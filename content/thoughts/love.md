@@ -6,14 +6,14 @@ aliases:
   - philia
   - eros
 date: '2025-10-04'
-description: choosing to give your full, continuously.
+description: love as attention, care, commitment, and revision
 gemini:
   session:
     46d2c85191d0369b: composable functions framing
     4a0fc1cd7b2da549: love, nihilism, mega deep research threads
     d7f06bc496ea82ea: Tractatus Amor-Politicus
 id: love
-modified: 2026-06-05 15:08:28 GMT-04:00
+modified: 2026-08-26 09:31:16 GMT-04:00
 socials:
   essay: '[[posts/love|mutual becoming]]'
   hermeneutics: '[[posts/romantic epistemology|romantic epistemology]]'
@@ -28,308 +28,121 @@ transclude:
   headings: false
 ---
 
-Love is [[#not a feeling|not a feeling]] that happens to you but a drive that is the _essence of life_.
+I use _dilectio_ for love as a practice: sustained attention, care, and commitment to a particular person. Attraction and attachment can arrive unbidden. The practice begins in how I respond.
 
-It's a discipline, a practice, a continuous choice to attend to someone despite there are no {{sidenotes<inline: true>[guarantees.]: You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]}} for reciprocation. In a way, love is a [[thoughts/hedonism|hedonistic]] pursuit.
+This is an account of love I can act on. It leaves room for feeling, history, sex, luck, and biology. It also leaves me responsible for what I do with them.
 
-> [!summary] decomposable functions
+> [!summary]
 >
-> love = choice + [[thoughts/Attention|attention]] + practice.
+> Love is attention that survives contact with another person's reality.
 
-Contrary to popular beliefs, love is _not_ conditioned response. You decide to make someone ::central:: to your being, and adapt your [[#boxes|boxes]] around them.
+## a working model
 
-Helen Fisher claimed that there must be a correlations between these three brain systems: sex drives, feelings for intensive love, and emotional attachment _must_ have something to do with how we love.
+Three distinctions stop the concept from turning into mush.
 
-## Sternberg's triangular theory of love
+1. **Attraction** pulls attention toward someone.
+2. **Attachment** makes their presence and absence matter to the nervous system.
+3. **Love as practice** is the repeated work of seeing, caring, repairing, and choosing.
 
-he argues that there are three components to love:
+Fisher separates mating into lust, romantic attraction, and attachment. These systems can interact and also come apart. Sternberg uses intimacy, passion, and commitment as a second map. [@fisher2002brainsystems; @sternberg1986triangular]
 
-- intimacy
-- passion
-- commitment
+These maps classify parts of a relationship. Each gives me a way to locate a failure. Passion can remain while trust collapses. Attachment can remain after a relationship becomes bad. Commitment can become inert if attention has stopped.
 
-## boxes
+My dating heuristic stays brutally simple:
 
-I propose a box model where one can decompose our feelings into interpretable components, in so far that when one of these components seem lacking,
+> When I do not know what to do, I ask what an emotionally healthy person would do, then I try that.
 
-### hermeneutics nature
+The heuristic works because it converts a mood into a next action. The other person still gets a vote on whether that action expresses care.
 
-### passion
+## public criteria
 
-### cohabitation
+Love has public criteria. I infer it from patterns of conduct, memory, attention, and repair. A person remembers what matters to you. They notice changes. They can say what they think you mean and revise that account when you correct them. They protect your agency when stress makes control tempting.
 
-### future projections
+Wittgenstein's point about criteria helps here. Criteria let us recognize a practice without reducing the practice to a checklist. [@wittgenstein1953philosophical]
 
-## heuristics
+I trust these observations:
 
-inspired by _[Keating's LW post](https://www.lesswrong.com/posts/gmysPZ3t5Rz9nzcCr/my-dating-heuristic)_ and [[dating|my-doc]]
+- They remain curious after forming a confident interpretation.
+- They can name a mistake without turning the admission into a demand for comfort.
+- They change conduct after an apology.
+- They make room for my projects, friends, and solitude.
+- They tell me when care has become resentment.
+- They can leave when staying would require self-erasure.
 
-> When in a dating context, I ask myself: what would an emotionally healthy person do? Then I do that.
+Staying through difficulty is weak evidence on its own. People also stay because of fear, dependence, coercion, habit, intermittent reinforcement, or a lack of alternatives. Love cannot be inferred from duration.
 
-- Leveling up emotional intelligence
-- Don't cosplay as a mature adult
-  - We are all kids once, and adult is just a mask to protect such inner-child
+Behaviorism can explain part of the history that produces attachment habits. Reinforcement, punishment, and extinction are real mechanisms. First-person meaning and the value of a commitment require further evidence.
 
-## not a feeling
+## attention and revision
 
-If love were a feeling, then:
+Murdoch treats attention as moral work. The work happens before a dramatic choice, in what I notice, imagine, dismiss, and allow to correct me. [@murdoch1970sovereignty]
 
-- it would be subject to _extinction_.
-- it requires certain {{sidenotes[reinforcement]: This is prevalent within psychology, where}}.
-- Add punishment, love turns to avoidance.
+This is harder than being nice. Niceness can run from a script. Attention has to survive surprise.
 
-> This is [[thoughts/Behavirourism|behaviorism's]] prediction, where love is just _positive reinforcement_ {{sidenotes[schedule.]: abusive relationships don't end quickly (high punishment). Secure relationships aren't just well-tuned reinforcement. People stay through illness, depression, long separation—all conditions that break behavioral contingencies.}}
+Gadamer's hermeneutic circle gives the right rhythm. I approach someone with a partial model. Their words and actions revise the model. The revised whole changes how I understand each part. Then I repeat. [@gadamer1960truth]
 
-[[thoughts/Existentialism|existentialist]] argues that "love is choice, not a response within communications". [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]
-You commit not because they reinforce you but because you _decide_ to make them central. This decision persists despite absence of guarantees, despite changes, failures, disappointments.
+Love fails when the model stops updating. "I know you" becomes a claim of ownership. A generous interpretation remains answerable to evidence. It can be charitable and still notice contempt, avoidance, manipulation, or incompatibility.
 
-Kierkegaard: love is duty you give yourself. "You shall love" makes love free—it's independent of the object's behavior. [@kierkegaard1847worksoflove] They can change; you chose this, you remain, as a duty that you choose, instead of imposed upon you (external reinforcement)
+> People change. Understanding has to be renewed with them.
 
-Fromm: love is art requiring discipline and practice. [@fromm1956art] The activity is voluntary: you choose to attend, to understand, to care—regardless of immediate reinforcement.
+This gives [[thoughts/Epistemology|epistemic humility]] a practical form:
 
-bell hooks: love is action. [@hooks2000love] When you understand love as action, you assume accountability. You can't say "I couldn't help it" (behaviorist excuse: environment controlled me). You chose. You're responsible.
+1. Say what I think I heard.
+2. Let them correct it.
+3. Look for the action implied by the correction.
+4. Check later whether the action helped.
 
-[[thoughts/Camus]]: The misery and greatness of this world: it offers no truths, but only objects for love. Absurdity is king, but love saves us from it.
+## choice and responsibility
 
-## what it requires
+Kierkegaard, Fromm, and bell hooks all put weight on practice. Kierkegaard gives love the force of a task. Fromm calls it an art that requires discipline and knowledge. hooks makes action and accountability central. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]
 
-three things: [[#attention|attention]], [[#choice|choice]], and [[#thoughts/Epistemology epistemic humility|epistemic humility]]
+Choice here means taking responsibility for a response inside real constraints. Desire can remain involuntary, and endurance needs its own justification.
 
-### attention
+The commitment I want is specific: keep learning the person, keep care legible, repair harms that can be repaired, and tell the truth when the relationship can no longer support both lives.
 
-> "[[thoughts/Attention]] is the rarest and purest form of generosity." [@weil1952gravity]
+## care and judgment
 
-Not attention _to_ something you already understand, but attention that _constitutes_ understanding. You empty yourself, bracket instrumental concerns, become available to what they present.
+Care ethics keeps love particular. Gilligan and Noddings ask what this person needs in this relation, under these conditions. Kittay and Ruddick make the labor visible. Care consumes time, attention, coordination, money, sleep, and sometimes a body. [@gilligan1982different; @noddings1984caring; @ruddick1989maternal; @kittay1999love]
 
-Attention is not {{sidenotes[^will]}} [@murdoch1970sovereignty] says that "moral life happens mostly in ongoing attention, not discrete choices". How you _think_ about someone, how you imagine them, what you notice and ignore—this is where love operates. Seeing someone clearly requires discipline, spiritual {{sidenotes[exercise.]: one can behaviorally comply (eye contact, nod, repeat back) while completely absent. attention resists third-person measurement. The gap between behavioral proxy and actual attention is everything.}} You practice interpreting charitably, checking projections, staying open to revision.
+Particularity creates duties and risks. A lover can know exactly where another person is vulnerable. Good judgment means using that knowledge to increase their room to act.
 
-{{sidenotes[will]}}:
+Aristotle's _philia_ adds reciprocity and shared activity. [@aristotle_nicomachean_ethics] Buber adds the distinction between meeting a person and managing an object. [@buber1923i] These ideas cash out in ordinary decisions: whether I ask, assume, disclose, conceal, repair, or leave.
 
-    Will tries to force understanding; attention waits for your understanding.
+The test is mutual becoming. Does the relationship increase each person's agency, practical knowledge, and capacity to care? A relationship can contain love and still fail this test. That is enough reason to change or end it.
 
-    [[thoughts/Will|Will]] imposes your framework; attention _lets_ the framework shift. They might reorganize your whole way of seeing—if you let them
+## a model is a promise to update
 
-### choice
+I need a model of someone to care for them well. I need to remember what tires them, what makes them laugh, which risks they want help taking, and which forms of help feel like control. The model becomes dangerous when I defend it against the person.
 
-@sartre1943being: you're "condemned to be free"—even when you claim "I had no choice," you chose to {{sidenotes[see it that way.]: Choosing to love is choosing despite absence of guarantees. No reinforcement schedule can make you do that. You do it because you decided it matters}} This isn't libertarian free will (uncaused choice from nowhere), rather _situated_ freedom: you're shaped by history, but you still decide how to respond.
+This is the boundary between understanding and [[thoughts/Compression|compression]]. A useful model predicts enough to coordinate, then changes when prediction fails. A bad model treats surprise as disobedience.
 
-The same reinforcement history produces different people because people aren't passive recipients—they interpret, resist, reframe. Love requires this active stance: you take responsibility for your interpretation, your commitment, your continued choice to stay.
+The right question is operational:
 
-### [[thoughts/Epistemology|epistemic]] humility
+> Which observations would make me trust that this is love, and which would make me update?
 
-This connects to self-{{sidenotes[knowledge:]: you might be wrong about them. Your current interpretation is provisional. Stay in the circle}} you need to know your own framework, your projections, your instrumental concerns—so you can bracket them. Authenticity requires recognizing when you're in bad faith, when you're using them instead of understanding them.
+That question has no permanent answer. Keeping the answer revisable is part of dilectio.
 
-Not claiming privileged access ("I know you better than you know yourself"). Not projecting your needs and calling it understanding. Not understanding _about_ them (facts, categories) instead of understanding _them_ (their horizon).
+## what the biology can say
 
-> People change. Your fusion of horizons must be redone, continuously. This is why love is practice, not possession.
+Romantic love recruits systems involved in reward, motivation, attention, attachment, and social cognition. That sentence is as far as the current evidence travels safely.
 
-### [[thoughts/hermeneutics|hermeneutics]]
+Song et al. compared an in-love group with $N=34$, an ended-love group with $N=34$, and a single group with $N=32$. [@song2015loverelated] They measured resting-state regional homogeneity and functional connectivity. The in-love group showed differences in networks that included the dorsal anterior cingulate cortex, insula, caudate, amygdala, temporoparietal junction, and posterior cingulate cortex. The study found correlations with time in love and time since breakup.
 
-When you love someone, you choose to interpret {{sidenotes[them.]: "Giving someone your full" = giving them your interpretive attention. You make their horizon matter. You let their way of making sense affect how you make sense. You stay with difficulty instead of retreating to easy categories}} Not once—continuously, rather you commit to staying in the [[thoughts/hermeneutics|hermeneutic circle]] even when understanding breaks down, even when they become strange to you.
+Those measurements identify group differences under one protocol. Dopamine withdrawal, anhedonia, grief recovery, and clinical treatment fell outside the study. The sample contained 45 women among 100 participants, so the old claim that it was mostly women was wrong.
 
-> understanding happens through _fusion of horizons_ (_Horizontverschmelzung_). [@gadamer1960truth]
+Bianchi-Demicheli et al. tested whether subliminal primes related to a beloved person changed lexical decisions. Their two experiments used 46 and 36 heterosexual women. [@bianchi2006power] The result concerns partner-related priming in that task. A general cognitive boost would require broader experiments.
 
-You bring your world, they bring theirs. Understanding emerges where they meet—not by one absorbing the other, but by creating shared space. This takes {{sidenotes[time.]: Learning to see as they see, to care about what they care about, to inhabit their concerns without losing your own. [@fromm1956art]}} You can't speed-read a {{sidenotes[person.]: This is not naive interpretation (assuming you already understand). It's not instrumental interpretation (extracting what you need). It's generous interpretation of giving benefit of doubt, seeking their internal logic, refusing to reduce them to a type}}
+Zeki's review connects romantic and maternal love studies to reward regions and discusses dopamine, oxytocin, vasopressin, serotonin, and nerve growth factor. [@zeki2007neurobiology] The causal story in humans remains limited. An fMRI contrast records blood-oxygen changes associated with a task or state. An account of love needs evidence at other levels.
 
-When someone says "you don't understand me," they're right—understanding must be achieved, maintained, renewed. It's never automatic. [@hooks2000love]
+The prairie vole story has also become more interesting. Older work linked pair bonding to oxytocin and vasopressin systems. In 2023, prairie voles lacking a functional oxytocin receptor still formed partner preferences and parented offspring. [@berendzen2023oxytocin] This rules out the clean one-receptor switch. It leaves a distributed mechanism with redundancy, developmental effects, sex differences, and interactions among several circuits.
 
-This takes time. You can't speed-read a person. Deep [reading](https://www.henrikkarlsson.xyz/p/how-i-read) is the model: return to difficult passages, sit with what resists you, let your categories be disrupted.
+The biology constrains the account. A scan can tell me that two groups differ under a protocol. Promises, agency, and repair need behavioral and first-person evidence.
 
-## what it's not
+## questionnaire
 
-Not: conditioned response to positive reinforcement. (If it were, extinction would end it.)
+Aron et al. designed a 45-minute procedure with escalating reciprocal disclosure to create temporary interpersonal closeness. [@aron1997closeness] The study found greater closeness than a small-talk condition. It did not test a recipe for falling in love.
 
-Not: stable state you achieve once. (Understanding requires continuous renewal.)
-
-Not: projection of your needs. (That's using them, not loving them.)
-
-Not: reduction to model or function. (Compression discards what makes them a person.)
-
-Not: unconditional acceptance without judgment. (Love requires seeing clearly, which means seeing limitations, failures, contradictions—and choosing to stay anyway.)
-
-Not: assuming you understand automatically. (Understanding is work, achievement, discipline.)
-
-## [[thoughts/ethics|ethics]] of love
-
-three axes: [[#care ethics|care]], [[#virtue ethics|virtue]], and [[#existentialist ethics|existentialism]]
-
-### care ethics
-
-Carol Gilligan, Nel Noddings: ethics of care emphasizes particularity over universality, relational self over autonomous individual, context-sensitive responsiveness over abstract principles. [@gilligan1982different; @noddings1984caring]
-
-You don't love "humanity" or "the good"; you love _this_ person. Their particularity matters. Their context, their history, their specific way of making sense—not interchangeable with anyone else.
-
-Relational self: you're not autonomous atom making rational choices in isolation. You're always already in relation. Love doesn't happen _to_ a self; it partly _constitutes_ the self. You become who you are through relationships, through being attended to and attending to others.
-
-Care as work: emotional labor, interpretive labor, maintenance labor. Not automatic, not effortless. Requires attention, practice, renewal. Feminist ethics recognizes this labor (often invisible, often gendered) as essential to human flourishing. [@ruddick1989maternal; @kittay1999love]
-
-Context-sensitive: you respond to their needs as _they_ articulate them, not as abstract principle dictates. Phronesis (practical wisdom): knowing what matters here, now, to this person. [@gadamer1960truth]
-
-### virtue ethics
-
-Aristotle: _philia_ (friendship/love) is central to good life. [@aristotle_nicomachean_ethics] Not instrumental (using friends for benefit) but intrinsic (friends are good in themselves). Reciprocal development: you flourish together.
-
-Love as practice developing character. Patience, generosity, attention—these aren't pre-existing traits you apply to relationships. You _learn_ them through loving, through failing, through staying when it's hard. Virtue is acquired through practice.
-
-Gadamer: understanding is form of phronesis—practical wisdom about what matters, how to proceed, what the situation calls for. [@gadamer1960truth] Not applying universal rule, but interpreting particular context. Love requires this: knowing when to push, when to wait, when to speak, when to listen.
-
-Eudaimonia (flourishing): not individual achievement but shared life. You flourish _with_ them, not despite them or independent of them.
-
-### existentialist ethics
-
-Martin Buber: I-Thou vs I-It. [@buber1923i] When you treat someone as I-It, they're object of experience, means to your ends, functional role in your life. When you treat them as I-Thou, they're subject, irreducible presence, end in themselves.
-
-Love requires I-Thou stance. You can't love someone you've made into I-It (instrument, function, type). The shift is not cognitive—it's existential. You choose to relate as subject-to-subject, not subject-to-object.
-
-Emmanuel Levinas: face of the Other makes infinite demand. [@levinas1961totality] You're responsible for them not because you chose it (that would be contractual), but because their vulnerability, their alterity, their face confronts you. Ethics precedes ontology: responsibility comes before being.
-
-Love intensifies this: you're accountable not just to abstract Other but to _this_ Other, whose particularity matters, whose horizon you've chosen to care about.
-
-Sartre, de Beauvoir: authenticity vs bad faith. [@sartre1943being] Bad faith in love: pretending you had no choice, hiding behind roles ("I'm just like this"), refusing responsibility for your interpretation. Authenticity: owning your choices, recognizing your freedom, taking responsibility for how you see them.
-
-### recognition
-
-Paul Ricoeur: narrative identity. [@ricoeur1992oneself] You understand someone by understanding their story—not just facts, but _how_ they make sense of facts, what trajectory they see, what possibilities matter. Recognition is acknowledging their narrative authority: they get to tell their story.
-
-Charles Taylor: frameworks of meaning. [@taylor1989sources] What someone cares about, what distinctions they draw, what they find significant—this is their framework. To love them is to take their framework seriously, to let it matter to you, even when it differs from yours.
-
-Axel Honneth: recognition as constitutive of self-realization. [@honneth1995struggle] You need to be recognized—attended to, interpreted charitably, taken seriously—to flourish. Love provides this: sustained recognition that allows them to develop, to become, to change.
-
-But recognition requires interpretive work. You can fail: misrecognize, impose your framework, refuse to see them as they are. Hermeneutic injustice: when your interpretive resources can't grasp their experience, or when you refuse to update your interpretation despite evidence.
-
-Love fights this: you commit to recognizing them accurately, to expanding your framework when it fails, to staying in the hermeneutic circle until understanding emerges.
-
-## criteria
-
-Don't ask "what is love?" Ask: what does loving someone look like in practice?
-
-Criteria are behavioral—but not reducible to reflex. You can tell someone loves another by:
-
-- How they talk about them: what they notice, what they remember, what they find significant
-- What they attend to: do they track the other's concerns? notice changes? stay curious?
-- How they respond under stress: do they retreat to easy categories or stay with difficulty?
-- Whether they stay when it's hard: through illness, conflict, uncertainty, change
-- Whether their interpretation stays generous: benefit of doubt, seeking internal logic, checking projections
-- How they handle being wrong: do they update? acknowledge? stay open?
-- Whether they treat them as means or ends: instrumental (I-It) or relational (I-Thou)?
-
-These are observable. But they're not stimulus-response. They're patterns of engagement that make sense only within a practice, a form of life. Love is language-game. You learn it by participating, not by collecting behavioral data.
-
-[[thoughts/Wittgenstein|Wittgensteinian]] lesson: criteria show what's going on without _being_ what's going on. You use behavior to recognize love, but love isn't identical to behavior.
-
-## towards [[thoughts/functionalism|functionalism]]
-
-Can functional role capture love? Maybe: love is ability to predict, to intervene appropriately, to maintain relationship under perturbations. Engineering criteria, not essence.
-
-But love resists reduction. If you treat someone as functional system to model, you've already stopped loving them. You've made them instrument of your prediction. The hermeneutic circle breaks.
-
-[[thoughts/functionalism|Functionalism]] works for [[thoughts/LLMs]], control systems, role-playing. It might work for surface-level social navigation. But loving someone? You need first-person engagement, not third-person modeling. You need to care about their horizon because it's _theirs_, not because it serves your goals.
-
-This is limit of [[thoughts/Compression|compression]]: you can't compress person to model without losing what makes them person. Love requires attending to what resists compression—their irreducibility, their first-person givenness, their capacity to surprise you.
-
-[[thoughts/Behavirourism]] tries to compress persons to stimulus-response mappings. Lossy compression discards: first-person experience, attention, intention, the _reasons_ they act. You model the function (input → output) but miss the process (how they make sense, what it means to them, what they're trying to do).
-
-This works when you don't care about person—only their behavior. Advertising, management, modification. It breaks when you need to understand them. Understanding requires entering their horizon (see [[thoughts/hermeneutics]]), not compressing them to model.
-
-> [!important]
->
-> You can't love someone you've reduced to function. Love requires attending to what resists [[thoughts/Compression|compression]].
-
-## thingspace
-
-see also: https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace
-
-> This is the benefit of viewing robins as points in space: You couldn't see the linear lineup as easily if you were just imagining the robins[^robin] as cute little wing-flapping creatures.
-
-[^robin]: A robin's DNA is a highly multidimensional variable, but you can still think of it as part of a robin's location in thingspace—millions of quaternary coordinates, one coordinate for each DNA base—or maybe a more sophisticated view that . The shape of the robin, and its color (surface reflectance), you can likewise think of as part of the robin's position in thingspace, even though they aren't single dimensions.
-
-> We can even imagine a configuration space with one or more dimensions for every distinct characteristic of an object, so that the position of an object's point in this space corresponds to all the information in the real object itself. Rather redundantly represented, too—dimensions would include the mass, the volume, and the density. [^radial]
-
-[^radial]: "Radial categories" are how cognitive psychologists describe the non-Aristotelian boundaries of words. The central "mother" conceives her child, gives birth to it, and supports it. Is an egg donor who never sees her child a mother? She is the "genetic mother". What about a woman who is implanted with a foreign embryo and bears it to term? She is a "surrogate mother". And the woman who raises a child that isn't hers genetically? Why, she's an "adoptive mother".
-
-> The Aristotelian syllogism would run, "Humans have ten fingers, Fred has nine fingers, therefore Fred is not a human" but the way we actually think is "Humans have ten fingers, Fred is a human, therefore Fred is a 'nine-fingered human'."
-
-We can think about the radial-ness of categories [^categories] in intensional terms, as described above—properties that are usually present, but optionally absent. If we thought about the intension of the word "mother", it might be like a distributed glow in thingspace, a glow whose intensity matches the degree to which that volume of thingspace matches the category "mother". The glow is concentrated in the center of genetics and birth and child-raising; the volume of egg donors would also glow, but less brightly.
-
-[^categories]: Or we can think about the radial-ness of categories extensionally. Suppose we mapped all the birds in the world into thingspace, using a distance metric that corresponds as well as possible to perceived similarity in humans: A robin is more similar to another robin, than either is similar to a pigeon, but robins and pigeons are all more similar to each other than either is to a penguin, etcetera.
-
-> This gives us yet another view of why words are not Aristotelian classes: the empirical clustered structure of the real universe is not so crystalline.
-
-A natural cluster, a group of things highly similar to each other, may have no set of necessary and sufficient properties—no set of characteristics that all group members have, and no non-members have.
-
-> When you draw a boundary around a group of extensional points empirically clustered in thingspace, you may find at least one exception to every simple intensional rule you can invent.
-
-## universal love.
-
-_from [Universal love, said the cactus person](https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/)_
-
----
-
-## lists
-
-_so I made this list for [Malaika](https://malaikaaiyar.me/)_
-
-| title                                  |                                                                         link |
-| :------------------------------------- | ---------------------------------------------------------------------------: |
-| Tender Masculinity                     |               https://buttondown.com/greengaybles/archive/tender-masculinity |
-| Universal love, said the cactus person | https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/ |
-
-- https://internetprincess.substack.com/p/against-narrative
-- https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for
-- https://www.edwardluperart.com/post/love-and-fear-on-the-musashi-plain-kajita-hanko-s-masterpiece-from-the-tales-of-ise (M sent me this actually)
-- https://pmc.ncbi.nlm.nih.gov/articles/PMC4191624/pdf/emss-59635.pdf -- Neuroreductionism about Sex and Love
-- https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Authentic Love
-- https://www.youtube.com/watch?v=Guvmpf6fU7s -- Phenomenology on love and auto-affection, Dr. Ellie Anderson
-- https://www.youtube.com/watch?v=8mQPuEnOsYM -- Simone de Beauvoir on love and open relationship
-- https://www.youtube.com/watch?v=5Cj4H4FBwho -- Reflection on love
-
-## hw
-
-see also: [[thoughts/pdfs/The neurobiology of love.pdf]], [[thoughts/pdfs/The power of love on the human brain.pdf]], and [[thoughts/pdfs/Love-realted changes in the brain.pdf]]
-
-regional homogeneity (ReHo) and functional connectivity (FC) across an "in-love" group (LG, N=34, currently intensely in love) and an "ended-love" group (ELG, N=32, ended romantic relationship) and a "single" group (SG, N=32, never fallen in love), shows that:
-
-- ReHo of left dorsal anterior cingulate cortex (dACC) was significantly increased in LG (compared to ELG and SG)
-- ReHo of left dACC was positively correlated with length of time in love in LG, and negatively correlated with the lovelorn duration since breakup in ELG
-- FC within the reward, motivation, and emotion regulation network (dACC, insula, caudate, amygdala) as well as FC in social cognition network (temporo-parietal junctions, posterior cingulate cortex, etc.) was significantly increased in the LG
-- FC was positively correlated with duration of love in the LG but negatively correlated with the lovelorn duration of time since breakup in the ELG.
-
-I found from all of these study that majority of participants are largely female, which dictates whether the data are either skewed or simply biased towards the females' psychology comparing to men.
-
-The regions activated by romantic love—the medial insula, anterior cingulate, hippocampus, striatum, and nucleus accumbens—are rich in specific neuromodulators that drive the attachment process. Zeki identifies four key chemical players that drive this activation: dopamine, oxytocin, vasopressin, and nerve growth factor.
-
-Zeki frames this as a "push-pull mechanism" where love simultaneously activates reward circuitry while suppressing critical social assessment networks.
-the deactivation of mentalizing regions (TPJ, mPFC) is particularly interesting—theory of mind requires distinguishing self from other, but "unity-in-love" phenomenologically involves merging that boundary.
-
-the prairie vs montane vole comparison is _crucial_ for understanding mechanism:
-
-- prairie voles: monogamous, high oxytocin/vasopressin receptor density in reward centers.
-- montane voles: promiscuous, sparse receptors.
-- blocking OT/VP release makes prairie voles promiscuous; supplementing doesn't make montane voles monogamous bc no receptor substrate.
-
-> This suggests love's neurochemistry requires both the ligand AND the receptor architecture.
-
-Bianchi-Demicheli et al. propose that because romantic love activates subcortical reward and motivation systems (as detailed by Zeki and Song), it acts as a goal-directed drive that can facilitate cognitive behavior. The theory posits that the state of being in love creates a "top-down" cognitive facilitation. The intense motivational state primes the brain to process information relevant to the goal (the partner) more efficiently. This processing advantage is not limited to conscious tasks but extends to unconscious, subliminal processing, suggesting that the motivation to love fundamentally alters information processing speeds.
-
-A unique and poignant contribution of Song et al. is the inclusion of the "Ended-Love" Group (ELG)—individuals who had recently experienced a breakup. This group provides a critical window into the neurobiology of grief, withdrawal, and recovery, offering a physiological basis for the intense suffering associated with heartbreak.
-
-- The study found distinct neural signatures that differentiated the ELG from both the in-love and single groups. Most notably, **ReHo in the bilateral caudate nucleus was significantly reduced** in the ELG compared to both the in-love and single groups.
-- The caudate nucleus is central to reward expectation, goal-directed behavior, and the dopaminergic reward pathway. Its hypo-activity in the ELG likely reflects a "reward withdrawal" state analogous to drug withdrawal.
-- In a relationship, the partner serves as a potent reward stimulus, driving dopaminergic activity in the caudate.
-- When the relationship ends, this source of dopamine is abruptly removed, leading to a downregulation of activity in this region.
-- This neurophysiological "crash" manifests psychologically as the ==anhedonia, lethargy, and lack of motivation== often seen in heartbreak.
-
-While Song et al. does not explicitly detail a clinical "recovery protocol," the data points to specific mechanisms of natural recovery. The caudate nucleus has been implicated in anxiety relief systems; deep brain stimulation of the caudate has been shown to improve symptoms of anxiety and major depression. The study suggests that the elevated FC observed in certain pathways of the ELG (specifically between the dACC and regions like the insula and amygdala, compared to the Single group) might represent an adaptive, compensatory mechanism.
-
-> The brain is attempting to regulate the distress of social loss.
-
-These study underscore the evolutionary imperative of love: ==love is not a luxury but survival mechanism==. Bianchi-Demicheli's findings somewhat confirmed a broader principle where **motivational states are big cognitive enhancers**. If love can speed up lexical decision making via top-down processing,then other intense motivational states—passion for work, art, survival—likely recruit similar neural architectures to boost performance.
-
----
-
-## questionaire
-
-see also: https://www.nytimes.com/2015/01/09/style/no-37-big-wedding-or-small.html, and the [research journal](https://journals.sagepub.com/doi/pdf/10.1177/0146167297234003)
+The pronouns below are adapted for current use. The task order and study conditions are retained.
 
 ### closeness-generating procedure
 
@@ -385,13 +198,13 @@ see also: https://www.nytimes.com/2015/01/09/style/no-37-big-wedding-or-small.ht
 
 <div class="slip" data-title="set iii">
 
-25. Make 3 true "we" statements each. For instance "We are
+25. Make 3 true "we" statements each. For instance, "We are
     both in this room feeling..."
 26. Complete this sentence: "I wish I had someone with
     whom I could share..."
 27. If you were going to become a close friend with your
-    partner, please share what would be important for him
-    or her to know.
+    partner, please share what would be important for them
+    to know.
 28. Tell your partner what you like about them; be very
     honest this time saying things that you might not say to
     someone you've just met.
@@ -412,7 +225,7 @@ see also: https://www.nytimes.com/2015/01/09/style/no-37-big-wedding-or-small.ht
     What would it be? Why?
 35. Of all the people in your family, whose death would you
     find most disturbing? Why?
-36. Share a personal problem and ask your partner's advice on how he or she might handle it. Also, ask your partner to reflect back to you how you seem to be feeling about the problem you have chosen.
+36. Share a personal problem and ask your partner's advice on how they might handle it. Also, ask your partner to reflect back to you how you seem to be feeling about the problem you have chosen.
 
 </div>
 
@@ -430,7 +243,7 @@ see also: https://www.nytimes.com/2015/01/09/style/no-37-big-wedding-or-small.ht
    prefer? Why?
 6. What is a good number of people to have in a student
    household and why?
-7. If you could inventa new flavor ofice cream, what would
+7. If you could invent a new flavor of ice cream, what would
    it be?
 8. What is the best restaurant you've been to in the last
    month that your partner hasn't been to? Tell your
@@ -444,12 +257,12 @@ see also: https://www.nytimes.com/2015/01/09/style/no-37-big-wedding-or-small.ht
 
 <div class="slip" data-title="set ii">
 
-13. Describe the last time you went to the zoо.
+13. Describe the last time you went to the zoo.
 14. Tell the names and ages of your family members, include grandparents, aunts and uncles, and where they
     were born (to the extent you know this information).
 15. One of you say a word, the next say a word that starts
     with the last letter of the word just said. Do this until
-    you have said 50 words. Any words will do-you aren't
+    you have said 50 words. Any words will do, you aren't
     making a sentence.
 16. Do you like to get up early or stay up late? Is there
     anything funny that has resulted from this?

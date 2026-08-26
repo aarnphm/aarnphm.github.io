@@ -2,7 +2,7 @@
 date: '2026-06-17'
 description: regular expressions, the regex-to-automaton pipeline, Brzozowski derivatives, and a matcher in Mojo
 id: Regex
-modified: 2026-06-19 12:49:32 GMT-04:00
+modified: 2026-08-26 10:25:11 GMT-04:00
 seealso:
   - '[[thoughts/DFA|DFA]]'
   - '[[thoughts/NFA|NFA]]'
@@ -86,8 +86,10 @@ A string $w = a_1 a_2 \ldots a_n$ is in $L$ iff $\partial_{a_n} \cdots \partial_
 
 $$
 \begin{aligned}
-\nu(\emptyset) = \nu(a) &= \emptyset & \nu(\epsilon) = \nu(r^{*}) &= \epsilon \\
-\nu(r_1 + r_2) &= \nu(r_1) + \nu(r_2) & \nu(r_1 r_2) &= \nu(r_1)\, \nu(r_2)
+\nu(\emptyset) = \nu(a) &= \emptyset \\
+\nu(\epsilon) = \nu(r^{*}) &= \epsilon \\
+\nu(r_1 + r_2) &= \nu(r_1) + \nu(r_2) \\
+\nu(r_1 r_2) &= \nu(r_1)\, \nu(r_2)
 \end{aligned}
 $$
 
@@ -101,7 +103,9 @@ $$
 \end{aligned}
 $$
 
-The concatenation rule is the only subtle one: if $r_1$ accepts the empty string ($\nu(r_1) = \epsilon$), the symbol $a$ may instead belong to $r_2$, so both branches survive. Brzozowski's result is that, up to similarity (associativity, commutativity, idempotence of $+$, and the identities $\emptyset r = \emptyset$, $\epsilon r = r$), an expression has finitely many distinct derivatives. Those derivative classes are precisely the states of the minimal DFA, so derivatives build it lazily.
+If $r_1$ accepts the empty string ($\nu(r_1) = \epsilon$), then $a$ may instead belong to $r_2$
+
+Brzozowski's result is that, up to similarity (associativity, commutativity, idempotence of $+$, and the identities $\emptyset r = \emptyset$, $\epsilon r = r$), an expression has finitely many distinct derivatives. These derivatives are the minimal state of a DFA.
 
 > [!example] matching against $(a + b)^{*}\,ba$ (strings ending in $ba$)
 >
@@ -125,11 +129,11 @@ Derivatives map onto an algebraic data type directly: a regex node is one of six
 from std.memory import ArcPointer
 
 struct Re(Copyable, Movable):
-    comptime NUL = 0   # ∅
-    comptime EPS = 1   # ε
+    comptime NUL = 0   # \emptyset
+    comptime EPS = 1   # \epsilon
     comptime CHR = 2   # literal byte
-    comptime ALT = 3   # r₁ + r₂
-    comptime CAT = 4   # r₁ r₂
+    comptime ALT = 3   # r_1 + r_2
+    comptime CAT = 4   # r_1 r_2
     comptime STA = 5   # r*
 
     var kind: Int
@@ -191,9 +195,3 @@ def matches(r: Re, s: String) -> Bool:
         cur = deriv(cur, b)
     return nullable(cur)
 ```
-
-The matcher is online: it consumes the input one byte at a time and never materializes the automaton. Each step is $O(|r|)$ in the current derivative, and similarity pruning keeps that bounded, so the whole match runs linear in $|w|$ with no backtracking. That property is the reason RE2 and the Rust `regex` crate refuse the backtracking model. The same shape extends to capture tracking and to _antiderivatives_ for a symmetric right-to-left scan.
-
-> [!note] toolchain
->
-> Written against the moving Mojo surface; no compiler was on hand to build it here. Read the listing as the derivative algorithm transcribed into Mojo's value/`ArcPointer` model rather than a vetted compile.
