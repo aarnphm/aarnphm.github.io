@@ -373,16 +373,16 @@ $$
 
 For a fixed universe $X$, we write $A^c = X \setminus A$.
 
-| law             | union form                              | intersection form                       |
-| --------------- | --------------------------------------- | --------------------------------------- |
-| identity        | $A \cup \emptyset = A$                  | $A \cap X = A$                          |
-| domination      | $A \cup X = X$                          | $A \cap \emptyset = \emptyset$          |
-| idempotent      | $A \cup A = A$                          | $A \cap A = A$                          |
-| commutative     | $A \cup B = B \cup A$                   | $A \cap B = B \cap A$                   |
-| associative     | $(A \cup B) \cup C = A \cup (B \cup C)$ | $(A \cap B) \cap C = A \cap (B \cap C)$ |
-| absorption      | $A \cup (A \cap B) = A$                 | $A \cap (A \cup B) = A$                 |
-| complement      | $A \cup A^c = X$                        | $A \cap A^c = \emptyset$                |
-| double complement | $(A^c)^c = A$                         | $(X \setminus A)^c = A$                 |
+| law               | union form                              | intersection form                       |
+| ----------------- | --------------------------------------- | --------------------------------------- |
+| identity          | $A \cup \emptyset = A$                  | $A \cap X = A$                          |
+| domination        | $A \cup X = X$                          | $A \cap \emptyset = \emptyset$          |
+| idempotent        | $A \cup A = A$                          | $A \cap A = A$                          |
+| commutative       | $A \cup B = B \cup A$                   | $A \cap B = B \cap A$                   |
+| associative       | $(A \cup B) \cup C = A \cup (B \cup C)$ | $(A \cap B) \cap C = A \cap (B \cap C)$ |
+| absorption        | $A \cup (A \cap B) = A$                 | $A \cap (A \cup B) = A$                 |
+| complement        | $A \cup A^c = X$                        | $A \cap A^c = \emptyset$                |
+| double complement | $(A^c)^c = A$                           | $(X \setminus A)^c = A$                 |
 
 Set difference is intersection with a complement:
 

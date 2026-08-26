@@ -23,4 +23,12 @@ tags:
 title: philosophical zombies
 ---
 
-chalmers 1996 (conceivability → possibility → anti-materialism). dennett denies. nearby: [[thoughts/inverted spectrum]], china brain, absent qualia.
+a philosophical zombie is a physical and functional duplicate with no experience. It talks about pain, avoids damage, reports red, and has the same internal causal organization. There is still nothing it is like to be that system.
+
+Chalmers' argument:
+
+- zombies are ideally conceivable.
+- ideal conceivability gives Chalmers a route to metaphysical possibility.
+- if zombies are possible, physical facts do not fix phenomenal facts. [@chalmers1996consciousmind]
+
+the weak point is the second step. Dennett's reply is that the story seems conceivable only while the capacities are underspecified. Once the capacities are filled in, he thinks there is no extra thing left to subtract. [@dennett1999zombie] The useful version for me is a test on explanation. If my theory makes report, attention, memory, and behavior come out the same while experience can still be subtracted, the explanation misses [[thoughts/phenomenal consciousness]].

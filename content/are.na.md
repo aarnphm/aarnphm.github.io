@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-08-20 02:30:24 GMT-04:00
+modified: 2026-08-25 00:00:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2016,6 +2016,86 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.are.na/christina/nyc-abwbcmydqpg -- Are.na: NYC
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website, are.na]
+    - later: true
+- https://www.avelorestaurant.com/ -- Avelo, Toronto&#039;s finest plant-based foods &#8211; Vegan fine dining and cocktail bar
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://anhandchi.com/ -- Anh and Chi
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://tyler.cafe/ -- Tyler Angert
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://www.thehomeproj.com/ -- The Home Project
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://efforttrust.com/ -- efforttrust.com
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://valhalladsp.com/ -- Valhalla DSP
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://interpretable-ai-workshop.github.io/ -- Interpretable AI: Past, Present and Future - Interpretable AI Workshop
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://www.fancycomponents.dev/ -- Fancy Components
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://fh295.github.io/ -- Language Understanding Grounded in Perception and Action
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://www.casapaco.ca/ -- Casa Paco
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://www.tona.zone/ -- Christina Nguyen Product Designer
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website, design]
+    - later: true
+- https://stategoods.myshopify.com/ -- State Goods
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://playbit.app/ -- playbit
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://textmotion.dev/ -- slot-text tiny text roll animation
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
+- https://ordinaryabundance.com/ -- Ordinary Abundance
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [website]
+    - later: true
 - https://www.designers-machines.com/ -- Designers and Machines
   - [meta]:
     - date: 08/20/2026
@@ -4206,6 +4286,106 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://oldster.substack.com/p/this-is-54-author-elizabeth-gilbert -- This is 54: Author Elizabeth Gilbert Responds to The Oldster Magazine Questionnaire
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://blog.regehr.org/archives/164 -- Why Take an Operating Systems Course? &#8211; Embedded in Academia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://culturevulture.substack.com/p/so-what-are-we -- so, what are we?
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://paulgraham.com/reddits.html -- The Reddits
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://www.dazeddigital.com/life-culture/article/64409/1/in-defence-of-low-stakes-friendships -- In defence of low-stakes friendships
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://camtology.substack.com/p/inadequacy-and-lack -- Inadequacy and Lack
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://philipgoff.substack.com/p/my-week-without-cosmic-hope -- My Week Without Cosmic Hope
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://calabrees.substack.com/p/a-weekly-list-of-toronto-art-exhibition-df2 -- a weekly list of Toronto art exhibition openings and events 018
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://blog.mercury.io/the-psychology-of-waiting-loading-animations-and-facebook/ -- Psychology of waiting and Facebook - Mercury Blog
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://www.wsj.com/arts-culture/books/daniel-kahneman-assisted-suicide-9fb16124 -- wsj.com
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://velvetnoise.substack.com/p/speak-so-you-can-be-found -- speak so you can be found
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://marginalrevolution.com/ -- Marginal Revolution
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://www.newyorker.com/magazine/2018/11/05/how-to-read-infinite-jest -- How to Read Infinite Jest
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://offhandquibbles.substack.com/p/evidence-is-knowledge -- Evidence is just knowledge
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://blog.ezyang.com/2026/01/megatron-via-shard-map/ -- Megatron via shard_map : ezyang's blog
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://www.theatlantic.com/technology/2026/03/ai-creative-writing/686418/?gift=ew64ZJVzcA6tYX59fXOkC-UOtpepArGxJKfXieeS0n0 -- The Human Skill That Eludes AI
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://paulgraham.com/ace.html -- Billionaires Build
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://paulgraham.com/winc.html -- How to Convert Between Wealth and Income Tax
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://blog.andymasley.com/p/a-cheat-sheet-for-conversations-about -- Using ChatGPT is not bad for the environment - a cheat sheet
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
+- https://waitbutwhy.com/2015/12/the-tail-end.html -- The Tail End
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [essay]
+    - later: true
 - https://patrickcollison.com/fast -- Fast
   - [meta]:
     - date: 08/20/2026
@@ -7155,6 +7335,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://courses.cs.washington.edu/courses/cse446/18wi/slides/p60-morgenstern.pdf -- Choose Identity Provider
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [course]
+    - later: true
+- https://15445.courses.cs.cmu.edu/fall2024/ -- CMU 15-445/645 :: Intro to Database Systems (Fall 2024)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [course]
+    - later: true
+- https://www.propublica.org/article/college-high-school-research-peer-review-publications -- The Newest College Admissions Ploy: Paying to Make Your Teen a Peer-Reviewed Author
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [course]
+    - later: true
+- https://scalable-ai.eecs.berkeley.edu/assets/lecture_slides/lecture_11a.pdf -- lecture 11a
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [course]
+    - later: true
 - https://rlhfbook.com/course -- Post-Training Course
   - [meta]:
     - date: 08/20/2026
@@ -7268,6 +7468,276 @@ title: are.na
   - view: list
   - json: true
 
+- https://huggingface.co/facebook/opt-66b -- facebook/opt-66b
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, language models]
+    - later: true
+- https://huggingface.co/facebook/galactica-120b -- facebook/galactica-120b
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, language models]
+    - later: true
+- https://www.lesswrong.com/posts/m8WKfNxp9eDLRkCk9/interim-research-report-mechanisms-of-awareness -- Interim Research Report: Mechanisms of Awareness
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, interpretability]
+    - later: true
+- https://huggingface.co/blog/rlhf -- Illustrating Reinforcement Learning from Human Feedback (RLHF)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, reinforcement learning]
+    - later: true
+- https://huggingface.co/papers/2401.00448 -- Paper page - Beyond Chinchilla-Optimal: Accounting for Inference in Language Model Scaling Laws
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, inference]
+    - later: true
+- https://theacademic.com/generative-models-and-their-latent-space/ -- Generative models and their latent space - The Academic
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://medium.com/@eugenesh4work/latent-space-mysteries-in-large-language-models-2d276c6d0708 -- Latent Space Mysteries in Large Language Models
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, attention]
+    - later: true
+- https://huggingface.co/spaces/mteb/leaderboard -- MTEB Leaderboard - a Hugging Face Space by mteb
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://osanseviero.github.io/hackerllama/blog/posts/random_transformer/ -- The Random Transformer hackerllama
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, transformers]
+    - later: true
+- https://transformer-circuits.pub/2023/monosemantic-features -- Towards Monosemanticity: Decomposing Language Models With Dictionary Learning
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, language models]
+    - later: true
+- https://blog.eleuther.ai/autointerp/ -- Open Source Automated Interpretability for Sparse Autoencoder Features
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, interpretability]
+    - later: true
+- https://imbue.com/research/70b-infrastructure/ -- From bare metal to a 70B model: infrastructure set-up and scripts
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://astralord.github.io/posts/transformer-inference-optimization-toolset/ -- Transformers Inference Optimization Toolset
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, transformers]
+    - later: true
+- https://eugeneyan.com/writing/llm-evaluators/ -- Evaluating the Effectiveness of LLM-Evaluators (aka LLM-as-Judge)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://o-g-rose-writing.medium.com/the-conviviality-of-ivan-illich-part-i-fa13e437c158 -- The Conviviality of Ivan Illich, Part I
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, attention]
+    - later: true
+- https://www.alignmentforum.org/posts/3JuSjTZyMzaSeTxKk/addressing-feature-suppression-in-saes -- Addressing Feature Suppression in SAEs AI Alignment Forum
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, alignment]
+    - later: true
+- https://people.idsia.ch/~juergen/deep-learning-history.html -- Timeline: artificial neural networks, deep learning, etc
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://karpathy.github.io/2015/05/21/rnn-effectiveness/ -- The Unreasonable Effectiveness of Recurrent Neural Networks
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://transformer-circuits.pub/2024/crosscoders/index.html -- Sparse Crosscoders for Cross-Layer Features and Model Diffing
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://vgel.me/posts/representation-engineering/ -- Representation Engineering Mistral-7B an Acid Trip
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://www.goodfire.ai/blog/announcing-goodfire-ember/ -- Announcing Goodfire Ember
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://twitterwrapped.exa.ai/aarnphm_ -- LLM + Web Search API Demos and Tutorials | Exa
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://openai.com/index/multimodal-neurons/ -- multimodal neurons
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://docs.google.com/presentation/d/1ow3mrRAgje8WdzXTxhJMT1SDEItYeWWEO9ZgCD9LmQ4/mobilepresent?slide=id.g2677a47e349_0_209 -- (Public) Can we safely automate alignment research?
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, alignment]
+    - later: true
+- https://www.alignmentforum.org/posts/PwnadG4BFjaER3MGf/interpretability-will-not-reliably-find-deceptive-ai -- Interpretability Will Not Reliably Find Deceptive AI AI Alignment Forum
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, alignment]
+    - later: true
+- https://huggingface.co/blog/kv-cache -- KV Cache from scratch in nanoVLM
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://semianalysis.com/2025/06/08/scaling-reinforcement-learning-environments-reward-hacking-agents-scaling-data/ -- Scaling Reinforcement Learning: Environments, Reward Hacking, Agents, Scaling Data
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, agents]
+    - later: true
+- https://www.jeremyjordan.me/distributed-training/ -- Training extremely large neural networks across thousands of GPUs.
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, gpu]
+    - later: true
+- https://red.anthropic.com/2025/cyber-competitions/ -- Claude does cyber competitions
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://www.snowflake.com/en/blog/engineering/arctic-inference-shift-parallelism/ -- Arctic Inference with Shift Parallelism: The Fastest Open Source Inference System for Enterprise AI
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, inference]
+    - later: true
+- https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/ -- Defeating Nondeterminism in LLM Inference
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, inference]
+    - later: true
+- https://publish.obsidian.md/the-tensor-throne/The+Graph+Side+of+Attention/Beyond+Attention+as+a+Graph -- Beyond Attention as a Graph - The Tensor Throne - Obsidian Publish
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, attention]
+    - later: true
+- https://jessylin.com/2025/10/20/continual-learning/ -- The Continual Learning Problem
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://www.anthropic.com/research/agentic-misalignment -- Agentic misalignment: How LLMs could be insider threats
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, agents]
+    - later: true
+- https://alignment.openai.com/prod-evals/ -- Sidestepping Evaluation Awareness and Anticipating Misalignment with Production Evaluations
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, alignment]
+    - later: true
+- https://www.anthropic.com/institute -- The Anthropic Institute
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://windowsontheory.org/2026/03/30/the-state-of-ai-safety-in-four-fake-graphs/ -- The state of AI safety in four fake graphs
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, safety]
+    - later: true
+- https://colossus.com/article/project-mario-demis-hassabis-deepmind-mallaby/ -- How Demis Hassabis Went From Idealist to Realist
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://transformer-circuits.pub/2026/emotions/index.html -- Emotion Concepts and their Function in a Large Language Model
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, language models]
+    - later: true
+- https://fireworks.ai/blog/scaling-optimizing-frontier-model-training -- Scaling and Optimizing Frontier Model Training
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://smoothcriminal.notion.site/the-remaining-mysteries-of-attention-sinks -- Notion | Where teams and agents work together
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, agents]
+    - later: true
+- https://www.verysane.ai/p/alignment-is-proven-to-be-tractable -- Alignment Is Proven To Be Solvable
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, alignment]
+    - later: true
+- https://www.thoughtfullab.com/letting-ai-posttrain-ai.html -- What We Learned from Letting AI PostTrain AI
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://openai.com/index/model-disproves-discrete-geometry-conjecture/ -- model disproves discrete geometry conjecture
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://d1qx31qr3h6wln.cloudfront.net/publications/Nemotron_Diffusion_Tech_Report_v1.pdf -- Nemotron Diffusion Tech Report v1
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://medium.com/@NoamShazeer/shape-suffixes-good-coding-style-f836e72e24fd -- Shape Suffixes: Good Coding Style
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, attention]
+    - later: true
+- https://xjffff.github.io/funcattn/ -- Functional Attention: From Pairwise Affinities to Functional Correspondences
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, attention]
+    - later: true
+- https://medium.com/@bchesky/how-to-time-travel-b604096d5ed0 -- How to Time Travel
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, attention]
+    - later: true
+- https://cdn.openai.com/pdf/ten-proofs-oai.pdf -- ten proofs oai
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://cdn.openai.com/pdf/reasoning-walkthroughs.pdf -- reasoning walkthroughs
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://openai-git-upstream.openai.chatgpt.site/ -- OpenAI Git patches & notes
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://jzhao2024.github.io/notes/2026/08/08/diffusion-language-models.html -- Some Theoretical and Practical Thoughts on Diffusion Language Models | Junbo Zhao (Jake)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning, language models]
+    - later: true
+- https://r0m1t.com/neat-trick-to-save-2bytes.html -- How to save 2 bytes in LLM training
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
+- https://openai.com/index/jalapeno-first-results/ -- jalapeno first results
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [machine learning]
+    - later: true
 - https://sustcsonglin.github.io/blog/2024/deltanet-1/ -- DeltaNet Explained (Part I)
   - [meta]:
     - date: 08/20/2026
@@ -11457,6 +11927,161 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Advanced_Vector_Extensions -- Advanced Vector Extensions
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, simd]
+    - later: true
+- http://hy3na.com/posts/compilers.html -- Towards High-Performance AI Compilers
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, compilers]
+    - later: true
+- https://blog.alpindale.net/posts/top_k_cuda/ -- Understanding the CUDA Compiler & PTX with a Top-K Kernel
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, cuda]
+    - later: true
+- https://lld.llvm.org/ -- LLD - The LLVM Linker &#8212; lld 24.0.0git documentation
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://dev-discuss.pytorch.org/t/rethinking-pytorch-fully-sharded-data-parallel-fsdp-from-first-principles/1019 -- Rethinking PyTorch Fully Sharded Data Parallel (FSDP) from First Principles
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://labs.iximiuz.com/challenges/start-container-with-runc -- Create and Start a Container Manually With runc | Challenge
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://blog.cloudflare.com/wildcard-rules -- Go wild: Wildcard support in Rules and a new open-source wildcard crate
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://discuss.pytorch.org/t/how-to-maximize-cpu-gpu-memory-transfer-speeds/173855/4 -- How to maximize CPU &lt;==&gt; GPU memory transfer speeds?
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, gpu]
+    - later: true
+- https://developer.nvidia.com/blog/how-optimize-data-transfers-cuda-cc/ -- How to Optimize Data Transfers in CUDA C/C++ | NVIDIA Technical Blog
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, cuda]
+    - later: true
+- https://aws.amazon.com/compliance/data-center/data-centers/ -- Data Center - Our Data Centers
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://grantslatton.com/how-to-software -- How to write complex software
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://research.colfax-intl.com/cutlass-tutorial-sub-byte-gemm-on-nvidia-blackwell-gpus/ -- CUTLASS Tutorial: Sub-byte GEMM on NVIDIA Blackwell GPUs - Colfax Research
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, gpu]
+    - later: true
+- https://docs.vllm.ai/en/latest/features/spec_decode.html -- Speculative Decoding
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://www.baseten.co/blog/sota-performance-for-gpt-oss-120b-on-nvidia-gpus/ -- How we run GPT OSS 120B at 500+ tokens per second on NVIDIA GPUs
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, gpu]
+    - later: true
+- https://xania.org/202506/how-compiler-explorer-works -- How Compiler Explorer Works in 2025 &#8212; Matt Godbolt&#8217;s blog
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, compilers]
+    - later: true
+- https://en.wikipedia.org/wiki/Suffix_automaton -- Suffix automaton - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://jrosser.co.uk/assets/TransformerLens___PyTorch_Quick_Reference.pdf -- TransformerLens PyTorch Quick Reference
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, transformers]
+    - later: true
+- https://ianbarber.blog/2026/02/11/tileir/ -- TileIR
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://unpacked.danielhowells.com/hydration-ssr/islands-architecture -- Islands Architecture | Unpacked
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://susun-blog.com/blog/pegainfer-3-cuda-graph/ -- pegainfer (3): From Launch Overhead to CUDA Graph (Part 1)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, cuda]
+    - later: true
+- https://www.vectorware.com/blog/async-await-on-gpu/ -- Async/await on the GPU
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, gpu]
+    - later: true
+- https://cursor.com/blog/fast-regex-search -- Fast regex search: indexing text for agent tools Cursor
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, agents]
+    - later: true
+- https://newsletter.semianalysis.com/p/dissecting-nvidia-blackwell-tensor -- Dissecting Nvidia Blackwell - Tensor Cores, PTX Instructions, SASS, Floorsweep, Yield
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://daringfireball.net/projects/markdown/ -- Daring Fireball: Markdown
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://www.modular.com/blog/software-pipelining-for-gpu-kernels-part-1-the-pipeline-problem -- Modular: Software Pipelining for GPU Kernels: Part 1 - The Pipeline Problem
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, gpu]
+    - later: true
+- https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment/ -- Expert Parallel Deployment - vLLM
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://research.nvidia.com/labs/eai/blogs/kv-cache-compression-and-its-infra-problems/ -- KV Cache Compression and Its Infra Problems | Efficient AI
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://blog.cloudflare.com/meerkat-introduction/ -- Introducing Meerkat- an experiment in global consensus
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://docs.pytorch.org/devlogs/compiler/2026-07-25-pytorch-a-reference-language/ -- PyTorch: a reference language PyTorch DevLog
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://docs.nvidia.com/cuda/parallel-thread-execution/index.html -- PTX ISA 9.3 documentation
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science]
+    - later: true
+- https://www.seangoedecke.com/good-api-design/ -- Everything I know about good API design
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [computer science, design]
+    - later: true
 - https://blog.rust-lang.org/inside-rust/2026/08/05/rust-langrust-is-adopting-an-llm-policy/ -- rust-lang/rust is adopting an LLM policy
   - [meta]:
     - date: 08/20/2026
@@ -12073,6 +12698,116 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://philosophy.stackexchange.com/questions/73326/why-did-nietzsche-dislike-kant-and-his-epistemology-so-much -- Why Did Nietzsche Dislike Kant and His Epistemology So Much?
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Semiotics -- Semiotics - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://www.thecollector.com/elizabeth-anscombe-influential-ideas/ -- Elizabeth Anscombe: Her Most Influential Ideas | TheCollector
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://www.thecollector.com/gilles-deleuze-philosophy-of-creation/ -- Gilles Deleuze: The Philosophy of Creation | TheCollector
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://en.wikipedia.org/wiki/Apollonian_and_Dionysian -- Apollonian and Dionysian - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://philarchive.org/archive/PEZBIT -- But in the End, Why Is Deleuze "Anti-Hegelian"? At the Root of the Hegel-Deleuze Affair
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://www.cambridge.org/core/books/abs/deleuze-and-derrida/deleuze-and-hegelian-difference/054822495FC3CF1151F5BA58EF86F640 -- Deleuze and Hegelian Difference (Chapter 4) - Deleuze and Derrida
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Robert_Brandom -- Robert Brandom - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://en.m.wikipedia.org/wiki/A_Short_History_of_Ethics -- A Short History of Ethics - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://philpeople.org/profiles/c-thi-nguyen -- C. Thi Nguyen
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://blogs.law.columbia.edu/revolution1313/files/2022/05/Harcourt-Foucault-Nietzsche-SSRN-id3393827.pdf -- Harcourt Foucault Nietzsche SSRN id3393827
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://plato.stanford.edu/entries/rationalism-empiricism/ -- Rationalism vs. Empiricism (Stanford Encyclopedia of Philosophy)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Ludwig_Wittgenstein -- Ludwig Wittgenstein - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Charles_W._Mills -- Charles W. Mills - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://iep.utm.edu/mill-eth/ -- Mill, John Stuart: Ethics | Internet Encyclopedia of Philosophy
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://people.duke.edu/~hardt/Deleuze&Guattari.html -- Deleuze&Guattari
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://foucault.info/ -- Michel Foucault, Info
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://deleuze.cla.purdue.edu/lecture/lecture-19/ -- Foucault, Lecture 19, 15 April 1986 - Gilles Deleuze | The Deleuze Seminars
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://plato.stanford.edu/entries/principia-mathematica/ -- Principia Mathematica (Stanford Encyclopedia of Philosophy)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://en.wikipedia.org/wiki/Causal_decision_theory -- Causal decision theory - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://en.wikipedia.org/wiki/Peter_Singer -- Peter Singer - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
+- https://en.wikipedia.org/wiki/List_of_fallacies -- List of fallacies - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [philosophy]
+    - later: true
 - https://liminalthinking.com/ -- Liminal Thinking
   - [meta]:
     - date: 08/20/2026
@@ -13602,6 +14337,21 @@ title: are.na
 
 ## finances
 
+- https://www.berkshirehathaway.com/ -- BERKSHIRE HATHAWAY INC.
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [finance]
+    - later: true
+- https://assets.stripeassets.com/fzn2n1nzq965/IpU9Th5UvfMD586WbQ5om/9c1dc7928e5a87da7806660b5ca99471/Stripe-annual-letter-2025-mobile.pdf -- Stripe annual letter 2025 mobile
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [finance]
+    - later: true
+- https://investment.binhph.am/ -- the hyper scale pillars of humanity
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [finance]
+    - later: true
 - https://www.marketsentiment.co/p/is-the-capex-sustainable -- Is the capex sustainable?
   - [meta]:
     - date: 08/20/2026
@@ -13795,6 +14545,51 @@ title: are.na
 
 ## design
 
+- https://www.sacai.jp/en-ca/sets/men-clothing -- sacai Men's Clothing
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [design]
+    - later: true
+- https://ca.loropiana.com/fr/c/holiday-season/homme -- Loro Piana Canada Boutique Officielle | Vetements, sacs et chaussures
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [design]
+    - later: true
+- https://shop.brunellocucinelli.com/en-ca/ -- Brunello Cucinelli: Official boutique for women, men and kids
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [design]
+    - later: true
+- https://www.maisonmargiela.com/en-ca/ -- Maison Margiela Official | Clothing, Shoes & Accessories
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [design]
+    - later: true
+- https://perfume-area.com/reviews/page:3 -- PERFUME AREA
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [design]
+    - later: true
+- https://www.perfumesloewe.com/int/en_CA/men/loewe-esencia/loewe-esencia-edp-150ml-LW75732.html -- LOEWE Esencia EDP 150ml | LOEWE Perfumes
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [design]
+    - later: true
+- https://ca-en.caudalie.com/p/432NAC/432nac-radiance-serum-complexion-enhancing.html -- Vinoperfect Facial Radiance Dark Spot Serum | CAUDALIE
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [design]
+    - later: true
+- https://montsand.com/products/d238-violet-midi -- Violet Draped Lace Midi Dress
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [design]
+    - later: true
+- https://om.co/2015/04/27/brunello-cucinelli-2/ -- Brunello Cucinelli
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [design]
+    - later: true
 - https://oliveateliers.com/en-ca/collections/the-sentimentalist -- The Sentimentalist
   - [meta]:
     - date: 08/20/2026
@@ -14228,6 +15023,36 @@ title: are.na
 
 ## cooking
 
+- https://www.vice.com/en/article/wxeeax/egg-yolk-raviolo-with-white-truffles-recipe -- Egg Yolk Raviolo with White Truffles Recipe
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [cooking]
+    - later: true
+- https://www.thefrenchcookingacademy.com/recipes/escoffier-brown-stock -- Brown beef stock (Escoffier style) | French Cooking Academy
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [cooking]
+    - later: true
+- https://prod.3se.at/assets/090/797/965/Chica_Vegas_Sales_Shared_Dinner_Menu_12.19.24.pdf -- Chica Vegas Sales Shared Dinner Menu 12.19.24
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [cooking]
+    - later: true
+- https://www.aldertoronto.com/ -- Alder Toronto | Mediterranean Restaurant in Toronto, Canada
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [cooking]
+    - later: true
+- https://www.lakeinezto.com/ -- lake inez | restaurant | toronto, on
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [cooking]
+    - later: true
+- https://www.thermomix.com/pages/tm6 -- Thermomix TM7TM Kitchen Robot | The All-In-One Cooking Solution
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [cooking]
+    - later: true
 - https://www.laowainoodles.com/ -- laowai popup
   - [meta]:
     - date: 08/20/2026
@@ -14272,6 +15097,11 @@ title: are.na
 
 ## video
 
+- https://m.youtube.com/watch?v=StCrwj72wXo -- Chef Thomas Keller's Halibut and Petit Pois a la Francaise | Halibut with Braised English Peas
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [video]
+    - later: true
 - https://www.youtube.com/watch?v=d0HJvGSWw8A -- Linear Attention and Beyond (Interactive Tutorial with Songlin Yang)
   - [meta]:
     - date: 08/06/2026
@@ -15082,6 +15912,41 @@ title: are.na
 
 ## arts
 
+- https://en.m.wikipedia.org/wiki/The_Comedians_(novel) -- The Comedians (novel) - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [arts]
+    - later: true
+- https://letterboxd.com/bruce_tetsuya/list/bruces-favorite-films-1/ -- Bruce&#039;s Favorite Films
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [arts]
+    - later: true
+- https://www.literatureandlatte.com/scrivener/overview -- #1 Novel & Book Writing Software For Writers
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [arts, writing]
+    - later: true
+- https://capitald.bandcamp.com/album/songs-pt-2 -- Songs Pt:2, by :D
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [arts]
+    - later: true
+- https://www.vox.com/culture/392971/men-reading-fiction-statistics-fact-checked -- Are mens reading habits truly a national crisis?
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [arts]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Clarice_Lispector -- Clarice Lispector - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [arts]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Gustave_Flaubert -- Gustave Flaubert - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [arts]
+    - later: true
 - https://alum.mit.edu/slice/art-and-algorithms-sothebys -- Art and Algorithms at Sotheby's
   - [meta]:
     - date: 08/20/2026
@@ -15357,6 +16222,916 @@ title: are.na
 
 ## resources
 
+- https://www.google.com/search?q=xkcd+meme+infrastructure+pibrary -- xkcd meme infrastructure pibrary - Google Search
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources, search]
+    - later: true
+- https://nav.al/build-sell -- Learn to Sell, Learn to Build
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.wikipedia.org/wiki/John_Lennox -- John Lennox - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.robinsloan.com/notes/home-cooked-app/ -- An app can be a home-cooked meal
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://faculty.ucr.edu/~eschwitz/SchwitzAbs/USAconscious.htm -- If Materialism Is True, the United States Is Probably Conscious - Eric Schwitzgebel
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.sethmorton.com/blog/what_you_attend_to_cannot_be_static -- What You Attend To Cannot Be Static
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://scale.com/blog/text-universal-interface -- Text became the main way humans commanded computers.
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.webstaurantstore.com/micro-matic-mm-5821-6-3-8-surface-mount-glass-rinser/379MM5821.html -- Micro Matic MM-5821 6 3/8" Surface Mount Glass Rinser
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://isabelmarant.com/collections/new-in-woman -- Nos nouveautes femme
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://fs.blog/chestertons-fence/ -- Chestertons Fence: A Lesson in Thinking
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://christophlocher.com/notes/bookshelf -- Bookshelf Christoph Locher Interaction Designer
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources, design]
+    - later: true
+- https://drive.google.com/drive/mobile/folders/0BxKBnD5y2M8NUXhZaXBCNXE4QlE -- Google Drive: Sign-in
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://docs.google.com/spreadsheets/u/1/d/1Lz1yeIQCXICUMR6Ij9HtmCudK_DGZFNqGx2wMvtJHDE/htmlview -- Google Sheets document
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://andymatuschak.org/books/ -- Why books don't work
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://scrabble.merriam.com/words/with/x -- Words That Contain X: 4723 Words | Scrabble Word Finder
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.troynikov.io/notes/beliefs/ -- beliefs
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://pydong.org/posts/PythonsPreprocessor/ -- Pythons Preprocessor
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://docs.google.com/document/u/1/d/e/2PACX-1vSIM0fpssM2BPfpyjBGHDmAEgjfF5b9bIdFXRbXq0lIMMsFtl2KR6lkLp5O6TxRn1JKaNTCxacYDz7s/pub -- pub
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://supermaven.com/cpc.pdf -- Supermaven
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.holybooks.com/wp-content/uploads/Motivation-and-Personality-Maslow.pdf -- Motivation and Personality Maslow
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.patriciamou.com/newsletter-archive/introducing-the-fourth-place-why-third-places-have-fallen-short-on-their-promise -- Introducing the Fourth Place: Why Third Places Have Fallen Short on Their Promise
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/iYFuZo9BMvr6GgMs5/case-study-interpreting-manipulating-and-controlling-clip -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/CJPqwXoFtgkKPRay8/an-intuitive-explanation-of-sparse-autoencoders-for -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://julien-vitay.net/lecturenotes-neurocomputing/4-neurocomputing/5-Hebbian.html -- 4. Unsupervised Hebbian learning &#8212; Neurocomputing
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Postprandial_somnolence -- Postprandial somnolence - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.reddit.com/r/askphilosophy/comments/5n2iar/significance_of_the_gay_science_117herd_remorse/ -- Reddit
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://blogs.fasos.maastrichtuniversity.nl/digitalcultures-MA/students/ashoylev19/2020/03/04/interfaces-the-theory-versus-practice-dichotomy/ -- Interfaces: The Theory Versus Practice Dichotomy
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://writings.stephenwolfram.com/2024/10/on-the-nature-of-time/ -- on the nature of time
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://leiaarqueologia.wordpress.com/wp-content/uploads/2017/08/the-perception-of-the-environment-tim-ingold.pdf -- the perception of the environment tim ingold
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://read.isabelunraveled.com/p/commit -- commitment is the only secret knowledge
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://darioamodei.com/machines-of-loving-grace -- Dario Amodei Machines of Loving Grace
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.russellandbromley.co.uk/men/mens-all-boots -- Men's Boots | Russell & Bromley
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://docs.google.com/document/d/14BBVzpSSFZkPS3ja3s2LbfFV_inpjsbxPezIV06O9s8/mobilebasic -- Three Brothers
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.joerockheads.com/price-dayuse -- Prices &mdash; Joe Rockhead's Indoor Rock Climbing
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://ai-r.com/blog/pirate-linguistics-and-tone-of-voice-fine-tuning-llms-to-talk-like-swashbucklers -- Squarespace - Website Expired
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://web.mit.edu/jmorzins/www/C-H-speech.html -- Calvin and Hobbes at Martijn's - Bill Watterson
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.m.wikiversity.org/wiki/Slime_Mould_Algorithm -- Slime Mould Algorithm - Wikiversity
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.yahoo.com/news/zuckerberg-reveals-endorsement-decision-2024-002856394.html -- Zuckerberg reveals his endorsement decision for the 2024 election
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/interesting-ideas -- On having more interesting ideas
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Metabolism_(architecture) -- Metabolism (architecture) - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.sherryning.com/p/in-the-near-future -- In the near future...
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://kevinniechen.com/will-we-have-agi/ -- What Scaling Laws Don
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.bitsofwonder.co/p/the-deutschian-deadend -- The Deutschian deadend
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://maggieappleton.com/tools-for-thought -- Tools for Thought as Cultural Practices, not Computational Objects
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Pearson_correlation_coefficient -- Pearson correlation coefficient - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Bryce_Canyon_National_Park -- Bryce Canyon National Park - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://minds.md/zakirullin/cognitive -- Cognitive load is what matters
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.plasticlist.org/methodology -- PlasticList
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://read.mindmine.xyz/p/potential -- potential
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://kyunghyuncho.me/i-sensed-anxiety-and-frustration-at-neurips24/ -- i sensed anxiety and frustration at NeurIPS&#8217;24 &#8211; Kyunghyun Cho
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://docs.google.com/document/u/1/d/1aEdTE-B6CSPPeUWYD-IgNVQVZM25f7MF-u9qn5KJJvo/mobilebasic -- AI and Stress
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://maggieappleton.com/growing-a-human -- Growing a Human: The First 30 Weeks
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Trilateration -- Trilateration - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/SXJGSPeQWbACveJhs/the-best-tacit-knowledge-videos-on-every-subject -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://space.ong.ac/escaping-flatland -- escaping flatland: career advice for CS undergrads
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://go281.user.srcf.net/blog/research/residual-streams/ -- Residual Streams
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://grantslatton.com/nobody-cares -- Nobody Cares
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.cia.gov/readingroom/docs/CIA-RDP87T00495R000300280006-2.pdf -- CIA RDP87T00495R000300280006 2
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.reddit.com/r/LocalLLaMA/comments/14pv20y/what_model_is_best_for_text_classification_these/ -- Reddit
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://stephango.com/stadium-of-selves -- Stadium of selves
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.rkg.blog/ai-or-die.php -- AI or Die | RKG
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.wikipedia.org/wiki/Phenotype -- Phenotype - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.art-prints-on-demand.com/a/denis-maurice/port-de-ploumanach.html -- Port de Ploumanach. - Maurice Denis as art print or hand painted oil.
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://docs.google.com/presentation/d/1bGpvNxJKyS_ZMiVlpJTopXtQuoHQhqCq/mobilepresent?slide=id.p1 -- Mojo talk.pptx
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Louis_Antoine_de_Saint-Just -- Louis Antoine de Saint-Just - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.owenschuh.com/work/unfoldingcube -- Work &mdash; Owen Schuh
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://vdoc.pub/documents/the-history-of-sexuality-volume-iii-the-care-of-the-self-2dfe9kncdo10 -- The History Of Sexuality, Volume Iii: The Care Of The Self [PDF] [2dfe9kncdo10]
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://assets.sbnation.com/assets/1074301/Valve_Handbook_LowRes.pdf -- Valve Handbook LowRes
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.poetryfoundation.org/collections/145704/an-introduction-to-the-harlem-renaissance -- An Introduction to the Harlem Renaissance
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://nousresearch.com/steering-the-shoggoth-taming-llms-with-sequential-monte-carlo/ -- Steering the Shoggoth: Taming LLMs with Sequential Monte Carlo - NOUS RESEARCH
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Bernard_Parmegiani -- Bernard Parmegiani - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://leehanchung.github.io/blogs/2025/07/03/pydantic-is-all-you-need-for-performance-spaghetti/ -- Pydantic and Performance Spaghetti Code
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://tokenbender.com/post.html?id=avatarl -- blog post - tokenbender
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://princeton-introml.github.io/files/COS324_Course_Notes.pdf -- COS324 Course Notes
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://jax-ml.github.io/scaling-book/roofline/ -- All About Rooflines
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Elsa_Peretti -- Elsa Peretti - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.biologicalpsychiatryjournal.com/action/showPdf?pii=S0006-3223%2825%2900023-X -- Focused Ultrasound Neuromodulation: Exploring a Novel Treatment for Severe Opioid Use Disorder
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.ligne-roset.com/en-ca/p/sofas/loveseat-without-arms-togo-r-3231 -- Sofas Togo Loveseat without arms - Ligne Roset
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.runnorthwest.co.uk/pages/race-pace-conversion-chart -- Race Pace Conversion Chart | Run North West
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://dynomight.net/persuasion/ -- I guess I was wrong about AI persuasion
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.wikipedia.org/wiki/Sequential_consistency -- Sequential consistency - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://cgi.csc.liv.ac.uk/~coopes/comp319/2016/papers/UbiquitousComputingAndInterfaceAgents-Weiser.pdf -- UbiquitousComputingAndInterfaceAgents Weiser
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources, agents]
+    - later: true
+- https://www.cb2.ca/collections/kara-mann/1 -- Kara Mann Furniture & Decor | CB2
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://spectrum.ieee.org/amp/xerox-parc-2657304064 -- Xerox Parcs Engineers on How They Invented the Future
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.cxotalk.com/episode/innovation-technology-xerox-parc-stephen-hoover-ceo -- Innovation and Technology at Xerox PARC with Stephen Hoover
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://tomgruber.org/humanistic-ai/ -- What is Humanistic AI? Humanistic Artificial Intelligence - A Guiding Philosophy
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://hoytech.com/vmtouch/ -- Hoytech
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://research.colfax-intl.com/categorical-foundations-for-cute-layouts/ -- Categorical Foundations for CuTe Layouts - Colfax Research
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://rupadarshiray.github.io/workstation/obsidian-and-latex -- A workstation with Obsidian and LaTeX
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.stevestewartwilliams.com/p/sex-differences-in-work-preferences-8af -- Sex Differences in Work Preferences, Life Values, and Personal Views
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/sYgv4eYH82JEsTD34/beyond-the-reach-of-god -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.drugs.com/vet/otizole-can.html -- Otizole for Dogs
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://mp.weixin.qq.com/s/Dmdg6aLgFHZEcm6TY1vKkA -- Eagle3
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.stevestewartwilliams.com/p/smarter-people-are-less-violent -- Smarter People Are Less Violent
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://docs.google.com/document/u/1/d/e/2PACX-1vTG_14sE1SLYHCcjDmh8X3yFFIdlqTpo37MlJ-Tba_pHWDr5xgU4EAzC2tIxFEsKi2qLlhB1ssoBhFn/pub -- AI research interviews
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.pmshacker.co.uk/books -- Books | PMSHacker - Philosopher
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/QmWNbCRMgRBcMK6RK/the-absolute-self-selection-assumption -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.wikipedia.org/wiki/Magic_circle -- Magic circle - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.wikipedia.org/wiki/Harry_Harlow -- Harry Harlow - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://docs.google.com/presentation/d/1aSrP4Pojh7EZde8EZL5kTOH_DAY0SoXzEWF6o2RmFg4/mobilepresent?slide=id.g3a19d307b14_0_1179 -- social signals 2025_v5
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://qntm.org/src -- Code
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/gmysPZ3t5Rz9nzcCr/my-dating-heuristic -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://joecarlsmith.com/2024/01/02/otherness-and-control-in-the-age-of-agi -- Otherness and control in the age of AGI - Joe Carlsmith
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.reddit.com/r/bigseo/comments/u1yexp/why_is_it_a_good_practice_to_open_an_internal/ -- Reddit
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.w3.org/TR/WCAG20-TECHS/G200.html -- G200: Opening new windows and tabs from a link only when necessary | Techniques for WCAG 2.0
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://convergentthinking.sh/posts/trajectory/ -- Trajectory
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.moredarkthanshark.org/eno_int_studint-novdec76.html -- Brian Eno is MORE DARK THAN SHARK
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://philsci-archive.pitt.edu/28024/1/Scientific_Invention_Position_Paper%20%2817%29.pdf -- Request Rejected
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://ellenli.github.io/prg/ -- PRG
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://mufan-li.github.io/OT2/ -- Everyone Should Learn Optimal Transport, Part 2
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.wikipedia.org/wiki/Panda!_Go,_Panda! -- Panda! Go, Panda! - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.citriniresearch.com/p/2028gic -- THE 2028 GLOBAL INTELLIGENCE CRISIS
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://xania.org/202512/01-xor-eax-eax -- Why xor eax, eax? &#8212; Matt Godbolt&#8217;s blog
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://kexue.fm/archives/11647 -- 11647
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://nicholas.carlini.com/writing/2026/how-to-win-a-best-paper-award.html -- How to win a best paper award (or, an opinionated take on how to do important research)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://asteriskmag.com/issues/13/a-brief-history-of-the-history-of-science -- A Brief History of the History of Science
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/ghq9EwiXbRbWSnDzF/solar-storms -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://geohot.github.io//blog/jekyll/update/2026/03/11/running-69-agents.html -- Every minute you arent running 69 agents, you are falling behind
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources, agents]
+    - later: true
+- https://antirez.com/news/156 -- Scaling HNSWs - &lt;antirez&gt;
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/8wBN8cdNAv3c7vt6p/the-case-against-ai-control-research -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://geohot.github.io//blog/jekyll/update/2026/03/16/polynomial-time-factoring.html -- Polynomial Time Factoring Algorithm
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://aweers.de/blog/2026/rl-for-llms/ -- State of RL for reasoning LLMs | A. Weers
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.verysane.ai/p/polly-wants-a-better-argument -- Polly Wants a Better Argument
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://tristan.st/blog/in_search_of_falsehood -- Tristan Sterin
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.gutenberg.org/files/30755/30755-h/30755-h.htm -- The Project Gutenberg eBook of The Stones of Venice, Volume II (of 3), by John Ruskin
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://geohot.github.io//blog/jekyll/update/2026/03/23/changing-the-world.html -- Changing the World
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.hyperdimensional.co/p/2023 -- 2023
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://thejaymo.net/2026/03/19/thinking-inside-out/ -- Thinking Inside Out - thejaymo.net
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://terrytao.wordpress.com/2008/02/05/the-blue-eyed-islanders-puzzle/ -- The blue-eyed islanders puzzle
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://john.regehr.org/writing/zero_dof_programming.html -- zero_dof_programming
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://sockpuppet.org/blog/2026/03/30/vulnerability-research-is-cooked/ -- Vulnerability Research Is Cooked
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://devouringdetails.com/resources/react-handbook -- React handbook
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://vickiboykis.com/2026/04/13/mechanical-sympathy/ -- Mechanical sympathy
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.modular.com/blog/matrix-multiplication-on-nvidias-blackwell-part-1-introduction -- Modular: Matrix Multiplication on Blackwell: Part 1 - Introduction
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/bxdwSZYxKmPBres6w/10-non-boring-ways-i-ve-used-ai-in-the-last-month -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://dn720004.ca.archive.org/0/items/english-collections-1/How%20To%20Win%20Friends%20And%20Influence%20People%20-%20Carnegie%2C%20Dale.pdf -- 401 Authorization Required
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.sec.gov/Archives/edgar/data/1679788/000162828021003168/coinbaseglobalincs-1.htm -- Document
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://z.ai/blog/scaling-pain -- scaling pain
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://nabeelqu.co/what-makes-art-great -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://sites.google.com/site/lixilinx/home/psgd -- Xi-Lin Li - Preconditioned stochastic gradient descent (PSGD)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://yalereview.org/article/virginia-woolf-essay-how-should-read-book -- Virginia Woolf: "How Should One Read a Book?"
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://zhuanlan.zhihu.com/p/2026679461102330722 -- 2026679461102330722
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://jonathanc.net/blog/kl-cache-trick -- KL Cache Trick for Full-Vocab Distillation Jonathan Changs Blog
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://habitatchronicles.com/2004/04/you-cant-tell-people-anything/ -- you cant tell people anything
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://mariozechner.at/recommended-reading/ -- Recommended reading/viewing
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.noahzender.com/ideas -- Ideas Noah Zender
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://bysupertri.typeform.com/to/pOSd9AxM -- Supertri Strides - Toronto
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.snowflake.com/en/blog/engineering/zorro-enterprise-rl-training/ -- Enterprise RL Training: Breaking Performance Bottlenecks
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.sexual-culture.com/p/do-unstylish-men-deserve-love -- Do Unstylish Men Deserve Love?
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://animations.dev/vocabulary -- Vocabulary
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://nilin.github.io/radial-brake/ -- Radial Brake
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://armaansood.com/posts/systems-reading-group/ -- Five Years of Running a Systems Reading Group at Microsoft
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://infoscience.epfl.ch/server/api/core/bitstreams/8fec1c55-3bec-4bc0-9a71-5a7eebfbe618/content -- The Puzzling Success of Overparameterization: Lottery Tickets or Escape Dimensions?
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://addyosmani.com/blog/cognitive-surrender/ -- Cognitive Surrender
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://dn790006.ca.archive.org/0/items/in.ernet.dli.2015.125783/2015.125783.On-Education_text.pdf -- 2015.125783.On Education text
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://jaydenteoh.github.io/blog/2026/nextlat -- Next-Latent Prediction Transformers | Jayden Teoh
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources, transformers]
+    - later: true
+- https://www.benjaminjameswaddell.com/wp-content/uploads/2011/08/readings-on-the-social-animal-ch-7-and-ch-8.pdf -- readings on the social animal ch 7 and ch 8
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://caseyhandmer.wordpress.com/2025/11/26/antimatter-development-program/ -- Antimatter Development Program
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://astro.build/blog/astro-7/ -- Astro 7.0 | Astro
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.zyphra.com/our-work/plasticity-loss-in-continual-learning -- Zyphra
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://yongzx.github.io/blog/2026/06/24/job-search/ -- Surprising lessons from my research scientist job search
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://group.softbank/media/Project/sbg/sbg/pdf/ir/investors/shareholders/2026/shareholders-meeting_46_05_en.pdf -- shareholders meeting 46 05 en
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.palladiummag.com/2022/01/06/quit-your-job/ -- Quit Your Job
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://web.archive.org/web/20260510053500/http://habitatchronicles.com/2004/04/you-cant-tell-people-anything/ -- Habitat Chronicles: You can&#039;t tell people anything
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://subpixel.space/entries/life-after-lifestyle/ -- Life After Lifestyle
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.greene.sh/compression-and-intelligence/ -- Compression and Intelligence
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://en.wikipedia.org/wiki/Tachycardia -- Tachycardia - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://thinkingmachines.ai/blog/a-safe-path-to-open-weights/ -- A Safe Path to Open Weights
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.seangoedecke.com/in-defense-of-not-understanding-your-codebase/ -- in defense of not understanding your codebase
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://fleuret.org/public/EN_notes/fleuret-gp-2009.pdf -- fleuret gp 2009
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.matthewsiu.com/bulletin -- Matthew Siu
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://chipsandcheese.com/p/nvidias-vera-whitepaper-has-a-thread -- NVIDIAs Vera Whitepaper Has a Thread Loose
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://mp.weixin.qq.com/s/BSZFXmzi2P4uTcDmZw1K9w -- BSZFXmzi2P4uTcDmZw1K9w
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://www.lesswrong.com/posts/vLFh8HP3hyNy9MCwe/returning-to-arc -- Vercel Security Checkpoint
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://opentheory.net/2026/08/compilable-wishes/ -- Compilable Wishes opentheory.net
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://omar.website/posts/skew/ -- Skew
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://leimao.github.io/blog/CuTe-Arithmetic-Tuple-Tensor/ -- CuTe Arithmetic Tuple Tensor
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://archive.is/3LBpo -- panbreak
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://michaelnotebook.com/whichfuture/ -- Which Future?
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://jbarrow.ai/field_notes/dspark/ -- Paper Notes: dSpark
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://alexzhang13.github.io/blog/2026/mgh/ -- Alex L. Zhang | The Mismanaged Geniuses Hypothesis
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
+- https://gwern.net/doc/philosophy/epistemology/1964-platt.pdf -- 1964 platt
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [resources]
+    - later: true
 - https://bytedance.larkoffice.com/docx/A88jd0B47oAd8zxWp5ycZFMfnxh -- ByteDance Lark document
   - [meta]:
     - date: 08/20/2026
@@ -15898,6 +17673,16 @@ title: are.na
 
 ## typography
 
+- https://fontsinuse.com/uses/14164/massimo-vignelli-s-a-few-basic-typefaces -- Massimo Vignellis A Few Basic Typefaces
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [typography]
+    - later: true
+- https://fonts.adobe.com/designers/herb-lubalin -- Herb Lubalin | Adobe Fonts
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [typography]
+    - later: true
 - https://ott-foundry.com/ -- Ornamental and Title Type
   - [meta]:
     - date: 08/20/2026
@@ -16105,6 +17890,101 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/yoheinakajima/babyagi -- GitHub - yoheinakajima/babyagi
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository, agents]
+    - later: true
+- https://github.com/TransluceAI/observatory -- GitHub - TransluceAI/observatory: A toolkit for model feature description and intervention
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository, interpretability]
+    - later: true
+- https://github.com/drbh/power-message -- GitHub - drbh/power-message: Free the blue message. Finally a simple REST API for iMessage
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/stas00/ml-engineering/blob/master/performance/software.md -- ML Engineering: Software Performance
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/google-deepmind/uncertain_ground_truth -- GitHub - google-deepmind/uncertain_ground_truth: Dermatology ddx dataset, Jax implementations of Monte Carlo conformal prediction, plausibility regions and statistical annotation aggregation from our recent work on uncer
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/valeman/awesome-conformal-prediction -- GitHub - valeman/awesome-conformal-prediction: A professionally curated list of awesome Conformal Prediction videos, tutorials, books, papers, PhD and MSc theses, articles and open-source libraries.
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/rasbt/LLMs-from-scratch/blob/main/ch05/07_gpt_to_llama/converting-gpt-to-llama2.ipynb -- LLMs-from-scratch/ch05/07_gpt_to_llama/converting-gpt-to-llama2.ipynb at main rasbt/LLMs-from-scratch
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/tensor-fusion/sophia-jax -- GitHub - tensor-fusion/sophia-jax: JAX implementation of 'Sophia: A Scalable Stochastic Second-order Optimizer for Language Model Pre-training'
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository, language models]
+    - later: true
+- https://github.com/xjdr-alt/entropix -- GitHub - xjdr-alt/entropix: Entropy Based Sampling and Parallel CoT Decoding
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/slavachalnev/SAE-TS/blob/main/src/sae_ts/steering/patch.py -- SAE-TS/src/sae_ts/steering/patch.py at main slavachalnev/SAE-TS
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/newfrgmnt/bitspace -- GitHub - emilwidlund/bitspace: A prototype of a creative environment for the 21st century
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/Wangmerlyn/MCTS-GSM8k-Demo -- GitHub - Wangmerlyn/MCTS-GSM8k-Demo: This is a repo for showcasing using MCTS with LLMs to solve gsm8k problems
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/safety-research/circuit-tracer -- GitHub - decoderesearch/circuit-tracer
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/facebookresearch/LayerSkip/blob/main/self_speculation/self_speculation_generator.py -- LayerSkip/self_speculation/self_speculation_generator.py at main facebookresearch/LayerSkip
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://gist.github.com/boknilev/c4eeeaf4a8400b95f9af8be98a13fb52 -- Some misconceptions about probes
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/MoonshotAI/Attention-Residuals/blob/master/Attention_Residuals.pdf -- Attention-Residuals/Attention_Residuals.pdf at master MoonshotAI/Attention-Residuals
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository, attention]
+    - later: true
+- https://github.com/jonbarron/gaussid/blob/main/gaussid.md -- gaussid/gaussid.md at main jonbarron/gaussid
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://gist.github.com/rebane2001/8b83121a7ea9263f136928231b6737eb -- CSS + SVG filters only version of https://twitter.com/mattrothenberg/status/2040416074710102300
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
+- https://github.com/nervanasystems/maxas/wiki/sgemm -- SGEMM
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [repository]
+    - later: true
 - https://github.com/Alain00/blobatar -- blobatar
   - [meta]:
     - date: 08/20/2026
@@ -18410,6 +20290,26 @@ title: are.na
 
 ## organizations
 
+- https://www.edgeesmeralda.com/ -- Edge Esmeralda 2026 (May 30 - June 27)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [organization]
+    - later: true
+- https://e2eml.school/transformers -- transformers
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [organization, transformers]
+    - later: true
+- https://accelerated-computing.academy/fall24/labs/ -- 6.S894
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [organization]
+    - later: true
+- https://accelerated-computing.academy/fall25/resources/tma-interface/ -- 6.S894
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [organization]
+    - later: true
 - https://generalcontrol.inc/ -- General Control Biotechnologies
   - [meta]:
     - date: 08/20/2026
@@ -18637,6 +20537,61 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2311.03658 -- The Linear Representation Hypothesis and the Geometry of Large Language Models
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math, language models]
+    - later: true
+- https://en.m.wikipedia.org/wiki/Euler's_formula -- Euler&#039;s formula - Wikipedia
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
+- https://www.quantamagazine.org/computer-scientists-combine-two-beautiful-proof-methods-20241004/ -- Computer Scientists Combine Two Beautiful Proof Methods | Quanta Magazine
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
+- https://web.math.princeton.edu/~nsher/ricciflow.pdf -- ricciflow
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
+- https://docs.google.com/spreadsheets/u/1/d/1Agt4FBDX6IYRpjaGFumrn9OL9ttx8UxPpw2lgE98re0/htmlview -- The Mathematics of Banana Farms (Bloons TD 6)
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
+- https://research.colfax-intl.com/wp-content/uploads/2024/01/layout_algebra.pdf -- layout algebra
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
+- https://cdn.openai.com/pdf/74c24085-19b0-4534-9c90-465b8e29ad73/unit-distance-proof.pdf -- unit distance proof
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
+- https://ncatlab.org/nlab/show/category+theory -- category theory in nLab
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
+- https://www.jmilne.org/math/CourseNotes/AG.pdf -- AG
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
+- https://www.cs.utexas.edu/~dahlin/bookshelf/hamming.html -- Dr. R. W. Hamming's Advice on Research
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
+- https://openai.com/index/ten-advances-in-mathematics/ -- ten advances in mathematics
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [math]
+    - later: true
 - https://lionellevine.github.io/math-for-AI-safety__lionel-levine__cornell-oliver-club-talk__2024-08-29.pdf -- Math for AI safety
   - [meta]:
     - date: 08/20/2026
@@ -19449,6 +21404,356 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2507.02754 -- Fast and Simplex: 2-Simplicial Attention in Triton
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, attention]
+    - later: true
+- https://arxiv.org/abs/2608.08888 -- Full-bandwidth transformer
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, transformers]
+    - later: true
+- https://arxiv.org/abs/2605.31514 -- If LLMs Have Human-Like Attributes, Then So Does Age of Empires II
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2308.07633 -- A Survey on Model Compression for Large Language Models
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, language models]
+    - later: true
+- https://arxiv.org/abs/2307.14936 -- PanGu-Coder2: Boosting Large Language Models for Code with Ranking Feedback
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, language models]
+    - later: true
+- https://arxiv.org/pdf/1706.03762.pdf -- Attention Is All You Need
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, attention]
+    - later: true
+- https://arxiv.org/abs/2310.01859 -- Variational Gaussian approximation of the Kushner optimal filter
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://api.repository.cam.ac.uk/server/api/core/bitstreams/cc3d796f-c130-4f78-89ab-ed16301651ab/content -- When Physics Became Undisciplined: An Essay on Econophysics
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2006.16668 -- GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/2401.10020 -- Self-Rewarding Language Models
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, language models]
+    - later: true
+- https://www.pnnl.gov/explainer-articles/physics-informed-machine-learning -- Physics-informed Machine Learning
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/1511.06434 -- Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2304.09960 -- A Latent Space Theory for Emergent Abilities in Large Language Models
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, language models]
+    - later: true
+- https://arxiv.org/pdf/2309.08600.pdf -- Sparse Autoencoders Find Highly Interpretable Features in Language Models
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, language models]
+    - later: true
+- https://www.stat.berkeley.edu/~ryantibs/statlearn-s24/lectures/conformal.pdf -- Conformal Prediction
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://users.ece.cmu.edu/~gamvrosi/thelastq.html -- The Last Question
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://dl.acm.org/doi/pdf/10.1145/1283920.1283935 -- Notation as a Tool of Thought
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://web.stanford.edu/~swager/causal_inf_book.pdf -- Causal Inference: A Statistical Learning Approach
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2409.14586 -- Backtracking Improves Generation Safety
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, safety]
+    - later: true
+- https://arxiv.org/abs/2407.01449 -- ColPali: Efficient Document Retrieval with Vision Language Models
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, language models]
+    - later: true
+- https://people.eecs.berkeley.edu/~jrs/papers/machlearn.pdf -- Concise Machine Learning
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/2410.10630 -- Thinking LLMs: General Instruction Following with Thought Generation
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/2410.01131 -- nGPT: Normalized Transformer with Representation Learning on the Hypersphere
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, transformers]
+    - later: true
+- https://arxiv.org/abs/2406.15786 -- What Matters in Transformers? Not All Attention is Needed
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, attention]
+    - later: true
+- https://arxiv.org/pdf/1706.05806 -- SVCCA: Singular Vector Canonical Correlation Analysis for Deep Learning Dynamics and Interpretability
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, interpretability]
+    - later: true
+- https://arxiv.org/abs/2409.11340 -- OmniGen: Unified Image Generation
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://algorithmsbook.com/files/dm.pdf -- Data Mining
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/1712.00409 -- Deep Learning Scaling is Predictable, Empirically
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://www.sciencedirect.com/science/article/pii/S0004370207001452 -- ScienceDirect
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/html/2407.09722v2 -- Optimized Multi-Token Joint Decoding with Auxiliary Model for LLM Inference
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, inference]
+    - later: true
+- https://arxiv.org/abs/2306.01116 -- The RefinedWeb Dataset for Falcon LLM: Outperforming Curated Corpora with Web Data, and Web Data Only
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://escholarship.org/content/qt1js6n2rz/qt1js6n2rz.pdf?v=lg -- Socrates in Plato's Symposium: A Lover of Wisdom Who Lacks Wisdom on Love
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2312.00752 -- Mamba: Linear-Time Sequence Modeling with Selective State Spaces
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2002.09402 -- Addressing Some Limitations of Transformers with Feedback Memory
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, transformers]
+    - later: true
+- https://www.pnas.org/doi/10.1073/pnas.2406675122 -- Bridging the Human-AI Knowledge Gap Through Concept Discovery and Transfer in AlphaZero
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2507.02754 -- Fast and Simplex: 2-Simplicial Attention in Triton
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, attention]
+    - later: true
+- https://arxiv.org/pdf/2404.17625 -- Alice's Adventures in a Differentiable Wonderland - Volume I, A Tour of the Land
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2506.21575 -- STRuCT-LLM: Unifying Tabular and Graph Reasoning with Reinforcement Learning for Semantic Parsing
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, reinforcement learning]
+    - later: true
+- https://arxiv.org/html/2504.17033v2 -- Breaking the Sorting Barrier for Directed Single-Source Shortest Paths
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2205.14135 -- FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, attention]
+    - later: true
+- https://arxiv.org/pdf/1411.0945 -- Extended 3-dimensional bordism as the theory of modular objects
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/html/2412.19437v1 -- DeepSeek-V3 Technical Report
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2405.16444 -- CacheBlend: Fast Large Language Model Serving for RAG with Cached Knowledge Fusion
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, language models]
+    - later: true
+- https://arxiv.org/pdf/2204.08396 -- StableMoE: Stable Routing Strategy for Mixture of Experts
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2305.19370 -- Blockwise Parallel Transformer for Large Context Models
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, transformers]
+    - later: true
+- https://arxiv.org/pdf/2506.05508 -- Beyond the Buzz: A Pragmatic Take on Inference Disaggregation
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, inference]
+    - later: true
+- https://arxiv.org/pdf/2512.16705 -- Olaf: Bringing an Animated Character to Life in the Physical World
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/2511.01815 -- KV Cache Transform Coding for Compact Storage in LLM Inference
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, inference]
+    - later: true
+- https://www.arxiv.org/pdf/2602.00398 -- MemoryLLM: Plug-n-Play Interpretable Feed-Forward Memory for Transformers
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, transformers]
+    - later: true
+- https://arxiv.org/abs/2602.06964 -- Learning a Generative Meta-Model of LLM Activations
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2602.12176 -- Single-minus gluon tree amplitudes are nonzero
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2602.21548 -- DualPath: Breaking the Storage Bandwidth Bottleneck in Agentic LLM Inference
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, agents]
+    - later: true
+- https://www.cs.columbia.edu/~johnhew/residual-stream-isnt-linear.html -- The Residual Stream Isn't Linear
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2507.07101 -- Small Batch Size Training for Language Models: When Vanilla SGD Works, and Why Gradient Accumulation Is Wasteful
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, language models]
+    - later: true
+- https://arxiv.org/pdf/2508.15734 -- Measuring the environmental impact of delivering AI at Google Scale
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2601.11580 -- Speculative Decoding: Performance or Illusion?
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/html/2603.21852v2 -- All elementary functions from a single operator
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/2604.11962 -- The Linear Centroids Hypothesis: Features as Directions Learned by Local Experts
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/2506.05340 -- Exploring Diffusion Transformer Designs via Grafting
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, transformers]
+    - later: true
+- https://arxiv.org/pdf/2605.03327 -- DGPO: Distribution Guided Policy Optimization for Fine Grained Credit Assignment
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2602.06036 -- DFlash: Block Diffusion for Flash Speculative Decoding
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2605.21568 -- Equilibrium Propagation and Hamiltonian Inference in the Diffusive Fitzhugh-Nagumo Model
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, inference]
+    - later: true
+- https://www.rand.org/content/dam/rand/pubs/research_reports/RRA4800/RRA4881-1/RAND_RRA4881-1.pdf -- Verified Machine Learning Infrastructure: Formal Methods for Trustworthy Artificial Intelligence Deployment
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/2606.12360 -- Anatomy of Post-Training: Using Interpretability to Characterize Data and Shape the Learning Signal
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper, interpretability]
+    - later: true
+- https://arxiv.org/abs/2606.16112 -- Scaling Adaptive Depth with Norm-Agnostic Residual Networks
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2602.14486 -- Revisiting the Platonic Representation Hypothesis: An Aristotelian View
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/1701.07570 -- Dynamic Regret of Strongly Adaptive Methods
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2607.03502 -- Reading Between the Dots: Decoding Hidden Computation across Filler Tokens
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/pdf/2301.12987v4 -- The Optimal Choice of Hypothesis Is the Weakest, Not the Shortest
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
+- https://arxiv.org/abs/2608.11612 -- Dion3: Full-Stack Orthogonal Updates
+  - [meta]:
+    - date: 08/25/2026
+    - tags: [paper]
+    - later: true
 - https://library.sparai.org/attachments/reports/rechWg1TuUP4o1vsT/know-thyself-evaluating-self-prediction-capabilities-in-lm-agents-4o1vst.pdf -- Know Thyself: Evaluating Self-prediction Capabilities in LM Agents
   - [meta]:
     - date: 08/20/2026

@@ -19,4 +19,20 @@ tags:
 title: physicalism
 ---
 
-51.9% in philpapers 2020. supervenience (davidson 1970). type identity [@putnam1967psychophysical], token identity, eliminative materialism [@churchland1981eliminative]. backing: causal closure. unresolved: [[thoughts/knowledge argument|mary]], [[thoughts/philosophical zombies|zombies]], levine 1983.
+physicalism says all concrete facts are fixed by the physical facts. In the philosophy of mind, this means no two worlds can share all physical facts and differ in mental facts:
+
+$$
+P(w_1) = P(w_2) \implies M(w_1) = M(w_2)
+$$
+
+Here $P$ is the total physical profile, and $M$ is the total mental profile.
+
+The 2020 PhilPapers survey reports 51.93% accepted or leaned toward physicalism among the 1,733 respondents counted for the mind question. [PhilPapers 2020](https://survey2020.philpeople.org/survey/results/4874)
+
+type identity is the older stronger view. Place and Smart identify conscious states or sensations with brain processes. [@place1956consciousness; @smart1959sensations] Davidson's anomalous monism is token identity without strict psychophysical laws. [@davidson1970mental] Putnam is the pressure against type identity because the same mental kind, e.g. pain, may be realized by many physical kinds. [@putnam1967psychological]
+
+the live argument:
+
+- backing: physical effects have physical causes.
+- cost: the theory must explain why a complete physical story also fixes [[thoughts/phenomenal consciousness|what experience is like]].
+- pressure cases: [[thoughts/knowledge argument|mary]], [[thoughts/philosophical zombies|zombies]], and Levine's explanatory gap. [@levine1983materialism]
