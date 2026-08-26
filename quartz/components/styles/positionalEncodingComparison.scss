@@ -14,8 +14,8 @@
   --pec-neutral: #cdd597;
   --pec-grid: color-mix(in srgb, var(--gray) 24%, transparent);
   --pec-panel-bg: color-mix(in srgb, var(--light) 96%, transparent);
-  --pec-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
-  --pec-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
+  --pec-tab-surface: var(--fig-tab-surface);
+  --pec-tab-border: var(--fig-tab-border);
   --pec-tab-active: color-mix(in srgb, var(--pec-pos) 24%, var(--pec-tab-surface));
 }
 
@@ -23,10 +23,8 @@
   --pec-pos: color-mix(in srgb, #fdb2a2 65%, var(--lightgray));
   --pec-neutral: color-mix(in srgb, #cdd597 55%, var(--lightgray));
   --pec-grid: color-mix(in srgb, var(--gray) 18%, transparent);
-  --pec-panel-bg: color-mix(in srgb, var(--lightgray) 12%, var(--dark));
-  --pec-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
-  --pec-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
-  --pec-tab-active: color-mix(in srgb, var(--pec-pos) 26%, var(--pec-tab-surface));
+  --pec-panel-bg: color-mix(in srgb, var(--lightgray) 55%, var(--light));
+  --pec-tab-active: color-mix(in srgb, var(--pec-pos) 18%, var(--pec-tab-surface));
 }
 
 .pec-grid {
@@ -210,7 +208,7 @@
   border: 0;
   border-radius: 0;
   background: var(--pec-tab-surface);
-  color: var(--gray);
+  color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
   font-size: 0.72rem;

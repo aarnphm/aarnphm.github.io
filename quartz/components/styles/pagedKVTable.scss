@@ -20,10 +20,9 @@
 }
 
 :root[saved-theme='dark'] .paged-kv-table {
-  --pkt-salmon-bg: color-mix(in srgb, #fdb2a2 22%, var(--lightgray));
-  --pkt-sage-bg: color-mix(in srgb, #cdd597 22%, var(--lightgray));
-  --pkt-free-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
-  --pkt-card-bg: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
+  --pkt-salmon-bg: color-mix(in srgb, #fdb2a2 18%, var(--lightgray));
+  --pkt-sage-bg: color-mix(in srgb, #cdd597 20%, var(--lightgray));
+  --pkt-card-bg: color-mix(in srgb, var(--lightgray) 55%, var(--light));
 }
 
 .paged-kv-table .katex {
@@ -69,8 +68,9 @@
   border-radius: var(--radius-none);
   border: 1px solid var(--lightgray);
   background: var(--pkt-card-bg);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 0.5rem;
 }
 
@@ -81,6 +81,7 @@
 }
 
 .pkt-seq-blocks {
+  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -150,7 +151,9 @@
 }
 
 .pkt-append {
-  align-self: flex-start;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
   padding: 0.25rem 0.65rem;
   border-radius: var(--radius-none);
   border: 0;

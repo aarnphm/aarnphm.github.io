@@ -13,6 +13,9 @@
   --fig-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
   --fig-caption-fg: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
   --fig-surface: color-mix(in srgb, var(--light) 96%, transparent);
+  --fig-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --fig-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
+  --fig-tab-fg: var(--gray);
 }
 
 @mixin figure-frame(
@@ -37,6 +40,7 @@
 
   :root[saved-theme='dark'] & {
     --fig-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
+    --fig-tab-fg: var(--fig-note);
   }
 
   @if $zoom {

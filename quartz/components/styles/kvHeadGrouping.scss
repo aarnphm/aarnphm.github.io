@@ -18,8 +18,8 @@
 }
 
 :root[saved-theme='dark'] .kv-head-grouping {
-  --kvg-query-bg: color-mix(in srgb, var(--kvg-salmon) 35%, var(--lightgray));
-  --kvg-kv-bg: color-mix(in srgb, var(--kvg-sage) 30%, var(--lightgray));
+  --kvg-query-bg: color-mix(in srgb, var(--kvg-salmon) 20%, var(--lightgray));
+  --kvg-kv-bg: color-mix(in srgb, var(--kvg-sage) 20%, var(--lightgray));
   --kvg-link: color-mix(in srgb, var(--kvg-stroke) 70%, transparent);
 }
 

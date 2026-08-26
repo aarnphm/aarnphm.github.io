@@ -18,9 +18,8 @@
 }
 
 :root[saved-theme='dark'] .radix-prefix-tree {
-  --rpt-node-bg: color-mix(in srgb, var(--lightgray) 30%, var(--dark));
-  --rpt-match-bg: color-mix(in srgb, #fdb2a2 22%, var(--lightgray));
-  --rpt-new-bg: color-mix(in srgb, #cdd597 22%, var(--lightgray));
+  --rpt-match-bg: color-mix(in srgb, #fdb2a2 18%, var(--lightgray));
+  --rpt-new-bg: color-mix(in srgb, #cdd597 20%, var(--lightgray));
   --rpt-evict-fg: color-mix(in srgb, var(--gray) 50%, transparent);
 }
 
