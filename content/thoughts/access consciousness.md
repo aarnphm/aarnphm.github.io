@@ -18,4 +18,8 @@ tags:
 title: access consciousness
 ---
 
-block 1995 (a- vs p-cut). baars 1988, dehaene 2011 (global workspace). dissociations: blindsight, sperling overflow, simons-chabris. interp gives access-maps, not phenomenal.
+access consciousness is a functional property. A mental content is access conscious when the subject can use it for reasoning, report, and action control. [@block1995confusion]
+
+this is the part of consciousness a lab can operationalize without settling the phenomenal question. Experiments on blindsight and masking ask whether information reached flexible use. Global workspace theories treat conscious access as broad availability to many systems. [@baars1988cognitive; @dehaene2011experimental]
+
+this is where [[thoughts/mechanistic interpretability]] gets purchase. An activation, circuit, or attention pattern can be tied to a report, a choice, or a memory update. That gives an access map. The missing premise is a bridge from access to [[thoughts/phenomenal consciousness|phenomenal]] feel.

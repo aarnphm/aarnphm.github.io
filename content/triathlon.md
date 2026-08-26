@@ -155,6 +155,7 @@ maintenance:
               - end: '2026-08-10'
                 start: '2026-07-16'
           - reason: punctures
+          - repaired: false
         - - type: Pirelli P Zero TPU
           - distance: null
           - range:
@@ -188,14 +189,14 @@ maintenance:
           - start: '2026-07-16'
           - end: '2026-08-17'
           - reason: big punctures
-          - repaired: false
+          - repaired: true
         - - type: Pirelli P Zero TPU
           - distance: null
           - start: '2026-08-17'
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-23 22:15:33 GMT-04:00
+modified: 2026-08-25 15:20:57 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'

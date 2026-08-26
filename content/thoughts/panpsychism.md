@@ -19,4 +19,8 @@ tags:
 title: panpsychism
 ---
 
-russell 1927 (categorical bases for relational structure). strawson 2006. goff 2017. chalmers 2015 (trilemma). combination problem (james 1890, chalmers 2017). variants: panprotopsychism, constitutive / emergent, micro / cosmo.
+panpsychism says mentality is fundamental and widespread in nature. Current analytic versions usually claim minimal experience, then leave belief and language to larger systems. [SEP panpsychism](https://plato.stanford.edu/entries/panpsychism/)
+
+the motivation is the gap in [[thoughts/physicalism]]. If physics gives relations and dispositions, Russell's move asks what the intrinsic nature of the physical is. Panpsychist versions answer with experiential or proto-experiential properties.
+
+the cost is the combination problem. If many small subjects or proto-phenomenal properties exist, the theory still has to explain how they compose into one subject with one experience. [SEP Russellian monism](https://plato.stanford.edu/entries/russellian-monism/) Without that bridge, panpsychism relocates the hard problem.

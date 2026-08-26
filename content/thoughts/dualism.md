@@ -20,4 +20,10 @@ tags:
 title: dualism and philosophy of mind
 ---
 
-property version >> substance version. leibniz's mill (1714). [[thoughts/philosophical zombies|zombies]] + [[thoughts/knowledge argument|mary]] + levine 1983. cost: epiphenomenalism. interpretability gives access-maps only, by construction.
+dualism says mental reality is not exhausted by physical description. The version worth tracking in this cluster is property dualism. It keeps physical objects and adds mental properties that do not reduce to physical properties. See [SEP dualism](https://plato.stanford.edu/entries/dualism/).
+
+substance dualism makes minds a second kind of thing. Property dualism keeps one physical organism, then says some properties of that organism are mental in a stronger sense than physics captures.
+
+Leibniz's mill gives the old prompt. Enter an enlarged thinking machine and you find parts pushing parts, never a perception. [@leibniz_selections_1951] The modern prompts are [[thoughts/philosophical zombies|zombies]], [[thoughts/knowledge argument|mary]], and Levine's gap. [@levine1983materialism]
+
+the cost is causation. If physical effects already have physical causes, then mental properties either make no extra physical difference or causal closure is false. Epiphenomenalism takes the first horn. [SEP epiphenomenalism](https://plato.stanford.edu/entries/epiphenomenalism/)
