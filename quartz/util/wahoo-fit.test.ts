@@ -2,6 +2,7 @@ import {
   Encoder,
   Profile,
   type DeviceInfoMesg,
+  type EventMesg,
   type FileIdMesg,
   type RecordMesg,
   type SessionMesg,
@@ -44,6 +45,13 @@ function activityFit(): Uint8Array {
       cadence: 88,
       speed: 8,
       leftRightBalance: 52 | 0x80,
+      leftPedalSmoothness: 21.5,
+      rightPedalSmoothness: 22.5,
+      leftTorqueEffectiveness: 75,
+      rightTorqueEffectiveness: 77,
+      leftPowerPhase: [350, 190],
+      rightPowerPhase: [348, 198],
+      respirationRate: 24,
     },
     {
       timestamp: new Date(START.getTime() + 60_000),
@@ -56,9 +64,26 @@ function activityFit(): Uint8Array {
       cadence: 92,
       speed: 9,
       leftRightBalance: 53 | 0x80,
+      leftPedalSmoothness: 22,
+      rightPedalSmoothness: 23,
+      leftTorqueEffectiveness: 76,
+      rightTorqueEffectiveness: 78,
+      leftPowerPhase: [352, 192],
+      rightPowerPhase: [350, 200],
+      respirationRate: 26,
     },
   ]
   for (const record of records) encoder.onMesg(Profile.MesgNum.RECORD, record)
+  const gear: EventMesg = {
+    timestamp: new Date(START.getTime() + 30_000),
+    event: 'rearGearChange',
+    eventType: 'marker',
+    frontGearNum: 2,
+    frontGear: 54,
+    rearGearNum: 5,
+    rearGear: 21,
+  }
+  encoder.onMesg(Profile.MesgNum.EVENT, gear)
   const session: SessionMesg = {
     timestamp: new Date(START.getTime() + 60_000),
     startTime: START,
@@ -96,6 +121,19 @@ test('decodes Wahoo FIT summary, device, aligned streams, and balance', () => {
   assert.equal(fit.metrics.normalizedPower, 230)
   assert.deepEqual(fit.streams.time, [0, 60])
   assert.deepEqual(fit.streams.rightBalance, [52, 53])
+  assert.deepEqual(fit.streams.respiration, [24, 26])
+  assert.deepEqual(fit.cyclingDynamics.leftPedalSmoothness, [21.5, 22])
+  assert.deepEqual(fit.cyclingDynamics.rightTorqueEffectiveness, [77, 78])
+  assert.deepEqual(fit.cyclingDynamics.leftPowerPhaseStart, [350.2, 351.6])
+  assert.deepEqual(fit.gearShifts, [
+    {
+      timestamp: new Date(START.getTime() + 30_000).toISOString(),
+      frontGearNum: 2,
+      frontTeeth: 54,
+      rearGearNum: 5,
+      rearTeeth: 21,
+    },
+  ])
   assert.ok(Math.abs((fit.streams.latlng[0]?.[0] ?? 0) - 43.65) < 0.0001)
   assert.match(wahooFitSha256(bytes), /^[a-f0-9]{64}$/)
 })

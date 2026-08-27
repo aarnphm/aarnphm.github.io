@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
@@ -15,6 +14,7 @@ import {
 } from '../plugins/stores/strava'
 import { upsertEnvLine } from '../util/env-file'
 import { joinSegments, QUARTZ } from '../util/path'
+import { readStravaCacheFile, writeStravaCacheFile } from '../util/strava-cache-file'
 import {
   DEFAULT_STRAVA_REFRESH_WINDOW_DAYS,
   reconcileStravaActivities,
@@ -86,11 +86,7 @@ async function readTokenResponse(res: Response): Promise<TokenResponse> {
 }
 
 async function readCache(): Promise<StravaRawCache | null> {
-  try {
-    return JSON.parse(await fs.readFile(cacheFile, 'utf8')) as StravaRawCache
-  } catch {
-    return null
-  }
+  return readStravaCacheFile(cacheFile)
 }
 
 async function refresh(
@@ -407,8 +403,7 @@ async function main(): Promise<void> {
       geo,
       zones,
     }
-    await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
-    await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+    await writeStravaCacheFile(cacheFile, cache)
   }
   let writing: Promise<void> | null = null
   const checkpoint = (): void => {

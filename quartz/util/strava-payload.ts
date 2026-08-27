@@ -33,11 +33,12 @@ import {
   type SwimActivityInterval,
   type StravaActivityDetail,
   type StravaPayload,
-  type StravaRawCache,
 } from '../plugins/stores/strava'
+import { parseWahooCache, type WahooCache } from '../plugins/stores/wahoo'
 import { matchAppleRun } from './apple-run-match'
 import { matchAppleSwims, matchAppleSwimTelemetry } from './apple-swim-match'
 import { joinSegments, QUARTZ } from './path'
+import { readStravaCacheFileSync } from './strava-cache-file'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
 import {
   buildTriathlonDailyAnalytics,
@@ -47,6 +48,7 @@ import {
 export const stravaCachePath = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 export const ouraCachePath = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
 export const garminCachePath = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
+export const wahooCachePath = joinSegments(QUARTZ, '.quartz-cache', 'wahoo.json')
 export const appleCachePath = joinSegments(QUARTZ, '.quartz-cache', 'apple-health.json')
 export const coreBodyTemperatureCachePath = joinSegments(
   QUARTZ,
@@ -134,6 +136,16 @@ const stamp = (path: string): number => {
     return statSync(path).mtimeMs
   } catch {
     return 0
+  }
+}
+
+function readWahooCache(): WahooCache | null {
+  const value = readJson<unknown>(wahooCachePath)
+  if (value == null) return null
+  try {
+    return parseWahooCache(value)
+  } catch {
+    return null
   }
 }
 
@@ -595,7 +607,7 @@ export function loadStravaPayloadSync(
     strength: manualStrength,
     analytics: analyticsInputs,
   })
-  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
+  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
   if (payloadMemoStamps !== stamps) {
     payloadMemo.clear()
     payloadMemoStamps = stamps
@@ -603,13 +615,24 @@ export function loadStravaPayloadSync(
   const key = `${since ?? ''}:${manualKey}`
   const cached = payloadMemo.get(key)
   if (cached) return cached
-  const strava = readJson<StravaRawCache>(stravaCachePath)
+  const strava = readStravaCacheFileSync(stravaCachePath)
   const oura = readJson<OuraCache>(ouraCachePath)
   const garmin = readJson<GarminCache>(garminCachePath)
+  const wahoo = readWahooCache()
   const apple = readJson<AppleCache>(appleCachePath)
   const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
   const weather = readJson<WeatherCache>(weatherCachePath)
-  const payload = buildPayload(strava, oura, garmin, since, weather, ATHLETE.ftp)
+  const payload = buildPayload(
+    strava,
+    oura,
+    garmin,
+    since,
+    weather,
+    ATHLETE.ftp,
+    undefined,
+    undefined,
+    wahoo,
+  )
   applyManualFueling(payload, manualFueling)
   applyManualStrength(payload, manualStrength)
   enrichSwimMetrics(payload, apple)

@@ -1,3 +1,4 @@
+import type { GarminCyclingDynamics, GarminGearShift, GarminRiderPosition } from './garmin'
 import type { ActivityKind, RawStravaActivity, Sport } from './strava'
 import { isRecord } from '../../util/type-guards'
 
@@ -7,7 +8,10 @@ const DISTANCE_TOLERANCE_M = 1500
 const DURATION_TOLERANCE_RATIO = 0.12
 const DURATION_TOLERANCE_S = 10 * 60
 
-export const WAHOO_CACHE_VERSION = 1
+export const WAHOO_CACHE_VERSION = 2
+
+export type WahooGearShift = GarminGearShift
+export type WahooCyclingDynamics = GarminCyclingDynamics
 
 const BIKE_WORKOUT_TYPE_IDS = new Set([0, 11, 12, 13, 14, 15, 16, 17, 21, 49, 61, 64, 68, 70])
 const RUN_WORKOUT_TYPE_IDS = new Set([1, 3, 4, 5, 19, 67, 71])
@@ -62,6 +66,7 @@ export interface WahooStreams {
   cadence: (number | null)[]
   speed: (number | null)[]
   temperature: (number | null)[]
+  respiration: (number | null)[]
 }
 
 export interface WahooActivity {
@@ -87,6 +92,8 @@ export interface WahooCache {
   lastSync: number
   activities: Record<string, WahooActivity>
   streams: Record<string, WahooStreams>
+  gearShifts: Record<string, WahooGearShift[]>
+  cyclingDynamics: Record<string, WahooCyclingDynamics>
 }
 
 export interface WahooActivityMatch {
@@ -430,11 +437,97 @@ function parseStreams(value: unknown, label: string): WahooStreams {
     cadence: nullableNumberArray(value.cadence, `${label}.cadence`),
     speed: nullableNumberArray(value.speed, `${label}.speed`),
     temperature: nullableNumberArray(value.temperature, `${label}.temperature`),
+    respiration: nullableNumberArray(value.respiration, `${label}.respiration`),
   }
   const lengths = Object.values(streams).map(stream => stream.length)
   if (lengths.some(length => length !== streams.time.length))
     throw new Error(`${label} arrays must have equal lengths`)
   return streams
+}
+
+function parseGearShift(value: unknown, label: string): WahooGearShift {
+  if (!isRecord(value)) throw new Error(`${label} must be an object`)
+  return {
+    timestamp: dateValue(value.timestamp, `${label}.timestamp`),
+    frontGearNum: integer(value.frontGearNum, `${label}.frontGearNum`),
+    frontTeeth: integer(value.frontTeeth, `${label}.frontTeeth`),
+    rearGearNum: integer(value.rearGearNum, `${label}.rearGearNum`),
+    rearTeeth: integer(value.rearTeeth, `${label}.rearTeeth`),
+  }
+}
+
+function numberArray(value: unknown, label: string): number[] {
+  if (!Array.isArray(value)) throw new Error(`${label} must be an array`)
+  return value.map((item, index) => finiteNumber(item, `${label}[${index}]`) ?? 0)
+}
+
+function parseCyclingDynamics(value: unknown, label: string): WahooCyclingDynamics {
+  if (!isRecord(value)) throw new Error(`${label} must be an object`)
+  if (!Array.isArray(value.positionChanges))
+    throw new Error(`${label}.positionChanges must be an array`)
+  const positionChanges = value.positionChanges.map((item, index) => {
+    const itemLabel = `${label}.positionChanges[${index}]`
+    if (!isRecord(item)) throw new Error(`${itemLabel} must be an object`)
+    let position: GarminRiderPosition
+    if (item.position === 'seated') position = 'seated'
+    else if (item.position === 'standing') position = 'standing'
+    else throw new Error(`${itemLabel}.position is invalid`)
+    return {
+      elapsedS: finiteNumber(item.elapsedS, `${itemLabel}.elapsedS`) ?? 0,
+      distanceM: finiteNumber(item.distanceM, `${itemLabel}.distanceM`) ?? 0,
+      position,
+    }
+  })
+  const dynamics: WahooCyclingDynamics = {
+    time: numberArray(value.time, `${label}.time`),
+    distance: numberArray(value.distance, `${label}.distance`),
+    leftPedalSmoothness: nullableNumberArray(
+      value.leftPedalSmoothness,
+      `${label}.leftPedalSmoothness`,
+    ),
+    rightPedalSmoothness: nullableNumberArray(
+      value.rightPedalSmoothness,
+      `${label}.rightPedalSmoothness`,
+    ),
+    leftTorqueEffectiveness: nullableNumberArray(
+      value.leftTorqueEffectiveness,
+      `${label}.leftTorqueEffectiveness`,
+    ),
+    rightTorqueEffectiveness: nullableNumberArray(
+      value.rightTorqueEffectiveness,
+      `${label}.rightTorqueEffectiveness`,
+    ),
+    leftPowerPhaseStart: nullableNumberArray(
+      value.leftPowerPhaseStart,
+      `${label}.leftPowerPhaseStart`,
+    ),
+    leftPowerPhaseEnd: nullableNumberArray(value.leftPowerPhaseEnd, `${label}.leftPowerPhaseEnd`),
+    rightPowerPhaseStart: nullableNumberArray(
+      value.rightPowerPhaseStart,
+      `${label}.rightPowerPhaseStart`,
+    ),
+    rightPowerPhaseEnd: nullableNumberArray(
+      value.rightPowerPhaseEnd,
+      `${label}.rightPowerPhaseEnd`,
+    ),
+    positionChanges,
+    seatedTimeS: finiteNumber(value.seatedTimeS, `${label}.seatedTimeS`, true),
+    standingTimeS: finiteNumber(value.standingTimeS, `${label}.standingTimeS`, true),
+  }
+  const lengths = [
+    dynamics.distance,
+    dynamics.leftPedalSmoothness,
+    dynamics.rightPedalSmoothness,
+    dynamics.leftTorqueEffectiveness,
+    dynamics.rightTorqueEffectiveness,
+    dynamics.leftPowerPhaseStart,
+    dynamics.leftPowerPhaseEnd,
+    dynamics.rightPowerPhaseStart,
+    dynamics.rightPowerPhaseEnd,
+  ].map(stream => stream.length)
+  if (lengths.some(length => length !== dynamics.time.length))
+    throw new Error(`${label} metric arrays must have equal lengths`)
+  return dynamics
 }
 
 function recordValue<T>(
@@ -456,6 +549,15 @@ export function parseWahooCache(value: unknown): WahooCache {
     throw new Error(`Wahoo cache version ${version} is unsupported`)
   const activities = recordValue(value.activities, 'Wahoo cache.activities', parseActivity)
   const streams = recordValue(value.streams, 'Wahoo cache.streams', parseStreams)
+  const gearShifts = recordValue(value.gearShifts, 'Wahoo cache.gearShifts', (item, label) => {
+    if (!Array.isArray(item)) throw new Error(`${label} must be an array`)
+    return item.map((shift, index) => parseGearShift(shift, `${label}[${index}]`))
+  })
+  const cyclingDynamics = recordValue(
+    value.cyclingDynamics,
+    'Wahoo cache.cyclingDynamics',
+    parseCyclingDynamics,
+  )
   for (const [id, activity] of Object.entries(activities)) {
     if (activity.id !== id)
       throw new Error(`Wahoo cache activity key ${id} does not match activity id`)
@@ -466,5 +568,7 @@ export function parseWahooCache(value: unknown): WahooCache {
     lastSync: finiteNumber(value.lastSync, 'Wahoo cache.lastSync') ?? 0,
     activities,
     streams,
+    gearShifts,
+    cyclingDynamics,
   }
 }

@@ -646,6 +646,8 @@ export const buildIcon = <N>(f: TriNodeFactory<N>, sport: ActivityKind): N => {
   return icon
 }
 
+const COMPUTER_LABEL = { garmin: 'Edge 1050', wahoo: 'ELEMNT BOLT 3' } as const
+
 export const buildBattery = <N>(f: TriNodeFactory<N>): N => {
   const icon = f.svg('svg', { class: 'tri-ico tri-battery', viewBox: '0 0 24 24', fill: 'none' })
   for (const d of BATTERY) f.add(icon, f.svg('path', { d }))
@@ -1197,6 +1199,79 @@ const routeRightPowerPct = (point: StravaActivityDetail['route'][number]): numbe
     : null
 }
 
+type PowerBalanceSample = { watts: number; rightPowerPct: number; distanceKm: number }
+
+type PowerBalanceHeatCell = { count: number; x: number; y: number; width: number; height: number }
+
+const POWER_BALANCE_HEAT_X_BINS = 64
+const POWER_BALANCE_HEAT_Y_BINS = 24
+
+const powerBalanceSamples = (
+  d: StravaActivityDetail,
+  graphDomain?: ActivityGraphDomain | null,
+): PowerBalanceSample[] => {
+  const measured = d.route.flatMap(point => {
+    const rightPowerPct = routeRightPowerPct(point)
+    return rightPowerPct == null ? [] : [{ watts: point.w, rightPowerPct, distanceKm: point.d }]
+  })
+  if (!graphDomain) return measured
+  const selected = measured.filter(
+    sample =>
+      sample.distanceKm >= graphDomain.startDistanceKm &&
+      sample.distanceKm <= graphDomain.endDistanceKm,
+  )
+  return selected.length >= 2 ? selected : measured
+}
+
+const powerBalanceWattsAxis = (
+  d: StravaActivityDetail,
+  samples: readonly PowerBalanceSample[],
+): { max: number; ticks: AxisXTick[] } => {
+  const observedMax = Math.max(d.maxWatts ?? 0, ...samples.map(sample => sample.watts))
+  const step = niceStep(observedMax, 5)
+  const max = Math.max(step, Math.ceil(observedMax / step) * step)
+  const ticks: AxisXTick[] = []
+  for (let watts = 0; watts <= max + step * 1e-6; watts += step) {
+    ticks.push({
+      label: `${axisNumber(watts, step)} W`,
+      pct: (watts / max) * 100,
+      ...(watts === 0
+        ? { cls: 'tri-cax-xt--first' }
+        : watts >= max
+          ? { cls: 'tri-cax-xt--last' }
+          : {}),
+    })
+  }
+  return { max, ticks }
+}
+
+const powerBalanceHeatCells = (
+  samples: readonly PowerBalanceSample[],
+  maxWatts: number,
+  height: number,
+): PowerBalanceHeatCell[] => {
+  const counts = new Map<number, number>()
+  for (const sample of samples) {
+    const xBin = Math.min(
+      POWER_BALANCE_HEAT_X_BINS - 1,
+      Math.max(0, Math.floor((sample.watts / maxWatts) * POWER_BALANCE_HEAT_X_BINS)),
+    )
+    const yBin = Math.min(
+      POWER_BALANCE_HEAT_Y_BINS - 1,
+      Math.max(0, Math.floor((sample.rightPowerPct / 100) * POWER_BALANCE_HEAT_Y_BINS)),
+    )
+    const key = yBin * POWER_BALANCE_HEAT_X_BINS + xBin
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+  const xSize = 100 / POWER_BALANCE_HEAT_X_BINS
+  const ySize = height / POWER_BALANCE_HEAT_Y_BINS
+  return Array.from(counts, ([key, count]) => {
+    const xBin = key % POWER_BALANCE_HEAT_X_BINS
+    const yBin = Math.floor(key / POWER_BALANCE_HEAT_X_BINS)
+    return { count, x: xBin * xSize, y: yBin * ySize, width: xSize, height: ySize }
+  }).sort((left, right) => left.y - right.y || left.x - right.x)
+}
+
 export const powerBalanceText = (rightPowerPct: number): string =>
   `L ${(100 - rightPowerPct).toFixed(1)}% / R ${rightPowerPct.toFixed(1)}%`
 
@@ -1271,9 +1346,10 @@ export const buildPowerBalanceChart = <N>(
   embedded = false,
   graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
+  const samples = powerBalanceSamples(d, graphDomain)
   const rightValues = d.route.flatMap(point => {
-    const value = routeRightPowerPct(point)
-    return value == null ? [] : [value]
+    const rightPowerPct = routeRightPowerPct(point)
+    return rightPowerPct == null ? [] : [rightPowerPct]
   })
   if (d.sport !== 'bike' || rightValues.length < 2) return null
   const width = 100
@@ -1349,8 +1425,47 @@ export const buildPowerBalanceChart = <N>(
     }),
     f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
   )
+  const wattsAxis = powerBalanceWattsAxis(d, samples)
+  const heatCells = powerBalanceHeatCells(samples, wattsAxis.max, height)
+  const maxCellCount = Math.max(1, ...heatCells.map(cell => cell.count))
+  const heatSvg = f.svg('svg', {
+    class: 'tri-power-balance-heatmap',
+    viewBox: `0 0 ${width} ${height}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': triText(f.presentation.locale, 'power balance by watts'),
+    'data-i18n-aria-label': 'power balance by watts',
+    'data-power-balance-samples': samples.length,
+    'data-power-balance-max-watts': wattsAxis.max,
+  })
+  for (const cell of heatCells) {
+    const density = 0.16 + 0.84 * Math.sqrt(cell.count / maxCellCount)
+    f.add(
+      heatSvg,
+      f.svg('rect', {
+        class: 'tri-power-balance-heat-cell',
+        x: cell.x.toFixed(3),
+        y: cell.y.toFixed(3),
+        width: cell.width.toFixed(3),
+        height: cell.height.toFixed(3),
+        style: `--tri-power-balance-density:${density.toFixed(3)}`,
+        'data-samples': cell.count,
+      }),
+    )
+  }
+  f.add(
+    heatSvg,
+    f.svg('line', {
+      class: 'tri-power-balance-reference',
+      x1: 0,
+      y1: height / 2,
+      x2: width,
+      y2: height / 2,
+    }),
+  )
   const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-power-balance-chart', undefined, {
     'data-tri-trace': triathlonTraceName('power balance'),
+    'data-power-balance-mode': 'distance',
   })
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-power-balance-summary')
@@ -1374,10 +1489,38 @@ export const buildPowerBalanceChart = <N>(
       f.add(summary, item)
     }
   }
-  f.add(cap, f.el('span', 'tri-elev-d', 'power balance', { 'data-i18n': 'power balance' }), summary)
+  const modes = f.el('span', 'tri-power-balance-modes', undefined, {
+    role: 'group',
+    'aria-label': triText(f.presentation.locale, 'power balance view'),
+    'data-i18n-aria-label': 'power balance view',
+  })
+  for (const [mode, label] of [
+    ['distance', 'distance'],
+    ['power', 'watts'],
+  ] as const)
+    f.add(
+      modes,
+      f.el('button', 'tri-power-balance-mode tri-curve-range', label, {
+        type: 'button',
+        'data-power-balance-mode': mode,
+        'aria-pressed': String(mode === 'distance'),
+        'data-i18n': label,
+      }),
+    )
   f.add(
-    wrap,
     cap,
+    f.el('span', 'tri-elev-d', 'power balance', { 'data-i18n': 'power balance' }),
+    summary,
+    modes,
+  )
+  const distancePane = f.el(
+    'div',
+    'tri-power-balance-pane tri-power-balance-pane--distance',
+    undefined,
+    { 'data-power-balance-mode': 'distance', 'aria-hidden': 'false' },
+  )
+  f.add(
+    distancePane,
     axisFrame(
       f,
       svgEl,
@@ -1388,6 +1531,28 @@ export const buildPowerBalanceChart = <N>(
       { top: 0, bottom: height },
     ),
   )
+  const powerPane = f.el('div', 'tri-power-balance-pane tri-power-balance-pane--power', undefined, {
+    'data-power-balance-mode': 'power',
+    'aria-hidden': 'true',
+    hidden: '',
+  })
+  f.add(
+    powerPane,
+    axisFrame(
+      f,
+      heatSvg,
+      [
+        { label: '100% L', vbY: 0 },
+        { label: '50/50', vbY: height / 2 },
+        { label: '100% R', vbY: height },
+      ],
+      height,
+      wattsAxis.ticks,
+      true,
+      { top: 0, bottom: height },
+    ),
+  )
+  f.add(wrap, cap, distancePane, powerPane)
   return wrap
 }
 
@@ -5227,6 +5392,7 @@ export const activityStatRows = (
     ['time', dur(d.movingTimeS)],
     [d.sport === 'bike' ? 'speed' : 'pace', activityRate],
   ]
+  if (d.computer) rows.push(['computer', COMPUTER_LABEL[d.computer]])
   if (d.sport === 'bike' && d.maxSpeedKph != null)
     rows.push(['max speed', speedKph(presentation, d.maxSpeedKph)])
   if (d.sport === 'run') {

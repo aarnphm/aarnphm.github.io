@@ -22,6 +22,7 @@ import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
+import { readStravaCacheFile } from '../../util/strava-cache-file'
 import { serializeStravaDetails, type StravaDetailPayload } from '../../util/strava-detail'
 import {
   appleCachePath,
@@ -38,6 +39,7 @@ import {
   type LoadedStravaPayload,
   ouraCachePath,
   stravaCachePath,
+  wahooCachePath,
   weatherCachePath,
 } from '../../util/strava-payload'
 import {
@@ -76,6 +78,7 @@ import {
   StravaRawCache,
 } from '../stores/strava'
 import { parseTrainingPlans } from '../stores/training'
+import { parseWahooCache, type WahooCache } from '../stores/wahoo'
 import { parseWeatherCache, WeatherCache } from '../stores/weather'
 import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../vfile'
 import { removeWritten, write } from './helpers'
@@ -91,11 +94,7 @@ async function cacheDataFeed(content: string): Promise<void> {
 }
 
 async function readCache(): Promise<StravaRawCache | null> {
-  try {
-    return JSON.parse(await fs.readFile(stravaCachePath, 'utf8')) as StravaRawCache
-  } catch {
-    return null
-  }
+  return readStravaCacheFile(stravaCachePath)
 }
 
 async function readOura(): Promise<OuraCache | null> {
@@ -109,6 +108,14 @@ async function readOura(): Promise<OuraCache | null> {
 async function readGarmin(): Promise<GarminCache | null> {
   try {
     return JSON.parse(await fs.readFile(garminCachePath, 'utf8')) as GarminCache
+  } catch {
+    return null
+  }
+}
+
+async function readWahoo(): Promise<WahooCache | null> {
+  try {
+    return parseWahooCache(JSON.parse(await fs.readFile(wahooCachePath, 'utf8')))
   } catch {
     return null
   }
@@ -194,6 +201,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     const cache = await readCache()
     const oura = await readOura()
     const garmin = await readGarmin()
+    const wahoo = await readWahoo()
     const apple = await readApple()
     const core = await readCoreBodyTemperature()
     const weather = await readWeather()
@@ -226,6 +234,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         weather,
         ATHLETE.ftp,
         hrBoundsOverride ?? undefined,
+        undefined,
+        wahoo,
       )
       applyManualFueling(payload, tracking?.fueling ?? [])
       applyManualStrength(payload, tracking?.strength ?? [])

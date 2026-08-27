@@ -243,7 +243,7 @@ function decodeGarminMessages(bytes: Uint8Array): FitMessages {
   return decoded.messages
 }
 
-function garminGearShifts(messages: FitMessages): GarminGearShift[] {
+export function fitGearShifts(messages: FitMessages): GarminGearShift[] {
   const shifts: GarminGearShift[] = []
   for (const event of messages.eventMesgs ?? []) {
     if (event.event !== 'frontGearChange' && event.event !== 'rearGearChange') continue
@@ -374,7 +374,7 @@ function emptyCyclingDynamics(): GarminCyclingDynamics {
   }
 }
 
-function garminCyclingDynamics(messages: FitMessages): GarminCyclingDynamics {
+export function fitCyclingDynamics(messages: FitMessages): GarminCyclingDynamics {
   const records = (messages.recordMesgs ?? []).filter(record => {
     const timestamp = fitTimestamp(record.timestamp)
     return timestamp != null && record.distance != null && Number.isFinite(record.distance)
@@ -495,8 +495,8 @@ function garminFitTrainingEffect(messages: FitMessages): GarminFitTrainingEffect
 export function decodeGarminRideFit(bytes: Uint8Array): GarminRideFitData {
   const messages = decodeGarminMessages(bytes)
   return {
-    gearShifts: garminGearShifts(messages),
-    cyclingDynamics: garminCyclingDynamics(messages),
+    gearShifts: fitGearShifts(messages),
+    cyclingDynamics: fitCyclingDynamics(messages),
     trainingEffect: garminFitTrainingEffect(messages),
   }
 }

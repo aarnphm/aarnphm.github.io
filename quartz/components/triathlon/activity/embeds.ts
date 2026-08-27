@@ -24,6 +24,7 @@ import { mountDaySleepCharts } from './day-sleep'
 import { dayExtrasFromDataset } from './embed-settings'
 import { renderDetail } from './render'
 import { setupStrengthExerciseOverflow } from './render'
+import { powerBalanceMode, setPowerBalanceMode, type PowerBalanceMode } from './scrub'
 
 const TRAINING_EFFECT_MARGIN = '--tri-training-effect-margin'
 
@@ -243,6 +244,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     let upgraded = false
     let payload: DetailPayload | null = null
     let pendingSwimMode: { index: number; mode: SwimTrendMode } | null = null
+    let pendingPowerBalanceMode: { index: number; mode: PowerBalanceMode } | null = null
     let pendingAnalysisRange: {
       activityId: string
       kind: string
@@ -270,9 +272,28 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       if (index < 0) return
       pendingSwimMode = { index, mode: button.dataset.swimMode === '100m' ? '100m' : 'lengths' }
     }
-    const onSwimPointerDown = (event: PointerEvent): void => setPendingSwimMode(event.target)
-    const onSwimKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Enter' || event.key === ' ') setPendingSwimMode(event.target)
+    const setPendingPowerBalanceMode = (target: EventTarget | null): void => {
+      if (!(target instanceof Element)) return
+      const button = target.closest<HTMLButtonElement>('.tri-power-balance-mode')
+      const chart = button?.closest<HTMLElement>('.tri-power-balance-chart')
+      if (!button || !chart) return
+      const index = Array.from(
+        embed.querySelectorAll<HTMLElement>('.tri-power-balance-chart'),
+      ).indexOf(chart)
+      if (index < 0) return
+      pendingPowerBalanceMode = {
+        index,
+        mode: button.dataset.powerBalanceMode === 'power' ? 'power' : 'distance',
+      }
+    }
+    const onModePointerDown = (event: PointerEvent): void => {
+      setPendingSwimMode(event.target)
+      setPendingPowerBalanceMode(event.target)
+    }
+    const onModeKeyDown = (event: KeyboardEvent): void => {
+      if (event.key !== 'Enter' && event.key !== ' ') return
+      setPendingSwimMode(event.target)
+      setPendingPowerBalanceMode(event.target)
     }
     const setPendingAnalysisRange = (target: EventTarget | null, restoreFocus = false): boolean => {
       if (payload) return false
@@ -328,28 +349,29 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     const onAnalysisKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Enter' || event.key === ' ') setPendingAnalysisRange(event.target, true)
     }
-    const clearPendingSwimMode = (): void => {
+    const clearPendingModes = (): void => {
       pendingSwimMode = null
+      pendingPowerBalanceMode = null
     }
-    embed.addEventListener('pointerdown', onSwimPointerDown, { passive: true })
-    embed.addEventListener('keydown', onSwimKeyDown)
+    embed.addEventListener('pointerdown', onModePointerDown, { passive: true })
+    embed.addEventListener('keydown', onModeKeyDown)
     embed.addEventListener('pointerdown', onAnalysisPointerDown, { passive: true })
     embed.addEventListener('pointerup', onAnalysisPointerUp, { passive: true })
     embed.addEventListener('click', onAnalysisClick)
     embed.addEventListener('pointercancel', onAnalysisPointerCancel)
     embed.addEventListener('keydown', onAnalysisKeyDown)
-    embed.addEventListener('click', clearPendingSwimMode)
-    embed.addEventListener('pointercancel', clearPendingSwimMode)
+    embed.addEventListener('click', clearPendingModes)
+    embed.addEventListener('pointercancel', clearPendingModes)
     embedTeardowns.push(() => {
-      embed.removeEventListener('pointerdown', onSwimPointerDown)
-      embed.removeEventListener('keydown', onSwimKeyDown)
+      embed.removeEventListener('pointerdown', onModePointerDown)
+      embed.removeEventListener('keydown', onModeKeyDown)
       embed.removeEventListener('pointerdown', onAnalysisPointerDown)
       embed.removeEventListener('pointerup', onAnalysisPointerUp)
       embed.removeEventListener('click', onAnalysisClick)
       embed.removeEventListener('pointercancel', onAnalysisPointerCancel)
       embed.removeEventListener('keydown', onAnalysisKeyDown)
-      embed.removeEventListener('click', clearPendingSwimMode)
-      embed.removeEventListener('pointercancel', clearPendingSwimMode)
+      embed.removeEventListener('click', clearPendingModes)
+      embed.removeEventListener('pointercancel', clearPendingModes)
     })
     const render = (data: DetailPayload) => {
       const swimStates: {
@@ -389,6 +411,15 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       if (pendingSwimMode && swimStates[pendingSwimMode.index])
         swimStates[pendingSwimMode.index].mode = pendingSwimMode.mode
       pendingSwimMode = null
+      const powerBalanceStates = Array.from(
+        embed.querySelectorAll<HTMLElement>('.tri-power-balance-chart'),
+        chart => ({ mode: powerBalanceMode(chart) }),
+      )
+      if (pendingPowerBalanceMode && powerBalanceStates[pendingPowerBalanceMode.index]) {
+        const state = powerBalanceStates[pendingPowerBalanceMode.index]
+        state.mode = pendingPowerBalanceMode.mode
+      }
+      pendingPowerBalanceMode = null
       const analysisStates = Array.from(
         embed.querySelectorAll<HTMLElement>('.tri-act[data-activity-id]'),
         activity => {
@@ -464,6 +495,13 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
           )
           ?.focus({ preventScroll: true })
       }
+      fresh.element
+        .querySelectorAll<HTMLElement>('.tri-power-balance-chart')
+        .forEach((chart, index) => {
+          const state = powerBalanceStates[index]
+          if (!state) return
+          setPowerBalanceMode(chart, state.mode)
+        })
       fresh.element.querySelectorAll<HTMLElement>('.tri-swim-trends').forEach((section, index) => {
         const state = swimStates[index]
         if (!state) return

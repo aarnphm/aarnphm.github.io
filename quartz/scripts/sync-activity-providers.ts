@@ -50,15 +50,29 @@ export const ACTIVITY_BRIDGE_LEDGER_FILE = joinSegments(
 
 export interface ActivityBridgeArgs {
   write: boolean
+  limit: number | null
+}
+
+interface ActivityBridgeExecution {
+  ledger: ActivityBridgeLedger
+  uploadStatus: ActivityBridgeUploadStatus
 }
 
 export function parseActivityBridgeArgs(argv: readonly string[]): ActivityBridgeArgs {
   let write = false
-  for (const arg of argv) {
+  let limit: number | null = null
+  for (let index = 0; index < argv.length; index++) {
+    const arg = argv[index]
     if (arg === '--write') write = true
-    else throw new Error(`unknown activity bridge argument: ${arg}`)
+    else if (arg === '--limit') {
+      const value = argv[++index]
+      const parsed = Number(value)
+      if (!value || !Number.isInteger(parsed) || parsed <= 0)
+        throw new Error('--limit requires a positive integer')
+      limit = parsed
+    } else throw new Error(`unknown activity bridge argument: ${arg}`)
   }
-  return { write }
+  return { write, limit }
 }
 
 function requiredRecord(value: unknown, label: string): UnknownRecord {
@@ -310,14 +324,15 @@ async function bridgeWahooToGarmin(
   garminSession: GarminConnectSession,
   garminBase: string,
   ledger: ActivityBridgeLedger,
-): Promise<ActivityBridgeLedger> {
+): Promise<ActivityBridgeExecution> {
   const bytes = await wahooClient.downloadFit(plan.source.fitUrl)
   const sha256 = wahooFitSha256(bytes)
   if (sha256 !== plan.source.fitSha256.toLowerCase())
     throw new Error(`Wahoo FIT SHA-256 changed for ${plan.source.id}`)
   const key = activityBridgeReceiptKey('wahoo', plan.source.id, sha256, 'garmin')
   const existing = ledger.receipts[key]
-  if (existing && isTerminalActivityBridgeReceipt(existing)) return ledger
+  if (existing && isTerminalActivityBridgeReceipt(existing))
+    return { ledger, uploadStatus: existing.uploadStatus }
   const destinationId = await uploadGarminFit(
     garminSession,
     garminBase,
@@ -328,7 +343,7 @@ async function bridgeWahooToGarmin(
   const next = upsertActivityBridgeReceipt(ledger, receipt)
   await writeActivityBridgeLedgerAtomic(next)
   await updateGarminActivityTitle(garminSession, garminBase, destinationId, plan.title)
-  return next
+  return { ledger: next, uploadStatus: 'complete' }
 }
 
 async function bridgeGarminToWahoo(
@@ -337,7 +352,7 @@ async function bridgeGarminToWahoo(
   garminSession: GarminConnectSession,
   garminBase: string,
   ledger: ActivityBridgeLedger,
-): Promise<ActivityBridgeLedger> {
+): Promise<ActivityBridgeExecution> {
   const sourceId = garminActivityId(plan.source.id)
   const archive = await fetchGarminBytes(
     garminSession,
@@ -348,30 +363,28 @@ async function bridgeGarminToWahoo(
   const sha256 = fitSha256(bytes)
   const key = activityBridgeReceiptKey('garmin', plan.source.id, sha256, 'wahoo')
   const existing = ledger.receipts[key]
-  if (existing && isTerminalActivityBridgeReceipt(existing)) return ledger
+  if (existing && isTerminalActivityBridgeReceipt(existing))
+    return { ledger, uploadStatus: existing.uploadStatus }
   let upload: WahooWorkoutFileUpload
   const createdAt = existing?.createdAt ?? Date.now()
   if (existing?.uploadToken) {
-    upload = await wahooClient.pollWorkoutFileUpload(existing.uploadToken)
+    upload = await wahooClient.getWorkoutFileUpload(existing.uploadToken)
   } else {
     upload = await wahooClient.createWorkoutFileUpload({
       bytes,
       filename: `garmin-${sourceId}.fit`,
       workoutName: plan.title,
     })
-    const pending = receiptFor(plan, sha256, upload, destinationWahooActivityId(upload), createdAt)
-    ledger = upsertActivityBridgeReceipt(ledger, pending)
-    await writeActivityBridgeLedgerAtomic(ledger)
-    if (upload.status !== 'complete' && upload.status !== 'duplicate')
-      upload = await wahooClient.pollWorkoutFileUpload(upload.token)
   }
+  if (upload.status === 'error')
+    throw new Error(`Wahoo workout file upload failed: ${upload.error ?? 'unknown error'}`)
   const destinationId = destinationWahooActivityId(upload)
-  if (!destinationId && upload.status !== 'duplicate')
+  if (!destinationId && upload.status === 'complete')
     throw new Error(`Wahoo upload ${upload.token} completed without a destination workout id`)
-  const completed = receiptFor(plan, sha256, upload, destinationId, createdAt)
-  const next = upsertActivityBridgeReceipt(ledger, completed)
+  const receipt = receiptFor(plan, sha256, upload, destinationId, createdAt)
+  const next = upsertActivityBridgeReceipt(ledger, receipt)
   await writeActivityBridgeLedgerAtomic(next)
-  return next
+  return { ledger: next, uploadStatus: upload.status }
 }
 
 function planSummary(plan: ActivityBridgePlan): string {
@@ -387,7 +400,8 @@ async function main(): Promise<void> {
     readActivityBridgeLedger(),
   ])
   const inputs = parseActivityBridgeInputs(stravaValue, garminValue, wahooValue)
-  const plans = planActivityBridge(inputs, initialLedger)
+  const planned = planActivityBridge(inputs, initialLedger)
+  const plans = args.limit == null ? planned : planned.slice(0, args.limit)
   for (const plan of plans) console.log(`[activity-bridge] ${planSummary(plan)}`)
   if (!args.write) {
     console.log(`[activity-bridge] dry run: ${plans.length} upload${plans.length === 1 ? '' : 's'}`)
@@ -407,11 +421,14 @@ async function main(): Promise<void> {
   )
   let ledger = initialLedger
   for (const plan of plans) {
-    ledger =
+    const execution =
       plan.direction === 'wahoo-to-garmin'
         ? await bridgeWahooToGarmin(plan, wahooClient, garminSession, garminBase, ledger)
         : await bridgeGarminToWahoo(plan, wahooClient, garminSession, garminBase, ledger)
-    console.log(`[activity-bridge] completed ${planSummary(plan)}`)
+    ledger = execution.ledger
+    console.log(
+      `[activity-bridge] ${execution.uploadStatus === 'complete' || execution.uploadStatus === 'duplicate' ? 'completed' : `queued status=${execution.uploadStatus}`} ${planSummary(plan)}`,
+    )
   }
 }
 
