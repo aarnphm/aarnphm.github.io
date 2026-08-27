@@ -2213,6 +2213,7 @@
   grid-template-areas:
     'bike wheel'
     'tire surface'
+    'balance measured'
     'balance weight'
     'balance speed';
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2241,6 +2242,10 @@
 
 .tri-pressure-weight {
   grid-area: weight;
+}
+
+.tri-pressure-measured {
+  grid-area: measured;
 }
 
 .tri-pressure-field {
@@ -2379,6 +2384,7 @@
 }
 
 .tri-pressure-speed,
+.tri-pressure-measured,
 .tri-pressure-weight {
   align-self: end;
   display: flex;
@@ -2395,6 +2401,7 @@
 
 .tri-pressure-speed-input,
 .tri-pressure-bike-mass,
+.tri-pressure-measured-controls,
 .tri-pressure-wheel-width,
 .tri-pressure-weight-controls {
   display: inline-flex;
@@ -2438,6 +2445,14 @@
 
 .tri-pressure-wheel-width input {
   width: 1.8rem;
+}
+
+.tri-pressure-measured-controls {
+  gap: 0.18rem;
+
+  > input {
+    width: 1.8rem;
+  }
 }
 
 .tri-pressure-weight-controls {
@@ -2606,6 +2621,7 @@
       'tire'
       'surface'
       'balance'
+      'measured'
       'weight'
       'speed';
     grid-template-columns: minmax(0, 1fr);

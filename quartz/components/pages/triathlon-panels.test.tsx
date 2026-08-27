@@ -334,14 +334,15 @@ test('calculator page tabs own race, gear ratio, and daily tire pressure calcula
   )
   assert.match(html, /<output class="tri-ratio-range" aria-live="polite">1\.18–4\.91<\/output>/)
   assert.match(html, /data-rider-kg="86.06"/)
-  assert.match(html, /data-pressure-output="front">76.5</)
-  assert.match(html, /data-pressure-output="rear">83</)
+  assert.match(html, /data-pressure-output="front">64</)
+  assert.match(html, /data-pressure-output="rear">81</)
   assert.match(html, />Custom<\/span>/)
   assert.match(html, /HUNT 54_58 Aerodynamicist UD/)
   assert.match(html, />Custom Wheelset<\/span>/)
   assert.equal(html.match(/data-pressure-field="bikeMass"/g)?.length, 3)
   assert.equal(html.match(/data-pressure-field="balance"/g)?.length, 4)
   assert.equal(html.match(/data-pressure-field="customWheelWidth"/g)?.length, 2)
+  assert.equal(html.match(/data-pressure-field="measuredTireWidth"/g)?.length, 2)
   assert.equal(html.match(/data-pressure-field="weightUnit"/g)?.length, 2)
   assert.match(html, /data-weight-unit="kg"/)
   assert.match(html, /<time class="tri-pressure-date" datetime="2026-08-16">2026-08-16<\/time>/)
@@ -349,6 +350,14 @@ test('calculator page tabs own race, gear ratio, and daily tire pressure calcula
   assert.match(html, /value="86.06" data-pressure-field="riderMass"/)
   assert.match(html, /data-pressure-bike="cervelo" inputmode="decimal"/)
   assert.match(html, /data-pressure-bike="custom" inputmode="decimal"/)
+  assert.match(
+    html,
+    /value="32" data-pressure-field="measuredTireWidth" data-pressure-axle="front" inputmode="numeric"/,
+  )
+  assert.match(
+    html,
+    /value="28" data-pressure-field="measuredTireWidth" data-pressure-axle="rear" inputmode="numeric"/,
+  )
   assert.match(html, /type="text" value="19.5" data-pressure-field="speed"/)
   assert.match(html, /WeatherKit · 2026-08-17 13:00 UTC/)
   assert.match(html, /18.5 °C/)

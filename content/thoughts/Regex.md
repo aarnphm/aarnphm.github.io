@@ -2,7 +2,7 @@
 date: '2026-06-17'
 description: regular expressions, the regex-to-automaton pipeline, Brzozowski derivatives, and a matcher in Mojo
 id: Regex
-modified: 2026-08-26 10:25:11 GMT-04:00
+modified: 2026-08-27 09:11:56 GMT-04:00
 seealso:
   - '[[thoughts/DFA|DFA]]'
   - '[[thoughts/NFA|NFA]]'
@@ -103,9 +103,9 @@ $$
 \end{aligned}
 $$
 
-If $r_1$ accepts the empty string ($\nu(r_1) = \epsilon$), then $a$ may instead belong to $r_2$
+If $r_1$ accepts the empty string ($\nu(r_1) = \epsilon$), then $a$ may instead belong to $r_2$.
 
-Brzozowski's result is that, up to similarity (associativity, commutativity, idempotence of $+$, and the identities $\emptyset r = \emptyset$, $\epsilon r = r$), an expression has finitely many distinct derivatives. These derivatives are the minimal state of a DFA.
+Brzozowski proved that a regular expression has finitely many derivatives up to similarity, including associativity, commutativity, and idempotence of $+$, plus the usual $\emptyset$ and $\epsilon$ identities [@brzozowski1964derivatives]. The derivative automaton can still contain language-equivalent states. Quotienting those states by language equivalence gives the minimal DFA.
 
 > [!example] matching against $(a + b)^{*}\,ba$ (strings ending in $ba$)
 >

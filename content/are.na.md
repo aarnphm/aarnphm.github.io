@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-08-26 00:00:00 GMT-04:00
+modified: 2026-08-27 00:00:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -623,6 +623,56 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/vikhyatk/status/2086579948647747914 -- vik on air-gapped Arch Linux
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [arch linux, joke]
+    - later: true
+- https://x.com/emilyzsh/status/2086466640577753597 -- Emily Sihan Zhang on pessimism and equanimity
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [pessimism, equanimity]
+    - later: true
+- https://x.com/fujikanaeda/status/2086490208145666165 -- Eric W. Tramel on A42 and evidence
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [evidence, benchmarks]
+    - later: true
+- https://x.com/willccbb/status/2086482421273317395 -- Will Brown on Codex Pets
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [codex, tooling]
+    - later: true
+- https://x.com/kyanyang_/status/2086205133793435777 -- Kyan Yang on sandboxed agents
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [agents, sandboxing]
+    - later: true
+- https://x.com/MohapatraHemant/status/2086255070585495862 -- Hemant Mohapatra on discipline
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [discipline, habits]
+    - later: true
+- https://x.com/ashebytes/status/2081887014597570878 -- Ashe on visibility and self-concept
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [visibility, self-concept]
+    - later: true
+- https://x.com/michael_nielsen/status/1473860703270309892 -- Michael Nielsen on favorite books
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [books, recommendations]
+    - later: true
+- https://x.com/tophtucker/status/1861173629976768808 -- Toph Tucker image note
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [image, reference]
+    - later: true
+- https://x.com/joodalooped/status/2090140818174816742 -- Judah on universally good advice
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [advice, essays]
+    - later: true
 - https://x.com/gradypb/status/1985788553587277978 -- Pat Grady on Sequoia's next generation
   - [meta]:
     - date: 08/26/2026
@@ -7553,6 +7603,71 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/giffmana/status/2086008351524008280 -- Lucas Beyer on Gemini pretraining curves
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [gemini, pretraining]
+    - later: true
+- https://x.com/VictorTaelin/status/2086542862435377307 -- Taelin on Bend2's Lean formalization and implementation state
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [lean, bend]
+    - later: true
+- https://x.com/jxmnop/status/2086586918880596406 -- Jack Morris on distilling open-weight models
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [distillation, open weights]
+    - later: true
+- https://x.com/primeintellect/status/2085087000764568010 -- Prime Intellect announces Prime Agent
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [agents, benchmarks]
+    - later: true
+- https://x.com/steipete/status/2074572085163381195 -- Peter Steinberger on volition under abundant intelligence
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [ai, volition]
+    - later: true
+- https://x.com/kotekjedi_ml/status/2087147042888114428 -- Alexander Panfilov on extracting hidden reasoning tokens
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [reasoning, security]
+    - later: true
+- https://x.com/lightseekorg/status/2085530676108157425 -- LightSeek Foundation on inference-provider competition
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [inference, ai infrastructure]
+    - later: true
+- https://x.com/_can1357/status/2087228354399265125 -- Can Boluk on reasoning through tool calls
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [reasoning, tools]
+    - later: true
+- https://x.com/banburismus_/status/2090223861879222342 -- Tom McGrath on interp timelines and cognitive time
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [interpretability, timelines]
+    - later: true
+- https://www.youtube.com/watch?v=87DyyMV0kCY -- Black Hat USA 2026 | The 'Breaking' News: The OpenAI-Hugging Face Incident
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [openai, security]
+    - later: true
+- https://www.youtube.com/watch?v=kMimQxIJLos -- What Really Separates Autoregression and Diffusion? A Synthesis and Path Beyond
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [diffusion, autoregression]
+    - later: true
+- https://www.youtube.com/watch?v=MfMq4sVJSFc -- I lead a Google DeepMind team at 26. If you want to work at an AI company...
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [deepmind, ai careers]
+    - later: true
+- https://www.youtube.com/watch?v=kLAawZ9x1nQ -- What AI insiders say off the record
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [ai labs, interviews]
+    - later: true
 - https://www.lesswrong.com/posts/dsou8dxCf9BubQ5NJ/some-reasons-alignment-doesn-t-generalise-well-1 -- Some reasons alignment doesn't generalise well
   - [meta]:
     - date: 08/26/2026
@@ -12057,6 +12172,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/AndrewCurran_/status/2086567854850384054 -- Andrew Curran on an agent exploiting a gym-booking vulnerability
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [agents, security]
+    - later: true
+- https://www.youtube.com/watch?v=_b2qsKz_Ifk -- Deep Dive: Advanced Ontology | DevCon 5
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [ontology, palantir]
+    - later: true
+- https://www.youtube.com/watch?v=Sir59K8ZDPU -- Why Agentic Systems Need Ontologies
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [agents, ontology]
+    - later: true
+- https://www.youtube.com/watch?v=VGN22pPpb-8 -- Thinner Agents on a Smarter Substrate: The Ontology-based Semantic Layer
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [agents, semantic layer]
+    - later: true
 - https://x.com/difficultyang/status/2085049604685598998 -- difficultyang on optimized transformer-block Perfetto traces
   - [meta]:
     - date: 08/26/2026
@@ -12843,6 +12978,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/maharshii/status/2086442755748970889 -- Maharshi links an X article
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [x article, notes]
+    - later: true
+- https://x.com/tsotchke/status/2090572453747499410 -- tsotchke on semiotics and simulacra
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [semiotics, simulacra]
+    - later: true
+- https://www.youtube.com/watch?v=awDAvbxS1vk -- I Changed My Mind.
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [philosophy, belief revision]
+    - later: true
 - https://www.lesswrong.com/posts/s22XzjQsrh6JXhXGH/big-world-intuitions -- Big-World Intuitions
   - [meta]:
     - date: 08/26/2026
@@ -14715,6 +14865,26 @@ title: are.na
 
 ## design
 
+- https://x.com/raffichill/status/2086459025755975789 -- Raffi on Adam Whitcroft's icon gallery
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [icons, design]
+    - later: true
+- https://x.com/valentinavee/status/2086195383688921111 -- Valentina Vee on point-source lighting
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [lighting, photography]
+    - later: true
+- https://x.com/mannay/status/2087522034351796728 -- Mannay on drawing faces with JavaScript
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [javascript, drawing]
+    - later: true
+- https://www.youtube.com/watch?v=E1QI43nBc2E -- Nord - The Making of the Red Keyboards
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [industrial design, keyboards]
+    - later: true
 - https://www.sacai.jp/en-ca/sets/men-clothing -- sacai Men's Clothing
   - [meta]:
     - date: 08/25/2026
@@ -15267,6 +15437,21 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=nLH7tn57es0 -- I went on 10 dates, here's what happened...
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [dating, video]
+    - later: true
+- https://www.youtube.com/watch?v=NwSV8RYaSwc -- The two types of modern blockbuster
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [film, blockbusters]
+    - later: true
+- https://www.youtube.com/watch?v=hRDSX1RLtnw -- This Is What Trench Warfare Really Feels Like.. | Devlog [3/4]
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [game development, devlog]
+    - later: true
 - https://m.youtube.com/watch?v=StCrwj72wXo -- Chef Thomas Keller's Halibut and Petit Pois a la Francaise | Halibut with Braised English Peas
   - [meta]:
     - date: 08/25/2026
@@ -16082,6 +16267,26 @@ title: are.na
 
 ## arts
 
+- https://x.com/hamburgerai/status/2090683415104557406 -- Hamburgerai on travel-photo field notes
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [field notes, visual art]
+    - later: true
+- https://x.com/xiaoxiaodong01/status/2091337011403882991 -- Xiaoxiaodong oil-painting prompt set
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [prompts, painting]
+    - later: true
+- https://x.com/zetalyrae/status/2092081160721686944 -- Fernando Borretti links a post on artists and image generators
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [artists, image generation]
+    - later: true
+- https://x.com/permutationink/status/2091977280105144322 -- Permutation: Issue One
+  - [meta]:
+    - date: 08/27/2026
+    - tags: [science fiction, magazine]
+    - later: true
 - https://linch.substack.com/p/ted-chiang-review -- Ted Chiang: The Secret Third Thing
   - [meta]:
     - date: 08/26/2026

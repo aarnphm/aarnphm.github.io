@@ -36,7 +36,9 @@ test('tire pressure palette advances through every physical selection', () => {
   assert.equal(nextTirePressurePaletteStep('bike'), 'bikeMass')
   assert.equal(nextTirePressurePaletteStep('bikeMass'), 'balance')
   assert.equal(nextTirePressurePaletteStep('balance'), 'wheel')
-  assert.equal(nextTirePressurePaletteStep('wheel'), 'tire')
+  assert.equal(nextTirePressurePaletteStep('wheel'), 'measuredTireFront')
+  assert.equal(nextTirePressurePaletteStep('measuredTireFront'), 'measuredTireRear')
+  assert.equal(nextTirePressurePaletteStep('measuredTireRear'), 'tire')
   assert.equal(nextTirePressurePaletteStep('tire'), 'surface')
   assert.equal(nextTirePressurePaletteStep('surface'), 'speed')
   assert.equal(nextTirePressurePaletteStep('speed'), 'result')
@@ -44,14 +46,16 @@ test('tire pressure palette advances through every physical selection', () => {
   const customWheel: TirePressureSelection = { ...DEFAULT_TIRE_PRESSURE_SELECTION, wheel: 'custom' }
   assert.equal(nextTirePressurePaletteStep('wheel', customWheel), 'customWheelFront')
   assert.equal(nextTirePressurePaletteStep('customWheelFront', customWheel), 'customWheelRear')
-  assert.equal(nextTirePressurePaletteStep('customWheelRear', customWheel), 'tire')
+  assert.equal(nextTirePressurePaletteStep('customWheelRear', customWheel), 'measuredTireFront')
 })
 
 test('tire pressure palette backtracks without skipping selection state', () => {
   assert.equal(previousTirePressurePaletteStep('result'), 'speed')
   assert.equal(previousTirePressurePaletteStep('speed'), 'surface')
   assert.equal(previousTirePressurePaletteStep('surface'), 'tire')
-  assert.equal(previousTirePressurePaletteStep('tire'), 'wheel')
+  assert.equal(previousTirePressurePaletteStep('tire'), 'measuredTireRear')
+  assert.equal(previousTirePressurePaletteStep('measuredTireRear'), 'measuredTireFront')
+  assert.equal(previousTirePressurePaletteStep('measuredTireFront'), 'wheel')
   assert.equal(previousTirePressurePaletteStep('wheel'), 'balance')
   assert.equal(previousTirePressurePaletteStep('balance'), 'bikeMass')
   assert.equal(previousTirePressurePaletteStep('bikeMass'), 'bike')
@@ -60,7 +64,7 @@ test('tire pressure palette backtracks without skipping selection state', () => 
   assert.equal(previousTirePressurePaletteStep('weightUnit'), 'commands')
 
   const customWheel: TirePressureSelection = { ...DEFAULT_TIRE_PRESSURE_SELECTION, wheel: 'custom' }
-  assert.equal(previousTirePressurePaletteStep('tire', customWheel), 'customWheelRear')
+  assert.equal(previousTirePressurePaletteStep('measuredTireFront', customWheel), 'customWheelRear')
   assert.equal(previousTirePressurePaletteStep('customWheelRear', customWheel), 'customWheelFront')
   assert.equal(previousTirePressurePaletteStep('customWheelFront', customWheel), 'wheel')
 })
@@ -71,9 +75,10 @@ test('tire pressure palette highlights the persisted choice at every step', () =
     weightUnit: 'lb',
     bike: 'speedmax',
     bikeMassesLb: { cervelo: 22.4, speedmax: 26.8, custom: 19.5 },
-    balance: '45-55',
+    balance: '47-53',
     wheel: 'reserve',
     customWheel: { frontInnerWidthMm: 21.5, rearInnerWidthMm: 24 },
+    measuredTire: { frontWidthMm: 32, rearWidthMm: 28 },
     tire: 'tubeless',
     surface: 'worn-pavement',
     speedMph: 23,
@@ -85,6 +90,8 @@ test('tire pressure palette highlights the persisted choice at every step', () =
   assert.equal(tirePressurePaletteSelectionIndex('bikeMass', selection), 0)
   assert.equal(tirePressurePaletteSelectionIndex('balance', selection), 2)
   assert.equal(tirePressurePaletteSelectionIndex('wheel', selection), 1)
+  assert.equal(tirePressurePaletteSelectionIndex('measuredTireFront', selection), 0)
+  assert.equal(tirePressurePaletteSelectionIndex('measuredTireRear', selection), 0)
   assert.equal(tirePressurePaletteSelectionIndex('tire', selection), 1)
   assert.equal(tirePressurePaletteSelectionIndex('surface', selection), 1)
   assert.equal(tirePressurePaletteSelectionIndex('speed', selection), 2)

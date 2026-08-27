@@ -68,9 +68,9 @@ maintenance:
             start: '2026-08-10'
   bottom bracket:
     - - type: FSA, T47 BBright for 24mm spindle
-      - distance: 1727.25
+      - distance: null
       - range:
-          - end: '2026-08-22'
+          - end: null
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed
     - - type: CeramicSpeed T47 BBright for Shimano
@@ -78,6 +78,19 @@ maintenance:
       - range:
           - end: null
             start: '2026-08-22'
+      - reason: null
+  break pads:
+    - - type: Shimano Brake Pads
+      - distance: 1727.25
+      - range:
+          - end: '2026-08-22'
+            start: '2026-05-16'
+      - reason: upgrades to BRAKCO Graphene
+    - - type: BRAKCO Airpads Graphene Venting Disc Brake Pads
+      - distance: null
+      - range:
+          - end: null
+            start: '2026-08-26'
       - reason: null
   chain:
     '1':
@@ -106,7 +119,7 @@ maintenance:
       distance: null
       lubricant: UFO Wax Drip-On
       ospw: ceramicspeed
-      since: '2026-08-22'
+      since: '2026-08-26'
       waxed: true
   chainrings:
     - - type: Ultegra FC-R8100 52-36T
@@ -119,7 +132,7 @@ maintenance:
       - distance: null
       - range:
           - end: null
-            start: '2026-08-22'
+            start: '2026-08-26'
       - reason: null
   service:
     soloist:
@@ -196,7 +209,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-25 15:20:57 GMT-04:00
+modified: 2026-08-26 21:28:02 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1353,7 +1366,7 @@ These labels interpret Garmin's score. They do not calculate the underlying aero
 
 ### tire pressure
 
-The gear panel starts with the latest valid Garmin morning body-mass sample. The rider-weight input accepts $25$–$200\ \mathrm{kg}$ and can display or accept either kilograms or pounds while retaining kilograms as the calculation value. A manual override is stored against the current Garmin measurement date, so a newer morning measurement becomes the next default. The Cervélo defaults to $22\ \mathrm{lb}=9.979\ \mathrm{kg}$ and the Speedmax defaults to $26\ \mathrm{lb}=11.793\ \mathrm{kg}$, using $1\ \mathrm{lb}=0.45359237\ \mathrm{kg}$. Each bike row exposes an editable pound value, persisted locally for that bike. A custom-bike row defaults to $20\ \mathrm{lb}$ and accepts the same $10$–$80\ \mathrm{lb}$ range. The command-palette flow accepts the rider unit, rider mass, and bike mass before calculating system mass:
+The gear panel starts with the latest valid Garmin morning body-mass sample. The rider-weight input accepts $25$–$200\ \mathrm{kg}$ and can display or accept either kilograms or pounds while retaining kilograms as the calculation value. A manual override is stored against the current Garmin measurement date, so a newer morning measurement becomes the next default. The Cervélo defaults to $26.2\ \mathrm{lb}=11.884\ \mathrm{kg}$ and the Speedmax defaults to $26\ \mathrm{lb}=11.793\ \mathrm{kg}$, using $1\ \mathrm{lb}=0.45359237\ \mathrm{kg}$. Each bike row exposes an editable pound value, persisted locally for that bike. A custom-bike row defaults to $20\ \mathrm{lb}$ and accepts the same $10$–$80\ \mathrm{lb}$ range. The command-palette flow accepts the rider unit, rider mass, and bike mass before calculating system mass:
 
 $$
 m_{\mathrm{system}}
@@ -1361,7 +1374,7 @@ m_{\mathrm{system}}
 m_{\mathrm{rider}}+m_{\mathrm{bike}}.
 $$
 
-The pressure calculation reproduces the public field model used by the [SILCA Professional Tire Pressure Calculator](https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1).[^silca-pressure] Let measured tire width be $w$ in millimetres, bead-seat diameter be $d$ in millimetres, average speed be $v$ in miles per hour, and $S$ be the surface coefficient:
+The pressure calculation reproduces the public field model used by the [SILCA Professional Tire Pressure Calculator](https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1).[^silca-pressure] Let measured tire width at axle $a$ be $w_a$ in millimetres, bead-seat diameter be $d$ in millimetres, average speed be $v$ in miles per hour, and $S$ be the surface coefficient:
 
 | dry surface   |   $S$ |
 | ------------- | ----: |
@@ -1377,36 +1390,36 @@ k
 =
 0.5\left(m_{\mathrm{system}}-50\right)+S,
 \qquad
-r_0
+r_{0,a}
 =
-w+\frac{d}{2}.
+w_a+\frac{d}{2}.
 $$
 
 The loaded radius, width polynomial, and centre pressure are
 
 $$
-r_{\mathrm{loaded}}
+r_{\mathrm{loaded},a}
 =
-r_0-
-\frac{4.905}{k\left(20/w\right)},
+r_{0,a}-
+\frac{4.905}{k\left(20/w_a\right)},
 $$
 
 $$
-N(w)
+N(w_a)
 =
 -226.44
 \left(
--0.00006w^3
-+0.0079w^2
--0.4102w
+-0.00006w_a^3
++0.0079w_a^2
+-0.4102w_a
 +12.725
 \right),
 $$
 
 $$
-p_0
+p_{0,a}
 =
-\frac{N(w)}{r_{\mathrm{loaded}}^2-r_0^2}.
+\frac{N(w_a)}{r_{\mathrm{loaded},a}^2-r_{0,a}^2}.
 $$
 
 Speed contributes the linear coefficient
@@ -1421,29 +1434,30 @@ c_v
 10\le v\le33.
 $$
 
-Front/rear load balance is selected independently of the bike. If the chosen split is $b_f/b_r$ percent, its pressure coefficients are
+Front/rear load balance is selected independently of the bike. SILCA maps each displayed split to a calibrated front and rear pressure coefficient:
 
-$$
-c_f=\frac{b_f}{50},
-\qquad
-c_r=\frac{b_r}{50}.
-$$
+| bike position          | displayed split | $c_f$ | $c_r$ |
+| ---------------------- | --------------: | ----: | ----: |
+| triathlon / TT / track |         $50/50$ | 1.000 | 1.000 |
+| road                   |         $48/52$ | 0.985 | 1.010 |
+| gravel                 |         $47/53$ | 0.975 | 1.020 |
+| mountain               |     $46.5/53.5$ | 0.970 | 1.030 |
 
-The available splits are $50/50$, $48/52$, $45/55$, and $40/60$, with $48/52$ as the default. Both the P Zero Race SL-R with a P Zero TPU tube and the P Zero Race TLR SL-R tubeless setup use the high-performance casing coefficient $c_t=1.00$. The axle recommendations are rounded to the nearest $0.5\ \mathrm{PSI}$:
+The road $48/52$ option remains the default. Both the P Zero Race SL-R with a P Zero TPU tube and the P Zero Race TLR SL-R tubeless setup use the high-performance casing coefficient $c_t=1.00$. The axle recommendations are rounded to the nearest $0.5\ \mathrm{PSI}$:
 
 $$
 p_f
 =
 \operatorname{round}_{0.5}
-\left(p_0c_vc_fc_t\right),
+\left(p_{0,f}c_vc_fc_t\right),
 \qquad
 p_r
 =
 \operatorname{round}_{0.5}
-\left(p_0c_vc_rc_t\right).
+\left(p_{0,r}c_vc_rc_t\right).
 $$
 
-All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. The HUNT 54_58 Aerodynamicist UD Carbon Spoke wheelset uses a $54.5\ \mathrm{mm}$ front depth, $58\ \mathrm{mm}$ rear depth, and hooked $22\ \mathrm{mm}$ internal width on both rims; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Once the actual mounted width $w=28\ \mathrm{mm}$ is supplied, internal rim width is compatibility metadata rather than a second SILCA pressure input, so choosing a custom internal width does not invent a casing-width adjustment. Reserve publishes $29\ \mathrm{mm}$ as the minimum recommended tire width, so the calculator shows a warning for the selected $28\ \mathrm{mm}$ setup.
+All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. The HUNT 54_58 Aerodynamicist UD Carbon Spoke wheelset uses a $54.5\ \mathrm{mm}$ front depth, $58\ \mathrm{mm}$ rear depth, and hooked $22\ \mathrm{mm}$ internal width on both rims; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Measured front and rear tire widths are independent $20$–$65\ \mathrm{mm}$ inputs, persisted locally, with $w_f=32\ \mathrm{mm}$ and $w_r=28\ \mathrm{mm}$ as the defaults. Internal rim width is compatibility metadata rather than a second casing-width input, so choosing a custom internal width does not invent casing growth. Reserve publishes $29\ \mathrm{mm}$ as the minimum recommended tire width, so the calculator shows a warning while the selected $28\ \mathrm{mm}$ rear tire remains below that range.
 
 The [Pirelli tire-pressure tool](https://www.pirelli.com/tires/en-us/bike/pressure-tool) remains the manufacturer check for the selected Pirelli casing, tube or tubeless construction, rim, and lower pressure limit.[^pirelli-pressure] Since both local casing coefficients are $1.00$, switching between TPU and tubeless changes the documented setup without changing PSI when measured width and every other input remain fixed.
 
@@ -1474,9 +1488,9 @@ $$
 
 WeatherKit supplies the ride-temperature context. The current cache does not contain inflation temperature or altitude, so the panel presents these as explicit notes instead of manufacturing an adjusted number from missing inputs.
 
-For example, the 2026-08-16 morning mass of $86.06\ \mathrm{kg}$, the $22\ \mathrm{lb}$ Cervélo, HUNT wheels, $28\ \mathrm{mm}$ measured tires, worn pavement, TPU tubes, and $19.5\ \mathrm{mph}$ produce $78.5\ \mathrm{PSI}$ front and $80.5\ \mathrm{PSI}$ rear.
+For example, the 2026-08-16 morning mass of $86.06\ \mathrm{kg}$, the $26.2\ \mathrm{lb}$ Cervélo, HUNT wheels, a $32\ \mathrm{mm}$ measured front tire, a $28\ \mathrm{mm}$ measured rear tire, worn pavement, TPU tubes, the road $48/52$ coefficients, and $19.5\ \mathrm{mph}$ produce $64\ \mathrm{PSI}$ front and $81\ \mathrm{PSI}$ rear.
 
-[^silca-pressure]: [SILCA, "Professional Tire Pressure Calculator"](https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1). The local implementation copies the calculator's public mass, surface, width, wheel-diameter, speed, and front/rear coefficients, then performs the same half-PSI rounding without making a runtime request.
+[^silca-pressure]: [SILCA, "Professional Tire Pressure Calculator"](https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1). The local implementation copies the calculator's public mass, surface, measured-width, wheel-diameter, speed, tire-casing, and load-distribution coefficients, then performs the same half-PSI rounding without making a runtime request. A controlled $100\ \mathrm{kg}$ system-weight check on 2026-08-27 reproduced SILCA's $64/65.5\ \mathrm{PSI}$ result at $32\ \mathrm{mm}$ and $79/81\ \mathrm{PSI}$ result at $28\ \mathrm{mm}$ for worn pavement, a $622\ \mathrm{mm}$ wheel, high-performance casing, $19.5\ \mathrm{mph}$, and the road $48/52$ selection.
 
 [^pressure-wheels]: [HUNT, "54_58 Aerodynamicist UD Carbon Spoke Disc Wheelset"](https://us.huntbikewheels.com/products/hunt-54_58-aerodynamicist-ud-carbon-spoke-disc-wheelset) and [Reserve, "42|49 TA"](https://reservewheels.com/products/reserve-42-49), official wheel dimensions and published tire-width compatibility.
 

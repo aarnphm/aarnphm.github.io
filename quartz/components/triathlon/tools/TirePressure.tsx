@@ -55,6 +55,8 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
       data-wheel={DEFAULT_TIRE_PRESSURE_SELECTION.wheel}
       data-custom-wheel-front-mm={defaultSelection.customWheel.frontInnerWidthMm}
       data-custom-wheel-rear-mm={defaultSelection.customWheel.rearInnerWidthMm}
+      data-measured-tire-front-mm={defaultSelection.measuredTire.frontWidthMm}
+      data-measured-tire-rear-mm={defaultSelection.measuredTire.rearWidthMm}
       data-tire={DEFAULT_TIRE_PRESSURE_SELECTION.tire}
       data-surface={DEFAULT_TIRE_PRESSURE_SELECTION.surface}
       data-speed-mph={DEFAULT_TIRE_PRESSURE_SELECTION.speedMph}
@@ -240,6 +242,35 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
             ))}
           </div>
         </fieldset>
+        <div class="tri-pressure-measured">
+          <span data-i18n="measured tire width">measured tire width</span>
+          <span
+            class="tri-pressure-measured-controls"
+            role="group"
+            aria-label="measured tire width"
+          >
+            <span data-i18n="front">front</span>
+            <input
+              type="text"
+              value={defaultSelection.measuredTire.frontWidthMm}
+              data-pressure-field="measuredTireWidth"
+              data-pressure-axle="front"
+              inputMode="numeric"
+              aria-label="front measured tire width in millimetres"
+            />
+            <span>/</span>
+            <span data-i18n="rear">rear</span>
+            <input
+              type="text"
+              value={defaultSelection.measuredTire.rearWidthMm}
+              data-pressure-field="measuredTireWidth"
+              data-pressure-axle="rear"
+              inputMode="numeric"
+              aria-label="rear measured tire width in millimetres"
+            />
+            <span>mm</span>
+          </span>
+        </div>
         <div class="tri-pressure-weight">
           <span data-i18n="rider weight">rider weight</span>
           <span class="tri-pressure-weight-controls">
@@ -327,8 +358,8 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
         </p>
       </aside>
       <p class="tri-pressure-warning" data-pressure-warning hidden>
-        Reserve specifies 29 mm as its minimum recommended tire width. This 28 mm setup sits below
-        that published range.
+        Reserve specifies 29 mm as its minimum recommended tire width. The 28 mm rear tire sits
+        below that published range.
       </p>
       <p class="tri-pressure-note">
         <span>Fastest-pressure estimate from the </span>

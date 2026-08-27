@@ -9,6 +9,7 @@ import {
   isTirePressureBikeMassLb,
   isTirePressureChange,
   isTirePressureInnerWidthMm,
+  isTirePressureMeasuredWidthMm,
   isTirePressureRiderKg,
   isTirePressureSpeed,
   isTirePressureSurfaceId,
@@ -31,6 +32,8 @@ const TIRE_PRESSURE_BALANCE_KEY = 'triathlon-tire-pressure-balance'
 const TIRE_PRESSURE_WHEEL_KEY = 'triathlon-tire-pressure-wheel'
 const TIRE_PRESSURE_CUSTOM_WHEEL_FRONT_KEY = 'triathlon-tire-pressure-wheel-custom-front'
 const TIRE_PRESSURE_CUSTOM_WHEEL_REAR_KEY = 'triathlon-tire-pressure-wheel-custom-rear'
+const TIRE_PRESSURE_MEASURED_TIRE_FRONT_KEY = 'triathlon-tire-pressure-measured-front'
+const TIRE_PRESSURE_MEASURED_TIRE_REAR_KEY = 'triathlon-tire-pressure-measured-rear'
 const TIRE_PRESSURE_TIRE_KEY = 'triathlon-tire-pressure-tire'
 const TIRE_PRESSURE_SURFACE_KEY = 'triathlon-tire-pressure-surface'
 const TIRE_PRESSURE_SPEED_KEY = 'triathlon-tire-pressure-speed'
@@ -66,6 +69,8 @@ export const readTirePressureSelection = (
   const storedWeightUnit = localStorage.getItem(TIRE_PRESSURE_WEIGHT_UNIT_KEY)
   const storedCustomFront = Number(localStorage.getItem(TIRE_PRESSURE_CUSTOM_WHEEL_FRONT_KEY))
   const storedCustomRear = Number(localStorage.getItem(TIRE_PRESSURE_CUSTOM_WHEEL_REAR_KEY))
+  const storedMeasuredFront = Number(localStorage.getItem(TIRE_PRESSURE_MEASURED_TIRE_FRONT_KEY))
+  const storedMeasuredRear = Number(localStorage.getItem(TIRE_PRESSURE_MEASURED_TIRE_REAR_KEY))
   const useStoredRider =
     isTirePressureRiderKg(storedRiderKg) && (!weightDate || storedRiderDate === weightDate)
   return {
@@ -112,6 +117,14 @@ export const readTirePressureSelection = (
         ? storedCustomRear
         : DEFAULT_TIRE_PRESSURE_SELECTION.customWheel.rearInnerWidthMm,
     },
+    measuredTire: {
+      frontWidthMm: isTirePressureMeasuredWidthMm(storedMeasuredFront)
+        ? storedMeasuredFront
+        : DEFAULT_TIRE_PRESSURE_SELECTION.measuredTire.frontWidthMm,
+      rearWidthMm: isTirePressureMeasuredWidthMm(storedMeasuredRear)
+        ? storedMeasuredRear
+        : DEFAULT_TIRE_PRESSURE_SELECTION.measuredTire.rearWidthMm,
+    },
     tire:
       storedTire && isTirePressureTireId(storedTire)
         ? storedTire
@@ -149,6 +162,14 @@ export const storeTirePressureSelection = (
     TIRE_PRESSURE_CUSTOM_WHEEL_REAR_KEY,
     String(selection.customWheel.rearInnerWidthMm),
   )
+  localStorage.setItem(
+    TIRE_PRESSURE_MEASURED_TIRE_FRONT_KEY,
+    String(selection.measuredTire.frontWidthMm),
+  )
+  localStorage.setItem(
+    TIRE_PRESSURE_MEASURED_TIRE_REAR_KEY,
+    String(selection.measuredTire.rearWidthMm),
+  )
   localStorage.setItem(TIRE_PRESSURE_TIRE_KEY, selection.tire)
   localStorage.setItem(TIRE_PRESSURE_SURFACE_KEY, selection.surface)
   localStorage.setItem(TIRE_PRESSURE_SPEED_KEY, String(selection.speedMph))
@@ -178,6 +199,14 @@ const updateSelection = (
         [change.axle === 'front' ? 'frontInnerWidthMm' : 'rearInnerWidthMm']: change.value,
       },
     }
+  if (change.field === 'measuredTireWidth')
+    return {
+      ...selection,
+      measuredTire: {
+        ...selection.measuredTire,
+        [change.axle === 'front' ? 'frontWidthMm' : 'rearWidthMm']: change.value,
+      },
+    }
   if (change.field === 'tire') return { ...selection, tire: change.value }
   if (change.field === 'surface') return { ...selection, surface: change.value }
   return { ...selection, speedMph: change.value }
@@ -203,6 +232,8 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
       calculator.dataset.wheel = selection.wheel
       calculator.dataset.customWheelFrontMm = String(selection.customWheel.frontInnerWidthMm)
       calculator.dataset.customWheelRearMm = String(selection.customWheel.rearInnerWidthMm)
+      calculator.dataset.measuredTireFrontMm = String(selection.measuredTire.frontWidthMm)
+      calculator.dataset.measuredTireRearMm = String(selection.measuredTire.rearWidthMm)
       calculator.dataset.tire = selection.tire
       calculator.dataset.surface = selection.surface
       calculator.dataset.speedMph = String(selection.speedMph)
@@ -227,6 +258,10 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
           const axle = input.dataset.pressureAxle
           if (axle === 'front') input.value = String(selection.customWheel.frontInnerWidthMm)
           else if (axle === 'rear') input.value = String(selection.customWheel.rearInnerWidthMm)
+        } else if (field === 'measuredTireWidth' && document.activeElement !== input) {
+          const axle = input.dataset.pressureAxle
+          if (axle === 'front') input.value = String(selection.measuredTire.frontWidthMm)
+          else if (axle === 'rear') input.value = String(selection.measuredTire.rearWidthMm)
         } else if (field === 'tire') input.checked = input.value === selection.tire
         else if (field === 'surface') input.checked = input.value === selection.surface
         else if (field === 'speed' && document.activeElement !== input)
@@ -246,7 +281,25 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
         system.textContent = recommendation
           ? `${formatTirePressureWeight(recommendation.riderKg, selection.weightUnit)} + ${formatTirePressureWeight(recommendation.bikeKg, selection.weightUnit)} = ${formatTirePressureWeight(recommendation.systemKg, selection.weightUnit)} ${selection.weightUnit} system`
           : 'add a morning body-composition measurement'
-      if (warning) warning.hidden = !recommendation?.wheelCompatibilityWarning
+      if (warning) {
+        warning.hidden = !recommendation?.wheelCompatibilityWarning
+        const minimum = recommendation?.wheel.recommendedMinimumTireWidthMm
+        if (recommendation?.wheelCompatibilityWarning && minimum != null) {
+          const incompatible = [
+            recommendation.frontMeasuredWidthMm < minimum
+              ? `${recommendation.frontMeasuredWidthMm} mm front`
+              : null,
+            recommendation.rearMeasuredWidthMm < minimum
+              ? `${recommendation.rearMeasuredWidthMm} mm rear`
+              : null,
+          ].filter(width => width != null)
+          const tires =
+            incompatible.length === 1
+              ? `The ${incompatible[0]} tire sits`
+              : `The ${incompatible.join(' and ')} tires sit`
+          warning.textContent = `${recommendation.wheel.label} specifies ${minimum} mm as its minimum recommended tire width. ${tires} below that published range.`
+        }
+      }
       calculator.dataset.frontPsi = recommendation ? String(recommendation.frontPsi) : ''
       calculator.dataset.rearPsi = recommendation ? String(recommendation.rearPsi) : ''
       calculator.dataset.systemKg = recommendation ? recommendation.systemKg.toFixed(1) : ''
@@ -291,6 +344,13 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
       else if (axle === 'front')
         event.target.value = String(selection.customWheel.frontInnerWidthMm)
       else if (axle === 'rear') event.target.value = String(selection.customWheel.rearInnerWidthMm)
+    } else if (field === 'measuredTireWidth') {
+      const axle = event.target.dataset.pressureAxle
+      const width = Number(event.target.value)
+      if ((axle === 'front' || axle === 'rear') && isTirePressureMeasuredWidthMm(width))
+        apply({ field, axle, value: width })
+      else if (axle === 'front') event.target.value = String(selection.measuredTire.frontWidthMm)
+      else if (axle === 'rear') event.target.value = String(selection.measuredTire.rearWidthMm)
     } else if (field === 'bikeMass') {
       const bike = event.target.dataset.pressureBike
       const mass = Number(event.target.value)
@@ -316,6 +376,11 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
       const width = Number(event.target.value)
       if ((axle === 'front' || axle === 'rear') && isTirePressureInnerWidthMm(width))
         apply({ field, axle, value: width })
+    } else if (field === 'measuredTireWidth') {
+      const axle = event.target.dataset.pressureAxle
+      const width = Number(event.target.value)
+      if ((axle === 'front' || axle === 'rear') && isTirePressureMeasuredWidthMm(width))
+        apply({ field, axle, value: width })
     } else if (field === 'speed') {
       const speed = Number(event.target.value)
       if (isTirePressureSpeed(speed)) apply({ field, value: speed })
@@ -339,6 +404,7 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
     if (
       field === 'riderMass' ||
       field === 'customWheelWidth' ||
+      field === 'measuredTireWidth' ||
       field === 'speed' ||
       field === 'bikeMass'
     )
@@ -364,6 +430,7 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
     if (
       (field !== 'riderMass' &&
         field !== 'customWheelWidth' &&
+        field !== 'measuredTireWidth' &&
         field !== 'speed' &&
         field !== 'bikeMass') ||
       event.key !== 'Enter'
