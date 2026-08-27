@@ -164,16 +164,19 @@ function positive(value: number | null): number | null {
   return value != null && Number.isFinite(value) && value > 0 ? value : null
 }
 
-function cyclingSportType(value: string): boolean {
+function stravaSport(value: string): Sport | null {
   const sport = value.toLowerCase()
-  return sport.includes('ride') || sport.includes('cycling') || sport.includes('bike')
+  if (sport.includes('ride') || sport.includes('cycling') || sport.includes('bike')) return 'bike'
+  if (sport.includes('run')) return 'run'
+  if (sport.includes('swim')) return 'swim'
+  return null
 }
 
 function matchScore<T extends ActivityBridgeProviderActivity>(
   strava: ActivityBridgeStravaActivity,
   provider: T,
 ): number | null {
-  if (provider.sport !== 'bike') return null
+  if (provider.sport !== stravaSport(strava.sportType)) return null
   const stravaStart = Date.parse(strava.startDate)
   const providerStart = Date.parse(provider.startDate)
   if (!Number.isFinite(stravaStart) || !Number.isFinite(providerStart)) return null
@@ -211,7 +214,7 @@ function oneToOneMatches<T extends ActivityBridgeProviderActivity>(
 ): ReadonlyMap<string, T> {
   const edges: MatchEdge<T>[] = []
   for (const canonical of strava) {
-    if (!cyclingSportType(canonical.sportType)) continue
+    if (stravaSport(canonical.sportType) == null) continue
     for (const candidate of provider) {
       if (excludedProviderIds.has(candidate.id)) continue
       const score = matchScore(canonical, candidate)
@@ -240,7 +243,7 @@ export function planActivityBridge(
   inputs: ActivityBridgeInputs,
   ledger: ActivityBridgeLedger,
 ): ActivityBridgePlan[] {
-  const canonical = inputs.strava.filter(activity => cyclingSportType(activity.sportType))
+  const canonical = inputs.strava.filter(activity => stravaSport(activity.sportType) != null)
   const garminMatches = oneToOneMatches(
     canonical,
     inputs.garmin,
@@ -276,9 +279,26 @@ export function planActivityBridge(
         })
     }
   }
+  const directionOrder: Record<ActivityBridgeDirection, number> = {
+    'wahoo-to-garmin': 0,
+    'garmin-to-wahoo': 1,
+  }
+  const receiptOrder = (plan: ActivityBridgePlan): number => {
+    const sourceProvider = plan.direction === 'wahoo-to-garmin' ? 'wahoo' : 'garmin'
+    const destinationProvider = plan.direction === 'wahoo-to-garmin' ? 'garmin' : 'wahoo'
+    return activityBridgeReceiptForSource(
+      ledger,
+      sourceProvider,
+      plan.source.id,
+      destinationProvider,
+    )
+      ? 0
+      : 1
+  }
   return plans.sort(
     (left, right) =>
-      left.stravaActivityId.localeCompare(right.stravaActivityId) ||
-      left.direction.localeCompare(right.direction),
+      directionOrder[left.direction] - directionOrder[right.direction] ||
+      receiptOrder(left) - receiptOrder(right) ||
+      right.stravaActivityId.localeCompare(left.stravaActivityId),
   )
 }

@@ -753,6 +753,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   strength: null,
   sauna: null,
   garmin: null,
+  computer: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
   calculatedTrainingEffect: null,
@@ -943,6 +944,19 @@ const garminVerification = (
   aerobicTrainingEffectMessage: null,
   anaerobicTrainingEffectMessage: null,
   ...overrides,
+})
+
+test('renders the cycling computer as an activity table row', () => {
+  const garmin = buildActivity(factory, detail({ computer: 'garmin' }))
+  const wahoo = buildActivity(factory, detail({ computer: 'wahoo' }))
+  const absent = buildActivity(factory, detail())
+  const computerRow = (node: TestNode): TestNode | undefined =>
+    byTag(node, 'tr').find(row => row.properties.dataStatKey === 'computer')
+
+  assert.equal(text(byClass(computerRow(garmin)!, 'tri-act-stat-v')[0]), 'Edge 1050')
+  assert.equal(text(byClass(computerRow(wahoo)!, 'tri-act-stat-v')[0]), 'ELEMNT BOLT 3')
+  assert.equal(computerRow(absent), undefined)
+  assert.equal(byClass(garmin, 'tri-act-computer').length, 0)
 })
 
 test('calculates missing exercise load from Garmin intensity without replacing native load', () => {
@@ -4215,15 +4229,70 @@ test('renders power-weighted left and right pedal balance on a symmetric percent
   const chart = buildPowerBalanceChart(factory, ride, null)
   assert.ok(chart)
   assert.equal(chart.properties.dataTriTrace, 'power-balance')
+  assert.equal(chart.properties.dataPowerBalanceMode, 'distance')
   assert.equal(byClass(chart, 'tri-power-balance-svg')[0].properties.ariaLabel, 'power balance')
   assert.deepEqual(byClass(chart, 'tri-elev-d').map(text), ['power balance'])
   assert.deepEqual(byClass(chart, 'tri-elev-range').map(text), ['L 49.7% / R 50.3% avg'])
   assert.deepEqual(byClass(chart, 'tri-power-balance-legend-item').map(text), ['left', 'right'])
-  assert.deepEqual(byClass(chart, 'tri-cax-yt').map(text), ['45%', '50%', '55%'])
+  const modes = byClass(chart, 'tri-power-balance-modes')[0]
+  assert.equal(modes.properties.role, 'group')
+  assert.equal(modes.properties.ariaLabel, 'power balance view')
+  assert.deepEqual(
+    byClass(modes, 'tri-power-balance-mode').map(button => [
+      text(button),
+      button.properties.dataPowerBalanceMode,
+      button.properties.ariaPressed,
+    ]),
+    [
+      ['distance', 'distance', 'true'],
+      ['watts', 'power', 'false'],
+    ],
+  )
+  const distancePane = byClass(chart, 'tri-power-balance-pane--distance')[0]
+  const powerPane = byClass(chart, 'tri-power-balance-pane--power')[0]
+  assert.ok(distancePane)
+  assert.ok(powerPane)
+  assert.equal(distancePane.properties.hidden, undefined)
+  assert.equal(distancePane.properties.ariaHidden, 'false')
+  assert.equal(powerPane.properties.hidden, true)
+  assert.equal(powerPane.properties.ariaHidden, 'true')
+  assert.deepEqual(byClass(distancePane, 'tri-cax-yt').map(text), ['45%', '50%', '55%'])
+  assert.deepEqual(byClass(powerPane, 'tri-cax-yt').map(text), ['100% L', '50/50', '100% R'])
+  assert.deepEqual(byClass(powerPane, 'tri-cax-xt').map(text), [
+    '0 W',
+    '100 W',
+    '200 W',
+    '300 W',
+    '400 W',
+    '500 W',
+    '600 W',
+  ])
+  const heatmap = byClass(chart, 'tri-power-balance-heatmap')[0]
+  assert.equal(heatmap.properties.ariaLabel, 'power balance by watts')
+  assert.equal(heatmap.properties.dataPowerBalanceSamples, 4)
+  assert.equal(heatmap.properties.dataPowerBalanceMaxWatts, 600)
+  assert.equal(
+    byClass(chart, 'tri-power-balance-heat-cell').reduce(
+      (samples, cell) => samples + Number(cell.properties.dataSamples),
+      0,
+    ),
+    4,
+  )
+  assert.equal(byClass(chart, 'tri-power-balance-reference').length, 1)
   assert.equal(byClass(chart, 'tri-power-balance-line--left').length, 1)
   assert.equal(byClass(chart, 'tri-power-balance-line--right').length, 1)
   assert.equal(byClass(chart, 'tri-analysis-selection').length, 1)
   assert.equal(byClass(chart, 'tri-elev-cursor').length, 1)
+
+  const selected = buildPowerBalanceChart(factory, ride, null, false, {
+    startDistanceKm: 0,
+    endDistanceKm: 10,
+  })
+  assert.ok(selected)
+  assert.equal(
+    byClass(selected, 'tri-power-balance-heatmap')[0].properties.dataPowerBalanceSamples,
+    2,
+  )
 
   const embedded = buildActivity(factory, ride, true, undefined, false, true)
   const embeddedChart = byClass(embedded, 'tri-power-balance-chart')[0]

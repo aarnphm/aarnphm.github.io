@@ -17,6 +17,7 @@ import {
   type StravaRawCache,
   type StravaStreams,
 } from './strava'
+import { emptyWahooMetrics, type WahooCache } from './wahoo'
 import { summarizeWeatherDays, type WeatherActivity, type WeatherCache } from './weather'
 
 test('calculates activity intensity from the sport-specific threshold signal', () => {
@@ -91,6 +92,25 @@ test('calculates missing run training effect from relative effort and upper-zone
       swimIntervals: [],
     }),
     { aerobic: 3, anaerobic: 2 },
+  )
+})
+
+test('calculates missing bike training effect from power load and upper-zone time', () => {
+  assert.deepEqual(
+    calculateActivityTrainingEffect({
+      sport: 'bike',
+      distanceKm: 24,
+      movingTimeS: 3_600,
+      sufferScore: null,
+      garmin: null,
+      calculatedIntensityFactor: { value: 0.645, source: 'power' },
+      calculatedExerciseLoad: { value: 40.4, source: 'power' },
+      hrZones: [0, 0, 0, 120, 60],
+      analysisRanges: [],
+      swimPaceSPer100m: null,
+      swimIntervals: [],
+    }),
+    { aerobic: 3, anaerobic: 1.5 },
   )
 })
 
@@ -873,6 +893,7 @@ test('projects Garmin FIT gear states and cycling dynamics onto ride distance', 
   }
 
   const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
+  assert.equal(detail.computer, 'garmin')
   assert.deepEqual(detail.gearShifts, [
     { elapsedS: 2, distanceKm: 0, frontGearNum: 2, frontTeeth: 52, rearGearNum: 3, rearTeeth: 27 },
     { elapsedS: 12, distanceKm: 1, frontGearNum: 2, frontTeeth: 52, rearGearNum: 6, rearTeeth: 19 },
@@ -897,6 +918,143 @@ test('projects Garmin FIT gear states and cycling dynamics onto ride distance', 
     seatedTimeS: 10,
     standingTimeS: 10,
   })
+})
+
+test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a ride', () => {
+  const activity = ride({
+    distance: 2_000,
+    movingTime: 20,
+    elapsedTime: 20,
+    startDate: '2026-06-07T12:00:00Z',
+    startDateLocal: '2026-06-07T08:00:00',
+  })
+  const cache: StravaRawCache = {
+    version: 4,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+    streams: {
+      101: {
+        time: [0, 10, 20],
+        latlng: [
+          [43.64, -79.4],
+          [43.65, -79.39],
+          [43.66, -79.38],
+        ],
+        altitude: [80, 85, 90],
+        distance: [0, 1_000, 2_000],
+      },
+    },
+  }
+  const wahoo: WahooCache = {
+    version: 2,
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    activities: {
+      'wahoo:1': {
+        id: 'wahoo:1',
+        workoutId: 1,
+        workoutTypeId: 15,
+        workoutUpdatedAt: '2026-06-07T13:00:00Z',
+        name: 'Wahoo ride',
+        sport: 'bike',
+        startDate: '2026-06-07T12:00:02Z',
+        startDateLocal: '2026-06-07T08:00:02',
+        distanceM: 2_000,
+        movingTimeS: 20,
+        elapsedTimeS: 20,
+        sourceDevice: 'ELEMNT BOLT',
+        sourceFile: {
+          url: 'https://cdn.wahoofitness.com/ride.fit',
+          sha256: 'a'.repeat(64),
+          byteLength: 4_000,
+          profileVersion: '21.171',
+        },
+        metrics: emptyWahooMetrics(),
+        summary: {
+          id: 2,
+          name: 'Wahoo ride',
+          timeZone: 'America/Toronto',
+          manual: false,
+          edited: false,
+          fitnessAppId: 1,
+          durationPausedS: 0,
+          createdAt: '2026-06-07T13:00:00Z',
+          updatedAt: '2026-06-07T13:00:00Z',
+        },
+      },
+    },
+    streams: {
+      'wahoo:1': {
+        timestamps: ['2026-06-07T12:00:02Z', '2026-06-07T12:00:12Z', '2026-06-07T12:00:22Z'],
+        time: [0, 10, 20],
+        latlng: [null, null, null],
+        altitude: [80, 85, 90],
+        distance: [0, 1_000, 2_000],
+        watts: [200, 220, 240],
+        rightBalance: [47, 49, 52],
+        heartrate: [130, 140, 150],
+        cadence: [80, 85, 90],
+        speed: [8, 9, 10],
+        temperature: [25, 25, 26],
+        respiration: [18, 28, 38],
+      },
+    },
+    gearShifts: {
+      'wahoo:1': [
+        {
+          timestamp: '2026-06-07T12:00:02Z',
+          frontGearNum: 2,
+          frontTeeth: 54,
+          rearGearNum: 5,
+          rearTeeth: 21,
+        },
+        {
+          timestamp: '2026-06-07T12:00:12Z',
+          frontGearNum: 2,
+          frontTeeth: 54,
+          rearGearNum: 6,
+          rearTeeth: 19,
+        },
+      ],
+    },
+    cyclingDynamics: {
+      'wahoo:1': {
+        time: [0, 10, 20],
+        distance: [0, 1_000, 2_000],
+        leftPedalSmoothness: [21, 22, 23],
+        rightPedalSmoothness: [23, 24, 25],
+        leftTorqueEffectiveness: [70, 74, 76],
+        rightTorqueEffectiveness: [72, 76, 78],
+        leftPowerPhaseStart: [null, null, null],
+        leftPowerPhaseEnd: [null, null, null],
+        rightPowerPhaseStart: [null, null, null],
+        rightPowerPhaseEnd: [null, null, null],
+        positionChanges: [],
+        seatedTimeS: null,
+        standingTimeS: null,
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, null, '2026-06-01', null, null, null, 'UTC', wahoo)
+    .details['101']
+  assert.equal(detail.computer, 'wahoo')
+  assert.deepEqual(
+    detail.route.map(point => point.rightPowerPct),
+    [47, 48.6, 51.4],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.resp),
+    [18, 26, 36],
+  )
+  assert.deepEqual(detail.gearShifts, [
+    { elapsedS: 2, distanceKm: 0, frontGearNum: 2, frontTeeth: 54, rearGearNum: 5, rearTeeth: 21 },
+    { elapsedS: 12, distanceKm: 1, frontGearNum: 2, frontTeeth: 54, rearGearNum: 6, rearTeeth: 19 },
+  ])
+  assert.deepEqual(detail.cyclingDynamics?.leftPedalSmoothness, [21, 22, 23])
+  assert.deepEqual(detail.cyclingDynamics?.rightTorqueEffectiveness, [72, 76, 78])
 })
 
 function timedRideCache(increments: (i: number) => number, n = 100): StravaRawCache {

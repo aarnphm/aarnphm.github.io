@@ -1,7 +1,9 @@
 import { Decoder, Stream, type FitMessages, type RecordMesg } from '@garmin/fitsdk'
 import { createHash } from 'node:crypto'
 import type { WahooMetrics, WahooStreams } from '../plugins/stores/wahoo'
+import type { WahooCyclingDynamics, WahooGearShift } from '../plugins/stores/wahoo'
 import { emptyWahooMetrics } from '../plugins/stores/wahoo'
+import { fitCyclingDynamics, fitGearShifts } from './garmin-fit'
 
 const SEMICIRCLES_PER_DEGREE = 2 ** 31 / 180
 
@@ -14,6 +16,8 @@ export interface WahooFitData {
   elapsedTimeS: number | null
   metrics: WahooMetrics
   streams: WahooStreams
+  gearShifts: WahooGearShift[]
+  cyclingDynamics: WahooCyclingDynamics
   profileVersion: string
 }
 
@@ -101,6 +105,7 @@ function streamsFor(messages: FitMessages, startMs: number): WahooStreams {
     cadence: [],
     speed: [],
     temperature: [],
+    respiration: [],
   }
   for (const record of records) {
     const date = timestamp(record.timestamp)
@@ -118,6 +123,7 @@ function streamsFor(messages: FitMessages, startMs: number): WahooStreams {
     streams.cadence.push(nonnegative(record.cadence))
     streams.speed.push(nonnegative(record.enhancedSpeed ?? record.speed))
     streams.temperature.push(finite(record.temperature))
+    streams.respiration.push(positive(record.respirationRate))
   }
   return streams
 }
@@ -166,6 +172,8 @@ export function decodeWahooFit(bytes: Uint8Array): WahooFitData {
     elapsedTimeS: nonnegative(session.totalElapsedTime),
     metrics: sessionMetrics(messages),
     streams: streamsFor(messages, start.getTime()),
+    gearShifts: fitGearShifts(messages),
+    cyclingDynamics: fitCyclingDynamics(messages),
     profileVersion,
   }
 }

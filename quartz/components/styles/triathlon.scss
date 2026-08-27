@@ -12946,13 +12946,43 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-shift-svg,
-.tri-power-balance-svg {
+.tri-power-balance-svg,
+.tri-power-balance-heatmap {
+  display: block;
+  width: 100%;
   height: var(--tri-activity-chart-height, 104px);
   overflow: visible;
 }
 
-.tri-zone.tri-power-balance-chart > .tri-cax-frame {
+.tri-zone.tri-power-balance-chart > .tri-power-balance-pane > .tri-cax-frame {
   grid-template-columns: 2.4rem minmax(0, 1fr);
+}
+
+.tri-power-balance-chart > .tri-elev-cap--summary {
+  flex-wrap: wrap;
+}
+
+.tri-power-balance-modes {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin-left: auto;
+}
+
+.tri-power-balance-heatmap {
+  cursor: default;
+}
+
+.tri-power-balance-heat-cell {
+  fill: var(--tri-accent);
+  opacity: var(--tri-power-balance-density);
+}
+
+.tri-power-balance-reference {
+  stroke: color-mix(in srgb, var(--darkgray) 68%, transparent);
+  stroke-width: 0.7;
+  stroke-dasharray: 2 2;
+  vector-effect: non-scaling-stroke;
 }
 
 .tri-power-balance-summary,

@@ -89,6 +89,7 @@ const activityDetail = (): StravaActivityDetail => ({
   strength: null,
   sauna: null,
   garmin: null,
+  computer: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
   calculatedTrainingEffect: null,

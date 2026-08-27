@@ -34,8 +34,10 @@ function receipt(): ActivityBridgeReceipt {
 }
 
 test('parses write mode and rejects unknown bridge arguments', () => {
-  assert.deepEqual(parseActivityBridgeArgs([]), { write: false })
-  assert.deepEqual(parseActivityBridgeArgs(['--write']), { write: true })
+  assert.deepEqual(parseActivityBridgeArgs([]), { write: false, limit: null })
+  assert.deepEqual(parseActivityBridgeArgs(['--write']), { write: true, limit: null })
+  assert.deepEqual(parseActivityBridgeArgs(['--write', '--limit', '8']), { write: true, limit: 8 })
+  assert.throws(() => parseActivityBridgeArgs(['--limit', '0']), /positive integer/)
   assert.throws(() => parseActivityBridgeArgs(['--delete']), /unknown activity bridge argument/)
 })
 

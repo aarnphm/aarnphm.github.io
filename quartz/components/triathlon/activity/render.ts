@@ -93,6 +93,7 @@ import {
   statRow,
   zoneDuo,
 } from './primitives'
+import { powerBalanceMode, setPowerBalanceMode } from './scrub'
 
 export const buildHeatRoute = (
   route: StravaActivityDetail['route'],
@@ -726,6 +727,9 @@ export const renderMapDetail = (
   const renderProfile = (): void => {
     analysisController?.dispose()
     analysisController = null
+    const existingPowerBalanceMode = powerBalanceMode(
+      zoneBox.querySelector<HTMLElement>('.tri-power-balance-chart'),
+    )
     const spec = specs[active]
     const profile = spec.profile(graphDomain)
     const traces = spec.traces?.(graphDomain) ?? []
@@ -733,6 +737,8 @@ export const renderMapDetail = (
     zoneBox.replaceChildren(...traces.map(trace => trace.wrap))
     if (spec.extra) for (const node of spec.extra()) if (node) zoneBox.appendChild(node)
     if (bestEfforts) zoneBox.appendChild(bestEfforts)
+    const nextPowerBalance = zoneBox.querySelector<HTMLElement>('.tri-power-balance-chart')
+    if (nextPowerBalance) setPowerBalanceMode(nextPowerBalance, existingPowerBalanceMode)
     linkedSurfaces = [{ wrap: profile, fmt: spec.readout }, ...traces].map(surface => ({
       wrap: surface.wrap,
       samples: routeSamples,

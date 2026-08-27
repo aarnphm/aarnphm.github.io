@@ -80,7 +80,7 @@ function receipt(overrides: Partial<ActivityBridgeReceipt> = {}): ActivityBridge
   }
 }
 
-test('plans only the missing provider side from canonical Strava cycling evidence', () => {
+test('plans only the missing provider side from canonical Strava sport evidence', () => {
   assert.deepEqual(
     planActivityBridge(
       { strava: [strava('1')], garmin: [], wahoo: [wahoo('wahoo:1')] },
@@ -108,6 +108,44 @@ test('plans only the missing provider side from canonical Strava cycling evidenc
       emptyActivityBridgeLedger(),
     ),
     [],
+  )
+})
+
+test('matches bike, run, and swim without crossing sports', () => {
+  const activities = [
+    strava('1'),
+    strava('2', { sportType: 'Run', startDate: '2026-08-27T15:00:00.000Z' }),
+    strava('3', { sportType: 'Swim', startDate: '2026-08-27T18:00:00.000Z' }),
+    strava('4', { sportType: 'WeightTraining', startDate: '2026-08-27T21:00:00.000Z' }),
+  ]
+  const garminActivities = [
+    garmin('connect:1'),
+    garmin('connect:2', { sport: 'run', startDate: '2026-08-27T15:01:00.000Z' }),
+    garmin('connect:3', { sport: 'swim', startDate: '2026-08-27T18:01:00.000Z' }),
+    garmin('connect:4', { sport: 'bike', startDate: '2026-08-27T21:01:00.000Z' }),
+  ]
+
+  assert.deepEqual(
+    planActivityBridge(
+      { strava: activities, garmin: garminActivities, wahoo: [] },
+      emptyActivityBridgeLedger(),
+    ).map(plan => plan.source.id),
+    ['connect:3', 'connect:2', 'connect:1'],
+  )
+})
+
+test('prioritizes current Wahoo recordings before Garmin history', () => {
+  const plans = planActivityBridge(
+    {
+      strava: [strava('1'), strava('2', { startDate: '2026-08-27T15:00:00.000Z' })],
+      garmin: [garmin('connect:1')],
+      wahoo: [wahoo('wahoo:2', { startDate: '2026-08-27T15:01:00.000Z' })],
+    },
+    emptyActivityBridgeLedger(),
+  )
+  assert.deepEqual(
+    plans.map(plan => plan.direction),
+    ['wahoo-to-garmin', 'garmin-to-wahoo'],
   )
 })
 
@@ -184,9 +222,16 @@ test('nonterminal Wahoo upload receipts remain resumable', () => {
   )
   assert.deepEqual(
     planActivityBridge(
-      { strava: [strava('1')], garmin: [garmin('connect:1')], wahoo: [] },
+      {
+        strava: [strava('1'), strava('2', { startDate: '2026-08-27T15:00:00.000Z' })],
+        garmin: [
+          garmin('connect:1'),
+          garmin('connect:2', { startDate: '2026-08-27T15:01:00.000Z' }),
+        ],
+        wahoo: [],
+      },
       ledger,
-    ).map(plan => plan.direction),
-    ['garmin-to-wahoo'],
+    ).map(plan => plan.source.id),
+    ['connect:1', 'connect:2'],
   )
 })

@@ -6,6 +6,11 @@ export type WahooAuthorizationCallback =
   | { kind: 'grant'; code: string; state: string }
   | { kind: 'error'; error: string; errorDescription: string | null; state: string }
 
+export interface WahooAuthorizationGrant {
+  code: string
+  state: string
+}
+
 function optionalSingleValue(searchParams: URLSearchParams, key: string): string | null {
   const values = searchParams.getAll(key)
   if (values.length > 1) throw new Error(`Wahoo callback repeated ${key}`)
@@ -36,10 +41,54 @@ export function parseWahooAuthorizationCallback(
   return { kind: 'error', error, errorDescription, state }
 }
 
+export function requireWahooAuthorizationGrant(
+  searchParams: URLSearchParams,
+  expectedState: string | null,
+): WahooAuthorizationGrant {
+  const callback = parseWahooAuthorizationCallback(searchParams)
+  if (expectedState !== null && callback.state !== expectedState)
+    throw new Error('Wahoo OAuth state mismatch')
+  if (callback.kind === 'error') {
+    const detail = callback.errorDescription
+      ? `${callback.error}: ${callback.errorDescription}`
+      : callback.error
+    throw new Error(`Wahoo authorization failed: ${detail}`)
+  }
+  return { code: callback.code, state: callback.state }
+}
+
+export function parsePastedWahooAuthorizationGrant(
+  value: string,
+  registeredRedirectUri: string,
+  expectedState: string | null,
+): WahooAuthorizationGrant {
+  let callbackUrl: URL
+  try {
+    callbackUrl = new URL(value.trim())
+  } catch {
+    throw new Error('Pasted Wahoo callback must be a full URL')
+  }
+
+  const registeredUrl = new URL(registeredRedirectUri)
+  if (
+    callbackUrl.origin !== registeredUrl.origin ||
+    callbackUrl.pathname !== registeredUrl.pathname ||
+    callbackUrl.username ||
+    callbackUrl.password ||
+    callbackUrl.hash
+  ) {
+    throw new Error(
+      `Pasted Wahoo callback must use ${registeredUrl.origin}${registeredUrl.pathname}`,
+    )
+  }
+
+  return requireWahooAuthorizationGrant(callbackUrl.searchParams, expectedState)
+}
+
 export function resolveWahooRedirectUri(configured: string | undefined): string {
   const url = new URL(configured?.trim() || DEFAULT_WAHOO_REDIRECT_URI)
   if (url.protocol !== 'https:') throw new Error('WAHOO_REDIRECT_URI must use HTTPS')
-  if (url.username || url.password || url.hash)
-    throw new Error('WAHOO_REDIRECT_URI cannot include credentials or a fragment')
+  if (url.username || url.password || url.search || url.hash)
+    throw new Error('WAHOO_REDIRECT_URI cannot include credentials, a query, or a fragment')
   return url.toString()
 }

@@ -6,6 +6,7 @@ import type {
   GarminClimbSegment,
   GarminCyclingDynamics,
   GarminFueling,
+  GarminGearShift,
   GarminRiderPosition,
   GarminStreams,
 } from './garmin'
@@ -16,6 +17,7 @@ import type {
   ManualStrengthEntry,
   StrengthExercise,
 } from './tracking'
+import type { WahooActivityMatch, WahooCache, WahooCyclingDynamics, WahooStreams } from './wahoo'
 import type { WeatherActivity, WeatherCache, WeatherTemperatureSample } from './weather'
 import { localDateTimeUtcMs, localIsoDay } from '../../util/local-date'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
@@ -32,6 +34,7 @@ import {
   matchGarminHeartRateActivity,
   matchGarminTrainingEffectActivity,
 } from './garmin'
+import { matchWahooActivity } from './wahoo'
 
 export type Sport = 'swim' | 'bike' | 'run'
 
@@ -414,6 +417,8 @@ export interface GarminVerification {
   anaerobicTrainingEffectMessage: string | null
 }
 
+export type ActivityComputer = 'garmin' | 'wahoo'
+
 export interface ActivityHeartRate {
   avgHr: number | null
   maxHr: number | null
@@ -503,6 +508,7 @@ export interface StravaActivityDetail {
   strength: ActivityStrength | null
   sauna: ActivitySauna | null
   garmin: GarminVerification | null
+  computer: ActivityComputer | null
   calculatedIntensityFactor: CalculatedIntensityFactor | null
   calculatedExerciseLoad: CalculatedExerciseLoad | null
   calculatedTrainingEffect: CalculatedTrainingEffect | null
@@ -897,7 +903,8 @@ export const calculateActivityTrainingEffect = (
     | 'swimIntervals'
   >,
 ): CalculatedTrainingEffect | null => {
-  if (activity.sport !== 'run' && activity.sport !== 'swim') return null
+  if (activity.sport !== 'bike' && activity.sport !== 'run' && activity.sport !== 'swim')
+    return null
   const garmin = activity.garmin
   if (
     garmin?.aerobicTrainingEffect != null ||
@@ -1587,6 +1594,16 @@ function garminVerification(
   }
 }
 
+function activityComputer(
+  sport: ActivityKind,
+  garminMatch: GarminActivityMatch | null,
+  wahooMatch: WahooActivityMatch | null,
+): ActivityComputer | null {
+  if (sport !== 'bike') return null
+  if (wahooMatch) return 'wahoo'
+  return garminMatch ? 'garmin' : null
+}
+
 function temperatureAt(samples: WeatherTemperatureSample[], elapsedS: number): number | null {
   if (samples.length === 0) return null
   if (elapsedS <= samples[0].elapsedS) return samples[0].temperatureC
@@ -1607,7 +1624,7 @@ interface TimedMetricSample {
   value: number
 }
 
-interface ActivityGarminMetricSamples {
+interface ActivityMetricSamples {
   rightBalance: TimedMetricSample[]
   stamina: TimedMetricSample[]
   potentialStamina: TimedMetricSample[]
@@ -1645,8 +1662,8 @@ function activityGarminMetricSamples(
   activity: RawStravaActivity,
   match: GarminActivityMatch | null,
   garmin: GarminCache | null,
-): ActivityGarminMetricSamples {
-  const empty = (): ActivityGarminMetricSamples => ({
+): ActivityMetricSamples {
+  const empty = (): ActivityMetricSamples => ({
     rightBalance: [],
     stamina: [],
     potentialStamina: [],
@@ -1689,6 +1706,49 @@ function activityGarminMetricSamples(
   }
 }
 
+function activityMetricSamples(
+  activity: RawStravaActivity,
+  garminMatch: GarminActivityMatch | null,
+  garmin: GarminCache | null,
+  wahooMatch: WahooActivityMatch | null,
+  wahoo: WahooCache | null,
+): ActivityMetricSamples {
+  const samples = activityGarminMetricSamples(activity, garminMatch, garmin)
+  if (!wahooMatch) return samples
+  const stream = wahoo?.streams[wahooMatch.activity.id]
+  if (!stream || stream.time.length === 0) return samples
+  const startOffsetS =
+    (Date.parse(wahooMatch.activity.startDate) - Date.parse(activity.startDate)) / 1000
+  if (!Number.isFinite(startOffsetS)) return samples
+  const collect = (
+    values: readonly (number | null)[],
+    valid: (value: number) => boolean,
+  ): TimedMetricSample[] => {
+    if (values.length !== stream.time.length) return []
+    const collected: TimedMetricSample[] = []
+    for (let index = 0; index < stream.time.length; index++) {
+      const elapsedS = stream.time[index]
+      const value = values[index]
+      if (!Number.isFinite(elapsedS) || typeof value !== 'number' || !Number.isFinite(value))
+        continue
+      if (!valid(value)) continue
+      collected.push({ elapsedS: elapsedS + startOffsetS, value })
+    }
+    return collected.sort((left, right) => left.elapsedS - right.elapsedS)
+  }
+  return {
+    ...samples,
+    rightBalance:
+      samples.rightBalance.length > 0
+        ? samples.rightBalance
+        : collect(stream.rightBalance, value => value >= 0 && value <= 100),
+    respiration:
+      samples.respiration.length > 0
+        ? samples.respiration
+        : collect(stream.respiration, value => value > 0),
+  }
+}
+
 interface TimedStreamAlignment {
   streams: StravaStreams | GarminStreams
   time: number[]
@@ -1719,6 +1779,20 @@ function timedStreamAlignment(
     alignedDistance.push(previousDistance)
   }
   return { streams, time, distance: alignedDistance }
+}
+
+function wahooTimedStreamAlignment(streams: WahooStreams | undefined): TimedStreamAlignment | null {
+  if (!streams || streams.time.length < 2 || streams.distance.length !== streams.time.length)
+    return null
+  const distance: number[] = []
+  let previousDistance = 0
+  for (const value of streams.distance) {
+    if (typeof value === 'number' && Number.isFinite(value))
+      previousDistance = Math.max(previousDistance, value)
+    distance.push(previousDistance)
+  }
+  const normalized: GarminStreams = { time: [...streams.time], latlng: [], altitude: [], distance }
+  return timedStreamAlignment(normalized)
 }
 
 function projectRouteLessHeartRateTrace(
@@ -1774,27 +1848,24 @@ function alignedDistanceAt(alignment: TimedStreamAlignment, elapsedS: number): n
   return distance[low] + (distance[high] - distance[low]) * fraction
 }
 
-function activityGearShifts(
+function projectedGearShifts(
   activity: RawStravaActivity,
-  match: GarminActivityMatch | null,
-  garmin: GarminCache | null,
+  sourceStartDate: string,
+  shifts: readonly GarminGearShift[],
+  alignment: TimedStreamAlignment | null,
 ): ActivityGearShift[] {
-  if (!match) return []
-  const shifts = garmin?.gearShifts?.[match.activity.id]
-  if (!shifts?.length) return []
   const activityStartMs = Date.parse(activity.startDate)
-  const garminStartMs = Date.parse(match.activity.startDate)
-  if (!Number.isFinite(activityStartMs) || !Number.isFinite(garminStartMs)) return []
-  const alignment = timedStreamAlignment(garmin?.streams?.[match.activity.id])
+  const sourceStartMs = Date.parse(sourceStartDate)
+  if (!Number.isFinite(activityStartMs) || !Number.isFinite(sourceStartMs)) return []
   const durationS = Math.max(activity.elapsedTime, activity.movingTime, 1)
   return shifts.flatMap(shift => {
     const timestampMs = Date.parse(shift.timestamp)
     if (!Number.isFinite(timestampMs)) return []
     const elapsedS = (timestampMs - activityStartMs) / 1000
-    const garminElapsedS = (timestampMs - garminStartMs) / 1000
-    if (garminElapsedS < -60 || garminElapsedS > durationS + 60) return []
+    const sourceElapsedS = (timestampMs - sourceStartMs) / 1000
+    if (sourceElapsedS < -60 || sourceElapsedS > durationS + 60) return []
     const distanceM = alignment
-      ? alignedDistanceAt(alignment, garminElapsedS)
+      ? alignedDistanceAt(alignment, sourceElapsedS)
       : (Math.min(durationS, Math.max(0, elapsedS)) / durationS) * activity.distance
     return [
       {
@@ -1809,6 +1880,31 @@ function activityGearShifts(
   })
 }
 
+function activityGearShifts(
+  activity: RawStravaActivity,
+  garminMatch: GarminActivityMatch | null,
+  garmin: GarminCache | null,
+  wahooMatch: WahooActivityMatch | null,
+  wahoo: WahooCache | null,
+): ActivityGearShift[] {
+  if (garminMatch) {
+    const projected = projectedGearShifts(
+      activity,
+      garminMatch.activity.startDate,
+      garmin?.gearShifts?.[garminMatch.activity.id] ?? [],
+      timedStreamAlignment(garmin?.streams?.[garminMatch.activity.id]),
+    )
+    if (projected.length > 0) return projected
+  }
+  if (!wahooMatch) return []
+  return projectedGearShifts(
+    activity,
+    wahooMatch.activity.startDate,
+    wahoo?.gearShifts[wahooMatch.activity.id] ?? [],
+    wahooTimedStreamAlignment(wahoo?.streams[wahooMatch.activity.id]),
+  )
+}
+
 const cyclingDynamicsMetricKeys = [
   'leftPedalSmoothness',
   'rightPedalSmoothness',
@@ -1820,7 +1916,9 @@ const cyclingDynamicsMetricKeys = [
   'rightPowerPhaseEnd',
 ] as const
 
-function validCyclingDynamicsSamples(dynamics: GarminCyclingDynamics): boolean {
+function validCyclingDynamicsSamples(
+  dynamics: GarminCyclingDynamics | WahooCyclingDynamics,
+): boolean {
   const length = dynamics.time.length
   return (
     length >= 2 &&
@@ -1829,16 +1927,12 @@ function validCyclingDynamicsSamples(dynamics: GarminCyclingDynamics): boolean {
   )
 }
 
-function activityCyclingDynamics(
+function projectCyclingDynamics(
   activity: RawStravaActivity,
-  match: GarminActivityMatch | null,
-  garmin: GarminCache | null,
+  sourceStartDate: string,
+  dynamics: GarminCyclingDynamics | WahooCyclingDynamics,
 ): ActivityCyclingDynamics | null {
-  if (!match) return null
-  const dynamics = garmin?.cyclingDynamics?.[match.activity.id]
-  if (!dynamics) return null
-  const startOffsetS =
-    (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1000
+  const startOffsetS = (Date.parse(sourceStartDate) - Date.parse(activity.startDate)) / 1000
   if (!Number.isFinite(startOffsetS)) return null
   const hasSamples = validCyclingDynamicsSamples(dynamics)
   const maxDistanceM = Math.max(activity.distance, 0)
@@ -1883,6 +1977,38 @@ function activityCyclingDynamics(
         ? null
         : round(dynamics.standingTimeS, 3),
   }
+}
+
+function cyclingDynamicsScore(dynamics: ActivityCyclingDynamics | null): number {
+  if (!dynamics) return 0
+  return (
+    cyclingDynamicsMetricKeys.reduce(
+      (total, key) => total + dynamics[key].filter(value => value != null).length,
+      0,
+    ) + dynamics.positionChanges.length
+  )
+}
+
+function activityCyclingDynamics(
+  activity: RawStravaActivity,
+  garminMatch: GarminActivityMatch | null,
+  garmin: GarminCache | null,
+  wahooMatch: WahooActivityMatch | null,
+  wahoo: WahooCache | null,
+): ActivityCyclingDynamics | null {
+  const garminDynamics = garminMatch
+    ? garmin?.cyclingDynamics?.[garminMatch.activity.id]
+    : undefined
+  const wahooDynamics = wahooMatch ? wahoo?.cyclingDynamics[wahooMatch.activity.id] : undefined
+  const projectedGarmin = garminDynamics
+    ? projectCyclingDynamics(activity, garminMatch?.activity.startDate ?? '', garminDynamics)
+    : null
+  const projectedWahoo = wahooDynamics
+    ? projectCyclingDynamics(activity, wahooMatch?.activity.startDate ?? '', wahooDynamics)
+    : null
+  return cyclingDynamicsScore(projectedWahoo) > cyclingDynamicsScore(projectedGarmin)
+    ? projectedWahoo
+    : projectedGarmin
 }
 
 function nearestElapsedIndex(time: number[], elapsedS: number): number {
@@ -2112,13 +2238,14 @@ function projectDetail(
   streams: StravaStreams | GarminStreams | undefined,
   effortStreams: StravaStreams | GarminStreams | undefined,
   heartRate: ActivityHeartRate,
-  garminMetricSamples: ActivityGarminMetricSamples,
+  metricSamples: ActivityMetricSamples,
   gearShifts: ActivityGearShift[],
   cyclingDynamics: ActivityCyclingDynamics | null,
   weather: WeatherCache['activities'][string] | undefined,
   geo: string | undefined,
   fueling: ActivityFueling | null,
   garmin: GarminVerification | null,
+  computer: ActivityComputer | null,
   weight: ActivityWeight | null,
   rawDetail: RawStravaActivityDetail | undefined,
   climbs: GarminClimbSegment[],
@@ -2207,13 +2334,13 @@ function projectDetail(
     idx.forEach((i, k) => {
       const elapsedS = routeTime[i]
       const temperatureC = temperatureAt(temperatureSeries, elapsedS) ?? fallbackTemperatureC
-      const rightPowerPct = timedMetricAt(garminMetricSamples.rightBalance, elapsedS)
-      const stamina = timedMetricAt(garminMetricSamples.stamina, elapsedS)
-      const potentialStamina = timedMetricAt(garminMetricSamples.potentialStamina, elapsedS)
-      const respiration = timedMetricAt(garminMetricSamples.respiration, elapsedS)
-      const heatStrainIndex = timedMetricAt(garminMetricSamples.heatStrainIndex, elapsedS)
-      const coreTemperatureC = timedMetricAt(garminMetricSamples.coreTemperatureC, elapsedS)
-      const skinTemperatureC = timedMetricAt(garminMetricSamples.skinTemperatureC, elapsedS)
+      const rightPowerPct = timedMetricAt(metricSamples.rightBalance, elapsedS)
+      const stamina = timedMetricAt(metricSamples.stamina, elapsedS)
+      const potentialStamina = timedMetricAt(metricSamples.potentialStamina, elapsedS)
+      const respiration = timedMetricAt(metricSamples.respiration, elapsedS)
+      const heatStrainIndex = timedMetricAt(metricSamples.heatStrainIndex, elapsedS)
+      const coreTemperatureC = timedMetricAt(metricSamples.coreTemperatureC, elapsedS)
+      const skinTemperatureC = timedMetricAt(metricSamples.skinTemperatureC, elapsedS)
       route.push({
         x: round((xs[k] - minX) / span + offX, 4),
         y: round((ys[k] - minY) / span + offY, 4),
@@ -2303,6 +2430,7 @@ function projectDetail(
     strength: null,
     sauna: null,
     garmin,
+    computer,
     calculatedIntensityFactor: null,
     calculatedExerciseLoad: null,
     calculatedTrainingEffect: null,
@@ -2488,6 +2616,7 @@ export function applyManualSauna(
         source: 'manual',
       },
       garmin: null,
+      computer: null,
       calculatedIntensityFactor: null,
       calculatedExerciseLoad: null,
       calculatedTrainingEffect: null,
@@ -2569,6 +2698,7 @@ export function buildPayload(
   inputFtp?: number | null,
   inputHrBounds?: number[] | null,
   timeZone?: string,
+  wahoo?: WahooCache | null,
 ): StravaPayload {
   if (!cache) return emptyPayload()
 
@@ -2590,6 +2720,7 @@ export function buildPayload(
   const garminMatches = new Map<string, GarminActivityMatch | null>()
   const garminTrainingEffectMatches = new Map<string, GarminActivityMatch | null>()
   const garminHeartRateMatches = new Map<string, GarminActivityMatch | null>()
+  const wahooMatches = new Map<string, WahooActivityMatch | null>()
   const selectedStreams = new Map<string, StravaStreams | GarminStreams | undefined>()
   const heartRates = new Map<string, ActivityHeartRate>()
   for (const { a, sport } of activities) {
@@ -2597,10 +2728,12 @@ export function buildPayload(
     const match = matchGarminActivity(a, sport, garmin)
     const trainingEffectMatch = matchGarminTrainingEffectActivity(a, sport, garmin, match)
     const hrMatch = matchGarminHeartRateActivity(a, sport, garmin)
+    const wahooMatch = matchWahooActivity(a, sport, wahoo ?? null)
     const streams = selectStreams(cache.streams?.[id], match, garmin)
     garminMatches.set(id, match)
     garminTrainingEffectMatches.set(id, trainingEffectMatch)
     garminHeartRateMatches.set(id, hrMatch)
+    wahooMatches.set(id, wahooMatch)
     selectedStreams.set(id, streams)
     heartRates.set(id, resolveActivityHeartRate(a, sport, streams, hrMatch, garmin))
   }
@@ -2782,6 +2915,7 @@ export function buildPayload(
       matchGarminTrainingEffectActivity(a, sport, garmin, garminMatch)
     const garminHeartRateMatch =
       garminHeartRateMatches.get(id) ?? matchGarminHeartRateActivity(a, sport, garmin)
+    const wahooMatch = wahooMatches.get(id) ?? matchWahooActivity(a, sport, wahoo ?? null)
     const selectedStream = selectedStreams.get(id)
     const exactWeather = weather?.activities[id]
     const usesRouteLessWeather =
@@ -2797,13 +2931,14 @@ export function buildPayload(
       selectEffortStreams(cache.streams?.[id], selectedStream),
       heartRates.get(id) ??
         resolveActivityHeartRate(a, sport, selectedStream, garminHeartRateMatch, garmin),
-      activityGarminMetricSamples(a, garminMatch, garmin),
-      activityGearShifts(a, garminMatch, garmin),
-      activityCyclingDynamics(a, garminMatch, garmin),
+      activityMetricSamples(a, garminMatch, garmin, wahooMatch, wahoo ?? null),
+      activityGearShifts(a, garminMatch, garmin, wahooMatch, wahoo ?? null),
+      activityCyclingDynamics(a, garminMatch, garmin, wahooMatch, wahoo ?? null),
       activityWeather,
       cache.geo?.[String(a.id)],
       garminActivityFueling(a, sport, garmin),
       garminVerification(a, garminMatch, garminTrainingEffectMatch),
+      activityComputer(sport, garminMatch, wahooMatch),
       activityWeight(garmin, a),
       cache.activityDetails?.[id],
       garminMatch ? (garmin?.climbs?.[garminMatch.activity.id] ?? []) : [],

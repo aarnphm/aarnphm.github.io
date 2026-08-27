@@ -64,7 +64,7 @@ function activity(edited = false): WahooActivity {
 function cache(edited = false): WahooCache {
   const ride = activity(edited)
   return {
-    version: 1,
+    version: 2,
     lastSync: Date.now(),
     activities: { [ride.id]: ride },
     streams: {
@@ -80,6 +80,25 @@ function cache(edited = false): WahooCache {
         cadence: [],
         speed: [],
         temperature: [],
+        respiration: [],
+      },
+    },
+    gearShifts: { [ride.id]: [] },
+    cyclingDynamics: {
+      [ride.id]: {
+        time: [],
+        distance: [],
+        leftPedalSmoothness: [],
+        rightPedalSmoothness: [],
+        leftTorqueEffectiveness: [],
+        rightTorqueEffectiveness: [],
+        leftPowerPhaseStart: [],
+        leftPowerPhaseEnd: [],
+        rightPowerPhaseStart: [],
+        rightPowerPhaseEnd: [],
+        positionChanges: [],
+        seatedTimeS: null,
+        standingTimeS: null,
       },
     },
   }
@@ -93,7 +112,7 @@ test('maps official Wahoo workout types to triathlon sports', () => {
 })
 
 test('rejects obsolete Wahoo cache versions', () => {
-  assert.throws(() => parseWahooCache({ ...cache(), version: 2 }), /version 2 is unsupported/)
+  assert.throws(() => parseWahooCache({ ...cache(), version: 1 }), /version 1 is unsupported/)
 })
 
 test('matches by sport, start, distance, and duration', () => {

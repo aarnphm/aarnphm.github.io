@@ -19,6 +19,24 @@ import { swimActivityValueText } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
 import { syncPowerCurveActivityLink } from './power-links'
 
+export type PowerBalanceMode = 'distance' | 'power'
+
+export const powerBalanceMode = (chart: HTMLElement | null): PowerBalanceMode =>
+  chart?.dataset.powerBalanceMode === 'power' ? 'power' : 'distance'
+
+export const setPowerBalanceMode = (chart: HTMLElement, mode: PowerBalanceMode): void => {
+  chart.dataset.powerBalanceMode = mode
+  chart.classList.remove('tri-elev-wrap--read')
+  chart.closest<HTMLElement>('.tri-act')?.classList.remove('tri-act--scrub')
+  for (const option of chart.querySelectorAll<HTMLButtonElement>('.tri-power-balance-mode'))
+    option.setAttribute('aria-pressed', String(option.dataset.powerBalanceMode === mode))
+  for (const pane of chart.querySelectorAll<HTMLElement>('.tri-power-balance-pane')) {
+    const visible = pane.dataset.powerBalanceMode === mode
+    pane.hidden = !visible
+    pane.setAttribute('aria-hidden', String(!visible))
+  }
+}
+
 export const setupChartScrub = (
   scope: HTMLElement,
   presentation: () => TriathlonPresentation,
@@ -491,7 +509,16 @@ export const setupChartScrub = (
       showSwim(svg, fraction, wasActive)
     }
   }
+  const setPowerBalanceFromTarget = (target: EventTarget | null): boolean => {
+    if (!(target instanceof Element)) return false
+    const button = target.closest<HTMLButtonElement>('.tri-power-balance-mode')
+    const chart = button?.closest<HTMLElement>('.tri-power-balance-chart')
+    if (!button || !chart) return false
+    setPowerBalanceMode(chart, button.dataset.powerBalanceMode === 'power' ? 'power' : 'distance')
+    return true
+  }
   const onChartClick = (event: MouseEvent): void => {
+    if (setPowerBalanceFromTarget(event.target)) return
     if (!(event.target instanceof Element)) return
     const swimButton = event.target.closest<HTMLButtonElement>('.tri-swim-mode')
     const swimSection = swimButton?.closest<HTMLElement>('.tri-swim-trends')
@@ -541,6 +568,11 @@ export const setupChartScrub = (
       path.toggleAttribute('hidden', path.dataset.curveRange !== range)
     delete svg.dataset.curveIndex
     showCurveIndex(svg, index, wasActive)
+  }
+  const onModeKey = (event: KeyboardEvent): void => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    if (!setPowerBalanceFromTarget(event.target)) return
+    event.preventDefault()
   }
   const onLocale = (): void => {
     for (const average of scope.querySelectorAll<HTMLElement>('.tri-swim-trend-value')) {
@@ -605,6 +637,7 @@ export const setupChartScrub = (
   scope.addEventListener('focusin', onFocus)
   scope.addEventListener('focusout', onBlur)
   scope.addEventListener('keydown', onKey)
+  scope.addEventListener('keydown', onModeKey)
   scope.addEventListener('click', onChartClick)
   scope.addEventListener('tri:swim-restore', onSwimRestore)
   window.addEventListener('tri:locale', onLocale)
@@ -620,6 +653,7 @@ export const setupChartScrub = (
     scope.removeEventListener('focusin', onFocus)
     scope.removeEventListener('focusout', onBlur)
     scope.removeEventListener('keydown', onKey)
+    scope.removeEventListener('keydown', onModeKey)
     scope.removeEventListener('click', onChartClick)
     scope.removeEventListener('tri:swim-restore', onSwimRestore)
     window.removeEventListener('tri:locale', onLocale)

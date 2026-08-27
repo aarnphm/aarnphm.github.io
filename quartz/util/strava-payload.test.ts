@@ -54,6 +54,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   strength: null,
   sauna: null,
   garmin: null,
+  computer: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
   calculatedTrainingEffect: null,

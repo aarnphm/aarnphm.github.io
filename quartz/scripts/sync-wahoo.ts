@@ -155,20 +155,28 @@ export async function fetchWahooCache(
   const workouts = await client.listWorkouts()
   const activities: Record<string, WahooActivity> = {}
   const streams: WahooCache['streams'] = {}
+  const gearShifts: WahooCache['gearShifts'] = {}
+  const cyclingDynamics: WahooCache['cyclingDynamics'] = {}
   let skippedThirdParty = 0
   let skippedIncomplete = 0
   for (const workout of workouts) {
     const id = `wahoo:${workout.id}`
     const previousActivity = previous?.activities[id]
     const previousStreams = previous?.streams[id]
+    const previousGearShifts = previous?.gearShifts[id]
+    const previousCyclingDynamics = previous?.cyclingDynamics[id]
     if (
       workout.summary == null &&
       workout.updatedAt != null &&
       previousActivity?.workoutUpdatedAt === workout.updatedAt &&
-      previousStreams
+      previousStreams &&
+      previousGearShifts &&
+      previousCyclingDynamics
     ) {
       activities[id] = previousActivity
       streams[id] = previousStreams
+      gearShifts[id] = previousGearShifts
+      cyclingDynamics[id] = previousCyclingDynamics
       continue
     }
     const summary = await resolveWahooWorkoutSummary(client, workout)
@@ -185,12 +193,21 @@ export async function fetchWahooCache(
     const activity = normalizeWahooActivity(workout, summary, fit, bytes)
     activities[activity.id] = activity
     streams[activity.id] = fit.streams
+    gearShifts[activity.id] = fit.gearShifts
+    cyclingDynamics[activity.id] = fit.cyclingDynamics
     console.log(`[wahoo] decoded ${activity.id} ${activity.startDate} ${bytes.byteLength} bytes`)
   }
   console.log(
     `[wahoo] retained ${Object.keys(activities).length}/${workouts.length} completed Wahoo workouts, skipped incomplete=${skippedIncomplete} third-party=${skippedThirdParty}`,
   )
-  return { version: WAHOO_CACHE_VERSION, lastSync: Date.now(), activities, streams }
+  return {
+    version: WAHOO_CACHE_VERSION,
+    lastSync: Date.now(),
+    activities,
+    streams,
+    gearShifts,
+    cyclingDynamics,
+  }
 }
 
 async function readPreviousCache(): Promise<WahooCache | null> {
