@@ -1,86 +1,57 @@
 ---
 date: '2025-10-05'
-description: educational JIT compiler implementations in Python
+description: map of the Python AST, IR, bytecode, and benchmark experiments in this directory
 id: bytecode-jit-readme
 layout: L->ET|A
-modified: 2026-06-05 15:08:25 GMT-04:00
+modified: 2026-08-27 09:11:56 GMT-04:00
 tags:
   - seed
   - compilers
-title: python JIT compiler
+title: Python compiler experiments
 ---
 
-three-tier JIT compiler demonstrating compilation strategies from simple to sophisticated. see [[thoughts/JIT/python bytecode jit|python bytecode jit]] for detailed writeup.
+This directory contains compiler experiments with three different objects: Python source syntax, a small custom IR, and CPython bytecode. The main path is eager Python AST to C compilation. See [[thoughts/jit/python bytecode jit|small Python compiler]] for the design and its correctness boundary.
 
-## tier 1: TinyCJIT (`minimal_jit.py`)
+## working map
 
-single-pass AST → C translation. 50-150ms compile, 20-80× runtime speedup.
+| file | purpose | current status |
+| --- | --- | --- |
+| `minimal_jit.py` | recover source, lower a restricted AST to C, compile, and bind through `ctypes` | works for the demonstrated straight-line expressions and positive-step loops when the caller supplies the right C types |
+| `ir.py` | IR values, instructions, blocks, small analysis passes, and C printing | educational; some pass names describe more than the implementation currently does |
+| `ir_compiler.py` | lower an AST through the custom IR and compile the resulting C | straight-line arithmetic works; loop-carried scalar reductions are wrong |
+| `compiler.py` | choose a backend from a static AST complexity score | selection happens once during decoration; there is no runtime tiering |
+| `tracing_jit.py` | extract a loop from the AST and compile it to C | trace-shaped source transformation with no guards or deoptimization |
+| `bytecodes.py` | inspect and rewrite CPython bytecode | constant folding works for the constructed example; several other demos are conceptual or stale on current opcodes |
+| `blas.py` | compare generated numerical kernels with Numba | timings are invalid until the harness rejects wrong outputs and separates cold compilation from warm calls |
+| `numba_jit.py` | Numba comparison experiments | timing labels need the same cold and warm separation |
 
-```python
-jit = TinyCJIT()
+## what the main path compiles
 
+The direct compiler runs during decoration:
 
-@jit(
-  restype=None,
-  argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int],
-)
-def vector_add(a, b, out, n):
-  for i in range(n):
-    out[i] = a[i] + b[i]
+```text
+Python source -> AST -> C -> system compiler -> shared library -> ctypes wrapper
 ```
 
-## tier 2: IRCompiler (`ir_compiler.py` + `ir.py`)
+The IR path inserts basic blocks, SSA-style names, and small optimization passes before C generation. Its current loop lowering carries the induction variable across iterations and fails to carry scalar accumulators. Any reduction routed through it can return a plausible wrong value.
 
-multi-pass compilation through SSA IR. 200-500ms compile, enables optimizations (constant folding, DCE, type inference).
+`Compiler` uses the following static score:
 
-```python
-compiler = IRCompiler(verbose=True, optimize=True)
+$$
+C(f) = 5L + 2K + B.
+$$
 
+Here $L$ is the number of loop nodes, $K$ the number of calls, and $B$ the number of binary operations in the recovered source. The score does not measure hotness or backend support.
 
-@compiler(restype=c_float, argtypes=[c_float, c_float])
-def add_mul(a, b):
-  return (a + b) * 2.0
-```
+## running the demonstrations
 
-## tier 3: Compiler (`compiler.py`)
-
-adaptive dispatch: complexity heuristic chooses TinyCJIT (simple) or IRCompiler (complex). mirrors V8/PyPy tiered compilation.
-
-```python
-jit = Compiler(mode='auto', complexity_threshold=10)
-
-
-@jit(restype=c_float, argtypes=[c_float, c_float])
-def compute(a, b):
-  return a + b  # auto-selects TinyCJIT
-```
-
-## benchmarks (`blas.py`)
-
-linear algebra kernels: saxpy, dot, gemv, gemm. compares TinyCJIT/IRCompiler/Compiler vs Numba.
-
-findings: Compiler competitive on bandwidth-bound (saxpy), Numba wins on reductions (dot/gemv via LLVM), Compiler wins on blocked gemm (cache tiling).
-
-## demos
-
-run from `content/thoughts/jit/`:
+Use the repository's locked Python environment from its root:
 
 ```bash
-python minimal_jit.py    # TinyCJIT vector add demo
-python ir_compiler.py    # IRCompiler demo
-python compiler.py       # adaptive Compiler demo
-python blas.py          # BLAS benchmarks
+uv run --frozen python content/thoughts/jit/minimal_jit.py
+uv run --frozen python content/thoughts/jit/ir_compiler.py
+uv run --frozen python content/thoughts/jit/compiler.py
+uv run --frozen python content/thoughts/jit/bytecodes.py
 ```
 
-## utilities
-
-**tracing_jit.py**: trace-based JIT with loop detection, guard insertion, deoptimization.
-
-**bytecodes.py**: bytecode manipulation examples (constant folding, DCE, inlining).
-
-**numba_jit.py**: Numba comparison baseline.
-
-```bash
-python tracing_jit.py    # tracing JIT demo
-python bytecodes.py      # bytecode transformations
-```
+`blas.py` remains useful as a bug reproducer. Its printed winners are not performance evidence because the harness does not compare outputs before timing them.

@@ -4,7 +4,9 @@ import {
   calculateTirePressure,
   DEFAULT_TIRE_PRESSURE_SELECTION,
   formatTirePressureWeight,
+  KG_PER_LB,
   latestMorningBodyWeight,
+  type TirePressureSelection,
   tirePressureWeightToKg,
 } from './triathlon-tire-pressure'
 
@@ -32,13 +34,41 @@ test('matches the published SILCA equation for the equipped Cervélo', () => {
   })
 
   assert.ok(recommendation)
-  assert.equal(recommendation.frontPsi, 76.5)
-  assert.equal(recommendation.rearPsi, 83)
-  assert.equal(Number(recommendation.bikeKg.toFixed(3)), 9.979)
-  assert.equal(Number(recommendation.systemKg.toFixed(3)), 96.039)
-  assert.equal(recommendation.measuredWidthMm, 28)
+  assert.equal(recommendation.frontPsi, 64)
+  assert.equal(recommendation.rearPsi, 81)
+  assert.equal(Number(recommendation.bikeKg.toFixed(3)), 11.884)
+  assert.equal(Number(recommendation.systemKg.toFixed(3)), 97.944)
+  assert.equal(recommendation.frontMeasuredWidthMm, 32)
+  assert.equal(recommendation.rearMeasuredWidthMm, 28)
   assert.equal(recommendation.diameterMm, 622)
   assert.equal(recommendation.wheelCompatibilityWarning, false)
+})
+
+test('matches controlled outputs from the live SILCA calculator', () => {
+  const systemKg = 100
+  const riderKg = systemKg - DEFAULT_TIRE_PRESSURE_SELECTION.bikeMassesLb.custom * KG_PER_LB
+  const selection: TirePressureSelection = {
+    ...DEFAULT_TIRE_PRESSURE_SELECTION,
+    riderKg,
+    bike: 'custom',
+    balance: '48-52',
+  }
+  const width32 = calculateTirePressure({
+    ...selection,
+    measuredTire: { frontWidthMm: 32, rearWidthMm: 32 },
+  })
+  const width28 = calculateTirePressure({
+    ...selection,
+    measuredTire: { frontWidthMm: 28, rearWidthMm: 28 },
+  })
+
+  assert.ok(width32)
+  assert.ok(width28)
+  assert.equal(width32.systemKg, systemKg)
+  assert.equal(width32.frontPsi, 64)
+  assert.equal(width32.rearPsi, 65.5)
+  assert.equal(width28.frontPsi, 79)
+  assert.equal(width28.rearPsi, 81)
 })
 
 test('uses the Speedmax system mass with a selected even load distribution', () => {
@@ -50,7 +80,7 @@ test('uses the Speedmax system mass with a selected even load distribution', () 
   })
 
   assert.ok(recommendation)
-  assert.equal(recommendation.frontPsi, 80)
+  assert.equal(recommendation.frontPsi, 64.5)
   assert.equal(recommendation.rearPsi, 80)
   assert.equal(Number(recommendation.bikeKg.toFixed(3)), 11.793)
 })
@@ -68,7 +98,7 @@ test('uses a customized equipped-bike mass without changing its load distributio
   assert.ok(recommendation.frontPsi < recommendation.rearPsi)
 })
 
-test('calculates a balanced recommendation for a custom bike', () => {
+test('uses axle-specific widths for a custom bike with an even load distribution', () => {
   const recommendation = calculateTirePressure({
     ...DEFAULT_TIRE_PRESSURE_SELECTION,
     riderKg: 86.06,
@@ -78,33 +108,36 @@ test('calculates a balanced recommendation for a custom bike', () => {
   })
 
   assert.ok(recommendation)
-  assert.equal(recommendation.bike.label, 'custom bike')
+  assert.equal(recommendation.bike.label, 'Custom')
   assert.equal(recommendation.bikeMassLb, 31.5)
-  assert.equal(recommendation.frontPsi, recommendation.rearPsi)
+  assert.ok(recommendation.frontPsi < recommendation.rearPsi)
 })
 
-test('applies selectable front and rear load distributions', () => {
-  const even = calculateTirePressure({
+test('applies SILCA front and rear load-distribution coefficients', () => {
+  const road = calculateTirePressure({
     ...DEFAULT_TIRE_PRESSURE_SELECTION,
     riderKg: 86.06,
-    balance: '50-50',
+    balance: '48-52',
   })
   const rearHeavy = calculateTirePressure({
     ...DEFAULT_TIRE_PRESSURE_SELECTION,
     riderKg: 86.06,
-    balance: '40-60',
+    balance: '46.5-53.5',
   })
 
-  assert.ok(even)
+  assert.ok(road)
   assert.ok(rearHeavy)
-  assert.equal(even.frontPsi, even.rearPsi)
-  assert.equal(rearHeavy.balance.frontPercent, 40)
-  assert.equal(rearHeavy.balance.rearPercent, 60)
-  assert.ok(rearHeavy.frontPsi < even.frontPsi)
-  assert.ok(rearHeavy.rearPsi > even.rearPsi)
+  assert.equal(road.balance.frontPressureCoefficient, 0.985)
+  assert.equal(road.balance.rearPressureCoefficient, 1.01)
+  assert.equal(rearHeavy.balance.frontPercent, 46.5)
+  assert.equal(rearHeavy.balance.rearPercent, 53.5)
+  assert.equal(rearHeavy.balance.frontPressureCoefficient, 0.97)
+  assert.equal(rearHeavy.balance.rearPressureCoefficient, 1.03)
+  assert.ok(rearHeavy.frontPsi < road.frontPsi)
+  assert.ok(rearHeavy.rearPsi > road.rearPsi)
 })
 
-test('keeps pressure stable across equal measured casing widths and flags Reserve compatibility', () => {
+test('keeps axle pressures stable across wheelsets and flags Reserve rear-tire compatibility', () => {
   const hunt = calculateTirePressure({ ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 })
   const reserve = calculateTirePressure({
     ...DEFAULT_TIRE_PRESSURE_SELECTION,
@@ -133,11 +166,26 @@ test('uses custom front and rear internal rim widths without inventing casing gr
   })
 
   assert.ok(recommendation)
-  assert.equal(recommendation.wheel.label, 'custom wheelset')
+  assert.equal(recommendation.wheel.label, 'Custom Wheelset')
   assert.equal(recommendation.wheel.frontInnerWidthMm, 21.5)
   assert.equal(recommendation.wheel.rearInnerWidthMm, 24)
-  assert.equal(recommendation.measuredWidthMm, 28)
+  assert.equal(recommendation.frontMeasuredWidthMm, 32)
+  assert.equal(recommendation.rearMeasuredWidthMm, 28)
   assert.equal(recommendation.wheelCompatibilityWarning, false)
+})
+
+test('uses measured front and rear tire widths as independent calculation inputs', () => {
+  const staggered = calculateTirePressure({ ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 })
+  const equalWidths = calculateTirePressure({
+    ...DEFAULT_TIRE_PRESSURE_SELECTION,
+    riderKg: 86.06,
+    measuredTire: { frontWidthMm: 28, rearWidthMm: 28 },
+  })
+
+  assert.ok(staggered)
+  assert.ok(equalWidths)
+  assert.ok(equalWidths.frontPsi > staggered.frontPsi)
+  assert.equal(equalWidths.rearPsi, staggered.rearPsi)
 })
 
 test('keeps Pirelli TPU and tubeless setups at the high-performance 1.00 coefficient', () => {
@@ -175,6 +223,14 @@ test('rejects pressure inputs outside the SILCA system-weight and speed domains'
       riderKg: 86.06,
       wheel: 'custom',
       customWheel: { frontInnerWidthMm: 12.5, rearInnerWidthMm: 23 },
+    }),
+    null,
+  )
+  assert.equal(
+    calculateTirePressure({
+      ...DEFAULT_TIRE_PRESSURE_SELECTION,
+      riderKg: 86.06,
+      measuredTire: { frontWidthMm: 19, rearWidthMm: 28 },
     }),
     null,
   )

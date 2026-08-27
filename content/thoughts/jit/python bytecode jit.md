@@ -1,238 +1,125 @@
 ---
 date: '2025-10-05'
-description: building a JIT compiler in Python, from simple AST lowering to IR-based optimization
+description: small Python AST to C compilers, an experimental SSA path, and the limits of their benchmark harness
 id: python-bytecode-jit
-modified: 2026-06-05 15:08:25 GMT-04:00
+modified: 2026-08-27 09:11:56 GMT-04:00
 tags:
   - compilers
   - technical
-title: simple JIT compiler
+title: small Python compiler
 ---
 
-see also: [@bolz2009tracing; @salib2004starkiller] for JIT in Python
+The name of this directory is historical. Its main compilers do not operate on Python bytecode, watch a running function, or promote hot code. They recover a function's source during decoration and eagerly compile a restricted Python AST to C.
 
-three compilation strategies of increasing sophistication:
+There are two backends and one static dispatcher:
 
-1. **TinyCJIT** (`minimal_jit.py`) — single-pass AST → C translation. 50-150ms compile, 20-80× runtime speedup on bandwidth-bound kernels
-2. **IRCompiler** (`ir_compiler.py`) — multi-pass compilation through SSA IR with type inference and optimization passes. 200-500ms compile, enables constant folding and DCE
-3. **Compiler** (`compiler.py`) — adaptive dispatch: complexity heuristic chooses TinyCJIT for simple functions, IRCompiler for complex ones
+| file | actual role | trustworthy boundary |
+| --- | --- | --- |
+| `minimal_jit.py` | direct AST to C lowering | simple scalar arithmetic and positive-step loops with an explicit C signature |
+| `ir.py` and `ir_compiler.py` | experimental SSA-like IR, small optimization passes, then C lowering | straight-line arithmetic; loop-carried scalar values are currently wrong |
+| `compiler.py` | one-time syntax-based choice between the two backends | records which backend it chose; it does not profile or recompile |
 
-execution flow mirrors V8 (Ignition → TurboFan) and PyPy (tracing JIT): fast baseline tier, optimizing tier for hot code.
+This makes the code useful for learning the boundary between source recovery, lowering, an intermediate representation, native compilation, and an ABI. Its scope ends at a compiler experiment.
 
-## tier 1: TinyCJIT — direct AST lowering
+## direct AST lowering
 
-bypasses the interpreter by lowering restricted Python to C. single-pass translation with no intermediate representation.
+`TinyCJIT` lowers a small Python subset directly to C. Compilation happens when the decorator runs. Calling the decorated function later enters the compiled shared library through `ctypes`.
 
-### pipeline
+The pipeline is:
 
+```text
+Python source -> AST -> C source -> clang or gcc -> shared library -> ctypes wrapper
 ```
-Python AST → C code generation → clang/gcc → shared object → ctypes binding
-```
 
-compilation steps:
+`inspect.getsource` and `ast.parse` recover the function. Two visitors emit C expressions and statements. The generated C is hashed for the cache, compiled with optimization enabled, loaded with `ctypes.CDLL`, and wrapped so NumPy arrays can be passed as pointers.
 
-1. `inspect.getsource` + `ast.parse` to extract function AST
-2. walk AST, emit C (restricted subset: for/range loops, array subscripts, binary ops)
-3. hash source, cache `.so` in `/tmp/minimal_cjit/`
-4. invoke `clang -O3 -fPIC -shared -lm`
-5. `ctypes.CDLL` to load, wrap with numpy → pointer marshaling
-
-decorator usage:
+The C ABI is explicit. `TinyCJIT` does not infer parameter types. The caller supplies `restype` and `argtypes`, while named local temporaries are emitted as `float`. A correct SAXPY signature therefore distinguishes its scalar coefficient from its array pointers:
 
 ```python
 from ctypes import POINTER, c_float, c_int
 
-jit = TinyCJIT(verbose=True)
+jit = TinyCJIT()
 
 
 @jit(
   restype=None,
-  argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int],
+  argtypes=[c_float, POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int],
 )
-def vector_add(a, b, out, n):
-  for i in range(n):
-    out[i] = a[i] + b[i]
-```
-
-### code generation
-
-two AST visitors emit C:
-
-- `_ExprEmitter`: expressions → C syntax (`a[i] + b[i]` → `(a[i] + b[i])`)
-- `_CBodyGenerator`: statements → C blocks, tracks locals
-
-example:
-
-```python
 def saxpy(a, x, y, out, n):
   for i in range(n):
     out[i] = a * x[i] + y[i]
 ```
 
-generates:
+The generated function has the corresponding signature:
 
 ```c
-void saxpy(float* a, float* x, float* y, float* out, int n) {
+void saxpy(float a, float* x, float* y, float* out, int n) {
   for (int i = 0; i < n; i += 1) {
     out[i] = (a * x[i]) + y[i];
   }
 }
 ```
 
-type inference: scalar type inferred from first pointer argument (`float*` → `float`). locals discovered during traversal.
+The accepted subset is narrower than Python. In particular, loop code always emits an increasing `index < stop` condition, so zero and negative `range` steps do not preserve Python semantics. The NumPy wrapper also trusts the declared element type. A mismatched pointer type crosses the ABI boundary without Python's usual safety checks and can crash or corrupt the process, as the [`ctypes` documentation](https://docs.python.org/3/library/ctypes.html) warns.
 
-### performance
+## the IR experiment
 
-vector add (100k floats):
+`IRCompiler` inserts an intermediate representation between the AST and C. The current route is:
 
-```
-python loop:   12.4 ms
-TinyCJIT:       0.18 ms
-speedup:        68×
+```text
+Python source -> AST -> basic blocks and SSA names -> small passes -> C -> shared library
 ```
 
-speedup sources: no interpreter dispatch, no reference counting, compiler vectorization (SSE/AVX), register allocation.
+The implementation demonstrates why an IR is useful. It gives constant folding and unused-result removal a representation that is easier to inspect than Python syntax. It also makes data-flow bugs visible.
 
-compile time: 50-150ms (invoke clang, hash-based caching).
+For straight-line arithmetic, the path lowers expressions, propagates a limited set of integer, float, and pointer types, folds constants, removes some unused results, eliminates phi nodes, and emits C. The pass names sound broader than their current implementations. Type propagation handles only a few instruction classes, and dead-code elimination does not compute block reachability.
 
-vs Numba: comparable runtime (both produce native code), TinyCJIT 3-5× faster compile (C compiler vs LLVM). Numba has richer type inference and broader Python support.
+The loop path has a harder defect. The induction variable is carried through a phi node, while scalar reductions are not. A dot product can therefore return the initial accumulator or another wrong value because the accumulator is never carried through the loop edge. The source says this directly in `ir_compiler.py`, where loop-carried phis for reductions are disabled. Dot products, matrix-vector products, and matrix multiplication through this backend are currently incorrect.
 
-### BLAS benchmarks
+That failure is the useful lesson. SSA construction has to represent every value that flows around a loop. Naming only the induction variable gives valid-looking IR and wrong programs.
 
-[[thoughts/JIT/blas.py]] compares TinyCJIT vs Numba on linear algebra kernels. bandwidth-bound ops (saxpy, dot): competitive. compute-bound (gemm): Numba wins via better vectorization.
+## static strategy selection
 
-## tier 2: IRCompiler — SSA-based optimization
+`Compiler` parses the recovered source once and computes a syntax score:
 
-TinyCJIT is fast but rigid: single-pass translation with no optimization. IRCompiler introduces an intermediate representation (IR) in SSA form, enabling type inference and optimization passes.
+$$
+C(f) = 5L + 2K + B,
+$$
 
-### pipeline
+where $L$ counts loop nodes, $K$ counts call nodes, and $B$ counts binary operations. The default threshold sends smaller scores to `TinyCJIT` and larger scores to `IRCompiler`.
 
-```
-Python AST → IR lowering → type inference → optimization passes → IR → C → clang/gcc → .so
-```
+This happens during decoration. There are no hotness counters, guards, runtime traces, on-stack replacement, or tier promotion. Decorator expressions also belong to the recovered syntax and can inflate the score. The score also ignores backend support, so it can route a reduction into a backend that miscompiles it.
 
-compilation steps:
+## the nearby production reference
 
-1. `IRBuilder` lowers AST to SSA IR (basic blocks, phi nodes for loops)
-2. `TypeInference` propagates types through SSA graph
-3. `ConstantFolding` evaluates compile-time expressions
-4. `DeadCodeElimination` removes unreachable instructions
-5. `PhiElimination` converts out of SSA for C codegen
-6. `CCodegen` emits C from IR
-7. compile and bind via ctypes (same as TinyCJIT)
+CPython's experimental JIT starts from its specializing adaptive interpreter. When a hot `JUMP_BACKWARD` or `RESUME` site enters tracing, CPython translates specialized bytecode into micro-ops, optimizes the trace, and installs an executor. That executor can run in the Tier 2 micro-op interpreter or, in a JIT-enabled build, as copy-and-patch machine code. The details live in CPython's current [JIT internals](https://github.com/python/cpython/blob/main/InternalDocs/jit.md) and [build documentation](https://docs.python.org/3/using/configure.html#cmdoption-enable-experimental-jit).
 
-decorator usage identical to TinyCJIT:
+The contrast matters. Production tiering responds to observed execution and preserves a path back to the interpreter when assumptions fail. `Compiler` makes a static source-level choice before the function runs.
 
-```python
-compiler = IRCompiler(verbose=True, optimize=True)
+V8's current tiers provide another reference point: Ignition interprets bytecode, Sparkplug supplies a baseline compiler, and Maglev and TurboFan provide optimizing tiers. PyPy uses meta-tracing around its RPython interpreter [@bolz2009tracing]. Those systems are useful architecture references. They do not describe what this directory implements.
 
+## evidence before speed
 
-@compiler(restype=c_float, argtypes=[c_float, c_float])
-def add_mul(a, b):
-  tmp = a + b
-  return tmp * 2.0
-```
+The existing `blas.py` harness prints timing winners without checking outputs. It also times already compiled wrappers for the eager C backends while Numba may still compile on its first call. Its results cannot support claims about compilation cost or runtime speed.
 
-### IR design
+A valid harness needs to establish this order:
 
-SSA form with typed values:
+1. Compare every generated result with a trusted implementation under a stated tolerance.
+2. Give mutating kernels fresh input and output arrays for every implementation.
+3. Measure cold compilation in a fresh cache separately from warm calls.
+4. Record CPU, compiler, flags, Python version, package versions, input sizes, and run counts.
+5. Inspect generated assembly or compiler reports before attributing a result to vectorization.
 
-```
-entry:
-  %const1 = const 2.0 : float
-  %binop1 = add %a, %b : float
-  %binop2 = mul %binop1, %const1 : float
-  ret %binop2
-```
+Until that protocol passes, the benchmark only documents the correctness bug. A fast wrong reduction has a speedup ratio with no semantic content.
 
-phi nodes for loops:
+## directory map
 
-```
-loop_header:
-  %iv1 = phi [%const2, entry], [%iv_next3, loop_body2] : int
-  %cond1 = lt %iv1, %n : bool
-  br %cond1, loop_body2, loop_exit3
-```
+- [[thoughts/jit/minimal_jit.py]] contains the eager AST to C decorator.
+- [[thoughts/jit/ir.py]] and [[thoughts/jit/ir_compiler.py]] contain the experimental IR path.
+- [[thoughts/jit/compiler.py]] contains the static syntax-based dispatcher.
+- [[thoughts/jit/blas.py]] is a benchmark harness that needs correctness gates before its timings mean anything.
+- [[thoughts/jit/tracing_jit.py]] extracts a loop from the AST and emits C. Despite its name, it has no runtime trace recorder, guards, or deoptimization.
+- [[thoughts/jit/bytecodes.py]] contains one working bytecode-folding example alongside several conceptual or version-stale transformations.
+- [[thoughts/jit/numba_jit.py]] is a comparison harness whose compilation timers also need repair.
 
-### optimization passes
-
-**constant folding**: `tmp = 2.0 * 3.0` → `tmp = 6.0` at compile time
-
-**dead code elimination**: removes unreachable basic blocks and unused values
-
-**type inference**: propagates `IRType.FLOAT`/`IRType.INT`/`IRType.PTR_FLOAT` through SSA graph
-
-### performance
-
-compile time: 200-500ms (IR passes add overhead vs TinyCJIT's 50-150ms).
-
-runtime: comparable to TinyCJIT for simple kernels. optimizations help on constant-heavy code.
-
-limitations: phi elimination for nested loops incomplete. reductions (dot product) may be incorrect. use TinyCJIT for complex control flow.
-
-## tier 3: Compiler — adaptive dispatch
-
-unified interface: chooses compilation strategy based on function complexity.
-
-### complexity heuristic
-
-AST visitor counts nodes:
-
-- loops: +5
-- calls: +2
-- binary ops: +1
-
-threshold (default 10): complexity < 10 → TinyCJIT, ≥ 10 → IRCompiler.
-
-### usage
-
-```python
-jit = Compiler(mode='auto', verbose=True, complexity_threshold=10)
-
-
-@jit(restype=c_float, argtypes=[c_float, c_float])
-def simple_add(a, b):  # complexity ~2 → TinyCJIT
-  return a + b
-
-
-@jit(restype=c_float, argtypes=[c_float, c_float])
-def complex_compute(a, b):  # complexity ~15 → IRCompiler
-  tmp1 = a + b
-  tmp2 = tmp1 * 2.0
-  tmp3 = tmp2 - a
-  tmp4 = tmp3 / b
-  return tmp4 + a
-```
-
-modes:
-
-- `mode='auto'`: heuristic-based (default)
-- `mode='fast'`: always TinyCJIT
-- `mode='optimized'`: always IRCompiler
-
-compilation stats tracked in `jit.stats`:
-
-```python
-{'fast': 1, 'optimized': 1}
-```
-
-### design rationale
-
-mirrors production JITs (V8, PyPy): fast baseline tier for quick startup, optimizing tier for hot code. adaptive dispatch amortizes compilation cost: simple functions get fast compile, complex functions get optimizations.
-
-real-world strategy: profile at runtime, tier up on hot paths. this demo uses static complexity heuristic for simplicity.
-
-## implementation
-
-- [[thoughts/JIT/minimal_jit.py]] — TinyCJIT implementation
-- [[thoughts/JIT/ir_compiler.py]] — IRCompiler with SSA IR
-- [[thoughts/JIT/compiler.py]] — unified Compiler with adaptive dispatch
-- [[thoughts/JIT/ir.py]] — IR data structures and optimization passes
-
-## references
-
-CPython internals: `Python/ceval.c` (eval loop), `Python/compile.c` (bytecode compiler), `Python/specialize.c` (PEP 659).
-
-libraries: [bytecode](https://github.com/MatthieuDartiailh/bytecode), [codetransformer](https://github.com/llllllllll/codetransformer).
-
-posts: [CPython Peephole Optimizer](https://akaptur.com/blog/2014/08/02/the-cpython-peephole-optimizer-and-you/), [Python 3.13 JIT](https://tonybaloney.github.io/posts/python-gets-a-jit.html), [Inline Caching](https://bernsteinbear.com/blog/inline-caching/).
+The directory is best read beside [PEP 659](https://peps.python.org/pep-0659/) and CPython's JIT internals. Starkiller is also nearby history, though it was a static type inferencer and compiler rather than a runtime JIT [@salib2004starkiller].
