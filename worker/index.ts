@@ -77,6 +77,7 @@ import {
   requestWithoutStaticAssetCache,
 } from './static-assets'
 import { triathlonDataHtml } from './triathlon-data'
+import { handleWahooOAuthCallback } from './wahoo-oauth'
 
 const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
 const MIME = 'application/vnd.git-lfs+json'
@@ -471,6 +472,9 @@ export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
     const localRequest = isLocalRequest(request)
+
+    const wahooOAuthResponse = handleWahooOAuthCallback(request)
+    if (wahooOAuthResponse) return wahooOAuthResponse
 
     if (url.pathname.endsWith('.fc')) {
       url.pathname = url.pathname.slice(0, -3) + '/flashcards'
