@@ -2,7 +2,9 @@ import {
   Encoder,
   Profile,
   type DeviceInfoMesg,
+  type DeveloperDataIdMesg,
   type EventMesg,
+  type FieldDescriptionMesg,
   type FileIdMesg,
   type RecordMesg,
   type SessionMesg,
@@ -16,6 +18,88 @@ const SEMICIRCLES_PER_DEGREE = 2 ** 31 / 180
 
 function activityFit(): Uint8Array {
   const encoder = new Encoder()
+  const developer: DeveloperDataIdMesg = {
+    developerDataIndex: 0,
+    applicationId: Array.from({ length: 16 }, () => 1),
+  }
+  const fields: [number, FieldDescriptionMesg][] = [
+    [
+      1,
+      {
+        developerDataIndex: 0,
+        fieldDefinitionNumber: 1,
+        fitBaseTypeId: 132,
+        fieldName: 'tyme_breath_rate',
+        units: 'brpm',
+      },
+    ],
+    [
+      2,
+      {
+        developerDataIndex: 0,
+        fieldDefinitionNumber: 2,
+        fitBaseTypeId: 132,
+        fieldName: 'tyme_minute_volume',
+        units: 'vol/min',
+      },
+    ],
+    [
+      3,
+      {
+        developerDataIndex: 0,
+        fieldDefinitionNumber: 3,
+        fitBaseTypeId: 132,
+        fieldName: 'tyme_tidal_volume',
+        units: 'vol/br',
+      },
+    ],
+    [
+      4,
+      {
+        developerDataIndex: 0,
+        fieldDefinitionNumber: 4,
+        fitBaseTypeId: 132,
+        fieldName: 'fluid_loss_ml',
+        units: 'mL',
+      },
+    ],
+    [
+      5,
+      {
+        developerDataIndex: 0,
+        fieldDefinitionNumber: 5,
+        fitBaseTypeId: 132,
+        fieldName: 'sodium_loss_mg',
+        units: 'mg',
+      },
+    ],
+    [
+      6,
+      {
+        developerDataIndex: 0,
+        fieldDefinitionNumber: 6,
+        fitBaseTypeId: 132,
+        fieldName: 'skin_temperature',
+        units: 'deg C',
+        scale: 100,
+      },
+    ],
+    [
+      7,
+      {
+        developerDataIndex: 0,
+        fieldDefinitionNumber: 7,
+        fitBaseTypeId: 2,
+        fieldName: 'heat_strain_index',
+        scale: 10,
+      },
+    ],
+  ]
+  encoder.onMesg(Profile.MesgNum.DEVELOPER_DATA_ID, developer)
+  for (const [key, field] of fields) {
+    encoder.addDeveloperField(key, developer, field)
+    encoder.onMesg(Profile.MesgNum.FIELD_DESCRIPTION, field)
+  }
   const file: FileIdMesg = {
     type: 'activity',
     manufacturer: 'wahooFitness',
@@ -51,7 +135,10 @@ function activityFit(): Uint8Array {
       rightTorqueEffectiveness: 77,
       leftPowerPhase: [350, 190],
       rightPowerPhase: [348, 198],
-      respirationRate: 24,
+      coreTemperature: 37.16,
+      saturatedHemoglobinPercent: 62,
+      totalHemoglobinConc: 12.1,
+      developerFields: { 1: 24, 2: 40, 3: 1200, 4: 0, 5: 0, 6: 3340, 7: 0 },
     },
     {
       timestamp: new Date(START.getTime() + 60_000),
@@ -70,7 +157,10 @@ function activityFit(): Uint8Array {
       rightTorqueEffectiveness: 78,
       leftPowerPhase: [352, 192],
       rightPowerPhase: [350, 200],
-      respirationRate: 26,
+      coreTemperature: 37.19,
+      saturatedHemoglobinPercent: 58,
+      totalHemoglobinConc: 12.3,
+      developerFields: { 1: 26, 2: 60, 3: 1400, 4: 900, 5: 740, 6: 3350, 7: 30 },
     },
   ]
   for (const record of records) encoder.onMesg(Profile.MesgNum.RECORD, record)
@@ -122,6 +212,14 @@ test('decodes Wahoo FIT summary, device, aligned streams, and balance', () => {
   assert.deepEqual(fit.streams.time, [0, 60])
   assert.deepEqual(fit.streams.rightBalance, [52, 53])
   assert.deepEqual(fit.streams.respiration, [24, 26])
+  assert.deepEqual(fit.streams.muscleOxygenPercent, [62, 58])
+  assert.deepEqual(fit.streams.totalHemoglobinConcentration, [12.1, 12.3])
+  assert.deepEqual(fit.streams.coreTemperatureC, [37.16, 37.19])
+  assert.deepEqual(fit.streams.skinTemperatureC, [33.4, 33.5])
+  assert.deepEqual(fit.streams.heatStrainIndex, [0, 3])
+  assert.deepEqual(fit.streams.minuteVentilation, [40, 60])
+  assert.deepEqual(fit.streams.tidalVolume, [1200, 1400])
+  assert.deepEqual(fit.sweatLoss, { fluidMl: 900, sodiumMg: 740 })
   assert.deepEqual(fit.cyclingDynamics.leftPedalSmoothness, [21.5, 22])
   assert.deepEqual(fit.cyclingDynamics.rightTorqueEffectiveness, [77, 78])
   assert.deepEqual(fit.cyclingDynamics.leftPowerPhaseStart, [350.2, 351.6])

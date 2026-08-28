@@ -37,6 +37,7 @@ import {
   buildPowerHist,
   buildShiftingChart,
   buildStaminaChart,
+  buildTorqueEffectivenessChart,
   buildTrainingEffectDetails,
   buildTimelineDayCard,
   cyclingDynamicsIndexAtDistance,
@@ -151,6 +152,7 @@ test('renders manual fueling with its source', () => {
       carbsRecommendedG: null,
       fluidRecommendedMl: null,
       sweatLossMl: null,
+      sodiumLossMg: null,
       sourceDevice: null,
       source: 'manual',
     }),
@@ -167,12 +169,54 @@ test('renders manual fueling with its source', () => {
       carbsRecommendedG: null,
       fluidRecommendedMl: null,
       sweatLossMl: null,
+      sodiumLossMg: null,
       sourceDevice: 'Edge 1050',
       source: 'garmin',
     }),
     [
       ['consumed', '200 kcal'],
       ['source', 'Garmin Edge 1050'],
+    ],
+  )
+})
+
+test('renders Wahoo sweat and sodium loss without treating them as bottle intake', () => {
+  assert.deepEqual(
+    fuelingRows({
+      caloriesConsumed: null,
+      carbsConsumedG: null,
+      fluidMl: null,
+      carbsRecommendedG: null,
+      fluidRecommendedMl: null,
+      sweatLossMl: 900,
+      sodiumLossMg: 740,
+      sourceDevice: 'ELEMNT BOLT',
+      source: 'wahoo',
+    }),
+    [
+      ['sweat', '900 ml'],
+      ['sodium loss', '740 mg'],
+      ['source', 'Wahoo ELEMNT BOLT'],
+    ],
+  )
+  assert.deepEqual(
+    fuelingRows({
+      caloriesConsumed: 260,
+      carbsConsumedG: null,
+      fluidMl: 1_200,
+      carbsRecommendedG: null,
+      fluidRecommendedMl: null,
+      sweatLossMl: 900,
+      sodiumLossMg: 740,
+      sourceDevice: 'Edge 1050',
+      source: 'garmin+wahoo',
+    }),
+    [
+      ['consumed', '260 kcal'],
+      ['fluid', '1.2 L'],
+      ['sweat', '900 ml'],
+      ['sodium loss', '740 mg'],
+      ['source', 'Garmin + Wahoo'],
     ],
   )
 })
@@ -1807,6 +1851,22 @@ test('renders CORE bike graphs after ambient temperature with sub-degree domains
       .map(text)
       .every(label => /^\d+\.\d{2}°C$/.test(label)),
   )
+})
+
+test('renders muscle oxygen as a percentage trace', () => {
+  const oxygen = detail({
+    route: detail().route.map((point, index) => ({
+      ...point,
+      muscleOxygenPct: [64, 62, 60, 58][index],
+    })),
+  })
+  const rendered = buildActivity(factory, oxygen, true)
+  const trace = byClass(rendered, 'tri-elev-wrap').find(
+    graph => graph.properties.dataTriTrace === 'muscle-oxygen',
+  )
+  assert.ok(trace)
+  assert.match(text(byClass(trace, 'tri-elev-cap')[0]), /muscle oxygen61\.0% SmO₂ avg/)
+  assert.deepEqual(byClass(trace, 'tri-cax-yt').map(text), ['55.0%', '60.0%', '65.0%'])
 })
 
 test('renders timestamp-aligned CORE app graphs for runs without Garmin thermal data', () => {
@@ -3680,6 +3740,7 @@ test('embedded day cards align activity summaries to their largest row count', (
       carbsRecommendedG: null,
       fluidRecommendedMl: null,
       sweatLossMl: null,
+      sodiumLossMg: null,
       sourceDevice: 'Edge 1050',
       source: 'garmin',
     },
@@ -4229,18 +4290,18 @@ test('renders power-weighted left and right pedal balance on a symmetric percent
   const chart = buildPowerBalanceChart(factory, ride, null)
   assert.ok(chart)
   assert.equal(chart.properties.dataTriTrace, 'power-balance')
-  assert.equal(chart.properties.dataPowerBalanceMode, 'distance')
+  assert.equal(chart.properties.dataCyclingChartMode, 'distance')
   assert.equal(byClass(chart, 'tri-power-balance-svg')[0].properties.ariaLabel, 'power balance')
   assert.deepEqual(byClass(chart, 'tri-elev-d').map(text), ['power balance'])
   assert.deepEqual(byClass(chart, 'tri-elev-range').map(text), ['L 49.7% / R 50.3% avg'])
   assert.deepEqual(byClass(chart, 'tri-power-balance-legend-item').map(text), ['left', 'right'])
-  const modes = byClass(chart, 'tri-power-balance-modes')[0]
+  const modes = byClass(chart, 'tri-cycling-chart-modes')[0]
   assert.equal(modes.properties.role, 'group')
-  assert.equal(modes.properties.ariaLabel, 'power balance view')
+  assert.equal(modes.properties.ariaLabel, 'cycling charts view')
   assert.deepEqual(
-    byClass(modes, 'tri-power-balance-mode').map(button => [
+    byClass(modes, 'tri-cycling-chart-mode').map(button => [
       text(button),
-      button.properties.dataPowerBalanceMode,
+      button.properties.dataCyclingChartMode,
       button.properties.ariaPressed,
     ]),
     [
@@ -4272,7 +4333,7 @@ test('renders power-weighted left and right pedal balance on a symmetric percent
   assert.equal(heatmap.properties.dataPowerBalanceSamples, 4)
   assert.equal(heatmap.properties.dataPowerBalanceMaxWatts, 600)
   assert.equal(
-    byClass(chart, 'tri-power-balance-heat-cell').reduce(
+    byClass(chart, 'tri-cycling-watts-heat-cell').reduce(
       (samples, cell) => samples + Number(cell.properties.dataSamples),
       0,
     ),
@@ -4362,6 +4423,8 @@ test('renders cycling dynamics and rider position immediately below pedal balanc
   assert.ok(smoothness)
   assert.ok(phase)
   assert.ok(position)
+  assert.equal(byClass(rendered, 'tri-cycling-chart-modes').length, 1)
+  assert.equal(byClass(rendered, 'tri-cycling-chart-mode').length, 2)
   assert.deepEqual(byClass(torque, 'tri-elev-d').map(text), ['torque effectiveness'])
   assert.deepEqual(byClass(smoothness, 'tri-elev-d').map(text), ['pedal smoothness'])
   assert.deepEqual(byClass(phase, 'tri-elev-d').map(text), ['power phase'])
@@ -4393,6 +4456,50 @@ test('renders cycling dynamics and rider position immediately below pedal balanc
     'left',
     'right',
   ])
+  for (const [chart, title, className, sampleProperty] of [
+    [torque, 'torque effectiveness', 'torque-effectiveness', 'dataTorqueEffectivenessSamples'],
+    [smoothness, 'pedal smoothness', 'pedal-smoothness', 'dataPedalSmoothnessSamples'],
+  ] as const) {
+    assert.equal(chart.properties.dataCyclingChartMode, 'distance')
+    assert.deepEqual(byClass(chart, 'tri-cycling-chart-modes'), [])
+    const distancePane = byClass(chart, `tri-${className}-pane--distance`)[0]
+    const powerPane = byClass(chart, `tri-${className}-pane--power`)[0]
+    assert.equal(distancePane.properties.hidden, undefined)
+    assert.equal(distancePane.properties.ariaHidden, 'false')
+    assert.equal(powerPane.properties.hidden, true)
+    assert.equal(powerPane.properties.ariaHidden, 'true')
+    assert.deepEqual(byClass(powerPane, 'tri-cax-xt').map(text), [
+      '0 W',
+      '100 W',
+      '200 W',
+      '300 W',
+      '400 W',
+      '500 W',
+      '600 W',
+    ])
+    const heatmap = byClass(chart, `tri-${className}-heatmap`)[0]
+    assert.equal(heatmap.properties.ariaLabel, `${title} by watts`)
+    assert.equal(heatmap.properties[sampleProperty], 6)
+    assert.equal(
+      byClass(heatmap, 'tri-cycling-watts-heat-cell').reduce(
+        (samples, cell) => samples + Number(cell.properties.dataSamples),
+        0,
+      ),
+      6,
+    )
+    assert.ok(byClass(heatmap, 'tri-cycling-watts-heat-cell--left').length > 0)
+    assert.ok(byClass(heatmap, 'tri-cycling-watts-heat-cell--right').length > 0)
+  }
+  const selectedTorque = buildTorqueEffectivenessChart(factory, ride, null, false, {
+    startDistanceKm: 0,
+    endDistanceKm: 0,
+  })
+  assert.ok(selectedTorque)
+  assert.equal(
+    byClass(selectedTorque, 'tri-torque-effectiveness-heatmap')[0].properties
+      .dataTorqueEffectivenessSamples,
+    2,
+  )
   assert.equal(byClass(phase, 'tri-power-phase-line--start').length, 2)
   assert.equal(byClass(phase, 'tri-power-phase-line--end').length, 2)
   assert.equal(byClass(phase, 'tri-cycling-dynamics-legend-item').length, 4)
@@ -4442,9 +4549,47 @@ test('renders front and rear shifting on separate overlaid y axes', () => {
     classNames(byClass(chart, 'tri-elev-cap')[0]).includes('tri-elev-cap--summary'),
     true,
   )
-  assert.deepEqual(byClass(chart, 'tri-cax-yt').map(text), ['36T', '52T'])
+  const distancePane = byClass(chart, 'tri-shift-pane--distance')[0]
+  const powerPane = byClass(chart, 'tri-shift-pane--power')[0]
+  assert.deepEqual(byClass(distancePane, 'tri-cax-yt').map(text), ['36T', '52T'])
   assert.equal(byClass(chart, 'tri-cax-yt--right').length, 0)
-  assert.deepEqual(byClass(chart, 'tri-cax-xt').map(text), ['10 km', '20 km'])
+  assert.deepEqual(byClass(distancePane, 'tri-cax-xt').map(text), ['10 km', '20 km'])
+  assert.equal(chart.properties.dataCyclingChartMode, 'distance')
+  assert.equal(distancePane.properties.hidden, undefined)
+  assert.equal(distancePane.properties.ariaHidden, 'false')
+  assert.equal(powerPane.properties.hidden, true)
+  assert.equal(powerPane.properties.ariaHidden, 'true')
+  assert.deepEqual(byClass(chart, 'tri-cycling-chart-modes'), [])
+  assert.deepEqual(byClass(powerPane, 'tri-cax-yt').map(text), ['36×19', '52×27', '52×19', '36×11'])
+  assert.deepEqual(byClass(powerPane, 'tri-cax-xt').map(text), [
+    '0 W',
+    '100 W',
+    '200 W',
+    '300 W',
+    '400 W',
+    '500 W',
+    '600 W',
+  ])
+  const heatmap = byClass(chart, 'tri-shift-heatmap')[0]
+  assert.equal(heatmap.properties.ariaLabel, 'electronic shifting by watts')
+  assert.equal(heatmap.properties.dataElectronicShiftingSamples, 4)
+  assert.equal(heatmap.properties.dataElectronicShiftingMaxWatts, 600)
+  assert.equal(
+    byClass(heatmap, 'tri-cycling-watts-heat-cell').reduce(
+      (samples, cell) => samples + Number(cell.properties.dataSamples),
+      0,
+    ),
+    4,
+  )
+  const selected = buildShiftingChart(factory, shiftedDetail(), null, {
+    startDistanceKm: 0,
+    endDistanceKm: 0,
+  })
+  assert.ok(selected)
+  assert.equal(
+    byClass(selected, 'tri-shift-heatmap')[0].properties.dataElectronicShiftingSamples,
+    1,
+  )
   assert.equal(byClass(chart, 'tri-shift-line').length, 2)
   assert.equal(byClass(chart, 'tri-analysis-selection').length, 1)
   assert.equal(chart.properties.dataTriTrace, 'electronic-shifting')
@@ -4500,7 +4645,7 @@ test('centres a fixed front chainring while the rear cassette changes', () => {
   const chart = buildShiftingChart(factory, ride)
   assert.ok(chart)
   assert.deepEqual(
-    byClass(chart, 'tri-cax-yt')
+    byClass(byClass(chart, 'tri-shift-pane--distance')[0], 'tri-cax-yt')
       .filter(tick => !classNames(tick).includes('tri-cax-yt--right'))
       .map(text),
     ['40T'],

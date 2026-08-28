@@ -9,6 +9,7 @@ import {
   DEFAULT_WAHOO_AUTHORIZE_URL,
   DEFAULT_WAHOO_TOKEN_URL,
   exchangeWahooAuthorizationCode,
+  writeWahooRefreshToken,
   WAHOO_OAUTH_SCOPES,
 } from '../util/wahoo-cloud'
 import {
@@ -130,8 +131,9 @@ async function main(): Promise<void> {
     process.env.WAHOO_TOKEN_URL?.trim() || DEFAULT_WAHOO_TOKEN_URL,
   )
   assertScopes(token.scope)
+  await writeWahooRefreshToken(token.refreshToken)
   await upsertEnvLine('.env', 'WAHOO_REFRESH_TOKEN', token.refreshToken)
-  console.log('\n[wahoo] authorized. WAHOO_REFRESH_TOKEN written to .env.')
+  console.log('\n[wahoo] authorized. WAHOO_REFRESH_TOKEN written to .env and the Wahoo cache.')
   console.log('now run: pnpm health:wahoo\n')
 }
 

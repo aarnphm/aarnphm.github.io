@@ -87,6 +87,7 @@ export interface GarminStreams {
   stamina?: number[]
   potentialStamina?: number[]
   respiration?: number[]
+  muscleOxygenPercent?: number[]
   heatStrainIndex?: number[]
   coreTemperatureC?: number[]
   skinTemperatureC?: number[]

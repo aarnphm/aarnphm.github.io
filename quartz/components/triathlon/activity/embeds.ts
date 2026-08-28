@@ -24,7 +24,7 @@ import { mountDaySleepCharts } from './day-sleep'
 import { dayExtrasFromDataset } from './embed-settings'
 import { renderDetail } from './render'
 import { setupStrengthExerciseOverflow } from './render'
-import { powerBalanceMode, setPowerBalanceMode, type PowerBalanceMode } from './scrub'
+import { cyclingChartMode, setCyclingChartMode, type CyclingChartMode } from './scrub'
 
 const TRAINING_EFFECT_MARGIN = '--tri-training-effect-margin'
 
@@ -244,7 +244,11 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     let upgraded = false
     let payload: DetailPayload | null = null
     let pendingSwimMode: { index: number; mode: SwimTrendMode } | null = null
-    let pendingPowerBalanceMode: { index: number; mode: PowerBalanceMode } | null = null
+    let pendingCyclingChartMode: {
+      activityId: string
+      trace: string
+      mode: CyclingChartMode
+    } | null = null
     let pendingAnalysisRange: {
       activityId: string
       kind: string
@@ -272,28 +276,29 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       if (index < 0) return
       pendingSwimMode = { index, mode: button.dataset.swimMode === '100m' ? '100m' : 'lengths' }
     }
-    const setPendingPowerBalanceMode = (target: EventTarget | null): void => {
+    const setPendingCyclingChartMode = (target: EventTarget | null): void => {
       if (!(target instanceof Element)) return
-      const button = target.closest<HTMLButtonElement>('.tri-power-balance-mode')
-      const chart = button?.closest<HTMLElement>('.tri-power-balance-chart')
+      const button = target.closest<HTMLButtonElement>('.tri-cycling-chart-mode')
+      const chart = button?.closest<HTMLElement>('.tri-cycling-mode-chart')
       if (!button || !chart) return
-      const index = Array.from(
-        embed.querySelectorAll<HTMLElement>('.tri-power-balance-chart'),
-      ).indexOf(chart)
-      if (index < 0) return
-      pendingPowerBalanceMode = {
-        index,
-        mode: button.dataset.powerBalanceMode === 'power' ? 'power' : 'distance',
+      const activityId = chart.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+        .activityId
+      const trace = chart.dataset.triTrace
+      if (!activityId || !trace) return
+      pendingCyclingChartMode = {
+        activityId,
+        trace,
+        mode: button.dataset.cyclingChartMode === 'power' ? 'power' : 'distance',
       }
     }
     const onModePointerDown = (event: PointerEvent): void => {
       setPendingSwimMode(event.target)
-      setPendingPowerBalanceMode(event.target)
+      setPendingCyclingChartMode(event.target)
     }
     const onModeKeyDown = (event: KeyboardEvent): void => {
       if (event.key !== 'Enter' && event.key !== ' ') return
       setPendingSwimMode(event.target)
-      setPendingPowerBalanceMode(event.target)
+      setPendingCyclingChartMode(event.target)
     }
     const setPendingAnalysisRange = (target: EventTarget | null, restoreFocus = false): boolean => {
       if (payload) return false
@@ -351,7 +356,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     }
     const clearPendingModes = (): void => {
       pendingSwimMode = null
-      pendingPowerBalanceMode = null
+      pendingCyclingChartMode = null
     }
     embed.addEventListener('pointerdown', onModePointerDown, { passive: true })
     embed.addEventListener('keydown', onModeKeyDown)
@@ -411,15 +416,23 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       if (pendingSwimMode && swimStates[pendingSwimMode.index])
         swimStates[pendingSwimMode.index].mode = pendingSwimMode.mode
       pendingSwimMode = null
-      const powerBalanceStates = Array.from(
-        embed.querySelectorAll<HTMLElement>('.tri-power-balance-chart'),
-        chart => ({ mode: powerBalanceMode(chart) }),
-      )
-      if (pendingPowerBalanceMode && powerBalanceStates[pendingPowerBalanceMode.index]) {
-        const state = powerBalanceStates[pendingPowerBalanceMode.index]
-        state.mode = pendingPowerBalanceMode.mode
+      const cyclingChartStates = Array.from(
+        embed.querySelectorAll<HTMLElement>('.tri-cycling-mode-chart[data-tri-trace]'),
+      ).flatMap(chart => {
+        const activityId = chart.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+          .activityId
+        const trace = chart.dataset.triTrace
+        return activityId && trace ? [{ activityId, trace, mode: cyclingChartMode(chart) }] : []
+      })
+      if (pendingCyclingChartMode) {
+        const state = cyclingChartStates.find(
+          candidate =>
+            candidate.activityId === pendingCyclingChartMode?.activityId &&
+            candidate.trace === pendingCyclingChartMode.trace,
+        )
+        if (state) state.mode = pendingCyclingChartMode.mode
       }
-      pendingPowerBalanceMode = null
+      pendingCyclingChartMode = null
       const analysisStates = Array.from(
         embed.querySelectorAll<HTMLElement>('.tri-act[data-activity-id]'),
         activity => {
@@ -496,11 +509,16 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
           ?.focus({ preventScroll: true })
       }
       fresh.element
-        .querySelectorAll<HTMLElement>('.tri-power-balance-chart')
-        .forEach((chart, index) => {
-          const state = powerBalanceStates[index]
+        .querySelectorAll<HTMLElement>('.tri-cycling-mode-chart[data-tri-trace]')
+        .forEach(chart => {
+          const activityId = chart.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+            .activityId
+          const state = cyclingChartStates.find(
+            candidate =>
+              candidate.activityId === activityId && candidate.trace === chart.dataset.triTrace,
+          )
           if (!state) return
-          setPowerBalanceMode(chart, state.mode)
+          setCyclingChartMode(chart, state.mode)
         })
       fresh.element.querySelectorAll<HTMLElement>('.tri-swim-trends').forEach((section, index) => {
         const state = swimStates[index]

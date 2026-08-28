@@ -16,7 +16,7 @@ import {
   isWahooOriginatedSummary,
   WahooApiError,
   WahooCloudClient,
-  wahooCloudCredentialsFromEnv,
+  wahooCloudClientFromEnv,
   type WahooWorkoutDto,
   type WahooWorkoutSummaryDto,
 } from '../util/wahoo-cloud'
@@ -129,6 +129,7 @@ export function normalizeWahooActivity(
       byteLength: fitBytes.byteLength,
       profileVersion: fit.profileVersion,
     },
+    sweatLoss: fit.sweatLoss,
     metrics: mergedMetrics(summary, fit),
     summary: normalizedSummary(summary),
   }
@@ -227,10 +228,7 @@ export async function writeWahooCache(cache: WahooCache, path = WAHOO_CACHE_FILE
 }
 
 async function main(): Promise<void> {
-  const client = new WahooCloudClient(wahooCloudCredentialsFromEnv(), {
-    apiBaseUrl: process.env.WAHOO_API_BASE_URL,
-    tokenUrl: process.env.WAHOO_TOKEN_URL,
-  })
+  const client = await wahooCloudClientFromEnv()
   const cache = await fetchWahooCache(client, await readPreviousCache())
   await writeWahooCache(cache)
   await refreshTriathlonRouteSource()

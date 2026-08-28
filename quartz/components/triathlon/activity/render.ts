@@ -15,6 +15,7 @@ import { buildActivity as buildActivityNode } from '../../../util/triathlon-card
 import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../../../util/triathlon-card'
 import { buildCyclingBestEfforts as buildCyclingBestEffortsNode } from '../../../util/triathlon-card'
 import { buildHeatStrainTrace as buildHeatStrainTraceNode } from '../../../util/triathlon-card'
+import { buildMuscleOxygenTrace as buildMuscleOxygenTraceNode } from '../../../util/triathlon-card'
 import { buildPedalSmoothnessChart as buildPedalSmoothnessChartNode } from '../../../util/triathlon-card'
 import { buildPowerBalanceChart as buildPowerBalanceChartNode } from '../../../util/triathlon-card'
 import { buildPowerPhaseChart as buildPowerPhaseChartNode } from '../../../util/triathlon-card'
@@ -35,6 +36,7 @@ import { cyclingDynamicsIndexAtDistance } from '../../../util/triathlon-card'
 import { dominantTrainingEffectGroup } from '../../../util/triathlon-card'
 import { formatAltitude } from '../../../util/triathlon-card'
 import { formatGroundContactTime } from '../../../util/triathlon-card'
+import { formatMuscleOxygen } from '../../../util/triathlon-card'
 import { formatRespirationRate } from '../../../util/triathlon-card'
 import { formatStrideLength } from '../../../util/triathlon-card'
 import { formatTemperature } from '../../../util/triathlon-card'
@@ -93,7 +95,7 @@ import {
   statRow,
   zoneDuo,
 } from './primitives'
-import { powerBalanceMode, setPowerBalanceMode } from './scrub'
+import { cyclingChartMode, setCyclingChartMode } from './scrub'
 
 export const buildHeatRoute = (
   route: StravaActivityDetail['route'],
@@ -262,6 +264,7 @@ export const metricSpecs = (
   const hasResp = route.some(p => p.resp != null && p.resp > 0)
   const hasElev = d.maxAlt > d.minAlt
   const flags = routeStreamFlags(d)
+  const hasMuscleOxygen = flags.muscleOxygen
   const maxDistanceKm = Math.max(route.at(-1)?.d ?? d.distanceKm, 0.001)
   const hasRiderPosition =
     d.sport === 'bike' &&
@@ -470,6 +473,17 @@ export const metricSpecs = (
     readout: p =>
       `${scrubDist(presentation, p.d, d.sport)} · ${p.resp == null ? '—' : formatRespirationRate(p.resp)}`,
   }
+  const muscleOxygenSpec: MapMetric = {
+    label: 'muscle oxygen',
+    shortLabel: 'SmO₂',
+    ramp: RESP_RAMP,
+    pick: p => p.muscleOxygenPct ?? 0,
+    fmt: formatMuscleOxygen,
+    profile: graphDomain =>
+      requiredMapProfile(buildMuscleOxygenTraceNode(domF, d, null, graphDomain), 'muscle oxygen'),
+    readout: p =>
+      `${scrubDist(presentation, p.d, d.sport)} · ${p.muscleOxygenPct == null ? '—' : formatMuscleOxygen(p.muscleOxygenPct)}`,
+  }
   const riderPositionSpec: MapMetric = {
     label: 'rider position',
     shortLabel: 'RP',
@@ -594,6 +608,7 @@ export const metricSpecs = (
     if (hasHr) specs.push(hrSpec)
     if (hasCad) specs.push(cadSpec)
     if (hasResp) specs.push(respirationSpec)
+    if (hasMuscleOxygen) specs.push(muscleOxygenSpec)
     specs.push(paceSpec)
     if (hasElev) specs.push(elevSpec)
     if (hasRiderPosition) specs.push(riderPositionSpec)
@@ -727,9 +742,7 @@ export const renderMapDetail = (
   const renderProfile = (): void => {
     analysisController?.dispose()
     analysisController = null
-    const existingPowerBalanceMode = powerBalanceMode(
-      zoneBox.querySelector<HTMLElement>('.tri-power-balance-chart'),
-    )
+    const existingCyclingChartMode = cyclingChartMode(wrap)
     const spec = specs[active]
     const profile = spec.profile(graphDomain)
     const traces = spec.traces?.(graphDomain) ?? []
@@ -737,8 +750,8 @@ export const renderMapDetail = (
     zoneBox.replaceChildren(...traces.map(trace => trace.wrap))
     if (spec.extra) for (const node of spec.extra()) if (node) zoneBox.appendChild(node)
     if (bestEfforts) zoneBox.appendChild(bestEfforts)
-    const nextPowerBalance = zoneBox.querySelector<HTMLElement>('.tri-power-balance-chart')
-    if (nextPowerBalance) setPowerBalanceMode(nextPowerBalance, existingPowerBalanceMode)
+    const cyclingChart = zoneBox.querySelector<HTMLElement>('.tri-cycling-mode-chart')
+    if (cyclingChart) setCyclingChartMode(cyclingChart, existingCyclingChartMode)
     linkedSurfaces = [{ wrap: profile, fmt: spec.readout }, ...traces].map(surface => ({
       wrap: surface.wrap,
       samples: routeSamples,
@@ -1119,6 +1132,15 @@ export const renderDetail = (
         fmt: i => {
           const p = d.route[i]
           return `${scrubDist(presentation, p.d, d.sport)} · ${p.resp == null ? '—' : formatRespirationRate(p.resp)}`
+        },
+      })
+    else if (trace.dataset.triTrace === 'muscle-oxygen')
+      surfaces.push({
+        wrap: trace,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${p.muscleOxygenPct == null ? '—' : formatMuscleOxygen(p.muscleOxygenPct)}`
         },
       })
     else if (trace.dataset.triTrace === 'temperature')

@@ -33,7 +33,7 @@ import { joinSegments, QUARTZ } from '../util/path'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 import {
   WahooCloudClient,
-  wahooCloudCredentialsFromEnv,
+  wahooCloudClientFromEnv,
   type WahooWorkoutFileUpload,
 } from '../util/wahoo-cloud'
 import { wahooFitSha256 } from '../util/wahoo-fit'
@@ -411,10 +411,7 @@ async function main(): Promise<void> {
     console.log('[activity-bridge] no uploads needed')
     return
   }
-  const wahooClient = new WahooCloudClient(wahooCloudCredentialsFromEnv(), {
-    apiBaseUrl: process.env.WAHOO_API_BASE_URL,
-    tokenUrl: process.env.WAHOO_TOKEN_URL,
-  })
+  const wahooClient = await wahooCloudClientFromEnv()
   const garminSession = await readGarminConnectSession()
   const garminBase = cleanGarminConnectBaseUrl(
     process.env.GARMIN_CONNECT_BASE_URL?.trim() || DEFAULT_GARMIN_CONNECT_BASE,

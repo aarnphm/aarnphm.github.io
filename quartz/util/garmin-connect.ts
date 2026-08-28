@@ -159,6 +159,11 @@ const METRIC_KEYS = {
 }
 const CORE_CONNECT_IQ_APP_ID = '6957fe68-83fe-4ed6-8613-413f70624bb5'
 const CORE_DEVELOPER_FIELDS = { coreTemperatureC: 0, skinTemperatureC: 10, heatStrainIndex: 95 }
+const MUSCLE_OXYGEN_METRIC_KEYS = new Set([
+  'directSaturatedHemoglobinPercent',
+  'directSmO2',
+  'directMuscleOxygen',
+])
 const WEIGHT_KEYS = [
   'weight',
   'weightKg',
@@ -634,6 +639,12 @@ function descriptorMetricIndex(
 const metricIndex = (detail: UnknownRecord, key: string): number | null =>
   descriptorMetricIndex(detail, descriptor => readString(descriptor, 'key') === key)
 
+const metricIndexFrom = (detail: UnknownRecord, keys: ReadonlySet<string>): number | null =>
+  descriptorMetricIndex(detail, descriptor => {
+    const key = readString(descriptor, 'key')
+    return key != null && keys.has(key)
+  })
+
 const coreMetricIndex = (
   detail: UnknownRecord,
   field: keyof typeof CORE_DEVELOPER_FIELDS,
@@ -668,6 +679,7 @@ function hasStreamData(streams: GarminStreams): boolean {
     (streams.stamina?.some(value => value >= 0) ?? false) ||
     (streams.potentialStamina?.some(value => value >= 0) ?? false) ||
     (streams.respiration?.some(value => value > 0) ?? false) ||
+    (streams.muscleOxygenPercent?.some(value => value >= 0 && value <= 100) ?? false) ||
     (streams.heatStrainIndex?.some(value => value >= 0) ?? false) ||
     (streams.coreTemperatureC?.some(value => value > 0) ?? false) ||
     (streams.skinTemperatureC?.some(value => value > 0) ?? false)
@@ -710,6 +722,7 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     power: metricIndex(detail, METRIC_KEYS.power),
     rightBalance: metricIndex(detail, METRIC_KEYS.rightBalance),
     respiration: metricIndex(detail, METRIC_KEYS.respiration),
+    muscleOxygenPercent: metricIndexFrom(detail, MUSCLE_OXYGEN_METRIC_KEYS),
     stamina: metricIndex(detail, METRIC_KEYS.stamina),
     heatStrainIndex: coreMetricIndex(detail, 'heatStrainIndex'),
     coreTemperatureC: coreMetricIndex(detail, 'coreTemperatureC'),
@@ -727,6 +740,7 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     stamina: indices.stamina == null ? undefined : [],
     potentialStamina: indices.potentialStamina == null ? undefined : [],
     respiration: indices.respiration == null ? undefined : [],
+    muscleOxygenPercent: indices.muscleOxygenPercent == null ? undefined : [],
     heatStrainIndex: indices.heatStrainIndex == null ? undefined : [],
     coreTemperatureC: indices.coreTemperatureC == null ? undefined : [],
     skinTemperatureC: indices.skinTemperatureC == null ? undefined : [],
@@ -757,6 +771,7 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     streams.stamina?.push(metricValue(item, indices.stamina) ?? -1)
     streams.potentialStamina?.push(metricValue(item, indices.potentialStamina) ?? -1)
     streams.respiration?.push(metricValue(item, indices.respiration) ?? 0)
+    streams.muscleOxygenPercent?.push(metricValue(item, indices.muscleOxygenPercent) ?? -1)
     streams.heatStrainIndex?.push(metricValue(item, indices.heatStrainIndex) ?? -1)
     streams.coreTemperatureC?.push(metricValue(item, indices.coreTemperatureC) ?? -1)
     streams.skinTemperatureC?.push(metricValue(item, indices.skinTemperatureC) ?? -1)
