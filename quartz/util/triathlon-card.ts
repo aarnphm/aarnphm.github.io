@@ -232,6 +232,8 @@ export const formatThermalTemperature = (
 export const formatRespirationRate = (breathsPerMinute: number): string =>
   `${breathsPerMinute.toFixed(1)} brpm`
 
+export const formatMuscleOxygen = (percent: number): string => `${percent.toFixed(1)}% SmO₂`
+
 export const formatAltitude = (presentation: TriathlonPresentation, meters: number): string => {
   const rounded = Math.round(elevationValue(presentation, meters))
   return `${(rounded === 0 ? 0 : rounded).toLocaleString('en-US')} ${isImperial(presentation) ? 'ft' : 'm'}`
@@ -258,8 +260,13 @@ export const formatMl = (value: number): string => {
 
 export const formatFuelingSource = (fueling: ActivityFueling): string => {
   if (fueling.source === 'manual') return 'manual'
+  if (fueling.source === 'garmin+wahoo') return 'Garmin + Wahoo'
   const value = fueling.sourceDevice
   const clean = value?.trim()
+  if (fueling.source === 'wahoo') {
+    if (!clean) return 'Wahoo'
+    return clean.toLowerCase().includes('wahoo') ? clean : `Wahoo ${clean}`
+  }
   if (!clean) return 'Garmin'
   return clean.toLowerCase().includes('garmin') ? clean : `Garmin ${clean}`
 }
@@ -299,6 +306,8 @@ export const fuelingRows = (f: ActivityFueling): [string, string][] => {
   if (target.length > 0) rows.push(['target', target.join(' / ')])
 
   if (f.sweatLossMl != null) rows.push(['sweat', formatMl(f.sweatLossMl)])
+  if (f.sodiumLossMg != null)
+    rows.push(['sodium loss', `${Math.round(f.sodiumLossMg).toLocaleString('en-US')} mg`])
   if (rows.length > 0) rows.push(['source', formatFuelingSource(f)])
   return rows
 }
@@ -383,6 +392,7 @@ export const routeStreamFlags = (
   verticalOscillation: boolean
   stamina: boolean
   resp: boolean
+  muscleOxygen: boolean
   temp: boolean
   heatStrain: boolean
   coreTemperature: boolean
@@ -416,6 +426,14 @@ export const routeStreamFlags = (
       d.sport === 'bike' &&
       d.route.filter(point => point.stamina != null && point.potentialStamina != null).length >= 2,
     resp: d.route.some(p => p.resp != null && p.resp > 0),
+    muscleOxygen:
+      d.route.filter(
+        point =>
+          point.muscleOxygenPct != null &&
+          Number.isFinite(point.muscleOxygenPct) &&
+          point.muscleOxygenPct >= 0 &&
+          point.muscleOxygenPct <= 100,
+      ).length >= 2,
     temp: d.route.some(p => p.tempC != null),
     heatStrain: thermalPoints.filter(point => point.heatStrainIndex != null).length >= 2,
     coreTemperature: thermalPoints.filter(point => point.coreTemperatureC != null).length >= 2,
@@ -1201,10 +1219,16 @@ const routeRightPowerPct = (point: StravaActivityDetail['route'][number]): numbe
 
 type PowerBalanceSample = { watts: number; rightPowerPct: number; distanceKm: number }
 
-type PowerBalanceHeatCell = { count: number; x: number; y: number; width: number; height: number }
+type WattsHeatSample = { watts: number; value: number }
+type WattsHeatCell = { count: number; x: number; y: number; width: number; height: number }
+type CyclingModeTitle =
+  | 'power balance'
+  | 'torque effectiveness'
+  | 'pedal smoothness'
+  | 'electronic shifting'
 
-const POWER_BALANCE_HEAT_X_BINS = 64
-const POWER_BALANCE_HEAT_Y_BINS = 24
+const WATTS_HEAT_X_BINS = 64
+const WATTS_HEAT_Y_BINS = 24
 
 const powerBalanceSamples = (
   d: StravaActivityDetail,
@@ -1220,12 +1244,12 @@ const powerBalanceSamples = (
       sample.distanceKm >= graphDomain.startDistanceKm &&
       sample.distanceKm <= graphDomain.endDistanceKm,
   )
-  return selected.length >= 2 ? selected : measured
+  return selected.length > 0 ? selected : measured
 }
 
-const powerBalanceWattsAxis = (
+const wattsAxis = (
   d: StravaActivityDetail,
-  samples: readonly PowerBalanceSample[],
+  samples: readonly { watts: number }[],
 ): { max: number; ticks: AxisXTick[] } => {
   const observedMax = Math.max(d.maxWatts ?? 0, ...samples.map(sample => sample.watts))
   const step = niceStep(observedMax, 5)
@@ -1245,31 +1269,108 @@ const powerBalanceWattsAxis = (
   return { max, ticks }
 }
 
-const powerBalanceHeatCells = (
-  samples: readonly PowerBalanceSample[],
+const wattsHeatCells = (
+  samples: readonly WattsHeatSample[],
   maxWatts: number,
+  domainMin: number,
+  domainMax: number,
   height: number,
-): PowerBalanceHeatCell[] => {
+  invertY: boolean,
+): WattsHeatCell[] => {
   const counts = new Map<number, number>()
   for (const sample of samples) {
     const xBin = Math.min(
-      POWER_BALANCE_HEAT_X_BINS - 1,
-      Math.max(0, Math.floor((sample.watts / maxWatts) * POWER_BALANCE_HEAT_X_BINS)),
+      WATTS_HEAT_X_BINS - 1,
+      Math.max(0, Math.floor((sample.watts / maxWatts) * WATTS_HEAT_X_BINS)),
     )
-    const yBin = Math.min(
-      POWER_BALANCE_HEAT_Y_BINS - 1,
-      Math.max(0, Math.floor((sample.rightPowerPct / 100) * POWER_BALANCE_HEAT_Y_BINS)),
+    const normalized = (sample.value - domainMin) / Math.max(1e-6, domainMax - domainMin)
+    const valueBin = Math.min(
+      WATTS_HEAT_Y_BINS - 1,
+      Math.max(0, Math.floor(normalized * WATTS_HEAT_Y_BINS)),
     )
-    const key = yBin * POWER_BALANCE_HEAT_X_BINS + xBin
+    const yBin = invertY ? WATTS_HEAT_Y_BINS - 1 - valueBin : valueBin
+    const key = yBin * WATTS_HEAT_X_BINS + xBin
     counts.set(key, (counts.get(key) ?? 0) + 1)
   }
-  const xSize = 100 / POWER_BALANCE_HEAT_X_BINS
-  const ySize = height / POWER_BALANCE_HEAT_Y_BINS
+  const xSize = 100 / WATTS_HEAT_X_BINS
+  const ySize = height / WATTS_HEAT_Y_BINS
   return Array.from(counts, ([key, count]) => {
-    const xBin = key % POWER_BALANCE_HEAT_X_BINS
-    const yBin = Math.floor(key / POWER_BALANCE_HEAT_X_BINS)
+    const xBin = key % WATTS_HEAT_X_BINS
+    const yBin = Math.floor(key / WATTS_HEAT_X_BINS)
     return { count, x: xBin * xSize, y: yBin * ySize, width: xSize, height: ySize }
   }).sort((left, right) => left.y - right.y || left.x - right.x)
+}
+
+const buildWattsHeatmap = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  title: CyclingModeTitle,
+  className: string,
+  dataName: string,
+  series: readonly { side: 'left' | 'right' | 'single'; samples: readonly WattsHeatSample[] }[],
+  domainMin: number,
+  domainMax: number,
+  height: number,
+  invertY = true,
+): { svg: N; wattsTicks: AxisXTick[] } => {
+  const allSamples = series.flatMap(item => item.samples)
+  const axis = wattsAxis(d, allSamples)
+  const svg = f.svg('svg', {
+    class: `tri-cycling-watts-heatmap ${className}`,
+    viewBox: `0 0 100 ${height}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': triText(f.presentation.locale, `${title} by watts`),
+    'data-i18n-aria-label': `${title} by watts`,
+    [`data-${dataName}-samples`]: allSamples.length,
+    [`data-${dataName}-max-watts`]: axis.max,
+  })
+  const splitSides =
+    series.some(item => item.side === 'left') && series.some(item => item.side === 'right')
+  for (const item of series) {
+    const cells = wattsHeatCells(item.samples, axis.max, domainMin, domainMax, height, invertY)
+    const maxCellCount = Math.max(1, ...cells.map(cell => cell.count))
+    for (const cell of cells) {
+      const density = 0.16 + 0.84 * Math.sqrt(cell.count / maxCellCount)
+      const width = splitSides ? cell.width / 2 : cell.width
+      const x = cell.x + (splitSides && item.side === 'right' ? width : 0)
+      f.add(
+        svg,
+        f.svg('rect', {
+          class: `tri-cycling-watts-heat-cell tri-cycling-watts-heat-cell--${item.side}`,
+          x: x.toFixed(3),
+          y: cell.y.toFixed(3),
+          width: width.toFixed(3),
+          height: cell.height.toFixed(3),
+          style: `--tri-cycling-watts-density:${density.toFixed(3)}`,
+          'data-samples': cell.count,
+        }),
+      )
+    }
+  }
+  return { svg, wattsTicks: axis.ticks }
+}
+
+const buildCyclingChartModes = <N>(f: TriNodeFactory<N>): N => {
+  const modes = f.el('span', 'tri-cycling-chart-modes', undefined, {
+    role: 'group',
+    'aria-label': triText(f.presentation.locale, 'cycling charts view'),
+    'data-i18n-aria-label': 'cycling charts view',
+  })
+  for (const [mode, label] of [
+    ['distance', 'distance'],
+    ['power', 'watts'],
+  ] as const)
+    f.add(
+      modes,
+      f.el('button', 'tri-cycling-chart-mode tri-curve-range', label, {
+        type: 'button',
+        'data-cycling-chart-mode': mode,
+        'aria-pressed': String(mode === 'distance'),
+        'data-i18n': label,
+      }),
+    )
+  return modes
 }
 
 export const powerBalanceText = (rightPowerPct: number): string =>
@@ -1425,34 +1526,24 @@ export const buildPowerBalanceChart = <N>(
     }),
     f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
   )
-  const wattsAxis = powerBalanceWattsAxis(d, samples)
-  const heatCells = powerBalanceHeatCells(samples, wattsAxis.max, height)
-  const maxCellCount = Math.max(1, ...heatCells.map(cell => cell.count))
-  const heatSvg = f.svg('svg', {
-    class: 'tri-power-balance-heatmap',
-    viewBox: `0 0 ${width} ${height}`,
-    preserveAspectRatio: 'none',
-    role: 'img',
-    'aria-label': triText(f.presentation.locale, 'power balance by watts'),
-    'data-i18n-aria-label': 'power balance by watts',
-    'data-power-balance-samples': samples.length,
-    'data-power-balance-max-watts': wattsAxis.max,
-  })
-  for (const cell of heatCells) {
-    const density = 0.16 + 0.84 * Math.sqrt(cell.count / maxCellCount)
-    f.add(
-      heatSvg,
-      f.svg('rect', {
-        class: 'tri-power-balance-heat-cell',
-        x: cell.x.toFixed(3),
-        y: cell.y.toFixed(3),
-        width: cell.width.toFixed(3),
-        height: cell.height.toFixed(3),
-        style: `--tri-power-balance-density:${density.toFixed(3)}`,
-        'data-samples': cell.count,
-      }),
-    )
-  }
+  const heatmap = buildWattsHeatmap(
+    f,
+    d,
+    'power balance',
+    'tri-power-balance-heatmap',
+    'power-balance',
+    [
+      {
+        side: 'single',
+        samples: samples.map(sample => ({ watts: sample.watts, value: sample.rightPowerPct })),
+      },
+    ],
+    0,
+    100,
+    height,
+    false,
+  )
+  const heatSvg = heatmap.svg
   f.add(
     heatSvg,
     f.svg('line', {
@@ -1463,10 +1554,15 @@ export const buildPowerBalanceChart = <N>(
       y2: height / 2,
     }),
   )
-  const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-power-balance-chart', undefined, {
-    'data-tri-trace': triathlonTraceName('power balance'),
-    'data-power-balance-mode': 'distance',
-  })
+  const wrap = f.el(
+    'div',
+    'tri-zone tri-elev-wrap tri-cycling-mode-chart tri-power-balance-chart',
+    undefined,
+    {
+      'data-tri-trace': triathlonTraceName('power balance'),
+      'data-cycling-chart-mode': 'distance',
+    },
+  )
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-power-balance-summary')
   const rightAverage = activityRightPowerPct(d)
@@ -1489,35 +1585,17 @@ export const buildPowerBalanceChart = <N>(
       f.add(summary, item)
     }
   }
-  const modes = f.el('span', 'tri-power-balance-modes', undefined, {
-    role: 'group',
-    'aria-label': triText(f.presentation.locale, 'power balance view'),
-    'data-i18n-aria-label': 'power balance view',
-  })
-  for (const [mode, label] of [
-    ['distance', 'distance'],
-    ['power', 'watts'],
-  ] as const)
-    f.add(
-      modes,
-      f.el('button', 'tri-power-balance-mode tri-curve-range', label, {
-        type: 'button',
-        'data-power-balance-mode': mode,
-        'aria-pressed': String(mode === 'distance'),
-        'data-i18n': label,
-      }),
-    )
   f.add(
     cap,
     f.el('span', 'tri-elev-d', 'power balance', { 'data-i18n': 'power balance' }),
     summary,
-    modes,
+    buildCyclingChartModes(f),
   )
   const distancePane = f.el(
     'div',
-    'tri-power-balance-pane tri-power-balance-pane--distance',
+    'tri-cycling-chart-pane tri-cycling-chart-pane--distance tri-power-balance-pane--distance',
     undefined,
-    { 'data-power-balance-mode': 'distance', 'aria-hidden': 'false' },
+    { 'data-cycling-chart-mode': 'distance', 'aria-hidden': 'false' },
   )
   f.add(
     distancePane,
@@ -1531,11 +1609,12 @@ export const buildPowerBalanceChart = <N>(
       { top: 0, bottom: height },
     ),
   )
-  const powerPane = f.el('div', 'tri-power-balance-pane tri-power-balance-pane--power', undefined, {
-    'data-power-balance-mode': 'power',
-    'aria-hidden': 'true',
-    hidden: '',
-  })
+  const powerPane = f.el(
+    'div',
+    'tri-cycling-chart-pane tri-cycling-chart-pane--power tri-power-balance-pane--power',
+    undefined,
+    { 'data-cycling-chart-mode': 'power', 'aria-hidden': 'true', hidden: '' },
+  )
   f.add(
     powerPane,
     axisFrame(
@@ -1547,7 +1626,7 @@ export const buildPowerBalanceChart = <N>(
         { label: '100% R', vbY: height },
       ],
       height,
-      wattsAxis.ticks,
+      heatmap.wattsTicks,
       true,
       { top: 0, bottom: height },
     ),
@@ -1687,6 +1766,51 @@ const cyclingDynamicsAverage = (values: readonly (number | null)[]): number | nu
   return count > 0 ? sum / count : null
 }
 
+const routeWattsAtElapsed = (
+  route: StravaActivityDetail['route'],
+  elapsedS: number,
+): number | null => {
+  if (route.length === 0) return null
+  let low = 0
+  let high = route.length
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2)
+    if (route[middle].elapsedS < elapsedS) low = middle + 1
+    else high = middle
+  }
+  const index =
+    low === 0
+      ? 0
+      : low >= route.length
+        ? route.length - 1
+        : elapsedS - route[low - 1].elapsedS <= route[low].elapsedS - elapsedS
+          ? low - 1
+          : low
+  return route[index].w > 0 ? route[index].w : null
+}
+
+const cyclingDynamicsWattsSamples = (
+  d: StravaActivityDetail,
+  dynamics: ActivityCyclingDynamics,
+  values: readonly (number | null)[],
+  graphDomain?: ActivityGraphDomain | null,
+): WattsHeatSample[] => {
+  const samples: WattsHeatSample[] = []
+  for (let index = 0; index < values.length; index++) {
+    const value = values[index]
+    const distanceKm = dynamics.distanceKm[index]
+    if (
+      !validCyclingDynamicsValue(value) ||
+      (graphDomain &&
+        (distanceKm < graphDomain.startDistanceKm || distanceKm > graphDomain.endDistanceKm))
+    )
+      continue
+    const watts = routeWattsAtElapsed(d.route, dynamics.elapsedS[index])
+    if (watts != null) samples.push({ watts, value })
+  }
+  return samples
+}
+
 const buildCyclingDynamicsLegend = <N>(
   f: TriNodeFactory<N>,
   side: 'left' | 'right',
@@ -1746,8 +1870,28 @@ const buildCyclingDynamicsPercentChart = <N>(
     vbY: py(value),
   }))
   const view = graphView(d, graphDomain)
-  const title = metric === 'pedalSmoothness' ? 'pedal smoothness' : 'torque effectiveness'
+  const title: CyclingModeTitle =
+    metric === 'pedalSmoothness' ? 'pedal smoothness' : 'torque effectiveness'
   const className = metric === 'pedalSmoothness' ? 'pedal-smoothness' : 'torque-effectiveness'
+  const leftHeat = cyclingDynamicsWattsSamples(d, dynamics, left, graphDomain)
+  const rightHeat = cyclingDynamicsWattsSamples(d, dynamics, right, graphDomain)
+  const heatAvailable = leftHeat.length + rightHeat.length > 0
+  const heatmap = heatAvailable
+    ? buildWattsHeatmap(
+        f,
+        d,
+        title,
+        `tri-${className}-heatmap`,
+        className,
+        [
+          { side: 'left', samples: leftHeat },
+          { side: 'right', samples: rightHeat },
+        ],
+        domainMin,
+        domainMax,
+        height,
+      )
+    : null
   const svgEl = f.svg('svg', {
     class: `tri-elev tri-cycling-dynamics-svg tri-${className}-svg`,
     viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
@@ -1788,9 +1932,12 @@ const buildCyclingDynamicsPercentChart = <N>(
   f.add(svgEl, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }))
   const wrap = f.el(
     'div',
-    `tri-zone tri-elev-wrap tri-cycling-dynamics-chart tri-${className}-chart`,
+    `tri-zone tri-elev-wrap tri-cycling-dynamics-chart tri-${className}-chart${heatmap ? ' tri-cycling-mode-chart' : ''}`,
     undefined,
-    { 'data-tri-trace': triathlonTraceName(title) },
+    {
+      'data-tri-trace': triathlonTraceName(title),
+      ...(heatmap ? { 'data-cycling-chart-mode': 'distance' } : {}),
+    },
   )
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-cycling-dynamics-summary')
@@ -1808,19 +1955,37 @@ const buildCyclingDynamicsPercentChart = <N>(
   if (!embedded)
     f.add(summary, buildCyclingDynamicsLegend(f, 'left'), buildCyclingDynamicsLegend(f, 'right'))
   f.add(cap, buildCyclingDynamicsTitle(f, title), summary)
-  f.add(
-    wrap,
-    cap,
-    axisFrame(
-      f,
-      svgEl,
-      yTicks,
-      height,
-      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
-      true,
-      { top: 0, bottom: height },
-    ),
+  const distanceFrame = axisFrame(
+    f,
+    svgEl,
+    yTicks,
+    height,
+    distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+    true,
+    { top: 0, bottom: height },
   )
+  if (!heatmap) {
+    f.add(wrap, cap, distanceFrame)
+    return wrap
+  }
+  const distancePane = f.el(
+    'div',
+    `tri-cycling-chart-pane tri-cycling-chart-pane--distance tri-${className}-pane--distance`,
+    undefined,
+    { 'data-cycling-chart-mode': 'distance', 'aria-hidden': 'false' },
+  )
+  f.add(distancePane, distanceFrame)
+  const powerPane = f.el(
+    'div',
+    `tri-cycling-chart-pane tri-cycling-chart-pane--power tri-${className}-pane--power`,
+    undefined,
+    { 'data-cycling-chart-mode': 'power', 'aria-hidden': 'true', hidden: '' },
+  )
+  f.add(
+    powerPane,
+    axisFrame(f, heatmap.svg, yTicks, height, heatmap.wattsTicks, true, { top: 0, bottom: height }),
+  )
+  f.add(wrap, cap, distancePane, powerPane)
   return wrap
 }
 
@@ -2239,6 +2404,80 @@ function dominantGearPairing(
   return dominant
 }
 
+interface ShiftingWattsRow {
+  key: string
+  frontTeeth: number
+  rearTeeth: number
+  ratio: number
+}
+
+const shiftingWattsData = (
+  d: StravaActivityDetail,
+  shifts: readonly ActivityGearShift[],
+  graphDomain?: ActivityGraphDomain | null,
+): { rows: ShiftingWattsRow[]; samples: WattsHeatSample[] } => {
+  const observed: { key: string; watts: number }[] = []
+  const pairings = new Map<string, ShiftingWattsRow>()
+  let shiftIndex = 0
+  for (const point of d.route) {
+    while (shiftIndex + 1 < shifts.length && shifts[shiftIndex + 1].elapsedS <= point.elapsedS)
+      shiftIndex++
+    if (
+      point.w <= 0 ||
+      (graphDomain &&
+        (point.d < graphDomain.startDistanceKm || point.d > graphDomain.endDistanceKm))
+    )
+      continue
+    const shift = shifts[shiftIndex]
+    if (!shift || shift.frontTeeth <= 0 || shift.rearTeeth <= 0) continue
+    const key = `${shift.frontTeeth}:${shift.rearTeeth}`
+    pairings.set(key, {
+      key,
+      frontTeeth: shift.frontTeeth,
+      rearTeeth: shift.rearTeeth,
+      ratio: shift.frontTeeth / shift.rearTeeth,
+    })
+    observed.push({ key, watts: point.w })
+  }
+  const rows = [...pairings.values()].sort(
+    (left, right) =>
+      left.ratio - right.ratio ||
+      left.frontTeeth - right.frontTeeth ||
+      right.rearTeeth - left.rearTeeth,
+  )
+  const rowIndex = new Map(rows.map((row, index) => [row.key, index]))
+  return {
+    rows,
+    samples: observed.flatMap(sample => {
+      const index = rowIndex.get(sample.key)
+      if (index == null) return []
+      return [{ watts: sample.watts, value: rows.length === 1 ? 0.5 : index }]
+    }),
+  }
+}
+
+const shiftingWattsTicks = (
+  rows: readonly ShiftingWattsRow[],
+  height: number,
+  limit = 4,
+): { label: string; vbY: number }[] => {
+  if (rows.length === 0) return []
+  const indices =
+    rows.length <= limit
+      ? rows.map((_, index) => index)
+      : Array.from(
+          new Set(
+            Array.from({ length: limit }, (_, index) =>
+              Math.round((index / (limit - 1)) * (rows.length - 1)),
+            ),
+          ),
+        )
+  return indices.map(index => ({
+    label: `${rows[index].frontTeeth}×${rows[index].rearTeeth}`,
+    vbY: rows.length === 1 ? height / 2 : height - (index / (rows.length - 1)) * (height - 1),
+  }))
+}
+
 export interface ActivityGearRatioDistributionPoint {
   ratio: number
   percentage: number
@@ -2292,6 +2531,21 @@ export const buildShiftingChart = <N>(
   const view = graphViewForDistance(maxDistanceKm, graphDomain)
   const frontY = (value: number): number => gearY(value, frontMin, frontMax, height)
   const rearY = (value: number): number => gearY(value, rearMin, rearMax, height)
+  const wattsData = shiftingWattsData(d, shifts, graphDomain)
+  const heatAvailable = wattsData.samples.length > 0 && wattsData.rows.length > 0
+  const heatmap = heatAvailable
+    ? buildWattsHeatmap(
+        f,
+        d,
+        'electronic shifting',
+        'tri-shift-heatmap',
+        'electronic-shifting',
+        [{ side: 'single', samples: wattsData.samples }],
+        0,
+        wattsData.rows.length === 1 ? 1 : wattsData.rows.length - 1,
+        height,
+      )
+    : null
   const svgEl = f.svg('svg', {
     class: 'tri-elev tri-shift-svg',
     viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
@@ -2312,9 +2566,15 @@ export const buildShiftingChart = <N>(
     }),
     f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
   )
-  const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-shift-chart', undefined, {
-    'data-tri-trace': triathlonTraceName('electronic shifting'),
-  })
+  const wrap = f.el(
+    'div',
+    `tri-zone tri-elev-wrap tri-shift-chart${heatmap ? ' tri-cycling-mode-chart' : ''}`,
+    undefined,
+    {
+      'data-tri-trace': triathlonTraceName('electronic shifting'),
+      ...(heatmap ? { 'data-cycling-chart-mode': 'distance' } : {}),
+    },
+  )
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-shift-summary')
   if (dominant)
@@ -2340,19 +2600,45 @@ export const buildShiftingChart = <N>(
     f.el('span', 'tri-elev-d', 'electronic shifting', { 'data-i18n': 'electronic shifting' }),
     summary,
   )
+  const distanceFrame = axisFrame(
+    f,
+    svgEl,
+    sampledGearTicks(frontValues).map(value => ({ label: `${value}T`, vbY: frontY(value) })),
+    height,
+    distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+    true,
+    { top: 0, bottom: height },
+  )
+  if (!heatmap) {
+    f.add(wrap, cap, distanceFrame)
+    return wrap
+  }
+  const distancePane = f.el(
+    'div',
+    'tri-cycling-chart-pane tri-cycling-chart-pane--distance tri-shift-pane--distance',
+    undefined,
+    { 'data-cycling-chart-mode': 'distance', 'aria-hidden': 'false' },
+  )
+  f.add(distancePane, distanceFrame)
+  const powerPane = f.el(
+    'div',
+    'tri-cycling-chart-pane tri-cycling-chart-pane--power tri-shift-pane--power',
+    undefined,
+    { 'data-cycling-chart-mode': 'power', 'aria-hidden': 'true', hidden: '' },
+  )
   f.add(
-    wrap,
-    cap,
+    powerPane,
     axisFrame(
       f,
-      svgEl,
-      sampledGearTicks(frontValues).map(value => ({ label: `${value}T`, vbY: frontY(value) })),
+      heatmap.svg,
+      shiftingWattsTicks(wattsData.rows, height),
       height,
-      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+      heatmap.wattsTicks,
       true,
       { top: 0, bottom: height },
     ),
   )
+  f.add(wrap, cap, distancePane, powerPane)
   return wrap
 }
 
@@ -2623,6 +2909,36 @@ export const buildRespirationTrace = <N>(
     'respiration',
     () => `${formatRespirationRate(average)} avg`,
     value => `${Math.round(value)}brpm`,
+    { min, max, intervals: 2 },
+    selection,
+    graphDomain,
+  )
+}
+
+export const buildMuscleOxygenTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+): N | null => {
+  const values = d.route
+    .map(point => point.muscleOxygenPct)
+    .filter((value): value is number => value != null && value >= 0 && value <= 100)
+  if (values.length < 2) return null
+  const average = values.reduce((total, value) => total + value, 0) / values.length
+  let min = Math.floor(Math.min(...values) / 5) * 5
+  let max = Math.ceil(Math.max(...values) / 5) * 5
+  if (max <= min) {
+    min = Math.max(0, min - 5)
+    max = Math.min(100, max + 5)
+  }
+  return buildTrace(
+    f,
+    d,
+    point => point.muscleOxygenPct ?? average,
+    'muscle oxygen',
+    () => `${formatMuscleOxygen(average)} avg`,
+    value => `${value.toFixed(1)}%`,
     { min, max, intervals: 2 },
     selection,
     graphDomain,
@@ -5598,6 +5914,10 @@ export const buildActivity = <N>(
       if (verticalOscillation) f.add(more, verticalOscillation)
     }
     if (flags.resp) f.add(more, buildRespirationTrace(f, d, analysisSelection))
+    if (flags.muscleOxygen) {
+      const muscleOxygen = buildMuscleOxygenTrace(f, d, analysisSelection)
+      if (muscleOxygen) f.add(more, muscleOxygen)
+    }
     if (flags.temp) f.add(more, buildTemperatureTrace(f, d, analysisSelection))
     if (flags.heatStrain) {
       const heatStrain = buildHeatStrainTrace(f, d, analysisSelection)

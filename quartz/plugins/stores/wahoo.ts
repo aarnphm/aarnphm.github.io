@@ -8,7 +8,7 @@ const DISTANCE_TOLERANCE_M = 1500
 const DURATION_TOLERANCE_RATIO = 0.12
 const DURATION_TOLERANCE_S = 10 * 60
 
-export const WAHOO_CACHE_VERSION = 2
+export const WAHOO_CACHE_VERSION = 3
 
 export type WahooGearShift = GarminGearShift
 export type WahooCyclingDynamics = GarminCyclingDynamics
@@ -54,6 +54,11 @@ export interface WahooFitFile {
   profileVersion: string
 }
 
+export interface WahooSweatLoss {
+  fluidMl: number | null
+  sodiumMg: number | null
+}
+
 export interface WahooStreams {
   timestamps: string[]
   time: number[]
@@ -67,6 +72,15 @@ export interface WahooStreams {
   speed: (number | null)[]
   temperature: (number | null)[]
   respiration: (number | null)[]
+  muscleOxygenPercent: (number | null)[]
+  totalHemoglobinConcentration: (number | null)[]
+  heatStrainIndex: (number | null)[]
+  coreTemperatureC: (number | null)[]
+  skinTemperatureC: (number | null)[]
+  minuteVentilation: (number | null)[]
+  tidalVolume: (number | null)[]
+  fluidLossMl: (number | null)[]
+  sodiumLossMg: (number | null)[]
 }
 
 export interface WahooActivity {
@@ -83,6 +97,7 @@ export interface WahooActivity {
   elapsedTimeS: number | null
   sourceDevice: string | null
   sourceFile: WahooFitFile
+  sweatLoss: WahooSweatLoss
   metrics: WahooMetrics
   summary: WahooSummary
 }
@@ -372,6 +387,14 @@ function parseFitFile(value: unknown, label: string): WahooFitFile {
   }
 }
 
+function parseSweatLoss(value: unknown, label: string): WahooSweatLoss {
+  if (!isRecord(value)) throw new Error(`${label} must be an object`)
+  return {
+    fluidMl: finiteNumber(value.fluidMl, `${label}.fluidMl`, true),
+    sodiumMg: finiteNumber(value.sodiumMg, `${label}.sodiumMg`, true),
+  }
+}
+
 function parseActivity(value: unknown, label: string): WahooActivity {
   if (!isRecord(value)) throw new Error(`${label} must be an object`)
   const id = stringValue(value.id, `${label}.id`)
@@ -396,6 +419,7 @@ function parseActivity(value: unknown, label: string): WahooActivity {
     elapsedTimeS: finiteNumber(value.elapsedTimeS, `${label}.elapsedTimeS`, true),
     sourceDevice: stringValue(value.sourceDevice, `${label}.sourceDevice`, true),
     sourceFile: parseFitFile(value.sourceFile, `${label}.sourceFile`),
+    sweatLoss: parseSweatLoss(value.sweatLoss, `${label}.sweatLoss`),
     metrics: parseMetrics(value.metrics, `${label}.metrics`),
     summary: parseSummary(value.summary, `${label}.summary`),
   }
@@ -438,6 +462,21 @@ function parseStreams(value: unknown, label: string): WahooStreams {
     speed: nullableNumberArray(value.speed, `${label}.speed`),
     temperature: nullableNumberArray(value.temperature, `${label}.temperature`),
     respiration: nullableNumberArray(value.respiration, `${label}.respiration`),
+    muscleOxygenPercent: nullableNumberArray(
+      value.muscleOxygenPercent,
+      `${label}.muscleOxygenPercent`,
+    ),
+    totalHemoglobinConcentration: nullableNumberArray(
+      value.totalHemoglobinConcentration,
+      `${label}.totalHemoglobinConcentration`,
+    ),
+    heatStrainIndex: nullableNumberArray(value.heatStrainIndex, `${label}.heatStrainIndex`),
+    coreTemperatureC: nullableNumberArray(value.coreTemperatureC, `${label}.coreTemperatureC`),
+    skinTemperatureC: nullableNumberArray(value.skinTemperatureC, `${label}.skinTemperatureC`),
+    minuteVentilation: nullableNumberArray(value.minuteVentilation, `${label}.minuteVentilation`),
+    tidalVolume: nullableNumberArray(value.tidalVolume, `${label}.tidalVolume`),
+    fluidLossMl: nullableNumberArray(value.fluidLossMl, `${label}.fluidLossMl`),
+    sodiumLossMg: nullableNumberArray(value.sodiumLossMg, `${label}.sodiumLossMg`),
   }
   const lengths = Object.values(streams).map(stream => stream.length)
   if (lengths.some(length => length !== streams.time.length))

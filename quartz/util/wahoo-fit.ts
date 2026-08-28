@@ -1,7 +1,7 @@
 import { Decoder, Stream, type FitMessages, type RecordMesg } from '@garmin/fitsdk'
 import { createHash } from 'node:crypto'
 import type { WahooMetrics, WahooStreams } from '../plugins/stores/wahoo'
-import type { WahooCyclingDynamics, WahooGearShift } from '../plugins/stores/wahoo'
+import type { WahooCyclingDynamics, WahooGearShift, WahooSweatLoss } from '../plugins/stores/wahoo'
 import { emptyWahooMetrics } from '../plugins/stores/wahoo'
 import { fitCyclingDynamics, fitGearShifts } from './garmin-fit'
 
@@ -16,6 +16,7 @@ export interface WahooFitData {
   elapsedTimeS: number | null
   metrics: WahooMetrics
   streams: WahooStreams
+  sweatLoss: WahooSweatLoss
   gearShifts: WahooGearShift[]
   cyclingDynamics: WahooCyclingDynamics
   profileVersion: string
@@ -46,18 +47,48 @@ function text(value: string | number | undefined): string | null {
   return null
 }
 
-function decodeMessages(bytes: Uint8Array): { messages: FitMessages; profileVersion: string } {
+interface DecodedMessages {
+  messages: FitMessages
+  developerFields: ReadonlyMap<number, DeveloperField>
+  profileVersion: string
+}
+
+interface DeveloperField {
+  name: string
+  offset: number
+  scale: number
+}
+
+function fieldName(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+}
+
+function decodeMessages(bytes: Uint8Array): DecodedMessages {
   if (!Decoder.isFIT(Stream.fromByteArray(bytes))) throw new Error('Wahoo workout file is not FIT')
   if (!new Decoder(Stream.fromByteArray(bytes)).checkIntegrity())
     throw new Error('Wahoo workout FIT integrity check failed')
+  const developerFields = new Map<number, DeveloperField>()
   const decoded = new Decoder(Stream.fromByteArray(bytes)).read({
     expandSubFields: true,
     expandComponents: true,
+    fieldDescriptionListener: (key, _developer, field) => {
+      const name = text(field.fieldName)
+      if (name)
+        developerFields.set(key, {
+          name: fieldName(name),
+          offset: finite(field.offset) ?? 0,
+          scale: positive(field.scale) ?? 1,
+        })
+    },
   })
   if (decoded.errors.length > 0)
     throw new Error(decoded.errors.map(error => error.message).join('; '))
   return {
     messages: decoded.messages,
+    developerFields,
     profileVersion: `${decoded.profileVersion.major}.${decoded.profileVersion.minor}`,
   }
 }
@@ -89,7 +120,37 @@ function deviceName(messages: FitMessages): string | null {
   return text(messages.fileIdMesgs?.[0]?.manufacturer)
 }
 
-function streamsFor(messages: FitMessages, startMs: number): WahooStreams {
+function developerNumber(
+  record: RecordMesg,
+  fields: ReadonlyMap<number, DeveloperField>,
+  acceptedNames: ReadonlySet<string>,
+): number | null {
+  for (const [key, value] of Object.entries(record.developerFields ?? {})) {
+    const field = fields.get(Number(key))
+    if (!field || !acceptedNames.has(field.name)) continue
+    if (typeof value === 'number') return finite(value / field.scale - field.offset)
+    if (!Array.isArray(value)) continue
+    for (let index = value.length - 1; index >= 0; index--) {
+      const item = value[index]
+      if (typeof item === 'number') return finite(item / field.scale - field.offset)
+    }
+  }
+  return null
+}
+
+const BREATH_RATE_FIELDS = new Set(['tyme_breath_rate', 'breathing_rate', 'respiration_rate'])
+const MINUTE_VENTILATION_FIELDS = new Set(['tyme_minute_volume', 'minute_ventilation'])
+const TIDAL_VOLUME_FIELDS = new Set(['tyme_tidal_volume', 'tidal_volume'])
+const FLUID_LOSS_FIELDS = new Set(['fluid_loss_ml', 'fluid_loss'])
+const SODIUM_LOSS_FIELDS = new Set(['sodium_loss_mg', 'sodium_loss'])
+const HEAT_STRAIN_FIELDS = new Set(['heat_strain_index'])
+const SKIN_TEMPERATURE_FIELDS = new Set(['skin_temperature'])
+
+function streamsFor(
+  messages: FitMessages,
+  developerFields: ReadonlyMap<number, DeveloperField>,
+  startMs: number,
+): WahooStreams {
   const records = [...(messages.recordMesgs ?? [])]
     .filter(record => timestamp(record.timestamp) != null)
     .sort((left, right) => recordTimestamp(left) - recordTimestamp(right))
@@ -106,6 +167,15 @@ function streamsFor(messages: FitMessages, startMs: number): WahooStreams {
     speed: [],
     temperature: [],
     respiration: [],
+    muscleOxygenPercent: [],
+    totalHemoglobinConcentration: [],
+    heatStrainIndex: [],
+    coreTemperatureC: [],
+    skinTemperatureC: [],
+    minuteVentilation: [],
+    tidalVolume: [],
+    fluidLossMl: [],
+    sodiumLossMg: [],
   }
   for (const record of records) {
     const date = timestamp(record.timestamp)
@@ -123,9 +193,44 @@ function streamsFor(messages: FitMessages, startMs: number): WahooStreams {
     streams.cadence.push(nonnegative(record.cadence))
     streams.speed.push(nonnegative(record.enhancedSpeed ?? record.speed))
     streams.temperature.push(finite(record.temperature))
-    streams.respiration.push(positive(record.respirationRate))
+    streams.respiration.push(
+      positive(
+        record.enhancedRespirationRate ??
+          record.respirationRate ??
+          developerNumber(record, developerFields, BREATH_RATE_FIELDS),
+      ),
+    )
+    streams.muscleOxygenPercent.push(nonnegative(record.saturatedHemoglobinPercent))
+    streams.totalHemoglobinConcentration.push(nonnegative(record.totalHemoglobinConc))
+    streams.heatStrainIndex.push(
+      nonnegative(developerNumber(record, developerFields, HEAT_STRAIN_FIELDS)),
+    )
+    streams.coreTemperatureC.push(finite(record.coreTemperature))
+    streams.skinTemperatureC.push(
+      finite(developerNumber(record, developerFields, SKIN_TEMPERATURE_FIELDS)),
+    )
+    streams.minuteVentilation.push(
+      nonnegative(developerNumber(record, developerFields, MINUTE_VENTILATION_FIELDS)),
+    )
+    streams.tidalVolume.push(
+      nonnegative(developerNumber(record, developerFields, TIDAL_VOLUME_FIELDS)),
+    )
+    streams.fluidLossMl.push(
+      nonnegative(developerNumber(record, developerFields, FLUID_LOSS_FIELDS)),
+    )
+    streams.sodiumLossMg.push(
+      nonnegative(developerNumber(record, developerFields, SODIUM_LOSS_FIELDS)),
+    )
   }
   return streams
+}
+
+function finalCumulativeValue(values: readonly (number | null)[]): number | null {
+  for (let index = values.length - 1; index >= 0; index--) {
+    const value = values[index]
+    if (value != null && Number.isFinite(value) && value >= 0) return value
+  }
+  return null
 }
 
 function sessionMetrics(messages: FitMessages): WahooMetrics {
@@ -156,13 +261,14 @@ export function wahooFitSha256(bytes: Uint8Array): string {
 }
 
 export function decodeWahooFit(bytes: Uint8Array): WahooFitData {
-  const { messages, profileVersion } = decodeMessages(bytes)
+  const { messages, developerFields, profileVersion } = decodeMessages(bytes)
   const file = messages.fileIdMesgs?.[0]
   if (!file || file.type !== 'activity') throw new Error('Wahoo FIT file must be an activity')
   const session = messages.sessionMesgs?.[0]
   if (!session) throw new Error('Wahoo FIT file has no session')
   const start = timestamp(session.startTime) ?? timestamp(file.timeCreated)
   if (!start) throw new Error('Wahoo FIT file has no valid start time')
+  const streams = streamsFor(messages, developerFields, start.getTime())
   return {
     startDate: start.toISOString(),
     sport: text(session.sport),
@@ -171,7 +277,11 @@ export function decodeWahooFit(bytes: Uint8Array): WahooFitData {
     movingTimeS: nonnegative(session.totalMovingTime ?? session.totalTimerTime),
     elapsedTimeS: nonnegative(session.totalElapsedTime),
     metrics: sessionMetrics(messages),
-    streams: streamsFor(messages, start.getTime()),
+    streams,
+    sweatLoss: {
+      fluidMl: finalCumulativeValue(streams.fluidLossMl),
+      sodiumMg: finalCumulativeValue(streams.sodiumLossMg),
+    },
     gearShifts: fitGearShifts(messages),
     cyclingDynamics: fitCyclingDynamics(messages),
     profileVersion,

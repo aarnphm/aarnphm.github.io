@@ -61,7 +61,7 @@ test('fetches the summary show endpoint when workout pages omit the embedded sum
   }
   const client = new WahooCloudClient(
     { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
-    { envFile: join(tmpdir(), `wahoo-sync-${process.pid}.env`), request },
+    { refreshTokenFile: join(tmpdir(), `wahoo-sync-${process.pid}.token`), request },
   )
 
   const resolved = await resolveWahooWorkoutSummary(client, workout())
@@ -82,7 +82,7 @@ test('treats absent third-party or planned summaries as an explicit skip', async
   }
   const client = new WahooCloudClient(
     { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
-    { envFile: join(tmpdir(), `wahoo-sync-missing-${process.pid}.env`), request },
+    { refreshTokenFile: join(tmpdir(), `wahoo-sync-missing-${process.pid}.token`), request },
   )
 
   assert.equal(await resolveWahooWorkoutSummary(client, workout()), null)

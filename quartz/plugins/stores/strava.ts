@@ -287,6 +287,7 @@ export interface StravaRoutePoint {
   stamina: number | null
   potentialStamina: number | null
   resp: number | null
+  muscleOxygenPct?: number | null
   tempC: number | null
   heatStrainIndex: number | null
   coreTemperatureC: number | null
@@ -436,7 +437,8 @@ export interface ActivityHeartRateTracePoint {
 }
 
 export interface ActivityFueling extends GarminFueling {
-  source: 'garmin' | 'manual'
+  sodiumLossMg: number | null
+  source: 'garmin' | 'garmin+wahoo' | 'manual' | 'wahoo'
 }
 
 export interface ActivityStrength {
@@ -1624,11 +1626,137 @@ interface TimedMetricSample {
   value: number
 }
 
+interface RespirationProjectionModel {
+  intercept: number
+  slope: number
+}
+
+const RESPIRATION_PROJECTION_STEP_S = 0.5
+const RESPIRATION_PROJECTION_MAX_GAP_S = 5
+const RESPIRATION_CALIBRATION_MIN_SAMPLES = 30
+const RESPIRATION_PROJECTION_MIN_BRPM = 12
+const RESPIRATION_PROJECTION_MAX_BRPM = 60
+
+function garminRespirationProjectionModel(
+  garmin: GarminCache | null,
+): RespirationProjectionModel | null {
+  if (!garmin?.streams) return null
+  let count = 0
+  let heartRateSum = 0
+  let respirationSum = 0
+  let heartRateSquaredSum = 0
+  let crossProductSum = 0
+  for (const [id, activity] of Object.entries(garmin.activities)) {
+    if (activity.sport !== 'bike') continue
+    const stream = garmin.streams[id]
+    const heartRate = stream?.heartrate
+    const respiration = stream?.respiration
+    if (!heartRate || !respiration || heartRate.length !== respiration.length) continue
+    for (let index = 0; index < heartRate.length; index++) {
+      const heartRateValue = heartRate[index]
+      const respirationValue = respiration[index]
+      if (
+        !Number.isFinite(heartRateValue) ||
+        heartRateValue < 35 ||
+        heartRateValue > 240 ||
+        !Number.isFinite(respirationValue) ||
+        respirationValue < 8 ||
+        respirationValue > 70
+      )
+        continue
+      count += 1
+      heartRateSum += heartRateValue
+      respirationSum += respirationValue
+      heartRateSquaredSum += heartRateValue * heartRateValue
+      crossProductSum += heartRateValue * respirationValue
+    }
+  }
+  if (count < RESPIRATION_CALIBRATION_MIN_SAMPLES) return null
+  const denominator = count * heartRateSquaredSum - heartRateSum * heartRateSum
+  if (!Number.isFinite(denominator) || denominator <= 0) return null
+  const slope = (count * crossProductSum - heartRateSum * respirationSum) / denominator
+  const intercept = (respirationSum - slope * heartRateSum) / count
+  if (!Number.isFinite(slope) || slope <= 0 || slope > 1 || !Number.isFinite(intercept)) return null
+  return { intercept, slope }
+}
+
+function projectedRespiration(model: RespirationProjectionModel, heartRate: number): number {
+  return Math.min(
+    RESPIRATION_PROJECTION_MAX_BRPM,
+    Math.max(RESPIRATION_PROJECTION_MIN_BRPM, model.intercept + model.slope * heartRate),
+  )
+}
+
+function projectWahooRespiration(
+  stream: WahooStreams,
+  startOffsetS: number,
+  model: RespirationProjectionModel,
+): TimedMetricSample[] {
+  if (stream.time.length !== stream.heartrate.length) return []
+  const samples: TimedMetricSample[] = []
+  let previousElapsedS: number | null = null
+  let previousHeartRate: number | null = null
+  for (let index = 0; index < stream.time.length; index++) {
+    const elapsedS = stream.time[index]
+    const heartRate = stream.heartrate[index]
+    if (
+      !Number.isFinite(elapsedS) ||
+      typeof heartRate !== 'number' ||
+      !Number.isFinite(heartRate) ||
+      heartRate < 35 ||
+      heartRate > 240
+    ) {
+      previousElapsedS = null
+      previousHeartRate = null
+      continue
+    }
+    if (previousElapsedS == null || previousHeartRate == null || elapsedS <= previousElapsedS) {
+      samples.push({
+        elapsedS: elapsedS + startOffsetS,
+        value: projectedRespiration(model, heartRate),
+      })
+      previousElapsedS = elapsedS
+      previousHeartRate = heartRate
+      continue
+    }
+    const spanS = elapsedS - previousElapsedS
+    if (spanS > RESPIRATION_PROJECTION_MAX_GAP_S) {
+      samples.push({
+        elapsedS: elapsedS + startOffsetS,
+        value: projectedRespiration(model, heartRate),
+      })
+      previousElapsedS = elapsedS
+      previousHeartRate = heartRate
+      continue
+    }
+    for (
+      let projectedElapsedS = previousElapsedS + RESPIRATION_PROJECTION_STEP_S;
+      projectedElapsedS < elapsedS;
+      projectedElapsedS += RESPIRATION_PROJECTION_STEP_S
+    ) {
+      const fraction = (projectedElapsedS - previousElapsedS) / spanS
+      const projectedHeartRate = previousHeartRate + (heartRate - previousHeartRate) * fraction
+      samples.push({
+        elapsedS: projectedElapsedS + startOffsetS,
+        value: projectedRespiration(model, projectedHeartRate),
+      })
+    }
+    samples.push({
+      elapsedS: elapsedS + startOffsetS,
+      value: projectedRespiration(model, heartRate),
+    })
+    previousElapsedS = elapsedS
+    previousHeartRate = heartRate
+  }
+  return samples
+}
+
 interface ActivityMetricSamples {
   rightBalance: TimedMetricSample[]
   stamina: TimedMetricSample[]
   potentialStamina: TimedMetricSample[]
   respiration: TimedMetricSample[]
+  muscleOxygenPercent: TimedMetricSample[]
   heatStrainIndex: TimedMetricSample[]
   coreTemperatureC: TimedMetricSample[]
   skinTemperatureC: TimedMetricSample[]
@@ -1654,6 +1782,7 @@ type GarminMetricStreamKey =
   | 'stamina'
   | 'potentialStamina'
   | 'respiration'
+  | 'muscleOxygenPercent'
   | 'heatStrainIndex'
   | 'coreTemperatureC'
   | 'skinTemperatureC'
@@ -1668,6 +1797,7 @@ function activityGarminMetricSamples(
     stamina: [],
     potentialStamina: [],
     respiration: [],
+    muscleOxygenPercent: [],
     heatStrainIndex: [],
     coreTemperatureC: [],
     skinTemperatureC: [],
@@ -1700,6 +1830,7 @@ function activityGarminMetricSamples(
     stamina: collect('stamina', value => value >= 0 && value <= 100),
     potentialStamina: collect('potentialStamina', value => value >= 0 && value <= 100),
     respiration: collect('respiration', value => value > 0),
+    muscleOxygenPercent: collect('muscleOxygenPercent', value => value >= 0 && value <= 100),
     heatStrainIndex: collect('heatStrainIndex', value => value >= 0 && value <= 20),
     coreTemperatureC: collect('coreTemperatureC', value => value >= 25 && value <= 45),
     skinTemperatureC: collect('skinTemperatureC', value => value >= 0 && value <= 50),
@@ -1708,10 +1839,12 @@ function activityGarminMetricSamples(
 
 function activityMetricSamples(
   activity: RawStravaActivity,
+  sport: ActivityKind,
   garminMatch: GarminActivityMatch | null,
   garmin: GarminCache | null,
   wahooMatch: WahooActivityMatch | null,
   wahoo: WahooCache | null,
+  respirationProjection: RespirationProjectionModel | null,
 ): ActivityMetricSamples {
   const samples = activityGarminMetricSamples(activity, garminMatch, garmin)
   if (!wahooMatch) return samples
@@ -1736,16 +1869,34 @@ function activityMetricSamples(
     }
     return collected.sort((left, right) => left.elapsedS - right.elapsedS)
   }
+  const directWahooRespiration = collect(stream.respiration, value => value > 0)
+  const wahooRespiration =
+    directWahooRespiration.length > 0 || sport !== 'bike' || !respirationProjection
+      ? directWahooRespiration
+      : projectWahooRespiration(stream, startOffsetS, respirationProjection)
   return {
     ...samples,
     rightBalance:
       samples.rightBalance.length > 0
         ? samples.rightBalance
         : collect(stream.rightBalance, value => value >= 0 && value <= 100),
-    respiration:
-      samples.respiration.length > 0
-        ? samples.respiration
-        : collect(stream.respiration, value => value > 0),
+    respiration: samples.respiration.length > 0 ? samples.respiration : wahooRespiration,
+    muscleOxygenPercent:
+      samples.muscleOxygenPercent.length > 0
+        ? samples.muscleOxygenPercent
+        : collect(stream.muscleOxygenPercent, value => value >= 0 && value <= 100),
+    heatStrainIndex:
+      samples.heatStrainIndex.length > 0
+        ? samples.heatStrainIndex
+        : collect(stream.heatStrainIndex, value => value >= 0 && value <= 20),
+    coreTemperatureC:
+      samples.coreTemperatureC.length > 0
+        ? samples.coreTemperatureC
+        : collect(stream.coreTemperatureC, value => value >= 25 && value <= 45),
+    skinTemperatureC:
+      samples.skinTemperatureC.length > 0
+        ? samples.skinTemperatureC
+        : collect(stream.skinTemperatureC, value => value >= 0 && value <= 50),
   }
 }
 
@@ -2229,7 +2380,37 @@ function garminActivityFueling(
   garmin: GarminCache | null,
 ): ActivityFueling | null {
   const fueling = matchGarminFueling(activity, sport, garmin)
-  return fueling ? { ...fueling, source: 'garmin' } : null
+  return fueling ? { ...fueling, sodiumLossMg: null, source: 'garmin' } : null
+}
+
+function wahooActivityFueling(match: WahooActivityMatch | null): ActivityFueling | null {
+  if (!match) return null
+  const { fluidMl, sodiumMg } = match.activity.sweatLoss
+  if (fluidMl == null && sodiumMg == null) return null
+  return {
+    ...emptyGarminFueling(match.activity.sourceDevice),
+    sweatLossMl: fluidMl,
+    sodiumLossMg: sodiumMg,
+    source: 'wahoo',
+  }
+}
+
+function activityFueling(
+  activity: RawStravaActivity,
+  sport: ActivityKind,
+  garmin: GarminCache | null,
+  wahooMatch: WahooActivityMatch | null,
+): ActivityFueling | null {
+  const garminFueling = garminActivityFueling(activity, sport, garmin)
+  const wahooFueling = wahooActivityFueling(wahooMatch)
+  if (!wahooFueling) return garminFueling
+  if (!garminFueling) return wahooFueling
+  return {
+    ...garminFueling,
+    sweatLossMl: wahooFueling.sweatLossMl ?? garminFueling.sweatLossMl,
+    sodiumLossMg: wahooFueling.sodiumLossMg,
+    source: 'garmin+wahoo',
+  }
 }
 
 function projectDetail(
@@ -2338,6 +2519,7 @@ function projectDetail(
       const stamina = timedMetricAt(metricSamples.stamina, elapsedS)
       const potentialStamina = timedMetricAt(metricSamples.potentialStamina, elapsedS)
       const respiration = timedMetricAt(metricSamples.respiration, elapsedS)
+      const muscleOxygen = timedMetricAt(metricSamples.muscleOxygenPercent, elapsedS)
       const heatStrainIndex = timedMetricAt(metricSamples.heatStrainIndex, elapsedS)
       const coreTemperatureC = timedMetricAt(metricSamples.coreTemperatureC, elapsedS)
       const skinTemperatureC = timedMetricAt(metricSamples.skinTemperatureC, elapsedS)
@@ -2353,6 +2535,7 @@ function projectDetail(
         stamina: stamina == null ? null : round(stamina, 1),
         potentialStamina: potentialStamina == null ? null : round(potentialStamina, 1),
         resp: respiration == null ? null : round(respiration, 1),
+        muscleOxygenPct: muscleOxygen == null ? null : round(muscleOxygen, 1),
         tempC: temperatureC == null ? null : round(temperatureC, 1),
         heatStrainIndex: heatStrainIndex == null ? null : round(heatStrainIndex, 1),
         coreTemperatureC: coreTemperatureC == null ? null : round(coreTemperatureC, 2),
@@ -2512,6 +2695,7 @@ export function applyManualFueling(
     detail.fueling = {
       ...emptyGarminFueling(),
       caloriesConsumed: entry.caloriesConsumed,
+      sodiumLossMg: null,
       source: 'manual',
     }
   }
@@ -2723,6 +2907,7 @@ export function buildPayload(
   const wahooMatches = new Map<string, WahooActivityMatch | null>()
   const selectedStreams = new Map<string, StravaStreams | GarminStreams | undefined>()
   const heartRates = new Map<string, ActivityHeartRate>()
+  const respirationProjection = garminRespirationProjectionModel(garmin)
   for (const { a, sport } of activities) {
     const id = String(a.id)
     const match = matchGarminActivity(a, sport, garmin)
@@ -2931,12 +3116,20 @@ export function buildPayload(
       selectEffortStreams(cache.streams?.[id], selectedStream),
       heartRates.get(id) ??
         resolveActivityHeartRate(a, sport, selectedStream, garminHeartRateMatch, garmin),
-      activityMetricSamples(a, garminMatch, garmin, wahooMatch, wahoo ?? null),
+      activityMetricSamples(
+        a,
+        sport,
+        garminMatch,
+        garmin,
+        wahooMatch,
+        wahoo ?? null,
+        respirationProjection,
+      ),
       activityGearShifts(a, garminMatch, garmin, wahooMatch, wahoo ?? null),
       activityCyclingDynamics(a, garminMatch, garmin, wahooMatch, wahoo ?? null),
       activityWeather,
       cache.geo?.[String(a.id)],
-      garminActivityFueling(a, sport, garmin),
+      activityFueling(a, sport, garmin, wahooMatch),
       garminVerification(a, garminMatch, garminTrainingEffectMatch),
       activityComputer(sport, garminMatch, wahooMatch),
       activityWeight(garmin, a),

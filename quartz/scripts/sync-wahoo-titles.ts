@@ -10,7 +10,7 @@ import {
 } from '../plugins/stores/wahoo'
 import { joinSegments, QUARTZ } from '../util/path'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
-import { WahooCloudClient, wahooCloudCredentialsFromEnv } from '../util/wahoo-cloud'
+import { wahooCloudClientFromEnv } from '../util/wahoo-cloud'
 import { WAHOO_CACHE_FILE, writeWahooCache } from './sync-wahoo'
 
 const STRAVA_CACHE_FILE = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
@@ -175,10 +175,7 @@ async function main(): Promise<void> {
   for (const update of updates) console.log(`[wahoo-title] candidate ${describe(update)}`)
   if (!args.write || updates.length === 0) return
 
-  const client = new WahooCloudClient(wahooCloudCredentialsFromEnv(), {
-    apiBaseUrl: process.env.WAHOO_API_BASE_URL,
-    tokenUrl: process.env.WAHOO_TOKEN_URL,
-  })
+  const client = await wahooCloudClientFromEnv()
   for (const [index, update] of updates.entries()) {
     const result = await client.updateWorkoutName(update.wahooWorkoutId, update.to)
     if (result.name !== update.to)

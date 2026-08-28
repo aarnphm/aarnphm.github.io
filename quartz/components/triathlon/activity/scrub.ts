@@ -19,21 +19,34 @@ import { swimActivityValueText } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
 import { syncPowerCurveActivityLink } from './power-links'
 
-export type PowerBalanceMode = 'distance' | 'power'
+export type CyclingChartMode = 'distance' | 'power'
 
-export const powerBalanceMode = (chart: HTMLElement | null): PowerBalanceMode =>
-  chart?.dataset.powerBalanceMode === 'power' ? 'power' : 'distance'
+export const cyclingChartMode = (element: HTMLElement | null): CyclingChartMode => {
+  const activity = element?.closest<HTMLElement>('.tri-act')
+  return (activity?.dataset.cyclingChartMode ?? element?.dataset.cyclingChartMode) === 'power'
+    ? 'power'
+    : 'distance'
+}
 
-export const setPowerBalanceMode = (chart: HTMLElement, mode: PowerBalanceMode): void => {
-  chart.dataset.powerBalanceMode = mode
-  chart.classList.remove('tri-elev-wrap--read')
-  chart.closest<HTMLElement>('.tri-act')?.classList.remove('tri-act--scrub')
-  for (const option of chart.querySelectorAll<HTMLButtonElement>('.tri-power-balance-mode'))
-    option.setAttribute('aria-pressed', String(option.dataset.powerBalanceMode === mode))
-  for (const pane of chart.querySelectorAll<HTMLElement>('.tri-power-balance-pane')) {
-    const visible = pane.dataset.powerBalanceMode === mode
-    pane.hidden = !visible
-    pane.setAttribute('aria-hidden', String(!visible))
+export const setCyclingChartMode = (chart: HTMLElement, mode: CyclingChartMode): void => {
+  const activity = chart.closest<HTMLElement>('.tri-act')
+  const charts = activity
+    ? Array.from(activity.querySelectorAll<HTMLElement>('.tri-cycling-mode-chart'))
+    : [chart]
+  if (activity) {
+    activity.dataset.cyclingChartMode = mode
+    activity.classList.remove('tri-act--scrub')
+  }
+  for (const sibling of charts) {
+    sibling.dataset.cyclingChartMode = mode
+    sibling.classList.remove('tri-elev-wrap--read')
+    for (const option of sibling.querySelectorAll<HTMLButtonElement>('.tri-cycling-chart-mode'))
+      option.setAttribute('aria-pressed', String(option.dataset.cyclingChartMode === mode))
+    for (const pane of sibling.querySelectorAll<HTMLElement>('.tri-cycling-chart-pane')) {
+      const visible = pane.dataset.cyclingChartMode === mode
+      pane.hidden = !visible
+      pane.setAttribute('aria-hidden', String(!visible))
+    }
   }
 }
 
@@ -509,16 +522,16 @@ export const setupChartScrub = (
       showSwim(svg, fraction, wasActive)
     }
   }
-  const setPowerBalanceFromTarget = (target: EventTarget | null): boolean => {
+  const setCyclingChartModeFromTarget = (target: EventTarget | null): boolean => {
     if (!(target instanceof Element)) return false
-    const button = target.closest<HTMLButtonElement>('.tri-power-balance-mode')
-    const chart = button?.closest<HTMLElement>('.tri-power-balance-chart')
+    const button = target.closest<HTMLButtonElement>('.tri-cycling-chart-mode')
+    const chart = button?.closest<HTMLElement>('.tri-cycling-mode-chart')
     if (!button || !chart) return false
-    setPowerBalanceMode(chart, button.dataset.powerBalanceMode === 'power' ? 'power' : 'distance')
+    setCyclingChartMode(chart, button.dataset.cyclingChartMode === 'power' ? 'power' : 'distance')
     return true
   }
   const onChartClick = (event: MouseEvent): void => {
-    if (setPowerBalanceFromTarget(event.target)) return
+    if (setCyclingChartModeFromTarget(event.target)) return
     if (!(event.target instanceof Element)) return
     const swimButton = event.target.closest<HTMLButtonElement>('.tri-swim-mode')
     const swimSection = swimButton?.closest<HTMLElement>('.tri-swim-trends')
@@ -571,7 +584,7 @@ export const setupChartScrub = (
   }
   const onModeKey = (event: KeyboardEvent): void => {
     if (event.key !== 'Enter' && event.key !== ' ') return
-    if (!setPowerBalanceFromTarget(event.target)) return
+    if (!setCyclingChartModeFromTarget(event.target)) return
     event.preventDefault()
   }
   const onLocale = (): void => {

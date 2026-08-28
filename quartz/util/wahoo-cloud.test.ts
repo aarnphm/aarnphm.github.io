@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import test from 'node:test'
 import {
   parseWahooWorkoutFileUpload,
+  readWahooCloudCredentials,
   safeWahooFileUrl,
   WahooCloudClient,
   wahooRateLimitDelay,
@@ -43,6 +44,7 @@ function upload(status: string): object {
 
 test('paginates workouts while caching a non-expiring access token', async () => {
   const directory = await fs.mkdtemp(join(tmpdir(), 'wahoo-cloud-'))
+  const refreshTokenFile = join(directory, 'wahoo-refresh-token')
   const calls: string[] = []
   const request: typeof fetch = async (input, init) => {
     const url = input instanceof Request ? input.url : input.toString()
@@ -70,7 +72,7 @@ test('paginates workouts while caching a non-expiring access token', async () =>
     {
       apiBaseUrl: 'https://api.wahooligan.com',
       tokenUrl: 'https://api.wahooligan.com/oauth/token',
-      envFile: join(directory, '.env'),
+      refreshTokenFile,
       request,
       now: () => 1_000,
     },
@@ -81,10 +83,32 @@ test('paginates workouts while caching a non-expiring access token', async () =>
     [1, 2],
   )
   assert.equal(calls.filter(url => url.endsWith('/oauth/token')).length, 1)
-  assert.match(
-    await fs.readFile(join(directory, '.env'), 'utf8'),
-    /WAHOO_REFRESH_TOKEN=refresh-two/,
-  )
+  assert.equal(await fs.readFile(refreshTokenFile, 'utf8'), 'refresh-two\n')
+  assert.equal((await fs.stat(refreshTokenFile)).mode & 0o777, 0o600)
+  await fs.rm(directory, { recursive: true })
+})
+
+test('uses the cached rotating refresh token before the env seed', async () => {
+  const directory = await fs.mkdtemp(join(tmpdir(), 'wahoo-credentials-'))
+  const refreshTokenFile = join(directory, 'wahoo-refresh-token')
+  const env = {
+    WAHOO_CLIENT_ID: 'client',
+    WAHOO_CLIENT_SECRET: 'secret',
+    WAHOO_REFRESH_TOKEN: 'seed',
+  }
+  await fs.writeFile(refreshTokenFile, 'cached\n')
+
+  assert.deepEqual(await readWahooCloudCredentials(refreshTokenFile, env), {
+    clientId: 'client',
+    clientSecret: 'secret',
+    refreshToken: 'cached',
+  })
+  await fs.rm(refreshTokenFile)
+  assert.deepEqual(await readWahooCloudCredentials(refreshTokenFile, env), {
+    clientId: 'client',
+    clientSecret: 'secret',
+    refreshToken: 'seed',
+  })
   await fs.rm(directory, { recursive: true })
 })
 
@@ -106,7 +130,7 @@ test('encodes FIT upload fields and parses completed upload status', async () =>
   }
   const client = new WahooCloudClient(
     { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
-    { envFile: join(tmpdir(), `wahoo-cloud-${process.pid}.env`), request },
+    { refreshTokenFile: join(tmpdir(), `wahoo-cloud-${process.pid}.token`), request },
   )
   const created = await client.createWorkoutFileUpload({
     bytes: Uint8Array.from([1, 2, 3]),

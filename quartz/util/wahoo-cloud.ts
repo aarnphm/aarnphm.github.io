@@ -1,5 +1,7 @@
+import fs from 'node:fs/promises'
 import { isIP } from 'node:net'
-import { upsertEnvLine } from './env-file'
+import { dirname } from 'node:path'
+import { joinSegments, QUARTZ } from './path'
 import { isRecord, readNumber, readString, type UnknownRecord } from './type-guards'
 
 export const WAHOO_OAUTH_SCOPES: readonly string[] = [
@@ -11,6 +13,7 @@ export const WAHOO_OAUTH_SCOPES: readonly string[] = [
 export const DEFAULT_WAHOO_API_BASE_URL = 'https://api.wahooligan.com'
 export const DEFAULT_WAHOO_AUTHORIZE_URL = 'https://api.wahooligan.com/oauth/authorize'
 export const DEFAULT_WAHOO_TOKEN_URL = 'https://api.wahooligan.com/oauth/token'
+export const WAHOO_REFRESH_TOKEN_FILE = joinSegments(QUARTZ, '.quartz-cache', 'wahoo-refresh-token')
 
 const DEFAULT_PER_PAGE = 100
 const MAX_REDIRECTS = 5
@@ -92,7 +95,7 @@ export class WahooApiError extends Error {
 export interface WahooCloudClientOptions {
   apiBaseUrl?: string
   tokenUrl?: string
-  envFile?: string
+  refreshTokenFile?: string
   request?: typeof fetch
   now?: () => number
 }
@@ -448,7 +451,7 @@ export async function exchangeWahooAuthorizationCode(
 export class WahooCloudClient {
   private readonly apiBaseUrl: string
   private readonly tokenUrl: string
-  private readonly envFile: string
+  private readonly refreshTokenFile: string
   private readonly request: typeof fetch
   private readonly now: () => number
   private refreshToken: string
@@ -465,7 +468,7 @@ export class WahooCloudClient {
       'Wahoo API base URL',
     )
     this.tokenUrl = cleanBaseUrl(options.tokenUrl ?? DEFAULT_WAHOO_TOKEN_URL, 'Wahoo token URL')
-    this.envFile = options.envFile ?? '.env'
+    this.refreshTokenFile = options.refreshTokenFile ?? WAHOO_REFRESH_TOKEN_FILE
     this.request = options.request ?? fetch
     this.now = options.now ?? Date.now
     this.refreshToken = credentials.refreshToken
@@ -488,8 +491,7 @@ export class WahooCloudClient {
     this.accessToken = token.accessToken
     this.accessTokenExpiresAt =
       this.now() + (token.expiresInS ?? DEFAULT_ACCESS_TOKEN_LIFETIME_S) * 1000
-    process.env.WAHOO_REFRESH_TOKEN = token.refreshToken
-    await upsertEnvLine(this.envFile, 'WAHOO_REFRESH_TOKEN', token.refreshToken)
+    await writeWahooRefreshToken(token.refreshToken, this.refreshTokenFile)
     return token.accessToken
   }
 
@@ -662,11 +664,50 @@ export class WahooCloudClient {
   }
 }
 
-export function wahooCloudCredentialsFromEnv(): WahooCloudCredentials {
-  const clientId = process.env.WAHOO_CLIENT_ID?.trim()
-  const clientSecret = process.env.WAHOO_CLIENT_SECRET?.trim()
-  const refreshToken = process.env.WAHOO_REFRESH_TOKEN?.trim()
+function missingFile(error: unknown): boolean {
+  return error instanceof Error && 'code' in error && error.code === 'ENOENT'
+}
+
+export async function readWahooRefreshToken(
+  path = WAHOO_REFRESH_TOKEN_FILE,
+): Promise<string | null> {
+  try {
+    const refreshToken = (await fs.readFile(path, 'utf8')).trim()
+    if (!refreshToken) throw new Error(`Wahoo refresh token file ${path} is empty`)
+    return refreshToken
+  } catch (error) {
+    if (missingFile(error)) return null
+    throw error
+  }
+}
+
+export async function writeWahooRefreshToken(
+  refreshToken: string,
+  path = WAHOO_REFRESH_TOKEN_FILE,
+): Promise<void> {
+  const temporary = `${path}.tmp-${process.pid}`
+  await fs.mkdir(dirname(path), { recursive: true })
+  await fs.writeFile(temporary, `${refreshToken}\n`, { mode: 0o600 })
+  await fs.rename(temporary, path)
+}
+
+export async function readWahooCloudCredentials(
+  refreshTokenFile = WAHOO_REFRESH_TOKEN_FILE,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<WahooCloudCredentials> {
+  const clientId = env.WAHOO_CLIENT_ID?.trim()
+  const clientSecret = env.WAHOO_CLIENT_SECRET?.trim()
+  const refreshToken =
+    (await readWahooRefreshToken(refreshTokenFile)) ?? env.WAHOO_REFRESH_TOKEN?.trim()
   if (!clientId || !clientSecret || !refreshToken)
     throw new Error('set WAHOO_CLIENT_ID, WAHOO_CLIENT_SECRET, and WAHOO_REFRESH_TOKEN in .env')
   return { clientId, clientSecret, refreshToken }
+}
+
+export async function wahooCloudClientFromEnv(): Promise<WahooCloudClient> {
+  return new WahooCloudClient(await readWahooCloudCredentials(), {
+    apiBaseUrl: process.env.WAHOO_API_BASE_URL,
+    tokenUrl: process.env.WAHOO_TOKEN_URL,
+    refreshTokenFile: WAHOO_REFRESH_TOKEN_FILE,
+  })
 }
