@@ -209,7 +209,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-26 21:28:02 GMT-04:00
+modified: 2026-08-28 22:56:54 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1241,6 +1241,12 @@ temperature: 196F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.7
+```
+
+```tracking
+date: 2026-08-28
+activity: 19943165126
+fueling: 2400
 ```
 
 <!-- training plan start

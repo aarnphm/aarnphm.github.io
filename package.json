@@ -40,6 +40,7 @@
     "oura:garmin": "tsx --env-file=.env quartz/scripts/sync-oura-garmin.ts",
     "core:sync": "tsx --env-file=.env quartz/scripts/sync-core-body-temperature.ts",
     "wahoo:auth": "tsx --env-file=.env quartz/scripts/auth-wahoo.ts",
+    "wahoo:reauth": "tsx --env-file=.env quartz/scripts/auth-wahoo.ts --reauthorize",
     "wahoo:sync": "tsx --env-file=.env quartz/scripts/sync-wahoo.ts",
     "wahoo:sync-titles": "tsx --env-file=.env quartz/scripts/sync-wahoo-titles.ts",
     "activity-providers:sync": "tsx --env-file=.env quartz/scripts/sync-activity-providers.ts",

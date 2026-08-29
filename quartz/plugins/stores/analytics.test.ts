@@ -1449,6 +1449,66 @@ test('garmin readings drive the vo2 trend and the bike proxy only fills earlier 
   assert.equal(trend[1].vo2max, 54)
 })
 
+test('newer Apple Watch vo2max replaces stale Garmin within the same week', () => {
+  const { cache, oura, weights } = fixtures()
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    vo2max: { [iso(26)]: { date: iso(26), generic: 54, cycling: 49.8 } },
+  }
+  const apple: AppleCache = {
+    lastSync: cache.lastSync,
+    days: {
+      [iso(28)]: {
+        date: iso(28),
+        burnKcal: null,
+        activeKcal: null,
+        intakeKcal: null,
+        weightKg: null,
+        vo2max: 55.2,
+      },
+    },
+  }
+  const analytics = buildAnalytics(cache, { oura, apple, garmin, weights, since: '2026-05-12' })
+
+  assert.equal(analytics.engine.vo2max.method, 'apple')
+  assert.equal(analytics.engine.vo2max.value, 55.2)
+  assert.equal(analytics.engine.vo2max.trend.at(-1)?.method, 'apple')
+  assert.equal(analytics.engine.ftpHypothesis?.vo2max, 55.2)
+  assert.equal(analytics.engine.ftpHypothesis?.vo2maxDate, iso(28))
+  assert.equal(analytics.engine.ftpHypothesis?.vo2maxSource, 'apple')
+  assert.equal(analytics.engine.ftpHypothesis?.vo2maxSport, 'unknown')
+})
+
+test('Garmin vo2max keeps precedence over Apple Watch on an equal date', () => {
+  const { cache, oura, weights } = fixtures()
+  const date = iso(28)
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    vo2max: { [date]: { date, generic: 54, cycling: 49.8 } },
+  }
+  const apple: AppleCache = {
+    lastSync: cache.lastSync,
+    days: {
+      [date]: {
+        date,
+        burnKcal: null,
+        activeKcal: null,
+        intakeKcal: null,
+        weightKg: null,
+        vo2max: 55.2,
+      },
+    },
+  }
+  const analytics = buildAnalytics(cache, { oura, apple, garmin, weights, since: '2026-05-12' })
+
+  assert.equal(analytics.engine.vo2max.method, 'garmin')
+  assert.equal(analytics.engine.vo2max.value, 54)
+  assert.equal(analytics.engine.ftpHypothesis?.vo2max, 54)
+  assert.equal(analytics.engine.ftpHypothesis?.vo2maxSource, 'garmin')
+})
+
 test('vo2 trend summary uses comparable observed weeks without carrying stale values forward', () => {
   const { cache, oura, weights } = fixtures()
   const readings = [48, 49, 50, 51, 52]

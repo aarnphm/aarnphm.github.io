@@ -16,6 +16,7 @@ import { deflateRawSync } from 'node:zlib'
 import {
   decodeGarminRideFit,
   encodeGarminSwimFit,
+  garminActivityFileFromArchive,
   garminFitBytesFromArchive,
   garminRideFitFromArchive,
   validateGarminFit,
@@ -169,9 +170,9 @@ function cyclingDynamicsFit(): Uint8Array {
   return encoder.close()
 }
 
-function zipFit(fit: Uint8Array): Uint8Array {
-  const name = Buffer.from('activity.fit')
-  const compressed = deflateRawSync(fit)
+function zipFile(filename: string, bytes: Uint8Array): Uint8Array {
+  const name = Buffer.from(filename)
+  const compressed = deflateRawSync(bytes)
   const local = Buffer.alloc(30 + name.length)
   local.writeUInt32LE(0x04034b50, 0)
   local.writeUInt16LE(20, 4)
@@ -179,7 +180,7 @@ function zipFit(fit: Uint8Array): Uint8Array {
   local.writeUInt16LE(8, 8)
   local.writeUInt32LE(0, 14)
   local.writeUInt32LE(compressed.length, 18)
-  local.writeUInt32LE(fit.length, 22)
+  local.writeUInt32LE(bytes.length, 22)
   local.writeUInt16LE(name.length, 26)
   name.copy(local, 30)
   const central = Buffer.alloc(46 + name.length)
@@ -190,7 +191,7 @@ function zipFit(fit: Uint8Array): Uint8Array {
   central.writeUInt16LE(8, 10)
   central.writeUInt32LE(0, 16)
   central.writeUInt32LE(compressed.length, 20)
-  central.writeUInt32LE(fit.length, 24)
+  central.writeUInt32LE(bytes.length, 24)
   central.writeUInt16LE(name.length, 28)
   central.writeUInt32LE(0, 42)
   name.copy(central, 46)
@@ -315,13 +316,22 @@ test('decodes electronic shifting state from Garmin FIT events', () => {
 
 test('extracts and decodes a deflated FIT member from the Garmin archive', () => {
   const fit = gearFit()
-  const archive = zipFit(fit)
+  const archive = zipFile('activity.fit', fit)
 
   assert.deepEqual(garminFitBytesFromArchive(archive), fit)
+  assert.deepEqual(garminActivityFileFromArchive(archive), { kind: 'fit', bytes: fit })
   assert.deepEqual(
     garminRideFitFromArchive(archive).gearShifts,
     decodeGarminRideFit(fit).gearShifts,
   )
+})
+
+test('extracts a deflated TCX member from a Garmin archive without a FIT member', () => {
+  const tcx = new TextEncoder().encode('<TrainingCenterDatabase/>')
+  const archive = zipFile('23516096233_ACTIVITY.tcx', tcx)
+
+  assert.deepEqual(garminActivityFileFromArchive(archive), { kind: 'tcx', bytes: tcx })
+  assert.throws(() => garminFitBytesFromArchive(archive), /contains no FIT file/)
 })
 
 test('decodes cycling dynamics and rider position from Garmin FIT records', () => {
