@@ -14,6 +14,7 @@ import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import {
   isWahooOriginatedSummary,
+  isWahooRestrictedWorkoutSummaryError,
   WahooApiError,
   WahooCloudClient,
   wahooCloudClientFromEnv,
@@ -135,16 +136,24 @@ export function normalizeWahooActivity(
   }
 }
 
+export type WahooWorkoutSummaryResolution =
+  | { kind: 'available'; summary: WahooWorkoutSummaryDto }
+  | { kind: 'missing' }
+  | { kind: 'restricted' }
+
 export async function resolveWahooWorkoutSummary(
   client: WahooCloudClient,
   workout: WahooWorkoutDto,
-): Promise<WahooWorkoutSummaryDto | null> {
-  if (workout.summary?.fileUrl && workout.summary.fitnessAppId != null) return workout.summary
+): Promise<WahooWorkoutSummaryResolution> {
+  if (workout.summary?.fileUrl && workout.summary.fitnessAppId != null)
+    return { kind: 'available', summary: workout.summary }
   try {
-    return await client.getWorkoutSummary(workout.id)
+    const summary = await client.getWorkoutSummary(workout.id)
+    return summary ? { kind: 'available', summary } : { kind: 'missing' }
   } catch (error) {
     if (error instanceof WahooApiError && (error.status === 404 || error.status === 410))
-      return null
+      return { kind: 'missing' }
+    if (isWahooRestrictedWorkoutSummaryError(error)) return { kind: 'restricted' }
     throw error
   }
 }
@@ -160,6 +169,7 @@ export async function fetchWahooCache(
   const cyclingDynamics: WahooCache['cyclingDynamics'] = {}
   let skippedThirdParty = 0
   let skippedIncomplete = 0
+  let skippedRestricted = 0
   for (const workout of workouts) {
     const id = `wahoo:${workout.id}`
     const previousActivity = previous?.activities[id]
@@ -180,8 +190,17 @@ export async function fetchWahooCache(
       cyclingDynamics[id] = previousCyclingDynamics
       continue
     }
-    const summary = await resolveWahooWorkoutSummary(client, workout)
-    if (!summary || summary.manual === true || !summary.fileUrl) {
+    const resolution = await resolveWahooWorkoutSummary(client, workout)
+    if (resolution.kind === 'restricted') {
+      skippedRestricted++
+      continue
+    }
+    if (resolution.kind === 'missing') {
+      skippedIncomplete++
+      continue
+    }
+    const { summary } = resolution
+    if (summary.manual === true || !summary.fileUrl) {
       skippedIncomplete++
       continue
     }
@@ -199,7 +218,7 @@ export async function fetchWahooCache(
     console.log(`[wahoo] decoded ${activity.id} ${activity.startDate} ${bytes.byteLength} bytes`)
   }
   console.log(
-    `[wahoo] retained ${Object.keys(activities).length}/${workouts.length} completed Wahoo workouts, skipped incomplete=${skippedIncomplete} third-party=${skippedThirdParty}`,
+    `[wahoo] retained ${Object.keys(activities).length}/${workouts.length} completed Wahoo workouts, skipped incomplete=${skippedIncomplete} restricted=${skippedRestricted} third-party=${skippedThirdParty}`,
   )
   return {
     version: WAHOO_CACHE_VERSION,

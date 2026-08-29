@@ -49,8 +49,31 @@ test('tire pressure palette advances through every physical selection', () => {
   assert.equal(nextTirePressurePaletteStep('customWheelRear', customWheel), 'measuredTireFront')
 })
 
+test('tire pressure palette returns to the result after editing one configuration row', () => {
+  assert.equal(
+    nextTirePressurePaletteStep('bikeMass', DEFAULT_TIRE_PRESSURE_SELECTION, 'bikeMass'),
+    'result',
+  )
+  assert.equal(
+    nextTirePressurePaletteStep(
+      'measuredTireFront',
+      DEFAULT_TIRE_PRESSURE_SELECTION,
+      'measuredTireRear',
+    ),
+    'measuredTireRear',
+  )
+  assert.equal(
+    nextTirePressurePaletteStep(
+      'measuredTireRear',
+      DEFAULT_TIRE_PRESSURE_SELECTION,
+      'measuredTireRear',
+    ),
+    'result',
+  )
+})
+
 test('tire pressure palette backtracks without skipping selection state', () => {
-  assert.equal(previousTirePressurePaletteStep('result'), 'speed')
+  assert.equal(previousTirePressurePaletteStep('result'), 'commands')
   assert.equal(previousTirePressurePaletteStep('speed'), 'surface')
   assert.equal(previousTirePressurePaletteStep('surface'), 'tire')
   assert.equal(previousTirePressurePaletteStep('tire'), 'measuredTireRear')
@@ -67,6 +90,25 @@ test('tire pressure palette backtracks without skipping selection state', () => 
   assert.equal(previousTirePressurePaletteStep('measuredTireFront', customWheel), 'customWheelRear')
   assert.equal(previousTirePressurePaletteStep('customWheelRear', customWheel), 'customWheelFront')
   assert.equal(previousTirePressurePaletteStep('customWheelFront', customWheel), 'wheel')
+})
+
+test('tire pressure palette backtracks within one configuration row', () => {
+  assert.equal(
+    previousTirePressurePaletteStep(
+      'measuredTireRear',
+      DEFAULT_TIRE_PRESSURE_SELECTION,
+      'measuredTireFront',
+    ),
+    'measuredTireFront',
+  )
+  assert.equal(
+    previousTirePressurePaletteStep(
+      'measuredTireFront',
+      DEFAULT_TIRE_PRESSURE_SELECTION,
+      'measuredTireFront',
+    ),
+    'result',
+  )
 })
 
 test('tire pressure palette highlights the persisted choice at every step', () => {

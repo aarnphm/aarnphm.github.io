@@ -85,7 +85,7 @@ export class WahooApiError extends Error {
   constructor(
     readonly status: number,
     readonly path: string,
-    detail: string,
+    readonly detail: string,
   ) {
     super(`Wahoo API ${path} failed: ${status} ${detail}`)
     this.name = 'WahooApiError'
@@ -331,6 +331,24 @@ export function isWahooOriginatedSummary(summary: WahooWorkoutSummaryDto): boole
   )
 }
 
+export function isWahooRestrictedWorkoutSummaryError(error: unknown): boolean {
+  if (
+    !(error instanceof WahooApiError) ||
+    error.status !== 401 ||
+    !/^\/v1\/workouts\/\d+\/workout_summary$/.test(error.path)
+  )
+    return false
+  try {
+    const value: unknown = JSON.parse(error.detail)
+    return (
+      isRecord(value) &&
+      readString(value, 'error') === 'You are not authorized to view this workout summary'
+    )
+  } catch {
+    return false
+  }
+}
+
 export function parseWahooTokenResponse(value: unknown): WahooTokenResponse {
   if (!isRecord(value)) throw new Error('Wahoo token response must be an object')
   const expiresIn = readNumber(value, 'expires_in')
@@ -559,10 +577,12 @@ export class WahooCloudClient {
     return workouts
   }
 
-  async getWorkoutSummary(workoutId: number): Promise<WahooWorkoutSummaryDto> {
+  async getWorkoutSummary(workoutId: number): Promise<WahooWorkoutSummaryDto | null> {
     if (!Number.isInteger(workoutId) || workoutId < 0)
       throw new Error('workoutId must be nonnegative')
-    return parseWahooWorkoutSummary(await this.apiJson(`/v1/workouts/${workoutId}/workout_summary`))
+    const value = await this.apiJson(`/v1/workouts/${workoutId}/workout_summary`)
+    if (isRecord(value) && Object.keys(value).length === 0) return null
+    return parseWahooWorkoutSummary(value)
   }
 
   async updateWorkoutName(workoutId: number, name: string): Promise<WahooWorkoutDto> {

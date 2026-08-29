@@ -20,7 +20,7 @@ import {
   type ActivityBridgeWahooActivity,
 } from '../plugins/stores/activity-bridge'
 import { parseWahooCache } from '../plugins/stores/wahoo'
-import { garminFitBytesFromArchive } from '../util/garmin-fit'
+import { garminActivityFileFromArchive } from '../util/garmin-fit'
 import {
   cleanGarminConnectBaseUrl,
   DEFAULT_GARMIN_CONNECT_BASE,
@@ -28,6 +28,7 @@ import {
   readGarminConnectSession,
   type GarminConnectSession,
 } from '../util/garmin-session'
+import { encodeGarminTcxActivityFit } from '../util/garmin-tcx-fit'
 import { updateGarminActivityTitle } from '../util/garmin-title-update'
 import { joinSegments, QUARTZ } from '../util/path'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
@@ -359,7 +360,13 @@ async function bridgeGarminToWahoo(
     garminBase,
     `/download-service/files/activity/${encodeURIComponent(sourceId)}`,
   )
-  const bytes = garminFitBytesFromArchive(archive)
+  const sourceFile = garminActivityFileFromArchive(archive)
+  const bytes =
+    sourceFile.kind === 'fit'
+      ? sourceFile.bytes
+      : encodeGarminTcxActivityFit(sourceFile.bytes, sourceId).bytes
+  if (sourceFile.kind === 'tcx')
+    console.log(`[activity-bridge] converted Garmin TCX source=${plan.source.id} to FIT`)
   const sha256 = fitSha256(bytes)
   const key = activityBridgeReceiptKey('garmin', plan.source.id, sha256, 'wahoo')
   const existing = ledger.receipts[key]

@@ -783,7 +783,7 @@ export interface CardioBlock {
 }
 
 export type FtpHypothesisMassSource = 'daily' | 'lab'
-export type FtpHypothesisVo2maxSource = 'garmin' | 'lab' | 'default'
+export type FtpHypothesisVo2maxSource = 'garmin' | 'apple' | 'lab' | 'default'
 export type FtpHypothesisVo2maxSport = 'running' | 'cycling' | 'unknown'
 export type FtpHypothesisEfficiencySource = 'literature-prior' | 'measured-metabolic'
 
@@ -4204,6 +4204,32 @@ interface GarminVo2Point {
   cycling: number | null
 }
 
+interface ObservedVo2Point {
+  date: string
+  v: number
+  method: 'lab' | 'garmin' | 'apple'
+  sport: FtpHypothesisVo2maxSport
+}
+
+const VO2_METHOD_PRIORITY: Record<ObservedVo2Point['method'], number> = {
+  lab: 3,
+  garmin: 2,
+  apple: 1,
+}
+
+const preferObservedVo2 = (
+  current: ObservedVo2Point | null,
+  candidate: ObservedVo2Point,
+): ObservedVo2Point => {
+  if (!current || candidate.date > current.date) return candidate
+  if (
+    candidate.date === current.date &&
+    VO2_METHOD_PRIORITY[candidate.method] > VO2_METHOD_PRIORITY[current.method]
+  )
+    return candidate
+  return current
+}
+
 const VO2_TREND_DAYS = 84
 const VO2_TREND_STABLE_PER_WEEK = 0.1
 
@@ -4365,19 +4391,24 @@ function buildEngine(
     const dow = new Date(ms).getUTCDay()
     return new Date(ms - ((dow + 6) % 7) * DAY_MS).toISOString().slice(0, 10)
   }
-  type Vo2Week = {
-    p20: number | null
-    kg: number | null
-    garmin: number | null
-    apple: number | null
-  }
+  type Vo2Week = { p20: number | null; kg: number | null; observed: ObservedVo2Point | null }
   const weeks = new Map<string, Vo2Week>()
   const weekAt = (day: string): Vo2Week => {
     const ws = weekOf(day)
     let w = weeks.get(ws)
-    if (!w) weeks.set(ws, (w = { p20: null, kg: null, garmin: null, apple: null }))
+    if (!w) weeks.set(ws, (w = { p20: null, kg: null, observed: null }))
     return w
   }
+  const observedVo2: ObservedVo2Point[] = garminVo2.map(point => ({
+    date: point.date,
+    v: point.v,
+    method: 'garmin',
+    sport: point.generic == null && point.cycling != null ? 'cycling' : 'unknown',
+  }))
+  for (const point of appleVo2)
+    observedVo2.push({ date: point.date, v: point.v, method: 'apple', sport: 'unknown' })
+  if (vo2Lab)
+    observedVo2.push({ date: vo2Lab.date, v: vo2Lab.value, method: 'lab', sport: 'running' })
   for (const d of daily) {
     const w = weekAt(d.date)
     if (d.weightKg != null) w.kg = d.weightKg
@@ -4388,20 +4419,21 @@ function buildEngine(
     const w = weekAt(b.day)
     if (w.p20 == null || v > w.p20) w.p20 = v
   }
-  for (const g of garminVo2) weekAt(g.date).garmin = g.v
-  for (const p of appleVo2) weekAt(p.date).apple = p.v
+  for (const point of observedVo2) {
+    const week = weekAt(point.date)
+    week.observed = preferObservedVo2(week.observed, point)
+  }
   const trend: Vo2Point[] = []
   let kgCarry: number | null = null
   for (const ws of [...weeks.keys()].sort()) {
     const w = weeks.get(ws)!
     if (w.kg != null) kgCarry = w.kg
-    const measured = w.garmin ?? w.apple
     let point: Vo2Point | null = null
-    if (measured != null)
+    if (w.observed)
       point = {
         weekStart: ws,
-        vo2max: round(clamp(measured, VO2_FLOOR, VO2_CEIL), 1),
-        method: w.garmin != null ? 'garmin' : 'apple',
+        vo2max: round(clamp(w.observed.v, VO2_FLOOR, VO2_CEIL), 1),
+        method: w.observed.method,
       }
     else if (w.p20 != null && kgCarry != null && kgCarry > 0)
       point = {
@@ -4418,16 +4450,6 @@ function buildEngine(
       }
     if (point) trend.push(point)
   }
-  if (vo2Lab) {
-    const lw = weekOf(vo2Lab.date)
-    const lv = round(clamp(vo2Lab.value, VO2_FLOOR, VO2_CEIL), 1)
-    const at = trend.findIndex(p => p.weekStart === lw)
-    if (at >= 0) trend[at] = { weekStart: lw, vo2max: lv, method: 'lab' }
-    else {
-      trend.push({ weekStart: lw, vo2max: lv, method: 'lab' })
-      trend.sort((a, b) => a.weekStart.localeCompare(b.weekStart))
-    }
-  }
 
   const latest = trend[trend.length - 1]
   const current = latest
@@ -4441,24 +4463,12 @@ function buildEngine(
   const fitnessAge = vo2 != null ? Math.round(clamp(invLerp(FRIEND_MED_M, vo2), 20, 80)) : null
   const ageDeltaYears = fitnessAge != null ? fitnessAge - age : null
   const percentileForAge = vo2 != null ? pctForAge(vo2, age) : null
-  let latestGarminVo2: GarminVo2Point | null = null
-  for (const point of garminVo2) latestGarminVo2 = point
-  const useLabVo2 =
-    vo2Lab != null && (latestGarminVo2 == null || vo2Lab.date >= latestGarminVo2.date)
-  const vo2max = useLabVo2 ? vo2Lab.value : (latestGarminVo2?.v ?? ATHLETE.vo2max)
-  const vo2maxDate = useLabVo2 ? vo2Lab.date : (latestGarminVo2?.date ?? today)
-  const vo2maxSource: FtpHypothesisVo2maxSource = useLabVo2
-    ? 'lab'
-    : latestGarminVo2
-      ? 'garmin'
-      : 'default'
-  const vo2maxSport: FtpHypothesisVo2maxSport = useLabVo2
-    ? 'running'
-    : latestGarminVo2
-      ? latestGarminVo2.generic == null && latestGarminVo2.cycling != null
-        ? 'cycling'
-        : 'unknown'
-      : 'running'
+  let latestObservedVo2: ObservedVo2Point | null = null
+  for (const point of observedVo2) latestObservedVo2 = preferObservedVo2(latestObservedVo2, point)
+  const vo2max = latestObservedVo2?.v ?? ATHLETE.vo2max
+  const vo2maxDate = latestObservedVo2?.date ?? today
+  const vo2maxSource: FtpHypothesisVo2maxSource = latestObservedVo2?.method ?? 'default'
+  const vo2maxSport: FtpHypothesisVo2maxSport = latestObservedVo2?.sport ?? 'running'
   const massKg = body.latestKg ?? vo2Lab?.massKg ?? null
   const massDate =
     body.latestKg != null ? (body.series.at(-1)?.date ?? today) : (vo2Lab?.date ?? today)

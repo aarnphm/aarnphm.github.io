@@ -163,7 +163,7 @@ export const buildFtpHypothesis = (data: Analytics, context: TriathlonContext): 
       ? `${text('latest daily weight')} · ${context.formatter.longDate(h.massDate)}`
       : `${text('value from vo2 report')} · ${context.formatter.longDate(h.massDate)}`
   const vo2Fallback =
-    h.vo2maxSource === 'garmin' && h.defaultVo2max != null
+    (h.vo2maxSource === 'garmin' || h.vo2maxSource === 'apple') && h.defaultVo2max != null
       ? ` · ${text('fallback')} ${h.defaultVo2max.toFixed(1)}`
       : ''
   const vo2Note =
@@ -171,9 +171,11 @@ export const buildFtpHypothesis = (data: Analytics, context: TriathlonContext): 
       ? `Garmin · ${context.formatter.longDate(h.vo2maxDate)} · ${text(
           h.vo2maxSport === 'cycling' ? 'cycling-specific source' : 'unknown sport provenance',
         )}${vo2Fallback}`
-      : h.vo2maxSource === 'lab'
-        ? `${text('measured during treadmill test')} · ${context.formatter.longDate(h.vo2maxDate)}`
-        : `${text('athlete default')} · ${h.vo2max.toFixed(1)}`
+      : h.vo2maxSource === 'apple'
+        ? `Apple Watch · ${context.formatter.longDate(h.vo2maxDate)}${vo2Fallback}`
+        : h.vo2maxSource === 'lab'
+          ? `${text('measured during treadmill test')} · ${context.formatter.longDate(h.vo2maxDate)}`
+          : `${text('athlete default')} · ${h.vo2max.toFixed(1)}`
   const vo2Label =
     h.vo2maxSport === 'cycling'
       ? 'cycling vo2max'

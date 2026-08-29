@@ -101,6 +101,10 @@ export interface GarminFitEncoding {
   validation: GarminFitValidation
 }
 
+export type GarminActivityArchiveFile =
+  | { kind: 'fit'; bytes: Uint8Array }
+  | { kind: 'tcx'; bytes: Uint8Array }
+
 interface PreparedSample extends GarminSwimSample {
   speedMetersPerSecond: number
 }
@@ -200,30 +204,51 @@ function zipEntries(bytes: Uint8Array, view: DataView): ZipEntry[] {
   return entries
 }
 
+function zipEntryBytes(
+  archive: Uint8Array,
+  view: DataView,
+  entry: ZipEntry,
+  kind: 'FIT' | 'TCX',
+): Uint8Array {
+  if ((entry.flags & 1) !== 0) throw new Error(`Garmin activity ${kind} file is encrypted`)
+  if (entry.compressionMethod !== 0 && entry.compressionMethod !== 8)
+    throw new Error(
+      `Garmin activity ${kind} uses unsupported ZIP method ${entry.compressionMethod}`,
+    )
+  requireZipRange(archive, entry.localHeaderOffset, 30)
+  if (view.getUint32(entry.localHeaderOffset, true) !== ZIP_LOCAL_HEADER)
+    throw new Error(`Garmin activity archive has an invalid ${kind} entry`)
+  const nameLength = view.getUint16(entry.localHeaderOffset + 26, true)
+  const extraLength = view.getUint16(entry.localHeaderOffset + 28, true)
+  const dataOffset = entry.localHeaderOffset + 30 + nameLength + extraLength
+  requireZipRange(archive, dataOffset, entry.compressedSize)
+  const compressed = archive.subarray(dataOffset, dataOffset + entry.compressedSize)
+  const bytes =
+    entry.compressionMethod === 0
+      ? Uint8Array.from(compressed)
+      : Uint8Array.from(inflateRawSync(compressed))
+  if (bytes.byteLength !== entry.uncompressedSize)
+    throw new Error(`Garmin activity ${kind} size does not match its ZIP entry`)
+  return bytes
+}
+
+export function garminActivityFileFromArchive(archive: Uint8Array): GarminActivityArchiveFile {
+  const view = new DataView(archive.buffer, archive.byteOffset, archive.byteLength)
+  const entries = zipEntries(archive, view)
+  const fit = entries.find(candidate => candidate.name.toLowerCase().endsWith('.fit'))
+  if (fit) return { kind: 'fit', bytes: zipEntryBytes(archive, view, fit, 'FIT') }
+  const tcx = entries.find(candidate => candidate.name.toLowerCase().endsWith('.tcx'))
+  if (tcx) return { kind: 'tcx', bytes: zipEntryBytes(archive, view, tcx, 'TCX') }
+  throw new Error('Garmin activity archive contains no FIT or TCX file')
+}
+
 export function garminFitBytesFromArchive(archive: Uint8Array): Uint8Array {
   const view = new DataView(archive.buffer, archive.byteOffset, archive.byteLength)
   const entry = zipEntries(archive, view).find(candidate =>
     candidate.name.toLowerCase().endsWith('.fit'),
   )
   if (!entry) throw new Error('Garmin activity archive contains no FIT file')
-  if ((entry.flags & 1) !== 0) throw new Error('Garmin activity FIT file is encrypted')
-  if (entry.compressionMethod !== 0 && entry.compressionMethod !== 8)
-    throw new Error(`Garmin activity FIT uses unsupported ZIP method ${entry.compressionMethod}`)
-  requireZipRange(archive, entry.localHeaderOffset, 30)
-  if (view.getUint32(entry.localHeaderOffset, true) !== ZIP_LOCAL_HEADER)
-    throw new Error('Garmin activity archive has an invalid FIT entry')
-  const nameLength = view.getUint16(entry.localHeaderOffset + 26, true)
-  const extraLength = view.getUint16(entry.localHeaderOffset + 28, true)
-  const dataOffset = entry.localHeaderOffset + 30 + nameLength + extraLength
-  requireZipRange(archive, dataOffset, entry.compressedSize)
-  const compressed = archive.subarray(dataOffset, dataOffset + entry.compressedSize)
-  const fit =
-    entry.compressionMethod === 0
-      ? Uint8Array.from(compressed)
-      : Uint8Array.from(inflateRawSync(compressed))
-  if (fit.byteLength !== entry.uncompressedSize)
-    throw new Error('Garmin activity FIT size does not match its ZIP entry')
-  return fit
+  return zipEntryBytes(archive, view, entry, 'FIT')
 }
 
 function positiveGearField(value: number | undefined): number | null {

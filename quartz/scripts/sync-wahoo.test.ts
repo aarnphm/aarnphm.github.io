@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
-import { WahooCloudClient, type WahooWorkoutDto } from '../util/wahoo-cloud'
+import { WahooApiError, WahooCloudClient, type WahooWorkoutDto } from '../util/wahoo-cloud'
 import { resolveWahooWorkoutSummary } from './sync-wahoo'
 
 function workout(): WahooWorkoutDto {
@@ -65,7 +65,9 @@ test('fetches the summary show endpoint when workout pages omit the embedded sum
   )
 
   const resolved = await resolveWahooWorkoutSummary(client, workout())
-  assert.equal(resolved?.id, 66)
+  assert.equal(resolved.kind, 'available')
+  if (resolved.kind !== 'available') assert.fail('expected an available Wahoo summary')
+  assert.equal(resolved.summary.id, 66)
   assert.ok(calls.some(url => url.endsWith('/v1/workouts/55/workout_summary')))
 })
 
@@ -85,5 +87,90 @@ test('treats absent third-party or planned summaries as an explicit skip', async
     { refreshTokenFile: join(tmpdir(), `wahoo-sync-missing-${process.pid}.token`), request },
   )
 
-  assert.equal(await resolveWahooWorkoutSummary(client, workout()), null)
+  assert.deepEqual(await resolveWahooWorkoutSummary(client, workout()), { kind: 'missing' })
+})
+
+test('treats Wahoo empty deleted-workout summaries as an explicit skip', async () => {
+  const request: typeof fetch = async input => {
+    const url = input instanceof Request ? input.url : input.toString()
+    if (url.endsWith('/oauth/token'))
+      return Response.json({
+        access_token: 'access',
+        refresh_token: 'refresh-two',
+        expires_in: 3600,
+      })
+    return Response.json({})
+  }
+  const client = new WahooCloudClient(
+    { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
+    { refreshTokenFile: join(tmpdir(), `wahoo-sync-deleted-${process.pid}.token`), request },
+  )
+
+  assert.deepEqual(await resolveWahooWorkoutSummary(client, workout()), { kind: 'missing' })
+})
+
+test('rejects nonempty malformed Wahoo workout summaries', async () => {
+  const request: typeof fetch = async input => {
+    const url = input instanceof Request ? input.url : input.toString()
+    if (url.endsWith('/oauth/token'))
+      return Response.json({
+        access_token: 'access',
+        refresh_token: 'refresh-two',
+        expires_in: 3600,
+      })
+    return Response.json({ name: 'Malformed summary' })
+  }
+  const client = new WahooCloudClient(
+    { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
+    { refreshTokenFile: join(tmpdir(), `wahoo-sync-malformed-${process.pid}.token`), request },
+  )
+
+  await assert.rejects(
+    resolveWahooWorkoutSummary(client, workout()),
+    /Wahoo workout summary\.id must be a nonnegative integer/,
+  )
+})
+
+test('treats Wahoo-restricted workout summaries as an explicit skip', async () => {
+  const request: typeof fetch = async input => {
+    const url = input instanceof Request ? input.url : input.toString()
+    if (url.endsWith('/oauth/token'))
+      return Response.json({
+        access_token: 'access',
+        refresh_token: 'refresh-two',
+        expires_in: 3600,
+      })
+    return Response.json(
+      { error: 'You are not authorized to view this workout summary' },
+      { status: 401 },
+    )
+  }
+  const client = new WahooCloudClient(
+    { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
+    { refreshTokenFile: join(tmpdir(), `wahoo-sync-restricted-${process.pid}.token`), request },
+  )
+
+  assert.deepEqual(await resolveWahooWorkoutSummary(client, workout()), { kind: 'restricted' })
+})
+
+test('preserves unrelated Wahoo authorization failures', async () => {
+  const request: typeof fetch = async input => {
+    const url = input instanceof Request ? input.url : input.toString()
+    if (url.endsWith('/oauth/token'))
+      return Response.json({
+        access_token: 'access',
+        refresh_token: 'refresh-two',
+        expires_in: 3600,
+      })
+    return Response.json({ error: 'Invalid access token' }, { status: 401 })
+  }
+  const client = new WahooCloudClient(
+    { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
+    { refreshTokenFile: join(tmpdir(), `wahoo-sync-unauthorized-${process.pid}.token`), request },
+  )
+
+  await assert.rejects(
+    resolveWahooWorkoutSummary(client, workout()),
+    error => error instanceof WahooApiError && error.status === 401,
+  )
 })

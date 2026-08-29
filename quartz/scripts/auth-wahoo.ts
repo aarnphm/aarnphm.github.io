@@ -9,6 +9,7 @@ import {
   DEFAULT_WAHOO_AUTHORIZE_URL,
   DEFAULT_WAHOO_TOKEN_URL,
   exchangeWahooAuthorizationCode,
+  readWahooRefreshToken,
   writeWahooRefreshToken,
   WAHOO_OAUTH_SCOPES,
 } from '../util/wahoo-cloud'
@@ -103,11 +104,20 @@ function assertScopes(scope: string | null): void {
 }
 
 async function main(): Promise<void> {
-  const { values } = parseArgs({ options: { paste: { type: 'boolean' } }, allowPositionals: false })
+  const { values } = parseArgs({
+    options: { paste: { type: 'boolean' }, reauthorize: { type: 'boolean' } },
+    allowPositionals: false,
+  })
   const clientId = process.env.WAHOO_CLIENT_ID?.trim()
   const clientSecret = process.env.WAHOO_CLIENT_SECRET?.trim()
   if (!clientId || !clientSecret)
     throw new Error('set WAHOO_CLIENT_ID and WAHOO_CLIENT_SECRET in .env first')
+  const refreshToken =
+    (await readWahooRefreshToken()) ?? process.env.WAHOO_REFRESH_TOKEN?.trim() ?? null
+  if (refreshToken && !values.reauthorize) {
+    console.log('[wahoo] authorization already cached; reusing its rotating token lineage.')
+    return
+  }
   const redirect = resolveWahooRedirectUri(process.env.WAHOO_REDIRECT_URI)
   let grant: WahooAuthorizationGrant
   if (values.paste) {
