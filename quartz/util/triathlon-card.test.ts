@@ -109,6 +109,16 @@ const factory: TriNodeFactory<Element> = {
   presentation: METRIC_TRIATHLON_PRESENTATION,
   el: (tag, cls, text, attrs) =>
     h(tag, { ...(cls ? { class: cls } : {}), ...attrs }, text === undefined ? [] : [text]),
+  math: (cls, text) =>
+    h(
+      'span',
+      { class: cls },
+      text
+        .split(/\$([^$]+)\$/)
+        .flatMap((part, index) =>
+          part ? [index % 2 === 0 ? part : h('span', { class: 'tri-math' }, part)] : [],
+        ),
+    ),
   svg: (tag, attrs) => s(tag, attrs),
   add: (parent, ...children) => parent.children.push(...children),
 }
@@ -798,8 +808,10 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   sauna: null,
   garmin: null,
   computer: null,
+  staminaTrace: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
+  anaerobicPowerIntervalLoadS: null,
   calculatedTrainingEffect: null,
   gearShifts: [],
   cyclingDynamics: null,
@@ -1865,7 +1877,8 @@ test('renders muscle oxygen as a percentage trace', () => {
     graph => graph.properties.dataTriTrace === 'muscle-oxygen',
   )
   assert.ok(trace)
-  assert.match(text(byClass(trace, 'tri-elev-cap')[0]), /muscle oxygen61\.0% SmO₂ avg/)
+  assert.match(text(byClass(trace, 'tri-elev-cap')[0]), /muscle oxygen61\.0% \\mathrm\{SmO\}_2 avg/)
+  assert.equal(byClass(trace, 'tri-math').length, 1)
   assert.deepEqual(byClass(trace, 'tri-cax-yt').map(text), ['55.0%', '60.0%', '65.0%'])
 })
 
@@ -4261,6 +4274,12 @@ test('resolves the active shifting pairing at distance', () => {
 
 test('renders Garmin stamina and potential stamina on one fixed percentage scale', () => {
   const ride = detail({
+    staminaTrace: {
+      source: 'garmin',
+      method: 'garmin-native',
+      ftpWatts: null,
+      maxHeartRateBpm: null,
+    },
     route: detail().route.map((point, index) => ({
       ...point,
       stamina: [100, 76, 54, 32][index],
@@ -4278,6 +4297,32 @@ test('renders Garmin stamina and potential stamina on one fixed percentage scale
   assert.equal(byClass(chart, 'tri-stamina-line--potential').length, 1)
   assert.equal(byClass(chart, 'tri-analysis-selection').length, 1)
   assert.equal(byClass(chart, 'tri-elev-cursor').length, 1)
+  assert.deepEqual(byClass(chart, 'tri-trace-reference-k').map(text), ['Garmin'])
+})
+
+test('moves Garden stamina provenance behind the estimated title', () => {
+  const ride = detail({
+    staminaTrace: {
+      source: 'garden-estimate',
+      method: 'garden-stamina-v1',
+      ftpWatts: 287,
+      maxHeartRateBpm: 196,
+    },
+    route: detail().route.map((point, index) => ({
+      ...point,
+      stamina: [100, 76, 54, 32][index],
+      potentialStamina: [100, 88, 67, 40][index],
+    })),
+  })
+  const chart = buildStaminaChart(factory, ride, null)
+
+  assert.ok(chart)
+  const title = byClass(chart, 'tri-elev-d')[0]
+  assert.equal(text(title), 'stamina (estimate)')
+  assert.equal(title.properties.dataGloss, '')
+  assert.equal(title.properties.dataGlossDef, 'Garden estimate v1 · FTP 287 W · max hr 196 bpm')
+  assert.equal(title.properties.tabIndex, 0)
+  assert.equal(byClass(chart, 'tri-trace-reference-k').length, 0)
 })
 
 test('renders power-weighted left and right pedal balance on a symmetric percentage scale', () => {

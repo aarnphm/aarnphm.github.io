@@ -41,6 +41,7 @@ import {
 export interface TriNodeFactory<N> {
   presentation: TriathlonPresentation
   el: (tag: string, cls?: string, text?: string, attrs?: Record<string, string>) => N
+  math: (cls: string, text: string) => N
   svg: (tag: string, attrs: Record<string, string | number>) => N
   add: (parent: N, ...children: N[]) => void
 }
@@ -233,6 +234,9 @@ export const formatRespirationRate = (breathsPerMinute: number): string =>
   `${breathsPerMinute.toFixed(1)} brpm`
 
 export const formatMuscleOxygen = (percent: number): string => `${percent.toFixed(1)}% SmO₂`
+
+export const formatMuscleOxygenMath = (percent: number): string =>
+  `${percent.toFixed(1)}% $\\mathrm{SmO}_2$`
 
 export const formatAltitude = (presentation: TriathlonPresentation, meters: number): string => {
   const rounded = Math.round(elevationValue(presentation, meters))
@@ -1111,10 +1115,13 @@ const buildTraceSeries = <N, P extends { d: number; elapsedS: number }>(
     'data-tri-trace': triathlonTraceName(title),
   })
   const capEl = f.el('div', 'tri-elev-cap')
+  const capText = cap(peak)
   f.add(
     capEl,
     f.el('span', 'tri-elev-d', triText(f.presentation.locale, title)),
-    f.el('span', 'tri-elev-range', cap(peak)),
+    capText.includes('$')
+      ? f.math('tri-elev-range', capText)
+      : f.el('span', 'tri-elev-range', capText),
   )
   if (reference) f.add(capEl, f.el('span', 'tri-elev-range tri-trace-reference-k', reference.label))
   f.add(
@@ -2300,7 +2307,24 @@ export const buildStaminaChart = <N>(
     'data-tri-trace': triathlonTraceName('stamina'),
   })
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
-  f.add(cap, f.el('span', 'tri-elev-d', triText(f.presentation.locale, 'stamina')))
+  const estimatedTrace = d.staminaTrace?.source === 'garden-estimate' ? d.staminaTrace : null
+  f.add(
+    cap,
+    f.el(
+      'span',
+      'tri-elev-d',
+      `${triText(f.presentation.locale, 'stamina')}${estimatedTrace ? ` (${triText(f.presentation.locale, 'estimate')})` : ''}`,
+      estimatedTrace
+        ? {
+            'data-gloss': '',
+            'data-gloss-def': `${triText(f.presentation.locale, 'Garden estimate v1')} · FTP ${estimatedTrace.ftpWatts} W · ${triText(f.presentation.locale, 'max hr')} ${estimatedTrace.maxHeartRateBpm} bpm`,
+            tabindex: '0',
+          }
+        : undefined,
+    ),
+  )
+  if (d.staminaTrace?.source === 'garmin')
+    f.add(cap, f.el('span', 'tri-elev-range tri-trace-reference-k', 'Garmin'))
   for (const kind of ['current', 'potential'] as const) {
     const item = f.el('span', `tri-stamina-legend-item tri-stamina-legend-item--${kind}`)
     f.add(
@@ -2937,7 +2961,7 @@ export const buildMuscleOxygenTrace = <N>(
     d,
     point => point.muscleOxygenPct ?? average,
     'muscle oxygen',
-    () => `${formatMuscleOxygen(average)} avg`,
+    () => `${formatMuscleOxygenMath(average)} avg`,
     value => `${value.toFixed(1)}%`,
     { min, max, intervals: 2 },
     selection,

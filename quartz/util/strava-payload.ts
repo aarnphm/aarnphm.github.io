@@ -632,6 +632,7 @@ export function loadStravaPayloadSync(
     undefined,
     undefined,
     wahoo,
+    ATHLETE.hrMax,
   )
   applyManualFueling(payload, manualFueling)
   applyManualStrength(payload, manualStrength)

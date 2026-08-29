@@ -19,6 +19,10 @@ import type {
 } from './tracking'
 import type { WahooActivityMatch, WahooCache, WahooCyclingDynamics, WahooStreams } from './wahoo'
 import type { WeatherActivity, WeatherCache, WeatherTemperatureSample } from './weather'
+import {
+  estimateWahooCyclingStamina,
+  type CyclingStaminaEstimate,
+} from '../../util/cycling-stamina'
 import { localDateTimeUtcMs, localIsoDay } from '../../util/local-date'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
 import {
@@ -420,6 +424,15 @@ export interface GarminVerification {
 
 export type ActivityComputer = 'garmin' | 'wahoo'
 
+export type ActivityStaminaTrace =
+  | { source: 'garmin'; method: 'garmin-native'; ftpWatts: null; maxHeartRateBpm: null }
+  | {
+      source: 'garden-estimate'
+      method: CyclingStaminaEstimate['method']
+      ftpWatts: number
+      maxHeartRateBpm: number
+    }
+
 export interface ActivityHeartRate {
   avgHr: number | null
   maxHr: number | null
@@ -511,8 +524,10 @@ export interface StravaActivityDetail {
   sauna: ActivitySauna | null
   garmin: GarminVerification | null
   computer: ActivityComputer | null
+  staminaTrace: ActivityStaminaTrace | null
   calculatedIntensityFactor: CalculatedIntensityFactor | null
   calculatedExerciseLoad: CalculatedExerciseLoad | null
+  anaerobicPowerIntervalLoadS: number | null
   calculatedTrainingEffect: CalculatedTrainingEffect | null
   gearShifts: ActivityGearShift[]
   cyclingDynamics: ActivityCyclingDynamics | null
@@ -784,6 +799,12 @@ const HIGH_INTENSITY_INTERVAL_TRAINING_EFFECT_SCALE: TrainingEffectScale = [
   [480, 5],
 ]
 
+const ANAEROBIC_POWER_WINDOW_S = 5
+const ANAEROBIC_POWER_INTERVAL_MIN_S = 10
+const ANAEROBIC_POWER_INTERVAL_MAX_S = 120
+const ANAEROBIC_POWER_THRESHOLD = 1.05
+const ANAEROBIC_POWER_FULL_WEIGHT = 1.3
+
 const trainingEffectFromScale = (value: number, scale: TrainingEffectScale): number => {
   if (!Number.isFinite(value) || value <= scale[0][0]) return scale[0][1]
   for (let index = 1; index < scale.length; index++) {
@@ -794,6 +815,64 @@ const trainingEffectFromScale = (value: number, scale: TrainingEffectScale): num
     return lowerEffect + fraction * (upperEffect - lowerEffect)
   }
   return scale[scale.length - 1][1]
+}
+
+export const calculateAnaerobicPowerIntervalLoad = (
+  watts: ArrayLike<number>,
+  ftpWatts: number | null,
+): number | null => {
+  if (
+    ftpWatts == null ||
+    !Number.isFinite(ftpWatts) ||
+    ftpWatts <= 0 ||
+    watts.length < ANAEROBIC_POWER_INTERVAL_MIN_S
+  )
+    return null
+
+  const smoothed = new Float64Array(watts.length)
+  let rollingWatts = 0
+  for (let index = 0; index < watts.length; index++) {
+    const value = watts[index]
+    rollingWatts += Number.isFinite(value) ? Math.max(0, value) : 0
+    if (index >= ANAEROBIC_POWER_WINDOW_S) {
+      const expired = watts[index - ANAEROBIC_POWER_WINDOW_S]
+      rollingWatts -= Number.isFinite(expired) ? Math.max(0, expired) : 0
+    }
+    smoothed[index] = rollingWatts / Math.min(index + 1, ANAEROBIC_POWER_WINDOW_S)
+  }
+
+  const thresholdWatts = ftpWatts * ANAEROBIC_POWER_THRESHOLD
+  let loadS = 0
+  let intervalStart = -1
+  let intervalWatts = 0
+  for (let index = 0; index <= smoothed.length; index++) {
+    const value = index < smoothed.length ? smoothed[index] : 0
+    if (value > thresholdWatts) {
+      if (intervalStart < 0) intervalStart = index
+      intervalWatts += value
+      continue
+    }
+    if (intervalStart < 0) continue
+    const durationS = index - intervalStart
+    if (
+      durationS >= ANAEROBIC_POWER_INTERVAL_MIN_S &&
+      durationS <= ANAEROBIC_POWER_INTERVAL_MAX_S
+    ) {
+      const relativeIntensity = intervalWatts / durationS / ftpWatts
+      const intensityWeight = Math.min(
+        1,
+        Math.max(
+          0,
+          (relativeIntensity - ANAEROBIC_POWER_THRESHOLD) /
+            (ANAEROBIC_POWER_FULL_WEIGHT - ANAEROBIC_POWER_THRESHOLD),
+        ),
+      )
+      loadS += durationS * intensityWeight
+    }
+    intervalStart = -1
+    intervalWatts = 0
+  }
+  return round(loadS, 1)
 }
 
 interface TrainingEffectPaceEffort {
@@ -851,6 +930,7 @@ const calculatedAnaerobicTrainingEffect = (
     | 'distanceKm'
     | 'movingTimeS'
     | 'calculatedIntensityFactor'
+    | 'anaerobicPowerIntervalLoadS'
     | 'hrZones'
     | 'analysisRanges'
     | 'swimPaceSPer100m'
@@ -862,6 +942,11 @@ const calculatedAnaerobicTrainingEffect = (
     highHeartRateS,
     HIGH_HEART_RATE_TRAINING_EFFECT_SCALE,
   )
+  const powerEffect = trainingEffectFromScale(
+    activity.anaerobicPowerIntervalLoadS ?? 0,
+    HIGH_INTENSITY_INTERVAL_TRAINING_EFFECT_SCALE,
+  )
+  const telemetryEffect = Math.max(heartRateEffect, powerEffect)
   const intensityFactor = activity.calculatedIntensityFactor
   if (
     intensityFactor?.source !== 'pace' ||
@@ -869,13 +954,13 @@ const calculatedAnaerobicTrainingEffect = (
     intensityFactor.value > 1.5 ||
     activity.movingTimeS <= 0
   )
-    return heartRateEffect
+    return telemetryEffect
   const averageSpeedMps =
     activity.sport === 'swim' && activity.swimPaceSPer100m != null && activity.swimPaceSPer100m > 0
       ? 100 / activity.swimPaceSPer100m
       : (activity.distanceKm * 1_000) / activity.movingTimeS
   const thresholdSpeedMps = averageSpeedMps / intensityFactor.value
-  if (!Number.isFinite(thresholdSpeedMps) || thresholdSpeedMps <= 0) return heartRateEffect
+  if (!Number.isFinite(thresholdSpeedMps) || thresholdSpeedMps <= 0) return telemetryEffect
   const intervalLoad = trainingEffectPaceEfforts(activity).reduce((sum, effort) => {
     if (effort.durationS <= 0 || effort.distanceM <= 0) return sum
     const relativeIntensity = effort.distanceM / effort.durationS / thresholdSpeedMps
@@ -884,7 +969,7 @@ const calculatedAnaerobicTrainingEffect = (
     return sum + Math.min(120, effort.durationS) * intensityWeight
   }, 0)
   return Math.max(
-    heartRateEffect,
+    telemetryEffect,
     trainingEffectFromScale(intervalLoad, HIGH_INTENSITY_INTERVAL_TRAINING_EFFECT_SCALE),
   )
 }
@@ -899,6 +984,7 @@ export const calculateActivityTrainingEffect = (
     | 'garmin'
     | 'calculatedIntensityFactor'
     | 'calculatedExerciseLoad'
+    | 'anaerobicPowerIntervalLoadS'
     | 'hrZones'
     | 'analysisRanges'
     | 'swimPaceSPer100m'
@@ -1755,6 +1841,7 @@ interface ActivityMetricSamples {
   rightBalance: TimedMetricSample[]
   stamina: TimedMetricSample[]
   potentialStamina: TimedMetricSample[]
+  staminaTrace: ActivityStaminaTrace | null
   respiration: TimedMetricSample[]
   muscleOxygenPercent: TimedMetricSample[]
   heatStrainIndex: TimedMetricSample[]
@@ -1796,6 +1883,7 @@ function activityGarminMetricSamples(
     rightBalance: [],
     stamina: [],
     potentialStamina: [],
+    staminaTrace: null,
     respiration: [],
     muscleOxygenPercent: [],
     heatStrainIndex: [],
@@ -1825,10 +1913,16 @@ function activityGarminMetricSamples(
     return samples.sort((left, right) => left.elapsedS - right.elapsedS)
   }
 
+  const stamina = collect('stamina', value => value >= 0 && value <= 100)
+  const potentialStamina = collect('potentialStamina', value => value >= 0 && value <= 100)
   return {
     rightBalance: collect('rightBalance', value => value >= 0 && value <= 100),
-    stamina: collect('stamina', value => value >= 0 && value <= 100),
-    potentialStamina: collect('potentialStamina', value => value >= 0 && value <= 100),
+    stamina,
+    potentialStamina,
+    staminaTrace:
+      stamina.length >= 2 && potentialStamina.length >= 2
+        ? { source: 'garmin', method: 'garmin-native', ftpWatts: null, maxHeartRateBpm: null }
+        : null,
     respiration: collect('respiration', value => value > 0),
     muscleOxygenPercent: collect('muscleOxygenPercent', value => value >= 0 && value <= 100),
     heatStrainIndex: collect('heatStrainIndex', value => value >= 0 && value <= 20),
@@ -1844,6 +1938,7 @@ function activityMetricSamples(
   garmin: GarminCache | null,
   wahooMatch: WahooActivityMatch | null,
   wahoo: WahooCache | null,
+  wahooStamina: CyclingStaminaEstimate | null,
   respirationProjection: RespirationProjectionModel | null,
 ): ActivityMetricSamples {
   const samples = activityGarminMetricSamples(activity, garminMatch, garmin)
@@ -1874,8 +1969,30 @@ function activityMetricSamples(
     directWahooRespiration.length > 0 || sport !== 'bike' || !respirationProjection
       ? directWahooRespiration
       : projectWahooRespiration(stream, startOffsetS, respirationProjection)
+  const estimatedStamina =
+    samples.staminaTrace == null && wahooStamina
+      ? {
+          stamina: wahooStamina.samples.map(sample => ({
+            elapsedS: sample.elapsedS + startOffsetS,
+            value: sample.stamina,
+          })),
+          potentialStamina: wahooStamina.samples.map(sample => ({
+            elapsedS: sample.elapsedS + startOffsetS,
+            value: sample.potentialStamina,
+          })),
+          staminaTrace: {
+            source: 'garden-estimate',
+            method: wahooStamina.method,
+            ftpWatts: wahooStamina.ftpWatts,
+            maxHeartRateBpm: wahooStamina.maxHeartRateBpm,
+          } satisfies ActivityStaminaTrace,
+        }
+      : null
   return {
     ...samples,
+    stamina: estimatedStamina?.stamina ?? samples.stamina,
+    potentialStamina: estimatedStamina?.potentialStamina ?? samples.potentialStamina,
+    staminaTrace: estimatedStamina?.staminaTrace ?? samples.staminaTrace,
     rightBalance:
       samples.rightBalance.length > 0
         ? samples.rightBalance
@@ -2432,6 +2549,7 @@ function projectDetail(
   climbs: GarminClimbSegment[],
   hrBounds: number[],
   powerBounds: number[],
+  ftpWatts: number | null,
   home: [number, number] | null,
   powerCurve: PowerCurvePoint[] | undefined,
   activityCriticalPower: CriticalPowerEstimate | null,
@@ -2614,8 +2732,13 @@ function projectDetail(
     sauna: null,
     garmin,
     computer,
+    staminaTrace: metricSamples.staminaTrace,
     calculatedIntensityFactor: null,
     calculatedExerciseLoad: null,
+    anaerobicPowerIntervalLoadS:
+      sport === 'bike' && hasEffortPower && timeline
+        ? calculateAnaerobicPowerIntervalLoad(timeline.watts, ftpWatts)
+        : null,
     calculatedTrainingEffect: null,
     gearShifts,
     cyclingDynamics,
@@ -2801,8 +2924,10 @@ export function applyManualSauna(
       },
       garmin: null,
       computer: null,
+      staminaTrace: null,
       calculatedIntensityFactor: null,
       calculatedExerciseLoad: null,
+      anaerobicPowerIntervalLoadS: null,
       calculatedTrainingEffect: null,
       gearShifts: [],
       cyclingDynamics: null,
@@ -2883,6 +3008,7 @@ export function buildPayload(
   inputHrBounds?: number[] | null,
   timeZone?: string,
   wahoo?: WahooCache | null,
+  inputMaxHeartRate?: number | null,
 ): StravaPayload {
   if (!cache) return emptyPayload()
 
@@ -3083,6 +3209,12 @@ export function buildPayload(
         : ftp != null
           ? derivePowerBounds(ftp)
           : []
+  const wahooStamina = estimateWahooCyclingStamina(
+    wahoo ?? null,
+    garmin,
+    ftp,
+    inputMaxHeartRate ?? hrmax,
+  )
 
   const starts: [number, number][] = []
   for (const { a } of activities) {
@@ -3123,6 +3255,7 @@ export function buildPayload(
         garmin,
         wahooMatch,
         wahoo ?? null,
+        wahooMatch ? (wahooStamina.get(wahooMatch.activity.id) ?? null) : null,
         respirationProjection,
       ),
       activityGearShifts(a, garminMatch, garmin, wahooMatch, wahoo ?? null),
@@ -3137,6 +3270,7 @@ export function buildPayload(
       garminMatch ? (garmin?.climbs?.[garminMatch.activity.id] ?? []) : [],
       hrBounds,
       powerBounds,
+      ftp,
       home,
       powerCurves.get(id),
       activityCriticalPowers.get(id) ?? null,

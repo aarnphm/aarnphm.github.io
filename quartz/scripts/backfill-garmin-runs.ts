@@ -21,7 +21,7 @@ import {
   type GarminSwimStroke,
 } from '../util/garmin-fit'
 import {
-  applyGarminSetCookies,
+  assertGarminResponseAuthorized,
   cleanGarminConnectBaseUrl,
   DEFAULT_GARMIN_CONNECT_BASE,
   DEFAULT_GARMIN_IMPORT_BASE,
@@ -714,25 +714,11 @@ function outputDir(args: Args): string {
   return joinSegments(CACHE_DIR, 'garmin-swim-backfill')
 }
 
-function uploadHeaders(session: GarminConnectSession): HeadersInit {
-  const headers = new Headers(garminConnectRequestHeaders(session))
-  headers.set('NK', 'NT')
-  headers.set(
-    'Origin',
-    process.env.GARMIN_CONNECT_IMPORT_ORIGIN?.trim() || 'https://sso.garmin.com',
-  )
-  headers.set(
-    'User-Agent',
-    process.env.GARMIN_CONNECT_IMPORT_USER_AGENT?.trim() || 'GCM-iOS-5.7.2.1',
-  )
-  headers.delete('Content-Type')
-  return headers
-}
-
 function parseJsonOrNull(text: string): unknown {
   if (!text.trim()) return null
   try {
-    return JSON.parse(text) as unknown
+    const value: unknown = JSON.parse(text)
+    return value
   } catch {
     return null
   }
@@ -745,14 +731,14 @@ async function uploadTcx(
   content: string,
 ): Promise<UploadResult> {
   const form = new FormData()
-  form.set('file', new Blob([content], { type: 'application/octet-stream' }), `"${filename}"`)
-  const res = await fetch(garminUrlFor(base, '/upload-service/upload/tcx'), {
+  form.set('file', new Blob([content], { type: 'application/octet-stream' }), filename)
+  const res = await fetch(garminUrlFor(base, '/upload-service/upload'), {
     method: 'POST',
-    headers: uploadHeaders(session),
+    headers: garminConnectRequestHeaders(session),
     body: form,
   })
+  assertGarminResponseAuthorized(res)
   const body = await res.text()
-  applyGarminSetCookies(session, res.headers)
   const json = parseJsonOrNull(body)
   if (res.status === 409) return { status: res.status, body, json }
   if (!res.ok)

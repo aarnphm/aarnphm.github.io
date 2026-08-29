@@ -1,6 +1,8 @@
-import type { Element } from 'hast'
+import type { Element, ElementContent, RootContent } from 'hast'
+import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { h, s } from 'hastscript'
 import type { QuartzPluginData } from '../plugins/vfile'
+import { renderInlineMath } from '../util/math-text'
 import { joinSegments, slugAnchor } from '../util/path'
 import {
   buildDayCard,
@@ -147,6 +149,22 @@ export const triathlonCardFactory: TriNodeFactory<Element> = {
   presentation: DEFAULT_TRIATHLON_PRESENTATION,
   el: (tag, cls, text, attrs) =>
     h(tag, { ...(cls ? { class: cls } : {}), ...attrs }, text === undefined ? [] : [text]),
+  math: (cls, text) => {
+    const children: ElementContent[] = []
+    text.split(/\$([^$]+)\$/).forEach((part, index) => {
+      if (!part) return
+      if (index % 2 === 0) {
+        children.push({ type: 'text', value: part })
+        return
+      }
+      const rendered = fromHtmlIsomorphic(renderInlineMath(part), { fragment: true })
+      const math = rendered.children.filter(
+        (child: RootContent): child is ElementContent => child.type !== 'doctype',
+      )
+      children.push(h('span', { class: 'tri-math' }, math))
+    })
+    return h('span', { class: cls }, children)
+  },
   svg: (tag, attrs) => s(tag, attrs),
   add: (parent, ...children) => {
     parent.children.push(...children)

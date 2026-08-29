@@ -1,5 +1,5 @@
 import {
-  applyGarminSetCookies,
+  assertGarminResponseAuthorized,
   garminConnectRequestHeaders,
   garminResponseSummary,
   garminUrlFor,
@@ -39,13 +39,12 @@ export function fitImportPollLocation(requestUrl: string, location: string | nul
   const url = new URL(location, requestUrl)
   if (url.protocol !== 'https:')
     throw new Error(`Garmin FIT import returned an unsafe poll location: ${url.toString()}`)
-  if (url.hostname === 'connect.garmin.com' && url.pathname.startsWith('/gc-api/'))
-    return url.toString()
   if (
     url.hostname === 'connectapi.garmin.com' &&
-    url.pathname.startsWith('/activity-service/activity/status/')
+    (url.pathname.startsWith('/activity-service/activity/status/') ||
+      url.pathname.startsWith('/upload-service/status/'))
   )
-    return new URL(`/gc-api${url.pathname}${url.search}`, 'https://connect.garmin.com').toString()
+    return url.toString()
   throw new Error(`Garmin FIT import returned an unsafe poll location: ${url.toString()}`)
 }
 
@@ -89,7 +88,7 @@ async function pollFitImport(
       headers: garminConnectRequestHeaders(session),
       redirect: 'manual',
     })
-    applyGarminSetCookies(session, res.headers)
+    assertGarminResponseAuthorized(res)
     if (res.status === 202) {
       delayMs = fitImportPollDelay(res.headers.get('Location-In-Milliseconds'))
       await res.arrayBuffer()
@@ -112,16 +111,15 @@ export async function uploadGarminFit(
   filename: string,
   bytes: Uint8Array,
 ): Promise<string> {
-  const requestUrl = garminUrlFor(base, '/upload-service/upload/.fit')
+  const requestUrl = garminUrlFor(base, '/upload-service/upload')
   const form = new FormData()
   const buffer = new ArrayBuffer(bytes.byteLength)
   new Uint8Array(buffer).set(bytes)
-  form.set('userfile', new Blob([buffer], { type: 'application/octet-stream' }), filename)
+  form.set('file', new Blob([buffer], { type: 'application/octet-stream' }), filename)
   const headers = new Headers(garminConnectRequestHeaders(session))
-  headers.set('X-Requested-With', 'XMLHttpRequest')
   headers.delete('Content-Type')
   const res = await fetch(requestUrl, { method: 'POST', headers, body: form, redirect: 'manual' })
-  applyGarminSetCookies(session, res.headers)
+  assertGarminResponseAuthorized(res)
   if (res.status === 202) {
     await res.arrayBuffer()
     return pollFitImport(

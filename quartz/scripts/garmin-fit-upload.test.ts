@@ -42,20 +42,20 @@ test('accepts only one successful Garmin internal activity ID', () => {
 })
 
 test('keeps FIT import polling on Garmin with bounded delays', () => {
-  const request = 'https://connect.garmin.com/gc-api/upload-service/upload/.fit'
+  const request = 'https://connectapi.garmin.com/upload-service/upload'
   assert.equal(
-    fitImportPollLocation(request, '/gc-api/upload-service/status/123'),
-    'https://connect.garmin.com/gc-api/upload-service/status/123',
+    fitImportPollLocation(request, '/upload-service/status/123'),
+    'https://connectapi.garmin.com/upload-service/status/123',
   )
   assert.equal(
     fitImportPollLocation(
       request,
       'https://connectapi.garmin.com/activity-service/activity/status/123/opaque',
     ),
-    'https://connect.garmin.com/gc-api/activity-service/activity/status/123/opaque',
+    'https://connectapi.garmin.com/activity-service/activity/status/123/opaque',
   )
   assert.throws(
-    () => fitImportPollLocation(request, 'https://example.com/gc-api/status/123'),
+    () => fitImportPollLocation(request, 'https://connect.garmin.com/gc-api/status/123'),
     /unsafe poll location/,
   )
   assert.throws(() => fitImportPollLocation(request, null), /omitted Location/)

@@ -1,4 +1,5 @@
 import type { Element } from 'hast'
+import { toHtml } from 'hast-util-to-html'
 import { h } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -10,6 +11,7 @@ import {
   filterTriathlonTraceElements,
   resolveTriathlonEmbedDate,
   triathlonDayProps,
+  triathlonCardFactory,
   triathlonEmbedAnchor,
   triathlonEmbedAnchorFromBlockRef,
   triathlonEmbedAnchorFromSource,
@@ -19,6 +21,15 @@ import {
 const SIMPLIFIED_SETTINGS_VALUE = serializeTriathlonTraceSettings(
   TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified,
 )
+
+test('renders inline math in server-side triathlon card nodes', () => {
+  const rendered = toHtml(
+    triathlonCardFactory.math('tri-elev-range', '61.0% $\\mathrm{SmO}_2$ avg'),
+  )
+  assert.match(rendered, /class="tri-math"/)
+  assert.match(rendered, /class="katex"/)
+  assert.doesNotMatch(rendered, /\$\\mathrm\{SmO\}_2\$/)
+})
 
 test('parses triathlon embed sport and activity exclusions', () => {
   assert.deepEqual(
