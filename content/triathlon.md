@@ -1337,18 +1337,19 @@ The activity-card values use these ordered sources:
 2. Missing intensity factor is calculated from device power for a bike, pace for a run or swim, then heart rate as the remaining fallback.
 3. Exercise load uses Garmin's native value when it exists.
 4. Missing exercise load is calculated from Garmin IF when Garmin supplied IF, otherwise from the locally calculated IF.
-5. Garmin aerobic and anaerobic training effect scores, messages, and labels stay provider-native. There is no local EPOC or training-effect reconstruction.
+5. Garmin aerobic and anaerobic training effect scores, messages, and labels take priority when they exist.
+6. When Garmin has no training effect details, bike, run, and swim activities use a local estimate. The aerobic score uses Strava relative effort when it exists, then exercise load. The anaerobic score uses the stronger result from upper heart rate zones and short high intensity intervals.
 
 The analytics load that drives CTL, ATL, TSB, ACWR, and weekly load is separate from the exercise-load number shown on an activity card. Swim, bike, and run use grade-adjusted pace and duration. Strength and yoga use threshold-normalized heart-rate TRIMP when average exercise heart rate and resting, threshold, and maximum heart rate are available. A strength or yoga activity without valid heart-rate inputs contributes zero load. Pace and volume calibration remains scoped to swim, bike, and run.
 
-Training-effect scores are only clamped for display:
+Provider scores and local estimates are clamped for display:
 
 $$
 \mathrm{TE}_{\mathrm{display}}
 =
 \operatorname{clamp}
 \left(
-\mathrm{TE}_{\mathrm{Garmin}},
+\mathrm{TE}_{\mathrm{source}},
 0,
 5
 \right).
@@ -1368,7 +1369,115 @@ $$
 \end{cases}
 $$
 
-These labels interpret Garmin's score. They do not calculate the underlying aerobic or anaerobic training effect.
+For a calculated ride, the site converts the complete power stream to one sample per second and smooths power over five seconds. A continuous effort counts when its smoothed average stays above $105\%$ of FTP for 10 to 120 seconds. Each effort receives a weight of zero at $105\%$ of FTP and a weight of one at $130\%$ of FTP. The power interval load is
+
+$$
+L_{\mathrm{power}}
+=
+\sum_{i\in\mathcal I}
+t_i
+\operatorname{clamp}
+\left(
+\frac{\bar P_i/\mathrm{FTP}-1.05}{0.25},
+0,
+1
+\right),
+\qquad
+10\le t_i\le120.
+$$
+
+The anaerobic estimate uses the larger score from the power interval load and the total time in the upper two heart rate zones:
+
+$$
+\mathrm{TE}_{\mathrm{anaerobic}}
+=
+\max
+\left(
+s_{\mathrm{interval}}(L_{\mathrm{power}}),
+s_{\mathrm{HR}}(t_{Z4}+t_{Z5})
+\right).
+$$
+
+Run and swim estimates use the same interval scale with pace efforts. These local scores remain estimates because the site does not reproduce Garmin's EPOC model or training history.
+
+### cycling stamina
+
+Garmin activity details supply current stamina and potential stamina as native percentage streams. Garmin describes current stamina as the capacity left at the present effort. It can recover toward potential stamina after the effort falls. Potential stamina tracks slower fatigue and can start below 100 when recovery from earlier training is incomplete.[^garmin-stamina]
+
+Wahoo FIT files do not contain either stamina stream. A Wahoo matched ride receives a Garden estimate when at least 80% of its aligned samples have valid time, power, and heart rate values, and when FTP and maximum heart rate are available. Garmin native stamina keeps first priority. The activity payload records `staminaTrace.source`, the method version, FTP, and maximum heart rate so the local estimate cannot be mistaken for a provider value.
+
+Let $P_i$ be power, $H_i$ be heart rate, $P_{\mathrm{FTP}}$ be FTP, and $H_{\max}$ be maximum heart rate. The potential stamina loss rate in percentage points per hour is
+
+$$
+R_i
+=
+17.14
+\left(
+\frac{P_i}{P_{\mathrm{FTP}}}
+\right)^{2.5}
++
+98.85
+\left(
+\frac{H_i}{H_{\max}}
+\right)^{10}.
+$$
+
+Potential stamina $U_i$ is
+
+$$
+U_i
+=
+\operatorname{clamp}
+\left(
+U_{i-1}-R_i\frac{\Delta t_i}{3600},
+0,
+100
+\right).
+$$
+
+The current stamina deficit $D_i$ grows during work above FTP and recovers during easier work:
+
+$$
+D_i
+=
+\begin{cases}
+\operatorname{clamp}
+\left(
+D_{i-1}
++
+800
+\left(
+\frac{P_i}{P_{\mathrm{FTP}}}-1
+\right)^{1.5}
+\frac{\Delta t_i}{3600},
+0,
+U_i
+\right),
+& P_i>P_{\mathrm{FTP}},\\
+D_{i-1}\exp\left(-\frac{\Delta t_i}{360}\right),
+& P_i\le P_{\mathrm{FTP}}.
+\end{cases}
+$$
+
+Current stamina is $S_i=U_i-D_i$. Gaps longer than five seconds do not spend potential stamina because the sensors do not establish the effort during the gap. The current deficit still recovers during the gap.
+
+Between rides, potential stamina recovers with a six hour time constant:
+
+$$
+U_{\mathrm{start}}
+=
+100
+-
+\left(
+100-U_{\mathrm{previous}}
+\right)
+\exp
+\left(
+-\frac{\Delta t}{21600}
+\right).
+$$
+
+The `garden-stamina-v1` coefficients were fitted against 71 Garmin native cycling traces from June 3 to August 26, 2026. Every trace had power and heart rate. The rides ranged from 10 minutes to 7.1 hours. On those traces, the potential estimate had 3.3 percentage points of trace RMSE. Current stamina had 5.4 points of trace RMSE. These errors measure agreement with Garmin output for the same rider. The graph labels every local result as `Garden estimate v1` because this method does not reproduce Garmin's private model and is not Wahoo data.
 
 ### tire pressure
 
@@ -3606,5 +3715,7 @@ The one thing worth saying about 4:40: at that level the swim is 1:54/100 m, whi
 [^triphys]: Millet, Vleck and Bentley, "Physiological differences between cycling and running: lessons from triathletes", Sports Medicine, 2009. https://pubmed.ncbi.nlm.nih.gov/19453206/
 
 [^critical-power]: Karsten et al., "Validity and reliability of critical power field testing", European Journal of Applied Physiology, 2015. https://doi.org/10.1007/s00421-014-3001-z Maturana et al., "Critical power: How different protocols and models affect its determination", Journal of Science and Medicine in Sport, 2018. https://doi.org/10.1016/j.jsams.2017.11.015
+
+[^garmin-stamina]: Garmin, "Real-time Stamina". https://www.garmin.com/en-GB/garmin-technology/running-science/physiological-measurements/real-time-stamina/
 
 <!-- training plan end -->

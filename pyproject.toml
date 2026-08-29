@@ -7,11 +7,12 @@ name = "garden"
 description = "Aaron's notes"
 readme = { file = ".github/README.md", content-type = "text/markdown" }
 authors = [{ name = "Aaron Pham", email = "contact@aarnphm.xyz" }]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
   "numpy>=2.1.2",
   "scipy>=1.14.1",
   "bytecode>=0.17.0",
+  "garminconnect==0.3.11",
   "nltk>=3.10.1",
   "graphviz>=0.21",
   "svgling>=0.5.0",

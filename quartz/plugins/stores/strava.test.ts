@@ -8,6 +8,7 @@ import {
   buildPayload,
   calculateActivityIntensityFactor,
   calculateActivityTrainingEffect,
+  calculateAnaerobicPowerIntervalLoad,
   calculateExerciseLoad,
   calculateHeartRateTss,
   emptyPayload,
@@ -76,6 +77,21 @@ test('normalizes heart-rate TRIMP to 100 TSS for one hour at threshold', () => {
   assert.equal(calculateHeartRateTss(120, 1_200, 50, 196, 196, 'M'), null)
 })
 
+test('counts only 10 to 120 second high-power intervals as anaerobic load', () => {
+  const watts = [
+    ...Array<number>(20).fill(0),
+    ...Array<number>(9).fill(600),
+    ...Array<number>(20).fill(0),
+    ...Array<number>(20).fill(600),
+    ...Array<number>(20).fill(0),
+    ...Array<number>(121).fill(600),
+    ...Array<number>(20).fill(0),
+  ]
+  assert.equal(calculateAnaerobicPowerIntervalLoad(watts, 300), 20)
+  assert.equal(calculateAnaerobicPowerIntervalLoad([], 300), null)
+  assert.equal(calculateAnaerobicPowerIntervalLoad(watts, null), null)
+})
+
 test('calculates missing run training effect from relative effort and upper-zone time', () => {
   assert.deepEqual(
     calculateActivityTrainingEffect({
@@ -86,6 +102,7 @@ test('calculates missing run training effect from relative effort and upper-zone
       garmin: null,
       calculatedIntensityFactor: { value: 0.9, source: 'pace' },
       calculatedExerciseLoad: { value: 81, source: 'pace' },
+      anaerobicPowerIntervalLoadS: null,
       hrZones: [0, 0, 3_360, 240, 0],
       analysisRanges: [],
       swimPaceSPer100m: null,
@@ -95,7 +112,7 @@ test('calculates missing run training effect from relative effort and upper-zone
   )
 })
 
-test('calculates missing bike training effect from power load and upper-zone time', () => {
+test('calculates missing bike training effect from aerobic load and power intervals', () => {
   assert.deepEqual(
     calculateActivityTrainingEffect({
       sport: 'bike',
@@ -105,12 +122,13 @@ test('calculates missing bike training effect from power load and upper-zone tim
       garmin: null,
       calculatedIntensityFactor: { value: 0.645, source: 'power' },
       calculatedExerciseLoad: { value: 40.4, source: 'power' },
+      anaerobicPowerIntervalLoadS: 95.6,
       hrZones: [0, 0, 0, 120, 60],
       analysisRanges: [],
       swimPaceSPer100m: null,
       swimIntervals: [],
     }),
-    { aerobic: 3, anaerobic: 1.5 },
+    { aerobic: 3, anaerobic: 2.6 },
   )
 })
 
@@ -789,6 +807,12 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
     detail.route.map(point => point.potentialStamina),
     [100, 93.6, 80.8],
   )
+  assert.deepEqual(detail.staminaTrace, {
+    source: 'garmin',
+    method: 'garmin-native',
+    ftpWatts: null,
+    maxHeartRateBpm: null,
+  })
   assert.deepEqual(
     detail.route.map(point => point.resp),
     [18, 26, 36],
@@ -1073,9 +1097,16 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
     },
   }
 
-  const detail = buildPayload(cache, null, garmin, '2026-06-01', null, null, null, 'UTC', wahoo)
+  const detail = buildPayload(cache, null, garmin, '2026-06-01', null, 230, null, 'UTC', wahoo, 196)
     .details['101']
   assert.equal(detail.computer, 'wahoo')
+  assert.deepEqual(detail.staminaTrace, {
+    source: 'garden-estimate',
+    method: 'garden-stamina-v1',
+    ftpWatts: 230,
+    maxHeartRateBpm: 196,
+  })
+  assert.ok(detail.route.every(point => point.stamina != null && point.potentialStamina != null))
   assert.deepEqual(
     detail.route.map(point => point.rightPowerPct),
     [47, 48.6, 51.4],
@@ -1270,6 +1301,25 @@ function timedRideCache(increments: (i: number) => number, n = 100): StravaRawCa
     },
   }
 }
+
+test('projects anaerobic interval load from the complete ride power stream', () => {
+  const watts = [
+    ...Array<number>(20).fill(0),
+    ...Array<number>(9).fill(600),
+    ...Array<number>(20).fill(0),
+    ...Array<number>(20).fill(600),
+    ...Array<number>(20).fill(0),
+    ...Array<number>(121).fill(600),
+    ...Array<number>(20).fill(0),
+  ]
+  const cache = timedRideCache(() => 8, watts.length)
+  const streams = cache.streams?.['101']
+  assert.ok(streams)
+  streams.watts = watts
+
+  const detail = buildPayload(cache, null, null, '2026-06-01', null, 300).details['101']
+  assert.equal(detail.anaerobicPowerIntervalLoadS, 20)
+})
 
 test('derives max speed from the timed distance stream', () => {
   const surge = new Map([

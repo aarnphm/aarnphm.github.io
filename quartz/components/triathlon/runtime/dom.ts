@@ -69,6 +69,7 @@ export const createDomFactory = (
 ): TriNodeFactory<HTMLElement | SVGElement> => ({
   presentation,
   el,
+  math: mathK,
   svg,
   add: (parent, ...children) => parent.append(...children),
 })

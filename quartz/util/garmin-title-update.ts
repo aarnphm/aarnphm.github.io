@@ -1,5 +1,5 @@
 import {
-  applyGarminSetCookies,
+  assertGarminResponseAuthorized,
   garminConnectRequestHeaders,
   garminResponseSummary,
   garminUrlFor,
@@ -36,13 +36,6 @@ const GARMIN_UNCATEGORIZED_EVENT_TYPE: GarminEventTypeDto = {
   sortOrder: 10,
 }
 
-function activityUpdateHeaders(session: GarminConnectSession): HeadersInit {
-  const headers = new Headers(garminConnectRequestHeaders(session, 'application/json'))
-  headers.set('NK', 'NT')
-  headers.set('X-HTTP-Method-Override', 'PUT')
-  return headers
-}
-
 function normalizedTitle(activityId: string, title: string): string {
   const normalized = title.trim().replace(/\s+/g, ' ')
   if (!normalized) throw new Error(`Garmin activity update for ${activityId} needs a title`)
@@ -51,12 +44,11 @@ function normalizedTitle(activityId: string, title: string): string {
 
 async function assertUpdateAccepted(
   res: Response,
-  session: GarminConnectSession,
   activityId: string,
   label: string,
 ): Promise<void> {
+  assertGarminResponseAuthorized(res)
   const text = await res.text()
-  applyGarminSetCookies(session, res.headers)
   if (!res.ok)
     throw new Error(
       `Garmin ${label} update failed for ${activityId}: ${res.status} ${garminResponseSummary(res, text)}`,
@@ -78,12 +70,12 @@ export async function updateGarminActivityTitle(
   const res = await fetch(
     garminUrlFor(base, `/activity-service/activity/${encodeURIComponent(activityId)}`),
     {
-      method: 'POST',
-      headers: activityUpdateHeaders(session),
-      body: JSON.stringify({ activityName: titleText, activityId: Number(activityId) }),
+      method: 'PUT',
+      headers: garminConnectRequestHeaders(session, 'application/json'),
+      body: JSON.stringify({ activityName: titleText, activityId }),
     },
   )
-  await assertUpdateAccepted(res, session, activityId, 'title')
+  await assertUpdateAccepted(res, activityId, 'title')
 }
 
 export async function updateGarminActivityType(
@@ -97,15 +89,15 @@ export async function updateGarminActivityType(
   const res = await fetch(
     garminUrlFor(base, `/activity-service/activity/${encodeURIComponent(activityId)}`),
     {
-      method: 'POST',
-      headers: activityUpdateHeaders(session),
+      method: 'PUT',
+      headers: garminConnectRequestHeaders(session, 'application/json'),
       body: JSON.stringify({
-        activityId: Number(activityId),
+        activityId,
         activityName: titleText,
         activityTypeDTO: activityType,
         eventTypeDTO: GARMIN_UNCATEGORIZED_EVENT_TYPE,
       }),
     },
   )
-  await assertUpdateAccepted(res, session, activityId, 'type')
+  await assertUpdateAccepted(res, activityId, 'type')
 }

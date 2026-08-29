@@ -236,6 +236,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         hrBoundsOverride ?? undefined,
         undefined,
         wahoo,
+        ATHLETE.hrMax,
       )
       applyManualFueling(payload, tracking?.fueling ?? [])
       applyManualStrength(payload, tracking?.strength ?? [])

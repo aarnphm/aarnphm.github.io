@@ -20,11 +20,31 @@ const isDetailIndex = (value: unknown): value is StravaDetailIndex =>
   isRecord(value.health) &&
   (value.dailyAnalytics === undefined || isTriathlonDailyAnalytics(value.dailyAnalytics))
 
+const isStaminaTrace = (value: unknown): boolean => {
+  if (value === null) return true
+  if (!isRecord(value)) return false
+  if (value.source === 'garmin')
+    return (
+      value.method === 'garmin-native' && value.ftpWatts === null && value.maxHeartRateBpm === null
+    )
+  return (
+    value.source === 'garden-estimate' &&
+    value.method === 'garden-stamina-v1' &&
+    typeof value.ftpWatts === 'number' &&
+    Number.isFinite(value.ftpWatts) &&
+    value.ftpWatts > 0 &&
+    typeof value.maxHeartRateBpm === 'number' &&
+    Number.isFinite(value.maxHeartRateBpm) &&
+    value.maxHeartRateBpm > 0
+  )
+}
+
 const isActivityDetail = (value: unknown): value is StravaActivityDetail =>
   isRecord(value) &&
   typeof value.id === 'number' &&
   /^\d{4}-\d{2}-\d{2}$/.test(typeof value.date === 'string' ? value.date : '') &&
-  isActivityKind(value.sport)
+  isActivityKind(value.sport) &&
+  isStaminaTrace(value.staminaTrace)
 
 const isDetailShard = (value: unknown): value is StravaDetailShard =>
   isRecord(value) &&
