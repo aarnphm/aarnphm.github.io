@@ -10,6 +10,7 @@ import {
   DEFAULT_WAHOO_TOKEN_URL,
   exchangeWahooAuthorizationCode,
   readWahooRefreshToken,
+  resolveWahooRefreshTokenFile,
   writeWahooRefreshToken,
   WAHOO_OAUTH_SCOPES,
 } from '../util/wahoo-cloud'
@@ -112,8 +113,11 @@ async function main(): Promise<void> {
   const clientSecret = process.env.WAHOO_CLIENT_SECRET?.trim()
   if (!clientId || !clientSecret)
     throw new Error('set WAHOO_CLIENT_ID and WAHOO_CLIENT_SECRET in .env first')
+  const refreshTokenFile = resolveWahooRefreshTokenFile()
   const refreshToken =
-    (await readWahooRefreshToken()) ?? process.env.WAHOO_REFRESH_TOKEN?.trim() ?? null
+    (await readWahooRefreshToken(refreshTokenFile)) ??
+    process.env.WAHOO_REFRESH_TOKEN?.trim() ??
+    null
   if (refreshToken && !values.reauthorize) {
     console.log('[wahoo] authorization already cached; reusing its rotating token lineage.')
     return
@@ -141,7 +145,7 @@ async function main(): Promise<void> {
     process.env.WAHOO_TOKEN_URL?.trim() || DEFAULT_WAHOO_TOKEN_URL,
   )
   assertScopes(token.scope)
-  await writeWahooRefreshToken(token.refreshToken)
+  await writeWahooRefreshToken(token.refreshToken, refreshTokenFile)
   await upsertEnvLine('.env', 'WAHOO_REFRESH_TOKEN', token.refreshToken)
   console.log('\n[wahoo] authorized. WAHOO_REFRESH_TOKEN written to .env and the Wahoo cache.')
   console.log('now run: pnpm health:wahoo\n')

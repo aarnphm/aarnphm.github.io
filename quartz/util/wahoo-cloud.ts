@@ -15,6 +15,10 @@ export const DEFAULT_WAHOO_AUTHORIZE_URL = 'https://api.wahooligan.com/oauth/aut
 export const DEFAULT_WAHOO_TOKEN_URL = 'https://api.wahooligan.com/oauth/token'
 export const WAHOO_REFRESH_TOKEN_FILE = joinSegments(QUARTZ, '.quartz-cache', 'wahoo-refresh-token')
 
+export function resolveWahooRefreshTokenFile(env: NodeJS.ProcessEnv = process.env): string {
+  return env.WAHOO_REFRESH_TOKEN_FILE?.trim() || WAHOO_REFRESH_TOKEN_FILE
+}
+
 const DEFAULT_PER_PAGE = 100
 const MAX_REDIRECTS = 5
 const MAX_FIT_BYTES = 64 * 1024 * 1024
@@ -725,9 +729,10 @@ export async function readWahooCloudCredentials(
 }
 
 export async function wahooCloudClientFromEnv(): Promise<WahooCloudClient> {
-  return new WahooCloudClient(await readWahooCloudCredentials(), {
+  const refreshTokenFile = resolveWahooRefreshTokenFile()
+  return new WahooCloudClient(await readWahooCloudCredentials(refreshTokenFile), {
     apiBaseUrl: process.env.WAHOO_API_BASE_URL,
     tokenUrl: process.env.WAHOO_TOKEN_URL,
-    refreshTokenFile: WAHOO_REFRESH_TOKEN_FILE,
+    refreshTokenFile,
   })
 }
