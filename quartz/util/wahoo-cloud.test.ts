@@ -6,10 +6,20 @@ import test from 'node:test'
 import {
   parseWahooWorkoutFileUpload,
   readWahooCloudCredentials,
+  resolveWahooRefreshTokenFile,
   safeWahooFileUrl,
   WahooCloudClient,
+  WAHOO_REFRESH_TOKEN_FILE,
   wahooRateLimitDelay,
 } from './wahoo-cloud'
+
+test('resolves one configured Wahoo refresh-token file across checkouts', () => {
+  assert.equal(
+    resolveWahooRefreshTokenFile({ WAHOO_REFRESH_TOKEN_FILE: ' /shared/wahoo-token ' }),
+    '/shared/wahoo-token',
+  )
+  assert.equal(resolveWahooRefreshTokenFile({}), WAHOO_REFRESH_TOKEN_FILE)
+})
 
 function workout(id: number): object {
   return {
