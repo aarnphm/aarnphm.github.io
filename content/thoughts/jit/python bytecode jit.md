@@ -13,11 +13,11 @@ The name of this directory is historical. Its main compilers do not operate on P
 
 There are two backends and one static dispatcher:
 
-| file | actual role | trustworthy boundary |
-| --- | --- | --- |
-| `minimal_jit.py` | direct AST to C lowering | simple scalar arithmetic and positive-step loops with an explicit C signature |
-| `ir.py` and `ir_compiler.py` | experimental SSA-like IR, small optimization passes, then C lowering | straight-line arithmetic; loop-carried scalar values are currently wrong |
-| `compiler.py` | one-time syntax-based choice between the two backends | records which backend it chose; it does not profile or recompile |
+| file                         | actual role                                                          | trustworthy boundary                                                          |
+| ---------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `minimal_jit.py`             | direct AST to C lowering                                             | simple scalar arithmetic and positive-step loops with an explicit C signature |
+| `ir.py` and `ir_compiler.py` | experimental SSA-like IR, small optimization passes, then C lowering | straight-line arithmetic; loop-carried scalar values are currently wrong      |
+| `compiler.py`                | one-time syntax-based choice between the two backends                | records which backend it chose; it does not profile or recompile              |
 
 This makes the code useful for learning the boundary between source recovery, lowering, an intermediate representation, native compilation, and an ABI. Its scope ends at a compiler experiment.
 
@@ -43,7 +43,13 @@ jit = TinyCJIT()
 
 @jit(
   restype=None,
-  argtypes=[c_float, POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int],
+  argtypes=[
+    c_float,
+    POINTER(c_float),
+    POINTER(c_float),
+    POINTER(c_float),
+    c_int,
+  ],
 )
 def saxpy(a, x, y, out, n):
   for i in range(n):

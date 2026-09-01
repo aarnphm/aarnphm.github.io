@@ -78,11 +78,11 @@ where $N$ is the number of tokens in test set $T$. This equals exponentiated cro
 
 $$H(p; m) = -\frac{1}{N}\log_2(m(T))$$
 
-### recent advances
+### as a language-model metric
 
-Since 2007, deep learning techniques have advanced language modeling significantly. Perplexity per token remains central to evaluating transformer models like BERT, GPT-4, and other large language models (LLMs).
+Perplexity per token is the standard intrinsic metric for autoregressive language models that assign a probability to the next token (GPT-style). It does not apply cleanly to masked models like BERT, whose objective is not a left-to-right likelihood.
 
-Despite its pivotal role, perplexity shows limitations as an inadequate predictor of speech recognition performance, overfitting, and generalization.
+Lower perplexity does not guarantee better downstream performance: it correlates weakly with task metrics such as word error rate in speech recognition.
 
 ### brown corpus
 

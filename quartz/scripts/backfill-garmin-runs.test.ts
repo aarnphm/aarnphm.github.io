@@ -2,13 +2,13 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { AppleSwim } from '../plugins/stores/apple'
 import type { RawStravaActivity } from '../plugins/stores/strava'
+import type { TimedStravaStreams } from '../util/strava-tcx'
 import {
   applePoolSwimProjection,
   encodeGarminSwimBackfill,
   garminBackfillFilename,
   garminSwimFitInput,
   shouldDeferPoolSwimForApple,
-  type TimedStravaStreams,
 } from './backfill-garmin-runs'
 
 function stravaActivity(): RawStravaActivity {

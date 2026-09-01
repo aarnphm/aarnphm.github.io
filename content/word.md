@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-08-27 16:26:58 GMT-04:00
+modified: 2026-09-01 12:27:53 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -319,3 +319,7 @@ title: lists
 - sisu
 - emblematic
 - dilettante
+- apocryphal
+- supercilious
+- sanctimonious
+- pharisaical

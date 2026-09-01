@@ -20,6 +20,7 @@ export interface ActivityBridgeStravaActivity {
   name: string
   sportType: string
   startDate: string
+  startDateLocal: string
   distanceM: number
   movingTimeS: number
   elapsedTimeS: number
@@ -29,14 +30,18 @@ interface ActivityBridgeProviderActivity {
   id: string
   sport: Sport | null
   startDate: string
+  startDateLocal: string
   distanceM: number | null
   movingTimeS: number | null
   elapsedTimeS: number | null
 }
 
-export type ActivityBridgeGarminActivity = ActivityBridgeProviderActivity
+export interface ActivityBridgeGarminActivity extends ActivityBridgeProviderActivity {
+  name: string
+}
 
 export interface ActivityBridgeWahooActivity extends ActivityBridgeProviderActivity {
+  name: string
   workoutId: number
   fitUrl: string
   fitSha256: string
@@ -84,6 +89,34 @@ export interface GarminToWahooBridgePlan extends ActivityBridgePlanBase {
 }
 
 export type ActivityBridgePlan = WahooToGarminBridgePlan | GarminToWahooBridgePlan
+
+export type TrainingPeaksBackfillSource = 'garmin' | 'strava' | 'wahoo'
+
+interface TrainingPeaksBackfillPlanBase {
+  title: string
+  localDate: string
+  sport: Sport
+}
+
+export interface StravaTrainingPeaksBackfillPlan extends TrainingPeaksBackfillPlanBase {
+  sourceProvider: 'strava'
+  source: ActivityBridgeStravaActivity
+}
+
+export interface GarminTrainingPeaksBackfillPlan extends TrainingPeaksBackfillPlanBase {
+  sourceProvider: 'garmin'
+  source: ActivityBridgeGarminActivity
+}
+
+export interface WahooTrainingPeaksBackfillPlan extends TrainingPeaksBackfillPlanBase {
+  sourceProvider: 'wahoo'
+  source: ActivityBridgeWahooActivity
+}
+
+export type TrainingPeaksBackfillPlan =
+  | StravaTrainingPeaksBackfillPlan
+  | GarminTrainingPeaksBackfillPlan
+  | WahooTrainingPeaksBackfillPlan
 
 interface MatchEdge<T extends ActivityBridgeProviderActivity> {
   strava: ActivityBridgeStravaActivity
@@ -170,6 +203,11 @@ function stravaSport(value: string): Sport | null {
   if (sport.includes('run')) return 'run'
   if (sport.includes('swim')) return 'swim'
   return null
+}
+
+function localDate(value: string): string | null {
+  const match = /^(\d{4}-\d{2}-\d{2})T/.exec(value)
+  return match?.[1] ?? null
 }
 
 function matchScore<T extends ActivityBridgeProviderActivity>(
@@ -300,5 +338,49 @@ export function planActivityBridge(
       directionOrder[left.direction] - directionOrder[right.direction] ||
       receiptOrder(left) - receiptOrder(right) ||
       right.stravaActivityId.localeCompare(left.stravaActivityId),
+  )
+}
+
+export function planTrainingPeaksBackfill(
+  inputs: ActivityBridgeInputs,
+  sourceProvider: TrainingPeaksBackfillSource,
+): TrainingPeaksBackfillPlan[] {
+  const plans: TrainingPeaksBackfillPlan[] = []
+  if (sourceProvider === 'strava') {
+    for (const strava of inputs.strava) {
+      const sport = stravaSport(strava.sportType)
+      const day = localDate(strava.startDateLocal)
+      if (sport == null || day == null) continue
+      plans.push({ sourceProvider, title: strava.name, localDate: day, sport, source: strava })
+    }
+  } else if (sourceProvider === 'garmin') {
+    for (const garmin of inputs.garmin) {
+      const day = localDate(garmin.startDateLocal)
+      if (garmin.sport == null || day == null) continue
+      plans.push({
+        sourceProvider,
+        title: garmin.name,
+        localDate: day,
+        sport: garmin.sport,
+        source: garmin,
+      })
+    }
+  } else {
+    for (const wahoo of inputs.wahoo) {
+      const day = localDate(wahoo.startDateLocal)
+      if (wahoo.sport == null || day == null) continue
+      plans.push({
+        sourceProvider,
+        title: wahoo.name,
+        localDate: day,
+        sport: wahoo.sport,
+        source: wahoo,
+      })
+    }
+  }
+  return plans.sort(
+    (left, right) =>
+      right.localDate.localeCompare(left.localDate) ||
+      right.source.id.localeCompare(left.source.id),
   )
 }

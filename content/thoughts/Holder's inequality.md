@@ -1,10 +1,10 @@
 ---
 created: '2025-09-19'
 date: '2025-09-19'
-description: "bounds dual pairings in \ell_p and integrable spaces"
+description: bounds dual pairings in finite-dimensional and integrable spaces
 id: Holder's inequality
 modified: 2026-06-05 15:08:25 GMT-04:00
-source: synthesis
+source: https://www.math.ucdavis.edu/~hunter/measure_theory/measure_notes_ch7.pdf
 tags:
   - ml
   - math
@@ -13,38 +13,150 @@ title: Hölder's inequality
 
 > [!summary]
 >
-> - bounds $|\langle x, y \rangle|$ by $\lVert x \rVert_p \lVert y \rVert_q$ when $1/p + 1/q = 1$, interpolating between triangle and [[thoughts/Cauchy-Schwarz]] inequalities.
-> - equality holds when $|x_i|^p$ and $|y_i|^q$ are proportional (discrete case) or when $|x|^p$ and $|y|^q$ are scalar multiples almost everywhere (measure-theoretic form).
-> - underpins dual norm identities, minkowski’s inequality, and $l_p$ space completeness arguments.
+> Hölder's inequality bounds $\sum_i |x_i y_i|$ by $\lVert x\rVert_p\lVert y\rVert_q$ when $1/p+1/q=1$. This makes [[thoughts/Cauchy-Schwarz|Cauchy-Schwarz]] the $p=q=2$ case and gives the finite-dimensional dual norm of $\ell_p$.
 
 ## discrete form
 
-for $x,y \in \mathbb{C}^n$ and exponents $p,q \in [1,\infty]$ with $1/p + 1/q = 1$,
+Let $1\leq p\leq\infty$, and let $q$ satisfy
 
-$$\sum_{i=1}^n |x_i y_i| \le \left( \sum_{i=1}^n |x_i|^p \right)^{1/p} \left( \sum_{i=1}^n |y_i|^q \right)^{1/q}.$$
+$$
+\frac{1}{p}+\frac{1}{q}=1,
+\qquad
+\frac{1}{\infty}=0.
+$$
 
-when $p=1$ the right-hand side reduces to $\lVert x \rVert_1 \lVert y \rVert_\infty$. the limiting case $p=q=2$ recovers cauchy–schwarz, so $l_2$ is self-dual.
+For $x,y\in\mathbb{C}^n$,
+
+$$
+\sum_{i=1}^n |x_i y_i|
+\leq
+\lVert x\rVert_p\lVert y\rVert_q.
+$$
+
+When $1<p,q<\infty$, this becomes
+
+$$
+\sum_{i=1}^n |x_i y_i|
+\leq
+\left(\sum_{i=1}^n |x_i|^p\right)^{1/p}
+\left(\sum_{i=1}^n |y_i|^q\right)^{1/q}.
+$$
+
+The endpoint cases are
+
+$$
+\sum_i |x_i y_i|
+\leq
+\lVert x\rVert_1\lVert y\rVert_\infty,
+\qquad
+\sum_i |x_i y_i|
+\leq
+\lVert x\rVert_\infty\lVert y\rVert_1.
+$$
+
+For the standard complex inner product,
+
+$$
+|\langle x,y\rangle|
+\leq
+\sum_i |x_i\overline{y_i}|
+\leq
+\lVert x\rVert_p\lVert y\rVert_q.
+$$
 
 ## integral form
 
-let $(\Omega,\Sigma,\mu)$ be a measure space and $f \in L^p(\mu)$, $g \in L^q(\mu)$ with conjugate exponents. then
+On a measure space $(\Omega,\Sigma,\mu)$, the same norm bound holds for $f\in L^p(\mu)$ and $g\in L^q(\mu)$:
 
-$$\int_{\Omega} |f(\omega) g(\omega)|\,d\mu(\omega) \le \left(\int_{\Omega} |f|^p d\mu\right)^{1/p} \left(\int_{\Omega} |g|^q d\mu\right)^{1/q}.$$
+$$
+\int_\Omega |fg|\,d\mu
+\leq
+\lVert f\rVert_p\lVert g\rVert_q.
+$$
 
-this holds for $1 < p,q < \infty$; the $p=1$ case reads $\int |f g| \le \lVert f \rVert_1 \lVert g \rVert_\infty$ provided $g$ is essentially bounded.
+At the endpoints this reads
 
-## equality condition
+$$
+\int_\Omega |fg|\,d\mu
+\leq
+\lVert f\rVert_1\lVert g\rVert_\infty
+$$
 
-if $x \neq 0$ and $y \neq 0$, equality in the discrete form occurs iff there exists $\lambda \ge 0$ such that $|x_i|^p = \lambda |y_i|^q$ for all $i$ with $x_i y_i \neq 0$. integrating the same idea yields equality in the $L^p$ case whenever $|f|^p$ and $|g|^q$ are positively proportional almost everywhere.
+The $p=\infty$, $q=1$ endpoint is the symmetric form.
 
-## proof sketch
+## equality
 
-- **young’s inequality:** for non-negative $a,b$ and conjugate exponents, $ab \le a^p/p + b^q/q$. apply this to $a = |x_i|/\lVert x \rVert_p$, $b = |y_i|/\lVert y \rVert_q$, sum over $i$, and clear denominators.
-- **convex duality:** start from the convex function $\varphi(t) = e^t$; the fenchel–young inequality yields the same bound via logarithms of weighted sums.
-- **geometric view:** the inequality expresses that the $\ell_p$ and $\ell_q$ unit balls are polar duals under the standard pairing, establishing $\lVert \cdot \rVert_q$ as the dual norm of $\lVert \cdot \rVert_p$.
+Suppose $1<p,q<\infty$ and both vectors are nonzero. Equality in the absolute-product form holds exactly when
+
+$$
+\frac{|x_i|^p}{\lVert x\rVert_p^p}
+=
+\frac{|y_i|^q}{\lVert y\rVert_q^q}
+$$
+
+for every $i$. Equivalently, $|x_i|^p=\lambda |y_i|^q$ for every $i$ and some $\lambda>0$. The condition includes zero coordinates, so the supports must match. In $L^p$, the same equality holds almost everywhere.
+
+The inner-product bound also uses the triangle inequality. Equality there requires the terms $x_i\overline{y_i}$ to share one phase on their support, so they do not cancel.
+
+## proof from Young's inequality
+
+For $1<p,q<\infty$, normalize
+
+$$
+a_i=\frac{|x_i|}{\lVert x\rVert_p},
+\qquad
+b_i=\frac{|y_i|}{\lVert y\rVert_q}.
+$$
+
+Young's inequality gives
+
+$$
+a_i b_i
+\leq
+\frac{a_i^p}{p}
++
+\frac{b_i^q}{q},
+$$
+
+with equality exactly when $a_i^p=b_i^q$. Summing over $i$ proves Hölder and its equality condition. Integrating the pointwise inequality gives the $L^p$ form. Zero inputs and the endpoint cases follow directly from the norm definitions.
 
 ## consequences
 
-- **minkowski:** the triangle inequality for $\ell_p$ norms follows by setting $y = x+z$ and applying the integral form to $|x_i + z_i|^{p-1}$ and $\operatorname{sgn}(x_i + z_i) x_i$.
-- **dual norms:** the supremum definition $\lVert y \rVert_q = \sup_{\lVert x \rVert_p \le 1} \sum_i x_i y_i$ is tight because hölder saturates the bound.
-- **interpolation:** riesz–thorin and related interpolation theorems rely on the logarithmic form of hölder to control operator norms between $l_p$ spaces.
+Let $u=x+z$ and $1<p<\infty$. If $u\neq 0$, Hölder gives
+
+$$
+\begin{aligned}
+\lVert u\rVert_p^p
+&\leq
+\sum_i \left(|x_i|+|z_i|\right)|u_i|^{p-1} \\
+&\leq
+\left(\lVert x\rVert_p+\lVert z\rVert_p\right)
+\lVert u\rVert_p^{p-1}.
+\end{aligned}
+$$
+
+Dividing by $\lVert u\rVert_p^{p-1}$ proves Minkowski's inequality. The cases $p=1$ and $p=\infty$ follow from the scalar triangle inequality.
+
+In finite dimension, Hölder also gives the dual norm identity
+
+$$
+\lVert y\rVert_q
+=
+\sup_{\lVert x\rVert_p\leq 1}
+\left|
+\sum_i x_i\overline{y_i}
+\right|.
+$$
+
+For $1<p<\infty$ and $y\neq 0$, the maximizing vector is
+
+$$
+x_i
+=
+\frac{\operatorname{sgn}(y_i)|y_i|^{q-1}}
+{\lVert y\rVert_q^{q-1}}.
+$$
+
+Here $\operatorname{sgn}(0)=0$.
+
+For general measure spaces, $(L^p)^*=L^q$ when $1<p<\infty$. Endpoint duals need separate treatment. In particular, $(L^\infty)^*$ is usually larger than $L^1$.

@@ -3,7 +3,7 @@ created: '2025-09-17'
 date: '2025-09-17'
 description: Shorthand notation for tensor operations using repeated indices to imply summation
 id: einstein notation
-modified: 2026-06-05 15:08:05 GMT-04:00
+modified: 2026-08-31 19:09:51 GMT-04:00
 published: '2003-03-12'
 source: https://en.wikipedia.org/wiki/Einstein_notation
 tags:
@@ -109,8 +109,8 @@ The core of an `einsum` API is a compiler from symbolic Einstein notation into e
 
 - Signature: `einsum(subscripts, *operands, out=None, dtype=None, order='K', casting='safe', optimize=False)`.
 - Subscripts grammar allows comma-separated input terms followed by `->` and output indices, e.g. `"ij,jk->ik"` mirrors $C^i{}_k = A^i{}_j B^j{}_k$.
-- Repeated labels within a term contract that axis; labels absent from output disappear (summed out). Ellipsis `...` maps to unmatched leading dimensions, matching Einstein's implicit summation over all coordinates of a dummy index family.
-- `optimize=True` invokes the [Brock et al. optimized path search](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html#numpy.einsum) to reorder contractions, analogous to choosing an efficient parenthesization of a multi-index expression. The resulting operation fuses elementwise multiplications and reductions into a single kernel, minimizing temporaries.
+- Repeated labels within a term contract that axis; labels absent from output disappear (summed out). Ellipsis `...` maps to unmatched leading dimensions.
+- `optimize=True` invokes the contraction-order search from [opt_einsum](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html#numpy.einsum) (Smith and Gray, merged into NumPy 1.12) to reorder contractions and cut the size of the intermediate tensors.
 
 #### mapping examples
 
@@ -121,25 +121,25 @@ The core of an `einsum` API is a compiler from symbolic Einstein notation into e
 ### `torch.einsum`
 
 - PyTorch copies NumPy's syntax but lowers to ATen tensor iterator kernels. Signature: `torch.einsum(equation, *operands)`.
-- Gradients propagate through the symbolic contraction graph because the backward pass re-applies the same Einstein pattern with complementary free indices. This aligns with viewing $z = x^i y_i$ as a bilinear form whose differentials follow the same index wiring.
-- Device semantics: computations execute on the operands' device (CPU, CUDA, MPS). Mixed-device inputs are rejected, unlike continuous Einstein notation which is device-agnostic.
+- Gradients propagate through the contraction: the backward pass re-applies the same pattern, contracting the output gradient against the remaining operands.
+- Device semantics: computations execute on the operands' device (CPU, CUDA, MPS), and mixed-device inputs are rejected.
 - PyTorch supports uppercase/lowercase labels uniformly; it reserves no special symbols aside from ellipsis. Broadcasting follows PyTorch semantics prior to contraction, so you can emulate $T^{ij}{}_{k\ell} u^k v^\ell$ with `torch.einsum("ijab,b->ija", T, v)` by leaving the contracted labels absent from the output term.
 
 #### performance notes
 
-- For static shapes, `opt_einsum` or `torch.compile` can fuse repeated contractions. Conceptually this is choosing a better summation tree for the Einstein expression.
-- On CUDA, reduce dimensions should be contiguous to avoid extra transposes; re-labeling indices to align with the backend's memory layout matches the tensor-density intuition that Einstein summations prefer compatible basis orderings.
+- For static shapes, `opt_einsum` or `torch.compile` can fuse repeated contractions and reuse a fixed contraction order.
+- On CUDA, contracted dimensions should be contiguous to avoid extra transposes before the reduction.
 
 ### `einops`
 
-- `einops.rearrange`, `reduce`, and `einsum` maintain the same symbolic idea but treat axis names as semantic tags rather than single characters. `einops.einsum("b t h, h d -> b t d", queries, weights)` reads closer to natural-language Einstein notation where labels are words.
+- `einops.rearrange`, `reduce`, and `einsum` treat axis names as multi-character tags rather than single letters. The pattern string is the last argument, after the tensors: `einops.einsum(queries, weights, "b t h, h d -> b t d")`.
 - The library separates _pattern_ from _equation_: `rearrange` handles pure re-indexing (no summation), while `reduce` introduces explicit aggregations (`sum`, `mean`, `max`). `einops.einsum` unifies both: any label appearing multiple times triggers the reduction chosen in `einsum` (default `sum`).
-- Broadcasting is explicit: absent labels correspond to newly created axes, avoiding implicit dummy indices. This mirrors the pedagogy that every contraction should state its surviving indices; you cannot accidentally drop an axis without naming it.
+- Every axis must be named in the pattern, so einops has no implicit dummy indices and you cannot drop an axis without naming it.
 
 #### cross-library translation
 
-- Map `einops` multi-character axes to single-character labels when moving to NumPy/PyTorch: `time -> t`, `heads -> h`, preserving the order of appearance to keep basis orientation untouched.
-- When translating from `numpy.einsum` to `einops`, rewrite the equation as `pattern, reduction`. Example: `numpy.einsum("bij,jk->bik", A, B)` becomes `einops.einsum(A, B, "batch i j, j k -> batch i k")`—the Einstein logic is identical; only the label alphabet changes.
+- Map `einops` multi-character axes to single-character labels when moving to NumPy/PyTorch: `time -> t`, `heads -> h`, keeping their order of appearance.
+- When translating from `numpy.einsum` to `einops`, keep the same index logic and move the pattern after the tensors. Example: `numpy.einsum("bij,jk->bik", A, B)` becomes `einops.einsum(A, B, "batch i j, j k -> batch i k")`.
 
 ## abstract description
 

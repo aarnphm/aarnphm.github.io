@@ -1892,6 +1892,30 @@ test('analytics treats late evening syncs as the local calendar day', () => {
   }
 })
 
+test('provider refreshes share one generated timestamp and current daily point', () => {
+  const { cache, oura } = fixtures()
+  const nextDay = '2026-06-12'
+  const generatedAt = Date.parse(`${nextDay}T10:30:00Z`)
+  oura.lastSync = generatedAt
+  oura.days[nextDay] = ouraDay(nextDay, 91)
+
+  const payload = buildPayload(cache, oura, null, '2026-05-12')
+  const analytics = buildAnalytics(cache, { oura, since: '2026-05-12' })
+  const feed = buildDataFeed(cache, analytics, { oura })
+  const rows = feed
+    .trimEnd()
+    .split('\n')
+    .map(line => JSON.parse(line))
+
+  assert.equal(payload.generatedAt, generatedAt)
+  assert.equal(payload.days.at(-1)?.date, nextDay)
+  assert.equal(analytics.meta.today, nextDay)
+  assert.equal(analytics.meta.windowTo, nextDay)
+  assert.equal(analytics.daily.at(-1)?.date, nextDay)
+  assert.equal(analytics.daily.at(-1)?.hrv, 91)
+  assert.equal(rows.find(row => row.kind === 'meta')?.generatedAt, generatedAt)
+})
+
 test('garmin scale drives body composition, multi-weigh-in series, weight merge, and goal', () => {
   const { cache, oura, weights } = fixtures()
   const at = (offset: number, h: number): number =>

@@ -140,9 +140,9 @@ export async function fetchGarminBytes(
   path: string,
   params?: URLSearchParams,
 ): Promise<Uint8Array> {
-  const res = await fetch(garminUrlFor(base, path, params), {
-    headers: garminConnectRequestHeaders(session),
-  })
+  const headers = new Headers(garminConnectRequestHeaders(session))
+  headers.set('Accept', '*/*')
+  const res = await fetch(garminUrlFor(base, path, params), { headers })
   assertGarminResponseAuthorized(res)
   if (!res.ok) {
     const text = await res.text()

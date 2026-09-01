@@ -33,6 +33,7 @@ import {
 } from '../util/garmin-session'
 import { updateGarminActivityTitle } from '../util/garmin-title-update'
 import { joinSegments, QUARTZ } from '../util/path'
+import { stravaActivityTcx, type TimedStravaStreams } from '../util/strava-tcx'
 import { isRecord, readNumber, readString, type UnknownRecord } from '../util/type-guards'
 import { uploadGarminFit } from './garmin-fit-upload'
 
@@ -84,17 +85,6 @@ interface ApplePoolSwimProjection {
   timerTimeSeconds: number
   poolLengthMeters: number
   lengths: GarminPoolSwimLength[]
-}
-
-export interface TimedStravaStreams {
-  time: number[]
-  latlng: [number, number][]
-  altitude: number[]
-  distance: number[]
-  heartrate: number[]
-  cadence: number[]
-  watts: number[]
-  temp: number[]
 }
 
 interface UploadResult {
@@ -336,19 +326,6 @@ async function fetchTimedStreams(token: string, id: number): Promise<TimedStrava
   }
 }
 
-function xml(value: string | number): string {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;')
-}
-
-function positive(value: number | undefined): number | null {
-  return value != null && Number.isFinite(value) && value > 0 ? value : null
-}
-
 function finite(value: number | undefined): number | undefined {
   return value != null && Number.isFinite(value) ? value : undefined
 }
@@ -582,127 +559,6 @@ export function encodeGarminSwimBackfill(
   return encodeGarminSwimFit(garminSwimFitInput(activity, streams, appleSwim))
 }
 
-function pointNumber(values: number[], index: number): number | null {
-  return positive(values[index])
-}
-
-function pointDistance(values: number[], index: number): number | null {
-  const value = values[index]
-  return value != null && Number.isFinite(value) && value >= 0 ? value : null
-}
-
-function pointTime(startMs: number, elapsedS: number): string {
-  return new Date(startMs + Math.round(elapsedS * 1000)).toISOString()
-}
-
-function average(values: number[]): number | null {
-  const positives = values.filter(value => value > 0 && Number.isFinite(value))
-  if (positives.length === 0) return null
-  return positives.reduce((sum, value) => sum + value, 0) / positives.length
-}
-
-function max(values: number[]): number | null {
-  const positives = values.filter(value => value > 0 && Number.isFinite(value))
-  if (positives.length === 0) return null
-  return Math.max(...positives)
-}
-
-function integer(value: number | null): number | null {
-  return value == null ? null : Math.round(value)
-}
-
-function byte(value: number | null): number | null {
-  if (value == null) return null
-  return Math.max(0, Math.min(254, Math.round(value)))
-}
-
-function element(name: string, value: string | number | null): string {
-  return value == null ? '' : `<${name}>${xml(value)}</${name}>`
-}
-
-function heartRateElement(value: number | null): string {
-  return value == null ? '' : `<HeartRateBpm><Value>${Math.round(value)}</Value></HeartRateBpm>`
-}
-
-function trackpoint(
-  activity: RawStravaActivity,
-  streams: TimedStravaStreams,
-  index: number,
-  startMs: number,
-): string {
-  const time = streams.time[index]
-  const latlng = streams.latlng[index]
-  const altitude = pointNumber(streams.altitude, index)
-  const distance = pointDistance(streams.distance, index)
-  const heartrate = pointNumber(streams.heartrate, index)
-  const cadence = byte(pointNumber(streams.cadence, index))
-  const watts = integer(pointNumber(streams.watts, index))
-  const temp = integer(pointNumber(streams.temp, index))
-  const parts = [`<Time>${pointTime(startMs, time)}</Time>`]
-  if (latlng)
-    parts.push(
-      `<Position><LatitudeDegrees>${latlng[0]}</LatitudeDegrees><LongitudeDegrees>${latlng[1]}</LongitudeDegrees></Position>`,
-    )
-  parts.push(element('AltitudeMeters', altitude == null ? null : altitude.toFixed(1)))
-  parts.push(element('DistanceMeters', distance == null ? null : distance.toFixed(1)))
-  parts.push(heartRateElement(heartrate))
-  if (cadence != null) parts.push(element('Cadence', cadence))
-  const tpx = [
-    watts == null ? '' : `<ns3:Watts>${watts}</ns3:Watts>`,
-    cadence == null ? '' : `<ns3:RunCadence>${cadence}</ns3:RunCadence>`,
-    temp == null ? '' : `<ns3:Temp>${temp}</ns3:Temp>`,
-  ].filter(Boolean)
-  if (tpx.length > 0) parts.push(`<Extensions><ns3:TPX>${tpx.join('')}</ns3:TPX></Extensions>`)
-  if (parts.length <= 1) throw new Error(`no TCX samples available for ${activity.id}`)
-  return `<Trackpoint>${parts.join('')}</Trackpoint>`
-}
-
-function tcxSport(sport: BackfillSport): string {
-  if (sport === 'run') return 'Running'
-  return 'Other'
-}
-
-function buildTcx(
-  activity: RawStravaActivity,
-  streams: TimedStravaStreams,
-  sport: BackfillSport,
-): string {
-  if (streams.time.length < 2) throw new Error(`Strava activity ${activity.id} has no timed stream`)
-  const startMs = Date.parse(activity.startDate)
-  if (!Number.isFinite(startMs))
-    throw new Error(`Strava activity ${activity.id} has invalid startDate`)
-  const lastElapsed = streams.time[streams.time.length - 1]
-  const totalTimeS = Math.max(lastElapsed, activity.elapsedTime || activity.movingTime)
-  const avgHr = integer(average(streams.heartrate))
-  const maxHr = integer(max(streams.heartrate))
-  const calories = integer(activity.calories ?? null) ?? 0
-  const points = streams.time
-    .map((_, index) => trackpoint(activity, streams, index, startMs))
-    .join('')
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" xmlns:ns3="http://www.garmin.com/xmlschemas/ActivityExtension/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">',
-    '<Activities>',
-    `<Activity Sport="${tcxSport(sport)}">`,
-    `<Id>${new Date(startMs).toISOString()}</Id>`,
-    `<Lap StartTime="${new Date(startMs).toISOString()}">`,
-    element('TotalTimeSeconds', totalTimeS.toFixed(1)),
-    element('DistanceMeters', activity.distance.toFixed(1)),
-    element('Calories', calories),
-    '<Intensity>Active</Intensity>',
-    heartRateElement(avgHr),
-    maxHr == null ? '' : `<MaximumHeartRateBpm><Value>${maxHr}</Value></MaximumHeartRateBpm>`,
-    '<TriggerMethod>Manual</TriggerMethod>',
-    `<Track>${points}</Track>`,
-    '</Lap>',
-    `<Notes>${xml(`Strava ${activity.id}: ${activity.name}`)}</Notes>`,
-    `<Creator xsi:type="Device_t"><Name>${xml(`Strava ${sport === 'swim' ? 'Swim' : 'Run'} Backfill`)}</Name><UnitId>0</UnitId><ProductID>0</ProductID></Creator>`,
-    '</Activity>',
-    '</Activities>',
-    '</TrainingCenterDatabase>',
-  ].join('')
-}
-
 export function garminBackfillFilename(activity: RawStravaActivity, sport: BackfillSport): string {
   const extension = sport === 'swim' ? 'fit' : 'tcx'
   return `${activity.startDate.slice(0, 10)}-${activity.id}.${extension}`
@@ -847,7 +703,7 @@ async function main(): Promise<void> {
       uploaded++
       console.log(`[garmin-backfill] uploaded ${activity.id} ${filename} -> ${ids.join(',')}`)
     } else {
-      const tcx = buildTcx(activity, streams, args.sport)
+      const tcx = stravaActivityTcx(activity, streams, args.sport)
       await fs.writeFile(pathname, tcx)
       const result = await uploadTcx(session, uploadBase, filename, tcx)
       ids = resultIds(result.json)

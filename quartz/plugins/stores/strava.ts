@@ -24,6 +24,7 @@ import {
   type CyclingStaminaEstimate,
 } from '../../util/cycling-stamina'
 import { localDateTimeUtcMs, localIsoDay } from '../../util/local-date'
+import { latestProviderSync } from '../../util/provider-sync'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
 import {
   CRITICAL_POWER_DURATIONS_S,
@@ -3009,8 +3010,11 @@ export function buildPayload(
   timeZone?: string,
   wahoo?: WahooCache | null,
   inputMaxHeartRate?: number | null,
+  inputGeneratedAt?: number,
 ): StravaPayload {
   if (!cache) return emptyPayload()
+
+  const generatedAt = latestProviderSync(inputGeneratedAt, cache, oura, garmin, weather, wahoo)
 
   const sinceDay = since && /^\d{4}-\d{2}-\d{2}$/.test(since) ? since : null
   const allActivities = Object.values(cache.activities)
@@ -3025,7 +3029,7 @@ export function buildPayload(
     .filter(x => !sinceDay || x.a.startDateLocal.slice(0, 10) >= sinceDay)
     .sort((p, q) => p.a.startDateLocal.localeCompare(q.a.startDateLocal))
 
-  if (activities.length === 0) return emptyPayload(cache.athleteId)
+  if (activities.length === 0) return { ...emptyPayload(cache.athleteId), generatedAt }
 
   const garminMatches = new Map<string, GarminActivityMatch | null>()
   const garminTrainingEffectMatches = new Map<string, GarminActivityMatch | null>()
@@ -3079,7 +3083,7 @@ export function buildPayload(
   const dayMs = (iso: string): number => Date.parse(`${iso}T00:00:00Z`)
   const firstMs = dayMs(activities[0].a.startDateLocal.slice(0, 10))
   const lastActMs = dayMs(activities[activities.length - 1].a.startDateLocal.slice(0, 10))
-  const end = cache.lastSync ? dayMs(localIsoDay(cache.lastSync, timeZone)) : lastActMs
+  const end = generatedAt ? dayMs(localIsoDay(generatedAt, timeZone)) : lastActMs
   const start = sinceDay ? dayMs(sinceDay) : Math.max(firstMs, end - (WINDOW_DAYS - 1) * DAY_MS)
   const days: StravaDay[] = []
   for (let ms = start; ms <= end; ms += DAY_MS) {
@@ -3292,7 +3296,7 @@ export function buildPayload(
     }
 
   return {
-    generatedAt: cache.lastSync,
+    generatedAt,
     athleteId: cache.athleteId,
     totalKm: round(
       finalized.reduce((s, t) => s + t.distanceKm, 0),

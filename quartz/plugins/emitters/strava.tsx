@@ -21,6 +21,7 @@ import {
 import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
+import { latestProviderSync } from '../../util/provider-sync'
 import { StaticResources } from '../../util/resources'
 import { readStravaCacheFile } from '../../util/strava-cache-file'
 import { serializeStravaDetails, type StravaDetailPayload } from '../../util/strava-detail'
@@ -205,6 +206,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     const apple = await readApple()
     const core = await readCoreBodyTemperature()
     const weather = await readWeather()
+    const generatedAt = latestProviderSync(cache, oura, garmin, wahoo, apple, core, weather)
     const nextTemporalSlugs = new Set<FullSlug>()
     const generateOgImage =
       ctx.argv.watch && !ctx.argv.force ? null : await createOgImageGenerator(ctx)
@@ -237,6 +239,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         undefined,
         wahoo,
         ATHLETE.hrMax,
+        generatedAt,
       )
       applyManualFueling(payload, tracking?.fueling ?? [])
       applyManualStrength(payload, tracking?.strength ?? [])
@@ -285,6 +288,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         zones: payload.zones,
         activityDetails: payload.details,
         since: typeof since === 'string' ? since : undefined,
+        generatedAt,
       })
       enrichRunPaceZones(payload, analytics.distributions)
       enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
@@ -325,6 +329,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         trainingExclusions: tracking?.trainingExclusions,
         zones: payload.zones,
         activityDetails: payload.details,
+        generatedAt,
       })
       await cacheDataFeed(dataFeed)
       yield* await Promise.all([

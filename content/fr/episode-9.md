@@ -27,7 +27,19 @@ the opening questions ask about three parts of a daily routine:
 - `À quelle heure est-ce que vous mangez votre déjeuner, votre diner et votre souper ?`
 - `Quels moyens de transport utilisez-vous ?`
 
-the transport checklist introduces `le vélo`, `le train`, `l'auto`, `l'autobus`, `le métro` et `le taxi`. the comic shows Maryse asking her son to tidy his room and do the cleaning before she leaves for work. he completes the chores after she leaves.
+the transport checklist introduces `le vélo`, `le train`, `l'auto`, `l'autobus`, `le métro` et `le taxi`.
+
+three header photos preview the episode's daily-activity vocabulary, each captioned by describing what the person does:
+
+| ce qu'on voit                       | description                                                               |
+| ----------------------------------- | ------------------------------------------------------------------------- |
+| une femme sourit devant sa tablette | `Elle lit sur sa tablette.`                                               |
+| un adulte fait manger un enfant     | `Ils prennent le déjeuner.` / `Ils mangent le déjeuner.`                  |
+| un homme au téléphone dans le métro | `Il va au travail en métro.` / `Il prend le métro pour aller au travail.` |
+
+the third pair shows two ways to pair a destination with a means of transport: `aller` + destination + `en/à` + transport, the pattern already seen in `Je vais au travail en autobus.`, or `prendre` + transport + `pour` + infinitive naming the destination's purpose. `prendre le déjeuner` also generalizes `prendre`: the verb accepts a meal as its object, a synonym of `manger`, the same pattern already seen in `prendre l'apéro`.
+
+**`Dans cet épisode…` Maryse, une amie d'Hélène, a un horaire bien rempli.** the nine-panel comic that follows: Maryse finds her son asleep in a messy room and asks him to tidy up and do the cleaning before she leaves for work; through her day she takes a phone call and gives a presentation while, at home, he sweeps and straightens; she returns to find the room done.
 
 ## décrire ses activités quotidiennes
 
@@ -59,7 +71,7 @@ the present indicative has three jobs in the Mémo:
 2. a habit: `Tous les matins, nous écoutons la radio.`
 3. a description or general fact: `La Terre tourne autour du Soleil.`
 
-remove the infinitive ending `-er`, then add the ending selected by the subject:
+remove the infinitive ending `-er`, then add the ending selected by the subject: for a given pronoun the ending is the same across every regular `-er` verb, `parler`, `travailler`, `écouter`, `cuisiner`, `étudier` all included.
 
 | personne     | terminaison | `parler`       | `travailler`        | `écouter`       | `cuisiner`        | `étudier`       |
 | ------------ | ----------- | -------------- | ------------------- | --------------- | ----------------- | --------------- |

@@ -299,6 +299,20 @@ function firstString(records: readonly UnknownRecord[], keys: readonly string[])
   return null
 }
 
+function firstDateValue(
+  records: readonly UnknownRecord[],
+  keys: readonly string[],
+): string | number | null {
+  for (const record of records) {
+    for (const key of keys) {
+      const value = record[key]
+      if (typeof value === 'string' && value.trim()) return value.trim()
+      if (typeof value === 'number' && Number.isFinite(value)) return value
+    }
+  }
+  return null
+}
+
 function firstSport(records: readonly UnknownRecord[]): string | null {
   const direct = firstString(records, SPORT_KEYS)
   if (direct) return direct
@@ -331,6 +345,16 @@ function normalizeDate(value: string | number | Date | null): string | null {
 function normalizeLocalDate(value: string | null, fallback: string): string {
   if (!value) return fallback
   return value.trim().replace(' ', 'T')
+}
+
+function activityStartDate(records: readonly UnknownRecord[]): string | null {
+  return normalizeDate(
+    firstDateValue(records, START_UTC_KEYS) ?? firstDateValue(records, START_LOCAL_KEYS),
+  )
+}
+
+export function garminConnectActivityStartDate(record: UnknownRecord): string | null {
+  return activityStartDate(collectRecords(record))
 }
 
 function ml(
@@ -797,9 +821,8 @@ export function garminConnectActivity(
   const records = detail
     ? [...collectRecords(detail), ...collectRecords(fallback)]
     : collectRecords(fallback)
-  const utcRaw = firstString(records, START_UTC_KEYS)
   const localRaw = firstString(records, START_LOCAL_KEYS)
-  const startDate = normalizeDate(utcRaw ?? localRaw)
+  const startDate = activityStartDate(records)
   if (!startDate) return null
 
   const sourceDevice = firstString(records, DEVICE_KEYS)

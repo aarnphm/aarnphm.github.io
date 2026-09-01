@@ -54,6 +54,14 @@ export interface ActivityBridgeArgs {
   limit: number | null
 }
 
+export interface ActivityBridgeFile {
+  bytes: Uint8Array
+  filename: string
+  sha256: string
+  kind: 'fit' | 'tcx'
+  sourceKind: 'fit' | 'tcx'
+}
+
 interface ActivityBridgeExecution {
   ledger: ActivityBridgeLedger
   uploadStatus: ActivityBridgeUploadStatus
@@ -119,7 +127,9 @@ function activityRecords(value: unknown, label: string): [string, UnknownRecord]
   ])
 }
 
-function parseStravaActivities(value: unknown): ActivityBridgeStravaActivity[] {
+export function parseActivityBridgeStravaActivities(
+  value: unknown,
+): ActivityBridgeStravaActivity[] {
   return activityRecords(value, 'Strava cache').map(([key, record]) => {
     const id = requiredNumber(record, 'id', `Strava activity ${key}`)
     return {
@@ -127,6 +137,7 @@ function parseStravaActivities(value: unknown): ActivityBridgeStravaActivity[] {
       name: requiredString(record, 'name', `Strava activity ${key}`),
       sportType: requiredString(record, 'sportType', `Strava activity ${key}`),
       startDate: requiredString(record, 'startDate', `Strava activity ${key}`),
+      startDateLocal: requiredString(record, 'startDateLocal', `Strava activity ${key}`),
       distanceM: requiredNumber(record, 'distance', `Strava activity ${key}`),
       movingTimeS: requiredNumber(record, 'movingTime', `Strava activity ${key}`),
       elapsedTimeS: requiredNumber(record, 'elapsedTime', `Strava activity ${key}`),
@@ -140,13 +151,17 @@ function providerSport(record: UnknownRecord, label: string): 'bike' | 'run' | '
   throw new Error(`${label}.sport is invalid`)
 }
 
-function parseGarminActivities(value: unknown): ActivityBridgeGarminActivity[] {
+export function parseActivityBridgeGarminActivities(
+  value: unknown,
+): ActivityBridgeGarminActivity[] {
   return activityRecords(value, 'Garmin cache').map(([key, record]) => {
     const label = `Garmin activity ${key}`
     return {
       id: requiredString(record, 'id', label),
+      name: requiredString(record, 'name', label),
       sport: providerSport(record, label),
       startDate: requiredString(record, 'startDate', label),
+      startDateLocal: requiredString(record, 'startDateLocal', label),
       distanceM: optionalNumber(record, 'distanceM', label),
       movingTimeS: optionalNumber(record, 'movingTimeS', label),
       elapsedTimeS: optionalNumber(record, 'elapsedTimeS', label),
@@ -159,25 +174,49 @@ export function parseActivityBridgeInputs(
   garminValue: unknown,
   wahooValue: unknown,
 ): ActivityBridgeInputs {
-  const wahooCache = parseWahooCache(wahooValue)
-  const wahoo: ActivityBridgeWahooActivity[] = Object.values(wahooCache.activities).map(
-    activity => ({
-      id: activity.id,
-      workoutId: activity.workoutId,
-      sport: activity.sport,
-      startDate: activity.startDate,
-      distanceM: activity.distanceM,
-      movingTimeS: activity.movingTimeS,
-      elapsedTimeS: activity.elapsedTimeS,
-      fitUrl: activity.sourceFile.url,
-      fitSha256: activity.sourceFile.sha256,
-    }),
-  )
   return {
-    strava: parseStravaActivities(stravaValue),
-    garmin: parseGarminActivities(garminValue),
-    wahoo,
+    strava: parseActivityBridgeStravaActivities(stravaValue),
+    garmin: parseActivityBridgeGarminActivities(garminValue),
+    wahoo: parseActivityBridgeWahooActivities(wahooValue),
   }
+}
+
+export function parseActivityBridgeWahooActivities(value: unknown): ActivityBridgeWahooActivity[] {
+  return Object.values(parseWahooCache(value).activities).map(activity => ({
+    id: activity.id,
+    name:
+      activity.name?.trim() ||
+      activity.summary.name?.trim() ||
+      `Wahoo workout ${activity.workoutId}`,
+    workoutId: activity.workoutId,
+    sport: activity.sport,
+    startDate: activity.startDate,
+    startDateLocal: activity.startDateLocal,
+    distanceM: activity.distanceM,
+    movingTimeS: activity.movingTimeS,
+    elapsedTimeS: activity.elapsedTimeS,
+    fitUrl: activity.sourceFile.url,
+    fitSha256: activity.sourceFile.sha256,
+  }))
+}
+
+export async function readActivityBridgeGarminActivities(): Promise<
+  ActivityBridgeGarminActivity[]
+> {
+  return parseActivityBridgeGarminActivities(await readJson(GARMIN_CACHE_FILE))
+}
+
+export async function readActivityBridgeWahooActivities(): Promise<ActivityBridgeWahooActivity[]> {
+  return parseActivityBridgeWahooActivities(await readJson(WAHOO_CACHE_FILE))
+}
+
+export async function readActivityBridgeInputs(): Promise<ActivityBridgeInputs> {
+  const [stravaValue, garminValue, wahooValue] = await Promise.all([
+    readJson(STRAVA_CACHE_FILE),
+    readJson(GARMIN_CACHE_FILE),
+    readJson(WAHOO_CACHE_FILE),
+  ])
+  return parseActivityBridgeInputs(stravaValue, garminValue, wahooValue)
 }
 
 function direction(value: unknown, label: string): ActivityBridgeDirection {
@@ -288,8 +327,64 @@ function garminActivityId(value: string): string {
   return id
 }
 
-function fitSha256(bytes: Uint8Array): string {
+function fileSha256(bytes: Uint8Array): string {
   return createHash('sha256').update(bytes).digest('hex')
+}
+
+export async function fetchWahooActivityFit(
+  activity: ActivityBridgeWahooActivity,
+  client: WahooCloudClient,
+): Promise<ActivityBridgeFile> {
+  const bytes = await client.downloadFit(activity.fitUrl)
+  const sha256 = wahooFitSha256(bytes)
+  if (sha256 !== activity.fitSha256.toLowerCase())
+    throw new Error(`Wahoo FIT SHA-256 changed for ${activity.id}`)
+  return {
+    bytes,
+    filename: `wahoo-${activity.workoutId}.fit`,
+    sha256,
+    kind: 'fit',
+    sourceKind: 'fit',
+  }
+}
+
+export async function fetchGarminActivityFile(
+  activity: ActivityBridgeGarminActivity,
+  session: GarminConnectSession,
+  base: string,
+): Promise<ActivityBridgeFile> {
+  const sourceId = garminActivityId(activity.id)
+  const archive = await fetchGarminBytes(
+    session,
+    base,
+    `/download-service/files/activity/${encodeURIComponent(sourceId)}`,
+  )
+  const sourceFile = garminActivityFileFromArchive(archive)
+  return {
+    bytes: sourceFile.bytes,
+    filename: `garmin-${sourceId}.${sourceFile.kind}`,
+    sha256: fileSha256(sourceFile.bytes),
+    kind: sourceFile.kind,
+    sourceKind: sourceFile.kind,
+  }
+}
+
+export async function fetchGarminActivityFit(
+  activity: ActivityBridgeGarminActivity,
+  session: GarminConnectSession,
+  base: string,
+): Promise<ActivityBridgeFile> {
+  const source = await fetchGarminActivityFile(activity, session, base)
+  if (source.kind === 'fit') return source
+  const sourceId = garminActivityId(activity.id)
+  const bytes = encodeGarminTcxActivityFit(source.bytes, sourceId).bytes
+  return {
+    bytes,
+    filename: `garmin-${sourceId}.fit`,
+    sha256: fileSha256(bytes),
+    kind: 'fit',
+    sourceKind: source.kind,
+  }
 }
 
 function destinationWahooActivityId(upload: WahooWorkoutFileUpload): string | null {
@@ -326,21 +421,13 @@ async function bridgeWahooToGarmin(
   garminBase: string,
   ledger: ActivityBridgeLedger,
 ): Promise<ActivityBridgeExecution> {
-  const bytes = await wahooClient.downloadFit(plan.source.fitUrl)
-  const sha256 = wahooFitSha256(bytes)
-  if (sha256 !== plan.source.fitSha256.toLowerCase())
-    throw new Error(`Wahoo FIT SHA-256 changed for ${plan.source.id}`)
-  const key = activityBridgeReceiptKey('wahoo', plan.source.id, sha256, 'garmin')
+  const file = await fetchWahooActivityFit(plan.source, wahooClient)
+  const key = activityBridgeReceiptKey('wahoo', plan.source.id, file.sha256, 'garmin')
   const existing = ledger.receipts[key]
   if (existing && isTerminalActivityBridgeReceipt(existing))
     return { ledger, uploadStatus: existing.uploadStatus }
-  const destinationId = await uploadGarminFit(
-    garminSession,
-    garminBase,
-    `wahoo-${plan.source.workoutId}.fit`,
-    bytes,
-  )
-  const receipt = receiptFor(plan, sha256, null, `connect:${destinationId}`, Date.now())
+  const destinationId = await uploadGarminFit(garminSession, garminBase, file.filename, file.bytes)
+  const receipt = receiptFor(plan, file.sha256, null, `connect:${destinationId}`, Date.now())
   const next = upsertActivityBridgeReceipt(ledger, receipt)
   await writeActivityBridgeLedgerAtomic(next)
   await updateGarminActivityTitle(garminSession, garminBase, destinationId, plan.title)
@@ -354,21 +441,10 @@ async function bridgeGarminToWahoo(
   garminBase: string,
   ledger: ActivityBridgeLedger,
 ): Promise<ActivityBridgeExecution> {
-  const sourceId = garminActivityId(plan.source.id)
-  const archive = await fetchGarminBytes(
-    garminSession,
-    garminBase,
-    `/download-service/files/activity/${encodeURIComponent(sourceId)}`,
-  )
-  const sourceFile = garminActivityFileFromArchive(archive)
-  const bytes =
-    sourceFile.kind === 'fit'
-      ? sourceFile.bytes
-      : encodeGarminTcxActivityFit(sourceFile.bytes, sourceId).bytes
-  if (sourceFile.kind === 'tcx')
+  const file = await fetchGarminActivityFit(plan.source, garminSession, garminBase)
+  if (file.sourceKind === 'tcx')
     console.log(`[activity-bridge] converted Garmin TCX source=${plan.source.id} to FIT`)
-  const sha256 = fitSha256(bytes)
-  const key = activityBridgeReceiptKey('garmin', plan.source.id, sha256, 'wahoo')
+  const key = activityBridgeReceiptKey('garmin', plan.source.id, file.sha256, 'wahoo')
   const existing = ledger.receipts[key]
   if (existing && isTerminalActivityBridgeReceipt(existing))
     return { ledger, uploadStatus: existing.uploadStatus }
@@ -378,8 +454,8 @@ async function bridgeGarminToWahoo(
     upload = await wahooClient.getWorkoutFileUpload(existing.uploadToken)
   } else {
     upload = await wahooClient.createWorkoutFileUpload({
-      bytes,
-      filename: `garmin-${sourceId}.fit`,
+      bytes: file.bytes,
+      filename: file.filename,
       workoutName: plan.title,
     })
   }
@@ -388,7 +464,7 @@ async function bridgeGarminToWahoo(
   const destinationId = destinationWahooActivityId(upload)
   if (!destinationId && upload.status === 'complete')
     throw new Error(`Wahoo upload ${upload.token} completed without a destination workout id`)
-  const receipt = receiptFor(plan, sha256, upload, destinationId, createdAt)
+  const receipt = receiptFor(plan, file.sha256, upload, destinationId, createdAt)
   const next = upsertActivityBridgeReceipt(ledger, receipt)
   await writeActivityBridgeLedgerAtomic(next)
   return { ledger: next, uploadStatus: upload.status }
@@ -400,13 +476,10 @@ function planSummary(plan: ActivityBridgePlan): string {
 
 async function main(): Promise<void> {
   const args = parseActivityBridgeArgs(process.argv.slice(2))
-  const [stravaValue, garminValue, wahooValue, initialLedger] = await Promise.all([
-    readJson(STRAVA_CACHE_FILE),
-    readJson(GARMIN_CACHE_FILE),
-    readJson(WAHOO_CACHE_FILE),
+  const [inputs, initialLedger] = await Promise.all([
+    readActivityBridgeInputs(),
     readActivityBridgeLedger(),
   ])
-  const inputs = parseActivityBridgeInputs(stravaValue, garminValue, wahooValue)
   const planned = planActivityBridge(inputs, initialLedger)
   const plans = args.limit == null ? planned : planned.slice(0, args.limit)
   for (const plan of plans) console.log(`[activity-bridge] ${planSummary(plan)}`)

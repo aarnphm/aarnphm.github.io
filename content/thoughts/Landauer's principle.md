@@ -1,67 +1,76 @@
 ---
 created: '2025-09-17'
 date: '2025-09-19'
-description: minimum energy required to erase one bit of information
+description: minimum heat produced when an unknown classical bit is reset
 id: Landauer's principle
 modified: 2026-06-05 15:08:21 GMT-04:00
 published: '2005-11-08'
-source: https://en.wikipedia.org/wiki/Landauer%27s_principle
+source: https://www.informationphilosopher.com/solutions/scientists/landauer/Landauer-1961.pdf
 tags:
   - seed
   - physics
 title: Landauer's principle
 ---
 
-a physical principle pertaining to a lower theoretical limit of energy consumption of computation.
+Landauer's principle gives the thermodynamic cost of discarding information. Resetting one unknown, equiprobable classical bit in contact with a heat bath at temperature $T$ produces at least $k_B T\ln 2$ of heat in the environment.[^landauer]
 
-It holds that an irreversible change in information stored in a computer, such as merging two computational paths, dissipates a minimum amount of heat to its surroundings.
+## where the bound comes from
 
-> hypothesized that energy consumption below this lower bound would require the development of reversible computing.
+Before reset, the memory can occupy two logical states with equal probability. Reset maps both states to one standard state. Its entropy falls by $k_B\ln 2$. The total entropy production obeys
 
-first proposed by Rolf Landauer in 1961.
+$$
+\Sigma
+=
+\Delta S_{\mathrm{mem}}
++
+\frac{Q_{\mathrm{env}}}{T}
+\geq 0.
+$$
 
-see also:
+For an equiprobable bit erased to a known state,
 
-- [[thoughts/Information Theory]]
-- Quantum speed limit
-- Bremermann's limit
-- Bekenstein bound
-- Kolmogorov complexity
-- Entropy in thermodynamics and information theory
-- Jarzynski equality
-- Limits of computation
-- Maxwell's demon
-- Koomey's law
-- No-deleting theorem
+$$
+\Delta S_{\mathrm{mem}}=-k_B\ln 2,
+\qquad
+Q_{\mathrm{env}}\geq k_B T\ln 2.
+$$
 
-## statement
+At $T=300\,\mathrm{K}$,
 
-Landauer's principle states that the minimum energy needed to erase one bit of information is proportional to the temperature at which the system is operating. Specifically, the energy needed for this computational task is given by:
+$$
+k_B T\ln 2
+\approx
+2.87\times 10^{-21}\,\mathrm{J}
+\approx
+0.0179\,\mathrm{eV}.
+$$
 
-$$E \geq k_B T \ln 2$$
+This is an average lower bound for a reset protocol. Individual stochastic trials may dissipate less, while the ensemble average respects the bound.[^jun]
 
-where $k_B$ is the Boltzmann constant and $T$ is the temperature in Kelvin. At room temperature, the Landauer limit represents an energy of approximately $0.018$ eV ($2.9 \times 10^{-21}$ J). As of 2012, modern computers use about a billion times as much energy per operation.
+## erasure and reversible operations
 
-## history
+A bit flip maps $0$ to $1$ and $1$ to $0$, so the output still identifies the input. Copying into a blank register also retains the source. These operations are logically reversible, so switching transistors does not by itself require $k_B T\ln 2$ of heat dissipation.
 
-Rolf Landauer first proposed the principle in 1961 while working at IBM. He justified and stated important limits to an earlier conjecture by John von Neumann. This refinement is sometimes called the Landauer bound, or Landauer limit.
+Reset discards which input state occurred. Bennett showed that a computation can preserve intermediate information, copy its result, then run backward to clear its work registers without erasing each intermediate bit.[^bennett] A physical machine still dissipates energy through finite-time control, error suppression, and eventual disposal of information. For logical steps that retain their inputs, reversible logic removes the mandatory $k_B T\ln 2$ heat cost.
 
-In 2008 and 2009, researchers showed that Landauer's principle can be derived from the second law of thermodynamics and the entropy change associated with information gain, developing the thermodynamics of quantum and classical feedback-controlled systems.
+## experiments
 
-In 2011, the principle was generalized to show that while information erasure requires an increase in entropy, this increase could theoretically occur at no energy cost. Instead, the cost can be taken in another conserved quantity, such as angular momentum.
+Bérut et al. represented one bit by a colloidal particle in a double-well potential. As they made the reset protocol slower, the mean dissipated heat approached $k_B T\ln 2$.[^berut] Jun, Gavrilov, and Bechhoefer compared this reset with a control protocol that preserved both logical states. The reset approached $0.71k_B T$, while the control approached zero work.[^jun]
 
-In a 2012 article published in _Nature_, a team of physicists from the École normale supérieure de Lyon, University of Augsburg and the University of Kaiserslautern described that for the first time they have measured the tiny amount of heat released when an individual bit of data is erased.
+Hong et al. tested a nanomagnetic memory in 2016. Their protocol reset the bit to a standard state. A reversible bit flip would preserve which input occurred. The measured dissipation was consistent with the Landauer limit within experimental uncertainty.[^hong]
 
-In 2014, physical experiments tested Landauer's principle and confirmed its predictions.
+## scope
 
-In 2016, researchers used a laser probe to measure the amount of energy dissipation that resulted when a nanomagnetic bit flipped from off to on. Flipping the bit required about $0.026$ eV ($4.2 \times 10^{-21}$ J) at 300 K, which is just 44% above the Landauer minimum.
+The bound $Q_{\mathrm{env}}\geq k_B T\ln 2$ assumes a thermal reservoir. Vaccaro and Barnett describe erasure coupled to an angular-momentum reservoir, so no heat cost is required even though total entropy still increases.[^vaccaro] Logical reversibility and thermodynamic reversibility are separate properties. A one-to-one logical map can be implemented dissipatively, while the heat cost of a reset depends on the physical reservoir and protocol.
 
-A 2018 article published in _Nature Physics_ features a Landauer erasure performed at cryogenic temperatures ($T = 1$ K) on an array of high-spin ($S = 10$) quantum molecular magnets. The array is made to act as a spin register where each nanomagnet encodes a single bit of information. The experiment has laid the foundations for the extension of the validity of the Landauer principle to the quantum realm.
+[^landauer]: Rolf Landauer, "Irreversibility and Heat Generation in the Computing Process," 1961. https://www.informationphilosopher.com/solutions/scientists/landauer/Landauer-1961.pdf
 
-## challenges
+[^bennett]: Charles H. Bennett, "Logical Reversibility of Computation," 1973. https://www.cs.princeton.edu/courses/archive/fall04/cos576/papers/bennett73.html
 
-The principle is widely accepted as physical law, but it has been challenged for using circular reasoning and faulty assumptions. Others have defended the principle, and Sagawa and Ueda (2008) and Cao and Feito (2009) have shown that Landauer's principle is a consequence of the second law of thermodynamics and the entropy reduction associated with information gain.
+[^berut]: Antoine Bérut et al., "Experimental verification of Landauer's principle linking information and thermodynamics," 2012. https://doi.org/10.1038/nature10872
 
-Recent advances in non-equilibrium statistical physics have established that there is not a prior relationship between logical and thermodynamic reversibility. It is possible that a physical process is logically reversible but thermodynamically irreversible. It is also possible that a physical process is logically irreversible but thermodynamically reversible.
+[^jun]: Yonggun Jun, Momcilo Gavrilov, and John Bechhoefer, "High-precision test of Landauer's principle in a feedback trap," 2014. https://arxiv.org/abs/1408.5089
 
-In 2016, researchers at the University of Perugia claimed to have demonstrated a violation of Landauer's principle, though their conclusions were disputed.
+[^hong]: Jeongmin Hong et al., "Experimental test of Landauer's principle in single-bit operations on nanomagnetic memory bits," 2016. https://doi.org/10.1126/sciadv.1501492
+
+[^vaccaro]: Joan A. Vaccaro and Stephen M. Barnett, "Information erasure without an energy cost," 2011. https://arxiv.org/abs/1004.5330

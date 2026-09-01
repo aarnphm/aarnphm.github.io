@@ -13,6 +13,7 @@ import {
   type FtpHypothesisParams,
 } from '../../util/ftp-hypothesis'
 import { localIsoDay } from '../../util/local-date'
+import { latestProviderSync } from '../../util/provider-sync'
 import { runPaceZoneReference } from '../../util/run-pace-zones'
 import {
   SWIM_PACE_MAX_S_PER_100M,
@@ -215,6 +216,7 @@ export interface AnalyticsInputs {
   activityDetails?: Readonly<Record<string, StravaActivityDetail>>
   since?: string
   timeZone?: string
+  generatedAt?: number
 }
 
 export const POWER_TO_WEIGHT_DURATIONS: readonly [5, 60, 300, 1200] = [5, 60, 300, 1200]
@@ -968,6 +970,7 @@ export interface DataFeedInputs {
   trainingExclusions?: TrainingExclusion[]
   zones?: StravaZones | null
   activityDetails?: Readonly<Record<string, StravaActivityDetail>>
+  generatedAt?: number
 }
 
 export interface Analytics {
@@ -5108,7 +5111,16 @@ export function buildAnalytics(
   cache: StravaRawCache | null,
   inputs: AnalyticsInputs = {},
 ): Analytics {
-  const todayFromSync = cache?.lastSync ? localIsoDay(cache.lastSync, inputs.timeZone) : null
+  const generatedAt = latestProviderSync(
+    inputs.generatedAt,
+    cache,
+    inputs.oura,
+    inputs.apple,
+    inputs.core,
+    inputs.garmin,
+    inputs.weather,
+  )
+  const todayFromSync = generatedAt ? localIsoDay(generatedAt, inputs.timeZone) : null
   const dexaTests = parseDexa(inputs.dexa)
   const vo2Tests = parseVo2Lab(inputs.vo2labs)
   const latestDexa = dexaTests.length ? dexaTests[dexaTests.length - 1] : null
@@ -5222,6 +5234,7 @@ export function buildAnalytics(
   const firstDay = sinceDay ?? sourceActivities[0].startDateLocal.slice(0, 10)
   const windowFrom = dayMs(firstDay)
   const windowTo = Math.max(todayMs, dayMs(lastActDay))
+  const windowToDay = today > lastActDay ? today : lastActDay
 
   const daily = buildDaily(
     acts,
@@ -5568,7 +5581,7 @@ export function buildAnalytics(
       athleteId: cache.athleteId,
       today,
       windowFrom: firstDay,
-      windowTo: lastActDay,
+      windowTo: windowToDay,
       activityCount: acts.length + supplementalLoadActivities.length + saunaSummaries.length,
       method: {
         ctlTau: 42,
@@ -5823,6 +5836,14 @@ export function buildDataFeed(
   analytics: Analytics,
   inputs: DataFeedInputs = {},
 ): string {
+  const generatedAt = latestProviderSync(
+    inputs.generatedAt,
+    cache,
+    inputs.oura,
+    inputs.apple,
+    inputs.weather,
+    inputs.garmin,
+  )
   const ouraDays = inputs.oura?.days ?? {}
   const appleDays = inputs.apple?.days ?? {}
   const vThrBySport = new Map(analytics.thresholds.map(t => [t.sport, t.vThr]))
@@ -6035,7 +6056,7 @@ export function buildDataFeed(
   const meta = {
     kind: 'meta',
     v: 5,
-    generatedAt: cache?.lastSync ?? 0,
+    generatedAt,
     athleteId: analytics.meta.athleteId,
     today: analytics.meta.today,
     windowFrom: analytics.meta.windowFrom,

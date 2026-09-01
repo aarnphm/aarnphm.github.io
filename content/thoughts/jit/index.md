@@ -14,16 +14,16 @@ This directory contains compiler experiments with three different objects: Pytho
 
 ## working map
 
-| file | purpose | current status |
-| --- | --- | --- |
+| file             | purpose                                                                         | current status                                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `minimal_jit.py` | recover source, lower a restricted AST to C, compile, and bind through `ctypes` | works for the demonstrated straight-line expressions and positive-step loops when the caller supplies the right C types |
-| `ir.py` | IR values, instructions, blocks, small analysis passes, and C printing | educational; some pass names describe more than the implementation currently does |
-| `ir_compiler.py` | lower an AST through the custom IR and compile the resulting C | straight-line arithmetic works; loop-carried scalar reductions are wrong |
-| `compiler.py` | choose a backend from a static AST complexity score | selection happens once during decoration; there is no runtime tiering |
-| `tracing_jit.py` | extract a loop from the AST and compile it to C | trace-shaped source transformation with no guards or deoptimization |
-| `bytecodes.py` | inspect and rewrite CPython bytecode | constant folding works for the constructed example; several other demos are conceptual or stale on current opcodes |
-| `blas.py` | compare generated numerical kernels with Numba | timings are invalid until the harness rejects wrong outputs and separates cold compilation from warm calls |
-| `numba_jit.py` | Numba comparison experiments | timing labels need the same cold and warm separation |
+| `ir.py`          | IR values, instructions, blocks, small analysis passes, and C printing          | educational; some pass names describe more than the implementation currently does                                       |
+| `ir_compiler.py` | lower an AST through the custom IR and compile the resulting C                  | straight-line arithmetic works; loop-carried scalar reductions are wrong                                                |
+| `compiler.py`    | choose a backend from a static AST complexity score                             | selection happens once during decoration; there is no runtime tiering                                                   |
+| `tracing_jit.py` | extract a loop from the AST and compile it to C                                 | trace-shaped source transformation with no guards or deoptimization                                                     |
+| `bytecodes.py`   | inspect and rewrite CPython bytecode                                            | constant folding works for the constructed example; several other demos are conceptual or stale on current opcodes      |
+| `blas.py`        | compare generated numerical kernels with Numba                                  | timings are invalid until the harness rejects wrong outputs and separates cold compilation from warm calls              |
+| `numba_jit.py`   | Numba comparison experiments                                                    | timing labels need the same cold and warm separation                                                                    |
 
 ## what the main path compiles
 

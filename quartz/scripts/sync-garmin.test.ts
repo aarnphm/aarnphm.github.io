@@ -8,21 +8,22 @@ import {
   type GarminWeightSample,
 } from '../plugins/stores/garmin'
 import {
-  initialGarminSyncRecords,
+  garminRefreshStart,
   mergeGarminFitTrainingEffect,
   mergeGarminVo2Range,
   mergeGarminWeightRange,
+  reconcileGarminActivities,
   resolveGarminFetch,
   resolveGarminWeightDay,
 } from './sync-garmin'
 
-function activity(): GarminActivity {
+function activity(id = 'connect:123', startDateLocal = '2026-08-14T13:27:27.0'): GarminActivity {
   return {
-    id: 'connect:123',
+    id,
     name: 'Imported ride',
     sport: 'bike',
     startDate: '2026-08-14T17:27:27.000Z',
-    startDateLocal: '2026-08-14T13:27:27.0',
+    startDateLocal,
     distanceM: 45_395,
     movingTimeS: 5_947,
     elapsedTimeS: 8_785,
@@ -74,12 +75,36 @@ test('preserves same-day Garmin weigh-ins when dayview fails', () => {
   assert.deepEqual(resolveGarminWeightDay('2026-07-09', { ok: true }, summary, previous), [summary])
 })
 
-test('keeps untouched Garmin records during a capped sync', () => {
-  const previous = { one: { value: 1 }, two: { value: 2 } }
+test('Garmin routine refresh overlaps the latest activity and schema refresh keeps history', () => {
+  const cache = {
+    version: 11,
+    lastSync: 1,
+    activities: {
+      old: activity('old', '2023-09-27T05:45:21.0'),
+      latest: activity('latest', '2026-08-31T16:48:05.0'),
+    },
+  }
 
-  assert.deepEqual(initialGarminSyncRecords(previous, true), previous)
-  assert.deepEqual(initialGarminSyncRecords(previous, false), {})
-  assert.notEqual(initialGarminSyncRecords(previous, true), previous)
+  assert.equal(garminRefreshStart(cache, '2026-05-15', 3), '2026-08-28')
+  assert.equal(garminRefreshStart({ ...cache, version: 10 }, '2026-05-15', 3), '2023-09-27')
+  assert.equal(garminRefreshStart(null, '2026-05-15', 3), '2026-05-15')
+})
+
+test('Garmin refresh reconciliation prunes the fetched range and preserves older history', () => {
+  const previous = {
+    old: activity('old', '2026-08-01T08:00:00.0'),
+    deleted: activity('deleted', '2026-08-29T08:00:00.0'),
+    future: activity('future', '2026-09-02T08:00:00.0'),
+  }
+
+  assert.deepEqual(
+    Object.keys(reconcileGarminActivities(previous, '2026-08-28', '2026-09-01', false)),
+    ['old', 'future'],
+  )
+  assert.deepEqual(
+    Object.keys(reconcileGarminActivities(previous, '2026-08-28', '2026-09-01', true)),
+    ['old', 'deleted', 'future'],
+  )
 })
 
 test('replaces only the fetched Garmin VO2max date range', () => {
