@@ -15,6 +15,7 @@ import type {
 import {
   garminConnectActivities,
   garminConnectActivity,
+  garminConnectActivityStartDate,
   garminConnectClimbSegments,
   garminConnectStreams,
   garminConnectVo2,
@@ -30,8 +31,14 @@ import {
   readGarminConnectSession,
   type GarminConnectSession,
 } from '../util/garmin-session'
-import { localDayEndUtcMs, localDayStartUtcMs, localIsoDayOffset } from '../util/local-date'
+import {
+  localDayEndUtcMs,
+  localDayStartUtcMs,
+  localIsoDayOffset,
+  shiftIsoDay,
+} from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
+import { syncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 
@@ -64,11 +71,51 @@ export function resolveGarminWeightDay(
   return prior.length ? prior : [summary]
 }
 
-export function initialGarminSyncRecords<T>(
-  previous: Record<string, T> | undefined,
-  partial: boolean,
-): Record<string, T> {
-  return partial ? { ...previous } : {}
+function garminActivityDay(activity: GarminActivity): string | null {
+  const day = (activity.startDateLocal || activity.startDate).slice(0, 10)
+  return /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : null
+}
+
+function garminActivityDateBounds(activities: Readonly<Record<string, GarminActivity>>): {
+  earliest: string | null
+  latest: string | null
+} {
+  let earliest: string | null = null
+  let latest: string | null = null
+  for (const activity of Object.values(activities)) {
+    const day = garminActivityDay(activity)
+    if (!day) continue
+    if (earliest == null || day < earliest) earliest = day
+    if (latest == null || day > latest) latest = day
+  }
+  return { earliest, latest }
+}
+
+export function garminRefreshStart(
+  previous: GarminCache | null,
+  configuredStart: string,
+  refreshWindowDays: number,
+): string {
+  const { earliest, latest } = garminActivityDateBounds(previous?.activities ?? {})
+  if (!previous || (previous.version ?? 0) < CACHE_VERSION)
+    return earliest != null && earliest < configuredStart ? earliest : configuredStart
+  if (latest == null) return configuredStart
+  const overlapStart = shiftIsoDay(latest, -refreshWindowDays)
+  return overlapStart > configuredStart ? overlapStart : configuredStart
+}
+
+export function reconcileGarminActivities(
+  previous: Readonly<Record<string, GarminActivity>> | undefined,
+  start: string,
+  end: string,
+  preserveRefreshRange: boolean,
+): Record<string, GarminActivity> {
+  const activities: Record<string, GarminActivity> = {}
+  for (const [id, activity] of Object.entries(previous ?? {})) {
+    const day = garminActivityDay(activity)
+    if (preserveRefreshRange || day == null || day < start || day > end) activities[id] = activity
+  }
+  return activities
 }
 
 export function mergeGarminFitTrainingEffect(
@@ -157,13 +204,12 @@ async function readTriathlonStart(): Promise<string | null> {
   }
 }
 
-async function startDate(): Promise<string> {
-  return (
-    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
-    cleanDay(process.env.GARMIN_CONNECT_SINCE) ??
-    (await readTriathlonStart()) ??
-    localIsoDayOffset(-90)
-  )
+async function startDate(previous: GarminCache | null, refreshWindowDays: number): Promise<string> {
+  const explicit =
+    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ?? cleanDay(process.env.GARMIN_CONNECT_SINCE)
+  if (explicit) return explicit
+  const configured = (await readTriathlonStart()) ?? localIsoDayOffset(-90)
+  return garminRefreshStart(previous, configured, refreshWindowDays)
 }
 
 function endDate(): string {
@@ -171,7 +217,7 @@ function endDate(): string {
 }
 
 function activityStartMs(item: GarminConnectActivityListItem): number | null {
-  const start = garminConnectActivity(null, item.record, 0)?.startDate
+  const start = garminConnectActivityStartDate(item.record)
   if (!start) return null
   const ms = Date.parse(start)
   return Number.isFinite(ms) ? ms : null
@@ -190,22 +236,26 @@ async function fetchActivities(
   const startMs = localDayStartUtcMs(start)
   const endMs = localDayEndUtcMs(end)
   for (let offset = 0; ; offset += pageSize) {
-    const raw = await fetchGarminJson(session, base, '/graphql-gateway/graphql', undefined, {
-      method: 'POST',
-      body: JSON.stringify({
-        query: `query{searchActivitiesScalar(start:${offset}, limit:${pageSize}, excludedActivitySubTypes:["assistance"])}`,
+    const raw = await fetchGarminJson(
+      session,
+      base,
+      '/activitylist-service/activities/search/activities',
+      new URLSearchParams({
+        startDate: start,
+        endDate: end,
+        start: String(offset),
+        limit: String(pageSize),
       }),
-    })
+    )
     const page = garminConnectActivities(raw)
     let oldestMs: number | null = null
     for (const item of page) {
       if (seen.has(item.id)) continue
       seen.add(item.id)
       const ms = activityStartMs(item)
-      if (ms != null) {
-        oldestMs = oldestMs == null ? ms : Math.min(oldestMs, ms)
-        if (ms < startMs || ms > endMs) continue
-      }
+      if (ms == null) throw new Error(`Garmin activity ${item.id} has no parseable start date`)
+      oldestMs = oldestMs == null ? ms : Math.min(oldestMs, ms)
+      if (ms < startMs || ms > endMs) continue
       out.push(item)
       if (maxActivities > 0 && out.length >= maxActivities) return out
     }
@@ -280,8 +330,10 @@ async function main(): Promise<void> {
   const delayMs = envNumber('GARMIN_CONNECT_DELAY_MS', DEFAULT_DELAY_MS)
   const maxActivities = envNumber('GARMIN_CONNECT_MAX_ACTIVITIES', 0)
   const fetchStreams = envFlag('GARMIN_CONNECT_FETCH_STREAMS', true)
-  const start = await startDate()
+  const refreshWindowDays = syncRefreshDays()
+  const start = await startDate(previous, refreshWindowDays)
   const end = endDate()
+  if (start > end) throw new Error(`Garmin sync start ${start} is after end ${end}`)
 
   console.log(`[garmin] fetching Garmin Connect activities ${start} -> ${end}`)
   const list = await fetchActivities(session, base, start, end, pageSize, maxActivities)
@@ -292,13 +344,14 @@ async function main(): Promise<void> {
   })
   console.log(`[garmin] found ${list.length} activities`)
 
-  const partial = maxActivities > 0
-  const activities = initialGarminSyncRecords(previous?.activities, partial)
-  const streams = initialGarminSyncRecords(previous?.streams, partial)
-  const gearShifts = initialGarminSyncRecords(previous?.gearShifts, partial)
-  const cyclingDynamics = initialGarminSyncRecords(previous?.cyclingDynamics, partial)
-  const fitTrainingEffects = initialGarminSyncRecords(previous?.fitTrainingEffects, partial)
-  const climbs = initialGarminSyncRecords(previous?.climbs, partial)
+  const activities = reconcileGarminActivities(previous?.activities, start, end, maxActivities > 0)
+  const streams: Record<string, GarminStreams> = { ...previous?.streams }
+  const gearShifts: Record<string, GarminGearShift[]> = { ...previous?.gearShifts }
+  const cyclingDynamics: Record<string, GarminCyclingDynamics> = { ...previous?.cyclingDynamics }
+  const fitTrainingEffects: Record<string, GarminFitTrainingEffect> = {
+    ...previous?.fitTrainingEffects,
+  }
+  const climbs: Record<string, GarminClimbSegment[]> = { ...previous?.climbs }
   let details = 0
   let streamDetails = 0
   let rideArchives = 0

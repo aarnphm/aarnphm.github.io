@@ -1,6 +1,6 @@
 ---
 date: '2025-09-19'
-description: reduce parameters size
+description: share token lookup and output classifier weights
 id: weight tying
 modified: 2026-06-05 15:08:30 GMT-04:00
 tags:
@@ -9,24 +9,78 @@ tags:
 title: weight tying
 ---
 
-> [!summary]
->
-> - tying enforces a shared embedding matrix $s$ for both input lookups and output logits, aligning update dynamics with the softmax weights and shrinking model size. [@press2017usingoutputembeddingimprove]
-> - untying keeps distinct matrices $u$ and $v$, so only the currently consumed token’s vector is touched per step while the softmax rows update densely. [@press2017usingoutputembeddingimprove]
+Weight tying makes the token lookup matrix and the output classifier share one matrix. It saves one vocabulary-sized matrix and couples two different gradient paths.[@press2017usingoutputembeddingimprove][@inan2017tyingwordvectors]
 
 ## setup
 
-consider a language model with input embedding $u \in \mathbb{R}^{|\mathcal{v}| \times h}$ and output projection $v \in \mathbb{R}^{|\mathcal{v}| \times h}$. tying enforces $u = v = s$, while untying leaves them independent. [@press2017usingoutputembeddingimprove]
+Let $W_E\in\mathbb{R}^{|\mathcal{V}|\times d}$ be the input embedding matrix. A token id $x_t$ selects the row $W_E[x_t]$. Let $W_O\in\mathbb{R}^{|\mathcal{V}|\times d}$ score a hidden state $h_t\in\mathbb{R}^d$:
 
-## weight tying effects
+$$
+z_t=W_Oh_t+b,
+\qquad
+p_t=\operatorname{softmax}(z_t),
+\qquad
+L_t=-\log p_{t,y_t}.
+$$
 
-- gradient coverage: in the tied system every row of $s$ is updated each timestep, mirroring the dense softmax gradient; in the untied system only the row for the observed input token receives an embedding update. [@press2017usingoutputembeddingimprove]
-- representation drift: the tied embedding evolves to match the behaviour of the untied model’s output embedding, improving cosine similarity on evaluation suites (ptb, text8). [@press2017usingoutputembeddingimprove]
-- parameter budget: sharing removes one $|\mathcal{v}|\times h$ matrix, cutting decoder parameters by nearly 50% in neural machine translation without degrading BLEU. [@press2017usingoutputembeddingimprove]
-- perplexity: tied LSTM language models dominate untied baselines across dropout/no-dropout settings due to the coupled updates. [@press2017usingoutputembeddingimprove]
+Weight tying sets
 
-## weight untying behaviour
+$$
+W_O=W_E.
+$$
 
-- separate embeddings allow specialization: $u$ captures distributional cues from the context tokens, while $v$ focuses on scoring the vocabulary; gradients act on different subsets each step. [@press2017usingoutputembeddingimprove]
-- sparse rare-word learning: because only the active input row updates, infrequent types learn slowly, contrasting with the tied case where the softmax-driven update reaches every word each iteration. [@press2017usingoutputembeddingimprove]
-- larger capacity: two independent matrices give the model freedom to disentangle input and output spaces at the cost of duplicated parameters and unaligned representations. [@press2017usingoutputembeddingimprove]
+This requires the lookup width and the final hidden width to match. Libraries often store both parameters with shape $|\mathcal{V}|\times d$, so the embedding table and language-model head can point to the same weight.
+
+## gradient paths
+
+With an untied exact softmax, every output row receives
+
+$$
+\frac{\partial L_t}{\partial W_O[k]}
+=
+\left(p_{t,k}-\mathbf{1}[k=y_t]\right)h_t^\top.
+$$
+
+The lookup gradient only touches rows for token ids that appear as inputs in the batch. With tying, the shared matrix receives both contributions:
+
+$$
+\nabla_{W_E}L_t
+=
+\nabla_{W_E}^{\mathrm{lookup}}L_t
++
+\nabla_{W_O}L_t.
+$$
+
+The input path is sparse in row support, while the full-softmax output path is dense. Sampled, adaptive, or sharded output losses can change that coverage.
+
+## parameter budget
+
+Untied input and output matrices contain
+
+$$
+N_{\mathrm{edge,untied}}=2|\mathcal{V}|d
+$$
+
+parameters. Tying stores
+
+$$
+N_{\mathrm{edge,tied}}=|\mathcal{V}|d.
+$$
+
+It therefore halves the parameters at the vocabulary edges. The saved fraction of the whole model is
+
+$$
+r
+=
+\frac{|\mathcal{V}|d}{N_{\mathrm{total,untied}}}.
+$$
+
+That fraction depends on the rest of the network. In Press and Wolf's translation experiments, decoder tying reduced total parameters by about 28%. Three-way tying across the encoder input, decoder input, and decoder output saved about 52%.[@press2017usingoutputembeddingimprove]
+
+## evidence and limits
+
+Press and Wolf found that a tied embedding evolved more like the untied output embedding than the untied input embedding. Their comparison used rank correlation between pairwise cosine-distance patterns. This statistic describes the geometry of the full embedding spaces. It does not measure whether every token's cosine similarity improved.[@press2017usingoutputembeddingimprove]
+
+Press and Wolf and Inan et al. reported lower held-out perplexity for several tied RNN language models. Those experiments cover the tested RNNs and corpora. Other architectures and losses require their own evidence.[@press2017usingoutputembeddingimprove][@inan2017tyingwordvectors]
+
+In practice, tying trades capacity for fewer parameters. Tying removes one large matrix and forces lookup vectors to serve as output class weights. Untying lets the two roles use separate parameters and permits different input and output widths.

@@ -3,10 +3,23 @@ import test from 'node:test'
 import {
   garminConnectActivities,
   garminConnectActivity,
+  garminConnectActivityStartDate,
   garminConnectClimbSegments,
   garminConnectStreams,
   garminConnectWeightSamples,
 } from './garmin-connect'
+
+test('normalizes Garmin GraphQL numeric activity timestamps', () => {
+  const record = {
+    activityId: 123,
+    beginTimestamp: 1_788_209_285_000,
+    startTimeGMT: '2026-08-31 20:48:05',
+    distance: 36_127,
+  }
+
+  assert.equal(garminConnectActivityStartDate(record), '2026-08-31T20:48:05.000Z')
+  assert.equal(garminConnectActivity(null, record, 0)?.startDate, '2026-08-31T20:48:05.000Z')
+})
 
 test('normalizes Garmin Connect activity details into the Garmin cache shape', () => {
   const raw = {

@@ -38,6 +38,7 @@ import { parseWahooCache, type WahooCache } from '../plugins/stores/wahoo'
 import { matchAppleRun } from './apple-run-match'
 import { matchAppleSwims, matchAppleSwimTelemetry } from './apple-swim-match'
 import { joinSegments, QUARTZ } from './path'
+import { latestProviderSync } from './provider-sync'
 import { readStravaCacheFileSync } from './strava-cache-file'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
 import {
@@ -622,6 +623,7 @@ export function loadStravaPayloadSync(
   const apple = readJson<AppleCache>(appleCachePath)
   const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
   const weather = readJson<WeatherCache>(weatherCachePath)
+  const generatedAt = latestProviderSync(strava, oura, garmin, wahoo, apple, core, weather)
   const payload = buildPayload(
     strava,
     oura,
@@ -633,6 +635,7 @@ export function loadStravaPayloadSync(
     undefined,
     wahoo,
     ATHLETE.hrMax,
+    generatedAt,
   )
   applyManualFueling(payload, manualFueling)
   applyManualStrength(payload, manualStrength)
@@ -660,6 +663,7 @@ export function loadStravaPayloadSync(
     zones: payload.zones,
     activityDetails: payload.details,
     since,
+    generatedAt,
   })
   enrichRunPaceZones(payload, analytics.distributions)
   enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)

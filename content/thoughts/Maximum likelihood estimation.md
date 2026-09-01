@@ -1,8 +1,8 @@
 ---
 date: '2025-09-15'
-description: Likelihood-based training objective; intuition, derivations, properties, and links to cross‑entropy/KL and MAP/regularization.
+description: Likelihood objective, Fisher information, conditional classification, and MAP
 id: Maximum likelihood estimation
-modified: 2026-06-05 15:08:05 GMT-04:00
+modified: 2026-09-01 09:15:00 GMT-04:00
 tags:
   - ml
   - probability
@@ -11,94 +11,149 @@ title: Maximum likelihood estimation
 
 > [!summary]
 >
-> Maximum likelihood estimation (MLE) chooses parameters $\hat{\theta}$ that make the observed data most probable under a model. With i.i.d. data, this is equivalent to minimizing the negative log‑likelihood (NLL) and, for classification, minimizing [[thoughts/cross entropy|cross‑entropy]]—which also minimizes [[thoughts/Kullback-Leibler divergence|KL divergence]] between the data and model.
+> Maximum likelihood estimation chooses the parameter value that gives the observed sample the largest probability mass or density under a model. With independent data, maximizing likelihood is equivalent to minimizing negative log likelihood. Conditional classification likelihood gives the usual [[thoughts/cross entropy|cross entropy]] objective.
 
 See also: [[thoughts/Logistic regression]], [[thoughts/regularization]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/finals|supervised learning notes]].
 
 ## definition
 
-Given observations $\mathbf{x}=(x_1,\ldots,x_n)$ from a parametric family $p(x\mid\theta)$, the ==likelihood== and ==log‑likelihood== are
+For a realized sample $\mathbf x=(x_1,\ldots,x_n)$, the likelihood is the joint probability mass or density as a function of $\theta$:
 
 $$
-\mathcal{L}(\theta;\mathbf{x}) = \prod_{i=1}^n p(x_i\mid\theta), \qquad
-\ell(\theta;\mathbf{x}) = \log \mathcal{L}(\theta;\mathbf{x}) = \sum_{i=1}^n \log p(x_i\mid\theta).
+\mathcal L(\theta;\mathbf x)=p_\theta(x_1,\ldots,x_n).
 $$
 
-The MLE is
+For independent and identically distributed observations,
 
 $$
-\hat{\theta} \in \arg\max_{\theta \in \Theta} \mathcal{L}(\theta;\mathbf{x}) \equiv \arg\min_{\theta} \bigl(-\ell(\theta;\mathbf{x})\bigr).
+\mathcal L_n(\theta;\mathbf x)=\prod_{i=1}^n p_\theta(x_i),\qquad
+\ell_n(\theta;\mathbf x)=\sum_{i=1}^n\log p_\theta(x_i).
 $$
 
-- Score: $\nabla_\theta \ell(\theta) = \sum_i \nabla_\theta \log p(x_i\mid\theta)$.
-- Hessian: $\nabla_\theta^2 \ell(\theta)$; expected negative Hessian is the [[thoughts/Manifold hypothesis#Fisher information|Fisher information]] $\mathcal{I}(\theta)= -\mathbb{E}[\nabla^2_\theta \ell(\theta)]$.
-
-> [!tip] working intuition
-> “Pretend the data came from the model.” Pick the parameters that would have made this dataset least surprising. Logs turn products into sums, making optimization numerically stable and additive over examples. See [[thoughts/Vector calculus#gradient|gradient]] for mechanics.
-
-## connection to cross‑entropy and KL
-
-Let $p_{\text{data}}$ be the (unknown) data distribution and $q_\theta$ the model. With empirical averaging,
+The estimate for this sample is
 
 $$
-\arg\max_\theta \ell(\theta) \equiv \arg\min_\theta \Big(-\tfrac{1}{n}\sum_i \log q_\theta(x_i)\Big)
-\approx \arg\min_\theta \; H\big(p_{\text{data}}, q_\theta\big)
-\;=\; \arg\min_\theta\; D_{\text{KL}}\big(p_{\text{data}}\,\|\, q_\theta\big),
+\widehat\theta(\mathbf x)\in
+\arg\max_{\theta\in\Theta}\ell_n(\theta;\mathbf x)
+=\arg\min_{\theta\in\Theta}\bigl(-\ell_n(\theta;\mathbf x)\bigr).
 $$
 
-so MLE minimizes cross‑entropy and projects the true distribution onto the model class in KL. See [[thoughts/cross entropy]] and [[thoughts/Kullback-Leibler divergence]].
+When the sample $\mathbf X$ is random, $\widehat\theta_n(\mathbf X)$ is the estimator. This distinction matters in statements about bias and sampling distributions.
+
+The score and observed information are
+
+$$
+s_n(\theta)=\nabla_\theta\ell_n(\theta),\qquad
+J_n(\theta)=-\nabla_\theta^2\ell_n(\theta).
+$$
+
+For one observation, let $s_\theta(X)=\nabla_\theta\log p_\theta(X)$. The expected Fisher information is
+
+$$
+\mathcal I_1(\theta)
+=\mathbb E_\theta\!\left[s_\theta(X)s_\theta(X)^{\mathsf T}\right]
+=-\mathbb E_\theta\!\left[\nabla_\theta^2\log p_\theta(X)\right],
+$$
+
+where the second equality needs the usual differentiation and support conditions. For $n$ i.i.d. observations, $\mathcal I_n(\theta)=n\mathcal I_1(\theta)$.
+
+## connection to cross-entropy and KL
+
+Let $\widehat p_n$ be the empirical distribution and $q_\theta$ the model. The average negative log likelihood is exactly the empirical cross entropy:
+
+$$
+-\frac{1}{n}\ell_n(\theta)
+=-\frac{1}{n}\sum_{i=1}^n\log q_\theta(x_i)
+=H(\widehat p_n,q_\theta).
+$$
+
+At the population level, for a true distribution $p_0$,
+
+$$
+\mathbb E_{X\sim p_0}[-\log q_\theta(X)]
+=H(p_0,q_\theta)
+=H(p_0)+D_{\mathrm{KL}}(p_0\Vert q_\theta).
+$$
+
+Because $H(p_0)$ is independent of $\theta$, population maximum likelihood finds the model in the chosen class with the smallest forward KL divergence. The empirical objective estimates this population quantity.
 
 ## training statistical models (derivation sketch)
 
-For a dataset $\{z_i\}_{i=1}^n$ (each $z_i$ may be $(x_i,y_i)$), define the NLL
+For a joint model over observations $z_i$, the negative log likelihood is
 
 $$
-\mathcal{J}(\theta) = -\ell(\theta) = -\sum_{i=1}^n \log p_\theta(z_i).
+\mathcal J_{\mathrm{joint}}(\theta)=-\sum_{i=1}^n\log p_\theta(z_i).
 $$
 
-- Gradient accumulates per‑example terms: $\nabla \mathcal{J}(\theta) = -\sum_i \nabla_\theta \log p_\theta(z_i)$.
-- Mini‑batch SGD uses unbiased estimates of this gradient; second‑order methods use the Hessian or Fisher (Fisher scoring/[[thoughts/optimization#Newton methods|Newton methods]]).
-- For softmax classifiers, $\partial \mathcal{J}/\partial z = \text{softmax}(z)-\text{one\_hot}(y)$; Jacobian and log‑sum‑exp stability in [[thoughts/optimization#softmax]].
-- Binary logistic case: gradients/Hessian in [[thoughts/Logistic regression#MLE derivation and gradients]].
+For a discriminative classifier, inputs $x_i$ are conditioned on rather than modeled:
 
-> [!note] regularization ≡ MAP
-> Adding a prior becomes a penalty: $\max_\theta \{\ell(\theta)+\log p(\theta)\}$.
+$$
+\mathcal J_{\mathrm{cond}}(\theta)=-\sum_{i=1}^n\log p_\theta(y_i\mid x_i).
+$$
+
+For one hard-label softmax example with logits $a$, the gradient is
+
+$$
+\nabla_a\mathcal J=\operatorname{softmax}(a)-\operatorname{onehot}(y).
+$$
+
+Mini-batch sampling gives an unbiased gradient estimate when the batch is sampled uniformly from the training set. See [[thoughts/Logistic regression#MLE derivation and gradients]] for the binary case.
+
+> [!note] penalty priors and MAP
+> A prior adds its log density to the objective:
 >
-> - Gaussian prior $\Rightarrow$ L2 (weight decay).
-> - Laplace prior $\Rightarrow$ L1 (sparsity).
->   See [[thoughts/regularization]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood#maximum a posteriori estimation|MAP]].
+> $$
+> \widehat\theta_{\mathrm{MAP}}
+> \in\arg\max_\theta\{\ell_n(\theta)+\log p(\theta)\}.
+> $$
+>
+> A zero-mean Gaussian prior gives an L2 penalty. A Laplace prior gives an L1 penalty. [Decoupled weight decay](https://arxiv.org/abs/1711.05101), as used by AdamW, is a different update rule, so the equivalence with an L2 objective usually fails. See [[thoughts/regularization]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/likelihood#maximum a posteriori estimation|MAP]].
 
 ## examples
 
 > [!example] Bernoulli($p$)
-> Likelihood $\mathcal{L}(p)=p^{\sum x_i}(1-p)^{n-\sum x_i}$. Setting $\partial \ell/\partial p=0$ gives $\hat p = \tfrac{1}{n}\sum_i x_i$.
+> Likelihood $\mathcal L(p)=p^{\sum x_i}(1-p)^{n-\sum x_i}$ on $p\in[0,1]$. The estimate is $\widehat p=\overline x$, including the boundary cases where every observation is $0$ or $1$.
 
 > [!example] Poisson($\lambda$)
-> $\ell(\lambda)=\sum_i (x_i\log\lambda-\lambda-\log x_i!) \Rightarrow \hat\lambda = \bar{x}$.
+> For $\lambda\geq0$, $\ell(\lambda)=\sum_i(x_i\log\lambda-\lambda-\log x_i!)$ and $\widehat\lambda=\overline x$.
 
 > [!example] Exponential($\lambda$)
-> $\ell(\lambda)= n\log\lambda - \lambda \sum_i x_i \Rightarrow \hat\lambda = 1/\bar{x}$.
+> For $\overline x>0$, $\ell(\lambda)=n\log\lambda-\lambda\sum_i x_i$ and $\widehat\lambda=1/\overline x$.
 
 > [!example] Normal($\mu,\sigma^2$)
 > $\ell(\mu,\sigma^2) = -\tfrac{n}{2}\log(2\pi\sigma^2) - \tfrac{1}{2\sigma^2}\sum_i (x_i-\mu)^2$.
-> Solving gives $\hat\mu=\bar{x}$ and $\hat\sigma^2=\tfrac{1}{n}\sum_i (x_i-\bar{x})^2$ (biased for variance by factor $\tfrac{n}{n-1}$).
+> Solving gives $\widehat\mu=\overline x$ and $\widehat\sigma^2_{\mathrm{MLE}}=\tfrac{1}{n}\sum_i(x_i-\overline x)^2$. The variance estimate is biased downward:
+>
+> $$
+> \mathbb E[\widehat\sigma^2_{\mathrm{MLE}}]=\frac{n-1}{n}\sigma^2.
+> $$
+>
+> The usual unbiased sample variance multiplies it by $n/(n-1)$.
 
 ## properties (under regularity conditions)
 
-- Consistency and asymptotic normality: $\sqrt{n}(\hat\theta-\theta_0) \xrightarrow{d} \mathcal{N}(0,\, \mathcal{I}(\theta_0)^{-1})$; standard errors from $\mathcal{I}(\hat\theta)^{-1}$.
-- Invariance: if $\alpha=g(\theta)$ then $\widehat{\alpha}=g(\hat\theta)$.
-- Asymptotic efficiency: achieves the Cramér–Rao lower bound asymptotically.
+For an identifiable, correctly specified model with an interior true parameter, enough differentiability, and nonsingular Fisher information,
+
+$$
+\sqrt n(\widehat\theta_n-\theta_0)
+\xrightarrow{d}
+\mathcal N\!\left(0,\mathcal I_1(\theta_0)^{-1}\right).
+$$
+
+The large-sample covariance of $\widehat\theta_n$ is therefore approximately $\mathcal I_1(\theta_0)^{-1}/n$, or the inverse of the full observed information $J_n(\widehat\theta)$ under the same conditions.
+
+MLE is invariant under a one-to-one reparameterization: if $\alpha=g(\theta)$, then $\widehat\alpha=g(\widehat\theta)$. Under the stated conditions it is also asymptotically efficient.
 
 > [!caution] caveats
 >
-> - Model misspecification: MLE converges to the KL‑projection within the model class.
-> - Non‑identifiability or boundary solutions can break asymptotics.
-> - Finite‑sample bias can appear (e.g., $\hat\sigma^2$ above).
+> - Under misspecification, MLE can converge to the KL projection within the model class. Its asymptotic covariance generally has the [sandwich form](https://doi.org/10.2307/1912526) rather than inverse Fisher.
+> - Non-identifiability, boundary solutions, and singular Fisher information can break the normal approximation.
+> - Finite-sample bias can remain, as in the Normal variance example.
 
 ## practical notes
 
-- Always optimize the log‑likelihood for numerical stability; use log‑sum‑exp for softmax/logits.
-- Check curvature at solutions (negative‑definite Hessian) to avoid saddle points/minima.
-- Batch your objective; gradients add across samples; prefer vectorized code.
+- Optimize log likelihood rather than multiplying many small probabilities. Use log-sum-exp for softmax logits.
+- At a twice-differentiable interior local maximum, the Hessian of $\ell_n$ is negative semidefinite. Negative definiteness is a sufficient local condition, not a necessary one.
+- Report whether the objective is a joint likelihood or a conditional likelihood.
 
 See also: [[thoughts/cross entropy]], [[thoughts/Logistic regression]], [[thoughts/regularization]], [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/finals]].

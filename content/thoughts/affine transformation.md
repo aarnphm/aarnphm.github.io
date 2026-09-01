@@ -1,8 +1,8 @@
 ---
 date: '2025-09-15'
-description: linear map plus translation preserving lines, parallelism, and convex combinations through matrix operations and homogeneous coordinates.
+description: A linear map plus translation expressed with homogeneous coordinates
 id: affine transformation
-modified: 2026-06-05 15:08:28 GMT-04:00
+modified: 2026-09-01 09:15:00 GMT-04:00
 tags:
   - seed
 title: affine transformation
@@ -12,9 +12,9 @@ title: affine transformation
 >
 > An affine transformation is a map of the form
 > $$\displaystyle f(x) = A\,x + b,$$
-> where $A\in\mathbb{R}^{m\times n}$ is a linear map and $b\in\mathbb{R}^m$ is a translation vector. Affine maps send lines to lines, preserve parallelism and ratios of lengths along a line, and preserve convex combinations. They generalize linear transformations by allowing translation.
+> where $A\in\mathbb{R}^{m\times n}$ is a linear map and $b\in\mathbb{R}^m$ is a translation vector. An affine map sends a line to a line or a point and preserves convex combinations. When $A$ is injective, it also preserves parallelism and ratios of lengths along a line. Translation makes affine maps more general than linear maps.
 
-Affines act on vectors in a vector space; see [[thoughts/Vector space]]. In $n$ dimensions, an affine map has $n^2+n$ degrees of freedom (entries of $A$ plus the $n$-vector $b$).
+An affine map acts on points. Choosing coordinate origins represents those points as vectors; see [[thoughts/Vector space]]. A map from $\mathbb R^n$ to $\mathbb R^m$ has $m(n+1)$ parameters: $mn$ entries in $A$ and $m$ entries in $b$. An affine endomap on $\mathbb R^n$ therefore has $n^2+n$ parameters.
 
 ## standard form
 
@@ -36,8 +36,8 @@ Then $\tilde{A}\,\tilde{x} = \begin{bmatrix} A x + b \\ 1 \end{bmatrix}$ encodes
 
 - Linearity on barycentric combinations: for scalars $\{\lambda_i\}$ with $\sum_i \lambda_i = 1$,
   $$\displaystyle f\Big(\sum_i \lambda_i x_i\Big) = \sum_i \lambda_i f(x_i).$$
-- Collinearity and parallelism are preserved; midpoints and centroids are preserved; general lengths and angles are not (unless $A$ is orthogonal and $\det A=\pm1$).
-- Area/volume scale by $|\det A|$; orientation is preserved if $\det A>0$ and flipped if $\det A<0$.
+- Affine maps preserve barycentric identities such as midpoints and centroids. Images of collinear points remain collinear. An injective affine map also preserves distinct parallel lines and ratios along a line. General lengths and angles can change.
+- For a square linear part $A$, $n$-dimensional volume scales by $|\det A|$. An invertible map preserves orientation when $\det A>0$ and reverses it when $\det A<0$.
 
 ## common 2d/3d examples
 
@@ -47,7 +47,7 @@ Then $\tilde{A}\,\tilde{x} = \begin{bmatrix} A x + b \\ 1 \end{bmatrix}$ encodes
 - Rotation (2D):
   $$\displaystyle A=\begin{bmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{bmatrix},\quad f(x)=Ax.$$
 - Shear (2D, $x$-shear by $k$): $A=\begin{bmatrix}1 & k\\ 0 & 1\end{bmatrix}$.
-- Reflection across a line/plane: $A$ is a Householder matrix $A=I-2uu^\top$ with $\|u\|=1$.
+- Reflection across the origin-centered hyperplane with unit normal $u$: $A=I-2uu^\top$. For the affine hyperplane $u^\top x=c$, the reflection is $f(x)=x-2(u^\top x-c)u$.
 
 ## algebraic structure
 
@@ -60,15 +60,15 @@ Given paired points $\{(x_i,y_i)\}_{i=1}^N$ with $x_i,y_i\in\mathbb{R}^n$, an af
 $$\displaystyle \min_{\tilde{A}\in\mathbb{R}^{n\times(n+1)}}\; \sum_i \big\|y_i - \tilde{A} \, \hat{x}_i\big\|_2^2,$$
 where $\tilde{A}=[A\;\;b]$.
 
-## invariants and non‑invariants
+## invariants and non-invariants
 
-- Preserved: straightness of lines, parallelism, ratios of lengths along a common line, convexity, barycentric coordinates, centroid of point sets.
-- Not preserved in general: angles, absolute lengths, circles/orthogonality (unless $A$ is a similarity/orthogonal transform), areas/volumes except up to factor $|\det A|$.
+- Every affine map preserves convexity, barycentric coordinates, and centroids. An injective affine map also preserves distinct parallel lines and ratios of lengths along a common line.
+- General affine maps can change angles, absolute lengths, circles, and orthogonality. An orthogonal $A$ preserves lengths and angles. A similarity $A=sQ$, with $s>0$ and $Q$ orthogonal, preserves angles and maps circles to circles while scaling all lengths by $s$.
 
 ## notes
 
-- When $A$ is orthogonal with $\det A=1$, $f$ is a rigid motion (rotation + translation) that preserves distances.
-- When $A=s R$ with $R$ orthogonal and $s>0$, $f$ is a similarity (uniform scaling + rotation + translation) that preserves angles and scales lengths by $s$.
+- When $A$ is orthogonal with $\det A=1$, $f$ is an orientation-preserving rigid motion that preserves distances.
+- When $A=sR$ with $R$ orthogonal and $s>0$, $f$ is a similarity. It preserves angles and scales lengths by $s$; $R$ may include a reflection.
 
 Affine shear + translation on a unit square ($A=\begin{bmatrix}1 & 0.6\\0 & 1\end{bmatrix}$, $b=\begin{bmatrix}1.2\\0.4\end{bmatrix}$):
 
@@ -83,8 +83,7 @@ Affine shear + translation on a unit square ($A=\begin{bmatrix}1 & 0.6\\0 & 1\en
   % original unit square S
   \filldraw[fill=blue!10,draw=blue,thick] (0,0) -- (1,0) -- (1,1) -- (0,1) -- cycle;
   \node[blue] at (0.5,1.2) {$S$};
-  % transformed square: cm = [[a,b],[c,d]] with translation (e,f)
-  \begin{scope}[cm={1,0.6,0,1,(1.2,0.4)}]
+  \begin{scope}[cm={1,0,0.6,1,(1.2,0.4)}]
     \filldraw[fill=red!10,draw=red,thick] (0,0) -- (1,0) -- (1,1) -- (0,1) -- cycle;
     \node[red] at (0.5,1.2) {$f(S)$};
   \end{scope}
@@ -108,9 +107,7 @@ Rotation + translation on a triangle ($A=R_\theta$, $\theta=25^\circ$, $b=(1.0,0
   \filldraw[fill=green!12,draw=green!60!black,thick]
     (0,0) -- (1.2,0.2) -- (0.3,1.1) -- cycle;
   \node[green!50!black] at (0.7,0.8) {$T$};
-  % rotated + translated triangle via cm = R_theta and shift b
-  % cm = [cos theta, -sin theta; sin theta, cos theta]
-  \begin{scope}[cm={0.9063,-0.4226,0.4226,0.9063,(1.0,0.6)}]
+  \begin{scope}[cm={0.9063,0.4226,-0.4226,0.9063,(1.0,0.6)}]
     \filldraw[fill=orange!15,draw=orange!70!black,thick]
       (0,0) -- (1.2,0.2) -- (0.3,1.1) -- cycle;
     \node[orange!70!black] at (0.7,0.8) {$f(T)$};

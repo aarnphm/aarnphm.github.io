@@ -4297,10 +4297,11 @@ test('renders Garmin stamina and potential stamina on one fixed percentage scale
   assert.equal(byClass(chart, 'tri-stamina-line--potential').length, 1)
   assert.equal(byClass(chart, 'tri-analysis-selection').length, 1)
   assert.equal(byClass(chart, 'tri-elev-cursor').length, 1)
-  assert.deepEqual(byClass(chart, 'tri-trace-reference-k').map(text), ['Garmin'])
+  assert.deepEqual(byClass(chart, 'tri-elev-d').map(text), ['stamina'])
+  assert.equal(byClass(chart, 'tri-trace-reference-k').length, 0)
 })
 
-test('moves Garden stamina provenance behind the estimated title', () => {
+test('keeps estimated stamina provenance in the title gloss', () => {
   const ride = detail({
     staminaTrace: {
       source: 'garden-estimate',
@@ -4318,9 +4319,9 @@ test('moves Garden stamina provenance behind the estimated title', () => {
 
   assert.ok(chart)
   const title = byClass(chart, 'tri-elev-d')[0]
-  assert.equal(text(title), 'stamina (estimate)')
+  assert.equal(text(title), 'stamina')
   assert.equal(title.properties.dataGloss, '')
-  assert.equal(title.properties.dataGlossDef, 'Garden estimate v1 · FTP 287 W · max hr 196 bpm')
+  assert.equal(title.properties.dataGlossDef, 'estimate · FTP 287 W · max hr 196 bpm')
   assert.equal(title.properties.tabIndex, 0)
   assert.equal(byClass(chart, 'tri-trace-reference-k').length, 0)
 })

@@ -1,4 +1,6 @@
 import fs from 'node:fs/promises'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
 import {
   emptyOuraDaily,
@@ -13,6 +15,7 @@ import {
 } from '../plugins/stores/oura'
 import { localDayStartUtcMs, localIsoDayOffset } from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
+import { calendarRefreshStart, syncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord } from '../util/type-guards'
 
@@ -20,7 +23,6 @@ const API = 'https://api.ouraring.com/v2/usercollection'
 const TOKEN_URL = 'https://api.ouraring.com/oauth/token'
 const CACHE_VERSION = 4
 const LOOKBACK_DAYS = 365
-const REFRESH_DAYS = 30
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
 const limiter = new AdaptiveRateLimiter(1500, 60_000)
 
@@ -231,15 +233,39 @@ async function fetchPersonalInfo(token: string): Promise<OuraUser> {
   return { id: str(data.id), email: str(data.email) }
 }
 
+export interface OuraRefreshRange {
+  start: string
+  end: string
+  endExclusive: string
+  heartRateStart: string
+}
+
+export function ouraRefreshRange(
+  stale: boolean,
+  refreshWindowDays: number,
+  now = Date.now(),
+): OuraRefreshRange {
+  return {
+    start: stale
+      ? localIsoDayOffset(-LOOKBACK_DAYS, now)
+      : calendarRefreshStart(refreshWindowDays, now),
+    end: localIsoDayOffset(0, now),
+    endExclusive: localIsoDayOffset(1, now),
+    heartRateStart: calendarRefreshStart(refreshWindowDays, now),
+  }
+}
+
 async function main(): Promise<void> {
   const prev = await readCache()
   const { access, refreshToken } = await resolveToken(prev)
   const stale = (prev?.version ?? 0) < CACHE_VERSION
   const now = Date.now()
-  const start = localIsoDayOffset(stale ? -LOOKBACK_DAYS : -REFRESH_DAYS, now)
-  const end = localIsoDayOffset(0, now)
-  const endExclusive = localIsoDayOffset(1, now)
-  const heartRateStart = localIsoDayOffset(-(REFRESH_DAYS - 1), now)
+  const refreshWindowDays = syncRefreshDays()
+  const { start, end, endExclusive, heartRateStart } = ouraRefreshRange(
+    stale,
+    refreshWindowDays,
+    now,
+  )
 
   const days: Record<string, OuraDaily> = {}
   if (prev?.days) for (const [k, v] of Object.entries(prev.days)) days[k] = { ...v }
@@ -372,7 +398,9 @@ async function main(): Promise<void> {
   )
 }
 
-main().catch(err => {
-  console.error(`[oura] sync failed: ${err instanceof Error ? err.message : err}`)
-  process.exit(1)
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main().catch(err => {
+    console.error(`[oura] sync failed: ${err instanceof Error ? err.message : err}`)
+    process.exit(1)
+  })
+}

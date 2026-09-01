@@ -209,7 +209,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-28 22:56:54 GMT-04:00
+modified: 2026-09-01 18:22:35 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1249,6 +1249,46 @@ activity: 19943165126
 fueling: 2400
 ```
 
+```tracking
+date: 2026-09-01
+activity: 19997132818
+fueling: 240
+```
+
+<!-- training plan start
+meta: calling with James
+date: 2026-09-01
+-->
+
+things go well -> let James know
+
+4-6 weeks: finding our feet, first few months really
+
+- be honest
+- inconvience and consistent and also let James know
+- fungible
+
+### goals
+
+> [!NOTE]
+>
+> IRONMAN Lanzarote 2027
+>
+> - dry, close to the sea
+> - lava
+
+find something 70.3 March or latest April
+
+Single sports events: Long Ride, 100 mi Sportif, Half-Marathon
+
+> cautious and take it slow.
+
+feedback, constant on TrainingPeak + WhatsApp
+
+EOD: Send voice notes, 30s, (swim great, bike tough, but didn't want to be there, did ok.)
+
+<!-- training plan end -->
+
 <!-- training plan start
 meta: equation references
 date: 2026-06-07
@@ -1477,7 +1517,7 @@ U_{\mathrm{start}}
 \right).
 $$
 
-The `garden-stamina-v1` coefficients were fitted against 71 Garmin native cycling traces from June 3 to August 26, 2026. Every trace had power and heart rate. The rides ranged from 10 minutes to 7.1 hours. On those traces, the potential estimate had 3.3 percentage points of trace RMSE. Current stamina had 5.4 points of trace RMSE. These errors measure agreement with Garmin output for the same rider. The graph labels every local result as `Garden estimate v1` because this method does not reproduce Garmin's private model and is not Wahoo data.
+The `garden-stamina-v1` coefficients were fitted against 71 Garmin native cycling traces from June 3 to August 26, 2026. Every trace had power and heart rate. The rides ranged from 10 minutes to 7.1 hours. On those traces, the potential estimate had 3.3 percentage points of trace RMSE. Current stamina had 5.4 points of trace RMSE. These errors measure agreement with Garmin output for the same rider. The graph identifies every local result as an estimate on hover because this method does not reproduce Garmin's private model and is not Wahoo data.
 
 ### tire pressure
 

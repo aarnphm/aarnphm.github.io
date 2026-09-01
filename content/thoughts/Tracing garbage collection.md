@@ -1,7 +1,7 @@
 ---
 created: '2025-09-18'
 date: '2025-09-27'
-description: Quick mental models and cross-language notes on tracing GC
+description: reachability, tri-color marking, and Go's concurrent collector
 id: Tracing garbage collection
 modified: 2026-06-05 15:08:06 GMT-04:00
 published: '2004-01-17'
@@ -12,119 +12,89 @@ title: tracing garbage collection
 ---
 
 > [!summary]
+>
+> tracing garbage collection keeps objects reachable from a root set and reclaims the rest. tri-color marking tracks the reached objects whose pointers still need scanning, and write barriers keep that state correct while the program changes pointers. Go uses precise, concurrent, non-generational, non-compacting mark-sweep. Go 1.26 made Green Tea the default marking implementation.[^go-runtime][^go126]
 
-- tracing gc keeps only objects reachable from the root set while tri-color invariants coordinate collector and mutators.[^tracing]
-- go uses a concurrent mark-sweep collector with mutator assists; go 1.25 adds the experimental "greentea" collector to accelerate small-object workloads.[^gc-guide][^go125]
-- rust avoids a builtin tracing gc, but crates like `zerogc` and `gc-arena` provide opt-in tracing heaps when ownership cannot express cycles.[^zerogc][^gcarena]
+## reachability
 
-## mental model
+Treat the heap as a directed graph. Objects are vertices and pointers are edges. Roots are references held in stacks, globals, and runtime data structures. The collector computes the transitive closure of the roots and reclaims vertices outside it.
 
-- roots comprise stacks, globals, and registered handles; reachability is the transitive closure from these anchors.[^tracing]
-- tri-color marking keeps white (candidate garbage), gray (scheduled), and black (scanned) sets disjoint to ensure progress during concurrent marking.[^ravenbrook]
-- practical collectors chase syntactic garbage; semantic garbage detection would require solving the halting problem, so systems accept liveness slack.[^tracing]
-
-## algorithm skeleton
-
-1. pause briefly to snapshot roots, then seed the gray set.[^go125]
-2. drain gray work queues by scanning references, shading newly discovered pointers, and honoring write barriers to maintain the invariant.[^ravenbrook]
-3. recycle the remaining white set via sweep lists or evacuation; optionally compact by generation or region depending on implementation goals.[^mark-sweep]
-
-```mermaid
-flowchart LR
-    Roots[[root set]] --> GrayQueue[gray worklist]
-    GrayQueue -->|scan| BlackPool((black set))
-    GrayQueue -->|discover| Discover[enqueue successor]
-    Discover --> GrayQueue
-    BlackPool -.write barrier hit.-> Barrier[barrier shade]
-    Barrier --> GrayQueue
-    WhitePool{{white set}} -.evacuate.-> FreeLists[(free lists)]
-    FreeLists -.reallocate.-> GrayQueue
-```
-
-## naive mark-and-sweep
-
-- stop-the-world traversal: mark phase walks the object graph from roots, setting per-object mark bits before sweeping unreachable blocks into free lists.[^mark-sweep][^javaiq]
-- complexity: proportional to heap size because both mark and sweep must touch every allocated slot each cycle, even if most objects are live.[^javaiq]
-- fragmentation: leaving survivors in place scatters free space, forcing additional allocators (segregated free lists, compaction) to recover contiguous regions.[^medium-frag]
-- strengths: handles cycles without reference counting overhead and keeps pointers stable because objects never move, which simplifies FFI and interior pointers.[^javaiq]
+Reachability overapproximates future use. A reachable object may never affect the program again, yet deciding that property in general would require predicting future execution. Tracing collectors therefore reclaim unreachable garbage and may retain semantic garbage.
 
 ## tri-color marking
 
-- invariant: never let a black object reference a white object; gray nodes act as a work set until every reachable object is promoted to black.[^tracing]
-- incremental safety: write barriers either shade the written pointer target or revert the source object to gray (incremental update) so concurrent mutators cannot violate the invariant.
-- scheduling: collectors interleave short marking steps with application execution, emptying gray queues gradually and greatly shrinking pause windows versus naive mark-sweep.[^tracing][^ravenbrook]
+The colors describe one marking cycle:
+
+- white objects have not been reached.
+- gray objects have been reached, but their outgoing pointers have not all been scanned.
+- black objects have been reached and scanned.
+
+The collector starts with gray roots. Scanning a gray object turns it black and shades each white successor gray. When the gray worklist is empty, every remaining white object is unreachable for that cycle.
 
 ```mermaid
 flowchart LR
-    snapshot[start] --> Snapshot[snapshot roots]
-    Snapshot --> MutatorAssist[mutator assist enqueue]
-    MutatorAssist --> Marker[scan gray node]
-    Marker --> BarrierCheck{barrier check}
-    BarrierCheck -->|shade successor| Marker
-    BarrierCheck -.invariant breach.-> Snapshot
-    Marker --> Sweeper[sweeper drains queue]
-    Sweeper --> collection[complete]
+    Roots[root jobs] --> Gray[gray worklist]
+    Gray --> Scan[scan pointers]
+    Scan --> Black[black object]
+    Scan -->|shade white successor| Gray
+    Barrier[pointer write barrier] --> Gray
+    Black --> Done{gray worklist empty}
+    Done --> Sweep[sweep white objects]
 ```
 
-## trade-offs to track
+An incremental collector must prevent the mutator from hiding a white object behind an already scanned black object. Write barriers record the relevant pointer changes. Go's current hybrid barrier shades both the overwritten pointer and the new pointer value during marking.[^go-runtime]
 
-- precise stack maps versus conservative scanning trade metadata overhead for false positives and collector safety.[^tracing]
-- write barriers impose per-mutation cost yet unlock incremental or concurrent cycles that cap pause times.[^gc-guide]
-- bump-pointer plus evacuation boosts locality; free-list sweeping avoids relocation but risks fragmentation and metadata churn.[^mark-sweep]
+## collector families
 
-## pause-time math
+Mark-sweep traces the live graph, then walks allocation units and returns unmarked storage to free lists. Marking costs $O(V_{\mathrm{live}}+E_{\mathrm{live}})$ for the reachable graph. Sweeping costs $O(H)$ over the heap units being swept.
 
-- define $H_t$ as the heap footprint at collection start, $L_t$ the live subgraph, and $B$ the aggregate scan bandwidth. Concurrent mark-sweep minimizes the stop-the-world envelope by bounding delay to stack scanning and root buffering.
+Evacuating collectors move live survivors into another region and reclaim the old region at once. Mark-compact collectors also move live objects, then leave free memory contiguous. Generation and region are policies for choosing which part of the heap to collect. They do not determine whether survivors move.
+
+## Go's collector
+
+The runtime describes Go's collector as precise, parallel, concurrent mark-sweep with a write barrier. It is non-generational and non-compacting.[^go-runtime] A cycle has two short global stops. The first enables the barrier and prepares root jobs. Mark workers and allocation assists scan roots and gray objects while the program runs. The second stop ends marking. Sweeping then proceeds concurrently and on demand during allocation.
+
+Go 1.25 introduced Green Tea as an experiment. Go 1.26 enabled it by default.[^go126] Green Tea keeps the same reachability semantics and reorganizes marking work around spans so small objects on the same page can be scanned together. This improves locality and CPU scaling when each page contains enough live objects that need scanning. The Go team reports a 10% to 40% reduction in GC overhead for programs that spend substantial time in the collector, with results depending on heap shape.[^green-tea]
+
+## pacing and memory
+
+The Go guide models one cycle's CPU cost as a fixed cost plus work proportional to the live heap and roots:
 
 $$
-T_{\text{stw}}(t) \approx \frac{|R_t|}{b_{\text{stack}}} + \frac{|U_t|}{b_{\text{handoff}}}
+C_{\mathrm{cycle}} \approx C_{\mathrm{fixed}} + c_{\mathrm{scan}}\left(H_{\mathrm{live}} + R_{\mathrm{roots}}\right).
 $$
 
-- here $R_t$ counts stack roots and $U_t$ counts unsafepointed writes buffered into the `grey` work queue; tightening safepoint density shrinks $U_t$ but taxes mutators with more frequent polls.
-- the concurrent tranche dominates overall GC budget, amortized over mutator progress: if $M_t$ bytes are allocated between safepoints and the runtime schedules assists with rate $\alpha$, the steady-state mutator share obeys
+`GOGC` controls how much new heap may accumulate before the next cycle:
 
 $$
-\Theta_{\text{mutator}} = \frac{\mu}{\mu + \alpha \cdot \frac{|L_t|}{B}}
+H_{\mathrm{target}}
+=
+H_{\mathrm{live}}
++
+\left(H_{\mathrm{live}}+R_{\mathrm{roots}}\right)
+\frac{\mathrm{GOGC}}{100}.
 $$
 
-- $\mu$ measures raw mutator throughput. Raising `GOGC` increases $|L_t|$, stretching the denominator and trading throughput for latency; `GOMEMLIMIT` caps $|H_t|$ thus bounding $|L_t|$ indirectly.
-- evacuation collectors minimize $T_{\text{stw}}$ by copying survivors: with promotion rate $p_t$ and region size $S$, the copy workload is approximately $p_t S$, so compaction remains linear but with a smaller constant when live ratios stay low.
+Under the guide's steady-state assumptions, doubling `GOGC` roughly doubles heap overhead and halves GC CPU cost. It changes the collection target, while the program determines the live set. `GOMEMLIMIT` adds a soft limit for runtime-managed memory. The runtime increases collection pressure near that limit, but it may exceed the limit to avoid spending more than about half of available CPU time in GC.[^go-guide]
 
-## go's collector
+Pause time needs measurement. Stack scanning, scheduler delays at safe points, mark termination, and operating-system effects can each dominate a particular workload. `runtime/metrics`, `GODEBUG=gctrace=1`, CPU profiles, and pause histograms expose different parts of that cost.
 
-- default collector is concurrent, non-generational mark-sweep with two short stop-the-world phases to flip into and out of GC.[^gc-guide]
-- mutator assists and background workers pace marking proportional to allocation, targeting the `GOGC` growth factor (default 100%).[^gc-guide]
-- `GOMEMLIMIT` constrains total runtime-managed memory; the runtime increases GC pressure when the soft cap is approached.[^runtime]
-- go 1.25 introduces the `GOEXPERIMENT=greenteagc` collector for denser marking of small objects and reports 10–40% GC overhead reductions in trials.[^go125]
+## Rust
 
-## rust landscape
+Rust uses ownership and deterministic destruction for its standard allocation model. Strong `Rc<T>` cycles can still leak because their reference counts never reach zero; `Weak<T>` breaks the usual parent-child cycle.[^rust-cycles]
 
-- rust's ownership and borrow checker give deterministic destruction, so the standard library omits a tracing collector.[^zerogc]
-- `zerogc` exposes tri-color tracing with safepoints driven by the borrower; collection occurs only at explicit `safepoint` calls to avoid runtime overhead between cycles.[^zerogc]
-- `gc-arena` builds single-root arenas with branded lifetimes so all traced pointers stay inside the arena; collection is incremental mark-sweep tuned for low pause time.[^gcarena]
+Programs that need traced cyclic subgraphs can opt into a separate heap. `zerogc` exposes explicit safepoints through an implementation-independent API.[^zerogc] `gc-arena` confines traced pointers to a branded arena with one root and uses incremental mark-sweep.[^gcarena] These crates collect only the objects placed in their heaps. Ordinary Rust allocation still uses ownership and deterministic destruction.
 
-## prompts for further study
+[^go-runtime]: "Garbage collector," Go runtime source. https://go.dev/src/runtime/mgc.go
 
-- measure pause histograms comparing go's default collector with the greentea experiment under mixed allocation patterns.
-- prototype a rust arena for cyclic subsystems while leaving acyclic data under ownership semantics.
-- profile `GOGC` and `GOMEMLIMIT` sweeps on production-like workloads to map throughput versus latency knees.
+[^go126]: "Go 1.26 release notes: new garbage collector." https://go.dev/doc/go1.26#new-garbage-collector
 
-[^tracing]: "tracing garbage collection." wikipedia, accessed 27 september 2025. https://en.wikipedia.org/wiki/Tracing_garbage_collection.
+[^green-tea]: Michael Knyszek and Austin Clements, "The Green Tea Garbage Collector," 2025. https://go.dev/blog/greenteagc
 
-[^gc-guide]: "a guide to the go garbage collector." go.dev/doc/gc-guide, accessed 27 september 2025.
+[^go-guide]: "A Guide to the Go Garbage Collector." https://go.dev/doc/gc-guide
 
-[^go125]: "go 1.25 release notes." go.dev/doc/go1.25, accessed 27 september 2025.
+[^rust-cycles]: "Reference Cycles Can Leak Memory," The Rust Programming Language. https://doc.rust-lang.org/book/ch15-06-reference-cycles.html
 
-[^zerogc]: "zerogc crate documentation." docs.rs/zerogc, accessed 27 september 2025.
+[^zerogc]: `zerogc` crate documentation. https://docs.rs/zerogc/latest/zerogc/
 
-[^gcarena]: "gc-arena crate." lib.rs/crates/gc-arena, accessed 27 september 2025.
-
-[^mark-sweep]: "mark-and-sweep (garbage collection algorithm)." java iq, accessed 27 september 2025. https://sandeepin.wordpress.com/2011/12/11/mark-and-sweep-garbage-collection-algorithm/.
-
-[^javaiq]: "garbage collector algorithms explained." medium, 10 august 2025. https://medium.com/%40dahemisankalpana/garbage-collector-algorithms-explained-776bfc8a6e88.
-
-[^medium-frag]: "garbage collection demystified: mark and sweep explained visually." notes.suhaib.in, accessed 27 september 2025. https://notes.suhaib.in/docs/tech/dsa/garbage-collection-demystified-mark-and-sweep-explained-visually/.
-
-[^ravenbrook]: "tri-color marking." memory management glossary, ravenbrook mps 1.112 manual, accessed 27 september 2025. https://www.ravenbrook.com/project/mps/version/1.112/manual/html/glossary/t.html.
-
-[^runtime]: "runtime package." pkg.go.dev/runtime, accessed 27 september 2025.
+[^gcarena]: `gc-arena` repository. https://github.com/kyren/gc-arena

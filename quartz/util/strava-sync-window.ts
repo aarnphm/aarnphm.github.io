@@ -1,8 +1,7 @@
 import type { RawStravaActivity } from '../plugins/stores/strava'
+import { DEFAULT_SYNC_REFRESH_WINDOW_DAYS } from './sync-refresh-window'
 
 const DAY_SECONDS = 86_400
-
-export const DEFAULT_STRAVA_REFRESH_WINDOW_DAYS = 30
 
 export interface StravaActivityReconciliation {
   activities: Record<string, RawStravaActivity>
@@ -12,7 +11,7 @@ export interface StravaActivityReconciliation {
 export function stravaFetchAfter(
   lastActivityStart: number | null | undefined,
   stale: boolean,
-  refreshWindowDays = DEFAULT_STRAVA_REFRESH_WINDOW_DAYS,
+  refreshWindowDays = DEFAULT_SYNC_REFRESH_WINDOW_DAYS,
 ): number {
   if (stale) return 0
   if (lastActivityStart == null || !Number.isFinite(lastActivityStart) || lastActivityStart <= 0)

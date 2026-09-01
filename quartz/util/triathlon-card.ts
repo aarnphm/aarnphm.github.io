@@ -2313,18 +2313,16 @@ export const buildStaminaChart = <N>(
     f.el(
       'span',
       'tri-elev-d',
-      `${triText(f.presentation.locale, 'stamina')}${estimatedTrace ? ` (${triText(f.presentation.locale, 'estimate')})` : ''}`,
+      triText(f.presentation.locale, 'stamina'),
       estimatedTrace
         ? {
             'data-gloss': '',
-            'data-gloss-def': `${triText(f.presentation.locale, 'Garden estimate v1')} · FTP ${estimatedTrace.ftpWatts} W · ${triText(f.presentation.locale, 'max hr')} ${estimatedTrace.maxHeartRateBpm} bpm`,
+            'data-gloss-def': `${triText(f.presentation.locale, 'estimate')} · FTP ${estimatedTrace.ftpWatts} W · ${triText(f.presentation.locale, 'max hr')} ${estimatedTrace.maxHeartRateBpm} bpm`,
             tabindex: '0',
           }
         : undefined,
     ),
   )
-  if (d.staminaTrace?.source === 'garmin')
-    f.add(cap, f.el('span', 'tri-elev-range tri-trace-reference-k', 'Garmin'))
   for (const kind of ['current', 'potential'] as const) {
     const item = f.el('span', `tri-stamina-legend-item tri-stamina-legend-item--${kind}`)
     f.add(

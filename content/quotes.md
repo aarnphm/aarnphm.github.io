@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-06-26 12:10:43 GMT-04:00
+modified: 2026-09-01 12:27:50 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> We have to continually be jumping off cliffs and developing our wings on the way down.
+>
+> Kurt Vonnegut
 
 > Literally from a hospital bed, he was telling me bugs.
 >

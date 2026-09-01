@@ -5,6 +5,7 @@ import {
   activityBridgeReceiptKey,
   emptyActivityBridgeLedger,
   planActivityBridge,
+  planTrainingPeaksBackfill,
   upsertActivityBridgeReceipt,
   type ActivityBridgeGarminActivity,
   type ActivityBridgeReceipt,
@@ -23,6 +24,7 @@ function strava(
     name: `Ride ${id}`,
     sportType: 'Ride',
     startDate: '2026-08-27T12:00:00.000Z',
+    startDateLocal: '2026-08-27T08:00:00',
     distanceM: 40_000,
     movingTimeS: 5_000,
     elapsedTimeS: 5_200,
@@ -36,8 +38,10 @@ function garmin(
 ): ActivityBridgeGarminActivity {
   return {
     id,
+    name: `Garmin ${id}`,
     sport: 'bike',
     startDate: '2026-08-27T12:01:00.000Z',
+    startDateLocal: '2026-08-27T08:01:00',
     distanceM: 40_100,
     movingTimeS: 5_010,
     elapsedTimeS: 5_210,
@@ -51,9 +55,11 @@ function wahoo(
 ): ActivityBridgeWahooActivity {
   return {
     id,
+    name: `Wahoo ${id}`,
     workoutId: Number(id.replace(/\D/g, '')),
     sport: 'bike',
     startDate: '2026-08-27T12:01:00.000Z',
+    startDateLocal: '2026-08-27T08:01:00',
     distanceM: 40_100,
     movingTimeS: 5_010,
     elapsedTimeS: 5_210,
@@ -233,5 +239,114 @@ test('nonterminal Wahoo upload receipts remain resumable', () => {
       ledger,
     ).map(plan => plan.source.id),
     ['connect:1', 'connect:2'],
+  )
+})
+
+test('plans direct Garmin TrainingPeaks exports without requiring a Strava match', () => {
+  const plans = planTrainingPeaksBackfill(
+    {
+      strava: [],
+      garmin: [
+        garmin('connect:1'),
+        garmin('connect:2', {
+          name: 'Evening run',
+          sport: 'run',
+          startDate: '2026-08-28T02:01:00.000Z',
+          startDateLocal: '2026-08-27T22:01:00',
+        }),
+        garmin('connect:3', { sport: null }),
+      ],
+      wahoo: [],
+    },
+    'garmin',
+  )
+
+  assert.deepEqual(
+    plans.map(plan => ({
+      sourceProvider: plan.sourceProvider,
+      sourceActivityId: plan.source.id,
+      localDate: plan.localDate,
+      title: plan.title,
+    })),
+    [
+      {
+        sourceProvider: 'garmin',
+        sourceActivityId: 'connect:2',
+        localDate: '2026-08-27',
+        title: 'Evening run',
+      },
+      {
+        sourceProvider: 'garmin',
+        sourceActivityId: 'connect:1',
+        localDate: '2026-08-27',
+        title: 'Garmin connect:1',
+      },
+    ],
+  )
+})
+
+test('plans direct Strava TrainingPeaks exports for triathlon sports', () => {
+  const plans = planTrainingPeaksBackfill(
+    {
+      strava: [
+        strava('1'),
+        strava('2', { sportType: 'TrailRun', startDateLocal: '2026-08-28T08:00:00' }),
+        strava('3', { sportType: 'WeightTraining' }),
+      ],
+      garmin: [garmin('connect:1')],
+      wahoo: [wahoo('wahoo:1')],
+    },
+    'strava',
+  )
+
+  assert.deepEqual(
+    plans.map(plan => ({ id: plan.source.id, sport: plan.sport, localDate: plan.localDate })),
+    [
+      { id: '2', sport: 'run', localDate: '2026-08-28' },
+      { id: '1', sport: 'bike', localDate: '2026-08-27' },
+    ],
+  )
+})
+
+test('plans direct Wahoo TrainingPeaks exports from original FIT activities', () => {
+  const plans = planTrainingPeaksBackfill(
+    {
+      strava: [],
+      garmin: [],
+      wahoo: [
+        wahoo('wahoo:1'),
+        wahoo('wahoo:2', {
+          name: 'Evening run',
+          sport: 'run',
+          startDate: '2026-08-28T02:01:00.000Z',
+          startDateLocal: '2026-08-27T22:01:00',
+        }),
+        wahoo('wahoo:3', { sport: null }),
+      ],
+    },
+    'wahoo',
+  )
+
+  assert.deepEqual(
+    plans.map(plan => ({
+      sourceProvider: plan.sourceProvider,
+      sourceActivityId: plan.source.id,
+      localDate: plan.localDate,
+      title: plan.title,
+    })),
+    [
+      {
+        sourceProvider: 'wahoo',
+        sourceActivityId: 'wahoo:2',
+        localDate: '2026-08-27',
+        title: 'Evening run',
+      },
+      {
+        sourceProvider: 'wahoo',
+        sourceActivityId: 'wahoo:1',
+        localDate: '2026-08-27',
+        title: 'Wahoo wahoo:1',
+      },
+    ],
   )
 })
