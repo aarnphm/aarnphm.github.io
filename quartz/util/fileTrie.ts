@@ -164,7 +164,7 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
    */
   getFolderPaths() {
     return this.entries()
-      .filter(([_, node]) => node.isFolder)
-      .map(([path, _]) => path)
+      .filter(([, node]) => node.isFolder)
+      .map(([path]) => path)
   }
 }

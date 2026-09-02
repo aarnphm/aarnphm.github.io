@@ -13,30 +13,26 @@ see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/timeseries.
 ## continuous compounding
 
 $$
-S(t) = S_{0}\exp^{rt}
+S(t) = S_0 e^{rt}
 $$
 
-Given the price $P=F \exp^{-rt}$, over period of c from certain interval:
+For a future cash flow $F$ paid at time $t$, continuous discounting gives $P=F e^{-rt}$. For cash flows $c_i$ paid at times $t_i$:
 
 $$
-P = \sum_{c=1}^{n} c_i \exp^{-r t_i}
+P = \sum_{i=1}^{n} c_i e^{-r t_i}
 $$
 
 ## forecasting
 
 see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/beer_sales_analysis.py]]
 
-> [!abstract] inverse-square law
->
-> $\text{intensity} \propto \frac{1}{\text{distance}^{2}}$
-
-forecast errors
+### forecast error
 
 $$
-\text{e}[t] = \text{Error}[t] = F[t] - D[t]
+e_t = F_t - D_t
 $$
 
-where $F$ is the forecast, $D$ is the actual demand
+where $F_t$ is the forecast and $D_t$ is the actual demand.
 
 ![[thoughts/mean-squared error]]
 
@@ -48,11 +44,11 @@ where $F$ is the forecast, $D$ is the actual demand
    $$
    F_t = D_{t-1}
    $$
-2. Moving-Average approach
+2. moving average approach
    $$
    \text{MA}(n) = F_t = \frac{1}{n}\sum_{i=1}^{n}D_{t-i}
    $$
-3. exponential-smoothing
+3. exponential smoothing
 
    $$
    \begin{aligned}
@@ -62,17 +58,17 @@ where $F$ is the forecast, $D$ is the actual demand
    \end{aligned}
    $$
 
-   generalisation model:
+   expanded form:
 
    $$
    F_t = \sum_{i=0}^{\infty} \alpha (1-\alpha)^{i} D_{t-i-1}
    $$
 
-4. double exponential-smoothing
-   see also: [[thoughts/pdfs/Holt-1957-Republished-IJF-2004.pdf]]
-   - uses for trend, certain moving items
+4. double exponential smoothing
+   see also: [[thoughts/papers/Holt-1957-Republished-IJF-2004.pdf]]
+   - used when the series has a trend
    - ![[thoughts/Holt linear]]
-5. Seasonality
+5. seasonality
 
 ## decompositions of time series
 
@@ -90,16 +86,20 @@ see also: [[thoughts/university/twenty-five-twenty-six/commerce-4qa3/trend_regre
 
 ## monitor forecast
 
-Running Sum of Forecast Error:
+the running sum of forecast error is:
 
 $$
-\operatorname{RSFE}_{t} = \sum_{i=1}^{t} e_i, e_i = F_i - D_i
+\operatorname{RSFE}_t = \sum_{i=1}^{t} e_i
 $$
 
-updated MAD is $\text{updated }\operatorname{MAD}_t =\frac{\sum_{i=1}^{t} |e_i|}{t}$
-
-hence the tracking signals is:
+The updated mean absolute deviation is:
 
 $$
-\operatorname{TS}_t = \frac{\operatorname{RSFE}_t}{\text{updated } \operatorname{MAD}_t}
+\operatorname{MAD}_t = \frac{1}{t}\sum_{i=1}^{t}\lvert e_i\rvert
+$$
+
+The tracking signal is:
+
+$$
+\operatorname{TS}_t = \frac{\operatorname{RSFE}_t}{\operatorname{MAD}_t}
 $$

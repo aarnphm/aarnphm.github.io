@@ -209,7 +209,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-09-01 18:22:35 GMT-04:00
+modified: 2026-09-01 20:53:11 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1262,7 +1262,11 @@ date: 2026-09-01
 
 things go well -> let James know
 
+if things don't go well -> also let James know
+
 4-6 weeks: finding our feet, first few months really
+
+note for self:
 
 - be honest
 - inconvience and consistent and also let James know
@@ -1378,7 +1382,7 @@ The activity-card values use these ordered sources:
 3. Exercise load uses Garmin's native value when it exists.
 4. Missing exercise load is calculated from Garmin IF when Garmin supplied IF, otherwise from the locally calculated IF.
 5. Garmin aerobic and anaerobic training effect scores, messages, and labels take priority when they exist.
-6. When Garmin has no training effect details, bike, run, and swim activities use a local estimate. The aerobic score uses Strava relative effort when it exists, then exercise load. The anaerobic score uses the stronger result from upper heart rate zones and short high intensity intervals.
+6. When Garmin has no training effect details, bike, run, and swim activities use a local estimate. The aerobic score uses Strava relative effort when it exists, then exercise load. The anaerobic score uses the stronger result from upper heart rate zones and short high intensity intervals. The training effect heading exposes the selected inputs on hover and keyboard focus.
 
 The analytics load that drives CTL, ATL, TSB, ACWR, and weekly load is separate from the exercise-load number shown on an activity card. Swim, bike, and run use grade-adjusted pace and duration. Strength and yoga use threshold-normalized heart-rate TRIMP when average exercise heart rate and resting, threshold, and maximum heart rate are available. A strength or yoga activity without valid heart-rate inputs contributes zero load. Pace and volume calibration remains scoped to swim, bike, and run.
 
@@ -1409,36 +1413,46 @@ $$
 \end{cases}
 $$
 
-For a calculated ride, the site converts the complete power stream to one sample per second and smooths power over five seconds. A continuous effort counts when its smoothed average stays above $105\%$ of FTP for 10 to 120 seconds. Each effort receives a weight of zero at $105\%$ of FTP and a weight of one at $130\%$ of FTP. The power interval load is
+For a calculated ride, the site converts the complete power stream to one sample per second and smooths power over five seconds. It uses the calendar-year critical power estimate when available, then the six-week estimate. The model supplies critical power $CP$ and the finite work capacity above critical power $W'$. A continuous effort $i$ is eligible when the smoothed power stays above $CP$ for 10 to 120 seconds. Its share of $W'$ is
 
 $$
-L_{\mathrm{power}}
+q_i
 =
-\sum_{i\in\mathcal I}
-t_i
-\operatorname{clamp}
-\left(
-\frac{\bar P_i/\mathrm{FTP}-1.05}{0.25},
-0,
-1
-\right),
-\qquad
-10\le t_i\le120.
+\frac{1}{W'}
+\sum_{t\in i}
+\max\left(0,\bar P_t-CP\right).
 $$
 
-The anaerobic estimate uses the larger score from the power interval load and the total time in the upper two heart rate zones:
+An effort starts contributing after it spends $10\%$ of $W'$. The session stimulus discounts accumulated road surges by moving duration $T$ in hours:
+
+$$
+S
+=
+\frac{
+\displaystyle\sum_{i\in\mathcal I}
+\max\left(0,\frac{q_i-0.1}{0.9}\right)
+}{
+\max(1,T)^{0.6}
+},
+\qquad
+\mathrm{TE}_{\mathrm{power}}
+=
+5\left(1-e^{-0.24S}\right).
+$$
+
+The anaerobic estimate uses the larger score from the power stimulus and the total time in the upper two heart rate zones:
 
 $$
 \mathrm{TE}_{\mathrm{anaerobic}}
 =
 \max
 \left(
-s_{\mathrm{interval}}(L_{\mathrm{power}}),
+\mathrm{TE}_{\mathrm{power}},
 s_{\mathrm{HR}}(t_{Z4}+t_{Z5})
 \right).
 $$
 
-Run and swim estimates use the same interval scale with pace efforts. These local scores remain estimates because the site does not reproduce Garmin's EPOC model or training history.
+The power branch stays unavailable when no fitted $CP$ and $W'$ profile exists. Run and swim estimates use the existing interval scale with pace efforts. These local scores remain estimates because the site does not reproduce Garmin's EPOC model or training history.
 
 ### cycling stamina
 

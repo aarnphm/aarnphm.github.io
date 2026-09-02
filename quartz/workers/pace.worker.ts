@@ -1,8 +1,6 @@
 import { PaceModel, ensureBackend, parseManifest, parseSafetensors } from '../util/pace-model'
 import { isRecord, readString } from '../util/type-guards'
 
-export {}
-
 type LoadMessage = { type: 'load'; base: string; family: string }
 type PredictMessage = { type: 'predict'; id: number; raw: number[]; presence: number[] }
 type WorkerMessage = LoadMessage | PredictMessage

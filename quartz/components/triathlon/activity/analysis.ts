@@ -300,6 +300,10 @@ export const linkActivityAnalysis = (
     right.id != null &&
     left.kind === right.kind &&
     left.id === right.id
+  const setPreviewed = (range: ActivityAnalysisRange | null): void => {
+    for (const candidate of ranges)
+      candidate.button.toggleAttribute('data-analysis-preview', sameRange(candidate, range))
+  }
   const setLocked = (range: ActivityAnalysisRange | null): void => {
     locked = range
     if (range?.kind && range.id) {
@@ -327,6 +331,7 @@ export const linkActivityAnalysis = (
     range.button.addEventListener(
       'pointerenter',
       () => {
+        setPreviewed(range)
         showRange(range)
         showReadout(range)
       },
@@ -335,6 +340,7 @@ export const linkActivityAnalysis = (
     range.button.addEventListener(
       'pointerleave',
       () => {
+        setPreviewed(null)
         showLocked()
         showReadout(locked)
       },
@@ -343,6 +349,7 @@ export const linkActivityAnalysis = (
     range.button.addEventListener(
       'focus',
       () => {
+        setPreviewed(range)
         showRange(range)
         showReadout(range)
       },
@@ -352,6 +359,7 @@ export const linkActivityAnalysis = (
       'blur',
       () => {
         if (range.button.matches(':hover')) return
+        setPreviewed(null)
         showLocked()
         showReadout(locked)
       },
@@ -415,17 +423,22 @@ export const linkActivityAnalysis = (
   setLocked(locked)
   const controller: ActivityAnalysisController = {
     preview: range => {
+      setPreviewed(range)
       showRange(range)
       showReadout(range)
     },
     restore: () => {
+      setPreviewed(null)
       showLocked()
       showReadout(locked)
     },
     lock: setLocked,
     clear: () => setLocked(null),
     hasLocked: () => locked != null,
-    dispose: () => listeners.abort(),
+    dispose: () => {
+      setPreviewed(null)
+      listeners.abort()
+    },
   }
   return controller
 }

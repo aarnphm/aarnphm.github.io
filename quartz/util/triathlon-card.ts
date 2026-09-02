@@ -353,6 +353,7 @@ export const moreStatRows = (
       'wind',
       `${d.windKph} km/h${d.windDir ? ` ${d.windDir}` : ''}${d.windGustKph != null ? ` / gust ${d.windGustKph}` : ''}`,
     ])
+  if (d.computer) rows.push(['computer', COMPUTER_LABEL[d.computer]])
   return rows
 }
 
@@ -3021,6 +3022,182 @@ const analysisRangeMetrics = (
   return values
 }
 
+type CyclingWorkoutLap = { range: ActivityAnalysisRange; index: number; powerWatts: number | null }
+
+const cyclingWorkoutLaps = (d: StravaActivityDetail): CyclingWorkoutLap[] =>
+  validAnalysisRanges(d)
+    .filter(range => range.kind === 'lap')
+    .sort((left, right) => left.startElapsedS - right.startElapsedS)
+    .map((range, index) => ({
+      range,
+      index: index + 1,
+      powerWatts:
+        range.averageWatts != null && Number.isFinite(range.averageWatts) && range.averageWatts >= 0
+          ? range.averageWatts
+          : null,
+    }))
+
+const cyclingWorkoutElevationPath = (
+  d: StravaActivityDetail,
+  totalElapsedS: number,
+): string | null => {
+  const route = d.route.filter(
+    point => Number.isFinite(point.elapsedS) && Number.isFinite(point.alt),
+  )
+  if (route.length < 2 || totalElapsedS <= 0) return null
+  const minAltitude = Math.min(...route.map(point => point.alt))
+  const maxAltitude = Math.max(...route.map(point => point.alt))
+  const altitudeSpan = Math.max(1, maxAltitude - minAltitude)
+  const points = route
+    .map(point => {
+      const x = Math.max(0, Math.min(100, (point.elapsedS / totalElapsedS) * 100))
+      const y = 100 - ((point.alt - minAltitude) / altitudeSpan) * 100
+      return `L ${x.toFixed(3)} ${y.toFixed(3)}`
+    })
+    .join(' ')
+  return `M 0 100 ${points} L 100 100 Z`
+}
+
+export const buildCyclingWorkoutAnalysis = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  showTitle = true,
+): N | null => {
+  if (d.sport !== 'bike' || d.route.length < 2) return null
+  const laps = cyclingWorkoutLaps(d)
+  const poweredLaps = laps.filter(
+    (lap): lap is CyclingWorkoutLap & { powerWatts: number } => lap.powerWatts != null,
+  )
+  if (laps.length === 0 || poweredLaps.length === 0) return null
+
+  const routeEndElapsedS = d.route.at(-1)?.elapsedS ?? 0
+  const totalElapsedS = Math.max(routeEndElapsedS, ...laps.map(lap => lap.range.endElapsedS))
+  const elevationPath = cyclingWorkoutElevationPath(d, totalElapsedS)
+  if (!elevationPath) return null
+
+  const highestPowerWatts = Math.max(...poweredLaps.map(lap => lap.powerWatts))
+  const lowestPowerWatts = Math.min(...poweredLaps.map(lap => lap.powerWatts))
+  const weightedPower = poweredLaps.reduce(
+    (summary, lap) => {
+      const durationS =
+        lap.range.movingTimeS != null &&
+        Number.isFinite(lap.range.movingTimeS) &&
+        lap.range.movingTimeS > 0
+          ? lap.range.movingTimeS
+          : lap.range.durationS
+      return {
+        wattsSeconds: summary.wattsSeconds + lap.powerWatts * durationS,
+        durationS: summary.durationS + durationS,
+      }
+    },
+    { wattsSeconds: 0, durationS: 0 },
+  )
+  const averagePowerWatts = weightedPower.wattsSeconds / weightedPower.durationS
+  const step = niceStep(Math.max(1, highestPowerWatts), 4)
+  const powerMax = Math.max(step, Math.ceil(highestPowerWatts / step) * step)
+  const ticks = niceTicks(0, powerMax, 4).filter(value => value > 0)
+
+  const wrap = f.el('section', 'tri-workout tri-cycling-workout', undefined, {
+    'aria-label': 'Cycling workout analysis',
+  })
+  const head = f.el('div', 'tri-workout-head tri-cycling-workout-head')
+  const stats = f.el('div', 'tri-workout-stats tri-cycling-workout-stats')
+  f.add(
+    stats,
+    f.el('span', undefined, `highest ${Math.round(highestPowerWatts)} W`),
+    f.el('span', undefined, `avg ${Math.round(averagePowerWatts)} W`),
+    f.el('span', undefined, `lowest ${Math.round(lowestPowerWatts)} W`),
+  )
+  if (showTitle)
+    f.add(head, f.el('span', 'tri-workout-title tri-cycling-workout-title', 'workout analysis'))
+  f.add(head, stats)
+
+  const chart = f.el('div', 'tri-workout-chart tri-cycling-workout-chart')
+  const yAxis = f.el('div', 'tri-workout-y-axis tri-cycling-workout-y-axis', undefined, {
+    'aria-hidden': 'true',
+  })
+  const viewport = f.el('div', 'tri-workout-viewport tri-cycling-workout-viewport')
+  const plot = f.el('div', 'tri-workout-plot tri-cycling-workout-plot', undefined, {
+    'data-site-cursor-line': '',
+    style: `--tri-cycling-workout-laps:${laps.length}`,
+  })
+  const elevation = f.svg('svg', {
+    class: 'tri-cycling-workout-elevation',
+    viewBox: '0 0 100 100',
+    preserveAspectRatio: 'none',
+    'aria-hidden': 'true',
+  })
+  f.add(elevation, f.svg('path', { class: 'tri-cycling-workout-elevation-area', d: elevationPath }))
+  const grid = f.el('div', 'tri-workout-grid tri-cycling-workout-grid', undefined, {
+    'aria-hidden': 'true',
+  })
+  for (const tick of ticks) {
+    const top = 100 - (tick / powerMax) * 100
+    f.add(
+      yAxis,
+      f.el('span', 'tri-workout-y-tick tri-cycling-workout-y-tick', axisNumber(tick, step), {
+        style: `top:${top.toFixed(3)}%`,
+      }),
+    )
+    f.add(
+      grid,
+      f.el('span', 'tri-workout-gridline tri-cycling-workout-gridline', undefined, {
+        style: `top:${top.toFixed(3)}%`,
+      }),
+    )
+  }
+  f.add(yAxis, f.el('span', 'tri-cycling-workout-y-unit', 'W'))
+
+  const averageLine = f.el('span', 'tri-cycling-workout-average-line', undefined, {
+    'aria-hidden': 'true',
+    style: `top:${(100 - (averagePowerWatts / powerMax) * 100).toFixed(3)}%`,
+  })
+  const annotations = f.el('div', 'tri-cycling-workout-annotations', undefined, {
+    'aria-hidden': 'true',
+  })
+  f.add(annotations, averageLine)
+  const bars = f.el('div', 'tri-cycling-workout-bars')
+  for (const lap of laps) {
+    const metrics = analysisRangeMetrics(f.presentation, d, lap.range)
+    const attrs = analysisRangeAttrs(lap.range)
+    const start = Math.max(0, Math.min(100, (lap.range.startElapsedS / totalElapsedS) * 100))
+    const end = Math.max(start, Math.min(100, (lap.range.endElapsedS / totalElapsedS) * 100))
+    const power = lap.powerWatts ?? 0
+    attrs['aria-pressed'] = 'false'
+    attrs['aria-label'] = `${lap.range.label}, ${metrics.join(', ')}`
+    attrs.style = `--tri-cycling-workout-start:${start.toFixed(3)}%;--tri-cycling-workout-width:${Math.max(0, end - start).toFixed(3)}%;--tri-cycling-workout-height:${((power / powerMax) * 100).toFixed(3)}%`
+    const button = f.el(
+      'button',
+      `tri-cycling-workout-lap${lap.powerWatts == null ? ' tri-cycling-workout-lap--unavailable' : ''}`,
+      undefined,
+      attrs,
+    )
+    const column = f.el('span', 'tri-cycling-workout-column', undefined, { 'aria-hidden': 'true' })
+    f.add(
+      column,
+      f.el('span', 'tri-cycling-workout-bar', undefined, { 'aria-hidden': 'true' }),
+      f.el(
+        'span',
+        'tri-cycling-workout-power',
+        lap.powerWatts == null ? '—' : `${Math.round(lap.powerWatts)} W`,
+        { 'aria-hidden': 'true' },
+      ),
+    )
+    f.add(
+      button,
+      column,
+      f.el('span', 'tri-cycling-workout-label', `${lap.index}`, { 'aria-hidden': 'true' }),
+    )
+    f.add(bars, button)
+  }
+
+  f.add(plot, elevation, grid, bars, annotations)
+  f.add(viewport, plot)
+  f.add(chart, yAxis, viewport)
+  f.add(wrap, head, chart)
+  return wrap
+}
+
 type RunLapSplit = {
   range: ActivityAnalysisRange
   index: number
@@ -3176,11 +3353,11 @@ export const buildRunWorkoutAnalysis = <N>(
   const fastestPaceS = Math.min(...laps.map(lap => lap.paceS))
   const slowestPaceS = Math.max(...laps.map(lap => lap.paceS))
 
-  const wrap = f.el('section', 'tri-run-workout', undefined, {
+  const wrap = f.el('section', 'tri-workout tri-run-workout', undefined, {
     'aria-label': 'Run workout analysis',
   })
-  const head = f.el('div', 'tri-run-workout-head')
-  const stats = f.el('div', 'tri-run-workout-stats')
+  const head = f.el('div', 'tri-workout-head tri-run-workout-head')
+  const stats = f.el('div', 'tri-workout-stats tri-run-workout-stats')
   f.add(
     stats,
     f.el('span', undefined, `fastest ${clock(fastestPaceS)} ${paceUnit}`),
@@ -3191,26 +3368,36 @@ export const buildRunWorkoutAnalysis = <N>(
     ),
     f.el('span', undefined, `slowest ${clock(slowestPaceS)} ${paceUnit}`),
   )
-  if (showTitle) f.add(head, f.el('span', 'tri-run-workout-title', 'workout analysis'))
+  if (showTitle)
+    f.add(head, f.el('span', 'tri-workout-title tri-run-workout-title', 'workout analysis'))
   f.add(head, stats)
 
-  const chart = f.el('div', 'tri-run-workout-chart')
-  const yAxis = f.el('div', 'tri-run-workout-y-axis', undefined, { 'aria-hidden': 'true' })
-  const viewport = f.el('div', 'tri-run-workout-viewport')
-  const plot = f.el('div', 'tri-run-workout-plot', undefined, {
+  const chart = f.el('div', 'tri-workout-chart tri-run-workout-chart')
+  const yAxis = f.el('div', 'tri-workout-y-axis tri-run-workout-y-axis', undefined, {
+    'aria-hidden': 'true',
+  })
+  const viewport = f.el('div', 'tri-workout-viewport tri-run-workout-viewport')
+  const plot = f.el('div', 'tri-workout-plot tri-run-workout-plot', undefined, {
+    'data-site-cursor-line': '',
     style: `--tri-run-workout-laps:${laps.length}`,
   })
-  const grid = f.el('div', 'tri-run-workout-grid', undefined, { 'aria-hidden': 'true' })
+  const grid = f.el('div', 'tri-workout-grid tri-run-workout-grid', undefined, {
+    'aria-hidden': 'true',
+  })
   const bars = f.el('div', 'tri-run-workout-bars')
   for (const tick of paceAxis.ticks) {
     const top = ((tick - paceAxis.min) / paceSpan) * 100
     f.add(
       yAxis,
-      f.el('span', 'tri-run-workout-y-tick', clock(tick), { style: `top:${top.toFixed(3)}%` }),
+      f.el('span', 'tri-workout-y-tick tri-run-workout-y-tick', clock(tick), {
+        style: `top:${top.toFixed(3)}%`,
+      }),
     )
     f.add(
       grid,
-      f.el('span', 'tri-run-workout-gridline', undefined, { style: `top:${top.toFixed(3)}%` }),
+      f.el('span', 'tri-workout-gridline tri-run-workout-gridline', undefined, {
+        style: `top:${top.toFixed(3)}%`,
+      }),
     )
   }
   for (const lap of laps) {
@@ -5533,6 +5720,46 @@ const trainingEffectNote = (
   message: string | null,
 ): string | null => formatTrainingEffectNote(message) ?? fallbackTrainingEffectNote(effect, score)
 
+export const calculatedTrainingEffectEvidenceText = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+): string | null => {
+  const effect = d.calculatedTrainingEffect
+  if (!effect) return null
+  const french = presentation.locale === 'fr'
+  const locale = french ? 'fr-CA' : 'en-US'
+  const number = (value: number, digits = 1): string =>
+    value.toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits })
+  const aerobic = effect.evidence.aerobic
+  const aerobicText = french
+    ? `Aérobie ${number(effect.aerobic)} à partir ${
+        aerobic.source === 'relative-effort'
+          ? `de l'effort relatif ${number(aerobic.load)}`
+          : `de la charge d'exercice ${number(aerobic.load)}`
+      }.`
+    : `Aerobic ${number(effect.aerobic)} uses ${
+        aerobic.source === 'relative-effort'
+          ? `relative effort ${number(aerobic.load)}`
+          : `exercise load ${number(aerobic.load)}`
+      }.`
+  const anaerobic = effect.evidence.anaerobic
+  let anaerobicText: string
+  if (anaerobic.source === 'power') {
+    anaerobicText = french
+      ? `Anaérobie ${number(effect.anaerobic)} à partir de ${anaerobic.effortCount.toLocaleString(locale)} efforts brefs au-dessus de l'eCP ${number(anaerobic.criticalPowerWatts)} W et de l'eW′ ${number(anaerobic.wPrimeKilojoules)} kJ. L'estimation répartit ces efforts sur ${dlabel(d.movingTimeS)} de déplacement.`
+      : `Anaerobic ${number(effect.anaerobic)} uses ${anaerobic.effortCount.toLocaleString(locale)} short power efforts above eCP ${number(anaerobic.criticalPowerWatts)} W and eW′ ${number(anaerobic.wPrimeKilojoules)} kJ. The estimate spreads those efforts across ${dlabel(d.movingTimeS)} of moving time.`
+  } else if (anaerobic.source === 'pace') {
+    anaerobicText = french
+      ? `Anaérobie ${number(effect.anaerobic)} à partir de ${dlabel(anaerobic.weightedSeconds)} d'efforts brefs pondérés par l'allure.`
+      : `Anaerobic ${number(effect.anaerobic)} uses ${dlabel(anaerobic.weightedSeconds)} of weighted short pace efforts.`
+  } else {
+    anaerobicText = french
+      ? `Anaérobie ${number(effect.anaerobic)} à partir de ${dlabel(anaerobic.seconds)} dans les zones de fréquence cardiaque supérieures.`
+      : `Anaerobic ${number(effect.anaerobic)} uses ${dlabel(anaerobic.seconds)} in the upper heart-rate zones.`
+  }
+  return `${french ? 'Estimation calculée' : 'Calculated estimate'}. ${aerobicText} ${anaerobicText}`
+}
+
 export const buildTrainingEffectDetails = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
@@ -5578,6 +5805,9 @@ export const buildTrainingEffectDetails = <N>(
   ].filter(effect => effect.score != null || effect.note != null)
   if (effects.length === 0) return null
   const titleKey = 'training effect'
+  const calculatedEvidence = calculated
+    ? calculatedTrainingEffectEvidenceText(f.presentation, d)
+    : null
   const wrap = f.el('section', 'tri-zone tri-training-effect', undefined, {
     'aria-label': triText(f.presentation.locale, titleKey),
     'data-i18n-aria-label': titleKey,
@@ -5587,6 +5817,9 @@ export const buildTrainingEffectDetails = <N>(
     wrap,
     f.el('div', 'tri-zone-title', triText(f.presentation.locale, titleKey), {
       'data-i18n': titleKey,
+      ...(calculatedEvidence
+        ? { 'data-gloss': '', 'data-gloss-def': calculatedEvidence, tabindex: '0' }
+        : {}),
     }),
   )
   const list = f.el('div', 'tri-training-effect-list')
@@ -5730,7 +5963,6 @@ export const activityStatRows = (
     ['time', dur(d.movingTimeS)],
     [d.sport === 'bike' ? 'speed' : 'pace', activityRate],
   ]
-  if (d.computer) rows.push(['computer', COMPUTER_LABEL[d.computer]])
   if (d.sport === 'bike' && d.maxSpeedKph != null)
     rows.push(['max speed', speedKph(presentation, d.maxSpeedKph)])
   if (d.sport === 'run') {
@@ -5865,6 +6097,8 @@ export const buildActivity = <N>(
     const moreId = `tri-act-more-${d.id}`
     const more = f.el('div', 'tri-act-more', undefined, { id: moreId })
     const flags = routeStreamFlags(d)
+    const cyclingWorkout = buildCyclingWorkoutAnalysis(f, d)
+    if (cyclingWorkout) f.add(more, cyclingWorkout)
     const runAnalysis = buildRunAnalysis(f, d)
     if (runAnalysis) f.add(more, runAnalysis)
     if (flags.hr) f.add(more, buildHeartRateTrace(f, d, analysisSelection))

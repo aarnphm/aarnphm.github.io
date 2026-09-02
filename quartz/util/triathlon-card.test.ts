@@ -811,7 +811,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   staminaTrace: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
-  anaerobicPowerIntervalLoadS: null,
+  anaerobicPowerEstimate: null,
   calculatedTrainingEffect: null,
   gearShifts: [],
   cyclingDynamics: null,
@@ -1003,7 +1003,10 @@ const garminVerification = (
 })
 
 test('renders the cycling computer as an activity table row', () => {
-  const garmin = buildActivity(factory, detail({ computer: 'garmin' }))
+  const garmin = buildActivity(
+    factory,
+    detail({ computer: 'garmin', windKph: 11, windDir: 'E', windGustKph: 17 }),
+  )
   const wahoo = buildActivity(factory, detail({ computer: 'wahoo' }))
   const absent = buildActivity(factory, detail())
   const computerRow = (node: TestNode): TestNode | undefined =>
@@ -1011,6 +1014,12 @@ test('renders the cycling computer as an activity table row', () => {
 
   assert.equal(text(byClass(computerRow(garmin)!, 'tri-act-stat-v')[0]), 'Edge 1050')
   assert.equal(text(byClass(computerRow(wahoo)!, 'tri-act-stat-v')[0]), 'ELEMNT BOLT 3')
+  assert.deepEqual(
+    byTag(byClass(garmin, 'tri-act-stats')[0], 'tr')
+      .map(row => row.properties.dataStatKey)
+      .slice(-2),
+    ['wind', 'computer'],
+  )
   assert.equal(computerRow(absent), undefined)
   assert.equal(byClass(garmin, 'tri-act-computer').length, 0)
 })
@@ -1274,11 +1283,34 @@ test('renders Garmin training effect scores and notes immediately above heart ra
 
   const calculatedDetails = buildTrainingEffectDetails(
     factory,
-    detail({ sport: 'run', calculatedTrainingEffect: { aerobic: 3.4, anaerobic: 1.2 } }),
+    detail({
+      calculatedTrainingEffect: {
+        aerobic: 3.4,
+        anaerobic: 1.2,
+        evidence: {
+          aerobic: { source: 'relative-effort', load: 42 },
+          anaerobic: {
+            source: 'power',
+            effect: 1.2,
+            effortCount: 8,
+            stimulus: 1.14,
+            criticalPowerWatts: 248.9,
+            wPrimeKilojoules: 10.3,
+          },
+        },
+      },
+    }),
   )
   assert.ok(calculatedDetails)
   assert.equal(calculatedDetails.properties.dataTrainingEffectSource, 'calculated')
-  assert.equal(text(byClass(calculatedDetails, 'tri-zone-title')[0]), 'training effect')
+  const calculatedTitle = byClass(calculatedDetails, 'tri-zone-title')[0]
+  assert.equal(text(calculatedTitle), 'training effect')
+  assert.equal(calculatedTitle.properties.dataGloss, '')
+  assert.equal(calculatedTitle.properties.tabIndex, 0)
+  assert.equal(
+    calculatedTitle.properties.dataGlossDef,
+    'Calculated estimate. Aerobic 3.4 uses relative effort 42.0. Anaerobic 1.2 uses 8 short power efforts above eCP 248.9 W and eW′ 10.3 kJ. The estimate spreads those efforts across 1h20m of moving time.',
+  )
   assert.deepEqual(byClass(calculatedDetails, 'tri-training-effect-score').map(text), [
     '3.4',
     '1.2',
@@ -1293,18 +1325,44 @@ test('renders Garmin training effect scores and notes immediately above heart ra
   )
   const frenchCalculatedDetails = buildTrainingEffectDetails(
     factoryFor(frenchPresentation),
-    detail({ sport: 'swim', calculatedTrainingEffect: { aerobic: 2.4, anaerobic: 0.4 } }),
+    detail({
+      sport: 'swim',
+      calculatedTrainingEffect: {
+        aerobic: 2.4,
+        anaerobic: 0.4,
+        evidence: {
+          aerobic: { source: 'exercise-load', load: 25.5 },
+          anaerobic: { source: 'pace', weightedSeconds: 72 },
+        },
+      },
+    }),
   )
   assert.ok(frenchCalculatedDetails)
   assert.equal(frenchCalculatedDetails.properties.ariaLabel, "effet d'entraînement")
-  assert.equal(text(byClass(frenchCalculatedDetails, 'tri-zone-title')[0]), "effet d'entraînement")
+  const frenchCalculatedTitle = byClass(frenchCalculatedDetails, 'tri-zone-title')[0]
+  assert.equal(text(frenchCalculatedTitle), "effet d'entraînement")
+  assert.equal(
+    frenchCalculatedTitle.properties.dataGlossDef,
+    "Estimation calculée. Aérobie 2,4 à partir de la charge d'exercice 25,5. Anaérobie 0,4 à partir de 1m12s d'efforts brefs pondérés par l'allure.",
+  )
 
   const nativeDetails = buildTrainingEffectDetails(
     factory,
-    detail({ garmin, calculatedTrainingEffect: { aerobic: 1.1, anaerobic: 4.9 } }),
+    detail({
+      garmin,
+      calculatedTrainingEffect: {
+        aerobic: 1.1,
+        anaerobic: 4.9,
+        evidence: {
+          aerobic: { source: 'relative-effort', load: 10 },
+          anaerobic: { source: 'heart-rate', seconds: 600 },
+        },
+      },
+    }),
   )
   assert.ok(nativeDetails)
   assert.equal(nativeDetails.properties.dataTrainingEffectSource, 'garmin')
+  assert.equal(byClass(nativeDetails, 'tri-zone-title')[0].properties.dataGloss, undefined)
   assert.deepEqual(byClass(nativeDetails, 'tri-training-effect-score').map(text), ['4.5', '2.7'])
 })
 
@@ -2110,6 +2168,138 @@ test('renders compact positional analysis bars beneath the existing activity fig
   assert.equal(byClass(analysis, 'tri-analysis-tooltip').length, 0)
 })
 
+test('renders cycling laps as selectable power bars over the elevation profile', () => {
+  const bike = analysisDetail()
+  bike.analysisRanges = [
+    {
+      kind: 'lap',
+      id: 'lap-1',
+      label: 'Lap 1',
+      startElapsedS: 0,
+      endElapsedS: 1_600,
+      startDistanceKm: 0,
+      endDistanceKm: 10,
+      durationS: 1_600,
+      movingTimeS: 1_200,
+      distanceKm: 10,
+      elevationGainM: 14,
+      averageSpeedKph: 30,
+      averageHeartRate: 142,
+      averageWatts: 180,
+      averageCadence: 84,
+    },
+    {
+      kind: 'lap',
+      id: 'lap-2',
+      label: 'Lap 2',
+      startElapsedS: 1_600,
+      endElapsedS: 3_200,
+      startDistanceKm: 10,
+      endDistanceKm: 20,
+      durationS: 1_600,
+      movingTimeS: 1_200,
+      distanceKm: 10,
+      elevationGainM: 14,
+      averageSpeedKph: 30,
+      averageHeartRate: 154,
+      averageWatts: 300,
+      averageCadence: 92,
+    },
+    {
+      kind: 'lap',
+      id: 'lap-3',
+      label: 'Lap 3',
+      startElapsedS: 3_200,
+      endElapsedS: 4_800,
+      startDistanceKm: 20,
+      endDistanceKm: 30,
+      durationS: 1_600,
+      movingTimeS: 1_200,
+      distanceKm: 10,
+      elevationGainM: 7,
+      averageSpeedKph: 30,
+      averageHeartRate: 136,
+      averageWatts: 120,
+      averageCadence: 78,
+    },
+    ...analysisRanges().filter(range => range.kind !== 'lap'),
+  ]
+
+  const rendered = buildActivity(factory, bike, true)
+  const workout = byClass(rendered, 'tri-cycling-workout')[0]
+  assert.ok(workout)
+  assert.equal(workout.tagName, 'section')
+  assert.equal(workout.properties.ariaLabel, 'Cycling workout analysis')
+  assert.equal(byClass(workout, 'tri-cycling-workout-plot')[0].properties.dataSiteCursorLine, '')
+  assert.deepEqual(byClass(workout, 'tri-cycling-workout-title').map(text), ['workout analysis'])
+  assert.deepEqual(
+    byClass(workout, 'tri-cycling-workout-stats')
+      .flatMap(stat => byTag(stat, 'span'))
+      .map(text),
+    ['highest 300 W', 'avg 200 W', 'lowest 120 W'],
+  )
+  assert.deepEqual(byClass(workout, 'tri-cycling-workout-y-tick').map(text), ['100', '200', '300'])
+  assert.deepEqual(byClass(workout, 'tri-cycling-workout-y-unit').map(text), ['W'])
+  const elevation = byClass(workout, 'tri-cycling-workout-elevation')[0]
+  assert.ok(elevation)
+  assert.equal(elevation.tagName, 'svg')
+  assert.equal(elevation.properties.viewBox, '0 0 100 100')
+  assert.match(
+    String(byClass(elevation, 'tri-cycling-workout-elevation-area')[0].properties.d),
+    /^M 0 100 L 0\.000 100\.000 L 33\.333 60\.000 L 66\.667 20\.000 L 100\.000 0\.000 L 100 100 Z$/,
+  )
+  assert.match(
+    String(byClass(workout, 'tri-cycling-workout-average-line')[0].properties.style),
+    /top:33\.333%/,
+  )
+
+  const laps = byClass(workout, 'tri-cycling-workout-lap')
+  assert.deepEqual(
+    laps.map(lap => [
+      lap.properties.dataRangeKind,
+      lap.properties.dataRangeId,
+      lap.properties.ariaPressed,
+    ]),
+    [
+      ['lap', 'lap-1', 'false'],
+      ['lap', 'lap-2', 'false'],
+      ['lap', 'lap-3', 'false'],
+    ],
+  )
+  assert.match(
+    String(laps[0].properties.style),
+    /--tri-cycling-workout-start:0\.000%;--tri-cycling-workout-width:33\.333%;--tri-cycling-workout-height:60\.000%/,
+  )
+  assert.match(
+    String(laps[1].properties.style),
+    /--tri-cycling-workout-start:33\.333%;--tri-cycling-workout-width:33\.333%;--tri-cycling-workout-height:100\.000%/,
+  )
+  assert.match(
+    String(laps[2].properties.style),
+    /--tri-cycling-workout-start:66\.667%;--tri-cycling-workout-width:33\.333%;--tri-cycling-workout-height:40\.000%/,
+  )
+  assert.match(String(laps[0].properties.ariaLabel), /^Lap 1, 10\.00 km, \+14 m, 20:00/)
+  assert.match(String(laps[0].properties.ariaLabel), /180 W/)
+  assert.deepEqual(byClass(workout, 'tri-cycling-workout-power').map(text), [
+    '180 W',
+    '300 W',
+    '120 W',
+  ])
+  assert.deepEqual(byClass(workout, 'tri-cycling-workout-label').map(text), ['1', '2', '3'])
+})
+
+test('omits cycling workout analysis when lap power is unavailable', () => {
+  const bike = analysisDetail()
+  bike.analysisRanges = bike.analysisRanges.map(range =>
+    range.kind === 'lap' ? { ...range, averageWatts: null } : range,
+  )
+  assert.equal(byClass(buildActivity(factory, bike, true), 'tri-cycling-workout').length, 0)
+  assert.equal(
+    byClass(buildActivity(factory, { ...bike, sport: 'run' }, true), 'tri-cycling-workout').length,
+    0,
+  )
+})
+
 test('renders run laps as selectable pace splits against the lap-weighted average', () => {
   const run = analysisDetail()
   run.sport = 'run'
@@ -2211,6 +2401,7 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
   assert.ok(workout)
   assert.equal(workout.tagName, 'section')
   assert.equal(workout.properties.ariaLabel, 'Run workout analysis')
+  assert.equal(byClass(workout, 'tri-run-workout-plot')[0].properties.dataSiteCursorLine, '')
   assert.equal(byClass(workout, 'tri-run-workout-title').length, 0)
   assert.deepEqual(
     byClass(workout, 'tri-run-workout-stats')

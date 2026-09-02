@@ -1,7 +1,5 @@
 import katex from 'katex'
 
-export {}
-
 const pktRenderMath = (tex: string): string => {
   try {
     return katex.renderToString(tex, {
