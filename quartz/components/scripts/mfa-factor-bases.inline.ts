@@ -157,5 +157,3 @@ document.addEventListener('nav', () => {
     mfaSetup(root)
   }
 })
-
-export {}

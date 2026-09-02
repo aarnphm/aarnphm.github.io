@@ -8,7 +8,7 @@ import {
   buildPayload,
   calculateActivityIntensityFactor,
   calculateActivityTrainingEffect,
-  calculateAnaerobicPowerIntervalLoad,
+  calculateAnaerobicPowerEstimate,
   calculateExerciseLoad,
   calculateHeartRateTss,
   emptyPayload,
@@ -77,19 +77,41 @@ test('normalizes heart-rate TRIMP to 100 TSS for one hour at threshold', () => {
   assert.equal(calculateHeartRateTss(120, 1_200, 50, 196, 196, 'M'), null)
 })
 
-test('counts only 10 to 120 second high-power intervals as anaerobic load', () => {
+test('scores only W-prime-depleting 10 to 120 second power efforts', () => {
   const watts = [
     ...Array<number>(20).fill(0),
-    ...Array<number>(9).fill(600),
+    ...Array<number>(20).fill(320),
     ...Array<number>(20).fill(0),
     ...Array<number>(20).fill(600),
     ...Array<number>(20).fill(0),
     ...Array<number>(121).fill(600),
     ...Array<number>(20).fill(0),
   ]
-  assert.equal(calculateAnaerobicPowerIntervalLoad(watts, 300), 20)
-  assert.equal(calculateAnaerobicPowerIntervalLoad([], 300), null)
-  assert.equal(calculateAnaerobicPowerIntervalLoad(watts, null), null)
+  const estimate = calculateAnaerobicPowerEstimate(watts, 3_600, {
+    criticalPowerWatts: 300,
+    wPrimeJoules: 6_000,
+  })
+  assert.ok(estimate)
+  assert.equal(estimate.effortCount, 1)
+  assert.equal(estimate.criticalPowerWatts, 300)
+  assert.equal(estimate.wPrimeKilojoules, 6)
+  assert.ok(estimate.effect > 0.8 && estimate.effect < 1.5)
+  assert.equal(calculateAnaerobicPowerEstimate([], 3_600, null), null)
+  assert.equal(calculateAnaerobicPowerEstimate(watts, 3_600, null), null)
+})
+
+test('dilutes repeated anaerobic efforts across moving time', () => {
+  const watts = Array.from({ length: 4 }, () => [
+    ...Array<number>(20).fill(0),
+    ...Array<number>(20).fill(600),
+  ]).flat()
+  const powerModel = { criticalPowerWatts: 300, wPrimeJoules: 6_000 }
+  const short = calculateAnaerobicPowerEstimate(watts, 3_600, powerModel)
+  const long = calculateAnaerobicPowerEstimate(watts, 8 * 3_600, powerModel)
+  assert.ok(short)
+  assert.ok(long)
+  assert.equal(short.effortCount, long.effortCount)
+  assert.ok(long.effect < short.effect / 2)
 })
 
 test('calculates missing run training effect from relative effort and upper-zone time', () => {
@@ -102,13 +124,20 @@ test('calculates missing run training effect from relative effort and upper-zone
       garmin: null,
       calculatedIntensityFactor: { value: 0.9, source: 'pace' },
       calculatedExerciseLoad: { value: 81, source: 'pace' },
-      anaerobicPowerIntervalLoadS: null,
+      anaerobicPowerEstimate: null,
       hrZones: [0, 0, 3_360, 240, 0],
       analysisRanges: [],
       swimPaceSPer100m: null,
       swimIntervals: [],
     }),
-    { aerobic: 3, anaerobic: 2 },
+    {
+      aerobic: 3,
+      anaerobic: 2,
+      evidence: {
+        aerobic: { source: 'relative-effort', load: 30 },
+        anaerobic: { source: 'heart-rate', seconds: 240 },
+      },
+    },
   )
 })
 
@@ -122,13 +151,33 @@ test('calculates missing bike training effect from aerobic load and power interv
       garmin: null,
       calculatedIntensityFactor: { value: 0.645, source: 'power' },
       calculatedExerciseLoad: { value: 40.4, source: 'power' },
-      anaerobicPowerIntervalLoadS: 95.6,
+      anaerobicPowerEstimate: {
+        effect: 2.6,
+        effortCount: 4,
+        stimulus: 3,
+        criticalPowerWatts: 250,
+        wPrimeKilojoules: 10,
+      },
       hrZones: [0, 0, 0, 120, 60],
       analysisRanges: [],
       swimPaceSPer100m: null,
       swimIntervals: [],
     }),
-    { aerobic: 3, anaerobic: 2.6 },
+    {
+      aerobic: 3,
+      anaerobic: 2.6,
+      evidence: {
+        aerobic: { source: 'exercise-load', load: 40.4 },
+        anaerobic: {
+          source: 'power',
+          effect: 2.6,
+          effortCount: 4,
+          stimulus: 3,
+          criticalPowerWatts: 250,
+          wPrimeKilojoules: 10,
+        },
+      },
+    },
   )
 })
 
@@ -1302,7 +1351,7 @@ function timedRideCache(increments: (i: number) => number, n = 100): StravaRawCa
   }
 }
 
-test('projects anaerobic interval load from the complete ride power stream', () => {
+test('leaves anaerobic power effect unavailable without a fitted power model', () => {
   const watts = [
     ...Array<number>(20).fill(0),
     ...Array<number>(9).fill(600),
@@ -1318,7 +1367,7 @@ test('projects anaerobic interval load from the complete ride power stream', () 
   streams.watts = watts
 
   const detail = buildPayload(cache, null, null, '2026-06-01', null, 300).details['101']
-  assert.equal(detail.anaerobicPowerIntervalLoadS, 20)
+  assert.equal(detail.anaerobicPowerEstimate, null)
 })
 
 test('derives max speed from the timed distance stream', () => {

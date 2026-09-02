@@ -436,7 +436,7 @@ function generateAtomFeed(
     return entry
   })
 
-  const latestUpdated = limitedEntries.reduce<Date | undefined>((latest, [_, content]) => {
+  const latestUpdated = limitedEntries.reduce<Date | undefined>((latest, [, content]) => {
     const frontmatterModified = content.fileData?.frontmatter?.modified
     let candidate = frontmatterModified ? new Date(frontmatterModified) : content.date
     if (candidate && Number.isNaN(candidate.getTime())) candidate = undefined
@@ -484,7 +484,7 @@ function limitedFeedEntries(
   limit?: number,
 ): Array<[FullSlug, ContentDetails]> {
   const filteredEntries = Array.from(idx)
-    .sort(([_, f1], [__, f2]) => {
+    .sort(([, f1], [, f2]) => {
       if (f1.date && f2.date) {
         return f2.date.getTime() - f1.date.getTime()
       } else if (f1.date && !f2.date) {

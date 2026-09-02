@@ -6,8 +6,6 @@ import { env, AutoModel, AutoTokenizer } from '@huggingface/transformers'
 import { init, defaultDevice, numpy as np } from '@jax-js/jax'
 import { dependencies } from '../../package.json'
 
-export {}
-
 type VectorShardMeta = {
   path: string
   rows: number

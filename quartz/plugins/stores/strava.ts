@@ -489,9 +489,26 @@ export interface CalculatedExerciseLoad {
   source: CalculatedIntensityFactor['source'] | 'garmin'
 }
 
+export interface AnaerobicPowerEstimate {
+  effect: number
+  effortCount: number
+  stimulus: number
+  criticalPowerWatts: number
+  wPrimeKilojoules: number
+}
+
+export type CalculatedTrainingEffectAnaerobicEvidence =
+  | { source: 'heart-rate'; seconds: number }
+  | { source: 'pace'; weightedSeconds: number }
+  | ({ source: 'power' } & AnaerobicPowerEstimate)
+
 export interface CalculatedTrainingEffect {
   aerobic: number
   anaerobic: number
+  evidence: {
+    aerobic: { source: 'relative-effort' | 'exercise-load'; load: number }
+    anaerobic: CalculatedTrainingEffectAnaerobicEvidence
+  }
 }
 
 export interface StravaActivityDetail {
@@ -528,7 +545,7 @@ export interface StravaActivityDetail {
   staminaTrace: ActivityStaminaTrace | null
   calculatedIntensityFactor: CalculatedIntensityFactor | null
   calculatedExerciseLoad: CalculatedExerciseLoad | null
-  anaerobicPowerIntervalLoadS: number | null
+  anaerobicPowerEstimate: AnaerobicPowerEstimate | null
   calculatedTrainingEffect: CalculatedTrainingEffect | null
   gearShifts: ActivityGearShift[]
   cyclingDynamics: ActivityCyclingDynamics | null
@@ -803,8 +820,9 @@ const HIGH_INTENSITY_INTERVAL_TRAINING_EFFECT_SCALE: TrainingEffectScale = [
 const ANAEROBIC_POWER_WINDOW_S = 5
 const ANAEROBIC_POWER_INTERVAL_MIN_S = 10
 const ANAEROBIC_POWER_INTERVAL_MAX_S = 120
-const ANAEROBIC_POWER_THRESHOLD = 1.05
-const ANAEROBIC_POWER_FULL_WEIGHT = 1.3
+const ANAEROBIC_W_PRIME_MIN_FRACTION = 0.1
+const ANAEROBIC_SESSION_DURATION_EXPONENT = 0.6
+const ANAEROBIC_TRAINING_EFFECT_RATE = 0.24
 
 const trainingEffectFromScale = (value: number, scale: TrainingEffectScale): number => {
   if (!Number.isFinite(value) || value <= scale[0][0]) return scale[0][1]
@@ -818,14 +836,22 @@ const trainingEffectFromScale = (value: number, scale: TrainingEffectScale): num
   return scale[scale.length - 1][1]
 }
 
-export const calculateAnaerobicPowerIntervalLoad = (
+export const calculateAnaerobicPowerEstimate = (
   watts: ArrayLike<number>,
-  ftpWatts: number | null,
-): number | null => {
+  movingTimeS: number,
+  powerModel: Pick<CriticalPowerEstimate, 'criticalPowerWatts' | 'wPrimeJoules'> | null,
+): AnaerobicPowerEstimate | null => {
+  const criticalPowerWatts = powerModel?.criticalPowerWatts
+  const wPrimeJoules = powerModel?.wPrimeJoules
   if (
-    ftpWatts == null ||
-    !Number.isFinite(ftpWatts) ||
-    ftpWatts <= 0 ||
+    criticalPowerWatts == null ||
+    !Number.isFinite(criticalPowerWatts) ||
+    criticalPowerWatts <= 0 ||
+    wPrimeJoules == null ||
+    !Number.isFinite(wPrimeJoules) ||
+    wPrimeJoules <= 0 ||
+    !Number.isFinite(movingTimeS) ||
+    movingTimeS <= 0 ||
     watts.length < ANAEROBIC_POWER_INTERVAL_MIN_S
   )
     return null
@@ -842,15 +868,15 @@ export const calculateAnaerobicPowerIntervalLoad = (
     smoothed[index] = rollingWatts / Math.min(index + 1, ANAEROBIC_POWER_WINDOW_S)
   }
 
-  const thresholdWatts = ftpWatts * ANAEROBIC_POWER_THRESHOLD
-  let loadS = 0
+  let rawStimulus = 0
+  let effortCount = 0
   let intervalStart = -1
-  let intervalWatts = 0
+  let intervalWorkJoules = 0
   for (let index = 0; index <= smoothed.length; index++) {
     const value = index < smoothed.length ? smoothed[index] : 0
-    if (value > thresholdWatts) {
+    if (value > criticalPowerWatts) {
       if (intervalStart < 0) intervalStart = index
-      intervalWatts += value
+      intervalWorkJoules += value - criticalPowerWatts
       continue
     }
     if (intervalStart < 0) continue
@@ -859,21 +885,27 @@ export const calculateAnaerobicPowerIntervalLoad = (
       durationS >= ANAEROBIC_POWER_INTERVAL_MIN_S &&
       durationS <= ANAEROBIC_POWER_INTERVAL_MAX_S
     ) {
-      const relativeIntensity = intervalWatts / durationS / ftpWatts
-      const intensityWeight = Math.min(
-        1,
-        Math.max(
-          0,
-          (relativeIntensity - ANAEROBIC_POWER_THRESHOLD) /
-            (ANAEROBIC_POWER_FULL_WEIGHT - ANAEROBIC_POWER_THRESHOLD),
-        ),
-      )
-      loadS += durationS * intensityWeight
+      const depletionFraction = intervalWorkJoules / wPrimeJoules
+      if (depletionFraction > ANAEROBIC_W_PRIME_MIN_FRACTION) {
+        rawStimulus +=
+          (depletionFraction - ANAEROBIC_W_PRIME_MIN_FRACTION) /
+          (1 - ANAEROBIC_W_PRIME_MIN_FRACTION)
+        effortCount++
+      }
     }
     intervalStart = -1
-    intervalWatts = 0
+    intervalWorkJoules = 0
   }
-  return round(loadS, 1)
+  const stimulus =
+    rawStimulus / Math.pow(Math.max(1, movingTimeS / 3600), ANAEROBIC_SESSION_DURATION_EXPONENT)
+  const effect = 5 * (1 - Math.exp(-ANAEROBIC_TRAINING_EFFECT_RATE * stimulus))
+  return {
+    effect: round(effect, 2),
+    effortCount,
+    stimulus: round(stimulus, 3),
+    criticalPowerWatts: round(criticalPowerWatts, 1),
+    wPrimeKilojoules: round(wPrimeJoules / 1_000, 1),
+  }
 }
 
 interface TrainingEffectPaceEffort {
@@ -931,23 +963,25 @@ const calculatedAnaerobicTrainingEffect = (
     | 'distanceKm'
     | 'movingTimeS'
     | 'calculatedIntensityFactor'
-    | 'anaerobicPowerIntervalLoadS'
+    | 'anaerobicPowerEstimate'
     | 'hrZones'
     | 'analysisRanges'
     | 'swimPaceSPer100m'
     | 'swimIntervals'
   >,
-): number => {
+): { score: number; evidence: CalculatedTrainingEffectAnaerobicEvidence } => {
   const highHeartRateS = (activity.hrZones ?? []).slice(-2).reduce((sum, value) => sum + value, 0)
   const heartRateEffect = trainingEffectFromScale(
     highHeartRateS,
     HIGH_HEART_RATE_TRAINING_EFFECT_SCALE,
   )
-  const powerEffect = trainingEffectFromScale(
-    activity.anaerobicPowerIntervalLoadS ?? 0,
-    HIGH_INTENSITY_INTERVAL_TRAINING_EFFECT_SCALE,
-  )
-  const telemetryEffect = Math.max(heartRateEffect, powerEffect)
+  let best: { score: number; evidence: CalculatedTrainingEffectAnaerobicEvidence } = {
+    score: heartRateEffect,
+    evidence: { source: 'heart-rate', seconds: highHeartRateS },
+  }
+  const powerEstimate = activity.anaerobicPowerEstimate
+  if (powerEstimate && powerEstimate.effect > best.score)
+    best = { score: powerEstimate.effect, evidence: { source: 'power', ...powerEstimate } }
   const intensityFactor = activity.calculatedIntensityFactor
   if (
     intensityFactor?.source !== 'pace' ||
@@ -955,13 +989,13 @@ const calculatedAnaerobicTrainingEffect = (
     intensityFactor.value > 1.5 ||
     activity.movingTimeS <= 0
   )
-    return telemetryEffect
+    return best
   const averageSpeedMps =
     activity.sport === 'swim' && activity.swimPaceSPer100m != null && activity.swimPaceSPer100m > 0
       ? 100 / activity.swimPaceSPer100m
       : (activity.distanceKm * 1_000) / activity.movingTimeS
   const thresholdSpeedMps = averageSpeedMps / intensityFactor.value
-  if (!Number.isFinite(thresholdSpeedMps) || thresholdSpeedMps <= 0) return telemetryEffect
+  if (!Number.isFinite(thresholdSpeedMps) || thresholdSpeedMps <= 0) return best
   const intervalLoad = trainingEffectPaceEfforts(activity).reduce((sum, effort) => {
     if (effort.durationS <= 0 || effort.distanceM <= 0) return sum
     const relativeIntensity = effort.distanceM / effort.durationS / thresholdSpeedMps
@@ -969,10 +1003,13 @@ const calculatedAnaerobicTrainingEffect = (
     const intensityWeight = Math.min(1, (relativeIntensity - 1.05) / 0.25)
     return sum + Math.min(120, effort.durationS) * intensityWeight
   }, 0)
-  return Math.max(
-    telemetryEffect,
-    trainingEffectFromScale(intervalLoad, HIGH_INTENSITY_INTERVAL_TRAINING_EFFECT_SCALE),
+  const paceEffect = trainingEffectFromScale(
+    intervalLoad,
+    HIGH_INTENSITY_INTERVAL_TRAINING_EFFECT_SCALE,
   )
+  return paceEffect > best.score
+    ? { score: paceEffect, evidence: { source: 'pace', weightedSeconds: round(intervalLoad, 1) } }
+    : best
 }
 
 export const calculateActivityTrainingEffect = (
@@ -985,7 +1022,7 @@ export const calculateActivityTrainingEffect = (
     | 'garmin'
     | 'calculatedIntensityFactor'
     | 'calculatedExerciseLoad'
-    | 'anaerobicPowerIntervalLoadS'
+    | 'anaerobicPowerEstimate'
     | 'hrZones'
     | 'analysisRanges'
     | 'swimPaceSPer100m'
@@ -1013,7 +1050,17 @@ export const calculateActivityTrainingEffect = (
       : RELATIVE_EFFORT_TRAINING_EFFECT_SCALE,
   )
   const anaerobic = calculatedAnaerobicTrainingEffect(activity)
-  return { aerobic: round(aerobic, 1), anaerobic: round(anaerobic, 1) }
+  return {
+    aerobic: round(aerobic, 1),
+    anaerobic: round(anaerobic.score, 1),
+    evidence: {
+      aerobic: {
+        source: relativeEffort == null ? 'exercise-load' : 'relative-effort',
+        load: round(aerobicLoad, 1),
+      },
+      anaerobic: anaerobic.evidence,
+    },
+  }
 }
 
 export function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -2550,7 +2597,7 @@ function projectDetail(
   climbs: GarminClimbSegment[],
   hrBounds: number[],
   powerBounds: number[],
-  ftpWatts: number | null,
+  anaerobicPowerModel: Pick<CriticalPowerEstimate, 'criticalPowerWatts' | 'wPrimeJoules'> | null,
   home: [number, number] | null,
   powerCurve: PowerCurvePoint[] | undefined,
   activityCriticalPower: CriticalPowerEstimate | null,
@@ -2736,9 +2783,9 @@ function projectDetail(
     staminaTrace: metricSamples.staminaTrace,
     calculatedIntensityFactor: null,
     calculatedExerciseLoad: null,
-    anaerobicPowerIntervalLoadS:
+    anaerobicPowerEstimate:
       sport === 'bike' && hasEffortPower && timeline
-        ? calculateAnaerobicPowerIntervalLoad(timeline.watts, ftpWatts)
+        ? calculateAnaerobicPowerEstimate(timeline.watts, a.movingTime, anaerobicPowerModel)
         : null,
     calculatedTrainingEffect: null,
     gearShifts,
@@ -2928,7 +2975,7 @@ export function applyManualSauna(
       staminaTrace: null,
       calculatedIntensityFactor: null,
       calculatedExerciseLoad: null,
-      anaerobicPowerIntervalLoadS: null,
+      anaerobicPowerEstimate: null,
       calculatedTrainingEffect: null,
       gearShifts: [],
       cyclingDynamics: null,
@@ -3274,7 +3321,7 @@ export function buildPayload(
       garminMatch ? (garmin?.climbs?.[garminMatch.activity.id] ?? []) : [],
       hrBounds,
       powerBounds,
-      ftp,
+      criticalPowerYear ?? criticalPower,
       home,
       powerCurves.get(id),
       activityCriticalPowers.get(id) ?? null,

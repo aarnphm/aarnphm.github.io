@@ -12,6 +12,8 @@ const CLOSE_CURSOR_SELECTOR =
 const ACTION_CURSOR_SELECTOR = '[data-site-cursor-action]:not(:disabled)'
 const MAGNETIC_ICON_SELECTOR = '[data-site-cursor-icon], svg'
 const BRACKET_ANCHOR_SELECTOR = '[data-site-cursor-bracket]'
+const LINE_CURSOR_SELECTOR = '.tri-bars, [data-site-cursor-line]'
+const SCROLL_RECONCILE_DELAY_MS = 80
 
 const HELP_CURSOR_SELECTOR = [
   '[data-gloss]',
@@ -143,11 +145,12 @@ document.addEventListener('nav', () => {
   let bracketTarget: HTMLElement | null = null
   let magneticTarget: HTMLElement | null = null
   let magneticTimer = 0
+  let scrollIdleTimer = 0
   let measuredMagnetic: HTMLElement | null = null
   let measuredMagneticRect: DOMRect | null = null
-  let measuredBars: HTMLElement | null = null
-  let measuredBarsRect: DOMRect | null = null
-  let measuredTimelineRect: DOMRect | null = null
+  let measuredLineTarget: HTMLElement | null = null
+  let measuredLineTargetRect: DOMRect | null = null
+  let measuredLineTrackRect: DOMRect | null = null
   let measuredBracketRect: DOMRect | null = null
   let measuredPointer: HTMLElement | null = null
   let measuredPointerAnchor: HTMLElement | null = null
@@ -199,7 +202,7 @@ document.addEventListener('nav', () => {
     const close = pointerTarget?.closest<HTMLElement>(CLOSE_CURSOR_SELECTOR) ?? null
     const action = pointerTarget?.closest<HTMLElement>(ACTION_CURSOR_SELECTOR) ?? null
     const magnetic = close ?? action
-    const bars = pointerTarget?.closest<HTMLElement>('.tri-bars') ?? null
+    const lineTarget = pointerTarget?.closest<HTMLElement>(LINE_CURSOR_SELECTOR) ?? null
     if (magnetic) {
       setBracketTarget(null)
       const anchor = magnetic.querySelector<HTMLElement>(MAGNETIC_ICON_SELECTOR) ?? magnetic
@@ -213,20 +216,20 @@ document.addEventListener('nav', () => {
       renderY = rect.top + rect.height / 2
       mode = close ? 'close' : 'action'
       visible = true
-    } else if (bars) {
+    } else if (lineTarget) {
       setBracketTarget(null)
       setMagneticTarget(null)
-      if (geometryDirty || bars !== measuredBars || !measuredBarsRect) {
-        measuredBars = bars
-        measuredBarsRect = bars.getBoundingClientRect()
-        measuredTimelineRect =
-          bars.closest<HTMLElement>('.tri-scroll')?.getBoundingClientRect() ?? null
+      if (geometryDirty || lineTarget !== measuredLineTarget || !measuredLineTargetRect) {
+        measuredLineTarget = lineTarget
+        measuredLineTargetRect = lineTarget.getBoundingClientRect()
+        measuredLineTrackRect =
+          lineTarget.closest<HTMLElement>('.tri-scroll')?.getBoundingClientRect() ?? null
       }
-      const barsRect = measuredBarsRect
-      const timelineRect = measuredTimelineRect
-      const lineBottom = Math.max(barsRect.bottom, timelineRect?.bottom ?? barsRect.bottom)
-      const lineHeight = lineBottom - barsRect.top
-      lineOffset = barsRect.top + lineHeight / 2 - renderY
+      const targetRect = measuredLineTargetRect
+      const trackRect = measuredLineTrackRect
+      const lineBottom = Math.max(targetRect.bottom, trackRect?.bottom ?? targetRect.bottom)
+      const lineHeight = lineBottom - targetRect.top
+      lineOffset = targetRect.top + lineHeight / 2 - renderY
       lineScale = Math.max(1, lineHeight / 24)
       mode = 'timeline'
       visible = true
@@ -280,8 +283,14 @@ document.addEventListener('nav', () => {
     frame = window.requestAnimationFrame(render)
   }
 
+  const clearScrollIdleTimer = (): void => {
+    window.clearTimeout(scrollIdleTimer)
+    scrollIdleTimer = 0
+  }
+
   const onMove = (event: PointerEvent): void => {
     if (event.pointerType !== 'mouse') return
+    clearScrollIdleTimer()
     pointerTarget = event.target instanceof Element ? event.target : null
     x = event.clientX
     y = event.clientY
@@ -298,7 +307,7 @@ document.addEventListener('nav', () => {
       schedule()
       return
     }
-    if (!target?.closest('.tri-bars')) return
+    if (!target?.closest(LINE_CURSOR_SELECTOR)) return
     pointerTarget = target
     x = event.clientX
     y = event.clientY
@@ -306,6 +315,7 @@ document.addEventListener('nav', () => {
   }
 
   const hide = (): void => {
+    clearScrollIdleTimer()
     pointerTarget = null
     setBracketTarget(null)
     mode = 'diamond'
@@ -314,6 +324,7 @@ document.addEventListener('nav', () => {
   }
 
   const invalidateGeometry = (): void => {
+    clearScrollIdleTimer()
     geometryDirty = true
     pointerTarget = document.elementFromPoint(x, y)
     if (pointerTarget || visible || magneticTarget || bracketTarget || mode === 'timeline')
@@ -322,8 +333,13 @@ document.addEventListener('nav', () => {
 
   const invalidateScrollGeometry = (): void => {
     geometryDirty = true
-    if (pointerTarget || visible || magneticTarget || bracketTarget || mode === 'timeline')
-      schedule()
+    if (!pointerTarget && !visible && !magneticTarget && !bracketTarget && mode !== 'timeline') {
+      clearScrollIdleTimer()
+      return
+    }
+    schedule()
+    window.clearTimeout(scrollIdleTimer)
+    scrollIdleTimer = window.setTimeout(invalidateGeometry, SCROLL_RECONCILE_DELAY_MS)
   }
 
   document.documentElement.classList.add('site-cursor-ready')
@@ -341,6 +357,7 @@ document.addEventListener('nav', () => {
     controller.abort()
     if (frame !== 0) window.cancelAnimationFrame(frame)
     window.clearTimeout(magneticTimer)
+    window.clearTimeout(scrollIdleTimer)
     bracket.dataset.visible = 'false'
     magneticTarget?.removeAttribute('data-site-cursor-active')
     frame = 0

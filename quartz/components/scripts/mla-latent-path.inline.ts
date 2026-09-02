@@ -1,7 +1,5 @@
 import katex from 'katex'
 
-export {}
-
 type MlaKey = 'd' | 'nh' | 'dh' | 'dc' | 'dr'
 type MlaState = Record<MlaKey, number>
 

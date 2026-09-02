@@ -58,7 +58,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   staminaTrace: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
-  anaerobicPowerIntervalLoadS: null,
+  anaerobicPowerEstimate: null,
   calculatedTrainingEffect: null,
   gearShifts: [],
   cyclingDynamics: null,
@@ -159,7 +159,14 @@ test('enriches SSR payloads with pace-derived intensity factors and exercise loa
 
   assert.deepEqual(swim.calculatedIntensityFactor, { value: 1.011, source: 'pace' })
   assert.deepEqual(swim.calculatedExerciseLoad, { value: 45.1, source: 'pace' })
-  assert.deepEqual(swim.calculatedTrainingEffect, { aerobic: 3.1, anaerobic: 0 })
+  assert.deepEqual(swim.calculatedTrainingEffect, {
+    aerobic: 3.1,
+    anaerobic: 0,
+    evidence: {
+      aerobic: { source: 'exercise-load', load: 45.1 },
+      anaerobic: { source: 'heart-rate', seconds: 0 },
+    },
+  })
 })
 
 test('aligns native Apple running dynamics to the matching run route', () => {

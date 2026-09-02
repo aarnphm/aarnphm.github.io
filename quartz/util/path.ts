@@ -153,7 +153,7 @@ export function pathToRoot(slug: FullSlug): RelativeURL {
     .split('/')
     .filter(x => x !== '')
     .slice(0, -1)
-    .map(_ => '..')
+    .map(() => '..')
     .join('/')
 
   if (rootPath.length === 0) {

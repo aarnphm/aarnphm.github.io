@@ -93,7 +93,7 @@ const activityDetail = (): StravaActivityDetail => ({
   staminaTrace: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
-  anaerobicPowerIntervalLoadS: null,
+  anaerobicPowerEstimate: null,
   calculatedTrainingEffect: null,
   gearShifts: [],
   cyclingDynamics: null,

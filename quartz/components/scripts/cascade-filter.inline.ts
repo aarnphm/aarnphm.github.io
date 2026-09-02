@@ -1,7 +1,5 @@
 import katex from 'katex'
 
-export {}
-
 type Preset = 'uniform' | 'spiky' | 'longtail'
 
 type CascadeState = {

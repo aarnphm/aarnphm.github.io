@@ -4,6 +4,12 @@
   "categories": { "correctness": "error" },
   "rules": {},
   "env": { "builtin": true },
+  "overrides": [
+    {
+      "files": ["quartz/runtime/javascript/browser-worker.ts"],
+      "rules": { "eslint/no-eval": "off" }
+    }
+  ],
   "ignorePatterns": [
     "public",
     "node_modules",

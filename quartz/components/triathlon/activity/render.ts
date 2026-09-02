@@ -14,6 +14,7 @@ import { activityTrainingEffectLabel } from '../../../util/triathlon-card'
 import { buildActivity as buildActivityNode } from '../../../util/triathlon-card'
 import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../../../util/triathlon-card'
 import { buildCyclingBestEfforts as buildCyclingBestEffortsNode } from '../../../util/triathlon-card'
+import { buildCyclingWorkoutAnalysis as buildCyclingWorkoutAnalysisNode } from '../../../util/triathlon-card'
 import { buildHeatStrainTrace as buildHeatStrainTraceNode } from '../../../util/triathlon-card'
 import { buildMuscleOxygenTrace as buildMuscleOxygenTraceNode } from '../../../util/triathlon-card'
 import { buildPedalSmoothnessChart as buildPedalSmoothnessChartNode } from '../../../util/triathlon-card'
@@ -716,10 +717,12 @@ export const renderMapDetail = (
   const figs = el('div', 'tri-act-figs tri-map-figs')
   const profileBox = el('div', 'tri-map-profile')
   const runSplits = buildRunLapSplitsNode(domF, d) as HTMLElement | null
+  const cyclingWorkout = buildCyclingWorkoutAnalysisNode(domF, d) as HTMLElement | null
   const zoneBox = el('div', 'tri-act-more')
   const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
   wrap.append(tablist, figs)
   if (runSplits) wrap.appendChild(runSplits)
+  if (cyclingWorkout) wrap.appendChild(cyclingWorkout)
   wrap.appendChild(profileBox)
   wrap.appendChild(zoneBox)
 

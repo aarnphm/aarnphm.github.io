@@ -46,7 +46,7 @@ async function processChunk(
   directory: 'instagram' | 'twitter',
 ): Promise<FilePath[]> {
   return Promise.all(
-    items.map(async ([_, file]) => {
+    items.map(async ([, file]) => {
       const slug = file.data.slug!
       const fileName = slug.replaceAll('/', '-')
       const title = file.data.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
@@ -318,8 +318,7 @@ export const PressKit: QuartzEmitterPlugin<Partial<PressKitOptions>> = userOpts 
 
       // Filter content first
       const filteredContents = [...content].filter(
-        ([_, file]) =>
-          !file.data.slug!.includes('university') && file.data.slug!.includes('posts/'),
+        ([, file]) => !file.data.slug!.includes('university') && file.data.slug!.includes('posts/'),
       )
       if (filteredContents.length === 0) return
       const headerFont = configuration.theme.typography.header

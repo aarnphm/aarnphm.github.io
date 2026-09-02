@@ -252,5 +252,3 @@ function setupFlashAttentionTiles() {
 }
 
 document.addEventListener('nav', setupFlashAttentionTiles)
-
-export {}

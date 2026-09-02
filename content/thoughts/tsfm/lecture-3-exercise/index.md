@@ -9,9 +9,9 @@ tags:
 title: numpy implementation of Transformer
 ---
 
-this directory contains a numpy implementation of transformer components with both forward and backward passes.
+this directory contains a NumPy implementation of Transformer components with forward and backward passes.
 
-the implementations are validated against pytorch to ensure gradient correctness.
+the backward-pass tests compare individual NumPy components against PyTorch references. The training path has separate smoke tests.
 
 see also [[thoughts/tsfm/lecture-3-exercise/reports|reports]]
 
