@@ -243,7 +243,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       )
       applyManualFueling(payload, tracking?.fueling ?? [])
       applyManualStrength(payload, tracking?.strength ?? [])
-      applyManualSauna(payload, tracking?.sauna ?? [], oura?.heartRate ?? [])
+      applyManualSauna(payload, tracking?.sauna ?? [], oura?.heartRate ?? [], undefined, weather)
       for (const t of tracking?.days ?? [])
         if (t.windKph != null) {
           const h = payload.health[t.date] ?? emptyHealth()

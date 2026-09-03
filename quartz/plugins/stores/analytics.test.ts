@@ -1284,6 +1284,27 @@ test('vo2 lab ftp hypothesis keeps the treadmill-to-bike estimate broad', () => 
   assert.equal(h.efficiency.conf, 'prior')
 })
 
+test('bike vo2max uses the lab result and its derived ftp as the baseline', () => {
+  const { cache, oura, weights } = fixtures()
+  const analytics = buildAnalytics(cache, {
+    oura,
+    weights,
+    ftp: 287,
+    since: '2026-05-12',
+    vo2labs: [{ date: iso(20), value: 47.8, massKg: 88.9 }],
+  })
+
+  assert.equal(analytics.engine.vo2max.method, 'bike')
+  assert.equal(analytics.engine.vo2max.value, 57.2)
+  assert.equal(analytics.engine.vo2max.trend.at(-1)?.vo2max, 57.2)
+  assert.deepEqual(analytics.engine.vo2max.bikeSource?.labBaseline, {
+    date: iso(20),
+    vo2max: 47.8,
+    ftpW: 230,
+    weightKg: 88.9,
+  })
+})
+
 test('pedaling evidence aggregates ride medians after per-side coverage checks', () => {
   const dynamics = (
     leftSmoothness: (number | null)[],
@@ -2359,6 +2380,7 @@ test('manual sauna sessions appear in analytics and the data feed without enteri
     [
       {
         id: 8_202_606_061_830,
+        stravaActivityId: null,
         title: 'Untangle',
         date,
         time: '18:30',
@@ -2411,6 +2433,84 @@ test('manual sauna sessions appear in analytics and the data feed without enteri
   assert.deepEqual(activity?.sauna, payload.details[String(activity.id)].sauna)
   assert.equal(rows.find(row => row.kind === 'day' && row.date === date)?.sessions, 1)
   assert.equal(rows.find(row => row.kind === 'meta')?.v, 5)
+})
+
+test('attached sauna activity replaces its raw Strava classification in analytics', () => {
+  const { cache, oura, weather } = fixtures()
+  const date = iso(25)
+  cache.activities['4'] = activity(4, 'Workout', date, 4_500, 0, { name: 'Sauna', sufferScore: 30 })
+  weather.activities['4'] = {
+    activityId: 4,
+    date,
+    start: `${date}T22:30:00Z`,
+    end: `${date}T23:45:00Z`,
+    latitude: 43.6,
+    longitude: -79.4,
+    durationS: 4_500,
+    windKph: 10,
+    windDir: 'NNW',
+    windDirDeg: 338,
+    windGustKph: 16,
+    temperatureC: 27,
+    source: 'weatherkit',
+  }
+  const payload = buildPayload(cache, oura, null, '2026-05-12')
+  applyManualSauna(
+    payload,
+    [
+      {
+        id: 8_202_606_061_830,
+        stravaActivityId: 4,
+        title: 'Untangle',
+        date,
+        time: '18:30',
+        durationS: 4_500,
+        temperatureC: 91.111,
+        humidityPct: 11,
+        cooldown: 'cold plunge',
+        heatTrainingLoad: 7.7,
+      },
+    ],
+    [],
+    'America/Toronto',
+    weather,
+  )
+  const analytics = buildAnalytics(cache, {
+    oura,
+    weather,
+    activityDetails: payload.details,
+    since: '2026-05-12',
+  })
+  const matching = analytics.activities.filter(candidate => candidate.id === 4)
+
+  assert.deepEqual(
+    matching.map(candidate => candidate.sport),
+    ['sauna'],
+  )
+  assert.equal(analytics.meta.activityCount, analytics.activities.length)
+  assert.equal(analytics.daily.find(candidate => candidate.date === date)?.load, 0)
+  assert.deepEqual(
+    matching.map(candidate => [candidate.windKph, candidate.windDir, candidate.windGustKph]),
+    [[10, 'NNW', 16]],
+  )
+
+  const feed = buildDataFeed(cache, analytics, {
+    oura,
+    weather,
+    zones: cache.zones,
+    activityDetails: payload.details,
+  })
+  const rows = feed
+    .trimEnd()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  assert.equal(rows.filter(row => row.kind === 'activity' && row.id === 4).length, 1)
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.sport, 'sauna')
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.avgTemp, 27)
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.windKph, 10)
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.windDir, 'NNW')
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.windGustKph, 16)
+  assert.equal(rows.find(row => row.kind === 'day' && row.date === date)?.sessions, 1)
 })
 
 test('data feed never leaks coordinates or secrets', () => {

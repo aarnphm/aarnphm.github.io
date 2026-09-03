@@ -258,6 +258,7 @@ test('plans direct Garmin TrainingPeaks exports without requiring a Strava match
       ],
       wahoo: [],
     },
+    emptyActivityBridgeLedger(),
     'garmin',
   )
 
@@ -296,6 +297,7 @@ test('plans direct Strava TrainingPeaks exports for triathlon sports', () => {
       garmin: [garmin('connect:1')],
       wahoo: [wahoo('wahoo:1')],
     },
+    emptyActivityBridgeLedger(),
     'strava',
   )
 
@@ -324,6 +326,7 @@ test('plans direct Wahoo TrainingPeaks exports from original FIT activities', ()
         wahoo('wahoo:3', { sport: null }),
       ],
     },
+    emptyActivityBridgeLedger(),
     'wahoo',
   )
 
@@ -348,5 +351,37 @@ test('plans direct Wahoo TrainingPeaks exports from original FIT activities', ()
         title: 'Wahoo wahoo:1',
       },
     ],
+  )
+})
+
+test('excludes provider activities created by the bridge from TrainingPeaks exports', () => {
+  const withGarminMirror = upsertActivityBridgeReceipt(
+    emptyActivityBridgeLedger(),
+    receipt({ sourceActivityId: 'wahoo:1', destinationActivityId: 'connect:1' }),
+  )
+  const ledger = upsertActivityBridgeReceipt(
+    withGarminMirror,
+    receipt({
+      direction: 'garmin-to-wahoo',
+      sourceProvider: 'garmin',
+      sourceActivityId: 'connect:2',
+      destinationProvider: 'wahoo',
+      destinationActivityId: 'wahoo:2',
+      stravaActivityId: '2',
+    }),
+  )
+  const inputs = {
+    strava: [],
+    garmin: [garmin('connect:1'), garmin('connect:3')],
+    wahoo: [wahoo('wahoo:2'), wahoo('wahoo:4')],
+  }
+
+  assert.deepEqual(
+    planTrainingPeaksBackfill(inputs, ledger, 'garmin').map(plan => plan.source.id),
+    ['connect:3'],
+  )
+  assert.deepEqual(
+    planTrainingPeaksBackfill(inputs, ledger, 'wahoo').map(plan => plan.source.id),
+    ['wahoo:4'],
   )
 })

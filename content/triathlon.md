@@ -209,7 +209,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-09-01 20:53:11 GMT-04:00
+modified: 2026-09-02 18:54:58 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1237,7 +1237,7 @@ date: 2026-08-23
 time: 18:30
 duration: 75 mins
 activity: sauna
-temperature: 196F
+temperature: 160F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.7
@@ -1253,6 +1253,19 @@ fueling: 2400
 date: 2026-09-01
 activity: 19997132818
 fueling: 240
+```
+
+```tracking
+title: Guided Down, Self-Care Sweat
+date: 2026-09-02
+time: 17:30
+duration: 75 mins
+activity: sauna
+temperature: 160F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.7
+strava: 20012367069
 ```
 
 <!-- training plan start
@@ -2222,6 +2235,26 @@ and power to weight is
 $$
 \mathrm{W/kg}=\frac{P}{m}.
 $$
+
+The bike VO2max estimate uses the ACSM power equation
+
+$$
+B(F,m)
+=
+10.8\frac{F/0.75}{m}+7,
+$$
+
+where $F$ is FTP and $m$ is body mass in kilograms. The current point uses the declared FTP. An older bike point uses $F=0.95P_{20}$.
+
+The lab result sets the absolute baseline. Let $V_L$ be the measured lab VO2max, $m_L$ be the mass recorded by the lab, and $F_L$ be the FTP derived from that result. The calibrated bike estimate is
+
+$$
+\widehat V_{\mathrm{bike}}
+=
+V_L+B(F,m)-B(F_L,m_L).
+$$
+
+This makes the estimate equal the measured lab VO2max at the lab baseline. Later changes come from FTP per kilogram.
 
 Vertical ascent rate is
 

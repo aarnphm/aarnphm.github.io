@@ -129,6 +129,7 @@ test('parses a manual sauna session without treating its activity kind as a Stra
 
   assert.deepEqual(parsed?.sauna, {
     id: 8_202_608_231_830,
+    stravaActivityId: null,
     title: 'Untangle',
     date: '2026-08-23',
     time: '18:30',
@@ -159,6 +160,7 @@ test('allows an omitted heat load and rejects incomplete sauna metadata', () => 
     )?.sauna,
     {
       id: 8_202_608_201_530,
+      stravaActivityId: null,
       title: null,
       date: '2026-08-20',
       time: '15:30',
@@ -184,4 +186,22 @@ test('allows an omitted heat load and rejects incomplete sauna metadata', () => 
     )?.sauna,
     null,
   )
+})
+
+test('parses a sauna Strava attachment and rejects an invalid activity ID', () => {
+  const body = [
+    'date: 2026-09-02',
+    'time: 17:30',
+    'duration: 75 mins',
+    'activity: sauna',
+    'temperature: 160F',
+    'humidity: 11%',
+    'cooldown: cold plunge',
+    'htl: 7.7',
+  ]
+  assert.equal(
+    parseTrackingBlock(null, [...body, 'strava: 20012367069'].join('\n'))?.sauna?.stravaActivityId,
+    20_012_367_069,
+  )
+  assert.equal(parseTrackingBlock(null, [...body, 'strava: 20012367069.5'].join('\n'))?.sauna, null)
 })
