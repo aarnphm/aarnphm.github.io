@@ -37,3 +37,13 @@ export const SPD_RAMP = ramp7('#7d8a96', '#205ea6')
 export const ELEV_RAMP = ramp7('#868a72', '#66800b')
 export const RESP_RAMP = ramp7('#74898a', '#16878a')
 export const STRIDE_RAMP = ramp7('#819078', '#3f7d57')
+export const UV_RAMP = ['#66800b', '#66800b', '#df9f22', '#da702c', '#da702c', '#af3029', '#8b6fd6']
+export const WIND_RAMP = [
+  '#205ea6',
+  '#4385b8',
+  '#7fa8bd',
+  '#a6a6a0',
+  '#d09062',
+  '#c86643',
+  '#af3029',
+]

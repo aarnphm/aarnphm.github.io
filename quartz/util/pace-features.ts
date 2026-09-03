@@ -145,7 +145,7 @@ export function legSpecFromActivityRow(row: unknown): PaceLegSpec | null {
     sport,
     distanceKm: readNumber(row, 'distanceKm') ?? 0,
     elevationM: readNumber(row, 'elevationM') ?? 0,
-    tempC: readNumber(row, 'avgTemp') ?? null,
+    tempC: readNumber(row, 'ambientTemperatureC') ?? null,
     windKph: readNumber(row, 'windKph') ?? null,
   }
 }

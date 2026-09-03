@@ -24,12 +24,67 @@ const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
 const API = normalizeApiBaseUrl(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
 const PER_PAGE = 200
-const CACHE_VERSION = 4
+const CACHE_VERSION = 5
 const ENV_FILE = '.env'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(400, 60_000)
 const geoLimiter = new AdaptiveRateLimiter(1100, 30_000)
 const CONCURRENCY = 5
+const DETAIL_BACKFILL_BATCH = 50
+const READ_REQUEST_RESERVE = 5
+const HEADERLESS_READ_REQUEST_LIMIT = 90
+const configuredReadRequestLimit = Number(process.env.STRAVA_MAX_READ_REQUESTS)
+const MAX_READ_REQUESTS =
+  Number.isFinite(configuredReadRequestLimit) && configuredReadRequestLimit >= 1
+    ? Math.floor(configuredReadRequestLimit)
+    : null
+
+interface StravaRatePair {
+  short: number
+  daily: number
+}
+
+let readLimit: StravaRatePair | null = null
+let readUsage: StravaRatePair | null = null
+let readRequests = 0
+let readsInFlight = 0
+let rateDeferred = false
+
+function ratePair(value: string | null): StravaRatePair | null {
+  const values = value?.split(',').map(part => Number(part.trim())) ?? []
+  if (values.length !== 2 || !values.every(item => Number.isInteger(item) && item >= 0)) return null
+  return { short: values[0], daily: values[1] }
+}
+
+function recordReadRate(response: Response): void {
+  readLimit = ratePair(response.headers.get('X-ReadRateLimit-Limit')) ?? readLimit
+  readUsage = ratePair(response.headers.get('X-ReadRateLimit-Usage')) ?? readUsage
+}
+
+function canRead(): boolean {
+  if (MAX_READ_REQUESTS != null && readRequests >= MAX_READ_REQUESTS) return false
+  if (!readLimit || !readUsage) return readRequests < HEADERLESS_READ_REQUEST_LIMIT
+  return (
+    readLimit.short - readUsage.short > READ_REQUEST_RESERVE + readsInFlight &&
+    readLimit.daily - readUsage.daily > READ_REQUEST_RESERVE + readsInFlight
+  )
+}
+
+async function fetchStrava(url: string, options: RequestInit): Promise<Response | null> {
+  if (!canRead()) {
+    rateDeferred = true
+    return null
+  }
+  readRequests += 1
+  readsInFlight += 1
+  try {
+    const response = await fetchWithRetry(url, options, limiter)
+    if (response) recordReadRate(response)
+    return response
+  } finally {
+    readsInFlight -= 1
+  }
+}
 
 async function mapPool<T>(
   items: T[],
@@ -156,7 +211,7 @@ async function fetchActivities(
   let athleteId = 0
   for (let page = 1; ; page++) {
     const url = apiUrl('/athlete/activities', { after, per_page: PER_PAGE, page })
-    const res = await fetchWithRetry(url, { headers }, limiter)
+    const res = await fetchStrava(url, { headers })
     if (!res) throw new Error(`activity fetch failed at page ${page}`)
     const batch = (await res.json()) as Record<string, unknown>[]
     if (!Array.isArray(batch) || batch.length === 0) break
@@ -177,7 +232,7 @@ async function fetchStreams(token: string, id: number): Promise<StravaStreams | 
     keys: 'time,latlng,altitude,distance,watts,heartrate,cadence',
     key_by_type: 'true',
   })
-  const res = await fetchWithRetry(url, { headers }, limiter)
+  const res = await fetchStrava(url, { headers })
   if (!res) return null
   const data = (await res.json()) as Record<string, { data?: unknown[] }>
   return {
@@ -192,18 +247,14 @@ async function fetchStreams(token: string, id: number): Promise<StravaStreams | 
 }
 
 async function fetchAthleteFtp(token: string): Promise<number | null> {
-  const res = await fetchWithRetry(apiUrl('/athlete'), { headers: authHeaders(token) }, limiter)
+  const res = await fetchStrava(apiUrl('/athlete'), { headers: authHeaders(token) })
   if (!res || !res.ok) return null
   const data = (await res.json()) as { ftp?: number | null }
   return typeof data.ftp === 'number' && data.ftp > 0 ? Math.round(data.ftp) : null
 }
 
 async function fetchZones(token: string): Promise<StravaZones | null> {
-  const res = await fetchWithRetry(
-    apiUrl('/athlete/zones'),
-    { headers: authHeaders(token) },
-    limiter,
-  )
+  const res = await fetchStrava(apiUrl('/athlete/zones'), { headers: authHeaders(token) })
   const ftp = await fetchAthleteFtp(token)
   if (!res || !res.ok) return ftp != null ? { hr: [], power: [], ftp } : null
   const data = (await res.json()) as {
@@ -304,15 +355,15 @@ async function fetchActivityDetail(
   token: string,
   id: number,
 ): Promise<RawStravaActivityDetail | null> {
-  const res = await fetchWithRetry(
-    apiUrl(`/activities/${id}`, { include_all_efforts: 'true' }),
-    { headers: authHeaders(token) },
-    limiter,
-  )
+  const res = await fetchStrava(apiUrl(`/activities/${id}`, { include_all_efforts: 'true' }), {
+    headers: authHeaders(token),
+  })
   if (!res) return null
   const data: unknown = await res.json()
   if (!isRecord(data)) return null
   return {
+    description: readString(data, 'description') ?? null,
+    fetchedAt: Date.now(),
     calories: nullableNumber(data, 'calories'),
     laps: parseAnalysisRanges(data.laps, 'lap'),
     segmentEfforts: parseAnalysisRanges(data.segment_efforts, 'segment'),
@@ -436,13 +487,27 @@ async function main(): Promise<void> {
     if (gi % 8 === 0) checkpoint()
   }
 
-  const needDetails = Object.values(merged)
-    .filter(
-      a =>
-        normalizeKind(a.sportType) !== null &&
-        !hasFetchedActivityDetail(activityDetails[String(a.id)]),
+  const detailCandidates = Object.values(merged)
+    .filter(a => normalizeKind(a.sportType) !== null)
+    .sort((left, right) => right.startDate.localeCompare(left.startDate))
+  const recentDetailCutoff = Date.now() - refreshWindowDays * 86_400_000
+  const recentDetails = detailCandidates
+    .filter(activity => Date.parse(activity.startDate) >= recentDetailCutoff)
+    .sort(
+      (left, right) =>
+        (activityDetails[String(left.id)]?.fetchedAt ?? 0) -
+          (activityDetails[String(right.id)]?.fetchedAt ?? 0) ||
+        right.startDate.localeCompare(left.startDate),
     )
-    .sort((x, y) => y.startDate.localeCompare(x.startDate))
+  const recentIds = new Set(recentDetails.map(activity => activity.id))
+  const historicalBackfill = detailCandidates
+    .filter(
+      activity =>
+        !recentIds.has(activity.id) &&
+        !hasFetchedActivityDetail(activityDetails[String(activity.id)]),
+    )
+    .slice(0, DETAIL_BACKFILL_BATCH)
+  const needDetails = [...recentDetails, ...historicalBackfill]
   let di = 0
   await mapPool(needDetails, CONCURRENCY, async a => {
     const detail = await fetchActivityDetail(access, a.id)
@@ -457,6 +522,15 @@ async function main(): Promise<void> {
   if (writing) await writing
   await writeCache()
   await refreshTriathlonRouteSource()
+  if (rateDeferred) {
+    const usage =
+      readLimit && readUsage
+        ? `; Strava read usage ${readUsage.short}/${readLimit.short} short, ${readUsage.daily}/${readLimit.daily} daily`
+        : ''
+    console.log(
+      `[strava] deferred requests after ${readRequests} reads${MAX_READ_REQUESTS == null ? '' : `/${MAX_READ_REQUESTS}`}${usage}`,
+    )
+  }
   console.log(
     `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new), ${Object.keys(streams).length} streams, ${Object.keys(activityDetails).length} details, ${Object.keys(geo).length} located → ${cacheFile}`,
   )

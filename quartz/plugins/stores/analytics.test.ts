@@ -6,6 +6,7 @@ import type { GarminCache, GarminCyclingDynamics } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
 import type { TrackEntry } from './tracking'
 import type { WeatherCache } from './weather'
+import { isRecord } from '../../util/type-guards'
 import {
   ACTIVITY_FIELDS,
   ATHLETE,
@@ -140,6 +141,8 @@ function fixtures(): {
     version: 1,
     lastSync: cache.lastSync,
     current: null,
+    attribution: null,
+    uvCalibration: null,
     activities: {
       '1': {
         activityId: 1,
@@ -153,6 +156,8 @@ function fixtures(): {
         windDir: 'W',
         windDirDeg: 270,
         windGustKph: 29,
+        averageRelativeHumidityPct: null,
+        relativeHumidityProvenance: null,
         temperatureC: 22,
         source: 'weatherkit',
       },
@@ -748,6 +753,8 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
     version: 1,
     lastSync: cache.lastSync,
     current: null,
+    attribution: null,
+    uvCalibration: null,
     activities: {},
     days: {},
   }
@@ -769,6 +776,8 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
       windDir: null,
       windDirDeg: null,
       windGustKph: null,
+      averageRelativeHumidityPct: null,
+      relativeHumidityProvenance: null,
       temperatureC: 26,
       source: 'weatherkit',
     }
@@ -793,6 +802,8 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
     windDir: null,
     windDirDeg: null,
     windGustKph: null,
+    averageRelativeHumidityPct: null,
+    relativeHumidityProvenance: null,
     temperatureC: 20,
     source: 'weatherkit',
   }
@@ -856,6 +867,8 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
     version: 1,
     lastSync: cache.lastSync,
     current: null,
+    attribution: null,
+    uvCalibration: null,
     activities: {
       201: {
         activityId: 201,
@@ -869,6 +882,8 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
         windDir: null,
         windDirDeg: null,
         windGustKph: null,
+        averageRelativeHumidityPct: null,
+        relativeHumidityProvenance: null,
         temperatureC: 40,
         source: 'weatherkit',
       },
@@ -2220,7 +2235,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   const lines = feed.trimEnd().split('\n')
   const rows = lines.map(l => JSON.parse(l))
   assert.equal(rows[0].kind, 'meta')
-  assert.equal(rows[0].v, 5)
+  assert.equal(rows[0].v, 6)
   assert.equal(rows[0].criticalPower, null)
   assert.equal(rows[0].criticalPowerYear, null)
   assert.deepEqual(rows[0].fields.day, [...DAY_FIELDS])
@@ -2269,7 +2284,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(ride?.windKph, 18)
   assert.equal(ride?.windDir, 'W')
   assert.equal(ride?.windGustKph, 29)
-  assert.equal(ride?.avgTemp, 22)
+  assert.equal(ride?.ambientTemperatureC, 22)
   assert.equal(ride?.skipTraining, true)
   const run = rows.find(r => r.kind === 'activity' && r.id === 2)
   assert.equal(run?.skipTraining, false)
@@ -2432,7 +2447,7 @@ test('manual sauna sessions appear in analytics and the data feed without enteri
   assert.equal(activity?.load, 0)
   assert.deepEqual(activity?.sauna, payload.details[String(activity.id)].sauna)
   assert.equal(rows.find(row => row.kind === 'day' && row.date === date)?.sessions, 1)
-  assert.equal(rows.find(row => row.kind === 'meta')?.v, 5)
+  assert.equal(rows.find(row => row.kind === 'meta')?.v, 6)
 })
 
 test('attached sauna activity replaces its raw Strava classification in analytics', () => {
@@ -2451,6 +2466,8 @@ test('attached sauna activity replaces its raw Strava classification in analytic
     windDir: 'NNW',
     windDirDeg: 338,
     windGustKph: 16,
+    averageRelativeHumidityPct: null,
+    relativeHumidityProvenance: null,
     temperatureC: 27,
     source: 'weatherkit',
   }
@@ -2506,7 +2523,7 @@ test('attached sauna activity replaces its raw Strava classification in analytic
     .map(line => JSON.parse(line))
   assert.equal(rows.filter(row => row.kind === 'activity' && row.id === 4).length, 1)
   assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.sport, 'sauna')
-  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.avgTemp, 27)
+  assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.ambientTemperatureC, 27)
   assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.windKph, 10)
   assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.windDir, 'NNW')
   assert.equal(rows.find(row => row.kind === 'activity' && row.id === 4)?.windGustKph, 16)
@@ -2518,6 +2535,88 @@ test('data feed never leaks coordinates or secrets', () => {
   const a = buildAnalytics(cache, { oura, weights, since: '2026-05-12' })
   const feed = buildDataFeed(cache, a, { oura, weights, zones: cache.zones })
   assert.doesNotMatch(feed, /latlng|polyline|refreshToken|"lat"|"lng"|43\.6|-79\.4/)
+})
+
+test('data feed emits selected scalar environment evidence without private analysis payloads', () => {
+  const { cache, oura, weather } = fixtures()
+  const raw = cache.activities['1']
+  const activityWeather = weather.activities['1']
+  assert.ok(raw)
+  assert.ok(activityWeather)
+  raw.averageTemp = 37
+  cache.activityDetails = {
+    '1': {
+      description:
+        '── pelotan.cc/uv UV Load™ Analysis ──\nUV Load 83 — High\nAvg UV 2.3\n🌡️ 20°C ☁️ 42%\n\n-- myWindsock Report --\nWeather Impact: 0.6%\nCdA: 0.324\nHeadwind: 56% @ 5-15mph\nLongest Headwind: 03:32:41\nAir Speed: 16.8mph\n-- END --\nhttps://strava.com/activities/1?token=top-secret',
+      fetchedAt: Date.parse('2026-06-12T00:00:00Z'),
+      calories: null,
+      laps: [],
+      segmentEfforts: [],
+      splitsMetric: [],
+      splitsStandard: [],
+    },
+  }
+  activityWeather.routeFingerprint = 'a'.repeat(64)
+  activityWeather.fetchedAt = Date.parse('2026-06-12T01:00:00Z')
+  activityWeather.routeHours = [
+    {
+      forecastStart: activityWeather.start,
+      overlapStart: activityWeather.start,
+      overlapEnd: activityWeather.end,
+      elapsedStartS: 0,
+      elapsedEndS: activityWeather.durationS,
+      latitude: activityWeather.latitude,
+      longitude: activityWeather.longitude,
+      uvIndex: 4,
+      cloudCover: 0.5,
+      temperatureC: 20,
+      windSpeedKph: 18,
+      windDirectionDeg: 270,
+      windGustKph: 29,
+      relativeHumidity: 0.5,
+      pressureHpa: 1_015,
+      daylight: true,
+    },
+  ]
+
+  const payload = buildPayload(cache, oura, null, '2026-05-12', weather)
+  const analytics = buildAnalytics(cache, {
+    oura,
+    weather,
+    activityDetails: payload.details,
+    since: '2026-05-12',
+  })
+  const feed = buildDataFeed(cache, analytics, {
+    oura,
+    weather,
+    zones: cache.zones,
+    activityDetails: payload.details,
+  })
+  const rows: unknown[] = feed
+    .trimEnd()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  const activityRow = rows.find(
+    (row): row is Record<string, unknown> =>
+      isRecord(row) && row.kind === 'activity' && row.id === 1,
+  )
+  assert.ok(activityRow)
+  assert.equal(activityRow.deviceTemperatureC, 37)
+  assert.equal(activityRow.ambientTemperatureC, 20)
+  assert.equal(activityRow.weatherImpactPct, 0.6)
+  assert.equal(activityRow.weatherImpactSource, 'mywindsock')
+  assert.equal(activityRow.uvExposureKind, 'pelotan-score')
+  assert.equal(activityRow.uvScore, 83)
+  assert.equal(activityRow.uvSeverity, 'high')
+  assert.equal(activityRow.ambientSed, 1.56)
+  assert.equal(activityRow.avgUvIndex, 2.3)
+  assert.equal(activityRow.peakUvIndex, 4)
+  assert.equal(activityRow.avgCloudCoverPct, 42)
+  assert.equal(Object.values(activityRow).some(Array.isArray), false)
+  assert.doesNotMatch(
+    feed,
+    /analyses|samples|routeFingerprint|provider-native|pelotan\.cc\/uv|strava\.com|top-secret/,
+  )
 })
 
 test('data feed degrades to a single meta line without a cache', () => {

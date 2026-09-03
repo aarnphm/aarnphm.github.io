@@ -24,6 +24,10 @@ export function stravaSyncRefreshDays(environment: SyncRefreshEnvironment = proc
   return refreshDays(environment, ['STRAVA_SYNC_REFRESH_DAYS', 'SYNC_REFRESH_DAYS'])
 }
 
+export function weatherSyncRefreshDays(environment: SyncRefreshEnvironment = process.env): number {
+  return refreshDays(environment, ['WEATHERKIT_REFRESH_DAYS', 'SYNC_REFRESH_DAYS'])
+}
+
 export function calendarRefreshStart(refreshWindowDays: number, now = Date.now()): string {
   if (!Number.isInteger(refreshWindowDays) || refreshWindowDays < 0)
     throw new Error('refreshWindowDays must be a nonnegative integer')

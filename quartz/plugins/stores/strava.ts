@@ -18,7 +18,23 @@ import type {
   StrengthExercise,
 } from './tracking'
 import type { WahooActivityMatch, WahooCache, WahooCyclingDynamics, WahooStreams } from './wahoo'
-import type { WeatherActivity, WeatherCache, WeatherTemperatureSample } from './weather'
+import type {
+  WeatherActivity,
+  WeatherCache,
+  WeatherRelativeHumidityProvenance,
+  WeatherTemperatureSample,
+} from './weather'
+import {
+  buildActivityEnvironment,
+  type GardenApparentWindEstimate,
+  type GardenEnvironmentEstimate,
+  type GardenUvScore,
+} from '../../util/activity-environment'
+import {
+  parseActivityProviderReports,
+  type NativeActivityReports,
+} from '../../util/activity-provider-reports'
+import { applyGardenUvCalibration } from '../../util/activity-uv-score'
 import {
   estimateWahooCyclingStamina,
   type CyclingStaminaEstimate,
@@ -166,6 +182,8 @@ export interface RawStravaRunSplit {
 }
 
 export interface RawStravaActivityDetail {
+  description?: string | null
+  fetchedAt?: number
   calories: number | null
   laps: RawStravaAnalysisRange[]
   segmentEfforts: RawStravaAnalysisRange[]
@@ -177,6 +195,9 @@ export const hasFetchedActivityDetail = (
   detail: Partial<RawStravaActivityDetail> | undefined,
 ): detail is RawStravaActivityDetail =>
   detail !== undefined &&
+  Object.hasOwn(detail, 'description') &&
+  typeof detail.fetchedAt === 'number' &&
+  Number.isFinite(detail.fetchedAt) &&
   Array.isArray(detail.laps) &&
   Array.isArray(detail.segmentEfforts) &&
   Array.isArray(detail.splitsMetric) &&
@@ -511,6 +532,15 @@ export interface CalculatedTrainingEffect {
   }
 }
 
+export interface ActivityAnalyses {
+  native: NativeActivityReports
+  derived: {
+    environment: GardenEnvironmentEstimate | null
+    uvScore: GardenUvScore | null
+    apparentWind: GardenApparentWindEstimate | null
+  }
+}
+
 export interface StravaActivityDetail {
   id: number
   sport: ActivityKind
@@ -519,6 +549,7 @@ export interface StravaActivityDetail {
   start: string
   distanceKm: number
   movingTimeS: number
+  elapsedTimeS: number
   maxSpeedKph: number | null
   elevationM: number
   avgHr: number | null
@@ -531,11 +562,14 @@ export interface StravaActivityDetail {
   avgCadence: number | null
   sufferScore: number | null
   calories: number | null
-  avgTemp: number | null
+  deviceTemperatureC: number | null
+  ambientTemperatureC: number | null
   windKph: number | null
   windDir: string | null
   windDirDeg: number | null
   windGustKph: number | null
+  averageRelativeHumidityPct: number | null
+  relativeHumidityProvenance: WeatherRelativeHumidityProvenance | null
   location: string | null
   fueling: ActivityFueling | null
   strength: ActivityStrength | null
@@ -575,6 +609,7 @@ export interface StravaActivityDetail {
   swimIntervals: SwimActivityInterval[]
   swimLocation: SwimLocation | null
   waterTemperatureC: number | null
+  analyses: ActivityAnalyses
 }
 
 export type SwimPaceSource = 'stroke' | 'active' | 'moving'
@@ -2588,6 +2623,9 @@ function projectDetail(
   gearShifts: ActivityGearShift[],
   cyclingDynamics: ActivityCyclingDynamics | null,
   weather: WeatherCache['activities'][string] | undefined,
+  weatherAttribution: WeatherCache['attribution'],
+  uvCalibration: WeatherCache['uvCalibration'],
+  generatedAt: number,
   geo: string | undefined,
   fueling: ActivityFueling | null,
   garmin: GarminVerification | null,
@@ -2609,6 +2647,8 @@ function projectDetail(
   let maxAlt = 0
   let ascentM = 0
   let descentM = 0
+  let environment: GardenEnvironmentEstimate | null = null
+  let apparentWind: GardenApparentWindEstimate | null = null
   const temperatureSeries = weather?.temperatureSeries ?? []
   const fallbackTemperatureC = weather?.temperatureC ?? a.averageTemp ?? null
   const mapLatlng = streams?.latlng ?? []
@@ -2645,6 +2685,21 @@ function projectDetail(
     const watts = routeStreams.watts ?? []
     const routeHrStream = routeStreams.heartrate ?? []
     const speedKph = localSpeedKph(routeTime, distance)
+    if (weather?.activityId === a.id) {
+      const result = buildActivityEnvironment({
+        activityId: a.id,
+        elapsedTimeS: a.elapsedTime > 0 ? a.elapsedTime : a.movingTime,
+        movingTimeS: a.movingTime,
+        timeS: routeTime,
+        distanceM: distance,
+        latlng,
+        weather,
+        attribution: weatherAttribution,
+        computedAt: generatedAt,
+      })
+      environment = result.environment
+      apparentWind = result.apparentWind
+    }
     let ascent = 0
     let descent = 0
     for (let i = 1; i < altitude.length; i++) {
@@ -2744,6 +2799,7 @@ function projectDetail(
     start: a.startDate,
     distanceKm: round(a.distance / 1000, sport === 'swim' ? 3 : 1),
     movingTimeS: a.movingTime,
+    elapsedTimeS: a.elapsedTime > 0 ? a.elapsedTime : a.movingTime,
     maxSpeedKph: maxSpeedKph(timeline),
     elevationM: ascentM,
     avgHr: heartRate.avgHr,
@@ -2764,16 +2820,15 @@ function projectDetail(
         : rawDetail?.calories != null
           ? Math.round(rawDetail.calories)
           : (garmin?.totalCalories ?? null),
-    avgTemp:
-      weather?.temperatureC != null
-        ? Math.round(weather.temperatureC)
-        : a.averageTemp != null
-          ? Math.round(a.averageTemp)
-          : null,
+    deviceTemperatureC: a.averageTemp != null ? round(a.averageTemp, 1) : null,
+    ambientTemperatureC:
+      environment?.summary.averageAmbientTemperatureC ?? weather?.temperatureC ?? null,
     windKph: weather?.windKph ?? null,
     windDir: weather?.windDir ?? null,
     windDirDeg: weather?.windDirDeg ?? null,
     windGustKph: weather?.windGustKph ?? null,
+    averageRelativeHumidityPct: weather?.averageRelativeHumidityPct ?? null,
+    relativeHumidityProvenance: weather?.relativeHumidityProvenance ?? null,
     location: geo ?? null,
     fueling,
     strength: null,
@@ -2831,6 +2886,20 @@ function projectDetail(
     swimIntervals: [],
     swimLocation: null,
     waterTemperatureC: null,
+    analyses: {
+      native: parseActivityProviderReports(
+        rawDetail?.description ?? null,
+        a.id,
+        rawDetail?.fetchedAt ?? 0,
+      ),
+      derived: {
+        environment,
+        uvScore: environment
+          ? applyGardenUvCalibration(environment, uvCalibration, generatedAt)
+          : null,
+        apparentWind,
+      },
+    },
   }
 }
 
@@ -2942,11 +3011,13 @@ const applySaunaWeather = (
   const activityWeather =
     exact?.date === entry.date ? exact : nearestSameDayWeatherAt(weather, entry.date, detail.start)
   const dayWeather = weather.days[entry.date]
-  detail.avgTemp ??= activityWeather?.temperatureC ?? null
+  detail.ambientTemperatureC ??= activityWeather?.temperatureC ?? null
   detail.windKph ??= activityWeather?.windKph ?? dayWeather?.windKph ?? null
   detail.windDir ??= activityWeather?.windDir ?? dayWeather?.windDir ?? null
   detail.windDirDeg ??= activityWeather?.windDirDeg ?? dayWeather?.windDirDeg ?? null
   detail.windGustKph ??= activityWeather?.windGustKph ?? dayWeather?.windGustKph ?? null
+  detail.averageRelativeHumidityPct ??= activityWeather?.averageRelativeHumidityPct ?? null
+  detail.relativeHumidityProvenance ??= activityWeather?.relativeHumidityProvenance ?? null
 }
 
 export function applyManualSauna(
@@ -3024,6 +3095,7 @@ export function applyManualSauna(
       start: new Date(startMs).toISOString(),
       distanceKm: 0,
       movingTimeS: entry.durationS,
+      elapsedTimeS: entry.durationS,
       maxSpeedKph: null,
       elevationM: 0,
       avgHr: heartRate.avgHr,
@@ -3036,11 +3108,14 @@ export function applyManualSauna(
       avgCadence: null,
       sufferScore: null,
       calories: null,
-      avgTemp: null,
+      deviceTemperatureC: null,
+      ambientTemperatureC: null,
       windKph: null,
       windDir: null,
       windDirDeg: null,
       windGustKph: null,
+      averageRelativeHumidityPct: null,
+      relativeHumidityProvenance: null,
       location: null,
       fueling: null,
       strength: null,
@@ -3079,6 +3154,10 @@ export function applyManualSauna(
       swimIntervals: [],
       swimLocation: null,
       waterTemperatureC: null,
+      analyses: {
+        native: { myWindsock: null, pelotan: null },
+        derived: { environment: null, uvScore: null, apparentWind: null },
+      },
     }
     applySaunaWeather(payload.details[id], entry, weather)
     const day = payload.days.find(candidate => candidate.date === entry.date) ?? {
@@ -3390,6 +3469,9 @@ export function buildPayload(
       activityGearShifts(a, garminMatch, garmin, wahooMatch, wahoo ?? null),
       activityCyclingDynamics(a, garminMatch, garmin, wahooMatch, wahoo ?? null),
       activityWeather,
+      weather?.attribution ?? null,
+      weather?.uvCalibration ?? null,
+      generatedAt,
       cache.geo?.[String(a.id)],
       activityFueling(a, sport, garmin, wahooMatch),
       garminVerification(a, garminMatch, garminTrainingEffectMatch),

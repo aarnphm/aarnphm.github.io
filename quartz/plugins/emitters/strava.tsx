@@ -27,6 +27,7 @@ import { readStravaCacheFile } from '../../util/strava-cache-file'
 import { serializeStravaDetails, type StravaDetailPayload } from '../../util/strava-detail'
 import {
   appleCachePath,
+  applyManualActivityTracking,
   coreBodyTemperatureCachePath,
   enrichCalculatedExerciseLoads,
   enrichCalculatedIntensityFactors,
@@ -70,14 +71,7 @@ import {
 import { buildMatchedRides, emptyMatchedRides } from '../stores/matched-rides'
 import { buildMatchedRuns, emptyMatchedRuns } from '../stores/matched-runs'
 import { OuraCache } from '../stores/oura'
-import {
-  applyManualFueling,
-  applyManualSauna,
-  applyManualStrength,
-  buildPayload,
-  emptyHealth,
-  StravaRawCache,
-} from '../stores/strava'
+import { buildPayload, emptyHealth, StravaRawCache } from '../stores/strava'
 import { parseTrainingPlans } from '../stores/training'
 import { parseWahooCache, type WahooCache } from '../stores/wahoo'
 import { parseWeatherCache, WeatherCache } from '../stores/weather'
@@ -241,9 +235,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         ATHLETE.hrMax,
         generatedAt,
       )
-      applyManualFueling(payload, tracking?.fueling ?? [])
-      applyManualStrength(payload, tracking?.strength ?? [])
-      applyManualSauna(payload, tracking?.sauna ?? [], oura?.heartRate ?? [], undefined, weather)
+      applyManualActivityTracking(payload, tracking, oura, weather)
       for (const t of tracking?.days ?? [])
         if (t.windKph != null) {
           const h = payload.health[t.date] ?? emptyHealth()

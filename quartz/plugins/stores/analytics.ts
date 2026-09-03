@@ -5,6 +5,7 @@ import type {
   GarminWeightSample,
 } from './garmin'
 import type { WeatherCache } from './weather'
+import { selectActivityAnalysisSummary } from '../../util/activity-analysis-selection'
 import { matchAppleRun } from '../../util/apple-run-match'
 import { matchAppleSwims } from '../../util/apple-swim-match'
 import {
@@ -5717,7 +5718,20 @@ export const ACTIVITY_FIELDS = [
   'strokes',
   'calories',
   'sufferScore',
-  'avgTemp',
+  'deviceTemperatureC',
+  'ambientTemperatureC',
+  'weatherImpactPct',
+  'weatherImpactSource',
+  'uvExposureKind',
+  'uvScore',
+  'uvSeverity',
+  'ambientSed',
+  'avgUvIndex',
+  'peakUvIndex',
+  'avgCloudCoverPct',
+  'gardenHeadwindSharePct',
+  'gardenApparentAirRatio',
+  'gardenWindCoveragePct',
   'windKph',
   'windDir',
   'windGustKph',
@@ -5820,7 +5834,20 @@ export interface FeedActivityRow {
   strokes: Record<string, number> | null
   calories: number | null
   sufferScore: number | null
-  avgTemp: number | null
+  deviceTemperatureC: number | null
+  ambientTemperatureC: number | null
+  weatherImpactPct: number | null
+  weatherImpactSource: 'mywindsock' | null
+  uvExposureKind: 'pelotan-score' | 'garden-score' | 'garden-sed' | null
+  uvScore: number | null
+  uvSeverity: string | null
+  ambientSed: number | null
+  avgUvIndex: number | null
+  peakUvIndex: number | null
+  avgCloudCoverPct: number | null
+  gardenHeadwindSharePct: number | null
+  gardenApparentAirRatio: number | null
+  gardenWindCoveragePct: number | null
   windKph: number | null
   windDir: string | null
   windGustKph: number | null
@@ -5977,6 +6004,24 @@ export function buildDataFeed(
   for (const s of sorted) {
     const raw = cache?.activities[String(s.id)]
     const detail = inputs.activityDetails?.[String(s.id)]
+    const selectedAnalysis = detail ? selectActivityAnalysisSummary(detail.analyses) : null
+    const environment = detail?.analyses.derived.environment ?? null
+    const apparentWind = detail?.analyses.derived.apparentWind ?? null
+    const selectedUv = selectedAnalysis?.uvExposure ?? null
+    const selectedUvScore =
+      selectedUv?.kind === 'pelotan-score' || selectedUv?.kind === 'garden-score'
+        ? selectedUv.score
+        : null
+    const selectedUvSeverity =
+      selectedUv?.kind === 'pelotan-score'
+        ? selectedUv.severity
+        : selectedUv?.kind === 'garden-score'
+          ? selectedUv.severity
+          : null
+    const selectedAverageUvIndex =
+      selectedUv?.kind === 'pelotan-score'
+        ? (detail?.analyses.native.pelotan?.averageUvIndex ?? null)
+        : (environment?.summary.averageUvIndex ?? null)
     if (s.sport === 'sauna' && detail?.sauna) {
       activityLines.push(
         pickLine(
@@ -5999,7 +6044,23 @@ export function buildDataFeed(
             strokes: null,
             calories: null,
             sufferScore: null,
-            avgTemp: detail.avgTemp,
+            deviceTemperatureC: detail.deviceTemperatureC,
+            ambientTemperatureC: detail.ambientTemperatureC,
+            weatherImpactPct: selectedAnalysis?.weatherImpact?.valuePct ?? null,
+            weatherImpactSource: selectedAnalysis?.weatherImpact ? 'mywindsock' : null,
+            uvExposureKind: selectedUv?.kind ?? null,
+            uvScore: selectedUvScore,
+            uvSeverity: selectedUvSeverity,
+            ambientSed: environment?.summary.ambientSed ?? null,
+            avgUvIndex: selectedAverageUvIndex,
+            peakUvIndex: environment?.summary.peakUvIndex ?? null,
+            avgCloudCoverPct:
+              selectedUv?.kind === 'pelotan-score'
+                ? (detail.analyses.native.pelotan?.averageCloudCoverPct ?? null)
+                : (environment?.summary.averageCloudCoverPct ?? null),
+            gardenHeadwindSharePct: apparentWind?.summary.headwindSharePct ?? null,
+            gardenApparentAirRatio: apparentWind?.summary.apparentAirRatio ?? null,
+            gardenWindCoveragePct: apparentWind?.summary.coveragePct ?? null,
             windKph: detail.windKph,
             windDir: detail.windDir,
             windGustKph: detail.windGustKph,
@@ -6066,8 +6127,26 @@ export function buildDataFeed(
           strokes: s.strokes,
           calories: raw.calories ?? null,
           sufferScore: raw.sufferScore ?? null,
-          avgTemp:
-            raw.averageTemp ?? inputs.weather?.activities[String(s.id)]?.temperatureC ?? null,
+          deviceTemperatureC: raw.averageTemp ?? null,
+          ambientTemperatureC:
+            detail?.ambientTemperatureC ??
+            inputs.weather?.activities[String(s.id)]?.temperatureC ??
+            null,
+          weatherImpactPct: selectedAnalysis?.weatherImpact?.valuePct ?? null,
+          weatherImpactSource: selectedAnalysis?.weatherImpact ? 'mywindsock' : null,
+          uvExposureKind: selectedUv?.kind ?? null,
+          uvScore: selectedUvScore,
+          uvSeverity: selectedUvSeverity,
+          ambientSed: environment?.summary.ambientSed ?? null,
+          avgUvIndex: selectedAverageUvIndex,
+          peakUvIndex: environment?.summary.peakUvIndex ?? null,
+          avgCloudCoverPct:
+            selectedUv?.kind === 'pelotan-score'
+              ? (detail?.analyses.native.pelotan?.averageCloudCoverPct ?? null)
+              : (environment?.summary.averageCloudCoverPct ?? null),
+          gardenHeadwindSharePct: apparentWind?.summary.headwindSharePct ?? null,
+          gardenApparentAirRatio: apparentWind?.summary.apparentAirRatio ?? null,
+          gardenWindCoveragePct: apparentWind?.summary.coveragePct ?? null,
           windKph: s.windKph,
           windDir: s.windDir,
           windGustKph: s.windGustKph,
@@ -6095,7 +6174,7 @@ export function buildDataFeed(
       : null
   const meta = {
     kind: 'meta',
-    v: 5,
+    v: 6,
     generatedAt,
     athleteId: analytics.meta.athleteId,
     today: analytics.meta.today,

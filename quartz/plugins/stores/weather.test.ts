@@ -30,7 +30,12 @@ function hour(values: Partial<WeatherHour>): WeatherHour {
     windSpeed: 0,
     windDirection: null,
     windGust: null,
+    relativeHumidity: null,
     temperature: null,
+    uvIndex: null,
+    cloudCover: null,
+    pressure: null,
+    daylight: null,
     conditionCode: null,
     precipitationChance: null,
     precipitationType: null,
@@ -53,6 +58,7 @@ test('weatherActivityFromHours weights wind by activity overlap', () => {
       windSpeed: 10,
       windDirection: 270,
       windGust: 20,
+      relativeHumidity: 0.5,
       temperature: 22,
     }),
     hour({
@@ -60,6 +66,7 @@ test('weatherActivityFromHours weights wind by activity overlap', () => {
       windSpeed: 20,
       windDirection: 270,
       windGust: 26,
+      relativeHumidity: 0.75,
       temperature: 24,
     }),
   ])
@@ -68,12 +75,44 @@ test('weatherActivityFromHours weights wind by activity overlap', () => {
   assert.equal(activity?.windDir, 'W')
   assert.equal(activity?.windDirDeg, 270)
   assert.equal(activity?.windGustKph, 26)
+  assert.equal(activity?.averageRelativeHumidityPct, 67)
+  assert.deepEqual(activity?.relativeHumidityProvenance, {
+    source: 'weatherkit',
+    sourceKind: 'modeled',
+    samplingMethod: 'route-hour',
+    inputTimestamp: '2026-06-11T13:30:00.000Z',
+    coveragePct: 100,
+  })
   assert.equal(activity?.temperatureC, 23)
   assert.deepEqual(activity?.temperatureSeries, [
     { elapsedS: 0, temperatureC: 22 },
     { elapsedS: 1800, temperatureC: 24 },
     { elapsedS: 5400, temperatureC: 24 },
   ])
+})
+
+test('weatherActivityFromHours calculates humidity independently from wind coverage', () => {
+  const activity = weatherActivityFromHours(candidate(), [
+    hour({ windSpeed: null, relativeHumidity: 0.68 }),
+    hour({ forecastStart: '2026-06-11T14:00:00.000Z', windSpeed: 20, relativeHumidity: null }),
+  ])
+
+  assert.equal(activity?.windKph, 20)
+  assert.equal(activity?.averageRelativeHumidityPct, 68)
+  assert.equal(activity?.relativeHumidityProvenance?.coveragePct, 33)
+})
+
+test('weatherActivityFromHours preserves zero humidity and rejects malformed fractions', () => {
+  const dry = weatherActivityFromHours(candidate(), [hour({ relativeHumidity: 0 })])
+  const malformed = weatherActivityFromHours(candidate(), [
+    hour({ relativeHumidity: -0.01 }),
+    hour({ forecastStart: '2026-06-11T14:00:00.000Z', relativeHumidity: 1.01 }),
+  ])
+
+  assert.equal(dry?.averageRelativeHumidityPct, 0)
+  assert.equal(dry?.relativeHumidityProvenance?.coveragePct, 33)
+  assert.equal(malformed?.averageRelativeHumidityPct, null)
+  assert.equal(malformed?.relativeHumidityProvenance?.coveragePct, 0)
 })
 
 test('summarizeWeatherDays folds activity weather into duration-weighted day wind', () => {
@@ -153,11 +192,20 @@ test('parseWeatherCache keeps valid activities and recomputes day summaries', ()
         windDir: 'SW',
         windDirDeg: 225,
         windGustKph: 28,
+        averageRelativeHumidityPct: 64,
+        relativeHumidityProvenance: {
+          source: 'weatherkit',
+          sourceKind: 'modeled',
+          samplingMethod: 'route-hour',
+          inputTimestamp: '2026-06-11T13:00:00.000Z',
+          coveragePct: 100,
+        },
         temperatureC: 24,
         temperatureSeries: [
           { elapsedS: 0, temperatureC: 23 },
           { elapsedS: 3600, temperatureC: 24 },
         ],
+        source: 'weatherkit',
       },
       bad: { activityId: 102 },
     },
@@ -167,6 +215,7 @@ test('parseWeatherCache keeps valid activities and recomputes day summaries', ()
   assert.equal(cache?.current, null)
   assert.equal(Object.keys(cache?.activities ?? {}).length, 1)
   assert.equal(cache?.days['2026-06-11'].windKph, 18)
+  assert.equal(cache?.activities.good.averageRelativeHumidityPct, 64)
   assert.deepEqual(cache?.activities.good.temperatureSeries, [
     { elapsedS: 0, temperatureC: 23 },
     { elapsedS: 3600, temperatureC: 24 },

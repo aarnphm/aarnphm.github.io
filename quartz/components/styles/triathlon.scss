@@ -13,6 +13,11 @@
   --tri-zone-heart-rate: #d14d41;
   --tri-zone-power: #8b6fd6;
   --tri-zone-pace: #205ea6;
+  --tri-environment-uv-low: #66800b;
+  --tri-environment-uv-moderate: #df9f22;
+  --tri-environment-uv-high: #da702c;
+  --tri-environment-uv-very-high: #af3029;
+  --tri-environment-uv-extreme: #8b6fd6;
   --tri-power-sprint: #287dd1;
   --tri-power-attack: #67a82f;
   --tri-power-climb: #f27440;
@@ -2020,6 +2025,11 @@
 
   .tri-effort-table--climbing {
     min-width: 52rem;
+  }
+
+  .tri-shift-chart > .tri-elev-cap--summary {
+    flex-wrap: wrap;
+    white-space: normal;
   }
 }
 
@@ -14917,6 +14927,335 @@ a.tri-pop-date:hover {
   overflow-y: auto;
   overscroll-behavior-y: contain;
   @include thin-scrollbar;
+}
+
+.tri-environment-layout,
+.tri-environment-traces {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+@media (min-width: 45.001rem) {
+  .tri-day-page > .tri-day-embed .tri-environment-layout {
+    --tri-environment-stack-height: calc(
+      var(--tri-activity-graph-row-height) + var(--tri-activity-graph-row-height) +
+        var(--tri-activity-graph-row-height) + var(--tri-activity-graph-row-height) +
+        var(--tri-activity-graph-row-height) + var(--tri-activity-graph-row-height) + 3.5rem
+    );
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.4rem;
+    align-items: stretch;
+    height: var(--tri-environment-stack-height);
+
+    > .tri-environment-traces {
+      display: grid;
+      grid-template-rows: repeat(6, var(--tri-activity-graph-row-height));
+      min-height: 0;
+    }
+
+    > .tri-environment {
+      grid-column: 2;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      height: 100%;
+      min-height: 0;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.tri-environment {
+  grid-column: 1 / -1;
+  box-sizing: border-box;
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+  margin-bottom: 0.5rem;
+  padding: 0.55rem 0.6rem 0.65rem;
+  background: color-mix(in srgb, var(--lightgray) 34%, transparent);
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-environment-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  color: var(--darkgray);
+  font-size: 0.56rem;
+  line-height: 1.35;
+
+  tr {
+    height: 1.7rem;
+  }
+
+  th,
+  td {
+    padding: 0.24rem 0.28rem;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid color-mix(in srgb, var(--gray) 16%, transparent);
+  }
+
+  thead th {
+    color: var(--dark);
+    font-weight: 600;
+  }
+
+  tbody th {
+    width: 42%;
+    color: var(--gray);
+    font-weight: 400;
+  }
+}
+
+.tri-environment-table-group th {
+  width: auto;
+  color: var(--dark);
+  font-size: 0.58rem;
+  font-weight: 500;
+}
+
+.tri-environment-summary-table tbody + tbody .tri-environment-table-group th {
+  padding-top: 0.55rem;
+}
+
+.tri-environment-estimate {
+  cursor: help;
+  text-decoration-color: color-mix(in srgb, currentcolor 42%, transparent);
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 0.18em;
+}
+
+.tri-environment-row-label[data-gloss] {
+  cursor: help;
+  text-decoration-color: color-mix(in srgb, currentcolor 42%, transparent);
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 0.18em;
+}
+
+.tri-environment-row-math .tri-math {
+  font-size: 0.95em;
+}
+
+.tri-environment-unavailable {
+  color: var(--gray);
+}
+
+.tri-environment-graphs {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 0.42rem;
+  min-width: 0;
+  min-height: 12.5rem;
+}
+
+.tri-environment-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  min-width: 0;
+}
+
+.tri-environment-tablist {
+  flex: 1 1 16rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  @include thin-scrollbar;
+}
+
+.tri-environment-mode {
+  display: inline-flex;
+  gap: 0.15rem;
+
+  &[hidden] {
+    display: none;
+  }
+
+  button {
+    appearance: none;
+    padding: 0.17rem 0.38rem;
+    color: var(--gray);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--gray) 24%, transparent);
+    border-radius: 0;
+    font: inherit;
+    font-size: 0.54rem;
+    cursor: pointer;
+  }
+
+  button:focus-visible {
+    outline: 1px solid var(--secondary);
+    outline-offset: 2px;
+  }
+
+  button[aria-pressed='true'] {
+    color: var(--light);
+    background: var(--secondary);
+    border-color: var(--secondary);
+  }
+}
+
+.tri-environment-readout {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--gray);
+  font-size: 0.56rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-environment-stage {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+}
+
+.tri-environment-panel {
+  grid-area: 1 / 1;
+  min-width: 0;
+  min-height: 0;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.tri-environment-chart {
+  min-width: 0;
+  height: 100%;
+}
+
+.tri-environment-chart > .tri-cax-frame {
+  grid-template-columns: 2.8rem minmax(0, 1fr);
+  column-gap: 0.35rem;
+}
+
+.tri-environment-chart .tri-cax-stage,
+.tri-environment-chart .tri-cax-yax {
+  min-height: 8.5rem;
+}
+
+.tri-environment-plot {
+  width: 100%;
+  height: 100%;
+  min-height: 8.5rem;
+  overflow: visible;
+  touch-action: none;
+}
+
+.tri-environment-plot:focus-visible,
+.tri-environment-tab[aria-selected='true']:focus-visible {
+  outline: 1px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+.tri-environment-gridline {
+  stroke: color-mix(in srgb, var(--gray) 16%, transparent);
+  stroke-width: 0.22;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-environment-line {
+  fill: none;
+  stroke: var(--secondary);
+  stroke-width: 1.25;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-environment-series[hidden] {
+  display: none;
+}
+
+.tri-environment-selection {
+  fill: color-mix(in srgb, var(--secondary) 12%, transparent);
+  pointer-events: none;
+}
+
+.tri-environment-cursor {
+  opacity: 0;
+  stroke: color-mix(in srgb, var(--dark) 72%, transparent);
+  stroke-width: 0.7;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-environment-plot:is(:hover, :focus-visible) .tri-environment-cursor {
+  opacity: 1;
+}
+
+.tri-environment-attribution {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem 0.65rem;
+  color: var(--gray);
+  font-size: 0.52rem;
+
+  a {
+    color: inherit;
+  }
+}
+
+.tri-environment-provider-logo {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  height: 1em;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.tri-environment-mywindsock-logo {
+  aspect-ratio: 600 / 265;
+}
+
+.tri-environment-pelotan-logo {
+  aspect-ratio: 240 / 38;
+}
+
+.tri-environment-apple-logo {
+  aspect-ratio: 154 / 28;
+  display: block;
+  flex: 0 0 auto;
+  height: 1em;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+:root[saved-theme='dark'] .tri-environment-pelotan-logo img {
+  filter: invert(1);
+}
+
+@media (max-width: 44rem) {
+  .tri-environment-table {
+    font-size: 0.52rem;
+  }
 }
 
 .tri-workout {

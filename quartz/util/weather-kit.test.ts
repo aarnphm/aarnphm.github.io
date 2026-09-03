@@ -2,7 +2,9 @@ import assert from 'node:assert/strict'
 import { createVerify, generateKeyPairSync } from 'node:crypto'
 import test from 'node:test'
 import {
+  fetchWeatherKitAttribution,
   fetchWeatherKitHours,
+  parseWeatherKitAttribution,
   parseWeatherKitHours,
   WeatherKitRequestError,
   weatherKitHourlyUrl,
@@ -79,7 +81,12 @@ test('parseWeatherKitHours extracts valid hourly wind rows', () => {
             windSpeed: 18.4,
             windDirection: 225,
             windGust: 30.1,
+            humidity: 0.684,
             temperature: 24.2,
+            uvIndex: 6,
+            cloudCover: 0.42,
+            pressure: 1014.2,
+            daylight: true,
             conditionCode: 'PartlyCloudy',
             precipitationChance: 0.35,
             precipitationType: 'rain',
@@ -94,13 +101,126 @@ test('parseWeatherKitHours extracts valid hourly wind rows', () => {
         windSpeed: 18.4,
         windDirection: 225,
         windGust: 30.1,
+        relativeHumidity: 0.684,
         temperature: 24.2,
+        uvIndex: 6,
+        cloudCover: 0.42,
+        pressure: 1014.2,
+        daylight: true,
         conditionCode: 'PartlyCloudy',
         precipitationChance: 0.35,
         precipitationType: 'rain',
       },
     ],
   )
+})
+
+test('parseWeatherKitAttribution resolves official relative logo assets', () => {
+  assert.deepEqual(
+    parseWeatherKitAttribution({
+      serviceName: 'Apple Weather',
+      'logoLight@2x': '/assets/logo-light@2x.png',
+      'logoDark@2x': '/assets/logo-dark@2x.png',
+    }),
+    {
+      serviceName: 'Apple Weather',
+      logoLightUrl: 'https://weatherkit.apple.com/assets/logo-light@2x.png',
+      logoDarkUrl: 'https://weatherkit.apple.com/assets/logo-dark@2x.png',
+      legalPageUrl: 'https://weatherkit.apple.com/legal-attribution.html',
+    },
+  )
+  assert.equal(
+    parseWeatherKitAttribution({
+      serviceName: 'Apple Weather',
+      'logoLight@2x': 'https://tracker.example/logo.png',
+      'logoDark@2x': '/dark.png',
+    }),
+    null,
+  )
+})
+
+test('fetchWeatherKitAttribution authenticates the REST request', async () => {
+  const previousFetch = globalThis.fetch
+  let authorization = ''
+  const fakeFetch: typeof fetch = async (_input, init) => {
+    authorization = new Headers(init?.headers).get('authorization') ?? ''
+    return Response.json({
+      serviceName: 'Apple Weather',
+      'logoLight@2x': '/light.png',
+      'logoDark@2x': '/dark.png',
+    })
+  }
+  globalThis.fetch = fakeFetch
+  try {
+    const attribution = await fetchWeatherKitAttribution(
+      {
+        teamId: 'TEAM123456',
+        serviceId: 'xyz.aarnphm.weather',
+        keyId: 'KEY1234567',
+        privateKey: privateKeyPem(),
+      },
+      'en',
+    )
+    assert.equal(attribution.serviceName, 'Apple Weather')
+    assert.match(authorization, /^Bearer [^.]+\.[^.]+\.[^.]+$/)
+  } finally {
+    globalThis.fetch = previousFetch
+  }
+})
+
+test('parseWeatherKitHours retains humidity without wind and rejects values outside zero to one', () => {
+  assert.deepEqual(
+    parseWeatherKitHours({
+      forecastHourly: {
+        hours: [
+          { forecastStart: '2026-06-11T13:00:00Z', humidity: 0 },
+          { forecastStart: '2026-06-11T14:00:00Z', humidity: 1, windSpeed: 18 },
+          { forecastStart: '2026-06-11T15:00:00Z', humidity: -0.01, windSpeed: 19 },
+          { forecastStart: '2026-06-11T16:00:00Z', humidity: 1.01, temperature: 24 },
+        ],
+      },
+    }).map(hour => ({
+      forecastStart: hour.forecastStart,
+      windSpeed: hour.windSpeed,
+      relativeHumidity: hour.relativeHumidity,
+    })),
+    [
+      { forecastStart: '2026-06-11T13:00:00Z', windSpeed: null, relativeHumidity: 0 },
+      { forecastStart: '2026-06-11T14:00:00Z', windSpeed: 18, relativeHumidity: 1 },
+      { forecastStart: '2026-06-11T15:00:00Z', windSpeed: 19, relativeHumidity: null },
+      { forecastStart: '2026-06-11T16:00:00Z', windSpeed: null, relativeHumidity: null },
+    ],
+  )
+})
+
+test('parseWeatherKitHours rejects out-of-range route-hour conditions independently', () => {
+  const [hour] = parseWeatherKitHours({
+    forecastHourly: {
+      hours: [
+        {
+          forecastStart: '2026-06-11T13:00:00Z',
+          temperature: 20,
+          uvIndex: 31,
+          cloudCover: -0.1,
+          windSpeed: -1,
+          windDirection: 361,
+          windGust: 501,
+          pressure: 2_001,
+          precipitationChance: 1.1,
+        },
+      ],
+    },
+  })
+
+  assert.ok(hour)
+  assert.equal(hour.temperature, 20)
+  assert.equal(hour.uvIndex, null)
+  assert.equal(hour.cloudCover, null)
+  assert.equal(hour.windSpeed, null)
+  assert.equal(hour.windDirection, null)
+  assert.equal(hour.windGust, null)
+  assert.equal(hour.pressure, null)
+  assert.equal(hour.precipitationChance, null)
 })
 
 test('fetchWeatherKitHours exposes WeatherKit HTTP status', async () => {
