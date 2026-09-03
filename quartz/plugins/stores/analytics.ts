@@ -678,6 +678,7 @@ export interface Vo2BikeSource {
   ftpSource: 'athlete' | 'strava' | 'derived'
   mapW: number
   weightKg: number
+  labBaseline: { date: string; vo2max: number; ftpW: number; weightKg: number } | null
 }
 
 export interface Vo2maxBlock {
@@ -4341,6 +4342,33 @@ function buildEngine(
     b => b.a.deviceWatts === true && wattsOf(b.a.id).length >= p20Win,
   ).length
 
+  const weekOf = (iso: string): string => {
+    const ms = dayMs(iso)
+    const dow = new Date(ms).getUTCDay()
+    return new Date(ms - ((dow + 6) % 7) * DAY_MS).toISOString().slice(0, 10)
+  }
+  const rawBikeVo2 = (ftpW: number, weightKg: number): number =>
+    (ACSM_WATT_K * (ftpW / MAP_FTP_RATIO)) / weightKg + ACSM_BASE
+  const labFtp =
+    vo2Lab?.massKg != null
+      ? (calculateFtpHypothesis(vo2Lab.value, vo2Lab.massKg)?.ftp ?? null)
+      : null
+  const labBaseline =
+    vo2Lab != null && vo2Lab.massKg != null && labFtp != null
+      ? {
+          date: vo2Lab.date,
+          vo2max: round(vo2Lab.value, 1),
+          ftpW: labFtp,
+          weightKg: round(vo2Lab.massKg, 1),
+        }
+      : null
+  const bikeVo2Offset =
+    labBaseline == null
+      ? 0
+      : labBaseline.vo2max - rawBikeVo2(labBaseline.ftpW, labBaseline.weightKg)
+  const bikeVo2 = (ftpW: number, weightKg: number): number =>
+    round(clamp(rawBikeVo2(ftpW, weightKg) + bikeVo2Offset, VO2_FLOOR, VO2_CEIL), 1)
+
   const estimates: Vo2Estimate[] = []
   if (vo2Lab)
     estimates.push({
@@ -4372,10 +4400,9 @@ function buildEngine(
   if (ftp != null) {
     bikeKg = (ftpSrc === 'derived' && p20Day ? kgAt.get(p20Day) : null) ?? body.latestKg
     if (bikeKg != null && bikeKg > 0) {
-      const map = ftp / MAP_FTP_RATIO
       estimates.push({
         method: 'bike',
-        vo2max: round(clamp((ACSM_WATT_K * map) / bikeKg + ACSM_BASE, VO2_FLOOR, VO2_CEIL), 1),
+        vo2max: bikeVo2(ftp, bikeKg),
         conf: ftpSrc === 'strava' ? 'firm' : deviceN >= 3 && p20Win === 1200 ? 'firm' : 'low',
       })
     }
@@ -4389,11 +4416,6 @@ function buildEngine(
       conf: 'prior',
     })
 
-  const weekOf = (iso: string): string => {
-    const ms = dayMs(iso)
-    const dow = new Date(ms).getUTCDay()
-    return new Date(ms - ((dow + 6) % 7) * DAY_MS).toISOString().slice(0, 10)
-  }
   type Vo2Week = { p20: number | null; kg: number | null; observed: ObservedVo2Point | null }
   const weeks = new Map<string, Vo2Week>()
   const weekAt = (day: string): Vo2Week => {
@@ -4426,6 +4448,8 @@ function buildEngine(
     const week = weekAt(point.date)
     week.observed = preferObservedVo2(week.observed, point)
   }
+  weekAt(today)
+  const currentWeekStart = weekOf(today)
   const trend: Vo2Point[] = []
   let kgCarry: number | null = null
   for (const ws of [...weeks.keys()].sort()) {
@@ -4438,19 +4462,10 @@ function buildEngine(
         vo2max: round(clamp(w.observed.v, VO2_FLOOR, VO2_CEIL), 1),
         method: w.observed.method,
       }
+    else if (ws === currentWeekStart && ftp != null && bikeKg != null && bikes.length > 0)
+      point = { weekStart: ws, vo2max: bikeVo2(ftp, bikeKg), method: 'bike' }
     else if (w.p20 != null && kgCarry != null && kgCarry > 0)
-      point = {
-        weekStart: ws,
-        vo2max: round(
-          clamp(
-            (ACSM_WATT_K * ((w.p20 * FTP_FROM_P20) / MAP_FTP_RATIO)) / kgCarry + ACSM_BASE,
-            VO2_FLOOR,
-            VO2_CEIL,
-          ),
-          1,
-        ),
-        method: 'bike',
-      }
+      point = { weekStart: ws, vo2max: bikeVo2(w.p20 * FTP_FROM_P20, kgCarry), method: 'bike' }
     if (point) trend.push(point)
   }
 
@@ -4512,6 +4527,7 @@ function buildEngine(
           ftpSource: ftpSrc,
           mapW: Math.round(ftp / MAP_FTP_RATIO),
           weightKg: round(bikeKg, 1),
+          labBaseline,
         }
       : null
 
@@ -5132,6 +5148,11 @@ export function buildAnalytics(
   const sourceActivities = Object.values(cache.activities)
     .filter(activity => !sinceDay || activity.startDateLocal.slice(0, 10) >= sinceDay)
     .sort((left, right) => left.startDateLocal.localeCompare(right.startDateLocal))
+  const saunaActivityIds = new Set(
+    Object.values(inputs.activityDetails ?? {})
+      .filter(detail => detail.sport === 'sauna' && detail.sauna != null)
+      .map(detail => detail.id),
+  )
 
   if (sourceActivities.length === 0) {
     const fallback = todayFromSync ?? '1970-01-01'
@@ -5139,6 +5160,7 @@ export function buildAnalytics(
   }
 
   const raw = sourceActivities
+    .filter(activity => !saunaActivityIds.has(activity.id))
     .map(a => ({ a, sport: normalizeSport(a.sportType) }))
     .filter(
       (x): x is { a: RawStravaActivity; sport: Sport } =>
@@ -5150,6 +5172,7 @@ export function buildAnalytics(
   const todayMs = dayMs(today)
   const effortByDay = new Map<string, EffortBucket>()
   for (const activity of sourceActivities) {
+    if (saunaActivityIds.has(activity.id)) continue
     const effort = activity.sufferScore
     if (effort == null || !Number.isFinite(effort)) continue
     const day = activity.startDateLocal.slice(0, 10)
@@ -5203,6 +5226,7 @@ export function buildAnalytics(
     if (act.sport !== 'bike') paceIntensityFactorById.set(act.a.id, round(act.vGap / vThr, 3))
   }
   const supplementalLoadActivities = sourceActivities.flatMap(a => {
+    if (saunaActivityIds.has(a.id)) return []
     const kind = normalizeKind(a.sportType)
     if ((kind !== 'strength' && kind !== 'yoga') || isTreatment(a.sportType, a.name)) return []
     const day = a.startDateLocal.slice(0, 10)
@@ -5246,7 +5270,7 @@ export function buildAnalytics(
   )
   const heat = buildHeat(
     cache,
-    sourceActivities,
+    sourceActivities.filter(activity => !saunaActivityIds.has(activity.id)),
     inputs.weather,
     inputs.core,
     inputs.garmin,
@@ -5461,7 +5485,12 @@ export function buildAnalytics(
   )
 
   const walkSummaries: ActivitySummary[] = Object.values(cache.activities)
-    .filter(a => normalizeKind(a.sportType) === 'walk' && !isTreatment(a.sportType, a.name))
+    .filter(
+      a =>
+        !saunaActivityIds.has(a.id) &&
+        normalizeKind(a.sportType) === 'walk' &&
+        !isTreatment(a.sportType, a.name),
+    )
     .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
     .map(a => ({
       id: a.id,
@@ -5480,7 +5509,12 @@ export function buildAnalytics(
       windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
     }))
   const strengthSummaries: ActivitySummary[] = Object.values(cache.activities)
-    .filter(a => normalizeKind(a.sportType) === 'strength' && !isTreatment(a.sportType, a.name))
+    .filter(
+      a =>
+        !saunaActivityIds.has(a.id) &&
+        normalizeKind(a.sportType) === 'strength' &&
+        !isTreatment(a.sportType, a.name),
+    )
     .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
     .map(a => ({
       id: a.id,
@@ -5499,7 +5533,7 @@ export function buildAnalytics(
       windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
     }))
   const treatmentSummaries: ActivitySummary[] = Object.values(cache.activities)
-    .filter(a => isTreatment(a.sportType, a.name))
+    .filter(a => !saunaActivityIds.has(a.id) && isTreatment(a.sportType, a.name))
     .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
     .map(a => ({
       id: a.id,
@@ -5518,7 +5552,12 @@ export function buildAnalytics(
       windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
     }))
   const yogaSummaries: ActivitySummary[] = Object.values(cache.activities)
-    .filter(a => normalizeKind(a.sportType) === 'yoga' && !isTreatment(a.sportType, a.name))
+    .filter(
+      a =>
+        !saunaActivityIds.has(a.id) &&
+        normalizeKind(a.sportType) === 'yoga' &&
+        !isTreatment(a.sportType, a.name),
+    )
     .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
     .map(a => ({
       id: a.id,
@@ -5538,6 +5577,7 @@ export function buildAnalytics(
     }))
   const saunaSummaries: ActivitySummary[] = Object.values(inputs.activityDetails ?? {})
     .filter(detail => detail.sport === 'sauna' && detail.sauna != null)
+    .filter(detail => !sinceDay || detail.date >= sinceDay)
     .map(detail => ({
       id: detail.id,
       date: detail.date,
@@ -5550,9 +5590,9 @@ export function buildAnalytics(
       effort: null,
       cadence: null,
       strokes: null,
-      windKph: null,
-      windDir: null,
-      windGustKph: null,
+      windKph: detail.windKph,
+      windDir: detail.windDir,
+      windGustKph: detail.windGustKph,
     }))
   const activities: ActivitySummary[] = acts
     .map(act => ({
@@ -5582,7 +5622,7 @@ export function buildAnalytics(
       today,
       windowFrom: firstDay,
       windowTo: windowToDay,
-      activityCount: acts.length + supplementalLoadActivities.length + saunaSummaries.length,
+      activityCount: activities.length,
       method: {
         ctlTau: 42,
         atlTau: 7,
@@ -5860,7 +5900,7 @@ export function buildDataFeed(
     const detail = inputs.activityDetails?.[String(s.id)]
     const b = byDay.get(s.date) ?? { sessions: 0, meters: 0, seconds: 0 }
     b.sessions += 1
-    b.meters += raw?.distance ?? (detail?.distanceKm ?? 0) * 1_000
+    b.meters += s.sport === 'sauna' ? 0 : (raw?.distance ?? (detail?.distanceKm ?? 0) * 1_000)
     b.seconds += s.movingTimeS
     byDay.set(s.date, b)
   }
@@ -5959,10 +5999,10 @@ export function buildDataFeed(
             strokes: null,
             calories: null,
             sufferScore: null,
-            avgTemp: null,
-            windKph: null,
-            windDir: null,
-            windGustKph: null,
+            avgTemp: detail.avgTemp,
+            windKph: detail.windKph,
+            windDir: detail.windDir,
+            windGustKph: detail.windGustKph,
             sauna: detail.sauna,
             skipTraining: true,
             vGap: 0,

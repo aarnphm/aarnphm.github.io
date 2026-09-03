@@ -343,6 +343,7 @@ export function planActivityBridge(
 
 export function planTrainingPeaksBackfill(
   inputs: ActivityBridgeInputs,
+  ledger: ActivityBridgeLedger,
   sourceProvider: TrainingPeaksBackfillSource,
 ): TrainingPeaksBackfillPlan[] {
   const plans: TrainingPeaksBackfillPlan[] = []
@@ -354,9 +355,10 @@ export function planTrainingPeaksBackfill(
       plans.push({ sourceProvider, title: strava.name, localDate: day, sport, source: strava })
     }
   } else if (sourceProvider === 'garmin') {
+    const mirrored = activityBridgeCreatedDestinations(ledger, 'garmin')
     for (const garmin of inputs.garmin) {
       const day = localDate(garmin.startDateLocal)
-      if (garmin.sport == null || day == null) continue
+      if (garmin.sport == null || day == null || mirrored.has(garmin.id)) continue
       plans.push({
         sourceProvider,
         title: garmin.name,
@@ -366,9 +368,10 @@ export function planTrainingPeaksBackfill(
       })
     }
   } else {
+    const mirrored = activityBridgeCreatedDestinations(ledger, 'wahoo')
     for (const wahoo of inputs.wahoo) {
       const day = localDate(wahoo.startDateLocal)
-      if (wahoo.sport == null || day == null) continue
+      if (wahoo.sport == null || day == null || mirrored.has(wahoo.id)) continue
       plans.push({
         sourceProvider,
         title: wahoo.name,

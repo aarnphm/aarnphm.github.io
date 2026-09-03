@@ -51,6 +51,7 @@ export type SaunaCooldown = 'natural' | 'cold plunge'
 
 export interface ManualSaunaEntry {
   id: number
+  stravaActivityId: number | null
   title: string | null
   date: string
   time: string
@@ -157,6 +158,7 @@ export const manualSaunaActivityId = (date: string, time: string): number =>
 
 const parseManualSauna = (body: Readonly<Record<string, string>>): ManualSaunaEntry | null => {
   if (body.activity?.toLowerCase() !== 'sauna') return null
+  const stravaActivityId = body.strava == null || body.strava === '' ? null : Number(body.strava)
   const title = body.title?.trim() || null
   const date = body.date?.slice(0, 10)
   const time = body.time
@@ -177,11 +179,16 @@ const parseManualSauna = (body: Readonly<Record<string, string>>): ManualSaunaEn
     humidityPct < 0 ||
     humidityPct > 100 ||
     (cooldown !== 'natural' && cooldown !== 'cold plunge') ||
-    (heatTrainingLoad != null && (!Number.isFinite(heatTrainingLoad) || heatTrainingLoad < 0))
+    (heatTrainingLoad != null && (!Number.isFinite(heatTrainingLoad) || heatTrainingLoad < 0)) ||
+    (stravaActivityId != null &&
+      (!/^\d+$/.test(body.strava ?? '') ||
+        !Number.isSafeInteger(stravaActivityId) ||
+        stravaActivityId <= 0))
   )
     return null
   return {
     id: manualSaunaActivityId(date, time),
+    stravaActivityId,
     title,
     date,
     time,

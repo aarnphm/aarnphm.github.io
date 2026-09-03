@@ -271,11 +271,9 @@ test('localizes dynamic analytics explanations', () => {
     ftpSource: 'athlete',
     mapW: 307,
     weightKg: 88.9,
+    labBaseline: { date: '2026-06-25', vo2max: 47.8, ftpW: 230, weightKg: 88.9 },
   }
-  assert.equal(
-    vo2SourceText('fr', 'garmin', null),
-    "Cette valeur vient de Garmin Connect ou d'une saisie manuelle.",
-  )
+  assert.equal(vo2SourceText('fr', 'garmin', null), "Garmin Connect ou d'une saisie manuelle.")
   assert.equal(vo2SourceText('fr', 'apple', null), "Cette mesure vient de l'Apple Watch.")
   assert.equal(
     vo2SourceText('fr', 'run', null),
@@ -295,7 +293,7 @@ test('localizes dynamic analytics explanations', () => {
   )
   assert.equal(
     vo2SourceText('fr', 'bike', bike),
-    'FTP 230 W (athlète). La puissance aérobie maximale estimée est de 307 W. Le poids est de 88,9 kg.',
+    'FTP 230 W (athlète). La puissance aérobie maximale estimée est de 307 W. Le poids est de 88,9 kg. La référence du laboratoire est une VO₂max de 47,8, une FTP de 230 W et un poids de 88,9 kg.',
   )
   assert.equal(trendUnavailableText('fr', 0, null), "Aucun effort n'a été enregistré.")
   assert.equal(trendUnavailableText('fr', 2, 0), "Le dernier effort date d'aujourd'hui.")
@@ -310,7 +308,7 @@ test('localizes dynamic analytics explanations', () => {
   )
   assert.equal(
     vo2SourceText('en', 'bike', bike),
-    'FTP 230 W (athlete). Estimated maximum aerobic power is 307 W. Body weight is 88.9 kg.',
+    'FTP 230 W (athlete). Estimated maximum aerobic power is 307 W. Body weight is 88.9 kg. The lab baseline is VO₂max 47.8, FTP 230 W, and body weight 88.9 kg.',
   )
   assert.equal(trendUnavailableText('en', 2, 1), 'The latest effort was 1 day ago.')
   assert.equal(trendUnavailableText('en', 2, 48), 'The latest effort was 48 days ago.')
@@ -1475,7 +1473,10 @@ test('renders manual sauna conditions and Oura heart rate without distance metri
     deviceWatts: false,
     avgCadence: null,
     calories: null,
-    avgTemp: null,
+    avgTemp: 27,
+    windKph: 10,
+    windDir: 'NNW',
+    windGustKph: 16,
     strength: null,
     sauna: {
       time: '18:30',
@@ -1500,7 +1501,11 @@ test('renders manual sauna conditions and Oura heart rate without distance metri
     ['HTL', '7.7'],
     ['avg hr', '120 bpm · Oura'],
   ])
-  assert.deepEqual(moreStatRows(imperialPresentation, sauna), [['max hr', '130 bpm']])
+  assert.deepEqual(moreStatRows(imperialPresentation, sauna), [
+    ['max hr', '130 bpm'],
+    ['air temp', '81°F'],
+    ['wind', '10 km/h NNW / gust 16'],
+  ])
   const rendered = buildActivity(factoryFor(imperialPresentation), sauna, true)
   assert.equal(rendered.properties.dataActivityTitle, 'Untangle')
   assert.equal(

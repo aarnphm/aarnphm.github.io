@@ -345,7 +345,7 @@ export const moreStatRows = (
   if (d.sufferScore != null) rows.push(['effort', `${d.sufferScore}`])
   if (d.avgTemp != null)
     rows.push([
-      d.sport === 'swim' || d.sport === 'strength' ? 'air temp' : 'temp',
+      d.sport === 'swim' || d.sport === 'strength' || d.sport === 'sauna' ? 'air temp' : 'temp',
       formatTemperature(presentation, d.avgTemp),
     ])
   if (d.windKph != null)

@@ -899,7 +899,7 @@ const en: TriDict = {
     },
     vo2max: {
       term: 'VO₂max',
-      def: 'VO₂max is the maximum amount of oxygen your body can use during hard exercise. It is measured in millilitres per kilogram per minute. The 28 day trend uses observed values from the latest measurement method over at most 12 weeks. The cycling estimate starts with FTP, estimates maximum aerobic power, then estimates VO₂max.',
+      def: 'VO₂max is the maximum amount of oxygen your body can use during hard exercise. It is measured in millilitres per kilogram per minute. The 28 day trend uses observed values from the latest measurement method over at most 12 weeks. The cycling estimate uses FTP and body weight. A lab result sets its baseline when the lab also recorded body weight.',
     },
     ftp: {
       term: 'FTP hypothesis',
@@ -1753,7 +1753,7 @@ const fr: TriDict = {
     },
     vo2max: {
       term: 'VO₂max',
-      def: "La VO₂max est la quantité maximale d'oxygène que ton corps peut utiliser pendant un effort intense. Elle est mesurée en millilitres par kilogramme par minute. La tendance sur 28 jours utilise les valeurs observées de la méthode la plus récente sur au plus 12 semaines. L'estimation à vélo part de la FTP, calcule la puissance aérobie maximale, puis estime la VO₂max.",
+      def: "La VO₂max est la quantité maximale d'oxygène que ton corps peut utiliser pendant un effort intense. Elle est mesurée en millilitres par kilogramme par minute. La tendance sur 28 jours utilise les valeurs observées de la méthode la plus récente sur au plus 12 semaines. L'estimation à vélo utilise la FTP et le poids. Un résultat de laboratoire fixe sa référence lorsque le poids a aussi été mesuré.",
     },
     ftp: {
       term: 'hypothèse FTP',
@@ -1817,6 +1817,7 @@ type Vo2BikeSourceText = {
   ftpSource: 'athlete' | 'strava' | 'derived'
   mapW: number
   weightKg: number
+  labBaseline: { date: string; vo2max: number; ftpW: number; weightKg: number } | null
 }
 
 export const vo2SourceText = (
@@ -1856,9 +1857,22 @@ export const vo2SourceText = (
           : target === 'fr'
             ? 'estimée'
             : 'estimated'
+    const calculation =
+      target === 'fr'
+        ? `FTP ${bike.ftpW} W (${source}). La puissance aérobie maximale estimée est de ${bike.mapW} W. Le poids est de ${weight} kg.`
+        : `FTP ${bike.ftpW} W (${source}). Estimated maximum aerobic power is ${bike.mapW} W. Body weight is ${weight} kg.`
+    if (bike.labBaseline == null) return calculation
+    const baselineVo2max = bike.labBaseline.vo2max.toLocaleString(
+      target === 'fr' ? 'fr-CA' : 'en-US',
+      { maximumFractionDigits: 1 },
+    )
+    const baselineWeight = bike.labBaseline.weightKg.toLocaleString(
+      target === 'fr' ? 'fr-CA' : 'en-US',
+      { maximumFractionDigits: 1 },
+    )
     return target === 'fr'
-      ? `FTP ${bike.ftpW} W (${source}). La puissance aérobie maximale estimée est de ${bike.mapW} W. Le poids est de ${weight} kg.`
-      : `FTP ${bike.ftpW} W (${source}). Estimated maximum aerobic power is ${bike.mapW} W. Body weight is ${weight} kg.`
+      ? `${calculation} La référence du laboratoire est une VO₂max de ${baselineVo2max}, une FTP de ${bike.labBaseline.ftpW} W et un poids de ${baselineWeight} kg.`
+      : `${calculation} The lab baseline is VO₂max ${baselineVo2max}, FTP ${bike.labBaseline.ftpW} W, and body weight ${baselineWeight} kg.`
   }
   return target === 'fr'
     ? 'Il manque les données de puissance ou de fréquence cardiaque.'

@@ -29,6 +29,7 @@ import {
   fetchWahooActivityFit,
   parseActivityBridgeStravaActivities,
   readActivityBridgeGarminActivities,
+  readActivityBridgeLedger,
   readActivityBridgeWahooActivities,
   type ActivityBridgeFile,
 } from './sync-activity-providers'
@@ -356,8 +357,9 @@ async function main(): Promise<void> {
   } else {
     inputs = { strava: [], garmin: [], wahoo: await readActivityBridgeWahooActivities() }
   }
+  const ledger = await readActivityBridgeLedger()
   const selected = selectTrainingPeaksBackfillPlans(
-    planTrainingPeaksBackfill(inputs, args.source),
+    planTrainingPeaksBackfill(inputs, ledger, args.source),
     args,
   )
   const unavailable =

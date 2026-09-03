@@ -2922,17 +2922,100 @@ const saunaHeartRate = (
   }
 }
 
+const refreshStravaDay = (day: StravaDay): void => {
+  day.durationS = day.items.reduce((total, item) => total + item.durationS, 0)
+  day.dominant =
+    day.items.reduce<StravaDayItem | null>(
+      (best, item) => (item.distanceKm > (best?.distanceKm ?? -1) ? item : best),
+      null,
+    )?.sport ?? null
+}
+
+const applySaunaWeather = (
+  detail: StravaActivityDetail,
+  entry: ManualSaunaEntry,
+  weather: WeatherCache | null | undefined,
+): void => {
+  if (!weather) return
+  const exact =
+    entry.stravaActivityId == null ? undefined : weather.activities[String(entry.stravaActivityId)]
+  const activityWeather =
+    exact?.date === entry.date ? exact : nearestSameDayWeatherAt(weather, entry.date, detail.start)
+  const dayWeather = weather.days[entry.date]
+  detail.avgTemp ??= activityWeather?.temperatureC ?? null
+  detail.windKph ??= activityWeather?.windKph ?? dayWeather?.windKph ?? null
+  detail.windDir ??= activityWeather?.windDir ?? dayWeather?.windDir ?? null
+  detail.windDirDeg ??= activityWeather?.windDirDeg ?? dayWeather?.windDirDeg ?? null
+  detail.windGustKph ??= activityWeather?.windGustKph ?? dayWeather?.windGustKph ?? null
+}
+
 export function applyManualSauna(
   payload: StravaPayload,
   entries: readonly ManualSaunaEntry[],
   heartRateSamples: readonly OuraHeartRateSample[],
   timeZone?: string,
+  weather?: WeatherCache | null,
 ): void {
   for (const entry of entries) {
+    const heartRate = saunaHeartRate(entry, heartRateSamples, timeZone)
+    const sauna: ActivitySauna = {
+      time: entry.time,
+      temperatureC: entry.temperatureC,
+      humidityPct: entry.humidityPct,
+      cooldown: entry.cooldown,
+      heatTrainingLoad: entry.heatTrainingLoad,
+      heartRateSource: heartRate.trace.length > 0 ? 'oura' : null,
+      source: 'manual',
+    }
+    if (entry.stravaActivityId != null) {
+      const id = String(entry.stravaActivityId)
+      const detail = payload.details[id]
+      const day = payload.days.find(candidate => candidate.date === entry.date)
+      const item = day?.items.find(candidate => candidate.id === entry.stravaActivityId)
+      if (!detail || detail.date !== entry.date || !day || !item) continue
+      const hasActivityHeartRate =
+        detail.avgHr != null ||
+        detail.maxHr != null ||
+        detail.heartRateTrace.some(point => point.heartRate != null)
+      if (detail.sport !== 'sauna') {
+        const total = payload.totals.find(candidate => candidate.sport === detail.sport)
+        if (total) {
+          total.count = Math.max(0, total.count - 1)
+          total.distanceKm = round(Math.max(0, total.distanceKm - detail.distanceKm), 1)
+          total.movingTimeS = Math.max(0, total.movingTimeS - detail.movingTimeS)
+          total.elevationM = Math.max(0, total.elevationM - detail.elevationM)
+        }
+        if (detail.sport === 'strength') {
+          payload.strengthTotal.count = Math.max(0, payload.strengthTotal.count - 1)
+          payload.strengthTotal.movingTimeS = Math.max(
+            0,
+            payload.strengthTotal.movingTimeS - detail.movingTimeS,
+          )
+        }
+      }
+      detail.sport = 'sauna'
+      detail.name = entry.title ?? detail.name
+      detail.distanceKm = 0
+      if (!hasActivityHeartRate) {
+        detail.avgHr = heartRate.avgHr
+        detail.maxHr = heartRate.maxHr
+        detail.heartRateTrace = heartRate.trace
+      }
+      detail.strength = null
+      detail.sauna = hasActivityHeartRate ? { ...sauna, heartRateSource: null } : sauna
+      applySaunaWeather(detail, entry, weather)
+      item.sport = 'sauna'
+      item.distanceKm = 0
+      payload.totalKm = round(
+        payload.totals.reduce((total, candidate) => total + candidate.distanceKm, 0),
+        1,
+      )
+      refreshStravaDay(day)
+      continue
+    }
     const id = String(entry.id)
     if (payload.details[id]) continue
     const startMs = localDateTimeUtcMs(entry.date, entry.time, timeZone)
-    const heartRate = saunaHeartRate(entry, heartRateSamples, timeZone)
     payload.details[id] = {
       id: entry.id,
       sport: 'sauna',
@@ -2961,15 +3044,7 @@ export function applyManualSauna(
       location: null,
       fueling: null,
       strength: null,
-      sauna: {
-        time: entry.time,
-        temperatureC: entry.temperatureC,
-        humidityPct: entry.humidityPct,
-        cooldown: entry.cooldown,
-        heatTrainingLoad: entry.heatTrainingLoad,
-        heartRateSource: heartRate.trace.length > 0 ? 'oura' : null,
-        source: 'manual',
-      },
+      sauna,
       garmin: null,
       computer: null,
       staminaTrace: null,
@@ -3005,6 +3080,7 @@ export function applyManualSauna(
       swimLocation: null,
       waterTemperatureC: null,
     }
+    applySaunaWeather(payload.details[id], entry, weather)
     const day = payload.days.find(candidate => candidate.date === entry.date) ?? {
       date: entry.date,
       durationS: 0,
@@ -3013,24 +3089,19 @@ export function applyManualSauna(
     }
     if (!payload.days.includes(day)) payload.days.push(day)
     day.items.push({ id: entry.id, sport: 'sauna', distanceKm: 0, durationS: entry.durationS })
-    day.durationS = day.items.reduce((total, item) => total + item.durationS, 0)
-    day.dominant =
-      day.items.reduce<StravaDayItem | null>(
-        (best, item) => (item.distanceKm > (best?.distanceKm ?? -1) ? item : best),
-        null,
-      )?.sport ?? null
+    refreshStravaDay(day)
     payload.totalCount += 1
     payload.totalTimeS += entry.durationS
   }
   payload.days.sort((left, right) => left.date.localeCompare(right.date))
 }
 
-function nearestSameDayWeather(
+function nearestSameDayWeatherAt(
   weather: WeatherCache,
-  activity: RawStravaActivity,
+  date: string,
+  start: string,
 ): WeatherActivity | undefined {
-  const date = activity.startDateLocal.slice(0, 10)
-  const startMs = Date.parse(activity.startDate)
+  const startMs = Date.parse(start)
   if (!Number.isFinite(startMs)) return undefined
   let nearest: WeatherActivity | undefined
   let nearestDifferenceMs = Number.POSITIVE_INFINITY
@@ -3044,6 +3115,13 @@ function nearestSameDayWeather(
     nearestDifferenceMs = differenceMs
   }
   return nearest
+}
+
+function nearestSameDayWeather(
+  weather: WeatherCache,
+  activity: RawStravaActivity,
+): WeatherActivity | undefined {
+  return nearestSameDayWeatherAt(weather, activity.startDateLocal.slice(0, 10), activity.startDate)
 }
 
 export function buildPayload(

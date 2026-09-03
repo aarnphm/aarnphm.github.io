@@ -684,6 +684,7 @@ test('projects a manual sauna session with interval-matched Oura heart rate', ()
     [
       {
         id: 8_202_608_231_830,
+        stravaActivityId: null,
         title: 'Untangle',
         date: '2026-08-23',
         time: '18:30',
@@ -734,6 +735,102 @@ test('projects a manual sauna session with interval-matched Oura heart rate', ()
   ])
   assert.equal(payload.totalCount, 1)
   assert.equal(payload.totalTimeS, 4_500)
+})
+
+test('attaches a manual sauna session to its canonical Strava activity', () => {
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: {
+      101: ride({
+        name: 'Sauna',
+        sportType: 'Workout',
+        distance: 0,
+        movingTime: 4_500,
+        elapsedTime: 4_500,
+        totalElevationGain: 0,
+        averageHeartrate: 101,
+        maxHeartrate: 143,
+      }),
+    },
+  }
+  const payload = buildPayload(cache, null, null, '2026-06-01')
+  const weatherActivity: WeatherActivity = {
+    activityId: 102,
+    date: '2026-06-07',
+    start: '2026-06-07T11:00:00Z',
+    end: '2026-06-07T12:00:00Z',
+    latitude: 43.6,
+    longitude: -79.4,
+    durationS: 3_600,
+    windKph: 18,
+    windDir: 'W',
+    windDirDeg: 270,
+    windGustKph: 29,
+    temperatureC: 27,
+    source: 'weatherkit',
+  }
+  const weather: WeatherCache = {
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    current: null,
+    activities: { 102: weatherActivity },
+    days: summarizeWeatherDays({ 102: weatherActivity }),
+  }
+  const entry = {
+    id: 8_202_606_070_730,
+    stravaActivityId: 101,
+    title: 'Untangle',
+    date: '2026-06-07',
+    time: '07:30',
+    durationS: 4_500,
+    temperatureC: 91.111,
+    humidityPct: 11,
+    cooldown: 'cold plunge' as const,
+    heatTrainingLoad: 7.7,
+  }
+
+  applyManualSauna(
+    payload,
+    [entry],
+    [{ timestamp: '2026-06-07T11:35:00Z', bpm: 110, source: 'awake' }],
+    'America/Toronto',
+    weather,
+  )
+
+  assert.deepEqual(Object.keys(payload.details), ['101'])
+  assert.equal(payload.details['101'].sport, 'sauna')
+  assert.equal(payload.details['101'].name, 'Untangle')
+  assert.equal(payload.details['101'].start, '2026-06-07T11:29:55Z')
+  assert.equal(payload.details['101'].avgHr, 101)
+  assert.equal(payload.details['101'].maxHr, 143)
+  assert.equal(payload.details['101'].avgTemp, 27)
+  assert.equal(payload.details['101'].windKph, 18)
+  assert.equal(payload.details['101'].windDir, 'W')
+  assert.equal(payload.details['101'].windGustKph, 29)
+  assert.equal(payload.details['101'].strength, null)
+  assert.deepEqual(payload.details['101'].sauna, {
+    time: '07:30',
+    temperatureC: 91.111,
+    humidityPct: 11,
+    cooldown: 'cold plunge',
+    heatTrainingLoad: 7.7,
+    heartRateSource: null,
+    source: 'manual',
+  })
+  assert.deepEqual(payload.days.find(day => day.date === '2026-06-07')?.items, [
+    { id: 101, sport: 'sauna', distanceKm: 0, durationS: 4_500 },
+  ])
+  assert.deepEqual(payload.strengthTotal, { count: 0, movingTimeS: 0 })
+  assert.equal(payload.totalCount, 1)
+  assert.equal(payload.totalTimeS, 4_500)
+
+  const missing = emptyPayload(1)
+  applyManualSauna(missing, [{ ...entry, stravaActivityId: 999 }], [], 'America/Toronto')
+  assert.deepEqual(missing.details, {})
+  assert.equal(missing.totalCount, 0)
 })
 
 test('emits geometry-preserved map data separately from compact telemetry route', () => {
