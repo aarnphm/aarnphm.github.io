@@ -7,7 +7,11 @@ import type {
 } from '../plugins/stores/apple'
 import type { GarminCache } from '../plugins/stores/garmin'
 import type { OuraCache } from '../plugins/stores/oura'
-import type { ManualFuelingEntry, ManualStrengthEntry } from '../plugins/stores/tracking'
+import type {
+  ManualFuelingEntry,
+  ManualSaunaEntry,
+  ManualStrengthEntry,
+} from '../plugins/stores/tracking'
 import type { WeatherCache } from '../plugins/stores/weather'
 import {
   ATHLETE,
@@ -25,6 +29,7 @@ import {
 } from '../plugins/stores/core-body-temperature'
 import {
   applyManualFueling,
+  applyManualSauna,
   applyManualStrength,
   buildPayload,
   calculateActivityExerciseLoad,
@@ -594,18 +599,35 @@ export type StravaPayloadAnalyticsInputs = Pick<
   'weights' | 'events' | 'dexa' | 'vo2labs'
 >
 
+export interface ManualActivityTracking {
+  readonly fueling: readonly ManualFuelingEntry[]
+  readonly strength: readonly ManualStrengthEntry[]
+  readonly sauna: readonly ManualSaunaEntry[]
+}
+
+export function applyManualActivityTracking(
+  payload: StravaPayload,
+  tracking: ManualActivityTracking | null | undefined,
+  oura: OuraCache | null,
+  weather: WeatherCache | null,
+): void {
+  applyManualFueling(payload, tracking?.fueling ?? [])
+  applyManualStrength(payload, tracking?.strength ?? [])
+  applyManualSauna(payload, tracking?.sauna ?? [], oura?.heartRate ?? [], undefined, weather)
+}
+
 const payloadMemo = new Map<string, LoadedStravaPayload>()
 let payloadMemoStamps = ''
 
 export function loadStravaPayloadSync(
-  since?: string,
-  manualFueling: readonly ManualFuelingEntry[] = [],
-  manualStrength: readonly ManualStrengthEntry[] = [],
+  since: string | undefined,
+  manualTracking: ManualActivityTracking | null | undefined,
   analyticsInputs: StravaPayloadAnalyticsInputs = {},
 ): LoadedStravaPayload {
   const manualKey = JSON.stringify({
-    fueling: manualFueling,
-    strength: manualStrength,
+    fueling: manualTracking?.fueling ?? [],
+    strength: manualTracking?.strength ?? [],
+    sauna: manualTracking?.sauna ?? [],
     analytics: analyticsInputs,
   })
   const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
@@ -637,8 +659,7 @@ export function loadStravaPayloadSync(
     ATHLETE.hrMax,
     generatedAt,
   )
-  applyManualFueling(payload, manualFueling)
-  applyManualStrength(payload, manualStrength)
+  applyManualActivityTracking(payload, manualTracking, oura, weather)
   enrichSwimMetrics(payload, apple)
   enrichRunDynamics(payload, apple)
   enrichRouteLessHeartRate(payload, apple)

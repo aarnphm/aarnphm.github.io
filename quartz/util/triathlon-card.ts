@@ -1,3 +1,4 @@
+import type { GardenEnvironmentSample, GardenUvScore } from './activity-environment'
 import type { TriathlonDailyAnalytics, TriathlonDayAnalytics } from './triathlon-day-analytics'
 import type { Locale, TriathlonPresentation } from './triathlon-presentation'
 import { STROKE_LABEL, SWIM_STROKES, type SwimStroke } from '../plugins/stores/apple'
@@ -16,6 +17,8 @@ import {
   type SwimActivityInterval,
   type SwimTrendPoint,
 } from '../plugins/stores/strava'
+import { selectActivityAnalysisSummary } from './activity-analysis-selection'
+import { gardenUvScoreFromDose } from './activity-uv-score'
 import { RUN_PACE_ZONE_NAMES, runPaceZoneRange } from './run-pace-zones'
 import {
   swimLengthAverages,
@@ -343,16 +346,17 @@ export const moreStatRows = (
   else if (d.sport === 'run') rows.push(['cadence', '—'])
   if (d.maxHr != null) rows.push(['max hr', `${d.maxHr} bpm`])
   if (d.sufferScore != null) rows.push(['effort', `${d.sufferScore}`])
-  if (d.avgTemp != null)
-    rows.push([
-      d.sport === 'swim' || d.sport === 'strength' || d.sport === 'sauna' ? 'air temp' : 'temp',
-      formatTemperature(presentation, d.avgTemp),
-    ])
+  if (d.deviceTemperatureC != null)
+    rows.push(['device temp', formatTemperature(presentation, d.deviceTemperatureC)])
+  if (d.ambientTemperatureC != null)
+    rows.push(['ambient temp', formatTemperature(presentation, d.ambientTemperatureC)])
   if (d.windKph != null)
     rows.push([
       'wind',
       `${d.windKph} km/h${d.windDir ? ` ${d.windDir}` : ''}${d.windGustKph != null ? ` / gust ${d.windGustKph}` : ''}`,
     ])
+  if (d.averageRelativeHumidityPct != null)
+    rows.push(['humidity', `${d.averageRelativeHumidityPct}%`])
   if (d.computer) rows.push(['computer', COMPUTER_LABEL[d.computer]])
   return rows
 }
@@ -2777,7 +2781,8 @@ export const buildTemperatureTrace = <N>(
     .map(point => point.tempC)
     .filter((value): value is number => value != null)
   const averageC =
-    d.avgTemp ?? temperaturesC.reduce((total, value) => total + value, 0) / temperaturesC.length
+    d.ambientTemperatureC ??
+    temperaturesC.reduce((total, value) => total + value, 0) / temperaturesC.length
   const values = temperaturesC.map(value => temperatureValue(f.presentation, value))
   const step = imperial ? 5 : 2
   let min = Math.floor(Math.min(...values) / step) * step
@@ -2789,7 +2794,7 @@ export const buildTemperatureTrace = <N>(
   return buildTrace(
     f,
     d,
-    point => temperatureValue(f.presentation, point.tempC ?? averageC),
+    point => (point.tempC == null ? null : temperatureValue(f.presentation, point.tempC)),
     'temperature',
     () => `${formatTemperature(f.presentation, averageC)} avg`,
     value => `${Math.round(value)}${temperatureUnit(f.presentation)}`,
@@ -3683,6 +3688,869 @@ export const buildRunAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
   return wrap
 }
 
+export type EnvironmentChartView = 'cumulative' | 'uv-index' | 'temperature' | 'cloud-cover'
+
+interface EnvironmentChartSeries {
+  path: string
+  color: string | null
+}
+
+type EnvironmentScoreModel = Pick<GardenUvScore, 'coefficientSed' | 'doseClock'>
+
+interface EnvironmentChartScale {
+  minimum: number
+  maximum: number
+  ticks: readonly number[]
+}
+
+const ENVIRONMENT_CHART_LEFT = 2
+const ENVIRONMENT_CHART_RIGHT = 98
+const ENVIRONMENT_CHART_TOP = 3
+const ENVIRONMENT_CHART_BOTTOM = 27
+
+const environmentUvColor = (uvIndex: number): string => {
+  if (uvIndex < 3) return 'var(--tri-environment-uv-low)'
+  if (uvIndex < 6) return 'var(--tri-environment-uv-moderate)'
+  if (uvIndex < 8) return 'var(--tri-environment-uv-high)'
+  if (uvIndex < 11) return 'var(--tri-environment-uv-very-high)'
+  return 'var(--tri-environment-uv-extreme)'
+}
+
+const environmentSampleValue = (
+  sample: GardenEnvironmentSample,
+  view: EnvironmentChartView,
+  scoreModel: EnvironmentScoreModel | null,
+): number | null => {
+  if (view === 'uv-index') return sample.uvIndex
+  if (view === 'temperature') return sample.ambientTemperatureC
+  if (view === 'cloud-cover') return sample.cloudCoverPct
+  const doseSed =
+    scoreModel?.doseClock === 'moving-telemetry'
+      ? sample.cumulativeMovingTelemetrySed
+      : sample.cumulativeSed
+  if (doseSed == null) return null
+  return scoreModel == null ? doseSed : gardenUvScoreFromDose(doseSed, scoreModel.coefficientSed)
+}
+
+const environmentNiceCeiling = (value: number): number => {
+  if (!Number.isFinite(value) || value <= 0) return 1
+  const magnitude = 10 ** Math.floor(Math.log10(value))
+  const normalized = value / magnitude
+  const ceiling = [1, 2, 2.5, 5, 10].find(candidate => candidate >= normalized) ?? 10
+  return ceiling * magnitude
+}
+
+const environmentChartScale = (
+  values: readonly number[],
+  view: EnvironmentChartView,
+  scoreModel: EnvironmentScoreModel | null,
+): EnvironmentChartScale => {
+  if (view === 'cloud-cover' || (view === 'cumulative' && scoreModel != null))
+    return { minimum: 0, maximum: 100, ticks: [0, 50, 100] }
+  if (view === 'uv-index') {
+    const maximum = Math.max(11, Math.ceil(Math.max(...values)))
+    return { minimum: 0, maximum, ticks: [0, maximum / 2, maximum] }
+  }
+  if (view === 'cumulative') {
+    const maximum = environmentNiceCeiling(Math.max(...values))
+    return { minimum: 0, maximum, ticks: [0, maximum / 2, maximum] }
+  }
+  const minimum = Math.min(...values)
+  const maximum = Math.max(...values)
+  const pad = Math.max(0.5, (maximum - minimum) * 0.08)
+  const lower = minimum - pad
+  const upper = maximum + pad
+  const step = niceStep(upper - lower, 2)
+  const domainMinimum = Math.floor(lower / step) * step
+  const domainMaximum = Math.ceil(upper / step) * step
+  return {
+    minimum: domainMinimum,
+    maximum: domainMaximum,
+    ticks: [domainMinimum, (domainMinimum + domainMaximum) / 2, domainMaximum],
+  }
+}
+
+const environmentChartY = (value: number, scale: EnvironmentChartScale): number =>
+  ENVIRONMENT_CHART_BOTTOM -
+  Math.min(1, Math.max(0, (value - scale.minimum) / (scale.maximum - scale.minimum))) *
+    (ENVIRONMENT_CHART_BOTTOM - ENVIRONMENT_CHART_TOP)
+
+const environmentChartValues = (
+  samples: readonly GardenEnvironmentSample[],
+  view: EnvironmentChartView,
+  scoreModel: EnvironmentScoreModel | null,
+): number[] =>
+  samples.flatMap(sample => {
+    const value = environmentSampleValue(sample, view, scoreModel)
+    return value == null || !Number.isFinite(value) ? [] : [value]
+  })
+
+export const environmentChartSeries = (
+  samples: readonly GardenEnvironmentSample[],
+  elapsedTimeS: number,
+  view: EnvironmentChartView,
+  scoreModel: EnvironmentScoreModel | null = null,
+): EnvironmentChartSeries[] => {
+  const values = environmentChartValues(samples, view, scoreModel)
+  if (values.length < 2 || elapsedTimeS <= 0) return []
+  const scale = environmentChartScale(values, view, scoreModel)
+  const x = (elapsedS: number): number =>
+    ENVIRONMENT_CHART_LEFT +
+    Math.min(1, Math.max(0, elapsedS / elapsedTimeS)) *
+      (ENVIRONMENT_CHART_RIGHT - ENVIRONMENT_CHART_LEFT)
+  const y = (value: number): number => environmentChartY(value, scale)
+  const stepped = view === 'uv-index' || view === 'cloud-cover'
+  if (view === 'uv-index') {
+    const segments: EnvironmentChartSeries[] = []
+    for (let index = 1; index < samples.length; index += 1) {
+      const previous = environmentSampleValue(samples[index - 1], view, scoreModel)
+      const current = environmentSampleValue(samples[index], view, scoreModel)
+      if (previous == null || current == null) continue
+      segments.push({
+        path: `M${x(samples[index - 1].elapsedS).toFixed(3)},${y(previous).toFixed(3)}H${x(samples[index].elapsedS).toFixed(3)}V${y(current).toFixed(3)}`,
+        color: environmentUvColor(previous),
+      })
+    }
+    return segments
+  }
+  const series: EnvironmentChartSeries[] = []
+  let path = ''
+  let previous: number | null = null
+  for (const sample of samples) {
+    const value = environmentSampleValue(sample, view, scoreModel)
+    if (value == null || !Number.isFinite(value)) {
+      if (path) series.push({ path, color: null })
+      path = ''
+      previous = null
+      continue
+    }
+    const px = x(sample.elapsedS).toFixed(3)
+    const py = y(value).toFixed(3)
+    if (!path) path = `M${px},${py}`
+    else path += stepped && previous != null ? `H${px}V${py}` : `L${px},${py}`
+    previous = value
+  }
+  if (path) series.push({ path, color: null })
+  return series
+}
+
+const environmentViewLabel = (view: EnvironmentChartView): string => {
+  if (view === 'uv-index') return 'UV index'
+  if (view === 'cloud-cover') return 'cloud cover'
+  return view
+}
+
+const environmentViewHasSamples = (
+  samples: readonly GardenEnvironmentSample[],
+  view: EnvironmentChartView,
+): boolean =>
+  samples.filter(sample => environmentSampleValue(sample, view, null) != null).length >= 2
+
+export const environmentElapsedClock = (elapsedS: number): string => {
+  const totalSeconds = Math.max(0, Math.round(elapsedS))
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+  const tail = `${minutes.toString().padStart(hours > 0 ? 2 : 1, '0')}:${seconds.toString().padStart(2, '0')}`
+  return hours > 0 ? `${hours}:${tail}` : tail
+}
+
+const environmentChartReadout = (
+  presentation: TriathlonPresentation,
+  sample: GardenEnvironmentSample,
+  scoreModel: EnvironmentScoreModel | null,
+): string => {
+  const values = [environmentElapsedClock(sample.elapsedS)]
+  if (sample.cumulativeSed != null) {
+    const scoreDoseSed =
+      scoreModel?.doseClock === 'moving-telemetry'
+        ? sample.cumulativeMovingTelemetrySed
+        : sample.cumulativeSed
+    if (scoreModel != null && scoreDoseSed != null)
+      values.push(
+        `${gardenUvScoreFromDose(scoreDoseSed, scoreModel.coefficientSed)} ${triText(presentation.locale, 'score')}`,
+      )
+    values.push(`${sample.cumulativeSed.toFixed(2)} SED`)
+  }
+  if (sample.uvIndex != null) values.push(`UVI ${sample.uvIndex.toFixed(1)}`)
+  if (sample.ambientTemperatureC != null)
+    values.push(formatTemperature(presentation, sample.ambientTemperatureC))
+  if (sample.cloudCoverPct != null)
+    values.push(`${Math.round(sample.cloudCoverPct)}% ${triText(presentation.locale, 'cloud')}`)
+  return values.join(' · ')
+}
+
+const environmentAxisLabel = (
+  presentation: TriathlonPresentation,
+  view: EnvironmentChartView,
+  scoreModel: EnvironmentScoreModel | null,
+  value: number,
+): string => {
+  if (view === 'cloud-cover') return `${Math.round(value)}%`
+  if (view === 'uv-index') return value.toFixed(1)
+  if (view === 'temperature') return formatTemperature(presentation, value)
+  if (scoreModel != null) return `${Math.round(value)}`
+  const locale = presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
+  return `${value.toLocaleString(locale, { maximumFractionDigits: 2 })} SED`
+}
+
+const environmentAxisTicks = (
+  presentation: TriathlonPresentation,
+  samples: readonly GardenEnvironmentSample[],
+  view: EnvironmentChartView,
+  scoreModel: EnvironmentScoreModel | null,
+  mode?: 'score' | 'sed',
+): AxisYTick[] => {
+  const values = environmentChartValues(samples, view, scoreModel)
+  if (values.length < 2) return []
+  const scale = environmentChartScale(values, view, scoreModel)
+  return scale.ticks.map(value => ({
+    label: environmentAxisLabel(presentation, view, scoreModel, value),
+    vbY: environmentChartY(value, scale),
+    ...(mode
+      ? {
+          attrs: {
+            'data-environment-cumulative-axis': mode,
+            ...(mode === 'sed' ? { hidden: '' } : {}),
+          },
+        }
+      : {}),
+  }))
+}
+
+const buildEnvironmentChart = <N>(
+  f: TriNodeFactory<N>,
+  samples: readonly GardenEnvironmentSample[],
+  elapsedTimeS: number,
+  view: EnvironmentChartView,
+  scoreModel: EnvironmentScoreModel | null,
+): N => {
+  const chart = f.el('div', 'tri-environment-chart')
+  const svg = f.svg('svg', {
+    class: 'tri-environment-plot',
+    viewBox: '0 0 100 32',
+    preserveAspectRatio: 'none',
+    role: 'slider',
+    tabindex: 0,
+    'aria-label': triText(f.presentation.locale, environmentViewLabel(view)),
+    'aria-valuemin': 0,
+    'aria-valuemax': Math.round(elapsedTimeS),
+    'aria-valuenow': Math.round(elapsedTimeS),
+    'data-environment-chart': view,
+  })
+  for (const y of [3, 15, 27])
+    f.add(
+      svg,
+      f.svg('line', {
+        class: 'tri-environment-gridline',
+        x1: ENVIRONMENT_CHART_LEFT,
+        x2: ENVIRONMENT_CHART_RIGHT,
+        y1: y,
+        y2: y,
+      }),
+    )
+  const addSeries = (model: EnvironmentScoreModel | null, mode?: 'score' | 'sed'): void => {
+    const group = f.svg('g', {
+      class: 'tri-environment-series',
+      ...(mode ? { 'data-environment-cumulative-series': mode } : {}),
+      ...(mode === 'sed' && scoreModel != null ? { hidden: '' } : {}),
+    })
+    for (const segment of environmentChartSeries(samples, elapsedTimeS, view, model))
+      f.add(
+        group,
+        f.svg('path', {
+          class: 'tri-environment-line',
+          d: segment.path,
+          ...(segment.color ? { style: `stroke:${segment.color}` } : {}),
+        }),
+      )
+    f.add(svg, group)
+  }
+  if (view === 'cumulative' && scoreModel != null) {
+    addSeries(scoreModel, 'score')
+    addSeries(null, 'sed')
+  } else {
+    addSeries(null)
+  }
+  f.add(
+    svg,
+    f.svg('rect', {
+      class: 'tri-environment-selection',
+      x: -10,
+      y: ENVIRONMENT_CHART_TOP,
+      width: 0,
+      height: ENVIRONMENT_CHART_BOTTOM - ENVIRONMENT_CHART_TOP,
+    }),
+    f.svg('line', {
+      class: 'tri-environment-cursor',
+      x1: ENVIRONMENT_CHART_RIGHT,
+      x2: ENVIRONMENT_CHART_RIGHT,
+      y1: ENVIRONMENT_CHART_TOP,
+      y2: ENVIRONMENT_CHART_BOTTOM,
+    }),
+  )
+  const yTicks =
+    view === 'cumulative' && scoreModel != null
+      ? [
+          ...environmentAxisTicks(f.presentation, samples, view, scoreModel, 'score'),
+          ...environmentAxisTicks(f.presentation, samples, view, null, 'sed'),
+        ]
+      : environmentAxisTicks(f.presentation, samples, view, scoreModel)
+  f.add(
+    chart,
+    axisFrame(
+      f,
+      svg,
+      yTicks,
+      32,
+      [
+        {
+          label: environmentElapsedClock(0),
+          pct: ENVIRONMENT_CHART_LEFT,
+          cls: 'tri-cax-xt--first',
+        },
+        { label: environmentElapsedClock(elapsedTimeS / 2), pct: 50 },
+        {
+          label: environmentElapsedClock(elapsedTimeS),
+          pct: ENVIRONMENT_CHART_RIGHT,
+          cls: 'tri-cax-xt--last',
+        },
+      ],
+      true,
+      { top: ENVIRONMENT_CHART_TOP, bottom: ENVIRONMENT_CHART_BOTTOM },
+    ),
+  )
+  return chart
+}
+
+type EnvironmentEvidenceSource = 'pelotan' | 'mywindsock' | 'garden-estimate'
+
+interface EnvironmentEvidenceValue {
+  text: string
+  source: EnvironmentEvidenceSource
+  formulaId?: string
+  formulaVersion?: number
+}
+
+interface EnvironmentEvidenceRow {
+  label: string
+  labelMath?: string
+  detail?: string
+  value: EnvironmentEvidenceValue | null
+}
+
+interface EnvironmentEvidenceGroup {
+  label: string
+  rows: readonly EnvironmentEvidenceRow[]
+}
+
+const providerEnvironmentValue = (
+  text: string,
+  source: Exclude<EnvironmentEvidenceSource, 'garden-estimate'>,
+): EnvironmentEvidenceValue => ({ text, source })
+
+const gardenEnvironmentValue = (
+  text: string,
+  model: { formulaId: string; formulaVersion: number },
+): EnvironmentEvidenceValue => ({
+  text,
+  source: 'garden-estimate',
+  formulaId: model.formulaId,
+  formulaVersion: model.formulaVersion,
+})
+
+const environmentTable = <N>(
+  f: TriNodeFactory<N>,
+  groups: readonly EnvironmentEvidenceGroup[],
+): N => {
+  const table = f.el('table', 'tri-environment-table tri-environment-summary-table')
+  for (const group of groups) {
+    const tbody = f.el('tbody')
+    const heading = f.el('tr', 'tri-environment-table-group')
+    f.add(
+      heading,
+      f.el('th', undefined, triText(f.presentation.locale, group.label), {
+        colspan: '2',
+        scope: 'rowgroup',
+        'data-i18n': group.label,
+      }),
+    )
+    f.add(tbody, heading)
+    for (const row of group.rows) {
+      const rendered = f.el('tr')
+      const label = triText(f.presentation.locale, row.label)
+      const labelAttrs: Record<string, string> = {
+        scope: 'row',
+        ...(row.labelMath
+          ? { 'aria-label': label, 'data-i18n-aria-label': row.label }
+          : { 'data-i18n': row.label }),
+        ...(row.detail
+          ? {
+              'data-gloss': '',
+              'data-gloss-def': triText(f.presentation.locale, row.detail),
+              tabindex: '0',
+            }
+          : {}),
+      }
+      const labelCell = f.el(
+        'th',
+        'tri-environment-row-label',
+        row.labelMath ? undefined : label,
+        labelAttrs,
+      )
+      if (row.labelMath) f.add(labelCell, f.math('tri-environment-row-math', row.labelMath))
+      if (row.value == null) {
+        f.add(
+          rendered,
+          labelCell,
+          f.el('td', 'tri-environment-unavailable', '—', { 'aria-label': 'unavailable' }),
+        )
+        f.add(tbody, rendered)
+        continue
+      }
+      const sourceLabel =
+        row.value.source === 'garden-estimate'
+          ? triText(f.presentation.locale, 'Garden estimate')
+          : row.value.source === 'pelotan'
+            ? 'Pelotan'
+            : 'MyWindsock'
+      const sourceAttrs: Record<string, string> =
+        row.value.source === 'garden-estimate'
+          ? {
+              'data-analysis-source': 'garden-estimate',
+              'data-analysis-formula': row.value.formulaId ?? 'garden-estimate',
+              'data-gloss': '',
+              'data-gloss-def': `${sourceLabel} · ${row.value.formulaId ?? 'garden-estimate'} v${row.value.formulaVersion ?? 1}`,
+              tabindex: '0',
+              'aria-label': `${row.value.text}, ${sourceLabel}, ${row.value.formulaId ?? 'garden-estimate'} version ${row.value.formulaVersion ?? 1}`,
+            }
+          : {
+              'data-analysis-source': 'provider-native',
+              'data-analysis-provider': row.value.source,
+              'aria-label': `${row.value.text}, provider-native ${sourceLabel} report`,
+            }
+      f.add(
+        rendered,
+        labelCell,
+        f.el(
+          'td',
+          row.value.source === 'garden-estimate' ? 'tri-environment-estimate' : undefined,
+          row.value.text,
+          sourceAttrs,
+        ),
+      )
+      f.add(tbody, rendered)
+    }
+    f.add(table, tbody)
+  }
+  return table
+}
+
+const environmentLink = <N>(f: TriNodeFactory<N>, text: string, href: string): N =>
+  f.el('a', undefined, text, { href, target: '_blank', rel: 'noreferrer' })
+
+const environmentLogoLink = <N>(
+  f: TriNodeFactory<N>,
+  cls: string,
+  src: string,
+  alt: string,
+  href: string,
+  title: string,
+): N => {
+  const link = f.el('a', `tri-environment-provider-logo ${cls}`, undefined, {
+    href,
+    target: '_blank',
+    rel: 'noreferrer',
+    title,
+    'aria-label': title,
+  })
+  f.add(link, f.el('img', undefined, undefined, { src, alt, loading: 'lazy', decoding: 'async' }))
+  return link
+}
+
+const formatSigned = (value: number, suffix: string): string =>
+  `${value > 0 ? '+' : ''}${value.toFixed(1)}${suffix}`
+
+const formatSignedSpeed = (presentation: TriathlonPresentation, value: number): string =>
+  `${value > 0 ? '+' : ''}${speedKph(presentation, value)}`
+
+export const buildEnvironmentAnalysis = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+): N | null => {
+  const pelotan = d.analyses.native.pelotan
+  const myWindsock = d.analyses.native.myWindsock
+  const environment = d.analyses.derived.environment
+  const uvScore = d.analyses.derived.uvScore
+  const wind = d.analyses.derived.apparentWind
+  if (!pelotan && !myWindsock && !environment && !wind) return null
+  const wrap = f.el('section', 'tri-environment', undefined, {
+    'aria-label': triText(f.presentation.locale, 'environment'),
+    'data-i18n-aria-label': 'environment',
+    'data-environment-analysis': '',
+  })
+  f.add(
+    wrap,
+    f.el('div', 'tri-zone-title', triText(f.presentation.locale, 'environment'), {
+      'data-i18n': 'environment',
+    }),
+  )
+  const uvRows: EnvironmentEvidenceRow[] = [
+    {
+      label: pelotan?.score != null ? 'uv load™' : 'UV score',
+      value:
+        pelotan?.score != null
+          ? providerEnvironmentValue(
+              `${pelotan.score}${pelotan.rawBand ? ` · ${pelotan.rawBand}` : ''}`,
+              'pelotan',
+            )
+          : uvScore
+            ? gardenEnvironmentValue(`${uvScore.score} · ${uvScore.severity}`, uvScore)
+            : null,
+    },
+    {
+      label: 'ambient SED',
+      value:
+        environment?.summary.ambientSed != null
+          ? gardenEnvironmentValue(`${environment.summary.ambientSed.toFixed(2)} SED`, environment)
+          : null,
+    },
+    {
+      label: 'average UVI',
+      value:
+        pelotan?.averageUvIndex != null
+          ? providerEnvironmentValue(pelotan.averageUvIndex.toFixed(1), 'pelotan')
+          : environment?.summary.averageUvIndex != null
+            ? gardenEnvironmentValue(environment.summary.averageUvIndex.toFixed(1), environment)
+            : null,
+    },
+    {
+      label: 'peak UVI',
+      value:
+        environment?.summary.peakUvIndex != null
+          ? gardenEnvironmentValue(environment.summary.peakUvIndex.toFixed(1), environment)
+          : null,
+    },
+    {
+      label: 'average ambient temperature',
+      value:
+        pelotan?.averageTemperatureC != null
+          ? providerEnvironmentValue(
+              formatTemperature(f.presentation, pelotan.averageTemperatureC),
+              'pelotan',
+            )
+          : environment?.summary.averageAmbientTemperatureC != null
+            ? gardenEnvironmentValue(
+                formatTemperature(f.presentation, environment.summary.averageAmbientTemperatureC),
+                environment,
+              )
+            : null,
+    },
+    {
+      label: 'average cloud cover',
+      value:
+        pelotan?.averageCloudCoverPct != null
+          ? providerEnvironmentValue(`${Math.round(pelotan.averageCloudCoverPct)}%`, 'pelotan')
+          : environment?.summary.averageCloudCoverPct != null
+            ? gardenEnvironmentValue(
+                `${Math.round(environment.summary.averageCloudCoverPct)}%`,
+                environment,
+              )
+            : null,
+    },
+    {
+      label: 'covered duration',
+      value: environment
+        ? gardenEnvironmentValue(
+            `${dlabel((environment.summary.elapsedDurationS * environment.coverage.uvPct) / 100)} · ${environment.coverage.uvPct.toFixed(1)}%`,
+            environment,
+          )
+        : null,
+    },
+  ]
+
+  const headwindRange =
+    myWindsock?.headwindMinKph != null && myWindsock.headwindMaxKph != null
+      ? ` · ${speedKph(f.presentation, myWindsock.headwindMinKph)}–${speedKph(f.presentation, myWindsock.headwindMaxKph)}`
+      : ''
+  const windRows: EnvironmentEvidenceRow[] = [
+    {
+      label: 'Weather Impact',
+      value:
+        myWindsock?.weatherImpactPct != null
+          ? providerEnvironmentValue(
+              `${myWindsock.weatherImpactPct > 0 ? '+' : ''}${myWindsock.weatherImpactPct.toFixed(1)}%`,
+              'mywindsock',
+            )
+          : null,
+    },
+    {
+      label: 'CdA',
+      value:
+        myWindsock?.cdaM2 != null
+          ? providerEnvironmentValue(`${myWindsock.cdaM2.toFixed(3)} m²`, 'mywindsock')
+          : null,
+    },
+    {
+      label: 'Feels Like Elevation',
+      value:
+        myWindsock?.feelsLikeElevationM != null
+          ? providerEnvironmentValue(
+              formatAltitude(f.presentation, myWindsock.feelsLikeElevationM),
+              'mywindsock',
+            )
+          : null,
+    },
+    {
+      label: 'headwind share and range',
+      value:
+        myWindsock?.headwindPct != null
+          ? providerEnvironmentValue(
+              `${myWindsock.headwindPct.toFixed(1)}%${headwindRange}`,
+              'mywindsock',
+            )
+          : wind
+            ? gardenEnvironmentValue(
+                `${wind.summary.headwindSharePct.toFixed(1)}% · ${triText(f.presentation.locale, 'average')} ${formatSignedSpeed(f.presentation, wind.summary.averageHeadwindKph)}`,
+                wind,
+              )
+            : null,
+    },
+    {
+      label: 'longest headwind',
+      value:
+        myWindsock?.longestHeadwindS != null
+          ? providerEnvironmentValue(dlabel(myWindsock.longestHeadwindS), 'mywindsock')
+          : wind
+            ? gardenEnvironmentValue(dlabel(wind.summary.longestHeadwindS), wind)
+            : null,
+    },
+    {
+      label: 'air speed',
+      detail: 'Air speed detail',
+      value:
+        myWindsock?.airSpeedKph != null
+          ? providerEnvironmentValue(speedKph(f.presentation, myWindsock.airSpeedKph), 'mywindsock')
+          : wind
+            ? gardenEnvironmentValue(
+                speedKph(f.presentation, wind.summary.averageApparentAirSpeedKph),
+                wind,
+              )
+            : null,
+    },
+    {
+      label: 'precipitation',
+      value:
+        myWindsock?.precipitationProbabilityPct != null
+          ? providerEnvironmentValue(
+              `${myWindsock.precipitationProbabilityPct.toFixed(0)}%${myWindsock.precipitationRateMmPerHour == null ? '' : ` · ${myWindsock.precipitationRateMmPerHour.toFixed(1)} mm/h`}`,
+              'mywindsock',
+            )
+          : null,
+    },
+    {
+      label: 'signed headwind / crosswind',
+      value: wind
+        ? gardenEnvironmentValue(
+            `${formatSignedSpeed(f.presentation, wind.summary.averageHeadwindKph)} / ${formatSignedSpeed(f.presentation, wind.summary.averageCrosswindKph)}`,
+            wind,
+          )
+        : null,
+    },
+    {
+      label: 'apparent-air ratio',
+      labelMath: '$v_{\\mathrm{air}} / v_{\\mathrm{ground}}$',
+      detail: 'Apparent-air ratio detail',
+      value: wind
+        ? gardenEnvironmentValue(`${wind.summary.apparentAirRatio.toFixed(3)}×`, wind)
+        : null,
+    },
+    {
+      label: 'yaw and wind coverage',
+      value: wind
+        ? gardenEnvironmentValue(
+            `${formatSigned(wind.summary.averageYawDeg, '°')} · ${wind.summary.coveragePct.toFixed(1)}%`,
+            wind,
+          )
+        : null,
+    },
+  ]
+  const evidenceGroups: EnvironmentEvidenceGroup[] = []
+  if (pelotan || uvScore || environment) evidenceGroups.push({ label: 'UV exposure', rows: uvRows })
+  if (myWindsock || wind) evidenceGroups.push({ label: 'wind and aero', rows: windRows })
+  if (evidenceGroups.length > 0) f.add(wrap, environmentTable(f, evidenceGroups))
+  if (environment && environment.samples.length >= 2) {
+    const environmentViews: readonly EnvironmentChartView[] = [
+      'cumulative',
+      'uv-index',
+      'temperature',
+      'cloud-cover',
+    ]
+    const availableViews = environmentViews.filter(view =>
+      environmentViewHasSamples(environment.samples, view),
+    )
+    if (availableViews.length > 0) {
+      const id = `tri-environment-${d.id}`
+      const selected = availableViews[0]
+      const scoreModel: EnvironmentScoreModel | null = uvScore
+        ? { coefficientSed: uvScore.coefficientSed, doseClock: uvScore.doseClock }
+        : null
+      const charts = f.el('div', 'tri-environment-graphs', undefined, {
+        'data-environment-tabs': '',
+        'data-environment-view': selected,
+        'data-environment-series': JSON.stringify(environment.samples),
+        'data-environment-elapsed': `${environment.summary.elapsedDurationS}`,
+        ...(scoreModel == null
+          ? {}
+          : {
+              'data-environment-score-coefficient': `${scoreModel.coefficientSed}`,
+              'data-environment-score-clock': scoreModel.doseClock,
+              'data-environment-cumulative-mode': 'score',
+            }),
+      })
+      const controls = f.el('div', 'tri-environment-controls')
+      const tabs = f.el('div', 'tri-map-tablist tri-environment-tablist', undefined, {
+        role: 'tablist',
+        'aria-label': triText(f.presentation.locale, 'Environment graph view'),
+        'data-i18n-aria-label': 'Environment graph view',
+      })
+      for (const view of availableViews) {
+        const active = view === selected
+        const label = environmentViewLabel(view)
+        f.add(
+          tabs,
+          f.el('button', 'tri-map-tab tri-environment-tab', triText(f.presentation.locale, label), {
+            id: `${id}-${view}-tab`,
+            type: 'button',
+            role: 'tab',
+            tabindex: active ? '0' : '-1',
+            'aria-controls': `${id}-${view}-panel`,
+            'aria-selected': String(active),
+            'data-environment-tab': view,
+            'data-i18n': label,
+          }),
+        )
+      }
+      f.add(controls, tabs)
+      if (scoreModel != null) {
+        const mode = f.el('div', 'tri-environment-mode', undefined, {
+          role: 'group',
+          'aria-label': triText(f.presentation.locale, 'Cumulative exposure unit'),
+          'data-i18n-aria-label': 'Cumulative exposure unit',
+        })
+        f.add(
+          mode,
+          f.el('button', undefined, triText(f.presentation.locale, 'score'), {
+            type: 'button',
+            'aria-pressed': 'true',
+            'data-environment-mode': 'score',
+            'data-i18n': 'score',
+          }),
+          f.el('button', undefined, 'SED', {
+            type: 'button',
+            'aria-pressed': 'false',
+            'data-environment-mode': 'sed',
+          }),
+        )
+        f.add(controls, mode)
+      }
+      const readoutSample = environment.samples.at(-1)
+      const readout = f.el(
+        'output',
+        'tri-environment-readout',
+        readoutSample ? environmentChartReadout(f.presentation, readoutSample, scoreModel) : '—',
+        { 'aria-live': 'polite', 'data-environment-readout': '' },
+      )
+      const stage = f.el('div', 'tri-environment-stage')
+      for (const view of availableViews) {
+        const active = view === selected
+        const panel = f.el('div', 'tri-environment-panel', undefined, {
+          id: `${id}-${view}-panel`,
+          role: 'tabpanel',
+          ...(active ? {} : { hidden: '' }),
+          'aria-hidden': String(!active),
+          'aria-labelledby': `${id}-${view}-tab`,
+          'data-environment-panel': view,
+        })
+        f.add(
+          panel,
+          buildEnvironmentChart(
+            f,
+            environment.samples,
+            environment.summary.elapsedDurationS,
+            view,
+            view === 'cumulative' ? scoreModel : null,
+          ),
+        )
+        f.add(stage, panel)
+      }
+      f.add(charts, controls, readout, stage)
+      f.add(wrap, charts)
+    }
+  }
+  const attribution = f.el('div', 'tri-environment-attribution')
+  if (myWindsock)
+    f.add(
+      attribution,
+      environmentLogoLink(
+        f,
+        'tri-environment-mywindsock-logo',
+        'https://mywindsock.com/images/mywindsock-logo-2020-orange.png',
+        'myWindsock',
+        `https://mywindsock.com/activity/${myWindsock.activityId}/`,
+        'Powered by myWindsock',
+      ),
+    )
+  if (pelotan)
+    f.add(
+      attribution,
+      environmentLogoLink(
+        f,
+        'tri-environment-pelotan-logo',
+        'https://pelotan.cc/cdn/shop/files/Pelotan-Wordmark-Black-RGB-_Screen.png?v=1713355522&width=240',
+        'Pelotan',
+        'https://pelotan.cc/pages/uv-load',
+        'Pelotan UV Load™',
+      ),
+    )
+  if (environment) {
+    const apple = environment.attribution
+    const legalUrl = apple?.legalPageUrl ?? 'https://weatherkit.apple.com/legal-attribution.html'
+    const provenance = triText(
+      f.presentation.locale,
+      'Garden estimate from Apple WeatherKit. Apple Weather data modified by Garden calculations.',
+    )
+    if (apple?.logoLightUrl && apple.logoDarkUrl) {
+      const picture = f.el('picture', 'tri-environment-apple-logo')
+      f.add(
+        picture,
+        f.el('source', undefined, undefined, {
+          media: '(prefers-color-scheme: dark)',
+          srcset: apple.logoDarkUrl,
+        }),
+        f.el('img', undefined, undefined, {
+          src: apple.logoLightUrl,
+          alt: apple.serviceName,
+          loading: 'lazy',
+        }),
+      )
+      const link = f.el('a', undefined, undefined, {
+        href: legalUrl,
+        target: '_blank',
+        rel: 'noreferrer',
+        title: provenance,
+        'aria-label': `${apple.serviceName} attribution. ${provenance}`,
+      })
+      f.add(link, picture)
+      f.add(attribution, link)
+    } else {
+      f.add(attribution, environmentLink(f, 'Apple Weather', legalUrl))
+    }
+  }
+  if (myWindsock || pelotan || environment) f.add(wrap, attribution)
+  return wrap
+}
+
 type PositionedAnalysisRange = { range: ActivityAnalysisRange; lane: number }
 
 const positionAnalysisRanges = (
@@ -4438,11 +5306,11 @@ export const statRow = <N>(
 export const statsTable = <N>(
   f: TriNodeFactory<N>,
   rows: [string, string][],
-  rowAttrs?: (label: string) => Record<string, string> | undefined,
+  rowAttrs?: (label: string, index: number) => Record<string, string> | undefined,
 ): N => {
   const table = f.el('table', 'tri-act-stats')
   const tbody = f.el('tbody')
-  for (const [k, v] of rows) f.add(tbody, statRow(f, k, v, rowAttrs?.(k)))
+  rows.forEach(([k, v], index) => f.add(tbody, statRow(f, k, v, rowAttrs?.(k, index))))
   f.add(table, tbody)
   return table
 }
@@ -4490,6 +5358,8 @@ export type AxisXTick = {
   tag?: 'span' | 'button'
   attrs?: Record<string, string>
 }
+
+export type AxisYTick = { label: string; vbY: number; cls?: string; attrs?: Record<string, string> }
 
 const HR_ZONE_NAMES = ['recovery', 'endurance', 'tempo', 'threshold', 'anaerobic']
 const POWER_ZONE_NAMES = [
@@ -4923,20 +5793,23 @@ export const buildCyclingBestEfforts = <N>(
 export const axisFrame = <N>(
   f: TriNodeFactory<N>,
   svgEl: N,
-  yTicks: { label: string; vbY: number }[],
+  yTicks: AxisYTick[],
   vbH: number,
   xTicks: AxisXTick[],
   axes = true,
   axisRange?: { top: number; bottom: number },
   stageOverlays: N[] = [],
-  rightYTicks: { label: string; vbY: number }[] = [],
+  rightYTicks: AxisYTick[] = [],
 ): N => {
   const frame = f.el('div', `tri-cax-frame${rightYTicks.length > 0 ? ' tri-cax-frame--dual' : ''}`)
   const yax = f.el('div', 'tri-cax-yax')
   for (const t of yTicks)
     f.add(
       yax,
-      f.el('span', 'tri-cax-yt', t.label, { style: `top:${((t.vbY / vbH) * 100).toFixed(2)}%` }),
+      f.el('span', `tri-cax-yt${t.cls ? ` ${t.cls}` : ''}`, t.label, {
+        ...t.attrs,
+        style: `top:${((t.vbY / vbH) * 100).toFixed(2)}%`,
+      }),
     )
   const stage = f.el('div', 'tri-cax-stage')
   if (axes && (yTicks.length >= 2 || axisRange)) {
@@ -4966,7 +5839,8 @@ export const axisFrame = <N>(
     for (const t of rightYTicks)
       f.add(
         rightYax,
-        f.el('span', 'tri-cax-yt tri-cax-yt--right', t.label, {
+        f.el('span', `tri-cax-yt tri-cax-yt--right${t.cls ? ` ${t.cls}` : ''}`, t.label, {
+          ...t.attrs,
           style: `top:${((t.vbY / vbH) * 100).toFixed(2)}%`,
         }),
       )
@@ -5885,6 +6759,34 @@ export const strengthExerciseSummary = (
   return `${sets} · ${efforts.join(', ')}`
 }
 
+const activityAnalysisStatRows = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+): [string, string][] => {
+  const selected = selectActivityAnalysisSummary(d.analyses)
+  const locale = presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
+  const rows: [string, string][] = []
+  if (selected.weatherImpact)
+    rows.push([
+      'weather impact',
+      `${selected.weatherImpact.valuePct.toLocaleString(locale, { maximumFractionDigits: 2 })}%`,
+    ])
+  const uv = selected.uvExposure
+  if (uv?.kind === 'pelotan-score')
+    rows.push([uv.label, `${uv.score} · ${uv.rawBand ?? uv.severity ?? '—'}`])
+  else if (uv?.kind === 'garden-score')
+    rows.push([
+      uv.label,
+      `${uv.score} · ${uv.severity[0].toUpperCase()}${uv.severity.slice(1)} · ${uv.sourceToken}`,
+    ])
+  else if (uv?.kind === 'garden-sed')
+    rows.push([
+      uv.label,
+      `${uv.ambientSed.toLocaleString(locale, { maximumFractionDigits: 2 })} SED · ${uv.sourceToken}`,
+    ])
+  return rows
+}
+
 export const buildStrengthExercises = <N>(
   f: TriNodeFactory<N>,
   strength: ActivityStrength,
@@ -5913,6 +6815,7 @@ export const buildStrengthExercises = <N>(
 export const activityStatRows = (
   presentation: TriathlonPresentation,
   d: StravaActivityDetail,
+  includeAnalyses = true,
 ): [string, string][] => {
   if (d.sport === 'sauna' && d.sauna) {
     const rows: [string, string][] = [
@@ -5936,6 +6839,7 @@ export const activityStatRows = (
       ])
     if (d.avgHr)
       rows.push(['avg hr', `${d.avgHr} bpm${d.sauna.heartRateSource === 'oura' ? ' · Oura' : ''}`])
+    if (includeAnalyses) rows.push(...activityAnalysisStatRows(presentation, d))
     return rows
   }
   if (d.sport === 'strength') {
@@ -5946,12 +6850,14 @@ export const activityStatRows = (
     if (d.strength?.totalReps != null) rows.push(['reps', String(d.strength.totalReps)])
     if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
     rows.push(...activityTrainingRows(presentation, d))
+    if (includeAnalyses) rows.push(...activityAnalysisStatRows(presentation, d))
     return rows
   }
   if (d.sport === 'treatment' || d.sport === 'yoga') {
     const rows: [string, string][] = [['time', dur(d.movingTimeS)]]
     if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
     rows.push(...activityTrainingRows(presentation, d))
+    if (includeAnalyses) rows.push(...activityAnalysisStatRows(presentation, d))
     return rows
   }
   const activityRate =
@@ -5976,6 +6882,7 @@ export const activityStatRows = (
     ])
   if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
   rows.push(...activityTrainingRows(presentation, d))
+  if (includeAnalyses) rows.push(...activityAnalysisStatRows(presentation, d))
   if (d.sport === 'swim') {
     const poolMetrics = d.swimLocation === 'pool' ? swimLengthAverages(d.swimIntervals) : null
     if (d.swimLocation !== 'pool') {
@@ -6003,6 +6910,65 @@ export const activityStatRows = (
   return rows
 }
 
+export const activityTableRows = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+  fillMissingRunPower = false,
+): [string, string][] => [
+  ...activityStatRows(presentation, d, false),
+  ...moreStatRows(presentation, d, fillMissingRunPower),
+  ...activityAnalysisStatRows(presentation, d),
+]
+
+export const relativeHumidityStatAttrs = (
+  d: StravaActivityDetail,
+): Record<string, string> | undefined => {
+  const provenance = d.relativeHumidityProvenance
+  if (d.averageRelativeHumidityPct == null || provenance == null) return undefined
+  return {
+    'data-weather-source': provenance.source,
+    'data-weather-source-kind': provenance.sourceKind,
+    'data-weather-sampling-method': provenance.samplingMethod,
+    'data-weather-input-timestamp': provenance.inputTimestamp,
+    'data-weather-coverage-pct': `${provenance.coveragePct}`,
+    title: `WeatherKit modeled weather · route-hour sampling · ${provenance.coveragePct}% coverage · ${provenance.inputTimestamp}`,
+  }
+}
+
+export const activityAnalysisStatAttrs = (
+  d: StravaActivityDetail,
+  label: string,
+): Record<string, string> | undefined => {
+  const selected = selectActivityAnalysisSummary(d.analyses)
+  if (label === 'weather impact' && selected.weatherImpact)
+    return {
+      'data-analysis-source': 'provider-native',
+      'data-analysis-provider': 'mywindsock',
+      title: 'Exact MyWindsock report attached to this Strava activity',
+      'aria-label': `weather impact ${selected.weatherImpact.valuePct} percent, provider-native MyWindsock report`,
+    }
+  const uv = selected.uvExposure
+  if (!uv || label !== uv.label) return undefined
+  if (uv.kind === 'pelotan-score')
+    return {
+      'data-analysis-source': 'provider-native',
+      'data-analysis-provider': 'pelotan',
+      title: 'Exact Pelotan UV Load report attached to this Strava activity',
+      'aria-label': `uv load ${uv.score}, ${uv.rawBand ?? uv.severity ?? 'unclassified'}, provider-native Pelotan report`,
+    }
+  return {
+    'data-analysis-source': 'garden-estimate',
+    title:
+      uv.kind === 'garden-score'
+        ? 'Garden score calibrated against held-out Pelotan reports'
+        : 'Garden ambient erythemal dose from Apple WeatherKit',
+    'aria-label':
+      uv.kind === 'garden-score'
+        ? `UV score ${uv.score}, ${uv.severity}, Garden estimate`
+        : `UV dose ${uv.ambientSed} standard erythema doses, Garden estimate from Apple WeatherKit`,
+  }
+}
+
 export const buildActivity = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
@@ -6022,6 +6988,7 @@ export const buildActivity = <N>(
     : null
   const activityAnchor = triathlonActivityAnchor(d.id)
   const summaryTrainingEffectGroup = dominantTrainingEffectGroup(activityTrainingEffectLabel(d))
+  const primaryStatCount = activityStatRows(f.presentation, d, false).length
   const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act', undefined, {
     ...(activityAnchor ? { id: activityAnchor } : {}),
     'data-activity-id': `${d.id}`,
@@ -6032,17 +6999,14 @@ export const buildActivity = <N>(
   f.add(wrap, head)
   f.add(
     wrap,
-    statsTable(
-      f,
-      [
-        ...activityStatRows(f.presentation, d),
-        ...moreStatRows(f.presentation, d, fillMissingRunPower),
-      ],
-      label =>
-        label === 'training effect'
-          ? { 'data-training-effect-group': summaryTrainingEffectGroup }
-          : undefined,
-    ),
+    statsTable(f, activityTableRows(f.presentation, d, fillMissingRunPower), (label, index) => {
+      if (label === 'training effect')
+        return { 'data-training-effect-group': summaryTrainingEffectGroup }
+      const analysisAttrs = activityAnalysisStatAttrs(d, label)
+      if (analysisAttrs) return analysisAttrs
+      if (index >= primaryStatCount && label === 'humidity') return relativeHumidityStatAttrs(d)
+      return undefined
+    }),
   )
   let hasSummaryVisual = false
   if (d.strength) {
@@ -6101,10 +7065,10 @@ export const buildActivity = <N>(
     if (cyclingWorkout) f.add(more, cyclingWorkout)
     const runAnalysis = buildRunAnalysis(f, d)
     if (runAnalysis) f.add(more, runAnalysis)
-    if (flags.hr) f.add(more, buildHeartRateTrace(f, d, analysisSelection))
+    const activityGraphs: N[] = []
+    if (flags.hr) activityGraphs.push(buildHeartRateTrace(f, d, analysisSelection))
     if (flags.power)
-      f.add(
-        more,
+      activityGraphs.push(
         buildTrace(
           f,
           d,
@@ -6125,24 +7089,23 @@ export const buildActivity = <N>(
         ),
       )
     const powerBalance = buildPowerBalanceChart(f, d, analysisSelection, embedded)
-    if (powerBalance) f.add(more, powerBalance)
+    if (powerBalance) activityGraphs.push(powerBalance)
     const torqueEffectiveness = buildTorqueEffectivenessChart(f, d, analysisSelection, embedded)
-    if (torqueEffectiveness) f.add(more, torqueEffectiveness)
+    if (torqueEffectiveness) activityGraphs.push(torqueEffectiveness)
     const pedalSmoothness = buildPedalSmoothnessChart(f, d, analysisSelection, embedded)
-    if (pedalSmoothness) f.add(more, pedalSmoothness)
+    if (pedalSmoothness) activityGraphs.push(pedalSmoothness)
     const powerPhase = buildPowerPhaseChart(f, d, analysisSelection)
-    if (powerPhase) f.add(more, powerPhase)
+    if (powerPhase) activityGraphs.push(powerPhase)
     const riderPosition = buildRiderPositionChart(f, d, analysisSelection)
-    if (riderPosition) f.add(more, riderPosition)
+    if (riderPosition) activityGraphs.push(riderPosition)
     const stamina = buildStaminaChart(f, d, analysisSelection)
-    if (stamina) f.add(more, stamina)
+    if (stamina) activityGraphs.push(stamina)
     const shifting = buildShiftingChart(f, d, analysisSelection)
-    if (shifting) f.add(more, shifting)
+    if (shifting) activityGraphs.push(shifting)
     if (flags.cad) {
       const cadenceScale = d.sport === 'run' ? 2 : 1
       const cadenceUnit = d.sport === 'run' ? 'spm' : 'rpm'
-      f.add(
-        more,
+      activityGraphs.push(
         buildTrace(
           f,
           d,
@@ -6159,33 +7122,49 @@ export const buildActivity = <N>(
     }
     if (flags.stride) {
       const stride = buildRunStrideTrace(f, d, analysisSelection)
-      if (stride) f.add(more, stride)
+      if (stride) activityGraphs.push(stride)
     }
     if (flags.groundContact) {
       const groundContact = buildRunGroundContactTrace(f, d, analysisSelection)
-      if (groundContact) f.add(more, groundContact)
+      if (groundContact) activityGraphs.push(groundContact)
     }
     if (flags.verticalOscillation) {
       const verticalOscillation = buildRunVerticalOscillationTrace(f, d, analysisSelection)
-      if (verticalOscillation) f.add(more, verticalOscillation)
+      if (verticalOscillation) activityGraphs.push(verticalOscillation)
     }
-    if (flags.resp) f.add(more, buildRespirationTrace(f, d, analysisSelection))
+    if (flags.resp) activityGraphs.push(buildRespirationTrace(f, d, analysisSelection))
     if (flags.muscleOxygen) {
       const muscleOxygen = buildMuscleOxygenTrace(f, d, analysisSelection)
-      if (muscleOxygen) f.add(more, muscleOxygen)
+      if (muscleOxygen) activityGraphs.push(muscleOxygen)
     }
-    if (flags.temp) f.add(more, buildTemperatureTrace(f, d, analysisSelection))
+    if (flags.temp) activityGraphs.push(buildTemperatureTrace(f, d, analysisSelection))
     if (flags.heatStrain) {
       const heatStrain = buildHeatStrainTrace(f, d, analysisSelection)
-      if (heatStrain) f.add(more, heatStrain)
+      if (heatStrain) activityGraphs.push(heatStrain)
     }
     if (flags.coreTemperature) {
       const coreTemperature = buildCoreTemperatureTrace(f, d, analysisSelection)
-      if (coreTemperature) f.add(more, coreTemperature)
+      if (coreTemperature) activityGraphs.push(coreTemperature)
     }
     if (flags.skinTemperature) {
       const skinTemperature = buildSkinTemperatureTrace(f, d, analysisSelection)
-      if (skinTemperature) f.add(more, skinTemperature)
+      if (skinTemperature) activityGraphs.push(skinTemperature)
+    }
+    const environment = buildEnvironmentAnalysis(f, d)
+    const pairEnvironment =
+      environment != null &&
+      activityGraphs.length >= 6 &&
+      (d.analyses.derived.environment?.samples.length ?? 0) >= 2
+    if (pairEnvironment) {
+      f.add(more, ...activityGraphs.slice(0, -6))
+      const layout = f.el('div', 'tri-environment-layout')
+      const traces = f.el('div', 'tri-environment-traces')
+      f.add(traces, ...activityGraphs.slice(-6))
+      f.add(layout, traces, environment)
+      f.add(more, layout)
+    } else {
+      f.add(more, ...activityGraphs)
+      if (environment) f.add(more, environment)
     }
     if (poolOverview) f.add(more, poolOverview)
     if (swimTrends) f.add(more, swimTrends)

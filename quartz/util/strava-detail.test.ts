@@ -52,3 +52,41 @@ test('rejects invalid activity dates and details larger than one shard', () => {
   }
   assert.throws(() => serializeStravaDetails(oversized, 100), /exceeds the shard byte limit/)
 })
+
+test('round-trips nested environment analyses through monthly detail shards', () => {
+  const payload: StravaDetailPayload<{
+    date: string
+    analyses: {
+      native: { pelotan: { score: number; source: string } }
+      derived: {
+        environment: {
+          summary: { ambientSed: number }
+          samples: { elapsedS: number; cumulativeSed: number }[]
+        }
+      }
+    }
+  }> = {
+    details: {
+      '19943165126': {
+        date: '2026-08-31',
+        analyses: {
+          native: { pelotan: { score: 83, source: 'provider-native' } },
+          derived: {
+            environment: {
+              summary: { ambientSed: 17.44 },
+              samples: [
+                { elapsedS: 0, cumulativeSed: 0 },
+                { elapsedS: 36_432, cumulativeSed: 17.44 },
+              ],
+            },
+          },
+        },
+      },
+    },
+    health: {},
+  }
+
+  const serialized = serializeStravaDetails(payload)
+  assert.deepEqual(JSON.parse(serialized.shards[0].content), { details: payload.details })
+  assert.equal(JSON.parse(serialized.manifest).shards[0], 'strava-detail/2026-08.json')
+})

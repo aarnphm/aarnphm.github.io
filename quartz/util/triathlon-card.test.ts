@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { CriticalPowerEstimate } from '../plugins/stores/critical-power'
 import type {
+  ActivityAnalyses,
   ActivityAnalysisRange,
   ActivityHeartRateTracePoint,
   StravaActivityDetail,
@@ -11,6 +12,7 @@ import type {
   SwimTrendPoint,
 } from '../plugins/stores/strava'
 import type { TriathlonDayAnalytics } from './triathlon-day-analytics'
+import { metricSpecs } from '../components/triathlon/activity/render'
 import { createTriathlonFormatter } from '../components/triathlon/runtime/formatter'
 import { calculateActivityExerciseLoad, emptyHealth } from '../plugins/stores/strava'
 import {
@@ -24,6 +26,7 @@ import {
   activityPowerDistributionPercentages,
   activitySelectionSummary,
   activityStatRows,
+  activityTableRows,
   activityZonePercentages,
   axisFrame,
   buildActivity,
@@ -31,6 +34,7 @@ import {
   buildCyclingBestEfforts,
   buildDayCard,
   buildElevation,
+  buildEnvironmentAnalysis,
   buildHeartRateTrace,
   buildPowerBalanceChart,
   buildPowerCurve,
@@ -52,6 +56,8 @@ import {
   decodePowerCurve,
   dlabel,
   encodePowerCurve,
+  environmentElapsedClock,
+  environmentChartSeries,
   formatAltitude,
   fuelingRows,
   formatGroundContactTime,
@@ -783,6 +789,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   start: '2026-07-09T12:00:00Z',
   distanceKm: 30,
   movingTimeS: 4_800,
+  elapsedTimeS: 4_800,
   maxSpeedKph: null,
   elevationM: 100,
   avgHr: 148,
@@ -795,11 +802,14 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   avgCadence: 88,
   sufferScore: null,
   calories: 960,
-  avgTemp: 24,
+  deviceTemperatureC: 24,
+  ambientTemperatureC: 22,
   windKph: null,
   windDir: null,
   windDirDeg: null,
   windGustKph: null,
+  averageRelativeHumidityPct: null,
+  relativeHumidityProvenance: null,
   location: 'Toronto',
   fueling: null,
   strength: null,
@@ -959,7 +969,364 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   swimIntervals: [],
   swimLocation: null,
   waterTemperatureC: null,
+  analyses: {
+    native: { myWindsock: null, pelotan: null },
+    derived: { environment: null, uvScore: null, apparentWind: null },
+  },
   ...overrides,
+})
+
+const environmentAnalyses = (): ActivityAnalyses => ({
+  native: {
+    pelotan: {
+      source: 'provider-native',
+      provider: 'pelotan',
+      transport: 'strava-description',
+      schemaVersion: 1,
+      activityId: 101,
+      retrievedAt: Date.parse('2026-07-09T18:00:00Z'),
+      score: 83,
+      rawBand: 'High',
+      severity: 'high',
+      averageUvIndex: 2.3,
+      averageTemperatureC: 20,
+      averageCloudCoverPct: 42,
+    },
+    myWindsock: {
+      source: 'provider-native',
+      provider: 'mywindsock',
+      transport: 'strava-description',
+      schemaVersion: 1,
+      activityId: 101,
+      retrievedAt: Date.parse('2026-07-09T18:00:00Z'),
+      weatherImpactPct: 0.6,
+      cdaM2: 0.324,
+      feelsLikeElevationM: 247,
+      headwindPct: 56,
+      headwindMinKph: 8,
+      headwindMaxKph: 24,
+      longestHeadwindS: 12_761,
+      airSpeedKph: 27,
+      averageTemperatureC: 20,
+      precipitationProbabilityPct: 20,
+      precipitationRateMmPerHour: 0.2,
+    },
+  },
+  derived: {
+    environment: {
+      source: 'garden-estimate',
+      formulaId: 'garden-environment-v1',
+      formulaVersion: 1,
+      inputVersion: 'weatherkit-route-hour-v1+strava-stream-v1',
+      normalizationVersion: 1,
+      computedAt: Date.parse('2026-07-09T18:05:00Z'),
+      inputAsOf: Date.parse('2026-07-09T17:00:00Z'),
+      temporalSamplingModel: 'weatherkit-hourly-piecewise-constant',
+      spatialSamplingModel: 'route-coordinate-nearest-hour-overlap-midpoint',
+      summary: {
+        averageUvIndex: 2.4,
+        peakUvIndex: 6.4,
+        uviHours: 4,
+        ambientSed: 3.6,
+        averageAmbientTemperatureC: 20,
+        averageCloudCoverPct: 42,
+        daylightCoveragePct: 100,
+        weatherCoveragePct: 100,
+        coveredDurationS: 4_800,
+        elapsedDurationS: 4_800,
+      },
+      doseClocks: { elapsedSed: 3.6, movingTelemetrySed: 3.4 },
+      coverage: {
+        weatherPct: 100,
+        uvPct: 100,
+        temperaturePct: 100,
+        cloudPct: 100,
+        daylightPct: 100,
+      },
+      samples: [
+        {
+          elapsedS: 0,
+          distanceKm: 0,
+          uvIndex: 6.4,
+          cumulativeSed: 0,
+          cumulativeMovingTelemetrySed: 0,
+          ambientTemperatureC: 22,
+          cloudCoverPct: 91,
+          headwindKph: null,
+          crosswindKph: null,
+          apparentAirSpeedKph: null,
+          yawDeg: null,
+        },
+        {
+          elapsedS: 1_600,
+          distanceKm: 10,
+          uvIndex: 4.2,
+          cumulativeSed: 2.1,
+          cumulativeMovingTelemetrySed: 1.9,
+          ambientTemperatureC: 21,
+          cloudCoverPct: 70,
+          headwindKph: 8,
+          crosswindKph: -3,
+          apparentAirSpeedKph: 31,
+          yawDeg: -5,
+        },
+        {
+          elapsedS: 3_200,
+          distanceKm: 20,
+          uvIndex: 2.1,
+          cumulativeSed: 3.1,
+          cumulativeMovingTelemetrySed: 2.9,
+          ambientTemperatureC: 19,
+          cloudCoverPct: 45,
+          headwindKph: -4,
+          crosswindKph: 2,
+          apparentAirSpeedKph: 21,
+          yawDeg: 4,
+        },
+        {
+          elapsedS: 4_800,
+          distanceKm: 30,
+          uvIndex: 0,
+          cumulativeSed: 3.6,
+          cumulativeMovingTelemetrySed: 3.4,
+          ambientTemperatureC: 18,
+          cloudCoverPct: 0,
+          headwindKph: 5,
+          crosswindKph: 1,
+          apparentAirSpeedKph: 28,
+          yawDeg: 2,
+        },
+      ],
+      attribution: {
+        serviceName: 'Apple Weather',
+        logoLightUrl: 'https://weatherkit.apple.com/assets/light.svg',
+        logoDarkUrl: 'https://weatherkit.apple.com/assets/dark.svg',
+        legalPageUrl: 'https://weatherkit.apple.com/legal-attribution.html',
+      },
+    },
+    uvScore: {
+      source: 'garden-estimate',
+      formulaId: 'garden-uv-score-v1',
+      formulaVersion: 1,
+      inputVersion: 'weatherkit-route-hour-v1+strava-stream-v1',
+      normalizationVersion: 1,
+      computedAt: Date.parse('2026-07-09T18:05:00Z'),
+      inputAsOf: Date.parse('2026-07-09T17:00:00Z'),
+      temporalSamplingModel: 'weatherkit-hourly-piecewise-constant',
+      spatialSamplingModel: 'route-coordinate-nearest-hour-overlap-midpoint',
+      score: 30,
+      severity: 'low',
+      doseClock: 'elapsed',
+      doseSed: 3.6,
+      coefficientSed: 10,
+      calibrationVersion: 1,
+    },
+    apparentWind: {
+      source: 'garden-estimate',
+      formulaId: 'garden-apparent-wind-v1',
+      formulaVersion: 1,
+      inputVersion: 'weatherkit-route-hour-v1+strava-stream-v1',
+      normalizationVersion: 1,
+      computedAt: Date.parse('2026-07-09T18:05:00Z'),
+      inputAsOf: Date.parse('2026-07-09T17:00:00Z'),
+      temporalSamplingModel: 'weatherkit-hourly-piecewise-constant',
+      spatialSamplingModel: 'route-coordinate-nearest-hour-overlap-midpoint',
+      summary: {
+        headwindSharePct: 56,
+        headwindTimeS: 2_000,
+        tailwindTimeS: 1_000,
+        longestHeadwindS: 800,
+        averageHeadwindKph: 3,
+        averageCrosswindKph: -1,
+        maximumHeadwindKph: 10,
+        maximumCrosswindKph: 5,
+        averageGroundSpeedKph: 24,
+        averageApparentAirSpeedKph: 27,
+        apparentAirRatio: 1.125,
+        averageYawDeg: -2,
+        coveragePct: 75,
+      },
+      coverage: { windPct: 75 },
+    },
+  },
+})
+
+test('renders one provider-first environment table with explicit Garden estimate provenance', () => {
+  const activity = detail({ analyses: environmentAnalyses() })
+  const rendered = buildActivity(factory, activity, true)
+  const environment = byClass(rendered, 'tri-environment')[0]
+
+  assert.ok(environment)
+  assert.deepEqual(activityTableRows(METRIC_TRIATHLON_PRESENTATION, activity).slice(-2), [
+    ['weather impact', '0.6%'],
+    ['uv load™', '83 · High'],
+  ])
+  assert.equal(byClass(environment, 'tri-environment-table').length, 1)
+  assert.equal(byClass(environment, 'tri-environment-table-group').length, 2)
+  const estimates = byClass(environment, 'tri-environment-estimate')
+  assert.ok(estimates.length > 0)
+  assert.ok(
+    estimates.every(
+      estimate =>
+        estimate.properties.dataAnalysisSource === 'garden-estimate' &&
+        estimate.properties.dataGloss === '' &&
+        String(estimate.properties.dataGlossDef).startsWith('Garden estimate · garden-') &&
+        estimate.properties.tabIndex === 0,
+    ),
+  )
+  const ratioLabel = byClass(environment, 'tri-environment-row-math')[0]
+  assert.ok(ratioLabel)
+  assert.equal(text(ratioLabel), 'v_{\\mathrm{air}} / v_{\\mathrm{ground}}')
+  assert.equal(byClass(ratioLabel, 'tri-math').length, 1)
+  assert.doesNotMatch(text(environment), /2\.4/)
+  assert.match(text(environment), /2\.3/)
+  assert.deepEqual(byClass(environment, 'tri-environment-tab').map(text), [
+    'cumulative',
+    'UV index',
+    'temperature',
+    'cloud cover',
+  ])
+  const tabs = byClass(environment, 'tri-environment-tab')
+  const panels = byClass(environment, 'tri-environment-panel')
+  assert.deepEqual(
+    tabs.map(tab => [tab.properties.role, tab.properties.tabIndex, tab.properties.ariaSelected]),
+    [
+      ['tab', 0, 'true'],
+      ['tab', -1, 'false'],
+      ['tab', -1, 'false'],
+      ['tab', -1, 'false'],
+    ],
+  )
+  assert.deepEqual(
+    panels.map(panel => [panel.properties.role, panel.properties.hidden]),
+    [
+      ['tabpanel', undefined],
+      ['tabpanel', true],
+      ['tabpanel', true],
+      ['tabpanel', true],
+    ],
+  )
+  assert.equal(byClass(environment, 'tri-environment-series').length, 5)
+  assert.deepEqual(byClass(panels[0], 'tri-cax-xt').map(text), ['0:00', '40:00', '1:20:00'])
+  assert.deepEqual(
+    byClass(panels[0], 'tri-cax-yt')
+      .filter(tick => tick.properties.hidden === undefined)
+      .map(text),
+    ['0', '50', '100'],
+  )
+  assert.deepEqual(
+    new Set(
+      descendants(
+        environment,
+        element => element.properties.dataAnalysisSource === 'provider-native',
+      ).map(element => element.properties.dataAnalysisProvider),
+    ),
+    new Set(['pelotan', 'mywindsock']),
+  )
+  const providerLogos = byClass(environment, 'tri-environment-provider-logo')
+  assert.equal(providerLogos.length, 2)
+  assert.deepEqual(
+    providerLogos.map(link => [link.properties.title, link.properties.href]),
+    [
+      ['Powered by myWindsock', 'https://mywindsock.com/activity/101/'],
+      ['Pelotan UV Load™', 'https://pelotan.cc/pages/uv-load'],
+    ],
+  )
+  assert.doesNotMatch(text(environment), /Garden estimate from Apple WeatherKit/)
+  assert.ok(
+    byTag(environment, 'a').some(
+      link =>
+        link.properties.title ===
+        'Garden estimate from Apple WeatherKit. Apple Weather data modified by Garden calculations.',
+    ),
+  )
+  assert.doesNotMatch(text(environment), /latitude|longitude|routeFingerprint/)
+})
+
+test('renders native evidence without inventing graphs and translates environment labels', () => {
+  const analyses = environmentAnalyses()
+  analyses.derived.environment = null
+  analyses.derived.uvScore = null
+  analyses.derived.apparentWind = null
+  const nativeOnly = buildEnvironmentAnalysis(factory, detail({ analyses }))
+  assert.ok(nativeOnly)
+  assert.equal(byClass(nativeOnly, 'tri-environment-panel').length, 0)
+  assert.match(text(nativeOnly), /83 · High/)
+  assert.equal(byTag(nativeOnly, 'tr').length, 19)
+  assert.equal(byClass(nativeOnly, 'tri-environment-unavailable').length, 6)
+  assert.ok(
+    byClass(nativeOnly, 'tri-environment-row-label').some(label => text(label) === 'air speed'),
+  )
+
+  const frenchEnvironment = buildEnvironmentAnalysis(
+    factoryFor(frenchPresentation),
+    detail({ analyses: environmentAnalyses() }),
+  )
+  assert.ok(frenchEnvironment)
+  assert.match(text(frenchEnvironment), /environnement/)
+  assert.match(text(frenchEnvironment), /exposition UV/)
+  assert.match(text(frenchEnvironment), /couverture nuageuse/)
+})
+
+test('environment paths retain explicit gaps and step hourly values', () => {
+  const samples = environmentAnalyses().derived.environment?.samples ?? []
+  const gapped = samples.map((sample, index) =>
+    index === 2 ? { ...sample, ambientTemperatureC: null } : sample,
+  )
+  const temperature = environmentChartSeries(gapped, 4_800, 'temperature')
+  const ultraviolet = environmentChartSeries(samples, 4_800, 'uv-index')
+
+  assert.equal(temperature.length, 2)
+  assert.equal(ultraviolet.length, 3)
+  assert.ok(ultraviolet.every(segment => segment.path.includes('H') && segment.path.includes('V')))
+  assert.ok(ultraviolet.every(segment => segment.color != null))
+})
+
+test('environment elapsed clocks switch to hours without changing the minute clock', () => {
+  assert.equal(environmentElapsedClock(0), '0:00')
+  assert.equal(environmentElapsedClock(1_999), '33:19')
+  assert.equal(environmentElapsedClock(3_997), '1:06:37')
+  assert.equal(environmentElapsedClock(36_432), '10:07:12')
+})
+
+test('calibrated cumulative paths use the selected dose clock', () => {
+  const samples = environmentAnalyses().derived.environment?.samples ?? []
+  const moving = environmentChartSeries(samples, 4_800, 'cumulative', {
+    coefficientSed: 10,
+    doseClock: 'moving-telemetry',
+  })
+  const elapsed = environmentChartSeries(samples, 4_800, 'cumulative', {
+    coefficientSed: 10,
+    doseClock: 'elapsed',
+  })
+
+  assert.match(moving[0]?.path ?? '', /L98\.000,20\.040$/)
+  assert.match(elapsed[0]?.path ?? '', /L98\.000,19\.800$/)
+})
+
+test('route map exposes UV and signed wind from Garden samples', () => {
+  const activity = detail({ analyses: environmentAnalyses() })
+  const specs = metricSpecs(METRIC_TRIATHLON_PRESENTATION, activity, {
+    zones: null,
+    curveRef: [],
+    curveYearRef: [],
+    curveYear: null,
+    criticalPower: null,
+    criticalPowerYear: null,
+    ftp: null,
+    goalFtp: null,
+    vt1: null,
+  })
+  const ultraviolet = specs.find(spec => spec.label === 'UV')
+  const wind = specs.find(spec => spec.label === 'wind')
+
+  assert.ok(ultraviolet)
+  assert.ok(wind)
+  assert.equal(ultraviolet.pick(activity.route[3], 3), 0)
+  assert.equal(ultraviolet.valid?.(activity.route[3], 3), true)
+  assert.equal(wind.pick(activity.route[1], 1), 8)
+  assert.match(wind.readout(activity.route[1], 1), /apparent air 31\.0 km\/h/)
+  assert.match(wind.readout(activity.route[1], 1), /yaw -5\.0°/)
 })
 
 const garminVerification = (
@@ -1020,6 +1387,81 @@ test('renders the cycling computer as an activity table row', () => {
   )
   assert.equal(computerRow(absent), undefined)
   assert.equal(byClass(garmin, 'tri-act-computer').length, 0)
+})
+
+test('renders WeatherKit humidity below wind in shared server and hydrated activity rows', () => {
+  const activity = detail({
+    windKph: 11,
+    windDir: 'E',
+    windGustKph: 17,
+    averageRelativeHumidityPct: 68,
+    relativeHumidityProvenance: {
+      source: 'weatherkit',
+      sourceKind: 'modeled',
+      samplingMethod: 'route-hour',
+      inputTimestamp: '2026-07-09T12:00:00Z',
+      coveragePct: 75,
+    },
+    analyses: {
+      native: {
+        myWindsock: {
+          source: 'provider-native',
+          provider: 'mywindsock',
+          transport: 'strava-description',
+          schemaVersion: 1,
+          activityId: 101,
+          retrievedAt: 1,
+          weatherImpactPct: 0.6,
+          cdaM2: null,
+          feelsLikeElevationM: null,
+          headwindPct: null,
+          headwindMinKph: null,
+          headwindMaxKph: null,
+          longestHeadwindS: null,
+          airSpeedKph: null,
+          averageTemperatureC: null,
+          precipitationProbabilityPct: null,
+          precipitationRateMmPerHour: null,
+        },
+        pelotan: null,
+      },
+      derived: { environment: null, uvScore: null, apparentWind: null },
+    },
+  })
+  const rows = activityTableRows(METRIC_TRIATHLON_PRESENTATION, activity)
+  const renderedRows = byTag(
+    byClass(buildActivity(factory, activity), 'tri-act-stats')[0],
+    'tr',
+  ).map(row => [row.properties.dataStatKey, text(byClass(row, 'tri-act-stat-v')[0])])
+  const humidityRow = byTag(buildActivity(factory, activity), 'tr').find(
+    row => row.properties.dataStatKey === 'humidity',
+  )
+
+  assert.deepEqual(rows.slice(-3), [
+    ['wind', '11 km/h E / gust 17'],
+    ['humidity', '68%'],
+    ['weather impact', '0.6%'],
+  ])
+  assert.deepEqual(renderedRows, rows)
+  assert.equal(humidityRow?.properties.dataWeatherSource, 'weatherkit')
+  assert.equal(humidityRow?.properties.dataWeatherSourceKind, 'modeled')
+  assert.equal(humidityRow?.properties.dataWeatherSamplingMethod, 'route-hour')
+  assert.equal(humidityRow?.properties.dataWeatherInputTimestamp, '2026-07-09T12:00:00Z')
+  assert.equal(humidityRow?.properties.dataWeatherCoveragePct, '75')
+  assert.deepEqual(
+    moreStatRows(
+      METRIC_TRIATHLON_PRESENTATION,
+      detail({ windKph: 0, averageRelativeHumidityPct: 0 }),
+    ).slice(-2),
+    [
+      ['wind', '0 km/h'],
+      ['humidity', '0%'],
+    ],
+  )
+  assert.equal(
+    moreStatRows(METRIC_TRIATHLON_PRESENTATION, detail()).some(([label]) => label === 'humidity'),
+    false,
+  )
 })
 
 test('calculates missing exercise load from Garmin intensity without replacing native load', () => {
@@ -1420,8 +1862,9 @@ test('renders strength volume, totals, exercises, and exact loaded sets', () => 
   ])
 
   assert.equal(activityStatRows(METRIC_TRIATHLON_PRESENTATION, activity)[1][1], '816.5 kg')
-  assert.deepEqual(moreStatRows(METRIC_TRIATHLON_PRESENTATION, activity).slice(-2), [
-    ['air temp', '24°C'],
+  assert.deepEqual(moreStatRows(METRIC_TRIATHLON_PRESENTATION, activity).slice(-3), [
+    ['device temp', '24°C'],
+    ['ambient temp', '22°C'],
     ['wind', '18 km/h SW / gust 31'],
   ])
 })
@@ -1473,7 +1916,7 @@ test('renders manual sauna conditions and Oura heart rate without distance metri
     deviceWatts: false,
     avgCadence: null,
     calories: null,
-    avgTemp: 27,
+    deviceTemperatureC: 27,
     windKph: 10,
     windDir: 'NNW',
     windGustKph: 16,
@@ -1503,7 +1946,8 @@ test('renders manual sauna conditions and Oura heart rate without distance metri
   ])
   assert.deepEqual(moreStatRows(imperialPresentation, sauna), [
     ['max hr', '130 bpm'],
-    ['air temp', '81°F'],
+    ['device temp', '81°F'],
+    ['ambient temp', '72°F'],
     ['wind', '10 km/h NNW / gust 16'],
   ])
   const rendered = buildActivity(factoryFor(imperialPresentation), sauna, true)
@@ -1878,7 +2322,7 @@ test('renders route stream graphs in the server activity markup', () => {
     byClass(temperature, 'tri-elev-cap')
       .flatMap(cap => byTag(cap, 'span'))
       .map(text),
-    ['temperature', '24°C avg'],
+    ['temperature', '22°C avg'],
   )
   assert.deepEqual(byClass(temperature, 'tri-cax-yt').map(text), ['22°C', '24°C', '26°C'])
 })
@@ -1943,6 +2387,44 @@ test('renders muscle oxygen as a percentage trace', () => {
   assert.match(text(byClass(trace, 'tri-elev-cap')[0]), /muscle oxygen61\.0% \\mathrm\{SmO\}_2 avg/)
   assert.equal(byClass(trace, 'tri-math').length, 1)
   assert.deepEqual(byClass(trace, 'tri-cax-yt').map(text), ['55.0%', '60.0%', '65.0%'])
+})
+
+test('pairs environment evidence with the final six activity graphs', () => {
+  const activity = detail({
+    analyses: environmentAnalyses(),
+    garmin: garminVerification({ aerobicTrainingEffect: 3.2, anaerobicTrainingEffect: 1.1 }),
+    route: detail().route.map((point, index) => ({
+      ...point,
+      muscleOxygenPct: [64, 62, 60, 58][index],
+      heatStrainIndex: [0, 1.4, 3, 3.1][index],
+      coreTemperatureC: [37.16, 37.17, 37.19, 37.18][index],
+      skinTemperatureC: [33.4, 33.45, 33.5, 33.55][index],
+    })),
+  })
+  const rendered = buildActivity(factory, activity, true)
+  const more = byClass(rendered, 'tri-act-more')[0]
+  const layout = byClass(more, 'tri-environment-layout')[0]
+  assert.ok(layout)
+  const stack = byClass(layout, 'tri-environment-traces')[0]
+  assert.ok(stack)
+  assert.deepEqual(
+    stack.children
+      .filter((child): child is Element => child.type === 'element')
+      .map(child => child.properties.dataTriTrace),
+    [
+      'respiration',
+      'muscle-oxygen',
+      'temperature',
+      'heat-strain-index',
+      'core-temperature',
+      'skin-temperature',
+    ],
+  )
+  assert.equal(byClass(layout, 'tri-environment').length, 1)
+  const children = more.children.filter((child): child is Element => child.type === 'element')
+  const layoutIndex = children.indexOf(layout)
+  assert.ok(layoutIndex >= 0)
+  assert.ok(classNames(children[layoutIndex + 1]).includes('tri-training-effect'))
 })
 
 test('renders timestamp-aligned CORE app graphs for runs without Garmin thermal data', () => {
@@ -2907,7 +3389,8 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
     ['calories', '960 kcal'],
     ['cadence', '10.5 /length'],
     ['max hr', '171 bpm'],
-    ['air temp', '24°C'],
+    ['device temp', '24°C'],
+    ['ambient temp', '22°C'],
     ['wind', '18 km/h SW / gust 31'],
   ])
 })
@@ -2994,7 +3477,8 @@ test('adds max speed directly below the bike speed row', () => {
     ['calories', '960 kcal'],
     ['cadence', '88 rpm'],
     ['max hr', '171 bpm'],
-    ['temp', '24°C'],
+    ['device temp', '24°C'],
+    ['ambient temp', '22°C'],
   ])
 
   const imperial = buildActivity(factoryFor(imperialPresentation), detail({ maxSpeedKph: 41.8 }))
@@ -3014,7 +3498,8 @@ test('adds max speed directly below the bike speed row', () => {
     ['calories', '960 kcal'],
     ['cadence', '88 rpm'],
     ['max hr', '171 bpm'],
-    ['temp', '75°F'],
+    ['device temp', '75°F'],
+    ['ambient temp', '72°F'],
   ])
   const withoutMax = buildActivity(factory, detail())
   const plainStats = byClass(withoutMax, 'tri-act-stats')[0]
@@ -3034,7 +3519,8 @@ test('adds max speed directly below the bike speed row', () => {
       'calories',
       'cadence',
       'max hr',
-      'temp',
+      'device temp',
+      'ambient temp',
     ],
   )
 })
@@ -3104,7 +3590,8 @@ test('renders the run trend between pace and heart rate in server activity marku
     ['calories', '960 kcal'],
     ['cadence', '176 spm'],
     ['max hr', '171 bpm'],
-    ['temp', '24°C'],
+    ['device temp', '24°C'],
+    ['ambient temp', '22°C'],
   ])
 })
 

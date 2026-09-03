@@ -7,12 +7,14 @@ import type {
   AppleWorkout,
 } from '../plugins/stores/apple'
 import type { CoreBodyTemperatureCache } from '../plugins/stores/core-body-temperature'
+import type { OuraCache } from '../plugins/stores/oura'
 import {
   emptyPayload,
   type StravaActivityDetail,
   type StravaPayload,
 } from '../plugins/stores/strava'
 import {
+  applyManualActivityTracking,
   enrichCalculatedExerciseLoads,
   enrichCalculatedIntensityFactors,
   enrichCalculatedTrainingEffects,
@@ -32,6 +34,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   start: '2026-07-09T20:13:31Z',
   distanceKm: 1,
   movingTimeS: 1_590,
+  elapsedTimeS: 1_590,
   maxSpeedKph: null,
   elevationM: 0,
   avgHr: 140,
@@ -44,11 +47,14 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   avgCadence: null,
   sufferScore: null,
   calories: null,
-  avgTemp: null,
+  deviceTemperatureC: null,
+  ambientTemperatureC: null,
   windKph: null,
   windDir: null,
   windDirDeg: null,
   windGustKph: null,
+  averageRelativeHumidityPct: null,
+  relativeHumidityProvenance: null,
   location: null,
   fueling: null,
   strength: null,
@@ -88,6 +94,10 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   swimIntervals: [],
   swimLocation: null,
   waterTemperatureC: null,
+  analyses: {
+    native: { myWindsock: null, pelotan: null },
+    derived: { environment: null, uvScore: null, apparentWind: null },
+  },
   ...values,
 })
 
@@ -340,6 +350,70 @@ test('keeps manual sauna heart rate Oura-only', () => {
   assert.equal(sauna.avgHr, null)
   assert.equal(sauna.maxHr, null)
   assert.deepEqual(sauna.heartRateTrace, [])
+})
+
+test('applies attached manual sauna metadata through the shared payload path', () => {
+  const activity = detail({
+    id: 20012367069,
+    sport: 'treatment',
+    name: 'Guided Down: Self-Care Sweat',
+    date: '2026-09-02',
+    start: '2026-09-02T21:30:00Z',
+    movingTimeS: 4_000,
+    elapsedTimeS: 4_000,
+    avgHr: 100,
+    maxHr: 150,
+  })
+  const payload = payloadWith(activity)
+  payload.days = [
+    {
+      date: activity.date,
+      durationS: activity.movingTimeS,
+      dominant: 'treatment',
+      items: [
+        { id: activity.id, sport: 'treatment', distanceKm: 0, durationS: activity.movingTimeS },
+      ],
+    },
+  ]
+  const oura: OuraCache = { lastSync: 1, days: {} }
+
+  applyManualActivityTracking(
+    payload,
+    {
+      fueling: [],
+      strength: [],
+      sauna: [
+        {
+          id: 8_202_609_021_730,
+          stravaActivityId: activity.id,
+          title: 'Guided Down, Self-Care Sweat',
+          date: activity.date,
+          time: '17:30',
+          durationS: 4_500,
+          temperatureC: 71.111,
+          humidityPct: 11,
+          cooldown: 'cold plunge',
+          heatTrainingLoad: 7.7,
+        },
+      ],
+    },
+    oura,
+    null,
+  )
+
+  assert.equal(activity.sport, 'sauna')
+  assert.equal(activity.name, 'Guided Down, Self-Care Sweat')
+  assert.deepEqual(activity.sauna, {
+    time: '17:30',
+    temperatureC: 71.111,
+    humidityPct: 11,
+    cooldown: 'cold plunge',
+    heatTrainingLoad: 7.7,
+    heartRateSource: null,
+    source: 'manual',
+  })
+  assert.equal(payload.days[0]?.items[0]?.sport, 'sauna')
+  assert.equal(payload.days[0]?.dominant, 'sauna')
 })
 
 test('CORE app samples override FIT thermal values only near onboard timestamps', () => {

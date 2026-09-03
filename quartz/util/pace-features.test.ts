@@ -139,7 +139,7 @@ test('legSpecFromActivityRow maps geometry and conditions', () => {
     sport: 'bike',
     distanceKm: 40,
     elevationM: 350,
-    avgTemp: 22,
+    ambientTemperatureC: 22,
     windKph: null,
   })
   assert.ok(spec)

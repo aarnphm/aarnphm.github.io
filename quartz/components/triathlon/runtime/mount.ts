@@ -3,6 +3,7 @@ import { decodeActivityComparisonAnchor } from '../../../util/triathlon-comparis
 import { TRI_TIRE_PRESSURE_OPEN_EVENT } from '../../../util/triathlon-tire-pressure'
 import { setupActivityComparisonEmbeds } from '../activity/embeds'
 import { setupDayEmbeds } from '../activity/embeds'
+import { setupEnvironmentTabs } from '../activity/environment-tabs'
 import { setupMatchedActivities } from '../activity/matched'
 import { setupPowerCurveActivityLinks } from '../activity/power-links'
 import { createDayCardFacade, type DayCardFacade } from '../activity/public-api'
@@ -50,6 +51,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   addCleanup(setupActivityComparisonEmbeds(context))
   addCleanup(setupPowerCurveActivityLinks(document.body, context))
   addCleanup(setupChartScrub(document.body, () => context.presentation))
+  addCleanup(setupEnvironmentTabs(document.body, () => context.presentation))
   addCleanup(setupRunAnalysisTabs(document.body))
   addCleanup(setupMatchedActivities(document.body))
   addCleanup(setupGloss(document.body, () => context.presentation.locale))

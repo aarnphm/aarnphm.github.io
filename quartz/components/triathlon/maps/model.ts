@@ -224,10 +224,13 @@ export const heatOpacityExpr: unknown[] = [
   0.95,
 ]
 
-export const heatWidthExpr: unknown[] = (() => {
-  const w = (base: number, k: number) => ['+', base, ['*', k, ['-', ['get', 'heat'], 1]]]
+const heatWidthExpression = (casing: number): unknown[] => {
+  const w = (base: number, k: number) => ['+', base + casing, ['*', k, ['-', ['get', 'heat'], 1]]]
   return ['interpolate', ['linear'], ['zoom'], 10, w(0.55, 0.08), 14, w(0.9, 0.14), 16, w(1.3, 0.2)]
-})()
+}
+
+export const heatWidthExpr = heatWidthExpression(0)
+export const heatCasingWidthExpr = heatWidthExpression(2.4)
 
 export const overviewRamp = (m: OverviewMode): string[] =>
   m === 'hr' ? HR_RAMP : m === 'cad' ? CAD_RAMP : m === 'spd' ? SPD_RAMP : HEAT_RAMP
@@ -245,17 +248,20 @@ export const streetMetricOpacityExpr = (k: OverviewMode): unknown[] => [
   0.6,
 ]
 
-export const streetMetricWidthExpr: unknown[] = [
+const streetMetricWidthExpression = (casing: number): unknown[] => [
   'interpolate',
   ['linear'],
   ['zoom'],
   10,
-  0.75,
+  0.75 + casing,
   14,
-  1.2,
+  1.2 + casing,
   16,
-  1.8,
+  1.8 + casing,
 ]
+
+export const streetMetricWidthExpr = streetMetricWidthExpression(0)
+export const streetMetricCasingWidthExpr = streetMetricWidthExpression(2.4)
 
 export const routeFC = (d: StravaActivityDetail): GeoFC => ({
   type: 'FeatureCollection',
@@ -316,12 +322,15 @@ export const metricRouteFC = (
     pick: (point: StravaActivityDetail['route'][number], index: number) => number
     ramp: readonly string[]
     zeroGap?: boolean
+    valid?: (point: StravaActivityDetail['route'][number], index: number) => boolean
   },
 ): GeoFC => {
   if (d.route.length === 0) return emptyFC()
   const pick = spec.pick
   const vals = d.route.map((p, i) => pick(p, i))
-  const pool = spec.zeroGap ? vals.filter(v => v > 0) : vals
+  const pool = vals.filter((value, index) =>
+    spec.valid && !spec.valid(d.route[index], index) ? false : !spec.zeroGap || value > 0,
+  )
   let lo = Infinity
   let hi = -Infinity
   for (const v of pool.length ? pool : vals) {
@@ -346,8 +355,10 @@ export const metricRouteFC = (
       const a = segment[index - 1]
       const b = segment[index]
       const value = metricValueAtDistance(d, pick, (a.d + b.d) / 2)
+      const routeIndex = analysisRouteIndex(d.route, (a.d + b.d) / 2)
+      const valid = spec.valid?.(d.route[routeIndex], routeIndex) ?? true
       const bucket = Math.min(6, Math.max(0, Math.floor(((value - lo) / range) * 7)))
-      const color = spec.zeroGap && value <= 0 ? 'rgba(0,0,0,0)' : spec.ramp[bucket]
+      const color = !valid || (spec.zeroGap && value <= 0) ? 'rgba(0,0,0,0)' : spec.ramp[bucket]
       const start: GeoCoord = [a.lng, a.lat]
       const end: GeoCoord = [b.lng, b.lat]
       if (color !== runColor) {

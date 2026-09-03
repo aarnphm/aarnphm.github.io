@@ -2,13 +2,27 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   fcBounds,
+  heatCasingWidthExpr,
+  heatWidthExpr,
   initialMapModel,
   lineFeatures,
   pctRange,
   readOverviewMode,
   readRouteSport,
+  streetMetricCasingWidthExpr,
+  streetMetricWidthExpr,
   updateMap,
 } from './model'
+
+const containsZoomExpression = (value: unknown): boolean =>
+  Array.isArray(value) &&
+  ((value.length === 1 && value[0] === 'zoom') || value.some(containsZoomExpression))
+
+const assertTopLevelZoomExpression = (expression: unknown[]): void => {
+  assert.equal(expression[0], 'interpolate')
+  assert.deepEqual(expression[2], ['zoom'])
+  assert.equal(containsZoomExpression(expression.slice(3)), false)
+}
 
 test('map geometry derives line features and geographic bounds', () => {
   const features = lineFeatures([
@@ -31,6 +45,16 @@ test('map parsers reject values outside the closed route domains', () => {
   assert.equal(readRouteSport('swim'), 'swim')
   assert.equal(readRouteSport('walk'), 'walk')
   assert.equal(readRouteSport('strength'), null)
+})
+
+test('map route widths keep zoom at the top level for Mapbox', () => {
+  for (const expression of [
+    heatWidthExpr,
+    heatCasingWidthExpr,
+    streetMetricWidthExpr,
+    streetMetricCasingWidthExpr,
+  ])
+    assertTopLevelZoomExpression(expression)
 })
 
 test('map reducer rejects stale loads and resets route state', () => {

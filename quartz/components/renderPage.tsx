@@ -1467,8 +1467,7 @@ export function transcludeFinal(
           const since = page.frontmatter?.['strava']
           triathlonPayload = loadStravaPayloadSync(
             typeof since === 'string' ? since : undefined,
-            page.tracking?.fueling,
-            page.tracking?.strength,
+            page.tracking,
             {
               weights: page.tracking?.days,
               events: page.tracking?.races,
@@ -1548,8 +1547,7 @@ export function transcludeFinal(
         const since = page.frontmatter?.['strava']
         const payload = loadStravaPayloadSync(
           typeof since === 'string' ? since : undefined,
-          page.tracking?.fueling,
-          page.tracking?.strength,
+          page.tracking,
         )
         const activities = comparisonIds.flatMap(activityId => {
           const activity = payload.details[activityId]

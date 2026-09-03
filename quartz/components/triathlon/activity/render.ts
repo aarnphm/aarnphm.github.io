@@ -1,4 +1,5 @@
 import type { StravaActivityDetail } from '../../../plugins/stores/strava'
+import type { GardenEnvironmentSample } from '../../../util/activity-environment'
 import type { DetailCtx } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import type { ActivityAnalysisRange } from './analysis'
@@ -7,6 +8,8 @@ import type { ActivityRangeChange } from './analysis'
 import type { ScrubSurface } from './analysis'
 import type { DetailPayload } from './data'
 import { activityStatRows } from '../../../util/triathlon-card'
+import { activityAnalysisStatAttrs } from '../../../util/triathlon-card'
+import { activityTableRows } from '../../../util/triathlon-card'
 import { activityHeartRateTracePoints } from '../../../util/triathlon-card'
 import { activityThermalTracePoints } from '../../../util/triathlon-card'
 import { activityTraceUsesElapsedAxis } from '../../../util/triathlon-card'
@@ -16,6 +19,7 @@ import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../.
 import { buildCyclingBestEfforts as buildCyclingBestEffortsNode } from '../../../util/triathlon-card'
 import { buildCyclingWorkoutAnalysis as buildCyclingWorkoutAnalysisNode } from '../../../util/triathlon-card'
 import { buildHeatStrainTrace as buildHeatStrainTraceNode } from '../../../util/triathlon-card'
+import { buildEnvironmentAnalysis as buildEnvironmentAnalysisNode } from '../../../util/triathlon-card'
 import { buildMuscleOxygenTrace as buildMuscleOxygenTraceNode } from '../../../util/triathlon-card'
 import { buildPedalSmoothnessChart as buildPedalSmoothnessChartNode } from '../../../util/triathlon-card'
 import { buildPowerBalanceChart as buildPowerBalanceChartNode } from '../../../util/triathlon-card'
@@ -51,6 +55,7 @@ import { KM_TO_MI } from '../../../util/triathlon-card'
 import { positiveMetricDomain } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
 import { powerBalanceText } from '../../../util/triathlon-card'
+import { relativeHumidityStatAttrs } from '../../../util/triathlon-card'
 import { runGroundContactTimeMs } from '../../../util/triathlon-card'
 import { routeStreamFlags } from '../../../util/triathlon-card'
 import { runStrideLengthLabel } from '../../../util/triathlon-card'
@@ -58,6 +63,7 @@ import { runStrideLengthValue } from '../../../util/triathlon-card'
 import { runVerticalOscillationCm } from '../../../util/triathlon-card'
 import { riderPositionAtDistance } from '../../../util/triathlon-card'
 import { scrubDist } from '../../../util/triathlon-card'
+import { speedKph } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
 import {
@@ -75,6 +81,8 @@ import {
   RESP_RAMP,
   SPD_RAMP,
   STRIDE_RAMP,
+  UV_RAMP,
+  WIND_RAMP,
 } from '../maps/palette'
 import { createDomFactory } from '../runtime/dom'
 import { el } from '../runtime/dom'
@@ -103,12 +111,15 @@ export const buildHeatRoute = (
   pick: (p: StravaActivityDetail['route'][number], i: number) => number,
   colors?: string[],
   zeroGap = false,
+  valid?: (p: StravaActivityDetail['route'][number], i: number) => boolean,
 ): SVGElement => {
   const ramp = colors?.length ?? 7
   const pad = 6
   const span = 100 - pad * 2
   const vals = route.map((p, i) => pick(p, i))
-  const pool = zeroGap ? vals.filter(v => v > 0) : vals
+  const pool = vals.filter((v, index) =>
+    valid && !valid(route[index], index) ? false : !zeroGap || v > 0,
+  )
   let lo = Infinity
   let hi = -Infinity
   for (const v of pool.length ? pool : vals) {
@@ -125,6 +136,7 @@ export const buildHeatRoute = (
   })
   const g = svg('g', { class: 'tri-heat' })
   for (let i = 0; i < route.length - 1; i++) {
+    if (valid && (!valid(route[i], i) || !valid(route[i + 1], i + 1))) continue
     if (zeroGap && (vals[i] <= 0 || vals[i + 1] <= 0)) continue
     const mid = (vals[i] + vals[i + 1]) / 2
     const t = Math.min(1, Math.max(0, (mid - lo) / range))
@@ -218,6 +230,29 @@ const requiredMapProfile = (profile: Element | null, label: string): HTMLElement
   return profile
 }
 
+const environmentValueAtElapsed = (
+  samples: readonly GardenEnvironmentSample[],
+  elapsedS: number,
+  pick: (sample: GardenEnvironmentSample) => number | null,
+  stepped = false,
+): number | null => {
+  if (samples.length === 0 || elapsedS < samples[0].elapsedS) return null
+  const exact = samples.find(sample => sample.elapsedS === elapsedS)
+  if (exact) return pick(exact)
+  let rightIndex = samples.findIndex(sample => sample.elapsedS > elapsedS)
+  if (rightIndex < 0) rightIndex = samples.length
+  const left = samples[rightIndex - 1]
+  const right = samples[rightIndex]
+  if (!left) return null
+  const leftValue = pick(left)
+  if (!right) return leftValue
+  const rightValue = pick(right)
+  if (leftValue == null || rightValue == null) return null
+  if (stepped || right.elapsedS <= left.elapsedS) return leftValue
+  const fraction = (elapsedS - left.elapsedS) / (right.elapsedS - left.elapsedS)
+  return leftValue + (rightValue - leftValue) * fraction
+}
+
 type ThermalMetric = 'temperature' | 'heat-strain' | 'core-temperature' | 'skin-temperature'
 
 type MapTraceSurface = {
@@ -230,6 +265,7 @@ export interface MapMetric {
   shortLabel: string
   ramp: string[]
   zeroGap?: boolean
+  valid?: (p: StravaActivityDetail['route'][number], i: number) => boolean
   pick: (p: StravaActivityDetail['route'][number], i: number) => number
   fmt: (v: number) => string
   profile: (graphDomain?: ActivityAnalysisRange | null) => HTMLElement
@@ -265,6 +301,28 @@ export const metricSpecs = (
   const hasResp = route.some(p => p.resp != null && p.resp > 0)
   const hasElev = d.maxAlt > d.minAlt
   const flags = routeStreamFlags(d)
+  const environmentSamples = d.analyses.derived.environment?.samples ?? []
+  const uvValues = route.map(point =>
+    environmentValueAtElapsed(environmentSamples, point.elapsedS, sample => sample.uvIndex, true),
+  )
+  const headwindValues = route.map(point =>
+    environmentValueAtElapsed(environmentSamples, point.elapsedS, sample => sample.headwindKph),
+  )
+  const crosswindValues = route.map(point =>
+    environmentValueAtElapsed(environmentSamples, point.elapsedS, sample => sample.crosswindKph),
+  )
+  const apparentAirValues = route.map(point =>
+    environmentValueAtElapsed(
+      environmentSamples,
+      point.elapsedS,
+      sample => sample.apparentAirSpeedKph,
+    ),
+  )
+  const yawValues = route.map(point =>
+    environmentValueAtElapsed(environmentSamples, point.elapsedS, sample => sample.yawDeg),
+  )
+  const hasUv = uvValues.filter(value => value != null).length >= 2
+  const hasWind = headwindValues.filter(value => value != null).length >= 2
   const hasMuscleOxygen = flags.muscleOxygen
   const maxDistanceKm = Math.max(route.at(-1)?.d ?? d.distanceKm, 0.001)
   const hasRiderPosition =
@@ -603,6 +661,69 @@ export const metricSpecs = (
       return `${scrubDist(presentation, p.d, d.sport)} · ${formatAltitude(presentation, p.alt)} · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%`
     },
   }
+  const uvMaximum = Math.max(11, ...uvValues.flatMap(value => (value == null ? [] : [value])))
+  const uvSpec: MapMetric = {
+    label: 'UV',
+    shortLabel: 'UV',
+    ramp: UV_RAMP,
+    valid: (_point, index) => uvValues[index] != null,
+    pick: (_point, index) => uvValues[index] ?? 0,
+    fmt: value => `UVI ${value.toFixed(1)}`,
+    profile: graphDomain =>
+      buildTrace(
+        presentation,
+        d,
+        (_point, index) => uvValues[index],
+        'UV index',
+        maximum => `UVI ${maximum.toFixed(1)} peak`,
+        value => value.toFixed(1),
+        graphDomain,
+        { min: 0, max: uvMaximum, intervals: 4 },
+      ),
+    readout: (point, index) =>
+      `${scrubDist(presentation, point.d, d.sport)} · ${uvValues[index] == null ? '—' : `UVI ${uvValues[index]?.toFixed(1)}`}`,
+  }
+  const windMagnitude = Math.max(
+    1,
+    ...headwindValues.flatMap(value => (value == null ? [] : [Math.abs(value)])),
+  )
+  const windSpec: MapMetric = {
+    label: 'wind',
+    shortLabel: 'W',
+    ramp: WIND_RAMP,
+    valid: (_point, index) => headwindValues[index] != null,
+    pick: (_point, index) => headwindValues[index] ?? 0,
+    fmt: value => `${value > 0 ? '+' : ''}${speedKph(presentation, value)}`,
+    profile: graphDomain =>
+      buildTrace(
+        presentation,
+        d,
+        (_point, index) => headwindValues[index],
+        'headwind',
+        () =>
+          `${d.analyses.derived.apparentWind?.summary.coveragePct.toFixed(1) ?? '0.0'}% coverage`,
+        value => `${value > 0 ? '+' : ''}${speedKph(presentation, value)}`,
+        graphDomain,
+        { min: -windMagnitude, max: windMagnitude, intervals: 4 },
+      ),
+    readout: (point, index) => {
+      const headwind = headwindValues[index]
+      const crosswind = crosswindValues[index]
+      const apparent = apparentAirValues[index]
+      const yaw = yawValues[index]
+      const metrics = [
+        headwind == null
+          ? 'headwind —'
+          : `headwind ${headwind > 0 ? '+' : ''}${speedKph(presentation, headwind)}`,
+        crosswind == null
+          ? 'crosswind —'
+          : `crosswind ${crosswind > 0 ? '+' : ''}${speedKph(presentation, crosswind)}`,
+        apparent == null ? 'apparent air —' : `apparent air ${speedKph(presentation, apparent)}`,
+        yaw == null ? 'yaw —' : `yaw ${yaw > 0 ? '+' : ''}${yaw.toFixed(1)}°`,
+      ]
+      return `${scrubDist(presentation, point.d, d.sport)} · ${metrics.join(' · ')}`
+    },
+  }
   const specs: MapMetric[] = []
   if (d.sport === 'bike') {
     if (hasPower) specs.push(powerSpec)
@@ -633,6 +754,8 @@ export const metricSpecs = (
     if (hasResp) specs.push(respirationSpec)
     if (hasThermal) specs.push(temperatureSpec)
   }
+  if (hasUv) specs.push(uvSpec)
+  if (hasWind) specs.push(windSpec)
   return specs
 }
 
@@ -666,7 +789,8 @@ export const renderMapDetail = (
   const stats = el('table', 'tri-act-stats')
   const sbody = document.createElement('tbody')
   const summaryTrainingEffectGroup = dominantTrainingEffectGroup(activityTrainingEffectLabel(d))
-  for (const [label, value] of activityStatRows(presentation, d))
+  const primaryStatCount = activityStatRows(presentation, d, false).length
+  activityTableRows(presentation, d).forEach(([label, value], index) =>
     sbody.appendChild(
       statRow(
         presentation,
@@ -674,9 +798,13 @@ export const renderMapDetail = (
         value,
         label === 'training effect'
           ? { 'data-training-effect-group': summaryTrainingEffectGroup }
-          : undefined,
+          : (activityAnalysisStatAttrs(d, label) ??
+              (index >= primaryStatCount && label === 'humidity'
+                ? relativeHumidityStatAttrs(d)
+                : undefined)),
       ),
-    )
+    ),
+  )
   stats.appendChild(sbody)
   wrap.appendChild(stats)
 
@@ -691,9 +819,11 @@ export const renderMapDetail = (
     const more = el('div', 'tri-act-more')
     const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
     const heartRate = hasHeartRateTrace(d) ? buildHeartRateTrace(presentation, d) : null
+    const environment = buildEnvironmentAnalysisNode(domF, d)
     const trainingEffect = buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null
     for (const z of [
       heartRate,
+      environment,
       trainingEffect,
       zoneDuo(
         presentation,
@@ -751,6 +881,8 @@ export const renderMapDetail = (
     const traces = spec.traces?.(graphDomain) ?? []
     profileBox.replaceChildren(profile)
     zoneBox.replaceChildren(...traces.map(trace => trace.wrap))
+    const environment = buildEnvironmentAnalysisNode(domF, d)
+    if (environment) zoneBox.appendChild(environment)
     if (spec.extra) for (const node of spec.extra()) if (node) zoneBox.appendChild(node)
     if (bestEfforts) zoneBox.appendChild(bestEfforts)
     const cyclingChart = zoneBox.querySelector<HTMLElement>('.tri-cycling-mode-chart')
@@ -788,7 +920,9 @@ export const renderMapDetail = (
   const draw = (animateTabs = true, notify = true) => {
     const spec = specs[active]
     const vals = d.route.map((p, i) => spec.pick(p, i))
-    const pool = spec.zeroGap ? vals.filter(v => v > 0) : vals
+    const pool = vals.filter((value, index) =>
+      spec.valid && !spec.valid(d.route[index], index) ? false : !spec.zeroGap || value > 0,
+    )
     let lo = Infinity
     let hi = -Infinity
     for (const v of pool.length ? pool : vals) {
@@ -799,7 +933,7 @@ export const renderMapDetail = (
     if (opts?.mapMode) {
       figs.replaceChildren(buildHeatLegend(lo, hi, spec.fmt, spec.ramp))
     } else {
-      const heat = buildHeatRoute(d.route, spec.pick, spec.ramp, spec.zeroGap)
+      const heat = buildHeatRoute(d.route, spec.pick, spec.ramp, spec.zeroGap, spec.valid)
       figs.replaceChildren(heat, buildHeatLegend(lo, hi, spec.fmt, spec.ramp))
       routeMarker = heat.querySelector<SVGElement>('.tri-route-cursor')
     }

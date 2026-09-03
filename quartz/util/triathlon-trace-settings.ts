@@ -11,6 +11,7 @@ export const TRIATHLON_TRACE_DISPLAY_SETTINGS = Object.freeze({
     'rider-position': false,
     stamina: false,
     respiration: false,
+    environment: false,
     'muscle-oxygen': false,
     'torque-effectiveness': false,
     'electronic-shifting': false,

@@ -186,6 +186,8 @@ test('treats cached empty analysis arrays as a fetched activity detail', () => {
   assert.equal(hasFetchedActivityDetail({ calories: null, laps: [], segmentEfforts: [] }), false)
   assert.equal(
     hasFetchedActivityDetail({
+      description: null,
+      fetchedAt: 1,
       calories: null,
       laps: [],
       segmentEfforts: [],
@@ -477,6 +479,47 @@ function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
     ...overrides,
   }
 }
+
+test('projects exact provider reports and removes them when the refreshed description does', () => {
+  const cache: StravaRawCache = {
+    version: 5,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: 1 },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: { 101: ride() },
+    activityDetails: {
+      101: {
+        description:
+          '── pelotan.cc/uv UV Load™ Analysis ──\nUV Load™: 83 — High\nAvg. UV Index: 2.3\nTemperature: 20°C\nCloud Cover: 42%\n\n-- myWindsock Report --\nWeather Impact: 0.6%\nCdA: 0.324\nHeadwind: 56% · 5–15 mph\nLongest Headwind: 03:32:41\nAir Speed: 16.8 mph\n-- END --',
+        fetchedAt: Date.parse('2026-06-08T00:00:00Z'),
+        calories: null,
+        laps: [],
+        segmentEfforts: [],
+        splitsMetric: [],
+        splitsStandard: [],
+      },
+    },
+  }
+  const projected = buildPayload(cache, null, null, '2026-06-01').details['101']
+
+  assert.equal(projected.analyses.native.pelotan?.score, 83)
+  assert.equal(projected.analyses.native.pelotan?.averageCloudCoverPct, 42)
+  assert.equal(projected.analyses.native.myWindsock?.weatherImpactPct, 0.6)
+  assert.equal(projected.analyses.native.myWindsock?.cdaM2, 0.324)
+  assert.equal(projected.analyses.native.myWindsock?.headwindPct, 56)
+  assert.equal(projected.analyses.native.myWindsock?.longestHeadwindS, 12_761)
+  assert.equal(projected.analyses.native.myWindsock?.airSpeedKph, 27.037)
+  assert.doesNotMatch(JSON.stringify(projected), /Pelotan UV Load|myWindsock Report|strava\.com/)
+
+  const detail = cache.activityDetails?.['101']
+  assert.ok(detail)
+  detail.description = null
+  detail.fetchedAt = (detail.fetchedAt ?? 0) + 1
+  const refreshed = buildPayload(cache, null, null, '2026-06-01').details['101']
+  assert.equal(refreshed.analyses.native.pelotan, null)
+  assert.equal(refreshed.analyses.native.myWindsock, null)
+})
 
 test('manual fueling overrides Garmin fueling by Strava activity ID', () => {
   const fueling = emptyGarminFueling('Edge 1050')
@@ -770,12 +813,22 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
     windDir: 'W',
     windDirDeg: 270,
     windGustKph: 29,
+    averageRelativeHumidityPct: 68,
+    relativeHumidityProvenance: {
+      source: 'weatherkit',
+      sourceKind: 'modeled',
+      samplingMethod: 'route-hour',
+      inputTimestamp: '2026-06-07T11:29:55Z',
+      coveragePct: 80,
+    },
     temperatureC: 27,
     source: 'weatherkit',
   }
   const weather: WeatherCache = {
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     current: null,
+    attribution: null,
+    uvCalibration: null,
     activities: { 102: weatherActivity },
     days: summarizeWeatherDays({ 102: weatherActivity }),
   }
@@ -806,10 +859,18 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
   assert.equal(payload.details['101'].start, '2026-06-07T11:29:55Z')
   assert.equal(payload.details['101'].avgHr, 101)
   assert.equal(payload.details['101'].maxHr, 143)
-  assert.equal(payload.details['101'].avgTemp, 27)
+  assert.equal(payload.details['101'].ambientTemperatureC, 27)
   assert.equal(payload.details['101'].windKph, 18)
   assert.equal(payload.details['101'].windDir, 'W')
   assert.equal(payload.details['101'].windGustKph, 29)
+  assert.equal(payload.details['101'].averageRelativeHumidityPct, 68)
+  assert.deepEqual(payload.details['101'].relativeHumidityProvenance, {
+    source: 'weatherkit',
+    sourceKind: 'modeled',
+    samplingMethod: 'route-hour',
+    inputTimestamp: '2026-06-07T11:29:55Z',
+    coveragePct: 80,
+  })
   assert.equal(payload.details['101'].strength, null)
   assert.deepEqual(payload.details['101'].sauna, {
     time: '07:30',
@@ -1806,6 +1867,14 @@ test('merges WeatherKit wind into activity detail and day health', () => {
     windDir: 'SW',
     windDirDeg: 225,
     windGustKph: 31,
+    averageRelativeHumidityPct: 68,
+    relativeHumidityProvenance: {
+      source: 'weatherkit',
+      sourceKind: 'modeled',
+      samplingMethod: 'route-hour',
+      inputTimestamp: '2026-06-07T11:29:55.000Z',
+      coveragePct: 100,
+    },
     temperatureC: 24,
     temperatureSeries: [
       { elapsedS: 0, temperatureC: 22 },
@@ -1818,15 +1887,19 @@ test('merges WeatherKit wind into activity detail and day health', () => {
     version: 2,
     lastSync: cache.lastSync,
     current: null,
+    attribution: null,
+    uvCalibration: null,
     activities: { 101: activity },
     days: summarizeWeatherDays({ 101: activity }),
   }
 
   const payload = buildPayload(cache, null, null, '2026-06-01', weather)
   assert.equal(payload.details['101'].windKph, 18)
+  assert.equal(payload.details['101'].averageRelativeHumidityPct, 68)
+  assert.equal(payload.details['101'].relativeHumidityProvenance?.coveragePct, 100)
   assert.equal(payload.details['101'].windDir, 'SW')
   assert.equal(payload.details['101'].windGustKph, 31)
-  assert.equal(payload.details['101'].avgTemp, 24)
+  assert.equal(payload.details['101'].ambientTemperatureC, 24)
   assert.deepEqual(
     payload.details['101'].route.map(point => point.tempC),
     [22, 26, 24],
@@ -1876,6 +1949,8 @@ test('uses nearest same-day weather for route-less swim and strength activities'
     windDir: 'SW',
     windDirDeg: 225,
     windGustKph: 31,
+    averageRelativeHumidityPct: null,
+    relativeHumidityProvenance: null,
     temperatureC: 24,
     source: 'weatherkit',
   }
@@ -1883,6 +1958,8 @@ test('uses nearest same-day weather for route-less swim and strength activities'
     version: 2,
     lastSync: cache.lastSync,
     current: null,
+    attribution: null,
+    uvCalibration: null,
     activities: { 101: activity },
     days: summarizeWeatherDays({ 101: activity }),
   }
@@ -1890,7 +1967,7 @@ test('uses nearest same-day weather for route-less swim and strength activities'
   const payload = buildPayload(cache, null, null, '2026-06-01', weather)
   for (const id of ['102', '103']) {
     const detail = payload.details[id]
-    assert.equal(detail.avgTemp, 24)
+    assert.equal(detail.ambientTemperatureC, 24)
     assert.equal(detail.windKph, 18)
     assert.equal(detail.windDir, 'SW')
     assert.equal(detail.windGustKph, 31)

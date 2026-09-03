@@ -28,6 +28,7 @@ import {
   emptyFC,
   fcBounds,
   gpsSegments,
+  heatCasingWidthExpr,
   heatColorExpr,
   heatOpacityExpr,
   heatWidthExpr,
@@ -40,6 +41,7 @@ import {
   readRouteSport,
   routeFC,
   streetMetricColorExpr,
+  streetMetricCasingWidthExpr,
   streetMetricOpacityExpr,
   streetMetricWidthExpr,
   type Overview,
@@ -114,6 +116,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       if (!current) return
       const mode = program.retrieve().mode
       const lineWidth = mode === 'heat' ? heatWidthExpr : streetMetricWidthExpr
+      const casingLineWidth = mode === 'heat' ? heatCasingWidthExpr : streetMetricCasingWidthExpr
       current.setPaintProperty(
         'tri-heat',
         'line-color',
@@ -130,7 +133,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         'line-opacity',
         readTriMapStyle() === 'satellite' ? 0.82 : 0,
       )
-      current.setPaintProperty('tri-heat-casing', 'line-width', ['+', lineWidth, 2.4])
+      current.setPaintProperty('tri-heat-casing', 'line-width', casingLineWidth)
       current.setPaintProperty(
         'tri-swim',
         'line-color',
@@ -147,7 +150,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         'line-opacity',
         readTriMapStyle() === 'satellite' ? 0.82 : 0,
       )
-      current.setPaintProperty('tri-swim-casing', 'line-width', ['+', lineWidth, 2.4])
+      current.setPaintProperty('tri-swim-casing', 'line-width', casingLineWidth)
       const lg = overview.current().legend[mode]
       if (legendLo) setMath(legendLo, lg?.lo ?? 'low')
       if (legendHi) setMath(legendHi, lg?.hi ?? 'high')
@@ -321,7 +324,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
           paint: {
             'line-color': '#100f0f',
             'line-opacity': satellite ? 0.82 : 0,
-            'line-width': ['+', heatWidthExpr, 2.4],
+            'line-width': heatCasingWidthExpr,
           },
         },
         firstLabelId,
@@ -351,7 +354,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
           paint: {
             'line-color': '#100f0f',
             'line-opacity': satellite ? 0.82 : 0,
-            'line-width': ['+', streetMetricWidthExpr, 2.4],
+            'line-width': streetMetricCasingWidthExpr,
           },
         },
         firstLabelId,

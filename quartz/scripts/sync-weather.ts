@@ -7,25 +7,45 @@ import { normalizeKind } from '../plugins/stores/strava'
 import {
   parseWeatherCache,
   summarizeWeatherDays,
-  weatherActivityFromHours,
+  weatherActivityHasCompleteRouteHours,
+  weatherActivityFromRouteHours,
+  weatherRouteHourFromForecast,
   weatherSnapshotFromHours,
   type WeatherActivity,
   type WeatherActivityCandidate,
   type WeatherCache,
   type WeatherHour,
+  type WeatherRouteHour,
   type WeatherSnapshot,
 } from '../plugins/stores/weather'
+import { buildActivityEnvironment } from '../util/activity-environment'
+import { parseActivityProviderReports } from '../util/activity-provider-reports'
+import {
+  auditGardenUvCalibration,
+  calibrateGardenUvScore,
+  type GardenUvCalibrationPair,
+} from '../util/activity-uv-score'
 import { localIsoDayOffset } from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
+import { weatherSyncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, readNumber, readString } from '../util/type-guards'
 import {
+  fetchWeatherKitAttribution,
   fetchWeatherKitHours,
   WeatherKitRequestError,
   type WeatherKitConfig,
 } from '../util/weather-kit'
+import {
+  routeHourQueries,
+  routeWeatherFingerprint,
+  routeWeatherNeedsRefresh,
+  selectRouteHour,
+  type RouteHourQuery,
+  type RouteWeatherStream,
+} from '../util/weather-route-hours'
 
-const CACHE_VERSION = 3
+const CACHE_VERSION = 5
 const HOUR_MS = 3_600_000
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
 const stravaCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
@@ -35,7 +55,14 @@ const KEYCHAIN_SERVICES = ['garden-weatherkit', 'WeatherKit', 'weatherkit']
 
 interface StravaWeatherSource {
   activities: RawStravaActivity[]
-  streams: Record<string, { latlng: [number, number][] }>
+  streams: Record<string, RouteWeatherStream>
+  details: Record<string, { description: string | null; fetchedAt: number }>
+}
+
+interface RouteWeatherCandidate extends WeatherActivityCandidate {
+  routeFingerprint: string
+  stream: RouteWeatherStream
+  queries: RouteHourQuery[]
 }
 
 function cleanDay(value: string | undefined): string | null {
@@ -197,15 +224,58 @@ function coordinate(value: unknown): [number, number] | null {
     : null
 }
 
-function readStreams(value: unknown): Record<string, { latlng: [number, number][] }> {
+function finiteNumberArray(value: unknown): number[] | null {
+  if (!Array.isArray(value)) return null
+  const numbers = value.filter(item => typeof item === 'number' && Number.isFinite(item))
+  return numbers.length === value.length ? numbers : null
+}
+
+function isMonotonic(values: readonly number[], strictly: boolean): boolean {
+  return values.every(
+    (value, index) =>
+      value >= 0 &&
+      (index === 0 || (strictly ? value > values[index - 1] : value >= values[index - 1])),
+  )
+}
+
+function readStreams(value: unknown): Record<string, RouteWeatherStream> {
   if (!isRecord(value)) return {}
-  const out: Record<string, { latlng: [number, number][] }> = {}
+  const out: Record<string, RouteWeatherStream> = {}
   for (const [id, raw] of Object.entries(value)) {
     if (!isRecord(raw) || !Array.isArray(raw.latlng)) continue
-    const latlng = raw.latlng.map(coordinate).filter(point => point !== null)
-    if (latlng.length >= 2) out[id] = { latlng }
+    const coordinates = raw.latlng.map(coordinate)
+    const timeS = finiteNumberArray(raw.time)
+    const distanceM = finiteNumberArray(raw.distance)
+    if (
+      coordinates.some(point => point === null) ||
+      !timeS ||
+      !distanceM ||
+      coordinates.length < 2 ||
+      timeS.length !== coordinates.length ||
+      distanceM.length !== coordinates.length ||
+      !isMonotonic(timeS, true) ||
+      !isMonotonic(distanceM, false)
+    )
+      continue
+    const latlng = coordinates.filter(point => point !== null)
+    out[id] = { timeS, distanceM, latlng }
   }
   return out
+}
+
+function readDetails(
+  value: unknown,
+): Record<string, { description: string | null; fetchedAt: number }> {
+  if (!isRecord(value)) return {}
+  const details: Record<string, { description: string | null; fetchedAt: number }> = {}
+  for (const [id, raw] of Object.entries(value)) {
+    if (!isRecord(raw) || (raw.description !== null && typeof raw.description !== 'string'))
+      continue
+    const fetchedAt = readNumber(raw, 'fetchedAt')
+    if (fetchedAt == null || !Number.isFinite(fetchedAt)) continue
+    details[id] = { description: raw.description, fetchedAt }
+  }
+  return details
 }
 
 async function readStravaSource(): Promise<StravaWeatherSource | null> {
@@ -215,7 +285,11 @@ async function readStravaSource(): Promise<StravaWeatherSource | null> {
     const activities = Object.values(raw.activities)
       .map(readActivity)
       .filter(activity => activity !== null)
-    return { activities, streams: readStreams(raw.streams) }
+    return {
+      activities,
+      streams: readStreams(raw.streams),
+      details: readDetails(raw.activityDetails),
+    }
   } catch {
     return null
   }
@@ -229,7 +303,7 @@ async function readWeatherCache(): Promise<WeatherCache | null> {
   }
 }
 
-function routeCenter(latlng: [number, number][]): { latitude: number; longitude: number } {
+function routeCenter(latlng: readonly [number, number][]): { latitude: number; longitude: number } {
   const stride = Math.max(1, Math.floor(latlng.length / 200))
   let latitude = 0
   let longitude = 0
@@ -245,16 +319,16 @@ function routeCenter(latlng: [number, number][]): { latitude: number; longitude:
 
 function candidate(
   activity: RawStravaActivity,
-  latlng: [number, number][],
-): WeatherActivityCandidate | null {
+  stream: RouteWeatherStream,
+): RouteWeatherCandidate | null {
   const sport = normalizeKind(activity.sportType)
   if (!sport || sport === 'strength') return null
   const startMs = Date.parse(activity.startDate)
   const durationS = activity.elapsedTime > 0 ? activity.elapsedTime : activity.movingTime
   if (!Number.isFinite(startMs) || durationS <= 0) return null
   const end = new Date(startMs + durationS * 1000).toISOString()
-  const center = routeCenter(latlng)
-  return {
+  const center = routeCenter(stream.latlng)
+  const base: WeatherActivityCandidate = {
     activityId: activity.id,
     date: activity.startDateLocal.slice(0, 10),
     start: new Date(startMs).toISOString(),
@@ -262,7 +336,11 @@ function candidate(
     latitude: center.latitude,
     longitude: center.longitude,
     durationS,
+    routeFingerprint: '',
   }
+  const routeFingerprint = routeWeatherFingerprint(activity.id, base.start, base.end, stream)
+  const withFingerprint = { ...base, routeFingerprint }
+  return { ...withFingerprint, stream, queries: routeHourQueries(withFingerprint, stream) }
 }
 
 function floorHour(ms: number): string {
@@ -271,15 +349,6 @@ function floorHour(ms: number): string {
 
 function ceilHour(ms: number): string {
   return new Date(Math.ceil(ms / HOUR_MS) * HOUR_MS).toISOString()
-}
-
-function requestWindow(candidate: WeatherActivityCandidate): {
-  hourlyStart: string
-  hourlyEnd: string
-} {
-  const startMs = Date.parse(candidate.start)
-  const endMs = Date.parse(candidate.end)
-  return { hourlyStart: floorHour(startMs - HOUR_MS), hourlyEnd: ceilHour(endMs + HOUR_MS) }
 }
 
 function sleep(ms: number): Promise<void> {
@@ -306,72 +375,172 @@ async function main(): Promise<void> {
   const timezone = process.env.WEATHERKIT_TIMEZONE?.trim() || 'America/Toronto'
   const language = process.env.WEATHERKIT_LANGUAGE?.trim() || 'en'
   const delayMs = envNumber('WEATHERKIT_DELAY_MS', 250)
+  const maxCalls = Math.floor(envNumber('WEATHERKIT_MAX_CALLS', 500))
   const force = envFlag('WEATHERKIT_FORCE', false)
+  const refreshWindowStartMs = Date.now() - weatherSyncRefreshDays() * 86_400_000
   const prev = await readWeatherCache()
   const activities: Record<string, WeatherActivity> = { ...prev?.activities }
-  const candidates = source.activities
-    .filter(activity => {
-      const date = activity.startDateLocal.slice(0, 10)
-      return date >= since && date <= until
-    })
+  let uvCalibration = prev?.uvCalibration ?? null
+  let attribution = prev?.attribution ?? null
+  try {
+    attribution = await fetchWeatherKitAttribution(config, language)
+  } catch (err) {
+    if (err instanceof WeatherKitRequestError && (err.status === 401 || err.status === 403))
+      throw err
+    console.warn(`[weather] attribution: ${err instanceof Error ? err.message : err}`)
+  }
+  const sourceActivities = new Map(source.activities.map(activity => [activity.id, activity]))
+  const sourceIds = new Set(source.activities.map(activity => String(activity.id)))
+  for (const id of Object.keys(activities)) if (!sourceIds.has(id)) delete activities[id]
+  const allCandidates = source.activities
     .map(activity => {
       const stream = source.streams[String(activity.id)]
-      return stream ? candidate(activity, stream.latlng) : null
+      return stream ? candidate(activity, stream) : null
     })
-    .filter(item => item !== null)
+    .filter((item): item is RouteWeatherCandidate => item !== null && item.queries.length > 0)
     .sort((a, b) => a.start.localeCompare(b.start))
+  const candidates = allCandidates.filter(item => item.date >= since && item.date <= until)
 
-  let fetched = 0
-  let skipped = 0
-  for (const item of candidates) {
-    const key = String(item.activityId)
-    if (
-      !force &&
-      activities[key]?.start === item.start &&
-      (activities[key]?.temperatureSeries?.length ?? 0) >= 2
-    ) {
-      skipped += 1
-      continue
-    }
-    const window = requestWindow(item)
-    let hours: WeatherHour[]
+  const refreshCandidates = candidates.filter(item =>
+    routeWeatherNeedsRefresh(
+      activities[String(item.activityId)],
+      item.routeFingerprint,
+      prev?.version,
+      CACHE_VERSION,
+      item.start,
+      refreshWindowStartMs,
+      force,
+    ),
+  )
+  const recent = refreshCandidates
+    .filter(item => Date.parse(item.start) >= refreshWindowStartMs)
+    .sort((left, right) => right.start.localeCompare(left.start))
+  let historical = refreshCandidates
+    .filter(item => Date.parse(item.start) < refreshWindowStartMs)
+    .sort((left, right) => left.start.localeCompare(right.start))
+  const prefetched = new Map<string, WeatherHour>()
+  let calls = 0
+  const fetchQuery = async (item: RouteWeatherCandidate, query: RouteHourQuery) => {
+    if (calls >= maxCalls) throw new Error(`WeatherKit call budget ${maxCalls} exhausted`)
+    calls += 1
+    const hours = await fetchWeatherKitHours(config, {
+      latitude: query.latitude,
+      longitude: query.longitude,
+      hourlyStart: query.hourlyStart,
+      hourlyEnd: query.hourlyEnd,
+      timezone,
+      language,
+    })
+    if (delayMs > 0) await sleep(delayMs)
+    const hour = selectRouteHour(hours, query.forecastStart)
+    if (!hour)
+      throw new Error(
+        `WeatherKit returned no ${query.forecastStart} hour for activity ${item.activityId}`,
+      )
+    return hour
+  }
+
+  const oldestHistorical = historical[0]
+  const probe = oldestHistorical?.queries[0]
+  if (oldestHistorical && probe && maxCalls > 0) {
     try {
-      hours = await fetchWeatherKitHours(config, {
-        latitude: item.latitude,
-        longitude: item.longitude,
-        hourlyStart: window.hourlyStart,
-        hourlyEnd: window.hourlyEnd,
-        timezone,
-        language,
-      })
+      prefetched.set(
+        `${oldestHistorical.activityId}:${probe.forecastStart}`,
+        await fetchQuery(oldestHistorical, probe),
+      )
+      console.log(
+        `[weather] historical availability confirmed at ${probe.forecastStart} for ${oldestHistorical.activityId}`,
+      )
     } catch (err) {
       if (err instanceof WeatherKitRequestError && (err.status === 401 || err.status === 403))
         throw err
+      historical = []
+      console.warn(
+        `[weather] historical backfill unavailable at ${probe.forecastStart}: ${err instanceof Error ? err.message : err}`,
+      )
+    }
+  }
+
+  let fetched = 0
+  const skipped = candidates.length - refreshCandidates.length
+  let current: WeatherSnapshot | null = prev?.current ?? null
+  const sortedActivities = (): Record<string, WeatherActivity> =>
+    Object.fromEntries(
+      Object.values(activities)
+        .sort((left, right) => left.start.localeCompare(right.start))
+        .map(activity => [String(activity.activityId), activity]),
+    )
+  const persist = async (): Promise<void> => {
+    const ordered = sortedActivities()
+    const cache: WeatherCache = {
+      version: CACHE_VERSION,
+      lastSync: Date.now(),
+      current,
+      attribution,
+      uvCalibration,
+      activities: ordered,
+      days: summarizeWeatherDays(ordered),
+    }
+    await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
+    await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+  }
+
+  for (const item of [...recent, ...historical]) {
+    const key = String(item.activityId)
+    const prefetchedCount = item.queries.filter(query =>
+      prefetched.has(`${item.activityId}:${query.forecastStart}`),
+    ).length
+    if (item.queries.length - prefetchedCount > maxCalls - calls) {
+      console.warn(
+        `[weather] call budget leaves ${refreshCandidates.length - fetched} activities for the next checkpointed run`,
+      )
+      break
+    }
+    const routeHours: WeatherRouteHour[] = []
+    let failed = false
+    try {
+      for (const query of item.queries) {
+        const prefetchKey = `${item.activityId}:${query.forecastStart}`
+        const hour = prefetched.get(prefetchKey) ?? (await fetchQuery(item, query))
+        prefetched.delete(prefetchKey)
+        const routeHour = weatherRouteHourFromForecast(item, hour, query)
+        if (!routeHour) throw new Error(`invalid overlap for ${query.forecastStart}`)
+        routeHours.push(routeHour)
+      }
+    } catch (err) {
+      if (err instanceof WeatherKitRequestError && (err.status === 401 || err.status === 403))
+        throw err
+      failed = true
       console.warn(
         `[weather] ${item.date} ${item.activityId}: ${err instanceof Error ? err.message : err}`,
       )
-      continue
     }
-    const weather = weatherActivityFromHours(item, hours)
-    if (weather) {
+    const weather = failed ? null : weatherActivityFromRouteHours(item, routeHours, Date.now())
+    if (weather && routeHours.length === item.queries.length) {
       activities[key] = weather
       fetched += 1
       console.log(
-        `[weather] ${item.date} ${item.activityId}: ${weather.windKph ?? 'n/a'} km/h ${weather.windDir ?? ''}`,
+        `[weather] ${item.date} ${item.activityId}: ${routeHours.length} route-hours, ${weather.windKph ?? 'n/a'} km/h ${weather.windDir ?? ''}`,
       )
-    } else {
-      console.warn(`[weather] ${item.date} ${item.activityId}: no overlapping hourly wind`)
+      if (fetched % 10 === 0) await persist()
+    } else if (!failed) {
+      console.warn(`[weather] ${item.date} ${item.activityId}: no overlapping hourly weather`)
     }
-    if (delayMs > 0) await sleep(delayMs)
   }
 
-  let current: WeatherSnapshot | null = null
+  for (const [id, activity] of Object.entries(activities)) {
+    const fingerprint = activity.routeFingerprint
+    if (!fingerprint || !weatherActivityHasCompleteRouteHours(activity, fingerprint))
+      delete activities[id]
+  }
+
   const latestLocation = Object.values(activities)
     .sort((a, b) => a.start.localeCompare(b.start))
     .at(-1)
-  if (latestLocation) {
+  if (latestLocation && calls < maxCalls) {
     const nowMs = Date.now()
     try {
+      calls += 1
       const hours = await fetchWeatherKitHours(config, {
         latitude: latestLocation.latitude,
         longitude: latestLocation.longitude,
@@ -392,22 +561,56 @@ async function main(): Promise<void> {
     }
   }
 
-  const sortedActivities: Record<string, WeatherActivity> = {}
-  for (const activity of Object.values(activities).sort((a, b) => a.start.localeCompare(b.start)))
-    sortedActivities[String(activity.activityId)] = activity
-
-  const cache: WeatherCache = {
-    version: CACHE_VERSION,
-    lastSync: Date.now(),
-    current,
-    activities: sortedActivities,
-    days: summarizeWeatherDays(sortedActivities),
+  const calibrationPairs: GardenUvCalibrationPair[] = []
+  for (const item of allCandidates) {
+    const activityWeather = activities[String(item.activityId)]
+    const detail = source.details[String(item.activityId)]
+    if (!activityWeather || !detail) continue
+    const pelotan = parseActivityProviderReports(
+      detail.description,
+      item.activityId,
+      detail.fetchedAt,
+    ).pelotan
+    if (pelotan?.score == null || pelotan.severity == null) continue
+    const environment = buildActivityEnvironment({
+      activityId: item.activityId,
+      elapsedTimeS: item.durationS,
+      movingTimeS: sourceActivities.get(item.activityId)?.movingTime ?? item.durationS,
+      timeS: item.stream.timeS,
+      distanceM: item.stream.distanceM,
+      latlng: item.stream.latlng,
+      weather: activityWeather,
+      attribution,
+      computedAt: Date.now(),
+    }).environment
+    if (
+      environment?.doseClocks.elapsedSed == null ||
+      environment.doseClocks.movingTelemetrySed == null
+    )
+      continue
+    calibrationPairs.push({
+      activityId: item.activityId,
+      date: item.date,
+      score: pelotan.score,
+      severity: pelotan.severity,
+      elapsedSed: environment.doseClocks.elapsedSed,
+      movingTelemetrySed: environment.doseClocks.movingTelemetrySed,
+    })
   }
-  await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
-  await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+  uvCalibration =
+    uvCalibration?.status === 'active'
+      ? auditGardenUvCalibration(uvCalibration, calibrationPairs)
+      : uvCalibration?.status === 'rejected' || uvCalibration?.status === 'suspended'
+        ? uvCalibration
+        : calibrateGardenUvScore(calibrationPairs)
+  console.log(
+    `[weather] UV calibration ${uvCalibration.status}: ${calibrationPairs.length} exact pairs`,
+  )
+
+  await persist()
   await refreshTriathlonRouteSource()
   console.log(
-    `[weather] fetched ${fetched}, skipped ${skipped}, cached ${Object.keys(cache.activities).length} activities -> ${cacheFile}`,
+    `[weather] fetched ${fetched}, skipped ${skipped}, used ${calls}/${maxCalls} calls, cached ${Object.keys(activities).length} activities -> ${cacheFile}`,
   )
 }
 
