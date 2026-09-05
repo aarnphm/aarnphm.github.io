@@ -1,7 +1,19 @@
-import { Decoder, Stream, type FitMessages, type RecordMesg } from '@garmin/fitsdk'
+import {
+  Decoder,
+  Stream,
+  type FitMessages,
+  type RecordMesg,
+  type SegmentLapMesg,
+} from '@garmin/fitsdk'
 import { createHash } from 'node:crypto'
-import type { WahooMetrics, WahooStreams } from '../plugins/stores/wahoo'
-import type { WahooCyclingDynamics, WahooGearShift, WahooSweatLoss } from '../plugins/stores/wahoo'
+import type {
+  WahooCyclingDynamics,
+  WahooGearShift,
+  WahooMetrics,
+  WahooStreams,
+  WahooSummitSegment,
+  WahooSweatLoss,
+} from '../plugins/stores/wahoo'
 import { emptyWahooMetrics } from '../plugins/stores/wahoo'
 import { fitCyclingDynamics, fitGearShifts } from './garmin-fit'
 
@@ -19,6 +31,7 @@ export interface WahooFitData {
   sweatLoss: WahooSweatLoss
   gearShifts: WahooGearShift[]
   cyclingDynamics: WahooCyclingDynamics
+  summitSegments: WahooSummitSegment[]
   profileVersion: string
 }
 
@@ -97,6 +110,12 @@ function recordTimestamp(record: RecordMesg): number {
   return timestamp(record.timestamp)?.getTime() ?? Number.POSITIVE_INFINITY
 }
 
+function sortedRecords(messages: FitMessages): RecordMesg[] {
+  return [...(messages.recordMesgs ?? [])]
+    .filter(record => timestamp(record.timestamp) != null)
+    .sort((left, right) => recordTimestamp(left) - recordTimestamp(right))
+}
+
 function coordinate(value: number | undefined, minimum: number, maximum: number): number | null {
   if (value == null || !Number.isFinite(value)) return null
   const degrees = value / SEMICIRCLES_PER_DEGREE
@@ -147,13 +166,10 @@ const HEAT_STRAIN_FIELDS = new Set(['heat_strain_index'])
 const SKIN_TEMPERATURE_FIELDS = new Set(['skin_temperature'])
 
 function streamsFor(
-  messages: FitMessages,
+  records: readonly RecordMesg[],
   developerFields: ReadonlyMap<number, DeveloperField>,
   startMs: number,
 ): WahooStreams {
-  const records = [...(messages.recordMesgs ?? [])]
-    .filter(record => timestamp(record.timestamp) != null)
-    .sort((left, right) => recordTimestamp(left) - recordTimestamp(right))
   const streams: WahooStreams = {
     timestamps: [],
     time: [],
@@ -225,6 +241,136 @@ function streamsFor(
   return streams
 }
 
+function summitFeature(uuid: string): WahooSummitSegment['feature'] | null {
+  if (uuid.startsWith('WAHOO_ON_ROUTE_CLIMB-')) return 'summit-segment'
+  if (uuid.startsWith('WAHOO_OFF_ROUTE_CLIMB-')) return 'summit-freeride'
+  return null
+}
+
+function average(values: readonly (number | null)[]): number | null {
+  const finiteValues = values.filter((value): value is number => value != null)
+  if (finiteValues.length === 0) return null
+  return finiteValues.reduce((sum, value) => sum + value, 0) / finiteValues.length
+}
+
+function recordDistance(records: readonly RecordMesg[]): number | null {
+  const distances = records
+    .map(record => nonnegative(record.distance))
+    .filter((value): value is number => value != null)
+  if (distances.length < 2) return null
+  const first = distances[0]
+  const last = distances[distances.length - 1]
+  return nonnegative(last - first)
+}
+
+function recordElevations(records: readonly RecordMesg[]): number[] {
+  return records
+    .map(record => finite(record.enhancedAltitude ?? record.altitude))
+    .filter((value): value is number => value != null)
+}
+
+function recordElevationGain(records: readonly RecordMesg[]): number | null {
+  const elevations = recordElevations(records)
+  if (elevations.length < 2) return null
+  let gain = 0
+  for (let index = 1; index < elevations.length; index++)
+    gain += Math.max(0, elevations[index] - elevations[index - 1])
+  return gain
+}
+
+function segmentDates(
+  segment: SegmentLapMesg,
+): { start: Date; end: Date; durationS: number } | null {
+  const fitDurationS = positive(segment.totalTimerTime) ?? positive(segment.totalElapsedTime)
+  let start = timestamp(segment.startTime)
+  let end = timestamp(segment.timestamp)
+  if (!start && end && fitDurationS != null) start = new Date(end.getTime() - fitDurationS * 1000)
+  if (!end && start && fitDurationS != null) end = new Date(start.getTime() + fitDurationS * 1000)
+  if (!start || !end || end.getTime() <= start.getTime()) return null
+  return { start, end, durationS: fitDurationS ?? (end.getTime() - start.getTime()) / 1000 }
+}
+
+function summitSegment(
+  segment: SegmentLapMesg,
+  records: readonly RecordMesg[],
+): WahooSummitSegment | null {
+  const uuid = text(segment.uuid)
+  if (!uuid) return null
+  const feature = summitFeature(uuid)
+  if (!feature) return null
+  const dates = segmentDates(segment)
+  if (!dates) return null
+  const enclosed = records.filter(record => {
+    const time = recordTimestamp(record)
+    return time >= dates.start.getTime() && time <= dates.end.getTime()
+  })
+  const distanceM = positive(segment.totalDistance) ?? recordDistance(enclosed)
+  if (distanceM == null || distanceM <= 0 || dates.durationS <= 0) return null
+  const elevationGainM = nonnegative(segment.totalAscent) ?? recordElevationGain(enclosed)
+  const avgSpeedMps = nonnegative(segment.avgSpeed) ?? distanceM / dates.durationS
+  return {
+    feature,
+    uuid,
+    name: text(segment.name),
+    startDate: dates.start.toISOString(),
+    endDate: dates.end.toISOString(),
+    distanceM,
+    durationS: dates.durationS,
+    elevationGainM,
+    avgGradePct:
+      finite(segment.avgGrade) ??
+      (elevationGainM != null && distanceM > 0 ? (elevationGainM / distanceM) * 100 : null),
+    avgSpeedMps,
+    avgHeartRate:
+      positive(segment.avgHeartRate) ?? average(enclosed.map(record => positive(record.heartRate))),
+    avgPower:
+      nonnegative(segment.avgPower) ?? average(enclosed.map(record => nonnegative(record.power))),
+    avgCadence:
+      nonnegative(segment.avgCadence) ??
+      average(enclosed.map(record => nonnegative(record.cadence))),
+  }
+}
+
+function preferSummitSegment(
+  current: WahooSummitSegment,
+  candidate: WahooSummitSegment,
+): WahooSummitSegment {
+  const endDiff = Date.parse(candidate.endDate) - Date.parse(current.endDate)
+  if (endDiff !== 0) return endDiff > 0 ? candidate : current
+  if (candidate.durationS !== current.durationS)
+    return candidate.durationS > current.durationS ? candidate : current
+  if (candidate.distanceM !== current.distanceM)
+    return candidate.distanceM > current.distanceM ? candidate : current
+  return candidate
+}
+
+function summitSegmentsFor(
+  messages: FitMessages,
+  records: readonly RecordMesg[],
+): WahooSummitSegment[] {
+  const segments = new Map<string, WahooSummitSegment>()
+  for (const value of messages.segmentLapMesgs ?? []) {
+    const segment = summitSegment(value, records)
+    if (!segment) continue
+    const key = JSON.stringify([
+      segment.feature,
+      segment.uuid,
+      segment.name,
+      segment.startDate,
+      finite(value.startPositionLat),
+      finite(value.startPositionLong),
+    ])
+    const current = segments.get(key)
+    segments.set(key, current ? preferSummitSegment(current, segment) : segment)
+  }
+  return [...segments.values()].sort(
+    (left, right) =>
+      left.startDate.localeCompare(right.startDate) ||
+      left.endDate.localeCompare(right.endDate) ||
+      left.uuid.localeCompare(right.uuid),
+  )
+}
+
 function finalCumulativeValue(values: readonly (number | null)[]): number | null {
   for (let index = values.length - 1; index >= 0; index--) {
     const value = values[index]
@@ -268,7 +414,8 @@ export function decodeWahooFit(bytes: Uint8Array): WahooFitData {
   if (!session) throw new Error('Wahoo FIT file has no session')
   const start = timestamp(session.startTime) ?? timestamp(file.timeCreated)
   if (!start) throw new Error('Wahoo FIT file has no valid start time')
-  const streams = streamsFor(messages, developerFields, start.getTime())
+  const records = sortedRecords(messages)
+  const streams = streamsFor(records, developerFields, start.getTime())
   return {
     startDate: start.toISOString(),
     sport: text(session.sport),
@@ -284,6 +431,7 @@ export function decodeWahooFit(bytes: Uint8Array): WahooFitData {
     },
     gearShifts: fitGearShifts(messages),
     cyclingDynamics: fitCyclingDynamics(messages),
+    summitSegments: summitSegmentsFor(messages, records),
     profileVersion,
   }
 }

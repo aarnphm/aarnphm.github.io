@@ -1,6 +1,24 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { parseRunSplits } from './sync-strava'
+import { mapActivity, parseRunSplits } from './sync-strava'
+
+test('maps the exact device name from a Strava activity summary', () => {
+  const activity = mapActivity({ id: 1, device_name: 'Garmin Forerunner 970' })
+
+  assert.equal(activity.deviceName, 'Garmin Forerunner 970')
+})
+
+test('trims the Strava activity summary device name', () => {
+  const activity = mapActivity({ id: 1, device_name: '  Apple Watch Ultra 3  ' })
+
+  assert.equal(activity.deviceName, 'Apple Watch Ultra 3')
+})
+
+test('omits blank or missing Strava activity summary device names', () => {
+  for (const raw of [{ id: 1 }, { id: 2, device_name: ' \t ' }]) {
+    assert.equal(Object.hasOwn(mapActivity(raw), 'deviceName'), false)
+  }
+})
 
 test('normalizes Strava run splits and derives missing average speed', () => {
   assert.deepEqual(

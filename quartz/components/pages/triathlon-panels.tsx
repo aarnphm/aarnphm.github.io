@@ -102,6 +102,8 @@ export const GEAR: [string, string[]][] = [
       'Headset: FSA IS2 1-1/4, 45° x 45° / 1-1/2, 36° x 45°',
       'Cervélo Aero Thru Axle Front, M12x1.5mm, 127mm length',
       'Cervélo Aero Thru Axle Rear, M12x1.5mm, 170.5mm length',
+      'Front Wheel: Reserve 40, 12x100mm, 24H, centerlock, tubeless compatible',
+      'Rear Wheel: Reserve 44, 12x142mm, 24H, centerlock, tubeless compatible',
       'Front Wheel: Reserve 42TA, DT Swiss 350, 12x100mm, 24H, centerlock, tubeless compatible',
       'Rear Wheel: Reserve 49TA, DT Swiss 350, 12x142mm, HG freehub 24H, centerlock, tubeless compatible',
       'Front Wheel: HUNT 54 Aerodynamicist UD Carbon Spoke',
@@ -171,7 +173,6 @@ export const GEAR: [string, string[]][] = [
       'Hat: Ciele Athletic Gocap',
       'Socks: Saucony Inferno Cushion Mid 3-Pack Sock',
       'Pants: Salomon SHAKEOUT CORE 5',
-      'Headphones: SHOKZ OpenRun Pro 2-Bone Conduction Headphones',
       'Utilities: Zone3 Ultimate Race Number Belt',
       'Utilities: Salomon HIGH PULSE',
       'Utilities: Salomon SOFT FLASK 150ml/5oz 28',
@@ -189,7 +190,16 @@ export const GEAR: [string, string[]][] = [
       'Utilities: Speedo Ergo Ear Plug',
     ],
   ],
-  ['wearables', ['Oura Ring 4', 'Apple Watch Ultra 3']],
+  [
+    'wearables',
+    [
+      'Oura Ring 4',
+      'Apple Watch Ultra 3',
+      'Garmin Forerunner 970',
+      'Apple AirPod Pro 3',
+      'SHOKZ OpenRun Pro 2-Bone Conduction Headphones',
+    ],
+  ],
   [
     'fuel',
     [

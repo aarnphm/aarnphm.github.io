@@ -7,6 +7,8 @@ import type { StreetMetricValues } from '../../scripts/triathlon-map-heat'
 import type { DetailPayload } from '../activity/data'
 import { none, type Cmd } from '../../../functional'
 import { ROUTE_SPORTS, type ActivityKind } from '../../../plugins/stores/strava'
+import { activityAverageCadence } from '../../../util/triathlon-card'
+import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { clock } from '../../../util/triathlon-card'
 import { KM_TO_MI } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
@@ -107,7 +109,7 @@ export const overviewMetric = (
   const d = powerViewActivity(presentation, activity)
   if (k === 'w') return d.deviceWatts && d.avgWatts ? d.avgWatts : null
   if (k === 'hr') return d.avgHr
-  if (k === 'cad') return d.avgCadence == null ? null : d.avgCadence * (d.sport === 'run' ? 2 : 1)
+  if (k === 'cad') return activityAverageCadence(d)
   return d.movingTimeS > 0 ? d.distanceKm / (d.movingTimeS / 3600) : null
 }
 
@@ -118,7 +120,7 @@ export const overviewFmt = (
 ): string => {
   if (k === 'w') return `${Math.round(v)} W`
   if (k === 'hr') return `${Math.round(v)} bpm`
-  if (k === 'cad') return `${Math.round(v)} ${sport === 'bike' ? 'rpm' : 'spm'}`
+  if (k === 'cad') return `${Math.round(v)} ${activityCadenceUnit(sport)}`
   if (sport === 'bike') return `${(v * KM_TO_MI).toFixed(1)} mph`
   if (sport === 'swim') return `${clock(360 / v)} /100m`
   return `${clock(3600 / (v * KM_TO_MI))} /mi`

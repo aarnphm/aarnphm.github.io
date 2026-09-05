@@ -6,6 +6,7 @@ import {
   formatTirePressureWeight,
   KG_PER_LB,
   latestMorningBodyWeight,
+  TIRE_PRESSURE_WHEELS,
   type TirePressureSelection,
   tirePressureWeightToKg,
 } from './triathlon-tire-pressure'
@@ -41,6 +42,10 @@ test('matches the published SILCA equation for the equipped Cervélo', () => {
   assert.equal(recommendation.frontMeasuredWidthMm, 32)
   assert.equal(recommendation.rearMeasuredWidthMm, 28)
   assert.equal(recommendation.diameterMm, 622)
+  assert.equal(recommendation.wheel.id, 'reserve-40-44')
+  assert.equal(recommendation.wheel.label, 'Reserve 40|44 Road')
+  assert.equal(recommendation.wheel.frontInnerWidthMm, 25.4)
+  assert.equal(recommendation.wheel.rearInnerWidthMm, 25)
   assert.equal(recommendation.wheelCompatibilityWarning, false)
 })
 
@@ -137,24 +142,38 @@ test('applies SILCA front and rear load-distribution coefficients', () => {
   assert.ok(rearHeavy.rearPsi > road.rearPsi)
 })
 
-test('keeps axle pressures stable across wheelsets and flags Reserve rear-tire compatibility', () => {
-  const hunt = calculateTirePressure({ ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 })
-  const reserve = calculateTirePressure({
+test('keeps axle pressures stable across the equipped wheelset rotation', () => {
+  const road4044 = calculateTirePressure({ ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 })
+  const hunt = calculateTirePressure({
     ...DEFAULT_TIRE_PRESSURE_SELECTION,
     riderKg: 86.06,
-    wheel: 'reserve',
+    wheel: 'hunt-54-58',
+  })
+  const ta4249 = calculateTirePressure({
+    ...DEFAULT_TIRE_PRESSURE_SELECTION,
+    riderKg: 86.06,
+    wheel: 'reserve-42-49',
   })
 
+  assert.ok(road4044)
   assert.ok(hunt)
-  assert.ok(reserve)
+  assert.ok(ta4249)
+  assert.deepEqual(
+    TIRE_PRESSURE_WHEELS.map(wheel => wheel.id),
+    ['reserve-40-44', 'reserve-42-49', 'hunt-54-58', 'custom'],
+  )
+  assert.equal(road4044.wheel.label, 'Reserve 40|44 Road')
+  assert.equal(road4044.wheel.frontInnerWidthMm, 25.4)
+  assert.equal(road4044.wheel.rearInnerWidthMm, 25)
+  assert.equal(road4044.wheelCompatibilityWarning, false)
   assert.equal(hunt.wheel.label, 'HUNT 54_58 Aerodynamicist UD')
   assert.equal(hunt.wheel.frontInnerWidthMm, 22)
   assert.equal(hunt.wheel.rearInnerWidthMm, 22)
-  assert.equal(reserve.frontPsi, hunt.frontPsi)
-  assert.equal(reserve.rearPsi, hunt.rearPsi)
-  assert.equal(reserve.wheelCompatibilityWarning, true)
-  assert.equal(reserve.wheel.frontInnerWidthMm, 25.4)
-  assert.equal(reserve.wheel.rearInnerWidthMm, 24.8)
+  assert.equal(ta4249.frontPsi, hunt.frontPsi)
+  assert.equal(ta4249.rearPsi, hunt.rearPsi)
+  assert.equal(ta4249.wheelCompatibilityWarning, true)
+  assert.equal(ta4249.wheel.frontInnerWidthMm, 25.4)
+  assert.equal(ta4249.wheel.rearInnerWidthMm, 24.8)
 })
 
 test('uses custom front and rear internal rim widths without inventing casing growth', () => {

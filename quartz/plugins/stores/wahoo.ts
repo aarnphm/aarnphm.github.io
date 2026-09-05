@@ -8,10 +8,26 @@ const DISTANCE_TOLERANCE_M = 1500
 const DURATION_TOLERANCE_RATIO = 0.12
 const DURATION_TOLERANCE_S = 10 * 60
 
-export const WAHOO_CACHE_VERSION = 3
+export const WAHOO_CACHE_VERSION = 4
 
 export type WahooGearShift = GarminGearShift
 export type WahooCyclingDynamics = GarminCyclingDynamics
+
+export interface WahooSummitSegment {
+  feature: 'summit-segment' | 'summit-freeride'
+  uuid: string
+  name: string | null
+  startDate: string
+  endDate: string
+  distanceM: number
+  durationS: number
+  elevationGainM: number | null
+  avgGradePct: number | null
+  avgSpeedMps: number | null
+  avgHeartRate: number | null
+  avgPower: number | null
+  avgCadence: number | null
+}
 
 const BIKE_WORKOUT_TYPE_IDS = new Set([0, 11, 12, 13, 14, 15, 16, 17, 21, 49, 61, 64, 68, 70])
 const RUN_WORKOUT_TYPE_IDS = new Set([1, 3, 4, 5, 19, 67, 71])
@@ -109,6 +125,7 @@ export interface WahooCache {
   streams: Record<string, WahooStreams>
   gearShifts: Record<string, WahooGearShift[]>
   cyclingDynamics: Record<string, WahooCyclingDynamics>
+  summitSegments: Record<string, WahooSummitSegment[]>
 }
 
 export interface WahooActivityMatch {
@@ -569,6 +586,49 @@ function parseCyclingDynamics(value: unknown, label: string): WahooCyclingDynami
   return dynamics
 }
 
+function nonnegativeNumber(value: unknown, label: string, nullable = false): number | null {
+  const parsed = finiteNumber(value, label, nullable)
+  if (parsed != null && parsed < 0) throw new Error(`${label} must be nonnegative`)
+  return parsed
+}
+
+function parseSummitSegment(value: unknown, label: string): WahooSummitSegment {
+  if (!isRecord(value)) throw new Error(`${label} must be an object`)
+  const feature = value.feature
+  if (feature !== 'summit-segment' && feature !== 'summit-freeride')
+    throw new Error(`${label}.feature is invalid`)
+  const uuid = stringValue(value.uuid, `${label}.uuid`)
+  if (
+    uuid == null ||
+    (feature === 'summit-segment' && !uuid.startsWith('WAHOO_ON_ROUTE_CLIMB-')) ||
+    (feature === 'summit-freeride' && !uuid.startsWith('WAHOO_OFF_ROUTE_CLIMB-'))
+  )
+    throw new Error(`${label}.uuid is invalid`)
+  const startDate = dateValue(value.startDate, `${label}.startDate`)
+  const endDate = dateValue(value.endDate, `${label}.endDate`)
+  if (Date.parse(endDate) <= Date.parse(startDate))
+    throw new Error(`${label}.endDate must follow startDate`)
+  const distanceM = nonnegativeNumber(value.distanceM, `${label}.distanceM`)
+  const durationS = nonnegativeNumber(value.durationS, `${label}.durationS`)
+  if (distanceM == null || distanceM === 0 || durationS == null || durationS === 0)
+    throw new Error(`${label} must have positive distance and duration`)
+  return {
+    feature,
+    uuid,
+    name: stringValue(value.name, `${label}.name`, true),
+    startDate,
+    endDate,
+    distanceM,
+    durationS,
+    elevationGainM: nonnegativeNumber(value.elevationGainM, `${label}.elevationGainM`, true),
+    avgGradePct: finiteNumber(value.avgGradePct, `${label}.avgGradePct`, true),
+    avgSpeedMps: nonnegativeNumber(value.avgSpeedMps, `${label}.avgSpeedMps`, true),
+    avgHeartRate: nonnegativeNumber(value.avgHeartRate, `${label}.avgHeartRate`, true),
+    avgPower: nonnegativeNumber(value.avgPower, `${label}.avgPower`, true),
+    avgCadence: nonnegativeNumber(value.avgCadence, `${label}.avgCadence`, true),
+  }
+}
+
 function recordValue<T>(
   value: unknown,
   label: string,
@@ -597,10 +657,20 @@ export function parseWahooCache(value: unknown): WahooCache {
     'Wahoo cache.cyclingDynamics',
     parseCyclingDynamics,
   )
+  const summitSegments = recordValue(
+    value.summitSegments,
+    'Wahoo cache.summitSegments',
+    (item, label) => {
+      if (!Array.isArray(item)) throw new Error(`${label} must be an array`)
+      return item.map((segment, index) => parseSummitSegment(segment, `${label}[${index}]`))
+    },
+  )
   for (const [id, activity] of Object.entries(activities)) {
     if (activity.id !== id)
       throw new Error(`Wahoo cache activity key ${id} does not match activity id`)
     if (!streams[id]) throw new Error(`Wahoo cache activity ${id} is missing streams`)
+    if (!summitSegments[id])
+      throw new Error(`Wahoo cache activity ${id} is missing summit segments`)
   }
   return {
     version,
@@ -609,5 +679,6 @@ export function parseWahooCache(value: unknown): WahooCache {
     streams,
     gearShifts,
     cyclingDynamics,
+    summitSegments,
   }
 }

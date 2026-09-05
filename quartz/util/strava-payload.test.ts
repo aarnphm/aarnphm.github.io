@@ -8,13 +8,17 @@ import type {
 } from '../plugins/stores/apple'
 import type { CoreBodyTemperatureCache } from '../plugins/stores/core-body-temperature'
 import type { OuraCache } from '../plugins/stores/oura'
+import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from '../plugins/stores/garmin'
 import {
   emptyPayload,
+  type ActivityThermalSource,
+  type GarminVerification,
   type StravaActivityDetail,
   type StravaPayload,
 } from '../plugins/stores/strava'
 import {
   applyManualActivityTracking,
+  enrichActivityDevices,
   enrichCalculatedExerciseLoads,
   enrichCalculatedIntensityFactors,
   enrichCalculatedTrainingEffects,
@@ -25,6 +29,7 @@ import {
   enrichSwimMetrics,
   swimActivityIntervals,
 } from './strava-payload'
+import { swimLengthAverages } from './swim-metrics'
 
 const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetail => ({
   id: 1,
@@ -61,13 +66,16 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   sauna: null,
   garmin: null,
   computer: null,
+  device: null,
   staminaTrace: null,
+  performanceConditionTrace: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
   anaerobicPowerEstimate: null,
   calculatedTrainingEffect: null,
   gearShifts: [],
   cyclingDynamics: null,
+  runWalk: null,
   route: [],
   heartRateTrace: [],
   mapRoute: [],
@@ -137,6 +145,41 @@ const appleSwim = (values: Partial<AppleSwim> = {}): AppleSwim => ({
   ...values,
 })
 
+const garminVerification = (activityId: string): GarminVerification => ({
+  activityId,
+  name: 'Pool swim',
+  sourceDevice: 'Forerunner 970',
+  startDate: '2026-07-09T20:13:31Z',
+  startDiffS: 0,
+  distanceM: 50,
+  distanceDeltaM: 0,
+  distanceDeltaPct: 0,
+  movingTimeS: 51,
+  movingTimeDeltaS: 0,
+  elapsedTimeS: 66,
+  elapsedTimeDeltaS: 0,
+  totalCalories: null,
+  caloriesDelta: null,
+  avgHeartRate: null,
+  avgHeartRateDelta: null,
+  avgPower: null,
+  avgPowerDelta: null,
+  avgCadence: 24.7,
+  normalizedPower: null,
+  maxPower: null,
+  totalWorkKJ: null,
+  totalWorkDeltaKJ: null,
+  trainingStressScore: null,
+  intensityFactor: null,
+  trainingEffectActivityId: activityId,
+  aerobicTrainingEffect: 2.9,
+  anaerobicTrainingEffect: 1.7,
+  exerciseLoad: 95,
+  trainingEffectLabel: 'AEROBIC_BASE',
+  aerobicTrainingEffectMessage: 'MAINTAINING_AEROBIC_BASE_7',
+  anaerobicTrainingEffectMessage: 'MINOR_ANAEROBIC_BENEFIT_15',
+})
+
 const appleRun = (values: Partial<AppleWorkout> = {}): AppleWorkout => ({
   id: 'apple-run',
   activity: 'running',
@@ -158,6 +201,98 @@ const payloadWith = (...details: StravaActivityDetail[]): StravaPayload => {
   for (const item of details) payload.details[String(item.id)] = item
   return payload
 }
+
+test('resolves run, walk, and swim devices only from exact model evidence', () => {
+  const run = detail({
+    id: 1,
+    sport: 'run',
+    start: '2026-07-17T00:30:45Z',
+    distanceKm: 5.6435,
+    movingTimeS: 2_400,
+    elapsedTimeS: 2_400,
+    garmin: { ...garminVerification('garmin-run'), sourceDevice: null },
+  })
+  const walk = detail({
+    id: 2,
+    sport: 'walk',
+    start: '2026-07-18T12:00:00Z',
+    distanceKm: 2,
+    movingTimeS: 1_200,
+    elapsedTimeS: 1_200,
+    garmin: { ...garminVerification('garmin-walk'), sourceDevice: null },
+  })
+  const swim = detail({
+    id: 3,
+    sport: 'swim',
+    start: '2026-07-19T12:00:00Z',
+    distanceKm: 1,
+    movingTimeS: 1_800,
+    elapsedTimeS: 1_800,
+  })
+  const bike = detail({ id: 4, sport: 'bike', device: null })
+  const garminRun = detail({
+    id: 5,
+    sport: 'run',
+    start: '2026-07-20T12:00:00Z',
+    distanceKm: 8,
+    movingTimeS: 2_800,
+    elapsedTimeS: 2_800,
+    garmin: { ...garminVerification('garmin-only-run'), sourceDevice: null },
+  })
+  const exactGarminRun = detail({
+    id: 6,
+    sport: 'run',
+    start: '2026-07-21T12:00:00Z',
+    distanceKm: 8,
+    movingTimeS: 2_800,
+    elapsedTimeS: 2_800,
+    garmin: garminVerification('exact-garmin-run'),
+  })
+  const workout = (
+    id: string,
+    activity: string,
+    start: string,
+    durationS: number,
+    distanceM: number,
+    values: Partial<AppleWorkout>,
+  ): AppleWorkout => ({
+    id,
+    activity,
+    start,
+    end: new Date(Date.parse(start) + durationS * 1_000).toISOString(),
+    durationS,
+    distanceM,
+    heartRate: [],
+    ...values,
+  })
+  const apple: AppleCache = {
+    version: 4,
+    lastSync: 1,
+    days: {},
+    workouts: {
+      run: workout('run', 'running', run.start, run.movingTimeS, run.distanceKm * 1_000, {
+        source: 'Runna',
+        device: 'Apple Watch',
+      }),
+      walk: workout('walk', 'walking', walk.start, walk.movingTimeS, walk.distanceKm * 1_000, {
+        source: 'appl-watch-ultra-3',
+        device: 'Apple Watch',
+      }),
+      swim: workout('swim', 'swimming', swim.start, swim.movingTimeS, swim.distanceKm * 1_000, {
+        device: 'Apple Watch Ultra 3 49mm',
+      }),
+    },
+  }
+
+  enrichActivityDevices(payloadWith(run, walk, swim, bike, garminRun, exactGarminRun), apple)
+
+  assert.equal(run.device, null)
+  assert.equal(walk.device, 'apple-watch-ultra-3')
+  assert.equal(swim.device, 'apple-watch-ultra-3')
+  assert.equal(bike.device, null)
+  assert.equal(garminRun.device, null)
+  assert.equal(exactGarminRun.device, 'garmin-forerunner-970')
+})
 
 test('enriches SSR payloads with pace-derived intensity factors and exercise loads', () => {
   const swim = detail()
@@ -199,9 +334,11 @@ test('aligns native Apple running dynamics to the matching run route', () => {
       resp: null,
       tempC: null,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
       lat: 43,
       lng: -79,
       elapsedS,
@@ -376,16 +513,45 @@ test('applies attached manual sauna metadata through the shared payload path', (
     },
   ]
   const oura: OuraCache = { lastSync: 1, days: {} }
+  const garminActivityId = 24_229_638_323
+  const metrics = emptyGarminMetrics()
+  metrics.aerobicTrainingEffect = 0.4
+  metrics.anaerobicTrainingEffect = 0
+  metrics.exerciseLoad = 7
+  metrics.trainingEffectLabel = 'RECOVERY'
+  metrics.aerobicTrainingEffectMessage = 'RECOVERY_5'
+  metrics.anaerobicTrainingEffectMessage = 'NO_ANAEROBIC_BENEFIT_0'
+  const garmin: GarminCache = {
+    lastSync: 1,
+    activities: {
+      [`connect:${garminActivityId}`]: {
+        id: `connect:${garminActivityId}`,
+        name: 'Cardio',
+        sport: null,
+        startDate: activity.start,
+        startDateLocal: '2026-09-02T17:30:00',
+        distanceM: null,
+        movingTimeS: null,
+        elapsedTimeS: activity.elapsedTimeS,
+        sourceDevice: 'Forerunner 970',
+        sourceFile: null,
+        metrics,
+        fueling: emptyGarminFueling('Forerunner 970'),
+      },
+    },
+  }
 
   applyManualActivityTracking(
     payload,
     {
+      activities: [],
       fueling: [],
       strength: [],
       sauna: [
         {
           id: 8_202_609_021_730,
           stravaActivityId: activity.id,
+          garminActivityId,
           title: 'Guided Down, Self-Care Sweat',
           date: activity.date,
           time: '17:30',
@@ -399,6 +565,7 @@ test('applies attached manual sauna metadata through the shared payload path', (
     },
     oura,
     null,
+    garmin,
   )
 
   assert.equal(activity.sport, 'sauna')
@@ -412,38 +579,17 @@ test('applies attached manual sauna metadata through the shared payload path', (
     heartRateSource: null,
     source: 'manual',
   })
+  assert.equal(activity.garmin?.trainingEffectActivityId, `connect:${garminActivityId}`)
+  assert.equal(activity.garmin?.aerobicTrainingEffect, 0.4)
+  assert.equal(activity.garmin?.anaerobicTrainingEffect, 0)
+  assert.equal(activity.garmin?.exerciseLoad, 7)
+  assert.equal(activity.garmin?.trainingEffectLabel, 'RECOVERY')
   assert.equal(payload.days[0]?.items[0]?.sport, 'sauna')
   assert.equal(payload.days[0]?.dominant, 'sauna')
 })
 
-test('CORE app samples override FIT thermal values only near onboard timestamps', () => {
+test('run and walk device thermal values win per channel before bounded CORE app fallback', () => {
   const start = '2026-07-29T19:00:00.000Z'
-  const run = detail({
-    sport: 'run',
-    start,
-    route: [0, 60, 120, 300].map((elapsedS, index) => ({
-      x: index / 3,
-      y: index / 3,
-      d: index,
-      alt: 100,
-      w: 0,
-      hr: 150,
-      cad: 80,
-      stamina: null,
-      potentialStamina: null,
-      resp: null,
-      tempC: 25,
-      heatStrainIndex: 1,
-      coreTemperatureC: 37,
-      skinTemperatureC: 31,
-      coreTemperatureSource: 'core-fit',
-      lat: 43,
-      lng: -79,
-      elapsedS,
-      speedKph: 10,
-    })),
-  })
-  const payload = payloadWith(run)
   const core: CoreBodyTemperatureCache = {
     version: 1,
     lastSync: 1,
@@ -467,22 +613,62 @@ test('CORE app samples override FIT thermal values only near onboard timestamps'
     ],
   }
 
-  enrichCoreBodyTemperature(payload, core)
+  const fitSource = (value: number | null): ActivityThermalSource | null =>
+    value == null ? null : 'core-fit'
+  const sports: ('run' | 'walk')[] = ['run', 'walk']
+  for (const sport of sports) {
+    const activity = detail({
+      sport,
+      start,
+      route: [0, 60, 120, 300].map((elapsedS, index) => {
+        const native = [
+          { heatStrainIndex: 0, coreTemperatureC: null, skinTemperatureC: 31 },
+          { heatStrainIndex: null, coreTemperatureC: 37.1, skinTemperatureC: null },
+          { heatStrainIndex: 1, coreTemperatureC: 37.2, skinTemperatureC: 31.5 },
+          { heatStrainIndex: null, coreTemperatureC: null, skinTemperatureC: null },
+        ][index]
+        return {
+          x: index / 3,
+          y: index / 3,
+          d: index,
+          alt: 100,
+          w: 0,
+          hr: 150,
+          cad: 80,
+          stamina: null,
+          potentialStamina: null,
+          resp: null,
+          tempC: 25,
+          heatStrainIndex: native.heatStrainIndex,
+          heatStrainSource: fitSource(native.heatStrainIndex),
+          coreTemperatureC: native.coreTemperatureC,
+          coreTemperatureSource: fitSource(native.coreTemperatureC),
+          skinTemperatureC: native.skinTemperatureC,
+          skinTemperatureSource: fitSource(native.skinTemperatureC),
+          lat: 43,
+          lng: -79,
+          elapsedS,
+          speedKph: 10,
+        }
+      }),
+    })
+    enrichCoreBodyTemperature(payloadWith(activity), core)
 
-  assert.deepEqual(
-    run.route.map(point => ({
-      coreTemperatureC: point.coreTemperatureC,
-      skinTemperatureC: point.skinTemperatureC,
-      heatStrainIndex: point.heatStrainIndex,
-      source: point.coreTemperatureSource,
-    })),
-    [
-      { coreTemperatureC: 37.5, skinTemperatureC: 32, heatStrainIndex: 2, source: 'core-app' },
-      { coreTemperatureC: 37.6, skinTemperatureC: 32.5, heatStrainIndex: 2.5, source: 'core-app' },
-      { coreTemperatureC: 37.7, skinTemperatureC: 33, heatStrainIndex: 3, source: 'core-app' },
-      { coreTemperatureC: 37, skinTemperatureC: 31, heatStrainIndex: 1, source: 'core-fit' },
-    ],
-  )
+    assert.deepEqual(
+      activity.route.map(point => ({
+        heat: [point.heatStrainIndex, point.heatStrainSource],
+        core: [point.coreTemperatureC, point.coreTemperatureSource],
+        skin: [point.skinTemperatureC, point.skinTemperatureSource],
+      })),
+      [
+        { heat: [0, 'core-fit'], core: [37.5, 'core-app'], skin: [31, 'core-fit'] },
+        { heat: [2.5, 'core-app'], core: [37.1, 'core-fit'], skin: [32.5, 'core-app'] },
+        { heat: [1, 'core-fit'], core: [37.2, 'core-fit'], skin: [31.5, 'core-fit'] },
+        { heat: [null, null], core: [null, null], skin: [null, null] },
+      ],
+      sport,
+    )
+  }
 })
 
 test('enriches route-less yoga timelines with nearby CORE app samples', () => {
@@ -497,9 +683,11 @@ test('enriches route-less yoga timelines with nearby CORE app samples', () => {
       elapsedS,
       heartRate: 90,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
     })),
   })
   const payload = payloadWith(yoga)
@@ -574,7 +762,7 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
     workouts: {},
   }
 
-  enrichSwimMetrics(payload, apple)
+  enrichSwimMetrics(payload, apple, null)
 
   assert.deepEqual(payload.details['1'].strokes, swim.strokes)
   assert.equal(payload.details['1'].strokeCount, 700)
@@ -624,10 +812,152 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
 test('uses the device cadence as swim stroke rate when Apple stroke timing is unavailable', () => {
   const payload = payloadWith(detail({ avgCadence: 26 }))
 
-  enrichSwimMetrics(payload, null)
+  enrichSwimMetrics(payload, null, null)
 
   assert.equal(payload.details['1'].strokeRateSpm, 26)
   assert.equal(payload.swimTrend[0]?.strokeRateSpm, 26)
+})
+
+test('uses Garmin FIT pool lengths for native swim pace, strokes, cadence, and SWOLF inputs', () => {
+  const activityId = 'connect:24227073871'
+  const payload = payloadWith(
+    detail({
+      distanceKm: 0.05,
+      movingTimeS: 51,
+      elapsedTimeS: 66,
+      garmin: garminVerification(activityId),
+      heartRateTrace: [0, 25, 32, 40, 53, 66].map(elapsedS => ({
+        distanceKm: 0,
+        elapsedS,
+        heartRate: 120,
+        heatStrainIndex: null,
+        heatStrainSource: null,
+        coreTemperatureC: null,
+        coreTemperatureSource: null,
+        skinTemperatureC: null,
+        skinTemperatureSource: null,
+      })),
+    }),
+  )
+  const conflictingApple = appleSwim({
+    totalM: 50,
+    activeTimeS: 60,
+    strokeCount: 30,
+    strokeTimeS: 60,
+    strokes: { breaststroke: 30 },
+    intervals: [],
+  })
+  const apple: AppleCache = {
+    version: 4,
+    lastSync: 1,
+    days: {},
+    swims: { [conflictingApple.id ?? conflictingApple.date]: conflictingApple },
+    workouts: {},
+  }
+  const garmin: GarminCache = {
+    version: 12,
+    lastSync: 1,
+    activities: {},
+    swims: {
+      [activityId]: {
+        location: 'pool',
+        elapsedTimeS: 66,
+        activeTimeS: 51,
+        distanceM: 50,
+        strokeCount: 21,
+        strokeRateSpm: 24.7,
+        poolLengthM: 25,
+        laps: [
+          {
+            startElapsedS: 0,
+            endElapsedS: 25,
+            distanceM: 25,
+            durationS: 25,
+            strokeCount: 10,
+            strokeTimeS: 25,
+            strokeRateSpm: 24,
+            stroke: 'freestyle',
+            averageHeartRate: 125,
+            elevationGainM: 3,
+          },
+          {
+            startElapsedS: 40,
+            endElapsedS: 66,
+            distanceM: 25,
+            durationS: 26,
+            strokeCount: 11,
+            strokeTimeS: 26,
+            strokeRateSpm: 25.4,
+            stroke: 'freestyle',
+            averageHeartRate: 135,
+            elevationGainM: 4,
+          },
+        ],
+        lengths: [
+          {
+            startElapsedS: 0,
+            endElapsedS: 25,
+            distanceM: 25,
+            durationS: 25,
+            strokeCount: 10,
+            strokeTimeS: 25,
+            strokeRateSpm: 24,
+            stroke: 'freestyle',
+          },
+          {
+            startElapsedS: 40,
+            endElapsedS: 66,
+            distanceM: 25,
+            durationS: 26,
+            strokeCount: 11,
+            strokeTimeS: 26,
+            strokeRateSpm: 25.4,
+            stroke: 'freestyle',
+          },
+        ],
+      },
+    },
+  }
+
+  enrichSwimMetrics(payload, apple, garmin)
+
+  const enriched = payload.details['1']
+  assert.deepEqual(enriched.strokes, { freestyle: 50 })
+  assert.equal(enriched.strokeCount, 21)
+  assert.equal(enriched.strokeRateSpm, 24.7)
+  assert.equal(enriched.swimPaceSPer100m, 102)
+  assert.equal(enriched.swimPaceSource, 'stroke')
+  assert.equal(enriched.swimDurationS, 66)
+  assert.equal(enriched.swimLocation, 'pool')
+  assert.equal(enriched.waterTemperatureC, 27.8)
+  assert.deepEqual(swimLengthAverages(enriched.swimIntervals), {
+    strokesPerLength: 10.5,
+    swolf: 36,
+  })
+  assert.deepEqual(
+    enriched.swimIntervals.map(interval => interval.cumulativeDistanceM),
+    [25, 50],
+  )
+  assert.deepEqual(
+    enriched.heartRateTrace.map(point => point.distanceKm),
+    [0, 0.025, 0.025, 0.025, 0.0375, 0.05],
+  )
+  assert.deepEqual(
+    enriched.analysisRanges.map(range => [
+      range.id,
+      range.startElapsedS,
+      range.endElapsedS,
+      range.startDistanceKm,
+      range.endDistanceKm,
+      range.elevationGainM,
+      range.averageHeartRate,
+      range.averageCadence,
+    ]),
+    [
+      ['garmin-swim-lap:1', 0, 25, 0, 0.025, null, 125, 24],
+      ['garmin-swim-lap:2', 40, 66, 0.025, 0.05, null, 135, 25.4],
+    ],
+  )
 })
 
 test('prefers a complete measured-length pace over workout duration for pool swims', () => {
@@ -679,7 +1009,7 @@ test('prefers a complete measured-length pace over workout duration for pool swi
     workouts: {},
   }
 
-  enrichSwimMetrics(payload, apple)
+  enrichSwimMetrics(payload, apple, null)
 
   assert.equal(payload.details['1'].swimPaceSPer100m, 130)
   assert.equal(payload.swimTrend[0]?.paceSPer100m, 130)
@@ -730,7 +1060,7 @@ test('uses corrected distance metrics with measured open-water environment', () 
     workouts: {},
   }
 
-  enrichSwimMetrics(payload, apple)
+  enrichSwimMetrics(payload, apple, null)
 
   assert.equal(payload.details['1'].swimPaceSPer100m, 164)
   assert.equal(payload.details['1'].swimLocation, 'openWater')
@@ -898,7 +1228,7 @@ test('keeps two same-date swim activities as separate trend observations', () =>
     workouts: {},
   }
 
-  enrichSwimMetrics(payload, apple)
+  enrichSwimMetrics(payload, apple, null)
 
   assert.deepEqual(payload.swimTrend, [
     {
@@ -960,7 +1290,7 @@ test('keeps valid Strava pace history and drops an implausible GPS swim', () => 
     }),
   )
 
-  enrichSwimMetrics(payload, null)
+  enrichSwimMetrics(payload, null, null)
 
   assert.equal(payload.details['1'].swimPaceSPer100m, 159)
   assert.equal(payload.details['2'].swimPaceSPer100m, null)
@@ -987,7 +1317,7 @@ test('keeps a valid stroke-rate observation when pace is unavailable', () => {
     workouts: {},
   }
 
-  enrichSwimMetrics(payload, apple)
+  enrichSwimMetrics(payload, apple, null)
 
   assert.equal(payload.details['1'].swimPaceSPer100m, null)
   assert.equal(payload.details['1'].strokeRateSpm, 28)
@@ -1026,13 +1356,11 @@ test('paces a swim by stroke time when lap distance overshoots the reported tota
     intervals: Array.from({ length: 8 }, (_, index) => lapInterval(index, 30)),
   })
 
-  enrichSwimMetrics(payload, {
-    version: 4,
-    lastSync: 1,
-    days: {},
-    swims: { [swim.id ?? swim.date]: swim },
-    workouts: {},
-  })
+  enrichSwimMetrics(
+    payload,
+    { version: 4, lastSync: 1, days: {}, swims: { [swim.id ?? swim.date]: swim }, workouts: {} },
+    null,
+  )
 
   assert.equal(payload.details['1'].swimPaceSPer100m, 120)
   assert.equal(payload.details['1'].swimPaceSource, 'stroke')
@@ -1046,13 +1374,11 @@ test('falls back to active time when intervals cover a fraction of the swim', ()
     intervals: Array.from({ length: 4 }, (_, index) => lapInterval(index, 30)),
   })
 
-  enrichSwimMetrics(payload, {
-    version: 4,
-    lastSync: 1,
-    days: {},
-    swims: { [swim.id ?? swim.date]: swim },
-    workouts: {},
-  })
+  enrichSwimMetrics(
+    payload,
+    { version: 4, lastSync: 1, days: {}, swims: { [swim.id ?? swim.date]: swim }, workouts: {} },
+    null,
+  )
 
   assert.equal(payload.details['1'].swimPaceSPer100m, 160)
   assert.equal(payload.details['1'].swimPaceSource, 'active')

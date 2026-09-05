@@ -20,6 +20,41 @@ import { triText } from '../../../util/triathlon-i18n'
 import { syncPowerCurveActivityLink } from './power-links'
 
 export type CyclingChartMode = 'distance' | 'power'
+export type RunMetricMode =
+  | 'vertical-oscillation'
+  | 'vertical-ratio'
+  | 'ground-contact-time'
+  | 'ground-contact-balance'
+  | 'step-speed-loss'
+  | 'step-speed-loss-percent'
+
+const isRunMetricMode = (value: string | undefined): value is RunMetricMode =>
+  value === 'vertical-oscillation' ||
+  value === 'vertical-ratio' ||
+  value === 'ground-contact-time' ||
+  value === 'ground-contact-balance' ||
+  value === 'step-speed-loss' ||
+  value === 'step-speed-loss-percent'
+
+export const runMetricMode = (element: HTMLElement | null): RunMetricMode | null => {
+  const value = element?.dataset.runMetricMode
+  return isRunMetricMode(value) ? value : null
+}
+
+export const setRunMetricMode = (chart: HTMLElement, mode: RunMetricMode): void => {
+  if (!chart.querySelector(`[data-run-metric-pane="${mode}"]`)) return
+  chart.dataset.runMetricMode = mode
+  const activity = chart.closest<HTMLElement>('.tri-act')
+  activity?.classList.remove('tri-act--scrub')
+  for (const pane of chart.querySelectorAll<HTMLElement>('[data-run-metric-pane]')) {
+    const visible = pane.dataset.runMetricPane === mode
+    pane.hidden = !visible
+    pane.setAttribute('aria-hidden', String(!visible))
+    pane.classList.remove('tri-elev-wrap--read')
+  }
+  for (const option of chart.querySelectorAll<HTMLButtonElement>('.tri-run-metric-mode'))
+    option.setAttribute('aria-pressed', String(option.dataset.runMetricMode === mode))
+}
 
 export const cyclingChartMode = (element: HTMLElement | null): CyclingChartMode => {
   const activity = element?.closest<HTMLElement>('.tri-act')
@@ -530,7 +565,17 @@ export const setupChartScrub = (
     setCyclingChartMode(chart, button.dataset.cyclingChartMode === 'power' ? 'power' : 'distance')
     return true
   }
+  const setRunMetricModeFromTarget = (target: EventTarget | null): boolean => {
+    if (!(target instanceof Element)) return false
+    const button = target.closest<HTMLButtonElement>('.tri-run-metric-mode')
+    const chart = button?.closest<HTMLElement>('.tri-run-metric-chart')
+    const mode = runMetricMode(button)
+    if (!button || !chart || !mode) return false
+    setRunMetricMode(chart, mode)
+    return true
+  }
   const onChartClick = (event: MouseEvent): void => {
+    if (setRunMetricModeFromTarget(event.target)) return
     if (setCyclingChartModeFromTarget(event.target)) return
     if (!(event.target instanceof Element)) return
     const swimButton = event.target.closest<HTMLButtonElement>('.tri-swim-mode')
@@ -584,6 +629,10 @@ export const setupChartScrub = (
   }
   const onModeKey = (event: KeyboardEvent): void => {
     if (event.key !== 'Enter' && event.key !== ' ') return
+    if (setRunMetricModeFromTarget(event.target)) {
+      event.preventDefault()
+      return
+    }
     if (!setCyclingChartModeFromTarget(event.target)) return
     event.preventDefault()
   }

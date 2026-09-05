@@ -7,6 +7,7 @@ import {
   matchGarminActivity,
   matchGarminFueling,
   matchGarminHeartRateActivity,
+  normalizeGarminSport,
 } from './garmin'
 import { buildPayload, type RawStravaActivity, type StravaRawCache } from './strava'
 
@@ -25,6 +26,48 @@ function strava(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
     ...overrides,
   }
 }
+
+test('normalizes walking and hiking as walk activities', () => {
+  assert.equal(normalizeGarminSport('walking'), 'walk')
+  assert.equal(normalizeGarminSport('HIKING'), 'walk')
+  assert.equal(normalizeGarminSport('trail_running'), 'run')
+})
+
+test('explicit Garmin links bypass distance heuristics and reject missing or unrelated records', () => {
+  const activity = {
+    id: 'connect:24239315396',
+    name: 'Virtual course',
+    sport: normalizeGarminSport('cycling'),
+    startDate: '2026-06-01T11:57:19Z',
+    startDateLocal: '2026-06-01T07:57:19',
+    distanceM: 28_112,
+    movingTimeS: 9_217,
+    elapsedTimeS: 9_973,
+    sourceDevice: null,
+    sourceFile: null,
+    metrics: emptyGarminMetrics(),
+    fueling: emptyGarminFueling(),
+  }
+  const ride = strava({ distance: 66_798.5, movingTime: 9_771, elapsedTime: 9_771 })
+  const cache: GarminCache = { lastSync: 0, activities: { [activity.id]: activity } }
+  assert.equal(matchGarminActivity(ride, 'bike', cache), null)
+  assert.equal(matchGarminActivity(ride, 'bike', cache, 24239315396)?.activity.id, activity.id)
+  assert.equal(matchGarminActivity(ride, 'bike', cache, 999), null)
+  assert.equal(matchGarminActivity(ride, 'run', cache, 24239315396), null)
+  assert.equal(
+    matchGarminActivity({ ...ride, startDate: '2026-06-02T12:00:00Z' }, 'bike', cache, 24239315396),
+    null,
+  )
+  assert.equal(
+    matchGarminActivity(
+      ride,
+      'bike',
+      { ...cache, activities: { '24239315396': activity } },
+      24239315396,
+    )?.activity.id,
+    activity.id,
+  )
+})
 
 test('matches Garmin fueling to a Strava activity by sport, start, distance, and duration', () => {
   const fueling = emptyGarminFueling()

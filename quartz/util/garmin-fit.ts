@@ -14,12 +14,14 @@ import {
   type SessionMesg,
 } from '@garmin/fitsdk'
 import { inflateRawSync } from 'node:zlib'
+import type { SwimLocation, SwimStroke } from '../plugins/stores/apple'
 import type {
   GarminCyclingDynamics,
   GarminFitTrainingEffect,
   GarminGearShift,
   GarminRiderPosition,
   GarminRiderPositionChange,
+  GarminSwimData,
 } from '../plugins/stores/garmin'
 
 export type GarminSwimStroke =
@@ -498,10 +500,11 @@ export function fitCyclingDynamics(messages: FitMessages): GarminCyclingDynamics
   }
 }
 
-export interface GarminRideFitData {
+export interface GarminActivityFitData {
   gearShifts: GarminGearShift[]
   cyclingDynamics: GarminCyclingDynamics
   trainingEffect: GarminFitTrainingEffect
+  swim: GarminSwimData | null
 }
 
 function garminFitTrainingEffect(messages: FitMessages): GarminFitTrainingEffect {
@@ -517,17 +520,170 @@ function garminFitTrainingEffect(messages: FitMessages): GarminFitTrainingEffect
   }
 }
 
-export function decodeGarminRideFit(bytes: Uint8Array): GarminRideFitData {
+function positiveFitMetric(value: number | null | undefined, dp: number): number | null {
+  return value != null && Number.isFinite(value) && value > 0 ? roundedFit(value, dp) : null
+}
+
+function decodedSwimStroke(value: unknown): SwimStroke | null {
+  if (value === 'drill') return 'kickboard'
+  if (value === 'im') return 'mixed'
+  if (
+    value === 'freestyle' ||
+    value === 'backstroke' ||
+    value === 'breaststroke' ||
+    value === 'butterfly' ||
+    value === 'mixed'
+  )
+    return value
+  return null
+}
+
+function decodedSwimStrokeMetrics(
+  stroke: SwimStroke | null,
+  durationS: number,
+  count: number | null | undefined,
+  rate: number | null | undefined,
+): { strokeCount: number | null; strokeRateSpm: number | null } {
+  const nativeStrokeRate = positiveFitMetric(rate, 1)
+  const nativeStrokeCount = stroke === 'kickboard' ? null : positiveFitMetric(count, 1)
+  const strokeCount =
+    nativeStrokeCount ??
+    (nativeStrokeRate == null ? null : roundedFit((nativeStrokeRate * durationS) / 60, 1))
+  return {
+    strokeCount,
+    strokeRateSpm:
+      nativeStrokeRate ??
+      (strokeCount == null ? null : roundedFit((strokeCount / durationS) * 60, 1)),
+  }
+}
+
+function garminFitSwim(messages: FitMessages): GarminSwimData | null {
+  const session = messages.sessionMesgs?.find(candidate => candidate.sport === 'swimming')
+  if (!session) return null
+  const sessionStartMs = fitTimestamp(session.startTime)
+  const poolLengthM = positiveFitMetric(session.poolLength, 2)
+  const location: SwimLocation =
+    session.subSport === 'lapSwimming' || poolLengthM != null ? 'pool' : 'openWater'
+  const laps: GarminSwimData['laps'] = []
+  let previousLapEndElapsedS = 0
+  for (const lap of messages.lapMesgs ?? []) {
+    const elapsedTimeS =
+      positiveFitMetric(lap.totalElapsedTime, 3) ?? positiveFitMetric(lap.totalTimerTime, 3)
+    const durationS =
+      positiveFitMetric(lap.totalTimerTime, 3) ?? positiveFitMetric(lap.totalElapsedTime, 3)
+    if (elapsedTimeS == null || durationS == null) continue
+    const distanceM =
+      positiveFitMetric(lap.totalDistance, 2) ??
+      (positiveFitMetric(lap.avgSpeed, 3) != null
+        ? roundedFit((lap.avgSpeed ?? 0) * durationS, 2)
+        : null)
+    if (distanceM == null) continue
+    const startMs = fitTimestamp(lap.startTime)
+    const startElapsedS =
+      startMs != null && sessionStartMs != null
+        ? roundedFit(Math.max(0, (startMs - sessionStartMs) / 1000), 3)
+        : previousLapEndElapsedS
+    const endElapsedS = roundedFit(startElapsedS + elapsedTimeS, 3)
+    const stroke = decodedSwimStroke(lap.swimStroke)
+    const strokes = decodedSwimStrokeMetrics(
+      stroke,
+      durationS,
+      lap.totalStrokes ?? lap.totalCycles,
+      lap.avgCadence,
+    )
+    laps.push({
+      startElapsedS,
+      endElapsedS,
+      distanceM,
+      durationS,
+      strokeCount: strokes.strokeCount,
+      strokeTimeS: strokes.strokeCount == null ? null : durationS,
+      strokeRateSpm: strokes.strokeRateSpm,
+      stroke,
+      averageHeartRate: positiveFitMetric(lap.avgHeartRate, 1),
+      elevationGainM: location === 'openWater' ? positiveFitMetric(lap.totalAscent, 2) : null,
+    })
+    previousLapEndElapsedS = endElapsedS
+  }
+  const lengths: GarminSwimData['lengths'] = []
+  let cumulativeDistanceM = 0
+  let previousEndElapsedS = 0
+  for (const length of messages.lengthMesgs ?? []) {
+    if (length.lengthType !== 'active') continue
+    const durationS =
+      positiveFitMetric(length.totalTimerTime, 3) ?? positiveFitMetric(length.totalElapsedTime, 3)
+    if (durationS == null) continue
+    const startMs = fitTimestamp(length.startTime)
+    const startElapsedS =
+      startMs != null && sessionStartMs != null
+        ? roundedFit(Math.max(0, (startMs - sessionStartMs) / 1000), 3)
+        : previousEndElapsedS
+    const endElapsedS = roundedFit(startElapsedS + durationS, 3)
+    const distanceM =
+      poolLengthM ??
+      (positiveFitMetric(length.avgSpeed, 3) != null
+        ? roundedFit((length.avgSpeed ?? 0) * durationS, 2)
+        : null)
+    if (distanceM == null) continue
+    const stroke = decodedSwimStroke(length.swimStroke)
+    const strokes = decodedSwimStrokeMetrics(
+      stroke,
+      durationS,
+      length.totalStrokes,
+      length.avgSwimmingCadence,
+    )
+    cumulativeDistanceM = roundedFit(cumulativeDistanceM + distanceM, 2)
+    lengths.push({
+      startElapsedS,
+      endElapsedS,
+      distanceM,
+      durationS,
+      strokeCount: strokes.strokeCount,
+      strokeTimeS: strokes.strokeCount == null ? null : durationS,
+      strokeRateSpm: strokes.strokeRateSpm,
+      stroke,
+    })
+    previousEndElapsedS = endElapsedS
+  }
+  const lengthStrokeCount = lengths.reduce((sum, length) => sum + (length.strokeCount ?? 0), 0)
+  const activeTimeS =
+    positiveFitMetric(session.activeTime, 3) ?? positiveFitMetric(session.totalTimerTime, 3)
+  const strokeCount =
+    positiveFitMetric(session.totalStrokes, 1) ??
+    (lengthStrokeCount > 0 ? roundedFit(lengthStrokeCount, 1) : null)
+  const strokeRateSpm =
+    positiveFitMetric(session.avgCadence, 1) ??
+    (strokeCount != null && activeTimeS != null
+      ? roundedFit((strokeCount / activeTimeS) * 60, 1)
+      : null)
+  const lengthDistanceM = lengths.reduce((sum, length) => sum + length.distanceM, 0)
+  return {
+    location,
+    elapsedTimeS: positiveFitMetric(session.totalElapsedTime, 3),
+    activeTimeS,
+    distanceM:
+      positiveFitMetric(session.totalDistance, 2) ??
+      (lengthDistanceM > 0 ? roundedFit(lengthDistanceM, 2) : null),
+    strokeCount,
+    strokeRateSpm,
+    poolLengthM,
+    laps,
+    lengths,
+  }
+}
+
+export function decodeGarminActivityFit(bytes: Uint8Array): GarminActivityFitData {
   const messages = decodeGarminMessages(bytes)
   return {
     gearShifts: fitGearShifts(messages),
     cyclingDynamics: fitCyclingDynamics(messages),
     trainingEffect: garminFitTrainingEffect(messages),
+    swim: garminFitSwim(messages),
   }
 }
 
-export function garminRideFitFromArchive(archive: Uint8Array): GarminRideFitData {
-  return decodeGarminRideFit(garminFitBytesFromArchive(archive))
+export function garminActivityFitFromArchive(archive: Uint8Array): GarminActivityFitData {
+  return decodeGarminActivityFit(garminFitBytesFromArchive(archive))
 }
 
 function requireFinite(value: number, label: string): void {

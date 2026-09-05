@@ -1,5 +1,10 @@
 import type { DetailCtx } from '../../../util/triathlon-card'
-import { isActivityKind, type StravaActivityDetail } from '../../../plugins/stores/strava'
+import {
+  GARDEN_CYCLING_PERFORMANCE_CONDITION_METHOD,
+  isActivityDevice,
+  isActivityKind,
+  type StravaActivityDetail,
+} from '../../../plugins/stores/strava'
 import {
   isStravaDetailShardPath,
   STRAVA_DETAIL_INDEX_KIND,
@@ -39,16 +44,109 @@ const isStaminaTrace = (value: unknown): boolean => {
   )
 }
 
+const isPerformanceConditionTrace = (value: unknown): boolean => {
+  if (!isRecord(value)) return false
+  if (value.source === 'garmin') return value.method === 'garmin-native'
+  return (
+    value.source === 'garden-estimate' &&
+    value.method === GARDEN_CYCLING_PERFORMANCE_CONDITION_METHOD &&
+    finite(value.ftpWatts) &&
+    value.ftpWatts > 0 &&
+    finite(value.lactateThresholdHeartRateBpm) &&
+    finite(value.restingHeartRateBpm) &&
+    value.restingHeartRateBpm > 0 &&
+    value.lactateThresholdHeartRateBpm > value.restingHeartRateBpm &&
+    value.windowSeconds === 360
+  )
+}
+
 const finite = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value)
 
 const nullableFinite = (value: unknown): value is number | null => value === null || finite(value)
 
-const bounded = (value: unknown, minimum: number, maximum: number): boolean =>
+const bounded = (value: unknown, minimum: number, maximum: number): value is number =>
   finite(value) && value >= minimum && value <= maximum
 
 const nullableBounded = (value: unknown, minimum: number, maximum: number): boolean =>
   value === null || bounded(value, minimum, maximum)
+
+const optionalNullableBounded = (value: unknown, minimum: number, maximum: number): boolean =>
+  value === undefined || nullableBounded(value, minimum, maximum)
+
+const isThermalSource = (value: unknown): boolean =>
+  value === null || value === 'core-app' || value === 'core-fit'
+
+const isThermalPoint = (value: unknown): boolean =>
+  isRecord(value) &&
+  nullableBounded(value.heatStrainIndex, 0, 20) &&
+  isThermalSource(value.heatStrainSource) &&
+  (value.heatStrainIndex == null) === (value.heatStrainSource === null) &&
+  nullableBounded(value.coreTemperatureC, 25, 45) &&
+  isThermalSource(value.coreTemperatureSource) &&
+  (value.coreTemperatureC == null) === (value.coreTemperatureSource === null) &&
+  nullableBounded(value.skinTemperatureC, 0, 50) &&
+  isThermalSource(value.skinTemperatureSource) &&
+  (value.skinTemperatureC == null) === (value.skinTemperatureSource === null)
+
+const isThermalTrace = (value: unknown): boolean =>
+  Array.isArray(value) && value.every(isThermalPoint)
+
+const isRouteMetricPoint = (value: unknown): boolean =>
+  isRecord(value) &&
+  optionalNullableBounded(value.performanceCondition, -20, 20) &&
+  optionalNullableBounded(value.strideLengthM, 0.2, 3) &&
+  optionalNullableBounded(value.verticalRatioPct, 0, 50) &&
+  optionalNullableBounded(value.verticalOscillationCm, 1, 30) &&
+  optionalNullableBounded(value.groundContactBalanceLeftPct, 0, 100) &&
+  optionalNullableBounded(value.groundContactTimeMs, 50, 1_000) &&
+  optionalNullableBounded(value.stepSpeedLossMps, 0, 5) &&
+  optionalNullableBounded(value.stepSpeedLossPct, 0, 100) &&
+  optionalNullableBounded(value.impactLoadFactor, 0, 10)
+
+const isRouteTrace = (value: unknown): boolean =>
+  Array.isArray(value) && value.every(point => isThermalPoint(point) && isRouteMetricPoint(point))
+
+const isRunWalk = (value: unknown): boolean => {
+  if (value === null) return true
+  if (
+    !isRecord(value) ||
+    value.source !== 'garmin' ||
+    !bounded(value.elapsedTimeS, 0, Number.MAX_SAFE_INTEGER) ||
+    !bounded(value.runTimeS, 0, Number.MAX_SAFE_INTEGER) ||
+    !bounded(value.walkTimeS, 0, Number.MAX_SAFE_INTEGER) ||
+    !bounded(value.idleTimeS, 0, Number.MAX_SAFE_INTEGER) ||
+    !Array.isArray(value.segments) ||
+    value.segments.length === 0
+  )
+    return false
+  let elapsedTimeS = 0
+  let runTimeS = 0
+  let walkTimeS = 0
+  let idleTimeS = 0
+  for (const segment of value.segments) {
+    if (
+      !isRecord(segment) ||
+      (segment.state !== 'run' && segment.state !== 'walk' && segment.state !== 'idle') ||
+      !finite(segment.startElapsedS) ||
+      !finite(segment.endElapsedS) ||
+      Math.abs(segment.startElapsedS - elapsedTimeS) > 0.002 ||
+      segment.endElapsedS <= segment.startElapsedS
+    )
+      return false
+    const durationS = segment.endElapsedS - segment.startElapsedS
+    elapsedTimeS = segment.endElapsedS
+    if (segment.state === 'run') runTimeS += durationS
+    else if (segment.state === 'walk') walkTimeS += durationS
+    else idleTimeS += durationS
+  }
+  return (
+    Math.abs(value.elapsedTimeS - elapsedTimeS) <= 0.002 &&
+    Math.abs(value.runTimeS - runTimeS) <= 0.01 &&
+    Math.abs(value.walkTimeS - walkTimeS) <= 0.01 &&
+    Math.abs(value.idleTimeS - idleTimeS) <= 0.01
+  )
+}
 
 const PRIVATE_ANALYSIS_KEYS = new Set([
   'description',
@@ -273,12 +371,29 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     typeof value.id !== 'number' ||
     !/^\d{4}-\d{2}-\d{2}$/.test(typeof value.date === 'string' ? value.date : '') ||
     !isActivityKind(value.sport) ||
+    !(value.device === null || isActivityDevice(value.device)) ||
     !isStaminaTrace(value.staminaTrace) ||
+    (isRecord(value.staminaTrace) &&
+      ((value.staminaTrace.source === 'garden-estimate' && value.sport !== 'bike') ||
+        (value.staminaTrace.source === 'garmin' &&
+          value.sport !== 'bike' &&
+          value.sport !== 'run'))) ||
+    !(
+      value.performanceConditionTrace === null ||
+      isPerformanceConditionTrace(value.performanceConditionTrace)
+    ) ||
+    (isRecord(value.performanceConditionTrace) &&
+      ((value.performanceConditionTrace.source === 'garden-estimate' && value.sport !== 'bike') ||
+        (value.sport !== 'bike' && value.sport !== 'run'))) ||
     !finite(value.elapsedTimeS) ||
     value.elapsedTimeS < 0 ||
     value.elapsedTimeS > Number.MAX_SAFE_INTEGER ||
     !nullableBounded(value.deviceTemperatureC, -90, 100) ||
-    !nullableBounded(value.ambientTemperatureC, -90, 70)
+    !nullableBounded(value.ambientTemperatureC, -90, 70) ||
+    !isRouteTrace(value.route) ||
+    !isThermalTrace(value.heartRateTrace) ||
+    !isRunWalk(value.runWalk) ||
+    (value.runWalk !== null && value.sport !== 'run')
   )
     return false
   return isActivityAnalyses(value.analyses, value.id, value.elapsedTimeS)

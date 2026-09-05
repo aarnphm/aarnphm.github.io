@@ -24,7 +24,14 @@ import { mountDaySleepCharts } from './day-sleep'
 import { dayExtrasFromDataset } from './embed-settings'
 import { renderDetail } from './render'
 import { setupStrengthExerciseOverflow } from './render'
-import { cyclingChartMode, setCyclingChartMode, type CyclingChartMode } from './scrub'
+import {
+  cyclingChartMode,
+  runMetricMode,
+  setCyclingChartMode,
+  setRunMetricMode,
+  type CyclingChartMode,
+  type RunMetricMode,
+} from './scrub'
 
 const TRAINING_EFFECT_MARGIN = '--tri-training-effect-margin'
 
@@ -249,6 +256,8 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       trace: string
       mode: CyclingChartMode
     } | null = null
+    let pendingRunMetricMode: { activityId: string; group: string; mode: RunMetricMode } | null =
+      null
     let pendingAnalysisRange: {
       activityId: string
       kind: string
@@ -291,14 +300,27 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
         mode: button.dataset.cyclingChartMode === 'power' ? 'power' : 'distance',
       }
     }
+    const setPendingRunMetricMode = (target: EventTarget | null): void => {
+      if (!(target instanceof Element)) return
+      const button = target.closest<HTMLButtonElement>('.tri-run-metric-mode')
+      const chart = button?.closest<HTMLElement>('.tri-run-metric-chart')
+      const activityId = chart?.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+        .activityId
+      const group = chart?.dataset.runMetricGroup
+      const mode = runMetricMode(button ?? null)
+      if (!activityId || !group || !mode) return
+      pendingRunMetricMode = { activityId, group, mode }
+    }
     const onModePointerDown = (event: PointerEvent): void => {
       setPendingSwimMode(event.target)
       setPendingCyclingChartMode(event.target)
+      setPendingRunMetricMode(event.target)
     }
     const onModeKeyDown = (event: KeyboardEvent): void => {
       if (event.key !== 'Enter' && event.key !== ' ') return
       setPendingSwimMode(event.target)
       setPendingCyclingChartMode(event.target)
+      setPendingRunMetricMode(event.target)
     }
     const setPendingAnalysisRange = (target: EventTarget | null, restoreFocus = false): boolean => {
       if (payload) return false
@@ -357,6 +379,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     const clearPendingModes = (): void => {
       pendingSwimMode = null
       pendingCyclingChartMode = null
+      pendingRunMetricMode = null
     }
     embed.addEventListener('pointerdown', onModePointerDown, { passive: true })
     embed.addEventListener('keydown', onModeKeyDown)
@@ -379,6 +402,21 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       embed.removeEventListener('pointercancel', clearPendingModes)
     })
     const render = (data: DetailPayload) => {
+      const environmentStates = Array.from(
+        embed.querySelectorAll<HTMLElement>('[data-environment-tabs]'),
+      ).flatMap(analysis => {
+        const activityId = analysis.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+          .activityId
+        return activityId
+          ? [
+              {
+                activityId,
+                view: analysis.dataset.environmentView,
+                mode: analysis.dataset.environmentCumulativeMode,
+              },
+            ]
+          : []
+      })
       const swimStates: {
         mode: SwimTrendMode
         focusedMode: SwimTrendMode | null
@@ -433,6 +471,24 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
         if (state) state.mode = pendingCyclingChartMode.mode
       }
       pendingCyclingChartMode = null
+      const runMetricStates = Array.from(
+        embed.querySelectorAll<HTMLElement>('.tri-run-metric-chart[data-run-metric-group]'),
+      ).flatMap(chart => {
+        const activityId = chart.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+          .activityId
+        const group = chart.dataset.runMetricGroup
+        const mode = runMetricMode(chart)
+        return activityId && group && mode ? [{ activityId, group, mode }] : []
+      })
+      if (pendingRunMetricMode) {
+        const state = runMetricStates.find(
+          candidate =>
+            candidate.activityId === pendingRunMetricMode?.activityId &&
+            candidate.group === pendingRunMetricMode.group,
+        )
+        if (state) state.mode = pendingRunMetricMode.mode
+      }
+      pendingRunMetricMode = null
       const analysisStates = Array.from(
         embed.querySelectorAll<HTMLElement>('.tri-act[data-activity-id]'),
         activity => {
@@ -480,6 +536,20 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       embed.replaceChildren(fresh.element)
       cardCleanup = fresh.mount()
       applyI18n(fresh.element, context.presentation)
+      for (const analysis of fresh.element.querySelectorAll<HTMLElement>(
+        '[data-environment-tabs]',
+      )) {
+        const activityId = analysis.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+          .activityId
+        const state = environmentStates.find(candidate => candidate.activityId === activityId)
+        if (!state) continue
+        Array.from(analysis.querySelectorAll<HTMLButtonElement>('[data-environment-tab]'))
+          .find(button => button.dataset.environmentTab === state.view)
+          ?.click()
+        Array.from(analysis.querySelectorAll<HTMLButtonElement>('[data-environment-mode]'))
+          .find(button => button.dataset.environmentMode === state.mode)
+          ?.click()
+      }
       for (const state of analysisStates) {
         const activity = Array.from(
           fresh.element.querySelectorAll<HTMLElement>('.tri-act[data-activity-id]'),
@@ -519,6 +589,18 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
           )
           if (!state) return
           setCyclingChartMode(chart, state.mode)
+        })
+      fresh.element
+        .querySelectorAll<HTMLElement>('.tri-run-metric-chart[data-run-metric-group]')
+        .forEach(chart => {
+          const activityId = chart.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+            .activityId
+          const state = runMetricStates.find(
+            candidate =>
+              candidate.activityId === activityId &&
+              candidate.group === chart.dataset.runMetricGroup,
+          )
+          if (state) setRunMetricMode(chart, state.mode)
         })
       fresh.element.querySelectorAll<HTMLElement>('.tri-swim-trends').forEach((section, index) => {
         const state = swimStates[index]

@@ -7,6 +7,7 @@ import {
   type FileIdMesg,
   type FitMessages,
   type LapMesg,
+  type LengthMesg,
   type RecordMesg,
   type SessionMesg,
 } from '@garmin/fitsdk'
@@ -14,11 +15,11 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { deflateRawSync } from 'node:zlib'
 import {
-  decodeGarminRideFit,
+  decodeGarminActivityFit,
   encodeGarminSwimFit,
+  garminActivityFitFromArchive,
   garminActivityFileFromArchive,
   garminFitBytesFromArchive,
-  garminRideFitFromArchive,
   validateGarminFit,
   type GarminOpenWaterSwimInput,
   type GarminPoolSwimInput,
@@ -170,6 +171,119 @@ function cyclingDynamicsFit(): Uint8Array {
   return encoder.close()
 }
 
+function partialSwimMetricsFit(): Uint8Array {
+  const encoder = new Encoder()
+  const fileId: FileIdMesg = {
+    type: 'activity',
+    manufacturer: 'development',
+    product: 1,
+    serialNumber: 1,
+    timeCreated: START,
+  }
+  encoder.onMesg(Profile.MesgNum.FILE_ID, fileId)
+  const lengths: LengthMesg[] = [
+    {
+      timestamp: new Date(START.getTime() + 30_000),
+      startTime: START,
+      totalElapsedTime: 30,
+      totalTimerTime: 30,
+      avgSwimmingCadence: 24,
+      swimStroke: 'freestyle',
+      lengthType: 'active',
+    },
+    {
+      timestamp: new Date(START.getTime() + 60_000),
+      startTime: new Date(START.getTime() + 30_000),
+      totalElapsedTime: 30,
+      totalTimerTime: 30,
+      totalStrokes: 15,
+      swimStroke: 'freestyle',
+      lengthType: 'active',
+    },
+  ]
+  for (const length of lengths) encoder.onMesg(Profile.MesgNum.LENGTH, length)
+  const session: SessionMesg = {
+    timestamp: new Date(START.getTime() + 60_000),
+    startTime: START,
+    totalElapsedTime: 60,
+    totalTimerTime: 60,
+    totalDistance: 50,
+    poolLength: 25,
+    sport: 'swimming',
+    subSport: 'lapSwimming',
+    totalTrainingEffect: 2.9,
+    totalAnaerobicTrainingEffect: 1.7,
+  }
+  encoder.onMesg(Profile.MesgNum.SESSION, session)
+  return encoder.close()
+}
+
+function swimLapsFit(): Uint8Array {
+  const encoder = new Encoder()
+  const fileId: FileIdMesg = {
+    type: 'activity',
+    manufacturer: 'development',
+    product: 1,
+    serialNumber: 1,
+    timeCreated: START,
+  }
+  encoder.onMesg(Profile.MesgNum.FILE_ID, fileId)
+  const laps: LapMesg[] = [
+    {
+      timestamp: new Date(START.getTime() + 130_000),
+      startTime: new Date(START.getTime() + 10_000),
+      totalElapsedTime: 120,
+      totalTimerTime: 100,
+      totalDistance: 100,
+      totalCycles: 60,
+      avgHeartRate: 130,
+      avgCadence: 36,
+      swimStroke: 'freestyle',
+      sport: 'swimming',
+      subSport: 'lapSwimming',
+    },
+    {
+      timestamp: new Date(START.getTime() + 160_000),
+      startTime: new Date(START.getTime() + 130_000),
+      totalElapsedTime: 30,
+      totalTimerTime: 30,
+      totalDistance: 0,
+      totalCycles: 0,
+      avgHeartRate: 120,
+      avgCadence: 0,
+      sport: 'swimming',
+      subSport: 'lapSwimming',
+    },
+    {
+      timestamp: new Date(START.getTime() + 220_000),
+      startTime: new Date(START.getTime() + 160_000),
+      totalElapsedTime: 60,
+      totalTimerTime: 50,
+      totalDistance: 50,
+      totalCycles: 30,
+      avgHeartRate: 140,
+      avgCadence: 36,
+      swimStroke: 'freestyle',
+      sport: 'swimming',
+      subSport: 'lapSwimming',
+    },
+  ]
+  for (const lap of laps) encoder.onMesg(Profile.MesgNum.LAP, lap)
+  const session: SessionMesg = {
+    timestamp: new Date(START.getTime() + 220_000),
+    startTime: START,
+    totalElapsedTime: 220,
+    totalTimerTime: 180,
+    totalDistance: 150,
+    totalCycles: 90,
+    poolLength: 25,
+    sport: 'swimming',
+    subSport: 'lapSwimming',
+  }
+  encoder.onMesg(Profile.MesgNum.SESSION, session)
+  return encoder.close()
+}
+
 function zipFile(filename: string, bytes: Uint8Array): Uint8Array {
   const name = Buffer.from(filename)
   const compressed = deflateRawSync(bytes)
@@ -296,7 +410,7 @@ function openWaterInput(): GarminOpenWaterSwimInput {
 }
 
 test('decodes electronic shifting state from Garmin FIT events', () => {
-  assert.deepEqual(decodeGarminRideFit(gearFit()).gearShifts, [
+  assert.deepEqual(decodeGarminActivityFit(gearFit()).gearShifts, [
     {
       timestamp: '2026-07-19T12:00:00.000Z',
       frontGearNum: 2,
@@ -321,8 +435,8 @@ test('extracts and decodes a deflated FIT member from the Garmin archive', () =>
   assert.deepEqual(garminFitBytesFromArchive(archive), fit)
   assert.deepEqual(garminActivityFileFromArchive(archive), { kind: 'fit', bytes: fit })
   assert.deepEqual(
-    garminRideFitFromArchive(archive).gearShifts,
-    decodeGarminRideFit(fit).gearShifts,
+    garminActivityFitFromArchive(archive).gearShifts,
+    decodeGarminActivityFit(fit).gearShifts,
   )
 })
 
@@ -335,8 +449,8 @@ test('extracts a deflated TCX member from a Garmin archive without a FIT member'
 })
 
 test('decodes cycling dynamics and rider position from Garmin FIT records', () => {
-  const ride = decodeGarminRideFit(cyclingDynamicsFit())
-  const dynamics = ride.cyclingDynamics
+  const activity = decodeGarminActivityFit(cyclingDynamicsFit())
+  const dynamics = activity.cyclingDynamics
 
   assert.deepEqual(dynamics.time, [0, 10, 20])
   assert.deepEqual(dynamics.distance, [0, 100, 200])
@@ -355,7 +469,8 @@ test('decodes cycling dynamics and rider position from Garmin FIT records', () =
   ])
   assert.equal(dynamics.seatedTimeS, 10)
   assert.equal(dynamics.standingTimeS, 10)
-  assert.deepEqual(ride.trainingEffect, { aerobic: 3, anaerobic: 1.3 })
+  assert.deepEqual(activity.trainingEffect, { aerobic: 3, anaerobic: 1.3 })
+  assert.equal(activity.swim, null)
 })
 
 test('rejects a Garmin archive without a FIT member', () => {
@@ -414,6 +529,117 @@ test('encodes a 25 metre pool swim with interpolated length messages', () => {
   assert.equal(session?.numActiveLengths, 4)
   assert.equal(session?.firstLapIndex, 0)
   assert.equal(session?.numLaps, 1)
+})
+
+test('decodes Garmin pool lengths into shared swim metrics', () => {
+  const swim = decodeGarminActivityFit(encodeGarminSwimFit(poolInput()).bytes).swim
+
+  assert.ok(swim)
+  assert.equal(swim.location, 'pool')
+  assert.equal(swim.elapsedTimeS, 120)
+  assert.equal(swim.activeTimeS, 120)
+  assert.equal(swim.distanceM, 100)
+  assert.equal(swim.strokeCount, 60)
+  assert.equal(swim.strokeRateSpm, 30)
+  assert.equal(swim.poolLengthM, 25)
+  assert.deepEqual(
+    swim.lengths.map(length => ({
+      startElapsedS: length.startElapsedS,
+      endElapsedS: length.endElapsedS,
+      distanceM: length.distanceM,
+      durationS: length.durationS,
+      strokeCount: length.strokeCount,
+      strokeRateSpm: length.strokeRateSpm,
+      stroke: length.stroke,
+    })),
+    [
+      {
+        startElapsedS: 0,
+        endElapsedS: 30,
+        distanceM: 25,
+        durationS: 30,
+        strokeCount: 15,
+        strokeRateSpm: 30,
+        stroke: 'freestyle',
+      },
+      {
+        startElapsedS: 30,
+        endElapsedS: 60,
+        distanceM: 25,
+        durationS: 30,
+        strokeCount: 15,
+        strokeRateSpm: 30,
+        stroke: 'freestyle',
+      },
+      {
+        startElapsedS: 60,
+        endElapsedS: 90,
+        distanceM: 25,
+        durationS: 30,
+        strokeCount: 15,
+        strokeRateSpm: 30,
+        stroke: 'freestyle',
+      },
+      {
+        startElapsedS: 90,
+        endElapsedS: 120,
+        distanceM: 25,
+        durationS: 30,
+        strokeCount: 15,
+        strokeRateSpm: 30,
+        stroke: 'freestyle',
+      },
+    ],
+  )
+})
+
+test('decodes active Garmin swim laps and preserves workout rests', () => {
+  const swim = decodeGarminActivityFit(swimLapsFit()).swim
+
+  assert.ok(swim)
+  assert.deepEqual(swim.laps, [
+    {
+      startElapsedS: 10,
+      endElapsedS: 130,
+      distanceM: 100,
+      durationS: 100,
+      strokeCount: 60,
+      strokeTimeS: 100,
+      strokeRateSpm: 36,
+      stroke: 'freestyle',
+      averageHeartRate: 130,
+      elevationGainM: null,
+    },
+    {
+      startElapsedS: 160,
+      endElapsedS: 220,
+      distanceM: 50,
+      durationS: 50,
+      strokeCount: 30,
+      strokeTimeS: 50,
+      strokeRateSpm: 36,
+      stroke: 'freestyle',
+      averageHeartRate: 140,
+      elevationGainM: null,
+    },
+  ])
+})
+
+test('derives missing Garmin swim strokes and cadence from the complementary length metric', () => {
+  const activity = decodeGarminActivityFit(partialSwimMetricsFit())
+  const swim = activity.swim
+
+  assert.ok(swim)
+  assert.deepEqual(activity.trainingEffect, { aerobic: 2.9, anaerobic: 1.7 })
+  assert.equal(swim.strokeCount, 27)
+  assert.equal(swim.strokeRateSpm, 27)
+  assert.deepEqual(
+    swim.lengths.map(length => [length.strokeCount, length.strokeRateSpm]),
+    [
+      [12, 24],
+      [15, 30],
+    ],
+  )
 })
 
 test('keeps pool length elapsed time while distributing active timer time', () => {

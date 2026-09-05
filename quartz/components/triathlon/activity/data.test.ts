@@ -13,10 +13,15 @@ const detail = (id: number, date: string, sport: string): Record<string, unknown
   id,
   date,
   sport,
+  device: null,
   staminaTrace: null,
+  performanceConditionTrace: null,
   elapsedTimeS: 3_600,
   deviceTemperatureC: null,
   ambientTemperatureC: null,
+  runWalk: null,
+  route: [],
+  heartRateTrace: [],
   analyses: emptyAnalyses,
 })
 
@@ -132,6 +137,126 @@ test('validates public analysis contracts while preserving numeric zero', () => 
     },
   }
   assert.equal(isActivityDetail(value), true)
+})
+
+test('validates closed activity devices and independent thermal provenance', () => {
+  const value = detail(14, '2026-08-14', 'run')
+  value.device = 'apple-watch-ultra-3'
+  const thermal = {
+    heatStrainIndex: 0,
+    heatStrainSource: 'core-fit',
+    coreTemperatureC: 37.5,
+    coreTemperatureSource: 'core-app',
+    skinTemperatureC: null,
+    skinTemperatureSource: null,
+  }
+  value.route = [thermal]
+  assert.equal(isActivityDetail(value), true)
+
+  const garmin = { ...value, device: 'garmin-forerunner-970' }
+  assert.equal(isActivityDetail(garmin), true)
+  assert.equal(isActivityDetail({ ...value, device: 'Apple Watch Ultra 3' }), false)
+  assert.equal(
+    isActivityDetail({ ...value, route: [{ ...thermal, heatStrainSource: 'watch' }] }),
+    false,
+  )
+  const missing = { ...value }
+  delete missing.device
+  assert.equal(isActivityDetail(missing), false)
+})
+
+test('validates native Garmin running dynamics and run/walk segments', () => {
+  const value = detail(15, '2026-09-03', 'run')
+  value.route = [
+    {
+      heatStrainIndex: null,
+      heatStrainSource: null,
+      coreTemperatureC: null,
+      coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
+      performanceCondition: -10,
+      strideLengthM: 1.08,
+      verticalRatioPct: 11.3,
+      verticalOscillationCm: 12.4,
+      groundContactBalanceLeftPct: 49.3,
+      groundContactTimeMs: 246.5,
+      stepSpeedLossMps: 0.079,
+      stepSpeedLossPct: 2.78,
+      impactLoadFactor: 1,
+    },
+  ]
+  value.staminaTrace = {
+    source: 'garmin',
+    method: 'garmin-native',
+    ftpWatts: null,
+    maxHeartRateBpm: null,
+  }
+  value.performanceConditionTrace = { source: 'garmin', method: 'garmin-native' }
+  const runWalk = {
+    source: 'garmin',
+    elapsedTimeS: 1800.479,
+    runTimeS: 1746.741,
+    walkTimeS: 46.836,
+    idleTimeS: 6.902,
+    segments: [
+      { state: 'run', startElapsedS: 0, endElapsedS: 1746.741 },
+      { state: 'walk', startElapsedS: 1746.741, endElapsedS: 1793.577 },
+      { state: 'idle', startElapsedS: 1793.577, endElapsedS: 1800.479 },
+    ],
+  }
+  value.runWalk = runWalk
+  assert.equal(isActivityDetail(value), true)
+  assert.equal(
+    isActivityDetail({
+      ...value,
+      staminaTrace: {
+        source: 'garden-estimate',
+        method: 'garden-stamina-v1',
+        ftpWatts: 287,
+        maxHeartRateBpm: 196,
+      },
+    }),
+    false,
+  )
+  assert.equal(
+    isActivityDetail({
+      ...value,
+      runWalk: {
+        ...runWalk,
+        segments: [
+          { state: 'run', startElapsedS: 1, endElapsedS: 1747.741 },
+          { state: 'walk', startElapsedS: 1747.741, endElapsedS: 1794.577 },
+          { state: 'idle', startElapsedS: 1794.577, endElapsedS: 1801.479 },
+        ],
+      },
+    }),
+    false,
+  )
+  assert.equal(isActivityDetail({ ...value, sport: 'walk' }), false)
+
+  const calculated = {
+    ...value,
+    sport: 'bike',
+    runWalk: null,
+    performanceConditionTrace: {
+      source: 'garden-estimate',
+      method: 'garden-cycling-performance-condition-v1',
+      ftpWatts: 287,
+      lactateThresholdHeartRateBpm: 173,
+      restingHeartRateBpm: 50,
+      windowSeconds: 360,
+    },
+  }
+  assert.equal(isActivityDetail(calculated), true)
+  assert.equal(isActivityDetail({ ...calculated, sport: 'run' }), false)
+  assert.equal(
+    isActivityDetail({
+      ...calculated,
+      performanceConditionTrace: { ...calculated.performanceConditionTrace, windowSeconds: 300 },
+    }),
+    false,
+  )
 })
 
 test('rejects private fields, out-of-order samples, and ambiguous temperature contracts', () => {

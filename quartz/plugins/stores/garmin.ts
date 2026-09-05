@@ -1,4 +1,5 @@
-import type { ActivityKind, RawStravaActivity, Sport } from './strava'
+import type { SwimLocation, SwimStroke } from './apple'
+import type { ActivityKind, RawStravaActivity } from './strava'
 
 const START_TOLERANCE_MS = 20 * 60 * 1000
 const DISTANCE_TOLERANCE_RATIO = 0.08
@@ -38,10 +39,23 @@ export interface GarminMetrics {
   anaerobicTrainingEffectMessage: string | null
 }
 
+export interface GarminRunningDynamicsSummary {
+  source: 'garmin'
+  averageRespirationRate: number | null
+  averageStrideLengthCm: number | null
+  averageVerticalRatioPct: number | null
+  averageVerticalOscillationCm: number | null
+  averageGroundContactBalanceLeftPct: number | null
+  averageGroundContactTimeMs: number | null
+  averageStepSpeedLossMps: number | null
+  averageStepSpeedLossPct: number | null
+  impactLoadM: number | null
+}
+
 export interface GarminActivity {
   id: string
   name: string | null
-  sport: Sport | null
+  sport: ActivityKind | null
   startDate: string
   startDateLocal: string
   distanceM: number | null
@@ -50,6 +64,7 @@ export interface GarminActivity {
   sourceDevice: string | null
   sourceFile: string | null
   metrics: GarminMetrics
+  runningDynamics?: GarminRunningDynamicsSummary | null
   fueling: GarminFueling
 }
 
@@ -87,10 +102,64 @@ export interface GarminStreams {
   stamina?: number[]
   potentialStamina?: number[]
   respiration?: number[]
+  performanceCondition?: (number | null)[]
+  strideLengthCm?: (number | null)[]
+  verticalRatioPct?: (number | null)[]
+  verticalOscillationCm?: (number | null)[]
+  groundContactBalanceLeftPct?: (number | null)[]
+  groundContactTimeMs?: (number | null)[]
+  stepSpeedLossMps?: (number | null)[]
+  stepSpeedLossPct?: (number | null)[]
+  impactLoadFactor?: (number | null)[]
   muscleOxygenPercent?: number[]
   heatStrainIndex?: number[]
   coreTemperatureC?: number[]
   skinTemperatureC?: number[]
+}
+
+export type GarminRunWalkState = 'run' | 'walk' | 'idle'
+
+export interface GarminRunWalkSegment {
+  state: GarminRunWalkState
+  startElapsedS: number
+  endElapsedS: number
+}
+
+export interface GarminRunWalkData {
+  source: 'garmin'
+  elapsedTimeS: number
+  runTimeS: number
+  walkTimeS: number
+  idleTimeS: number
+  segments: GarminRunWalkSegment[]
+}
+
+export interface GarminSwimLength {
+  startElapsedS: number
+  endElapsedS: number
+  distanceM: number
+  durationS: number
+  strokeCount: number | null
+  strokeTimeS: number | null
+  strokeRateSpm: number | null
+  stroke: SwimStroke | null
+}
+
+export interface GarminSwimLap extends GarminSwimLength {
+  averageHeartRate: number | null
+  elevationGainM: number | null
+}
+
+export interface GarminSwimData {
+  location: SwimLocation
+  elapsedTimeS: number | null
+  activeTimeS: number | null
+  distanceM: number | null
+  strokeCount: number | null
+  strokeRateSpm: number | null
+  poolLengthM: number | null
+  laps: GarminSwimLap[]
+  lengths: GarminSwimLength[]
 }
 
 export interface GarminGearShift {
@@ -163,7 +232,9 @@ export interface GarminCache {
   gearShifts?: Record<string, GarminGearShift[]>
   cyclingDynamics?: Record<string, GarminCyclingDynamics>
   fitTrainingEffects?: Record<string, GarminFitTrainingEffect>
+  swims?: Record<string, GarminSwimData>
   climbs?: Record<string, GarminClimbSegment[]>
+  runWalks?: Record<string, GarminRunWalkData>
   vo2max?: Record<string, GarminVo2Day>
   weight?: GarminWeightSample[]
 }
@@ -224,7 +295,7 @@ export function hasGarminHeartRate(activity: GarminActivity, cache: GarminCache 
   return cache?.streams?.[activity.id]?.heartrate?.some(value => value > 0) ?? false
 }
 
-export function normalizeGarminSport(value: string | null | undefined): Sport | null {
+export function normalizeGarminSport(value: string | null | undefined): ActivityKind | null {
   if (!value) return null
   const sport = value.toLowerCase()
   if (sport.includes('swim')) return 'swim'
@@ -236,6 +307,7 @@ export function normalizeGarminSport(value: string | null | undefined): Sport | 
   )
     return 'bike'
   if (sport.includes('run')) return 'run'
+  if (sport.includes('walk') || sport.includes('hike') || sport.includes('hiking')) return 'walk'
   return null
 }
 
@@ -286,10 +358,27 @@ export function matchGarminActivity(
   strava: RawStravaActivity,
   sport: ActivityKind,
   cache: GarminCache | null,
+  activityId?: number | null,
 ): GarminActivityMatch | null {
   if (!cache) return null
   const stravaStart = Date.parse(strava.startDate)
   if (!Number.isFinite(stravaStart)) return null
+
+  if (activityId != null) {
+    const activity =
+      cache.activities[`connect:${activityId}`] ?? cache.activities[String(activityId)]
+    if (!activity || (activity.sport != null && activity.sport !== sport)) return null
+    const garminStart = Date.parse(activity.startDate)
+    const startDiffMs = Math.abs(garminStart - stravaStart)
+    if (!Number.isFinite(startDiffMs) || startDiffMs > START_TOLERANCE_MS) return null
+    return {
+      activity,
+      score: startDiffMs / 60_000,
+      startDiffMs,
+      distanceDiffM: distanceDiffM(strava.distance, activity.distanceM),
+      durationDiffS: durationDiffS(strava, activity),
+    }
+  }
 
   let best: { score: number; activity: GarminActivity } | null = null
   for (const activity of Object.values(cache.activities)) {

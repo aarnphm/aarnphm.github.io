@@ -1037,6 +1037,76 @@ test('heat block prefers CORE app onboard samples over CORE FIT telemetry', () =
   assert.equal(analytics.distributions.activities[0].heatStrainObservedSeconds, 3660)
 })
 
+test('run heat prefers zero-valued Garmin FIT strain and fills missing skin from CORE app', () => {
+  const date = iso(20)
+  const runActivity = activity(201, 'Run', date, 3600, 10_000)
+  const cache: StravaRawCache = {
+    athleteId: 123,
+    auth: { refreshToken: 'core-run-test-token', obtainedAt: 0 },
+    lastSync: Date.parse(`${date}T18:00:00Z`),
+    lastActivityStart: 0,
+    activities: { 201: runActivity },
+    streams: { 201: streams(10, 3) },
+  }
+  const core: CoreBodyTemperatureCache = {
+    version: 1,
+    lastSync: cache.lastSync,
+    samples: Array.from({ length: 61 }, (_, index) => ({
+      time: new Date(Date.parse(runActivity.startDate) + index * 60_000).toISOString(),
+      coreTemperatureC: 38 + index / 1_000,
+      skinTemperatureC: 33,
+      heatStrainIndex: 4,
+      quality: 4,
+      heartRate: 150,
+    })),
+  }
+  const garmin: GarminCache = {
+    version: 6,
+    lastSync: cache.lastSync,
+    activities: {
+      core: {
+        id: 'core',
+        name: 'CORE run',
+        sport: 'run',
+        startDate: runActivity.startDate,
+        startDateLocal: runActivity.startDateLocal,
+        distanceM: runActivity.distance,
+        movingTimeS: runActivity.movingTime,
+        elapsedTimeS: runActivity.elapsedTime,
+        sourceDevice: 'Forerunner 970',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Forerunner 970'),
+      },
+    },
+    streams: {
+      core: {
+        time: [0, 1800, 3600],
+        latlng: [],
+        altitude: [],
+        distance: [0, 5_000, 10_000],
+        heatStrainIndex: [0, 0, 0],
+        coreTemperatureC: [37, 37, 37],
+      },
+    },
+  }
+
+  const analytics = buildAnalytics(cache, { core, garmin, since: date })
+  const heat = analytics.heat
+  assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0 })
+  assert.deepEqual(heat.coreSourceCounts, { app: 0, fit: 1 })
+  assert.equal(heat.activities[0].coreOrigin, 'fit')
+  assert.equal(heat.activities[0].temperatureC, 37)
+  assert.equal(heat.activities[0].heatStrainIndex, 0)
+  assert.equal(heat.activities[0].hotMinutes, 0)
+  assert.equal(analytics.distributions.activities[0].skinTemperatureC, 33)
+  assert.equal(analytics.distributions.activities[0].skinThermalSource, 'core-app')
+  assert.equal(analytics.distributions.activities[0].skinObservedSeconds, 3660)
+  assert.equal(analytics.distributions.activities[0].heatStrainIndex, 0)
+  assert.equal(analytics.distributions.activities[0].heatStrainThermalSource, 'core-fit')
+  assert.equal(analytics.distributions.activities[0].heatStrainObservedSeconds, 3660)
+})
+
 test('activity telemetry resolves sparse CORE app and FIT metrics independently', () => {
   const date = iso(20)
   const rideActivity = activity(201, 'Ride', date, 3600, 20_000)
@@ -2396,6 +2466,7 @@ test('manual sauna sessions appear in analytics and the data feed without enteri
       {
         id: 8_202_606_061_830,
         stravaActivityId: null,
+        garminActivityId: null,
         title: 'Untangle',
         date,
         time: '18:30',
@@ -2478,6 +2549,7 @@ test('attached sauna activity replaces its raw Strava classification in analytic
       {
         id: 8_202_606_061_830,
         stravaActivityId: 4,
+        garminActivityId: null,
         title: 'Untangle',
         date,
         time: '18:30',

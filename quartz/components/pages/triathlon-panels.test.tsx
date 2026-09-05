@@ -14,6 +14,7 @@ import {
   AnalyticsPanel,
   CalcPanel,
   FeedPanel,
+  GEAR,
   GearPanel,
   MapPanel,
   OnTreePanel,
@@ -234,6 +235,18 @@ test('overview training markup keeps its list, tree, and document empty', () => 
   assert.equal(elements(root, element => element.properties?.dataPlan != null).length, 0)
 })
 
+test('Soloist inventory includes the Reserve 40|44 wheelset rotation', () => {
+  const inventory = GEAR.find(([name]) => name === 'Cervélo Soloist')?.[1]
+
+  assert.ok(inventory)
+  assert.ok(
+    inventory.includes('Front Wheel: Reserve 40, 12x100mm, 24H, centerlock, tubeless compatible'),
+  )
+  assert.ok(
+    inventory.includes('Rear Wheel: Reserve 44, 12x142mm, 24H, centerlock, tubeless compatible'),
+  )
+})
+
 test('gear surfaces keep inventory and maintenance without calculators', () => {
   const popover = renderToString(<GearPanel maintenance={maintenance} />)
   const tools = renderToString(<ToolsPanel maintenance={maintenance} />)
@@ -337,6 +350,9 @@ test('calculator page tabs own race, gear ratio, and daily tire pressure calcula
   assert.match(html, /data-pressure-output="front">64</)
   assert.match(html, /data-pressure-output="rear">81</)
   assert.match(html, />Custom<\/span>/)
+  assert.match(html, /data-wheel="reserve-40-44"/)
+  assert.match(html, /value="reserve-40-44"[^>]*checked/)
+  assert.match(html, /Reserve 40\|44 Road/)
   assert.match(html, /HUNT 54_58 Aerodynamicist UD/)
   assert.match(html, />Custom Wheelset<\/span>/)
   assert.equal(html.match(/data-pressure-field="bikeMass"/g)?.length, 3)

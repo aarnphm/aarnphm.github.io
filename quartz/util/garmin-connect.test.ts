@@ -5,6 +5,7 @@ import {
   garminConnectActivity,
   garminConnectActivityStartDate,
   garminConnectClimbSegments,
+  garminConnectRunWalk,
   garminConnectStreams,
   garminConnectWeightSamples,
 } from './garmin-connect'
@@ -122,6 +123,46 @@ test('prefers elapsed duration over timer duration', () => {
 
   assert.equal(activity?.movingTimeS, 2_460)
   assert.equal(activity?.elapsedTimeS, 2_468)
+})
+
+test('preserves canonical Garmin running-dynamics summary values', () => {
+  const fallback = {
+    activityId: 24227986086,
+    activityName: 'Easy Miles',
+    activityType: { typeKey: 'running' },
+    startTimeGMT: '2026-09-03 19:38:48',
+  }
+  const activity = garminConnectActivity(
+    {
+      ...fallback,
+      summaryDTO: {
+        avgRespirationRate: 35.150001525878906,
+        strideLength: 108.21999511718751,
+        verticalRatio: 11.300000190734863,
+        verticalOscillation: 12.380000305175782,
+        groundContactBalanceLeft: 49.2599983215332,
+        groundContactTime: 246.5,
+        stepSpeedLoss: 0.07900000095367432,
+        stepSpeedLossPercent: 2.7799999713897705,
+        impactLoad: 5_320,
+      },
+    },
+    fallback,
+    0,
+  )
+
+  assert.deepEqual(activity?.runningDynamics, {
+    source: 'garmin',
+    averageRespirationRate: 35.15,
+    averageStrideLengthCm: 108.22,
+    averageVerticalRatioPct: 11.3,
+    averageVerticalOscillationCm: 12.38,
+    averageGroundContactBalanceLeftPct: 49.26,
+    averageGroundContactTimeMs: 246.5,
+    averageStepSpeedLossMps: 0.079,
+    averageStepSpeedLossPct: 2.78,
+    impactLoadM: 5_320,
+  })
 })
 
 test('keeps Garmin Connect fueling fields when they appear in nested records', () => {
@@ -440,4 +481,64 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
   assert.deepEqual(streams?.heatStrainIndex, [0, 1.4, 3])
   assert.deepEqual(streams?.coreTemperatureC, [37, 37.01, 37.03])
   assert.deepEqual(streams?.skinTemperatureC, [-1, 33.45, 33.5])
+})
+
+test('preserves nullable native Forerunner running dynamics', () => {
+  const streams = garminConnectStreams({
+    metricDescriptors: [
+      { metricsIndex: 0, key: 'sumElapsedDuration' },
+      { metricsIndex: 1, key: 'directPerformanceCondition' },
+      { metricsIndex: 2, key: 'directStrideLength' },
+      { metricsIndex: 3, key: 'directVerticalRatio' },
+      { metricsIndex: 4, key: 'directVerticalOscillation' },
+      { metricsIndex: 5, key: 'directGroundContactBalanceLeft' },
+      { metricsIndex: 6, key: 'directGroundContactTime' },
+      { metricsIndex: 7, key: 'directStepSpeedLoss' },
+      { metricsIndex: 8, key: 'directStepSpeedLossPercent' },
+      { metricsIndex: 9, key: 'directImpactLoadFactor' },
+    ],
+    activityDetailMetrics: [
+      { metrics: [0, null, null, null, null, null, null, null, null, 0] },
+      { metrics: [15, -4, 108, 11.3, 12.4, 49.3, 246.5, 0.079, 2.78, 1] },
+      { metrics: [30, -10, 77, 16.1, 12.5, 50.1, 248, 0.07, 2.5, 0.96] },
+    ],
+  })
+
+  assert.deepEqual(streams?.performanceCondition, [null, -4, -10])
+  assert.deepEqual(streams?.strideLengthCm, [null, 108, 77])
+  assert.deepEqual(streams?.verticalRatioPct, [null, 11.3, 16.1])
+  assert.deepEqual(streams?.verticalOscillationCm, [null, 12.4, 12.5])
+  assert.deepEqual(streams?.groundContactBalanceLeftPct, [null, 49.3, 50.1])
+  assert.deepEqual(streams?.groundContactTimeMs, [null, 246.5, 248])
+  assert.deepEqual(streams?.stepSpeedLossMps, [null, 0.079, 0.07])
+  assert.deepEqual(streams?.stepSpeedLossPct, [null, 2.78, 2.5])
+  assert.deepEqual(streams?.impactLoadFactor, [0, 1, 0.96])
+})
+
+test('normalizes positive Garmin run/walk intervals onto the active elapsed axis', () => {
+  assert.deepEqual(
+    garminConnectRunWalk({
+      splits: [
+        { type: 'RWD_RUN', duration: 10 },
+        { type: 'RWD_WALK', duration: 2.345 },
+        { type: 'RWD_STAND', duration: 0 },
+        { type: 'RWD_STAND', duration: 0.655 },
+        { type: 'RWD_RUN', duration: 5.5 },
+        { type: 'SURFACE_TYPE_PAVED', duration: 18.5 },
+      ],
+    }),
+    {
+      source: 'garmin',
+      elapsedTimeS: 18.5,
+      runTimeS: 15.5,
+      walkTimeS: 2.345,
+      idleTimeS: 0.655,
+      segments: [
+        { state: 'run', startElapsedS: 0, endElapsedS: 10 },
+        { state: 'walk', startElapsedS: 10, endElapsedS: 12.345 },
+        { state: 'idle', startElapsedS: 12.345, endElapsedS: 13 },
+        { state: 'run', startElapsedS: 13, endElapsedS: 18.5 },
+      ],
+    },
+  )
 })

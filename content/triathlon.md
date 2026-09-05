@@ -35,7 +35,7 @@ dexa:
     vatAreaIn2: 8.64
     vatLbs: 1.24
 events:
-  ironman-70.3--nyc--26:
+  ironman-lanzarote--spain--27:
     T1: null
     T2: null
     bike: null
@@ -126,14 +126,14 @@ maintenance:
       - distance: 1727.25
       - range:
           - end: '2026-08-22'
+            reason: upgrades to CarbonTi
             start: '2026-05-16'
-      - reason: upgrades to CarbonTi
     - - type: CarbonTi 54-40T
       - distance: null
       - range:
           - end: null
+            reason: null
             start: '2026-08-26'
-      - reason: null
   service:
     soloist:
       - date: '2026-08-21'
@@ -166,15 +166,15 @@ maintenance:
           - distance: 619.84
           - range:
               - end: '2026-08-10'
+                repaired: false
                 start: '2026-07-16'
           - reason: punctures
-          - repaired: false
         - - type: Pirelli P Zero TPU
           - distance: null
           - range:
               - end: null
+                reason: null
                 start: '2026-08-12'
-          - reason: null
     rear:
       tires:
         - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
@@ -199,17 +199,21 @@ maintenance:
       tube:
         - - type: Pirelli P Zero TPU
           - distance: 878.49
-          - start: '2026-07-16'
-          - end: '2026-08-17'
-          - reason: big punctures
-          - repaired: true
+          - range:
+              - end: '2026-08-17'
+                reason: big punctures, but will be the backup now.
+                repaired: true
+                start: '2026-07-16'
         - - type: Pirelli P Zero TPU
           - distance: null
-          - start: '2026-08-17'
-          - end: null
-          - reason: null
-          - repaired: null
-modified: 2026-09-02 18:54:58 GMT-04:00
+          - range:
+              - end: '2026-09-03'
+                reason: slow punctures
+                repaired: true
+                start: '2026-08-17'
+              - start: '2026-09-04'
+              - end: null
+modified: 2026-09-04 21:23:49 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -217,7 +221,7 @@ strava: '2026-05-15'
 tags:
   - evergreen
 title: triathlon
-triathlon: '70.3'
+triathlon: ironman
 vo2max:
   - caloriesAtVt1: 850
     date: '2026-06-25'
@@ -1268,6 +1272,40 @@ htl: 7.7
 strava: 20012367069
 ```
 
+```tracking
+title: Guided All Round, Loving Kindness
+date: 2026-09-03
+time: 19:30
+duration: 75 mins
+activity: sauna
+temperature: 155F
+humidity: 10%
+cooldown: cold plunge
+htl: 6.9
+strava: 20027487559
+garmin: 24229638323
+```
+
+```tracking
+title: Free Flow
+date: 2026-09-04
+time: 16:45
+duration: 75 mins
+activity: sauna
+temperature: 202F
+humidity: 10%
+cooldown: cold plunge
+htl: 7.7
+strava: 20038635691
+garmin: 24239862296
+```
+
+```tracking
+activity: 20037941355
+garmin: 24239315396
+virtual: true
+```
+
 <!-- training plan start
 meta: calling with James
 date: 2026-09-01
@@ -1394,8 +1432,8 @@ The activity-card values use these ordered sources:
 2. Missing intensity factor is calculated from device power for a bike, pace for a run or swim, then heart rate as the remaining fallback.
 3. Exercise load uses Garmin's native value when it exists.
 4. Missing exercise load is calculated from Garmin IF when Garmin supplied IF, otherwise from the locally calculated IF.
-5. Garmin aerobic and anaerobic training effect scores, messages, and labels take priority when they exist.
-6. When Garmin has no training effect details, bike, run, and swim activities use a local estimate. The aerobic score uses Strava relative effort when it exists, then exercise load. The anaerobic score uses the stronger result from upper heart rate zones and short high intensity intervals. The training effect heading exposes the selected inputs on hover and keyboard focus.
+5. Garmin aerobic and anaerobic training effect scores, messages, and labels take priority when they exist. A sauna tracking block can pin the exact Garmin Connect source with `garmin: <activity ID>`.
+6. When Garmin has no training effect details, an activity with observed load uses a local estimate. An Apple Watch sauna normally uses the relative effort from its canonical Strava recording. The aerobic score uses Strava relative effort when it exists, then exercise load. The anaerobic score uses the stronger result from upper heart rate zones and short high intensity intervals. The training effect heading exposes the selected inputs on hover and keyboard focus.
 
 The analytics load that drives CTL, ATL, TSB, ACWR, and weekly load is separate from the exercise-load number shown on an activity card. Swim, bike, and run use grade-adjusted pace and duration. Strength and yoga use threshold-normalized heart-rate TRIMP when average exercise heart rate and resting, threshold, and maximum heart rate are available. A strength or yoga activity without valid heart-rate inputs contributes zero load. Pace and volume calibration remains scoped to swim, bike, and run.
 
@@ -1639,7 +1677,7 @@ p_r
 \left(p_{0,r}c_vc_rc_t\right).
 $$
 
-All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. The HUNT 54_58 Aerodynamicist UD Carbon Spoke wheelset uses a $54.5\ \mathrm{mm}$ front depth, $58\ \mathrm{mm}$ rear depth, and hooked $22\ \mathrm{mm}$ internal width on both rims; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Measured front and rear tire widths are independent $20$–$65\ \mathrm{mm}$ inputs, persisted locally, with $w_f=32\ \mathrm{mm}$ and $w_r=28\ \mathrm{mm}$ as the defaults. Internal rim width is compatibility metadata rather than a second casing-width input, so choosing a custom internal width does not invent casing growth. Reserve publishes $29\ \mathrm{mm}$ as the minimum recommended tire width, so the calculator shows a warning while the selected $28\ \mathrm{mm}$ rear tire remains below that range.
+All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. The Cervélo Soloist defaults to Reserve 40|44 Road, with a $25.4\ \mathrm{mm}$ front and $25\ \mathrm{mm}$ rear internal width. The HUNT 54_58 Aerodynamicist UD Carbon Spoke wheelset uses a $54.5\ \mathrm{mm}$ front depth, $58\ \mathrm{mm}$ rear depth, and hooked $22\ \mathrm{mm}$ internal width on both rims; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Measured front and rear tire widths are independent $20$–$65\ \mathrm{mm}$ inputs, persisted locally, with $w_f=32\ \mathrm{mm}$ and $w_r=28\ \mathrm{mm}$ as the defaults. Internal rim width is compatibility metadata rather than a second casing-width input, so choosing a custom internal width does not invent casing growth. Reserve publishes a $28\ \mathrm{mm}$ minimum for 40|44 Road and $29\ \mathrm{mm}$ for 42|49 TA, so the calculator warns only when a selected tire sits below its wheelset's published range.
 
 The [Pirelli tire-pressure tool](https://www.pirelli.com/tires/en-us/bike/pressure-tool) remains the manufacturer check for the selected Pirelli casing, tube or tubeless construction, rim, and lower pressure limit.[^pirelli-pressure] Since both local casing coefficients are $1.00$, switching between TPU and tubeless changes the documented setup without changing PSI when measured width and every other input remain fixed.
 
@@ -1674,7 +1712,7 @@ For example, the 2026-08-16 morning mass of $86.06\ \mathrm{kg}$, the $26.2\ \ma
 
 [^silca-pressure]: [SILCA, "Professional Tire Pressure Calculator"](https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1). The local implementation copies the calculator's public mass, surface, measured-width, wheel-diameter, speed, tire-casing, and load-distribution coefficients, then performs the same half-PSI rounding without making a runtime request. A controlled $100\ \mathrm{kg}$ system-weight check on 2026-08-27 reproduced SILCA's $64/65.5\ \mathrm{PSI}$ result at $32\ \mathrm{mm}$ and $79/81\ \mathrm{PSI}$ result at $28\ \mathrm{mm}$ for worn pavement, a $622\ \mathrm{mm}$ wheel, high-performance casing, $19.5\ \mathrm{mph}$, and the road $48/52$ selection.
 
-[^pressure-wheels]: [HUNT, "54_58 Aerodynamicist UD Carbon Spoke Disc Wheelset"](https://us.huntbikewheels.com/products/hunt-54_58-aerodynamicist-ud-carbon-spoke-disc-wheelset) and [Reserve, "42|49 TA"](https://reservewheels.com/products/reserve-42-49), official wheel dimensions and published tire-width compatibility.
+[^pressure-wheels]: [HUNT, "54_58 Aerodynamicist UD Carbon Spoke Disc Wheelset"](https://us.huntbikewheels.com/products/hunt-54_58-aerodynamicist-ud-carbon-spoke-disc-wheelset), [Reserve, "40|44 Road"](https://eu.reservewheels.com/products/reserve-40-44-road-wheel), [Reserve, "42|49 TA"](https://reservewheels.com/products/reserve-42-49), and [Reserve, "Wheels Tech Info"](https://cdn.shopify.com/s/files/1/0769/6420/0723/files/Dealer_Tech_Doc_-_7-10-26.pdf?v=1783718075), official wheel dimensions and published tire-width compatibility.
 
 [^pirelli-pressure]: [Pirelli, "Bike Tire Pressure Tool"](https://www.pirelli.com/tires/en-us/bike/pressure-tool), manufacturer guidance for matching tire construction, rim, system mass, use, and pressure limits.
 

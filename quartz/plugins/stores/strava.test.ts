@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from './garmin'
+import { isRecord } from '../../util/type-guards'
+import { buildAnalytics, buildDataFeed } from './analytics'
 import {
+  emptyGarminFueling,
+  emptyGarminMetrics,
+  type GarminCache,
+  type GarminRunWalkData,
+} from './garmin'
+import {
+  applyActivityTracking,
   applyManualFueling,
   applyManualSauna,
   applyManualStrength,
@@ -9,6 +17,7 @@ import {
   calculateActivityIntensityFactor,
   calculateActivityTrainingEffect,
   calculateAnaerobicPowerEstimate,
+  calculateCyclingPerformanceCondition,
   calculateExerciseLoad,
   calculateHeartRateTss,
   emptyPayload,
@@ -18,8 +27,57 @@ import {
   type StravaRawCache,
   type StravaStreams,
 } from './strava'
+import { parseTrackingBlock } from './tracking'
 import { emptyWahooMetrics, type WahooCache } from './wahoo'
 import { summarizeWeatherDays, type WeatherActivity, type WeatherCache } from './weather'
+
+test('calculates cycling performance condition from six-minute power and heart-rate load', () => {
+  const sampleCount = 721
+  const observed = Array<number>(sampleCount).fill(1)
+  const baseline = calculateCyclingPerformanceCondition(
+    Array<number>(sampleCount).fill(150),
+    observed,
+    Array<number>(sampleCount).fill(122),
+    250,
+    170,
+    50,
+  )
+  const elevated = calculateCyclingPerformanceCondition(
+    Array<number>(sampleCount).fill(165),
+    observed,
+    Array<number>(sampleCount).fill(122),
+    250,
+    170,
+    50,
+  )
+  const partialCoverage = calculateCyclingPerformanceCondition(
+    Array<number>(sampleCount).fill(150),
+    observed.map((value, index) => (index % 10 === 9 ? 0 : value)),
+    Array<number>(sampleCount).fill(122),
+    250,
+    170,
+    50,
+  )
+
+  assert.ok(baseline)
+  assert.ok(elevated)
+  assert.ok(partialCoverage)
+  assert.equal(baseline.windowSeconds, 360)
+  assert.ok(baseline.samples.every(sample => sample.value === 0))
+  assert.ok(elevated.samples.every(sample => sample.value === 10))
+  assert.ok(partialCoverage.samples.every(sample => sample.value === 0))
+  assert.equal(
+    calculateCyclingPerformanceCondition(
+      Array<number>(sampleCount).fill(165),
+      Array<number>(sampleCount).fill(0),
+      Array<number>(sampleCount).fill(122),
+      250,
+      170,
+      50,
+    ),
+    null,
+  )
+})
 
 test('calculates activity intensity from the sport-specific threshold signal', () => {
   assert.deepEqual(
@@ -181,6 +239,89 @@ test('calculates missing bike training effect from aerobic load and power interv
   )
 })
 
+test('calculates training effect for every non-endurance activity with observed load', () => {
+  const kinds: Array<'strength' | 'walk' | 'yoga' | 'treatment' | 'sauna'> = [
+    'strength',
+    'walk',
+    'yoga',
+    'treatment',
+    'sauna',
+  ]
+  for (const sport of kinds)
+    assert.deepEqual(
+      calculateActivityTrainingEffect({
+        sport,
+        distanceKm: 0,
+        movingTimeS: 1_800,
+        sufferScore: 11,
+        garmin: null,
+        calculatedIntensityFactor: { value: 0.7, source: 'heart-rate' },
+        calculatedExerciseLoad: { value: 24.5, source: 'heart-rate' },
+        anaerobicPowerEstimate: null,
+        hrZones: [0, 0, 1_680, 120, 0],
+        analysisRanges: [],
+        swimPaceSPer100m: null,
+        swimIntervals: [],
+      }),
+      {
+        aerobic: 2,
+        anaerobic: 1,
+        evidence: {
+          aerobic: { source: 'relative-effort', load: 11 },
+          anaerobic: { source: 'heart-rate', seconds: 120 },
+        },
+      },
+      sport,
+    )
+})
+
+test('calculates recovery training effect for an Apple Watch sauna without Garmin', () => {
+  assert.deepEqual(
+    calculateActivityTrainingEffect({
+      sport: 'sauna',
+      distanceKm: 0,
+      movingTimeS: 4_000,
+      sufferScore: 8,
+      garmin: null,
+      calculatedIntensityFactor: null,
+      calculatedExerciseLoad: null,
+      anaerobicPowerEstimate: null,
+      hrZones: [3_468, 437, 95, 0, 0],
+      analysisRanges: [],
+      swimPaceSPer100m: null,
+      swimIntervals: [],
+    }),
+    {
+      aerobic: 1.6,
+      anaerobic: 0,
+      evidence: {
+        aerobic: { source: 'relative-effort', load: 8 },
+        anaerobic: { source: 'heart-rate', seconds: 0 },
+      },
+    },
+  )
+})
+
+test('requires measured load before calculating training effect', () => {
+  assert.equal(
+    calculateActivityTrainingEffect({
+      sport: 'yoga',
+      distanceKm: 0,
+      movingTimeS: 1_800,
+      sufferScore: null,
+      garmin: null,
+      calculatedIntensityFactor: null,
+      calculatedExerciseLoad: null,
+      anaerobicPowerEstimate: null,
+      hrZones: null,
+      analysisRanges: [],
+      swimPaceSPer100m: null,
+      swimIntervals: [],
+    }),
+    null,
+  )
+})
+
 test('treats cached empty analysis arrays as a fetched activity detail', () => {
   assert.equal(hasFetchedActivityDetail(undefined), false)
   assert.equal(hasFetchedActivityDetail({ calories: null, laps: [], segmentEfforts: [] }), false)
@@ -234,38 +375,264 @@ test('projects a distance-aligned heart rate trace for route-less pool swims', (
       elapsedS: 0,
       heartRate: 90,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
     },
     {
       distanceKm: 0.025,
       elapsedS: 30,
       heartRate: 110,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
     },
     {
       distanceKm: 0.05,
       elapsedS: 60,
       heartRate: null,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
     },
     {
       distanceKm: 0.075,
       elapsedS: 90,
       heartRate: 130,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
     },
   ])
+})
+
+test('projects bounded Garmin thermal samples onto a route-less run', () => {
+  const activity = ride({
+    name: 'Thermal run',
+    sportType: 'Run',
+    distance: 3_000,
+    movingTime: 300,
+    elapsedTime: 300,
+    startDate: '2026-06-07T12:00:00Z',
+    startDateLocal: '2026-06-07T08:00:00',
+  })
+  const cache: StravaRawCache = {
+    version: 5,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+    streams: {
+      101: {
+        time: [0, 60, 120, 300],
+        latlng: [],
+        altitude: [],
+        distance: [0, 1_000, 2_000, 3_000],
+        heartrate: [120, 130, 140, 150],
+      },
+    },
+  }
+  const garmin: GarminCache = {
+    version: 7,
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    activities: {
+      run: {
+        id: 'run',
+        name: 'Thermal run',
+        sport: 'run',
+        startDate: '2026-06-07T12:00:00Z',
+        startDateLocal: '2026-06-07T08:00:00',
+        distanceM: 3_000,
+        movingTimeS: 300,
+        elapsedTimeS: 300,
+        sourceDevice: 'Forerunner 970',
+        sourceFile: 'run.fit',
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Forerunner 970'),
+      },
+    },
+    streams: {
+      run: {
+        time: [0, 60, 120],
+        latlng: [],
+        altitude: [],
+        distance: [0, 1_000, 2_000],
+        heatStrainIndex: [0, -1, 2],
+        coreTemperatureC: [37.1, -1, 37.3],
+        skinTemperatureC: [32.5, -1, 33],
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
+
+  assert.equal(detail.device, 'garmin-forerunner-970')
+  assert.deepEqual(
+    detail.heartRateTrace.map(point => ({
+      elapsedS: point.elapsedS,
+      heartRate: point.heartRate,
+      heatStrainIndex: point.heatStrainIndex,
+      heatStrainSource: point.heatStrainSource,
+      coreTemperatureC: point.coreTemperatureC,
+      coreTemperatureSource: point.coreTemperatureSource,
+      skinTemperatureC: point.skinTemperatureC,
+      skinTemperatureSource: point.skinTemperatureSource,
+    })),
+    [
+      {
+        elapsedS: 0,
+        heartRate: 120,
+        heatStrainIndex: 0,
+        heatStrainSource: 'core-fit',
+        coreTemperatureC: 37.1,
+        coreTemperatureSource: 'core-fit',
+        skinTemperatureC: 32.5,
+        skinTemperatureSource: 'core-fit',
+      },
+      {
+        elapsedS: 60,
+        heartRate: 130,
+        heatStrainIndex: null,
+        heatStrainSource: null,
+        coreTemperatureC: null,
+        coreTemperatureSource: null,
+        skinTemperatureC: null,
+        skinTemperatureSource: null,
+      },
+      {
+        elapsedS: 120,
+        heartRate: 140,
+        heatStrainIndex: 2,
+        heatStrainSource: 'core-fit',
+        coreTemperatureC: 37.3,
+        coreTemperatureSource: 'core-fit',
+        skinTemperatureC: 33,
+        skinTemperatureSource: 'core-fit',
+      },
+      {
+        elapsedS: 300,
+        heartRate: 150,
+        heatStrainIndex: null,
+        heatStrainSource: null,
+        coreTemperatureC: null,
+        coreTemperatureSource: null,
+        skinTemperatureC: null,
+        skinTemperatureSource: null,
+      },
+    ],
+  )
+})
+
+test('projects Garmin thermal telemetry without GPS or heart rate onto a route-less walk', () => {
+  const activity = ride({
+    name: 'Thermal walk',
+    sportType: 'Walk',
+    distance: 1_000,
+    movingTime: 120,
+    elapsedTime: 120,
+    startDate: '2026-06-07T12:00:00Z',
+    startDateLocal: '2026-06-07T08:00:00',
+  })
+  const cache: StravaRawCache = {
+    version: 5,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+  }
+  const garmin: GarminCache = {
+    version: 7,
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    activities: {
+      walk: {
+        id: 'walk',
+        name: 'Thermal walk',
+        sport: 'walk',
+        startDate: '2026-06-07T12:00:00Z',
+        startDateLocal: '2026-06-07T08:00:00',
+        distanceM: 1_000,
+        movingTimeS: 120,
+        elapsedTimeS: 120,
+        sourceDevice: 'Forerunner 970',
+        sourceFile: 'walk.fit',
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Forerunner 970'),
+      },
+    },
+    streams: {
+      walk: {
+        time: [0, 60, 120],
+        latlng: [],
+        altitude: [],
+        distance: [],
+        heatStrainIndex: [0, 1, 2],
+        coreTemperatureC: [37.1, 37.2, 37.3],
+        skinTemperatureC: [32.5, 32.8, 33],
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
+
+  assert.deepEqual(detail.route, [])
+  assert.equal(detail.device, 'garmin-forerunner-970')
+  assert.deepEqual(
+    detail.heartRateTrace.map(point => ({
+      elapsedS: point.elapsedS,
+      heartRate: point.heartRate,
+      heatStrainIndex: point.heatStrainIndex,
+      heatStrainSource: point.heatStrainSource,
+      coreTemperatureC: point.coreTemperatureC,
+      coreTemperatureSource: point.coreTemperatureSource,
+      skinTemperatureC: point.skinTemperatureC,
+      skinTemperatureSource: point.skinTemperatureSource,
+    })),
+    [
+      {
+        elapsedS: 0,
+        heartRate: null,
+        heatStrainIndex: 0,
+        heatStrainSource: 'core-fit',
+        coreTemperatureC: 37.1,
+        coreTemperatureSource: 'core-fit',
+        skinTemperatureC: 32.5,
+        skinTemperatureSource: 'core-fit',
+      },
+      {
+        elapsedS: 60,
+        heartRate: null,
+        heatStrainIndex: 1,
+        heatStrainSource: 'core-fit',
+        coreTemperatureC: 37.2,
+        coreTemperatureSource: 'core-fit',
+        skinTemperatureC: 32.8,
+        skinTemperatureSource: 'core-fit',
+      },
+      {
+        elapsedS: 120,
+        heartRate: null,
+        heatStrainIndex: 2,
+        heatStrainSource: 'core-fit',
+        coreTemperatureC: 37.3,
+        coreTemperatureSource: 'core-fit',
+        skinTemperatureC: 33,
+        skinTemperatureSource: 'core-fit',
+      },
+    ],
+  )
 })
 
 test('projects a time-aligned heart rate trace for route-less strength training', () => {
@@ -304,36 +671,44 @@ test('projects a time-aligned heart rate trace for route-less strength training'
       elapsedS: 0,
       heartRate: 90,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
     },
     {
       distanceKm: 0,
       elapsedS: 30,
       heartRate: 110,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
     },
     {
       distanceKm: 0,
       elapsedS: 60,
       heartRate: null,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
     },
     {
       distanceKm: 0,
       elapsedS: 90,
       heartRate: 130,
       heatStrainIndex: null,
+      heatStrainSource: null,
       coreTemperatureC: null,
-      skinTemperatureC: null,
       coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
     },
   ])
 })
@@ -479,6 +854,324 @@ function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
     ...overrides,
   }
 }
+
+test('merges an explicit virtual route by time and uses Garmin distance across payload and feed', () => {
+  const activity = ride({
+    id: 20037941355,
+    distance: 66_800,
+    movingTime: 10,
+    elapsedTime: 10,
+    averageWatts: 153,
+    weightedAverageWatts: 170,
+    averageHeartrate: 123,
+    averageCadence: 74,
+    deviceWatts: true,
+    totalElevationGain: 0,
+  })
+  const time = Array.from({ length: 11 }, (_, index) => index)
+  const cache: StravaRawCache = {
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: 0 },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: 0,
+    activities: { [activity.id]: activity },
+    streams: {
+      [activity.id]: {
+        time,
+        latlng: [],
+        altitude: [],
+        distance: time.map(value => value * 6_680),
+        watts: time.map(value => (value === 2 ? 0 : 100 + value)),
+        heartrate: time.map(value => 120 + value),
+        cadence: time.map(value => 70 + value),
+      },
+    },
+  }
+  const garminTime = [0, 2, 4, 6, 8, 10, 12, 14]
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {
+      'connect:24239315396': {
+        id: 'connect:24239315396',
+        name: 'Virtual course',
+        sport: 'bike',
+        startDate: '2026-06-07T11:29:53Z',
+        startDateLocal: '2026-06-07T07:29:53',
+        distanceM: 28_000,
+        movingTimeS: 10,
+        elapsedTimeS: 14,
+        sourceDevice: null,
+        sourceFile: null,
+        metrics: {
+          ...emptyGarminMetrics(),
+          totalAscentM: 1_244,
+          totalDescentM: 1_058,
+          normalizedPower: 179,
+          trainingStressScore: 89.9,
+          aerobicTrainingEffect: 0,
+        },
+        fueling: { ...emptyGarminFueling(), caloriesConsumed: 0, fluidMl: 700 },
+      },
+    },
+    streams: {
+      'connect:24239315396': {
+        time: garminTime,
+        latlng: garminTime.map(value => [45 + value / 10_000, 6 + value / 10_000]),
+        altitude: garminTime.map(value => 758 + value),
+        distance: [0, 0, 5_600, 11_200, 16_800, 22_400, 28_000, 28_000],
+        watts: garminTime.map(() => 250),
+        heartrate: garminTime.map(() => 0),
+        cadence: garminTime.map(() => 0),
+      },
+    },
+  }
+  const entry = parseTrackingBlock(
+    null,
+    `activity: ${activity.id}\ngarmin: 24239315396\nvirtual: true`,
+  )?.activity
+  assert.ok(entry)
+  cache.activityDetails = {
+    [activity.id]: {
+      calories: null,
+      laps: [
+        analysisRange('virtual-lap', 'Lap 1', {
+          distance: 66_800,
+          elapsedTime: 10,
+          movingTime: 10,
+          startIndex: 0,
+          endIndex: 10,
+        }),
+      ],
+      segmentEfforts: [],
+      splitsMetric: [],
+      splitsStandard: [],
+    },
+  }
+  const before = structuredClone(cache)
+  const payload = buildPayload(
+    cache,
+    null,
+    garmin,
+    undefined,
+    null,
+    250,
+    undefined,
+    undefined,
+    null,
+    190,
+    170,
+    cache.lastSync,
+    [entry],
+  )
+  const detail = payload.details[String(activity.id)]
+  assert.equal(detail.virtual, true)
+  assert.equal(detail.distanceSource, 'garmin')
+  assert.equal(detail.distanceKm, 28)
+  assert.equal(detail.elevationM, 1_244)
+  assert.equal(detail.descentM, 1_058)
+  assert.equal(payload.totalKm, 28)
+  assert.equal(payload.totals.find(total => total.sport === 'bike')?.distanceKm, 28)
+  assert.equal(payload.days.flatMap(day => day.items)[0].distanceKm, 28)
+  assert.equal(detail.avgWatts, 153)
+  assert.equal(detail.npWatts, 170)
+  assert.equal(detail.avgHr, 123)
+  assert.equal(detail.avgCadence, 74)
+  assert.equal(detail.garmin?.normalizedPower, 179)
+  assert.equal(detail.garmin?.trainingStressScore, 89.9)
+  assert.equal(detail.garmin?.aerobicTrainingEffect, 0)
+  assert.equal(detail.garmin?.distanceDeltaM, -38_800)
+  assert.equal(detail.fueling?.caloriesConsumed, 0)
+  assert.equal(detail.fueling?.fluidMl, 700)
+  assert.equal(detail.route[0].elapsedS, 0)
+  assert.equal(detail.route[0].lat, 45.0002)
+  assert.equal(detail.route[0].hr, 120)
+  assert.equal(detail.route[0].w, 100)
+  assert.equal(detail.route.find(point => point.elapsedS === 2)?.w, 0)
+  assert.equal(detail.route.at(-1)?.elapsedS, 10)
+  assert.equal(detail.route.at(-1)?.d, 28)
+  assert.equal(detail.analysisRanges[0].distanceKm, 28)
+  assert.equal(detail.analysisRanges[0].elevationGainM, null)
+  assert.ok(detail.mapRoute.flat().length >= 2)
+  assert.equal(detail.analyses.derived.environment, null)
+  assert.deepEqual(cache, before)
+  const trackedCache = applyActivityTracking(cache, garmin, [entry])
+  assert.deepEqual(
+    trackedCache?.streams?.[String(activity.id)].altitude,
+    time.map(value => 760 + value),
+  )
+  const analytics = buildAnalytics(trackedCache, { activityDetails: payload.details, garmin })
+  assert.equal(analytics.activities[0].distanceKm, 28)
+  const feed = buildDataFeed(trackedCache, analytics, { activityDetails: payload.details, garmin })
+  const rows: unknown[] = feed
+    .trim()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  assert.equal(rows.filter(isRecord).find(row => row.kind === 'activity')?.distanceKm, 28)
+  const serialized: unknown = JSON.parse(JSON.stringify(detail))
+  assert.ok(isRecord(serialized))
+  assert.equal(serialized.virtual, true)
+  assert.equal(serialized.distanceSource, 'garmin')
+
+  const missing = buildPayload(
+    cache,
+    null,
+    garmin,
+    undefined,
+    null,
+    250,
+    undefined,
+    undefined,
+    null,
+    190,
+    170,
+    cache.lastSync,
+    [{ ...entry, garminActivityId: 999 }],
+  ).details[String(activity.id)]
+  assert.equal(missing.garmin, null)
+  assert.equal(missing.distanceKm, 66.8)
+  assert.equal(missing.distanceSource, undefined)
+  assert.equal(missing.mapRoute.length, 0)
+  assert.equal(missing.virtual, true)
+
+  const regular = buildPayload(cache, null, garmin).details[String(activity.id)]
+  assert.equal(regular.garmin, null)
+  assert.equal(regular.virtual, false)
+  assert.equal(regular.distanceKm, 66.8)
+  const stream = cache.streams?.[String(activity.id)]
+  assert.ok(stream)
+  stream.time = [0, 1, 9, 10]
+  stream.distance = [0, 6_680, 60_120, 66_800]
+  stream.watts = [100, 101, 109, 110]
+  stream.heartrate = [120, 121, 129, 130]
+  stream.cadence = [70, 71, 79, 80]
+  const gapped = buildPayload(
+    cache,
+    null,
+    garmin,
+    undefined,
+    null,
+    250,
+    undefined,
+    undefined,
+    null,
+    190,
+    170,
+    cache.lastSync,
+    [entry],
+  ).details[String(activity.id)]
+  assert.equal(gapped.route.find(point => point.elapsedS === 4)?.w, 250)
+  assert.equal(gapped.route.find(point => point.elapsedS === 4)?.hr, 0)
+})
+
+test('projects a calculated cycling performance condition when Garmin omits its native trace', () => {
+  const sampleCount = 1_801
+  const activity = ride({
+    distance: 7_200,
+    movingTime: sampleCount - 1,
+    elapsedTime: sampleCount - 1,
+    deviceWatts: true,
+  })
+  const time = Array.from({ length: sampleCount }, (_, index) => index)
+  const cache: StravaRawCache = {
+    version: 6,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+    streams: {
+      101: {
+        time,
+        latlng: time.map(index => [43.6 + index / 100_000, -79.4 + index / 100_000]),
+        altitude: time.map(() => 80),
+        distance: time.map(index => index * 10),
+        watts: time.map(() => 165),
+        heartrate: time.map(index => (index >= 600 && index < 900 ? 0 : 122)),
+        cadence: time.map(() => 85),
+      },
+    },
+  }
+  const oura = {
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    days: {
+      '2026-06-07': {
+        date: '2026-06-07',
+        readiness: null,
+        sleepScore: null,
+        hrv: null,
+        rhr: 50,
+        sleepDurationS: null,
+        tempDeviationC: null,
+        totalCalories: null,
+        activeCalories: null,
+      },
+    },
+  }
+
+  const detail = buildPayload(
+    cache,
+    oura,
+    null,
+    '2026-06-01',
+    null,
+    250,
+    null,
+    'UTC',
+    null,
+    null,
+    170,
+  ).details['101']
+
+  assert.deepEqual(detail.performanceConditionTrace, {
+    source: 'garden-estimate',
+    method: 'garden-cycling-performance-condition-v1',
+    ftpWatts: 250,
+    lactateThresholdHeartRateBpm: 170,
+    restingHeartRateBpm: 50,
+    windowSeconds: 360,
+  })
+  const firstCalculatedIndex = detail.route.findIndex(point => point.performanceCondition != null)
+  assert.ok(firstCalculatedIndex > 0)
+  assert.ok(
+    detail.route.slice(firstCalculatedIndex).every(point => point.performanceCondition === 10),
+  )
+})
+
+test('projects supported run, walk, and swim recording devices', () => {
+  const cases: {
+    sportType: string
+    deviceName: string
+    expected: 'apple-watch-ultra-3' | 'garmin-forerunner-970' | null
+  }[] = [
+    {
+      sportType: 'Run',
+      deviceName: 'Apple Watch Ultra 3 (GPS + Cellular)',
+      expected: 'apple-watch-ultra-3',
+    },
+    { sportType: 'Walk', deviceName: 'Garmin Forerunner 970', expected: 'garmin-forerunner-970' },
+    { sportType: 'Swim', deviceName: 'Apple Watch Ultra 3', expected: 'apple-watch-ultra-3' },
+    { sportType: 'Run', deviceName: 'Apple Watch', expected: null },
+    { sportType: 'Run', deviceName: 'Garmin Forerunner 965', expected: null },
+    { sportType: 'Ride', deviceName: 'Garmin Forerunner 970', expected: null },
+  ]
+
+  for (const current of cases) {
+    const activity = ride({ sportType: current.sportType, deviceName: current.deviceName })
+    const cache: StravaRawCache = {
+      version: 6,
+      athleteId: 1,
+      auth: { refreshToken: '', obtainedAt: Date.now() },
+      lastSync: Date.parse('2026-06-08T00:00:00Z'),
+      lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+      activities: { 101: activity },
+    }
+
+    assert.equal(
+      buildPayload(cache, null, null, '2026-06-01').details['101'].device,
+      current.expected,
+    )
+  }
+})
 
 test('projects exact provider reports and removes them when the refreshed description does', () => {
   const cache: StravaRawCache = {
@@ -728,6 +1421,7 @@ test('projects a manual sauna session with interval-matched Oura heart rate', ()
       {
         id: 8_202_608_231_830,
         stravaActivityId: null,
+        garminActivityId: null,
         title: 'Untangle',
         date: '2026-08-23',
         time: '18:30',
@@ -801,6 +1495,33 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
     },
   }
   const payload = buildPayload(cache, null, null, '2026-06-01')
+  const garminMetrics = emptyGarminMetrics()
+  garminMetrics.aerobicTrainingEffect = 0.4
+  garminMetrics.anaerobicTrainingEffect = 0
+  garminMetrics.exerciseLoad = 7
+  garminMetrics.trainingEffectLabel = 'RECOVERY'
+  garminMetrics.aerobicTrainingEffectMessage = 'RECOVERY_5'
+  garminMetrics.anaerobicTrainingEffectMessage = 'NO_ANAEROBIC_BENEFIT_0'
+  const garminActivityId = 24_229_638_323
+  const garmin: GarminCache = {
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    activities: {
+      [`connect:${garminActivityId}`]: {
+        id: `connect:${garminActivityId}`,
+        name: 'Cardio',
+        sport: null,
+        startDate: '2026-06-07T11:30:00Z',
+        startDateLocal: '2026-06-07T07:30:00',
+        distanceM: null,
+        movingTimeS: null,
+        elapsedTimeS: 4_500,
+        sourceDevice: 'Forerunner 970',
+        sourceFile: null,
+        metrics: garminMetrics,
+        fueling: emptyGarminFueling('Forerunner 970'),
+      },
+    },
+  }
   const weatherActivity: WeatherActivity = {
     activityId: 102,
     date: '2026-06-07',
@@ -835,6 +1556,7 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
   const entry = {
     id: 8_202_606_070_730,
     stravaActivityId: 101,
+    garminActivityId,
     title: 'Untangle',
     date: '2026-06-07',
     time: '07:30',
@@ -851,6 +1573,7 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
     [{ timestamp: '2026-06-07T11:35:00Z', bpm: 110, source: 'awake' }],
     'America/Toronto',
     weather,
+    garmin,
   )
 
   assert.deepEqual(Object.keys(payload.details), ['101'])
@@ -872,6 +1595,19 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
     coveragePct: 80,
   })
   assert.equal(payload.details['101'].strength, null)
+  assert.equal(
+    payload.details['101'].garmin?.trainingEffectActivityId,
+    `connect:${garminActivityId}`,
+  )
+  assert.equal(payload.details['101'].garmin?.aerobicTrainingEffect, 0.4)
+  assert.equal(payload.details['101'].garmin?.anaerobicTrainingEffect, 0)
+  assert.equal(payload.details['101'].garmin?.exerciseLoad, 7)
+  assert.equal(payload.details['101'].garmin?.trainingEffectLabel, 'RECOVERY')
+  assert.equal(payload.details['101'].garmin?.aerobicTrainingEffectMessage, 'RECOVERY_5')
+  assert.equal(
+    payload.details['101'].garmin?.anaerobicTrainingEffectMessage,
+    'NO_ANAEROBIC_BENEFIT_0',
+  )
   assert.deepEqual(payload.details['101'].sauna, {
     time: '07:30',
     temperatureC: 91.111,
@@ -1036,6 +1772,227 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
     detail.route.map(point => point.skinTemperatureC),
     [33.4, 33.44, 33.49],
   )
+  assert.ok(
+    detail.route.every(
+      point =>
+        point.heatStrainSource === 'core-fit' &&
+        point.coreTemperatureSource === 'core-fit' &&
+        point.skinTemperatureSource === 'core-fit',
+    ),
+  )
+})
+
+test('projects native Forerunner running dynamics and run/walk intervals', () => {
+  const activity = ride({
+    name: 'Easy Miles',
+    sportType: 'Run',
+    distance: 2_000,
+    movingTime: 20,
+    elapsedTime: 20,
+    startDate: '2026-09-03T19:38:00Z',
+    startDateLocal: '2026-09-03T15:38:00',
+  })
+  const cache: StravaRawCache = {
+    version: 5,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-09-03T20:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+    streams: {
+      101: {
+        time: [0, 10, 20],
+        latlng: [
+          [43.64, -79.4],
+          [43.65, -79.39],
+          [43.66, -79.38],
+        ],
+        altitude: [80, 85, 90],
+        distance: [0, 1_000, 2_000],
+      },
+    },
+  }
+  const runWalk: GarminRunWalkData = {
+    source: 'garmin',
+    elapsedTimeS: 20,
+    runTimeS: 17,
+    walkTimeS: 2,
+    idleTimeS: 1,
+    segments: [
+      { state: 'run', startElapsedS: 0, endElapsedS: 10 },
+      { state: 'walk', startElapsedS: 10, endElapsedS: 12 },
+      { state: 'idle', startElapsedS: 12, endElapsedS: 13 },
+      { state: 'run', startElapsedS: 13, endElapsedS: 20 },
+    ],
+  }
+  const garmin: GarminCache = {
+    version: 13,
+    lastSync: Date.parse('2026-09-03T20:00:00Z'),
+    activities: {
+      run: {
+        id: 'run',
+        name: 'Easy Miles',
+        sport: 'run',
+        startDate: activity.startDate,
+        startDateLocal: activity.startDateLocal,
+        distanceM: 2_000,
+        movingTimeS: 20,
+        elapsedTimeS: 20,
+        sourceDevice: 'Forerunner 970',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        runningDynamics: {
+          source: 'garmin',
+          averageRespirationRate: 35.15,
+          averageStrideLengthCm: 108.22,
+          averageVerticalRatioPct: 11.3,
+          averageVerticalOscillationCm: 12.38,
+          averageGroundContactBalanceLeftPct: 49.26,
+          averageGroundContactTimeMs: 246.5,
+          averageStepSpeedLossMps: 0.079,
+          averageStepSpeedLossPct: 2.78,
+          impactLoadM: 5_320,
+        },
+        fueling: emptyGarminFueling('Forerunner 970'),
+      },
+    },
+    streams: {
+      run: {
+        time: [0, 10, 20],
+        latlng: [],
+        altitude: [0, 0, 0],
+        distance: [0, 1_000, 2_000],
+        stamina: [100, 80, 60],
+        potentialStamina: [100, 92, 78],
+        performanceCondition: [null, -4, -10],
+        strideLengthCm: [null, 108, 77],
+        verticalRatioPct: [null, 11.3, 16.1],
+        verticalOscillationCm: [null, 12.4, 12.5],
+        groundContactBalanceLeftPct: [null, 49.3, 50.1],
+        groundContactTimeMs: [null, 246.5, 248],
+        stepSpeedLossMps: [null, 0.079, 0.07],
+        stepSpeedLossPct: [null, 2.78, 2.5],
+        impactLoadFactor: [0, 1, 0.96],
+      },
+    },
+    runWalks: { run: runWalk },
+  }
+
+  const detail = buildPayload(cache, null, garmin, '2026-09-01').details['101']
+  assert.equal(detail.device, 'garmin-forerunner-970')
+  assert.equal(detail.runWalk, runWalk)
+  assert.deepEqual(detail.garmin?.runningDynamics, garmin.activities.run.runningDynamics)
+  assert.deepEqual(
+    detail.route.map(point => point.performanceCondition),
+    [null, -4, -10],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.strideLengthM),
+    [null, 1.08, 0.77],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.verticalRatioPct),
+    [null, 11.3, 16.1],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.groundContactBalanceLeftPct),
+    [null, 49.3, 50.1],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.stepSpeedLossMps),
+    [null, 0.079, 0.07],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.stepSpeedLossPct),
+    [null, 2.78, 2.5],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.impactLoadFactor),
+    [0, 1, 0.96],
+  )
+  assert.deepEqual(detail.performanceConditionTrace, { source: 'garmin', method: 'garmin-native' })
+  assert.deepEqual(
+    detail.route.map(point => point.stamina),
+    [100, 80, 60],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.potentialStamina),
+    [100, 92, 78],
+  )
+  assert.deepEqual(detail.staminaTrace, {
+    source: 'garmin',
+    method: 'garmin-native',
+    ftpWatts: null,
+    maxHeartRateBpm: null,
+  })
+})
+
+test('projects Garmin-native performance condition onto a cycling route', () => {
+  const activity = ride({
+    name: 'Garmin ride',
+    distance: 2_000,
+    movingTime: 20,
+    elapsedTime: 20,
+    startDate: '2026-06-07T12:00:00Z',
+    startDateLocal: '2026-06-07T08:00:00',
+  })
+  const cache: StravaRawCache = {
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+    streams: {
+      101: {
+        time: [0, 10, 20],
+        latlng: [
+          [43.64, -79.4],
+          [43.65, -79.39],
+          [43.66, -79.38],
+        ],
+        altitude: [80, 85, 90],
+        distance: [0, 1_000, 2_000],
+        watts: [180, 200, 220],
+        heartrate: [125, 130, 135],
+      },
+    },
+  }
+  const garmin: GarminCache = {
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    activities: {
+      ride: {
+        id: 'ride',
+        name: 'Garmin ride',
+        sport: 'bike',
+        startDate: activity.startDate,
+        startDateLocal: activity.startDateLocal,
+        distanceM: 2_000,
+        movingTimeS: 20,
+        elapsedTimeS: 20,
+        sourceDevice: 'Forerunner 970',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Forerunner 970'),
+      },
+    },
+    streams: {
+      ride: {
+        time: [0, 10, 20],
+        latlng: [],
+        altitude: [0, 0, 0],
+        distance: [0, 1_000, 2_000],
+        performanceCondition: [null, 2, 4],
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
+
+  assert.deepEqual(
+    detail.route.map(point => point.performanceCondition),
+    [null, 2, 4],
+  )
+  assert.deepEqual(detail.performanceConditionTrace, { source: 'garmin', method: 'garmin-native' })
 })
 
 test('projects Garmin FIT gear states and cycling dynamics onto ride distance', () => {
@@ -1181,7 +2138,7 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
     },
   }
   const wahoo: WahooCache = {
-    version: 3,
+    version: 4,
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     activities: {
       'wahoo:1': {
@@ -1278,6 +2235,25 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
         standingTimeS: null,
       },
     },
+    summitSegments: {
+      'wahoo:1': [
+        {
+          feature: 'summit-segment',
+          uuid: 'WAHOO_ON_ROUTE_CLIMB-route',
+          name: '1/2',
+          startDate: '2026-06-07T12:00:02Z',
+          endDate: '2026-06-07T12:00:12Z',
+          distanceM: 1_000,
+          durationS: 10,
+          elevationGainM: 50,
+          avgGradePct: 5,
+          avgSpeedMps: 100,
+          avgHeartRate: 140,
+          avgPower: 220,
+          avgCadence: 85,
+        },
+      ],
+    },
   }
 
   const fueling = emptyGarminFueling('Edge 1050')
@@ -1302,11 +2278,90 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
         fueling,
       },
     },
+    climbs: {
+      edge: [
+        {
+          startDate: '2026-06-07T12:00:12Z',
+          endDate: '2026-06-07T12:00:22Z',
+          distanceM: 500,
+          durationS: 10,
+          movingTimeS: 10,
+          elapsedTimeS: 10,
+          elevationGainM: 25,
+          elevationLossM: 0,
+          startElevationM: 100,
+          avgGradePct: 5,
+          maxGradePct: 8,
+          avgSpeedMps: 50,
+          avgHeartRate: 150,
+          maxHeartRate: 160,
+          avgPower: 300,
+          normalizedPower: 310,
+          maxPower: 400,
+          avgCadence: 90,
+          difficulty: 'MODERATE',
+        },
+      ],
+    },
   }
 
   const detail = buildPayload(cache, null, garmin, '2026-06-01', null, 230, null, 'UTC', wahoo, 196)
     .details['101']
   assert.equal(detail.computer, 'wahoo')
+  assert.deepEqual(
+    detail.analysisRanges.filter(range => range.kind === 'climb'),
+    [
+      {
+        kind: 'climb',
+        source: 'wahoo-summit-segment',
+        id: 'wahoo-summit-segment:1:2026-06-07T12:00:02Z',
+        label: 'Summit 1/2',
+        startElapsedS: 0,
+        endElapsedS: 10,
+        startDistanceKm: 0,
+        endDistanceKm: 1,
+        durationS: 10,
+        distanceKm: 1,
+        elevationGainM: 50,
+        averageSpeedKph: 360,
+        averageHeartRate: 140,
+        averageWatts: 220,
+        averageCadence: 85,
+      },
+    ],
+  )
+  assert.deepEqual(detail.bestEfforts?.climbs, [
+    {
+      source: 'wahoo-summit-segment',
+      name: 'Summit 1/2',
+      durationS: 10,
+      distanceM: 1_000,
+      elevationGainM: 50,
+      averageGradePct: 5,
+      averageSpeedKph: 360,
+      averageHeartRate: 140,
+      averageWatts: 220,
+      wattsPerKg: null,
+      vamMPerHour: 18_000,
+    },
+  ])
+  const withoutSummit = buildPayload(
+    cache,
+    null,
+    garmin,
+    '2026-06-01',
+    null,
+    230,
+    null,
+    'UTC',
+    { ...wahoo, summitSegments: { 'wahoo:1': [] } },
+    196,
+  ).details['101']
+  assert.deepEqual(
+    withoutSummit.analysisRanges.filter(range => range.kind === 'climb'),
+    [],
+  )
+  assert.deepEqual(withoutSummit.bestEfforts?.climbs, [])
   assert.deepEqual(detail.staminaTrace, {
     source: 'garden-estimate',
     method: 'garden-stamina-v1',
@@ -1347,6 +2402,44 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
   ])
   assert.deepEqual(detail.cyclingDynamics?.leftPedalSmoothness, [21, 22, 23])
   assert.deepEqual(detail.cyclingDynamics?.rightTorqueEffectiveness, [72, 76, 78])
+  const sourceStream = cache.streams?.['101']
+  assert.ok(sourceStream)
+  const virtualGarmin: GarminCache = {
+    ...garmin,
+    activities: { 'connect:123': { ...garmin.activities.edge, id: 'connect:123', distanceM: 200 } },
+    streams: { 'connect:123': { ...sourceStream, distance: [0, 100, 200] } },
+    climbs: { 'connect:123': garmin.climbs?.edge ?? [] },
+  }
+  const virtual = buildPayload(
+    cache,
+    null,
+    virtualGarmin,
+    '2026-06-01',
+    null,
+    230,
+    null,
+    'UTC',
+    wahoo,
+    196,
+    170,
+    cache.lastSync,
+    [{ activityId: 101, garminActivityId: 123, virtual: true }],
+  ).details['101']
+  assert.equal(virtual.distanceKm, 0.2)
+  assert.equal(virtual.computer, 'wahoo')
+  assert.deepEqual(
+    virtual.gearShifts.map(shift => shift.distanceKm),
+    [0.02, 0.12],
+  )
+  assert.deepEqual(virtual.cyclingDynamics?.distanceKm, [0.02, 0.12, 0.2])
+  assert.deepEqual(virtual.cyclingDynamics?.leftPedalSmoothness, [21, 22, 23])
+  assert.equal(virtual.fueling?.source, 'garmin+wahoo')
+  assert.equal(virtual.route[0].rightPowerPct, 47)
+  assert.ok(
+    virtual.analysisRanges.some(
+      range => range.kind === 'climb' && range.source === 'garmin-climbpro',
+    ),
+  )
 })
 
 test('projects Wahoo respiration at 500 ms from Garmin-calibrated heart rate', () => {
@@ -1413,7 +2506,7 @@ test('projects Wahoo respiration at 500 ms from Garmin-calibrated heart rate', (
   }
   const empty = [null, null, null]
   const wahoo: WahooCache = {
-    version: 3,
+    version: 4,
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     activities: {
       'wahoo:1': {
@@ -1477,6 +2570,7 @@ test('projects Wahoo respiration at 500 ms from Garmin-calibrated heart rate', (
     },
     gearShifts: { 'wahoo:1': [] },
     cyclingDynamics: {},
+    summitSegments: { 'wahoo:1': [] },
   }
 
   const detail = buildPayload(cache, null, garmin, '2026-06-01', null, null, null, 'UTC', wahoo)
@@ -2467,7 +3561,8 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   assert.deepEqual(detail.analysisRanges, [
     {
       kind: 'climb',
-      id: 'climb:1:2026-06-07T12:00:02.000Z',
+      source: 'garmin-climbpro',
+      id: 'garmin-climbpro:1:2026-06-07T12:00:02.000Z',
       label: 'Climb 1',
       startElapsedS: 2,
       endElapsedS: 12,
@@ -2495,6 +3590,7 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   assert.equal(efforts.power.find(effort => effort.durationS === 15)?.averageWatts, 126)
   assert.deepEqual(efforts.climbs, [
     {
+      source: 'garmin-climbpro',
       name: 'Climb 1',
       durationS: 10,
       distanceM: 500,

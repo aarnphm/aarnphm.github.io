@@ -50,6 +50,11 @@ export interface TriathlonMaintenance {
   wheels: TriathlonWheelMaintenance[]
 }
 
+interface ParsedMaintenanceRange extends TriathlonMaintenanceRange {
+  reason: string | null | undefined
+  repaired: boolean | null | undefined
+}
+
 const nullableString = (record: UnknownRecord, key: string): string | null | undefined => {
   const value = record[key]
   if (value === null) return null
@@ -97,19 +102,53 @@ const mergeMaintenanceFields = (value: unknown): UnknownRecord | null => {
   return record
 }
 
-const parseRange = (value: unknown): TriathlonMaintenanceRange | null => {
+const parseRange = (value: unknown): ParsedMaintenanceRange | null => {
   if (!isRecord(value)) return null
   const start = value.start
   const end = nullableString(value, 'end')
-  if (typeof start !== 'string' || end === undefined) return null
-  return { start, end }
+  const reason = nullableString(value, 'reason')
+  const repaired = value.repaired
+  if (
+    typeof start !== 'string' ||
+    end === undefined ||
+    (value.reason !== undefined && reason === undefined) ||
+    (repaired !== undefined && repaired !== null && typeof repaired !== 'boolean')
+  ) {
+    return null
+  }
+  return {
+    start,
+    end,
+    reason,
+    repaired: typeof repaired === 'boolean' || repaired === null ? repaired : undefined,
+  }
 }
 
-const parseRanges = (record: UnknownRecord): TriathlonMaintenanceRange[] | null => {
+const mergeRangeFields = (values: unknown[]): UnknownRecord[] | null => {
+  const records: UnknownRecord[] = []
+  let record: UnknownRecord = {}
+  for (const value of values) {
+    if (!isRecord(value)) return null
+    if (Object.hasOwn(record, 'start') && Object.hasOwn(value, 'start')) {
+      records.push(record)
+      record = {}
+    }
+    for (const [key, fieldValue] of Object.entries(value)) {
+      if (Object.hasOwn(record, key)) return null
+      record[key] = fieldValue
+    }
+  }
+  if (Object.keys(record).length > 0) records.push(record)
+  return records
+}
+
+const parseRanges = (record: UnknownRecord): ParsedMaintenanceRange[] | null => {
   if (record.range !== undefined) {
     if (!Array.isArray(record.range) || record.range.length === 0) return null
-    const ranges: TriathlonMaintenanceRange[] = []
-    for (const value of record.range) {
+    const records = mergeRangeFields(record.range)
+    if (!records) return null
+    const ranges: ParsedMaintenanceRange[] = []
+    for (const value of records) {
       const range = parseRange(value)
       if (!range) return null
       ranges.push(range)
@@ -120,6 +159,37 @@ const parseRanges = (record: UnknownRecord): TriathlonMaintenanceRange[] | null 
   const range = parseRange(record)
   return range ? [range] : null
 }
+
+const lastDefined = <T>(values: Array<T | undefined>): T | undefined => {
+  for (let index = values.length - 1; index >= 0; index -= 1) {
+    const value = values[index]
+    if (value !== undefined) return value
+  }
+  return undefined
+}
+
+const parseRangeMetadata = (
+  record: UnknownRecord,
+  ranges: ParsedMaintenanceRange[],
+): { reason: string | null | undefined; repaired: boolean | null | undefined } | null => {
+  const recordReason = nullableString(record, 'reason')
+  const recordRepaired = record.repaired
+  if (
+    (record.reason !== undefined && recordReason === undefined) ||
+    (recordRepaired !== undefined && recordRepaired !== null && typeof recordRepaired !== 'boolean')
+  ) {
+    return null
+  }
+  const rangeReason = lastDefined(ranges.map(range => range.reason))
+  const rangeRepaired = lastDefined(ranges.map(range => range.repaired))
+  return {
+    reason: rangeReason !== undefined ? rangeReason : recordReason,
+    repaired: rangeRepaired !== undefined ? rangeRepaired : recordRepaired,
+  }
+}
+
+const maintenanceRanges = (ranges: ParsedMaintenanceRange[]): TriathlonMaintenanceRange[] =>
+  ranges.map(({ start, end }) => ({ start, end }))
 
 const sortByCurrentUse = <T extends { ranges: TriathlonMaintenanceRange[] }>(entries: T[]): T[] =>
   entries.sort((left, right) => {
@@ -141,21 +211,15 @@ const parseComponentEntry = (
   const type = record.type
   const distanceMiles = nullableDistanceMiles(record)
   const ranges = parseRanges(record)
-  const reason = record.reason
-  if (
-    typeof type !== 'string' ||
-    distanceMiles === undefined ||
-    !ranges ||
-    (reason !== undefined && reason !== null && typeof reason !== 'string')
-  ) {
-    return null
-  }
+  if (typeof type !== 'string' || distanceMiles === undefined || !ranges) return null
+  const metadata = parseRangeMetadata(record, ranges)
+  if (!metadata) return null
   return {
     component,
     type,
     distanceMiles,
-    ranges,
-    reason: typeof reason === 'string' ? reason : null,
+    ranges: maintenanceRanges(ranges),
+    reason: metadata.reason ?? null,
   }
 }
 
@@ -209,25 +273,17 @@ const parseWheelEntry = (
   const type = record.type
   const distanceMiles = nullableDistanceMiles(record)
   const ranges = parseRanges(record)
-  const reason = nullableString(record, 'reason')
-  const repaired = record.repaired
-  if (
-    typeof type !== 'string' ||
-    distanceMiles === undefined ||
-    !ranges ||
-    reason === undefined ||
-    (repaired !== undefined && repaired !== null && typeof repaired !== 'boolean')
-  ) {
-    return null
-  }
+  if (typeof type !== 'string' || distanceMiles === undefined || !ranges) return null
+  const metadata = parseRangeMetadata(record, ranges)
+  if (!metadata || metadata.reason === undefined) return null
   return {
     position,
     part,
     type,
     distanceMiles,
-    ranges,
-    reason,
-    repaired: typeof repaired === 'boolean' ? repaired : null,
+    ranges: maintenanceRanges(ranges),
+    reason: metadata.reason,
+    repaired: typeof metadata.repaired === 'boolean' ? metadata.repaired : null,
   }
 }
 

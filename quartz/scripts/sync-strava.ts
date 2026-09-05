@@ -24,7 +24,7 @@ const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
 const API = normalizeApiBaseUrl(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
 const PER_PAGE = 200
-const CACHE_VERSION = 5
+const CACHE_VERSION = 6
 const ENV_FILE = '.env'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(400, 60_000)
@@ -175,7 +175,8 @@ async function resolveToken(
   )
 }
 
-function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
+export function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
+  const deviceName = readString(raw, 'device_name')?.trim()
   return {
     id: raw.id as number,
     name: String(raw.name ?? ''),
@@ -199,6 +200,7 @@ function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
     averageCadence: raw.average_cadence === undefined ? undefined : Number(raw.average_cadence),
     sufferScore: raw.suffer_score === undefined ? undefined : Number(raw.suffer_score),
     averageTemp: raw.average_temp === undefined ? undefined : Number(raw.average_temp),
+    ...(deviceName ? { deviceName } : {}),
   }
 }
 

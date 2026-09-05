@@ -118,7 +118,7 @@ test('tire pressure palette highlights the persisted choice at every step', () =
     bike: 'speedmax',
     bikeMassesLb: { cervelo: 22.4, speedmax: 26.8, custom: 19.5 },
     balance: '47-53',
-    wheel: 'reserve',
+    wheel: 'reserve-42-49',
     customWheel: { frontInnerWidthMm: 21.5, rearInnerWidthMm: 24 },
     measuredTire: { frontWidthMm: 32, rearWidthMm: 28 },
     tire: 'tubeless',

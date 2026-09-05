@@ -57,6 +57,7 @@ import {
   type StravaStreams,
   type StravaRawCache,
   type StravaZones,
+  prefersActivityDeviceThermal,
 } from './strava'
 import { RaceEvent, TrackEntry, TrainingExclusion } from './tracking'
 
@@ -1391,7 +1392,7 @@ const heatMethod = (): HeatMethod => ({
   decayGraceDays: HEAT_DECAY_GRACE_DAYS,
   decayPerDay: HEAT_DECAY_PER_DAY,
   coverageDays: HEAT_COVERAGE_DAYS,
-  note: 'CORE app onboard data is primary, followed by CORE recorded in Garmin FIT. WeatherKit ambient temperature fills activities without CORE data, then Strava device temperature fills remaining gaps.',
+  note: 'Runs prefer CORE recorded in Garmin FIT, with CORE app onboard data filling missing thermal metrics. Rides prefer CORE app onboard data, followed by Garmin FIT. WeatherKit ambient temperature fills activities without complete CORE heat data, then Strava device temperature fills remaining gaps.',
 })
 
 export type CoreTemperatureOrigin = 'app' | 'fit'
@@ -1578,12 +1579,17 @@ function coreHeatObservation(
   garmin: GarminCache | null | undefined,
 ): CoreHeatObservation | null {
   const app = coreAppHeatObservation(activity, core)
-  if (app && app.durationS > 0 && app.coreTemperatureC != null && app.heatStrainIndex != null)
-    return app
   const fit = coreFitHeatObservation(activity, sport, garmin)
-  return fit && fit.durationS > 0 && fit.coreTemperatureC != null && fit.heatStrainIndex != null
-    ? fit
-    : null
+  const observations = prefersActivityDeviceThermal(sport) ? [fit, app] : [app, fit]
+  return (
+    observations.find(
+      observation =>
+        observation != null &&
+        observation.durationS > 0 &&
+        observation.coreTemperatureC != null &&
+        observation.heatStrainIndex != null,
+    ) ?? null
+  )
 }
 
 function coreThermalObservation(
@@ -1601,8 +1607,9 @@ function coreThermalObservation(
 } | null {
   const app = coreAppHeatObservation(activity, core)
   const fit = coreFitHeatObservation(activity, sport, garmin)
-  const skin = app?.skinTemperatureC != null ? app : fit
-  const heatStrain = app?.heatStrainIndex != null ? app : fit
+  const observations = prefersActivityDeviceThermal(sport) ? [fit, app] : [app, fit]
+  const skin = observations.find(observation => observation?.skinTemperatureC != null)
+  const heatStrain = observations.find(observation => observation?.heatStrainIndex != null)
   if (skin?.skinTemperatureC == null && heatStrain?.heatStrainIndex == null) return null
   return {
     skinTemperatureC: skin?.skinTemperatureC ?? null,
@@ -3287,10 +3294,10 @@ export const ATHLETE = {
   sex: 'M' as 'M' | 'F',
   born: '2001-03',
   bornAnchor: '2001-03-01',
-  hrMax: 196 as number | null,
+  hrMax: 200 as number | null,
   vo2max: 47.8 as number | null,
   ftp: 287 as number | null,
-  lt: 173 as number | null,
+  lt: 174 as number | null,
   goalWeightLb: 170 as number | null,
   goalFTP: 350 as number | null,
   heightCm: 188,
