@@ -2,7 +2,7 @@
 date: '2026-08-12'
 description: épisode 9, décrire les activités quotidiennes et les déplacements, situer une action dans le temps et poser des questions
 id: episode-9
-modified: 2026-08-12 19:35:00 GMT-04:00
+modified: 2026-09-04 20:38:40 GMT-04:00
 tags:
   - fr
   - language
@@ -185,6 +185,23 @@ with `aller`, the preposition depends on the destination's article, unless the d
 
 the destination and transport phrases can appear in the same sentence: `Je vais au travail en autobus.` `au travail` answers **where**, while `en autobus` answers **how**.
 
+#### piste 5: comment chaque personne se déplace-t-elle ?
+
+`se déplacer` means to travel or get around. `Comment` asks for the means of transport, so the answer combines a conjugated form of `aller`, a destination, and `à` or `en` plus the means of transport.
+
+| no  | phrase entendue                     | moyen de transport |
+| --- | ----------------------------------- | ------------------ |
+| 1   | `Je vais à la bibliothèque à pied.` | `à pied`           |
+| 2   | `Elle va au travail en autobus.`    | `en autobus`       |
+| 3   | `Vous allez au restaurant en taxi.` | `en taxi`          |
+| 4   | `Tu vas chez ta sœur à vélo.`       | `à vélo`           |
+| 5   | `Je vais à l'épicerie en auto.`     | `en auto`          |
+| 6   | `Il va à Québec en train.`          | `en train`         |
+| 7   | `Mon enfant va à l'école à pied.`   | `à pied`           |
+| 8   | `On va au cinéma en métro.`         | `en métro`         |
+
+in `Comment chaque personne se déplace-t-elle ?`, complex inversion keeps the noun subject and repeats it with a pronoun. `elle` agrees with the grammatically feminine noun `personne`, regardless of the person's gender. the `-t-` has no meaning; it is inserted between the vowel sounds of `déplace` and `elle`. ordinary speech can ask the same thing with `Comment est-ce que chaque personne se déplace ?`
+
 > [!note] usage québécois
 > `une auto` and `en autobus` are the Québec forms used in this episode.
 
@@ -205,6 +222,32 @@ the destination and transport phrases can appear in the same sentence: `Je vais 
 > in Québec, `déjeuner` is breakfast, `diner` is lunch, and `souper` is the evening meal. this note keeps the book's Québec vocabulary and rectified spelling.
 
 the food timeline also introduces `manger une collation`, `prendre l'apéro`, and `grignoter`. the drink labels use partitive articles: `du café`, `du lait`, `du jus d'orange`, `de l'eau`, `du vin`, `de la bière`.
+
+### piste 7 : les heures des repas
+
+| action                   | heure entendue | heure sur 24 heures |
+| ------------------------ | -------------- | ------------------- |
+| `Je déjeune.`            | `à 7 h`        | `7 h`               |
+| `Je mange ma collation.` | `à 10 h`       | `10 h`              |
+| `Je dine.`               | `vers midi`    | `vers 12 h`         |
+| `Je prends l'apéro.`     | `vers 5 h`     | `vers 17 h`         |
+| `Je soupe.`              | `à 6 h`        | `18 h`              |
+| `Je grignote.`           | `à 9 h`        | `21 h`              |
+
+the audio uses ordinary twelve-hour speech. the context places `prendre l'apéro`, `souper`, and `grignoter` in the evening, so `5 h`, `6 h`, and `9 h` correspond to `17 h`, `18 h`, and `21 h`.
+
+### piste 8 : les boissons et les moments de la journée
+
+| moment         | phrase entendue                       | réponse  |
+| -------------- | ------------------------------------- | -------- |
+| `le matin`     | `Je bois du jus d'orange ou du lait.` | `c ou b` |
+| `l'avant-midi` | `Elle boit du café.`                  | `a`      |
+| `le midi`      | `Je bois de l'eau.`                   | `d`      |
+| `l'après-midi` | `Tu bois de la bière.`                | `f`      |
+| `le soir`      | `Vous buvez du vin.`                  | `e`      |
+| `la nuit`      | `Je bois de l'eau.`                   | `d`      |
+
+`de l'eau` appears twice because it is the answer for both `le midi` and `la nuit`.
 
 ### indiquer une heure approximative
 
@@ -241,6 +284,21 @@ a time phrase can follow the action. it can also begin the sentence, followed by
 
 to place an action relative to a meal, use `avant`, `pendant`, or `après`: `avant le déjeuner`, `pendant le diner`, `après le souper`.
 
+### exercice 4 : à quel moment faites-vous ces actions ?
+
+these are personal answers, so several times are possible. each model keeps the action in the present and adds a time, a moment of the day, or a position relative to a meal.
+
+| action proposée          | exemple de réponse                             | english                                  |
+| ------------------------ | ---------------------------------------------- | ---------------------------------------- |
+| `boire de l'eau`         | `Je bois de l'eau toute la journée.`           | I drink water throughout the day.        |
+| `prendre l'autobus`      | `Le matin, je prends l'autobus.`               | In the morning, I take the bus.          |
+| `relaxer`                | `Après le travail, je relaxe.`                 | After work, I relax.                     |
+| `parler avec ma famille` | `Pendant le souper, je parle avec ma famille.` | During supper, I talk with my family.    |
+| `regarder la télévision` | `Je regarde la télévision après le souper.`    | I watch television after supper.         |
+| `faire le ménage`        | `Le samedi matin, je fais le ménage.`          | On Saturday mornings, I do the cleaning. |
+
+when the time phrase begins the sentence, separate it from the action with a comma: `Le matin, je prends l'autobus.` when it follows the action, no comma is needed: `Je regarde la télévision après le souper.`
+
 ### action habituelle ou ponctuelle
 
 French separates a habit from one dated occurrence by adding or omitting the article:
@@ -265,6 +323,24 @@ demonstratives point to a specific current period:
 the book uses the accepted masculine form `cet après-midi`. general French also accepts the feminine, although the masculine is often preferred.[^apresmidi]
 
 `en fin de semaine` is the ordinary Québec expression for **on the weekend**.[^findesemaine]
+
+#### modèles du mémo
+
+| type d'action | ordre des éléments           | modèle                                 | english                                     |
+| ------------- | ---------------------------- | -------------------------------------- | ------------------------------------------- |
+| habituelle    | action + `le/la` + moment    | `Je vais à l'école le mardi.`          | I go to school on Tuesdays.                 |
+| habituelle    | action + `le/la` + moment    | `Je regarde la télé le soir.`          | I watch television in the evenings.         |
+| habituelle    | `le/la` + moment + action    | `Le jeudi soir, je vais au cinéma.`    | On Thursday evenings, I go to the cinema.   |
+| habituelle    | `la` + moment + action       | `La fin de semaine, je travaille.`     | On weekends, I work.                        |
+| ponctuelle    | action + jour ou moment      | `Je vais au cinéma mardi après-midi.`  | I am going to the cinema Tuesday afternoon. |
+| ponctuelle    | action + `ce` + moment       | `Je fais le ménage ce soir.`           | I am doing the cleaning tonight.            |
+| ponctuelle    | jour ou moment + action      | `Lundi, je reste à la maison.`         | On Monday, I am staying home.               |
+| ponctuelle    | `en fin de semaine` + action | `En fin de semaine, je vais à Québec.` | This weekend, I am going to Québec.         |
+
+> [!note] `la fin de semaine` ou `en fin de semaine`
+> in the book's contrast, `La fin de semaine, je travaille.` describes a routine, **on weekends**. `En fin de semaine, je vais à Québec.` describes one particular weekend, **this weekend** or **over the weekend**.
+
+the present can describe a planned or scheduled event when an explicit time phrase identifies the occurrence: `Je fais le ménage ce soir.` and `Je vais au cinéma mardi après-midi.` use present-tense verbs while referring to one upcoming event.
 
 ## poser des questions sur les activités quotidiennes
 

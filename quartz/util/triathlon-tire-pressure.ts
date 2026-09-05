@@ -1,5 +1,5 @@
 export type TirePressureBikeId = 'cervelo' | 'speedmax' | 'custom'
-export type TirePressureWheelId = 'hunt' | 'reserve' | 'custom'
+export type TirePressureWheelId = 'hunt-54-58' | 'reserve-40-44' | 'reserve-42-49' | 'custom'
 export type TirePressureTireId = 'tpu' | 'tubeless'
 export type TirePressureBalanceId = '50-50' | '48-52' | '47-53' | '46.5-53.5'
 export type TirePressureWeightUnit = 'kg' | 'lb'
@@ -169,20 +169,28 @@ export const TIRE_PRESSURE_BALANCES: readonly TirePressureBalance[] = [
 
 export const TIRE_PRESSURE_WHEELS: readonly TirePressureWheel[] = [
   {
-    id: 'hunt',
-    label: 'HUNT 54_58 Aerodynamicist UD',
+    id: 'reserve-40-44',
+    label: 'Reserve 40|44 Road',
     diameterMm: 622,
-    frontInnerWidthMm: 22,
-    rearInnerWidthMm: 22,
-    recommendedMinimumTireWidthMm: 25,
+    frontInnerWidthMm: 25.4,
+    rearInnerWidthMm: 25,
+    recommendedMinimumTireWidthMm: 28,
   },
   {
-    id: 'reserve',
+    id: 'reserve-42-49',
     label: 'Reserve 42|49 TA',
     diameterMm: 622,
     frontInnerWidthMm: 25.4,
     rearInnerWidthMm: 24.8,
     recommendedMinimumTireWidthMm: 29,
+  },
+  {
+    id: 'hunt-54-58',
+    label: 'HUNT 54_58 Aerodynamicist UD',
+    diameterMm: 622,
+    frontInnerWidthMm: 22,
+    rearInnerWidthMm: 22,
+    recommendedMinimumTireWidthMm: 25,
   },
   {
     id: 'custom',
@@ -244,7 +252,7 @@ export const DEFAULT_TIRE_PRESSURE_SELECTION: TirePressureSelection = {
   bike: 'cervelo',
   bikeMassesLb: DEFAULT_TIRE_PRESSURE_BIKE_MASSES_LB,
   balance: '48-52',
-  wheel: 'hunt',
+  wheel: 'reserve-40-44',
   customWheel: { frontInnerWidthMm: 23, rearInnerWidthMm: 23 },
   measuredTire: { frontWidthMm: 32, rearWidthMm: 28 },
   tire: 'tpu',

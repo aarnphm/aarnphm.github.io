@@ -1,6 +1,6 @@
 ---
 date: '2025-08-28'
-description: bottleneck in theory
+description: compressing an input while preserving information about a target
 id: Information bottleneck method
 modified: 2026-06-05 15:08:05 GMT-04:00
 tags:
@@ -8,42 +8,61 @@ tags:
 title: Information bottleneck method
 ---
 
-Addresses how to find optimal compressed representations of data while preserving relevant information for a specific task. Or _accuracy/complexity tradeoff_
+The information bottleneck asks for a representation $T$ that forgets as much of an input $X$ as possible while keeping information about a target $Y$ [@tishby1999information]. The variables obey the Markov relation $Y\to X\to T$ because the encoder produces $T$ from $X$.
 
-part of [[thoughts/Information Theory]]
+Part of [[thoughts/Information Theory|information theory]].
 
-The information bottleneck principle seeks to find a representation $T$ of input data $X$ that satisfies two competing objectives:
+## objective
 
-- **Compression**: Minimize the mutual information $I(X;T)$ between the input and representation
-- **Prediction**: Maximize the mutual information $I(T;Y)$ between the representation and the target variable
+Mutual information measures both sides of the problem:
+
+- $I(X;T)$ is the information that the representation keeps about the input.
+- $I(T;Y)$ is the information that the representation keeps about the target.
+
+The standard Lagrangian minimizes:
 
 $$
-L = I(T;Y) - \beta I(X;T)
+\mathcal{L}_{\mathrm{IB}}[p(t\mid x)]
+= I(X;T) - \beta I(T;Y),
+\qquad \beta \geq 0
 $$
 
-where $\beta$ is a [[thoughts/Lagrange multiplier]] controlling the compression-prediction trade-off.
+A larger $\beta$ places more weight on target information. Some papers maximize $I(T;Y)-\lambda I(X;T)$ instead. For $\beta>0$, the two forms trace the same tradeoff after the parameter is rescaled.
 
-## mathematical framework
+The encoder is a conditional distribution $p(t\mid x)$. Together with the observed joint distribution $p(x,y)$, it determines $p(t)$, $p(t,y)$, and both mutual informations.
 
-The theory is built on several key information-theoretic quantities:
+A sufficient representation keeps all target information available in the input:
 
-**Mutual Information**: $I(X;Y) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}{p(x)p(y)}$
+$$
+I(T;Y)=I(X;Y)
+$$
 
-**Conditional Entropy**: $H(Y|X) = -\sum_{x,y} p(x,y) \log p(y|x)$
+Among sufficient representations, the bottleneck prefers the one with the smallest $I(X;T)$. A rate limit may rule out sufficiency. Varying $\beta$ then traces the achievable compression and relevance boundary.
 
-The bottleneck representation $T$ is characterized by the conditional distribution $p(t|x)$, which defines how input data $X$ is mapped to the compressed representation $T$.
+## what the encoder groups
 
-## the information plane
+The optimal encoder has a self-consistent form:
 
-One of the most insightful aspects of information bottleneck theory is the information plane visualization, where we plot $I(X;T)$ on the x-axis against $I(T;Y)$ on the y-axis. This creates several important regions:
+$$
+p(t\mid x)
+= \frac{p(t)}{Z(x,\beta)}
+  \exp\left(
+    -\beta D_{\mathrm{KL}}\left[
+      p(y\mid x)\,\middle\|\,p(y\mid t)
+    \right]
+  \right)
+$$
 
-- **Underfitting region**: Low $I(X;T)$, low $I(T;Y)$
-- **Overfitting region**: High $I(X;T)$, low $I(T;Y)$
-- **Optimal region**: The Pareto frontier balancing both quantities
+The KL divergence compares the target distribution for $x$ with the target distribution represented by $t$. The encoder can group inputs when those predictive distributions are close.
 
-Information bottleneck theory gained renewed attention when Tishby proposed that deep neural networks naturally implement information bottleneck principles through two phases:
+## information plane
 
-1. **Fitting phase**: Networks increase $I(X;T)$ to capture input patterns
-2. **Compression phase**: Networks reduce $I(X;T)$ while maintaining $I(T;Y)$, achieving generalization
+The information plane plots $I(X;T)$ on the horizontal axis and $I(T;Y)$ on the vertical axis. Points farther left retain less input information. Points higher up retain more target information. The useful boundary is the set of feasible points where no other representation has both lower $I(X;T)$ and higher $I(T;Y)$.
 
-However, this "compression phase" claim has been debated, with some arguing it depends heavily on activation functions and may not occur with ReLU networks.
+These coordinates alone do not define underfitting or overfitting. Overfitting is a difference between behavior on training data and new data. The population quantities $I(X;T)$ and $I(T;Y)$ do not contain that comparison.
+
+## neural networks
+
+Shwartz-Ziv and Tishby estimated the information-plane paths of hidden layers and reported a fitting phase followed by a compression phase [@shwartzziv2017opening]. They proposed that stochastic gradient descent first increased information about $Y$, then reduced information about $X$ while retaining the target signal.
+
+Saxe and collaborators reproduced compression for saturating tanh nonlinearities, though they did not find it for standard ReLU networks under the same analysis [@saxe2019information]. They also showed that networks could generalize without a separate compression phase. Mutual information for deterministic continuous hidden states is sensitive to noise assumptions and to the estimator. A plotted trajectory therefore describes that measurement setup. It cannot establish a general law of deep learning.

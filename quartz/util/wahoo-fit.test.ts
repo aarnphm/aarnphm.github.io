@@ -7,6 +7,7 @@ import {
   type FieldDescriptionMesg,
   type FileIdMesg,
   type RecordMesg,
+  type SegmentLapMesg,
   type SessionMesg,
 } from '@garmin/fitsdk'
 import assert from 'node:assert/strict'
@@ -124,9 +125,9 @@ function activityFit(): Uint8Array {
       positionLong: -79.38 * SEMICIRCLES_PER_DEGREE,
       altitude: 100,
       distance: 0,
-      power: 200,
+      power: 0,
       heartRate: 130,
-      cadence: 88,
+      cadence: 0,
       speed: 8,
       leftRightBalance: 52 | 0x80,
       leftPedalSmoothness: 21.5,
@@ -146,9 +147,9 @@ function activityFit(): Uint8Array {
       positionLong: -79.37 * SEMICIRCLES_PER_DEGREE,
       altitude: 110,
       distance: 500,
-      power: 240,
+      power: 0,
       heartRate: 145,
-      cadence: 92,
+      cadence: 0,
       speed: 9,
       leftRightBalance: 53 | 0x80,
       leftPedalSmoothness: 22,
@@ -164,6 +165,61 @@ function activityFit(): Uint8Array {
     },
   ]
   for (const record of records) encoder.onMesg(Profile.MesgNum.RECORD, record)
+  const segments: SegmentLapMesg[] = [
+    {
+      startTime: START,
+      timestamp: new Date(START.getTime() + 60_000),
+      uuid: 'WAHOO_ON_ROUTE_CLIMB-snake-road',
+      name: 'Snake Road',
+      totalTimerTime: 58,
+      totalDistance: 480,
+      totalAscent: 12,
+      avgGrade: 2.5,
+      avgSpeed: 8.3,
+      avgHeartRate: 140,
+      avgPower: 222,
+      avgCadence: 91,
+    },
+    {
+      startTime: START,
+      timestamp: new Date(START.getTime() + 30_000),
+      uuid: 'WAHOO_OFF_ROUTE_CLIMB-1',
+      name: '1',
+      totalTimerTime: 30,
+      totalDistance: 200,
+    },
+    {
+      startTime: START,
+      timestamp: new Date(START.getTime() + 60_000),
+      uuid: 'WAHOO_OFF_ROUTE_CLIMB-1',
+      name: '1',
+    },
+    {
+      startTime: START,
+      timestamp: new Date(START.getTime() + 60_000),
+      uuid: 'STRAVA_SEGMENT-1',
+      name: 'Unrelated',
+      totalTimerTime: 60,
+      totalDistance: 500,
+    },
+    {
+      startTime: START,
+      timestamp: START,
+      uuid: 'WAHOO_ON_ROUTE_CLIMB-zero-duration',
+      name: 'Zero duration',
+      totalTimerTime: 0,
+      totalDistance: 100,
+    },
+    {
+      startTime: new Date(START.getTime() + 60_000),
+      timestamp: START,
+      uuid: 'WAHOO_OFF_ROUTE_CLIMB-reversed',
+      name: 'Reversed',
+      totalTimerTime: 60,
+      totalDistance: 100,
+    },
+  ]
+  for (const segment of segments) encoder.onMesg(Profile.MesgNum.SEGMENT_LAP, segment)
   const gear: EventMesg = {
     timestamp: new Date(START.getTime() + 30_000),
     event: 'rearGearChange',
@@ -238,4 +294,65 @@ test('decodes Wahoo FIT summary, device, aligned streams, and balance', () => {
 
 test('rejects non-FIT bytes', () => {
   assert.throws(() => decodeWahooFit(Uint8Array.from([1, 2, 3])), /not FIT/)
+})
+
+test('recognizes Wahoo Summit Segment and Freeride prefixes only', () => {
+  const segments = decodeWahooFit(activityFit()).summitSegments
+
+  assert.deepEqual(
+    segments.map(segment => [segment.feature, segment.uuid]),
+    [
+      ['summit-freeride', 'WAHOO_OFF_ROUTE_CLIMB-1'],
+      ['summit-segment', 'WAHOO_ON_ROUTE_CLIMB-snake-road'],
+    ],
+  )
+  assert.ok(segments.every(segment => segment.name !== 'Unrelated'))
+})
+
+test('keeps the latest and longest duplicate Wahoo Summit result', () => {
+  const segment = decodeWahooFit(activityFit()).summitSegments.find(
+    value => value.feature === 'summit-freeride',
+  )
+
+  assert.ok(segment)
+  assert.equal(segment.endDate, new Date(START.getTime() + 60_000).toISOString())
+  assert.equal(segment.durationS, 60)
+  assert.equal(segment.distanceM, 500)
+})
+
+test('prefers Summit lap fields and derives absent metrics from enclosed records', () => {
+  const segments = decodeWahooFit(activityFit()).summitSegments
+  const routed = segments.find(segment => segment.feature === 'summit-segment')
+  const freeride = segments.find(segment => segment.feature === 'summit-freeride')
+
+  assert.ok(routed)
+  assert.deepEqual(
+    {
+      distanceM: routed.distanceM,
+      durationS: routed.durationS,
+      elevationGainM: routed.elevationGainM,
+      avgGradePct: routed.avgGradePct,
+      avgSpeedMps: routed.avgSpeedMps,
+      avgHeartRate: routed.avgHeartRate,
+      avgPower: routed.avgPower,
+      avgCadence: routed.avgCadence,
+    },
+    {
+      distanceM: 480,
+      durationS: 58,
+      elevationGainM: 12,
+      avgGradePct: 2.5,
+      avgSpeedMps: 8.3,
+      avgHeartRate: 140,
+      avgPower: 222,
+      avgCadence: 91,
+    },
+  )
+  assert.ok(freeride)
+  assert.equal(freeride.elevationGainM, 10)
+  assert.equal(freeride.avgGradePct, 2)
+  assert.ok(Math.abs((freeride.avgSpeedMps ?? 0) - 500 / 60) < 0.0001)
+  assert.equal(freeride.avgHeartRate, 137.5)
+  assert.equal(freeride.avgPower, 0)
+  assert.equal(freeride.avgCadence, 0)
 })

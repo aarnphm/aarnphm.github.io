@@ -7,6 +7,8 @@ import type { ActivityAnalysisController } from './analysis'
 import type { ActivityRangeChange } from './analysis'
 import type { ScrubSurface } from './analysis'
 import type { DetailPayload } from './data'
+import { activityCadenceScale } from '../../../util/triathlon-card'
+import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { activityStatRows } from '../../../util/triathlon-card'
 import { activityAnalysisStatAttrs } from '../../../util/triathlon-card'
 import { activityTableRows } from '../../../util/triathlon-card'
@@ -20,18 +22,25 @@ import { buildCyclingBestEfforts as buildCyclingBestEffortsNode } from '../../..
 import { buildCyclingWorkoutAnalysis as buildCyclingWorkoutAnalysisNode } from '../../../util/triathlon-card'
 import { buildHeatStrainTrace as buildHeatStrainTraceNode } from '../../../util/triathlon-card'
 import { buildEnvironmentAnalysis as buildEnvironmentAnalysisNode } from '../../../util/triathlon-card'
+import { buildImpactLoadFactorTrace as buildImpactLoadFactorTraceNode } from '../../../util/triathlon-card'
 import { buildMuscleOxygenTrace as buildMuscleOxygenTraceNode } from '../../../util/triathlon-card'
+import { buildPerformanceConditionTrace as buildPerformanceConditionTraceNode } from '../../../util/triathlon-card'
 import { buildPedalSmoothnessChart as buildPedalSmoothnessChartNode } from '../../../util/triathlon-card'
 import { buildPowerBalanceChart as buildPowerBalanceChartNode } from '../../../util/triathlon-card'
 import { buildPowerPhaseChart as buildPowerPhaseChartNode } from '../../../util/triathlon-card'
 import { buildRespirationTrace as buildRespirationTraceNode } from '../../../util/triathlon-card'
 import { buildRiderPositionChart as buildRiderPositionChartNode } from '../../../util/triathlon-card'
 import { buildRunGroundContactTrace as buildRunGroundContactTraceNode } from '../../../util/triathlon-card'
+import { buildRunGroundContactBalanceTrace as buildRunGroundContactBalanceTraceNode } from '../../../util/triathlon-card'
 import { buildRunLapSplits as buildRunLapSplitsNode } from '../../../util/triathlon-card'
 import { buildRunStrideTrace as buildRunStrideTraceNode } from '../../../util/triathlon-card'
+import { buildRunStepSpeedLossPercentTrace as buildRunStepSpeedLossPercentTraceNode } from '../../../util/triathlon-card'
+import { buildRunStepSpeedLossTrace as buildRunStepSpeedLossTraceNode } from '../../../util/triathlon-card'
 import { buildRunVerticalOscillationTrace as buildRunVerticalOscillationTraceNode } from '../../../util/triathlon-card'
+import { buildRunVerticalRatioTrace as buildRunVerticalRatioTraceNode } from '../../../util/triathlon-card'
 import { buildShiftingChart as buildShiftingChartNode } from '../../../util/triathlon-card'
 import { buildSkinTemperatureTrace as buildSkinTemperatureTraceNode } from '../../../util/triathlon-card'
+import { buildSwimWorkoutAnalysis as buildSwimWorkoutAnalysisNode } from '../../../util/triathlon-card'
 import { buildStaminaChart as buildStaminaChartNode } from '../../../util/triathlon-card'
 import { buildTemperatureTrace as buildTemperatureTraceNode } from '../../../util/triathlon-card'
 import { buildTorqueEffectivenessChart as buildTorqueEffectivenessChartNode } from '../../../util/triathlon-card'
@@ -41,12 +50,18 @@ import { cyclingDynamicsIndexAtDistance } from '../../../util/triathlon-card'
 import { dominantTrainingEffectGroup } from '../../../util/triathlon-card'
 import { formatAltitude } from '../../../util/triathlon-card'
 import { formatGroundContactTime } from '../../../util/triathlon-card'
+import { formatGroundContactBalance } from '../../../util/triathlon-card'
+import { formatImpactLoadFactor } from '../../../util/triathlon-card'
 import { formatMuscleOxygen } from '../../../util/triathlon-card'
 import { formatRespirationRate } from '../../../util/triathlon-card'
+import { formatPerformanceCondition } from '../../../util/triathlon-card'
+import { formatStepSpeedLoss } from '../../../util/triathlon-card'
+import { formatStepSpeedLossPercent } from '../../../util/triathlon-card'
 import { formatStrideLength } from '../../../util/triathlon-card'
 import { formatTemperature } from '../../../util/triathlon-card'
 import { formatThermalTemperature } from '../../../util/triathlon-card'
 import { formatVerticalOscillation } from '../../../util/triathlon-card'
+import { formatVerticalRatio } from '../../../util/triathlon-card'
 import { gearShiftAtFraction } from '../../../util/triathlon-card'
 import { gradeAt } from '../../../util/triathlon-card'
 import { hasHeartRateTrace } from '../../../util/triathlon-card'
@@ -57,10 +72,16 @@ import { powerViewActivity } from '../../../util/triathlon-card'
 import { powerBalanceText } from '../../../util/triathlon-card'
 import { relativeHumidityStatAttrs } from '../../../util/triathlon-card'
 import { runGroundContactTimeMs } from '../../../util/triathlon-card'
+import { runGroundContactBalanceLeftPct } from '../../../util/triathlon-card'
+import { runImpactLoadFactor } from '../../../util/triathlon-card'
+import { performanceConditionValue } from '../../../util/triathlon-card'
 import { routeStreamFlags } from '../../../util/triathlon-card'
 import { runStrideLengthLabel } from '../../../util/triathlon-card'
 import { runStrideLengthValue } from '../../../util/triathlon-card'
+import { runStepSpeedLossMps } from '../../../util/triathlon-card'
+import { runStepSpeedLossPct } from '../../../util/triathlon-card'
 import { runVerticalOscillationCm } from '../../../util/triathlon-card'
+import { runVerticalRatioPct } from '../../../util/triathlon-card'
 import { riderPositionAtDistance } from '../../../util/triathlon-card'
 import { scrubDist } from '../../../util/triathlon-card'
 import { speedKph } from '../../../util/triathlon-card'
@@ -89,6 +110,7 @@ import { el } from '../runtime/dom'
 import { svg } from '../runtime/dom'
 import { nextMapMetricShortcutIndex } from '../shell/command-palette'
 import { analysisRate } from './analysis'
+import { linkActivityAnalysis } from './analysis'
 import { linkScrub } from './analysis'
 import { detailContextFromPayload } from './data'
 import {
@@ -104,7 +126,7 @@ import {
   statRow,
   zoneDuo,
 } from './primitives'
-import { cyclingChartMode, setCyclingChartMode } from './scrub'
+import { cyclingChartMode, runMetricMode, setCyclingChartMode, setRunMetricMode } from './scrub'
 
 export const buildHeatRoute = (
   route: StravaActivityDetail['route'],
@@ -353,7 +375,7 @@ export const metricSpecs = (
   const primaryThermalAverage =
     primaryThermalValues.reduce((total, value) => total + value, 0) /
     Math.max(1, primaryThermalValues.length)
-  const cadUnit = d.sport === 'run' ? 'spm' : 'rpm'
+  const cadUnit = activityCadenceUnit(d.sport)
   const paceFmt = (kmh: number): string => {
     return analysisRate(presentation, d.sport, kmh)
   }
@@ -455,7 +477,7 @@ export const metricSpecs = (
       buildHrZones(presentation, d, detailContext),
     ],
   }
-  const cadScale = d.sport === 'run' ? 2 : 1
+  const cadScale = activityCadenceScale(d.sport)
   const cadenceValues = filterPowerZeros
     ? interpolatePositiveMetricSeries(route, point => point.cad * cadScale)
     : route.map(point => point.cad * cadScale)
@@ -520,6 +542,108 @@ export const metricSpecs = (
     readout: p => {
       const verticalOscillation = runVerticalOscillationCm(p)
       return `${scrubDist(presentation, p.d, d.sport)} · ${verticalOscillation == null ? '—' : formatVerticalOscillation(presentation, verticalOscillation)}`
+    },
+  }
+  const performanceConditionSpec: MapMetric = {
+    label: 'performance condition',
+    shortLabel: 'PC',
+    ramp: STRIDE_RAMP,
+    valid: p => performanceConditionValue(p) != null,
+    pick: p => performanceConditionValue(p) ?? 0,
+    fmt: formatPerformanceCondition,
+    profile: graphDomain =>
+      requiredMapProfile(
+        buildPerformanceConditionTraceNode(domF, d, null, graphDomain),
+        'performance condition',
+      ),
+    readout: p => {
+      const value = performanceConditionValue(p)
+      return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatPerformanceCondition(value)}`
+    },
+  }
+  const verticalRatioSpec: MapMetric = {
+    label: 'vertical ratio',
+    shortLabel: 'VR',
+    ramp: STRIDE_RAMP,
+    valid: p => runVerticalRatioPct(p) != null,
+    pick: p => runVerticalRatioPct(p) ?? 0,
+    fmt: formatVerticalRatio,
+    profile: graphDomain =>
+      requiredMapProfile(
+        buildRunVerticalRatioTraceNode(domF, d, null, graphDomain),
+        'vertical ratio',
+      ),
+    readout: p => {
+      const value = runVerticalRatioPct(p)
+      return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatVerticalRatio(value)}`
+    },
+  }
+  const groundContactBalanceSpec: MapMetric = {
+    label: 'ground contact balance',
+    shortLabel: 'GCB',
+    ramp: STRIDE_RAMP,
+    valid: p => runGroundContactBalanceLeftPct(p) != null,
+    pick: p => runGroundContactBalanceLeftPct(p) ?? 0,
+    fmt: formatGroundContactBalance,
+    profile: graphDomain =>
+      requiredMapProfile(
+        buildRunGroundContactBalanceTraceNode(domF, d, null, graphDomain),
+        'ground contact balance',
+      ),
+    readout: p => {
+      const value = runGroundContactBalanceLeftPct(p)
+      return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatGroundContactBalance(value)}`
+    },
+  }
+  const stepSpeedLossSpec: MapMetric = {
+    label: 'step speed loss',
+    shortLabel: 'SSL',
+    ramp: STRIDE_RAMP,
+    valid: p => runStepSpeedLossMps(p) != null,
+    pick: p => runStepSpeedLossMps(p) ?? 0,
+    fmt: formatStepSpeedLoss,
+    profile: graphDomain =>
+      requiredMapProfile(
+        buildRunStepSpeedLossTraceNode(domF, d, null, graphDomain),
+        'step speed loss',
+      ),
+    readout: p => {
+      const value = runStepSpeedLossMps(p)
+      return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatStepSpeedLoss(value)}`
+    },
+  }
+  const stepSpeedLossPercentSpec: MapMetric = {
+    label: 'step speed loss percent',
+    shortLabel: 'SSL%',
+    ramp: STRIDE_RAMP,
+    valid: p => runStepSpeedLossPct(p) != null,
+    pick: p => runStepSpeedLossPct(p) ?? 0,
+    fmt: formatStepSpeedLossPercent,
+    profile: graphDomain =>
+      requiredMapProfile(
+        buildRunStepSpeedLossPercentTraceNode(domF, d, null, graphDomain),
+        'step speed loss percent',
+      ),
+    readout: p => {
+      const value = runStepSpeedLossPct(p)
+      return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatStepSpeedLossPercent(value)}`
+    },
+  }
+  const impactLoadFactorSpec: MapMetric = {
+    label: 'impact load factor',
+    shortLabel: 'ILF',
+    ramp: STRIDE_RAMP,
+    valid: p => runImpactLoadFactor(p) != null,
+    pick: p => runImpactLoadFactor(p) ?? 0,
+    fmt: formatImpactLoadFactor,
+    profile: graphDomain =>
+      requiredMapProfile(
+        buildImpactLoadFactorTraceNode(domF, d, null, graphDomain),
+        'impact load factor',
+      ),
+    readout: p => {
+      const value = runImpactLoadFactor(p)
+      return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatImpactLoadFactor(value)}`
     },
   }
   const respirationSpec: MapMetric = {
@@ -729,6 +853,7 @@ export const metricSpecs = (
     if (hasPower) specs.push(powerSpec)
     if (hasHr) specs.push(hrSpec)
     if (hasCad) specs.push(cadSpec)
+    if (flags.performanceCondition) specs.push(performanceConditionSpec)
     if (hasResp) specs.push(respirationSpec)
     if (hasMuscleOxygen) specs.push(muscleOxygenSpec)
     specs.push(paceSpec)
@@ -740,13 +865,27 @@ export const metricSpecs = (
   } else if (d.sport === 'run') {
     specs.push(paceSpec)
     if (hasHr) specs.push(hrSpec)
+    if (flags.stamina) specs.push(staminaSpec)
     if (hasCad) specs.push(cadSpec)
+    if (flags.performanceCondition) specs.push(performanceConditionSpec)
     if (hasStride) specs.push(strideSpec)
+    if (flags.verticalRatio) specs.push(verticalRatioSpec)
     if (hasGroundContact) specs.push(groundContactSpec)
+    if (flags.groundContactBalance) specs.push(groundContactBalanceSpec)
     if (hasVerticalOscillation) specs.push(verticalOscillationSpec)
+    if (flags.stepSpeedLoss) specs.push(stepSpeedLossSpec)
+    if (flags.stepSpeedLossPercent) specs.push(stepSpeedLossPercentSpec)
     if (hasResp) specs.push(respirationSpec)
+    if (flags.impactLoadFactor) specs.push(impactLoadFactorSpec)
     if (hasElev) specs.push(elevSpec)
     if (hasPower) specs.push(powerSpec)
+    if (hasThermal) specs.push(temperatureSpec)
+  } else if (d.sport === 'walk') {
+    specs.push(paceSpec)
+    if (hasHr) specs.push(hrSpec)
+    if (hasCad) specs.push(cadSpec)
+    if (hasResp) specs.push(respirationSpec)
+    if (hasElev) specs.push(elevSpec)
     if (hasThermal) specs.push(temperatureSpec)
   } else {
     specs.push(paceSpec)
@@ -817,11 +956,13 @@ export const renderMapDetail = (
     if (d.sport === 'swim') figs.appendChild(buildPool(presentation, d))
     if (figs.childElementCount > 0) wrap.appendChild(figs)
     const more = el('div', 'tri-act-more')
+    const swimWorkout = buildSwimWorkoutAnalysisNode(domF, d) as HTMLElement | null
     const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
     const heartRate = hasHeartRateTrace(d) ? buildHeartRateTrace(presentation, d) : null
     const environment = buildEnvironmentAnalysisNode(domF, d)
     const trainingEffect = buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null
     for (const z of [
+      swimWorkout,
       heartRate,
       environment,
       trainingEffect,
@@ -839,7 +980,19 @@ export const renderMapDetail = (
       if (z) more.appendChild(z)
     if (bestEfforts) more.appendChild(bestEfforts)
     if (more.childElementCount > 0) wrap.appendChild(more)
-    return { element: wrap, mount: () => () => {} }
+    return {
+      element: wrap,
+      mount: () => {
+        const controller = linkActivityAnalysis(
+          presentation,
+          wrap,
+          opts?.analysis ?? null,
+          d,
+          opts?.onRange,
+        )
+        return () => controller?.dispose()
+      },
+    }
   }
 
   const tablist = el('div', 'tri-map-tablist')
@@ -847,11 +1000,13 @@ export const renderMapDetail = (
   const figs = el('div', 'tri-act-figs tri-map-figs')
   const profileBox = el('div', 'tri-map-profile')
   const runSplits = buildRunLapSplitsNode(domF, d) as HTMLElement | null
+  const swimWorkout = buildSwimWorkoutAnalysisNode(domF, d) as HTMLElement | null
   const cyclingWorkout = buildCyclingWorkoutAnalysisNode(domF, d) as HTMLElement | null
   const zoneBox = el('div', 'tri-act-more')
   const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
   wrap.append(tablist, figs)
   if (runSplits) wrap.appendChild(runSplits)
+  if (swimWorkout) wrap.appendChild(swimWorkout)
   if (cyclingWorkout) wrap.appendChild(cyclingWorkout)
   wrap.appendChild(profileBox)
   wrap.appendChild(zoneBox)
@@ -1115,6 +1270,30 @@ export const renderDetail = (
     const name = trace.dataset.triTrace
     if (!name || !triathlonTraceEnabled(traceSettings, name)) trace.remove()
   }
+  for (const chart of wrap.querySelectorAll<HTMLElement>(
+    '.tri-run-metric-chart[data-run-metric-group]',
+  )) {
+    const panes = Array.from(chart.querySelectorAll<HTMLElement>('[data-run-metric-pane]'))
+    if (panes.length === 0) {
+      chart.remove()
+      continue
+    }
+    if (panes.length === 1) {
+      panes[0].hidden = false
+      panes[0].setAttribute('aria-hidden', 'false')
+      for (const controls of panes[0].querySelectorAll('.tri-run-metric-modes')) controls.remove()
+      continue
+    }
+    const current = runMetricMode(chart)
+    const available = current ? panes.some(pane => pane.dataset.runMetricPane === current) : false
+    const fallback = runMetricMode(
+      chart.querySelector<HTMLButtonElement>(
+        `.tri-run-metric-mode[data-run-metric-mode="${panes[0].dataset.runMetricPane ?? ''}"]`,
+      ),
+    )
+    if (available && current) setRunMetricMode(chart, current)
+    else if (fallback) setRunMetricMode(chart, fallback)
+  }
   const elev = wrap.querySelector<HTMLElement>(
     '.tri-act-figs .tri-elev-wrap:not(.tri-elev-wrap--unavailable)',
   )
@@ -1132,8 +1311,8 @@ export const renderDetail = (
       },
     })
   }
-  const cadenceScale = d.sport === 'run' ? 2 : 1
-  const cadenceUnit = d.sport === 'run' ? 'spm' : 'rpm'
+  const cadenceScale = activityCadenceScale(d.sport)
+  const cadenceUnit = activityCadenceUnit(d.sport)
   const cadenceValues = normalizeBikeMetrics
     ? interpolatePositiveMetricSeries(d.route, point => point.cad * cadenceScale)
     : null
@@ -1229,6 +1408,16 @@ export const renderDetail = (
           return `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(cadenceValues?.[i] ?? p.cad * cadenceScale)} ${cadenceUnit}`
         },
       })
+    else if (trace.dataset.triTrace === 'performance-condition')
+      surfaces.push({
+        wrap: trace,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          const value = performanceConditionValue(p)
+          return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatPerformanceCondition(value)}`
+        },
+      })
     else if (
       trace.dataset.triTrace === 'stride-length' ||
       trace.dataset.triTrace === 'estimated-stride-length'
@@ -1252,6 +1441,16 @@ export const renderDetail = (
           return `${scrubDist(presentation, p.d, d.sport)} · ${groundContact == null ? '—' : formatGroundContactTime(groundContact)}`
         },
       })
+    else if (trace.dataset.triTrace === 'ground-contact-balance')
+      surfaces.push({
+        wrap: trace,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          const value = runGroundContactBalanceLeftPct(p)
+          return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatGroundContactBalance(value)}`
+        },
+      })
     else if (trace.dataset.triTrace === 'vertical-oscillation')
       surfaces.push({
         wrap: trace,
@@ -1260,6 +1459,36 @@ export const renderDetail = (
           const p = d.route[i]
           const verticalOscillation = runVerticalOscillationCm(p)
           return `${scrubDist(presentation, p.d, d.sport)} · ${verticalOscillation == null ? '—' : formatVerticalOscillation(presentation, verticalOscillation)}`
+        },
+      })
+    else if (trace.dataset.triTrace === 'vertical-ratio')
+      surfaces.push({
+        wrap: trace,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          const value = runVerticalRatioPct(p)
+          return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatVerticalRatio(value)}`
+        },
+      })
+    else if (trace.dataset.triTrace === 'step-speed-loss')
+      surfaces.push({
+        wrap: trace,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          const value = runStepSpeedLossMps(p)
+          return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatStepSpeedLoss(value)}`
+        },
+      })
+    else if (trace.dataset.triTrace === 'step-speed-loss-percent')
+      surfaces.push({
+        wrap: trace,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          const value = runStepSpeedLossPct(p)
+          return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatStepSpeedLossPercent(value)}`
         },
       })
     else if (trace.dataset.triTrace === 'respiration')
@@ -1278,6 +1507,16 @@ export const renderDetail = (
         fmt: i => {
           const p = d.route[i]
           return `${scrubDist(presentation, p.d, d.sport)} · ${p.muscleOxygenPct == null ? '—' : formatMuscleOxygen(p.muscleOxygenPct)}`
+        },
+      })
+    else if (trace.dataset.triTrace === 'impact-load-factor')
+      surfaces.push({
+        wrap: trace,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          const value = runImpactLoadFactor(p)
+          return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatImpactLoadFactor(value)}`
         },
       })
     else if (trace.dataset.triTrace === 'temperature')
@@ -1319,7 +1558,7 @@ export const renderDetail = (
   }
   const interactive =
     surfaces.some(surface => surface.samples.length >= 2) ||
-    (wrap.querySelector('[data-tri-analysis]') != null && d.route.length >= 2)
+    wrap.querySelector('[data-analysis-range]') != null
   return {
     element: wrap,
     mount: () => {

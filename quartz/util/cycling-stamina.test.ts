@@ -78,12 +78,13 @@ const streams = (watts: (number | null)[], heartrate: (number | null)[]): WahooS
 const cache = (stream: WahooStreams, values: Partial<WahooActivity> = {}): WahooCache => {
   const ride = activity(values)
   return {
-    version: 3,
+    version: 4,
     lastSync: Date.parse('2026-08-30T00:00:00Z'),
     activities: { [ride.id]: ride },
     streams: { [ride.id]: stream },
     gearShifts: { [ride.id]: [] },
     cyclingDynamics: {},
+    summitSegments: { [ride.id]: [] },
   }
 }
 

@@ -65,7 +65,7 @@ function activity(edited = false): WahooActivity {
 function cache(edited = false): WahooCache {
   const ride = activity(edited)
   return {
-    version: 3,
+    version: 4,
     lastSync: Date.now(),
     activities: { [ride.id]: ride },
     streams: {
@@ -111,6 +111,25 @@ function cache(edited = false): WahooCache {
         standingTimeS: null,
       },
     },
+    summitSegments: {
+      [ride.id]: [
+        {
+          feature: 'summit-segment',
+          uuid: 'WAHOO_ON_ROUTE_CLIMB-snake-road',
+          name: 'Snake Road',
+          startDate: '2026-08-27T12:30:00.000Z',
+          endDate: '2026-08-27T12:35:00.000Z',
+          distanceM: 1_500,
+          durationS: 300,
+          elevationGainM: 90,
+          avgGradePct: 6,
+          avgSpeedMps: 5,
+          avgHeartRate: 155,
+          avgPower: 280,
+          avgCadence: 82,
+        },
+      ],
+    },
   }
 }
 
@@ -122,7 +141,31 @@ test('maps official Wahoo workout types to triathlon sports', () => {
 })
 
 test('rejects obsolete Wahoo cache versions', () => {
-  assert.throws(() => parseWahooCache({ ...cache(), version: 2 }), /version 2 is unsupported/)
+  assert.throws(() => parseWahooCache({ ...cache(), version: 3 }), /version 3 is unsupported/)
+})
+
+test('parses Summit segments and requires one entry for every Wahoo activity', () => {
+  const value = cache()
+  assert.deepEqual(parseWahooCache(value), value)
+
+  const missing = { ...value, summitSegments: {} }
+  assert.throws(() => parseWahooCache(missing), /activity wahoo:55 is missing summit segments/)
+
+  const [segment] = value.summitSegments['wahoo:55']
+  assert.ok(segment)
+  assert.throws(
+    () =>
+      parseWahooCache({ ...value, summitSegments: { 'wahoo:55': [{ ...segment, durationS: 0 }] } }),
+    /positive distance and duration/,
+  )
+  assert.throws(
+    () =>
+      parseWahooCache({
+        ...value,
+        summitSegments: { 'wahoo:55': [{ ...segment, feature: 'summit-freeride' }] },
+      }),
+    /uuid is invalid/,
+  )
 })
 
 test('matches by sport, start, distance, and duration', () => {

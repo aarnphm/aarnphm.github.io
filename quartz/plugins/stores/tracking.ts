@@ -47,11 +47,18 @@ export interface TrainingExclusion {
   activityId: number
 }
 
+export interface ActivityTrackingEntry {
+  activityId: number
+  garminActivityId: number | null
+  virtual: boolean
+}
+
 export type SaunaCooldown = 'natural' | 'cold plunge'
 
 export interface ManualSaunaEntry {
   id: number
   stravaActivityId: number | null
+  garminActivityId: number | null
   title: string | null
   date: string
   time: string
@@ -63,6 +70,7 @@ export interface ManualSaunaEntry {
 }
 
 export interface TrackingData {
+  activities: ActivityTrackingEntry[]
   days: TrackEntry[]
   races: RaceEvent[]
   fueling: ManualFuelingEntry[]
@@ -72,7 +80,8 @@ export interface TrackingData {
 }
 
 export interface ParsedTrackingBlock {
-  day: TrackEntry
+  day: TrackEntry | null
+  activity: ActivityTrackingEntry | null
   fueling: ManualFuelingEntry | null
   strength: ManualStrengthEntry | null
   sauna: ManualSaunaEntry | null
@@ -156,9 +165,17 @@ const parseSaunaTemperatureC = (value: string): number | null => {
 export const manualSaunaActivityId = (date: string, time: string): number =>
   MANUAL_ACTIVITY_ID_OFFSET + Number(`${date.replaceAll('-', '')}${time.replace(':', '')}`)
 
+const parseOptionalActivityId = (value: string | undefined): number | null | undefined => {
+  if (value == null || value === '') return null
+  if (!/^\d+$/.test(value)) return undefined
+  const activityId = Number(value)
+  return Number.isSafeInteger(activityId) && activityId > 0 ? activityId : undefined
+}
+
 const parseManualSauna = (body: Readonly<Record<string, string>>): ManualSaunaEntry | null => {
   if (body.activity?.toLowerCase() !== 'sauna') return null
-  const stravaActivityId = body.strava == null || body.strava === '' ? null : Number(body.strava)
+  const stravaActivityId = parseOptionalActivityId(body.strava)
+  const garminActivityId = parseOptionalActivityId(body.garmin)
   const title = body.title?.trim() || null
   const date = body.date?.slice(0, 10)
   const time = body.time
@@ -180,15 +197,14 @@ const parseManualSauna = (body: Readonly<Record<string, string>>): ManualSaunaEn
     humidityPct > 100 ||
     (cooldown !== 'natural' && cooldown !== 'cold plunge') ||
     (heatTrainingLoad != null && (!Number.isFinite(heatTrainingLoad) || heatTrainingLoad < 0)) ||
-    (stravaActivityId != null &&
-      (!/^\d+$/.test(body.strava ?? '') ||
-        !Number.isSafeInteger(stravaActivityId) ||
-        stravaActivityId <= 0))
+    stravaActivityId === undefined ||
+    garminActivityId === undefined
   )
     return null
   return {
     id: manualSaunaActivityId(date, time),
     stravaActivityId,
+    garminActivityId,
     title,
     date,
     time,
@@ -232,8 +248,22 @@ export function parseTrackingBlock(
     if (k === 'exercise') exerciseValues.push(v)
     else if (k) body[k] = v
   }
+  const linkedActivityId = parseOptionalActivityId(body.activity)
+  const garminActivityId = parseOptionalActivityId(body.garmin)
+  const virtual = body.virtual?.toLowerCase()
+  const activity: ActivityTrackingEntry | null =
+    linkedActivityId != null &&
+    garminActivityId !== undefined &&
+    (garminActivityId != null || virtual != null) &&
+    (virtual == null || virtual === 'true' || virtual === 'false')
+      ? { activityId: linkedActivityId, garminActivityId, virtual: virtual === 'true' }
+      : null
   const date = body.date
-  if (!date || !/^\d{4}-\d{2}-\d{2}/.test(date)) return null
+  if (!date)
+    return activity
+      ? { day: null, activity, fueling: null, strength: null, sauna: null, trainingExclusion: null }
+      : null
+  if (!/^\d{4}-\d{2}-\d{2}/.test(date)) return null
   const wl = body.weight != null ? Number(body.weight) : NaN
   const weightLbs = Number.isFinite(wl) ? wl : null
   const weightKg = weightLbs != null ? Math.round(weightLbs * LB_TO_KG * 10) / 10 : null
@@ -284,5 +314,5 @@ export function parseTrackingBlock(
       ? { date: day.date, activityId }
       : null
   const sauna = parseManualSauna(body)
-  return { day, fueling, strength, sauna, trainingExclusion }
+  return { day, activity, fueling, strength, sauna, trainingExclusion }
 }

@@ -2,8 +2,9 @@ import assert from 'node:assert/strict'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
+import { emptyWahooMetrics, type WahooActivity, type WahooCache } from '../plugins/stores/wahoo'
 import { WahooApiError, WahooCloudClient, type WahooWorkoutDto } from '../util/wahoo-cloud'
-import { resolveWahooWorkoutSummary } from './sync-wahoo'
+import { fetchWahooCache, resolveWahooWorkoutSummary } from './sync-wahoo'
 
 function workout(): WahooWorkoutDto {
   return {
@@ -43,6 +44,114 @@ function summary(): object {
     file: { url: 'https://cdn.wahoofitness.com/ride.fit' },
     created_at: '2026-08-27T12:00:00.000Z',
     updated_at: '2026-08-27T13:00:00.000Z',
+  }
+}
+
+function cachedActivity(): WahooActivity {
+  return {
+    id: 'wahoo:55',
+    workoutId: 55,
+    workoutTypeId: 15,
+    workoutUpdatedAt: '2026-08-27T13:00:00.000Z',
+    name: 'Ride',
+    sport: 'bike',
+    startDate: '2026-08-27T12:00:00.000Z',
+    startDateLocal: '2026-08-27T08:00:00',
+    distanceM: 48_200,
+    movingTimeS: 7_200,
+    elapsedTimeS: 7_500,
+    sourceDevice: 'ELEMNT BOLT',
+    sourceFile: {
+      url: 'https://cdn.wahoofitness.com/ride.fit',
+      sha256: 'a'.repeat(64),
+      byteLength: 4_000,
+      profileVersion: '21.208',
+    },
+    sweatLoss: { fluidMl: null, sodiumMg: null },
+    metrics: emptyWahooMetrics(),
+    summary: {
+      id: 66,
+      name: 'Ride',
+      timeZone: 'America/Toronto',
+      manual: false,
+      edited: false,
+      fitnessAppId: 1,
+      durationPausedS: 300,
+      createdAt: '2026-08-27T12:00:00.000Z',
+      updatedAt: '2026-08-27T13:00:00.000Z',
+    },
+  }
+}
+
+function previousCache(): WahooCache {
+  const activity = cachedActivity()
+  const id = activity.id
+  return {
+    version: 4,
+    lastSync: Date.parse('2026-08-27T14:00:00.000Z'),
+    activities: { [id]: activity },
+    streams: {
+      [id]: {
+        timestamps: [],
+        time: [],
+        latlng: [],
+        altitude: [],
+        distance: [],
+        watts: [],
+        rightBalance: [],
+        heartrate: [],
+        cadence: [],
+        speed: [],
+        temperature: [],
+        respiration: [],
+        muscleOxygenPercent: [],
+        totalHemoglobinConcentration: [],
+        heatStrainIndex: [],
+        coreTemperatureC: [],
+        skinTemperatureC: [],
+        minuteVentilation: [],
+        tidalVolume: [],
+        fluidLossMl: [],
+        sodiumLossMg: [],
+      },
+    },
+    gearShifts: { [id]: [] },
+    cyclingDynamics: {
+      [id]: {
+        time: [],
+        distance: [],
+        leftPedalSmoothness: [],
+        rightPedalSmoothness: [],
+        leftTorqueEffectiveness: [],
+        rightTorqueEffectiveness: [],
+        leftPowerPhaseStart: [],
+        leftPowerPhaseEnd: [],
+        rightPowerPhaseStart: [],
+        rightPowerPhaseEnd: [],
+        positionChanges: [],
+        seatedTimeS: null,
+        standingTimeS: null,
+      },
+    },
+    summitSegments: {
+      [id]: [
+        {
+          feature: 'summit-freeride',
+          uuid: 'WAHOO_OFF_ROUTE_CLIMB-1',
+          name: '1',
+          startDate: '2026-08-27T12:30:00.000Z',
+          endDate: '2026-08-27T12:35:00.000Z',
+          distanceM: 1_500,
+          durationS: 300,
+          elevationGainM: 90,
+          avgGradePct: 6,
+          avgSpeedMps: 5,
+          avgHeartRate: 155,
+          avgPower: 280,
+          avgCadence: 82,
+        },
+      ],
+    },
   }
 }
 
@@ -173,4 +282,49 @@ test('preserves unrelated Wahoo authorization failures', async () => {
     resolveWahooWorkoutSummary(client, workout()),
     error => error instanceof WahooApiError && error.status === 401,
   )
+})
+
+test('reuses Summit segments for unchanged cached workouts', async () => {
+  const previous = previousCache()
+  const calls: string[] = []
+  const request: typeof fetch = async input => {
+    const url = input instanceof Request ? input.url : input.toString()
+    calls.push(url)
+    if (url.endsWith('/oauth/token'))
+      return Response.json({
+        access_token: 'access',
+        refresh_token: 'refresh-two',
+        expires_in: 3600,
+      })
+    if (url.includes('/v1/workouts?'))
+      return Response.json({
+        workouts: [
+          {
+            id: 55,
+            starts: '2026-08-27T12:00:00.000Z',
+            minutes: 60,
+            name: 'Ride',
+            workout_token: '55',
+            workout_type_id: 15,
+            workout_summary: null,
+            created_at: '2026-08-27T12:00:00.000Z',
+            updated_at: '2026-08-27T13:00:00.000Z',
+          },
+        ],
+        total: 1,
+        page: 1,
+        per_page: 100,
+      })
+    return new Response('unexpected request', { status: 500 })
+  }
+  const client = new WahooCloudClient(
+    { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
+    { refreshTokenFile: join(tmpdir(), `wahoo-sync-reuse-${process.pid}.token`), request },
+  )
+
+  const refreshed = await fetchWahooCache(client, previous)
+
+  assert.strictEqual(refreshed.summitSegments['wahoo:55'], previous.summitSegments['wahoo:55'])
+  assert.ok(!calls.some(url => url.includes('/workout_summary')))
+  assert.ok(!calls.some(url => url.endsWith('.fit')))
 })

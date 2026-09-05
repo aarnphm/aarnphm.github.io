@@ -2,7 +2,7 @@
 aliases:
   - gpus
 date: '2025-09-08'
-description: bedstone of scaling intelligence
+description: CUDA execution, memory traffic, and precision-specific performance limits
 id: GPU programming
 modified: 2026-06-07 01:19:33 GMT-04:00
 permalinks:
@@ -16,148 +16,133 @@ tags:
 title: GPU
 ---
 
-> uccl project: https://github.com/uccl-project/uccl
+A GPU runs many threads so that some can make progress while others wait for data or earlier instructions. Kernel performance depends on the work each thread does and the data it moves. A peak FLOP rate alone leaves out the second part.
 
 ## arithmetic bandwidth
 
-_https://modal.com/gpu-glossary/perf/arithmetic-bandwidth_
+Arithmetic throughput is the number of arithmetic operations completed per second. A quoted peak needs a data type and an instruction path. Tensor Core matrix multiplication and scalar FP32 instructions have different ceilings on the same chip. For supported sparse patterns, the quoted effective Tensor Core rate can be twice the dense rate.
+
+The [Modal glossary](https://modal.com/gpu-glossary/perf/arithmetic-bandwidth) defines the term.
 
 ## architecture overview
 
-> [!info] core terminology
->
-> | concept                       | summary                                                                                                                                       |
-> | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-> | GPU vs CPU                    | throughput-optimized accelerator (270k+ resident threads on Hopper) vs latency-optimized cpu ($\approx 192$ hardware threads on 96-core epyc) |
-> | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                                     |
-> | SIMT                          | warp-level (32 thread) execution model issuing one instruction per warp                                                                       |
-> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm ($\approx 400$) → nvlink fabric                                  |
-> | latency hiding                | 64 resident warps per sm swap on stall to cover $\approx 400$-cycle hbm accesses                                                              |
+CUDA groups threads into blocks. An SM, or streaming multiprocessor, executes resident blocks in warps of $32$ threads. A warp instruction applies to its active threads; divergence can leave some threads inactive for part of the execution.
+
+Registers hold per-thread values. Shared memory belongs to a block, with cluster access available on supported hardware. L1 is local to an SM and L2 is shared across the GPU. HBM holds device memory. NVLink carries traffic between devices. Access latency depends on the instruction and access pattern. See the [CUDA programming model](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/programming-model.html).
+
+H100 SXM has an upper residency limit of
+
+$$
+132\ \text{SMs}\times64\ \text{warps/SM}\times32\ \text{threads/warp}
+=270{,}336\ \text{threads}.
+$$
+
+Actual occupancy depends on block size and the registers and shared memory each block needs. Ready warps can issue while other warps wait, so residency helps hide latency when there is independent work available. The [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html#occupancy) gives the resource limits.
 
 ## execution units
 
-> [!table] sm execution roles (hopper/blackwell)
->
-> | unit                      | capacity per sm                           | responsibility                        | deeper dive                                      |
-> | ------------------------- | ----------------------------------------- | ------------------------------------- | ------------------------------------------------ |
-> | warp schedulers           | 4 quads, 16 warp issue slots/cycle        | pick ready warps, arbitrate pipelines | [[lectures/420#1. Warp Scheduler]]               |
-> | cuda cores                | 128 fp32/int32 alus                       | scalar and vector integer/fp work     | [[lectures/420#2. CUDA Core]]                    |
-> | tensor cores              | 4 mma pipelines (fp16/bf16/tf32/fp8/fp4)  | matrix multiply-accumulate via wgmma  | [[lectures/420#tensor core operation]]           |
-> | load/store units          | 64b sector loads, cp.async, tma front-end | coalesced global/shared traffic       | [[lectures/420#4. Load/Store Unit (LSU)]]        |
-> | special function units    | exp, sin, cos, rsqrt throughput           | transcendental evaluation             | [[lectures/420#5. Special Function Unit (SFU)]]  |
-> | tensor memory accelerator | descriptor-driven dma (sm90+)             | async tensor copies, multicast        | [[lectures/420#tensor memory accelerator (TMA)]] |
+The following counts describe Hopper. NVIDIA's [architecture account][hopper] and [scheduler presentation](https://developer-blogs.nvidia.com/wp-content/uploads/2024/08/CUDA-Programming-and-Optimization.pdf#page=27) give the details.
+
+| unit                      | Hopper role                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------------------- |
+| warp scheduler            | Four per SM. Each holds up to $16$ resident warps and can issue at most one warp instruction per cycle. |
+| arithmetic units          | $128$ FP32 units and $64$ INT32 units per SM. Instruction throughput depends on the operation.          |
+| Tensor Cores              | Four per SM. Matrix multiply-accumulate instructions include Hopper's warp-group MMA path.              |
+| load/store units          | Execute memory instructions. Coalescing combines a warp's global accesses into memory transactions.     |
+| special-function units    | Execute supported special-function instructions. A library function can require several instructions.   |
+| Tensor Memory Accelerator | TMA moves tensor tiles asynchronously using descriptors and supports cluster multicast.                 |
+
+For coalesced global access, an aligned warp reading $32$ consecutive FP32 values requests $128$ bytes in four $32$-byte transactions. Scattered addresses can require more transactions for the same useful data. These transaction sizes differ from the width of one thread's load instruction. See [CUDA's coalescing example](https://docs.nvidia.com/cuda/cuda-programming-guide/02-basics/writing-cuda-kernels.html#coalesced-global-memory-access).
 
 ## AMD
 
-### [[thoughts/PD disaggregated serving|pd disaggregated serving]]
-
-RCCL on PyNCCL
-
-SGLang
-
-NIXL + UCX
+The reading pointers for [[thoughts/PD disaggregated serving|disaggregated serving]] are RCCL and SGLang, with NIXL and UCX for the transfer path. The AMD CDNA 3 architecture pass is still open.
 
 ## NVIDIA
 
 ### cuda
 
-see also @lindholm2008nvidia
+The earlier Tesla architecture is described in [@lindholm2008nvidia]. Keep architecture-specific counts tied to the chip they describe.
 
 ### hopper
 
-i.e: H100 (2022)
+These are [H100 SXM specifications](https://www.nvidia.com/en-us/data-center/h100/). The full GH100 design contains $144$ SMs; the H100 SXM product exposes $132$ [@nvidia2022hopper].
 
-> [!example] sheets
->
-> | metric       | value                                                                          |
-> | ------------ | ------------------------------------------------------------------------------ |
-> | sm count     | 132 (144 on sxm)                                                               |
-> | cuda cores   | 16,896                                                                         |
-> | tensor cores | 528 (4th gen)                                                                  |
-> | hbm          | 80 gb hbm3 @ 3.35 tb/s                                                         |
-> | fp16 peak    | 1,979 tflop/s                                                                  |
-> | fp8 peak     | 3,958 tflop/s                                                                  |
-> | reference    | [[lectures/420#memory hierarchy: the performance bottleneck]] · modal glossary |
+| metric                | H100 SXM                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------- |
+| SMs                   | $132$                                                                                              |
+| FP32 CUDA cores       | $16{,}896$                                                                                         |
+| Tensor Cores          | $528$                                                                                              |
+| HBM                   | $80\ \mathrm{GB}$ HBM3 at $3.35\ \mathrm{TB/s}$                                                    |
+| FP16 Tensor Core peak | approximately $989.5\ \mathrm{TFLOP/s}$ dense, $1{,}979\ \mathrm{TFLOP/s}$ with supported sparsity |
+| FP8 Tensor Core peak  | $1{,}979\ \mathrm{TFLOP/s}$ dense, $3{,}958\ \mathrm{TFLOP/s}$ with supported sparsity             |
 
-> [!tip] hopper features
->
-> - [[lectures/420#thread block clusters and distributed shared memory|thread block clusters]] + dsme fabric
-> - [[lectures/420#tensor memory accelerator (TMA)|tensor memory accelerator]] for descriptor-driven async copies
-> - [[lectures/420#tensor core operation|wgmma]] instructions and mbarrier synchronization
-> - fp8 (e4m3, e5m2) execution paths highlighted in section 11 of the jax scaling book: https://jax-ml.github.io/scaling-book/
+Hopper supports thread-block clusters and distributed shared memory. TMA handles descriptor-based tensor copies, and `wgmma` provides asynchronous warp-group matrix operations. The synchronization rules are covered in the [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html) for TMA and clusters, and the [warp-group MMA guide](https://docs.nvidia.com/cutlass/latest/media/docs/pythonDSL/mma_docs/warpgroup_programming.html) for WGMMA.
 
 ### blackwell
 
-i.e: b200 (2024)
+The B200 specifications below use the current [Blackwell tuning guide](https://docs.nvidia.com/cuda/blackwell-tuning-guide/index.html#high-bandwidth-memory-hbm3-subsystem) and [HGX B200 product table](https://www.nvidia.com/en-us/data-center/hgx/). The arithmetic figures are per GPU, obtained by dividing the eight-GPU HGX totals by $8$.
 
-> [!example] sheets
->
-> | metric       | value                                                                                      |
-> | ------------ | ------------------------------------------------------------------------------------------ |
-> | sm count     | 192                                                                                        |
-> | cuda cores   | 24,576                                                                                     |
-> | tensor cores | 768 (5th gen)                                                                              |
-> | hbm          | 192 gb hbm3e @ 8 tb/s                                                                      |
-> | fp16 peak    | 2,250 tflop/s                                                                              |
-> | fp4 peak     | 20,000 tflop/s                                                                             |
-> | reference    | [[lectures/420#level 1: the GPU chip \| architecture table]] · jax scaling book section 12 |
+| metric                | B200                                                                   |
+| --------------------- | ---------------------------------------------------------------------- |
+| HBM                   | $180\ \mathrm{GB}$ HBM3e at approximately $8\ \mathrm{TB/s}$           |
+| FP16 Tensor Core peak | $2{,}250\ \mathrm{TFLOP/s}$ dense, $4{,}500\ \mathrm{TFLOP/s}$ sparse  |
+| FP4 Tensor Core peak  | $9{,}000\ \mathrm{TFLOP/s}$ dense, $18{,}000\ \mathrm{TFLOP/s}$ sparse |
 
-> [!tip] blackwell enhancements
->
-> - [[lectures/420#mixed precision arithmetic|nvfp4 + mxfp8]] pipelines (tensor core fp4)
-> - second-generation tma with multicast/reduction shortcuts
-> - nvls fabric for multi-gpu topologies, complements nvlink
-> - guidance in "how to scale your model" (jax scaling book): https://jax-ml.github.io/scaling-book/
+Blackwell SM100 adds `tcgen05.mma` and FP4 matrix operations. Its instruction forms and data layouts are described in the [CUTLASS Blackwell documentation](https://docs.nvidia.com/cutlass/latest/media/docs/cpp/blackwell_functionality.html). Hopper's WGMMA description does not specify this newer path.
+
+TMA multicast and reductions already exist on Hopper. NVLink SHARP, called NVLS in NCCL, offloads supported collective operations to NVSwitch on compatible systems, as described in the [NCCL documentation](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html#nccl-nvls-enable).
 
 ### cutlass and cute dsl
 
-See [[lectures/420#cute dsl mental model|CUTLASS and CuTe DSL section]] for comprehensive coverage.
+[CUTLASS](https://docs.nvidia.com/cutlass/latest/) provides GPU linear-algebra kernels and components for building them. CuTe expresses tensor layouts and the partitioning of work across threads. CuTe DSL provides a Python interface for writing and compiling GPU kernels.
 
-> [!table] templated gemm stack
->
-> | component                         | focus                                                             | follow-up                                                                                                              |
-> | --------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-> | cutlass                           | template-based gemm primitives, epilogue fusion, cute integration | [[lectures/420#hierarchical tiling with local_tile]]                                                                   |
-> | cute dsl                          | layout algebra for compile-time tiling/swizzling                  | [[lectures/420#layout algebra operations]]                                                                             |
-> | cute swizzle ops                  | xor, block-raked layouts to kill bank conflicts                   | [[lectures/420#swizzling and bank conflict avoidance]]                                                                 |
-> | cute local_tile / local_partition | hierarchical decompositions down to register tiles                | [[lectures/420#hierarchical tiling with local_tile]] · [[lectures/420#thread-level partitioning with local_partition]] |
+The local [[lectures/420#CuTe DSL mental model|CuTe notes]] include layout examples. Consult the installed version's API when turning those sketches into runnable code.
 
 ### triton linear layout
 
-See also: [post](https://www.lei.chat/posts/triton-linear-layout-concept/) · modal glossary on tensor cores: https://modal.com/gpu-glossary/device-hardware/tensor-core
+Lei Zhang's [linear-layout note](https://www.lei.chat/posts/triton-linear-layout-concept/) explains how Triton represents mappings between logical tensor indices and hardware locations. That mapping determines which values each thread holds and how values move between layouts.
 
-Triton's layout system provides high-level abstractions similar to CUTe but with a Python-based programming model.
+## roofline
 
-![[lectures/420#roofline model|Roofline model section]].
+For a kernel with $F$ floating-point operations and $Q$ bytes transferred through HBM, define arithmetic intensity as
 
-> [!abstract] roofline checklist
->
-> - arithmetic intensity (flop/byte) classifies memory- vs compute-bound behavior
-> - ridge point on h100: $i \approx 592$ flop/byte (1979 tflop/s ÷ 3.35 tb/s)
-> - optimization target: increase reuse via tiling so intensity crosses the ridge point
+$$
+I=\frac{F}{Q}.
+$$
+
+With compute ceiling $P_{\max}$ and HBM bandwidth $B$, the corresponding roofline bound is
+
+$$
+P\le\min(P_{\max},BI),
+\qquad
+I_{\mathrm{ridge}}=\frac{P_{\max}}{B}.
+$$
+
+Using the dense FP16 Tensor Core ceiling for H100 SXM gives
+
+$$
+I_{\mathrm{ridge}}
+=\frac{989.5\times10^{12}\ \mathrm{FLOP/s}}
+{3.35\times10^{12}\ \mathrm{byte/s}}
+\approx295\ \mathrm{FLOP/byte}.
+$$
+
+Using the sparse peak would double this ceiling and require matching sparsity assumptions. Tiling can increase reuse and reduce $Q$, but larger tiles also consume more registers and shared memory. Measure runtime after the change. Crossing the ridge point alone does not establish a speedup. NVIDIA's [occupancy guidance](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#thread-and-block-heuristics) explains the resource tradeoff.
 
 ### profiling tools
 
-> [!info] profiling toolkit
->
-> - nsys for system-wide timeline capture and stream overlap analysis
-> - ncu (nsight compute) for kernel metrics + roofline overlays
-> - critical metrics: occupancy, bank conflicts, dram throughput, tensor core utilization
+Use Nsight Systems (`nsys`) to inspect the application timeline and stream overlap. Use Nsight Compute (`ncu`) to inspect an individual kernel's memory traffic and instruction use. NVIDIA documents the distinction in its [profiling migration guide](https://docs.nvidia.com/cuda/profiler-users-guide/index.html#migrating-to-nsight-tools-from-visual-profiler-and-nvprof).
 
 ## resources
 
-> [!reference]
->
-> | theme                  | resource                                                                                                 | notes                                                                    |
-> | ---------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-> | fundamentals           | [Making Deep Learning Go Brrrr From First Principles](https://horace.io/brrr_intro.html)                 | end-to-end walkthrough of gpu perf stack                                 |
-> | official docs          | [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)                         | baseline runtime + api semantics                                         |
-> | templated gemm         | [CUTLASS Documentation](https://github.com/NVIDIA/cutlass)                                               | hierarchical tiling + cute dsl references                                |
-> | architecture deep dive | [Hopper Architecture Whitepaper](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) | latency/bandwidth tables, sm diagrams [@nvidia2022hopper]                |
-> | modal glossary         | https://modal.com/gpu-glossary/device-hardware/cuda-device-architecture                                  | concise recap of sm→gpc→gpc topology, updated for hopper                 |
-> | scaling text           | https://jax-ml.github.io/scaling-book/                                                                   | sections 11–12 cover hopper/blackwell perf envelopes [@jax2025blackwell] |
+- [Making Deep Learning Go Brrrr From First Principles](https://horace.io/brrr_intro.html) walks through GPU performance calculations.
+- [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/) defines the programming model and API contracts.
+- [UCCL](https://github.com/uccl-project/uccl) is a communication project to follow.
 
 > [!todo] open threads
 >
-> - derive cutlass 4.2 cute dsl paged-attention microbenchmark here once implementation stabilizes
-> - add amd cdna 3 summary + translation to hip/kokkos analogues
+> - derive a CuTe DSL paged-attention microbenchmark with recorded inputs and measurements
+> - add an AMD CDNA 3 summary and the corresponding HIP/Kokkos notes
+
+[hopper]: https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/

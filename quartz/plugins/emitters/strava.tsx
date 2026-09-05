@@ -32,6 +32,7 @@ import {
   enrichCalculatedExerciseLoads,
   enrichCalculatedIntensityFactors,
   enrichCalculatedTrainingEffects,
+  enrichActivityDevices,
   enrichCoreBodyTemperature,
   enrichRouteLessHeartRate,
   enrichRunPaceZones,
@@ -71,7 +72,7 @@ import {
 import { buildMatchedRides, emptyMatchedRides } from '../stores/matched-rides'
 import { buildMatchedRuns, emptyMatchedRuns } from '../stores/matched-runs'
 import { OuraCache } from '../stores/oura'
-import { buildPayload, emptyHealth, StravaRawCache } from '../stores/strava'
+import { applyActivityTracking, buildPayload, emptyHealth, StravaRawCache } from '../stores/strava'
 import { parseTrainingPlans } from '../stores/training'
 import { parseWahooCache, type WahooCache } from '../stores/wahoo'
 import { parseWeatherCache, WeatherCache } from '../stores/weather'
@@ -233,31 +234,35 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         undefined,
         wahoo,
         ATHLETE.hrMax,
+        ATHLETE.lt,
         generatedAt,
+        tracking?.activities,
       )
-      applyManualActivityTracking(payload, tracking, oura, weather)
+      applyManualActivityTracking(payload, tracking, oura, weather, garmin)
       for (const t of tracking?.days ?? [])
         if (t.windKph != null) {
           const h = payload.health[t.date] ?? emptyHealth()
           payload.health[t.date] = { ...h, windKph: t.windKph, windDir: t.windDir ?? h.windDir }
         }
-      enrichSwimMetrics(payload, apple)
-      enrichRunDynamics(payload, apple)
+      enrichActivityDevices(payload, apple)
       enrichRouteLessHeartRate(payload, apple)
+      enrichSwimMetrics(payload, apple, garmin)
+      enrichRunDynamics(payload, apple)
       enrichCoreBodyTemperature(payload, core)
       const detailActivityIds = new Set(Object.keys(payload.details))
-      const matchedActivities = cache
-        ? Object.values(cache.activities).filter(activity =>
+      const trackedCache = applyActivityTracking(cache, garmin, tracking?.activities ?? [])
+      const matchedActivities = trackedCache
+        ? Object.values(trackedCache.activities).filter(activity =>
             detailActivityIds.has(String(activity.id)),
           )
         : []
       const matchedRuns = cache
-        ? buildMatchedRuns(matchedActivities, cache.streams ?? {})
+        ? buildMatchedRuns(matchedActivities, trackedCache?.streams ?? {})
         : emptyMatchedRuns()
       const matchedRides = cache
-        ? buildMatchedRides(matchedActivities, cache.streams ?? {})
+        ? buildMatchedRides(matchedActivities, trackedCache?.streams ?? {})
         : emptyMatchedRides()
-      const analytics = buildAnalytics(cache, {
+      const analytics = buildAnalytics(trackedCache, {
         oura,
         apple,
         core,
@@ -312,7 +317,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         plans,
         weather: weather?.current ?? null,
       }
-      const dataFeed = buildDataFeed(cache, analytics, {
+      const dataFeed = buildDataFeed(trackedCache, analytics, {
         oura,
         apple,
         weather,

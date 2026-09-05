@@ -2,6 +2,8 @@ import type { ActivityKind } from '../../../plugins/stores/strava'
 import type { StravaActivityDetail } from '../../../plugins/stores/strava'
 import type { ActivitySelectionSummary } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import { activityCadenceScale } from '../../../util/triathlon-card'
+import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { activitySelectionSummary } from '../../../util/triathlon-card'
 import { clock } from '../../../util/triathlon-card'
 import { formatAltitude } from '../../../util/triathlon-card'
@@ -192,11 +194,18 @@ export const linkActivityAnalysis = (
   const ranges = Array.from(rangeButtons)
     .map(analysisRangeFromButton)
     .filter((range): range is PresetActivityAnalysisRange => range != null)
-  if (route.length < 2) return null
 
-  const maxDistanceKm = route[route.length - 1].d || 1
+  const domainEndDistanceKm = Math.max(
+    detail.distanceKm,
+    route.at(-1)?.d ?? 0,
+    ...detail.heartRateTrace.map(point => point.distanceKm),
+    ...ranges.map(range => range.endDistanceKm),
+    0,
+  )
+  const maxDistanceKm = domainEndDistanceKm > 0 ? domainEndDistanceKm : 1
   const routeSelected = act.querySelector<SVGPathElement>('.tri-route-selected')
-  if (!routeSelected && !act.querySelector('.tri-analysis-selection')) return null
+  if (ranges.length === 0 && !routeSelected && !act.querySelector('.tri-analysis-selection'))
+    return null
   const readout = analysis?.querySelector<HTMLElement>('[data-tri-analysis-readout]') ?? null
   const readoutLabel = readout?.querySelector<HTMLElement>('.tri-analysis-readout-label') ?? null
   const readoutMetrics =
@@ -207,7 +216,10 @@ export const linkActivityAnalysis = (
   const storedStartDistanceKm = analysisFinite(stateHost.dataset.selectionStartDistanceKm)
   const storedEndDistanceKm = analysisFinite(stateHost.dataset.selectionEndDistanceKm)
   const storedSelection =
-    selectedKind === 'selection' && storedStartDistanceKm != null && storedEndDistanceKm != null
+    route.length >= 2 &&
+    selectedKind === 'selection' &&
+    storedStartDistanceKm != null &&
+    storedEndDistanceKm != null
       ? activitySelectionSummary(
           route,
           analysisRouteIndex(route, storedStartDistanceKm),
@@ -235,8 +247,8 @@ export const linkActivityAnalysis = (
     return metrics
   }
   const rangeReadoutMetrics = (range: ActivityAnalysisRange): string[] => {
-    const cadenceScale = sport === 'run' ? 2 : 1
-    const cadenceUnit = sport === 'run' ? 'spm' : 'rpm'
+    const cadenceScale = activityCadenceScale(sport)
+    const cadenceUnit = activityCadenceUnit(sport)
     const metrics = rangeMetrics(range)
     if (range.averageSpeedKph != null)
       metrics.push(analysisRate(presentation, sport, range.averageSpeedKph))
@@ -279,9 +291,7 @@ export const linkActivityAnalysis = (
       selection.setAttribute('x', x.toFixed(2))
       selection.setAttribute('width', width.toFixed(2))
     }
-    act
-      .querySelector<SVGPathElement>('.tri-route-selected')
-      ?.setAttribute('d', analysisRoutePath(route, range))
+    routeSelected?.setAttribute('d', route.length >= 2 ? analysisRoutePath(route, range) : '')
     onRange?.(range, committed)
   }
   const showLocked = (): void => {

@@ -12,6 +12,7 @@ import {
   mergeGarminFitTrainingEffect,
   mergeGarminVo2Range,
   mergeGarminWeightRange,
+  needsGarminActivityFit,
   reconcileGarminActivities,
   resolveGarminFetch,
   resolveGarminWeightDay,
@@ -49,6 +50,16 @@ test('keeps Garmin Connect training effect when the FIT also contains values', (
   assert.equal(mergeGarminFitTrainingEffect(source, { aerobic: 3, anaerobic: 1.3 }), source)
 })
 
+test('fetches FIT training effect for every Garmin activity kind exactly once', () => {
+  assert.equal(needsGarminActivityFit('yoga', false, false, false), true)
+  assert.equal(needsGarminActivityFit('walk', false, false, false), true)
+  assert.equal(needsGarminActivityFit('strength', true, false, false), false)
+  assert.equal(needsGarminActivityFit('bike', true, false, false), true)
+  assert.equal(needsGarminActivityFit('bike', true, true, false), false)
+  assert.equal(needsGarminActivityFit('swim', true, false, false), true)
+  assert.equal(needsGarminActivityFit('swim', true, false, true), false)
+})
+
 test('preserves Garmin cache data only when a fetch fails', () => {
   const previous = [{ id: 1 }]
 
@@ -77,7 +88,7 @@ test('preserves same-day Garmin weigh-ins when dayview fails', () => {
 
 test('Garmin routine refresh overlaps the latest activity and schema refresh keeps history', () => {
   const cache = {
-    version: 11,
+    version: 14,
     lastSync: 1,
     activities: {
       old: activity('old', '2023-09-27T05:45:21.0'),
@@ -86,7 +97,7 @@ test('Garmin routine refresh overlaps the latest activity and schema refresh kee
   }
 
   assert.equal(garminRefreshStart(cache, '2026-05-15', 3), '2026-08-28')
-  assert.equal(garminRefreshStart({ ...cache, version: 10 }, '2026-05-15', 3), '2023-09-27')
+  assert.equal(garminRefreshStart({ ...cache, version: 13 }, '2026-05-15', 3), '2023-09-27')
   assert.equal(garminRefreshStart(null, '2026-05-15', 3), '2026-05-15')
 })
 

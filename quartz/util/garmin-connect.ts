@@ -3,6 +3,9 @@ import {
   emptyGarminMetrics,
   type GarminActivity,
   type GarminClimbSegment,
+  type GarminRunWalkData,
+  type GarminRunWalkState,
+  type GarminRunningDynamicsSummary,
   type GarminStreams,
   type GarminVo2Day,
   type GarminWeightSample,
@@ -93,6 +96,18 @@ const EXERCISE_LOAD_KEYS = ['activityTrainingLoad', 'exerciseLoad']
 const TRAINING_EFFECT_LABEL_KEYS = ['trainingEffectLabel']
 const AEROBIC_TRAINING_EFFECT_MESSAGE_KEYS = ['aerobicTrainingEffectMessage']
 const ANAEROBIC_TRAINING_EFFECT_MESSAGE_KEYS = ['anaerobicTrainingEffectMessage']
+const AVG_RESPIRATION_RATE_KEYS = ['avgRespirationRate', 'averageRespirationRate']
+const AVG_STRIDE_LENGTH_CM_KEYS = ['strideLength', 'averageStrideLength']
+const AVG_VERTICAL_RATIO_PCT_KEYS = ['verticalRatio', 'averageVerticalRatio']
+const AVG_VERTICAL_OSCILLATION_CM_KEYS = ['verticalOscillation', 'averageVerticalOscillation']
+const AVG_GROUND_CONTACT_BALANCE_LEFT_PCT_KEYS = [
+  'groundContactBalanceLeft',
+  'averageGroundContactBalanceLeft',
+]
+const AVG_GROUND_CONTACT_TIME_MS_KEYS = ['groundContactTime', 'averageGroundContactTime']
+const AVG_STEP_SPEED_LOSS_MPS_KEYS = ['stepSpeedLoss', 'averageStepSpeedLoss']
+const AVG_STEP_SPEED_LOSS_PCT_KEYS = ['stepSpeedLossPercent', 'averageStepSpeedLossPercent']
+const IMPACT_LOAD_M_KEYS = ['impactLoad']
 const KJ_PER_KCAL = 4.184
 const CLIMB_SPLIT_TYPE = 'CLIMB_PRO_CYCLING_CLIMB'
 
@@ -148,14 +163,23 @@ const METRIC_KEYS = {
   cadence: 'directBikeCadence',
   distance: 'sumDistance',
   elapsedTime: 'sumElapsedDuration',
+  groundContactBalanceLeftPct: 'directGroundContactBalanceLeft',
+  groundContactTimeMs: 'directGroundContactTime',
   heartRate: 'directHeartRate',
+  impactLoadFactor: 'directImpactLoadFactor',
   latitude: 'directLatitude',
   longitude: 'directLongitude',
+  performanceCondition: 'directPerformanceCondition',
   potentialStamina: 'directPotentialStamina',
   power: 'directPower',
   rightBalance: 'directRightBalance',
   respiration: 'directRespirationRate',
+  stepSpeedLossMps: 'directStepSpeedLoss',
+  stepSpeedLossPct: 'directStepSpeedLossPercent',
   stamina: 'directAvailableStamina',
+  strideLengthCm: 'directStrideLength',
+  verticalOscillationCm: 'directVerticalOscillation',
+  verticalRatioPct: 'directVerticalRatio',
 }
 const CORE_CONNECT_IQ_APP_ID = '6957fe68-83fe-4ed6-8613-413f70624bb5'
 const CORE_DEVELOPER_FIELDS = { coreTemperatureC: 0, skinTemperatureC: 10, heatStrainIndex: 95 }
@@ -380,10 +404,55 @@ function hasGarminActivityData(activity: GarminActivity): boolean {
   return (
     hasGarminFueling(activity.fueling) ||
     hasGarminMetrics(activity.metrics) ||
+    activity.runningDynamics != null ||
     activity.distanceM != null ||
     activity.movingTimeS != null ||
     activity.elapsedTimeS != null
   )
+}
+
+function garminRunningDynamicsSummary(
+  records: readonly UnknownRecord[],
+): GarminRunningDynamicsSummary | null {
+  const summary: GarminRunningDynamicsSummary = {
+    source: 'garmin',
+    averageRespirationRate: roundedNonnegativeFloat(
+      firstNumber(records, AVG_RESPIRATION_RATE_KEYS),
+      2,
+    ),
+    averageStrideLengthCm: roundedNonnegativeFloat(
+      firstNumber(records, AVG_STRIDE_LENGTH_CM_KEYS),
+      2,
+    ),
+    averageVerticalRatioPct: roundedNonnegativeFloat(
+      firstNumber(records, AVG_VERTICAL_RATIO_PCT_KEYS),
+      2,
+    ),
+    averageVerticalOscillationCm: roundedNonnegativeFloat(
+      firstNumber(records, AVG_VERTICAL_OSCILLATION_CM_KEYS),
+      2,
+    ),
+    averageGroundContactBalanceLeftPct: roundedNonnegativeFloat(
+      firstNumber(records, AVG_GROUND_CONTACT_BALANCE_LEFT_PCT_KEYS),
+      2,
+    ),
+    averageGroundContactTimeMs: roundedNonnegativeFloat(
+      firstNumber(records, AVG_GROUND_CONTACT_TIME_MS_KEYS),
+      2,
+    ),
+    averageStepSpeedLossMps: roundedNonnegativeFloat(
+      firstNumber(records, AVG_STEP_SPEED_LOSS_MPS_KEYS),
+      4,
+    ),
+    averageStepSpeedLossPct: roundedNonnegativeFloat(
+      firstNumber(records, AVG_STEP_SPEED_LOSS_PCT_KEYS),
+      2,
+    ),
+    impactLoadM: roundedNonnegativeFloat(firstNumber(records, IMPACT_LOAD_M_KEYS), 1),
+  }
+  return Object.entries(summary).some(([key, value]) => key !== 'source' && value != null)
+    ? summary
+    : null
 }
 
 function recordsFromJson(raw: unknown): UnknownRecord[] {
@@ -643,6 +712,47 @@ export function garminConnectClimbSegments(raw: unknown): GarminClimbSegment[] {
   return out.sort((a, b) => a.startDate.localeCompare(b.startDate))
 }
 
+function garminRunWalkState(type: string | null): GarminRunWalkState | null {
+  if (type === 'RWD_RUN') return 'run'
+  if (type === 'RWD_WALK') return 'walk'
+  if (type === 'RWD_STAND') return 'idle'
+  return null
+}
+
+export function garminConnectRunWalk(raw: unknown): GarminRunWalkData | null {
+  if (!isRecord(raw) || !Array.isArray(raw.splits)) return null
+  const segments: GarminRunWalkData['segments'] = []
+  let elapsedTimeS = 0
+  let runTimeS = 0
+  let walkTimeS = 0
+  let idleTimeS = 0
+  for (const split of raw.splits) {
+    if (!isRecord(split)) continue
+    const state = garminRunWalkState(readString(split, 'type') ?? null)
+    const durationS = roundedFloat(readNumber(split, 'duration') ?? null, 3)
+    if (!state || durationS == null || durationS <= 0) continue
+    const startElapsedS = elapsedTimeS
+    elapsedTimeS += durationS
+    if (state === 'run') runTimeS += durationS
+    else if (state === 'walk') walkTimeS += durationS
+    else idleTimeS += durationS
+    segments.push({
+      state,
+      startElapsedS: roundedFloat(startElapsedS, 3) ?? startElapsedS,
+      endElapsedS: roundedFloat(elapsedTimeS, 3) ?? elapsedTimeS,
+    })
+  }
+  if (segments.length === 0) return null
+  return {
+    source: 'garmin',
+    elapsedTimeS: roundedFloat(elapsedTimeS, 3) ?? elapsedTimeS,
+    runTimeS: roundedFloat(runTimeS, 3) ?? runTimeS,
+    walkTimeS: roundedFloat(walkTimeS, 3) ?? walkTimeS,
+    idleTimeS: roundedFloat(idleTimeS, 3) ?? idleTimeS,
+    segments,
+  }
+}
+
 function descriptorMetricIndex(
   detail: UnknownRecord,
   matches: (descriptor: UnknownRecord) => boolean,
@@ -703,6 +813,15 @@ function hasStreamData(streams: GarminStreams): boolean {
     (streams.stamina?.some(value => value >= 0) ?? false) ||
     (streams.potentialStamina?.some(value => value >= 0) ?? false) ||
     (streams.respiration?.some(value => value > 0) ?? false) ||
+    (streams.performanceCondition?.some(value => value != null) ?? false) ||
+    (streams.strideLengthCm?.some(value => value != null && value > 0) ?? false) ||
+    (streams.verticalRatioPct?.some(value => value != null && value >= 0) ?? false) ||
+    (streams.verticalOscillationCm?.some(value => value != null && value > 0) ?? false) ||
+    (streams.groundContactBalanceLeftPct?.some(value => value != null && value >= 0) ?? false) ||
+    (streams.groundContactTimeMs?.some(value => value != null && value > 0) ?? false) ||
+    (streams.stepSpeedLossMps?.some(value => value != null && value >= 0) ?? false) ||
+    (streams.stepSpeedLossPct?.some(value => value != null && value >= 0) ?? false) ||
+    (streams.impactLoadFactor?.some(value => value != null && value >= 0) ?? false) ||
     (streams.muscleOxygenPercent?.some(value => value >= 0 && value <= 100) ?? false) ||
     (streams.heatStrainIndex?.some(value => value >= 0) ?? false) ||
     (streams.coreTemperatureC?.some(value => value > 0) ?? false) ||
@@ -739,15 +858,24 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     cadence: metricIndex(detail, METRIC_KEYS.cadence),
     distance: metricIndex(detail, METRIC_KEYS.distance),
     elapsedTime: metricIndex(detail, METRIC_KEYS.elapsedTime),
+    groundContactBalanceLeftPct: metricIndex(detail, METRIC_KEYS.groundContactBalanceLeftPct),
+    groundContactTimeMs: metricIndex(detail, METRIC_KEYS.groundContactTimeMs),
     heartRate: metricIndex(detail, METRIC_KEYS.heartRate),
+    impactLoadFactor: metricIndex(detail, METRIC_KEYS.impactLoadFactor),
     latitude: metricIndex(detail, METRIC_KEYS.latitude),
     longitude: metricIndex(detail, METRIC_KEYS.longitude),
+    performanceCondition: metricIndex(detail, METRIC_KEYS.performanceCondition),
     potentialStamina: metricIndex(detail, METRIC_KEYS.potentialStamina),
     power: metricIndex(detail, METRIC_KEYS.power),
     rightBalance: metricIndex(detail, METRIC_KEYS.rightBalance),
     respiration: metricIndex(detail, METRIC_KEYS.respiration),
+    stepSpeedLossMps: metricIndex(detail, METRIC_KEYS.stepSpeedLossMps),
+    stepSpeedLossPct: metricIndex(detail, METRIC_KEYS.stepSpeedLossPct),
     muscleOxygenPercent: metricIndexFrom(detail, MUSCLE_OXYGEN_METRIC_KEYS),
     stamina: metricIndex(detail, METRIC_KEYS.stamina),
+    strideLengthCm: metricIndex(detail, METRIC_KEYS.strideLengthCm),
+    verticalOscillationCm: metricIndex(detail, METRIC_KEYS.verticalOscillationCm),
+    verticalRatioPct: metricIndex(detail, METRIC_KEYS.verticalRatioPct),
     heatStrainIndex: coreMetricIndex(detail, 'heatStrainIndex'),
     coreTemperatureC: coreMetricIndex(detail, 'coreTemperatureC'),
     skinTemperatureC: coreMetricIndex(detail, 'skinTemperatureC'),
@@ -764,6 +892,15 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     stamina: indices.stamina == null ? undefined : [],
     potentialStamina: indices.potentialStamina == null ? undefined : [],
     respiration: indices.respiration == null ? undefined : [],
+    performanceCondition: indices.performanceCondition == null ? undefined : [],
+    strideLengthCm: indices.strideLengthCm == null ? undefined : [],
+    verticalRatioPct: indices.verticalRatioPct == null ? undefined : [],
+    verticalOscillationCm: indices.verticalOscillationCm == null ? undefined : [],
+    groundContactBalanceLeftPct: indices.groundContactBalanceLeftPct == null ? undefined : [],
+    groundContactTimeMs: indices.groundContactTimeMs == null ? undefined : [],
+    stepSpeedLossMps: indices.stepSpeedLossMps == null ? undefined : [],
+    stepSpeedLossPct: indices.stepSpeedLossPct == null ? undefined : [],
+    impactLoadFactor: indices.impactLoadFactor == null ? undefined : [],
     muscleOxygenPercent: indices.muscleOxygenPercent == null ? undefined : [],
     heatStrainIndex: indices.heatStrainIndex == null ? undefined : [],
     coreTemperatureC: indices.coreTemperatureC == null ? undefined : [],
@@ -795,6 +932,17 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     streams.stamina?.push(metricValue(item, indices.stamina) ?? -1)
     streams.potentialStamina?.push(metricValue(item, indices.potentialStamina) ?? -1)
     streams.respiration?.push(metricValue(item, indices.respiration) ?? 0)
+    streams.performanceCondition?.push(metricValue(item, indices.performanceCondition))
+    streams.strideLengthCm?.push(metricValue(item, indices.strideLengthCm))
+    streams.verticalRatioPct?.push(metricValue(item, indices.verticalRatioPct))
+    streams.verticalOscillationCm?.push(metricValue(item, indices.verticalOscillationCm))
+    streams.groundContactBalanceLeftPct?.push(
+      metricValue(item, indices.groundContactBalanceLeftPct),
+    )
+    streams.groundContactTimeMs?.push(metricValue(item, indices.groundContactTimeMs))
+    streams.stepSpeedLossMps?.push(metricValue(item, indices.stepSpeedLossMps))
+    streams.stepSpeedLossPct?.push(metricValue(item, indices.stepSpeedLossPct))
+    streams.impactLoadFactor?.push(metricValue(item, indices.impactLoadFactor))
     streams.muscleOxygenPercent?.push(metricValue(item, indices.muscleOxygenPercent) ?? -1)
     streams.heatStrainIndex?.push(metricValue(item, indices.heatStrainIndex) ?? -1)
     streams.coreTemperatureC?.push(metricValue(item, indices.coreTemperatureC) ?? -1)
@@ -893,6 +1041,7 @@ export function garminConnectActivity(
     sourceDevice,
     sourceFile: null,
     metrics,
+    runningDynamics: garminRunningDynamicsSummary(records),
     fueling,
   }
   return hasGarminActivityData(activity) ? activity : null

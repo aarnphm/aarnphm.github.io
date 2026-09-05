@@ -10,8 +10,11 @@ const maintenance = {
     [
       { type: 'Ultegra R8100 Pulley Wheel' },
       { distance: null },
-      { range: [{ start: '2026-05-16', end: '2026-08-10' }] },
-      { reason: 'upgraded to CeramicSpeed OSPW' },
+      {
+        range: [
+          { start: '2026-05-16', end: '2026-08-10', reason: 'upgraded to CeramicSpeed OSPW' },
+        ],
+      },
     ],
     [
       { type: 'CeramicSpeed OSPW RS 5 Spoke' },
@@ -62,9 +65,13 @@ const maintenance = {
         [
           { type: 'Pirelli P Zero TPU' },
           { distance: null },
-          { range: [{ start: '2026-08-12', end: null }] },
-          { reason: null },
-          { repaired: false },
+          {
+            range: [
+              { start: '2026-08-12', end: '2026-09-03', reason: 'slow puncture', repaired: true },
+              { start: '2026-09-04' },
+              { end: null },
+            ],
+          },
         ],
       ],
     },
@@ -126,6 +133,16 @@ test('normalizes service, component, chain, and wheel maintenance records from f
     [
       [
         'front',
+        'tube',
+        'Pirelli P Zero TPU',
+        [
+          { start: '2026-08-12', end: '2026-09-03' },
+          { start: '2026-09-04', end: null },
+        ],
+        true,
+      ],
+      [
+        'front',
         'tire',
         'Pirelli P Zero Race SL-R',
         [
@@ -134,10 +151,11 @@ test('normalizes service, component, chain, and wheel maintenance records from f
         ],
         true,
       ],
-      ['front', 'tube', 'Pirelli P Zero TPU', [{ start: '2026-08-12', end: null }], false],
       ['front', 'tire', 'Vittoria Corsa N.EXT', [{ start: '2026-05-16', end: '2026-07-16' }], null],
     ],
   )
+  assert.equal(parsed?.components[1]?.reason, 'upgraded to CeramicSpeed OSPW')
+  assert.equal(parsed?.wheels[0]?.reason, 'slow puncture')
 })
 
 test('formats mile source values in the selected distance system', () => {
@@ -159,6 +177,22 @@ test('drops malformed records and rejects empty maintenance data', () => {
       tires: {
         front: {
           tires: [[{ type: 'Pirelli' }, { distance: null }, { range: [] }, { reason: null }]],
+        },
+      },
+    }),
+    null,
+  )
+  assert.equal(
+    parseTriathlonMaintenance({
+      tires: {
+        front: {
+          tube: [
+            [
+              { type: 'Pirelli' },
+              { distance: null },
+              { range: [{ start: '2026-08-12', reason: 42 }, { end: null }] },
+            ],
+          ],
         },
       },
     }),

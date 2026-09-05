@@ -167,6 +167,7 @@ export async function fetchWahooCache(
   const streams: WahooCache['streams'] = {}
   const gearShifts: WahooCache['gearShifts'] = {}
   const cyclingDynamics: WahooCache['cyclingDynamics'] = {}
+  const summitSegments: WahooCache['summitSegments'] = {}
   let skippedThirdParty = 0
   let skippedIncomplete = 0
   let skippedRestricted = 0
@@ -176,18 +177,21 @@ export async function fetchWahooCache(
     const previousStreams = previous?.streams[id]
     const previousGearShifts = previous?.gearShifts[id]
     const previousCyclingDynamics = previous?.cyclingDynamics[id]
+    const previousSummitSegments = previous?.summitSegments[id]
     if (
       workout.summary == null &&
       workout.updatedAt != null &&
       previousActivity?.workoutUpdatedAt === workout.updatedAt &&
       previousStreams &&
       previousGearShifts &&
-      previousCyclingDynamics
+      previousCyclingDynamics &&
+      previousSummitSegments
     ) {
       activities[id] = previousActivity
       streams[id] = previousStreams
       gearShifts[id] = previousGearShifts
       cyclingDynamics[id] = previousCyclingDynamics
+      summitSegments[id] = previousSummitSegments
       continue
     }
     const resolution = await resolveWahooWorkoutSummary(client, workout)
@@ -215,6 +219,7 @@ export async function fetchWahooCache(
     streams[activity.id] = fit.streams
     gearShifts[activity.id] = fit.gearShifts
     cyclingDynamics[activity.id] = fit.cyclingDynamics
+    summitSegments[activity.id] = fit.summitSegments
     console.log(`[wahoo] decoded ${activity.id} ${activity.startDate} ${bytes.byteLength} bytes`)
   }
   console.log(
@@ -227,6 +232,7 @@ export async function fetchWahooCache(
     streams,
     gearShifts,
     cyclingDynamics,
+    summitSegments,
   }
 }
 

@@ -3,6 +3,7 @@ import { remove } from 'unist-util-remove'
 import { visit } from 'unist-util-visit'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import {
+  ActivityTrackingEntry,
   ManualFuelingEntry,
   ManualSaunaEntry,
   ManualStrengthEntry,
@@ -18,6 +19,7 @@ export const Tracking: QuartzTransformerPlugin = () => ({
   markdownPlugins() {
     return [
       () => (tree: Root, file) => {
+        const activities: ActivityTrackingEntry[] = []
         const days: TrackEntry[] = []
         const fueling: ManualFuelingEntry[] = []
         const strength: ManualStrengthEntry[] = []
@@ -27,18 +29,27 @@ export const Tracking: QuartzTransformerPlugin = () => ({
           if (node.lang !== 'tracking') return
           const entry = parseTrackingBlock(node.meta, node.value ?? '')
           if (!entry) return
-          days.push(entry.day)
+          if (entry.day) days.push(entry.day)
+          if (entry.activity) activities.push(entry.activity)
           if (entry.fueling) fueling.push(entry.fueling)
           if (entry.strength) strength.push(entry.strength)
           if (entry.sauna) sauna.push(entry.sauna)
           if (entry.trainingExclusion) trainingExclusions.push(entry.trainingExclusion)
         })
-        if (days.length === 0) return
+        if (days.length === 0 && activities.length === 0) return
         days.sort((a, b) => a.date.localeCompare(b.date))
         const races: RaceEvent[] = days
           .filter(d => d.race || d.event != null)
           .map(d => ({ date: d.date, event: d.event }))
-        const data: TrackingData = { days, races, fueling, strength, sauna, trainingExclusions }
+        const data: TrackingData = {
+          activities,
+          days,
+          races,
+          fueling,
+          strength,
+          sauna,
+          trainingExclusions,
+        }
         file.data.tracking = data
         remove(tree, node => node.type === 'code' && (node as Code).lang === 'tracking')
       },
