@@ -13,3 +13,31 @@ export function audioIconSvg(path: string): string {
 export function audioBarHeight(i: number): number {
   return 30 + Math.round(60 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.55)))
 }
+
+export function memoPeaksUrl(url: string): string | undefined {
+  const parsed = new URL(url)
+  if (!/^\/triathlon\/memos\/[^/]+\.m4a$/.test(parsed.pathname)) return undefined
+  parsed.pathname = parsed.pathname.replace(/\.m4a$/, '.peaks.json')
+  return parsed.toString()
+}
+
+export function resampleAudioPeaks(value: unknown, count: number): number[] | null {
+  if (typeof value !== 'object' || value === null || !('peaks' in value)) return null
+  const peaks = value.peaks
+  if (
+    !Array.isArray(peaks) ||
+    !peaks.length ||
+    !Number.isInteger(count) ||
+    count < 1 ||
+    !peaks.every(
+      (peak): peak is number =>
+        typeof peak === 'number' && Number.isFinite(peak) && peak >= 0 && peak <= 1,
+    )
+  )
+    return null
+  return Array.from({ length: count }, (_, index) => {
+    const start = Math.floor((index * peaks.length) / count)
+    const end = Math.max(start + 1, Math.floor(((index + 1) * peaks.length) / count))
+    return Math.max(...peaks.slice(start, end))
+  })
+}

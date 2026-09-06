@@ -1,4 +1,10 @@
-import { AUDIO_ICON_PATHS, audioBarHeight, audioIconSvg } from '../../util/audio'
+import {
+  AUDIO_ICON_PATHS,
+  audioBarHeight,
+  audioIconSvg,
+  memoPeaksUrl,
+  resampleAudioPeaks,
+} from '../../util/audio'
 
 const PITCH = 4
 const SVG_PLAY = audioIconSvg(AUDIO_ICON_PATHS.play)
@@ -24,6 +30,15 @@ async function computePeaks(
   const cached = peakCache.get(key)
   if (cached) return cached
   try {
+    const peaksUrl = memoPeaksUrl(url)
+    if (peaksUrl) {
+      const response = await fetch(peaksUrl, { signal })
+      if (!response.ok) return null
+      const data: unknown = await response.json()
+      const peaks = resampleAudioPeaks(data, count)
+      if (peaks) peakCache.set(key, peaks)
+      return peaks
+    }
     const res = await fetch(url, { signal })
     if (!res.ok) return null
     if (Number(res.headers.get('content-length') ?? '0') > MAX_DECODE_BYTES) return null
@@ -55,7 +70,7 @@ async function computePeaks(
   }
 }
 
-function hydrate(wrap: HTMLElement): void {
+function hydrate(wrap: HTMLElement): (() => void) | undefined {
   if (wrap.dataset.customized === 'true') return
   const audio = wrap.querySelector<HTMLAudioElement>('audio')
   const btn = wrap.querySelector<HTMLButtonElement>('.ap-play')
@@ -154,7 +169,7 @@ function hydrate(wrap: HTMLElement): void {
   render()
   audio.load()
 
-  window.addCleanup(() => {
+  return () => {
     btn.removeEventListener('click', toggle)
     repeat?.removeEventListener('click', toggleRepeat)
     bars.removeEventListener('click', seek)
@@ -167,9 +182,12 @@ function hydrate(wrap: HTMLElement): void {
     io.disconnect()
     ac.abort()
     if (!audio.paused) audio.pause()
-  })
+  }
 }
 
 document.addEventListener('nav', () => {
-  document.querySelectorAll<HTMLElement>('figure.audio-player[data-audio-embed]').forEach(hydrate)
+  document.querySelectorAll<HTMLElement>('figure.audio-player[data-audio-embed]').forEach(wrap => {
+    const cleanup = hydrate(wrap)
+    if (cleanup) window.addCleanup(cleanup)
+  })
 })

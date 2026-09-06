@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, realpath, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
@@ -11,6 +11,7 @@ import type { StaticResources } from '../../util/resources'
 import { type FilePath, isFilePath } from '../../util/path'
 import {
   AgentSkills,
+  AGENT_SKILLS_SOURCE_DIRECTORY,
   createAgentSkillsPublication,
   loadAgentSkillSources,
   type AgentSkillFile,
@@ -231,20 +232,16 @@ test('partial emitter replaces the publication after skill source changes', asyn
 })
 
 test('loads every tracked garden skill into an RFC-valid publication', async () => {
-  const publication = createAgentSkillsPublication(await loadAgentSkillSources('.claude/skills'))
+  const sources = await loadAgentSkillSources(AGENT_SKILLS_SOURCE_DIRECTORY)
+  const publication = createAgentSkillsPublication(sources)
   assert.deepEqual(
     publication.index.skills.map(skill => skill.name),
-    [
-      'add-descriptions',
-      'core',
-      'flashcards',
-      'interactive-diagrams',
-      'quartz-plugins',
-      'sfwr-4tb3',
-    ],
+    ['add-descriptions', 'flashcards', 'interactive-diagrams', 'quartz-plugins', 'sfwr-4tb3'],
   )
   assert.equal(
     publication.index.skills.every(skill => /^sha256:[0-9a-f]{64}$/.test(skill.digest)),
     true,
   )
+  assert.deepEqual(await loadAgentSkillSources('.claude/skills'), sources)
+  assert.equal(await realpath('.claude/skills'), await realpath(AGENT_SKILLS_SOURCE_DIRECTORY))
 })

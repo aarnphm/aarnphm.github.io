@@ -86,6 +86,9 @@ function shouldIgnoreAssetFile(
 ): boolean {
   const ext = path.extname(fp).toLowerCase()
   if (ext === '.md' || ext === '.base' || isFlashcardPath(fp)) return true
+  if (fp.startsWith('triathlon/memos/') && ext !== '.json') {
+    return ext === '.qta' || ext === '.waveform' || process.env.CF_PAGES === '1'
+  }
   if (process.env.CF_PAGES === '1') return ext === '.pdf' || heavyWatchAssetExts.has(ext)
   if (argv.watch && ext === '.pdf') return !referencedPdfs.has(fp)
   return argv.watch && heavyWatchAssetExts.has(ext)

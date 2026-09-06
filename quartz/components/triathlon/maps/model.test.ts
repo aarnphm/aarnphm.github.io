@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { buildPayload, type StravaMapPoint } from '../../../plugins/stores/strava'
+import { mapActivity as mapStravaActivity } from '../../../scripts/sync-strava'
+import { DEFAULT_TRIATHLON_PRESENTATION } from '../../../util/triathlon-presentation'
 import {
+  buildOverview,
   fcBounds,
   heatCasingWidthExpr,
   heatWidthExpr,
@@ -9,10 +13,94 @@ import {
   pctRange,
   readOverviewMode,
   readRouteSport,
+  routeFC,
   streetMetricCasingWidthExpr,
   streetMetricWidthExpr,
   updateMap,
 } from './model'
+
+const mapActivity = (id: number, sportType: string, mapRoute: StravaMapPoint[][]) => {
+  const start = '2026-09-04T12:00:00Z'
+  const payload = buildPayload(
+    {
+      athleteId: 1,
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: Date.parse(start),
+      lastActivityStart: Date.parse(start) / 1000,
+      activities: {
+        [id]: mapStravaActivity({
+          id,
+          name: sportType,
+          type: sportType === 'VirtualRun' ? 'Run' : 'Ride',
+          sport_type: sportType,
+          distance: 1_000,
+          moving_time: 300,
+          elapsed_time: 300,
+          total_elevation_gain: 0,
+          start_date: start,
+          start_date_local: start,
+          average_speed: 1_000 / 300,
+          average_watts: 150,
+          device_watts: true,
+        }),
+      },
+    },
+    null,
+    null,
+  )
+  return { ...payload.details[id], mapRoute }
+}
+
+test('Strava virtual ride tags exclude courses from overview bounds, visits, and metric ranges', () => {
+  const outdoor = mapActivity(1, 'Ride', [
+    [
+      { lat: 43.7, lng: -79.4, d: 0 },
+      { lat: 43.701, lng: -79.399, d: 1 },
+    ],
+  ])
+  const virtual = mapActivity(2, 'VirtualRide', [
+    [
+      { lat: 45.062314, lng: 6.036319, d: 0 },
+      { lat: 45.063, lng: 6.037, d: 1 },
+    ],
+  ])
+  const virtualLocal = { ...outdoor, id: 3, virtual: true, avgWatts: 900 }
+  const overview = (details: Record<string, typeof outdoor>) =>
+    buildOverview(DEFAULT_TRIATHLON_PRESENTATION, { details, health: {} }, new Set(['bike']))
+
+  assert.equal(virtual.virtual, true)
+  assert.deepEqual(overview({ 1: outdoor, 2: virtual, 3: virtualLocal }), overview({ 1: outdoor }))
+  assert.deepEqual(fcBounds(overview({ 1: outdoor, 2: virtual }).traces), [
+    [-79.4, 43.7],
+    [-79.399, 43.701],
+  ])
+  assert.deepEqual(fcBounds(routeFC(virtual)), [
+    [6.036319, 45.062314],
+    [6.037, 45.063],
+  ])
+  assert.deepEqual(fcBounds(overview({ 2: { ...virtual, virtual: false } }).traces), [
+    [6.036319, 45.062314],
+    [6.037, 45.063],
+  ])
+})
+
+test('Strava virtual run tags retain detail routes without adding outdoor overview bounds', () => {
+  const virtual = mapActivity(1, 'VirtualRun', [
+    [
+      { lat: 45.062314, lng: 6.036319, d: 0 },
+      { lat: 45.063, lng: 6.037, d: 1 },
+    ],
+  ])
+  const overview = buildOverview(
+    DEFAULT_TRIATHLON_PRESENTATION,
+    { details: { 1: virtual }, health: {} },
+    new Set(['run']),
+  )
+
+  assert.equal(fcBounds(overview.traces), null)
+  assert.deepEqual(overview.streetActivities, [])
+  assert.equal(routeFC(virtual).features.length, 1)
+})
 
 const containsZoomExpression = (value: unknown): boolean =>
   Array.isArray(value) &&

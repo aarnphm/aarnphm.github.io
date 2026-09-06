@@ -53,6 +53,12 @@ import {
 import handleCurius from './curius'
 import { handleFlashcardsReview, handleFlashcardsState } from './flashcards'
 import { handleLeanVerify } from './lean'
+import {
+  getObjectFromBucket,
+  getObjectInfo,
+  lfsAssetContentType,
+  lfsPointerRequest,
+} from './lfs-assets'
 import Garden from './mcp'
 import { MCP_SERVER_CARD_PATH, mcpServerCardResponse } from './mcp-server-card'
 import { handleMentions } from './mentions'
@@ -79,7 +85,6 @@ import {
 import { triathlonDataHtml } from './triathlon-data'
 import { handleWahooOAuthCallback } from './wahoo-oauth'
 
-const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
 const MIME = 'application/vnd.git-lfs+json'
 const KEEP_HEADERS = 'Cache-Control'
 const HTML_CONTENT_TYPE = 'text/html; charset=utf-8'
@@ -133,14 +138,6 @@ type CfCacheStorage = CacheStorage & { readonly default: Cache }
 function splitFirst(str: string, delim: string): [string, string?] {
   const idx = str.indexOf(delim)
   return idx === -1 ? [str] : [str.slice(0, idx), str.slice(idx + 1)]
-}
-
-function strictDecode(bytes: Uint8Array): string | null {
-  try {
-    return new TextDecoder('utf-8', { fatal: true }).decode(bytes)
-  } catch {
-    return null
-  }
 }
 
 function getLfsUrl(config: string): URL | null {
@@ -246,37 +243,6 @@ function buildCorsHeaders(env: Env, request: Request): Record<string, string> {
   return headers
 }
 
-async function getObjectInfo(
-  response: Response,
-): Promise<{ hash_algo: string; oid: string; size: number } | null> {
-  // TODO: theoretically an LFS pointer could be >256 bytes.
-  // however, even the LFS client spec seems to only read 100:
-  // https://github.com/git-lfs/git-lfs/blob/main/docs/spec.md
-  const reader = response.body?.getReader()
-  if (!reader) return null
-  const { value } = await reader.read()
-  if (!value) return null
-  const slice = value.subarray(0, 256)
-  const text = strictDecode(slice)
-  if (!text || !text.startsWith(VERSION)) return null
-  const rest = text.slice(VERSION.length)
-  let hash_algo: string | undefined, oid: string | undefined, size: number | undefined
-  for (const line of rest.split('\n')) {
-    if (line === '') continue
-    const [key, val] = splitFirst(line, ' ')
-    if (val === undefined) return null
-    if (key === 'oid') {
-      ;[hash_algo, oid] = splitFirst(val, ':')
-      if (oid === undefined) return null
-    } else if (key === 'size') {
-      const n = parseInt(val)
-      if (Number.isNaN(n)) return null
-      size = n
-    }
-  }
-  return hash_algo && oid && size ? { hash_algo, oid, size } : null
-}
-
 async function getObjectAction(
   lfsUrl: URL,
   info: { hash_algo: string; oid: string; size: number },
@@ -301,33 +267,6 @@ async function getObjectAction(
       return obj.actions.download
   }
   return null
-}
-
-async function getObjectFromBucket(
-  ctx: ExecutionContext,
-  bucket: R2Bucket,
-  bucketUrl: string,
-  path: string,
-  request: Request,
-): Promise<Response> {
-  const cacheKey = new Request(extendPath(bucketUrl, path).toString(), request)
-  // https://developers.cloudflare.com/workers/reference/how-the-cache-works/#cache-api
-  const cache = (caches as CfCacheStorage).default
-  const cached = await cache.match(cacheKey)
-  if (cached) return cached
-  const method = request.method.toLowerCase() as 'get' | 'head'
-  const object = (await bucket[method](path)) as R2ObjectBody
-  const headers = new Headers()
-  object.writeHttpMetadata(headers)
-  if (object.httpEtag) headers.set('ETag', object.httpEtag)
-  const resp = new Response(object.body, { headers })
-  ctx.waitUntil(
-    cache.put(
-      cacheKey,
-      withHeaders(resp.clone(), { 'Cache-Control': 'immutable, max-age=31536000' }),
-    ),
-  )
-  return resp
 }
 
 async function getModelObject(
@@ -1162,6 +1101,59 @@ export default {
       )
     }
 
+    const lfsContentType = lfsAssetContentType(url.pathname)
+    if (lfsContentType) {
+      if (request.method !== 'GET' && request.method !== 'HEAD') {
+        return new Response(null, {
+          status: request.method === 'OPTIONS' ? 204 : 405,
+          headers: {
+            Allow: 'GET, HEAD, OPTIONS',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Range',
+            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+          },
+        })
+      }
+      const assetProbeRequest = lfsPointerRequest(request)
+      const originResp = await env.ASSETS.fetch(
+        requestWithoutStaticAssetCache(assetProbeRequest, url.pathname),
+      )
+      if (originResp.ok) {
+        const info = originResp.body ? await getObjectInfo(originResp.clone()) : null
+        if (!info) {
+          void originResp.body?.cancel().catch(() => {})
+          const resp = await env.ASSETS.fetch(request)
+          return withHeaders(resp, {
+            ...cacheHeadersForStaticAsset(url.pathname, resp.status),
+            ...isolationHeadersForStaticAsset(url.pathname, resp.status),
+          })
+        }
+
+        const resp = env.LFS_BUCKET
+          ? await getObjectFromBucket(env.LFS_BUCKET, info.oid, request, lfsContentType)
+          : await getObjectFromLFS(info, request)
+        const keep = (env.KEEP_HEADERS || KEEP_HEADERS).split(',')
+        return withHeaders(withHeadersFromSource(resp, originResp, keep), {
+          'Content-Type': lfsContentType,
+        })
+      }
+
+      const rawUrl = `https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
+      const upstream = await fetch(lfsPointerRequest(new Request(rawUrl)))
+      if (upstream.ok && upstream.body) {
+        const info = await getObjectInfo(upstream.clone())
+        if (info) {
+          const resp = env.LFS_BUCKET
+            ? await getObjectFromBucket(env.LFS_BUCKET, info.oid, request, lfsContentType)
+            : await getObjectFromLFS(info, request)
+          const keep = (env.KEEP_HEADERS || KEEP_HEADERS).split(',')
+          return withHeaders(withHeadersFromSource(resp, upstream, keep), {
+            'Content-Type': lfsContentType,
+          })
+        }
+      }
+    }
+
     if (url.hostname === STREAM_HOSTNAME && !url.pathname.startsWith('/fonts/')) {
       const sanitizedPathname = streamHostPathname(url.pathname)
 
@@ -1228,60 +1220,6 @@ export default {
     if (arenaJsonMatch) {
       const originResp = await env.ASSETS.fetch(request)
       return withHeaders(originResp, { 'Content-Type': 'application/json', ...apiHeaders })
-    }
-
-    if (url.pathname.endsWith('.pdf')) {
-      const assetProbeRequest =
-        request.method === 'HEAD'
-          ? new Request(request.url, { method: 'GET', headers: request.headers })
-          : request
-      const originResp = await env.ASSETS.fetch(
-        requestWithoutStaticAssetCache(assetProbeRequest, url.pathname),
-      )
-      if (originResp.ok) {
-        const info = originResp.body ? await getObjectInfo(originResp.clone()) : null
-        if (!info) {
-          const resp =
-            request.method === 'HEAD'
-              ? new Response(null, {
-                  headers: originResp.headers,
-                  status: originResp.status,
-                  statusText: originResp.statusText,
-                })
-              : originResp
-          return withHeaders(resp, {
-            ...cacheHeadersForStaticAsset(url.pathname, resp.status),
-            ...isolationHeadersForStaticAsset(url.pathname, resp.status),
-          })
-        }
-
-        const resp =
-          env.LFS_BUCKET && env.LFS_BUCKET_URL
-            ? await getObjectFromBucket(ctx, env.LFS_BUCKET, env.LFS_BUCKET_URL, info.oid, request)
-            : await getObjectFromLFS(info, request)
-        const keep = (env.KEEP_HEADERS || KEEP_HEADERS).split(',')
-        return withHeadersFromSource(resp, originResp, keep)
-      }
-
-      const rawUrl = `https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
-      const upstream = await fetch(new Request(rawUrl, { method: 'GET', headers: request.headers }))
-      if (upstream.body) {
-        const info = await getObjectInfo(upstream.clone())
-        if (info) {
-          const resp =
-            env.LFS_BUCKET && env.LFS_BUCKET_URL
-              ? await getObjectFromBucket(
-                  ctx,
-                  env.LFS_BUCKET,
-                  env.LFS_BUCKET_URL,
-                  info.oid,
-                  request,
-                )
-              : await getObjectFromLFS(info, request)
-          const keep = (env.KEEP_HEADERS || KEEP_HEADERS).split(',')
-          return withHeadersFromSource(resp, upstream, keep)
-        }
-      }
     }
 
     const shouldBypassDocumentCache = localRequest && shouldTreatAsDocument(url.pathname)

@@ -158,3 +158,27 @@ test('production asset emission writes regular files', async () => {
     await rm(root, { recursive: true, force: true })
   }
 })
+
+test('memo audio is local while production keeps only waveform JSON', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-memo-assets-'))
+  const previous = process.env.CF_PAGES
+  try {
+    const ctx = testCtx(root)
+    for (const file of ['day.m4a', 'day.peaks.json', 'day.qta', 'day.waveform']) {
+      await touch(root, `triathlon/memos/${file}`)
+    }
+    delete process.env.CF_PAGES
+    const local = await collectEmitted(Assets().emit(ctx, [], resources))
+    assert.deepEqual(local.sort(), [
+      path.join(ctx.argv.output, 'triathlon/memos/day.m4a'),
+      path.join(ctx.argv.output, 'triathlon/memos/day.peaks.json'),
+    ])
+    process.env.CF_PAGES = '1'
+    const production = await collectEmitted(Assets().emit(ctx, [], resources))
+    assert.deepEqual(production, [path.join(ctx.argv.output, 'triathlon/memos/day.peaks.json')])
+  } finally {
+    if (previous === undefined) delete process.env.CF_PAGES
+    else process.env.CF_PAGES = previous
+    await rm(root, { recursive: true, force: true })
+  }
+})

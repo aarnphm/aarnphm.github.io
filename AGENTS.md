@@ -1,29 +1,26 @@
 # aarnphm's garden
 
-this repo powers a Quartz-based digital garden with custom plugins and a Cloudflare worker. It also contains tools and implementations in Rust, Python, Go, C, C++, OCaml.
+This repository powers a Quartz digital garden with custom plugins and a Cloudflare worker. Other languages and independent projects live under `content/`.
 
-This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quality code that at all times demonstrates a maniacal obsession with elegant minimalism.
+## Implementation
 
-## non-negotiables
+- Fix the owning boundary with the simplest implementation that meets current requirements. Reuse established helpers and dependencies before introducing abstractions or packages.
+- Remove obsolete code when its callers no longer need it. Preserve required provider recovery, external API contracts, and persisted data. Add compatibility or migration code only for an identified current requirement.
+- Keep components modular. Use Preact and the existing SCSS tokens for Quartz UI. Avoid `box-shadow` and decorative `border-left` styling.
+- Keep utility filenames kebab-case. Share a helper in `quartz/util` when multiple owners need it; keep a script-specific helper with its script.
+- Use comments for non-obvious constraints or decisions; omit comments that repeat the code.
+- Keep filesystem access out of Quartz transformers. Emitters own filesystem output.
+- Register browser listeners within `document.addEventListener('nav', () => { ... })` and register their `window.addCleanup` callbacks inside that handler. Keep transient state scoped to the page; persist only state that should survive navigation or reloads.
+- Use native buttons for actions and links for navigation. Preserve keyboard operation and visible focus when styling controls.
+- Keep secrets in local `.env` files or Cloudflare Secrets. Never add secret values to tracked configuration.
+- Use LaTeX math syntax in Markdown and preserve existing note paths and source citations.
 
-- Do not preserve backward compatibility. Remove obsolete paths instead of adding compatibility layers, fallbacks, or migrations.
-- Choose the simplest implementation that fully meets the current requirements. Avoid speculative abstractions, configuration, and indirection.
-- Grow the system in layers. Start from the smallest version that works end to end, and add each new capability on top of a product that already works. Never trade a working product for unfinished complexity.
-- Keep components modular and concerns clearly separated.
-- Prefer established, well-maintained libraries when they reduce overall complexity or improve reliability. Do not reimplement common functionality without a clear reason.
-- Lean on the dependencies already in the project before writing your own implementation or adding packages. Do not assume a library lacks a capability without checking its documentation and types.
-- Make architectural decisions for the long term. Do not accept a stopgap that only works for now and is meant to be replaced later.
-- Ship minimal production code that fixes the owning boundary.
-- Do not write comments.
-- Use `pnpm`, `oxlint`, `oxfmt`, and `tsgo`.
-- Inspect with `fd` and `rg`.
-- Keep new files in `quartz/util` kebab-case.
-- Reuse shared guards and helpers from the owning util module; do not copy `isRecord`, JSON readers, or tiny support functions into call sites. If there are scripts available to be self-contained no need to make a util modules. ONLY uses `quartz/util` when it is universally used in a lot of places.
-- Do not run bundle or build. Inspect the running `dev.ts` process when runtime evidence is needed. Oftentimes we will pipe the outputs to `/tmp/quartz-dev.log` for easier inspection.
-- Keep secrets in `.env` locally and Cloudflare Secrets in production.
-- Keep filesystem access out of `@quartz/plugins/transformers`.
-- Write markdown math with LaTeX blocks.
-- Skip shims and backward compatibility unless aarnphm asks for them.
-- When you write test NEVER USE `readFile` and create unit tests that regex the actual changes for regression, that is fucking stupid.
-- Make sure that `window.addCleanup` must always written within `document.addEventListener('nav', () => {})`
-- no `box-shadow`, `border-left` and any sloppy styling that you might do for frontend components
+## Workflow and checks
+
+- Inspect scoped Git state and the existing watcher before editing. Preserve staging, unrelated work, and user-owned processes.
+- Use `pnpm`, `oxlint`, `oxfmt`, and `tsgo` for the Quartz project. Nested projects may define their own package manager and build checks in a closer AGENTS.md.
+- Run relevant existing tests and tests for changed behavior. File fixtures and generated-output assertions are valid; tests that regex source text to prove an implementation edit are not.
+- Routine targeted local checks are authorized with the task. See [development commands](docs/agent-development.md) for command effects, and read the current package script before an unfamiliar invocation.
+- Use the running `quartz/scripts/dev.ts` watcher for browser evidence. Do not launch a full Quartz bundle/build or restart an existing process just to verify an edit. Wait for the matching new `build:ready`, confirm HTTP availability, and inspect the rendered page. Report the actual blocker if that path fails.
+- Keep provider identity and per-field provenance explicit. A computed estimate is distinct from a native measurement. A verified replacement and separate deletion approval are required before removing source activities.
+- Preserve existing flashcard text and identities unless the requested correction requires a change; edits can affect scheduling.

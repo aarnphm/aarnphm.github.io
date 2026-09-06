@@ -245,3 +245,14 @@ PROMPTS.md
 quartz/runtime/native/packs/**/_build/
 !migrations/**/*.sql
 .pnpm-store
+
+# Canonical repository skills; keep other local agent state ignored.
+!.agents/
+.agents/*
+!.agents/skills/
+!.agents/skills/**
+
+# Keep the shared Claude skill alias visible without exposing local settings.
+!.claude/
+.claude/*
+!.claude/skills

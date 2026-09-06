@@ -213,7 +213,8 @@ maintenance:
                 start: '2026-08-17'
               - start: '2026-09-04'
               - end: null
-modified: 2026-09-04 21:23:49 GMT-04:00
+modified: 2026-09-05 20:17:12 GMT-04:00
+race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1306,9 +1307,19 @@ garmin: 24239315396
 virtual: true
 ```
 
+```tracking
+activity: 20052559983
+garmin: 24252090809
+virtual: true
+```
+
 <!-- training plan start
-meta: calling with James
+meta: IRONMAN Lanzarote
 date: 2026-09-01
+distance: ironman
+endDate: 2027-05-15
+target: sub-10
+author: James Cunnama
 -->
 
 things go well -> let James know
@@ -1341,6 +1352,10 @@ Single sports events: Long Ride, 100 mi Sportif, Half-Marathon
 feedback, constant on TrainingPeak + WhatsApp
 
 EOD: Send voice notes, 30s, (swim great, bike tough, but didn't want to be there, did ok.)
+
+### tech
+
+_TrainingPeak + Turbo + GO MAX WIN, locked in time._
 
 <!-- training plan end -->
 
