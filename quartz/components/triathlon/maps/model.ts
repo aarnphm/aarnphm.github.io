@@ -155,7 +155,7 @@ export const buildOverview = (
   const det = dp?.details ?? {}
   for (const k in det) {
     const d = det[k]
-    if (enabled.has(d.sport) && gpsSegments(d).length > 0) acts.push(d)
+    if (!d.virtual && enabled.has(d.sport) && gpsSegments(d).length > 0) acts.push(d)
   }
   const counts = new Map<string, number>()
   for (const d of acts) {

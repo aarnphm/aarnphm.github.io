@@ -62,6 +62,7 @@ export default (() => {
       .find(d => d.location)?.location
     const location = String(recentLoc ?? fileData.frontmatter?.['location'] ?? 'Toronto')
     const target = String(fileData.frontmatter?.['triathlon'] ?? '')
+    const race = String(fileData.frontmatter?.['race'] ?? '').trim()
     const raceDates = new Set((fileData.tracking?.races ?? []).map(r => r.date))
     const trackByDate = new Map((fileData.tracking?.days ?? []).map(d => [d.date, d]))
 
@@ -253,7 +254,13 @@ export default (() => {
                 <tr>
                   <th>
                     {label === target ? (
-                      <span class="tri-cheat-target">
+                      <span
+                        class="tri-cheat-target"
+                        data-gloss={race ? '' : undefined}
+                        data-gloss-def={race || undefined}
+                        aria-label={race ? `${label}: ${race}` : undefined}
+                        tabindex={race ? 0 : undefined}
+                      >
                         {label}
                         <span class="tri-cheat-sticker" aria-hidden="true">
                           🎯

@@ -8,7 +8,7 @@ import type { BuildCtx } from '../../util/ctx'
 import { isRecord } from '../../util/type-guards'
 import { resetWriteCache, write } from './helpers'
 
-export const AGENT_SKILLS_SOURCE_DIRECTORY = '.claude/skills'
+export const AGENT_SKILLS_SOURCE_DIRECTORY = '.agents/skills'
 
 const AGENT_SKILLS_SCHEMA = 'https://schemas.agentskills.io/discovery/0.2.0/schema.json'
 const DISCOVERY_ROOT = '.well-known/agent-skills'
