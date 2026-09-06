@@ -13,7 +13,7 @@ dependencies = [
   "scipy>=1.14.1",
   "bytecode>=0.17.0",
   "garminconnect==0.3.11",
-  "nltk>=3.10.1",
+  "nltk>=3.10.3",
   "graphviz>=0.21",
   "svgling>=0.5.0",
   "tiktoken>=0.11.0",
