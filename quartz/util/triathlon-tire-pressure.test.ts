@@ -6,9 +6,12 @@ import {
   formatTirePressureWeight,
   KG_PER_LB,
   latestMorningBodyWeight,
+  isTirePressureChange,
+  tirePressureSetups,
   TIRE_PRESSURE_WHEELS,
   type TirePressureSelection,
   tirePressureWeightToKg,
+  updateTirePressureSelection,
 } from './triathlon-tire-pressure'
 
 test('uses the latest valid morning body-composition weight', () => {
@@ -207,19 +210,71 @@ test('uses measured front and rear tire widths as independent calculation inputs
   assert.equal(equalWidths.rearPsi, staggered.rearPsi)
 })
 
-test('keeps Pirelli TPU and tubeless setups at the high-performance 1.00 coefficient', () => {
-  const tpu = calculateTirePressure({ ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 })
+test('keeps the two tire identities and mounting setups distinct in the pressure recommendation', () => {
+  const tpu = calculateTirePressure({
+    ...DEFAULT_TIRE_PRESSURE_SELECTION,
+    riderKg: 86.06,
+    tire: 'race-sl-r',
+    setup: 'tpu',
+  })
   const tubeless = calculateTirePressure({
     ...DEFAULT_TIRE_PRESSURE_SELECTION,
     riderKg: 86.06,
-    tire: 'tubeless',
+    tire: 'race-tlr-sl-r',
+    setup: 'tubeless',
+  })
+  const tlrTpu = calculateTirePressure({
+    ...DEFAULT_TIRE_PRESSURE_SELECTION,
+    riderKg: 86.06,
+    tire: 'race-tlr-sl-r',
+    setup: 'tpu',
   })
 
   assert.ok(tpu)
   assert.ok(tubeless)
+  assert.ok(tlrTpu)
+  assert.equal(tpu.tire.id, 'race-sl-r')
+  assert.equal(tpu.setup.id, 'tpu')
+  assert.equal(tubeless.tire.id, 'race-tlr-sl-r')
+  assert.equal(tubeless.setup.id, 'tubeless')
+  assert.equal(tlrTpu.tire.id, 'race-tlr-sl-r')
+  assert.equal(tlrTpu.setup.id, 'tpu')
+  assert.equal(tlrTpu.frontPsi, tpu.frontPsi)
+  assert.equal(tlrTpu.rearPsi, tpu.rearPsi)
+  assert.equal(tpu.tire.pressureCoefficient, 1)
   assert.equal(tubeless.frontPsi, tpu.frontPsi)
   assert.equal(tubeless.rearPsi, tpu.rearPsi)
   assert.equal(tubeless.tire.pressureCoefficient, 1)
+})
+
+test('changing the tire preserves a supported setup and normalizes the configured SL-R profile to TPU', () => {
+  const tlr = updateTirePressureSelection(DEFAULT_TIRE_PRESSURE_SELECTION, {
+    field: 'tire',
+    value: 'race-tlr-sl-r',
+  })
+  assert.equal(tlr.setup, 'tpu')
+  const tubeless = updateTirePressureSelection(tlr, { field: 'setup', value: 'tubeless' })
+  assert.equal(tubeless.tire, 'race-tlr-sl-r')
+  assert.equal(tubeless.setup, 'tubeless')
+  const slr = updateTirePressureSelection(tubeless, { field: 'tire', value: 'race-sl-r' })
+  assert.deepEqual(slr, DEFAULT_TIRE_PRESSURE_SELECTION)
+  assert.deepEqual(
+    tirePressureSetups(slr.tire).map(setup => setup.id),
+    ['tpu'],
+  )
+  assert.deepEqual(
+    tirePressureSetups(tlr.tire).map(setup => setup.id),
+    ['tpu', 'tubeless'],
+  )
+  assert.equal(updateTirePressureSelection(slr, { field: 'setup', value: 'tubeless' }), slr)
+  assert.equal(calculateTirePressure({ ...slr, riderKg: 86.06, setup: 'tubeless' }), null)
+})
+
+test('validates tire identity separately from mounting setup in change events', () => {
+  assert.ok(isTirePressureChange({ field: 'tire', value: 'race-sl-r' }))
+  assert.ok(isTirePressureChange({ field: 'setup', value: 'tpu' }))
+  assert.equal(isTirePressureChange({ field: 'tire', value: 'tpu' }), false)
+  assert.equal(isTirePressureChange({ field: 'setup', value: 'race-sl-r' }), false)
 })
 
 test('rejects pressure inputs outside the SILCA system-weight and speed domains', () => {
@@ -252,5 +307,51 @@ test('rejects pressure inputs outside the SILCA system-weight and speed domains'
       measuredTire: { frontWidthMm: 19, rearWidthMm: 28 },
     }),
     null,
+  )
+})
+
+test('switching bikes applies their balance to the pressure calculation', () => {
+  const soloist = { ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 }
+  const speedmax = updateTirePressureSelection(soloist, { field: 'bike', value: 'speedmax' })
+  assert.equal(speedmax.balance, '50-50')
+  const pressure = calculateTirePressure(speedmax)
+  assert.ok(pressure)
+  assert.equal(pressure.frontPsi, 64.5)
+  assert.equal(pressure.rearPsi, 80)
+  assert.deepEqual(
+    updateTirePressureSelection(speedmax, { field: 'bike', value: 'cervelo' }),
+    soloist,
+  )
+})
+
+test('manual balance survives mass edits and custom bike selection until switching presets', () => {
+  const manual = updateTirePressureSelection(DEFAULT_TIRE_PRESSURE_SELECTION, {
+    field: 'balance',
+    value: '47-53',
+  })
+  assert.equal(
+    updateTirePressureSelection(manual, { field: 'bike', value: 'cervelo' }).balance,
+    '47-53',
+  )
+  assert.equal(
+    updateTirePressureSelection(manual, { field: 'bikeMass', bike: 'cervelo', value: 25 }).balance,
+    '47-53',
+  )
+  assert.equal(
+    updateTirePressureSelection(manual, { field: 'bike', value: 'custom' }).balance,
+    '47-53',
+  )
+  const speedmax = updateTirePressureSelection(manual, {
+    field: 'bikeMass',
+    bike: 'speedmax',
+    value: 27,
+  })
+  assert.equal(speedmax.bike, 'speedmax')
+  assert.equal(speedmax.balance, '50-50')
+  assert.equal(speedmax.bikeMassesLb.speedmax, 27)
+  assert.equal(
+    updateTirePressureSelection(speedmax, { field: 'bikeMass', bike: 'cervelo', value: 25 })
+      .balance,
+    '48-52',
   )
 })

@@ -33,6 +33,7 @@ import {
   buildActivity,
   buildActivityComparison,
   buildCyclingBestEfforts,
+  buildDayAnalytics,
   buildDayCard,
   buildElevation,
   buildEnvironmentAnalysis,
@@ -1322,6 +1323,28 @@ test('renders one provider-first environment table with explicit Garden estimate
   assert.doesNotMatch(text(environment), /latitude|longitude|routeFingerprint/)
 })
 
+test('renders elapsed lap highlights inside every environment plot', () => {
+  const activity = detail({ analyses: environmentAnalyses() })
+  const rendered = buildEnvironmentAnalysis(factory, activity)
+  assert.ok(rendered)
+  const graphs = byClass(rendered, 'tri-environment-plot')
+  assert.equal(graphs.length, 4)
+  for (const graph of graphs) {
+    assert.equal(graph.properties.dataDomainStartElapsedS, 0)
+    assert.equal(
+      graph.properties.dataDomainEndElapsedS,
+      activity.analyses.derived.environment?.summary.elapsedDurationS,
+    )
+    assert.equal(graph.properties.dataDomainStartX, 2)
+    assert.equal(graph.properties.dataDomainEndX, 98)
+    const selections = byClass(graph, 'tri-analysis-selection')
+    assert.equal(selections.length, 1)
+    assert.equal(selections[0].properties.width, '0.00')
+    assert.equal(selections[0].properties.y, 3)
+    assert.equal(selections[0].properties.height, 24)
+  }
+})
+
 test('renders native evidence without inventing graphs and translates environment labels', () => {
   const analyses = environmentAnalyses()
   analyses.derived.environment = null
@@ -1614,7 +1637,7 @@ test('renders bike computers and run, walk, and swim devices as distinct activit
   assert.equal(byClass(garmin, 'tri-act-computer').length, 0)
 })
 
-test('renders virtual course provenance and retains both providers measurements in shared rows', () => {
+test('renders one metric per row and lists contributing recordings in the source hover', () => {
   const activity = detail({
     computer: 'wahoo',
     virtual: true,
@@ -1626,6 +1649,16 @@ test('renders virtual course provenance and retains both providers measurements 
       normalizedPower: 179,
       trainingStressScore: 89.9,
     }),
+    sources: [
+      { provider: 'strava', activityId: '101', name: 'Morning ride', fileName: null },
+      {
+        provider: 'garmin',
+        activityId: 'connect:55',
+        name: 'Virtual course',
+        fileName: 'course.fit',
+      },
+      { provider: 'wahoo', activityId: 'wahoo:99', name: 'Power & cadence', fileName: 'ride.fit' },
+    ],
   })
   const rows = activityTableRows(METRIC_TRIATHLON_PRESENTATION, activity)
   const renderedRows = byTag(
@@ -1637,12 +1670,26 @@ test('renders virtual course provenance and retains both providers measurements 
   assert.ok(computerIndex >= 0)
   assert.deepEqual(rows.slice(computerIndex + 1, computerIndex + 3), [
     ['activity', 'virtual'],
-    ['distance source', 'Garmin'],
+    ['source', 'Garmin'],
   ])
-  assert.ok(rows.some(([label, value]) => label === 'Strava distance' && value === '66.8 km'))
-  assert.ok(rows.some(([label, value]) => label === 'Garmin NP' && value === '179 W'))
-  assert.ok(rows.some(([label, value]) => label === 'Garmin TSS' && value === '89.9'))
+  assert.equal(rows.filter(([label]) => label === 'distance').length, 1)
+  assert.equal(rows.filter(([label]) => label === 'NP').length, 1)
+  assert.equal(rows.filter(([label]) => label === 'TSS').length, 1)
+  assert.equal(
+    rows.some(([label]) => /^(Strava|Garmin|Wahoo) |^(distance|telemetry) source$/.test(label)),
+    false,
+  )
+  assert.ok(rows.some(([label, value]) => label === 'TSS' && value === '89.9'))
   assert.ok(rows.some(([label, value]) => label === 'NP' && value === '205 W'))
+  const source = byClass(buildActivity(factory, activity), 'tri-act-source')[0]
+  assert.equal(text(source), 'Garmin')
+  assert.equal(source.properties.tabIndex, 0)
+  assert.equal(source.properties.dataGloss, '')
+  assert.equal(
+    source.properties.dataGlossDef,
+    'Strava · 101\nMorning ride\n\nGarmin · connect:55\nVirtual course\ncourse.fit\n\nWahoo · wahoo:99\nPower & cadence\nride.fit',
+  )
+  assert.ok(String(source.properties.ariaLabel).includes('course.fit'))
 })
 
 test('renders WeatherKit humidity below wind in shared server and hydrated activity rows', () => {
@@ -3023,6 +3070,16 @@ test('renders the complete native Forerunner running dynamics set with paired co
   const rendered = buildActivity(factory, run, true)
   const traces = byClass(rendered, 'tri-elev-wrap').map(trace => trace.properties.dataTriTrace)
 
+  for (const graph of byClass(rendered, 'tri-elev')) {
+    const selection = byClass(graph, 'tri-analysis-selection')
+    assert.equal(selection.length, 1, `${classNames(graph).join(' ')} has a lap highlight`)
+    assert.equal(selection[0].properties.width, '0.00')
+    assert.ok(
+      graph.properties.dataDomainEndDistanceKm != null ||
+        graph.properties.dataDomainEndElapsedS != null,
+    )
+  }
+
   for (const trace of [
     'stamina',
     'performance-condition',
@@ -4152,6 +4209,18 @@ test('keeps an empty selected-route overlay available after deselection', () => 
   assert.match(String(byClass(route, 'tri-route-path')[0].properties.d), /^M /)
 })
 
+test('keeps virtual ride highlights on each chart distance domain', () => {
+  const activity = { ...analysisDetail(), virtual: true, distanceKm: 31 }
+  const rendered = buildActivity(factory, activity, true)
+  const graphs = byClass(rendered, 'tri-elev')
+  assert.equal(graphs.length, 7)
+  for (const graph of graphs) {
+    assert.equal(graph.properties.dataDomainStartDistanceKm, 0)
+    assert.equal(graph.properties.dataDomainEndDistanceKm, activity.route.at(-1)?.d)
+    assert.equal(byClass(graph, 'tri-analysis-selection').length, 1)
+  }
+})
+
 test('keeps the run lap block visible when no lap is available', () => {
   const rendered = buildActivity(
     factory,
@@ -4827,6 +4896,15 @@ test('renders aligned swim trends with the selected activity average', () => {
   )
   const paceSvg = byClass(pace, 'tri-swim-trend-svg')[0]
   assert.ok(paceSvg)
+  for (const graph of byClass(rendered, 'tri-swim-trend-svg')) {
+    assert.equal(graph.properties.dataDomainStartDistanceKm, 0)
+    assert.equal(graph.properties.dataDomainEndDistanceKm, 0.1)
+    const selections = byClass(graph, 'tri-analysis-selection')
+    assert.equal(selections.length, 1)
+    assert.equal(selections[0].properties.x, '0.00')
+    assert.equal(selections[0].properties.width, '0.00')
+    assert.equal(selections[0].properties.height, 30)
+  }
   assert.deepEqual(byClass(pace, 'tri-cax-yt').map(text), ['0:00', '0:50', '1:40', '2:30'])
   assert.deepEqual(byClass(cadence, 'tri-cax-yt').map(text), [
     '10.0',
@@ -5288,6 +5366,8 @@ test('renders exact-date analytics and limits automatic rest-day analytics to sl
       coreOrigin: 'app',
       observedMinutes: 74,
       hotMinutes: 0,
+      saunaMinutes: 0,
+      saunaHtl: null,
       dose: 0,
       acclimatisationPct: 100,
     },
@@ -5379,6 +5459,20 @@ test('renders exact-date analytics and limits automatic rest-day analytics to sl
   assert.equal(byClass(rest, 'tri-day-sleep-stages').length, 1)
   assert.equal(byClass(rest, 'tri-day-sleep-series--hrv').length, 1)
   assert.equal(byClass(rest, 'tri-day-sleep-series--heart-rate').length, 1)
+
+  assert.ok(summary.heat)
+  const saunaSummary: TriathlonDayAnalytics = {
+    ...summary,
+    heat: { ...summary.heat, source: 'mixed', saunaMinutes: 65, saunaHtl: 7.7 },
+  }
+  const thermal = byClass(
+    buildDayAnalytics(factory, saunaSummary),
+    'tri-day-analytics-group--thermal',
+  )[0]
+  assert.match(text(thermal), /CORE temperature/)
+  assert.doesNotMatch(text(thermal), /ambient temperature/)
+  assert.match(text(thermal), /sauna min65/)
+  assert.match(text(thermal), /recorded sauna HTL7\.7/)
 })
 
 test('day-card date renders as a month link only when extras provide an href', () => {
@@ -6029,7 +6123,10 @@ test('renders a route-less pool swim heart rate trace without distance against e
 
   assert.ok(trace)
   assert.deepEqual(byClass(trace, 'tri-cax-xt').map(text), ['0s', '26:39', '53:18'])
-  assert.equal(byClass(trace, 'tri-analysis-selection').length, 0)
+  assert.equal(byClass(trace, 'tri-analysis-selection').length, 1)
+  const graph = byClass(trace, 'tri-elev')[0]
+  assert.equal(graph.properties.dataDomainStartElapsedS, 0)
+  assert.equal(graph.properties.dataDomainEndElapsedS, 3_198)
 })
 
 test('renders activity graphs against a selected distance domain', () => {

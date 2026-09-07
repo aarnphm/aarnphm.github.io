@@ -32,11 +32,13 @@ import { TRI_ANALYTICS_BOOT_CLASS } from './boot'
 import { analyticsPanelDefinition } from './catalog'
 import { initialAnalyticsModel, updateAnalytics } from './model'
 import { activityCommandHints } from './search'
+import { activityQueryTokens } from './search'
 import { activityResultItem } from './search'
 import { activityResultItems } from './search'
 import { detailHead } from './search'
 import { GLOSS_CHART } from './search'
 import { matchesActivityTokens } from './search'
+import { matchesActivityQuery } from './search'
 import { parseActivityQuery } from './search'
 import { SEARCH_SECTIONS } from './search'
 import { setActivityResultSelection } from './search'
@@ -421,7 +423,7 @@ export const setupAnalytics = (
       if (inCompareMode()) toggleCompareActivity(it.dataset.id)
       else program.dispatch({ type: 'show-activity', id: it.dataset.id })
     } else if (it.dataset.insert) {
-      const tokens = search!.value.trim().split(/\s+/)
+      const tokens = activityQueryTokens(search!.value)
       tokens[tokens.length - 1] = it.dataset.insert
       search!.value = tokens.join(' ') + (it.dataset.insert.endsWith(':') ? '' : ' ')
       search!.focus()
@@ -444,14 +446,15 @@ export const setupAnalytics = (
       ? el('div', 'tri-compare-activity-list', undefined, { 'data-keyboard-scroll': '' })
       : results
     if (inCompareMode()) results.appendChild(resultList)
-    const rawTokens = q ? q.split(/\s+/) : []
-    const { filterSport, filterDate, sortKey, tokens } = parseActivityQuery(rawTokens)
+    const rawTokens = activityQueryTokens(q)
+    const query = parseActivityQuery(rawTokens)
+    const { filterSport, filterEnvironment, filterDate, sortKey, tokens } = query
 
     const metrics: HTMLElement[] = []
     const lastToken = rawTokens[rawTokens.length - 1] ?? ''
     const hints = rawTokens.length ? activityCommandHints(lastToken, 'activities') : []
 
-    if (!inCompareMode() && !filterSport && !filterDate && !sortKey) {
+    if (!inCompareMode() && !filterSport && !filterEnvironment && !filterDate && !sortKey) {
       for (const s of SEARCH_SECTIONS)
         if (
           matchesActivityTokens(
@@ -475,18 +478,14 @@ export const setupAnalytics = (
 
     const acts = sortActivitiesBy(
       (data?.activities ?? []).filter(a => {
-        if (filterSport && a.sport !== filterSport) return false
-        if (filterDate && (a.date < filterDate.start || a.date > filterDate.end)) return false
+        if (!matchesActivityQuery(a, query)) return false
         if (inCompareMode()) {
           const activity = detailData?.details[String(a.id)]
           if (!compareActivityEligible(activity)) return false
           const sport = compareSport()
           if (sport && a.sport !== sport) return false
         }
-        return (
-          tokens.length === 0 ||
-          matchesActivityTokens(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
-        )
+        return true
       }),
       sortKey,
     )

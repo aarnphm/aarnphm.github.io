@@ -2242,6 +2242,7 @@
   grid-template-areas:
     'bike wheel'
     'tire surface'
+    'setup surface'
     'balance measured'
     'balance weight'
     'balance speed';
@@ -2259,6 +2260,25 @@
 
 .tri-pressure-field[data-pressure-group='tire'] {
   grid-area: tire;
+
+  .tri-pressure-option {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.12rem;
+
+    small {
+      white-space: normal;
+    }
+  }
+}
+
+.tri-pressure-setup-note {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+
+.tri-pressure-field[data-pressure-group='setup'] {
+  grid-area: setup;
 }
 
 .tri-pressure-field[data-pressure-group='surface'] {
@@ -2347,6 +2367,11 @@
   &:has(input:checked) {
     color: var(--dark);
     background: color-mix(in srgb, var(--tri-bike) 13%, var(--light));
+  }
+
+  &:has(input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 
   &:has(input:focus-visible) {
@@ -2648,6 +2673,7 @@
       'bike'
       'wheel'
       'tire'
+      'setup'
       'surface'
       'balance'
       'measured'
@@ -10922,6 +10948,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+  width: max-content;
   max-width: 17rem;
   padding: 0.5rem 0.7rem;
   background: color-mix(in srgb, var(--light) 94%, transparent);
@@ -10961,6 +10988,8 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   font-size: 0.74rem;
   line-height: 1.45;
   color: var(--darkgray);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
 }
 
 .tri-radar-tip {

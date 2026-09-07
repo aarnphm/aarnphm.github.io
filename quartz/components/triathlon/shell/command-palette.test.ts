@@ -39,7 +39,8 @@ test('tire pressure palette advances through every physical selection', () => {
   assert.equal(nextTirePressurePaletteStep('wheel'), 'measuredTireFront')
   assert.equal(nextTirePressurePaletteStep('measuredTireFront'), 'measuredTireRear')
   assert.equal(nextTirePressurePaletteStep('measuredTireRear'), 'tire')
-  assert.equal(nextTirePressurePaletteStep('tire'), 'surface')
+  assert.equal(nextTirePressurePaletteStep('tire'), 'setup')
+  assert.equal(nextTirePressurePaletteStep('setup'), 'surface')
   assert.equal(nextTirePressurePaletteStep('surface'), 'speed')
   assert.equal(nextTirePressurePaletteStep('speed'), 'result')
 
@@ -72,10 +73,28 @@ test('tire pressure palette returns to the result after editing one configuratio
   )
 })
 
+test('tire pressure palette highlights tire models and their compatible setups independently', () => {
+  for (const [tire, setup, tireIndex, setupIndex] of [
+    ['race-sl-r', 'tpu', 0, 0],
+    ['race-tlr-sl-r', 'tpu', 1, 0],
+    ['race-tlr-sl-r', 'tubeless', 1, 1],
+  ] as const) {
+    const selection: TirePressureSelection = { ...DEFAULT_TIRE_PRESSURE_SELECTION, tire, setup }
+
+    assert.equal(tirePressurePaletteSelectionIndex('tire', selection), tireIndex)
+    assert.equal(tirePressurePaletteSelectionIndex('setup', selection), setupIndex)
+    for (const step of ['tire', 'setup'] as const) {
+      assert.equal(nextTirePressurePaletteStep(step, selection, step), 'result')
+      assert.equal(previousTirePressurePaletteStep(step, selection, step), 'result')
+    }
+  }
+})
+
 test('tire pressure palette backtracks without skipping selection state', () => {
   assert.equal(previousTirePressurePaletteStep('result'), 'commands')
   assert.equal(previousTirePressurePaletteStep('speed'), 'surface')
-  assert.equal(previousTirePressurePaletteStep('surface'), 'tire')
+  assert.equal(previousTirePressurePaletteStep('surface'), 'setup')
+  assert.equal(previousTirePressurePaletteStep('setup'), 'tire')
   assert.equal(previousTirePressurePaletteStep('tire'), 'measuredTireRear')
   assert.equal(previousTirePressurePaletteStep('measuredTireRear'), 'measuredTireFront')
   assert.equal(previousTirePressurePaletteStep('measuredTireFront'), 'wheel')
@@ -121,7 +140,8 @@ test('tire pressure palette highlights the persisted choice at every step', () =
     wheel: 'reserve-42-49',
     customWheel: { frontInnerWidthMm: 21.5, rearInnerWidthMm: 24 },
     measuredTire: { frontWidthMm: 32, rearWidthMm: 28 },
-    tire: 'tubeless',
+    tire: 'race-tlr-sl-r',
+    setup: 'tubeless',
     surface: 'worn-pavement',
     speedMph: 23,
   }
@@ -135,6 +155,7 @@ test('tire pressure palette highlights the persisted choice at every step', () =
   assert.equal(tirePressurePaletteSelectionIndex('measuredTireFront', selection), 0)
   assert.equal(tirePressurePaletteSelectionIndex('measuredTireRear', selection), 0)
   assert.equal(tirePressurePaletteSelectionIndex('tire', selection), 1)
+  assert.equal(tirePressurePaletteSelectionIndex('setup', selection), 1)
   assert.equal(tirePressurePaletteSelectionIndex('surface', selection), 1)
   assert.equal(tirePressurePaletteSelectionIndex('speed', selection), 2)
   assert.equal(tirePressurePaletteSelectionIndex('result', selection), 0)

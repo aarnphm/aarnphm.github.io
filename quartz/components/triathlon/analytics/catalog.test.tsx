@@ -6,6 +6,7 @@ import {
   type PowerToWeightDurationS,
   type PowerToWeightEffort,
 } from '../../../plugins/stores/analytics'
+import { applyManualSauna, buildPayload, type StravaRawCache } from '../../../plugins/stores/strava'
 import { DEFAULT_TRIATHLON_FORMATTER } from '../runtime/formatter'
 import { ANALYTICS_CATALOG, ANALYTICS_PANEL_ORDER } from './catalog'
 import { analyticsChartPath, AnalyticsServerPanel } from './render'
@@ -29,6 +30,52 @@ test('every analytics panel produces meaningful server markup from the real anal
     assert.match(html, new RegExp(`data-tri-server-panel="${definition.key}"`))
     assert.match(html, /<dl/)
   }
+})
+
+test('heat server markup includes passive HTL and sauna minutes from the shared analytics model', () => {
+  const date = '2026-09-07'
+  const cache: StravaRawCache = {
+    athleteId: 123,
+    auth: { refreshToken: 'test-token', obtainedAt: 0 },
+    lastSync: Date.parse(`${date}T23:00:00Z`),
+    lastActivityStart: 0,
+    activities: {},
+  }
+  const payload = buildPayload(cache, null, null)
+  applyManualSauna(
+    payload,
+    [
+      {
+        id: 8_202_609_071_830,
+        stravaActivityId: null,
+        garminActivityId: null,
+        title: 'Sauna',
+        date,
+        time: '18:30',
+        durationS: 3_900,
+        temperatureC: 85,
+        humidityPct: 11,
+        cooldown: 'cold plunge',
+        heatTrainingLoad: 7.7,
+      },
+    ],
+    [],
+    'America/Toronto',
+  )
+  const analytics = buildAnalytics(cache, { activityDetails: payload.details })
+  const definition = ANALYTICS_CATALOG.find(panel => panel.key === 'heat')
+  assert.ok(definition)
+  const content = definition.server(analytics, DEFAULT_TRIATHLON_FORMATTER)
+  assert.ok(
+    content.values.some(metric => metric.label === 'sauna min' && metric.value === '65 min'),
+  )
+  assert.ok(
+    content.values.some(metric => metric.label === 'recorded sauna HTL' && metric.value === '7.7'),
+  )
+  const html = renderToString(<AnalyticsServerPanel definition={definition} data={analytics} />)
+  assert.match(html, /data-series="sauna HTL"/)
+  assert.match(html, /recorded sauna HTL/)
+  assert.match(html, /65 min/)
 })
 
 test('server analytics markup draws source-backed series when observations exist', () => {

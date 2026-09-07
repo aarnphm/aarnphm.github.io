@@ -18,8 +18,8 @@ A language model receives token IDs. Text reaches the tokenizer after decoding i
 In ASCII, each Latin uppercase and lowercase pair differs by bit `0x20`. Python makes the representation visible:
 
 ```python
-format(ord("Y"), "07b")  # '1011001'
-format(ord("y"), "07b")  # '1111001'
+format(ord('Y'), '07b')  # '1011001'
+format(ord('y'), '07b')  # '1111001'
 ```
 
 "Extended ASCII" does not name one standard. It refers to several incompatible eight-bit encodings that reused values `128` to `255`.
@@ -31,7 +31,7 @@ Unicode defines a code space from `U+0000` through `U+10FFFF`. A Unicode scalar 
 [UTF-8](https://www.rfc-editor.org/rfc/rfc3629) encodes each Unicode scalar value as one to four bytes. ASCII values keep their one-byte representation. Other values use a leading byte followed by continuation bytes.
 
 ```python
-"😋".encode("utf-8")  # b'\xf0\x9f\x98\x8b'
+'😋'.encode('utf-8')  # b'\xf0\x9f\x98\x8b'
 ```
 
 ## model tokens

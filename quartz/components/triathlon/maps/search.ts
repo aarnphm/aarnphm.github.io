@@ -7,8 +7,9 @@ import { triText } from '../../../util/triathlon-i18n'
 import { buildIcon } from '../activity/primitives'
 import {
   activityCommandHints,
+  activityQueryTokens,
   activityResultItem,
-  matchesActivityTokens,
+  matchesActivityQuery,
   parseActivityQuery,
   sortActivitiesBy,
 } from '../analytics/search'
@@ -36,26 +37,17 @@ export const buildMapSearchView = (
   details: DetailPayload | null,
   detailLoaded: boolean,
 ): MapSearchView => {
-  const rawTokens = query.split(/\s+/)
-  const { filterSport, filterDate, sortKey, tokens } = parseActivityQuery(rawTokens)
+  const rawTokens = activityQueryTokens(query)
+  const parsed = parseActivityQuery(rawTokens)
+  const { filterSport, sortKey } = parsed
   const sport = ROUTE_SPORTS.find(candidate => candidate === filterSport) ?? null
-  const lastToken = rawTokens[rawTokens.length - 1]
+  const lastToken = rawTokens[rawTokens.length - 1] ?? ''
   const hints = activityCommandHints(lastToken, 'routes', ROUTE_SPORTS)
   const ids = drawableActivityIds(details)
   const activities = sortActivitiesBy(
-    (analytics?.activities ?? []).filter(activity => {
-      if (!ids.has(String(activity.id))) return false
-      if (filterSport && activity.sport !== filterSport) return false
-      if (filterDate && (activity.date < filterDate.start || activity.date > filterDate.end))
-        return false
-      return (
-        tokens.length === 0 ||
-        matchesActivityTokens(
-          `${activity.name} ${activity.sport} ${activity.date}`.toLowerCase(),
-          tokens,
-        )
-      )
-    }),
+    (analytics?.activities ?? []).filter(
+      activity => ids.has(String(activity.id)) && matchesActivityQuery(activity, parsed),
+    ),
     sortKey,
   )
   const nodes: HTMLElement[] = []

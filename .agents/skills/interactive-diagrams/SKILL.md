@@ -17,12 +17,12 @@ Use the registered components in `quartz/components/mdx`, their Preact implement
 
 Read only the reference needed for the change:
 
-| Work | Reference |
-| --- | --- |
+| Work                                                | Reference                                                      |
+| --------------------------------------------------- | -------------------------------------------------------------- |
 | Frame, SCSS mixins, zoom, or component registration | [Frame and registration](references/frame-and-registration.md) |
-| Tabs, segments, or toggles | [Controls](references/controls.md) |
-| KaTeX values, statistics, or sliders | [Math and readouts](references/math-and-readouts.md) |
-| Hover or focus explanations | [Hover details](references/hover-details.md) |
-| Source-rendered browser verification | [Verification](references/verification.md) |
+| Tabs, segments, or toggles                          | [Controls](references/controls.md)                             |
+| KaTeX values, statistics, or sliders                | [Math and readouts](references/math-and-readouts.md)           |
+| Hover or focus explanations                         | [Hover details](references/hover-details.md)                   |
+| Source-rendered browser verification                | [Verification](references/verification.md)                     |
 
 Reuse a shared mixin when an established pattern exists. Extract a new shared helper only when actual callers need it, and keep the change scoped to those callers.

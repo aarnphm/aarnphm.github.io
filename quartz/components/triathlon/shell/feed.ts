@@ -7,9 +7,10 @@ import { setActivityExpanded } from '../activity/comparison'
 import { buildIcon, buildRecovery } from '../activity/primitives'
 import { renderDetail } from '../activity/render'
 import { activityCommandHints } from '../analytics/search'
+import { activityQueryTokens } from '../analytics/search'
 import { activityResultItems } from '../analytics/search'
 import { marqueeCtl } from '../analytics/search'
-import { matchesActivityTokens } from '../analytics/search'
+import { matchesActivityQuery } from '../analytics/search'
 import { parseActivityQuery } from '../analytics/search'
 import { setActivityResultSelection } from '../analytics/search'
 import { sortActivitiesBy } from '../analytics/search'
@@ -147,23 +148,11 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
   }
 
   const renderList = () => {
-    const query = search.value.trim().toLowerCase()
-    const rawTokens = query ? query.split(/\s+/) : []
-    const { filterSport, filterDate, sortKey, tokens } = parseActivityQuery(rawTokens)
+    const rawTokens = activityQueryTokens(search.value)
+    const query = parseActivityQuery(rawTokens)
     const filtered = sortActivitiesBy(
-      acts.filter(activity => {
-        if (filterSport && activity.sport !== filterSport) return false
-        if (filterDate && (activity.date < filterDate.start || activity.date > filterDate.end))
-          return false
-        return (
-          tokens.length === 0 ||
-          matchesActivityTokens(
-            `${activity.sport} ${activity.name} ${activity.date}`.toLowerCase(),
-            tokens,
-          )
-        )
-      }),
-      sortKey ?? 'date',
+      acts.filter(activity => matchesActivityQuery(activity, query)),
+      query.sortKey ?? 'date',
     )
     list.replaceChildren(
       ...filtered.map(a => {
@@ -192,7 +181,7 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
   const activate = (item: HTMLElement | undefined) => {
     const insert = item?.dataset.insert
     if (!insert) return
-    const tokens = search.value.trim().split(/\s+/)
+    const tokens = activityQueryTokens(search.value)
     tokens[tokens.length - 1] = insert
     search.value = tokens.join(' ') + (insert.endsWith(':') ? '' : ' ')
     search.focus()

@@ -12,6 +12,7 @@ import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { activityStatRows } from '../../../util/triathlon-card'
 import { activityAnalysisStatAttrs } from '../../../util/triathlon-card'
 import { activityTableRows } from '../../../util/triathlon-card'
+import { activitySourceStatAttrs } from '../../../util/triathlon-card'
 import { activityHeartRateTracePoints } from '../../../util/triathlon-card'
 import { activityThermalTracePoints } from '../../../util/triathlon-card'
 import { activityTraceUsesElapsedAxis } from '../../../util/triathlon-card'
@@ -936,7 +937,8 @@ export const renderMapDetail = (
         value,
         label === 'training effect'
           ? { 'data-training-effect-group': summaryTrainingEffectGroup }
-          : (activityAnalysisStatAttrs(d, label) ??
+          : ((label === 'source' ? activitySourceStatAttrs(d) : undefined) ??
+              activityAnalysisStatAttrs(d, label) ??
               (index >= primaryStatCount && label === 'humidity'
                 ? relativeHumidityStatAttrs(d)
                 : undefined)),

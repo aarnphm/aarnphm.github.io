@@ -1,177 +1,174 @@
 ---
 date: '2025-08-21'
-description: continuity study
+description: global slope bounds, convex subgradients, and logistic loss
 id: Lipschitzness
-modified: 2026-06-05 15:08:05 GMT-04:00
+modified: 2026-09-07 13:37:25 GMT-04:00
 tags:
   - ml
   - math
 title: Lipschitzness
 ---
 
-## What "$L$-Lipschitz" means
+Let $(\mathcal{X},\|\cdot\|)$ be a normed space, let $D\subseteq\mathcal{X}$, and let $f:D\to\mathbb{R}$. The function is $L$-Lipschitz on $D$ when
 
-Let $(\mathcal{X},\|\cdot\|)$ be a [[thoughts/norm|normed]] space and $f:\mathcal{X}\to(-\infty,+\infty]$
+$$
+|f(x)-f(y)|\leq L\|x-y\|\qquad\text{for every }x,y\in D.
+$$
 
-> [!definition] $L$-Lipschitz
+The constant bounds every secant slope at once. It is global on the stated domain: $e^x$ is not Lipschitz on $\mathbb{R}$, but it is Lipschitz on every bounded interval.
+
+> [!note] Useful rules
 >
-> $f$ is **$L$-Lipschitz (w\.r.t. $\|\cdot\|$)** if
+> | Construction                                 | Bound                    |
+> | -------------------------------------------- | ------------------------ |
+> | $f+g$                                        | $L_f+L_g$                |
+> | $x\mapsto f(Ax)$                             | $L_f\|A\|_{\mathrm{op}}$ |
+> | $x\mapsto\max_i\{\langle a_i,x\rangle+b_i\}$ | $\max_i\|a_i\|_*$        |
 >
-> $$
-> \|f(x)- f(y)\|\;\le\;L\,\|x - y\|\quad\forall x,y\in\operatorname{dom}f.
-> $$
+> For $u\in\mathcal{X}^*$, the dual norm is $\|u\|_*=\sup_{\|x\|\leq 1}|\langle u,x\rangle|$. These bounds follow from the triangle inequality and $|\langle u,x\rangle|\leq\|u\|_*\|x\|$.
 
-> [!note] Properties
->
-> | Topic                     | Statement                                                                | Lipschitz constant       |
-> | ------------------------- | ------------------------------------------------------------------------ | ------------------------ |
-> | Dual norm (def.)          | $\|g\|_* = \sup_{\|x\|\le 1}\langle g,x\rangle$                          | —                        |
-> | Sum                       | If $f,g$ are $L_f, L_g$‑Lipschitz, then $f+g$ is $(L_f{+}L_g)$‑Lipschitz | $L_f{+}L_g$              |
-> | Precompose linear map $A$ | If $f$ is $L$‑Lipschitz, then $x\mapsto f(Ax)$ is Lipschitz              | $L\,\|A\|_{\mathrm{op}}$ |
-> | Max of affine             | $x\mapsto \max_i\{\langle a_i,x\rangle+b_i\}$                            | $\max_i \|a_i\|_*$       |
+Lipschitz continuity implies uniform continuity. In one dimension, a differentiable function with $|f'(x)|\leq L$ is $L$-Lipschitz by the mean value theorem. The converse has to be stated with weaker derivatives: Lipschitz functions on $\mathbb{R}^n$ can have corners, but Rademacher's theorem says they are differentiable almost everywhere. [@cobzas2019lipschitzfunctions]
 
-## Clarifications
-
-Think of a Lipschitz function as having a global speed limit: it cannot change faster than a rate $L$ between any two points. In one dimension, this is the worst‑case secant slope over the domain. If every such slope is bounded by $L$, the function is $L$‑Lipschitz.
-
-- Continuity ladder: Lipschitz ⇒ uniformly continuous ⇒ continuous. So Lipschitz continuity is a strong, domain‑wide form of regularity with no local surprises.
-- Almost‑everywhere differentiability (Rademacher): a Lipschitz function on $\mathbb{R}^n$ is differentiable except on a measure‑zero set, so gradients exist “almost everywhere” even without smoothness.
-
-## Examples
-
-- $f(x)=3x+1$: Lipschitz with $L=3$ (slope is 3 everywhere).
-- $f(x)=|x|$: Lipschitz with $L=1$ (steepest secant slope is 1).
-- $f(x)=\sin x$: Lipschitz with $L=1$ because $|\cos x|\le1$ (bounded slope).
-- $f(x)=e^x$: **not** Lipschitz on all $\mathbb{R}$ (slope $e^x$ blows up), but it **is** Lipschitz on any bounded interval—speed limit only needs to hold on the domain you care about.
-
-> [!example] Lipschitz inequality via secant slope
+## secant picture
 
 ```tikz
 \begin{document}
 \begin{tikzpicture}[>=Latex, scale=3]
-  % axes
   \draw[->] (-2.6,0) -- (2.8,0) node[below right] {$x$};
   \draw[->] (0,-0.2) -- (0,3.0) node[left] {$f(x)$};
-  % function f(x) = |x|
   \draw[thick,blue] (-2,2) -- (0,0) -- (2,2);
   \node[blue,above right=1pt and 1pt of {(2,2)}] {$f(x)=|x|$};
 
-  % choose points with larger vertical separation to avoid overlap
   \def\xone{-1.8}
   \def\xtwo{0.8}
   \def\fyone{1.8}
   \def\fytwo{0.8}
 
-  % vertical guides
   \draw[densely dashed] (\xone,0) -- (\xone,\fyone) node[below left=1pt and -2pt] {$x_1$};
   \draw[densely dashed] (\xtwo,0) -- (\xtwo,\fytwo) node[below right=1pt and -2pt] {$x_2$};
 
-  % points + labels (shifted to avoid clutter)
   \fill[blue] (\xone,\fyone) circle(1.9pt)
     node[above left=3pt and 2pt] {$(x_1,\,f(x_1))$};
   \fill[blue] (\xtwo,\fytwo) circle(1.9pt)
     node[below right=4pt and 3pt] {$(x_2,\,f(x_2))$};
 
-  % secant line with lifted label
   \draw[thick,orange] (\xone,\fyone) -- (\xtwo,\fytwo)
-    node[pos=0.55, above=8pt, sloped] {$\displaystyle \frac{|f(x_2)-f(x_1)|}{|x_2-x_1|} \le L$};
-
-  % delta x bracket (pulled slightly further down)
+    node[pos=0.55, above=8pt, sloped] {$\displaystyle \frac{|f(x_2)-f(x_1)|}{|x_2-x_1|} \leq L$};
   \draw[<->] (\xone,-0.15) -- (\xtwo,-0.15) node[midway, below=2pt] {$|x_2-x_1|$};
-
-  % delta f bracket moved to the right to avoid (x2,f(x2))
   \draw[<->] (\xtwo+0.55,\fyone) -- (\xtwo+0.55,\fytwo)
     node[midway, right=3pt] {$|f(x_2)-f(x_1)|$};
-
-  % annotate L for |x|
   \node[orange!80!black] at (-1.7,2.5) {$L=1$ for $f(x)=|x|$};
 \end{tikzpicture}
 \end{document}
 ```
 
-## Convexity-adjacent equivalences
+## convex functions
 
-For convex $f$, the following are **equivalent**:
+Assume now that $f:\mathbb{R}^n\to\mathbb{R}$ is closed and convex. Because $f$ is finite everywhere, each point has a subgradient. The following statements are equivalent:
 
-1. Function bound: $f$ is $L$-Lipschitz.
-2. Subgradient bound:
-   $$
-   \|g\|_* \le L\quad \text{for all }x\in\operatorname{dom}f,\; g\in\partial f(x).
-   $$
-   (Geometric read: all slopes live in the dual ball[^notes] of radius $L$.)
-3. Conjugate domain bound: If $f^*$ is the Fenchel conjugate, then
+1. $f$ is $L$-Lipschitz.
+2. For every $x$, every $g\in\partial f(x)$ satisfies $\|g\|_*\leq L$.
+3. The effective domain of the Fenchel conjugate is contained in the closed dual ball:
 
    $$
-   \operatorname{dom} f^*\;\subseteq\;L\cdot \mathbb{B}_* \;\;=\;\{u:\|u\|_*\le L\},
+   \operatorname{dom}f^*\subseteq\{u:\|u\|_*\leq L\}.
    $$
 
-   equivalently $f^*(u)=+\infty$ whenever $\|u\|_*>L$.
+One direction follows from the subgradient inequality
 
-4. Gradient bound: $f$ differentiable $\Rightarrow$
-   $$
-   \sup_{x}\|\nabla f(x)\|_* \le L.
-   $$
+$$
+f(y)\geq f(x)+\langle g,y-x\rangle.
+$$
 
-[^notes]: $L$-Lipschitz $\iff$ every subgradient has dual-norm $\le L$ $\iff$ the conjugate “lives” inside the dual ball of radius $L$.
+If $\|g\|_*\leq L$, this gives $f(x)-f(y)\leq L\|x-y\|$; swap $x$ and $y$ for the absolute-value bound. For the conjugate condition, use $f(x)=\sup_{u\in\operatorname{dom}f^*}\{\langle u,x\rangle-f^*(u)\}$. When that domain lies in the closed dual ball, $f(x)-f(y)\leq\sup_{\|u\|_*\leq L}\langle u,x-y\rangle\leq L\|x-y\|$. [@rockafellar1970convexanalysis; @bubeck2015convexoptimization]
 
-## smoothness & strong convexity
+> [!warning] Domain matters
+>
+> A constrained convex objective often takes the value $+\infty$ outside its feasible set. It is not a real-valued Lipschitz function on $\mathbb{R}^n$. Restricting the first inequality to its effective domain does not recover the equivalences above. For example, the indicator of a closed convex set is constant on its domain, while its boundary subgradients include an unbounded normal cone.
 
-- $L$-smooth:
+## function Lipschitzness and smoothness
 
-  $$
-  \|\nabla f(x)-\nabla f(y)\|_*\le L\|x-y\|
-  $$
+Function Lipschitzness bounds changes in $f$; smoothness bounds changes in $\nabla f$. In Euclidean space, $f$ is $L$-smooth when
 
-  For convex $f$: $f(y)\le f(x)+\langle\nabla f(x),y-x\rangle+\tfrac{L}{2}\|y-x\|^2$; and Baillon–Haddad co-coercivity:
+$$
+\|\nabla f(x)-\nabla f(y)\|_2\leq L\|x-y\|_2.
+$$
 
-  $$
-  \langle\nabla f(x)-\nabla f(y),x-y\rangle \;\ge\; \tfrac{1}{L}\|\nabla f(x)-\nabla f(y)\|_*^2.
-  $$
+For a convex differentiable function this implies
 
-- $\mu$-strongly convex:
+$$
+f(y)\leq f(x)+\langle\nabla f(x),y-x\rangle+\frac{L}{2}\|y-x\|_2^2
+$$
 
-  $$
-  f(y)\ge f(x)+\langle\nabla f(x),y- x\rangle+\tfrac{\mu}{2}\|y- x\|^2
-  $$
+and the Baillon-Haddad inequality
 
-  _fact:_ no nonconstant strongly convex function is globally Lipschitz on $\mathbb{R}^n$ (it grows at least quadratically).
+$$
+\langle\nabla f(x)-\nabla f(y),x-y\rangle
+\geq \frac{1}{L}\|\nabla f(x)-\nabla f(y)\|_2^2.
+$$
+
+The inner-product structure matters for this co-coercivity statement; writing it for an arbitrary norm and its dual is not generally valid. [@bubeck2015convexoptimization]
+
+A $\mu$-strongly convex function satisfies
+
+$$
+f(y)\geq f(x)+\langle g,y-x\rangle+\frac{\mu}{2}\|y-x\|_2^2,
+\qquad g\in\partial f(x).
+$$
+
+When $\mu>0$, such a function cannot also be globally Lipschitz on all of $\mathbb{R}^n$: the quadratic lower bound eventually outruns every linear Lipschitz bound. The two properties can coexist on a bounded domain.
 
 ## examples
 
-- $f(x)=\|x\|$: **1-Lipschitz** w\.r.t. $\|\cdot\|$ (subgradients in the dual unit ball).
-- $f(x)=\langle a,x\rangle$: **$\|a\|_*$-Lipschitz**.
-- Hinge loss $f(t)=\max(0,1 - t)$: **1-Lipschitz** on $\mathbb{R}$.
-- Log-sum-exp $f(z)=\log\sum_i e^{z_i}$: $\nabla f(z)=\text{softmax}(z)$, $\|\nabla f(z)\|_1=1$ $\Rightarrow$ **1-Lipschitz w\.r.t. $\|\cdot\|_\infty$** (nice tie-in to attention logits).
-- Quadratic $f(x)=\tfrac12 x^\top Qx$: **not** globally Lipschitz on $\mathbb{R}^n$ unless the domain is bounded; but it **is** $L$-smooth with $L=\|Q\|_{\text{op}}$.
+- $f(x)=\|x\|$ is $1$-Lipschitz with respect to the same norm.
+- $f(x)=\langle a,x\rangle$ is $\|a\|_*$-Lipschitz.
+- $f(t)=\max(0,1-t)$ is $1$-Lipschitz on $\mathbb{R}$.
+- $f(z)=\log\sum_i e^{z_i}$ is $1$-Lipschitz with respect to $\|\cdot\|_\infty$, since $\nabla f(z)=\operatorname{softmax}(z)$ has $\ell_1$ norm $1$.
+- If $Q=Q^\top\succeq0$, then $f(x)=\tfrac12x^\top Qx$ is convex and has a $\|Q\|_2$-Lipschitz gradient. When $Q\neq0$, the function itself is not globally Lipschitz on $\mathbb{R}^n$.
 
 ## logistic loss
 
-_0/1 vs $\pm 1$ forms (Lipschitz constants)_
+For a logit $t$, binary logistic loss has two equivalent label conventions:
 
-Two equivalent ways to write the binary logistic negative log‑likelihood per example (with logit $t=w^\top x + b$):
+$$
+\ell_{01}(t;y)
+=-y\log\sigma(t)-(1-y)\log(1-\sigma(t)),
+\qquad y\in\{0,1\},
+$$
 
-- 0/1 labels ($y\in\{0,1\}$):
+$$
+\ell_{\pm}(t;y)=\log(1+e^{-yt}),
+\qquad y\in\{-1,+1\}.
+$$
 
-  $$
-  \ell_{01}(t;y) = -\big[ y\,\log\sigma(t) + (1-y)\,\log(1-\sigma(t)) \big].
-  $$
+Their first derivatives obey
 
-  Derivative w.r.t. $t$: $\partial_t\ell_{01}=\sigma(t)-y\in[-1,1]$; second derivative $\partial_t^2\ell_{01}=\sigma(t)(1-\sigma(t))\le\tfrac14$.
+$$
+|\partial_t\ell(t;y)|\leq 1.
+$$
 
-- $\pm 1$ labels ($y\in\{-1,+1\}$):
-  $$
-  \ell_{\pm}(t;y) = \log\big(1+e^{-y t}\big).
-  $$
-  Derivative: $\partial_t\ell_{\pm}=-y\,\sigma(-y t)\in[-1,1]$; second derivative $\partial_t^2\ell_{\pm}=\sigma(y t)\,\sigma(-y t)\le\tfrac14$.
+For the $0/1$ form, $\partial_t^2\ell_{01}(t;y)=\sigma(t)(1-\sigma(t))$; for signed labels, $\partial_t^2\ell_{\pm}(t;y)=\sigma(yt)\sigma(-yt)$. Both lie in $[0,1/4]$, so the scalar loss is $1$-Lipschitz in $t$ and its derivative is $1/4$-Lipschitz.
 
-> [!result] Consequences
->
-> - Both forms are **1‑Lipschitz in the logit $t$** (since $|\partial_t\ell|\le1$).
-> - Both have **1/4‑Lipschitz gradients in $t$** (since $|\partial_t^2\ell|\le 1/4$).
-> - For a linear model $t=w^\top x + b$, the empirical risk $J(w)=\frac{1}{n}\sum_i \ell(w^\top x_i;y_i)$ has
->   $$
->   \nabla^2 J(w)=\frac{1}{n} X^\top S X,\quad S=\operatorname{diag}\big(\sigma(t_i)(1-\sigma(t_i))\big) \preceq \tfrac14 I,
->   $$
->   hence $\nabla J$ is **L‑Lipschitz** with $L\le \tfrac{1}{4n}\,\|X\|_2^2$ (spectral norm), or $L\le\tfrac14\,\|X\|_2^2$ if $J$ sums instead of averages.
+For parameters $\theta=(w,b)$, let $\widetilde X$ have rows $(x_i^\top,1)$ and define the mean empirical risk
 
-See [[thoughts/Logistic regression#MLE derivation and gradients]] and [[thoughts/cross entropy]] for context; norms in [[thoughts/norm]] and operator norms/linear maps in [[thoughts/linear map#Operator norm and Lipschitzness]].
+$$
+J(\theta)=\frac1n\sum_{i=1}^n\ell(\widetilde x_i^\top\theta;y_i).
+$$
+
+Then
+
+$$
+\nabla^2J(\theta)=\frac1n\widetilde X^\top S\widetilde X,
+\qquad
+0\preceq S\preceq\frac14I,
+$$
+
+so $J$ is $L_J$-smooth with
+
+$$
+L_J\leq\frac{\|\widetilde X\|_2^2}{4n}.
+$$
+
+For a summed loss, remove the factor $1/n$. [@freund2018conditionnumberlogisticregression]
+
+See [[thoughts/Logistic regression#MLE derivation and gradients]], [[thoughts/cross entropy]], [[thoughts/norm]], and [[thoughts/linear map#Operator norm and Lipschitzness]].

@@ -189,6 +189,8 @@ export interface ActivitySummary {
   id: number
   date: string
   sport: ActivityKind
+  virtual?: boolean
+  treadmill?: boolean
   name: string
   distanceKm: number
   movingTimeS: number
@@ -863,16 +865,19 @@ export interface FtpHypothesis {
 
 export type HeatAcclimatisationState = 'unexposed' | 'acclimating' | 'maintaining' | 'decaying'
 export type HeatConfidence = 'none' | 'low' | 'moderate'
-export type HeatTemperatureSource = 'core' | 'weatherkit' | 'strava'
+export type HeatTemperatureSource = 'core' | 'weatherkit' | 'strava' | 'manual-sauna'
+
+export type HeatSauna = NonNullable<StravaActivityDetail['sauna']> & { durationMinutes: number }
 
 export interface HeatActivityPoint {
   id: number
   date: string
   startedAt: string
-  sport: 'bike' | 'run'
+  sport: 'bike' | 'run' | 'sauna'
   name: string
-  temperatureC: number
+  temperatureC: number | null
   heatStrainIndex: number | null
+  sauna: HeatSauna | null
   source: HeatTemperatureSource
   coreOrigin: CoreTemperatureOrigin | null
   observedMinutes: number
@@ -887,12 +892,14 @@ export interface HeatDay {
   source: HeatTemperatureSource | 'mixed' | null
   observedMinutes: number
   hotMinutes: number
+  saunaMinutes: number
+  saunaHtl: number | null
   dose: number
   acclimatisationPct: number
 }
 
 export interface HeatMethod {
-  eligibleSports: ['bike', 'run']
+  eligibleSports: ['bike', 'run', 'sauna']
   hotThresholdC: number
   heatStrainThreshold: number
   targetMinutesPerDay: number
@@ -900,6 +907,8 @@ export interface HeatMethod {
   decayGraceDays: number
   decayPerDay: number
   coverageDays: number
+  htlPerExposure: number
+  passiveHtlCapPerDay: number
   note: string
 }
 
@@ -915,6 +924,9 @@ export interface HeatBlock {
   lastHeatDate: string | null
   heatMinutes14d: number
   heatDays14d: number
+  saunaMinutes14d: number
+  saunaHtl14d: number | null
+  saunaSessions14d: number
   sourceCounts: Record<HeatTemperatureSource, number>
   coreSourceCounts: Record<CoreTemperatureOrigin, number>
   activities: HeatActivityPoint[]
@@ -1157,6 +1169,8 @@ const HEAT_TARGET_DAYS = 14
 const HEAT_DECAY_GRACE_DAYS = 3
 const HEAT_DECAY_PER_DAY = 0.025
 const HEAT_COVERAGE_DAYS = 42
+const HEAT_HTL_PER_EXPOSURE = 10
+const HEAT_PASSIVE_HTL_CAP = 8
 
 const SPORT_PRIOR: Record<Sport, number> = { swim: 1.3, bike: 6.9, run: 3.3 }
 const LOAD_SHARE_TARGET: Record<Sport, number> = { swim: 0.2, bike: 0.5, run: 0.3 }
@@ -1362,11 +1376,12 @@ interface HeatActivity {
   id: number
   date: string
   startedAt: string
-  sport: 'bike' | 'run'
+  sport: 'bike' | 'run' | 'sauna'
   name: string
   durationS: number
-  temperatureC: number
+  temperatureC: number | null
   heatStrainIndex: number | null
+  sauna: HeatSauna | null
   hotS: number
   source: HeatTemperatureSource
   coreOrigin: CoreTemperatureOrigin | null
@@ -1375,6 +1390,8 @@ interface HeatActivity {
 interface HeatDayBucket {
   observedS: number
   hotS: number
+  saunaS: number
+  saunaHtl: number | null
   coreObservedS: number
   coreTemperatureSeconds: number
   heatStrainSeconds: number
@@ -1384,7 +1401,7 @@ interface HeatDayBucket {
 }
 
 const heatMethod = (): HeatMethod => ({
-  eligibleSports: ['bike', 'run'],
+  eligibleSports: ['bike', 'run', 'sauna'],
   hotThresholdC: HEAT_THRESHOLD_C,
   heatStrainThreshold: HEAT_STRAIN_THRESHOLD,
   targetMinutesPerDay: HEAT_TARGET_MINUTES,
@@ -1392,7 +1409,9 @@ const heatMethod = (): HeatMethod => ({
   decayGraceDays: HEAT_DECAY_GRACE_DAYS,
   decayPerDay: HEAT_DECAY_PER_DAY,
   coverageDays: HEAT_COVERAGE_DAYS,
-  note: 'Runs prefer CORE recorded in Garmin FIT, with CORE app onboard data filling missing thermal metrics. Rides prefer CORE app onboard data, followed by Garmin FIT. WeatherKit ambient temperature fills activities without complete CORE heat data, then Strava device temperature fills remaining gaps.',
+  htlPerExposure: HEAT_HTL_PER_EXPOSURE,
+  passiveHtlCapPerDay: HEAT_PASSIVE_HTL_CAP,
+  note: 'Runs prefer CORE recorded in Garmin FIT, with CORE app onboard data filling missing thermal metrics. Rides prefer CORE app onboard data, followed by Garmin FIT. WeatherKit ambient temperature fills activities without complete CORE heat data, then Strava device temperature fills remaining gaps. Manual sauna HTL contributes HTL / 10 to the Garden proxy, capped at 8 passive HTL per day and one combined daily exposure. Missing HTL earns no inferred credit. Sauna room conditions remain separate from measured HSI and workout temperature. This proxy is not the CORE Heat Adaptation Score.',
 })
 
 export type CoreTemperatureOrigin = 'app' | 'fit'
@@ -1401,6 +1420,7 @@ const emptyHeatSourceCounts = (): Record<HeatTemperatureSource, number> => ({
   core: 0,
   weatherkit: 0,
   strava: 0,
+  'manual-sauna': 0,
 })
 
 const emptyCoreSourceCounts = (): Record<CoreTemperatureOrigin, number> => ({ app: 0, fit: 0 })
@@ -1418,6 +1438,9 @@ function emptyHeat(): HeatBlock {
     lastHeatDate: null,
     heatMinutes14d: 0,
     heatDays14d: 0,
+    saunaMinutes14d: 0,
+    saunaHtl14d: null,
+    saunaSessions14d: 0,
     sourceCounts: emptyHeatSourceCounts(),
     coreSourceCounts: emptyCoreSourceCounts(),
     activities: [],
@@ -1754,10 +1777,11 @@ function buildHeat(
   weather: WeatherCache | null | undefined,
   coreCache: CoreBodyTemperatureCache | null | undefined,
   garmin: GarminCache | null | undefined,
+  saunaDetails: readonly StravaActivityDetail[],
   windowFrom: number,
   windowTo: number,
 ): HeatBlock {
-  const eligible: RawStravaActivity[] = []
+  const eligible: { date: string; durationS: number }[] = []
   const observed: HeatActivity[] = []
   const sourceCounts = emptyHeatSourceCounts()
   const coreSourceCounts = emptyCoreSourceCounts()
@@ -1767,7 +1791,10 @@ function buildHeat(
     if (sport !== 'bike' && sport !== 'run') continue
     const route = cache.streams?.[String(activity.id)]?.latlng
     if (!route || route.length < 2) continue
-    eligible.push(activity)
+    eligible.push({
+      date: activity.startDateLocal.slice(0, 10),
+      durationS: activity.elapsedTime > 0 ? activity.elapsedTime : activity.movingTime,
+    })
 
     const core = coreHeatObservation(activity, sport, coreCache, garmin)
     if (
@@ -1787,6 +1814,7 @@ function buildHeat(
         durationS: core.durationS,
         temperatureC: core.coreTemperatureC,
         heatStrainIndex: core.heatStrainIndex,
+        sauna: null,
         hotS: core.hotS,
         source: 'core',
         coreOrigin: core.origin,
@@ -1812,8 +1840,34 @@ function buildHeat(
       durationS,
       temperatureC,
       heatStrainIndex: null,
+      sauna: null,
       hotS: temperatureC > HEAT_THRESHOLD_C ? durationS : 0,
       source,
+      coreOrigin: null,
+    })
+  }
+
+  for (const detail of saunaDetails) {
+    if (dayMs(detail.date) < windowFrom || dayMs(detail.date) > windowTo) continue
+    const durationS = detail.elapsedTimeS > 0 ? detail.elapsedTimeS : detail.movingTimeS
+    if (!detail.sauna || !Number.isFinite(durationS) || durationS <= 0) continue
+    const rawHtl = detail.sauna.heatTrainingLoad
+    const heatTrainingLoad =
+      rawHtl != null && Number.isFinite(rawHtl) && rawHtl >= 0 ? rawHtl : null
+    eligible.push({ date: detail.date, durationS })
+    sourceCounts['manual-sauna'] += 1
+    observed.push({
+      id: detail.id,
+      date: detail.date,
+      startedAt: detail.start,
+      sport: 'sauna',
+      name: detail.name,
+      durationS: heatTrainingLoad == null ? 0 : durationS,
+      temperatureC: null,
+      heatStrainIndex: null,
+      sauna: { ...detail.sauna, heatTrainingLoad, durationMinutes: durationS / 60 },
+      hotS: 0,
+      source: 'manual-sauna',
       coreOrigin: null,
     })
   }
@@ -1823,6 +1877,8 @@ function buildHeat(
     const bucket = byDay.get(activity.date) ?? {
       observedS: 0,
       hotS: 0,
+      saunaS: 0,
+      saunaHtl: null,
       coreObservedS: 0,
       coreTemperatureSeconds: 0,
       heatStrainSeconds: 0,
@@ -1832,11 +1888,15 @@ function buildHeat(
     }
     bucket.observedS += activity.durationS
     bucket.hotS += activity.hotS
-    if (activity.source === 'core') {
+    if (activity.sauna) {
+      bucket.saunaS += activity.sauna.durationMinutes * 60
+      if (activity.sauna.heatTrainingLoad != null)
+        bucket.saunaHtl = (bucket.saunaHtl ?? 0) + activity.sauna.heatTrainingLoad
+    } else if (activity.source === 'core' && activity.temperatureC != null) {
       bucket.coreObservedS += activity.durationS
       bucket.coreTemperatureSeconds += activity.temperatureC * activity.durationS
       bucket.heatStrainSeconds += (activity.heatStrainIndex ?? 0) * activity.durationS
-    } else {
+    } else if (activity.temperatureC != null) {
       bucket.ambientObservedS += activity.durationS
       bucket.ambientTemperatureSeconds += activity.temperatureC * activity.durationS
     }
@@ -1853,7 +1913,9 @@ function buildHeat(
     const bucket = byDay.get(date)
     const observedMinutes = (bucket?.observedS ?? 0) / 60
     const hotMinutes = (bucket?.hotS ?? 0) / 60
-    const dose = clamp(hotMinutes / HEAT_TARGET_MINUTES, 0, 1)
+    const passiveDose =
+      clamp(bucket?.saunaHtl ?? 0, 0, HEAT_PASSIVE_HTL_CAP) / HEAT_HTL_PER_EXPOSURE
+    const dose = clamp(hotMinutes / HEAT_TARGET_MINUTES + passiveDose, 0, 1)
     if (dose > 0) {
       credits = Math.min(HEAT_TARGET_DAYS, credits + dose)
       lastHeatMs = ms
@@ -1879,36 +1941,35 @@ function buildHeat(
       source:
         bucket == null || bucket.sources.size === 0
           ? null
-          : bucket.sources.has('core')
-            ? 'core'
-            : bucket.sources.size > 1
-              ? 'mixed'
-              : (bucket.sources.values().next().value ?? null),
+          : bucket.sources.size > 1
+            ? 'mixed'
+            : (bucket.sources.values().next().value ?? null),
       observedMinutes: round(observedMinutes, 0),
       hotMinutes: round(hotMinutes, 0),
+      saunaMinutes: round((bucket?.saunaS ?? 0) / 60, 0),
+      saunaHtl: bucket?.saunaHtl == null ? null : round(bucket.saunaHtl, 1),
       dose: round(dose, 3),
       acclimatisationPct: round((credits / HEAT_TARGET_DAYS) * 100, 1),
     })
   }
 
-  const latestObserved = [...series].reverse().find(day => day.temperatureC != null) ?? null
+  const latestObserved =
+    [...series].reverse().find(day => (byDay.get(day.date)?.observedS ?? 0) > 0) ?? null
   const currentPct = observed.length ? (series[series.length - 1]?.acclimatisationPct ?? 0) : null
   const coverageFrom = windowTo - (HEAT_COVERAGE_DAYS - 1) * DAY_MS
-  const eligibleRecent = eligible.filter(
-    activity => dayMs(activity.startDateLocal.slice(0, 10)) >= coverageFrom,
+  const eligibleRecent = eligible.filter(activity => dayMs(activity.date) >= coverageFrom)
+  const observedRecent = observed.filter(
+    activity => dayMs(activity.date) >= coverageFrom && activity.durationS > 0,
   )
-  const observedRecent = observed.filter(activity => dayMs(activity.date) >= coverageFrom)
-  const eligibleSeconds = eligibleRecent.reduce(
-    (total, activity) =>
-      total + (activity.elapsedTime > 0 ? activity.elapsedTime : activity.movingTime),
-    0,
-  )
+  const eligibleSeconds = eligibleRecent.reduce((total, activity) => total + activity.durationS, 0)
   const observedSeconds = observedRecent.reduce((total, activity) => total + activity.durationS, 0)
   const coveragePct =
     eligibleSeconds > 0 ? round(clamp(observedSeconds / eligibleSeconds, 0, 1) * 100, 0) : 0
-  const latestEligibleDate = eligibleRecent.length
-    ? eligibleRecent[eligibleRecent.length - 1].startDateLocal.slice(0, 10)
-    : null
+  const latestEligibleDate =
+    eligibleRecent
+      .map(activity => activity.date)
+      .sort()
+      .at(-1) ?? null
   const confidence: HeatConfidence =
     observedRecent.length === 0
       ? 'none'
@@ -1943,6 +2004,19 @@ function buildHeat(
     lastHeatDate,
     heatMinutes14d,
     heatDays14d,
+    saunaMinutes14d: round(
+      recent14.reduce((total, day) => total + day.saunaMinutes, 0),
+      0,
+    ),
+    saunaHtl14d: recent14.some(day => day.saunaHtl != null)
+      ? round(
+          recent14.reduce((total, day) => total + (day.saunaHtl ?? 0), 0),
+          1,
+        )
+      : null,
+    saunaSessions14d: observed.filter(
+      activity => activity.sauna != null && dayMs(activity.date) >= windowTo - 13 * DAY_MS,
+    ).length,
     sourceCounts,
     coreSourceCounts,
     activities: [...observed]
@@ -1956,14 +2030,24 @@ function buildHeat(
           startedAt: activity.startedAt,
           sport: activity.sport,
           name: activity.name,
-          temperatureC: round(activity.temperatureC, activity.source === 'core' ? 2 : 1),
+          temperatureC:
+            activity.temperatureC == null
+              ? null
+              : round(activity.temperatureC, activity.source === 'core' ? 2 : 1),
           heatStrainIndex:
             activity.heatStrainIndex == null ? null : round(activity.heatStrainIndex, 1),
           source: activity.source,
           coreOrigin: activity.coreOrigin,
+          sauna: activity.sauna,
           observedMinutes: round(observedMinutes, 0),
           hotMinutes: round(hotMinutes, 0),
-          dose: round(clamp(hotMinutes / HEAT_TARGET_MINUTES, 0, 1), 3),
+          dose: round(
+            activity.sauna
+              ? clamp(activity.sauna.heatTrainingLoad ?? 0, 0, HEAT_PASSIVE_HTL_CAP) /
+                  HEAT_HTL_PER_EXPOSURE
+              : clamp(hotMinutes / HEAT_TARGET_MINUTES, 0, 1),
+            3,
+          ),
         }
       }),
     series,
@@ -5156,13 +5240,16 @@ export function buildAnalytics(
   const sourceActivities = Object.values(cache.activities)
     .filter(activity => !sinceDay || activity.startDateLocal.slice(0, 10) >= sinceDay)
     .sort((left, right) => left.startDateLocal.localeCompare(right.startDateLocal))
-  const saunaActivityIds = new Set(
-    Object.values(inputs.activityDetails ?? {})
-      .filter(detail => detail.sport === 'sauna' && detail.sauna != null)
-      .map(detail => detail.id),
-  )
+  const saunaDetails = Object.values(inputs.activityDetails ?? {})
+    .filter(detail => detail.sport === 'sauna' && detail.sauna != null)
+    .filter(detail => !sinceDay || detail.date >= sinceDay)
+  const saunaActivityIds = new Set(saunaDetails.map(detail => detail.id))
+  const activityDays = [
+    ...sourceActivities.map(activity => activity.startDateLocal.slice(0, 10)),
+    ...saunaDetails.map(detail => detail.date),
+  ].sort()
 
-  if (sourceActivities.length === 0) {
+  if (activityDays.length === 0) {
     const fallback = todayFromSync ?? '1970-01-01'
     return emptyAnalytics(cache.athleteId, fallback)
   }
@@ -5175,7 +5262,7 @@ export function buildAnalytics(
         x.sport !== null && !isTreatment(x.a.sportType, x.a.name),
     )
 
-  const lastActDay = sourceActivities[sourceActivities.length - 1].startDateLocal.slice(0, 10)
+  const lastActDay = activityDays[activityDays.length - 1]
   const today = todayFromSync ?? lastActDay
   const todayMs = dayMs(today)
   const effortByDay = new Map<string, EffortBucket>()
@@ -5263,7 +5350,7 @@ export function buildAnalytics(
     supplementalLoadActivities.map(activity => [activity.a.id, activity.load]),
   )
 
-  const firstDay = sinceDay ?? sourceActivities[0].startDateLocal.slice(0, 10)
+  const firstDay = sinceDay ?? activityDays[0]
   const windowFrom = dayMs(firstDay)
   const windowTo = Math.max(todayMs, dayMs(lastActDay))
   const windowToDay = today > lastActDay ? today : lastActDay
@@ -5282,6 +5369,7 @@ export function buildAnalytics(
     inputs.weather,
     inputs.core,
     inputs.garmin,
+    saunaDetails,
     windowFrom,
     windowTo,
   )
@@ -5583,30 +5671,32 @@ export function buildAnalytics(
       windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
       windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
     }))
-  const saunaSummaries: ActivitySummary[] = Object.values(inputs.activityDetails ?? {})
-    .filter(detail => detail.sport === 'sauna' && detail.sauna != null)
-    .filter(detail => !sinceDay || detail.date >= sinceDay)
-    .map(detail => ({
-      id: detail.id,
-      date: detail.date,
-      sport: 'sauna',
-      name: detail.name,
-      distanceKm: 0,
-      movingTimeS: detail.movingTimeS,
-      load: 0,
-      paceIntensityFactor: null,
-      effort: null,
-      cadence: null,
-      strokes: null,
-      windKph: detail.windKph,
-      windDir: detail.windDir,
-      windGustKph: detail.windGustKph,
-    }))
+  const saunaSummaries: ActivitySummary[] = saunaDetails.map(detail => ({
+    id: detail.id,
+    date: detail.date,
+    sport: 'sauna',
+    name: detail.name,
+    distanceKm: 0,
+    movingTimeS: detail.movingTimeS,
+    load: 0,
+    paceIntensityFactor: null,
+    effort: null,
+    cadence: null,
+    strokes: null,
+    windKph: detail.windKph,
+    windDir: detail.windDir,
+    windGustKph: detail.windGustKph,
+  }))
   const activities: ActivitySummary[] = acts
-    .map(act => ({
+    .map<ActivitySummary>(act => ({
       id: act.a.id,
       date: act.day,
-      sport: act.sport as ActivityKind,
+      sport: act.sport,
+      virtual:
+        inputs.activityDetails?.[String(act.a.id)]?.virtual ??
+        act.a.sportType.startsWith('Virtual'),
+      treadmill:
+        act.sport === 'run' && (act.a.trainer === true || /\btreadmill\b/i.test(act.a.name)),
       name: act.a.name ?? '',
       distanceKm: act.distanceKm,
       movingTimeS: act.a.movingTime,

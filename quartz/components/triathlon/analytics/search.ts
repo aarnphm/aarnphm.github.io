@@ -19,7 +19,7 @@ export const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = 
   {
     label: 'heat strain · acclimatisation',
     chart: 'heat',
-    hay: 'heat strain hsi core body skin temperature ambient thermal hot weather weatherkit acclimatisation acclimation exposure proxy',
+    hay: 'heat strain hsi core body skin temperature ambient thermal hot weather weatherkit acclimatisation acclimation exposure proxy sauna passive htl humidity cooldown',
   },
   {
     label: 'sleep · debt',
@@ -199,8 +199,13 @@ export interface DateSpan {
   end: string
 }
 
+export type ActivityFilterEnvironment = 'virtual' | 'treadmill'
+
+const ACTIVITY_FILTER_ENVIRONMENTS: readonly ActivityFilterEnvironment[] = ['virtual', 'treadmill']
+
 export interface ActivityQuery {
   filterSport: string | null
+  filterEnvironment: ActivityFilterEnvironment | null
   filterDate: DateSpan | null
   sortKey: string | null
   tokens: string[]
@@ -250,6 +255,7 @@ export const isActivityFilterSport = (value: string, sports: readonly ActivityKi
 
 export const parseActivityQuery = (rawTokens: string[]): ActivityQuery => {
   let filterSport: string | null = null
+  let filterEnvironment: ActivityFilterEnvironment | null = null
   let filterDate: DateSpan | null = null
   let sortKey: string | null = null
   const tokens: string[] = []
@@ -257,18 +263,54 @@ export const parseActivityQuery = (rawTokens: string[]): ActivityQuery => {
     const t = rawTokens[i]
     if (t.startsWith('filter:')) {
       let fv = t.slice(7)
+      if (!fv && rawTokens[i + 1] && !rawTokens[i + 1].includes(':')) fv = rawTokens[++i]
       if (/^\d+$/.test(fv) && rawTokens[i + 1] && DATE_FILTER_UNIT.test(rawTokens[i + 1])) {
         fv = `${fv} ${rawTokens[i + 1]}`
         i++
       }
       const span = dateFilterSpan(fv)
       if (span) filterDate = span
+      else if (fv === 'virtual' || fv === 'treadmill') filterEnvironment = fv
       else filterSport = resolveActivityFilterSport(fv) ?? fv
     } else if (t.startsWith('sort:')) {
       sortKey = t.slice(5)
     } else if (t) tokens.push(t)
   }
-  return { filterSport, filterDate, sortKey, tokens }
+  return { filterSport, filterEnvironment, filterDate, sortKey, tokens }
+}
+
+export const activityQueryTokens = (query: string): string[] => {
+  const normalized = query
+    .toLowerCase()
+    .replace(/\b(filter|sort):\s+/g, '$1:')
+    .trim()
+  return normalized ? normalized.split(/\s+/) : []
+}
+
+export const matchesActivityQuery = (
+  activity: Pick<ActivitySummary, 'sport' | 'virtual' | 'treadmill' | 'date' | 'name'>,
+  query: ActivityQuery,
+): boolean => {
+  if (query.filterSport && activity.sport !== query.filterSport) return false
+  if (
+    query.filterEnvironment === 'virtual' &&
+    (!activity.virtual || (activity.sport !== 'bike' && activity.sport !== 'run'))
+  )
+    return false
+  if (
+    query.filterEnvironment === 'treadmill' &&
+    (activity.sport !== 'run' || (!activity.virtual && !activity.treadmill))
+  )
+    return false
+  if (
+    query.filterDate &&
+    (activity.date < query.filterDate.start || activity.date > query.filterDate.end)
+  )
+    return false
+  return matchesActivityTokens(
+    `${activity.name} ${activity.sport} ${activity.date}`.toLowerCase(),
+    query.tokens,
+  )
 }
 
 export const sortActivitiesBy = <
@@ -312,6 +354,7 @@ export const activityCommandHints = (
   } else if (
     filterValue !== null &&
     !isActivityFilterSport(filterValue, filterSports) &&
+    !ACTIVITY_FILTER_ENVIRONMENTS.some(value => value === filterValue) &&
     !dateFilterSpan(filterValue)
   ) {
     for (const sport of filterSports) {
@@ -325,6 +368,15 @@ export const activityCommandHints = (
         it.dataset.insert = `filter:${value}`
         hints.push(it)
       }
+    }
+    for (const value of ACTIVITY_FILTER_ENVIRONMENTS) {
+      const supported =
+        filterSports.includes('run') || (value === 'virtual' && filterSports.includes('bike'))
+      if (!supported || !value.startsWith(filterValue)) continue
+      const sub = value === 'virtual' ? 'virtual runs and rides' : 'treadmill and virtual runs'
+      const it = activityResultItem(searchCommandTitle('filter:', value), sub)
+      it.dataset.insert = `filter:${value}`
+      hints.push(it)
     }
     for (const k of DATE_FILTER_KEYWORDS)
       if (k.startsWith(filterValue)) {
@@ -342,7 +394,7 @@ export const activityCommandHints = (
   } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
     const it = activityResultItem(
       searchCommandTitle('filter:'),
-      'filter by sport or date (bike, strength, yoga, today, 3 days)',
+      'filter by sport, virtual, treadmill, or date (today, 3 days)',
     )
     it.dataset.insert = 'filter:'
     hints.push(it)

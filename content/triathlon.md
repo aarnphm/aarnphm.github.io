@@ -62,7 +62,7 @@ maintenance:
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed OSPW
     - - type: CeramicSpeed OSPW RS 5 Spoke
-      - distance: null
+      - distance: 799.02
       - range:
           - end: null
             start: '2026-08-10'
@@ -74,20 +74,20 @@ maintenance:
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed
     - - type: CeramicSpeed T47 BBright for Shimano
-      - distance: null
+      - distance: 380.62
       - range:
           - end: null
             start: '2026-08-22'
       - reason: null
-  break pads:
+  brake pads:
     - - type: Shimano Brake Pads
-      - distance: 1727.25
+      - distance: 1731.28
       - range:
           - end: '2026-08-22'
             start: '2026-05-16'
       - reason: upgrades to BRAKCO Graphene
     - - type: BRAKCO Airpads Graphene Venting Disc Brake Pads
-      - distance: null
+      - distance: 380.62
       - range:
           - end: null
             start: '2026-08-26'
@@ -109,27 +109,27 @@ maintenance:
       waxed: false
     '3':
       chainring: ultegra
-      distance: 408.65
+      distance: 418.39
       lubricant: UFO Wax Drip-On
       ospw: ceramicspeed
       since: '2026-08-10'
       waxed: true
     '4':
       chainring: carbonti
-      distance: null
+      distance: 380.62
       lubricant: UFO Wax Drip-On
       ospw: ceramicspeed
       since: '2026-08-26'
       waxed: true
   chainrings:
     - - type: Ultegra FC-R8100 52-36T
-      - distance: 1727.25
+      - distance: 1731.28
       - range:
           - end: '2026-08-22'
             reason: upgrades to CarbonTi
             start: '2026-05-16'
     - - type: CarbonTi 54-40T
-      - distance: null
+      - distance: 380.62
       - range:
           - end: null
             reason: null
@@ -137,7 +137,7 @@ maintenance:
   service:
     soloist:
       - date: '2026-08-21'
-        distance: 1727.25
+        distance: 1731.28
         place: Racer Sportif
     speedmax: null
   tires:
@@ -153,14 +153,14 @@ maintenance:
           - distance: 619.84
           - range:
               - end: '2026-08-10'
+                reason: punctures
                 start: '2026-07-16'
-          - reason: punctures
         - - type: Pirelli P Zero Race SL-R 700x28c
-          - distance: null
+          - distance: 776.9
           - range:
               - end: null
+                reason: null
                 start: '2026-08-12'
-          - reason: null
       tube:
         - - type: Pirelli P Zero TPU
           - distance: 619.84
@@ -170,7 +170,7 @@ maintenance:
                 start: '2026-07-16'
           - reason: punctures
         - - type: Pirelli P Zero TPU
-          - distance: null
+          - distance: 776.9
           - range:
               - end: null
                 reason: null
@@ -183,19 +183,26 @@ maintenance:
           - end: '2026-07-16'
           - reason: training to race tires
         - - type: Pirelli P Zero Race SL-R 700x28c
-          - distance: null
+          - distance: 1138.08
           - range:
               - end: '2026-08-10'
+                reason: punctures and big ruptures, but fixed
                 start: '2026-07-16'
-              - end: null
+              - end: '2026-09-04'
+                reason: setup tubeless
                 start: '2026-08-18'
-          - reason: punctures and big ruptures, but fixed
         - - type: Pirelli P Zero Race SL-R 700x28c
           - distance: 258.65
           - range:
               - end: '2026-08-17'
+                reason: big punctures cut
                 start: '2026-08-12'
-          - reason: big punctures cut
+        - - type: Pirelli P Zero Race TLR SL-R 700x28c
+          - distance: null
+          - range:
+              - end: null
+                reason: null
+                start: '2026-09-07'
       tube:
         - - type: Pirelli P Zero TPU
           - distance: 878.49
@@ -205,15 +212,15 @@ maintenance:
                 repaired: true
                 start: '2026-07-16'
         - - type: Pirelli P Zero TPU
-          - distance: null
+          - distance: 521.66
           - range:
               - end: '2026-09-03'
                 reason: slow punctures
                 repaired: true
                 start: '2026-08-17'
-              - start: '2026-09-04'
               - end: null
-modified: 2026-09-06 21:21:51 GMT-04:00
+                start: '2026-09-04'
+modified: 2026-09-07 19:48:36 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1302,6 +1309,22 @@ garmin: 24239862296
 ```
 
 ```tracking
+date: 2026-09-04
+activity: 20038951296
+strengthVolume: 0 lb
+strengthSets: 5
+strengthReps: 40
+exercise: Marching in Place | 30s
+exercise: Bodyweight Squat | 30s | 45s | 45s | 45s
+exercise: Glute Bridge | 30s | 45s | 45s | 45s
+exercise: Arm Swings | 30s
+exercise: Plank Hold | 45s | 45s | 45s
+exercise: Alternating Reverse Lunge | 45s | 45s | 45s
+exercise: Standing Single-Leg Balance with Knee Lift | 45s | 45s | 45s
+exercise: Full-Body Stretch Flow | 2m
+```
+
+```tracking
 activity: 20037941355
 garmin: 24239315396
 virtual: true
@@ -1339,6 +1362,24 @@ cooldown: cold plunge
 htl: 7.6
 strava: 20067592351
 garmin: 24265300419
+```
+
+```tracking
+date: 2026-09-07
+activity: 20081306752
+strengthVolume: 0 lb
+strengthSets: 6
+strengthReps: 59
+exercise: Hip Circles | 30s
+exercise: Glute Bridge | 30s
+exercise: Walking Knee Hugs | 30s
+exercise: Ankle Bounces | 30s
+exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
+exercise: Reverse Lunge to Knee Drive | 40s | 40s | 40s | 40s
+exercise: Side Plank with Hip Dip | 40s | 40s | 40s | 40s
+exercise: Bodyweight Squat with 2s Pause | 40s | 40s | 40s | 40s
+exercise: Bird Dog | 40s | 40s | 40s | 40s
+exercise: Hip Flexor, Calf, and Standing Quad Stretch Flow | 2m
 ```
 
 <!-- training plan start
@@ -1710,7 +1751,11 @@ Front/rear load balance is selected independently of the bike. SILCA maps each d
 | gravel                 |         $47/53$ | 0.975 | 1.020 |
 | mountain               |     $46.5/53.5$ | 0.970 | 1.030 |
 
-The road $48/52$ option remains the default. Both the P Zero Race SL-R with a P Zero TPU tube and the P Zero Race TLR SL-R tubeless setup use the high-performance casing coefficient $c_t=1.00$. The axle recommendations are rounded to the nearest $0.5\ \mathrm{PSI}$:
+The road $48/52$ option remains the default. Tire identity and mounting setup are separate controls, both saved locally and independently editable from the command-palette result. The tire choices preserve the equipment-log names **P Zero Race SL-R** and **P Zero Race TLR SL-R**. The configured SL-R profile uses a **TPU inner tube**; the TLR profile offers either **TPU inner tube** or **Tubeless** with sealant. Choosing the SL-R profile after a tubeless setup returns the mounting choice to TPU. Existing saved TPU selections map to SL-R + TPU, while saved tubeless selections map to TLR + tubeless.
+
+These are distinct equipment profiles for tracking the owned tires, not a claim that an omitted “TLR” proves a different manufacturer construction. Pirelli's public SL-R page uses both the full TLR SL-R name and the shortened SL-R name.[^pirelli-sl-r] The calculator retains the two recorded identities without assigning an unverified rolling-resistance difference.
+
+Both tire profiles use SILCA's high-performance casing coefficient $c_t=1.00$. Applying that baseline with TPU remains a **Garden estimate**. SILCA's current calculator has no TPU-specific option. Its explanation separates tire construction from casing efficiency, and its TPU product guidance describes rolling resistance approaching latex and tubeless, but neither publishes a TPU pressure factor.[^silca-tpu] A shared pressure coefficient does not establish equal rolling resistance: this calculator estimates starting pressure, not a tire-specific $C_{rr}$ or wattage loss. The axle recommendations are rounded to the nearest $0.5\ \mathrm{PSI}$:
 
 $$
 p_f
@@ -1726,7 +1771,9 @@ $$
 
 All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. The Cervélo Soloist defaults to Reserve 40|44 Road, with a $25.4\ \mathrm{mm}$ front and $25\ \mathrm{mm}$ rear internal width. The HUNT 54_58 Aerodynamicist UD Carbon Spoke wheelset uses a $54.5\ \mathrm{mm}$ front depth, $58\ \mathrm{mm}$ rear depth, and hooked $22\ \mathrm{mm}$ internal width on both rims; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Measured front and rear tire widths are independent $20$–$65\ \mathrm{mm}$ inputs, persisted locally, with $w_f=32\ \mathrm{mm}$ and $w_r=28\ \mathrm{mm}$ as the defaults. Internal rim width is compatibility metadata rather than a second casing-width input, so choosing a custom internal width does not invent casing growth. Reserve publishes a $28\ \mathrm{mm}$ minimum for 40|44 Road and $29\ \mathrm{mm}$ for 42|49 TA, so the calculator warns only when a selected tire sits below its wheelset's published range.
 
-The [Pirelli tire-pressure tool](https://www.pirelli.com/tires/en-us/bike/pressure-tool) remains the manufacturer check for the selected Pirelli casing, tube or tubeless construction, rim, and lower pressure limit.[^pirelli-pressure] Since both local casing coefficients are $1.00$, switching between TPU and tubeless changes the documented setup without changing PSI when measured width and every other input remain fixed.
+The [Pirelli tire-pressure tool](https://www.pirelli.com/tires/en-us/bike/pressure-tool) remains the manufacturer check for the selected Pirelli casing, tube or tubeless construction, and rim. Respect the lower of the tire and rim maximum pressures.[^pirelli-pressure] Pirelli distinguishes tubetype from tubeless and uses nominal tire width with internal rim width; it does not offer a TPU-specific selection. Its recommendations can therefore differ from this measured-width SILCA model.
+
+Since both local casing coefficients are $1.00$, changing tire identity or switching the TLR profile between TPU and tubeless leaves PSI unchanged when measured width and every other input remain fixed. This equality is a local baseline assumption, not a claim that Pirelli recommends equal pressures. The calculator adds no universal tubeless reduction or TPU surcharge. The selected setup note explains the pressure basis; confirm the actual tire/rim combination in Pirelli's tool and account for pinch-flat risk when using a tube.
 
 The displayed front and rear values remain the dry SILCA baseline. Pirelli gives two road-condition offsets for fine tuning:
 
@@ -1762,6 +1809,10 @@ For example, the 2026-08-16 morning mass of $86.06\ \mathrm{kg}$, the $26.2\ \ma
 [^pressure-wheels]: [HUNT, "54_58 Aerodynamicist UD Carbon Spoke Disc Wheelset"](https://us.huntbikewheels.com/products/hunt-54_58-aerodynamicist-ud-carbon-spoke-disc-wheelset), [Reserve, "40|44 Road"](https://eu.reservewheels.com/products/reserve-40-44-road-wheel), [Reserve, "42|49 TA"](https://reservewheels.com/products/reserve-42-49), and [Reserve, "Wheels Tech Info"](https://cdn.shopify.com/s/files/1/0769/6420/0723/files/Dealer_Tech_Doc_-_7-10-26.pdf?v=1783718075), official wheel dimensions and published tire-width compatibility.
 
 [^pirelli-pressure]: [Pirelli, "Bike Tire Pressure Tool"](https://www.pirelli.com/tires/en-us/bike/pressure-tool), manufacturer guidance for matching tire construction, rim, system mass, use, and pressure limits.
+
+[^silca-tpu]: [SILCA, "Tire Pressure Calculator Explained"](https://silca.gorgias.help/en-US/tire-pressure-calculator-explained-265377) distinguishes breakpoint pressure from construction-related limits and casing efficiency. [SILCA, "TPU Tubes"](https://silca.cc/products/tpu-tubes) discusses rolling-resistance efficiency, not a TPU-specific pressure coefficient. The calculator's available casing categories were checked on 2026-09-07.
+
+[^pirelli-sl-r]: [Pirelli, "P ZERO Race TLR SL-R"](https://www.pirelli.com/tyres/en-ww/bike/tyres/catalogue/p-zero-race-tlr-sl-r), the official TLR casing specification.
 
 [^weatherkit-pressure]: [Apple, "HourWeatherConditions"](https://developer.apple.com/documentation/weatherkitrestapi/hourweatherconditions), hourly temperature, condition code, precipitation type, and precipitation probability supplied through the WeatherKit REST API.
 
@@ -3092,7 +3143,7 @@ $$
 }.
 $$
 
-CORE heat is counted when heat strain index is at least $3$. When CORE data is unavailable, ambient heat is counted when temperature exceeds $22^\circ\mathrm{C}$. Source order is CORE app, CORE FIT, WeatherKit, then Strava device temperature.
+CORE heat is counted when heat strain index is at least $3$. When CORE data is unavailable, ambient heat is counted when temperature exceeds $22^\circ\mathrm{C}$. Runs prefer CORE FIT, then CORE app; rides prefer CORE app, then CORE FIT. WeatherKit and Strava device temperature supply the ambient fallback.
 
 Daily heat dose is
 
@@ -3101,11 +3152,15 @@ D_d
 =
 \operatorname{clamp}
 \left(
-\frac{\mathrm{hot\ minutes}_d}{60},
+\frac{\mathrm{hot\ workout\ minutes}_d}{60}
++
+\frac{\min(8,\mathrm{recorded\ sauna\ HTL}_d)}{10},
 0,
 1
 \right).
 $$
+
+Recorded sauna HTL contributes to this Garden proxy on the [CORE 0–10 scale](https://help.corebodytemp.com/hc/en-us/articles/34476316782866-Heat-Training-Load), with a [passive contribution capped at 8 HTL per day](https://help.corebodytemp.com/hc/en-us/articles/34606310515090-CORE-s-Passive-Heat-Training-Load-Calculator). The linear HTL conversion is a Garden heuristic. The resulting percentage is separate from CORE’s Heat Adaptation Score. Sessions without HTL remain visible with no inferred dose; an explicit HTL of zero remains zero. Sauna duration, room temperature, humidity, and cooldown are retained as manual context. They do not supply measured HSI or enter workout-temperature averages.
 
 Heat credits evolve as
 
@@ -3145,7 +3200,7 @@ $$
 \right).
 $$
 
-Only routed bike and run activities are eligible for this heat model.
+Routed bike and run activities and recorded sauna sessions are eligible for this heat model. Sauna minutes with recorded HTL count toward observation coverage; missing HTL reduces coverage. Linked sauna recordings contribute once and retain zero sport-training load.
 
 <!-- training plan end -->
 

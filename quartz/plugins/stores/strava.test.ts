@@ -855,7 +855,7 @@ function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   }
 }
 
-test('merges an explicit virtual route by time and uses Garmin distance across payload and feed', () => {
+test('merges an explicit virtual route by time and prefers Strava summaries across payload and feed', () => {
   const activity = ride({
     id: 20037941355,
     distance: 66_800,
@@ -965,13 +965,13 @@ test('merges an explicit virtual route by time and uses Garmin distance across p
   )
   const detail = payload.details[String(activity.id)]
   assert.equal(detail.virtual, true)
-  assert.equal(detail.distanceSource, 'garmin')
-  assert.equal(detail.distanceKm, 28)
+  assert.equal(detail.distanceSource, 'strava')
+  assert.equal(detail.distanceKm, 66.8)
   assert.equal(detail.elevationM, 1_244)
   assert.equal(detail.descentM, 1_058)
-  assert.equal(payload.totalKm, 28)
-  assert.equal(payload.totals.find(total => total.sport === 'bike')?.distanceKm, 28)
-  assert.equal(payload.days.flatMap(day => day.items)[0].distanceKm, 28)
+  assert.equal(payload.totalKm, 66.8)
+  assert.equal(payload.totals.find(total => total.sport === 'bike')?.distanceKm, 66.8)
+  assert.equal(payload.days.flatMap(day => day.items)[0].distanceKm, 66.8)
   assert.equal(detail.avgWatts, 153)
   assert.equal(detail.npWatts, 170)
   assert.equal(detail.avgHr, 123)
@@ -1000,17 +1000,17 @@ test('merges an explicit virtual route by time and uses Garmin distance across p
     time.map(value => 760 + value),
   )
   const analytics = buildAnalytics(trackedCache, { activityDetails: payload.details, garmin })
-  assert.equal(analytics.activities[0].distanceKm, 28)
+  assert.equal(analytics.activities[0].distanceKm, 66.8)
   const feed = buildDataFeed(trackedCache, analytics, { activityDetails: payload.details, garmin })
   const rows: unknown[] = feed
     .trim()
     .split('\n')
     .map(line => JSON.parse(line))
-  assert.equal(rows.filter(isRecord).find(row => row.kind === 'activity')?.distanceKm, 28)
+  assert.equal(rows.filter(isRecord).find(row => row.kind === 'activity')?.distanceKm, 66.8)
   const serialized: unknown = JSON.parse(JSON.stringify(detail))
   assert.ok(isRecord(serialized))
   assert.equal(serialized.virtual, true)
-  assert.equal(serialized.distanceSource, 'garmin')
+  assert.equal(serialized.distanceSource, 'strava')
 
   const missing = buildPayload(
     cache,
@@ -2425,7 +2425,7 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
     cache.lastSync,
     [{ activityId: 101, garminActivityId: 123, virtual: true }],
   ).details['101']
-  assert.equal(virtual.distanceKm, 0.2)
+  assert.equal(virtual.distanceKm, 2)
   assert.equal(virtual.computer, 'wahoo')
   assert.deepEqual(
     virtual.gearShifts.map(shift => shift.distanceKm),
