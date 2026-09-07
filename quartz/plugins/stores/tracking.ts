@@ -50,6 +50,7 @@ export interface TrainingExclusion {
 export interface ActivityTrackingEntry {
   activityId: number
   garminActivityId: number | null
+  wahooFitPath?: string
   virtual: boolean
 }
 
@@ -250,13 +251,20 @@ export function parseTrackingBlock(
   }
   const linkedActivityId = parseOptionalActivityId(body.activity)
   const garminActivityId = parseOptionalActivityId(body.garmin)
+  const wahooFitPath = body.wahoo == null ? null : parseWahooFitLink(body.wahoo)
   const virtual = body.virtual?.toLowerCase()
   const activity: ActivityTrackingEntry | null =
     linkedActivityId != null &&
     garminActivityId !== undefined &&
-    (garminActivityId != null || virtual != null) &&
+    (body.wahoo == null || wahooFitPath != null) &&
+    (garminActivityId != null || wahooFitPath != null || virtual != null) &&
     (virtual == null || virtual === 'true' || virtual === 'false')
-      ? { activityId: linkedActivityId, garminActivityId, virtual: virtual === 'true' }
+      ? {
+          activityId: linkedActivityId,
+          garminActivityId,
+          ...(wahooFitPath ? { wahooFitPath } : {}),
+          virtual: virtual === 'true',
+        }
       : null
   const date = body.date
   if (!date)
@@ -315,4 +323,17 @@ export function parseTrackingBlock(
       : null
   const sauna = parseManualSauna(body)
   return { day, activity, fueling, strength, sauna, trainingExclusion }
+}
+
+export function parseWahooFitLink(value: string): string | null {
+  const match = /^\[\[([^\]|#]+)(?:\|[^\]]+)?\]\]$/.exec(value.trim())
+  const path = match?.[1]?.trim()
+  if (
+    !path?.startsWith('triathlon/wahoo/') ||
+    !path.toLowerCase().endsWith('.fit') ||
+    /[\\:]/.test(path) ||
+    path.split('/').some(part => !part || part === '.' || part === '..')
+  )
+    return null
+  return path
 }

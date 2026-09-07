@@ -213,7 +213,7 @@ maintenance:
                 start: '2026-08-17'
               - start: '2026-09-04'
               - end: null
-modified: 2026-09-05 20:17:12 GMT-04:00
+modified: 2026-09-06 21:21:51 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1313,6 +1313,34 @@ garmin: 24252090809
 virtual: true
 ```
 
+```tracking
+activity: 20065423270
+garmin: 24263528410
+wahoo: [[triathlon/wahoo/26-09-06.fit]]
+virtual: true
+```
+
+```tracking
+activity: 20068262332
+garmin: 24265775617
+wahoo: [[triathlon/wahoo/26-09-06-FTP.fit]]
+virtual: true
+```
+
+```tracking
+title: Guided, Untangled
+date: 2026-09-06
+time: 18:00
+duration: 75 mins
+activity: sauna
+temperature: 160F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.6
+strava: 20067592351
+garmin: 24265300419
+```
+
 <!-- training plan start
 meta: IRONMAN Lanzarote
 date: 2026-09-01
@@ -1441,12 +1469,16 @@ The in-browser pace forecaster first reads `/static/triathlon/data.jsonl`, then 
 
 ### source precedence
 
+For a ride recorded on both Rouvy and the BOLT, attach the BOLT file with `wahoo: [[triathlon/wahoo/<file>.fit]]` in the ride's tracking block. The Strava activity ID remains canonical. With `virtual: true`, Garmin supplies the virtual course, distance, and elevation when available; Strava supplies the activity timing. The linked FIT supplies recorded power, heart rate, cadence, device temperature, cycling dynamics, shifts, and native Wahoo summary metrics. Telemetry aligns by UTC time, with Strava or Garmin filling missing power, heart-rate, and cadence samples only when the FIT has no value within 2.5 seconds. Gear shifts and cycling dynamics use the virtual course's distance axis. The source caches and FIT stay unchanged, and an existing Wahoo recording is counted once.
+
+The card identifies Wahoo telemetry and retains separate Garmin and Strava normalized-power values and Garmin and Wahoo TSS. CORE temperature samples duplicated in the legacy muscle-oxygen fields are shown only as temperature, following [CORE's Wahoo field mapping](https://help.corebodytemp.com/hc/en-us/articles/34420267066002-Wahoo).
+
 The activity-card values use these ordered sources:
 
-1. Intensity factor uses Garmin's native value when it exists.
+1. Intensity factor uses the linked Wahoo FIT's native value when present, then Garmin's native value.
 2. Missing intensity factor is calculated from device power for a bike, pace for a run or swim, then heart rate as the remaining fallback.
 3. Exercise load uses Garmin's native value when it exists.
-4. Missing exercise load is calculated from Garmin IF when Garmin supplied IF, otherwise from the locally calculated IF.
+4. Missing exercise load is calculated from the linked Wahoo IF, then Garmin IF, otherwise from the locally calculated IF.
 5. Garmin aerobic and anaerobic training effect scores, messages, and labels take priority when they exist. A sauna tracking block can pin the exact Garmin Connect source with `garmin: <activity ID>`.
 6. When Garmin has no training effect details, an activity with observed load uses a local estimate. An Apple Watch sauna normally uses the relative effort from its canonical Strava recording. The aerobic score uses Strava relative effort when it exists, then exercise load. The anaerobic score uses the stronger result from upper heart rate zones and short high intensity intervals. The training effect heading exposes the selected inputs on hover and keyboard focus.
 

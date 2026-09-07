@@ -17,9 +17,10 @@ import { activityThermalTracePoints } from '../../../util/triathlon-card'
 import { activityTraceUsesElapsedAxis } from '../../../util/triathlon-card'
 import { activityTrainingEffectLabel } from '../../../util/triathlon-card'
 import { buildActivity as buildActivityNode } from '../../../util/triathlon-card'
+import { buildAnalysisBar } from '../../../util/triathlon-card'
 import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../../../util/triathlon-card'
 import { buildCyclingBestEfforts as buildCyclingBestEffortsNode } from '../../../util/triathlon-card'
-import { buildCyclingWorkoutAnalysis as buildCyclingWorkoutAnalysisNode } from '../../../util/triathlon-card'
+import { buildWorkoutAnalysis as buildWorkoutAnalysisNode } from '../../../util/triathlon-card'
 import { buildHeatStrainTrace as buildHeatStrainTraceNode } from '../../../util/triathlon-card'
 import { buildEnvironmentAnalysis as buildEnvironmentAnalysisNode } from '../../../util/triathlon-card'
 import { buildImpactLoadFactorTrace as buildImpactLoadFactorTraceNode } from '../../../util/triathlon-card'
@@ -32,7 +33,6 @@ import { buildRespirationTrace as buildRespirationTraceNode } from '../../../uti
 import { buildRiderPositionChart as buildRiderPositionChartNode } from '../../../util/triathlon-card'
 import { buildRunGroundContactTrace as buildRunGroundContactTraceNode } from '../../../util/triathlon-card'
 import { buildRunGroundContactBalanceTrace as buildRunGroundContactBalanceTraceNode } from '../../../util/triathlon-card'
-import { buildRunLapSplits as buildRunLapSplitsNode } from '../../../util/triathlon-card'
 import { buildRunStrideTrace as buildRunStrideTraceNode } from '../../../util/triathlon-card'
 import { buildRunStepSpeedLossPercentTrace as buildRunStepSpeedLossPercentTraceNode } from '../../../util/triathlon-card'
 import { buildRunStepSpeedLossTrace as buildRunStepSpeedLossTraceNode } from '../../../util/triathlon-card'
@@ -40,7 +40,6 @@ import { buildRunVerticalOscillationTrace as buildRunVerticalOscillationTraceNod
 import { buildRunVerticalRatioTrace as buildRunVerticalRatioTraceNode } from '../../../util/triathlon-card'
 import { buildShiftingChart as buildShiftingChartNode } from '../../../util/triathlon-card'
 import { buildSkinTemperatureTrace as buildSkinTemperatureTraceNode } from '../../../util/triathlon-card'
-import { buildSwimWorkoutAnalysis as buildSwimWorkoutAnalysisNode } from '../../../util/triathlon-card'
 import { buildStaminaChart as buildStaminaChartNode } from '../../../util/triathlon-card'
 import { buildTemperatureTrace as buildTemperatureTraceNode } from '../../../util/triathlon-card'
 import { buildTorqueEffectivenessChart as buildTorqueEffectivenessChartNode } from '../../../util/triathlon-card'
@@ -954,15 +953,17 @@ export const renderMapDetail = (
   if (specs.length === 0) {
     const figs = el('div', 'tri-act-figs')
     if (d.sport === 'swim') figs.appendChild(buildPool(presentation, d))
+    const analysis = d.sport === 'sauna' ? (buildAnalysisBar(domF, d) as HTMLElement | null) : null
+    if (analysis) figs.appendChild(analysis)
     if (figs.childElementCount > 0) wrap.appendChild(figs)
     const more = el('div', 'tri-act-more')
-    const swimWorkout = buildSwimWorkoutAnalysisNode(domF, d) as HTMLElement | null
+    const workoutAnalysis = buildWorkoutAnalysisNode(domF, d) as HTMLElement | null
     const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
     const heartRate = hasHeartRateTrace(d) ? buildHeartRateTrace(presentation, d) : null
     const environment = buildEnvironmentAnalysisNode(domF, d)
     const trainingEffect = buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null
     for (const z of [
-      swimWorkout,
+      workoutAnalysis,
       heartRate,
       environment,
       trainingEffect,
@@ -986,7 +987,7 @@ export const renderMapDetail = (
         const controller = linkActivityAnalysis(
           presentation,
           wrap,
-          opts?.analysis ?? null,
+          opts?.analysis ?? analysis,
           d,
           opts?.onRange,
         )
@@ -999,15 +1000,11 @@ export const renderMapDetail = (
   tablist.setAttribute('role', 'tablist')
   const figs = el('div', 'tri-act-figs tri-map-figs')
   const profileBox = el('div', 'tri-map-profile')
-  const runSplits = buildRunLapSplitsNode(domF, d) as HTMLElement | null
-  const swimWorkout = buildSwimWorkoutAnalysisNode(domF, d) as HTMLElement | null
-  const cyclingWorkout = buildCyclingWorkoutAnalysisNode(domF, d) as HTMLElement | null
+  const workoutAnalysis = buildWorkoutAnalysisNode(domF, d) as HTMLElement | null
   const zoneBox = el('div', 'tri-act-more')
   const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
   wrap.append(tablist, figs)
-  if (runSplits) wrap.appendChild(runSplits)
-  if (swimWorkout) wrap.appendChild(swimWorkout)
-  if (cyclingWorkout) wrap.appendChild(cyclingWorkout)
+  if (workoutAnalysis) wrap.appendChild(workoutAnalysis)
   wrap.appendChild(profileBox)
   wrap.appendChild(zoneBox)
 
@@ -1324,6 +1321,16 @@ export const renderDetail = (
         fmt: i => {
           const point = heartRatePoints[i]
           return `${tracePosition(point)} · ${point.heartRate == null ? '—' : `${Math.round(point.heartRate)} bpm`}`
+        },
+      })
+    else if (trace.dataset.triTrace === 'speed')
+      surfaces.push({
+        wrap: trace,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          const value = Number.isFinite(p.speedKph) && p.speedKph >= 0 ? p.speedKph : null
+          return `${tracePosition(p)} · ${value == null ? '—' : speedKph(presentation, value)}`
         },
       })
     else if (trace.dataset.triTrace === 'power')

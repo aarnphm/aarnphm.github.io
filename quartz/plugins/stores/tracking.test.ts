@@ -2,6 +2,32 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { parseTrackingBlock } from './tracking'
 
+test('accepts a linked Wahoo FIT with or without virtual-course tracking', () => {
+  for (const suffix of ['', '\nvirtual: true']) {
+    const parsed = parseTrackingBlock(
+      null,
+      `activity: 101\nwahoo: [[triathlon/wahoo/ride.fit|BOLT]]${suffix}`,
+    )
+    assert.equal(parsed?.activity?.wahooFitPath, 'triathlon/wahoo/ride.fit')
+    assert.equal(parsed?.activity?.virtual, suffix.length > 0)
+  }
+})
+
+test('rejects malformed Wahoo references instead of silently dropping the attachment', () => {
+  for (const path of [
+    '../ride.fit',
+    '/triathlon/wahoo/ride.fit',
+    'triathlon/wahoo/../ride.fit',
+    'triathlon/wahoo/./ride.fit',
+    'triathlon/wahoo/ride.tcx',
+    'https://example.com/ride.fit',
+    'triathlon/wahoo//ride.fit',
+    'triathlon/wahoo/ride.fit#fragment',
+  ])
+    assert.equal(parseTrackingBlock(null, `activity: 101\nvirtual: true\nwahoo: [[${path}]]`), null)
+  assert.equal(parseTrackingBlock(null, 'activity: 101\nvirtual: true\nwahoo: ride.fit'), null)
+})
+
 test('parses a virtual Garmin attachment without a tracking date', () => {
   assert.deepEqual(
     parseTrackingBlock(null, 'activity: 20037941355\ngarmin: 24239315396\nvirtual: true'),

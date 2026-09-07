@@ -170,6 +170,22 @@ function streamsFor(
   developerFields: ReadonlyMap<number, DeveloperField>,
   startMs: number,
 ): WahooStreams {
+  const pairedThermal = records.flatMap(record => {
+    const core = finite(record.coreTemperature)
+    const skin = finite(developerNumber(record, developerFields, SKIN_TEMPERATURE_FIELDS))
+    const thb = finite(record.totalHemoglobinConc)
+    const oxygen = finite(record.saturatedHemoglobinPercent)
+    return core == null || skin == null || thb == null || oxygen == null
+      ? []
+      : [{ core, skin, thb, oxygen }]
+  })
+  // CORE's legacy oxygen profile can update at a different cadence from native temperatures.
+  const duplicatedThermal =
+    pairedThermal.length >= 2 &&
+    pairedThermal.every(
+      ({ core, skin, thb, oxygen }) =>
+        Math.abs(core - thb) <= 0.100001 && Math.abs(skin - oxygen) <= 0.100001,
+    )
   const streams: WahooStreams = {
     timestamps: [],
     time: [],
@@ -216,15 +232,21 @@ function streamsFor(
           developerNumber(record, developerFields, BREATH_RATE_FIELDS),
       ),
     )
-    streams.muscleOxygenPercent.push(nonnegative(record.saturatedHemoglobinPercent))
-    streams.totalHemoglobinConcentration.push(nonnegative(record.totalHemoglobinConc))
+    const coreTemperature = finite(record.coreTemperature)
+    const skinTemperature = finite(
+      developerNumber(record, developerFields, SKIN_TEMPERATURE_FIELDS),
+    )
+    streams.muscleOxygenPercent.push(
+      duplicatedThermal ? null : nonnegative(record.saturatedHemoglobinPercent),
+    )
+    streams.totalHemoglobinConcentration.push(
+      duplicatedThermal ? null : nonnegative(record.totalHemoglobinConc),
+    )
     streams.heatStrainIndex.push(
       nonnegative(developerNumber(record, developerFields, HEAT_STRAIN_FIELDS)),
     )
-    streams.coreTemperatureC.push(finite(record.coreTemperature))
-    streams.skinTemperatureC.push(
-      finite(developerNumber(record, developerFields, SKIN_TEMPERATURE_FIELDS)),
-    )
+    streams.coreTemperatureC.push(coreTemperature)
+    streams.skinTemperatureC.push(skinTemperature)
     streams.minuteVentilation.push(
       nonnegative(developerNumber(record, developerFields, MINUTE_VENTILATION_FIELDS)),
     )

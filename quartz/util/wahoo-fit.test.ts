@@ -17,7 +17,7 @@ import { decodeWahooFit, wahooFitSha256 } from './wahoo-fit'
 const START = new Date('2026-08-27T12:00:00.000Z')
 const SEMICIRCLES_PER_DEGREE = 2 ** 31 / 180
 
-function activityFit(): Uint8Array {
+function activityFit(duplicateThermal = false): Uint8Array {
   const encoder = new Encoder()
   const developer: DeveloperDataIdMesg = {
     developerDataIndex: 0,
@@ -164,7 +164,13 @@ function activityFit(): Uint8Array {
       developerFields: { 1: 26, 2: 60, 3: 1400, 4: 900, 5: 740, 6: 3350, 7: 30 },
     },
   ]
-  for (const record of records) encoder.onMesg(Profile.MesgNum.RECORD, record)
+  for (const record of records) {
+    if (duplicateThermal) {
+      record.totalHemoglobinConc = record.coreTemperature! + 0.01
+      record.saturatedHemoglobinPercent = record === records[0] ? 33.4 : 33.5
+    }
+    encoder.onMesg(Profile.MesgNum.RECORD, record)
+  }
   const segments: SegmentLapMesg[] = [
     {
       startTime: START,
@@ -254,6 +260,14 @@ function activityFit(): Uint8Array {
   encoder.onMesg(Profile.MesgNum.SESSION, session)
   return encoder.close()
 }
+
+test('does not mistake duplicate CORE broadcasts for muscle oxygen', () => {
+  const { streams } = decodeWahooFit(activityFit(true))
+  assert.deepEqual(streams.muscleOxygenPercent, [null, null])
+  assert.deepEqual(streams.totalHemoglobinConcentration, [null, null])
+  assert.deepEqual(streams.coreTemperatureC, [37.16, 37.19])
+  assert.deepEqual(streams.skinTemperatureC, [33.4, 33.5])
+})
 
 test('decodes Wahoo FIT summary, device, aligned streams, and balance', () => {
   const bytes = activityFit()

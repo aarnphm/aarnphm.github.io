@@ -118,18 +118,31 @@ export interface WahooActivity {
   summary: WahooSummary
 }
 
-export interface WahooCache {
-  version: typeof WAHOO_CACHE_VERSION
+export interface WahooLocalFitActivity extends Omit<
+  WahooActivity,
+  'workoutId' | 'workoutTypeId' | 'workoutUpdatedAt' | 'summary' | 'sourceFile'
+> {
+  sourceFile: Omit<WahooFitFile, 'url'> & { path: string }
+}
+
+export type WahooActivitySource = WahooActivity | WahooLocalFitActivity
+
+export interface WahooData {
   lastSync: number
-  activities: Record<string, WahooActivity>
+  activities: Record<string, WahooActivitySource>
   streams: Record<string, WahooStreams>
   gearShifts: Record<string, WahooGearShift[]>
   cyclingDynamics: Record<string, WahooCyclingDynamics>
   summitSegments: Record<string, WahooSummitSegment[]>
 }
 
+export interface WahooCache extends WahooData {
+  version: typeof WAHOO_CACHE_VERSION
+  activities: Record<string, WahooActivity>
+}
+
 export interface WahooActivityMatch {
-  activity: WahooActivity
+  activity: WahooActivitySource
   score: number
   startDiffMs: number
   distanceDiffM: number | null
@@ -210,7 +223,7 @@ function distanceScore(stravaDistanceM: number, wahooDistanceM: number | null): 
   return ratio * 100
 }
 
-function durationDiffS(strava: RawStravaActivity, wahoo: WahooActivity): number | null {
+function durationDiffS(strava: RawStravaActivity, wahoo: WahooActivitySource): number | null {
   const stravaDurations = [positive(strava.movingTime), positive(strava.elapsedTime)].filter(
     (value): value is number => value != null,
   )
@@ -223,7 +236,7 @@ function durationDiffS(strava: RawStravaActivity, wahoo: WahooActivity): number 
   )
 }
 
-function durationScore(strava: RawStravaActivity, wahoo: WahooActivity): number | null {
+function durationScore(strava: RawStravaActivity, wahoo: WahooActivitySource): number | null {
   const diff = durationDiffS(strava, wahoo)
   if (diff == null) return null
   const tolerance = Math.max(DURATION_TOLERANCE_S, strava.elapsedTime * DURATION_TOLERANCE_RATIO)
@@ -233,19 +246,22 @@ function durationScore(strava: RawStravaActivity, wahoo: WahooActivity): number 
 export function matchWahooActivity(
   strava: RawStravaActivity,
   sport: ActivityKind,
-  cache: WahooCache | null,
+  cache: WahooData | null,
+  fitPath?: string | null,
 ): WahooActivityMatch | null {
   if (!cache) return null
   const stravaStart = Date.parse(strava.startDate)
   if (!Number.isFinite(stravaStart)) return null
-  let best: { activity: WahooActivity; score: number } | null = null
+  let best: { activity: WahooActivitySource; score: number } | null = null
   for (const activity of Object.values(cache.activities)) {
+    if (fitPath && (!('path' in activity.sourceFile) || activity.sourceFile.path !== fitPath))
+      continue
     if (activity.sport != null && activity.sport !== sport) continue
     const wahooStart = Date.parse(activity.startDate)
     if (!Number.isFinite(wahooStart)) continue
     const startDiff = Math.abs(wahooStart - stravaStart)
     if (startDiff > START_TOLERANCE_MS) continue
-    const dScore = distanceScore(strava.distance, activity.distanceM)
+    const dScore = fitPath ? 0 : distanceScore(strava.distance, activity.distanceM)
     if (dScore == null) continue
     const tScore = durationScore(strava, activity)
     if (tScore == null) continue
@@ -295,6 +311,7 @@ export function selectWahooTitleUpdates(
   for (const { activity, match } of [...unique.values()].sort((left, right) =>
     startValue(left.activity).localeCompare(startValue(right.activity)),
   )) {
+    if (!('summary' in match.activity)) continue
     if (match.activity.summary.edited && !options.includeEdited) continue
     const from = normalizedTitle(match.activity.name)
     const to = normalizedTitle(activity.name)

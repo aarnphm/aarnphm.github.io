@@ -1,5 +1,5 @@
 import type { GarminActivity, GarminCache } from '../plugins/stores/garmin'
-import type { WahooActivity, WahooCache, WahooStreams } from '../plugins/stores/wahoo'
+import type { WahooActivitySource, WahooData, WahooStreams } from '../plugins/stores/wahoo'
 
 export const GARDEN_CYCLING_STAMINA_METHOD = 'garden-stamina-v1'
 
@@ -91,7 +91,7 @@ function garminStaminaStates(cache: GarminCache | null): GarminStaminaState[] {
 }
 
 function matchingNativeActivity(
-  wahoo: WahooActivity,
+  wahoo: WahooActivitySource,
   native: readonly GarminStaminaState[],
 ): boolean {
   const wahooStartMs = Date.parse(wahoo.startDate)
@@ -142,7 +142,7 @@ function recoveredState(previous: StaminaState | null, startMs: number): Stamina
 }
 
 function estimateActivity(
-  activity: WahooActivity,
+  activity: WahooActivitySource,
   stream: WahooStreams,
   ftpWatts: number,
   maxHeartRateBpm: number,
@@ -227,7 +227,7 @@ function estimateActivity(
 }
 
 export function estimateWahooCyclingStamina(
-  wahoo: WahooCache | null,
+  wahoo: WahooData | null,
   garmin: GarminCache | null,
   ftpWatts: number | null,
   maxHeartRateBpm: number | null,

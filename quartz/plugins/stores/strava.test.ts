@@ -2676,6 +2676,123 @@ function analysisRange(
   }
 }
 
+test('preserves zero-distance sauna laps, native duration, and exact HR boundary samples', () => {
+  const time = Array.from({ length: 501 }, (_, index) => index * 2)
+  const heartrate = time.map((_, index) => 80 + (index % 60))
+  const lap = analysisRange('sauna-1', 'Lap 1', {
+    elapsedTime: 44,
+    movingTime: 41,
+    distance: 0,
+    startIndex: 177,
+    endIndex: 199,
+    averageSpeed: 0,
+    totalElevationGain: 0,
+    averageHeartrate: 108.5,
+  })
+  const cache: StravaRawCache = {
+    version: 3,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: 0,
+    activities: {
+      101: ride({ sportType: 'Workout', distance: 0, movingTime: 1000, elapsedTime: 1000 }),
+    },
+    activityDetails: {
+      101: {
+        calories: null,
+        laps: [lap],
+        segmentEfforts: [],
+        splitsMetric: [],
+        splitsStandard: [],
+      },
+    },
+    streams: {
+      101: { time, heartrate, distance: [], latlng: [], altitude: [], watts: [], cadence: [] },
+    },
+  }
+  const original = structuredClone(cache)
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {
+      cardio: {
+        id: 'cardio',
+        name: 'Cardio',
+        sport: null,
+        startDate: cache.activities[101].startDate,
+        startDateLocal: cache.activities[101].startDateLocal,
+        distanceM: null,
+        movingTimeS: null,
+        elapsedTimeS: 1000,
+        sourceDevice: null,
+        sourceFile: null,
+        metrics: { ...emptyGarminMetrics(), avgHeartRate: 109, maxHeartRate: 139 },
+        fueling: emptyGarminFueling(),
+      },
+    },
+    streams: {
+      cardio: {
+        time: [0, 200, 400, 600, 800, 1000],
+        distance: [0, 0, 0, 0, 0, 0],
+        altitude: [0, 0, 0, 0, 0, 0],
+        latlng: [],
+        heartrate: [80, 120, 100, 80, 120, 100],
+      },
+    },
+  }
+  const payload = buildPayload(cache, null, garmin, '2026-06-01')
+  const entry = parseTrackingBlock(
+    'triathlon',
+    'activity: sauna\ndate: 2026-06-07\ntime: 07:30\nduration: 20 mins\ntemperature: 90C\nhumidity: 10%\ncooldown: cold plunge\nstrava: 101',
+  )
+  assert.ok(entry?.sauna)
+  applyManualSauna(payload, [entry.sauna], [])
+  const detail = JSON.parse(JSON.stringify(payload.details['101']))
+  assert.equal(detail.sport, 'sauna')
+  assert.equal(detail.garmin?.activityId, 'cardio')
+  assert.deepEqual(detail.analysisRanges, [
+    {
+      kind: 'lap',
+      id: 'lap:sauna-1',
+      label: 'Lap 1',
+      startElapsedS: 354,
+      endElapsedS: 398,
+      startDistanceKm: 0,
+      endDistanceKm: 0,
+      distanceKm: 0,
+      durationS: 44,
+      movingTimeS: 41,
+      elevationGainM: null,
+      averageSpeedKph: null,
+      averageHeartRate: 108.5,
+      averageWatts: null,
+      averageCadence: null,
+      heartRateChange: { source: 'strava', startBpm: 137, endBpm: 99 },
+    },
+  ])
+  for (const index of [177, 199]) {
+    const point = detail.heartRateTrace.find(
+      (point: { elapsedS: number }) => point.elapsedS === time[index],
+    )
+    assert.equal(point?.heartRate, heartrate[index])
+  }
+  assert.deepEqual(cache, original)
+
+  cache.streams![101].heartrate![199] = 0
+  assert.equal(
+    buildPayload(cache, null, null, '2026-06-01').details['101'].analysisRanges[0].heartRateChange,
+    undefined,
+  )
+  cache.streams![101].distance = time.map(() => 0)
+  assert.equal(
+    buildPayload(cache, null, null, '2026-06-01').details['101'].analysisRanges.length,
+    1,
+  )
+  cache.activities[101].distance = 1000
+  cache.streams![101].distance = []
+  assert.deepEqual(buildPayload(cache, null, null, '2026-06-01').details['101'].analysisRanges, [])
+})
+
 test('emits exact elapsed time and bounded local speed at forced analysis boundaries', () => {
   const points = 201
   const time = Array.from({ length: points }, (_, index) => index + (index >= 50 ? 10 : 0))

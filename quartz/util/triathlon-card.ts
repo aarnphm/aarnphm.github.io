@@ -395,7 +395,17 @@ export const moreStatRows = (
     ])
   if (d.averageRelativeHumidityPct != null)
     rows.push(['humidity', `${d.averageRelativeHumidityPct}%`])
-  if (d.computer) rows.push(['computer', COMPUTER_LABEL[d.computer]])
+  if (d.computer) rows.push(['computer', d.wahoo?.sourceDevice ?? COMPUTER_LABEL[d.computer]])
+  if (d.wahoo) {
+    rows.push(['telemetry source', 'Wahoo FIT'])
+    if (d.wahoo.metrics.trainingStressScore != null)
+      rows.push(['Wahoo TSS', `${d.wahoo.metrics.trainingStressScore}`])
+    if (d.wahoo.stravaNormalizedPower != null)
+      rows.push(['Strava NP', `${d.wahoo.stravaNormalizedPower} W`])
+  }
+  if (d.virtual) rows.push(['activity', triText(presentation.locale, 'virtual')])
+  if (d.distanceSource === 'garmin') rows.push(['distance source', 'Garmin'])
+  else if (d.distanceSource === 'strava') rows.push(['distance source', 'Strava'])
   if (d.device && (d.sport === 'run' || d.sport === 'walk' || d.sport === 'swim'))
     rows.push(['device', DEVICE_LABEL[d.device]])
   return rows
@@ -729,6 +739,7 @@ const ANALYSIS_KIND_ORDER: ActivityAnalysisKind[] = ['lap', 'segment', 'climb']
 const validAnalysisRanges = (d: StravaActivityDetail): ActivityAnalysisRange[] => {
   const seen = new Set<string>()
   return d.analysisRanges.filter(range => {
+    const timedLap = d.sport === 'sauna' && range.kind === 'lap' && range.distanceKm === 0
     const key = `${range.kind}:${range.id}`
     if (
       seen.has(key) ||
@@ -741,11 +752,13 @@ const validAnalysisRanges = (d: StravaActivityDetail): ActivityAnalysisRange[] =
       !Number.isFinite(range.startDistanceKm) ||
       !Number.isFinite(range.endDistanceKm) ||
       range.startDistanceKm < 0 ||
-      range.endDistanceKm <= range.startDistanceKm ||
+      (timedLap
+        ? range.endDistanceKm !== range.startDistanceKm
+        : range.endDistanceKm <= range.startDistanceKm) ||
       !Number.isFinite(range.durationS) ||
       range.durationS <= 0 ||
       !Number.isFinite(range.distanceKm) ||
-      range.distanceKm <= 0
+      (!timedLap && range.distanceKm <= 0)
     )
       return false
     seen.add(key)
@@ -1008,10 +1021,19 @@ const routeDistanceAtElapsed = (d: StravaActivityDetail, elapsedS: number): numb
   return route[route.length - 1].d
 }
 
-const analysisSelectionBounds = (
+export const analysisSelectionBounds = (
   d: StravaActivityDetail,
-  range: ActivityAnalysisRange,
+  range: Pick<
+    ActivityAnalysisRange,
+    'startElapsedS' | 'endElapsedS' | 'startDistanceKm' | 'endDistanceKm'
+  >,
 ): { x: number; width: number } => {
+  if (activityTraceUsesElapsedAxis(d)) {
+    const maxElapsedS = d.heartRateTrace.at(-1)?.elapsedS || d.elapsedTimeS || 1
+    const start = Math.max(0, Math.min(maxElapsedS, range.startElapsedS))
+    const end = Math.max(start, Math.min(maxElapsedS, range.endElapsedS))
+    return { x: (start / maxElapsedS) * 100, width: ((end - start) / maxElapsedS) * 100 }
+  }
   const hasRoute = d.route.length >= 2
   const maxD = hasRoute
     ? d.route[d.route.length - 1].d || 1
@@ -1284,7 +1306,7 @@ const buildTraceSeries = <N, P extends { d: number; elapsedS: number }>(
   for (const t of yTicks)
     f.add(s, f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: t.vbY, x2: w, y2: t.vbY }))
   f.add(s, f.svg('path', { d: area, class: 'tri-elev-area' }))
-  if (selection !== undefined && !usesElapsedAxis)
+  if (selection !== undefined && (!usesElapsedAxis || d.sport === 'sauna'))
     f.add(s, buildAnalysisSelection(f, d, h, selection))
   if (missingLine)
     f.add(s, f.svg('path', { d: missingLine, class: 'tri-elev-line tri-elev-line--missing' }))
@@ -3621,7 +3643,8 @@ export const buildMuscleOxygenTrace = <N>(
 }
 
 const analysisRangeAttrs = (range: ActivityAnalysisRange): Record<string, string> => {
-  const displayDurationS = range.movingTimeS ?? range.durationS
+  const displayDurationS =
+    range.distanceKm === 0 ? range.durationS : (range.movingTimeS ?? range.durationS)
   const attrs: Record<string, string> = {
     type: 'button',
     'data-analysis-range': '',
@@ -3640,7 +3663,22 @@ const analysisRangeAttrs = (range: ActivityAnalysisRange): Record<string, string
   if (range.averageHeartRate != null) attrs['data-average-heart-rate'] = `${range.averageHeartRate}`
   if (range.averageWatts != null) attrs['data-average-watts'] = `${range.averageWatts}`
   if (range.averageCadence != null) attrs['data-average-cadence'] = `${range.averageCadence}`
+  if (range.heartRateChange) {
+    attrs['data-heart-rate-change-source'] = range.heartRateChange.source
+    attrs['data-start-heart-rate'] = `${range.heartRateChange.startBpm}`
+    attrs['data-end-heart-rate'] = `${range.heartRateChange.endBpm}`
+  }
   return attrs
+}
+
+export const analysisHeartRateChangeText = (
+  change: ActivityAnalysisRange['heartRateChange'],
+): string | null => {
+  if (!change) return null
+  const start = Math.round(change.startBpm)
+  const end = Math.round(change.endBpm)
+  const delta = end - start
+  return `${start} → ${end} bpm (${delta > 0 ? '+' : ''}${delta})`
 }
 
 const analysisRangeRate = (
@@ -3681,11 +3719,50 @@ export const buildPaceTrace = <N>(
   )
 }
 
+const buildSpeedTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+): N | null => {
+  if (d.sport !== 'bike') return null
+  const speeds = d.route
+    .map(point => point.speedKph)
+    .filter(speed => Number.isFinite(speed) && speed >= 0)
+  if (speeds.length < 2) return null
+  const peak = Math.max(...speeds)
+  return buildTrace(
+    f,
+    d,
+    point => (Number.isFinite(point.speedKph) && point.speedKph >= 0 ? point.speedKph : null),
+    'speed',
+    () => `${speedKph(f.presentation, peak)} peak`,
+    value => speedKph(f.presentation, value),
+    undefined,
+    selection,
+    undefined,
+    undefined,
+    undefined,
+    {
+      wrapAttrs: {
+        'data-speed-source': 'distance-time',
+        title: 'Speed calculated from recorded distance and elapsed time.',
+      },
+    },
+  )
+}
+
 const analysisRangeMetrics = (
   presentation: TriathlonPresentation,
   d: StravaActivityDetail,
   range: ActivityAnalysisRange,
 ): string[] => {
+  if (d.sport === 'sauna') {
+    const values = [clock(range.durationS)]
+    if (range.averageHeartRate != null) values.push(`${Math.round(range.averageHeartRate)} bpm avg`)
+    const change = analysisHeartRateChangeText(range.heartRateChange)
+    if (change) values.push(change)
+    return values
+  }
   const cadenceUnit = activityCadenceUnit(d.sport)
   const cadenceScale = activityCadenceScale(d.sport)
   const values = [scrubDist(presentation, range.distanceKm, d.sport)]
@@ -3716,12 +3793,15 @@ const cyclingWorkoutLaps = (d: StravaActivityDetail): CyclingWorkoutLap[] =>
           : null,
     }))
 
-const cyclingWorkoutElevationPath = (
-  d: StravaActivityDetail,
-  totalElapsedS: number,
-): string | null => {
+const workoutElevationPath = (d: StravaActivityDetail, totalElapsedS: number): string | null => {
+  if (d.sport === 'swim' && d.swimLocation === 'pool') return null
+  const requireGps = d.sport === 'run' || d.sport === 'swim'
+  if (requireGps && !d.mapRoute.some(segment => segment.length >= 2)) return null
   const route = d.route.filter(
-    point => Number.isFinite(point.elapsedS) && Number.isFinite(point.alt),
+    point =>
+      Number.isFinite(point.elapsedS) &&
+      Number.isFinite(point.alt) &&
+      (!requireGps || (Number.isFinite(point.lat) && Number.isFinite(point.lng))),
   )
   if (route.length < 2 || totalElapsedS <= 0) return null
   const minAltitude = Math.min(...route.map(point => point.alt))
@@ -3737,10 +3817,20 @@ const cyclingWorkoutElevationPath = (
   return `M 0 100 ${points} L 100 100 Z`
 }
 
-export const buildCyclingWorkoutAnalysis = <N>(
+const buildWorkoutElevation = <N>(f: TriNodeFactory<N>, path: string): N => {
+  const elevation = f.svg('svg', {
+    class: 'tri-workout-elevation',
+    viewBox: '0 0 100 100',
+    preserveAspectRatio: 'none',
+    'aria-hidden': 'true',
+  })
+  f.add(elevation, f.svg('path', { class: 'tri-workout-elevation-area', d: path }))
+  return elevation
+}
+
+const buildCyclingWorkoutAnalysis = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
-  showTitle = true,
 ): N | null => {
   if (d.sport !== 'bike' || d.route.length < 2) return null
   const laps = cyclingWorkoutLaps(d)
@@ -3751,7 +3841,7 @@ export const buildCyclingWorkoutAnalysis = <N>(
 
   const routeEndElapsedS = d.route.at(-1)?.elapsedS ?? 0
   const totalElapsedS = Math.max(routeEndElapsedS, ...laps.map(lap => lap.range.endElapsedS))
-  const elevationPath = cyclingWorkoutElevationPath(d, totalElapsedS)
+  const elevationPath = workoutElevationPath(d, totalElapsedS)
   if (!elevationPath) return null
 
   const highestPowerWatts = Math.max(...poweredLaps.map(lap => lap.powerWatts))
@@ -3787,8 +3877,6 @@ export const buildCyclingWorkoutAnalysis = <N>(
     f.el('span', undefined, `avg ${Math.round(averagePowerWatts)} W`),
     f.el('span', undefined, `lowest ${Math.round(lowestPowerWatts)} W`),
   )
-  if (showTitle)
-    f.add(head, f.el('span', 'tri-workout-title tri-cycling-workout-title', 'workout analysis'))
   f.add(head, stats)
 
   const chart = f.el('div', 'tri-workout-chart tri-cycling-workout-chart')
@@ -3800,13 +3888,7 @@ export const buildCyclingWorkoutAnalysis = <N>(
     'data-site-cursor-line': '',
     style: `--tri-cycling-workout-laps:${laps.length}`,
   })
-  const elevation = f.svg('svg', {
-    class: 'tri-cycling-workout-elevation',
-    viewBox: '0 0 100 100',
-    preserveAspectRatio: 'none',
-    'aria-hidden': 'true',
-  })
-  f.add(elevation, f.svg('path', { class: 'tri-cycling-workout-elevation-area', d: elevationPath }))
+  const elevation = buildWorkoutElevation(f, elevationPath)
   const grid = f.el('div', 'tri-workout-grid tri-cycling-workout-grid', undefined, {
     'aria-hidden': 'true',
   })
@@ -4030,37 +4112,7 @@ const swimWorkoutLaps = (d: StravaActivityDetail): SwimWorkoutLap[] => {
   return laps
 }
 
-const swimWorkoutElevationPath = (
-  d: StravaActivityDetail,
-  totalElapsedS: number,
-): string | null => {
-  if (!d.mapRoute.some(segment => segment.length >= 2)) return null
-  const route = d.route.filter(
-    point =>
-      Number.isFinite(point.lat) &&
-      Number.isFinite(point.lng) &&
-      Number.isFinite(point.elapsedS) &&
-      Number.isFinite(point.alt),
-  )
-  if (route.length < 2 || totalElapsedS <= 0) return null
-  const minAltitude = Math.min(...route.map(point => point.alt))
-  const maxAltitude = Math.max(...route.map(point => point.alt))
-  const altitudeSpan = Math.max(1, maxAltitude - minAltitude)
-  const points = route
-    .map(point => {
-      const x = Math.max(0, Math.min(100, (point.elapsedS / totalElapsedS) * 100))
-      const y = 100 - ((point.alt - minAltitude) / altitudeSpan) * 100
-      return `L ${x.toFixed(3)} ${y.toFixed(3)}`
-    })
-    .join(' ')
-  return `M 0 100 ${points} L 100 100 Z`
-}
-
-export const buildSwimWorkoutAnalysis = <N>(
-  f: TriNodeFactory<N>,
-  d: StravaActivityDetail,
-  showTitle = true,
-): N | null => {
+const buildSwimWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   if (d.sport !== 'swim') return null
   const laps = swimWorkoutLaps(d)
   if (laps.length === 0) return null
@@ -4084,7 +4136,7 @@ export const buildSwimWorkoutAnalysis = <N>(
   const averagePaceS = 360 / ((distanceKm / durationS) * 3600)
   const fastestPaceS = Math.min(...laps.map(lap => lap.paceS))
   const slowestPaceS = Math.max(...laps.map(lap => lap.paceS))
-  const elevationPath = swimWorkoutElevationPath(d, totalElapsedS)
+  const elevationPath = workoutElevationPath(d, totalElapsedS)
 
   const wrap = f.el('section', 'tri-workout tri-swim-workout', undefined, {
     'aria-label': 'Swim workout analysis',
@@ -4098,8 +4150,6 @@ export const buildSwimWorkoutAnalysis = <N>(
     f.el('span', undefined, `avg ${clock(averagePaceS)} /100m`),
     f.el('span', undefined, `slowest ${clock(slowestPaceS)} /100m`),
   )
-  if (showTitle)
-    f.add(head, f.el('span', 'tri-workout-title tri-swim-workout-title', 'workout analysis'))
   f.add(head, stats)
 
   const chart = f.el('div', 'tri-workout-chart tri-swim-workout-chart')
@@ -4111,16 +4161,7 @@ export const buildSwimWorkoutAnalysis = <N>(
     'data-site-cursor-line': '',
     style: `--tri-swim-workout-laps:${laps.length}`,
   })
-  if (elevationPath) {
-    const elevation = f.svg('svg', {
-      class: 'tri-swim-workout-elevation',
-      viewBox: '0 0 100 100',
-      preserveAspectRatio: 'none',
-      'aria-hidden': 'true',
-    })
-    f.add(elevation, f.svg('path', { class: 'tri-swim-workout-elevation-area', d: elevationPath }))
-    f.add(plot, elevation)
-  }
+  if (elevationPath) f.add(plot, buildWorkoutElevation(f, elevationPath))
   const grid = f.el('div', 'tri-workout-grid tri-swim-workout-grid', undefined, {
     'aria-hidden': 'true',
   })
@@ -4171,14 +4212,17 @@ export const buildSwimWorkoutAnalysis = <N>(
   return wrap
 }
 
-export const buildRunWorkoutAnalysis = <N>(
-  f: TriNodeFactory<N>,
-  d: StravaActivityDetail,
-  showTitle = true,
-): N | null => {
+const buildRunWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   if (d.sport !== 'run') return null
   const laps = runWorkoutLaps(f.presentation, d)
   if (laps.length === 0) return null
+  const totalElapsedS = Math.max(
+    d.elapsedTimeS,
+    d.route.at(-1)?.elapsedS ?? 0,
+    ...laps.map(lap => lap.range.endElapsedS),
+  )
+  if (totalElapsedS <= 0) return null
+  const elevationPath = workoutElevationPath(d, totalElapsedS)
   const imperial = isImperial(f.presentation)
   const paceUnit = imperial ? '/mi' : '/km'
   const paceAxis = runWorkoutPaceAxis(laps.map(lap => lap.paceS))
@@ -4198,6 +4242,7 @@ export const buildRunWorkoutAnalysis = <N>(
 
   const wrap = f.el('section', 'tri-workout tri-run-workout', undefined, {
     'aria-label': 'Run workout analysis',
+    'data-run-workout-elevation': String(elevationPath != null),
   })
   const head = f.el('div', 'tri-workout-head tri-run-workout-head')
   const stats = f.el('div', 'tri-workout-stats tri-run-workout-stats')
@@ -4211,8 +4256,6 @@ export const buildRunWorkoutAnalysis = <N>(
     ),
     f.el('span', undefined, `slowest ${clock(slowestPaceS)} ${paceUnit}`),
   )
-  if (showTitle)
-    f.add(head, f.el('span', 'tri-workout-title tri-run-workout-title', 'workout analysis'))
   f.add(head, stats)
 
   const chart = f.el('div', 'tri-workout-chart tri-run-workout-chart')
@@ -4224,6 +4267,7 @@ export const buildRunWorkoutAnalysis = <N>(
     'data-site-cursor-line': '',
     style: `--tri-run-workout-laps:${laps.length}`,
   })
+  if (elevationPath) f.add(plot, buildWorkoutElevation(f, elevationPath))
   const grid = f.el('div', 'tri-workout-grid tri-run-workout-grid', undefined, {
     'aria-hidden': 'true',
   })
@@ -4246,11 +4290,13 @@ export const buildRunWorkoutAnalysis = <N>(
   for (const lap of laps) {
     const metrics = analysisRangeMetrics(f.presentation, d, lap.range)
     const attrs = analysisRangeAttrs(lap.range)
+    const start = Math.max(0, Math.min(100, (lap.range.startElapsedS / totalElapsedS) * 100))
+    const end = Math.max(start, Math.min(100, (lap.range.endElapsedS / totalElapsedS) * 100))
     const height = Math.max(3, ((paceAxis.max - lap.paceS) / paceSpan) * 100)
     const intensity = speedSpan > 0 ? 0.42 + ((lap.speedKph - minSpeedKph) / speedSpan) * 0.5 : 0.72
     attrs['aria-pressed'] = 'false'
     attrs['aria-label'] = `${lap.range.label}, ${metrics.join(', ')}`
-    attrs.style = `--tri-run-workout-height:${height.toFixed(3)}%;--tri-run-workout-opacity:${intensity.toFixed(3)}`
+    attrs.style = `--tri-run-workout-start:${start.toFixed(3)}%;--tri-run-workout-width:${Math.max(0, end - start).toFixed(3)}%;--tri-run-workout-height:${height.toFixed(3)}%;--tri-run-workout-opacity:${intensity.toFixed(3)}`
     const button = f.el('button', 'tri-run-workout-lap', undefined, attrs)
     const column = f.el('span', 'tri-run-workout-column', undefined, { 'aria-hidden': 'true' })
     f.add(
@@ -4274,17 +4320,12 @@ export const buildRunWorkoutAnalysis = <N>(
   return wrap
 }
 
-export const buildRunLapSplits = <N>(
-  f: TriNodeFactory<N>,
-  d: StravaActivityDetail,
-  showTitle = true,
-): N | null => {
+const buildRunLapSplits = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   if (d.sport !== 'run') return null
   const imperial = isImperial(f.presentation)
   const splits = runLapSplits(f.presentation, d)
   const wrap = f.el('section', 'tri-run-splits', undefined, { 'aria-label': 'Run lap splits' })
   const head = f.el('div', 'tri-run-splits-head')
-  if (showTitle) f.add(head, f.el('span', 'tri-run-splits-title', 'lap splits'))
   if (splits.length === 0) {
     const columns = f.el('div', 'tri-run-splits-columns', undefined, { 'aria-hidden': 'true' })
     const list = f.el('div', 'tri-run-splits-list')
@@ -4373,11 +4414,7 @@ const runPaceZoneRangeText = (
   return `${clock(range.fastestSPerKm / scale)}–${clock(range.slowestSPerKm / scale)}${unit}`
 }
 
-export const buildRunPaceDistribution = <N>(
-  f: TriNodeFactory<N>,
-  d: StravaActivityDetail,
-  showTitle = true,
-): N | null => {
+const buildRunPaceDistribution = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   const distribution = d.runPaceZones
   if (
     d.sport !== 'run' ||
@@ -4399,7 +4436,6 @@ export const buildRunPaceDistribution = <N>(
     'aria-label': 'Run pace distribution',
   })
   const head = f.el('div', 'tri-run-pace-distribution-head')
-  if (showTitle) f.add(head, f.el('span', 'tri-run-pace-distribution-title', 'pace distribution'))
   const summary = f.el('div', 'tri-training-zone-summary', undefined, { 'aria-live': 'polite' })
   f.add(
     summary,
@@ -4468,14 +4504,21 @@ export const buildRunPaceDistribution = <N>(
   return wrap
 }
 
-export const buildRunAnalysis = <N>(
+export const buildWorkoutAnalysis = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   embedded = false,
 ): N | null => {
-  const workout = buildRunWorkoutAnalysis(f, d, false)
-  const splits = buildRunLapSplits(f, d, false)
-  const pace = buildRunPaceDistribution(f, d, false)
+  if (d.sport !== 'bike' && d.sport !== 'swim' && d.sport !== 'run') return null
+  const sport = { bike: 'Cycling', swim: 'Swim', run: 'Run' }[d.sport]
+  const workout =
+    d.sport === 'bike'
+      ? buildCyclingWorkoutAnalysis(f, d)
+      : d.sport === 'swim'
+        ? buildSwimWorkoutAnalysis(f, d)
+        : buildRunWorkoutAnalysis(f, d)
+  const splits = buildRunLapSplits(f, d)
+  const pace = buildRunPaceDistribution(f, d)
   const views = [
     { key: 'workout', label: 'workout analysis', shortLabel: 'WA', content: workout },
     { key: 'laps', label: 'lap splits', shortLabel: 'LS', content: splits },
@@ -4485,47 +4528,46 @@ export const buildRunAnalysis = <N>(
       view.content != null,
   )
   if (views.length === 0) return null
-  if (views.length === 1)
-    return views[0].key === 'workout'
-      ? buildRunWorkoutAnalysis(f, d)
-      : views[0].key === 'laps'
-        ? buildRunLapSplits(f, d)
-        : buildRunPaceDistribution(f, d)
-
-  const id = `tri-run-analysis-${d.id}`
+  const id = `tri-workout-analysis-${d.id}`
   const selected = views[0].key
-  const wrap = f.el('section', 'tri-run-analysis', undefined, {
-    'aria-label': 'Run analysis',
-    'data-run-analysis': '',
-    'data-run-analysis-view': selected,
+  const wrap = f.el('section', 'tri-workout-analysis', undefined, {
+    'aria-label': `${sport} analysis`,
+    'data-sport': d.sport,
+    'data-workout-analysis': '',
+    'data-workout-analysis-view': selected,
   })
-  const tabs = f.el('div', 'tri-map-tablist tri-run-analysis-tabs', undefined, {
+  const tabs = f.el('div', 'tri-map-tablist tri-workout-analysis-tabs', undefined, {
     role: 'tablist',
-    'aria-label': 'Run analysis view',
+    'aria-label': `${sport} analysis view`,
   })
-  const stage = f.el('div', 'tri-run-analysis-stage')
+  const stage = f.el('div', 'tri-workout-analysis-stage')
   for (const view of views) {
     const active = view.key === selected
     f.add(
       tabs,
-      f.el('button', 'tri-map-tab tri-run-analysis-tab', embedded ? view.shortLabel : view.label, {
-        id: `${id}-${view.key}-tab`,
-        type: 'button',
-        role: 'tab',
-        tabindex: active ? '0' : '-1',
-        'aria-label': view.label,
-        'aria-controls': `${id}-${view.key}-panel`,
-        'aria-selected': String(active),
-        'data-run-analysis-tab': view.key,
-      }),
+      f.el(
+        'button',
+        'tri-map-tab tri-workout-analysis-tab',
+        embedded ? view.shortLabel : view.label,
+        {
+          id: `${id}-${view.key}-tab`,
+          type: 'button',
+          role: 'tab',
+          tabindex: active ? '0' : '-1',
+          'aria-label': view.label,
+          'aria-controls': `${id}-${view.key}-panel`,
+          'aria-selected': String(active),
+          'data-workout-analysis-tab': view.key,
+        },
+      ),
     )
-    const panel = f.el('div', 'tri-run-analysis-panel', undefined, {
+    const panel = f.el('div', 'tri-workout-analysis-panel', undefined, {
       id: `${id}-${view.key}-panel`,
       role: 'tabpanel',
-      ...(active ? {} : { hidden: '' }),
+      ...(active ? {} : { hidden: '', inert: '' }),
       'aria-hidden': String(!active),
       'aria-labelledby': `${id}-${view.key}-tab`,
-      'data-run-analysis-panel': view.key,
+      'data-workout-analysis-panel': view.key,
     })
     f.add(panel, view.content)
     f.add(stage, panel)
@@ -4690,6 +4732,13 @@ const environmentViewLabel = (view: EnvironmentChartView): string => {
   if (view === 'uv-index') return 'UV index'
   if (view === 'cloud-cover') return 'cloud cover'
   return view
+}
+
+const environmentViewShortLabel = (view: EnvironmentChartView): string => {
+  if (view === 'cumulative') return 'cum.'
+  if (view === 'uv-index') return 'UVI'
+  if (view === 'temperature') return 'temp.'
+  return 'cloud'
 }
 
 const environmentViewHasSamples = (
@@ -5275,19 +5324,31 @@ export const buildEnvironmentAnalysis = <N>(
       for (const view of availableViews) {
         const active = view === selected
         const label = environmentViewLabel(view)
+        const shortLabel = environmentViewShortLabel(view)
+        const tab = f.el('button', 'tri-map-tab tri-environment-tab', undefined, {
+          id: `${id}-${view}-tab`,
+          type: 'button',
+          role: 'tab',
+          tabindex: active ? '0' : '-1',
+          title: triText(f.presentation.locale, label),
+          'aria-label': triText(f.presentation.locale, label),
+          'aria-controls': `${id}-${view}-panel`,
+          'aria-selected': String(active),
+          'data-environment-tab': view,
+          'data-i18n-aria-label': label,
+        })
         f.add(
-          tabs,
-          f.el('button', 'tri-map-tab tri-environment-tab', triText(f.presentation.locale, label), {
-            id: `${id}-${view}-tab`,
-            type: 'button',
-            role: 'tab',
-            tabindex: active ? '0' : '-1',
-            'aria-controls': `${id}-${view}-panel`,
-            'aria-selected': String(active),
-            'data-environment-tab': view,
+          tab,
+          f.el('span', 'tri-environment-tab-full', triText(f.presentation.locale, label), {
+            'aria-hidden': 'true',
             'data-i18n': label,
           }),
+          f.el('span', 'tri-environment-tab-short', triText(f.presentation.locale, shortLabel), {
+            'aria-hidden': 'true',
+            'data-i18n': shortLabel,
+          }),
         )
+        f.add(tabs, tab)
       }
       f.add(controls, tabs)
       if (scoreModel != null) {
@@ -5458,7 +5519,8 @@ const positionAnalysisRanges = (
 
 export const buildAnalysisBar = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   const ranges = validAnalysisRanges(d)
-  if (!hasAnalysisWorkspace(d)) return null
+  const timedLaps = d.sport === 'sauna' && ranges.some(range => range.kind === 'lap')
+  if (!hasAnalysisWorkspace(d) && !timedLaps) return null
   const wrapAttrs: Record<string, string> = {
     'data-tri-analysis': '',
     'data-activity-id': `${d.id}`,
@@ -5481,6 +5543,7 @@ export const buildAnalysisBar = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
 
   const rangeBands = f.el('div', 'tri-analysis-ranges')
   for (const kind of ANALYSIS_KIND_ORDER) {
+    if (timedLaps && kind !== 'lap') continue
     const groupRanges = ranges.filter(range => range.kind === kind)
     const label = analysisGroupLabel(kind, groupRanges)
     const visibleLabel = label === 'Summit Segments' ? 'Summit' : label
@@ -7383,7 +7446,10 @@ const activityTrainingRows = (
   const garmin = d.garmin
   const locale = presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
   const rows: [string, string][] = []
-  const intensityFactor = garmin?.intensityFactor ?? d.calculatedIntensityFactor?.value
+  const intensityFactor =
+    d.wahoo?.metrics.intensityFactor ??
+    garmin?.intensityFactor ??
+    d.calculatedIntensityFactor?.value
   if (intensityFactor != null)
     rows.push([
       'intensity factor',
@@ -7752,8 +7818,6 @@ export const activityStatRows = (
     ['time', dur(d.movingTimeS)],
     [d.sport === 'bike' ? 'speed' : 'pace', activityRate],
   ]
-  if (d.virtual) rows.push(['activity', triText(presentation.locale, 'virtual')])
-  if (d.distanceSource === 'garmin') rows.push(['distance source', 'Garmin'])
   if (d.sport === 'bike' && d.maxSpeedKph != null)
     rows.push(['max speed', speedKph(presentation, d.maxSpeedKph)])
   if (d.sport === 'run') {
@@ -7934,6 +7998,12 @@ export const buildActivity = <N>(
     f.add(wrap, figs)
     hasSummaryVisual = true
   }
+  if (d.sport === 'sauna' && d.route.length < 2 && analysis) {
+    const figs = f.el('div', 'tri-act-figs')
+    f.add(figs, analysis)
+    f.add(wrap, figs)
+    hasSummaryVisual = true
+  }
   if (embedded && !hasSummaryVisual)
     f.add(
       wrap,
@@ -7946,12 +8016,8 @@ export const buildActivity = <N>(
     const moreId = `tri-act-more-${d.id}`
     const more = f.el('div', 'tri-act-more', undefined, { id: moreId })
     const flags = routeStreamFlags(d)
-    const swimWorkout = buildSwimWorkoutAnalysis(f, d)
-    if (swimWorkout) f.add(more, swimWorkout)
-    const cyclingWorkout = buildCyclingWorkoutAnalysis(f, d)
-    if (cyclingWorkout) f.add(more, cyclingWorkout)
-    const runAnalysis = buildRunAnalysis(f, d, embedded)
-    if (runAnalysis) f.add(more, runAnalysis)
+    const workoutAnalysis = buildWorkoutAnalysis(f, d, embedded)
+    if (workoutAnalysis) f.add(more, workoutAnalysis)
     const activityGraphs: N[] = []
     if (d.sport === 'walk') {
       const pace = buildPaceTrace(f, d, analysisSelection)
@@ -7993,6 +8059,10 @@ export const buildActivity = <N>(
     if (stamina) activityGraphs.push(stamina)
     const shifting = buildShiftingChart(f, d, analysisSelection)
     if (shifting) activityGraphs.push(shifting)
+    const speed = triathlonTraceEnabled(traceSettings, 'speed')
+      ? buildSpeedTrace(f, d, analysisSelection)
+      : null
+    if (speed) activityGraphs.push(speed)
     if (flags.cad) {
       const cadenceScale = activityCadenceScale(d.sport)
       const cadenceUnit = activityCadenceUnit(d.sport)
