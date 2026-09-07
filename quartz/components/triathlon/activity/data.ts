@@ -5,6 +5,7 @@ import {
   isActivityKind,
   type StravaActivityDetail,
 } from '../../../plugins/stores/strava'
+import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
 import {
   isStravaDetailShardPath,
   STRAVA_DETAIL_INDEX_KIND,
@@ -14,6 +15,27 @@ import {
 } from '../../../util/strava-detail'
 import { isTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { isRecord } from '../../../util/type-guards'
+
+const isWahooVerification = (value: unknown): boolean => {
+  if (value === undefined) return true
+  if (!isRecord(value) || !isRecord(value.metrics) || !isRecord(value.summarySources)) return false
+  const metrics = value.metrics
+  return (
+    typeof value.activityId === 'string' &&
+    typeof value.fitPath === 'string' &&
+    value.fitPath.startsWith('triathlon/wahoo/') &&
+    value.fitPath.toLowerCase().endsWith('.fit') &&
+    typeof value.sha256 === 'string' &&
+    /^[a-f0-9]{64}$/.test(value.sha256) &&
+    (value.sourceDevice === null || typeof value.sourceDevice === 'string') &&
+    finite(value.startOffsetS) &&
+    (value.distanceM === null || finite(value.distanceM)) &&
+    (value.stravaNormalizedPower === null || finite(value.stravaNormalizedPower)) &&
+    [null, 'strava', 'garmin'].includes(value.streamFallback as string | null) &&
+    Object.keys(emptyWahooMetrics()).every(key => metrics[key] === null || finite(metrics[key])) &&
+    Object.values(value.summarySources).every(source => source === 'wahoo')
+  )
+}
 
 export type DetailPayload = StravaDetailPayload
 
@@ -371,6 +393,7 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     typeof value.id !== 'number' ||
     !/^\d{4}-\d{2}-\d{2}$/.test(typeof value.date === 'string' ? value.date : '') ||
     !isActivityKind(value.sport) ||
+    !isWahooVerification(value.wahoo) ||
     !(value.device === null || isActivityDevice(value.device)) ||
     !isStaminaTrace(value.staminaTrace) ||
     (isRecord(value.staminaTrace) &&

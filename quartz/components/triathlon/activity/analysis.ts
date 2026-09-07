@@ -5,6 +5,11 @@ import type { TriathlonPresentation } from '../../../util/triathlon-presentation
 import { activityCadenceScale } from '../../../util/triathlon-card'
 import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { activitySelectionSummary } from '../../../util/triathlon-card'
+import {
+  activityTraceUsesElapsedAxis,
+  analysisSelectionBounds,
+  analysisHeartRateChangeText,
+} from '../../../util/triathlon-card'
 import { clock } from '../../../util/triathlon-card'
 import { formatAltitude } from '../../../util/triathlon-card'
 import { formatRespirationRate } from '../../../util/triathlon-card'
@@ -59,6 +64,7 @@ export const activityScrubElapsedIndexAt = (
 }
 
 export type ActivityAnalysisRange = ActivitySelectionSummary & {
+  heartRateChange?: StravaActivityDetail['analysisRanges'][number]['heartRateChange']
   button: HTMLButtonElement | null
   kind: 'lap' | 'segment' | 'climb' | null
   id: string | null
@@ -124,6 +130,8 @@ export const analysisRangeFromButton = (
     endDistanceKm == null
   )
     return null
+  const startBpm = analysisFinite(button.dataset.startHeartRate)
+  const endBpm = analysisFinite(button.dataset.endHeartRate)
   return {
     button,
     kind,
@@ -146,6 +154,9 @@ export const analysisRangeFromButton = (
     averageCadence: analysisFinite(button.dataset.averageCadence),
     averageRespirationRate: null,
     averageTemperatureC: null,
+    ...(button.dataset.heartRateChangeSource === 'strava' && startBpm != null && endBpm != null
+      ? { heartRateChange: { source: 'strava' as const, startBpm, endBpm } }
+      : {}),
   }
 }
 
@@ -247,6 +258,14 @@ export const linkActivityAnalysis = (
     return metrics
   }
   const rangeReadoutMetrics = (range: ActivityAnalysisRange): string[] => {
+    if (sport === 'sauna') {
+      const metrics = [clock(range.durationS)]
+      if (range.averageHeartRate != null)
+        metrics.push(`${Math.round(range.averageHeartRate)} bpm avg`)
+      const change = analysisHeartRateChangeText(range.heartRateChange)
+      if (change) metrics.push(change)
+      return metrics
+    }
     const cadenceScale = activityCadenceScale(sport)
     const cadenceUnit = activityCadenceUnit(sport)
     const metrics = rangeMetrics(range)
@@ -285,8 +304,12 @@ export const linkActivityAnalysis = (
   const showRange = (range: ActivityAnalysisRange, committed = false): void => {
     const startDistanceKm = Math.max(0, Math.min(maxDistanceKm, range.startDistanceKm))
     const endDistanceKm = Math.max(startDistanceKm, Math.min(maxDistanceKm, range.endDistanceKm))
-    const x = (startDistanceKm / maxDistanceKm) * 100
-    const width = Math.max(0, ((endDistanceKm - startDistanceKm) / maxDistanceKm) * 100)
+    const { x, width } = activityTraceUsesElapsedAxis(detail)
+      ? analysisSelectionBounds(detail, range)
+      : {
+          x: (startDistanceKm / maxDistanceKm) * 100,
+          width: Math.max(0, ((endDistanceKm - startDistanceKm) / maxDistanceKm) * 100),
+        }
     for (const selection of act.querySelectorAll<SVGRectElement>('.tri-analysis-selection')) {
       selection.setAttribute('x', x.toFixed(2))
       selection.setAttribute('width', width.toFixed(2))

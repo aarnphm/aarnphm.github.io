@@ -8,6 +8,7 @@ import { QuartzLogger } from '../util/log'
 import { logBuildSpan, PerfTimer } from '../util/perf'
 import { getStaticResourcesFromPlugins } from '../util/static-resources'
 import { trace } from '../util/trace'
+import { trackedWahooChangeEvents } from '../util/wahoo-tracking'
 
 type EmitterOutput = Promise<FilePath[]> | AsyncGenerator<FilePath> | null
 
@@ -103,9 +104,11 @@ export async function emitPartialEmitter(
 export async function emitContent(
   ctx: BuildCtx,
   content: ProcessedContent[],
-  changeEvents?: ChangeEvent[],
+  inputChangeEvents?: ChangeEvent[],
 ) {
   const { argv, cfg } = ctx
+  const changeEvents =
+    inputChangeEvents && trackedWahooChangeEvents(content, inputChangeEvents, argv.directory)
   const perf = new PerfTimer()
   const log = new QuartzLogger(ctx.argv.verbose)
   const usePartialEmit = ctx.incremental && changeEvents !== undefined

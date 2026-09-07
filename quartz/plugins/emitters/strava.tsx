@@ -57,6 +57,7 @@ import {
 } from '../../util/triathlon-maintenance'
 import { buildTriathlonMarkdown } from '../../util/triathlon-markdown'
 import { buildStravaActivityIndex } from '../../util/triathlon-shortcut'
+import { loadTrackedWahooFits } from '../../util/wahoo-tracking'
 import {
   ATHLETE,
   buildAnalytics,
@@ -197,11 +198,11 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     const cache = await readCache()
     const oura = await readOura()
     const garmin = await readGarmin()
-    const wahoo = await readWahoo()
+    const wahooCache = await readWahoo()
     const apple = await readApple()
     const core = await readCoreBodyTemperature()
     const weather = await readWeather()
-    const generatedAt = latestProviderSync(cache, oura, garmin, wahoo, apple, core, weather)
+    const generatedAt = latestProviderSync(cache, oura, garmin, wahooCache, apple, core, weather)
     const nextTemporalSlugs = new Set<FullSlug>()
     const generateOgImage =
       ctx.argv.watch && !ctx.argv.force ? null : await createOgImageGenerator(ctx)
@@ -220,6 +221,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const since = file.data.frontmatter?.['strava']
       const maintenance = parseTriathlonMaintenance(file.data.frontmatter?.['maintenance'])
       const tracking = file.data.tracking
+      const wahoo = loadTrackedWahooFits(
+        wahooCache,
+        cache,
+        tracking?.activities ?? [],
+        ctx.argv.directory,
+      )
       const vo2labs = parseVo2Lab(file.data.frontmatter?.['vo2max'])
       const latestVo2 = vo2labs.length ? vo2labs[vo2labs.length - 1] : null
       const hrBoundsOverride = latestVo2 ? hrZoneUppers(latestVo2) : null
@@ -250,7 +257,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       enrichRunDynamics(payload, apple)
       enrichCoreBodyTemperature(payload, core)
       const detailActivityIds = new Set(Object.keys(payload.details))
-      const trackedCache = applyActivityTracking(cache, garmin, tracking?.activities ?? [])
+      const trackedCache = applyActivityTracking(cache, garmin, tracking?.activities ?? [], wahoo)
       const matchedActivities = trackedCache
         ? Object.values(trackedCache.activities).filter(activity =>
             detailActivityIds.has(String(activity.id)),

@@ -54,6 +54,7 @@ import {
   buildTriathlonDailyAnalytics,
   type TriathlonDailyAnalytics,
 } from './triathlon-day-analytics'
+import { loadTrackedWahooFits, wahooTrackingStamp } from './wahoo-tracking'
 
 export const stravaCachePath = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 export const ouraCachePath = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
@@ -835,6 +836,7 @@ export function loadStravaPayloadSync(
   since: string | undefined,
   manualTracking: ManualActivityTracking | null | undefined,
   analyticsInputs: StravaPayloadAnalyticsInputs = {},
+  contentDirectory = 'content',
 ): LoadedStravaPayload {
   const manualKey = JSON.stringify({
     activities: manualTracking?.activities ?? [],
@@ -843,7 +845,7 @@ export function loadStravaPayloadSync(
     sauna: manualTracking?.sauna ?? [],
     analytics: analyticsInputs,
   })
-  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
+  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${wahooTrackingStamp(manualTracking?.activities ?? [], contentDirectory)}`
   if (payloadMemoStamps !== stamps) {
     payloadMemo.clear()
     payloadMemoStamps = stamps
@@ -854,7 +856,12 @@ export function loadStravaPayloadSync(
   const strava = readStravaCacheFileSync(stravaCachePath)
   const oura = readJson<OuraCache>(ouraCachePath)
   const garmin = readJson<GarminCache>(garminCachePath)
-  const wahoo = readWahooCache()
+  const wahoo = loadTrackedWahooFits(
+    readWahooCache(),
+    strava,
+    manualTracking?.activities ?? [],
+    contentDirectory,
+  )
   const apple = readJson<AppleCache>(appleCachePath)
   const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
   const weather = readJson<WeatherCache>(weatherCachePath)
@@ -881,7 +888,7 @@ export function loadStravaPayloadSync(
   enrichRunDynamics(payload, apple)
   enrichCoreBodyTemperature(payload, core)
   const analytics = buildAnalytics(
-    applyActivityTracking(strava, garmin, manualTracking?.activities ?? []),
+    applyActivityTracking(strava, garmin, manualTracking?.activities ?? [], wahoo),
     {
       ...analyticsInputs,
       oura,

@@ -53,6 +53,7 @@ import {
   buildRunVerticalOscillationTrace,
   buildSwimTrends,
   buildTrace,
+  buildWorkoutAnalysis,
   climbGradeBand,
   clock,
   decodePowerCurve,
@@ -1229,13 +1230,23 @@ test('renders one provider-first environment table with explicit Garden estimate
   assert.equal(text(ratioRow), 'v_{\\mathrm{air}} / v_{\\mathrm{ground}}1.125')
   assert.doesNotMatch(text(environment), /2\.4/)
   assert.match(text(environment), /2\.3/)
-  assert.deepEqual(byClass(environment, 'tri-environment-tab').map(text), [
+  assert.deepEqual(byClass(environment, 'tri-environment-tab-full').map(text), [
     'cumulative',
     'UV index',
     'temperature',
     'cloud cover',
   ])
   const tabs = byClass(environment, 'tri-environment-tab')
+  assert.deepEqual(byClass(environment, 'tri-environment-tab-short').map(text), [
+    'cum.',
+    'UVI',
+    'temp.',
+    'cloud',
+  ])
+  for (const tab of tabs) {
+    assert.equal(tab.properties.ariaLabel, text(byClass(tab, 'tri-environment-tab-full')[0]))
+    assert.equal(tab.properties.title, tab.properties.ariaLabel)
+  }
   const panels = byClass(environment, 'tri-environment-panel')
   assert.deepEqual(
     tabs.map(tab => [tab.properties.role, tab.properties.tabIndex, tab.properties.ariaSelected]),
@@ -1605,6 +1616,7 @@ test('renders bike computers and run, walk, and swim devices as distinct activit
 
 test('renders virtual course provenance and retains both providers measurements in shared rows', () => {
   const activity = detail({
+    computer: 'wahoo',
     virtual: true,
     distanceSource: 'garmin',
     distanceKm: 28.1,
@@ -1621,8 +1633,12 @@ test('renders virtual course provenance and retains both providers measurements 
     'tr',
   ).map(row => [row.properties.dataStatKey, text(byClass(row, 'tri-act-stat-v')[0])])
   assert.deepEqual(renderedRows, rows)
-  assert.ok(rows.some(([label, value]) => label === 'activity' && value === 'virtual'))
-  assert.ok(rows.some(([label, value]) => label === 'distance source' && value === 'Garmin'))
+  const computerIndex = rows.findIndex(([label]) => label === 'computer')
+  assert.ok(computerIndex >= 0)
+  assert.deepEqual(rows.slice(computerIndex + 1, computerIndex + 3), [
+    ['activity', 'virtual'],
+    ['distance source', 'Garmin'],
+  ])
   assert.ok(rows.some(([label, value]) => label === 'Strava distance' && value === '66.8 km'))
   assert.ok(rows.some(([label, value]) => label === 'Garmin NP' && value === '179 W'))
   assert.ok(rows.some(([label, value]) => label === 'Garmin TSS' && value === '89.9'))
@@ -2559,7 +2575,7 @@ test('renders route stream graphs in the server activity markup', () => {
   )
   assert.deepEqual(
     traces.map(graph => graph.properties.dataTriTrace),
-    ['hr', 'power', 'cadence', 'respiration', 'temperature'],
+    ['hr', 'power', 'speed', 'cadence', 'respiration', 'temperature'],
   )
   for (const graph of traces) {
     assert.equal(byClass(graph, 'tri-elev').length, 1)
@@ -2567,7 +2583,7 @@ test('renders route stream graphs in the server activity markup', () => {
     assert.equal(byClass(graph, 'tri-elev-line').length, 1)
     assert.equal(byClass(graph, 'tri-analysis-selection').length, 1)
   }
-  assert.equal(byClass(activity, 'tri-analysis-selection').length, 6)
+  assert.equal(byClass(activity, 'tri-analysis-selection').length, 7)
   const respiration = traces.find(graph => graph.properties.dataTriTrace === 'respiration')
   assert.ok(respiration)
   assert.deepEqual(
@@ -2609,6 +2625,7 @@ test('renders CORE bike graphs after ambient temperature with sub-degree domains
     [
       'hr',
       'power',
+      'speed',
       'cadence',
       'respiration',
       'temperature',
@@ -2634,6 +2651,65 @@ test('renders CORE bike graphs after ambient temperature with sub-degree domains
       .map(text)
       .every(label => /^\d+\.\d{2}°C$/.test(label)),
   )
+})
+
+test('renders cycling speed in initial activity HTML with metric and imperial units', () => {
+  const bike = detail({
+    route: detail().route.map((point, index) => ({ ...point, speedKph: index * 12 })),
+  })
+  for (const [presentation, peak, unit] of [
+    [METRIC_TRIATHLON_PRESENTATION, '36.0 km/h peak', 'km/h'],
+    [imperialPresentation, '22.4 mph peak', 'mph'],
+  ] as const) {
+    const rendered = buildActivity(factoryFor(presentation), bike, false, undefined, false, true)
+    const traces = byClass(byClass(rendered, 'tri-act-more')[0], 'tri-elev-wrap')
+    const speedIndex = traces.findIndex(trace => trace.properties.dataTriTrace === 'speed')
+    const speed = traces[speedIndex]
+    assert.ok(speed)
+    assert.equal(traces[speedIndex - 1].properties.dataTriTrace, 'power')
+    assert.equal(speed.properties.dataSpeedSource, 'distance-time')
+    assert.equal(byClass(speed, 'tri-elev-d').map(text).join(''), 'speed')
+    assert.equal(byClass(speed, 'tri-elev-range').map(text).join(''), peak)
+    assert.ok(
+      byClass(speed, 'tri-cax-yt')
+        .slice(1)
+        .every(tick => text(tick).endsWith(unit)),
+    )
+    assert.match(String(byClass(speed, 'tri-elev-line')[0].properties.d), /^M 0 30\.00 L /)
+    assert.equal(byClass(speed, 'tri-analysis-selection').length, 1)
+  }
+  const filtered = buildActivity(factory, bike, false, undefined, false, true, { speed: false })
+  assert.equal(
+    byClass(filtered, 'tri-elev-wrap').some(trace => trace.properties.dataTriTrace === 'speed'),
+    false,
+  )
+  for (const sport of ['run', 'walk', 'swim'] as const)
+    assert.equal(
+      byClass(buildActivity(factory, { ...bike, sport }), 'tri-elev-wrap').some(
+        trace => trace.properties.dataTriTrace === 'speed',
+      ),
+      false,
+    )
+})
+
+test('cycling speed preserves stops, breaks at invalid samples, and omits unavailable traces', () => {
+  const traceFor = (speeds: number[]) =>
+    byClass(
+      buildActivity(
+        factory,
+        detail({
+          route: detail().route.map((point, index) => ({ ...point, speedKph: speeds[index] })),
+        }),
+      ),
+      'tri-elev-wrap',
+    ).find(trace => trace.properties.dataTriTrace === 'speed')
+  const stopped = traceFor([0, 0, 0, 0])
+  assert.ok(stopped)
+  assert.equal(byClass(stopped, 'tri-elev-range').map(text).join(''), '0.0 km/h peak')
+  const gaps = traceFor([12, Number.NaN, -1, 24])
+  assert.ok(gaps)
+  assert.equal(String(byClass(gaps, 'tri-elev-line')[0].properties.d).match(/M /g)?.length, 2)
+  assert.equal(traceFor([12, Number.NaN, -1, Number.POSITIVE_INFINITY]), undefined)
 })
 
 test('renders muscle oxygen as a percentage trace', () => {
@@ -3250,7 +3326,28 @@ test('renders cycling laps as selectable power bars over the elevation profile',
   assert.equal(workout.tagName, 'section')
   assert.equal(workout.properties.ariaLabel, 'Cycling workout analysis')
   assert.equal(byClass(workout, 'tri-cycling-workout-plot')[0].properties.dataSiteCursorLine, '')
-  assert.deepEqual(byClass(workout, 'tri-cycling-workout-title').map(text), ['workout analysis'])
+  assert.equal(byClass(workout, 'tri-cycling-workout-title').length, 0)
+  for (const embedded of [false, true]) {
+    const card = buildActivity(factory, bike, true, undefined, false, embedded)
+    const analysis = byClass(card, 'tri-workout-analysis')[0]
+    assert.ok(analysis)
+    assert.equal(analysis.properties.dataSport, 'bike')
+    const tabs = byClass(analysis, 'tri-workout-analysis-tab')
+    const panels = byClass(analysis, 'tri-workout-analysis-panel')
+    assert.deepEqual(tabs.map(text), [embedded ? 'WA' : 'workout analysis'])
+    assert.deepEqual(
+      tabs.map(tab => tab.properties.ariaLabel),
+      ['workout analysis'],
+    )
+    assert.equal(tabs[0].properties.role, 'tab')
+    assert.equal(tabs[0].properties.ariaSelected, 'true')
+    assert.equal(tabs[0].properties.tabIndex, 0)
+    assert.equal(panels.length, 1)
+    assert.equal(panels[0].properties.role, 'tabpanel')
+    assert.equal(panels[0].properties.hidden, undefined)
+    assert.deepEqual(tabs[0].properties.ariaControls, [panels[0].properties.id])
+    assert.equal(byClass(panels[0], 'tri-cycling-workout').length, 1)
+  }
   assert.deepEqual(
     byClass(workout, 'tri-cycling-workout-stats')
       .flatMap(stat => byTag(stat, 'span'))
@@ -3259,13 +3356,13 @@ test('renders cycling laps as selectable power bars over the elevation profile',
   )
   assert.deepEqual(byClass(workout, 'tri-cycling-workout-y-tick').map(text), ['100', '200', '300'])
   assert.deepEqual(byClass(workout, 'tri-cycling-workout-y-unit').map(text), ['W'])
-  const elevation = byClass(workout, 'tri-cycling-workout-elevation')[0]
+  const elevation = byClass(workout, 'tri-workout-elevation')[0]
   assert.ok(elevation)
   assert.equal(elevation.tagName, 'svg')
   assert.equal(elevation.properties.viewBox, '0 0 100 100')
   assert.equal(elevation.properties.ariaHidden, 'true')
   assert.match(
-    String(byClass(elevation, 'tri-cycling-workout-elevation-area')[0].properties.d),
+    String(byClass(elevation, 'tri-workout-elevation-area')[0].properties.d),
     /^M 0 100 L 0\.000 100\.000 L 33\.333 60\.000 L 66\.667 20\.000 L 100\.000 0\.000 L 100 100 Z$/,
   )
   assert.equal(byClass(elevation, 'tri-cycling-workout-grade').length, 0)
@@ -3424,8 +3521,29 @@ test('renders pool swim laps as selectable pace bars without elevation', () => {
   const workout = byClass(rendered, 'tri-swim-workout')[0]
   assert.ok(workout)
   assert.equal(workout.properties.ariaLabel, 'Swim workout analysis')
+  for (const embedded of [false, true]) {
+    const card = buildActivity(factory, swim, true, undefined, false, embedded)
+    const analysis = byClass(card, 'tri-workout-analysis')[0]
+    assert.ok(analysis)
+    assert.equal(analysis.properties.dataSport, 'swim')
+    const tabs = byClass(analysis, 'tri-workout-analysis-tab')
+    const panels = byClass(analysis, 'tri-workout-analysis-panel')
+    assert.deepEqual(tabs.map(text), [embedded ? 'WA' : 'workout analysis'])
+    assert.deepEqual(
+      tabs.map(tab => tab.properties.ariaLabel),
+      ['workout analysis'],
+    )
+    assert.equal(tabs[0].properties.role, 'tab')
+    assert.equal(tabs[0].properties.ariaSelected, 'true')
+    assert.equal(tabs[0].properties.tabIndex, 0)
+    assert.equal(panels.length, 1)
+    assert.equal(panels[0].properties.role, 'tabpanel')
+    assert.equal(panels[0].properties.hidden, undefined)
+    assert.deepEqual(tabs[0].properties.ariaControls, [panels[0].properties.id])
+    assert.equal(byClass(panels[0], 'tri-swim-workout').length, 1)
+  }
   assert.equal(workout.properties.dataSwimWorkoutElevation, 'false')
-  assert.equal(byClass(workout, 'tri-swim-workout-elevation').length, 0)
+  assert.equal(byClass(workout, 'tri-workout-elevation').length, 0)
   assert.equal(byClass(workout, 'tri-swim-workout-plot')[0].properties.dataSiteCursorLine, '')
   assert.deepEqual(
     byClass(workout, 'tri-swim-workout-stats')
@@ -3498,10 +3616,10 @@ test('adds elevation behind open-water swim laps only when GPS data exists', () 
   const workout = byClass(withGps, 'tri-swim-workout')[0]
   assert.ok(workout)
   assert.equal(workout.properties.dataSwimWorkoutElevation, 'true')
-  const elevation = byClass(workout, 'tri-swim-workout-elevation')[0]
+  const elevation = byClass(workout, 'tri-workout-elevation')[0]
   assert.ok(elevation)
   assert.match(
-    String(byClass(elevation, 'tri-swim-workout-elevation-area')[0].properties.d),
+    String(byClass(elevation, 'tri-workout-elevation-area')[0].properties.d),
     /^M 0 100 L 0\.000 50\.000 L 50\.000 0\.000 L 100\.000 100\.000 L 100 100 Z$/,
   )
   assert.match(
@@ -3513,7 +3631,99 @@ test('adds elevation behind open-water swim laps only when GPS data exists', () 
   const routeLessWorkout = byClass(withoutGps, 'tri-swim-workout')[0]
   assert.ok(routeLessWorkout)
   assert.equal(routeLessWorkout.properties.dataSwimWorkoutElevation, 'false')
-  assert.equal(byClass(routeLessWorkout, 'tri-swim-workout-elevation').length, 0)
+  assert.equal(byClass(routeLessWorkout, 'tri-workout-elevation').length, 0)
+
+  const pool = buildWorkoutAnalysis(factory, { ...swim, swimLocation: 'pool' })
+  assert.ok(pool)
+  assert.equal(byClass(pool, 'tri-swim-workout-lap').length, 1)
+  assert.equal(byClass(pool, 'tri-workout-elevation').length, 0)
+})
+
+test('aligns GPS run elevation and unequal lap widths on elapsed time, including rest gaps', () => {
+  const seed = detail().route[0]
+  const route = [
+    { ...seed, d: 0, alt: 0, elapsedS: 0 },
+    { ...seed, d: 0.4, alt: 10, elapsedS: 120 },
+    { ...seed, d: 0.4, alt: 20, elapsedS: 180 },
+    { ...seed, d: 1.8, alt: 0, elapsedS: 600 },
+  ]
+  const lap = analysisRanges().find(range => range.kind === 'lap')!
+  const run = detail({
+    sport: 'run',
+    distanceKm: 1.8,
+    movingTimeS: 540,
+    elapsedTimeS: 600,
+    route,
+    mapRoute: [route.map(point => ({ lat: point.lat, lng: point.lng, d: point.d }))],
+    analysisRanges: [
+      {
+        ...lap,
+        id: 'lap-1',
+        startElapsedS: 0,
+        endElapsedS: 120,
+        startDistanceKm: 0,
+        endDistanceKm: 0.4,
+        durationS: 120,
+        distanceKm: 0.4,
+        averageSpeedKph: 12,
+      },
+      {
+        ...lap,
+        id: 'lap-2',
+        startElapsedS: 180,
+        endElapsedS: 600,
+        startDistanceKm: 0.4,
+        endDistanceKm: 1.8,
+        durationS: 420,
+        distanceKm: 1.4,
+        averageSpeedKph: 12,
+      },
+    ],
+  })
+
+  for (const embedded of [false, true]) {
+    const rendered = buildWorkoutAnalysis(factory, run, embedded)
+    assert.ok(rendered)
+    const workout = byClass(rendered, 'tri-run-workout')[0]
+    assert.equal(workout.properties.dataRunWorkoutElevation, 'true')
+    const plot = byClass(workout, 'tri-run-workout-plot')[0]
+    const layers = plot.children.filter((child): child is Element => child.type === 'element')
+    assert.deepEqual(
+      layers.map(child => classNames(child)[0]),
+      ['tri-workout-elevation', 'tri-workout-grid', 'tri-run-workout-bars'],
+    )
+    assert.equal(layers[0].properties.ariaHidden, 'true')
+    assert.equal(
+      byClass(workout, 'tri-workout-elevation-area')[0].properties.d,
+      'M 0 100 L 0.000 100.000 L 20.000 50.000 L 30.000 0.000 L 100.000 100.000 L 100 100 Z',
+    )
+    const laps = byClass(workout, 'tri-run-workout-lap')
+    assert.match(
+      String(laps[0].properties.style),
+      /--tri-run-workout-start:0\.000%;--tri-run-workout-width:20\.000%/,
+    )
+    assert.match(
+      String(laps[1].properties.style),
+      /--tri-run-workout-start:30\.000%;--tri-run-workout-width:70\.000%/,
+    )
+  }
+
+  const unavailable: Partial<StravaActivityDetail>[] = [
+    { route: [], mapRoute: [] },
+    { mapRoute: [] },
+    { route: route.map(point => ({ ...point, lat: Number.NaN })) },
+    { route: route.map((point, index) => ({ ...point, alt: index ? Number.NaN : point.alt })) },
+  ]
+  for (const override of unavailable) {
+    const rendered = buildWorkoutAnalysis(factory, { ...run, ...override })
+    assert.ok(rendered)
+    assert.equal(
+      byClass(rendered, 'tri-run-workout')[0].properties.dataRunWorkoutElevation,
+      'false',
+    )
+    assert.equal(byClass(rendered, 'tri-workout-elevation').length, 0)
+    assert.equal(byClass(rendered, 'tri-run-workout-lap').length, 2)
+  }
 })
 
 test('renders run laps as selectable pace splits against the lap-weighted average', () => {
@@ -3580,13 +3790,14 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
   const rendered = buildActivity(factory, run, true)
   const analysis = byClass(rendered, 'tri-analysis')[0]
   const more = byClass(rendered, 'tri-act-more')[0]
-  const runAnalysis = byClass(more, 'tri-run-analysis')[0]
+  const workoutAnalysis = byClass(more, 'tri-workout-analysis')[0]
   const workout = byClass(more, 'tri-run-workout')[0]
   const splits = byClass(more, 'tri-run-splits')[0]
-  assert.ok(runAnalysis)
-  assert.equal(runAnalysis.properties.ariaLabel, 'Run analysis')
-  assert.equal(runAnalysis.properties.dataRunAnalysisView, 'workout')
-  const tabs = byClass(runAnalysis, 'tri-run-analysis-tab')
+  assert.ok(workoutAnalysis)
+  assert.equal(workoutAnalysis.properties.ariaLabel, 'Run analysis')
+  assert.equal(workoutAnalysis.properties.dataSport, 'run')
+  assert.equal(workoutAnalysis.properties.dataWorkoutAnalysisView, 'workout')
+  const tabs = byClass(workoutAnalysis, 'tri-workout-analysis-tab')
   assert.deepEqual(tabs.map(text), ['workout analysis', 'lap splits', 'pace distribution'])
   assert.deepEqual(
     tabs.map(tab => tab.properties.ariaLabel),
@@ -3600,11 +3811,11 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
       ['tab', 'false', -1],
     ],
   )
-  const panels = byClass(runAnalysis, 'tri-run-analysis-panel')
+  const panels = byClass(workoutAnalysis, 'tri-workout-analysis-panel')
   assert.deepEqual(
     panels.map(panel => [
       panel.properties.role,
-      panel.properties.dataRunAnalysisPanel,
+      panel.properties.dataWorkoutAnalysisPanel,
       panel.properties.hidden,
       panel.properties.ariaHidden,
     ]),
@@ -3618,8 +3829,12 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
     tabs.map(tab => tab.properties.ariaControls),
     panels.map(panel => [panel.properties.id]),
   )
+  assert.deepEqual(
+    panels.map(panel => panel.properties.inert),
+    [undefined, true, true],
+  )
   const embedded = buildActivity(factory, run, true, undefined, false, true)
-  const embeddedTabs = byClass(embedded, 'tri-run-analysis-tab')
+  const embeddedTabs = byClass(embedded, 'tri-workout-analysis-tab')
   assert.deepEqual(embeddedTabs.map(text), ['WA', 'LS', 'PD'])
   assert.deepEqual(
     embeddedTabs.map(tab => tab.properties.ariaLabel),
@@ -3711,7 +3926,7 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
   assert.equal(rows[0].properties.ariaPressed, 'false')
   assert.match(String(rows[1].properties.ariaLabel), /−1:00 versus previous lap$/)
 
-  const pace = byClass(runAnalysis, 'tri-run-pace-distribution')[0]
+  const pace = byClass(workoutAnalysis, 'tri-run-pace-distribution')[0]
   assert.ok(pace)
   assert.equal(pace.properties.ariaLabel, 'Run pace distribution')
   assert.deepEqual(byClass(pace, 'tri-training-zone-summary-value').map(text), ['23% in zone 2'])
@@ -3748,15 +3963,15 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
       .filter((child): child is Element => child.type === 'element')
       .slice(0, 2)
       .map(child => classNames(child)),
-    [['tri-run-analysis'], ['tri-elev-wrap']],
+    [['tri-workout-analysis'], ['tri-elev-wrap']],
   )
 })
 
-test('keeps the available run-analysis tabs when pace telemetry is missing', () => {
+test('keeps the available workout-analysis tabs when pace telemetry is missing', () => {
   const run = analysisDetail()
   run.sport = 'run'
   const rendered = buildActivity(factory, run, true)
-  assert.deepEqual(byClass(rendered, 'tri-run-analysis-tab').map(text), [
+  assert.deepEqual(byClass(rendered, 'tri-workout-analysis-tab').map(text), [
     'workout analysis',
     'lap splits',
   ])
@@ -3912,7 +4127,7 @@ test('starts the route and stream graphs with empty analysis highlights', () => 
   assert.equal(selectedRoute.properties.d, '')
 
   const selections = byClass(rendered, 'tri-analysis-selection')
-  assert.equal(selections.length, 6)
+  assert.equal(selections.length, 7)
   for (const selection of selections) {
     assert.equal(selection.tagName, 'rect')
     assert.equal(selection.properties.x, '0.00')
@@ -3924,9 +4139,9 @@ test('starts the route and stream graphs with empty analysis highlights', () => 
   )
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'power', 'cadence', 'respiration', 'temperature'],
+    ['hr', 'power', 'speed', 'cadence', 'respiration', 'temperature'],
   )
-  assert.equal(byClass(rendered, 'tri-elev-cursor').length, 6)
+  assert.equal(byClass(rendered, 'tri-elev-cursor').length, 7)
 })
 
 test('keeps an empty selected-route overlay available after deselection', () => {
@@ -3948,7 +4163,9 @@ test('keeps the run lap block visible when no lap is available', () => {
   const splits = byClass(more, 'tri-run-splits')[0]
   assert.ok(splits)
   assert.equal(splits.properties.ariaLabel, 'Run lap splits')
-  assert.deepEqual(byClass(splits, 'tri-run-splits-title').map(text), ['lap splits'])
+  assert.equal(byClass(splits, 'tri-run-splits-title').length, 0)
+  assert.deepEqual(byClass(more, 'tri-workout-analysis-tab').map(text), ['lap splits'])
+  assert.equal(byClass(more, 'tri-workout-analysis-tab')[0].properties.ariaSelected, 'true')
   assert.deepEqual(byClass(splits, 'tri-run-splits-columns').map(text), [''])
   assert.deepEqual(byClass(splits, 'tri-run-splits-empty').map(text), ['no lap found'])
   assert.equal(byClass(splits, 'tri-run-split').length, 0)
@@ -3968,7 +4185,7 @@ test('falls back to legacy stream traces without complete analysis telemetry', (
   )
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'power', 'cadence', 'respiration', 'temperature'],
+    ['hr', 'power', 'speed', 'cadence', 'respiration', 'temperature'],
   )
 })
 
@@ -5596,6 +5813,7 @@ test('emits kebab-case trace names across bike, run, and swim charts', () => {
     'respiration',
     'rider-position',
     'skin-temperature',
+    'speed',
     'stamina',
     'stride-length',
     'stroke-rate',
@@ -5692,6 +5910,60 @@ test('starts heart rate traces at 80 bpm', () => {
     String(byClass(trace, 'tri-elev-line')[0]?.properties.d),
     / 30(?:\.00)?(?: |$)/,
   )
+})
+
+test('renders sauna laps by elapsed time with duration and HR change', () => {
+  const lap: ActivityAnalysisRange = {
+    kind: 'lap',
+    id: 'lap:sauna-1',
+    label: 'Lap 1',
+    startElapsedS: 300,
+    endElapsedS: 344,
+    startDistanceKm: 0,
+    endDistanceKm: 0,
+    distanceKm: 0,
+    durationS: 44,
+    movingTimeS: 41,
+    elevationGainM: null,
+    averageSpeedKph: null,
+    averageHeartRate: 108.5,
+    averageWatts: null,
+    averageCadence: null,
+    heartRateChange: { source: 'strava', startBpm: 137, endBpm: 99 },
+  }
+  const sauna = detail({
+    sport: 'sauna',
+    route: [],
+    mapRoute: [],
+    distanceKm: 0,
+    elapsedTimeS: 1000,
+    analysisRanges: [lap, { ...lap }, { ...lap, id: 'invalid', endElapsedS: 300 }],
+    heartRateTrace: [
+      heartRateTracePoint(0, 0, 80),
+      heartRateTracePoint(0, 300, 137),
+      heartRateTracePoint(0, 344, 99),
+      heartRateTracePoint(0, 1000, 70),
+    ],
+  })
+  const rendered = buildActivity(factory, sauna, true, ctx())
+  const bands = byClass(rendered, 'tri-analysis-band')
+  assert.equal(bands.length, 1)
+  assert.equal(bands[0].properties.dataAnalysisKind, 'lap')
+  const buttons = byClass(rendered, 'tri-analysis-range')
+  assert.equal(buttons.length, 1)
+  assert.equal(buttons[0].properties.ariaLabel, 'Lap 1, 0:44, 109 bpm avg, 137 → 99 bpm (-38)')
+  assert.equal(buttons[0].properties.dataDurationS, '44')
+  assert.equal(buttons[0].properties.dataHeartRateChangeSource, 'strava')
+  assert.match(
+    String(buttons[0].properties.style),
+    /--tri-analysis-start:30\.000%;--tri-analysis-width:4\.400%/,
+  )
+  const trace = buildHeartRateTrace(factory, sauna, lap)
+  assert.equal(byClass(trace, 'tri-analysis-selection')[0].properties.x, '30.00')
+  assert.equal(byClass(trace, 'tri-analysis-selection')[0].properties.width, '4.40')
+  assert.deepEqual(byClass(trace, 'tri-cax-xt').map(text), ['0s', '8:20', '16:40'])
+  const withoutLaps = buildActivity(factory, { ...sauna, analysisRanges: [] }, true, ctx())
+  assert.equal(byClass(withoutLaps, 'tri-analysis-range').length, 0)
 })
 
 test('renders a route-less pool swim heart rate trace against metres', () => {

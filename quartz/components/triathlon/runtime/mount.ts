@@ -7,8 +7,8 @@ import { setupEnvironmentTabs } from '../activity/environment-tabs'
 import { setupMatchedActivities } from '../activity/matched'
 import { setupPowerCurveActivityLinks } from '../activity/power-links'
 import { createDayCardFacade, type DayCardFacade } from '../activity/public-api'
-import { setupRunAnalysisTabs } from '../activity/run-analysis-tabs'
 import { setupChartScrub } from '../activity/scrub'
+import { setupWorkoutAnalysisTabs } from '../activity/workout-analysis-tabs'
 import { setupAnalytics } from '../analytics/controller'
 import { setupMap } from '../maps/controller'
 import { setupAxisLabels } from '../shell/axis-labels'
@@ -52,7 +52,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   addCleanup(setupPowerCurveActivityLinks(document.body, context))
   addCleanup(setupChartScrub(document.body, () => context.presentation))
   addCleanup(setupEnvironmentTabs(document.body, () => context.presentation))
-  addCleanup(setupRunAnalysisTabs(document.body))
+  addCleanup(setupWorkoutAnalysisTabs(document.body))
   addCleanup(setupMatchedActivities(document.body))
   addCleanup(setupGloss(document.body, () => context.presentation.locale))
   if (root) {
