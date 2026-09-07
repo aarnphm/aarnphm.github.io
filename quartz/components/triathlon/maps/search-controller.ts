@@ -2,6 +2,7 @@ import type { Analytics } from '../../../plugins/stores/analytics'
 import type { DetailPayload } from '../activity/data'
 import type { TriathlonContext } from '../runtime/context'
 import { ROUTE_SPORTS, type ActivityKind } from '../../../plugins/stores/strava'
+import { activityQueryTokens } from '../analytics/search'
 import { activityResultItems, setActivityResultSelection } from '../analytics/search'
 import { buildMapSearchView } from './search'
 
@@ -67,7 +68,7 @@ export const createMapSearchController = ({
       return
     }
     if (!item.dataset.insert || !search) return
-    const tokens = search.value.trim().split(/\s+/)
+    const tokens = activityQueryTokens(search.value)
     tokens[tokens.length - 1] = item.dataset.insert
     search.value = tokens.join(' ') + (item.dataset.insert.endsWith(':') ? '' : ' ')
     search.focus()

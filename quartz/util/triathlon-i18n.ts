@@ -208,6 +208,18 @@ const en: TriDict = {
     'activity temperature': 'activity temperature',
     'acclimatisation proxy': 'acclimatisation proxy',
     'heat exposure': 'heat exposure',
+    'passive heat · acclimatisation': 'passive heat · acclimatisation',
+    'sauna min': 'sauna min',
+    'recorded sauna HTL': 'recorded sauna HTL',
+    'sauna HTL': 'sauna HTL',
+    'manual sauna': 'manual sauna',
+    'combined heat exposure': 'combined heat exposure',
+    'passive HTL cap': 'passive HTL cap',
+    'combined daily exposure capped at 1': 'combined daily exposure capped at 1',
+    'missing HTL earns no inferred credit': 'missing HTL earns no inferred credit',
+    'room temperature': 'room temperature',
+    'sauna HTL and heat acclimatisation proxy over time':
+      'sauna HTL and heat acclimatisation proxy over time',
     'ambient workout temperature and heat acclimatisation proxy over time':
       'ambient workout temperature and heat acclimatisation proxy over time',
     'CORE heat strain and heat acclimatisation over time':
@@ -318,6 +330,17 @@ const en: TriDict = {
     'morning weight unavailable': 'morning weight unavailable',
     wheelset: 'wheelset',
     'tire setup': 'tire setup',
+    'TPU inner tube': 'TPU inner tube',
+    Tubeless: 'Tubeless',
+    sealant: 'sealant',
+    'configured with TPU': 'configured with TPU',
+    'TPU or tubeless': 'TPU or tubeless',
+    'Select the TLR tire profile for a tubeless setup.':
+      'Select the TLR tire profile for a tubeless setup.',
+    'TPU uses the high-performance baseline as a Garden estimate; SILCA has no TPU-specific setting. At equal measured widths, this gives the same PSI as tubeless.':
+      'TPU uses the high-performance baseline as a Garden estimate; SILCA has no TPU-specific setting. At equal measured widths, this gives the same PSI as tubeless.',
+    'Tubeless uses SILCA’s high-performance baseline. Pirelli calculates tubetype and tubeless separately; check its tool for a setup-specific recommendation.':
+      'Tubeless uses SILCA’s high-performance baseline. Pirelli calculates tubetype and tubeless separately; check its tool for a setup-specific recommendation.',
     surface: 'surface',
     balance: 'balance',
     'measured tire width': 'measured tire width',
@@ -929,11 +952,11 @@ const en: TriDict = {
     },
     heatdose: {
       term: 'heat exposure dose',
-      def: 'CORE Heat Strain Index at or above 3.0 supplies the primary dose. A GPS run or ride above 22 °C supplies the fallback dose when CORE data is absent. Sixty hot minutes equal one dose. The proxy targets 14 doses, holds for three days without heat, then decays by 2.5% per day.',
+      def: 'CORE Heat Strain Index at or above 3.0 supplies the primary dose. A GPS run or ride above 22 °C supplies the fallback dose when CORE data is absent. Sixty hot workout minutes equal one dose. Recorded sauna HTL adds HTL / 10, with a passive cap of 8 HTL per day and a combined daily cap of one dose. Missing sauna HTL earns no inferred credit. The proxy targets 14 doses, holds for three days without heat, then decays by 2.5% per day.',
     },
     heatacclimation: {
       term: 'heat acclimatisation proxy',
-      def: 'This percentage tracks recent heat strain from CORE when available, then ambient exposure from WeatherKit or Strava. It remains an estimate because humidity, solar load, clothing, sweat response, hydration, and passive heat exposure are unavailable.',
+      def: 'This Garden proxy combines CORE heat strain, ambient workout exposure from WeatherKit or Strava, and manually recorded sauna HTL. Sauna duration, room temperature, humidity, and cooldown remain separate from measured HSI. The HTL conversion is a Garden heuristic, not the CORE Heat Adaptation Score or a physiological measurement.',
     },
     sleepdebt: {
       term: 'sleep debt',
@@ -1116,6 +1139,18 @@ const fr: TriDict = {
     'activity temperature': 'température par activité',
     'acclimatisation proxy': "indice d'acclimatation",
     'heat exposure': 'exposition à la chaleur',
+    'passive heat · acclimatisation': 'chaleur passive · acclimatation',
+    'sauna min': 'min de sauna',
+    'recorded sauna HTL': 'HTL de sauna consignée',
+    'sauna HTL': 'HTL de sauna',
+    'manual sauna': 'sauna consigné',
+    'combined heat exposure': 'exposition combinée à la chaleur',
+    'passive HTL cap': 'plafond de HTL passive',
+    'combined daily exposure capped at 1': 'exposition quotidienne combinée plafonnée à 1',
+    'missing HTL earns no inferred credit': 'aucun crédit estimé si la HTL est absente',
+    'room temperature': 'température du sauna',
+    'sauna HTL and heat acclimatisation proxy over time':
+      'HTL de sauna et indice d’acclimatation à la chaleur au fil du temps',
     'ambient workout temperature and heat acclimatisation proxy over time':
       "température ambiante des séances et indice d'acclimatation au fil du temps",
     'CORE heat strain and heat acclimatisation over time':
@@ -1227,6 +1262,17 @@ const fr: TriDict = {
     'morning weight unavailable': 'poids matinal indisponible',
     wheelset: 'roues',
     'tire setup': 'montage pneu',
+    'TPU inner tube': 'chambre à air TPU',
+    Tubeless: 'sans chambre à air',
+    sealant: 'liquide préventif',
+    'configured with TPU': 'montage avec chambre TPU',
+    'TPU or tubeless': 'TPU ou sans chambre à air',
+    'Select the TLR tire profile for a tubeless setup.':
+      'Choisis le profil de pneu TLR pour un montage sans chambre à air.',
+    'TPU uses the high-performance baseline as a Garden estimate; SILCA has no TPU-specific setting. At equal measured widths, this gives the same PSI as tubeless.':
+      'Le montage TPU reprend la pression de base haute performance comme estimation du Garden; SILCA ne propose aucun réglage propre au TPU. À largeurs mesurées égales, la pression est la même que pour le montage sans chambre à air.',
+    'Tubeless uses SILCA’s high-performance baseline. Pirelli calculates tubetype and tubeless separately; check its tool for a setup-specific recommendation.':
+      'Le montage sans chambre à air utilise la pression de base haute performance de SILCA. Pirelli calcule séparément les montages avec et sans chambre à air; consulte son outil pour une recommandation adaptée au montage.',
     surface: 'revêtement',
     balance: 'répartition',
     'measured tire width': 'largeur mesurée du pneu',
@@ -1845,11 +1891,11 @@ const fr: TriDict = {
     },
     heatdose: {
       term: "dose d'exposition à la chaleur",
-      def: "L'indice de contrainte thermique CORE d'au moins 3,0 fournit la dose principale. Une course ou une sortie à vélo avec GPS au-dessus de 22 °C fournit la dose de repli lorsque les données CORE sont absentes. Soixante minutes chaudes représentent une dose. L'indice vise 14 doses, reste stable pendant trois jours sans chaleur, puis baisse de 2,5 % par jour.",
+      def: "L'indice de contrainte thermique CORE d'au moins 3,0 fournit la dose principale. Une course ou une sortie à vélo avec GPS au-dessus de 22 °C fournit la dose de repli lorsque les données CORE sont absentes. Soixante minutes chaudes d’exercice représentent une dose. La HTL de sauna consignée ajoute HTL / 10, avec un plafond passif de 8 HTL par jour et un plafond combiné d’une dose quotidienne. Une HTL absente ne donne aucun crédit estimé. L'indice vise 14 doses, reste stable pendant trois jours sans chaleur, puis baisse de 2,5 % par jour.",
     },
     heatacclimation: {
       term: "indice d'acclimatation à la chaleur",
-      def: "Ce pourcentage suit d'abord la contrainte thermique CORE, puis l'exposition ambiante WeatherKit ou Strava. Il reste une estimation, car l'humidité, le rayonnement solaire, les vêtements, la transpiration, l'hydratation et l'exposition passive ne sont pas disponibles.",
+      def: 'Cet indice Garden combine la contrainte thermique CORE, l’exposition ambiante WeatherKit ou Strava et la HTL de sauna consignée. La durée, la température du sauna, l’humidité et le refroidissement restent distincts du HSI mesuré. La conversion HTL est une approximation Garden, et non le score d’adaptation CORE ou une mesure physiologique.',
     },
     sleepdebt: {
       term: 'dette de sommeil',

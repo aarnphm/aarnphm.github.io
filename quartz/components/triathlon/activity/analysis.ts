@@ -1,13 +1,15 @@
 import type { ActivityKind } from '../../../plugins/stores/strava'
 import type { StravaActivityDetail } from '../../../plugins/stores/strava'
-import type { ActivitySelectionSummary } from '../../../util/triathlon-card'
+import type {
+  ActivityAnalysisChartDomain,
+  ActivitySelectionSummary,
+} from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import { activityCadenceScale } from '../../../util/triathlon-card'
 import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { activitySelectionSummary } from '../../../util/triathlon-card'
 import {
-  activityTraceUsesElapsedAxis,
-  analysisSelectionBounds,
+  analysisChartSelectionBounds,
   analysisHeartRateChangeText,
 } from '../../../util/triathlon-card'
 import { clock } from '../../../util/triathlon-card'
@@ -81,6 +83,17 @@ export const analysisFinite = (value: string | undefined): number | null => {
   if (value == null || value === '') return null
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : null
+}
+
+const analysisDomainFromChart = (svg: SVGSVGElement): ActivityAnalysisChartDomain | null => {
+  const startElapsedS = analysisFinite(svg.dataset.domainStartElapsedS)
+  const endElapsedS = analysisFinite(svg.dataset.domainEndElapsedS)
+  if (startElapsedS != null && endElapsedS != null) return { startElapsedS, endElapsedS }
+  const startDistanceKm = analysisFinite(svg.dataset.domainStartDistanceKm)
+  const endDistanceKm = analysisFinite(svg.dataset.domainEndDistanceKm)
+  return startDistanceKm != null && endDistanceKm != null
+    ? { startDistanceKm, endDistanceKm }
+    : null
 }
 
 export const analysisRouteIndex = (
@@ -206,14 +219,6 @@ export const linkActivityAnalysis = (
     .map(analysisRangeFromButton)
     .filter((range): range is PresetActivityAnalysisRange => range != null)
 
-  const domainEndDistanceKm = Math.max(
-    detail.distanceKm,
-    route.at(-1)?.d ?? 0,
-    ...detail.heartRateTrace.map(point => point.distanceKm),
-    ...ranges.map(range => range.endDistanceKm),
-    0,
-  )
-  const maxDistanceKm = domainEndDistanceKm > 0 ? domainEndDistanceKm : 1
   const routeSelected = act.querySelector<SVGPathElement>('.tri-route-selected')
   if (ranges.length === 0 && !routeSelected && !act.querySelector('.tri-analysis-selection'))
     return null
@@ -302,15 +307,17 @@ export const linkActivityAnalysis = (
     onRange?.(null, committed)
   }
   const showRange = (range: ActivityAnalysisRange, committed = false): void => {
-    const startDistanceKm = Math.max(0, Math.min(maxDistanceKm, range.startDistanceKm))
-    const endDistanceKm = Math.max(startDistanceKm, Math.min(maxDistanceKm, range.endDistanceKm))
-    const { x, width } = activityTraceUsesElapsedAxis(detail)
-      ? analysisSelectionBounds(detail, range)
-      : {
-          x: (startDistanceKm / maxDistanceKm) * 100,
-          width: Math.max(0, ((endDistanceKm - startDistanceKm) / maxDistanceKm) * 100),
-        }
     for (const selection of act.querySelectorAll<SVGRectElement>('.tri-analysis-selection')) {
+      const svg = selection.ownerSVGElement
+      const domain = svg ? analysisDomainFromChart(svg) : null
+      let bounds = { x: 0, width: 0 }
+      if (svg && domain) {
+        const viewBox = svg.viewBox.baseVal
+        const start = analysisFinite(svg.dataset.domainStartX) ?? viewBox.x
+        const end = analysisFinite(svg.dataset.domainEndX) ?? viewBox.x + viewBox.width
+        bounds = analysisChartSelectionBounds(range, domain, { x: start, width: end - start })
+      }
+      const { x, width } = bounds
       selection.setAttribute('x', x.toFixed(2))
       selection.setAttribute('width', width.toFixed(2))
     }

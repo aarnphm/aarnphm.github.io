@@ -88,3 +88,40 @@ test('normalizes Computer Modern set operators in tikz text', () => {
     ].join(''),
   )
 })
+
+test('normalizes absolute-value bars and the emitted leq glyph in tikz labels', () => {
+  // node-tikzjax emits these font-encoded characters for $|x| \\leq L$.
+  const svg = [
+    '<svg>',
+    '<text font-family="cmsy10" x="0">j</text>',
+    '<text font-family="cmmi10" x="3">x</text>',
+    '<text font-family="cmsy10" x="9">&#106;</text>',
+    '<text font-family="cmsy10" x="15">∙</text>',
+    '<text font-family="cmmi10" x="25">L</text>',
+    '<text font-family="cmbsy10">&#x2219;j</text>',
+    '</svg>',
+  ].join('')
+
+  assert.strictEqual(
+    normalizeComputerModernText(svg),
+    [
+      '<svg>',
+      '<text font-family="serif" x="0">|</text>',
+      '<text font-family="serif" x="3" font-style="italic">x</text>',
+      '<text font-family="serif" x="9">|</text>',
+      '<text font-family="serif" x="15">≤</text>',
+      '<text font-family="serif" x="25" font-style="italic">L</text>',
+      '<text font-family="serif">≤|</text>',
+      '</svg>',
+    ].join(''),
+  )
+})
+
+test('preserves literal j and dot characters outside Computer Modern symbol fonts', () => {
+  assert.strictEqual(
+    normalizeComputerModernText(
+      '<svg><text font-family="cmr10">j</text><text font-family="cmmi10">j</text><text font-family="serif">j∙</text></svg>',
+    ),
+    '<svg><text font-family="serif">j</text><text font-family="serif" font-style="italic">j</text><text font-family="serif">j∙</text></svg>',
+  )
+})

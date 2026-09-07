@@ -360,6 +360,50 @@ test('calculator page tabs own race, gear ratio, and daily tire pressure calcula
   assert.equal(html.match(/data-pressure-field="customWheelWidth"/g)?.length, 2)
   assert.equal(html.match(/data-pressure-field="measuredTireWidth"/g)?.length, 2)
   assert.equal(html.match(/data-pressure-field="weightUnit"/g)?.length, 2)
+  const tireInputs = elements(
+    rendered(panel),
+    element => element.tagName === 'input' && element.properties?.dataPressureField === 'tire',
+  )
+  assert.deepEqual(
+    tireInputs.map(input => [input.properties?.value, Boolean(input.properties?.checked)]),
+    [
+      ['race-sl-r', true],
+      ['race-tlr-sl-r', false],
+    ],
+  )
+  const setupInputs = elements(
+    rendered(panel),
+    element => element.tagName === 'input' && element.properties?.dataPressureField === 'setup',
+  )
+  assert.deepEqual(
+    setupInputs.map(input => [
+      input.properties?.value,
+      Boolean(input.properties?.checked),
+      Boolean(input.properties?.disabled),
+    ]),
+    [
+      ['tpu', true, false],
+      ['tubeless', false, true],
+    ],
+  )
+  assert.match(html, /data-tire="race-sl-r"/)
+  assert.match(html, /data-setup="tpu"/)
+  const setupNotes = elements(
+    rendered(panel),
+    element => typeof element.properties?.dataPressureSetupNote === 'string',
+  )
+  assert.deepEqual(
+    setupNotes.map(note => [
+      note.properties?.dataPressureSetupNote,
+      Boolean(note.properties?.hidden),
+    ]),
+    [
+      ['tpu', false],
+      ['tubeless', true],
+    ],
+  )
+  assert.match(html, /data-i18n="TPU inner tube">TPU inner tube</)
+  assert.match(html, /data-i18n="Tubeless">Tubeless</)
   assert.match(html, /data-weight-unit="kg"/)
   assert.match(html, /<time class="tri-pressure-date" datetime="2026-08-16">2026-08-16<\/time>/)
   assert.doesNotMatch(html, /Garmin morning/)

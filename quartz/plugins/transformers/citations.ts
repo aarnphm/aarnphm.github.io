@@ -429,10 +429,11 @@ function markdownBody(source: string): string {
   return afterMarker === -1 ? '' : source.slice(afterMarker + 1)
 }
 
-function citationTreeCacheKey(
+export function citationTreeCacheKey(
   file: VFile,
   bibliographyKey: string,
   locale: string,
+  tree: HastRoot,
 ): string | undefined {
   if (file.data.citationsDisabled || !file.data.hasCitationSyntax) return undefined
   const source = typeof file.value === 'string' ? file.value : file.value?.toString()
@@ -440,6 +441,8 @@ function citationTreeCacheKey(
   const frontmatter = file.data.frontmatter
   return [
     stringFingerprint(markdownBody(source)),
+    // Cache hits replace the whole tree, including output from upstream transformers.
+    stringFingerprint(JSON.stringify(tree)),
     bibliographyKey,
     locale,
     frontmatterCacheValue(frontmatter, 'noCite'),
@@ -651,7 +654,7 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           if (resolvedCitationDataKey) {
             await hydrateCitationDataCache(resolvedCitationDataKey)
           }
-          const cacheKey = citationTreeCacheKey(file, resolvedBibliographyKey, locale)
+          const cacheKey = citationTreeCacheKey(file, resolvedBibliographyKey, locale, tree)
           const cached = cacheKey ? await readCitationTreeCache(cacheKey) : undefined
           if (cached) {
             tree.children = cached.children

@@ -181,6 +181,7 @@ export function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
     id: raw.id as number,
     name: String(raw.name ?? ''),
     sportType: String(raw.sport_type ?? raw.type ?? ''),
+    ...(typeof raw.trainer === 'boolean' ? { trainer: raw.trainer } : {}),
     distance: Number(raw.distance ?? 0),
     movingTime: Number(raw.moving_time ?? 0),
     elapsedTime: Number(raw.elapsed_time ?? 0),
@@ -188,6 +189,7 @@ export function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
     startDate: String(raw.start_date ?? ''),
     startDateLocal: String(raw.start_date_local ?? raw.start_date ?? ''),
     averageSpeed: Number(raw.average_speed ?? 0),
+    maxSpeed: nullableNumber(raw, 'max_speed') ?? undefined,
     averageHeartrate:
       raw.average_heartrate === undefined ? undefined : Number(raw.average_heartrate),
     maxHeartrate: raw.max_heartrate === undefined ? undefined : Number(raw.max_heartrate),

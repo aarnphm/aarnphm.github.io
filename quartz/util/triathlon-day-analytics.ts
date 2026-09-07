@@ -102,7 +102,13 @@ const vo2Methods: ReadonlySet<unknown> = new Set([
 ])
 const confidences: ReadonlySet<unknown> = new Set(['firm', 'low', 'prior', 'stale'])
 const exerciseLoadSources: ReadonlySet<unknown> = new Set(['garmin', 'calculated', 'mixed'])
-const heatSources: ReadonlySet<unknown> = new Set(['core', 'weatherkit', 'strava', 'mixed'])
+const heatSources: ReadonlySet<unknown> = new Set([
+  'core',
+  'weatherkit',
+  'strava',
+  'manual-sauna',
+  'mixed',
+])
 const coreOrigins: ReadonlySet<unknown> = new Set(['app', 'fit', 'mixed'])
 
 const bodyIsValid = (value: unknown, date: string): boolean =>
@@ -205,6 +211,8 @@ const heatIsValid = (value: unknown, date: string): boolean =>
     (value.source === null || oneOf(value.source, heatSources)) &&
     finiteNumber(value.observedMinutes) &&
     finiteNumber(value.hotMinutes) &&
+    finiteNumber(value.saunaMinutes) &&
+    nullableFiniteNumber(value.saunaHtl) &&
     finiteNumber(value.dose) &&
     finiteNumber(value.acclimatisationPct) &&
     (value.coreOrigin === null || oneOf(value.coreOrigin, coreOrigins)))

@@ -1,4 +1,5 @@
 import type { TriathlonContext } from '../runtime/context'
+import { triText } from '../../../util/triathlon-i18n'
 import {
   calculateTirePressure,
   DEFAULT_TIRE_PRESSURE_SELECTION,
@@ -10,6 +11,7 @@ import {
   isTirePressureInnerWidthMm,
   isTirePressureMeasuredWidthMm,
   isTirePressureRiderKg,
+  isTirePressureSetupId,
   isTirePressureSpeed,
   isTirePressureSurfaceId,
   isTirePressureTireId,
@@ -19,6 +21,8 @@ import {
   selectedTirePressureWheel,
   tirePressureBalance,
   tirePressureBike,
+  tirePressureSetup,
+  tirePressureSetups,
   tirePressureSurface,
   tirePressureTire,
   tirePressureWeightToKg,
@@ -31,6 +35,7 @@ import {
   TIRE_PRESSURE_TIRES,
   TIRE_PRESSURE_WHEELS,
   TIRE_PRESSURE_WEIGHT_UNITS,
+  updateTirePressureSelection,
   type TirePressureChange,
   type TirePressureSelection,
 } from '../../../util/triathlon-tire-pressure'
@@ -155,6 +160,7 @@ export type TirePressurePaletteStep =
   | 'measuredTireFront'
   | 'measuredTireRear'
   | 'tire'
+  | 'setup'
   | 'surface'
   | 'speed'
   | 'result'
@@ -178,7 +184,8 @@ export const nextTirePressurePaletteStep = (
   if (step === 'customWheelRear') return 'measuredTireFront'
   if (step === 'measuredTireFront') return 'measuredTireRear'
   if (step === 'measuredTireRear') return 'tire'
-  if (step === 'tire') return 'surface'
+  if (step === 'tire') return 'setup'
+  if (step === 'setup') return 'surface'
   if (step === 'surface') return 'speed'
   return 'result'
 }
@@ -191,7 +198,8 @@ export const previousTirePressurePaletteStep = (
   if (step === 'result') return 'commands'
   if (step === editStart) return 'result'
   if (step === 'speed') return 'surface'
-  if (step === 'surface') return 'tire'
+  if (step === 'surface') return 'setup'
+  if (step === 'setup') return 'tire'
   if (step === 'tire') return 'measuredTireRear'
   if (step === 'measuredTireRear') return 'measuredTireFront'
   if (step === 'measuredTireFront')
@@ -232,6 +240,11 @@ export const tirePressurePaletteSelectionIndex = (
       0,
       TIRE_PRESSURE_TIRES.findIndex(tire => tire.id === selection.tire),
     )
+  if (step === 'setup')
+    return Math.max(
+      0,
+      tirePressureSetups(selection.tire).findIndex(setup => setup.id === selection.setup),
+    )
   if (step === 'surface')
     return Math.max(
       0,
@@ -262,10 +275,11 @@ const tirePressureSelectionFromRoot = (root: HTMLElement): TirePressureSelection
   const measuredTireFrontMm = Number(calculator?.dataset.measuredTireFrontMm)
   const measuredTireRearMm = Number(calculator?.dataset.measuredTireRearMm)
   const tire = calculator?.dataset.tire
+  const setup = calculator?.dataset.setup
   const surface = calculator?.dataset.surface
   const speedMph = Number(calculator?.dataset.speedMph)
   const selectedBike = bike && isTirePressureBikeId(bike) ? bike : stored.bike
-  return {
+  const selection: TirePressureSelection = {
     riderKg: isTirePressureRiderKg(rootRiderKg) ? rootRiderKg : stored.riderKg,
     weightUnit: weightUnit && isTirePressureWeightUnit(weightUnit) ? weightUnit : stored.weightUnit,
     bike: selectedBike,
@@ -291,9 +305,11 @@ const tirePressureSelectionFromRoot = (root: HTMLElement): TirePressureSelection
         : stored.measuredTire.rearWidthMm,
     },
     tire: tire && isTirePressureTireId(tire) ? tire : stored.tire,
+    setup: setup && isTirePressureSetupId(setup) ? setup : stored.setup,
     surface: surface && isTirePressureSurfaceId(surface) ? surface : stored.surface,
     speedMph: isTirePressureSpeed(speedMph) ? speedMph : stored.speedMph,
   }
+  return updateTirePressureSelection(selection, { field: 'tire', value: selection.tire })
 }
 
 export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext): (() => void) => {
@@ -342,44 +358,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   }
 
   const updatePressureSelection = (change: TirePressureChange): void => {
-    if (change.field === 'riderMass')
-      pressureSelection = { ...pressureSelection, riderKg: change.valueKg }
-    else if (change.field === 'weightUnit')
-      pressureSelection = { ...pressureSelection, weightUnit: change.value }
-    else if (change.field === 'bike')
-      pressureSelection = { ...pressureSelection, bike: change.value }
-    else if (change.field === 'bikeMass')
-      pressureSelection = {
-        ...pressureSelection,
-        bike: change.bike,
-        bikeMassesLb: { ...pressureSelection.bikeMassesLb, [change.bike]: change.value },
-      }
-    else if (change.field === 'balance')
-      pressureSelection = { ...pressureSelection, balance: change.value }
-    else if (change.field === 'wheel')
-      pressureSelection = { ...pressureSelection, wheel: change.value }
-    else if (change.field === 'customWheelWidth')
-      pressureSelection = {
-        ...pressureSelection,
-        wheel: 'custom',
-        customWheel: {
-          ...pressureSelection.customWheel,
-          [change.axle === 'front' ? 'frontInnerWidthMm' : 'rearInnerWidthMm']: change.value,
-        },
-      }
-    else if (change.field === 'measuredTireWidth')
-      pressureSelection = {
-        ...pressureSelection,
-        measuredTire: {
-          ...pressureSelection.measuredTire,
-          [change.axle === 'front' ? 'frontWidthMm' : 'rearWidthMm']: change.value,
-        },
-      }
-    else if (change.field === 'tire')
-      pressureSelection = { ...pressureSelection, tire: change.value }
-    else if (change.field === 'surface')
-      pressureSelection = { ...pressureSelection, surface: change.value }
-    else pressureSelection = { ...pressureSelection, speedMph: change.value }
+    pressureSelection = updateTirePressureSelection(pressureSelection, change)
     storeTirePressureSelection(pressureSelection, pressureWeightDate)
     root.dispatchEvent(new CustomEvent(TRI_TIRE_PRESSURE_CHANGE_EVENT, { detail: change }))
   }
@@ -595,10 +574,19 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     }
     if (mode === 'tire')
       return TIRE_PRESSURE_TIRES.map(tire => ({
-        label: () => `${tire.id === pressureSelection.tire ? '✓ ' : ''}${tire.label}`,
-        hint: tire.detail,
+        label: () =>
+          `${tire.id === pressureSelection.tire ? '✓ ' : ''}${triText(context.presentation.locale, tire.label)}`,
+        hint: triText(context.presentation.locale, tire.detail),
         keys: `${tire.id} ${tire.label} ${tire.detail}`,
         run: () => selectPressure({ field: 'tire', value: tire.id }),
+      }))
+    if (mode === 'setup')
+      return tirePressureSetups(pressureSelection.tire).map(setup => ({
+        label: () =>
+          `${setup.id === pressureSelection.setup ? '✓ ' : ''}${triText(context.presentation.locale, setup.label)}`,
+        hint: triText(context.presentation.locale, setup.detail),
+        keys: `${setup.id} ${setup.label} ${setup.detail}`,
+        run: () => selectPressure({ field: 'setup', value: setup.id }),
       }))
     if (mode === 'surface')
       return TIRE_PRESSURE_SURFACES.map(surface => ({
@@ -620,6 +608,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
       const balance = tirePressureBalance(pressureSelection.balance)
       const wheel = selectedTirePressureWheel(pressureSelection)
       const tire = tirePressureTire(pressureSelection.tire)
+      const setup = tirePressureSetup(pressureSelection.setup)
       const surface = tirePressureSurface(pressureSelection.surface)
       return [
         {
@@ -696,10 +685,18 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
           run: () => startPressureEdit('measuredTireFront', 'measuredTireRear'),
         },
         {
-          label: () => `tire · ${tire.label}`,
-          hint: tire.detail,
-          keys: 'tire setup tubeless tpu change',
+          label: () =>
+            `${triText(context.presentation.locale, 'tire')} · ${triText(context.presentation.locale, tire.label)}`,
+          hint: triText(context.presentation.locale, tire.detail),
+          keys: `tire model ${tire.label} change`,
           run: () => startPressureEdit('tire'),
+        },
+        {
+          label: () =>
+            `${triText(context.presentation.locale, 'tire setup')} · ${triText(context.presentation.locale, setup.label)}`,
+          hint: triText(context.presentation.locale, setup.detail),
+          keys: 'tire setup tubeless tpu inner tube mounting change',
+          run: () => startPressureEdit('setup'),
         },
         {
           label: () => `surface · ${surface.label}`,

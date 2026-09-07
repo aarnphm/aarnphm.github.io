@@ -2,11 +2,32 @@ import type { Element, Root } from 'hast'
 import { h } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { VFile } from 'vfile'
 import {
+  citationTreeCacheKey,
   mergeCitationKeysIntoNoCite,
   normalizeCitationBibliography,
   resolveCitationLocale,
 } from './citations'
+
+test('citation tree cache distinguishes upstream SVG changes with unchanged Markdown', () => {
+  const file = new VFile({ value: 'A diagram with a citation [@paper].' })
+  file.data.hasCitationSyntax = true
+  const diagram = (label: string): Root => ({
+    type: 'root',
+    children: [h('img', { src: `data:image/svg+xml,<svg><text>${label}</text></svg>` })],
+  })
+  const oldTree = diagram('jxj ∙ L')
+  const correctedTree = diagram('|x| ≤ L')
+  const oldKey = citationTreeCacheKey(file, 'bibliography', 'en-US', oldTree)
+  const correctedKey = citationTreeCacheKey(file, 'bibliography', 'en-US', correctedTree)
+
+  assert.notEqual(oldKey, correctedKey)
+  assert.equal(
+    correctedKey,
+    citationTreeCacheKey(file, 'bibliography', 'en-US', structuredClone(correctedTree)),
+  )
+})
 
 test('uses bundled CSL locale when available', () => {
   assert.equal(resolveCitationLocale('fr-FR'), 'fr-FR')

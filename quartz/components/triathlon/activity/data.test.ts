@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
 import test from 'node:test'
+import { buildAnalytics } from '../../../plugins/stores/analytics'
 import { STRAVA_DETAIL_INDEX_KIND } from '../../../util/strava-detail'
+import { buildTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { isActivityDetail, readDetailPayload } from './data'
 
 const emptyAnalyses = {
@@ -25,7 +27,23 @@ const detail = (id: number, date: string, sport: string): Record<string, unknown
   analyses: emptyAnalyses,
 })
 
-test('loads and reconstructs a Strava detail index from valid JSON shards', async () => {
+test('loads activity shards alongside manual sauna daily analytics', async () => {
+  const analytics = buildAnalytics(null)
+  analytics.heat.series = [
+    {
+      date: '2026-08-02',
+      temperatureC: null,
+      heatStrainIndex: null,
+      source: 'manual-sauna',
+      observedMinutes: 65,
+      hotMinutes: 0,
+      saunaMinutes: 65,
+      saunaHtl: 7.7,
+      dose: 0.77,
+      acclimatisationPct: 100,
+    },
+  ]
+  const dailyAnalytics = buildTriathlonDailyAnalytics(analytics)
   const requested: string[] = []
   const server = createServer((request, response) => {
     const path = request.url ?? ''
@@ -35,6 +53,7 @@ test('loads and reconstructs a Strava detail index from valid JSON shards', asyn
         kind: STRAVA_DETAIL_INDEX_KIND,
         shards: ['strava-detail/2026-08.json', 'strava-detail/2026-07.json'],
         health: {},
+        dailyAnalytics,
         ftp: 250,
       },
       '/static/strava-detail/2026-08.json': {
@@ -70,6 +89,8 @@ test('loads and reconstructs a Strava detail index from valid JSON shards', asyn
     assert.equal(payload.details['4'].sport, 'yoga')
     assert.equal(payload.details['5'].sport, 'treatment')
     assert.equal(payload.ftp, 250)
+    assert.deepEqual(payload.dailyAnalytics, dailyAnalytics)
+    assert.equal(payload.dailyAnalytics?.['2026-08-02'].heat?.source, 'manual-sauna')
     assert.deepEqual(requested.sort(), [
       '/static/strava-detail.json',
       '/static/strava-detail/2026-07.json',

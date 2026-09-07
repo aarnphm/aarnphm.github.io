@@ -326,3 +326,5 @@ content/triathlon/memos/20260905.waveform filter=lfs diff=lfs merge=lfs -text
 .agents/skills/** -filter diff merge text
 content/triathlon/memos/20260906-171533-4823852d4f8d.m4a filter=lfs diff=lfs merge=lfs -text
 content/triathlon/memos/20260906-171533-4823852d4f8d.peaks.json filter=lfs diff=lfs merge=lfs -text
+content/triathlon/memos/20260905-175710-c1fb523cad92.peaks.json filter=lfs diff=lfs merge=lfs -text
+content/triathlon/memos/20260905-175710-c1fb523cad92.m4a filter=lfs diff=lfs merge=lfs -text

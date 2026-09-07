@@ -657,10 +657,13 @@ export const mountPrimaryPanel = (
       const { activity } = nearest
       const day = dayByDate.get(activity.date)
       const temperatureDigits = activity.source === 'core' ? 2 : 0
+      const temperatureC = activity.sauna?.temperatureC ?? activity.temperatureC
       const temperature =
-        context.presentation.distance === 'imperial'
-          ? `${((activity.temperatureC * 9) / 5 + 32).toFixed(temperatureDigits)}°F`
-          : `${activity.temperatureC.toFixed(temperatureDigits)}°C`
+        temperatureC == null
+          ? '—'
+          : context.presentation.distance === 'imperial'
+            ? `${((temperatureC * 9) / 5 + 32).toFixed(temperatureDigits)}°F`
+            : `${temperatureC.toFixed(temperatureDigits)}°C`
       const heatStrain =
         activity.heatStrainIndex == null ? '' : ` · HSI ${activity.heatStrainIndex.toFixed(1)}`
       const source =
@@ -670,11 +673,16 @@ export const mountPrimaryPanel = (
             : 'CORE FIT'
           : activity.source === 'weatherkit'
             ? 'WeatherKit'
-            : 'Strava'
+            : activity.source === 'manual-sauna'
+              ? context.formatter.text('manual sauna')
+              : 'Strava'
+      const exposure = activity.sauna
+        ? `${context.formatter.text('room temperature')} ${temperature} · ${activity.sauna.humidityPct}% ${context.formatter.text('humidity')} · ${activity.sauna.durationMinutes.toFixed(0)} ${context.formatter.text('sauna min')} · HTL ${activity.sauna.heatTrainingLoad?.toFixed(1) ?? '—'} · ${context.formatter.text('cooldown')}: ${context.formatter.text(activity.sauna.cooldown)}`
+        : `${temperature}${heatStrain} · ${activity.hotMinutes} ${context.formatter.text('hot min')}`
       const cx = (nearest.fraction * ANA_W).toFixed(2)
       heatCursor.setAttribute('x1', cx)
       heatCursor.setAttribute('x2', cx)
-      heatReadout.textContent = `${context.formatter.shortDate(activity.date)} · ${activity.name} · ${temperature}${heatStrain} · ${activity.hotMinutes} ${context.formatter.text('hot min')} · ${context.formatter.text('proxy')} ${day?.acclimatisationPct.toFixed(0) ?? '—'}% · ${source}`
+      heatReadout.textContent = `${context.formatter.shortDate(activity.date)} · ${activity.name} · ${exposure} · ${context.formatter.text('proxy')} ${day?.acclimatisationPct.toFixed(0) ?? '—'}% · ${source}`
       heatBlock.classList.add('tri-chart--hover')
     }
     const onLeave = (): void => heatBlock.classList.remove('tri-chart--hover')

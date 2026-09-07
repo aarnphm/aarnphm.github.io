@@ -350,19 +350,10 @@ export const moreStatRows = (
 ): [string, string][] => {
   const rows: [string, string][] = []
   const showRunPower = fillMissingRunPower && d.sport === 'run'
-  if (d.virtual && d.garmin) {
-    const garmin = d.garmin
-    if (d.distanceSource === 'garmin' && garmin.distanceM != null && garmin.distanceDeltaM != null)
-      rows.push([
-        'Strava distance',
-        dist(presentation, (garmin.distanceM - garmin.distanceDeltaM) / 1_000, d.sport),
-      ])
-    if (garmin.normalizedPower != null) rows.push(['Garmin NP', `${garmin.normalizedPower} W`])
-    if (garmin.trainingStressScore != null)
-      rows.push(['Garmin TSS', `${garmin.trainingStressScore}`])
-  }
   if (d.deviceWatts && d.npWatts != null) rows.push(['NP', `${d.npWatts} W`])
   else if (showRunPower) rows.push(['NP', '—'])
+  const trainingStressScore = d.garmin?.trainingStressScore ?? d.wahoo?.metrics.trainingStressScore
+  if (trainingStressScore != null) rows.push(['TSS', `${trainingStressScore}`])
   if (d.avgWatts != null) rows.push([d.deviceWatts ? 'avg power' : 'est power', `${d.avgWatts} W`])
   else if (showRunPower) rows.push(['avg power', '—'])
   if (d.deviceWatts && d.maxWatts != null) rows.push(['max power', `${d.maxWatts} W`])
@@ -396,19 +387,30 @@ export const moreStatRows = (
   if (d.averageRelativeHumidityPct != null)
     rows.push(['humidity', `${d.averageRelativeHumidityPct}%`])
   if (d.computer) rows.push(['computer', d.wahoo?.sourceDevice ?? COMPUTER_LABEL[d.computer]])
-  if (d.wahoo) {
-    rows.push(['telemetry source', 'Wahoo FIT'])
-    if (d.wahoo.metrics.trainingStressScore != null)
-      rows.push(['Wahoo TSS', `${d.wahoo.metrics.trainingStressScore}`])
-    if (d.wahoo.stravaNormalizedPower != null)
-      rows.push(['Strava NP', `${d.wahoo.stravaNormalizedPower} W`])
-  }
   if (d.virtual) rows.push(['activity', triText(presentation.locale, 'virtual')])
-  if (d.distanceSource === 'garmin') rows.push(['distance source', 'Garmin'])
-  else if (d.distanceSource === 'strava') rows.push(['distance source', 'Strava'])
   if (d.device && (d.sport === 'run' || d.sport === 'walk' || d.sport === 'swim'))
     rows.push(['device', DEVICE_LABEL[d.device]])
+  if (d.sources?.length || d.garmin || d.wahoo)
+    rows.push([
+      'source',
+      d.garmin ? 'Garmin' : d.wahoo || d.computer === 'wahoo' ? 'Wahoo' : 'Strava',
+    ])
   return rows
+}
+
+export const activitySourceStatAttrs = (
+  d: StravaActivityDetail,
+): Record<string, string> | undefined => {
+  if (!d.sources?.length) return undefined
+  const labels = { strava: 'Strava', garmin: 'Garmin', wahoo: 'Wahoo' }
+  const description = d.sources
+    .map(source =>
+      [`${labels[source.provider]} · ${source.activityId}`, source.name, source.fileName]
+        .filter(Boolean)
+        .join('\n'),
+    )
+    .join('\n\n')
+  return { 'data-source-description': description }
 }
 
 export type ActivityThermalTracePoint = {
@@ -1021,18 +1023,41 @@ const routeDistanceAtElapsed = (d: StravaActivityDetail, elapsedS: number): numb
   return route[route.length - 1].d
 }
 
+type AnalysisInterval = Pick<
+  ActivityAnalysisRange,
+  'startElapsedS' | 'endElapsedS' | 'startDistanceKm' | 'endDistanceKm'
+>
+
+export type ActivityAnalysisChartDomain =
+  | Pick<AnalysisInterval, 'startElapsedS' | 'endElapsedS'>
+  | Pick<AnalysisInterval, 'startDistanceKm' | 'endDistanceKm'>
+
+export const analysisChartSelectionBounds = (
+  range: AnalysisInterval,
+  domain: ActivityAnalysisChartDomain,
+  plot = { x: 0, width: 100 },
+): { x: number; width: number } => {
+  const [domainStart, domainEnd, rangeStart, rangeEnd] =
+    'startElapsedS' in domain
+      ? [domain.startElapsedS, domain.endElapsedS, range.startElapsedS, range.endElapsedS]
+      : [domain.startDistanceKm, domain.endDistanceKm, range.startDistanceKm, range.endDistanceKm]
+  const span = domainEnd - domainStart
+  if (!(span > 0) || !(plot.width > 0)) return { x: plot.x, width: 0 }
+  const start = Math.max(domainStart, Math.min(domainEnd, rangeStart))
+  const end = Math.max(start, Math.min(domainEnd, rangeEnd))
+  return {
+    x: plot.x + ((start - domainStart) / span) * plot.width,
+    width: ((end - start) / span) * plot.width,
+  }
+}
+
 export const analysisSelectionBounds = (
   d: StravaActivityDetail,
-  range: Pick<
-    ActivityAnalysisRange,
-    'startElapsedS' | 'endElapsedS' | 'startDistanceKm' | 'endDistanceKm'
-  >,
+  range: AnalysisInterval,
 ): { x: number; width: number } => {
   if (activityTraceUsesElapsedAxis(d)) {
     const maxElapsedS = d.heartRateTrace.at(-1)?.elapsedS || d.elapsedTimeS || 1
-    const start = Math.max(0, Math.min(maxElapsedS, range.startElapsedS))
-    const end = Math.max(start, Math.min(maxElapsedS, range.endElapsedS))
-    return { x: (start / maxElapsedS) * 100, width: ((end - start) / maxElapsedS) * 100 }
+    return analysisChartSelectionBounds(range, { startElapsedS: 0, endElapsedS: maxElapsedS })
   }
   const hasRoute = d.route.length >= 2
   const maxD = hasRoute
@@ -1044,11 +1069,25 @@ export const analysisSelectionBounds = (
   const endDistanceKm = hasRoute
     ? routeDistanceAtElapsed(d, range.endElapsedS)
     : range.endDistanceKm
-  const start = Math.max(0, Math.min(maxD, startDistanceKm))
-  const end = Math.max(start, Math.min(maxD, endDistanceKm))
-  const x = (start / maxD) * 100
-  return { x, width: Math.max(0, ((end - start) / maxD) * 100) }
+  return analysisChartSelectionBounds(
+    { ...range, startDistanceKm, endDistanceKm },
+    { startDistanceKm: 0, endDistanceKm: maxD },
+  )
 }
+
+const buildAnalysisSelectionRect = <N>(
+  f: TriNodeFactory<N>,
+  height: number,
+  bounds = { x: 0, width: 0 },
+  y = 0,
+): N =>
+  f.svg('rect', {
+    class: 'tri-analysis-selection',
+    x: bounds.x.toFixed(2),
+    y,
+    width: bounds.width.toFixed(2),
+    height,
+  })
 
 const buildAnalysisSelection = <N>(
   f: TriNodeFactory<N>,
@@ -1057,13 +1096,7 @@ const buildAnalysisSelection = <N>(
   range: ActivityAnalysisRange | null,
 ): N => {
   const bounds = range ? analysisSelectionBounds(d, range) : { x: 0, width: 0 }
-  return f.svg('rect', {
-    class: 'tri-analysis-selection',
-    x: bounds.x.toFixed(2),
-    y: 0,
-    width: bounds.width.toFixed(2),
-    height,
-  })
+  return buildAnalysisSelectionRect(f, height, bounds)
 }
 
 type ElevationGradePoint = { x: number; y: number }
@@ -1306,8 +1339,7 @@ const buildTraceSeries = <N, P extends { d: number; elapsedS: number }>(
   for (const t of yTicks)
     f.add(s, f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: t.vbY, x2: w, y2: t.vbY }))
   f.add(s, f.svg('path', { d: area, class: 'tri-elev-area' }))
-  if (selection !== undefined && (!usesElapsedAxis || d.sport === 'sauna'))
-    f.add(s, buildAnalysisSelection(f, d, h, selection))
+  if (selection !== undefined) f.add(s, buildAnalysisSelection(f, d, h, selection))
   if (missingLine)
     f.add(s, f.svg('path', { d: missingLine, class: 'tri-elev-line tri-elev-line--missing' }))
   if (reference)
@@ -3393,6 +3425,7 @@ export const buildRunWalkTrace = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
       }),
     )
   }
+  f.add(svgEl, buildAnalysisSelectionRect(f, height))
   const wrap = f.el('div', 'tri-elev-wrap tri-run-walk-chart', undefined, {
     'data-tri-trace': triathlonTraceName('run/walk'),
     'data-run-walk-source': runWalk.source,
@@ -4838,6 +4871,10 @@ const buildEnvironmentChart = <N>(
     'aria-valuemax': Math.round(elapsedTimeS),
     'aria-valuenow': Math.round(elapsedTimeS),
     'data-environment-chart': view,
+    'data-domain-start-elapsed-s': 0,
+    'data-domain-end-elapsed-s': elapsedTimeS,
+    'data-domain-start-x': ENVIRONMENT_CHART_LEFT,
+    'data-domain-end-x': ENVIRONMENT_CHART_RIGHT,
   })
   const yTicks =
     view === 'cumulative' && scoreModel != null
@@ -4888,6 +4925,12 @@ const buildEnvironmentChart = <N>(
   }
   f.add(
     svg,
+    buildAnalysisSelectionRect(
+      f,
+      ENVIRONMENT_CHART_BOTTOM - ENVIRONMENT_CHART_TOP,
+      undefined,
+      ENVIRONMENT_CHART_TOP,
+    ),
     f.svg('rect', {
       class: 'tri-environment-selection',
       x: -10,
@@ -6040,6 +6083,8 @@ const buildSwimTrendChart = <N>(
     'data-swim-mode': 'lengths',
     'data-swim-kind': kind,
     'data-swim-index': currentIndex,
+    'data-domain-start-distance-km': 0,
+    'data-domain-end-distance-km': totalDistanceM / 1000,
   })
   for (const tick of yTicks)
     f.add(
@@ -6073,6 +6118,7 @@ const buildSwimTrendChart = <N>(
   if (hundredMetreChart.points.length >= 2) addLayer('100m', hundredMetreChart, false)
   f.add(
     svg,
+    buildAnalysisSelectionRect(f, H),
     f.svg('line', {
       class: 'tri-chart-cursor',
       x1: currentChartPoint.xPct.toFixed(2),
@@ -6238,11 +6284,19 @@ export const statRow = <N>(
   attrs?: Record<string, string>,
 ): N => {
   const tr = f.el('tr', undefined, undefined, { ...attrs, 'data-stat-key': label })
-  f.add(
-    tr,
-    f.el('th', 'tri-act-stat-k', label, { 'data-i18n': label }),
-    f.el('td', 'tri-act-stat-v', value),
-  )
+  const description = attrs?.['data-source-description']
+  const cell = f.el('td', 'tri-act-stat-v', description ? undefined : value)
+  if (description)
+    f.add(
+      cell,
+      f.el('span', 'tri-act-source', value, {
+        'data-gloss': '',
+        'data-gloss-def': description,
+        tabindex: '0',
+        'aria-label': `${value}: ${description}`,
+      }),
+    )
+  f.add(tr, f.el('th', 'tri-act-stat-k', label, { 'data-i18n': label }), cell)
   return tr
 }
 
@@ -7949,6 +8003,7 @@ export const buildActivity = <N>(
   f.add(
     wrap,
     statsTable(f, activityTableRows(f.presentation, d, fillMissingRunPower), (label, index) => {
+      if (label === 'source') return activitySourceStatAttrs(d)
       if (label === 'training effect')
         return { 'data-training-effect-group': summaryTrainingEffectGroup }
       const analysisAttrs = activityAnalysisStatAttrs(d, label)
@@ -10665,7 +10720,7 @@ const dayAnalyticsHeatMetrics = (
     metrics.push({ label: 'HSI', value: dayAnalyticsNumber(presentation, heat.heatStrainIndex, 1) })
   if (heat.temperatureC != null)
     metrics.push({
-      label: heat.source === 'core' ? 'CORE temperature' : 'ambient temperature',
+      label: heat.coreOrigin != null ? 'CORE temperature' : 'ambient temperature',
       value: dayAnalyticsTemperature(presentation, heat.temperatureC),
     })
   metrics.push(
@@ -10678,6 +10733,14 @@ const dayAnalyticsHeatMetrics = (
   )
   if (heat.dose > 0)
     metrics.push({ label: 'heat dose', value: dayAnalyticsNumber(presentation, heat.dose, 1) })
+  if (heat.saunaMinutes > 0)
+    metrics.push(
+      { label: 'sauna min', value: dayAnalyticsNumber(presentation, heat.saunaMinutes) },
+      {
+        label: 'recorded sauna HTL',
+        value: heat.saunaHtl == null ? '—' : dayAnalyticsNumber(presentation, heat.saunaHtl, 1),
+      },
+    )
   return metrics
 }
 

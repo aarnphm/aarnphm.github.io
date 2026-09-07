@@ -429,11 +429,18 @@ export const buildHeatAcclimatisation = (
   const block = el('div', 'tri-ana-accl')
   const heat = data.heat
   const coreActivities = heat.activities.filter(activity => activity.heatStrainIndex != null)
+  const thermalActivities = heat.activities.filter(activity => activity.temperatureC != null)
+  const saunaActivities = heat.activities.filter(activity => activity.sauna != null)
   const usesCore = coreActivities.length > 0
+  const usesSauna = !thermalActivities.length && saunaActivities.length > 0
   block.appendChild(
     anaTitle(
       context.formatter,
-      usesCore ? 'heat strain · acclimatisation' : 'ambient heat · acclimatisation',
+      usesCore
+        ? 'heat strain · acclimatisation'
+        : usesSauna
+          ? 'passive heat · acclimatisation'
+          : 'ambient heat · acclimatisation',
       'heatacclimation',
     ),
   )
@@ -458,6 +465,17 @@ export const buildHeatAcclimatisation = (
     el('span', 'tri-accl-summary-k tri-accl-summary-dot', '·'),
     el('span', 'tri-accl-summary-k', text('14d')),
   )
+  if (heat.saunaSessions14d > 0)
+    summary.append(
+      el('span', 'tri-accl-summary-v', `${heat.saunaMinutes14d}`),
+      el('span', 'tri-accl-summary-k', text('sauna min')),
+      el('span', 'tri-accl-summary-k tri-accl-summary-dot', '·'),
+      el('span', 'tri-accl-summary-k', text('14d')),
+      el('span', 'tri-accl-summary-v', heat.saunaHtl14d?.toFixed(1) ?? '—'),
+      markGloss(el('span', 'tri-accl-summary-k', text('recorded sauna HTL')), 'heatdose'),
+      el('span', 'tri-accl-summary-k tri-accl-summary-dot', '·'),
+      el('span', 'tri-accl-summary-k', text('14d')),
+    )
   block.appendChild(summary)
 
   const legend = el('div', 'tri-accl-legend')
@@ -467,14 +485,24 @@ export const buildHeatAcclimatisation = (
     return item
   }
   legend.append(
-    legendItem('tri-accl-leg-temp', usesCore ? 'heat strain index' : 'activity temperature'),
+    legendItem(
+      'tri-accl-leg-temp',
+      usesCore ? 'heat strain index' : usesSauna ? 'recorded sauna HTL' : 'activity temperature',
+    ),
     legendItem('tri-accl-leg-proxy', 'acclimatisation proxy'),
-    legendItem('tri-accl-leg-dose', 'heat exposure'),
+    legendItem(
+      'tri-accl-leg-dose',
+      saunaActivities.length ? 'combined heat exposure' : 'heat exposure',
+    ),
   )
   block.appendChild(legend)
 
   const rows = heat.series
-  const activities = usesCore ? coreActivities : heat.activities
+  const activities = usesCore
+    ? coreActivities
+    : usesSauna
+      ? saunaActivities.filter(activity => activity.sauna?.heatTrainingLoad != null)
+      : thermalActivities
   const n = rows.length
   const H = 70
   const tempTop = 3
@@ -482,18 +510,29 @@ export const buildHeatAcclimatisation = (
   const acclTop = 40
   const acclBottom = 66
   const signal = (activity: (typeof activities)[number]): number =>
-    usesCore ? (activity.heatStrainIndex ?? 0) : temperature(activity.temperatureC)
+    usesCore
+      ? (activity.heatStrainIndex ?? 0)
+      : usesSauna
+        ? (activity.sauna?.heatTrainingLoad ?? 0)
+        : temperature(activity.temperatureC ?? 0)
   const observed = activities.map(signal)
   const threshold = usesCore
     ? heat.method.heatStrainThreshold
-    : temperature(heat.method.hotThresholdC)
-  const signalStep = usesCore ? 1 : 5
-  const minimumSpan = usesCore ? 2 : 10
+    : usesSauna
+      ? heat.method.passiveHtlCapPerDay
+      : temperature(heat.method.hotThresholdC)
+  const signalUnit = usesCore ? '' : usesSauna ? ' HTL' : temperatureUnit
+  const signalStep = usesCore || usesSauna ? 1 : 5
+  const minimumSpan = usesCore || usesSauna ? 2 : 10
   let signalLo = Math.floor(Math.min(...observed, threshold) / signalStep) * signalStep
   let signalHi = Math.ceil(Math.max(...observed, threshold) / signalStep) * signalStep
   if (signalHi - signalLo < minimumSpan) {
     signalLo -= signalStep
     signalHi += signalStep
+  }
+  if (usesSauna) {
+    signalLo = 0
+    signalHi = Math.max(heat.method.htlPerExposure, ...observed)
   }
   const x = (i: number): number => (n > 1 ? (i / (n - 1)) * ANA_W : ANA_W / 2)
   const fromMs = Date.parse(`${rows[0].date}T00:00:00Z`)
@@ -516,18 +555,21 @@ export const buildHeatAcclimatisation = (
     'aria-label': text(
       usesCore
         ? 'CORE heat strain and heat acclimatisation over time'
-        : 'ambient workout temperature and heat acclimatisation proxy over time',
+        : usesSauna
+          ? 'sauna HTL and heat acclimatisation proxy over time'
+          : 'ambient workout temperature and heat acclimatisation proxy over time',
     ),
   })
-  s.appendChild(
-    svg('rect', {
-      x: 0,
-      y: tempTop,
-      width: ANA_W,
-      height: Math.max(0, ySignal(threshold) - tempTop),
-      class: 'tri-accl-hot-zone',
-    }),
-  )
+  if (!usesSauna)
+    s.appendChild(
+      svg('rect', {
+        x: 0,
+        y: tempTop,
+        width: ANA_W,
+        height: Math.max(0, ySignal(threshold) - tempTop),
+        class: 'tri-accl-hot-zone',
+      }),
+    )
   s.appendChild(
     svg('line', {
       x1: 0,
@@ -547,6 +589,8 @@ export const buildHeatAcclimatisation = (
           width: barWidth,
           height: acclBottom - yAccl(day.dose * 100),
           class: 'tri-accl-dose',
+          'data-date': day.date,
+          'data-sauna-htl': day.saunaHtl ?? '',
         }),
       )
   }
@@ -575,7 +619,7 @@ export const buildHeatAcclimatisation = (
     }),
   )
   s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' }))
-  if (usesCore)
+  if (usesCore || usesSauna)
     for (const activity of activities) {
       const pointX = xActivity(activity.startedAt)
       const pointY = ySignal(signal(activity))
@@ -593,12 +637,12 @@ export const buildHeatAcclimatisation = (
     createDomFactory(context.presentation),
     s,
     [
-      { label: `${signalHi}${usesCore ? '' : temperatureUnit}`, vbY: tempTop },
+      { label: `${signalHi}${signalUnit}`, vbY: tempTop },
       {
-        label: `${usesCore ? threshold.toFixed(1) : Math.round(threshold)}${usesCore ? '' : temperatureUnit}`,
+        label: `${usesCore ? threshold.toFixed(1) : Math.round(threshold)}${signalUnit}`,
         vbY: ySignal(threshold),
       },
-      { label: `${signalLo}${usesCore ? '' : temperatureUnit}`, vbY: tempBottom },
+      { label: `${signalLo}${signalUnit}`, vbY: tempBottom },
       { label: '100%', vbY: acclTop },
       { label: '50%', vbY: yAccl(50) },
       { label: '0%', vbY: acclBottom },
@@ -616,7 +660,7 @@ export const buildHeatAcclimatisation = (
 
   const cap = el('div', 'tri-elev-cap tri-accl-cap')
   const latestCore = coreActivities.at(-1)
-  if (usesCore && latestCore)
+  if (usesCore && latestCore?.temperatureC != null)
     cap.appendChild(
       markGloss(
         el(
@@ -641,23 +685,37 @@ export const buildHeatAcclimatisation = (
   cap.append(
     markGloss(
       el('span', 'tri-ana-k', `${heat.coveragePct}% ${text('thermal coverage')}`),
-      usesCore ? 'heatstrain' : 'ambienttemp',
+      'heatdose',
     ),
     el('span', 'tri-ana-k', `${text(heat.confidence)} ${text('confidence')}`),
     el(
       'span',
       'tri-ana-k',
-      `CORE app ${heat.coreSourceCounts.app} · CORE FIT ${heat.coreSourceCounts.fit} · WeatherKit ${heat.sourceCounts.weatherkit} · Strava ${heat.sourceCounts.strava}`,
+      `CORE app ${heat.coreSourceCounts.app} · CORE FIT ${heat.coreSourceCounts.fit} · WeatherKit ${heat.sourceCounts.weatherkit} · Strava ${heat.sourceCounts.strava} · ${text('manual sauna')} ${heat.sourceCounts['manual-sauna']}`,
     ),
   )
   block.appendChild(cap)
+  const activeMethod = usesSauna
+    ? ''
+    : `${usesCore ? `HSI ≥${heat.method.heatStrainThreshold.toFixed(1)} · ${text('fallback')} ` : ''}>${temperatureText(heat.method.hotThresholdC)} · ${heat.method.targetMinutesPerDay} min = 1 ${text('exposure')} · `
   const method = markGloss(
     mathK(
       'tri-accl-method',
-      `${usesCore ? `HSI ≥${heat.method.heatStrainThreshold.toFixed(1)} · ${text('fallback')} >${temperatureText(heat.method.hotThresholdC)}` : `>${temperatureText(heat.method.hotThresholdC)}`} · ${heat.method.targetMinutesPerDay} min = 1 ${text('exposure')} · ${heat.method.targetDays} ${text('exposures')} = 100% · ${heat.method.decayPerDay * 100}%/${text('day')} ${text('decay after')} ${heat.method.decayGraceDays} ${text('days')}`,
+      `${activeMethod}${heat.method.targetDays} ${text('exposures')} = 100% · ${heat.method.decayPerDay * 100}%/${text('day')} ${text('decay after')} ${heat.method.decayGraceDays} ${text('days')}`,
     ),
     'heatdose',
   )
   block.appendChild(method)
+  if (saunaActivities.length)
+    block.appendChild(
+      markGloss(
+        el(
+          'div',
+          'tri-accl-method',
+          `${text('sauna HTL')} / ${heat.method.htlPerExposure} · ${text('passive HTL cap')} ${heat.method.passiveHtlCapPerDay}/${text('day')} · ${text('combined daily exposure capped at 1')} · ${text('missing HTL earns no inferred credit')}`,
+        ),
+        'heatdose',
+      ),
+    )
   return block
 }

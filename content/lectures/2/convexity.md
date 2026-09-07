@@ -1,76 +1,87 @@
 ---
 date: '2025-08-21'
-description: Entropy-regularized attention as a convex program; Fenchel–Young view, geometry, and verification insights.
+description: entropy-regularized attention on the probability simplex
 id: convexity
-modified: 2026-06-05 15:07:56 GMT-04:00
+modified: 2026-09-07 13:56:24 GMT-04:00
 tags:
   - math/linalg
   - theory
 title: convexity of attention
 ---
 
-We study attention weight computation as a convex program: entropy‑regularized linear maximization on the probability simplex. We derive uniqueness and closed‑form solutions, connect to Fenchel–Young regularizers (softmax/sparsemax/entmax), and outline geometric and verification consequences.
+One row of attention weights solves a convex problem once its score vector is fixed. This gives softmax a precise variational meaning. It does not make the query, key, or model-training problem convex.
 
-## setup
+## entropy-regularized weights
 
-Let $s\in\mathbb{R}^n$ be scores (e.g., $s_i=q^\top k_i/\sqrt{d}$). Define the simplex
-
-$$
-\Delta=\{\alpha\in\mathbb{R}^n\mid \alpha\ge 0,\ \mathbf{1}^\top\alpha=1\}.
-$$
-
-Consider the entropy‑regularized problem
+For scores $s\in\mathbb{R}^n$, let
 
 $$
-\min_{\alpha\in\Delta}\quad f_\tau(\alpha)=\tau\sum_i \alpha_i\log\alpha_i - s^\top\alpha,\qquad \tau>0.
+\Delta_n=\left\{\alpha\in\mathbb{R}^n:\alpha_i\geq0,\ \sum_{i=1}^n\alpha_i=1\right\}.
 $$
 
-> [!abstract] Proposition 1 (Strict convexity and uniqueness).
->
-> $f_\tau$ is strictly convex on the relative interior of $\Delta$; the minimizer on $\Delta$ is unique.
-
-Proof. $x\mapsto x\log x$ is convex on $x\ge 0$ with Hessian $\nabla^2 f_\tau(\alpha)=\tau\,\mathrm{diag}(1/\alpha_i)\succ0$ for $\alpha>0$; the feasible set is convex with nonempty interior, so the solution is unique.
-
-> [!abstract] Proposition 2 (softmax solution).
->
-> The unique minimizer is
->
-> $$
-> \alpha^*_i(s,\tau)=\frac{\exp(s_i/\tau)}{\sum_j \exp(s_j/\tau)}.
-> $$
-
-Proof. [[lectures/2/notes#KKT|KKT]] stationarity gives $\tau(1+\log\alpha_i)-s_i+\lambda-\mu_i=0$.
-
-At optimality $\alpha_i>0$ so $\mu_i=0$; exponentiating yields $\alpha_i\propto e^{s_i/\tau}$ and normalization on $\Delta$ fixes the constant.
-
-> [!abstract] Corollary 3 (temperature limits).
->
-> As $\tau\downarrow 0$, $\alpha^*(s,\tau)$ converges to the uniform distribution over the set of maximizers $\arg\max_i s_i$ (which is the standard basis vector $e_k$ if the maximizer is unique). As $\tau\uparrow\infty$, $\alpha^*\to \tfrac{1}{n}\mathbf{1}$.
-
-## Fenchel–Young view
-
-Write attention as the regularized argmax
+At temperature $\tau>0$, consider
 
 $$
-\alpha^*(s)=\arg\max_{\alpha\in\Delta}\ \langle s,\alpha\rangle-\Omega(\alpha),
+\min_{\alpha\in\Delta_n}
+\left\{
+\tau\sum_{i=1}^n\alpha_i\log\alpha_i-s^\top\alpha
+\right\},
 $$
 
-with convex regularizer $\Omega$. Choices of $\Omega$ give different behaviors with convex losses and explicit solutions:
+with $0\log0=0$. Negative entropy is strictly convex on the simplex. The minimizer is unique, and its coordinates are positive because the one-sided derivative of $x\log x$ tends to $-\infty$ at zero.
 
-- Softmax: $\Omega(\alpha)=\tau\sum_i\alpha_i\log\alpha_i$ (dense, max‑entropy).
-- Sparsemax/entmax: $\Omega$ inducing exact zeros in $\alpha$ (sparse attention; convex objectives; closed‑form/provably convergent solvers). [@martins2022sparsecontinuousdistributions; @peters2019sparsesequencetosequencemodels]
-- Doubly‑stochastic attention: apply Sinkhorn to obtain row/column stochastic $W$ (OT connection; beneficial inductive biases). [@sander2022sinkformers]
+The equality-constrained stationarity equation is
 
-## geometry and convexity
+$$
+\tau(1+\log\alpha_i)-s_i+\lambda=0.
+$$
 
-- Input non‑convexity. As a function of $(q,k)$, scores are bilinear and the softmax mapping is non‑convex; standard transformers remain non‑convex in parameters.
-- Weight‑space convexity. For fixed scores, optimizing over $\alpha\in\Delta$ is convex; the output $y=\sum_i\alpha_i v_i$ lies in the convex hull of $\{v_i\}$ (the "probability cage"). [@richter2020normalizedattentionprobabilitycage]
+Exponentiating and enforcing $\sum_i\alpha_i=1$ gives
 
-## verification and robustness
+$$
+\alpha_i^*(s,\tau)
+=\frac{e^{s_i/\tau}}{\sum_j e^{s_j/\tau}}
+=\operatorname{softmax}(s/\tau)_i.
+$$
 
-Tight convex lower and concave upper bounds for softmax enable robustness verification with stronger certificates than linear relaxations; they integrate into $\alpha, \beta$‑CROWN/BaB verifiers.
+This is the gradient of the scaled log-partition function
 
-- Guarantees: convex surrogates train to global optimality for the surrogate model. [@ergen2022convexifyingtransformersimprovingoptimization]
-- Structure: choose $\Omega$ and constraints to promote sparsity, matching, or conservation (e.g., Sinkhorn) with principled convergence. [@martins2022sparsecontinuousdistributions; @sander2022sinkformers]
-- Analysis: convex duality exposes implicit biases (e.g., low‑rank/clustering) and yields interpretable formulations. [@sahiner2022unravelingattentionconvexduality]
-- Differentiation: optimization layers allow exact/implicit gradients with stable sensitivity. [@amos2017optnet]
+$$
+\operatorname{LSE}_\tau(s)=\tau\log\sum_j e^{s_j/\tau}.
+$$
+
+As $\tau\downarrow0$, the mass approaches the uniform distribution over the indices attaining $\max_i s_i$. If the maximum is unique, the limit is its basis vector. As $\tau\uparrow\infty$, the weights approach $\mathbf1/n$. [@gao2018propertiessoftmaxfunctionapplication; @blondel2019fenchelyoung]
+
+## Fenchel-Young prediction maps
+
+Let $\Omega$ be a proper closed convex regularizer on $\Delta_n$. Its regularized prediction correspondence is
+
+$$
+\widehat\alpha_\Omega(s)
+\in\underset{\alpha\in\Delta_n}{\arg\max}
+\left\{s^\top\alpha-\Omega(\alpha)\right\}.
+$$
+
+When the maximizer is unique, as it is for the regularizers below, this correspondence is a prediction map.
+
+The regularizer controls how probability mass sits on the simplex:
+
+- Shannon negative entropy, $\Omega(\alpha)=\tau\sum_i\alpha_i\log\alpha_i$, gives softmax and a dense solution.
+- The squared Euclidean regularizer, $\Omega(\alpha)=\tfrac12\|\alpha\|_2^2$, gives sparsemax, the Euclidean projection of $s$ onto the simplex.
+- Tsallis-entropy regularizers give the entmax family. Softmax and sparsemax appear at its two standard endpoints, while intermediate choices can produce sparse weights with a smoother support transition. [@blondel2019fenchelyoung; @peters2019sparsesequencetosequencemodels]
+
+The convexity is in $\alpha$ with $s$ held fixed. In a transformer, $s_i=q^\top k_i/\sqrt{d_h}$ is bilinear in the projected query and key. Learning those projections remains a nonconvex parameter problem.
+
+## output geometry
+
+With fixed values $v_1,\ldots,v_n$, any simplex-valued attention rule returns
+
+$$
+y=\sum_i\alpha_i v_i\in\operatorname{conv}\{v_1,\ldots,v_n\}.
+$$
+
+This convex-hull restriction is the probability-cage observation. It concerns one head's weighted average before the output projection and residual connection; it is not a bound on the whole transformer. [@richter2020normalizedattentionprobabilitycage]
+
+## matrix normalization
+
+Sinkhorn attention starts with a positive score matrix and alternates row and column rescaling toward prescribed marginals. For a square matrix with uniform marginals, the limit is doubly stochastic under the usual positivity conditions. That constraint lives at matrix level, not inside each row's simplex. Sinkformers use it as an architectural normalization, not as another scalar entropy regularizer. [@sander2022sinkformers]

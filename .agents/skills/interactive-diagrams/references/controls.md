@@ -2,11 +2,11 @@
 
 Keep the existing square segments, figure border token, and visible focus styling. Choose semantics by behavior before copying a component's visual classes.
 
-| Behavior | Control and state |
-| --- | --- |
-| Switch among related content panels | Native buttons with `role="tab"`, `aria-selected`, and panel relationships inside a named tablist |
-| Select exactly one parameter value | A named native radio group, styled as segments if needed |
-| Toggle an independent feature or optional highlight | A native button with `aria-pressed`, or a checkbox for a form value |
+| Behavior                                            | Control and state                                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Switch among related content panels                 | Native buttons with `role="tab"`, `aria-selected`, and panel relationships inside a named tablist |
+| Select exactly one parameter value                  | A named native radio group, styled as segments if needed                                          |
+| Toggle an independent feature or optional highlight | A native button with `aria-pressed`, or a checkbox for a form value                               |
 
 ## Tabs
 

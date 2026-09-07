@@ -406,6 +406,37 @@ test('activity summaries expose normalized pace intensity for run and swim', () 
   )
 })
 
+test('activity summaries preserve virtual overrides and explicit treadmill evidence', () => {
+  const { cache } = fixtures()
+  const day = iso(22)
+  cache.activities = {
+    '1': activity(1, 'VirtualRide', day, 1800, 15000),
+    '2': activity(2, 'VirtualRun', day, 1800, 5000),
+    '3': activity(3, 'Run', day, 1800, 5000, { trainer: true }),
+    '4': activity(4, 'Run', day, 1800, 5000, { name: 'Warm down Treadmill' }),
+    '5': activity(5, 'Ride', day, 1800, 15000, { trainer: true }),
+    '6': activity(6, 'Run', day, 1800, 5000),
+    '7': activity(7, 'Ride', day, 1800, 15000),
+  }
+  const payload = buildPayload(cache, null, null)
+  payload.details['7'].virtual = true
+  const analytics = buildAnalytics(cache, { activityDetails: payload.details })
+
+  assert.deepEqual(
+    analytics.activities.filter(activity => activity.virtual).map(activity => activity.id),
+    [1, 2, 7],
+  )
+  assert.deepEqual(
+    analytics.activities.filter(activity => activity.treadmill).map(activity => activity.id),
+    [3, 4],
+  )
+  const withoutDetails = buildAnalytics(cache)
+  assert.deepEqual(
+    withoutDetails.activities.filter(activity => activity.virtual).map(activity => activity.id),
+    [1, 2],
+  )
+})
+
 test('recovery block computes baselines, series, and flags from oura-merged daily', () => {
   const { cache, oura, weights } = fixtures()
   const a = buildAnalytics(cache, { oura, weights, since: '2026-05-12' })
@@ -822,7 +853,7 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
   assert.equal(heat.latestTemperatureC, 20)
   assert.equal(heat.heatDays14d, 0)
   assert.equal(heat.heatMinutes14d, 0)
-  assert.deepEqual(heat.sourceCounts, { core: 0, weatherkit: 15, strava: 1 })
+  assert.deepEqual(heat.sourceCounts, { core: 0, weatherkit: 15, strava: 1, 'manual-sauna': 0 })
   assert.equal(heat.activities.length, 16)
   assert.deepEqual(
     heat.activities.find(activity => activity.id === 114),
@@ -836,6 +867,7 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
       heatStrainIndex: null,
       source: 'strava',
       coreOrigin: null,
+      sauna: null,
       observedMinutes: 61,
       hotMinutes: 61,
       dose: 1,
@@ -924,7 +956,7 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
 
   const analytics = buildAnalytics(cache, { weather, garmin, since: date })
   const heat = analytics.heat
-  assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0 })
+  assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0, 'manual-sauna': 0 })
   assert.deepEqual(heat.coreSourceCounts, { app: 0, fit: 1 })
   assert.equal(heat.latestTemperatureC, 37.15)
   assert.equal(heat.heatMinutes14d, 30)
@@ -938,6 +970,7 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
     heatStrainIndex: 2.5,
     source: 'core',
     coreOrigin: 'fit',
+    sauna: null,
     observedMinutes: 61,
     hotMinutes: 30,
     dose: 0.5,
@@ -1023,7 +1056,7 @@ test('heat block prefers CORE app onboard samples over CORE FIT telemetry', () =
 
   const analytics = buildAnalytics(cache, { core, garmin, since: date })
   const heat = analytics.heat
-  assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0 })
+  assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0, 'manual-sauna': 0 })
   assert.deepEqual(heat.coreSourceCounts, { app: 1, fit: 0 })
   assert.equal(heat.activities[0].coreOrigin, 'app')
   assert.equal(heat.activities[0].temperatureC, 38.03)
@@ -1093,7 +1126,7 @@ test('run heat prefers zero-valued Garmin FIT strain and fills missing skin from
 
   const analytics = buildAnalytics(cache, { core, garmin, since: date })
   const heat = analytics.heat
-  assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0 })
+  assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0, 'manual-sauna': 0 })
   assert.deepEqual(heat.coreSourceCounts, { app: 0, fit: 1 })
   assert.equal(heat.activities[0].coreOrigin, 'fit')
   assert.equal(heat.activities[0].temperatureC, 37)

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-08-27 00:00:00 GMT-04:00
+modified: 2026-09-07 19:41:55 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,41 @@ title: are.na
 
 ## discourse
 
+- https://www.bloomberg.com/news/features/2026-05-07/us-midterm-elections-shaped-by-billionaires-like-elon-musk-george-soros -- How Billionaires Are Shaping the U.S. Midterm Elections
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [politics, billionaires]
+    - later: true
+- https://davidoks.blog/p/why-china-got-rich-and-india-didnt -- Why China got rich and India didn't
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [china, india, development]
+    - later: true
+- https://www.lesswrong.com/posts/2trvf5byng7caPsyx/optimal-timing-for-superintelligence-mundane-considerations -- Optimal Timing for Superintelligence: Mundane Considerations
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [superintelligence, timing]
+    - later: true
+- https://www.theatlantic.com/science/archive/2019/07/we-need-new-science-progress/594946 -- We Need a New Science of Progress
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [science, progress]
+    - later: true
+- https://www.lesswrong.com/posts/ySXuvJcqRindQwAk7/how-my-students-think-about-ai -- How My Students Think About AI
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [ai, education]
+    - later: true
+- https://www.lesswrong.com/posts/rZcyemEpBHgb2hqLP/ai-control-may-increase-existential-risk -- AI control may increase existential risk
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [ai control, existential risk]
+    - later: true
+- https://sfstandard.com/2023/02/23/armed-robbers-stormed-his-packed-san-francisco-coffee-shop-now-he-wants-action -- Armed Robbers Stormed His Packed San Francisco Coffee Shop. Now He Wants Action
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [san francisco, crime]
+    - later: true
 - https://www.lesswrong.com/posts/NG2AigxmBKLu9oCZE/arguments-for-p -- Arguments for P
   - [meta]:
     - date: 08/26/2026
@@ -623,6 +658,56 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/zetalyrae/status/2092464824919978485 -- Fernando Borretti on justified text
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [typography, css]
+    - later: true
+- https://x.com/_xjdr/status/2092606097119162873 -- X post by @xjdr
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [x, unavailable]
+    - later: true
+- https://x.com/_felipe/status/2092653743779069989 -- Felipe O. Carvalho on SIMD and loop unswitching
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [simd, compilers]
+    - later: true
+- https://x.com/nathancgy4/status/2092419228049535320 -- nathan chen on model architecture research
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [machine learning, research]
+    - later: true
+- https://x.com/victortaelin/status/2093005237296443458 -- Taelin on expert decision-making
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [decision making, expertise]
+    - later: true
+- https://x.com/SchrodingrsBrat/status/2093054503813603586 -- Sherry on intention and agency
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [agency, desire]
+    - later: true
+- https://x.com/nabeelqu/status/2093025756792180898 -- Nabeel Qureshi on an AI evaluation story
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [ai safety, evaluations]
+    - later: true
+- https://x.com/cdleary/status/2094878051238887834 -- Chris Lattner on Compilers 2.0
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [compilers, ai]
+    - later: true
+- https://x.com/sama/status/1984025727763935585 -- Sam Altman on GPT-6-7
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [openai, joke]
+    - later: true
+- https://x.com/danielfradin/status/2095612544677564477 -- Daniel Fradin on OpenAI's Astra film
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [openai, interfaces]
+    - later: true
 - https://x.com/vikhyatk/status/2086579948647747914 -- vik on air-gapped Arch Linux
   - [meta]:
     - date: 08/27/2026
@@ -2146,6 +2231,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.nowplacesf.com/publications -- Now Place: Publications
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [publishing, san francisco]
+    - later: true
+- https://www.dialedcoffee.com/ -- Dialed Performance Cold Brew Coffee
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [coffee, product]
+    - later: true
+- https://graciestudio.com/ -- Gracie
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [design, studio]
+    - later: true
 - https://www.are.na/christina/nyc-abwbcmydqpg -- Are.na: NYC
   - [meta]:
     - date: 08/25/2026
@@ -3042,6 +3142,41 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://nathan.rs/ -- Nathan Barry
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [personal site, writing]
+    - later: true
+- https://www.jade.flowers/ -- jade.flowers
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [personal site, design]
+    - later: true
+- https://brydon.ai/ -- Brydon Eastman
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [personal site, ai]
+    - later: true
+- https://nicoletwohy.substack.com/ -- Domicile by Nicole Twohy
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [newsletter, home]
+    - later: true
+- https://karaman.is/ -- Georgios Karamanis
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [personal site, research]
+    - later: true
+- https://a11ce.com/ -- a11ce
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [personal site, design]
+    - later: true
+- https://www.akesandberg.se/minerva -- Ake Sandberg: Minerva member profile
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [sociology, author]
+    - later: true
 - https://x.com/waitbutwhy -- Wait But Why
   - [meta]:
     - date: 08/26/2026
@@ -4125,6 +4260,11 @@ title: are.na
 
 ## places
 
+- https://mwlpdx.com/ -- Multnomah Whiskey Library
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [portland, whiskey]
+    - later: true
 - https://www.atlasobscura.com/places/bristol-basin -- Bristol Basin
   - [meta]:
     - date: 08/20/2026
@@ -4421,6 +4561,56 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.experimental-history.com/p/i-like-em-thick -- I like 'em thick
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [writing, literature]
+    - later: true
+- https://wattenberger.com/thoughts/code-is-a-medium-for-thought -- Code was our medium for thought
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [programming, thinking]
+    - later: true
+- https://newleftreview.org/sidecar/posts/unhappy-consciousness -- Unhappy Consciousness
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [rachel cusk, literature]
+    - later: true
+- https://tayiabr.wordpress.com/2014/06/22/how-to-write-with-style-by-kurt-vonnegut -- How To Write With Style by Kurt Vonnegut
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [writing, vonnegut]
+    - later: true
+- https://www.seangoedecke.com/how-to-keep-thinking -- How to keep thinking
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [thinking, software]
+    - later: true
+- https://everythingi.love/text/tropical-technologist/text.html -- Tropical Technologist
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [philippines, technology]
+    - later: true
+- https://paulgraham.com/speak.html -- Writing and Speaking
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [writing, speaking]
+    - later: true
+- https://josephthacker.com/personal/2026/07/22/its-important-to-say-things.html -- it's important to say things
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [communication, ambiguity]
+    - later: true
+- https://paulgraham.com/goodtaste.html -- Is There Such a Thing as Good Taste?
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [taste, writing]
+    - later: true
+- https://notebook.garnet.nyc/You-Should-Become-the-Shopkeeper -- You Should Become the Shopkeeper
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [urbanism, retail]
+    - later: true
 - https://oldster.substack.com/p/this-is-54-author-elizabeth-gilbert -- This is 54: Author Elizabeth Gilbert Responds to The Oldster Magazine Questionnaire
   - [meta]:
     - date: 08/25/2026
@@ -7470,6 +7660,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://thinkinginpython.com/index.html -- Thinking in Python
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [python, learning]
+    - later: true
 - https://courses.cs.washington.edu/courses/cse446/18wi/slides/p60-morgenstern.pdf -- Choose Identity Provider
   - [meta]:
     - date: 08/25/2026
@@ -7603,6 +7798,76 @@ title: are.na
   - view: list
   - json: true
 
+- https://transluce.org/scaling-activation-oracles -- Scaling Activation Oracles to Trillion-Parameter Models
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [interpretability, model evaluation]
+    - later: true
+- https://surya.website/rling-qwen-to-paint-with-code -- RL-ing Qwen to Paint With Code
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [reinforcement learning, code generation]
+    - later: true
+- https://pantheon.inc/research/introducing-rp1 -- Introducing Reinforced Planning (RP-1)
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [planning, reinforcement learning]
+    - later: true
+- https://www.businessinsider.com/amazon-starfish-ai-ultimate-source-product-information-marketplace-sellers-collection-2025-7 -- Amazon's Starfish project and AI product information
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [amazon, product data]
+    - later: true
+- https://www.empirical.health/blog/yc-startups-publishing-ai-research -- 20+ YC startups have recently published machine learning research
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [startups, research]
+    - later: true
+- https://seohong.me/blog/behavioral-cloning-mystery -- Behavioral cloning mystery
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [imitation learning, behavioral cloning]
+    - later: true
+- https://poolside.ai/pulse -- Pulse
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [models, metrics]
+    - later: true
+- https://www.jefftk.com/p/ai-tweets -- AI Tweets
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [ai, social media]
+    - later: true
+- https://www.anthropic.com/research/statistical-approach-to-model-evals -- A statistical approach to model evaluations
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [evaluations, statistics]
+    - later: true
+- https://www.coreauto.com/blog/how-our-data-shaped-neural-architecture-discovery-and-how-automation-can-reshape-the-future -- How data shaped neural architecture discovery
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [architecture search, agents]
+    - later: true
+- https://huggingface.co/blog/train-to-paint-with-code -- Training a coding model to paint watercolours with TRL and OpenEnv
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [code generation, reinforcement learning]
+    - later: true
+- https://openai.com/index/an-alien-mind -- An Alien Mind
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [openai, model behavior]
+    - later: true
+- https://openai.com/index/research-acceleration-view-inside-openai -- Research acceleration: a view inside OpenAI
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [openai, research]
+    - later: true
+- https://blog.redwoodresearch.org/p/how-will-we-update-about-scheming -- How will we update about scheming?
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [ai safety, scheming]
+    - later: true
 - https://x.com/giffmana/status/2086008351524008280 -- Lucas Beyer on Gemini pretraining curves
   - [meta]:
     - date: 08/27/2026
@@ -10788,6 +11053,21 @@ title: are.na
 
 ## opinions
 
+- https://nabeelqu.co/reflections-on-palantir -- Reflections on Palantir
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [palantir, defense]
+    - later: true
+- https://andrewwu.substack.com/p/i-dont-care-anymore-if-your-writing -- I don't care (anymore) if your writing got a Pangram false positive
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [ai writing, criticism]
+    - later: true
+- https://evanjconrad.com/posts/end-of-software -- The end of software
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [generative interfaces, software]
+    - later: true
 - https://fas.org/publication/tracking-hyperscale/ -- Tracking Hyperscale AI Data Center Growth with Satellite Imagery
   - [meta]:
     - date: 08/20/2026
@@ -11368,6 +11648,46 @@ title: are.na
 
 ## life is literature
 
+- https://ponnekanti.net/psychokinetics -- Psychokinetics
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [motivation, psychology]
+    - later: true
+- https://musings.suryamidha.com/san-francisco -- san francisco
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [san francisco, personal]
+    - later: true
+- https://livingalonealone.com/p/the-mountain-in-topanga -- the mountain in Topanga
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [nature, personal]
+    - later: true
+- https://jacobgw.com/blog/hiking/2026/08/08/trt-thru-hike.html -- Tahoe Rim Trail thru-hike: a trail journal
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [hiking, journal]
+    - later: true
+- https://jackieluo.com/bookshelf/formative-works -- Formative works
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [books, reading]
+    - later: true
+- https://victoriahebbert.substack.com/p/motherhood-is-not-the-end-of-an-intellectual -- Motherhood is not the end of an intellectual life
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [motherhood, intellectual life]
+    - later: true
+- https://mnqrls.substack.com/p/keeping-your-options-open-is-ruining -- Keeping Your Options Open is Ruining Your Life
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [options, decisions]
+    - later: true
+- https://www.astralcodexten.com/p/the-colors-of-her-coat -- The Colors Of Her Coat
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [fiction, literature]
+    - later: true
 - https://www.startingfromnix.com/p/if-experience-is-the-goal-then-you -- if experience is the goal, then you always win
   - [meta]:
     - date: 08/26/2026
@@ -12172,6 +12492,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://danluu.com/perf-opt -- There's no reason for software to be slow anymore
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [performance, software]
+    - later: true
+- https://lucumr.pocoo.org/2026/8/22/fast-hard-code -- Fast and Hard Code
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [programming, llms]
+    - later: true
+- https://queue.acm.org/doi/10.1145/3212477.3212479 -- C Is Not a Low-level Language
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [c, programming languages]
+    - later: true
+- https://laser-coder.net/articles/circular-reasoning/index.html -- Circular Reasoning in Unit Tests
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [testing, logic]
+    - later: true
+- https://go.dev/blog/swisstable -- Faster Go maps with Swiss Tables
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [go, hash tables]
+    - later: true
 - https://x.com/AndrewCurran_/status/2086567854850384054 -- Andrew Curran on an agent exploiting a gym-booking vulnerability
   - [meta]:
     - date: 08/27/2026
@@ -12978,6 +13323,31 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://cosmicfeeling.blogspot.com/2018/07/my-fascination-in-recent-years-is-area.html -- Peak Experiences
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [consciousness, experience]
+    - later: true
+- https://american-innocence.com/p/mortal-limits-humans-minds -- Mortal Limits, Humans Minds
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [aristotle, ai]
+    - later: true
+- https://integralaltruism.substack.com/p/unblocking-metta -- Unblocking Metta
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [buddhism, altruism]
+    - later: true
+- https://www.themathesontrust.org/papers/christianity/Weil-Reflections.pdf -- Reflections on the Right Use of Studies
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [simone weil, education]
+    - later: true
+- https://en.wikipedia.org/wiki/Non-identity_problem -- Non-identity problem
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [ethics, identity]
+    - later: true
 - https://x.com/maharshii/status/2086442755748970889 -- Maharshi links an X article
   - [meta]:
     - date: 08/27/2026
@@ -14657,6 +15027,21 @@ title: are.na
 
 ## finances
 
+- https://nav.al/rich -- How to Get Rich
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [wealth, investing]
+    - later: true
+- https://colossus.com/article/sarah-guo-conviction -- Sarah's Wager
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [venture capital, ai]
+    - later: true
+- https://www.dtvbook.com/ -- DTV
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [sequoia, venture capital]
+    - later: true
 - https://www.berkshirehathaway.com/ -- BERKSHIRE HATHAWAY INC.
   - [meta]:
     - date: 08/25/2026
@@ -14865,6 +15250,26 @@ title: are.na
 
 ## design
 
+- https://www.choicehacking.com/2025/11/27/the-hidden-psychology-of-netflix-thumbnails -- The Hidden Psychology of Netflix Thumbnails
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [psychology, thumbnails]
+    - later: true
+- https://eyemagazine.com/feature/article/jacqueline-casey-science-and-design -- Jacqueline Casey: Science and design
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [graphic design, history]
+    - later: true
+- https://rauno.me/notes/3 -- Rauno's notes, issue 3
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [interaction design, notes]
+    - later: true
+- https://www.canelectricaudio.com/product/taula-4-mr -- Taula 4 MR - Analogue Rotary Mixer
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [audio, product design]
+    - later: true
 - https://x.com/raffichill/status/2086459025755975789 -- Raffi on Adam Whitcroft's icon gallery
   - [meta]:
     - date: 08/27/2026
@@ -15437,6 +15842,16 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=k86eUj4hgdc -- Positional Encodings and Group Theory
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [transformers, mathematics]
+    - later: true
+- https://www.youtube.com/watch?v=1J2iN6I0gCQ -- Lessons in 3D
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [machine learning, 3d]
+    - later: true
 - https://www.youtube.com/watch?v=nLH7tn57es0 -- I went on 10 dates, here's what happened...
   - [meta]:
     - date: 08/27/2026
@@ -16147,6 +16562,41 @@ title: are.na
 
 ## tools
 
+- https://programasweights.com/claudish -- English to Claudish translator
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [translation, language model]
+    - later: true
+- https://deftwriting.com/console -- Deft AI Writing
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [writing, ai]
+    - later: true
+- https://yulia-volkova.github.io/reading-tracker -- Reading Tracker
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [reading, tracker]
+    - later: true
+- https://tree.icqr.com/ -- ICQR Magic Tree
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [qr code, 3d]
+    - later: true
+- https://www.gabrielvaldivia.com/timeline?date=2026-08-19 -- Timeline
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [timeline, visualization]
+    - later: true
+- https://texture.fayaz.workers.dev/ -- Textures
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [image filters, texture]
+    - later: true
+- https://replicas.dev/ -- Replicas
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [coding agents, cloud]
+    - later: true
 - https://angleref.com/ -- Angle Ref. Search
   - [meta]:
     - date: 08/20/2026
@@ -16267,6 +16717,16 @@ title: are.na
 
 ## arts
 
+- https://archive.org/details/theoriginalfilesofsomewindowswallpapers/bliss%20600dpi.jpg -- The original files of some Windows wallpapers
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [windows, photography]
+    - later: true
+- https://www.boldpreciousmetals.com/blogs/anna-may-wong-quarter -- The Anna May Wong quarter
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [anna may wong, currency]
+    - later: true
 - https://x.com/hamburgerai/status/2090683415104557406 -- Hamburgerai on travel-photo field notes
   - [meta]:
     - date: 08/27/2026
@@ -16612,6 +17072,46 @@ title: are.na
 
 ## resources
 
+- https://docs.google.com/document/d/195PTFrWOoY7yF0Xiv3rIKLui4aCjR4lND8cXciqCduQ/edit?tab=t.0#heading=h.s1w2gnb8dlsn -- LLL: liz's list of lists
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [lists, reading]
+    - later: true
+- https://top500.org/lists/top500/2026/06 -- June 2026 TOP500
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [supercomputers, ranking]
+    - later: true
+- https://www.gpuworld.org/ -- GPU World
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [gpu, computing]
+    - later: true
+- https://www.altium.com/education/students -- Altium Student Lab
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [electronics, students]
+    - later: true
+- https://en.wikipedia.org/wiki/Czechoslovak_Legion -- Czechoslovak Legion
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [history, military]
+    - later: true
+- https://en.wikipedia.org/wiki/Justin_O._Schmidt -- Justin O. Schmidt
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [entomology, pain]
+    - later: true
+- https://en.wikipedia.org/wiki/Reality_distortion_field -- Reality distortion field
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [steve jobs, culture]
+    - later: true
+- https://en.wikipedia.org/wiki/Thinking_Machines_Corporation -- Thinking Machines Corporation
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [computing, history]
+    - later: true
 - https://en.wikipedia.org/wiki/Battarrea -- Battarrea
   - [meta]:
     - date: 08/26/2026
@@ -18073,6 +18573,16 @@ title: are.na
 
 ## typography
 
+- https://displaay.net/ -- Displaay
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [type foundry, typefaces]
+    - later: true
+- https://www.kerls.dev/read/how-i-made-the-header-font-styling -- How I made the header font styling
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [css, headers]
+    - later: true
 - https://fontsinuse.com/uses/14164/massimo-vignelli-s-a-few-basic-typefaces -- Massimo Vignellis A Few Basic Typefaces
   - [meta]:
     - date: 08/25/2026
@@ -18218,6 +18728,11 @@ title: are.na
 
 ## lecture
 
+- https://www.youtube.com/watch?v=ncHmEUmJZf4 -- CppCon 2017: Designing a Fast, Efficient, Cache-friendly Hash Table
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [c++, hash tables]
+    - later: true
 - https://www.youtube.com/watch?v=Tt_hDVN5TZE -- Linus Lee Lecture for MIT Media Lab's Thinking With Sand
   - [meta]:
     - date: 07/03/2026
@@ -19701,6 +20216,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.yosefk.com/blog/how-fpgas-work-and-why-youll-buy-one.html -- How FPGAs work, and why you'll buy one
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [fpga, hardware]
+    - later: true
+- https://masterplan.substack.com/p/master-plan-justin-glibert-foundation -- Justin Glibert (Foundation)
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [hard tech, formal verification]
+    - later: true
 - https://www.aerospacemanufacturinganddesign.com/news/airbus-a320-design-digitalization-underway-032117/ -- Airbus A320 design digitalization underway
   - [meta]:
     - date: 08/20/2026
@@ -20720,6 +21245,46 @@ title: are.na
 
 ## organizations
 
+- https://public---domain.com/ -- PUBLIC DOMAIN
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [design, research]
+    - later: true
+- https://www.marleyx.com/desert -- Homebrew Neurotech Conference
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [neurotech, conference]
+    - later: true
+- https://www.asperaindustries.com/ -- Aspera Industries
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [aerospace, autonomy]
+    - later: true
+- https://ilovecreatives.com/ -- ilovecreatives
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [creative community, education]
+    - later: true
+- https://jepsen.io/ -- Jepsen
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [distributed systems, testing]
+    - later: true
+- https://circuitlaunch.com/ -- Circuit Launch
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [hardware, startups]
+    - later: true
+- https://www.neofactory.ai/ -- neofactory
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [manufacturing, ai]
+    - later: true
+- https://www.harpoon.vc/ -- Harpoon Ventures
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [venture capital, technology]
+    - later: true
 - https://www.edgeesmeralda.com/ -- Edge Esmeralda 2026 (May 30 - June 27)
   - [meta]:
     - date: 08/25/2026
@@ -21839,6 +22404,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://cdn.sanity.io/files/e4qjo92p/production/2d7fa58e3b820715664bcf42097e86c05070c161.pdf -- The Cerebras Wafer-Scale Architecture for Deep Learning
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [hardware, deep learning]
+    - later: true
+- https://mechinterpworkshop.com/poster-pdfs/660.pdf -- Latent Introspection - Cartoon V2
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [mechanistic interpretability, poster]
+    - later: true
+- https://alpo.ge/s6.pdf -- S6
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [mathematics, pdf]
+    - later: true
+- https://transformer-transformer.github.io/ -- Transformer Transformer: A Unified Model for Motion-Conditioned Robot Co-design
+  - [meta]:
+    - date: 09/07/2026
+    - tags: [robotics, transformers]
+    - later: true
 - https://alphaxiv.org/abs/2608.20319 -- Inducing Task Models from Computer-Use Traces
   - [meta]:
     - date: 08/26/2026

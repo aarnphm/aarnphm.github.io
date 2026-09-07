@@ -8,7 +8,9 @@ from datetime import date, datetime
 from pathlib import Path
 
 
-spec = importlib.util.spec_from_file_location('voice_memos', Path(__file__).with_name('import-voice-memos.py'))
+spec = importlib.util.spec_from_file_location(
+  'voice_memos', Path(__file__).with_name('import-voice-memos.py')
+)
 if spec is None or spec.loader is None:
   raise RuntimeError('Cannot load the voice memo importer')
 memos = importlib.util.module_from_spec(spec)
@@ -16,7 +18,7 @@ sys.modules[spec.name] = memos
 spec.loader.exec_module(memos)
 
 NOW = datetime(2026, 9, 6, 18, 0, tzinfo=memos.TORONTO)
-STREAM = '''---
+STREAM = """---
 title: stream
 ---
 
@@ -40,21 +42,32 @@ Training felt good today.
 ## Another entry
 
 Keep this writing.
-'''
+"""
 
 
 class VoiceMemoTests(unittest.TestCase):
   def test_existing_entry_and_repeat_import(self) -> None:
-    updated = memos.update_stream(STREAM, date(2026, 9, 5), ['20260905', 'second'], NOW)
+    updated = memos.update_stream(
+      STREAM, date(2026, 9, 5), ['20260905', 'second'], NOW
+    )
     expected = STREAM.replace('20260905.qta', '20260905.m4a').replace(
       '![[triathlon/memos/20260905.m4a]]',
       '![[triathlon/memos/20260905.m4a]]\n\n![[triathlon/memos/second.m4a]]',
     )
     self.assertEqual(updated, expected)
-    self.assertEqual(memos.update_stream(updated, date(2026, 9, 5), ['20260905', 'second'], NOW), updated)
+    self.assertEqual(
+      memos.update_stream(
+        updated, date(2026, 9, 5), ['20260905', 'second'], NOW
+      ),
+      updated,
+    )
 
-  def test_new_entry_has_next_number_and_preserves_previous_entries(self) -> None:
-    updated = memos.update_stream(STREAM, date(2026, 9, 6), ['first', 'second'], NOW)
+  def test_new_entry_has_next_number_and_preserves_previous_entries(
+    self,
+  ) -> None:
+    updated = memos.update_stream(
+      STREAM, date(2026, 9, 6), ['first', 'second'], NOW
+    )
     self.assertIn('description: training log 042', updated)
     self.assertIn('![[triathlon#2026-09-06#analytics]]', updated)
     self.assertIn('date: 2026-09-06 18:00:00 GMT-04:00', updated)
@@ -70,9 +83,24 @@ class VoiceMemoTests(unittest.TestCase):
       root = Path(temporary)
       source = root / '20260906_hash.qta'
       subprocess.run(
-        ['ffmpeg', '-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=0.2',
-         '-c:a', 'aac', '-metadata', 'creation_time=2026-09-06T02:00:00Z', '-f', 'mov', str(source)],
-        check=True, timeout=30,
+        [
+          'ffmpeg',
+          '-v',
+          'error',
+          '-f',
+          'lavfi',
+          '-i',
+          'sine=frequency=440:duration=0.2',
+          '-c:a',
+          'aac',
+          '-metadata',
+          'creation_time=2026-09-06T02:00:00Z',
+          '-f',
+          'mov',
+          str(source),
+        ],
+        check=True,
+        timeout=30,
       )
       source.with_suffix('.waveform').write_bytes(b'waveform fixture')
       recording = memos.probe(source)
@@ -81,19 +109,37 @@ class VoiceMemoTests(unittest.TestCase):
       name = memos.import_recording(recording, destination)
       self.assertTrue(name.startswith('20260905-220000-'))
       self.assertEqual(memos.sha256(source), recording.digest)
-      self.assertEqual(source.with_suffix('.waveform').read_bytes(), b'waveform fixture')
-      self.assertEqual({file.name for file in destination.iterdir()}, {f'{name}.m4a', f'{name}.peaks.json'})
+      self.assertEqual(
+        source.with_suffix('.waveform').read_bytes(), b'waveform fixture'
+      )
+      self.assertEqual(
+        {file.name for file in destination.iterdir()},
+        {f'{name}.m4a', f'{name}.peaks.json'},
+      )
       metadata = json.loads((destination / f'{name}.peaks.json').read_text())
       self.assertEqual(len(metadata['peaks']), 512)
       self.assertEqual(max(metadata['peaks']), 1)
       self.assertEqual(metadata['sourceSha256'], recording.digest)
-      before = {file.name: file.stat().st_mtime_ns for file in destination.iterdir()}
+      before = {
+        file.name: file.stat().st_mtime_ns for file in destination.iterdir()
+      }
       self.assertEqual(memos.import_recording(recording, destination), name)
-      self.assertEqual(before, {file.name: file.stat().st_mtime_ns for file in destination.iterdir()})
+      self.assertEqual(
+        before,
+        {file.name: file.stat().st_mtime_ns for file in destination.iterdir()},
+      )
       stream = root / 'content/stream.md'
       stream.write_text(STREAM)
-      command = [sys.executable, str(Path(memos.__file__)), '--date', '2026-09-05',
-                 '--repo', str(root), '--source', str(root)]
+      command = [
+        sys.executable,
+        str(Path(memos.__file__)),
+        '--date',
+        '2026-09-05',
+        '--repo',
+        str(root),
+        '--source',
+        str(root),
+      ]
       subprocess.run(command, check=True, capture_output=True, timeout=30)
       self.assertIn(f'![[triathlon/memos/{name}.m4a]]', stream.read_text())
       written = stream.stat().st_mtime_ns

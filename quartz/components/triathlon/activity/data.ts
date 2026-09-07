@@ -30,7 +30,6 @@ const isWahooVerification = (value: unknown): boolean => {
     (value.sourceDevice === null || typeof value.sourceDevice === 'string') &&
     finite(value.startOffsetS) &&
     (value.distanceM === null || finite(value.distanceM)) &&
-    (value.stravaNormalizedPower === null || finite(value.stravaNormalizedPower)) &&
     [null, 'strava', 'garmin'].includes(value.streamFallback as string | null) &&
     Object.keys(emptyWahooMetrics()).every(key => metrics[key] === null || finite(metrics[key])) &&
     Object.values(value.summarySources).every(source => source === 'wahoo')
@@ -38,6 +37,20 @@ const isWahooVerification = (value: unknown): boolean => {
 }
 
 export type DetailPayload = StravaDetailPayload
+
+const isActivitySources = (value: unknown): boolean =>
+  value === undefined ||
+  (Array.isArray(value) &&
+    value.every(
+      source =>
+        isRecord(source) &&
+        (source.provider === 'strava' ||
+          source.provider === 'garmin' ||
+          source.provider === 'wahoo') &&
+        typeof source.activityId === 'string' &&
+        (source.name === null || typeof source.name === 'string') &&
+        (source.fileName === null || typeof source.fileName === 'string'),
+    ))
 
 const isDetailIndex = (value: unknown): value is StravaDetailIndex =>
   isRecord(value) &&
@@ -394,6 +407,7 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     !/^\d{4}-\d{2}-\d{2}$/.test(typeof value.date === 'string' ? value.date : '') ||
     !isActivityKind(value.sport) ||
     !isWahooVerification(value.wahoo) ||
+    !isActivitySources(value.sources) ||
     !(value.device === null || isActivityDevice(value.device)) ||
     !isStaminaTrace(value.staminaTrace) ||
     (isRecord(value.staminaTrace) &&

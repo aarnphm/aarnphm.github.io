@@ -496,7 +496,8 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   heat: {
     key: 'heat',
     label: 'heat acclimatisation',
-    search: 'heat acclimatisation temperature weatherkit core strain hot minutes',
+    search:
+      'heat acclimatisation temperature weatherkit core strain hot minutes sauna passive htl humidity cooldown',
     render: (data, context) =>
       withPanelMount(buildHeatAcclimatisation(data, context), [
         root => mountPrimaryPanel('heat', root, data, context),
@@ -507,10 +508,13 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
         { label: 'status', value: data.heat.state },
         { label: 'acclimatisation', value: value(data.heat.currentPct, '%') },
         { label: 'hot minutes 14d', value: value(data.heat.heatMinutes14d, ' min') },
+        { label: 'sauna min', value: value(data.heat.saunaMinutes14d, ' min') },
+        { label: 'recorded sauna HTL', value: value(data.heat.saunaHtl14d, '', 1) },
       ],
       series: [
         { label: 'acclimatisation', values: data.heat.series.map(day => day.acclimatisationPct) },
         { label: 'hot minutes', values: data.heat.series.map(day => day.hotMinutes) },
+        { label: 'sauna HTL', values: finite(data.heat.series.map(day => day.saunaHtl)) },
         { label: 'temperature', values: finite(data.heat.series.map(day => day.temperatureC)) },
       ],
     }),

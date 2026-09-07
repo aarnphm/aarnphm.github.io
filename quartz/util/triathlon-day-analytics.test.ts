@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { OuraDayDetail } from '../plugins/stores/oura'
-import { buildAnalytics } from '../plugins/stores/analytics'
+import { buildAnalytics, type HeatDay } from '../plugins/stores/analytics'
 import { buildTriathlonDailyAnalytics, isTriathlonDailyAnalytics } from './triathlon-day-analytics'
 
 const date = '2026-08-16'
@@ -107,6 +107,8 @@ test('projects exact-date daily analytics without latest-value leakage', () => {
         source: 'core',
         observedMinutes: 74,
         hotMinutes: 0,
+        saunaMinutes: 0,
+        saunaHtl: null,
         dose: 0,
         acclimatisationPct: 100,
       },
@@ -122,6 +124,7 @@ test('projects exact-date daily analytics without latest-value leakage', () => {
         heatStrainIndex: 0.9,
         source: 'core',
         coreOrigin: 'app',
+        sauna: null,
         observedMinutes: 74,
         hotMinutes: 0,
         dose: 0,
@@ -192,4 +195,45 @@ test('rejects malformed nested daily analytics', () => {
     }),
     false,
   )
+})
+
+test('validates every daily heat source and preserves missing and zero sauna HTL', () => {
+  const sources: Record<NonNullable<HeatDay['source']>, true> = {
+    core: true,
+    weatherkit: true,
+    strava: true,
+    'manual-sauna': true,
+    mixed: true,
+  }
+  const heat = {
+    date,
+    temperatureC: null,
+    heatStrainIndex: null,
+    source: 'manual-sauna',
+    observedMinutes: 65,
+    hotMinutes: 0,
+    saunaMinutes: 65,
+    saunaHtl: 7.7,
+    dose: 0.77,
+    acclimatisationPct: 100,
+    coreOrigin: null,
+  }
+  const valid = (changes: Record<string, unknown>) =>
+    isTriathlonDailyAnalytics({
+      [date]: {
+        date,
+        body: null,
+        recovery: null,
+        sleep: null,
+        training: null,
+        heat: { ...heat, ...changes },
+      },
+    })
+  for (const source of [null, ...Object.keys(sources)]) assert.equal(valid({ source }), true)
+  for (const saunaHtl of [null, 0, 7.7]) assert.equal(valid({ saunaHtl }), true)
+  assert.equal(valid({ saunaMinutes: 0 }), true)
+  assert.equal(valid({ source: 'unknown' }), false)
+  assert.equal(valid({ saunaMinutes: '65' }), false)
+  assert.equal(valid({ saunaHtl: '7.7' }), false)
+  assert.equal(valid({ saunaHtl: Number.NaN }), false)
 })

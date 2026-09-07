@@ -2,6 +2,19 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { mapActivity, parseRunSplits } from './sync-strava'
 
+test('preserves explicit Strava trainer flags without inventing missing values', () => {
+  assert.equal(mapActivity({ id: 1, trainer: true }).trainer, true)
+  assert.equal(mapActivity({ id: 2, trainer: false }).trainer, false)
+  for (const raw of [{ id: 3 }, { id: 4, trainer: null }, { id: 5, trainer: 'false' }])
+    assert.equal(Object.hasOwn(mapActivity(raw), 'trainer'), false)
+})
+
+test('retains Strava maximum speed, including zero, and omits unavailable values', () => {
+  assert.equal(mapActivity({ id: 1, max_speed: 12.3 }).maxSpeed, 12.3)
+  assert.equal(mapActivity({ id: 1, max_speed: 0 }).maxSpeed, 0)
+  assert.equal(mapActivity({ id: 1 }).maxSpeed, undefined)
+})
+
 test('maps the exact device name from a Strava activity summary', () => {
   const activity = mapActivity({ id: 1, device_name: 'Garmin Forerunner 970' })
 

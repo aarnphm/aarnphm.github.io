@@ -10,11 +10,13 @@ import {
   TIRE_PRESSURE_BIKES,
   TIRE_PRESSURE_BALANCES,
   TIRE_PRESSURE_SOURCE_URL,
+  TIRE_PRESSURE_SETUPS,
   TIRE_PRESSURE_SURFACES,
   TIRE_PRESSURE_TIRES,
   TIRE_PRESSURE_WEIGHT_UNITS,
   TIRE_PRESSURE_WHEELS,
   tirePressureSurface,
+  tirePressureTire,
 } from '../../../util/triathlon-tire-pressure'
 
 interface TirePressureProps {
@@ -38,6 +40,7 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
     riderKg: morningWeight?.kg ?? null,
   }
   const defaultSurface = tirePressureSurface(DEFAULT_TIRE_PRESSURE_SELECTION.surface)
+  const defaultTire = tirePressureTire(defaultSelection.tire)
   const recommendation = calculateTirePressure(defaultSelection)
   return (
     <section
@@ -58,6 +61,7 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
       data-measured-tire-front-mm={defaultSelection.measuredTire.frontWidthMm}
       data-measured-tire-rear-mm={defaultSelection.measuredTire.rearWidthMm}
       data-tire={DEFAULT_TIRE_PRESSURE_SELECTION.tire}
+      data-setup={defaultSelection.setup}
       data-surface={DEFAULT_TIRE_PRESSURE_SELECTION.surface}
       data-speed-mph={DEFAULT_TIRE_PRESSURE_SELECTION.speedMph}
     >
@@ -208,7 +212,7 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
           </div>
         </fieldset>
         <fieldset class="tri-pressure-field" data-pressure-group="tire">
-          <legend data-i18n="tire setup">tire setup</legend>
+          <legend data-i18n="tire">tire</legend>
           <div class="tri-pressure-options">
             {TIRE_PRESSURE_TIRES.map(tire => (
               <label class="tri-pressure-option">
@@ -219,9 +223,51 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
                   data-pressure-field="tire"
                   checked={tire.id === DEFAULT_TIRE_PRESSURE_SELECTION.tire}
                 />
-                <span>{tire.label}</span>
-                <small>{tire.detail}</small>
+                <span data-i18n={tire.label}>{tire.label}</span>
+                <small data-i18n={tire.detail}>{tire.detail}</small>
               </label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset class="tri-pressure-field" data-pressure-group="setup">
+          <legend data-i18n="tire setup">tire setup</legend>
+          <div class="tri-pressure-options">
+            {TIRE_PRESSURE_SETUPS.map(setup => (
+              <label class="tri-pressure-option">
+                <input
+                  type="radio"
+                  name="tri-pressure-setup"
+                  value={setup.id}
+                  data-pressure-field="setup"
+                  aria-describedby={`tri-pressure-setup-note-${setup.id} tri-pressure-setup-availability`}
+                  checked={setup.id === defaultSelection.setup}
+                  disabled={!defaultTire.supportedSetups.includes(setup.id)}
+                />
+                <span data-i18n={setup.label}>{setup.label}</span>
+                <small data-i18n={setup.detail}>{setup.detail}</small>
+              </label>
+            ))}
+          </div>
+          <div class="tri-pressure-setup-note" aria-live="polite">
+            <p
+              id="tri-pressure-setup-availability"
+              class="tri-pressure-note"
+              data-pressure-setup-availability
+              data-i18n="Select the TLR tire profile for a tubeless setup."
+              hidden={defaultTire.supportedSetups.includes('tubeless')}
+            >
+              Select the TLR tire profile for a tubeless setup.
+            </p>
+            {TIRE_PRESSURE_SETUPS.map(setup => (
+              <p
+                id={`tri-pressure-setup-note-${setup.id}`}
+                class="tri-pressure-note"
+                data-pressure-setup-note={setup.id}
+                data-i18n={setup.note}
+                hidden={setup.id !== defaultSelection.setup}
+              >
+                {setup.note}
+              </p>
             ))}
           </div>
         </fieldset>
@@ -366,11 +412,11 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
         <a href={TIRE_PRESSURE_SOURCE_URL} target="_blank" rel="noopener noreferrer">
           SILCA field model
         </a>
-        <span>. Confirm the lower tire/rim limit with </span>
+        <span>. Check the selected setup with </span>
         <a href={PIRELLI_PRESSURE_SOURCE_URL} target="_blank" rel="noopener noreferrer">
           Pirelli
         </a>
-        <span>.</span>
+        <span> and respect the lower of the tire and rim maximum pressures.</span>
       </p>
     </section>
   )

@@ -146,6 +146,7 @@ export interface RawStravaActivity {
   id: number
   name: string
   sportType: string
+  trainer?: boolean
   distance: number
   movingTime: number
   elapsedTime: number
@@ -153,6 +154,7 @@ export interface RawStravaActivity {
   startDate: string
   startDateLocal: string
   averageSpeed: number
+  maxSpeed?: number
   averageHeartrate?: number
   maxHeartrate?: number
   averageWatts?: number
@@ -607,6 +609,7 @@ export interface ActivityAnalyses {
 
 export interface StravaActivityDetail {
   id: number
+  sources?: ActivitySource[]
   virtual?: boolean
   distanceSource?: 'garmin' | 'strava'
   wahoo?: WahooVerification
@@ -682,6 +685,13 @@ export interface StravaActivityDetail {
   analyses: ActivityAnalyses
 }
 
+export interface ActivitySource {
+  provider: 'strava' | 'garmin' | 'wahoo'
+  activityId: string
+  name: string | null
+  fileName: string | null
+}
+
 export interface WahooVerification {
   activityId: string
   fitPath: string
@@ -690,7 +700,6 @@ export interface WahooVerification {
   startOffsetS: number
   distanceM: number | null
   metrics: WahooMetrics
-  stravaNormalizedPower: number | null
   summarySources: Partial<Record<WahooSummaryDetailField, 'wahoo'>>
   streamFallback: 'strava' | 'garmin' | null
 }
@@ -1436,10 +1445,7 @@ export function applyActivityTracking(
     if (sport !== 'bike' && sport !== 'run') continue
     const match = matchGarminActivity(activity, sport, garmin, entry.garminActivityId)
     const garminDistance = match?.activity.distanceM
-    const distance =
-      garminDistance != null && Number.isFinite(garminDistance) && garminDistance > 0
-        ? garminDistance
-        : activity.distance
+    const distance = Number.isFinite(activity.distance) ? activity.distance : (garminDistance ?? 0)
     if (entry.virtual)
       activities[id] = {
         ...activity,
@@ -1479,10 +1485,17 @@ export function applyActivityTracking(
     if (wahooMatch && wahoo) {
       const projected = { ...activities[id] }
       for (const [field, metric] of WAHOO_SUMMARY_FIELDS) {
+        if (field === 'calories')
+          projected.calories ??= cache.activityDetails?.[id]?.calories ?? undefined
         const value = wahooMatch.activity.metrics[metric]
-        if (value != null && Number.isFinite(value)) projected[field] = value
+        if (projected[field] == null && value != null && Number.isFinite(value))
+          projected[field] = value
       }
-      if (wahooMatch.activity.metrics.avgPower != null) projected.deviceWatts = true
+      if (
+        (activity.averageWatts == null || activity.deviceWatts == null) &&
+        wahooMatch.activity.metrics.avgPower != null
+      )
+        projected.deviceWatts = true
       activities[id] = projected
       const base =
         streams[id] ?? (match ? selectStreams(undefined, match, garmin, activities[id]) : undefined)
@@ -1524,7 +1537,7 @@ export function resolveActivityHeartRate(
       stream: hasPositive(garminStream) ? garminStream : selectedHr,
     }
 
-  return { avgHr: stravaAvg, maxHr: stravaMax, stream: selectedHr }
+  return { avgHr: stravaAvg ?? garminAvg, maxHr: stravaMax ?? garminMax, stream: selectedHr }
 }
 
 const MILE_M = 1609.344
@@ -3644,15 +3657,15 @@ function projectDetail(
     distanceKm: round(a.distance / 1000, sport === 'swim' ? 3 : 1),
     movingTimeS: a.movingTime,
     elapsedTimeS: a.elapsedTime > 0 ? a.elapsedTime : a.movingTime,
-    maxSpeedKph: maxSpeedKph(timeline),
+    maxSpeedKph: a.maxSpeed == null ? maxSpeedKph(timeline) : round(a.maxSpeed * 3.6, 1),
     elevationM: ascentM,
-    avgHr: heartRate.avgHr,
-    maxHr: heartRate.maxHr,
-    avgWatts: a.averageWatts != null ? Math.round(a.averageWatts) : null,
-    npWatts: a.weightedAverageWatts != null ? Math.round(a.weightedAverageWatts) : null,
-    maxWatts: a.maxWatts != null ? Math.round(a.maxWatts) : null,
-    kilojoules: a.kilojoules != null ? Math.round(a.kilojoules) : null,
-    deviceWatts: a.deviceWatts === true,
+    avgHr: nullableRound(a.averageHeartrate ?? garmin?.avgHeartRate ?? heartRate.avgHr, 0),
+    maxHr: nullableRound(a.maxHeartrate ?? heartRate.maxHr, 0),
+    avgWatts: nullableRound(a.averageWatts ?? garmin?.avgPower ?? null, 0),
+    npWatts: nullableRound(a.weightedAverageWatts ?? garmin?.normalizedPower ?? null, 0),
+    maxWatts: nullableRound(a.maxWatts ?? garmin?.maxPower ?? null, 0),
+    kilojoules: nullableRound(a.kilojoules ?? garmin?.totalWorkKJ ?? null, 0),
+    deviceWatts: a.deviceWatts === true || (a.averageWatts == null && garmin?.avgPower != null),
     avgCadence:
       a.averageCadence != null
         ? Math.round(a.averageCadence)
@@ -4477,6 +4490,40 @@ export function buildPayload(
       activityCriticalPowers.get(id) ?? null,
     )
     const detail = details[id]
+    const stravaWatts = originalCache.streams?.[id]?.watts
+    if (detail.powerWithoutZeros && stravaWatts?.some(value => value > 0))
+      detail.powerWithoutZeros.avgWatts = avgPos(stravaWatts)
+    const fileName = (path: string | null): string | null => path?.split(/[\\/]/).at(-1) || null
+    detail.sources = [{ provider: 'strava', activityId: id, name: original.name, fileName: null }]
+    if (garminMatch)
+      detail.sources.push({
+        provider: 'garmin',
+        activityId: garminMatch.activity.id,
+        name: garminMatch.activity.name,
+        fileName: fileName(garminMatch.activity.sourceFile),
+      })
+    if (
+      garminTrainingEffectMatch &&
+      garminTrainingEffectMatch.activity.id !== garminMatch?.activity.id
+    )
+      detail.sources.push({
+        provider: 'garmin',
+        activityId: garminTrainingEffectMatch.activity.id,
+        name: garminTrainingEffectMatch.activity.name,
+        fileName: fileName(garminTrainingEffectMatch.activity.sourceFile),
+      })
+    if (wahooMatch) {
+      const source = wahooMatch.activity
+      detail.sources.push({
+        provider: 'wahoo',
+        activityId: source.id,
+        name: source.name,
+        fileName:
+          'path' in source.sourceFile
+            ? fileName(source.sourceFile.path)
+            : fileName(source.sourceFile.url.split(/[?#]/)[0]),
+      })
+    }
     if (
       trackingById.get(a.id)?.wahooFitPath &&
       wahooMatch &&
@@ -4491,10 +4538,13 @@ export function buildPayload(
         startOffsetS: (Date.parse(source.startDate) - Date.parse(original.startDate)) / 1_000,
         distanceM: source.distanceM,
         metrics: { ...source.metrics },
-        stravaNormalizedPower: original.weightedAverageWatts ?? null,
         summarySources: Object.fromEntries(
-          WAHOO_SUMMARY_FIELDS.flatMap(([, metric, field]) =>
-            source.metrics[metric] == null ? [] : [[field, 'wahoo']],
+          WAHOO_SUMMARY_FIELDS.flatMap(([rawField, metric, field]) =>
+            original[rawField] != null ||
+            (rawField === 'calories' && originalCache.activityDetails?.[id]?.calories != null) ||
+            source.metrics[metric] == null
+              ? []
+              : [[field, 'wahoo']],
           ),
         ),
         streamFallback: originalCache.streams?.[id]?.time?.length
@@ -4542,8 +4592,7 @@ export function buildPayload(
     }
     if (trackingById.get(a.id)?.virtual && garminMatch) {
       const metrics = garminMatch.activity.metrics
-      if (garminMatch.activity.distanceM != null && garminMatch.activity.distanceM > 0)
-        detail.distanceSource = 'garmin'
+      detail.distanceSource = Number.isFinite(original.distance) ? 'strava' : 'garmin'
       detail.elevationM = metrics.totalAscentM ?? detail.elevationM
       detail.descentM = metrics.totalDescentM ?? detail.descentM
     }
