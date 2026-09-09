@@ -19,6 +19,7 @@ import {
 import { parseTrackingBlock } from '../plugins/stores/tracking'
 import {
   applyManualActivityTracking,
+  buildStravaData,
   enrichActivityDevices,
   enrichCalculatedExerciseLoads,
   enrichCalculatedIntensityFactors,
@@ -29,6 +30,7 @@ import {
   enrichRunDynamics,
   enrichSwimMetrics,
   swimActivityIntervals,
+  type StravaDataSources,
 } from './strava-payload'
 import { swimLengthAverages } from './swim-metrics'
 
@@ -1456,4 +1458,82 @@ test('falls back to active time when intervals cover a fraction of the swim', ()
 
   assert.equal(payload.details['1'].swimPaceSPer100m, 160)
   assert.equal(payload.details['1'].swimPaceSource, 'active')
+})
+
+test('shared Strava data preserves lab zones, manual wind and fueling for embedded and full pages', () => {
+  const date = '2026-09-09'
+  const sources: StravaDataSources = {
+    strava: {
+      athleteId: 1,
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: Date.parse(`${date}T12:00:00Z`),
+      lastActivityStart: 0,
+      activities: {
+        '1': {
+          id: 1,
+          name: 'Fixture ride',
+          sportType: 'Ride',
+          distance: 10000,
+          movingTime: 1800,
+          elapsedTime: 1800,
+          totalElevationGain: 50,
+          startDate: `${date}T10:00:00Z`,
+          startDateLocal: `${date}T10:00:00Z`,
+          averageSpeed: 5.5,
+          averageHeartrate: 135,
+          averageWatts: 150,
+          weightedAverageWatts: 155,
+          deviceWatts: true,
+        },
+      },
+      zones: { hr: [120, 140, 160, 180], power: [100, 150, 200], ftp: 250 },
+    },
+    oura: null,
+    garmin: null,
+    wahoo: null,
+    apple: null,
+    core: null,
+    weather: null,
+  }
+  const tracking = {
+    activities: [],
+    fueling: [{ date, activityId: 1, caloriesConsumed: 0 }],
+    strength: [],
+    moves: [],
+    sauna: [],
+  }
+  const inputs = {
+    vo2labs: [{ date, value: 50, hrMax: 200, zonesHr: [100, 125, 150, 175] }],
+    weights: [
+      {
+        date,
+        weightLbs: null,
+        weightKg: null,
+        windKph: 0,
+        windDir: 'NW',
+        race: false,
+        event: null,
+      },
+    ],
+  }
+  const before = structuredClone(sources)
+  const { payload, analytics, generatedAt } = buildStravaData(sources, date, tracking, inputs)
+
+  assert.deepEqual(payload.zones.hr, [124, 149, 174, 199])
+  assert.equal(payload.health[date].windKph, 0)
+  assert.equal(payload.health[date].windDir, 'NW')
+  assert.equal(payload.details['1'].fueling?.caloriesConsumed, 0)
+  assert.equal(generatedAt, sources.strava?.lastSync)
+  assert.equal(analytics.activities.length, 1)
+  assert.ok(payload.dailyAnalytics[date])
+  assert.deepEqual(sources, before)
+
+  const revised = buildStravaData(
+    sources,
+    date,
+    { ...tracking, fueling: [{ date, activityId: 1, caloriesConsumed: 400 }] },
+    inputs,
+  )
+  assert.equal(revised.payload.details['1'].fueling?.caloriesConsumed, 400)
+  assert.equal(payload.details['1'].fueling?.caloriesConsumed, 0)
 })

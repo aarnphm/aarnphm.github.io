@@ -1,4 +1,6 @@
 import type { Root as HtmlRoot } from 'hast'
+import type { Processor } from 'unified'
+import { toHtml } from 'hast-util-to-html'
 import assert from 'node:assert/strict'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -7,8 +9,10 @@ import test from 'node:test'
 import { VFile } from 'vfile'
 import type { QuartzTransformerPluginInstance } from '../types/plugin'
 import type { BuildCtx } from '../util/ctx'
-import type { FilePath } from '../util/path'
+import { wikilink, wikilinkFromMarkdown } from '../extensions/micromark-extension-ofm-wikilinks'
+import { CodeViewer } from '../plugins/transformers/codeViewer'
 import { ProcessedContent } from '../plugins/vfile'
+import { isFilePath, type FilePath } from '../util/path'
 import {
   canReuseProcessedHtml,
   HTML_PARSE_CHUNK_SIZE,
@@ -166,4 +170,45 @@ test('processed content cache can be reset after source changes', async t => {
   resetProcessedContentCache()
   const reparsed = await parseMarkdown(testCtx(directory, 'second'), [fp])
   assert.equal(hasMarker(reparsed[0], 'second'), true)
+})
+
+test('editing a transcluded code file invalidates the unchanged Markdown parse', async t => {
+  const directory = await mkdtemp(join(tmpdir(), 'quartz-code-dependency-'))
+  t.after(async () => {
+    resetProcessedContentCache()
+    await rm(directory, { recursive: true, force: true })
+  })
+  const fp = join(directory, 'note.md')
+  const dependency = 'example.py'
+  if (!isFilePath(fp) || !isFilePath(dependency)) throw new Error('invalid fixture path')
+  await writeFile(fp, '![[example.py]]\n')
+  await writeFile(join(directory, 'example.py'), 'print("before")\n')
+  const ctx = testCtx(directory, 'code')
+  ctx.allFiles = [dependency]
+  ctx.cfg.plugins.transformers = [
+    {
+      name: 'Wikilinks',
+      markdownPlugins: () => [
+        function (this: Processor) {
+          const data = this.data()
+          ;(data.micromarkExtensions ??= []).push(wikilink())
+          ;(data.fromMarkdownExtensions ??= []).push(wikilinkFromMarkdown())
+        },
+      ],
+    },
+    CodeViewer(),
+  ]
+  resetProcessedContentCache()
+
+  const [first] = await parseMarkdown(ctx, [fp])
+  assert.deepEqual(first[1].data.codeDependencies, ['example.py'])
+  assert.match(toHtml(first[0]), /before/)
+  const [cached] = await parseMarkdown(ctx, [fp])
+  assert.equal(cached, first)
+
+  await writeFile(join(directory, 'example.py'), 'print("after dependency edit")\n')
+  const [rebuilt] = await parseMarkdown(ctx, [fp])
+  assert.notEqual(rebuilt, first)
+  assert.match(toHtml(rebuilt[0]), /after dependency edit/)
+  assert.doesNotMatch(toHtml(rebuilt[0]), /before/)
 })

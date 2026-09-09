@@ -284,7 +284,11 @@ function timedTransformer(ctx: BuildCtx, label: string, transformer: Transformer
 }
 
 type ProcessorCache = { cfg: BuildCtx['cfg']; md: QuartzMdProcessor; html: QuartzHtmlProcessor }
-type ProcessedContentCacheEntry = { signature: string; content: ProcessedContent }
+type ProcessedContentCacheEntry = {
+  signature: string
+  dependencySignature?: string
+  content: ProcessedContent
+}
 type ProcessedContentCacheState = {
   sourceSalt: string | undefined
   content: Map<FilePath, ProcessedContentCacheEntry>
@@ -518,14 +522,28 @@ async function syncProcessedContentCacheSource(ctx: BuildCtx): Promise<void> {
 }
 
 async function cachedProcessedContent(
+  ctx: BuildCtx,
   fp: FilePath,
 ): Promise<{ fp: FilePath; signature: string; content?: ProcessedContent }> {
   const signature = await fileStatSignature(fp)
   const cached = processedContentCache.content.get(fp)
-  if (cached?.signature === signature) {
+  if (
+    cached?.signature === signature &&
+    (cached.dependencySignature ?? '') === (await codeDependencySignature(ctx, cached.content))
+  ) {
     return { fp, signature, content: cached.content }
   }
   return { fp, signature }
+}
+
+async function codeDependencySignature(ctx: BuildCtx, content: ProcessedContent): Promise<string> {
+  const dependencies = content[1].data.codeDependencies ?? []
+  const signatures = await Promise.all(
+    dependencies.map(dependency =>
+      sourceFileSignature(path.resolve(ctx.argv.directory, dependency)),
+    ),
+  )
+  return signatures.join('|')
 }
 
 function filePathForProcessedContent(content: ProcessedContent): FilePath | undefined {
@@ -665,7 +683,7 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
   const log = new QuartzLogger(argv.verbose)
   const useCache = argv.watch
   await syncProcessedContentCacheSource(ctx)
-  const cached = useCache ? await Promise.all(fps.map(cachedProcessedContent)) : []
+  const cached = useCache ? await Promise.all(fps.map(fp => cachedProcessedContent(ctx, fp))) : []
   const cacheHits = cached.filter(entry => entry.content !== undefined).length
   const missSignatures = new Map<FilePath, string>()
   const cachedContent = new Map<FilePath, ProcessedContent>()
@@ -766,7 +784,8 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
       if (!fp) continue
       const signature = missSignatures.get(fp)
       if (!signature) continue
-      processedContentCache.content.set(fp, { signature, content })
+      const dependencySignature = await codeDependencySignature(ctx, content)
+      processedContentCache.content.set(fp, { signature, dependencySignature, content })
       cachedContent.set(fp, content)
     }
     res = fps.flatMap(fp => {

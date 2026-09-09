@@ -220,7 +220,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-08 20:08:13 GMT-04:00
+modified: 2026-09-09 16:41:03 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1415,6 +1415,13 @@ garmin: 24290193820
 exercise: Glute Bridge | 30s | 30s
 exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
 exercise: Single-Leg Glute Bridge to Abductor | 40s | 40s | 40s | 40s
+```
+
+```tracking
+activity: 20108229114
+garmin: 24302010541
+wahoo: [[triathlon/wahoo/26-09-09.fit]]
+virtual: true
 ```
 
 <!-- training plan start

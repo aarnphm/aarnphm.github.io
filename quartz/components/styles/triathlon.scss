@@ -7451,6 +7451,12 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   min-height: 0;
 }
 
+.tri-ana-weekly > .tri-cax-frame,
+.tri-ana-effort > .tri-cax-frame {
+  // Keep the endpoint marker and halo inside the block's paint containment.
+  padding-inline-end: 8px;
+}
+
 .tri-bodywt-plot {
   position: relative;
   flex: 1 1 auto;

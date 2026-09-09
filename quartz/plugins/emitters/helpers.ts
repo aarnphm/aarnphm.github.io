@@ -1,4 +1,4 @@
-import { createHash } from 'crypto'
+import { createHash, randomUUID } from 'crypto'
 import fs from 'fs'
 import path from 'path'
 import { Readable } from 'stream'
@@ -53,12 +53,6 @@ export async function removeWritten(
   await fs.promises.rm(pathToPage, { force: true })
 }
 
-function contentSize(content: WriteOptions['content']): number | undefined {
-  if (typeof content === 'string') return Buffer.byteLength(content)
-  if (Buffer.isBuffer(content)) return content.byteLength
-  return undefined
-}
-
 function contentCacheEntry(content: WriteOptions['content']): ContentCacheEntry | undefined {
   if (typeof content === 'string') {
     return {
@@ -90,48 +84,28 @@ async function shouldWrite(
   content: WriteOptions['content'],
   cacheEntry: ContentCacheEntry | undefined,
 ): Promise<boolean> {
-  if (cacheEntry) {
-    const previous = writtenContent.get(pathToPage)
-    if (previous) {
-      return (
-        previous.size !== cacheEntry.size ||
-        previous.kind !== cacheEntry.kind ||
-        previous.fingerprint !== cacheEntry.fingerprint
-      )
-    }
+  if (!cacheEntry) return true
+  const previous = writtenContent.get(pathToPage)
+  if (previous) {
+    return (
+      previous.size !== cacheEntry.size ||
+      previous.kind !== cacheEntry.kind ||
+      previous.fingerprint !== cacheEntry.fingerprint
+    )
   }
-
-  const size = contentSize(content)
-  if (size === undefined) return true
 
   try {
     const stat = await fs.promises.stat(pathToPage)
-    if (stat.size !== size) return true
+    if (stat.size !== cacheEntry.size) return true
     const existing = await fs.promises.readFile(pathToPage)
     const changed = !contentEquals(existing, content)
-    if (!changed && cacheEntry) {
+    if (!changed) {
       writtenContent.set(pathToPage, cacheEntry)
     }
     return changed
   } catch {
     return true
   }
-}
-
-function cachedContentStatus(
-  pathToPage: FilePath,
-  cacheEntry: ContentCacheEntry,
-): 'changed' | 'same' | undefined {
-  const previous = writtenContent.get(pathToPage)
-  if (!previous) return undefined
-  if (
-    previous.size !== cacheEntry.size ||
-    previous.kind !== cacheEntry.kind ||
-    previous.fingerprint !== cacheEntry.fingerprint
-  ) {
-    return 'changed'
-  }
-  return 'same'
 }
 
 function ensureOutputDir(dir: string): Promise<void> {
@@ -148,58 +122,49 @@ function ensureOutputDir(dir: string): Promise<void> {
   return pending
 }
 
-function canWriteCachedContent(content: WriteOptions['content']): content is string | Buffer {
-  return typeof content === 'string' || Buffer.isBuffer(content)
-}
-
 function cacheWrittenContent(pathToPage: FilePath, cacheEntry: ContentCacheEntry | undefined) {
   if (cacheEntry) {
     writtenContent.set(pathToPage, cacheEntry)
+  } else {
+    writtenContent.delete(pathToPage)
   }
 }
 
-function isCachedSame(status: ReturnType<typeof cachedContentStatus>): boolean {
-  return status !== undefined && status === 'same'
+async function writeOutputFile(
+  ctx: BuildCtx,
+  pathToPage: FilePath,
+  content: WriteOptions['content'],
+): Promise<void> {
+  await ensureOutputDir(path.dirname(pathToPage))
+  if (!ctx.incremental) {
+    await fs.promises.writeFile(pathToPage, content)
+    return
+  }
+
+  // Wrangler keeps serving during rebuilds, so readers must see complete files.
+  const temporary = `${pathToPage}.tmp-${randomUUID()}`
+  try {
+    await fs.promises.writeFile(temporary, content)
+    await fs.promises.rename(temporary, pathToPage)
+  } finally {
+    await fs.promises.rm(temporary, { force: true })
+  }
 }
 
 export const write = async ({ ctx, slug, ext, content }: WriteOptions): Promise<FilePath> => {
   const perf = new PerfTimer()
   const pathToPage = joinSegments(ctx.argv.output, slug + ext) as FilePath
-  const dir = path.dirname(pathToPage)
   const cacheEntry = ctx.incremental || ctx.argv.watch ? contentCacheEntry(content) : undefined
-  if (ctx.cleanOutput) {
-    await ensureOutputDir(dir)
-    await fs.promises.writeFile(pathToPage, content)
-    logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
-    return pathToPage
-  }
-  if (!ctx.incremental) {
-    await ensureOutputDir(dir)
-    await fs.promises.writeFile(pathToPage, content)
-    cacheWrittenContent(pathToPage, cacheEntry)
-    logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
-    return pathToPage
-  }
-
-  const cachedStatus = cacheEntry ? cachedContentStatus(pathToPage, cacheEntry) : undefined
-  if (isCachedSame(cachedStatus)) {
+  if (
+    ctx.incremental &&
+    !ctx.cleanOutput &&
+    !(await shouldWrite(pathToPage, content, cacheEntry))
+  ) {
     logBuildSpan(ctx.argv, 'write:skip', pathToPage, perf.elapsedMs())
     return pathToPage
   }
-  if (cachedStatus === 'changed' && canWriteCachedContent(content)) {
-    await ensureOutputDir(dir)
-    await fs.promises.writeFile(pathToPage, content)
-    cacheWrittenContent(pathToPage, cacheEntry)
-    logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
-    return pathToPage
-  }
-  if (!(await shouldWrite(pathToPage, content, cacheEntry))) {
-    logBuildSpan(ctx.argv, 'write:skip', pathToPage, perf.elapsedMs())
-    return pathToPage
-  }
-  await ensureOutputDir(dir)
-  await fs.promises.writeFile(pathToPage, content)
-  cacheWrittenContent(pathToPage, cacheEntry)
+  await writeOutputFile(ctx, pathToPage, content)
+  if (!ctx.cleanOutput) cacheWrittenContent(pathToPage, cacheEntry)
   logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
   return pathToPage
 }
@@ -212,14 +177,8 @@ export async function writeKnownChanged({
 }: KnownChangedWriteOptions): Promise<FilePath> {
   const perf = new PerfTimer()
   const pathToPage = joinSegments(ctx.argv.output, slug + ext) as FilePath
-  await ensureOutputDir(path.dirname(pathToPage))
-  if (ctx.cleanOutput) {
-    await fs.promises.writeFile(pathToPage, content)
-    logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
-    return pathToPage
-  }
-  await fs.promises.writeFile(pathToPage, content)
-  cacheWrittenContent(pathToPage, contentCacheEntry(content))
+  await writeOutputFile(ctx, pathToPage, content)
+  if (!ctx.cleanOutput) cacheWrittenContent(pathToPage, contentCacheEntry(content))
   logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
   return pathToPage
 }

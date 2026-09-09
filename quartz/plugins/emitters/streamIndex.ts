@@ -12,9 +12,8 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { renderProtectedEntryBody } from '../../components/stream/Entry'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
-import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
-import { FilePath, joinSegments, pathToRoot, type FullSlug } from '../../util/path'
+import { joinSegments, pathToRoot, type FullSlug } from '../../util/path'
 import { EncryptedPayload, encryptContent, resolveProtectedPassword } from '../../util/protected'
 import {
   buildStreamDayPathFromIso,
@@ -27,13 +26,13 @@ import {
   isProtectedEntry,
 } from '../../util/stream'
 import { generateStreamAtomFeed } from '../../util/stream-feed'
-import { buildStreamManifestGroup, type StreamManifestGroup } from '../../util/stream-manifest'
+import { buildStreamManifestGroup } from '../../util/stream-manifest'
 import {
-  buildStreamRouteTree,
+  buildStreamPageTree,
   cloneStreamEntries,
   rebaseStreamEntries,
 } from '../../util/stream-route-tree'
-import { write } from './helpers'
+import { removeWritten, write } from './helpers'
 import { renderedStreamEntries } from './streamRenderedText'
 
 const formatIsoAsYMD = (iso?: string | null): string | null => {
@@ -77,18 +76,12 @@ const renderStreamRoute = async (
     externalResources,
     cfg: ctx.cfg.configuration,
     children: [],
-    tree: streamData ? buildStreamRouteTree(streamData.entries, sourceTree) : sourceTree,
+    tree: streamData ? buildStreamPageTree(streamData.entries, sourceTree, slug) : sourceTree,
     allFiles,
   }
   const html = renderPage(ctx, slug, componentData, layout, externalResources, false)
   return write({ ctx, slug, ext: '.html', content: html })
 }
-
-type StreamRouteCache = Map<FullSlug, { hash: string; file: FilePath }>
-type StreamGroupCache = Map<
-  FullSlug,
-  { hash: string; file: FilePath; manifest: StreamManifestGroup | null }
->
 
 async function* processStreamIndex(
   ctx: BuildCtx,
@@ -96,8 +89,7 @@ async function* processStreamIndex(
   tree: Root,
   allFiles: QuartzPluginData[],
   resources: StaticResources,
-  routeCache: StreamRouteCache,
-  groupCache: StreamGroupCache,
+  emittedRoutes: Set<FullSlug>,
 ) {
   yield write({
     ctx,
@@ -125,7 +117,6 @@ async function* processStreamIndex(
 
   const visibleEntries = fileData!.streamData!.entries.filter(entry => !isDraftEntry(entry))
   const groups = groupStreamEntries(visibleEntries)
-  if (groups.length === 0) return
 
   const yearGroups = groupStreamEntriesByYear(visibleEntries)
   const legendPageLayout: ContentLayout = 'default'
@@ -158,16 +149,7 @@ async function* processStreamIndex(
     }
   }
 
-  const routeCacheEligible = ctx.argv.watch
   const routeFiles = await mapConcurrent(routeData, defaultIoConcurrency, async route => {
-    const routeKey = routeCacheEligible
-      ? hashContent({ entries: route.entries, title: route.title })
-      : ''
-    if (routeCacheEligible) {
-      const cached = routeCache.get(route.slug)
-      if (cached?.hash === routeKey) return cached.file
-    }
-
     const file = await renderStreamRoute(
       ctx,
       tree,
@@ -181,7 +163,6 @@ async function* processStreamIndex(
       resources,
       layout,
     )
-    if (routeCacheEligible) routeCache.set(route.slug, { hash: routeKey, file })
     return file
   })
   yield* routeFiles
@@ -229,19 +210,6 @@ async function* processStreamIndex(
     const titleDate = formatIsoAsYMD(isoSource) ?? formatIsoAsYMD(group.isoDate)
     const title = titleDate ?? fileData!.frontmatter?.title ?? 'stream'
 
-    const groupCacheEligible = ctx.argv.watch
-    const groupKey = groupCacheEligible
-      ? hashContent({
-          entries: group.entries,
-          title,
-          protected: group.entries.some(isProtectedEntry),
-        })
-      : ''
-    if (groupCacheEligible) {
-      const cached = groupCache.get(slug)
-      if (cached?.hash === groupKey) return { file: cached.file, manifest: cached.manifest }
-    }
-
     const rebasedEntries = rebaseStreamEntries(group.entries, slug, sourceSlug)
 
     const fileDataForGroup: QuartzPluginData = {
@@ -263,12 +231,16 @@ async function* processStreamIndex(
       externalResources,
       cfg: ctx.cfg.configuration,
       children: [],
-      tree: buildStreamRouteTree(rebasedEntries, tree),
+      tree: buildStreamPageTree(rebasedEntries, tree, slug),
       allFiles,
     }
 
     const renderGroupPage = () => {
-      componentData.tree = buildStreamRouteTree(fileDataForGroup.streamData?.entries ?? [], tree)
+      componentData.tree = buildStreamPageTree(
+        fileDataForGroup.streamData?.entries ?? [],
+        tree,
+        slug,
+      )
       return renderPage(ctx, slug, componentData, layout, externalResources, false)
     }
 
@@ -283,10 +255,10 @@ async function* processStreamIndex(
     }
 
     const result = {
+      slug,
       file: await write({ ctx, slug, ext: '.html', content: html }),
       manifest: manifestForRenderedGroup(group, html),
     }
-    if (groupCacheEligible) groupCache.set(slug, { hash: groupKey, ...result })
     return result
   })
 
@@ -299,12 +271,21 @@ async function* processStreamIndex(
   for (const result of groupFiles) {
     if (result) yield result.file
   }
+
+  const nextRoutes = new Set([
+    ...routeData.map(route => route.slug),
+    ...groupFiles.flatMap(result => (result ? [result.slug] : [])),
+  ])
+  for (const slug of emittedRoutes) {
+    if (!nextRoutes.has(slug)) await removeWritten(ctx, slug, '.html')
+  }
+  emittedRoutes.clear()
+  for (const slug of nextRoutes) emittedRoutes.add(slug)
 }
 
 export const StreamIndex: QuartzEmitterPlugin = () => {
   const Header = HeaderConstructor()
-  const routeCache: StreamRouteCache = new Map()
-  const groupCache: StreamGroupCache = new Map()
+  const emittedRoutes = new Set<FullSlug>()
   return {
     name: 'StreamIndex',
     getQuartzComponents() {
@@ -341,39 +322,21 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
         const data = file.data as QuartzPluginData
         if (data.slug !== 'stream' || !data.streamData) continue
 
-        yield* processStreamIndex(ctx, data, tree, allFiles, resources, routeCache, groupCache)
+        yield* processStreamIndex(ctx, data, tree, allFiles, resources, emittedRoutes)
       }
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
       const allFiles = contentDataFor(content)
-      const changedSlugs = new Set<string>()
-
-      for (const changeEvent of changeEvents) {
-        if (changeEvent.file) {
-          if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-            changedSlugs.add(changeEvent.file.data.slug!)
-          }
-          continue
-        }
-
-        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-          const changedPath = changeEvent.path
-          for (const [_, vf] of content) {
-            const deps = (vf.data.codeDependencies as string[] | undefined) ?? []
-            if (deps.includes(changedPath)) {
-              changedSlugs.add(vf.data.slug!)
-            }
-          }
-        }
-      }
-
-      if (!changedSlugs.has('stream')) return
+      if (
+        !changeEvents.some(event => event.type !== 'delete' && event.file?.data.slug === 'stream')
+      )
+        return
 
       for (const [tree, file] of content) {
         const data = file.data as QuartzPluginData
         const slug = data.slug!
         if (slug !== 'stream' || !data.streamData) continue
-        yield* processStreamIndex(ctx, data, tree, allFiles, resources, routeCache, groupCache)
+        yield* processStreamIndex(ctx, data, tree, allFiles, resources, emittedRoutes)
       }
     },
   }

@@ -2,7 +2,6 @@ import type { Root as HtmlRoot } from 'hast'
 import fs from 'node:fs/promises'
 import { Node } from 'unist'
 import type { TriathlonRenderData } from '../../components/triathlon/render-data'
-import type { GarminCache } from '../stores/garmin'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
 import { Cursor, TriathlonPage } from '../../components'
@@ -21,62 +20,24 @@ import {
 import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
-import { latestProviderSync } from '../../util/provider-sync'
 import { StaticResources } from '../../util/resources'
-import { readStravaCacheFile } from '../../util/strava-cache-file'
 import { serializeStravaDetails, type StravaDetailPayload } from '../../util/strava-detail'
-import {
-  appleCachePath,
-  applyManualActivityTracking,
-  coreBodyTemperatureCachePath,
-  enrichCalculatedExerciseLoads,
-  enrichCalculatedIntensityFactors,
-  enrichCalculatedTrainingEffects,
-  enrichActivityDevices,
-  enrichCoreBodyTemperature,
-  enrichRouteLessHeartRate,
-  enrichRunPaceZones,
-  enrichRunDynamics,
-  enrichSwimMetrics,
-  garminCachePath,
-  type LoadedStravaPayload,
-  ouraCachePath,
-  stravaCachePath,
-  wahooCachePath,
-  weatherCachePath,
-} from '../../util/strava-payload'
+import { loadStravaDataSync, type LoadedStravaPayload } from '../../util/strava-payload'
 import {
   triathlonActivityFeedRoutes,
   triathlonDaySlug,
   triathlonFeedScopeFromSlug,
 } from '../../util/triathlon-date-route'
-import { buildTriathlonDailyAnalytics } from '../../util/triathlon-day-analytics'
 import {
   parseTriathlonMaintenance,
   type TriathlonMaintenance,
 } from '../../util/triathlon-maintenance'
 import { buildTriathlonMarkdown } from '../../util/triathlon-markdown'
 import { buildStravaActivityIndex } from '../../util/triathlon-shortcut'
-import { loadTrackedWahooFits } from '../../util/wahoo-tracking'
-import {
-  ATHLETE,
-  buildAnalytics,
-  buildDataFeed,
-  hrZoneUppers,
-  parseVo2Lab,
-} from '../stores/analytics'
-import { AppleCache } from '../stores/apple'
-import {
-  parseCoreBodyTemperatureCache,
-  type CoreBodyTemperatureCache,
-} from '../stores/core-body-temperature'
+import { ATHLETE, buildDataFeed, parseVo2Lab } from '../stores/analytics'
 import { buildMatchedRides, emptyMatchedRides } from '../stores/matched-rides'
 import { buildMatchedRuns, emptyMatchedRuns } from '../stores/matched-runs'
-import { OuraCache } from '../stores/oura'
-import { applyActivityTracking, buildPayload, emptyHealth, StravaRawCache } from '../stores/strava'
 import { parseTrainingPlans } from '../stores/training'
-import { parseWahooCache, type WahooCache } from '../stores/wahoo'
-import { parseWeatherCache, WeatherCache } from '../stores/weather'
 import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../vfile'
 import { removeWritten, write } from './helpers'
 import { createOgImageGenerator } from './ogImage'
@@ -88,60 +49,6 @@ const TRIATHLON_DATA_CACHE_PATH = joinSegments(TRIATHLON_DATA_CACHE_DIR, 'data.j
 async function cacheDataFeed(content: string): Promise<void> {
   await fs.mkdir(TRIATHLON_DATA_CACHE_DIR, { recursive: true })
   await fs.writeFile(TRIATHLON_DATA_CACHE_PATH, content)
-}
-
-async function readCache(): Promise<StravaRawCache | null> {
-  return readStravaCacheFile(stravaCachePath)
-}
-
-async function readOura(): Promise<OuraCache | null> {
-  try {
-    return JSON.parse(await fs.readFile(ouraCachePath, 'utf8')) as OuraCache
-  } catch {
-    return null
-  }
-}
-
-async function readGarmin(): Promise<GarminCache | null> {
-  try {
-    return JSON.parse(await fs.readFile(garminCachePath, 'utf8')) as GarminCache
-  } catch {
-    return null
-  }
-}
-
-async function readWahoo(): Promise<WahooCache | null> {
-  try {
-    return parseWahooCache(JSON.parse(await fs.readFile(wahooCachePath, 'utf8')))
-  } catch {
-    return null
-  }
-}
-
-async function readApple(): Promise<AppleCache | null> {
-  try {
-    return JSON.parse(await fs.readFile(appleCachePath, 'utf8')) as AppleCache
-  } catch {
-    return null
-  }
-}
-
-async function readCoreBodyTemperature(): Promise<CoreBodyTemperatureCache | null> {
-  try {
-    return parseCoreBodyTemperatureCache(
-      JSON.parse(await fs.readFile(coreBodyTemperatureCachePath, 'utf8')),
-    )
-  } catch {
-    return null
-  }
-}
-
-async function readWeather(): Promise<WeatherCache | null> {
-  try {
-    return parseWeatherCache(JSON.parse(await fs.readFile(weatherCachePath, 'utf8')))
-  } catch {
-    return null
-  }
 }
 
 const isTriathlon = (data: QuartzPluginData): boolean => data.frontmatter?.layout === 'triathlon'
@@ -195,14 +102,6 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     content: ProcessedContent[],
     resources: StaticResources,
   ): AsyncGenerator<FilePath> {
-    const cache = await readCache()
-    const oura = await readOura()
-    const garmin = await readGarmin()
-    const wahooCache = await readWahoo()
-    const apple = await readApple()
-    const core = await readCoreBodyTemperature()
-    const weather = await readWeather()
-    const generatedAt = latestProviderSync(cache, oura, garmin, wahooCache, apple, core, weather)
     const nextTemporalSlugs = new Set<FullSlug>()
     const generateOgImage =
       ctx.argv.watch && !ctx.argv.force ? null : await createOgImageGenerator(ctx)
@@ -221,43 +120,21 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const since = file.data.frontmatter?.['strava']
       const maintenance = parseTriathlonMaintenance(file.data.frontmatter?.['maintenance'])
       const tracking = file.data.tracking
-      const wahoo = loadTrackedWahooFits(
-        wahooCache,
-        cache,
-        tracking?.activities ?? [],
+      const { payload, analytics, trackedCache, sources, generatedAt } = loadStravaDataSync(
+        typeof since === 'string' ? since : undefined,
+        tracking,
+        {
+          weights: tracking?.days,
+          events: tracking?.races,
+          dexa: file.data.frontmatter?.['dexa'],
+          vo2labs: file.data.frontmatter?.['vo2max'],
+        },
         ctx.argv.directory,
       )
+      const { strava: cache, oura, apple, garmin, weather } = sources
       const vo2labs = parseVo2Lab(file.data.frontmatter?.['vo2max'])
-      const latestVo2 = vo2labs.length ? vo2labs[vo2labs.length - 1] : null
-      const hrBoundsOverride = latestVo2 ? hrZoneUppers(latestVo2) : null
-      const payload = buildPayload(
-        cache,
-        oura,
-        garmin,
-        typeof since === 'string' ? since : undefined,
-        weather,
-        ATHLETE.ftp,
-        hrBoundsOverride ?? undefined,
-        undefined,
-        wahoo,
-        ATHLETE.hrMax,
-        ATHLETE.lt,
-        generatedAt,
-        tracking?.activities,
-      )
-      applyManualActivityTracking(payload, tracking, oura, weather, garmin)
-      for (const t of tracking?.days ?? [])
-        if (t.windKph != null) {
-          const h = payload.health[t.date] ?? emptyHealth()
-          payload.health[t.date] = { ...h, windKph: t.windKph, windDir: t.windDir ?? h.windDir }
-        }
-      enrichActivityDevices(payload, apple)
-      enrichRouteLessHeartRate(payload, apple)
-      enrichSwimMetrics(payload, apple, garmin)
-      enrichRunDynamics(payload, apple)
-      enrichCoreBodyTemperature(payload, core)
+      const latestVo2 = vo2labs.at(-1)
       const detailActivityIds = new Set(Object.keys(payload.details))
-      const trackedCache = applyActivityTracking(cache, garmin, tracking?.activities ?? [], wahoo)
       const matchedActivities = trackedCache
         ? Object.values(trackedCache.activities).filter(activity =>
             detailActivityIds.has(String(activity.id)),
@@ -269,37 +146,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const matchedRides = cache
         ? buildMatchedRides(matchedActivities, trackedCache?.streams ?? {})
         : emptyMatchedRides()
-      const analytics = buildAnalytics(trackedCache, {
-        oura,
-        apple,
-        core,
-        garmin,
-        weather,
-        weights: tracking?.days,
-        events: tracking?.races,
-        dexa: file.data.frontmatter?.['dexa'],
-        vo2labs: file.data.frontmatter?.['vo2max'],
-        ftp: ATHLETE.ftp,
-        powerCurve: {
-          sixWeeks: payload.powerCurveRef,
-          year: payload.powerCurveYearRef,
-          yearLabel: payload.powerCurveYear,
-          criticalPower: payload.criticalPower,
-          criticalPowerYear: payload.criticalPowerYear,
-          ftp: ATHLETE.ftp,
-          goalFtp: ATHLETE.goalFTP,
-        },
-        zones: payload.zones,
-        activityDetails: payload.details,
-        since: typeof since === 'string' ? since : undefined,
-        generatedAt,
-      })
-      enrichRunPaceZones(payload, analytics.distributions)
-      enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
-      enrichCalculatedExerciseLoads(payload)
-      enrichCalculatedTrainingEffects(payload)
-      const dailyAnalytics = buildTriathlonDailyAnalytics(analytics, oura?.details, payload.details)
-      const renderPayload: LoadedStravaPayload = { ...payload, dailyAnalytics }
+      const dailyAnalytics = payload.dailyAnalytics
+      const renderPayload = payload
       const detailPayload: StravaDetailPayload = {
         details: payload.details,
         swimTrend: payload.swimTrend,

@@ -2,7 +2,7 @@
 date: '2025-08-20'
 description: Vector length, the triangle inequality, dual norms, and why finite-dimensional norms are equivalent.
 id: norm
-modified: 2026-09-08 09:12:38 GMT-04:00
+modified: 2026-09-09 09:16:53 GMT-04:00
 tags:
   - math
 title: norm
@@ -14,11 +14,11 @@ A norm measures the length of a vector. It also measures distance, since the dis
 >
 > On a vector space $X$ over $\mathbb F\in\{\mathbb R,\mathbb C\}$, a norm is a map $N:X\to[0,\infty)$ satisfying
 >
-> | property              | statement             |
-> | --------------------- | --------------------- | ------- | ----- |
-> | positive definiteness | $N(x)=0\iff x=0$      |
-> | absolute homogeneity  | $N(\lambda x)=        | \lambda | N(x)$ |
-> | triangle inequality   | $N(x+y)\le N(x)+N(y)$ |
+> | property              | statement                               |
+> | --------------------- | --------------------------------------- |
+> | positive definiteness | $N(x)=0\iff x=0$                        |
+> | absolute homogeneity  | $N(\lambda x)=\lvert\lambda\rvert N(x)$ |
+> | triangle inequality   | $N(x+y)\le N(x)+N(y)$                   |
 >
 > These hold for all $x,y\in X$ and $\lambda\in\mathbb F$. The usual notation is $\lVert x\rVert=N(x)$.
 

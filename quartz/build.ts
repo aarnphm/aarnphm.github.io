@@ -3,11 +3,12 @@ import { Mutex } from 'async-mutex'
 import chokidar from 'chokidar'
 import { GlobbyFilterFunction, isGitIgnored } from 'globby'
 import { minimatch } from 'minimatch'
+import { once } from 'node:events'
 import { stat } from 'node:fs/promises'
 import path from 'path'
 import sourceMapSupport from 'source-map-support'
 import { styleText } from 'util'
-import cfg from '../quartz.config'
+import type { QuartzConfig } from './cfg'
 import { AGENT_SKILLS_SOURCE_DIRECTORY } from './plugins/emitters/agent-skills'
 import { contentAssetClaims } from './plugins/emitters/assets'
 import { resetWriteCache } from './plugins/emitters/helpers'
@@ -81,6 +82,7 @@ type BuildData = {
   contentMap: Map<FilePath, ProcessedContent>
   pending: PendingChanges
   agentSkillsPending: PendingChanges
+  disposed: boolean
 }
 
 type WatchRuntime = { dispose(): Promise<void> }
@@ -157,7 +159,8 @@ async function cleanOutputForBuild(
   console.log(`Cleaned \`${ctx.argv.output}\` in ${perf.timeSince('clean')}`)
 }
 
-async function buildQuartz(
+export async function buildQuartz(
+  config: QuartzConfig,
   argv: Argv,
   mut: Mutex,
   clientRefresh: () => void,
@@ -181,7 +184,7 @@ async function buildQuartz(
   const ctx: BuildCtx = {
     buildId: randomIdNonSecure(),
     argv,
-    cfg,
+    cfg: config,
     allSlugs: [],
     allFiles: [],
     incremental: false,
@@ -190,9 +193,9 @@ async function buildQuartz(
 
   const perf = new PerfTimer()
 
-  const pluginCount = Object.values(cfg.plugins).flat().length
+  const pluginCount = Object.values(config.plugins).flat().length
   const pluginNames = (key: 'transformers' | 'filters' | 'emitters') =>
-    cfg.plugins[key].map(plugin => plugin.name)
+    config.plugins[key].map(plugin => plugin.name)
   if (argv.verbose) {
     console.log(`Loaded ${pluginCount} plugins`)
     console.log(`  Transformers: ${pluginNames('transformers').join(', ')}`)
@@ -200,12 +203,14 @@ async function buildQuartz(
     console.log(`  Emitters: ${pluginNames('emitters').join(', ')}`)
   }
 
-  let initialContent: ProcessedContent[] = []
+  const initialContent = new Map<FilePath, ProcessedContent>()
+  let watching: WatchRuntime | undefined
   const release = await mut.acquire()
   try {
     emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason })
+    if (argv.watch) watching = await startWatching(ctx, mut, clientRefresh, initialContent)
     perf.addEvent('glob')
-    const allFiles = await glob('**', argv.directory, cfg.configuration.ignorePatterns)
+    const allFiles = await glob('**', argv.directory, config.configuration.ignorePatterns)
     const markdownPaths = allFiles.filter(isMarkdownPath).sort()
     console.log(
       `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,
@@ -217,11 +222,12 @@ async function buildQuartz(
 
     const parsedFiles = await parseMarkdown(ctx, filePaths)
     const filteredContent = filterContentResult(ctx, parsedFiles).published
-    initialContent = filteredContent
+    for (const [fp, content] of indexContent(filteredContent)) initialContent.set(fp, content)
 
     await emitContent(ctx, filteredContent)
     await writeCurrentOutputAssetManifest(ctx)
     delete ctx.outputAssetPreserved
+    ctx.incremental = argv.watch
     console.log(
       styleText('green', `Done processing ${markdownPaths.length} files in ${perf.timeSince()}`),
     )
@@ -232,6 +238,7 @@ async function buildQuartz(
       elapsedMs: perf.elapsedMs(),
     })
   } catch (err) {
+    await watching?.dispose()
     emitQuartzDevEvent({
       type: 'build:error',
       epoch: ctx.buildId,
@@ -242,17 +249,14 @@ async function buildQuartz(
     release()
   }
 
-  if (argv.watch) {
-    ctx.incremental = true
-    return startWatching(ctx, mut, clientRefresh, initialContent)
-  }
+  return watching
 }
 
 async function startWatching(
   ctx: BuildCtx,
   mut: Mutex,
   clientRefresh: () => void,
-  initialContent: ProcessedContent[],
+  contentMap: Map<FilePath, ProcessedContent>,
 ): Promise<WatchRuntime> {
   const { argv } = ctx
   const ignored = await createIgnoredFilter(ctx)
@@ -260,9 +264,10 @@ async function startWatching(
     ctx,
     mut,
     ignored,
-    contentMap: indexContent(initialContent),
+    contentMap,
     pending: new Map(),
     agentSkillsPending: new Map(),
+    disposed: false,
   }
 
   const watcher = chokidar.watch('.', {
@@ -284,7 +289,7 @@ async function startWatching(
     }
   }
   const enqueue = async (fp: string, type: ChangeEvent['type']) => {
-    if (buildData.ignored(fp)) return
+    if (buildData.disposed || buildData.ignored(fp)) return
     const normalized = toPosixPath(fp) as FilePath
     if (type === 'delete') {
       watchedSignatures.delete(normalized)
@@ -293,6 +298,7 @@ async function startWatching(
       if (watchedSignatures.get(normalized) === signature) return
       watchedSignatures.set(normalized, signature)
     }
+    if (buildData.disposed) return
     buildData.pending.set(normalized, type)
     void requestRebuild(queue, clientRefresh, buildData)
   }
@@ -308,6 +314,7 @@ async function startWatching(
   })
   const agentSkillsQueue: RebuildQueue = { running: false, requested: false }
   const enqueueAgentSkills = (fp: string, type: ChangeEvent['type']) => {
+    if (buildData.disposed) return
     buildData.agentSkillsPending.set(toPosixPath(fp) as FilePath, type)
     void requestAgentSkillsRebuild(agentSkillsQueue, clientRefresh, buildData)
   }
@@ -316,8 +323,13 @@ async function startWatching(
     .on('change', fp => enqueueAgentSkills(fp, 'change'))
     .on('unlink', fp => enqueueAgentSkills(fp, 'delete'))
 
+  await Promise.all([once(watcher, 'ready'), once(agentSkillsWatcher, 'ready')])
+
   return {
     async dispose() {
+      buildData.disposed = true
+      buildData.pending.clear()
+      buildData.agentSkillsPending.clear()
       await Promise.all([watcher.close(), agentSkillsWatcher.close()])
     },
   }
@@ -353,7 +365,7 @@ async function requestRebuild(
   if (queue.running) return
   queue.running = true
   try {
-    while (queue.requested) {
+    while (queue.requested && !buildData.disposed) {
       queue.requested = false
       const pending: PendingChanges = new Map(buildData.pending)
       buildData.pending.clear()
@@ -373,7 +385,7 @@ async function requestAgentSkillsRebuild(
   if (queue.running) return
   queue.running = true
   try {
-    while (queue.requested) {
+    while (queue.requested && !buildData.disposed) {
       queue.requested = false
       const pending: PendingChanges = new Map(buildData.agentSkillsPending)
       buildData.agentSkillsPending.clear()
@@ -395,6 +407,7 @@ async function rebuildAgentSkills(
   let shouldRefresh = false
 
   try {
+    if (buildData.disposed) return
     ctx.buildId = buildId
     emitQuartzDevEvent({ type: 'build:start', epoch: buildId, reason: 'content' })
 
@@ -435,6 +448,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
   const incremental = ctx.incremental && pending.size > 0 && contentMap.size > 0
 
   try {
+    if (buildData.disposed) return
     ctx.buildId = buildId
     emitQuartzDevEvent({ type: 'build:start', epoch: buildId, reason: 'content' })
 
@@ -495,6 +509,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
 export { isStyleOnlySourceChange } from './plugins/emitters/component-resources/change-classifier'
 
 export async function buildStyles(argv: Argv, mut: Mutex, changedPaths: FilePath[]) {
+  const { default: cfg } = await import('../quartz.config')
   const ctx: BuildCtx = {
     buildId: randomIdNonSecure(),
     argv,
@@ -531,7 +546,8 @@ export async function buildStyles(argv: Argv, mut: Mutex, changedPaths: FilePath
 
 export default async (argv: Argv, mut: Mutex, clientRefresh: () => void, reason?: BuildReason) => {
   try {
-    return await buildQuartz(argv, mut, clientRefresh, reason)
+    const { default: cfg } = await import('../quartz.config')
+    return await buildQuartz(cfg, argv, mut, clientRefresh, reason)
   } catch (err) {
     trace('\nExiting Quartz due to a fatal error', err as Error)
   }

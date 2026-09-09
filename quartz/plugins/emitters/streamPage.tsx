@@ -12,7 +12,7 @@ import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { pathToRoot } from '../../util/path'
 import { StaticResources } from '../../util/resources'
-import { buildStreamRouteTree, cloneStreamEntries } from '../../util/stream-route-tree'
+import { buildStreamPageTree, cloneStreamEntries } from '../../util/stream-route-tree'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
@@ -53,7 +53,7 @@ async function processStreamPage(
     externalResources,
     cfg,
     children: [],
-    tree: streamData ? buildStreamRouteTree(routeEntries, tree) : tree,
+    tree: streamData ? buildStreamPageTree(routeEntries, tree, slug) : tree,
     allFiles,
   }
 
@@ -113,28 +113,10 @@ export const StreamPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
       const allFiles = contentDataFor(content)
-      const changedSlugs = new Set<string>()
-
-      for (const changeEvent of changeEvents) {
-        if (changeEvent.file) {
-          if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-            changedSlugs.add(changeEvent.file.data.slug!)
-          }
-          continue
-        }
-
-        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-          const changedPath = changeEvent.path
-          for (const [_, vf] of content) {
-            const deps = (vf.data.codeDependencies as string[] | undefined) ?? []
-            if (deps.includes(changedPath)) {
-              changedSlugs.add(vf.data.slug!)
-            }
-          }
-        }
-      }
-
-      if (!changedSlugs.has('stream')) return
+      if (
+        !changeEvents.some(event => event.type !== 'delete' && event.file?.data.slug === 'stream')
+      )
+        return
 
       for (const [tree, file] of content) {
         const data = file.data as QuartzPluginData

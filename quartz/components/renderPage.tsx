@@ -1549,7 +1549,12 @@ export function transcludeFinal(
         const payload = loadStravaPayloadSync(
           typeof since === 'string' ? since : undefined,
           page.tracking,
-          {},
+          {
+            weights: page.tracking?.days,
+            events: page.tracking?.races,
+            dexa: page.frontmatter?.['dexa'],
+            vo2labs: page.frontmatter?.['vo2max'],
+          },
           componentData.ctx?.argv.directory,
         )
         const activities = comparisonIds.flatMap(activityId => {

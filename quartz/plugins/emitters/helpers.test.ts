@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict'
-import { mkdtemp, rm, stat } from 'node:fs/promises'
+import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { Readable } from 'node:stream'
 import test from 'node:test'
 import type { QuartzConfig } from '../../cfg'
 import type { BuildCtx } from '../../util/ctx'
-import { resetWriteCache, write } from './helpers'
+import { resetWriteCache, write, writeKnownChanged } from './helpers'
 
 const testTheme = {
   typography: { header: 'system-ui', body: 'system-ui', code: 'monospace' },
@@ -124,4 +125,65 @@ test('binary write cache tracks unchanged and changed buffers', async () => {
     await rm(output, { recursive: true, force: true })
     resetWriteCache()
   }
+})
+
+test('incremental readers keep the complete old file until its replacement is ready', async t => {
+  const output = await mkdtemp(path.join(tmpdir(), 'quartz-write-atomic-'))
+  t.after(async () => {
+    await rm(output, { recursive: true, force: true })
+    resetWriteCache()
+  })
+  const buildCtx = ctx(output)
+  buildCtx.argv.watch = true
+  const file = await write({ ctx: buildCtx, slug: 'page', ext: '.html', content: 'old page' })
+  buildCtx.incremental = true
+  const resume = Promise.withResolvers<void>()
+  const paused = Promise.withResolvers<void>()
+  const content = Readable.from(
+    (async function* () {
+      yield 'new '
+      paused.resolve()
+      await resume.promise
+      yield 'page'
+    })(),
+  )
+  const pending = write({ ctx: buildCtx, slug: 'page', ext: '.html', content })
+  try {
+    await paused.promise
+    assert.equal(await readFile(file, 'utf8'), 'old page')
+  } finally {
+    resume.resolve()
+    await pending
+  }
+  assert.equal(await readFile(file, 'utf8'), 'new page')
+  assert.deepEqual(await readdir(output), ['page.html'])
+  await write({ ctx: buildCtx, slug: 'page', ext: '.html', content: 'old page' })
+  assert.equal(await readFile(file, 'utf8'), 'old page')
+})
+
+test('failed incremental writes preserve the published file and remove temporary output', async t => {
+  const output = await mkdtemp(path.join(tmpdir(), 'quartz-write-atomic-'))
+  t.after(async () => {
+    await rm(output, { recursive: true, force: true })
+    resetWriteCache()
+  })
+  const buildCtx = ctx(output)
+  const file = await write({ ctx: buildCtx, slug: 'page', ext: '.html', content: 'old page' })
+  buildCtx.incremental = true
+  const content = Readable.from(
+    (async function* () {
+      yield 'incomplete '
+      throw new Error('interrupted source')
+    })(),
+  )
+  await assert.rejects(
+    write({ ctx: buildCtx, slug: 'page', ext: '.html', content }),
+    /interrupted source/,
+  )
+  assert.equal(await readFile(file, 'utf8'), 'old page')
+  assert.deepEqual(await readdir(output), ['page.html'])
+
+  await writeKnownChanged({ ctx: buildCtx, slug: 'page', ext: '.html', content: 'recovered page' })
+  assert.equal(await readFile(file, 'utf8'), 'recovered page')
+  assert.deepEqual(await readdir(output), ['page.html'])
 })
