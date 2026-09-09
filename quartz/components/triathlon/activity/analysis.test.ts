@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { analysisChartSelectionBounds } from '../../../util/triathlon-card'
-import { activityScrubElapsedIndexAt, activityScrubIndexAt } from './analysis'
+import { activityScrubCursorX, activityScrubElapsedIndexAt, activityScrubIndexAt } from './analysis'
 
 const routeLessSamples = [
   { d: 0, elapsedS: 0 },
@@ -30,6 +30,16 @@ test('linked activity charts synchronize samples by elapsed time', () => {
   assert.equal(activityScrubElapsedIndexAt(distanceSamples, 900), 2)
   assert.equal(activityScrubElapsedIndexAt(distanceSamples, 2_000), 3)
   assert.equal(activityScrubElapsedIndexAt([], 900), -1)
+})
+
+test('linked run/walk cursor projects the hovered time onto its own elapsed axis', () => {
+  const sample = { d: 1.5, elapsedS: 900 }
+  assert.equal(activityScrubCursorX(sample, { startDistanceKm: 0, endDistanceKm: 2 }), 75)
+  assert.equal(activityScrubCursorX(sample, { startElapsedS: 0, endElapsedS: 1_800 }), 50)
+  assert.equal(activityScrubCursorX(sample, { startElapsedS: 600, endElapsedS: 1_800 }), 25)
+  assert.equal(activityScrubCursorX(sample, { startElapsedS: 1_000, endElapsedS: 1_800 }), 0)
+  assert.equal(activityScrubCursorX(sample, { startElapsedS: 0, endElapsedS: 600 }), 100)
+  assert.equal(activityScrubCursorX(sample, { startElapsedS: 900, endElapsedS: 900 }), 0)
 })
 
 const selectedLap = {

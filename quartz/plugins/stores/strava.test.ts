@@ -2711,6 +2711,48 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
     outdoor.sources?.map(source => source.provider),
     ['strava', 'garmin', 'wahoo'],
   )
+  const intensityCache: StravaRawCache = {
+    ...cache,
+    activities: { 101: { ...activity, elapsedTime: 120, movingTime: 120 } },
+    streams: { 101: { ...sourceStream, time: [0, 60, 120], watts: [900, 900, 900] } },
+  }
+  const intensityWahoo: WahooCache = {
+    ...wahoo,
+    activities: {
+      'wahoo:1': {
+        ...wahoo.activities['wahoo:1'],
+        elapsedTimeS: 120,
+        movingTimeS: 120,
+        metrics: { ...emptyWahooMetrics(), normalizedPower: 200, intensityFactor: 0.8 },
+      },
+    },
+    streams: {
+      'wahoo:1': {
+        ...wahoo.streams['wahoo:1'],
+        time: Array.from({ length: 121 }, (_, i) => i),
+        watts: Array(121).fill(200),
+      },
+    },
+  }
+  const intensityDetail = buildPayload(
+    intensityCache,
+    null,
+    null,
+    '2026-06-01',
+    null,
+    230,
+    null,
+    'UTC',
+    intensityWahoo,
+  ).details['101']
+  const intensity = intensityDetail.cyclingIntensityTrace
+  assert.ok(intensity)
+  assert.equal(intensity.ftpWatts, 250)
+  assert.equal(intensity.ftpSource, 'wahoo-summary')
+  assert.equal(intensity.points[30].intensityFactor, null)
+  assert.equal(intensity.points[31].intensityFactor, 0.8)
+  assert.equal(intensity.points.at(-1)?.intensityFactor, 0.8)
+  assert.deepEqual(JSON.parse(JSON.stringify(intensityDetail)).cyclingIntensityTrace, intensity)
 })
 
 test('projects Wahoo respiration at 500 ms from Garmin-calibrated heart rate', () => {

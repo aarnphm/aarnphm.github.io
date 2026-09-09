@@ -1436,6 +1436,51 @@ export const buildTrace = <N>(
 
 const HEART_RATE_TRACE_MIN_BPM = 80
 
+export const activityCyclingIntensityPoints = (d: StravaActivityDetail) =>
+  (d.cyclingIntensityTrace?.points ?? []).map(point => ({
+    ...point,
+    d: activityTraceUsesElapsedAxis(d) ? point.elapsedS : point.distanceKm,
+  }))
+
+export const buildIntensityFactorChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+): N | null => {
+  const trace = d.cyclingIntensityTrace
+  if (d.sport !== 'bike' || !d.wahoo || !trace) return null
+  const points = activityCyclingIntensityPoints(d)
+  const values = points.flatMap(point =>
+    point.intensityFactor == null ? [] : [point.intensityFactor],
+  )
+  if (values.length < 2) return null
+  const nativeIf = d.wahoo.metrics.intensityFactor
+  const summary =
+    nativeIf != null
+      ? `${nativeIf.toFixed(3)} · Wahoo`
+      : `${values.at(-1)?.toFixed(3)} · ${triText(f.presentation.locale, 'calculated')}`
+  const source = f.el('span', 'tri-elev-range', triText(f.presentation.locale, 'cumulative'), {
+    'data-gloss': '',
+    'data-gloss-def': `${triText(f.presentation.locale, '30 s rolling power, cumulative NP, zeros included')} · NP / FTP · FTP ${trace.ftpWatts.toFixed(1)} W (${trace.ftpSource === 'wahoo-summary' ? 'Wahoo NP / IF' : triText(f.presentation.locale, 'athlete setting')})`,
+    tabindex: '0',
+  })
+  return buildTraceSeries(
+    f,
+    d,
+    points,
+    point => point.intensityFactor,
+    'intensity factor',
+    () => summary,
+    value => value.toFixed(2),
+    { min: 0, max: Math.max(1.1, ...values) * 1.05 },
+    d.route.length >= 2 ? selection : undefined,
+    undefined,
+    undefined,
+    { value: 1, label: '1.00' },
+    { wrapAttrs: { 'data-cycling-intensity-source': 'calculated-wahoo' }, capExtra: [source] },
+  )
+}
+
 export const activityHeartRateTracePoints = (
   d: StravaActivityDetail,
 ): { d: number; elapsedS: number; heartRate: number | null }[] => {
@@ -3465,7 +3510,7 @@ export const buildRunWalkTrace = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
   f.add(
     svgEl,
     buildAnalysisSelectionRect(f, height),
-    f.svg('line', { class: 'tri-chart-cursor', x1: 0, x2: 0, y1: 0, y2: height }),
+    f.svg('line', { class: 'tri-chart-cursor tri-elev-cursor', x1: 0, x2: 0, y1: 0, y2: height }),
   )
   const wrap = f.el('div', 'tri-elev-wrap tri-run-walk-chart', undefined, {
     'data-tri-trace': triathlonTraceName('run/walk'),
@@ -4907,29 +4952,39 @@ const buildEnvironmentChart = <N>(
   scoreModel: EnvironmentScoreModel | null,
 ): N => {
   const chart = f.el('div', 'tri-environment-chart')
+  const hasSamples = elapsedTimeS > 0 && environmentViewHasSamples(f.presentation, samples, view)
   const svg = f.svg('svg', {
     class: 'tri-environment-plot',
     viewBox: '0 0 100 32',
     preserveAspectRatio: 'none',
-    role: 'slider',
-    tabindex: 0,
+    role: hasSamples ? 'slider' : 'img',
     'aria-label': triText(f.presentation.locale, environmentViewLabel(view)),
-    'aria-valuemin': 0,
-    'aria-valuemax': Math.round(elapsedTimeS),
-    'aria-valuenow': Math.round(elapsedTimeS),
-    'data-environment-chart': view,
+    ...(hasSamples
+      ? {
+          tabindex: 0,
+          'aria-valuemin': 0,
+          'aria-valuemax': Math.round(elapsedTimeS),
+          'aria-valuenow': Math.round(elapsedTimeS),
+          'data-environment-chart': view,
+        }
+      : {}),
     'data-domain-start-elapsed-s': 0,
     'data-domain-end-elapsed-s': elapsedTimeS,
     'data-domain-start-x': ENVIRONMENT_CHART_LEFT,
     'data-domain-end-x': ENVIRONMENT_CHART_RIGHT,
   })
-  const yTicks =
-    view === 'cumulative' && scoreModel != null
+  const yTicks: AxisYTick[] = hasSamples
+    ? view === 'cumulative' && scoreModel != null
       ? [
           ...environmentAxisTicks(f.presentation, samples, view, scoreModel, 'score'),
           ...environmentAxisTicks(f.presentation, samples, view, null, 'sed'),
         ]
       : environmentAxisTicks(f.presentation, samples, view, scoreModel)
+    : [
+        ENVIRONMENT_CHART_TOP,
+        (ENVIRONMENT_CHART_TOP + ENVIRONMENT_CHART_BOTTOM) / 2,
+        ENVIRONMENT_CHART_BOTTOM,
+      ].map(vbY => ({ label: '—', vbY }))
   for (const tick of yTicks.filter(tick => tick.attrs?.hidden === undefined))
     f.add(
       svg,
@@ -4970,29 +5025,30 @@ const buildEnvironmentChart = <N>(
   } else {
     addSeries(null)
   }
-  f.add(
-    svg,
-    buildAnalysisSelectionRect(
-      f,
-      ENVIRONMENT_CHART_BOTTOM - ENVIRONMENT_CHART_TOP,
-      undefined,
-      ENVIRONMENT_CHART_TOP,
-    ),
-    f.svg('rect', {
-      class: 'tri-environment-selection',
-      x: -10,
-      y: ENVIRONMENT_CHART_TOP,
-      width: 0,
-      height: ENVIRONMENT_CHART_BOTTOM - ENVIRONMENT_CHART_TOP,
-    }),
-    f.svg('line', {
-      class: 'tri-environment-cursor',
-      x1: ENVIRONMENT_CHART_RIGHT,
-      x2: ENVIRONMENT_CHART_RIGHT,
-      y1: ENVIRONMENT_CHART_TOP,
-      y2: ENVIRONMENT_CHART_BOTTOM,
-    }),
-  )
+  if (hasSamples)
+    f.add(
+      svg,
+      buildAnalysisSelectionRect(
+        f,
+        ENVIRONMENT_CHART_BOTTOM - ENVIRONMENT_CHART_TOP,
+        undefined,
+        ENVIRONMENT_CHART_TOP,
+      ),
+      f.svg('rect', {
+        class: 'tri-environment-selection',
+        x: -10,
+        y: ENVIRONMENT_CHART_TOP,
+        width: 0,
+        height: ENVIRONMENT_CHART_BOTTOM - ENVIRONMENT_CHART_TOP,
+      }),
+      f.svg('line', {
+        class: 'tri-environment-cursor',
+        x1: ENVIRONMENT_CHART_RIGHT,
+        x2: ENVIRONMENT_CHART_RIGHT,
+        y1: ENVIRONMENT_CHART_TOP,
+        y2: ENVIRONMENT_CHART_BOTTOM,
+      }),
+    )
   f.add(
     chart,
     axisFrame(
@@ -5015,6 +5071,16 @@ const buildEnvironmentChart = <N>(
       ],
       true,
       { top: ENVIRONMENT_CHART_TOP, bottom: ENVIRONMENT_CHART_BOTTOM },
+      hasSamples
+        ? []
+        : [
+            f.el(
+              'span',
+              'tri-environment-empty',
+              triText(f.presentation.locale, 'no data available'),
+              { 'data-i18n': 'no data available' },
+            ),
+          ],
     ),
   )
   return chart
@@ -5376,127 +5442,125 @@ export const buildEnvironmentAnalysis = <N>(
   if (pelotan || uvScore || environment) evidenceGroups.push({ label: 'UV exposure', rows: uvRows })
   if (myWindsock || wind) evidenceGroups.push({ label: 'wind and aero', rows: windRows })
   if (evidenceGroups.length > 0) f.add(wrap, environmentTable(f, evidenceGroups))
-  if (environment && environment.samples.length >= 2) {
-    const environmentViews: readonly EnvironmentChartView[] = [
-      'cumulative',
-      'uv-index',
-      'temperature',
-      'cloud-cover',
-    ]
-    const availableViews = environmentViews.filter(view =>
-      environmentViewHasSamples(f.presentation, environment.samples, view),
+  const environmentSamples = environment?.samples ?? []
+  const environmentElapsedS = environment?.summary.elapsedDurationS ?? d.elapsedTimeS
+  const environmentViews: readonly EnvironmentChartView[] = [
+    'cumulative',
+    'uv-index',
+    'temperature',
+    'cloud-cover',
+  ]
+  const selected =
+    environmentViews.find(view =>
+      environmentViewHasSamples(f.presentation, environmentSamples, view),
+    ) ?? 'cumulative'
+  const id = `tri-environment-${d.id}`
+  const scoreModel: EnvironmentScoreModel | null = uvScore
+    ? { coefficientSed: uvScore.coefficientSed, doseClock: uvScore.doseClock }
+    : null
+  const charts = f.el('div', 'tri-environment-graphs', undefined, {
+    'data-environment-tabs': '',
+    'data-environment-view': selected,
+    'data-environment-series': JSON.stringify(environmentSamples),
+    'data-environment-elapsed': `${environmentElapsedS}`,
+    ...(scoreModel == null
+      ? {}
+      : {
+          'data-environment-score-coefficient': `${scoreModel.coefficientSed}`,
+          'data-environment-score-clock': scoreModel.doseClock,
+          'data-environment-cumulative-mode': 'score',
+        }),
+  })
+  const controls = f.el('div', 'tri-environment-controls')
+  const tabs = f.el('div', 'tri-map-tablist tri-environment-tablist', undefined, {
+    role: 'tablist',
+    'aria-label': triText(f.presentation.locale, 'Environment graph view'),
+    'data-i18n-aria-label': 'Environment graph view',
+  })
+  for (const view of environmentViews) {
+    const active = view === selected
+    const label = environmentViewLabel(view)
+    const shortLabel = environmentViewShortLabel(view)
+    const tab = f.el('button', 'tri-map-tab tri-environment-tab', undefined, {
+      id: `${id}-${view}-tab`,
+      type: 'button',
+      role: 'tab',
+      tabindex: active ? '0' : '-1',
+      title: triText(f.presentation.locale, label),
+      'aria-label': triText(f.presentation.locale, label),
+      'aria-controls': `${id}-${view}-panel`,
+      'aria-selected': String(active),
+      'data-environment-tab': view,
+      'data-i18n-aria-label': label,
+    })
+    f.add(
+      tab,
+      f.el('span', 'tri-environment-tab-full', triText(f.presentation.locale, label), {
+        'aria-hidden': 'true',
+        'data-i18n': label,
+      }),
+      f.el('span', 'tri-environment-tab-short', triText(f.presentation.locale, shortLabel), {
+        'aria-hidden': 'true',
+        'data-i18n': shortLabel,
+      }),
     )
-    if (availableViews.length > 0) {
-      const id = `tri-environment-${d.id}`
-      const selected = availableViews[0]
-      const scoreModel: EnvironmentScoreModel | null = uvScore
-        ? { coefficientSed: uvScore.coefficientSed, doseClock: uvScore.doseClock }
-        : null
-      const charts = f.el('div', 'tri-environment-graphs', undefined, {
-        'data-environment-tabs': '',
-        'data-environment-view': selected,
-        'data-environment-series': JSON.stringify(environment.samples),
-        'data-environment-elapsed': `${environment.summary.elapsedDurationS}`,
-        ...(scoreModel == null
-          ? {}
-          : {
-              'data-environment-score-coefficient': `${scoreModel.coefficientSed}`,
-              'data-environment-score-clock': scoreModel.doseClock,
-              'data-environment-cumulative-mode': 'score',
-            }),
-      })
-      const controls = f.el('div', 'tri-environment-controls')
-      const tabs = f.el('div', 'tri-map-tablist tri-environment-tablist', undefined, {
-        role: 'tablist',
-        'aria-label': triText(f.presentation.locale, 'Environment graph view'),
-        'data-i18n-aria-label': 'Environment graph view',
-      })
-      for (const view of availableViews) {
-        const active = view === selected
-        const label = environmentViewLabel(view)
-        const shortLabel = environmentViewShortLabel(view)
-        const tab = f.el('button', 'tri-map-tab tri-environment-tab', undefined, {
-          id: `${id}-${view}-tab`,
-          type: 'button',
-          role: 'tab',
-          tabindex: active ? '0' : '-1',
-          title: triText(f.presentation.locale, label),
-          'aria-label': triText(f.presentation.locale, label),
-          'aria-controls': `${id}-${view}-panel`,
-          'aria-selected': String(active),
-          'data-environment-tab': view,
-          'data-i18n-aria-label': label,
-        })
-        f.add(
-          tab,
-          f.el('span', 'tri-environment-tab-full', triText(f.presentation.locale, label), {
-            'aria-hidden': 'true',
-            'data-i18n': label,
-          }),
-          f.el('span', 'tri-environment-tab-short', triText(f.presentation.locale, shortLabel), {
-            'aria-hidden': 'true',
-            'data-i18n': shortLabel,
-          }),
-        )
-        f.add(tabs, tab)
-      }
-      f.add(controls, tabs)
-      if (scoreModel != null) {
-        const mode = f.el('div', 'tri-environment-mode', undefined, {
-          role: 'group',
-          'aria-label': triText(f.presentation.locale, 'Cumulative exposure unit'),
-          'data-i18n-aria-label': 'Cumulative exposure unit',
-        })
-        f.add(
-          mode,
-          f.el('button', undefined, triText(f.presentation.locale, 'score'), {
-            type: 'button',
-            'aria-pressed': 'true',
-            'data-environment-mode': 'score',
-            'data-i18n': 'score',
-          }),
-          f.el('button', undefined, 'SED', {
-            type: 'button',
-            'aria-pressed': 'false',
-            'data-environment-mode': 'sed',
-          }),
-        )
-        f.add(controls, mode)
-      }
-      const readoutSample = environment.samples.at(-1)
-      const readout = f.el(
-        'output',
-        'tri-environment-readout',
-        readoutSample ? environmentChartReadout(f.presentation, readoutSample, scoreModel) : '—',
-        { 'aria-live': 'polite', 'data-environment-readout': '' },
-      )
-      const stage = f.el('div', 'tri-environment-stage')
-      for (const view of availableViews) {
-        const active = view === selected
-        const panel = f.el('div', 'tri-environment-panel', undefined, {
-          id: `${id}-${view}-panel`,
-          role: 'tabpanel',
-          ...(active ? {} : { hidden: '' }),
-          'aria-hidden': String(!active),
-          'aria-labelledby': `${id}-${view}-tab`,
-          'data-environment-panel': view,
-        })
-        f.add(
-          panel,
-          buildEnvironmentChart(
-            f,
-            environment.samples,
-            environment.summary.elapsedDurationS,
-            view,
-            view === 'cumulative' ? scoreModel : null,
-          ),
-        )
-        f.add(stage, panel)
-      }
-      f.add(charts, controls, readout, stage)
-      f.add(wrap, charts)
-    }
+    f.add(tabs, tab)
   }
+  f.add(controls, tabs)
+  if (scoreModel != null) {
+    const mode = f.el('div', 'tri-environment-mode', undefined, {
+      role: 'group',
+      'aria-label': triText(f.presentation.locale, 'Cumulative exposure unit'),
+      'data-i18n-aria-label': 'Cumulative exposure unit',
+    })
+    f.add(
+      mode,
+      f.el('button', undefined, triText(f.presentation.locale, 'score'), {
+        type: 'button',
+        'aria-pressed': 'true',
+        'data-environment-mode': 'score',
+        'data-i18n': 'score',
+      }),
+      f.el('button', undefined, 'SED', {
+        type: 'button',
+        'aria-pressed': 'false',
+        'data-environment-mode': 'sed',
+      }),
+    )
+    f.add(controls, mode)
+  }
+  const readoutSample = environmentSamples.at(-1)
+  const readout = f.el(
+    'output',
+    'tri-environment-readout',
+    readoutSample ? environmentChartReadout(f.presentation, readoutSample, scoreModel) : '—',
+    { 'aria-live': 'polite', 'data-environment-readout': '' },
+  )
+  const stage = f.el('div', 'tri-environment-stage')
+  for (const view of environmentViews) {
+    const active = view === selected
+    const panel = f.el('div', 'tri-environment-panel', undefined, {
+      id: `${id}-${view}-panel`,
+      role: 'tabpanel',
+      ...(active ? {} : { hidden: '' }),
+      'aria-hidden': String(!active),
+      'aria-labelledby': `${id}-${view}-tab`,
+      'data-environment-panel': view,
+    })
+    f.add(
+      panel,
+      buildEnvironmentChart(
+        f,
+        environmentSamples,
+        environmentElapsedS,
+        view,
+        view === 'cumulative' ? scoreModel : null,
+      ),
+    )
+    f.add(stage, panel)
+  }
+  f.add(charts, controls, readout, stage)
+  f.add(wrap, charts)
   const attribution = f.el('div', 'tri-environment-attribution')
   if (myWindsock)
     f.add(
@@ -7559,6 +7623,22 @@ const activityTrainingRows = (
         maximumFractionDigits: 3,
       }),
     ])
+  const normalizedPower = d.wahoo?.metrics.normalizedPower
+  const averagePower = d.wahoo?.metrics.avgPower
+  if (
+    d.sport === 'bike' &&
+    normalizedPower != null &&
+    Number.isFinite(normalizedPower) &&
+    normalizedPower >= 0 &&
+    positiveMetric(averagePower)
+  )
+    rows.push([
+      'variability index',
+      (normalizedPower / averagePower).toLocaleString(locale, {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3,
+      }),
+    ])
   rows.push(['training effect', triText(presentation.locale, activityTrainingEffectLabel(d))])
   const exerciseLoad = garmin?.exerciseLoad ?? d.calculatedExerciseLoad?.value
   if (exerciseLoad != null)
@@ -8208,6 +8288,10 @@ export const buildActivity = <N>(
     if (flags.performanceCondition) {
       const performanceCondition = buildPerformanceConditionTrace(f, d, analysisSelection)
       if (performanceCondition) activityGraphs.push(performanceCondition)
+    }
+    if (triathlonTraceEnabled(traceSettings, 'intensity-factor')) {
+      const intensity = buildIntensityFactorChart(f, d, analysisSelection)
+      if (intensity) activityGraphs.push(intensity)
     }
     const powerBalance = buildPowerBalanceChart(f, d, analysisSelection, embedded)
     if (powerBalance) activityGraphs.push(powerBalance)

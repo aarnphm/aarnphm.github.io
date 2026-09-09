@@ -5,12 +5,55 @@ import {
   garminConnectActivity,
   garminConnectActivityStartDate,
   garminConnectClimbSegments,
+  garminConnectLactateThresholdHistory,
   garminConnectRunWalk,
   garminConnectRunningLactateThreshold,
   garminConnectSleep,
   garminConnectStreams,
   garminConnectWeightSamples,
 } from './garmin-connect'
+
+test('normalizes dated Garmin running lactate threshold history without filling missing days', () => {
+  const raw = [
+    {
+      from: '2026-09-08',
+      until: '2026-09-08',
+      updatedDate: '2026-09-08',
+      series: 'running',
+      value: 0.37499895,
+    },
+    {
+      from: '2026-09-03',
+      until: '2026-09-03',
+      updatedDate: '2026-09-03',
+      series: 'running',
+      value: 0.37777672,
+    },
+    { from: '2026-09-05', series: 'cycling', value: 0.5 },
+    { from: '2026-09-06', series: 'running', value: null },
+    { from: '2026-02-30', series: 'running', value: 0.5 },
+  ]
+  const pace = garminConnectLactateThresholdHistory(raw, 'speedMps')
+  assert.equal(pace.length, 2)
+  assert.equal(pace[0].date, '2026-09-03')
+  assert.ok(Math.abs(pace[0].value - 3.7777672) < 1e-8)
+  assert.equal(pace[1].date, '2026-09-08')
+  assert.deepEqual(
+    garminConnectLactateThresholdHistory(
+      [
+        { from: '2026-09-03', updatedDate: '2026-09-03', series: 'running', value: 174 },
+        { from: '2026-09-08', updatedDate: '2026-09-08', series: 'running', value: 174 },
+      ],
+      'heartRateBpm',
+    ),
+    [
+      { date: '2026-09-03', value: 174 },
+      { date: '2026-09-08', value: 174 },
+    ],
+  )
+  assert.deepEqual(garminConnectLactateThresholdHistory([], 'speedMps'), [])
+  assert.throws(() => garminConnectLactateThresholdHistory({}, 'speedMps'), /Invalid Garmin/)
+})
 
 test('normalizes Garmin running lactate threshold units and ignores cycling heart rate', () => {
   const threshold = garminConnectRunningLactateThreshold([

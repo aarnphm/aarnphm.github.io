@@ -119,6 +119,37 @@ const isPerformanceConditionTrace = (value: unknown): boolean => {
   )
 }
 
+const isCyclingIntensityTrace = (value: unknown, elapsedTimeS: number): boolean => {
+  if (value == null) return true
+  if (
+    !isRecord(value) ||
+    value.source !== 'wahoo' ||
+    value.method !== 'cumulative-power-30s-v1' ||
+    !(finite(value.ftpWatts) && value.ftpWatts > 0) ||
+    !(value.ftpSource === 'wahoo-summary' || value.ftpSource === 'athlete') ||
+    !Array.isArray(value.points) ||
+    value.points.length < 2 ||
+    value.points.length > 322
+  )
+    return false
+  let previousElapsed = -1
+  let previousDistance = 0
+  return value.points.every((point: unknown) => {
+    if (
+      !isRecord(point) ||
+      !bounded(point.elapsedS, 0, elapsedTimeS) ||
+      point.elapsedS <= previousElapsed ||
+      !finite(point.distanceKm) ||
+      point.distanceKm < previousDistance ||
+      !nullableBounded(point.intensityFactor, 0, Number.MAX_VALUE)
+    )
+      return false
+    previousElapsed = point.elapsedS
+    previousDistance = point.distanceKm
+    return true
+  })
+}
+
 const finite = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value)
 
@@ -450,6 +481,9 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     !finite(value.elapsedTimeS) ||
     value.elapsedTimeS < 0 ||
     value.elapsedTimeS > Number.MAX_SAFE_INTEGER ||
+    !isCyclingIntensityTrace(value.cyclingIntensityTrace, value.elapsedTimeS) ||
+    (value.cyclingIntensityTrace != null &&
+      (value.sport !== 'bike' || value.wahoo === undefined)) ||
     !nullableBounded(value.deviceTemperatureC, -90, 100) ||
     !nullableBounded(value.ambientTemperatureC, -90, 70) ||
     !isRouteTrace(value.route) ||

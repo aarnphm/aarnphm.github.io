@@ -63,6 +63,7 @@ export interface AnalyticsSummaryValue {
 export interface AnalyticsPanelSeries {
   label: string
   values: readonly number[]
+  dates?: readonly string[]
 }
 
 export interface AnalyticsPanelContent {
@@ -303,10 +304,32 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
           ),
         },
       ],
-      series: data.engine.lactateThreshold.sports.map(sport => ({
-        label: sport.sport,
-        values: sport.points.map(point => point.value),
-      })),
+      series: [
+        ...data.engine.lactateThreshold.sports.map(sport => ({
+          label: sport.source === 'garmin' ? 'run pace · Garmin' : sport.sport,
+          values:
+            sport.source === 'garmin'
+              ? data.engine.lactateThreshold.runningHistory.pace.map(point => point.value)
+              : sport.points.map(point => point.value),
+          dates:
+            sport.source === 'garmin'
+              ? data.engine.lactateThreshold.runningHistory.pace.map(point => point.date)
+              : sport.points.map(point => point.date),
+        })),
+        ...(data.engine.lactateThreshold.heartRate?.source === 'garmin'
+          ? [
+              {
+                label: 'run heart rate · Garmin',
+                values: data.engine.lactateThreshold.runningHistory.heartRate.map(
+                  point => point.value,
+                ),
+                dates: data.engine.lactateThreshold.runningHistory.heartRate.map(
+                  point => point.date,
+                ),
+              },
+            ]
+          : []),
+      ],
     }),
   },
   power: {

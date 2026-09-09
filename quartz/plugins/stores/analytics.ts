@@ -736,6 +736,7 @@ export interface LactateThresholdSportProjection {
 export interface LactateThresholdBlock {
   heartRate: LactateThresholdHeartRate | null
   sports: LactateThresholdSportProjection[]
+  runningHistory: { pace: GarminLactateThresholdValue[]; heartRate: GarminLactateThresholdValue[] }
 }
 
 export interface RadarAxis {
@@ -2732,6 +2733,20 @@ const usableGarminThreshold = (
   new Date(sample.date).toISOString().slice(0, 10) === sample.date &&
   sample.date <= today
 
+const lactateThresholdHistory = (
+  latest: GarminLactateThresholdValue | null | undefined,
+  history: readonly GarminLactateThresholdValue[],
+  today: string,
+): GarminLactateThresholdValue[] => {
+  const days = new Map(
+    history.filter(point => usableGarminThreshold(point, today)).map(point => [point.date, point]),
+  )
+  if (usableGarminThreshold(latest, today)) days.set(latest.date, latest)
+  return [...days.values()].sort((left, right) => left.date.localeCompare(right.date))
+}
+
+const GARMIN_LACTATE_MIN_PACE_READINGS = 31
+
 const buildLactateThreshold = (
   thresholds: ReadonlyMap<Sport, ThresholdEstimate>,
   trends: ReadonlyMap<Sport, SportTrend>,
@@ -2739,34 +2754,47 @@ const buildLactateThreshold = (
   garmin?: GarminCache | null,
 ): LactateThresholdBlock => {
   const native = garmin?.runningLactateThreshold
-  const heartRate = native?.heartRateBpm
+  const speeds = lactateThresholdHistory(native?.speedMps, native?.history?.speedMps ?? [], today)
+  const heartRates = lactateThresholdHistory(
+    native?.heartRateBpm,
+    native?.history?.heartRateBpm ?? [],
+    today,
+  )
+  const speed = speeds.at(-1)
+  const heartRate = heartRates.at(-1)
+  const useGarmin = speeds.length >= GARMIN_LACTATE_MIN_PACE_READINGS
   return {
-    heartRate: usableGarminThreshold(heartRate, today)
-      ? {
-          value: heartRate.value,
-          unit: 'bpm',
-          source: 'garmin',
-          sport: 'run',
-          date: heartRate.date,
-        }
-      : declaredLactateThresholdHeartRate(),
+    runningHistory: {
+      pace: speeds.map(point => ({ date: point.date, value: humanPaceValue('run', point.value) })),
+      heartRate: heartRates,
+    },
+    heartRate:
+      useGarmin && usableGarminThreshold(heartRate, today)
+        ? {
+            value: heartRate.value,
+            unit: 'bpm',
+            source: 'garmin',
+            sport: 'run',
+            date: heartRate.date,
+          }
+        : declaredLactateThresholdHeartRate(),
     sports: SPORT_ORDER.flatMap((sport): LactateThresholdSportProjection[] => {
-      if (sport === 'run' && usableGarminThreshold(native?.speedMps, today)) {
+      if (sport === 'run' && useGarmin && speed) {
         return [
           {
             sport,
             unit: 's/km',
-            current: humanPaceValue(sport, native.speedMps.value),
+            current: humanPaceValue(sport, speed.value),
             projected: null,
             low: null,
             high: null,
             deltaPct: null,
             conf: null,
             method: 'none',
-            sampleSize: 1,
+            sampleSize: speeds.length,
             horizonDays: 0,
             source: 'garmin',
-            date: native.speedMps.date,
+            date: speed.date,
             points: [],
           },
         ]
@@ -4340,7 +4368,11 @@ function emptyEngine(): EngineBlock {
       },
       bikeSource: null,
     },
-    lactateThreshold: { heartRate: declaredLactateThresholdHeartRate(), sports: [] },
+    lactateThreshold: {
+      heartRate: declaredLactateThresholdHeartRate(),
+      sports: [],
+      runningHistory: { pace: [], heartRate: [] },
+    },
     abilities: { sports: [] },
     cardio: { metrics: [], rhrSeries: [], hrvSeries: [], efSeries: [], decouplingSeries: [] },
     ftpHypothesis: null,

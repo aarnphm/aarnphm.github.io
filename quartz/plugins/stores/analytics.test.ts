@@ -2,7 +2,12 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { AppleCache } from './apple'
 import type { CoreBodyTemperatureCache } from './core-body-temperature'
-import type { GarminCache, GarminCyclingDynamics, GarminSleepSummary } from './garmin'
+import type {
+  GarminCache,
+  GarminCyclingDynamics,
+  GarminLactateThresholdValue,
+  GarminSleepSummary,
+} from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
 import type { TrackEntry } from './tracking'
 import type { WeatherCache } from './weather'
@@ -1991,7 +1996,61 @@ test('lactate threshold projection stays a low-confidence training proxy with it
   assert.ok(projection.high != null && projection.projected <= projection.high)
 })
 
-test('running lactate threshold prefers Garmin and preserves other sport calculations', () => {
+const garminPaceHistory = (end: string, count = 31): GarminLactateThresholdValue[] =>
+  Array.from({ length: count }, (_, index) => ({
+    date: new Date(Date.parse(end) - (count - 1 - index) * DAY).toISOString().slice(0, 10),
+    value: 3.75,
+  }))
+
+test('running lactate threshold waits for 31 distinct valid pace dates and preserves its projection', () => {
+  const { cache } = fixtures()
+  cache.activities = Object.fromEntries(
+    [1800, 1740, 1680, 1620, 1560, 1500].map((movingTime, index) => {
+      const id = 20 + index
+      return [String(id), activity(id, 'Run', iso(-6 + index * 7), movingTime, 5000)]
+    }),
+  )
+  cache.streams = {}
+  const baseline = buildAnalytics(cache).engine.lactateThreshold
+  assert.ok(baseline.sports.find(sport => sport.sport === 'run')?.projected != null)
+  const heartRateBpm = garminPaceHistory(iso(25)).map(point => ({ ...point, value: 174 }))
+  for (const count of [2, 30, 31]) {
+    const speedMps = garminPaceHistory(iso(25), count)
+    const block = buildAnalytics(cache, {
+      garmin: {
+        lastSync: cache.lastSync,
+        activities: {},
+        runningLactateThreshold: {
+          speedMps: speedMps.at(-1) ?? null,
+          heartRateBpm: heartRateBpm.at(-1) ?? null,
+          history: {
+            speedMps: [
+              ...speedMps,
+              ...speedMps,
+              { date: iso(26), value: 0 },
+              { date: iso(27), value: NaN },
+              { date: '2026-02-30', value: 3.75 },
+              { date: '2027-01-01', value: 3.75 },
+            ],
+            heartRateBpm,
+          },
+        },
+      },
+    }).engine.lactateThreshold
+    assert.equal(block.runningHistory.pace.length, count)
+    assert.equal(block.runningHistory.heartRate.length, 31)
+    if (count < 31) {
+      assert.deepEqual(block.sports, baseline.sports)
+      assert.deepEqual(block.heartRate, baseline.heartRate)
+    } else {
+      assert.equal(block.sports.find(sport => sport.sport === 'run')?.source, 'garmin')
+      assert.equal(block.heartRate?.source, 'garmin')
+    }
+    assert.deepEqual(JSON.parse(JSON.stringify(block)).runningHistory, block.runningHistory)
+  }
+})
+
+test('running lactate threshold prefers Garmin at 31 pace readings and preserves other sport calculations', () => {
   const { cache } = fixtures()
   const garmin: GarminCache = {
     lastSync: cache.lastSync,
@@ -1999,6 +2058,7 @@ test('running lactate threshold prefers Garmin and preserves other sport calcula
     runningLactateThreshold: {
       speedMps: { value: 3.75, date: iso(25) },
       heartRateBpm: { value: 174, date: iso(24) },
+      history: { speedMps: garminPaceHistory(iso(25)), heartRateBpm: [] },
     },
   }
   const baseline = buildAnalytics(cache).engine.lactateThreshold
@@ -2028,7 +2088,66 @@ test('running lactate threshold prefers Garmin and preserves other sport calcula
   assert.deepEqual(JSON.parse(JSON.stringify(block)), block)
 })
 
-test('Garmin running threshold fields fall back independently', () => {
+test('Garmin lactate threshold history carries recorded dates and latest values into analytics', () => {
+  const analytics = buildAnalytics(null, {
+    garmin: {
+      lastSync: Date.parse('2026-09-08T20:00:00Z'),
+      activities: {},
+      runningLactateThreshold: {
+        speedMps: { value: 3.75, date: '2026-09-08' },
+        heartRateBpm: { value: 174, date: '2026-09-08' },
+        history: {
+          speedMps: [
+            { date: '2026-09-08', value: 3.8 },
+            { date: '2026-09-03', value: 3.78 },
+            { date: '2026-09-04', value: 0 },
+            { date: '2027-01-01', value: 4 },
+          ],
+          heartRateBpm: [
+            { date: '2026-05-31', value: 166 },
+            { date: '2026-09-03', value: 174 },
+          ],
+        },
+      },
+    },
+  })
+  const block = analytics.engine.lactateThreshold
+  assert.deepEqual(block.runningHistory.pace, [
+    { date: '2026-09-03', value: 264.6 },
+    { date: '2026-09-08', value: 266.7 },
+  ])
+  assert.deepEqual(block.runningHistory.heartRate, [
+    { date: '2026-05-31', value: 166 },
+    { date: '2026-09-03', value: 174 },
+    { date: '2026-09-08', value: 174 },
+  ])
+  assert.deepEqual(block.sports, [])
+  assert.equal(block.heartRate?.source, 'declared')
+  assert.deepEqual(JSON.parse(JSON.stringify(block)).runningHistory, block.runningHistory)
+})
+
+test('historical Garmin lactate threshold remains usable when the latest endpoint has no reading', () => {
+  const block = buildAnalytics(null, {
+    garmin: {
+      lastSync: Date.parse('2026-09-08T20:00:00Z'),
+      activities: {},
+      runningLactateThreshold: {
+        speedMps: null,
+        heartRateBpm: null,
+        history: {
+          speedMps: garminPaceHistory('2026-09-03'),
+          heartRateBpm: [{ date: '2026-09-03', value: 174 }],
+        },
+      },
+    },
+  }).engine.lactateThreshold
+  assert.equal(block.heartRate?.value, 174)
+  assert.equal(block.sports[0].current, 266.7)
+  assert.equal(block.sports[0].date, '2026-09-03')
+  assert.equal(block.runningHistory.pace.length, 31)
+})
+
+test('Garmin running threshold requires pace history and keeps the declared anchor when Garmin heart rate is missing', () => {
   const { cache } = fixtures()
   const garmin: GarminCache = {
     lastSync: cache.lastSync,
@@ -2037,10 +2156,14 @@ test('Garmin running threshold fields fall back independently', () => {
   }
   const baseline = buildAnalytics(cache).engine.lactateThreshold
   const hrOnly = buildAnalytics(cache, { garmin }).engine.lactateThreshold
-  assert.equal(hrOnly.heartRate?.source, 'garmin')
+  assert.deepEqual(hrOnly.heartRate, baseline.heartRate)
   assert.deepEqual(hrOnly.sports, baseline.sports)
 
-  garmin.runningLactateThreshold = { speedMps: { value: 3.75, date: iso(25) }, heartRateBpm: null }
+  garmin.runningLactateThreshold = {
+    speedMps: { value: 3.75, date: iso(25) },
+    heartRateBpm: null,
+    history: { speedMps: garminPaceHistory(iso(25)), heartRateBpm: [] },
+  }
   const paceOnly = buildAnalytics(cache, { garmin }).engine.lactateThreshold
   assert.deepEqual(paceOnly.heartRate, baseline.heartRate)
   assert.equal(paceOnly.sports.find(sport => sport.sport === 'run')?.source, 'garmin')
@@ -2075,7 +2198,7 @@ test('invalid or future Garmin lactate threshold fields use the existing fallbac
   }
 })
 
-test('Garmin lactate threshold remains available without Strava training data', () => {
+test('Garmin lactate threshold with enough pace history remains available without Strava training data', () => {
   const block = buildAnalytics(null, {
     garmin: {
       lastSync: 0,
@@ -2084,6 +2207,7 @@ test('Garmin lactate threshold remains available without Strava training data', 
       runningLactateThreshold: {
         speedMps: { value: 3.75, date: '2026-09-08' },
         heartRateBpm: { value: 174, date: '2026-09-07' },
+        history: { speedMps: garminPaceHistory('2026-09-08'), heartRateBpm: [] },
       },
     },
   }).engine.lactateThreshold

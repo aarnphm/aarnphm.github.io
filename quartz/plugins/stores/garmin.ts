@@ -221,6 +221,7 @@ export interface GarminLactateThresholdValue {
 export interface GarminRunningLactateThreshold {
   speedMps: GarminLactateThresholdValue | null
   heartRateBpm: GarminLactateThresholdValue | null
+  history?: { speedMps: GarminLactateThresholdValue[]; heartRateBpm: GarminLactateThresholdValue[] }
 }
 
 export interface GarminWeightSample {

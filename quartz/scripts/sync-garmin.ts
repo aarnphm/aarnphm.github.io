@@ -8,6 +8,7 @@ import type {
   GarminCyclingDynamics,
   GarminFitTrainingEffect,
   GarminGearShift,
+  GarminLactateThresholdValue,
   GarminRunWalkData,
   GarminRunningLactateThreshold,
   GarminSleepSummary,
@@ -21,6 +22,7 @@ import {
   garminConnectActivity,
   garminConnectActivityStartDate,
   garminConnectClimbSegments,
+  garminConnectLactateThresholdHistory,
   garminConnectRunWalk,
   garminConnectRunningLactateThreshold,
   garminConnectSleep,
@@ -347,10 +349,67 @@ function sleep(ms: number): Promise<void> {
 async function fetchRunningLactateThreshold(
   session: GarminConnectSession,
   base: string,
+  previous?: GarminRunningLactateThreshold | null,
 ): Promise<GarminRunningLactateThreshold | null> {
-  return garminConnectRunningLactateThreshold(
+  const latest = garminConnectRunningLactateThreshold(
     await fetchGarminJson(session, base, '/biometric-service/biometric/latestLactateThreshold'),
   )
+  const start =
+    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
+    cleanDay(process.env.GARMIN_CONNECT_SINCE) ??
+    (await readTriathlonStart()) ??
+    localIsoDayOffset(-90)
+  const end = endDate()
+  const history = {
+    speedMps: previous?.history?.speedMps ?? [],
+    heartRateBpm: previous?.history?.heartRateBpm ?? [],
+  }
+  const metrics = [
+    { key: 'speedMps', endpoint: 'lactateThresholdSpeed' },
+    { key: 'heartRateBpm', endpoint: 'lactateThresholdHeartRate' },
+  ] as const
+  for (const { key, endpoint } of metrics) {
+    try {
+      const raw = await fetchGarminJson(
+        session,
+        base,
+        `/biometric-service/stats/${endpoint}/range/${start}/${end}`,
+        new URLSearchParams({
+          sport: 'RUNNING',
+          aggregation: 'daily',
+          aggregationStrategy: 'LATEST',
+        }),
+      )
+      history[key] = mergeGarminLactateThresholdHistory(
+        history[key],
+        garminConnectLactateThresholdHistory(raw, key),
+        start,
+        end,
+      )
+    } catch (error) {
+      console.warn(
+        `[garmin] lactate threshold ${key} history failed: ${error instanceof Error ? error.message : error}`,
+      )
+    }
+  }
+  return latest || history.speedMps.length || history.heartRateBpm.length
+    ? { speedMps: latest?.speedMps ?? null, heartRateBpm: latest?.heartRateBpm ?? null, history }
+    : null
+}
+
+export function mergeGarminLactateThresholdHistory(
+  previous: GarminLactateThresholdValue[],
+  fetched: GarminLactateThresholdValue[],
+  start: string,
+  end: string,
+): GarminLactateThresholdValue[] {
+  const days = new Map(
+    previous
+      .filter(point => point.date < start || point.date > end)
+      .map(point => [point.date, point]),
+  )
+  for (const point of fetched) days.set(point.date, point)
+  return [...days.values()].sort((left, right) => left.date.localeCompare(right.date))
 }
 
 export interface GarminSleepFetchResult {
@@ -417,7 +476,11 @@ async function main(): Promise<void> {
   )
   if (process.argv.includes('--lactate-threshold-only')) {
     if (!previous) throw new Error('Run a Garmin sync before refreshing lactate threshold only')
-    const runningLactateThreshold = await fetchRunningLactateThreshold(session, base)
+    const runningLactateThreshold = await fetchRunningLactateThreshold(
+      session,
+      base,
+      previous.runningLactateThreshold,
+    )
     const latest = await readCache()
     if (!latest) throw new Error('Garmin cache disappeared during lactate threshold refresh')
     await fs.writeFile(
@@ -654,7 +717,10 @@ async function main(): Promise<void> {
     ok: false,
   }
   try {
-    lactateThresholdOutcome = { ok: true, value: await fetchRunningLactateThreshold(session, base) }
+    lactateThresholdOutcome = {
+      ok: true,
+      value: await fetchRunningLactateThreshold(session, base, previous?.runningLactateThreshold),
+    }
   } catch (err) {
     console.warn(
       `[garmin] lactate threshold fetch failed: ${err instanceof Error ? err.message : err}`,
