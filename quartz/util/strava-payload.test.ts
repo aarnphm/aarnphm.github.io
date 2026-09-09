@@ -16,6 +16,7 @@ import {
   type StravaActivityDetail,
   type StravaPayload,
 } from '../plugins/stores/strava'
+import { parseTrackingBlock } from '../plugins/stores/tracking'
 import {
   applyManualActivityTracking,
   enrichActivityDevices,
@@ -586,6 +587,79 @@ test('applies attached manual sauna metadata through the shared payload path', (
   assert.equal(activity.garmin?.trainingEffectLabel, 'RECOVERY')
   assert.equal(payload.days[0]?.items[0]?.sport, 'sauna')
   assert.equal(payload.days[0]?.dominant, 'sauna')
+})
+
+test('retains parsed exercises when projecting linked and standalone sauna activities', () => {
+  for (const linked of [false, true]) {
+    const parsed = parseTrackingBlock(
+      null,
+      [
+        'title: Guided All Round, Reset',
+        'date: 2026-09-08',
+        'time: 18:00',
+        'duration: 75 mins',
+        'activity: sauna',
+        'temperature: 160F',
+        'humidity: 11%',
+        'cooldown: cold plunge',
+        'htl: 7.6',
+        ...(linked ? ['strava: 20094989479'] : []),
+        'exercise: Glute Bridge | 30s | 30s',
+        'exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s',
+        'exercise: Single-Leg Glute Bridge to Abductor | 40s | 40s | 40s | 40s',
+      ].join('\n'),
+    )
+    assert.ok(parsed?.sauna)
+    assert.ok(parsed.strength)
+    const id = parsed.strength.activityId
+    const payload = emptyPayload(1)
+    if (linked) {
+      payload.details[String(id)] = detail({
+        id,
+        sport: 'treatment',
+        date: '2026-09-08',
+        start: '2026-09-08T22:00:00Z',
+        distanceKm: 0,
+        movingTimeS: 4_500,
+        elapsedTimeS: 4_500,
+      })
+      payload.days = [
+        {
+          date: '2026-09-08',
+          durationS: 4_500,
+          dominant: 'treatment',
+          items: [{ id, sport: 'treatment', distanceKm: 0, durationS: 4_500 }],
+        },
+      ]
+      payload.totalCount = 1
+      payload.totalTimeS = 4_500
+    }
+    const tracking = {
+      activities: [],
+      fueling: [],
+      strength: [parsed.strength],
+      sauna: [parsed.sauna],
+    }
+    applyManualActivityTracking(payload, tracking, null, null, null)
+    applyManualActivityTracking(payload, tracking, null, null, null)
+    const activity = payload.details[String(id)]
+    assert.equal(activity.sport, 'sauna')
+    assert.equal(activity.name, 'Guided All Round, Reset')
+    assert.equal(activity.distanceKm, 0)
+    assert.equal(activity.sauna?.heatTrainingLoad, 7.6)
+    assert.deepEqual(activity.strength, {
+      volumeKg: null,
+      totalSets: null,
+      totalReps: null,
+      exercises: parsed.strength.exercises,
+      source: 'manual',
+    })
+    assert.equal(Object.keys(payload.details).length, 1)
+    assert.equal(payload.days[0].items.length, 1)
+    assert.equal(payload.days[0].items[0].sport, 'sauna')
+    assert.equal(payload.totalCount, 1)
+    assert.deepEqual(payload.strengthTotal, { count: 0, movingTimeS: 0 })
+  }
 })
 
 test('run and walk device thermal values win per channel before bounded CORE app fallback', () => {

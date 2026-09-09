@@ -41,7 +41,7 @@ each lecture/lab carries a recent snapshot. canonical source is under lecture 05
 | `P0.ipynb`      | parser & type-checker      | `factor`, `term`, `simpleExpression`, `expression`, `statement*`, `typ`, `procedureDecl`, `program`                                                                                                                                |
 | `CGast.ipynb`   | AST pretty-printer codegen | classes `UnaryOp`, `BinaryOp`, `Assignment`, `Call`, `Seq`, `IfThen`, `IfElse`, `While`, `ArrayIndexing`, `FieldSelection`; `genVar`, `genConst`, `genBinaryOp`, `genAssign`, `genCall`, `genProcStart/Entry/Exit`, `genLocalVars` |
 | `CGwat.ipynb`   | wasm codegen               | same surface as `CGast`, emits WAT text                                                                                                                                                                                            |
-| `CGriscv.ipynb` | risc-v codegen             | same surface, emits risc-v asm; also tracks `regs` (registers in use)                                                                                                                                                              |
+| `CGriscv.ipynb` | risc-v codegen             | emits risc-v asm; `regs` is the available-register set in the lecture 08 snapshot                                                                                                                                                  |
 | `CGmips.ipynb`  | mips codegen               | same surface, emits mips asm                                                                                                                                                                                                       |
 
 ## AST classes
@@ -52,11 +52,9 @@ each lecture/lab carries a recent snapshot. canonical source is under lecture 05
 
 - $x$ often means "an expression or entry being processed"
 - `reg`, $reg_1$, $reg_2$ are freshly-allocated registers (risc-v/mips)
-- `SP` is a compile-time register stack pointer; `regs` is the set of in-use registers
+- In the lecture 08 RISC-V generator, `SP = 'sp'` names the runtime stack pointer; `regs` contains available registers, removed by `obtainReg` and returned by `releaseReg`.
 - `$name` prefixes indicate wasm locals/globals/functions
 - `memsize` tracks statically-allocated memory during codegen
 - `$_fp` is the local frame pointer; `$_memsize` is the global memory top
 
-## grading
-
-11 assignments (3% each, capped at 28%), midterm 22%, final 50%. tests run on jupyterhub. the practice final lives on `jhub4tb3.cas.mcmaster.ca/user/phama10/`; the local mirror of course material is under `content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/`.
+For grading weights or assessment rules, read the relevant syllabus or question. The local notebooks and their tests provide the implementation context; a lecture snapshot does not establish the requirements of a later assignment.

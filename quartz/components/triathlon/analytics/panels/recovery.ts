@@ -1,10 +1,16 @@
 import type { Analytics } from '../../../../plugins/stores/analytics'
 import type { OuraDayDetail } from '../../../../plugins/stores/oura'
 import type { OuraSeries } from '../../../../plugins/stores/oura'
+import type { SleepMetrics } from '../../../../util/sleep-metrics'
 import type { AxisXTick } from '../../../../util/triathlon-card'
 import type { TriathlonContext } from '../../runtime/context'
 import type { TriathlonFormatter } from '../../runtime/formatter'
-import { axisFrame } from '../../../../util/triathlon-card'
+import { resolveSleepMetrics } from '../../../../util/sleep-metrics'
+import {
+  axisFrame,
+  buildSleepMetricBar,
+  buildSleepRespirationChart,
+} from '../../../../util/triathlon-card'
 import { createDomFactory } from '../../runtime/dom'
 import { el } from '../../runtime/dom'
 import { mathK } from '../../runtime/dom'
@@ -375,39 +381,37 @@ export const buildSleeplessRock = (caption: string): HTMLElement => {
   return wrap
 }
 
-export const buildOuraDayDetail = (
+export const buildSleepDayDetail = (
   formatter: TriathlonFormatter,
-  d: OuraDayDetail,
+  date: string,
+  d: OuraDayDetail | null,
+  sleepMetrics: SleepMetrics | null,
 ): HTMLElement => {
   const wrap = el('div', 'tri-sleep-day-body')
   const head = el('div', 'tri-sleep-day-head')
   const cap = el('div', 'tri-elev-cap')
-  cap.appendChild(el('span', 'tri-ana-k tri-sleep-day-date', formatter.shortDate(d.date)))
-  if (d.bedtimeStart)
+  cap.appendChild(el('span', 'tri-ana-k tri-sleep-day-date', formatter.shortDate(date)))
+  if (d?.bedtimeStart)
     cap.appendChild(
       el('span', 'tri-ana-k', `${formatter.text('bedtime')} ${wallClock(wallMin(d.bedtimeStart))}`),
     )
-  if (d.bedtimeEnd)
+  if (d?.bedtimeEnd)
     cap.appendChild(
       el('span', 'tri-ana-k', `${formatter.text('wake-up')} ${wallClock(wallMin(d.bedtimeEnd))}`),
     )
-  if (d.totalSleepS != null)
+  if (d?.totalSleepS != null)
     cap.appendChild(el('span', 'tri-ana-k', `${formatter.text('sleep')} ${hms(d.totalSleepS)}`))
-  if (d.efficiency != null)
+  if (d?.efficiency != null)
     cap.appendChild(
       el('span', 'tri-ana-k', `${formatter.text('efficiency')} ${Math.round(d.efficiency)}%`),
     )
-  if (d.latencyS != null)
+  if (d?.latencyS != null)
     cap.appendChild(el('span', 'tri-ana-k', `${formatter.text('latency')} ${hms(d.latencyS)}`))
-  if (d.lowestHr != null)
+  if (d?.lowestHr != null)
     cap.appendChild(
       el('span', 'tri-ana-k', `${formatter.text('lowest hr')} ${Math.round(d.lowestHr)}`),
     )
-  if (d.avgBreath != null)
-    cap.appendChild(
-      el('span', 'tri-ana-k', `${formatter.text('breath')} ${d.avgBreath.toFixed(1)}`),
-    )
-  if (d.sleepScore != null)
+  if (d?.sleepScore != null)
     cap.appendChild(
       el(
         'span',
@@ -415,7 +419,7 @@ export const buildOuraDayDetail = (
         `${formatter.text('sleep score')} ${Math.round(d.sleepScore)}`,
       ),
     )
-  if (d.readinessScore != null)
+  if (d?.readinessScore != null)
     cap.appendChild(
       el(
         'span',
@@ -423,6 +427,16 @@ export const buildOuraDayDetail = (
         `${formatter.text('readiness')} ${Math.round(d.readinessScore)}`,
       ),
     )
+  const metricBar = buildSleepMetricBar(
+    createDomFactory(formatter.presentation),
+    date,
+    sleepMetrics ?? resolveSleepMetrics(d, null),
+  )
+  const respiration = buildSleepRespirationChart(
+    createDomFactory(formatter.presentation),
+    date,
+    sleepMetrics,
+  )
   head.appendChild(cap)
   const closeBtn = el('button', 'tri-sleep-day-close', undefined, {
     type: 'button',
@@ -434,18 +448,22 @@ export const buildOuraDayDetail = (
   )
   head.appendChild(closeBtn)
   wrap.appendChild(head)
-  const hyp = buildHypnogram(formatter, d)
-  const hrv = buildOuraSeriesChart(formatter, 'hrv', 'hrv', d.hrv, 'tri-rec-hrv')
-  const hr = buildOuraSeriesChart(formatter, 'hr', 'resting heart rate', d.hr, 'tri-rec-rhr')
-  if (!hyp && !hrv && !hr)
+  if (metricBar) wrap.appendChild(metricBar)
+  const hyp = d ? buildHypnogram(formatter, d) : null
+  const hrv = d ? buildOuraSeriesChart(formatter, 'hrv', 'hrv', d.hrv, 'tri-rec-hrv') : null
+  const hr = d
+    ? buildOuraSeriesChart(formatter, 'hr', 'resting heart rate', d.hr, 'tri-rec-rhr')
+    : null
+  if (!hyp && !hrv && !hr && !metricBar && !respiration)
     wrap.appendChild(buildSleeplessRock(formatter.text('rock bottom — no sleep recorded')))
-  const sleepContrib = ouraContribGroup(formatter, 'sleep score', d.sleepContrib)
+  const sleepContrib = ouraContribGroup(formatter, 'sleep score', d?.sleepContrib ?? null)
   if (sleepContrib) wrap.appendChild(sleepContrib)
-  const readyContrib = ouraContribGroup(formatter, 'readiness', d.readinessContrib)
+  const readyContrib = ouraContribGroup(formatter, 'readiness', d?.readinessContrib ?? null)
   if (readyContrib) wrap.appendChild(readyContrib)
   if (hyp) wrap.appendChild(hyp)
   if (hrv) wrap.appendChild(hrv)
   if (hr) wrap.appendChild(hr)
+  if (respiration) wrap.appendChild(respiration)
   return wrap
 }
 
@@ -454,7 +472,10 @@ export const buildSleep = (data: Analytics, context: TriathlonContext): HTMLElem
   block.appendChild(anaTitle(context.formatter, 'sleep · debt', 'sleepdebt'))
   const rec = data.recovery
   const view = rec.series
-  if (!view.some(d => d.sleepS != null)) {
+  const supplementaryDates = new Set(
+    data.daily.filter(day => day.sleepMetrics != null).map(day => day.date),
+  )
+  if (!view.some(d => d.sleepS != null || supplementaryDates.has(d.date))) {
     block.appendChild(el('div', 'tri-ana-empty', context.formatter.text('no sleep logged')))
     return block
   }
@@ -491,7 +512,14 @@ export const buildSleep = (data: Analytics, context: TriathlonContext): HTMLElem
   view.forEach((d, i) => {
     if (d.sleepS == null) {
       s.appendChild(
-        svg('rect', { x: i + 0.35, y: bot - 0.5, width: 0.3, height: 0.5, class: 'tri-seg--rest' }),
+        svg('rect', {
+          x: i + 0.35,
+          y: bot - 0.5,
+          width: 0.3,
+          height: 0.5,
+          class: 'tri-seg--rest',
+          ...(supplementaryDates.has(d.date) ? { 'data-sleep-date': d.date } : {}),
+        }),
       )
       return
     }

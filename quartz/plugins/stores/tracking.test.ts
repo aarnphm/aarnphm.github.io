@@ -36,6 +36,7 @@ test('parses a virtual Garmin attachment without a tracking date', () => {
       activity: { activityId: 20037941355, garminActivityId: 24239315396, virtual: true },
       fueling: null,
       strength: null,
+      moves: null,
       sauna: null,
       trainingExclusion: null,
     },
@@ -91,6 +92,7 @@ test('parses manual fueling against a Strava activity ID', () => {
       fueling: { date: '2026-07-19', activityId: 19382727312, caloriesConsumed: 140 },
       activity: null,
       strength: null,
+      moves: null,
       sauna: null,
       trainingExclusion: null,
     },
@@ -180,6 +182,40 @@ test('requires a Strava activity ID before emitting strength metadata', () => {
     )?.strength,
     null,
   )
+})
+
+test('parses repeated activity moves with exact per-side repetitions', () => {
+  const parsed = parseTrackingBlock(
+    null,
+    [
+      'date: 2026-09-08',
+      'activity: 20093785889',
+      'move: Roll Eagle | 4 reps per side',
+      'move: Roll Center | 4 reps',
+      'move: Roll Hurdler | 4 reps per side | 4 reps per side',
+    ].join('\n'),
+  )
+
+  assert.deepEqual(parsed?.moves, {
+    date: '2026-09-08',
+    activityId: 20093785889,
+    moves: [
+      { name: 'Roll Eagle', sets: [{ repetitions: 4, perSide: true }] },
+      { name: 'Roll Center', sets: [{ repetitions: 4, perSide: false }] },
+      {
+        name: 'Roll Hurdler',
+        sets: [
+          { repetitions: 4, perSide: true },
+          { repetitions: 4, perSide: true },
+        ],
+      },
+    ],
+  })
+  assert.equal(
+    parseTrackingBlock(null, 'date: 2026-09-08\nactivity: 20093785889\nmove: Roll Eagle')?.moves,
+    null,
+  )
+  assert.equal(parseTrackingBlock(null, 'date: 2026-09-08\nmove: Roll Eagle | 4 reps')?.moves, null)
 })
 
 test('parses a manual sauna session without treating its activity kind as a Strava ID', () => {
@@ -280,4 +316,55 @@ test('parses sauna provider attachments and rejects invalid activity IDs', () =>
   assert.equal(parsed?.garminActivityId, 24_229_638_323)
   assert.equal(parseTrackingBlock(null, [...body, 'strava: 20012367069.5'].join('\n'))?.sauna, null)
   assert.equal(parseTrackingBlock(null, [...body, 'garmin: 24229638323.5'].join('\n'))?.sauna, null)
+})
+
+test('parses sauna exercises against linked and standalone activity IDs', () => {
+  const body = [
+    'title: Guided All Round, Reset',
+    'date: 2026-09-08',
+    'time: 18:00',
+    'duration: 75 mins',
+    'activity: sauna',
+    'temperature: 160F',
+    'humidity: 11%',
+    'cooldown: cold plunge',
+    'htl: 7.6',
+    'garmin: 24290193820',
+    'exercise: Glute Bridge | 30s | 30s',
+    'exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s',
+    'exercise: Single-Leg Glute Bridge to Abductor | 40s | 40s | 40s | 40s',
+    'exercise: Invalid | unknown',
+  ]
+  for (const stravaActivityId of [null, 20094989479]) {
+    const parsed = parseTrackingBlock(
+      null,
+      [...body, ...(stravaActivityId == null ? [] : [`strava: ${stravaActivityId}`])].join('\n'),
+    )
+    assert.ok(parsed?.sauna)
+    assert.ok(parsed.strength)
+    assert.equal(parsed.strength.activityId, stravaActivityId ?? parsed.sauna.id)
+    assert.equal(parsed.strength.date, '2026-09-08')
+    assert.equal(parsed.strength.volumeKg, null)
+    assert.equal(parsed.strength.totalSets, null)
+    assert.equal(parsed.strength.totalReps, null)
+    assert.deepEqual(
+      parsed.strength.exercises,
+      [
+        { name: 'Glute Bridge', durations: [30, 30] },
+        { name: 'Single-Leg Glute Bridge', durations: [40, 40, 40, 40] },
+        { name: 'Single-Leg Glute Bridge to Abductor', durations: [40, 40, 40, 40] },
+      ].map(({ name, durations }) => ({
+        name,
+        setCount: durations.length,
+        durationS: durations.reduce((total, seconds) => total + seconds, 0),
+        repetitions: null,
+        sets: durations.map(durationS => ({ durationS, repetitions: null, weightKg: null })),
+      })),
+    )
+  }
+  for (const invalid of ['strava: 1.5', 'garmin: -1', 'duration: 0 mins']) {
+    const parsed = parseTrackingBlock(null, [...body, invalid].join('\n'))
+    assert.equal(parsed?.sauna, null)
+    assert.equal(parsed?.strength, null)
+  }
 })

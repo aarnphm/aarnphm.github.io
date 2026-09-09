@@ -1,11 +1,11 @@
 ---
 name: content-index
-description: authoritative index of every lecture, lab, and assignment notebook under content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/
+description: lookup guide for lecture, lab, and assignment notebooks under content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/
 ---
 
 # content index
 
-all paths are relative to `content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/`. when aarnphm references a lab or assignment, find it here and read the matching `.ipynb` directly.
+All paths are relative to `content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/`. Use this index when the request lacks an exact path. Read the matching `.ipynb` directly; if an indexed path has moved, search the named lab or assignment with `rg --files`, excluding `.ipynb_checkpoints`. Directory descriptions are a snapshot, not evidence that a question is still absent.
 
 ## lectures
 

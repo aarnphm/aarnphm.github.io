@@ -25,6 +25,60 @@ test('uses the latest valid morning body-composition weight', () => {
   )
 })
 
+test('advanced widths change only the pressure of the edited axle', () => {
+  const selection = { ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 }
+  const baseline = calculateTirePressure(selection)
+  const front31 = updateTirePressureSelection(selection, {
+    field: 'measuredTireWidth',
+    axle: 'front',
+    value: 31,
+  })
+  const frontPressure = calculateTirePressure(front31)
+  const rear30 = updateTirePressureSelection(front31, {
+    field: 'measuredTireWidth',
+    axle: 'rear',
+    value: 30,
+  })
+  const staggered = calculateTirePressure(rear30)
+  assert.ok(baseline && frontPressure && staggered)
+  assert.deepEqual(rear30.measuredTire, { frontWidthMm: 31, rearWidthMm: 30 })
+  assert.ok(frontPressure.frontPsi > baseline.frontPsi)
+  assert.equal(frontPressure.rearPsi, baseline.rearPsi)
+  assert.equal(staggered.frontPsi, frontPressure.frontPsi)
+  assert.ok(staggered.rearPsi < frontPressure.rearPsi)
+})
+
+test('shared mode copies the front width and keeps subsequent edits equal', () => {
+  const shared = updateTirePressureSelection(DEFAULT_TIRE_PRESSURE_SELECTION, {
+    field: 'widthMode',
+    value: 'shared',
+  })
+  assert.deepEqual(shared.measuredTire, { frontWidthMm: 32, rearWidthMm: 32 })
+  const edited = updateTirePressureSelection(shared, {
+    field: 'measuredTireWidth',
+    axle: 'front',
+    value: 30,
+  })
+  assert.deepEqual(edited.measuredTire, { frontWidthMm: 30, rearWidthMm: 30 })
+  const advanced = updateTirePressureSelection(edited, { field: 'widthMode', value: 'separate' })
+  assert.deepEqual(advanced.measuredTire, edited.measuredTire)
+  const front31 = updateTirePressureSelection(advanced, {
+    field: 'measuredTireWidth',
+    axle: 'front',
+    value: 31,
+  })
+  assert.deepEqual(front31.measuredTire, { frontWidthMm: 31, rearWidthMm: 30 })
+})
+
+test('accepts only known width modes and whole measured widths within range', () => {
+  for (const value of ['shared', 'separate'])
+    assert.equal(isTirePressureChange({ field: 'widthMode', value }), true)
+  for (const value of ['advanced', '', false, null])
+    assert.equal(isTirePressureChange({ field: 'widthMode', value }), false)
+  for (const value of [19, 30.5, 66, Number.NaN])
+    assert.equal(isTirePressureChange({ field: 'measuredTireWidth', axle: 'rear', value }), false)
+})
+
 test('converts rider weight units while retaining canonical kilograms', () => {
   assert.equal(formatTirePressureWeight(86.06, 'kg'), '86.06')
   assert.equal(formatTirePressureWeight(86.06, 'lb'), '189.7')
@@ -354,4 +408,23 @@ test('manual balance survives mass edits and custom bike selection until switchi
       .balance,
     '48-52',
   )
+})
+
+test('Aeroad uses its road balance and editable bike mass in the pressure calculation', () => {
+  const selection = updateTirePressureSelection(
+    { ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06, balance: '50-50' },
+    { field: 'bike', value: 'aeroad' },
+  )
+  assert.equal(selection.balance, '48-52')
+  const stock = calculateTirePressure(selection)
+  assert.ok(stock)
+  assert.equal(stock.bike.label, 'Canyon Aeroad CFR')
+  assert.equal(stock.bikeMassLb, 15.7)
+  const equipped = calculateTirePressure(
+    updateTirePressureSelection(selection, { field: 'bikeMass', bike: 'aeroad', value: 20 }),
+  )
+  assert.ok(equipped)
+  assert.equal(equipped.bikeMassLb, 20)
+  assert.ok(equipped.frontPsi > stock.frontPsi)
+  assert.ok(equipped.rearPsi > stock.rearPsi)
 })

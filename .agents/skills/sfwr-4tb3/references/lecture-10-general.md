@@ -64,18 +64,18 @@ PEG longest-match: $\texttt{'<<='} / \texttt{'<<'} / \texttt{'<='}$ selects the 
 
 ## packrat parsing
 
-PEG + memoization = linear time. for every nonterminal and every input position, cache whether parsing succeeded and the position consumed. each of those $O(|N| \times n)$ entries is computed once.
+Packrat parsing memoizes a rule's result at each input position, including failures. There are $O(|N| \times n)$ rule-position entries. Linear time for a fixed grammar also depends on bounded work per entry or memoizing the relevant subexpressions; a rule that repeatedly scans a long suffix can still cost more.
 
 space-time tradeoff: memo table is large. worth it when the grammar has heavy shared prefixes; otherwise packrat can be slower than recursive descent.
 
 ## side effects and attribute grammars
 
-| strategy                       | side effects during parsing?                    |
-| :----------------------------- | :---------------------------------------------- |
-| $LL(k)$ / $LR(k)$              | yes, in rule actions                            |
-| combinator (with backtracking) | risky — may undo                                |
-| packrat                        | no, must return results so memoization can undo |
-| earley                         | attach results to items; not all items are used |
+| strategy                       | side effects during parsing?                                                     |
+| :----------------------------- | :------------------------------------------------------------------------------- |
+| $LL(k)$ / $LR(k)$              | yes, in rule actions                                                             |
+| combinator (with backtracking) | risky — may undo                                                                 |
+| packrat                        | return semantic values with memoized results; a cache does not undo side effects |
+| earley                         | attach results to items; not all items are used                                  |
 
 ## probabilistic grammars
 

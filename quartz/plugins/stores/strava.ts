@@ -15,8 +15,10 @@ import type {
 } from './garmin'
 import type { OuraCache, OuraDaily, OuraHeartRateSample } from './oura'
 import type {
+  ActivityMove,
   ActivityTrackingEntry,
   ManualFuelingEntry,
+  ManualMovesEntry,
   ManualSaunaEntry,
   ManualStrengthEntry,
   StrengthExercise,
@@ -550,6 +552,11 @@ export interface ActivityStrength {
   source: 'manual' | 'strava'
 }
 
+export interface ActivityMoveList {
+  entries: ActivityMove[]
+  source: 'manual'
+}
+
 export interface ActivitySauna {
   time: string
   temperatureC: number
@@ -643,6 +650,7 @@ export interface StravaActivityDetail {
   location: string | null
   fueling: ActivityFueling | null
   strength: ActivityStrength | null
+  moves?: ActivityMoveList
   sauna: ActivitySauna | null
   garmin: GarminVerification | null
   computer: ActivityComputer | null
@@ -694,7 +702,7 @@ export interface ActivitySource {
 
 export interface WahooVerification {
   activityId: string
-  fitPath: string
+  fitPath: string | null
   sha256: string
   sourceDevice: string | null
   startOffsetS: number
@@ -719,6 +727,26 @@ const WAHOO_SUMMARY_FIELDS = [
 type WahooSummaryDetailField = (typeof WAHOO_SUMMARY_FIELDS)[number][2]
 const WAHOO_TELEMETRY_MAX_DISTANCE_S = 2.5
 
+function withWahooSummary(
+  activity: RawStravaActivity,
+  detail: RawStravaActivityDetail | undefined,
+  match: WahooActivityMatch,
+): RawStravaActivity {
+  const projected = { ...activity }
+  for (const [field, metric] of WAHOO_SUMMARY_FIELDS) {
+    if (field === 'calories') projected.calories ??= detail?.calories ?? undefined
+    const value = match.activity.metrics[metric]
+    if (projected[field] == null && value != null && Number.isFinite(value))
+      projected[field] = value
+  }
+  if (
+    (activity.averageWatts == null || activity.deviceWatts == null) &&
+    match.activity.metrics.avgPower != null
+  )
+    projected.deviceWatts = true
+  return projected
+}
+
 function mergeWahooTelemetry(
   activity: RawStravaActivity,
   original: StravaStreams | GarminStreams | undefined,
@@ -727,9 +755,9 @@ function mergeWahooTelemetry(
 ): StravaStreams | undefined {
   const time = original?.time
   const stream = wahoo.streams[match.activity.id]
-  if (!original || !time?.length || !stream) return original as StravaStreams | undefined
+  if (!original || !time?.length || !stream) return original
   const offsetS = (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1_000
-  const merged: StravaStreams = { ...original, time: [...time] }
+  const merged: StravaStreams = { ...original }
   for (const key of ['watts', 'heartrate', 'cadence'] as const) {
     const values = stream[key]
     if (values.length !== stream.time.length) continue
@@ -1425,6 +1453,69 @@ function selectStreams(
       cadence: telemetry('cadence'),
     }
   }
+  if (activity && normalizeKind(activity.sportType) === 'bike') {
+    if (!fromGarmin || !match) return strava
+    const offsetS = (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1_000
+    const garminTime = fromGarmin.time
+    const stravaTime = strava?.time
+    if (!Number.isFinite(offsetS) || !garminTime?.length) return strava
+    if (!strava || !stravaTime?.length) {
+      const endS = activity.elapsedTime || activity.movingTime
+      const indices = garminTime.flatMap((time, index) =>
+        time + offsetS >= 0 && time + offsetS <= endS ? [index] : [],
+      )
+      const aligned: StravaStreams = {
+        time: indices.map(index => garminTime[index] + offsetS),
+        latlng:
+          fromGarmin.latlng.length === garminTime.length
+            ? indices.map(index => fromGarmin.latlng[index])
+            : [],
+        altitude:
+          fromGarmin.altitude.length === garminTime.length
+            ? indices.map(index => fromGarmin.altitude[index])
+            : [],
+        distance:
+          fromGarmin.distance.length === garminTime.length
+            ? indices.map(index => fromGarmin.distance[index])
+            : [],
+      }
+      for (const key of ['watts', 'heartrate', 'cadence'] as const) {
+        const values = fromGarmin[key]
+        if (values?.length === garminTime.length) aligned[key] = indices.map(index => values[index])
+      }
+      return aligned
+    }
+    const merged: StravaStreams = { ...strava }
+    for (const key of ['distance', 'altitude', 'watts', 'heartrate', 'cadence'] as const) {
+      const primary = strava[key]
+      const fallback = fromGarmin[key]
+      if (primary?.length === stravaTime.length && primary.every(Number.isFinite)) continue
+      if (fallback?.length !== garminTime.length) continue
+      const samples = garminTime.map((time, index) => ({
+        elapsedS: time + offsetS,
+        value: Number.isFinite(fallback[index]) ? fallback[index] : null,
+      }))
+      merged[key] = stravaTime.map((time, index) =>
+        primary?.length === stravaTime.length && Number.isFinite(primary[index])
+          ? primary[index]
+          : (timedNullableMetricAt(samples, time, WAHOO_TELEMETRY_MAX_DISTANCE_S) ?? 0),
+      )
+    }
+    if (
+      strava.latlng.length !== stravaTime.length &&
+      fromGarmin.latlng.length === garminTime.length
+    ) {
+      const time = garminTime.map(value => value + offsetS)
+      const positions = stravaTime.map(value => {
+        const index = nearestElapsedIndex(time, value)
+        return Math.abs(time[index] - value) <= WAHOO_TELEMETRY_MAX_DISTANCE_S
+          ? fromGarmin.latlng[index]
+          : null
+      })
+      if (positions.every(position => position != null)) merged.latlng = positions
+    }
+    return merged
+  }
   return streamQuality(fromGarmin) > streamQuality(strava) ? fromGarmin : strava
 }
 
@@ -1479,28 +1570,17 @@ export function applyActivityTracking(
       }
     }
     const wahooMatch =
-      entry.wahooFitPath && sport === 'bike'
-        ? matchWahooActivity(activity, sport, wahoo, entry.wahooFitPath)
-        : null
+      sport === 'bike' ? matchWahooActivity(activity, sport, wahoo, entry.wahooFitPath) : null
     if (wahooMatch && wahoo) {
-      const projected = { ...activities[id] }
-      for (const [field, metric] of WAHOO_SUMMARY_FIELDS) {
-        if (field === 'calories')
-          projected.calories ??= cache.activityDetails?.[id]?.calories ?? undefined
-        const value = wahooMatch.activity.metrics[metric]
-        if (projected[field] == null && value != null && Number.isFinite(value))
-          projected[field] = value
-      }
-      if (
-        (activity.averageWatts == null || activity.deviceWatts == null) &&
-        wahooMatch.activity.metrics.avgPower != null
-      )
-        projected.deviceWatts = true
-      activities[id] = projected
+      activities[id] = withWahooSummary(activities[id], cache.activityDetails?.[id], wahooMatch)
       const base =
         streams[id] ?? (match ? selectStreams(undefined, match, garmin, activities[id]) : undefined)
       const merged = mergeWahooTelemetry(activity, base, wahooMatch, wahoo)
       if (merged) streams[id] = merged
+    }
+    if (!entry.virtual && sport === 'bike') {
+      const selected = selectStreams(streams[id], match, garmin, activities[id])
+      if (selected) streams[id] = selected
     }
   }
   return { ...cache, activities, streams }
@@ -1510,7 +1590,7 @@ function selectEffortStreams(
   strava: StravaStreams | undefined,
   selected: StravaStreams | GarminStreams | undefined,
 ): StravaStreams | GarminStreams | undefined {
-  return strava?.time?.length ? strava : selected
+  return strava?.time?.length && strava.time !== selected?.time ? strava : selected
 }
 
 export function resolveActivityHeartRate(
@@ -2019,7 +2099,10 @@ function activityClimbSegments(
   wahoo: WahooData | null,
 ): ActivityClimbSegment[] {
   if (sport !== 'bike') return []
-  if (wahooMatch) return wahooClimbSegments(wahoo?.summitSegments[wahooMatch.activity.id] ?? [])
+  const wahooClimbs = wahooMatch
+    ? wahooClimbSegments(wahoo?.summitSegments[wahooMatch.activity.id] ?? [])
+    : []
+  if (wahooClimbs.length > 0) return wahooClimbs
   if (garminMatch) return garminClimbSegments(garmin?.climbs?.[garminMatch.activity.id] ?? [])
   return []
 }
@@ -2750,18 +2833,23 @@ function activityMetricSamples(
     return collected.sort((left, right) => left.elapsedS - right.elapsedS)
   }
   const directWahooRespiration = collect(stream.respiration, value => value > 0)
-  const preferWahoo = 'path' in wahooMatch.activity.sourceFile
   const select = <T extends TimedNullableMetricSample>(
     garminSamples: T[],
     wahooSamples: T[],
   ): T[] => {
-    const [primary, fallback] = preferWahoo
-      ? [wahooSamples, garminSamples]
-      : [garminSamples, wahooSamples]
-    return primary.some(sample => sample.value != null) ? primary : fallback
+    if (!wahooSamples.some(sample => sample.value != null)) return garminSamples
+    return wahooSamples.map(sample => ({
+      ...sample,
+      value:
+        sample.value ??
+        timedNullableMetricAt(garminSamples, sample.elapsedS, THERMAL_SAMPLE_MAX_DISTANCE_S),
+    }))
   }
   const wahooRespiration =
-    directWahooRespiration.length > 0 || sport !== 'bike' || !respirationProjection
+    directWahooRespiration.length > 0 ||
+    samples.respiration.length > 0 ||
+    sport !== 'bike' ||
+    !respirationProjection
       ? directWahooRespiration
       : projectWahooRespiration(stream, startOffsetS, respirationProjection)
   const estimatedStamina =
@@ -2785,10 +2873,7 @@ function activityMetricSamples(
       : null
   return {
     ...samples,
-    deviceTemperatureC:
-      'path' in wahooMatch.activity.sourceFile
-        ? collectThermal(stream.temperature, value => value >= -80 && value <= 80)
-        : [],
+    deviceTemperatureC: collectThermal(stream.temperature, value => value >= -80 && value <= 80),
     stamina: estimatedStamina?.stamina ?? samples.stamina,
     potentialStamina: estimatedStamina?.potentialStamina ?? samples.potentialStamina,
     staminaTrace: estimatedStamina?.staminaTrace ?? samples.staminaTrace,
@@ -2974,7 +3059,7 @@ function activityGearShifts(
   wahooMatch: WahooActivityMatch | null,
   wahoo: WahooData | null,
 ): ActivityGearShift[] {
-  if (wahooMatch && 'path' in wahooMatch.activity.sourceFile) {
+  if (wahooMatch) {
     const shifts = projectedGearShifts(
       activity,
       wahooMatch.activity.startDate,
@@ -2992,13 +3077,7 @@ function activityGearShifts(
     )
     if (projected.length > 0) return projected
   }
-  if (!wahooMatch) return []
-  return projectedGearShifts(
-    activity,
-    wahooMatch.activity.startDate,
-    wahoo?.gearShifts[wahooMatch.activity.id] ?? [],
-    wahooTimedStreamAlignment(wahoo?.streams[wahooMatch.activity.id]),
-  )
+  return []
 }
 
 const cyclingDynamicsMetricKeys = [
@@ -3102,12 +3181,7 @@ function activityCyclingDynamics(
   const projectedWahoo = wahooDynamics
     ? projectCyclingDynamics(activity, wahooMatch?.activity.startDate ?? '', wahooDynamics)
     : null
-  if (
-    wahooMatch &&
-    'path' in wahooMatch.activity.sourceFile &&
-    projectedWahoo &&
-    cyclingDynamicsScore(projectedWahoo) > 0
-  ) {
+  if (projectedWahoo && cyclingDynamicsScore(projectedWahoo) > 0) {
     if (projectedGarmin?.elapsedS.length && projectedWahoo.elapsedS.length)
       for (const key of cyclingDynamicsMetricKeys)
         projectedWahoo[key] = projectedWahoo[key].map((value, index) => {
@@ -3121,9 +3195,7 @@ function activityCyclingDynamics(
         })
     return projectedWahoo
   }
-  return cyclingDynamicsScore(projectedWahoo) > cyclingDynamicsScore(projectedGarmin)
-    ? projectedWahoo
-    : projectedGarmin
+  return projectedGarmin
 }
 
 function activityRunWalk(
@@ -3156,18 +3228,27 @@ function rangeIndices(
   alignment: TimedStreamAlignment,
   activityStartMs: number,
   fallbackStartElapsedS: number | null,
+  hasStravaStreams: boolean,
 ): [number, number] | null {
+  const startMs = raw.startDate ? Date.parse(raw.startDate) : NaN
+  // Lap indices can refer to the original recording rather than the exported stream.
+  // Strava timestamps survive resampling and provider timeline replacement.
+  if (Number.isFinite(startMs)) {
+    const startElapsedS = (startMs - activityStartMs) / 1000
+    return [
+      nearestElapsedIndex(alignment.time, startElapsedS),
+      nearestElapsedIndex(alignment.time, startElapsedS + raw.elapsedTime),
+    ]
+  }
   if (
+    hasStravaStreams &&
     validStreamIndex(raw.startIndex, alignment.time.length) &&
     validStreamIndex(raw.endIndex, alignment.time.length) &&
     raw.endIndex >= raw.startIndex
   )
     return [raw.startIndex, raw.endIndex]
 
-  const startMs = raw.startDate ? Date.parse(raw.startDate) : NaN
-  const startElapsedS = Number.isFinite(startMs)
-    ? (startMs - activityStartMs) / 1000
-    : fallbackStartElapsedS
+  const startElapsedS = fallbackStartElapsedS
   if (startElapsedS == null || !Number.isFinite(startElapsedS)) return null
   const endElapsedS = startElapsedS + raw.elapsedTime
   return [
@@ -3238,7 +3319,7 @@ function projectAnalysisRanges(
   let lapElapsedS = 0
 
   for (const [index, raw] of (detail?.laps ?? []).entries()) {
-    const bounds = rangeIndices(raw, alignment, activityStartMs, lapElapsedS)
+    const bounds = rangeIndices(raw, alignment, activityStartMs, lapElapsedS, hasStravaStreams)
     lapElapsedS += raw.elapsedTime
     if (!bounds || bounds[1] < bounds[0]) continue
     const range = projectStravaAnalysisRange('lap', raw, index, bounds, alignment)
@@ -3264,7 +3345,7 @@ function projectAnalysisRanges(
     boundaryIndices.push(...bounds)
   }
   for (const [index, raw] of (detail?.segmentEfforts ?? []).entries()) {
-    const bounds = rangeIndices(raw, alignment, activityStartMs, null)
+    const bounds = rangeIndices(raw, alignment, activityStartMs, null, hasStravaStreams)
     if (!bounds || bounds[1] < bounds[0]) continue
     ranges.push(projectStravaAnalysisRange('segment', raw, index, bounds, alignment))
     boundaryIndices.push(...bounds)
@@ -3596,8 +3677,14 @@ function projectDetail(
         temperatureAt(temperatureSeries, elapsedS) ??
         fallbackTemperatureC
       const rightPowerPct = timedMetricAt(metricSamples.rightBalance, elapsedS)
-      const stamina = timedMetricAt(metricSamples.stamina, elapsedS)
-      const potentialStamina = timedMetricAt(metricSamples.potentialStamina, elapsedS)
+      const staminaAt = (samples: TimedMetricSample[]): number | null =>
+        samples.length > 0 &&
+        elapsedS >= samples[0].elapsedS &&
+        elapsedS <= samples[samples.length - 1].elapsedS
+          ? timedNullableMetricAt(samples, elapsedS, THERMAL_SAMPLE_MAX_DISTANCE_S)
+          : null
+      const stamina = staminaAt(metricSamples.stamina)
+      const potentialStamina = staminaAt(metricSamples.potentialStamina)
       const respiration = timedMetricAt(metricSamples.respiration, elapsedS)
       const muscleOxygen = timedMetricAt(metricSamples.muscleOxygenPercent, elapsedS)
       const thermal = nativeThermalAt(metricSamples, elapsedS)
@@ -3669,7 +3756,7 @@ function projectDetail(
     avgCadence:
       a.averageCadence != null
         ? Math.round(a.averageCadence)
-        : (avgPos(cadStream) ?? roundPos(garmin?.avgCadence)),
+        : (roundPos(garmin?.avgCadence) ?? avgPos(cadStream)),
     sufferScore: a.sufferScore != null ? Math.round(a.sufferScore) : null,
     calories:
       a.calories != null
@@ -3817,7 +3904,12 @@ export function applyManualStrength(
 ): void {
   for (const entry of entries) {
     const detail = payload.details[String(entry.activityId)]
-    if (!detail || detail.date !== entry.date || detail.sport !== 'strength') continue
+    if (
+      !detail ||
+      detail.date !== entry.date ||
+      (detail.sport !== 'strength' && detail.sport !== 'sauna')
+    )
+      continue
     detail.strength = {
       volumeKg: entry.volumeKg,
       totalSets: entry.totalSets,
@@ -3825,6 +3917,17 @@ export function applyManualStrength(
       exercises: entry.exercises,
       source: 'manual',
     }
+  }
+}
+
+export function applyManualMoves(
+  payload: StravaPayload,
+  entries: readonly ManualMovesEntry[],
+): void {
+  for (const entry of entries) {
+    const detail = payload.details[String(entry.activityId)]
+    if (!detail || detail.date !== entry.date) continue
+    detail.moves = { entries: entry.moves, source: 'manual' }
   }
 }
 
@@ -4220,7 +4323,11 @@ export function buildPayload(
       wahoo ?? null,
       trackingById.get(a.id)?.wahooFitPath,
     )
-    const streams = selectStreams(cache.streams?.[id], match, garmin, a)
+    const primary =
+      wahooMatch && wahoo
+        ? mergeWahooTelemetry(a, cache.streams?.[id], wahooMatch, wahoo)
+        : cache.streams?.[id]
+    const streams = selectStreams(primary, match, garmin, a)
     garminMatches.set(id, match)
     garminTrainingEffectMatches.set(id, trainingEffectMatch)
     garminHeartRateMatches.set(id, hrMatch)
@@ -4447,7 +4554,7 @@ export function buildPayload(
       : (exactWeather ??
         (weather && usesRouteLessWeather ? nearestSameDayWeather(weather, a) : undefined))
     details[String(a.id)] = projectDetail(
-      a,
+      wahooMatch ? withWahooSummary(a, cache.activityDetails?.[id], wahooMatch) : a,
       sport,
       selectedStream,
       selectEffortStreams(cache.streams?.[id], selectedStream),
@@ -4490,6 +4597,8 @@ export function buildPayload(
       activityCriticalPowers.get(id) ?? null,
     )
     const detail = details[id]
+    if (!detail.virtual && trackingById.get(a.id)?.garminActivityId != null)
+      detail.distanceSource = 'strava'
     const stravaWatts = originalCache.streams?.[id]?.watts
     if (detail.powerWithoutZeros && stravaWatts?.some(value => value > 0))
       detail.powerWithoutZeros.avgWatts = avgPos(stravaWatts)
@@ -4524,15 +4633,11 @@ export function buildPayload(
             : fileName(source.sourceFile.url.split(/[?#]/)[0]),
       })
     }
-    if (
-      trackingById.get(a.id)?.wahooFitPath &&
-      wahooMatch &&
-      'path' in wahooMatch.activity.sourceFile
-    ) {
+    if (wahooMatch) {
       const source = wahooMatch.activity
       detail.wahoo = {
         activityId: source.id,
-        fitPath: wahooMatch.activity.sourceFile.path,
+        fitPath: 'path' in source.sourceFile ? source.sourceFile.path : null,
         sha256: source.sourceFile.sha256,
         sourceDevice: source.sourceDevice,
         startOffsetS: (Date.parse(source.startDate) - Date.parse(original.startDate)) / 1_000,
@@ -4562,7 +4667,7 @@ export function buildPayload(
       )
       detail.calculatedExerciseLoad = calculateActivityExerciseLoad(detail)
       const merged = cache.streams?.[id]
-      if (merged?.time)
+      if (trackingById.get(a.id)?.wahooFitPath && merged?.time)
         for (const range of detail.analysisRanges) {
           for (const [field, channel] of [
             ['averageWatts', 'watts'],

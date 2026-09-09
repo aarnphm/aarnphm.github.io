@@ -9,6 +9,7 @@ import type {
 } from '../plugins/stores/analytics'
 import type { OuraDayDetail, OuraSeries } from '../plugins/stores/oura'
 import type { StravaActivityDetail } from '../plugins/stores/strava'
+import { isSleepMetrics, resolveSleepMetrics, type SleepMetrics } from './sleep-metrics'
 import { isRecord } from './type-guards'
 
 export interface TriathlonDayRecovery {
@@ -79,6 +80,7 @@ export interface TriathlonDayAnalytics {
   body: BodyCompositionDay | null
   recovery: TriathlonDayRecovery | null
   sleep: TriathlonDaySleep | null
+  sleepMetrics: SleepMetrics | null
   training: TriathlonDayTraining | null
   heat: (HeatDay & { coreOrigin: CoreTemperatureOrigin | 'mixed' | null }) | null
 }
@@ -227,6 +229,7 @@ export const isTriathlonDailyAnalytics = (value: unknown): value is TriathlonDai
       bodyIsValid(summary.body, date) &&
       recoveryIsValid(summary.recovery) &&
       sleepIsValid(summary.sleep) &&
+      isSleepMetrics(summary.sleepMetrics, date) &&
       trainingIsValid(summary.training) &&
       heatIsValid(summary.heat, date),
   )
@@ -407,6 +410,7 @@ export function buildTriathlonDailyAnalytics(
           }
         : null,
       sleep: sleepSummary(ouraDetails[date]),
+      sleepMetrics: daily?.sleepMetrics ?? resolveSleepMetrics(ouraDetails[date], null),
       training:
         daily || activitySummaries.length > 0 || activities.length > 0 || vo2max
           ? {

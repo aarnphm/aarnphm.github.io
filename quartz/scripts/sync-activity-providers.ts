@@ -19,6 +19,7 @@ import {
   type ActivityBridgeUploadStatus,
   type ActivityBridgeWahooActivity,
 } from '../plugins/stores/activity-bridge'
+import { isActivityKind } from '../plugins/stores/strava'
 import { parseWahooCache } from '../plugins/stores/wahoo'
 import { garminActivityFileFromArchive } from '../util/garmin-fit'
 import {
@@ -148,6 +149,7 @@ export function parseActivityBridgeStravaActivities(
 function providerSport(record: UnknownRecord, label: string): 'bike' | 'run' | 'swim' | null {
   const value = optionalString(record, 'sport', label)
   if (value == null || value === 'bike' || value === 'run' || value === 'swim') return value
+  if (isActivityKind(value)) return null
   throw new Error(`${label}.sport is invalid`)
 }
 

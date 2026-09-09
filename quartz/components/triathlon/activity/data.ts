@@ -22,9 +22,10 @@ const isWahooVerification = (value: unknown): boolean => {
   const metrics = value.metrics
   return (
     typeof value.activityId === 'string' &&
-    typeof value.fitPath === 'string' &&
-    value.fitPath.startsWith('triathlon/wahoo/') &&
-    value.fitPath.toLowerCase().endsWith('.fit') &&
+    (value.fitPath === null ||
+      (typeof value.fitPath === 'string' &&
+        value.fitPath.startsWith('triathlon/wahoo/') &&
+        value.fitPath.toLowerCase().endsWith('.fit'))) &&
     typeof value.sha256 === 'string' &&
     /^[a-f0-9]{64}$/.test(value.sha256) &&
     (value.sourceDevice === null || typeof value.sourceDevice === 'string') &&
@@ -50,6 +51,29 @@ const isActivitySources = (value: unknown): boolean =>
         typeof source.activityId === 'string' &&
         (source.name === null || typeof source.name === 'string') &&
         (source.fileName === null || typeof source.fileName === 'string'),
+    ))
+
+const isActivityMoves = (value: unknown): boolean =>
+  value === undefined ||
+  (isRecord(value) &&
+    value.source === 'manual' &&
+    Array.isArray(value.entries) &&
+    value.entries.length > 0 &&
+    value.entries.every(
+      move =>
+        isRecord(move) &&
+        typeof move.name === 'string' &&
+        move.name.trim().length > 0 &&
+        Array.isArray(move.sets) &&
+        move.sets.length > 0 &&
+        move.sets.every(
+          set =>
+            isRecord(set) &&
+            typeof set.repetitions === 'number' &&
+            Number.isSafeInteger(set.repetitions) &&
+            set.repetitions > 0 &&
+            typeof set.perSide === 'boolean',
+        ),
     ))
 
 const isDetailIndex = (value: unknown): value is StravaDetailIndex =>
@@ -408,6 +432,7 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     !isActivityKind(value.sport) ||
     !isWahooVerification(value.wahoo) ||
     !isActivitySources(value.sources) ||
+    !isActivityMoves(value.moves) ||
     !(value.device === null || isActivityDevice(value.device)) ||
     !isStaminaTrace(value.staminaTrace) ||
     (isRecord(value.staminaTrace) &&

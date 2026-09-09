@@ -106,6 +106,10 @@
       display: none;
     }
 
+    > [data-entry-id][hidden] {
+      display: none !important;
+    }
+
     > .stream-entry-spacer {
       display: block;
       inline-size: 100%;
@@ -729,12 +733,6 @@
     flex-wrap: wrap;
     gap: 0.25rem;
     min-width: 0;
-  }
-
-  .stream-entry {
-    &[hidden] {
-      display: none !important;
-    }
   }
 
   .stream-backlink {

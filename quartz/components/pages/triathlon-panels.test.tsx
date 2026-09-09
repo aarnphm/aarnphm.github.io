@@ -71,6 +71,27 @@ const renderData: TriathlonRenderData = {
   },
 }
 
+test('server analytics exposes Garmin running lactate threshold values and dates', () => {
+  const native = buildAnalytics(null, {
+    garmin: {
+      lastSync: Date.parse('2026-09-08T20:00:00Z'),
+      activities: {},
+      runningLactateThreshold: {
+        speedMps: { value: 3.75, date: '2026-09-08' },
+        heartRateBpm: { value: 174, date: '2026-09-07' },
+      },
+    },
+  })
+  const html = renderToString(
+    <AnalyticsPanel page renderData={{ ...renderData, analytics: native }} />,
+  )
+  assert.match(html, /running heart rate · Garmin · 2026-09-07/)
+  assert.match(html, /174 bpm/)
+  assert.match(html, /running pace · Garmin · 2026-09-08/)
+  assert.match(html, /4:27|7:09/)
+  assert.doesNotMatch(html, /heart rate · declared/)
+})
+
 const maintenance: TriathlonMaintenance = {
   services: [],
   components: [],
@@ -355,10 +376,14 @@ test('calculator page tabs own race, gear ratio, and daily tire pressure calcula
   assert.match(html, /Reserve 40\|44 Road/)
   assert.match(html, /HUNT 54_58 Aerodynamicist UD/)
   assert.match(html, />Custom Wheelset<\/span>/)
-  assert.equal(html.match(/data-pressure-field="bikeMass"/g)?.length, 3)
+  assert.equal(html.match(/data-pressure-field="bikeMass"/g)?.length, 4)
   assert.equal(html.match(/data-pressure-field="balance"/g)?.length, 4)
   assert.equal(html.match(/data-pressure-field="customWheelWidth"/g)?.length, 2)
-  assert.equal(html.match(/data-pressure-field="measuredTireWidth"/g)?.length, 2)
+  assert.equal(html.match(/data-pressure-field="measuredTireWidth"/g)?.length, 3)
+  assert.match(html, /data-pressure-field="widthMode" aria-pressed="true"/)
+  assert.match(html, />customized front\/rear width<\/button>/)
+  assert.match(html, /data-pressure-width-mode="shared" hidden/)
+  assert.match(html, /data-pressure-width-mode="separate" role="group"/)
   assert.equal(html.match(/data-pressure-field="weightUnit"/g)?.length, 2)
   const tireInputs = elements(
     rendered(panel),

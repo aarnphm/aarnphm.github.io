@@ -1,3 +1,4 @@
+import type { GarminRunWalkSegment } from '../plugins/stores/garmin'
 import type { GardenEnvironmentSample, GardenUvScore } from './activity-environment'
 import type { TriathlonDailyAnalytics, TriathlonDayAnalytics } from './triathlon-day-analytics'
 import type { Locale, TriathlonPresentation } from './triathlon-presentation'
@@ -22,6 +23,7 @@ import {
 import { selectActivityAnalysisSummary } from './activity-analysis-selection'
 import { gardenUvScoreFromDose } from './activity-uv-score'
 import { RUN_PACE_ZONE_NAMES, runPaceZoneRange } from './run-pace-zones'
+import { resolveSleepMetrics, type SleepMetrics } from './sleep-metrics'
 import {
   swimLengthAverages,
   swimLengthMetrics,
@@ -79,6 +81,8 @@ export type ActivityFueling = NonNullable<StravaActivityDetail['fueling']>
 export type ActivityStrength = NonNullable<StravaActivityDetail['strength']>
 export type ActivityStrengthExercise = ActivityStrength['exercises'][number]
 export type ActivityStrengthSet = ActivityStrengthExercise['sets'][number]
+export type ActivityMoves = NonNullable<StravaActivityDetail['moves']>
+export type ActivityMove = ActivityMoves['entries'][number]
 
 export const KM_TO_MI = 0.621371
 export const M_TO_FT = 3.28084
@@ -352,7 +356,7 @@ export const moreStatRows = (
   const showRunPower = fillMissingRunPower && d.sport === 'run'
   if (d.deviceWatts && d.npWatts != null) rows.push(['NP', `${d.npWatts} W`])
   else if (showRunPower) rows.push(['NP', '—'])
-  const trainingStressScore = d.garmin?.trainingStressScore ?? d.wahoo?.metrics.trainingStressScore
+  const trainingStressScore = d.wahoo?.metrics.trainingStressScore ?? d.garmin?.trainingStressScore
   if (trainingStressScore != null) rows.push(['TSS', `${trainingStressScore}`])
   if (d.avgWatts != null) rows.push([d.deviceWatts ? 'avg power' : 'est power', `${d.avgWatts} W`])
   else if (showRunPower) rows.push(['avg power', '—'])
@@ -393,7 +397,15 @@ export const moreStatRows = (
   if (d.sources?.length || d.garmin || d.wahoo)
     rows.push([
       'source',
-      d.garmin ? 'Garmin' : d.wahoo || d.computer === 'wahoo' ? 'Wahoo' : 'Strava',
+      d.wahoo
+        ? 'Wahoo'
+        : d.distanceSource === 'strava'
+          ? 'Strava'
+          : d.garmin
+            ? 'Garmin'
+            : d.computer === 'wahoo'
+              ? 'Wahoo'
+              : 'Strava',
     ])
   return rows
 }
@@ -2574,7 +2586,9 @@ export const buildStaminaChart = <N>(
             'data-gloss-def': `${triText(f.presentation.locale, 'estimate')} · FTP ${estimatedTrace.ftpWatts} W · ${triText(f.presentation.locale, 'max hr')} ${estimatedTrace.maxHeartRateBpm} bpm`,
             tabindex: '0',
           }
-        : undefined,
+        : d.staminaTrace?.source === 'garmin'
+          ? { 'data-gloss': '', 'data-gloss-def': 'Garmin Connect', tabindex: '0' }
+          : undefined,
     ),
   )
   for (const kind of ['current', 'potential'] as const) {
@@ -3393,6 +3407,21 @@ const formatRunWalkTime = (seconds: number): string => {
   return `0:${seconds.toFixed(1).padStart(4, '0')}`
 }
 
+export const runWalkSegmentAt = (
+  segments: readonly GarminRunWalkSegment[],
+  elapsedS: number,
+): GarminRunWalkSegment | null => {
+  if (!Number.isFinite(elapsedS)) return null
+  return (
+    segments.find(
+      (segment, index) =>
+        elapsedS >= segment.startElapsedS &&
+        (elapsedS < segment.endElapsedS ||
+          (index === segments.length - 1 && elapsedS === segment.endElapsedS)),
+    ) ?? null
+  )
+}
+
 export const buildRunWalkTrace = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   const runWalk = d.runWalk
   if (d.sport !== 'run' || !runWalk || runWalk.segments.length === 0 || runWalk.elapsedTimeS <= 0)
@@ -3407,7 +3436,13 @@ export const buildRunWalkTrace = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
     preserveAspectRatio: 'none',
     'data-domain-start-elapsed-s': 0,
     'data-domain-end-elapsed-s': runWalk.elapsedTimeS,
-    'aria-hidden': 'true',
+    tabindex: 0,
+    role: 'slider',
+    'aria-label': triText(f.presentation.locale, 'run/walk'),
+    'aria-valuemin': 0,
+    'aria-valuemax': runWalk.elapsedTimeS,
+    'aria-valuenow': 0,
+    'aria-valuetext': `0:00 · ${triText(f.presentation.locale, runWalkSegmentAt(runWalk.segments, 0)?.state ?? 'unavailable')}`,
   })
   for (const segment of runWalk.segments) {
     const x = (segment.startElapsedS / runWalk.elapsedTimeS) * width
@@ -3422,10 +3457,16 @@ export const buildRunWalkTrace = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
         width: segmentWidth.toFixed(4),
         height: 8,
         'data-run-walk-state': segment.state,
+        'data-start-elapsed-s': segment.startElapsedS,
+        'data-end-elapsed-s': segment.endElapsedS,
       }),
     )
   }
-  f.add(svgEl, buildAnalysisSelectionRect(f, height))
+  f.add(
+    svgEl,
+    buildAnalysisSelectionRect(f, height),
+    f.svg('line', { class: 'tri-chart-cursor', x1: 0, x2: 0, y1: 0, y2: height }),
+  )
   const wrap = f.el('div', 'tri-elev-wrap tri-run-walk-chart', undefined, {
     'data-tri-trace': triathlonTraceName('run/walk'),
     'data-run-walk-source': runWalk.source,
@@ -3449,7 +3490,12 @@ export const buildRunWalkTrace = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
     )
     f.add(summary, total)
   }
-  f.add(cap, f.el('span', 'tri-elev-d', triText(f.presentation.locale, 'run/walk')), summary)
+  f.add(
+    cap,
+    f.el('span', 'tri-elev-d', triText(f.presentation.locale, 'run/walk')),
+    summary,
+    f.el('span', 'tri-fig-readout tri-chart-readout'),
+  )
   f.add(
     wrap,
     cap,
@@ -3840,14 +3886,15 @@ const workoutElevationPath = (d: StravaActivityDetail, totalElapsedS: number): s
   const minAltitude = Math.min(...route.map(point => point.alt))
   const maxAltitude = Math.max(...route.map(point => point.alt))
   const altitudeSpan = Math.max(1, maxAltitude - minAltitude)
+  const projectX = (elapsedS: number): string =>
+    Math.max(0, Math.min(100, (elapsedS / totalElapsedS) * 100)).toFixed(3)
   const points = route
     .map(point => {
-      const x = Math.max(0, Math.min(100, (point.elapsedS / totalElapsedS) * 100))
       const y = 100 - ((point.alt - minAltitude) / altitudeSpan) * 100
-      return `L ${x.toFixed(3)} ${y.toFixed(3)}`
+      return `L ${projectX(point.elapsedS)} ${y.toFixed(3)}`
     })
     .join(' ')
-  return `M 0 100 ${points} L 100 100 Z`
+  return `M ${projectX(route[0].elapsedS)} 100 ${points} L ${projectX(route[route.length - 1].elapsedS)} 100 Z`
 }
 
 const buildWorkoutElevation = <N>(f: TriNodeFactory<N>, path: string): N => {
@@ -7761,6 +7808,19 @@ export const strengthExerciseSummary = (
   return `${sets} · ${efforts.join(', ')}`
 }
 
+const activityMoveEffort = (move: ActivityMove, index: number): string => {
+  const set = move.sets[index]
+  return `${set.repetitions} ${set.repetitions === 1 ? 'rep' : 'reps'}${set.perSide ? ' per side' : ''}`
+}
+
+export const activityMoveSummary = (move: ActivityMove): string => {
+  const sets = `${move.sets.length} ${move.sets.length === 1 ? 'set' : 'sets'}`
+  const efforts = move.sets.map((_, index) => activityMoveEffort(move, index))
+  if (efforts.every(effort => effort === efforts[0]))
+    return `${sets} · ${efforts[0]}${efforts.length === 1 ? '' : ' each'}`
+  return `${sets} · ${efforts.join(', ')}`
+}
+
 const activityAnalysisStatRows = (
   presentation: TriathlonPresentation,
   d: StravaActivityDetail,
@@ -7807,6 +7867,24 @@ export const buildStrengthExercises = <N>(
         'tri-strength-exercise-summary',
         strengthExerciseSummary(f.presentation, exercise),
       ),
+    )
+    f.add(list, item)
+  }
+  f.add(wrap, list)
+  return wrap
+}
+
+export const buildActivityMoves = <N>(f: TriNodeFactory<N>, moves: ActivityMoves): N | null => {
+  if (moves.entries.length === 0) return null
+  const wrap = f.el('section', 'tri-act-strength tri-act-moves')
+  f.add(wrap, f.el('h3', 'tri-act-strength-h tri-act-moves-h', 'moves'))
+  const list = f.el('ol', 'tri-strength-exercises tri-move-list')
+  for (const move of moves.entries) {
+    const item = f.el('li', 'tri-strength-exercise tri-move')
+    f.add(
+      item,
+      f.el('span', 'tri-strength-exercise-name tri-move-name', move.name),
+      f.el('span', 'tri-strength-exercise-summary tri-move-summary', activityMoveSummary(move)),
     )
     f.add(list, item)
   }
@@ -8013,6 +8091,13 @@ export const buildActivity = <N>(
     }),
   )
   let hasSummaryVisual = false
+  if (d.moves) {
+    const moves = buildActivityMoves(f, d.moves)
+    if (moves) {
+      f.add(wrap, moves)
+      hasSummaryVisual = true
+    }
+  }
   if (d.strength) {
     const strength = buildStrengthExercises(f, d.strength)
     if (strength) {
@@ -8100,24 +8185,8 @@ export const buildActivity = <N>(
             : null,
         ),
       )
-    const powerBalance = buildPowerBalanceChart(f, d, analysisSelection, embedded)
-    if (powerBalance) activityGraphs.push(powerBalance)
-    const torqueEffectiveness = buildTorqueEffectivenessChart(f, d, analysisSelection, embedded)
-    if (torqueEffectiveness) activityGraphs.push(torqueEffectiveness)
-    const pedalSmoothness = buildPedalSmoothnessChart(f, d, analysisSelection, embedded)
-    if (pedalSmoothness) activityGraphs.push(pedalSmoothness)
-    const powerPhase = buildPowerPhaseChart(f, d, analysisSelection)
-    if (powerPhase) activityGraphs.push(powerPhase)
-    const riderPosition = buildRiderPositionChart(f, d, analysisSelection)
-    if (riderPosition) activityGraphs.push(riderPosition)
     const stamina = buildStaminaChart(f, d, analysisSelection)
     if (stamina) activityGraphs.push(stamina)
-    const shifting = buildShiftingChart(f, d, analysisSelection)
-    if (shifting) activityGraphs.push(shifting)
-    const speed = triathlonTraceEnabled(traceSettings, 'speed')
-      ? buildSpeedTrace(f, d, analysisSelection)
-      : null
-    if (speed) activityGraphs.push(speed)
     if (flags.cad) {
       const cadenceScale = activityCadenceScale(d.sport)
       const cadenceUnit = activityCadenceUnit(d.sport)
@@ -8140,6 +8209,22 @@ export const buildActivity = <N>(
       const performanceCondition = buildPerformanceConditionTrace(f, d, analysisSelection)
       if (performanceCondition) activityGraphs.push(performanceCondition)
     }
+    const powerBalance = buildPowerBalanceChart(f, d, analysisSelection, embedded)
+    if (powerBalance) activityGraphs.push(powerBalance)
+    const torqueEffectiveness = buildTorqueEffectivenessChart(f, d, analysisSelection, embedded)
+    if (torqueEffectiveness) activityGraphs.push(torqueEffectiveness)
+    const pedalSmoothness = buildPedalSmoothnessChart(f, d, analysisSelection, embedded)
+    if (pedalSmoothness) activityGraphs.push(pedalSmoothness)
+    const powerPhase = buildPowerPhaseChart(f, d, analysisSelection)
+    if (powerPhase) activityGraphs.push(powerPhase)
+    const riderPosition = buildRiderPositionChart(f, d, analysisSelection)
+    if (riderPosition) activityGraphs.push(riderPosition)
+    const shifting = buildShiftingChart(f, d, analysisSelection)
+    if (shifting) activityGraphs.push(shifting)
+    const speed = triathlonTraceEnabled(traceSettings, 'speed')
+      ? buildSpeedTrace(f, d, analysisSelection)
+      : null
+    if (speed) activityGraphs.push(speed)
     if (flags.stride) {
       const stride = buildRunStrideTrace(f, d, analysisSelection)
       if (stride) activityGraphs.push(stride)
@@ -9972,6 +10057,75 @@ const dayAnalyticsSigned = (
 ): string =>
   `${value > 0 ? '+' : ''}${dayAnalyticsNumber(presentation, value === 0 ? 0 : value, digits)}`
 
+export const sleepSupplementMetrics = (
+  presentation: TriathlonPresentation,
+  sleep: SleepMetrics | null | undefined,
+): DayAnalyticsMetric[] => {
+  if (!sleep) return []
+  const metrics: DayAnalyticsMetric[] = []
+  const garmin = sleep.garmin
+  const number = (value: number, digits = 0): string =>
+    dayAnalyticsNumber(presentation, value, digits)
+  const detail = (label: string, value: number | null, unit = '', digits = 0): string | null =>
+    value == null ? null : `${triText(presentation.locale, label)} ${number(value, digits)}${unit}`
+  const garminRespiration = garmin
+    ? [
+        detail('respiration', garmin.averageBreathsPerMinute, ' brpm', 1),
+        detail('lowest respiration', garmin.lowestBreathsPerMinute, ' brpm', 1),
+        detail('highest respiration', garmin.highestBreathsPerMinute, ' brpm', 1),
+      ].filter(value => value != null)
+    : []
+  if (sleep.averageBreathsPerMinute != null || garminRespiration.length > 0) {
+    const source = sleep.respirationSource === 'oura' ? 'Oura' : 'Garmin'
+    metrics.push({
+      label: 'respiration',
+      value:
+        sleep.averageBreathsPerMinute == null
+          ? '—'
+          : `${number(sleep.averageBreathsPerMinute, 1)} brpm`,
+      detail:
+        garminRespiration.length > 0
+          ? `${source === 'Oura' ? 'Oura\n' : ''}Garmin: ${garminRespiration.join('; ')}`
+          : source,
+    })
+  }
+  if (!garmin) return metrics
+  const add = (label: string, value: number | null, unit = '', digits = 0): void => {
+    if (value != null)
+      metrics.push({ label, value: `${number(value, digits)}${unit}`, detail: 'Garmin' })
+  }
+  if (garmin.averageSpO2 != null || garmin.lowestSpO2 != null)
+    metrics.push({
+      label: 'Pulse Ox',
+      value: garmin.averageSpO2 == null ? '—' : `${number(garmin.averageSpO2, 1)}%`,
+      detail: ['Garmin', detail('lowest Pulse Ox', garmin.lowestSpO2, '%')]
+        .filter(value => value != null)
+        .join('\n'),
+    })
+  const batteryDetail = [
+    'Garmin',
+    detail('Body Battery at bedtime', garmin.bodyBatteryStart),
+    detail('Body Battery at wake-up', garmin.bodyBatteryEnd),
+  ]
+    .filter(value => value != null)
+    .join('\n')
+  if (garmin.bodyBatteryChange != null)
+    metrics.push({
+      label: 'Body Battery change',
+      value: dayAnalyticsSigned(presentation, garmin.bodyBatteryChange, 0),
+      detail: batteryDetail,
+    })
+  else if (garmin.bodyBatteryEnd != null || garmin.bodyBatteryStart != null)
+    metrics.push({
+      label: garmin.bodyBatteryEnd != null ? 'Body Battery at wake-up' : 'Body Battery at bedtime',
+      value: number(garmin.bodyBatteryEnd ?? garmin.bodyBatteryStart ?? 0),
+      detail: batteryDetail,
+    })
+  add('sleep stress', garmin.averageStress, '', 1)
+  add('restless moments', garmin.restlessMoments)
+  return metrics
+}
+
 const dayAnalyticsDuration = (seconds: number): string => {
   const total = Math.max(0, Math.round(seconds))
   const hours = Math.floor(total / 3600)
@@ -10042,6 +10196,16 @@ const dayAnalyticsList = <N>(
     f.add(list, row)
   }
   return list
+}
+
+export const buildSleepMetricBar = <N>(
+  f: TriNodeFactory<N>,
+  date: string,
+  sleep: SleepMetrics | null | undefined,
+): N | null => {
+  const metrics = sleepSupplementMetrics(f.presentation, sleep)
+  if (metrics.length === 0) return null
+  return dayAnalyticsList(f, date, 'sleep-metrics', metrics, 'tri-sleep-metrics')
 }
 
 const dayAnalyticsGroup = <N>(
@@ -10159,7 +10323,7 @@ const dayAnalyticsSleepMetrics = (
 ): DayAnalyticsMetric[] => {
   const sleep = summary.sleep
   const recovery = summary.recovery
-  if (!sleep && !recovery) return []
+  if (!sleep && !recovery && !summary.sleepMetrics) return []
   const metrics: DayAnalyticsMetric[] = []
   const score = sleep?.sleepScore ?? null
   if (score != null)
@@ -10200,11 +10364,6 @@ const dayAnalyticsSleepMetrics = (
       label: 'average hrv',
       value: `${dayAnalyticsNumber(presentation, sleep.averageHrv)} ms`,
     })
-  if (sleep?.averageBreathsPerMinute != null)
-    metrics.push({
-      label: 'breath',
-      value: `${dayAnalyticsNumber(presentation, sleep.averageBreathsPerMinute, 1)} brpm`,
-    })
   if (sleep?.restlessPeriods != null)
     metrics.push({
       label: 'restless periods',
@@ -10221,6 +10380,8 @@ const dayAnalyticsSleepMetrics = (
 
 const DAY_ANALYTICS_SLEEP_WIDTH = 100
 const DAY_ANALYTICS_SLEEP_HEIGHT = 24
+// Garmin's two-minute samples can skip an epoch; longer gaps stay disconnected.
+const SLEEP_RESPIRATION_MAX_GAP_S = 300
 
 const dayAnalyticsWallMinute = (iso: string): number | null => {
   const match = /T(\d{2}):(\d{2})/.exec(iso)
@@ -10445,6 +10606,7 @@ const dayAnalyticsSeriesPaths = (
   items: readonly (number | null)[],
   x: (index: number) => number,
   y: (value: number) => number,
+  offsetsS?: readonly number[],
 ): string[] => {
   const paths: string[] = []
   let path = ''
@@ -10455,6 +10617,12 @@ const dayAnalyticsSeriesPaths = (
     points = 0
   }
   for (const [index, value] of items.entries()) {
+    if (
+      offsetsS &&
+      index > 0 &&
+      offsetsS[index] - offsetsS[index - 1] > SLEEP_RESPIRATION_MAX_GAP_S
+    )
+      flush()
     if (value == null) {
       flush()
       continue
@@ -10467,12 +10635,18 @@ const dayAnalyticsSeriesPaths = (
   return paths
 }
 
+type SleepChartSeries = { startTs: string; items: (number | null)[] } & (
+  | { intervalS: number }
+  | { offsetsS: number[] }
+)
+
 const dayAnalyticsSleepSeries = <N>(
   f: TriNodeFactory<N>,
   date: string,
-  key: 'hrv' | 'heart-rate',
+  key: 'hrv' | 'heart-rate' | 'respiration',
   title: string,
-  series: NonNullable<TriathlonDayAnalytics['sleep']>['hrv'],
+  series: SleepChartSeries | null,
+  source?: string,
 ): N | null => {
   if (!series || series.items.length < 2) return null
   const values = series.items.filter((value): value is number => value != null)
@@ -10482,20 +10656,30 @@ const dayAnalyticsSleepSeries = <N>(
   const padding = Math.max((high - low) * 0.1, 1)
   const minimum = low - padding
   const maximum = high + padding
+  const offsetsS = 'offsetsS' in series ? series.offsetsS : undefined
+  const elapsedS = offsetsS?.at(-1) ?? 0
   const x = (index: number): number =>
-    (index / Math.max(1, series.items.length - 1)) * DAY_ANALYTICS_SLEEP_WIDTH
+    (offsetsS
+      ? offsetsS[index] / Math.max(1, elapsedS)
+      : index / Math.max(1, series.items.length - 1)) * DAY_ANALYTICS_SLEEP_WIDTH
   const y = (value: number): number =>
     DAY_ANALYTICS_SLEEP_HEIGHT -
     2 -
     ((value - minimum) / Math.max(1, maximum - minimum)) * (DAY_ANALYTICS_SLEEP_HEIGHT - 4)
   const average = values.reduce((sum, value) => sum + value, 0) / values.length
-  const unit = key === 'hrv' ? 'ms' : 'bpm'
+  const unit = key === 'hrv' ? 'ms' : key === 'respiration' ? 'brpm' : 'bpm'
   const readoutId = `tri-day-${date}-sleep-${key}-readout`
   const initialIndex = series.items.findLastIndex(value => value != null)
-  const startMinute = dayAnalyticsWallMinute(series.startTs) ?? 0
-  const initialTime = dayAnalyticsWallClock(
-    startMinute + (Math.max(0, initialIndex) * series.intervalS) / 60,
-  )
+  const startMinute =
+    (dayAnalyticsWallMinute(series.startTs) ?? 0) +
+    (offsetsS ? Number(series.startTs.slice(17, 19)) / 60 : 0)
+  const initialMinute =
+    startMinute +
+    ('offsetsS' in series
+      ? series.offsetsS[Math.max(0, initialIndex)]
+      : Math.max(0, initialIndex) * series.intervalS) /
+      60
+  const initialTime = dayAnalyticsWallClock(offsetsS ? Math.floor(initialMinute) : initialMinute)
   const initialValue = initialIndex >= 0 ? series.items[initialIndex] : null
   const initialReadout = `${initialTime} · ${initialValue == null ? '—' : Math.round(initialValue)} ${unit}`
   const chart = f.el(
@@ -10506,7 +10690,10 @@ const dayAnalyticsSleepSeries = <N>(
       'data-day-sleep-series': key,
       'data-day-sleep-values': series.items.map(value => value ?? '').join(','),
       'data-day-sleep-start': series.startTs,
-      'data-day-sleep-interval': series.intervalS.toString(),
+      ...('offsetsS' in series
+        ? { 'data-day-sleep-times': series.offsetsS.join(',') }
+        : { 'data-day-sleep-interval': series.intervalS.toString() }),
+      ...(source ? { 'data-day-sleep-source': source } : {}),
       'data-day-sleep-unit': unit,
       'data-day-sleep-width': DAY_ANALYTICS_SLEEP_WIDTH.toString(),
     },
@@ -10540,8 +10727,39 @@ const dayAnalyticsSleepSeries = <N>(
       class: 'tri-rec-target',
     }),
   )
-  for (const path of dayAnalyticsSeriesPaths(series.items, x, y))
+  for (const path of dayAnalyticsSeriesPaths(series.items, x, y, offsetsS))
     f.add(svg, f.svg('path', { d: path, class: `tri-day-sleep-line tri-day-sleep-line--${key}` }))
+  if (offsetsS)
+    for (const [index, value] of series.items.entries()) {
+      const previousConnected =
+        index > 0 &&
+        series.items[index - 1] != null &&
+        offsetsS[index] - offsetsS[index - 1] <= SLEEP_RESPIRATION_MAX_GAP_S
+      const nextConnected =
+        index + 1 < series.items.length &&
+        series.items[index + 1] != null &&
+        offsetsS[index + 1] - offsetsS[index] <= SLEEP_RESPIRATION_MAX_GAP_S
+      if (value != null && !previousConnected && !nextConnected)
+        f.add(
+          svg,
+          f.svg('path', {
+            d: `M${x(index).toFixed(3)} ${y(value).toFixed(3)}l0 0`,
+            class: `tri-day-sleep-line tri-day-sleep-line--${key}`,
+            'stroke-linecap': 'round',
+          }),
+        )
+    }
+  const ticks: AxisXTick[] = []
+  if (offsetsS)
+    for (
+      let minute = (Math.floor(startMinute / 120) + 1) * 120;
+      minute <= startMinute + elapsedS / 60;
+      minute += 120
+    )
+      ticks.push({
+        label: dayAnalyticsWallClock(minute),
+        pct: ((minute - startMinute) * 60 * 100) / elapsedS,
+      })
   f.add(
     svg,
     f.svg('line', {
@@ -10562,16 +10780,49 @@ const dayAnalyticsSleepSeries = <N>(
         { label: dayAnalyticsNumber(f.presentation, low), vbY: y(low) },
       ],
       DAY_ANALYTICS_SLEEP_HEIGHT,
-      dayAnalyticsHourTicks(
-        series.startTs,
-        series.intervalS,
-        series.items.length,
-        series.items.length - 1,
-      ),
+      'offsetsS' in series
+        ? ticks
+        : dayAnalyticsHourTicks(
+            series.startTs,
+            series.intervalS,
+            series.items.length,
+            series.items.length - 1,
+          ),
     ),
     f.el('div', 'tri-chart-readout', initialReadout, { id: readoutId }),
   )
   return chart
+}
+
+export const buildSleepRespirationChart = <N>(
+  f: TriNodeFactory<N>,
+  date: string,
+  sleep: SleepMetrics | null | undefined,
+): N | null => {
+  const garmin = sleep?.garmin
+  const samples = garmin?.respiration
+  if (!samples || samples.length < 2) return null
+  const start = samples[0].timestamp
+  const offset = garmin.utcOffsetMinutes ?? 0
+  const absoluteOffset = Math.abs(offset)
+  const offsetHours = Math.floor(absoluteOffset / 60)
+    .toString()
+    .padStart(2, '0')
+  const offsetMinutes = (absoluteOffset % 60).toString().padStart(2, '0')
+  const localStart = new Date(start + offset * 60_000).toISOString().slice(0, -1)
+  const startTs = `${localStart}${offset < 0 ? '-' : '+'}${offsetHours}:${offsetMinutes}`
+  return dayAnalyticsSleepSeries(
+    f,
+    date,
+    'respiration',
+    'respiration',
+    {
+      startTs,
+      offsetsS: samples.map(sample => (sample.timestamp - start) / 1000),
+      items: samples.map(sample => sample.breathsPerMinute),
+    },
+    garmin.utcOffsetMinutes == null ? 'Garmin (UTC)' : 'Garmin',
+  )
 }
 
 const buildDaySleepAnalytics = <N>(
@@ -10580,7 +10831,14 @@ const buildDaySleepAnalytics = <N>(
 ): N | null => {
   const sleep = summary.sleep
   const metrics = dayAnalyticsSleepMetrics(f.presentation, summary)
-  if (!sleep && metrics.length === 0) return null
+  const metricBar = buildSleepMetricBar(
+    f,
+    summary.date,
+    summary.sleepMetrics ??
+      resolveSleepMetrics({ avgBreath: sleep?.averageBreathsPerMinute ?? null }, null),
+  )
+  const respiration = buildSleepRespirationChart(f, summary.date, summary.sleepMetrics)
+  if (!sleep && metrics.length === 0 && !metricBar && !respiration) return null
   const titleId = `tri-day-${summary.date}-sleep`
   const group = f.el(
     'section',
@@ -10608,6 +10866,7 @@ const buildDaySleepAnalytics = <N>(
         'tri-day-analytics-list tri-day-sleep-summary',
       ),
     )
+  if (metricBar) f.add(group, metricBar)
   if (sleep) {
     const sleepContrib = dayAnalyticsContributionGroup(f, 'sleep score', sleep.sleepContrib)
     const readinessContrib = dayAnalyticsContributionGroup(f, 'readiness', sleep.readinessContrib)
@@ -10630,6 +10889,7 @@ const buildDaySleepAnalytics = <N>(
     if (hrv) f.add(group, hrv)
     if (heartRate) f.add(group, heartRate)
   }
+  if (respiration) f.add(group, respiration)
   return group
 }
 
@@ -10794,7 +11054,11 @@ export const buildDayCard = <N>(
     excludedActivityIds.size > 0
       ? selectedDay.filter(d => !excludedActivityIds.has(`${d.id}`))
       : selectedDay
-  const day = extras.sport ? visibleDay.filter(d => d.sport === extras.sport) : visibleDay
+  const day = visibleDay.filter(
+    d =>
+      (!extras.sport || d.sport === extras.sport) &&
+      (!extras.settings?.focused || d.sport === 'bike' || d.sport === 'run' || d.sport === 'swim'),
+  )
   const summaryRows =
     extras.embedded === true && day.length > 1
       ? Math.max(

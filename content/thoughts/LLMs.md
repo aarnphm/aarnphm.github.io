@@ -3,7 +3,7 @@ abstract: large language models will probably be the most important piece of tec
 date: '2024-02-07'
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2026-08-08 20:58:39 GMT-04:00
+modified: 2026-09-08 09:12:38 GMT-04:00
 seealso:
   - '[[thoughts/mechanistic interpretability]]'
   - '[[thoughts/Alignment|Alignment]]'
@@ -15,7 +15,7 @@ tags:
 title: LLMs
 ---
 
-[[thoughts/Machine learning|large language]] models, often implemented as [[thoughts/Autoregressive models|autoregressive]] [[thoughts/Transformers|transformers]] models. Though there are variants that uses [[thoughts/Diffusion|diffusion]]-based models for more low-[[thoughts/Entropy|entropy]] workload.
+Large language models often use [[thoughts/Autoregressive models|autoregressive]] [[thoughts/Transformers|transformers]] to predict the next token. LLaDA is a diffusion language model: it learns to reconstruct masked tokens, then generates text through repeated unmasking [@nie2025largelanguagediffusionmodels]. DFlash uses a lightweight block-diffusion draft model for [[thoughts/Speculative decoding|speculative decoding]], producing a block of draft tokens in one forward pass for an autoregressive target model to verify [@chen2026dflashblockdiffusionflash]. These are separate roles for diffusion, with separate training and sampling procedures.
 
 > [!note] GPTs and friends
 >

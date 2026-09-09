@@ -2,10 +2,14 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { AppleCache } from './apple'
 import type { CoreBodyTemperatureCache } from './core-body-temperature'
-import type { GarminCache, GarminCyclingDynamics } from './garmin'
+import type { GarminCache, GarminCyclingDynamics, GarminSleepSummary } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
 import type { TrackEntry } from './tracking'
 import type { WeatherCache } from './weather'
+import {
+  buildTriathlonDailyAnalytics,
+  isTriathlonDailyAnalytics,
+} from '../../util/triathlon-day-analytics'
 import { isRecord } from '../../util/type-guards'
 import {
   ACTIVITY_FIELDS,
@@ -451,6 +455,102 @@ test('recovery block computes baselines, series, and flags from oura-merged dail
   const day = a.daily.find(d => d.date === iso(20))
   assert.equal(day?.sleepDurationS, 27000)
   assert.equal(day?.tempDevC, 0.1)
+})
+
+test('merges exact-night Garmin sleep measurements through analytics, day SSR data and the feed', () => {
+  const { cache, oura } = fixtures()
+  const date = iso(20)
+  const garminSleep: GarminSleepSummary = {
+    source: 'garmin',
+    date,
+    startTime: `${date}T02:00:00Z`,
+    endTime: `${date}T10:00:00Z`,
+    averageBreathsPerMinute: 15,
+    lowestBreathsPerMinute: 11,
+    highestBreathsPerMinute: 19,
+    averageSpO2: 97,
+    lowestSpO2: 91,
+    bodyBatteryStart: 64,
+    bodyBatteryEnd: 100,
+    bodyBatteryChange: 36,
+    averageStress: 0,
+    restlessMoments: 39,
+    utcOffsetMinutes: -240,
+    respiration: [
+      { timestamp: Date.parse(`${date}T02:00:00Z`), breathsPerMinute: 15 },
+      { timestamp: Date.parse(`${date}T02:02:00Z`), breathsPerMinute: null },
+      { timestamp: Date.parse(`${date}T02:04:00Z`), breathsPerMinute: 17 },
+    ],
+  }
+  oura.details = {
+    [date]: {
+      date,
+      bedtimeStart: `${date}T02:30:00Z`,
+      bedtimeEnd: `${date}T10:00:00Z`,
+      phase5Min: '1234',
+      efficiency: 90,
+      latencyS: 300,
+      timeInBedS: 27000,
+      totalSleepS: 24000,
+      deepS: 5000,
+      lightS: 14000,
+      remS: 5000,
+      awakeS: 3000,
+      avgBreath: 14.25,
+      avgHr: 55,
+      avgHrv: 80,
+      lowestHr: 50,
+      restlessPeriods: 20,
+      hrv: null,
+      hr: null,
+      readinessScore: 82,
+      readinessContrib: null,
+      sleepScore: 78,
+      sleepContrib: null,
+    },
+  }
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    sleep: { [date]: garminSleep },
+  }
+  const baseline = buildAnalytics(cache, { oura, since: iso(0) })
+  const analytics = buildAnalytics(cache, { oura, garmin, since: iso(0) })
+  const metrics = analytics.daily.find(day => day.date === date)?.sleepMetrics
+  assert.equal(metrics?.averageBreathsPerMinute, 14.25)
+  assert.equal(metrics?.respirationSource, 'oura')
+  assert.deepEqual(metrics?.garmin, garminSleep)
+  assert.deepEqual(analytics.recovery, baseline.recovery)
+  assert.equal(analytics.daily.find(day => day.date === iso(21))?.sleepMetrics, null)
+
+  const summaries = buildTriathlonDailyAnalytics(analytics, oura.details)
+  assert.equal(summaries[date].sleep?.phase5Min, '1234')
+  assert.equal(summaries[date].sleep?.deepS, 5000)
+  assert.equal(summaries[date].sleep?.bedtimeStart, `${date}T02:30:00Z`)
+  assert.deepEqual(summaries[date].sleepMetrics, metrics)
+  assert.equal(isTriathlonDailyAnalytics(JSON.parse(JSON.stringify(summaries))), true)
+  const feed: unknown[] = buildDataFeed(cache, analytics, { oura, garmin })
+    .trimEnd()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  const row = feed.find(value => isRecord(value) && value.kind === 'day' && value.date === date)
+  assert.ok(isRecord(row))
+  assert.deepEqual(row.sleepMetrics, metrics)
+
+  const garminOnly = buildAnalytics(cache, { garmin, since: iso(0) })
+  const night = garminOnly.daily.find(day => day.date === date)
+  assert.equal(night?.sleepDurationS, null)
+  assert.equal(night?.sleepScore, null)
+  assert.equal(night?.hrv, null)
+  assert.equal(night?.sleepMetrics?.respirationSource, 'garmin')
+  assert.equal(garminOnly.recovery.series[0]?.date, date)
+  const garminSummary = buildTriathlonDailyAnalytics(garminOnly)[date]
+  assert.equal(garminSummary.sleep, null)
+  assert.deepEqual(garminSummary.sleepMetrics?.garmin, garminSleep)
+
+  garmin.sleep = { [date]: { ...garminSleep, date: iso(21) } }
+  const wrongDay = buildAnalytics(cache, { garmin, since: iso(0) })
+  assert.equal(wrongDay.daily.find(day => day.date === date)?.sleepMetrics, null)
 })
 
 test('carries build-time power curves and ranks exact durations at the latest measured mass', () => {
@@ -1000,16 +1100,16 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
   })
 })
 
-test('heat block prefers CORE app onboard samples over CORE FIT telemetry', () => {
+test('heat block includes indoor CORE app and FIT recordings without GPS', () => {
   const date = iso(20)
-  const rideActivity = activity(201, 'Ride', date, 3600, 20_000)
+  const rideActivity = activity(201, 'VirtualRide', date, 3600, 20_000, { averageTemp: 40 })
   const cache: StravaRawCache = {
     athleteId: 123,
     auth: { refreshToken: 'core-app-test-token', obtainedAt: 0 },
     lastSync: Date.parse(`${date}T18:00:00Z`),
     lastActivityStart: 0,
     activities: { 201: rideActivity },
-    streams: { 201: streams(10, 3) },
+    streams: {},
   }
   const core: CoreBodyTemperatureCache = {
     version: 1,
@@ -1068,6 +1168,16 @@ test('heat block prefers CORE app onboard samples over CORE FIT telemetry', () =
   assert.equal(analytics.distributions.activities[0].heatStrainThermalSource, 'core-app')
   assert.equal(analytics.distributions.activities[0].skinObservedSeconds, 3660)
   assert.equal(analytics.distributions.activities[0].heatStrainObservedSeconds, 3660)
+
+  const fitHeat = buildAnalytics(cache, { garmin, since: date }).heat
+  assert.equal(fitHeat.activities[0].coreOrigin, 'fit')
+  assert.equal(fitHeat.activities[0].temperatureC, 37)
+  assert.equal(fitHeat.activities[0].heatStrainIndex, 1)
+  assert.equal(fitHeat.activities[0].observedMinutes, 61)
+
+  const withoutCore = buildAnalytics(cache, { since: date }).heat
+  assert.equal(withoutCore.activities.length, 0)
+  assert.equal(withoutCore.series[0].temperatureC, null)
 })
 
 test('run heat prefers zero-valued Garmin FIT strain and fills missing skin from CORE app', () => {
@@ -1879,6 +1989,108 @@ test('lactate threshold projection stays a low-confidence training proxy with it
   assert.ok(projection.deltaPct != null && projection.deltaPct > 0)
   assert.ok(projection.low != null && projection.projected >= projection.low)
   assert.ok(projection.high != null && projection.projected <= projection.high)
+})
+
+test('running lactate threshold prefers Garmin and preserves other sport calculations', () => {
+  const { cache } = fixtures()
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    runningLactateThreshold: {
+      speedMps: { value: 3.75, date: iso(25) },
+      heartRateBpm: { value: 174, date: iso(24) },
+    },
+  }
+  const baseline = buildAnalytics(cache).engine.lactateThreshold
+  const block = buildAnalytics(cache, { garmin }).engine.lactateThreshold
+  assert.deepEqual(block.heartRate, {
+    value: 174,
+    unit: 'bpm',
+    source: 'garmin',
+    sport: 'run',
+    date: iso(24),
+  })
+  const run = block.sports.find(sport => sport.sport === 'run')
+  assert.ok(run)
+  assert.equal(run.current, 266.7)
+  assert.equal(run.source, 'garmin')
+  assert.equal(run.date, iso(25))
+  assert.equal(run.projected, null)
+  assert.equal(run.conf, null)
+  assert.equal(run.method, 'none')
+  assert.equal(run.horizonDays, 0)
+  assert.deepEqual(run.points, [])
+  for (const sport of ['swim', 'bike'])
+    assert.deepEqual(
+      block.sports.find(item => item.sport === sport),
+      baseline.sports.find(item => item.sport === sport),
+    )
+  assert.deepEqual(JSON.parse(JSON.stringify(block)), block)
+})
+
+test('Garmin running threshold fields fall back independently', () => {
+  const { cache } = fixtures()
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    runningLactateThreshold: { speedMps: null, heartRateBpm: { value: 174, date: iso(24) } },
+  }
+  const baseline = buildAnalytics(cache).engine.lactateThreshold
+  const hrOnly = buildAnalytics(cache, { garmin }).engine.lactateThreshold
+  assert.equal(hrOnly.heartRate?.source, 'garmin')
+  assert.deepEqual(hrOnly.sports, baseline.sports)
+
+  garmin.runningLactateThreshold = { speedMps: { value: 3.75, date: iso(25) }, heartRateBpm: null }
+  const paceOnly = buildAnalytics(cache, { garmin }).engine.lactateThreshold
+  assert.deepEqual(paceOnly.heartRate, baseline.heartRate)
+  assert.equal(paceOnly.sports.find(sport => sport.sport === 'run')?.source, 'garmin')
+})
+
+test('invalid or future Garmin lactate threshold fields use the existing fallback', () => {
+  const { cache } = fixtures()
+  const baseline = buildAnalytics(cache).engine.lactateThreshold
+  for (const value of [0, -1, NaN, Infinity]) {
+    const sample = { value, date: iso(25) }
+    const block = buildAnalytics(cache, {
+      garmin: {
+        lastSync: cache.lastSync,
+        activities: {},
+        runningLactateThreshold: { speedMps: sample, heartRateBpm: sample },
+      },
+    }).engine.lactateThreshold
+    assert.deepEqual(block, baseline)
+  }
+  for (const date of ['invalid', '2026-02-30', '2027-01-01']) {
+    const block = buildAnalytics(cache, {
+      garmin: {
+        lastSync: cache.lastSync,
+        activities: {},
+        runningLactateThreshold: {
+          speedMps: { value: 3.75, date },
+          heartRateBpm: { value: 174, date },
+        },
+      },
+    }).engine.lactateThreshold
+    assert.deepEqual(block, baseline)
+  }
+})
+
+test('Garmin lactate threshold remains available without Strava training data', () => {
+  const block = buildAnalytics(null, {
+    garmin: {
+      lastSync: 0,
+      lactateThresholdLastSync: Date.parse('2026-09-08T20:00:00Z'),
+      activities: {},
+      runningLactateThreshold: {
+        speedMps: { value: 3.75, date: '2026-09-08' },
+        heartRateBpm: { value: 174, date: '2026-09-07' },
+      },
+    },
+  }).engine.lactateThreshold
+  assert.equal(block.heartRate?.value, 174)
+  assert.equal(block.sports.length, 1)
+  assert.equal(block.sports[0].source, 'garmin')
+  assert.equal(block.sports[0].current, 266.7)
 })
 
 test('suffer score flows into daily effort, activity summaries, and weekly totals', () => {

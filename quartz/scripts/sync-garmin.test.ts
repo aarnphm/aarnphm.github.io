@@ -1,13 +1,17 @@
 import assert from 'node:assert/strict'
+import { createServer } from 'node:http'
 import test from 'node:test'
 import {
   emptyGarminFueling,
   emptyGarminMetrics,
   type GarminActivity,
+  type GarminRunningLactateThreshold,
+  type GarminSleepSummary,
   type GarminVo2Day,
   type GarminWeightSample,
 } from '../plugins/stores/garmin'
 import {
+  fetchGarminSleepRange,
   garminRefreshStart,
   mergeGarminFitTrainingEffect,
   mergeGarminVo2Range,
@@ -17,6 +21,92 @@ import {
   resolveGarminFetch,
   resolveGarminWeightDay,
 } from './sync-garmin'
+
+test('sleep download preserves failed dates, replaces fetched dates, and clears empty dates', async t => {
+  const cached = (date: string): GarminSleepSummary => ({
+    source: 'garmin',
+    date,
+    startTime: null,
+    endTime: null,
+    averageBreathsPerMinute: 14,
+    lowestBreathsPerMinute: null,
+    highestBreathsPerMinute: null,
+    averageSpO2: null,
+    lowestSpO2: null,
+    bodyBatteryStart: null,
+    bodyBatteryEnd: null,
+    bodyBatteryChange: null,
+    averageStress: null,
+    restlessMoments: null,
+  })
+  const previous = {
+    '2026-09-06': cached('2026-09-06'),
+    '2026-09-07': cached('2026-09-07'),
+    '2026-09-08': cached('2026-09-08'),
+    '2026-09-09': cached('2026-09-09'),
+    '2026-09-10': cached('2026-09-10'),
+  }
+  const requests: string[] = []
+  const server = createServer((req, res) => {
+    requests.push(req.url ?? '')
+    res.setHeader('Content-Type', 'application/json')
+    const url = new URL(req.url ?? '', 'http://localhost')
+    if (url.pathname === '/userprofile-service/socialProfile') {
+      res.end(JSON.stringify({ displayName: 'sleep-fixture' }))
+      return
+    }
+    const day = url.searchParams.get('date')
+    if (day === '2026-09-10') {
+      res.end(JSON.stringify({ unexpected: true }))
+      return
+    }
+    if (day === '2026-09-08') {
+      res.writeHead(503)
+      res.end(JSON.stringify({ message: 'temporarily unavailable' }))
+      return
+    }
+    res.end(
+      JSON.stringify({
+        dailySleepDTO:
+          day === '2026-09-07'
+            ? { calendarDate: day, sleepFromDevice: true, averageRespirationValue: 15 }
+            : null,
+      }),
+    )
+  })
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
+  t.after(
+    () =>
+      new Promise<void>((resolve, reject) =>
+        server.close(error => (error ? reject(error) : resolve())),
+      ),
+  )
+  const address = server.address()
+  assert.ok(address != null && typeof address !== 'string')
+  const result = await fetchGarminSleepRange(
+    { headers: { authorization: 'Bearer fixture' } },
+    `http://127.0.0.1:${address.port}`,
+    previous,
+    '2026-09-07',
+    '2026-09-10',
+    0,
+  )
+  assert.equal(result.fetchedDays, 2)
+  assert.deepEqual(result.failedDays, ['2026-09-08', '2026-09-10'])
+  assert.equal(result.sleep['2026-09-06'], previous['2026-09-06'])
+  assert.equal(result.sleep['2026-09-07'].averageBreathsPerMinute, 15)
+  assert.equal(result.sleep['2026-09-08'], previous['2026-09-08'])
+  assert.equal(result.sleep['2026-09-09'], undefined)
+  assert.equal(result.sleep['2026-09-10'], previous['2026-09-10'])
+  assert.equal(previous['2026-09-09'].averageBreathsPerMinute, 14)
+  assert.deepEqual(requests, [
+    '/userprofile-service/socialProfile',
+    '/wellness-service/wellness/dailySleepData/sleep-fixture?date=2026-09-07&nonSleepBufferMinutes=0',
+    '/wellness-service/wellness/dailySleepData/sleep-fixture?date=2026-09-08&nonSleepBufferMinutes=0',
+    '/wellness-service/wellness/dailySleepData/sleep-fixture?date=2026-09-09&nonSleepBufferMinutes=0',
+    '/wellness-service/wellness/dailySleepData/sleep-fixture?date=2026-09-10&nonSleepBufferMinutes=0',
+  ])
+})
 
 function activity(id = 'connect:123', startDateLocal = '2026-08-14T13:27:27.0'): GarminActivity {
   return {
@@ -40,6 +130,18 @@ test('recovers missing Garmin Connect training effect from the stored FIT', () =
 
   assert.equal(recovered.metrics.aerobicTrainingEffect, 3)
   assert.equal(recovered.metrics.anaerobicTrainingEffect, 1.3)
+})
+
+test('retains cached running lactate threshold after a fetch failure and clears confirmed absence', () => {
+  const previous: GarminRunningLactateThreshold = {
+    speedMps: { value: 3.75, date: '2026-09-08' },
+    heartRateBpm: { value: 174, date: '2026-09-08' },
+  }
+  assert.deepEqual(
+    resolveGarminFetch<GarminRunningLactateThreshold | null>({ ok: false }, previous),
+    previous,
+  )
+  assert.equal(resolveGarminFetch({ ok: true, value: null }, previous), null)
 })
 
 test('keeps Garmin Connect training effect when the FIT also contains values', () => {

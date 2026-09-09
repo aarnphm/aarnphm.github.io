@@ -72,21 +72,4 @@ example: $(2 + 3) \times 4$ has a CST with paren nodes but an AST like `Mul(Add(
 
 ## coroutines and generators (lab 1)
 
-the notebook introduces python generators for scanners: a scanner yields tokens one at a time. pattern:
-
-```python
-def scanner(s: str):
-  pos = 0
-  while pos < len(s):
-    if s[pos].isdigit():
-      n, pos = 0, pos
-      while pos < len(s) and s[pos].isdigit():
-        n, pos = 10 * n + int(s[pos]), pos + 1
-      yield ('NUM', n)
-    elif s[pos].isalpha():
-      ...
-    else:
-      pos += 1
-```
-
-the consumer uses `next()` or iteration. this is the pattern lab 1's "Integer Scanner with Generators" question wants.
+The notebook introduces Python generators for scanners: a scanner yields tokens one at a time and the consumer advances it with `next()` or iteration. Read `99 Lab 1/07 Integer Scanner with Generators.ipynb` for the required token representation and interface. Every scanner branch must either advance input, yield with a defined continuation, or report an error; an unfinished branch can otherwise loop forever.

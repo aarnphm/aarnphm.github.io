@@ -1,3 +1,4 @@
+import type { GarminRunWalkSegment } from '../../../plugins/stores/garmin'
 import type { PowerCurvePoint } from '../../../plugins/stores/strava'
 import type { SwimTrendChartPoint } from '../../../util/triathlon-card'
 import type { SwimTrendMode } from '../../../util/triathlon-card'
@@ -9,6 +10,7 @@ import { nearestPowerCurvePoint } from '../../../util/triathlon-card'
 import { powerCurveFraction } from '../../../util/triathlon-card'
 import { powerCurveHoverAt } from '../../../util/triathlon-card'
 import { swimTrendHoverAt } from '../../../util/triathlon-card'
+import { runWalkSegmentAt } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
 import { powerCurveReferenceLabel } from '../../../util/triathlon-i18n'
 import { swimActivityDisplayValue } from '../../../util/triathlon-i18n'
@@ -103,6 +105,26 @@ export const setupChartScrub = (
     { lengths: SwimTrendChartPoint[]; '100m': SwimTrendChartPoint[] }
   >()
   const swimAnimations = new Map<SVGGElement, Animation>()
+  const runWalkCache = new WeakMap<SVGSVGElement, GarminRunWalkSegment[]>()
+  const runWalkSegments = (svg: SVGSVGElement): GarminRunWalkSegment[] => {
+    const cached = runWalkCache.get(svg)
+    if (cached) return cached
+    const segments: GarminRunWalkSegment[] = []
+    for (const rect of svg.querySelectorAll<SVGElement>('.tri-run-walk-segment')) {
+      const state = rect.dataset.runWalkState
+      const startElapsedS = Number(rect.dataset.startElapsedS)
+      const endElapsedS = Number(rect.dataset.endElapsedS)
+      if (
+        (state === 'run' || state === 'walk' || state === 'idle') &&
+        Number.isFinite(startElapsedS) &&
+        Number.isFinite(endElapsedS) &&
+        endElapsedS > startElapsedS
+      )
+        segments.push({ state, startElapsedS, endElapsedS })
+    }
+    runWalkCache.set(svg, segments)
+    return segments
+  }
   const curveData = (
     svg: SVGSVGElement,
   ): { curve: PowerCurvePoint[]; sixWeeks: PowerCurvePoint[]; year: PowerCurvePoint[] } => {
@@ -424,12 +446,31 @@ export const setupChartScrub = (
     }
     if (focusedSvg.classList.contains('tri-curve-svg'))
       showCurveIndex(focusedSvg, selectedCurveIndex(focusedSvg))
+    else if (focusedSvg.classList.contains('tri-run-walk'))
+      showRunWalk(focusedSvg, Number(focusedSvg.getAttribute('aria-valuenow')))
     else showSwimIndex(focusedSvg, selectedSwimIndex(focusedSvg))
+  }
+  const showRunWalk = (svg: SVGSVGElement, requestedElapsedS: number): void => {
+    const wrap = svg.closest<HTMLElement>('.tri-run-walk-chart')
+    const readout = wrap?.querySelector<HTMLElement>('.tri-chart-readout')
+    const durationS = Number(svg.dataset.domainEndElapsedS)
+    if (!wrap || !readout || !Number.isFinite(durationS) || durationS <= 0) return
+    const elapsedS = Math.max(0, Math.min(durationS, requestedElapsedS))
+    const segment = runWalkSegmentAt(runWalkSegments(svg), elapsedS)
+    const value = `${clock(elapsedS)} · ${text(segment?.state ?? 'unavailable')}`
+    readout.textContent = value
+    svg.setAttribute('aria-valuenow', String(elapsedS))
+    svg.setAttribute('aria-valuetext', value)
+    const cursor = svg.querySelector<SVGElement>('.tri-chart-cursor')
+    const x = ((elapsedS / durationS) * 100).toFixed(4)
+    cursor?.setAttribute('x1', x)
+    cursor?.setAttribute('x2', x)
+    activate(wrap)
   }
   const onPointer = (event: PointerEvent): void => {
     if (!(event.target instanceof Element)) return
     const svg = event.target.closest<SVGSVGElement>(
-      '.tri-curve-svg, .tri-hist-svg, .tri-swim-trend-svg',
+      '.tri-curve-svg, .tri-hist-svg, .tri-swim-trend-svg, .tri-run-walk',
     )
     if (!svg) {
       if (activeWrap) showFocused()
@@ -440,6 +481,10 @@ export const setupChartScrub = (
     const readout = wrap?.querySelector<HTMLElement>('.tri-chart-readout')
     const r = svg.getBoundingClientRect()
     const frac = r.width > 0 ? Math.max(0, Math.min(1, (event.clientX - r.left) / r.width)) : 0
+    if (svg.classList.contains('tri-run-walk')) {
+      showRunWalk(svg, frac * Number(svg.dataset.domainEndElapsedS))
+      return
+    }
     if (svg.classList.contains('tri-curve-svg')) {
       const commit = event.type === 'pointerdown'
       showCurve(svg, frac, true, commit)
@@ -470,23 +515,56 @@ export const setupChartScrub = (
   }
   const onFocus = (event: FocusEvent): void => {
     if (!(event.target instanceof Element)) return
-    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg, .tri-swim-trend-svg')
+    const svg = event.target.closest<SVGSVGElement>(
+      '.tri-curve-svg, .tri-swim-trend-svg, .tri-run-walk',
+    )
     if (!svg) return
     focusedSvg = svg
     if (svg.classList.contains('tri-curve-svg')) showCurveIndex(svg, selectedCurveIndex(svg))
+    else if (svg.classList.contains('tri-run-walk'))
+      showRunWalk(svg, Number(svg.getAttribute('aria-valuenow')))
     else showSwimIndex(svg, selectedSwimIndex(svg))
   }
   const onBlur = (event: FocusEvent): void => {
     if (!(event.target instanceof Element)) return
-    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg, .tri-swim-trend-svg')
+    const svg = event.target.closest<SVGSVGElement>(
+      '.tri-curve-svg, .tri-swim-trend-svg, .tri-run-walk',
+    )
     if (!svg) return
     if (focusedSvg === svg) focusedSvg = null
     clear()
   }
   const onKey = (event: KeyboardEvent): void => {
     if (!(event.target instanceof Element)) return
-    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg, .tri-swim-trend-svg')
+    const svg = event.target.closest<SVGSVGElement>(
+      '.tri-curve-svg, .tri-swim-trend-svg, .tri-run-walk',
+    )
     if (!svg) return
+    if (svg.classList.contains('tri-run-walk')) {
+      const segments = runWalkSegments(svg)
+      const elapsedS = Number(svg.getAttribute('aria-valuenow'))
+      const next =
+        event.key === 'ArrowRight' || event.key === 'ArrowUp'
+          ? segments.find(segment => segment.startElapsedS > elapsedS)?.startElapsedS
+          : event.key === 'ArrowLeft' || event.key === 'ArrowDown'
+            ? segments.findLast(segment => segment.startElapsedS < elapsedS)?.startElapsedS
+            : event.key === 'Home'
+              ? 0
+              : event.key === 'End'
+                ? Number(svg.dataset.domainEndElapsedS)
+                : null
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        focusedSvg = null
+        svg.blur()
+        clear()
+      } else if (next != null || event.key.startsWith('Arrow')) {
+        event.preventDefault()
+        showRunWalk(svg, next ?? elapsedS)
+      }
+      return
+    }
     const isCurve = svg.classList.contains('tri-curve-svg')
     const length = isCurve ? curveData(svg).curve.length : swimData(svg).length
     if (length < 2) return
@@ -637,6 +715,11 @@ export const setupChartScrub = (
     event.preventDefault()
   }
   const onLocale = (): void => {
+    for (const svg of scope.querySelectorAll<SVGSVGElement>('.tri-run-walk')) {
+      svg.setAttribute('aria-label', text('run/walk'))
+      if (svg === focusedSvg || svg.closest('.tri-chart--hover'))
+        showRunWalk(svg, Number(svg.getAttribute('aria-valuenow')))
+    }
     for (const average of scope.querySelectorAll<HTMLElement>('.tri-swim-trend-value')) {
       const kind = swimChartMetric(average.dataset.swimAverageKind)
       const value = Number(average.dataset.swimAverageValue)

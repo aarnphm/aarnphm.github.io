@@ -42,6 +42,22 @@ export interface ManualStrengthEntry {
   exercises: StrengthExercise[]
 }
 
+export interface ActivityMoveSet {
+  repetitions: number
+  perSide: boolean
+}
+
+export interface ActivityMove {
+  name: string
+  sets: ActivityMoveSet[]
+}
+
+export interface ManualMovesEntry {
+  date: string
+  activityId: number
+  moves: ActivityMove[]
+}
+
 export interface TrainingExclusion {
   date: string
   activityId: number
@@ -76,6 +92,7 @@ export interface TrackingData {
   races: RaceEvent[]
   fueling: ManualFuelingEntry[]
   strength: ManualStrengthEntry[]
+  moves: ManualMovesEntry[]
   sauna: ManualSaunaEntry[]
   trainingExclusions: TrainingExclusion[]
 }
@@ -85,6 +102,7 @@ export interface ParsedTrackingBlock {
   activity: ActivityTrackingEntry | null
   fueling: ManualFuelingEntry | null
   strength: ManualStrengthEntry | null
+  moves: ManualMovesEntry | null
   sauna: ManualSaunaEntry | null
   trainingExclusion: TrainingExclusion | null
 }
@@ -145,6 +163,20 @@ const parseStrengthExercise = (value: string): StrengthExercise | null => {
     durationS: parsedSets.some(set => set.durationS != null) ? durationS : null,
     sets: parsedSets,
   }
+}
+
+const parseActivityMove = (value: string): ActivityMove | null => {
+  const [rawName, ...rawSets] = value.split('|').map(part => part.trim())
+  if (!rawName || rawSets.length === 0 || rawSets.some(set => !set)) return null
+  const sets = rawSets.flatMap(set => {
+    const match = /^(\d+)\s+reps?(\s+per\s+side)?$/i.exec(set)
+    if (!match) return []
+    const repetitions = Number(match[1])
+    return Number.isSafeInteger(repetitions) && repetitions > 0
+      ? [{ repetitions, perSide: match[2] != null }]
+      : []
+  })
+  return sets.length === rawSets.length ? { name: rawName, sets } : null
 }
 
 const parseSaunaDuration = (value: string): number | null => {
@@ -241,12 +273,14 @@ export function parseTrackingBlock(
 ): ParsedTrackingBlock | null {
   const body: Record<string, string> = {}
   const exerciseValues: string[] = []
+  const moveValues: string[] = []
   for (const line of value.split('\n')) {
     const idx = line.indexOf(':')
     if (idx < 0) continue
     const k = line.slice(0, idx).trim().toLowerCase()
     const v = line.slice(idx + 1).trim()
     if (k === 'exercise') exerciseValues.push(v)
+    else if (k === 'move') moveValues.push(v)
     else if (k) body[k] = v
   }
   const linkedActivityId = parseOptionalActivityId(body.activity)
@@ -269,7 +303,15 @@ export function parseTrackingBlock(
   const date = body.date
   if (!date)
     return activity
-      ? { day: null, activity, fueling: null, strength: null, sauna: null, trainingExclusion: null }
+      ? {
+          day: null,
+          activity,
+          fueling: null,
+          strength: null,
+          moves: null,
+          sauna: null,
+          trainingExclusion: null,
+        }
       : null
   if (!/^\d{4}-\d{2}-\d{2}/.test(date)) return null
   const wl = body.weight != null ? Number(body.weight) : NaN
@@ -294,6 +336,8 @@ export function parseTrackingBlock(
     caloriesConsumed >= 0
       ? { date: day.date, activityId, caloriesConsumed }
       : null
+  const sauna = parseManualSauna(body)
+  const strengthActivityId = sauna?.stravaActivityId ?? sauna?.id ?? activityId
   const strengthVolume = /^(\d+(?:\.\d+)?)\s*(kg|lbs?)$/i.exec(body.strengthvolume ?? '')
   const totalSets = Number(body.strengthsets)
   const totalReps = Number(body.strengthreps)
@@ -306,23 +350,29 @@ export function parseTrackingBlock(
     (Number.isSafeInteger(totalReps) && totalReps >= 0) ||
     exercises.length > 0
   const strength =
-    hasStrengthData && Number.isSafeInteger(activityId) && activityId > 0
+    hasStrengthData && Number.isSafeInteger(strengthActivityId) && strengthActivityId > 0
       ? {
           date: day.date,
-          activityId,
+          activityId: strengthActivityId,
           volumeKg: strengthVolume ? massKg(Number(strengthVolume[1]), strengthVolume[2]) : null,
           totalSets: Number.isSafeInteger(totalSets) && totalSets > 0 ? totalSets : null,
           totalReps: Number.isSafeInteger(totalReps) && totalReps >= 0 ? totalReps : null,
           exercises,
         }
       : null
+  const parsedMoves = moveValues
+    .map(parseActivityMove)
+    .filter((move): move is ActivityMove => move != null)
+  const moves =
+    parsedMoves.length > 0 && Number.isSafeInteger(activityId) && activityId > 0
+      ? { date: day.date, activityId, moves: parsedMoves }
+      : null
   const skipTraining = ['true', '1', 'yes'].includes(body.skiptraining?.toLowerCase() ?? '')
   const trainingExclusion =
     skipTraining && Number.isSafeInteger(activityId) && activityId > 0
       ? { date: day.date, activityId }
       : null
-  const sauna = parseManualSauna(body)
-  return { day, activity, fueling, strength, sauna, trainingExclusion }
+  return { day, activity, fueling, strength, moves, sauna, trainingExclusion }
 }
 
 export function parseWahooFitLink(value: string): string | null {

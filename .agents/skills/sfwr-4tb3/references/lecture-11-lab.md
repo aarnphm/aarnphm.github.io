@@ -1,107 +1,53 @@
 ---
 name: lecture-11-lab
-description: lab 11 — step-by-step earley's parser, packrat parsing, packrat for statements; plus assignment 11 extensions
+description: local Lab 11 Earley, backtracking, and memoizing parser exercises
 ---
 
-# lecture 11 / lab 11
+# Lab 11
 
-the three lab 11 notebooks walk through:
+Read the named question in `99 Lab 11/` or its assignment counterpart in `88 Assignment 11/`. The local lab uses Python parsers. Haskell and OCaml examples elsewhere in the generalized-parsing lecture do not establish the lab's API.
 
-1. **steps with earley's parser** — given a grammar and input, produce the sequence of earley state sets $s_0, s_1, \ldots, s_n$ by hand
-2. **packrat parsing** — define a packrat parser for a small grammar in haskell or ocaml with memoization
-3. **packrat parsing for statements** — extend packrat to handle statement blocks, sequencing, `if`, `while`
+## Earley sets
 
-the assignment 11 counterparts push further:
+`01 Steps with Earley's Parser.ipynb` asks for sets of dotted productions with origin indices. Use the question's start production and indexing convention.
 
-- **all trees with earley's parser** — for ambiguous grammars, enumerate all parse trees
-- **arithmetic expressions with PEG** — write the PEG for `expr`, `term`, `factor` with prioritized choice
-- **packrat parsing for statements** — same as lab, but graded
+1. Initialize the first set, then close it under prediction and completion, including nullable productions.
+2. Scan matching terminals into the next set.
+3. Close that set under prediction and completion before scanning again.
+4. Accept when the completed start item with origin zero is in the final set.
 
-## earley by hand (the method)
+For assignment questions requesting all trees, preserve all derivations or back-pointers contributing to an item. A set of recognition items alone discards that history. Trace the supplied implementation's representation before adding tree construction.
 
-given grammar $G$ and input $w = a_1\,a_2\,\ldots\,a_n$:
+## Backtracking and memoization
 
-1. start: $s_0 = \{ [S' \to \bullet S, 0] \}$ plus all predictions from it
-2. for each $i$ from $0$ to $n-1$:
-   - scan: for each item $[A \to \alpha \bullet a_{i+1}\,\beta, k]$ in $s_i$, add $[A \to \alpha\,a_{i+1} \bullet \beta, k]$ to $s_{i+1}$
-   - in $s_{i+1}$: repeatedly apply predict (on items with nonterminal after dot) and complete (on completed items) until fixpoint
-3. accept iff $[S' \to S \bullet, 0] \in s_n$
+`02 Packrat Parsing.ipynb` uses:
 
-### worked example (tiny)
-
-grammar:
-
-$$
-S \to a\,S\,b \mid \epsilon
-$$
-
-input: `a a b b`
-
-- $s_0$: $[S' \to \bullet S, 0]$, $[S \to \bullet a\,S\,b, 0]$, $[S \to \bullet, 0]$, $[S' \to S \bullet, 0]$ (via complete)
-- scan `a` ($i=0 \to 1$): $[S \to a \bullet S\,b, 0]$ into $s_1$; then predict $[S \to \bullet a\,S\,b, 1]$, $[S \to \bullet, 1]$; complete $[S \to a\,S \bullet b, 0]$
-- scan `a` ($i=1 \to 2$): $[S \to a \bullet S\,b, 1]$; predict $[S \to \bullet a\,S\,b, 2]$, $[S \to \bullet, 2]$; complete $[S \to a\,S \bullet b, 1]$
-- scan `b` ($i=2 \to 3$): $[S \to a\,S\,b \bullet, 1]$; complete cascades $[S \to a\,S \bullet b, 0]$
-- scan `b` ($i=3 \to 4$): $[S \to a\,S\,b \bullet, 0]$; complete $[S' \to S \bullet, 0]$ → accept
-
-## PEG for P0 statements
-
-packrat-for-statements shape:
-
-$$
-\begin{aligned}
-\text{Stmt}      &\leftarrow \text{Assign} / \text{IfStmt} / \text{WhileStmt} / \text{Block} / \text{Call} \\
-\text{Assign}    &\leftarrow \text{Var}\ \texttt{':='}\ \text{Expr} \\
-\text{IfStmt}    &\leftarrow \texttt{'if'}\ \text{Expr}\ \texttt{'then'}\ \text{Suite}\ (\texttt{'else'}\ \text{Suite})? \\
-\text{WhileStmt} &\leftarrow \texttt{'while'}\ \text{Expr}\ \texttt{'do'}\ \text{Suite} \\
-\text{Suite}     &\leftarrow \text{INDENT}\ \text{StmtList}\ \text{DEDENT} / \text{Stmt} \\
-\text{StmtList}  &\leftarrow \text{Stmt}\ (\text{NEWLINE}\ \text{Stmt})^*
-\end{aligned}
-$$
-
-the $/$ is prioritized choice; $*$ / $?$ are greedy. watch out for left-recursion: $\text{Expr} \leftarrow \text{Expr}\ \texttt{'+'}\ \text{Term} / \text{Term}$ is illegal; rewrite as $\text{Expr} \leftarrow \text{Term}\,(\texttt{'+'}\ \text{Term})^*$.
-
-## packrat implementation pattern (haskell)
-
-```haskell
-parseA :: String -> Int -> Maybe (AST, Int)
-parseA input pos = case Map.lookup (A, pos) memo of
-  Just r  -> r
-  Nothing -> let r = ...parsing logic...
-             in memoInsert (A, pos) r ; r
+```text
+S  ← &(AB c) a* BC
+AB ← (a AB b)?
+BC ← (b BC c)?
 ```
 
-in ocaml, use a mutable `Hashtbl` keyed by `(nonterminal, pos)`.
+Its `Backtrack` class returns the next input position on success and `None` on failure. Position zero is a valid successful result. `parse` checks that the result equals the input length. `Memoizing` caches by `(nonterminal, position)` and resets the cache for each input, including cached failures.
 
-the trick: every parser function is $\text{input} \to \text{pos} \to \text{option}\,(\text{ast} \times \text{pos})$ and memoizes on $(\text{nt}, \text{pos})$. that gives $O(|N| \times n)$ entries, $O(1)$ lookup, so total time is linear.
+Read those classes and test cells before extending them. Preserve the positive lookahead's original position and optional productions' zero-length success. A memo table avoids recomputing the same rule at the same position; check the work performed inside each memoized rule before claiming linear runtime.
 
-## all-trees with earley
+## Statement parsing
 
-for ambiguous grammars, the `complete` step can produce multiple items that share completed nonterminals but different histories. to enumerate all trees:
+`03 Packrat Parsing for Statements.ipynb` supplies this grammar:
 
-1. for each item, record **all** back-pointer pairs that led to it, not just one
-2. from $[S' \to S \bullet, 0] \in s_n$, enumerate combinations of back-pointers recursively
-3. tree count grows exponentially for genuinely ambiguous sentences (this is expected)
+```text
+statement  ← assignment / call
+assignment ← designator ':=' designator
+call       ← designator '(' designator ')'
+designator ← ident ('.' ident)*
+ident      ← 'a' / ... / 'z'
+```
 
-## arithmetic with PEG
+It uses `StatementBacktrack` and `StatementMemoizing`. Extend those definitions and preserve the fallback from an unsuccessful assignment to a call at the original position. Follow the actual exercise if an assignment variant asks for additional constructs.
 
-canonical answer:
+## Arithmetic PEG questions
 
-$$
-\begin{aligned}
-\text{Expr}   &\leftarrow \text{Term}\,((\texttt{'+'} / \texttt{'-'})\,\text{Term})^* \\
-\text{Term}   &\leftarrow \text{Factor}\,((\texttt{'*'} / \texttt{'/'})\,\text{Factor})^* \\
-\text{Factor} &\leftarrow \texttt{'('}\,\text{Expr}\,\texttt{')'} / \text{Number} / \text{Ident} \\
-\text{Number} &\leftarrow [0\text{-}9]^+ \\
-\text{Ident}  &\leftarrow [a\text{-}zA\text{-}Z][a\text{-}zA\text{-}Z0\text{-}9]^*
-\end{aligned}
-$$
+Read `88 Assignment 11/03 Arithmetic Expressions with PEG.ipynb` for its grammar, operators, and required semantic values. Ordered choice and greedy repetition affect recognition; a repetition-based expression grammar also needs an explicit accumulation rule to produce left-associative values or trees.
 
-note the $+$ / $-$ inside a single choice with repetition, encoding left-associativity via iteration.
-
-## common exam traps
-
-- **left recursion in PEG**: illegal, must be rewritten with $*$ or $+$
-- **ambiguous else in EBNF**: the straight CFG is ambiguous; PEG's greedy $?$ resolves it without grammar gymnastics
-- **misreading earley items**: the origin index $k$ is where the production _started_, not the current position
-- **completing a not-yet-completed item**: complete only fires when the dot is at the end
-- **scanning past the input**: $s_{n+1}$ is never constructed; accept is checked in $s_n$
+The [generalized-parsing reference](lecture-10-general.md) covers the algorithms. Use the local question for the answer shape and verification cases.

@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import renderToString from 'preact-render-to-string'
+import type { GarminSleepSummary } from '../../../plugins/stores/garmin'
 import {
   buildAnalytics,
   type PowerToWeightDurationS,
   type PowerToWeightEffort,
 } from '../../../plugins/stores/analytics'
 import { applyManualSauna, buildPayload, type StravaRawCache } from '../../../plugins/stores/strava'
+import { resolveSleepMetrics } from '../../../util/sleep-metrics'
 import { DEFAULT_TRIATHLON_FORMATTER } from '../runtime/formatter'
 import { ANALYTICS_CATALOG, ANALYTICS_PANEL_ORDER } from './catalog'
 import { analyticsChartPath, AnalyticsServerPanel } from './render'
@@ -91,6 +93,72 @@ test('server analytics markup draws source-backed series when observations exist
   assert.match(html, /class="tri-ana-ssr-chart"/)
   assert.match(html, /data-series="weight"/)
   assert.match(html, /M0\.00 3\.00 L100\.00 29\.00/)
+})
+
+test('sleep server markup includes Oura respiration and Garmin overnight metrics without stages', () => {
+  const date = '2026-09-08'
+  const analytics = buildAnalytics(null)
+  const garmin: GarminSleepSummary = {
+    source: 'garmin',
+    date,
+    startTime: '2026-09-08T00:50:00-04:00',
+    endTime: '2026-09-08T08:15:00-04:00',
+    averageBreathsPerMinute: 15,
+    lowestBreathsPerMinute: 11,
+    highestBreathsPerMinute: 19,
+    averageSpO2: 97,
+    lowestSpO2: 91,
+    bodyBatteryStart: 64,
+    bodyBatteryEnd: 100,
+    bodyBatteryChange: 36,
+    averageStress: 11,
+    restlessMoments: 39,
+  }
+  const day = {
+    date,
+    load: 0,
+    effort: 0,
+    swimLoad: 0,
+    bikeLoad: 0,
+    runLoad: 0,
+    ctl: 0,
+    atl: 0,
+    tsb: 0,
+    swimCtl: 0,
+    bikeCtl: 0,
+    runCtl: 0,
+    readiness: null,
+    hrv: null,
+    rhr: null,
+    sleepScore: null,
+    sleepDurationS: null,
+    sleepMetrics: resolveSleepMetrics({ avgBreath: 14.25 }, garmin),
+    tempDevC: null,
+    weightKg: null,
+    totalCalories: null,
+    intakeKcal: null,
+    warmup: false,
+  }
+  analytics.daily = [day]
+  const definition = ANALYTICS_CATALOG.find(panel => panel.key === 'sleep')
+  assert.ok(definition)
+  const html = renderToString(<AnalyticsServerPanel definition={definition} data={analytics} />)
+  assert.match(html, /respiration<\/dt><dd>14\.3 brpm<span/)
+  assert.match(html, /Pulse Ox<\/dt><dd>97\.0%<span/)
+  assert.match(html, /Body Battery change<\/dt><dd>\+36<span/)
+  assert.match(html, /sleep stress<\/dt><dd>11\.0<span/)
+  assert.match(html, /role="tooltip">Garmin\nlowest Pulse Ox 91%<\/span>/)
+  assert.doesNotMatch(html, / · (Oura|Garmin)|<dt>lowest Pulse Ox<\/dt>/)
+  assert.match(html, /sleep details<\/dt><dd>Sep 8/)
+  assert.doesNotMatch(html, /sleep stages|hypnogram/)
+
+  analytics.daily = [{ ...day, sleepMetrics: resolveSleepMetrics(null, garmin) }]
+  const garminOnly = renderToString(
+    <AnalyticsServerPanel definition={definition} data={analytics} />,
+  )
+  assert.match(garminOnly, /respiration<\/dt><dd>15\.0 brpm<span/)
+  assert.match(garminOnly, /role="tooltip">Garmin\nlowest Pulse Ox 91%<\/span>/)
+  assert.doesNotMatch(garminOnly, /Oura|data-series="sleep duration"|data-series="sleep score"/)
 })
 
 test('power-to-weight server series share one zero-based scale', () => {

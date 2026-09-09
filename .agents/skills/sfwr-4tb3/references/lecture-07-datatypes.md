@@ -7,7 +7,7 @@ description: further data types (floats, sets, records) and control structures (
 
 ## floating-point numbers
 
-wasm has `f32`/`f64` with IEEE-754 semantics. instructions mirror integer arithmetic: `f64.add`, `f64.sub`, `f64.mul`, `f64.div`, comparisons `f64.eq/ne/lt/gt/le/ge`, conversions `f64.convert_i32_s`, `i32.trunc_f64_s`. no signed/unsigned distinction on floats. NaN propagates through operations; comparisons with NaN are false.
+wasm has `f32`/`f64` with IEEE-754 semantics. instructions mirror integer arithmetic: `f64.add`, `f64.sub`, `f64.mul`, `f64.div`, comparisons `f64.eq/ne/lt/gt/le/ge`, conversions `f64.convert_i32_s`, `i32.trunc_f64_s`. Floating-point comparisons do not have signed/unsigned variants. With NaN, equality and ordered comparisons return false; `ne` returns true. See the [WebAssembly numeric semantics](https://webassembly.github.io/spec/core/exec/numerics.html) for instruction-specific behavior.
 
 grammar extensions for P0 float literals: $[\text{int}]\ \texttt{'.'}\ \text{num}\ [\texttt{'e'}\ \text{int}]$ etc. the scanner emits a dedicated float token.
 

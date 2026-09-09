@@ -46,6 +46,51 @@ Keep this writing.
 
 
 class VoiceMemoTests(unittest.TestCase):
+  def test_memo_attributes_replace_lfs_entries_and_preserve_other_rules(
+    self,
+  ) -> None:
+    text = (
+      '* text=auto eol=lf\n'
+      '*.pdf filter=lfs diff=lfs merge=lfs -text\n'
+      'content/triathlon/memos/*.m4a filter=lfs diff=lfs merge=lfs -text\n'
+      'content/triathlon/memos/day.peaks.json filter=lfs diff=lfs merge=lfs -text\n'
+      'content/triathlon/memos/** filter=lfs diff=lfs merge=lfs -text\n'
+      'content/triathlon/memos/*.peaks.json linguist-generated=true\n'
+    )
+    expected = (
+      '* text=auto eol=lf\n'
+      '*.pdf filter=lfs diff=lfs merge=lfs -text\n'
+      'content/triathlon/memos/*.peaks.json linguist-generated=true\n'
+      'content/triathlon/memos/**/*.m4a filter=lfs diff=lfs merge=lfs -text\n'
+      'content/triathlon/memos/**/*.peaks.json -filter diff merge text\n'
+    )
+    updated = memos.update_memo_attributes(text)
+    self.assertEqual(updated, expected)
+    self.assertEqual(memos.update_memo_attributes(updated), updated)
+    self.assertEqual(
+      memos.update_memo_attributes(updated + '*.json filter=lfs\n'),
+      expected.split('content/triathlon/memos/**/*.m4a')[0]
+      + '*.json filter=lfs\n'
+      + '\n'.join(memos.MEMO_ATTRIBUTE_RULES)
+      + '\n',
+    )
+
+  def test_memo_attributes_create_file_and_preserve_mtime_on_repeat(
+    self,
+  ) -> None:
+    with tempfile.TemporaryDirectory(
+      prefix='memo-attributes-test-'
+    ) as temporary:
+      root = Path(temporary)
+      memos.ensure_memo_attributes(root)
+      attributes = root / '.gitattributes'
+      self.assertEqual(
+        attributes.read_text(), '\n'.join(memos.MEMO_ATTRIBUTE_RULES) + '\n'
+      )
+      written = attributes.stat().st_mtime_ns
+      memos.ensure_memo_attributes(root)
+      self.assertEqual(attributes.stat().st_mtime_ns, written)
+
   def test_existing_entry_and_repeat_import(self) -> None:
     updated = memos.update_stream(
       STREAM, date(2026, 9, 5), ['20260905', 'second'], NOW
@@ -140,11 +185,28 @@ class VoiceMemoTests(unittest.TestCase):
         '--source',
         str(root),
       ]
+      attributes = root / '.gitattributes'
+      attributes.write_text(
+        '*.pdf filter=lfs diff=lfs merge=lfs -text\n'
+        'content/triathlon/memos/** filter=lfs diff=lfs merge=lfs -text\n'
+      )
+      subprocess.run(
+        [*command, '--list'], check=True, capture_output=True, timeout=30
+      )
+      self.assertNotIn('*.peaks.json', attributes.read_text())
       subprocess.run(command, check=True, capture_output=True, timeout=30)
       self.assertIn(f'![[triathlon/memos/{name}.m4a]]', stream.read_text())
+      self.assertEqual(
+        attributes.read_text(),
+        '*.pdf filter=lfs diff=lfs merge=lfs -text\n'
+        'content/triathlon/memos/**/*.m4a filter=lfs diff=lfs merge=lfs -text\n'
+        'content/triathlon/memos/**/*.peaks.json -filter diff merge text\n',
+      )
       written = stream.stat().st_mtime_ns
+      attributes_written = attributes.stat().st_mtime_ns
       subprocess.run(command, check=True, capture_output=True, timeout=30)
       self.assertEqual(stream.stat().st_mtime_ns, written)
+      self.assertEqual(attributes.stat().st_mtime_ns, attributes_written)
       (destination / f'{name}.m4a').write_bytes(b'changed')
       with self.assertRaisesRegex(ValueError, 'incomplete or changed'):
         memos.import_recording(recording, destination)

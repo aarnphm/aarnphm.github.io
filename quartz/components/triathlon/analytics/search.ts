@@ -32,9 +32,9 @@ export const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = 
     hay: 'vo2max vo2 max aerobic fitness age friend percentile engine ftp map trend',
   },
   {
-    label: 'lactate threshold projection',
+    label: 'lactate threshold',
     chart: 'lactate',
-    hay: 'lactate threshold projection lt lthr lt2 mlss heart rate bpm pace power proxy forecast',
+    hay: 'lactate threshold projection lt lthr lt2 mlss heart rate bpm pace power proxy forecast garmin running',
   },
   {
     label: 'best efforts · power curve · power rank',

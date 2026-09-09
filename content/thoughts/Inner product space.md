@@ -1,117 +1,124 @@
 ---
 date: '2025-08-20'
-description: Vector spaces with a generalized dot product that induces length, angles, orthogonality, and projections; the gateway from Euclidean geometry to Hilbert spaces.
+description: A dot-product structure for lengths and orthogonal projections, with one consistent complex convention.
 id: Inner product space
-modified: 2026-06-05 15:08:23 GMT-04:00
+modified: 2026-09-08 09:12:38 GMT-04:00
 tags:
   - math
 title: Inner product space
 ---
 
-Inner products formalize dot products, letting us measure lengths, angles, and orthogonality in arbitrary vector spaces.
+An inner product adds geometry to a vector space: length, orthogonality, and nearest-point projection.
 
 ## Definition (real/complex)
 
-A (real/complex) vector space $V$ with a map $\langle\cdot,\cdot\rangle:V\times V\to \mathbb F$ is an **inner product space** if for all $x,y,z\in V$ and $a,b\in\mathbb F$:
+Let $V$ be a vector space over $\mathbb F\in\{\mathbb R,\mathbb C\}$. An inner product $\langle\cdot,\cdot\rangle:V\times V\to\mathbb F$ satisfies, for all vectors $x,y,z$ and scalars $a,b$,
 
-- **Conjugate symmetry:** $\langle x,y\rangle=\overline{\langle y,x\rangle}$.
-- **Linearity in the first argument:** $\langle ax+by,z\rangle=a\langle x,z\rangle+b\langle y,z\rangle$ (hence, conjugate‑linearity in the second).
-- **Positive‑definite:** $\langle x,x\rangle>0$ for all $x\neq 0$.
+$$
+\begin{aligned}
+\langle ax+by,z\rangle&=a\langle x,z\rangle+b\langle y,z\rangle,\\
+\langle x,y\rangle&=\overline{\langle y,x\rangle},\\
+\langle x,x\rangle&\ge 0,\qquad
+\langle x,x\rangle=0\iff x=0.
+\end{aligned}
+$$
 
-> [!note] Convention
->
-> Many physics texts take linearity in the second argument. Results are equivalent after complex conjugation.
+This note uses **linearity in the first argument**, so the second argument is conjugate-linear. For column vectors, the standard complex inner product is
 
-## Induced norm and core inequalities
+$$
+\langle x,y\rangle=y^\dagger x=\sum_i x_i\overline{y_i},
+$$
 
-Define $\|x\|:=\sqrt{\langle x,x\rangle}$. Then:
+where $\dagger$ denotes conjugate transpose. For example, $\langle i,1\rangle=i$ and $\langle1,i\rangle=-i$. A Hermitian positive-definite matrix $M$ gives the weighted inner product $\langle x,y\rangle_M=y^\dagger Mx$. Over the reals, this reduces to $x^{\mathsf T}My$. [Bindel's matrix-computations notes](https://www.cs.cornell.edu/courses/cs6210/2025fa/lec/2025-08-25.html) use the same convention.
 
-- **Absolute homogeneity:** $\|a x\|=|a|\,\|x\|$.
-- **Triangle inequality:** $\|x+y\|\le \|x\|+\|y\|$ (via Cauchy–Schwarz).
-- **Cauchy–Schwarz:** $|\langle x,y\rangle|\le \|x\|\,\|y\|$, with equality iff $x,y$ are linearly dependent. See [[thoughts/Cauchy-Schwarz]].
-- **Parallelogram law:** $\|x+y\|^{2}+\|x-y\|^{2}=2\|x\|^{2}+2\|y\|^{2}$.
+## Induced norm and inequalities
 
-> [!important] Positive‑definiteness matters
->
-> Without $\langle x,x\rangle>0$ (for $x\ne0$), $\sqrt{\langle x,x\rangle}$ is not a norm and geometry breaks.
+The induced [[thoughts/norm|norm]] is $\lVert x\rVert=\sqrt{\langle x,x\rangle}$. Expanding a squared length gives
 
-## Polarization identity
+$$
+\lVert x+y\rVert^2=\lVert x\rVert^2
++2\operatorname{Re}\langle x,y\rangle+\lVert y\rVert^2.
+$$
 
-A norm comes from an inner product **iff** it satisfies the parallelogram law (Jordan–von Neumann). Then the inner product is uniquely recovered by polarization:
-
-- **Real spaces:** $\displaystyle \langle x,y\rangle=\tfrac14\big(\|x+y\|^{2}-\|x-y\|^{2}\big)$.
-- **Complex spaces (math convention, linear in the first argument):**
-
-  $$
-  \langle x,y\rangle=\tfrac14\Big(\|x+y\|^{2}-\|x-y\|^{2}+i\|x+iy\|^{2}-i\|x-iy\|^{2}\Big).
-  $$
-
-> [!tip] Intuition
->
-> Polarization is the “inverse” of building a norm from an inner product: it reconstructs $\langle\cdot,\cdot\rangle$ from $\|\cdot\|$.
-
-## Orthogonality, projections, Pythagoras/Parseval
-
-- **Orthogonality:** $x\perp y$ iff $\langle x,y\rangle=0$.
-- **Pythagoras:** if $x\perp y$, then $\|x+y\|^{2}=\|x\|^{2}+\|y\|^{2}$.
-- **Parseval (finite orthogonal families):** for pairwise orthogonal $\{x_k\}$, $\big\|\sum_k x_k\big\|^{2}=\sum_k\|x_k\|^{2}$.
-  In Hilbert spaces (complete inner‑product spaces), the series version holds for infinite orthogonal families.
-
-> [!theorem] Orthogonal projection onto a subspace
->
-> If $Q=[q_1\,\cdots\,q_k]$ has orthonormal columns spanning $S\subseteq V$, then $P_S=QQ^{\!*}$ is the projector and $\operatorname{argmin}_{s\in S}\|x-s\|=P_S x$.
+[[thoughts/Cauchy-Schwarz]] gives $|\langle x,y\rangle|\le\lVert x\rVert\lVert y\rVert$, so the squared-length expansion implies the triangle inequality. If a positive-semidefinite form assigns length zero to a nonzero vector, it gives a seminorm; positive definiteness rules that out.
 
 ## Orthonormal bases & Gram–Schmidt
 
-Every finite‑dimensional inner product space admits an **orthonormal basis**, obtained from any basis via Gram–Schmidt. In Hilbert spaces (complete), orthonormal bases support Parseval expansions.
+An orthonormal family satisfies $\langle q_i,q_j\rangle=\delta_{ij}$. Gram-Schmidt constructs one from a linearly independent list: subtract the projections onto the vectors already constructed, then normalize the residual. Applied to a finite [[thoughts/basis|basis]], it gives an orthonormal basis of the same space. The residual is nonzero because the next input vector lies outside the span of its predecessors. See [Axler, §6B](https://linear.axler.net/LADR4e.pdf#page=214).
 
-> [!tip] Privileged basis
->
-> Working in an orthonormal or eigenbasis simplifies computations (projections, diagonalisation, PCA/SVD).
+## Orthogonality, projections, Pythagoras/Parseval
 
-## Canonical examples
+Vectors are orthogonal when $\langle x,y\rangle=0$. The squared-length expansion then gives Pythagoras, $\lVert x+y\rVert^2=\lVert x\rVert^2+\lVert y\rVert^2$.
 
-- **$\mathbb R^{n}$:**
-  $\displaystyle \langle x,y\rangle=x^{\mathsf T} M y$ for symmetric positive‑definite $M$ (the usual dot product uses $M=I$).
+For a finite-dimensional subspace $S$ with orthonormal basis $q_1,\ldots,q_k$, define
 
-- **$\mathbb C^{n}$:**
-  $\displaystyle \langle x,y\rangle=x^{\dagger} M y$ for Hermitian positive‑definite $M$ (standard choice $M=I$ gives $\sum_i \overline{x_i}y_i$).
+$$
+P_Sx=\sum_{j=1}^k\langle x,q_j\rangle q_j.
+$$
 
-- **Matrix space $\mathbb C^{m\times n}$: (Frobenius/Hilbert–Schmidt)**
-  $\displaystyle \langle A,B\rangle=\operatorname{tr}(A B^{\dagger})$ with induced norm $\|A\|_{\!F}^{2}=\sum_{ij}|A_{ij}|^{2}$.
+The residual $x-P_Sx$ is orthogonal to every vector in $S$. For any $s\in S$, Pythagoras therefore gives
 
-- **Continuous functions $C([a,b])$:**
-  $\displaystyle \langle f,g\rangle=\int_a^b f(t)\,\overline{g(t)}\,dt$. This inner‑product norm is not complete on $C([a,b])$; the completion is $L^{2}([a,b])$.
+$$
+\lVert x-s\rVert^2
+=\lVert x-P_Sx\rVert^2+\lVert P_Sx-s\rVert^2.
+$$
 
-- **Probability / $L^{2}$ random variables:**
-  $\displaystyle \langle X,Y\rangle=\mathbb E[X\,\overline{Y}]$; modulo a.s. equality, this makes $L^{2}$ a Hilbert space.
+The last term is minimized uniquely at $s=P_Sx$. This proves that the projection is the nearest point in $S$. In standard real or complex coordinates, $Q=[q_1\ \cdots\ q_k]$ gives $P_S=QQ^\dagger$. With the weighted inner product, $Q^\dagger MQ=I$ instead gives $P_S=QQ^\dagger M$. See [Axler, §6C, projection and minimization](https://linear.axler.net/LADR4e.pdf#page=229).
 
 ## Gram matrices and PSD
 
-Given $x_1,\ldots,x_n\in V$, the Gram matrix $G\in\mathbb{F}^{n\times n}$ with $G_{ij}=\langle x_i,x_j\rangle$ is Hermitian positive semidefinite: $c^{\!*} G c=\big\|\sum_i c_i x_i\big\|^2\ge 0$. In finite‑dimensional Euclidean spaces, $G=X^{\!*}X$ for data matrix $X$.
+For vectors $x_1,\ldots,x_n$, define $G_{ij}=\langle x_j,x_i\rangle$. The index order follows our linear-first convention and makes
 
-> [!note] Links
-> Gram matrices appear in least squares and kernel methods; principal axes arise from eigen/SVD. See [[thoughts/Singular Value Decomposition]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis|PCA]].
+$$
+c^\dagger Gc=\left\lVert\sum_j c_jx_j\right\rVert^2\ge0.
+$$
 
-## Useful identities
+Thus $G$ is Hermitian positive semidefinite, and it is positive definite exactly when the vectors are linearly independent. In standard coordinates, putting the vectors in the columns of $X$ gives $G=X^\dagger X$. [Bindel's Gram-matrix derivation](https://www.cs.cornell.edu/courses/cs6210/2025fa/lec/2025-08-25-slides.html#gram-matrices) keeps this index order explicit. These matrices appear in least squares and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis|PCA]]; see also [[thoughts/Singular Value Decomposition]].
 
-- **Binomial expansion in IP spaces (real case):**
-  $\displaystyle \|x+y\|^{2}=\|x\|^{2}+2\langle x,y\rangle+\|y\|^{2}$. (Complex: replace $2\langle x,y\rangle$ by $2\operatorname{Re}\langle x,y\rangle$.)
+## Polarization identity
 
-- **Angle via C–S (real spaces):**
-  $\displaystyle \cos\theta=\frac{\langle x,y\rangle}{\|x\|\,\|y\|}\in[-1,1]$. (In complex spaces, use $\operatorname{Re}$ or $|\cdot|$ as needed.)
+A norm comes from an inner product exactly when it satisfies the parallelogram law,
 
-- **Polarization (again, because it’s that useful):**
-  Real: $\displaystyle \frac14(\|x+y\|^{2}-\|x-y\|^{2})$;
-  Complex: $\displaystyle \frac14(\|x+y\|^{2}-\|x-y\|^{2}+i\|x+iy\|^{2}-i\|x-iy\|^{2})$.
+$$
+\lVert x+y\rVert^2+\lVert x-y\rVert^2
+=2\lVert x\rVert^2+2\lVert y\rVert^2.
+$$
+
+The inner product is then recovered from lengths. Over the reals,
+
+$$
+\langle x,y\rangle=\frac14\bigl(\lVert x+y\rVert^2-\lVert x-y\rVert^2\bigr).
+$$
+
+For our complex convention,
+
+$$
+\langle x,y\rangle=\frac14\Bigl(
+\lVert x+y\rVert^2-\lVert x-y\rVert^2
++i\lVert x+iy\rVert^2-i\lVert x-iy\rVert^2\Bigr).
+$$
 
 ## Relation to completeness (Hilbert spaces)
 
-An inner product space is a **Hilbert space** iff it’s complete in the induced norm. When complete, orthogonal series behave exactly like Euclidean Pythagoras in infinite sums:
+A Hilbert space is complete in its induced norm: every Cauchy sequence has a limit in the space.
+
+For $a<b$, continuous functions on $[a,b]$ have inner product $\langle f,g\rangle=\int_a^b f(t)\overline{g(t)}\,dt$, yet they are incomplete in this norm. Their completion is $L^2([a,b])$, where functions equal almost everywhere are identified. Square-integrable random variables similarly use $\langle X,Y\rangle=\mathbb E[X\overline Y]$, modulo almost-sure equality.
+
+In a Hilbert space, a pairwise orthogonal series converges precisely when $\sum_k\lVert u_k\rVert^2<\infty$. For its partial sums,
 
 $$
-\Big\|\sum_{k=0}^{\infty} u_k\Big\|^{2}=\sum_{k=0}^{\infty}\|u_k\|^{2}
-\quad\text{for orthogonal }\{u_k\}.
+\left\lVert\sum_{k=m+1}^n u_k\right\rVert^2
+=\sum_{k=m+1}^n\lVert u_k\rVert^2.
 $$
 
-If you are missing limits, complete it—every pre‑Hilbert space has a Hilbert completion.
+This turns the Cauchy condition for vectors into a condition on a scalar series. When it converges, the squared norm of the sum is the sum of squared norms.
+
+For a countable orthonormal basis $(e_k)$ whose closed span is the whole space, this yields the expansion and Parseval identity
+
+$$
+x=\sum_k\langle x,e_k\rangle e_k,
+\qquad
+\lVert x\rVert^2=\sum_k|\langle x,e_k\rangle|^2.
+$$
+
+An arbitrary orthonormal family gives Bessel's inequality in place of equality. Projection onto a general subspace of a Hilbert space requires that subspace to be closed. [Axler, chapter 8](https://measure.axler.net/MIRA.pdf#page=234) develops completeness, projection, polarization, and orthogonal series.

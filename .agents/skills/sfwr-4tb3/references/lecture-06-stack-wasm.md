@@ -26,19 +26,21 @@ $$
 
 ## instruction cheat-sheet (semantics as assignments)
 
-| instruction                               | effect                                        | trap condition          |
-| :---------------------------------------- | :-------------------------------------------- | :---------------------- |
-| `i32.const i`                             | $s[sp], sp := i,\ sp+1$                       | $sp < \text{StackSize}$ |
-| `i32.add`                                 | $s[sp-2], sp := s[sp-2] + s[sp-1],\ sp-1$     |                         |
-| `i32.sub` / `i32.mul`                     | pop two, push result                          |                         |
-| `i32.div_s` / `i32.rem_s`                 | signed                                        | $s[sp-1] = 0$           |
-| `i32.eq`/`ne`/`lt_s`/`gt_s`/`le_s`/`ge_s` | comparisons push $1$ or $0$                   |                         |
-| `i32.eqz`                                 | $1$ if top is $0$, else $0$                   |                         |
-| `i32.load offset=n`                       | $s[sp-1] := m[s[sp-1]+n]$                     | bounds                  |
-| `i32.store offset=n`                      | $m[s[sp-2]+n] := s[sp-1];\ sp -= 2$           | bounds                  |
-| `local.get x` / `local.set x`             | frame-local r/w                               |                         |
-| `global.get x` / `global.set x`           | global r/w                                    |                         |
-| `local.tee x`                             | `local.set` but leaves the value on the stack |                         |
+| instruction                               | effect                                        | trap condition                                                               |
+| :---------------------------------------- | :-------------------------------------------- | :--------------------------------------------------------------------------- |
+| `i32.const i`                             | $s[sp], sp := i,\ sp+1$                       |                                                                              |
+| `i32.add`                                 | $s[sp-2], sp := s[sp-2] + s[sp-1],\ sp-1$     |                                                                              |
+| `i32.sub` / `i32.mul`                     | pop two, push result                          |                                                                              |
+| `i32.div_s` / `i32.rem_s`                 | signed division / remainder                   | zero divisor; division also traps for minimum signed integer divided by $-1$ |
+| `i32.eq`/`ne`/`lt_s`/`gt_s`/`le_s`/`ge_s` | comparisons push $1$ or $0$                   |                                                                              |
+| `i32.eqz`                                 | $1$ if top is $0$, else $0$                   |                                                                              |
+| `i32.load offset=n`                       | $s[sp-1] := m[s[sp-1]+n]$                     | bounds                                                                       |
+| `i32.store offset=n`                      | $m[s[sp-2]+n] := s[sp-1];\ sp -= 2$           | bounds                                                                       |
+| `local.get x` / `local.set x`             | frame-local r/w                               |                                                                              |
+| `global.get x` / `global.set x`           | global r/w                                    |                                                                              |
+| `local.tee x`                             | `local.set` but leaves the value on the stack |                                                                              |
+
+These are abbreviated stack effects. For numeric traps and rounding, use the [WebAssembly numeric semantics](https://webassembly.github.io/spec/core/exec/numerics.html); remainder of the minimum signed integer by $-1$ is zero.
 
 control:
 

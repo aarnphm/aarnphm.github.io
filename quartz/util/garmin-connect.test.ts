@@ -6,9 +6,354 @@ import {
   garminConnectActivityStartDate,
   garminConnectClimbSegments,
   garminConnectRunWalk,
+  garminConnectRunningLactateThreshold,
+  garminConnectSleep,
   garminConnectStreams,
   garminConnectWeightSamples,
 } from './garmin-connect'
+
+test('normalizes Garmin running lactate threshold units and ignores cycling heart rate', () => {
+  const threshold = garminConnectRunningLactateThreshold([
+    { calendarDate: '2026-09-08T16:00:53.119', speed: 0.37499895, hearRate: null },
+    { calendarDate: '2026-09-08T16:00:53.119', speed: null, hearRate: 174 },
+    {
+      calendarDate: '2026-09-09T12:00:00',
+      heartRateCycling: 166,
+      rowSpeed: 0.5,
+      heartRateRowing: 160,
+    },
+  ])
+  assert.ok(threshold?.speedMps)
+  assert.ok(Math.abs(threshold.speedMps.value - 3.7499895) < 1e-9)
+  assert.equal(Math.round(1609.344 / threshold.speedMps.value), 429)
+  assert.equal(threshold.speedMps.date, '2026-09-08')
+  assert.deepEqual(threshold.heartRateBpm, { value: 174, date: '2026-09-08' })
+})
+
+test('selects the latest Garmin threshold independently for each metric and time of day', () => {
+  assert.deepEqual(
+    garminConnectRunningLactateThreshold([
+      { calendarDate: '2026-09-08T16:00:00', speed: 0.4 },
+      { calendarDate: '2026-09-07T10:00:00', heartRate: 175 },
+      { calendarDate: '2026-09-08T08:00:00', speed: 0.3 },
+      { calendarDate: '2026-09-06T10:00:00', hearRate: 173 },
+    ]),
+    {
+      speedMps: { value: 4, date: '2026-09-08' },
+      heartRateBpm: { value: 175, date: '2026-09-07' },
+    },
+  )
+})
+
+test('missing and invalid Garmin threshold values remain unavailable', () => {
+  assert.equal(garminConnectRunningLactateThreshold([]), null)
+  assert.equal(
+    garminConnectRunningLactateThreshold([
+      null,
+      { calendarDate: 'invalid', speed: 0.4, hearRate: 175 },
+      { calendarDate: '2026-02-30', speed: 0.4, hearRate: 175 },
+      { calendarDate: '2026-09-08', speed: 0, hearRate: -1 },
+      { calendarDate: '2026-09-08', speed: Infinity, hearRate: NaN },
+      { calendarDate: '2026-09-08', heartRateCycling: 170 },
+    ]),
+    null,
+  )
+  assert.deepEqual(
+    garminConnectRunningLactateThreshold([{ calendarDate: '2026-09-08', heartRate: 174 }]),
+    { speedMps: null, heartRateBpm: { value: 174, date: '2026-09-08' } },
+  )
+  assert.throws(
+    () => garminConnectRunningLactateThreshold({ error: 'unexpected' }),
+    /Invalid Garmin/,
+  )
+})
+
+// Garmin Connect dailySleepData response, 2026-09-08, with identity fields removed.
+const overnightSleep = {
+  dailySleepDTO: {
+    calendarDate: '2026-09-08',
+    sleepStartTimestampGMT: 1788845456000,
+    sleepEndTimestampGMT: 1788875809000,
+    sleepFromDevice: true,
+    sleepWindowConfirmationType: 'enhanced_confirmed_final',
+    averageSpO2Value: 97,
+    lowestSpO2Value: 91,
+    averageRespirationValue: 15,
+    lowestRespirationValue: 11,
+    highestRespirationValue: 19,
+    avgSleepStress: 11,
+    deepSleepSeconds: 2340,
+    remSleepSeconds: 7320,
+    lightSleepSeconds: 20640,
+  },
+  sleepBodyBattery: [
+    { value: 64, startGMT: 1788845400000 },
+    { value: 100, startGMT: 1788875640000 },
+  ],
+  bodyBatteryChange: 36,
+  restlessMomentsCount: 39,
+}
+
+test('extracts Garmin overnight physiology without copying sleep stages', () => {
+  assert.deepEqual(garminConnectSleep(overnightSleep, '2026-09-08'), {
+    source: 'garmin',
+    date: '2026-09-08',
+    startTime: '2026-09-08T05:30:56.000Z',
+    endTime: '2026-09-08T13:56:49.000Z',
+    averageBreathsPerMinute: 15,
+    lowestBreathsPerMinute: 11,
+    highestBreathsPerMinute: 19,
+    averageSpO2: 97,
+    lowestSpO2: 91,
+    bodyBatteryStart: 64,
+    bodyBatteryEnd: 100,
+    bodyBatteryChange: 36,
+    averageStress: 11,
+    restlessMoments: 39,
+  })
+})
+
+test('preserves native overnight respiration timestamps and the clipped first interval', () => {
+  const summary = garminConnectSleep(
+    {
+      ...overnightSleep,
+      wellnessEpochRespirationDataDTOList: [
+        { startTimeGMT: 1788845456000, respirationValue: 19 },
+        { startTimeGMT: 1788845520000, respirationValue: 17 },
+        { startTimeGMT: 1788845640000, respirationValue: 18 },
+        { startTimeGMT: 1788845760000, respirationValue: 19 },
+        { startTimeGMT: 1788845880000, respirationValue: 18 },
+      ],
+    },
+    '2026-09-08',
+  )
+  assert.deepEqual(summary?.respiration, [
+    { timestamp: 1788845456000, breathsPerMinute: 19 },
+    { timestamp: 1788845520000, breathsPerMinute: 17 },
+    { timestamp: 1788845640000, breathsPerMinute: 18 },
+    { timestamp: 1788845760000, breathsPerMinute: 19 },
+    { timestamp: 1788845880000, breathsPerMinute: 18 },
+  ])
+})
+
+test('normalizes respiration gaps, invalid values, and repeated timestamps within the sleep window', () => {
+  const start = overnightSleep.dailySleepDTO.sleepStartTimestampGMT
+  const end = overnightSleep.dailySleepDTO.sleepEndTimestampGMT
+  const summary = garminConnectSleep(
+    {
+      ...overnightSleep,
+      wellnessEpochRespirationDataDTOList: [
+        { startTimeGMT: start + 20 * 60_000, respirationValue: 13 },
+        { startTimeGMT: start - 1, respirationValue: 17 },
+        { startTimeGMT: start, respirationValue: 15 },
+        { startTimeGMT: start, respirationValue: -2 },
+        { startTimeGMT: start + 120_000, respirationValue: -1 },
+        { startTimeGMT: start + 240_000, respirationValue: 0 },
+        { startTimeGMT: start + 360_000, respirationValue: null },
+        { startTimeGMT: start + 480_000, respirationValue: NaN },
+        { startTimeGMT: start + 600_000, respirationValue: Infinity },
+        { startTimeGMT: start + 720_000, respirationValue: '16' },
+        { startTimeGMT: end + 1, respirationValue: 17 },
+        { startTimeGMT: NaN, respirationValue: 17 },
+        { respirationValue: 17 },
+        null,
+      ],
+    },
+    '2026-09-08',
+  )
+  assert.deepEqual(summary?.respiration, [
+    { timestamp: start, breathsPerMinute: 15 },
+    { timestamp: start + 120_000, breathsPerMinute: null },
+    { timestamp: start + 240_000, breathsPerMinute: null },
+    { timestamp: start + 360_000, breathsPerMinute: null },
+    { timestamp: start + 480_000, breathsPerMinute: null },
+    { timestamp: start + 600_000, breathsPerMinute: null },
+    { timestamp: start + 720_000, breathsPerMinute: null },
+    { timestamp: start + 20 * 60_000, breathsPerMinute: 13 },
+  ])
+})
+
+test('keeps native respiration without a summary average and omits unusable series', () => {
+  const dto = {
+    calendarDate: '2026-09-08',
+    sleepStartTimestampGMT: 1788845456000,
+    sleepEndTimestampGMT: 1788875809000,
+    sleepFromDevice: true,
+  }
+  const summary = garminConnectSleep(
+    {
+      dailySleepDTO: dto,
+      wellnessEpochRespirationDataDTOList: [{ startTimeGMT: 1788845456000, respirationValue: 15 }],
+    },
+    '2026-09-08',
+  )
+  assert.equal(summary?.averageBreathsPerMinute, null)
+  assert.deepEqual(summary?.respiration, [{ timestamp: 1788845456000, breathsPerMinute: 15 }])
+  assert.equal(
+    garminConnectSleep(
+      {
+        dailySleepDTO: dto,
+        wellnessEpochRespirationDataDTOList: [
+          { startTimeGMT: 1788845456000, respirationValue: -2 },
+        ],
+      },
+      '2026-09-08',
+    ),
+    null,
+  )
+  assert.equal(garminConnectSleep(overnightSleep, '2026-09-08')?.respiration, undefined)
+  assert.equal(
+    garminConnectSleep(
+      {
+        ...overnightSleep,
+        dailySleepDTO: { ...dto, sleepEndTimestampGMT: 0, averageRespirationValue: 15 },
+        wellnessEpochRespirationDataDTOList: [
+          { startTimeGMT: 1788845456000, respirationValue: 15 },
+        ],
+      },
+      '2026-09-08',
+    )?.respiration,
+    undefined,
+  )
+})
+
+test('preserves validated provider clock offsets without treating an offset as sleep physiology', () => {
+  const utcStart = overnightSleep.dailySleepDTO.sleepStartTimestampGMT
+  const utcEnd = overnightSleep.dailySleepDTO.sleepEndTimestampGMT
+  const withOffset = (minutes: number, endMinutes = minutes) =>
+    garminConnectSleep(
+      {
+        ...overnightSleep,
+        dailySleepDTO: {
+          ...overnightSleep.dailySleepDTO,
+          sleepStartTimestampLocal: utcStart + minutes * 60_000,
+          sleepEndTimestampLocal: utcEnd + endMinutes * 60_000,
+        },
+      },
+      '2026-09-08',
+    )
+  assert.equal(withOffset(-240)?.utcOffsetMinutes, -240)
+  assert.equal(withOffset(0)?.utcOffsetMinutes, 0)
+  assert.equal(withOffset(16 * 60)?.utcOffsetMinutes, undefined)
+  assert.equal(withOffset(0.5)?.utcOffsetMinutes, undefined)
+  assert.equal(withOffset(-240, -300)?.utcOffsetMinutes, undefined)
+  assert.equal(
+    garminConnectSleep(
+      {
+        dailySleepDTO: {
+          calendarDate: '2026-09-08',
+          sleepStartTimestampGMT: utcStart,
+          sleepStartTimestampLocal: utcStart - 240 * 60_000,
+          sleepEndTimestampGMT: utcEnd,
+        },
+      },
+      '2026-09-08',
+    ),
+    null,
+  )
+})
+
+test('keeps valid zero stress, restlessness, and battery readings while rejecting sentinel values', () => {
+  const summary = garminConnectSleep(
+    {
+      ...overnightSleep,
+      dailySleepDTO: {
+        ...overnightSleep.dailySleepDTO,
+        averageRespirationValue: 0,
+        lowestRespirationValue: -2,
+        highestRespirationValue: Infinity,
+        averageSpO2Value: 0,
+        lowestSpO2Value: 101,
+        avgSleepStress: 0,
+      },
+      sleepBodyBattery: [{ startGMT: 1788845400000, value: 0 }],
+      bodyBatteryChange: 0,
+      restlessMomentsCount: 0,
+    },
+    '2026-09-08',
+  )
+  assert.equal(summary?.averageBreathsPerMinute, null)
+  assert.equal(summary?.lowestBreathsPerMinute, null)
+  assert.equal(summary?.highestBreathsPerMinute, null)
+  assert.equal(summary?.averageSpO2, null)
+  assert.equal(summary?.lowestSpO2, null)
+  assert.equal(summary?.bodyBatteryStart, 0)
+  assert.equal(summary?.bodyBatteryEnd, null)
+  assert.equal(summary?.bodyBatteryChange, 0)
+  assert.equal(summary?.averageStress, 0)
+  assert.equal(summary?.restlessMoments, 0)
+})
+
+test('requires measured body battery near each sleep boundary and keeps native overnight change', () => {
+  const summary = garminConnectSleep(
+    {
+      ...overnightSleep,
+      sleepBodyBattery: [
+        { startGMT: 1788875640000, value: 100 },
+        { startGMT: 1788850000000, value: 70 },
+        { startGMT: 1788845400000, value: -1 },
+      ],
+      bodyBatteryChange: -3,
+      bodyBatteryChargedValue: 90,
+      bodyBatteryDrainedValue: 40,
+    },
+    '2026-09-08',
+  )
+  assert.equal(summary?.bodyBatteryStart, null)
+  assert.equal(summary?.bodyBatteryEnd, 100)
+  assert.equal(summary?.bodyBatteryChange, -3)
+})
+
+test('does not derive overnight charge from daily body battery or partial endpoint samples', () => {
+  const summary = garminConnectSleep(
+    { ...overnightSleep, bodyBatteryChange: null, bodyBatteryChargedValue: 50 },
+    '2026-09-08',
+  )
+  assert.equal(summary?.bodyBatteryChange, null)
+})
+
+test('ignores empty and manually imported sleep without relabeling Oura stages as Garmin', () => {
+  assert.equal(garminConnectSleep(null, '2026-09-08'), null)
+  assert.equal(garminConnectSleep({ dailySleepDTO: null }, '2026-09-08'), null)
+  assert.equal(
+    garminConnectSleep(
+      { dailySleepDTO: { calendarDate: '2026-09-08', deepSleepSeconds: 2340 } },
+      '2026-09-08',
+    ),
+    null,
+  )
+  assert.equal(
+    garminConnectSleep(
+      {
+        ...overnightSleep,
+        dailySleepDTO: { ...overnightSleep.dailySleepDTO, sleepFromDevice: false },
+      },
+      '2026-09-08',
+    ),
+    null,
+  )
+})
+
+test('rejects the wrong wake-day and invalid windows independently of valid physiology', () => {
+  assert.throws(() => garminConnectSleep(overnightSleep, '2026-09-07'), /does not match/)
+  const summary = garminConnectSleep(
+    {
+      ...overnightSleep,
+      dailySleepDTO: {
+        ...overnightSleep.dailySleepDTO,
+        sleepEndTimestampGMT: 1788840000000,
+        averageRespirationValue: NaN,
+      },
+    },
+    '2026-09-08',
+  )
+  assert.equal(summary?.startTime, null)
+  assert.equal(summary?.endTime, null)
+  assert.equal(summary?.bodyBatteryStart, null)
+  assert.equal(summary?.bodyBatteryEnd, null)
+  assert.equal(summary?.averageBreathsPerMinute, null)
+  assert.equal(summary?.averageSpO2, 97)
+})
 
 test('normalizes Garmin GraphQL numeric activity timestamps', () => {
   const record = {

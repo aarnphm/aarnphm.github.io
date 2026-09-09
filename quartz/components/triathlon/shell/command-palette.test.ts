@@ -36,7 +36,8 @@ test('tire pressure palette advances through every physical selection', () => {
   assert.equal(nextTirePressurePaletteStep('bike'), 'bikeMass')
   assert.equal(nextTirePressurePaletteStep('bikeMass'), 'balance')
   assert.equal(nextTirePressurePaletteStep('balance'), 'wheel')
-  assert.equal(nextTirePressurePaletteStep('wheel'), 'measuredTireFront')
+  assert.equal(nextTirePressurePaletteStep('wheel'), 'widthMode')
+  assert.equal(nextTirePressurePaletteStep('widthMode'), 'measuredTireFront')
   assert.equal(nextTirePressurePaletteStep('measuredTireFront'), 'measuredTireRear')
   assert.equal(nextTirePressurePaletteStep('measuredTireRear'), 'tire')
   assert.equal(nextTirePressurePaletteStep('tire'), 'setup')
@@ -47,7 +48,7 @@ test('tire pressure palette advances through every physical selection', () => {
   const customWheel: TirePressureSelection = { ...DEFAULT_TIRE_PRESSURE_SELECTION, wheel: 'custom' }
   assert.equal(nextTirePressurePaletteStep('wheel', customWheel), 'customWheelFront')
   assert.equal(nextTirePressurePaletteStep('customWheelFront', customWheel), 'customWheelRear')
-  assert.equal(nextTirePressurePaletteStep('customWheelRear', customWheel), 'measuredTireFront')
+  assert.equal(nextTirePressurePaletteStep('customWheelRear', customWheel), 'widthMode')
 })
 
 test('tire pressure palette returns to the result after editing one configuration row', () => {
@@ -71,6 +72,27 @@ test('tire pressure palette returns to the result after editing one configuratio
     ),
     'result',
   )
+})
+
+test('shared width flow skips the rear input and keeps result edits bounded', () => {
+  const selection: TirePressureSelection = {
+    ...DEFAULT_TIRE_PRESSURE_SELECTION,
+    widthMode: 'shared',
+  }
+  assert.equal(nextTirePressurePaletteStep('widthMode', selection), 'measuredTireFront')
+  assert.equal(nextTirePressurePaletteStep('measuredTireFront', selection), 'tire')
+  assert.equal(
+    nextTirePressurePaletteStep('measuredTireFront', selection, 'measuredTireRear'),
+    'result',
+  )
+  assert.equal(previousTirePressurePaletteStep('tire', selection), 'measuredTireFront')
+  assert.equal(
+    previousTirePressurePaletteStep('measuredTireFront', selection, 'widthMode'),
+    'widthMode',
+  )
+  assert.equal(previousTirePressurePaletteStep('widthMode', selection, 'widthMode'), 'result')
+  assert.equal(tirePressurePaletteSelectionIndex('widthMode', selection), 0)
+  assert.equal(tirePressurePaletteSelectionIndex('widthMode', DEFAULT_TIRE_PRESSURE_SELECTION), 1)
 })
 
 test('tire pressure palette highlights tire models and their compatible setups independently', () => {
@@ -97,7 +119,8 @@ test('tire pressure palette backtracks without skipping selection state', () => 
   assert.equal(previousTirePressurePaletteStep('setup'), 'tire')
   assert.equal(previousTirePressurePaletteStep('tire'), 'measuredTireRear')
   assert.equal(previousTirePressurePaletteStep('measuredTireRear'), 'measuredTireFront')
-  assert.equal(previousTirePressurePaletteStep('measuredTireFront'), 'wheel')
+  assert.equal(previousTirePressurePaletteStep('measuredTireFront'), 'widthMode')
+  assert.equal(previousTirePressurePaletteStep('widthMode'), 'wheel')
   assert.equal(previousTirePressurePaletteStep('wheel'), 'balance')
   assert.equal(previousTirePressurePaletteStep('balance'), 'bikeMass')
   assert.equal(previousTirePressurePaletteStep('bikeMass'), 'bike')
@@ -106,7 +129,7 @@ test('tire pressure palette backtracks without skipping selection state', () => 
   assert.equal(previousTirePressurePaletteStep('weightUnit'), 'commands')
 
   const customWheel: TirePressureSelection = { ...DEFAULT_TIRE_PRESSURE_SELECTION, wheel: 'custom' }
-  assert.equal(previousTirePressurePaletteStep('measuredTireFront', customWheel), 'customWheelRear')
+  assert.equal(previousTirePressurePaletteStep('widthMode', customWheel), 'customWheelRear')
   assert.equal(previousTirePressurePaletteStep('customWheelRear', customWheel), 'customWheelFront')
   assert.equal(previousTirePressurePaletteStep('customWheelFront', customWheel), 'wheel')
 })
@@ -135,10 +158,11 @@ test('tire pressure palette highlights the persisted choice at every step', () =
     riderKg: 86.2,
     weightUnit: 'lb',
     bike: 'speedmax',
-    bikeMassesLb: { cervelo: 22.4, speedmax: 26.8, custom: 19.5 },
+    bikeMassesLb: { cervelo: 22.4, speedmax: 26.8, aeroad: 15.7, custom: 19.5 },
     balance: '47-53',
     wheel: 'reserve-42-49',
     customWheel: { frontInnerWidthMm: 21.5, rearInnerWidthMm: 24 },
+    widthMode: 'separate',
     measuredTire: { frontWidthMm: 32, rearWidthMm: 28 },
     tire: 'race-tlr-sl-r',
     setup: 'tubeless',

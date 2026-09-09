@@ -29,7 +29,7 @@ description: risc-v (and mips) as target — registers, instruction formats, tra
 
 ## P0 register convention
 
-the P0 compiler keeps a set `regs` of in-use registers. $\text{GPregs} = \{t_0..t_6, s_0..s_{11}, \ldots\}$ (general-purpose). `obtainReg()` grabs a fresh one; `releaseReg(r)` frees it. running out marks an error: `mark('RISC-V: out of registers')`.
+In `08 A RISC Architecture as Target/CGriscv.ipynb`, `GPregs` contains `s2` through `s11`, and `regs` is the set of available registers. `obtainReg()` removes one with `regs.pop()`; `releaseReg(r)` adds it back when it belongs to `GPregs`. Exhaustion calls `mark('RISC-V: out of registers')`. Read the assignment-local generator for its pool and allocation policy.
 
 ## translation scheme — expressions (risc-v)
 
@@ -42,7 +42,7 @@ the P0 compiler keeps a set `regs` of in-use registers. $\text{GPregs} = \{t_0..
 | $E_1 + E_2$      | $\text{code}(E_1);\ \text{code}(E_2);$ `add reg,` $reg_1,$ $reg_2$ | `reg`                           |
 | $-E$             | $\text{code}(E);$ `sub reg, zero, reg_E`                           | `reg`                           |
 
-when the compiler issues `mul reg,` $reg_1,$ $reg_2$, it also releases $reg_1$ and $reg_2$ back to `regs` ($reg_1$ is reused as `reg` in practice).
+Track operand and destination lifetimes in the local generator. Release consumed temporaries while keeping the destination live; do not return a reused destination register to the free pool prematurely.
 
 ## translation scheme — statements
 
@@ -57,19 +57,9 @@ relational comparisons usually fuse with the branch: $x < y \to \ldots;$ `blt re
 
 ## procedure calling convention (P0, risc-v)
 
-prologue:
+The lecture 08 generator's active `genActualPara` stores parameter `n` at `-4 * (n + 1)(sp)`. A register-passing alternative appears inside a string literal; it is inactive. Use executable definitions when annotating the compiler's output.
 
-1. allocate frame on stack: `addi sp, sp, -framesize`
-2. save return address and old fp: `sw ra, 0(sp); sw fp, 4(sp)`
-3. set new fp: `addi fp, sp, 0`
-
-epilogue:
-
-1. restore `ra, fp`: `lw ra, 0(sp); lw fp, 4(sp)`
-2. `addi sp, sp, framesize`
-3. `jalr x0, ra, 0` (i.e. `ret`)
-
-arguments go in `a0..a7`, overflow to the stack. return values in `a0`, `a1`.
+`genProcEntry` computes `n = roundTo16(localsize + parsize + 8)`, subtracts it from `sp`, saves `ra` at `n - 4 - parsize` and `s0` at `n - 8 - parsize`, then sets `s0 = sp + n - parsize`. `genProcExit` restores those registers, adds `n` back to `sp`, and emits `ret`. Check these hooks in the requested snapshot; the general RISC-V ABI alone does not specify P0's generated calls.
 
 ## mips highlights (diff vs risc-v)
 

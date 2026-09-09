@@ -4,6 +4,7 @@ const TRACE_NAME_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 export const TRIATHLON_TRACE_DISPLAY_SETTINGS = Object.freeze({
   detailed: Object.freeze({}),
+  focused: Object.freeze({ focused: true }),
   simplified: Object.freeze({
     'power-balance': false,
     'pedal-smoothness': false,
@@ -57,7 +58,8 @@ export const parseTriathlonTraceSettings = (
     const name = entry.slice(0, separator)
     const enabled = entry.slice(separator + 1)
     if (name === 'display') {
-      if (display || (enabled !== 'detailed' && enabled !== 'simplified')) return null
+      if (display || (enabled !== 'detailed' && enabled !== 'simplified' && enabled !== 'focused'))
+        return null
       display = enabled
       continue
     }

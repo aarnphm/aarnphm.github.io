@@ -56,10 +56,25 @@ export const AnalyticsServerPanel = ({
     >
       <h2 class="tri-ana-block-title">{content.title}</h2>
       <dl class="tri-ana-ssr-values">
-        {content.values.map(item => (
-          <div class="tri-ana-ssr-value">
+        {content.values.map((item, index) => (
+          <div
+            class={`tri-ana-ssr-value${item.detail ? ' tri-day-analytics-metric' : ''}`}
+            tabIndex={item.detail ? 0 : undefined}
+            aria-describedby={item.detail ? `tri-ssr-${definition.key}-detail-${index}` : undefined}
+          >
             <dt>{item.label}</dt>
-            <dd>{item.value}</dd>
+            <dd>
+              {item.value}
+              {item.detail && (
+                <span
+                  class="tri-day-analytics-detail"
+                  id={`tri-ssr-${definition.key}-detail-${index}`}
+                  role="tooltip"
+                >
+                  {item.detail}
+                </span>
+              )}
+            </dd>
           </div>
         ))}
       </dl>

@@ -391,9 +391,10 @@ export const buildLactateThresholdPanel = (
   const threshold = bySport(data.thresholds, sport)
   const wrap = el(
     'div',
-    `tri-trend-panel tri-lt-panel${projection?.projected == null ? ' tri-trend-stale' : ''}`,
+    `tri-trend-panel tri-lt-panel${projection?.source !== 'garmin' && projection?.projected == null ? ' tri-trend-stale' : ''}`,
   )
   wrap.dataset.sport = sport
+  if (projection) wrap.dataset.source = projection.source
   const head = el('div', 'tri-trend-head')
   head.append(
     buildIconLeg(context.formatter, sport),
@@ -408,11 +409,21 @@ export const buildLactateThresholdPanel = (
       'lactate',
     ),
   )
-  if (projection)
+  if (projection?.conf)
     head.appendChild(
       markGloss(el('span', `tri-ana-conf tri-conf-${projection.conf}`, projection.conf), 'conf'),
     )
   wrap.appendChild(head)
+  if (projection?.source === 'garmin') {
+    wrap.appendChild(
+      el(
+        'div',
+        'tri-trend-note',
+        `${context.formatter.text('Garmin running estimate')} · ${projection.date}`,
+      ),
+    )
+    return wrap
+  }
   if (!projection || projection.projected == null) {
     wrap.appendChild(
       el(
@@ -463,13 +474,19 @@ export const buildLactateThresholdPanel = (
 
 export const buildLactateThreshold = (data: Analytics, context: TriathlonContext): HTMLElement => {
   const block = el('div', 'tri-ana-lactate')
-  block.appendChild(anaTitle(context.formatter, 'lactate threshold projection', 'lactate'))
+  block.appendChild(anaTitle(context.formatter, 'lactate threshold', 'lactate'))
   const heartRate = data.engine.lactateThreshold.heartRate
   if (heartRate) {
     const cap = el('div', 'tri-elev-cap')
     cap.append(
       markGloss(el('span', 'tri-ana-k', `LTHR ${heartRate.value} ${heartRate.unit}`), 'lactate'),
-      el('span', 'tri-ana-k', context.formatter.text('declared heart-rate anchor')),
+      el(
+        'span',
+        'tri-ana-k',
+        heartRate.source === 'garmin'
+          ? `${context.formatter.text('Garmin running estimate')} · ${heartRate.date}`
+          : context.formatter.text('declared heart-rate anchor'),
+      ),
     )
     block.appendChild(cap)
   }

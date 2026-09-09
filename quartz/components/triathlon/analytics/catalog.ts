@@ -5,6 +5,7 @@ import {
   type Analytics,
   type PowerToWeightDurationS,
 } from '../../../plugins/stores/analytics'
+import { sleepSupplementMetrics } from '../../../util/triathlon-card'
 import { mountPrimaryPanel } from './panel-mounts-primary'
 import { mountSecondaryPanel } from './panel-mounts-secondary'
 import { buildAbilities } from './panels/abilities'
@@ -20,6 +21,7 @@ import { buildRecoveryChart, buildSleep } from './panels/recovery'
 import {
   buildActions,
   buildLactateThreshold,
+  fmtTrendVal,
   buildReadiness,
   buildTrend,
 } from './panels/thresholds'
@@ -55,6 +57,7 @@ export type AnalyticsPanelKey = (typeof ANALYTICS_PANEL_ORDER)[number]
 export interface AnalyticsSummaryValue {
   label: string
   value: string
+  detail?: string
 }
 
 export interface AnalyticsPanelSeries {
@@ -212,24 +215,36 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   sleep: {
     key: 'sleep',
     label: 'sleep',
-    search: 'sleep debt target score night hypnogram',
+    search:
+      'sleep debt target score night hypnogram respiration breath pulse ox spo2 body battery stress garmin oura',
     render: (data, context) =>
       withPanelMount(buildSleep(data, context), [
         root => mountPrimaryPanel('sleep', root, data, context),
         root => mountSleepPanel(root, data, context),
       ]),
-    server: data => ({
-      title: 'sleep · debt',
-      values: [
-        { label: 'latest', value: duration(data.recovery.sleepLatestS) },
-        { label: 'baseline', value: duration(data.recovery.sleepBaselineS) },
-        { label: 'debt', value: duration(data.recovery.sleepDebtS) },
-      ],
-      series: [
-        { label: 'sleep duration', values: finite(data.recovery.series.map(day => day.sleepS)) },
-        { label: 'sleep score', values: finite(data.recovery.series.map(day => day.sleepScore)) },
-      ],
-    }),
+    server: (data, formatter) => {
+      const latest = data.daily.findLast(day => day.sleepMetrics != null)
+      return {
+        title: formatter.text('sleep · debt'),
+        values: [
+          { label: formatter.text('latest'), value: duration(data.recovery.sleepLatestS) },
+          { label: formatter.text('baseline'), value: duration(data.recovery.sleepBaselineS) },
+          { label: formatter.text('debt'), value: duration(data.recovery.sleepDebtS) },
+          ...(latest
+            ? [
+                { label: formatter.text('sleep details'), value: formatter.shortDate(latest.date) },
+                ...sleepSupplementMetrics(formatter.presentation, latest.sleepMetrics).map(
+                  metric => ({ ...metric, label: formatter.text(metric.label) }),
+                ),
+              ]
+            : []),
+        ],
+        series: [
+          { label: 'sleep duration', values: finite(data.recovery.series.map(day => day.sleepS)) },
+          { label: 'sleep score', values: finite(data.recovery.series.map(day => day.sleepScore)) },
+        ],
+      }
+    },
   },
   vo2max: {
     key: 'vo2max',
@@ -256,18 +271,30 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   lactate: {
     key: 'lactate',
     label: 'lactate threshold',
-    search: 'lactate threshold lt2 pace heart rate projection',
+    search: 'lactate threshold lt2 pace heart rate projection garmin running',
     render: (data, context) =>
       withPanelMount(buildLactateThreshold(data, context), [
         root => mountSecondaryPanel('lactate', root, data, context),
       ]),
-    server: data => ({
-      title: 'lactate threshold · projection',
+    server: (data, formatter) => ({
+      title: 'lactate threshold',
       values: [
         {
-          label: 'heart rate',
+          label:
+            data.engine.lactateThreshold.heartRate?.source === 'garmin'
+              ? `running heart rate · Garmin · ${data.engine.lactateThreshold.heartRate.date}`
+              : 'heart rate · declared',
           value: value(data.engine.lactateThreshold.heartRate?.value, ' bpm'),
         },
+        ...data.engine.lactateThreshold.sports
+          .filter(sport => sport.sport === 'run')
+          .map(sport => ({
+            label:
+              sport.source === 'garmin'
+                ? `running pace · Garmin · ${sport.date}`
+                : 'running pace · training-derived',
+            value: fmtTrendVal(formatter, sport.sport, sport.current),
+          })),
         { label: 'sports', value: String(data.engine.lactateThreshold.sports.length) },
         {
           label: 'projected',
