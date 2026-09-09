@@ -2,6 +2,7 @@ import type { Element, ElementContent, Root, RootContent } from 'hast'
 import type { StreamEntry } from '../plugins/transformers/stream'
 import { clone } from './clone'
 import { normalizeHastElement, type FullSlug } from './path'
+import { groupStreamEntries, selectStreamFeedGroups } from './stream'
 
 const isElement = (node: ElementContent | RootContent): node is Element => node.type === 'element'
 
@@ -78,4 +79,23 @@ export function buildStreamRouteTree(entries: readonly StreamEntry[], sourceTree
   }
 
   return { type: 'root', children }
+}
+
+export function buildStreamPageTree(
+  entries: StreamEntry[],
+  sourceTree: Root,
+  slug: FullSlug,
+): Root {
+  if (slug === 'stream') {
+    const { feedGroups } = selectStreamFeedGroups(groupStreamEntries(entries), true)
+    return buildStreamRouteTree(
+      feedGroups.flatMap(group => group.entries),
+      sourceTree,
+    )
+  }
+  if (/^stream\/on\/\d{4}\/\d{2}\/\d{2}$/.test(slug)) {
+    return buildStreamRouteTree(entries, sourceTree)
+  }
+  // Archive routes display metadata, so their entry bodies never reach the page.
+  return { type: 'root', children: [] }
 }

@@ -1,4 +1,5 @@
 import { readFileSync, statSync } from 'node:fs'
+import { resolve } from 'node:path'
 import type {
   AppleCache,
   AppleRunningDynamicsSample,
@@ -14,13 +15,15 @@ import type {
   ManualSaunaEntry,
   ManualStrengthEntry,
 } from '../plugins/stores/tracking'
-import type { WeatherCache } from '../plugins/stores/weather'
 import {
   ATHLETE,
   buildAnalytics,
+  hrZoneUppers,
+  parseVo2Lab,
   type ActivityDistributionPoint,
   type ActivitySummary,
   type AnalyticsInputs,
+  type Analytics,
 } from '../plugins/stores/analytics'
 import {
   coreBodyTemperatureSamplesForWindow,
@@ -38,14 +41,17 @@ import {
   calculateActivityExerciseLoad,
   calculateActivityIntensityFactor,
   calculateActivityTrainingEffect,
+  emptyHealth,
   normalizeActivityDevice,
   prefersActivityDeviceThermal,
   type ActivityAnalysisRange,
   type SwimActivityInterval,
   type StravaActivityDetail,
   type StravaPayload,
+  type StravaRawCache,
 } from '../plugins/stores/strava'
 import { parseWahooCache, type WahooCache } from '../plugins/stores/wahoo'
+import { parseWeatherCache, type WeatherCache } from '../plugins/stores/weather'
 import { matchAppleRun } from './apple-run-match'
 import { matchAppleSwims, matchAppleSwimTelemetry } from './apple-swim-match'
 import { joinSegments, QUARTZ } from './path'
@@ -833,7 +839,25 @@ export function applyManualActivityTracking(
   applyManualStrength(payload, tracking?.strength ?? [])
 }
 
-const payloadMemo = new Map<string, LoadedStravaPayload>()
+export interface StravaDataSources {
+  strava: StravaRawCache | null
+  oura: OuraCache | null
+  garmin: GarminCache | null
+  wahoo: WahooCache | null
+  apple: AppleCache | null
+  core: CoreBodyTemperatureCache | null
+  weather: WeatherCache | null
+}
+
+export interface LoadedStravaData {
+  payload: LoadedStravaPayload
+  analytics: Analytics
+  trackedCache: StravaRawCache | null
+  sources: StravaDataSources
+  generatedAt: number
+}
+
+const payloadMemo = new Map<string, { manualKey: string; data: LoadedStravaData }>()
 let payloadMemoStamps = ''
 
 export function loadStravaPayloadSync(
@@ -842,6 +866,15 @@ export function loadStravaPayloadSync(
   analyticsInputs: StravaPayloadAnalyticsInputs = {},
   contentDirectory = 'content',
 ): LoadedStravaPayload {
+  return loadStravaDataSync(since, manualTracking, analyticsInputs, contentDirectory).payload
+}
+
+export function loadStravaDataSync(
+  since: string | undefined,
+  manualTracking: ManualActivityTracking | null | undefined,
+  analyticsInputs: StravaPayloadAnalyticsInputs = {},
+  contentDirectory = 'content',
+): LoadedStravaData {
   const manualKey = JSON.stringify({
     activities: manualTracking?.activities ?? [],
     fueling: manualTracking?.fueling ?? [],
@@ -855,22 +888,44 @@ export function loadStravaPayloadSync(
     payloadMemo.clear()
     payloadMemoStamps = stamps
   }
-  const key = `${since ?? ''}:${manualKey}`
+  const key = JSON.stringify([resolve(contentDirectory), since ?? ''])
   const cached = payloadMemo.get(key)
-  if (cached) return cached
+  if (cached?.manualKey === manualKey) return cached.data
   const strava = readStravaCacheFileSync(stravaCachePath)
   const oura = readJson<OuraCache>(ouraCachePath)
   const garmin = readJson<GarminCache>(garminCachePath)
+  const wahoo = readWahooCache()
+  const apple = readJson<AppleCache>(appleCachePath)
+  const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
+  const weather = parseWeatherCache(readJson<unknown>(weatherCachePath))
+  const loaded = buildStravaData(
+    { strava, oura, garmin, wahoo, apple, core, weather },
+    since,
+    manualTracking,
+    analyticsInputs,
+    contentDirectory,
+  )
+  payloadMemo.set(key, { manualKey, data: loaded })
+  return loaded
+}
+
+export function buildStravaData(
+  sources: StravaDataSources,
+  since: string | undefined,
+  manualTracking: ManualActivityTracking | null | undefined,
+  analyticsInputs: StravaPayloadAnalyticsInputs = {},
+  contentDirectory = 'content',
+): LoadedStravaData {
+  const { strava, oura, garmin, apple, core, weather } = sources
   const wahoo = loadTrackedWahooFits(
-    readWahooCache(),
+    sources.wahoo,
     strava,
     manualTracking?.activities ?? [],
     contentDirectory,
   )
-  const apple = readJson<AppleCache>(appleCachePath)
-  const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
-  const weather = readJson<WeatherCache>(weatherCachePath)
-  const generatedAt = latestProviderSync(strava, oura, garmin, wahoo, apple, core, weather)
+  const generatedAt = latestProviderSync(strava, oura, garmin, sources.wahoo, apple, core, weather)
+  const labs = parseVo2Lab(analyticsInputs.vo2labs)
+  const latestLab = labs.at(-1)
   const payload = buildPayload(
     strava,
     oura,
@@ -878,7 +933,7 @@ export function loadStravaPayloadSync(
     since,
     weather,
     ATHLETE.ftp,
-    undefined,
+    latestLab ? (hrZoneUppers(latestLab) ?? undefined) : undefined,
     undefined,
     wahoo,
     ATHLETE.hrMax,
@@ -887,36 +942,49 @@ export function loadStravaPayloadSync(
     manualTracking?.activities,
   )
   applyManualActivityTracking(payload, manualTracking, oura, weather, garmin)
+  for (const day of analyticsInputs.weights ?? []) {
+    if (day.windKph != null) {
+      const health = payload.health[day.date] ?? emptyHealth()
+      payload.health[day.date] = {
+        ...health,
+        windKph: day.windKph,
+        windDir: day.windDir ?? health.windDir,
+      }
+    }
+  }
   enrichActivityDevices(payload, apple)
   enrichRouteLessHeartRate(payload, apple)
   enrichSwimMetrics(payload, apple, garmin)
   enrichRunDynamics(payload, apple)
   enrichCoreBodyTemperature(payload, core)
-  const analytics = buildAnalytics(
-    applyActivityTracking(strava, garmin, manualTracking?.activities ?? [], wahoo),
-    {
-      ...analyticsInputs,
-      oura,
-      apple,
-      core,
-      garmin,
-      weather,
-      ftp: ATHLETE.ftp,
-      powerCurve: {
-        sixWeeks: payload.powerCurveRef,
-        year: payload.powerCurveYearRef,
-        yearLabel: payload.powerCurveYear,
-        criticalPower: payload.criticalPower,
-        criticalPowerYear: payload.criticalPowerYear,
-        ftp: ATHLETE.ftp,
-        goalFtp: ATHLETE.goalFTP,
-      },
-      zones: payload.zones,
-      activityDetails: payload.details,
-      since,
-      generatedAt,
-    },
+  const trackedCache = applyActivityTracking(
+    strava,
+    garmin,
+    manualTracking?.activities ?? [],
+    wahoo,
   )
+  const analytics = buildAnalytics(trackedCache, {
+    ...analyticsInputs,
+    oura,
+    apple,
+    core,
+    garmin,
+    weather,
+    ftp: ATHLETE.ftp,
+    powerCurve: {
+      sixWeeks: payload.powerCurveRef,
+      year: payload.powerCurveYearRef,
+      yearLabel: payload.powerCurveYear,
+      criticalPower: payload.criticalPower,
+      criticalPowerYear: payload.criticalPowerYear,
+      ftp: ATHLETE.ftp,
+      goalFtp: ATHLETE.goalFTP,
+    },
+    zones: payload.zones,
+    activityDetails: payload.details,
+    since,
+    generatedAt,
+  })
   enrichRunPaceZones(payload, analytics.distributions)
   enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
   enrichCalculatedExerciseLoads(payload)
@@ -926,6 +994,5 @@ export function loadStravaPayloadSync(
     ...payload,
     dailyAnalytics: buildTriathlonDailyAnalytics(analytics, ouraDetails, payload.details),
   }
-  payloadMemo.set(key, loaded)
-  return loaded
+  return { payload: loaded, analytics, trackedCache, sources, generatedAt }
 }

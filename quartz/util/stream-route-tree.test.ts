@@ -3,7 +3,12 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { StreamEntry } from '../plugins/transformers/stream'
 import { isFullSlug, type FullSlug } from './path'
-import { buildStreamRouteTree, cloneStreamEntries, rebaseStreamEntries } from './stream-route-tree'
+import {
+  buildStreamPageTree,
+  buildStreamRouteTree,
+  cloneStreamEntries,
+  rebaseStreamEntries,
+} from './stream-route-tree'
 
 function slug(value: string): FullSlug {
   if (!isFullSlug(value)) throw new Error(`invalid slug: ${value}`)
@@ -84,4 +89,34 @@ test('stream entry cloning and rebasing do not mutate source entries', () => {
   cloned.content[0].properties.href = '/mutated'
 
   assert.equal(link.properties.href, './image.png')
+})
+
+test('the stream root prepares only the newest date group while retaining lazy group metadata', () => {
+  const older = { ...entry('older', [el('p', {}, [text('old embed')])]), date: '2026-09-08' }
+  const newest = { ...entry('newest', [el('p', {}, [text('new embed')])]), date: '2026-09-09' }
+  const sameDay = {
+    ...entry('same-day', [el('p', {}, [text('another embed')])]),
+    date: '2026-09-09',
+  }
+  const entries = [newest, older, sameDay]
+  const tree = buildStreamRouteTree(entries, { type: 'root', children: [] })
+
+  const prepared = buildStreamPageTree(entries, tree, slug('stream'))
+
+  assert.deepEqual(prepared.children, [...newest.content, ...sameDay.content])
+  assert.equal(entries.length, 3)
+  assert.deepEqual(tree.children, [...newest.content, ...older.content, ...sameDay.content])
+})
+
+test('archive pages prepare no entry bodies and daily pages prepare every entry', () => {
+  const entries = [
+    entry('one', [el('p', {}, [text('one')])]),
+    entry('two', [el('p', {}, [text('two')])]),
+  ]
+  const tree = buildStreamRouteTree(entries, { type: 'root', children: [] })
+
+  for (const route of ['stream/on', 'stream/on/2026', 'stream/on/2026/09']) {
+    assert.deepEqual(buildStreamPageTree(entries, tree, slug(route)).children, [])
+  }
+  assert.deepEqual(buildStreamPageTree(entries, tree, slug('stream/on/2026/09/09')), tree)
 })

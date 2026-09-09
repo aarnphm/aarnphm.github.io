@@ -17,7 +17,7 @@ test('initial build lifecycle starts wrangler once', () => {
 
   assert.deepEqual(
     applyQuartzDevEvent(state, { type: 'build:start', epoch: 'a', reason: 'initial' }, delayMs),
-    [{ type: 'stop-wrangler', reason: 'stopping wrangler while quartz rebuilds' }],
+    [],
   )
   assert.deepEqual(
     applyQuartzDevEvent(state, { type: 'public:remove:start', epoch: 'a' }, delayMs),
@@ -35,12 +35,12 @@ test('initial build lifecycle starts wrangler once', () => {
   assert.equal(state.publicAvailable, true)
 })
 
-test('source hard rebuild stops then schedules wrangler restart', () => {
+test('source hard rebuild stops wrangler when output is removed then schedules restart', () => {
   const state = readyState('a')
 
   assert.deepEqual(
     applyQuartzDevEvent(state, { type: 'build:start', epoch: 'b', reason: 'source' }, delayMs),
-    [{ type: 'stop-wrangler', reason: 'stopping wrangler while quartz rebuilds' }],
+    [],
   )
   assert.deepEqual(
     applyQuartzDevEvent(state, { type: 'public:remove:start', epoch: 'b' }, delayMs),
@@ -56,14 +56,16 @@ test('source hard rebuild stops then schedules wrangler restart', () => {
   )
 })
 
-test('content rebuild stops wrangler then schedules restart on ready', () => {
+test('content rebuild keeps wrangler running until updated output is ready', () => {
   const state = readyState('a')
 
   assert.deepEqual(
     applyQuartzDevEvent(state, { type: 'build:start', epoch: 'b', reason: 'content' }, delayMs),
-    [{ type: 'stop-wrangler', reason: 'stopping wrangler while quartz rebuilds' }],
+    [],
   )
   assert.equal(state.quartz, 'building')
+  assert.equal(state.publicAvailable, true)
+  assert.equal(state.wrangler, 'ready')
   assert.deepEqual(
     applyQuartzDevEvent(
       state,
@@ -72,6 +74,29 @@ test('content rebuild stops wrangler then schedules restart on ready', () => {
     ),
     [{ type: 'schedule-wrangler-start', delayMs }],
   )
+  assert.equal(state.wrangler, 'ready')
+})
+
+test('style rebuild keeps the current output available', () => {
+  const state = readyState('a')
+  assert.deepEqual(
+    applyQuartzDevEvent(state, { type: 'build:start', epoch: 'b', reason: 'source' }, delayMs),
+    [],
+  )
+  assert.equal(state.publicAvailable, true)
+  assert.equal(state.wrangler, 'ready')
+})
+
+test('failed content rebuild leaves the existing server available', () => {
+  const state = readyState('a')
+  applyQuartzDevEvent(state, { type: 'build:start', epoch: 'b', reason: 'content' }, delayMs)
+  assert.deepEqual(
+    applyQuartzDevEvent(state, { type: 'build:error', epoch: 'b', message: 'boom' }, delayMs),
+    [],
+  )
+  assert.equal(state.quartz, 'failed')
+  assert.equal(state.publicAvailable, true)
+  assert.equal(state.wrangler, 'ready')
 })
 
 test('stale ready event does not schedule wrangler restart', () => {

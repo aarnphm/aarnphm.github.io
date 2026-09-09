@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict'
+import { once } from 'node:events'
 import test from 'node:test'
+import { WebSocket } from 'ws'
 import {
   bundleInfoSummary,
+  createReloadServer,
   formatBundleInfoJson,
   formatBundleInfoTable,
   isSourceWatchPath,
@@ -11,6 +14,28 @@ import {
   sourceWatchPatterns,
   sourceWatchRoots,
 } from './handlers.js'
+
+test('watch reload server broadcasts successive builds without an HTTP server', async t => {
+  const reload = createReloadServer(0)
+  t.after(() => new Promise(resolve => reload.server.close(resolve)))
+  await once(reload.server, 'listening')
+  const address = reload.server.address()
+  assert.ok(address && typeof address !== 'string')
+  const socket = new WebSocket(`ws://localhost:${address.port}`)
+  t.after(() => socket.terminate())
+  await once(socket, 'open')
+
+  for (let index = 0; index < 2; index++) {
+    const message = once(socket, 'message')
+    reload.refresh()
+    assert.equal((await message)[0].toString(), 'rebuild')
+  }
+
+  const closed = once(socket, 'close')
+  socket.close()
+  await closed
+  reload.refresh()
+})
 
 const bundleMetafile = {
   inputs: {

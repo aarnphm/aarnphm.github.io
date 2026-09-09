@@ -17,7 +17,7 @@ export function getStaticResourcesFromPlugins(ctx: BuildCtx) {
     }
   }
 
-  if (ctx.argv.serve) {
+  if (ctx.argv.serve || ctx.argv.watch) {
     const wsUrl = ctx.argv.remoteDevHost
       ? `wss://${ctx.argv.remoteDevHost}:${ctx.argv.wsPort}`
       : `ws://localhost:${ctx.argv.wsPort}`

@@ -6,6 +6,7 @@ import { sassPlugin } from 'esbuild-sass-plugin'
 import { promises } from 'fs'
 import { globby } from 'globby'
 import http from 'http'
+import { once } from 'node:events'
 import { inspect, styleText } from 'node:util'
 import path from 'path'
 import prettyBytes from 'pretty-bytes'
@@ -220,6 +221,21 @@ const printBundleInfoHeader = () => {
   console.log('\n' + styleText(['bgGreen', 'black'], `Quartz v${version}`) + '\n')
 }
 
+export function createReloadServer(port) {
+  const server = new WebSocketServer({ port })
+  server.on('connection', socket => {
+    socket.on('error', () => socket.terminate())
+  })
+  return {
+    server,
+    refresh() {
+      for (const socket of server.clients) {
+        if (socket.readyState === WebSocket.OPEN) socket.send('rebuild')
+      }
+    },
+  }
+}
+
 /**
  * Handles `npx quartz build`
  * @param {import("../util/ctx.ts").Argv} argv arguments for `build`
@@ -233,16 +249,11 @@ export async function handleBuild(argv) {
   const ctx = await esbuild.context(createBuildConfig())
 
   const buildMutex = new Mutex()
-  let lastBuildMs = 0
   let activeBuild = null
 
   const disposeActiveBuild = async () => {
     if (!activeBuild) return
-    if (typeof activeBuild === 'function') {
-      await activeBuild()
-    } else {
-      await activeBuild.dispose()
-    }
+    await activeBuild.dispose()
     activeBuild = null
   }
 
@@ -264,13 +275,7 @@ export async function handleBuild(argv) {
   }
 
   const build = async (clientRefresh, changedPaths = []) => {
-    const buildStart = new Date().getTime()
-    lastBuildMs = buildStart
     const release = await buildMutex.acquire()
-    if (lastBuildMs > buildStart) {
-      release()
-      return
-    }
 
     const buildReason = activeBuild ? 'source' : 'initial'
     const bundle = await rebuildQuartzBundle()
@@ -296,24 +301,53 @@ export async function handleBuild(argv) {
     clientRefresh()
   }
 
-  let clientRefresh = () => {}
-  if (argv.serve) {
-    const connections = new Set()
-    clientRefresh = () => {
-      for (const conn of connections) {
-        if (conn.readyState === WebSocket.OPEN) {
-          conn.send('rebuild')
-        } else {
-          connections.delete(conn)
+  const reload = argv.watch ? createReloadServer(argv.wsPort) : undefined
+  const clientRefresh = () => reload?.refresh()
+  let initialBuild = () => build(clientRefresh)
+  if (argv.watch) {
+    const sourceRebuildQueue = { running: true, requested: false, pending: new Set() }
+    const requestSourceRebuild = async () => {
+      sourceRebuildQueue.requested = true
+      if (sourceRebuildQueue.running) return
+      sourceRebuildQueue.running = true
+      try {
+        while (sourceRebuildQueue.requested) {
+          sourceRebuildQueue.requested = false
+          const changedPaths = [...sourceRebuildQueue.pending]
+          sourceRebuildQueue.pending.clear()
+          await build(clientRefresh, changedPaths)
         }
+      } finally {
+        sourceRebuildQueue.running = false
       }
     }
+    const sourceChanged = (type, fp) => {
+      if (isTestSourcePath(fp)) return
+      const normalized = normalizeWatchedPath(fp)
+      console.log(styleText('yellow', `Detected source ${type}: ${normalized}`))
+      sourceRebuildQueue.pending.add(normalized)
+      void requestSourceRebuild()
+    }
+    const sourceWatcher = chokidar
+      .watch(sourceWatchRoots, {
+        awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
+        ignoreInitial: true,
+        ignored: isIgnoredSourceWatchPath,
+      })
+      .on('add', fp => sourceChanged('add', fp))
+      .on('change', fp => sourceChanged('change', fp))
+      .on('unlink', fp => sourceChanged('unlink', fp))
+    await once(sourceWatcher, 'ready')
+    sourceRebuildQueue.running = false
+    initialBuild = requestSourceRebuild
+  }
+  await initialBuild()
 
+  if (argv.serve) {
     if (argv.baseDir !== '' && !argv.baseDir.startsWith('/')) {
       argv.baseDir = '/' + argv.baseDir
     }
 
-    await build(clientRefresh)
     const server = http.createServer(async (req, res) => {
       if (argv.baseDir && !req.url?.startsWith(argv.baseDir)) {
         console.log(
@@ -445,59 +479,17 @@ export async function handleBuild(argv) {
     })
 
     server.listen(argv.port)
-    const wss = new WebSocketServer({ port: argv.wsPort })
-    wss.on('connection', ws => {
-      connections.add(ws)
-      ws.on('close', () => connections.delete(ws))
-      ws.on('error', () => connections.delete(ws))
-    })
     console.log(
       styleText(
         'cyan',
         `[serve] Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`,
       ),
     )
-  } else {
-    await build(clientRefresh)
-    if (!argv.watch) {
-      ctx.dispose()
-    }
+  } else if (!argv.watch) {
+    ctx.dispose()
   }
 
   if (argv.watch) {
-    const sourceRebuildQueue = { running: false, requested: false, pending: new Set() }
-    const requestSourceRebuild = async () => {
-      sourceRebuildQueue.requested = true
-      if (sourceRebuildQueue.running) return
-      sourceRebuildQueue.running = true
-      try {
-        while (sourceRebuildQueue.requested) {
-          sourceRebuildQueue.requested = false
-          const changedPaths = [...sourceRebuildQueue.pending]
-          sourceRebuildQueue.pending.clear()
-          await build(clientRefresh, changedPaths)
-        }
-      } finally {
-        sourceRebuildQueue.running = false
-      }
-    }
-    const sourceChanged = (type, fp) => {
-      if (isTestSourcePath(fp)) return
-      const normalized = normalizeWatchedPath(fp)
-      console.log(styleText('yellow', `Detected source ${type}: ${normalized}`))
-      sourceRebuildQueue.pending.add(normalized)
-      void requestSourceRebuild()
-    }
-    chokidar
-      .watch(sourceWatchRoots, {
-        awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
-        ignoreInitial: true,
-        ignored: isIgnoredSourceWatchPath,
-      })
-      .on('add', fp => sourceChanged('add', fp))
-      .on('change', fp => sourceChanged('change', fp))
-      .on('unlink', fp => sourceChanged('unlink', fp))
-
     console.log(styleText('gray', 'hint: exit with ctrl+c'))
   }
 }
