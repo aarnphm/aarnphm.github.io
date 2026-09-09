@@ -49,6 +49,10 @@ import {
 } from '../../util/activity-provider-reports'
 import { applyGardenUvCalibration } from '../../util/activity-uv-score'
 import {
+  buildCyclingIntensityTrace,
+  type CyclingIntensityTrace,
+} from '../../util/cycling-intensity'
+import {
   estimateWahooCyclingStamina,
   type CyclingStaminaEstimate,
 } from '../../util/cycling-stamina'
@@ -620,6 +624,7 @@ export interface StravaActivityDetail {
   virtual?: boolean
   distanceSource?: 'garmin' | 'strava'
   wahoo?: WahooVerification
+  cyclingIntensityTrace?: CyclingIntensityTrace | null
   sport: ActivityKind
   name: string
   date: string
@@ -4658,6 +4663,15 @@ export function buildPayload(
             ? 'garmin'
             : null,
       }
+      if (detail.sport === 'bike')
+        detail.cyclingIntensityTrace = buildCyclingIntensityTrace({
+          streams: wahoo?.streams[source.id],
+          metrics: source.metrics,
+          startOffsetS: detail.wahoo.startOffsetS,
+          elapsedTimeS: detail.elapsedTimeS,
+          route: detail.route,
+          athleteFtp: ftp,
+        })
       detail.distanceSource = 'strava'
       detail.calculatedIntensityFactor = calculateActivityIntensityFactor(
         detail,

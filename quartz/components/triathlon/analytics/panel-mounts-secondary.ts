@@ -20,6 +20,7 @@ import { cardioValueText } from './panels/cardio'
 import { fmtTrendShort } from './panels/thresholds'
 import { fmtTrendVal } from './panels/thresholds'
 import { lactateThresholdSamples } from './panels/thresholds'
+import { lactateHistoryAt, lactateHistoryFraction, lactateHistoryValue } from './panels/thresholds'
 import { sampleTrend } from './panels/thresholds'
 import { trendSamples } from './panels/thresholds'
 import { scrubGroup, type ScrubItem } from './scrub-primitives'
@@ -245,28 +246,69 @@ export const mountSecondaryPanel = (
   const lactateBlock =
     kind === 'lactate' ? panel.querySelector<HTMLElement>('.tri-ana-lactate') : null
   if (lactateBlock) {
-    const items: ScrubItem[] = []
+    for (const metric of ['pace', 'heartRate'] as const) {
+      const wrap = lactateBlock.querySelector<HTMLElement>(`[data-lt-history="${metric}"]`)
+      const svgEl = wrap?.querySelector<SVGElement>('.tri-lt-history-svg')
+      const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
+      const readout = wrap?.querySelector<HTMLElement>(':scope > .tri-trend-readout')
+      const points = data.engine.lactateThreshold.runningHistory[metric]
+      if (!wrap || !svgEl || !cursor || !readout || !points.length) continue
+      cleanups.push(
+        scrubGroup(
+          [
+            {
+              svgEl,
+              cursor,
+              readout,
+              hover: wrap,
+              textOf: fraction => {
+                const point = lactateHistoryAt(points, fraction)
+                return point
+                  ? `${context.formatter.shortDate(point.date)} · ${lactateHistoryValue(context.formatter, metric, point.value)} · Garmin`
+                  : ''
+              },
+            },
+          ],
+          fraction => {
+            const point = lactateHistoryAt(points, fraction)
+            return point ? lactateHistoryFraction(points, point.date) * ANA_W : 0
+          },
+          100,
+        ),
+      )
+    }
     for (const sport of ['swim', 'bike', 'run'] as Sport[]) {
       const wrap = lactateBlock.querySelector<HTMLElement>(`.tri-lt-panel[data-sport="${sport}"]`)
-      const svgEl = wrap?.querySelector<SVGElement>('.tri-trend-svg')
+      const svgEl = wrap?.querySelector<SVGElement>(':scope > .tri-trend-chart .tri-trend-svg')
       const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
-      const readout = wrap?.querySelector<HTMLElement>('.tri-chart-readout')
+      const readout = wrap?.querySelector<HTMLElement>(':scope > .tri-trend-readout')
       const projection = bySport(data.engine.lactateThreshold.sports, sport)
       const samples = projection ? lactateThresholdSamples(projection) : null
       if (!wrap || !svgEl || !cursor || !readout || !projection || !samples) continue
-      items.push({
-        svgEl,
-        cursor,
-        readout,
-        hover: wrap,
-        textOf: f => {
-          const at = sampleTrend(samples, f)
-          const band = `${fmtTrendShort(context.formatter, sport, Math.min(at.lo, at.hi))}–${fmtTrendShort(context.formatter, sport, Math.max(at.lo, at.hi))}`
-          return `+${(at.days / 7).toFixed(1)} wk · LT2 ${fmtTrendVal(context.formatter, sport, at.value)} · ${band}`
-        },
-      })
+      svgEl.setAttribute(
+        'aria-label',
+        `${context.formatter.text(sport)} LT2 ${context.formatter.text('projected')}`,
+      )
+      cleanups.push(
+        scrubGroup(
+          [
+            {
+              svgEl,
+              cursor,
+              readout,
+              hover: wrap,
+              textOf: f => {
+                const at = sampleTrend(samples, f)
+                const band = `${fmtTrendShort(context.formatter, sport, Math.min(at.lo, at.hi))}–${fmtTrendShort(context.formatter, sport, Math.max(at.lo, at.hi))}`
+                return `+${Math.round(at.days)}d · LT2 ${fmtTrendVal(context.formatter, sport, at.value)} · ${context.formatter.text('80% range')} ${band}`
+              },
+            },
+          ],
+          f => f * ANA_W,
+          samples.days,
+        ),
+      )
     }
-    cleanups.push(scrubGroup(items, f => f * ANA_W))
   }
 
   const radarBlock =

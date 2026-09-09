@@ -175,17 +175,13 @@ export const sampleTrend = (
   return { value: at(s.centers), lo: at(s.los), hi: at(s.his), days: q }
 }
 
-export const appendTrendChart = (
-  formatter: TriathlonFormatter,
-  wrap: HTMLElement,
-  sport: Sport,
+export const trendChartGeometry = (
   invert: boolean,
   samples: TrendSamples,
   capBand = true,
-): void => {
+): { line: string; band: string; low: number; high: number } => {
   const { centers, los, his, days: M } = samples
   const level = centers[0]
-  const weeks = M / 7
   let cLo = Infinity
   let cHi = -Infinity
   for (let i = 0; i <= M; i++) {
@@ -194,27 +190,48 @@ export const appendTrendChart = (
   }
   const scale = Math.max(cHi - cLo, Math.abs(level) * 0.05, 1e-6)
   const coneMax = scale * 0.5
-  const halfAt = (i: number): number =>
-    capBand ? Math.min((his[i] - los[i]) / 2, coneMax) : (his[i] - los[i]) / 2
+  const lowAt = (i: number): number => (capBand ? Math.max(los[i], centers[i] - coneMax) : los[i])
+  const highAt = (i: number): number => (capBand ? Math.min(his[i], centers[i] + coneMax) : his[i])
   let lo = cLo
   let hi = cHi
   for (let i = 0; i <= M; i++) {
-    const half = halfAt(i)
-    if (centers[i] + half > hi) hi = centers[i] + half
-    if (centers[i] - half < lo) lo = centers[i] - half
+    hi = Math.max(hi, highAt(i))
+    lo = Math.min(lo, lowAt(i))
   }
   const pad = scale * 0.3
   lo -= pad
   hi += pad
   const span = Math.max(1e-6, hi - lo)
-  const top = 4
-  const bot = 24
   const xOf = (i: number): number => (i / M) * ANA_W
   const y = (value: number): number => {
     const t = (value - lo) / span
-    return invert ? top + t * (bot - top) : bot - t * (bot - top)
+    return invert ? t * ANA_H : (1 - t) * ANA_H
   }
-  const yClamped = (value: number): number => clampN(y(value), 0.5, ANA_H - 0.5)
+  const hiPts: [number, number][] = []
+  const loPts: [number, number][] = []
+  const midPts: [number, number][] = []
+  for (let i = 0; i <= M; i++) {
+    hiPts.push([xOf(i), y(highAt(i))])
+    loPts.push([xOf(i), y(lowAt(i))])
+    midPts.push([xOf(i), y(centers[i])])
+  }
+  return {
+    line: polyD(midPts),
+    band: `${polyD([...hiPts, ...loPts.reverse()])} Z`,
+    low: lo,
+    high: hi,
+  }
+}
+
+export const appendTrendChart = (
+  formatter: TriathlonFormatter,
+  wrap: HTMLElement,
+  sport: Sport,
+  invert: boolean,
+  samples: TrendSamples,
+  capBand = true,
+): void => {
+  const geometry = trendChartGeometry(invert, samples, capBand)
   const s = svg('svg', {
     class: 'tri-ana-svg tri-trend-svg',
     viewBox: `0 0 ${ANA_W} ${ANA_H}`,
@@ -222,38 +239,24 @@ export const appendTrendChart = (
   })
   s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-trend-axis' }))
   s.appendChild(svg('line', { x1: 0, y1: ANA_H, x2: ANA_W, y2: ANA_H, class: 'tri-trend-axis' }))
-  const hiPts: [number, number][] = []
-  const loPts: [number, number][] = []
-  const midPts: [number, number][] = []
-  for (let i = 0; i <= M; i++) {
-    const half = halfAt(i)
-    hiPts.push([xOf(i), yClamped(centers[i] + half)])
-    loPts.push([xOf(i), yClamped(centers[i] - half)])
-    midPts.push([xOf(i), yClamped(centers[i])])
-  }
-  s.appendChild(
-    svg('path', {
-      d: `${polyD([...hiPts, ...loPts.reverse()])} Z`,
-      class: `tri-trend-band tri-fill-${sport}`,
-    }),
-  )
-  s.appendChild(svg('path', { d: polyD(midPts), class: `tri-trend-proj tri-line-${sport}` }))
+  s.appendChild(svg('path', { d: geometry.band, class: `tri-trend-band tri-fill-${sport}` }))
+  s.appendChild(svg('path', { d: geometry.line, class: `tri-trend-proj tri-line-${sport}` }))
   s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
   const track = el('div', 'tri-trend-track')
-  const dot = el('span', `tri-trend-dot tri-bg-${sport}`)
-  dot.style.left = '0%'
-  dot.style.top = `${clampN((y(level) / ANA_H) * 100, 4, 96)}%`
-  track.append(s, dot)
+  track.appendChild(s)
   const yax = el('div', 'tri-trend-yax')
   yax.append(
-    el('span', '', fmtTrendShort(formatter, sport, invert ? lo : hi)),
-    el('span', '', fmtTrendShort(formatter, sport, invert ? hi : lo)),
+    el('span', '', fmtTrendShort(formatter, sport, invert ? geometry.low : geometry.high)),
+    el('span', '', fmtTrendShort(formatter, sport, invert ? geometry.high : geometry.low)),
   )
   const chart = el('div', 'tri-trend-chart')
   chart.append(yax, track)
   const xax = el('div', 'tri-trend-xax')
-  xax.append(el('span', '', formatter.text('now')), el('span', '', `+${Math.round(weeks)} wk`))
-  wrap.append(chart, xax, el('div', 'tri-chart-readout'))
+  xax.append(
+    el('span', '', formatter.text('now')),
+    el('span', '', `+${Math.round(samples.days / 7)} wk`),
+  )
+  wrap.append(chart, xax, el('div', 'tri-chart-readout tri-trend-readout'))
 }
 
 export const buildTrendPanel = (
@@ -370,6 +373,107 @@ export const buildTrend = (
 
 export type LactateThresholdProjection = Analytics['engine']['lactateThreshold']['sports'][number]
 
+export type LactateHistoryPoint =
+  Analytics['engine']['lactateThreshold']['runningHistory']['pace'][number]
+export type LactateHistoryMetric = 'pace' | 'heartRate'
+
+export const lactateHistoryFraction = (
+  points: readonly LactateHistoryPoint[],
+  date: string,
+): number => {
+  const first = Date.parse(points[0]?.date ?? date)
+  const last = Date.parse(points.at(-1)?.date ?? date)
+  return last === first ? 0.5 : clampN((Date.parse(date) - first) / (last - first), 0, 1)
+}
+
+export const lactateHistoryAt = (
+  points: readonly LactateHistoryPoint[],
+  fraction: number,
+): LactateHistoryPoint | null => {
+  if (!points.length) return null
+  let nearest = points[0]
+  for (const point of points)
+    if (
+      Math.abs(lactateHistoryFraction(points, point.date) - fraction) <
+      Math.abs(lactateHistoryFraction(points, nearest.date) - fraction)
+    )
+      nearest = point
+  return nearest
+}
+
+export const lactateHistoryValue = (
+  formatter: TriathlonFormatter,
+  metric: LactateHistoryMetric,
+  value: number,
+): string => (metric === 'pace' ? fmtTrendVal(formatter, 'run', value) : `${Math.round(value)} bpm`)
+
+const appendLactateHistoryChart = (
+  wrap: HTMLElement,
+  metric: LactateHistoryMetric,
+  points: readonly LactateHistoryPoint[],
+  formatter: TriathlonFormatter,
+): void => {
+  if (!points.length) return
+  const history = el('div', 'tri-trend-panel tri-lt-history')
+  history.dataset.ltHistory = metric
+  const label = formatter.text(metric === 'pace' ? 'pace' : 'heart rate')
+  history.appendChild(el('div', 'tri-trend-head', `${label} · Garmin · n ${points.length}`))
+  const values = points.map(point => point.value)
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const pad = Math.max((max - min) * 0.15, metric === 'pace' ? 1 : 0.5)
+  const lo = min - pad
+  const hi = max + pad
+  const x = (date: string): number => lactateHistoryFraction(points, date) * ANA_W
+  const y = (value: number): number =>
+    metric === 'pace' ? 4 + ((value - lo) / (hi - lo)) * 20 : 24 - ((value - lo) / (hi - lo)) * 20
+  const chart = svg('svg', {
+    class: 'tri-ana-svg tri-lt-history-svg',
+    viewBox: `0 0 ${ANA_W} ${ANA_H}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': `${formatter.text('Garmin running threshold history')} · ${label}`,
+  })
+  chart.appendChild(
+    svg('line', { x1: 0, y1: ANA_H, x2: ANA_W, y2: ANA_H, class: 'tri-trend-axis' }),
+  )
+  if (points.length > 1)
+    chart.appendChild(
+      svg('path', {
+        d: polyD(points.map((point): [number, number] => [x(point.date), y(point.value)])),
+        class: 'tri-elev-line tri-line-run',
+      }),
+    )
+  chart.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
+  const track = el('div', 'tri-trend-track')
+  if (points.length === 1)
+    chart.appendChild(
+      svg('line', {
+        x1: x(points[0].date) - 1,
+        x2: x(points[0].date) + 1,
+        y1: y(points[0].value),
+        y2: y(points[0].value),
+        class: 'tri-elev-line tri-line-run',
+      }),
+    )
+  track.appendChild(chart)
+  const yax = el('div', 'tri-trend-yax')
+  const format = (value: number): string =>
+    metric === 'pace' ? fmtTrendShort(formatter, 'run', value) : value.toFixed(0)
+  yax.append(
+    el('span', '', format(metric === 'pace' ? lo : hi)),
+    el('span', '', format(metric === 'pace' ? hi : lo)),
+  )
+  const frame = el('div', 'tri-trend-chart')
+  frame.append(yax, track)
+  const xax = el('div', 'tri-trend-xax')
+  xax.append(el('span', '', formatter.shortDate(points[0].date)))
+  if (points.length > 1)
+    xax.appendChild(el('span', '', formatter.shortDate(points[points.length - 1].date)))
+  history.append(frame, xax, el('div', 'tri-chart-readout tri-trend-readout'))
+  wrap.appendChild(history)
+}
+
 export const lactateThresholdSamples = (
   projection: LactateThresholdProjection,
 ): TrendSamples | null => {
@@ -415,6 +519,18 @@ export const buildLactateThresholdPanel = (
     )
   wrap.appendChild(head)
   if (projection?.source === 'garmin') {
+    appendLactateHistoryChart(
+      wrap,
+      'pace',
+      data.engine.lactateThreshold.runningHistory.pace,
+      context.formatter,
+    )
+    appendLactateHistoryChart(
+      wrap,
+      'heartRate',
+      data.engine.lactateThreshold.runningHistory.heartRate,
+      context.formatter,
+    )
     wrap.appendChild(
       el(
         'div',

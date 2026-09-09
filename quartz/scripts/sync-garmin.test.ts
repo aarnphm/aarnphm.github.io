@@ -14,6 +14,7 @@ import {
   fetchGarminSleepRange,
   garminRefreshStart,
   mergeGarminFitTrainingEffect,
+  mergeGarminLactateThresholdHistory,
   mergeGarminVo2Range,
   mergeGarminWeightRange,
   needsGarminActivityFit,
@@ -124,6 +125,32 @@ function activity(id = 'connect:123', startDateLocal = '2026-08-14T13:27:27.0'):
     fueling: emptyGarminFueling(),
   }
 }
+
+test('refreshes Garmin lactate threshold history inside the fetched range and keeps older dates', () => {
+  const previous = [
+    { date: '2026-08-01', value: 173 },
+    { date: '2026-09-03', value: 173 },
+  ]
+  assert.deepEqual(
+    mergeGarminLactateThresholdHistory(
+      previous,
+      [
+        { date: '2026-09-03', value: 174 },
+        { date: '2026-09-08', value: 174 },
+      ],
+      '2026-09-01',
+      '2026-09-08',
+    ),
+    [
+      { date: '2026-08-01', value: 173 },
+      { date: '2026-09-03', value: 174 },
+      { date: '2026-09-08', value: 174 },
+    ],
+  )
+  assert.deepEqual(mergeGarminLactateThresholdHistory(previous, [], '2026-09-01', '2026-09-08'), [
+    previous[0],
+  ])
+})
 
 test('recovers missing Garmin Connect training effect from the stored FIT', () => {
   const recovered = mergeGarminFitTrainingEffect(activity(), { aerobic: 3, anaerobic: 1.3 })

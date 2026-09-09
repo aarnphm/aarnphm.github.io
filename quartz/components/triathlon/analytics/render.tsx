@@ -10,6 +10,7 @@ export interface AnalyticsChartDomain {
 export const analyticsChartPath = (
   values: readonly number[],
   domain?: AnalyticsChartDomain,
+  dates?: readonly string[],
 ): string => {
   if (values.length === 0) return ''
   let minimum = domain?.minimum ?? Infinity
@@ -21,9 +22,17 @@ export const analyticsChartPath = (
     }
   }
   const span = Math.max(maximum - minimum, Math.abs(maximum) * 0.01, 1)
+  const start = dates?.length === values.length ? Date.parse(dates[0]) : NaN
+  const end = dates?.length === values.length ? Date.parse(dates[dates.length - 1]) : NaN
   return values
     .map((value, index) => {
-      const x = values.length === 1 ? 50 : (index / (values.length - 1)) * 100
+      const timestamp = dates?.[index] ? Date.parse(dates[index]) : NaN
+      const x =
+        values.length === 1
+          ? 50
+          : Number.isFinite(timestamp) && end > start
+            ? ((timestamp - start) / (end - start)) * 100
+            : (index / (values.length - 1)) * 100
       const y = 29 - ((value - minimum) / span) * 26
       return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`
     })
@@ -94,7 +103,7 @@ export const AnalyticsServerPanel = ({
             {series.map((item, index) => (
               <path
                 class={`tri-ana-ssr-line tri-ana-ssr-line--${index % 4}`}
-                d={analyticsChartPath(item.values, sharedDomain)}
+                d={analyticsChartPath(item.values, sharedDomain, item.dates)}
                 vector-effect="non-scaling-stroke"
                 data-series={item.label}
               />

@@ -3,6 +3,7 @@ import {
   emptyGarminMetrics,
   type GarminActivity,
   type GarminClimbSegment,
+  type GarminLactateThresholdValue,
   type GarminRunWalkData,
   type GarminRunWalkState,
   type GarminRunningDynamicsSummary,
@@ -616,6 +617,29 @@ export function garminConnectRunningLactateThreshold(
       result.heartRateBpm = { value: heartRate, date }
   }
   return result.speedMps || result.heartRateBpm ? result : null
+}
+
+export function garminConnectLactateThresholdHistory(
+  raw: unknown,
+  metric: 'speedMps' | 'heartRateBpm',
+): GarminLactateThresholdValue[] {
+  if (!Array.isArray(raw)) throw new Error('Invalid Garmin lactate threshold history response')
+  const days = new Map<string, GarminLactateThresholdValue>()
+  for (const item of raw) {
+    if (!isRecord(item) || item.series !== 'running') continue
+    const date = readString(item, 'updatedDate') ?? readString(item, 'from')
+    const value = positive(finite(item.value))
+    if (
+      !date ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+      !Number.isFinite(Date.parse(date)) ||
+      new Date(date).toISOString().slice(0, 10) !== date ||
+      value == null
+    )
+      continue
+    days.set(date, { date, value: metric === 'speedMps' ? value * 10 : value })
+  }
+  return [...days.values()].sort((left, right) => left.date.localeCompare(right.date))
 }
 
 function vo2Of(value: unknown): number | null {

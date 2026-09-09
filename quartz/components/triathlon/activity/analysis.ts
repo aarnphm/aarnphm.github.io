@@ -31,6 +31,18 @@ export type ScrubSurface = {
 
 export type ActivityScrubSample = { d: number; elapsedS: number }
 
+export const activityScrubCursorX = (
+  sample: ActivityScrubSample,
+  domain: ActivityAnalysisChartDomain,
+): number => {
+  const [start, end, value] =
+    'startElapsedS' in domain
+      ? [domain.startElapsedS, domain.endElapsedS, sample.elapsedS]
+      : [domain.startDistanceKm, domain.endDistanceKm, sample.d]
+  if (!(end > start)) return 0
+  return Math.max(0, Math.min(100, ((value - start) / (end - start)) * 100))
+}
+
 export const activityScrubIndexAt = (
   samples: readonly ActivityScrubSample[],
   target: number,
@@ -501,7 +513,7 @@ export const linkScrub = (
   const span = 88
   const resolved: {
     wrap: HTMLElement
-    svgEl: SVGElement
+    svgEl: SVGSVGElement
     cursor: SVGElement
     readout: HTMLElement
     samples: readonly ActivityScrubSample[]
@@ -509,7 +521,7 @@ export const linkScrub = (
   }[] = []
   for (const s of surfaces) {
     if (s.samples.length < 2) continue
-    const svgEl = s.wrap.querySelector<SVGElement>('.tri-elev')
+    const svgEl = s.wrap.querySelector<SVGSVGElement>('.tri-elev')
     const cursor = svgEl?.querySelector<SVGElement>('.tri-elev-cursor')
     if (!svgEl || !cursor) continue
     const readout = el('div', 'tri-fig-readout')
@@ -521,6 +533,9 @@ export const linkScrub = (
     resolved.push({ wrap: s.wrap, svgEl, cursor, readout, samples: s.samples, fmt: s.fmt })
   }
   if (resolved.length === 0) return rangeController
+  const runWalk = act.querySelector<SVGSVGElement>('.tri-run-walk')
+  const runWalkCursor = runWalk?.querySelector<SVGElement>('.tri-chart-cursor')
+  const runWalkDomain = runWalk ? analysisDomainFromChart(runWalk) : null
   const listeners = new AbortController()
   const frameCleanups: (() => void)[] = []
   const indexAt = (clientX: number, surface: (typeof resolved)[number]): number => {
@@ -577,12 +592,20 @@ export const linkScrub = (
       for (const linked of resolved) {
         const linkedIndex = activityScrubElapsedIndexAt(linked.samples, sample.elapsedS)
         const linkedSample = linked.samples[linkedIndex]
-        const linkedMax = linked.samples.at(-1)?.d || 1
-        const x = ((linkedSample.d / linkedMax) * 100).toFixed(2)
+        const domain = analysisDomainFromChart(linked.svgEl) ?? {
+          startDistanceKm: 0,
+          endDistanceKm: linked.samples.at(-1)?.d || 1,
+        }
+        const x = activityScrubCursorX(linkedSample, domain).toFixed(2)
         linked.cursor.setAttribute('x1', x)
         linked.cursor.setAttribute('x2', x)
         if (rangeController?.hasLocked() || drag?.range || linked === surf)
           linked.readout.textContent = linked.fmt(linkedIndex)
+      }
+      if (runWalkCursor && runWalkDomain) {
+        const x = activityScrubCursorX(sample, runWalkDomain).toFixed(4)
+        runWalkCursor.setAttribute('x1', x)
+        runWalkCursor.setAttribute('x2', x)
       }
       if (marker && routePoint) {
         marker.setAttribute('cx', (pad + routePoint.x * span).toFixed(2))

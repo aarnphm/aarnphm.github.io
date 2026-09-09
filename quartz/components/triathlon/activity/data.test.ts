@@ -367,3 +367,51 @@ test('rejects private fields, out-of-order samples, and ambiguous temperature co
   delete ambiguous.deviceTemperatureC
   assert.equal(isActivityDetail(ambiguous), false)
 })
+
+test('validates serialized cycling intensity provenance, gaps and sample ordering', () => {
+  const trace = {
+    source: 'wahoo',
+    method: 'cumulative-power-30s-v1',
+    ftpWatts: 250,
+    ftpSource: 'wahoo-summary',
+    points: [
+      { elapsedS: 0, distanceKm: 0, intensityFactor: null },
+      { elapsedS: 30, distanceKm: 0.3, intensityFactor: 0 },
+      { elapsedS: 60, distanceKm: 0.6, intensityFactor: 0.8 },
+    ],
+  }
+  const value = {
+    ...detail(101, '2026-09-08', 'bike'),
+    wahoo: {
+      activityId: 'wahoo:1',
+      fitPath: null,
+      sha256: 'a'.repeat(64),
+      sourceDevice: null,
+      startOffsetS: 0,
+      distanceM: 600,
+      metrics: emptyWahooMetrics(),
+      summarySources: {},
+      streamFallback: null,
+    },
+    cyclingIntensityTrace: trace,
+  }
+  assert.equal(isActivityDetail(JSON.parse(JSON.stringify(value))), true)
+  assert.equal(isActivityDetail({ ...value, sport: 'run' }), false)
+  assert.equal(isActivityDetail({ ...value, wahoo: undefined }), false)
+  for (const invalid of [
+    { ...trace, source: 'garmin' },
+    { ...trace, ftpSource: null },
+    { ...trace, ftpWatts: null, ftpSource: null },
+    { ...trace, points: trace.points.toReversed() },
+    { ...trace, points: [...trace.points, { ...trace.points[2], elapsedS: 3601 }] },
+    {
+      ...trace,
+      points: [...trace.points.slice(0, 2), { ...trace.points[2], intensityFactor: -1 }],
+    },
+    {
+      ...trace,
+      points: [...trace.points.slice(0, 2), { ...trace.points[2], intensityFactor: Infinity }],
+    },
+  ])
+    assert.equal(isActivityDetail({ ...value, cyclingIntensityTrace: invalid }), false)
+})

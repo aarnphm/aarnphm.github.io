@@ -14,6 +14,7 @@ import { activityAnalysisStatAttrs } from '../../../util/triathlon-card'
 import { activityTableRows } from '../../../util/triathlon-card'
 import { activitySourceStatAttrs } from '../../../util/triathlon-card'
 import { activityHeartRateTracePoints } from '../../../util/triathlon-card'
+import { activityCyclingIntensityPoints } from '../../../util/triathlon-card'
 import { activityThermalTracePoints } from '../../../util/triathlon-card'
 import { activityTraceUsesElapsedAxis } from '../../../util/triathlon-card'
 import { activityTrainingEffectLabel } from '../../../util/triathlon-card'
@@ -1417,7 +1418,17 @@ export const renderDetail = (
           return `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(cadenceValues?.[i] ?? p.cad * cadenceScale)} ${cadenceUnit}`
         },
       })
-    else if (trace.dataset.triTrace === 'performance-condition')
+    else if (trace.dataset.triTrace === 'intensity-factor') {
+      const points = activityCyclingIntensityPoints(d)
+      surfaces.push({
+        wrap: trace,
+        samples: points,
+        fmt: i => {
+          const point = points[i]
+          return `${tracePosition(point)} · ${point.intensityFactor?.toFixed(3) ?? '—'} · ${triText(presentation.locale, 'cumulative')}`
+        },
+      })
+    } else if (trace.dataset.triTrace === 'performance-condition')
       surfaces.push({
         wrap: trace,
         samples: routeSamples,

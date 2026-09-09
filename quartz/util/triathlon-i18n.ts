@@ -151,6 +151,10 @@ const en: TriDict = {
     aerobic: 'aerobic',
     anaerobic: 'anaerobic',
     'intensity factor': 'intensity factor',
+    'variability index': 'variability index',
+    '30 s rolling power, cumulative NP, zeros included':
+      '30 s rolling power, cumulative NP, zeros included',
+    'athlete setting': 'athlete setting',
     'training effect': 'training effect',
     'exercise load': 'exercise load',
     VO2max: 'VO2max',
@@ -620,6 +624,7 @@ const en: TriDict = {
     '80% range': '80% range',
     'lactate threshold': 'lactate threshold',
     'Garmin running estimate': 'Garmin running estimate',
+    'Garmin running threshold history': 'Garmin running threshold history',
     'declared heart-rate anchor': 'declared heart-rate anchor',
     'training-derived LT2 proxy': 'training-derived LT2 proxy',
     'dashed line is projected from bike power': 'dashed line is projected from bike power',
@@ -902,7 +907,7 @@ const en: TriDict = {
     },
     lactate: {
       term: 'lactate threshold',
-      def: 'Running pace and LTHR use the latest available Garmin estimates, with a separate date for each value. When Garmin pace is unavailable, the running value uses the training-derived LT2 proxy; missing Garmin LTHR falls back to the declared heart-rate anchor. Training-derived sport values project the current one hour threshold over 14 days, with 80% model ranges. These estimates do not measure blood lactate or ventilatory thresholds.',
+      def: 'Running uses the training-derived LT2 proxy and declared heart-rate anchor until Garmin has 31 distinct dated threshold-pace readings. It then switches automatically to the latest Garmin pace and available LTHR, each with its own date; missing Garmin LTHR keeps the declared anchor. Garmin history continues to accumulate before the switch. Training-derived sport values project the current one hour threshold over 14 days, with 80% model ranges. These estimates do not measure blood lactate or ventilatory thresholds.',
     },
     trend: {
       term: 'pace trend',
@@ -1096,6 +1101,10 @@ const fr: TriDict = {
     aerobic: 'aérobie',
     anaerobic: 'anaérobie',
     'intensity factor': "facteur d'intensité",
+    'variability index': 'indice de variabilité',
+    '30 s rolling power, cumulative NP, zeros included':
+      'puissance glissante sur 30 s, NP cumulée, zéros inclus',
+    'athlete setting': 'réglage de l’athlète',
     'training effect': "effet d'entraînement",
     'exercise load': "charge d'exercice",
     VO2max: 'VO2max',
@@ -1571,6 +1580,7 @@ const fr: TriDict = {
     '80% range': 'plage à 80 %',
     'lactate threshold': 'seuil lactique',
     'Garmin running estimate': 'estimation Garmin en course à pied',
+    'Garmin running threshold history': 'historique du seuil Garmin en course à pied',
     'declared heart-rate anchor': 'repère de fréquence cardiaque déclaré',
     'training-derived LT2 proxy': "indice LT2 dérivé de l'entraînement",
     'dashed line is projected from bike power':
@@ -1855,7 +1865,7 @@ const fr: TriDict = {
     },
     lactate: {
       term: 'seuil lactique',
-      def: "L'allure et la FCSL en course à pied utilisent les dernières estimations Garmin disponibles, avec une date propre à chaque valeur. En l'absence d'allure Garmin, la valeur utilise l'indice LT2 dérivé de l'entraînement ; en l'absence de FCSL Garmin, elle utilise le repère déclaré. Les valeurs dérivées de l'entraînement projettent le seuil sur une heure sur 14 jours, avec des plages du modèle à 80 %. Ces estimations ne mesurent ni le lactate sanguin ni les seuils ventilatoires.",
+      def: "La course à pied utilise l'indice LT2 dérivé de l'entraînement et le repère de fréquence cardiaque déclaré jusqu'à ce que Garmin dispose de 31 mesures d'allure au seuil à des dates distinctes. Elle passe alors automatiquement aux dernières valeurs Garmin d'allure et de FCSL disponibles, chacune avec sa date ; en l'absence de FCSL Garmin, le repère déclaré reste utilisé. L'historique Garmin continue de s'accumuler avant ce changement. Les valeurs dérivées de l'entraînement projettent le seuil sur une heure sur 14 jours, avec des plages du modèle à 80 %. Ces estimations ne mesurent ni le lactate sanguin ni les seuils ventilatoires.",
     },
     trend: {
       term: "tendance d'allure",

@@ -18,6 +18,7 @@ import { metricSpecs } from '../components/triathlon/activity/render'
 import { createTriathlonFormatter } from '../components/triathlon/runtime/formatter'
 import { calculateActivityExerciseLoad, emptyHealth } from '../plugins/stores/strava'
 import { emptyWahooMetrics } from '../plugins/stores/wahoo'
+import { buildCyclingIntensityTrace } from './cycling-intensity'
 import { resolveSleepMetrics } from './sleep-metrics'
 import {
   activityCompareColor,
@@ -36,6 +37,7 @@ import {
   buildActivity,
   buildActivityComparison,
   buildCyclingBestEfforts,
+  buildIntensityFactorChart,
   buildDayAnalytics,
   buildDayCard,
   buildElevation,
@@ -1350,14 +1352,36 @@ test('renders elapsed lap highlights inside every environment plot', () => {
   }
 })
 
-test('renders native evidence without inventing graphs and translates environment labels', () => {
+test('renders empty environment axes with native evidence and translates their no-data state', () => {
   const analyses = environmentAnalyses()
   analyses.derived.environment = null
   analyses.derived.uvScore = null
   analyses.derived.apparentWind = null
-  const nativeOnly = buildEnvironmentAnalysis(factory, detail({ analyses }))
+  const activity = detail({ analyses })
+  const nativeOnly = buildEnvironmentAnalysis(factory, activity)
   assert.ok(nativeOnly)
-  assert.equal(byClass(nativeOnly, 'tri-environment-panel').length, 0)
+  const panels = byClass(nativeOnly, 'tri-environment-panel')
+  assert.equal(panels.length, 4)
+  assert.equal(byClass(nativeOnly, 'tri-environment-tab').length, 4)
+  assert.equal(byClass(nativeOnly, 'tri-environment-line').length, 0)
+  assert.equal(byClass(nativeOnly, 'tri-environment-cursor').length, 0)
+  for (const panel of panels) {
+    const plot = byClass(panel, 'tri-environment-plot')[0]
+    assert.equal(plot.properties.viewBox, '0 0 100 32')
+    assert.equal(plot.properties.role, 'img')
+    assert.equal(plot.properties.tabIndex, undefined)
+    assert.equal(plot.properties.dataEnvironmentChart, undefined)
+    assert.equal(plot.properties.dataDomainEndElapsedS, activity.elapsedTimeS)
+    assert.equal(text(byClass(panel, 'tri-environment-empty')[0]), 'no data available')
+    assert.equal(byClass(panel, 'tri-cax-ax--x').length, 1)
+    assert.equal(byClass(panel, 'tri-cax-ax--y').length, 1)
+    assert.deepEqual(byClass(panel, 'tri-cax-yt').map(text), ['—', '—', '—'])
+    assert.deepEqual(byClass(panel, 'tri-cax-xt').map(text), [
+      '0:00',
+      environmentElapsedClock(activity.elapsedTimeS / 2),
+      environmentElapsedClock(activity.elapsedTimeS),
+    ])
+  }
   assert.match(text(nativeOnly), /83 · High/)
   assert.equal(byTag(nativeOnly, 'tr').length, 19)
   const unavailable = byClass(nativeOnly, 'tri-environment-unavailable')
@@ -1375,6 +1399,40 @@ test('renders native evidence without inventing graphs and translates environmen
   assert.match(text(frenchEnvironment), /environnement/)
   assert.match(text(frenchEnvironment), /exposition UV/)
   assert.match(text(frenchEnvironment), /couverture nuageuse/)
+  const frenchEmpty = buildEnvironmentAnalysis(factoryFor(frenchPresentation), activity)
+  assert.ok(frenchEmpty)
+  assert.equal(text(byClass(frenchEmpty, 'tri-environment-empty')[0]), 'aucune donnée disponible')
+})
+
+test('keeps unavailable environment views while rendering recorded zero values', () => {
+  const analyses = environmentAnalyses()
+  const environment = analyses.derived.environment
+  assert.ok(environment)
+  environment.samples = environment.samples.map(sample => ({
+    ...sample,
+    cumulativeSed: null,
+    cumulativeMovingTelemetrySed: null,
+    uvIndex: null,
+    ambientTemperatureC: 0,
+    cloudCoverPct: null,
+  }))
+  const rendered = buildEnvironmentAnalysis(factory, detail({ analyses }))
+  assert.ok(rendered)
+  const panels = byClass(rendered, 'tri-environment-panel')
+  assert.equal(panels.length, 4)
+  const temperature = panels.find(panel => panel.properties.dataEnvironmentPanel === 'temperature')
+  assert.ok(temperature)
+  assert.equal(temperature.properties.hidden, undefined)
+  assert.equal(byClass(temperature, 'tri-environment-empty').length, 0)
+  assert.equal(byClass(temperature, 'tri-environment-line').length, 1)
+  assert.equal(byClass(temperature, 'tri-environment-plot')[0].properties.role, 'slider')
+  assert.equal(byClass(rendered, 'tri-environment-empty').length, 3)
+
+  environment.samples = environment.samples.slice(0, 1)
+  const sparse = buildEnvironmentAnalysis(factory, detail({ analyses }))
+  assert.ok(sparse)
+  assert.equal(byClass(sparse, 'tri-environment-empty').length, 4)
+  assert.equal(byClass(sparse, 'tri-environment-line').length, 0)
 })
 
 test('environment paths retain explicit gaps and step hourly values', () => {
@@ -3280,6 +3338,7 @@ test('renders the complete native Forerunner running dynamics set with paired co
   assert.equal(runWalkSvg.properties.ariaHidden, undefined)
   assert.equal(runWalkSvg.properties.ariaValueMax, 1_800.479)
   assert.equal(byClass(runWalk, 'tri-chart-cursor').length, 1)
+  assert.equal(byClass(runWalk, 'tri-elev-cursor')[0], byClass(runWalk, 'tri-chart-cursor')[0])
   assert.equal(byClass(runWalk, 'tri-chart-readout').length, 1)
   assert.equal(byClass(runWalk, 'tri-fig-readout').length, 1)
   assert.deepEqual(
@@ -8677,4 +8736,94 @@ test('degrades deterministically for empty, single, mixed-sport, and unrouted se
     assert.equal(byClass(rendered, 'tri-compare-map-stage').length, 0)
     assert.equal(byClass(rendered, 'tri-compare-readout').length, 0)
   }
+})
+
+test('renders the IF graph and session VI table value in server HTML', () => {
+  const d = detail()
+  d.wahoo = {
+    activityId: 'wahoo:1',
+    fitPath: null,
+    sha256: 'a'.repeat(64),
+    sourceDevice: 'ELEMNT BOLT',
+    startOffsetS: 0,
+    distanceM: 30_000,
+    metrics: {
+      ...emptyWahooMetrics(),
+      intensityFactor: 0.814,
+      normalizedPower: 203.5,
+      avgPower: 200,
+    },
+    summarySources: {},
+    streamFallback: 'strava',
+  }
+  d.cyclingIntensityTrace = buildCyclingIntensityTrace({
+    streams: { time: Array.from({ length: 4801 }, (_, i) => i), watts: Array(4801).fill(200) },
+    metrics: d.wahoo.metrics,
+    startOffsetS: 0,
+    elapsedTimeS: 4800,
+    route: d.route,
+    athleteFtp: 300,
+  })
+  assert.ok(d.cyclingIntensityTrace)
+  const card = buildActivity(factory, d, true)
+  const intensity = descendants(card, node => node.properties.dataTriTrace === 'intensity-factor')
+  const variability = descendants(
+    card,
+    node => node.properties.dataTriTrace === 'variability-index',
+  )
+  assert.equal(intensity.length, 1)
+  assert.equal(variability.length, 0)
+  assert.match(text(intensity[0]), /0\.814 · Wahoo/)
+  const viRow = byTag(card, 'tr').find(row => row.properties.dataStatKey === 'variability index')
+  assert.ok(viRow)
+  assert.equal(text(byTag(viRow, 'td')[0]), '1.018')
+  assert.doesNotMatch(text(card), /calculated from Wahoo/)
+  const viStat = (activity: StravaActivityDetail) =>
+    activityStatRows(METRIC_TRIATHLON_PRESENTATION, activity).find(
+      ([key]) => key === 'variability index',
+    )
+  assert.deepEqual(viStat({ ...d, cyclingIntensityTrace: null }), ['variability index', '1.018'])
+  assert.deepEqual(
+    viStat({ ...d, wahoo: { ...d.wahoo, metrics: { ...d.wahoo.metrics, normalizedPower: 0 } } }),
+    ['variability index', '0.000'],
+  )
+  assert.equal(
+    viStat({ ...d, wahoo: { ...d.wahoo, metrics: { ...d.wahoo.metrics, avgPower: 0 } } }),
+    undefined,
+  )
+  assert.equal(
+    viStat({ ...d, wahoo: { ...d.wahoo, metrics: { ...d.wahoo.metrics, normalizedPower: null } } }),
+    undefined,
+  )
+  assert.equal(viStat({ ...d, sport: 'run' }), undefined)
+  assert.deepEqual(
+    activityStatRows(frenchPresentation, d).find(([key]) => key === 'variability index'),
+    ['variability index', '1,018'],
+  )
+  assert.match(text(intensity[0]), /cumulative/)
+  assert.equal(intensity[0].properties.dataCyclingIntensitySource, 'calculated-wahoo')
+  for (const chart of intensity) {
+    assert.ok(String(byClass(chart, 'tri-elev-line')[0].properties.d).includes('L'))
+    assert.equal(byClass(chart, 'tri-elev-cursor').length, 1)
+    assert.ok(byClass(chart, 'tri-elev')[0].properties.dataDomainEndDistanceKm)
+  }
+  const simplified = buildActivity(factory, d, true, undefined, false, false, {
+    'intensity-factor': false,
+  })
+  assert.equal(
+    descendants(simplified, node => node.properties.dataTriTrace === 'intensity-factor').length,
+    0,
+  )
+  assert.equal(
+    descendants(simplified, node => node.properties.dataTriTrace === 'variability-index').length,
+    0,
+  )
+  const indoor = buildIntensityFactorChart(factory, { ...d, route: [] })
+  assert.ok(indoor)
+  assert.equal(byClass(indoor, 'tri-elev')[0].properties.dataDomainEndElapsedS, 4800)
+  assert.equal(buildIntensityFactorChart(factory, { ...d, sport: 'run' }), null)
+  assert.equal(buildIntensityFactorChart(factory, { ...d, wahoo: undefined }), null)
+  const frenchChart = buildIntensityFactorChart(factoryFor(frenchPresentation), d)
+  assert.ok(frenchChart)
+  assert.match(text(frenchChart), /facteur d'intensité/)
 })
