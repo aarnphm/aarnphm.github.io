@@ -62,6 +62,16 @@ test('expands simplified display settings and treats detailed display as the def
   assert.equal(serializeTriathlonTraceSettings(TRIATHLON_TRACE_DISPLAY_SETTINGS.detailed), '')
 })
 
+test('expands focused display and preserves it through serialization', () => {
+  const settings = parseTriathlonTraceSettings('settings=display:focused&expanded:true')
+  assert.deepEqual(settings, { focused: true, expanded: true })
+  assert.ok(settings)
+  assert.deepEqual(parseTriathlonTraceSettings(serializeTriathlonTraceSettings(settings)), settings)
+  assert.equal(triathlonTraceEnabled(settings, 'power'), true)
+  assert.equal(triathlonTraceEnabled(settings, 'power-balance'), true)
+  assert.equal(parseTriathlonTraceSettings('display:focused&display:detailed'), null)
+})
+
 test('rejects malformed, duplicate, and non-kebab trace settings', () => {
   assert.equal(parseTriathlonTraceSettings(undefined), null)
   assert.equal(parseTriathlonTraceSettings('settings='), null)

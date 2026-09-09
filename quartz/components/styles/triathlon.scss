@@ -2502,11 +2502,65 @@
 }
 
 .tri-pressure-measured-controls {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
   gap: 0.18rem;
+
+  &[hidden] {
+    display: none;
+  }
 
   > input {
     width: 1.8rem;
   }
+}
+
+.tri-pressure-measured {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.25rem 0.5rem;
+}
+
+.tri-pressure-measured-head {
+  grid-column: 1 / -1;
+}
+
+.tri-pressure-width-mode {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  margin: 0;
+  padding: 0.08rem 0;
+  color: var(--gray);
+  font: inherit;
+  font-size: var(--tri-pressure-meta-size);
+  text-align: left;
+  text-transform: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    border-bottom-color: currentColor;
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+.tri-pressure-width-note {
+  grid-column: 1 / -1;
+  font-size: var(--tri-pressure-meta-size);
+  text-transform: none;
 }
 
 .tri-pressure-weight-controls {
@@ -7979,6 +8033,42 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   color: var(--dark);
 }
 
+.tri-sleep-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 1.25rem;
+  margin: 0.6rem 0 0;
+  padding: 0.45rem 0;
+  border-block: 1px solid var(--lightgray);
+
+  .tri-day-analytics-metric {
+    gap: 0.4rem;
+  }
+
+  .tri-day-analytics-label {
+    text-transform: lowercase;
+  }
+
+  .tri-day-analytics-detail {
+    right: auto;
+    left: 0;
+    width: max-content;
+    max-width: min(18rem, 78cqw);
+    white-space: pre-line;
+    transform-origin: left bottom;
+  }
+}
+
+.tri-ana-ssr-value.tri-day-analytics-metric {
+  display: block;
+
+  .tri-day-analytics-detail {
+    width: max-content;
+    white-space: pre-line;
+  }
+}
+
 .tri-sleep-day-close {
   border: none;
   background: none;
@@ -8133,7 +8223,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   opacity: 0;
 }
 
-.tri-sleep-day .tri-sleep-chart.tri-chart--hover .tri-ana-cursor {
+.tri-sleep-day :is(.tri-sleep-chart, .tri-day-sleep-chart).tri-chart--hover .tri-ana-cursor {
   opacity: 0.7;
 }
 
@@ -8141,7 +8231,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   opacity: 0;
 }
 
-.tri-sleep-day .tri-sleep-chart.tri-chart--hover .tri-chart-readout {
+.tri-sleep-day :is(.tri-sleep-chart, .tri-day-sleep-chart).tri-chart--hover .tri-chart-readout {
   opacity: 1;
 }
 
@@ -13088,6 +13178,11 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   fill: var(--gray);
 }
 
+.tri-run-walk:focus-visible {
+  outline: 1px solid var(--tri-run);
+  outline-offset: 2px;
+}
+
 .tri-cycling-watts-heatmap {
   cursor: default;
 }
@@ -14442,6 +14537,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   stroke: var(--tri-run);
 }
 
+.tri-day-sleep-line--respiration {
+  stroke: var(--tri-swim);
+}
+
 @container tri-day-card (max-width: 36rem) {
   .tri-day-analytics-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -14601,6 +14700,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
         height: calc(
           var(--tri-embedded-graph-row-height) + var(--tri-embedded-graph-row-height) + 0.7rem
         );
+      }
+
+      > .tri-act-more > .tri-environment {
+        margin-top: var(--tri-environment-margin, 0px);
       }
 
       > .tri-act-more > .tri-training-effect {
@@ -15051,7 +15154,7 @@ a.tri-pop-date:hover {
 }
 
 @media (min-width: 45.001rem) {
-  .tri-day-page > .tri-day-embed .tri-environment {
+  .tri-day-page > .tri-day-embed .tri-environment:has(> .tri-environment-graphs) {
     --tri-environment-stack-height: calc(
       var(--tri-activity-graph-row-height) + var(--tri-activity-graph-row-height) +
         var(--tri-activity-graph-row-height) + var(--tri-activity-graph-row-height) +

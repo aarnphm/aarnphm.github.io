@@ -5,6 +5,7 @@ import { QuartzTransformerPlugin } from '../../types/plugin'
 import {
   ActivityTrackingEntry,
   ManualFuelingEntry,
+  ManualMovesEntry,
   ManualSaunaEntry,
   ManualStrengthEntry,
   parseTrackingBlock,
@@ -23,6 +24,7 @@ export const Tracking: QuartzTransformerPlugin = () => ({
         const days: TrackEntry[] = []
         const fueling: ManualFuelingEntry[] = []
         const strength: ManualStrengthEntry[] = []
+        const moves: ManualMovesEntry[] = []
         const sauna: ManualSaunaEntry[] = []
         const trainingExclusions: TrainingExclusion[] = []
         visit(tree, 'code', (node: Code) => {
@@ -33,6 +35,7 @@ export const Tracking: QuartzTransformerPlugin = () => ({
           if (entry.activity) activities.push(entry.activity)
           if (entry.fueling) fueling.push(entry.fueling)
           if (entry.strength) strength.push(entry.strength)
+          if (entry.moves) moves.push(entry.moves)
           if (entry.sauna) sauna.push(entry.sauna)
           if (entry.trainingExclusion) trainingExclusions.push(entry.trainingExclusion)
         })
@@ -47,6 +50,7 @@ export const Tracking: QuartzTransformerPlugin = () => ({
           races,
           fueling,
           strength,
+          moves,
           sauna,
           trainingExclusions,
         }

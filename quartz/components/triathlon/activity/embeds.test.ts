@@ -1,16 +1,16 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { dayCardActivitiesExpanded } from '../../../util/triathlon-card'
-import { alignedTrainingEffectMargins } from './activity-layout'
+import { alignedActivitySectionMargins } from './activity-layout'
 import { dayExtrasFromDataset } from './embed-settings'
 
 test('aligns training effects by their natural top within each activity row', () => {
   assert.deepEqual(
-    alignedTrainingEffectMargins([
-      { activityTop: 100, effectTop: 2_963.734375, marginTop: 0 },
-      { activityTop: 100.0078125, effectTop: 2_963.734375, marginTop: 0 },
-      { activityTop: 100, effectTop: 3_651.2109375, marginTop: 2_410.875 },
-      { activityTop: 4_000, effectTop: 4_500, marginTop: 0 },
+    alignedActivitySectionMargins([
+      { activityTop: 100, sectionTop: 2_963.734375, marginTop: 0 },
+      { activityTop: 100.0078125, sectionTop: 2_963.734375, marginTop: 0 },
+      { activityTop: 100, sectionTop: 3_651.2109375, marginTop: 2_410.875 },
+      { activityTop: 4_000, sectionTop: 4_500, marginTop: 0 },
     ]),
     [0, 0, 1_723.3984375, 0],
   )
@@ -43,5 +43,40 @@ test('restores activity selection, exclusions, and trace settings from the embed
       dayExtrasFromDataset({ triathlonSport: 'bike', triathlonSettings: 'expanded:false' }),
     ),
     false,
+  )
+})
+
+test('aligns environment sections without accumulating the previous layout offset', () => {
+  const positions = [
+    { activityTop: 100, sectionTop: 3308.625, marginTop: 0 },
+    { activityTop: 100, sectionTop: 3480.9609375, marginTop: 0 },
+  ]
+  const margins = alignedActivitySectionMargins(positions)
+  assert.deepEqual(margins, [172.3359375, 0])
+  assert.deepEqual(
+    alignedActivitySectionMargins(
+      positions.map((position, index) => ({
+        ...position,
+        sectionTop: position.sectionTop + margins[index],
+        marginTop: margins[index],
+      })),
+    ),
+    margins,
+  )
+})
+
+test('clears alignment when activity columns stack or only one section is visible', () => {
+  assert.deepEqual(
+    alignedActivitySectionMargins([
+      { activityTop: 100, sectionTop: 3480.9609375, marginTop: 172.3359375 },
+      { activityTop: 5000, sectionTop: 8308.625, marginTop: 0 },
+    ]),
+    [0, 0],
+  )
+  assert.deepEqual(
+    alignedActivitySectionMargins([
+      { activityTop: 100, sectionTop: 3480.9609375, marginTop: 172.3359375 },
+    ]),
+    [0],
   )
 })

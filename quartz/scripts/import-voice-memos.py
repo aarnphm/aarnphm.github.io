@@ -20,6 +20,10 @@ RECORDINGS = (
   / 'Library/Group Containers/group.com.apple.VoiceMemos.shared/Recordings'
 )
 REPOSITORY = Path(__file__).resolve().parents[2]
+MEMO_ATTRIBUTE_RULES = (
+  'content/triathlon/memos/**/*.m4a filter=lfs diff=lfs merge=lfs -text',
+  'content/triathlon/memos/**/*.peaks.json -filter diff merge text',
+)
 
 
 @dataclass(frozen=True)
@@ -34,6 +38,33 @@ class Recording:
 def sha256(path: Path) -> str:
   with path.open('rb') as source:
     return hashlib.file_digest(source, 'sha256').hexdigest()
+
+
+def update_memo_attributes(text: str) -> str:
+  lines = []
+  for line in text.splitlines(keepends=True):
+    fields = line.split()
+    if line.strip() in MEMO_ATTRIBUTE_RULES:
+      continue
+    if (
+      fields
+      and fields[0].lstrip('/').startswith('content/triathlon/memos/')
+      and set(fields[1:]) == {'filter=lfs', 'diff=lfs', 'merge=lfs', '-text'}
+    ):
+      continue
+    lines.append(line)
+  preserved = ''.join(lines)
+  if preserved and not preserved.endswith('\n'):
+    preserved += '\n'
+  return preserved + '\n'.join(MEMO_ATTRIBUTE_RULES) + '\n'
+
+
+def ensure_memo_attributes(repository: Path) -> None:
+  path = repository / '.gitattributes'
+  current = path.read_text() if path.exists() else ''
+  updated = update_memo_attributes(current)
+  if updated != current:
+    path.write_text(updated)
 
 
 def probe(path: Path) -> Recording:
@@ -335,6 +366,7 @@ def main() -> None:
     raise ValueError(
       'stream.md changed during import; rerun to apply embeds to the latest text'
     )
+  ensure_memo_attributes(args.repo)
   if updated != current:
     stream.write_text(updated)
 

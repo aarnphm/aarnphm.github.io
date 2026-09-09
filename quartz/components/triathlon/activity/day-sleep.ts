@@ -10,6 +10,7 @@ type DaySleepSeries = {
   values: readonly (number | null)[]
   startMinute: number
   intervalSeconds: number
+  offsetsS?: readonly number[]
   label: DaySleepValueLabel
   geometry: DaySleepGeometry
 }
@@ -32,7 +33,7 @@ export const decodeDaySleepValues = (encoded: string): (number | null)[] | null 
 }
 
 export const daySleepUnitLabel =
-  (unit: 'ms' | 'bpm'): DaySleepValueLabel =>
+  (unit: 'ms' | 'bpm' | 'brpm'): DaySleepValueLabel =>
   value =>
     `${value == null ? '—' : Math.round(value)} ${unit}`
 
@@ -42,11 +43,42 @@ export const daySleepReadout = (
   values: readonly (number | null)[],
   index: number,
   label: DaySleepValueLabel,
+  offsetsS?: readonly number[],
 ): string => {
   const boundedIndex = Math.min(Math.max(Math.round(index), 0), values.length - 1)
-  const time = wallClock(startMinute + (boundedIndex * intervalSeconds) / 60)
+  const minute = startMinute + (offsetsS?.[boundedIndex] ?? boundedIndex * intervalSeconds) / 60
+  const time = wallClock(offsetsS ? Math.floor(minute) : minute)
   return `${time} · ${label(values[boundedIndex])}`
 }
+
+export const decodeDaySleepTimes = (encoded: string, count: number): number[] | null => {
+  const offsets = encoded.split(',').map(value => (value === '' ? Number.NaN : Number(value)))
+  return offsets.length === count &&
+    offsets[0] === 0 &&
+    offsets.every(
+      (value, index) => Number.isFinite(value) && (index === 0 || value > offsets[index - 1]),
+    )
+    ? offsets
+    : null
+}
+
+export const daySleepTimeGeometry = (
+  offsetsS: readonly number[],
+  width: number,
+): DaySleepGeometry => ({
+  x: index => (offsetsS[index] / offsetsS[offsetsS.length - 1]) * width,
+  indexAt: fraction => {
+    const target = Math.min(Math.max(fraction, 0), 1) * offsetsS[offsetsS.length - 1]
+    let low = 0
+    let high = offsetsS.length - 1
+    while (low < high) {
+      const middle = Math.floor((low + high) / 2)
+      if (offsetsS[middle] < target) low = middle + 1
+      else high = middle
+    }
+    return low > 0 && target - offsetsS[low - 1] <= offsetsS[low] - target ? low - 1 : low
+  },
+})
 
 const pointGeometry = (count: number, width: number): DaySleepGeometry => ({
   x: index => (index / (count - 1)) * width,
@@ -64,21 +96,38 @@ const seriesFromElement = (wrap: HTMLElement, locale: () => Locale): DaySleepSer
     : null
   const startTs = wrap.dataset.daySleepStart
   const intervalSeconds = finitePositive(wrap.dataset.daySleepInterval)
+  const offsetsS =
+    wrap.dataset.daySleepTimes && values
+      ? decodeDaySleepTimes(wrap.dataset.daySleepTimes, values.length)
+      : undefined
   const width = finitePositive(wrap.dataset.daySleepWidth)
-  const startMinute = startTs ? wallMin(startTs) : Number.NaN
-  if (!values || !Number.isFinite(startMinute) || intervalSeconds == null || width == null)
+  const startMinute = startTs
+    ? wallMin(startTs) + (offsetsS ? Number(startTs.slice(17, 19)) / 60 : 0)
+    : Number.NaN
+  if (
+    !values ||
+    !Number.isFinite(startMinute) ||
+    offsetsS === null ||
+    (intervalSeconds == null && !offsetsS) ||
+    width == null
+  )
     return null
   const unit = wrap.dataset.daySleepUnit
   const stages = wrap.dataset.daySleepSeries === 'stages'
-  if (!stages && unit !== 'ms' && unit !== 'bpm') return null
+  if (!stages && unit !== 'ms' && unit !== 'bpm' && unit !== 'brpm') return null
   return {
     values,
     startMinute,
-    intervalSeconds,
+    intervalSeconds: intervalSeconds ?? 0,
+    offsetsS,
     label: stages
       ? value => daySleepStageLabel(locale(), value)
-      : daySleepUnitLabel(unit === 'ms' ? 'ms' : 'bpm'),
-    geometry: stages ? bandGeometry(values.length, width) : pointGeometry(values.length, width),
+      : daySleepUnitLabel(unit === 'ms' ? 'ms' : unit === 'brpm' ? 'brpm' : 'bpm'),
+    geometry: stages
+      ? bandGeometry(values.length, width)
+      : offsetsS
+        ? daySleepTimeGeometry(offsetsS, width)
+        : pointGeometry(values.length, width),
   }
 }
 
@@ -105,6 +154,7 @@ const mountDaySleepChart = (wrap: HTMLElement, locale: () => Locale): (() => voi
       series.values,
       currentIndex,
       series.label,
+      series.offsetsS,
     )
     cursor.setAttribute('x1', x.toFixed(2))
     cursor.setAttribute('x2', x.toFixed(2))

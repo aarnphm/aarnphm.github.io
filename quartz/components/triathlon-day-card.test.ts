@@ -17,6 +17,7 @@ import {
   triathlonEmbedAnchorFromSource,
   triathlonEmbedDayHref,
 } from './triathlon-day-card'
+import { dayExtrasFromDataset } from './triathlon/activity/embed-settings'
 
 const SIMPLIFIED_SETTINGS_VALUE = serializeTriathlonTraceSettings(
   TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified,
@@ -96,6 +97,26 @@ test('parses dated analytics embeds with settings and activity filters', () => {
     excludedActivityIds: ['19771722076'],
     analytics: true,
   })
+})
+
+test('carries focused analytics from its source anchor through hydration', () => {
+  const anchor = triathlonEmbedAnchorFromSource(
+    '["2026-09-08","analytics","settingsdisplayfocused"]',
+    '![[triathlon#2026-09-08#analytics#settings=display:focused]]',
+  )
+  assert.deepEqual(anchor, { date: '2026-09-08', analytics: true, settings: { focused: true } })
+  assert.deepEqual(
+    triathlonEmbedAnchor('["2026-09-08","analytics","settings=display:focused"]'),
+    anchor,
+  )
+  assert.ok(anchor && 'date' in anchor)
+  const props = triathlonDayProps(anchor, anchor.date)
+  const extras = dayExtrasFromDataset({
+    triathlonSettings: props['data-triathlon-settings'],
+    triathlonAnalytics: props['data-triathlon-analytics'],
+  })
+  assert.deepEqual(extras.settings, { focused: true })
+  assert.equal(extras.analytics, true)
 })
 
 test('rejects malformed triathlon embed options', () => {

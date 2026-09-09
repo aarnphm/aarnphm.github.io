@@ -9,6 +9,8 @@ import type {
   GarminFitTrainingEffect,
   GarminGearShift,
   GarminRunWalkData,
+  GarminRunningLactateThreshold,
+  GarminSleepSummary,
   GarminSwimData,
   GarminStreams,
   GarminVo2Day,
@@ -20,6 +22,8 @@ import {
   garminConnectActivityStartDate,
   garminConnectClimbSegments,
   garminConnectRunWalk,
+  garminConnectRunningLactateThreshold,
+  garminConnectSleep,
   garminConnectStreams,
   garminConnectVo2,
   garminConnectWeightSamples,
@@ -47,7 +51,7 @@ import {
 import { joinSegments, QUARTZ } from '../util/path'
 import { syncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
-import { isRecord, type UnknownRecord } from '../util/type-guards'
+import { isRecord, readString, type UnknownRecord } from '../util/type-guards'
 
 const CACHE_VERSION = 14
 const SWIM_CACHE_VERSION = 13
@@ -340,12 +344,94 @@ function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+async function fetchRunningLactateThreshold(
+  session: GarminConnectSession,
+  base: string,
+): Promise<GarminRunningLactateThreshold | null> {
+  return garminConnectRunningLactateThreshold(
+    await fetchGarminJson(session, base, '/biometric-service/biometric/latestLactateThreshold'),
+  )
+}
+
+export interface GarminSleepFetchResult {
+  sleep: Record<string, GarminSleepSummary>
+  fetchedDays: number
+  failedDays: string[]
+}
+
+export async function fetchGarminSleepRange(
+  session: GarminConnectSession,
+  base: string,
+  previous: Readonly<Record<string, GarminSleepSummary>>,
+  start: string,
+  end: string,
+  delayMs: number,
+): Promise<GarminSleepFetchResult> {
+  const profile = await fetchGarminJson(session, base, '/userprofile-service/socialProfile')
+  const displayName = isRecord(profile) ? readString(profile, 'displayName') : undefined
+  if (!displayName) throw new Error('Garmin profile omitted displayName')
+  const summaries: Record<string, GarminSleepSummary> = { ...previous }
+  let fetchedDays = 0
+  const failedDays: string[] = []
+  for (let day = start; day <= end; day = shiftIsoDay(day, 1)) {
+    try {
+      const raw = await fetchGarminJson(
+        session,
+        base,
+        `/wellness-service/wellness/dailySleepData/${encodeURIComponent(displayName)}`,
+        new URLSearchParams({ date: day, nonSleepBufferMinutes: '0' }),
+      )
+      if (!isRecord(raw) || (raw.dailySleepDTO !== null && !isRecord(raw.dailySleepDTO)))
+        throw new Error('Garmin sleep response omitted a valid dailySleepDTO')
+      const summary = garminConnectSleep(raw, day)
+      if (summary) summaries[day] = summary
+      else delete summaries[day]
+      fetchedDays++
+    } catch (error) {
+      failedDays.push(day)
+      console.warn(
+        `[garmin] sleep ${day} failed: ${error instanceof Error ? error.message : error}`,
+      )
+    }
+    if (delayMs > 0 && day < end) await sleep(delayMs)
+  }
+  return {
+    sleep: Object.fromEntries(
+      Object.entries(summaries).sort(([left], [right]) => left.localeCompare(right)),
+    ),
+    fetchedDays,
+    failedDays,
+  }
+}
+
 async function main(): Promise<void> {
+  const flags = process.argv.slice(2)
+  for (const flag of flags)
+    if (flag !== '--sleep-only' && flag !== '--lactate-threshold-only')
+      throw new Error(`unknown flag ${flag}`)
+  const sleepOnly = flags.includes('--sleep-only')
   const previous = await readCache()
   const session = await readGarminConnectSession()
   const base = cleanGarminConnectBaseUrl(
     process.env.GARMIN_CONNECT_BASE_URL?.trim() || DEFAULT_GARMIN_CONNECT_BASE,
   )
+  if (process.argv.includes('--lactate-threshold-only')) {
+    if (!previous) throw new Error('Run a Garmin sync before refreshing lactate threshold only')
+    const runningLactateThreshold = await fetchRunningLactateThreshold(session, base)
+    const latest = await readCache()
+    if (!latest) throw new Error('Garmin cache disappeared during lactate threshold refresh')
+    await fs.writeFile(
+      cacheFile,
+      JSON.stringify(
+        { ...latest, runningLactateThreshold, lactateThresholdLastSync: Date.now() },
+        null,
+        2,
+      ),
+    )
+    await refreshTriathlonRouteSource()
+    console.log('[garmin] refreshed running lactate threshold', runningLactateThreshold)
+    return
+  }
   const pageSize = Math.max(1, envNumber('GARMIN_CONNECT_PAGE_SIZE', DEFAULT_PAGE_SIZE))
   const delayMs = envNumber('GARMIN_CONNECT_DELAY_MS', DEFAULT_DELAY_MS)
   const maxActivities = envNumber('GARMIN_CONNECT_MAX_ACTIVITIES', 0)
@@ -354,6 +440,51 @@ async function main(): Promise<void> {
   const start = await startDate(previous, refreshWindowDays)
   const end = endDate()
   if (start > end) throw new Error(`Garmin sync start ${start} is after end ${end}`)
+
+  const sleepStart =
+    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
+    cleanDay(process.env.GARMIN_CONNECT_SINCE) ??
+    shiftIsoDay(end, -refreshWindowDays)
+  let overnightSleep = previous?.sleep ?? {}
+  let sleepLastSync = previous?.sleepLastSync
+  let sleepFailedDays: string[] = []
+  console.log(`[garmin] fetching Garmin Connect sleep ${sleepStart} -> ${end}`)
+  try {
+    const result = await fetchGarminSleepRange(
+      session,
+      base,
+      overnightSleep,
+      sleepStart,
+      end,
+      delayMs,
+    )
+    overnightSleep = result.sleep
+    sleepFailedDays = result.failedDays
+    if (result.fetchedDays > 0) sleepLastSync = Date.now()
+    console.log(
+      `[garmin] sleep: ${result.fetchedDays} responses, ${result.failedDays.length} failed, ${Object.keys(overnightSleep).length} nights with measurements`,
+    )
+    if (sleepOnly && result.fetchedDays === 0) throw new Error('No Garmin sleep dates fetched')
+  } catch (error) {
+    if (sleepOnly) throw error
+    console.warn(`[garmin] sleep fetch failed: ${error instanceof Error ? error.message : error}`)
+  }
+  if (sleepOnly) {
+    const latest = await readCache()
+    if (previous && !latest) throw new Error('Garmin cache disappeared during sleep refresh')
+    const cache: GarminCache = {
+      ...(latest ?? { version: CACHE_VERSION, lastSync: 0, activities: {} }),
+      sleep: overnightSleep,
+      sleepLastSync,
+    }
+    await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
+    await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+    await refreshTriathlonRouteSource()
+    console.log(`[garmin] wrote ${Object.keys(overnightSleep).length} sleep nights -> ${cacheFile}`)
+    if (sleepFailedDays.length > 0)
+      throw new Error(`Garmin sleep refresh incomplete for ${sleepFailedDays.join(', ')}`)
+    return
+  }
 
   console.log(`[garmin] fetching Garmin Connect activities ${start} -> ${end}`)
   const list = await fetchActivities(session, base, start, end, pageSize, maxActivities)
@@ -519,6 +650,17 @@ async function main(): Promise<void> {
     if (delayMs > 0) await sleep(delayMs)
   }
 
+  let lactateThresholdOutcome: GarminFetchOutcome<GarminRunningLactateThreshold | null> = {
+    ok: false,
+  }
+  try {
+    lactateThresholdOutcome = { ok: true, value: await fetchRunningLactateThreshold(session, base) }
+  } catch (err) {
+    console.warn(
+      `[garmin] lactate threshold fetch failed: ${err instanceof Error ? err.message : err}`,
+    )
+  }
+
   let vo2Outcome: GarminFetchOutcome<Record<string, GarminVo2Day>> = { ok: false }
   try {
     const raw = await fetchGarminJson(
@@ -617,7 +759,14 @@ async function main(): Promise<void> {
     climbs: sortedClimbs,
     runWalks: sortedRunWalks,
     vo2max,
+    runningLactateThreshold: resolveGarminFetch(
+      lactateThresholdOutcome,
+      previous?.runningLactateThreshold,
+    ),
+    lactateThresholdLastSync: lactateThresholdOutcome.ok ? now : previous?.lactateThresholdLastSync,
     weight,
+    sleep: overnightSleep,
+    sleepLastSync,
   }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
 import test from 'node:test'
 import { buildAnalytics } from '../../../plugins/stores/analytics'
+import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
 import { STRAVA_DETAIL_INDEX_KIND } from '../../../util/strava-detail'
 import { buildTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { isActivityDetail, readDetailPayload } from './data'
@@ -145,6 +146,30 @@ const environmentSample = (elapsedS: number, distanceKm: number): Record<string,
   yawDeg: 0,
 })
 
+test('accepts synced Wahoo provenance without a local FIT path', () => {
+  const wahoo = {
+    activityId: 'wahoo:495060543',
+    fitPath: null,
+    sha256: 'a'.repeat(64),
+    sourceDevice: 'ELEMNT BOLT',
+    startOffsetS: 0,
+    distanceM: 48_513.64,
+    metrics: { ...emptyWahooMetrics(), intensityFactor: 0, trainingStressScore: 0 },
+    summarySources: { npWatts: 'wahoo' },
+    streamFallback: 'strava',
+  }
+  const value = { ...detail(20092789179, '2026-09-08', 'bike'), wahoo }
+  assert.equal(isActivityDetail(JSON.parse(JSON.stringify(value))), true)
+  assert.equal(
+    isActivityDetail({ ...value, wahoo: { ...wahoo, fitPath: 'triathlon/wahoo/ride.fit' } }),
+    true,
+  )
+  assert.equal(
+    isActivityDetail({ ...value, wahoo: { ...wahoo, fitPath: '/private/ride.fit' } }),
+    false,
+  )
+})
+
 test('validates public analysis contracts while preserving numeric zero', () => {
   const value = detail(9, '2026-08-09', 'bike')
   value.deviceTemperatureC = 0
@@ -158,6 +183,27 @@ test('validates public analysis contracts while preserving numeric zero', () => 
     },
   }
   assert.equal(isActivityDetail(value), true)
+})
+
+test('validates manual activity moves and their per-side repetition contract', () => {
+  const value = detail(20093785889, '2026-09-08', 'treatment')
+  const entries = [
+    { name: 'Roll Eagle', sets: [{ repetitions: 4, perSide: true }] },
+    { name: 'Roll Center', sets: [{ repetitions: 4, perSide: false }] },
+  ]
+  value.moves = { source: 'manual', entries }
+  assert.equal(isActivityDetail(value), true)
+  assert.equal(
+    isActivityDetail({
+      ...value,
+      moves: {
+        source: 'manual',
+        entries: [{ name: 'Roll Eagle', sets: [{ repetitions: 0, perSide: true }] }],
+      },
+    }),
+    false,
+  )
+  assert.equal(isActivityDetail({ ...value, moves: { source: 'strava', entries } }), false)
 })
 
 test('validates closed activity devices and independent thermal provenance', () => {

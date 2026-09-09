@@ -1,5 +1,5 @@
-export const alignedTrainingEffectMargins = (
-  positions: readonly { activityTop: number; effectTop: number; marginTop: number }[],
+export const alignedActivitySectionMargins = (
+  positions: readonly { activityTop: number; sectionTop: number; marginTop: number }[],
 ): number[] => {
   const rows: { top: number; indices: number[] }[] = []
   for (const [index, position] of positions.entries()) {
@@ -11,12 +11,12 @@ export const alignedTrainingEffectMargins = (
   for (const row of rows) {
     if (row.indices.length < 2) continue
     const targetTop = Math.max(
-      ...row.indices.map(index => positions[index].effectTop - positions[index].marginTop),
+      ...row.indices.map(index => positions[index].sectionTop - positions[index].marginTop),
     )
     for (const index of row.indices)
       margins[index] = Math.max(
         0,
-        targetTop - (positions[index].effectTop - positions[index].marginTop),
+        targetTop - (positions[index].sectionTop - positions[index].marginTop),
       )
   }
   return margins

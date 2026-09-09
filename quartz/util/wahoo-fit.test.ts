@@ -17,7 +17,15 @@ import { decodeWahooFit, wahooFitSha256 } from './wahoo-fit'
 const START = new Date('2026-08-27T12:00:00.000Z')
 const SEMICIRCLES_PER_DEGREE = 2 ** 31 / 180
 
-function activityFit(duplicateThermal = false): Uint8Array {
+function activityFit({
+  duplicateThermal = false,
+  sensors = [],
+  missingThermal = false,
+}: {
+  duplicateThermal?: boolean
+  sensors?: DeviceInfoMesg[]
+  missingThermal?: boolean
+} = {}): Uint8Array {
   const encoder = new Encoder()
   const developer: DeveloperDataIdMesg = {
     developerDataIndex: 0,
@@ -118,6 +126,7 @@ function activityFit(duplicateThermal = false): Uint8Array {
     productName: 'ELEMNT BOLT',
   }
   encoder.onMesg(Profile.MesgNum.DEVICE_INFO, device)
+  for (const sensor of sensors) encoder.onMesg(Profile.MesgNum.DEVICE_INFO, sensor)
   const records: RecordMesg[] = [
     {
       timestamp: START,
@@ -168,6 +177,13 @@ function activityFit(duplicateThermal = false): Uint8Array {
     if (duplicateThermal) {
       record.totalHemoglobinConc = record.coreTemperature! + 0.01
       record.saturatedHemoglobinPercent = record === records[0] ? 33.4 : 33.5
+    }
+    if (missingThermal) {
+      delete record.coreTemperature
+      delete record.developerFields?.[6]
+      delete record.developerFields?.[7]
+      record.totalHemoglobinConc = 0
+      record.saturatedHemoglobinPercent = 37
     }
     encoder.onMesg(Profile.MesgNum.RECORD, record)
   }
@@ -262,11 +278,48 @@ function activityFit(duplicateThermal = false): Uint8Array {
 }
 
 test('does not mistake duplicate CORE broadcasts for muscle oxygen', () => {
-  const { streams } = decodeWahooFit(activityFit(true))
+  const { streams } = decodeWahooFit(activityFit({ duplicateThermal: true }))
   assert.deepEqual(streams.muscleOxygenPercent, [null, null])
   assert.deepEqual(streams.totalHemoglobinConcentration, [null, null])
   assert.deepEqual(streams.coreTemperatureC, [37.16, 37.19])
   assert.deepEqual(streams.skinTemperatureC, [33.4, 33.5])
+})
+
+const coreSensors: DeviceInfoMesg[] = [
+  {
+    deviceIndex: 1,
+    productName: 'Body Temp',
+    sourceType: 'antplus',
+    deviceType: 127,
+    antDeviceNumber: 16248,
+  },
+  {
+    deviceIndex: 2,
+    productName: 'Muscle Oxygen',
+    sourceType: 'antplus',
+    deviceType: 31,
+    antDeviceNumber: 16248,
+  },
+]
+
+test('suppresses CORE oxygen-profile values when native thermal recording is missing', () => {
+  const { streams } = decodeWahooFit(activityFit({ sensors: coreSensors, missingThermal: true }))
+  assert.deepEqual(streams.muscleOxygenPercent, [null, null])
+  assert.deepEqual(streams.totalHemoglobinConcentration, [null, null])
+  assert.deepEqual(streams.coreTemperatureC, [null, null])
+  assert.deepEqual(streams.skinTemperatureC, [null, null])
+  assert.deepEqual(streams.heatStrainIndex, [null, null])
+})
+
+test('preserves oxygen measurements when a separate oxygen sensor is present', () => {
+  const { streams } = decodeWahooFit(
+    activityFit({
+      sensors: [...coreSensors, { ...coreSensors[1], deviceIndex: 3, antDeviceNumber: 1234 }],
+    }),
+  )
+  assert.deepEqual(streams.muscleOxygenPercent, [62, 58])
+  assert.deepEqual(streams.totalHemoglobinConcentration, [12.1, 12.3])
+  assert.deepEqual(streams.coreTemperatureC, [37.16, 37.19])
 })
 
 test('decodes Wahoo FIT summary, device, aligned streams, and balance', () => {

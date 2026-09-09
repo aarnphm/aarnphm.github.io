@@ -10,6 +10,7 @@ import type { OuraCache } from '../plugins/stores/oura'
 import type {
   ActivityTrackingEntry,
   ManualFuelingEntry,
+  ManualMovesEntry,
   ManualSaunaEntry,
   ManualStrengthEntry,
 } from '../plugins/stores/tracking'
@@ -30,6 +31,7 @@ import {
 import {
   applyActivityTracking,
   applyManualFueling,
+  applyManualMoves,
   applyManualSauna,
   applyManualStrength,
   buildPayload,
@@ -807,6 +809,7 @@ export interface ManualActivityTracking {
   readonly activities: readonly ActivityTrackingEntry[]
   readonly fueling: readonly ManualFuelingEntry[]
   readonly strength: readonly ManualStrengthEntry[]
+  readonly moves?: readonly ManualMovesEntry[]
   readonly sauna: readonly ManualSaunaEntry[]
 }
 
@@ -818,7 +821,7 @@ export function applyManualActivityTracking(
   garmin: GarminCache | null,
 ): void {
   applyManualFueling(payload, tracking?.fueling ?? [])
-  applyManualStrength(payload, tracking?.strength ?? [])
+  applyManualMoves(payload, tracking?.moves ?? [])
   applyManualSauna(
     payload,
     tracking?.sauna ?? [],
@@ -827,6 +830,7 @@ export function applyManualActivityTracking(
     weather,
     garmin,
   )
+  applyManualStrength(payload, tracking?.strength ?? [])
 }
 
 const payloadMemo = new Map<string, LoadedStravaPayload>()
@@ -842,6 +846,7 @@ export function loadStravaPayloadSync(
     activities: manualTracking?.activities ?? [],
     fueling: manualTracking?.fueling ?? [],
     strength: manualTracking?.strength ?? [],
+    moves: manualTracking?.moves ?? [],
     sauna: manualTracking?.sauna ?? [],
     analytics: analyticsInputs,
   })

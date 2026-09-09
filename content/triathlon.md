@@ -220,7 +220,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-07 19:48:36 GMT-04:00
+modified: 2026-09-08 20:08:13 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1382,6 +1382,41 @@ exercise: Bird Dog | 40s | 40s | 40s | 40s
 exercise: Hip Flexor, Calf, and Standing Quad Stretch Flow | 2m
 ```
 
+```tracking
+activity: 20092789179
+garmin: 24288441761
+```
+
+```tracking
+date: 2026-09-08
+activity: 20093785889
+move: Roll Eagle | 4 reps per side
+move: Roll Scorpion | 4 reps per side
+move: Roll Center | 4 reps
+move: Roll Hurdler | 4 reps per side
+move: Scissors Frontal | 4 reps per side
+move: Scissor Sagittal | 4 reps per side
+move: Leg Swings Frontal | 4 reps per side
+move: Leg Swings Sagittal | 4 reps per side
+```
+
+```tracking
+title: Guided All Round, Reset
+date: 2026-09-08
+time: 18:00
+duration: 75 mins
+activity: sauna
+temperature: 160F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.6
+strava: 20094989479
+garmin: 24290193820
+exercise: Glute Bridge | 30s | 30s
+exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
+exercise: Single-Leg Glute Bridge to Abductor | 40s | 40s | 40s | 40s
+```
+
 <!-- training plan start
 meta: IRONMAN Lanzarote
 date: 2026-09-01
@@ -1457,9 +1492,17 @@ The `/triathlon` route family is generated from the same enriched activity, heal
 
 #### agent navigation
 
-Agents should use `/triathlon.md` as the route-family index and select the narrowest document that answers the task. Request a canonical route with `Accept: text/markdown` or append `.md`, then follow the route-local data pointers. Use a fixed document for one domain, `/triathlon/feed.md` for the complete activity history, `/triathlon/on/<YYYY>/<MM>/<DD>.md` for a known local date, `/triathlon/data` for chronological cross-route analysis, and `/static/strava-detail.json` to locate the bounded shard containing complete activity payloads. Open the canonical HTML route when the task requires rendered-state or interaction evidence because the Markdown sibling describes the contract without reproducing hydrated browser state.
+Agents should use `/triathlon.md` as the route-family index and select the narrowest document that answers the task. Request a canonical route with `Accept: text/markdown` or append `.md`, then follow the route-local data pointers.
 
-<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> opens the triathlon command palette. <kbd>/</kbd> focuses or blurs the active search on analytics, maps, training, and feed. On a fixed subpage, <kbd>g</kbd> followed within one second by <kbd>g</kbd>, <kbd>c</kbd>, <kbd>a</kbd>, <kbd>m</kbd>, <kbd>t</kbd>/<kbd>r</kbd>, <kbd>f</kbd>, <kbd>o</kbd>, or <kbd>h</kbd> navigates to tools, calculator, analytics, maps, training, feed, the date index, or `/triathlon`, respectively. On `/triathlon`, <kbd>g</kbd> followed by <kbd>a</kbd>, <kbd>c</kbd>, <kbd>m</kbd>, <kbd>t</kbd>, <kbd>g</kbd>, <kbd>p</kbd>, or <kbd>s</kbd> opens analytics, calculator, maps, training, gear, pace, or the summary. <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> opens tools anywhere in the route family, while <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>\</kbd> returns a fixed subpage to `/triathlon` and `/triathlon` to the site root. <kbd>j</kbd>/<kbd>k</kbd> moves through feed and date-tree rows, and the calculator uses <kbd>r</kbd>, <kbd>c</kbd>, and <kbd>t</kbd> for race, gear ratios, and tire pressure. `?tri-debug=performance` opens the performance panel on every fixed, archive, and day page; <kbd>Option</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> toggles it. The panel reports FPS, frame p95, over-budget and long-frame counts, blocked time, layout shift, cursor/timeline/popover samples, scroll rate, heap, DOM size, and worst script/event attribution.
+- Use a fixed document for one domain, `/triathlon/feed.md` for the complete activity history,
+- `/triathlon/on/<YYYY>/<MM>/<DD>.md` for a known local date, `/triathlon/data` for chronological cross-route analysis, and `/static/strava-detail.json` to locate the bounded shard containing complete activity payloads.
+- Open the canonical HTML route when the task requires rendered-state or interaction evidence because the Markdown sibling describes the contract without reproducing hydrated browser state.
+- <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> opens the triathlon command palette.
+- <kbd>/</kbd> focuses or blurs the active search on analytics, maps, training, and feed. On a fixed subpage, <kbd>g</kbd> followed within one second by <kbd>g</kbd>, <kbd>c</kbd>, <kbd>a</kbd>, <kbd>m</kbd>, <kbd>t</kbd>/<kbd>r</kbd>, <kbd>f</kbd>, <kbd>o</kbd>, or <kbd>h</kbd> navigates to tools, calculator, analytics, maps, training, feed, the date index, or `/triathlon`, respectively.
+- On `/triathlon`, <kbd>g</kbd> followed by <kbd>a</kbd>, <kbd>c</kbd>, <kbd>m</kbd>, <kbd>t</kbd>, <kbd>g</kbd>, <kbd>p</kbd>, or <kbd>s</kbd> opens analytics, calculator, maps, training, gear, pace, or the summary.
+- <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> opens tools anywhere in the route family, while <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>\\</kbd> returns a fixed subpage to `/triathlon` and `/triathlon` to the site root.
+- <kbd>j</kbd>/<kbd>k</kbd> moves through feed and date-tree rows, and the calculator uses <kbd>r</kbd>, <kbd>c</kbd>, and <kbd>t</kbd> for race, gear ratios, and tire pressure.
+- `?tri-debug=performance` opens the performance panel on every fixed, archive, and day page; <kbd>Option</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> toggles it. The panel reports FPS, frame p95, over-budget and long-frame counts, blocked time, layout shift, cursor/timeline/popover samples, scroll rate, heap, DOM size, and worst script/event attribution.
 
 Every document route has a Markdown sibling. `/triathlon.md` is this source note. The generated fixed, year/month archive, and day pages use the same pathname with `.md` appended. A `GET` or `HEAD` request from a recognized agent user agent, or one accepting `text/markdown` with positive quality, receives the Markdown sibling automatically. Ordinary browser requests receive HTML. Explicit `.md` requests stay explicit. Generated Markdown is route-specific:
 
@@ -1769,7 +1812,7 @@ p_r
 \left(p_{0,r}c_vc_rc_t\right).
 $$
 
-All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. The Cervélo Soloist defaults to Reserve 40|44 Road, with a $25.4\ \mathrm{mm}$ front and $25\ \mathrm{mm}$ rear internal width. The HUNT 54_58 Aerodynamicist UD Carbon Spoke wheelset uses a $54.5\ \mathrm{mm}$ front depth, $58\ \mathrm{mm}$ rear depth, and hooked $22\ \mathrm{mm}$ internal width on both rims; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Measured front and rear tire widths are independent $20$–$65\ \mathrm{mm}$ inputs, persisted locally, with $w_f=32\ \mathrm{mm}$ and $w_r=28\ \mathrm{mm}$ as the defaults. Internal rim width is compatibility metadata rather than a second casing-width input, so choosing a custom internal width does not invent casing growth. Reserve publishes a $28\ \mathrm{mm}$ minimum for 40|44 Road and $29\ \mathrm{mm}$ for 42|49 TA, so the calculator warns only when a selected tire sits below its wheelset's published range.
+All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. The Cervélo Soloist defaults to Reserve 40|44 Road, with a $25.4\ \mathrm{mm}$ front and $25\ \mathrm{mm}$ rear internal width. The HUNT 54_58 Aerodynamicist UD Carbon Spoke wheelset uses a $54.5\ \mathrm{mm}$ front depth, $58\ \mathrm{mm}$ rear depth, and hooked $22\ \mathrm{mm}$ internal width on both rims; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Measured front and rear tire widths are independent $20$–$65\ \mathrm{mm}$ inputs, persisted locally, with $w_f=32\ \mathrm{mm}$ and $w_r=28\ \mathrm{mm}$ as the defaults. Advanced width mode exposes the two axle inputs, including setups such as $31/30\ \mathrm{mm}$. Turning advanced mode off uses the current front width for both tires; subsequent shared-width edits update both axles. The mode persists locally, and existing unequal saved widths open in advanced mode. Internal rim width is compatibility metadata rather than a second casing-width input, so choosing a custom internal width does not invent casing growth. Reserve publishes a $28\ \mathrm{mm}$ minimum for 40|44 Road and $29\ \mathrm{mm}$ for 42|49 TA, so the calculator warns only when a selected tire sits below its wheelset's published range.
 
 The [Pirelli tire-pressure tool](https://www.pirelli.com/tires/en-us/bike/pressure-tool) remains the manufacturer check for the selected Pirelli casing, tube or tubeless construction, and rim. Respect the lower of the tire and rim maximum pressures.[^pirelli-pressure] Pirelli distinguishes tubetype from tubeless and uses nominal tire width with internal rim width; it does not offer a TPU-specific selection. Its recommendations can therefore differ from this measured-width SILCA model.
 
@@ -3064,6 +3107,10 @@ $$
 $$
 
 ### recovery
+
+Oura supplies sleep duration, stages, scores, HRV, resting heart rate, and the first choice for average respiration. Garmin adds measurements for the same wake-up date through `sleepMetrics`: its respiration average and range, average and minimum Pulse Ox, Body Battery at bedtime and waking, native overnight Body Battery change, average sleep stress, and restless moments. If Oura has no respiration measurement, the displayed average uses Garmin and records `respirationSource: garmin`. Garmin fields retain their own source and do not change Oura's stages or the sleep-debt calculation.
+
+These summaries appear in daily analytics, the `day` feed records, and both server-rendered and interactive sleep views. A Garmin-only night can show its measurements while sleep duration and stages remain unavailable. Missing measurements stay null; zero stress or Body Battery change remains a measured zero. Body Battery endpoints require a sample within five minutes of the corresponding sleep boundary. The Garmin sync refreshes recent nights, and `quartz/scripts/sync-garmin.ts --sleep-only` refreshes only nightly measurements using the existing date-range environment variables.
 
 For samples $x_1,\ldots,x_n$,
 

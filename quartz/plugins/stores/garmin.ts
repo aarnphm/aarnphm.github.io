@@ -213,6 +213,16 @@ export interface GarminVo2Day {
   cycling: number | null
 }
 
+export interface GarminLactateThresholdValue {
+  value: number
+  date: string
+}
+
+export interface GarminRunningLactateThreshold {
+  speedMps: GarminLactateThresholdValue | null
+  heartRateBpm: GarminLactateThresholdValue | null
+}
+
 export interface GarminWeightSample {
   ts: number
   date: string
@@ -222,6 +232,31 @@ export interface GarminWeightSample {
   bodyWaterPct: number | null
   muscleMassKg: number | null
   boneMassKg: number | null
+}
+
+export interface GarminSleepRespirationSample {
+  /** UTC Unix timestamp in milliseconds. */
+  timestamp: number
+  breathsPerMinute: number | null
+}
+
+export interface GarminSleepSummary {
+  source: 'garmin'
+  date: string
+  startTime: string | null
+  endTime: string | null
+  utcOffsetMinutes?: number
+  averageBreathsPerMinute: number | null
+  lowestBreathsPerMinute: number | null
+  highestBreathsPerMinute: number | null
+  averageSpO2: number | null
+  lowestSpO2: number | null
+  bodyBatteryStart: number | null
+  bodyBatteryEnd: number | null
+  bodyBatteryChange: number | null
+  averageStress: number | null
+  restlessMoments: number | null
+  respiration?: GarminSleepRespirationSample[]
 }
 
 export interface GarminCache {
@@ -236,7 +271,11 @@ export interface GarminCache {
   climbs?: Record<string, GarminClimbSegment[]>
   runWalks?: Record<string, GarminRunWalkData>
   vo2max?: Record<string, GarminVo2Day>
+  runningLactateThreshold?: GarminRunningLactateThreshold | null
+  lactateThresholdLastSync?: number
   weight?: GarminWeightSample[]
+  sleep?: Record<string, GarminSleepSummary>
+  sleepLastSync?: number
 }
 
 export function emptyGarminMetrics(): GarminMetrics {

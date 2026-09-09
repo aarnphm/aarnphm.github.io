@@ -3,7 +3,8 @@
 }
 
 .site-cursor,
-.site-cursor-bracket {
+.site-cursor-bracket,
+.site-cursor-chart-line {
   display: none;
 }
 
@@ -159,6 +160,22 @@
   .site-cursor[data-mode='timeline'] .site-cursor-diamond {
     opacity: 0;
     transform: translate(-50%, -50%) rotate(45deg) scale(0.18);
+  }
+
+  .site-cursor[data-mode='chart'] .site-cursor-diamond {
+    opacity: 0;
+  }
+
+  html.site-cursor-ready .site-cursor-chart-line {
+    position: absolute;
+    z-index: 6;
+    top: 0;
+    bottom: 0;
+    display: block;
+    width: 2px;
+    background: #fc4c02;
+    pointer-events: none;
+    transform: translateX(-50%);
   }
 
   .site-cursor[data-mode='timeline'] .site-cursor-line {

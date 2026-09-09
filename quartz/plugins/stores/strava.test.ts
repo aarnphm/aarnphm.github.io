@@ -11,6 +11,7 @@ import {
 import {
   applyActivityTracking,
   applyManualFueling,
+  applyManualMoves,
   applyManualSauna,
   applyManualStrength,
   buildPayload,
@@ -855,6 +856,156 @@ function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   }
 }
 
+test('keeps outdoor Strava streams when linked Garmin has more samples and fills missing channels by UTC', () => {
+  const activity = ride({
+    id: 20092789179,
+    distance: 1_000,
+    movingTime: 10,
+    elapsedTime: 10,
+    averageWatts: 0,
+    weightedAverageWatts: 0,
+    averageHeartrate: 140,
+    averageCadence: 0,
+  })
+  const stream: StravaStreams = {
+    time: [0, 2, 4, 6, 8, 10],
+    latlng: Array.from({ length: 6 }, (_, i) => [43 + i / 10_000, -79]),
+    distance: [0, 200, 400, 600, 800, 1_000],
+    altitude: [80, 81, 82, 83, 84, 85],
+    watts: [0, 100, 200, 300, 0, 100],
+    heartrate: [140, 141, 142, 143, 144, 145],
+  }
+  const cache: StravaRawCache = {
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: 0 },
+    lastSync: 0,
+    lastActivityStart: 0,
+    activities: { [activity.id]: activity },
+    streams: { [activity.id]: stream },
+  }
+  const garminTime = Array.from({ length: 9 }, (_, i) => i)
+  const garmin: GarminCache = {
+    lastSync: 0,
+    activities: {
+      'connect:24288441761': {
+        id: 'connect:24288441761',
+        name: 'Companion recording',
+        sport: 'bike',
+        startDate: '2026-06-07T11:29:57Z',
+        startDateLocal: '2026-06-07T07:29:57',
+        distanceM: 2_000,
+        movingTimeS: 8,
+        elapsedTimeS: 8,
+        sourceDevice: 'Forerunner 970',
+        sourceFile: null,
+        metrics: {
+          ...emptyGarminMetrics(),
+          avgPower: 350,
+          normalizedPower: 400,
+          avgHeartRate: 180,
+          avgCadence: 90,
+        },
+        fueling: emptyGarminFueling(),
+      },
+    },
+    streams: {
+      'connect:24288441761': {
+        time: garminTime,
+        latlng: garminTime.map(i => [44 + i / 10_000, -78]),
+        distance: garminTime.map(i => i * 250),
+        altitude: garminTime.map(() => 300),
+        watts: garminTime.map(() => 400),
+        heartrate: garminTime.map(() => 180),
+        cadence: garminTime.map(i => 80 + i),
+        stamina: garminTime.map(i => 100 - i),
+        potentialStamina: garminTime.map(i => 100 - i / 2),
+      },
+    },
+  }
+  const entry = parseTrackingBlock(null, 'activity: 20092789179\ngarmin: 24288441761')?.activity
+  assert.ok(entry)
+  assert.equal(entry.virtual, false)
+  const before = structuredClone(cache)
+  const tracked = applyActivityTracking(cache, garmin, [entry])
+  assert.deepEqual(tracked?.streams?.[activity.id], {
+    ...stream,
+    cadence: [80, 80, 82, 84, 86, 88],
+  })
+  const payload = buildPayload(
+    cache,
+    null,
+    garmin,
+    undefined,
+    null,
+    250,
+    null,
+    'UTC',
+    null,
+    190,
+    170,
+    undefined,
+    [entry],
+  )
+  const detail = payload.details[activity.id]
+  assert.equal(detail.virtual, false)
+  assert.equal(detail.distanceKm, 1)
+  assert.equal(detail.avgWatts, 0)
+  assert.equal(detail.npWatts, 0)
+  assert.equal(detail.avgCadence, 0)
+  assert.equal(detail.avgHr, 140)
+  assert.deepEqual(
+    detail.route.map(point => point.w),
+    stream.watts,
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.hr),
+    stream.heartrate,
+  )
+  assert.deepEqual(
+    detail.route.map(point => [point.lat, point.lng]),
+    stream.latlng,
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.stamina),
+    [null, 100, 98, 96, 94, 92],
+  )
+  assert.equal(detail.staminaTrace?.source, 'garmin')
+  assert.equal(detail.garmin?.activityId, 'connect:24288441761')
+  const feed = buildDataFeed(
+    tracked,
+    buildAnalytics(tracked, { activityDetails: payload.details, garmin }),
+    { activityDetails: payload.details, garmin },
+  )
+  const rows: unknown[] = feed
+    .trim()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  assert.equal(rows.filter(isRecord).find(row => row.kind === 'activity')?.distanceKm, 1)
+  assert.deepEqual(cache, before)
+
+  const missing = buildPayload(
+    cache,
+    null,
+    garmin,
+    undefined,
+    null,
+    250,
+    null,
+    'UTC',
+    null,
+    190,
+    170,
+    undefined,
+    [{ ...entry, garminActivityId: 999 }],
+  ).details[activity.id]
+  assert.equal(missing.garmin, null)
+  assert.equal(missing.staminaTrace, null)
+  assert.deepEqual(
+    missing.route.map(point => point.w),
+    stream.watts,
+  )
+})
+
 test('merges an explicit virtual route by time and prefers Strava summaries across payload and feed', () => {
   const activity = ride({
     id: 20037941355,
@@ -1413,6 +1564,29 @@ test('manual strength attaches only to the matching strength activity and date',
   })
 })
 
+test('manual moves attach only to the matching activity and date', () => {
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: {
+      101: ride({ name: 'Dynamic stretches', sportType: 'PhysicalTherapy', distance: 0 }),
+    },
+  }
+  const payload = buildPayload(cache, null, null, '2026-06-01')
+  const moves = [
+    { name: 'Roll Eagle', sets: [{ repetitions: 4, perSide: true }] },
+    { name: 'Roll Center', sets: [{ repetitions: 4, perSide: false }] },
+  ]
+
+  applyManualMoves(payload, [{ date: '2026-06-08', activityId: 101, moves }])
+  assert.equal(payload.details['101'].moves, undefined)
+  applyManualMoves(payload, [{ date: '2026-06-07', activityId: 101, moves }])
+  assert.deepEqual(payload.details['101'].moves, { entries: moves, source: 'manual' })
+})
+
 test('projects a manual sauna session with interval-matched Oura heart rate', () => {
   const payload = emptyPayload(1)
   applyManualSauna(
@@ -1744,11 +1918,11 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
   )
   assert.deepEqual(
     detail.route.map(point => point.stamina),
-    [100, 84, 64],
+    [null, 84, 64],
   )
   assert.deepEqual(
     detail.route.map(point => point.potentialStamina),
-    [100, 93.6, 80.8],
+    [null, 93.6, 80.8],
   )
   assert.deepEqual(detail.staminaTrace, {
     source: 'garmin',
@@ -2357,18 +2531,21 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
     { ...wahoo, summitSegments: { 'wahoo:1': [] } },
     196,
   ).details['101']
-  assert.deepEqual(
-    withoutSummit.analysisRanges.filter(range => range.kind === 'climb'),
-    [],
+  assert.equal(
+    withoutSummit.analysisRanges.find(range => range.kind === 'climb')?.source,
+    'garmin-climbpro',
   )
-  assert.deepEqual(withoutSummit.bestEfforts?.climbs, [])
+  assert.equal(withoutSummit.bestEfforts?.climbs[0]?.source, 'garmin-climbpro')
   assert.deepEqual(detail.staminaTrace, {
     source: 'garden-estimate',
     method: 'garden-stamina-v1',
     ftpWatts: 230,
     maxHeartRateBpm: 196,
   })
-  assert.ok(detail.route.every(point => point.stamina != null && point.potentialStamina != null))
+  assert.equal(detail.route[0].stamina, null)
+  assert.ok(
+    detail.route.slice(1).every(point => point.stamina != null && point.potentialStamina != null),
+  )
   assert.deepEqual(
     detail.route.map(point => point.rightPowerPct),
     [47, 48.6, 51.4],
@@ -2397,8 +2574,22 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
     source: 'garmin+wahoo',
   })
   assert.deepEqual(detail.gearShifts, [
-    { elapsedS: 2, distanceKm: 0, frontGearNum: 2, frontTeeth: 54, rearGearNum: 5, rearTeeth: 21 },
-    { elapsedS: 12, distanceKm: 1, frontGearNum: 2, frontTeeth: 54, rearGearNum: 6, rearTeeth: 19 },
+    {
+      elapsedS: 2,
+      distanceKm: 0.2,
+      frontGearNum: 2,
+      frontTeeth: 54,
+      rearGearNum: 5,
+      rearTeeth: 21,
+    },
+    {
+      elapsedS: 12,
+      distanceKm: 1.2,
+      frontGearNum: 2,
+      frontTeeth: 54,
+      rearGearNum: 6,
+      rearTeeth: 19,
+    },
   ])
   assert.deepEqual(detail.cyclingDynamics?.leftPedalSmoothness, [21, 22, 23])
   assert.deepEqual(detail.cyclingDynamics?.rightTorqueEffectiveness, [72, 76, 78])
@@ -2439,6 +2630,86 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
     virtual.analysisRanges.some(
       range => range.kind === 'climb' && range.source === 'garmin-climbpro',
     ),
+  )
+
+  const outdoorGarmin: GarminCache = {
+    ...virtualGarmin,
+    activities: {
+      'connect:123': {
+        ...virtualGarmin.activities['connect:123'],
+        metrics: {
+          ...emptyGarminMetrics(),
+          avgPower: 300,
+          normalizedPower: 310,
+          intensityFactor: 0.9,
+        },
+      },
+    },
+    streams: {
+      'connect:123': {
+        ...sourceStream,
+        stamina: [100, 85, 70],
+        potentialStamina: [100, 90, 80],
+        respiration: [16, 20, 24],
+        coreTemperatureC: [39, 39, 39],
+      },
+    },
+  }
+  const outdoorWahoo: WahooCache = {
+    ...wahoo,
+    activities: {
+      'wahoo:1': {
+        ...wahoo.activities['wahoo:1'],
+        metrics: {
+          ...emptyWahooMetrics(),
+          avgPower: 210,
+          normalizedPower: 234,
+          intensityFactor: 0.814,
+        },
+      },
+    },
+    streams: { 'wahoo:1': { ...wahoo.streams['wahoo:1'], respiration: [null, null, null] } },
+  }
+  const outdoor = buildPayload(
+    cache,
+    null,
+    outdoorGarmin,
+    '2026-06-01',
+    null,
+    230,
+    null,
+    'UTC',
+    outdoorWahoo,
+    196,
+    170,
+    cache.lastSync,
+    [{ activityId: 101, garminActivityId: 123, virtual: false }],
+  ).details['101']
+  assert.equal(outdoor.virtual, false)
+  assert.equal(outdoor.distanceKm, 2)
+  assert.equal(outdoor.avgWatts, 210)
+  assert.equal(outdoor.npWatts, 234)
+  assert.equal(outdoor.garmin?.normalizedPower, 310)
+  assert.equal(outdoor.wahoo?.fitPath, null)
+  assert.equal(outdoor.wahoo?.metrics.intensityFactor, 0.814)
+  assert.equal(outdoor.wahoo?.summarySources.npWatts, 'wahoo')
+  assert.equal(outdoor.calculatedIntensityFactor, null)
+  assert.equal(outdoor.staminaTrace?.source, 'garmin')
+  assert.deepEqual(
+    outdoor.route.map(point => point.stamina),
+    [100, 85, 70],
+  )
+  assert.deepEqual(
+    outdoor.route.map(point => point.resp),
+    [16, 20, 24],
+  )
+  assert.deepEqual(
+    outdoor.route.map(point => point.coreTemperatureC),
+    [37.16, 37.17, 37.19],
+  )
+  assert.deepEqual(
+    outdoor.sources?.map(source => source.provider),
+    ['strava', 'garmin', 'wahoo'],
   )
 })
 
@@ -2675,6 +2946,134 @@ function analysisRange(
     ...overrides,
   }
 }
+
+test('projects Strava lap and segment timestamps when recording indices disagree with exported streams', () => {
+  const time = [0, 25, 87, 480, 481, 707, 709, 1102, 1103, 1126, 1292, 1293, 1558, 1619, 1876]
+  const distance = [
+    0, 56, 251, 1146, 1148, 1609, 1611, 2726, 2727, 2731, 3219, 3220, 3937, 4126, 4708,
+  ]
+  for (const sportType of ['Run', 'Ride', 'Swim', 'Walk']) {
+    const activity = ride({ sportType, distance: 4708, movingTime: 1688, elapsedTime: 1876 })
+    const startDate = (elapsedS: number): string =>
+      new Date(Date.parse(activity.startDate) + elapsedS * 1000).toISOString()
+    const laps = [
+      analysisRange('first', 'Lap 1', {
+        startDate: startDate(0),
+        startIndex: 0,
+        endIndex: 3,
+        elapsedTime: 707,
+        movingTime: 547,
+        distance: 1609,
+      }),
+      analysisRange('second', 'Lap 2', {
+        startDate: startDate(709),
+        startIndex: 4,
+        endIndex: 7,
+        elapsedTime: 583,
+        movingTime: 556,
+        distance: 1609,
+      }),
+      analysisRange('third', 'Lap 3', {
+        startDate: startDate(1293),
+        startIndex: 8,
+        endIndex: 9,
+        elapsedTime: 585,
+        movingTime: 585,
+        distance: 1490,
+      }),
+    ]
+    const segments = [
+      analysisRange('early', 'Sprint', {
+        startDate: startDate(25),
+        startIndex: 3,
+        endIndex: 4,
+        elapsedTime: 62,
+        movingTime: 62,
+        distance: 190,
+      }),
+      analysisRange('late', 'Sprint', {
+        startDate: startDate(1558),
+        startIndex: 8,
+        endIndex: 9,
+        elapsedTime: 61,
+        movingTime: 57,
+        distance: 190,
+      }),
+    ]
+    const cache: StravaRawCache = {
+      version: 3,
+      athleteId: 1,
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: Date.parse('2026-06-08T00:00:00Z'),
+      lastActivityStart: 0,
+      activities: { 101: activity },
+      activityDetails: {
+        101: {
+          calories: null,
+          laps,
+          segmentEfforts: segments,
+          splitsMetric: [],
+          splitsStandard: [],
+        },
+      },
+      streams: {
+        101: {
+          time,
+          distance,
+          latlng: time.map((_, index) => [43 + index * 0.001, -79]),
+          altitude: time.map((_, index) => 80 + index),
+        },
+      },
+    }
+    const original = structuredClone(cache)
+    const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
+    const projectedLaps = detail.analysisRanges.filter(range => range.kind === 'lap')
+    assert.deepEqual(
+      projectedLaps.map(range => [
+        range.id,
+        range.startElapsedS,
+        range.endElapsedS,
+        range.startDistanceKm,
+        range.endDistanceKm,
+        range.durationS,
+        range.movingTimeS,
+      ]),
+      [
+        ['lap:first', 0, 707, 0, 1.609, 707, 547],
+        ['lap:second', 709, 1292, 1.611, 3.219, 583, 556],
+        ['lap:third', 1293, 1876, 3.22, 4.708, 585, 585],
+      ],
+      sportType,
+    )
+    assert.deepEqual(
+      detail.analysisRanges
+        .filter(range => range.kind === 'segment')
+        .map(range => [
+          range.id,
+          range.startElapsedS,
+          range.endElapsedS,
+          range.startDistanceKm,
+          range.endDistanceKm,
+        ]),
+      [
+        ['segment:early', 25, 87, 0.056, 0.251],
+        ['segment:late', 1558, 1619, 3.937, 4.126],
+      ],
+      sportType,
+    )
+    for (const range of detail.analysisRanges) {
+      assert.ok(
+        detail.route.some(point => point.elapsedS === range.startElapsedS),
+        sportType,
+      )
+      assert.ok(
+        detail.route.some(point => point.elapsedS === range.endElapsedS),
+        sportType,
+      )
+    }
+    assert.deepEqual(cache, original)
+  }
+})
 
 test('preserves zero-distance sauna laps, native duration, and exact HR boundary samples', () => {
   const time = Array.from({ length: 501 }, (_, index) => index * 2)

@@ -52,13 +52,9 @@ abstract syntax (EBNF): $E \to \texttt{'}\epsilon\texttt{'} \mid \Sigma \mid E \
 - `Conc(E1, E2)` → $A_1$ and $A_2$; $\epsilon$-transitions from every $q \in A_1.F$ to $A_2.I$; accepting = $A_2.F$
 - `Star(E)` → $A$; $\epsilon$-transitions from every $q \in A.F$ back to $A.I$; accepting = $A.I \cup A.F$
 
-## extending the regex — the recipe
+## choosing the extension boundary
 
-whenever a question says "extend regex with X", do these three moves:
-
-1. **add an AST class**: minimal `__init__` storing children, `__repr__` for display. follow the existing single-assignment-in-init idiom.
-2. **add a case to `RegExToFSA.ToFSA`**: build children via recursive `ToFSA`, then stitch states with $\epsilon$-transitions and `merge` from the notebook.
-3. **extend semantic helpers as needed**: $L(A)$ iterator, `equalRegEx`, or a nullability/derivatives function if the question asks for language equality.
+Read the question's grammar, supplied classes, and tests. A parser extension can lower to existing `Conc`, `Choice`, `Star`, and `ε` nodes. If the exercise requires a distinct AST constructor, implement it and add the corresponding `RegExToFSA.ToFSA` case. Extend semantic helpers only when the new representation reaches them or the question requests them.
 
 ## the specific case: exponentiation $E^n$
 
@@ -143,14 +139,7 @@ three edge cases:
 
 ### which approach does a practice-final question want
 
-read the question text:
-
-- if it says "extend the parser" → approach A (helper + parser change)
-- if it says "extend the regex language" or "add a new construct" → approach B (new class + FSA case)
-- if it shows `class Exp(RegEx): ...` already declared in the notebook → approach B, finish it
-- if it gives an attribute grammar mentioning `repeat(e, n)` → approach A
-
-most 4tb3 exponentiation questions take approach A because the course lives in "reduce to primitives" world.
+Use the required representation, rather than inferring it from a phrase such as "extend the language". Assignment 5's `04 RE with Counted Repetition.ipynb` supplies the helper/parser approach. An exercise supplying `class Exp(RegEx)` or testing that constructor requires the explicit-node approach. Preserve its signatures and test both the zero-count case and repeated copies.
 
 ## algebraic identities worth remembering
 

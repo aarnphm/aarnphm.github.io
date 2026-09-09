@@ -24,6 +24,7 @@ const daily: DailyPoint = {
   rhr: null,
   sleepScore: null,
   sleepDurationS: null,
+  sleepMetrics: null,
   tempDevC: null,
   weightKg: null,
   totalCalories: null,

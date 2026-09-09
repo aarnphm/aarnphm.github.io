@@ -20,7 +20,7 @@ $$
 ## synthesized vs inherited attributes
 
 - **synthesized**: value flows _up_ the parse tree (child → parent). computed from children.
-- **inherited**: value flows _down_ or _across_ (parent/siblings → child). computed from parent and left siblings.
+- **inherited**: value flows _down_ or _across_ (parent/siblings → child). The left-sibling restriction belongs to L-attributed grammars.
 
 an attribute grammar is:
 

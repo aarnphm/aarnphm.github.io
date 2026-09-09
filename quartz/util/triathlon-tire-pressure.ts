@@ -1,10 +1,11 @@
-export type TirePressureBikeId = 'cervelo' | 'speedmax' | 'custom'
+export type TirePressureBikeId = 'cervelo' | 'speedmax' | 'aeroad' | 'custom'
 export type TirePressureWheelId = 'hunt-54-58' | 'reserve-40-44' | 'reserve-42-49' | 'custom'
 export type TirePressureTireId = 'race-sl-r' | 'race-tlr-sl-r'
 export type TirePressureSetupId = 'tpu' | 'tubeless'
 export type TirePressureBalanceId = '50-50' | '48-52' | '47-53' | '46.5-53.5'
 export type TirePressureWeightUnit = 'kg' | 'lb'
 export type TirePressureWheelAxle = 'front' | 'rear'
+export type TirePressureWidthMode = 'shared' | 'separate'
 export type TirePressureSurfaceId =
   | 'new-pavement'
   | 'worn-pavement'
@@ -81,6 +82,7 @@ export interface TirePressureSelection {
   balance: TirePressureBalanceId
   wheel: TirePressureWheelId
   customWheel: TirePressureCustomWheel
+  widthMode: TirePressureWidthMode
   measuredTire: TirePressureMeasuredTire
   tire: TirePressureTireId
   setup: TirePressureSetupId
@@ -96,6 +98,7 @@ export type TirePressureChange =
   | { field: 'balance'; value: TirePressureBalanceId }
   | { field: 'wheel'; value: TirePressureWheelId }
   | { field: 'customWheelWidth'; axle: TirePressureWheelAxle; value: number }
+  | { field: 'widthMode'; value: TirePressureWidthMode }
   | { field: 'measuredTireWidth'; axle: TirePressureWheelAxle; value: number }
   | { field: 'tire'; value: TirePressureTireId }
   | { field: 'setup'; value: TirePressureSetupId }
@@ -142,6 +145,8 @@ export const TIRE_PRESSURE_WEIGHT_UNITS: readonly TirePressureWeightUnit[] = ['k
 export const TIRE_PRESSURE_BIKES: readonly TirePressureBike[] = [
   { id: 'cervelo', label: 'Cervélo Soloist', massLb: 26.2, defaultBalance: '48-52' },
   { id: 'speedmax', label: 'Canyon Speedmax', massLb: 26, defaultBalance: '50-50' },
+  // Stock CFR Di2 baseline: https://www.canyon.com/en-us/road-bikes/aero-bikes/aeroad/cfr/aeroad-cfr-di2/4480.html
+  { id: 'aeroad', label: 'Canyon Aeroad CFR', massLb: 15.7, defaultBalance: '48-52' },
   { id: 'custom', label: 'Custom', massLb: 20, defaultBalance: null },
 ]
 
@@ -283,6 +288,7 @@ export const TIRE_PRESSURE_SPEEDS: readonly TirePressureSpeed[] = [
 export const DEFAULT_TIRE_PRESSURE_BIKE_MASSES_LB: Readonly<Record<TirePressureBikeId, number>> = {
   cervelo: 26.2,
   speedmax: 26,
+  aeroad: 15.7,
   custom: 20,
 }
 
@@ -294,6 +300,7 @@ export const DEFAULT_TIRE_PRESSURE_SELECTION: TirePressureSelection = {
   balance: '48-52',
   wheel: 'reserve-40-44',
   customWheel: { frontInnerWidthMm: 23, rearInnerWidthMm: 23 },
+  widthMode: 'separate',
   measuredTire: { frontWidthMm: 32, rearWidthMm: 28 },
   tire: 'race-sl-r',
   setup: 'tpu',
@@ -337,6 +344,9 @@ export const isTirePressureInnerWidthMm = (value: number): boolean =>
 export const isTirePressureMeasuredWidthMm = (value: number): boolean =>
   Number.isInteger(value) && value >= 20 && value <= 65
 
+export const isTirePressureWidthMode = (value: string): value is TirePressureWidthMode =>
+  value === 'shared' || value === 'separate'
+
 export const tirePressureWeightFromKg = (valueKg: number, unit: TirePressureWeightUnit): number =>
   unit === 'kg' ? valueKg : valueKg / KG_PER_LB
 
@@ -371,6 +381,8 @@ export const isTirePressureChange = (value: unknown): value is TirePressureChang
     return typeof value.value === 'string' && isTirePressureBalanceId(value.value)
   if (value.field === 'wheel')
     return typeof value.value === 'string' && isTirePressureWheelId(value.value)
+  if (value.field === 'widthMode')
+    return typeof value.value === 'string' && isTirePressureWidthMode(value.value)
   if (value.field === 'customWheelWidth')
     return (
       'axle' in value &&
@@ -450,13 +462,28 @@ export const updateTirePressureSelection = (
         [change.axle === 'front' ? 'frontInnerWidthMm' : 'rearInnerWidthMm']: change.value,
       },
     }
+  if (change.field === 'widthMode')
+    return {
+      ...selection,
+      widthMode: change.value,
+      measuredTire:
+        change.value === 'shared'
+          ? {
+              frontWidthMm: selection.measuredTire.frontWidthMm,
+              rearWidthMm: selection.measuredTire.frontWidthMm,
+            }
+          : selection.measuredTire,
+    }
   if (change.field === 'measuredTireWidth')
     return {
       ...selection,
-      measuredTire: {
-        ...selection.measuredTire,
-        [change.axle === 'front' ? 'frontWidthMm' : 'rearWidthMm']: change.value,
-      },
+      measuredTire:
+        selection.widthMode === 'shared'
+          ? { frontWidthMm: change.value, rearWidthMm: change.value }
+          : {
+              ...selection.measuredTire,
+              [change.axle === 'front' ? 'frontWidthMm' : 'rearWidthMm']: change.value,
+            },
     }
   if (change.field === 'tire') {
     const tire = tirePressureTire(change.value)

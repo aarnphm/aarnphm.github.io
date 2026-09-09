@@ -10,6 +10,7 @@ import {
   isTirePressureChange,
   isTirePressureInnerWidthMm,
   isTirePressureMeasuredWidthMm,
+  isTirePressureWidthMode,
   isTirePressureRiderKg,
   isTirePressureSpeed,
   isTirePressureSurfaceId,
@@ -30,6 +31,7 @@ import {
 const TIRE_PRESSURE_BIKE_KEY = 'triathlon-tire-pressure-bike'
 const TIRE_PRESSURE_CERVELO_MASS_KEY = 'triathlon-tire-pressure-bike-mass-cervelo'
 const TIRE_PRESSURE_SPEEDMAX_MASS_KEY = 'triathlon-tire-pressure-bike-mass-speedmax'
+const TIRE_PRESSURE_AEROAD_MASS_KEY = 'triathlon-tire-pressure-bike-mass-aeroad'
 const TIRE_PRESSURE_CUSTOM_MASS_KEY = 'triathlon-tire-pressure-bike-mass-custom'
 const TIRE_PRESSURE_BALANCE_KEY = 'triathlon-tire-pressure-balance'
 const TIRE_PRESSURE_WHEEL_KEY = 'triathlon-tire-pressure-wheel'
@@ -37,6 +39,7 @@ const TIRE_PRESSURE_CUSTOM_WHEEL_FRONT_KEY = 'triathlon-tire-pressure-wheel-cust
 const TIRE_PRESSURE_CUSTOM_WHEEL_REAR_KEY = 'triathlon-tire-pressure-wheel-custom-rear'
 const TIRE_PRESSURE_MEASURED_TIRE_FRONT_KEY = 'triathlon-tire-pressure-measured-front'
 const TIRE_PRESSURE_MEASURED_TIRE_REAR_KEY = 'triathlon-tire-pressure-measured-rear'
+const TIRE_PRESSURE_WIDTH_MODE_KEY = 'triathlon-tire-pressure-width-mode'
 const TIRE_PRESSURE_TIRE_KEY = 'triathlon-tire-pressure-tire'
 const TIRE_PRESSURE_SETUP_KEY = 'triathlon-tire-pressure-setup'
 const TIRE_PRESSURE_SURFACE_KEY = 'triathlon-tire-pressure-surface'
@@ -76,6 +79,21 @@ export const readTirePressureSelection = (
   const storedCustomRear = Number(localStorage.getItem(TIRE_PRESSURE_CUSTOM_WHEEL_REAR_KEY))
   const storedMeasuredFront = Number(localStorage.getItem(TIRE_PRESSURE_MEASURED_TIRE_FRONT_KEY))
   const storedMeasuredRear = Number(localStorage.getItem(TIRE_PRESSURE_MEASURED_TIRE_REAR_KEY))
+  const storedWidthMode = localStorage.getItem(TIRE_PRESSURE_WIDTH_MODE_KEY)
+  const measuredTire = {
+    frontWidthMm: isTirePressureMeasuredWidthMm(storedMeasuredFront)
+      ? storedMeasuredFront
+      : DEFAULT_TIRE_PRESSURE_SELECTION.measuredTire.frontWidthMm,
+    rearWidthMm: isTirePressureMeasuredWidthMm(storedMeasuredRear)
+      ? storedMeasuredRear
+      : DEFAULT_TIRE_PRESSURE_SELECTION.measuredTire.rearWidthMm,
+  }
+  const widthMode =
+    storedWidthMode && isTirePressureWidthMode(storedWidthMode)
+      ? storedWidthMode
+      : measuredTire.frontWidthMm === measuredTire.rearWidthMm
+        ? 'shared'
+        : 'separate'
   const useStoredRider =
     isTirePressureRiderKg(storedRiderKg) && (!weightDate || storedRiderDate === weightDate)
   const tire =
@@ -114,6 +132,10 @@ export const readTirePressureSelection = (
         TIRE_PRESSURE_SPEEDMAX_MASS_KEY,
         DEFAULT_TIRE_PRESSURE_BIKE_MASSES_LB.speedmax,
       ),
+      aeroad: storedBikeMass(
+        TIRE_PRESSURE_AEROAD_MASS_KEY,
+        DEFAULT_TIRE_PRESSURE_BIKE_MASSES_LB.aeroad,
+      ),
       custom: storedBikeMass(
         TIRE_PRESSURE_CUSTOM_MASS_KEY,
         DEFAULT_TIRE_PRESSURE_BIKE_MASSES_LB.custom,
@@ -135,14 +157,11 @@ export const readTirePressureSelection = (
         ? storedCustomRear
         : DEFAULT_TIRE_PRESSURE_SELECTION.customWheel.rearInnerWidthMm,
     },
-    measuredTire: {
-      frontWidthMm: isTirePressureMeasuredWidthMm(storedMeasuredFront)
-        ? storedMeasuredFront
-        : DEFAULT_TIRE_PRESSURE_SELECTION.measuredTire.frontWidthMm,
-      rearWidthMm: isTirePressureMeasuredWidthMm(storedMeasuredRear)
-        ? storedMeasuredRear
-        : DEFAULT_TIRE_PRESSURE_SELECTION.measuredTire.rearWidthMm,
-    },
+    widthMode,
+    measuredTire:
+      widthMode === 'shared'
+        ? { frontWidthMm: measuredTire.frontWidthMm, rearWidthMm: measuredTire.frontWidthMm }
+        : measuredTire,
     tire,
     setup: supportedSetups.includes(setup) ? setup : supportedSetups[0],
     surface:
@@ -164,9 +183,11 @@ export const storeTirePressureSelection = (
     localStorage.setItem(TIRE_PRESSURE_RIDER_DATE_KEY, weightDate ?? '')
   }
   localStorage.setItem(TIRE_PRESSURE_WEIGHT_UNIT_KEY, selection.weightUnit)
+  localStorage.setItem(TIRE_PRESSURE_WIDTH_MODE_KEY, selection.widthMode)
   localStorage.setItem(TIRE_PRESSURE_BIKE_KEY, selection.bike)
   localStorage.setItem(TIRE_PRESSURE_CERVELO_MASS_KEY, String(selection.bikeMassesLb.cervelo))
   localStorage.setItem(TIRE_PRESSURE_SPEEDMAX_MASS_KEY, String(selection.bikeMassesLb.speedmax))
+  localStorage.setItem(TIRE_PRESSURE_AEROAD_MASS_KEY, String(selection.bikeMassesLb.aeroad))
   localStorage.setItem(TIRE_PRESSURE_CUSTOM_MASS_KEY, String(selection.bikeMassesLb.custom))
   localStorage.setItem(TIRE_PRESSURE_BALANCE_KEY, selection.balance)
   localStorage.setItem(TIRE_PRESSURE_WHEEL_KEY, selection.wheel)
@@ -214,6 +235,7 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
       calculator.dataset.customWheelRearMm = String(selection.customWheel.rearInnerWidthMm)
       calculator.dataset.measuredTireFrontMm = String(selection.measuredTire.frontWidthMm)
       calculator.dataset.measuredTireRearMm = String(selection.measuredTire.rearWidthMm)
+      calculator.dataset.widthMode = selection.widthMode
       calculator.dataset.tire = selection.tire
       calculator.dataset.setup = selection.setup
       calculator.dataset.surface = selection.surface
@@ -251,6 +273,13 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
         else if (field === 'speed' && document.activeElement !== input)
           input.value = String(selection.speedMph)
       }
+
+      for (const controls of calculator.querySelectorAll<HTMLElement>('[data-pressure-width-mode]'))
+        controls.hidden = controls.dataset.pressureWidthMode !== selection.widthMode
+
+      calculator
+        .querySelector<HTMLButtonElement>('button[data-pressure-field="widthMode"]')
+        ?.setAttribute('aria-pressed', String(selection.widthMode === 'separate'))
 
       for (const note of calculator.querySelectorAll<HTMLElement>('[data-pressure-setup-note]'))
         note.hidden = note.dataset.pressureSetupNote !== selection.setup
@@ -305,6 +334,12 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
     selection = updateTirePressureSelection(selection, change)
     storeTirePressureSelection(selection, weightDate)
     render()
+  }
+
+  const onClick = (event: MouseEvent): void => {
+    if (!(event.target instanceof Element)) return
+    if (event.target.closest('button[data-pressure-field="widthMode"]'))
+      apply({ field: 'widthMode', value: selection.widthMode === 'shared' ? 'separate' : 'shared' })
   }
 
   const onChange = (event: Event): void => {
@@ -449,6 +484,7 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
     })
   }
 
+  root.addEventListener('click', onClick)
   root.addEventListener('change', onChange)
   root.addEventListener('input', onInput)
   root.addEventListener('focusin', onFocusIn)
@@ -458,6 +494,7 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
   root.addEventListener(TRI_TIRE_PRESSURE_OPEN_EVENT, onOpen)
   render()
   return () => {
+    root.removeEventListener('click', onClick)
     root.removeEventListener('change', onChange)
     root.removeEventListener('input', onInput)
     root.removeEventListener('focusin', onFocusIn)

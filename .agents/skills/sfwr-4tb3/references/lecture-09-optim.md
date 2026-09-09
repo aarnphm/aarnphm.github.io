@@ -35,7 +35,7 @@ CSE often fires in **generated** code, for example array indexing: $a[i][j]$ wit
 
 ## loop invariant code motion (LICM)
 
-if an expression inside a loop doesn't depend on any variable modified in the loop, hoist it before the loop. transform:
+An invariant expression may be hoisted when doing so preserves effects and traps, including when the loop executes zero times. Check aliasing and writes as well as the variables named in the expression. For a pure, non-trapping expression, transform:
 
 ```
 while i < n do
@@ -58,15 +58,17 @@ while i < n do
 
 replace expensive ops with cheaper equivalents. classic examples:
 
-| original             | replacement                                  |
-| :------------------- | :------------------------------------------- |
-| $x \times 2$         | $x + x$ or $x \ll 1$                         |
-| $x \times 2^n$       | $x \ll n$                                    |
-| $x \div 2^n$         | $x \ggg n$ (unsigned) or $x \gg n$ (signed)  |
-| $x \bmod 2^n$        | $x\ \&\ (2^n - 1)$                           |
-| $i \times 4$ in loop | maintain $t$ with $t := t + 4$ per iteration |
+| original                                   | replacement                                  |
+| :----------------------------------------- | :------------------------------------------- |
+| $x \times 2$                               | $x + x$ or $x \ll 1$                         |
+| $x \times 2^n$                             | $x \ll n$                                    |
+| $x \div 2^n$, unsigned or nonnegative $x$  | logical right shift by $n$                   |
+| $x \bmod 2^n$, unsigned or nonnegative $x$ | $x\ \&\ (2^n - 1)$                           |
+| $i \times 4$ in loop                       | maintain $t$ with $t := t + 4$ per iteration |
 
-the loop-based one is particularly powerful: replaces a multiply per iteration with an addition.
+For negative signed operands, truncation toward zero differs from arithmetic right shift: `-3 / 2` truncates to `-1`, while shifting gives `-2`. A mask also does not preserve a signed remainder such as `-3 rem 2 = -1`. Check the language and target's rounding, overflow, and valid shift counts before applying these identities.
+
+The induction-variable transformation replaces a multiply per iteration with an addition; preserve initialization, update order, and overflow behavior.
 
 ## dead code elimination
 
@@ -90,7 +92,7 @@ dead code often arises from debug/logging code, conditional compilation, or mach
 - $x \le x = \text{true}$, $x < x = \text{false}$
 - $\lnot \lnot x = x$
 
-these can eliminate operations entirely ($x + 0$ disappears) or collapse whole subtrees ($x \land \text{false}$ becomes $\text{false}$).
+Apply these identities only when the operand domain and evaluation effects permit them. Removing an expression may remove a trap, memory access, or procedure call; floating-point NaNs also invalidate identities such as $x \le x = \text{true}$.
 
 ## typical exam question shapes
 

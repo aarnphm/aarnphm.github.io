@@ -1,29 +1,13 @@
-## hover affordances without a script
+# Hover and focus details
 
-a static (no-inline-script) figure can still get hover tooltips with `:has()` — useful for moving always-on legend prose into on-demand tips. wrap the hover target in a group with a **wide invisible hit-path** (so a thin arc is easy to hover), put the tooltip as an HTML overlay in a `position: relative` stage, and toggle from the figure root:
+Expose explanatory detail through both pointer hover and keyboard focus. Keep essential information in an accessible description, including when a visual tooltip is unavailable. Use a wide invisible SVG hit-path for a thin arc, with a focusable, named target and visible focus treatment.
 
-```scss
-.x-stage {
-  position: relative;
-}
-.x-arc-hit {
-  fill: none;
-  stroke: transparent;
-  stroke-width: 14;
-  pointer-events: stroke;
-}
-.x-tip {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 140ms ease; /* framed box */
-}
-.x-figure:has(.x-group--echo:hover) .x-tip--echo,
-.x-figure:has(.x-legend-item--echo:hover) .x-tip--echo {
-  opacity: 1;
-}
-```
+Choose the interaction from the layout:
 
-mark up `<g class="x-group x-group--echo" tabindex={0} role="img" aria-label="…">` (the `aria-label` keeps the moved-to-tooltip prose accessible). RazorHeadTaxonomy does this for the echo/induction arc descriptions.
+- If details fit in reserved space without obscuring content, a CSS `:has()` treatment can respond to target `:hover` and `:focus-visible`. Keep the detail visible while the pointer is over it, and provide a continuous pointer path from the target. Hidden details must not intercept pointer events.
+- If a popup obscures meaningful content, use a controller that supports Escape dismissal while focus remains on the trigger. Suppress reopening until the current hover/focus interaction ends. Register listeners and cleanup within the page's `nav` handler.
+- If the explanation contains actions or needs deliberate opening, use a native disclosure or button-controlled popover with the appropriate focus behavior.
 
-Provide the same explanatory content on keyboard focus. Tooltips must remain available when focus or hover moves to their content, and dismissible when they obscure other content. Keep essential information in an accessible description even if the visual tooltip is unavailable.
+Check target focus, movement from target onto the detail, dismissal where needed, and touch access to essential information. A tooltip with permanent `pointer-events: none` cannot satisfy pointer transfer to its own content. An opacity-only hover selector also needs explicit focus and hidden-state behavior.
+
+The [W3C hover/focus criterion](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html) defines persistence, hoverability, and when dismissal is required. Existing figure implementations are useful layout references; check their interaction contract before copying them.

@@ -46,6 +46,8 @@ for $A \to \alpha \mid \beta$ to be $LL(1)$:
 1. $\text{FIRST}(\alpha) \cap \text{FIRST}(\beta) = \emptyset$
 2. if $\alpha \Rightarrow^* \epsilon$, then $\text{FIRST}(\beta) \cap \text{FOLLOW}(A) = \emptyset$
 
+Apply the nullable/FOLLOW check symmetrically if $\beta$ is nullable; both alternatives being nullable creates a conflict.
+
 these conditions let you pick the right production with one token of lookahead.
 
 ## FIRST and FOLLOW
@@ -91,7 +93,7 @@ scanner invariant: `sym` holds the _next_ symbol; `nxt()` advances. each parsing
 
 options:
 
-1. rewrite the grammar (dangling else: $\text{IfStmt} \to \texttt{if}\,E\,\texttt{then}\,S\,\texttt{else}\,S \mid \texttt{if}\,E\,\texttt{then}\,S$, resolved by matching `else` eagerly)
+1. rewrite the grammar, such as separating matched and unmatched statements for dangling `else`; an eager nearest-`if` parser rule resolves the choice without making the original CFG unambiguous
 2. use precedence declarations (in parser generators)
 3. move to PEG (prioritized choice disambiguates)
 
@@ -101,4 +103,4 @@ options:
 - **phrase-level**: insert/delete one token to continue
 - **global**: find the minimum-edit correction
 
-the course's P0 parser uses `mark('error message')` to report and continue without raising.
+The lecture 05 `SC.mark('error message')` raises an exception. Error recovery strategies above are general techniques; check the target notebook before applying one to P0.

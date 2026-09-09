@@ -5,17 +5,66 @@ import { join } from 'node:path'
 import test from 'node:test'
 import {
   emptyActivityBridgeLedger,
+  planTrainingPeaksBackfill,
   upsertActivityBridgeReceipt,
   type ActivityBridgeReceipt,
 } from '../plugins/stores/activity-bridge'
 import {
   parseActivityBridgeArgs,
+  parseActivityBridgeGarminActivities,
   parseActivityBridgeLedger,
   readActivityBridgeLedger,
   writeActivityBridgeLedgerAtomic,
 } from './sync-activity-providers'
 
 const SHA = 'b'.repeat(64)
+
+function garminCache(sports: readonly unknown[]) {
+  return {
+    activities: Object.fromEntries(
+      sports.map((sport, index) => [
+        `connect:${index}`,
+        {
+          id: `connect:${index}`,
+          name: `Garmin activity ${index}`,
+          sport,
+          startDate: '2026-09-08T12:00:00Z',
+          startDateLocal: '2026-09-08T08:00:00',
+          distanceM: 1000,
+          movingTimeS: 600,
+          elapsedTimeS: 600,
+        },
+      ]),
+    ),
+  }
+}
+
+test('accepts valid Garmin activity kinds and excludes unsupported sports from backfill', () => {
+  const garmin = parseActivityBridgeGarminActivities(
+    garminCache(['walk', 'strength', 'yoga', 'treatment', 'sauna', 'bike', 'run', 'swim', null]),
+  )
+  assert.deepEqual(
+    garmin.map(activity => activity.sport),
+    [null, null, null, null, null, 'bike', 'run', 'swim', null],
+  )
+  const plans = planTrainingPeaksBackfill(
+    { strava: [], garmin, wahoo: [] },
+    emptyActivityBridgeLedger(),
+    'garmin',
+  )
+  assert.deepEqual(plans.map(plan => plan.sport).sort(), ['bike', 'run', 'swim'])
+})
+
+test('rejects malformed Garmin sports', () => {
+  assert.throws(
+    () => parseActivityBridgeGarminActivities(garminCache(['invalid'])),
+    /Garmin activity connect:0.sport is invalid/,
+  )
+  assert.throws(
+    () => parseActivityBridgeGarminActivities(garminCache([42])),
+    /Garmin activity connect:0.sport must be a string or null/,
+  )
+})
 
 function receipt(): ActivityBridgeReceipt {
   return {

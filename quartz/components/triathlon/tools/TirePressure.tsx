@@ -60,6 +60,7 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
       data-custom-wheel-rear-mm={defaultSelection.customWheel.rearInnerWidthMm}
       data-measured-tire-front-mm={defaultSelection.measuredTire.frontWidthMm}
       data-measured-tire-rear-mm={defaultSelection.measuredTire.rearWidthMm}
+      data-width-mode={defaultSelection.widthMode}
       data-tire={DEFAULT_TIRE_PRESSURE_SELECTION.tire}
       data-setup={defaultSelection.setup}
       data-surface={DEFAULT_TIRE_PRESSURE_SELECTION.surface}
@@ -289,9 +290,39 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
           </div>
         </fieldset>
         <div class="tri-pressure-measured">
-          <span data-i18n="measured tire width">measured tire width</span>
+          <span class="tri-pressure-measured-head" data-i18n="measured tire width">
+            measured tire width
+          </span>
+          <button
+            type="button"
+            class="tri-pressure-width-mode"
+            data-pressure-field="widthMode"
+            aria-pressed={defaultSelection.widthMode === 'separate'}
+            aria-describedby="tri-pressure-width-note"
+            data-i18n="customized front/rear width"
+          >
+            customized front/rear width
+          </button>
           <span
             class="tri-pressure-measured-controls"
+            data-pressure-width-mode="shared"
+            hidden={defaultSelection.widthMode !== 'shared'}
+          >
+            <span data-i18n="both tires">both tires</span>
+            <input
+              type="text"
+              value={defaultSelection.measuredTire.frontWidthMm}
+              data-pressure-field="measuredTireWidth"
+              data-pressure-axle="front"
+              inputMode="numeric"
+              aria-label="shared measured tire width in millimetres"
+            />
+            <span>mm</span>
+          </span>
+          <span
+            class="tri-pressure-measured-controls"
+            data-pressure-width-mode="separate"
+            hidden={defaultSelection.widthMode !== 'separate'}
             role="group"
             aria-label="measured tire width"
           >
@@ -315,6 +346,13 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
               aria-label="rear measured tire width in millimetres"
             />
             <span>mm</span>
+          </span>
+          <span
+            id="tri-pressure-width-note"
+            class="tri-pressure-width-note"
+            data-i18n="Turning customization off uses the front width for both tires."
+          >
+            Turning customization off uses the front width for both tires.
           </span>
         </div>
         <div class="tri-pressure-weight">

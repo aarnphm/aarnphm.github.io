@@ -394,7 +394,9 @@ export default (() => {
         )}
         {isDailyView && (
           <div class="stream-backlink">
-            <a href="/">← back to stream</a>
+            <a class="internal" href={canonicalPath} data-no-popover>
+              ← back to stream
+            </a>
           </div>
         )}
       </article>

@@ -1,6 +1,7 @@
 import type {
   GarminCache,
   GarminCyclingDynamics,
+  GarminLactateThresholdValue,
   GarminStreams,
   GarminWeightSample,
 } from './garmin'
@@ -16,6 +17,7 @@ import {
 import { localIsoDay } from '../../util/local-date'
 import { latestProviderSync } from '../../util/provider-sync'
 import { runPaceZoneReference } from '../../util/run-pace-zones'
+import { resolveSleepMetrics, type SleepMetrics } from '../../util/sleep-metrics'
 import {
   SWIM_PACE_MAX_S_PER_100M,
   SWIM_PACE_MIN_S_PER_100M,
@@ -395,6 +397,7 @@ export interface DailyPoint {
   rhr: number | null
   sleepScore: number | null
   sleepDurationS: number | null
+  sleepMetrics: SleepMetrics | null
   tempDevC: number | null
   weightKg: number | null
   totalCalories: number | null
@@ -709,11 +712,9 @@ export interface LactateThresholdProjectionPoint {
   hi: number
 }
 
-export interface LactateThresholdHeartRate {
-  value: number
-  unit: 'bpm'
-  source: 'declared'
-}
+export type LactateThresholdHeartRate =
+  | { value: number; unit: 'bpm'; source: 'declared' }
+  | { value: number; unit: 'bpm'; source: 'garmin'; sport: 'run'; date: string }
 
 export interface LactateThresholdSportProjection {
   sport: Sport
@@ -723,11 +724,12 @@ export interface LactateThresholdSportProjection {
   low: number | null
   high: number | null
   deltaPct: number | null
-  conf: Conf
+  conf: Conf | null
   method: TrendMethod
   sampleSize: number
   horizonDays: number
-  source: 'training-pace-trend'
+  source: 'training-pace-trend' | 'garmin'
+  date: string | null
   points: LactateThresholdProjectionPoint[]
 }
 
@@ -1357,6 +1359,7 @@ function buildDaily(
       rhr: null,
       sleepScore: null,
       sleepDurationS: null,
+      sleepMetrics: null,
       tempDevC: null,
       weightKg: null,
       totalCalories: null,
@@ -1789,14 +1792,15 @@ function buildHeat(
   for (const activity of sourceActivities) {
     const sport = normalizeKind(activity.sportType)
     if (sport !== 'bike' && sport !== 'run') continue
+    const core = coreHeatObservation(activity, sport, coreCache, garmin)
     const route = cache.streams?.[String(activity.id)]?.latlng
-    if (!route || route.length < 2) continue
+    // Indoor CORE recordings do not need GPS; ambient fallbacks still require a route.
+    if (!core && (!route || route.length < 2)) continue
     eligible.push({
       date: activity.startDateLocal.slice(0, 10),
       durationS: activity.elapsedTime > 0 ? activity.elapsedTime : activity.movingTime,
     })
 
-    const core = coreHeatObservation(activity, sport, coreCache, garmin)
     if (
       core &&
       core.durationS > 0 &&
@@ -2716,62 +2720,111 @@ const thresholdHuman = (threshold: ThresholdEstimate): number | null =>
 const declaredLactateThresholdHeartRate = (): LactateThresholdHeartRate | null =>
   ATHLETE.lt == null ? null : { value: ATHLETE.lt, unit: 'bpm', source: 'declared' }
 
+const usableGarminThreshold = (
+  sample: GarminLactateThresholdValue | null | undefined,
+  today: string,
+): sample is GarminLactateThresholdValue =>
+  sample != null &&
+  Number.isFinite(sample.value) &&
+  sample.value > 0 &&
+  /^\d{4}-\d{2}-\d{2}$/.test(sample.date) &&
+  Number.isFinite(Date.parse(sample.date)) &&
+  new Date(sample.date).toISOString().slice(0, 10) === sample.date &&
+  sample.date <= today
+
 const buildLactateThreshold = (
   thresholds: ReadonlyMap<Sport, ThresholdEstimate>,
   trends: ReadonlyMap<Sport, SportTrend>,
   today: string,
-): LactateThresholdBlock => ({
-  heartRate: declaredLactateThresholdHeartRate(),
-  sports: SPORT_ORDER.map(sport => {
-    const threshold = thresholds.get(sport)!
-    const trend = trends.get(sport)
-    const level = trend?.level
-    const current = thresholdHuman(threshold)!
-    const usable =
-      threshold.conf !== 'prior' &&
-      threshold.conf !== 'stale' &&
-      trend != null &&
-      !trend.stale &&
-      level != null &&
-      level > 0 &&
-      trend.forecast.length > 0 &&
-      trend.forecast.every(
-        point => point.lo > 0 && point.lo <= point.value && point.value <= point.hi,
-      )
-    const points: LactateThresholdProjectionPoint[] = [
-      { date: today, value: current, lo: current, hi: current },
-    ]
-    if (usable) {
-      for (const point of trend.forecast) {
-        const ratio = clamp(point.value / level, 1 - TREND_PROJ_CLAMP, 1 + TREND_PROJ_CLAMP)
-        const value = current * ratio
-        const halfFrac = (point.hi - point.lo) / (2 * point.value)
-        points.push({
-          date: point.date,
-          value: round(value, 1),
-          lo: round(value * (1 - halfFrac), 1),
-          hi: round(value * (1 + halfFrac), 1),
-        })
+  garmin?: GarminCache | null,
+): LactateThresholdBlock => {
+  const native = garmin?.runningLactateThreshold
+  const heartRate = native?.heartRateBpm
+  return {
+    heartRate: usableGarminThreshold(heartRate, today)
+      ? {
+          value: heartRate.value,
+          unit: 'bpm',
+          source: 'garmin',
+          sport: 'run',
+          date: heartRate.date,
+        }
+      : declaredLactateThresholdHeartRate(),
+    sports: SPORT_ORDER.flatMap((sport): LactateThresholdSportProjection[] => {
+      if (sport === 'run' && usableGarminThreshold(native?.speedMps, today)) {
+        return [
+          {
+            sport,
+            unit: 's/km',
+            current: humanPaceValue(sport, native.speedMps.value),
+            projected: null,
+            low: null,
+            high: null,
+            deltaPct: null,
+            conf: null,
+            method: 'none',
+            sampleSize: 1,
+            horizonDays: 0,
+            source: 'garmin',
+            date: native.speedMps.date,
+            points: [],
+          },
+        ]
       }
-    }
-    const end = usable ? points[points.length - 1] : null
-    return {
-      sport,
-      unit: threshold.unit,
-      current,
-      projected: end?.value ?? null,
-      low: end?.lo ?? null,
-      high: end?.hi ?? null,
-      deltaPct: end ? fasterPct(sport, end.value, current) : null,
-      conf: usable ? 'low' : threshold.conf,
-      method: usable ? trend.method : 'none',
-      sampleSize: trend?.sampleSize ?? 0,
-      horizonDays: usable ? TREND_FORECAST_DAYS : 0,
-      source: 'training-pace-trend',
-      points: usable ? points : [],
-    }
-  }),
-})
+      const threshold = thresholds.get(sport)
+      if (!threshold) return []
+      const trend = trends.get(sport)
+      const level = trend?.level
+      const current = thresholdHuman(threshold)!
+      const usable =
+        threshold.conf !== 'prior' &&
+        threshold.conf !== 'stale' &&
+        trend != null &&
+        !trend.stale &&
+        level != null &&
+        level > 0 &&
+        trend.forecast.length > 0 &&
+        trend.forecast.every(
+          point => point.lo > 0 && point.lo <= point.value && point.value <= point.hi,
+        )
+      const points: LactateThresholdProjectionPoint[] = [
+        { date: today, value: current, lo: current, hi: current },
+      ]
+      if (usable) {
+        for (const point of trend.forecast) {
+          const ratio = clamp(point.value / level, 1 - TREND_PROJ_CLAMP, 1 + TREND_PROJ_CLAMP)
+          const value = current * ratio
+          const halfFrac = (point.hi - point.lo) / (2 * point.value)
+          points.push({
+            date: point.date,
+            value: round(value, 1),
+            lo: round(value * (1 - halfFrac), 1),
+            hi: round(value * (1 + halfFrac), 1),
+          })
+        }
+      }
+      const end = usable ? points[points.length - 1] : null
+      return [
+        {
+          sport,
+          unit: threshold.unit,
+          current,
+          projected: end?.value ?? null,
+          low: end?.lo ?? null,
+          high: end?.hi ?? null,
+          deltaPct: end ? fasterPct(sport, end.value, current) : null,
+          conf: usable ? 'low' : threshold.conf,
+          method: usable ? trend.method : 'none',
+          sampleSize: trend?.sampleSize ?? 0,
+          horizonDays: usable ? TREND_FORECAST_DAYS : 0,
+          source: 'training-pace-trend',
+          date: null,
+          points: usable ? points : [],
+        },
+      ]
+    }),
+  }
+}
 
 const projectedHuman = (
   average: number | null,
@@ -3114,6 +3167,7 @@ function buildRecovery(daily: DailyPoint[], risk: RiskBlock): RecoveryBlock {
       d.hrv != null ||
       d.rhr != null ||
       d.sleepDurationS != null ||
+      d.sleepMetrics != null ||
       d.readiness != null ||
       d.tempDevC != null,
   )
@@ -5172,7 +5226,7 @@ function buildEngine(
       trendSummary: buildVo2TrendSummary(trend),
       bikeSource,
     },
-    lactateThreshold: buildLactateThreshold(thresholds, trends, today),
+    lactateThreshold: buildLactateThreshold(thresholds, trends, today, garmin),
     abilities: { sports: SPORT_ORDER.map(buildSportAbilities) },
     cardio: {
       metrics,
@@ -5189,7 +5243,7 @@ function buildEngine(
   }
 }
 
-function emptyAnalytics(athleteId: number, today: string): Analytics {
+function emptyAnalytics(athleteId: number, today: string, garmin?: GarminCache | null): Analytics {
   return {
     meta: emptyMeta(athleteId, today),
     calibration: emptyCalibration(today),
@@ -5206,7 +5260,10 @@ function emptyAnalytics(athleteId: number, today: string): Analytics {
     powerCurve: emptyPowerCurve(today),
     heat: emptyHeat(),
     distributions: emptyDistributions(),
-    engine: emptyEngine(),
+    engine: {
+      ...emptyEngine(),
+      lactateThreshold: buildLactateThreshold(new Map(), new Map(), today, garmin),
+    },
     events: [],
     activities: [],
     weakestSport: 'run',
@@ -5234,7 +5291,7 @@ export function buildAnalytics(
   const latestDexa = dexaTests.length ? dexaTests[dexaTests.length - 1] : null
   const latestVo2Lab = vo2Tests.length ? vo2Tests[vo2Tests.length - 1] : null
 
-  if (!cache) return emptyAnalytics(0, todayFromSync ?? '1970-01-01')
+  if (!cache) return emptyAnalytics(0, todayFromSync ?? '1970-01-01', inputs.garmin)
 
   const sinceDay = inputs.since && /^\d{4}-\d{2}-\d{2}$/.test(inputs.since) ? inputs.since : null
   const sourceActivities = Object.values(cache.activities)
@@ -5251,7 +5308,7 @@ export function buildAnalytics(
 
   if (activityDays.length === 0) {
     const fallback = todayFromSync ?? '1970-01-01'
-    return emptyAnalytics(cache.athleteId, fallback)
+    return emptyAnalytics(cache.athleteId, fallback, inputs.garmin)
   }
 
   const raw = sourceActivities
@@ -5388,6 +5445,11 @@ export function buildAnalytics(
   let latestWeight: PowerRankMass | null = null
   for (const d of daily) {
     const o = ouraDays[d.date]
+    const garminSleep = inputs.garmin?.sleep?.[d.date]
+    d.sleepMetrics = resolveSleepMetrics(
+      inputs.oura?.details?.[d.date],
+      garminSleep?.date === d.date ? garminSleep : null,
+    )
     if (o) {
       d.readiness = o.readiness
       d.hrv = o.hrv
@@ -5777,6 +5839,7 @@ export const DAY_FIELDS = [
   'hrv',
   'rhr',
   'sleepDurationS',
+  'sleepMetrics',
   'tempDeviationC',
   'totalCalories',
   'activeCalories',
@@ -5894,6 +5957,7 @@ export interface FeedDayRow {
   hrv: number | null
   rhr: number | null
   sleepDurationS: number | null
+  sleepMetrics: SleepMetrics | null
   tempDeviationC: number | null
   totalCalories: number | null
   activeCalories: number | null
@@ -6069,6 +6133,7 @@ export function buildDataFeed(
         hrv: o?.hrv ?? null,
         rhr: o?.rhr ?? null,
         sleepDurationS: o?.sleepDurationS ?? null,
+        sleepMetrics: d.sleepMetrics,
         tempDeviationC: o?.tempDeviationC ?? null,
         totalCalories: d.totalCalories ?? o?.totalCalories ?? ap?.burnKcal ?? null,
         activeCalories: o?.activeCalories ?? ap?.activeKcal ?? null,

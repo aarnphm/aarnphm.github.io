@@ -10,6 +10,7 @@ import {
   isTirePressureBikeMassLb,
   isTirePressureInnerWidthMm,
   isTirePressureMeasuredWidthMm,
+  isTirePressureWidthMode,
   isTirePressureRiderKg,
   isTirePressureSetupId,
   isTirePressureSpeed,
@@ -38,6 +39,7 @@ import {
   updateTirePressureSelection,
   type TirePressureChange,
   type TirePressureSelection,
+  type TirePressureWidthMode,
 } from '../../../util/triathlon-tire-pressure'
 import { el } from '../runtime/dom'
 import { nextTriMapStyle } from '../runtime/preferences'
@@ -157,6 +159,7 @@ export type TirePressurePaletteStep =
   | 'wheel'
   | 'customWheelFront'
   | 'customWheelRear'
+  | 'widthMode'
   | 'measuredTireFront'
   | 'measuredTireRear'
   | 'tire'
@@ -178,11 +181,16 @@ export const nextTirePressurePaletteStep = (
   if (step === 'bike') return 'bikeMass'
   if (step === 'bikeMass') return 'balance'
   if (step === 'balance') return 'wheel'
-  if (step === 'wheel')
-    return selection.wheel === 'custom' ? 'customWheelFront' : 'measuredTireFront'
+  if (step === 'wheel') return selection.wheel === 'custom' ? 'customWheelFront' : 'widthMode'
   if (step === 'customWheelFront') return 'customWheelRear'
-  if (step === 'customWheelRear') return 'measuredTireFront'
-  if (step === 'measuredTireFront') return 'measuredTireRear'
+  if (step === 'customWheelRear') return 'widthMode'
+  if (step === 'widthMode') return 'measuredTireFront'
+  if (step === 'measuredTireFront')
+    return selection.widthMode === 'separate'
+      ? 'measuredTireRear'
+      : editEnd === 'measuredTireRear'
+        ? 'result'
+        : 'tire'
   if (step === 'measuredTireRear') return 'tire'
   if (step === 'tire') return 'setup'
   if (step === 'setup') return 'surface'
@@ -200,10 +208,11 @@ export const previousTirePressurePaletteStep = (
   if (step === 'speed') return 'surface'
   if (step === 'surface') return 'setup'
   if (step === 'setup') return 'tire'
-  if (step === 'tire') return 'measuredTireRear'
+  if (step === 'tire')
+    return selection.widthMode === 'separate' ? 'measuredTireRear' : 'measuredTireFront'
   if (step === 'measuredTireRear') return 'measuredTireFront'
-  if (step === 'measuredTireFront')
-    return selection.wheel === 'custom' ? 'customWheelRear' : 'wheel'
+  if (step === 'measuredTireFront') return 'widthMode'
+  if (step === 'widthMode') return selection.wheel === 'custom' ? 'customWheelRear' : 'wheel'
   if (step === 'customWheelRear') return 'customWheelFront'
   if (step === 'customWheelFront') return 'wheel'
   if (step === 'wheel') return 'balance'
@@ -218,6 +227,7 @@ export const tirePressurePaletteSelectionIndex = (
   step: TirePressurePaletteStep,
   selection: TirePressureSelection,
 ): number => {
+  if (step === 'widthMode') return selection.widthMode === 'shared' ? 0 : 1
   if (step === 'weightUnit')
     return Math.max(0, TIRE_PRESSURE_WEIGHT_UNITS.indexOf(selection.weightUnit))
   if (step === 'bike')
@@ -274,6 +284,7 @@ const tirePressureSelectionFromRoot = (root: HTMLElement): TirePressureSelection
   const customWheelRearMm = Number(calculator?.dataset.customWheelRearMm)
   const measuredTireFrontMm = Number(calculator?.dataset.measuredTireFrontMm)
   const measuredTireRearMm = Number(calculator?.dataset.measuredTireRearMm)
+  const widthMode = calculator?.dataset.widthMode
   const tire = calculator?.dataset.tire
   const setup = calculator?.dataset.setup
   const surface = calculator?.dataset.surface
@@ -288,6 +299,7 @@ const tirePressureSelectionFromRoot = (root: HTMLElement): TirePressureSelection
       : stored.bikeMassesLb,
     balance: balance && isTirePressureBalanceId(balance) ? balance : stored.balance,
     wheel: wheel && isTirePressureWheelId(wheel) ? wheel : stored.wheel,
+    widthMode: widthMode && isTirePressureWidthMode(widthMode) ? widthMode : stored.widthMode,
     customWheel: {
       frontInnerWidthMm: isTirePressureInnerWidthMm(customWheelFrontMm)
         ? customWheelFrontMm
@@ -394,7 +406,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     {
       label: () => 'tire pressure',
       hint: tirePressureHint,
-      keys: 'tire tyre pressure psi front rear pirelli silca cervelo speedmax hunt aerodynamicist reserve custom wheel bike rider weight kg lb tubeless tpu tube',
+      keys: 'tire tyre pressure psi front rear pirelli silca cervelo speedmax canyon aeroad cfr hunt aerodynamicist reserve custom wheel bike rider weight kg lb tubeless tpu tube',
       run: () => startPressureFlow(),
     },
     {
@@ -554,16 +566,27 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
         },
       ]
     }
+    if (mode === 'widthMode') {
+      const modes: readonly TirePressureWidthMode[] = ['shared', 'separate']
+      return modes.map(value => ({
+        label: () =>
+          `${value === pressureSelection.widthMode ? '✓ ' : ''}${triText(context.presentation.locale, value === 'shared' ? 'both tires' : 'customized front/rear width')}`,
+        hint: value === 'shared' ? 'one measured width' : 'front / rear',
+        keys: `${value} advanced measured tire casing width front rear same both`,
+        run: () => selectPressure({ field: 'widthMode', value }),
+      }))
+    }
     if (mode === 'measuredTireFront' || mode === 'measuredTireRear') {
       const axle = mode === 'measuredTireFront' ? 'front' : 'rear'
+      const label = pressureSelection.widthMode === 'shared' ? 'shared' : axle
       const width = Number(input.value)
       const valid = isTirePressureMeasuredWidthMm(width)
       return [
         {
           label: () =>
             valid
-              ? `${axle} measured tire width · ${width} mm`
-              : `${axle} measured tire width · enter 20–65 mm`,
+              ? `${label} measured tire width · ${width} mm`
+              : `${label} measured tire width · enter 20–65 mm`,
           hint: valid ? 'use measured width' : 'whole millimetres required',
           keys: `${axle} measured tire casing width millimetres mm`,
           run: () => {
@@ -679,10 +702,12 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
           : []),
         {
           label: () =>
-            `measured tire width · ${pressureSelection.measuredTire.frontWidthMm}/${pressureSelection.measuredTire.rearWidthMm} mm`,
-          hint: 'front / rear',
-          keys: 'measured tire casing width front rear millimetres mm change',
-          run: () => startPressureEdit('measuredTireFront', 'measuredTireRear'),
+            pressureSelection.widthMode === 'shared'
+              ? `measured tire width · ${pressureSelection.measuredTire.frontWidthMm} mm`
+              : `measured tire width · ${pressureSelection.measuredTire.frontWidthMm}/${pressureSelection.measuredTire.rearWidthMm} mm`,
+          hint: pressureSelection.widthMode === 'shared' ? 'both tires' : 'front / rear',
+          keys: 'advanced shared separate measured tire casing width front rear millimetres mm change',
+          run: () => startPressureEdit('widthMode', 'measuredTireRear'),
         },
         {
           label: () =>
@@ -777,7 +802,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
               : mode === 'customWheelRear'
                 ? 'rear internal rim width in millimetres'
                 : mode === 'measuredTireFront'
-                  ? 'front measured tire width in millimetres'
+                  ? `${pressureSelection.widthMode === 'shared' ? 'shared' : 'front'} measured tire width in millimetres`
                   : mode === 'measuredTireRear'
                     ? 'rear measured tire width in millimetres'
                     : `tire pressure ${mode}`,

@@ -13,6 +13,7 @@ const ACTION_CURSOR_SELECTOR = '[data-site-cursor-action]:not(:disabled)'
 const MAGNETIC_ICON_SELECTOR = '[data-site-cursor-icon], svg'
 const BRACKET_ANCHOR_SELECTOR = '[data-site-cursor-bracket]'
 const LINE_CURSOR_SELECTOR = '.tri-bars, [data-site-cursor-line]'
+const SCROLL_RECONCILE_DELAY_MS = 80
 
 const HELP_CURSOR_SELECTOR = [
   '[data-gloss]',
@@ -122,9 +123,12 @@ document.addEventListener('nav', () => {
   document.body.appendChild(bracket)
   const line = cursor.querySelector<HTMLElement>('.site-cursor-line')
   if (!line) return
+  const chartLine = cursorPart('site-cursor-chart-line')
+  chartLine.setAttribute('aria-hidden', 'true')
   configuredCursors.get(cursor)?.abort()
   const controller = new AbortController()
   const signal = controller.signal
+  signal.addEventListener('abort', () => chartLine.remove(), { once: true })
   configuredCursors.set(cursor, controller)
 
   let frame = 0
@@ -133,6 +137,7 @@ document.addEventListener('nav', () => {
   let mode:
     | 'action'
     | 'bracket'
+    | 'chart'
     | 'close'
     | 'crosshair'
     | 'diamond'
@@ -141,9 +146,11 @@ document.addEventListener('nav', () => {
     | 'timeline' = 'diamond'
   let visible = false
   let pointerTarget: Element | null = null
+  let chartTarget: HTMLElement | null = null
   let bracketTarget: HTMLElement | null = null
   let magneticTarget: HTMLElement | null = null
   let magneticTimer = 0
+  let scrollIdleTimer = 0
   let measuredMagnetic: HTMLElement | null = null
   let measuredMagneticRect: DOMRect | null = null
   let measuredLineTarget: HTMLElement | null = null
@@ -154,6 +161,19 @@ document.addEventListener('nav', () => {
   let measuredPointerAnchor: HTMLElement | null = null
   let geometryDirty = true
   let pointerTargetDirty = false
+
+  // Keep the line in the plot so scrolling and layout changes cannot strand it in the viewport.
+  const setChartTarget = (target: HTMLElement | null): void => {
+    if (target !== chartTarget) {
+      chartTarget = target
+      chartLine.remove()
+      target?.appendChild(chartLine)
+    }
+    if (!target) return
+    const rect = target.getBoundingClientRect()
+    const fraction = rect.width > 0 ? Math.max(0, Math.min(1, (x - rect.left) / rect.width)) : 0
+    chartLine.style.left = `${fraction * 100}%`
+  }
 
   const setBracketTarget = (target: HTMLElement | null): void => {
     const targetChanged = target !== bracketTarget
@@ -194,7 +214,7 @@ document.addEventListener('nav', () => {
   const render = (): void => {
     const startedAt = beginSitePerformanceSample()
     frame = 0
-    if (pointerTargetDirty) {
+    if (pointerTargetDirty || (pointerTarget && !pointerTarget.isConnected)) {
       pointerTarget = document.elementFromPoint(x, y)
       pointerTargetDirty = false
     }
@@ -206,6 +226,9 @@ document.addEventListener('nav', () => {
     const action = pointerTarget?.closest<HTMLElement>(ACTION_CURSOR_SELECTOR) ?? null
     const magnetic = close ?? action
     const lineTarget = pointerTarget?.closest<HTMLElement>(LINE_CURSOR_SELECTOR) ?? null
+    const nextChartTarget =
+      !magnetic && lineTarget?.hasAttribute('data-site-cursor-line') ? lineTarget : null
+    setChartTarget(nextChartTarget)
     if (magnetic) {
       setBracketTarget(null)
       const anchor = magnetic.querySelector<HTMLElement>(MAGNETIC_ICON_SELECTOR) ?? magnetic
@@ -218,6 +241,11 @@ document.addEventListener('nav', () => {
       renderX = rect.left + rect.width / 2
       renderY = rect.top + rect.height / 2
       mode = close ? 'close' : 'action'
+      visible = true
+    } else if (nextChartTarget) {
+      setBracketTarget(null)
+      setMagneticTarget(null)
+      mode = 'chart'
       visible = true
     } else if (lineTarget) {
       setBracketTarget(null)
@@ -315,8 +343,10 @@ document.addEventListener('nav', () => {
   }
 
   const hide = (): void => {
+    window.clearTimeout(scrollIdleTimer)
     pointerTargetDirty = false
     pointerTarget = null
+    setChartTarget(null)
     setBracketTarget(null)
     mode = 'diamond'
     visible = false
@@ -330,17 +360,26 @@ document.addEventListener('nav', () => {
       schedule()
   }
 
+  const onScroll = (): void => {
+    invalidateGeometry()
+    window.clearTimeout(scrollIdleTimer)
+    // Recheck after the compositor settles, even when the mouse has not moved.
+    scrollIdleTimer = window.setTimeout(invalidateGeometry, SCROLL_RECONCILE_DELAY_MS)
+  }
+
   document.documentElement.classList.add('site-cursor-ready')
   document.addEventListener('pointermove', onMove, { signal })
   document.addEventListener('click', onClick, { signal })
   document.addEventListener('pointerleave', hide, { signal })
   window.addEventListener('blur', hide, { signal })
   window.addEventListener('resize', invalidateGeometry, { signal })
-  window.addEventListener('scroll', invalidateGeometry, { capture: true, passive: true, signal })
+  window.addEventListener('scroll', onScroll, { capture: true, passive: true, signal })
+  window.addEventListener('scrollend', invalidateGeometry, { capture: true, passive: true, signal })
   window.addCleanup(() => {
     controller.abort()
     if (frame !== 0) window.cancelAnimationFrame(frame)
     window.clearTimeout(magneticTimer)
+    window.clearTimeout(scrollIdleTimer)
     bracket.dataset.visible = 'false'
     magneticTarget?.removeAttribute('data-site-cursor-active')
     frame = 0

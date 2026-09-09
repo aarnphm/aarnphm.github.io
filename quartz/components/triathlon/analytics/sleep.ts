@@ -1,8 +1,9 @@
 import type { Analytics } from '../../../plugins/stores/analytics'
 import type { OuraDayDetail, OuraSeries } from '../../../plugins/stores/oura'
 import type { TriathlonContext } from '../runtime/context'
+import { mountDaySleepCharts } from '../activity/day-sleep'
 import {
-  buildOuraDayDetail,
+  buildSleepDayDetail,
   buildSleeplessRock,
   OURA_STAGE,
   wallClock,
@@ -71,6 +72,7 @@ export const mountSleepPanel = (
   const dayInner = block?.querySelector<HTMLElement>('.tri-sleep-day-inner')
   if (!block || !chart || !day || !dayInner) return () => {}
   const nights = data.recovery.series
+  const supplementalByDate = new Map(data.daily.map(day => [day.date, day.sleepMetrics]))
   let live = true
   let selectedDate: string | null = null
   let detailCleanup: (() => void) | null = null
@@ -101,20 +103,29 @@ export const mountSleepPanel = (
     if (!live || context.signal.aborted || selectedDate !== date || !dayInner.isConnected) return
     clearDetail()
     const detail = details?.[date]
-    if (!detail) {
+    const supplemental = supplementalByDate.get(date) ?? null
+    if (!detail && !supplemental) {
       dayInner.replaceChildren(
         buildSleeplessRock(context.formatter.text('no detail for this night')),
       )
       reveal()
       return
     }
-    dayInner.replaceChildren(buildOuraDayDetail(context.formatter, detail))
-    detailCleanup = mountDetailScrubs(dayInner, detail, context)
+    dayInner.replaceChildren(
+      buildSleepDayDetail(context.formatter, date, detail ?? null, supplemental),
+    )
+    const ouraCleanup = detail ? mountDetailScrubs(dayInner, detail, context) : () => {}
+    const respirationCleanup = mountDaySleepCharts(dayInner, () => context.presentation.locale)
+    detailCleanup = () => {
+      ouraCleanup()
+      respirationCleanup()
+    }
     reveal()
   }
   const open = (date: string): void => {
     selectedDate = date
     setActive(date)
+    if (supplementalByDate.get(date)) renderDetail(date, null)
     const path = context.root?.dataset.ouraDetailPath
     if (!path) {
       renderDetail(date, null)

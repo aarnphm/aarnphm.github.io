@@ -1,6 +1,7 @@
 import {
   Decoder,
   Stream,
+  type DeviceInfoMesg,
   type FitMessages,
   type RecordMesg,
   type SegmentLapMesg,
@@ -165,10 +166,28 @@ const SODIUM_LOSS_FIELDS = new Set(['sodium_loss_mg', 'sodium_loss'])
 const HEAT_STRAIN_FIELDS = new Set(['heat_strain_index'])
 const SKIN_TEMPERATURE_FIELDS = new Set(['skin_temperature'])
 
+function coreOxygenProfile(devices: readonly DeviceInfoMesg[]): boolean {
+  const antDevices = devices.filter(device => device.sourceType === 'antplus')
+  const bodyTemperatureIds = new Set(
+    antDevices
+      .filter(device => fieldName(text(device.productName) ?? '') === 'body_temp')
+      .flatMap(device => (device.antDeviceNumber == null ? [] : [device.antDeviceNumber])),
+  )
+  const oxygenDevices = antDevices.filter(device => device.antplusDeviceType === 'muscleOxygen')
+  // CORE can broadcast a legacy oxygen profile even when no native thermal samples arrive.
+  return (
+    oxygenDevices.length > 0 &&
+    oxygenDevices.every(
+      device => device.antDeviceNumber != null && bodyTemperatureIds.has(device.antDeviceNumber),
+    )
+  )
+}
+
 function streamsFor(
   records: readonly RecordMesg[],
   developerFields: ReadonlyMap<number, DeveloperField>,
   startMs: number,
+  devices: readonly DeviceInfoMesg[],
 ): WahooStreams {
   const pairedThermal = records.flatMap(record => {
     const core = finite(record.coreTemperature)
@@ -186,6 +205,7 @@ function streamsFor(
       ({ core, skin, thb, oxygen }) =>
         Math.abs(core - thb) <= 0.100001 && Math.abs(skin - oxygen) <= 0.100001,
     )
+  const thermalOxygen = coreOxygenProfile(devices) || duplicatedThermal
   const streams: WahooStreams = {
     timestamps: [],
     time: [],
@@ -237,10 +257,10 @@ function streamsFor(
       developerNumber(record, developerFields, SKIN_TEMPERATURE_FIELDS),
     )
     streams.muscleOxygenPercent.push(
-      duplicatedThermal ? null : nonnegative(record.saturatedHemoglobinPercent),
+      thermalOxygen ? null : nonnegative(record.saturatedHemoglobinPercent),
     )
     streams.totalHemoglobinConcentration.push(
-      duplicatedThermal ? null : nonnegative(record.totalHemoglobinConc),
+      thermalOxygen ? null : nonnegative(record.totalHemoglobinConc),
     )
     streams.heatStrainIndex.push(
       nonnegative(developerNumber(record, developerFields, HEAT_STRAIN_FIELDS)),
@@ -437,7 +457,12 @@ export function decodeWahooFit(bytes: Uint8Array): WahooFitData {
   const start = timestamp(session.startTime) ?? timestamp(file.timeCreated)
   if (!start) throw new Error('Wahoo FIT file has no valid start time')
   const records = sortedRecords(messages)
-  const streams = streamsFor(records, developerFields, start.getTime())
+  const streams = streamsFor(
+    records,
+    developerFields,
+    start.getTime(),
+    messages.deviceInfoMesgs ?? [],
+  )
   return {
     startDate: start.toISOString(),
     sport: text(session.sport),

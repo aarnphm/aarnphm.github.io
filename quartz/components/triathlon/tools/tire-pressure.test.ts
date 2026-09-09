@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test, { type TestContext } from 'node:test'
 import {
   DEFAULT_TIRE_PRESSURE_SELECTION,
+  updateTirePressureSelection,
   type TirePressureSelection,
 } from '../../../util/triathlon-tire-pressure'
 import { readTirePressureSelection, storeTirePressureSelection } from './tire-pressure'
@@ -20,6 +21,43 @@ const mockLocalStorage = (t: TestContext): void => {
   }
   t.mock.getter(globalThis, 'localStorage', () => storage)
 }
+
+test('restores advanced 31/30 widths and preserves explicit mode for equal widths', t => {
+  mockLocalStorage(t)
+  const advanced: TirePressureSelection = {
+    ...DEFAULT_TIRE_PRESSURE_SELECTION,
+    measuredTire: { frontWidthMm: 31, rearWidthMm: 30 },
+  }
+  storeTirePressureSelection(advanced)
+  assert.deepEqual(readTirePressureSelection(), advanced)
+  const equal = { ...advanced, measuredTire: { frontWidthMm: 30, rearWidthMm: 30 } }
+  storeTirePressureSelection(equal)
+  assert.deepEqual(readTirePressureSelection(), equal)
+  const shared = updateTirePressureSelection(equal, { field: 'widthMode', value: 'shared' })
+  storeTirePressureSelection(shared)
+  assert.deepEqual(readTirePressureSelection(), shared)
+})
+
+test('migrates saved widths without replacing either axle measurement', t => {
+  mockLocalStorage(t)
+  localStorage.setItem('triathlon-tire-pressure-measured-front', '31')
+  localStorage.setItem('triathlon-tire-pressure-measured-rear', '30')
+  const separate = readTirePressureSelection()
+  assert.equal(separate.widthMode, 'separate')
+  assert.deepEqual(separate.measuredTire, { frontWidthMm: 31, rearWidthMm: 30 })
+  localStorage.setItem('triathlon-tire-pressure-width-mode', 'unknown')
+  assert.deepEqual(readTirePressureSelection(), separate)
+  localStorage.setItem('triathlon-tire-pressure-measured-front', '30')
+  assert.equal(readTirePressureSelection().widthMode, 'shared')
+})
+
+test('normalizes a stale rear width when restoring shared mode', t => {
+  mockLocalStorage(t)
+  localStorage.setItem('triathlon-tire-pressure-width-mode', 'shared')
+  localStorage.setItem('triathlon-tire-pressure-measured-front', '31')
+  localStorage.setItem('triathlon-tire-pressure-measured-rear', '28')
+  assert.deepEqual(readTirePressureSelection().measuredTire, { frontWidthMm: 31, rearWidthMm: 31 })
+})
 
 for (const [tire, setup] of [
   ['race-sl-r', 'tpu'],

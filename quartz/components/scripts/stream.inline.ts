@@ -411,7 +411,16 @@ const hydrateStream = (): void => {
   }
 
   const onClick = (event: MouseEvent): void => {
-    if (!isRoot || root.dataset.streamSearchActive === 'true') return
+    if (
+      !isRoot ||
+      root.dataset.streamSearchActive === 'true' ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return
     const target = event.target
     if (!(target instanceof Element)) return
     const link = target.closest<HTMLAnchorElement>(
@@ -425,7 +434,8 @@ const hydrateStream = (): void => {
     activeTimestamp = activeTimestamp === timestamp ? null : timestamp
     applyHistory(activeTimestamp ? canonicalizePath(href) : canonicalPath)
     applyFilters()
-    link.focus()
+    link.focus({ preventScroll: true })
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   const onKeydown = (event: KeyboardEvent): void => {
