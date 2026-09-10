@@ -33,9 +33,9 @@ import {
   type RunMetricMode,
 } from './scrub'
 
-const ALIGNED_ACTIVITY_SECTIONS = [
-  { selector: '.tri-environment', margin: '--tri-environment-margin' },
-  { selector: '.tri-training-effect', margin: '--tri-training-effect-margin' },
+const ALIGNED_ACTIVITY_SECTIONS: { selector: string; margin: string }[] = [
+  { selector: '.tri-act-more > .tri-environment', margin: '--tri-environment-margin' },
+  { selector: '.tri-act-more > .tri-training-effect', margin: '--tri-training-effect-margin' },
 ]
 
 const mountActivitySectionAlignment = (card: HTMLElement): (() => void) => {
@@ -45,7 +45,7 @@ const mountActivitySectionAlignment = (card: HTMLElement): (() => void) => {
     frame = 0
     for (const { selector, margin: marginProperty } of ALIGNED_ACTIVITY_SECTIONS) {
       const effects = Array.from(
-        card.querySelectorAll<HTMLElement>(`:scope > .tri-act > .tri-act-more > ${selector}`),
+        card.querySelectorAll<HTMLElement>(`:scope > .tri-act > ${selector}`),
       )
       const targets: {
         effect: HTMLElement
@@ -90,7 +90,7 @@ const mountActivitySectionAlignment = (card: HTMLElement): (() => void) => {
     card.removeEventListener('click', schedule)
     for (const { selector, margin } of ALIGNED_ACTIVITY_SECTIONS)
       card
-        .querySelectorAll<HTMLElement>(`:scope > .tri-act > .tri-act-more > ${selector}`)
+        .querySelectorAll<HTMLElement>(`:scope > .tri-act > ${selector}`)
         .forEach(section => section.style.removeProperty(margin))
   }
 }

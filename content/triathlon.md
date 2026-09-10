@@ -220,7 +220,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-09 16:41:03 GMT-04:00
+modified: 2026-09-09 19:45:50 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1422,6 +1422,20 @@ activity: 20108229114
 garmin: 24302010541
 wahoo: [[triathlon/wahoo/26-09-09.fit]]
 virtual: true
+```
+
+```tracking
+title: Self Care, Sweat
+date: 2026-09-09
+time: 17:30
+duration: 75 mins
+activity: sauna
+temperature: 167F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.6
+strava: 20109334842
+garmin: 24302930336
 ```
 
 <!-- training plan start

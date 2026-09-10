@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-09-01 12:27:53 GMT-04:00
+modified: 2026-09-09 22:43:15 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -323,3 +323,4 @@ title: lists
 - supercilious
 - sanctimonious
 - pharisaical
+- diaphanous

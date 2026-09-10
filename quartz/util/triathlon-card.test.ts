@@ -1732,8 +1732,8 @@ test('renders one metric per row and lists contributing recordings in the source
   const computerIndex = rows.findIndex(([label]) => label === 'computer')
   assert.ok(computerIndex >= 0)
   assert.deepEqual(rows.slice(computerIndex + 1, computerIndex + 3), [
-    ['activity', 'virtual'],
     ['source', 'Garmin'],
+    ['activity', 'virtual'],
   ])
   assert.equal(rows.filter(([label]) => label === 'distance').length, 1)
   assert.equal(rows.filter(([label]) => label === 'NP').length, 1)
@@ -3739,7 +3739,7 @@ test('omits cycling workout analysis when lap power is unavailable', () => {
   )
 })
 
-test('renders pool swim laps as selectable pace bars without elevation', () => {
+test('renders consecutive pool swim pace bars while preserving elapsed selection ranges', () => {
   const swim = swimTrendDetail({
     distanceKm: 0.15,
     movingTimeS: 195,
@@ -3831,14 +3831,33 @@ test('renders pool swim laps as selectable pace bars without elevation', () => {
   )
   assert.match(
     String(laps[0].properties.style),
-    /--tri-swim-workout-start:24\.000%;--tri-swim-workout-width:40\.000%;--tri-swim-workout-height:100\.000%/,
+    /--tri-swim-workout-start:0\.000%;--tri-swim-workout-width:61\.538%;--tri-swim-workout-height:100\.000%/,
   )
   assert.match(
     String(laps[1].properties.style),
-    /--tri-swim-workout-start:74\.000%;--tri-swim-workout-width:25\.000%;--tri-swim-workout-height:3\.000%/,
+    /--tri-swim-workout-start:61\.538%;--tri-swim-workout-width:38\.462%;--tri-swim-workout-height:3\.000%/,
+  )
+  assert.deepEqual(
+    laps.map(lap => [lap.properties.dataStartElapsedS, lap.properties.dataEndElapsedS]),
+    [
+      ['72', '192'],
+      ['222', '297'],
+    ],
   )
   assert.match(String(laps[0].properties.ariaLabel), /^Lap 1, 100 m, 2:00, 2:00 \/100m/)
   assert.match(String(laps[0].properties.ariaLabel), /130 bpm, 25 spm$/)
+
+  const openWater = buildWorkoutAnalysis(factory, { ...swim, swimLocation: 'openWater' })
+  assert.ok(openWater)
+  const openWaterLaps = byClass(openWater, 'tri-swim-workout-lap')
+  assert.match(
+    String(openWaterLaps[0].properties.style),
+    /--tri-swim-workout-start:24\.000%;--tri-swim-workout-width:40\.000%/,
+  )
+  assert.match(
+    String(openWaterLaps[1].properties.style),
+    /--tri-swim-workout-start:74\.000%;--tri-swim-workout-width:25\.000%/,
+  )
 })
 
 test('adds elevation behind open-water swim laps only when GPS data exists', () => {

@@ -1,8 +1,8 @@
 ---
 date: '2025-08-13'
-description: Mixture of Expert
+description: sparse mixture-of-experts routing, active versus stored parameters, and the Step3/Kimi K2 designs.
 id: MoE
-modified: 2026-06-05 15:08:30 GMT-04:00
+modified: 2026-09-10 09:14:14 GMT-04:00
 seealso:
   - '[[thoughts/muon|muon]]'
   - '[[thoughts/optimization#muon]]'
@@ -12,56 +12,61 @@ tags:
 title: MoE
 ---
 
-the first proposal is found at https://arxiv.org/abs/2101.03961
+a sparse mixture-of-experts layer routes each token through a few feed-forward networks. a learned router selects the experts and weights their outputs. for token state $x$,
+
+$$
+S(x)=\operatorname{TopK}(r(x),k),\qquad
+y(x)=\sum_{e\in S(x)}g_e(x)E_e(x).
+$$
+
+here $r(x)$ contains routing scores, $S(x)$ is the selected expert set, and $g_e(x)$ weights expert $E_e$'s output. gating and normalization vary by model. a shared expert, when present, runs for every token and adds another term.
+
+with $64$ equally sized routed experts and $k=4$, one token evaluates $4/64=1/16$ of routed FFN work. the checkpoint still stores all $64$ expert weight sets. attention, routing, shared experts, and cross-device communication add costs, so that fraction alone cannot predict memory use or latency. [@shazeer2017outrageouslylargeneuralnetworks]
+
+## origins
+
+the gated-expert idea dates at least to Jacobs, Jordan, Nowlan, and Hinton's 1991 paper, _Adaptive Mixtures of Local Experts_. [@jacobs1991adaptive] Shazeer et al. developed the sparsely gated layer for large neural networks in 2017. Switch Transformer, first released in 2021, simplifies sparse routing to one selected expert per token. [@shazeer2017outrageouslylargeneuralnetworks; @fedus2022switchtransformersscalingtrillion]
+
+routing also creates a training problem: repeatedly selecting the same experts concentrates both their updates and their workload. load-balancing mechanisms encourage broader use, while expert parallelism distributes weights and routes token states between devices.
 
 ## step3
 
-https://arxiv.org/abs/2507.19427
+Step3 combines sparse feed-forward layers with [[thoughts/MFA|Multi-Matrix Factorization Attention]] and Attention-FFN Disaggregation (AFD). MFA reduces attention state and decode arithmetic; AFD lets attention and feed-forward computation use separate device groups. [@stepfun2025step3largeaffordablemodelsystem]
 
-[@stepfun2025step3largeaffordablemodelsystem], stored in bfloat16 or block-fp8, used for vision-language reasoning.
+the [released architecture](https://github.com/stepfun-ai/Step3/blob/b0c05a818015b096309e5a63954ffa61aed28f6f/README.md) has $61$ layers, including $56$ MoE layers, with hidden width $7168$. each MoE layer selects $3$ of $48$ routed experts and also runs one shared expert. MFA uses $64$ query heads of dimension $256$. the report counts $316$ billion language-model parameters, $321$ billion including vision, and $38$ billion active per token. BF16 and block-FP8 describe the released checkpoint formats.
 
-see also https://zhuanlan.zhihu.com/p/1935657127348793545, https://zhuanlan.zhihu.com/p/1932920900203807997
+Table 3 of the report estimates these attention-side quantities for one decoding token at context length $32768$. the read and FLOP counts cover all layers. the attention FLOPs exclude linear projections. memory access measures KV/state bytes read under the quantized configurations chosen in Section 4.1. Step3 uses FP8 or INT8 KV, one byte per element. [@stepfun2025step3largeaffordablemodelsystem]
 
-Proposes [[thoughts/MFA|MFA]] to reduce KVCache and attention cost -- 22% of DeepSeek V3's per-token attention cost, and Attention-FFN Disaggregation (AFD)
+| quantity                          | Step3               | DeepSeek-V3         | Qwen3-235B-A22B     | Qwen3-32B (dense)   | ERNIE 4.5           |
+| --------------------------------- | ------------------- | ------------------- | ------------------- | ------------------- | ------------------- |
+| KV/state reads (bytes)            | $1.02\times10^9$    | $1.15\times10^9$    | $3.15\times10^9$    | $4.29\times10^9$    | $3.62\times10^9$    |
+| attention core (FLOPs)            | $1.31\times10^{11}$ | $5.89\times10^{11}$ | $1.01\times10^{11}$ | $6.87\times10^{10}$ | $5.80\times10^{10}$ |
+| arithmetic intensity (FLOPs/byte) | $128$               | $512$               | $32$                | $16$                | $16$                |
 
-|                                          | Step3                | DeepSeekV3           | Qwen3-235B           | ERNIE4.5             | Qwen3 32B            |
-| ---------------------------------------- | -------------------- | -------------------- | -------------------- | -------------------- | -------------------- |
-| model_dim                                | $\mathbf{7168}$      | $\mathbf{7168}$      | $\mathbf{4096}$      | $\mathbf{8192}$      | $\mathbf{5120}$      |
-| dense ffn_dim                            | $\mathbf{18432}$     | $\mathbf{18432}$     | $\mathbf{12288}$     | $\mathbf{28672}$     | $\mathbf{25600}$     |
-| layer_num (MoE Layer)                    | $61(56)$             | $61(58)$             | $94(94)$             | $54(51)$             | $64$                 |
-| query_head_num                           | $\mathbf{64}$        | $\mathbf{128}$       | $\mathbf{64}$        | $\mathbf{64}$        | $\mathbf{64}$        |
-| head_size                                | $\mathbf{256}$       | $\mathbf{128}$       | $\mathbf{128}$       | $\mathbf{128}$       | $\mathbf{128}$       |
-| attention_cls                            | MFA                  | MLA                  | GQA-4                | GQA-8                | GQA-8                |
-| expert num–topk                          | $3\mathrm{in}48$     | $8\mathrm{in}256$    | $8\mathrm{in}128$    | $8\mathrm{in}64$     | $8\mathrm{in}64$     |
-| dynamic expert dim (share expert)        | $5120(5120)$         | $2048(2048)$         | $1536(0)$            | $3584(0)$            | —                    |
-| activated params                         | $\mathbf{38B}$       | $\mathbf{37B}$       | $\mathbf{22B}$       | $\mathbf{47B}$       | $\mathbf{32B}$       |
-| total params (llm only)                  | $\mathbf{316B}$      | $\mathbf{671B}$      | $\mathbf{235B}$      | $\mathbf{300B}$      | —                    |
-| kv cache size (length = 32k)             | $1.02\times 10^9$    | $1.15\times 10^9$    | $3.15\times 10^9$    | $3.60\times 10^9$    | $4.30\times 10^9$    |
-| attention computation w/o linear (FLOPs) | $1.31\times 10^{11}$ | $5.89\times 10^{11}$ | $1.01\times 10^{11}$ | $5.80\times 10^{10}$ | $6.87\times 10^{10}$ |
-| arithmetic intensity                     | $128$                | $512$                | $32$                 | $16$                 | $16$                 |
+the quoted attention reduction is
+
+$$
+\frac{1.31\times10^{11}}{5.89\times10^{11}}\approx0.222.
+$$
+
+Step3 uses about $22.2\%$ of DeepSeek-V3's core attention FLOPs in this calculation. latency and cost still depend on hardware, batching, bandwidth, and the remaining model work. Qwen3-32B's [configuration](https://huggingface.co/Qwen/Qwen3-32B/blob/9216db5781bf21249d130ec9da846c4624c16137/config.json) is dense; it has no routed-expert count.
 
 ## kimi-k2
 
-> [!important] core facts from the k2 tech report
->
-> - total params ≈ 1.04t; activated ≈ 32.6b/token.
-> - moe with 384 experts (top‑8 routing + 1 shared expert).
-> - 61 transformer layers; hidden size 7168; 64 attention heads.
-> - pretrain on ~15.5t tokens; bf16 training. [@kimi2025openagentic]
+K2 reports $1.04$ trillion total parameters and $32.6$ billion active per token. its [configuration](https://huggingface.co/moonshotai/Kimi-K2-Instruct/blob/fd1984e2b7a3350dbf7305fe73a4ede25c14de50/config.json) has $61$ layers, hidden width $7168$, and $64$ attention heads. each MoE layer selects $8$ of $384$ routed experts and adds one shared expert; the first layer uses a dense FFN. [[thoughts/MLA|MLA]] compresses the KV cache. [@kimi2025openagentic]
 
-why muon / muonclip at scale
+MuonClip combines [[thoughts/muon|Muon]] with QK-Clip. when a head's observed maximum attention logit exceeds $\tau=100$, QK-Clip rescales its query/key projection weights after the optimizer update. for an observed batch maximum $S^h_{\max}$, the per-head clipping factor is
 
-- stability at trillions of tokens: k2 reports smooth loss across ~15.5t tokens using a muon‑based optimizer with clipping (muonclip and qk‑clip) to curb rare gradient/activation spikes while preserving convergence. see [@liu2025muonscalablellmtraining; @kimi2025openagentic].
-- throughput: clipping reduces outlier steps that would force smaller batches or conservative lr schedules at this scale.
-- memory + latency: moe yields sparse activation (≈32.6b active), and multi‑head latent attention (mla) shrinks kv cache to serve long contexts (≥128k) efficiently. training avoids tensor parallel by default; instead uses pipeline + expert parallel. [@kimi2025openagentic]
+$$
+\gamma_h=\begin{cases}
+\tau/S^h_{\max},&S^h_{\max}>\tau,\\
+1,&S^h_{\max}\le\tau.
+\end{cases}
+$$
 
-training system
+with MLA, the rescaling acts on head-specific projections and leaves the shared rotary key unchanged. this targets attention-logit growth. the authors report pretraining on $15.5$ trillion tokens without an observable loss spike. they do not isolate a throughput gain from clipping. [@kimi2025openagentic]
 
-- parallelism (train): pipeline parallelism 16, expert parallelism 16, and zero‑1 data parallelism on h800 clusters. [@kimi2025openagentic]
-
-evaluation snapshot
-
-- the paper reports strong coding/agentic results (e.g., swe‑bench and livecodebench) competitive with proprietary peers; see appendix of [@kimi2025openagentic] for exact numbers and setup details.
+training stores parameters in BF16 and gradient accumulation buffers in FP32. selected activations use FP8-E4M3 storage; recomputation and CPU offload reduce the remaining activation memory. the disclosed H800 setup uses $16$-way pipeline parallelism and $16$-way expert parallelism, giving $16\times16=256$ GPUs per model-parallel group, with ZeRO-1 data parallelism. [@kimi2025openagentic]
 
 > [!see-also] muon details
 >
