@@ -391,7 +391,6 @@ export const moreStatRows = (
   if (d.averageRelativeHumidityPct != null)
     rows.push(['humidity', `${d.averageRelativeHumidityPct}%`])
   if (d.computer) rows.push(['computer', d.wahoo?.sourceDevice ?? COMPUTER_LABEL[d.computer]])
-  if (d.virtual) rows.push(['activity', triText(presentation.locale, 'virtual')])
   if (d.device && (d.sport === 'run' || d.sport === 'walk' || d.sport === 'swim'))
     rows.push(['device', DEVICE_LABEL[d.device]])
   if (d.sources?.length || d.garmin || d.wahoo)
@@ -407,6 +406,7 @@ export const moreStatRows = (
               ? 'Wahoo'
               : 'Strava',
     ])
+  if (d.virtual) rows.push(['activity', triText(presentation.locale, 'virtual')])
   return rows
 }
 
@@ -4306,11 +4306,18 @@ const buildSwimWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
     )
   }
   const bars = f.el('div', 'tri-swim-workout-bars')
+  const pool = d.swimLocation === 'pool'
+  const plotDurationS = pool ? durationS : totalElapsedS
+  let activeTimeS = 0
   for (const lap of laps) {
     const metrics = analysisRangeMetrics(f.presentation, d, lap.range)
     const attrs = analysisRangeAttrs(lap.range)
-    const start = Math.max(0, Math.min(100, (lap.range.startElapsedS / totalElapsedS) * 100))
-    const end = Math.max(start, Math.min(100, (lap.range.endElapsedS / totalElapsedS) * 100))
+    // Pool bars omit rests; selection attributes retain the recorded elapsed ranges.
+    const startS = pool ? activeTimeS : lap.range.startElapsedS
+    activeTimeS += lap.range.movingTimeS ?? lap.range.durationS
+    const endS = pool ? activeTimeS : lap.range.endElapsedS
+    const start = Math.max(0, Math.min(100, (startS / plotDurationS) * 100))
+    const end = Math.max(start, Math.min(100, (endS / plotDurationS) * 100))
     const height = Math.max(3, ((paceAxis.max - lap.paceS) / paceSpan) * 100)
     const intensity = speedSpan > 0 ? 0.42 + ((lap.speedKph - minSpeedKph) / speedSpan) * 0.5 : 0.72
     attrs['aria-pressed'] = 'false'
@@ -5751,7 +5758,6 @@ export const buildSwimStrokes = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
       li,
       f.el('span', `tri-stroke-dot tri-stroke-${s}`),
       f.el('span', 'tri-stroke-name', STROKE_LABEL[s]),
-      f.el('span', 'tri-stroke-val', `${Math.round(m)}m`),
     )
     f.add(legend, li)
   }
@@ -5762,7 +5768,13 @@ export const buildSwimStrokes = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
 export const buildPool = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N => {
   const lengths = Math.max(1, Math.round((d.distanceKm * 1000) / 25))
   const wrap = f.el('div', 'tri-pool-wrap')
-  f.add(wrap, f.el('span', 'tri-pool-cap', `${lengths} × 25m`))
+  const cap = f.el('div', 'tri-pool-cap')
+  f.add(
+    cap,
+    f.el('span', 'tri-pool-lengths', `${lengths} × 25m`),
+    f.el('span', 'tri-pool-distance', dist(f.presentation, d.distanceKm, 'swim')),
+  )
+  f.add(wrap, cap)
   const strokes = buildSwimStrokes(f, d)
   if (strokes) f.add(wrap, strokes)
   return wrap
@@ -7623,6 +7635,10 @@ const activityTrainingRows = (
         maximumFractionDigits: 3,
       }),
     ])
+  rows.push(['training effect', triText(presentation.locale, activityTrainingEffectLabel(d))])
+  const exerciseLoad = garmin?.exerciseLoad ?? d.calculatedExerciseLoad?.value
+  if (exerciseLoad != null)
+    rows.push(['exercise load', Math.round(exerciseLoad).toLocaleString(locale)])
   const normalizedPower = d.wahoo?.metrics.normalizedPower
   const averagePower = d.wahoo?.metrics.avgPower
   if (
@@ -7639,10 +7655,6 @@ const activityTrainingRows = (
         maximumFractionDigits: 3,
       }),
     ])
-  rows.push(['training effect', triText(presentation.locale, activityTrainingEffectLabel(d))])
-  const exerciseLoad = garmin?.exerciseLoad ?? d.calculatedExerciseLoad?.value
-  if (exerciseLoad != null)
-    rows.push(['exercise load', Math.round(exerciseLoad).toLocaleString(locale)])
   return rows
 }
 

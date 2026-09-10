@@ -1,8 +1,8 @@
 ---
 date: '2025-08-07'
-description: rotary position embedding — pairwise rotation of Q/K so inner products encode relative offset, plus context-extension via frequency rescaling.
+description: rotary position embeddings as pairwise Q/K rotations, the relative-offset identity, and frequency rescaling for longer contexts.
 id: RoPE
-modified: 2026-06-05 15:08:12 GMT-04:00
+modified: 2026-09-10 09:10:35 GMT-04:00
 seealso:
   - '[[thoughts/positional embeddings|positional embeddings]]'
   - '[[thoughts/Attention|Attention]]'
@@ -15,91 +15,106 @@ tags:
 title: RoPE
 ---
 
-rotary position embedding [@su2023roformerenhancedtransformerrotary]. instead of adding a position vector to the input embedding, RoPE rotates query and key in $\mathbb{R}^2$ planes by an angle that depends on absolute position. the inner product $\langle R_m q, R_n k\rangle$ then depends only on the offset $m - n$, so attention sees relative position without any extra parameter.
+RoPE [@su2023roformerenhancedtransformerrotary] rotates query and key coordinates in 2D pairs before the attention dot product. position $m$ gives a pair angle $m\theta$. the dot product cancels the absolute angles and leaves a signed offset, $n-m$.
+
+qualification: the rotation depends on relative position. the score still depends on $q$ and $k$, which carry token content and earlier-layer state.
 
 ## the 2D case
 
-for a single 2-vector $q \in \mathbb{R}^2$ at position $m$, define the rotation
+for a frequency $\theta$, write
 
 $$
-R_m = \begin{pmatrix} \cos m\theta & -\sin m\theta \\ \sin m\theta & \cos m\theta \end{pmatrix}, \qquad \tilde q_m = R_m q.
+R_m(\theta)=\begin{pmatrix}
+\cos(m\theta)&-\sin(m\theta)\\
+\sin(m\theta)&\cos(m\theta)
+\end{pmatrix}.
 $$
 
-the rotation is a unitary, so $\lVert \tilde q_m \rVert = \lVert q \rVert$. for two positions $m,n$,
+this is an orthogonal matrix: $R_m^\top R_m=I$, so rotation preserves norm. for fixed $q,k\in\mathbb{R}^2$,
 
 $$
-\langle R_m q, R_n k\rangle = q^\top R_m^\top R_n k = q^\top R_{n-m} k,
+\langle R_m q,R_n k\rangle
+=q^\top R_m^\top R_n k
+=q^\top R_{n-m}k.
 $$
 
-because $R_m^\top R_n = R_{n-m}$ (rotations are an abelian one-parameter group). the dot product carries the offset $n-m$, not the absolute positions.
+a shared position shift leaves this expression unchanged. moving the rotation to the query reverses its sign:
+
+$$
+\langle q,R_{n-m}k\rangle=\langle R_{m-n}q,k\rangle.
+$$
+
+sign check: take $q=(1,0)^\top$, $k=(0,1)^\top$, and $(n-m)\theta=\pi/2$. the rotated key is $(-1,0)^\top$, giving a score of $-1$. rotating the query forward by the same angle would give $+1$.
 
 ## $d$-dimensional generalisation
 
-split the head dimension $d$ into $d/2$ disjoint pairs $\{(2i, 2i+1)\}_{i=0}^{d/2-1}$ and rotate each pair by its own frequency $\theta_i$. with the geometric schedule
+let rotary dimension $d$ be even. split the coordinates into $d/2$ pairs and give pair $i$ the frequency
 
 $$
-\theta_i = b^{-2i/d}, \qquad b = 10000,
+\theta_i=b^{-2i/d},\qquad i=0,\ldots,d/2-1.
 $$
 
-the rotation matrix is block-diagonal,
+the original schedule uses $b=10000$. stack the pairwise rotations into a block-diagonal matrix $R_m^{(d)}$. applying the two-dimensional identity to each block gives
 
 $$
-R_m^{(d)} = \mathrm{diag}\bigl(R_m(\theta_0), R_m(\theta_1), \dots, R_m(\theta_{d/2-1})\bigr),
+\left\langle R_m^{(d)}q,R_n^{(d)}k\right\rangle
+=\sum_{i=0}^{d/2-1}q_i^\top R_{n-m}(\theta_i)k_i.
 $$
 
-and applied identically to $q$ and $k$ before the attention dot. the lowest-index pairs spin fast (period $\approx 2\pi$); the highest-index pairs spin slowly (period $\approx 2\pi b$). a model trained on context length $L$ has seen each frequency exercised over the angular interval $[0, L\theta_i)$.
+here $q_i,k_i\in\mathbb{R}^2$ are coordinate pairs. their wavelengths, measured in units of token positions, are
 
-> [!important] relative-offset property
->
-> for any $m, n$ and any pair index $i$,
->
-> $$
-> \langle R_m^{(d)} q, R_n^{(d)} k\rangle = \sum_{i=0}^{d/2-1} \langle R_{n-m}(\theta_i)\, q_i, k_i\rangle.
-> $$
->
-> attention reads ==only the offset==. there is no learned position parameter; the inductive bias lives in the schedule $\{\theta_i\}$.
+$$
+\lambda_i=\frac{2\pi}{\theta_i},\qquad
+\lambda_0=2\pi,\qquad
+\lambda_{d/2-1}=2\pi b^{1-2/d}.
+$$
+
+the schedule supplies several distance scales. it adds no learned position vectors. the model learns how to use those scales through its query and key projections.
 
 ## scaling to longer contexts
 
-the failure mode at test-time is that positions $m > L$ rotate the slow pairs into angles the model never saw at training. the three families below all reshape the schedule rather than retrain from scratch.
+RoPE is defined at every integer position. that algebra alone gives no guarantee about accuracy at longer distances. a slow pair may have covered only part of a turn during training; extending the sequence changes which phases and combinations the model encounters.
+
+let $L$ be the original context length, $L'$ the target, and $s=L'/L>1$. position interpolation replaces position $m$ by $m/s$, equivalently replacing every $\theta_i$ by $\theta_i/s$. adjacent positions then have $1/s$ of their original angular separation. Chen et al. used this transformation with fine-tuning. [@chen2023extendingcontextwindowlarge]
 
 ### NTK-aware scaling
 
-stretch the base $b$ instead of compressing positions. for a context-extension factor $s = L'/L$, set
+bloc97's NTK-aware base scaling keeps the fastest pair fixed and stretches the slowest wavelength by $s$. for $d>2$,
 
 $$
-b' = b \cdot s^{d/(d-2)}.
+(b')^{1-2/d}=s b^{1-2/d}
+\quad\Longrightarrow\quad
+b'=b s^{d/(d-2)}.
 $$
 
-high frequencies are nearly untouched (so short-range structure survives) while low frequencies pick up the slack. derived from a neural-tangent-kernel argument that the highest-frequency coordinates dominate the local interpolation error.
+consequently $\theta'_i=\theta_i s^{-2i/(d-2)}$: the first frequency stays fixed and the last is divided by $s$. YaRN's appendix gives this derivation for bloc97's NTK-aware proposal. this is endpoint matching; accuracy at the target context length still has to be measured. [@peng2023yarnefficientcontextwindow]
 
 ### YaRN
 
-[@peng2023yarnefficientcontextwindow] partitions the pair indices into three bands by wavelength $\lambda_i = 2\pi / \theta_i$ relative to the training length $L$:
+YaRN combines frequency-dependent interpolation with attention scaling. it leaves high frequencies unchanged, divides low frequencies by $s$, and blends between them. the bands use the number of rotations within $L$.
 
-- **high-frequency** ($\lambda_i \ll L$, fully exercised) — leave $\theta_i$ untouched.
-- **low-frequency** ($\lambda_i \gtrsim L$, never completed a period) — divide $\theta_i$ by $s$, the position-interpolation move.
-- **mid-band** — ramp linearly between the two extremes.
+for the LLaMA-family experiments, its fitted amplitude factor is
 
-YaRN also rescales the attention temperature by $\sqrt{1 + 0.1\,\log s}$ to compensate for the wider rotational support shrinking softmax mass. small fine-tune (typically $\sim 100$ steps) recovers the original perplexity at the new length.
+$$
+a=1+0.1\ln s,\qquad
+\operatorname{softmax}\!\left(\frac{a^2\tilde Q\tilde K^\top}{\sqrt{d_h}}\right),
+$$
+
+here $\tilde Q,\tilde K$ use the rescaled frequencies before amplitude scaling, and $d_h$ is the attention head dimension. multiplying both by $a$ multiplies their dot product by $a^2$. the equivalent temperature is $t=a^{-2}$. the amplitude fit is empirical. [@peng2023yarnefficientcontextwindow]
 
 ### LongRoPE
 
-[@ding2024longropeextendingllmcontext] keeps YaRN's per-band treatment but searches the per-dimension rescaling factors with an evolutionary loop on a small calibration set, then trains progressively from $L$ to $4L$ to $\dots$ to the target. reported context windows reach $2\text{M}$ tokens with sub-1B parameter-updates.
+LongRoPE searches rescaling factors across rotary dimensions and a prefix of token positions to leave unscaled. pairs crossing that prefix boundary lose the pure relative-offset property because the two positions follow different scaling rules.
 
-| scheme                 | what is rescaled                          | extra training           |
-| ---------------------- | ----------------------------------------- | ------------------------ |
-| position interpolation | all $\theta_i$ uniformly by $s$           | yes, small               |
-| NTK-aware              | base $b \to b s^{d/(d-2)}$                | none                     |
-| YaRN                   | per-band $\theta_i$ + softmax temperature | $\sim 100$ steps         |
-| LongRoPE               | per-dim $\theta_i$ found by search        | progressive, multi-stage |
+its LLaMA2 procedure fine-tunes through a $256\mathrm{k}$ context, then searches another interpolation to reach $2048\mathrm{k}$; here $\mathrm{k}$ denotes $1024$ tokens. a separate short-context adjustment recovers performance at $8\mathrm{k}$. the paper reports $1000$ fine-tuning steps for this procedure; steps and training-token counts are different budgets. [@ding2024longropeextendingllmcontext]
 
 ## implementation note
 
-RoPE applies to $Q$ and $K$ only; values $V$ are left alone, which is what lets MLA cache one RoPE-bearing duplicate $k_t^R$ alongside the latent $c_t^{KV}$ without rotating the reconstructed $v_{t,i}^C$. see [[thoughts/MLA|MLA]] eq. (3)–(4) for the decoupling that makes the cache compatible with rotary embeddings.
+in standard decoder implementations, RoPE rotates $Q$ and $K$; $V$ stays unrotated. queries and keys must use the checkpoint's coordinate-pairing convention. adjacent-pair and split-half layouts require the corresponding weight convention.
+
+[[thoughts/MLA|DeepSeek's decoupled MLA]] caches a separate RoPE-bearing key alongside its compressed KV latent. this keeps the position-dependent key term separate from the content term whose projection can be absorbed into the query computation.
 
 > [!todo]+ follow-ups
 >
-> - derive the NTK rescaling $b' = b s^{d/(d-2)}$ from the kernel-interpolation argument.
-> - compare position interpolation vs. NTK-aware on a fixed eval (perplexity at $2L, 4L, 8L$); which dims dominate the loss?
-> - read Chen et al. (2023) for the original PI proposal and bloc97's reddit thread for NTK-aware.
+> - compare position interpolation and base scaling at $2L$, $4L$, and $8L$, recording both perplexity and retrieval accuracy.
+> - test cached decoding when the scaling factor changes mid-sequence. previously rotated keys must remain consistent with the new queries.

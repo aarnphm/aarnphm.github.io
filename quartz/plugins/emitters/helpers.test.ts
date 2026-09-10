@@ -128,9 +128,10 @@ test('binary write cache tracks unchanged and changed buffers', async () => {
 })
 
 test('incremental readers keep the complete old file until its replacement is ready', async t => {
-  const output = await mkdtemp(path.join(tmpdir(), 'quartz-write-atomic-'))
+  const directory = await mkdtemp(path.join(tmpdir(), 'quartz-write-atomic-'))
+  const output = path.join(directory, 'public')
   t.after(async () => {
-    await rm(output, { recursive: true, force: true })
+    await rm(directory, { recursive: true, force: true })
     resetWriteCache()
   })
   const buildCtx = ctx(output)
@@ -151,20 +152,28 @@ test('incremental readers keep the complete old file until its replacement is re
   try {
     await paused.promise
     assert.equal(await readFile(file, 'utf8'), 'old page')
+    const assets = await readdir(output, { recursive: true })
+    assert.deepEqual(assets, ['page.html'])
+    resume.resolve()
+    await pending
+    // Asset scanners may stat their directory listing after the write has finished.
+    for (const asset of assets) await stat(path.join(output, asset))
   } finally {
     resume.resolve()
     await pending
   }
   assert.equal(await readFile(file, 'utf8'), 'new page')
   assert.deepEqual(await readdir(output), ['page.html'])
+  assert.deepEqual(await readdir(directory), ['public'])
   await write({ ctx: buildCtx, slug: 'page', ext: '.html', content: 'old page' })
   assert.equal(await readFile(file, 'utf8'), 'old page')
 })
 
 test('failed incremental writes preserve the published file and remove temporary output', async t => {
-  const output = await mkdtemp(path.join(tmpdir(), 'quartz-write-atomic-'))
+  const directory = await mkdtemp(path.join(tmpdir(), 'quartz-write-atomic-'))
+  const output = path.join(directory, 'public')
   t.after(async () => {
-    await rm(output, { recursive: true, force: true })
+    await rm(directory, { recursive: true, force: true })
     resetWriteCache()
   })
   const buildCtx = ctx(output)
@@ -182,8 +191,10 @@ test('failed incremental writes preserve the published file and remove temporary
   )
   assert.equal(await readFile(file, 'utf8'), 'old page')
   assert.deepEqual(await readdir(output), ['page.html'])
+  assert.deepEqual(await readdir(directory), ['public'])
 
   await writeKnownChanged({ ctx: buildCtx, slug: 'page', ext: '.html', content: 'recovered page' })
   assert.equal(await readFile(file, 'utf8'), 'recovered page')
   assert.deepEqual(await readdir(output), ['page.html'])
+  assert.deepEqual(await readdir(directory), ['public'])
 })

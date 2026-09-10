@@ -141,8 +141,11 @@ async function writeOutputFile(
     return
   }
 
-  // Wrangler keeps serving during rebuilds, so readers must see complete files.
-  const temporary = `${pathToPage}.tmp-${randomUUID()}`
+  // Stage beside the output tree so Wrangler cannot index a temporary file before rename.
+  const temporary = path.join(
+    path.dirname(path.resolve(ctx.argv.output)),
+    `.quartz-write-${randomUUID()}`,
+  )
   try {
     await fs.promises.writeFile(temporary, content)
     await fs.promises.rename(temporary, pathToPage)
