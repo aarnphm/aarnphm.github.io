@@ -2838,6 +2838,24 @@ function activityMetricSamples(
     return collected.sort((left, right) => left.elapsedS - right.elapsedS)
   }
   const directWahooRespiration = collect(stream.respiration, value => value > 0)
+  const fitStamina = collect(
+    stream.garminStamina?.current ?? [],
+    value => value >= 0 && value <= 100,
+  )
+  const fitPotentialStamina = collect(
+    stream.garminStamina?.potential ?? [],
+    value => value >= 0 && value <= 100,
+  )
+  if (fitStamina.length >= 2 && fitPotentialStamina.length >= 2) {
+    samples.stamina = fitStamina
+    samples.potentialStamina = fitPotentialStamina
+    samples.staminaTrace = {
+      source: 'garmin',
+      method: 'garmin-native',
+      ftpWatts: null,
+      maxHeartRateBpm: null,
+    }
+  }
   const select = <T extends TimedNullableMetricSample>(
     garminSamples: T[],
     wahooSamples: T[],
@@ -3681,7 +3699,11 @@ function projectDetail(
         ) ??
         temperatureAt(temperatureSeries, elapsedS) ??
         fallbackTemperatureC
-      const rightPowerPct = timedMetricAt(metricSamples.rightBalance, elapsedS)
+      const rightPowerPct = timedNullableMetricAt(
+        metricSamples.rightBalance,
+        elapsedS,
+        WAHOO_TELEMETRY_MAX_DISTANCE_S,
+      )
       const staminaAt = (samples: TimedMetricSample[]): number | null =>
         samples.length > 0 &&
         elapsedS >= samples[0].elapsedS &&

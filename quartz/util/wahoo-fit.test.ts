@@ -11,6 +11,7 @@ import {
   type SessionMesg,
 } from '@garmin/fitsdk'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { decodeWahooFit, wahooFitSha256 } from './wahoo-fit'
 
@@ -361,6 +362,46 @@ test('decodes Wahoo FIT summary, device, aligned streams, and balance', () => {
 
 test('rejects non-FIT bytes', () => {
   assert.throws(() => decodeWahooFit(Uint8Array.from([1, 2, 3])), /not FIT/)
+})
+
+test('preserves Garmin stamina in a merged Wahoo FIT, including zero and missing samples', () => {
+  // Synthetic FIT: Wahoo file, remapped Garmin local device, private uint8 record fields 137/138.
+  const bytes = readFileSync(new URL('./fixtures/wahoo-garmin-stamina.fit', import.meta.url))
+  const fit = decodeWahooFit(bytes)
+  assert.deepEqual(fit.streams.time, [0, 1, 2, 5, 9, 11])
+  assert.deepEqual(fit.streams.garminStamina, {
+    current: [80, 0, null, null, 65, null],
+    potential: [83, 80, null, null, 70, null],
+  })
+  assert.deepEqual(fit.streams.respiration, [24, 25, 26, 26, 27, 28])
+  assert.equal(decodeWahooFit(activityFit()).streams.garminStamina, undefined)
+})
+
+test('reads CORE developer temperature when the native field and first alias are missing', () => {
+  const encoder = new Encoder()
+  const file: FileIdMesg = { type: 'activity', manufacturer: 'wahooFitness', timeCreated: START }
+  encoder.onMesg(Profile.MesgNum.FILE_ID, file)
+  const developer: DeveloperDataIdMesg = {
+    developerDataIndex: 22,
+    applicationId: Array.from({ length: 16 }, () => 1),
+  }
+  for (const [key, name] of ['core_temperature', 'CIQ_core_temperature'].entries()) {
+    const field: FieldDescriptionMesg = {
+      developerDataIndex: 22,
+      fieldDefinitionNumber: key,
+      fitBaseTypeId: 136,
+      fieldName: name,
+      units: 'C',
+    }
+    encoder.addDeveloperField(key, developer, field)
+    if (key === 0) encoder.onMesg(Profile.MesgNum.DEVELOPER_DATA_ID, developer)
+    encoder.onMesg(Profile.MesgNum.FIELD_DESCRIPTION, field)
+  }
+  const session: SessionMesg = { startTime: START, sport: 'cycling' }
+  encoder.onMesg(Profile.MesgNum.SESSION, session)
+  const record: RecordMesg = { timestamp: START, developerFields: { 1: 37.25 } }
+  encoder.onMesg(Profile.MesgNum.RECORD, record)
+  assert.deepEqual(decodeWahooFit(encoder.close()).streams.coreTemperatureC, [37.25])
 })
 
 test('recognizes Wahoo Summit Segment and Freeride prefixes only', () => {

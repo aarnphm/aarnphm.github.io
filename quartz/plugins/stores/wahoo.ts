@@ -88,6 +88,7 @@ export interface WahooStreams {
   speed: (number | null)[]
   temperature: (number | null)[]
   respiration: (number | null)[]
+  garminStamina?: { current: (number | null)[]; potential: (number | null)[] }
   muscleOxygenPercent: (number | null)[]
   totalHemoglobinConcentration: (number | null)[]
   heatStrainIndex: (number | null)[]
