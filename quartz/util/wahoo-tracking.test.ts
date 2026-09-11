@@ -7,7 +7,7 @@ import {
   type SessionMesg,
 } from '@garmin/fitsdk'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, utimesSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync, utimesSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test, { type TestContext } from 'node:test'
@@ -268,7 +268,7 @@ test('loads an uncached linked FIT and merges telemetry onto the virtual course 
   const presentation = { locale: 'en', distance: 'metric', powerSamples: 'recorded' } as const
   assert.ok(
     moreStatRows(presentation, detail).some(
-      ([key, value]) => key === 'source' && value === 'Garmin',
+      ([key, value]) => key === 'source' && value === 'Wahoo',
     ),
   )
   assert.ok(
@@ -397,6 +397,45 @@ test('uses Strava course without Garmin and Garmin UTC timeline without Strava s
   const projected = applyActivityTracking(strava, garmin, [entry], wahoo)!
   assert.equal(projected.streams!['101'].time![0], 0)
   assert.equal(projected.streams!['101'].watts![0], 0)
+})
+
+test('projects recorded Garmin stamina from a linked Wahoo FIT with native provenance', t => {
+  const dir = temporary(t)
+  writeFileSync(
+    join(dir, FIT_PATH),
+    readFileSync(new URL('./fixtures/wahoo-garmin-stamina.fit', import.meta.url)),
+  )
+  const { strava } = sources()
+  const wahoo = loadTrackedWahooFits(null, strava, [entry], dir)!
+  const detail = buildPayload(
+    strava,
+    null,
+    null,
+    undefined,
+    null,
+    287,
+    undefined,
+    undefined,
+    wahoo,
+    190,
+    166,
+    undefined,
+    [entry],
+  ).details['101']
+  assert.ok(isActivityDetail(JSON.parse(JSON.stringify(detail))))
+  assert.equal(detail.staminaTrace?.source, 'garmin')
+  assert.equal(detail.staminaTrace?.method, 'garmin-native')
+  assert.equal(detail.staminaTrace?.ftpWatts, null)
+  assert.ok(detail.route.some(point => point.stamina === 0 && point.potentialStamina === 80))
+  assert.ok(detail.route.some(point => point.stamina === 65 && point.potentialStamina === 70))
+  assert.equal(detail.route.at(-1)?.stamina, null)
+  assert.equal(detail.route[0].rightPowerPct, 53)
+  assert.ok(
+    detail.route.some(
+      point => point.elapsedS > 2.5 && point.elapsedS < 6.5 && point.rightPowerPct == null,
+    ),
+    JSON.stringify(detail.route.map(point => [point.elapsedS, point.rightPowerPct])),
+  )
 })
 
 test('deduplicates an identical session re-encoded by Wahoo and detects replaced files', t => {

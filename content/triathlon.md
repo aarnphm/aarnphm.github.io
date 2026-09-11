@@ -220,7 +220,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-09 19:45:50 GMT-04:00
+modified: 2026-09-10 21:04:53 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1436,6 +1436,25 @@ cooldown: cold plunge
 htl: 7.6
 strava: 20109334842
 garmin: 24302930336
+```
+
+```tracking
+activity: 20123273837
+wahoo: [[triathlon/wahoo/26-09-10.fit]]
+```
+
+```tracking
+title: Guided All Round, Reset
+date: 2026-09-10
+time: 19:30
+duration: 75 mins
+activity: sauna
+temperature: 178F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.6
+strava: 20124347682
+garmin: 24316146067
 ```
 
 <!-- training plan start

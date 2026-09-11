@@ -17,6 +17,7 @@ import type {
 } from '../plugins/stores/wahoo'
 import { emptyWahooMetrics } from '../plugins/stores/wahoo'
 import { fitCyclingDynamics, fitGearShifts } from './garmin-fit'
+import { isRecord } from './type-guards'
 
 const SEMICIRCLES_PER_DEGREE = 2 ** 31 / 180
 
@@ -88,6 +89,7 @@ function decodeMessages(bytes: Uint8Array): DecodedMessages {
   const decoded = new Decoder(Stream.fromByteArray(bytes)).read({
     expandSubFields: true,
     expandComponents: true,
+    includeUnknownData: true,
     fieldDescriptionListener: (key, _developer, field) => {
       const name = text(field.fieldName)
       if (name)
@@ -148,11 +150,13 @@ function developerNumber(
   for (const [key, value] of Object.entries(record.developerFields ?? {})) {
     const field = fields.get(Number(key))
     if (!field || !acceptedNames.has(field.name)) continue
-    if (typeof value === 'number') return finite(value / field.scale - field.offset)
+    if (typeof value === 'number' && Number.isFinite(value))
+      return value / field.scale - field.offset
     if (!Array.isArray(value)) continue
     for (let index = value.length - 1; index >= 0; index--) {
       const item = value[index]
-      if (typeof item === 'number') return finite(item / field.scale - field.offset)
+      if (typeof item === 'number' && Number.isFinite(item))
+        return item / field.scale - field.offset
     }
   }
   return null
@@ -165,6 +169,15 @@ const FLUID_LOSS_FIELDS = new Set(['fluid_loss_ml', 'fluid_loss'])
 const SODIUM_LOSS_FIELDS = new Set(['sodium_loss_mg', 'sodium_loss'])
 const HEAT_STRAIN_FIELDS = new Set(['heat_strain_index'])
 const SKIN_TEMPERATURE_FIELDS = new Set(['skin_temperature'])
+const CORE_TEMPERATURE_FIELDS = new Set(['core_temperature', 'ciq_core_temperature'])
+
+function garminStamina(record: RecordMesg, field: '137' | '138'): number | null {
+  // Garmin's private record fields are potential (137) and current (138) stamina in percent.
+  const value = isRecord(record) ? record[field] : null
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100
+    ? value
+    : null
+}
 
 function coreOxygenProfile(devices: readonly DeviceInfoMesg[]): boolean {
   const antDevices = devices.filter(device => device.sourceType === 'antplus')
@@ -206,6 +219,11 @@ function streamsFor(
         Math.abs(core - thb) <= 0.100001 && Math.abs(skin - oxygen) <= 0.100001,
     )
   const thermalOxygen = coreOxygenProfile(devices) || duplicatedThermal
+  const hasGarminStamina =
+    devices.some(device => device.manufacturer === 'garmin' && device.sourceType === 'local') &&
+    records.some(
+      record => garminStamina(record, '137') != null || garminStamina(record, '138') != null,
+    )
   const streams: WahooStreams = {
     timestamps: [],
     time: [],
@@ -228,6 +246,7 @@ function streamsFor(
     tidalVolume: [],
     fluidLossMl: [],
     sodiumLossMg: [],
+    ...(hasGarminStamina ? { garminStamina: { current: [], potential: [] } } : {}),
   }
   for (const record of records) {
     const date = timestamp(record.timestamp)
@@ -236,6 +255,8 @@ function streamsFor(
     const longitude = coordinate(record.positionLong, -180, 180)
     streams.timestamps.push(date.toISOString())
     streams.time.push(Math.max(0, (date.getTime() - startMs) / 1000))
+    streams.garminStamina?.current.push(garminStamina(record, '138'))
+    streams.garminStamina?.potential.push(garminStamina(record, '137'))
     streams.latlng.push(latitude != null && longitude != null ? [latitude, longitude] : null)
     streams.altitude.push(finite(record.enhancedAltitude ?? record.altitude))
     streams.distance.push(nonnegative(record.distance))
@@ -252,7 +273,9 @@ function streamsFor(
           developerNumber(record, developerFields, BREATH_RATE_FIELDS),
       ),
     )
-    const coreTemperature = finite(record.coreTemperature)
+    const coreTemperature =
+      finite(record.coreTemperature) ??
+      developerNumber(record, developerFields, CORE_TEMPERATURE_FIELDS)
     const skinTemperature = finite(
       developerNumber(record, developerFields, SKIN_TEMPERATURE_FIELDS),
     )
