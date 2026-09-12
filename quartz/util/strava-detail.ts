@@ -27,6 +27,8 @@ export type StravaDetailPayload<TDetail extends { date: string } = StravaActivit
   zones?: StravaZones
   powerCurveRef?: PowerCurvePoint[]
   powerCurveYearRef?: PowerCurvePoint[]
+  runPowerCurveRef?: PowerCurvePoint[]
+  runPowerCurveYearRef?: PowerCurvePoint[]
   powerCurveYear?: number | null
   criticalPower?: CriticalPowerEstimate | null
   criticalPowerYear?: CriticalPowerEstimate | null
@@ -117,6 +119,8 @@ export function serializeStravaDetails<TDetail extends { date: string }>(
     zones: payload.zones,
     powerCurveRef: payload.powerCurveRef,
     powerCurveYearRef: payload.powerCurveYearRef,
+    runPowerCurveRef: payload.runPowerCurveRef,
+    runPowerCurveYearRef: payload.runPowerCurveYearRef,
     powerCurveYear: payload.powerCurveYear,
     criticalPower: payload.criticalPower,
     criticalPowerYear: payload.criticalPowerYear,

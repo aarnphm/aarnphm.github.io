@@ -156,6 +156,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         zones: payload.zones,
         powerCurveRef: payload.powerCurveRef,
         powerCurveYearRef: payload.powerCurveYearRef,
+        runPowerCurveRef: payload.runPowerCurveRef,
+        runPowerCurveYearRef: payload.runPowerCurveYearRef,
         powerCurveYear: payload.powerCurveYear,
         criticalPower: payload.criticalPower,
         criticalPowerYear: payload.criticalPowerYear,

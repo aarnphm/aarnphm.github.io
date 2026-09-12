@@ -819,6 +819,8 @@ export interface StravaPayload {
   zones: StravaZones
   powerCurveRef: PowerCurvePoint[]
   powerCurveYearRef: PowerCurvePoint[]
+  runPowerCurveRef: PowerCurvePoint[]
+  runPowerCurveYearRef: PowerCurvePoint[]
   powerCurveYear: number | null
   criticalPower: CriticalPowerEstimate | null
   criticalPowerYear: CriticalPowerEstimate | null
@@ -3903,6 +3905,8 @@ export function emptyPayload(athleteId = 0): StravaPayload {
     zones: { hr: [], power: [], ftp: null },
     powerCurveRef: [],
     powerCurveYearRef: [],
+    runPowerCurveRef: [],
+    runPowerCurveYearRef: [],
     powerCurveYear: null,
     criticalPower: null,
     criticalPowerYear: null,
@@ -4442,11 +4446,13 @@ export function buildPayload(
   const powerCurves = new Map<string, PowerCurvePoint[]>()
   const recentCurves: PowerCurveSource[] = []
   const yearCurves: PowerCurveSource[] = []
+  const recentRunCurves: PowerCurveSource[] = []
+  const yearRunCurves: PowerCurveSource[] = []
   const activityCriticalPowers = new Map<string, CriticalPowerEstimate>()
   const recentCriticalPowerAnchors: CriticalPowerAnchor[] = []
   const yearCriticalPowerAnchors: CriticalPowerAnchor[] = []
   for (const { a, sport } of allActivities) {
-    if (sport !== 'bike') continue
+    if (sport !== 'bike' && sport !== 'run') continue
     const id = String(a.id)
     const activityDay = dayMs(a.startDateLocal.slice(0, 10))
     const inRecentWindow = activityDay >= recentCut && activityDay <= end
@@ -4461,11 +4467,16 @@ export function buildPayload(
     const timeline = effortTimeline(streams, a.movingTime)
     const c = meanMaxCurve(timeline)
     powerCurves.set(id, c)
-    if (detailIds.has(id)) {
+    if (sport === 'bike' && detailIds.has(id)) {
       const p20 = c.find(p => p.s === 1200)
       if (p20 && p20.w > best20) best20 = p20.w
     }
     const source = { activityId: a.id, activityDate: a.startDateLocal.slice(0, 10), curve: c }
+    if (sport === 'run') {
+      if (inRecentWindow) recentRunCurves.push(source)
+      if (inYear) yearRunCurves.push(source)
+      continue
+    }
     if (inRecentWindow) recentCurves.push(source)
     if (inYear) yearCurves.push(source)
     if (a.deviceWatts && timeline) {
@@ -4493,6 +4504,8 @@ export function buildPayload(
   }
   const powerCurveRef = mergeMaxCurves(recentCurves)
   const powerCurveYearRef = mergeMaxCurves(yearCurves)
+  const runPowerCurveRef = mergeMaxCurves(recentRunCurves)
+  const runPowerCurveYearRef = mergeMaxCurves(yearRunCurves)
   const windowTo = new Date(end).toISOString().slice(0, 10)
   const criticalPower = fitCriticalPower(
     recentCriticalPowerAnchors,
@@ -4507,9 +4520,12 @@ export function buildPayload(
     windowTo,
   )
   const powerCurveActivityIds = new Set([
-    ...[...powerCurveRef, ...powerCurveYearRef].flatMap(point =>
-      point.activityId == null ? [] : [String(point.activityId)],
-    ),
+    ...[
+      ...powerCurveRef,
+      ...powerCurveYearRef,
+      ...runPowerCurveRef,
+      ...runPowerCurveYearRef,
+    ].flatMap(point => (point.activityId == null ? [] : [String(point.activityId)])),
     ...[criticalPower, criticalPowerYear].flatMap(estimate =>
       estimate ? estimate.anchors.map(anchor => String(anchor.activityId)) : [],
     ),
@@ -4788,6 +4804,8 @@ export function buildPayload(
     zones: { hr: hrBounds, power: powerBounds, ftp },
     powerCurveRef,
     powerCurveYearRef,
+    runPowerCurveRef,
+    runPowerCurveYearRef,
     powerCurveYear,
     criticalPower,
     criticalPowerYear,

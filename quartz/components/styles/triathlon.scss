@@ -14703,8 +14703,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     --tri-embedded-primary-height: calc(
       var(--tri-embedded-visual-height) - var(--tri-embedded-secondary-height) - 0.6rem
     );
+    --tri-embedded-analysis-height: 5rem;
     // Reserve the three analysis bands and their readout before hydration.
-    --tri-embedded-visual-rows: minmax(0, 1fr) auto auto 5rem;
+    --tri-embedded-visual-rows: minmax(0, 1fr) auto auto var(--tri-embedded-analysis-height);
     --tri-embedded-analysis-readout-height: 1.67rem;
 
     > .tri-act {
@@ -14757,7 +14758,8 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
         margin-top: var(--tri-training-effect-margin, auto);
       }
 
-      > .tri-act-strength {
+      > .tri-act-strength,
+      > .tri-act-figs--sauna > .tri-act-strength {
         position: relative;
         box-sizing: border-box;
         height: var(--tri-embedded-visual-height);
@@ -14787,6 +14789,25 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
       > .tri-act-figs {
         height: var(--tri-embedded-visual-height);
+
+        > .tri-analysis {
+          align-content: start;
+          box-sizing: border-box;
+          min-height: var(--tri-embedded-analysis-height);
+          flex-shrink: 0;
+        }
+      }
+
+      > .tri-act-figs--sauna {
+        > .tri-act-strength {
+          flex: 1 1 0;
+          min-height: 0;
+          height: auto;
+        }
+
+        > .tri-analysis {
+          margin-top: auto;
+        }
       }
 
       > .tri-act-figs--route {
@@ -14854,7 +14875,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     .tri-day-embed[data-triathlon-embedded='1']
       .tri-pop-card:has(> .tri-act + .tri-act)
       > .tri-act
-      > .tri-act-strength::after {
+      .tri-act-strength::after {
       transition: none;
     }
   }
@@ -14955,6 +14976,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     > .tri-act-figs {
       grid-column: 1 / -1;
       grid-row: 5;
+    }
+
+    > .tri-act-figs--sauna {
+      grid-row: auto;
     }
   }
 

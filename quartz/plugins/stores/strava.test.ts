@@ -3739,6 +3739,69 @@ test('builds the calendar-year power reference outside the visible activity wind
   assert.equal(payload.powerCurveYear, 2026)
 })
 
+test('builds separate running power references with inclusive dates and historical source details', () => {
+  const streams: Record<string, StravaStreams> = {}
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: 0 },
+    lastSync: Date.parse('2026-07-13T12:00:00Z'),
+    lastActivityStart: 0,
+    activities: {},
+    streams,
+  }
+  const efforts = [
+    { id: 201, date: '2025-12-31', sportType: 'Run', watts: 3_000 },
+    { id: 202, date: '2026-01-01', sportType: 'Run', watts: 700 },
+    { id: 203, date: '2026-06-01', sportType: 'Run', watts: 600 },
+    { id: 204, date: '2026-06-02', sportType: 'TrailRun', watts: 500 },
+    { id: 205, date: '2026-07-13', sportType: 'VirtualRun', watts: 400 },
+    { id: 206, date: '2026-07-14', sportType: 'Run', watts: 4_000 },
+    { id: 207, date: '2026-07-12', sportType: 'Ride', watts: 2_000 },
+  ]
+  for (const effort of efforts) {
+    const duration = effort.id === 205 ? 1_200 : 5
+    const time = Array.from({ length: duration }, (_, index) => index)
+    cache.activities[String(effort.id)] = ride({
+      id: effort.id,
+      sportType: effort.sportType,
+      movingTime: duration,
+      elapsedTime: duration,
+      startDate: `${effort.date}T12:00:00Z`,
+      startDateLocal: `${effort.date}T12:00:00`,
+    })
+    streams[String(effort.id)] = {
+      time,
+      latlng: [],
+      altitude: time.map(() => 0),
+      distance: time,
+      watts: time.map(() => effort.watts),
+    }
+  }
+  const payload = buildPayload(cache, null, null, '2026-06-01', null, null, null, 'UTC')
+  assert.equal(payload.powerCurveYear, 2026)
+  assert.deepEqual(
+    payload.runPowerCurveRef.find(point => point.s === 5),
+    { s: 5, w: 500, activityId: 204, activityDate: '2026-06-02' },
+  )
+  assert.deepEqual(
+    payload.runPowerCurveYearRef.find(point => point.s === 5),
+    { s: 5, w: 700, activityId: 202, activityDate: '2026-01-01' },
+  )
+  assert.equal(payload.powerCurveRef[0].w, 2_000)
+  assert.deepEqual(payload.runPowerCurveRef.at(-1), {
+    s: 1_200,
+    w: 400,
+    activityId: 205,
+    activityDate: '2026-07-13',
+  })
+  assert.equal(payload.powerCurveYearRef[0].w, 2_000)
+  assert.equal(payload.details['202']?.sport, 'run')
+  assert.equal(payload.details['202']?.powerCurve?.at(-1)?.w, 700)
+  assert.equal(payload.details['202']?.activityCriticalPower, null)
+  assert.equal(payload.zones.ftp, null)
+})
+
 test('retains the winning activity at every aggregate power duration', () => {
   const stream = (watts: number[]): StravaStreams => ({
     time: [0, 1, 2, 3],

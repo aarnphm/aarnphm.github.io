@@ -4,6 +4,7 @@ import {
   serializeStravaDetails,
   STRAVA_DETAIL_INDEX_KIND,
   type StravaDetailPayload,
+  type StravaDetailIndex,
 } from './strava-detail'
 
 type TestDetail = { id: number; date: string; name: string }
@@ -51,6 +52,24 @@ test('rejects invalid activity dates and details larger than one shard', () => {
     health: {},
   }
   assert.throws(() => serializeStravaDetails(oversized, 100), /exceeds the shard byte limit/)
+})
+
+test('serializes separate cycling and running power references with source links', () => {
+  const payload: StravaDetailPayload<TestDetail> = {
+    details: {},
+    health: {},
+    powerCurveRef: [{ s: 1, w: 1_200, activityId: 1, activityDate: '2026-08-01' }],
+    powerCurveYearRef: [{ s: 1, w: 1_400, activityId: 2, activityDate: '2026-01-01' }],
+    runPowerCurveRef: [{ s: 1, w: 700, activityId: 3, activityDate: '2026-08-01' }],
+    runPowerCurveYearRef: [{ s: 1, w: 800, activityId: 4, activityDate: '2026-01-01' }],
+    powerCurveYear: 2026,
+  }
+  const manifest: StravaDetailIndex = JSON.parse(serializeStravaDetails(payload).manifest)
+  assert.deepEqual(manifest.powerCurveRef, payload.powerCurveRef)
+  assert.deepEqual(manifest.powerCurveYearRef, payload.powerCurveYearRef)
+  assert.deepEqual(manifest.runPowerCurveRef, payload.runPowerCurveRef)
+  assert.deepEqual(manifest.runPowerCurveYearRef, payload.runPowerCurveYearRef)
+  assert.equal(manifest.powerCurveYear, 2026)
 })
 
 test('round-trips nested environment analyses through monthly detail shards', () => {
