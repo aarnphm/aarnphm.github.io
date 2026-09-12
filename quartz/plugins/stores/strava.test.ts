@@ -856,19 +856,19 @@ function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   }
 }
 
-test('keeps outdoor Strava streams when linked Garmin has more samples and fills missing channels by UTC', () => {
+test('merges late linked Garmin training effect and stamina while retaining outdoor Strava telemetry', () => {
   const activity = ride({
     id: 20092789179,
     distance: 1_000,
-    movingTime: 10,
-    elapsedTime: 10,
+    movingTime: 1_789,
+    elapsedTime: 1_789,
     averageWatts: 0,
     weightedAverageWatts: 0,
     averageHeartrate: 140,
     averageCadence: 0,
   })
   const stream: StravaStreams = {
-    time: [0, 2, 4, 6, 8, 10],
+    time: [0, 1_780, 1_781, 1_783, 1_785, 1_789],
     latlng: Array.from({ length: 6 }, (_, i) => [43 + i / 10_000, -79]),
     distance: [0, 200, 400, 600, 800, 1_000],
     altitude: [80, 81, 82, 83, 84, 85],
@@ -891,8 +891,8 @@ test('keeps outdoor Strava streams when linked Garmin has more samples and fills
         id: 'connect:24288441761',
         name: 'Companion recording',
         sport: 'bike',
-        startDate: '2026-06-07T11:29:57Z',
-        startDateLocal: '2026-06-07T07:29:57',
+        startDate: '2026-06-07T11:59:36Z',
+        startDateLocal: '2026-06-07T07:59:36',
         distanceM: 2_000,
         movingTimeS: 8,
         elapsedTimeS: 8,
@@ -904,6 +904,10 @@ test('keeps outdoor Strava streams when linked Garmin has more samples and fills
           normalizedPower: 400,
           avgHeartRate: 180,
           avgCadence: 90,
+          aerobicTrainingEffect: 4,
+          anaerobicTrainingEffect: 1.5,
+          exerciseLoad: 199.3,
+          trainingEffectLabel: 'AEROBIC_BASE',
         },
         fueling: emptyGarminFueling(),
       },
@@ -927,10 +931,7 @@ test('keeps outdoor Strava streams when linked Garmin has more samples and fills
   assert.equal(entry.virtual, false)
   const before = structuredClone(cache)
   const tracked = applyActivityTracking(cache, garmin, [entry])
-  assert.deepEqual(tracked?.streams?.[activity.id], {
-    ...stream,
-    cadence: [80, 80, 82, 84, 86, 88],
-  })
+  assert.deepEqual(tracked?.streams?.[activity.id], { ...stream, cadence: [0, 80, 80, 82, 84, 88] })
   const payload = buildPayload(
     cache,
     null,
@@ -967,10 +968,20 @@ test('keeps outdoor Strava streams when linked Garmin has more samples and fills
   )
   assert.deepEqual(
     detail.route.map(point => point.stamina),
-    [null, 100, 98, 96, 94, 92],
+    [null, null, 100, 98, 96, 92],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.potentialStamina),
+    [null, null, 100, 99, 98, 96],
   )
   assert.equal(detail.staminaTrace?.source, 'garmin')
   assert.equal(detail.garmin?.activityId, 'connect:24288441761')
+  assert.equal(detail.garmin?.startDiffS, 1_781)
+  assert.equal(detail.garmin?.trainingEffectActivityId, 'connect:24288441761')
+  assert.equal(detail.garmin?.aerobicTrainingEffect, 4)
+  assert.equal(detail.garmin?.anaerobicTrainingEffect, 1.5)
+  assert.equal(detail.garmin?.exerciseLoad, 199.3)
+  assert.equal(calculateActivityTrainingEffect(detail), null)
   const feed = buildDataFeed(
     tracked,
     buildAnalytics(tracked, { activityDetails: payload.details, garmin }),

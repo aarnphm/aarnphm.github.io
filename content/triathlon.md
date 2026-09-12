@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-11 23:06:14 GMT-04:00
+modified: 2026-09-12 19:05:17 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1484,6 +1484,11 @@ exercise: Curtsy Lunge | 40s | 40s | 40s | 40s
 exercise: Wall Sit | 40s | 40s | 40s | 40s
 exercise: Single-Leg Romanian Deadlift | 40s | 40s | 40s | 40s
 exercise: Standing Calf, Seated Forward Fold, and Pigeon Stretch Flow | 2m
+```
+
+```tracking
+activity: 20147774828
+garmin: 24337399565
 ```
 
 <!-- training plan start
