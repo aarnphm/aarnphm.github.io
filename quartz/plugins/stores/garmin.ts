@@ -410,7 +410,16 @@ export function matchGarminActivity(
     if (!activity || (activity.sport != null && activity.sport !== sport)) return null
     const garminStart = Date.parse(activity.startDate)
     const startDiffMs = Math.abs(garminStart - stravaStart)
-    if (!Number.isFinite(startDiffMs) || startDiffMs > START_TOLERANCE_MS) return null
+    if (!Number.isFinite(startDiffMs)) return null
+    const stravaDuration = positive(strava.elapsedTime) ?? positive(strava.movingTime)
+    const garminDuration = positive(activity.elapsedTimeS) ?? positive(activity.movingTimeS)
+    const overlaps =
+      stravaDuration != null &&
+      garminDuration != null &&
+      garminStart < stravaStart + stravaDuration * 1000 &&
+      stravaStart < garminStart + garminDuration * 1000
+    // An explicit link can identify a companion recording started partway through the activity.
+    if (startDiffMs > START_TOLERANCE_MS && !overlaps) return null
     return {
       activity,
       score: startDiffMs / 60_000,

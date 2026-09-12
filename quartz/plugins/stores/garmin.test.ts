@@ -69,6 +69,43 @@ test('explicit Garmin links bypass distance heuristics and reject missing or unr
   )
 })
 
+test('explicit Garmin links accept overlapping recordings beyond the automatic start tolerance', () => {
+  const ride = strava()
+  const activity = {
+    id: 'connect:24337399565',
+    name: 'Companion recording',
+    sport: normalizeGarminSport('cycling'),
+    startDate: '2026-06-01T12:29:41Z',
+    startDateLocal: '2026-06-01T08:29:41',
+    distanceM: ride.distance,
+    movingTimeS: ride.movingTime,
+    elapsedTimeS: ride.elapsedTime,
+    sourceDevice: null,
+    sourceFile: null,
+    metrics: emptyGarminMetrics(),
+    fueling: emptyGarminFueling(),
+  }
+  for (const [startDate, expected] of [
+    ['2026-06-01T12:29:41Z', true],
+    ['2026-06-01T11:30:00Z', true],
+    ['2026-06-01T14:05:00Z', false],
+    ['2026-06-01T09:55:00Z', false],
+    ['2026-06-02T12:29:41Z', false],
+    ['invalid', false],
+  ] as const) {
+    const cache: GarminCache = {
+      lastSync: 0,
+      activities: { [activity.id]: { ...activity, startDate } },
+    }
+    assert.equal(matchGarminActivity(ride, 'bike', cache), null, startDate)
+    assert.equal(
+      matchGarminActivity(ride, 'bike', cache, 24337399565)?.activity.id ?? null,
+      expected ? activity.id : null,
+      startDate,
+    )
+  }
+})
+
 test('matches Garmin fueling to a Strava activity by sport, start, distance, and duration', () => {
   const fueling = emptyGarminFueling()
   fueling.caloriesConsumed = 520
