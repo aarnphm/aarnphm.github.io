@@ -5,7 +5,7 @@ import { buildAnalytics } from '../../../plugins/stores/analytics'
 import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
 import { STRAVA_DETAIL_INDEX_KIND } from '../../../util/strava-detail'
 import { buildTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
-import { isActivityDetail, readDetailPayload } from './data'
+import { detailContextFromPayload, isActivityDetail, readDetailPayload } from './data'
 
 const emptyAnalyses = {
   native: { myWindsock: null, pelotan: null },
@@ -45,6 +45,8 @@ test('loads activity shards alongside manual sauna daily analytics', async () =>
     },
   ]
   const dailyAnalytics = buildTriathlonDailyAnalytics(analytics)
+  const runPowerCurveRef = [{ s: 1, w: 700, activityId: 1, activityDate: '2026-07-31' }]
+  const runPowerCurveYearRef = [{ s: 1, w: 800, activityId: 6, activityDate: '2026-01-01' }]
   const requested: string[] = []
   const server = createServer((request, response) => {
     const path = request.url ?? ''
@@ -55,6 +57,8 @@ test('loads activity shards alongside manual sauna daily analytics', async () =>
         shards: ['strava-detail/2026-08.json', 'strava-detail/2026-07.json'],
         health: {},
         dailyAnalytics,
+        runPowerCurveRef,
+        runPowerCurveYearRef,
         ftp: 250,
       },
       '/static/strava-detail/2026-08.json': {
@@ -90,6 +94,8 @@ test('loads activity shards alongside manual sauna daily analytics', async () =>
     assert.equal(payload.details['4'].sport, 'yoga')
     assert.equal(payload.details['5'].sport, 'treatment')
     assert.equal(payload.ftp, 250)
+    assert.deepEqual(detailContextFromPayload(payload).runCurveRef, runPowerCurveRef)
+    assert.deepEqual(detailContextFromPayload(payload).runCurveYearRef, runPowerCurveYearRef)
     assert.deepEqual(payload.dailyAnalytics, dailyAnalytics)
     assert.equal(payload.dailyAnalytics?.['2026-08-02'].heat?.source, 'manual-sauna')
     assert.deepEqual(requested.sort(), [

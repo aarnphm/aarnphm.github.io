@@ -228,7 +228,7 @@ export const setupChartScrub = (
     referenceWatts: number | null,
     modelValues: readonly CurveModelValue[],
   ): string =>
-    `${zoneClock(point.s)}, ${text('this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${powerCurveReferenceLabel(presentation().locale, curveReferenceYear(svg))} ${referenceWatts.toLocaleString()} watts`}${modelValues.map(model => `, ${model.label} ${model.watts.toLocaleString()} watts`).join('')}`
+    `${zoneClock(point.s)}, ${text(svg.dataset.curveSport === 'run' ? 'this run' : 'this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${powerCurveReferenceLabel(presentation().locale, curveReferenceYear(svg))} ${referenceWatts.toLocaleString()} watts`}${modelValues.map(model => `, ${model.label} ${model.watts.toLocaleString()} watts`).join('')}`
   const swimKind = (svg: SVGSVGElement): SwimChartMetric => swimChartMetric(svg.dataset.swimKind)
   const swimKindLabel = (kind: SwimChartMetric): string =>
     kind === 'pace'

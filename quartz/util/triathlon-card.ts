@@ -6463,6 +6463,8 @@ export interface DetailCtx {
   zones: StravaZones | null
   curveRef: PowerCurvePoint[]
   curveYearRef: PowerCurvePoint[]
+  runCurveRef: PowerCurvePoint[]
+  runCurveYearRef: PowerCurvePoint[]
   curveYear: number | null
   criticalPower: CriticalPowerEstimate | null
   criticalPowerYear: CriticalPowerEstimate | null
@@ -7288,8 +7290,9 @@ export const buildPowerCurve = <N>(
   const curve = d.powerCurve
   if (!curve || curve.length < 2) return null
   const isBike = d.sport === 'bike'
-  const sixWeekRef = isBike ? ctx.curveRef : []
-  const yearRef = isBike ? ctx.curveYearRef : []
+  const sixWeekRef = isBike ? ctx.curveRef : d.sport === 'run' ? ctx.runCurveRef : []
+  const yearRef = isBike ? ctx.curveYearRef : d.sport === 'run' ? ctx.runCurveYearRef : []
+  const activityLabel = d.sport === 'run' ? 'this run' : 'this ride'
   const activityCriticalPower = isBike ? d.activityCriticalPower : null
   const activityModel =
     activityCriticalPower != null
@@ -7346,6 +7349,7 @@ export const buildPowerCurve = <N>(
     viewBox: `0 0 ${W} ${H}`,
     preserveAspectRatio: 'none',
     'data-curve': encodePowerCurve(curve),
+    'data-curve-sport': d.sport,
     'data-curve-ref-six-weeks': encodePowerCurve(visibleSixWeekRef),
     'data-curve-ref-year': encodePowerCurve(visibleYearRef),
     'data-curve-range': defaultRange,
@@ -7456,7 +7460,7 @@ export const buildPowerCurve = <N>(
       'aria-hidden': 'true',
     }),
     f.el('strong', 'tri-curve-readout-value tri-curve-readout-value--ride'),
-    f.el('span', 'tri-curve-readout-label', 'this ride', { 'data-i18n': 'this ride' }),
+    f.el('span', 'tri-curve-readout-label', activityLabel, { 'data-i18n': activityLabel }),
   )
   f.add(readout, rideRow)
   if (visibleRef.length > 0) {
@@ -7678,11 +7682,13 @@ export const formatTrainingEffectLabel = (value: string | null): string | null =
   return TRAINING_EFFECT_LABELS[key] ?? key.replaceAll('_', ' ').toLowerCase()
 }
 
-export const activityTrainingEffectLabel = (d: StravaActivityDetail): string =>
-  formatTrainingEffectLabel(d.garmin?.trainingEffectLabel ?? null) ??
-  (d.sport === 'strength' || d.sport === 'yoga' || d.sport === 'treatment' || d.sport === 'sauna'
-    ? 'recovery'
-    : 'base')
+export const activityTrainingEffectLabel = (d: StravaActivityDetail): string => {
+  if (d.sport === 'sauna') return 'recovery'
+  return (
+    formatTrainingEffectLabel(d.garmin?.trainingEffectLabel ?? null) ??
+    (d.sport === 'strength' || d.sport === 'yoga' || d.sport === 'treatment' ? 'recovery' : 'base')
+  )
+}
 
 export const formatTrainingEffectNote = (value: string | null): string | null => {
   const key = value?.trim()
@@ -8000,8 +8006,9 @@ export const activityStatRows = (
           maximumFractionDigits: 1,
         })}%`,
       ],
-      ['cooldown', d.sauna.cooldown],
     ]
+    if (d.avgHr)
+      rows.push(['avg hr', `${d.avgHr} bpm${d.sauna.heartRateSource === 'oura' ? ' · Oura' : ''}`])
     if (d.sauna.heatTrainingLoad != null)
       rows.push([
         'HTL',
@@ -8009,9 +8016,8 @@ export const activityStatRows = (
           maximumFractionDigits: 1,
         }),
       ])
-    if (d.avgHr)
-      rows.push(['avg hr', `${d.avgHr} bpm${d.sauna.heartRateSource === 'oura' ? ' · Oura' : ''}`])
     rows.push(...activityTrainingRows(presentation, d))
+    rows.push(['cooldown', d.sauna.cooldown])
     if (includeAnalyses) rows.push(...activityAnalysisStatRows(presentation, d))
     return rows
   }
@@ -8183,17 +8189,21 @@ export const buildActivity = <N>(
     }),
   )
   let hasSummaryVisual = false
+  const saunaFigs =
+    d.sport === 'sauna' && d.route.length < 2
+      ? f.el('div', 'tri-act-figs tri-act-figs--sauna')
+      : null
   if (d.moves) {
     const moves = buildActivityMoves(f, d.moves)
     if (moves) {
-      f.add(wrap, moves)
+      f.add(saunaFigs ?? wrap, moves)
       hasSummaryVisual = true
     }
   }
   if (d.strength) {
     const strength = buildStrengthExercises(f, d.strength)
     if (strength) {
-      f.add(wrap, strength)
+      f.add(saunaFigs ?? wrap, strength)
       hasSummaryVisual = true
     }
   }
@@ -8230,10 +8240,9 @@ export const buildActivity = <N>(
     f.add(wrap, figs)
     hasSummaryVisual = true
   }
-  if (d.sport === 'sauna' && d.route.length < 2 && analysis) {
-    const figs = f.el('div', 'tri-act-figs')
-    f.add(figs, analysis)
-    f.add(wrap, figs)
+  if (saunaFigs && (hasSummaryVisual || analysis)) {
+    if (analysis) f.add(saunaFigs, analysis)
+    f.add(wrap, saunaFigs)
     hasSummaryVisual = true
   }
   if (embedded && !hasSummaryVisual)

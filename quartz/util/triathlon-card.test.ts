@@ -1507,6 +1507,8 @@ test('temperature axes, series, and readouts follow selected units independently
         zones: null,
         curveRef: [],
         curveYearRef: [],
+        runCurveRef: [],
+        runCurveYearRef: [],
         curveYear: null,
         criticalPower: null,
         criticalPowerYear: null,
@@ -1597,6 +1599,8 @@ test('route map exposes UV and signed wind from Garden samples', () => {
     zones: null,
     curveRef: [],
     curveYearRef: [],
+    runCurveRef: [],
+    runCurveYearRef: [],
     curveYear: null,
     criticalPower: null,
     criticalPowerYear: null,
@@ -1992,6 +1996,28 @@ test('uses base by default and recovery for strength, yoga, and treatment', () =
   assert.equal(strengthRow.properties.dataTrainingEffectGroup, 'low-aerobic')
 })
 
+test('labels sauna as recovery while retaining Garmin training effect scores', () => {
+  for (const trainingEffectLabel of [null, 'UNKNOWN', 'AEROBIC_BASE', 'VO2_MAX']) {
+    const garmin = garminVerification({
+      trainingEffectLabel,
+      aerobicTrainingEffect: 0.8,
+      anaerobicTrainingEffect: 0,
+      exerciseLoad: 14,
+    })
+    const rendered = buildActivity(factory, detail({ sport: 'sauna', route: [], garmin }), true)
+    const summary = byTag(rendered, 'tr').find(
+      row => row.properties.dataStatKey === 'training effect',
+    )
+    assert.ok(summary)
+    assert.equal(text(summary), 'training effectrecovery')
+    assert.equal(summary.properties.dataTrainingEffectGroup, 'low-aerobic')
+    const scores = byClass(rendered, 'tri-training-effect')[0]
+    assert.equal(scores.properties.dataTrainingEffectSource, 'garmin')
+    assert.deepEqual(byClass(scores, 'tri-training-effect-score').map(text), ['0.8', '0.0'])
+    assert.equal(garmin.trainingEffectLabel, trainingEffectLabel)
+  }
+})
+
 test('summarizes calculated intensity when Garmin does not provide it', () => {
   assert.deepEqual(
     activityStatRows(
@@ -2384,10 +2410,10 @@ test('renders manual sauna conditions and Oura heart rate without distance metri
     ['duration', "1h15'"],
     ['temperature', '196°F'],
     ['humidity', '11%'],
-    ['cooldown', 'cold plunge'],
-    ['HTL', '7.7'],
     ['avg hr', '120 bpm · Oura'],
+    ['HTL', '7.7'],
     ['training effect', 'recovery'],
+    ['cooldown', 'cold plunge'],
   ])
   assert.deepEqual(moreStatRows(imperialPresentation, sauna), [
     ['max hr', '130 bpm'],
@@ -6412,6 +6438,8 @@ const ctx = (overrides: Partial<DetailCtx> = {}): DetailCtx => ({
   zones: { hr: [120, 140, 160, 180], power: [150, 200, 250, 300, 350, 400], ftp: 260 },
   curveRef: [],
   curveYearRef: [],
+  runCurveRef: [],
+  runCurveYearRef: [],
   curveYear: null,
   criticalPower: null,
   criticalPowerYear: null,
@@ -6547,6 +6575,44 @@ test('renders sauna laps by elapsed time with duration and HR change', () => {
   assert.deepEqual(byClass(trace, 'tri-cax-xt').map(text), ['0s', '8:20', '16:40'])
   const withoutLaps = buildActivity(factory, { ...sauna, analysisRanges: [] }, true, ctx())
   assert.equal(byClass(withoutLaps, 'tri-analysis-range').length, 0)
+
+  const withExercises: StravaActivityDetail = {
+    ...sauna,
+    strength: {
+      volumeKg: null,
+      totalSets: null,
+      totalReps: null,
+      source: 'manual',
+      exercises: [
+        {
+          name: 'Glute Bridge',
+          setCount: 2,
+          durationS: 60,
+          repetitions: null,
+          sets: [
+            { durationS: 30, repetitions: null, weightKg: null },
+            { durationS: 30, repetitions: null, weightKg: null },
+          ],
+        },
+      ],
+    },
+  }
+  for (const embedded of [false, true]) {
+    for (const expanded of [false, true]) {
+      const card = buildActivity(factory, withExercises, expanded, ctx(), false, embedded)
+      const figures = byClass(card, 'tri-act-figs')
+      assert.equal(figures.length, 1)
+      const exercises = byClass(figures[0], 'tri-act-strength')[0]
+      const analysis = byClass(figures[0], 'tri-analysis')[0]
+      assert.ok(exercises)
+      assert.ok(analysis)
+      assert.ok(figures[0].children.indexOf(exercises) < figures[0].children.indexOf(analysis))
+      const toggle = byClass(card, 'tri-act-toggle')[0]
+      assert.equal(card.children.indexOf(toggle), card.children.indexOf(figures[0]) + 1)
+      assert.equal(toggle.properties.ariaExpanded, String(expanded))
+      assert.equal(byClass(analysis, 'tri-analysis-range').length, 1)
+    }
+  }
 })
 
 test('renders a route-less pool swim heart rate trace against metres', () => {
@@ -7623,25 +7689,75 @@ test('renders only the ride critical power model and keeps FTP and goal in the e
   assert.equal(text(byClass(activity, 'tri-trace-reference-k')[0]), 'eCP 245 W')
 })
 
-test('keeps critical power references off run power charts', () => {
+test('renders running power comparison ranges with run sources and keeps cycling thresholds off', () => {
   const run = detail({
     sport: 'run',
     deviceWatts: true,
     powerCurve: zonedDetail().powerCurve,
     powerHist: Array.from({ length: 13 }, () => 1),
   })
-  const context = ctx({ criticalPower: criticalPower() })
+  const context = ctx({
+    criticalPower: criticalPower(),
+    curveRef: [{ s: 1, w: 1_200 }],
+    curveYearRef: [{ s: 1, w: 1_400 }],
+    runCurveRef: [
+      { s: 1, w: 700, activityId: 201, activityDate: '2026-07-10' },
+      { s: 3_600, w: 320, activityId: 201, activityDate: '2026-07-10' },
+    ],
+    runCurveYearRef: [
+      { s: 1, w: 800, activityId: 202, activityDate: '2026-01-10' },
+      { s: 3_600, w: 350, activityId: 202, activityDate: '2026-01-10' },
+    ],
+    curveYear: 2026,
+  })
   const curve = buildPowerCurve(factory, run, context)
   assert.ok(curve)
+  const svg = byClass(curve, 'tri-curve-svg')[0]
+  assert.equal(svg.properties.dataCurveSport, 'run')
+  assert.equal(svg.properties.dataCurveDomainMax, 800)
+  assert.deepEqual(
+    decodePowerCurve(String(svg.properties.dataCurveRefSixWeeks)),
+    context.runCurveRef,
+  )
+  assert.deepEqual(
+    decodePowerCurve(String(svg.properties.dataCurveRefYear)),
+    context.runCurveYearRef,
+  )
+  assert.deepEqual(byClass(curve, 'tri-curve-range').map(text), ['6 weeks', 'all of 2026'])
+  assert.deepEqual(byClass(curve, 'tri-curve-readout-label').map(text), ['this run', '6-week best'])
+  assert.equal(
+    byClass(curve, 'tri-curve-readout-row--ref')[0].properties.href,
+    '/triathlon/on/2026/07/10#tri-activity-201',
+  )
   assert.equal(byClass(curve, 'tri-curve-model').length, 0)
   assert.equal(byClass(curve, 'tri-curve-cp').length, 0)
-  assert.equal(byClass(curve, 'tri-curve-ref').length, 0)
+  assert.equal(byClass(curve, 'tri-curve-ref').length, 2)
   assert.equal(byClass(curve, 'tri-curve-ftp').length, 0)
   assert.equal(byClass(curve, 'tri-curve-goal').length, 0)
   assert.equal(byClass(curve, 'tri-curve-thresholds').length, 0)
   const histogram = buildPowerHist(factory, run)
   assert.ok(histogram)
   assert.equal(byClass(histogram, 'tri-hist-cp').length, 0)
+
+  const embedded = buildPowerCurve(factory, run, context, true)
+  assert.ok(embedded)
+  assert.deepEqual(byClass(embedded, 'tri-curve-range').map(text), ['6 weeks', 'all of 2026'])
+  const yearOnly = buildPowerCurve(factory, run, { ...context, runCurveRef: [] })
+  assert.ok(yearOnly)
+  assert.equal(byClass(yearOnly, 'tri-curve-range')[0].properties.disabled, true)
+  assert.equal(byClass(yearOnly, 'tri-curve-svg')[0].properties.dataCurveRange, 'year')
+  assert.equal(
+    byClass(yearOnly, 'tri-curve-readout-row--ref')[0].properties.href,
+    '/triathlon/on/2026/01/10#tri-activity-202',
+  )
+  const unavailable = buildPowerCurve(factory, run, {
+    ...context,
+    runCurveRef: [],
+    runCurveYearRef: [],
+  })
+  assert.ok(unavailable)
+  assert.equal(byClass(unavailable, 'tri-curve-ref').length, 0)
+  assert.equal(byClass(unavailable, 'tri-curve-range').length, 0)
 })
 
 test('suppresses a power reference link back to its enclosing activity', () => {

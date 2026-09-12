@@ -149,18 +149,27 @@ maintenance:
               - end: '2026-07-16'
                 start: '2026-05-16'
           - reason: training to race tires
-        - - type: Pirelli P Zero Race TLR SL-R 700x28c
+        - - type: Pirelli P Zero Race TLR RS 700x28c
           - distance: 619.84
           - range:
               - end: '2026-08-10'
                 reason: punctures
                 start: '2026-07-16'
+              - end: '2026-09-11'
+                reason: big big punctures GG
+                start: '2026-09-07'
         - - type: Pirelli P Zero Race SL-R 700x28c
           - distance: 776.9
           - range:
               - end: null
                 reason: null
                 start: '2026-08-12'
+        - - type: Pirelli P Zero Race TLR SL-R 700x28c
+          - distance: null
+          - range:
+              - end: null
+                reason: null
+                start: '2026-09-11'
       tube:
         - - type: Pirelli P Zero TPU
           - distance: 619.84
@@ -197,7 +206,7 @@ maintenance:
               - end: '2026-08-17'
                 reason: big punctures cut
                 start: '2026-08-12'
-        - - type: Pirelli P Zero Race TLR SL-R 700x28c
+        - - type: Pirelli P Zero Race TLR RS 700x28c
           - distance: null
           - range:
               - end: null
@@ -220,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-10 21:04:53 GMT-04:00
+modified: 2026-09-11 23:06:14 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1455,6 +1464,26 @@ cooldown: cold plunge
 htl: 7.6
 strava: 20124347682
 garmin: 24316146067
+exercise: Glute Bridge | 30s | 30s
+exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
+```
+
+```tracking
+date: 2026-09-11
+activity: 20137671181
+strengthVolume: 180 lb
+strengthSets: 10
+strengthReps: 60
+exercise: Glute Bridge | 30s
+exercise: Standing Calf Raise | 30s
+exercise: Walking Lunge | 30s
+exercise: Hip Hinge | 30s
+exercise: Single-Leg Calf Raise | 40s | 40s | 40s | 40s
+exercise: Glute Bridge March | 40s | 40s | 40s | 40s
+exercise: Curtsy Lunge | 40s | 40s | 40s | 40s
+exercise: Wall Sit | 40s | 40s | 40s | 40s
+exercise: Single-Leg Romanian Deadlift | 40s | 40s | 40s | 40s
+exercise: Standing Calf, Seated Forward Fold, and Pigeon Stretch Flow | 2m
 ```
 
 <!-- training plan start

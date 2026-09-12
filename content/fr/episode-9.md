@@ -2,7 +2,7 @@
 date: '2026-08-12'
 description: épisode 9, décrire les activités quotidiennes et les déplacements, situer une action dans le temps et poser des questions
 id: episode-9
-modified: 2026-09-04 20:38:40 GMT-04:00
+modified: 2026-09-11 20:30:07 GMT-04:00
 tags:
   - fr
   - language
@@ -62,6 +62,27 @@ the plural pronoun follows the group:
 | one woman or girl                 | `elle`  |
 | two or more men, or a mixed group | `ils`   |
 | two or more women or girls        | `elles` |
+
+### les pronoms toniques
+
+les pronoms toniques (stressed pronouns) s'utilisent notamment après une préposition, pour insister sur une personne ou pour répondre seuls à une question.
+
+| pronom sujet | pronom tonique | english                         |
+| ------------ | -------------- | ------------------------------- |
+| `je`         | `moi`          | me                              |
+| `tu`         | `toi`          | you (singular, informal)        |
+| `il`         | `lui`          | him                             |
+| `elle`       | `elle`         | her                             |
+| `nous`       | `nous`         | us                              |
+| `vous`       | `vous`         | you (plural or polite)          |
+| `ils`        | `eux`          | them (masculine or mixed group) |
+| `elles`      | `elles`        | them (feminine group)           |
+
+- **Après une préposition** : `Je vais au cinéma avec toi.` (I go to the cinema with you.) `Elle va chez lui.` (She goes to his place.) `Je cuisine pour eux.` (I cook for them.)
+- **Pour insister** : `Moi, je fais du vélo.` (As for me, I cycle.) `Lui, il lit le soir.` (As for him, he reads in the evening.) Le verbe s'accorde avec le pronom sujet : `je fais`, `il lit`.
+- **Pour répondre seul** : `Qui fait la cuisine ?` → `Moi !` (Who does the cooking? Me!)
+
+dans une question et sa réponse, la personne change selon qui parle : `Est-ce qu'elle étudie avec toi ?` → `Oui, elle étudie avec moi.` Ici, `toi` désigne la personne à qui l'on pose la question; cette personne répond avec `moi`.
 
 ### les verbes réguliers en `-er`
 
@@ -343,6 +364,25 @@ the book uses the accepted masculine form `cet après-midi`. general French also
 the present can describe a planned or scheduled event when an explicit time phrase identifies the occurrence: `Je fais le ménage ce soir.` and `Je vais au cinéma mardi après-midi.` use present-tense verbs while referring to one upcoming event.
 
 ## poser des questions sur les activités quotidiennes
+
+### piste 12 : question ou affirmation ?
+
+the eight utterances in question 1 sort into **five questions** and **three affirmations**. each finite verb and its infinitive are included here:
+
+| no  | transcription                           | type        | forme conjuguée | infinitif    | indice de la question  |
+| --- | --------------------------------------- | ----------- | --------------- | ------------ | ---------------------- |
+| 1   | `Est-ce que tu vas au cinéma ce soir ?` | question    | `vas`           | `aller`      | `est-ce que`           |
+| 2   | `Je regarde un film avec mon ami.`      | affirmation | `regarde`       | `regarder`   | intonation descendante |
+| 3   | `Tu travailles-tu la fin de semaine ?`  | question    | `travailles`    | `travailler` | `-tu` interrogatif     |
+| 4   | `Elle étudie avec toi ?`                | question    | `étudie`        | `étudier`    | intonation ascendante  |
+| 5   | `Elle étudie avec moi.`                 | affirmation | `étudie`        | `étudier`    | intonation descendante |
+| 6   | `Il joue-tu de la guitare ?`            | question    | `joue`          | `jouer`      | `-tu` interrogatif     |
+| 7   | `On dine vers midi.`                    | affirmation | `dine`          | `diner`      | intonation descendante |
+| 8   | `Tu bois-tu du vin au souper ?`         | question    | `bois`          | `boire`      | `-tu` interrogatif     |
+
+answer key: **questions 1, 3, 4, 6, and 8**; **affirmations 2, 5, and 7**.
+
+the fourth utterance matters for listening: its words keep ordinary statement order, so the rising intonation alone turns `Elle étudie avec toi` into a question. compare it with the falling intonation of `Elle étudie avec moi.`
 
 ### le `tu` interrogatif québécois
 

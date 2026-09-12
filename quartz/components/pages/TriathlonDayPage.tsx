@@ -32,6 +32,8 @@ export default (() => {
       zones: payload.zones,
       curveRef: payload.powerCurveRef,
       curveYearRef: payload.powerCurveYearRef,
+      runCurveRef: payload.runPowerCurveRef,
+      runCurveYearRef: payload.runPowerCurveYearRef,
       curveYear: payload.powerCurveYear,
       criticalPower: payload.criticalPower,
       criticalPowerYear: payload.criticalPowerYear,
