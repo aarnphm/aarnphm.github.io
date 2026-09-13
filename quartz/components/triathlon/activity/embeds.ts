@@ -14,6 +14,7 @@ import { applyI18n } from '../runtime/dom'
 import { createDomFactory } from '../runtime/dom'
 import { el } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
+import { setupPowerCurveTicks } from '../shell/power-curve-ticks'
 import { alignedActivitySectionMargins } from './activity-layout'
 import { analysisFinite } from './analysis'
 import { onCardToggle } from './comparison'
@@ -127,6 +128,7 @@ export const buildDayCard = (
     mount: () => {
       card.addEventListener('click', onCardToggle)
       const cleanups = [
+        setupPowerCurveTicks(card),
         mountActivitySectionAlignment(card),
         mountDaySleepCharts(card, () => presentation.locale),
         ...activityViews.map(view => view.mount()),
@@ -659,11 +661,13 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     if (ssr) {
       ssr.addEventListener('click', onCardToggle)
       const cleanupAlignment = mountActivitySectionAlignment(ssr)
+      const cleanupPowerTicks = setupPowerCurveTicks(ssr)
       const cleanupStrengthOverflow = setupStrengthExerciseOverflow(ssr)
       const cleanupDaySleepCharts = mountDaySleepCharts(ssr, () => context.presentation.locale)
       cardCleanup = () => {
         ssr.removeEventListener('click', onCardToggle)
         cleanupAlignment()
+        cleanupPowerTicks()
         cleanupStrengthOverflow()
         cleanupDaySleepCharts()
       }

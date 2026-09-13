@@ -807,6 +807,24 @@ export const buildIcon = <N>(f: TriNodeFactory<N>, sport: ActivityKind): N => {
   return icon
 }
 
+export const buildActivityIcon = <N>(f: TriNodeFactory<N>, activity: StravaActivityDetail): N => {
+  const icon = buildIcon(f, activity.sport)
+  const stravaId = activity.sources
+    ? activity.sources.find(source => source.provider === 'strava')?.activityId
+    : activity.sauna
+      ? null
+      : String(activity.id)
+  if (!stravaId || !/^[1-9]\d*$/.test(stravaId)) return icon
+  const link = f.el('a', 'tri-act-icon-link', undefined, {
+    href: `https://www.strava.com/activities/${stravaId}`,
+    target: '_blank',
+    rel: 'noopener noreferrer',
+    'aria-label': `${activity.name || triText(f.presentation.locale, activity.sport)} · Strava`,
+  })
+  f.add(link, icon)
+  return link
+}
+
 const COMPUTER_LABEL = { garmin: 'Edge 1050', wahoo: 'ELEMNT BOLT 3' } as const
 const DEVICE_LABEL: Record<ActivityDevice, string> = {
   'apple-watch-ultra-3': 'Apple Watch Ultra 3',
@@ -4708,7 +4726,20 @@ export const buildWorkoutAnalysis = <N>(
   return wrap
 }
 
-export type EnvironmentChartView = 'cumulative' | 'uv-index' | 'temperature' | 'cloud-cover'
+export type EnvironmentChartView =
+  | 'cumulative'
+  | 'uv-index'
+  | 'temperature'
+  | 'cloud-cover'
+  | 'wind'
+
+export const ENVIRONMENT_CHART_VIEWS: readonly EnvironmentChartView[] = [
+  'cumulative',
+  'uv-index',
+  'temperature',
+  'cloud-cover',
+  'wind',
+]
 
 interface EnvironmentChartSeries {
   path: string
@@ -4748,6 +4779,10 @@ const environmentSampleValue = (
       ? null
       : temperatureValue(presentation, sample.ambientTemperatureC)
   if (view === 'cloud-cover') return sample.cloudCoverPct
+  if (view === 'wind')
+    return sample.headwindKph == null
+      ? null
+      : sample.headwindKph * (isImperial(presentation) ? KM_TO_MI : 1)
   const doseSed =
     scoreModel?.doseClock === 'moving-telemetry'
       ? sample.cumulativeMovingTelemetrySed
@@ -4774,6 +4809,10 @@ const environmentChartScale = (
   if (view === 'uv-index') {
     const maximum = Math.max(11, Math.ceil(Math.max(...values)))
     return { minimum: 0, maximum, ticks: [0, maximum / 2, maximum] }
+  }
+  if (view === 'wind') {
+    const maximum = environmentNiceCeiling(Math.max(...values.map(Math.abs)))
+    return { minimum: -maximum, maximum, ticks: [-maximum, 0, maximum] }
   }
   if (view === 'cumulative') {
     const maximum = environmentNiceCeiling(Math.max(...values))
@@ -4870,6 +4909,7 @@ const environmentViewShortLabel = (view: EnvironmentChartView): string => {
   if (view === 'cumulative') return 'cum.'
   if (view === 'uv-index') return 'UVI'
   if (view === 'temperature') return 'temp.'
+  if (view === 'wind') return 'wind'
   return 'cloud'
 }
 
@@ -4888,7 +4928,7 @@ export const environmentElapsedClock = (elapsedS: number): string => {
   return hours > 0 ? `${hours}:${tail}` : tail
 }
 
-const environmentChartReadout = (
+export const environmentChartReadout = (
   presentation: TriathlonPresentation,
   sample: GardenEnvironmentSample,
   scoreModel: EnvironmentScoreModel | null,
@@ -4910,6 +4950,22 @@ const environmentChartReadout = (
     values.push(formatTemperature(presentation, sample.ambientTemperatureC))
   if (sample.cloudCoverPct != null)
     values.push(`${Math.round(sample.cloudCoverPct)}% ${triText(presentation.locale, 'cloud')}`)
+  if (sample.headwindKph != null)
+    values.push(
+      `${triText(presentation.locale, 'headwind')} ${formatSignedSpeed(presentation, sample.headwindKph)}`,
+    )
+  if (sample.crosswindKph != null)
+    values.push(
+      `${triText(presentation.locale, 'crosswind')} ${formatSignedSpeed(presentation, sample.crosswindKph)}`,
+    )
+  if (sample.apparentAirSpeedKph != null)
+    values.push(
+      `${triText(presentation.locale, 'apparent air')} ${speedKph(presentation, sample.apparentAirSpeedKph)}`,
+    )
+  if (sample.yawDeg != null)
+    values.push(
+      `${triText(presentation.locale, 'yaw')} ${sample.yawDeg > 0 ? '+' : ''}${sample.yawDeg.toFixed(1)}°`,
+    )
   return values.join(' · ')
 }
 
@@ -4922,6 +4978,8 @@ const environmentAxisLabel = (
   if (view === 'cloud-cover') return `${Math.round(value)}%`
   if (view === 'uv-index') return value.toFixed(1)
   if (view === 'temperature') return `${Number(value.toFixed(1))}${temperatureUnit(presentation)}`
+  if (view === 'wind')
+    return `${value > 0 ? '+' : ''}${Number(value.toFixed(1))} ${isImperial(presentation) ? 'mph' : 'km/h'}`
   if (scoreModel != null) return `${Math.round(value)}`
   const locale = presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
   return `${value.toLocaleString(locale, { maximumFractionDigits: 2 })} SED`
@@ -4996,7 +5054,7 @@ const buildEnvironmentChart = <N>(
     f.add(
       svg,
       f.svg('line', {
-        class: 'tri-environment-gridline',
+        class: `tri-environment-gridline${view === 'wind' && hasSamples && tick.vbY === (ENVIRONMENT_CHART_TOP + ENVIRONMENT_CHART_BOTTOM) / 2 ? ' tri-environment-gridline--zero' : ''}`,
         x1: ENVIRONMENT_CHART_LEFT,
         x2: ENVIRONMENT_CHART_RIGHT,
         y1: tick.vbY,
@@ -5451,12 +5509,7 @@ export const buildEnvironmentAnalysis = <N>(
   if (evidenceGroups.length > 0) f.add(wrap, environmentTable(f, evidenceGroups))
   const environmentSamples = environment?.samples ?? []
   const environmentElapsedS = environment?.summary.elapsedDurationS ?? d.elapsedTimeS
-  const environmentViews: readonly EnvironmentChartView[] = [
-    'cumulative',
-    'uv-index',
-    'temperature',
-    'cloud-cover',
-  ]
+  const environmentViews = ENVIRONMENT_CHART_VIEWS
   const selected =
     environmentViews.find(view =>
       environmentViewHasSamples(f.presentation, environmentSamples, view),
@@ -6645,7 +6698,8 @@ export const powerCurveFraction = (
   return (Math.log(value) - Math.log(minSeconds)) / (Math.log(maxSeconds) - Math.log(minSeconds))
 }
 
-const POWER_CURVE_AXIS_MARKERS = [5, 10, 20, 30, 120]
+export const POWER_CURVE_EXTRA_AXIS_MARKERS = [180, 360, 720]
+const POWER_CURVE_AXIS_MARKERS = [5, 10, 20, 30, 120, ...POWER_CURVE_EXTRA_AXIS_MARKERS]
 const POWER_CURVE_ENDPOINT_GAP = 0.12
 const EMBEDDED_POWER_CURVE_PRECISE_ENDPOINT_GAP = 0.14
 
@@ -8174,7 +8228,7 @@ export const buildActivity = <N>(
     'data-activity-title': d.name || d.sport,
   })
   const head = f.el('div', 'tri-act-head')
-  f.add(head, buildIcon(f, d.sport))
+  f.add(head, buildActivityIcon(f, d))
   f.add(wrap, head)
   f.add(
     wrap,
@@ -10998,13 +11052,13 @@ const buildDaySleepAnalytics = <N>(
   return group
 }
 
-const buildRestDaySleepAnalytics = <N>(
+const buildDaySleepSection = <N>(
   f: TriNodeFactory<N>,
   summary: TriathlonDayAnalytics,
 ): N | null => {
   const sleep = buildDaySleepAnalytics(f, summary)
   if (!sleep) return null
-  const section = f.el('section', 'tri-day-analytics tri-day-rest-analytics', undefined, {
+  const section = f.el('section', 'tri-day-analytics tri-day-sleep-analytics', undefined, {
     'aria-label': triText(f.presentation.locale, 'sleep details'),
     'data-analytics-date': summary.date,
     'data-i18n-aria-label': 'sleep details',
@@ -11251,21 +11305,15 @@ export const buildDayCard = <N>(
   } else {
     for (const d of day) f.add(card, render(d, sharedFuelingRows > 0))
   }
-  if (
-    !extras.analytics &&
-    !extras.sport &&
-    !extras.activityId &&
-    allDay.length === 0 &&
-    dailyAnalytics
-  ) {
-    const sleep = buildRestDaySleepAnalytics(f, dailyAnalytics)
-    if (sleep) f.add(card, sleep)
-  }
   if (!extras.sport && !extras.activityId && !extras.analytics) {
     const dh = payload?.health[dateIso]
     if (dh) {
       const rec = buildRecovery(f, dh)
       if (rec) f.add(card, rec)
+    }
+    if (dailyAnalytics) {
+      const sleep = buildDaySleepSection(f, dailyAnalytics)
+      if (sleep) f.add(card, sleep)
     }
   }
   return card

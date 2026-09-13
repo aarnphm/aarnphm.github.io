@@ -7,12 +7,13 @@ import {
 } from './environment-tabs'
 
 test('environment tabs wrap with arrows and respect Home and End', () => {
-  const views: readonly EnvironmentView[] = ['cumulative', 'uv-index', 'temperature', 'cloud-cover']
-  assert.equal(environmentViewFromKey('cumulative', 'ArrowLeft', views), 'cloud-cover')
-  assert.equal(environmentViewFromKey('cloud-cover', 'ArrowRight', views), 'cumulative')
-  assert.equal(environmentViewFromKey('temperature', 'Home', views), 'cumulative')
-  assert.equal(environmentViewFromKey('uv-index', 'End', views), 'cloud-cover')
-  assert.equal(environmentViewFromKey('uv-index', 'Enter', views), null)
+  assert.equal(environmentViewFromKey('cloud-cover', 'ArrowRight'), 'wind')
+  assert.equal(environmentViewFromKey('cumulative', 'ArrowLeft'), 'wind')
+  assert.equal(environmentViewFromKey('wind', 'ArrowRight'), 'cumulative')
+  assert.equal(environmentViewFromKey('wind', 'ArrowLeft'), 'cloud-cover')
+  assert.equal(environmentViewFromKey('wind', 'Home'), 'cumulative')
+  assert.equal(environmentViewFromKey('uv-index', 'End'), 'wind')
+  assert.equal(environmentViewFromKey('uv-index', 'Enter'), null)
 })
 
 test('environment tabs navigate only among rendered views', () => {

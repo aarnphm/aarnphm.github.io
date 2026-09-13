@@ -763,6 +763,29 @@
   align-items: center;
 }
 
+.tri-act-head > a.tri-act-icon-link {
+  display: inline-flex;
+  flex: none;
+  padding: 0;
+  line-height: 0;
+  color: inherit;
+  text-decoration: none;
+  background: none;
+
+  &:hover,
+  &:active,
+  &:visited {
+    color: inherit;
+    text-decoration: none;
+    background: none;
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--dark);
+    outline-offset: 3px;
+  }
+}
+
 .tri-act-stats {
   width: 100%;
   margin: 0;
@@ -5816,7 +5839,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-curve-tick {
   appearance: none;
   margin: -0.18rem -0.22rem 0;
-  padding: 0.18rem 0.22rem;
+  padding: 0.18rem 0;
   border: 0;
   color: var(--gray);
   font: inherit;
@@ -5824,6 +5847,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   line-height: 1;
   background: transparent;
   cursor: pointer;
+
+  &[hidden] {
+    display: none;
+  }
 
   &[aria-pressed='true'] {
     color: var(--dark);
@@ -5837,10 +5864,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
     outline-offset: 1px;
   }
-}
-
-.tri-curve-tick {
-  padding-inline: 0;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -10958,10 +10981,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     align-content: start;
   }
 
-  .tri-best-power-tick {
-    padding-inline: 0;
-  }
-
   .tri-best-power-tick,
   .tri-curve-tick {
     font-size: 0.45rem;
@@ -15514,6 +15533,11 @@ a.tri-pop-date:hover {
   stroke: color-mix(in srgb, var(--gray) 16%, transparent);
   stroke-width: 0.22;
   vector-effect: non-scaling-stroke;
+
+  &--zero {
+    stroke: var(--gray);
+    stroke-width: 0.75;
+  }
 }
 
 .tri-environment-line {

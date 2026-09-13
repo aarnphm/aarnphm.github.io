@@ -19,6 +19,7 @@ import { activityThermalTracePoints } from '../../../util/triathlon-card'
 import { activityTraceUsesElapsedAxis } from '../../../util/triathlon-card'
 import { activityTrainingEffectLabel } from '../../../util/triathlon-card'
 import { buildActivity as buildActivityNode } from '../../../util/triathlon-card'
+import { buildActivityIcon } from '../../../util/triathlon-card'
 import { buildAnalysisBar } from '../../../util/triathlon-card'
 import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../../../util/triathlon-card'
 import { buildCyclingBestEfforts as buildCyclingBestEffortsNode } from '../../../util/triathlon-card'
@@ -118,7 +119,6 @@ import {
   buildElevation,
   buildHeartRateTrace,
   buildHrZones,
-  buildIcon,
   buildPool,
   buildPowerCurve,
   buildPowerHist,
@@ -923,7 +923,7 @@ export const renderMapDetail = (
   const d = powerViewActivity(presentation, source)
   const wrap = el('section', 'tri-act tri-act--expanded')
   const head = el('div', 'tri-act-head')
-  head.appendChild(buildIcon(presentation, d.sport))
+  head.appendChild(buildActivityIcon(domF, d))
   wrap.appendChild(head)
 
   const stats = el('table', 'tri-act-stats')

@@ -14,6 +14,7 @@ import { weeklyChartX } from '../../../util/weekly-target-range'
 import { syncPowerCurveActivityLink } from '../activity/power-links'
 import { el } from '../runtime/dom'
 import { setMath } from '../runtime/dom'
+import { setupPowerCurveTicks } from '../shell/power-curve-ticks'
 import { groupBodyByDay } from './panels/body'
 import { renderWkDetail } from './panels/performance'
 import { wkTrendRows } from './panels/performance'
@@ -153,6 +154,7 @@ export const mountPrimaryPanel = (
     powerSeries.filter(({ curve }) => curve.length >= 2).map(({ key }) => key),
   )
   if (powerBlock && powerSvg && activePowerSeries.size > 0) {
+    cleanups.push(setupPowerCurveTicks(powerBlock))
     const cursor = powerSvg.querySelector<SVGLineElement>('.tri-best-power-cursor')
     const duration = powerBlock.querySelector<HTMLElement>('.tri-best-power-duration')
     const rankBlock = powerBlock.querySelector<HTMLElement>('.tri-power-radar')
