@@ -35,6 +35,7 @@ import {
   activityZonePercentages,
   axisFrame,
   buildActivity,
+  buildActivityIcon,
   buildActivityComparison,
   buildCyclingBestEfforts,
   buildIntensityFactorChart,
@@ -43,6 +44,7 @@ import {
   buildElevation,
   buildEnvironmentAnalysis,
   buildHeartRateTrace,
+  buildIcon,
   buildPowerBalanceChart,
   buildPowerCurve,
   buildPowerHist,
@@ -1243,6 +1245,7 @@ test('renders one provider-first environment table with explicit Garden estimate
     'UV index',
     'temperature',
     'cloud cover',
+    'wind',
   ])
   const tabs = byClass(environment, 'tri-environment-tab')
   assert.deepEqual(byClass(environment, 'tri-environment-tab-short').map(text), [
@@ -1250,6 +1253,7 @@ test('renders one provider-first environment table with explicit Garden estimate
     'UVI',
     'temp.',
     'cloud',
+    'wind',
   ])
   for (const tab of tabs) {
     assert.equal(tab.properties.ariaLabel, text(byClass(tab, 'tri-environment-tab-full')[0]))
@@ -1263,6 +1267,7 @@ test('renders one provider-first environment table with explicit Garden estimate
       ['tab', -1, 'false'],
       ['tab', -1, 'false'],
       ['tab', -1, 'false'],
+      ['tab', -1, 'false'],
     ],
   )
   assert.deepEqual(
@@ -1272,9 +1277,10 @@ test('renders one provider-first environment table with explicit Garden estimate
       ['tabpanel', true],
       ['tabpanel', true],
       ['tabpanel', true],
+      ['tabpanel', true],
     ],
   )
-  assert.equal(byClass(environment, 'tri-environment-series').length, 5)
+  assert.equal(byClass(environment, 'tri-environment-series').length, 6)
   assert.deepEqual(byClass(panels[0], 'tri-cax-xt').map(text), ['0:00', '40:00', '1:20:00'])
   assert.deepEqual(
     byClass(panels[0], 'tri-cax-yt')
@@ -1335,7 +1341,7 @@ test('renders elapsed lap highlights inside every environment plot', () => {
   const rendered = buildEnvironmentAnalysis(factory, activity)
   assert.ok(rendered)
   const graphs = byClass(rendered, 'tri-environment-plot')
-  assert.equal(graphs.length, 4)
+  assert.equal(graphs.length, 5)
   for (const graph of graphs) {
     assert.equal(graph.properties.dataDomainStartElapsedS, 0)
     assert.equal(
@@ -1361,8 +1367,8 @@ test('renders empty environment axes with native evidence and translates their n
   const nativeOnly = buildEnvironmentAnalysis(factory, activity)
   assert.ok(nativeOnly)
   const panels = byClass(nativeOnly, 'tri-environment-panel')
-  assert.equal(panels.length, 4)
-  assert.equal(byClass(nativeOnly, 'tri-environment-tab').length, 4)
+  assert.equal(panels.length, 5)
+  assert.equal(byClass(nativeOnly, 'tri-environment-tab').length, 5)
   assert.equal(byClass(nativeOnly, 'tri-environment-line').length, 0)
   assert.equal(byClass(nativeOnly, 'tri-environment-cursor').length, 0)
   for (const panel of panels) {
@@ -1415,23 +1421,24 @@ test('keeps unavailable environment views while rendering recorded zero values',
     uvIndex: null,
     ambientTemperatureC: 0,
     cloudCoverPct: null,
+    headwindKph: null,
   }))
   const rendered = buildEnvironmentAnalysis(factory, detail({ analyses }))
   assert.ok(rendered)
   const panels = byClass(rendered, 'tri-environment-panel')
-  assert.equal(panels.length, 4)
+  assert.equal(panels.length, 5)
   const temperature = panels.find(panel => panel.properties.dataEnvironmentPanel === 'temperature')
   assert.ok(temperature)
   assert.equal(temperature.properties.hidden, undefined)
   assert.equal(byClass(temperature, 'tri-environment-empty').length, 0)
   assert.equal(byClass(temperature, 'tri-environment-line').length, 1)
   assert.equal(byClass(temperature, 'tri-environment-plot')[0].properties.role, 'slider')
-  assert.equal(byClass(rendered, 'tri-environment-empty').length, 3)
+  assert.equal(byClass(rendered, 'tri-environment-empty').length, 4)
 
   environment.samples = environment.samples.slice(0, 1)
   const sparse = buildEnvironmentAnalysis(factory, detail({ analyses }))
   assert.ok(sparse)
-  assert.equal(byClass(sparse, 'tri-environment-empty').length, 4)
+  assert.equal(byClass(sparse, 'tri-environment-empty').length, 5)
   assert.equal(byClass(sparse, 'tri-environment-line').length, 0)
 })
 
@@ -1457,6 +1464,83 @@ test('environment paths retain explicit gaps and step hourly values', () => {
   assert.equal(ultraviolet.length, 3)
   assert.ok(ultraviolet.every(segment => segment.path.includes('H') && segment.path.includes('V')))
   assert.ok(ultraviolet.every(segment => segment.color != null))
+})
+
+test('wind plots signed headwind with centered axes and shares localized cursor values', () => {
+  const activity = detail({ analyses: environmentAnalyses() })
+  const locales: TriathlonPresentation['locale'][] = ['en', 'fr']
+  const units: TriathlonPresentation['distance'][] = ['metric', 'imperial']
+  for (const locale of locales) {
+    for (const distance of units) {
+      const selected = presentation({ locale, distance })
+      const rendered = buildEnvironmentAnalysis(factoryFor(selected), activity)
+      assert.ok(rendered)
+      const panel = byClass(rendered, 'tri-environment-panel').at(-1)
+      assert.ok(panel)
+      assert.equal(panel.properties.dataEnvironmentPanel, 'wind')
+      const plot = byClass(panel, 'tri-environment-plot')[0]
+      assert.equal(plot.properties.dataEnvironmentChart, 'wind')
+      assert.equal(plot.properties.role, 'slider')
+      assert.equal(plot.properties.ariaLabel, locale === 'fr' ? 'vent' : 'wind')
+      assert.deepEqual(
+        byClass(panel, 'tri-cax-yt').map(text),
+        distance === 'imperial'
+          ? ['-5 mph', '0 mph', '+5 mph']
+          : ['-10 km/h', '0 km/h', '+10 km/h'],
+      )
+      const baseline = byClass(panel, 'tri-environment-gridline--zero')[0]
+      assert.equal(baseline.properties.y1, 15)
+      assert.equal(baseline.properties.y2, 15)
+      assert.equal(
+        byClass(panel, 'tri-environment-line')[0].properties.d,
+        distance === 'imperial'
+          ? 'M34.000,3.070L66.000,20.965L98.000,7.544'
+          : 'M34.000,5.400L66.000,19.800L98.000,9.000',
+      )
+      const readout = text(byClass(rendered, 'tri-environment-readout')[0])
+      const windSpeed = distance === 'imperial' ? '+3.1 mph' : '+5.0 km/h'
+      assert.ok(readout.includes(`${locale === 'fr' ? 'vent de face' : 'headwind'} ${windSpeed}`))
+      assert.ok(readout.includes(locale === 'fr' ? 'vent latéral' : 'crosswind'))
+      assert.ok(readout.includes(distance === 'imperial' ? '17.4 mph' : '28.0 km/h'))
+    }
+  }
+})
+
+test('wind preserves calm zero samples, missing data, and explicit trace gaps', () => {
+  const analyses = environmentAnalyses()
+  const environment = analyses.derived.environment
+  assert.ok(environment)
+  const samples = environment.samples
+  environment.samples = samples.map(sample => ({ ...sample, headwindKph: 0 }))
+  const calm = buildEnvironmentAnalysis(factory, detail({ analyses }))
+  assert.ok(calm)
+  const calmPanel = byClass(calm, 'tri-environment-panel').at(-1)
+  assert.ok(calmPanel)
+  assert.equal(byClass(calmPanel, 'tri-environment-empty').length, 0)
+  assert.equal(
+    byClass(calmPanel, 'tri-environment-line')[0].properties.d,
+    'M2.000,15.000L34.000,15.000L66.000,15.000L98.000,15.000',
+  )
+
+  environment.samples = samples.map(sample => ({ ...sample, headwindKph: null }))
+  const missing = buildEnvironmentAnalysis(factory, detail({ analyses }))
+  assert.ok(missing)
+  const missingPanel = byClass(missing, 'tri-environment-panel').at(-1)
+  assert.ok(missingPanel)
+  assert.equal(byClass(missingPanel, 'tri-environment-line').length, 0)
+  assert.equal(byClass(missingPanel, 'tri-environment-empty').length, 1)
+  assert.equal(byClass(missingPanel, 'tri-environment-plot')[0].properties.role, 'img')
+
+  const gapped = samples.map((sample, index) => ({
+    ...sample,
+    headwindKph: index === 2 ? null : 8,
+  }))
+  assert.deepEqual(
+    environmentChartSeries(METRIC_TRIATHLON_PRESENTATION, gapped, 4_800, 'wind').map(
+      series => series.path,
+    ),
+    ['M2.000,5.400L34.000,5.400', 'M98.000,5.400'],
+  )
 })
 
 test('temperature axes, series, and readouts follow selected units independently of locale', () => {
@@ -1656,6 +1740,60 @@ const garminVerification = (
   aerobicTrainingEffectMessage: null,
   anaerobicTrainingEffectMessage: null,
   ...overrides,
+})
+
+test('links every activity header icon to its Strava activity in a new tab', () => {
+  const sports: StravaActivityDetail['sport'][] = [
+    'bike',
+    'run',
+    'swim',
+    'walk',
+    'strength',
+    'yoga',
+    'treatment',
+    'sauna',
+  ]
+  for (const sport of sports) {
+    const activity = detail({
+      sport,
+      sources: [
+        { provider: 'garmin', activityId: 'connect:777', name: null, fileName: null },
+        { provider: 'strava', activityId: '20147774828', name: null, fileName: null },
+      ],
+    })
+    const card = buildActivity(factory, activity)
+    const links = byClass(byClass(card, 'tri-act-head')[0], 'tri-act-icon-link')
+    assert.equal(links.length, 1)
+    const link = links[0]
+    assert.equal(link.tagName, 'a')
+    assert.equal(link.properties.href, 'https://www.strava.com/activities/20147774828')
+    assert.equal(link.properties.target, '_blank')
+    assert.deepEqual(link.properties.rel, ['noopener', 'noreferrer'])
+    assert.equal(link.properties.ariaLabel, 'Threshold ride · Strava')
+    assert.deepEqual(link.children, [buildIcon(factory, sport)])
+  }
+})
+
+test('activity icon links retain legacy Strava IDs and omit records without Strava activities', () => {
+  const legacy = buildActivityIcon(factory, detail())
+  assert.equal(legacy.properties.href, 'https://www.strava.com/activities/101')
+  const providerOnly = detail({
+    sources: [{ provider: 'garmin', activityId: 'connect:777', name: null, fileName: null }],
+  })
+  assert.deepEqual(buildActivityIcon(factory, providerOnly), buildIcon(factory, providerOnly.sport))
+  const manual = detail({
+    sport: 'sauna',
+    sauna: {
+      time: '18:30',
+      temperatureC: 90,
+      humidityPct: 10,
+      cooldown: 'cold plunge',
+      heatTrainingLoad: null,
+      heartRateSource: 'oura',
+      source: 'manual',
+    },
+  })
+  assert.deepEqual(buildActivityIcon(factory, manual), buildIcon(factory, 'sauna'))
 })
 
 test('renders bike computers and run, walk, and swim devices as distinct activity rows', () => {
@@ -5615,7 +5753,7 @@ test('renders only the selected activity and expands it', () => {
   assert.equal(byClass(rendered, 'tri-act-health').length, 0)
 })
 
-test('renders exact-date analytics and limits automatic rest-day analytics to sleep', () => {
+test('renders exact-date analytics and appends day-card sleep after recovery', () => {
   const date = '2026-08-16'
   const ride = detail({ id: 19771722076, date, name: 'Recovery Crit' })
   const run = detail({ id: 19771722077, date, name: 'Evening run', sport: 'run' })
@@ -5838,7 +5976,7 @@ test('renders exact-date analytics and limits automatic rest-day analytics to sl
   })
   assert.equal(text(byClass(rest, 'tri-pop-rest-label')[0]), 'rest')
   assert.equal(byClass(rest, 'tri-day-analytics').length, 1)
-  assert.equal(byClass(rest, 'tri-day-rest-analytics').length, 1)
+  assert.equal(byClass(rest, 'tri-day-sleep-analytics').length, 1)
   assert.equal(byClass(rest, 'tri-day-analytics-group').length, 1)
   assert.equal(byClass(rest, 'tri-day-analytics-group--sleep').length, 1)
   assert.equal(byClass(rest, 'tri-day-analytics-group--body-recovery').length, 0)
@@ -5847,6 +5985,44 @@ test('renders exact-date analytics and limits automatic rest-day analytics to sl
   assert.equal(byClass(rest, 'tri-day-sleep-stages').length, 1)
   assert.equal(byClass(rest, 'tri-day-sleep-series--hrv').length, 1)
   assert.equal(byClass(rest, 'tri-day-sleep-series--heart-rate').length, 1)
+  assert.deepEqual(rest.children.slice(-2), [
+    byClass(rest, 'tri-act-health')[0],
+    byClass(rest, 'tri-day-sleep-analytics')[0],
+  ])
+
+  const payload = {
+    details: { [ride.id]: ride, [run.id]: run },
+    health: { [date]: { ...emptyHealth(), readiness: 75 } },
+    dailyAnalytics: { [date]: summary },
+  }
+  for (const extras of [{}, { expanded: true }, { embedded: true }]) {
+    const active = buildDayCard(factory, date, payload, extras)
+    const sleepSection = byClass(active, 'tri-day-sleep-analytics')[0]
+    assert.equal(byClass(active, 'tri-act').length, 2)
+    assert.equal(byClass(active, 'tri-day-analytics').length, 1)
+    assert.equal(byClass(active, 'tri-day-analytics-group').length, 1)
+    assert.equal(sleepSection.properties.dataAnalyticsDate, date)
+    assert.deepEqual(active.children.slice(-2), [
+      byClass(active, 'tri-act-health')[0],
+      sleepSection,
+    ])
+    assert.deepEqual(byClass(sleepSection, 'tri-day-analytics-group--sleep'), [sleepMarkup])
+  }
+
+  for (const extras of [{ sport: ride.sport }, { activityId: `${ride.id}` }]) {
+    const selected = buildDayCard(factory, date, payload, extras)
+    assert.equal(byClass(selected, 'tri-act-health').length, 0)
+    assert.equal(byClass(selected, 'tri-day-sleep-analytics').length, 0)
+  }
+  const analyticsCard = buildDayCard(factory, date, payload, { analytics: true })
+  assert.equal(byClass(analyticsCard, 'tri-day-analytics-group--sleep').length, 1)
+  assert.equal(byClass(analyticsCard, 'tri-day-sleep-analytics').length, 0)
+  assert.equal(byClass(buildDayCard(factory, '2026-08-17', payload), 'tri-day-analytics').length, 0)
+  const noSleep = buildDayCard(factory, date, {
+    ...payload,
+    dailyAnalytics: { [date]: { ...summary, sleep: null, sleepMetrics: null, recovery: null } },
+  })
+  assert.equal(byClass(noSleep, 'tri-day-analytics').length, 0)
 
   assert.ok(summary.sleepMetrics?.garmin)
   const garminOnly: TriathlonDayAnalytics = {
@@ -5873,6 +6049,14 @@ test('renders exact-date analytics and limits automatic rest-day analytics to sl
   assert.equal(byClass(garminRest, 'tri-day-sleep-stages').length, 0)
   assert.equal(byClass(garminRest, 'tri-day-sleep-line-svg').length, 0)
   assert.doesNotMatch(text(garminRest), /total sleep|sleep score|time in bed/)
+  const garminActive = buildDayCard(factory, date, {
+    ...payload,
+    dailyAnalytics: { [date]: garminOnly },
+  })
+  assert.deepEqual(
+    byClass(garminActive, 'tri-day-analytics-group--sleep'),
+    byClass(garminRest, 'tri-day-analytics-group--sleep'),
+  )
 
   assert.ok(summary.heat)
   const saunaSummary: TriathlonDayAnalytics = {
@@ -7378,7 +7562,10 @@ test('labels a power curve through its endpoint beyond three hours', () => {
     '30s',
     '1m',
     '2m',
+    '3m',
     '5m',
+    '6m',
+    '12m',
     '20m',
     '1h',
     '5h35m',
@@ -7393,23 +7580,11 @@ test('labels a power curve through its endpoint beyond three hours', () => {
   )
   assert.deepEqual(
     ticks.map(tick => tick.properties.dataCurveSeconds),
-    ['1', '5', '10', '20', '30', '60', '120', '300', '1200', '3600', '20107'],
+    ['1', '5', '10', '20', '30', '60', '120', '180', '300', '360', '720', '1200', '3600', '20107'],
   )
   assert.deepEqual(
     ticks.map(tick => tick.properties.ariaPressed),
-    [
-      'true',
-      'false',
-      'false',
-      'false',
-      'false',
-      'false',
-      'false',
-      'false',
-      'false',
-      'false',
-      'false',
-    ],
+    ticks.map((_, index) => String(index === 0)),
   )
 })
 
@@ -7435,7 +7610,10 @@ test('uses sparse second markers in embedded power curves', () => {
     '30s',
     '1m',
     '2m',
+    '3m',
     '5m',
+    '6m',
+    '12m',
     '20m',
     '1h',
   ])
@@ -7463,7 +7641,10 @@ test('keeps precise embedded power curve endpoints clear of the previous marker'
     '30s',
     '1m',
     '2m',
+    '3m',
     '5m',
+    '6m',
+    '12m',
     '53m20s',
   ])
 })
@@ -7471,11 +7652,11 @@ test('keeps precise embedded power curve endpoints clear of the previous marker'
 test('keeps shared power curve duration markers inside the visible domain', () => {
   assert.deepEqual(
     powerCurveDurationTicks(5, 300, [1, 15, 60, 300, 600]),
-    [5, 10, 15, 20, 30, 60, 120, 300],
+    [5, 10, 15, 20, 30, 60, 120, 180, 300],
   )
   assert.deepEqual(
     powerCurveDurationTicks(1, 20_107, [1, 60, 300, 1_200, 3_600, 10_800]),
-    [1, 5, 10, 20, 30, 60, 120, 300, 1_200, 3_600, 20_107],
+    [1, 5, 10, 20, 30, 60, 120, 180, 300, 360, 720, 1_200, 3_600, 20_107],
   )
 })
 
@@ -8574,14 +8755,26 @@ test('gives comparison power curves the shared ranges and clickable duration seg
   assert.equal(references.length, 2)
   assert.equal('hidden' in references[0].properties, false)
   assert.equal('hidden' in references[1].properties, true)
-  assert.deepEqual(ticks.map(text), ['1s', '5s', '10s', '20s', '30s', '1m', '2m', '5m', '20m'])
+  assert.deepEqual(ticks.map(text), [
+    '1s',
+    '5s',
+    '10s',
+    '20s',
+    '30s',
+    '1m',
+    '2m',
+    '3m',
+    '5m',
+    '6m',
+    '20m',
+  ])
   assert.equal(
     ticks.every(tick => tick.tagName === 'button'),
     true,
   )
   assert.deepEqual(
     ticks.map(tick => tick.properties.dataCurveSeconds),
-    ['1', '5', '10', '20', '30', '60', '120', '300', '1200'],
+    ['1', '5', '10', '20', '30', '60', '120', '180', '300', '360', '1200'],
   )
   assert.equal(ticks[0].properties.ariaPressed, 'true')
   assert.deepEqual(byClass(chart, 'tri-compare-curve-reference-label').map(text), ['6-week best'])

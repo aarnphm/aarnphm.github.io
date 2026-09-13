@@ -19,6 +19,7 @@ import { powerCurveFraction } from '../../../util/triathlon-card'
 import { scrubDist } from '../../../util/triathlon-card'
 import { powerCurveReferenceLabel } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
+import { setupPowerCurveTicks } from '../shell/power-curve-ticks'
 import { activityComparisonMetric } from './comparison-graph'
 import { activityComparisonMetricLabel } from './comparison-graph'
 import { bindActivityComparisonGraph } from './comparison-graph'
@@ -31,7 +32,7 @@ export const wireActivityComparison = (
   activities: StravaActivityDetail[],
 ): (() => void) => {
   const text = (key: string): string => triText(presentation.locale, key)
-  const cleanups: (() => void)[] = []
+  const cleanups: (() => void)[] = [setupPowerCurveTicks(comparison)]
   const charts = Array.from(
     comparison.querySelectorAll<HTMLElement>('.tri-compare-chart[data-compare-chart]'),
   )

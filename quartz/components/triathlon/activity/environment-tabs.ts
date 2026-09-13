@@ -1,26 +1,21 @@
 import type { GardenEnvironmentSample } from '../../../util/activity-environment'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
-import { gardenUvScoreFromDose } from '../../../util/activity-uv-score'
-import { environmentElapsedClock, formatTemperature, speedKph } from '../../../util/triathlon-card'
-import { triText } from '../../../util/triathlon-i18n'
+import {
+  ENVIRONMENT_CHART_VIEWS,
+  environmentChartReadout,
+  type EnvironmentChartView,
+} from '../../../util/triathlon-card'
 import { isRecord } from '../../../util/type-guards'
 
-export type EnvironmentView = 'cumulative' | 'uv-index' | 'temperature' | 'cloud-cover'
-
-const ENVIRONMENT_VIEWS: readonly EnvironmentView[] = [
-  'cumulative',
-  'uv-index',
-  'temperature',
-  'cloud-cover',
-]
+export type EnvironmentView = EnvironmentChartView
 
 const isEnvironmentView = (value: string | undefined): value is EnvironmentView =>
-  ENVIRONMENT_VIEWS.some(view => view === value)
+  ENVIRONMENT_CHART_VIEWS.some(view => view === value)
 
 export const environmentViewFromKey = (
   selected: EnvironmentView,
   key: string,
-  views: readonly EnvironmentView[] = ENVIRONMENT_VIEWS,
+  views: readonly EnvironmentView[] = ENVIRONMENT_CHART_VIEWS,
 ): EnvironmentView | null => {
   const current = views.indexOf(selected)
   if (current < 0 || views.length === 0) return null
@@ -131,46 +126,6 @@ const cumulativeMode = (analysis: HTMLElement): 'score' | 'sed' =>
     ? 'score'
     : 'sed'
 
-const readout = (
-  presentation: TriathlonPresentation,
-  sample: GardenEnvironmentSample,
-  scoreCoefficientSed: number | null,
-  doseClock: 'elapsed' | 'moving-telemetry' | null,
-): string => {
-  const values = [environmentElapsedClock(sample.elapsedS)]
-  if (sample.cumulativeSed != null) {
-    const scoreDoseSed =
-      doseClock === 'moving-telemetry' ? sample.cumulativeMovingTelemetrySed : sample.cumulativeSed
-    if (scoreCoefficientSed != null && scoreDoseSed != null)
-      values.push(
-        `${gardenUvScoreFromDose(scoreDoseSed, scoreCoefficientSed)} ${triText(presentation.locale, 'score')}`,
-      )
-    values.push(`${sample.cumulativeSed.toFixed(2)} SED`)
-  }
-  if (sample.uvIndex != null) values.push(`UVI ${sample.uvIndex.toFixed(1)}`)
-  if (sample.ambientTemperatureC != null)
-    values.push(formatTemperature(presentation, sample.ambientTemperatureC))
-  if (sample.cloudCoverPct != null)
-    values.push(`${Math.round(sample.cloudCoverPct)}% ${triText(presentation.locale, 'cloud')}`)
-  if (sample.headwindKph != null)
-    values.push(
-      `${triText(presentation.locale, 'headwind')} ${sample.headwindKph > 0 ? '+' : ''}${speedKph(presentation, sample.headwindKph)}`,
-    )
-  if (sample.crosswindKph != null)
-    values.push(
-      `${triText(presentation.locale, 'crosswind')} ${sample.crosswindKph > 0 ? '+' : ''}${speedKph(presentation, sample.crosswindKph)}`,
-    )
-  if (sample.apparentAirSpeedKph != null)
-    values.push(
-      `${triText(presentation.locale, 'apparent air')} ${speedKph(presentation, sample.apparentAirSpeedKph)}`,
-    )
-  if (sample.yawDeg != null)
-    values.push(
-      `${triText(presentation.locale, 'yaw')} ${sample.yawDeg > 0 ? '+' : ''}${sample.yawDeg.toFixed(1)}°`,
-    )
-  return values.join(' · ')
-}
-
 const updateCursor = (
   analysis: HTMLElement,
   presentation: TriathlonPresentation,
@@ -182,19 +137,22 @@ const updateCursor = (
   const elapsed = Number(analysis.dataset.environmentElapsed)
   if (!Number.isFinite(elapsed) || elapsed <= 0) return
   const x = 2 + Math.min(1, Math.max(0, sample.elapsedS / elapsed)) * 96
+  const coefficientSed = coefficient(analysis)
+  const doseClock = scoreClock(analysis)
+  const readout = environmentChartReadout(
+    presentation,
+    sample,
+    coefficientSed != null && doseClock != null ? { coefficientSed, doseClock } : null,
+  )
   for (const chart of analysis.querySelectorAll<SVGElement>('[data-environment-chart]')) {
     const cursor = chart.querySelector<SVGLineElement>('.tri-environment-cursor')
     cursor?.setAttribute('x1', x.toFixed(3))
     cursor?.setAttribute('x2', x.toFixed(3))
     chart.setAttribute('aria-valuenow', `${Math.round(sample.elapsedS)}`)
-    chart.setAttribute(
-      'aria-valuetext',
-      readout(presentation, sample, coefficient(analysis), scoreClock(analysis)),
-    )
+    chart.setAttribute('aria-valuetext', readout)
   }
   const output = analysis.querySelector<HTMLOutputElement>('[data-environment-readout]')
-  if (output)
-    output.value = readout(presentation, sample, coefficient(analysis), scoreClock(analysis))
+  if (output) output.value = readout
   analysis.dataset.environmentSampleIndex = `${index}`
 }
 

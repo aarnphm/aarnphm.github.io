@@ -82,6 +82,21 @@ title: are.na
 
 ## discourse
 
+- https://paulfchristiano.substack.com/p/personal-statement-on-joining-the -- Personal statement on joining the OpenAI board
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [openai, governance]
+    - later: true
+- https://www.anthropic.com/institute/econ-scenarios -- Scenarios for our Economic Future
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [ai, economics]
+    - later: true
+- https://www.highcapacity.org/p/does-china-care-about-agi -- Does China care about AGI?
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [china, agi]
+    - later: true
 - https://www.bloomberg.com/news/features/2026-05-07/us-midterm-elections-shaped-by-billionaires-like-elon-musk-george-soros -- How Billionaires Are Shaping the U.S. Midterm Elections
   - [meta]:
     - date: 09/07/2026
@@ -658,6 +673,71 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/artficialisabel/status/2095678312773554533 -- isabel on the OpenAI-Hugging Face incident
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [openai, agents]
+    - later: true
+- https://x.com/thsottiaux/status/2097084139627561041 -- Tibo on Codex and infrastructure buildout
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [codex, infrastructure]
+    - later: true
+- https://x.com/tenobrus/status/2096636223414808719 -- Tenobrus on Astra's code quality
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [astra, code quality]
+    - later: true
+- https://x.com/cohere/status/2097410772355666393 -- Cohere on Megakernel serving
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [model serving, cuda]
+    - later: true
+- https://x.com/sethkarten/status/2097332966896578954 -- Seth Karten on action-labeled game data
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [agents, dataset]
+    - later: true
+- https://x.com/SledgeDev/status/2097784668175450273 -- Barrett on leaving Apple
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [apple, research]
+    - later: true
+- https://x.com/tagyourwho/status/2097758128607543528 -- Me & Who? post
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [x, media]
+    - later: true
+- https://x.com/deepseek_ai/status/2097930608790167907 -- DeepSeek introduces DeepSeek-V4.1-Flash
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [deepseek, inference]
+    - later: true
+- https://x.com/ArmandDoma/status/2097807182809153799 -- Armand Domalewski on boyfriend technology
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [apple, joke]
+    - later: true
+- https://x.com/FogleBird/status/954464508705234944 -- Michael Fogleman: Five Seconds of Donkey Kong
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [nes, visualization]
+    - later: true
+- https://x.com/rsnous/status/2098071684611719463 -- Omar Rizwan shares Five Seconds of Donkey Kong
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [nes, visualization]
+    - later: true
+- https://x.com/nickcammarata/status/2098561840712482987 -- Nick Cammarata on backlash to AI safety
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [ai safety, criticism]
+    - later: true
+- https://x.com/eliebakouch/status/2098562888508039654 -- elie on OpenAI disclosure
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [openai, disclosure]
+    - later: true
 - https://x.com/zetalyrae/status/2092464824919978485 -- Fernando Borretti on justified text
   - [meta]:
     - date: 09/07/2026
@@ -3142,6 +3222,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.pengzhe.ng/ -- Peng Zheng
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [product design, personal site]
+    - later: true
+- http://hannahkim.me/ -- hannah
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [personal site, design]
+    - later: true
 - https://nathan.rs/ -- Nathan Barry
   - [meta]:
     - date: 09/07/2026
@@ -4561,6 +4651,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://devonhalliday.substack.com/p/literary-fiction-has-lost-the-plot -- Literary Fiction Has Lost the Plot
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [literature, criticism]
+    - later: true
+- https://www.matthewball.co/all/presentation-the-state-of-video-gaming-in-2026 -- The State of Video Gaming in 2026
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [video games, industry]
+    - later: true
+- https://www.nytimes.com/2002/05/26/nyregion/102-minutes-last-words-at-the-trade-center-fighting-to-live-as-the-towers-die.html -- 102 Minutes: Last Words at the Trade Center
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [september 11, history]
+    - later: true
 - https://www.experimental-history.com/p/i-like-em-thick -- I like 'em thick
   - [meta]:
     - date: 09/07/2026
@@ -7798,6 +7903,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.anthropic.com/research/alignment-assessment-cybersecurity-incidents -- An alignment assessment of recent cybersecurity incidents
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [alignment, cybersecurity]
+    - later: true
 - https://transluce.org/scaling-activation-oracles -- Scaling Activation Oracles to Trillion-Parameter Models
   - [meta]:
     - date: 09/07/2026
@@ -11053,6 +11163,16 @@ title: are.na
 
 ## opinions
 
+- https://www.compactmag.com/article/big-techs-war-on-human-achievement/ -- Big Tech's War on Human Achievement
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [technology, politics]
+    - later: true
+- https://www.compactmag.com/article/the-ai-apocalypse-is-already-here/ -- The AI Apocalypse Is Already Here
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [ai, politics]
+    - later: true
 - https://nabeelqu.co/reflections-on-palantir -- Reflections on Palantir
   - [meta]:
     - date: 09/07/2026
@@ -15027,6 +15147,16 @@ title: are.na
 
 ## finances
 
+- https://www.simonandschuster.com/books/Auslander/Michael-Moritz/9798897101924 -- Auslander
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [michael moritz, book]
+    - later: true
+- https://conversationswithtyler.com/episodes/michael-moritz/ -- Michael Moritz on Origin Stories, Exile, and Obsessive Curiosity
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [venture capital, interview]
+    - later: true
 - https://nav.al/rich -- How to Get Rich
   - [meta]:
     - date: 09/07/2026
@@ -15250,6 +15380,11 @@ title: are.na
 
 ## design
 
+- https://ramp.design/ -- ramp.design
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [design studio, product design]
+    - later: true
 - https://www.choicehacking.com/2025/11/27/the-hidden-psychology-of-netflix-thumbnails -- The Hidden Psychology of Netflix Thumbnails
   - [meta]:
     - date: 09/07/2026
@@ -15842,6 +15977,11 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=MccJdr61xnc -- Geoffrey Litt: Dynamic Documents as Personal Software
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [personal software, interfaces]
+    - later: true
 - https://www.youtube.com/watch?v=k86eUj4hgdc -- Positional Encodings and Group Theory
   - [meta]:
     - date: 09/07/2026
@@ -16562,6 +16702,21 @@ title: are.na
 
 ## tools
 
+- https://orchestraos.com/ -- Orchestra: Search the physical world
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [search, cities]
+    - later: true
+- https://www.rams.ai/ -- Rams
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [design evaluation, agents]
+    - later: true
+- https://holocloth.vercel.app/ -- Holocloth
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [webgl, simulation]
+    - later: true
 - https://programasweights.com/claudish -- English to Claudish translator
   - [meta]:
     - date: 09/07/2026
@@ -16717,6 +16872,16 @@ title: are.na
 
 ## arts
 
+- https://letter.palladiummag.com/p/the-universe-wants-us-to-take-her-c4b -- "The Universe Wants Us To Take Her Clothes Off" With Grimes
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [grimes, interview]
+    - later: true
+- https://www.auraphotoagency.com/news/collectible-dry-31-feat-willem-dafoe/2003/ -- COLLECTIBLE DRY 31 feat. Willem Dafoe
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [photography, willem dafoe]
+    - later: true
 - https://archive.org/details/theoriginalfilesofsomewindowswallpapers/bliss%20600dpi.jpg -- The original files of some Windows wallpapers
   - [meta]:
     - date: 09/07/2026
@@ -17072,6 +17237,21 @@ title: are.na
 
 ## resources
 
+- https://help.huntbikewheels.com/en/support/solutions/articles/43000591592-track-your-order-progress -- Track Your Order Progress
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [cycling, tracking]
+    - later: true
+- https://en.wikipedia.org/wiki/C._Northcote_Parkinson -- C. Northcote Parkinson
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [parkinson's law, management]
+    - later: true
+- https://www.livetracklist.com/tracklist/81961/four-tet-boomtown-2026 -- Four Tet @ Boomtown 2026 Tracklist
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [music, tracklist]
+    - later: true
 - https://docs.google.com/document/d/195PTFrWOoY7yF0Xiv3rIKLui4aCjR4lND8cXciqCduQ/edit?tab=t.0#heading=h.s1w2gnb8dlsn -- LLL: liz's list of lists
   - [meta]:
     - date: 09/07/2026
@@ -18805,6 +18985,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/cohere-ai/cohere-megakernel/blob/main/src/kv/cache.cpp -- cohere-megakernel KV cache
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [repository, model serving]
+    - later: true
+- https://github.com/yifanzhang-pro/recurrent-looped-tranformer -- Recurrent Looped Transformer
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [repository, transformers]
+    - later: true
 - https://github.com/get-bb/bb -- GitHub - get-bb/bb: The agent IDE that builds itself
   - [meta]:
     - date: 08/26/2026
@@ -20216,6 +20406,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://blog.jessfraz.com/post/home-hardware-part-one?v=2 -- Home Hardware, Part 1: My Control4 Revenge Arc
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [hardware, home automation]
+    - later: true
+- https://www.impulsespace.com/ -- Impulse Space
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [space, in-space mobility]
+    - later: true
 - https://www.yosefk.com/blog/how-fpgas-work-and-why-youll-buy-one.html -- How FPGAs work, and why you'll buy one
   - [meta]:
     - date: 09/07/2026
@@ -21245,6 +21445,11 @@ title: are.na
 
 ## organizations
 
+- https://nytery.com/vinayak/ -- Vinayak Grants Program
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [grants, entrepreneurship]
+    - later: true
 - https://public---domain.com/ -- PUBLIC DOMAIN
   - [meta]:
     - date: 09/07/2026
@@ -21532,6 +21737,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://terrytao.wordpress.com/2026/09/11/a-severe-misalignment-of-ai-in-mathematics/ -- A Severe Misalignment of AI in Mathematics
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [ai, mathematics]
+    - later: true
+- https://mathandai.org/ -- Math and AI Declaration
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [ai, mathematics]
+    - later: true
+- https://leidendeclaration.ai/ -- Leiden Declaration on Artificial Intelligence and Mathematics
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [ai, mathematics]
+    - later: true
+- https://www.economist.com/science-and-technology/2026/09/11/top-mathematicians-are-outraged-by-openais-methods -- Top mathematicians are outraged by OpenAI's methods
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [openai, mathematics]
+    - later: true
 - https://en.wikipedia.org/wiki/Barnsley_fern -- Barnsley fern
   - [meta]:
     - date: 08/26/2026
@@ -22404,6 +22629,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://www-cdn.anthropic.com/files/4zrzovbb/website/cf58f84d46a4a76bf5a5b039ac695fba6b80041c.pdf -- Economic Scenarios for Transformative AI
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [ai, economics]
+    - later: true
+- https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/DeepSeek_V41_Tech_Report.pdf -- DeepSeek V4.1 Flash Technical Report
+  - [meta]:
+    - date: 09/12/2026
+    - tags: [deepseek, technical report]
+    - later: true
 - https://cdn.sanity.io/files/e4qjo92p/production/2d7fa58e3b820715664bcf42097e86c05070c161.pdf -- The Cerebras Wafer-Scale Architecture for Deep Learning
   - [meta]:
     - date: 09/07/2026
