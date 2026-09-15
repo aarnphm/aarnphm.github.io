@@ -10,6 +10,7 @@ import type { DetailPayload } from './data'
 import { activityCadenceScale } from '../../../util/triathlon-card'
 import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { activityStatRows } from '../../../util/triathlon-card'
+import { activityEquipmentStatAttrs } from '../../../util/triathlon-card'
 import { activityAnalysisStatAttrs } from '../../../util/triathlon-card'
 import { activityTableRows } from '../../../util/triathlon-card'
 import { activitySourceStatAttrs } from '../../../util/triathlon-card'
@@ -993,6 +994,7 @@ export const renderMapDetail = (
         label === 'training effect'
           ? { 'data-training-effect-group': summaryTrainingEffectGroup }
           : ((label === 'source' ? activitySourceStatAttrs(d) : undefined) ??
+              (label === 'equipment' ? activityEquipmentStatAttrs(d) : undefined) ??
               activityAnalysisStatAttrs(d, label) ??
               (index >= primaryStatCount && label === 'humidity'
                 ? relativeHumidityStatAttrs(d)

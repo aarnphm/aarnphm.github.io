@@ -497,6 +497,15 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     !isActivityKind(value.sport) ||
     !isWahooVerification(value.wahoo) ||
     !isActivitySources(value.sources) ||
+    !(
+      value.equipment === undefined ||
+      (isRecord(value.equipment) &&
+        typeof value.equipment.id === 'string' &&
+        value.equipment.id.trim().length > 0 &&
+        (value.equipment.name === null ||
+          (typeof value.equipment.name === 'string' && value.equipment.name.trim().length > 0)) &&
+        value.equipment.source === 'strava')
+    ) ||
     !isActivityMoves(value.moves) ||
     !(value.device === null || isActivityDevice(value.device)) ||
     !isStaminaTrace(value.staminaTrace) ||

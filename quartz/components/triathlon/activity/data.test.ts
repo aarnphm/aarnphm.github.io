@@ -29,6 +29,24 @@ const detail = (id: number, date: string, sport: string): Record<string, unknown
   analyses: emptyAnalyses,
 })
 
+test('validates equipment identity, nullable names, and Strava provenance', () => {
+  const activity = detail(1, '2026-09-15', 'bike')
+  for (const name of ['Speedmax', null])
+    assert.equal(
+      isActivityDetail({ ...activity, equipment: { id: 'b123', name, source: 'strava' } }),
+      true,
+    )
+  for (const equipment of [
+    null,
+    {},
+    { id: '', name: 'Speedmax', source: 'strava' },
+    { id: 'b123', name: '', source: 'strava' },
+    { id: 'b123', name: 'Speedmax', source: 'garmin' },
+  ])
+    assert.equal(isActivityDetail({ ...activity, equipment }), false)
+  assert.equal(isActivityDetail(activity), true)
+})
+
 test('loads activity shards alongside manual sauna daily analytics', async () => {
   const analytics = buildAnalytics(null)
   analytics.heat.series = [

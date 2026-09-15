@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-15 10:30:00 GMT-04:00
+modified: 2026-09-15 14:10:26 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1564,6 +1564,22 @@ htl: 7.6
 location: Othership Adelaide
 strava:
 garmin:
+```
+
+```tracking
+activity: 20188550065
+garmin: 24374034524
+```
+
+```tracking
+date: 2026-09-15
+activity: 20189471007
+exercise: Standing Quad Stretch (30s per side) | 1m
+exercise: Crossover hamstring stretch (30s per side) | 1m
+exercise: Upper Calf Stretch (30s per side) | 1m
+exercise: Hip Flexor Stretch Kneeling (30s per side) | 1m
+exercise: Butterfly stretch | 30s
+exercise: Figure 4 glute stretch (30s per side) | 1m
 ```
 
 <!-- training plan start

@@ -239,7 +239,10 @@ test('power-to-weight server series share one zero-based scale', () => {
       efforts: {
         5: effort(5, 10, '2026-08-01'),
         60: effort(60, 6, '2026-08-01'),
+        180: effort(180, 5, '2026-08-01'),
         300: effort(300, 4, '2026-08-01'),
+        360: effort(360, 3.8, '2026-08-01'),
+        720: effort(720, 3.5, '2026-08-01'),
         1200: effort(1200, 2, '2026-08-01'),
       },
     },
@@ -248,7 +251,10 @@ test('power-to-weight server series share one zero-based scale', () => {
       efforts: {
         5: effort(5, 12, '2026-08-02'),
         60: effort(60, 7, '2026-08-02'),
+        180: effort(180, 6, '2026-08-02'),
         300: effort(300, 5, '2026-08-02'),
+        360: effort(360, 4.8, '2026-08-02'),
+        720: effort(720, 4.5, '2026-08-02'),
         1200: effort(1200, 3, '2026-08-02'),
       },
     },
@@ -259,12 +265,13 @@ test('power-to-weight server series share one zero-based scale', () => {
   assert.equal(content.seriesDomain, 'shared-zero')
   assert.deepEqual(
     content.series?.map(series => series.label),
-    ['5s', '1m', '5m', '20m'],
+    ['5s', '1m', '3m', '5m', '6m', '12m', '20m'],
   )
   const html = renderToString(<AnalyticsServerPanel definition={definition} data={analytics} />)
-  assert.match(html, /data-tri-series-count="4"/)
+  assert.match(html, /data-tri-series-count="7"/)
   assert.match(html, /data-tri-series-domain="shared-zero"/)
   assert.match(html, /data-series="20m"/)
+  for (const label of ['3m', '6m', '12m']) assert.ok(html.includes(`data-series="${label}"`))
   assert.equal(analyticsChartPath([10, 12], { minimum: 0, maximum: 12 }), 'M0.00 7.33 L100.00 3.00')
   assert.equal(analyticsChartPath([2, 3], { minimum: 0, maximum: 12 }), 'M0.00 24.67 L100.00 22.50')
 })

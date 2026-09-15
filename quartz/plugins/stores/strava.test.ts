@@ -1299,6 +1299,53 @@ test('projects a calculated cycling performance condition when Garmin omits its 
   )
 })
 
+test('projects each activity equipment assignment with Strava provenance through JSON', () => {
+  const cache: StravaRawCache = {
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: 1 },
+    lastSync: 1,
+    lastActivityStart: 1,
+    activities: {
+      101: ride({ gearId: 'b1' }),
+      102: ride({ id: 102, gearId: 'b2' }),
+      103: ride({ id: 103, sportType: 'Run', gearId: 's1' }),
+      104: ride({ id: 104, gearId: null }),
+      105: ride({ id: 105, gearId: 'b-missing' }),
+    },
+    gear: {
+      b1: { id: 'b1', name: 'Soloist', brandName: null, modelName: null, distanceM: 1000 },
+      b2: { id: 'b2', name: 'Speedmax', brandName: null, modelName: null, distanceM: 0 },
+      s1: { id: 's1', name: 'Running shoes', brandName: null, modelName: null, distanceM: 100 },
+    },
+  }
+  const payload = buildPayload(cache, null, null, '2026-06-01')
+  assert.deepEqual(payload.details['101'].equipment, {
+    id: 'b1',
+    name: 'Soloist',
+    source: 'strava',
+  })
+  assert.deepEqual(payload.details['102'].equipment, {
+    id: 'b2',
+    name: 'Speedmax',
+    source: 'strava',
+  })
+  assert.deepEqual(payload.details['103'].equipment, {
+    id: 's1',
+    name: 'Running shoes',
+    source: 'strava',
+  })
+  assert.equal(payload.details['104'].equipment, undefined)
+  assert.deepEqual(payload.details['105'].equipment, {
+    id: 'b-missing',
+    name: null,
+    source: 'strava',
+  })
+  const serialized = JSON.stringify(payload.details)
+  assert.deepEqual(JSON.parse(serialized)['102'].equipment, payload.details['102'].equipment)
+  cache.activities['102'].gearId = null
+  assert.equal(buildPayload(cache, null, null, '2026-06-01').details['102'].equipment, undefined)
+})
+
 test('projects supported run, walk, and swim recording devices', () => {
   const cases: {
     sportType: string

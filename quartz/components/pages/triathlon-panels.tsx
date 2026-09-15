@@ -23,6 +23,7 @@ import {
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
 import { AnalyticsServerPanel } from '../triathlon/analytics/render'
+import { EquipmentUsage } from '../triathlon/tools/EquipmentUsage'
 import { Maintenance } from '../triathlon/tools/Maintenance'
 import { TirePressure } from '../triathlon/tools/TirePressure'
 import { deriveTrainingDocument, type TrainingTreeNode } from '../triathlon/training/tree'
@@ -1044,7 +1045,20 @@ const GearRatioCalculator = () => {
   )
 }
 
-const GearRows = ({ groups }: { groups: ReadonlyArray<readonly [string, readonly string[]]> }) => (
+const STRAVA_GEAR_IDS: Readonly<Record<string, string>> = {
+  'Cervélo Soloist': 'b18037537',
+  'Canyon Speedmax CFR Di2 2027': 'b18595115',
+  'Shoes: HOKA Clifton 10': 'g31765417',
+  'Shoes: Saucony Endorphin Elite 3': 'g32047204',
+}
+
+const GearRows = ({
+  groups,
+  equipment,
+}: {
+  groups: ReadonlyArray<readonly [string, readonly string[]]>
+  equipment: TriathlonRenderData['equipment']
+}) => (
   <>
     {groups.map(([label, items]) => (
       <div class="tri-gear-row">
@@ -1052,8 +1066,12 @@ const GearRows = ({ groups }: { groups: ReadonlyArray<readonly [string, readonly
           {label}
         </span>
         <span class="tri-gear-v">
+          <EquipmentUsage usage={equipment?.[STRAVA_GEAR_IDS[label]]} />
           {items.map(it => (
-            <span class="tri-gear-li">· {it}</span>
+            <span class="tri-gear-li">
+              · {it}
+              <EquipmentUsage usage={equipment?.[STRAVA_GEAR_IDS[it]]} />
+            </span>
           ))}
         </span>
       </div>
@@ -1064,9 +1082,11 @@ const GearRows = ({ groups }: { groups: ReadonlyArray<readonly [string, readonly
 export const GearPanel = ({
   page,
   maintenance = null,
+  equipment,
 }: {
   page?: boolean
   maintenance?: TriathlonMaintenance | null
+  equipment?: TriathlonRenderData['equipment']
 }) => (
   <div class="tri-gear-wrap">
     {!page && (
@@ -1086,9 +1106,9 @@ export const GearPanel = ({
       aria-hidden={page ? 'false' : 'true'}
     >
       <div class="tri-gear-scroll">
-        <GearRows groups={GEAR.slice(0, BIKE_GEAR_GROUP_COUNT)} />
+        <GearRows groups={GEAR.slice(0, BIKE_GEAR_GROUP_COUNT)} equipment={equipment} />
         <Maintenance maintenance={maintenance} />
-        <GearRows groups={GEAR.slice(BIKE_GEAR_GROUP_COUNT)} />
+        <GearRows groups={GEAR.slice(BIKE_GEAR_GROUP_COUNT)} equipment={equipment} />
       </div>
     </div>
   </div>
@@ -1522,10 +1542,16 @@ export const CalcPanel = ({
   )
 }
 
-export const ToolsPanel = ({ maintenance }: { maintenance?: TriathlonMaintenance | null }) => (
+export const ToolsPanel = ({
+  maintenance,
+  renderData,
+}: {
+  maintenance?: TriathlonMaintenance | null
+  renderData?: TriathlonRenderData
+}) => (
   <div class="tri-tools" data-keyboard-scroll>
     <section class="tri-tools-sec">
-      <GearPanel page maintenance={maintenance} />
+      <GearPanel page maintenance={maintenance} equipment={renderData?.equipment} />
     </section>
     <section class="tri-tools-sec">
       <PacePanel page />

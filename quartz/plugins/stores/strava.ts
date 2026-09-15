@@ -177,6 +177,21 @@ export interface RawStravaActivity {
   averageTemp?: number
   calories?: number
   deviceName?: string
+  gearId?: string | null
+}
+
+export interface StravaGear {
+  id: string
+  name: string | null
+  brandName: string | null
+  modelName: string | null
+  distanceM: number | null
+}
+
+export interface ActivityEquipment {
+  id: string
+  name: string | null
+  source: 'strava'
 }
 
 export interface RawStravaAnalysisRange {
@@ -250,6 +265,7 @@ export interface StravaRawCache {
   lastSync: number
   lastActivityStart: number
   activities: Record<string, RawStravaActivity>
+  gear?: Record<string, StravaGear>
   activityDetails?: Record<string, RawStravaActivityDetail>
   streams?: Record<string, StravaStreams>
   geo?: Record<string, string>
@@ -625,6 +641,7 @@ export interface ActivityAnalyses {
 
 export interface StravaActivityDetail {
   id: number
+  equipment?: ActivityEquipment
   sources?: ActivitySource[]
   virtual?: boolean
   distanceSource?: 'garmin' | 'strava'
@@ -4647,6 +4664,12 @@ export function buildPayload(
       activityCriticalPowers.get(id) ?? null,
     )
     const detail = details[id]
+    if (original.gearId)
+      detail.equipment = {
+        id: original.gearId,
+        name: cache.gear?.[original.gearId]?.name ?? null,
+        source: 'strava',
+      }
     applyHeartRatePhysiology(detail, inputMaxHeartRate ?? hrmax)
     if (!detail.virtual && trackingById.get(a.id)?.garminActivityId != null)
       detail.distanceSource = 'strava'

@@ -15,9 +15,22 @@ import { anaTitle, clampN, markGlossDefinition, monthTicks } from '../shared'
 
 const W = 100
 const H = 34
+const SELECTION_KEY = 'tri-power-weight-durations'
+
+export const restorePowerToWeightDurations = (
+  stored: unknown,
+  available: ReadonlySet<PowerToWeightDurationS>,
+): Set<PowerToWeightDurationS> => {
+  const selected = new Set(
+    POWER_TO_WEIGHT_DURATIONS.filter(
+      durationS => available.has(durationS) && Array.isArray(stored) && stored.includes(durationS),
+    ),
+  )
+  return selected.size > 0 ? selected : new Set(available)
+}
 
 export const powerToWeightDurationLabel = (durationS: PowerToWeightDurationS): string =>
-  durationS === 5 ? '5s' : durationS === 60 ? '1m' : durationS === 300 ? '5m' : '20m'
+  durationS < 60 ? `${durationS}s` : `${durationS / 60}m`
 
 export const deconflictPowerToWeightMonthTicks = (ticks: AxisXTick[]): AxisXTick[] => {
   if (ticks.length < 2 || ticks[1].pct - ticks[0].pct >= 5) return ticks
@@ -434,14 +447,35 @@ export const buildPowerToWeightTrend = (
         if (enabled && active.size === 1) return
         if (enabled) active.delete(durationS)
         else active.add(durationS)
-        button.setAttribute('aria-pressed', String(!enabled))
-        for (const item of block.querySelectorAll<HTMLElement | SVGElement>(
-          `[data-power-weight-duration="${durationS}"]`,
-        ))
-          if (!controls.contains(item)) item.toggleAttribute('hidden', enabled)
+        try {
+          localStorage.setItem(SELECTION_KEY, JSON.stringify([...active]))
+        } catch {}
+        syncSelection()
         updateScale()
         showIndex(selectedIndex, false)
       }
+      const syncSelection = (): void => {
+        for (const button of controls.querySelectorAll<HTMLButtonElement>(
+          '.tri-power-weight-toggle',
+        )) {
+          const durationS = durationFrom(button.dataset.powerWeightDuration)
+          button.setAttribute('aria-pressed', String(durationS != null && active.has(durationS)))
+        }
+        for (const item of block.querySelectorAll<HTMLElement | SVGElement>(
+          '[data-power-weight-duration]',
+        )) {
+          if (controls.contains(item)) continue
+          const durationS = durationFrom(item.dataset.powerWeightDuration)
+          item.toggleAttribute('hidden', durationS == null || !active.has(durationS))
+        }
+      }
+      try {
+        const stored: unknown = JSON.parse(localStorage.getItem(SELECTION_KEY) ?? 'null')
+        const restored = restorePowerToWeightDurations(stored, available)
+        active.clear()
+        for (const durationS of restored) active.add(durationS)
+      } catch {}
+      syncSelection()
       updateScale()
       showIndex(initialIndex, true)
       graph.addEventListener('pointermove', onMove)

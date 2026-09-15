@@ -661,13 +661,13 @@ test('keeps Apple-only ranking mass and measurement provenance together', () => 
   assert.equal(ranking.massSource, 'apple')
 })
 
-test('power-to-weight extracts the four exact durations and current Zwift references', () => {
+test('power-to-weight extracts seven exact durations with only four Zwift references', () => {
   const date = iso(20)
   const cache = powerActivityCache([{ id: 11, date }], date)
   const activityDetails = {
     '11': powerDetail(11, date, {
-      bestWatts: { 5: 800, 60: 400 },
-      curveWatts: { 300: 320, 1200: 280 },
+      bestWatts: { 5: 800, 60: 400, 180: 360, 360: 312 },
+      curveWatts: { 180: 350, 300: 320, 720: 296, 1200: 280 },
     }),
   }
   const trend = buildAnalytics(cache, {
@@ -686,7 +686,10 @@ test('power-to-weight extracts the four exact durations and current Zwift refere
     [
       { durationS: 5, watts: 800, wattsPerKg: 10 },
       { durationS: 60, watts: 400, wattsPerKg: 5 },
+      { durationS: 180, watts: 360, wattsPerKg: 4.5 },
       { durationS: 300, watts: 320, wattsPerKg: 4 },
+      { durationS: 360, watts: 312, wattsPerKg: 3.9 },
+      { durationS: 720, watts: 296, wattsPerKg: 3.7 },
       { durationS: 1200, watts: 280, wattsPerKg: 3.5 },
     ],
   )
@@ -704,6 +707,21 @@ test('power-to-weight extracts the four exact durations and current Zwift refere
   assert.equal(trend.source.label, 'GCN × Zwift data')
   assert.equal(trend.source.population, 'Zwift riders')
   assert.match(trend.source.selectionBias, /self-selected/)
+})
+
+test('power-to-weight leaves unrecorded durations unavailable between recorded efforts', () => {
+  const date = iso(20)
+  const trend = buildAnalytics(powerActivityCache([{ id: 12, date }], date), {
+    activityDetails: {
+      '12': powerDetail(12, date, { bestWatts: { 60: 400, 300: 320 }, curveWatts: { 1200: 280 } }),
+    },
+    weights: [trackingWeight(date, 80)],
+    since: date,
+  }).powerCurve.powerToWeight
+
+  assert.equal(trend.points[0].efforts[180], null)
+  assert.equal(trend.points[0].efforts[360], null)
+  assert.equal(trend.points[0].efforts[720], null)
 })
 
 test('power-to-weight rejects estimated power and non-bike details', () => {

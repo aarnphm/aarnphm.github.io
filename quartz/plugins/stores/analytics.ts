@@ -225,7 +225,10 @@ export interface AnalyticsInputs {
   generatedAt?: number
 }
 
-export const POWER_TO_WEIGHT_DURATIONS: readonly [5, 60, 300, 1200] = [5, 60, 300, 1200]
+export const POWER_TO_WEIGHT_DURATIONS: readonly [5, 60, 180, 300, 360, 720, 1200] = [
+  5, 60, 180, 300, 360, 720, 1200,
+]
+const POWER_TO_WEIGHT_REFERENCE_DURATIONS: readonly [5, 60, 300, 1200] = [5, 60, 300, 1200]
 
 export type PowerToWeightDurationS = (typeof POWER_TO_WEIGHT_DURATIONS)[number]
 export type PowerToWeightAgeGroup = '20–29' | '30–39' | '40–49' | '50–59' | '60–69' | '70–79'
@@ -247,7 +250,7 @@ export interface PowerToWeightTrendPoint {
 }
 
 export interface PowerToWeightReference {
-  durationS: PowerToWeightDurationS
+  durationS: (typeof POWER_TO_WEIGHT_REFERENCE_DURATIONS)[number]
   p10: number
   average: number
   p90: number
@@ -290,7 +293,7 @@ const POWER_TO_WEIGHT_AGE_BANDS: readonly PowerToWeightAgeBand[] = [
 const POWER_TO_WEIGHT_MALE_REFERENCES: Readonly<
   Record<
     PowerToWeightAgeGroup,
-    Readonly<Record<PowerToWeightDurationS, PowerToWeightReferenceValues>>
+    Readonly<Record<PowerToWeightReference['durationS'], PowerToWeightReferenceValues>>
   >
 > = {
   '20–29': {
@@ -1025,7 +1028,10 @@ function powerToWeightReferences(
 ): PowerToWeightReference[] {
   if (sex !== 'M' || ageGroup == null) return []
   const reference = POWER_TO_WEIGHT_MALE_REFERENCES[ageGroup]
-  return POWER_TO_WEIGHT_DURATIONS.map(durationS => ({ durationS, ...reference[durationS] }))
+  return POWER_TO_WEIGHT_REFERENCE_DURATIONS.map(durationS => ({
+    durationS,
+    ...reference[durationS],
+  }))
 }
 
 function emptyPowerToWeight(today: string): PowerToWeightTrend {
@@ -3811,7 +3817,7 @@ const ageOn = (iso: string): number =>
 const emptyPowerToWeightEfforts = (): Record<
   PowerToWeightDurationS,
   PowerToWeightEffort | null
-> => ({ 5: null, 60: null, 300: null, 1200: null })
+> => ({ 5: null, 60: null, 180: null, 300: null, 360: null, 720: null, 1200: null })
 
 const finitePositive = (value: number | null | undefined): value is number =>
   value != null && Number.isFinite(value) && value > 0

@@ -1,6 +1,7 @@
 import type { Element, Root, RootContent } from 'hast'
 import type { VNode } from 'preact'
 import { fromHtml } from 'hast-util-from-html'
+import { toText } from 'hast-util-to-text'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import renderToString from 'preact-render-to-string'
@@ -277,6 +278,52 @@ test('Soloist inventory includes the Reserve 40|44 wheelset rotation', () => {
   )
 })
 
+test('gear surfaces attach lifetime mileage to both bikes and each pair of running shoes', () => {
+  const equipment: NonNullable<TriathlonRenderData['equipment']> = Object.fromEntries(
+    ['b18037537', 'b18595115', 'g31765417', 'g32047204'].map((id, index) => [
+      id,
+      {
+        id,
+        name: 'Renamed in Strava',
+        lifetimeDistanceM: index === 1 ? 0 : 1_609.344,
+        activityCount: index === 1 ? 0 : 2,
+        firstRecorded: index === 1 ? null : '2026-05-26',
+        lastRecorded: index === 1 ? null : '2026-09-15',
+        source: 'strava',
+      },
+    ]),
+  )
+  for (const node of [
+    <GearPanel equipment={equipment} maintenance={maintenance} />,
+    <ToolsPanel renderData={{ ...renderData, equipment }} maintenance={maintenance} />,
+  ]) {
+    const root = rendered(node)
+    const usage = elements(root, element => classes(element).includes('tri-gear-usage'))
+    assert.deepEqual(
+      usage.map(element => element.properties.dataGearId),
+      ['b18037537', 'b18595115', 'g31765417', 'g32047204'],
+    )
+    assert.ok(usage.every(element => element.properties.dataEquipmentSource === 'strava'))
+    assert.deepEqual(
+      usage.map(element => toText(element)),
+      [
+        'distance - 1 mi, 2 activities',
+        'distance - 0 mi, 0 activities',
+        'distance - 1 mi, 2 activities',
+        'distance - 1 mi, 2 activities',
+      ],
+    )
+    const distances = elements(root, element => element.properties.dataKind === 'equipment')
+    assert.deepEqual(
+      distances.map(element => element.properties.dataKm),
+      ['1.609344', '0', '1.609344', '1.609344'],
+    )
+    const html = renderToString(node)
+    assert.match(html, />0 mi</)
+    assert.match(html, /UFO Wax Drip-On/)
+  }
+})
+
 test('gear surfaces keep inventory and maintenance without calculators', () => {
   const popover = renderToString(<GearPanel maintenance={maintenance} />)
   const tools = renderToString(<ToolsPanel maintenance={maintenance} />)
@@ -294,7 +341,7 @@ test('gear surfaces keep inventory and maintenance without calculators', () => {
 
     const sections = [
       html.indexOf('Cervélo Soloist'),
-      html.indexOf('Canyon Speedmax CFR Di2 2026'),
+      html.indexOf('Canyon Speedmax CFR Di2 2027'),
       html.indexOf('class="tri-maintenance"'),
       html.indexOf('data-i18n="running"'),
     ]
