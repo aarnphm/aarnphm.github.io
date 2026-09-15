@@ -1598,6 +1598,52 @@ test('manual moves attach only to the matching activity and date', () => {
   assert.deepEqual(payload.details['101'].moves, { entries: moves, source: 'manual' })
 })
 
+test('preserves parsed sauna locations through standalone and linked payload serialization', () => {
+  for (const name of ['Othership Adelaide', 'Othership Yorkville']) {
+    for (const linked of [false, true]) {
+      const parsed = parseTrackingBlock(
+        null,
+        [
+          'activity: sauna',
+          'date: 2026-06-07',
+          'time: 07:30',
+          'duration: 75 mins',
+          'temperature: 85C',
+          'humidity: 11%',
+          'cooldown: natural',
+          `location: ${name}`,
+          ...(linked ? ['strava: 101'] : []),
+        ].join('\n'),
+      )
+      assert.ok(parsed?.sauna?.location)
+      const payload = linked
+        ? buildPayload(
+            {
+              version: 1,
+              athleteId: 1,
+              auth: { refreshToken: '', obtainedAt: 0 },
+              lastSync: 0,
+              lastActivityStart: 0,
+              activities: { 101: ride({ sportType: 'PhysicalTherapy', distance: 0 }) },
+            },
+            null,
+            null,
+            '2026-06-01',
+          )
+        : emptyPayload(1)
+      applyManualSauna(payload, [parsed.sauna], [])
+      const id = String(linked ? 101 : parsed.sauna.id)
+      assert.deepEqual(payload.details[id].sauna?.location, parsed.sauna.location)
+      assert.deepEqual(
+        JSON.parse(JSON.stringify(payload)).details[id].sauna.location,
+        parsed.sauna.location,
+      )
+      assert.equal(payload.details[id].distanceKm, 0)
+      assert.deepEqual(payload.details[id].mapRoute, [])
+    }
+  }
+})
+
 test('projects a manual sauna session with interval-matched Oura heart rate', () => {
   const payload = emptyPayload(1)
   applyManualSauna(
@@ -1640,6 +1686,7 @@ test('projects a manual sauna session with interval-matched Oura heart rate', ()
   )
   assert.deepEqual(detail.sauna, {
     time: '18:30',
+    location: null,
     temperatureC: 91.111,
     humidityPct: 11,
     cooldown: 'cold plunge',
@@ -1795,6 +1842,7 @@ test('attaches a manual sauna session to its canonical Strava activity', () => {
   )
   assert.deepEqual(payload.details['101'].sauna, {
     time: '07:30',
+    location: null,
     temperatureC: 91.111,
     humidityPct: 11,
     cooldown: 'cold plunge',

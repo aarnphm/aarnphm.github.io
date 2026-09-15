@@ -567,6 +567,7 @@ export interface ActivityMoveList {
 
 export interface ActivitySauna {
   time: string
+  location?: ManualSaunaEntry['location']
   temperatureC: number
   humidityPct: number
   cooldown: ManualSaunaEntry['cooldown']
@@ -4104,6 +4105,7 @@ export function applyManualSauna(
     const heartRate = saunaHeartRate(entry, heartRateSamples, timeZone)
     const sauna: ActivitySauna = {
       time: entry.time,
+      location: entry.location ?? null,
       temperatureC: entry.temperatureC,
       humidityPct: entry.humidityPct,
       cooldown: entry.cooldown,

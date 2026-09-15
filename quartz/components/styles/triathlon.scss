@@ -1548,6 +1548,114 @@
   display: none;
 }
 
+.tri-sauna-summary {
+  display: grid;
+  grid-template-columns: min(44%, 15rem) minmax(0, 1fr);
+  gap: 0.8rem;
+  width: 100%;
+  align-items: start;
+  flex-shrink: 0;
+}
+
+.tri-sauna-summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+
+  > .tri-sauna-laps {
+    align-self: stretch;
+  }
+}
+
+.tri-sauna-location {
+  min-width: 0;
+  margin: 0;
+}
+
+.tri-sauna-location-map {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--light);
+
+  &:hover {
+    background: var(--light);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+
+  > .tri-sauna-location-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
+    mix-blend-mode: multiply;
+  }
+
+  > .tri-sauna-location-image--dark {
+    display: none;
+  }
+}
+
+:root[saved-theme='dark'] .tri-sauna-location-map {
+  > .tri-sauna-location-image--light {
+    display: none;
+  }
+
+  > .tri-sauna-location-image--dark {
+    display: block;
+    mix-blend-mode: screen;
+  }
+}
+
+.tri-sauna-location-pin {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  width: 24px;
+  height: 32px;
+  transform: translateX(-50%);
+  fill: var(--secondary);
+  stroke: var(--light);
+  stroke-width: 1.5;
+
+  circle {
+    fill: var(--light);
+    stroke: none;
+  }
+}
+
+.tri-sauna-location-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.5rem;
+  margin-top: 0.3rem;
+  font-size: 0.62rem;
+  line-height: 1.4;
+  color: var(--gray);
+  text-align: left;
+}
+
+.tri-sauna-location-name {
+  color: var(--darkgray);
+}
+
+.tri-sauna-location-coordinates {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.56rem;
+}
+
+.tri-sauna-location-attribution {
+  font-size: 0.6rem;
+}
+
 .tri-route-cursor {
   fill: var(--tri-accent);
   stroke: var(--light);
@@ -14682,6 +14790,23 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .stream .tri-day-embed[data-triathlon-embedded='1'] {
+  .tri-sauna-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-sauna-location {
+    width: 100%;
+    max-width: 15rem;
+  }
+
+  .tri-sauna-htl-title-full {
+    display: none;
+  }
+
+  .tri-sauna-htl-title-short {
+    display: inline;
+  }
+
   .tri-elev-wrap > .tri-elev-cap:has(> .tri-elev-d) {
     flex-wrap: nowrap;
     column-gap: 0.45rem;
@@ -14801,8 +14926,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
       > .tri-act-more > .tri-workout-analysis {
         margin-top: var(--tri-workout-margin, 0px);
-        height: calc(
-          var(--tri-embedded-graph-row-height) + var(--tri-embedded-graph-row-height) + 0.7rem
+        height: var(
+          --tri-workout-analysis-height,
+          calc(var(--tri-embedded-graph-row-height) + var(--tri-embedded-graph-row-height) + 0.7rem)
         );
       }
 
@@ -14810,7 +14936,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
         margin-top: var(--tri-environment-margin, 0px);
       }
 
-      @each $metric in hr, stamina, performance-condition, respiration, temperature, cadence {
+      @each $metric in stamina, performance-condition, heat-strain-index, core-temperature,
+        skin-temperature, hr, respiration, temperature, cadence
+      {
         > .tri-act-more > [data-tri-trace='#{$metric}'] {
           margin-top: var(--tri-#{$metric}-margin, 0px);
         }
@@ -14822,31 +14950,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
       > .tri-act-strength,
       > .tri-act-figs--sauna > .tri-act-strength {
-        position: relative;
         box-sizing: border-box;
         height: var(--tri-embedded-visual-height);
         margin-top: 0;
         overflow: hidden;
-
-        &::after {
-          position: absolute;
-          inset: auto 0.35rem 0 0;
-          z-index: 1;
-          height: 3.25rem;
-          background: color-mix(in srgb, var(--light) 78%, transparent);
-          -webkit-backdrop-filter: blur(5px);
-          backdrop-filter: blur(5px);
-          content: '';
-          opacity: 0;
-          pointer-events: none;
-          -webkit-mask-image: linear-gradient(to bottom, transparent, #000 45%);
-          mask-image: linear-gradient(to bottom, transparent, #000 45%);
-          transition: opacity 140ms ease;
-        }
-
-        &[data-scrollable='true'][data-scroll-end='false']::after {
-          opacity: 1;
-        }
       }
 
       > .tri-act-figs {
@@ -14861,6 +14968,11 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
       }
 
       > .tri-act-figs--sauna {
+        &:has(> .tri-sauna-summary) {
+          height: auto;
+          min-height: var(--tri-embedded-visual-height);
+        }
+
         > .tri-act-strength {
           flex: 1 1 0;
           min-height: 0;
@@ -14930,15 +15042,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
         min-height: var(--tri-embedded-analysis-readout-height);
         padding-top: 0.15rem;
       }
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .tri-day-embed[data-triathlon-embedded='1']
-      .tri-pop-card:has(> .tri-act + .tri-act)
-      > .tri-act
-      .tri-act-strength::after {
-      transition: none;
     }
   }
 
@@ -15221,7 +15324,7 @@ a.tri-pop-date:hover {
   grid-template-rows: auto minmax(0, 1fr);
   gap: 0.45rem;
   min-width: 0;
-  height: 13rem;
+  height: var(--tri-workout-analysis-height, 13rem);
   margin-bottom: 0.5rem;
   padding: 0.5rem 0.6rem 0.6rem;
   background: color-mix(in srgb, var(--lightgray) 34%, transparent);
@@ -15345,6 +15448,188 @@ a.tri-pop-date:hover {
 
 .tri-workout-analysis .tri-workout {
   grid-template-rows: auto minmax(0, 1fr);
+}
+
+.tri-workout-analysis .tri-sauna-workout:has(> .tri-sauna-laps) {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.tri-sauna-laps {
+  min-width: 0;
+  align-self: end;
+  font-size: 0.52rem;
+}
+
+.tri-sauna-laps-head {
+  display: grid;
+  min-width: 0;
+  margin-bottom: 0.25rem;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+
+  &:has([data-visible='true']) .tri-sauna-laps-legend {
+    visibility: hidden;
+  }
+
+  .tri-analysis-readout {
+    flex-wrap: wrap;
+    gap: 0.15rem 0.6rem;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .tri-analysis-readout-label,
+  .tri-analysis-readout-metrics {
+    max-width: 100%;
+    overflow: visible;
+    white-space: normal;
+  }
+}
+
+.tri-sauna-laps-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.7rem;
+  color: var(--darkgray);
+}
+
+.tri-sauna-lap-list {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.tri-sauna-lap-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--darkgray);
+  font: inherit;
+  font-size: 0.62rem;
+  text-align: left;
+  cursor: pointer;
+
+  &:focus-visible,
+  &[data-analysis-preview],
+  &[aria-pressed='true'] {
+    outline: 1px solid var(--gray);
+    outline-offset: 2px;
+    color: var(--dark);
+  }
+}
+
+.tri-sauna-lap-duration {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-sauna-phase='hot sauna'] {
+  --tri-sauna-phase-color: var(--tri-accent);
+}
+
+[data-sauna-phase='cold plunge'] {
+  --tri-sauna-phase-color: var(--tri-swim);
+}
+
+[data-sauna-phase='break'] {
+  --tri-sauna-phase-color: var(--gray);
+}
+
+.tri-sauna-phase::before {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.25rem;
+  background: var(--tri-sauna-phase-color);
+  content: '';
+}
+
+.tri-sauna-laps-timeline {
+  position: relative;
+  height: 1.5rem;
+}
+
+.tri-sauna-lap {
+  appearance: none;
+  position: absolute;
+  display: grid;
+  place-items: center;
+  inset-block: 0;
+  left: var(--tri-sauna-lap-start);
+  width: max(2px, var(--tri-sauna-lap-width));
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--light);
+  border-radius: 0;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--tri-sauna-phase-color) 28%, var(--light));
+  font: inherit;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+
+  &:focus-visible,
+  &[data-analysis-preview],
+  &[aria-pressed='true'] {
+    z-index: 1;
+    outline: 1px solid var(--dark);
+    outline-offset: -1px;
+    background: color-mix(in srgb, var(--tri-sauna-phase-color) 48%, var(--light));
+  }
+}
+
+.tri-sauna-htl {
+  gap: 0.5rem;
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-sauna-htl-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  > .tri-zone-title {
+    margin: 0;
+    font-size: 0.66rem;
+  }
+}
+
+.tri-sauna-htl-score {
+  color: var(--tri-accent);
+  font-size: 0.66rem;
+  white-space: nowrap;
+}
+
+.tri-sauna-htl-title-short {
+  display: none;
+}
+
+.tri-sauna-htl-meter {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 2px;
+  height: 0.6rem;
+}
+
+.tri-sauna-htl-segment {
+  background: color-mix(in srgb, var(--tri-accent) 18%, transparent);
+}
+
+.tri-sauna-htl-fill {
+  display: block;
+  height: 100%;
+  background: var(--tri-accent);
 }
 
 .tri-workout-analysis .tri-workout-chart {
@@ -16021,8 +16306,8 @@ a.tri-pop-date:hover {
 .tri-swim-workout-pace {
   position: absolute;
   z-index: 4;
-  left: 50%;
-  bottom: clamp(0.15rem, calc(var(--tri-swim-workout-height) - 0.9rem), calc(100% - 1rem));
+  top: 0;
+  left: 0;
   padding: 0.12rem 0.28rem;
   visibility: hidden;
   color: var(--dark);
@@ -16033,18 +16318,6 @@ a.tri-pop-date:hover {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transform: translateX(-50%);
-}
-
-.tri-swim-workout-lap:first-child .tri-swim-workout-pace {
-  left: 0;
-  transform: none;
-}
-
-.tri-swim-workout-lap:nth-last-child(-n + 2) .tri-swim-workout-pace {
-  right: 0;
-  left: auto;
-  transform: none;
 }
 
 .tri-swim-workout-label {
@@ -16479,6 +16752,15 @@ a.tri-pop-date:hover {
   }
 
   .tri-run-workout-lap:hover .tri-run-workout-pace {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .tri-swim-workout-lap:hover {
+    z-index: 5;
+  }
+
+  .tri-swim-workout-lap:hover .tri-swim-workout-pace {
     visibility: visible;
     opacity: 1;
   }

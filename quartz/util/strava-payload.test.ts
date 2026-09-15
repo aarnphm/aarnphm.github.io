@@ -556,6 +556,7 @@ test('applies attached manual sauna metadata through the shared payload path', (
           stravaActivityId: activity.id,
           garminActivityId,
           title: 'Guided Down, Self-Care Sweat',
+          location: { name: 'Othership Adelaide', latitude: 43.6460984, longitude: -79.3977406 },
           date: activity.date,
           time: '17:30',
           durationS: 4_500,
@@ -575,6 +576,7 @@ test('applies attached manual sauna metadata through the shared payload path', (
   assert.equal(activity.name, 'Guided Down, Self-Care Sweat')
   assert.deepEqual(activity.sauna, {
     time: '17:30',
+    location: { name: 'Othership Adelaide', latitude: 43.6460984, longitude: -79.3977406 },
     temperatureC: 71.111,
     humidityPct: 11,
     cooldown: 'cold plunge',

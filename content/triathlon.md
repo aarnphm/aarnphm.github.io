@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-14 20:06:46 GMT-04:00
+modified: 2026-09-15 10:30:00 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1212,6 +1212,7 @@ temperature: 185F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.7
+location: Othership Adelaide
 ```
 
 ```tracking
@@ -1262,6 +1263,7 @@ temperature: 160F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.7
+location: Othership Adelaide
 ```
 
 ```tracking
@@ -1286,6 +1288,7 @@ temperature: 160F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.7
+location: Othership Adelaide
 strava: 20012367069
 ```
 
@@ -1299,6 +1302,7 @@ temperature: 155F
 humidity: 10%
 cooldown: cold plunge
 htl: 6.9
+location: Othership Adelaide
 strava: 20027487559
 garmin: 24229638323
 ```
@@ -1313,6 +1317,7 @@ temperature: 202F
 humidity: 10%
 cooldown: cold plunge
 htl: 7.7
+location: Othership Adelaide
 strava: 20038635691
 garmin: 24239862296
 ```
@@ -1369,6 +1374,7 @@ temperature: 160F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.6
+location: Othership Adelaide
 strava: 20067592351
 garmin: 24265300419
 ```
@@ -1420,6 +1426,7 @@ temperature: 160F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.6
+location: Othership Adelaide
 strava: 20094989479
 garmin: 24290193820
 exercise: Glute Bridge | 30s | 30s
@@ -1444,6 +1451,7 @@ temperature: 167F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.6
+location: Othership Adelaide
 strava: 20109334842
 garmin: 24302930336
 ```
@@ -1463,6 +1471,7 @@ temperature: 178F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.6
+location: Othership Adelaide
 strava: 20124347682
 garmin: 24316146067
 exercise: Glute Bridge | 30s | 30s
@@ -1503,6 +1512,7 @@ temperature: 160F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.6
+location: Othership Adelaide
 strava: 20164727635
 garmin: 24351932641
 ```
@@ -1528,16 +1538,32 @@ exercise: Figure-4 Glute Stretch, Downward Dogs, Seated Hamstring Stretch | 2m
 
 ```tracking
 title: Guided All Round, Loving Kindness
-date: 2026-09-03
-time: 19:30
+date: 2026-09-14
+time: 18:30
 duration: 75 mins
 activity: sauna
 temperature: 162F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.6
+location: Othership Adelaide
 strava: 20177859808
 garmin: 24364001566
+```
+
+```tracking
+title: Guided All Round, Loving Kindness
+date: 2026-09-15
+time: 17:30
+duration: 75 mins
+activity: sauna
+temperature: 162F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.6
+location: Othership Adelaide
+strava:
+garmin:
 ```
 
 <!-- training plan start

@@ -42,6 +42,7 @@ import { buildRunStepSpeedLossPercentTrace as buildRunStepSpeedLossPercentTraceN
 import { buildRunStepSpeedLossTrace as buildRunStepSpeedLossTraceNode } from '../../../util/triathlon-card'
 import { buildRunVerticalOscillationTrace as buildRunVerticalOscillationTraceNode } from '../../../util/triathlon-card'
 import { buildRunVerticalRatioTrace as buildRunVerticalRatioTraceNode } from '../../../util/triathlon-card'
+import { buildSaunaHeatTrainingLoad } from '../../../util/triathlon-card'
 import { buildShiftingChart as buildShiftingChartNode } from '../../../util/triathlon-card'
 import { buildSkinTemperatureTrace as buildSkinTemperatureTraceNode } from '../../../util/triathlon-card'
 import { buildStaminaChart as buildStaminaChartNode } from '../../../util/triathlon-card'
@@ -1015,7 +1016,10 @@ export const renderMapDetail = (
     const more = el('div', 'tri-act-more')
     const workoutAnalysis = buildWorkoutAnalysisNode(domF, d) as HTMLElement | null
     const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
-    const heartRate = hasHeartRateTrace(d) ? buildHeartRateTrace(presentation, d) : null
+    const heartRate =
+      hasHeartRateTrace(d) && workoutAnalysis?.dataset.workoutAnalysisMetric !== 'hr'
+        ? buildHeartRateTrace(presentation, d)
+        : null
     const environment = buildEnvironmentAnalysisNode(domF, d)
     const trainingEffect = buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null
     for (const z of [
@@ -1024,6 +1028,7 @@ export const renderMapDetail = (
       buildStaminaChartNode(domF, d, null),
       buildPerformanceConditionTraceNode(domF, d, null),
       environment,
+      buildSaunaHeatTrainingLoad(domF, d),
       trainingEffect,
       zoneDuo(
         presentation,
@@ -1241,42 +1246,6 @@ export const renderMapDetail = (
         cleanupPowerTicks = null
       }
     },
-  }
-}
-
-export const setupStrengthExerciseOverflow = (root: ParentNode): (() => void) => {
-  const cleanups = Array.from(root.querySelectorAll<HTMLElement>('.tri-act-strength'), strength => {
-    const exercises = strength.querySelector<HTMLElement>('.tri-strength-exercises')
-    if (!exercises) return () => {}
-    let frame = 0
-    const update = () => {
-      const maxScroll = Math.max(0, exercises.scrollHeight - exercises.clientHeight)
-      const scrollable = maxScroll > 1
-      strength.dataset.scrollable = String(scrollable)
-      strength.dataset.scrollEnd = String(!scrollable || exercises.scrollTop >= maxScroll - 1)
-    }
-    const schedule = () => {
-      if (frame !== 0) return
-      frame = window.requestAnimationFrame(() => {
-        frame = 0
-        update()
-      })
-    }
-    const resize = new ResizeObserver(schedule)
-    exercises.addEventListener('scroll', schedule, { passive: true })
-    resize.observe(exercises)
-    for (const exercise of exercises.children) resize.observe(exercise)
-    schedule()
-    return () => {
-      exercises.removeEventListener('scroll', schedule)
-      resize.disconnect()
-      if (frame !== 0) window.cancelAnimationFrame(frame)
-      strength.removeAttribute('data-scrollable')
-      strength.removeAttribute('data-scroll-end')
-    }
-  })
-  return () => {
-    for (const cleanup of cleanups) cleanup()
   }
 }
 
@@ -1652,12 +1621,10 @@ export const renderDetail = (
   return {
     element: wrap,
     mount: () => {
-      const cleanupExerciseOverflow = setupStrengthExerciseOverflow(wrap)
-      if (!interactive) return cleanupExerciseOverflow
+      if (!interactive) return () => {}
       const routeMarker = wrap.querySelector<SVGElement>('.tri-route-cursor')
       const controller = linkScrub(presentation, wrap, routeMarker, surfaces, d.route, d)
       return () => {
-        cleanupExerciseOverflow()
         controller?.dispose()
       }
     },
