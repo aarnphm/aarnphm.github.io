@@ -56,6 +56,10 @@ import {
   estimateWahooCyclingStamina,
   type CyclingStaminaEstimate,
 } from '../../util/cycling-stamina'
+import {
+  applyHeartRatePhysiology,
+  type HeartRatePhysiology,
+} from '../../util/heart-rate-physiology'
 import { localDateTimeUtcMs, localIsoDay } from '../../util/local-date'
 import { latestProviderSync } from '../../util/provider-sync'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
@@ -662,6 +666,7 @@ export interface StravaActivityDetail {
   device: ActivityDevice | null
   staminaTrace: ActivityStaminaTrace | null
   performanceConditionTrace: ActivityPerformanceConditionTrace | null
+  heartRatePhysiology?: HeartRatePhysiology | null
   calculatedIntensityFactor: CalculatedIntensityFactor | null
   calculatedExerciseLoad: CalculatedExerciseLoad | null
   anaerobicPowerEstimate: AnaerobicPowerEstimate | null
@@ -4640,6 +4645,7 @@ export function buildPayload(
       activityCriticalPowers.get(id) ?? null,
     )
     const detail = details[id]
+    applyHeartRatePhysiology(detail, inputMaxHeartRate ?? hrmax)
     if (!detail.virtual && trackingById.get(a.id)?.garminActivityId != null)
       detail.distanceSource = 'strava'
     const stravaWatts = originalCache.streams?.[id]?.watts

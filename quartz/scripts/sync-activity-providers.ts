@@ -191,7 +191,7 @@ export function parseActivityBridgeWahooActivities(value: unknown): ActivityBrid
       activity.summary.name?.trim() ||
       `Wahoo workout ${activity.workoutId}`,
     workoutId: activity.workoutId,
-    sport: activity.sport,
+    sport: providerSport({ sport: activity.sport }, `Wahoo activity ${activity.id}`),
     startDate: activity.startDate,
     startDateLocal: activity.startDateLocal,
     distanceM: activity.distanceM,

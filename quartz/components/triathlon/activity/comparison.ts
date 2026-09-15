@@ -43,6 +43,7 @@ export const wireActivityComparison = (
   })
   const map = comparison.querySelector<HTMLElement>('.tri-compare-map')
   const readout = comparison.querySelector<HTMLElement>('[data-compare-readout]')
+  const readoutContext = readout?.querySelector<HTMLElement>('[data-compare-readout-context]')
   const maxDistanceKm = Number(
     map?.dataset.domainXMax ?? distanceCharts[0]?.graph.dataset.domainXMax ?? 0,
   )
@@ -60,10 +61,19 @@ export const wireActivityComparison = (
       | 'hr-zones'
       | 'power-zones',
     values: { activity: StravaActivityDetail; value: string; missing: boolean }[],
+    context = '',
   ) => {
     if (!readout) return
+    const head = charts
+      .find(chart => chart.dataset.compareChart === mode)
+      ?.querySelector<HTMLElement>('.tri-compare-chart-head')
+    if (head && readout.parentElement !== head) head.append(readout)
     readout.dataset.visible = 'true'
     readout.dataset.compareReadoutMode = mode
+    if (readoutContext) {
+      readoutContext.textContent = context
+      readoutContext.hidden = context.length === 0
+    }
     for (const { activity, value, missing } of values) {
       const row = readout.querySelector<HTMLElement>(
         `.tri-compare-readout-row[data-activity-id="${activity.id}"]`,
@@ -393,6 +403,7 @@ export const wireActivityComparison = (
       const index = Math.round(distributionState.fraction * (binCount - 1))
       const selectedFraction = index / (binCount - 1)
       const startWatts = index * 25
+      const range = `${startWatts}–${startWatts + 24} W`
       positionActivityComparisonCursor(distributionGraph, selectedFraction)
       const values = activities.map((activity, activityIndex) => {
         const distribution = distributions[activityIndex]
@@ -403,11 +414,12 @@ export const wireActivityComparison = (
       setReadout(
         'power-distribution',
         values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
+        range,
       )
       distributionGraph.setAttribute('aria-valuenow', `${startWatts}`)
       distributionGraph.setAttribute(
         'aria-valuetext',
-        `${startWatts}–${startWatts + 24} W; ${values
+        `${range}; ${values
           .map(
             ({ activity, value }) =>
               `${activity.name || text(activity.sport)}: ${value === '—' ? text('no data') : value}`,
@@ -448,14 +460,20 @@ export const wireActivityComparison = (
       positionActivityComparisonCursor(gearRatioGraph, selectedFraction)
       const values = activities.map((activity, activityIndex) => {
         const distribution = gearRatioDistributions[activityIndex]
-        const percentage = distribution.find(point => point.ratio === ratio)?.percentage
-        const value = distribution.length === 0 ? '—' : `${(percentage ?? 0).toFixed(1)}%`
+        const point = distribution.find(point => point.ratio === ratio)
+        const pairings = point?.pairings
+          .map(({ frontTeeth, rearTeeth }) => `${frontTeeth}×${rearTeeth}T`)
+          .join(' / ')
+        const percentage = `${(point?.percentage ?? 0).toFixed(1)}%`
+        const value =
+          distribution.length === 0 ? '—' : pairings ? `${pairings} · ${percentage}` : percentage
         return { activity, value }
       })
       showChartCursors([gearRatioChart])
       setReadout(
         'gear-ratio-distribution',
         values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
+        `${ratio.toFixed(2)}×`,
       )
       gearRatioGraph.setAttribute('aria-valuenow', `${index}`)
       gearRatioGraph.setAttribute(

@@ -345,6 +345,17 @@ hr {
 #quartz-root > section[class~='header'] {
   background: var(--light);
   z-index: 99999;
+
+  @media all and ($tablet), all and ($desktop) {
+    body[data-slug*='stream'] & {
+      background: transparent;
+      pointer-events: none;
+
+      > .header-content {
+        pointer-events: auto;
+      }
+    }
+  }
 }
 
 body {

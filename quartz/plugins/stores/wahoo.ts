@@ -1,6 +1,6 @@
 import type { GarminCyclingDynamics, GarminGearShift, GarminRiderPosition } from './garmin'
-import type { ActivityKind, RawStravaActivity, Sport } from './strava'
 import { isRecord } from '../../util/type-guards'
+import { isActivityKind, normalizeKind, type ActivityKind, type RawStravaActivity } from './strava'
 
 const START_TOLERANCE_MS = 20 * 60 * 1000
 const DISTANCE_TOLERANCE_RATIO = 0.08
@@ -32,6 +32,8 @@ export interface WahooSummitSegment {
 const BIKE_WORKOUT_TYPE_IDS = new Set([0, 11, 12, 13, 14, 15, 16, 17, 21, 49, 61, 64, 68, 70])
 const RUN_WORKOUT_TYPE_IDS = new Set([1, 3, 4, 5, 19, 67, 71])
 const SWIM_WORKOUT_TYPE_IDS = new Set([25, 26])
+const WALK_WORKOUT_TYPE_IDS = new Set([6, 7, 8, 9, 10, 56])
+const STRENGTH_WORKOUT_TYPE_IDS = new Set([2, 18, 42, 43])
 
 export interface WahooMetrics {
   totalCalories: number | null
@@ -106,7 +108,7 @@ export interface WahooActivity {
   workoutTypeId: number
   workoutUpdatedAt?: string | null
   name: string | null
-  sport: Sport | null
+  sport: ActivityKind | null
   startDate: string
   startDateLocal: string
   distanceM: number | null
@@ -195,14 +197,28 @@ export function emptyWahooMetrics(): WahooMetrics {
   }
 }
 
-export function normalizeWahooSport(workoutTypeId: number, fitSport?: string | null): Sport | null {
+export function normalizeWahooSport(
+  workoutTypeId: number,
+  fitSport?: string | null,
+): ActivityKind | null {
   if (BIKE_WORKOUT_TYPE_IDS.has(workoutTypeId)) return 'bike'
   if (RUN_WORKOUT_TYPE_IDS.has(workoutTypeId)) return 'run'
   if (SWIM_WORKOUT_TYPE_IDS.has(workoutTypeId)) return 'swim'
+  if (WALK_WORKOUT_TYPE_IDS.has(workoutTypeId)) return 'walk'
+  if (STRENGTH_WORKOUT_TYPE_IDS.has(workoutTypeId)) return 'strength'
+  if (workoutTypeId === 66) return 'yoga'
   const normalized = fitSport?.toLowerCase() ?? ''
   if (normalized.includes('cycl') || normalized.includes('bike')) return 'bike'
   if (normalized.includes('run')) return 'run'
   if (normalized.includes('swim')) return 'swim'
+  if (normalized.includes('walk') || normalized.includes('hik')) return 'walk'
+  if (normalized.includes('yoga') || normalized.includes('pilates')) return 'yoga'
+  if (
+    normalized.includes('strength') ||
+    normalized.includes('training') ||
+    normalized.includes('fitness')
+  )
+    return 'strength'
   return null
 }
 
@@ -262,7 +278,11 @@ export function matchWahooActivity(
     if (!Number.isFinite(wahooStart)) continue
     const startDiff = Math.abs(wahooStart - stravaStart)
     if (startDiff > START_TOLERANCE_MS) continue
-    const dScore = fitPath ? 0 : distanceScore(strava.distance, activity.distanceM)
+    const stationary =
+      (sport === 'strength' || sport === 'yoga' || sport === 'treatment' || sport === 'sauna') &&
+      strava.distance === 0 &&
+      (activity.distanceM == null || activity.distanceM === 0)
+    const dScore = fitPath || stationary ? 0 : distanceScore(strava.distance, activity.distanceM)
     if (dScore == null) continue
     const tScore = durationScore(strava, activity)
     if (tScore == null) continue
@@ -294,15 +314,13 @@ export function selectWahooTitleUpdates(
 ): WahooTitleUpdate[] {
   const unique = new Map<string, { activity: RawStravaActivity; match: WahooActivityMatch }>()
   const activities = Object.values(strava.activities)
-    .filter(activity => {
-      const sport = activity.sportType.toLowerCase()
-      return sport.includes('ride') || sport.includes('cycling') || sport.includes('bike')
-    })
     .filter(activity => !options.ids?.size || options.ids.has(String(activity.id)))
     .filter(activity => !options.since || startValue(activity).slice(0, 10) >= options.since)
     .sort((left, right) => startValue(left).localeCompare(startValue(right)))
   for (const activity of activities) {
-    const match = matchWahooActivity(activity, 'bike', wahoo)
+    const kind = normalizeKind(activity.sportType)
+    if (!kind) continue
+    const match = matchWahooActivity(activity, kind, wahoo)
     if (!match) continue
     const previous = unique.get(match.activity.id)
     if (!previous || match.score < previous.match.score)
@@ -435,8 +453,7 @@ function parseActivity(value: unknown, label: string): WahooActivity {
   const id = stringValue(value.id, `${label}.id`)
   const sport = value.sport == null ? null : value.sport
   if (id == null) throw new Error(`${label}.id is missing`)
-  if (sport != null && sport !== 'bike' && sport !== 'run' && sport !== 'swim')
-    throw new Error(`${label}.sport is invalid`)
+  if (sport != null && !isActivityKind(sport)) throw new Error(`${label}.sport is invalid`)
   return {
     id,
     workoutId: integer(value.workoutId, `${label}.workoutId`),
@@ -446,7 +463,7 @@ function parseActivity(value: unknown, label: string): WahooActivity {
         ? null
         : dateValue(value.workoutUpdatedAt, `${label}.workoutUpdatedAt`),
     name: stringValue(value.name, `${label}.name`, true),
-    sport,
+    sport: sport ?? normalizeWahooSport(integer(value.workoutTypeId, `${label}.workoutTypeId`)),
     startDate: dateValue(value.startDate, `${label}.startDate`),
     startDateLocal: dateValue(value.startDateLocal, `${label}.startDateLocal`),
     distanceM: finiteNumber(value.distanceM, `${label}.distanceM`, true),

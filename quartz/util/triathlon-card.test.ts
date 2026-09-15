@@ -19,6 +19,7 @@ import { createTriathlonFormatter } from '../components/triathlon/runtime/format
 import { calculateActivityExerciseLoad, emptyHealth } from '../plugins/stores/strava'
 import { emptyWahooMetrics } from '../plugins/stores/wahoo'
 import { buildCyclingIntensityTrace } from './cycling-intensity'
+import { estimateHeartRatePhysiology } from './heart-rate-physiology'
 import { resolveSleepMetrics } from './sleep-metrics'
 import {
   activityCompareColor,
@@ -1770,6 +1771,7 @@ test('links every activity header icon to its Strava activity in a new tab', () 
     assert.equal(link.properties.target, '_blank')
     assert.deepEqual(link.properties.rel, ['noopener', 'noreferrer'])
     assert.equal(link.properties.ariaLabel, 'Threshold ride · Strava')
+    assert.equal(link.properties.dataSiteCursorAction, '')
     assert.deepEqual(link.children, [buildIcon(factory, sport)])
   }
 })
@@ -2691,7 +2693,7 @@ test('renders route-less yoga heart rate and CORE thermal traces against elapsed
 
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'heat-strain-index', 'core-temperature', 'skin-temperature'],
+    ['hr', 'hr', 'heat-strain-index', 'core-temperature', 'skin-temperature'],
   )
   for (const trace of traces) {
     assert.deepEqual(byClass(trace, 'tri-cax-xt').map(text), ['0s', '13:00', '26:00'])
@@ -2953,7 +2955,7 @@ test('renders route stream graphs in the server activity markup', () => {
   )
   assert.deepEqual(
     traces.map(graph => graph.properties.dataTriTrace),
-    ['hr', 'power', 'cadence', 'speed', 'respiration', 'temperature'],
+    ['hr', 'respiration', 'temperature', 'power', 'cadence', 'speed'],
   )
   for (const graph of traces) {
     assert.equal(byClass(graph, 'tri-elev').length, 1)
@@ -3002,11 +3004,11 @@ test('renders CORE bike graphs after ambient temperature with sub-degree domains
     traces.map(graph => graph.properties.dataTriTrace),
     [
       'hr',
+      'respiration',
+      'temperature',
       'power',
       'cadence',
       'speed',
-      'respiration',
-      'temperature',
       'heat-strain-index',
       'core-temperature',
       'skin-temperature',
@@ -3133,9 +3135,9 @@ test('keeps environment in the full-width activity graph sequence before trainin
       .slice(-6)
       .map(child => child.properties.dataTriTrace),
     [
-      'respiration',
+      'cadence',
+      'speed',
       'muscle-oxygen',
-      'temperature',
       'heat-strain-index',
       'core-temperature',
       'skin-temperature',
@@ -4630,7 +4632,7 @@ test('starts the route and stream graphs with empty analysis highlights', () => 
   )
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'power', 'cadence', 'speed', 'respiration', 'temperature'],
+    ['hr', 'respiration', 'temperature', 'power', 'cadence', 'speed'],
   )
   assert.equal(byClass(rendered, 'tri-elev-cursor').length, 7)
 })
@@ -4688,7 +4690,7 @@ test('falls back to legacy stream traces without complete analysis telemetry', (
   )
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'power', 'cadence', 'speed', 'respiration', 'temperature'],
+    ['hr', 'respiration', 'temperature', 'power', 'cadence', 'speed'],
   )
 })
 
@@ -5090,6 +5092,7 @@ test('renders Garmin walk pace, cadence, respiration, and elevation', () => {
   }))
   const activity = detail({
     sport: 'walk',
+    deviceWatts: false,
     distanceKm: 0.618,
     movingTimeS: 403,
     elapsedTimeS: 475,
@@ -5113,7 +5116,7 @@ test('renders Garmin walk pace, cadence, respiration, and elevation', () => {
   )
   assert.deepEqual(
     traces.map(graph => graph.properties.dataTriTrace),
-    ['pace', 'hr', 'cadence', 'respiration', 'temperature'],
+    ['hr', 'hr', 'respiration', 'temperature', 'pace', 'cadence'],
   )
   const pace = traces.find(graph => graph.properties.dataTriTrace === 'pace')
   const cadence = traces.find(graph => graph.properties.dataTriTrace === 'cadence')
@@ -5989,6 +5992,27 @@ test('renders exact-date analytics and appends day-card sleep after recovery', (
     byClass(rest, 'tri-act-health')[0],
     byClass(rest, 'tri-day-sleep-analytics')[0],
   ])
+
+  const restAnalytics = buildDayCard(
+    factory,
+    date,
+    { details: {}, health: {}, dailyAnalytics: { [date]: summary } },
+    { embedded: true, analytics: true },
+  )
+  assert.equal(byClass(restAnalytics, 'tri-act').length, 0)
+  assert.equal(byClass(restAnalytics, 'tri-day-activities-title').length, 0)
+  assert.equal(text(byClass(restAnalytics, 'tri-pop-rest-label')[0]), 'rest')
+  assert.equal(byClass(restAnalytics, 'tri-day-analytics').length, 1)
+  assert.equal(byClass(restAnalytics, 'tri-day-analytics')[0].properties.dataAnalyticsDate, date)
+  assert.deepEqual(byClass(restAnalytics, 'tri-day-analytics-group-title').map(text), [
+    'body · recovery',
+    'sleep details',
+    'state · load',
+    'thermal',
+  ])
+  assert.equal(byClass(restAnalytics, 'tri-day-sleep-stages').length, 1)
+  assert.equal(byClass(restAnalytics, 'tri-day-sleep-series--hrv').length, 1)
+  assert.equal(byClass(restAnalytics, 'tri-day-sleep-series--heart-rate').length, 1)
 
   const payload = {
     details: { [ride.id]: ride, [run.id]: run },
@@ -7204,7 +7228,7 @@ test('renders cycling dynamics and rider position immediately below pedal balanc
   assert.equal(byClass(embeddedPhase, 'tri-cycling-dynamics-legend-item').length, 4)
 })
 
-test('aligns stamina, cadence, and performance condition before sport-specific charts', () => {
+test('groups shared physiology before power, pace, cadence, and sport-specific charts', () => {
   const ride = cyclingDynamicsDetail()
   ride.gearShifts = shiftedDetail().gearShifts
   ride.staminaTrace = {
@@ -7224,7 +7248,8 @@ test('aligns stamina, cadence, and performance condition before sport-specific c
     staminaTrace: ride.staminaTrace,
     route: ride.route.map(point => ({ ...point, rightPowerPct: null })),
   })
-  for (const activity of [ride, run]) {
+  const walk = detail({ ...run, sport: 'walk', deviceWatts: false })
+  for (const activity of [ride, run, walk]) {
     for (const embedded of [false, true]) {
       const rendered = buildActivity(factory, activity, true, undefined, false, embedded)
       const more = byClass(rendered, 'tri-act-more')[0]
@@ -7235,15 +7260,19 @@ test('aligns stamina, cadence, and performance condition before sport-specific c
         .filter(trace => trace != null)
       assert.deepEqual(traces.slice(0, 5), [
         'hr',
-        'power',
         'stamina',
-        'cadence',
         'performance-condition',
+        'respiration',
+        'temperature',
+      ])
+      assert.deepEqual(traces.slice(5, 7), [
+        activity.sport === 'walk' ? 'pace' : 'power',
+        'cadence',
       ])
       if (activity.sport === 'bike') {
-        assert.equal(traces[5], 'power-balance')
-        assert.ok(traces.indexOf('electronic-shifting') > 5)
-        assert.ok(traces.indexOf('speed') > 5)
+        assert.equal(traces[7], 'power-balance')
+        assert.ok(traces.indexOf('electronic-shifting') > 7)
+        assert.ok(traces.indexOf('speed') > 7)
       }
     }
   }
@@ -7333,11 +7362,36 @@ test('normalizes electronic shifting time by exact gear ratio', () => {
   ]
 
   assert.deepEqual(activityGearRatioDistribution(ride), [
-    { ratio: 1.333333, percentage: 12.5 },
-    { ratio: 2.736842, percentage: 62.5 },
-    { ratio: 3.272727, percentage: 25 },
+    { ratio: 1.333333, percentage: 12.5, pairings: [{ frontTeeth: 36, rearTeeth: 27 }] },
+    { ratio: 2.736842, percentage: 62.5, pairings: [{ frontTeeth: 52, rearTeeth: 19 }] },
+    { ratio: 3.272727, percentage: 25, pairings: [{ frontTeeth: 36, rearTeeth: 11 }] },
   ])
   assert.deepEqual(activityGearRatioDistribution({ ...ride, sport: 'run' }), [])
+})
+
+test('gear ratio distributions retain distinct tooth combinations with the same ratio', () => {
+  const ride = shiftedDetail()
+  ride.route = []
+  ride.movingTimeS = 400
+  ride.gearShifts = [
+    { ...ride.gearShifts[0], elapsedS: 0, frontTeeth: 52, rearTeeth: 26 },
+    { ...ride.gearShifts[0], elapsedS: 100, frontTeeth: 36, rearTeeth: 18 },
+    { ...ride.gearShifts[0], elapsedS: 200, frontTeeth: 52, rearTeeth: 26 },
+    { ...ride.gearShifts[0], elapsedS: 300, frontTeeth: 52, rearTeeth: 13 },
+    { ...ride.gearShifts[0], elapsedS: 400, frontTeeth: 36, rearTeeth: 9 },
+  ]
+  assert.deepEqual(activityGearRatioDistribution(ride), [
+    {
+      ratio: 2,
+      percentage: 75,
+      pairings: [
+        { frontTeeth: 36, rearTeeth: 18 },
+        { frontTeeth: 52, rearTeeth: 26 },
+      ],
+    },
+    { ratio: 4, percentage: 25, pairings: [{ frontTeeth: 52, rearTeeth: 13 }] },
+  ])
+  assert.deepEqual(activityGearRatioDistribution({ ...ride, gearShifts: [] }), [])
 })
 
 test('places electronic shifting after the available common traces', () => {
@@ -7385,25 +7439,21 @@ test('extends the first measured trace value to distance zero', () => {
   assert.match(String(line.properties.d), /^M 0 ([\d.]+) L 0\.61 \1 /)
 })
 
-test('pairs hr/power zones and curve/hist into duos with aligned captions', () => {
+test('pairs hr/power zones with aligned captions', () => {
   const rendered = buildActivity(factory, zonedDetail(), true, ctx())
   const duos = byClass(rendered, 'tri-zone-duo')
-  assert.equal(duos.length, 2)
+  assert.equal(duos.length, 1)
   assert.deepEqual(
     duos.flatMap(duo =>
       duo.children
         .filter((child): child is Element => child.type === 'element')
         .map(child => child.properties.dataTriTrace),
     ),
-    ['heart-rate-zones', 'power-zones', 'power-curve', '25w-power-distribution'],
+    ['heart-rate-zones', 'power-zones'],
   )
   assert.deepEqual(byClass(duos[0], 'tri-zone-title').map(text), [
     'heart rate zones',
     'power zones',
-  ])
-  assert.deepEqual(byClass(duos[1], 'tri-zone-title').map(text), [
-    'power curve',
-    '25W power distribution',
   ])
   assert.deepEqual(byClass(duos[0], 'tri-zone-cap').map(text), [
     'based on vt1 150 bpm',
@@ -7431,6 +7481,24 @@ test('pairs hr/power zones and curve/hist into duos with aligned captions', () =
   assert.equal(zoneRows[0].properties.role, 'listitem')
   assert.match(String(zoneRows[0].properties.ariaLabel), /^Z7, neuromuscular, > 400w, 40s, /)
   assert.equal(byClass(zoneTables[1], 'tri-zone-z')[0].properties.tabIndex, undefined)
+})
+
+test('gives cycling and running power curves and distributions their own activity rows', () => {
+  const sports: StravaActivityDetail['sport'][] = ['bike', 'run']
+  for (const sport of sports) {
+    for (const embedded of [false, true]) {
+      const activity = { ...zonedDetail(), sport }
+      const rendered = buildActivity(factory, activity, true, ctx(), false, embedded)
+      const more = byClass(rendered, 'tri-act-more')[0]
+      assert.ok(more)
+      const children = more.children.filter((child): child is Element => child.type === 'element')
+      const curveIndex = children.findIndex(
+        child => child.properties.dataTriTrace === 'power-curve',
+      )
+      assert.ok(curveIndex >= 0)
+      assert.equal(children[curveIndex + 1].properties.dataTriTrace, '25w-power-distribution')
+    }
+  }
 })
 
 test('removes zone duos from simplified activity details', () => {
@@ -8102,7 +8170,7 @@ test('counts route coverage for the comparison map from gapped map routes', () =
 
 test('formats only the active comparison metric and clamps keyboard navigation', () => {
   const activity = comparisonActivity(210)
-  assert.equal(activityComparisonDisplayValueAtDistance(activity, 'elevation', 5), '82 m')
+  assert.equal(activityComparisonDisplayValueAtDistance(activity, 'elevation', 5), '82 m · +0.1%')
   assert.equal(activityComparisonDisplayValueAtDistance(activity, 'speed', 5), '23.0 km/h')
   assert.equal(activityComparisonDisplayValueAtDistance(activity, 'hr', 5), '138 bpm')
   assert.equal(activityComparisonDisplayValueAtDistance(activity, 'power', 5), '180 W')
@@ -8281,14 +8349,17 @@ test('renders every comparison graph with stable selectors, cursors, and readout
       assert.equal(selectionClip[0].properties.x, 0)
       assert.equal(selectionClip[0].properties.width, 0)
     }
-    assert.equal(byClass(chart, 'tri-compare-readout').length, 0)
-    assert.equal(text(byClass(chart, 'tri-compare-coverage')[0]), '2/2 · sensor coverage')
+    assert.equal(
+      byClass(chart, 'tri-compare-readout').length,
+      chart.properties.dataCompareChart === 'elevation' ? 1 : 0,
+    )
+    assert.equal(byClass(chart, 'tri-compare-coverage').length, 0)
   }
   assert.equal(byClass(rendered, 'tri-compare-zone-band').length, 0)
   const maps = byClass(rendered, 'tri-compare-map')
   const mapPanels = byClass(rendered, 'tri-compare-map-panel')
   const mapStages = byClass(rendered, 'tri-compare-map-stage')
-  const readouts = byClass(rendered, 'tri-compare-map-readout')
+  const readouts = byClass(rendered, 'tri-compare-readout')
   assert.equal(maps.length, 1)
   assert.equal(mapPanels.length, 1)
   assert.equal(mapStages.length, 1)
@@ -8307,7 +8378,11 @@ test('renders every comparison graph with stable selectors, cursors, and readout
   assert.equal(map.properties.dataAvailable, '2')
   assert.equal(mapPanel.children.includes(mapStage), true)
   assert.equal(mapStage.children.includes(map), true)
-  assert.equal(mapStage.children.includes(readout), true)
+  assert.equal(mapStage.children.includes(readout), false)
+  const elevationHead = byClass(comparisonChart(rendered, 'elevation'), 'tri-compare-chart-head')[0]
+  assert.ok(elevationHead)
+  assert.equal(elevationHead.children.includes(readout), true)
+  assert.equal(byClass(rendered, 'tri-compare-coverage').length, 0)
   assert.equal(byClass(rendered, 'tri-compare-readout').length, 1)
   assert.equal(readout.properties.role, undefined)
   assert.equal(readout.properties.ariaLabel, undefined)
@@ -8315,7 +8390,11 @@ test('renders every comparison graph with stable selectors, cursors, and readout
   assert.equal(readout.properties.dataCompareReadout, '')
   assert.equal(readout.properties.dataVisible, 'false')
   assert.equal(readout.properties.ariaHidden, 'true')
-  assert.equal(byClass(readout, 'tri-compare-readout-context').length, 0)
+  const context = byClass(readout, 'tri-compare-readout-context')
+  assert.equal(context.length, 1)
+  assert.equal(context[0].properties.dataCompareReadoutContext, '')
+  assert.equal(context[0].properties.hidden, true)
+  assert.equal(text(context[0]), '')
   assert.equal(byClass(readout, 'tri-compare-readout-position').length, 0)
   assert.equal(byClass(readout, 'tri-compare-readout-label').length, 0)
   const rows = byClass(readout, 'tri-compare-readout-row')
@@ -8454,6 +8533,8 @@ test('compares route-less pool swims on interval distance, pace, and stroke rate
     ['swim-pace', 'stroke-rate', 'hr-zones'],
   )
   assert.equal(byClass(rendered, 'tri-compare-map').length, 0)
+  const head = byClass(comparisonChart(rendered, 'swim-pace'), 'tri-compare-chart-head')[0]
+  assert.equal(byClass(head, 'tri-compare-readout-row').length, 2)
   for (const kind of ['swim-pace', 'stroke-rate']) {
     const chart = comparisonChart(rendered, kind)
     assert.equal(chart.properties.dataAvailable, '2')
@@ -8892,7 +8973,7 @@ test('normalizes heart-rate and power zone overlays to percentages', () => {
   }
 })
 
-test('reports mixed sensor coverage without turning missing samples into zero lines', () => {
+test('preserves mixed sensor availability without turning missing samples into zero lines', () => {
   const measured = comparisonActivity(251, {
     route: detail().route.map((point, index) => ({
       ...point,
@@ -8962,6 +9043,51 @@ test('keeps zero-coverage and single-sample plots visible but noninteractive', (
   }
   const elevation = comparisonChart(rendered, 'elevation')
   assert.equal(byClass(elevation, 'tri-compare-graph')[0].properties.role, 'slider')
+})
+
+test('comparison elevation readouts include signed smoothed grades in either unit system', () => {
+  const base = detail().route[0]
+  for (const slope of [0.08, -0.04, 0]) {
+    const activity = comparisonActivity(258, {
+      route: Array.from({ length: 7 }, (_, index) => ({
+        ...base,
+        d: index * 0.1,
+        alt: 100 + slope * index * 100,
+      })),
+    })
+    for (const units of [METRIC_TRIATHLON_PRESENTATION, imperialPresentation]) {
+      for (const distance of [0, 0.25, activity.route[6].d]) {
+        const altitude = formatAltitude(units, 100 + slope * distance * 1000)
+        const grade = `${slope >= 0 ? '+' : ''}${(slope * 100).toFixed(1)}%`
+        assert.equal(
+          activityComparisonDisplayValueAtDistance(activity, 'elevation', distance, units),
+          `${altitude} · ${grade}`,
+        )
+      }
+    }
+    assert.equal(activityComparisonDisplayValueAtDistance(activity, 'elevation', -1), '—')
+    assert.equal(activityComparisonDisplayValueAtDistance(activity, 'elevation', 1), '—')
+  }
+  const smoothed = comparisonActivity(259, {
+    route: [100, 110, 140, 110, 120].map((alt, index) => ({ ...base, d: index * 0.1, alt })),
+  })
+  assert.equal(
+    activityComparisonDisplayValueAtDistance(smoothed, 'elevation', 0.2),
+    '140 m · +5.0%',
+  )
+})
+
+test('comparison elevation omits grades across invalid samples or without a distance span', () => {
+  const base = detail().route[0]
+  const missing = comparisonActivity(260, {
+    route: [100, Number.NaN, 120, 130, 140].map((alt, index) => ({ ...base, d: index * 0.1, alt })),
+  })
+  assert.equal(activityComparisonDisplayValueAtDistance(missing, 'elevation', 0.2), '120 m')
+  assert.equal(activityComparisonDisplayValueAtDistance(missing, 'elevation', 0.1), '—')
+  const stationary = comparisonActivity(260, {
+    route: [100, 110].map(alt => ({ ...base, d: 0, alt })),
+  })
+  assert.equal(activityComparisonDisplayValueAtDistance(stationary, 'elevation', 0), '110 m')
 })
 
 test('interpolates only finite adjacent metrics and returns null past telemetry', () => {
@@ -9154,4 +9280,88 @@ test('renders the IF graph and session VI table value in server HTML', () => {
   const frenchChart = buildIntensityFactorChart(factoryFor(frenchPresentation), d)
   assert.ok(frenchChart)
   assert.match(text(frenchChart), /facteur d'intensité/)
+})
+
+test('renders HR workout analysis and session estimates for activities without power', () => {
+  const sports: StravaActivityDetail['sport'][] = [
+    'walk',
+    'yoga',
+    'strength',
+    'treatment',
+    'sauna',
+    'bike',
+  ]
+  for (const sport of sports) {
+    for (const embedded of [false, true]) {
+      const heartRateTrace = Array.from({ length: 31 }, (_, index) =>
+        heartRateTracePoint(0, index * 10, index < 7 ? 100 : 120),
+      )
+      const activity = detail({
+        sport,
+        route: [],
+        distanceKm: 0,
+        deviceWatts: false,
+        elapsedTimeS: 300,
+        movingTimeS: 300,
+        heartRateTrace,
+        heartRatePhysiology: estimateHeartRatePhysiology(heartRateTrace, 200),
+      })
+      const rendered = buildActivity(factory, activity, true, undefined, false, embedded)
+      const analysis = byClass(rendered, 'tri-workout-analysis')[0]
+      assert.ok(analysis, sport)
+      assert.equal(analysis.properties.dataWorkoutAnalysisMetric, 'hr')
+      assert.match(
+        text(byClass(analysis, 'tri-workout-stats')[0]),
+        /highest 120 bpm.*avg.*lowest 100 bpm/,
+      )
+      const more = byClass(rendered, 'tri-act-more')[0]
+      const children = more.children.filter((node): node is Element => node.type === 'element')
+      assert.equal(children[0], analysis)
+      assert.deepEqual(
+        children
+          .filter(node => node.properties.dataTriTrace)
+          .slice(0, 3)
+          .map(node => node.properties.dataTriTrace),
+        ['hr', 'stamina', 'performance-condition'],
+      )
+      const stamina = byClass(rendered, 'tri-stamina-chart')[0]
+      assert.equal(stamina.properties.dataStaminaSource, 'garden-estimate')
+      assert.match(String(byTag(stamina, 'svg')[0].properties.dataDomainEndElapsedS), /300/)
+      assert.match(
+        String(byClass(stamina, 'tri-elev-d')[0].properties.dataGlossDef),
+        /session starts at 100%/,
+      )
+      assert.match(
+        String(byClass(rendered, 'tri-performance-condition-source')[0].properties.dataGlossDef),
+        /HR change proxy/,
+      )
+    }
+  }
+})
+
+test('keeps native physiology ahead of the HR fallback and omits empty workout analysis', () => {
+  const activity = cyclingDynamicsDetail()
+  const points = Array.from({ length: 31 }, (_, index) => heartRateTracePoint(0, index * 10, 100))
+  activity.heartRatePhysiology = estimateHeartRatePhysiology(points, 200)
+  activity.staminaTrace = {
+    source: 'garmin',
+    method: 'garmin-native',
+    ftpWatts: null,
+    maxHeartRateBpm: null,
+  }
+  activity.route = activity.route.map(point => ({
+    ...point,
+    stamina: 0,
+    potentialStamina: 0,
+    performanceCondition: 0,
+  }))
+  const rendered = buildActivity(factory, activity, true)
+  assert.equal(byClass(rendered, 'tri-stamina-chart')[0].properties.dataStaminaSource, 'garmin')
+  assert.equal(
+    byClass(
+      buildActivity(factory, detail({ sport: 'treatment', route: [], heartRateTrace: [] }), true),
+      'tri-workout-analysis',
+    ).length,
+    0,
+  )
 })

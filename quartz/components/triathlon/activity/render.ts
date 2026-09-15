@@ -14,6 +14,7 @@ import { activityAnalysisStatAttrs } from '../../../util/triathlon-card'
 import { activityTableRows } from '../../../util/triathlon-card'
 import { activitySourceStatAttrs } from '../../../util/triathlon-card'
 import { activityHeartRateTracePoints } from '../../../util/triathlon-card'
+import { activityPhysiologyTracePoints } from '../../../util/triathlon-card'
 import { activityCyclingIntensityPoints } from '../../../util/triathlon-card'
 import { activityThermalTracePoints } from '../../../util/triathlon-card'
 import { activityTraceUsesElapsedAxis } from '../../../util/triathlon-card'
@@ -111,8 +112,8 @@ import { createDomFactory } from '../runtime/dom'
 import { el } from '../runtime/dom'
 import { svg } from '../runtime/dom'
 import { nextMapMetricShortcutIndex } from '../shell/command-palette'
+import { setupPowerCurveTicks } from '../shell/power-curve-ticks'
 import { analysisRate } from './analysis'
-import { linkActivityAnalysis } from './analysis'
 import { linkScrub } from './analysis'
 import { detailContextFromPayload } from './data'
 import {
@@ -244,9 +245,49 @@ const gearAtPoint = (
 
 const staminaAtPoint = (
   presentation: TriathlonPresentation,
-  point: StravaActivityDetail['route'][number],
+  point: { stamina: number | null; potentialStamina: number | null },
 ): string =>
   `${triText(presentation.locale, 'current')} ${point.stamina == null ? '—' : `${Math.round(point.stamina)}%`} · ${triText(presentation.locale, 'potential')} ${point.potentialStamina == null ? '—' : `${Math.round(point.potentialStamina)}%`}`
+
+const physiologyScrubSurfaces = (
+  root: HTMLElement,
+  d: StravaActivityDetail,
+  presentation: TriathlonPresentation,
+): ScrubSurface[] => {
+  const position = (point: { d: number; elapsedS: number }) =>
+    activityTraceUsesElapsedAxis(d)
+      ? zoneClock(point.elapsedS)
+      : scrubDist(presentation, point.d, d.sport)
+  const heartRate = activityHeartRateTracePoints(d)
+  const stamina = activityPhysiologyTracePoints(d, 'stamina')
+  const condition = activityPhysiologyTracePoints(d, 'performanceCondition')
+  return Array.from(
+    root.querySelectorAll<HTMLElement>(
+      '[data-tri-trace="hr"], [data-tri-trace="stamina"], [data-tri-trace="performance-condition"]',
+    ),
+  ).map(wrap => {
+    if (wrap.dataset.triTrace === 'hr')
+      return {
+        wrap,
+        samples: heartRate,
+        fmt: (index: number) =>
+          `${position(heartRate[index])} · ${heartRate[index].heartRate ?? '—'} bpm`,
+      }
+    if (wrap.dataset.triTrace === 'stamina')
+      return {
+        wrap,
+        samples: stamina,
+        fmt: (index: number) =>
+          `${position(stamina[index])} · ${staminaAtPoint(presentation, stamina[index])}`,
+      }
+    return {
+      wrap,
+      samples: condition,
+      fmt: (index: number) =>
+        `${position(condition[index])} · ${condition[index].performanceCondition == null ? '—' : formatPerformanceCondition(condition[index].performanceCondition)}`,
+    }
+  })
+}
 
 const requiredMapProfile = (profile: Element | null, label: string): HTMLElement => {
   if (!(profile instanceof HTMLElement)) throw new Error(`Missing ${label} map profile`)
@@ -304,6 +345,16 @@ export const metricSpecs = (
 ): MapMetric[] => {
   const domF = createDomFactory(presentation)
   const route = d.route
+  const staminaPoints = new Map(
+    activityPhysiologyTracePoints(d, 'stamina').map(point => [point.elapsedS, point]),
+  )
+  const conditionPoints = new Map(
+    activityPhysiologyTracePoints(d, 'performanceCondition').map(point => [point.elapsedS, point]),
+  )
+  const conditionAt = (point: StravaActivityDetail['route'][number]): number | null =>
+    performanceConditionValue(conditionPoints.get(point.elapsedS) ?? point)
+  const staminaAt = (point: StravaActivityDetail['route'][number]) =>
+    staminaPoints.get(point.elapsedS) ?? point
   const imperial = presentation.distance === 'imperial'
   const filterPowerZeros = d.sport === 'bike' && presentation.powerSamples === 'exclude-zero'
   const powerValues = filterPowerZeros
@@ -457,11 +508,8 @@ export const metricSpecs = (
       return traces
     },
     extra: () => [
-      zoneDuo(
-        presentation,
-        buildPowerCurve(presentation, d, detailContext),
-        buildPowerHist(presentation, d),
-      ),
+      buildPowerCurve(presentation, d, detailContext),
+      buildPowerHist(presentation, d),
       buildPowerZones(presentation, d, detailContext),
     ],
   }
@@ -549,8 +597,8 @@ export const metricSpecs = (
     label: 'performance condition',
     shortLabel: 'PC',
     ramp: STRIDE_RAMP,
-    valid: p => performanceConditionValue(p) != null,
-    pick: p => performanceConditionValue(p) ?? 0,
+    valid: p => conditionAt(p) != null,
+    pick: p => conditionAt(p) ?? 0,
     fmt: formatPerformanceCondition,
     profile: graphDomain =>
       requiredMapProfile(
@@ -558,7 +606,7 @@ export const metricSpecs = (
         'performance condition',
       ),
     readout: p => {
-      const value = performanceConditionValue(p)
+      const value = conditionAt(p)
       return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatPerformanceCondition(value)}`
     },
   }
@@ -689,12 +737,13 @@ export const metricSpecs = (
     label: 'stamina',
     shortLabel: 'STA',
     ramp: HEAT_RAMP,
-    zeroGap: true,
-    pick: p => p.stamina ?? 0,
+    valid: p => staminaAt(p).stamina != null,
+    pick: p => staminaAt(p).stamina ?? 0,
     fmt: value => `${Math.round(value)}%`,
     profile: graphDomain =>
       requiredMapProfile(buildStaminaChartNode(domF, d, null, graphDomain), 'stamina'),
-    readout: p => `${scrubDist(presentation, p.d, d.sport)} · ${staminaAtPoint(presentation, p)}`,
+    readout: p =>
+      `${scrubDist(presentation, p.d, d.sport)} · ${staminaAtPoint(presentation, staminaAt(p))}`,
   }
   const shiftingSpec: MapMetric = {
     label: 'electronic shifting',
@@ -884,13 +933,17 @@ export const metricSpecs = (
   } else if (d.sport === 'walk') {
     specs.push(paceSpec)
     if (hasHr) specs.push(hrSpec)
+    if (flags.stamina) specs.push(staminaSpec)
     if (hasCad) specs.push(cadSpec)
+    if (flags.performanceCondition) specs.push(performanceConditionSpec)
     if (hasResp) specs.push(respirationSpec)
     if (hasElev) specs.push(elevSpec)
     if (hasThermal) specs.push(temperatureSpec)
   } else {
     specs.push(paceSpec)
     if (hasHr) specs.push(hrSpec)
+    if (flags.stamina) specs.push(staminaSpec)
+    if (flags.performanceCondition) specs.push(performanceConditionSpec)
     if (hasResp) specs.push(respirationSpec)
     if (hasThermal) specs.push(temperatureSpec)
   }
@@ -968,6 +1021,8 @@ export const renderMapDetail = (
     for (const z of [
       workoutAnalysis,
       heartRate,
+      buildStaminaChartNode(domF, d, null),
+      buildPerformanceConditionTraceNode(domF, d, null),
       environment,
       trainingEffect,
       zoneDuo(
@@ -975,11 +1030,8 @@ export const renderMapDetail = (
         buildHrZones(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
         buildPowerZones(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
       ),
-      zoneDuo(
-        presentation,
-        buildPowerCurve(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
-        buildPowerHist(presentation, d),
-      ),
+      buildPowerCurve(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
+      buildPowerHist(presentation, d),
     ])
       if (z) more.appendChild(z)
     if (bestEfforts) more.appendChild(bestEfforts)
@@ -987,14 +1039,21 @@ export const renderMapDetail = (
     return {
       element: wrap,
       mount: () => {
-        const controller = linkActivityAnalysis(
+        const cleanupPowerTicks = setupPowerCurveTicks(wrap)
+        const controller = linkScrub(
           presentation,
           wrap,
-          opts?.analysis ?? analysis,
+          null,
+          physiologyScrubSurfaces(wrap, d, presentation),
+          d.route,
           d,
+          opts?.analysis ?? analysis,
           opts?.onRange,
         )
-        return () => controller?.dispose()
+        return () => {
+          cleanupPowerTicks()
+          controller?.dispose()
+        }
       },
     }
   }
@@ -1016,6 +1075,7 @@ export const renderMapDetail = (
   let graphDomain: ActivityAnalysisRange | null = null
   let routeMarker: SVGElement | null = null
   let analysisController: ActivityAnalysisController | null = null
+  let cleanupPowerTicks: (() => void) | null = null
   let linkedSurfaces: ScrubSurface[] = []
   let mounted = false
   const sameGraphDomain = (
@@ -1030,6 +1090,8 @@ export const renderMapDetail = (
   const renderProfile = (): void => {
     analysisController?.dispose()
     analysisController = null
+    cleanupPowerTicks?.()
+    cleanupPowerTicks = null
     const existingCyclingChartMode = cyclingChartMode(wrap)
     const spec = specs[active]
     const profile = spec.profile(graphDomain)
@@ -1054,11 +1116,15 @@ export const renderMapDetail = (
     if (mounted) mountProfile()
   }
   const mountProfile = (): void => {
+    cleanupPowerTicks = setupPowerCurveTicks(zoneBox)
     analysisController = linkScrub(
       presentation,
       wrap,
       routeMarker,
-      linkedSurfaces,
+      [
+        ...linkedSurfaces,
+        ...(workoutAnalysis ? physiologyScrubSurfaces(workoutAnalysis, d, presentation) : []),
+      ],
       d.route,
       d,
       opts?.analysis,
@@ -1171,6 +1237,8 @@ export const renderMapDetail = (
         tablist.removeEventListener('keydown', onTabKeydown)
         analysisController?.dispose()
         analysisController = null
+        cleanupPowerTicks?.()
+        cleanupPowerTicks = null
       }
     },
   }
@@ -1261,6 +1329,8 @@ export const renderDetail = (
   const surfaces: ScrubSurface[] = []
   const routeSamples = d.route
   const heartRatePoints = activityHeartRateTracePoints(d)
+  const staminaPoints = activityPhysiologyTracePoints(d, 'stamina')
+  const performanceConditionPoints = activityPhysiologyTracePoints(d, 'performanceCondition')
   const thermalPoints = activityThermalTracePoints(d)
   const tracePosition = (point: { d: number; elapsedS: number }): string =>
     activityTraceUsesElapsedAxis(d)
@@ -1403,10 +1473,10 @@ export const renderDetail = (
     else if (trace.dataset.triTrace === 'stamina')
       surfaces.push({
         wrap: trace,
-        samples: routeSamples,
+        samples: staminaPoints,
         fmt: i => {
-          const p = d.route[i]
-          return `${scrubDist(presentation, p.d, d.sport)} · ${staminaAtPoint(presentation, p)}`
+          const p = staminaPoints[i]
+          return `${tracePosition(p)} · ${staminaAtPoint(presentation, p)}`
         },
       })
     else if (trace.dataset.triTrace === 'cadence')
@@ -1431,11 +1501,11 @@ export const renderDetail = (
     } else if (trace.dataset.triTrace === 'performance-condition')
       surfaces.push({
         wrap: trace,
-        samples: routeSamples,
+        samples: performanceConditionPoints,
         fmt: i => {
-          const p = d.route[i]
+          const p = performanceConditionPoints[i]
           const value = performanceConditionValue(p)
-          return `${scrubDist(presentation, p.d, d.sport)} · ${value == null ? '—' : formatPerformanceCondition(value)}`
+          return `${tracePosition(p)} · ${value == null ? '—' : formatPerformanceCondition(value)}`
         },
       })
     else if (

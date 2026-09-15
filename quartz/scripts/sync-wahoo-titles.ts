@@ -29,7 +29,7 @@ function usage(): string {
   return [
     'usage: pnpm wahoo:sync-titles -- [--write] [--since YYYY-MM-DD] [--limit N] [--id STRAVA_ID] [--include-edited]',
     '',
-    'defaults to a dry-run of cycling titles matched by start, distance, and duration.',
+    'defaults to a dry-run of all activity titles matched by sport, start, duration, and distance when recorded.',
   ].join('\n')
 }
 
@@ -170,7 +170,7 @@ async function main(): Promise<void> {
     includeEdited: args.includeEdited,
   })
   console.log(
-    `[wahoo-title] ${args.write ? 'write' : 'dry-run'} ${updates.length} cycling title candidates${args.since ? ` since ${args.since}` : ''}`,
+    `[wahoo-title] ${args.write ? 'write' : 'dry-run'} ${updates.length} activity title candidates${args.since ? ` since ${args.since}` : ''}`,
   )
   for (const update of updates) console.log(`[wahoo-title] candidate ${describe(update)}`)
   if (!args.write || updates.length === 0) return

@@ -1,5 +1,6 @@
 import type { GarminActivity, GarminCache } from '../plugins/stores/garmin'
 import type { WahooActivitySource, WahooData, WahooStreams } from '../plugins/stores/wahoo'
+import { heartRateStaminaDepletionPerHour } from './heart-rate-physiology'
 
 export const GARDEN_CYCLING_STAMINA_METHOD = 'garden-stamina-v1'
 
@@ -29,8 +30,6 @@ interface GarminStaminaState {
 
 const POTENTIAL_POWER_RATE = 17.14
 const POTENTIAL_POWER_EXPONENT = 2.5
-const POTENTIAL_HEART_RATE_RATE = 98.85
-const POTENTIAL_HEART_RATE_EXPONENT = 10
 const CURRENT_DEPLETION_RATE = 800
 const CURRENT_DEPLETION_EXPONENT = 1.5
 const CURRENT_RECOVERY_TIME_S = 360
@@ -192,10 +191,9 @@ function estimateActivity(
       const power = (previousPower + nextPower) / 2
       const heartRate = (previousHeartRate + nextHeartRate) / 2
       const relativePower = power / ftpWatts
-      const relativeHeartRate = heartRate / maxHeartRateBpm
       const potentialRate =
         POTENTIAL_POWER_RATE * relativePower ** POTENTIAL_POWER_EXPONENT +
-        POTENTIAL_HEART_RATE_RATE * relativeHeartRate ** POTENTIAL_HEART_RATE_EXPONENT
+        heartRateStaminaDepletionPerHour(heartRate, maxHeartRateBpm)
       potentialStamina = clampPercentage(potentialStamina - (potentialRate * durationS) / 3600)
       const excess = Math.max(0, relativePower - 1)
       currentDeficit =

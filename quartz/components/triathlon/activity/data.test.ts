@@ -3,6 +3,7 @@ import { createServer } from 'node:http'
 import test from 'node:test'
 import { buildAnalytics } from '../../../plugins/stores/analytics'
 import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
+import { estimateHeartRatePhysiology } from '../../../util/heart-rate-physiology'
 import { STRAVA_DETAIL_INDEX_KIND } from '../../../util/strava-detail'
 import { buildTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { detailContextFromPayload, isActivityDetail, readDetailPayload } from './data'
@@ -420,4 +421,44 @@ test('validates serialized cycling intensity provenance, gaps and sample orderin
     },
   ])
     assert.equal(isActivityDetail({ ...value, cyclingIntensityTrace: invalid }), false)
+})
+
+test('validates HR session estimates for walks and stationary recovery activities', () => {
+  const physiology = estimateHeartRatePhysiology(
+    Array.from({ length: 31 }, (_, index) => ({
+      elapsedS: index * 10,
+      distanceKm: 0,
+      heartRate: 100,
+    })),
+    200,
+  )
+  assert.ok(physiology)
+  for (const sport of ['walk', 'yoga', 'treatment', 'sauna', 'strength']) {
+    const value: Record<string, unknown> = {
+      ...detail(1, '2026-09-12', sport),
+      heartRatePhysiology: physiology,
+    }
+    assert.equal(isActivityDetail(JSON.parse(JSON.stringify(value))), true)
+    assert.equal(
+      isActivityDetail({ ...value, heartRatePhysiology: { ...physiology, source: 'garmin' } }),
+      false,
+    )
+    assert.equal(
+      isActivityDetail({
+        ...value,
+        heartRatePhysiology: {
+          ...physiology,
+          points: [{ ...physiology.points[0], stamina: 101 }, ...physiology.points.slice(1)],
+        },
+      }),
+      false,
+    )
+    assert.equal(
+      isActivityDetail({
+        ...value,
+        heartRatePhysiology: { ...physiology, points: [...physiology.points].reverse() },
+      }),
+      false,
+    )
+  }
 })

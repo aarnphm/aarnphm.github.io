@@ -50,7 +50,7 @@
     "trainingpeaks:backfill-wahoo": "tsx --env-file=.env quartz/scripts/backfill-trainingpeaks.ts --source wahoo",
     "garmin:auth": "uv run --locked python quartz/scripts/garmin-auth.py authorize",
     "garmin:sync": "pnpm apple:sync && pnpm core:sync && tsx --env-file=.env quartz/scripts/sync-garmin.ts && pnpm garmin:backfill",
-    "garmin:backfill": "pnpm garmin:backfill-runs --write && pnpm garmin:backfill-swims --write && pnpm garmin:sync-swim-types --write && pnpm garmin:sync-swim-titles --write && pnpm garmin:sync-titles --write && pnpm garmin:sync-titles --kind run --write",
+    "garmin:backfill": "pnpm garmin:backfill-runs --write && pnpm garmin:backfill-swims --write && pnpm garmin:sync-swim-types --write && pnpm garmin:sync-titles --write",
     "garmin:sync-titles": "tsx --env-file=.env quartz/scripts/sync-garmin-titles.ts",
     "garmin:sync-swim-titles": "tsx --env-file=.env quartz/scripts/sync-garmin-titles.ts --kind swim",
     "garmin:sync-swim-types": "tsx --env-file=.env quartz/scripts/sync-garmin-titles.ts --kind swim --type pool-swim",

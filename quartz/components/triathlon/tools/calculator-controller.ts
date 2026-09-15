@@ -354,7 +354,7 @@ export const setupCalc = (root: HTMLElement, context: TriathlonContext): (() => 
     })
   }
   const pinModalTop = (): void => {
-    if (pageMode) return
+    if (pageMode || root.closest('.sidepanel-container')) return
     const top = Math.round(calc.getBoundingClientRect().top)
     calc.style.transition = 'none'
     calc.style.top = `${top}px`

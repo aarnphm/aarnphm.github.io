@@ -78,7 +78,7 @@ export const bindActivityComparisonGraph = (
       if (drag.selected) selection?.preview(drag.anchorFraction, state.fraction)
       else selection?.restore()
     }
-    render(graph, restore)
+    render(graph, () => show(state.fraction))
     pendingFraction = null
     pendingClientX = null
   }
@@ -102,14 +102,17 @@ export const bindActivityComparisonGraph = (
     }
     queue(fraction, event.clientX)
   }
-  const release = () => {
-    if (pointerActive || focused) return
+  const cancelPending = () => {
     pendingFraction = null
     pendingClientX = null
     if (frame) {
       window.cancelAnimationFrame(frame)
       frame = 0
     }
+  }
+  const release = () => {
+    if (pointerActive || focused) return
+    cancelPending()
     deactivate(graph)
   }
   const onKeyDown = (event: KeyboardEvent) => {
@@ -121,6 +124,7 @@ export const bindActivityComparisonGraph = (
   }
   const onPointerLeave = () => {
     if (drag) return
+    cancelPending()
     if (state.selectedFraction != null) {
       state.fraction = state.selectedFraction
       show(state.selectedFraction)
@@ -210,10 +214,8 @@ export const bindActivityComparisonGraph = (
     graph.removeEventListener('focus', onFocus)
     graph.removeEventListener('keydown', onKeyDown)
     graph.removeEventListener('blur', onBlur)
-    if (frame) window.cancelAnimationFrame(frame)
+    cancelPending()
     if (drag && graph.hasPointerCapture(drag.pointerId)) graph.releasePointerCapture(drag.pointerId)
-    pendingFraction = null
-    pendingClientX = null
     drag = null
     deactivate(graph)
   }
