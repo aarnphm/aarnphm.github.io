@@ -2,7 +2,7 @@
 date: '2025-08-12'
 description: and my interests.
 id: research
-modified: 2026-06-05 15:08:12 GMT-04:00
+modified: 2026-09-14 15:58:43 GMT-04:00
 tags:
   - fruit
 title: research
@@ -70,7 +70,7 @@ where $L$ is the layer count, $n_{\mathrm{kv}}$ is the number of key-value heads
 
 There's also scheduling: how do you decide which request to process next when they all have different deadlines and costs? [^scheduling-solution]
 
-[^scheduling-solution]: vLLM popularized [[thoughts/Continuous batching|continuous batching]] — instead of waiting for all requests in a batch to finish, you continuously add and remove requests. Orca took this further with iteration-level scheduling. SGLang went another direction entirely with [[thoughts/radix attention]], building a tree of shared prefixes so common prompts don't get recomputed, but similar idea.
+[^scheduling-solution]: [Orca introduced iteration-level scheduling in 2022](https://www.usenix.org/conference/osdi22/presentation/yu): the batch can change between model iterations as requests arrive or finish. The [2023 vLLM release](https://vllm.ai/blog/2023-06-20-vllm) combined [[thoughts/Continuous batching|continuous batching]] with PagedAttention's KV-memory management. SGLang's [[thoughts/radix attention]] addresses prefix reuse, which can operate alongside this scheduling approach.
 
 Then there is the kernel problem.[^kernel] Deep learning uses dense matrix multiplications, reductions, normalization, and elementwise operations. Matrix multiplication is distinct from both the Hadamard product and the [[lectures/411/notes#Hadamard and Kronecker products|Kronecker product]]. These operations run in accelerator kernels whose memory access and parallel work must be tuned together.[^kernel-solution]
 
@@ -148,7 +148,7 @@ Then build something. Take vLLM or lorax or any open-source engine and add a fea
 
 Study the failures too. Why did FasterTransformer get deprecated? Why do most custom kernels eventually get replaced by FlashAttention variants? Why does everyone keep reimplementing the same attachment points for LoRA? The archaeology of failed approaches teaches you about the constraints that actually matter.
 
-And honestly? Read code. The vLLM codebase is particularly instructive — well, it has a lot of code, but when a problem set grows big enough, everything is complicated. The attention kernels in FlashInfer show you what optimized CUDA actually looks like. The SGLang compiler shows you how to think about LLM programs as dataflow graphs.
+Read THE FUCKING CODE. The vLLM codebase is particularly instructive — well, it has a lot of code, but when a problem set grows big enough, everything is complicated. The attention kernels in FlashInfer show you what optimized CUDA actually looks like. The SGLang compiler shows you how to think about LLM programs as dataflow graphs.
 
 The field is moving fast enough that by the time you read this, half the systems I mentioned might be obsolete. But the principles — thinking about memory hierarchies, scheduling under constraints, trading compute for bandwidth, specialization versus generalization — are eternal. Well, as eternal as anything gets in this field.
 

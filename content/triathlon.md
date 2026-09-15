@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-12 19:05:17 GMT-04:00
+modified: 2026-09-14 20:06:46 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1360,7 +1360,7 @@ virtual: true
 ```
 
 ```tracking
-title: Guided, Untangled
+title: Guided Down, Untangled
 date: 2026-09-06
 time: 18:00
 duration: 75 mins
@@ -1376,6 +1376,7 @@ garmin: 24265300419
 ```tracking
 date: 2026-09-07
 activity: 20081306752
+garmin: 24277684359
 strengthVolume: 0 lb
 strengthSets: 6
 strengthReps: 59
@@ -1471,6 +1472,7 @@ exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
 ```tracking
 date: 2026-09-11
 activity: 20137671181
+garmin: 24327949290
 strengthVolume: 180 lb
 strengthSets: 10
 strengthReps: 60
@@ -1489,6 +1491,53 @@ exercise: Standing Calf, Seated Forward Fold, and Pigeon Stretch Flow | 2m
 ```tracking
 activity: 20147774828
 garmin: 24337399565
+```
+
+```tracking
+title: Guided Down, Untangled
+date: 2026-09-13
+time: 18:30
+duration: 75 mins
+activity: sauna
+temperature: 160F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.6
+strava: 20164727635
+garmin: 24351932641
+```
+
+```tracking
+date: 2026-09-14
+activity: 20176233674
+garmin: 24362776276
+strengthVolume: 180 lb
+strengthSets: 10
+strengthReps: 60
+exercise: Leg Swings | 30s
+exercise: Inchworms | 30s
+exercise: Bodyweight Squats | 30s
+exercise: Arm Circles & Torso Twists | 30s
+exercise: Squat Jump | 40s | 40s | 40s | 40s
+exercise: Plank Shoulder Taps | 40s | 40s | 40s | 40s
+exercise: Bulgarian Split Squats | 40s | 40s | 40s | 40s
+exercise: Mountain Climbers | 40s | 40s | 40s | 40s
+exercise: Reverse Lunge to High Knee Balance Hold | 40s | 40s | 40s | 40s
+exercise: Figure-4 Glute Stretch, Downward Dogs, Seated Hamstring Stretch | 2m
+```
+
+```tracking
+title: Guided All Round, Loving Kindness
+date: 2026-09-03
+time: 19:30
+duration: 75 mins
+activity: sauna
+temperature: 162F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.6
+strava: 20177859808
+garmin: 24364001566
 ```
 
 <!-- training plan start

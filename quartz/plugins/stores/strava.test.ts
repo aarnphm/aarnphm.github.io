@@ -4270,3 +4270,52 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   assert.equal(withoutSameDayWeight.weightKg, null)
   assert.equal(withoutSameDayWeight.power[0].wattsPerKg, null)
 })
+
+test('projects HR session estimates into walking and stationary recovery payloads', () => {
+  for (const sportType of ['Walk', 'Yoga', 'WeightTraining']) {
+    const time = Array.from({ length: 126 }, (_, index) => index * 5)
+    const cache: StravaRawCache = {
+      auth: { refreshToken: '', obtainedAt: 0 },
+      athleteId: 1,
+      lastSync: 0,
+      lastActivityStart: 0,
+      activities: {
+        '101': ride({
+          sportType,
+          deviceWatts: false,
+          averageWatts: undefined,
+          distance: 0,
+          movingTime: 600,
+          elapsedTime: 600,
+        }),
+      },
+      streams: {
+        '101': {
+          time,
+          latlng: [],
+          altitude: [],
+          distance: time.map(() => 0),
+          heartrate: time.map(seconds => (seconds < 60 ? 100 : 120)),
+        },
+      },
+    }
+    const activity = buildPayload(
+      cache,
+      null,
+      null,
+      undefined,
+      null,
+      null,
+      null,
+      undefined,
+      null,
+      200,
+    ).details['101']
+    assert.ok(activity.heartRatePhysiology)
+    assert.equal(activity.heartRatePhysiology.source, 'garden-estimate')
+    assert.equal(activity.staminaTrace, null)
+    assert.equal(activity.performanceConditionTrace, null)
+    assert.equal(activity.heartRatePhysiology.points.at(-1)?.elapsedS, 600)
+    assert.ok((activity.heartRatePhysiology.points.at(-1)?.performanceCondition ?? 0) < 0)
+  }
+})

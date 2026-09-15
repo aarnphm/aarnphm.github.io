@@ -54,12 +54,13 @@ function createSidePanel(asidePanel: HTMLElement, ...inner: HTMLElement[]): HTML
   const events = new AbortController()
   const headerSection = document.querySelector<HTMLElement>('main > section.header')
   const updateSidepanelOffset = (): void => {
-    if (!headerSection) {
+    const headerStyle = headerSection ? getComputedStyle(headerSection) : null
+    if (!headerSection || !headerStyle || headerStyle.position === 'static') {
       asidePanel.style.setProperty('--sidepanel-top-offset', '0px')
       return
     }
     const headerRect = headerSection.getBoundingClientRect()
-    const stickyTop = Number.parseFloat(getComputedStyle(headerSection).top) || 0
+    const stickyTop = Number.parseFloat(headerStyle.top) || 0
     asidePanel.style.setProperty(
       '--sidepanel-top-offset',
       `${Math.max(0, headerRect.height + stickyTop)}px`,
@@ -116,8 +117,12 @@ function createSidePanel(asidePanel: HTMLElement, ...inner: HTMLElement[]): HTML
 
   const sideInner = document.createElement('div')
   sideInner.classList.add('sidepanel-inner')
-  sideInner.append(...inner, header)
-  asidePanel.appendChild(sideInner)
+  sideInner.append(...inner)
+
+  const content = document.createElement('div')
+  content.classList.add('sidepanel-content')
+  content.appendChild(sideInner)
+  asidePanel.append(content, header)
   return sideInner
 }
 

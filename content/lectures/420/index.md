@@ -3,7 +3,7 @@ date: '2025-09-30'
 description: GPUs, CUTLASS, and CuTe
 id: index
 layout: A|L
-modified: 2026-06-07 01:29:05 GMT-04:00
+modified: 2026-09-14 15:58:14 GMT-04:00
 tags:
   - ml
   - math/linalg
@@ -55,60 +55,32 @@ see also: [[thoughts/GPU programming|GPU]], [[thoughts/XLA]], [[thoughts/LLMs]]
 > - Inference: Billions of matmul operations per forward pass
 > - Training: Forward pass, backpropagation, and optimizer updates
 
-> [!warning] Performance Constraints
+> [!warning] Performance constraints
 >
-> - GPT-4 scale: $\approx 10^{24}$ FLOPs for training
-> - Real-time inference: <100ms latency, >1000 tokens/sec throughput
-> - Memory bandwidth: hundreds of GB/s to multiple TB/s
-> - Mixed precision: fp16, bf16, fp8, fp4 to stay within power envelopes
-> - Central challenge: Matrix multiplication is memory-bound on modern GPUs, so peak throughput requires deep hardware-awareness (i.e: arthmetic intensity)
+> A matmul's dimensions, data type, and data reuse determine which hardware limit it reaches. If an operand is reloaded for every use, memory traffic dominates. Reusing tiles raises arithmetic intensity until the arithmetic units become the limit. Measure latency and throughput for the actual batch and matrix shapes; there is no universal tokens-per-second target.
 
 ## what is a GPU?
 
-### CPU vs GPU: philosophical differences
+### CPU vs GPU: execution resources
 
-> [!info] Latency-centric CPU design vs throughput-centric GPU design
->
-> | Aspect                 | CPU                                         | GPU                                                  |
-> | ---------------------- | ------------------------------------------- | ---------------------------------------------------- |
-> | Design Goal            | Low-latency sequential execution            | High-throughput parallel execution                   |
-> | Execution Model        | Complex out-of-order with branch prediction | Simple in-order with no speculation                  |
-> | Cache Hierarchy        | Large L1/L2/L3 caches (tens of MB)          | Minimal caching, programmer-managed shared memory    |
-> | Core Count             | Few cores (4-64 on server CPUs)             | Hundreds of SMs running tens of thousands of threads |
-> | Per-Thread Performance | High (sophisticated ILP, speculation)       | Low (simple in-order execution)                      |
-> | Aggregate Throughput   | Optimized for single-thread speed           | Optimized for total work completed per second        |
-> | Context Switching      | Microseconds (expensive OS operation)       | Single clock cycle (zero-overhead warp switching)    |
-> | Clock Frequency        | 3-5 GHz                                     | 1.4 GHz                                              |
-> | Memory Model           | Sequential consistency guaranteed           | Relaxed consistency, explicit synchronization        |
-> | Power per Core         | 10-20W per complex core                     | <1W per simple execution unit                        |
+A CPU core uses caches, branch prediction, and out-of-order execution to keep a small number of hardware threads moving. An NVIDIA SM keeps many warps resident and selects ready instructions while other warps wait. Its registers and shared memory limit how many warps fit at once.
 
-> [!note] Clarification: "cycle" terminology
+> [!note] Clock cycles
 >
-> When we refer to **"cycles"** throughout this document, we mean **clock cycles** of the GPU core clock (not memory clock or boost clock).
+> Cycle counts need a clock frequency. At an assumed $1.41\ \text{GHz}$, one cycle takes
 >
-> - **H100 core clock**: 1.41 GHz → 1 cycle ≈ 0.71 nanoseconds
-> - **EPYC 9654 base clock**: 2.4 GHz → 1 cycle ≈ 0.42 nanoseconds (3.7 GHz boost → 0.27 ns)
+> $$
+> t_{\text{cycle}}=\frac{1}{1.41\times10^9\ \text{s}^{-1}}
+> \approx0.71\ \text{ns}.
+> $$
 >
-> **Latency examples**:
->
-> - Global memory (HBM3): ~400 cycles ≈ 280 ns
-> - L2 cache: ~200 cycles ≈ 140 ns
-> - Shared memory/L1: ~20 cycles ≈ 14 ns
-> - Register access: ~1 cycle ≈ 0.71 ns
->
-> When we say "context switching costs 1,000 CPU cycles," that's ~420 ns on EPYC at base clock. GPU warp switching is literally 0 cycles, happening instantaneously in hardware without stalling the pipeline.
+> This is a unit conversion. Memory latency also depends on the cache hit level, access pattern, and contention; a clock frequency alone cannot determine it. Selecting another resident warp requires no software save and restore of that warp's registers. Instruction dependencies and occupied execution units can still stall issue.
 
-> [!important] tradeoff
->
-> CPUs optimize for latency: "How fast can I complete this single task?"
->
-> GPUs optimize for throughput: "How many tasks can I complete per second?"
-
-Example: A single CPU core might execute a 1000-instruction sequence in 200 nanoseconds (5 instructions/ns via ILP). A GPU thread might take 2000 nanoseconds for the same sequence, but the GPU executes 100,000 such threads concurrently, achieving 500× higher total throughput.
+The CUDA [hardware multithreading model](https://docs.nvidia.com/cuda/archive/12.9.1/cuda-c-programming-guide/index.html#hardware-multithreading) describes this distinction. Resident-thread counts tell us how much work can wait on the chip; sustained throughput also depends on the instructions that work executes.
 
 ### GPU architectural hierarchy
 
-Modern NVIDIA GPUs (Hopper H100, Blackwell B200) organize computation hierarchically:
+The diagram below shows the H100 SXM hierarchy. B200 presents two connected dies as one GPU, so a GPU and a die are distinct units in its package.
 
 > [!example] GPU hierarchy from top to bottom
 >
@@ -144,7 +116,7 @@ Modern NVIDIA GPUs (Hopper H100, Blackwell B200) organize computation hierarchic
 > │  └──────────────────────────────────────────────────────────┘   │
 > │                                                                 │
 > │  ┌────────────────────────────────────┐                         │
-> │  │  L2 Cache (Unified, 60 MB H100)    │                         │
+> │  │  L2 Cache (Unified, 50 MB H100)    │                         │
 > │  └────────────────────────────────────┘                         │
 > │  ┌────────────────────────────────────┐                         │
 > │  │  HBM3 Memory (80 GB @ 3.35 TB/s)   │                         │
@@ -154,87 +126,56 @@ Modern NVIDIA GPUs (Hopper H100, Blackwell B200) organize computation hierarchic
 
 #### Level 1: the GPU chip
 
-The GPU chip integrates all components. Here's a comparison of NVIDIA's latest datacenter GPUs:
+The SKU matters. NVIDIA's full GH100 design has 144 SMs and 60 MB of L2; H100 SXM enables 132 SMs and 50 MB. Using the full-die counts with the SXM memory and throughput numbers describes a configuration NVIDIA does not sell. [Hopper architecture](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/)
 
-> [!info] NVIDIA GPU architecture comparison
+> [!info] H100 SXM and B200 SXM, per GPU
 >
-> | Component                 | Hopper H100 (2022)      | Blackwell B200 (2024)  | Improvement |
-> | ------------------------- | ----------------------- | ---------------------- | ----------- |
-> | Architecture              | Hopper (4th gen)        | Blackwell (5th gen)    | Next-gen    |
-> | Process node              | TSMC 4N                 | TSMC 4NP               | Refined 4nm |
-> | Streaming Multiprocessors | 132 SMs (144 SXM)       | 192 SMs                | 1.45×       |
-> | GPC topology              | 8 GPCs × 9 TPCs × 2 SMs | 8 GPCs (estimated)     | n/a         |
-> | CUDA cores                | 16,896 (128/SM)         | 24,576 (128/SM)        | 1.45×       |
-> | Tensor cores              | 528 (4th gen, 4/SM)     | 768 (5th gen, 4/SM)    | 1.45×       |
-> | FP64 cores                | 8,448 (64/SM)           | 12,288 (64/SM)         | 1.45×       |
-> | L2 cache                  | 60 MB                   | 96 MB                  | 1.6×        |
-> | Memory                    | 80 GB HBM3              | 192 GB HBM3e           | 2.4×        |
-> | Memory bandwidth          | 3.35 TB/s               | 8 TB/s                 | 2.39×       |
-> | Peak FP64                 | 34 TFLOP/s              | 45 TFLOP/s             | 1.32×       |
-> | Peak FP32                 | 67 TFLOP/s              | 90 TFLOP/s             | 1.34×       |
-> | Peak FP16 (Tensor)        | 1,979 TFLOP/s           | 2,250 TFLOP/s          | 1.14×       |
-> | Peak FP8 (Tensor)         | 3,958 TFLOP/s           | 4,500 TFLOP/s          | 1.14×       |
-> | Peak FP4 (Tensor)         | n/a                     | 20,000 TFLOP/s         | New         |
-> | TDP                       | 700W                    | 1,000W                 | 1.43×       |
-> | Key features              | WGMMA, TMA, clusters    | FP4, 2nd-gen TMA, NVLS | Enhanced    |
+> Tensor-core rates below use **dense** inputs. A multiply-add counts as two floating-point operations.
+>
+> | Component              | H100 SXM      | B200 SXM           | B200 / H100  |
+> | ---------------------- | ------------- | ------------------ | ------------ |
+> | Architecture           | Hopper        | Blackwell          |              |
+> | GPU package            | One die       | Two connected dies |              |
+> | Process                | TSMC 4N       | TSMC 4NP           |              |
+> | Enabled SMs            | 132           | 148                | $1.12\times$ |
+> | Tensor-core generation | Fourth        | Fifth              |              |
+> | Memory                 | 80 GB HBM3    | 180 GB HBM3e       | $2.25\times$ |
+> | Memory bandwidth       | 3.35 TB/s     | 7.7 TB/s           | $2.30\times$ |
+> | Peak FP64              | 34 TFLOP/s    | 37 TFLOP/s         | $1.09\times$ |
+> | Peak FP32              | 67 TFLOP/s    | 75 TFLOP/s         | $1.12\times$ |
+> | Peak FP16/BF16 tensor  | 989.5 TFLOP/s | 2,250 TFLOP/s      | $2.27\times$ |
+> | Peak FP8 tensor        | 1,979 TFLOP/s | 4,500 TFLOP/s      | $2.27\times$ |
+> | Peak FP4 tensor        | Unsupported   | 9,000 TFLOP/s      |              |
+> | Maximum GPU power      | 700 W         | 1,000 W            | $1.43\times$ |
+
+Sources: NVIDIA's [H100 specifications](https://www.nvidia.com/en-us/data-center/h100/), [Blackwell package description](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/), [B200 SM count](https://developer.nvidia.com/blog/boost-gpu-memory-performance-with-no-code-changes-using-nvidia-cuda-mps/), [HGX specifications](https://www.nvidia.com/en-us/data-center/hgx/), and [DGX B200 specifications](https://www.nvidia.com/en-us/data-center/dgx-b200/). The HGX and DGX pages report eight-GPU system totals; the table divides those totals by eight where needed. Lenovo's [B200 product guide](https://lenovopress.lenovo.com/lp2226-thinksystem-nvidia-b200-180gb-1000w-gpu) gives the B200 module memory bandwidth and power limit.
+
+NVIDIA advertises H100 FP16 at $1{,}979\ \text{TFLOP/s}$ with structured sparsity. Its dense rate is half that value. Lenovo lists B200 tensor rates as dense/sparse pairs, so $2{,}250\ \text{TFLOP/s}$ is the dense FP16/BF16 figure. A speed ratio needs the same precision and sparsity setting on both sides.
 
 #### Thread count comparison: EPYC vs H100
 
-To illustrate the scale difference, compare a high-end server CPU with H100:
+The [EPYC 9654 specification](https://www.amd.com/en/products/processors/server/epyc/4th-generation-9004-and-8004-series/amd-epyc-9654.html) lists 96 cores and 192 hardware threads. For H100 SXM, combine the 132 enabled SMs with the [Hopper occupancy limits](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html#occupancy):
 
-> [!example] AMD EPYC 9654 (Zen 4) vs NVIDIA H100 thread counts
+$$
+\begin{aligned}
+N_{\text{EPYC hardware threads}}&=96\times2=192,\\
+N_{\text{H100 resident lanes}}&\le132\times64\times32=270{,}336.
+\end{aligned}
+$$
+
+> [!note] Residency and execution
 >
-> | Metric                    | AMD EPYC 9654              | NVIDIA H100              | Ratio |
-> | ------------------------- | -------------------------- | ------------------------ | ----- |
-> | Physical cores            | 96 cores                   | 132 SMs                  | 1.4×  |
-> | Resident contexts         | 2 SMT threads per core     | up to 64 warps per SM    | n/a   |
-> | Maximum resident contexts | 192 CPU threads            | 270,336 CUDA threads     | n/a   |
-> | Scheduling                | OS and hardware scheduling | ready-warp selection     | n/a   |
-> | Clock frequency           | 3.7 GHz boost              | 1.41 GHz                 | 0.38× |
-> | Thread execution          | Out-of-order, speculative  | In-order, no speculation | n/a   |
-> | L3 Cache                  | 384 MB                     | 60 MB L2 (no L3)         | n/a   |
-> | Memory bandwidth          | 460 GB/s (DDR5)            | 3,350 GB/s (HBM3)        | 7.3×  |
-> | TDP                       | 360W                       | 700W                     | 1.9×  |
+> A CUDA thread contributes one lane of a warp. The upper bound assumes enough registers, shared memory, and block slots to hold 64 warps per SM. The schedulers issue instructions from ready warps over successive cycles, so all 270,336 lanes do not execute an instruction at once.
 
-> [!note] These counts measure different things
->
-> A resident CUDA thread is a lane in a scheduled warp, not an independently scheduled CPU hardware thread. the count explains how an SM keeps many warps available while other warps wait. it does not imply a throughput ratio.
-
-- EPYC 9654: 96 physical cores × 2-way SMT = 192 hardware threads
-  - Each core runs 2 threads via simultaneous multithreading (SMT)
-  - SMT siblings share one core; an OS context switch is a separate event
-  - Total: 192 threads across entire CPU
-
-- H100: 132 SMs × 64 warps/SM × 32 threads/warp = 270,336 concurrent threads
-  - Each SM runs 64 warps (2,048 threads) simultaneously
-  - warp state stays resident while schedulers select ready instructions
-  - Each warp executes 32 threads in lockstep (SIMT)
-  - Total: 270,336 threads across entire GPU
-
-> [!important] why is it important for matmul?
->
-> A 4096×4096 matrix has 16,777,216 elements. Assigning one element per thread:
->
-> - EPYC: 192 threads → 87,381 iterations per thread (serial bottleneck)
-> - H100: 270,336 threads → 62 iterations per thread (parallel throughout)
-
-With tensor cores computing 16×16 tiles, H100 needs only 256×256 = 65,536 tiles, easily mapped to 270K threads with massive occupancy.
+For a $4096\times4096$ output matrix, a one-output-per-thread kernel launches $16{,}777{,}216$ threads across many blocks. Dividing that count by maximum residency says how much work must be scheduled over time; it does not predict the duration of a matmul. Each output still needs a dot product over the reduction dimension. Tensor-core kernels distribute matrix fragments across cooperating threads, and their tile sizes determine register use, reuse, and occupancy.
 
 #### Level 2: graphics processing cluster (GPC)
 
-A GPC groups multiple TPCs and provides:
-
-- Shared L2 cache access
-- Raster engines (for graphics workloads)
-- High-bandwidth interconnect between SMs
-
-Hopper's 8 GPCs enable hierarchical scheduling: thread block clusters (introduced in Hopper) preferentially schedule within GPC boundaries to minimize DSMEM access latency.
+A GPC contains multiple TPCs. H100 SXM has eight GPCs and 66 enabled TPCs in total. A thread block cluster stays within one GPC, where its blocks can access one another's shared memory. CUDA guarantees this placement for a valid cluster launch. [CUDA thread block clusters](https://docs.nvidia.com/cuda/archive/12.9.1/cuda-c-programming-guide/index.html#thread-block-clusters)
 
 #### Level 3: texture processing cluster (TPC) and streaming multiprocessor (SM)
 
-Each TPC contains 2 SMs. The SM is the fundamental execution unit (the GPU equivalent of a CPU core, but simpler and massively parallel).
-
-An SM can execute up to 2,048 threads concurrently (64 warps × 32 threads/warp). Compare this to a single CPU core running 1-2 threads!
+Each H100 TPC contains two SMs. An SM owns warp schedulers, execution units, registers, and shared memory. It can hold up to $64\times32=2{,}048$ resident threads, subject to resource limits.
 
 #### Level 4: warps and threads
 
@@ -242,7 +183,7 @@ A warp is a group of 32 threads that execute in lockstep (SIMT execution):
 
 - All 32 threads execute the same instruction simultaneously
 - Each thread operates on different data (SIMT = Single Instruction, Multiple Thread)
-- Warp scheduling is hardware-managed with zero-overhead context switching
+- Ready-warp selection is hardware-managed, with no OS context switch between resident warps
 - Divergence (threads taking different control-flow paths) causes serialization
 
 ```cuda
@@ -255,13 +196,13 @@ __global__ void vector_add(float* a, float* b, float* c, int N) {
 }
 ```
 
-> [!note] Why 32 threads per warp?
+> [!note] What the 32-thread warp means
 >
-> Historical constraint tied to memory system design:
+> CUDA groups consecutive thread IDs into warps of 32. That choice shapes memory and control-flow costs:
 >
-> - Shared memory has 32 banks (4-byte words)
-> - 32 threads enable single-cycle coalesced memory access
-> - Register file ports and execution unit groups sized for warp-level parallelism
+> - Shared-memory banks, coalescing rules, and warp-level intrinsics are defined around the warp width.
+> - Full efficiency needs the 32 lanes to execute the same instruction path.
+> - Divergence serializes the paths taken inside the warp.
 
 ### latency hiding through massive parallelism
 
@@ -288,21 +229,11 @@ $$\text{Occupancy} = \frac{\text{Active warps per SM}}{\text{Maximum warps per S
 
 higher occupancy can expose more independent work. after the active bottleneck is covered, extra occupancy need not increase throughput.
 
-> [!warning] CPU architectural constraints
+> [!warning] Why the GPU trade works for data-parallel code
 >
-> 1. Cache coherence overhead: With 100K+ threads, maintaining cache coherence across cores would require prohibitive bandwidth and complexity
-> 2. Branch prediction complexity: Speculative execution for thousands of threads with divergent control flow is intractable
-> 3. Power density: Complex out-of-order cores consume 10-20W each; 10,000 such cores would require megawatts
-> 4. Memory model: CPUs guarantee sequential consistency; GPUs use relaxed memory models with explicit synchronization
+> A GPU SM spends less area on branch prediction and out-of-order machinery, then relies on many resident warps to cover latency. The programming model exposes explicit synchronization, scoped memory operations, shared memory, and coalescing rules, so kernels have to present enough regular work for the hardware to exploit.
 
-GPUs sidestep these constraints by:
-
-- Eliminating cache coherence (programmer-managed shared memory)
-- Using simple in-order execution (no speculation)
-- Running threads at lower frequency (1.4 GHz vs 3-5 GHz for CPUs)
-- Exposing explicit memory hierarchy and synchronization primitives
-
-The result: GPUs achieve 10-100× higher compute throughput than CPUs for data-parallel workloads, at the cost of requiring algorithm redesign and careful memory management.
+This trade is why a dense matmul can suit a GPU and a branch-heavy request path can suit a CPU. The question is the instruction mix and memory access pattern, not whether the code contains arithmetic.
 
 ## gpu architecture fundamentals
 
@@ -336,8 +267,7 @@ An SM contains multiple specialized execution units, each serving distinct purpo
 >                    │              │               │             │
 >         ┌──────────▼──────┐  ┌────▼─────┐  ┌──────▼──────┐  ┌───▼────────┐
 >         │  CUDA Cores     │  │ Tensor   │  │  Load/Store │  │    SFU     │
->         │    (x32/quad)   │  │  Cores   │  │   Units     │  │   (x8)     │
->         │                 │  │  (x2)    │  │   (x32)     │  │            │
+>         │                 │  │  Cores   │  │   Units     │  │            │
 >         │  FP32, INT32    │  │  Matrix  │  │   Memory    │  │ Transcen.  │
 >         │  FMA, ADD, MUL  │  │  MMA ops │  │   Ops       │  │ sin,cos,√  │
 >         └────────┬────────┘  └────┬─────┘  └──────┬──────┘  └─────┬──────┘
@@ -367,12 +297,12 @@ _function_: Control unit that selects which warp executes next and dispatches in
 > [!info] Warp scheduler responsibilities
 >
 > - Maintains scoreboard of warp states (ready, stalled on memory, stalled on dependency)
-> - Selects eligible warp each cycle using round-robin or priority policy
-> - Decodes instruction and routes to appropriate execution unit (CUDA core, tensor core, LSU, SFU)
-> - Handles warp divergence: issues predicated instructions for each execution path
-> - Zero-overhead context switching: switching between warps costs zero cycles
+> - Selects an eligible resident warp according to the SM scheduler policy
+> - Decodes the warp instruction and routes it to the relevant execution unit: CUDA core, tensor core, LSU, or SFU
+> - Tracks active masks and reconvergence for divergent control flow; short conditionals may compile to predicated instructions
+> - Keeps resident warp state on chip, so ready-warp selection needs no OS context switch
 
-Example: If Warp 0 issues a memory load and stalls, the scheduler immediately switches to Warp 1 without any penalty.
+Example: If Warp 0 issues a memory load and stalls, the scheduler can choose Warp 1 on a later issue opportunity without saving and restoring a software thread context.
 
 Hopper has 4 warp schedulers per SM, each managing 16 warps (64 total warps per SM).
 
@@ -387,8 +317,7 @@ Operations: FP32 (single-precision), INT32 arithmetic, logical operations
 > - FP32 FMA: `a * b + c` in single precision
 > - INT32 operations: addition, multiplication, bit shifts, logical AND/OR/XOR
 > - FP32 comparison and conversion operations
-> - Throughput: 1 FP32 FMA per core per cycle
-> - 128 CUDA cores per SM = 128 FP32 operations/cycle/SM
+> - Throughput depends on the issued instruction and pipeline; the SKU-level FP32 peak in the table above is the safer bound
 
 Example instructions:
 
@@ -411,8 +340,7 @@ Operations: Matrix multiplication in mixed precision (FP16, BF16, FP8, INT8, FP4
 > - Computes $D = A \times B + C$ where $A, B$ are 16×16 tiles
 > - Input types: FP16, BF16, TF32, FP8 (E4M3, E5M2), INT8, INT4
 > - Accumulator: FP32 or FP16
-> - Throughput: 4 Tensor cores per SM × 256 FP16 FMA/tensor core/cycle = 1,024 FP16 operations/cycle/SM
-> - 20× faster than CUDA cores for dense matrix ops
+> - Throughput depends on the MMA instruction shape, input type, accumulation type, sparsity convention, and SKU
 
 Example instructions:
 
@@ -442,8 +370,7 @@ Operations: Reads and writes to registers, shared memory, L1 cache, L2 cache, an
 > - Shared memory loads/stores: `ld.shared`, `st.shared`
 > - Coalescing: Merges 32 thread accesses into fewer transactions
 > - Asynchronous copies: `cp.async` (Ampere+), `cp.async.bulk` (Hopper+)
-> - 32 LSUs per warp scheduler (total varies by architecture)
-> - Throughput: 32 bytes/cycle per LSU (for coalesced access)
+> - The throughput that matters is the observed path through L1, L2, HBM, and interconnect for the kernel's access pattern
 
 Example instructions:
 
@@ -463,9 +390,7 @@ Operations: Reciprocal, square root, logarithm, exponential, trigonometric funct
 >
 > - Transcendentals: `sin`, `cos`, `exp`, `log`, `rsqrt` (reciprocal square root)
 > - Lower precision than CUDA cores: ~1-2 ULP (units in last place) error
-> - 8-16 SFUs per SM (shared across warp schedulers)
-> - Throughput: 1 operation per thread per cycle (for 32-thread warp = 32 ops/cycle)
-> - Much faster than computing via CUDA core polynomial approximations
+> - Throughput and precision depend on the instruction, compiler choice, and architecture
 
 Example instructions:
 
@@ -480,14 +405,14 @@ float angle = sinf(theta);       // Sine → SFU
 > Dedicating silicon to SFUs is more efficient than implementing in general-purpose CUDA cores.
 
 > [!warning] Precision tradeoff
-> SFU functions are faster but less precise than CUDA core implementations:
+> Fast math intrinsics can trade precision for speed. Check the CUDA math API for the function, type, and compilation flags:
 >
-> | Function  | SFU (`__sinf`) | CUDA Core (`sin`) | Speedup |
-> | --------- | -------------- | ----------------- | ------- |
-> | `sin(x)`  | ~20 cycles     | ~100-200 cycles   | 5-10×   |
-> | Precision | 1-2 ULP error  | 1 ULP error       | Lower   |
+> | Choice                       | What to check                         |
+> | ---------------------------- | ------------------------------------- |
+> | Intrinsic such as `__sinf`   | Documented error bound and throughput |
+> | Standard function like `sin` | Required accuracy and compiler flags  |
 >
-> Use intrinsics (`__sinf`, `__expf`) for SFU, standard functions (`sin`, `exp`) for CUDA cores.
+> Use the faster intrinsic only when its error bound fits the kernel.
 
 #### 6. Tensor Memory Accelerator (TMA)
 
@@ -778,29 +703,11 @@ cudaStreamDestroy(stream2);
 
 ## gpu architecture fundamentals
 
-> [!note] Hopper/Blackwell SM topology
+> [!note] H100 SM resources
 >
-> ```
-> ┌────────────────────────────────────────────────────────────┐
-> │                SM (Quad View)                              │
-> ├──────────────┬──────────────┬──────────────┬───────────────┤
-> │ Quad 0       │ Quad 1       │ Quad 2       │ Quad 3        │
-> │ Warp Sched   │ Warp Sched   │ Warp Sched   │ Warp Sched    │
-> │ + 2 Tensor   │ + 2 Tensor   │ + 2 Tensor   │ + 2 Tensor    │
-> │ Core Pairs   │ Core Pairs   │ Core Pairs   │ Core Pairs    │
-> │ + 32 CUDA    │ + 32 CUDA    │ + 32 CUDA    │ + 32 CUDA     │
-> │ Cores        │ Cores        │ Cores        │ Cores         │
-> ├──────────────┴──────────────┴──────────────┴───────────────┤
-> │ Shared/L1 (256 KB logical) split into 4 partitions         │
-> ├────────────────────────────────────────────────────────────┤
-> │ Register File (256 KB) logically partitioned per quad      │
-> └────────────────────────────────────────────────────────────┘
-> ```
+> Each H100 SM has four scheduler partitions and four tensor cores. Its 128 FP32 CUDA cores are arithmetic units shared by resident warps. The SM has a 256 KiB register file and a separate 256 KiB combined L1/shared-memory pool. These capacities apply per SM, so multiplying a per-SM figure by 132 gives an H100 SXM total. [Hopper SM architecture](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/)
 >
-> - Hopper and Blackwell SMs expose four warp-scheduler quads, each feeding a pair of tensor-core pipelines and 32 FP/INT ALUs, enabling 16 warp issue slots per SM cycle. [@nvidia2022hopper; @scalingbook]
-> - Each quad accesses its slice of the 256 KB shared-memory/L1 pool and its register file segment; Hopper's thread block clusters let quads collaborate via distributed shared memory fabric. [@nvidia2022hopper]
-> - Blackwell retains the quad layout but doubles tensor-core throughput via FP4/MX formats and adds enhanced asynchronous transaction engines feeding the quads. [@nvidia2024nvfp4; @nvidia2025cutlass42]
-> - Warp-specialized instructions (WGMMA) target warp-group scheduling across quads, while the tensor memory accelerator (TMA) streams tiles from HBM to shared memory with single-issue descriptors. [@nvidia2022hopper; @cutlass2025cute41]
+> Distributed shared memory connects the shared-memory regions of blocks within a cluster. A warp group's cooperation inside one SM and a cluster's cooperation across SMs use different synchronization scopes.
 
 ### thread execution model: SIMT
 
@@ -915,22 +822,20 @@ int result = (condition) ? value_A : value_B;
 
 ## memory hierarchy: the performance bottleneck
 
-Modern GPU programming is fundamentally about managing memory hierarchy. Compute is abundant; bandwidth is scarce.
+much GPU programming is memory-hierarchy work. Arithmetic units are fast enough that traffic often controls kernel design.
 
 ### memory levels: capacity vs latency
 
 ```
-┌────────────────────────────────────────────────────────────┐
-│ Registers       ~1 cycle    256KB/SM      thread-private   │
-├────────────────────────────────────────────────────────────┤
-│ Shared Memory   ~20 cycles  256KB/SM      block-shared     │
-├────────────────────────────────────────────────────────────┤
-│ L1 Cache        ~30 cycles  128KB/SM      transparent      │
-├────────────────────────────────────────────────────────────┤
-│ L2 Cache        ~200 cycles 50MB          GPU-wide         │
-├────────────────────────────────────────────────────────────┤
-│ Global (HBM)    ~400 cycles 80GB          3.35 TB/s        │
-└────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│ Registers          per-thread operands, per-SM pool │
+├─────────────────────────────────────────────────────┤
+│ Shared memory/L1   per-SM scratchpad and cache      │
+├─────────────────────────────────────────────────────┤
+│ L2 cache           device-wide cache                │
+├─────────────────────────────────────────────────────┤
+│ Global memory      HBM device memory                │
+└─────────────────────────────────────────────────────┘
 ```
 
 Arithmetic intensity determines achievable performance:
@@ -947,39 +852,36 @@ For matmul $C_{M\times N} = A_{M\times K} B_{K\times N}$:
 
 For large $K$, this approaches $\frac{MN}{2(M+N)}$ FLOPs per byte. With square tiles where $M=N$, this simplifies to $\frac{M}{4}$. Tiling achieves much higher intensity by reusing data in shared memory.
 
-> [!example] Memory hierarchy data flow [^data-flow]
+> [!example] Memory hierarchy data flow
 >
 > ```
-> Global Memory (HBM)     [████████████] 80GB @ 3.35 TB/s
->     ↓ ~400 cycles            ↑ writeback
+> Global Memory (HBM)     [████████████] device memory
+>     ↓                        ↑ writeback
+> L2 Cache                [████] shared across the GPU
 >     ↓                        ↑
-> L2 Cache                [████] 50MB shared
->     ↓ ~200 cycles            ↑
+> L1/Shared Memory        [██] per SM
 >     ↓                        ↑
-> L1/Shared Memory        [██] 256KB per SM
->     ↓ ~20 cycles             ↑
->     ↓                        ↑
-> Registers               [█] 256KB per SM, ~1 cycle
+> Registers               [█] per SM pool, allocated per thread
 >     ↓                        ↑
 >     └────────────────────────┘
 >          Compute Units
 >     [Tensor Cores | CUDA Cores]
 > ```
 
-[^data-flow]: Data flows down from global memory through the cache hierarchy to registers where computation happens. Results flow back up. The key optimization is keeping data in lower levels (registers, shared memory) as long as possible to avoid expensive trips to HBM. Each level trades capacity for latency: registers are tiny but instant, HBM is massive but slow.
+Arithmetic instructions consume operands held in registers. Caches and shared memory retain data that a kernel can reuse, reducing repeated HBM reads. The exact latency depends on address pattern, cache hits, contention, and the instruction stream.
 
-> [!info] Hopper H100 memory hierarchy (per SM unless noted)
+> [!info] H100 SXM memory capacities
 >
-> | Level                            | Capacity               | Approx latency   | Notes                                                        |
-> | -------------------------------- | ---------------------- | ---------------- | ------------------------------------------------------------ |
-> | Registers                        | 256 KB                 | ~1 cycle         | Allocated per warp, spilled to L1 on pressure                |
-> | Shared/L1 cache                  | 256 KB (configurable)  | 20–30 cycles     | Supports 64/128/256 KB split, sector-based replacement       |
-> | Tensor Memory Accelerator queues | 32 descriptors         | <10 cycles issue | Streams multidimensional tiles without register address math |
-> | L2 cache (device)                | 50 MB                  | ~200 cycles      | 16 channels, sector caches feed SM quads                     |
-> | HBM3 global mem                  | 80 GB @ 3.35 TB/s      | 400–500 cycles   | Four stacks per SXM, 64-byte access granularity              |
-> | NVLink/NVSwitch                  | 900 GB/s bidirectional | microseconds     | Fabric for scale-out multi-GPU                               |
+> | Resource                  | Capacity                         | Scope                                 |
+> | ------------------------- | -------------------------------- | ------------------------------------- |
+> | Registers                 | 65,536 32-bit registers, 256 KiB | Per SM, allocated to resident threads |
+> | Combined L1/shared memory | 256 KiB                          | Per SM                                |
+> | Shared-memory carveout    | Up to 228 KiB                    | Per SM, drawn from the combined pool  |
+> | Shared memory per block   | Up to 227 KiB                    | Requires opt-in above 48 KiB          |
+> | L2 cache                  | 50 MB                            | Device                                |
+> | HBM3                      | 80 GB, five stacks               | Device, 3.35 TB/s peak bandwidth      |
 >
-> Latency and bandwidth derived from architectural specs and microbenchmark studies.
+> The shared-memory carveout reduces the capacity left for L1. Register spills use thread-local memory backed by device memory and serviced through the cache hierarchy. TMA transfers tensors between memory spaces; it adds no separate programmer-addressable storage tier. Capacities are specified by the [Hopper architecture](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) and [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html#unified-shared-memory-l1-texture-cache).
 
 ### memory coalescing
 
@@ -1437,19 +1339,13 @@ cluster_reduce(float* input, float* output) {
 
 > [!warning] Cluster size limitations
 >
-> - Maximum cluster size: 8 thread blocks on Hopper (SM90)
-> - Blocks in a cluster must fit on adjacent SMs with available resources
-> - If resources insufficient, driver falls back to non-clustered execution
-> - Optimal cluster sizes: 2, 4, or 8 blocks depending on workload
+> Hopper supports a portable cluster size of eight blocks. H100 also supports a nonportable size of 16 after setting `cudaFuncAttributeNonPortableClusterSizeAllowed`. Query `cudaOccupancyMaxPotentialClusterSize` and `cudaOccupancyMaxActiveClusters` for the kernel and device, then check launch errors. A kernel that uses cluster synchronization requires a valid clustered launch. [Hopper tuning guide](https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html#thread-block-clusters)
 
 > [!note] GPC topology awareness
-> Hopper H100 SMs are organized into Graphics Processing Clusters (GPCs):
 >
-> - 8 GPCs × 18 SMs/GPC = 144 total SMs
-> - Clusters scheduled within GPC boundaries for minimal latency
-> - Cross-GPC DSMEM access incurs higher latency (~50 vs 20 cycles)
+> The full GH100 layout contains $8\times9\times2=144$ SMs; H100 SXM enables 132. Blocks in a cluster are co-scheduled within one GPC. Distributed shared-memory access is scoped to that cluster, so a cross-GPC DSMEM latency is outside this programming model. [CUDA cluster placement](https://docs.nvidia.com/cuda/archive/12.9.1/cuda-c-programming-guide/index.html#thread-block-clusters)
 
-The combination of TMA multicast + thread block clusters + DSMEM enables warp-specialized persistent kernels where producer warps stream data via TMA while consumer warps continuously compute, achieving near-peak utilization by hiding memory latency.
+TMA can feed tiles while consumer warps compute on earlier tiles. Cluster size, shared-memory use, and synchronization costs determine how much overlap a particular kernel achieves.
 
 ## matrix multiplication: from naive to optimized
 
@@ -1613,16 +1509,17 @@ that gives a roofline bound, not a measured kernel speed. use the executable exa
 
 Tensor cores are specialized hardware units for accelerating matrix multiplication, introduced in Volta (2017) and evolved through Turing, Ampere, Ada Lovelace, Hopper, and Blackwell architectures.
 
-Evolution across generations:
+The generations introduced different instruction sets:
 
-| Architecture        | Year | Tensor Core Gen | FP16 TFLOP/s | New Features                  |
-| ------------------- | ---- | --------------- | ------------ | ----------------------------- |
-| Volta (V100)        | 2017 | 1st gen         | 125          | Mixed precision (FP16)        |
-| Turing (T4)         | 2018 | 2nd gen         | 65           | INT8, INT4 support            |
-| Ampere (A100)       | 2020 | 3rd gen         | 312          | TF32, BF16, FP64 tensor cores |
-| Ada Lovelace (L40S) | 2022 | 4th gen         | 362          | FP8 support                   |
-| Hopper (H100)       | 2022 | 4th gen         | 1979         | FP8, wgmma instructions, TMA  |
-| Blackwell (B200)    | 2024 | 5th gen         | 4500         | FP4, dynamic precision        |
+| Architecture | Tensor-core generation | Added capabilities                          |
+| ------------ | ---------------------- | ------------------------------------------- |
+| Volta        | First                  | FP16 matrix multiply with FP32 accumulation |
+| Turing       | Second                 | INT8 and INT4                               |
+| Ampere       | Third                  | TF32, BF16, FP64, and structured sparsity   |
+| Hopper       | Fourth                 | FP8 and asynchronous warp-group MMA         |
+| Blackwell    | Fifth                  | FP4 and new block-scaled matrix operations  |
+
+NVIDIA's [Hopper overview](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/) and [Blackwell overview](https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/) describe these changes. For throughput, use a specific SKU and the dense/sparse convention in the hardware table above; an architecture name alone leaves both unspecified.
 
 ### tensor core operation
 
@@ -3092,8 +2989,6 @@ Step-by-step process:
 
 ### roofline model
 
-Roofline model visualizes performance limits based on arithmetic intensity:
-
 > [!example] Roofline model for H100 [^roofline]
 >
 > ```
@@ -3122,28 +3017,25 @@ Roofline model visualizes performance limits based on arithmetic intensity:
     - A 128×128×32 FP16 tiled kernel raises intensity to ≈64, pushing the roofline bound to ~214 TFLOP/s.
     - Only when the program approaches perfect data reuse (each matrix element fetched once, giving $I \gtrsim 10^3$), does the kernel enter the compute-bound regime and approach the 1,979 TFLOP/s tensor-core ceiling.
 
-For a given arithmetic intensity $I$ (FLOP/byte):
-
-- If $I \times B < P_{\text{peak}}$: Memory-bound (performance = $I \times B$)
-- If $I \times B \ge P_{\text{peak}}$: Compute-bound (performance = $P_{\text{peak}}$)
-
-Where $B$ is memory bandwidth and $P_{\text{peak}}$ is peak compute throughput.
-
-Example for matmul on H100:
-
-- Memory bandwidth: 3.35 TB/s
-- Peak FP16 tensor core: 1979 TFLOP/s
-- Ridge point:
+A roofline bounds throughput using arithmetic intensity $I$, memory bandwidth $B$, and the peak rate of the instructions the kernel issues:
 
 $$
-I_{\text{ridge}}
-=\frac{1979\ \text{TFLOP/s}}{3.35\ \text{TB/s}}
-\approx591\ \text{FLOP/byte}.
+P_{\text{attainable}}\le\min\!\left(P_{\text{peak}},\,IB\right).
 $$
 
-for $I<591\ \text{FLOP/byte}$ the roofline is memory-bound. above that ridge, the stated tensor-core peak becomes the bound.
+> [!example] Dense FP16/BF16 tensor-core roofline for H100 SXM
+>
+> With $B=3.35\ \text{TB/s}$ and $P_{\text{peak}}=989.5\ \text{TFLOP/s}$, the two bounds meet at
+>
+> $$
+> I_{\text{ridge}}=\frac{P_{\text{peak}}}{B}
+> =\frac{989.5\ \text{TFLOP/s}}{3.35\ \text{TB/s}}
+> \approx295\ \text{FLOP/byte}.
+> $$
+>
+> A tensor-core kernel with $I\approx64\ \text{FLOP/byte}$ has a bandwidth bound of $64\times3.35\approx214\ \text{TFLOP/s}$. Raising reuse above the ridge moves the bound to the dense tensor-core rate. Dependencies, instruction overhead, and incomplete utilization can keep measured performance below either bound.
 
-a tile with $I\approx64\ \text{FLOP/byte}$ is still below the ridge in this model, with a bandwidth roof near $214\ \text{TFLOP/s}$.
+The [H100 product specification](https://www.nvidia.com/en-us/data-center/h100/) marks $1{,}979\ \text{TFLOP/s}$ FP16/BF16 as a structured-sparse rate. A dense GEMM uses half that peak. Pair the work count, byte count, and compute ceiling with the same algorithm and data type. The earlier scalar FP32 teaching kernel uses CUDA-core FP32 throughput as its compute ceiling, even when tensor cores exist on the device.
 
 ### occupancy tuning
 

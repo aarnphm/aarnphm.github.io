@@ -35,6 +35,22 @@ import {
 } from './scrub'
 
 const ALIGNED_ACTIVITY_SECTIONS: { selector: string; margin: string }[] = [
+  { selector: '.tri-act-more > .tri-workout-analysis', margin: '--tri-workout-margin' },
+  { selector: '.tri-act-more > [data-tri-trace="hr"]', margin: '--tri-hr-margin' },
+  { selector: '.tri-act-more > [data-tri-trace="stamina"]', margin: '--tri-stamina-margin' },
+  {
+    selector: '.tri-act-more > [data-tri-trace="performance-condition"]',
+    margin: '--tri-performance-condition-margin',
+  },
+  {
+    selector: '.tri-act-more > [data-tri-trace="respiration"]',
+    margin: '--tri-respiration-margin',
+  },
+  {
+    selector: '.tri-act-more > [data-tri-trace="temperature"]',
+    margin: '--tri-temperature-margin',
+  },
+  { selector: '.tri-act-more > [data-tri-trace="cadence"]', margin: '--tri-cadence-margin' },
   { selector: '.tri-act-more > .tri-environment', margin: '--tri-environment-margin' },
   { selector: '.tri-act-more > .tri-training-effect', margin: '--tri-training-effect-margin' },
 ]
@@ -158,7 +174,7 @@ export const setupActivityTitleTooltip = (): (() => void) | null => {
   const move = (event: PointerEvent): void => {
     const icon =
       event.target instanceof Element
-        ? event.target.closest<SVGElement>('.tri-act-head > .tri-ico')
+        ? event.target.closest('.tri-act-head > .tri-ico, .tri-act-head > .tri-act-icon-link')
         : null
     const activity = icon?.closest<HTMLElement>('.tri-act[data-activity-title]') ?? null
     const title = activity?.dataset.activityTitle

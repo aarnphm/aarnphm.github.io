@@ -70,11 +70,12 @@ function startValue(activity: RawStravaActivity): string {
 
 function uniqueGarminMatches(
   activities: RawStravaActivity[],
-  kind: ActivityKind,
   garmin: GarminCache,
 ): UniqueGarminMatch[] {
   const bestByGarminId = new Map<string, UniqueGarminMatch>()
   for (const activity of activities) {
+    const kind = normalizeKind(activity.sportType)
+    if (!kind) continue
     const match = matchGarminActivity(activity, kind, garmin)
     if (!match) continue
     const best = bestByGarminId.get(match.activity.id)
@@ -140,15 +141,14 @@ export function selectGarminTitleUpdates(
   garmin: GarminCache,
   options: GarminTitleSyncOptions = {},
 ): GarminTitleUpdate[] {
-  const kind = options.kind ?? 'bike'
   const updates: GarminTitleUpdate[] = []
   const activities = Object.values(strava.activities)
-    .filter(activity => normalizeKind(activity.sportType) === kind)
+    .filter(activity => !options.kind || normalizeKind(activity.sportType) === options.kind)
     .filter(activity => !options.ids?.size || options.ids.has(String(activity.id)))
     .filter(activity => !options.since || startDay(activity) >= options.since)
     .sort((left, right) => startValue(left).localeCompare(startValue(right)))
 
-  for (const { activity, match } of uniqueGarminMatches(activities, kind, garmin)) {
+  for (const { activity, match } of uniqueGarminMatches(activities, garmin)) {
     const update = updateFor(activity, match)
     if (update) updates.push(update)
   }
@@ -170,7 +170,7 @@ export function selectGarminActivityTypeUpdates(
     .filter(activity => !options.since || startDay(activity) >= options.since)
     .sort((left, right) => startValue(left).localeCompare(startValue(right)))
 
-  for (const { activity, match } of uniqueGarminMatches(activities, kind, garmin)) {
+  for (const { activity, match } of uniqueGarminMatches(activities, garmin)) {
     const update = typeUpdateFor(activity, match)
     if (update) updates.push(update)
   }

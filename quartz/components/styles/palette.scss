@@ -1,18 +1,5 @@
-@use 'sass:map';
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
-
-@media all and ((min-width: #{map.get($breakpoints, mobile)}) and (max-width: 1400px)) {
-  .sidepanel-container {
-    display: none;
-  }
-}
-
-@media all and ($mobile) {
-  .sidepanel-container {
-    display: none;
-  }
-}
 
 ul#helper {
   list-style-type: none;
@@ -51,8 +38,14 @@ ul#helper {
   right: 0;
   bottom: 0;
   position: fixed;
+  display: flex;
+  flex-direction: column;
   width: var(--sidepanel-width);
   grid-column: 8/-1;
+
+  @media all and (max-width: 1400px) {
+    display: none;
+  }
 
   &.active {
     top: var(--sidepanel-top-offset, 0px);
@@ -63,7 +56,15 @@ ul#helper {
     width: var(--sidepanel-width);
   }
 
-  & > .sidepanel-inner {
+  & > .sidepanel-content {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    // Keep fixed subpanels anchored outside the scrolling content.
+    contain: layout;
+  }
+
+  & > .sidepanel-content > .sidepanel-inner {
     position: relative;
     width: 100%;
     height: 100%;
@@ -75,6 +76,7 @@ ul#helper {
     border: 1px solid var(--gray);
     border-radius: var(--radius-none);
     border-top-width: 0px;
+    border-bottom-width: 0px;
     background-color: var(--light);
     overflow: hidden auto;
     white-space: normal;
@@ -188,63 +190,62 @@ ul#helper {
     & > .page-footer {
       margin-top: auto;
     }
+  }
 
-    & > .sidepanel-header {
-      position: fixed;
-      bottom: 0;
-      margin-top: auto;
-      gap: 0.3em;
+  & > .sidepanel-header {
+    flex: 0 0 auto;
+    padding: 4px var(--sidepanel-padding);
+    gap: 0.3em;
+    display: flex;
+    justify-content: flex-end;
+    border: 1px solid var(--gray);
+    border-top-color: var(--lightgray);
+    background: var(--light);
+    z-index: var(--z-popover);
+    width: 100%;
+    box-sizing: border-box;
+
+    & > .redirect-button,
+    & > .close-button {
       display: flex;
-      justify-content: flex-end;
-      border-top: 1px solid var(--lightgray);
-      background: var(--light);
-      z-index: var(--z-popover);
-      max-height: 24px;
-      width: var(--sidepanel-width);
-      box-sizing: border-box;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      padding: 0;
+      color: var(--darkgray);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition:
+        background-color 120ms ease,
+        color 120ms ease,
+        transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
 
-      & > .redirect-button,
-      & > .close-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        flex: 0 0 24px;
-        padding: 0;
-        color: var(--darkgray);
-        border: none;
-        background: transparent;
-        cursor: pointer;
+      &:focus-visible {
+        outline: 2px solid var(--secondary);
+        outline-offset: -3px;
+      }
+
+      &:active {
+        transform: scale(0.96);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background-color: var(--lightgray);
+          color: var(--dark);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
         transition:
           background-color 120ms ease,
-          color 120ms ease,
-          transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
-
-        &:focus-visible {
-          outline: 2px solid var(--secondary);
-          outline-offset: -3px;
-        }
+          color 120ms ease;
 
         &:active {
-          transform: scale(0.96);
-        }
-
-        @media (hover: hover) and (pointer: fine) {
-          &:hover {
-            background-color: var(--lightgray);
-            color: var(--dark);
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          transition:
-            background-color 120ms ease,
-            color 120ms ease;
-
-          &:active {
-            transform: none;
-          }
+          transform: none;
         }
       }
     }

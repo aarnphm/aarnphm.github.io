@@ -1537,3 +1537,55 @@ test('shared Strava data preserves lab zones, manual wind and fueling for embedd
   assert.equal(revised.payload.details['1'].fueling?.caloriesConsumed, 400)
   assert.equal(payload.details['1'].fueling?.caloriesConsumed, 0)
 })
+
+test('builds recovery estimates after Apple HR enrichment', () => {
+  const date = '2026-09-12'
+  const start = `${date}T20:00:00Z`
+  const workout: AppleWorkout = {
+    id: 'apple-recovery',
+    activity: 'other',
+    start,
+    end: `${date}T20:10:00Z`,
+    durationS: 600,
+    source: 'Apple Watch',
+    heartRate: Array.from({ length: 61 }, (_, index) => ({
+      time: new Date(Date.parse(start) + index * 10000).toISOString(),
+      bpm: index < 7 ? 110 : 90,
+    })),
+  }
+  const sources: StravaDataSources = {
+    strava: {
+      athleteId: 1,
+      auth: { refreshToken: '', obtainedAt: 0 },
+      lastSync: 0,
+      lastActivityStart: 0,
+      activities: {
+        '1': {
+          id: 1,
+          name: 'Recovery physio',
+          averageSpeed: 0,
+          sportType: 'Workout',
+          distance: 0,
+          movingTime: 600,
+          elapsedTime: 600,
+          totalElevationGain: 0,
+          startDate: start,
+          startDateLocal: start,
+          deviceWatts: false,
+        },
+      },
+    },
+    apple: { version: 9, lastSync: 0, days: {}, workouts: { [workout.id]: workout } },
+    oura: null,
+    garmin: null,
+    wahoo: null,
+    core: null,
+    weather: null,
+  }
+  const { payload } = buildStravaData(sources, date, null)
+  const recovery = payload.details['1']
+  assert.equal(recovery.sport, 'treatment')
+  assert.ok(recovery.heartRateTrace.length >= 2)
+  assert.equal(recovery.heartRatePhysiology?.source, 'garden-estimate')
+  assert.ok((recovery.heartRatePhysiology?.points.at(-1)?.performanceCondition ?? 0) > 0)
+})

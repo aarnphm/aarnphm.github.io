@@ -54,6 +54,7 @@ import { parseWahooCache, type WahooCache } from '../plugins/stores/wahoo'
 import { parseWeatherCache, type WeatherCache } from '../plugins/stores/weather'
 import { matchAppleRun } from './apple-run-match'
 import { matchAppleSwims, matchAppleSwimTelemetry } from './apple-swim-match'
+import { applyHeartRatePhysiology } from './heart-rate-physiology'
 import { joinSegments, QUARTZ } from './path'
 import { latestProviderSync } from './provider-sync'
 import { readStravaCacheFileSync } from './strava-cache-file'
@@ -957,6 +958,8 @@ export function buildStravaData(
   enrichSwimMetrics(payload, apple, garmin)
   enrichRunDynamics(payload, apple)
   enrichCoreBodyTemperature(payload, core)
+  for (const detail of Object.values(payload.details))
+    applyHeartRatePhysiology(detail, ATHLETE.hrMax)
   const trackedCache = applyActivityTracking(
     strava,
     garmin,

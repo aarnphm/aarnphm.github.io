@@ -6,6 +6,7 @@ import {
   type StravaActivityDetail,
 } from '../../../plugins/stores/strava'
 import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
+import { HEART_RATE_PHYSIOLOGY_METHOD } from '../../../util/heart-rate-physiology'
 import {
   isStravaDetailShardPath,
   STRAVA_DETAIL_INDEX_KIND,
@@ -15,6 +16,39 @@ import {
 } from '../../../util/strava-detail'
 import { isTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { isRecord } from '../../../util/type-guards'
+
+const isHeartRatePhysiology = (value: unknown, elapsedTimeS: number): boolean => {
+  if (value == null) return true
+  if (
+    !isRecord(value) ||
+    value.source !== 'garden-estimate' ||
+    value.method !== HEART_RATE_PHYSIOLOGY_METHOD ||
+    !bounded(value.maxHeartRateBpm, 100, 240) ||
+    !bounded(value.baselineHeartRateBpm, 35, 240) ||
+    value.windowSeconds !== 60 ||
+    !Array.isArray(value.points) ||
+    value.points.length < 2
+  )
+    return false
+  let previous = -1
+  let distance = 0
+  return value.points.every((point: unknown) => {
+    if (
+      !isRecord(point) ||
+      !bounded(point.elapsedS, 0, elapsedTimeS) ||
+      point.elapsedS <= previous ||
+      !finite(point.distanceKm) ||
+      point.distanceKm < distance ||
+      !nullableBounded(point.stamina, 0, 100) ||
+      !nullableBounded(point.potentialStamina, 0, 100) ||
+      !nullableBounded(point.performanceCondition, -20, 20)
+    )
+      return false
+    previous = point.elapsedS
+    distance = point.distanceKm
+    return true
+  })
+}
 
 const isWahooVerification = (value: unknown): boolean => {
   if (value === undefined) return true
@@ -479,6 +513,7 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
       ((value.performanceConditionTrace.source === 'garden-estimate' && value.sport !== 'bike') ||
         (value.sport !== 'bike' && value.sport !== 'run'))) ||
     !finite(value.elapsedTimeS) ||
+    !isHeartRatePhysiology(value.heartRatePhysiology, value.elapsedTimeS) ||
     value.elapsedTimeS < 0 ||
     value.elapsedTimeS > Number.MAX_SAFE_INTEGER ||
     !isCyclingIntensityTrace(value.cyclingIntensityTrace, value.elapsedTimeS) ||

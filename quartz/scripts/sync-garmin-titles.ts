@@ -1,6 +1,14 @@
+import { randomUUID } from 'node:crypto'
 import fs from 'node:fs/promises'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import type { GarminCache } from '../plugins/stores/garmin'
-import type { ActivityKind, StravaRawCache } from '../plugins/stores/strava'
+import {
+  ACTIVITY_KINDS,
+  isActivityKind,
+  type ActivityKind,
+  type StravaRawCache,
+} from '../plugins/stores/strava'
 import {
   cleanGarminConnectBaseUrl,
   DEFAULT_GARMIN_CONNECT_BASE,
@@ -26,7 +34,7 @@ const DEFAULT_DELAY_MS = 1200
 
 interface Args {
   write: boolean
-  kind: ActivityKind
+  kind: ActivityKind | undefined
   type: ActivityTypeTarget | null
   since: string | null
   limit: number
@@ -38,16 +46,16 @@ type ActivityTypeTarget = 'pool-swim'
 
 function usage(): string {
   return [
-    'usage: pnpm garmin:sync-titles -- [--write] [--kind swim|bike|run|strength|walk|yoga|treatment] [--type pool-swim] [--since YYYY-MM-DD] [--limit N] [--id STRAVA_ID]',
+    `usage: pnpm garmin:sync-titles -- [--write] [--kind all|${ACTIVITY_KINDS.join('|')}|cardio] [--type pool-swim] [--since YYYY-MM-DD] [--limit N] [--id STRAVA_ID]`,
     '',
-    'defaults to dry-run. --write renames matched Garmin activities to their Strava names or updates a requested activity type.',
+    'defaults to a dry-run of all activity titles. --write renames matched Garmin activities to their Strava names or updates a requested activity type. Cardio uses the strength/workout group.',
   ].join('\n')
 }
 
-function parseArgs(argv: string[]): Args {
+export function parseGarminTitleArgs(argv: string[]): Args {
   const args: Args = {
     write: false,
-    kind: 'bike',
+    kind: undefined,
     type: null,
     since: null,
     limit: 0,
@@ -85,21 +93,11 @@ function parseType(value: string): ActivityTypeTarget {
   throw new Error(`--type must be pool-swim, got ${value}`)
 }
 
-function parseKind(value: string): ActivityKind {
-  switch (value) {
-    case 'swim':
-    case 'bike':
-    case 'run':
-    case 'strength':
-    case 'walk':
-    case 'yoga':
-    case 'treatment':
-      return value
-    default:
-      throw new Error(
-        `--kind must be swim, bike, run, strength, walk, yoga, or treatment, got ${value}`,
-      )
-  }
+function parseKind(value: string): ActivityKind | undefined {
+  if (value === 'all') return undefined
+  if (value === 'cardio') return 'strength'
+  if (isActivityKind(value)) return value
+  throw new Error(`--kind must be all, ${ACTIVITY_KINDS.join(', ')}, or cardio, got ${value}`)
 }
 
 function readArgValue(argv: string[], index: number, flag: string): string {
@@ -144,6 +142,26 @@ function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+export async function persistGarminTitleUpdates(
+  updates: readonly GarminTitleUpdate[],
+  path = GARMIN_CACHE,
+): Promise<void> {
+  if (updates.length === 0) return
+  const cache = await readJsonFile<GarminCache>(path)
+  const titles = new Map(updates.map(update => [update.garminId, update.to]))
+  for (const activity of Object.values(cache.activities)) {
+    const title = titles.get(activity.id)
+    if (title != null) activity.name = title
+  }
+  const temporary = `${path}.${randomUUID()}.tmp`
+  try {
+    await fs.writeFile(temporary, JSON.stringify(cache, null, 2))
+    await fs.rename(temporary, path)
+  } finally {
+    await fs.rm(temporary, { force: true })
+  }
+}
+
 async function syncPoolSwimTypes(args: Args): Promise<void> {
   const strava = await readJsonFile<StravaRawCache>(STRAVA_CACHE)
   const garmin = await readJsonFile<GarminCache>(GARMIN_CACHE)
@@ -154,7 +172,7 @@ async function syncPoolSwimTypes(args: Args): Promise<void> {
     ids: args.ids,
   })
   console.log(
-    `[garmin-type] ${args.write ? 'write' : 'dry-run'} ${updates.length} candidate ${args.kind} ${args.type} types${args.since ? ` since ${args.since}` : ''}`,
+    `[garmin-type] ${args.write ? 'write' : 'dry-run'} ${updates.length} candidate ${args.kind ?? 'swim'} ${args.type} types${args.since ? ` since ${args.since}` : ''}`,
   )
   for (const update of updates) console.log(`[garmin-type] candidate ${describeType(update)}`)
   if (!args.write || updates.length === 0) return
@@ -181,7 +199,7 @@ async function syncPoolSwimTypes(args: Args): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2))
+  const args = parseGarminTitleArgs(process.argv.slice(2))
   if (args.type) {
     await syncPoolSwimTypes(args)
     return
@@ -195,7 +213,7 @@ async function main(): Promise<void> {
     ids: args.ids,
   })
   console.log(
-    `[garmin-title] ${args.write ? 'write' : 'dry-run'} ${updates.length} candidate ${args.kind} titles${args.since ? ` since ${args.since}` : ''}`,
+    `[garmin-title] ${args.write ? 'write' : 'dry-run'} ${updates.length} candidate ${args.kind ?? 'all-activity'} titles${args.since ? ` since ${args.since}` : ''}`,
   )
   for (const update of updates) console.log(`[garmin-title] candidate ${describe(update)}`)
   if (!args.write || updates.length === 0) return
@@ -205,17 +223,23 @@ async function main(): Promise<void> {
     process.env.GARMIN_CONNECT_TITLE_BASE_URL?.trim() || DEFAULT_GARMIN_CONNECT_BASE,
   )
 
-  let updated = 0
-  for (const update of updates) {
-    await updateGarminActivityTitle(session, base, update.garminActivityId, update.to)
-    updated++
-    console.log(`[garmin-title] updated ${update.garminActivityId} -> ${update.to}`)
-    if (args.delayMs > 0) await sleep(args.delayMs)
+  const updated: GarminTitleUpdate[] = []
+  try {
+    for (const update of updates) {
+      await updateGarminActivityTitle(session, base, update.garminActivityId, update.to)
+      updated.push(update)
+      console.log(`[garmin-title] updated ${update.garminActivityId} -> ${update.to}`)
+      if (args.delayMs > 0) await sleep(args.delayMs)
+    }
+  } finally {
+    await persistGarminTitleUpdates(updated)
   }
-  console.log(`[garmin-title] done updated=${updated}`)
+  console.log(`[garmin-title] done updated=${updated.length}`)
 }
 
-main().catch(err => {
-  console.error(`[garmin-title] failed: ${err instanceof Error ? err.message : err}`)
-  process.exit(1)
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main().catch(err => {
+    console.error(`[garmin-title] failed: ${err instanceof Error ? err.message : err}`)
+    process.exit(1)
+  })
+}
