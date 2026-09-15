@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-15 14:10:26 GMT-04:00
+modified: 2026-09-15 19:29:19 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1552,18 +1552,20 @@ garmin: 24364001566
 ```
 
 ```tracking
-title: Guided All Round, Loving Kindness
+title: Guided All Round, Self-Care Sweats
 date: 2026-09-15
-time: 17:30
-duration: 75 mins
+time: 18:30
+duration: 65 mins
 activity: sauna
 temperature: 162F
 humidity: 11%
 cooldown: cold plunge
-htl: 7.6
+htl: 6.7
 location: Othership Adelaide
-strava:
-garmin:
+strava: 20192210982
+garmin: 24376937916
+exercise: Glute Bridge | 30s | 30s
+exercise: Figure-4 Glute Stretch | 40s | 40s | 40s | 40s
 ```
 
 ```tracking
@@ -1574,12 +1576,12 @@ garmin: 24374034524
 ```tracking
 date: 2026-09-15
 activity: 20189471007
-exercise: Standing Quad Stretch (30s per side) | 1m
-exercise: Crossover hamstring stretch (30s per side) | 1m
-exercise: Upper Calf Stretch (30s per side) | 1m
-exercise: Hip Flexor Stretch Kneeling (30s per side) | 1m
-exercise: Butterfly stretch | 30s
-exercise: Figure 4 glute stretch (30s per side) | 1m
+move: Standing Quad Stretch (30s per side) | 1m
+move: Crossover hamstring stretch (30s per side) | 1m
+move: Upper Calf Stretch (30s per side) | 1m
+move: Hip Flexor Stretch Kneeling (30s per side) | 1m
+move: Butterfly stretch | 30s
+move: Figure 4 glute stretch (30s per side) | 1m
 ```
 
 <!-- training plan start

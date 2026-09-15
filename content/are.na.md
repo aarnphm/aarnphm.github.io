@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-09-07 19:41:55 GMT-04:00
+modified: 2026-09-15 16:06:52 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -12178,7 +12178,7 @@ title: are.na
     - date: 07/28/2026
     - tags: [open weights, ai policy]
     - later: true
-- https://removepaywalls.com/https://www.bloomberg.com/news/newsletters/2026-07-06/donald-trump-changed-presidential-power-will-democrats-keep-it -- Trump has expanded presidential power. Will the next Democrat keep it?
+- https://www.bloomberg.com/news/newsletters/2026-07-06/donald-trump-changed-presidential-power-will-democrats-keep-it -- Trump has expanded presidential power. Will the next Democrat keep it?
   - [meta]:
     - date: 07/08/2026
     - tags: [trump, presidential power]
