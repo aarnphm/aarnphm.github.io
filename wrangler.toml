@@ -6,7 +6,13 @@ compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 main = "./worker/index.ts"
 preview_urls = false
 workers_dev = true
-rules = [{ type = "Text", globs = ["**/*.txt"], fallthrough = true }]
+rules = [
+  { type = "Text", globs = [
+    "**/*.txt",
+    "**/Readability.js",
+    "**/purify.js",
+  ], fallthrough = true },
+]
 
 [[durable_objects.bindings]]
 name = "MCP_OBJECT"
@@ -29,12 +35,24 @@ remote = true
 binding = "LFS_BUCKET"
 bucket_name = "sites"
 
+[[r2_buckets]]
+binding = "ARENA_CONTENT"
+bucket_name = "garden-arena-content"
+
 [[ratelimits]]
 name = "MCP_RATE_LIMITER"
 namespace_id = "1001"
 
 [ratelimits.simple]
 limit = 120
+period = 60
+
+[[ratelimits]]
+name = "ARENA_RENDER_RATE_LIMITER"
+namespace_id = "1002"
+
+[ratelimits.simple]
+limit = 10
 period = 60
 
 [[durable_objects.bindings]]
@@ -59,8 +77,15 @@ database_id = "4fa538cf-e186-417b-922b-dfd88eb92628"
 migrations_dir = "migrations/flashcards"
 remote = true
 
+[[d1_databases]]
+binding = "ARENA_READER"
+database_name = "ARENA_READER"
+database_id = "d5f3c625-2a65-423b-bff9-8ec76eb2a134"
+migrations_dir = "migrations/arena-reader"
+
 [browser]
 binding = "BROWSER"
+remote = true
 
 [ai]
 binding = "AI"
@@ -97,3 +122,4 @@ mode = "smart"
 [dev]
 port = 8080
 ip = "0.0.0.0"
+host = "localhost"

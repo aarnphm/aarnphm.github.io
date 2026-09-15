@@ -1,5 +1,6 @@
 import crypto from 'node:crypto'
 import type { ArenaChannel } from '../plugins/transformers/arena'
+import { assertArenaFeedRouteAvailable } from './arena-feed'
 
 export type ArenaChannelEmitState = { fingerprint: string; jsonEnabled: boolean }
 
@@ -21,6 +22,7 @@ function fingerprintChannel(channel: ArenaChannel): string {
 }
 
 export function collectArenaEmitState(channels: ArenaChannel[]): ArenaEmitState {
+  assertArenaFeedRouteAvailable(channels)
   return {
     channelStates: new Map(
       channels.map(channel => [
@@ -40,12 +42,7 @@ export function planArenaPartialEmit(
 ): ArenaPartialEmitPlan {
   const nextState = collectArenaEmitState(channels)
   if (!previousState) {
-    return {
-      changedChannels: channels,
-      deletedChannels: [],
-      nextState,
-      hasChanges: channels.length > 0,
-    }
+    return { changedChannels: channels, deletedChannels: [], nextState, hasChanges: true }
   }
 
   const changedChannels: ArenaChannel[] = []
@@ -61,11 +58,14 @@ export function planArenaPartialEmit(
   const deletedChannels = Array.from(previousState.channelStates.entries()).filter(
     ([slug]) => !nextState.channelStates.has(slug),
   )
+  const channelOrderChanged = [...previousState.channelStates.keys()].some(
+    (slug, index) => channels[index]?.slug !== slug,
+  )
 
   return {
     changedChannels,
     deletedChannels,
     nextState,
-    hasChanges: changedChannels.length > 0 || deletedChannels.length > 0,
+    hasChanges: changedChannels.length > 0 || deletedChannels.length > 0 || channelOrderChanged,
   }
 }

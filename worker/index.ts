@@ -36,6 +36,7 @@ import {
   handleArenaEmbedCapture,
   handleArenaEmbedHtml,
 } from './arena-embed'
+import { handleArenaReaderRequest } from './arena-reader'
 import handleArxiv from './arxiv'
 import {
   handleAuthMarkdown,
@@ -75,6 +76,7 @@ import {
   shouldRewriteMarkdown,
   shouldTreatAsDocument,
 } from './request-utils'
+import { handleSaunaMap } from './sauna-map'
 import { handleStackedNoteDataRequest, handleStackedNotesRequest } from './stacked'
 import {
   cacheHeadersForStaticAsset,
@@ -411,6 +413,9 @@ export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
     const localRequest = isLocalRequest(request)
+
+    const arenaReaderResponse = await handleArenaReaderRequest(request, env)
+    if (arenaReaderResponse) return arenaReaderResponse
 
     const wahooOAuthResponse = handleWahooOAuthCallback(request)
     if (wahooOAuthResponse) return wahooOAuthResponse
@@ -931,6 +936,8 @@ export default {
           statusText: upstream.statusText,
         })
       }
+      case '/api/sauna-map':
+        return handleSaunaMap(request, env, ctx)
       case '/api/secrets': {
         if (request.method !== 'GET') {
           return new Response('method not allowed', {

@@ -12,6 +12,7 @@ export type GithubOAuthConfig = {
 }
 
 export type GithubUser = {
+  id: number
   login: string
   name: string | null
   email: string | null
@@ -93,6 +94,7 @@ export function createGithubOAuthHandler<TState, TResult>(
 
     const { data } = await new Octokit({ auth: accessToken }).rest.users.getAuthenticated()
     const user: GithubUser = {
+      id: data.id,
       login: data.login,
       name: data.name ?? null,
       email: data.email ?? null,
