@@ -1800,6 +1800,35 @@ test('activity icon links retain legacy Strava IDs and omit records without Stra
   assert.deepEqual(buildActivityIcon(factory, manual), buildIcon(factory, 'sauna'))
 })
 
+test('renders equipment in shared summary rows with Strava provenance for bikes and shoes', () => {
+  for (const sport of ['bike', 'run', 'walk', 'strength'] as const) {
+    const equipment = { id: 'b123', name: 'Speedmax <CF> & SLX', source: 'strava' as const }
+    const activity = detail({ sport, equipment })
+    const rows = activityTableRows(factory.presentation, activity)
+    assert.deepEqual(
+      rows.filter(([label]) => label === 'equipment'),
+      [['equipment', equipment.name]],
+    )
+    const built = buildActivity(factory, activity)
+    const row = byTag(built, 'tr').find(node => node.properties.dataStatKey === 'equipment')
+    assert.ok(row)
+    assert.equal(text(byClass(row, 'tri-act-stat-v')[0]), equipment.name)
+    assert.equal(row.properties.dataEquipmentSource, 'strava')
+    assert.equal(row.properties.dataEquipmentId, equipment.id)
+  }
+  const unnamed = detail({ equipment: { id: 's123', name: null, source: 'strava' } })
+  assert.ok(
+    activityTableRows(factory.presentation, unnamed).some(
+      ([label, value]) => label === 'equipment' && value === 's123',
+    ),
+  )
+  assert.equal(
+    activityTableRows(factory.presentation, detail()).some(([label]) => label === 'equipment'),
+    false,
+  )
+  assert.equal(triText('fr', 'equipment'), 'équipement')
+})
+
 test('renders bike computers and run, walk, and swim devices as distinct activity rows', () => {
   const garmin = buildActivity(
     factory,

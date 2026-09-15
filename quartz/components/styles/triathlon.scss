@@ -3580,6 +3580,13 @@
   text-indent: -2ch;
 }
 
+.tri-gear-usage {
+  display: block;
+  margin-block: 0.2rem 0.5rem;
+  text-indent: 0;
+  font-variant-numeric: tabular-nums;
+}
+
 .tri-pace-wrap {
   position: relative;
   display: inline-flex;
@@ -5302,8 +5309,20 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   --tri-power-weight-color: var(--tri-zone-power);
 }
 
+.tri-power-weight [data-power-weight-duration='180'] {
+  --tri-power-weight-color: var(--tri-swim);
+}
+
 .tri-power-weight [data-power-weight-duration='300'] {
   --tri-power-weight-color: var(--tri-power-attack);
+}
+
+.tri-power-weight [data-power-weight-duration='360'] {
+  --tri-power-weight-color: var(--tri-zone-heart-rate);
+}
+
+.tri-power-weight [data-power-weight-duration='720'] {
+  --tri-power-weight-color: var(--tri-environment-uv-moderate);
 }
 
 .tri-power-weight [data-power-weight-duration='1200'] {

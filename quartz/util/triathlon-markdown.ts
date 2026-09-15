@@ -3,6 +3,7 @@ import type { Analytics } from '../plugins/stores/analytics'
 import type { StravaActivityDetail, StravaPayload } from '../plugins/stores/strava'
 import type { TrainingPlan } from '../plugins/stores/training'
 import type { FullSlug } from './path'
+import type { TriathlonEquipmentUsage } from './triathlon-equipment'
 import { TRI_RACE_DISTANCES } from './triathlon-calculator'
 import { buildFeedMarkdown } from './triathlon-feed'
 import { type TriathlonMaintenance, type TriathlonMaintenanceRange } from './triathlon-maintenance'
@@ -26,6 +27,7 @@ export interface TriathlonMarkdownTools {
   conversions: ReadonlyArray<readonly [string, string]>
   gear: ReadonlyArray<readonly [string, readonly string[]]>
   maintenance: TriathlonMaintenance | null
+  equipment?: Record<string, TriathlonEquipmentUsage>
 }
 
 export interface TriathlonMarkdownOptions {
@@ -224,6 +226,9 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
     { title: 'gearAndFuel' },
   )
   const maintenanceData = opts.tools.maintenance
+  const equipment = renderTitledSections(Object.values(opts.tools.equipment ?? {}), {
+    title: 'equipment',
+  })
   const maintenance = maintenanceData
     ? [
         '## maintenance',
@@ -277,8 +282,8 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
     : []
   return document(
     opts,
-    [conversions, '', distances, '', ...maintenance, gear].join('\n'),
-    'race distance km, maintenance distance mi',
+    [conversions, '', distances, '', ...maintenance, equipment, '', gear].join('\n'),
+    'race distance km, maintenance distance mi, equipment lifetime distance m',
   )
 }
 

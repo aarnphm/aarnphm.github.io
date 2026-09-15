@@ -9,6 +9,7 @@ import {
   RawStravaAnalysisRange,
   RawStravaRunSplit,
   StravaRawCache,
+  StravaGear,
   StravaStreams,
   StravaZones,
 } from '../plugins/stores/strava'
@@ -24,7 +25,7 @@ const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
 const API = normalizeApiBaseUrl(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
 const PER_PAGE = 200
-const CACHE_VERSION = 6
+const CACHE_VERSION = 7
 const ENV_FILE = '.env'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(400, 60_000)
@@ -203,6 +204,9 @@ export function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
     sufferScore: raw.suffer_score === undefined ? undefined : Number(raw.suffer_score),
     averageTemp: raw.average_temp === undefined ? undefined : Number(raw.average_temp),
     ...(deviceName ? { deviceName } : {}),
+    ...(raw.gear_id === null || typeof raw.gear_id === 'string'
+      ? { gearId: readString(raw, 'gear_id')?.trim() || null }
+      : {}),
   }
 }
 
@@ -250,16 +254,61 @@ async function fetchStreams(token: string, id: number): Promise<StravaStreams | 
   }
 }
 
-async function fetchAthleteFtp(token: string): Promise<number | null> {
+export function parseGear(value: unknown): StravaGear | null {
+  if (!isRecord(value)) return null
+  const id = readString(value, 'id')?.trim()
+  if (!id) return null
+  const brandName = readString(value, 'brand_name')?.trim() || null
+  const modelName = readString(value, 'model_name')?.trim() || null
+  const distance = nullableNumber(value, 'distance')
+  return {
+    id,
+    name:
+      readString(value, 'name')?.trim() || [brandName, modelName].filter(Boolean).join(' ') || null,
+    brandName,
+    modelName,
+    distanceM: distance != null && distance >= 0 ? distance : null,
+  }
+}
+
+async function fetchGear(token: string, id: string): Promise<StravaGear | null> {
+  const res = await fetchStrava(apiUrl(`/gear/${encodeURIComponent(id)}`), {
+    headers: authHeaders(token),
+  })
+  if (!res || !res.ok) return null
+  const gear = parseGear(await res.json())
+  return gear?.id === id ? gear : null
+}
+
+async function fetchAthleteFtp(
+  token: string,
+  gear: Record<string, StravaGear>,
+): Promise<number | null> {
   const res = await fetchStrava(apiUrl('/athlete'), { headers: authHeaders(token) })
   if (!res || !res.ok) return null
-  const data = (await res.json()) as { ftp?: number | null }
+  const data: unknown = await res.json()
+  if (!isRecord(data)) return null
+  for (const items of [data.bikes, data.shoes]) {
+    if (!Array.isArray(items)) continue
+    for (const item of items) {
+      const summary = parseGear(item)
+      if (summary)
+        gear[summary.id] = {
+          ...summary,
+          brandName: gear[summary.id]?.brandName ?? summary.brandName,
+          modelName: gear[summary.id]?.modelName ?? summary.modelName,
+        }
+    }
+  }
   return typeof data.ftp === 'number' && data.ftp > 0 ? Math.round(data.ftp) : null
 }
 
-async function fetchZones(token: string): Promise<StravaZones | null> {
+async function fetchZones(
+  token: string,
+  gear: Record<string, StravaGear>,
+): Promise<StravaZones | null> {
   const res = await fetchStrava(apiUrl('/athlete/zones'), { headers: authHeaders(token) })
-  const ftp = await fetchAthleteFtp(token)
+  const ftp = await fetchAthleteFtp(token, gear)
   if (!res || !res.ok) return ftp != null ? { hr: [], power: [], ftp } : null
   const data = (await res.json()) as {
     heart_rate?: { zones?: { min: number; max: number }[] }
@@ -421,6 +470,7 @@ async function main(): Promise<void> {
   const streams: Record<string, StravaStreams> = { ...prev?.streams }
   const geo: Record<string, string> = { ...prev?.geo }
   const activityDetails: Record<string, RawStravaActivityDetail> = { ...prev?.activityDetails }
+  const gear: Record<string, StravaGear> = { ...prev?.gear }
   for (const id of reconciled.removedIds) {
     delete streams[id]
     delete geo[id]
@@ -440,6 +490,7 @@ async function main(): Promise<void> {
         Object.entries(merged).sort(([a], [b]) => Number(a) - Number(b)),
       ),
       activityDetails,
+      gear,
       streams,
       geo,
       zones,
@@ -454,9 +505,19 @@ async function main(): Promise<void> {
     })
   }
 
-  const fetchedZones = await fetchZones(access)
+  const fetchedZones = await fetchZones(access, gear)
   if (fetchedZones) zones = fetchedZones
   else if (!zones) console.log('[strava] no athlete zones (needs profile:read_all) — deriving')
+
+  const gearIds = [...new Set(Object.values(merged).flatMap(a => (a.gearId ? [a.gearId] : [])))]
+  await mapPool(gearIds, CONCURRENCY, async id => {
+    const fetched = await fetchGear(access, id)
+    if (fetched) gear[id] = { ...fetched, name: fetched.name ?? gear[id]?.name ?? null }
+  })
+  const unresolvedGear = gearIds.filter(id => !gear[id]?.name)
+  console.log(
+    `[strava] equipment: ${gearIds.length} used, ${Object.keys(gear).length} cached, ${unresolvedGear.length} unresolved`,
+  )
 
   const needStreams = Object.values(merged)
     .filter(a => {

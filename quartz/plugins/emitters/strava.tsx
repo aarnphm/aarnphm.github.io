@@ -28,6 +28,7 @@ import {
   triathlonDaySlug,
   triathlonFeedScopeFromSlug,
 } from '../../util/triathlon-date-route'
+import { buildTriathlonEquipment } from '../../util/triathlon-equipment'
 import {
   parseTriathlonMaintenance,
   type TriathlonMaintenance,
@@ -169,10 +170,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       }
       const detailArtifacts = serializeStravaDetails(detailPayload)
       const plans = parseTrainingPlans(tree as unknown as HtmlRoot)
+      const equipment = buildTriathlonEquipment(cache)
       const triathlonRenderData: TriathlonRenderData = {
         analytics,
         plans,
         weather: weather?.current ?? null,
+        equipment,
       }
       const dataFeed = buildDataFeed(trackedCache, analytics, {
         oura,
@@ -269,7 +272,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           analytics,
           payload,
           plans,
-          tools: { conversions: CONVERSIONS, gear: GEAR, maintenance },
+          tools: { conversions: CONVERSIONS, gear: GEAR, maintenance, equipment },
         })
         const [subTree, subFile] = defaultProcessedContent({
           slug: subSlug,
@@ -374,7 +377,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
               analytics,
               payload,
               plans,
-              tools: { conversions: CONVERSIONS, gear: GEAR, maintenance },
+              tools: { conversions: CONVERSIONS, gear: GEAR, maintenance, equipment },
             })
             const [dayTree, dayFile] = defaultProcessedContent({
               slug: daySlug,

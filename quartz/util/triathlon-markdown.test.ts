@@ -194,6 +194,17 @@ const options = (
     tools: {
       conversions: [['pace', '/100m x 16.09 -> /mi']],
       gear: [['bike', ['Cervelo Soloist']]],
+      equipment: {
+        b1: {
+          id: 'b1',
+          name: 'Soloist',
+          lifetimeDistanceM: 3_723_142,
+          activityCount: 103,
+          firstRecorded: '2026-05-26',
+          lastRecorded: '2026-09-15',
+          source: 'strava',
+        },
+      },
       maintenance: {
         services: [
           { bike: 'soloist', date: '2026-08-20', distanceMiles: 1721.5, place: 'Racer Sportif' },
@@ -292,6 +303,11 @@ test('turns generated training HTML and tool constants into markdown', () => {
     /\| 1 \| "rear" \| "tire" \| "Pirelli P Zero Race SL-R" \| "2026-07-16 to 2026-08-10, 2026-08-18 to current" \| null \| true \| "punctures, repaired" \|/,
   )
   assert.match(tools, /\| arrayIndex \| category \| item \|/)
+  assert.match(tools, /## equipment/)
+  assert.match(tools, /lifetimeDistanceM/)
+  assert.match(tools, /3723142/)
+  assert.match(tools, /"2026-05-26"/)
+  assert.match(tools, /"strava"/)
   assert.match(tools, /\| 1 \| "bike" \| "Cervelo Soloist" \|/)
   assert.doesNotMatch(training, /```json/)
   assert.doesNotMatch(tools, /```json/)

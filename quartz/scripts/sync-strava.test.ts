@@ -1,6 +1,37 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { mapActivity, parseRunSplits } from './sync-strava'
+import { mapActivity, parseGear, parseRunSplits } from './sync-strava'
+
+test('retains activity gear assignments and explicit removal for every sport', () => {
+  for (const sport_type of ['Ride', 'VirtualRide', 'Run', 'Walk', 'Hike', 'Workout']) {
+    assert.equal(mapActivity({ id: 1, sport_type, gear_id: ' b123 ' }).gearId, 'b123')
+    assert.equal(mapActivity({ id: 1, sport_type, gear_id: null }).gearId, null)
+  }
+  for (const gear_id of [undefined, 123, false])
+    assert.equal(Object.hasOwn(mapActivity({ id: 1, gear_id }), 'gearId'), false)
+})
+
+test('parses named bikes and shoes, zero mileage, and detailed model fallback', () => {
+  assert.deepEqual(parseGear({ id: ' b123 ', name: ' Speedmax ', distance: 0 }), {
+    id: 'b123',
+    name: 'Speedmax',
+    brandName: null,
+    modelName: null,
+    distanceM: 0,
+  })
+  assert.equal(
+    parseGear({ id: 's123', name: 'Running shoes', distance: 1234 })?.name,
+    'Running shoes',
+  )
+  assert.equal(
+    parseGear({ id: 'b123', brand_name: 'Canyon', model_name: 'Speedmax' })?.name,
+    'Canyon Speedmax',
+  )
+  assert.equal(parseGear({ id: 'b123', distance: -1 })?.distanceM, null)
+  assert.equal(parseGear({ id: 'b123' })?.name, null)
+  for (const value of [null, [], {}, { id: 123 }, { id: '  ' }])
+    assert.equal(parseGear(value), null)
+})
 
 test('preserves explicit Strava trainer flags without inventing missing values', () => {
   assert.equal(mapActivity({ id: 1, trainer: true }).trainer, true)

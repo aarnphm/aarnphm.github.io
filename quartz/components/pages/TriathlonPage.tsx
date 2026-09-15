@@ -3,23 +3,18 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
-import {
-  emptyPayload,
-  SPORT_ICON,
-  SPORT_ORDER,
-  type ActivityKind,
-  type Sport,
-} from '../../plugins/stores/strava'
+import { emptyPayload, type ActivityKind } from '../../plugins/stores/strava'
 import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot, resolveRelative } from '../../util/path'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
-import { dist, distCombined, dur, raceDistanceValue } from '../../util/triathlon-card'
+import { distCombined, raceDistanceValue } from '../../util/triathlon-card'
 import { triathlonDaySlug } from '../../util/triathlon-date-route'
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
 import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
+import { SeasonSummary } from '../triathlon/SeasonSummary'
 import {
   AnalyticsPanel,
   CalcPanel,
@@ -30,10 +25,10 @@ import {
   TrainingPanel,
 } from './triathlon-panels'
 
-const SPORT_LABEL: Record<Sport, string> = { swim: 'swim', bike: 'bike', run: 'run' }
 const PX_PER_MIN = 2.4
 const BIKE_PX_PER_MIN = 1.2
 const RUN_PX_PER_MIN = 2
+const SAUNA_PX_PER_MIN = 1.2
 const MAX_BAR = 300
 const MIN_SEG = 3
 const REST_SEG = 7
@@ -42,16 +37,9 @@ const GAP_PX = 2
 const timelinePxPerMin = (sport: ActivityKind): number => {
   if (sport === 'bike') return BIKE_PX_PER_MIN
   if (sport === 'run') return RUN_PX_PER_MIN
+  if (sport === 'sauna') return SAUNA_PX_PER_MIN
   return PX_PER_MIN
 }
-
-const Icon = ({ sport, cls }: { sport: ActivityKind; cls: string }) => (
-  <svg class={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    {SPORT_ICON[sport].map(d => (
-      <path d={d} />
-    ))}
-  </svg>
-)
 
 export default (() => {
   const TriathlonPage: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
@@ -121,7 +109,7 @@ export default (() => {
                 <div class="tri-track">
                   <nav
                     class="tri-bars"
-                    aria-label={`${payload.totalCount} sessions, bar height by duration with cycling and running normalized`}
+                    aria-label={`${payload.totalCount} sessions, bar height by duration with cycling, running, and sauna normalized`}
                   >
                     {payload.days.map(d => {
                       const rest = d.items.length === 0
@@ -187,47 +175,11 @@ export default (() => {
           <aside class="tri-pop" aria-hidden="true" />
         </div>
 
-        <div class="tri-foot">
-          {SPORT_ORDER.map(sport => {
-            const t = payload.totals.find(x => x.sport === sport)
-            return (
-              <span class="tri-leg">
-                <Icon sport={sport} cls="tri-ico tri-leg-ico" />
-                <span class="tri-leg-body">
-                  <span data-i18n={SPORT_LABEL[sport]}>{SPORT_LABEL[sport]}</span> ·{' '}
-                  <span
-                    class="tri-dist tri-unit-distance"
-                    data-km={t?.distanceKm ?? 0}
-                    data-kind={sport}
-                    data-gloss="legdist"
-                    tabindex={0}
-                  >
-                    {dist(DEFAULT_TRIATHLON_PRESENTATION, t?.distanceKm ?? 0, sport)}
-                  </span>{' '}
-                  ·{' '}
-                  <span data-gloss="legcount" tabindex={0}>
-                    {t?.count ?? 0}
-                  </span>
-                </span>
-              </span>
-            )
-          })}
-          {payload.strengthTotal.count > 0 && (
-            <span class="tri-leg">
-              <Icon sport="strength" cls="tri-ico tri-leg-ico" />
-              <span class="tri-leg-body">
-                <span data-i18n="strength">strength</span> ·{' '}
-                <span data-gloss="legtime" tabindex={0}>
-                  {dur(payload.strengthTotal.movingTimeS)}
-                </span>{' '}
-                ·{' '}
-                <span data-gloss="legcount" tabindex={0}>
-                  {payload.strengthTotal.count}
-                </span>
-              </span>
-            </span>
-          )}
-        </div>
+        <SeasonSummary
+          totals={payload.totals}
+          strengthTotal={payload.strengthTotal}
+          activities={Object.values(payload.details)}
+        />
 
         <div class="tri-note">
           <div class="tri-conv">
@@ -278,7 +230,10 @@ export default (() => {
             </tbody>
           </table>
           <div class="tri-note-foot">
-            <GearPanel maintenance={fileData.triathlonMaintenance} />
+            <GearPanel
+              maintenance={fileData.triathlonMaintenance}
+              equipment={fileData.triathlonRenderData?.equipment}
+            />
             <PacePanel />
             <button class="tri-analytics-btn" type="button" data-i18n="analytics">
               analytics

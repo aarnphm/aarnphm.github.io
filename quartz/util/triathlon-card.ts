@@ -390,6 +390,7 @@ export const moreStatRows = (
     ])
   if (d.averageRelativeHumidityPct != null)
     rows.push(['humidity', `${d.averageRelativeHumidityPct}%`])
+  if (d.equipment) rows.push(['equipment', d.equipment.name ?? d.equipment.id])
   if (d.computer) rows.push(['computer', d.wahoo?.sourceDevice ?? COMPUTER_LABEL[d.computer]])
   if (d.device && (d.sport === 'run' || d.sport === 'walk' || d.sport === 'swim'))
     rows.push(['device', DEVICE_LABEL[d.device]])
@@ -424,6 +425,17 @@ export const activitySourceStatAttrs = (
     .join('\n\n')
   return { 'data-source-description': description }
 }
+
+export const activityEquipmentStatAttrs = (
+  d: StravaActivityDetail,
+): Record<string, string> | undefined =>
+  d.equipment
+    ? {
+        'data-equipment-source': d.equipment.source,
+        'data-equipment-id': d.equipment.id,
+        title: `Strava equipment · ${d.equipment.id}`,
+      }
+    : undefined
 
 export type ActivityThermalTracePoint = {
   d: number
@@ -8567,6 +8579,7 @@ export const buildActivity = <N>(
     wrap,
     statsTable(f, activityTableRows(f.presentation, d, fillMissingRunPower), (label, index) => {
       if (label === 'source') return activitySourceStatAttrs(d)
+      if (label === 'equipment') return activityEquipmentStatAttrs(d)
       if (label === 'training effect')
         return { 'data-training-effect-group': summaryTrainingEffectGroup }
       const analysisAttrs = activityAnalysisStatAttrs(d, label)

@@ -1,6 +1,7 @@
 import type { TriathlonContext } from '../runtime/context'
 import { isActivityKind } from '../../../plugins/stores/strava'
 import { dist, distCombined } from '../../../util/triathlon-card'
+import { formatEquipmentDistance } from '../../../util/triathlon-equipment'
 import { formatTriathlonMaintenanceDistance } from '../../../util/triathlon-maintenance'
 import { applyI18n } from '../runtime/dom'
 import { toggleTriUnit } from '../runtime/preferences'
@@ -27,11 +28,13 @@ export const setupDistanceUnits = (
       }
       const kilometres = Number(value.dataset.km)
       value.textContent =
-        kind === 'combined'
-          ? distCombined(context.presentation, kilometres)
-          : isActivityKind(kind)
-            ? dist(context.presentation, kilometres, kind)
-            : value.textContent
+        kind === 'equipment'
+          ? formatEquipmentDistance(kilometres * 1_000, context.presentation.distance)
+          : kind === 'combined'
+            ? distCombined(context.presentation, kilometres)
+            : isActivityKind(kind)
+              ? dist(context.presentation, kilometres, kind)
+              : value.textContent
     }
   }
   sync()
