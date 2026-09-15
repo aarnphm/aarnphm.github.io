@@ -728,6 +728,11 @@ export default (() => {
         data-view-mode={defaultViewMode}
         data-view-default={defaultViewMode}
       >
+        <p>
+          <a href="/arena/feed" class="internal" data-no-popover>
+            Open reader →
+          </a>
+        </p>
         <div class="arena-channel-controls">
           <div class="arena-search">
             <input

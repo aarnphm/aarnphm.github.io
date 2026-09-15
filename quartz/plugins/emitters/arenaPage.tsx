@@ -5,11 +5,13 @@ import { Node } from 'unist'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
 import HeaderConstructor from '../../components/Header'
+import ArenaFeed from '../../components/pages/ArenaFeed'
 import ArenaIndex from '../../components/pages/ArenaIndex'
 import ChannelContent from '../../components/pages/ChannelContent'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
+import { buildArenaFeedManifest, type ArenaFeedManifest } from '../../util/arena-feed'
 import {
   collectArenaEmitState,
   isArenaChannelJsonEnabled,
@@ -29,7 +31,7 @@ import {
   ArenaSearchIndex,
 } from '../transformers/arena'
 import { QuartzPluginData, defaultProcessedContent } from '../vfile'
-import { write } from './helpers'
+import { removeWritten, write } from './helpers'
 
 async function processArenaIndex(
   ctx: BuildCtx,
@@ -100,6 +102,40 @@ async function processChannel(
 
   const content = renderPage(ctx, channelSlug, componentData, opts, externalResources, false)
   return write({ ctx, content, slug: channelSlug, ext: '.html' })
+}
+
+async function processArenaFeed(
+  ctx: BuildCtx,
+  baseFileData: QuartzPluginData,
+  allFiles: QuartzPluginData[],
+  opts: FullPageLayout,
+  resources: StaticResources,
+) {
+  const slug = 'arena/feed' as FullSlug
+  const [tree, file] = defaultProcessedContent({
+    ...baseFileData,
+    slug,
+    arenaData: undefined,
+    arenaChannel: undefined,
+    frontmatter: {
+      ...baseFileData.frontmatter,
+      title: 'Arena reader',
+      description: 'Read saved links and keep notes.',
+      pageLayout: 'default',
+    },
+  })
+  const externalResources = pageResources(pathToRoot(slug), resources, ctx)
+  const componentData: QuartzComponentProps = {
+    ctx,
+    fileData: file.data,
+    externalResources,
+    cfg: ctx.cfg.configuration,
+    children: [],
+    tree,
+    allFiles,
+  }
+  const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
+  return write({ ctx, content, slug, ext: '.html' })
 }
 
 function serializeBlock(
@@ -180,6 +216,10 @@ async function emitSearchIndex(ctx: BuildCtx, searchIndex: ArenaSearchIndex) {
   const content = JSON.stringify(searchIndex)
 
   return write({ ctx, content, slug, ext: '.json' })
+}
+
+async function emitFeedManifest(ctx: BuildCtx, manifest: ArenaFeedManifest) {
+  return write({ ctx, content: JSON.stringify(manifest), slug: 'static/arena-feed', ext: '.json' })
 }
 
 async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
@@ -294,6 +334,8 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
     pageBody: ChannelContent(),
   }
 
+  const feedOpts: FullPageLayout = { ...indexOpts, beforeBody: [], pageBody: ArenaFeed() }
+
   const { head: Head, footer: Footer } = sharedPageComponents
   const Header = HeaderConstructor()
   let arenaEmitState: ArenaEmitState | undefined
@@ -314,6 +356,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
         channelOpts.pageBody,
         ...channelOpts.afterBody,
         ...channelOpts.sidebar,
+        feedOpts.pageBody,
         Footer,
       ]
     },
@@ -327,7 +370,13 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
         if (!file.data.arenaData) continue
 
         const channels = file.data.arenaData.channels
+        const manifest = await buildArenaFeedManifest(
+          channels,
+          ctx.cfg.configuration.baseUrl ?? 'aarnphm.xyz',
+        )
         yield processArenaIndex(ctx, tree, file.data, allFiles, indexOpts, resources)
+        yield processArenaFeed(ctx, file.data, allFiles, feedOpts, resources)
+        yield emitFeedManifest(ctx, manifest)
 
         const channelFiles = await mapConcurrent(channels, defaultIoConcurrency, channel =>
           processChannelOutputs(ctx, channel, file.data, allFiles, channelOpts, resources),
@@ -347,6 +396,23 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
 
       return (async function* () {
         const allFiles = contentDataFor(content)
+
+        const hasArenaData = content.some(
+          ([, file]) => file.data.slug === 'are.na' && file.data.arenaData,
+        )
+        if (!hasArenaData) {
+          await Promise.all([
+            removeWritten(ctx, 'arena', '.html'),
+            removeWritten(ctx, 'arena/feed', '.html'),
+            removeWritten(ctx, 'static/arena-feed', '.json'),
+            removeWritten(ctx, 'static/arena-search', '.json'),
+            ...[...(arenaEmitState?.channelStates ?? [])].map(([slug, state]) =>
+              removeChannelOutputs(ctx, slug, state.jsonEnabled),
+            ),
+          ])
+          arenaEmitState = undefined
+          return
+        }
 
         const changedSlugs = new Set<string>()
         for (const changeEvent of changeEvents) {
@@ -369,7 +435,14 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
             continue
           }
 
+          const manifest = await buildArenaFeedManifest(
+            channels,
+            ctx.cfg.configuration.baseUrl ?? 'aarnphm.xyz',
+          )
+
           yield processArenaIndex(ctx, tree, file.data, allFiles, indexOpts, resources)
+          yield processArenaFeed(ctx, file.data, allFiles, feedOpts, resources)
+          yield emitFeedManifest(ctx, manifest)
 
           const changedChannelFiles = await mapConcurrent(
             plan.changedChannels,

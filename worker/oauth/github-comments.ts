@@ -1,6 +1,7 @@
 import type { OAuthHelpers } from '@cloudflare/workers-oauth-provider'
 import { drizzle } from 'drizzle-orm/d1'
 import { Hono } from 'hono'
+import { createArenaReaderSessionCookie } from '../arena-reader-auth'
 import {
   getGithubCommentAuthor,
   normalizeAuthor,
@@ -14,7 +15,13 @@ import { createGithubOAuthHandler, OAuthError } from './core'
 
 type CommentAuthState = { returnTo: string; author: string | null }
 
-type CommentAuthResult = { author: string; returnTo: string; login: string }
+type CommentAuthResult = {
+  author: string
+  returnTo: string
+  login: string
+  readerSessionCookie: string | null
+  readerAuthConfigured: boolean
+}
 
 function parseCommentAuthState(raw: string): CommentAuthState | null {
   let parsed: unknown
@@ -41,7 +48,7 @@ const commentsOAuth = createGithubOAuthHandler<CommentAuthState, CommentAuthResu
   },
   {
     parseStatePayload: parseCommentAuthState,
-    onComplete: async (_req, env, state, user, _accessToken) => {
+    onComplete: async (req, env, state, user, _accessToken) => {
       const storedAuthor = await getGithubCommentAuthor(env.OAUTH_KV, user.login)
       const stateAuthor = normalizeAuthor(state.author)
       const resolvedAuthor =
@@ -68,10 +75,36 @@ const commentsOAuth = createGithubOAuthHandler<CommentAuthState, CommentAuthResu
           },
         })
 
-      return { author: resolvedAuthor, returnTo: state.returnTo, login: user.login }
+      return {
+        author: resolvedAuthor,
+        returnTo: state.returnTo,
+        login: user.login,
+        readerSessionCookie: await createArenaReaderSessionCookie(req, env, user),
+        readerAuthConfigured: Boolean(env.SESSION_SECRET?.trim()),
+      }
     },
-    formatResult: (result, _req) => {
-      return renderCommentAuthResponse(result.author, result.returnTo, result.login)
+    formatResult: (result, req) => {
+      const returnPath = new URL(result.returnTo, req.url).pathname
+      if (
+        !result.readerSessionCookie &&
+        (returnPath === '/arena/feed' || returnPath === '/arena/feed/')
+      ) {
+        return new Response(
+          result.readerAuthConfigured
+            ? 'This GitHub account does not have access to the Arena reader.'
+            : 'Arena reader sign-in is not configured.',
+          {
+            status: result.readerAuthConfigured ? 403 : 503,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' },
+          },
+        )
+      }
+      const response = renderCommentAuthResponse(result.author, result.returnTo, result.login)
+      if (result.readerSessionCookie) {
+        response.headers.append('Set-Cookie', result.readerSessionCookie)
+      }
+      response.headers.set('Cache-Control', 'no-store')
+      return response
     },
   },
 )

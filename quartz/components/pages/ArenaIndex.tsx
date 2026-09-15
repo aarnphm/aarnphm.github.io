@@ -88,6 +88,11 @@ export default (() => {
 
     return (
       <article class="arena-index main-col popover-hint">
+        <p>
+          <a href="/arena/feed" class="internal" data-no-popover>
+            Open reader →
+          </a>
+        </p>
         <div class="arena-search">
           <input
             type="text"

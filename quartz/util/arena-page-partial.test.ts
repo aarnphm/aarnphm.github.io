@@ -63,3 +63,48 @@ test('arena partial planner ignores unchanged channel sets', () => {
   assert.deepEqual(plan.deletedChannels, [])
   assert.equal(plan.hasChanges, false)
 })
+
+test('arena partial planner emits an initial empty feed and removes the final channel', () => {
+  const initial = planArenaPartialEmit(undefined, [])
+  assert.equal(initial.hasChanges, true)
+  assert.deepEqual(initial.changedChannels, [])
+
+  const removed = planArenaPartialEmit(collectArenaEmitState([channel('alpha', 'Alpha')]), [])
+  assert.equal(removed.hasChanges, true)
+  assert.deepEqual(
+    removed.deletedChannels.map(([slug]) => slug),
+    ['alpha'],
+  )
+  assert.equal(planArenaPartialEmit(initial.nextState, []).hasChanges, false)
+})
+
+test('arena partial planner detects nested note and priority changes', () => {
+  const original = channel('alpha', 'Alpha')
+  original.blocks[0].subItems = [{ id: 'note', content: 'Original note' }]
+  const state = collectArenaEmitState([original])
+  const updated = structuredClone(original)
+  updated.blocks[0].subItems = [{ id: 'note', content: 'Updated note', metadata: { later: true } }]
+  const plan = planArenaPartialEmit(state, [updated])
+  assert.equal(plan.hasChanges, true)
+  assert.deepEqual(
+    plan.changedChannels.map(channel => channel.slug),
+    ['alpha'],
+  )
+})
+
+test('arena partial planner rejects a channel that would replace the reader', () => {
+  assert.throws(() => collectArenaEmitState([channel('feed', 'Feed')]), /reserved reader route/)
+  assert.throws(
+    () => planArenaPartialEmit(undefined, [channel('feed', 'Feed')]),
+    /reserved reader route/,
+  )
+})
+
+test('arena partial planner refreshes shared projections when channels are reordered', () => {
+  const alpha = channel('alpha', 'Alpha')
+  const beta = channel('beta', 'Beta')
+  const plan = planArenaPartialEmit(collectArenaEmitState([alpha, beta]), [beta, alpha])
+  assert.equal(plan.hasChanges, true)
+  assert.deepEqual(plan.changedChannels, [])
+  assert.deepEqual(plan.deletedChannels, [])
+})
