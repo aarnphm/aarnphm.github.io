@@ -17,6 +17,7 @@ import type { TriathlonDayAnalytics } from './triathlon-day-analytics'
 import { metricSpecs } from '../components/triathlon/activity/render'
 import { createTriathlonFormatter } from '../components/triathlon/runtime/formatter'
 import { calculateActivityExerciseLoad, emptyHealth } from '../plugins/stores/strava'
+import { parseTrackingBlock } from '../plugins/stores/tracking'
 import { emptyWahooMetrics } from '../plugins/stores/wahoo'
 import { buildCyclingIntensityTrace } from './cycling-intensity'
 import { estimateHeartRatePhysiology } from './heart-rate-physiology'
@@ -49,6 +50,7 @@ import {
   buildPowerBalanceChart,
   buildPowerCurve,
   buildPowerHist,
+  buildSaunaHeatTrainingLoad,
   buildShiftingChart,
   buildSleepRespirationChart,
   buildStaminaChart,
@@ -2503,6 +2505,117 @@ test('renders route-less strength heart rate against elapsed time', () => {
   assert.equal(graph?.properties.dataDomainStartDistanceKm, undefined)
 })
 
+test('renders parsed sauna location maps in compact, expanded, and embedded cards', () => {
+  for (const name of ['Othership Adelaide', 'Othership Yorkville', 'Local sauna']) {
+    const parsed = parseTrackingBlock(
+      null,
+      [
+        'activity: sauna',
+        'date: 2026-06-07',
+        'time: 07:30',
+        'duration: 75 mins',
+        'temperature: 85C',
+        'humidity: 11%',
+        'cooldown: natural',
+        `location: ${name}`,
+      ].join('\n'),
+    )
+    assert.ok(parsed?.sauna?.location)
+    const location = parsed.sauna.location
+    const sauna = detail({
+      sport: 'sauna',
+      route: [],
+      mapRoute: [],
+      distanceKm: 0,
+      elapsedTimeS: 4_500,
+      heartRateTrace: [heartRateTracePoint(0, 0, 90), heartRateTracePoint(0, 4_500, 100)],
+      analysisRanges: analysisRanges()
+        .filter(range => range.kind === 'lap')
+        .map((range, index) => ({
+          ...range,
+          id: `sauna:${index}`,
+          startElapsedS: index * 1_000,
+          endElapsedS: (index + 1) * 1_000,
+          startDistanceKm: 0,
+          endDistanceKm: 0,
+          distanceKm: 0,
+          durationS: 1_000,
+        })),
+      sauna: { ...parsed.sauna, heatTrainingLoad: 7.6, heartRateSource: null, source: 'manual' },
+    })
+    for (const expanded of [false, true]) {
+      for (const embedded of [false, true]) {
+        const rendered = buildActivity(factory, sauna, expanded, ctx(), false, embedded)
+        const figure = byClass(rendered, 'tri-sauna-location')[0]
+        assert.ok(figure)
+        assert.equal(text(byClass(figure, 'tri-sauna-location-name')[0]), name)
+        const summary = byClass(rendered, 'tri-sauna-summary')[0]
+        const summaryDetails = byClass(summary, 'tri-sauna-summary-details')[0]
+        assert.equal(byClass(rendered, 'tri-sauna-laps').length, 1)
+        assert.equal(byClass(rendered, 'tri-sauna-laps-timeline').length, 0)
+        const workout = byClass(rendered, 'tri-sauna-workout')[0]
+        assert.ok(workout)
+        assert.equal(byClass(workout, 'tri-elev').length, 1)
+        assert.equal(byClass(workout, 'tri-sauna-laps').length, 0)
+        const phaseLegend = byClass(summaryDetails, 'tri-sauna-laps-legend')[0]
+        assert.deepEqual(byClass(phaseLegend, 'tri-sauna-phase').map(text), [
+          'hot sauna',
+          'cold plunge',
+          'break',
+        ])
+        assert.equal(byClass(summaryDetails, 'tri-analysis-readout').length, 0)
+        for (const [index, lap] of byClass(summaryDetails, 'tri-sauna-lap-legend').entries()) {
+          assert.equal(text(byClass(lap, 'tri-sauna-phase')[0]), `lap ${index + 1}`)
+          assert.equal(text(byClass(lap, 'tri-sauna-lap-duration')[0]), '16:40')
+          assert.equal(lap.properties.dataSaunaPhase, 'hot sauna')
+        }
+        assert.equal(
+          byClass(summaryDetails, 'tri-sauna-lap-legend').length,
+          sauna.analysisRanges.length,
+        )
+        assert.equal(byClass(summaryDetails, 'tri-sauna-htl').length, 1)
+        assert.equal(byClass(rendered, 'tri-sauna-htl').length, 1)
+        assert.equal(byClass(summaryDetails, 'tri-sauna-htl-meter')[0].properties.ariaValueNow, 7.6)
+        const maps = byClass(figure, 'tri-sauna-location-map')
+        if (location.latitude == null || location.longitude == null) {
+          assert.equal(maps.length, 0)
+          assert.equal(byClass(figure, 'tri-sauna-location-pin').length, 0)
+          continue
+        }
+        assert.equal(maps.length, 1)
+        assert.equal(maps[0].tagName, 'a')
+        assert.equal(
+          maps[0].properties.href,
+          `https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}#map=16/${location.latitude}/${location.longitude}`,
+        )
+        assert.equal(byClass(figure, 'tri-sauna-location-pin').length, 1)
+        const images = byClass(figure, 'tri-sauna-location-image')
+        assert.equal(images.length, 2)
+        for (const [index, image] of images.entries()) {
+          assert.equal(image.tagName, 'img')
+          assert.equal(image.properties.loading, 'lazy')
+          assert.equal(image.properties.dataNoPopover, 'true')
+          assert.equal(
+            image.properties.src,
+            `/api/sauna-map?location=${encodeURIComponent(name)}&theme=${index === 0 ? 'light' : 'dark'}`,
+          )
+        }
+        assert.equal(byClass(figure, 'tri-sauna-location-attribution').length, 1)
+        assert.ok(byClass(rendered, 'tri-act-figs--sauna')[0].children.includes(summary))
+      }
+    }
+    assert.equal(
+      byClass(buildActivity(factory, { ...sauna, sauna: null }), 'tri-sauna-location').length,
+      0,
+    )
+    assert.equal(
+      byClass(buildActivity(factory, { ...sauna, sport: 'treatment' }), 'tri-sauna-location')
+        .length,
+      0,
+    )
+  }
+})
+
 test('renders manual sauna conditions and Oura heart rate without distance metrics', () => {
   const sauna = detail({
     sport: 'sauna',
@@ -2693,7 +2806,7 @@ test('renders route-less yoga heart rate and CORE thermal traces against elapsed
 
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'hr', 'heat-strain-index', 'core-temperature', 'skin-temperature'],
+    ['hr', 'heat-strain-index', 'core-temperature', 'skin-temperature'],
   )
   for (const trace of traces) {
     assert.deepEqual(byClass(trace, 'tri-cax-xt').map(text), ['0s', '13:00', '26:00'])
@@ -2984,7 +3097,7 @@ test('renders route stream graphs in the server activity markup', () => {
   assert.deepEqual(byClass(temperature, 'tri-cax-yt').map(text), ['22°C', '24°C', '26°C'])
 })
 
-test('renders CORE bike graphs after ambient temperature with sub-degree domains', () => {
+test('renders CORE bike graphs before heart rate with sub-degree domains', () => {
   const thermal = detail({
     route: detail().route.map((point, index) => ({
       ...point,
@@ -3003,15 +3116,15 @@ test('renders CORE bike graphs after ambient temperature with sub-degree domains
   assert.deepEqual(
     traces.map(graph => graph.properties.dataTriTrace),
     [
+      'heat-strain-index',
+      'core-temperature',
+      'skin-temperature',
       'hr',
       'respiration',
       'temperature',
       'power',
       'cadence',
       'speed',
-      'heat-strain-index',
-      'core-temperature',
-      'skin-temperature',
     ],
   )
 
@@ -3132,21 +3245,14 @@ test('keeps environment in the full-width activity graph sequence before trainin
   assert.deepEqual(
     children
       .filter(child => typeof child.properties.dataTriTrace === 'string')
-      .slice(-6)
+      .slice(-3)
       .map(child => child.properties.dataTriTrace),
-    [
-      'cadence',
-      'speed',
-      'muscle-oxygen',
-      'heat-strain-index',
-      'core-temperature',
-      'skin-temperature',
-    ],
+    ['cadence', 'speed', 'muscle-oxygen'],
   )
   const environment = children.find(child => classNames(child).includes('tri-environment'))
   assert.ok(environment)
   const environmentIndex = children.indexOf(environment)
-  assert.equal(children[environmentIndex - 1].properties.dataTriTrace, 'skin-temperature')
+  assert.equal(children[environmentIndex - 1].properties.dataTriTrace, 'muscle-oxygen')
   assert.ok(classNames(children[environmentIndex + 1]).includes('tri-training-effect'))
 })
 
@@ -5116,7 +5222,7 @@ test('renders Garmin walk pace, cadence, respiration, and elevation', () => {
   )
   assert.deepEqual(
     traces.map(graph => graph.properties.dataTriTrace),
-    ['hr', 'hr', 'respiration', 'temperature', 'pace', 'cadence'],
+    ['hr', 'respiration', 'temperature', 'pace', 'cadence'],
   )
   const pace = traces.find(graph => graph.properties.dataTriTrace === 'pace')
   const cadence = traces.find(graph => graph.properties.dataTriTrace === 'cadence')
@@ -6770,6 +6876,7 @@ test('renders sauna laps by elapsed time with duration and HR change', () => {
   assert.equal(bands[0].properties.dataAnalysisKind, 'lap')
   const buttons = byClass(rendered, 'tri-analysis-range')
   assert.equal(buttons.length, 1)
+  assert.equal(byClass(bands[0], 'tri-analysis-band-items')[0].properties.dataSiteCursorLine, '')
   assert.equal(buttons[0].properties.ariaLabel, 'Lap 1, 0:44, 109 bpm avg, 137 → 99 bpm (-38)')
   assert.equal(buttons[0].properties.dataDurationS, '44')
   assert.equal(buttons[0].properties.dataHeartRateChangeSource, 'strava')
@@ -6821,6 +6928,190 @@ test('renders sauna laps by elapsed time with duration and HR change', () => {
       assert.equal(byClass(analysis, 'tri-analysis-range').length, 1)
     }
   }
+})
+
+test('renders sauna phases in chronological lap order with recorded timing and HR', () => {
+  const durations = [600, 1_500, 480, 1_320, 540, 60]
+  let elapsedS = 0
+  const laps: ActivityAnalysisRange[] = durations.map((durationS, index) => {
+    const startElapsedS = elapsedS
+    elapsedS += durationS
+    return {
+      kind: 'lap',
+      id: `lap:sauna-${index}`,
+      label: `Lap ${index}`,
+      startElapsedS,
+      endElapsedS: elapsedS,
+      startDistanceKm: 0,
+      endDistanceKm: 0,
+      distanceKm: 0,
+      durationS,
+      movingTimeS: durationS - 1,
+      elevationGainM: null,
+      averageSpeedKph: null,
+      averageHeartRate: 101,
+      averageWatts: null,
+      averageCadence: null,
+      heartRateChange: { source: 'strava', startBpm: 130, endBpm: 100 },
+    }
+  })
+  const sauna = detail({
+    sport: 'sauna',
+    route: [],
+    mapRoute: [],
+    distanceKm: 0,
+    elapsedTimeS: elapsedS,
+    analysisRanges: [...laps.toReversed(), laps[0]],
+    heartRateTrace: [heartRateTracePoint(0, 0, 90), heartRateTracePoint(0, elapsedS, 100)],
+  })
+  for (const embedded of [false, true]) {
+    const workout = buildWorkoutAnalysis(factory, sauna, embedded)
+    assert.ok(workout)
+    assert.equal(workout.properties.dataWorkoutAnalysisMetric, 'hr')
+    const phases = byClass(workout, 'tri-sauna-lap')
+    assert.deepEqual(phases.map(text), ['1', '2', '3', '4', '5', '6'])
+    assert.deepEqual(
+      phases.map(phase => phase.properties.dataSaunaPhase),
+      ['hot sauna', 'hot sauna', 'cold plunge', 'hot sauna', 'break', 'break'],
+    )
+    assert.deepEqual(
+      phases.map(phase => phase.properties.dataRangeId),
+      laps.map(lap => lap.id),
+    )
+    assert.equal(phases[2].properties.dataRangeLabel, 'lap 3 · cold plunge')
+    assert.equal(
+      phases[2].properties.ariaLabel,
+      'lap 3 · cold plunge, 8:00, 101 bpm avg, 130 → 100 bpm (-30)',
+    )
+    assert.equal(phases[2].properties.dataDurationS, '480')
+    assert.equal(phases[2].properties.dataStartElapsedS, '2100')
+    assert.equal(phases[2].properties.dataEndElapsedS, '2580')
+    assert.equal(phases[2].properties.dataHeartRateChangeSource, 'strava')
+    assert.equal(byClass(workout, 'tri-sauna-laps')[0].properties.dataSaunaPhaseSource, 'lap-order')
+    assert.equal(byClass(workout, 'tri-sauna-laps-timeline')[0].properties.dataSiteCursorLine, '')
+    assert.doesNotMatch(text(workout), /phases inferred from lap order/)
+    assert.equal(byClass(workout, 'tri-analysis-selection').length, 1)
+    const trace = byClass(workout, 'tri-elev')[0]
+    assert.equal(trace.properties.dataDomainEndElapsedS, elapsedS)
+  }
+
+  const noHeartRate = buildWorkoutAnalysis(factory, { ...sauna, heartRateTrace: [] })
+  assert.ok(noHeartRate)
+  assert.equal(noHeartRate.properties.dataWorkoutAnalysisMetric, 'elapsed')
+  assert.equal(byClass(noHeartRate, 'tri-sauna-lap').length, 6)
+  assert.equal(byClass(noHeartRate, 'tri-elev').length, 0)
+  assert.equal(
+    buildWorkoutAnalysis(factory, { ...sauna, analysisRanges: [], heartRateTrace: [] }),
+    null,
+  )
+  const unsplit = buildWorkoutAnalysis(factory, { ...sauna, analysisRanges: [laps[0]] })
+  assert.ok(unsplit)
+  assert.equal(byClass(unsplit, 'tri-sauna-lap').length, 0)
+  const naturalCooldown = buildWorkoutAnalysis(factory, {
+    ...sauna,
+    sauna: {
+      time: '19:30',
+      temperatureC: 80,
+      humidityPct: 10,
+      cooldown: 'natural',
+      heatTrainingLoad: null,
+      heartRateSource: null,
+      source: 'manual',
+    },
+  })
+  assert.ok(naturalCooldown)
+  assert.equal(byClass(naturalCooldown, 'tri-sauna-lap')[2].properties.dataSaunaPhase, 'break')
+})
+
+test('renders recorded sauna HTL as ten one-point segments after activity graphs', () => {
+  const sauna = detail({
+    sport: 'sauna',
+    route: [],
+    mapRoute: [],
+    distanceKm: 0,
+    heartRateTrace: [heartRateTracePoint(0, 0, 90), heartRateTracePoint(0, 4_800, 100)],
+    garmin: garminVerification({ aerobicTrainingEffect: 0.3 }),
+    sauna: {
+      time: '18:30',
+      temperatureC: 72,
+      humidityPct: 11,
+      cooldown: 'cold plunge',
+      heatTrainingLoad: 7.6,
+      heartRateSource: null,
+      source: 'manual',
+    },
+  })
+  for (const embedded of [false, true]) {
+    const card = buildActivity(factory, sauna, true, ctx(), false, embedded)
+    const htl = byClass(card, 'tri-sauna-htl')[0]
+    assert.ok(htl)
+    assert.equal(htl.properties.dataSaunaHtlSource, 'manual')
+    assert.equal(text(byClass(htl, 'tri-sauna-htl-score')[0]), '7.6 / 10')
+    const meter = byClass(htl, 'tri-sauna-htl-meter')[0]
+    assert.deepEqual(
+      [
+        meter.properties.role,
+        meter.properties.ariaValueMin,
+        meter.properties.ariaValueMax,
+        meter.properties.ariaValueNow,
+      ],
+      ['meter', 0, 10, 7.6],
+    )
+    assert.equal(byClass(meter, 'tri-sauna-htl-segment').length, 10)
+    assert.deepEqual(
+      byClass(meter, 'tri-sauna-htl-fill').map(fill => fill.properties.style),
+      [
+        ...Array.from({ length: 7 }, () => 'width:100.0%'),
+        'width:60.0%',
+        'width:0.0%',
+        'width:0.0%',
+      ],
+    )
+    const more = byClass(card, 'tri-act-more')[0]
+    assert.ok(
+      more.children.indexOf(htl) > more.children.indexOf(byClass(card, 'tri-workout-analysis')[0]),
+    )
+    assert.equal(
+      more.children.indexOf(htl) + 1,
+      more.children.indexOf(byClass(card, 'tri-training-effect')[0]),
+    )
+  }
+  assert.ok(sauna.sauna)
+  const boundaryScores: [number, string][] = [
+    [0, 'width:0.0%'],
+    [10, 'width:100.0%'],
+    [-1, 'width:0.0%'],
+    [11, 'width:100.0%'],
+  ]
+  for (const [value, fill] of boundaryScores) {
+    const meter: Element | null = buildSaunaHeatTrainingLoad(factory, {
+      ...sauna,
+      sauna: { ...sauna.sauna, heatTrainingLoad: value },
+    })
+    assert.ok(meter)
+    assert.deepEqual(
+      byClass(meter, 'tri-sauna-htl-fill').map(node => node.properties.style),
+      Array.from({ length: 10 }, () => fill),
+    )
+  }
+  for (const heatTrainingLoad of [null, Number.NaN, Number.POSITIVE_INFINITY]) {
+    assert.equal(
+      buildSaunaHeatTrainingLoad(factory, {
+        ...sauna,
+        sauna: { ...sauna.sauna, heatTrainingLoad },
+      }),
+      null,
+    )
+  }
+  assert.equal(buildSaunaHeatTrainingLoad(factory, { ...sauna, sauna: null }), null)
+  assert.equal(buildSaunaHeatTrainingLoad(factory, { ...sauna, sport: 'strength' }), null)
+  const frenchHtl = buildSaunaHeatTrainingLoad(factoryFor(frenchPresentation), sauna)
+  assert.ok(frenchHtl)
+  assert.equal(text(byClass(frenchHtl, 'tri-sauna-htl-score')[0]), '7,6 / 10')
+  assert.equal(
+    byClass(frenchHtl, 'tri-sauna-htl-meter')[0].properties.ariaLabel,
+    'charge d’entraînement à la chaleur',
+  )
 })
 
 test('renders a route-less pool swim heart rate trace against metres', () => {
@@ -7228,7 +7519,7 @@ test('renders cycling dynamics and rider position immediately below pedal balanc
   assert.equal(byClass(embeddedPhase, 'tri-cycling-dynamics-legend-item').length, 4)
 })
 
-test('groups shared physiology before power, pace, cadence, and sport-specific charts', () => {
+test('groups stamina, performance condition, and thermal graphs before heart rate and sport-specific charts', () => {
   const ride = cyclingDynamicsDetail()
   ride.gearShifts = shiftedDetail().gearShifts
   ride.staminaTrace = {
@@ -7242,6 +7533,12 @@ test('groups shared physiology before power, pace, cadence, and sport-specific c
     stamina: [100, 76, 54, 32][index],
     potentialStamina: [100, 88, 67, 40][index],
     performanceCondition: [2, 1, -1, -2][index],
+    heatStrainIndex: [0, 0.4, 0.8, 1.2][index],
+    heatStrainSource: 'core-app',
+    coreTemperatureC: [37.2, 37.5, 37.8, 38.1][index],
+    coreTemperatureSource: 'core-app',
+    skinTemperatureC: [32.5, 32.4, 32.2, 32.0][index],
+    skinTemperatureSource: 'core-app',
   }))
   const run = detail({
     sport: 'run',
@@ -7258,21 +7555,23 @@ test('groups shared physiology before power, pace, cadence, and sport-specific c
         .filter((child): child is Element => child.type === 'element')
         .map(child => child.properties.dataTriTrace)
         .filter(trace => trace != null)
-      assert.deepEqual(traces.slice(0, 5), [
-        'hr',
+      const common = [
         'stamina',
         'performance-condition',
+        'heat-strain-index',
+        'core-temperature',
+        'skin-temperature',
+        ...(activity.sport === 'walk' ? [] : ['hr']),
         'respiration',
         'temperature',
-      ])
-      assert.deepEqual(traces.slice(5, 7), [
         activity.sport === 'walk' ? 'pace' : 'power',
         'cadence',
-      ])
+      ]
+      assert.deepEqual(traces.slice(0, common.length), common)
       if (activity.sport === 'bike') {
-        assert.equal(traces[7], 'power-balance')
-        assert.ok(traces.indexOf('electronic-shifting') > 7)
-        assert.ok(traces.indexOf('speed') > 7)
+        assert.equal(traces[common.length], 'power-balance')
+        assert.ok(traces.indexOf('electronic-shifting') > common.length)
+        assert.ok(traces.indexOf('speed') > common.length)
       }
     }
   }
@@ -9285,6 +9584,8 @@ test('renders the IF graph and session VI table value in server HTML', () => {
 test('renders HR workout analysis and session estimates for activities without power', () => {
   const sports: StravaActivityDetail['sport'][] = [
     'walk',
+    'run',
+    'swim',
     'yoga',
     'strength',
     'treatment',
@@ -9294,7 +9595,14 @@ test('renders HR workout analysis and session estimates for activities without p
   for (const sport of sports) {
     for (const embedded of [false, true]) {
       const heartRateTrace = Array.from({ length: 31 }, (_, index) =>
-        heartRateTracePoint(0, index * 10, index < 7 ? 100 : 120),
+        heartRateTracePoint(0, index * 10, index < 7 ? 100 : 120, {
+          heatStrainIndex: index / 10,
+          heatStrainSource: 'core-app',
+          coreTemperatureC: 37 + index / 30,
+          coreTemperatureSource: 'core-app',
+          skinTemperatureC: 33 + index / 30,
+          skinTemperatureSource: 'core-app',
+        }),
       )
       const activity = detail({
         sport,
@@ -9310,6 +9618,12 @@ test('renders HR workout analysis and session estimates for activities without p
       const analysis = byClass(rendered, 'tri-workout-analysis')[0]
       assert.ok(analysis, sport)
       assert.equal(analysis.properties.dataWorkoutAnalysisMetric, 'hr')
+      const heartRateGraphs = descendants(rendered, node => node.properties.dataTriTrace === 'hr')
+      assert.equal(heartRateGraphs.length, 1, `${sport} renders HR once`)
+      assert.equal(
+        descendants(analysis, node => node.properties.dataTriTrace === 'hr')[0],
+        heartRateGraphs[0],
+      )
       assert.match(
         text(byClass(analysis, 'tri-workout-stats')[0]),
         /highest 120 bpm.*avg.*lowest 100 bpm/,
@@ -9318,11 +9632,14 @@ test('renders HR workout analysis and session estimates for activities without p
       const children = more.children.filter((node): node is Element => node.type === 'element')
       assert.equal(children[0], analysis)
       assert.deepEqual(
-        children
-          .filter(node => node.properties.dataTriTrace)
-          .slice(0, 3)
-          .map(node => node.properties.dataTriTrace),
-        ['hr', 'stamina', 'performance-condition'],
+        children.slice(1, 6).map(node => node.properties.dataTriTrace),
+        [
+          'stamina',
+          'performance-condition',
+          'heat-strain-index',
+          'core-temperature',
+          'skin-temperature',
+        ],
       )
       const stamina = byClass(rendered, 'tri-stamina-chart')[0]
       assert.equal(stamina.properties.dataStaminaSource, 'garden-estimate')
@@ -9335,6 +9652,27 @@ test('renders HR workout analysis and session estimates for activities without p
         String(byClass(rendered, 'tri-performance-condition-source')[0].properties.dataGlossDef),
         /HR change proxy/,
       )
+    }
+  }
+})
+
+test('keeps standalone HR for pace, power, and activities without workout analysis', () => {
+  const bike = analysisDetail()
+  const activities = [
+    { activity: bike, metric: 'power' },
+    { activity: { ...bike, sport: 'run' }, metric: 'pace' },
+    { activity: { ...bike, sport: 'swim' }, metric: 'pace' },
+    { activity: { ...bike, analysisRanges: [] }, metric: null },
+  ] satisfies { activity: StravaActivityDetail; metric: string | null }[]
+  for (const { activity, metric } of activities) {
+    for (const embedded of [false, true]) {
+      const rendered = buildActivity(factory, activity, true, undefined, false, embedded)
+      const analysis = byClass(rendered, 'tri-workout-analysis')[0]
+      assert.equal(analysis?.properties.dataWorkoutAnalysisMetric ?? null, metric)
+      const heartRateGraphs = descendants(rendered, node => node.properties.dataTriTrace === 'hr')
+      assert.equal(heartRateGraphs.length, 1)
+      const more = byClass(rendered, 'tri-act-more')[0]
+      assert.ok(more.children.includes(heartRateGraphs[0]))
     }
   }
 })

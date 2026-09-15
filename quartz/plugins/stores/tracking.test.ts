@@ -239,6 +239,7 @@ test('parses a manual sauna session without treating its activity kind as a Stra
     stravaActivityId: null,
     garminActivityId: null,
     title: 'Untangle',
+    location: null,
     date: '2026-08-23',
     time: '18:30',
     durationS: 4_500,
@@ -250,6 +251,36 @@ test('parses a manual sauna session without treating its activity kind as a Stra
   assert.equal(parsed?.fueling, null)
   assert.equal(parsed?.strength, null)
   assert.equal(parsed?.trainingExclusion, null)
+})
+
+test('resolves both Othership locations and preserves unknown sauna locations without coordinates', () => {
+  const body = [
+    'activity: sauna',
+    'date: 2026-08-23',
+    'time: 18:30',
+    'duration: 75 mins',
+    'temperature: 85C',
+    'humidity: 11%',
+    'cooldown: cold plunge',
+  ]
+  for (const [input, expected] of [
+    [
+      'Othership Adelaide',
+      { name: 'Othership Adelaide', latitude: 43.6460984, longitude: -79.3977406 },
+    ],
+    [
+      '  OTHERSHIP   yorkville  ',
+      { name: 'Othership Yorkville', latitude: 43.6694504, longitude: -79.3922208 },
+    ],
+    ['Local sauna', { name: 'Local sauna', latitude: null, longitude: null }],
+    ['Othership', { name: 'Othership', latitude: null, longitude: null }],
+    ['', null],
+  ]) {
+    assert.deepEqual(
+      parseTrackingBlock(null, [...body, `location: ${input}`].join('\n'))?.sauna?.location,
+      expected,
+    )
+  }
 })
 
 test('allows an omitted heat load and rejects incomplete sauna metadata', () => {
@@ -271,6 +302,7 @@ test('allows an omitted heat load and rejects incomplete sauna metadata', () => 
       stravaActivityId: null,
       garminActivityId: null,
       title: null,
+      location: null,
       date: '2026-08-20',
       time: '15:30',
       durationS: 3_900,

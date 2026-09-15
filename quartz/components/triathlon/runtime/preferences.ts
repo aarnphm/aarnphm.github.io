@@ -1,5 +1,6 @@
 import type { TriathlonEventBus } from './events'
 import { detectLocale } from '../../../util/triathlon-i18n'
+export { mapboxStyleUrl } from '../../../util/mapbox-style'
 import {
   DEFAULT_TRIATHLON_PRESENTATION,
   distanceSystemFromStoredUnit,
@@ -119,14 +120,6 @@ export const readTriMapStyle = (): TriMapStyle => {
 
 export const readTriMapTheme = (): TriMapTheme =>
   document.documentElement.getAttribute('saved-theme') === 'dark' ? 'dark' : 'light'
-
-export const mapboxStyleUrl = (style: TriMapStyle, theme: TriMapTheme): string => {
-  if (style === 'satellite') return 'mapbox://styles/mapbox/satellite-streets-v12'
-  if (theme === 'dark') return 'mapbox://styles/mapbox/dark-v11'
-  return style === 'streets'
-    ? 'mapbox://styles/mapbox/streets-v12'
-    : 'mapbox://styles/mapbox/light-v11'
-}
 
 export const setTriMapStyle = (next: TriMapStyle): void => {
   try {

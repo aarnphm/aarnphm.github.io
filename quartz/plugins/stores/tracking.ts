@@ -72,11 +72,31 @@ export interface ActivityTrackingEntry {
 
 export type SaunaCooldown = 'natural' | 'cold plunge'
 
+export interface SaunaLocation {
+  name: string
+  latitude: number | null
+  longitude: number | null
+}
+
+// Coordinates from the map embeds on https://www.othership.us/adelaide and /yorkville.
+export const SAUNA_LOCATIONS: readonly SaunaLocation[] = [
+  { name: 'Othership Adelaide', latitude: 43.6460984, longitude: -79.3977406 },
+  { name: 'Othership Yorkville', latitude: 43.6694504, longitude: -79.3922208 },
+]
+
+const parseSaunaLocation = (value: string | undefined): SaunaLocation | null => {
+  const name = value?.trim().replace(/\s+/g, ' ')
+  if (!name) return null
+  const known = SAUNA_LOCATIONS.find(location => location.name.toLowerCase() === name.toLowerCase())
+  return known ? { ...known } : { name, latitude: null, longitude: null }
+}
+
 export interface ManualSaunaEntry {
   id: number
   stravaActivityId: number | null
   garminActivityId: number | null
   title: string | null
+  location?: SaunaLocation | null
   date: string
   time: string
   durationS: number
@@ -239,6 +259,7 @@ const parseManualSauna = (body: Readonly<Record<string, string>>): ManualSaunaEn
     stravaActivityId,
     garminActivityId,
     title,
+    location: parseSaunaLocation(body.location),
     date,
     time,
     durationS,

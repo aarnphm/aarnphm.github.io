@@ -22,6 +22,7 @@ import { speedKph } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
 import { isRecord } from '../../../util/type-guards'
 import { el } from '../runtime/dom'
+import { mountSwimLapPace } from './swim-lap-pace'
 
 export type ScrubSurface = {
   wrap: HTMLElement
@@ -234,10 +235,10 @@ export const linkActivityAnalysis = (
   const routeSelected = act.querySelector<SVGPathElement>('.tri-route-selected')
   if (ranges.length === 0 && !routeSelected && !act.querySelector('.tri-analysis-selection'))
     return null
-  const readout = analysis?.querySelector<HTMLElement>('[data-tri-analysis-readout]') ?? null
-  const readoutLabel = readout?.querySelector<HTMLElement>('.tri-analysis-readout-label') ?? null
-  const readoutMetrics =
-    readout?.querySelector<HTMLElement>('.tri-analysis-readout-metrics') ?? null
+  const readouts = new Set(act.querySelectorAll<HTMLElement>('[data-tri-analysis-readout]'))
+  for (const readout of analysis?.querySelectorAll<HTMLElement>('[data-tri-analysis-readout]') ??
+    [])
+    readouts.add(readout)
   const stateHost = analysis ?? act
   const selectedKind = stateHost.dataset.selectedKind
   const selectedId = stateHost.dataset.selectedId
@@ -299,16 +300,24 @@ export const linkActivityAnalysis = (
     return metrics
   }
   const showReadout = (range: ActivityAnalysisRange | null): void => {
-    if (!readout) return
-    if (!range) {
-      readout.dataset.visible = 'false'
-      readout.setAttribute('aria-hidden', 'true')
-      return
+    const label = range
+      ? (ranges.find(
+          candidate =>
+            candidate.kind === range.kind &&
+            candidate.id === range.id &&
+            candidate.button.dataset.saunaPhase != null,
+        )?.label ?? range.label)
+      : ''
+    for (const readout of readouts) {
+      const readoutLabel = readout.querySelector<HTMLElement>('.tri-analysis-readout-label')
+      const readoutMetrics = readout.querySelector<HTMLElement>('.tri-analysis-readout-metrics')
+      if (range) {
+        if (readoutLabel) readoutLabel.textContent = label
+        if (readoutMetrics) readoutMetrics.textContent = rangeReadoutMetrics(range).join(' · ')
+      }
+      readout.dataset.visible = String(range != null)
+      readout.setAttribute('aria-hidden', String(range == null))
     }
-    if (readoutLabel) readoutLabel.textContent = range.label
-    if (readoutMetrics) readoutMetrics.textContent = rangeReadoutMetrics(range).join(' · ')
-    readout.dataset.visible = 'true'
-    readout.setAttribute('aria-hidden', 'false')
   }
   const clearRange = (committed = false): void => {
     for (const selection of act.querySelectorAll<SVGRectElement>('.tri-analysis-selection')) {
@@ -380,6 +389,7 @@ export const linkActivityAnalysis = (
     showLocked()
   }
   for (const range of ranges) {
+    mountSwimLapPace(range.button, listeners.signal)
     range.button.addEventListener(
       'pointerenter',
       () => {

@@ -4724,11 +4724,87 @@ const buildRunPaceDistribution = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
   return wrap
 }
 
+const buildSaunaLapAnalysis = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  layout: 'timeline' | 'legend' = 'timeline',
+): N | null => {
+  if (d.sport !== 'sauna') return null
+  const laps = validAnalysisRanges(d)
+    .filter(range => range.kind === 'lap')
+    .sort((left, right) => left.startElapsedS - right.startElapsedS)
+  if (laps.length < (layout === 'legend' ? 1 : 2)) return null
+  const text = (value: string): string => triText(f.presentation.locale, value)
+  const wrap = f.el('div', `tri-sauna-laps tri-sauna-laps--${layout}`, undefined, {
+    'data-sauna-phase-source': 'lap-order',
+    'aria-label': text('sauna phases'),
+  })
+  const head = f.el('div', 'tri-sauna-laps-head')
+  const legend = f.el('div', 'tri-sauna-laps-legend')
+  for (const phase of ['hot sauna', 'cold plunge', 'break'])
+    f.add(legend, f.el('span', 'tri-sauna-phase', text(phase), { 'data-sauna-phase': phase }))
+  f.add(head, legend)
+  if (layout === 'timeline') {
+    const readout = f.el('div', 'tri-analysis-readout', undefined, {
+      'data-tri-analysis-readout': '',
+      'data-visible': 'false',
+      'aria-hidden': 'true',
+    })
+    f.add(
+      readout,
+      f.el('span', 'tri-analysis-readout-label'),
+      f.el('span', 'tri-analysis-readout-metrics'),
+    )
+    f.add(head, readout)
+  }
+  const timeline = f.el(
+    'div',
+    layout === 'legend' ? 'tri-sauna-lap-list' : 'tri-sauna-laps-timeline',
+    undefined,
+    layout === 'timeline' ? { 'data-site-cursor-line': '' } : undefined,
+  )
+  laps.forEach((range, index) => {
+    const phase =
+      index < 2 || index === 3
+        ? 'hot sauna'
+        : index === 2 && d.sauna?.cooldown !== 'natural'
+          ? 'cold plunge'
+          : 'break'
+    const label = `${text('lap')} ${index + 1} · ${text(phase)}`
+    const metrics = analysisRangeMetrics(f.presentation, d, range)
+    const bounds = analysisSelectionBounds(d, range)
+    const attrs = analysisRangeAttrs(range)
+    attrs['data-range-label'] = label
+    attrs['data-sauna-phase'] = phase
+    attrs['aria-pressed'] = 'false'
+    attrs['aria-label'] = `${label}, ${metrics.join(', ')}`
+    if (layout === 'timeline')
+      attrs.style = `--tri-sauna-lap-start:${bounds.x.toFixed(3)}%;--tri-sauna-lap-width:${bounds.width.toFixed(3)}%`
+    const button = f.el(
+      'button',
+      layout === 'legend' ? 'tri-sauna-lap-legend' : 'tri-sauna-lap',
+      undefined,
+      attrs,
+    )
+    if (layout === 'legend')
+      f.add(
+        button,
+        f.el('span', 'tri-sauna-phase', `${text('lap')} ${index + 1}`),
+        f.el('span', 'tri-sauna-lap-duration', clock(range.durationS)),
+      )
+    else f.add(button, f.el('span', undefined, String(index + 1), { 'aria-hidden': 'true' }))
+    f.add(timeline, button)
+  })
+  f.add(wrap, head, timeline)
+  return wrap
+}
+
 const buildHeartRateWorkoutAnalysis = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
 ): N | null => {
-  if (!hasHeartRateTrace(d)) return null
+  const saunaLaps = d.sauna?.location ? null : buildSaunaLapAnalysis(f, d)
+  if (!hasHeartRateTrace(d)) return saunaLaps
   const points = activityHeartRateTracePoints(d)
   const values = points.flatMap(point => (point.heartRate == null ? [] : [point.heartRate]))
   let total = 0
@@ -4744,9 +4820,14 @@ const buildHeartRateWorkoutAnalysis = <N>(
   }
   const average =
     seconds > 0 ? total / seconds : values.reduce((sum, value) => sum + value, 0) / values.length
-  const wrap = f.el('section', 'tri-workout tri-hr-workout', undefined, {
-    'aria-label': 'Heart rate workout analysis',
-  })
+  const wrap = f.el(
+    'section',
+    `tri-workout tri-hr-workout${d.sport === 'sauna' ? ' tri-sauna-workout' : ''}`,
+    undefined,
+    {
+      'aria-label': d.sport === 'sauna' ? 'Sauna workout analysis' : 'Heart rate workout analysis',
+    },
+  )
   const stats = f.el('div', 'tri-workout-stats')
   f.add(
     stats,
@@ -4755,14 +4836,15 @@ const buildHeartRateWorkoutAnalysis = <N>(
     f.el('span', undefined, `lowest ${Math.round(Math.min(...values))} bpm`),
   )
   f.add(wrap, stats, buildHeartRateTrace(f, d, null))
+  if (saunaLaps) f.add(wrap, saunaLaps)
   return wrap
 }
 
-export const buildWorkoutAnalysis = <N>(
+const buildWorkoutAnalysisSection = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   embedded = false,
-): N | null => {
+): { element: N; metric: 'elapsed' | 'hr' | 'power' | 'pace' } | null => {
   const sport = {
     bike: 'Cycling',
     swim: 'Swim',
@@ -4795,10 +4877,18 @@ export const buildWorkoutAnalysis = <N>(
   if (views.length === 0) return null
   const id = `tri-workout-analysis-${d.id}`
   const selected = views[0].key
+  const metric =
+    d.sport === 'sauna' && !hasHeartRateTrace(d)
+      ? 'elapsed'
+      : heartRateWorkout
+        ? 'hr'
+        : d.sport === 'bike'
+          ? 'power'
+          : 'pace'
   const wrap = f.el('section', 'tri-workout-analysis', undefined, {
     'aria-label': `${sport} analysis`,
     'data-sport': d.sport,
-    'data-workout-analysis-metric': heartRateWorkout ? 'hr' : d.sport === 'bike' ? 'power' : 'pace',
+    'data-workout-analysis-metric': metric,
     'data-workout-analysis': '',
     'data-workout-analysis-view': selected,
   })
@@ -4839,8 +4929,14 @@ export const buildWorkoutAnalysis = <N>(
     f.add(stage, panel)
   }
   f.add(wrap, tabs, stage)
-  return wrap
+  return { element: wrap, metric }
 }
+
+export const buildWorkoutAnalysis = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  embedded = false,
+): N | null => buildWorkoutAnalysisSection(f, d, embedded)?.element ?? null
 
 export type EnvironmentChartView =
   | 'cumulative'
@@ -5889,6 +5985,7 @@ export const buildAnalysisBar = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
     const band = f.el('div', 'tri-analysis-band', undefined, bandAttrs)
     const items = f.el('div', 'tri-analysis-band-items', undefined, {
       style: `--tri-analysis-lanes:${laneLimit}`,
+      ...(timedLaps ? { 'data-site-cursor-line': '' } : {}),
     })
     for (const { range, lane } of positioned) {
       const metrics = analysisRangeMetrics(f.presentation, d, range)
@@ -7951,6 +8048,61 @@ export const calculatedTrainingEffectEvidenceText = (
   return `${french ? 'Estimation calculée' : 'Calculated estimate'}. ${aerobicText} ${anaerobicText}`
 }
 
+export const buildSaunaHeatTrainingLoad = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+): N | null => {
+  const sauna = d.sauna
+  if (d.sport !== 'sauna' || !sauna) return null
+  const recorded = sauna.heatTrainingLoad
+  if (recorded == null || !Number.isFinite(recorded)) return null
+  const score = Math.min(10, Math.max(0, recorded))
+  const locale = f.presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
+  const titleKey = 'heat training load'
+  const label = triText(f.presentation.locale, titleKey)
+  const wrap = f.el('section', 'tri-zone tri-sauna-htl', undefined, {
+    'aria-label': label,
+    'data-i18n-aria-label': titleKey,
+    'data-sauna-htl-source': sauna.source,
+  })
+  const head = f.el('div', 'tri-sauna-htl-head')
+  const title = f.el('div', 'tri-zone-title')
+  f.add(
+    title,
+    f.el('span', 'tri-sauna-htl-title-full', label, { 'data-i18n': titleKey }),
+    f.el('span', 'tri-sauna-htl-title-short', 'HTL'),
+  )
+  f.add(
+    head,
+    title,
+    f.el(
+      'span',
+      'tri-sauna-htl-score',
+      `${score.toLocaleString(locale, { maximumFractionDigits: 1 })} / 10`,
+    ),
+  )
+  const meter = f.el('div', 'tri-sauna-htl-meter', undefined, {
+    role: 'meter',
+    'aria-label': label,
+    'data-i18n-aria-label': titleKey,
+    'aria-valuemin': '0',
+    'aria-valuemax': '10',
+    'aria-valuenow': String(score),
+  })
+  for (let index = 0; index < 10; index++) {
+    const segment = f.el('span', 'tri-sauna-htl-segment', undefined, { 'aria-hidden': 'true' })
+    f.add(
+      segment,
+      f.el('span', 'tri-sauna-htl-fill', undefined, {
+        style: `width:${(Math.min(1, Math.max(0, score - index)) * 100).toFixed(1)}%`,
+      }),
+    )
+    f.add(meter, segment)
+  }
+  f.add(wrap, head, meter)
+  return wrap
+}
+
 export const buildTrainingEffectDetails = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
@@ -8140,6 +8292,71 @@ export const buildStrengthExercises = <N>(
   }
   f.add(wrap, list)
   return wrap
+}
+
+const buildSaunaSummary = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
+  const location = d.sport === 'sauna' ? d.sauna?.location : null
+  if (!location) return null
+  const { name, latitude, longitude } = location
+  const figure = f.el('figure', 'tri-sauna-location')
+  if (latitude != null && longitude != null) {
+    const map = f.el('a', 'tri-sauna-location-map', undefined, {
+      href: `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=16/${latitude}/${longitude}`,
+      'aria-label': `${name} (${latitude}, ${longitude})`,
+      'data-no-popover': 'true',
+    })
+    for (const theme of ['light', 'dark']) {
+      f.add(
+        map,
+        f.el('img', `tri-sauna-location-image tri-sauna-location-image--${theme}`, undefined, {
+          src: `/api/sauna-map?location=${encodeURIComponent(name)}&theme=${theme}`,
+          alt: '',
+          'data-no-popover': 'true',
+          loading: 'lazy',
+          decoding: 'async',
+          width: '240',
+          height: '240',
+        }),
+      )
+    }
+    const pin = f.svg('svg', {
+      class: 'tri-sauna-location-pin',
+      viewBox: '0 0 24 32',
+      'aria-hidden': 'true',
+    })
+    f.add(
+      pin,
+      f.svg('path', { d: 'M12 30C10 27 2 19 2 12a10 10 0 0 1 20 0c0 7-8 15-10 18Z' }),
+      f.svg('circle', { cx: 12, cy: 12, r: 3.5 }),
+    )
+    f.add(map, pin)
+    f.add(figure, map)
+  }
+  const caption = f.el('figcaption', 'tri-sauna-location-caption')
+  f.add(caption, f.el('span', 'tri-sauna-location-name', name))
+  if (latitude != null && longitude != null) {
+    f.add(
+      caption,
+      f.el(
+        'span',
+        'tri-sauna-location-coordinates',
+        `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`,
+      ),
+      f.el('a', 'tri-sauna-location-attribution', '© OpenStreetMap contributors', {
+        href: 'https://www.openstreetmap.org/copyright',
+        'data-no-popover': 'true',
+      }),
+    )
+  }
+  f.add(figure, caption)
+  const summary = f.el('div', 'tri-sauna-summary')
+  const details = f.el('div', 'tri-sauna-summary-details')
+  const laps = buildSaunaLapAnalysis(f, d, 'legend')
+  const htl = buildSaunaHeatTrainingLoad(f, d)
+  if (laps) f.add(details, laps)
+  if (htl) f.add(details, htl)
+  f.add(summary, figure, details)
+  return summary
 }
 
 export const buildActivityMoves = <N>(f: TriNodeFactory<N>, moves: ActivityMoves): N | null => {
@@ -8363,6 +8580,11 @@ export const buildActivity = <N>(
     d.sport === 'sauna' && d.route.length < 2
       ? f.el('div', 'tri-act-figs tri-act-figs--sauna')
       : null
+  const saunaSummary = buildSaunaSummary(f, d)
+  if (saunaSummary) {
+    f.add(saunaFigs ?? wrap, saunaSummary)
+    hasSummaryVisual = true
+  }
   if (d.moves) {
     const moves = buildActivityMoves(f, d.moves)
     if (moves) {
@@ -8386,7 +8608,7 @@ export const buildActivity = <N>(
     }
   }
   if (embedded && reserveFueling && !hasFueling) f.add(wrap, buildReservedFueling(f))
-  const analysis = buildAnalysisBar(f, d)
+  const analysis = saunaSummary ? null : buildAnalysisBar(f, d)
   const analysisSelection = null
   if (d.route.length >= 2) {
     const secondary =
@@ -8427,16 +8649,29 @@ export const buildActivity = <N>(
     const moreId = `tri-act-more-${d.id}`
     const more = f.el('div', 'tri-act-more', undefined, { id: moreId })
     const flags = routeStreamFlags(d)
-    const workoutAnalysis = buildWorkoutAnalysis(f, d, embedded)
-    if (workoutAnalysis) f.add(more, workoutAnalysis)
+    const workoutAnalysis = buildWorkoutAnalysisSection(f, d, embedded)
+    if (workoutAnalysis) f.add(more, workoutAnalysis.element)
     const activityGraphs: N[] = []
-    if (flags.hr) activityGraphs.push(buildHeartRateTrace(f, d, analysisSelection))
     const stamina = buildStaminaChart(f, d, analysisSelection)
     if (stamina) activityGraphs.push(stamina)
     if (flags.performanceCondition) {
       const performanceCondition = buildPerformanceConditionTrace(f, d, analysisSelection)
       if (performanceCondition) activityGraphs.push(performanceCondition)
     }
+    if (flags.heatStrain) {
+      const heatStrain = buildHeatStrainTrace(f, d, analysisSelection)
+      if (heatStrain) activityGraphs.push(heatStrain)
+    }
+    if (flags.coreTemperature) {
+      const coreTemperature = buildCoreTemperatureTrace(f, d, analysisSelection)
+      if (coreTemperature) activityGraphs.push(coreTemperature)
+    }
+    if (flags.skinTemperature) {
+      const skinTemperature = buildSkinTemperatureTrace(f, d, analysisSelection)
+      if (skinTemperature) activityGraphs.push(skinTemperature)
+    }
+    if (flags.hr && workoutAnalysis?.metric !== 'hr')
+      activityGraphs.push(buildHeartRateTrace(f, d, analysisSelection))
     if (flags.resp) activityGraphs.push(buildRespirationTrace(f, d, analysisSelection))
     if (flags.temp) activityGraphs.push(buildTemperatureTrace(f, d, analysisSelection))
     if (flags.power)
@@ -8530,23 +8765,13 @@ export const buildActivity = <N>(
       const muscleOxygen = buildMuscleOxygenTrace(f, d, analysisSelection)
       if (muscleOxygen) activityGraphs.push(muscleOxygen)
     }
-    if (flags.heatStrain) {
-      const heatStrain = buildHeatStrainTrace(f, d, analysisSelection)
-      if (heatStrain) activityGraphs.push(heatStrain)
-    }
-    if (flags.coreTemperature) {
-      const coreTemperature = buildCoreTemperatureTrace(f, d, analysisSelection)
-      if (coreTemperature) activityGraphs.push(coreTemperature)
-    }
-    if (flags.skinTemperature) {
-      const skinTemperature = buildSkinTemperatureTrace(f, d, analysisSelection)
-      if (skinTemperature) activityGraphs.push(skinTemperature)
-    }
     f.add(more, ...activityGraphs)
     const environment = buildEnvironmentAnalysis(f, d)
     if (environment) f.add(more, environment)
     if (poolOverview) f.add(more, poolOverview)
     if (swimTrends) f.add(more, swimTrends)
+    const saunaHtl = saunaSummary ? null : buildSaunaHeatTrainingLoad(f, d)
+    if (saunaHtl) f.add(more, saunaHtl)
     const trainingEffect = buildTrainingEffectDetails(f, d)
     if (trainingEffect) f.add(more, trainingEffect)
     if (ctx) {

@@ -24,7 +24,6 @@ import { detailContextFromPayload } from './data'
 import { mountDaySleepCharts } from './day-sleep'
 import { dayExtrasFromDataset } from './embed-settings'
 import { renderDetail } from './render'
-import { setupStrengthExerciseOverflow } from './render'
 import {
   cyclingChartMode,
   runMetricMode,
@@ -36,12 +35,24 @@ import {
 
 const ALIGNED_ACTIVITY_SECTIONS: { selector: string; margin: string }[] = [
   { selector: '.tri-act-more > .tri-workout-analysis', margin: '--tri-workout-margin' },
-  { selector: '.tri-act-more > [data-tri-trace="hr"]', margin: '--tri-hr-margin' },
   { selector: '.tri-act-more > [data-tri-trace="stamina"]', margin: '--tri-stamina-margin' },
   {
     selector: '.tri-act-more > [data-tri-trace="performance-condition"]',
     margin: '--tri-performance-condition-margin',
   },
+  {
+    selector: '.tri-act-more > [data-tri-trace="heat-strain-index"]',
+    margin: '--tri-heat-strain-index-margin',
+  },
+  {
+    selector: '.tri-act-more > [data-tri-trace="core-temperature"]',
+    margin: '--tri-core-temperature-margin',
+  },
+  {
+    selector: '.tri-act-more > [data-tri-trace="skin-temperature"]',
+    margin: '--tri-skin-temperature-margin',
+  },
+  { selector: '.tri-act-more > [data-tri-trace="hr"]', margin: '--tri-hr-margin' },
   {
     selector: '.tri-act-more > [data-tri-trace="respiration"]',
     margin: '--tri-respiration-margin',
@@ -346,7 +357,9 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       if (payload) return false
       if (!(target instanceof Element)) return false
       const button = target.closest<HTMLButtonElement>('[data-analysis-range]')
-      const workspace = button?.closest<HTMLElement>('[data-tri-analysis]')
+      const workspace =
+        button?.closest<HTMLElement>('[data-tri-analysis]') ??
+        button?.closest<HTMLElement>('.tri-act[data-activity-id]')
       const activityId = workspace?.dataset.activityId
       const kind = button?.dataset.rangeKind
       const id = button?.dataset.rangeId
@@ -678,13 +691,11 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       ssr.addEventListener('click', onCardToggle)
       const cleanupAlignment = mountActivitySectionAlignment(ssr)
       const cleanupPowerTicks = setupPowerCurveTicks(ssr)
-      const cleanupStrengthOverflow = setupStrengthExerciseOverflow(ssr)
       const cleanupDaySleepCharts = mountDaySleepCharts(ssr, () => context.presentation.locale)
       cardCleanup = () => {
         ssr.removeEventListener('click', onCardToggle)
         cleanupAlignment()
         cleanupPowerTicks()
-        cleanupStrengthOverflow()
         cleanupDaySleepCharts()
       }
       const events = ['pointerdown', 'touchstart'] as const

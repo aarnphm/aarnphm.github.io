@@ -20,6 +20,7 @@ quartz.git
 __pycache__
 sites
 .env
+.env.local
 .ipynb_checkpoints
 **/partial_movie_files/**
 data/

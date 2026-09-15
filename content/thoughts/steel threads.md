@@ -1,35 +1,27 @@
 ---
 date: '2025-05-27'
-description: thin slice of functionality threading through system boundaries, enabling incremental production deployment of narrow use cases.
+description: Build one narrow use case across real system boundaries, then expand it using what the running system reveals.
 id: steel threads
-modified: 2026-06-06 00:11:53 GMT-04:00
+modified: 2026-09-15 09:06:25 GMT-04:00
 tags:
   - ml
 title: steel threads
 ---
 
+[Jade Rubick](https://www.rubick.com/steel-threads/) describes a steel thread as:
+
 > a very thin slice of functionality that threads through a software system.
 
-> [!note]
+Pick one useful outcome and build the path that makes it happen. For a notes app, that could be saving a plain-text note and reading it after a reload. The editor, request handler, storage, and read path all have to agree on what was saved. Search and rich-text editing can wait. A storage API alone would leave the client integration untested.
+
+Each boundary has to work for this case before the system grows around it. Running the path exposes mistakes in serialization, permissions, and failure handling while the implementation is still small. It gives evidence about the cases exercised so far; load and recovery still need their own tests.
+
+## replacing an existing system
+
+Choose a use case that can be routed separately. Keep the remaining cases on the old implementation, deploy the new path, then expand its scope as each case works. This is where steel threads overlap with the [strangler fig pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/strangler-fig).
+
+> [!tip] compare the two implementations
 >
-> The idea is that you build the thinnest possible version that crosses the boundaries of the system and covers an important use case.
+> For a read-only operation, both paths can process the same request while only the current path's result reaches the caller. Record differences and timings. This is shadow testing; [GitHub's Scientist](https://github.com/github/scientist) implements this arrangement. A write needs separate treatment: running both paths could save the note twice or send two notifications.
 
-Usage:
-
-1. Think about the new system you’re building.
-   Come up with some narrow use cases that represent Steel Threads of the system:
-   – they cover useful functionality into the system, but don’t handle all use cases
-   - they are constrained in some ways.
-2. Choose a starting use case that is as narrow as possible, that provides some value.
-   For example, you might choose one API that you think would be part of the new service.
-3. Build out the new API in a new service.
-4. Make it work for just that narrow use case.
-   - For any other use case, use the old code path. Get it out to production, into full use.
-     > [!tip] A/B testing
-     >
-     > you could even do both the new AND old code path, and compare!
-
-5. Then you gradually add the additional use cases, until you’ve moved all of the functionality you need to, to the new service. Each use case is in production.
-6. Once you’re done, you rip out the old code and feature flags. This isn’t risky at all, since you’re already running on the new system.
-
-> The idea is to avoid integration pains, and cut through complexity
+Removing the old path needs evidence too. Check for remaining callers, background jobs, and data that only the old implementation can read. [Expand, migrate, contract](https://martinfowler.com/bliki/ParallelChange.html) puts removal after consumers have migrated. If rollback depends on an old table or data format, deleting it changes the recovery procedure. Working production traffic is evidence for the replacement, and the dependency checks establish what can actually be removed.
