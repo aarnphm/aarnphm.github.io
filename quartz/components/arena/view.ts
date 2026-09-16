@@ -1,9 +1,5 @@
 import type { ArenaEvent, SearchResultOptions, SearchScope } from './model'
 import {
-  arenaEmbedCapabilityPath,
-  arenaEmbedCapturePath,
-  type ArenaEmbedCaptureOptions,
-  arenaEmbedHtmlPath,
   arenaPdfFilenameFromUrl,
   arenaPdfViewerSource,
   isArenaPdfUrl,
@@ -12,9 +8,9 @@ import {
 import { fetchCanonical } from '../../util/fetch-canonical'
 import { normalizeRelativeURLs } from '../../util/path'
 import { tokenizeTerm } from '../../util/search-text'
-import { isRecord, readString } from '../../util/type-guards'
 import { loadMapbox, applyMonochromeMapPalette } from '../scripts/mapbox-client'
-import { mountTwitterEmbeds } from '../scripts/twitter'
+import { mountArenaChannel } from './channel'
+import { createArenaExternalEmbeds } from './external-embed'
 
 let currentBlockIndex = 0
 let totalBlocks = 0
@@ -26,183 +22,14 @@ let scrollLockState: { x: number; y: number } | null = null
 let searchInput: HTMLInputElement | null = null
 let activeResultIndex: number | null = null
 let registerCleanup: ((cleanup: () => void) => void) | null = null
-const arenaEmbedCapabilityCache = new Map<string, Promise<ArenaEmbedCapability | null>>()
-
-interface ArenaEmbedCapability {
-  mode: 'iframe' | 'fetch' | 'capture' | 'disabled'
-  finalUrl?: string
-  reason?: string
-}
+let externalEmbeds: ReturnType<typeof createArenaExternalEmbeds> | null = null
+let channelViews: ReturnType<typeof mountArenaChannel> = null
+let modalRequest: AbortController | null = null
 
 const addCleanup = (cleanup: () => void) => {
   if (registerCleanup) {
     registerCleanup(cleanup)
   }
-}
-
-function readArenaEmbedCapability(value: unknown): ArenaEmbedCapability | null {
-  if (!isRecord(value)) return null
-
-  const mode = readString(value, 'mode')
-  if (mode !== 'iframe' && mode !== 'fetch' && mode !== 'capture' && mode !== 'disabled') {
-    return null
-  }
-
-  const finalUrl = readString(value, 'finalUrl')
-  const reason = readString(value, 'reason')
-  const capability: ArenaEmbedCapability = { mode }
-  if (finalUrl) capability.finalUrl = finalUrl
-  if (reason) capability.reason = reason
-  return capability
-}
-
-function readArenaExternalModeDataset(value: string | undefined): ArenaExternalEmbedMode {
-  if (value === 'iframe' || value === 'fetch' || value === 'capture' || value === 'none') {
-    return value
-  }
-  return 'auto'
-}
-
-async function fetchArenaEmbedCapability(rawUrl: string): Promise<ArenaEmbedCapability | null> {
-  const cached = arenaEmbedCapabilityCache.get(rawUrl)
-  if (cached) return cached
-
-  const pending = fetch(arenaEmbedCapabilityPath(rawUrl), { credentials: 'same-origin' })
-    .then(async response => {
-      if (!response.ok) return null
-      return readArenaEmbedCapability(await response.json())
-    })
-    .catch(error => {
-      console.error(error)
-      return null
-    })
-
-  arenaEmbedCapabilityCache.set(rawUrl, pending)
-  return pending
-}
-
-function renderExternalEmbedFallback(host: HTMLElement, targetUrl: string) {
-  host.innerHTML = ''
-  const shell = document.createElement('div')
-  shell.className = 'arena-iframe-error'
-  const content = document.createElement('div')
-  content.className = 'arena-iframe-error-content'
-  const message = document.createElement('p')
-  message.textContent = 'embedded content unavailable'
-  const link = document.createElement('a')
-  link.href = targetUrl
-  link.target = '_blank'
-  link.rel = 'noopener noreferrer'
-  link.className = 'arena-iframe-error-link'
-  link.textContent = 'open in new tab ->'
-  content.append(message, link)
-  shell.appendChild(content)
-  host.appendChild(shell)
-}
-
-function renderFetchedExternalEmbed(host: HTMLElement, targetUrl: string) {
-  let iframe = host.querySelector<HTMLIFrameElement>('iframe.arena-modal-iframe')
-  if (!iframe) {
-    host.innerHTML = ''
-    iframe = document.createElement('iframe')
-    iframe.className = 'arena-modal-iframe'
-    iframe.loading = 'lazy'
-    const blockId = host.dataset.blockId
-    if (blockId) iframe.dataset.blockId = blockId
-    host.appendChild(iframe)
-  }
-
-  iframe.classList.add('arena-modal-iframe-fetched')
-  iframe.setAttribute('sandbox', '')
-  iframe.referrerPolicy = 'no-referrer'
-  iframe.src = arenaEmbedHtmlPath(targetUrl)
-}
-
-function captureOptionsForHost(host: HTMLElement): ArenaEmbedCaptureOptions {
-  const rect = host.getBoundingClientRect()
-  const width = Math.round(rect.width || host.clientWidth || window.innerWidth)
-  const hostHeight = rect.height || host.clientHeight || window.innerHeight
-  const height = Math.round(Math.min(hostHeight, window.innerHeight))
-  const dpr = Math.min(2, Math.max(1, Math.ceil(window.devicePixelRatio || 1)))
-  return { width, height, dpr }
-}
-
-function renderCapturedExternalEmbed(host: HTMLElement, targetUrl: string) {
-  host.innerHTML = ''
-  const link = document.createElement('a')
-  link.href = targetUrl
-  link.target = '_blank'
-  link.rel = 'noopener noreferrer'
-  link.className = 'arena-modal-capture-link'
-  const image = document.createElement('img')
-  image.className = 'arena-modal-capture'
-  image.loading = 'lazy'
-  image.decoding = 'async'
-  image.alt = 'Captured preview'
-  const captureOptions = captureOptionsForHost(host)
-  image.width = captureOptions.width ?? 0
-  image.height = captureOptions.height ?? 0
-  image.src = arenaEmbedCapturePath(targetUrl, captureOptions)
-  link.appendChild(image)
-  host.appendChild(link)
-}
-
-async function hydrateExternalEmbedHost(host: HTMLElement) {
-  if (!host.isConnected) return
-  const targetUrl = host.dataset.arenaUrl
-  if (!targetUrl) return
-
-  const mode = readArenaExternalModeDataset(host.dataset.arenaEmbedMode)
-  if (host.dataset.arenaEmbedStatus === 'loading' || host.dataset.arenaEmbedStatus === 'loaded') {
-    return
-  }
-
-  if (mode === 'none') {
-    renderExternalEmbedFallback(host, targetUrl)
-    host.dataset.arenaEmbedStatus = 'loaded'
-    return
-  }
-
-  if (mode === 'fetch') {
-    renderFetchedExternalEmbed(host, targetUrl)
-    host.dataset.arenaEmbedStatus = 'loaded'
-    return
-  }
-
-  if (mode === 'capture') {
-    renderCapturedExternalEmbed(host, targetUrl)
-    host.dataset.arenaEmbedStatus = 'loaded'
-    return
-  }
-
-  if (mode === 'iframe') {
-    host.dataset.arenaEmbedStatus = 'loaded'
-    return
-  }
-
-  host.dataset.arenaEmbedStatus = 'loading'
-  const capability = await fetchArenaEmbedCapability(targetUrl)
-  if (!host.isConnected) return
-  if (!capability) {
-    host.dataset.arenaEmbedStatus = 'loaded'
-    return
-  }
-
-  if (capability.mode === 'fetch') {
-    renderFetchedExternalEmbed(host, capability.finalUrl ?? targetUrl)
-  } else if (capability.mode === 'capture') {
-    renderCapturedExternalEmbed(host, capability.finalUrl ?? targetUrl)
-  } else if (capability.mode === 'disabled') {
-    renderExternalEmbedFallback(host, capability.finalUrl ?? targetUrl)
-  }
-
-  host.dataset.arenaEmbedStatus = 'loaded'
-}
-
-function hydrateExternalEmbeds(root: HTMLElement) {
-  root.querySelectorAll<HTMLElement>('.arena-modal-external-host[data-arena-url]').forEach(host => {
-    void hydrateExternalEmbedHost(host)
-  })
 }
 
 function lockPageScroll() {
@@ -584,6 +411,12 @@ function hydrateInternalHosts(root: HTMLElement) {
 }
 
 function mountPdfEmbeds(root: HTMLElement) {
+  for (const embed of root.querySelectorAll<HTMLElement>('[data-arena-pdf-src]')) {
+    const src = embed.dataset.arenaPdfSrc
+    if (!src) continue
+    embed.dataset.pdfSrc = src
+    delete embed.dataset.arenaPdfSrc
+  }
   window.quartzPdfEmbeds?.mount(root)
 }
 
@@ -597,63 +430,14 @@ function renderExternalModalHtml(
   mode: ArenaExternalEmbedMode,
 ): string {
   const escapedUrl = escapeHtml(targetUrl)
-  if (mode === 'none') {
-    return `
-      <div class="arena-iframe-error">
-        <div class="arena-iframe-error-content">
-          <p>embedded content unavailable</p>
-          <a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" class="arena-iframe-error-link">
-            open in new tab ->
-          </a>
-        </div>
-      </div>
-    `
-  }
-
-  if (mode === 'capture') {
-    return `
-    <div
-      class="arena-modal-external-host"
-      data-block-id="${escapeHtml(block.id)}"
-      data-arena-url="${escapedUrl}"
-      data-arena-embed-mode="${mode}"
-    >
-      <a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" class="arena-modal-capture-link">
-        <img
-          class="arena-modal-capture"
-          loading="lazy"
-          decoding="async"
-          alt="Captured preview: ${escapeHtml(block.title ?? block.content ?? 'Block')}"
-          src="${escapeHtml(arenaEmbedCapturePath(targetUrl))}"
-        />
-      </a>
-    </div>
-  `
-  }
-
-  const fetched = mode === 'fetch'
-  const frameTitle = escapeHtml(block.title ?? block.content ?? 'Block')
-  const iframeSrc = fetched ? arenaEmbedHtmlPath(targetUrl) : targetUrl
-  const sandbox = fetched
-    ? 'sandbox="" referrerpolicy="no-referrer"'
-    : 'sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"'
-
   return `
     <div
       class="arena-modal-external-host"
       data-block-id="${escapeHtml(block.id)}"
       data-arena-url="${escapedUrl}"
+      data-arena-title="${escapeHtml(block.title ?? block.content ?? 'Block')}"
       data-arena-embed-mode="${mode}"
-    >
-      <iframe
-        class="arena-modal-iframe${fetched ? ' arena-modal-iframe-fetched' : ''}"
-        title="Embedded block: ${frameTitle}"
-        loading="lazy"
-        data-block-id="${escapeHtml(block.id)}"
-        ${sandbox}
-        src="${escapeHtml(iframeSrc)}"
-      ></iframe>
-    </div>
+    ><span class="arena-embed-loading" role="status">loading preview</span></div>
   `
 }
 
@@ -661,7 +445,7 @@ function renderPdfModalHtml(pdfUrl: string): string {
   return `
     <div
       class="arena-modal-embed arena-modal-embed-pdf pdf-embed"
-      data-pdf-src="${escapeHtml(arenaPdfViewerSource(pdfUrl))}"
+      data-arena-pdf-src="${escapeHtml(arenaPdfViewerSource(pdfUrl))}"
       data-pdf-title="${escapeHtml(arenaPdfFilenameFromUrl(pdfUrl))}"
       data-pdf-fit="page"
       tabindex="0"
@@ -866,44 +650,65 @@ export async function showModal(blockId: string) {
   if (!modal || !modalBody) return
 
   const dataEl = document.getElementById(`arena-modal-data-${blockId}`)
-  if (!dataEl) {
+  if (!dataEl && !channelViews) {
     console.warn(`Modal data not found for block ${blockId}`)
     return
   }
 
-  const blockEl = document.querySelector(`[data-block-id="${blockId}"]`)
-  if (blockEl) {
-    currentBlockIndex = parseInt(blockEl.getAttribute('data-block-index') || '0')
-  } else {
-    // On index page or dynamic modal - disable navigation by setting out of bounds
-    currentBlockIndex = 0
-  }
+  currentBlockIndex = channelViews ? channelViews.blockIds.indexOf(blockId) : 0
+  if (currentBlockIndex < 0) return
+  modalRequest?.abort()
+  const request = new AbortController()
+  modalRequest = request
 
   cleanupMaps(modalBody)
-  modalBody.innerHTML = ''
-  const clonedContent = dataEl.cloneNode(true) as HTMLElement
-  clonedContent.style.display = 'block'
-  modalBody.appendChild(clonedContent)
+  cleanupPdfs(modalBody)
+  externalEmbeds?.cleanup()
+  const status = document.createElement('p')
+  status.className = 'arena-embed-loading'
+  status.setAttribute('role', 'status')
+  status.textContent = 'loading block…'
+  modalBody.replaceChildren(status)
+  modalBody.setAttribute('aria-busy', 'true')
+  updateNavButtons()
+  modal.classList.add('active')
+  lockPageScroll()
 
-  mountTwitterEmbeds(modalBody)
-
-  hydrateSubstackEmbeds(modalBody)
-  hydrateExternalEmbeds(modalBody)
-  hydrateInternalHosts(modalBody)
-  hydrateMapboxMaps(modalBody)
-  mountPdfEmbeds(modalBody)
+  let clonedContent: HTMLElement
+  try {
+    const content = channelViews
+      ? await channelViews.loadModal(blockId, request.signal)
+      : dataEl?.cloneNode(true)
+    if (request.signal.aborted || !modalBody.isConnected) return
+    if (!(content instanceof HTMLElement)) throw new Error('Arena block content is unavailable')
+    clonedContent = content
+    clonedContent.style.display = 'block'
+    modalBody.replaceChildren(clonedContent)
+  } catch (error) {
+    if (request.signal.aborted) return
+    status.textContent = 'could not load this block'
+    const retry = document.createElement('button')
+    retry.type = 'button'
+    retry.textContent = 'retry'
+    retry.addEventListener('click', () => void showModal(blockId), { signal: request.signal })
+    modalBody.append(retry)
+    console.error(error)
+    return
+  } finally {
+    if (modalRequest === request) modalBody.removeAttribute('aria-busy')
+  }
 
   const sidebar = modalBody.querySelector('.arena-modal-sidebar') as HTMLElement | null
   const hasConnections = modalBody.querySelector('.arena-modal-connections') !== null
   const collapseBtn = modal?.querySelector('.arena-modal-collapse') as HTMLElement | null
 
   if (sidebar) {
-    let shouldCollapse = !hasConnections
+    let shouldCollapse = !hasConnections || clonedContent.dataset.sidebarCollapsed === 'true'
 
     // Check for sidebar metadata
     if (arenaSearchData) {
       const blockData = arenaSearchData.blocks.find(b => b.id === blockId)
-      if (blockData?.metadata?.sidebar) {
+      if (typeof blockData?.metadata?.sidebar === 'string') {
         const sidebarValue = blockData.metadata.sidebar.toLowerCase().trim()
         if (sidebarValue === 'false' || sidebarValue === '0') {
           shouldCollapse = true
@@ -920,33 +725,37 @@ export async function showModal(blockId: string) {
     }
   }
 
-  updateNavButtons()
-  modal.classList.add('active')
-  lockPageScroll()
+  hydrateSubstackEmbeds(modalBody)
+  externalEmbeds?.mount(modalBody)
+  hydrateInternalHosts(modalBody)
+  hydrateMapboxMaps(modalBody)
+  mountPdfEmbeds(modalBody)
 }
 
 export function closeModal() {
+  modalRequest?.abort()
+  modalRequest = null
   const modal = document.getElementById('arena-modal')
   if (modal) {
     const modalBody = modal.querySelector('.arena-modal-body') as HTMLElement | null
     if (modalBody) {
       cleanupMaps(modalBody)
       cleanupPdfs(modalBody)
+      externalEmbeds?.cleanup()
+      modalBody.replaceChildren()
     }
     modal.classList.remove('active')
     unlockPageScroll()
+    channelViews?.refresh()
   }
 }
 
 export async function navigateBlock(direction: number) {
+  if (!document.getElementById('arena-modal')?.classList.contains('active')) return
   const newIndex = currentBlockIndex + direction
   if (newIndex < 0 || newIndex >= totalBlocks) return
 
-  const blocks = Array.from(document.querySelectorAll('.arena-block[data-block-id]'))
-  const targetBlock = blocks[newIndex] as HTMLElement
-  if (!targetBlock) return
-
-  const blockId = targetBlock.getAttribute('data-block-id')
+  const blockId = channelViews?.blockIds[newIndex]
   if (blockId) {
     await showModal(blockId)
   }
@@ -1035,6 +844,7 @@ interface SearchIndexItem {
 let searchIndex: SearchIndexItem[] = []
 let searchDebounceTimer: number | undefined
 let arenaSearchData: ArenaSearchIndex | null = null
+let searchRequest: AbortController | null = null
 
 export const getSearchIndex = () => searchIndex
 export const setSearchIndex = (index: SearchIndexItem[]) => {
@@ -1044,28 +854,34 @@ export const setSearchIndex = (index: SearchIndexItem[]) => {
 // Fetch arena search index JSON
 async function fetchArenaSearchIndex(): Promise<ArenaSearchIndex | null> {
   if (arenaSearchData) return arenaSearchData
+  const request = searchRequest
 
   try {
-    const response = await fetch('/static/arena-search.json')
+    const response = await fetch(channelViews?.searchSource ?? '/static/arena-search.json', {
+      signal: request?.signal,
+    })
     if (!response.ok) {
       console.warn(`Failed to fetch arena search index: ${response.status}`)
       return null
     }
-    arenaSearchData = (await response.json()) as ArenaSearchIndex
+    const data: ArenaSearchIndex = await response.json()
+    if (request?.signal.aborted) return null
+    arenaSearchData = data
     return arenaSearchData
   } catch (error) {
+    if (request?.signal.aborted) return null
     console.error('Error fetching arena search index:', error)
     return null
   }
 }
 
-export async function buildSearchIndex(scope: SearchScope): Promise<SearchIndexItem[]> {
+export async function buildSearchIndex(scope: SearchScope): Promise<SearchIndexItem[] | null> {
   const index: SearchIndexItem[] = []
 
   if (scope === 'channel') {
     // For channel pages, fetch JSON and filter by current channel
     const data = await fetchArenaSearchIndex()
-    if (!data) return index
+    if (!data) return null
 
     const currentSlug = document.body?.dataset.slug || ''
     const channelSlug = currentSlug.replace(/^arena\//, '')
@@ -1087,7 +903,7 @@ export async function buildSearchIndex(scope: SearchScope): Promise<SearchIndexI
   } else {
     // For index page, use all blocks from JSON
     const data = await fetchArenaSearchIndex()
-    if (!data) return index
+    if (!data) return null
 
     data.blocks.forEach(block => {
       index.push({
@@ -1433,10 +1249,31 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
     cleanups.push(cleanup)
   }
   registerCleanup = register
+  const embeds = createArenaExternalEmbeds()
+  externalEmbeds = embeds
+  addCleanup(() => {
+    embeds.cleanup()
+    if (externalEmbeds === embeds) externalEmbeds = null
+  })
 
   totalBlocks = document.querySelectorAll('[data-block-id][data-block-index]').length
 
   const channelPage = document.querySelector<HTMLElement>('.arena-channel-page')
+  channelViews = channelPage ? mountArenaChannel(channelPage) : null
+  if (channelViews) totalBlocks = channelViews.blockIds.length
+  arenaSearchData = null
+  searchIndex = []
+  searchRequest?.abort()
+  searchRequest = new AbortController()
+  addCleanup(() => {
+    closeModal()
+    channelViews?.destroy()
+    channelViews = null
+    arenaSearchData = null
+    searchIndex = []
+    searchRequest?.abort()
+    searchRequest = null
+  })
   const blockCollection = document.getElementById('arena-block-collection') as HTMLElement | null
   const viewToggleButtons = channelPage
     ? Array.from(channelPage.querySelectorAll<HTMLButtonElement>('.arena-view-toggle-button'))
@@ -1449,13 +1286,13 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
     const normalized: ArenaViewMode = mode === 'list' ? 'list' : 'grid'
     channelPage.dataset.viewMode = normalized
     blockCollection.dataset.viewMode = normalized
+    channelViews?.refresh()
     viewToggleButtons.forEach(button => {
       const targetMode = (button.dataset.viewMode as ArenaViewMode) || 'grid'
       const isActive = targetMode === normalized
       button.classList.toggle('active', isActive)
       button.setAttribute('aria-pressed', isActive ? 'true' : 'false')
     })
-    totalBlocks = channelPage.querySelectorAll('[data-block-id][data-block-index]').length
   }
 
   if (channelPage && blockCollection && viewToggleButtons.length > 0) {
@@ -1707,6 +1544,11 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
       if (blockId) {
         e.preventDefault()
         dispatch({ type: 'ui.search.clear', blur: true })
+
+        if (channelViews) {
+          dispatch({ type: 'ui.modal.open', blockId })
+          return
+        }
 
         // Check if this is an arxiv block without notes and redirect instead of opening modal
         if (arenaSearchData) {

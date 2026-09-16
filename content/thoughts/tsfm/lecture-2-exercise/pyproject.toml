@@ -1,7 +1,7 @@
 [project]
 name = "minibpe"
 version = "0.1.0"
-description = "minibpe but even more scuffed and garbage"
+description = "Byte-level BPE training in Python with Python and Rust encoders"
 readme = "index.md"
 requires-python = ">=3.11"
 dependencies = [

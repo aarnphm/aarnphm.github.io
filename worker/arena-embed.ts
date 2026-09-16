@@ -390,7 +390,7 @@ export function classifyArenaFrameHeaders(
     }
   }
 
-  return { mode: 'iframe', reason: 'ok' }
+  return { mode: isHtmlResponse(headers) ? 'fetch' : 'iframe', reason: 'ok' }
 }
 
 function responseFinalUrl(response: Response, fallback: URL): URL {

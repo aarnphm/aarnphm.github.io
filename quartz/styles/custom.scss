@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use 'sass:list';
 @use './tokens';
+@use '../components/styles/twitter.scss';
 @use './width.scss';
 @use './variables.scss' as *;
 @use './mixin.scss' as *;
@@ -246,13 +247,6 @@ blockquote:not(:where(.arena-reader blockquote)) {
       }
     }
   }
-}
-
-blockquote.twitter-tweet {
-  padding-bottom: 1rem;
-  padding-right: 0.2rem;
-  position: relative;
-  margin-right: 0.5rem !important;
 }
 
 p.text,

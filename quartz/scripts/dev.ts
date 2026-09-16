@@ -616,7 +616,18 @@ function startProcess(args: string[], label: Label, message?: string): ManagedCh
     cwd: gitRoot,
     env: {
       ...process.env,
-      ...(label === 'wrangler' ? { PUBLIC_BASE_URL: runtimeConfig.publicBaseUrl } : {}),
+      ...(label === 'wrangler'
+        ? {
+            PUBLIC_BASE_URL: runtimeConfig.publicBaseUrl,
+            // macOS asset watchers can exceed OPEN_MAX and make esbuild spawn fail with EBADF.
+            ...(process.platform === 'darwin'
+              ? {
+                  CHOKIDAR_USEPOLLING: process.env.CHOKIDAR_USEPOLLING ?? '1',
+                  CHOKIDAR_INTERVAL: process.env.CHOKIDAR_INTERVAL ?? '1000',
+                }
+              : {}),
+          }
+        : {}),
       ...(label === 'quartz'
         ? {
             NODE_OPTIONS: [process.env.NODE_OPTIONS, quartzChildNodeOptions]

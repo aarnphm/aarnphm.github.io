@@ -8,6 +8,7 @@ import type {
 } from '../../util/arena-reader'
 import { isNote, isReadLink, isRecord, ReaderApiError, readerApi } from './api'
 import { ArticleContent, safeHref } from './content'
+import { ReaderFilter } from './filter'
 import { ReaderLoading } from './loading'
 import {
   acknowledgeDraft,
@@ -23,7 +24,6 @@ import {
   type ReaderPass,
 } from './model'
 import { NotesPanel, type DraftStatus } from './notes'
-import { QueueFilter } from './queue-filter'
 import {
   loadDrafts,
   loadPass,
@@ -37,6 +37,12 @@ import {
 
 type Panel = 'queue' | 'notes' | null
 type BackgroundNotice = 'storage' | 'position' | 'refresh' | 'sync'
+
+const queueFilters: { value: FeedFilter; label: string }[] = [
+  { value: 'unread', label: 'unread' },
+  { value: 'read', label: 'read' },
+  { value: 'all', label: 'all saved links' },
+]
 
 function errorMessage(error: unknown): string {
   return error instanceof Error
@@ -116,6 +122,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   const contentRef = useRef<HTMLDivElement>(null)
   const pendingQuote = useRef<ArenaNoteQuote | null>(null)
   const articleRef = useRef<HTMLDivElement>(null)
+  const queueRef = useRef<HTMLDivElement>(null)
   const returnFocus = useRef<HTMLElement | null>(null)
   const panelHistory = useRef(false)
   const ownerRef = useRef<string | null>(null)
@@ -248,6 +255,10 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     else url.searchParams.delete('view')
     history.replaceState(history.state, '', url)
   }, [feed?.subject, pass, inbox, panel, notify])
+
+  useLayoutEffect(() => {
+    queueRef.current?.scrollTo({ top: 0 })
+  }, [query, filter, pass?.seed])
 
   useEffect(() => {
     const media = matchMedia('(min-width: 68rem)')
@@ -448,6 +459,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   }, [drafts, feed?.subject, notify, signal, syncTick, updateDraft])
 
   const selected = feed?.entries.find(entry => entry.articleId === pass?.current) ?? null
+  const originalUrl = selected ? safeHref(selected.sourceUrl) : undefined
   const eligible = useMemo(
     () => eligibleEntries(feed?.entries ?? [], feed?.readLinks ?? [], filter, query),
     [feed, filter, query],
@@ -800,35 +812,31 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
         </div>
         <button
           type="button"
-          class="arena-reader-icon-button"
-          aria-pressed={inbox}
-          aria-label={inbox ? 'Back to reading' : 'Notes inbox'}
-          title={inbox ? 'Back to reading' : 'Notes inbox'}
+          class={inbox ? 'arena-reader-icon-button' : undefined}
+          aria-label={inbox ? 'back to reading' : 'inbox'}
+          title={inbox ? 'back to reading' : 'inbox'}
           onClick={() => {
             setInbox(!inbox)
             setEditing(null)
             if (panel) closePanel()
           }}
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            focusable="false"
-          >
-            {inbox ? (
-              <path d="m10 5-7 7 7 7M3 12h18" />
-            ) : (
-              <>
-                <path d="m3 13 3-9h12l3 9v7H3Z" />
-                <path d="M3 13h5l2 3h4l2-3h5" />
-              </>
-            )}
-          </svg>
+          {inbox ? (
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="m7 3-5 5 5 5M2 8h12" />
+            </svg>
+          ) : (
+            'inbox'
+          )}
         </button>
       </header>
       {pendingFeed && (
@@ -890,21 +898,9 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
             {inbox ? (
               <section class="arena-reader-inbox">
                 <header>
-                  <h1>Notes inbox</h1>
-                  <p>
-                    Keep drafts here. Mark a revision ready when you want to bring it back into your
-                    Garden.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      void exportNotes()
-                    }}
-                  >
-                    Export ready notes
-                  </button>
+                  <h1>notes</h1>
                 </header>
-                <NotesPanel {...notesProps} />
+                <NotesPanel {...notesProps} onExport={() => void exportNotes()} />
               </section>
             ) : selected ? (
               <ArticleContent
@@ -1001,54 +997,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
               </header>
               {panel === 'queue' ? (
                 <div class="arena-reader-queue">
-                  <div class="arena-reader-search">
-                    <input
-                      type="search"
-                      aria-label="Search saved links"
-                      value={query}
-                      onInput={event => {
-                        setQuery(event.currentTarget.value)
-                        setLimit(50)
-                      }}
-                      placeholder="search saved links…"
-                    />
-                    <button
-                      type="button"
-                      class="arena-reader-icon-button"
-                      aria-label="Shuffle queue"
-                      title="Shuffle queue"
-                      onClick={() => {
-                        void shuffle()
-                      }}
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        aria-hidden="true"
-                        focusable="false"
-                      >
-                        <path d="m17 3 4 4-4 4M17 13l4 4-4 4M3 7h3c5 0 7 10 12 10h3M3 17h3c2 0 3.5-1.6 5-4M13 9c1.5-1.4 3-2 5-2h3" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div class="arena-reader-queue-controls">
-                    <QueueFilter
-                      value={filter}
-                      onChange={value => {
-                        setFilter(value)
-                        setLimit(50)
-                      }}
-                    />
-                    <p class="arena-reader-status">
-                      {remaining.filter(entry => entry.later).length.toLocaleString()} later ·{' '}
-                      {remaining.length.toLocaleString()} unread
-                    </p>
-                  </div>
-                  <div class="arena-reader-queue-entries">
+                  <div class="arena-reader-queue-entries" ref={queueRef}>
                     <ol>
                       {eligible.slice(0, limit).map(entry => (
                         <li key={entry.articleId}>
@@ -1075,6 +1024,57 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
                         Show 50 more ({eligible.length.toLocaleString()} total)
                       </button>
                     )}
+                  </div>
+                  <div class="arena-reader-queue-footer">
+                    <div class="arena-reader-search">
+                      <input
+                        type="search"
+                        aria-label="Search saved links"
+                        value={query}
+                        onInput={event => {
+                          setQuery(event.currentTarget.value)
+                          setLimit(50)
+                        }}
+                        placeholder="search saved links…"
+                      />
+                      <button
+                        type="button"
+                        class="arena-reader-icon-button"
+                        aria-label="Shuffle queue"
+                        title="Shuffle queue"
+                        onClick={() => {
+                          void shuffle()
+                        }}
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path d="m17 3 4 4-4 4M17 13l4 4-4 4M3 7h3c5 0 7 10 12 10h3M3 17h3c2 0 3.5-1.6 5-4M13 9c1.5-1.4 3-2 5-2h3" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="arena-reader-queue-controls">
+                      <ReaderFilter
+                        label="show"
+                        options={queueFilters}
+                        value={filter}
+                        onChange={value => {
+                          setFilter(value)
+                          setLimit(50)
+                        }}
+                      />
+                      <p class="arena-reader-status">
+                        {remaining.filter(entry => entry.later).length.toLocaleString()} later ·{' '}
+                        {remaining.length.toLocaleString()} unread
+                      </p>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -1129,13 +1129,34 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
                 >
                   {readBusy ? 'saving…' : isRead ? 'unread' : 'read'}
                 </button>
+                {originalUrl && (
+                  <a
+                    class="arena-reader-icon-button"
+                    href={originalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="open original"
+                    title="open original in a new tab"
+                  >
+                    <svg viewBox="0 0 15 15" fill="none" aria-hidden="true" focusable="false">
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M12 13C12.5523 13 13 12.5523 13 12V3C13 2.44771 12.5523 2 12 2H3C2.44771 2 2 2.44771 2 3V6.5C2 6.77614 2.22386 7 2.5 7C2.77614 7 3 6.77614 3 6.5V3H12V12H8.5C8.22386 12 8 12.2239 8 12.5C8 12.7761 8.22386 13 8.5 13H12ZM9 6.5C9 6.5001 9 6.50021 9 6.50031V6.50035V9.5C9 9.77614 8.77614 10 8.5 10C8.22386 10 8 9.77614 8 9.5V7.70711L2.85355 12.8536C2.65829 13.0488 2.34171 13.0488 2.14645 12.8536C1.95118 12.6583 1.95118 12.3417 2.14645 12.1464L7.29289 7H5.5C5.22386 7 5 6.77614 5 6.5C5 6.22386 5.22386 6 5.5 6H8.5C8.56779 6 8.63244 6.01349 8.69139 6.03794C8.74949 6.06198 8.80398 6.09744 8.85143 6.14433C8.94251 6.23434 8.9992 6.35909 8.99999 6.49708L8.99999 6.49738"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </a>
+                )}
                 <button
                   type="button"
+                  class="arena-reader-icon-button"
                   disabled={!selected}
                   onClick={advance}
                   aria-label="Next link, keep current link unread"
+                  title="Next link, keep current link unread"
                 >
-                  next →
+                  <span aria-hidden="true">→</span>
                 </button>
               </nav>
             </div>

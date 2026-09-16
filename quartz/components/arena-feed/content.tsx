@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import type { ArenaFeedEntry } from '../../util/arena-feed'
 import type { ArenaReaderArtifact, ArenaReaderRenderResult } from '../../util/arena-reader'
 import { parseWikipediaTarget } from '../../util/wikipedia'
+import { mathVariantText } from './math'
 
 export function safeHref(raw: string): string | undefined {
   try {
@@ -36,6 +37,17 @@ export function sanitizeReaderHtml(html: string): string {
     ADD_ATTR: ['data-lang', 'data-latex', 'data-callout'],
   })
   const document = new DOMParser().parseFromString(clean, 'text/html')
+  // MathML Core uses Unicode alphabets instead of MathJax's legacy mathvariant values.
+  for (const token of document.querySelectorAll('math mi, math mn, math mo, math mtext, math ms')) {
+    const variant = token.closest('[mathvariant]')?.getAttribute('mathvariant')
+    if (!variant || token.children.length) continue
+    const original = token.textContent ?? ''
+    const text = mathVariantText(original, variant)
+    if (text !== original) {
+      token.textContent = text
+      token.setAttribute('mathvariant', 'normal')
+    }
+  }
   for (const element of document.querySelectorAll('[src], [poster]')) {
     for (const attribute of ['src', 'poster']) {
       const raw = element.getAttribute(attribute)
@@ -47,6 +59,9 @@ export function sanitizeReaderHtml(html: string): string {
     }
   }
   for (const link of document.querySelectorAll('a')) {
+    if (link.classList.contains('arena-footnote-backref')) {
+      link.textContent = (link.textContent ?? '').replace(/↩[\uFE0E\uFE0F]?/gu, '↩\uFE0E')
+    }
     const raw = link.getAttribute('href')
     if (!raw || raw.startsWith('#')) continue
     const href = safeHref(raw)
@@ -183,19 +198,14 @@ export function ArticleContent({
             .join(' / ')}
         </p>
         <h1>{title}</h1>
-        <div class="arena-reader-source">
-          <a href={safeHref(entry.sourceUrl)} target="_blank" rel="noopener noreferrer">
-            open original ↗
-          </a>
-          {artifact && (
-            <span>
-              {result?.status === 'ready' && result.cached ? 'saved copy' : 'captured'} ·{' '}
-              {new Date(artifact.capturedAt)
-                .toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-                .toLocaleLowerCase()}
-            </span>
-          )}
-        </div>
+        {artifact && (
+          <div class="arena-reader-source">
+            {result?.status === 'ready' && result.cached ? 'saved copy' : 'captured'} ·{' '}
+            {new Date(artifact.capturedAt)
+              .toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+              .toLocaleLowerCase()}
+          </div>
+        )}
       </header>
       {loading && !artifact && (
         <p role="status" class="arena-reader-status arena-reader-loading">

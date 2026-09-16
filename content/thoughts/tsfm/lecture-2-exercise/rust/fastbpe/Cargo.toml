@@ -12,3 +12,5 @@ pyo3 = { version = "0.29", features = ["extension-module", "abi3-py311"] }
 fancy-regex = "0.16"
 anyhow = "1"
 rustc-hash = "2.1"
+
+[workspace]

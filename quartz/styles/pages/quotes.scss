@@ -57,7 +57,7 @@ $quote-indent: 1.25em;
   }
 
   & article {
-    & > blockquote:not(.twitter-tweet) {
+    & > blockquote {
       @include quote-block(1rem);
     }
   }

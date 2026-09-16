@@ -2,7 +2,7 @@
 date: '2025-03-25'
 description: multi-level intermediate representation for compiler infrastructure
 id: MLIR
-modified: 2026-06-05 15:08:28 GMT-04:00
+modified: 2026-09-16 13:30:23 GMT-04:00
 seealso:
   - '[[thoughts/Compiler]]'
   - '[[thoughts/XLA]]'
@@ -23,217 +23,123 @@ Good blogpost write up:
 
 > a compiler infrastructure project under the LLVM umbrella that provides a flexible framework for building reusable and extensible compiler infrastructure.
 
-Unlike traditional single-level IRs like LLVM IR, MLIR allows dialects at multiple abstraction levels to coexist and transform progressively.
+MLIR lets a compiler keep a matrix multiplication recognizable while choosing how to execute it. A `linalg.matmul` still exposes its reduction and indexing structure. Once lowered to scalar loads and branches, that information takes more analysis to recover. The point of multiple levels is to make each decision while the relevant structure is available.
 
 ## core architecture
 
 ### the dialect system
 
-> a way to define domain-specific operations, types, and attributes that can coexist in the same IR.
-> Each dialect is ==self-contained== with its own semantics, verification, and transformations.
+A dialect groups operations, types, and attributes under a namespace. A function can contain `tensor`, `linalg`, and `arith` operations together. They share MLIR's representation; their definitions supply the semantics. A compiler must still provide the conversions between them. [MLIR language reference](https://mlir.llvm.org/docs/LangRef/#dialects).
 
-dialects are composable. you can mix operations from `tensor`, `linalg`, `arith`, and `func` dialects in the same function.
-
-> This [[thoughts/Compositionality|composability]] enables progressive lowering where high-level abstractions incrementally transform to lower-level representations.
+For example, this function computes $AB$:
 
 ```mlir
 func.func @matmul(%A: tensor<128x256xf32>, %B: tensor<256x512xf32>) -> tensor<128x512xf32> {
+  %zero = arith.constant 0.0 : f32
   %empty = tensor.empty() : tensor<128x512xf32>
+  %init = linalg.fill ins(%zero : f32) outs(%empty : tensor<128x512xf32>) -> tensor<128x512xf32>
   %result = linalg.matmul ins(%A, %B : tensor<128x256xf32>, tensor<256x512xf32>)
-                          outs(%empty : tensor<128x512xf32>) -> tensor<128x512xf32>
+                          outs(%init : tensor<128x512xf32>) -> tensor<128x512xf32>
   return %result : tensor<128x512xf32>
 }
 ```
 
+The fill matters. Matmul accumulates into its destination:
+
+$$
+C^{\mathrm{out}}_{ij}=C^{\mathrm{init}}_{ij}+\sum_{k=0}^{K-1} A_{ik}B_{kj}.
+$$
+
+`tensor.empty` supplies a shape with unspecified contents. Passing it directly to this reduction leaves the initial sum unspecified. An elementwise operation that overwrites every output without reading the destination can use an empty tensor directly. Check what the operation reads. [Tensor `empty`](https://mlir.llvm.org/docs/Dialects/TensorOps/#tensorempty-tensoremptyop), [Linalg structured operations](https://mlir.llvm.org/docs/Tutorials/transform/Ch0/).
+
 ### operation definition specification (ODS)
 
-operations are defined using TableGen[^note] to generate C++ code. ODS provides declarative specifications that generate boilerplate:
+ODS uses LLVM's TableGen language to describe an operation's operands, results, attributes, traits, and assembly format. `mlir-tblgen` generates C++ classes, accessors, builders, and verification code from those declarations. Custom constraints can require a handwritten verifier.
 
-[^note]: LLVM's own DSL
-
-```tablegen
-def MatmulOp : LinalgStructuredOp<"matmul"> {
-  let arguments = (ins AnyTensor:$A, AnyTensor:$B, AnyTensor:$C);
-  let results = (outs AnyTensor:$result);
-  let hasFolder = 1;
-  let hasCanonicalizer = 1;
-}
-```
-
-this generates:
-
-- operation class with accessors
-- verification methods
-- builders and printers
-- trait implementations
+Setting `hasFolder` or `hasCanonicalizer` declares hooks for implementations. It does not derive the arithmetic, prove the rewrite, or generate a backend. Keep the operation's semantics next to its definition so a pass author can tell which transformations are legal. [ODS reference](https://mlir.llvm.org/docs/DefiningDialects/Operations/).
 
 ### region, block, SSA hierarchy
 
-MLIR uses a nested structure:
+An operation can contain regions; regions contain blocks; blocks contain operations. `builtin.module` and `func.func` are operations too. Values come from operation results or block arguments.
 
-- **Module**: top-level container
-- **Operation**: fundamental unit (everything is an op)
-- **Region**: contains control flow graphs
-- **Block**: basic block with arguments (phi nodes as arguments)
-- **Value**: SSA values (operation results or block arguments)
+The enclosing operation determines a region's meaning. Function bodies use control-flow regions; graph regions need no sequential execution order. In a control-flow region, branches pass values to block arguments, serving the role of LLVM's phi nodes. [Regions and blocks](https://mlir.llvm.org/docs/LangRef/#regions).
 
-blocks take arguments instead of phi nodes, simplifying control flow representation:
+A loop also needs an explicit value for each iteration's state:
 
 ```mlir
-func.func @loop(%arg0: index, %arg1: index) -> index {
-  %c1 = arith.constant 1 : index
-  %result = scf.for %i = %arg0 to %arg1 step %c1 iter_args(%acc = %arg0) -> index {
-    %next = arith.addi %acc, %c1 : index
+func.func @count(%lower: index, %upper: index) -> index {
+  %zero = arith.constant 0 : index
+  %one = arith.constant 1 : index
+  %result = scf.for %i = %lower to %upper step %one iter_args(%acc = %zero) -> (index) {
+    %next = arith.addi %acc, %one : index
     scf.yield %next : index
   }
   return %result : index
 }
 ```
 
+`%acc` starts at zero. Each `scf.yield` supplies the next iteration's argument, and the final yield becomes `%result`. With no iterations, `%result` is the initial value. [SCF `for`](https://mlir.llvm.org/docs/Dialects/SCFDialect/#scffor-scfforop).
+
 ### traits and interfaces
 
-**traits** define properties that can be checked at compile time:
+Traits attach shared constraints or behavior to operations. `SameOperandsAndResultType`, for example, checks the types on an IR operation. That verification happens when checking the IR; calling it a C++ compile-time property confuses two different programs. [Traits](https://mlir.llvm.org/docs/Traits/).
 
-- `SameOperandsAndResultType`: all operands and results have same type
-- `Commutative`: operation is commutative
-- `NoMemoryEffect`: operation has no side effects
+Interfaces let transformations ask an operation about its behavior without switching on every operation name. `MemoryEffectOpInterface` describes memory effects; `LoopLikeOpInterface` describes loop structure. A dialect has to implement the relevant contract before a generic pass can use it.
 
-**interfaces** define methods operations can implement:
-
-- `MemoryEffectOpInterface`: describe memory read/write effects
-- `InferTypeOpInterface`: infer result types from operands
-- `LoopLikeOpInterface`: standard loop operations
-
-```cpp
-def MatmulOp : Op<LinalgDialect, "matmul", [
-  NoMemoryEffect,
-  DeclareOpInterfaceMethods<DestinationStyleOpInterface>
-]> {
-  // ...
-}
-```
+`NoMemoryEffect` covers memory effects. Speculation also has to account for undefined behavior and nontermination. Hoisting a computation above a conditional needs those conditions checked too. [Side effects and speculation](https://mlir.llvm.org/docs/Rationale/SideEffectsAndSpeculation/).
 
 ### pattern rewriting infrastructure
 
-MLIR provides two pattern rewriting systems:
+A rewrite has a match, legality conditions, and a replacement. C++ patterns use `PatternRewriter` for mutations so the driver can track changed operations. DRR expresses patterns in TableGen; PDLL provides a language for matching and rewriting operation graphs. [Pattern rewriting](https://mlir.llvm.org/docs/PatternRewriter/), [PDLL](https://mlir.llvm.org/docs/PDLL/).
 
-**declarative rewrite rules (DRR)** - TableGen-based pattern matching:
+The driver determines how patterns run. A greedy driver repeats applicable rewrites until convergence or a configured limit. Dialect conversion instead checks a specified legality target. Neither driver proves that a replacement preserves the original computation.
 
-```tablegen
-// Fold consecutive reshapes
-def ReshapeReshapeOptPattern : Pat<
-  (ReshapeOp(ReshapeOp $arg)),
-  (ReshapeOp $arg)
->;
-
-// Constant folding
-def FoldConstantAdd : Pat<
-  (AddIOp (ConstantOp $a), (ConstantOp $b)),
-  (ConstantOp (AddInts $a, $b))
->;
-```
-
-**PDLL (PDL Language)** - newer, more expressive pattern language:
-
-```pdll
-Pattern FuseMatmuls {
-  let matmul1 = op<linalg.matmul>(a: Value, b: Value, c0: Value) -> (r1: Type);
-  let matmul2 = op<linalg.matmul>(r1, d: Value, c1: Value) -> (r2: Type);
-
-  rewrite matmul2 with {
-    let fused = op<linalg.matmul_matmul>(a, b, d, c1) -> (r2);
-    replace matmul2 with fused;
-    erase matmul1;
-  };
-}
-```
-
-pattern application uses a greedy rewrite driver. patterns fire until fixpoint. debug with `-debug-only=greedy-rewriter`.
+For fusion, matching two matmuls is only the start. The rewrite must build legal IR while preserving accumulator values, shapes, and every use of the intermediate result.
 
 ### pass manager and composition
 
-passes organize into pipelines:
+Pass pipelines name the operations they run on. This pipeline canonicalizes each function, then runs common-subexpression elimination on the module:
 
-```cpp
-mlir::PassManager pm(&context);
-pm.addPass(mlir::createCanonicalizerPass());
-pm.addPass(mlir::createCSEPass());
-pm.addNestedPass<func::FuncOp>(createLinalgTilingPass());
-pm.addPass(createConvertLinalgToLoopsPass());
+```sh
+mlir-opt input.mlir --pass-pipeline='builtin.module(func.func(canonicalize),cse)'
 ```
 
-passes can be function-scoped, module-scoped, or op-scoped. nested pass managers handle different IR levels.
+Nesting controls scope. It also matters for analysis ownership and parallel pass execution. A pipeline must register its passes and respect the IR each pass accepts; putting pass names in a list does not establish those preconditions. [Pass management](https://mlir.llvm.org/docs/PassManagement/).
 
 ## key dialects
 
 ### high-level frontend dialects
 
-**`tf` (TensorFlow)**: represents TensorFlow operations
+| Dialect     | What it carries                                                                     |
+| ----------- | ----------------------------------------------------------------------------------- |
+| `tf`        | TensorFlow operations in TensorFlow's compiler infrastructure                       |
+| `torch`     | PyTorch semantics imported by Torch-MLIR                                            |
+| `tosa`      | A specified tensor operator set for neural-network computation                      |
+| `stablehlo` | A versioned tensor computation format for exchange between frameworks and compilers |
 
-- preserves TensorFlow semantics during ingestion
-- lowered through StableHLO or directly to TOSA
+These are entry points for particular compiler stacks. Availability of a lowering depends on the supported operations, types, and shapes. TOSA defines computation, including quantized arithmetic, rather than a schedule for a particular accelerator. [TOSA dialect](https://mlir.llvm.org/docs/Dialects/TOSA/), [Torch-MLIR](https://github.com/llvm/torch-mlir).
 
-**`torch`**: PyTorch operations via Torch-MLIR
-
-- two variants: Torch dialect (Python semantics) and TMTensor
-- progressive lowering: Torch → Linalg → loops
-
-**`tosa` (Tensor Operator Set Architecture)**:
-
-- portable operator set for NN workloads
-- ~60 operations covering conv, matmul, pooling, elementwise
-- designed for hardware compliance testing
-
-**StableHLO**: successor to MHLO, standardizes XLA's HLO
-
-- 5-year backward compatibility guarantee
-- 2-year forward compatibility
-- canonical format for framework interop
-- ~100 operations with full specifications
+StableHLO's compatibility policy applies to artifacts produced through its portable serialization APIs. It specifies five years of backward compatibility and two years of forward compatibility, with exceptions for features absent from the older consumer. Arbitrary pretty-printed MLIR is outside that promise. [StableHLO compatibility](https://openxla.org/stablehlo/compatibility).
 
 ### mid-level structured operations
 
-**`linalg` dialect**: structured operations on tensors/memrefs
+Linalg keeps the iteration structure explicit: indexing maps relate loop indices to operands, iterator types identify parallel and reduction dimensions, and a region supplies the scalar computation. For matmul, the maps are
 
-linalg operations describe computation through:
+$$
+(i,j,k)\mapsto(i,k),\qquad
+(i,j,k)\mapsto(k,j),\qquad
+(i,j,k)\mapsto(i,j).
+$$
 
-- indexing maps (affine expressions relating iteration space to data space)
-- iterator types (parallel, reduction, window)
-- region describing scalar computation
+The first two select elements of $A$ and $B$; the third selects the accumulator. The $k$ dimension is a reduction. That structure lets a transformation find which input slices are needed for an output tile. [Linalg](https://mlir.llvm.org/docs/Dialects/Linalg/).
 
-named operations:
-
-```mlir
-linalg.matmul ins(%A, %B) outs(%C)
-linalg.conv_2d_nhwc_hwcf ins(%input, %filter) outs(%output)
-linalg.pooling_nhwc_sum ins(%input, %window) outs(%output)
-```
-
-generic operations with explicit indexing:
-
-```mlir
-linalg.generic {
-  indexing_maps = [
-    affine_map<(d0, d1, d2) -> (d0, d2)>,  // A
-    affine_map<(d0, d1, d2) -> (d2, d1)>,  // B
-    affine_map<(d0, d1, d2) -> (d0, d1)>   // C
-  ],
-  iterator_types = ["parallel", "parallel", "reduction"]
-}
-ins(%A, %B : tensor<128x256xf32>, tensor<256x512xf32>)
-outs(%C : tensor<128x512xf32>) {
-  ^bb0(%a: f32, %b: f32, %c: f32):
-    %mul = arith.mulf %a, %b : f32
-    %add = arith.addf %c, %mul : f32
-    linalg.yield %add : f32
-}
-```
-
-linalg-on-tensors uses destination-passing style (DPS): output tensor passed as operand. this enables sophisticated fusion without intermediate allocations.
+Tensor-form Linalg operations use destination-passing style: an `outs` operand is tied to each tensor result. The operation produces a new SSA value. Bufferization may later reuse the destination's storage if its old contents are no longer needed. [Destination-passing style](https://mlir.llvm.org/docs/Bufferization/#destination-passing-style).
 
 ### affine dialect
 
-affine dialect models loop nests and array accesses using polyhedral compilation techniques. affine expressions: `d0 * 4 + d1 + 16` where `d0, d1` are dimensions.
+Affine operations restrict loop bounds and accesses to expressions that dependence analysis can reason about. Multiplication by a constant is affine; multiplication of two loop dimensions is not. MLIR also admits floor division, ceiling division, and modulo by positive integer constants in affine expressions.
+
+The following buffer-form example accumulates $AB$ into an existing $C$. The caller must initialize $C$ and supply non-overlapping input and output storage for this intended matmul computation.
 
 ```mlir
 func.func @matrix_multiply(%A: memref<1024x1024xf32>, %B: memref<1024x1024xf32>, %C: memref<1024x1024xf32>) {
@@ -253,720 +159,245 @@ func.func @matrix_multiply(%A: memref<1024x1024xf32>, %B: memref<1024x1024xf32>,
 }
 ```
 
-affine dialect enables:
-
-- **dependence analysis**: precise data dependencies using polyhedral methods
-- **loop transformations**: interchange, tiling, skewing, unroll-and-jam
-- **automatic parallelization**: detect parallel loops
-- **vectorization**: multi-dimensional vectorization
+Affine syntax makes access relationships available to analysis. Whether interchange, fusion, or parallelization is legal still depends on the accesses and their dependencies. [Affine dialect](https://mlir.llvm.org/docs/Dialects/Affine/).
 
 ### SCF (structured control flow)
 
-SCF provides imperative control flow constructs:
+SCF provides `for`, `while`, `if`, and parallel loop operations with nested regions. It can express bounds and conditions outside the affine restrictions. Loop-carried tensors follow the same `iter_args` and `scf.yield` discipline as the counter above: producing an updated tensor inside the body has no effect on the next iteration unless it is yielded.
 
-```mlir
-// for loop
-scf.for %i = %lb to %ub step %step iter_args(%acc = %init) -> (tensor<f32>) {
-  %next = some_op %acc
-  scf.yield %next : tensor<f32>
-}
-
-// while loop
-scf.while (%arg = %init) : (tensor<f32>) -> tensor<f32> {
-  %cond = some_condition %arg
-  scf.condition(%cond) %arg : tensor<f32>
-} do {
-^bb0(%arg: tensor<f32>):
-  %next = some_op %arg
-  scf.yield %next : tensor<f32>
-}
-
-// conditional
-scf.if %cond -> tensor<f32> {
-  scf.yield %true_val : tensor<f32>
-} else {
-  scf.yield %false_val : tensor<f32>
-}
-
-// parallel
-scf.parallel (%i, %j) = (%c0, %c0) to (%N, %M) step (%c1, %c1) {
-  // parallel work
-  scf.reduce(%val) : f32 {
-    ^bb0(%lhs: f32, %rhs: f32):
-      %sum = arith.addf %lhs, %rhs : f32
-      scf.reduce.return %sum : f32
-  }
-}
-```
+Lowering SCF to the Control Flow dialect replaces this nesting with blocks and branches. Passes that need a visible loop nest should run before that structure is discarded. [SCF dialect](https://mlir.llvm.org/docs/Dialects/SCFDialect/).
 
 ### tensor vs memref
 
-**tensor dialect**: value semantics, immutable
+A tensor is a value. `tensor.insert` returns an updated value; it does not mutate the input tensor. `tensor.extract_slice` likewise returns a tensor value, leaving storage sharing to later decisions. `tensor.empty` introduces unspecified contents and a shape, with no requirement to allocate a buffer at that point. [Tensor dialect](https://mlir.llvm.org/docs/Dialects/TensorOps/).
 
-- `tensor.empty`: allocate uninitialized tensor
-- `tensor.extract`: extract scalar element
-- `tensor.insert`: insert element (returns new tensor)
-- `tensor.extract_slice`: get subtensor view
+A memref describes addressable storage. Loads read it, stores mutate it, and views can alias it. Bufferization chooses how to represent tensor values using such buffers while preserving the values that later readers observe.
 
-**memref dialect**: buffer semantics, mutable
-
-- `memref.alloc`: allocate buffer
-- `memref.load`/`memref.store`: read/write
-- `memref.view`: reinterpret cast
-- `memref.subview`: create view into memref
-
-conversion: **bufferization** transforms tensor IR to memref IR
-
-```mlir
-// before bufferization
-func.func @add(%a: tensor<1024xf32>, %b: tensor<1024xf32>) -> tensor<1024xf32> {
-  %empty = tensor.empty() : tensor<1024xf32>
-  %result = linalg.add ins(%a, %b) outs(%empty)
-  return %result : tensor<1024xf32>
-}
-
-// after bufferization
-func.func @add(%a: memref<1024xf32>, %b: memref<1024xf32>, %c: memref<1024xf32>) {
-  linalg.add ins(%a, %b) outs(%c)
-  return
-}
-```
-
-one-shot bufferization analyzes entire program, avoids unnecessary allocations by reusing buffers when safe.
+One-Shot Bufferize analyzes SSA uses and considers reusing a destination buffer or allocating a new one. Function boundaries need suitable configuration and supported operations. Allocation hoisting and buffer deallocation are separate work; the pass does not promise a globally optimal memory plan. [Bufferization](https://mlir.llvm.org/docs/Bufferization/).
 
 ### vector dialect
 
-hardware-agnostic SIMD operations. targets can be multi-dimensional:
+Vector operations describe groups of scalar computations before choosing target instructions. A multidimensional vector is useful for expressing a tile even when the hardware's registers have a different shape. `vector.contract` describes a contraction, while transfer operations describe movement between shaped storage and vectors.
 
-```mlir
-// 2D vector load
-%vec = vector.transfer_read %memref[%i, %j], %pad
-  : memref<1024x1024xf32>, vector<8x16xf32>
-
-// vector contraction (generalized dot product)
-%result = vector.contract {
-  indexing_maps = [
-    affine_map<(i,j,k) -> (i,k)>,
-    affine_map<(i,j,k) -> (k,j)>,
-    affine_map<(i,j,k) -> (i,j)>
-  ],
-  iterator_types = ["parallel", "parallel", "reduction"]
-}
-%a, %b, %acc : vector<8x16xf32>, vector<16x8xf32> into vector<8x8xf32>
-
-// multi-dim transpose
-%transposed = vector.transpose %vec, [1, 0] : vector<8x16xf32> to vector<16x8xf32>
-```
-
-vector operations lower to target-specific intrinsics (AVX, NEON, SVE).
+A transfer read supplies a padding value for out-of-bounds elements. Lowering may split the vector, introduce masks, or select target instructions. The vector's type alone does not guarantee one instruction. [Vector dialect](https://mlir.llvm.org/docs/Dialects/Vector/).
 
 ### GPU/NVVM/ROCDL dialects
 
-**GPU dialect**: target-agnostic parallel execution model
+The GPU dialect describes kernels, launch dimensions, and synchronization. Target-specific lowering can produce NVVM operations for NVIDIA or ROCDL operations for AMD, followed by LLVM IR and the relevant backend. A SPIR-V path is another option.
 
-```mlir
-gpu.launch blocks(%bx, %by, %bz) in (%grid_x, %grid_y, %grid_z)
-           threads(%tx, %ty, %tz) in (%block_x, %block_y, %block_z) {
-  %thread_id = gpu.thread_id x
-  %block_id = gpu.block_id x
-  // kernel code
-  gpu.terminator
-}
-```
-
-**NVVM dialect**: NVIDIA CUDA operations
-
-- maps to NVVM IR (NVIDIA's LLVM variant)
-- intrinsics: `nvvm.shfl.sync.bfly`, `nvvm.wmma.load`, `nvvm.barrier0`
-
-**ROCDL dialect**: AMD ROCm operations
-
-- maps to AMD GCN/CDNA ISA
-- intrinsics: `rocdl.workitem.id.x`, `rocdl.barrier`
-
-lowering path: `gpu` → `nvvm`/`rocdl` → LLVM → PTX/GCN
+Kernel code generation is only part of this pipeline. The host must load the device binary, arrange memory, and issue the launch through a runtime. A `gpu.launch` operation does not settle those choices by itself. [GPU compilation](https://mlir.llvm.org/docs/Dialects/GPU/).
 
 ### LLVM dialect
 
-1:1 correspondence with LLVM IR. final lowering target before native code:
+The LLVM dialect represents LLVM-level operations inside MLIR. It can then be translated to LLVM IR:
 
 ```mlir
-llvm.func @add(%arg0: i32, %arg1: i32) -> i32 {
-  %0 = llvm.add %arg0, %arg1 : i32
-  llvm.return %0 : i32
-}
-
-llvm.func @malloc(%size: i64) -> !llvm.ptr {
-  %ptr = llvm.call @malloc(%size) : (i64) -> !llvm.ptr
-  llvm.return %ptr : !llvm.ptr
+llvm.func @add(%a: i32, %b: i32) -> i32 {
+  %result = llvm.add %a, %b : i32
+  llvm.return %result : i32
 }
 ```
 
-all MLIR eventually lowers to LLVM dialect, then to LLVM IR, then to machine code.
+This is a common exit from MLIR for native code generation. Other compilers emit SPIR-V, runtime calls, or hardware descriptions. An MLIR-based compiler chooses its output representation. [LLVM dialect](https://mlir.llvm.org/docs/Dialects/LLVM/), [CIRCT](https://circt.llvm.org/docs/).
 
 ## progressive lowering examples
 
+The arrows below describe possible routes. They omit supporting dialects and cleanup passes. Treat them as a map of representation changes, then inspect the pipeline implemented by the compiler and revision in use.
+
 ### PyTorch → Torch-MLIR → Linalg → LLVM
 
+```text
+imported PyTorch graph
+  → Torch dialect
+  → Linalg on tensors
+  → bufferization and loop/vector lowering
+  → LLVM dialect
+  → LLVM IR
 ```
-PyTorch nn.Linear
-    ↓ (torch.jit.script)
-Torch dialect: torch.aten.linear
-    ↓ (decompose-complex-ops)
-Torch dialect: torch.aten.mm
-    ↓ (convert-torch-to-linalg)
-Linalg: linalg.matmul on tensors
-    ↓ (linalg-bufferize)
-Linalg: linalg.matmul on memrefs
-    ↓ (convert-linalg-to-loops)
-SCF: nested scf.for loops
-    ↓ (convert-scf-to-cf)
-CF: br, cond_br
-    ↓ (convert-to-llvm)
-LLVM dialect
-    ↓ (mlir-translate)
-LLVM IR
-```
+
+Torch-MLIR supplies imports and conversions for downstream compilers. Its current project documentation lists FX and ONNX entry points. The supported subset and backend determine the remaining route. [Torch-MLIR project](https://github.com/llvm/torch-mlir).
+
+Ordinary `torch.compile` uses TorchDynamo for graph capture and TorchInductor as its default backend. Torch-MLIR is a separate integration path. [PyTorch compiler documentation](https://docs.pytorch.org/docs/main/user_guide/torch_compiler/torch.compiler.html).
 
 ### TensorFlow → StableHLO → Linalg → Affine → LLVM
 
-```
-TensorFlow MatMul
-    ↓ (tf-to-stablehlo)
-StableHLO: stablehlo.dot_general
-    ↓ (stablehlo-to-linalg)
-Linalg: linalg.matmul
-    ↓ (linalg-tile)
-Linalg: tiled linalg.matmul in loops
-    ↓ (linalg-bufferize)
-Linalg on memrefs
-    ↓ (convert-linalg-to-affine)
-Affine: affine.for with affine.load/store
-    ↓ (affine-loop-fusion, affine-vectorize)
-Optimized affine + vector ops
-    ↓ (lower-affine, convert-vector-to-llvm)
-LLVM dialect
-```
+StableHLO can be an exchange boundary between a framework and a compiler. A consumer that provides StableHLO-to-Linalg conversion may then bufferize and lower to affine loops or vectors.
+
+XLA has its own HLO optimization and backend pipelines. It does not require the full route in this heading. Whether a TensorFlow program uses XLA also depends on how compilation was requested. [XLA architecture](https://openxla.org/xla/architecture).
 
 ### TOSA → Linalg → Vector → LLVM
 
-```
-TOSA: tosa.conv2d
-    ↓ (tosa-to-linalg)
-Linalg: linalg.conv_2d_nhwc_hwcf
-    ↓ (linalg-tile-and-fuse)
-Tiled linalg ops
-    ↓ (linalg-vectorize)
-Vector dialect ops
-    ↓ (vector-lower-to-llvm)
-LLVM vector intrinsics
-```
+TOSA-to-Linalg lowering translates supported tensor operations into structured computations. Tiling and vectorization can then prepare those computations for LLVM lowering. Layout changes, quantization, and operation coverage determine what extra work is needed. There is no single convolution rewrite that covers every type and target. [TOSA dialect](https://mlir.llvm.org/docs/Dialects/TOSA/).
 
 ## key optimization passes
 
 ### tiling
 
-tiling divides iteration space into smaller tiles for better cache locality:
+Tiling splits an iteration space into bounded pieces so reused data may remain close to the computation. For an $f32$ matmul tile of sizes $(M_t,N_t,K_t)$, the three dense operand tiles occupy
 
-```mlir
-// before tiling
-linalg.matmul ins(%A, %B) outs(%C)
-  : tensor<1024x1024xf32>, tensor<1024x1024xf32> into tensor<1024x1024xf32>
+$$
+4\bigl(M_tK_t+K_tN_t+M_tN_t\bigr)\text{ bytes}.
+$$
 
-// after tiling with tile sizes [256, 256, 128]
-scf.for %i = %c0 to %c1024 step %c256 {
-  scf.for %j = %c0 to %c1024 step %c256 {
-    scf.for %k = %c0 to %c1024 step %c128 {
-      %A_tile = tensor.extract_slice %A[%i, %k][256, 128]
-      %B_tile = tensor.extract_slice %B[%k, %j][128, 256]
-      %C_tile = tensor.extract_slice %C[%i, %j][256, 256]
-      %result = linalg.matmul ins(%A_tile, %B_tile) outs(%C_tile)
-      %C_updated = tensor.insert_slice %result into %C[%i, %j]
-    }
-  }
-}
-```
+With $(256,256,128)$, that is $512\,\mathrm{KiB}$ before packing or other live data. Cache capacity, layout, concurrency, and the target's instructions determine whether that tile fits and how efficiently it runs.
 
-multi-level tiling for cache hierarchy:
-
-- L1 tiling: 32x32x32
-- L2 tiling: 256x256x128
-- L3 tiling: 1024x1024x512
+Tensor tiling also has a correctness obligation: each reduction tile must receive the preceding tile's accumulator. The full result must be carried through the surrounding loops. [Transform tutorial](https://mlir.llvm.org/docs/Tutorials/transform/Ch0/).
 
 ### fusion
 
-**producer-consumer fusion**: fuse ops where output of one feeds another
+Producer-consumer fusion computes the part of a producer needed by a consumer tile. For a matmul followed by an elementwise operation, this can avoid writing and rereading the entire intermediate matrix. Other uses of that matrix may still require materialization or recomputation.
 
-```mlir
-// before fusion
-%1 = linalg.matmul ins(%A, %B) outs(%C_init)
-%2 = linalg.add ins(%1, %bias) outs(%D_init)
-
-// after fusion
-scf.for %i, %j {
-  %tile_mm = linalg.matmul ins(%A_tile, %B_tile) outs(%C_tile)
-  %tile_add = linalg.add ins(%tile_mm, %bias_tile) outs(%D_tile)
-  // no intermediate materialization
-}
-```
-
-**sibling fusion**: fuse independent ops accessing same data
-
-```mlir
-// before
-%1 = linalg.reduce ins(%X) outs(%sum)
-%2 = linalg.reduce ins(%X) outs(%max)
-
-// after
-%sum, %max = scf.for %i iter_args(%s, %m) {
-  // compute both reductions in single loop
-}
-```
-
-linalg-on-tensors enables fusion without premature buffer allocation.
+A bias or nonlinear activation must be applied at the correct point relative to the reduction. Adding the bias once per reduction tile changes the answer. Fusion needs both indexing information and the scalar computation's semantics. [Structured transformations](https://mlir.llvm.org/docs/Dialects/Linalg/#set-of-key-transformations).
 
 ### vectorization
 
-affine vectorization finds vectorizable loops:
+Vectorization groups scalar work into vector operations. For a simple contiguous loop, a width of eight processes eight elements per main-loop iteration. A length that is not divisible by eight needs masking, padding, or a remainder path.
 
-```mlir
-// scalar loop
-affine.for %i = 0 to 1024 {
-  %a = affine.load %A[%i] : memref<1024xf32>
-  %b = affine.load %B[%i] : memref<1024xf32>
-  %c = arith.addf %a, %b : f32
-  affine.store %c, %C[%i] : memref<1024xf32>
-}
-
-// vectorized (factor 8)
-affine.for %i = 0 to 1024 step 8 {
-  %a_vec = vector.transfer_read %A[%i] : memref<1024xf32>, vector<8xf32>
-  %b_vec = vector.transfer_read %B[%i] : memref<1024xf32>, vector<8xf32>
-  %c_vec = arith.addf %a_vec, %b_vec : vector<8xf32>
-  vector.transfer_write %c_vec, %C[%i] : vector<8xf32>, memref<1024xf32>
-}
-```
-
-multi-dimensional vectorization for matrix operations:
-
-```mlir
-// 2D vectorization of matmul inner loops
-%result_vec = vector.contract %A_vec, %B_vec, %C_vec
-```
+For a contraction, the lowering also chooses how vectors map to registers and matrix instructions. Wider IR vectors can increase register pressure. Inspect the generated code and measure the actual kernel before treating vector width as a speedup. [Vector dialect](https://mlir.llvm.org/docs/Dialects/Vector/).
 
 ### buffer allocation
 
-one-shot bufferization analyzes tensor dataflow, places allocations optimally:
+The useful question is which old values remain observable after a proposed in-place update. If a later operation reads the original tensor, overwriting its only buffer would change that read. Bufferization must keep the old value available.
 
-strategies:
-
-- **in-place updates**: reuse input buffer when safe
-- **buffer hoisting**: allocate outside loops
-- **aliasing analysis**: avoid copies when possible
-
-```mlir
-// analysis determines %empty can be allocated once, reused
-func.func @chain(%x: tensor<1024xf32>) -> tensor<1024xf32> {
-  %c0 = arith.constant 0 : index
-  %c1024 = arith.constant 1024 : index
-  %c1 = arith.constant 1 : index
-
-  %result = scf.for %i = %c0 to %c1024 step %c1 iter_args(%acc = %x) -> tensor<1024xf32> {
-    %empty = tensor.empty() : tensor<1024xf32>
-    %next = linalg.add ins(%acc, %acc) outs(%empty)
-    scf.yield %next : tensor<1024xf32>
-  }
-  return %result : tensor<1024xf32>
-}
-
-// bufferized: single allocation hoisted out of loop
-```
+A destination passed through loop arguments can make storage reuse visible to analysis. An unrelated `tensor.empty` inside every iteration does not establish that one allocation will be hoisted and reused. Check the resulting memref IR, then account for ownership and deallocation. [Bufferization analysis](https://mlir.llvm.org/docs/Bufferization/).
 
 ### canonicalization and folding
 
-canonicalization simplifies IR using local rewrite patterns:
+Folding evaluates or simplifies an operation using its defined semantics. Canonicalization applies local cleanup patterns repeatedly, with limits. It is best-effort; a correct pipeline must not depend on every possible cleanup firing. CSE removes equivalent computations when the effect and dominance conditions permit it. [Canonicalization](https://mlir.llvm.org/docs/Canonicalization/).
 
-- constant folding: `add(constant(1), constant(2))` → `constant(3)`
-- dead code elimination: remove unused operations
-- algebraic simplification: `x + 0` → `x`, `x * 1` → `x`
-- operation strength reduction: `x << 2` instead of `x * 4`
-
-CSE (common subexpression elimination) removes duplicate computations.
+Arithmetic identities need types and assumptions. Integer addition by zero is straightforward. Floating-point rewrites must respect signed zero, NaNs, rounding, and any fast-math permissions. A familiar algebraic identity is insufficient justification for changing an `arith` operation's behavior.
 
 ### loop transformations
 
-**loop interchange**: reorder loops for better cache access
+Interchange changes loop order. For row-major storage, making the last index vary in the innermost loop gives contiguous accesses. Dependencies can forbid that order, so checking layout is only the performance half of the decision.
 
-```mlir
-// before: column-major access pattern (bad for row-major arrays)
-affine.for %i {
-  affine.for %j {
-    %a = affine.load %A[%j, %i]
-  }
-}
-
-// after interchange
-affine.for %j {
-  affine.for %i {
-    %a = affine.load %A[%j, %i]
-  }
-}
-```
-
-**loop skewing**: handle loop-carried dependencies
-
-**unroll-and-jam**: unroll outer loop, jam inner bodies
-
-```mlir
-// unroll outer by 2, jam
-affine.for %i = 0 to 1024 step 2 {
-  affine.for %j {
-    // iteration i
-    work(%i, %j)
-    // iteration i+1
-    work(%i+1, %j)
-  }
-}
-```
+Skewing changes the coordinates of the iteration space; unroll-and-jam duplicates outer iterations and combines their inner loops. Each transformation must preserve dependencies, and floating-point reductions may impose additional ordering constraints. [Affine dialect](https://mlir.llvm.org/docs/Dialects/Affine/).
 
 ## MLIR vs traditional compilers
 
 ### vs LLVM
 
-| aspect        | LLVM IR                     | MLIR                              |
-| ------------- | --------------------------- | --------------------------------- |
-| abstraction   | single-level, low-level     | multi-level, extensible           |
-| types         | primitive types, pointers   | dialects define arbitrary types   |
-| operations    | fixed instruction set       | extensible via dialects           |
-| optimization  | SSA-based, dataflow         | multiple levels, dialect-specific |
-| target domain | general purpose compilation | specialized for ML/HPC/DSLs       |
-| control flow  | CFG with phi nodes          | blocks with arguments             |
-
-LLVM IR is final lowering target. MLIR complements it by providing higher-level abstractions that preserve domain semantics during optimization.
+LLVM IR provides a defined instruction set for optimization and code generation. MLIR lets a compiler define operations that retain language or domain structure, then lower them when needed. The projects share infrastructure, and an MLIR compiler can use LLVM as its backend. [MLIR's representation](https://mlir.llvm.org/docs/LangRef/).
 
 ### vs XLA HLO
 
-XLA (Accelerated Linear Algebra) compiles TensorFlow/JAX to hardware.
-
-HLO (High-Level Optimizer) is XLA's IR. StableHLO standardizes it.
-
-| aspect        | HLO/StableHLO           | MLIR                                  |
-| ------------- | ----------------------- | ------------------------------------- |
-| scope         | ML-specific operations  | general compiler framework            |
-| extensibility | fixed op set (~100 ops) | unlimited via dialects                |
-| lowering      | HLO → LLVM directly     | progressive through multiple dialects |
-| reusability   | XLA-specific            | infrastructure for many compilers     |
-| abstractions  | single-level tensor ops | multi-level from high to low          |
-
-StableHLO is now an MLIR dialect. XLA increasingly uses MLIR infrastructure.
+XLA is a compiler; HLO is one of its representations. StableHLO is an MLIR dialect used for exchange, with a compatibility contract. These names refer to different layers of a compiler stack. Asking whether a system uses “MLIR or StableHLO” misses that StableHLO is represented using MLIR. [XLA architecture](https://openxla.org/xla/architecture), [StableHLO compatibility](https://openxla.org/stablehlo/compatibility).
 
 ### vs TVM
 
-TVM provides ML compilation stack: Relay (graph IR) → TIR (tensor IR) → target code.
+TVM provides a tensor compilation stack with graph-level and tensor-program representations, scheduling, and runtime components. Its architecture documentation describes Relax and TensorIR, so the older shorthand “Relay plus TIR” needs a version attached.
 
-| aspect      | TVM                            | MLIR                                    |
-| ----------- | ------------------------------ | --------------------------------------- |
-| approach    | Python-driven with C++ runtime | C++ infrastructure with Python bindings |
-| IR levels   | 2 levels (Relay, TIR)          | unlimited dialects                      |
-| scheduling  | TVM schedule primitives        | transformation dialect + passes         |
-| auto-tuning | AutoTVM, Ansor                 | typically external (like IREE)          |
-| community   | focused on ML                  | broader (ML, HPC, languages)            |
-
-both use progressive lowering. TVM emphasizes auto-tuning. MLIR emphasizes infrastructure reuse.
+MLIR supplies reusable IR and transformation infrastructure. A project using it still has to choose its scheduling policy, runtime, and supported models. A count of IR levels tells us little about those decisions. [TVM architecture](https://tvm.apache.org/docs/arch/).
 
 ### reusability story
 
-MLIR enables code sharing across compilers:
+A transformation can work across operations that implement the contracts it needs. This is why Linalg exposes structured indexing and why dialects implement interfaces. Reuse stops where semantics or representations stop matching. Sharing the parser and pass manager alone cannot make an optimization valid for a new dialect. [Linalg transformations](https://mlir.llvm.org/docs/Dialects/Linalg/#set-of-key-transformations).
 
-- **IREE**: uses StableHLO, Linalg, Vector, GPU dialects
-- **Torch-MLIR**: reuses Linalg, Arith, Func
-- **Flang**: uses MLIR for Fortran, shares LLVM lowering
-- **CIRCT**: hardware design, reuses core MLIR patterns
+## compiler and runtime projects
 
-dialects are mix-and-match. write optimization once, apply everywhere.
-
-## production deployments
+These projects use MLIR at different points in their compiler and runtime stacks.
 
 ### TensorFlow ecosystem
 
-**TFRT (TensorFlow Runtime)**: uses MLIR for graph optimization
-
-- BEF (Binary Executable Format) generated from MLIR
-- replaces legacy TensorFlow runtime
-
-**TF-to-StableHLO-to-XLA**: canonical TensorFlow compilation path
-
-- TensorFlow → StableHLO → XLA → hardware
-- MLIR-based passes at each level
+TFRT uses MLIR to represent host programs and translates them to its Binary Executable Format for execution. That is a specific runtime design. Its repository documents the compiler-to-BEF path; it does not establish that TFRT replaced every TensorFlow execution path. [TFRT](https://github.com/tensorflow/runtime).
 
 ### IREE (Intermediate Representation Execution Environment)
 
-MLIR-based ML compiler for edge/mobile/datacenter.
+IREE includes both an MLIR-based compiler and a runtime. Its compiler has input conversions, kernel code generation, and dialects for dispatch and execution, including Flow, Stream, HAL, and VM. The runtime supplies device interfaces and executes the compiled module.
 
-ingestion: TensorFlow (via IREE), PyTorch (via Torch-MLIR), JAX (via StableHLO)
-
-compilation flow:
-
-```
-StableHLO/Torch → Linalg → Flow (data flow) → Stream (scheduling) → HAL (hardware abstraction)
-```
-
-targets: CPU (LLVM), GPU (Vulkan/CUDA/ROCm), mobile (Metal), edge (embedded).
-
-focus: low-latency inference, small binary size, cross-platform portability.
-
-notable: AMD submitted IREE-based SDXL to MLPerf (2025).
+Keeping host scheduling separate from kernel lowering matters: compiling an individual matmul does not determine when its buffers are available or when another device may use the result. [IREE developer overview](https://iree.dev/developers/general/developer-overview/).
 
 ### Torch-MLIR
 
-PyTorch integration into MLIR ecosystem.
-
-two frontends:
-
-- **TorchScript**: via `torch.jit.script`
-- **TorchDynamo**: via `torch.compile` (newer, more coverage)
-
-lowering paths:
-
-- Torch dialect → Linalg → backend
-- Torch dialect → TOSA → backend
-- Torch dialect → StableHLO → XLA
-
-enables: portable PyTorch models, hardware vendor integration, custom backends.
+Torch-MLIR bridges FX and ONNX entry points to MLIR-based compilers. Its import paths and conversions are useful to downstream projects such as IREE. Selecting Torch-MLIR means selecting an integration with a supported input subset and backend. The default `torch.compile` backend remains TorchInductor. [Torch-MLIR](https://github.com/llvm/torch-mlir), [PyTorch `torch.compile`](https://docs.pytorch.org/docs/stable/generated/torch.compile.html).
 
 ### Flang (Fortran compiler)
 
-LLVM's Fortran frontend built entirely on MLIR.
-
-FIR (Fortran IR) dialect:
-
-- represents Fortran semantics (array slicing, complex numbers, etc.)
-- progressive lowering: FIR → LLVM dialect → LLVM IR
-
-demonstrates MLIR for traditional language compilation, not just ML.
+Flang parses and checks Fortran before lowering into MLIR-based representations. HLFIR retains higher-level Fortran expression and assignment semantics; FIR represents lower-level Fortran operations and eventually lowers toward LLVM. Describing the entire frontend as MLIR would skip its parser and semantic analysis. [Flang phases](https://flang.llvm.org/docs/Overview.html), [HLFIR](https://flang.llvm.org/docs/HighLevelFIR.html).
 
 ### CIRCT (Circuit IR Compilers and Tools)
 
-hardware design using MLIR.
-
-dialects:
-
-- **HW**: hardware structure (modules, instances)
-- **Comb**: combinational logic
-- **Seq**: sequential logic (registers, clocks)
-- **SV**: SystemVerilog constructs
-
-integrates with Chisel (Scala-based HDL). lowering: high-level hardware → Verilog.
-
-### other production users
-
-- **Google**: XLA, StableHLO, internal tooling
-- **Meta**: PyTorch 2.0 compilation via Torch-MLIR
-- **AMD**: IREE for GPUs, MLIR-based compiler stack
-- **Intel**: oneAPI uses MLIR dialects
-- **Modular**: Mojo language uses MLIR
+CIRCT uses MLIR for hardware compilation. Its dialects include HW for hardware structure, Comb for combinational logic, Seq for sequential logic, and SV for SystemVerilog constructs. Hardware descriptions are a useful counterexample to the claim that every MLIR pipeline ends in LLVM machine code. [CIRCT documentation](https://circt.llvm.org/docs/).
 
 ## practical code examples
 
 ### simple dialect definition
 
-define a toy dialect with `constant` and `add` operations:
+Start with the [Toy tutorial](https://mlir.llvm.org/docs/Tutorials/Toy/Ch-2/) for a buildable custom dialect. A constant operation needs an attribute whose type matches the result; an elementwise addition needs shape and element-type rules. A custom assembly format needs its parser and printer definitions too.
 
-```tablegen
-// ToyDialect.td
-def Toy_Dialect : Dialect {
-  let name = "toy";
-  let cppNamespace = "::mlir::toy";
-}
-
-class Toy_Op<string mnemonic, list<Trait> traits = []> :
-    Op<Toy_Dialect, mnemonic, traits>;
-
-def ConstantOp : Toy_Op<"constant"> {
-  let summary = "constant operation";
-  let arguments = (ins F64ElementsAttr:$value);
-  let results = (outs F64Tensor);
-
-  let builders = [
-    OpBuilder<(ins "DenseElementsAttr":$value)>
-  ];
-}
-
-def AddOp : Toy_Op<"add", [NoMemoryEffect, Commutative]> {
-  let summary = "element-wise addition";
-  let arguments = (ins F64Tensor:$lhs, F64Tensor:$rhs);
-  let results = (outs F64Tensor);
-}
-```
-
-usage:
-
-```mlir
-func.func @example() -> tensor<2x3xf64> {
-  %0 = toy.constant dense<[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]> : tensor<2x3xf64>
-  %1 = toy.constant dense<[[7.0, 8.0, 9.0], [10.0, 11.0, 12.0]]> : tensor<2x3xf64>
-  %2 = toy.add %0, %1 : tensor<2x3xf64>
-  return %2 : tensor<2x3xf64>
-}
-```
+ODS can generate the structural code, while the dialect supplies semantics and lowerings. A bare declaration of `toy.add` does not make its arithmetic executable. For experiments with matmul, the existing `arith`, `tensor`, and `linalg` operations above already provide those definitions.
 
 ### pattern rewriting example
 
-constant folding for `add`:
+Use a small integer fold to inspect the existing canonicalizer. Save this as `fold.mlir`:
 
-```cpp
-// ToyPatterns.cpp
-struct ConstantFoldAdd : public OpRewritePattern<AddOp> {
-  using OpRewritePattern<AddOp>::OpRewritePattern;
-
-  LogicalResult matchAndRewrite(AddOp op, PatternRewriter &rewriter) const override {
-    auto lhs = op.getLhs().getDefiningOp<ConstantOp>();
-    auto rhs = op.getRhs().getDefiningOp<ConstantOp>();
-
-    if (!lhs || !rhs)
-      return failure();
-
-    // Fold: add(constant(a), constant(b)) -> constant(a + b)
-    DenseElementsAttr lhsAttr = lhs.getValue();
-    DenseElementsAttr rhsAttr = rhs.getValue();
-
-    SmallVector<APFloat> results;
-    for (auto [lhsVal, rhsVal] : llvm::zip(
-           lhsAttr.getValues<APFloat>(),
-           rhsAttr.getValues<APFloat>())) {
-      results.push_back(lhsVal + rhsVal);
-    }
-
-    auto resultAttr = DenseElementsAttr::get(
-      op.getType(), ArrayRef<APFloat>(results));
-
-    rewriter.replaceOpWithNewOp<ConstantOp>(op, resultAttr);
-    return success();
-  }
-};
-
-void AddOp::getCanonicalizationPatterns(RewritePatternSet &results, MLIRContext *context) {
-  results.add<ConstantFoldAdd>(context);
+```mlir
+func.func @fold() -> i32 {
+  %a = arith.constant 7 : i32
+  %b = arith.constant 9 : i32
+  %sum = arith.addi %a, %b : i32
+  return %sum : i32
 }
 ```
+
+```sh
+mlir-opt fold.mlir --canonicalize
+```
+
+The result should return an `i32` constant of $16$; SSA names and printer formatting may change. This tests an existing folder without introducing a custom floating-point constant evaluator. [Canonicalization and folding](https://mlir.llvm.org/docs/Canonicalization/).
 
 ### tiling transformation
 
-tile matmul with specific tile sizes:
-
-```cpp
-// TilingPass.cpp
-void tileMatmul(linalg::MatmulOp matmul) {
-  OpBuilder builder(matmul);
-
-  SmallVector<int64_t> tileSizes = {256, 256, 128}; // M, N, K
-
-  auto tilingOptions = linalg::LinalgTilingOptions()
-    .setTileSizes(tileSizes)
-    .setLoopType(linalg::LinalgTilingLoopType::Loops);
-
-  FailureOr<linalg::TiledLinalgOp> tiled =
-    linalg::tileLinalgOp(builder, matmul, tilingOptions);
-
-  if (failed(tiled))
-    return;
-
-  matmul.replaceAllUsesWith(tiled->tensorResults);
-  matmul.erase();
-}
-```
-
-resulting IR:
+This example tiles only the reduction dimension of a matmul. Keeping the output dimensions intact makes the loop-carried accumulator visible. The tile size divides the static reduction extent exactly.
 
 ```mlir
-scf.for %i = %c0 to %c1024 step %c256 {
-  scf.for %j = %c0 to %c1024 step %c256 {
-    scf.for %k = %c0 to %c1024 step %c128 {
-      %A_tile = tensor.extract_slice %A[%i, %k][256, 128][1, 1]
-      %B_tile = tensor.extract_slice %B[%k, %j][128, 256][1, 1]
-      %C_tile = tensor.extract_slice %C[%i, %j][256, 256][1, 1]
-
-      %result_tile = linalg.matmul
-        ins(%A_tile, %B_tile : tensor<256x128xf32>, tensor<128x256xf32>)
-        outs(%C_tile : tensor<256x256xf32>) -> tensor<256x256xf32>
-
-      %C_new = tensor.insert_slice %result_tile into %C[%i, %j][256, 256][1, 1]
-      // update %C for next iteration
-    }
+func.func @matmul_k_tiles(%A: tensor<8x16xf32>, %B: tensor<16x8xf32>, %C: tensor<8x8xf32>) -> tensor<8x8xf32> {
+  %c0 = arith.constant 0 : index
+  %c4 = arith.constant 4 : index
+  %c16 = arith.constant 16 : index
+  %result = scf.for %k = %c0 to %c16 step %c4 iter_args(%acc = %C) -> (tensor<8x8xf32>) {
+    %a = tensor.extract_slice %A[0, %k] [8, 4] [1, 1] : tensor<8x16xf32> to tensor<8x4xf32>
+    %b = tensor.extract_slice %B[%k, 0] [4, 8] [1, 1] : tensor<16x8xf32> to tensor<4x8xf32>
+    %next = linalg.matmul ins(%a, %b : tensor<8x4xf32>, tensor<4x8xf32>)
+                          outs(%acc : tensor<8x8xf32>) -> tensor<8x8xf32>
+    scf.yield %next : tensor<8x8xf32>
   }
+  return %result : tensor<8x8xf32>
 }
 ```
+
+Each iteration starts from the previous `%acc`, so all four reduction tiles contribute. Passing `%C` directly as every tile's destination would discard earlier partial sums. To compute $AB$, supply a zero-filled `%C`; otherwise this computes $C+AB$.
+
+General tiling also handles partial boundary tiles and carries updated output slices through outer loops. MLIR's Transform dialect exposes tiling operations for eligible payload operations; its tutorial describes the required interfaces and handles. [Transform dialect](https://mlir.llvm.org/docs/Dialects/Transform/), [Transform tutorial](https://mlir.llvm.org/docs/Tutorials/transform/Ch0/).
 
 ### conversion between dialects
 
-convert linalg to loops:
+Start with a buffer-form matmul to isolate Linalg-to-loop conversion. Save this as `matmul-buffer.mlir`:
 
-```cpp
-// ConvertLinalgToLoops.cpp
-class MatmulToLoopsPattern : public OpRewritePattern<linalg::MatmulOp> {
-  using OpRewritePattern<linalg::MatmulOp>::OpRewritePattern;
-
-  LogicalResult matchAndRewrite(linalg::MatmulOp matmul, PatternRewriter &rewriter) const override {
-    Location loc = matmul.getLoc();
-
-    Value A = matmul.getInputs()[0];
-    Value B = matmul.getInputs()[1];
-    Value C = matmul.getOutputs()[0];
-
-    auto ATy = A.getType().cast<MemRefType>();
-    int64_t M = ATy.getShape()[0];
-    int64_t K = ATy.getShape()[1];
-
-    auto BTy = B.getType().cast<MemRefType>();
-    int64_t N = BTy.getShape()[1];
-
-    // Generate triple nested loop
-    auto buildLoop = [&](int64_t ub) {
-      Value ubVal = rewriter.create<arith::ConstantIndexOp>(loc, ub);
-      Value lbVal = rewriter.create<arith::ConstantIndexOp>(loc, 0);
-      Value stepVal = rewriter.create<arith::ConstantIndexOp>(loc, 1);
-      return rewriter.create<scf::ForOp>(loc, lbVal, ubVal, stepVal);
-    };
-
-    auto iLoop = buildLoop(M);
-    rewriter.setInsertionPointToStart(iLoop.getBody());
-
-    auto jLoop = buildLoop(N);
-    rewriter.setInsertionPointToStart(jLoop.getBody());
-
-    auto kLoop = buildLoop(K);
-    rewriter.setInsertionPointToStart(kLoop.getBody());
-
-    Value i = iLoop.getInductionVar();
-    Value j = jLoop.getInductionVar();
-    Value k = kLoop.getInductionVar();
-
-    // C[i,j] += A[i,k] * B[k,j]
-    Value aVal = rewriter.create<memref::LoadOp>(loc, A, ValueRange{i, k});
-    Value bVal = rewriter.create<memref::LoadOp>(loc, B, ValueRange{k, j});
-    Value cVal = rewriter.create<memref::LoadOp>(loc, C, ValueRange{i, j});
-
-    Value prod = rewriter.create<arith::MulFOp>(loc, aVal, bVal);
-    Value sum = rewriter.create<arith::AddFOp>(loc, cVal, prod);
-
-    rewriter.create<memref::StoreOp>(loc, sum, C, ValueRange{i, j});
-
-    rewriter.eraseOp(matmul);
-    return success();
-  }
-};
+```mlir
+func.func @matmul_buffer(%A: memref<8x16xf32>, %B: memref<16x8xf32>, %C: memref<8x8xf32>) {
+  linalg.matmul ins(%A, %B : memref<8x16xf32>, memref<16x8xf32>)
+                outs(%C : memref<8x8xf32>)
+  return
+}
 ```
+
+```sh
+mlir-opt matmul-buffer.mlir --convert-linalg-to-loops
+```
+
+The caller initializes `%C` and keeps its storage separate from `%A` and `%B`. The pass expresses the computation with SCF loops, loads, arithmetic, and stores. Tensor-form input needs bufferization or an appropriate tensor transformation first. [Linalg loop lowering](https://mlir.llvm.org/docs/Dialects/Linalg/#property-1-input-and-output-operands-define-the-iteration-space).
+
+For a custom dialect conversion, declare which operations are legal in the result, provide rewrite patterns, and use a type converter where representations change. A full conversion fails if illegal operations remain. That failure is useful evidence of a missing lowering. [Dialect conversion](https://mlir.llvm.org/docs/DialectConversion/).
 
 ## references
 
-- MLIR documentation: https://mlir.llvm.org/docs/
-- ODS specification: https://mlir.llvm.org/docs/DefiningDialects/Operations/
-- Linalg dialect: https://mlir.llvm.org/docs/Dialects/Linalg/
-- Affine dialect: https://mlir.llvm.org/docs/Dialects/Affine/
-- Pattern rewriting: https://mlir.llvm.org/docs/PatternRewriter/
-- Transform dialect: https://mlir.llvm.org/docs/Dialects/Transform/
-- IREE: https://iree.dev/
-- Torch-MLIR: https://github.com/llvm/torch-mlir
-- StableHLO: https://openxla.org/stablehlo
-- CIRCT: https://circt.llvm.org/
-- Jeremy Kun's MLIR tutorials: https://www.jeremykun.com/tags/mlir/
+- [MLIR documentation](https://mlir.llvm.org/docs/) and [tutorials](https://mlir.llvm.org/docs/Tutorials/)
+- [ODS specification](https://mlir.llvm.org/docs/DefiningDialects/Operations/)
+- [Linalg dialect](https://mlir.llvm.org/docs/Dialects/Linalg/)
+- [Affine dialect](https://mlir.llvm.org/docs/Dialects/Affine/)
+- [Pattern rewriting](https://mlir.llvm.org/docs/PatternRewriter/)
+- [Transform dialect](https://mlir.llvm.org/docs/Dialects/Transform/)
+- [IREE](https://iree.dev/), [Torch-MLIR](https://github.com/llvm/torch-mlir), [StableHLO](https://openxla.org/stablehlo), [CIRCT](https://circt.llvm.org/)
+- [Stephen Diehl's introduction](https://www.stephendiehl.com/posts/mlir_introduction/)
+- [Jeremy Kun's getting-started article](https://www.jeremykun.com/2023/08/10/mlir-getting-started/) and [MLIR series](https://www.jeremykun.com/tags/mlir/)

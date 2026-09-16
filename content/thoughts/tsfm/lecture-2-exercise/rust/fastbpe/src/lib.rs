@@ -3,6 +3,10 @@ use pyo3::types::PyBytes;
 
 mod bpe;
 
+fn value_error(error: anyhow::Error) -> PyErr {
+    pyo3::exceptions::PyValueError::new_err(error.to_string())
+}
+
 #[pyclass]
 pub struct Tokenizer {
     inner: bpe::PreTrainedBPE,
@@ -11,22 +15,29 @@ pub struct Tokenizer {
 #[pymethods]
 impl Tokenizer {
     #[staticmethod]
-    #[pyo3(signature = (dir))]
     fn from_pretrained(dir: String) -> PyResult<Self> {
-        let trained = bpe::load_from_dir(dir)
-            .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
-        Ok(Self { inner: trained })
+        Ok(Self {
+            inner: bpe::load_from_dir(dir).map_err(value_error)?,
+        })
     }
 
-    fn encode(&self, text: &str) -> Vec<u32> { bpe::encode_str(&self.inner, text) }
-    fn encode_bytes<'py>(&self, py: Python<'py>, data: &Bound<'py, PyBytes>) -> Vec<u32> {
-        // SAFETY: Holding GIL only to access bytes; merge is pure Rust
-        let slice = data.as_bytes();
-        // Release GIL during compute-heavy merge
-        py.allow_threads(|| bpe::encode_bytes(&self.inner, slice))
+    fn encode(&self, py: Python<'_>, text: &str) -> PyResult<Vec<u32>> {
+        py.detach(|| bpe::encode_str(&self.inner, text))
+            .map_err(value_error)
     }
-    fn decode(&self, ids: Vec<u32>) -> String {
-        bpe::decode_ids(&self.inner, &ids)
+
+    fn encode_bytes(&self, py: Python<'_>, data: &Bound<'_, PyBytes>) -> Vec<u32> {
+        let slice = data.as_bytes();
+        py.detach(|| bpe::encode_bytes(&self.inner, slice))
+    }
+
+    fn decode(&self, ids: Vec<u32>) -> PyResult<String> {
+        bpe::decode_ids(&self.inner, &ids).map_err(value_error)
+    }
+
+    fn decode_bytes<'py>(&self, py: Python<'py>, ids: Vec<u32>) -> PyResult<Bound<'py, PyBytes>> {
+        let bytes = bpe::decode_bytes(&self.inner, &ids).map_err(value_error)?;
+        Ok(PyBytes::new(py, &bytes))
     }
 
     fn merges_list(&self) -> Vec<(u32, u32, u32)> {
@@ -36,12 +47,13 @@ impl Tokenizer {
             .map(|(p, n)| (p.0, p.1, *n))
             .collect()
     }
+
     fn vocab_pairs(&self) -> Vec<(Vec<u32>, u32)> {
         let mut out = Vec::with_capacity(256 + self.inner.merges_ordered.len());
         for i in 0u32..256 {
             out.push((vec![i], i));
         }
-        for (pair, nid) in self.inner.merges_ordered.iter() {
+        for (pair, nid) in &self.inner.merges_ordered {
             out.push((vec![pair.0, pair.1], *nid));
         }
         out
@@ -49,7 +61,7 @@ impl Tokenizer {
 }
 
 #[pymodule]
-fn _core(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
+fn _core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Tokenizer>()?;
     Ok(())
 }

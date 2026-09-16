@@ -1,18 +1,15 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'preact/hooks'
-import type { FeedFilter } from './model'
 
-const filters: { value: FeedFilter; label: string }[] = [
-  { value: 'unread', label: 'unread' },
-  { value: 'read', label: 'read' },
-  { value: 'all', label: 'all saved links' },
-]
-
-export function QueueFilter({
+export function ReaderFilter<Value extends string>({
+  label,
+  options,
   value,
   onChange,
 }: {
-  value: FeedFilter
-  onChange: (value: FeedFilter) => void
+  label: string
+  options: readonly { value: Value; label: string }[]
+  value: Value
+  onChange: (value: Value) => void
 }) {
   const id = useId()
   const root = useRef<HTMLDivElement>(null)
@@ -21,7 +18,7 @@ export function QueueFilter({
   const [active, setActive] = useState(0)
 
   const show = () => {
-    setActive(filters.findIndex(filter => filter.value === value))
+    setActive(options.findIndex(option => option.value === value))
     setOpen(true)
   }
   const close = () => {
@@ -52,7 +49,7 @@ export function QueueFilter({
         setOpen(false)
       }}
     >
-      <span id={`${id}-label`}>show</span>
+      <span id={`${id}-label`}>{label}</span>
       <div class="arena-reader-filter-picker">
         <button
           ref={trigger}
@@ -69,9 +66,9 @@ export function QueueFilter({
             show()
           }}
         >
-          <span id={`${id}-value`}>{filters.find(filter => filter.value === value)?.label}</span>
+          <span id={`${id}-value`}>{options.find(option => option.value === value)?.label}</span>
           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
-            <path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.4" />
+            <path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.25" />
           </svg>
         </button>
         <div
@@ -91,14 +88,14 @@ export function QueueFilter({
               event.key === 'Home'
                 ? 0
                 : event.key === 'End'
-                  ? filters.length - 1
+                  ? options.length - 1
                   : event.key === 'ArrowDown'
-                    ? Math.min(filters.length - 1, active + 1)
+                    ? Math.min(options.length - 1, active + 1)
                     : event.key === 'ArrowUp'
                       ? Math.max(0, active - 1)
                       : event.key.length === 1 && !event.metaKey && !event.ctrlKey && !event.altKey
-                        ? filters.findIndex(filter =>
-                            filter.label.toLowerCase().startsWith(event.key.toLowerCase()),
+                        ? options.findIndex(option =>
+                            option.label.toLowerCase().startsWith(event.key.toLowerCase()),
                           )
                         : -1
             if (next < 0) return
@@ -106,23 +103,29 @@ export function QueueFilter({
             setActive(next)
           }}
         >
-          {filters.map((filter, index) => (
+          {options.map((option, index) => (
             <button
-              key={filter.value}
+              key={option.value}
               type="button"
               role="option"
-              aria-selected={filter.value === value}
+              aria-selected={option.value === value}
               tabIndex={index === active ? 0 : -1}
               onFocus={() => setActive(index)}
               onClick={() => {
-                onChange(filter.value)
+                onChange(option.value)
                 close()
               }}
             >
-              <span class="arena-reader-filter-check" aria-hidden="true">
-                ✓
-              </span>
-              <span>{filter.label}</span>
+              <svg
+                class="arena-reader-filter-check"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.25" />
+              </svg>
+              <span>{option.label}</span>
             </button>
           ))}
         </div>

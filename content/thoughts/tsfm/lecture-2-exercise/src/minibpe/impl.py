@@ -1,75 +1,18 @@
 from __future__ import annotations
 
-import dataclasses, json, os, multiprocessing, heapq
+import dataclasses
+import heapq
+import os
+from pathlib import Path
 
-from .core import PRETOKENIZER
-
-# Byte-level BPE encoder in pure Python
-# Walkthrough:
-# - Loads merges (pair -> new_id) and builds ranks (pair -> rank order)
-# - Encodes by: pretokenize -> bytes -> merge loop
-# - Merge loop keeps a linked list of indices and a min-heap of candidate pairs
-#   ordered by rank. Each pop validates adjacency and staleness, merges in place,
-#   then updates neighboring pairs. This avoids full rescans on every step.
-# - Decoding expands ids back to bytes by recursively composing learned pairs.
-
-
-def _parse_merges_batch(lines: list[str]) -> dict[tuple[int, int], int]:
-  out: dict[tuple[int, int], int] = {}
-  for line in lines:
-    s = line.strip()
-    if not s:
-      continue
-    parts = s.split()
-    if len(parts) < 3:
-      parts = s.split(',')
-      if len(parts) < 3:
-        continue
-    a = int(parts[0])
-    b = int(parts[1])
-    new_id = int(parts[2])
-    out[a, b] = new_id
-  return out
-
-
-def _parse_vocab_batch(lines: list[str]) -> dict[tuple[int, ...], int]:
-  out: dict[tuple[int, ...], int] = {}
-  for line in lines:
-    s = line.rstrip('\n')
-    if not s:
-      continue
-    if '\t' in s:
-      left, right = s.split('\t', 1)
-      token_text = json.loads(left)
-      tok_id = int(right.strip())
-      symbol = tuple(token_text.encode('utf-8'))
-      out[symbol] = tok_id
-    else:
-      parts = [int(x) for x in s.split()]
-      if len(parts) < 2:
-        continue
-      *symbol, tok_id = parts
-      out[tuple(symbol)] = tok_id
-  return out
-
-
-def _batched_line_reader(path: str, batch_size: int = 200_000):
-  with open(path, 'r') as f:
-    batch: list[str] = []
-    for line in f:
-      batch.append(line)
-      if len(batch) >= batch_size:
-        yield batch
-        batch = []
-    if batch:
-      yield batch
+from .patterns import PRETOKENIZER
 
 
 @dataclasses.dataclass
 class Tokenizer:
   merges: dict[tuple[int, int], int]
-  vocab: dict[tuple[int, ...], int]
-  id_to_sym: dict[int, tuple[int, ...]] = dataclasses.field(init=False)
+  vocab: dict[tuple[int, ...], int] = dataclasses.field(init=False)
+  id_to_bytes: dict[int, bytes] = dataclasses.field(init=False)
   ranks: dict[tuple[int, int], int] = dataclasses.field(init=False)
   encode_cache: dict[bytes, tuple[int, ...]] = dataclasses.field(
     default_factory=dict, init=False
@@ -77,80 +20,53 @@ class Tokenizer:
   cache_max_token_bytes: int = 100
 
   def __post_init__(self) -> None:
-    # Build id -> symbol table for decoding (only non-byte ids >=256)
-    self.id_to_sym = {
-      tok_id: tuple(symbol)
-      for symbol, tok_id in self.vocab.items()
-      if tok_id >= 256
-    }
-    # Convert merges table to ranks (lower rank merges first)
-    self.ranks = {
-      pair: rank
-      for rank, (pair, _) in enumerate(
-        sorted(self.merges.items(), key=lambda kv: kv[1])
+    self.id_to_bytes = {i: bytes([i]) for i in range(256)}
+    self.ranks = {}
+    # Merge ids encode training order. The merge graph is the source of bytes,
+    # including for old models whose display-only vocab.txt lost UTF-8 fragments.
+    ordered = sorted(self.merges.items(), key=lambda entry: entry[1])
+    for rank, (pair, tok_id) in enumerate(ordered):
+      if not 256 <= tok_id <= 0xFFFFFFFF:
+        raise ValueError(f'learned token id must fit an unsigned 32-bit integer: {tok_id}')
+      if tok_id in self.id_to_bytes:
+        raise ValueError(f'duplicate or reserved token id: {tok_id}')
+      if len(pair) != 2 or any(part not in self.id_to_bytes for part in pair):
+        raise ValueError(f'merge refers to an undefined token: {pair}')
+      self.id_to_bytes[tok_id] = (
+        self.id_to_bytes[pair[0]] + self.id_to_bytes[pair[1]]
       )
-    }
+      self.ranks[pair] = rank
+    self.vocab = {(i,): i for i in range(256)} | dict(self.merges)
 
   @classmethod
-  def from_pretrained(cls, fp: str) -> 'Tokenizer':
-    merges_fp = os.path.join(fp, 'merges.txt')
-    vocab_fp = os.path.join(fp, 'vocab.txt')
-    procs = max(1, multiprocessing.cpu_count() - 1)
-    with multiprocessing.Pool(procs) as pool:
-      merges_parts = pool.imap_unordered(
-        _parse_merges_batch, _batched_line_reader(merges_fp), chunksize=1
-      )
-      merges: dict[tuple[int, int], int] = {}
-      for part in merges_parts:
-        merges.update(part)
-      vocab_parts = pool.imap_unordered(
-        _parse_vocab_batch, _batched_line_reader(vocab_fp), chunksize=1
-      )
-      vocab: dict[tuple[int, ...], int] = {}
-      for part in vocab_parts:
-        vocab.update(part)
-      pool.close()
-      pool.join()
-    return cls(merges=merges, vocab=vocab)
+  def from_pretrained(cls, fp: str | os.PathLike[str]) -> 'Tokenizer':
+    merges: dict[tuple[int, int], int] = {}
+    with (Path(fp) / 'merges.txt').open(encoding='utf-8') as handle:
+      for line in handle:
+        if not line.strip():
+          continue
+        parts = line.replace(',', ' ').split()
+        if len(parts) != 3:
+          raise ValueError(f'expected three merge ids: {line.strip()}')
+        a, b, tok_id = map(int, parts)
+        if (a, b) in merges:
+          raise ValueError(f'duplicate merge pair: {(a, b)}')
+        merges[a, b] = tok_id
+    return cls(merges=merges)
 
-  def _get_pairs(self, symbols: list[int]) -> list[tuple[int, int]]:
-    if len(symbols) < 2:
-      return []
-    return list(zip(symbols, symbols[1:]))
+  def save_pretrained(self, fp: str | os.PathLike[str]) -> None:
+    directory = Path(fp)
+    directory.mkdir(parents=True, exist_ok=True)
+    with (directory / 'merges.txt').open('w', encoding='utf-8') as handle:
+      for (a, b), tok_id in sorted(self.merges.items(), key=lambda kv: kv[1]):
+        handle.write(f'{a},{b},{tok_id}\n')
+    with (directory / 'vocab.txt').open('w', encoding='utf-8') as handle:
+      for tok_id, data in sorted(self.id_to_bytes.items()):
+        # Decimal byte values preserve tokens that end inside a UTF-8 character.
+        handle.write(' '.join(map(str, (*data, tok_id))) + '\n')
 
   def _apply_bpe(self, symbols: list[int]) -> list[int]:
-    """
-    Apply byte pair encoding (BPE) merges to a sequence of byte ids.
-
-    Background: Traditional BPE (Sennrich et al., 2015) starts from a
-    symbolization of text as a sequence of bytes (or characters) and
-    repeatedly merges the most frequent adjacent pair into a new symbol.
-
-    Training records the order of pairs merged (or assigns each learned
-    pair a rank). At inference/encoding time we then greedily apply those
-    learned merges: at every step, among all adjacent pairs present in the
-    current sequence, merge the one with the best (lowest) rank, and repeat
-    until no mergeable pairs remain.
-
-    Naïve application rescans the whole sequence to locate the next best
-    pair after every merge, which is O(n) per step and can be costly.
-
-    Implementation: heap + linked list
-    - We maintain the sequence in-place using parallel next/prev index arrays to simulate a linked list.
-      - Elements marked "dead" are skipped.
-    - We push every mergeable adjacent pair into a min-heap keyed by its rank.
-      - Each heap item also carries a stamp to help detect staleness.
-    - When we pop a candidate:
-      - validate that its two positions are still adjacent and alive and
-        that the pair’s rank hasn’t changed;
-      - otherwise we discard or re-push.
-    - If valid, we merge them in-place, update neighbors, and push the newly formed adjacent pairs.
-    - This avoids full rescans and keeps encoding efficient in practice.
-
-    Note: this matches the greedy merge order of traditional BPE,
-    just realized with data structures that make each step cheap.
-    """
-    # Heap + linked-list merge (similar idea to tiktoken)
+    """Apply ranked merges using a heap and linked indices."""
     n = len(symbols)
     if n < 2:
       return symbols
@@ -158,8 +74,7 @@ class Tokenizer:
     next_idx = list(range(1, n)) + [-1]
     prev_idx = [-1] + list(range(0, n - 1))
     alive = [True] * n
-    stamp = [0] * n
-    heap: list[tuple[int, int, int, int, int]] = []
+    heap: list[tuple[int, int, int, int]] = []
 
     ranks = self.ranks
     merges = self.merges
@@ -177,13 +92,13 @@ class Tokenizer:
       if r is None:
         return
       new_id = merges[pair]
-      heappush(heap, (r, i, stamp[i], j, new_id))
+      heappush(heap, (r, i, j, new_id))
 
     for i in range(n - 1):
       push(i)
 
     while heap:
-      r, i, _, j, new_id = heappop(heap)
+      r, i, j, new_id = heappop(heap)
       if i < 0 or j < 0:
         continue
       if not (alive[i] and alive[j]):
@@ -195,7 +110,6 @@ class Tokenizer:
         push(i)
         continue
       ids[i] = new_id
-      stamp[i] += 1
       alive[j] = False
       nj = next_idx[j]
       next_idx[i] = nj
@@ -203,7 +117,6 @@ class Tokenizer:
         prev_idx[nj] = i
       pi = prev_idx[i]
       if pi != -1:
-        stamp[pi] += 1
         push(pi)
       if next_idx[i] != -1:
         push(i)
@@ -237,25 +150,14 @@ class Tokenizer:
   def encode_bytes(self, data: bytes) -> list[int]:
     return self._apply_bpe(list(data))
 
-  def decode(self, ids: list[int]) -> str:
-    # Expand composed ids back to bytes using iterative stack; decode as utf-8
-    def flatten(idx: int, out: list[int]) -> None:
-      stack: list[int] = [idx]
-      while stack:
-        cur = stack.pop()
-        if 0 <= cur < 256:
-          out.append(cur)
-          continue
-        sym = self.id_to_sym.get(cur)
-        if sym is None:
-          continue
-        for s in reversed(sym):
-          stack.append(s)
+  def decode_bytes(self, ids: list[int]) -> bytes:
+    try:
+      return b''.join(self.id_to_bytes[idx] for idx in ids)
+    except KeyError as error:
+      raise ValueError(f'unknown token id: {error.args[0]}') from error
 
-    bytes_out: list[int] = []
-    for idx in ids:
-      flatten(idx, bytes_out)
-    return bytes(bytes_out).decode('utf-8', errors='replace')
+  def decode(self, ids: list[int]) -> str:
+    return self.decode_bytes(ids).decode('utf-8', errors='replace')
 
   def colorize_tokens(self, text: str) -> str:
     """
@@ -303,7 +205,7 @@ class Tokenizer:
       width = max(1, len(s))
       underline_parts.append(f'{color}{fg}{block * width}{reset}')
 
-    text_line = ''.join(spans)
+    text_line = text
     underline_line = ''.join(underline_parts)
     return f'{text_line}\n{underline_line}'
 
@@ -344,8 +246,7 @@ class Tokenizer:
     next_idx = list(range(1, n)) + [-1]
     prev_idx = [-1] + list(range(0, n - 1))
     alive = [True] * n
-    stamp = [0] * n
-    heap: list[tuple[int, int, int, int, int]] = []
+    heap: list[tuple[int, int, int, int]] = []
 
     ranks = self.ranks
     merges = self.merges
@@ -363,7 +264,7 @@ class Tokenizer:
       if r is None:
         return
       new_id = merges[pair]
-      heappush(heap, (r, i, stamp[i], j, new_id))
+      heappush(heap, (r, i, j, new_id))
 
     for i in range(n - 1):
       push(i)
@@ -386,34 +287,8 @@ class Tokenizer:
         k = next_idx[k]
       return toks
 
-    def flatten_token(tok_id: int) -> bytes:
-      # Turn a token id back into bytes for display
-      if 0 <= tok_id < 256:
-        return bytes([tok_id])
-      sym = self.id_to_sym.get(tok_id)
-      if sym is None:
-        return f'<{tok_id}>'.encode()
-      # Iterative stack to avoid recursion
-      out: list[int] = []
-      stack: list[int] = list(sym)
-      while stack:
-        t = stack.pop()
-        if 0 <= t < 256:
-          out.append(t)
-        else:
-          inner = self.id_to_sym.get(t)
-          if inner is None:
-            # Should not happen for well-formed vocabs; fall back
-            return f'<{tok_id}>'.encode()
-          stack.extend(reversed(inner))
-      return bytes(out)
-
     def render_tokens(toks: list[int]) -> str:
-      parts: list[str] = [
-        (flatten_token(t).decode('utf-8', errors='replace'))[::-1]
-        for t in toks
-      ]
-      return ' | '.join(parts)
+      return ' | '.join(repr(self.decode_bytes([tok_id])) for tok_id in toks)
 
     def current_candidates() -> list[tuple[int, tuple[int, int]]]:
       # Recompute live adjacent pairs and sort by rank (best first)
@@ -434,7 +309,7 @@ class Tokenizer:
       f'tokens: {snapshot_tokens()} :: {render_tokens(snapshot_tokens())}'
     )
     while heap and (max_steps is None or step < max_steps):
-      r, i, _, j, new_id = heappop(heap)
+      r, i, j, new_id = heappop(heap)
       if i < 0 or j < 0:
         continue
       if not (alive[i] and alive[j]):
@@ -456,7 +331,6 @@ class Tokenizer:
 
       # Apply merge
       ids[i] = new_id
-      stamp[i] += 1
       alive[j] = False
       nj = next_idx[j]
       next_idx[i] = nj
@@ -464,7 +338,6 @@ class Tokenizer:
         prev_idx[nj] = i
       pi = prev_idx[i]
       if pi != -1:
-        stamp[pi] += 1
         push(pi)
       if next_idx[i] != -1:
         push(i)

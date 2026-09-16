@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os, time, typing as t
-import fire
 
 from .impl import Tokenizer as PyTokenizer
 from ._core import Tokenizer as RustTokenizer
@@ -15,7 +14,8 @@ def _load_valid_text(
     path = os.path.join(base_dir, 'data', 'toy_data.txt')
   else:
     path = os.path.join(base_dir, 'data', 'TinyStoriesV2-GPT4-valid.txt')
-  return open(path, 'r', encoding='utf-8', errors='ignore').read()
+  with open(path, encoding='utf-8') as handle:
+    return handle.read()
 
 
 def _timings_ms(
@@ -34,9 +34,6 @@ def _timings_ms(
 
 def benchmark(
   dataset: t.Literal['toy', 'tinygpt-train'] = 'toy',
-  merges: int = 500,
-  processes: int = 4,
-  batch_size: int = 1,
 ) -> None:
   text = _load_valid_text(dataset)
 
@@ -47,17 +44,12 @@ def benchmark(
     os.path.join(os.path.dirname(__file__), dataset)
   )
 
-  # train_path = resolve_ds(dataset)
-  # # Train Python
-  # start = time.perf_counter()
-  # counts = chunk_text_file(train_path, processes, special_token='<|endoftext|>')
-  # py_merges_map, py_vocab = train_bpe(counts, merges, batch_size=batch_size)
-  # py_model = PyTokenizer(merges=py_merges_map, vocab=py_vocab)
-  # py_train_s = time.perf_counter() - start
-  #
-  # # Train Rust
-  # TODO: DOGSHIT LOL
-  # start = time.perf_counter(); r_model = RustTokenizer.train_from_files([train_path], merges, processes); rust_train_s = time.perf_counter() - start
+  py_ids = py_model.encode(text)
+  rust_ids = r_model.encode(text)
+  if py_ids != rust_ids:
+    raise ValueError('Python and Rust token IDs differ; benchmark aborted')
+  if py_model.decode(py_ids) != text or r_model.decode(rust_ids) != text:
+    raise ValueError('Decoded text differs from input; benchmark aborted')
 
   py_enc_ms, py_dec_ms, py_rt_ms = _timings_ms(py_model, text)
   r_enc_ms, r_dec_ms, r_rt_ms = _timings_ms(r_model, text)
@@ -73,4 +65,6 @@ def benchmark(
 
 
 def cli() -> None:
+  import fire
+
   fire.Fire(benchmark)

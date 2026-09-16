@@ -8,6 +8,7 @@ import path from 'node:path'
 import test from 'node:test'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
+import { compile } from 'sass-embedded'
 import type { ArenaReaderArtifactBase } from '../quartz/util/arena-reader'
 import type { ArenaExtractedDocument } from './arena-reader-extraction'
 import { ARENA_READER_PROFILE } from './arena-reader-cache'
@@ -15,9 +16,56 @@ import {
   arenaReaderFailureSignals,
   arenaReaderRelayHeaders,
   buildArenaHtmlArtifact,
+  readArenaReaderResource,
 } from './arena-reader-render'
 
 const run = promisify(execFile)
+
+test('capture allows MathJax-sized scripts while bounding documents and streamed resources', async t => {
+  const documentLimit = 2 * 1024 * 1024
+  const scriptLimit = 4 * 1024 * 1024
+  const bundle = new Uint8Array(2_108_580)
+  await t.test('combined math bundles fit the script budget', async () => {
+    const body = await readArenaReaderResource(
+      new Response(bundle, { headers: { 'Content-Length': String(bundle.byteLength) } }),
+      'script',
+    )
+    assert.equal(body.byteLength, bundle.byteLength)
+  })
+  await t.test('documents and stylesheets retain their smaller limit', async () => {
+    const types: ('document' | 'stylesheet')[] = ['document', 'stylesheet']
+    for (const type of types) {
+      await assert.rejects(
+        readArenaReaderResource(new Response(bundle), type),
+        /exceeds the reader size limit/,
+      )
+    }
+  })
+  await t.test('oversized scripts are rejected from headers or the streamed body', async () => {
+    await assert.rejects(
+      readArenaReaderResource(
+        new Response('', { headers: { 'Content-Length': String(scriptLimit + 1) } }),
+        'script',
+      ),
+      /exceeds the reader size limit/,
+    )
+    let cancelled = false
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array(documentLimit))
+        controller.enqueue(new Uint8Array(documentLimit + 1))
+      },
+      cancel() {
+        cancelled = true
+      },
+    })
+    await assert.rejects(
+      readArenaReaderResource(new Response(body), 'script'),
+      /exceeds the reader size limit/,
+    )
+    assert.ok(cancelled)
+  })
+})
 
 test('relay headers preserve content/CORS without forwarding source credentials or executable workers', () => {
   const headers = arenaReaderRelayHeaders(
@@ -318,11 +366,34 @@ test('real Chromium extracts articles and strips active content in an isolated d
         idPrefix: 'snapshot-',
       })
     }
+    inputs.push({
+      html: `<html><head><title>MathJax research</title></head><body><article>
+        <h1>MathJax research</h1><p>${paragraph.repeat(5)}</p>
+        <p>The reflection direction is
+          <mjx-container class="MathJax" jax="SVG"><svg><path d="M0 0"></path></svg>
+            <mjx-assistive-mml display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow data-mjx-texclass="ORD"><mi mathvariant="bold">k</mi></mrow><mo stretchy="false">(</mo><mrow data-mjx-texclass="ORD"><mi mathvariant="bold">X</mi></mrow><mo stretchy="false">)</mo><mo>∈</mo><mi mathvariant="double-struck">R</mi></math></mjx-assistive-mml>
+          </mjx-container> and its gate controls the update.</p>
+        <h2>The delta operator</h2>
+        <mjx-container class="MathJax" jax="SVG" display="true"><svg><path d="M0 0"></path></svg>
+          <mjx-assistive-mml display="block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msub><mrow data-mjx-texclass="ORD"><mi mathvariant="bold">X</mi></mrow><mrow data-mjx-texclass="ORD"><mi>l</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><munder><mrow data-mjx-texclass="OP"><munder><mrow><mo stretchy="false">(</mo><mrow data-mjx-texclass="ORD"><mi mathvariant="bold">I</mi></mrow><mo>−</mo><msub><mi>β</mi><mi>l</mi></msub><msub><mrow data-mjx-texclass="ORD"><mi mathvariant="bold">k</mi></mrow><mi>l</mi></msub><msubsup><mrow data-mjx-texclass="ORD"><mi mathvariant="bold">k</mi></mrow><mi>l</mi><mi mathvariant="normal">⊤</mi></msubsup><mo stretchy="false">)</mo></mrow><mo>⏟</mo></munder></mrow><mrow data-mjx-texclass="ORD"><mtext>Delta Operator </mtext><mrow data-mjx-texclass="ORD"><mi mathvariant="bold">A</mi></mrow><mo stretchy="false">(</mo><mrow data-mjx-texclass="ORD"><mi mathvariant="bold">X</mi></mrow><mo stretchy="false">)</mo></mrow></munder></math></mjx-assistive-mml>
+        </mjx-container>
+        <p>${paragraph.repeat(4)}</p>
+        <table><thead><tr><th>Regime</th><th>Gate</th></tr></thead><tbody><tr><td>Reflection</td><td>
+          <mjx-container class="MathJax" jax="SVG"><svg><path d="M0 0"></path></svg>
+            <mjx-assistive-mml display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>β</mi><mo>=</mo><mn>2</mn></math></mjx-assistive-mml>
+          </mjx-container></td></tr></tbody></table>
+        </article></body></html>`,
+      finalUrl: 'https://example.com/mathjax-research',
+      idPrefix: 'snapshot-',
+    })
     const input = JSON.stringify(inputs).replaceAll('<', '\\u003c')
     const fixture = path.join(directory, 'fixture.html')
+    const css = compile(
+      fileURLToPath(new URL('../quartz/components/styles/arena-feed.scss', import.meta.url)),
+    ).css
     await writeFile(
       fixture,
-      `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; connect-src ${fixtureOrigin}"></head><body><script>${defuddle}\n${purify}\n${bundle.outputFiles[0].text}\n
+      `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src ${fixtureOrigin}"><style>${css}</style></head><body><script>${defuddle}\n${purify}\n${bundle.outputFiles[0].text}\n
       globalThis.arenaReaderFetch = async url => {
         const response = await fetch(${JSON.stringify(fixtureOrigin)} + '/extractor?url=' + encodeURIComponent(url));
         return { body: await response.text(), status: response.status, contentType: response.headers.get('Content-Type'), url };
@@ -333,7 +404,21 @@ test('real Chromium extracts articles and strips active content in an isolated d
       Promise.all(${input}.map(async input => {
         try {
           const result = await extractSerialized(input);
-          return { ...result, displayHtml: ArenaExtraction.sanitizeReaderHtml(result.readerHtml ?? '') };
+          const displayHtml = ArenaExtraction.sanitizeReaderHtml(result.readerHtml ?? '');
+          const article = document.createElement('div');
+          article.className = 'arena-reader-prose';
+          article.style.width = '320px';
+          article.innerHTML = displayHtml;
+          document.body.appendChild(article);
+          const equation = article.querySelector('math[display="block"]');
+          const mathLayout = equation ? {
+            display: getComputedStyle(equation).display,
+            width: equation.getBoundingClientRect().width,
+            articleWidth: article.getBoundingClientRect().width,
+            overflowX: getComputedStyle(equation).overflowX,
+          } : null;
+          article.remove();
+          return { ...result, displayHtml, mathLayout };
         }
         catch (error) { return { error: error.message } }
       })).then(results => { document.body.textContent = btoa(unescape(encodeURIComponent(JSON.stringify(results)))); });</script></body></html>`,
@@ -355,8 +440,18 @@ test('real Chromium extracts articles and strips active content in an isolated d
     )
     const encoded = result.stdout.match(/<body>([A-Za-z\d+/=]+)<\/body>/)?.[1]
     assert.ok(encoded, result.stderr.slice(-1000))
-    const outputs: ((ArenaExtractedDocument & { displayHtml: string }) | { error: string })[] =
-      JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'))
+    const outputs: (
+      | (ArenaExtractedDocument & {
+          displayHtml: string
+          mathLayout: {
+            display: string
+            width: number
+            articleWidth: number
+            overflowX: string
+          } | null
+        })
+      | { error: string }
+    )[] = JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'))
     const [
       output,
       structured,
@@ -369,6 +464,7 @@ test('real Chromium extracts articles and strips active content in an isolated d
       xArticle,
       xPost,
       xFallback,
+      mathJax,
     ] = outputs
     assert.ok(output && !('error' in output))
     assert.equal(output.title, 'Reading links')
@@ -471,6 +567,31 @@ test('real Chromium extracts articles and strips active content in an isolated d
       assert.match(structured.displayHtml, /data-lang="python"/)
       assert.match(structured.displayHtml, /data-latex="\\frac\{a\}\{b\}"/)
       assert.match(structured.displayHtml, /href="#snapshot-fn:1"/)
+    })
+    await t.test('MathJax macro expansions survive Defuddle and both sanitizers as MathML', () => {
+      assert.ok(mathJax && !('error' in mathJax))
+      assert.ok(mathJax.readerHtml)
+      for (const markup of [mathJax.readerHtml, mathJax.displayHtml]) {
+        assert.equal((markup.match(/<math[\s>]/g) ?? []).length, 3)
+        assert.match(markup, /<math[^>]*display="block"/)
+        assert.match(markup, /<munder>/)
+        assert.match(markup, /<msubsup>/)
+        assert.match(markup, /<mtext>Delta Operator <\/mtext>/)
+        assert.match(
+          markup,
+          /<td>\s*<math[^>]*><mi>β<\/mi>\s*<mo>=<\/mo>\s*<mn>2<\/mn><\/math>\s*<\/td>/,
+        )
+        assert.doesNotMatch(markup, /mjx-container|mjx-assistive-mml|<svg|<script|\\Xb|\\kb/)
+      }
+      assert.match(mathJax.readerHtml, /<mi mathvariant="bold">k<\/mi>/)
+      assert.match(mathJax.readerHtml, /<mi mathvariant="bold">X<\/mi>/)
+      assert.match(mathJax.displayHtml, /<mi mathvariant="normal">𝐤<\/mi>/)
+      assert.match(mathJax.displayHtml, /<mi mathvariant="normal">𝐗<\/mi>/)
+      assert.match(mathJax.displayHtml, /<mi mathvariant="normal">ℝ<\/mi>/)
+      assert.ok(mathJax.mathLayout)
+      assert.equal(mathJax.mathLayout.display, 'block math')
+      assert.ok(mathJax.mathLayout.width <= mathJax.mathLayout.articleWidth)
+      assert.equal(mathJax.mathLayout.overflowX, 'auto')
     })
     await t.test(
       'short articles remain readable and executable payloads do not count as content',

@@ -19,3 +19,5 @@ Run commands from the owning package. Read its current `package.json` or task ru
 | Provider sync or backfill scripts | May contact providers, replace caches, or update remote activities. Read the specific command and its flags before running it. |
 
 Do not delete generated files as a routine step after starting the watcher. Let the owning emitter handle its output. For browser checks, use the matching `build:ready` and successful HTTP response before inspecting source-rendered markup and interactions. DOM injection proves only a prototype unless the served implementation is separately verified.
+
+On macOS, `pnpm swarm` uses polling for Wrangler's file watchers. Watching the large `public/` tree with native file watchers can exceed Darwin's `OPEN_MAX` descriptor range and cause esbuild to fail with `spawn EBADF`, even with a higher `ulimit`. Text files use a one-second polling interval; Chokidar retains its default binary-file interval. Explicit `CHOKIDAR_USEPOLLING` and `CHOKIDAR_INTERVAL` settings override these defaults. Quartz's watcher and Linux container launches retain their existing behavior.
