@@ -1016,7 +1016,12 @@ export const renderMapDetail = (
     if (analysis) figs.appendChild(analysis)
     if (figs.childElementCount > 0) wrap.appendChild(figs)
     const more = el('div', 'tri-act-more')
-    const workoutAnalysis = buildWorkoutAnalysisNode(domF, d) as HTMLElement | null
+    const workoutAnalysis = buildWorkoutAnalysisNode(
+      domF,
+      d,
+      false,
+      (opts?.detailContext ?? detailContextFromPayload()).zones,
+    ) as HTMLElement | null
     const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
     const heartRate =
       hasHeartRateTrace(d) && workoutAnalysis?.dataset.workoutAnalysisMetric !== 'hr'
@@ -1069,7 +1074,12 @@ export const renderMapDetail = (
   tablist.setAttribute('role', 'tablist')
   const figs = el('div', 'tri-act-figs tri-map-figs')
   const profileBox = el('div', 'tri-map-profile')
-  const workoutAnalysis = buildWorkoutAnalysisNode(domF, d) as HTMLElement | null
+  const workoutAnalysis = buildWorkoutAnalysisNode(
+    domF,
+    d,
+    false,
+    (opts?.detailContext ?? detailContextFromPayload()).zones,
+  ) as HTMLElement | null
   const zoneBox = el('div', 'tri-act-more')
   const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
   wrap.append(tablist, figs)

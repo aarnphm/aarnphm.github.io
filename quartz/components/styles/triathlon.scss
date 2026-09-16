@@ -14832,7 +14832,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
   .tri-sauna-location {
     width: 100%;
-    max-width: 15rem;
   }
 
   .tri-sauna-htl-title-full {
@@ -15439,46 +15438,46 @@ a.tri-pop-date:hover {
   display: none;
 }
 
-.tri-workout-analysis :is(.tri-workout, .tri-run-splits, .tri-run-pace-distribution) {
+.tri-workout-analysis :is(.tri-workout, .tri-run-splits, .tri-workout-distribution) {
   height: 100%;
   margin: 0;
   padding: 0;
   background: transparent;
 }
 
-.tri-run-pace-distribution {
+.tri-workout-distribution {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 0.38rem;
   min-width: 0;
 }
 
-.tri-run-pace-distribution-head {
+.tri-workout-distribution-head {
   display: flex;
   align-items: baseline;
   gap: 0.7rem;
   min-width: 0;
 }
 
-.tri-run-pace-distribution .tri-training-zone-summary {
+.tri-workout-distribution .tri-training-zone-summary {
   flex: 1;
 }
 
-.tri-run-pace-distribution .tri-training-zone-summary-value {
+.tri-workout-distribution .tri-training-zone-summary-value {
   font-size: 0.62rem;
 }
 
-.tri-run-pace-distribution .tri-training-zone-row {
+.tri-workout-distribution .tri-training-zone-row {
   grid-template-columns: 1.5rem minmax(0, 1fr) minmax(5.2rem, auto);
   gap: 0.42rem;
 }
 
-.tri-run-pace-distribution .tri-training-zone-visual {
+.tri-workout-distribution .tri-training-zone-visual {
   grid-template-columns: minmax(0, 1fr) 2.8rem;
   gap: 0.35rem;
 }
 
-.tri-run-pace-distribution .tri-training-zone-bar {
+.tri-workout-distribution .tri-training-zone-bar {
   block-size: 0.68rem;
 }
 
@@ -16849,7 +16848,7 @@ a.tri-pop-date:hover {
     padding-inline: 0.45rem;
   }
 
-  .tri-workout-analysis :is(.tri-workout, .tri-run-splits, .tri-run-pace-distribution) {
+  .tri-workout-analysis :is(.tri-workout, .tri-run-splits, .tri-workout-distribution) {
     padding-inline: 0;
   }
 

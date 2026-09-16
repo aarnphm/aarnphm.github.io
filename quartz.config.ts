@@ -90,6 +90,7 @@ const configuration: GlobalConfiguration = {
     'cmd+j': 'curius',
     'cmd+g': 'triathlon',
     'cmd+h': 'stream',
+    'cmd+i': 'arena',
     'cmd+.': 'arena',
     'cmd+b': 'lecteur',
     // 'cmd+g': 'graphique',

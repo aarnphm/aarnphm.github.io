@@ -89,6 +89,7 @@ _mapping.set('\\', '/')
 _mapping.set('j', '/curius')
 _mapping.set('g', '/triathlon')
 _mapping.set('h', '/stream')
+_mapping.set('i', '/arena')
 
 const aliases: Record<string, { mac: string; def: string }> = {
   recherche: { mac: '/', def: 'k' },
