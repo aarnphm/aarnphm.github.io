@@ -4658,37 +4658,93 @@ const buildRunPaceDistribution = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
     distribution.zoneSeconds.some(value => !Number.isFinite(value) || value < 0)
   )
     return null
-  const total = distribution.zoneSeconds.reduce((sum, seconds) => sum + seconds, 0)
+  return buildWorkoutZoneDistribution(
+    f,
+    'pace',
+    'tri-run-pace-distribution',
+    'Run pace distribution',
+    distribution.zoneSeconds,
+    RUN_PACE_ZONE_NAMES,
+    distribution.zoneSeconds.map((_, index) =>
+      runPaceZoneRangeText(f.presentation, distribution.boundsSPerKm, index),
+    ),
+    `based on 10 km race time ${clock(distribution.tenKmRaceTimeS)}`,
+  )
+}
+
+const buildCyclingPowerDistribution = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  zones: StravaZones | null,
+): N | null => {
+  const seconds = d.powerZones
+  const bounds = zones?.power
+  if (
+    d.sport !== 'bike' ||
+    !seconds ||
+    !bounds ||
+    seconds.length !== 7 ||
+    bounds.length !== 6 ||
+    seconds.some(value => !Number.isFinite(value) || value < 0) ||
+    bounds.some(
+      (value, index) =>
+        !Number.isFinite(value) || value <= 0 || (index > 0 && value <= bounds[index - 1]),
+    )
+  )
+    return null
+  return buildWorkoutZoneDistribution(
+    f,
+    'power',
+    'tri-cycling-power-distribution',
+    'Cycling power distribution',
+    seconds,
+    POWER_ZONE_NAMES,
+    seconds.map((_, index) => `${index === 0 ? `≤ ${bounds[0]}` : zoneRange(bounds, index)} W`),
+    zones?.ftp != null ? `based on FTP ${zones.ftp} W` : '',
+  )
+}
+
+const buildWorkoutZoneDistribution = <N>(
+  f: TriNodeFactory<N>,
+  kind: 'pace' | 'power',
+  className: string,
+  label: string,
+  secondsByZone: readonly number[],
+  names: readonly string[],
+  ranges: readonly string[],
+  caption: string,
+): N | null => {
+  const total = secondsByZone.reduce((sum, seconds) => sum + seconds, 0)
   if (!(total > 0)) return null
   let majority = 0
-  for (let index = 1; index < distribution.zoneSeconds.length; index++)
-    if (distribution.zoneSeconds[index] > distribution.zoneSeconds[majority]) majority = index
-  const maximum = Math.max(...distribution.zoneSeconds, 1)
-  const wrap = f.el('section', 'tri-run-pace-distribution', undefined, {
-    'aria-label': 'Run pace distribution',
+  for (let index = 1; index < secondsByZone.length; index++)
+    if (secondsByZone[index] > secondsByZone[majority]) majority = index
+  const maximum = Math.max(...secondsByZone, 1)
+  const wrap = f.el('section', `tri-workout-distribution ${className}`, undefined, {
+    'aria-label': label,
   })
-  const head = f.el('div', 'tri-run-pace-distribution-head')
+  const head = f.el('div', 'tri-workout-distribution-head')
   const summary = f.el('div', 'tri-training-zone-summary', undefined, { 'aria-live': 'polite' })
   f.add(
     summary,
     f.el(
       'strong',
       'tri-training-zone-summary-value',
-      `${Math.round((distribution.zoneSeconds[majority] / total) * 100)}% in zone ${majority + 1}`,
+      `${Math.round((secondsByZone[majority] / total) * 100)}% in zone ${majority + 1}`,
     ),
     f.el('span', 'tri-training-zone-summary-time', zoneClock(total)),
   )
   f.add(head, summary)
-  const grid = f.el('div', 'tri-training-zone-grid tri-training-zone-grid--pace', undefined, {
+  const grid = f.el('div', `tri-training-zone-grid tri-training-zone-grid--${kind}`, undefined, {
     role: 'list',
-    'aria-label': 'pace zone distribution',
-    style: `--tri-zone-count:${distribution.zoneSeconds.length}`,
+    'aria-label': `${kind} zone distribution`,
+    style: `--tri-zone-count:${secondsByZone.length}`,
   })
-  for (let index = distribution.zoneSeconds.length - 1; index >= 0; index--) {
-    const seconds = distribution.zoneSeconds[index]
+  for (let index = secondsByZone.length - 1; index >= 0; index--) {
+    const seconds = secondsByZone[index]
     const percentage = (seconds / total) * 100
-    const range = runPaceZoneRangeText(f.presentation, distribution.boundsSPerKm, index)
-    const name = RUN_PACE_ZONE_NAMES[index] ?? `zone ${index + 1}`
+    const range = ranges[index]
+    const name = names[index] ?? `zone ${index + 1}`
     const row = f.el(
       'div',
       `tri-training-zone-row${index === majority ? ' tri-training-zone-row--majority' : ''}`,
@@ -4704,7 +4760,7 @@ const buildRunPaceDistribution = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
       bar,
       f.el(
         'span',
-        `tri-training-zone-fill tri-training-zone-fill--pace tri-training-zone-fill--${index + 1}`,
+        `tri-training-zone-fill tri-training-zone-fill--${kind} tri-training-zone-fill--${index + 1}`,
         undefined,
         { style: `--tri-zone-share:${(seconds / maximum) * 100}%` },
       ),
@@ -4723,16 +4779,7 @@ const buildRunPaceDistribution = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
     )
     f.add(grid, row)
   }
-  f.add(
-    wrap,
-    head,
-    grid,
-    f.el(
-      'div',
-      'tri-dist-cap tri-training-zone-source',
-      `based on 10 km race time ${clock(distribution.tenKmRaceTimeS)}`,
-    ),
-  )
+  f.add(wrap, head, grid, f.el('div', 'tri-dist-cap tri-training-zone-source', caption))
   return wrap
 }
 
@@ -4856,6 +4903,7 @@ const buildWorkoutAnalysisSection = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   embedded = false,
+  zones: StravaZones | null = null,
 ): { element: N; metric: 'elapsed' | 'hr' | 'power' | 'pace' } | null => {
   const sport = {
     bike: 'Cycling',
@@ -4878,10 +4926,12 @@ const buildWorkoutAnalysisSection = <N>(
   const workout = sportWorkout ?? heartRateWorkout
   const splits = buildRunLapSplits(f, d)
   const pace = buildRunPaceDistribution(f, d)
+  const power = buildCyclingPowerDistribution(f, d, zones)
   const views = [
     { key: 'workout', label: 'workout analysis', shortLabel: 'WA', content: workout },
     { key: 'laps', label: 'lap splits', shortLabel: 'LS', content: splits },
     { key: 'pace', label: 'pace distribution', shortLabel: 'PD', content: pace },
+    { key: 'power', label: 'power distribution', shortLabel: 'PD', content: power },
   ].filter(
     (view): view is { key: string; label: string; shortLabel: string; content: N } =>
       view.content != null,
@@ -4948,7 +4998,8 @@ export const buildWorkoutAnalysis = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   embedded = false,
-): N | null => buildWorkoutAnalysisSection(f, d, embedded)?.element ?? null
+  zones: StravaZones | null = null,
+): N | null => buildWorkoutAnalysisSection(f, d, embedded, zones)?.element ?? null
 
 export type EnvironmentChartView =
   | 'cumulative'
@@ -8660,7 +8711,7 @@ export const buildActivity = <N>(
     const moreId = `tri-act-more-${d.id}`
     const more = f.el('div', 'tri-act-more', undefined, { id: moreId })
     const flags = routeStreamFlags(d)
-    const workoutAnalysis = buildWorkoutAnalysisSection(f, d, embedded)
+    const workoutAnalysis = buildWorkoutAnalysisSection(f, d, embedded, ctx?.zones)
     if (workoutAnalysis) f.add(more, workoutAnalysis.element)
     const activityGraphs: N[] = []
     const stamina = buildStaminaChart(f, d, analysisSelection)

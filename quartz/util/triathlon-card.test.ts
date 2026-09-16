@@ -9796,3 +9796,94 @@ test('keeps native physiology ahead of the HR fallback and omits empty workout a
     0,
   )
 })
+
+test('cycling PD uses the recorded power zones and FTP boundaries in full and embedded cards', () => {
+  const ride = detail({
+    powerZones: [0, 60, 120, 180, 120, 60, 60],
+    analysisRanges: analysisRanges(),
+  })
+  for (const embedded of [false, true]) {
+    const card = buildActivity(factory, ride, true, ctx(), false, embedded)
+    const analysis = byClass(card, 'tri-workout-analysis')[0]
+    const tabs = byClass(analysis, 'tri-workout-analysis-tab')
+    assert.deepEqual(
+      tabs.map(text),
+      embedded ? ['WA', 'PD'] : ['workout analysis', 'power distribution'],
+    )
+    assert.equal(tabs[1].properties.ariaLabel, 'power distribution')
+    const panel = byClass(analysis, 'tri-workout-analysis-panel')[1]
+    assert.equal(panel.properties.dataWorkoutAnalysisPanel, 'power')
+    assert.equal(panel.properties.hidden, true)
+    assert.equal(panel.properties.inert, true)
+    assert.deepEqual(tabs[1].properties.ariaControls, [panel.properties.id])
+    const power = byClass(panel, 'tri-cycling-power-distribution')[0]
+    assert.deepEqual(byClass(power, 'tri-training-zone-name').map(text), [
+      'Z7',
+      'Z6',
+      'Z5',
+      'Z4',
+      'Z3',
+      'Z2',
+      'Z1',
+    ])
+    assert.deepEqual(byClass(power, 'tri-training-zone-range').map(text), [
+      '> 400 W',
+      '351–400 W',
+      '301–350 W',
+      '251–300 W',
+      '201–250 W',
+      '151–200 W',
+      '≤ 150 W',
+    ])
+    assert.deepEqual(byClass(power, 'tri-training-zone-pct').map(text), [
+      '10.0%',
+      '10.0%',
+      '20.0%',
+      '30.0%',
+      '20.0%',
+      '10.0%',
+      '0.0%',
+    ])
+    assert.deepEqual(byClass(power, 'tri-training-zone-summary-value').map(text), ['30% in zone 4'])
+    assert.deepEqual(byClass(power, 'tri-training-zone-summary-time').map(text), ['10:00'])
+    assert.deepEqual(byClass(power, 'tri-training-zone-source').map(text), ['based on FTP 260 W'])
+    assert.equal(
+      byClass(power, 'tri-training-zone-row')[3].properties.ariaLabel,
+      'Z4 threshold, 3:00, 30.0%, 251–300 W',
+    )
+  }
+})
+
+test('cycling PD omits missing or invalid distributions and supports rides without laps', () => {
+  for (const powerZones of [
+    null,
+    [],
+    [1, 2],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, -1, 0, 0, 0, 0, 0],
+    [0, NaN, 0, 0, 0, 0, 0],
+  ]) {
+    const card = buildActivity(factory, detail({ powerZones }), true, ctx())
+    assert.equal(byClass(card, 'tri-cycling-power-distribution').length, 0)
+  }
+  const ride = detail({ powerZones: [60, 0, 0, 0, 0, 0, 0], analysisRanges: [] })
+  for (const zones of [
+    null,
+    { hr: [], power: [150, 200], ftp: 260 },
+    { hr: [], power: [150, 200, 200, 300, 350, 400], ftp: 260 },
+  ]) {
+    const card = buildActivity(factory, ride, true, ctx({ zones }))
+    assert.equal(byClass(card, 'tri-cycling-power-distribution').length, 0)
+  }
+  const analysis = buildWorkoutAnalysis(factory, ride, false, ctx().zones)
+  assert.ok(analysis)
+  assert.equal(byClass(analysis, 'tri-cycling-power-distribution').length, 1)
+  const run = buildActivity(factory, { ...ride, sport: 'run' }, true, ctx())
+  assert.equal(byClass(run, 'tri-cycling-power-distribution').length, 0)
+  const filtered = powerViewActivity(excludeZeroPresentation, {
+    ...ride,
+    powerWithoutZeros: { avgWatts: 200, powerZones: [0, 60, 0, 0, 0, 0, 0], powerHist: [] },
+  })
+  const card = buildActivity(factory, filtered, true, ctx())
+  assert.deepEqual(byClass(card, 'tri-training-zone-summary-value').map(text), ['100% in zone 2'])
+})
