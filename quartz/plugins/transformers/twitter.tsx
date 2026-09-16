@@ -3,35 +3,20 @@ import { Html, Link, Paragraph, PhrasingContent } from 'mdast'
 import { Parent } from 'unist'
 import { visit } from 'unist-util-visit'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-import { unescapeHTML } from '../../util/escape'
+import { escapeHTML } from '../../util/escape'
+import { fetchTwitterEmbed as fetchEmbed, parseTwitterPostUrl } from '../../util/twitter'
 import { wikiTextTransform } from './ofm'
-
-export const twitterUrlRegex = /^.*(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/(status)\/(\d{19}).*/
 
 export function filterEmbedTwitter(node: Element): boolean {
   const href = node.properties.href
   if (href === undefined || typeof href !== 'string') return false
-  return node.children.length !== 0 && twitterUrlRegex.test(href)
-}
-
-type TwitterEmbed = {
-  url: string
-  author_name: string
-  author_url: string
-  html: string
-  width: number
-  height: null
-  type: 'rich'
-  cache_age: number
-  provider_name: 'Twitter'
-  provider_url: 'https://twitter.com'
-  version: '1.0'
+  return node.children.length !== 0 && parseTwitterPostUrl(href) !== null
 }
 
 const cache = new Map<string, string>()
 
 const fallbackHtml = (url: string) =>
-  `<p class="twitter-fallback">Link to original <a href="${url}">tweet</a>.</p>`
+  `<p class="twitter-fallback">Link to original <a href="${escapeHTML(url)}">tweet</a>.</p>`
 
 const isWhitespaceNode = (node: PhrasingContent) => {
   if (node.type !== 'text') return false
@@ -62,14 +47,7 @@ export async function fetchTwitterEmbed(url: string, locale: string): Promise<st
   let value = fallbackHtml(url)
 
   try {
-    const res = await fetch(
-      `https://publish.twitter.com/oembed?url=${url}&dnt=true&omit_script=true&lang=${locale}`,
-    )
-    if (!res.ok) {
-      throw new Error(`twitter oEmbed request failed with status ${res.status}`)
-    }
-    const data = (await res.json()) as TwitterEmbed
-    value = unescapeHTML(data.html)
+    value = (await fetchEmbed(url, locale)) ?? value
   } catch {
     // swallow network failures and fall back to a simple link
     value = fallbackHtml(url)
@@ -110,7 +88,7 @@ export const Twitter: QuartzTransformerPlugin = () => ({
             const child = node.children[i]
             if (
               child.type === 'link' &&
-              twitterUrlRegex.test(child.url) &&
+              parseTwitterPostUrl(child.url) !== null &&
               isNakedLink(node, child)
             ) {
               promises.push(fetchEmbedded(node, i, child.url, locale))

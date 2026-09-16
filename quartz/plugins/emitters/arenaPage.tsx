@@ -119,7 +119,7 @@ async function processArenaFeed(
     arenaChannel: undefined,
     frontmatter: {
       ...baseFileData.frontmatter,
-      title: 'Arena reader',
+      title: 'arena | reader',
       description: 'Read saved links and keep notes.',
       pageLayout: 'default',
     },

@@ -3,6 +3,7 @@ import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import type { ArenaFeedEntry } from '../../util/arena-feed'
 import type { ArenaReaderArtifact, ArenaReaderRenderResult } from '../../util/arena-reader'
+import { parseWikipediaTarget } from '../../util/wikipedia'
 
 export function safeHref(raw: string): string | undefined {
   try {
@@ -31,6 +32,8 @@ export function sanitizeReaderHtml(html: string): string {
       'meta',
     ],
     FORBID_ATTR: ['style', 'srcset', 'autofocus'],
+    ALLOW_DATA_ATTR: false,
+    ADD_ATTR: ['data-lang', 'data-latex', 'data-callout'],
   })
   const document = new DOMParser().parseFromString(clean, 'text/html')
   for (const element of document.querySelectorAll('[src], [poster]')) {
@@ -52,6 +55,12 @@ export function sanitizeReaderHtml(html: string): string {
       link.href = href
       link.target = '_blank'
       link.rel = 'noopener noreferrer'
+      const wikipedia = parseWikipediaTarget(href)
+      if (wikipedia) {
+        link.classList.add('internal')
+        link.dataset.wikipediaLang = wikipedia.lang
+        link.dataset.wikipediaTitle = wikipedia.title
+      }
     }
   }
   for (const image of document.querySelectorAll('img')) {
@@ -60,11 +69,6 @@ export function sanitizeReaderHtml(html: string): string {
     image.referrerPolicy = 'no-referrer'
   }
   return document.body.innerHTML
-}
-
-function isolatedDocument(html: string): string {
-  const body = sanitizeReaderHtml(html)
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${location.origin}; style-src 'unsafe-inline'; font-src 'none'; base-uri 'none'; form-action 'none'"><style>:root{color-scheme:light dark}body{font:18px/1.65 Georgia,serif;max-width:70ch;margin:24px auto;padding:0 18px;overflow-wrap:anywhere}img,video{max-width:100%;height:auto}pre{overflow:auto;padding:1rem;background:light-dark(#f4f4f2,#222)}table{display:block;overflow:auto;border-collapse:collapse}td,th{border:1px solid #888;padding:.4rem}a{color:light-dark(#246344,#9cd8b4)}blockquote{margin-inline:1rem}h1,h2,h3{line-height:1.2}</style></head><body>${body}</body></html>`
 }
 
 function PdfContent({ artifact }: { artifact: Extract<ArenaReaderArtifact, { kind: 'pdf' }> }) {
@@ -82,23 +86,16 @@ function PdfContent({ artifact }: { artifact: Extract<ArenaReaderArtifact, { kin
   return (
     <div ref={ref} class="arena-reader-pdf">
       {src ? (
-        <>
-          <div
-            class="pdf-embed"
-            data-pdf-src={src}
-            data-pdf-title={artifact.title}
-            data-pdf-fit="width"
-          >
-            <a href={src} target="_blank" rel="noopener noreferrer">
-              Open PDF
-            </a>
-          </div>
-          <p>
-            <a href={src} target="_blank" rel="noopener noreferrer">
-              Open PDF in a separate tab
-            </a>
-          </p>
-        </>
+        <div
+          class="pdf-embed"
+          data-pdf-src={src}
+          data-pdf-title={artifact.title}
+          data-pdf-fit="width"
+        >
+          <a href={src} target="_blank" rel="noopener noreferrer">
+            Open PDF
+          </a>
+        </div>
       ) : (
         <p>
           The saved PDF is unavailable.{' '}
@@ -119,50 +116,27 @@ function HtmlContent({
   artifact: Extract<ArenaReaderArtifact, { kind: 'html' }>
   contentRef: RefObject<HTMLDivElement>
 }) {
-  const [full, setFull] = useState(!artifact.readerHtml)
   const html = useMemo(
-    () => sanitizeReaderHtml(artifact.readerHtml ?? ''),
+    () => (artifact.readerHtml ? sanitizeReaderHtml(artifact.readerHtml) : ''),
     [artifact.snapshotId, artifact.readerHtml],
   )
-  const document = useMemo(
-    () => isolatedDocument(artifact.documentHtml),
-    [artifact.snapshotId, artifact.documentHtml],
-  )
+  if (!html)
+    return (
+      <p class="arena-reader-status">
+        reader content is unavailable.{' '}
+        <a href={safeHref(artifact.sourceUrl)} target="_blank" rel="noopener noreferrer">
+          open original ↗
+        </a>
+      </p>
+    )
   return (
     <>
-      <div class="arena-reader-representation" role="group" aria-label="Article representation">
-        <button
-          type="button"
-          aria-pressed={!full}
-          disabled={!artifact.readerHtml}
-          onClick={() => setFull(false)}
-        >
-          Reader
-        </button>
-        <button type="button" aria-pressed={full} onClick={() => setFull(true)}>
-          Full document
-        </button>
-      </div>
       {artifact.quality === 'partial' && (
-        <p class="arena-reader-notice">
-          This copy may be incomplete. {artifact.diagnostics.join(' ')}
+        <p class="arena-reader-quality" role="status" title={artifact.diagnostics.join(' ')}>
+          incomplete copy
         </p>
       )}
-      {full ? (
-        <iframe
-          class="arena-reader-document"
-          title={`${artifact.title}, full document`}
-          sandbox="allow-popups allow-popups-to-escape-sandbox"
-          referrerPolicy="no-referrer"
-          srcDoc={document}
-        />
-      ) : (
-        <div
-          ref={contentRef}
-          class="arena-reader-prose"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-      )}
+      <div ref={contentRef} class="arena-reader-prose" dangerouslySetInnerHTML={{ __html: html }} />
     </>
   )
 }
@@ -181,6 +155,10 @@ export function ArticleContent({
   onRetry: () => void
 }) {
   const artifact = result?.status === 'ready' ? result.artifact : null
+  const rawTitle = artifact?.title || entry.title
+  const title = parseWikipediaTarget(entry.sourceUrl)
+    ? rawTitle.replace(/\s+[-–—|]\s+Wikipedia\s*$/i, '')
+    : rawTitle
   const [cooldown, setCooldown] = useState(0)
   useEffect(() => {
     const seconds = result?.status === 'unavailable' ? (result.retryAfter ?? 0) : 0
@@ -198,36 +176,32 @@ export function ArticleContent({
     <>
       <header class="arena-reader-article-header">
         <p class="arena-reader-eyebrow">
-          {entry.later ? 'Later' : 'From your channels'} ·{' '}
+          {entry.later ? 'later' : 'from your channels'} ·{' '}
           {entry.occurrences
             .map(item => item.channelName)
             .filter((name, index, names) => names.indexOf(name) === index)
             .join(' / ')}
         </p>
-        <h1>{artifact?.title || entry.title}</h1>
+        <h1>{title}</h1>
         <div class="arena-reader-source">
           <a href={safeHref(entry.sourceUrl)} target="_blank" rel="noopener noreferrer">
-            Open original ↗
+            open original ↗
           </a>
           {artifact && (
             <span>
-              {result?.status === 'ready' && result.cached ? 'Saved copy' : 'Captured'} ·{' '}
-              {new Date(artifact.capturedAt).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}
+              {result?.status === 'ready' && result.cached ? 'saved copy' : 'captured'} ·{' '}
+              {new Date(artifact.capturedAt)
+                .toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                .toLocaleLowerCase()}
             </span>
           )}
         </div>
       </header>
-      {loading && (
-        <p role="status" class="arena-reader-status">
-          {artifact
-            ? 'Refreshing from the source…'
-            : result?.status === 'pending'
-              ? 'An article copy is being prepared…'
-              : 'Opening your saved article…'}
+      {loading && !artifact && (
+        <p role="status" class="arena-reader-status arena-reader-loading">
+          {result?.status === 'pending'
+            ? 'An article copy is being prepared…'
+            : 'Opening your saved article…'}
         </p>
       )}
       {result?.status === 'ready' && result.warning && (

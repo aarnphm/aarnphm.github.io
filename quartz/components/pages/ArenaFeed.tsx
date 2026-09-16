@@ -1,4 +1,5 @@
 import type { QuartzComponent, QuartzComponentConstructor } from '../../types/component'
+import { ReaderLoading } from '../arena-feed/loading'
 // @ts-ignore
 import script from '../scripts/arena-feed.inline'
 import style from '../styles/arena-feed.scss'
@@ -7,15 +8,17 @@ export default (() => {
   const ArenaFeed: QuartzComponent = () => (
     <article class="arena-feed main-col" data-arena-feed>
       <div class="arena-feed-mount" data-arena-feed-mount>
-        <header class="arena-reader-header">
-          <a href="/arena" class="internal">
-            Arena
-          </a>
-          <span>Reader</span>
-        </header>
-        <div class="arena-reader-empty" role="status">
-          <h1>Your reading queue</h1>
-          <p>Loading your saved links. Later links come first.</p>
+        <div class="arena-reader">
+          <header class="arena-reader-header">
+            <div>
+              <a href="/arena" class="internal">
+                arena
+              </a>
+              <span aria-hidden="true"> / </span>
+              <span>reader</span>
+            </div>
+          </header>
+          <ReaderLoading />
         </div>
       </div>
       <noscript>

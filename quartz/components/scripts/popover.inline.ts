@@ -1392,7 +1392,7 @@ function popoverForLink(link: HTMLAnchorElement): HTMLElement | null {
   return popover instanceof HTMLElement ? popover : null
 }
 
-function mouseLeaveHandler(this: HTMLAnchorElement, event: MouseEvent) {
+function mouseLeaveHandler(this: HTMLAnchorElement, event: MouseEvent | FocusEvent) {
   if (containsRelatedTarget(this, event.relatedTarget)) return
 
   const popover = popoverForLink(this)
@@ -1843,6 +1843,37 @@ function setupPopoverDelegation(): void {
   if (delegatedPopoverSignal === signal) return
   delegatedPopoverSignal = signal
 
+  document.addEventListener(
+    'focusin',
+    event => {
+      const link = closestPopoverLink(event.target)
+      if (!link || !wikipediaTargetFromLink(link) || !link.matches(':focus-visible')) return
+      const rect = link.getBoundingClientRect()
+      void mouseEnterHandler.call(link, {
+        clientX: rect.left + rect.width / 2,
+        clientY: rect.top + rect.height / 2,
+      })
+    },
+    { signal },
+  )
+  document.addEventListener(
+    'focusout',
+    event => {
+      const link = closestPopoverLink(event.target)
+      if (link && wikipediaTargetFromLink(link)) mouseLeaveHandler.call(link, event)
+    },
+    { signal },
+  )
+  document.addEventListener(
+    'keydown',
+    event => {
+      if (event.key !== 'Escape') return
+      activePopoverReq?.abort()
+      activePopoverReq = null
+      clearActivePopover()
+    },
+    { signal },
+  )
   document.addEventListener(
     'mouseover',
     event => {

@@ -278,13 +278,13 @@ body[data-arena-subpage='true'] {
   margin: 1rem 0 2rem;
 }
 
-.arena-channel-controls .arena-search {
+.arena-channel-controls .arena-search-row {
   margin: 0;
   flex: 1 1 320px;
 }
 
 @media all and ($mobile) {
-  .arena-channel-controls .arena-search {
+  .arena-channel-controls .arena-search-row {
     flex-basis: auto;
   }
 }
@@ -292,6 +292,8 @@ body[data-arena-subpage='true'] {
 .arena-view-toggle {
   display: inline-flex;
   align-items: center;
+  box-sizing: border-box;
+  height: 44px;
   border: 1px solid var(--lightgray);
   background: var(--light);
   overflow: hidden;
@@ -301,6 +303,7 @@ body[data-arena-subpage='true'] {
 .arena-view-toggle-button {
   display: inline-flex;
   align-items: center;
+  min-height: 42px;
   gap: 0.4rem;
   padding: 10px;
   padding-block: 10px !important;
@@ -1269,16 +1272,56 @@ span.tag-link:hover {
   }
 }
 
+.arena-search-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  margin: 1rem 0 2rem;
+
+  .arena-search {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.arena-reader-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--gray);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--light);
+    color: var(--dark);
+    border-color: var(--secondary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}
+
 // Search functionality styles
 .arena-search {
   position: relative;
   width: 100%;
-  margin: 1rem 0 2rem;
 
   .arena-search-input {
     width: 100%;
+    height: 44px;
     box-sizing: border-box;
-    padding: 10px 0 10px 12px;
+    padding: 10px 2.5rem 10px 12px;
     border: 1px solid var(--lightgray);
     border-radius: var(--radius-none);
     font-size: 14px;
@@ -1300,7 +1343,8 @@ span.tag-link:hover {
   .arena-search-icon {
     position: absolute;
     right: 0.75rem;
-    top: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
     width: 18px;
     height: 18px;
     color: var(--gray);

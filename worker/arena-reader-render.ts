@@ -1,6 +1,6 @@
 import type { BrowserWorker, HTTPRequest, Page } from '@cloudflare/puppeteer'
 import puppeteer from '@cloudflare/puppeteer'
-import readabilitySource from '@mozilla/readability/Readability.js'
+import defuddleSource from 'defuddle/full'
 import purifySource from 'dompurify/dist/purify.js'
 import type { ArenaFeedEntry } from '../quartz/util/arena-feed'
 import type {
@@ -9,10 +9,13 @@ import type {
   ArenaReaderRenderResult,
   ArenaReaderResource,
 } from '../quartz/util/arena-reader'
-import type { ArenaExtractedDocument } from './arena-reader-extraction'
+import type { ArenaExtractedDocument, ArenaExtractionResponse } from './arena-reader-extraction'
+import { arenaArxivPdfUrl } from '../quartz/util/arena-embed'
+import { parseTwitterPostUrl } from '../quartz/util/twitter'
 import {
   ARENA_READER_COOLDOWN_MS,
   ARENA_READER_PROFILE,
+  ARENA_TWITTER_PROFILE,
   arenaReaderHash,
   arenaRenderCacheDecision,
   claimArenaRenderLease,
@@ -122,10 +125,6 @@ async function deliverArtifact(
       // Only replace the exact generated attribute; publisher markup has no route authority.
       artifact.readerHtml =
         artifact.readerHtml?.replaceAll(`src="${path}"`, `src="${deliveryUrl}"`) ?? null
-      artifact.documentHtml = artifact.documentHtml.replaceAll(
-        `src="${path}"`,
-        `src="${deliveryUrl}"`,
-      )
     }
   }
   return readerResponse({ status: 'ready', cached, artifact, warning })
@@ -245,12 +244,10 @@ export function arenaReaderRelayHeaders(
   return output
 }
 
-export function arenaReaderFailureSignals(input: {
-  title: string
-  text: string
-  articleLength: number
-  hasArticle: boolean
-}): { reason: string; message: string } | null {
+export function arenaReaderFailureSignals(
+  input: { title: string; text: string; articleLength: number; hasArticle: boolean },
+  minimumTextLength = 40,
+): { reason: string; message: string } | null {
   const title = input.title.toLowerCase()
   const text = input.text.toLowerCase()
   const challengeTitle =
@@ -275,7 +272,7 @@ export function arenaReaderFailureSignals(input: {
       reason: 'requires-login',
       message: 'The source requires a publisher login. Open the original to continue.',
     }
-  if (input.text.trim().length < 40)
+  if (input.text.trim().length < minimumTextLength)
     return { reason: 'empty', message: 'The page did not produce readable article text.' }
   return null
 }
@@ -335,33 +332,25 @@ export async function buildArenaHtmlArtifact(
 ): Promise<ArenaReaderArtifact> {
   const resources: ArenaReaderResource[] = []
   const fingerprint = await arenaReaderHash(
-    JSON.stringify([extracted.readerHtml, extracted.documentHtml, extracted.imageUrls]),
+    JSON.stringify([extracted.readerHtml, extracted.imageUrls]),
   )
   const prefix = `arena-${base.snapshotId}-`
   let readerHtml =
     extracted.readerHtml
       ?.replaceAll('id="arena-content-', `id="${prefix}`)
       .replaceAll('href="#arena-content-', `href="#${prefix}`) ?? null
-  let documentHtml = extracted.documentHtml
-    .replaceAll('id="arena-content-', `id="${prefix}`)
-    .replaceAll('href="#arena-content-', `href="#${prefix}`)
   for (const [index, sourceUrl] of extracted.imageUrls.entries()) {
     const marker = `data-arena-image="${index}"`
     if (!validateArenaReaderTarget(sourceUrl)) {
       readerHtml = readerHtml?.replaceAll(marker, '') ?? null
-      documentHtml = documentHtml.replaceAll(marker, '')
       continue
     }
     const id = `resource-${(await arenaReaderHash(sourceUrl)).slice(0, 32)}`
     resources.push({ id, url: sourceUrl, kind: 'image' })
     const replacement = `src="${arenaReaderResourcePath(base.articleId, base.snapshotId, id)}"`
     readerHtml = readerHtml?.replaceAll(marker, replacement) ?? null
-    documentHtml = documentHtml.replaceAll(marker, replacement)
   }
-  if (!readerHtml)
-    diagnostics.add(
-      'The article extractor could not isolate an article. The full document remains available.',
-    )
+  if (!readerHtml) diagnostics.add('The article extractor could not isolate readable content.')
   return {
     ...base,
     title: (extracted.title || base.title).slice(0, 4096),
@@ -369,7 +358,6 @@ export async function buildArenaHtmlArtifact(
     resources,
     kind: 'html',
     readerHtml,
-    documentHtml,
     quality: readerHtml && diagnostics.size === 0 ? 'complete' : 'partial',
     diagnostics: Array.from(diagnostics).slice(0, 30),
   }
@@ -389,46 +377,51 @@ async function captureHtml(
   const diagnostics = new Set<string>()
   const pendingRequests = new Set<Promise<void>>()
   try {
-    const first = await fetchArenaReaderSource(entry.sourceUrl, {
-      signal: controller.signal,
-      headers: { Accept: 'text/html,application/xhtml+xml,application/pdf;q=0.9' },
-    })
-    if (!first.response.ok) {
-      await first.response.body?.cancel()
-      const retry = Number(first.response.headers.get('Retry-After'))
-      const status = first.response.status
-      throw new ArenaCaptureError(
-        status === 404
-          ? 'not-found'
-          : status === 401
-            ? 'requires-login'
-            : status === 403
-              ? 'blocked'
-              : 'upstream-error',
-        `The publisher returned HTTP ${status}. Open the original or retry later.`,
-        status === 429 ? 429 : 502,
-        Number.isFinite(retry) && retry > 0 ? Math.min(retry, 86_400) : undefined,
-      )
-    }
-    const contentType = first.response.headers
-      .get('Content-Type')
-      ?.split(';')[0]
-      .trim()
-      .toLowerCase()
-    if (contentType === 'application/pdf') {
-      await first.response.body?.cancel()
-      return pdfArtifact(entry, first.finalUrl)
-    }
-    if (contentType !== 'text/html' && contentType !== 'application/xhtml+xml') {
-      await first.response.body?.cancel()
-      return {
-        ...(await artifactBase(entry, first.finalUrl)),
-        kind: 'external',
-        reason: 'unsupported',
-        message: 'This source is not an HTML article or PDF. Open the original to view it.',
+    const twitter = parseTwitterPostUrl(entry.sourceUrl) !== null
+    const first = twitter
+      ? null
+      : await fetchArenaReaderSource(entry.sourceUrl, {
+          signal: controller.signal,
+          headers: { Accept: 'text/html,application/xhtml+xml,application/pdf;q=0.9' },
+        })
+    if (first) {
+      if (!first.response.ok) {
+        await first.response.body?.cancel()
+        const retry = Number(first.response.headers.get('Retry-After'))
+        const status = first.response.status
+        throw new ArenaCaptureError(
+          status === 404
+            ? 'not-found'
+            : status === 401
+              ? 'requires-login'
+              : status === 403
+                ? 'blocked'
+                : 'upstream-error',
+          `The publisher returned HTTP ${status}. Open the original or retry later.`,
+          status === 429 ? 429 : 502,
+          Number.isFinite(retry) && retry > 0 ? Math.min(retry, 86_400) : undefined,
+        )
+      }
+      const contentType = first.response.headers
+        .get('Content-Type')
+        ?.split(';')[0]
+        .trim()
+        .toLowerCase()
+      if (contentType === 'application/pdf') {
+        await first.response.body?.cancel()
+        return pdfArtifact(entry, first.finalUrl)
+      }
+      if (contentType !== 'text/html' && contentType !== 'application/xhtml+xml') {
+        await first.response.body?.cancel()
+        return {
+          ...(await artifactBase(entry, first.finalUrl)),
+          kind: 'external',
+          reason: 'unsupported',
+          message: 'This source is not an HTML article or PDF. Open the original to view it.',
+        }
       }
     }
-    const initialBody = await boundedBody(first.response, DOCUMENT_LIMIT)
+    const initialBody = first ? await boundedBody(first.response, DOCUMENT_LIMIT) : new Uint8Array()
     if (env.arenaReaderAcquireRenderPermit && !(await env.arenaReaderAcquireRenderPermit()))
       throw new ArenaCaptureError(
         'rate-limited',
@@ -463,130 +456,176 @@ async function captureHtml(
     const activeBrowser = browser
     const closeOnAbort = () => void activeBrowser.close().catch(() => {})
     controller.signal.addEventListener('abort', closeOnAbort, { once: true })
-    const sourceContext = await browser.createBrowserContext()
-    const page = await sourceContext.newPage()
-    await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 1 })
-    await page.setBypassServiceWorker(true)
-    await page.setRequestInterception(true)
     let totalBytes = initialBody.byteLength
     let requestCount = 0
-    let servedInitial = false
-    const initialUrl = new URL(first.finalUrl)
-    initialUrl.hash = ''
-    const handleRequest = async (request: HTTPRequest): Promise<void> => {
-      if (request.isInterceptResolutionHandled()) return
-      const type = request.resourceType()
-      if (
-        controller.signal.aborted ||
-        request.method() !== 'GET' ||
-        !['document', 'script', 'stylesheet', 'xhr', 'fetch'].includes(type) ||
-        (type === 'document' && request.frame() !== page.mainFrame())
-      ) {
-        if (request.method() !== 'GET' || ['xhr', 'fetch', 'document'].includes(type))
-          diagnostics.add('Some interactive content could not be loaded anonymously.')
-        await request.abort('blockedbyclient')
-        return
-      }
-      requestCount++
-      if (requestCount > SESSION_REQUEST_LIMIT || totalBytes > SESSION_BYTES_LIMIT) {
-        diagnostics.add('The page reached the bounded resource-loading limit.')
-        await request.abort('blockedbyclient')
-        return
-      }
-      if (!servedInitial && request.url() === initialUrl.href) {
-        servedInitial = true
-        await request.respond({
-          status: first.response.status,
-          headers: arenaReaderRelayHeaders(first.response.headers, true),
-          body: initialBody,
-        })
-        return
-      }
-      try {
-        const upstream = await fetchArenaReaderSource(request.url(), {
-          signal: controller.signal,
-          headers: { Accept: request.headers().accept ?? '*/*' },
-        })
-        const final = new URL(upstream.finalUrl)
-        final.hash = ''
-        if (final.href !== request.url()) {
-          await upstream.response.body?.cancel()
-          await request.respond({ status: 302, headers: { location: final.href } })
+    // A blank parsing document lets Defuddle's async X extractor retrieve the post
+    // or full article once, without capturing the timeline and repeated embeds.
+    let html = '<!doctype html><html><head></head><body></body></html>'
+    let finalUrl = entry.sourceUrl
+    if (first) {
+      const sourceContext = await browser.createBrowserContext()
+      const page = await sourceContext.newPage()
+      await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 1 })
+      await page.setBypassServiceWorker(true)
+      await page.setRequestInterception(true)
+      let servedInitial = false
+      const initialUrl = new URL(first.finalUrl)
+      initialUrl.hash = ''
+      const handleRequest = async (request: HTTPRequest): Promise<void> => {
+        if (request.isInterceptResolutionHandled()) return
+        const type = request.resourceType()
+        if (
+          controller.signal.aborted ||
+          request.method() !== 'GET' ||
+          !['document', 'script', 'stylesheet', 'xhr', 'fetch'].includes(type) ||
+          (type === 'document' && request.frame() !== page.mainFrame())
+        ) {
+          if (request.method() !== 'GET' || ['xhr', 'fetch', 'document'].includes(type))
+            diagnostics.add('Some interactive content could not be loaded anonymously.')
+          await request.abort('blockedbyclient')
           return
         }
-        const body = await boundedBody(upstream.response, DOCUMENT_LIMIT)
-        totalBytes += body.byteLength
-        if (totalBytes > SESSION_BYTES_LIMIT) {
+        requestCount++
+        if (requestCount > SESSION_REQUEST_LIMIT || totalBytes > SESSION_BYTES_LIMIT) {
           diagnostics.add('The page reached the bounded resource-loading limit.')
           await request.abort('blockedbyclient')
           return
         }
-        if (!upstream.response.ok) diagnostics.add('Some publisher resources returned an error.')
-        await request.respond({
-          status: upstream.response.status,
-          headers: arenaReaderRelayHeaders(upstream.response.headers, type === 'document'),
-          body,
-        })
-      } catch {
-        diagnostics.add('Some publisher resources could not be loaded through the reader.')
-        if (!request.isInterceptResolutionHandled()) await request.abort('failed').catch(() => {})
+        if (!servedInitial && request.url() === initialUrl.href) {
+          servedInitial = true
+          await request.respond({
+            status: first.response.status,
+            headers: arenaReaderRelayHeaders(first.response.headers, true),
+            body: initialBody,
+          })
+          return
+        }
+        try {
+          const upstream = await fetchArenaReaderSource(request.url(), {
+            signal: controller.signal,
+            headers: { Accept: request.headers().accept ?? '*/*' },
+          })
+          const final = new URL(upstream.finalUrl)
+          final.hash = ''
+          if (final.href !== request.url()) {
+            await upstream.response.body?.cancel()
+            await request.respond({ status: 302, headers: { location: final.href } })
+            return
+          }
+          const body = await boundedBody(upstream.response, DOCUMENT_LIMIT)
+          totalBytes += body.byteLength
+          if (totalBytes > SESSION_BYTES_LIMIT) {
+            diagnostics.add('The page reached the bounded resource-loading limit.')
+            await request.abort('blockedbyclient')
+            return
+          }
+          if (!upstream.response.ok) diagnostics.add('Some publisher resources returned an error.')
+          await request.respond({
+            status: upstream.response.status,
+            headers: arenaReaderRelayHeaders(upstream.response.headers, type === 'document'),
+            body,
+          })
+        } catch {
+          diagnostics.add('Some publisher resources could not be loaded through the reader.')
+          if (!request.isInterceptResolutionHandled()) await request.abort('failed').catch(() => {})
+        }
       }
-    }
-    page.on('request', request => {
-      const promise = handleRequest(request).catch(() => {})
-      pendingRequests.add(promise)
-      void promise.finally(() => pendingRequests.delete(promise))
-    })
-    const navigation = await page.goto(first.finalUrl, {
-      waitUntil: 'domcontentloaded',
-      timeout: 25_000,
-    })
-    if (navigation && !navigation.ok())
-      throw new ArenaCaptureError('upstream-error', 'The publisher did not produce a usable page.')
-    await page.waitForNetworkIdle({ idleTime: 600, timeout: 5000 }).catch(() => {})
-    for (let index = 0; index < 2; index++) {
-      controller.signal.throwIfAborted()
-      await page.evaluate(() => window.scrollBy(0, Math.min(window.innerHeight, 900)))
-      await new Promise(resolve => setTimeout(resolve, 250))
-    }
-    await page.waitForNetworkIdle({ idleTime: 300, timeout: 1500 }).catch(() => {})
-    const html = await page.evaluate(() => {
-      for (const image of document.querySelectorAll('img')) {
-        const source =
-          image.currentSrc ||
-          image.getAttribute('data-src') ||
-          image.getAttribute('data-original') ||
-          image.src
-        if (source) image.setAttribute('src', source)
+      page.on('request', request => {
+        const promise = handleRequest(request).catch(() => {})
+        pendingRequests.add(promise)
+        void promise.finally(() => pendingRequests.delete(promise))
+      })
+      const navigation = await page.goto(first.finalUrl, {
+        waitUntil: 'domcontentloaded',
+        timeout: 25_000,
+      })
+      if (navigation && !navigation.ok())
+        throw new ArenaCaptureError(
+          'upstream-error',
+          'The publisher did not produce a usable page.',
+        )
+      await page.waitForNetworkIdle({ idleTime: 600, timeout: 5000 }).catch(() => {})
+      for (let index = 0; index < 2; index++) {
+        controller.signal.throwIfAborted()
+        await page.evaluate(() => window.scrollBy(0, Math.min(window.innerHeight, 900)))
+        await new Promise(resolve => setTimeout(resolve, 250))
       }
-      return document.documentElement.outerHTML.slice(0, 2 * 1024 * 1024 + 1)
-    })
-    if (new TextEncoder().encode(html).byteLength > DOCUMENT_LIMIT)
-      throw new ArenaCaptureError(
-        'too-large',
-        'The rendered document exceeds the reader size limit.',
-      )
-    const finalUrl = page.url()
-    if (!validateArenaReaderTarget(finalUrl))
-      throw new ArenaCaptureError(
-        'blocked',
-        'The publisher navigated to an unsupported destination.',
-      )
-    await sourceContext.close()
+      await page.waitForNetworkIdle({ idleTime: 300, timeout: 1500 }).catch(() => {})
+      html = await page.evaluate(() => {
+        for (const image of document.querySelectorAll('img')) {
+          const source =
+            image.currentSrc ||
+            image.getAttribute('data-src') ||
+            image.getAttribute('data-original') ||
+            image.src
+          if (source) image.setAttribute('src', source)
+        }
+        return document.documentElement.outerHTML.slice(0, 2 * 1024 * 1024 + 1)
+      })
+      if (new TextEncoder().encode(html).byteLength > DOCUMENT_LIMIT)
+        throw new ArenaCaptureError(
+          'too-large',
+          'The rendered document exceeds the reader size limit.',
+        )
+      finalUrl = page.url()
+      if (!validateArenaReaderTarget(finalUrl))
+        throw new ArenaCaptureError(
+          'blocked',
+          'The publisher navigated to an unsupported destination.',
+        )
+      await sourceContext.close()
+    }
     const parseContext = await browser.createBrowserContext()
     const parser: Page = await parseContext.newPage()
     await parser.setRequestInterception(true)
     parser.on('request', request => void request.abort('blockedbyclient').catch(() => {}))
     await parser.setContent('<!doctype html><html><head></head><body></body></html>')
-    await parser.addScriptTag({ content: readabilitySource })
+    await parser.addScriptTag({ content: defuddleSource })
     await parser.addScriptTag({ content: purifySource })
+    const extractionController = new AbortController()
+    const extractionSignal = AbortSignal.any([
+      controller.signal,
+      extractionController.signal,
+      AbortSignal.timeout(8000),
+    ])
+    let extractionRequests = 0
+    await parser.exposeFunction(
+      'arenaReaderFetch',
+      async (url: string, headers: Record<string, string>): Promise<ArenaExtractionResponse> => {
+        extractionSignal.throwIfAborted()
+        // Only the trusted extractor can call this bridge. Publisher scripts ran in the
+        // source context, when used, is closed; the parser has no direct egress.
+        if (++extractionRequests > 8 || ++requestCount > SESSION_REQUEST_LIMIT)
+          throw new Error('Article extraction reached its request limit.')
+        const upstream = await fetchArenaReaderSource(url, { signal: extractionSignal, headers })
+        const body = await boundedBody(
+          upstream.response,
+          Math.min(DOCUMENT_LIMIT, Math.max(0, SESSION_BYTES_LIMIT - totalBytes)),
+        )
+        totalBytes += body.byteLength
+        if (totalBytes > SESSION_BYTES_LIMIT)
+          throw new Error('Article extraction reached its resource limit.')
+        return {
+          body: new TextDecoder().decode(body),
+          status: upstream.response.status,
+          contentType: upstream.response.headers.get('Content-Type') ?? 'text/plain',
+          url: upstream.finalUrl,
+        }
+      },
+    )
     const base = await artifactBase(entry, finalUrl)
-    const extracted = await parser.evaluate(extractArenaReaderDocument, {
-      html,
-      finalUrl,
-      idPrefix: 'arena-content-',
-    })
-    const failure = arenaReaderFailureSignals(extracted)
+    if (twitter) base.profileVersion = ARENA_TWITTER_PROFILE
+    let extracted: ArenaExtractedDocument
+    try {
+      extracted = await parser.evaluate(extractArenaReaderDocument, {
+        html,
+        finalUrl,
+        idPrefix: 'arena-content-',
+      })
+    } finally {
+      extractionController.abort()
+    }
+    const failure = arenaReaderFailureSignals(extracted, twitter ? 1 : 40)
     if (failure) throw new ArenaCaptureError(failure.reason, failure.message)
     return buildArenaHtmlArtifact(base, extracted, diagnostics)
   } catch (error) {
@@ -619,6 +658,8 @@ async function buildArtifact(
   const target = validateArenaReaderTarget(entry.sourceUrl)
   if (!target)
     throw new ArenaCaptureError('blocked', 'This saved URL cannot be fetched by the reader.', 400)
+  const arxivPdf = arenaArxivPdfUrl(entry.sourceUrl)
+  if (arxivPdf) return pdfArtifact(entry, arxivPdf)
   if (entry.kind === 'pdf') return pdfArtifact(entry)
   if (entry.kind === 'internal')
     return {
@@ -677,11 +718,33 @@ export async function renderArenaArticle(
   const previous = cached.state.snapshotId
     ? await loadArenaReaderSnapshot(env.ARENA_CONTENT, entry.articleId, cached.state.snapshotId)
     : null
-  const decision = arenaRenderCacheDecision(
-    previous ? cached.state : { ...cached.state, snapshotId: null },
-    Date.now(),
-    refresh,
-  )
+  const arxivPdf = arenaArxivPdfUrl(entry.sourceUrl)
+  const replaceWithPdf =
+    arxivPdf !== null &&
+    previous !== null &&
+    (previous.kind !== 'pdf' || previous.finalUrl !== arxivPdf)
+  const replaceWithTweet =
+    parseTwitterPostUrl(entry.sourceUrl) !== null &&
+    previous !== null &&
+    previous.profileVersion !== ARENA_TWITTER_PROFILE
+  // A failed HTML capture must not delay switching to a source-specific representation.
+  const cacheState = replaceWithPdf
+    ? {
+        ...cached.state,
+        snapshotId: null,
+        failure: cached.state.failure?.reason === 'storage-failed' ? cached.state.failure : null,
+      }
+    : replaceWithTweet
+      ? {
+          ...cached.state,
+          snapshotId: null,
+          failure:
+            cached.state.failure?.reason === 'twitter-unavailable' ? null : cached.state.failure,
+        }
+      : previous
+        ? cached.state
+        : { ...cached.state, snapshotId: null }
+  const decision = arenaRenderCacheDecision(cacheState, Date.now(), refresh)
   if (decision === 'ready' && previous) return deliverArtifact(env, previous, true)
   if (decision === 'pending') return pending(entry)
   if (decision === 'cooldown' && cached.state.failure) {
@@ -697,7 +760,11 @@ export async function renderArenaArticle(
   const lease = await claimArenaRenderLease(env.ARENA_CONTENT, entry.articleId, cached)
   if (!lease) return pending(entry)
   try {
-    const artifact = await buildArtifact(entry, env, request.signal)
+    const artifact = await buildArtifact(
+      replaceWithPdf && previous ? { ...entry, title: previous.title } : entry,
+      env,
+      request.signal,
+    )
     // Retry storage from this retained extraction once before returning an unsaved copy.
     let saved = false
     for (let attempt = 0; attempt < 2 && !saved; attempt++) {

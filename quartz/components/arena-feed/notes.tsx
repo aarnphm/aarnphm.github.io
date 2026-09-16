@@ -3,6 +3,7 @@ import { useState } from 'preact/hooks'
 import type { ArenaFeedEntry } from '../../util/arena-feed'
 import type { ArenaNote } from '../../util/arena-reader'
 import { sanitizeReaderHtml } from './content'
+import { DeleteNote } from './delete-note'
 import { noteStage, type NoteDraft } from './model'
 
 export type DraftStatus = 'device' | 'saving' | 'synced' | 'unsaved' | 'conflict'
@@ -39,7 +40,6 @@ const stages = { draft: 'Draft', ready: 'Ready to backfill', backfilled: 'Backfi
 export function NotesPanel(props: NotesProps) {
   const [stage, setStage] = useState<'all' | 'draft' | 'ready' | 'backfilled'>('all')
   const [preview, setPreview] = useState(false)
-  const [deleting, setDeleting] = useState<string | null>(null)
   const draft = props.drafts.find(item => item.note.id === props.editing)
   const visible = props.drafts.filter(
     item => stage === 'all' || (item.dirty ? 'draft' : noteStage(item.note)) === stage,
@@ -116,44 +116,24 @@ export function NotesPanel(props: NotesProps) {
             autoFocus
           />
         )}
-        <div class="arena-notes-editor-footer">
-          <span class="arena-reader-status">
-            {draft.note.body.trim() ? 'Markdown supported' : 'Write text to sync this draft.'}
-          </span>
-          <div class="arena-notes-toolbar">
-            {status === 'device' && (
-              <button type="button" onClick={props.onRetry}>
-                Sync now
-              </button>
-            )}
-            <button
-              type="button"
-              disabled={!draft.note.body.trim() || Boolean(draft.conflict) || status === 'saving'}
-              onClick={() => props.onReady(draft)}
-            >
-              {draft.ready ? 'Return to draft' : 'Ready to backfill'}
+        <div class="arena-note-actions">
+          {status === 'device' && (
+            <button type="button" onClick={props.onRetry}>
+              sync
             </button>
-            <button type="button" onClick={() => setDeleting(draft.note.id)}>
-              Delete
-            </button>
-          </div>
-          {deleting === draft.note.id && (
-            <div class="arena-note-delete">
-              <p>Delete this reader note?</p>
-              <button
-                type="button"
-                onClick={() => {
-                  props.onDelete(draft)
-                  setDeleting(null)
-                }}
-              >
-                Delete note
-              </button>
-              <button type="button" onClick={() => setDeleting(null)}>
-                Keep note
-              </button>
-            </div>
           )}
+          <button
+            type="button"
+            disabled={!draft.note.body.trim() || Boolean(draft.conflict) || status === 'saving'}
+            onClick={() => props.onReady(draft)}
+          >
+            {draft.ready ? 'return to draft' : 'ready to backfill'}
+          </button>
+          <DeleteNote
+            key={draft.note.id}
+            disabled={status === 'saving'}
+            onDelete={() => props.onDelete(draft)}
+          />
         </div>
       </div>
     )

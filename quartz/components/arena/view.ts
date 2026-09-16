@@ -14,6 +14,7 @@ import { normalizeRelativeURLs } from '../../util/path'
 import { tokenizeTerm } from '../../util/search-text'
 import { isRecord, readString } from '../../util/type-guards'
 import { loadMapbox, applyMonochromeMapPalette } from '../scripts/mapbox-client'
+import { mountTwitterEmbeds } from '../scripts/twitter'
 
 let currentBlockIndex = 0
 let totalBlocks = 0
@@ -884,17 +885,7 @@ export async function showModal(blockId: string) {
   clonedContent.style.display = 'block'
   modalBody.appendChild(clonedContent)
 
-  if (window.twttr && typeof window.twttr.ready === 'function') {
-    window.twttr.ready((readyTwttr: any) => {
-      if (readyTwttr?.widgets?.load) {
-        readyTwttr.widgets.load(modalBody)
-      }
-    })
-    // @ts-ignore
-  } else if (window.twttr?.widgets?.load) {
-    // @ts-ignore
-    window.twttr.widgets.load(modalBody)
-  }
+  mountTwitterEmbeds(modalBody)
 
   hydrateSubstackEmbeds(modalBody)
   hydrateExternalEmbeds(modalBody)

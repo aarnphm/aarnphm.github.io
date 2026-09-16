@@ -20,6 +20,7 @@ import { classNames } from '../../util/lang'
 import { FullSlug, slugTag, resolveRelative } from '../../util/path'
 import { hostnameMatches } from '../../util/url'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
+import { ArenaReaderLink } from '../arena/reader-link'
 import style from '../styles/arena.scss'
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
@@ -728,39 +729,37 @@ export default (() => {
         data-view-mode={defaultViewMode}
         data-view-default={defaultViewMode}
       >
-        <p>
-          <a href="/arena/feed" class="internal" data-no-popover>
-            Open reader →
-          </a>
-        </p>
         <div class="arena-channel-controls">
-          <div class="arena-search">
-            <input
-              type="text"
-              id="arena-search-bar"
-              class="arena-search-input"
-              placeholder="rechercher ce canal..."
-              data-search-scope="channel"
-              data-channel-slug={channel.slug}
-              aria-label="Rechercher ce canal"
-              aria-keyshortcuts="Meta+K Control+K"
-            />
-            <svg
-              class="arena-search-icon"
-              width="18"
-              height="18"
-              viewBox="0 0 15 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 6.5C10 8.433 8.433 10 6.5 10C4.567 10 3 8.433 3 6.5C3 4.567 4.567 3 6.5 3C8.433 3 10 4.567 10 6.5ZM9.30884 10.0159C8.53901 10.6318 7.56251 11 6.5 11C4.01472 11 2 8.98528 2 6.5C2 4.01472 4.01472 2 6.5 2C8.98528 2 11 4.01472 11 6.5C11 7.56251 10.6318 8.53901 10.0159 9.30884L12.8536 12.1464C13.0488 12.3417 13.0488 12.6583 12.8536 12.8536C12.6583 13.0488 12.3417 13.0488 12.1464 12.8536L9.30884 10.0159Z"
-                fill="currentColor"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+          <div class="arena-search-row">
+            <div class="arena-search">
+              <input
+                type="text"
+                id="arena-search-bar"
+                class="arena-search-input"
+                placeholder="rechercher ce canal..."
+                data-search-scope="channel"
+                data-channel-slug={channel.slug}
+                aria-label="Rechercher ce canal"
+                aria-keyshortcuts="Meta+K Control+K"
               />
-            </svg>
-            <div id="arena-search-container" class="arena-search-results" />
+              <svg
+                class="arena-search-icon"
+                width="18"
+                height="18"
+                viewBox="0 0 15 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 6.5C10 8.433 8.433 10 6.5 10C4.567 10 3 8.433 3 6.5C3 4.567 4.567 3 6.5 3C8.433 3 10 4.567 10 6.5ZM9.30884 10.0159C8.53901 10.6318 7.56251 11 6.5 11C4.01472 11 2 8.98528 2 6.5C2 4.01472 4.01472 2 6.5 2C8.98528 2 11 4.01472 11 6.5C11 7.56251 10.6318 8.53901 10.0159 9.30884L12.8536 12.1464C13.0488 12.3417 13.0488 12.6583 12.8536 12.8536C12.6583 13.0488 12.3417 13.0488 12.1464 12.8536L9.30884 10.0159Z"
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <div id="arena-search-container" class="arena-search-results" />
+            </div>
+            <ArenaReaderLink />
           </div>
           <div class="arena-view-toggle" role="group" aria-label="Toggle channel layout">
             <button

@@ -67,7 +67,6 @@ export type ArenaReaderArtifact = ArenaReaderArtifactBase &
     | {
         kind: 'html'
         readerHtml: string | null
-        documentHtml: string
         quality: 'complete' | 'partial'
         diagnostics: string[]
       }

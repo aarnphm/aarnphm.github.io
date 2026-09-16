@@ -1,7 +1,10 @@
 body[data-slug='arena/feed'] {
+  overflow: hidden;
+
   .page-content {
     display: block;
     min-width: 0;
+    margin-bottom: 0;
   }
 
   #quartz-root {
@@ -30,19 +33,29 @@ body[data-slug='arena/feed'] {
   grid-column: 1 / -1;
 }
 
+.arena-feed-mount {
+  height: 100dvh;
+  overflow: hidden;
+}
+
 .arena-reader {
   --arena-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --arena-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --arena-selected: color-mix(in srgb, var(--secondary) 18%, var(--arena-surface));
   --arena-muted: var(--darkgray);
-  --arena-width: 80rem;
+  --arena-width: 52rem;
+  --arena-gutter: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
+  --arena-control-height: 1.5rem;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   color: var(--darkgray);
   width: 100%;
   max-width: var(--arena-width);
-  min-height: 100dvh;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
   margin-inline: auto;
-  padding-bottom: calc(3.25rem + env(safe-area-inset-bottom));
   border-inline: 1px solid var(--arena-line);
   text-align: start;
 
@@ -62,19 +75,22 @@ body[data-slug='arena/feed'] {
 
   button,
   select {
-    min-height: 44px;
-    padding: 0.5rem 0.75rem;
+    min-height: var(--arena-control-height);
+    padding: 0.22rem 0.7rem;
     border: 1px solid var(--arena-line);
     border-radius: var(--radius-none);
     background: transparent;
     font-family: var(--codeFont);
-    font-size: 0.75rem;
-    line-height: 1.4;
+    font-size: 0.66rem;
+    line-height: 1.3;
     font-variant-numeric: tabular-nums;
   }
 
   button {
     appearance: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     cursor: pointer;
     touch-action: manipulation;
 
@@ -93,11 +109,21 @@ body[data-slug='arena/feed'] {
   }
 
   @media (hover: hover) and (pointer: fine) {
-    button:hover:not(:disabled) {
+    button:hover:not(
+        :disabled,
+        [aria-pressed='true'],
+        [aria-selected='true'],
+        [aria-current='page'],
+        [aria-expanded='true']
+      ) {
       color: var(--dark);
       background: var(--arena-surface);
       border-color: var(--gray);
     }
+  }
+
+  @media (pointer: coarse) {
+    --arena-control-height: 44px;
   }
 
   :where(button, a, input, select, textarea):focus-visible {
@@ -135,38 +161,67 @@ body[data-slug='arena/feed'] {
 
 .arena-reader-header {
   display: flex;
+  flex: none;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  min-height: 3.5rem;
-  padding: 0 max(1rem, env(safe-area-inset-left));
+  min-height: calc(var(--arena-control-height) + 0.5rem + 1px);
+  padding: 0.25rem var(--arena-gutter);
   border-bottom: 1px solid var(--arena-line);
   font-family: var(--codeFont);
-  font-size: 0.75rem;
+  font-size: 0.66rem;
 
   > button {
-    align-self: stretch;
-    margin-right: calc(-1 * max(1rem, env(safe-area-inset-left)));
-    padding-inline: 1rem;
-    border-block: 0;
-    border-inline-end: 0;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    border: 0;
   }
 
   a {
     color: var(--dark);
+
+    &:hover {
+      color: var(--dark);
+      background: transparent;
+      text-decoration: underline;
+    }
+  }
+}
+
+.arena-reader .arena-reader-icon-button {
+  display: inline-flex;
+  flex: none;
+  width: var(--arena-control-height);
+  height: var(--arena-control-height);
+  padding: 0;
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex: none;
   }
 }
 
 .arena-reader-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  flex: 1;
+  min-height: 0;
   min-width: 0;
+  overflow: hidden;
 }
 
 .arena-reader-main {
+  min-height: 0;
   min-width: 0;
   width: 100%;
-  max-width: 52rem;
-  padding: 1.75rem max(1rem, env(safe-area-inset-left)) 2rem;
+  padding: 1.75rem var(--arena-gutter) 2rem;
   margin: 0 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--arena-line) transparent;
 }
 
 .arena-reader-article-header {
@@ -200,9 +255,14 @@ body[data-slug='arena/feed'] {
   font-family: var(--codeFont);
 }
 
+.arena-reader-loading {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--arena-line);
+  text-align: start;
+}
+
 .arena-reader-source,
-.arena-reader-article-actions,
-.arena-reader-representation,
 .arena-notes-toolbar,
 .arena-reader-queue-controls,
 .arena-note-card-meta {
@@ -212,22 +272,12 @@ body[data-slug='arena/feed'] {
   gap: 0.5rem 1rem;
 }
 
-.arena-reader-representation {
-  display: inline-flex;
-  flex-wrap: nowrap;
-  gap: 0;
-  margin-bottom: 1.25rem;
-  border: 1px solid var(--arena-line);
-  background: var(--arena-surface);
-
-  button {
-    border: 0;
-    background: var(--light);
-
-    + button {
-      border-inline-start: 1px solid var(--arena-line);
-    }
-  }
+.arena-reader-quality {
+  margin: 0 0 1.25rem;
+  color: var(--arena-muted);
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  line-height: 1.3;
 }
 
 .arena-reader-prose {
@@ -299,13 +349,41 @@ body[data-slug='arena/feed'] {
   a {
     overflow-wrap: anywhere;
   }
-}
 
-.arena-reader-document {
-  width: 100%;
-  min-height: 75dvh;
-  border: 1px solid var(--arena-line);
-  background: var(--light);
+  .arena-callout {
+    margin-block: 1.25rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--arena-line);
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .arena-callout-title {
+    padding-bottom: 0.65rem;
+    margin-bottom: 0.85rem;
+    border-bottom: 1px solid var(--arena-line);
+    font-weight: 600;
+  }
+
+  .arena-callout-content {
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  math[display='block'] {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    margin-block: 1.25rem;
+    padding-block: 0.25rem;
+  }
 }
 
 .arena-reader-media iframe {
@@ -314,21 +392,55 @@ body[data-slug='arena/feed'] {
   border: 0;
 }
 
-.arena-reader-pdf .pdf-embed {
-  min-height: 70dvh;
-  width: 100%;
-}
+.arena-reader-pdf {
+  .pdf-embed {
+    min-height: 70dvh;
+    width: 100%;
+  }
 
-.arena-reader-pdf .pdf-embed-button {
-  width: 44px;
-  height: 44px;
-  padding: 0.5rem;
-  flex: 0 0 44px;
+  .pdf-embed-toolbar {
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+  }
 
-  svg {
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
+  .pdf-embed-control-group {
+    gap: 0.375rem;
+  }
+
+  .pdf-embed-button {
+    width: var(--arena-control-height);
+    height: var(--arena-control-height);
+    padding: 0.25rem;
+    flex: 0 0 var(--arena-control-height);
+
+    svg {
+      width: 0.75rem;
+      height: 0.75rem;
+      flex-shrink: 0;
+    }
+  }
+
+  .pdf-embed-page-input {
+    width: 2.5rem;
+    height: var(--arena-control-height);
+    padding: 0.125rem 0.25rem;
+    line-height: 1.3;
+  }
+
+  .pdf-embed-page-input,
+  .pdf-embed-page-total,
+  .pdf-embed-zoom {
+    font-family: var(--codeFont);
+    font-size: 0.66rem;
+  }
+
+  .pdf-embed-page-total,
+  .pdf-embed-zoom {
+    line-height: var(--arena-control-height);
+  }
+
+  .pdf-embed-zoom {
+    min-width: 3em;
   }
 }
 
@@ -348,26 +460,11 @@ body[data-slug='arena/feed'] {
   }
 }
 
-.arena-reader-article-actions {
-  gap: 0;
-  margin-top: 1.5rem;
-  border: 1px solid var(--arena-line);
-
-  button {
-    flex: 1 1 0;
-    min-width: 0;
-    border: 0;
-
-    + button {
-      border-inline-start: 1px solid var(--arena-line);
-    }
-  }
-}
-
 .arena-reader-empty {
   max-width: 38rem;
   margin: 2rem auto;
   padding: 1.5rem 1rem;
+  overflow-y: auto;
 
   h1 {
     font-size: 1.8rem;
@@ -382,12 +479,12 @@ body[data-slug='arena/feed'] {
 .arena-reader-notice,
 .arena-reader-undo {
   display: flex;
+  flex: none;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  max-width: 70rem;
   margin: 0 auto;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem var(--arena-gutter);
   font-size: 0.85rem;
   border: 1px solid var(--arena-line);
   background: var(--arena-surface);
@@ -401,28 +498,30 @@ body[data-slug='arena/feed'] {
   }
 }
 
+.arena-reader-footer {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  padding-block: 0.75rem calc(0.75rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--arena-line);
+  background: var(--light);
+}
+
 .arena-reader-bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1.15fr 0.8fr;
-  max-width: var(--arena-width);
+  display: flex;
+  width: max-content;
+  max-width: calc(100% - 2rem);
   margin-inline: auto;
   gap: 0;
-  padding: 0 0 env(safe-area-inset-bottom);
+  padding: 0;
   background: var(--light);
   border: 1px solid var(--arena-line);
-  border-bottom: 0;
 
   button {
-    min-height: 3.25rem;
-    padding: 0.5rem 0.35rem;
+    flex: 0 1 auto;
+    min-width: 0;
+    padding-inline: 0.4rem;
     border: 0;
-    font-size: 0.72rem;
-    line-height: 1.3;
     white-space: nowrap;
 
     + button {
@@ -433,7 +532,7 @@ body[data-slug='arena/feed'] {
 
 .arena-reader-counter {
   display: inline-block;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   color: var(--arena-muted);
   margin-left: 0.35rem;
   font-variant-numeric: tabular-nums;
@@ -493,17 +592,19 @@ body[data-slug='arena/feed'] {
 
 .arena-reader-panel-header {
   display: flex;
+  flex: none;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0 0 0 1rem;
+  min-height: 2rem;
+  padding: 0.25rem var(--arena-gutter);
   border-bottom: 1px solid var(--arena-line);
   font-family: var(--codeFont);
   background: var(--arena-surface);
 
   h2 {
     font-family: inherit;
-    font-size: 0.8rem;
+    font-size: 0.66rem;
     font-weight: 500;
     margin: 0;
   }
@@ -514,14 +615,26 @@ body[data-slug='arena/feed'] {
   }
 
   button {
-    border-block: 0;
-    border-inline-end: 0;
+    border: 0;
+  }
+
+  .arena-reader-icon-button {
+    justify-content: flex-end;
   }
 }
 
-.arena-reader-queue,
+.arena-reader-queue {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: var(--arena-gutter);
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.arena-reader-queue-entries,
 .arena-notes-list {
-  padding: 1rem;
   overflow-y: auto;
   overscroll-behavior: contain;
   min-height: 0;
@@ -529,35 +642,131 @@ body[data-slug='arena/feed'] {
   scrollbar-color: var(--arena-line) transparent;
 }
 
+.arena-reader-queue-entries {
+  flex: 1;
+
+  > button {
+    margin-top: 0.75rem;
+  }
+}
+
+.arena-notes-list {
+  padding: var(--arena-gutter);
+}
+
 .arena-reader-queue-controls {
+  flex: none;
   justify-content: space-between;
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: 0.62rem;
+  gap: 0.35rem 0.5rem;
 
-  label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  .arena-reader-status {
+    margin: 0;
+    font-size: 0.6rem;
+    white-space: nowrap;
   }
 }
 
 .arena-reader-search {
-  display: block;
-  font-family: var(--codeFont);
-  font-size: 0.72rem;
-  margin: 1rem 0;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.35rem;
 
   input {
     display: block;
-    margin-top: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    min-height: var(--arena-control-height);
+    height: var(--arena-control-height);
+    padding: 0.25rem 0.5rem;
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
     background: var(--arena-surface);
+
+    &::placeholder {
+      color: var(--arena-muted);
+      font-size: 0.7rem;
+    }
+
+    @media (pointer: coarse) {
+      font-size: 1rem;
+    }
+  }
+}
+
+.arena-reader-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.arena-reader-filter-picker {
+  position: relative;
+}
+
+.arena-reader .arena-reader-filter-trigger {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding-inline: 0.4rem;
+  font-size: 0.62rem;
+
+  svg {
+    width: 0.7rem;
+    height: 0.7rem;
+    flex: none;
+  }
+
+  &[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+}
+
+.arena-reader-filter-menu {
+  position: absolute;
+  inset: calc(100% + 0.2rem) auto auto 0;
+  z-index: var(--z-popover);
+  width: max-content;
+  min-width: 100%;
+  padding: 0.2rem;
+  background: var(--light);
+  border: 1px solid var(--arena-line);
+
+  &:not([hidden]) {
+    display: grid;
+  }
+
+  button {
+    display: grid;
+    grid-template-columns: 0.75rem minmax(0, 1fr);
+    gap: 0.35rem;
+    width: 100%;
+    padding: 0.3rem 0.4rem;
+    border: 0;
+    font-size: 0.62rem;
+    text-align: left;
+
+    &[aria-selected='true'] {
+      color: var(--dark);
+      background: var(--arena-selected);
+    }
+  }
+}
+
+.arena-reader-filter-check {
+  visibility: hidden;
+
+  [aria-selected='true'] > & {
+    visibility: visible;
   }
 }
 
 .arena-reader-queue ol {
   list-style: none;
   padding: 0;
-  margin: 1rem 0;
+  margin: 0;
   border: 1px solid var(--arena-line);
 
   li {
@@ -575,7 +784,7 @@ body[data-slug='arena/feed'] {
     text-align: left;
     border-radius: 0;
     border: 0;
-    padding: 0.75rem;
+    padding: 0.35rem 0.5rem;
   }
 }
 
@@ -586,10 +795,16 @@ body[data-slug='arena/feed'] {
 
 .arena-reader-queue-title {
   font-family: var(--bodyFont);
-  font-size: 0.95rem;
-  line-height: 1.35;
+  font-variant-numeric: normal;
+  font-size: 0.8rem;
+  line-height: 1.3;
   overflow-wrap: anywhere;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.15rem;
+}
+
+.arena-reader-queue-meta {
+  font-size: 0.6rem;
+  line-height: 1.35;
 }
 
 .arena-notes-editor {
@@ -597,7 +812,7 @@ body[data-slug='arena/feed'] {
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  padding: 0.75rem 1rem;
+  padding: var(--arena-gutter);
   gap: 0.65rem;
   overflow-y: auto;
 
@@ -651,8 +866,22 @@ body[data-slug='arena/feed'] {
   }
 }
 
-.arena-notes-editor-footer {
+.arena-note-actions {
+  display: flex;
   flex-shrink: 0;
+  width: 100%;
+  border: 1px solid var(--arena-line);
+
+  > button {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    white-space: nowrap;
+
+    + button {
+      border-inline-start: 1px solid var(--arena-line);
+    }
+  }
 }
 
 .arena-note-add {
@@ -706,8 +935,7 @@ body[data-slug='arena/feed'] {
   color: var(--tertiary);
 }
 
-.arena-note-conflict,
-.arena-note-delete {
+.arena-note-conflict {
   padding: 0.75rem;
   border: 1px solid var(--tertiary);
   font-size: 0.85rem;
@@ -715,6 +943,44 @@ body[data-slug='arena/feed'] {
 
   p {
     white-space: pre-wrap;
+  }
+}
+
+.arena-note-delete {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  width: 18rem;
+  max-width: calc(100vw - 1rem);
+  padding: 0.75rem;
+  border: 1px solid var(--arena-line);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  font-size: 0.8rem;
+
+  h3 {
+    margin: 0;
+    font-family: var(--bodyFont);
+    font-size: inherit;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  p {
+    margin: 0.4rem 0 0.75rem;
+    color: var(--arena-muted);
+    line-height: 1.4;
+  }
+}
+
+.arena-note-delete-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  > button + button {
+    margin-inline-start: -1px;
+    color: var(--dark);
   }
 }
 
@@ -736,8 +1002,17 @@ body[data-slug='arena/feed'] {
 }
 
 @media (min-width: 68rem) {
+  .arena-reader {
+    --arena-gutter: 2rem;
+
+    &[data-panel='queue'],
+    &[data-panel='notes'] {
+      --arena-width: 76rem;
+    }
+  }
+
   .arena-reader-main {
-    padding: 2rem 2.5rem 3rem;
+    padding-block: 2rem 3rem;
   }
 
   .arena-reader[data-panel='queue'] .arena-reader-layout,
@@ -748,34 +1023,28 @@ body[data-slug='arena/feed'] {
   }
 
   .arena-reader-panel {
-    position: sticky;
-    top: 0;
-    align-self: start;
+    position: relative;
+    inset: auto;
+    align-self: stretch;
     width: 100%;
     margin: 0;
-    height: calc(100dvh - 3.25rem);
-    max-height: none;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
     border: 0;
     border-inline-start: 1px solid var(--arena-line);
     border-radius: var(--radius-none);
     grid-column: 2;
+    grid-row: 1 / -1;
 
     &[data-editing='true'] {
-      height: calc(100dvh - 3.25rem);
+      height: 100%;
     }
-  }
-
-  .arena-reader-panel-header {
-    min-height: 3.5rem;
   }
 
   .arena-reader-drawer-handle,
   .arena-reader-expand {
     display: none;
-  }
-
-  .arena-reader-bottom-bar button {
-    font-size: 0.78rem;
   }
 }
 

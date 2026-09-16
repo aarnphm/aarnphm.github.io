@@ -9,10 +9,11 @@ import {
   readArenaExternalEmbedMode,
 } from '../../util/arena-embed'
 import { splitAnchor, transformLink, stripSlashes, FullSlug } from '../../util/path'
+import { parseTwitterPostUrl } from '../../util/twitter'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
 import { buildYouTubeEmbed } from '../../util/youtube'
 import { externalLinkRegex } from './ofm'
-import { fetchTwitterEmbed, twitterUrlRegex } from './twitter'
+import { fetchTwitterEmbed } from './twitter'
 
 export interface ArenaBlock {
   id: string
@@ -100,7 +101,15 @@ declare module 'vfile' {
 const TRAILING_MARKERS_PATTERN = /(?:\s*\[(?:\*\*|--|—)\])+\s*$/
 const HIGHLIGHT_MARKER = /\[\*\*\]/
 const EMBED_DISABLED_MARKER = /\[(?:--|—)\]/
-const REMOVE_PAYWALL_PREFIX = 'https://removepaywalls.com/'
+const WAYBACK_PREFIX = 'https://web.archive.org/web/*/'
+const REMOVE_PAYWALL_PATTERN = /^https?:\/\/(?:www\.)?removepaywalls\.com\/(?=https?:\/\/)/i
+
+const archiveUrl = (url: string): string => {
+  const original = url.replace(REMOVE_PAYWALL_PATTERN, '')
+  return /^https?:\/\/web\.archive\.org\//i.test(original)
+    ? original
+    : `${WAYBACK_PREFIX}${original}`
+}
 
 const parseLinkTitle = (text: string): { url: string; title?: string } | undefined => {
   const match = text.match(/^(https?:\/\/[^\s]+)\s*(?:(?:--|—)\s*(.+))?$/)
@@ -459,11 +468,10 @@ export const Arena: QuartzTransformerPlugin = () => {
                   id: `block-${blockCounter++}`,
                   content: titleCandidate || strippedContent || url || '',
                   title: titleCandidate,
-                  url,
+                  url: url && REMOVE_PAYWALL_PATTERN.test(url) ? archiveUrl(url) : url,
                   highlighted,
                   embedMode: defaultEmbedMode,
                 }
-                let unlocked = false
 
                 const nestedList = extractNestedList(li)
                 if (nestedList) {
@@ -549,11 +557,9 @@ export const Arena: QuartzTransformerPlugin = () => {
                               : undefined
                       if (
                         (normalizedUnlocked === 'true' || normalizedUnlocked === 'yes') &&
-                        block.url &&
-                        !block.url.startsWith(REMOVE_PAYWALL_PREFIX)
+                        block.url
                       ) {
-                        unlocked = true
-                        block.url = `${REMOVE_PAYWALL_PREFIX}${block.url}`
+                        block.url = archiveUrl(block.url)
                       }
                       delete block.metadata?.unlocked
                     }
@@ -587,7 +593,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                   if (subItems.length > 0) block.subItems = subItems
                 }
 
-                if (url && twitterUrlRegex.test(url)) {
+                if (url && parseTwitterPostUrl(url)) {
                   embedPromises.push(
                     fetchTwitterEmbed(url, locale)
                       .then(html => {
@@ -681,8 +687,8 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                         if (!classes.includes('internal')) classes.push('internal')
                       } else if (isExternal) {
-                        if (unlocked && url && dest === url) {
-                          e.properties.href = `${REMOVE_PAYWALL_PREFIX}${dest}`
+                        if (block.url && dest === url) {
+                          e.properties.href = block.url
                         }
                         if (!classes.includes('external')) classes.push('external')
                       }

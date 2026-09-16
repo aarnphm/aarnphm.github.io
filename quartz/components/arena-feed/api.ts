@@ -134,7 +134,6 @@ function isArtifact(value: unknown): value is ArenaReaderArtifact {
   if (value.kind === 'html')
     return (
       nullableString(value.readerHtml) &&
-      typeof value.documentHtml === 'string' &&
       (value.quality === 'complete' || value.quality === 'partial') &&
       Array.isArray(value.diagnostics) &&
       value.diagnostics.every(diagnostic => typeof diagnostic === 'string')

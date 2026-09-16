@@ -19,16 +19,11 @@ export interface WikipediaPreview {
   thumbnail?: WikipediaThumbnail
 }
 
-const wikipediaLanguage = /^[a-z][a-z0-9-]{0,15}$/
 const ignoredLanguageLabels = new Set(['m', 'www'])
 
 function wikipediaHostLanguage(hostname: string): string | undefined {
-  const labels = hostname.toLowerCase().split('.')
-  const wikipediaIndex = labels.lastIndexOf('wikipedia')
-  if (wikipediaIndex < 1 || labels[wikipediaIndex + 1] !== 'org') return undefined
-
-  const lang = labels[0]
-  if (ignoredLanguageLabels.has(lang) || !wikipediaLanguage.test(lang)) return undefined
+  const lang = hostname.toLowerCase().match(/^([a-z][a-z0-9-]{0,15})(?:\.m)?\.wikipedia\.org$/)?.[1]
+  if (!lang || ignoredLanguageLabels.has(lang)) return undefined
   return lang
 }
 
@@ -52,6 +47,7 @@ export function parseWikipediaTarget(href: string): WikipediaTarget | undefined 
   } catch {
     return undefined
   }
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return undefined
 
   const lang = wikipediaHostLanguage(url.hostname)
   const title = wikipediaPathTitle(url.pathname)

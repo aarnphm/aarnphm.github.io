@@ -6,6 +6,7 @@ import test from 'node:test'
 import { getPlatformProxy } from 'wrangler'
 import {
   type ArenaReaderResource,
+  arenaReaderSourceHeaders,
   fetchArenaReaderSource,
   isArenaPublicAddress,
   isPublicArenaHostname,
@@ -13,6 +14,27 @@ import {
   serveArenaReaderResource,
   validateArenaReaderTarget,
 } from './arena-reader-resources'
+
+test('source requests identify the reader without forwarding caller credentials or identity', () => {
+  const headers = arenaReaderSourceHeaders({
+    Accept: 'text/html',
+    'Accept-Language': 'fr',
+    Range: 'bytes=0-1023',
+    'User-Agent': 'UntrustedClient',
+    Authorization: 'Bearer private',
+    Cookie: 'session=private',
+    Referer: 'https://private.example/notes',
+  })
+  assert.equal(headers.get('User-Agent'), 'GardenArenaReader/1.0 (https://aarnphm.xyz/arena)')
+  assert.equal(arenaReaderSourceHeaders().get('User-Agent'), headers.get('User-Agent'))
+  assert.equal(headers.get('Accept-Encoding'), 'identity')
+  assert.equal(headers.get('Accept'), 'text/html')
+  assert.equal(headers.get('Accept-Language'), 'fr')
+  assert.equal(headers.get('Range'), 'bytes=0-1023')
+  for (const name of ['Authorization', 'Cookie', 'Referer']) assert.equal(headers.get(name), null)
+  assert.equal(arenaReaderSourceHeaders({ Range: 'bytes=0-1,4-5' }).get('Range'), null)
+  assert.equal(arenaReaderSourceHeaders({ Accept: 'x'.repeat(1025) }).get('Accept'), null)
+})
 
 test('accepts anonymous public HTTP URLs and preserves source identity', () => {
   for (const url of [

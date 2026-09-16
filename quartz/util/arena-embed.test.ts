@@ -1,6 +1,7 @@
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
 import {
+  arenaArxivPdfUrl,
   arenaEmbedCapabilityPath,
   arenaEmbedCapturePath,
   arenaEmbedHtmlPath,
@@ -12,6 +13,33 @@ import {
 } from './arena-embed'
 
 describe('arena embeds', () => {
+  test('resolves arXiv paper representations to PDFs without changing versions', () => {
+    for (const [source, pdf] of [
+      ['https://arxiv.org/abs/2206.00759', '2206.00759'],
+      ['https://arxiv.org/abs/2206.00759v3?context=cs#abstract', '2206.00759v3'],
+      ['http://www.arxiv.org/pdf/0706.0001v2.pdf', '0706.0001v2'],
+      ['https://export.arxiv.org/html/2609.00001v1', '2609.00001v1'],
+      ['https://arxiv.org/abs/hep-th/9901001', 'hep-th/9901001'],
+      ['https://arxiv.org/pdf/math.GT/0309136v2.pdf', 'math.GT/0309136v2'],
+    ]) {
+      assert.strictEqual(arenaArxivPdfUrl(source), `https://arxiv.org/pdf/${pdf}`)
+    }
+    for (const source of [
+      'https://arxiv.org/list/cs.LG/recent',
+      'https://arxiv.org/abs/not-a-paper',
+      'https://arxiv.org/abs/2213.00759',
+      'https://arxiv.org/abs/2206.00759v0',
+      'https://arxiv.org/abs/2206.00759/extra',
+      'https://arxiv.org.example.com/abs/2206.00759',
+      'https://user:secret@arxiv.org/abs/2206.00759',
+      'https://arxiv.org:8081/abs/2206.00759',
+      'file://arxiv.org/abs/2206.00759',
+      '/abs/2206.00759',
+    ]) {
+      assert.strictEqual(arenaArxivPdfUrl(source), null, source)
+    }
+  })
+
   test('reads explicit metadata modes', () => {
     assert.strictEqual(readArenaExternalEmbedMode('auto'), 'auto')
     assert.strictEqual(readArenaExternalEmbedMode('iframe'), 'iframe')
