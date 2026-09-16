@@ -10,10 +10,10 @@ import {
 } from '../../util/arena-embed'
 import { splitAnchor, transformLink, stripSlashes, FullSlug } from '../../util/path'
 import { parseTwitterPostUrl } from '../../util/twitter'
+import { fetchTwitterPost } from '../../util/twitter-content'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
 import { buildYouTubeEmbed } from '../../util/youtube'
 import { externalLinkRegex } from './ofm'
-import { fetchTwitterEmbed } from './twitter'
 
 export interface ArenaBlock {
   id: string
@@ -242,9 +242,6 @@ export const Arena: QuartzTransformerPlugin = () => {
   return {
     name: 'Arena',
     htmlPlugins(ctx) {
-      const localeConfig = ctx.cfg.configuration.locale ?? 'en'
-      const locale = localeConfig.split('-')[0] ?? 'en'
-
       return [
         () => {
           return (tree: HastRoot, file) => {
@@ -595,7 +592,7 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                 if (url && parseTwitterPostUrl(url)) {
                   embedPromises.push(
-                    fetchTwitterEmbed(url, locale)
+                    fetchTwitterPost(url)
                       .then(html => {
                         if (html) block.embedHtml = html
                       })

@@ -64,11 +64,12 @@ test('classifies shared browser utilities as page script changes', () => {
 })
 
 test('classifies global component styles as index stylesheet changes', () => {
-  const changes = classifyResourceChanges([change('quartz/components/styles/popover.scss')])
-
-  assert.equal(changes.indexStylesheet, true)
-  assert.equal(changes.componentStyles, false)
-  assert.equal(changes.staticStyles, false)
+  for (const stylesheet of ['popover', 'twitter']) {
+    const changes = classifyResourceChanges([change(`quartz/components/styles/${stylesheet}.scss`)])
+    assert.equal(changes.indexStylesheet, true)
+    assert.equal(changes.componentStyles, false)
+    assert.equal(changes.staticStyles, false)
+  }
 })
 
 test('classifies mdx component styles as component stylesheet changes', () => {

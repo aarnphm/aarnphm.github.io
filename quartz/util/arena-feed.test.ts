@@ -14,6 +14,13 @@ import { unified } from 'unified'
 import type { ArenaBlock, ArenaChannel } from '../plugins/transformers/arena'
 import type { QuartzEmitterPluginInstance } from '../types/plugin'
 import type { BuildCtx } from './ctx'
+import {
+  ARENA_CARD_PAGE_SIZE,
+  arenaChannelAssets,
+  arenaCardPageSource,
+  arenaModalSource,
+  parseArenaCardPage,
+} from '../components/arena/channel-data'
 import { defaultProcessedContent, type ProcessedContent } from '../plugins/vfile'
 import {
   buildArenaFeedManifest,
@@ -507,6 +514,71 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
     return manifest
   }
   const resources = { css: [], js: [], additionalHead: [] }
+  await t.test(
+    'virtual channel cards support random access and preserve separate modal content',
+    async () => {
+      const fixture = await parse(
+        `## lazy\n\n${['pinned', 'later', 'blocks']
+          .map(section =>
+            Array.from(
+              { length: section === 'blocks' ? 55 : 30 },
+              (_, index) =>
+                `- [${section} ${index}](https://example.com/${section}-${index}.pdf)\n  - [meta]:\n    - date: 09/15/2026\n${section === 'blocks' ? '' : `    - ${section}: true\n`}  - **Delayed note ${section} ${index}**\n`,
+            ).join('\n'),
+          )
+          .join('\n')}`,
+      )
+      const channels = fixture[1].data.arenaData?.channels
+      assert.ok(channels)
+      const channel = channels[0]
+      const lazyEmitter = ArenaPage()
+      await collect(lazyEmitter.emit(ctx, [fixture], resources))
+      const html = await readFile(join(output, 'arena/lazy.html'), 'utf8')
+      const initialIds = Array.from(html.matchAll(/data-block-id="([^"]+)"/g), match => match[1])
+      assert.equal(initialIds.length, 3 * ARENA_CARD_PAGE_SIZE)
+      assert.equal(new Set(initialIds).size, initialIds.length)
+      assert.doesNotMatch(html, /arena-block-modal-data|Delayed note|data-arena-pdf-src/)
+      assert.doesNotMatch(html, /arena-load-more/)
+      assert.match(html, /data-arena-count="55"/)
+      const assets = arenaChannelAssets(channel.slug)
+      const allIds: string[] = []
+      for (const section of ['pinned', 'later', 'blocks'] as const) {
+        const total = section === 'blocks' ? 55 : 30
+        for (let offset = 0; offset < total; offset += ARENA_CARD_PAGE_SIZE) {
+          const source = arenaCardPageSource(assets, section, offset)
+          const page = parseArenaCardPage(
+            JSON.parse(await readFile(join(output, source.slice(1)), 'utf8')),
+          )
+          const ids = Array.from(page.html.matchAll(/data-block-id="([^"]+)"/g), match => match[1])
+          assert.equal(page.total, total)
+          assert.equal(page.offset, offset)
+          assert.equal(ids.length, Math.min(ARENA_CARD_PAGE_SIZE, total - offset))
+          assert.doesNotMatch(page.html, /arena-block-modal-data|Delayed note/)
+          allIds.push(...ids)
+        }
+      }
+      assert.equal(allIds.length, channel.blocks.length)
+      assert.deepEqual(new Set(allIds), new Set(channel.blocks.map(block => block.id)))
+      const last = channel.blocks.at(-1)
+      assert.ok(last)
+      const modal = await readFile(join(output, arenaModalSource(assets, last.id).slice(1)), 'utf8')
+      assert.match(modal, /Delayed note blocks 54/)
+      assert.match(modal, /data-arena-pdf-src=/)
+      assert.doesNotMatch(modal, /data-pdf-src=/)
+      const search = JSON.parse(
+        await readFile(join(output, assets.slice(1), 'search.json'), 'utf8'),
+      )
+      assert.equal(search.blocks.length, channel.blocks.length)
+      assert.equal(search.blocks.at(-1).id, last.id)
+      assert.ok(search.blocks.every((block: { hasModalInDom: boolean }) => !block.hasModalInDom))
+      await collect(
+        lazyEmitter.partialEmit?.(ctx, [], resources, [
+          { type: 'delete', path: filePath, previousFile: fixture[1] },
+        ]),
+      )
+      await assert.rejects(access(join(output, assets.slice(1))), { code: 'ENOENT' })
+    },
+  )
   await t.test(
     'unlocked links use Wayback consistently across blocks, anchors, and feed entries',
     async () => {

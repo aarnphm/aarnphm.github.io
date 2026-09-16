@@ -34,6 +34,7 @@ import {
 
 const CAPTURE_TIMEOUT_MS = 55_000
 const DOCUMENT_LIMIT = 2 * 1024 * 1024
+const SCRIPT_LIMIT = 4 * 1024 * 1024
 const SESSION_BYTES_LIMIT = 12 * 1024 * 1024
 const SESSION_REQUEST_LIMIT = 80
 const SOURCE_CSP =
@@ -223,6 +224,14 @@ async function boundedBody(response: Response, limit: number): Promise<Uint8Arra
     offset += chunk.byteLength
   }
   return bytes
+}
+
+export function readArenaReaderResource(
+  response: Response,
+  type: ReturnType<HTTPRequest['resourceType']>,
+): Promise<Uint8Array<ArrayBuffer>> {
+  // MathJax's combined bundles exceed the document cap before they can emit MathML.
+  return boundedBody(response, type === 'script' ? SCRIPT_LIMIT : DOCUMENT_LIMIT)
 }
 
 export function arenaReaderRelayHeaders(
@@ -512,7 +521,7 @@ async function captureHtml(
             await request.respond({ status: 302, headers: { location: final.href } })
             return
           }
-          const body = await boundedBody(upstream.response, DOCUMENT_LIMIT)
+          const body = await readArenaReaderResource(upstream.response, type)
           totalBytes += body.byteLength
           if (totalBytes > SESSION_BYTES_LIMIT) {
             diagnostics.add('The page reached the bounded resource-loading limit.')
@@ -551,6 +560,29 @@ async function captureHtml(
         await new Promise(resolve => setTimeout(resolve, 250))
       }
       await page.waitForNetworkIdle({ idleTime: 300, timeout: 1500 }).catch(() => {})
+      const mathReady = await page.evaluate(async () => {
+        const mathJax: unknown = 'MathJax' in window ? window.MathJax : undefined
+        if (!mathJax || typeof mathJax !== 'object') return true
+        if (!('startup' in mathJax)) return true
+        const startup = mathJax.startup
+        if (!startup || typeof startup !== 'object' || !('promise' in startup)) return true
+        let timer: number | undefined
+        try {
+          // Preserve expanded custom macros in assistive MathML before the inert extraction.
+          return await Promise.race([
+            Promise.resolve(startup.promise).then(
+              () => true,
+              () => false,
+            ),
+            new Promise<boolean>(resolve => {
+              timer = window.setTimeout(() => resolve(false), 5000)
+            }),
+          ])
+        } finally {
+          window.clearTimeout(timer)
+        }
+      })
+      if (!mathReady) diagnostics.add('Some equations could not finish typesetting.')
       html = await page.evaluate(() => {
         for (const image of document.querySelectorAll('img')) {
           const source =

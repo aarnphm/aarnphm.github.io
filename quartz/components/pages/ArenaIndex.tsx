@@ -200,7 +200,11 @@ export default (() => {
         <div class="arena-block-modal" id="arena-modal">
           <div class="arena-modal-content">
             <div class="arena-modal-nav">
-              <button type="button" class="arena-modal-nav-btn arena-modal-collapse">
+              <button
+                type="button"
+                class="arena-modal-nav-btn arena-modal-collapse"
+                aria-label="Toggle item details"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="15"

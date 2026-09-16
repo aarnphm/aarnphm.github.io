@@ -4,6 +4,7 @@ import type { ArenaFeedEntry } from '../../util/arena-feed'
 import type { ArenaNote } from '../../util/arena-reader'
 import { sanitizeReaderHtml } from './content'
 import { DeleteNote } from './delete-note'
+import { ReaderFilter } from './filter'
 import { noteStage, type NoteDraft } from './model'
 
 export type DraftStatus = 'device' | 'saving' | 'synced' | 'unsaved' | 'conflict'
@@ -31,18 +32,61 @@ interface NotesProps {
   onResolve: (draft: NoteDraft, choice: 'remote' | 'copy') => void
   onOpenArticle: (id: string) => void
   onOpenSnapshot: (note: ArenaNote) => void
+  onExport?: () => void
   snapshotId: string | null
   inbox?: boolean
 }
 
 const stages = { draft: 'Draft', ready: 'Ready to backfill', backfilled: 'Backfilled' }
+type NoteFilter = 'all' | 'draft' | 'ready' | 'backfilled'
+const noteFilters: { value: NoteFilter; label: string }[] = [
+  { value: 'all', label: 'all notes' },
+  { value: 'draft', label: 'drafts' },
+  { value: 'ready', label: 'ready to backfill' },
+  { value: 'backfilled', label: 'backfilled' },
+]
 
 export function NotesPanel(props: NotesProps) {
-  const [stage, setStage] = useState<'all' | 'draft' | 'ready' | 'backfilled'>('all')
+  const [stage, setStage] = useState<NoteFilter>('all')
   const [preview, setPreview] = useState(false)
   const draft = props.drafts.find(item => item.note.id === props.editing)
   const visible = props.drafts.filter(
     item => stage === 'all' || (item.dirty ? 'draft' : noteStage(item.note)) === stage,
+  )
+  const toolbar = props.inbox && (
+    <div class="arena-notes-controls">
+      <button
+        type="button"
+        class="arena-notes-export"
+        aria-label="export ready notes"
+        title="export ready notes"
+        onClick={props.onExport}
+      >
+        <svg
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.25"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M8 2v8m-3-3 3 3 3-3M2 10v4h12v-4" />
+        </svg>
+        export
+      </button>
+      <ReaderFilter
+        label="show notes"
+        options={noteFilters}
+        value={stage}
+        onChange={value => {
+          setStage(value)
+          props.onEdit(null)
+          setPreview(false)
+        }}
+      />
+    </div>
   )
   if (draft) {
     const title =
@@ -50,6 +94,7 @@ export function NotesPanel(props: NotesProps) {
     const status = props.status(draft)
     return (
       <div class="arena-notes-editor">
+        {toolbar}
         <div class="arena-notes-toolbar">
           <button
             type="button"
@@ -140,29 +185,8 @@ export function NotesPanel(props: NotesProps) {
   }
   return (
     <div class="arena-notes-list">
-      {props.inbox ? (
-        <label class="arena-reader-select">
-          Show notes
-          <select
-            value={stage}
-            onChange={event => {
-              const value = event.currentTarget.value
-              if (
-                value === 'all' ||
-                value === 'draft' ||
-                value === 'ready' ||
-                value === 'backfilled'
-              )
-                setStage(value)
-            }}
-          >
-            <option value="all">All notes</option>
-            <option value="draft">Drafts</option>
-            <option value="ready">Ready to backfill</option>
-            <option value="backfilled">Backfilled</option>
-          </select>
-        </label>
-      ) : (
+      {toolbar}
+      {!props.inbox && (
         <>
           <p class="arena-reader-status">{props.article?.title}</p>
           <button

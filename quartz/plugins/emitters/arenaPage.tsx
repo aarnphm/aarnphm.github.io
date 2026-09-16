@@ -1,9 +1,21 @@
 import { ElementContent } from 'hast'
 import { toHtml } from 'hast-util-to-html'
 import fs from 'node:fs/promises'
+import { render } from 'preact-render-to-string'
 import { Node } from 'unist'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
+import {
+  ARENA_CARD_PAGE_SIZE,
+  arenaCardPageSource,
+  arenaChannelAssets,
+  arenaModalSource,
+  type ArenaSectionName,
+} from '../../components/arena/channel-data'
+import {
+  arenaChannelSections,
+  createArenaChannelRenderer,
+} from '../../components/arena/ChannelBlock'
 import HeaderConstructor from '../../components/Header'
 import ArenaFeed from '../../components/pages/ArenaFeed'
 import ArenaIndex from '../../components/pages/ArenaIndex'
@@ -101,7 +113,72 @@ async function processChannel(
   }
 
   const content = renderPage(ctx, channelSlug, componentData, opts, externalResources, false)
-  return write({ ctx, content, slug: channelSlug, ext: '.html' })
+  const files = [await write({ ctx, content, slug: channelSlug, ext: '.html' })]
+  const assetBase = arenaChannelAssets(channel.slug)
+  const sections = arenaChannelSections(channel)
+  const ordered = [...sections.pinned, ...sections.later, ...sections.blocks]
+  const renderBlock = createArenaChannelRenderer(componentData, channel)
+  const modalFiles = await mapConcurrent(ordered, defaultIoConcurrency, (block, index) =>
+    write({
+      ctx,
+      slug: arenaModalSource(assetBase, block.id).slice(1),
+      ext: '',
+      content: render(renderBlock(block, index, 'modal')),
+    }),
+  )
+  files.push(...modalFiles)
+
+  const sectionNames: ArenaSectionName[] = ['pinned', 'later', 'blocks']
+  let startIndex = 0
+  for (const name of sectionNames) {
+    const blocks = sections[name]
+    for (let offset = 0; offset < blocks.length; offset += ARENA_CARD_PAGE_SIZE) {
+      const loaded = Math.min(offset + ARENA_CARD_PAGE_SIZE, blocks.length)
+      const html = blocks
+        .slice(offset, loaded)
+        .map((block, index) => render(renderBlock(block, startIndex + offset + index)))
+        .join('')
+      files.push(
+        await write({
+          ctx,
+          slug: arenaCardPageSource(assetBase, name, offset).slice(1),
+          ext: '',
+          content: JSON.stringify({ html, offset, total: blocks.length }),
+        }),
+      )
+    }
+    startIndex += blocks.length
+  }
+
+  const searchIndex: ArenaSearchIndex = {
+    version: '1.0.0',
+    channels: [
+      { id: channel.id, slug: channel.slug, name: channel.name, blockCount: ordered.length },
+    ],
+    blocks: ordered.map(block => ({
+      id: block.id,
+      channelSlug: channel.slug,
+      channelName: channel.name,
+      title: block.title,
+      content: block.content,
+      url: block.url,
+      tags: block.tags,
+      metadata: block.metadata,
+      highlighted: block.highlighted ?? false,
+      pinned: block.pinned ?? false,
+      later: block.later ?? false,
+      hasModalInDom: false,
+    })),
+  }
+  files.push(
+    await write({
+      ctx,
+      slug: `${assetBase.slice(1)}/search`,
+      ext: '.json',
+      content: JSON.stringify(searchIndex),
+    }),
+  )
+  return files
 }
 
 async function processArenaFeed(
@@ -264,7 +341,7 @@ async function processChannelOutputs(
   opts: FullPageLayout,
   resources: StaticResources,
 ): Promise<FilePath[]> {
-  const files = [await processChannel(ctx, channel, baseFileData, allFiles, opts, resources)]
+  const files = await processChannel(ctx, channel, baseFileData, allFiles, opts, resources)
   if (isArenaChannelJsonEnabled(channel)) {
     files.push(await processChannelJson(ctx, channel))
   }
@@ -280,7 +357,7 @@ async function processChangedChannelOutputs(
   opts: FullPageLayout,
   resources: StaticResources,
 ): Promise<FilePath[]> {
-  const files = [await processChannel(ctx, channel, baseFileData, allFiles, opts, resources)]
+  const files = await processChannel(ctx, channel, baseFileData, allFiles, opts, resources)
   if (isArenaChannelJsonEnabled(channel)) {
     files.push(await processChannelJson(ctx, channel))
   } else if (previous?.jsonEnabled) {
@@ -295,6 +372,10 @@ async function removeChannelOutputs(
   jsonEnabled: boolean,
 ): Promise<void> {
   await fs.rm(joinSegments(ctx.argv.output, 'arena', `${channelSlug}.html`), { force: true })
+  await fs.rm(joinSegments(ctx.argv.output, arenaChannelAssets(channelSlug).slice(1)), {
+    recursive: true,
+    force: true,
+  })
   if (jsonEnabled) {
     await fs.rm(joinSegments(ctx.argv.output, 'arena', channelSlug, 'json'), { force: true })
   }

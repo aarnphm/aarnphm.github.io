@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-09-09 22:43:15 GMT-04:00
+modified: 2026-09-16 13:56:29 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -35,6 +35,8 @@ title: lists
 - bash magic
   - {{sidenotes[`sudo pmset -b sleep 0; sudo pmset -b disablesleep 1`]: disable display sleeping MacOS}}
   - {{sidenotes[`sudo pmset -b sleep 5; sudo pmset -b disablesleep 0`]: revert sleeping setup on MacOS}}
+- ripgrep magic
+  - `-U -P -B 1 '(?<=- later: true\n)\n'`
 - SAXPY: single-precision a \* x plus y
 - BLAS: Basic Linear Algebra Subprograms
   - L1: scalar,vector,vector-vector ops

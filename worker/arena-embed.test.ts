@@ -57,6 +57,15 @@ describe('arena embed worker helpers', () => {
       mode: 'iframe',
       reason: 'ok',
     })
+
+    assert.deepStrictEqual(
+      classifyArenaFrameHeaders(
+        new Headers({ 'Content-Type': 'text/html; charset=utf-8' }),
+        target,
+        embedderOrigin,
+      ),
+      { mode: 'fetch', reason: 'ok' },
+    )
   })
 
   test('rebases fetched document assets', () => {

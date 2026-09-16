@@ -59,7 +59,7 @@ export const runArenaEffect = (effect: ArenaEffect) => {
     case 'search.index.build':
       buildSearchIndex(effect.scope)
         .then(index => {
-          setSearchIndex(index)
+          if (index) setSearchIndex(index)
         })
         .catch(error => {
           console.error('Failed to build search index:', error)

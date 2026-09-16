@@ -17,6 +17,7 @@ const indexStylesheetComponentStyles = new Set([
   'quartz/components/styles/clipboard.scss',
   'quartz/components/styles/popover.scss',
   'quartz/components/styles/pseudocode.scss',
+  'quartz/components/styles/twitter.scss',
 ])
 
 const staticStylesheetEntries = new Set([

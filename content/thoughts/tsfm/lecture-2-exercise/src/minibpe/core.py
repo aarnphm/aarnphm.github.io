@@ -1,22 +1,23 @@
 from __future__ import annotations
 
-import mmap, os, time, json, typing as t, heapq, multiprocessing as mp
-import regex as re, psutil, speedscope, fire
+import json
+import mmap
+import multiprocessing as mp
+import os
+import time
+import typing as t
+import psutil
 
-from collections import Counter, defaultdict
+from collections import Counter
 from tqdm import tqdm
-from datasets import load_dataset
+from .patterns import PRETOKENIZER
+from .training import train_bpe
+from .impl import Tokenizer
 
-from ._core import Tokenizer as TokenizerFast
 
-
-# GPT-2 split pattern
-PRETOKENIZER_PATTERN = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
-PRETOKENIZER = re.compile(PRETOKENIZER_PATTERN)
 BASEDIR = os.path.dirname(__file__)
 
 
-# file_length: os.path.getsize(file_path)
 _WORKER_FILE, _WORKER_MMAP, _WORKER_SPECIAL_TOKEN_BYTES = None, None, None
 
 
@@ -29,7 +30,7 @@ def _init_worker(fpath: str, special_token: str):
 
 def pretokenize_chunk(
   start_end_indices: tuple[int, int],
-) -> Counter[list[str]]:
+) -> Counter[str]:
   start, end = start_end_indices
   assert (_WORKER_MMAP is not None) and (
     _WORKER_SPECIAL_TOKEN_BYTES is not None
@@ -43,7 +44,7 @@ def pretokenize_chunk(
 
 
 def pretokenize_batch(boundary_batch: list[tuple[int, int]]):
-  total: Counter[list[str]] = Counter()
+  total: Counter[str] = Counter()
   for bounds in boundary_batch:
     total.update(pretokenize_chunk(bounds))
   return total, len(boundary_batch)
@@ -56,7 +57,11 @@ def chunk_text_file(
   memory_interval: float = 1.0,
   memory_log_path: str | None = None,
   pt_batch: int = 256,
-) -> Counter[list[str]]:
+) -> Counter[str]:
+  if not special_token:
+    raise ValueError('special_token must be nonempty')
+  if os.path.getsize(file_path) == 0:
+    return Counter()
   with open(file_path, 'rb') as f:
     mm = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
     special = special_token.encode('utf-8')
@@ -154,27 +159,16 @@ def resolve_ds(ds: str) -> str:
   return os.path.join(data, ds)
 
 
-def _count_texts_batch(texts: list[str]):
-  c: Counter[str] = Counter()
-  total = 0
-  for t_ in texts:
-    toks = PRETOKENIZER.findall(t_)
-    c.update(toks)
-    total += len(toks)
-  return c, total
-
-
-def build_fineweb_parallel(
+def build_fineweb_counts(
   token_budget: int = 1_000_000_000,
   split: str = 'train',
-  processes: int = 8,
   batch_docs: int = 1000,
 ) -> Counter:
-  # Load as streaming to iterate lazily and respect token budget
+  from datasets import load_dataset
+
   ds = load_dataset('HuggingFaceFW/fineweb', split=split, streaming=True)
 
-  # Map: pretokenize texts in batches, attach token list and length per example
-  def _pretok_batch(batch: dict[str, list[t.Any]]):
+  def _pretok_batch(batch: dict[str, list[str]]):
     texts: list[str] = batch.get('text', [])
     pretoks = [PRETOKENIZER.findall(t_) if t_ else [] for t_ in texts]
     lengths = [len(p) for p in pretoks]
@@ -208,97 +202,8 @@ def build_fineweb_parallel(
   return counts
 
 
-def collect_fineweb_texts(
-  token_budget: int = 1_000_000_000, split: str = 'train'
-) -> list[str]:
-  from datasets import load_dataset
-
-  ds = load_dataset('HuggingFaceFW/fineweb', split=split, streaming=True)
-  texts: list[str] = []
-  total = 0
-  for example in ds:
-    text = example.get('text')
-    if not text:
-      continue
-    n = len(PRETOKENIZER.findall(text))
-    texts.append(text)
-    total += n
-    if total >= token_budget:
-      break
-  return texts
-
-
-def train_bpe(
-  pretokenized_freq: Counter[str], num_merges: int, batch_size: int = 1
-):
-  # Represent every token as a list[int] so we can edit in place
-  corpus = {
-    tuple(token.encode()): count for token, count in pretokenized_freq.items()
-  }
-  vocab = {tuple([i]): i for i in range(256)}  # byte → id
-  next_id = 256
-  merges: dict[tuple[int, int], int] = {}
-
-  remaining = num_merges
-  pbar = tqdm(total=num_merges, desc='BPE merges', unit='merge')
-  while remaining > 0:
-    step = min(batch_size, remaining)
-    pair_counts = defaultdict(int)
-    for symbols, freq in corpus.items():
-      if len(symbols) < 2:
-        continue
-      local = Counter(zip(symbols, symbols[1:]))
-      if freq != 1:
-        for pair, c in local.items():
-          pair_counts[pair] += c * freq
-      else:
-        for pair, c in local.items():
-          pair_counts[pair] += c
-
-    if not pair_counts:
-      break
-
-    top_pairs = heapq.nlargest(step, pair_counts.keys(), key=pair_counts.get)
-    selected_map: dict[tuple[int, int], int] = {}
-    for pair in top_pairs:
-      merges[pair] = next_id
-      vocab[pair] = next_id
-      selected_map[pair] = next_id
-      next_id += 1
-
-    # 3. Replace occurrences in every token
-    updated_corpus = {}
-    for symbols, freq in corpus.items():
-      merged = []
-      i = 0
-      while i < len(symbols):
-        if i < len(symbols) - 1:
-          pair = (symbols[i], symbols[i + 1])
-          new_tok = selected_map.get(pair)
-          if new_tok is not None:
-            merged.append(new_tok)
-            i += 2
-            continue
-        merged.append(symbols[i])
-        i += 1
-      updated_corpus[tuple(merged)] = freq
-    corpus = updated_corpus
-
-    applied = len(top_pairs)
-    if applied == 0:
-      break
-    remaining -= applied
-    pbar.update(applied)
-
-  pbar.close()
-
-  return merges, vocab
-
-
 def main(
-  dataset: t.Literal[
-    'toy', 'tinygpt-train', 'tinygpt-valid', 'fineweb'
-  ] = 'toy',
+  dataset: str = 'toy',
   vocab_size: int = 131459,
   proc: int = 8,
   profile: t.Literal['none', 'speedscope'] = 'none',
@@ -306,34 +211,24 @@ def main(
   memory_interval: float = 1.0,
   memory_log_path: str | None = None,
   special_token: str = '<|endoftext|>',
-  merges_filename: str = 'merges.txt',
-  vocab_filename: str = 'vocab.txt',
   token_budget: int = 1_000_000_000,
   fineweb_split: str = 'train',
-  batch_size: int = 1,
-  fast: bool = False,
+  output_dir: str | None = None,
 ):
-  os.makedirs((out_dir := os.path.join(BASEDIR, dataset)), exist_ok=True)
+  if vocab_size < 256:
+    raise ValueError('vocab_size must include all 256 byte tokens')
+  out_dir = output_dir or os.path.join(
+    BASEDIR, os.path.splitext(os.path.basename(dataset))[0]
+  )
   merges = vocab_size - 256
 
   def _run():
     if dataset.lower().startswith('fineweb'):
-      if fast:
-        texts = collect_fineweb_texts(token_budget, split=fineweb_split)
-        model = TokenizerFast.train_from_texts(texts, merges, proc)
-        merges_tbl = {(a, b): nid for a, b, nid in model.merges_list()}
-        vocab = {tuple(pair): nid for pair, nid in model.vocab_pairs()}
-        return merges_tbl, vocab
-      pretokenized_frequency_table = build_fineweb_parallel(
-        token_budget, split=fineweb_split, processes=proc
+      pretokenized_frequency_table = build_fineweb_counts(
+        token_budget, split=fineweb_split
       )
     else:
       datapath = resolve_ds(dataset)
-      if fast:
-        model = TokenizerFast.train_from_files([datapath], merges, proc)
-        merges_tbl = {(a, b): nid for a, b, nid in model.merges_list()}
-        vocab = {tuple(pair): nid for pair, nid in model.vocab_pairs()}
-        return merges_tbl, vocab
       pretokenized_frequency_table = chunk_text_file(
         datapath,
         proc,
@@ -342,54 +237,22 @@ def main(
         memory_log_path=memory_log_path,
       )
 
-    merges_tbl, vocab = train_bpe(
-      pretokenized_frequency_table, merges, batch_size=batch_size
-    )
-    return merges_tbl, vocab
+    return train_bpe(pretokenized_frequency_table, merges)
 
   if profile.lower() == 'speedscope':
+    import speedscope
+
     with speedscope.track(speedscope_outfile):
       results = _run()
   else:
     results = _run()
 
-  merges_tbl, vocab = results
+  merges_tbl, _ = results
 
-  # csv format type beat
-  with open(os.path.join(out_dir, merges_filename), 'w') as f1:
-    for (a, b), new_id in sorted(merges_tbl.items(), key=lambda kv: kv[1]):
-      f1.write(f'{a},{b},{new_id}\n')
-  with open(os.path.join(out_dir, vocab_filename), 'w') as f2:
-    id_to_pair = {new_id: pair for pair, new_id in merges_tbl.items()}
-    cache: dict[int, tuple[int, ...]] = {}
-
-    def expand_id_to_bytes(idx: int) -> tuple[int, ...]:
-      if idx < 256:
-        return (idx,)
-      if idx in cache:
-        return cache[idx]
-      pair = id_to_pair.get(idx)
-      if pair is None:
-        return ()
-      left = expand_id_to_bytes(pair[0])
-      right = expand_id_to_bytes(pair[1])
-      out = left + right
-      cache[idx] = out
-      return out
-
-    for sym, tok_id in sorted(vocab.items(), key=lambda kv: kv[1]):
-      bytes_seq: tuple[int, ...] = ()
-      for x in sym:
-        if x < 256:
-          bytes_seq += (x,)
-        else:
-          bytes_seq += expand_id_to_bytes(x)
-      token_text = bytes(bytes_seq).decode('utf-8', errors='replace')
-      safe = json.dumps(token_text, ensure_ascii=False)
-      f2.write(f'{safe}\t{tok_id}\n')
-
-  print()
+  Tokenizer(merges_tbl).save_pretrained(out_dir)
 
 
 def cli():
+  import fire
+
   fire.Fire(main)

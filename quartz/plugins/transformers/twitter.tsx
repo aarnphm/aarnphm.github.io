@@ -1,10 +1,9 @@
 import { Element } from 'hast'
-import { Html, Link, Paragraph, PhrasingContent } from 'mdast'
-import { Parent } from 'unist'
+import { Link, Paragraph, PhrasingContent } from 'mdast'
 import { visit } from 'unist-util-visit'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-import { escapeHTML } from '../../util/escape'
-import { fetchTwitterEmbed as fetchEmbed, parseTwitterPostUrl } from '../../util/twitter'
+import { parseTwitterPostUrl } from '../../util/twitter'
+import { fetchTwitterPost } from '../../util/twitter-content'
 import { wikiTextTransform } from './ofm'
 
 export function filterEmbedTwitter(node: Element): boolean {
@@ -12,11 +11,6 @@ export function filterEmbedTwitter(node: Element): boolean {
   if (href === undefined || typeof href !== 'string') return false
   return node.children.length !== 0 && parseTwitterPostUrl(href) !== null
 }
-
-const cache = new Map<string, string>()
-
-const fallbackHtml = (url: string) =>
-  `<p class="twitter-fallback">Link to original <a href="${escapeHTML(url)}">tweet</a>.</p>`
 
 const isWhitespaceNode = (node: PhrasingContent) => {
   if (node.type !== 'text') return false
@@ -37,26 +31,6 @@ const isNakedLink = (parent: Paragraph, child: Link) => {
   return linkText.length === 0 || linkText === child.url
 }
 
-export async function fetchTwitterEmbed(url: string, locale: string): Promise<string> {
-  const cacheKey = `twitter:${locale}:${url}`
-  const cached = cache.get(cacheKey)
-  if (cached) {
-    return cached
-  }
-
-  let value = fallbackHtml(url)
-
-  try {
-    value = (await fetchEmbed(url, locale)) ?? value
-  } catch {
-    // swallow network failures and fall back to a simple link
-    value = fallbackHtml(url)
-  }
-
-  cache.set(cacheKey, value)
-  return value
-}
-
 export const Twitter: QuartzTransformerPlugin = () => ({
   name: 'Twitter',
   textTransform(_, src) {
@@ -64,8 +38,7 @@ export const Twitter: QuartzTransformerPlugin = () => ({
 
     return src
   },
-  markdownPlugins({ cfg }) {
-    const locale = cfg.configuration.locale.split('-')[0] ?? 'en'
+  markdownPlugins() {
     return [
       () => async (tree, file) => {
         const fileData = file.data
@@ -73,27 +46,15 @@ export const Twitter: QuartzTransformerPlugin = () => ({
 
         const promises: Promise<void>[] = []
 
-        const fetchEmbedded = async (
-          parent: Parent,
-          index: number,
-          url: string,
-          locale: string,
-        ) => {
-          const value = await fetchTwitterEmbed(url, locale)
-          parent.children.splice(index, 1, { type: 'html', value } as Html)
-        }
-
-        visit(tree, 'paragraph', (node: Paragraph) => {
-          for (let i = 0; i < node.children.length; i++) {
-            const child = node.children[i]
-            if (
-              child.type === 'link' &&
-              parseTwitterPostUrl(child.url) !== null &&
-              isNakedLink(node, child)
-            ) {
-              promises.push(fetchEmbedded(node, i, child.url, locale))
-            }
-          }
+        visit(tree, 'paragraph', (node: Paragraph, index, parent) => {
+          if (!parent || index === undefined) return
+          const link = node.children.find(child => child.type === 'link')
+          if (!link || !parseTwitterPostUrl(link.url) || !isNakedLink(node, link)) return
+          promises.push(
+            fetchTwitterPost(link.url).then(value => {
+              parent.children.splice(index, 1, { type: 'html', value })
+            }),
+          )
         })
 
         if (promises.length > 0) await Promise.all(promises)
