@@ -1,4 +1,4 @@
-declare module '@mozilla/readability/Readability.js' {
+declare module 'defuddle/full' {
   const source: string
   export default source
 }

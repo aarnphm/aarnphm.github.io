@@ -158,18 +158,27 @@ export async function isPublicArenaHostname(hostname: string): Promise<boolean> 
   return addresses.length > 0 && addresses.every(isArenaPublicAddress)
 }
 
-export async function fetchArenaReaderSource(
-  rawUrl: string,
-  options: { signal?: AbortSignal; method?: 'GET' | 'HEAD'; headers?: HeadersInit } = {},
-): Promise<{ response: Response; finalUrl: string }> {
-  const provided = new Headers(options.headers)
-  const headers = new Headers({ 'Accept-Encoding': 'identity' })
+export function arenaReaderSourceHeaders(input?: HeadersInit): Headers {
+  const provided = new Headers(input)
+  // Wikimedia requires an identifiable client with contact information.
+  const headers = new Headers({
+    'Accept-Encoding': 'identity',
+    'User-Agent': 'GardenArenaReader/1.0 (https://aarnphm.xyz/arena)',
+  })
   for (const name of ['Accept', 'Accept-Language']) {
     const value = provided.get(name)
     if (value && value.length <= 1024) headers.set(name, value)
   }
   const range = provided.get('Range')
   if (range && /^bytes=\d{0,16}-\d{0,16}$/.test(range)) headers.set('Range', range)
+  return headers
+}
+
+export async function fetchArenaReaderSource(
+  rawUrl: string,
+  options: { signal?: AbortSignal; method?: 'GET' | 'HEAD'; headers?: HeadersInit } = {},
+): Promise<{ response: Response; finalUrl: string }> {
+  const headers = arenaReaderSourceHeaders(options.headers)
   const timeout = AbortSignal.timeout(SOURCE_TIMEOUT_MS)
   const signal = options.signal ? AbortSignal.any([options.signal, timeout]) : timeout
   let target = rawUrl

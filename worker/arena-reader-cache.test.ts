@@ -7,6 +7,7 @@ import { getPlatformProxy } from 'wrangler'
 import type { ArenaReaderArtifact } from '../quartz/util/arena-reader'
 import {
   ARENA_READER_PROFILE,
+  ARENA_TWITTER_PROFILE,
   arenaReaderHash,
   arenaRenderCacheDecision,
   claimArenaRenderLease,
@@ -36,7 +37,6 @@ async function artifact(
     resources: [],
     kind: 'html',
     readerHtml: '<p>A saved article.</p>',
-    documentHtml: '<main><p>A saved article.</p></main>',
     quality,
     diagnostics: [],
   }
@@ -45,6 +45,21 @@ async function artifact(
 test('artifact validation rejects incompatible policies and broken resource references', async () => {
   const saved = await artifact()
   assert.deepEqual(parseArenaReaderArtifact(saved), saved)
+  for (const profileVersion of [
+    'anonymous-readability-1-purify-1',
+    'anonymous-defuddle-0.19.3-purify-1',
+    'twitter-oembed-1',
+    ARENA_TWITTER_PROFILE,
+  ]) {
+    assert.deepEqual(
+      parseArenaReaderArtifact({
+        ...saved,
+        profileVersion,
+        documentHtml: '<main>Old full view</main>',
+      }),
+      { ...saved, profileVersion },
+    )
+  }
   assert.equal(parseArenaReaderArtifact({ ...saved, profileVersion: 'obsolete' }), null)
   assert.equal(parseArenaReaderArtifact({ ...saved, articleId: '../other-owner' }), null)
   assert.equal(
@@ -81,6 +96,62 @@ test('real R2 leases coalesce misses, reject stale publishers, and retain saved 
   })
   try {
     const bucket = platform.env.CONTENT
+    await t.test(
+      'saved copies from the previous extractor keep their state and snapshot URLs',
+      async () => {
+        const legacyArticleId = `article-v1-${'b'.repeat(64)}`
+        const saved = {
+          ...(await artifact()),
+          articleId: legacyArticleId,
+          profileVersion: 'anonymous-readability-1-purify-1',
+        }
+        const key = `arena-reader/v1/${legacyArticleId}/anonymous-readability-1-purify-1/state.json`
+        await bucket.put(
+          `arena-reader/v1/${legacyArticleId}/snapshots/${saved.snapshotId}.json`,
+          JSON.stringify({ ...saved, documentHtml: '<main>Old full view</main>' }),
+        )
+        await bucket.put(
+          key,
+          JSON.stringify({
+            schemaVersion: 1,
+            generation: 1,
+            snapshotId: saved.snapshotId,
+            lease: null,
+            failure: null,
+          }),
+        )
+        const cached = await readArenaRenderCache(bucket, legacyArticleId)
+        assert.equal(arenaRenderCacheDecision(cached.state, 1000, false), 'ready')
+        assert.equal(arenaRenderCacheDecision(cached.state, 1000, true), 'render')
+        assert.deepEqual(
+          await loadArenaReaderSnapshot(bucket, legacyArticleId, saved.snapshotId),
+          saved,
+        )
+        const lease = await claimArenaRenderLease(bucket, legacyArticleId, cached, 1000)
+        assert.ok(lease)
+        const refreshed = { ...(await artifact()), articleId: legacyArticleId }
+        assert.equal(await saveArenaReaderSnapshot(bucket, refreshed), true)
+        assert.equal(
+          await publishArenaRenderState(
+            bucket,
+            legacyArticleId,
+            lease,
+            refreshed.snapshotId,
+            null,
+            1001,
+          ),
+          true,
+        )
+        assert.equal(
+          (await readArenaRenderCache(bucket, legacyArticleId)).state.snapshotId,
+          refreshed.snapshotId,
+        )
+        assert.deepEqual(
+          await loadArenaReaderSnapshot(bucket, legacyArticleId, saved.snapshotId),
+          saved,
+        )
+      },
+    )
     const initial = await readArenaRenderCache(bucket, articleId)
     assert.equal(arenaRenderCacheDecision(initial.state, 1000, false), 'render')
     const claims = await Promise.all([

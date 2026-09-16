@@ -53,6 +53,29 @@ export function isArenaPdfUrl(rawUrl: string): boolean {
   return arenaPdfUrlRegex.test(rawUrl)
 }
 
+export function arenaArxivPdfUrl(rawUrl: string): string | null {
+  const url = URL.parse(rawUrl)
+  if (
+    !url ||
+    !['http:', 'https:'].includes(url.protocol) ||
+    !['arxiv.org', 'www.arxiv.org', 'export.arxiv.org'].includes(url.hostname) ||
+    url.username ||
+    url.password ||
+    url.port
+  )
+    return null
+  const match = /^\/(?:abs|pdf|html)\/(.+?)\/?$/.exec(url.pathname)
+  if (!match) return null
+  const identifier = match[1].replace(/\.pdf$/i, '')
+  if (
+    !/^(?:\d{2}(?:0[1-9]|1[0-2])\.\d{4,5}|[a-z][a-z-]*(?:\.[A-Z]{2})?\/\d{2}(?:0[1-9]|1[0-2])\d{3})(?:v[1-9]\d*)?$/.test(
+      identifier,
+    )
+  )
+    return null
+  return `https://arxiv.org/pdf/${identifier}`
+}
+
 export function arenaPdfFilenameFromUrl(rawUrl: string): string {
   try {
     const url = new URL(rawUrl, 'https://arena.local')

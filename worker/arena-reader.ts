@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import type { ArenaReaderErrorResponse } from '../quartz/util/arena-reader'
 import {
+  isArenaReadingEntry,
   orderArenaFeedEntries,
   parseArenaFeedManifest,
   type ArenaFeedManifest,
@@ -276,7 +277,7 @@ async function dispatch(request: Request, env: Env): Promise<Response | null> {
     return json({
       subject,
       revision: catalogue.revision,
-      entries: orderArenaFeedEntries(catalogue.entries, seed),
+      entries: orderArenaFeedEntries(catalogue.entries.filter(isArenaReadingEntry), seed),
       readLinks: await listReadLinks(env.ARENA_READER, subject),
     })
   }

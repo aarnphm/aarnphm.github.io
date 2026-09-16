@@ -6,9 +6,13 @@
 
 The default queue shuffles unread `later: true` links first, then the remaining unread links. The shuffle seed, skipped links, selected article, and reading position stay on the current device. Only an explicit read action changes completion in D1. Saving a note or opening a source leaves completion unchanged.
 
+The feed excludes video entries, the `video` channel, YouTube and Vimeo links, and direct video files. Watch URLs with a YouTube video ID are also excluded when their saved hostname has a typo. Filtering happens before the API returns the queue, so counts, search, and shuffle share the same entries. The full catalogue, saved snapshots, notes, and read marks remain available.
+
 Text notes open in a modal drawer on phones and a side panel on larger screens. Drafts are written to IndexedDB before server acknowledgement. Saved notes and read marks belong to the authenticated account. Revision checks prevent a stale device from overwriting a newer edit. Conflicts keep the local draft available for reconciliation.
 
-Selecting text in Reader view can create a note with a quotation, surrounding text, and the saved article version. Full-document view runs in an isolated iframe. PDFs use the existing PDF viewer, and supported videos use their provider's embed. Unsupported, inaccessible, or incomplete sources retain an Open original link.
+Selecting text in the reader can create a note with a quotation, surrounding text, and the saved article version. HTML articles use one extracted reading view. PDFs use the existing PDF viewer. Unsupported, inaccessible, or incomplete sources retain an Open original link.
+
+Wikipedia article links use the garden's existing summary popovers on hover and keyboard focus. The reader derives preview metadata from the sanitized destination URL, including mobile Wikipedia links. Escape dismisses the preview; clicking still opens the original link.
 
 ## Access and development
 
@@ -43,13 +47,65 @@ pnpm exec wrangler d1 migrations apply ARENA_READER --remote
 
 The remote command changes the configured reader database. The normal deployment migration scripts include it. Provisioning storage and applying a migration do not deploy the Worker or publish a new Quartz build.
 
+### Wrangler setup
+
+`wrangler.toml` records the provisioned database IDs and migration directories for `COMMENTS_ROOM`, `FLASHCARDS`, and `ARENA_READER`. Use the repository's installed Wrangler to inspect them and apply all configured migrations:
+
+```sh
+pnpm exec wrangler d1 list
+pnpm db:migrate:local
+pnpm db:migrate
+```
+
+The migration scripts run each database sequentially. Local D1 commands share Wrangler's runtime state and can contend for a SQLite lock when run concurrently. Repeating these scripts applies only outstanding migrations.
+
+Rate limits are declared in `wrangler.toml`:
+
+| Binding                     | Namespace | Limit                              | Key                          |
+| --------------------------- | --------- | ---------------------------------- | ---------------------------- |
+| `MCP_RATE_LIMITER`          | `1001`    | 120 requests per 60 seconds        | Client IP                    |
+| `ARENA_RENDER_RATE_LIMITER` | `1002`    | 10 browser launches per 60 seconds | Authenticated reader subject |
+
+Cloudflare creates these bindings with the Worker version; there is no separate rate-limit namespace creation command. Keep namespace IDs distinct and stable because Workers in the same account that use the same namespace share counters. Limits apply per Cloudflare location and are eventually consistent. They reduce bursts of browser work; a strict global browser spending cap would require separate accounting. Saved article responses do not consume the browser-launch allowance. See [Cloudflare's rate-limiting binding reference](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/).
+
+Validate the bindings without publishing:
+
+```sh
+pnpm exec wrangler deploy --dry-run
+```
+
+A normal Worker deployment activates the bindings along with its code and configured site assets. Verify the active version after deployment:
+
+```sh
+pnpm exec wrangler deployments status --json
+pnpm exec wrangler versions view <active-version-id>
+```
+
+The active version should list all three D1 bindings and both rate limiters. A successful dry-run validates configuration and bundling; it does not activate a new version. See [Cloudflare's versions and deployments reference](https://developers.cloudflare.com/workers/versions-and-deployments/).
+
 ## Capture and persistent storage
 
 Opening a link checks R2 first. A usable saved copy is returned without starting Chromium. First HTML visits launch a bounded browser session, then extract and sanitize the resulting document in a separate context. Source requests pass through the Worker's public-address fetch boundary. Publisher cookies, authorization headers, source forms, and publisher scripts are never installed in the reader page.
 
+Every HTML capture and resource request identifies itself as `GardenArenaReader/1.0 (https://aarnphm.xyz/arena)`, including redirects, extractor API requests, and image delivery. This follows [Defuddle's identified fetch setup](https://github.com/kepano/defuddle/blob/main/src/fetch.ts) and [Wikimedia's User-Agent requirement](https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy). Wikipedia content uses Defuddle's built-in `#mw-content-text` extractor; it needs no separate proxy or hosted conversion API. Before extraction, image RDFa `resource` attributes are removed so Defuddle does not mistake Wikipedia file-description pages for image sources.
+
+Defuddle 0.19.3 is the sole HTML extractor, using its full browser bundle for equation conversion. The URL flow follows [Obsidian Web Clipper's reader](https://github.com/obsidianmd/obsidian-clipper/blob/main/src/core/reader-view.ts) and [defuddle.md's converter](https://github.com/kepano/defuddle/blob/main/website/src/convert.ts): assign the resolved source URL to the inert document, run `parseAsync()` with the default article selection and standardization, and display the extracted HTML. Images retain lazy-loading hints; small-image filtering is disabled because source images are not downloaded during capture.
+
+The parsing context blocks direct network requests. Defuddle's async extractors use a separate Worker bridge that permits public GET requests through the existing address and redirect checks, with at most eight requests and an eight-second extraction deadline inside the capture's existing request and byte budgets. Empty or timed-out async extraction falls back to synchronous Defuddle on a fresh document clone. Publisher scripts cannot access this bridge. The reader runs the installed package locally; it does not call defuddle.md's hosted API.
+
+DOMPurify sanitizes the extracted article after metadata, math, and site-specific extraction. Code language, MathML with LaTeX sources, and callout structure survive; retained classes are scoped to the reader. Local section links and footnotes retain their targets, and images use validated resource delivery. New snapshots store only the cleaned `readerHtml`; older snapshots with a `documentHtml` field remain readable through their extracted content. A raw page body is never substituted for a failed extraction.
+
 Snapshots are immutable. A conditional R2 state update claims one article render at a time and publishes the completed snapshot after storage succeeds. Expired claims can be recovered. Failed captures enter a retry cooldown. Explicit refresh creates a new version; a complete previous copy remains the default when a refresh only produces partial content.
 
-Images and PDF bytes are stored when requested. The saved snapshot lists the permitted resources; each delivery URL carries a short-lived signature scoped to its article, snapshot, and resource. These signatures permit images inside the opaque full-document iframe without granting access to read marks or notes.
+New captures record the Defuddle extraction profile. Previously saved copies keep their storage keys and remain readable, including article versions referenced by notes. Opening a saved article does not recapture it after an extractor update. Use Refresh from source to create a version with the current extractor.
+
+Images and PDF bytes are stored when requested. The saved snapshot lists the permitted resources; each delivery URL carries a short-lived signature scoped to its article, snapshot, and resource. These signatures grant access only to the saved resource, without granting access to read marks or notes.
+
+arXiv abstract, HTML, and PDF links open the paper in the existing PDF viewer. Explicit paper versions are preserved. The original saved URL and article ID remain unchanged, so read marks and notes stay attached. A cached abstract switches to a PDF snapshot on the next open; its old snapshot remains available to quoted notes. This route needs no browser capture, and the PDF bytes use the same on-demand R2 resource storage.
+
+X and Twitter post URLs use Defuddle's async extractor in the isolated parsing context. It receives the original URL and a blank document, skips the source timeline, and retrieves the post or full linked X article through its FxTwitter API path, with its own oEmbed text fallback. The reader displays the sanitized HTML once, without mounting Twitter widgets. Images use the same validated resource delivery as other articles.
+
+These copies record the `twitter-defuddle-0.19.3-purify-1` profile and are saved in R2. A previously scraped or embedded post upgrades on its next open while retaining its old snapshot and notes. A failed extraction keeps the prior copy and enters the normal retry cooldown. Profiles and direct X article URLs continue through the HTML reader. The ordinary Arena item viewer retains its existing Twitter embeds.
 
 Successful copies have no automatic age expiry. D1 holds no render catalogue, browsing history, or scroll log. Reader responses use `private, no-store`; R2 provides persistence without a public CDN cache. All article versions are retained, including versions referenced by notes. Storage cleanup can be added with reference checks later.
 

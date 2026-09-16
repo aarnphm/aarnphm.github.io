@@ -10,6 +10,7 @@ export interface ToastShowOptions {
   styles?: Partial<CSSStyleDeclaration>
   containerId?: string
   containerStyles?: Partial<CSSStyleDeclaration>
+  containerHost?: HTMLElement
 }
 
 export interface ToastEventDetail extends ToastShowOptions {
@@ -41,8 +42,7 @@ const baseToastStyles: Partial<CSSStyleDeclaration> = {
   fontWeight: '500',
   opacity: '0',
   transform: 'translate3d(0, 12px, 0) scale(0.96)',
-  transition:
-    'opacity 160ms ease, transform 210ms cubic-bezier(0.22, 1, 0.36, 1), filter 200ms ease',
+  transition: 'opacity 160ms ease, transform 210ms cubic-bezier(0.22, 1, 0.36, 1)',
   transformOrigin: 'bottom center',
   willChange: 'transform, opacity',
   width: '100%',
@@ -54,12 +54,11 @@ const baseToastStyles: Partial<CSSStyleDeclaration> = {
   alignSelf: 'end',
 }
 
-const lightToastStyles: Partial<CSSStyleDeclaration> = {
-  background: 'rgba(255, 252, 240, 0.94)',
-  color: 'rgb(16, 15, 15)',
-  boxShadow: '0 14px 34px rgba(15, 23, 42, 0.22)',
-  border: '1px solid rgba(100, 116, 139, 0.16)',
-  borderRadius: '12px',
+const toastSurfaceStyles: Partial<CSSStyleDeclaration> = {
+  background: 'var(--light)',
+  color: 'var(--dark)',
+  border: '1px solid var(--gray)',
+  borderRadius: '0',
 }
 
 const transitionBufferMs = 220
@@ -67,9 +66,7 @@ const MAX_VISIBLE_DEFAULT = 3
 const STACK_OFFSET_Y = 16
 const STACK_OFFSET_X = 12
 const STACK_SCALE_DECAY = 0.1
-const STACK_OPACITY_DECAY = 0.1
 const STACK_MIN_SCALE = 0.81
-const STACK_MIN_OPACITY = 0.32
 const STACK_WIDTH_STEP = 16
 const STACK_MIN_WIDTH = 100
 const STACK_MAX_WIDTH = 180
@@ -85,6 +82,7 @@ export class Toast {
   private container: HTMLDivElement | null = null
   private containerId: string
   private containerStyles: Partial<CSSStyleDeclaration>
+  private containerHostCleanup: (() => void) | null = null
   private readonly defaultDurationMs: number
   private readonly maxVisible: number
   private readonly toasts: ToastEntry[] = []
@@ -97,13 +95,17 @@ export class Toast {
   }
 
   show(message: string, options: ToastShowOptions = {}) {
-    const container = this.ensureContainer(options.containerId, options.containerStyles)
+    const container = this.ensureContainer(
+      options.containerId,
+      options.containerStyles,
+      options.containerHost,
+    )
 
     const toast = document.createElement('div')
     toast.textContent = message
 
     Object.assign(toast.style, baseToastStyles)
-    Object.assign(toast.style, lightToastStyles)
+    Object.assign(toast.style, toastSurfaceStyles)
     toast.dataset.toastState = 'entering'
     if (options.styles) {
       Object.assign(toast.style, options.styles)
@@ -140,6 +142,7 @@ export class Toast {
   private ensureContainer(
     containerId?: string,
     containerStyles?: Partial<CSSStyleDeclaration>,
+    containerHost?: HTMLElement,
   ): HTMLDivElement {
     if (containerId && containerId !== this.containerId) {
       this.containerId = containerId
@@ -160,15 +163,37 @@ export class Toast {
     if (!this.container) {
       const container = document.createElement('div')
       container.id = this.containerId
+      container.setAttribute('role', 'status')
+      container.setAttribute('aria-live', 'polite')
+      container.setAttribute('aria-atomic', 'false')
+      container.setAttribute('aria-relevant', 'additions text')
       Object.assign(container.style, this.containerStyles)
-
-      const parent = document.body ?? document.documentElement
-      parent.appendChild(container)
-
       this.container = container
     }
 
+    this.setContainerHost(containerHost)
     return this.container
+  }
+
+  private setContainerHost(host?: HTMLElement) {
+    const parent =
+      host?.isConnected && (!(host instanceof HTMLDialogElement) || host.open)
+        ? host
+        : (document.body ?? document.documentElement)
+    if (!this.container) return
+    this.container.style.position =
+      parent instanceof HTMLDialogElement ? 'absolute' : (this.containerStyles.position ?? 'fixed')
+    if (this.container.parentElement === parent) return
+    this.containerHostCleanup?.()
+    this.containerHostCleanup = null
+    parent.appendChild(this.container)
+    if (parent instanceof HTMLDialogElement) {
+      const onClose = () => {
+        if (!parent.open && this.container?.parentElement === parent) this.setContainerHost()
+      }
+      parent.addEventListener('close', onClose)
+      this.containerHostCleanup = () => parent.removeEventListener('close', onClose)
+    }
   }
 
   private layoutToasts(entering?: ToastEntry) {
@@ -211,11 +236,8 @@ export class Toast {
       } else {
         const translateY = (depth - maxDepth) * STACK_OFFSET_Y
         const scale = Math.max(STACK_MIN_SCALE, 1 - depth * STACK_SCALE_DECAY)
-        const opacity =
-          depth === 0 ? 1 : Math.max(STACK_MIN_OPACITY, 1 - depth * STACK_OPACITY_DECAY)
-
         el.style.transform = `translate3d(${STACK_OFFSET_X}px, ${translateY}px, 0) scale(${scale})`
-        el.style.opacity = `${opacity}`
+        el.style.opacity = '1'
         el.dataset.toastState = depth === 0 ? 'active' : 'stacked'
       }
 
@@ -223,15 +245,10 @@ export class Toast {
       el.style.padding = `${paddingY}px 12px`
 
       if (depth === 0) {
-        el.style.color = 'rgb(16, 15, 15)'
-        el.style.background = 'rgba(255, 252, 240, 0.94)'
-        el.style.filter = 'none'
+        el.style.color = 'var(--dark)'
         el.setAttribute('aria-hidden', 'false')
       } else {
-        const attenuatedAlpha = Math.max(0.24, 0.94 - depth * 0.18)
         el.style.color = 'transparent'
-        el.style.background = `rgba(255, 252, 240, ${attenuatedAlpha})`
-        el.style.filter = 'saturate(0.75) brightness(0.9)'
         el.setAttribute('aria-hidden', 'true')
       }
 
@@ -292,6 +309,8 @@ export class Toast {
   }
 
   private removeContainer() {
+    this.containerHostCleanup?.()
+    this.containerHostCleanup = null
     if (this.container) {
       this.container.remove()
       this.container = null

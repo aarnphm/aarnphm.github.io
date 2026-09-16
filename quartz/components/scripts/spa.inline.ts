@@ -127,6 +127,7 @@ if (!window.quartzToast) {
       styles: detail.styles,
       containerId: detail.containerId,
       containerStyles: detail.containerStyles,
+      containerHost: detail.containerHost,
     })
   }
 
@@ -1191,6 +1192,10 @@ function createRouter() {
     })
 
     window.addEventListener('popstate', event => {
+      const local: CustomEventMap['beforepopstate'] = new CustomEvent('beforepopstate', {
+        cancelable: true,
+      })
+      if (!document.dispatchEvent(local)) return
       const { url } = getOpts(event) ?? {}
       if (window.location.hash && window.location.pathname === url?.pathname) return
       try {

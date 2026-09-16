@@ -9,7 +9,7 @@ workers_dev = true
 rules = [
   { type = "Text", globs = [
     "**/*.txt",
-    "**/Readability.js",
+    "defuddle/full",
     "**/purify.js",
   ], fallthrough = true },
 ]

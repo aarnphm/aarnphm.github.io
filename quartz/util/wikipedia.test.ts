@@ -17,6 +17,10 @@ test('parses Wikipedia article URLs', () => {
     lang: 'zh-yue',
     title: '香港',
   })
+  assert.deepEqual(parseWikipediaTarget('https://en.m.wikipedia.org/wiki/Madame_Bovary'), {
+    lang: 'en',
+    title: 'Madame_Bovary',
+  })
 })
 
 test('rejects non-article Wikipedia URLs', () => {
@@ -26,6 +30,14 @@ test('rejects non-article Wikipedia URLs', () => {
     undefined,
   )
   assert.equal(parseWikipediaTarget('https://example.com/wiki/Jupiter'), undefined)
+  for (const href of [
+    'https://en.wikipedia.org.example.com/wiki/Jupiter',
+    'https://en.example.wikipedia.org/wiki/Jupiter',
+    'https://user@en.wikipedia.org/wiki/Jupiter',
+    'ftp://en.wikipedia.org/wiki/Jupiter',
+  ]) {
+    assert.equal(parseWikipediaTarget(href), undefined)
+  }
 })
 
 test('builds the Action API preview URL', () => {

@@ -916,6 +916,23 @@
   display: none;
   flex-direction: column;
   gap: 0.7rem;
+
+  > .tri-act-strength {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    height: var(--tri-activity-graph-row-height);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+
+    > .tri-strength-exercises {
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      scrollbar-gutter: stable;
+      @include thin-scrollbar;
+    }
+  }
 }
 
 .tri-training-effect-list {

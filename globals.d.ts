@@ -47,7 +47,7 @@ export declare global {
     stackedNotePayloadCache?: Map<string, import('./quartz/util/stacked-notes').StackedNotePayload>
     quartzToast: import('./quartz/components/scripts/toast').Toast
     plausible: { (eventName: string, options: { props: { path: string } }): void }
-    twttr: { ready(f: (twttr: any) => void): void }
+    twttr?: import('./quartz/components/scripts/twitter').TwitterLoader
     mermaid: typeof import('mermaid/dist/mermaid').default
     mapboxgl: any
     pdfjsLib: any

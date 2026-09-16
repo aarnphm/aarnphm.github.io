@@ -2,7 +2,7 @@ import type { ElementContent } from 'hast'
 import { toHtml } from 'hast-util-to-html'
 import { toString } from 'hast-util-to-string'
 import type { ArenaBlock, ArenaChannel } from '../plugins/transformers/arena'
-import { isArenaPdfUrl } from './arena-embed'
+import { arenaArxivPdfUrl, isArenaPdfUrl } from './arena-embed'
 import { hostnameMatches } from './url'
 import { buildYouTubeEmbed } from './youtube'
 
@@ -179,17 +179,29 @@ function savedNotes(block: ArenaBlock, baseUrl: string): string | null {
 function contentKind(sourceUrl: string, baseUrl: string): ArenaFeedEntry['kind'] {
   const url = new URL(sourceUrl)
   if (url.origin === new URL(baseUrl).origin) return 'internal'
-  if (
-    isArenaPdfUrl(sourceUrl) ||
-    (hostnameMatches(url, 'arxiv.org') && url.pathname.startsWith('/pdf/'))
-  )
-    return 'pdf'
+  if (isArenaPdfUrl(sourceUrl) || arenaArxivPdfUrl(sourceUrl)) return 'pdf'
   if (
     buildYouTubeEmbed(sourceUrl) ||
     (hostnameMatches(url, 'vimeo.com') && /^\/(?:video\/)?\d+/.test(url.pathname))
   )
     return 'video'
   return 'html'
+}
+
+export function isArenaReadingEntry(entry: ArenaFeedEntry): boolean {
+  if (
+    entry.kind === 'video' ||
+    entry.occurrences.some(occurrence => occurrence.channelSlug === 'video')
+  )
+    return false
+  const url = new URL(entry.sourceUrl)
+  if (/\/watch\/?$/.test(url.pathname) && /^[\w-]{11}$/.test(url.searchParams.get('v') ?? ''))
+    return false
+  return (
+    !['youtube.com', 'youtube-nocookie.com', 'youtu.be', 'vimeo.com'].some(host =>
+      hostnameMatches(url, host),
+    ) && !/\.(?:mp4|m4v|mov|webm|ogv|avi|mkv|m3u8|mpd)$/i.test(url.pathname)
+  )
 }
 
 export async function buildArenaFeedManifest(

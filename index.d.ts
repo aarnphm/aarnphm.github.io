@@ -25,6 +25,7 @@ declare module '*.html' {
 
 // dom custom event
 interface CustomEventMap {
+  beforepopstate: CustomEvent<void>
   prenav: CustomEvent<{}>
   nav: CustomEvent<{ url: FullSlug }>
   themechange: CustomEvent<{ theme: 'light' | 'dark' }>

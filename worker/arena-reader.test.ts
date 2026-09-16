@@ -22,8 +22,12 @@ const ownerId = 12345
 const subject = `github:${ownerId}`
 const secret = 'arena-reader-integration-test-secret'
 
-function entry(name: string, later: boolean, blockId: string): ArenaFeedEntry {
-  const sourceUrl = `https://example.com/${name}`
+function entry(
+  name: string,
+  later: boolean,
+  blockId: string,
+  sourceUrl = `https://example.com/${name}`,
+): ArenaFeedEntry {
   return {
     articleId: `article-v1-${createHash('sha256').update(`arena-article-v1\0${sourceUrl}`).digest('hex')}`,
     sourceUrl,
@@ -47,11 +51,30 @@ function entry(name: string, later: boolean, blockId: string): ArenaFeedEntry {
 const first = entry('first-article', true, 'block-1')
 const second = entry('second-article', true, 'block-2')
 const ordinary: ArenaFeedEntry = { ...entry('ordinary-article', false, 'block-3'), kind: 'pdf' }
-const entries = [ordinary, first, second]
+const arxiv = entry('arxiv-abstract', false, 'block-4', 'https://arxiv.org/abs/2206.00759v3')
+const arxivHtml: ArenaFeedEntry = {
+  ...entry('arxiv-html', false, 'block-5', 'https://arxiv.org/html/2206.00759v3'),
+  kind: 'pdf',
+}
+const entries = [ordinary, first, second, arxiv, arxivHtml]
+const video: ArenaFeedEntry = { ...entry('video', true, 'block-6'), kind: 'video' }
+const youtube = entry('youtube-channel', true, 'block-7', 'https://youtube.com/@creator')
+const directVideo = entry('video-file', true, 'block-8', 'https://example.com/film.mp4')
+const malformedYoutube = entry(
+  'youtube-typo',
+  true,
+  'block-10',
+  'https://www.youtube.com87/watch?v=qX6NztnPU-4',
+)
+const videoChannel: ArenaFeedEntry = {
+  ...entry('recorded-talk', true, 'block-9'),
+  occurrences: [{ ...first.occurrences[0], blockId: 'block-9', channelSlug: 'video' }],
+}
+const catalogueEntries = [...entries, video, youtube, directVideo, videoChannel, malformedYoutube]
 const manifest: ArenaFeedManifest = {
   schemaVersion: 1,
-  revision: `feed-v1-${createHash('sha256').update(JSON.stringify(entries)).digest('hex')}`,
-  entries,
+  revision: `feed-v1-${createHash('sha256').update(JSON.stringify(catalogueEntries)).digest('hex')}`,
+  entries: catalogueEntries,
 }
 const snapshot: ArenaReaderArtifact = {
   schemaVersion: 1,
@@ -66,9 +89,16 @@ const snapshot: ArenaReaderArtifact = {
   resources: [],
   kind: 'html',
   readerHtml: '<p>A fixture quote.</p>',
-  documentHtml: '<main><p>A fixture quote.</p></main>',
   quality: 'complete',
   diagnostics: [],
+}
+const arxivSnapshot: ArenaReaderArtifact = {
+  ...snapshot,
+  articleId: arxiv.articleId,
+  snapshotId: randomUUID(),
+  title: 'Interpretability Guarantees with Merlin-Arthur Classifiers',
+  sourceUrl: arxiv.sourceUrl,
+  finalUrl: arxiv.sourceUrl,
 }
 
 let server: TestHarness | undefined
@@ -120,6 +150,17 @@ export default {
       await env.ARENA_CONTENT.put(${JSON.stringify(arenaReaderStateKey(first.articleId))}, ${JSON.stringify(JSON.stringify({ schemaVersion: 1, generation: 1, snapshotId: snapshot.snapshotId, lease: null, failure: null }))})
       return Response.json({ reset: true })
     }
+    if (pathname === '/__test/cache-arxiv') {
+      await env.ARENA_CONTENT.put(${JSON.stringify(arenaReaderSnapshotKey(arxiv.articleId, arxivSnapshot.snapshotId))}, ${JSON.stringify(JSON.stringify(arxivSnapshot))})
+      await env.ARENA_CONTENT.put(${JSON.stringify(arenaReaderStateKey(arxiv.articleId))}, JSON.stringify({
+        schemaVersion: 1,
+        generation: 1,
+        snapshotId: ${JSON.stringify(arxivSnapshot.snapshotId)},
+        lease: null,
+        failure: { reason: 'timeout', message: 'The abstract refresh timed out.', retryAt: Date.now() + 600_000 },
+      }))
+      return Response.json({ cached: true })
+    }
     if (pathname === '/__test/counts') {
       const read = await env.ARENA_READER.prepare('SELECT count(*) AS count FROM arena_read_links').first()
       const notes = await env.ARENA_READER.prepare('SELECT count(*) AS count FROM arena_notes').first()
@@ -140,9 +181,7 @@ export default {
           compatibility_date: '2025-01-21',
           compatibility_flags: ['nodejs_compat', 'global_fetch_strictly_public'],
           vars: { SESSION_SECRET: secret, ARENA_OWNER_LOGIN: 'aarnphm' },
-          rules: [
-            { type: 'Text', globs: ['**/Readability.js', '**/purify.js'], fallthrough: true },
-          ],
+          rules: [{ type: 'Text', globs: ['defuddle/full', '**/purify.js'], fallthrough: true }],
           assets: { directory: assetDirectory, binding: 'ASSETS', run_worker_first: true },
           d1_databases: [
             {
@@ -223,7 +262,7 @@ function noteInput(overrides: Record<string, unknown> = {}) {
   return { articleId: first.articleId, body: 'A reader note.', revision: 0, ...overrides }
 }
 
-test('authenticated feed loads the real catalogue asset and places Later entries first', async () => {
+test('authenticated feed excludes video sources and places Later reading entries first', async () => {
   const response = await fetchReader('/api/arena/feed?seed=fixture')
   assert.equal(response.status, 200)
   assert.equal(response.headers.get('Cache-Control'), 'private, no-store')
@@ -236,10 +275,14 @@ test('authenticated feed loads the real catalogue asset and places Later entries
   assert.ok(Array.isArray(body.entries))
   const queue = body.entries.map(record)
   assert.deepEqual(
-    queue.map(item => item.later),
-    [true, true, false],
+    queue.map(item => item.articleId).sort(),
+    entries.map(item => item.articleId).sort(),
   )
-  assert.equal(queue[2].articleId, ordinary.articleId)
+  assert.deepEqual(
+    queue.map(item => item.later),
+    [true, true, false, false, false],
+  )
+  assert.ok(queue.some(item => item.articleId === ordinary.articleId))
   const repeated = await responseBody(await fetchReader('/api/arena/feed?seed=fixture'))
   assert.deepEqual(repeated.entries, body.entries)
   assert.deepEqual(await counts(), { read: 0, notes: 0, cached: 2 })
@@ -502,6 +545,93 @@ test('a first PDF open creates a snapshot and only the second open reports a cac
   assert.equal(secondOpen.cached, true)
   assert.equal(record(firstOpen.artifact).snapshotId, record(secondOpen.artifact).snapshotId)
   assert.deepEqual(await counts(), { read: 0, notes: 0, cached: 4 })
+})
+
+test('arXiv abstract and HTML links open versioned PDFs without a Browser binding', async () => {
+  for (const paper of [arxiv, arxivHtml]) {
+    const route = `/api/arena/articles/${paper.articleId}/render`
+    const response = await mutate(route, {}, {}, 'POST')
+    assert.equal(response.status, 200)
+    const opened = await responseBody(response)
+    assert.equal(opened.status, 'ready')
+    assert.equal(opened.cached, false)
+    const artifact = record(opened.artifact)
+    assert.equal(artifact.kind, 'pdf')
+    assert.equal(artifact.articleId, paper.articleId)
+    assert.equal(artifact.sourceUrl, paper.sourceUrl)
+    assert.equal(artifact.finalUrl, 'https://arxiv.org/pdf/2206.00759v3')
+    assert.ok(Array.isArray(artifact.resources))
+    assert.equal(artifact.resources.length, 1)
+    const resource = record(artifact.resources[0])
+    assert.equal(resource.kind, 'pdf')
+    assert.equal(resource.contentType, 'application/pdf')
+    assert.equal(resource.id, artifact.resourceId)
+    assert.ok(typeof resource.url === 'string')
+    const resourceUrl = new URL(resource.url, origin)
+    assert.equal(resourceUrl.origin, origin)
+    assert.equal(
+      resourceUrl.pathname,
+      `/api/arena/articles/${paper.articleId}/snapshots/${artifact.snapshotId}/resources/${resource.id}`,
+    )
+    assert.ok(resourceUrl.searchParams.has('token'))
+    const reopened = await responseBody(await mutate(route, {}, {}, 'POST'))
+    assert.equal(reopened.cached, true)
+    assert.equal(record(reopened.artifact).snapshotId, artifact.snapshotId)
+  }
+  assert.deepEqual(await counts(), { read: 0, notes: 0, cached: 6 })
+})
+
+test('a cached arXiv abstract switches to PDF while preserving its quoted notes and read mark', async () => {
+  const seed = await harness().fetch(`${origin}/__test/cache-arxiv`)
+  assert.equal(seed.status, 200)
+  await seed.text()
+  const quote = { exact: 'A fixture quote.', prefix: '', suffix: '' }
+  const note = await mutate(
+    `/api/arena/notes/${randomUUID()}`,
+    noteInput({ articleId: arxiv.articleId, snapshotId: arxivSnapshot.snapshotId, quote }),
+  )
+  assert.equal(note.status, 200)
+  const savedNote = record((await responseBody(note)).note)
+  const read = await mutate(`/api/arena/articles/${arxiv.articleId}/read`, {
+    read: true,
+    revision: 0,
+  })
+  assert.equal(read.status, 200)
+  const readLink = record((await responseBody(read)).readLink)
+
+  const route = `/api/arena/articles/${arxiv.articleId}/render`
+  const response = await mutate(route, { refresh: false }, {}, 'POST')
+  assert.equal(response.status, 200)
+  const opened = await responseBody(response)
+  assert.equal(opened.status, 'ready')
+  assert.equal(opened.cached, false)
+  const artifact = record(opened.artifact)
+  assert.equal(artifact.kind, 'pdf')
+  assert.equal(artifact.title, arxivSnapshot.title)
+  assert.equal(artifact.sourceUrl, arxiv.sourceUrl)
+  assert.equal(artifact.finalUrl, 'https://arxiv.org/pdf/2206.00759v3')
+  assert.notEqual(artifact.snapshotId, arxivSnapshot.snapshotId)
+  const reopened = await responseBody(await mutate(route, {}, {}, 'POST'))
+  assert.equal(reopened.cached, true)
+  assert.equal(record(reopened.artifact).snapshotId, artifact.snapshotId)
+  const status = await responseBody(
+    await fetchReader(`/api/arena/articles/${arxiv.articleId}/render-status`),
+  )
+  assert.equal(record(status.artifact).snapshotId, artifact.snapshotId)
+
+  const historical = await fetchReader(
+    `/api/arena/articles/${arxiv.articleId}/snapshots/${arxivSnapshot.snapshotId}`,
+  )
+  assert.equal(historical.status, 200)
+  const original = record((await responseBody(historical)).artifact)
+  assert.equal(original.kind, 'html')
+  assert.equal(original.readerHtml, '<p>A fixture quote.</p>')
+  assert.deepEqual(
+    (await responseBody(await fetchReader(`/api/arena/articles/${arxiv.articleId}/notes`))).notes,
+    [savedNote],
+  )
+  assert.deepEqual((await responseBody(await fetchReader('/api/arena/feed'))).readLinks, [readLink])
+  assert.deepEqual(await counts(), { read: 1, notes: 1, cached: 5 })
 })
 
 test('cached article opening and status use R2 without a Browser binding or a read mark', async () => {

@@ -2466,6 +2466,68 @@ test('renders strength volume, totals, exercises, and exact loaded sets', () => 
   ])
 })
 
+test('places sauna exercises in one expanded block after activity graphs', () => {
+  const parsed = parseTrackingBlock(
+    null,
+    [
+      'date: 2026-09-15',
+      'activity: sauna',
+      'time: 18:30',
+      'duration: 71m',
+      'temperature: 73C',
+      'humidity: 11%',
+      'cooldown: cold plunge',
+      'exercise: Glute Bridge | 30s | 30s',
+      'exercise: Figure-4 Glute Stretch | 40s | 40s | 40s | 40s',
+    ].join('\n'),
+  )
+  assert.ok(parsed?.strength)
+  const recordedStrength: NonNullable<StravaActivityDetail['strength']> = {
+    ...parsed.strength,
+    source: 'manual',
+  }
+  for (const expanded of [false, true]) {
+    for (const embedded of [false, true]) {
+      const activity = detail({
+        sport: 'sauna',
+        route: [],
+        heartRateTrace: [heartRateTracePoint(0, 0, 90), heartRateTracePoint(0, 4_260, 100)],
+        strength: recordedStrength,
+      })
+      const rendered = buildActivity(factory, activity, expanded, ctx(), false, embedded)
+      const more = byClass(rendered, 'tri-act-more')[0]
+      const exercises = byClass(rendered, 'tri-act-strength')
+      assert.equal(exercises.length, 1)
+      assert.ok(more.children.includes(exercises[0]))
+      assert.equal(byClass(rendered, 'tri-act-figs--sauna').length, 0)
+      assert.deepEqual(byClass(exercises[0], 'tri-strength-exercise-name').map(text), [
+        'Glute Bridge',
+        'Figure-4 Glute Stretch',
+      ])
+      assert.deepEqual(byClass(exercises[0], 'tri-strength-exercise-summary').map(text), [
+        '2 sets · 30s each',
+        '4 sets · 40s each',
+      ])
+      const workout = byClass(more, 'tri-workout-analysis')[0]
+      assert.ok(workout)
+      assert.ok(more.children.indexOf(workout) < more.children.indexOf(exercises[0]))
+      assert.equal(byClass(rendered, 'tri-act-toggle')[0].properties.ariaExpanded, String(expanded))
+
+      for (const strength of [null, { ...recordedStrength, exercises: [] }]) {
+        const empty = buildActivity(
+          factory,
+          { ...activity, strength },
+          expanded,
+          ctx(),
+          false,
+          embedded,
+        )
+        assert.equal(byClass(empty, 'tri-act-strength').length, 0)
+      }
+    }
+  }
+})
+
 test('renders activity moves with exact repetitions and per-side labels', () => {
   const rendered = buildActivity(
     factory,
@@ -6946,11 +7008,13 @@ test('renders sauna laps by elapsed time with duration and HR change', () => {
       const card = buildActivity(factory, withExercises, expanded, ctx(), false, embedded)
       const figures = byClass(card, 'tri-act-figs')
       assert.equal(figures.length, 1)
-      const exercises = byClass(figures[0], 'tri-act-strength')[0]
+      const more = byClass(card, 'tri-act-more')[0]
+      const exercises = byClass(more, 'tri-act-strength')[0]
       const analysis = byClass(figures[0], 'tri-analysis')[0]
       assert.ok(exercises)
       assert.ok(analysis)
-      assert.ok(figures[0].children.indexOf(exercises) < figures[0].children.indexOf(analysis))
+      assert.equal(byClass(figures[0], 'tri-act-strength').length, 0)
+      assert.ok(more.children.includes(exercises))
       const toggle = byClass(card, 'tri-act-toggle')[0]
       assert.equal(card.children.indexOf(toggle), card.children.indexOf(figures[0]) + 1)
       assert.equal(toggle.properties.ariaExpanded, String(expanded))

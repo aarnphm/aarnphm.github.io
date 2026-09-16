@@ -8605,12 +8605,10 @@ export const buildActivity = <N>(
       hasSummaryVisual = true
     }
   }
-  if (d.strength) {
-    const strength = buildStrengthExercises(f, d.strength)
-    if (strength) {
-      f.add(saunaFigs ?? wrap, strength)
-      hasSummaryVisual = true
-    }
+  const strength = d.strength ? buildStrengthExercises(f, d.strength) : null
+  if (strength && d.sport !== 'sauna') {
+    f.add(wrap, strength)
+    hasSummaryVisual = true
   }
   let hasFueling = false
   if (d.fueling) {
@@ -8779,6 +8777,7 @@ export const buildActivity = <N>(
       if (muscleOxygen) activityGraphs.push(muscleOxygen)
     }
     f.add(more, ...activityGraphs)
+    if (strength && d.sport === 'sauna') f.add(more, strength)
     const environment = buildEnvironmentAnalysis(f, d)
     if (environment) f.add(more, environment)
     if (poolOverview) f.add(more, poolOverview)

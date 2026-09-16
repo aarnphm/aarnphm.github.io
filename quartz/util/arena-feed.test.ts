@@ -1,3 +1,4 @@
+import { toHtml } from 'hast-util-to-html'
 import { h } from 'hastscript'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { toHast } from 'mdast-util-to-hast'
@@ -16,6 +17,7 @@ import type { BuildCtx } from './ctx'
 import { defaultProcessedContent, type ProcessedContent } from '../plugins/vfile'
 import {
   buildArenaFeedManifest,
+  isArenaReadingEntry,
   normalizeArenaFeedUrl,
   orderArenaFeedEntries,
   parseArenaFeedManifest,
@@ -218,6 +220,9 @@ test('kind hints preserve internal anchors and identify supported PDFs and video
     }),
     block('pdf', 'https://example.com/PAPER.PDF?download=1#page=4'),
     block('arxiv', 'https://arxiv.org/pdf/2609.00001'),
+    block('arxiv-abstract', 'https://arxiv.org/abs/2206.00759v3'),
+    block('arxiv-html', 'https://arxiv.org/html/2206.00759v3'),
+    block('arxiv-list', 'https://arxiv.org/list/cs.LG/recent'),
     block('video', 'https://www.youtube.com/watch?v=AbCdEfGhI12&t=45'),
     block('vimeo', 'https://vimeo.com/12345'),
     block('spoof', 'https://youtube.com.example.com/watch?v=AbCdEfGhI12'),
@@ -230,6 +235,9 @@ test('kind hints preserve internal anchors and identify supported PDFs and video
       ['internal', 'internal'],
       ['pdf', 'pdf'],
       ['arxiv', 'pdf'],
+      ['arxiv-abstract', 'pdf'],
+      ['arxiv-html', 'pdf'],
+      ['arxiv-list', 'html'],
       ['video', 'video'],
       ['vimeo', 'video'],
       ['spoof', 'html'],
@@ -239,6 +247,60 @@ test('kind hints preserve internal anchors and identify supported PDFs and video
     manifest.entries.find(entry => entry.kind === 'internal')?.sourceUrl,
     'https://aarnphm.xyz/thoughts/example#section',
   )
+  const paper = manifest.entries.find(entry => entry.occurrences[0].blockId === 'arxiv-abstract')
+  assert.ok(paper)
+  assert.equal(paper.sourceUrl, 'https://arxiv.org/abs/2206.00759v3')
+  assert.equal(
+    paper.articleId,
+    `article-v1-${createHash('sha256').update(`arena-article-v1\0${paper.sourceUrl}`).digest('hex')}`,
+  )
+})
+
+test('reading eligibility excludes video sources while keeping articles about video', async () => {
+  const videoUrls = [
+    'https://www.youtube.com/watch?v=AbCdEfGhI12',
+    'https://m.youtube.com/shorts/AbCdEfGhI12',
+    'https://youtube.com/live/AbCdEfGhI12',
+    'https://youtube.com/playlist?list=PL123',
+    'https://youtube.com/@creator',
+    'https://www.youtube-nocookie.com/embed/AbCdEfGhI12',
+    'https://youtu.be/AbCdEfGhI12?t=42',
+    'https://www.youtube.com87/watch?v=qX6NztnPU-4',
+    'https://vimeo.com/12345',
+    'https://player.vimeo.com/video/12345',
+    'https://example.com/film.MP4?download=1#t=30',
+    'https://example.com/film.webm',
+    'https://example.com/stream.m3u8',
+    'https://aarnphm.xyz/film.mov',
+  ]
+  const articleUrls = [
+    'https://example.com/how-video-works',
+    'https://example.com/article?watch=https://youtube.com/watch?v=AbCdEfGhI12',
+    'https://youtube.com.example.com/about',
+    'https://example.com/paper.pdf',
+    'https://arxiv.org/abs/2206.00759',
+    'https://aarnphm.xyz/thoughts/video',
+  ]
+  const manifest = await buildArenaFeedManifest(
+    [
+      channel('saved', [
+        ...videoUrls.map((url, index) => block(`video-${index}`, url)),
+        ...articleUrls.map((url, index) => block(`article-${index}`, url, { tags: ['video'] })),
+      ]),
+      channel('video', [block('video-channel', 'https://example.com/recorded-talk')]),
+    ],
+    'aarnphm.xyz',
+  )
+  const before = structuredClone(manifest)
+  assert.deepEqual(
+    manifest.entries
+      .filter(isArenaReadingEntry)
+      .map(entry => entry.sourceUrl)
+      .sort(),
+    [...articleUrls].sort(),
+  )
+  assert.equal(isArenaReadingEntry({ ...manifest.entries[0], kind: 'video' }), false)
+  assert.deepEqual(manifest, before)
 })
 
 test('manifest revision reflects note edits and removed links without changing remaining identities', async () => {
@@ -445,6 +507,57 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
     return manifest
   }
   const resources = { css: [], js: [], additionalHead: [] }
+  await t.test(
+    'unlocked links use Wayback consistently across blocks, anchors, and feed entries',
+    async () => {
+      const original = 'https://example.com/article?edition=1#section'
+      const archived = `https://web.archive.org/web/*/${original}`
+      const snapshot = `https://web.archive.org/web/20260901000000/${original}`
+      const wrapped = `https://removepaywalls.com/${original}`
+      for (const [url, unlocked, expected] of [
+        [original, 'true', archived],
+        [original, 'YES', archived],
+        [original, 'false', original],
+        [original, 'no', original],
+        [original, undefined, original],
+        [snapshot, 'true', snapshot],
+        [archived, 'true', archived],
+        [wrapped, 'true', archived],
+        [wrapped, undefined, archived],
+      ]) {
+        const parsed = await parse(`## saved
+
+- [Article](<${url}>)
+  - [meta]:
+    - later: true
+${unlocked === undefined ? '' : `    - unlocked: ${unlocked}\n`}  - Keep [this citation](https://example.com/citation).
+  - [Nested article](<${original}>)
+    - [meta]:
+      - unlocked: true
+`)
+        const parent = parsed[1].data.arenaData?.channels[0].blocks[0]
+        assert.ok(parent)
+        assert.equal(parent.url, expected)
+        assert.equal(parent.metadata?.unlocked, undefined)
+        for (const node of [parent.htmlNode, parent.titleHtmlNode]) {
+          assert.ok(node)
+          assert.ok(toHtml(node).includes(`href="${expected}"`))
+        }
+        const nested = parent.subItems?.find(item => item.title === 'Nested article')
+        assert.ok(nested)
+        assert.equal(nested.url, archived)
+        assert.ok(nested.htmlNode)
+        assert.ok(toHtml(nested.htmlNode).includes(`href="${archived}"`))
+        const channels = parsed[1].data.arenaData?.channels
+        assert.ok(channels)
+        const manifest = await buildArenaFeedManifest(channels, 'aarnphm.xyz')
+        const entry = manifest.entries.find(item => item.title === 'Article')
+        assert.ok(entry)
+        assert.equal(entry.sourceUrl, expected)
+        assert.ok(entry.occurrences[0].notesHtml.includes('href="https://example.com/citation"'))
+      }
+    },
+  )
   const first = await parse(`## saved
 
 - <https://example.com/parent> -- Parent
@@ -462,6 +575,8 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
   assert.ok(initialPaths.includes(join(output, 'static/arena-feed.json')))
   const shell = await readFile(join(output, 'arena/feed.html'), 'utf8')
   assert.match(shell, /data-arena-feed/)
+  assert.match(shell, /<a[^>]*href="\/arena"[^>]*>arena<\/a>/)
+  assert.match(shell, /<span>reader<\/span>/)
   assert.doesNotMatch(shell, /Keep.*this citation/)
   const initial = await readManifest()
   assert.equal(initial.entries.length, 2)

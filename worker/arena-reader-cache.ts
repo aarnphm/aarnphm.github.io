@@ -1,7 +1,9 @@
 import { z } from 'zod'
 import type { ArenaReaderArtifact } from '../quartz/util/arena-reader'
 
-export const ARENA_READER_PROFILE = 'anonymous-readability-1-purify-1'
+const legacyReaderProfile = 'anonymous-readability-1-purify-1'
+export const ARENA_READER_PROFILE = 'anonymous-defuddle-0.19.3-purify-2'
+export const ARENA_TWITTER_PROFILE = 'twitter-defuddle-0.19.3-purify-1'
 export const ARENA_READER_LEASE_MS = 90_000
 export const ARENA_READER_COOLDOWN_MS = 10 * 60_000
 export const ARENA_READER_MAX_ARTIFACT_BYTES = 4 * 1024 * 1024
@@ -22,7 +24,13 @@ const artifactBase = z.object({
   sourceUrl: z.string().url(),
   finalUrl: z.string().url(),
   capturedAt: z.number().int().nonnegative(),
-  profileVersion: z.literal(ARENA_READER_PROFILE),
+  profileVersion: z.enum([
+    legacyReaderProfile,
+    'anonymous-defuddle-0.19.3-purify-1',
+    ARENA_READER_PROFILE,
+    'twitter-oembed-1',
+    ARENA_TWITTER_PROFILE,
+  ]),
   fingerprint: z.string().regex(/^[a-f0-9]{64}$/),
   resources: z.array(resource).max(300),
 })
@@ -30,7 +38,6 @@ const artifactSchema = z.discriminatedUnion('kind', [
   artifactBase.extend({
     kind: z.literal('html'),
     readerHtml: z.string().nullable(),
-    documentHtml: z.string(),
     quality: z.enum(['complete', 'partial']),
     diagnostics: z.array(z.string().max(1024)).max(30),
   }),
@@ -76,7 +83,8 @@ export interface ArenaRenderLease {
 }
 
 export function arenaReaderStateKey(id: string): string {
-  return `arena-reader/v1/${id}/${ARENA_READER_PROFILE}/state.json`
+  // Keep the persisted namespace so an extractor change does not invalidate visited links.
+  return `arena-reader/v1/${id}/${legacyReaderProfile}/state.json`
 }
 
 export function arenaReaderSnapshotKey(id: string, snapshot: string): string {

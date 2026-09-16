@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks'
 import type { ArenaFeedEntry } from '../../util/arena-feed'
 import type {
   ArenaFeedResponse,
@@ -8,6 +8,7 @@ import type {
 } from '../../util/arena-reader'
 import { isNote, isReadLink, isRecord, ReaderApiError, readerApi } from './api'
 import { ArticleContent, safeHref } from './content'
+import { ReaderLoading } from './loading'
 import {
   acknowledgeDraft,
   draftFromNote,
@@ -22,6 +23,7 @@ import {
   type ReaderPass,
 } from './model'
 import { NotesPanel, type DraftStatus } from './notes'
+import { QueueFilter } from './queue-filter'
 import {
   loadDrafts,
   loadPass,
@@ -34,6 +36,7 @@ import {
 } from './store'
 
 type Panel = 'queue' | 'notes' | null
+type BackgroundNotice = 'storage' | 'position' | 'refresh' | 'sync'
 
 function errorMessage(error: unknown): string {
   return error instanceof Error
@@ -83,7 +86,6 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   const [pass, setPass] = useState<ReaderPass | null>(null)
   const [fatal, setFatal] = useState<unknown>(null)
   const [retry, setRetry] = useState(0)
-  const [notice, setNotice] = useState('')
   const [filter, setFilter] = useState<FeedFilter>('unread')
   const [query, setQuery] = useState('')
   const [limit, setLimit] = useState(50)
@@ -121,8 +123,30 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   const forceRefresh = useRef(false)
   const passRef = useRef(pass)
   const feedRef = useRef(feed)
+  const lastBackgroundNotice = useRef(new Map<BackgroundNotice, number>())
   passRef.current = pass
   feedRef.current = feed
+
+  const notify = useCallback(
+    (message: string, background?: BackgroundNotice) => {
+      if (signal.aborted) return
+      if (background) {
+        const now = Date.now()
+        const last = lastBackgroundNotice.current.get(background)
+        if (last !== undefined && now - last < 30_000) return
+        lastBackgroundNotice.current.set(background, now)
+      }
+      const event: CustomEventMap['toast'] = new CustomEvent('toast', {
+        detail: {
+          message,
+          durationMs: 6000,
+          containerHost: dialog.current?.open ? dialog.current : undefined,
+        },
+      })
+      document.dispatchEvent(event)
+    },
+    [signal],
+  )
 
   const setAllDrafts = useCallback((next: Record<string, NoteDraft>) => {
     draftRef.current = next
@@ -142,13 +166,13 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
           }
         })
         .catch(() => {
-          if (!signal.aborted)
-            setNotice(
-              'Local note storage failed. Keep this page open and copy your draft until it syncs.',
-            )
+          notify(
+            'Local note storage failed. Keep this page open and copy your draft until it syncs.',
+            'storage',
+          )
         })
     },
-    [database, signal],
+    [database, notify, signal],
   )
 
   const updateDraft = useCallback(
@@ -176,9 +200,11 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       ownerRef.current = response.subject
       const [local, notes] = await Promise.all([
         loadDrafts(database, response.subject).catch(() => {
-          setNotice(
-            'Local note storage is unavailable. Notes can sync while connected; keep unsynced text on this page.',
-          )
+          if (active)
+            notify(
+              'Local note storage is unavailable. Notes can sync while connected; keep unsynced text on this page.',
+              'storage',
+            )
           return []
         }),
         readerApi.notes(null, signal),
@@ -199,21 +225,21 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       setFeed(response)
       setPass({ ...restoredPass, current })
       if (selected && !response.entries.some(entry => entry.articleId === selected))
-        setNotice('This link is no longer in the saved catalogue. Your notes remain in the inbox.')
+        notify('This link is outside the reading queue. Your notes remain in the inbox.')
     })().catch(error => {
       if (active && !signal.aborted) setFatal(error)
     })
     return () => {
       active = false
     }
-  }, [retry, database, persist, setAllDrafts, signal])
+  }, [retry, database, notify, persist, setAllDrafts, signal])
 
   useEffect(() => {
     if (!feed || !pass) return
     try {
       savePass(feed.subject, pass)
     } catch {
-      setNotice('This browser could not save the current reading position.')
+      notify('This browser could not save the current reading position.', 'position')
     }
     const url = new URL(location.href)
     if (pass.current) url.searchParams.set('article', pass.current)
@@ -221,7 +247,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     if (inbox) url.searchParams.set('view', 'notes')
     else url.searchParams.delete('view')
     history.replaceState(history.state, '', url)
-  }, [feed?.subject, pass, inbox, panel])
+  }, [feed?.subject, pass, inbox, panel, notify])
 
   useEffect(() => {
     const media = matchMedia('(min-width: 68rem)')
@@ -266,27 +292,31 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   }, [])
 
   useEffect(() => {
-    const onPop = (event: PopStateEvent) => {
+    const onPop = (event: CustomEventMap['beforepopstate']) => {
       if (!panelHistory.current || location.pathname.replace(/\/$/, '') !== '/arena/feed') return
-      event.stopImmediatePropagation()
+      event.preventDefault()
       panelHistory.current = false
       setPanel(null)
       setSyncTick(value => value + 1)
     }
-    window.addEventListener('popstate', onPop, true)
+    document.addEventListener('beforepopstate', onPop)
     return () => {
-      window.removeEventListener('popstate', onPop, true)
+      document.removeEventListener('beforepopstate', onPop)
     }
   }, [])
 
-  useEffect(() => {
+  // Keep the native dialog and its grid columns in the same frame.
+  useLayoutEffect(() => {
     const element = dialog.current
     if (!element) return
     const focused = document.activeElement
-    if (element.open) element.close()
+    const modal = Boolean(panel && !wide)
+    if (element.open && (!panel || element.matches(':modal') !== modal)) element.close()
     if (panel) {
-      if (wide) element.show()
-      else element.showModal()
+      if (!element.open) {
+        if (wide) element.show()
+        else element.showModal()
+      }
       if (focused instanceof HTMLElement && element.contains(focused))
         focused.focus({ preventScroll: true })
     } else returnFocus.current?.focus({ preventScroll: true })
@@ -342,7 +372,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
         for (const draft of Object.values(merged)) persist(draft)
         setSyncTick(value => value + 1)
       } catch (error) {
-        if (!signal.aborted) setNotice(errorMessage(error))
+        notify(errorMessage(error), 'refresh')
       } finally {
         running = false
       }
@@ -356,7 +386,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       window.removeEventListener('focus', onFocus)
       window.removeEventListener('online', onFocus)
     }
-  }, [feed?.subject, persist, setAllDrafts, signal])
+  }, [feed?.subject, notify, persist, setAllDrafts, signal])
 
   useEffect(() => {
     if (!feed) return
@@ -399,7 +429,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
               latest
             )
               updateDraft({ ...latest, conflict: error.current })
-            else setNotice(`${errorMessage(error)} Unsynced notes remain on this device.`)
+            else notify(`${errorMessage(error)} Unsynced notes remain on this device.`, 'sync')
           })
           .finally(() => {
             savingRef.current.delete(draft.note.id)
@@ -415,7 +445,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     return () => {
       for (const timer of timers) clearTimeout(timer)
     }
-  }, [drafts, feed?.subject, signal, syncTick, updateDraft])
+  }, [drafts, feed?.subject, notify, signal, syncTick, updateDraft])
 
   const selected = feed?.entries.find(entry => entry.articleId === pass?.current) ?? null
   const eligible = useMemo(
@@ -427,6 +457,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     [feed],
   )
   const activeRead = feed?.readLinks.find(link => link.articleId === selected?.articleId)
+  const isRead = activeRead?.readAt != null
   const artifact = result?.status === 'ready' ? result.artifact : null
 
   useEffect(() => {
@@ -439,13 +470,15 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     lastRendered.current = selected.articleId
     if (changed) setResult(null)
     setLoading(true)
+    if (explicitRefresh) notify('refreshing from the source…')
     void (async () => {
       let response = snapshot
         ? await readerApi.snapshot(selected.articleId, snapshot, requestSignal)
         : await readerApi.render(selected.articleId, requestSignal, explicitRefresh)
       let polls = 0
       while (response.status === 'pending' && polls < 24) {
-        setResult(response)
+        const pending = response
+        setResult(previous => (previous?.status === 'ready' ? previous : pending))
         await delay(response.retryAfter, requestSignal)
         response = await readerApi.renderStatus(response.statusUrl, requestSignal)
         polls += 1
@@ -457,11 +490,11 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
             : response,
         )
         if (response.status === 'pending')
-          setNotice('This copy is still being prepared. Reopen the link to check its status.')
+          notify('This copy is still being prepared. Reopen the link to check its status.')
       }
     })()
       .catch(error => {
-        if (!requestSignal.aborted) setNotice(errorMessage(error))
+        if (!requestSignal.aborted) notify(errorMessage(error))
       })
       .finally(() => {
         if (!requestSignal.aborted) setLoading(false)
@@ -469,7 +502,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     return () => {
       controller.abort()
     }
-  }, [selected?.articleId, inbox, renderVersion, signal, snapshot])
+  }, [selected?.articleId, inbox, notify, renderVersion, signal, snapshot])
 
   useEffect(() => {
     if (!artifact || !feed || inbox) return
@@ -477,13 +510,8 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     let timer = 0
     const root = articleRef.current
     if (!root) return
-    const fraction = () => {
-      const start = root.getBoundingClientRect().top + scrollY
-      return Math.min(
-        1,
-        Math.max(0, (scrollY - start) / Math.max(1, root.scrollHeight - innerHeight)),
-      )
-    }
+    const fraction = () =>
+      Math.min(1, Math.max(0, root.scrollTop / Math.max(1, root.scrollHeight - root.clientHeight)))
     const save = () => {
       void savePosition(
         database,
@@ -500,20 +528,19 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     void loadPosition(database, feed.subject, artifact.articleId, artifact.fingerprint)
       .then(position => {
         if (!mounted) return
-        const top = root.getBoundingClientRect().top + scrollY
-        window.scrollTo({
-          top: top + position * Math.max(0, root.scrollHeight - innerHeight),
+        root.scrollTo({
+          top: position * Math.max(0, root.scrollHeight - root.clientHeight),
           behavior: 'instant',
         })
-        window.addEventListener('scroll', onScroll, { passive: true })
+        root.addEventListener('scroll', onScroll, { passive: true })
       })
       .catch(() => {
-        if (mounted) window.addEventListener('scroll', onScroll, { passive: true })
+        if (mounted) root.addEventListener('scroll', onScroll, { passive: true })
       })
     return () => {
       mounted = false
       clearTimeout(timer)
-      window.removeEventListener('scroll', onScroll)
+      root.removeEventListener('scroll', onScroll)
       save()
     }
   }, [artifact?.snapshotId, database, feed?.subject, inbox])
@@ -532,7 +559,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     setEditing(null)
     setInbox(false)
     setPass(current => current && { ...current, current: entry.articleId })
-    if (panel === 'queue' || (!wide && panel)) closePanel()
+    if (!wide && panel && panel !== 'queue') closePanel()
   }
 
   function advance() {
@@ -584,7 +611,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
             },
         )
       }
-      if (!signal.aborted) setNotice(errorMessage(error))
+      notify(errorMessage(error))
     } finally {
       if (!signal.aborted) setReadBusy(false)
     }
@@ -623,7 +650,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
 
   async function deleteNote(draft: NoteDraft) {
     if (savingRef.current.has(draft.note.id)) {
-      setNotice('Wait for the current save before deleting this note.')
+      notify('Wait for the current save before deleting this note.')
       return
     }
     try {
@@ -635,7 +662,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       await removeDraft(database, draft.subject, draft.note.id)
       setEditing(null)
     } catch (error) {
-      if (!signal.aborted) setNotice(errorMessage(error))
+      notify(errorMessage(error))
     }
   }
 
@@ -730,7 +757,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       setInbox(false)
       if (panel) closePanel()
     } catch (error) {
-      if (!signal.aborted) setNotice(errorMessage(error))
+      notify(errorMessage(error))
     }
   }
 
@@ -753,11 +780,11 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       link.download = `arena-notes-${new Date().toISOString().slice(0, 10)}.json`
       link.click()
       window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-      setNotice(
+      notify(
         `Exported ${notes.length} ready notes. Backfill receipts are recorded by the later Markdown workflow.`,
       )
     } catch (error) {
-      if (!signal.aborted) setNotice(errorMessage(error))
+      notify(errorMessage(error))
     }
   }
 
@@ -766,31 +793,44 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       <header class="arena-reader-header">
         <div>
           <a href="/arena" class="internal">
-            Arena
+            arena
           </a>
           <span aria-hidden="true"> / </span>
-          <span>Reader</span>
+          <span>reader</span>
         </div>
         <button
           type="button"
+          class="arena-reader-icon-button"
           aria-pressed={inbox}
+          aria-label={inbox ? 'Back to reading' : 'Notes inbox'}
+          title={inbox ? 'Back to reading' : 'Notes inbox'}
           onClick={() => {
             setInbox(!inbox)
             setEditing(null)
             if (panel) closePanel()
           }}
         >
-          {inbox ? 'Back to reading' : 'Notes inbox'}
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            {inbox ? (
+              <path d="m10 5-7 7 7 7M3 12h18" />
+            ) : (
+              <>
+                <path d="m3 13 3-9h12l3 9v7H3Z" />
+                <path d="M3 13h5l2 3h4l2-3h5" />
+              </>
+            )}
+          </svg>
         </button>
       </header>
-      {notice && (
-        <div class="arena-reader-notice" role="status">
-          <span>{notice}</span>
-          <button type="button" aria-label="Dismiss message" onClick={() => setNotice('')}>
-            ×
-          </button>
-        </div>
-      )}
       {pendingFeed && (
         <div class="arena-reader-notice">
           <span>The saved catalogue has changed.</span>
@@ -803,7 +843,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
               }))
               setPendingFeed(null)
               setPass(current => current && { ...current, visited: [] })
-              setNotice('Queue refreshed. New Later links are first in the next pass.')
+              notify('Queue refreshed. New Later links are first in the next pass.')
             }}
           >
             Refresh queue
@@ -843,190 +883,172 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
           </button>
         </div>
       ) : !feed ? (
-        <div class="arena-reader-empty" role="status">
-          <h1>Your reading queue</h1>
-          <p>Loading your saved links and notes…</p>
-        </div>
+        <ReaderLoading />
       ) : (
-        <>
-          <div class="arena-reader-layout">
-            <main class="arena-reader-main" ref={articleRef}>
-              {inbox ? (
-                <section class="arena-reader-inbox">
-                  <header>
-                    <h1>Notes inbox</h1>
-                    <p>
-                      Keep drafts here. Mark a revision ready when you want to bring it back into
-                      your Garden.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        void exportNotes()
-                      }}
-                    >
-                      Export ready notes
-                    </button>
-                  </header>
-                  <NotesPanel {...notesProps} />
-                </section>
-              ) : selected ? (
-                <>
-                  <ArticleContent
-                    entry={selected}
-                    result={result}
-                    loading={loading}
-                    contentRef={contentRef}
-                    onRetry={() => setRenderVersion(value => value + 1)}
-                  />
-                  <div class="arena-reader-article-actions">
-                    <button type="button" onClick={addNote}>
-                      Add note from selection
-                    </button>
-                    <button
-                      type="button"
-                      disabled={loading || !artifact}
-                      onClick={() => {
-                        setSnapshot(null)
-                        forceRefresh.current = true
-                        setRenderVersion(value => value + 1)
-                      }}
-                    >
-                      Refresh from source
-                    </button>
-                    {activeRead?.readAt != null && (
-                      <button
-                        type="button"
-                        disabled={readBusy}
-                        onClick={() => {
-                          void markRead(selected, false, false)
-                        }}
-                      >
-                        Mark unread
-                      </button>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div class="arena-reader-empty">
-                  <h1>
-                    {remaining.length ? 'You reached the end of this pass' : 'You’re all caught up'}
-                  </h1>
+        <div class="arena-reader-layout">
+          <main class="arena-reader-main" ref={articleRef}>
+            {inbox ? (
+              <section class="arena-reader-inbox">
+                <header>
+                  <h1>Notes inbox</h1>
                   <p>
-                    {remaining.length
-                      ? `${remaining.length.toLocaleString()} unread links remain. A new shuffle brings skipped links back.`
-                      : 'Read links and your notes are still available in the queue.'}
+                    Keep drafts here. Mark a revision ready when you want to bring it back into your
+                    Garden.
                   </p>
                   <button
                     type="button"
                     onClick={() => {
-                      void shuffle()
+                      void exportNotes()
                     }}
                   >
-                    Start another pass
+                    Export ready notes
+                  </button>
+                </header>
+                <NotesPanel {...notesProps} />
+              </section>
+            ) : selected ? (
+              <ArticleContent
+                entry={selected}
+                result={result}
+                loading={loading}
+                contentRef={contentRef}
+                onRetry={() => setRenderVersion(value => value + 1)}
+              />
+            ) : (
+              <div class="arena-reader-empty">
+                <h1>
+                  {remaining.length ? 'You reached the end of this pass' : 'You’re all caught up'}
+                </h1>
+                <p>
+                  {remaining.length
+                    ? `${remaining.length.toLocaleString()} unread links remain. A new shuffle brings skipped links back.`
+                    : 'Read links and your notes are still available in the queue.'}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void shuffle()
+                  }}
+                >
+                  Start another pass
+                </button>
+              </div>
+            )}
+          </main>
+          <dialog
+            ref={dialog}
+            class="arena-reader-panel"
+            aria-labelledby="arena-reader-panel-title"
+            data-editing={Boolean(editing) || expanded}
+            style={{
+              '--arena-visible-height': `${viewport.height}px`,
+              '--arena-keyboard-inset': `${viewport.inset}px`,
+            }}
+            onCancel={event => {
+              event.preventDefault()
+              closePanel()
+            }}
+            onClick={event => {
+              if (event.target === event.currentTarget && !wide) closePanel()
+            }}
+          >
+            <div class="arena-reader-panel-inner">
+              <div
+                class="arena-reader-drawer-handle"
+                aria-hidden="true"
+                onPointerDown={event => {
+                  event.currentTarget.dataset.startY = String(event.clientY)
+                  event.currentTarget.setPointerCapture(event.pointerId)
+                }}
+                onPointerUp={event => {
+                  const start = Number(event.currentTarget.dataset.startY)
+                  const movement = event.clientY - start
+                  if (movement > 70) closePanel()
+                  if (movement < -50) setExpanded(true)
+                }}
+              />
+              <header class="arena-reader-panel-header">
+                <h2 id="arena-reader-panel-title">{panel === 'queue' ? 'queue' : 'notes'}</h2>
+                <div>
+                  <button
+                    type="button"
+                    class="arena-reader-expand"
+                    aria-pressed={expanded}
+                    onClick={() => setExpanded(!expanded)}
+                  >
+                    {expanded ? 'collapse' : 'expand'}
+                  </button>
+                  <button
+                    type="button"
+                    class="arena-reader-icon-button"
+                    aria-label={`Close ${panel ?? 'panel'}`}
+                    title={`Close ${panel ?? 'panel'}`}
+                    onClick={closePanel}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="m6 6 12 12M6 18 18 6" />
+                    </svg>
                   </button>
                 </div>
-              )}
-            </main>
-            <dialog
-              ref={dialog}
-              class="arena-reader-panel"
-              aria-labelledby="arena-reader-panel-title"
-              data-editing={Boolean(editing) || expanded}
-              style={{
-                '--arena-visible-height': `${viewport.height}px`,
-                '--arena-keyboard-inset': `${viewport.inset}px`,
-              }}
-              onCancel={event => {
-                event.preventDefault()
-                closePanel()
-              }}
-              onClick={event => {
-                if (event.target === event.currentTarget && !wide) closePanel()
-              }}
-            >
-              <div class="arena-reader-panel-inner">
-                <div
-                  class="arena-reader-drawer-handle"
-                  aria-hidden="true"
-                  onPointerDown={event => {
-                    event.currentTarget.dataset.startY = String(event.clientY)
-                    event.currentTarget.setPointerCapture(event.pointerId)
-                  }}
-                  onPointerUp={event => {
-                    const start = Number(event.currentTarget.dataset.startY)
-                    const movement = event.clientY - start
-                    if (movement > 70) closePanel()
-                    if (movement < -50) setExpanded(true)
-                  }}
-                />
-                <header class="arena-reader-panel-header">
-                  <h2 id="arena-reader-panel-title">
-                    {panel === 'queue' ? 'Reading queue' : 'Notes'}
-                  </h2>
-                  <div>
+              </header>
+              {panel === 'queue' ? (
+                <div class="arena-reader-queue">
+                  <div class="arena-reader-search">
+                    <input
+                      type="search"
+                      aria-label="Search saved links"
+                      value={query}
+                      onInput={event => {
+                        setQuery(event.currentTarget.value)
+                        setLimit(50)
+                      }}
+                      placeholder="search saved links…"
+                    />
                     <button
                       type="button"
-                      class="arena-reader-expand"
-                      aria-pressed={expanded}
-                      onClick={() => setExpanded(!expanded)}
+                      class="arena-reader-icon-button"
+                      aria-label="Shuffle queue"
+                      title="Shuffle queue"
+                      onClick={() => {
+                        void shuffle()
+                      }}
                     >
-                      {expanded ? 'Collapse' : 'Expand'}
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Close ${panel ?? 'panel'}`}
-                      onClick={closePanel}
-                    >
-                      Close
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path d="m17 3 4 4-4 4M17 13l4 4-4 4M3 7h3c5 0 7 10 12 10h3M3 17h3c2 0 3.5-1.6 5-4M13 9c1.5-1.4 3-2 5-2h3" />
+                      </svg>
                     </button>
                   </div>
-                </header>
-                {panel === 'queue' ? (
-                  <div class="arena-reader-queue">
+                  <div class="arena-reader-queue-controls">
+                    <QueueFilter
+                      value={filter}
+                      onChange={value => {
+                        setFilter(value)
+                        setLimit(50)
+                      }}
+                    />
                     <p class="arena-reader-status">
-                      {remaining.filter(entry => entry.later).length.toLocaleString()} Later ·{' '}
+                      {remaining.filter(entry => entry.later).length.toLocaleString()} later ·{' '}
                       {remaining.length.toLocaleString()} unread
                     </p>
-                    <div class="arena-reader-queue-controls">
-                      <label>
-                        Show
-                        <select
-                          value={filter}
-                          onChange={event => {
-                            const value = event.currentTarget.value
-                            if (value === 'unread' || value === 'read' || value === 'all') {
-                              setFilter(value)
-                              setLimit(50)
-                            }
-                          }}
-                        >
-                          <option value="unread">Unread</option>
-                          <option value="read">Read</option>
-                          <option value="all">All saved links</option>
-                        </select>
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          void shuffle()
-                        }}
-                      >
-                        Shuffle
-                      </button>
-                    </div>
-                    <label class="arena-reader-search">
-                      Search saved links
-                      <input
-                        type="search"
-                        value={query}
-                        onInput={event => {
-                          setQuery(event.currentTarget.value)
-                          setLimit(50)
-                        }}
-                        placeholder="Title, source, or channel"
-                      />
-                    </label>
+                  </div>
+                  <div class="arena-reader-queue-entries">
                     <ol>
                       {eligible.slice(0, limit).map(entry => (
                         <li key={entry.articleId}>
@@ -1039,7 +1061,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
                           >
                             <span class="arena-reader-queue-title">{entry.title}</span>
                             <span class="arena-reader-queue-meta">
-                              {entry.later && <span>Later · </span>}
+                              {entry.later && <span>later · </span>}
                               {entry.occurrences[0]?.channelName}
                               {pass?.visited.includes(entry.articleId) && ' · skipped this pass'}
                             </span>
@@ -1054,50 +1076,71 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
                       </button>
                     )}
                   </div>
-                ) : (
-                  <NotesPanel {...notesProps} inbox={false} drafts={selectedDrafts} />
-                )}
-              </div>
-            </dialog>
-          </div>
+                </div>
+              ) : (
+                <NotesPanel {...notesProps} inbox={false} drafts={selectedDrafts} />
+              )}
+            </div>
+          </dialog>
           {!inbox && (
-            <nav class="arena-reader-bottom-bar" aria-label="Reader actions">
-              <button
-                type="button"
-                aria-expanded={panel === 'queue'}
-                aria-controls="arena-reader-panel-title"
-                onClick={() => (panel === 'queue' ? closePanel() : openPanel('queue'))}
-              >
-                Queue<span class="arena-reader-counter">{remaining.length.toLocaleString()}</span>
-              </button>
-              <button
-                type="button"
-                aria-expanded={panel === 'notes'}
-                aria-controls="arena-reader-panel-title"
-                onClick={() => (panel === 'notes' ? closePanel() : openPanel('notes'))}
-              >
-                Notes<span class="arena-reader-counter">{selectedDrafts.length}</span>
-              </button>
-              <button
-                type="button"
-                disabled={!selected || readBusy}
-                onClick={() => {
-                  if (selected) void markRead(selected, true, true)
-                }}
-              >
-                {readBusy ? 'Saving…' : activeRead?.readAt != null ? 'Read · Next' : 'Mark read'}
-              </button>
-              <button
-                type="button"
-                disabled={!selected}
-                onClick={advance}
-                aria-label="Next link, keep current link unread"
-              >
-                Next →
-              </button>
-            </nav>
+            <div class="arena-reader-footer">
+              <nav class="arena-reader-bottom-bar" aria-label="Reader actions">
+                <button
+                  type="button"
+                  aria-expanded={panel === 'queue'}
+                  aria-controls="arena-reader-panel-title"
+                  onClick={() => (panel === 'queue' ? closePanel() : openPanel('queue'))}
+                >
+                  queue<span class="arena-reader-counter">{remaining.length.toLocaleString()}</span>
+                </button>
+                <button
+                  type="button"
+                  aria-expanded={panel === 'notes'}
+                  aria-controls="arena-reader-panel-title"
+                  onClick={() => {
+                    pendingQuote.current = contentRef.current
+                      ? quoteFromSelection(contentRef.current)
+                      : null
+                    if (pendingQuote.current) addNote()
+                    else if (panel === 'notes') closePanel()
+                    else openPanel('notes')
+                  }}
+                >
+                  notes<span class="arena-reader-counter">{selectedDrafts.length}</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={loading || !artifact}
+                  onClick={() => {
+                    setSnapshot(null)
+                    forceRefresh.current = true
+                    setRenderVersion(value => value + 1)
+                  }}
+                >
+                  refresh
+                </button>
+                <button
+                  type="button"
+                  disabled={!selected || readBusy}
+                  aria-label={isRead ? 'Mark unread' : 'Read and go to next link'}
+                  onClick={() => {
+                    if (selected) void markRead(selected, !isRead, !isRead)
+                  }}
+                >
+                  {readBusy ? 'saving…' : isRead ? 'unread' : 'read'}
+                </button>
+                <button
+                  type="button"
+                  disabled={!selected}
+                  onClick={advance}
+                  aria-label="Next link, keep current link unread"
+                >
+                  next →
+                </button>
+              </nav>
+            </div>
           )}
-        </>
+        </div>
       )}
     </div>
   )
