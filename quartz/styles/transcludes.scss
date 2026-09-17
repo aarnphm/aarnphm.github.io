@@ -543,6 +543,8 @@
 }
 
 .pdf-embed-page {
+  --scale-round-x: 1px;
+  --scale-round-y: 1px;
   position: relative;
   display: flex;
   align-items: center;
@@ -577,11 +579,29 @@
 }
 
 .pdf-embed-text-layer {
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
   z-index: 2;
   line-height: 1;
+  letter-spacing: normal;
+  word-spacing: normal;
   text-align: initial;
   text-size-adjust: none;
+  forced-color-adjust: none;
   transform-origin: 0 0;
+
+  &[data-main-rotation='90'] {
+    transform: rotate(90deg) translateY(-100%);
+  }
+
+  &[data-main-rotation='180'] {
+    transform: rotate(180deg) translate(-100%, -100%);
+  }
+
+  &[data-main-rotation='270'] {
+    transform: rotate(270deg) translateX(-100%);
+  }
 
   span,
   br {
@@ -590,11 +610,35 @@
     white-space: pre;
     cursor: text;
     transform-origin: 0% 0%;
+    user-select: text;
+  }
+
+  > :not(.markedContent),
+  .markedContent span:not(.markedContent) {
+    --font-height: 0;
+    --scale-x: 1;
+    --rotate: 0deg;
+    z-index: 1;
+    font-size: calc(var(--text-scale-factor) * var(--font-height));
+    transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+  }
+
+  .markedContent {
+    display: contents;
+  }
+
+  span[role='img'] {
+    user-select: none;
+    cursor: default;
   }
 
   ::selection {
     color: transparent;
     background: rgba(135, 154, 57, 0.28);
+  }
+
+  br::selection {
+    background: transparent;
   }
 }
 

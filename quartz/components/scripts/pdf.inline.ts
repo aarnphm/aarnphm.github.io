@@ -35,6 +35,8 @@ type PdfFitMode = 'width' | 'page' | 'actual' | 'custom'
 interface PdfViewport {
   width: number
   height: number
+  scale: number
+  userUnit: number
 }
 
 interface PdfRenderTask {
@@ -1523,6 +1525,10 @@ function setSlotSize(slot: PdfPageSlot, viewport: PdfViewport, scale: number): b
   const changed = slot.element.style.width !== widthPx || slot.element.style.minHeight !== heightPx
   slot.element.style.width = widthPx
   slot.element.style.minHeight = heightPx
+  slot.element.style.setProperty(
+    '--total-scale-factor',
+    String(viewport.scale * viewport.userUnit * scale),
+  )
   slot.textLayer.style.width = widthPx
   slot.textLayer.style.height = heightPx
   slot.highlightLayer.style.width = widthPx

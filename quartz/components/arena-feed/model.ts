@@ -119,5 +119,5 @@ export function quoteFromSelection(root: HTMLElement): ArenaNoteQuote | null {
   const after = range.cloneRange()
   after.selectNodeContents(root)
   after.setStart(range.endContainer, range.endOffset)
-  return boundedQuote(range.toString(), before.toString(), after.toString())
+  return boundedQuote(selection.toString(), before.toString(), after.toString())
 }

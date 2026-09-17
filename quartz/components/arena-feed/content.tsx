@@ -1,6 +1,6 @@
 import type { RefObject } from 'preact'
 import DOMPurify from 'dompurify'
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
+import { useEffect, useMemo, useState } from 'preact/hooks'
 import type { ArenaReaderArtifact, ArenaReaderRenderResult } from '../../util/arena-reader'
 import { arenaFeedSourceNames, type ArenaFeedEntry } from '../../util/arena-feed'
 import { parseWikipediaTarget } from '../../util/wikipedia'
@@ -86,20 +86,25 @@ export function sanitizeReaderHtml(html: string): string {
   return document.body.innerHTML
 }
 
-function PdfContent({ artifact }: { artifact: Extract<ArenaReaderArtifact, { kind: 'pdf' }> }) {
-  const ref = useRef<HTMLDivElement>(null)
+function PdfContent({
+  artifact,
+  contentRef,
+}: {
+  artifact: Extract<ArenaReaderArtifact, { kind: 'pdf' }>
+  contentRef: RefObject<HTMLDivElement>
+}) {
   const resource = artifact.resources.find(item => item.id === artifact.resourceId)
   const src = resource && safeHref(resource.url)
   useEffect(() => {
-    const root = ref.current
+    const root = contentRef.current
     if (!root || !src) return
     window.quartzPdfEmbeds?.mount(root)
     return () => {
       window.quartzPdfEmbeds?.cleanup(root)
     }
-  }, [src])
+  }, [src, contentRef])
   return (
-    <div ref={ref} class="arena-reader-pdf">
+    <div ref={contentRef} class="arena-reader-pdf">
       {src ? (
         <div
           class="pdf-embed"
@@ -226,7 +231,7 @@ export function ArticleContent({
       {artifact?.kind === 'html' && (
         <HtmlContent key={artifact.snapshotId} artifact={artifact} contentRef={contentRef} />
       )}
-      {artifact?.kind === 'pdf' && <PdfContent artifact={artifact} />}
+      {artifact?.kind === 'pdf' && <PdfContent artifact={artifact} contentRef={contentRef} />}
       {artifact?.kind === 'video' && (
         <div class="arena-reader-media">
           {artifact.embedUrl &&
