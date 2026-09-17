@@ -120,7 +120,7 @@ C: `La banque est [à côté] des magasins.`
 ---
 
 Q: `de l'autre côté de` vs `en face de`?
-A: `en face de` names what you look at, `Le restaurant japonais est en face du cinéma.` `de l'autre côté de` names what you cross, `L'épicerie est de l'autre côté de la rue.` The first takes buildings, the second takes streets, rivers, bridges.
+A: `en face de` means opposite or facing a reference point: `Le restaurant japonais est en face du cinéma.` `de l'autre côté de` means on the other side of a reference point: `L'épicerie est de l'autre côté de la rue.` Shops on opposite sides of a street need not face each other directly. `en face de` also works with people and objects.
 
 ---
 
@@ -163,7 +163,7 @@ A: `Prenez la rue Laliberté.`, `Continuez tout droit jusqu'à…`, `Tournez à 
 ---
 
 Q: `dans la rue` or `sur la rue`?
-A: Static location takes `dans`: `Elle est dans la rue du Domaine.` A verb of motion takes `sur` in Québec: `Tournez à droite sur la rue Sainte-Anne.` The episode uses both, consistently split.
+A: Both can locate a building: `La pharmacie est dans la rue du Domaine.` or `La pharmacie est sur la rue du Domaine.` `sur la rue` is common in Québec. The OQLF accepts both for a fixed location. See [[fr/episode-10#sur la rue ou dans la rue|street-location examples]].
 
 ---
 
@@ -248,7 +248,7 @@ A: With the article it means every Monday, the habitual reading from [[fr/episod
 ---
 
 Q: `une modification de service` vs `une perturbation de service`?
-A: A planned service change against an unplanned disruption. Both head STM notices.
+A: A service change and a service disruption. A modification changes the service arrangement, such as moving a stop; a perturbation disrupts its operation, such as causing delays. Roadworks can cause either. The words alone do not establish whether the cause was planned. See [[fr/episode-10#comprendre les formulations des avis|les avis]].
 
 ---
 
@@ -283,3 +283,44 @@ C: Dates use cardinal numbers except the first of the month: `du 30 aout au 30 a
 
 Q: Four rectified spellings on these pages?
 A: `Cout` (classic `coût`), `aout` (classic `août`), `évènement` (classic `événement`), `s'il vous plait` (classic `plaît`).
+
+---
+
+C: `Le restaurant japonais est en face [du] cinéma.` (`de + le`) See [[fr/episode-10#choisir du, de la, de l' ou des|les contractions]].
+
+---
+
+C: `La pharmacie est près [de la] clinique.` (`la clinique`) See [[fr/episode-10#choisir du, de la, de l' ou des|les contractions]].
+
+---
+
+C: `L'école est loin [de l']hôpital.` (`h` muet) See [[fr/episode-10#choisir du, de la, de l' ou des|les contractions]].
+
+---
+
+C: `La banque est à côté [des] magasins.` (`de + les`) See [[fr/episode-10#choisir du, de la, de l' ou des|les contractions]].
+
+---
+
+Q: How do you say that a place is between two landmarks in French?
+A: `lieu + est / se trouve + entre + lieu A + et + lieu B`. Keep each landmark's article, without adding `de`: `La boucherie est entre l'épicerie et la boulangerie.` See [[fr/episode-10#entre… et…|entre… et…]].
+
+---
+
+Q: On the neighbourhood plan, which street is the pharmacie Lucie Roy (9) on? Answer with `sur la rue`.
+A: `La pharmacie Lucie Roy est sur la rue du Domaine.` See [[fr/episode-10#sur la rue ou dans la rue|street-location examples]].
+
+---
+
+Q: À qui s'adresse l'avis 1 « Modification de service » du manuel ?
+A: Aux personnes qui prennent la ligne d'autobus **10 De Lorimier, direction sud**. See [[fr/episode-10#lire un avis|les avis]].
+
+---
+
+Q: Selon l'avis 2 du manuel, peut-on transporter son vélo dans le métro le lundi à 16 h ?
+A: Non. Du lundi au vendredi, les créneaux indiqués sont **de 10 h à 15 h** et **de 19 h à la fin du service**. See [[fr/episode-10#comprendre les formulations des avis|les horaires de l'avis]].
+
+---
+
+Q: Que signifie « l'accès peut être refusé » dans l'avis sur les vélos ?
+A: **Access may be denied.** `Peut + être + participe passé` exprime une possibilité à la voix passive. Dans cet avis, l'accès avec un vélo peut être refusé pour des raisons de sécurité lors d'un évènement qui attire beaucoup de monde. See [[fr/episode-10#comprendre les formulations des avis|les formulations des avis]].

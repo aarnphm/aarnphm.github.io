@@ -51,7 +51,11 @@ Use this site when a task needs Aaron's published notes, an exact Markdown page,
 `
 }
 
-async function llmText(ctx: BuildCtx, fileData: QuartzPluginData, reconstructed: string[]) {
+export async function llmText(
+  ctx: BuildCtx,
+  fileData: QuartzPluginData,
+  reconstructed: string[] = [],
+) {
   const slug = fileData.slug!
   const baseUrl = ctx.cfg.configuration.baseUrl ?? 'https://example.com'
   const contentBase = fileData.llmsText as string | undefined

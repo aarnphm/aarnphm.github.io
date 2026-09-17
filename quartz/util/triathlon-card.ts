@@ -8720,6 +8720,16 @@ export const buildActivity = <N>(
       const performanceCondition = buildPerformanceConditionTrace(f, d, analysisSelection)
       if (performanceCondition) activityGraphs.push(performanceCondition)
     }
+    const trainingEffect = buildTrainingEffectDetails(f, d)
+    if (trainingEffect) activityGraphs.push(trainingEffect)
+    if (ctx) {
+      const zones = zoneDuo(
+        f,
+        triathlonTraceEnabled(traceSettings, 'heart-rate-zones') ? buildHrZones(f, d, ctx) : null,
+        triathlonTraceEnabled(traceSettings, 'power-zones') ? buildPowerZones(f, d, ctx) : null,
+      )
+      if (zones) activityGraphs.push(zones)
+    }
     if (flags.heatStrain) {
       const heatStrain = buildHeatStrainTrace(f, d, analysisSelection)
       if (heatStrain) activityGraphs.push(heatStrain)
@@ -8835,15 +8845,7 @@ export const buildActivity = <N>(
     if (swimTrends) f.add(more, swimTrends)
     const saunaHtl = saunaSummary ? null : buildSaunaHeatTrainingLoad(f, d)
     if (saunaHtl) f.add(more, saunaHtl)
-    const trainingEffect = buildTrainingEffectDetails(f, d)
-    if (trainingEffect) f.add(more, trainingEffect)
     if (ctx) {
-      const zones = zoneDuo(
-        f,
-        triathlonTraceEnabled(traceSettings, 'heart-rate-zones') ? buildHrZones(f, d, ctx) : null,
-        triathlonTraceEnabled(traceSettings, 'power-zones') ? buildPowerZones(f, d, ctx) : null,
-      )
-      if (zones) f.add(more, zones)
       const charts = [
         triathlonTraceEnabled(traceSettings, 'power-curve')
           ? buildPowerCurve(f, d, ctx, embedded)

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-09-16 13:52:15 GMT-04:00
+modified: 2026-09-17 00:05:58 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -18477,11 +18477,6 @@ title: are.na
     - tags: [resources]
     - later: true
 - http://www.catb.org/~esr/press.html -- Press and Presentation Resources
-  - [meta]:
-    - date: 09/15/2026
-    - tags: [resources]
-    - later: true
-- https://www.amazon.ca/Programming-Massively-Parallel-Processors-Hands/dp/0323912311 -- Programming Massively Parallel Processors: A Hands-on Approach
   - [meta]:
     - date: 09/15/2026
     - tags: [resources]

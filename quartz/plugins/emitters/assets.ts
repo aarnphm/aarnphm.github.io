@@ -101,7 +101,8 @@ async function contentAssetFilesFrom(ctx: BuildCtx, files: FilePath[]): Promise<
 
 function contentAssetClaim(argv: Argv, fp: FilePath): OutputAssetClaim {
   const src = joinSegments(argv.directory, fp) as FilePath
-  const name = slugifyFilePath(fp)
+  const slug = slugifyFilePath(fp)
+  const name = fp.endsWith('.canvas') ? `${slug}.canvas` : slug
   const output = joinSegments(argv.output, name) as FilePath
   return { owner: 'content-asset', source: src, output }
 }

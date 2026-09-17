@@ -32,6 +32,7 @@ const defaultContainerStyles: Partial<CSSStyleDeclaration> = {
 }
 
 const baseToastStyles: Partial<CSSStyleDeclaration> = {
+  boxSizing: 'content-box',
   pointerEvents: 'auto',
   position: 'relative',
   display: 'inline-flex',
@@ -182,7 +183,9 @@ export class Toast {
         : (document.body ?? document.documentElement)
     if (!this.container) return
     this.container.style.position =
-      parent instanceof HTMLDialogElement ? 'absolute' : (this.containerStyles.position ?? 'fixed')
+      parent instanceof HTMLDialogElement && parent.matches(':modal')
+        ? 'absolute'
+        : (this.containerStyles.position ?? 'fixed')
     if (this.container.parentElement === parent) return
     this.containerHostCleanup?.()
     this.containerHostCleanup = null

@@ -31,7 +31,7 @@ document.addEventListener('nav', () => {
   }
 
   const shortcutHandler = (e: HTMLElementEventMap['keydown']) => {
-    if (e.key === 'b' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+    if (e.key.toLowerCase() === 'b' && (e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey) {
       e.preventDefault()
       switchReaderMode()
     }

@@ -16,7 +16,9 @@ def load_rust():
   path = os.environ.get('MINIBPE_EXTENSION_PATH')
   if path:
     loader = importlib.machinery.ExtensionFileLoader('minibpe._core', path)
-    spec = importlib.util.spec_from_file_location('minibpe._core', path, loader=loader)
+    spec = importlib.util.spec_from_file_location(
+      'minibpe._core', path, loader=loader
+    )
     if spec is None:
       raise RuntimeError(f'cannot load extension at {path}')
     module = importlib.util.module_from_spec(spec)
@@ -69,7 +71,9 @@ class TokenizerTests(unittest.TestCase):
     rng = random.Random(916)
     payloads = [b'', bytes(range(256)), rng.randbytes(2048)]
     for payload in payloads:
-      self.assertEqual(model.decode_bytes(model.encode_bytes(payload)), payload)
+      self.assertEqual(
+        model.decode_bytes(model.encode_bytes(payload)), payload
+      )
     for text in ['', 'café', '你好 🦀', 'e\u0301', 'a  b\n\t c', "I'm we'll"]:
       self.assertEqual(model.decode(model.encode(text)), text)
 
@@ -95,9 +99,13 @@ class TokenizerTests(unittest.TestCase):
 
   def test_malformed_models_and_unknown_ids_fail(self):
     malformed = [
-      '97,98\n', 'no,98,256\n', '300,98,256\n', '97,98,97\n',
+      '97,98\n',
+      'no,98,256\n',
+      '300,98,256\n',
+      '97,98,97\n',
       '97,98,4294967296\n',
-      '97,98,256\n98,99,256\n', '97,98,256\n97,98,257\n',
+      '97,98,256\n98,99,256\n',
+      '97,98,256\n97,98,257\n',
     ]
     with tempfile.TemporaryDirectory() as directory:
       for text in malformed:
@@ -128,7 +136,9 @@ class TokenizerTests(unittest.TestCase):
       with self.assertRaises(ValueError):
         chunk_text_file(str(source), 1, '')
       source.write_text('')
-      self.assertEqual(chunk_text_file(str(source), 1, '<|endoftext|>'), Counter())
+      self.assertEqual(
+        chunk_text_file(str(source), 1, '<|endoftext|>'), Counter()
+      )
 
   @unittest.skipIf(RustTokenizer is None, 'Rust extension is not built')
   def test_python_rust_parity_for_saved_learned_models(self):
@@ -155,12 +165,21 @@ class TokenizerTests(unittest.TestCase):
   @unittest.skipIf(RustTokenizer is None, 'Rust extension is not built')
   def test_python_rust_reject_the_same_corrupt_models(self):
     with tempfile.TemporaryDirectory() as directory:
-      for text in ['97,98\n', 'no,98,256\n', '300,98,256\n', '97,98,97\n',
-      '97,98,4294967296\n',
-                   '97,98,256\n98,99,256\n', '97,98,256\n97,98,257\n']:
+      for text in [
+        '97,98\n',
+        'no,98,256\n',
+        '300,98,256\n',
+        '97,98,97\n',
+        '97,98,4294967296\n',
+        '97,98,256\n98,99,256\n',
+        '97,98,256\n97,98,257\n',
+      ]:
         (Path(directory) / 'merges.txt').write_text(text)
         for backend in [Tokenizer, RustTokenizer]:
-          with self.subTest(text=text, backend=backend), self.assertRaises(ValueError):
+          with (
+            self.subTest(text=text, backend=backend),
+            self.assertRaises(ValueError),
+          ):
             backend.from_pretrained(directory)
 
 

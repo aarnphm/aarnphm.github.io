@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-09-16 13:56:29 GMT-04:00
+modified: 2026-09-16 18:22:25 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -326,3 +326,30 @@ title: lists
 - sanctimonious
 - pharisaical
 - diaphanous
+- NATO Phonetic Alphabet
+  - Alpha
+  - Bravo
+  - Charlie
+  - Delta
+  - Echo
+  - Foxtrot
+  - Golf
+  - Hotel
+  - India
+  - Juliett
+  - Kilo
+  - Lima
+  - Mike
+  - November
+  - Oscar
+  - Papa
+  - Quebec
+  - Romeo
+  - Sierra
+  - Tango
+  - Uniform
+  - Victor
+  - Whiskey
+  - X-ray
+  - Yankee
+  - Zulu

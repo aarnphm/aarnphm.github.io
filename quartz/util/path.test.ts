@@ -99,6 +99,7 @@ describe('transforms', () => {
       [
         ['content/index.md', 'content/index'],
         ['content/index.html', 'content/index'],
+        ['fr/parcours.canvas', 'fr/parcours'],
         ['content/_index.md', 'content/index'],
         ['/content/index.md', 'content/index'],
         ['content/cool.png', 'content/cool.png'],
@@ -129,6 +130,8 @@ describe('transforms', () => {
         ['./index.css', './index.css'],
         ['content', './content'],
         ['content/test.md', './content/test'],
+        ['fr/parcours.canvas', './fr/parcours'],
+        ['fr/parcours.canvas#repères', './fr/parcours#repères'],
         ['content/test.pdf', './content/test.pdf'],
         ['./content/test.md', './content/test'],
         ['../content/test.md', '../content/test'],

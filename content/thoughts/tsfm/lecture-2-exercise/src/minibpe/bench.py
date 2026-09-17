@@ -32,9 +32,7 @@ def _timings_ms(
   return enc_ms, dec_ms, enc_ms + dec_ms
 
 
-def benchmark(
-  dataset: t.Literal['toy', 'tinygpt-train'] = 'toy',
-) -> None:
+def benchmark(dataset: t.Literal['toy', 'tinygpt-train'] = 'toy') -> None:
   text = _load_valid_text(dataset)
 
   py_model = PyTokenizer.from_pretrained(

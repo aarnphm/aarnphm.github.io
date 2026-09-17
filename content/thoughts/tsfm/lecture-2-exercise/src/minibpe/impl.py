@@ -27,7 +27,9 @@ class Tokenizer:
     ordered = sorted(self.merges.items(), key=lambda entry: entry[1])
     for rank, (pair, tok_id) in enumerate(ordered):
       if not 256 <= tok_id <= 0xFFFFFFFF:
-        raise ValueError(f'learned token id must fit an unsigned 32-bit integer: {tok_id}')
+        raise ValueError(
+          f'learned token id must fit an unsigned 32-bit integer: {tok_id}'
+        )
       if tok_id in self.id_to_bytes:
         raise ValueError(f'duplicate or reserved token id: {tok_id}')
       if len(pair) != 2 or any(part not in self.id_to_bytes for part in pair):

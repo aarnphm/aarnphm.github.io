@@ -1,13 +1,15 @@
-import { fetchFollowing, timeSince, PINNED_FOLLOWING_IDS } from './curius'
+import { fetchFollowing, timeSince } from './curius'
 import { rootNavSignal } from './root-lifecycle'
 
-const pinnedFollowingIds = new Set<number>(PINNED_FOLLOWING_IDS)
 const configuredFriends = new WeakMap<HTMLUListElement, AbortSignal>()
 
 document.addEventListener('nav', async () => {
-  const friends = document.getElementById('friends-list') as HTMLUListElement | null
-  const seeMoreFriends = document.getElementById('see-more-friends') as HTMLDivElement | null
-  if (!friends) return
+  const friends = document.querySelector<HTMLUListElement>('#friends-list')
+  const section = document.querySelector<HTMLElement>('.curius-friends')
+  const status = document.querySelector<HTMLElement>('#curius-friends-status')
+  const seeMore = document.querySelector<HTMLButtonElement>('#see-more-friends')
+  if (!friends || !section || !status || !seeMore) return
+
   const signal = rootNavSignal(friends)
   if (configuredFriends.get(friends) === signal) return
   configuredFriends.set(friends, signal)
@@ -19,87 +21,96 @@ document.addEventListener('nav', async () => {
     { once: true },
   )
 
-  const response = await fetchFollowing()
-  if (!response || signal.aborted) return
+  section.setAttribute('aria-busy', 'true')
+  status.textContent = 'Chargement des amis…'
+  status.hidden = false
+  seeMore.hidden = true
+  seeMore.classList.remove('expand')
+  seeMore.setAttribute('aria-expanded', 'false')
+  const moreText = seeMore.querySelector<HTMLSpanElement>('#more')
+  const chevron = seeMore.querySelector('svg')
+  if (moreText) moreText.textContent = 'de plus'
+  chevron?.classList.remove('fold')
 
-  friends.replaceChildren()
-  response.map((user, index) => {
-    const { user: User, link: Link } = user
-    const li = document.createElement('li')
-    li.classList.add('friend-li')
-    if (pinnedFollowingIds.has(User.id)) {
-      li.classList.add('friend-pinned')
-    }
+  try {
+    const response = await fetchFollowing()
+    if (signal.aborted) return
 
-    const onClick = (e: HTMLElementEventMap['click']) => {
-      if (e.target instanceof HTMLAnchorElement) return
-      window.open(Link.link, '_blank')
-    }
-    li.addEventListener('click', onClick, { signal })
-    li.addEventListener('mouseenter', () => li.classList.add('focus'), { signal })
-    li.addEventListener('mouseleave', () => li.classList.remove('focus'), { signal })
+    friends.replaceChildren()
+    status.hidden = Boolean(response?.length)
+    status.textContent = response ? 'Aucun ami à afficher.' : 'Impossible de charger les amis.'
+    if (!response?.length) return
 
-    // only show first four friends
-    if (index < 4) {
-      li.classList.add('active')
-    } else {
-      li.id = 'inactive'
-    }
+    const rows = response.map(({ user, link }, index) => {
+      const row = document.createElement('li')
+      row.className = 'friend-li'
+      row.classList.toggle('active', index < 4)
+      row.addEventListener(
+        'click',
+        event => {
+          if (
+            event.defaultPrevented ||
+            event.button !== 0 ||
+            event.altKey ||
+            event.ctrlKey ||
+            event.metaKey
+          )
+            return
+          if (event.target instanceof Element && event.target.closest('a')) return
+          window.open(link.link, '_blank', 'noopener,noreferrer')
+        },
+        { signal },
+      )
 
-    // title div
-    const titleDiv = document.createElement('div')
-    titleDiv.classList.add('friend-title')
+      const title = document.createElement('div')
+      title.className = 'friend-title'
+      const name = document.createElement('a')
+      name.className = 'friend-name'
+      name.textContent = `${user.firstName} ${user.lastName}`
+      name.href = `https://curius.app/${user.userLink}`
+      name.target = '_blank'
+      name.rel = 'noopener noreferrer'
 
-    const name = document.createElement('a')
-    name.classList.add('friend-name')
-    name.innerHTML = `${User.firstName} ${User.lastName}`
-    name.style.fontWeight = 'bold'
-    name.href = `https://curius.app/${User.userLink}`
-    name.target = '_blank'
+      const time = document.createElement('time')
+      const createdDate = link.createdDate ?? new Date().toISOString()
+      const modifiedDate = link.modifiedDate ?? createdDate
+      time.dateTime = modifiedDate
+      const modified = new Date(modifiedDate)
+      if (!Number.isNaN(modified.getTime())) time.title = modified.toUTCString()
+      time.textContent = timeSince(createdDate)
+      title.append(name, time)
 
-    const time = document.createElement('span')
-    time.id = `curius-span-${user.link.id}`
-    const modifiedDate = new Date(Link.modifiedDate as string)
-    time.innerHTML = `<time datetime=${
-      Link.modifiedDate
-    } title="${modifiedDate.toUTCString()}">${timeSince(Link.createdDate as string)}</time>`
-    titleDiv.append(name, time)
+      const description = document.createElement('div')
+      description.className = 'friend-shortcut'
+      description.textContent = `in ${link.title}`
+      row.append(title, description)
+      return row
+    })
+    friends.append(...rows)
+    seeMore.hidden = rows.length <= 4
 
-    // description div
-    const descriptionDiv = document.createElement('div')
-    descriptionDiv.classList.add('friend-shortcut')
-    descriptionDiv.innerHTML = `in <span style="color: var(--gray) !important">${Link.title}</span>`
-
-    li.append(titleDiv, descriptionDiv)
-
-    friends.appendChild(li)
-  })
-
-  const onSeeMore = () => {
-    const ul = document.getElementById('friends-list') as HTMLUListElement | null
-    const svgChev = seeMoreFriends?.querySelectorAll('svg')[0] as SVGSVGElement | null
-    const moreText = seeMoreFriends?.querySelectorAll('span')[0] as HTMLSpanElement | null
-    const showMore = Array.from(ul?.children as Iterable<HTMLLIElement>).filter(
-      li => li.id === 'inactive',
+    seeMore.addEventListener(
+      'click',
+      () => {
+        const expanded = seeMore.getAttribute('aria-expanded') !== 'true'
+        seeMore.setAttribute('aria-expanded', String(expanded))
+        seeMore.classList.toggle('expand', expanded)
+        rows.slice(4).forEach(row => row.classList.toggle('active', expanded))
+        chevron?.classList.toggle('fold', expanded)
+        if (moreText) moreText.textContent = expanded ? 'moins' : 'de plus'
+        if (!expanded) friends.scrollTop = 0
+      },
+      { signal },
     )
-    if (seeMoreFriends?.classList.contains('expand')) {
-      seeMoreFriends.classList.remove('expand')
-      showMore.map(li => li.classList.remove('active'))
-      if (svgChev) {
-        svgChev.classList.remove('fold')
-        svgChev.viewBox.baseVal.y = -10
-      }
-      if (moreText) moreText.textContent = 'de plus'
-    } else {
-      seeMoreFriends?.classList.add('expand')
-      showMore.map(li => li.classList.add('active'))
-      if (svgChev) {
-        svgChev.classList.add('fold')
-        svgChev.viewBox.baseVal.y = 10
-      }
-      if (moreText) moreText.textContent = 'moins'
+  } catch (error) {
+    if (signal.aborted) return
+    console.error(error)
+    status.hidden = false
+    status.textContent = 'Impossible de charger les amis.'
+  } finally {
+    if (!signal.aborted) {
+      section.setAttribute('aria-busy', 'false')
+      document.dispatchEvent(new CustomEvent<void>('curius:sidebar-settled'))
     }
   }
-
-  seeMoreFriends?.addEventListener('click', onSeeMore, { signal })
 })

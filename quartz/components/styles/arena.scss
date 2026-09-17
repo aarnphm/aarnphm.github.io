@@ -90,8 +90,7 @@ body.arena-modal-open {
 }
 
 body[data-arena-subpage='true'] {
-  .page-footer,
-  li.readable-source {
+  .page-footer {
     display: none;
   }
 
@@ -470,11 +469,6 @@ body[data-arena-subpage='true'] {
     background: var(--arena-surface);
   }
 
-  &.highlighted {
-    outline: 1px solid var(--tertiary);
-    outline-offset: -1px;
-  }
-
   &.pinned {
     background: color-mix(in srgb, var(--secondary) 5%, var(--light));
     border-color: var(--secondary);
@@ -495,6 +489,10 @@ body[data-arena-subpage='true'] {
   border: 0;
 
   border-bottom: 1px solid var(--arena-line);
+
+  &.highlighted:not(.pinned) {
+    padding-inline-end: 2.25rem;
+  }
 }
 
 .arena-block-placeholder {
@@ -557,16 +555,16 @@ body[data-arena-subpage='true'] {
   }
 }
 
-.arena-block-pinned-indicator {
+.arena-block-favorite-indicator {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
+  bottom: 0.5rem;
+  right: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 20px;
   height: 20px;
-  color: var(--secondary);
+  color: var(--tertiary);
   z-index: var(--z-base);
   pointer-events: none;
 
@@ -592,13 +590,6 @@ body[data-arena-subpage='true'] {
   position: static;
   order: 3;
   margin-left: 0.5rem;
-  align-self: flex-start;
-}
-
-.arena-channel-grid[data-view-mode='list'] .arena-block-pinned-indicator {
-  position: static;
-  order: 1;
-  margin-right: 0.5rem;
   align-self: flex-start;
 }
 
@@ -1408,8 +1399,8 @@ span.tag-link:hover {
   text-decoration: none;
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {
@@ -1430,6 +1421,7 @@ span.tag-link:hover {
   width: 100%;
 
   .arena-search-input {
+    display: block;
     width: 100%;
     height: var(--arena-control-height);
     box-sizing: border-box;
@@ -1669,14 +1661,6 @@ span.tag-link:hover {
         border-color: var(--secondary);
       }
 
-      &.highlighted {
-        border-color: var(--tertiary);
-
-        &:hover {
-          border-color: var(--tertiary);
-        }
-      }
-
       &.pinned {
         background: color-mix(in srgb, var(--secondary) 8%, var(--dark));
         border-color: var(--secondary);
@@ -1690,10 +1674,6 @@ span.tag-link:hover {
     .arena-block-connections-indicator {
       background: var(--secondary);
       color: var(--dark);
-    }
-
-    .arena-block-pinned-indicator {
-      color: var(--secondary);
     }
 
     .arena-block-title {

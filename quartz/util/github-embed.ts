@@ -13,6 +13,48 @@ export interface LineRange {
   end: number
 }
 
+export interface GithubRepositoryRef {
+  owner: string
+  repo: string
+  url: string
+}
+
+export function parseGithubRepositoryUrl(input: string): GithubRepositoryRef | null {
+  let url: URL
+  try {
+    url = new URL(input)
+  } catch {
+    return null
+  }
+  if (
+    !['http:', 'https:'].includes(url.protocol) ||
+    !['github.com', 'www.github.com'].includes(url.hostname) ||
+    url.username ||
+    url.password ||
+    url.port
+  )
+    return null
+  const match = /^\/([a-z\d-]+)\/([a-z\d_.-]+)\/?$/i.exec(url.pathname)
+  if (!match) return null
+  const [, owner, repository] = match
+  if (
+    [
+      'orgs',
+      'users',
+      'topics',
+      'collections',
+      'settings',
+      'marketplace',
+      'features',
+      'sponsors',
+    ].includes(owner.toLowerCase())
+  )
+    return null
+  const repo = repository.replace(/\.git$/, '')
+  if (!repo) return null
+  return { owner, repo, url: `https://github.com/${owner}/${repo}` }
+}
+
 export function parseGithubBlobUrl(input: string | undefined): GithubBlobRef | null {
   if (!input) return null
 

@@ -28,9 +28,7 @@ def _init_worker(fpath: str, special_token: str):
   _WORKER_SPECIAL_TOKEN_BYTES = special_token.encode('utf-8')
 
 
-def pretokenize_chunk(
-  start_end_indices: tuple[int, int],
-) -> Counter[str]:
+def pretokenize_chunk(start_end_indices: tuple[int, int]) -> Counter[str]:
   start, end = start_end_indices
   assert (_WORKER_MMAP is not None) and (
     _WORKER_SPECIAL_TOKEN_BYTES is not None

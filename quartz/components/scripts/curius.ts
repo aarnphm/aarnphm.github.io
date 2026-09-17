@@ -1,15 +1,16 @@
+import DOMPurify from 'dompurify'
 import FlexSearch, { Id } from 'flexsearch'
 import { ValidLocale, i18n } from '../../i18n'
-import { Link, CuriusResponse, Trail, TrailInfo, Following } from '../../types/curius'
+import { Link, CuriusResponse, Trail, TrailInfo } from '../../types/curius'
 import { LCG } from '../../util/helpers'
 import { encode, highlight } from '../../util/search-text'
+import { activateCuriusLink, bindCuriusPreview, isCuriusPrimaryClick } from './curius-preview'
 import { registerEscapeHandler } from './escape-handler'
 import { currentNavSignal } from './nav-lifecycle'
 
 const CURIUS_HOST = 'https://curius.app'
 export const CURIUS = `${CURIUS_HOST}/aaron-pham`
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^/]+)/
-export const PINNED_FOLLOWING_IDS = [3971, 1296] as const
 
 export const fetchLinksHeaders: RequestInit = {
   method: 'GET',
@@ -53,47 +54,6 @@ function extractApexDomain(url: string) {
   return match ? match[1] : ''
 }
 
-let currentActive: HTMLLIElement | null = null
-
-function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement) {
-  const titleNode = note.querySelector('#note-link') as HTMLAnchorElement
-  const snippetNode = note.querySelector('.curius-note-snippet') as HTMLDivElement
-  const highlightsNode = note.querySelector('.curius-note-highlights') as HTMLDivElement
-
-  titleNode.innerHTML = `<span class="curius-item-span">${Link.title}</span>`
-  titleNode.href = Link.link
-  titleNode.target = '_blank'
-  titleNode.rel = 'noopener noreferrer'
-
-  const close = document.querySelector('.icon-container')
-
-  const cleanUp = () => {
-    note.classList.remove('active')
-    parent.classList.remove('active')
-  }
-
-  close?.addEventListener('click', cleanUp)
-  window.addCleanup(() => close?.removeEventListener('click', cleanUp))
-  registerEscapeHandler(note, cleanUp)
-
-  snippetNode.replaceChildren()
-  snippetNode.textContent = Link.metadata ? Link.metadata.full_text : Link.snippet
-
-  highlightsNode.replaceChildren()
-  if (Link.highlights.length === 0) return
-  for (const hl of Link.highlights) {
-    const highlightItem = document.createElement('li')
-    const hlLink = document.createElement('a')
-    hlLink.dataset.highlight = hl.id.toString()
-    hlLink.href = `${Link.link}?curius=${hl.userId}`
-    hlLink.target = '_blank'
-    hlLink.rel = 'noopener noreferrer'
-    hlLink.textContent = hl.highlight
-    highlightItem.appendChild(hlLink)
-    highlightsNode.appendChild(highlightItem)
-  }
-}
-
 export function createLinkEl(Link: Link): HTMLLIElement {
   const curiusItem = document.createElement('li')
   curiusItem.id = `curius-item-${Link.id}`
@@ -129,7 +89,7 @@ export function createLinkEl(Link: Link): HTMLLIElement {
     if (Link.highlights.length > 0) {
       const highlights = document.createElement('div')
       highlights.id = `curius-highlights-${Link.id}`
-      highlights.innerHTML = `${Link.highlights.length} ${Link.highlights.length > 0 ? 'highlights' : 'highlight'}`
+      highlights.textContent = `${Link.highlights.length} ${Link.highlights.length === 1 ? 'highlight' : 'highlights'}`
       misc.appendChild(highlights)
 
       const modal = document.getElementById('highlight-modal')
@@ -141,7 +101,6 @@ export function createLinkEl(Link: Link): HTMLLIElement {
         if (!modal || !modalList) return
         // clear the previous modal
         modalList.innerHTML = ''
-        curiusItem.classList.remove('focus')
 
         highlightsData.forEach(highlight => {
           let hiItem = document.createElement('li')
@@ -153,16 +112,12 @@ export function createLinkEl(Link: Link): HTMLLIElement {
       }
 
       const onMouseLeave = () => {
-        curiusItem.classList.add('focus')
-
         if (!modal) return
         modal.style.visibility = 'hidden'
         modal.classList.remove('active')
       }
 
       const onMouseMove = ({ pageX, pageY }: MouseEvent) => {
-        curiusItem.classList.remove('focus')
-
         if (!modal) return
         modal.classList.add('active')
         modal.style.left = `${pageX + 10}px`
@@ -182,46 +137,22 @@ export function createLinkEl(Link: Link): HTMLLIElement {
   curiusItem.append(createTitle({ Link, addFaIcon: true }), createMetadata(Link))
   curiusItem.dataset.items = JSON.stringify(true)
 
-  const onClick = (e: HTMLElementEventMap['click']) => {
-    const note = document.getElementsByClassName('curius-notes')[0] as HTMLDivElement | null
-
-    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
-    if (currentActive) currentActive.classList.remove('active')
-    if (note) note.classList.remove('active')
-
-    currentActive = curiusItem
-    currentActive.classList.add('active')
-
-    if (Link.highlights.length > 0) {
-      if (!note) return
-      note.classList.add('active')
-      updateNotePanel(Link, note, currentActive)
-    }
-
-    if (e.target instanceof HTMLAnchorElement || note?.classList.contains('active')) return
-    window.open(Link.link, '_blank')
+  const onClick = (event: MouseEvent) => {
+    if (event.defaultPrevented || !isCuriusPrimaryClick(event)) return
+    if (
+      event.target instanceof Element &&
+      event.target.closest('a, button, [id^="curius-highlights-"]')
+    )
+      return
+    event.preventDefault()
+    activateCuriusLink(
+      Link,
+      curiusItem.querySelector<HTMLAnchorElement>('.curius-item-link > a') ?? curiusItem,
+      event.shiftKey,
+    )
   }
 
-  registerEscapeHandler(curiusItem, () => curiusItem.classList.remove('active'))
-
-  const onMouseEnter = () => {
-    const favoriteDiv = curiusItem.querySelector('svg.favorite-icon') as HTMLDivElement | null
-
-    if (favoriteDiv) favoriteDiv.classList.add('focus')
-    curiusItem.classList.add('focus')
-  }
-
-  const onMouseLeave = () => {
-    const favoriteDiv = curiusItem.querySelector('svg.favorite-icon') as HTMLDivElement | null
-
-    if (favoriteDiv) favoriteDiv.classList.remove('focus')
-    curiusItem.classList.remove('focus')
-  }
-
-  const signal = currentNavSignal()
-  curiusItem.addEventListener('click', onClick, { signal })
-  curiusItem.addEventListener('mouseenter', onMouseEnter, { signal })
-  curiusItem.addEventListener('mouseleave', onMouseLeave, { signal })
+  curiusItem.addEventListener('click', onClick, { signal: currentNavSignal() })
 
   return curiusItem
 }
@@ -259,13 +190,11 @@ interface Title {
 
 const defaultTitle: Title = { Link: _SENTINEL, elementType: 'div', addFaIcon: false }
 
-let p: DOMParser
 export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => {
   const { Link, elementType, addFaIcon } = { ...defaultTitle, ...userOpts }
 
   if (elementType === undefined) throw new Error('Element type is undefined')
 
-  p = p || new DOMParser()
   const item = document.createElement(elementType)
   item.classList.add('curius-item-title')
 
@@ -277,8 +206,9 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
     href: Link.link,
     target: '_blank',
     rel: 'noopener noreferrer',
-    innerHTML: Link.title,
+    textContent: Link.title,
   })
+  bindCuriusPreview(Link, link)
   header.appendChild(link)
 
   const address = document.createElement('div')
@@ -336,7 +266,7 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
     itemIcon.appendChild(icon)
   }
 
-  item.appendChild(itemIcon)
+  if (Link.favorite) item.appendChild(itemIcon)
 
   return item
 }
@@ -351,51 +281,13 @@ export async function fetchFollowing() {
     if (data === undefined || data.following === undefined) {
       throw new Error('No following data')
     }
-    const prioritizedSet = new Set<number>(PINNED_FOLLOWING_IDS)
-    const prioritizedBuckets = new Map<number, Following[]>()
-    PINNED_FOLLOWING_IDS.forEach(id => prioritizedBuckets.set(id, []))
-    const remaining: Following[] = []
-
-    data.following.forEach(entry => {
-      const userId = entry.user.id
-      if (prioritizedSet.has(userId)) {
-        prioritizedBuckets.get(userId)!.push(entry)
-      } else {
-        remaining.push(entry)
-      }
-    })
-
-    const prioritized: Following[] = []
-    PINNED_FOLLOWING_IDS.forEach(id => {
-      const entries = prioritizedBuckets.get(id)
-      if (entries && entries.length > 0) {
-        prioritized.push(...entries)
-      }
-    })
-
-    return [...prioritized, ...remaining]
+    return data.following
   } catch (err) {
     console.error(err)
   }
 }
 
-export async function fetchUsers() {
-  try {
-    const resp = await fetch('/api/curius?query=user', fetchLinksHeaders)
-    if (!resp.ok) {
-      throw new Error('Failed to get users from curius')
-    }
-    const data: CuriusResponse = await resp.json()
-    if (data === undefined || data.user === undefined) {
-      throw new Error('Failed to fetch user')
-    }
-    return data.user
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-async function fetchLinks(): Promise<CuriusResponse | undefined> {
+export async function fetchCuriusLinks(): Promise<CuriusResponse | undefined> {
   try {
     const resp = await fetch('/api/curius?query=links', fetchLinksHeaders)
     if (!resp.ok) {
@@ -409,21 +301,6 @@ async function fetchLinks(): Promise<CuriusResponse | undefined> {
   } catch (error) {
     console.error(error)
   }
-}
-
-export async function fetchCuriusLinks(): Promise<CuriusResponse> {
-  const [user, following, linkResp, trails] = await Promise.all([
-    fetchUsers(),
-    fetchFollowing(),
-    fetchLinks(),
-    fetchTrails(),
-  ])
-
-  const links = linkResp?.links ?? []
-  const hasMore = typeof linkResp?.hasMore === 'boolean' ? linkResp.hasMore : links.length > 0
-  const page = linkResp?.page ?? 0
-
-  return { links, user, following, trails, hasMore, page }
 }
 
 async function fetchTrailPages(trail: Trail): Promise<Link[]> {
@@ -556,7 +433,13 @@ function createTrailEl(
 
   const headers = document.createElement('div')
   headers.classList.add('curius-trail-header')
-  headers.innerHTML = `<span class="trail-title"><em>${trail_name}</em></span><span class="trail-description">${info.description!}</span>`
+  const title = document.createElement('span')
+  title.className = 'trail-title'
+  title.textContent = trail_name
+  const description = document.createElement('span')
+  description.className = 'trail-description'
+  description.textContent = info.description ?? ''
+  headers.append(title, description)
 
   const trailLink = `${CURIUS_HOST}/trail/${info.slug}`
 
@@ -566,39 +449,40 @@ function createTrailEl(
     ...trails.map(link => {
       const el = createTitle({ Link: link, elementType: 'li' })
 
-      const onMouseEnter = () => {
-        const favoriteDiv = el.querySelector('svg.favorite-icon') as HTMLDivElement | null
-
-        if (favoriteDiv) favoriteDiv.classList.add('focus')
-        el.classList.add('focus')
-      }
-
-      const onMouseLeave = () => {
-        const favoriteDiv = el.querySelector('svg.favorite-icon') as HTMLDivElement | null
-
-        if (favoriteDiv) favoriteDiv.classList.remove('focus')
-        el.classList.remove('focus')
-      }
-
-      const openLink = (evt: Event) => {
-        if (evt.target instanceof HTMLAnchorElement) return
-        window.open(trailLink, '_blank')
-      }
-
-      const signal = currentNavSignal()
-      el.addEventListener('mouseenter', onMouseEnter, { signal })
-      el.addEventListener('mouseleave', onMouseLeave, { signal })
-      el.addEventListener('click', openLink, { signal })
+      el.addEventListener(
+        'click',
+        event => {
+          if (!(event instanceof MouseEvent)) return
+          if (event.defaultPrevented || !isCuriusPrimaryClick(event)) return
+          if (event.target instanceof Element && event.target.closest('a, button')) return
+          event.preventDefault()
+          activateCuriusLink(
+            link,
+            el.querySelector<HTMLAnchorElement>('.curius-item-link > a') ?? el,
+            event.shiftKey,
+          )
+        },
+        { signal: currentNavSignal() },
+      )
 
       return el
     }),
   )
 
-  const seeMore = document.createElement('div')
+  const seeMore = document.createElement('li')
   seeMore.classList.add('see-more')
-  seeMore.innerHTML = `<span><a href=${trailLink} target="_blank">${remaining > 0 ? i18n(locale).components.recentNotes.seeRemainingMore({ remaining }) : 'Void de plus →'}</a></span>`
+  const moreLink = document.createElement('a')
+  moreLink.href = trailLink
+  moreLink.target = '_blank'
+  moreLink.rel = 'noopener noreferrer'
+  moreLink.textContent =
+    remaining > 0
+      ? i18n(locale).components.recentNotes.seeRemainingMore({ remaining })
+      : 'Voir de plus →'
+  seeMore.appendChild(moreLink)
+  links.appendChild(seeMore)
 
-  container.append(headers, links, seeMore)
+  container.append(headers, links)
 
   return container
 }
@@ -624,12 +508,15 @@ const seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDat
 const rng = new LCG(seed)
 
 export async function curiusSearch(searchData: Link[]) {
+  const signal = currentNavSignal()
+  let searchRevision = 0
   const sampleLinks = rng.shuffle(searchData).splice(0, 20)
 
   const bar = document.getElementById('curius-bar') as HTMLInputElement | null
   const container = document.getElementById('curius-search-container') as HTMLDivElement | null
 
   async function onType(e: HTMLElementEventMap['input']) {
+    const revision = ++searchRevision
     let term = (e.target as HTMLInputElement).value
     container?.classList.toggle('active', term !== '')
     let searchResults =
@@ -638,6 +525,7 @@ export async function curiusSearch(searchData: Link[]) {
         limit: numSearchResults,
         index: ['title', 'snippet', 'link'],
       })) ?? []
+    if (signal.aborted || !container?.isConnected || revision !== searchRevision) return
 
     const getByField = (field: string): number[] => {
       const results = searchResults.filter(x => x.field === field)
@@ -659,8 +547,6 @@ export async function curiusSearch(searchData: Link[]) {
     return { ...L, title: highlight(term, L.title), snippet: highlight(term, L.snippet, true) }
   }
 
-  const notes = document.getElementsByClassName('curius-notes')[0] as HTMLDivElement | null
-
   function displayLinks(links: Link[]) {
     if (!container) return
     container.replaceChildren()
@@ -673,9 +559,10 @@ export async function curiusSearch(searchData: Link[]) {
   }
 
   function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+    if (e.defaultPrevented || (e.target instanceof Element && e.target.closest('#curius-preview')))
+      return
     if (e.key === 'k' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      if (notes?.classList.contains('active')) notes.classList.remove('active')
       const searchBarOpen = container?.classList.contains('active')
       if (searchBarOpen) {
         hideLinks()
@@ -685,8 +572,9 @@ export async function curiusSearch(searchData: Link[]) {
       return
     }
 
-    if (!container?.classList.contains('active')) return
+    if (!container?.classList.contains('active') || e.ctrlKey || e.metaKey || e.altKey) return
     if (e.key === 'Enter') {
+      if (e.shiftKey) return
       if (container?.contains(document.activeElement)) {
         const active = document.activeElement as HTMLInputElement
         active.click()
@@ -722,7 +610,6 @@ export async function curiusSearch(searchData: Link[]) {
 
   function onClick() {
     if (bar?.classList.contains('active')) return
-    if (notes?.classList.contains('active')) notes.classList.remove('active')
     const searchBarOpen = container?.classList.contains('active')
     if (searchBarOpen) {
       hideLinks()
@@ -733,6 +620,7 @@ export async function curiusSearch(searchData: Link[]) {
 
   function showLinks(links: Link[]) {
     if (!container) return
+    searchRevision++
     container?.classList.add('active')
     bar?.focus()
     bar?.scrollIntoView({ behavior: 'smooth' })
@@ -740,6 +628,7 @@ export async function curiusSearch(searchData: Link[]) {
   }
 
   function hideLinks() {
+    searchRevision++
     if (container) container.classList.remove('active')
     if (bar) bar.value = ''
   }
@@ -748,11 +637,16 @@ export async function curiusSearch(searchData: Link[]) {
     const curiusLink = document.createElement('a')
     curiusLink.classList.add('curius-search-link')
     curiusLink.target = '_blank'
+    curiusLink.rel = 'noopener noreferrer'
     curiusLink.href = link.link
-    curiusLink.innerHTML = `<span class="curius-search-title">${link.title}</span><p class="curius-search-snippet">${link.snippet}</div>`
+    curiusLink.innerHTML = DOMPurify.sanitize(
+      `<span class="curius-search-title">${link.title}</span><p class="curius-search-snippet">${link.snippet}</p>`,
+      { ALLOWED_TAGS: ['span', 'p'], ALLOWED_ATTR: ['class'] },
+    )
+    bindCuriusPreview(link, curiusLink)
 
     const onClick = (e: MouseEvent) => {
-      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
       hideLinks()
     }
 
@@ -804,7 +698,6 @@ export async function fetchTrails() {
     return data.trails
   } catch (err) {
     console.error(err)
-    return []
   }
 }
 

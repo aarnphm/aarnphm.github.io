@@ -3,8 +3,10 @@ import { Semaphore } from 'async-mutex'
 import { Defuddle, type DefuddleOptions, type DefuddleResponse } from 'defuddle/node'
 import { fromHtml } from 'hast-util-from-html'
 import { toHtml } from 'hast-util-to-html'
-import { h } from 'hastscript'
+import { h, s } from 'hastscript'
+import { svgOptions } from './svg-options'
 import { parseTwitterPostUrl } from './twitter'
+import { twitterIconPath } from './twitter-icon'
 import { isRecord } from './type-guards'
 
 const EMPTY_DOCUMENT = '<!doctype html><html><head></head><body></body></html>'
@@ -81,6 +83,7 @@ function cleanContent(nodes: RootContent[], url: string): ElementContent[] {
       const href = publicUrl(node.properties.href, url)
       if (!href) return children
       Object.assign(properties, { href, target: '_blank', rel: ['noopener', 'noreferrer'] })
+      if (parseTwitterPostUrl(href)) properties.dataSkipIcons = 'true'
     }
     if (node.tagName === 'img' || node.tagName === 'video') {
       const src = publicUrl(node.properties.src, url)
@@ -110,10 +113,41 @@ export function renderTwitterPost(article: DefuddleResponse, url: string): strin
   const author = article.author || 'X post'
   return toHtml(
     h('article.twitter-post', { 'data-twitter-source': url }, [
+      h(
+        'span.twitter-post-badge',
+        { role: 'img', ariaLabel: 'Twitter post', title: 'Twitter post' },
+        s(
+          'svg',
+          { ...svgOptions, viewBox: '64 64 896 896', ariaHidden: 'true', focusable: 'false' },
+          s('path', { d: twitterIconPath }),
+        ),
+      ),
       h('header.twitter-post-header', [
         h('span.twitter-post-author', author),
         ...(date ? [h('time', { dateTime: date }, date)] : []),
-        h('a', { href: url, target: '_blank', rel: ['noopener', 'noreferrer'] }, 'open original ↗'),
+        h(
+          'a.twitter-post-source',
+          {
+            href: url,
+            target: '_blank',
+            rel: ['noopener', 'noreferrer'],
+            ariaLabel: 'Open original post (opens in a new tab)',
+            title: 'Open original post',
+            dataSkipIcons: 'true',
+          },
+          s(
+            'svg',
+            {
+              ...svgOptions,
+              fill: 'none',
+              stroke: 'currentColor',
+              strokeWidth: 1.5,
+              ariaHidden: 'true',
+              focusable: 'false',
+            },
+            s('path', { d: 'M7 17 17 7M7 7h10v10' }),
+          ),
+        ),
       ]),
       h('div.twitter-post-body', [
         ...(article.title && !article.title.startsWith('Post by ')

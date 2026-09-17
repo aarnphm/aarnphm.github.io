@@ -2,11 +2,13 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from 'preact/hook
 
 export function ReaderFilter<Value extends string>({
   label,
+  hideLabel = false,
   options,
   value,
   onChange,
 }: {
   label: string
+  hideLabel?: boolean
   options: readonly { value: Value; label: string }[]
   value: Value
   onChange: (value: Value) => void
@@ -49,7 +51,9 @@ export function ReaderFilter<Value extends string>({
         setOpen(false)
       }}
     >
-      <span id={`${id}-label`}>{label}</span>
+      <span id={`${id}-label`} hidden={hideLabel}>
+        {label}
+      </span>
       <div class="arena-reader-filter-picker">
         <button
           ref={trigger}

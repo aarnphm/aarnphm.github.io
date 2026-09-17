@@ -1,4 +1,3 @@
-import type { ArenaFeedEntry } from '../../util/arena-feed'
 import type {
   ArenaFeedResponse,
   ArenaNote,
@@ -8,6 +7,7 @@ import type {
   ArenaReaderArtifact,
   ArenaReaderRenderResult,
 } from '../../util/arena-reader'
+import { isCuriusFeedOccurrence, type ArenaFeedEntry } from '../../util/arena-feed'
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
@@ -74,9 +74,13 @@ function isEntry(value: unknown): value is ArenaFeedEntry {
     typeof value.title === 'string' &&
     ['html', 'pdf', 'video', 'internal'].includes(String(value.kind)) &&
     typeof value.later === 'boolean' &&
+    nullableString(value.savedAt) &&
     Array.isArray(value.tags) &&
     value.tags.every(tag => typeof tag === 'string') &&
+    (value.curius === undefined ||
+      (Array.isArray(value.curius) && value.curius.every(isCuriusFeedOccurrence))) &&
     Array.isArray(value.occurrences) &&
+    (value.occurrences.length > 0 || (Array.isArray(value.curius) && value.curius.length > 0)) &&
     value.occurrences.every(
       occurrence =>
         isRecord(occurrence) &&
@@ -89,7 +93,7 @@ function isEntry(value: unknown): value is ArenaFeedEntry {
   )
 }
 
-function parseFeed(value: unknown): ArenaFeedResponse {
+export function parseFeed(value: unknown): ArenaFeedResponse {
   if (
     isRecord(value) &&
     typeof value.subject === 'string' &&

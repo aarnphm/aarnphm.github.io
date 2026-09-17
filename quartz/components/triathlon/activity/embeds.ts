@@ -34,11 +34,18 @@ import {
 } from './scrub'
 
 const ALIGNED_ACTIVITY_SECTIONS: { selector: string; margin: string }[] = [
+  { selector: '.tri-act-toggle', margin: '--tri-toggle-margin' },
   { selector: '.tri-act-more > .tri-workout-analysis', margin: '--tri-workout-margin' },
   { selector: '.tri-act-more > [data-tri-trace="stamina"]', margin: '--tri-stamina-margin' },
   {
     selector: '.tri-act-more > [data-tri-trace="performance-condition"]',
     margin: '--tri-performance-condition-margin',
+  },
+  { selector: '.tri-act-more > .tri-training-effect', margin: '--tri-training-effect-margin' },
+  {
+    selector:
+      '.tri-act-more > :is(.tri-zone-duo, [data-tri-trace="heart-rate-zones"], [data-tri-trace="power-zones"])',
+    margin: '--tri-zones-margin',
   },
   {
     selector: '.tri-act-more > [data-tri-trace="heat-strain-index"]',
@@ -63,7 +70,6 @@ const ALIGNED_ACTIVITY_SECTIONS: { selector: string; margin: string }[] = [
   },
   { selector: '.tri-act-more > [data-tri-trace="cadence"]', margin: '--tri-cadence-margin' },
   { selector: '.tri-act-more > .tri-environment', margin: '--tri-environment-margin' },
-  { selector: '.tri-act-more > .tri-training-effect', margin: '--tri-training-effect-margin' },
 ]
 
 const mountActivitySectionAlignment = (card: HTMLElement): (() => void) => {

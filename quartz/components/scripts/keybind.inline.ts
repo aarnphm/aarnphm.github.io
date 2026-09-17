@@ -90,6 +90,7 @@ _mapping.set('j', '/curius')
 _mapping.set('g', '/triathlon')
 _mapping.set('h', '/stream')
 _mapping.set('i', '/arena')
+_mapping.set('b', '/fr')
 
 const aliases: Record<string, { mac: string; def: string }> = {
   recherche: { mac: '/', def: 'k' },
@@ -776,6 +777,11 @@ document.addEventListener('nav', () => {
   }
 
   function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+    if (
+      e.key.toLowerCase() === 'b' &&
+      (e.shiftKey || e.altKey || e.isComposing || shouldIgnoreTarget(e.target))
+    )
+      return
     if (_mapping.get(e.key) !== undefined && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       const action = _mapping.get(e.key)

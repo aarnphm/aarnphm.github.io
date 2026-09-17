@@ -1,4 +1,5 @@
 import type { Following, Link, User, Trail } from '../quartz/types/curius'
+import { handleCuriusPreview, type CuriusPreviewEnv } from './curius-preview'
 
 const HEADERS: RequestInit = { headers: { 'Content-Type': 'application/json' } }
 
@@ -73,7 +74,10 @@ async function queryFollowing(): Promise<ApiResponse> {
   }
 }
 
-export default async function handleCurius(request: Request): Promise<Response> {
+export default async function handleCurius(
+  request: Request,
+  env: CuriusPreviewEnv = {},
+): Promise<Response> {
   if (request.method !== 'GET')
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
@@ -81,6 +85,7 @@ export default async function handleCurius(request: Request): Promise<Response> 
     })
   const url = new URL(request.url)
   const query = url.searchParams.get('query')
+  if (query === 'preview' || query === 'preview-image') return handleCuriusPreview(request, env)
   const page = parseInt(url.searchParams.get('page') || '0')
   const alias = url.searchParams.get('name') || undefined
   let resp: Partial<ApiResponse> = {}
