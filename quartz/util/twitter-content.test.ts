@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict'
+import { execFile } from 'node:child_process'
 import { once } from 'node:events'
 import { createServer } from 'node:http'
 import test from 'node:test'
+import { promisify } from 'node:util'
 import { extractTwitterPost, parseTwitterPost, renderTwitterPost } from './twitter-content'
 
 const source = 'https://x.com/garden_fixture/status/101'
@@ -288,5 +290,102 @@ test('X extraction follows bounded provider redirects and rejects unsupported de
     oversized = true
     const post = await extractTwitterPost(source, fixtureFetch)
     assert.match(post, /Post unavailable/)
+  })
+})
+
+test('unavailable X posts stop extraction quietly and retain the original link', async t => {
+  const requested: string[] = []
+  const server = createServer((request, response) => {
+    const target = new URL(
+      new URL(request.url ?? '/', 'http://localhost').searchParams.get('url') ?? source,
+    )
+    requested.push(target.hostname)
+    response.setHeader('Content-Type', 'application/json')
+    if (target.hostname === 'api.fxtwitter.com') {
+      if (target.pathname.endsWith('/107')) {
+        response.end(
+          JSON.stringify({
+            tweet: {
+              author: { screen_name: 'garden_fixture' },
+              text: 'The parent post remains available.',
+              quote: { url: 'https://x.com/quoted_fixture/status/404' },
+            },
+          }),
+        )
+      } else {
+        response.writeHead(404).end('{}')
+      }
+      return
+    }
+    if (target.hostname === 'publish.twitter.com') {
+      target.hostname = 'publish.x.com'
+      response.writeHead(301, { Location: target.href }).end()
+      return
+    }
+    const status = Number(target.searchParams.get('url')?.split('/').at(-1))
+    response.writeHead(status).end('{}')
+  })
+  server.listen(0, '127.0.0.1')
+  await once(server, 'listening')
+  t.after(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        server.close(error => (error ? reject(error) : resolve()))
+        server.closeAllConnections()
+      }),
+  )
+  const address = server.address()
+  assert.ok(address && typeof address !== 'string')
+  const origin = `http://127.0.0.1:${address.port}`
+  const extract = (url: string) =>
+    promisify(execFile)(
+      process.execPath,
+      [
+        '--import',
+        'tsx',
+        '--input-type=module',
+        '-e',
+        `
+          import { extractTwitterPost } from ${JSON.stringify(new URL('./twitter-content.ts', import.meta.url).href)}
+          const [url, origin] = process.argv.slice(1)
+          const html = await extractTwitterPost(url, (resource, init) => {
+            const request = new Request(resource, init)
+            return fetch(origin + '/?url=' + encodeURIComponent(request.url), {
+              signal: request.signal,
+              redirect: request.redirect,
+            })
+          })
+          console.log(html)
+        `,
+        url,
+        origin,
+      ],
+      { timeout: 10_000 },
+    )
+
+  for (const status of [403, 404, 410]) {
+    await t.test(`handles oEmbed ${status} without retrying or logging an exception`, async () => {
+      requested.length = 0
+      const url = `https://x.com/garden_fixture/status/${status}`
+      const { stdout, stderr } = await extract(url)
+      assert.match(stdout, /Post unavailable/)
+      assert.ok(stdout.includes(`href="${url}"`))
+      assert.equal(stderr, '')
+      assert.deepEqual(requested, ['api.fxtwitter.com', 'publish.twitter.com', 'publish.x.com'])
+    })
+  }
+
+  await t.test('keeps an available parent when its quoted post is unavailable', async () => {
+    const { stdout, stderr } = await extract('https://x.com/garden_fixture/status/107')
+    assert.match(stdout, /The parent post remains available/)
+    assert.match(stdout, /<blockquote>[\s\S]*Post unavailable[\s\S]*<\/blockquote>/)
+    assert.match(stdout, /href="https:\/\/x.com\/quoted_fixture\/status\/404"/)
+    assert.equal(stderr, '')
+  })
+
+  await t.test('retains diagnostics for unexpected provider failures', async () => {
+    const { stdout, stderr } = await extract('https://x.com/garden_fixture/status/500')
+    assert.match(stdout, /Post unavailable/)
+    assert.match(stderr, /oEmbed request failed: 500/)
   })
 })
