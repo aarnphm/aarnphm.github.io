@@ -1,0 +1,16 @@
+diff --git a/dist/extractors/x-oembed.js b/dist/extractors/x-oembed.js
+index 414ca85fb713da8f1df67883a2fa448f65c12204..74367bc5ec50a6b17e63e77e7c3f0448a1edb0f9 100644
+--- a/dist/extractors/x-oembed.js
++++ b/dist/extractors/x-oembed.js
+@@ -45,6 +45,11 @@ class XOembedExtractor extends _base_1.BaseExtractor {
+     async extractOembed() {
+         const oembedUrl = `https://publish.twitter.com/oembed?url=${encodeURIComponent(this.url)}&omit_script=true`;
+         const response = await this.fetch(oembedUrl);
++        if ([403, 404, 410].includes(response.status)) {
++            // Unavailable posts have no content. Complete extraction so parseAsync
++            // does not retry the same providers and log a second exception.
++            return { content: '', contentHtml: '' };
++        }
+         if (!response.ok) {
+             throw new Error(`oEmbed request failed: ${response.status}`);
+         }

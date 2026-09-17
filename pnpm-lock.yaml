@@ -6,6 +6,9 @@ settings:
 
 pnpmfileChecksum: sha256-ZFpxw/fAMMWTHwalFWTr8VwxhOOcBwBXIvmvhyaK92k=
 
+patchedDependencies:
+  defuddle@0.19.3: d9d862705fca85393aa641ca24536df03f68585d4ffd5825d4c909f5127f04e6
+
 importers:
 
   .:
@@ -132,7 +135,7 @@ importers:
         version: 7.9.0
       defuddle:
         specifier: 0.19.3
-        version: 0.19.3
+        version: 0.19.3(patch_hash=d9d862705fca85393aa641ca24536df03f68585d4ffd5825d4c909f5127f04e6)
       dompurify:
         specifier: ^3.4.15
         version: 3.4.15
@@ -9753,7 +9756,7 @@ snapshots:
       has-property-descriptors: 1.0.2
       object-keys: 1.1.1
 
-  defuddle@0.19.3:
+  defuddle@0.19.3(patch_hash=d9d862705fca85393aa641ca24536df03f68585d4ffd5825d4c909f5127f04e6):
     dependencies:
       commander: 12.1.0
     optionalDependencies:

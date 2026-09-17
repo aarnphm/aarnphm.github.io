@@ -170,6 +170,9 @@ onlyBuiltDependencies:
   - utf-8-validate
   - workerd
 
+patchedDependencies:
+  defuddle@0.19.3: patches/defuddle@0.19.3.patch
+
 strictPeerDependencies: true
 
 supportedArchitectures:
