@@ -6,10 +6,38 @@ import {
   lineRangeLabel,
   lineRangeMeta,
   parseGithubBlobUrl,
+  parseGithubRepositoryUrl,
   parseLineRange,
 } from './github-embed'
 
 describe('github embed utilities', () => {
+  test('recognizes repository roots without treating files, issues, or profiles as repositories', () => {
+    for (const url of [
+      'https://github.com/JasonGross/guarantees-based-mechanistic-interpretability',
+      'http://www.github.com/JasonGross/guarantees-based-mechanistic-interpretability.git/?tab=readme-ov-file#readme',
+    ])
+      assert.deepStrictEqual(parseGithubRepositoryUrl(url), {
+        owner: 'JasonGross',
+        repo: 'guarantees-based-mechanistic-interpretability',
+        url: 'https://github.com/JasonGross/guarantees-based-mechanistic-interpretability',
+      })
+    for (const url of [
+      'https://github.com/JasonGross',
+      'https://github.com/topics/interpretability',
+      'https://github.com/orgs/github',
+      'https://github.com/owner/repo/issues/1',
+      'https://github.com/owner/repo/blob/main/README.md',
+      'https://github.com/owner/repo/tree/main',
+      'https://github.com.evil.example/owner/repo',
+      'https://person@github.com/owner/repo',
+      'https://github.com:8443/owner/repo',
+      'file://github.com/owner/repo',
+      'https://github.com/owner/.git',
+      'not a URL',
+    ])
+      assert.strictEqual(parseGithubRepositoryUrl(url), null, url)
+  })
+
   test('parses GitHub blob URLs into raw.githubusercontent.com URLs', () => {
     const ref = parseGithubBlobUrl(
       'https://github.com/FasterDecoding/SnapKV/blob/82135ce2cc60f212a9ba918467f3d9c8134e163f/snapkv/monkeypatch/llama_hijack_4_37.py#L19',

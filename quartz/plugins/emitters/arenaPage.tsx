@@ -1,5 +1,9 @@
-import { ElementContent } from 'hast'
+import { Element, ElementContent, Root } from 'hast'
 import { toHtml } from 'hast-util-to-html'
+import { toMdast } from 'hast-util-to-mdast'
+import { h } from 'hastscript'
+import { gfmToMarkdown } from 'mdast-util-gfm'
+import { toMarkdown } from 'mdast-util-to-markdown'
 import fs from 'node:fs/promises'
 import { render } from 'preact-render-to-string'
 import { Node } from 'unist'
@@ -44,6 +48,43 @@ import {
 } from '../transformers/arena'
 import { QuartzPluginData, defaultProcessedContent } from '../vfile'
 import { removeWritten, write } from './helpers'
+import { llmText } from './llm'
+
+function blockSource(block: ArenaBlock): Element {
+  const node = h('li', [
+    block.htmlNode ??
+      h('p', block.url ? h('a', { href: block.url }, block.content) : block.content),
+  ])
+  const metadata = {
+    ...block.metadata,
+    tags: block.tags ?? block.metadata?.tags,
+    pinned: block.pinned ?? block.metadata?.pinned,
+    later: block.later ?? block.metadata?.later,
+    highlighted: block.highlighted || undefined,
+    importance: block.importance,
+    coord: block.coordinates
+      ? `${block.coordinates.lat}, ${block.coordinates.lon}`
+      : block.metadata?.coord,
+  }
+  const fields = Object.entries(metadata)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) =>
+      h('li', `${key}: ${typeof value === 'string' ? value : JSON.stringify(value)}`),
+    )
+  const children: Element[] = []
+  if (fields.length > 0) children.push(h('li', ['[meta]:', h('ul', fields)]))
+  children.push(...(block.subItems ?? []).map(blockSource))
+  if (children.length > 0) node.children.push(h('ul', children))
+  return node
+}
+
+function channelSource(channel: ArenaChannel): string {
+  const tree: Root = {
+    type: 'root',
+    children: [h('h1', channel.name), h('ul', channel.blocks.map(blockSource))],
+  }
+  return toMarkdown(toMdast(tree), { bullet: '-', emphasis: '_', extensions: [gfmToMarkdown()] })
+}
 
 async function processArenaIndex(
   ctx: BuildCtx,
@@ -114,6 +155,11 @@ async function processChannel(
 
   const content = renderPage(ctx, channelSlug, componentData, opts, externalResources, false)
   const files = [await write({ ctx, content, slug: channelSlug, ext: '.html' })]
+  if (baseFileData.frontmatter?.protected !== true) {
+    files.push(await llmText(ctx, { ...componentData.fileData, llmsText: channelSource(channel) }))
+  } else {
+    await removeWritten(ctx, channelSlug, '.md')
+  }
   const assetBase = arenaChannelAssets(channel.slug)
   const sections = arenaChannelSections(channel)
   const ordered = [...sections.pinned, ...sections.later, ...sections.blocks]
@@ -372,6 +418,7 @@ async function removeChannelOutputs(
   jsonEnabled: boolean,
 ): Promise<void> {
   await fs.rm(joinSegments(ctx.argv.output, 'arena', `${channelSlug}.html`), { force: true })
+  await removeWritten(ctx, joinSegments('arena', channelSlug), '.md')
   await fs.rm(joinSegments(ctx.argv.output, arenaChannelAssets(channelSlug).slice(1)), {
     recursive: true,
     force: true,

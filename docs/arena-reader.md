@@ -1,6 +1,14 @@
 # Arena reader
 
-`/arena/feed` reads the saved links in `content/are.na.md`. Quartz emits the page shell and `static/arena-feed.json`; the existing Cloudflare Worker owns authentication, read marks, notes, and article capture.
+`/arena/feed` reads the saved links in `content/are.na.md` and the public saved-link index for [Aaron's Curius account](https://curius.app/aaron-pham). Quartz emits the page shell and `static/arena-feed.json`; the existing Cloudflare Worker merges Curius and owns authentication, read marks, notes, and article capture.
+
+## Curius catalogue
+
+The Worker imports the complete `/api/users/3584/searchLinks` index, independently of the 30-link pages used by the Curius profile. It stores the validated index in the existing private R2 bucket and checks for updates when the feed is requested, at most once every 15 minutes. Reading, notes and resource requests reuse that snapshot. A failed refresh retains the previous index and waits a minute before retrying; an initial failure returns an explicit error so an incomplete catalogue cannot silently replace the queue.
+
+Arena and Curius links share the existing normalized-URL article identity. Tracking parameters (including `curius` and `utm_*`) are removed before duplicate matching. Content parameters, URL fragments, trailing slashes and HTTP/HTTPS distinctions are preserved. A duplicate occupies one queue entry, keeping Arena's authored title, tags and saved notes alongside every Curius link ID. Curius-only entries are labeled `curius`, which also works as a queue search term. The Curius index supplies link metadata; its full-text snippets, highlights and comments are not imported as reader notes.
+
+Curius `toRead: true` joins the Later queue. A false or unset value does not mark anything read. Existing read marks, saved copies and reader notes keep their article IDs, including when a Curius-only link is subsequently saved in Arena. Reader notes for Curius-only links have a source URL and a null Arena occurrence, so exports never invent a Markdown backfill target. The reader does not write to Curius.
 
 ## Reading and notes
 
@@ -13,6 +21,20 @@ Text notes open in a modal drawer on phones and a side panel on larger screens. 
 Selecting text in the reader can create a note with a quotation, surrounding text, and the saved article version. HTML articles use one extracted reading view. PDFs use the existing PDF viewer. Unsupported, inaccessible, or incomplete sources retain an Open original link.
 
 Wikipedia article links use the garden's existing summary popovers on hover and keyboard focus. The reader derives preview metadata from the sanitized destination URL, including mobile Wikipedia links. Escape dismisses the preview; clicking still opens the original link.
+
+### Keyboard shortcuts
+
+The reading view exposes these shortcuts on its action buttons:
+
+| Key       | Action                                                  |
+| --------- | ------------------------------------------------------- |
+| `q`       | Toggle the queue                                        |
+| `Shift+N` | Toggle notes, or start a note from the selected passage |
+| `r`       | Mark an unread link read and advance                    |
+| `Shift+O` | Open the original link in a new tab                     |
+| `n`       | Go to the next link without changing its read status    |
+
+Shortcuts pause while typing in search or notes, using a menu, or holding Control, Command, or Alt. Holding a shortcut key does not repeat its action. Read and next wait for an in-progress read save to finish. The notes inbox keeps its own controls.
 
 ## Access and development
 
@@ -28,13 +50,13 @@ This setting only permits requests whose URL hostname is `localhost`, `127.0.0.1
 
 The required bindings are:
 
-| Binding                     | Responsibility                                      |
-| --------------------------- | --------------------------------------------------- |
-| `ASSETS`                    | Feed shell and fixed catalogue asset                |
-| `ARENA_READER`              | D1 read marks and text notes                        |
-| `ARENA_CONTENT`             | Private R2 article versions and visited images/PDFs |
-| `BROWSER`                   | Anonymous Cloudflare browser capture                |
-| `ARENA_RENDER_RATE_LIMITER` | Browser launch limit per authenticated reader       |
+| Binding                     | Responsibility                                            |
+| --------------------------- | --------------------------------------------------------- |
+| `ASSETS`                    | Feed shell and fixed catalogue asset                      |
+| `ARENA_READER`              | D1 read marks and text notes                              |
+| `ARENA_CONTENT`             | Private R2 article versions, images/PDFs and Curius index |
+| `BROWSER`                   | Anonymous Cloudflare browser capture                      |
+| `ARENA_RENDER_RATE_LIMITER` | Browser launch limit per authenticated reader             |
 
 The Browser binding uses Cloudflare during local development, so local cache misses use real browser time. Reader D1 and R2 stay local unless their commands explicitly target remote storage. The configured development host is `localhost`, which keeps the loopback identity and origin checks consistent with the local request. See [Cloudflare's Browser Run development reference](https://developers.cloudflare.com/browser-run/reference/wrangler/).
 
@@ -127,7 +149,7 @@ All endpoints require a verified reader session, except a resource URL with a va
 | PUT, DELETE | `/api/arena/notes/:id`                                                | Revision-checked note update or tombstone           |
 | POST        | `/api/arena/notes/:id/export-receipt`                                 | Acknowledge a verified backfill revision            |
 
-The Worker chooses source URLs from the generated catalogue. Clients supply stable article IDs, never arbitrary capture URLs. Note input preserves Markdown whitespace, validates occurrence/snapshot ownership, and has bounded lengths. Database and catalogue failures return an error rather than an empty successful state.
+The Worker chooses source URLs from the merged Arena and Curius catalogue. Clients supply stable article IDs, never arbitrary capture URLs. Note input preserves Markdown whitespace, validates occurrence/snapshot ownership, and has bounded lengths. Database and catalogue failures return an error rather than an empty successful state.
 
 ## Backfill contract
 

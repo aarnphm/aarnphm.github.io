@@ -175,7 +175,7 @@ a {
 // Blockquotes: a large decorative opening quotation mark instead of the
 // default left bar. The mark hangs in the left margin so the quote text stays
 // aligned with the surrounding prose.
-blockquote:not(:where(.arena-reader blockquote)) {
+blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
   border-left: none;
   padding-left: 0;
   margin: 1.5rem 0 1.5rem 2.5rem;

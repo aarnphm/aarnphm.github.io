@@ -14,6 +14,11 @@ export interface ArenaFeedOccurrence {
   notesHtml: string | null
 }
 
+export interface CuriusFeedOccurrence {
+  userId: number
+  linkId: number
+}
+
 export interface ArenaFeedEntry {
   articleId: string
   sourceUrl: string
@@ -23,6 +28,7 @@ export interface ArenaFeedEntry {
   tags: string[]
   savedAt: string | null
   occurrences: ArenaFeedOccurrence[]
+  curius?: CuriusFeedOccurrence[]
 }
 
 export interface ArenaFeedManifest {
@@ -127,7 +133,7 @@ function explicitLater(value: unknown): boolean | undefined {
   return undefined
 }
 
-function savedDate(value: unknown): string | null {
+export function arenaFeedSavedDate(value: unknown): string | null {
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.toISOString()
   if (typeof value !== 'string') return null
   const trimmed = value.trim()
@@ -176,7 +182,7 @@ function savedNotes(block: ArenaBlock, baseUrl: string): string | null {
     : null
 }
 
-function contentKind(sourceUrl: string, baseUrl: string): ArenaFeedEntry['kind'] {
+export function arenaFeedContentKind(sourceUrl: string, baseUrl: string): ArenaFeedEntry['kind'] {
   const url = new URL(sourceUrl)
   if (url.origin === new URL(baseUrl).origin) return 'internal'
   if (isArenaPdfUrl(sourceUrl) || arenaArxivPdfUrl(sourceUrl)) return 'pdf'
@@ -186,6 +192,27 @@ function contentKind(sourceUrl: string, baseUrl: string): ArenaFeedEntry['kind']
   )
     return 'video'
   return 'html'
+}
+
+export async function arenaFeedArticleId(sourceUrl: string): Promise<string> {
+  return `article-v1-${await sha256(`arena-article-v1\0${sourceUrl}`)}`
+}
+
+export async function finalizeArenaFeedManifest(
+  entries: readonly ArenaFeedEntry[],
+): Promise<ArenaFeedManifest> {
+  const sorted = [...entries].sort((a, b) => compareText(a.articleId, b.articleId))
+  const revision = `feed-v1-${await sha256(JSON.stringify(sorted))}`
+  return { schemaVersion: 1, revision, entries: sorted }
+}
+
+export function arenaFeedSourceNames(entry: ArenaFeedEntry): string[] {
+  return [
+    ...new Set([
+      ...entry.occurrences.map(occurrence => occurrence.channelName),
+      ...(entry.curius?.length ? ['curius'] : []),
+    ]),
+  ]
 }
 
 export function isArenaReadingEntry(entry: ArenaFeedEntry): boolean {
@@ -231,7 +258,7 @@ export async function buildArenaFeedManifest(
         parentBlockId: parent?.id ?? null,
         notesHtml: savedNotes(block, base.href),
       }
-      const date = savedDate(block.metadata?.date)
+      const date = arenaFeedSavedDate(block.metadata?.date)
       const title =
         (block.titleHtmlNode ? toString(block.titleHtmlNode).trim() : '') ||
         block.title?.trim() ||
@@ -250,7 +277,7 @@ export async function buildArenaFeedManifest(
         entriesByUrl.set(sourceUrl, {
           sourceUrl,
           title,
-          kind: contentKind(sourceUrl, base.href),
+          kind: arenaFeedContentKind(sourceUrl, base.href),
           later,
           tags,
           savedAt: date,
@@ -267,13 +294,11 @@ export async function buildArenaFeedManifest(
 
   const entries = await Promise.all(
     [...entriesByUrl.values()].map(async entry => ({
-      articleId: `article-v1-${await sha256(`arena-article-v1\0${entry.sourceUrl}`)}`,
+      articleId: await arenaFeedArticleId(entry.sourceUrl),
       ...entry,
     })),
   )
-  entries.sort((a, b) => compareText(a.articleId, b.articleId))
-  const revision = `feed-v1-${await sha256(JSON.stringify(entries))}`
-  return { schemaVersion: 1, revision, entries }
+  return finalizeArenaFeedManifest(entries)
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -298,6 +323,18 @@ function isOccurrence(value: unknown): value is ArenaFeedOccurrence {
   )
 }
 
+export function isCuriusFeedOccurrence(value: unknown): value is CuriusFeedOccurrence {
+  return (
+    isRecord(value) &&
+    typeof value.userId === 'number' &&
+    Number.isSafeInteger(value.userId) &&
+    value.userId > 0 &&
+    typeof value.linkId === 'number' &&
+    Number.isSafeInteger(value.linkId) &&
+    value.linkId > 0
+  )
+}
+
 function isEntry(value: unknown): value is ArenaFeedEntry {
   return (
     isRecord(value) &&
@@ -315,10 +352,12 @@ function isEntry(value: unknown): value is ArenaFeedEntry {
     Array.isArray(value.tags) &&
     value.tags.every(tag => typeof tag === 'string') &&
     isNullableString(value.savedAt) &&
-    (value.savedAt === null || savedDate(value.savedAt) !== null) &&
+    (value.savedAt === null || arenaFeedSavedDate(value.savedAt) !== null) &&
     Array.isArray(value.occurrences) &&
-    value.occurrences.length > 0 &&
-    value.occurrences.every(isOccurrence)
+    value.occurrences.every(isOccurrence) &&
+    (value.curius === undefined ||
+      (Array.isArray(value.curius) && value.curius.every(isCuriusFeedOccurrence))) &&
+    (value.occurrences.length > 0 || (Array.isArray(value.curius) && value.curius.length > 0))
   )
 }
 

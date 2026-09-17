@@ -199,12 +199,8 @@ export function NotesPanel(props: NotesProps) {
           </button>
         </>
       )}
-      {visible.length === 0 && (
-        <p class="arena-reader-empty-hint">
-          {props.inbox
-            ? 'Notes you write while reading will appear here.'
-            : 'Keep a thought here. Select a passage in the article to attach a quote.'}
-        </p>
+      {props.inbox && visible.length === 0 && (
+        <p class="arena-reader-empty-hint">Notes you write while reading will appear here.</p>
       )}
       {visible.map(item => {
         const entry = props.entries.find(entry => entry.articleId === item.note.articleId)

@@ -540,6 +540,14 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
       assert.doesNotMatch(html, /arena-block-modal-data|Delayed note|data-arena-pdf-src/)
       assert.doesNotMatch(html, /arena-load-more/)
       assert.match(html, /data-arena-count="55"/)
+      const markdown = await readFile(join(output, 'arena/lazy.md'), 'utf8')
+      assert.match(markdown, /# lazy/)
+      assert.match(markdown, /\*\*Delayed note pinned 29\*\*/)
+      assert.match(markdown, /\*\*Delayed note later 29\*\*/)
+      assert.match(markdown, /\*\*Delayed note blocks 54\*\*/)
+      assert.match(markdown, /https:\/\/example.com\/blocks-54.pdf/)
+      assert.match(markdown, /pinned: true/)
+      assert.match(markdown, /later: true/)
       const assets = arenaChannelAssets(channel.slug)
       const allIds: string[] = []
       for (const section of ['pinned', 'later', 'blocks'] as const) {
@@ -577,8 +585,44 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
         ]),
       )
       await assert.rejects(access(join(output, assets.slice(1))), { code: 'ENOENT' })
+      await assert.rejects(access(join(output, 'arena/lazy.md')), { code: 'ENOENT' })
     },
   )
+  await t.test('watch builds emit a separate Markdown source for every channel', async () => {
+    const fixture = await parse(`## first
+
+- [First article](https://example.com/first)
+  - **First channel note.**
+
+## second
+
+- [Second article](https://example.com/second)
+  - Second channel note.
+`)
+    const watchCtx = { ...ctx, argv: { ...ctx.argv, watch: true } }
+    const sourceEmitter = ArenaPage()
+    const paths = await collect(sourceEmitter.emit(watchCtx, [fixture], resources))
+    for (const name of ['first', 'second']) {
+      assert.ok(paths.includes(join(output, `arena/${name}.md`)))
+      const source = await readFile(join(output, `arena/${name}.md`), 'utf8')
+      assert.match(source, new RegExp(`slug: arena/${name}`))
+      assert.match(source, new RegExp(`https://example.com/${name}`))
+      assert.doesNotMatch(
+        source,
+        new RegExp(`${name === 'first' ? 'Second' : 'First'} channel note`),
+      )
+      const html = await readFile(join(output, `arena/${name}.html`), 'utf8')
+      assert.match(html, new RegExp(`href="[^"]*/${name}\\.md"[^>]*class="llm-source"`))
+    }
+    const remaining = await parse('## second\n\n- [Second article](https://example.com/second)\n')
+    await collect(
+      sourceEmitter.partialEmit?.(watchCtx, [remaining], resources, [
+        { type: 'change', path: filePath, file: remaining[1], previousFile: fixture[1] },
+      ]),
+    )
+    await assert.rejects(access(join(output, 'arena/first.md')), { code: 'ENOENT' })
+    await access(join(output, 'arena/second.md'))
+  })
   await t.test(
     'unlocked links use Wayback consistently across blocks, anchors, and feed entries',
     async () => {
@@ -626,7 +670,7 @@ ${unlocked === undefined ? '' : `    - unlocked: ${unlocked}\n`}  - Keep [this c
         const entry = manifest.entries.find(item => item.title === 'Article')
         assert.ok(entry)
         assert.equal(entry.sourceUrl, expected)
-        assert.ok(entry.occurrences[0].notesHtml.includes('href="https://example.com/citation"'))
+        assert.ok(entry.occurrences[0].notesHtml?.includes('href="https://example.com/citation"'))
       }
     },
   )
@@ -645,6 +689,12 @@ ${unlocked === undefined ? '' : `    - unlocked: ${unlocked}\n`}  - Keep [this c
   const initialPaths = await collect(emitter.emit(ctx, [first], resources))
   assert.ok(initialPaths.includes(join(output, 'arena/feed.html')))
   assert.ok(initialPaths.includes(join(output, 'static/arena-feed.json')))
+  assert.ok(initialPaths.includes(join(output, 'arena/saved.md')))
+  const source = await readFile(join(output, 'arena/saved.md'), 'utf8')
+  assert.match(source, /# saved/)
+  assert.match(source, /\[this citation\]\(https:\/\/example.com\/incidental\)/)
+  assert.match(source, /later: false/)
+  assert.equal(source.split('Child note.').length - 1, 1)
   const shell = await readFile(join(output, 'arena/feed.html'), 'utf8')
   assert.match(shell, /data-arena-feed/)
   assert.match(shell, /<a[^>]*href="\/arena"[^>]*>arena<\/a>/)
@@ -675,6 +725,11 @@ ${unlocked === undefined ? '' : `    - unlocked: ${unlocked}\n`}  - Keep [this c
   )
   assert.ok(changedPaths.includes(join(output, 'arena/feed.html')))
   assert.ok(changedPaths.includes(join(output, 'static/arena-feed.json')))
+  assert.ok(changedPaths.includes(join(output, 'arena/saved.md')))
+  const updatedSource = await readFile(join(output, 'arena/saved.md'), 'utf8')
+  assert.match(updatedSource, /Updated parent/)
+  assert.match(updatedSource, /Fresh evidence/)
+  assert.doesNotMatch(updatedSource, /Child note/)
   const changed = await readManifest()
   assert.equal(changed.entries.length, 1)
   assert.equal(
@@ -697,6 +752,7 @@ ${unlocked === undefined ? '' : `    - unlocked: ${unlocked}\n`}  - Keep [this c
     'arena/feed.html',
     'static/arena-feed.json',
     'arena/saved.html',
+    'arena/saved.md',
     'arena.html',
     'static/arena-search.json',
   ]) {

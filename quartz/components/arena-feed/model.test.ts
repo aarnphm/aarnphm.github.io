@@ -84,6 +84,46 @@ test('a completed pass waits for an explicit shuffle', () => {
   assert.equal(nextEntry(entries, [], null)?.articleId, 'a')
 })
 
+test('searching curius includes shared and Curius-only links and preserves explicit read state', () => {
+  const curius = [{ userId: 3584, linkId: 1 }]
+  const links = [
+    entry('arena', false),
+    { ...entry('shared', true), curius },
+    { ...entry('curius-only', false), occurrences: [], curius },
+  ]
+  assert.deepEqual(
+    eligibleEntries(links, [], 'unread', 'curius').map(item => item.articleId),
+    ['shared', 'curius-only'],
+  )
+  const readLinks = [{ articleId: 'shared', readAt: 10, updatedAt: 10, revision: 1 }]
+  assert.deepEqual(
+    eligibleEntries(links, readLinks, 'unread', 'curius').map(item => item.articleId),
+    ['curius-only'],
+  )
+  assert.deepEqual(
+    eligibleEntries(links, readLinks, 'read', 'curius').map(item => item.articleId),
+    ['shared'],
+  )
+})
+
+test('the Curius filter uses source metadata and includes shared, read, and unread links once', () => {
+  const curius = [{ userId: 3584, linkId: 1 }]
+  const shared = { ...entry('shared', true), curius: [...curius, { userId: 3584, linkId: 2 }] }
+  const curiusOnly = { ...entry('curius-only', false), occurrences: [], curius }
+  const links = [
+    entry('arena', false),
+    entry('curius-in-title-and-url', true),
+    { ...entry('empty-source', false), curius: [] },
+    shared,
+    curiusOnly,
+  ]
+  const readLinks = [{ articleId: 'shared', readAt: 10, updatedAt: 10, revision: 1 }]
+  assert.deepEqual(eligibleEntries(links, readLinks, 'curius'), [shared, curiusOnly])
+  assert.deepEqual(eligibleEntries(links, readLinks, 'curius', 'reading systems shared'), [shared])
+  assert.deepEqual(eligibleEntries(links, readLinks, 'curius', 'CURiUS-ONLY'), [curiusOnly])
+  assert.deepEqual(eligibleEntries(links, readLinks, 'curius', 'arena'), [])
+})
+
 test('edits invalidate ready status without changing article or snapshot anchors', () => {
   const draft = draftFromNote('owner-a', { ...note, readyRevision: note.revision })
   const edited = editDraft(draft, 'A newer thought')

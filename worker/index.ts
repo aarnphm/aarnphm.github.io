@@ -818,8 +818,11 @@ export default {
         return withHeaders(resp, apiHeaders)
       }
       case '/api/curius': {
-        const resp = await handleCurius(request)
-        return withHeaders(resp, apiHeaders)
+        const resp = await handleCurius(request, env)
+        return withHeaders(resp, {
+          ...apiHeaders,
+          'Cache-Control': resp.headers.get('Cache-Control') ?? apiHeaders['Cache-Control'],
+        })
       }
       case '/api/mentions': {
         const resp = await handleMentions(env)

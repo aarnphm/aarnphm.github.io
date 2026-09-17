@@ -1,6 +1,27 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { readApiResponse, ReaderApiError } from './api'
+import { parseFeed, readApiResponse, ReaderApiError } from './api'
+
+test('feed responses retain Curius provenance and reject links without a valid source', () => {
+  const entry = {
+    articleId: 'article-v1-fixture',
+    sourceUrl: 'https://example.com/read',
+    title: 'Saved on Curius',
+    kind: 'html',
+    later: false,
+    tags: [],
+    savedAt: null,
+    occurrences: [],
+    curius: [{ userId: 3584, linkId: 236997 }],
+  }
+  const feed = { subject: 'owner', revision: 'feed-fixture', entries: [entry], readLinks: [] }
+  assert.deepEqual(parseFeed(feed), feed)
+  for (const curius of [undefined, [], [{ userId: 3584, linkId: '236997' }]])
+    assert.throws(
+      () => parseFeed({ ...feed, entries: [{ ...entry, curius }] }),
+      /invalid catalogue/,
+    )
+})
 
 test('render failures retain typed unavailable results across HTTP error statuses', async () => {
   const unavailable = {

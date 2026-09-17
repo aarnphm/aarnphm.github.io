@@ -14959,6 +14959,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
         flex: 1 1 auto;
       }
 
+      > .tri-act-toggle {
+        margin-top: var(--tri-toggle-margin, 0px);
+      }
+
       > .tri-act-more > .tri-workout-analysis {
         margin-top: var(--tri-workout-margin, 0px);
         height: var(
@@ -14980,7 +14984,12 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
       }
 
       > .tri-act-more > .tri-training-effect {
-        margin-top: var(--tri-training-effect-margin, auto);
+        margin-top: var(--tri-training-effect-margin, 0px);
+      }
+
+      > .tri-act-more
+        > :is(.tri-zone-duo, [data-tri-trace='heart-rate-zones'], [data-tri-trace='power-zones']) {
+        margin-top: var(--tri-zones-margin, 0px);
       }
 
       > .tri-act-strength,

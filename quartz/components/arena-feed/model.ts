@@ -1,7 +1,7 @@
-import type { ArenaFeedEntry } from '../../util/arena-feed'
 import type { ArenaNote, ArenaNoteQuote, ArenaReadLink } from '../../util/arena-reader'
+import { arenaFeedSourceNames, type ArenaFeedEntry } from '../../util/arena-feed'
 
-export type FeedFilter = 'unread' | 'read' | 'all'
+export type FeedFilter = 'unread' | 'read' | 'all' | 'curius'
 export type NoteStage = 'draft' | 'ready' | 'backfilled'
 
 export interface ReaderPass {
@@ -30,12 +30,8 @@ export function eligibleEntries(
   return entries.filter(entry => {
     if (filter === 'unread' && read.has(entry.articleId)) return false
     if (filter === 'read' && !read.has(entry.articleId)) return false
-    const text = [
-      entry.title,
-      entry.sourceUrl,
-      ...entry.tags,
-      ...entry.occurrences.map(o => o.channelName),
-    ]
+    if (filter === 'curius' && !entry.curius?.length) return false
+    const text = [entry.title, entry.sourceUrl, ...entry.tags, ...arenaFeedSourceNames(entry)]
       .join(' ')
       .toLocaleLowerCase()
     return terms.every(term => text.includes(term))

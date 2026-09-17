@@ -1,9 +1,11 @@
 .twitter-post {
+  position: relative;
   box-sizing: border-box;
   min-width: 0;
-  margin-block: 1.5rem;
-  padding-block: 1rem;
-  border-block: 1px solid var(--lightgray);
+  margin-block: 2rem 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--dark);
+  border-radius: var(--radius-none);
   color: var(--darkgray);
   font-family: var(--bodyFont);
   overflow-wrap: anywhere;
@@ -15,6 +17,26 @@
     padding: 1.5rem;
     width: 100%;
     max-width: 52rem;
+
+    > .twitter-post-badge {
+      display: none;
+    }
+  }
+
+  .twitter-post-badge {
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    display: inline-grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 1.75rem;
+    height: 1.25rem;
+    border: 1px solid var(--dark);
+    border-bottom: 0;
+    background: var(--light);
+    color: var(--gray);
+    transform: translateY(-100%);
   }
 
   a:hover {
@@ -24,22 +46,40 @@
   }
 
   .twitter-post-header {
-    display: flex;
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
     height: auto;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0.35rem 1rem;
+    align-items: center;
+    gap: 0.15rem 0.25rem;
     margin-bottom: 1rem;
+    padding: 0;
     font-family: var(--codeFont);
     font-size: 0.75rem;
     line-height: 1.5;
 
-    > a {
-      margin-left: auto;
+    > :nth-last-child(2) {
+      margin-left: 0;
+    }
+  }
+
+  .twitter-post-source {
+    grid-column: 2;
+    grid-row: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
     }
   }
 
   .twitter-post-author {
+    grid-column: 1 / -1;
     color: var(--dark);
   }
 
@@ -63,8 +103,8 @@
   blockquote {
     margin: 1rem 0;
     padding: 1rem;
-    border: 1px solid var(--lightgray);
-    border-radius: 0;
+    border: 1px solid var(--dark);
+    border-radius: var(--radius-none);
     background: transparent;
 
     cite {

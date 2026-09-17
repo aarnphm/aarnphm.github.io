@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict'
-import { lstat, mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises'
+import { lstat, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 import type { BuildCtx } from '../../util/ctx'
-import type { FilePath } from '../../util/path'
 import type { StaticResources } from '../../util/resources'
+import { isFilePath, type FilePath } from '../../util/path'
 import { Assets } from './assets'
 
 function testCtx(root: string): BuildCtx {
@@ -43,8 +43,9 @@ function testCtx(root: string): BuildCtx {
 
 const resources: StaticResources = { css: [], js: [], additionalHead: [] }
 
-async function collectEmitted(emitted: Promise<FilePath[]> | AsyncGenerator<FilePath>) {
+async function collectEmitted(emitted: Promise<FilePath[]> | AsyncGenerator<FilePath> | null) {
   const result = await emitted
+  assert.ok(result)
   if (Symbol.asyncIterator in result) {
     const files: FilePath[] = []
     for await (const file of result) {
@@ -158,6 +159,42 @@ test('production asset emission writes regular files', async () => {
     await rm(root, { recursive: true, force: true })
   }
 })
+
+for (const watch of [false, true]) {
+  test(`canvas assets retain their extension through emission and updates (watch=${watch})`, async t => {
+    const root = await mkdtemp(path.join(tmpdir(), 'quartz-canvas-assets-'))
+    t.after(() => rm(root, { recursive: true, force: true }))
+    const ctx = testCtx(root)
+    ctx.argv.watch = watch
+    const file = 'fr/parcours.canvas'
+    assert.ok(isFilePath(file))
+    ctx.allFiles = [file]
+    await touch(root, file)
+    const source = path.join(ctx.argv.directory, file)
+    const output = path.join(ctx.argv.output, file)
+    const initial = JSON.stringify({ nodes: [], edges: [] })
+    await writeFile(source, initial)
+    const plugin = Assets()
+
+    assert.deepEqual(await collectEmitted(plugin.emit(ctx, [], resources)), [output])
+    assert.equal(await readFile(output, 'utf8'), initial)
+    await assert.rejects(lstat(path.join(ctx.argv.output, 'fr/parcours')), { code: 'ENOENT' })
+
+    const updated = JSON.stringify({ nodes: [], edges: [], version: '1.0' })
+    await writeFile(source, updated)
+    assert.ok(plugin.partialEmit)
+    assert.deepEqual(
+      await collectEmitted(
+        plugin.partialEmit(ctx, [], resources, [{ type: 'change', path: file }]),
+      ),
+      [output],
+    )
+    assert.equal(await readFile(output, 'utf8'), updated)
+
+    await collectEmitted(plugin.partialEmit(ctx, [], resources, [{ type: 'delete', path: file }]))
+    await assert.rejects(lstat(output), { code: 'ENOENT' })
+  })
+}
 
 test('memo audio is local while production keeps only waveform JSON', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-memo-assets-'))

@@ -1,5 +1,6 @@
 import type { Element } from 'hast'
 import { fromHtml } from 'hast-util-from-html'
+import { toString } from 'hast-util-to-string'
 import { toText } from 'hast-util-to-text'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -10,11 +11,13 @@ import { ReaderFilter } from './filter'
 const filters = [
   {
     name: 'queue',
-    label: 'show',
+    label: 'Filter links',
+    hideLabel: true,
     options: [
       { value: 'unread', label: 'unread' },
       { value: 'read', label: 'read' },
-      { value: 'all', label: 'all saved links' },
+      { value: 'all', label: 'all' },
+      { value: 'curius', label: 'curius' },
     ],
   },
   {
@@ -36,6 +39,7 @@ for (const filter of filters) {
         renderToString(
           <ReaderFilter
             label={filter.label}
+            hideLabel={filter.hideLabel}
             options={filter.options}
             value={value}
             onChange={() => {}}
@@ -62,7 +66,12 @@ for (const filter of filters) {
           menu.properties.ariaLabelledBy.includes(element.properties.id),
       )
       assert.ok(menuLabel)
-      assert.equal(toText(menuLabel), filter.label)
+      assert.equal(toString(menuLabel), filter.label)
+      assert.equal(menuLabel.properties.hidden, filter.hideLabel)
+      assert.ok(
+        Array.isArray(trigger.properties.ariaLabelledBy) &&
+          trigger.properties.ariaLabelledBy.includes(String(menuLabel.properties.id)),
+      )
       assert.equal(
         elements.some(element => element.tagName === 'select'),
         false,

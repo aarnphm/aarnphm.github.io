@@ -2,7 +2,15 @@ import path from 'path'
 import { visit } from 'unist-util-visit'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
-import { slugifyFilePath, slugAnchor, FilePath, FullSlug, resolveRelative } from '../../util/path'
+import {
+  slugifyFilePath,
+  slugAnchor,
+  FilePath,
+  FullSlug,
+  isFullSlug,
+  resolveRelative,
+  simplifySlug,
+} from '../../util/path'
 import {
   extractWikilinks,
   extractWikilinksWithPositions,
@@ -83,7 +91,7 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
                   }
                 }
               }
-              file.data.links = linkedSlugs as any[]
+              file.data.links = linkedSlugs.filter(isFullSlug).map(simplifySlug)
 
               // extract searchable text
               const textContent: string[] = []

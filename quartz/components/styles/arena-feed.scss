@@ -1,4 +1,8 @@
 @use './arena-controls.scss' as arena;
+@use '../../styles/variables.scss' as *;
+
+$panel-duration: 220ms;
+$panel-ease: cubic-bezier(0.23, 1, 0.32, 1);
 
 body[data-slug='arena/feed'] {
   overflow: hidden;
@@ -56,7 +60,7 @@ body[data-slug='arena/feed'] {
   max-width: var(--arena-width);
   height: 100%;
   min-height: 0;
-  overflow: hidden;
+  overflow: clip;
   margin-inline: auto;
   border-inline: 1px solid var(--arena-line);
   text-align: start;
@@ -113,6 +117,7 @@ body[data-slug='arena/feed'] {
   @media (hover: hover) and (pointer: fine) {
     button:hover:not(
         :disabled,
+        .arena-reader-header > button,
         [aria-pressed='true'],
         [aria-selected='true'],
         [aria-current='page'],
@@ -212,7 +217,7 @@ body[data-slug='arena/feed'] {
   flex: 1;
   min-height: 0;
   min-width: 0;
-  overflow: hidden;
+  overflow: clip;
 }
 
 .arena-reader-main {
@@ -525,6 +530,11 @@ body[data-slug='arena/feed'] {
     }
   }
 
+  .arena-reader & button:hover:not(:disabled),
+  .arena-reader & button[aria-expanded='true'] {
+    border-color: var(--arena-line);
+  }
+
   a {
     align-items: center;
     justify-content: center;
@@ -550,6 +560,7 @@ body[data-slug='arena/feed'] {
 }
 
 .arena-reader-panel {
+  --arena-panel-offset: 0, 1.5rem;
   position: fixed;
   inset: auto 0 var(--arena-keyboard-inset, 0px);
   width: 100%;
@@ -564,9 +575,40 @@ body[data-slug='arena/feed'] {
   padding: 0;
   background: var(--light);
   overflow: hidden;
+  opacity: 0;
+  transform: translate(var(--arena-panel-offset));
+  transition:
+    opacity $panel-duration $panel-ease,
+    transform $panel-duration $panel-ease,
+    display $panel-duration allow-discrete,
+    overlay $panel-duration allow-discrete;
+
+  &[open] {
+    opacity: 1;
+    transform: translate(0, 0);
+
+    @starting-style {
+      opacity: 0;
+      transform: translate(var(--arena-panel-offset));
+    }
+  }
 
   &::backdrop {
+    background: rgb(0 0 0 / 0%);
+    transition:
+      background-color $panel-duration $panel-ease,
+      display $panel-duration allow-discrete,
+      overlay $panel-duration allow-discrete;
+  }
+
+  &[open]::backdrop {
     background: rgb(0 0 0 / 30%);
+  }
+
+  @starting-style {
+    &[open]::backdrop {
+      background: rgb(0 0 0 / 0%);
+    }
   }
 
   &[data-editing='true'] {
@@ -575,6 +617,7 @@ body[data-slug='arena/feed'] {
 
   &:not([open]) {
     display: none;
+    pointer-events: none;
   }
 }
 
@@ -654,16 +697,11 @@ body[data-slug='arena/feed'] {
 .arena-reader-queue-entries {
   flex: 1;
   padding-inline: var(--arena-gutter);
-  border-top: 1px solid var(--arena-line);
   scrollbar-gutter: stable;
   scroll-padding-block: 0.5rem;
-
-  > button {
-    margin-block: 0.75rem;
-  }
 }
 
-.arena-reader[data-panel='queue'] .arena-reader-panel-header {
+.arena-reader-panel[data-panel='queue'] .arena-reader-panel-header {
   border-bottom: 0;
 }
 
@@ -694,43 +732,29 @@ body[data-slug='arena/feed'] {
 
 .arena-reader-queue-controls {
   flex: none;
-  justify-content: space-between;
+  flex-wrap: nowrap;
   font-family: var(--codeFont);
   font-size: 0.62rem;
-  gap: 0.35rem 0.5rem;
-
-  .arena-reader-status {
-    margin: 0;
-    font-size: 0.6rem;
-    white-space: nowrap;
-  }
+  gap: 0.35rem;
 }
 
-.arena-reader-search {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 0.35rem;
+.arena-reader .arena-reader-search-input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--arena-control-height);
+  height: var(--arena-control-height);
+  padding: 0.25rem 0.5rem;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  background: var(--arena-surface);
 
-  input {
-    display: block;
-    flex: 1;
-    min-width: 0;
-    min-height: var(--arena-control-height);
-    height: var(--arena-control-height);
-    padding: 0.25rem 0.5rem;
-    font-family: var(--codeFont);
+  &::placeholder {
+    color: var(--arena-muted);
     font-size: 0.7rem;
-    background: var(--arena-surface);
+  }
 
-    &::placeholder {
-      color: var(--arena-muted);
-      font-size: 0.7rem;
-    }
-
-    @media (pointer: coarse) {
-      font-size: 1rem;
-    }
+  @media (pointer: coarse) {
+    font-size: 1rem;
   }
 }
 
@@ -813,8 +837,8 @@ body[data-slug='arena/feed'] {
     margin: 0;
     padding: 0;
 
-    + li {
-      border-top: 1px solid var(--arena-line);
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--arena-line);
     }
   }
 
@@ -1088,9 +1112,25 @@ body[data-slug='arena/feed'] {
   }
 }
 
+@media all and ($mobile) and (pointer: coarse) {
+  .arena-reader-footer {
+    padding-block: 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
+  }
+
+  .arena-reader-bottom-bar {
+    --arena-control-height: 2rem;
+
+    button,
+    a {
+      padding-inline: 0.3rem;
+    }
+  }
+}
+
 @media (min-width: 68rem) {
   .arena-reader {
     --arena-gutter: 2rem;
+    transition: max-width $panel-duration $panel-ease;
 
     &[data-panel='queue'],
     &[data-panel='notes'] {
@@ -1099,21 +1139,32 @@ body[data-slug='arena/feed'] {
   }
 
   .arena-reader-main {
+    grid-row: 1;
     padding-block: 2rem 3rem;
+  }
+
+  .arena-reader-footer {
+    grid-row: 2;
+  }
+
+  .arena-reader-layout {
+    grid-template-columns: minmax(0, 1fr) 0rem;
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
+    transition: grid-template-columns $panel-duration $panel-ease;
   }
 
   .arena-reader[data-panel='queue'] .arena-reader-layout,
   .arena-reader[data-panel='notes'] .arena-reader-layout {
-    display: grid;
     grid-template-columns: minmax(0, 1fr) 24rem;
-    align-items: stretch;
   }
 
   .arena-reader-panel {
+    --arena-panel-offset: 1rem, 0;
     position: relative;
     inset: auto;
     align-self: stretch;
-    width: 100%;
+    width: 24rem;
     margin: 0;
     height: 100%;
     min-height: 0;
@@ -1129,8 +1180,13 @@ body[data-slug='arena/feed'] {
     }
   }
 
-  .arena-reader[data-panel='queue'] {
-    .arena-reader-panel,
+  .arena-reader-panel[data-panel='queue'] {
+    grid-template-rows: subgrid;
+
+    &[open] {
+      display: grid;
+    }
+
     .arena-reader-panel-inner,
     .arena-reader-queue {
       display: grid;
@@ -1143,7 +1199,16 @@ body[data-slug='arena/feed'] {
     }
 
     .arena-reader-queue {
-      grid-row: 2 / -1;
+      grid-row: 1 / -1;
+    }
+
+    .arena-reader-queue-entries {
+      grid-area: 1 / 1;
+    }
+
+    .arena-reader-queue-footer {
+      grid-area: 2 / 1;
+      padding: 0.75rem var(--arena-gutter);
     }
   }
 
@@ -1154,9 +1219,11 @@ body[data-slug='arena/feed'] {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .arena-reader,
   .arena-reader *,
   .arena-reader *::before,
-  .arena-reader *::after {
+  .arena-reader *::after,
+  .arena-reader-panel::backdrop {
     scroll-behavior: auto;
     transition: none;
     animation: none;

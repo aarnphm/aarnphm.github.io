@@ -1,8 +1,8 @@
 import type { RefObject } from 'preact'
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
-import type { ArenaFeedEntry } from '../../util/arena-feed'
 import type { ArenaReaderArtifact, ArenaReaderRenderResult } from '../../util/arena-reader'
+import { arenaFeedSourceNames, type ArenaFeedEntry } from '../../util/arena-feed'
 import { parseWikipediaTarget } from '../../util/wikipedia'
 import { mathVariantText } from './math'
 
@@ -191,11 +191,7 @@ export function ArticleContent({
     <>
       <header class="arena-reader-article-header">
         <p class="arena-reader-eyebrow">
-          {entry.later ? 'later' : 'from your channels'} ·{' '}
-          {entry.occurrences
-            .map(item => item.channelName)
-            .filter((name, index, names) => names.indexOf(name) === index)
-            .join(' / ')}
+          {entry.later ? 'later' : 'from your links'} · {arenaFeedSourceNames(entry).join(' / ')}
         </p>
         <h1>{title}</h1>
         {artifact && (

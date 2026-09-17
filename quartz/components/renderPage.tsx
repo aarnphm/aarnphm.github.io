@@ -88,12 +88,9 @@ import Image from './Image'
 import Keybind from './Keybind'
 import { byDateAndAlphabetical } from './PageList'
 import ContentConstructor from './pages/Content'
-import Content from './pages/Content'
 import Palette from './Palette'
 //@ts-ignore
 import curiusFriendScript from './scripts/curius-friends.inline'
-//@ts-ignore
-import curiusNavigationScript from './scripts/curius-navigation.inline'
 //@ts-ignore
 import curiusScript from './scripts/curius.inline'
 import Search from './Search'
@@ -2144,33 +2141,154 @@ export const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
     <>
       <div class={classNames(displayClass, 'curius', 'curius-col')} id="curius">
         <div class="curius-page-container">
-          <div class={classNames(displayClass, 'curius-header')}>
-            <div class="curius-search">
-              <input
-                id="curius-bar"
-                type="text"
-                aria-label={searchPlaceholder}
-                placeholder={searchPlaceholder}
-              />
-              <div id="curius-search-container" />
+          <header class="curius-header">
+            <div class="curius-toolbar">
+              <div class="curius-search">
+                <input
+                  id="curius-bar"
+                  type="search"
+                  aria-label={searchPlaceholder}
+                  aria-keyshortcuts="Meta+K Control+K"
+                  placeholder={searchPlaceholder}
+                  autoComplete="off"
+                />
+                <svg
+                  class="curius-search-icon"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M10 6.5C10 8.433 8.433 10 6.5 10C4.567 10 3 8.433 3 6.5C3 4.567 4.567 3 6.5 3C8.433 3 10 4.567 10 6.5ZM9.30884 10.0159C8.53901 10.6318 7.56251 11 6.5 11C4.01472 11 2 8.98528 2 6.5C2 4.01472 4.01472 2 6.5 2C8.98528 2 11 4.01472 11 6.5C11 7.56251 10.6318 8.53901 10.0159 9.30884L12.8536 12.1464C13.0488 12.3417 13.0488 12.6583 12.8536 12.8536C12.6583 13.0488 12.3417 13.0488 12.1464 12.8536L9.30884 10.0159Z"
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <div id="curius-search-container" />
+              </div>
+              <CuriusNavigation {...props} />
+              <button
+                type="button"
+                id="curius-preview-toggle"
+                class="curius-icon-button"
+                aria-label="Open preview"
+                aria-controls="curius-preview"
+                aria-expanded="false"
+                title="Toggle preview"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="4" width="18" height="16" rx="2" />
+                  <path d="M14 4v16" />
+                </svg>
+              </button>
             </div>
-            <div class="curius-title">
-              <em>
-                Voir de plus{' '}
-                <a href="https://curius.app/aaron-pham" target="_blank">
-                  curius.app/aaron-pham
-                </a>
-              </em>
-            </div>
-          </div>
-          <div id="curius-fetching-text" />
-          <div id="curius-fragments" />
+          </header>
+          <ul id="curius-fragments" aria-label="Saved links" aria-busy="true" />
           <div class="highlight-modal" id="highlight-modal">
             <ul id="highlight-modal-list" />
           </div>
         </div>
       </div>
-      <Content {...props} />
+      <button
+        type="button"
+        id="curius-preview-backdrop"
+        aria-label="Close preview"
+        tabIndex={-1}
+        hidden
+      />
+      <aside
+        id="curius-preview"
+        class="curius-preview"
+        role="dialog"
+        aria-modal="false"
+        aria-labelledby="curius-preview-title"
+        tabIndex={-1}
+        hidden
+      >
+        <header class="curius-preview-header">
+          <h2 id="curius-preview-title">preview</h2>
+          <button
+            type="button"
+            id="curius-preview-close"
+            class="curius-icon-button"
+            aria-label="Close preview"
+            title="Close preview (Esc)"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+              <path
+                d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
+                fill="currentColor"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </header>
+        <div class="curius-preview-heading">
+          <a
+            id="curius-preview-source"
+            class="curius-preview-source"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-no-popover
+            data-skip-icons
+          />
+          <div class="curius-preview-actions">
+            <button
+              type="button"
+              id="curius-preview-retry"
+              class="curius-icon-button"
+              aria-label="Retry preview"
+              title="Retry preview"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M20 7v5h-5M4 17v-5h5" />
+                <path d="M6.1 7a7 7 0 0 1 11.55-2.45L20 7M4 17l2.35 2.45A7 7 0 0 0 17.9 17" />
+              </svg>
+            </button>
+            <a
+              id="curius-preview-original"
+              class="curius-icon-button"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open original in a new tab"
+              title="Open original in a new tab"
+              data-no-popover
+              data-skip-icons
+              hidden
+            >
+              <svg viewBox="0 0 15 15" fill="none" aria-hidden="true" focusable="false">
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M12 13C12.5523 13 13 12.5523 13 12V3C13 2.44771 12.5523 2 12 2H3C2.44771 2 2 2.44771 2 3V6.5C2 6.77614 2.22386 7 2.5 7C2.77614 7 3 6.77614 3 6.5V3H12V12H8.5C8.22386 12 8 12.2239 8 12.5C8 12.7761 8.22386 13 8.5 13H12ZM9 6.5C9 6.5001 9 6.50021 9 6.50031V6.50035V9.5C9 9.77614 8.77614 10 8.5 10C8.22386 10 8 9.77614 8 9.5V7.70711L2.85355 12.8536C2.65829 13.0488 2.34171 13.0488 2.14645 12.8536C1.95118 12.6583 1.95118 12.3417 2.14645 12.1464L7.29289 7H5.5C5.22386 7 5 6.77614 5 6.5C5 6.22386 5.22386 6 5.5 6H8.5C8.56779 6 8.63244 6.01349 8.69139 6.03794C8.74949 6.06198 8.80398 6.09744 8.85143 6.14433C8.94251 6.23434 8.9992 6.35909 8.99999 6.49708L8.99999 6.49738"
+                  fill="currentColor"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div id="curius-preview-content" class="curius-preview-content" />
+      </aside>
     </>
   )
 }
@@ -2179,35 +2297,31 @@ CuriusContent.afterDOMLoaded = curiusScript
 export const CuriusFriends: QuartzComponent = (props: QuartzComponentProps) => {
   const { displayClass } = props
   return (
-    <div class={classNames(displayClass, 'curius-friends')}>
-      <h4
-        style={[
-          'font-size: initial',
-          'margin-top: unset',
-          'margin-bottom: 0.5rem',
-          'border-bottom: 1px solid var(--gray)',
-        ].join(';')}
+    <div class={classNames(displayClass, 'curius-friends')} aria-busy="true">
+      <h2>mes amis</h2>
+      <p id="curius-friends-status" class="curius-sidebar-status" role="status">
+        Chargement des amis…
+      </p>
+      <ul class="section-ul" id="friends-list" />
+      <button
+        type="button"
+        id="see-more-friends"
+        aria-expanded="false"
+        aria-controls="friends-list"
+        hidden
       >
-        mes amis
-      </h4>
-      <ul class="overflow section-ul" id="friends-list" style="margin-top: unset" />
-      <div id="see-more-friends">
-        Void{' '}
-        <span id="more" style="text-decoration: none !important">
-          de plus
+        <span>
+          Voir <span id="more">de plus</span>
         </span>
-        <svg
-          fill="currentColor"
-          preserveAspectRatio="xMidYMid meet"
-          height="1rem"
-          width="1rem"
-          viewBox="0 -10 40 40"
-        >
-          <g>
-            <path d="m31 12.5l1.5 1.6-12.5 13.4-12.5-13.4 1.5-1.6 11 11.7z" />
-          </g>
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+          <path
+            d="m3.5 5.5 4 4 4-4"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
-      </div>
+      </button>
     </div>
   )
 }
@@ -2216,31 +2330,80 @@ CuriusFriends.afterDOMLoaded = curiusFriendScript
 const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
   const { cfg, displayClass } = props
   return (
-    <div
-      class={classNames(displayClass, 'curius-trail')}
-      data-num-trails={3}
-      data-limits={4}
-      data-locale={cfg.locale}
-    >
-      <h4 style={['font-size: initial', 'margin-top: unset', 'margin-bottom: 0.5rem'].join(';')}>
-        sentiers
-      </h4>
-      <ul class="section-ul" id="trail-list" />
-    </div>
+    <>
+      <div
+        class={classNames(displayClass, 'curius-trail')}
+        aria-busy="true"
+        data-num-trails={3}
+        data-limits={4}
+        data-locale={cfg.locale}
+      >
+        <h2>sentiers</h2>
+        <p id="curius-trails-status" class="curius-sidebar-status" role="status">
+          Chargement des sentiers…
+        </p>
+        <ul class="section-ul" id="trail-list" />
+      </div>
+      <a
+        class="curius-profile"
+        hidden
+        href="https://curius.app/aaron-pham"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-no-popover
+        data-skip-icons
+      >
+        curius.app/aaron-pham ↗
+      </a>
+    </>
   )
 }
 
 export const CuriusNavigation: QuartzComponent = (props: QuartzComponentProps) => {
   const { displayClass } = props
   return (
-    <div class={classNames(displayClass, 'curius-pagination', 'curius-col')} id="curius-pagination">
-      <span id="curius-prev">(prev)</span>
-      <span id="curius-next">next</span>
-    </div>
+    <nav
+      class={classNames(displayClass, 'curius-pagination')}
+      id="curius-pagination"
+      aria-label="Saved links pages"
+    >
+      <button
+        type="button"
+        id="curius-prev"
+        class="curius-icon-button"
+        aria-label="Previous page"
+        title="Previous page"
+        disabled
+      >
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+          <path
+            d="M8.84182 3.13514C9.04327 3.32401 9.05348 3.64042 8.86462 3.84188L5.43521 7.49991L8.86462 11.1579C9.05348 11.3594 9.04327 11.6758 8.84182 11.8647C8.64036 12.0535 8.32394 12.0433 8.13508 11.8419L4.38508 7.84188C4.20477 7.64955 4.20477 7.35027 4.38508 7.15794L8.13508 3.15794C8.32394 2.95648 8.64036 2.94628 8.84182 3.13514Z"
+            fill="currentColor"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+      <button
+        type="button"
+        id="curius-next"
+        class="curius-icon-button"
+        aria-label="Next page"
+        title="Next page"
+        disabled
+      >
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+          <path
+            d="M6.1584 3.13508C6.35985 2.94621 6.67627 2.95642 6.86514 3.15788L10.6151 7.15788C10.7954 7.3502 10.7954 7.64949 10.6151 7.84182L6.86514 11.8418C6.67627 12.0433 6.35985 12.0535 6.1584 11.8646C5.95694 11.6757 5.94673 11.3593 6.1356 11.1579L9.565 7.49985L6.1356 3.84182C5.94673 3.64036 5.95694 3.32394 6.1584 3.13508Z"
+            fill="currentColor"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+    </nav>
   )
 }
-CuriusNavigation.afterDOMLoaded = curiusNavigationScript
-
 type RenderPageOptions = { forEmail?: boolean; skipProtected?: boolean; skipSearch?: boolean }
 
 export function renderPage(
@@ -2442,8 +2605,7 @@ export function renderPage(
       beforeBody: [],
       sidebar: [CuriusFriends, CuriusTrail],
       pageBody: CuriusContent,
-      afterBody: [CuriusNavigation],
-      footer: FooterConstructor({ layout: 'curius' }),
+      afterBody: [],
     }
   } else if (slug === 'lyd') {
     components = { ...components, beforeBody: [], sidebar: [], afterBody: [] }
@@ -2579,7 +2741,7 @@ export function renderPage(
                 )}
                 <Headings {...componentData} />
               </section>
-              {!isFolderTag && (
+              {!isFolderTag && !isCurius && (
                 <section class="page-footer popover-hint grid all-col">
                   {retrievalNodes.length > 0 &&
                     htmlToJsx(componentData.fileData.filePath!, {

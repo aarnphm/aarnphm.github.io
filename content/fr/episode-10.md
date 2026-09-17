@@ -2,7 +2,7 @@
 date: '2026-08-03'
 description: épisode 10, s'orienter dans un quartier, les commerces, les prépositions de localisation (3) et lire un plan ou un horaire
 id: episode-10
-modified: 2026-08-03 23:30:00 GMT-04:00
+modified: 2026-09-16 19:33:58 GMT-04:00
 tags:
   - fr
   - language
@@ -90,7 +90,7 @@ exercise 2 plays six recorded dialogues and asks you to write down what each spe
 
 these are audio-gated, so the answers are not recoverable from the page. what is recoverable is that the six statements already use every preposition the Mémo is about to name, plus `être situé` as a synonym of `être` and `se trouver`. the book teaches the pattern before labelling it.
 
-one detail in line 4: `dans la rue Aubry`, not `sur`. French puts you inside a street. Québec says `sur la rue` constantly, and the book itself does so whenever a verb of motion is involved (`Tournez à droite sur la rue Sainte-Anne.`), while keeping `dans la rue` for static location (`Elle est dans la rue du Domaine.`). that split holds across every example on these pages.
+line 4 uses `dans la rue Aubry`. the book also uses `sur la rue` in directions such as `Tournez à droite sur la rue Sainte-Anne.` both `dans` and `sur` can locate a building on a street; the [OQLF accepts both constructions](https://vitrinelinguistique.oqlf.gouv.qc.ca/25333/la-syntaxe/les-prepositions/preposition-devant-un-nom/les-prepositions-devant-le-nom-dune-voie-de-communication) and notes that `sur la rue` is common in Québec. see [[fr/episode-10#sur la rue ou dans la rue|street-location examples]].
 
 ## la rue et ses éléments
 
@@ -213,14 +213,46 @@ third pass, and the interesting part is the delta. set (1) in [[fr/episode-3]] i
 
 two in, three out. `de l'autre côté` and `au coin` arrive; `à gauche`, `à droite` and `au-dessus` leave. the three that leave are precisely the ones that need a reference frame. left and right depend on which way you are facing, and a quartier seen from above has no facing; above and below need a vertical axis, and a plan is flat. so the book moves left and right out of the preposition column and into the verb column, where they belong to a walker: `Tournez à gauche à la lumière.`, `C'est à votre droite.` the possessive `votre` is doing the frame-setting that the preposition can no longer do.[^audessus]
 
-the `de` machinery is unchanged, and [[fr/episode-6]] owns it: `du` before masculine, `de la` before feminine, `de l'` before a vowel or a mute `h`, `des` before a plural. the Mémo reprints the same bracket.
+### choisir du, de la, de l' ou des
+
+the same combinations introduced in [[fr/episode-6]] follow all seven expressions. choose the form from the reference noun after the preposition. in `La banque est à côté du cinéma.`, masculine `le cinéma` determines `du`.
+
+| nom de référence                                          | combinaison      | exemple du mémo       |
+| --------------------------------------------------------- | ---------------- | --------------------- |
+| masculin singulier : `le cinéma`                          | `de + le → du`   | `en face du cinéma`   |
+| féminin singulier : `la clinique`                         | `de la`          | `près de la clinique` |
+| singulier devant une voyelle ou un `h` muet : `l'hôpital` | `de l'`          | `loin de l'hôpital`   |
+| pluriel : `les magasins`                                  | `de + les → des` | `à côté des magasins` |
+
+elision works with either gender in the singular: `près de l'école`, `loin de l'hôpital`. a plural keeps `des`, including before a vowel: `près des écoles`. practice and corrections are in [[fr/lessons/260916#entrainement|la leçon du 16 septembre]].
 
 > [!warning] `de l'autre côté de` n'est pas `en face de`
-> both cross something, and they name different things. `en face de` names what you are looking at: `Le restaurant japonais est en face du cinéma.` `de l'autre côté de` names what you have to cross: `L'épicerie est de l'autre côté de la rue.` the complement of `en face de` is the destination, the complement of `de l'autre côté de` is the obstacle. that is why the second one takes streets, rivers and bridges as its object and the first one takes buildings.
+> `en face de` means opposite or facing a reference point: `Le restaurant japonais est en face du cinéma.` `de l'autre côté de` means on the other side of a reference point: `L'épicerie est de l'autre côté de la rue.` shops on opposite sides of a street need not face each other directly. `en face de` also works with people and objects: `Je suis en face de toi.`, `La chaise est en face du bureau.`
 
 `au coin de` runs two patterns. with one street it is a spot on that street, `Mon appartement est au coin de la rue.` with two it is an intersection, and each street gets its own `de`, contracted separately: `Il est au coin de la rue Laliberté et de l'avenue Sainte-Marcelle.`, `Au coin de la rue Légaré et du pont Labelle.` dropping the second `de` is the standard error.
 
 keep `au coin de` apart from `dans le coin`, which has no complement and means around here, in this general area: `Excusez-moi, est-ce qu'il y a un bar dans le coin ?`
+
+### entre… et…
+
+`entre… et…` means between… and…, with two landmarks: **lieu + est / se trouve + entre + lieu A + et + lieu B**. it comes from [[fr/episode-3]] and also works with the neighbourhood plan:
+
+- `La boucherie (11) est entre l'épicerie (12) et la boulangerie (10).`
+- `La boucherie se trouve entre l'épicerie et la boulangerie.`
+
+keep each place's article: `entre la banque et le café`, `entre l'école et les magasins`. `entre` takes the landmarks directly, without `de`. in `est entre`, `est` is the verb `être` and `entre` is the preposition.
+
+### sur la rue ou dans la rue
+
+to name the street containing a place, use **lieu + est / se trouve + sur la rue + nom de la rue**:
+
+- `La pharmacie Lucie Roy (9) est sur la rue du Domaine.`
+- `Elle se trouve dans la rue du Domaine.`
+- `La pharmacie Lucie Roy est sur la rue du Domaine, à côté du restaurant mexicain (8).`
+
+both `sur la rue` and `dans la rue` work for a fixed location. `sur la rue` is common in Québec. the [OQLF's guidance on street names](https://vitrinelinguistique.oqlf.gouv.qc.ca/25333/la-syntaxe/les-prepositions/preposition-devant-un-nom/les-prepositions-devant-le-nom-dune-voie-de-communication) accepts both. movement is also possible: `Tournez à droite sur la rue Sainte-Anne.`
+
+`du Domaine` is part of this street's name. a different name can follow `rue` directly: `sur la rue Laliberté`. the [[fr/lessons/260916#sur la rue ou dans la rue|lesson notes]] have the same examples in French.
 
 ## le plan du quartier
 
@@ -256,6 +288,33 @@ the plan abbreviates saints on the drawing (`Ave Ste-Marcelle`, `Rue Ste-Anne`, 
 
 exercise 4 puts the two together: `Observez le plan du quartier ci-dessous. Dites où sont situés les commerces. Utilisez les prépositions de localisation.` with the handwritten model `Le gym est en face de l'épicerie.`
 
+### exemples sur le plan
+
+practice sentences from the west half of the plan, with its building numbers. the first repeats the book's model:
+
+| phrase                                                                | sens en anglais                                                       |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Le gym (6) est en face de l'épicerie (12).                            | The gym is opposite the grocery store.                                |
+| La pharmacie Lucie Roy (9) est à côté du restaurant mexicain (8).     | The pharmacy is next to the Mexican restaurant.                       |
+| La boucherie (11) est entre l'épicerie (12) et la boulangerie (10).   | The butcher shop is between the grocery store and the bakery.         |
+| Le café (4) est au coin de la rue Laliberté et de la rue Sainte-Anne. | The café is at the corner of Laliberté Street and Sainte-Anne Street. |
+| La banque (14) est à côté du magasin de sport (13).                   | The bank is next to the sporting goods store.                         |
+
+`entre… et…` comes from [[fr/episode-3]]. to ask for a location, use `Où est le gym ?` or `Où se trouve le gym ?`. the [[fr/lessons/260916#exemples sur le plan du quartier|lesson notes]] pair each place with a question and answer.
+
+### repères sur la partie est du plan
+
+sur la page 81, les numéros permettent de retrouver les bâtiments et de vérifier le trajet :
+
+| phrase sur le plan                                                                        | sens en anglais                                                            |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| La garderie (16) est à côté du CLSC (17).                                                 | The daycare is next to the community health centre.                        |
+| Le musée (18) est au-dessus de la bibliothèque municipale (19), sur la côte Saint-Pierre. | The museum is above the municipal library, on Côte Saint-Pierre.           |
+| Le bureau de poste (20) est au coin du boulevard Cadieux et du pont Gauthier.             | The post office is at the corner of Boulevard Cadieux and Gauthier Bridge. |
+| Le dentiste Beau sourire (22) est à côté du bureau de poste (20).                         | The Beau sourire dentist's office is next to the post office.              |
+
+le pont Gauthier permet de traverser la rivière au Chat. sur ce plan, la rue Légaré longe une rive et le boulevard Cadieux longe l'autre rive. `une rive` = a riverbank; `longer` = to follow alongside.
+
 ## donner des indications dans un quartier
 
 the encadré is six lines, all impératif vous, the mood [[fr/episode-6]] already conjugated:
@@ -277,7 +336,44 @@ three things are new here rather than recycled.
 
 the landmarks changed with the setting. inside an édifice, [[fr/episode-6]] counted `le premier corridor` and `le troisième étage`. outdoors you count `la lumière`, `l'arrêt`, `le pont`, `le coin`. the slot after `à` is identical, only the furniture moved. `Au deuxième arrêt` needs an ordinal, which lives in [[fr/les-nombres]], and it means the second stop sign you drive past, a unit of measurement that only works in a place where every intersection has one.
 
-exercise 6 runs two trajets, `Repérez le lieu de départ sur le plan. Écoutez les indications et notez le lieu d'arrivée.`, from `L'hôpital` and from `Le magasin de sport`, with the arrivals on the recording. `repérer` is to spot or locate something on a map, a useful verb the book uses without glossing.
+### piste 17 : trouver le lieu d'arrivée
+
+exercice 6 : `Repérez le lieu de départ sur le plan. Écoutez les indications et notez le lieu d'arrivée.` le **lieu de départ** est le point où le trajet commence (starting point); le **lieu d'arrivée** est la destination. `repérer` signifie trouver un lieu sur le plan (to locate).
+
+| trajet | lieu de départ           | lieu d'arrivée              |
+| ------ | ------------------------ | --------------------------- |
+| a      | L'hôpital (21)           | **Le bureau de poste (20)** |
+| b      | Le magasin de sport (13) | **Le café (4)**             |
+
+réponses confirmées par le corrigé, p. 149 de [[fr/par-ici-niveau-a1.pdf|Par ici A1]]. les transcriptions ci-dessous viennent de la p. 137; les trajets se suivent sur les deux moitiés du plan, p. 80 et 81.
+
+**a. de l'hôpital au bureau de poste**
+
+> Descendez la côte Saint-Pierre jusqu'à la rue Légaré. Continuez tout droit jusqu'au pont Gauthier. Traversez le pont et tournez tout de suite à votre gauche. C'est là !
+
+trajet : **hôpital → côte Saint-Pierre → rue Légaré → pont Gauthier → à gauche sur le boulevard Cadieux → bureau de poste**. le bureau de poste est le premier bâtiment après le pont, à gauche dans le sens de la marche.
+
+**b. du magasin de sport au café**
+
+> En sortant du magasin de sport, tournez à votre droite et marchez jusqu'au pont. Prenez le pont puis l'avenue Sainte-Marcelle. À l'intersection avec la rue Laliberté, tournez à droite. Continuez tout droit. C'est juste après la rue Sainte-Anne, sur votre droite.
+
+trajet : **magasin de sport → à droite en sortant → pont Labelle → avenue Sainte-Marcelle → à droite sur la rue Laliberté → café**, juste après la rue Sainte-Anne. le plan permet d'identifier le pont Labelle, que l'enregistrement appelle simplement `le pont`.
+
+dans les deux trajets, **à votre droite / à votre gauche** dépend du sens de la marche. repérez votre direction après chaque virage, puis cherchez le bâtiment du côté indiqué.
+
+| expression                        | sens en anglais                   | note                                                         |
+| --------------------------------- | --------------------------------- | ------------------------------------------------------------ |
+| `Descendez la côte.`              | Go down the hill.                 | impératif de `descendre`, forme `vous`                       |
+| `En sortant du magasin…`          | As you leave the shop…            | `en sortant de` situe le début du trajet                     |
+| `Marchez jusqu'au pont.`          | Walk as far as the bridge.        | impératif de `marcher`; `jusqu'à + le = jusqu'au`            |
+| `Prenez le pont puis l'avenue…`   | Take the bridge, then the avenue… | `puis` indique l'étape suivante                              |
+| `À l'intersection avec…`          | At the intersection with…         | le point où les rues se rencontrent                          |
+| `Tout de suite à votre gauche.`   | Immediately on your left.         | `tout de suite` = immediately; `tout droit` = straight ahead |
+| `Juste après la rue Sainte-Anne.` | Just past Sainte-Anne Street.     | continuez jusqu'à dépasser cette rue                         |
+
+les formes `descendez`, `marchez`, `prenez`, `continuez`, `traversez` et `tournez` sont à l'impératif avec `vous`, sans pronom sujet exprimé. revoir [[fr/episode-6#l'impératif présent|l'impératif présent]].
+
+### jeu de rôle : demander et donner un trajet
 
 exercise 7 hands the trajets back as a jeu de rôle, one person asking and one answering:
 
@@ -291,13 +387,17 @@ with the model `– Pardon, je cherche le dentiste. – Tournez à gauche sur la
 
 ## demander son chemin
 
-the asking encadré is [[fr/episode-6]] moved outdoors, same four frames with new nouns:
+le mémo reprend cinq formulations pour demander des indications, avec le vocabulaire du quartier. les exemples complets prolongent les questions de [[fr/episode-6]] :
 
-- `Pardon, je cherche la rue/le dépanneur/…`
-- `Pouvez-vous me dire où est la pharmacie/…`
-- `Pouvez-vous me dire où sont les magasins/… ?`
-- `Le parc, c'est à quel endroit ?`
-- `L'école primaire, s'il vous plait.`
+| formulation                                  | sens en anglais                                   |
+| -------------------------------------------- | ------------------------------------------------- |
+| `Pardon, je cherche le dépanneur.`           | Excuse me, I'm looking for the convenience store. |
+| `Pouvez-vous me dire où est la pharmacie ?`  | Can you tell me where the pharmacy is?            |
+| `Pouvez-vous me dire où sont les magasins ?` | Can you tell me where the shops are?              |
+| `Le parc, c'est à quel endroit ?`            | Where is the park?                                |
+| `L'école primaire, s'il vous plait.`         | The elementary school, please.                    |
+
+`où est` accompagne un lieu singulier, `où sont` plusieurs lieux. `chercher` prend directement le nom : `Je cherche la pharmacie.` la dernière formule est une demande abrégée; le contexte indique qu'on cherche le chemin. `Pardon`, `Excusez-moi` et `s'il vous plait` rendent la demande polie.
 
 the matching exercise adds three frames the earlier episode did not have. `où se trouve X ?` uses `se trouver`, a pronominal verb meaning to be situated, interchangeable with `être` and with `être situé`. `Savez-vous où est X ?` wraps the question in a yes-no shell, so the answer opens with `Oui,` or `Non,`. and `est-ce qu'il y a un X dans le coin ?` asks about existence rather than location, which is the only question on the page that can be answered no.
 
@@ -396,6 +496,9 @@ two notations sit on the same page. the table uses `05:24`, the prose uses `5 h 
 
 ## lire un avis
 
+> [!note] documents du manuel
+> Les avis ci-dessous sont étudiés dans leur contexte historique, dont celui du 14 mai 2017. Les réponses suivent ces documents. Leurs horaires et conditions ne constituent pas une vérification du service actuel. Voir [[fr/lessons/260916#lire les avis : transports|les notes de lecture du 16 septembre]].
+
 four transit notices, read for gist. the vocabulary here is the highest-density on the page, because a notice compresses.
 
 > **1. Modification de service**
@@ -439,23 +542,38 @@ four transit notices, read for gist. the vocabulary here is the highest-density 
 
 the eight comprehension statements, only the first printed:
 
-| avis | énoncé                                                                                  | réponse                                        |
-| ---- | --------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| 1    | `L'avis s'adresse à toutes les personnes qui prennent l'autobus à Montréal.`            | faux, imprimé                                  |
-| 1    | `L'arrêt d'autobus 53033 est déplacé à partir du 14 novembre 2017.`                     | faux, c'est le 14 mai                          |
-| 2    | `On peut transporter son vélo dans le métro le lundi à 16 h.`                           | faux, la plage est 10 h à 15 h puis 19 h       |
-| 2    | `Quand il y a de grands évènements, les vélos sont parfois interdits.`                  | vrai                                           |
-| 3    | `Des travaux de construction peuvent ralentir le service d'autobus.`                    | vrai                                           |
-| 3    | `Cet avis s'adresse aux usagers et usagères de plusieurs lignes d'autobus de Montréal.` | vrai                                           |
-| 4    | `Ce service est offert aux femmes qui prennent l'autobus seules.`                       | vrai                                           |
-| 4    | `Ce service est offert en hiver seulement.`                                             | faux, toute l'année, avec deux heures de début |
+| avis | énoncé                                                                                  | réponse                                                              |
+| ---- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 1    | `L'avis s'adresse à toutes les personnes qui prennent l'autobus à Montréal.`            | faux, la ligne 10 De Lorimier, direction sud, est concernée          |
+| 1    | `L'arrêt d'autobus 53033 est déplacé à partir du 14 novembre 2017.`                     | faux, le 14 mai 2017 à 0 h 09                                        |
+| 2    | `On peut transporter son vélo dans le métro le lundi à 16 h.`                           | faux, de 10 h à 15 h et de 19 h à la fin du service                  |
+| 2    | `Quand il y a de grands évènements, les vélos sont parfois interdits.`                  | vrai, accès parfois refusé sans préavis pour des raisons de sécurité |
+| 3    | `Des travaux de construction peuvent ralentir le service d'autobus.`                    | vrai                                                                 |
+| 3    | `Cet avis s'adresse aux usagers et usagères de plusieurs lignes d'autobus de Montréal.` | vrai                                                                 |
+| 4    | `Ce service est offert aux femmes qui prennent l'autobus seules.`                       | vrai                                                                 |
+| 4    | `Ce service est offert en hiver seulement.`                                             | faux, toute l'année, avec deux heures de début                       |
+
+### comprendre les formulations des avis
+
+- `s'adresser à` identifies the intended audience. notice 1 concerns line **10 De Lorimier, direction sud**.
+- `en raison de + nom` gives a cause: `en raison des travaux` means because of the works, with `de + les → des`.
+- `du lundi au vendredi` means from Monday to Friday. `de 10 h à 15 h` and `de 19 h à la fin du service` are two separate time windows. Monday at 16 h falls outside both.
+- `l'accès peut être refusé` means access may be denied. `pouvoir + être + participe passé` expresses a possibility in the passive voice. a refusal depends on the circumstances.
+- `des retards importants sont à prévoir` means significant delays are to be expected. `importants` describes the extent of the delays.
+- `certains jours fériés` means some public holidays; `toute la journée` describes the duration of permission on those days.
+- `pour une durée indéterminée` gives no end date. it leaves the duration unspecified.
+- `bénéficiez du service` means take advantage of the service. `bénéficiez` is the `vous` imperative of `bénéficier de`.
+
+a **modification de service** changes the service arrangement; a **perturbation de service** disrupts its operation. roadworks can cause either, as notices 1 and 3 show. the words alone do not say whether the cause was planned.
+
+the [[fr/lessons/260916#lire les avis : transports|lesson summary]] groups each notice by audience, change, time and exceptions, with French explanations and English vocabulary.
 
 three spellings to notice, all rectified: `évènement` with a grave accent, `aout` and `Cout` with no circumflex.[^rectifie]
 
 dates take cardinal numbers except the first of the month: `le 14 mai 2017`, `le 30 aout`, but `le 1er mai`. that is the only ordinal French uses for dates, and [[fr/les-nombres]] has the rest.
 
 > [!note] faits d'ici
-> `entre 2 arrêts` is a real STM programme, not an idiom: after a certain hour a woman travelling alone on a bus can ask the driver to let her off between two official stops, closer to her door. the notice's two start times, 19 h 30 from 30 August and 21 h from 1 May, track sunset rather than the calendar, which is why the dates land where they do.
+> in notice 4, `entre 2 arrêts` names a service for women travelling alone on a bus: after the indicated time, they can request a drop-off between two official stops. the notice gives 19 h 30 from 30 August through 30 April and 21 h from 1 May through 29 August. together those periods cover the whole year.
 
 `VOUS POUVEZ MAINTENANT…` closes the episode on two lines, `Vous orienter dans un quartier.` and `Comprendre un plan, un horaire ou un avis.` the first is the épisode 6 skill with a bigger map and two new prepositions; the second is new, and it is the first time the book asks you to read a document written for native speakers rather than for you.
 

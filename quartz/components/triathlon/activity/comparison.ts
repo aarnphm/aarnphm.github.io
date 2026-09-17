@@ -563,7 +563,13 @@ export const setActivityExpanded = (activity: HTMLElement, expanded: boolean): v
 }
 
 export const onCardToggle = (event: Event): void => {
-  const toggle = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>('.tri-act-toggle')
+  if (!(event.target instanceof Element)) return
+  const toggle = event.target.closest<HTMLButtonElement>('.tri-act-toggle')
   const activity = toggle?.closest<HTMLElement>('.tri-act')
-  if (activity) setActivityExpanded(activity, !activity.classList.contains('tri-act--expanded'))
+  if (!activity) return
+  const expanded = !activity.classList.contains('tri-act--expanded')
+  const activities = activity
+    .closest('.tri-pop-card')
+    ?.querySelectorAll<HTMLElement>(':scope > .tri-act') ?? [activity]
+  for (const sibling of activities) setActivityExpanded(sibling, expanded)
 }

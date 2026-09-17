@@ -20,7 +20,7 @@ const convert = (key: string) =>
     .replace('ctrl', '⌃')
     .replace('alt', '⌥')
     .replace('shift', '⇧')
-    .replace('+', ' ')
+    .replaceAll('+', ' ')
 
 const revert = (key: string) =>
   key

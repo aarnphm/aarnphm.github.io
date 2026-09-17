@@ -3313,7 +3313,7 @@ test('renders muscle oxygen as a percentage trace', () => {
   assert.deepEqual(byClass(trace, 'tri-cax-yt').map(text), ['55.0%', '60.0%', '65.0%'])
 })
 
-test('keeps environment in the full-width activity graph sequence before training effect', () => {
+test('keeps environment after the full-width activity traces', () => {
   const activity = detail({
     analyses: environmentAnalyses(),
     garmin: garminVerification({ aerobicTrainingEffect: 3.2, anaerobicTrainingEffect: 1.1 }),
@@ -3344,7 +3344,7 @@ test('keeps environment in the full-width activity graph sequence before trainin
   assert.ok(environment)
   const environmentIndex = children.indexOf(environment)
   assert.equal(children[environmentIndex - 1].properties.dataTriTrace, 'muscle-oxygen')
-  assert.ok(classNames(children[environmentIndex + 1]).includes('tri-training-effect'))
+  assert.ok(children.indexOf(byClass(more, 'tri-training-effect')[0]) < environmentIndex)
 })
 
 test('renders timestamp-aligned CORE app graphs for runs without Garmin thermal data', () => {
@@ -7164,9 +7164,8 @@ test('renders recorded sauna HTL as ten one-point segments after activity graphs
     assert.ok(
       more.children.indexOf(htl) > more.children.indexOf(byClass(card, 'tri-workout-analysis')[0]),
     )
-    assert.equal(
-      more.children.indexOf(htl) + 1,
-      more.children.indexOf(byClass(card, 'tri-training-effect')[0]),
+    assert.ok(
+      more.children.indexOf(byClass(card, 'tri-training-effect')[0]) < more.children.indexOf(htl),
     )
   }
   assert.ok(sauna.sauna)
@@ -7831,6 +7830,55 @@ test('extends the first measured trace value to distance zero', () => {
   assert.match(String(line.properties.d), /^M 0 ([\d.]+) L 0\.61 \1 /)
 })
 
+test('places training effect and zones directly after performance condition across activity cards', () => {
+  const sports: StravaActivityDetail['sport'][] = [
+    'bike',
+    'run',
+    'walk',
+    'swim',
+    'sauna',
+    'strength',
+  ]
+  for (const sport of sports) {
+    for (const embedded of [false, true]) {
+      for (const hasRoute of [false, true]) {
+        const activity = detail({
+          ...zonedDetail(),
+          sport,
+          garmin: garminVerification({ aerobicTrainingEffect: 3.2, anaerobicTrainingEffect: 0 }),
+          route: hasRoute
+            ? detail().route.map((point, index) => ({ ...point, performanceCondition: index - 2 }))
+            : [],
+          heartRateTrace: [heartRateTracePoint(0, 0, 110), heartRateTracePoint(0, 4_800, 140)],
+        })
+        const rendered = buildActivity(factory, activity, true, ctx(), false, embedded)
+        const more = byClass(rendered, 'tri-act-more')[0]
+        const children = more.children.filter((child): child is Element => child.type === 'element')
+        const trainingEffect = byClass(more, 'tri-training-effect')
+        const zones = byClass(more, 'tri-zone-duo')
+        assert.equal(trainingEffect.length, 1)
+        assert.equal(zones.length, 1)
+        const effectIndex = children.indexOf(trainingEffect[0])
+        assert.equal(children.indexOf(zones[0]), effectIndex + 1)
+        const conditionIndex = children.findIndex(
+          child => child.properties.dataTriTrace === 'performance-condition',
+        )
+        if (hasRoute) {
+          assert.ok(conditionIndex >= 0)
+          assert.equal(effectIndex, conditionIndex + 1)
+        } else {
+          assert.equal(conditionIndex, -1)
+          assert.ok(
+            children
+              .slice(0, effectIndex)
+              .every(child => classNames(child).includes('tri-workout-analysis')),
+          )
+        }
+      }
+    }
+  }
+})
+
 test('pairs hr/power zones with aligned captions', () => {
   const rendered = buildActivity(factory, zonedDetail(), true, ctx())
   const duos = byClass(rendered, 'tri-zone-duo')
@@ -7913,7 +7961,7 @@ test('removes zone duos from simplified activity details', () => {
     )
 })
 
-test('places the pool overview and swim charts before heart rate zones in expanded details', () => {
+test('places heart rate zones before the pool overview and swim charts in expanded details', () => {
   const rendered = buildActivity(
     factory,
     swimTrendDetail({ hrZones: [20, 40, 30, 10, 0] }),
@@ -7931,7 +7979,7 @@ test('places the pool overview and swim charts before heart rate zones in expand
 
   assert.ok(overviewIndex >= 0)
   assert.equal(swimIndex, overviewIndex + 1)
-  assert.ok(zonesIndex > swimIndex)
+  assert.ok(zonesIndex >= 0 && zonesIndex < overviewIndex)
 })
 
 test('glosses the swim rate, cadence, and SWOLF titles', () => {

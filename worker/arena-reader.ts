@@ -14,6 +14,7 @@ import {
   verifyArenaResourceCapability,
 } from './arena-reader-auth'
 import { loadArenaReaderSnapshot } from './arena-reader-cache'
+import { CuriusFeedUnavailableError, includeCuriusFeed } from './arena-reader-catalogue'
 import {
   handleArenaReaderResource,
   readArenaRenderStatus,
@@ -229,7 +230,11 @@ async function dispatch(request: Request, env: Env): Promise<Response | null> {
       'Reader storage has not been configured.',
     )
   }
-  const catalogue = await loadCatalogue(env, url.origin)
+  const catalogue = await includeCuriusFeed(
+    await loadCatalogue(env, url.origin),
+    env.ARENA_CONTENT,
+    url.pathname === '/api/arena/feed',
+  )
   const entry =
     parts[2] === 'articles'
       ? catalogue.entries.find(item => item.articleId === parts[3])
@@ -412,6 +417,8 @@ export async function handleArenaReaderRequest(
   try {
     return await dispatch(request, env)
   } catch (error) {
+    if (error instanceof CuriusFeedUnavailableError)
+      return errorResponse('curius-unavailable', error.message, 503)
     if (error instanceof ReaderRequestError)
       return errorResponse(error.code, error.message, error.status)
     if (error instanceof ArenaReaderConflictError) {

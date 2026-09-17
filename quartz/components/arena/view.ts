@@ -1646,52 +1646,6 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
       return
     }
 
-    if ((e.metaKey || e.ctrlKey) && key === 'b') {
-      const modal = document.getElementById('arena-modal')
-      if (modal?.classList.contains('active')) {
-        e.preventDefault()
-        const sidebar = modal.querySelector('.arena-modal-sidebar') as HTMLElement | null
-        const collapseBtn = modal.querySelector('.arena-modal-collapse') as HTMLElement | null
-        if (sidebar) {
-          sidebar.classList.toggle('collapsed')
-          collapseBtn?.classList.toggle('active')
-
-          // Resize maps after layout change - wait for CSS transition
-          const modalBody = modal.querySelector('.arena-modal-body') as HTMLElement | null
-          if (modalBody) {
-            const resizeMaps = () => {
-              modalBody
-                .querySelectorAll<HTMLElement>(".arena-modal-map[data-map-initialized='1']")
-                .forEach(mapNode => {
-                  const map = mapInstances.get(mapNode)
-                  if (map) {
-                    try {
-                      map.resize()
-                    } catch (error) {
-                      console.error(error)
-                    }
-                  }
-                })
-            }
-
-            const onTransitionEnd = (event: TransitionEvent) => {
-              if (event.target === sidebar && event.propertyName === 'width') {
-                sidebar.removeEventListener('transitionend', onTransitionEnd)
-                requestAnimationFrame(resizeMaps)
-              }
-            }
-
-            sidebar.addEventListener('transitionend', onTransitionEnd)
-            setTimeout(() => {
-              sidebar.removeEventListener('transitionend', onTransitionEnd)
-              requestAnimationFrame(resizeMaps)
-            }, 100)
-          }
-        }
-        return
-      }
-    }
-
     const results = getSearchResults()
     const searchContainer = document.getElementById('arena-search-container')
     const searchOpen = Boolean(searchContainer && searchContainer.classList.contains('active'))

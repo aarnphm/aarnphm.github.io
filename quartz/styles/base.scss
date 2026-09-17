@@ -22,7 +22,6 @@ body {
   word-spacing: 0;
   scrollbar-width: thin;
   scrollbar-color: gray transparent;
-  text-align: justify;
 }
 
 html {
@@ -892,6 +891,7 @@ body[data-is-base='true'] {
 
 .page-content {
   margin-bottom: 2rem;
+  text-align: justify;
 
   & article {
     & li:has(> input[type='checkbox']) {

@@ -5,7 +5,7 @@ aliases:
 date: '2025-05-21'
 description: How draft tokens are verified, why residual sampling preserves the target distribution, and when the extra work reduces decoding time.
 id: Speculative decoding
-modified: 2026-09-15 09:28:39 GMT-04:00
+modified: 2026-09-16 15:58:23 GMT-04:00
 socials:
   slides: https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p
 tags:
@@ -18,11 +18,18 @@ transclude:
 
 https://x.com/karpathy/status/1697318534555336961
 
-A cheap draft process proposes a short continuation. The target [[thoughts/Transformers#model|transformer]] scores the proposed positions together, and verification decides how much of that continuation to keep. A cached prefix can be reused during this pass.
+Intuition:
 
-The draft still generates its chain [[thoughts/Autoregressive models|autoregressively]]. Parallel target scoring is possible because the proposed tokens are already available. At the first rejected token, the remaining draft is discarded because it was conditioned on a continuation we did not keep.
+- we generate a small set of lookahead tokens, albeit 2-5 tokens with smaller speculators
+- uses the larger [[thoughts/Transformers#model]] to "verify" the input sequences + draft tokens (then replace tokens that aren't valid from rejection sampler)
 
-Strict [[#speculative sampling|speculative sampling]] preserves the target distribution through its acceptance test and correction distribution. The draft-target overlap controls how much work survives verification. Speed also depends on draft cost and the cost of scoring several target positions together.
+In a sense, we are verify these in parallel instead of [[thoughts/Autoregressive models|autoregressive decoding]]. Given that verification is a lot cheaper comparing to next-token prediction
+
+A few techniques such as [[#ngrams|ngrams]], [[#EAGLE|EAGLE]] are supported in [[thoughts/vllm|vLLM]]
+
+> [!note]
+>
+> Strict [[#speculative sampling|speculative sampling]] preserves the target distribution through its acceptance test and correction distribution. Speed also depends on draft cost and the cost of scoring several target positions together.
 
 ## papers
 

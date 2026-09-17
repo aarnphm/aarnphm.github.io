@@ -600,6 +600,13 @@ export function createArenaChannelRenderer(
             </svg>
           </div>
         )}
+        {block.highlighted && !isPinned && (
+          <span class="arena-block-favorite-indicator" role="img" aria-label="Favorite">
+            <svg viewBox="0 0 15 15" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M3.5 1.5h8v12l-4-3-4 3z" />
+            </svg>
+          </span>
+        )}
         <div
           class="arena-block-clickable"
           role="button"

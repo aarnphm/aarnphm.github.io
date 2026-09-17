@@ -1034,14 +1034,14 @@ export const renderMapDetail = (
       heartRate,
       buildStaminaChartNode(domF, d, null),
       buildPerformanceConditionTraceNode(domF, d, null),
-      environment,
-      buildSaunaHeatTrainingLoad(domF, d),
       trainingEffect,
       zoneDuo(
         presentation,
         buildHrZones(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
         buildPowerZones(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
       ),
+      environment,
+      buildSaunaHeatTrainingLoad(domF, d),
       buildPowerCurve(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
       buildPowerHist(presentation, d),
     ])
