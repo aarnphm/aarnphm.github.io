@@ -20,12 +20,12 @@ https://x.com/karpathy/status/1697318534555336961
 
 Intuition:
 
-- we generate a small set of lookahead tokens, albeit 2-5 tokens with smaller speculators
-- uses the larger [[thoughts/Transformers#model]] to "verify" the input sequences + draft tokens (then replace tokens that aren't valid from rejection sampler)
+- we generate a short continuation with a cheaper speculator, say two to five lookahead tokens
+- the larger [[thoughts/Transformers#model|transformer]] scores those positions together, reusing the cached prefix. At the first rejection, the sampler draws a correction token and discards the remaining draft
 
-In a sense, we are verify these in parallel instead of [[thoughts/Autoregressive models|autoregressive decoding]]. Given that verification is a lot cheaper comparing to next-token prediction
+The draft tokens are already available, so the target can score them in one causal forward pass. A sequential speculator still drafts [[thoughts/Autoregressive models|autoregressively]]. Speed comes from accepting several tokens per target pass, especially when the target pass amortizes memory reads. Low acceptance or an expensive draft can erase the gain [@leviathan2023fastinferencetransformersspeculative].
 
-A few techniques such as [[#ngrams|ngrams]], [[#EAGLE|EAGLE]] are supported in [[thoughts/vllm|vLLM]]
+[[thoughts/vllm|vLLM]] supports draft methods such as [[#ngrams|ngrams]] and [[#EAGLE|EAGLE]].
 
 > [!note]
 >

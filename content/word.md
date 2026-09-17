@@ -327,7 +327,7 @@ title: lists
 - pharisaical
 - diaphanous
 - NATO Phonetic Alphabet
-  - Alpha
+  - Alfa
   - Bravo
   - Charlie
   - Delta

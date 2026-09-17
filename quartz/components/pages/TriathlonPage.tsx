@@ -15,6 +15,7 @@ import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
 import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
 import { SeasonSummary } from '../triathlon/SeasonSummary'
+import { ShortcutHint } from '../triathlon/shell/ShortcutHint'
 import {
   AnalyticsPanel,
   CalcPanel,
@@ -75,18 +76,24 @@ export default (() => {
       >
         <div class="tri-head">
           <button
-            class="tri-cmdk-trigger"
+            class="tri-cmdk-trigger tri-key-anchor"
             type="button"
             aria-label="command palette"
             aria-controls="tri-command-palette"
             aria-expanded="false"
             aria-haspopup="dialog"
-            data-i18n="command"
             data-i18n-aria-label="command palette"
+            aria-keyshortcuts="Meta+k Control+k"
           >
-            command
+            <span data-i18n="command">command</span>
+            <ShortcutHint>⌘/ctrl k</ShortcutHint>
           </button>
-          <a class="tri-total" href={profile} target="_blank" rel="noopener noreferrer">
+          <a
+            class="tri-total tri-key-anchor"
+            href={profile}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <span
               class="tri-dist tri-unit-distance"
               data-km={payload.totalKm}
@@ -96,9 +103,11 @@ export default (() => {
             >
               {distCombined(DEFAULT_TRIATHLON_PRESENTATION, payload.totalKm)}
             </span>
+            <ShortcutHint>g s</ShortcutHint>
           </a>
-          <a class="tri-total" data-no-popover href="/" data-i18n="home">
-            home
+          <a class="tri-total tri-key-anchor" data-no-popover href="/">
+            <span data-i18n="home">home</span>
+            <ShortcutHint>g h</ShortcutHint>
           </a>
         </div>
 
@@ -235,17 +244,21 @@ export default (() => {
               equipment={fileData.triathlonRenderData?.equipment}
             />
             <PacePanel />
-            <button class="tri-analytics-btn" type="button" data-i18n="analytics">
-              analytics
+            <button class="tri-analytics-btn tri-key-anchor" type="button">
+              <span data-i18n="analytics">analytics</span>
+              <ShortcutHint>g a</ShortcutHint>
             </button>
-            <button class="tri-map-btn" type="button" data-i18n="map">
-              map
+            <button class="tri-map-btn tri-key-anchor" type="button">
+              <span data-i18n="map">map</span>
+              <ShortcutHint>g m</ShortcutHint>
             </button>
-            <button class="tri-training-btn" type="button" data-i18n="training">
-              training
+            <button class="tri-training-btn tri-key-anchor" type="button">
+              <span data-i18n="training">training</span>
+              <ShortcutHint>g t</ShortcutHint>
             </button>
-            <button class="tri-calc-btn" type="button" data-i18n="calculator">
-              calculator
+            <button class="tri-calc-btn tri-key-anchor" type="button">
+              <span data-i18n="calculator">calculator</span>
+              <ShortcutHint>g c</ShortcutHint>
             </button>
             <a
               class="tri-credit"

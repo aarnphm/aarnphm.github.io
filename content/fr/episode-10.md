@@ -211,7 +211,7 @@ third pass, and the interesting part is the delta. set (1) in [[fr/episode-3]] i
 | `au bout de`         | at the end of        | repris de (2) | `Le parc est au bout de la rue.`                |
 | `à côté de`          | next to, beside      | repris de (2) | `La banque est à côté des magasins.`            |
 
-two in, three out. `de l'autre côté` and `au coin` arrive; `à gauche`, `à droite` and `au-dessus` leave. the three that leave are precisely the ones that need a reference frame. left and right depend on which way you are facing, and a quartier seen from above has no facing; above and below need a vertical axis, and a plan is flat. so the book moves left and right out of the preposition column and into the verb column, where they belong to a walker: `Tournez à gauche à la lumière.`, `C'est à votre droite.` the possessive `votre` is doing the frame-setting that the preposition can no longer do.[^audessus]
+two in, three out of this Mémo. `de l'autre côté` and `au coin` arrive; `à gauche`, `à droite` and `au-dessus` are absent from the list. the chapter still uses them: `Tournez à gauche à la lumière.`, `C'est à votre droite.`, and the museum is above the library.[^audessus] in directions, left and right follow the walker's orientation, which changes after a turn.
 
 ### choisir du, de la, de l' ou des
 
@@ -581,7 +581,7 @@ related: [[fr/episode-6|épisode 6]], [[fr/episode-3|épisode 3]], [[fr/episode-
 
 [^librairie]: `librairie` descends from Latin `librarius`, from `liber`, book. English borrowed the same root for library, the building, while French kept the shop and named the building from Greek `bibliothēkē`, the box you put books in. Spanish `librería` and Italian `libreria` are bookstores too, so English is the outlier and the trap is aimed squarely at anglophones.
 
-[^audessus]: `au-dessus de` still appears once on the page, in réponse 1: `Il est au-dessus de la bibliothèque municipale, sur la côte Saint-Pierre.` on a hill street that reads as further up the slope rather than vertically overhead, which is a second sense the Mémo never states and a good reason it was cut from the list.
+[^audessus]: `au-dessus de` appears in réponse 1 on p. 80: `Il est au-dessus de la bibliothèque municipale, sur la côte Saint-Pierre.` the drawing on p. 81 of [[fr/par-ici-niveau-a1.pdf|Par ici A1]] places the museum (18) on the upper floor of the building containing the library (19). the phrase describes their vertical arrangement.
 
 [^plan]: this matters for reading the answers. `le CLSC` and `la garderie` are numbered on the east half of the plan but described as being `dans la rue du Domaine`, a street labelled on the west half; the rue du Domaine and the rue Légaré simply continue across the gutter. if you only look at one page the answers appear to name streets that are not there.
 

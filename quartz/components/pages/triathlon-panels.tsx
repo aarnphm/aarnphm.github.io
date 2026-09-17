@@ -23,6 +23,7 @@ import {
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
 import { AnalyticsServerPanel } from '../triathlon/analytics/render'
+import { ShortcutHint } from '../triathlon/shell/ShortcutHint'
 import { EquipmentUsage } from '../triathlon/tools/EquipmentUsage'
 import { Maintenance } from '../triathlon/tools/Maintenance'
 import { TirePressure } from '../triathlon/tools/TirePressure'
@@ -32,13 +33,13 @@ export const DISPATCH_ICON =
   'M189 375Q189 338 207 306.5Q225 275 256.5 257Q288 239 325 239H675Q712 239 743.5 257Q775 275 793 306.5Q811 338 811 375V775Q811 812 793 843.5Q775 875 743.5 893Q712 911 675 911H325Q288 911 256.5 893Q225 875 207 843.5Q189 812 189 775ZM261 375V775Q261 802 279.5 820.5Q298 839 325 839H675Q702 839 720.5 820.5Q739 802 739 775V375Q739 348 720.5 329.5Q702 311 675 311H325Q298 311 279.5 329.5Q261 348 261 375ZM411 275H339V100Q339 85 349.5 74.5Q360 64 375 64Q390 64 400.5 74.5Q411 85 411 100ZM661 275H589V150Q589 135 599.5 124.5Q610 114 625 114Q640 114 650.5 124.5Q661 135 661 150ZM375 539H625A36 36 0 0 1 625 611H375A36 36 0 0 1 375 539Z'
 
 const NAV = [
-  ['tools', 'tools'],
-  ['calc', 'calculator'],
-  ['analytics', 'analytics'],
-  ['maps', 'maps'],
-  ['training', 'training'],
-  ['feed', 'feed'],
-  ['on', 'on'],
+  ['tools', 'tools', 'g g'],
+  ['calc', 'calculator', 'g c'],
+  ['analytics', 'analytics', 'g a'],
+  ['maps', 'maps', 'g m'],
+  ['training', 'training', 'g t'],
+  ['feed', 'feed', 'g f'],
+  ['on', 'on', 'g o'],
 ] as const
 
 export type TriView = (typeof NAV)[number][0]
@@ -250,18 +251,19 @@ const bikePaceMi = (kmh: number): string => clockFromSec(3600 / (kmh * KM_TO_MI)
 
 export const TriathlonSubnav = ({ active, root }: { active?: TriView; root: string }) => (
   <nav class="tri-subnav" aria-label="triathlon sections">
-    <a class="tri-subnav-home" href={`${root}/triathlon`}>
+    <a class="tri-subnav-home tri-key-anchor" href={`${root}/triathlon`}>
       ← triathlon
+      <ShortcutHint>g h</ShortcutHint>
     </a>
     <span class="tri-subnav-links">
-      {NAV.map(([slug, label]) => (
+      {NAV.map(([slug, label, shortcut]) => (
         <a
-          class="tri-subnav-link"
+          class="tri-subnav-link tri-key-anchor"
           href={`${root}/triathlon/${slug}`}
           aria-current={slug === active ? 'page' : undefined}
-          data-i18n={label}
         >
-          {label}
+          <span data-i18n={label}>{label}</span>
+          <ShortcutHint>{shortcut}</ShortcutHint>
         </a>
       ))}
     </span>
@@ -271,7 +273,7 @@ export const TriathlonSubnav = ({ active, root }: { active?: TriView; root: stri
 export const FeedPanel = () => (
   <section class="tri-feed" aria-label="activity feed" tabindex={-1} data-keyboard-scroll-scope>
     <div class="tri-ana-bar tri-feed-bar">
-      <div class="tri-feed-search-wrap">
+      <div class="tri-feed-search-wrap tri-key-anchor tri-key-search">
         <input
           class="tri-ana-search tri-feed-search"
           type="search"
@@ -281,6 +283,7 @@ export const FeedPanel = () => (
           aria-expanded="false"
           autocomplete="off"
         />
+        <ShortcutHint>/</ShortcutHint>
         <div id="tri-feed-results" class="tri-ana-results tri-feed-results" aria-hidden="true" />
       </div>
       <span class="tri-feed-count" aria-live="polite" />
@@ -396,7 +399,7 @@ const TriPanelShell = ({
           )}
           {search}
           <button
-            class={`tri-ana-close${kind === 'analytics' ? '' : ` tri-${kind}-close`}`}
+            class={`tri-ana-close tri-key-anchor${kind === 'analytics' ? '' : ` tri-${kind}-close`}`}
             type="button"
             aria-label="Close"
             data-site-cursor-close
@@ -404,6 +407,7 @@ const TriPanelShell = ({
             <span aria-hidden="true" data-site-cursor-icon>
               ×
             </span>
+            <ShortcutHint>esc</ShortcutHint>
           </button>
         </div>
         <div class={`tri-ana-body${bodyClass ? ` ${bodyClass}` : ''}`} data-keyboard-scroll>
@@ -427,7 +431,7 @@ export const AnalyticsPanel = ({
     label="triathlon analytics"
     title="analytics"
     search={
-      <div class="tri-analytics-search-wrap">
+      <div class="tri-analytics-search-wrap tri-key-anchor tri-key-search">
         <input
           class="tri-ana-search"
           type="search"
@@ -435,6 +439,7 @@ export const AnalyticsPanel = ({
           aria-label="search analytics"
           autocomplete="off"
         />
+        <ShortcutHint>/</ShortcutHint>
         <button
           class="tri-ana-compare-toggle"
           type="button"
@@ -473,7 +478,7 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
     titleClass="tri-map-title"
     bodyClass="tri-map-body"
     search={
-      <div class="tri-map-search-wrap">
+      <div class="tri-map-search-wrap tri-key-anchor tri-key-search">
         <input
           class="tri-ana-search tri-map-search"
           type="search"
@@ -481,6 +486,7 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
           aria-label="search routes"
           autocomplete="off"
         />
+        <ShortcutHint>/</ShortcutHint>
         <div class="tri-ana-results tri-map-results" aria-hidden="true" />
       </div>
     }
@@ -723,7 +729,7 @@ export const TrainingPanel = ({
     titleClass="tri-training-title"
     bodyClass="tri-training-body"
     search={
-      <div class="tri-training-search-wrap">
+      <div class="tri-training-search-wrap tri-key-anchor tri-key-search">
         <input
           class="tri-ana-search tri-training-search"
           type="search"
@@ -731,6 +737,7 @@ export const TrainingPanel = ({
           aria-label="search training plans"
           autocomplete="off"
         />
+        <ShortcutHint>/</ShortcutHint>
         <div class="tri-ana-results tri-training-results" aria-hidden="true" />
       </div>
     }
@@ -1091,13 +1098,13 @@ export const GearPanel = ({
   <div class="tri-gear-wrap">
     {!page && (
       <button
-        class="tri-gear-btn"
+        class="tri-gear-btn tri-key-anchor"
         type="button"
-        data-i18n="gear"
         aria-expanded="false"
         aria-controls="tri-gear-panel"
       >
-        gear
+        <span data-i18n="gear">gear</span>
+        <ShortcutHint>g g</ShortcutHint>
       </button>
     )}
     <div
@@ -1118,13 +1125,13 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
   <div class="tri-pace-wrap">
     {!page && (
       <button
-        class="tri-pace-btn"
+        class="tri-pace-btn tri-key-anchor"
         type="button"
-        data-i18n="pace"
         aria-expanded="false"
         aria-controls="tri-pace-panel"
       >
-        pace
+        <span data-i18n="pace">pace</span>
+        <ShortcutHint>g p</ShortcutHint>
       </button>
     )}
     <div
@@ -1268,10 +1275,16 @@ export const CalcPanel = ({
       {!page && (
         <div class="tri-calc-bar">
           <span class="tri-calc-title">race pace</span>
-          <button class="tri-calc-close" type="button" aria-label="Close" data-site-cursor-close>
+          <button
+            class="tri-calc-close tri-key-anchor"
+            type="button"
+            aria-label="Close"
+            data-site-cursor-close
+          >
             <span aria-hidden="true" data-site-cursor-icon>
               ×
             </span>
+            <ShortcutHint>esc</ShortcutHint>
           </button>
         </div>
       )}
@@ -1279,7 +1292,7 @@ export const CalcPanel = ({
         <div class="tri-calc-tabs" role="tablist" aria-label="calculators">
           <button
             id="tri-calc-tab-race"
-            class="tri-calc-tab tri-calc-tab--on"
+            class="tri-calc-tab tri-calc-tab--on tri-key-anchor"
             type="button"
             role="tab"
             aria-selected="true"
@@ -1288,10 +1301,11 @@ export const CalcPanel = ({
             data-calc-tab="race"
           >
             race
+            <ShortcutHint>r</ShortcutHint>
           </button>
           <button
             id="tri-calc-tab-gear-ratios"
-            class="tri-calc-tab"
+            class="tri-calc-tab tri-key-anchor"
             type="button"
             role="tab"
             aria-selected="false"
@@ -1301,10 +1315,11 @@ export const CalcPanel = ({
             tabindex={-1}
           >
             gear ratios
+            <ShortcutHint>c</ShortcutHint>
           </button>
           <button
             id="tri-calc-tab-tire-pressure"
-            class="tri-calc-tab"
+            class="tri-calc-tab tri-key-anchor"
             type="button"
             role="tab"
             aria-selected="false"
@@ -1314,6 +1329,7 @@ export const CalcPanel = ({
             tabindex={-1}
           >
             tire pressure
+            <ShortcutHint>t</ShortcutHint>
           </button>
         </div>
       )}

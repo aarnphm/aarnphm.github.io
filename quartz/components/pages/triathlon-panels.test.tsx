@@ -176,6 +176,53 @@ test('subpage navigation links remain native pointer targets for the shared brac
   assert.equal(links.filter(link => link.properties?.ariaCurrent === 'page').length, 1)
 })
 
+test('section hints show the existing chords without replacing translated link labels', () => {
+  const root = rendered(<TriathlonSubnav active="analytics" root="../.." />)
+  const links = elements(root, element => element.tagName === 'a')
+  const expected = [
+    ['../../triathlon', 'g h'],
+    ['../../triathlon/tools', 'g g'],
+    ['../../triathlon/calc', 'g c'],
+    ['../../triathlon/analytics', 'g a'],
+    ['../../triathlon/maps', 'g m'],
+    ['../../triathlon/training', 'g t'],
+    ['../../triathlon/feed', 'g f'],
+    ['../../triathlon/on', 'g o'],
+  ]
+  assert.deepEqual(
+    links.map(link => {
+      const hints = elements(
+        { type: 'root', children: link.children },
+        element => element.tagName === 'kbd',
+      )
+      assert.equal(hints.length, 1)
+      assert.equal(hints[0].properties?.ariaHidden, 'true')
+      assert.ok(!('dataI18n' in (link.properties ?? {})))
+      return [link.properties?.href, toText(hints[0])]
+    }),
+    expected,
+  )
+  assert.equal(
+    elements(root, element => typeof element.properties?.dataI18n === 'string').length,
+    7,
+  )
+})
+
+test('calculator hints match their accessible shortcut keys', () => {
+  const root = rendered(<CalcPanel page />)
+  const tabs = elements(root, element => typeof element.properties?.dataCalcTab === 'string')
+  assert.equal(tabs.length, 3)
+  for (const tab of tabs) {
+    const hints = elements(
+      { type: 'root', children: tab.children },
+      element => element.tagName === 'kbd',
+    )
+    assert.equal(hints.length, 1)
+    assert.equal(toText(hints[0]), tab.properties?.ariaKeyShortcuts)
+    assert.equal(hints[0].properties?.ariaHidden, 'true')
+  }
+})
+
 test('calculator copy control exposes its SVG states as one magnetic cursor action', () => {
   const root = rendered(<CalcPanel page />)
   const buttons = elements(root, element => classes(element).includes('tri-calc-copy'))

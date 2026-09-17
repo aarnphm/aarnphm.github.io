@@ -172,9 +172,7 @@ a {
   }
 }
 
-// Blockquotes: a large decorative opening quotation mark instead of the
-// default left bar. The mark hangs in the left margin so the quote text stays
-// aligned with the surrounding prose.
+// Keep the decorative tree corners in the margin, clear of the quote text.
 blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
   border-left: none;
   padding-left: 0;
@@ -184,15 +182,12 @@ blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
     position: relative;
 
     &::before {
-      content: '\201C';
+      content: '└└' / '';
       position: absolute;
       left: -2.5rem;
-      top: 0;
-      // pull the glyph's baseline up so the visible top of the quote mark lines
-      // up with the cap height of the first line of the quote
-      transform: translateY(-0.08em);
-      font-family: var(--headerFont);
-      font-size: 3.5rem;
+      top: 0.15em;
+      font-family: var(--codeFont);
+      font-size: 1.5rem;
       line-height: 1;
       color: var(--secondary);
       opacity: 0.4;
@@ -207,9 +202,9 @@ blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
   @media all and ($mobile) {
     margin-left: 1.75rem;
 
-    &:not([class~='callout']):not([class~='transclude'])::before {
+    &:not([class~='callout']):not([class~='transclude']):not([class~='quotes'])::before {
       left: -1.75rem;
-      font-size: 2.75rem;
+      font-size: 1rem;
     }
   }
 }

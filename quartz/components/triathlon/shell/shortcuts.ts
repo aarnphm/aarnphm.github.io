@@ -8,6 +8,16 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
   let waitingForG = false
   let gTimeout: number | null = null
 
+  const onModifier = (event: KeyboardEvent): void => {
+    root.classList.toggle('tri-hints', event.metaKey || event.ctrlKey)
+  }
+  const hideHints = (): void => {
+    root.classList.remove('tri-hints')
+  }
+  const onVisibilityChange = (): void => {
+    if (document.hidden) hideHints()
+  }
+
   const clearG = (): void => {
     waitingForG = false
     if (gTimeout) {
@@ -236,9 +246,18 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     }
   }
 
+  window.addEventListener('keydown', onModifier, true)
+  window.addEventListener('keyup', onModifier, true)
+  window.addEventListener('blur', hideHints)
+  document.addEventListener('visibilitychange', onVisibilityChange)
   document.addEventListener('keydown', onKey, true)
   return () => {
     clearG()
+    hideHints()
+    window.removeEventListener('keydown', onModifier, true)
+    window.removeEventListener('keyup', onModifier, true)
+    window.removeEventListener('blur', hideHints)
+    document.removeEventListener('visibilitychange', onVisibilityChange)
     document.removeEventListener('keydown', onKey, true)
   }
 }

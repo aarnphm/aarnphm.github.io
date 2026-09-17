@@ -301,6 +301,8 @@ body[data-flashcards='true'][data-slug$='/flashcards'] {
 
 .fc-btn {
   box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   min-height: var(--fc-control-height);
   min-width: 0;
   font-family: var(--codeFont);

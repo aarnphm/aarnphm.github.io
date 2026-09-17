@@ -1,8 +1,8 @@
 ---
 date: '2025-01-18'
-description: and mathematical framework of transformers
+description: How induction heads copy a continuation from context, and how residual-stream paths connect them.
 id: induction heads
-modified: 2026-06-05 15:08:29 GMT-04:00
+modified: 2026-09-17 09:05:53 GMT-04:00
 seealso:
   - '[[thoughts/Transformers|Transformers]]'
   - '[[thoughts/LLMs|LLMs]]'
@@ -14,28 +14,46 @@ transclude:
   title: false
 ---
 
-@elhage2021mathematical, @olsson2022context
+An induction head increases the probability of a continuation that appeared earlier in the context:
+
+$$
+[A][B]\ldots[A]\longrightarrow[B].
+$$
+
+At the second $A$, it attends to the earlier $B$ and increases the logit for $B$. The useful detail is where it looks: the token _after_ the earlier match. [@olsson2022context]
+
+In the two-layer attention-only circuit, an earlier head copies information about the previous token into each position. The position containing $B$ now also carries information about the $A$ before it. The induction head uses that information in its keys, so the current $A$ can find $B$. Its value and output matrices then promote $B$ as the next token. [@olsson2022context]
+
+The weights learn this lookup procedure during training; the current context supplies the particular $A$ and $B$. This is one mechanism for in-context learning. Olsson et al. found strong causal evidence in small attention-only models. Their broader claim that induction explains most in-context learning in large models remains a hypothesis. [@olsson2022context]
 
 ## virtual weights
 
+How does the later head read what the earlier one wrote? The [[thoughts/Transformers|transformer]] residual stream adds component outputs to a shared vector. Using column vectors, suppose component $1$ writes $W_O^1h_1$ and component $2$ reads with $W_I^2$. Ignoring normalization for this calculation, that direct path contributes
+
+$$
+W_I^2(W_O^1h_1)=\underbrace{W_I^2W_O^1}_{\text{virtual weights}}h_1.
+$$
+
+The product maps the earlier component's output coordinates into the later component's input coordinates. It is an implicit connection through the residual stream, so the components can be several layers apart. [@elhage2021mathematical]
+
 ```jsx imports={Zoomable,VirtualWeights}
 <Zoomable label="virtual weights diagram">
-  <VirtualWeights caption="Note that the high linearity of the network is very much specific to Transformers; even ResNets, with non-linear activation functions between layers, do not factor this cleanly." />
+  <VirtualWeights caption="The diagram isolates linear read and write projections through the residual stream. Attention patterns, MLP activations, and normalization still affect the full computation." />
 </Zoomable>
 ```
 
-```sms
-Each layer performing an arbitrary linear transformations to "read in" information, and performs another arbitrary linear transformers to "write out" back to the residual stream.
-```
-
-In a sense, they don't have [[thoughts/induction heads#privileged basis]]
-
-One salient property of linear residual stream is that we can think of each explicit pairing as "virtual weights" [^attention]. These virtual weights are the product of the output weights of one layer with the input weights of another (ie. $W^2_{I}W_{O}^1$), and describe the extent to which a later layer reads in the information written by a previous layer.
-
-[^attention]: Note that for attention layers, there are three different kinds of input weights:$W_{Q}, W_{K}, W_{V}$. For simplicity and generality, we think of layers as just having input and output weights here.
+Attention has separate query, key, and value reads: $W_Q$, $W_K$, and $W_V$. In the induction circuit above, the earlier head's output affects the later head's keys. This is **K-composition**. The matrix product identifies a path; its effect on a particular prediction also depends on the activations and attention pattern. [@elhage2021mathematical]
 
 ## privileged basis
 
-see also: https://transformer-circuits.pub/2023/privileged-basis/index.html
+A virtual weight product survives a change of residual coordinates. For an invertible matrix $R$, write $x'=Rx$ and change the adjoining matrices to
 
-tldr: we can rotate it all matrices interacting with the layers without modifying the models' behaviour.
+$$
+W_O'=RW_O,\qquad W_I'=W_IR^{-1}.
+$$
+
+Then $W_I'W_O'=W_IW_O$. This is the [[thoughts/induction heads#privileged basis|privileged basis]] question: does a particular residual coordinate have a special role? The linear path alone does not make any residual coordinate special.
+
+Extending this argument to a whole model requires checking normalization. Ordinary LayerNorm subtracts the coordinate mean and applies learned per-coordinate scales, so arbitrary rotations cannot simply pass through it. Elhage et al. instead tested normalization with no mean subtraction and one shared learned scale; that operation commutes with orthogonal rotations. [@elhage2023privilegedbasis]
+
+Trained models can still develop unusually large activations along particular coordinates. The same study found such outliers even after removing LayerNorm's basis dependence. Its experiments point toward Adam's per-coordinate updates as a cause, while leaving that attribution provisional. A symmetry of the forward computation does not guarantee that training treats every basis equally. [@elhage2023privilegedbasis]
