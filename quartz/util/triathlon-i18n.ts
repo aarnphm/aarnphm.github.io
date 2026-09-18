@@ -385,6 +385,9 @@ const en: TriDict = {
     '6-week best': '6-week best',
     'this ride eCP model': 'this ride eCP model',
     'comparison range': 'comparison range',
+    'power curve units': 'power curve units',
+    'W/kg unavailable: no weight recorded for this activity':
+      'W/kg unavailable: no weight recorded for this activity',
     selection: 'selection',
     'compare activities': 'compare activities',
     'choose 2 or more activities from one sport': 'choose 2 or more activities from one sport',
@@ -1344,6 +1347,9 @@ const fr: TriDict = {
     '6-week best': 'meilleur sur 6 semaines',
     'this ride eCP model': 'modèle eCP de cette sortie',
     'comparison range': 'période de comparaison',
+    'power curve units': 'unités de la courbe de puissance',
+    'W/kg unavailable: no weight recorded for this activity':
+      'W/kg indisponible : aucun poids enregistré pour cette activité',
     selection: 'sélection',
     'compare activities': 'comparer les activités',
     'choose 2 or more activities from one sport': 'choisir au moins 2 activités du même sport',

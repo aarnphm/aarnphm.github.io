@@ -67,6 +67,7 @@ export interface ActivityTrackingEntry {
   activityId: number
   garminActivityId: number | null
   wahooFitPath?: string
+  computer?: string
   virtual: boolean
 }
 
@@ -307,17 +308,19 @@ export function parseTrackingBlock(
   const linkedActivityId = parseOptionalActivityId(body.activity)
   const garminActivityId = parseOptionalActivityId(body.garmin)
   const wahooFitPath = body.wahoo == null ? null : parseWahooFitLink(body.wahoo)
+  const computer = body.computer || undefined
   const virtual = body.virtual?.toLowerCase()
   const activity: ActivityTrackingEntry | null =
     linkedActivityId != null &&
     garminActivityId !== undefined &&
     (body.wahoo == null || wahooFitPath != null) &&
-    (garminActivityId != null || wahooFitPath != null || virtual != null) &&
+    (garminActivityId != null || wahooFitPath != null || computer != null || virtual != null) &&
     (virtual == null || virtual === 'true' || virtual === 'false')
       ? {
           activityId: linkedActivityId,
           garminActivityId,
           ...(wahooFitPath ? { wahooFitPath } : {}),
+          ...(computer ? { computer } : {}),
           virtual: virtual === 'true',
         }
       : null

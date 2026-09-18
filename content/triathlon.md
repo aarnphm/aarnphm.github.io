@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-16 18:26:35 GMT-04:00
+modified: 2026-09-18 00:19:48 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1597,6 +1597,42 @@ location: Othership Adelaide
 htl: 7.6
 strava: 20202805429
 garmin: 24386386134
+```
+
+```tracking
+title: Guided Down, Self-Care Sweat
+date: 2026-09-17
+time: 19:30
+duration: 75 mins
+activity: sauna
+temperature: 168F
+humidity: 11%
+cooldown: cold plunge
+location: Othership Adelaide
+htl: 7.6
+strava: 20221226052
+garmin: 24402492628
+```
+
+```tracking
+activity: 20220077128
+garmin: 24401552199
+computer: Wahoo ELEMNT BOLT 3
+```
+
+```tracking
+date: 2026-09-17
+activity: 20222319922
+exercise: Cat-cow | 30s
+exercise: Standing torso rotations | 30s
+exercise: Glute bridges | 30s
+exercise: Deep squat hold with gentle rocking | 30s
+exercise: Dead bug | 40s | 40s | 40s | 40s
+exercise: Forearm plank | 40s | 40s | 40s | 40s
+exercise: Single-leg Romanian deadlift reach | 40s | 40s | 40s | 40s
+exercise: Side plank | 40s | 40s | 40s | 40s
+exercise: Superman hold with alternating leg lift | 40s | 40s | 40s | 40s
+exercise: Child's pose and thread-the-needle stretch | 2m
 ```
 
 <!-- training plan start
