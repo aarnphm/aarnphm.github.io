@@ -34,6 +34,7 @@ import {
 import { triathlonActivityAnchor } from './triathlon-date-route'
 import {
   criticalPowerEvidenceText,
+  criticalPowerSummaryParts,
   criticalPowerSummaryText,
   swimActivityHeaderValue,
   triText,
@@ -391,7 +392,10 @@ export const moreStatRows = (
   if (d.averageRelativeHumidityPct != null)
     rows.push(['humidity', `${d.averageRelativeHumidityPct}%`])
   if (d.equipment) rows.push(['equipment', d.equipment.name ?? d.equipment.id])
-  if (d.computer) rows.push(['computer', d.wahoo?.sourceDevice ?? COMPUTER_LABEL[d.computer]])
+  const computer =
+    d.computerOverride ??
+    (d.computer ? (d.wahoo?.sourceDevice ?? COMPUTER_LABEL[d.computer]) : null)
+  if (computer) rows.push(['computer', computer])
   if (d.device && (d.sport === 'run' || d.sport === 'walk' || d.sport === 'swim'))
     rows.push(['device', DEVICE_LABEL[d.device]])
   if (d.sources?.length || d.garmin || d.wahoo)
@@ -7469,6 +7473,65 @@ export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
 
 type PowerCurveRange = 'six-weeks' | 'year'
 
+export const powerCurveWeight = (
+  detail: StravaActivityDetail,
+): StravaActivityDetail['powerCurveWeight'] => {
+  const weight = detail.powerCurveWeight
+  if (weight && Number.isFinite(weight.kg) && weight.kg > 0 && weight.date === detail.date)
+    return weight
+  const kg = detail.bestEfforts?.weightKg
+  const date = detail.bestEfforts?.weightDate
+  return kg != null && Number.isFinite(kg) && kg > 0 && date === detail.date
+    ? { kg, date, source: 'garmin' }
+    : undefined
+}
+
+export const powerCurveValueText = (
+  watts: number,
+  weightKg: number | null,
+  locale: Locale,
+  compact = false,
+): string => {
+  const relative = weightKg != null && Number.isFinite(weightKg) && weightKg > 0
+  const value = relative ? watts / weightKg : watts
+  return `${value.toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-US', {
+    minimumFractionDigits: relative ? 2 : 0,
+    maximumFractionDigits: relative ? 2 : 1,
+  })}${compact ? '' : ' '}${relative ? 'W/kg' : 'W'}`
+}
+
+export const powerCurveAxisTicks = (
+  maxWatts: number,
+  wattStep: number,
+  weightKg: number | null,
+  locale: Locale,
+): { label: string; watts: number }[] => {
+  const mass = weightKg != null && Number.isFinite(weightKg) && weightKg > 0 ? weightKg : null
+  const max = maxWatts / (mass ?? 1)
+  const step = mass == null ? wattStep : niceStep(max, 4)
+  if (!Number.isFinite(max) || max <= 0 || !Number.isFinite(step) || step <= 0) return []
+  return Array.from({ length: Math.floor(max / step + 1e-9) + 1 }, (_, index) => {
+    const value = index * step
+    return {
+      label:
+        value === 0
+          ? '0'
+          : mass == null
+            ? `${axisNumber(value, step)}w`
+            : `${value.toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-US', { maximumFractionDigits: 2 })} W/kg`,
+      watts: value * (mass ?? 1),
+    }
+  })
+}
+
+const powerCurveValueNode = <N>(f: TriNodeFactory<N>, watts: number, compact = true): N =>
+  f.el(
+    'span',
+    'tri-curve-power-value',
+    powerCurveValueText(watts, null, f.presentation.locale, compact),
+    { 'data-curve-watts': String(watts), 'data-curve-compact': String(compact) },
+  )
+
 export const buildCriticalPowerAnchorLinks = <N>(
   f: TriNodeFactory<N>,
   estimate: CriticalPowerEstimate,
@@ -7559,22 +7622,29 @@ const addActivityCriticalPowerCaption = <N>(
   f: TriNodeFactory<N>,
   caption: N,
   estimate: CriticalPowerEstimate,
-): void => {
+): N => {
   const thresholds = f.el('span', 'tri-curve-thresholds')
+  const summary = f.el('span', 'tri-ana-k tri-curve-cp-k tri-curve-cp-k--ride', undefined, {
+    'data-gloss': '',
+    'data-gloss-def': criticalPowerEvidenceText(f.presentation.locale, estimate),
+    tabindex: '0',
+  })
   f.add(
-    thresholds,
+    summary,
+    f.el('span', undefined, triText(f.presentation.locale, 'this ride'), {
+      'data-i18n': 'this ride',
+    }),
+    f.el('span', undefined, ' · eCP '),
+    powerCurveValueNode(f, estimate.criticalPowerWatts, false),
     f.el(
       'span',
-      'tri-ana-k tri-curve-cp-k tri-curve-cp-k--ride',
-      `${triText(f.presentation.locale, 'this ride')} · ${criticalPowerSummaryText(f.presentation.locale, estimate)}`,
-      {
-        'data-gloss': '',
-        'data-gloss-def': criticalPowerEvidenceText(f.presentation.locale, estimate),
-        tabindex: '0',
-      },
+      undefined,
+      ` · ${criticalPowerSummaryParts(f.presentation.locale, estimate).wPrime}`,
     ),
   )
+  f.add(thresholds, summary)
   f.add(caption, thresholds)
+  return summary
 }
 
 const buildPowerCurveRanges = <N>(
@@ -7619,6 +7689,7 @@ export const buildPowerCurve = <N>(
 ): N | null => {
   const curve = d.powerCurve
   if (!curve || curve.length < 2) return null
+  const weight = powerCurveWeight(d)
   const isBike = d.sport === 'bike'
   const sixWeekRef = isBike ? ctx.curveRef : d.sport === 'run' ? ctx.runCurveRef : []
   const yearRef = isBike ? ctx.curveYearRef : d.sport === 'run' ? ctx.runCurveYearRef : []
@@ -7632,6 +7703,7 @@ export const buildPowerCurve = <N>(
   const goalRef = isBike ? ctx.goalFtp : null
   const wrap = f.el('div', 'tri-zone tri-curve-chart', undefined, {
     'data-tri-trace': triathlonTraceName('power curve'),
+    'data-curve-unit': 'watts',
   })
   const W = 100
   const H = 34
@@ -7642,6 +7714,33 @@ export const buildPowerCurve = <N>(
   const visibleRef = defaultRange === 'six-weeks' ? visibleSixWeekRef : visibleYearRef
   const head = f.el('div', 'tri-curve-head')
   f.add(head, f.el('div', 'tri-zone-title', 'power curve', { 'data-i18n': 'power curve' }))
+  const controls = f.el('div', 'tri-curve-controls')
+  const units = f.el('div', 'tri-curve-units', undefined, {
+    role: 'group',
+    'aria-label': triText(f.presentation.locale, 'power curve units'),
+    'data-i18n-aria-label': 'power curve units',
+  })
+  for (const [unit, label] of [
+    ['watts', 'W'],
+    ['watts-per-kg', 'W/kg'],
+  ])
+    f.add(
+      units,
+      f.el('button', 'tri-curve-unit', label, {
+        type: 'button',
+        'data-curve-unit': unit,
+        'aria-pressed': String(unit === 'watts'),
+        ...(unit === 'watts-per-kg' && !weight
+          ? {
+              disabled: '',
+              title: triText(
+                f.presentation.locale,
+                'W/kg unavailable: no weight recorded for this activity',
+              ),
+            }
+          : {}),
+      }),
+    )
   const ranges = buildPowerCurveRanges(
     f,
     defaultRange,
@@ -7649,7 +7748,9 @@ export const buildPowerCurve = <N>(
     visibleSixWeekRef.length > 0,
     visibleYearRef.length > 0,
   )
-  if (ranges) f.add(head, ranges)
+  if (ranges) f.add(controls, ranges)
+  f.add(controls, units)
+  f.add(head, controls)
   f.add(wrap, head)
   const observedMaxW = Math.max(
     1,
@@ -7663,10 +7764,6 @@ export const buildPowerCurve = <N>(
   )
   const curveStep = niceStep(observedMaxW, 4)
   const curveMax = Math.ceil(observedMaxW / curveStep) * curveStep
-  const curveTicks = Array.from(
-    { length: Math.round(curveMax / curveStep) + 1 },
-    (_, index) => index * curveStep,
-  )
   const X = (sec: number): number => powerCurveFraction(sec, secs[0], secs[secs.length - 1]) * W
   const Y = (w: number): number => H - (w / curveMax) * (H - 1)
   const toPath = (pts: PowerCurvePoint[]): string =>
@@ -7685,6 +7782,8 @@ export const buildPowerCurve = <N>(
     'data-curve-range': defaultRange,
     'data-curve-year': ctx.curveYear ?? '',
     'data-curve-domain-max': curveMax,
+    'data-curve-watt-step': curveStep,
+    'data-curve-weight-kg': weight?.kg ?? '',
     'data-curve-selected-index': 0,
     'data-i18n-aria-label': 'power curve',
     role: 'slider',
@@ -7855,9 +7954,9 @@ export const buildPowerCurve = <N>(
     axisFrame(
       f,
       s,
-      curveTicks.map(value => ({
-        label: value === 0 ? '0' : `${axisNumber(value, curveStep)}w`,
-        vbY: Y(value),
+      powerCurveAxisTicks(curveMax, curveStep, null, f.presentation.locale).map(tick => ({
+        label: tick.label,
+        vbY: Y(tick.watts),
       })),
       H,
       curveDurTicks.map((sec, idx) => ({
@@ -7877,16 +7976,29 @@ export const buildPowerCurve = <N>(
     ),
   )
   const cap = f.el('div', 'tri-elev-cap')
+  const addPowerCaption = (label: string, watts: number, cls = ''): void => {
+    const item = f.el('span', `tri-ana-k${cls ? ` ${cls}` : ''}`)
+    f.add(item, f.el('span', undefined, `${label} `), powerCurveValueNode(f, watts))
+    f.add(cap, item)
+  }
   for (const sec of [5, 60, 300, 1200]) {
     const p = curve.find(c => c.s === sec)
-    if (p) f.add(cap, f.el('span', 'tri-ana-k', `${dlabel(sec)} ${p.w}W`))
+    if (p) addPowerCaption(dlabel(sec), p.w)
   }
-  if (!embedded && ftpRef != null)
-    f.add(cap, f.el('span', 'tri-ana-k tri-curve-ftp-k', `FTP ${ftpRef}W`))
-  if (!embedded && goalRef != null)
-    f.add(cap, f.el('span', 'tri-ana-k tri-curve-goal-k', `goal ${goalRef}W`))
-  if (!embedded && activityCriticalPower)
-    addActivityCriticalPowerCaption(f, cap, activityCriticalPower)
+  if (!embedded && ftpRef != null) addPowerCaption('FTP', ftpRef, 'tri-curve-ftp-k')
+  if (!embedded && goalRef != null) addPowerCaption('goal', goalRef, 'tri-curve-goal-k')
+  const criticalPowerCaption =
+    !embedded && activityCriticalPower
+      ? addActivityCriticalPowerCaption(f, cap, activityCriticalPower)
+      : undefined
+  if (weight)
+    f.add(
+      criticalPowerCaption ?? cap,
+      f.el('span', 'tri-curve-weight-note', `${criticalPowerCaption ? ' · ' : ''}${weight.kg} kg`, {
+        hidden: '',
+        title: `Garmin · ${weight.date}`,
+      }),
+    )
   f.add(wrap, cap)
   return wrap
 }

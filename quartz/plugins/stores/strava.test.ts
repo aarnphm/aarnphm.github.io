@@ -1346,6 +1346,89 @@ test('projects each activity equipment assignment with Strava provenance through
   assert.equal(buildPayload(cache, null, null, '2026-06-01').details['102'].equipment, undefined)
 })
 
+test('projects authored computer text without changing provider data or unrelated activities', () => {
+  const activity = ride()
+  const cache: StravaRawCache = {
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: 1 },
+    lastSync: 1,
+    lastActivityStart: 1,
+    activities: { 101: activity, 102: ride({ id: 102 }), 103: ride({ id: 103, sportType: 'Run' }) },
+  }
+  const garmin: GarminCache = {
+    lastSync: 1,
+    activities: {
+      'connect:123': {
+        id: 'connect:123',
+        name: activity.name,
+        sport: 'bike',
+        startDate: activity.startDate,
+        startDateLocal: activity.startDateLocal,
+        distanceM: activity.distance,
+        movingTimeS: activity.movingTime,
+        elapsedTimeS: activity.elapsedTime,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+    },
+  }
+  const entries = [101, 103].map(id => {
+    const parsed = parseTrackingBlock(
+      null,
+      `activity: ${id}\ngarmin: 123\ncomputer: Wahoo ELEMNT BOLT 3`,
+    )
+    assert.ok(parsed?.activity)
+    return parsed.activity
+  })
+  for (const provider of [garmin, null]) {
+    const baseline = buildPayload(
+      cache,
+      null,
+      provider,
+      undefined,
+      null,
+      null,
+      null,
+      'UTC',
+      null,
+      null,
+      null,
+      undefined,
+      entries.map(entry => ({ ...entry, computer: undefined })),
+    )
+    const payload = buildPayload(
+      cache,
+      null,
+      provider,
+      undefined,
+      null,
+      null,
+      null,
+      'UTC',
+      null,
+      null,
+      null,
+      undefined,
+      entries,
+    )
+    const projected = payload.details['101']
+    assert.equal(projected.computerOverride, 'Wahoo ELEMNT BOLT 3')
+    assert.equal(projected.computer, provider ? 'garmin' : null)
+    assert.equal(JSON.parse(JSON.stringify(projected)).computerOverride, 'Wahoo ELEMNT BOLT 3')
+    assert.equal(payload.details['102'].computerOverride, undefined)
+    assert.equal(payload.details['103'].computerOverride, undefined)
+    if (provider) {
+      assert.deepEqual(projected.garmin, baseline.details['101'].garmin)
+      assert.deepEqual(projected.sources, baseline.details['101'].sources)
+      assert.deepEqual(projected.fueling, baseline.details['101'].fueling)
+    }
+  }
+  assert.equal(buildPayload(cache, null, garmin).details['101'].computerOverride, undefined)
+  assert.equal(cache.activities['101'].deviceName, undefined)
+})
+
 test('projects supported run, walk, and swim recording devices', () => {
   const cases: {
     sportType: string
@@ -4306,6 +4389,7 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   ])
   assert.equal(efforts.weightKg, 75)
   assert.equal(efforts.weightDate, '2026-06-07')
+  assert.deepEqual(detail.powerCurveWeight, { kg: 75, date: '2026-06-07', source: 'garmin' })
   assert.equal(efforts.distance.find(effort => effort.label === '10K')?.elapsedTimeS, 14)
   assert.deepEqual(efforts.power[0], {
     durationS: 5,
@@ -4364,6 +4448,16 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   assert.ok(withoutSameDayWeight)
   assert.equal(withoutSameDayWeight.weightKg, null)
   assert.equal(withoutSameDayWeight.power[0].wattsPerKg, null)
+
+  const run = { ...cache, activities: { 101: { ...activity, sportType: 'Run' } } }
+  const runDetail = buildPayload(run, null, garmin, '2026-06-01').details['101']
+  assert.ok(runDetail.powerCurve?.length)
+  assert.equal(runDetail.bestEfforts, null)
+  assert.deepEqual(runDetail.powerCurveWeight, { kg: 75, date: '2026-06-07', source: 'garmin' })
+  assert.equal(
+    buildPayload(run, null, null, '2026-06-01').details['101'].powerCurveWeight,
+    undefined,
+  )
 })
 
 test('projects HR session estimates into walking and stationary recovery payloads', () => {

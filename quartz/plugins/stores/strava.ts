@@ -681,6 +681,7 @@ export interface StravaActivityDetail {
   sauna: ActivitySauna | null
   garmin: GarminVerification | null
   computer: ActivityComputer | null
+  computerOverride?: string
   device: ActivityDevice | null
   staminaTrace: ActivityStaminaTrace | null
   performanceConditionTrace: ActivityPerformanceConditionTrace | null
@@ -707,6 +708,7 @@ export interface StravaActivityDetail {
   powerHist: number[] | null
   powerWithoutZeros: ActivityPowerWithoutZeros | null
   powerCurve: PowerCurvePoint[] | null
+  powerCurveWeight?: { kg: number; date: string; source: 'garmin' }
   activityCriticalPower: CriticalPowerEstimate | null
   bestEfforts: CyclingBestEfforts | null
   strokes?: Record<string, number> | null
@@ -3873,6 +3875,8 @@ function projectDetail(
     powerHist: hasW ? powerHistogram(wFull) : null,
     powerWithoutZeros,
     powerCurve: hasEffortPower && timeline ? (powerCurve ?? meanMaxCurve(timeline)) : null,
+    powerCurveWeight:
+      hasEffortPower && timeline && weight ? { ...weight, source: 'garmin' } : undefined,
     activityCriticalPower,
     bestEfforts:
       sport === 'bike' && (elapsedTimeline || climbs.length > 0)
@@ -4664,6 +4668,8 @@ export function buildPayload(
       activityCriticalPowers.get(id) ?? null,
     )
     const detail = details[id]
+    const computerOverride = trackingById.get(a.id)?.computer?.trim()
+    if (sport === 'bike' && computerOverride) detail.computerOverride = computerOverride
     if (original.gearId)
       detail.equipment = {
         id: original.gearId,

@@ -29,6 +29,39 @@ const detail = (id: number, date: string, sport: string): Record<string, unknown
   analyses: emptyAnalyses,
 })
 
+test('validates nonempty authored computer text for cycling details', () => {
+  const activity = detail(1, '2026-09-17', 'bike')
+  assert.equal(isActivityDetail(activity), true)
+  assert.equal(isActivityDetail({ ...activity, computerOverride: 'Wahoo ELEMNT BOLT 3' }), true)
+  for (const computerOverride of ['', '   ', null, 3, {}])
+    assert.equal(isActivityDetail({ ...activity, computerOverride }), false)
+  assert.equal(
+    isActivityDetail({ ...activity, sport: 'run', computerOverride: 'Wahoo ELEMNT BOLT 3' }),
+    false,
+  )
+})
+
+test('validates same-day power curve weight and retains it through JSON', () => {
+  const weight = { kg: 87.09, date: '2026-09-17', source: 'garmin' }
+  for (const sport of ['bike', 'run']) {
+    const activity = detail(1, weight.date, sport)
+    const serialized: unknown = JSON.parse(
+      JSON.stringify({ ...activity, powerCurveWeight: weight }),
+    )
+    assert.ok(isActivityDetail(serialized))
+    assert.deepEqual(serialized.powerCurveWeight, weight)
+    assert.equal(isActivityDetail(activity), true)
+    for (const powerCurveWeight of [
+      null,
+      {},
+      ...[0, -1, NaN, Infinity, '87.09'].map(kg => ({ ...weight, kg })),
+      { ...weight, date: '2026-09-18' },
+      { ...weight, source: 'strava' },
+    ])
+      assert.equal(isActivityDetail({ ...activity, powerCurveWeight }), false)
+  }
+})
+
 test('validates equipment identity, nullable names, and Strava provenance', () => {
   const activity = detail(1, '2026-09-15', 'bike')
   for (const name of ['Speedmax', null])

@@ -88,8 +88,11 @@ import {
   normalizePowerCurvePoints,
   parseExcludedActivityIds,
   powerCurveDurationTicks,
+  powerCurveAxisTicks,
   powerCurveFraction,
   powerCurveHoverAt,
+  powerCurveValueText,
+  powerCurveWeight,
   powerViewActivity,
   riderPositionAtDistance,
   runWalkSegmentAt,
@@ -1873,6 +1876,34 @@ test('renders bike computers and run, walk, and swim devices as distinct activit
   assert.equal(computerRow(absent), undefined)
   assert.equal(deviceRow(absent), undefined)
   assert.equal(byClass(garmin, 'tri-act-computer').length, 0)
+})
+
+test('prefers authored computer text in shared summary rows and rendered cards', () => {
+  const computers: StravaActivityDetail['computer'][] = ['garmin', 'wahoo', null]
+  for (const computer of computers) {
+    const activity = detail({ computer, computerOverride: 'Wahoo ELEMNT BOLT 3' })
+    if (computer === 'wahoo')
+      activity.wahoo = {
+        activityId: 'wahoo:99',
+        fitPath: null,
+        sha256: 'a'.repeat(64),
+        sourceDevice: 'ELEMNT ROAM',
+        startOffsetS: 0,
+        distanceM: 28_100,
+        metrics: emptyWahooMetrics(),
+        summarySources: {},
+        streamFallback: 'strava',
+      }
+    assert.deepEqual(
+      activityTableRows(factory.presentation, activity).filter(([key]) => key === 'computer'),
+      [['computer', 'Wahoo ELEMNT BOLT 3']],
+    )
+    const row = byTag(buildActivity(factory, activity), 'tr').find(
+      row => row.properties.dataStatKey === 'computer',
+    )
+    assert.ok(row)
+    assert.equal(text(byClass(row, 'tri-act-stat-v')[0]), 'Wahoo ELEMNT BOLT 3')
+  }
 })
 
 test('renders one metric per row and lists contributing recordings in the source hover', () => {
@@ -8036,6 +8067,106 @@ test('places cycling efforts after the expanded charts', () => {
   assert.equal(classNames(last).includes('tri-efforts'), true)
 })
 
+test('renders power curve unit controls and activity-day weight for full and embedded cards', () => {
+  for (const embedded of [false, true]) {
+    const activity = zonedDetail()
+    const curve = buildPowerCurve(factory, activity, ctx(), embedded)
+    assert.ok(curve)
+    const buttons = byClass(curve, 'tri-curve-unit')
+    assert.deepEqual(buttons.map(text), ['W', 'W/kg'])
+    assert.deepEqual(
+      buttons.map(button => button.properties.ariaPressed),
+      ['true', 'false'],
+    )
+    assert.ok(
+      buttons.every(button => button.tagName === 'button' && button.properties.type === 'button'),
+    )
+    assert.equal(buttons[1].properties.disabled, undefined)
+    assert.equal(byClass(curve, 'tri-curve-units')[0].properties.ariaLabel, 'power curve units')
+    const svg = byClass(curve, 'tri-curve-svg')[0]
+    assert.equal(svg.properties.dataCurveWeightKg, 87.55)
+    assert.equal(svg.properties.dataCurveWattStep, 100)
+    assert.deepEqual(decodePowerCurve(String(svg.properties.dataCurve)), activity.powerCurve)
+    const note = byClass(curve, 'tri-curve-weight-note')[0]
+    assert.equal(note.properties.hidden, true)
+    assert.equal(note.tagName, 'span')
+    assert.equal(text(note), '87.55 kg')
+    assert.equal(note.properties.title, 'Garmin · 2026-07-09')
+    assert.ok(byClass(curve, 'tri-elev-cap')[0].children.includes(note))
+    assert.equal(curve.children.includes(note), false)
+    assert.deepEqual(
+      byClass(curve, 'tri-curve-power-value').map(value => Number(value.properties.dataCurveWatts)),
+      embedded ? [540, 320, 250, 230] : [540, 320, 250, 230, 260, 280],
+    )
+  }
+  const run = {
+    ...zonedDetail(),
+    sport: 'run',
+    bestEfforts: null,
+    powerCurveWeight: { kg: 75, date: '2026-07-09', source: 'garmin' },
+  } satisfies StravaActivityDetail
+  const curve = buildPowerCurve(factory, run, ctx())
+  assert.ok(curve)
+  assert.equal(byClass(curve, 'tri-curve-unit')[1].properties.disabled, undefined)
+  assert.equal(byClass(curve, 'tri-curve-svg')[0].properties.dataCurveWeightKg, 75)
+})
+
+test('disables power curve W/kg without a valid same-day weight', () => {
+  for (const kg of [null, 0, -75, NaN, Infinity]) {
+    const activity = zonedDetail()
+    assert.ok(activity.bestEfforts)
+    activity.bestEfforts = { ...activity.bestEfforts, weightKg: kg }
+    const curve = buildPowerCurve(factory, activity, ctx())
+    assert.ok(curve)
+    assert.equal(powerCurveWeight(activity), undefined)
+    assert.equal(byClass(curve, 'tri-curve-unit')[1].properties.disabled, true)
+    assert.equal(byClass(curve, 'tri-curve-svg')[0].properties.dataCurveWeightKg, '')
+    assert.equal(byClass(curve, 'tri-curve-weight-note').length, 0)
+    assert.equal(
+      byClass(curve, 'tri-curve-unit')[1].properties.title,
+      'W/kg unavailable: no weight recorded for this activity',
+    )
+  }
+  assert.equal(powerCurveWeight(detail({ bestEfforts: null })), undefined)
+  assert.equal(
+    powerCurveWeight(
+      detail({
+        bestEfforts: null,
+        powerCurveWeight: { kg: 75, date: '2026-07-10', source: 'garmin' },
+      }),
+    ),
+    undefined,
+  )
+})
+
+test('converts power curve values with fractional kilograms and preserves measured zero', () => {
+  assert.equal(powerCurveValueText(264, 87.09, 'en'), '3.03 W/kg')
+  assert.equal(powerCurveValueText(0, 87.09, 'en'), '0.00 W/kg')
+  assert.equal(powerCurveValueText(264, 87.09, 'fr'), '3,03 W/kg')
+  assert.equal(powerCurveValueText(234.3, 87.09, 'en'), '2.69 W/kg')
+  assert.equal(powerCurveValueText(264, null, 'en'), '264 W')
+  assert.equal(powerCurveValueText(264, null, 'en', true), '264W')
+  assert.equal(powerCurveValueText(234.3, null, 'en'), '234.3 W')
+})
+
+test('keeps power curve W/kg ticks on the common watt geometry and restores the watt axis', () => {
+  const watts = powerCurveAxisTicks(1_200, 200, null, 'en')
+  const relative = powerCurveAxisTicks(1_200, 200, 80, 'en')
+  assert.deepEqual(relative, [
+    { label: '0', watts: 0 },
+    { label: '5 W/kg', watts: 400 },
+    { label: '10 W/kg', watts: 800 },
+    { label: '15 W/kg', watts: 1_200 },
+  ])
+  assert.deepEqual(powerCurveAxisTicks(1_200, 200, null, 'en'), watts)
+  assert.deepEqual(
+    watts.map(tick => tick.label),
+    ['0', '200w', '400w', '600w', '800w', '1,000w', '1,200w'],
+  )
+  assert.ok(powerCurveAxisTicks(1_500, 500, 87.09, 'en').every(tick => tick.watts <= 1_500))
+  assert.deepEqual(powerCurveAxisTicks(1_200, 200, 0, 'en'), watts)
+})
+
 test('scales power curve y axis with nice watt ticks', () => {
   const curve = buildPowerCurve(factory, zonedDetail(), ctx())
   assert.ok(curve)
@@ -8263,6 +8394,11 @@ test('renders six-week and calendar-year comparison ranges on one watt domain', 
   ])
   const ranges = byClass(curve, 'tri-curve-range')
   assert.deepEqual(ranges.map(text), ['6 weeks', 'all of 2026'])
+  const controls = byClass(curve, 'tri-curve-controls')[0]
+  assert.deepEqual(controls.children, [
+    byClass(curve, 'tri-curve-ranges')[0],
+    byClass(curve, 'tri-curve-units')[0],
+  ])
   assert.deepEqual(
     ranges.map(button => button.properties.ariaPressed),
     ['true', 'false'],
@@ -8336,7 +8472,11 @@ test('renders only the ride critical power model and keeps FTP and goal in the e
   assert.equal(modelRows[0].properties.dataCurveModelMaxSeconds, '720')
   const summaries = byClass(curve, 'tri-curve-cp-k')
   assert.equal(summaries.length, 1)
-  assert.equal(text(summaries[0]), 'this ride · eCP 245 W · eW′ 9.6 kJ')
+  assert.equal(text(summaries[0]), 'this ride · eCP 245 W · eW′ 9.6 kJ · 87.55 kg')
+  const weightNote = byClass(curve, 'tri-curve-weight-note')[0]
+  assert.ok(summaries[0].children.includes(weightNote))
+  assert.equal(weightNote.properties.hidden, true)
+  assert.equal(curve.children.includes(weightNote), false)
   assert.equal(summaries[0].properties.dataGlossDef, '1 independent effort · provisional')
   assert.equal(summaries[0].properties.tabIndex, 0)
   assert.equal('hidden' in summaries[0].properties, false)
@@ -8345,7 +8485,7 @@ test('renders only the ride critical power model and keeps FTP and goal in the e
   const thresholds = byClass(curve, 'tri-curve-thresholds')
   assert.equal(thresholds.length, 1)
   assert.deepEqual((thresholds[0].children as Element[]).map(text), [
-    'this ride · eCP 245 W · eW′ 9.6 kJ',
+    'this ride · eCP 245 W · eW′ 9.6 kJ · 87.55 kg',
   ])
   const cap = byClass(curve, 'tri-elev-cap')[0]
   const capChildren = cap.children as Element[]

@@ -2,6 +2,30 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { parseTrackingBlock } from './tracking'
 
+test('parses authored computer text with or without a provider attachment', () => {
+  for (const attachment of ['', '\ngarmin: 24401552199']) {
+    assert.deepEqual(
+      parseTrackingBlock(
+        null,
+        `activity: 20220077128${attachment}\ncomputer:   Wahoo ELEMNT BOLT 3  `,
+      )?.activity,
+      {
+        activityId: 20220077128,
+        garminActivityId: attachment ? 24401552199 : null,
+        computer: 'Wahoo ELEMNT BOLT 3',
+        virtual: false,
+      },
+    )
+  }
+  assert.equal(parseTrackingBlock(null, 'activity: 20220077128\ncomputer:   '), null)
+  assert.equal(parseTrackingBlock(null, 'computer: Wahoo ELEMNT BOLT 3'), null)
+  assert.equal(
+    parseTrackingBlock(null, 'activity: 20220077128\ngarmin: 24401552199\ncomputer:   ')?.activity
+      ?.computer,
+    undefined,
+  )
+})
+
 test('accepts a linked Wahoo FIT with or without virtual-course tracking', () => {
   for (const suffix of ['', '\nvirtual: true']) {
     const parsed = parseTrackingBlock(

@@ -498,6 +498,14 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     !isWahooVerification(value.wahoo) ||
     !isActivitySources(value.sources) ||
     !(
+      value.powerCurveWeight === undefined ||
+      (isRecord(value.powerCurveWeight) &&
+        finite(value.powerCurveWeight.kg) &&
+        value.powerCurveWeight.kg > 0 &&
+        value.powerCurveWeight.date === value.date &&
+        value.powerCurveWeight.source === 'garmin')
+    ) ||
+    !(
       value.equipment === undefined ||
       (isRecord(value.equipment) &&
         typeof value.equipment.id === 'string' &&
@@ -507,6 +515,12 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
         value.equipment.source === 'strava')
     ) ||
     !isActivityMoves(value.moves) ||
+    !(
+      value.computerOverride === undefined ||
+      (value.sport === 'bike' &&
+        typeof value.computerOverride === 'string' &&
+        value.computerOverride.trim().length > 0)
+    ) ||
     !(value.device === null || isActivityDevice(value.device)) ||
     !isStaminaTrace(value.staminaTrace) ||
     (isRecord(value.staminaTrace) &&
