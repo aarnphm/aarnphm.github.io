@@ -21,6 +21,7 @@ import { swimActivityPointText } from '../../../util/triathlon-i18n'
 import { swimActivityValueText } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
 import { syncPowerCurveActivityLink } from './power-links'
+import { setupTorqueCharts } from './torque'
 
 export type CyclingChartMode = 'distance' | 'power'
 export type RunMetricMode =
@@ -92,6 +93,7 @@ export const setupChartScrub = (
   scope: HTMLElement,
   presentation: () => TriathlonPresentation,
 ): (() => void) => {
+  const cleanupTorque = setupTorqueCharts(scope)
   const text = (key: string): string => triText(presentation().locale, key)
   type CurveRange = 'six-weeks' | 'year'
   let activeWrap: HTMLElement | null = null
@@ -839,6 +841,7 @@ export const setupChartScrub = (
   window.addEventListener('tri:locale', onLocale)
   onLocale()
   return () => {
+    cleanupTorque()
     clear()
     for (const animation of swimAnimations.values()) animation.cancel()
     swimAnimations.clear()

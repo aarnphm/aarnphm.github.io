@@ -27,6 +27,7 @@ import {
   buildFtpPedalingEvidence,
   computeFtpHypothesisFromVo2,
   type PowerToWeightDurationS,
+  type RadarAxis,
 } from './analytics'
 import { emptyGarminFueling, emptyGarminMetrics } from './garmin'
 import {
@@ -1407,6 +1408,127 @@ test('abilities block builds one radar per sport with per-discipline history', (
   const swimLast = swim.history[swim.history.length - 1]
   assert.equal(swimLast.climb, 76)
   assert.equal(swimLast.sprint, 76)
+})
+
+test('bike abilities express measured sprint and climb as fractions of WorldTour record power', () => {
+  const date = iso(20)
+  const cache = powerActivityCache([{ id: 11, date }], date)
+  const weights = [trackingWeight(iso(15), 80)]
+  for (const fraction of [0.1, 0.5, 1, 1.2]) {
+    const activityDetails = {
+      '11': powerDetail(11, date, {
+        bestWatts: { 5: 18.1 * 80 * fraction, 1200: 6 * 80 * fraction },
+      }),
+    }
+    const analytics = buildAnalytics(cache, { activityDetails, weights, since: date })
+    const bike = analytics.engine.abilities.sports.find(sport => sport.sport === 'bike')
+    assert.ok(bike)
+    for (const [key, benchmark] of [
+      ['sprint', 18.1],
+      ['climb', 6],
+    ] as const) {
+      const axis: RadarAxis | undefined = bike.axes.find(candidate => candidate.key === key)
+      assert.equal(axis?.rawValue, Math.round(benchmark * fraction * 100) / 100)
+      assert.equal(axis?.rawUnit, 'w/kg')
+      assert.equal(axis?.lo, 0)
+      assert.equal(axis?.hi, benchmark)
+      assert.equal(axis?.score, Math.min(100, fraction * 100))
+      assert.equal(axis?.proj, axis?.score)
+      assert.equal(bike.history.at(-1)?.[key], axis?.score)
+    }
+  }
+})
+
+test('bike abilities use effort-date mass and ignore whole-ride elevation and peak watts', () => {
+  const date = iso(20)
+  const today = iso(30)
+  const cache = powerActivityCache([{ id: 11, date }], today)
+  cache.activities['11'].totalElevationGain = 5000
+  cache.activities['11'].maxWatts = 2000
+  const analytics = buildAnalytics(cache, {
+    activityDetails: { '11': powerDetail(11, date, { bestWatts: { 5: 800, 1200: 240 } }) },
+    weights: [trackingWeight(iso(15), 80), trackingWeight(today, 60)],
+    since: iso(15),
+  })
+  const bike = analytics.engine.abilities.sports.find(sport => sport.sport === 'bike')
+  assert.equal(bike?.axes.find(axis => axis.key === 'sprint')?.rawValue, 10)
+  assert.equal(bike?.axes.find(axis => axis.key === 'climb')?.rawValue, 3)
+  assert.equal(bike?.history.find(point => point.date === iso(19))?.sprint, null)
+  assert.equal(bike?.history.find(point => point.date === date)?.sprint, 55)
+  assert.equal(bike?.history.at(-1)?.sprint, 55)
+  assert.equal(bike?.history.at(-1)?.climb, 50)
+  assert.equal(bike?.axes.find(axis => axis.key === 'sprint')?.proj, 55)
+})
+
+test('bike abilities require measured exact durations and a known historical mass', () => {
+  const date = iso(20)
+  const cache = powerActivityCache([{ id: 11, date }], date)
+  for (const options of [
+    {},
+    { bestWatts: { 60: 800, 300: 400 } },
+    { bestWatts: { 5: 800, 1200: 240 }, deviceWatts: false },
+  ]) {
+    const bike = buildAnalytics(cache, {
+      activityDetails: { '11': powerDetail(11, date, options) },
+      weights: [trackingWeight(iso(15), 80)],
+      since: date,
+    }).engine.abilities.sports.find(sport => sport.sport === 'bike')
+    for (const key of ['sprint', 'climb']) {
+      const axis = bike?.axes.find(axis => axis.key === key)
+      assert.equal(axis?.rawValue, null)
+      assert.equal(axis?.score, null)
+      assert.equal(axis?.proj, null)
+    }
+  }
+  const bike = buildAnalytics(cache, {
+    activityDetails: { '11': powerDetail(11, date, { bestWatts: { 5: 800, 1200: 240 } }) },
+    weights: [trackingWeight(iso(21), 80)],
+    since: date,
+  }).engine.abilities.sports.find(sport => sport.sport === 'bike')
+  assert.equal(bike?.axes.find(axis => axis.key === 'sprint')?.score, null)
+  assert.equal(bike?.axes.find(axis => axis.key === 'climb')?.score, null)
+})
+
+test('bike ability records expire after the shared 42 day window', () => {
+  const date = iso(20)
+  const analytics = buildAnalytics(powerActivityCache([{ id: 11, date }], iso(62)), {
+    activityDetails: { '11': powerDetail(11, date, { curveWatts: { 5: 800, 1200: 240 } }) },
+    weights: [trackingWeight(iso(15), 80)],
+    since: date,
+  })
+  const bike = analytics.engine.abilities.sports.find(sport => sport.sport === 'bike')
+  assert.equal(bike?.history.find(point => point.date === iso(61))?.climb, 50)
+  assert.equal(bike?.history.at(-1)?.climb, null)
+  assert.equal(bike?.axes.find(axis => axis.key === 'climb')?.score, null)
+  assert.equal(bike?.axes.find(axis => axis.key === 'sprint')?.proj, null)
+})
+
+test('bike ability projections extrapolate W/kg before applying the WorldTour scale', () => {
+  const specs = Array.from({ length: 28 }, (_, index) => ({ id: index + 11, date: iso(index) }))
+  const activityDetails = Object.fromEntries(
+    specs.map((spec, index) => [
+      String(spec.id),
+      powerDetail(spec.id, spec.date, {
+        bestWatts: { 5: (8 + index * 0.1) * 80, 1200: (3 + index * 0.03) * 80 },
+      }),
+    ]),
+  )
+  const analytics = buildAnalytics(powerActivityCache(specs, iso(27)), {
+    activityDetails,
+    weights: [trackingWeight(iso(0), 80)],
+    since: iso(0),
+  })
+  const bike = analytics.engine.abilities.sports.find(sport => sport.sport === 'bike')
+  const sprint = bike?.axes.find(axis => axis.key === 'sprint')
+  const climb = bike?.axes.find(axis => axis.key === 'climb')
+  assert.equal(sprint?.rawValue, 10.7)
+  assert.equal(sprint?.score, 59)
+  assert.equal(sprint?.projRawValue, 13.5)
+  assert.equal(sprint?.proj, 75)
+  assert.equal(climb?.rawValue, 3.81)
+  assert.equal(climb?.score, 64)
+  assert.equal(climb?.projRawValue, 4.65)
+  assert.equal(climb?.proj, 78)
 })
 
 test('swim sprint and threshold share the swim pace scale', () => {
@@ -3086,4 +3208,63 @@ test('data feed degrades to a single meta line without a cache', () => {
   assert.equal(meta.kind, 'meta')
   assert.deepEqual(meta.counts, { day: 0, activity: 0, week: 0 })
   assert.equal(meta.athlete.ageYears, null)
+})
+
+test('historical effort mechanics and eCP use exact windows and only past anchors', () => {
+  const firstDate = iso(20)
+  const lastDate = iso(22)
+  const cache = powerActivityCache(
+    [
+      { id: 11, date: firstDate },
+      { id: 12, date: lastDate },
+    ],
+    lastDate,
+  )
+  const first = powerDetail(11, firstDate, { bestWatts: { 180: 300, 360: 280, 720: 260 } })
+  const later = powerDetail(12, lastDate, { bestWatts: { 180: 400, 360: 360, 720: 330 } })
+  const mechanics = {
+    source: 'wahoo',
+    method: 'power-cadence-v1',
+    averageTorqueNm: 30,
+    averageCadenceRpm: 85,
+    coverage: 1,
+    observedSeconds: 180,
+  } satisfies NonNullable<NonNullable<typeof first.bestEfforts>['power'][number]['mechanics']>
+  const effort = first.bestEfforts?.power.find(value => value.durationS === 180)
+  assert.ok(effort)
+  effort.mechanics = mechanics
+  effort.startElapsedS = 300
+  effort.endElapsedS = 480
+  first.criticalPowerAnchors = [180, 420, 720].map((durationS, i) => ({
+    durationS,
+    meanPowerWatts: 240 + 10_000 / durationS,
+    activityId: 11,
+    activityDate: firstDate,
+    startElapsedS: i * 1000,
+    endElapsedS: i * 1000 + durationS,
+    mechanics,
+  }))
+  later.criticalPowerAnchors = first.criticalPowerAnchors.map(anchor => ({
+    ...anchor,
+    activityId: 12,
+    activityDate: lastDate,
+    meanPowerWatts: anchor.meanPowerWatts + 50,
+  }))
+  const trend = buildAnalytics(cache, {
+    activityDetails: { 11: first, 12: later },
+    weights: [trackingWeight(iso(15), 80)],
+    since: firstDate,
+  }).powerCurve.powerToWeight
+  assert.equal(trend.points[0].criticalPower?.criticalPowerWatts, 240)
+  assert.equal(trend.points.at(-1)?.criticalPower?.criticalPowerWatts, 290)
+  assert.deepEqual(trend.points[0].efforts[180]?.mechanics, mechanics)
+  assert.equal(trend.points[0].efforts[180]?.startElapsedS, 300)
+  assert.equal(trend.points[0].efforts[180]?.endElapsedS, 480)
+  assert.ok(
+    trend.points[0].criticalPower?.anchors.every(anchor => anchor.activityDate <= firstDate),
+  )
+  assert.deepEqual(
+    trend.points[0].criticalPower?.anchors.map(anchor => anchor.durationS),
+    [180, 420, 720],
+  )
 })

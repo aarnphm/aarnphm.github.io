@@ -6,6 +6,8 @@ export const TRIATHLON_TRACE_DISPLAY_SETTINGS = Object.freeze({
   detailed: Object.freeze({}),
   focused: Object.freeze({ focused: true }),
   simplified: Object.freeze({
+    'cycling-power': false,
+    'crank-torque': false,
     'power-balance': false,
     'pedal-smoothness': false,
     'power-phase': false,

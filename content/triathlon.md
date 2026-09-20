@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-18 00:19:48 GMT-04:00
+modified: 2026-09-20 00:34:38 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1254,7 +1254,7 @@ exercise: Side Plank | 60s | 60s | 60s
 ```
 
 ```tracking
-title: Untangled, Wind Down
+title: Guided Down, Untangled
 date: 2026-08-23
 time: 18:30
 duration: 75 mins
@@ -1318,6 +1318,7 @@ humidity: 10%
 cooldown: cold plunge
 htl: 7.7
 location: Othership Adelaide
+lap-phases: hot sauna | cold plunge | break | hot sauna | hot sauna | cold plunge | hot sauna | break | cold plunge | break
 strava: 20038635691
 garmin: 24239862296
 ```
@@ -1374,6 +1375,7 @@ temperature: 160F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.6
+lap-phases: break | hot sauna | cold plunge | break | hot sauna | break
 location: Othership Adelaide
 strava: 20067592351
 garmin: 24265300419
@@ -1429,6 +1431,7 @@ htl: 7.6
 location: Othership Adelaide
 strava: 20094989479
 garmin: 24290193820
+lap-phases: hot sauna | cold plunge | hot sauna | break
 exercise: Glute Bridge | 30s | 30s
 exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
 exercise: Single-Leg Glute Bridge to Abductor | 40s | 40s | 40s | 40s
@@ -1442,7 +1445,7 @@ virtual: true
 ```
 
 ```tracking
-title: Self Care, Sweat
+title: Guided Down, Self-Care Sweat
 date: 2026-09-09
 time: 17:30
 duration: 75 mins
@@ -1452,6 +1455,7 @@ humidity: 11%
 cooldown: cold plunge
 htl: 7.6
 location: Othership Adelaide
+lap-phases: hot sauna | cold plunge | hot sauna | break
 strava: 20109334842
 garmin: 24302930336
 ```
@@ -1511,6 +1515,7 @@ activity: sauna
 temperature: 160F
 humidity: 11%
 cooldown: cold plunge
+lap-phases: hot sauna | hot sauna | cold plunge
 htl: 7.6
 location: Othership Adelaide
 strava: 20164727635
@@ -1546,13 +1551,14 @@ temperature: 162F
 humidity: 11%
 cooldown: cold plunge
 htl: 7.6
+lap-phases: break | hot sauna | cold plunge | hot sauna | cold plunge | break
 location: Othership Adelaide
 strava: 20177859808
 garmin: 24364001566
 ```
 
 ```tracking
-title: Guided All Round, Self-Care Sweats
+title: Guided All Round, Self-Care Sweat
 date: 2026-09-15
 time: 18:30
 duration: 65 mins
@@ -1561,6 +1567,7 @@ temperature: 162F
 humidity: 11%
 cooldown: cold plunge
 htl: 6.7
+lap-phases: break | hot sauna | cold plunge | hot sauna | break
 location: Othership Adelaide
 strava: 20192210982
 garmin: 24376937916
@@ -1593,6 +1600,7 @@ activity: sauna
 temperature: 162F
 humidity: 11%
 cooldown: cold plunge
+lap-phases: hot sauna | cold plunge | hot sauna
 location: Othership Adelaide
 htl: 7.6
 strava: 20202805429
@@ -1608,6 +1616,7 @@ activity: sauna
 temperature: 168F
 humidity: 11%
 cooldown: cold plunge
+lap-phases: hot sauna | cold plunge | hot sauna | break
 location: Othership Adelaide
 htl: 7.6
 strava: 20221226052
@@ -1633,6 +1642,28 @@ exercise: Single-leg Romanian deadlift reach | 40s | 40s | 40s | 40s
 exercise: Side plank | 40s | 40s | 40s | 40s
 exercise: Superman hold with alternating leg lift | 40s | 40s | 40s | 40s
 exercise: Child's pose and thread-the-needle stretch | 2m
+```
+
+```tracking
+date: 2026-09-19
+activity: 20246133767
+fueling: 1560
+```
+
+```tracking
+title: Socials
+date: 2026-09-19
+time: 21:00
+duration: 75 mins
+activity: sauna
+temperature: 185F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: break | hot sauna | cold plunge | break | hot sauna | cold plunge | break | hot sauna | cold plunge | break
+location: Othership Adelaide
+htl: 7.6
+strava: 20248302782
+garmin: 24426208601
 ```
 
 <!-- training plan start
@@ -1678,6 +1709,17 @@ EOD: Send voice notes, 30s, (swim great, bike tough, but didn't want to be there
 ### tech
 
 _TrainingPeak + Turbo + GO MAX WIN, locked in time._
+
+### training camps
+
+> when, where?
+
+After Oman, 2-3 weeks. Mid-End March 2027
+
+Options:
+
+- Lanzarote (Routes and ask James about this)
+- KIS training camp, Utah
 
 <!-- training plan end -->
 

@@ -313,6 +313,26 @@ const en: TriDict = {
     'power curve': 'power curve',
     'critical power model': 'critical power model',
     'estimated critical power': 'estimated critical power',
+    'power over terrain': 'power over terrain',
+    terrain: 'terrain',
+    '30 s average': '30 s average',
+    '5 min average': '5 min average',
+    'ride average': 'ride average',
+    'power averaging window': 'power averaging window',
+    'recorded power averages':
+      'Time-weighted recorded power, including zeroes. Pauses and missing data stay empty. Trailing averages restart after gaps.',
+    'estimated wind': 'estimated wind',
+    'wind unavailable': 'wind unavailable',
+    '+ headwind': '+ headwind',
+    '− tailwind': '− tailwind',
+    'crank torque': 'crank torque',
+    'whole ride': 'whole ride',
+    'crank torque view': 'crank torque view',
+    'crank torque by cadence': 'crank torque by cadence',
+    'time in cadence and torque bins': 'time in cadence and torque bins',
+    'darker means more time': 'darker means more time',
+    'crank torque definition':
+      'Mean crank torque = 60 × watts / (2π × rpm), calculated from paired Wahoo samples before downsampling. Zero cadence and missing data are excluded. Display windows require 80% paired coverage. The density chart covers the whole ride; its top band groups the high-torque tail beyond the 99th percentile. Torque describes crank load; it does not measure metabolic efficiency.',
     'power balance': 'power balance',
     'cycling charts view': 'cycling charts view',
     'power balance by watts': 'power balance by watts',
@@ -779,8 +799,9 @@ const en: TriDict = {
     'projected finish range, including both transitions':
       'The projected finish has an 80% chance of falling in this range. It includes both transitions.',
     'custom date missing': 'custom date missing',
+    'WorldTour reference': 'WorldTour reference',
     'radar sprint bike definition':
-      'Sprint uses your best 5 second bike power divided by body weight. A higher value means more power for your weight during a short effort.',
+      'Sprint uses your best measured 5 second power-to-weight effort in the past 42 days, with body weight from the effort date. The score is the percentage of the male WorldTour mean record, {benchmark} W/kg, capped at 100. A 28 day projection uses the recent W/kg trend when at least three distinct efforts are available; otherwise it holds the current score.',
     'radar sprint run definition':
       'Sprint uses your fastest recorded 30 second running speed. It shows your top speed during a short effort.',
     'radar sprint swim definition':
@@ -798,7 +819,7 @@ const en: TriDict = {
     'radar climb run definition':
       'Climb uses the vertical {unit} gained per hour of running. It counts moving time.',
     'radar climb bike definition':
-      'Climb uses the vertical {unit} gained per hour of cycling. It counts moving time.',
+      'Climb uses your best measured 20 minute power-to-weight effort in the past 42 days, with body weight from the effort date. The score is the percentage of the male WorldTour mean record, {benchmark} W/kg, capped at 100. This measures sustained climbing power. The 28 day projection uses the same W/kg scale.',
     'radar cadence bike definition':
       'Cadence compares your average pedal rate with 90 revolutions per minute. The score falls when your rate is above or below 90.',
     'radar cadence run definition':
@@ -1030,7 +1051,7 @@ const en: TriDict = {
     },
     radar: {
       term: 'abilities',
-      def: 'Each sport has six scores from 0 to 100. Sprint and threshold use power or speed. Endurance uses 42 days of training load. Run uses stride length, cadence, and vertical oscillation. Bike uses climbing rate and cadence. Swim uses pace and stroke rate. Bike and swim retain recovery. The dashed line shows the projected score 28 days from now.',
+      def: 'Each sport has six scores from 0 to 100. Sprint and threshold use power or speed. Endurance uses 42 days of training load. Run uses stride length, cadence, and vertical oscillation. Bike uses 5 second sprint and 20 minute climbing power in W/kg relative to male WorldTour mean records, plus cadence. Swim uses pace and stroke rate. Bike and swim retain recovery. The dashed line shows the projected score 28 days from now.',
     },
     hrzones: {
       term: 'training zone distributions',
@@ -1275,6 +1296,26 @@ const fr: TriDict = {
     'power curve': 'courbe de puissance',
     'critical power model': 'modèle de puissance critique',
     'estimated critical power': 'puissance critique estimée',
+    'power over terrain': 'puissance et relief',
+    terrain: 'relief',
+    '30 s average': 'moyenne sur 30 s',
+    '5 min average': 'moyenne sur 5 min',
+    'ride average': 'moyenne de la sortie',
+    'power averaging window': 'fenêtre de moyenne de puissance',
+    'recorded power averages':
+      'Puissance enregistrée pondérée par la durée, zéros inclus. Les pauses et les données manquantes restent vides. Les moyennes glissantes repartent après chaque interruption.',
+    'estimated wind': 'vent estimé',
+    'wind unavailable': 'vent indisponible',
+    '+ headwind': '+ vent de face',
+    '− tailwind': '− vent arrière',
+    'crank torque': 'couple au pédalier',
+    'whole ride': 'sortie entière',
+    'crank torque view': 'vue du couple au pédalier',
+    'crank torque by cadence': 'couple selon la cadence',
+    'time in cadence and torque bins': 'temps par intervalle de cadence et de couple',
+    'darker means more time': 'plus foncé = plus de temps',
+    'crank torque definition':
+      'Couple moyen = 60 × watts / (2π × tr/min), calculé à partir des mesures Wahoo appariées avant réduction. La cadence nulle et les données absentes sont exclues. Chaque fenêtre affichée exige 80 % de couverture. La densité couvre la sortie entière; sa bande supérieure regroupe les couples élevés au-delà du 99e percentile. Le couple décrit la charge au pédalier, sans mesurer l’efficacité métabolique.',
     'power balance': 'équilibre de puissance',
     'cycling charts view': 'affichage des graphiques de cyclisme',
     'power balance by watts': 'équilibre de puissance selon les watts',
@@ -1747,8 +1788,9 @@ const fr: TriDict = {
     'projected finish range, including both transitions':
       "Le temps d'arrivée a 80 % de chances de se trouver dans cette plage. Les deux transitions sont incluses.",
     'custom date missing': 'date perso manquante',
+    'WorldTour reference': 'référence WorldTour',
     'radar sprint bike definition':
-      'Le sprint utilise ta meilleure puissance à vélo sur 5 secondes, divisée par ton poids. Une valeur plus haute signifie plus de puissance par kilogramme pendant un effort court.',
+      'Le sprint utilise ton meilleur effort mesuré sur 5 secondes en W/kg des 42 derniers jours, avec le poids connu à la date de cet effort. La note est le pourcentage du record moyen du WorldTour masculin, {benchmark} W/kg, plafonné à 100. La projection à 28 jours utilise la tendance récente en W/kg lorsque trois efforts distincts sont disponibles; sinon, elle conserve la note actuelle.',
     'radar sprint run definition':
       'Le sprint utilise ta vitesse de course la plus rapide sur 30 secondes. Il montre ta vitesse maximale pendant un effort court.',
     'radar sprint swim definition':
@@ -1766,7 +1808,7 @@ const fr: TriDict = {
     'radar climb run definition':
       'La grimpe utilise les {unit} de dénivelé gagnés par heure de course. Elle compte le temps en mouvement.',
     'radar climb bike definition':
-      'La grimpe utilise les {unit} de dénivelé gagnés par heure de vélo. Elle compte le temps en mouvement.',
+      'La grimpe utilise ton meilleur effort mesuré sur 20 minutes en W/kg des 42 derniers jours, avec le poids connu à la date de cet effort. La note est le pourcentage du record moyen du WorldTour masculin, {benchmark} W/kg, plafonné à 100. Elle mesure la puissance soutenue en montée. La projection à 28 jours utilise la même échelle en W/kg.',
     'radar cadence bike definition':
       'La cadence compare ta fréquence moyenne de pédalage avec 90 tours par minute. La note baisse lorsque ta fréquence est au-dessus ou en dessous de 90.',
     'radar cadence run definition':
@@ -1999,7 +2041,7 @@ const fr: TriDict = {
     },
     radar: {
       term: 'aptitudes',
-      def: "Chaque sport a six notes de 0 à 100. Le sprint et le seuil utilisent la puissance ou la vitesse. L'endurance utilise 42 jours de charge d'entraînement. La course utilise la longueur de foulée, la cadence et l'oscillation verticale. Le vélo utilise la vitesse de grimpe et la cadence. La natation utilise l'allure et la fréquence de nage. Le vélo et la natation conservent la récupération. La ligne pointillée montre la note prévue dans 28 jours.",
+      def: "Chaque sport a six notes de 0 à 100. Le sprint et le seuil utilisent la puissance ou la vitesse. L'endurance utilise 42 jours de charge d'entraînement. La course utilise la longueur de foulée, la cadence et l'oscillation verticale. Le vélo utilise la puissance de sprint sur 5 secondes et de grimpe sur 20 minutes en W/kg par rapport aux records moyens du WorldTour masculin, ainsi que la cadence. La natation utilise l'allure et la fréquence de nage. Le vélo et la natation conservent la récupération. La ligne pointillée montre la note prévue dans 28 jours.",
     },
     hrzones: {
       term: "répartition des zones d'entraînement",

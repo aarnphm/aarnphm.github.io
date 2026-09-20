@@ -6,6 +6,7 @@ import {
   type StravaActivityDetail,
 } from '../../../plugins/stores/strava'
 import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
+import { CYCLING_POWER_MAX_POINTS } from '../../../util/cycling-power'
 import { HEART_RATE_PHYSIOLOGY_METHOD } from '../../../util/heart-rate-physiology'
 import {
   isStravaDetailShardPath,
@@ -153,6 +154,60 @@ const isPerformanceConditionTrace = (value: unknown): boolean => {
   )
 }
 
+const isCyclingTorqueTrace = (value: unknown, elapsedTimeS: number): boolean => {
+  if (value == null) return true
+  if (
+    !isRecord(value) ||
+    value.source !== 'wahoo' ||
+    value.method !== 'power-cadence-v1' ||
+    !isRecord(value.summary) ||
+    value.summary.source !== 'wahoo' ||
+    value.summary.method !== 'power-cadence-v1' ||
+    !bounded(value.summary.coverage, 0, 1) ||
+    !bounded(value.summary.observedSeconds, 0, elapsedTimeS) ||
+    !finite(value.summary.averageTorqueNm) ||
+    value.summary.averageTorqueNm < 0 ||
+    !finite(value.summary.averageCadenceRpm) ||
+    value.summary.averageCadenceRpm <= 0 ||
+    !Array.isArray(value.points) ||
+    value.points.length < 2 ||
+    !Array.isArray(value.cells)
+  )
+    return false
+  let previous = -1
+  let distance = 0
+  return (
+    value.points.every((point: unknown) => {
+      if (
+        !isRecord(point) ||
+        !bounded(point.elapsedS, 0, elapsedTimeS) ||
+        point.elapsedS <= previous ||
+        !finite(point.distanceKm) ||
+        point.distanceKm < distance ||
+        !finite(point.durationS) ||
+        point.durationS <= 0 ||
+        !nullableBounded(point.torqueNm, 0, Number.MAX_VALUE) ||
+        !nullableBounded(point.cadenceRpm, 0, Number.MAX_VALUE) ||
+        !nullableBounded(point.watts, 0, Number.MAX_VALUE)
+      )
+        return false
+      previous = point.elapsedS
+      distance = point.distanceKm
+      return true
+    }) &&
+    value.cells.every(
+      (cell: unknown) =>
+        isRecord(cell) &&
+        finite(cell.cadenceRpm) &&
+        cell.cadenceRpm >= 0 &&
+        finite(cell.torqueNm) &&
+        cell.torqueNm >= 0 &&
+        finite(cell.seconds) &&
+        cell.seconds > 0,
+    )
+  )
+}
+
 const isCyclingIntensityTrace = (value: unknown, elapsedTimeS: number): boolean => {
   if (value == null) return true
   if (
@@ -176,6 +231,41 @@ const isCyclingIntensityTrace = (value: unknown, elapsedTimeS: number): boolean 
       !finite(point.distanceKm) ||
       point.distanceKm < previousDistance ||
       !nullableBounded(point.intensityFactor, 0, Number.MAX_VALUE)
+    )
+      return false
+    previousElapsed = point.elapsedS
+    previousDistance = point.distanceKm
+    return true
+  })
+}
+
+const isCyclingPowerTrace = (value: unknown, elapsedTimeS: number): boolean => {
+  if (value == null) return true
+  if (
+    !isRecord(value) ||
+    (value.source !== 'wahoo' && value.source !== 'strava') ||
+    (value.terrainSource !== 'wahoo' &&
+      value.terrainSource !== 'strava' &&
+      value.terrainSource !== 'garmin') ||
+    value.method !== 'recorded-power-average-v1' ||
+    !Array.isArray(value.points) ||
+    value.points.length < 2 ||
+    value.points.length > CYCLING_POWER_MAX_POINTS
+  )
+    return false
+  let previousElapsed = -1
+  let previousDistance = 0
+  return value.points.every((point: unknown) => {
+    if (
+      !isRecord(point) ||
+      !bounded(point.elapsedS, 0, elapsedTimeS) ||
+      point.elapsedS <= previousElapsed ||
+      !finite(point.distanceKm) ||
+      point.distanceKm < previousDistance ||
+      !nullableFinite(point.elevationM) ||
+      !nullableBounded(point.power30sWatts, 0, Number.MAX_VALUE) ||
+      !nullableBounded(point.power5mWatts, 0, Number.MAX_VALUE) ||
+      !nullableBounded(point.cumulativePowerWatts, 0, Number.MAX_VALUE)
     )
       return false
     previousElapsed = point.elapsedS
@@ -539,9 +629,16 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     !isHeartRatePhysiology(value.heartRatePhysiology, value.elapsedTimeS) ||
     value.elapsedTimeS < 0 ||
     value.elapsedTimeS > Number.MAX_SAFE_INTEGER ||
+    !isCyclingTorqueTrace(value.cyclingTorque, value.elapsedTimeS) ||
+    (value.cyclingTorque != null && (value.sport !== 'bike' || value.wahoo === undefined)) ||
     !isCyclingIntensityTrace(value.cyclingIntensityTrace, value.elapsedTimeS) ||
     (value.cyclingIntensityTrace != null &&
       (value.sport !== 'bike' || value.wahoo === undefined)) ||
+    !isCyclingPowerTrace(value.cyclingPowerTrace, value.elapsedTimeS) ||
+    (isRecord(value.cyclingPowerTrace) &&
+      (value.sport !== 'bike' ||
+        (value.cyclingPowerTrace.source === 'wahoo' && value.wahoo === undefined) ||
+        (value.cyclingPowerTrace.source === 'strava' && value.deviceWatts !== true))) ||
     !nullableBounded(value.deviceTemperatureC, -90, 100) ||
     !nullableBounded(value.ambientTemperatureC, -90, 70) ||
     !isRouteTrace(value.route) ||

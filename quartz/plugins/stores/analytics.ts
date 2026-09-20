@@ -1,3 +1,4 @@
+import type { CyclingMechanics } from '../../util/cycling-torque'
 import type {
   GarminCache,
   GarminCyclingDynamics,
@@ -9,6 +10,7 @@ import type { WeatherCache } from './weather'
 import { selectActivityAnalysisSummary } from '../../util/activity-analysis-selection'
 import { matchAppleRun } from '../../util/apple-run-match'
 import { matchAppleSwims } from '../../util/apple-swim-match'
+import { WORLD_TOUR_POWER_REFERENCE } from '../../util/cycling-ability-reference'
 import {
   calculateFtpHypothesis,
   FTP_HYPOTHESIS_DEFAULTS,
@@ -31,7 +33,11 @@ import {
   matchCoreBodyTemperatureActivity,
   type CoreBodyTemperatureCache,
 } from './core-body-temperature'
-import { criticalPowerAtDuration, type CriticalPowerEstimate } from './critical-power'
+import {
+  criticalPowerAtDuration,
+  fitCriticalPower,
+  type CriticalPowerEstimate,
+} from './critical-power'
 import { matchGarminActivity, matchGarminHeartRateActivity } from './garmin'
 import { OuraCache } from './oura'
 import {
@@ -234,6 +240,9 @@ export type PowerToWeightDurationS = (typeof POWER_TO_WEIGHT_DURATIONS)[number]
 export type PowerToWeightAgeGroup = '20–29' | '30–39' | '40–49' | '50–59' | '60–69' | '70–79'
 
 export interface PowerToWeightEffort {
+  mechanics?: CyclingMechanics | null
+  startElapsedS?: number
+  endElapsedS?: number
   durationS: PowerToWeightDurationS
   watts: number
   wattsPerKg: number
@@ -245,6 +254,7 @@ export interface PowerToWeightEffort {
 }
 
 export interface PowerToWeightTrendPoint {
+  criticalPower?: CriticalPowerEstimate | null
   date: string
   efforts: Record<PowerToWeightDurationS, PowerToWeightEffort | null>
 }
@@ -747,6 +757,7 @@ export interface RadarAxis {
   label: string
   score: number | null
   proj: number | null
+  projRawValue?: number | null
   rawValue: number | null
   rawUnit: string
   lo: number
@@ -3776,10 +3787,7 @@ const DANIELS_C = 0.000104
 const UTH_K = 15.3
 const TANAKA_A = 208
 const TANAKA_B = 0.7
-const COGGAN_SPRINT_WKG: [number, number] = [7, 24]
 const COGGAN_FTP_WKG: [number, number] = [1.5, 6.4]
-const VAM_ANCHOR: [number, number] = [300, 1500]
-const RUN_VAM_ANCHOR: [number, number] = [100, 1200]
 const CTL_ANCHOR: [number, number] = [0, 100]
 const RUN_SPM_TARGET = 180
 const BIKE_RPM_TARGET = 90
@@ -3790,7 +3798,6 @@ const SWIM_SPEED_MS: [number, number] = [
   100 / SWIM_PACE_MAX_S_PER_100M,
   100 / SWIM_PACE_MIN_S_PER_100M,
 ]
-const BIKE_SPRINT_WIN_S = 5
 const RUN_SPRINT_WIN_S = 30
 const SPRINT_CAP_MS: Record<'swim' | 'run', number> = { swim: 3, run: 12 }
 const PROJ_WINDOW_D = 28
@@ -3803,10 +3810,6 @@ const CAD_TARGET: Record<Sport, number> = {
   run: RUN_SPM_TARGET,
 }
 const CAD_UNIT: Record<Sport, string> = { swim: 'str/min', bike: 'rpm', run: 'spm' }
-const VAM_ANCHOR_OF: Record<'bike' | 'run', [number, number]> = {
-  bike: VAM_ANCHOR,
-  run: RUN_VAM_ANCHOR,
-}
 const ONE_HZ_TOL = 0.15
 const DECOUPLE_MIN_S = 1200
 const PEAK_WINDOWS = [30, 60, 300, 1200] as const
@@ -3913,6 +3916,7 @@ function buildPowerToWeightTrend(
     for (const durationS of POWER_TO_WEIGHT_DURATIONS) {
       const watts = exactPowerToWeightWatts(detail, durationS)
       if (watts == null) continue
+      const effort = detail.bestEfforts?.power.find(effort => effort.durationS === durationS)
       candidates.push({
         durationS,
         watts,
@@ -3922,6 +3926,9 @@ function buildPowerToWeightTrend(
         massSource: mass.source,
         activityId: detail.id,
         activityDate: detail.date,
+        mechanics: effort?.mechanics ?? null,
+        startElapsedS: effort?.startElapsedS,
+        endElapsedS: effort?.endElapsedS,
       })
     }
   }
@@ -3943,7 +3950,22 @@ function buildPowerToWeightTrend(
       if (betterPowerToWeightEffort(candidate, efforts[candidate.durationS]))
         efforts[candidate.durationS] = candidate
     }
-    return [{ date: day.date, efforts }]
+    const anchors = details.flatMap(detail => {
+      const timestamp = dayMs(detail.date)
+      return detail.sport === 'bike' &&
+        detail.deviceWatts &&
+        timestamp >= cutoffTimestamp &&
+        timestamp <= dayTimestamp
+        ? (detail.criticalPowerAnchors ?? detail.activityCriticalPower?.anchors ?? [])
+        : []
+    })
+    const criticalPower = fitCriticalPower(
+      anchors,
+      'six-weeks',
+      new Date(cutoffTimestamp).toISOString().slice(0, 10),
+      day.date,
+    )
+    return [{ date: day.date, efforts, criticalPower }]
   })
   return { ...trend, points }
 }
@@ -4717,15 +4739,28 @@ function buildEngine(
 
   const kgNow = body.latestKg
   const engineTodayMs = dayMs(today)
-  let p5: number | null = null
-  for (const b of bikes) {
-    const v = peakMean(wattsOf(b.a.id), BIKE_SPRINT_WIN_S)
-    if (v != null && (p5 == null || v > p5)) p5 = v
+  const bikePowerHistory = new Map(
+    powerCurve.powerToWeight.points.map(point => [point.date, point]),
+  )
+  const bikePowerScore = (key: 'sprint' | 'climb', wattsPerKg: number | null): number | null =>
+    wattsPerKg == null
+      ? null
+      : Math.round(norm01(wattsPerKg, 0, WORLD_TOUR_POWER_REFERENCE[key].wattsPerKg) * 100)
+  const bikePowerAxis = (key: 'sprint' | 'climb'): RadarAxis => {
+    const reference = WORLD_TOUR_POWER_REFERENCE[key]
+    const effort = bikePowerHistory.get(today)?.efforts[reference.durationS]
+    const wattsPerKg = effort?.wattsPerKg ?? null
+    return {
+      key,
+      label: key,
+      score: bikePowerScore(key, wattsPerKg),
+      proj: null,
+      rawValue: wattsPerKg != null ? round(wattsPerKg, 2) : null,
+      rawUnit: 'w/kg',
+      lo: 0,
+      hi: reference.wattsPerKg,
+    }
   }
-  if (p5 == null)
-    for (const b of bikes)
-      if (b.a.maxWatts != null && (p5 == null || b.a.maxWatts > p5)) p5 = b.a.maxWatts
-  const sprintWkg = p5 != null && kgNow ? p5 / kgNow : null
   const ftpWkg = ftp != null && kgNow ? ftp / kgNow : null
   const rdy14 = winValues(
     daily.map(d => d.readiness),
@@ -4752,10 +4787,6 @@ function buildEngine(
   }
   const plausibleVgap = (sport: 'swim' | 'run', x: Act): number | null =>
     x.vGap > 0 && x.vGap <= SPRINT_CAP_MS[sport] ? x.vGap : null
-  const vamOf = (x: Act): number | null =>
-    x.a.movingTime > 0 && x.a.totalElevationGain > 0
-      ? (x.a.totalElevationGain * 3600) / x.a.movingTime
-      : null
   const cadValOf = (sport: Sport, a: RawStravaActivity): number | null =>
     a.averageCadence == null ? null : sport === 'run' ? a.averageCadence * 2 : a.averageCadence
   const cadScoreOf = (sport: Sport, v: number): number =>
@@ -4846,16 +4877,7 @@ function buildEngine(
     let sprint: RadarAxis
     let threshold: RadarAxis
     if (sport === 'bike') {
-      sprint = {
-        key: 'sprint',
-        label: 'sprint',
-        proj: null,
-        score: sprintWkg != null ? Math.round(norm01(sprintWkg, ...COGGAN_SPRINT_WKG) * 100) : null,
-        rawValue: sprintWkg != null ? round(sprintWkg, 1) : null,
-        rawUnit: 'w/kg',
-        lo: COGGAN_SPRINT_WKG[0],
-        hi: COGGAN_SPRINT_WKG[1],
-      }
+      sprint = bikePowerAxis('sprint')
       threshold = {
         key: 'threshold',
         label: 'threshold',
@@ -4925,22 +4947,7 @@ function buildEngine(
         hi: SWIM_PACE_MAX_S_PER_100M,
       }
     } else if (sport === 'bike') {
-      let vam: number | null = null
-      for (const x of mine) {
-        const v = vamOf(x)
-        if (v != null && (vam == null || v > vam)) vam = v
-      }
-      const anchor = VAM_ANCHOR_OF[sport]
-      fourth = {
-        key: 'climb',
-        label: 'climb',
-        proj: null,
-        score: vam != null ? Math.round(norm01(vam, ...anchor) * 100) : null,
-        rawValue: vam != null ? round(vam, 0) : null,
-        rawUnit: 'm/h',
-        lo: anchor[0],
-        hi: anchor[1],
-      }
+      fourth = bikePowerAxis('climb')
     } else {
       fourth = {
         key: 'stride',
@@ -5019,27 +5026,16 @@ function buildEngine(
         id: x.a.id,
         sprint:
           sport === 'bike'
-            ? (peakMean(wattsOf(x.a.id), BIKE_SPRINT_WIN_S) ?? x.a.maxWatts ?? null)
+            ? null
             : sport === 'run'
               ? (peakRunSpeedOf(x) ?? plausibleVgap(sport, x))
               : plausibleVgap(sport, x),
-        fourth:
-          sport === 'swim'
-            ? swimMetrics.get(x.a.id)?.paceSPer100m
-            : sport === 'bike'
-              ? vamOf(x)
-              : null,
+        fourth: sport === 'swim' ? swimMetrics.get(x.a.id)?.paceSPer100m : null,
         fifth: sport === 'swim' ? swimMetrics.get(x.a.id)?.strokeRateSpm : cadValOf(sport, x.a),
       }))
       .sort((p, q) => p.start.localeCompare(q.start) || p.id - q.id)
     const sprintScoreOf = (v: number): number | null =>
-      sport === 'bike'
-        ? kgNow
-          ? Math.round(norm01(v / kgNow, ...COGGAN_SPRINT_WKG) * 100)
-          : null
-        : sport === 'swim'
-          ? swimSpeedScoreOf(v)
-          : Math.round(norm01(v, ...RUN_SPRINT_MS) * 100)
+      sport === 'swim' ? swimSpeedScoreOf(v) : Math.round(norm01(v, ...RUN_SPRINT_MS) * 100)
     const rdyArr = daily.map(d => d.readiness)
     const history: AbilityTrendPoint[] = []
     let si = 0
@@ -5062,7 +5058,12 @@ function buildEngine(
       const rdyH = winValues(rdyArr, i, 14)
       const point: AbilityTrendPoint = {
         date: cutoff,
-        sprint: cumSprint != null ? sprintScoreOf(cumSprint) : null,
+        sprint:
+          sport === 'bike'
+            ? bikePowerScore('sprint', bikePowerHistory.get(cutoff)?.efforts[5]?.wattsPerKg ?? null)
+            : cumSprint != null
+              ? sprintScoreOf(cumSprint)
+              : null,
         threshold: threshold.score,
         endurance: Math.round(norm01(sportCtlOf(daily[i], sport), CTL_ANCHOR[0], ctlHi) * 100),
         cadence: fifthAcc.length ? cadScoreOf(sport, mean(fifthAcc)) : null,
@@ -5076,11 +5077,14 @@ function buildEngine(
         )
       } else {
         point.climb =
-          cumFourth == null
-            ? null
-            : sport === 'swim'
+          sport === 'bike'
+            ? bikePowerScore(
+                'climb',
+                bikePowerHistory.get(cutoff)?.efforts[1200]?.wattsPerKg ?? null,
+              )
+            : cumFourth != null
               ? swimPaceScoreOf(cumFourth)
-              : Math.round(norm01(cumFourth, ...VAM_ANCHOR_OF[sport]) * 100)
+              : null
         point.recovery = rdyH.length ? Math.round(mean(rdyH)) : null
       }
       history.push(point)
@@ -5090,6 +5094,26 @@ function buildEngine(
       if (a.score == null) continue
       if (a.key === 'sprint' || a.key === 'climb') {
         a.proj = a.score
+        if (sport === 'bike') {
+          const durationS = WORLD_TOUR_POWER_REFERENCE[a.key].durationS
+          const current = bikePowerHistory.get(today)?.efforts[durationS]
+          const observations = recent.flatMap(day => {
+            const effort = bikePowerHistory.get(day.date)?.efforts[durationS]
+            return effort == null ? [] : [{ date: day.date, effort }]
+          })
+          // Carrying one record across days does not supply independent evidence of improvement.
+          const efforts = new Set(observations.map(point => point.effort.activityId))
+          if (current != null && observations.length >= PROJ_MIN_POINTS && efforts.size >= 3) {
+            const slope =
+              olsSlope(
+                observations.map(point => (dayMs(point.date) - engineTodayMs) / DAY_MS),
+                observations.map(point => point.effort.wattsPerKg),
+              ) ?? 0
+            const projected = Math.max(0, current.wattsPerKg + slope * PROJ_HORIZON_D)
+            a.proj = bikePowerScore(a.key, projected)
+            a.projRawValue = round(projected, 2)
+          }
+        }
         continue
       }
       const xs: number[] = []

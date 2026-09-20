@@ -26,14 +26,18 @@ test('parses and serializes kebab-case trace settings', () => {
 
 test('expands simplified display settings and treats detailed display as the default', () => {
   assert.deepEqual(TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified, {
+    'cycling-power': false,
+    'crank-torque': false,
     'power-balance': false,
     'torque-effectiveness': false,
     'pedal-smoothness': false,
     'power-phase': false,
     'rider-position': false,
     stamina: false,
+    respiration: false,
+    environment: false,
+    'muscle-oxygen': false,
     'electronic-shifting': false,
-    'stroke-rate': false,
     'matched-rides': false,
     '25w-power-distribution': false,
     'power-curve': false,
@@ -42,6 +46,17 @@ test('expands simplified display settings and treats detailed display as the def
     'heat-strain-index': false,
     'core-temperature': false,
     'skin-temperature': false,
+    'stride-length': false,
+    'performance-condition': false,
+    'intensity-factor': false,
+    'ground-contact-time': false,
+    'ground-contact-balance': false,
+    'vertical-oscillation': false,
+    'vertical-ratio': false,
+    'step-speed-loss': false,
+    'step-speed-loss-percent': false,
+    'run-walk': false,
+    'impact-load-factor': false,
     temperature: false,
   })
   assert.deepEqual(

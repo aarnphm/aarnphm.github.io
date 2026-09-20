@@ -331,7 +331,9 @@ export const mountSecondaryPanel = (
       return `${value} ${vamFt ? 'ft/h' : a.rawUnit}${pace ? ` (${pace})` : ''}`
     }
     const projTxtOf = (a: AbilityAxis): string =>
-      a.proj != null && a.proj !== a.score ? ` → ${a.proj}/100` : ''
+      a.proj != null && a.proj !== a.score
+        ? ` → ${a.projRawValue != null ? `${a.projRawValue} w/kg · ` : ''}${a.proj}/100`
+        : ''
     const onMove = (event: MouseEvent) => {
       const n = abilities[0]?.axes.length ?? 0
       if (!n) return

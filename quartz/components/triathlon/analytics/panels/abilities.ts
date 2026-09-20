@@ -2,6 +2,10 @@ import type { Analytics } from '../../../../plugins/stores/analytics'
 import type { Sport } from '../../../../plugins/stores/strava'
 import type { TriathlonPresentation } from '../../../../util/triathlon-presentation'
 import type { TriathlonContext } from '../../runtime/context'
+import {
+  WORLD_TOUR_POWER_REFERENCE,
+  WORLD_TOUR_POWER_SOURCE_URL,
+} from '../../../../util/cycling-ability-reference'
 import { buildLayers as buildLayersNode } from '../../../../util/triathlon-card'
 import { clock } from '../../../../util/triathlon-card'
 import { triText } from '../../../../util/triathlon-i18n'
@@ -48,7 +52,11 @@ export const radarAxisDefinition = (
   const definition = (key: string): string => radarDefinition(presentation, key)
   switch (axis.key) {
     case 'sprint':
-      if (sport === 'bike') return definition('radar sprint bike definition')
+      if (sport === 'bike')
+        return definition('radar sprint bike definition').replace(
+          '{benchmark}',
+          String(WORLD_TOUR_POWER_REFERENCE.sprint.wattsPerKg),
+        )
       if (sport === 'run') return definition('radar sprint run definition')
       return definition('radar sprint swim definition')
     case 'threshold':
@@ -60,7 +68,10 @@ export const radarAxisDefinition = (
     case 'climb':
       if (sport === 'swim') return definition('radar pace swim definition')
       if (sport === 'run') return definition('radar climb run definition')
-      return definition('radar climb bike definition')
+      return definition('radar climb bike definition').replace(
+        '{benchmark}',
+        WORLD_TOUR_POWER_REFERENCE.climb.wattsPerKg.toFixed(1),
+      )
     case 'stride':
       return definition('radar stride run definition')
     case 'cadence':
@@ -247,6 +258,16 @@ export const buildAbilities = (
   )
   keyCap.append(nowKey, projKey)
   block.appendChild(keyCap)
+  const reference = el('div', 'tri-radar-reference')
+  reference.appendChild(
+    el(
+      'a',
+      undefined,
+      `${text('WorldTour reference')} · 5s ${WORLD_TOUR_POWER_REFERENCE.sprint.wattsPerKg} W/kg · 20m ${WORLD_TOUR_POWER_REFERENCE.climb.wattsPerKg.toFixed(1)} W/kg`,
+      { href: WORLD_TOUR_POWER_SOURCE_URL },
+    ),
+  )
+  block.appendChild(reference)
 
   const shown = new Map<RadarKey, { solid: number[]; proj: number[] }>()
   for (const k of radarKeys) shown.set(k, { solid: zeros(), proj: zeros() })
@@ -561,6 +582,7 @@ export const buildAbilities = (
 
   let revealed = reduced
   const syncChrome = (): void => {
+    reference.hidden = !avg && !pressed.has('bike')
     block.dataset.sport = avg ? 'avg' : (singleOf()?.sport ?? (pressed.size ? 'all' : 'none'))
     block.dataset.pressed = avg ? sports.map(sp => sp.sport).join(',') : [...pressed].join(',')
     block.classList.toggle('tri-engine-radar--multi', !avg && pressed.size !== 1)

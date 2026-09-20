@@ -72,6 +72,7 @@ export interface ActivityTrackingEntry {
 }
 
 export type SaunaCooldown = 'natural' | 'cold plunge'
+export type SaunaPhase = 'hot sauna' | 'cold plunge' | 'break'
 
 export interface SaunaLocation {
   name: string
@@ -104,6 +105,7 @@ export interface ManualSaunaEntry {
   temperatureC: number
   humidityPct: number
   cooldown: SaunaCooldown
+  lapPhases?: SaunaPhase[]
   heatTrainingLoad: number | null
 }
 
@@ -238,6 +240,12 @@ const parseManualSauna = (body: Readonly<Record<string, string>>): ManualSaunaEn
   const humidity = /^(\d+(?:\.\d+)?)\s*%$/.exec(body.humidity ?? '')
   const humidityPct = humidity ? Number(humidity[1]) : NaN
   const cooldown = body.cooldown?.toLowerCase()
+  const lapPhases: SaunaPhase[] = []
+  for (const value of body['lap-phases']?.split('|') ?? []) {
+    const phase = value.trim().toLowerCase()
+    if (phase !== 'hot sauna' && phase !== 'cold plunge' && phase !== 'break') return null
+    lapPhases.push(phase)
+  }
   const heatTrainingLoad = body.htl == null || body.htl === '' ? null : Number(body.htl)
   if (
     !date ||
@@ -267,6 +275,7 @@ const parseManualSauna = (body: Readonly<Record<string, string>>): ManualSaunaEn
     temperatureC,
     humidityPct,
     cooldown,
+    ...(lapPhases.length > 0 ? { lapPhases } : {}),
     heatTrainingLoad,
   }
 }
