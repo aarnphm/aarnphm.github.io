@@ -7,6 +7,8 @@ import type { ActivityAnalysisController } from './analysis'
 import type { ActivityRangeChange } from './analysis'
 import type { ScrubSurface } from './analysis'
 import type { DetailPayload } from './data'
+import { activityCyclingTorquePoints, buildCrankTorqueChart } from '../../../util/triathlon-card'
+import { activityCyclingPowerPoints, buildCyclingPowerChart } from '../../../util/triathlon-card'
 import { activityCadenceScale } from '../../../util/triathlon-card'
 import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { activityStatRows } from '../../../util/triathlon-card'
@@ -115,8 +117,14 @@ import { el } from '../runtime/dom'
 import { svg } from '../runtime/dom'
 import { nextMapMetricShortcutIndex } from '../shell/command-palette'
 import { setupPowerCurveTicks } from '../shell/power-curve-ticks'
-import { analysisRate } from './analysis'
+import { activityScrubElapsedIndexAt, analysisRate } from './analysis'
 import { linkScrub } from './analysis'
+import {
+  cyclingPowerReadout,
+  cyclingPowerWindow,
+  setCyclingPowerWindow,
+  setupCyclingPowerCharts,
+} from './cycling-power'
 import { detailContextFromPayload } from './data'
 import {
   buildElevation,
@@ -250,6 +258,52 @@ const staminaAtPoint = (
   point: { stamina: number | null; potentialStamina: number | null },
 ): string =>
   `${triText(presentation.locale, 'current')} ${point.stamina == null ? '—' : `${Math.round(point.stamina)}%`} · ${triText(presentation.locale, 'potential')} ${point.potentialStamina == null ? '—' : `${Math.round(point.potentialStamina)}%`}`
+
+const torqueScrubSurface = (
+  wrap: HTMLElement,
+  d: StravaActivityDetail,
+  presentation: TriathlonPresentation,
+): ScrubSurface => {
+  const points = activityCyclingTorquePoints(d)
+  return {
+    wrap,
+    samples: points,
+    fmt: i => {
+      const point = points[i]
+      const gear = d.gearShifts.findLast(shift => shift.elapsedS <= point.elapsedS)
+      const position = activityTraceUsesElapsedAxis(d)
+        ? zoneClock(point.elapsedS)
+        : scrubDist(presentation, point.d, d.sport)
+      return `${position} · ${point.torqueNm?.toFixed(1) ?? '—'} N·m · ${point.cadenceRpm?.toFixed(0) ?? '—'} rpm · ${point.watts?.toFixed(0) ?? '—'} W${gear ? ` · ${gear.frontTeeth ?? '—'}×${gear.rearTeeth ?? '—'}` : ''}`
+    },
+  }
+}
+
+const cyclingPowerScrubSurface = (
+  wrap: HTMLElement,
+  d: StravaActivityDetail,
+  presentation: TriathlonPresentation,
+  onHover?: MapDetailOpts['onHover'],
+): ScrubSurface => {
+  const points = activityCyclingPowerPoints(d)
+  const distanceAvailable = d.distanceKm > 0 || points.some(point => point.distanceKm > 0)
+  return {
+    wrap,
+    samples: points,
+    onHover: index => {
+      const routeIndex = activityScrubElapsedIndexAt(d.route, points[index].elapsedS)
+      if (routeIndex >= 0) onHover?.(d.route[routeIndex], routeIndex)
+    },
+    fmt: index =>
+      cyclingPowerReadout(
+        presentation,
+        points[index],
+        cyclingPowerWindow(wrap),
+        d.analyses.derived.environment?.samples ?? [],
+        distanceAvailable,
+      ),
+  }
+}
 
 const physiologyScrubSurfaces = (
   root: HTMLElement,
@@ -1040,6 +1094,8 @@ export const renderMapDetail = (
         buildHrZones(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
         buildPowerZones(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
       ),
+      buildCrankTorqueChart(domF, d, null),
+      buildCyclingPowerChart(domF, d, null),
       environment,
       buildSaunaHeatTrainingLoad(domF, d),
       buildPowerCurve(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
@@ -1052,11 +1108,22 @@ export const renderMapDetail = (
       element: wrap,
       mount: () => {
         const cleanupPowerTicks = setupPowerCurveTicks(wrap)
+        const cleanupCyclingPower = setupCyclingPowerCharts(wrap, presentation, d)
         const controller = linkScrub(
           presentation,
           wrap,
           null,
-          physiologyScrubSurfaces(wrap, d, presentation),
+          [
+            ...physiologyScrubSurfaces(wrap, d, presentation),
+            ...Array.from(
+              wrap.querySelectorAll<HTMLElement>('[data-tri-trace="crank-torque"]'),
+              trace => torqueScrubSurface(trace, d, presentation),
+            ),
+            ...Array.from(
+              wrap.querySelectorAll<HTMLElement>('[data-tri-trace="cycling-power"]'),
+              trace => cyclingPowerScrubSurface(trace, d, presentation, opts?.onHover),
+            ),
+          ],
           d.route,
           d,
           opts?.analysis ?? analysis,
@@ -1064,6 +1131,7 @@ export const renderMapDetail = (
         )
         return () => {
           cleanupPowerTicks()
+          cleanupCyclingPower()
           controller?.dispose()
         }
       },
@@ -1110,11 +1178,18 @@ export const renderMapDetail = (
     cleanupPowerTicks?.()
     cleanupPowerTicks = null
     const existingCyclingChartMode = cyclingChartMode(wrap)
+    const existingPowerWindow = cyclingPowerWindow(
+      zoneBox.querySelector<HTMLElement>('.tri-cycling-power'),
+    )
     const spec = specs[active]
     const profile = spec.profile(graphDomain)
     const traces = spec.traces?.(graphDomain) ?? []
     profileBox.replaceChildren(profile)
     zoneBox.replaceChildren(...traces.map(trace => trace.wrap))
+    const torque = buildCrankTorqueChart(domF, d, null, graphDomain)
+    if (torque) zoneBox.appendChild(torque)
+    const cyclingPower = buildCyclingPowerChart(domF, d, graphDomain)
+    if (cyclingPower) zoneBox.appendChild(cyclingPower)
     const environment = buildEnvironmentAnalysisNode(domF, d)
     if (environment) zoneBox.appendChild(environment)
     if (spec.extra) for (const node of spec.extra()) if (node) zoneBox.appendChild(node)
@@ -1130,6 +1205,12 @@ export const renderMapDetail = (
         return surface.fmt(point, index)
       },
     }))
+    const torqueTrace = torque?.querySelector<HTMLElement>('[data-tri-trace="crank-torque"]')
+    if (torqueTrace) linkedSurfaces.push(torqueScrubSurface(torqueTrace, d, presentation))
+    if (cyclingPower instanceof HTMLElement) {
+      setCyclingPowerWindow(cyclingPower, existingPowerWindow, presentation)
+      linkedSurfaces.push(cyclingPowerScrubSurface(cyclingPower, d, presentation, opts?.onHover))
+    }
     if (mounted) mountProfile()
   }
   const mountProfile = (): void => {
@@ -1246,10 +1327,12 @@ export const renderMapDetail = (
     mount: () => {
       mounted = true
       mountProfile()
+      const cleanupCyclingPower = setupCyclingPowerCharts(wrap, presentation, d)
       tablist.addEventListener('click', onTabClick)
       tablist.addEventListener('keydown', onTabKeydown)
       return () => {
         mounted = false
+        cleanupCyclingPower()
         tablist.removeEventListener('click', onTabClick)
         tablist.removeEventListener('keydown', onTabKeydown)
         analysisController?.dispose()
@@ -1469,6 +1552,10 @@ export const renderDetail = (
           return `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(cadenceValues?.[i] ?? p.cad * cadenceScale)} ${cadenceUnit}`
         },
       })
+    else if (trace.dataset.triTrace === 'crank-torque')
+      surfaces.push(torqueScrubSurface(trace, d, presentation))
+    else if (trace.dataset.triTrace === 'cycling-power')
+      surfaces.push(cyclingPowerScrubSurface(trace, d, presentation))
     else if (trace.dataset.triTrace === 'intensity-factor') {
       const points = activityCyclingIntensityPoints(d)
       surfaces.push({
@@ -1634,9 +1721,11 @@ export const renderDetail = (
     element: wrap,
     mount: () => {
       if (!interactive) return () => {}
+      const cleanupCyclingPower = setupCyclingPowerCharts(wrap, presentation, d)
       const routeMarker = wrap.querySelector<SVGElement>('.tri-route-cursor')
       const controller = linkScrub(presentation, wrap, routeMarker, surfaces, d.route, d)
       return () => {
+        cleanupCyclingPower()
         controller?.dispose()
       }
     },

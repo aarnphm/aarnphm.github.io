@@ -52,10 +52,19 @@ import {
   buildCyclingIntensityTrace,
   type CyclingIntensityTrace,
 } from '../../util/cycling-intensity'
+import { buildCyclingPowerTrace, type CyclingPowerTrace } from '../../util/cycling-power'
 import {
   estimateWahooCyclingStamina,
   type CyclingStaminaEstimate,
 } from '../../util/cycling-stamina'
+import {
+  buildCyclingTorqueTrace,
+  cyclingMechanics,
+  cyclingTorqueSamples,
+  type CyclingMechanics,
+  type CyclingTorqueSample,
+  type CyclingTorqueTrace,
+} from '../../util/cycling-torque'
 import {
   applyHeartRatePhysiology,
   type HeartRatePhysiology,
@@ -291,6 +300,9 @@ export interface CyclingDistanceEffort {
 }
 
 export interface CyclingPowerEffort {
+  startElapsedS?: number
+  endElapsedS?: number
+  mechanics?: CyclingMechanics | null
   durationS: number
   averageWatts: number
   wattsPerKg: number | null
@@ -587,6 +599,7 @@ export interface ActivitySauna {
   temperatureC: number
   humidityPct: number
   cooldown: ManualSaunaEntry['cooldown']
+  lapPhases?: ManualSaunaEntry['lapPhases']
   heatTrainingLoad: number | null
   heartRateSource: 'oura' | null
   source: 'manual'
@@ -646,7 +659,9 @@ export interface StravaActivityDetail {
   virtual?: boolean
   distanceSource?: 'garmin' | 'strava'
   wahoo?: WahooVerification
+  cyclingTorque?: CyclingTorqueTrace | null
   cyclingIntensityTrace?: CyclingIntensityTrace | null
+  cyclingPowerTrace?: CyclingPowerTrace | null
   sport: ActivityKind
   name: string
   date: string
@@ -709,6 +724,7 @@ export interface StravaActivityDetail {
   powerWithoutZeros: ActivityPowerWithoutZeros | null
   powerCurve: PowerCurvePoint[] | null
   powerCurveWeight?: { kg: number; date: string; source: 'garmin' }
+  criticalPowerAnchors?: CriticalPowerAnchor[]
   activityCriticalPower: CriticalPowerEstimate | null
   bestEfforts: CyclingBestEfforts | null
   strokes?: Record<string, number> | null
@@ -1655,7 +1671,7 @@ export function resolveActivityHeartRate(
 const MILE_M = 1609.344
 const MAX_EFFORT_TIMELINE_S = (7 * DAY_MS) / 1000
 const POWER_EFFORT_SECS = [
-  5, 15, 30, 60, 120, 180, 300, 480, 600, 900, 1200, 1800, 2700, 3600, 7200,
+  5, 15, 30, 60, 120, 180, 300, 360, 420, 480, 600, 720, 900, 1200, 1800, 2700, 3600, 7200,
 ]
 const DISTANCE_EFFORTS = [
   ['5 mile', 5 * MILE_M],
@@ -2029,6 +2045,8 @@ function distanceBestEfforts(timeline: EffortTimeline): CyclingDistanceEffort[] 
 function powerBestEfforts(timeline: EffortTimeline, weightKg: number | null): CyclingPowerEffort[] {
   const [hrSum, hrCount] = positivePrefixes(timeline.heartRate)
   return bestPowerWindows(timeline, POWER_EFFORT_SECS).map(window => ({
+    startElapsedS: window.start,
+    endElapsedS: window.end,
     durationS: window.durationS,
     averageWatts: window.averageWatts,
     wattsPerKg: weightKg != null && weightKg > 0 ? round(window.averageWatts / weightKg, 2) : null,
@@ -3068,6 +3086,61 @@ function alignedDistanceAt(alignment: TimedStreamAlignment, elapsedS: number): n
   if (span <= 0) return distance[high]
   const fraction = (elapsedS - time[low]) / span
   return distance[low] + (distance[high] - distance[low]) * fraction
+}
+
+interface CyclingPowerTerrain {
+  source: 'garmin' | 'strava'
+  alignment: TimedStreamAlignment
+  startOffsetS: number
+}
+
+function cyclingPowerTerrain(
+  activity: RawStravaActivity,
+  strava: StravaStreams | undefined,
+  garminMatch: GarminActivityMatch | null,
+  garmin: GarminCache | null,
+): CyclingPowerTerrain | null {
+  const fromStrava = timedStreamAlignment(strava)
+  const fromGarmin = timedStreamAlignment(
+    garminMatch ? garmin?.streams?.[garminMatch.activity.id] : undefined,
+  )
+  if (fromStrava && (!activity.sportType.startsWith('Virtual') || !fromGarmin))
+    return { source: 'strava', alignment: fromStrava, startOffsetS: 0 }
+  if (fromGarmin && garminMatch) {
+    const startOffsetS =
+      (Date.parse(garminMatch.activity.startDate) - Date.parse(activity.startDate)) / 1_000
+    if (Number.isFinite(startOffsetS))
+      return { source: 'garmin', alignment: fromGarmin, startOffsetS }
+  }
+  return fromStrava ? { source: 'strava', alignment: fromStrava, startOffsetS: 0 } : null
+}
+
+function cyclingPowerStreamsOnTerrain(
+  streams: Pick<WahooStreams, 'time' | 'watts' | 'distance' | 'altitude'> | undefined,
+  startOffsetS: number,
+  terrain: CyclingPowerTerrain | null,
+): Pick<WahooStreams, 'time' | 'watts' | 'distance' | 'altitude'> | undefined {
+  if (!streams || !terrain) return streams
+  const { time, distance, streams: course } = terrain.alignment
+  const projectedDistance: number[] = []
+  const altitude: (number | null)[] = []
+  let index = 0
+  for (const sourceTime of streams.time) {
+    const elapsedS = sourceTime + startOffsetS - terrain.startOffsetS
+    while (index + 1 < time.length && time[index + 1] <= elapsedS) index++
+    const next = Math.min(index + 1, time.length - 1)
+    const fraction =
+      time[next] > time[index]
+        ? Math.max(0, Math.min(1, (elapsedS - time[index]) / (time[next] - time[index])))
+        : 0
+    projectedDistance.push(distance[index] + (distance[next] - distance[index]) * fraction)
+    const left = course.altitude[index]
+    const right = course.altitude[next]
+    altitude.push(
+      Number.isFinite(left) && Number.isFinite(right) ? left + (right - left) * fraction : null,
+    )
+  }
+  return { time: streams.time, watts: streams.watts, distance: projectedDistance, altitude }
 }
 
 function projectedGearShifts(
@@ -4130,6 +4203,7 @@ export function applyManualSauna(
       temperatureC: entry.temperatureC,
       humidityPct: entry.humidityPct,
       cooldown: entry.cooldown,
+      ...(entry.lapPhases ? { lapPhases: entry.lapPhases } : {}),
       heatTrainingLoad: entry.heatTrainingLoad,
       heartRateSource: heartRate.trace.length > 0 ? 'oura' : null,
       source: 'manual',
@@ -4476,6 +4550,8 @@ export function buildPayload(
   const yearCurves: PowerCurveSource[] = []
   const recentRunCurves: PowerCurveSource[] = []
   const yearRunCurves: PowerCurveSource[] = []
+  const torqueSamplesByActivity = new Map<string, CyclingTorqueSample[]>()
+  const criticalPowerAnchorsByActivity = new Map<string, CriticalPowerAnchor[]>()
   const activityCriticalPowers = new Map<string, CriticalPowerEstimate>()
   const recentCriticalPowerAnchors: CriticalPowerAnchor[] = []
   const yearCriticalPowerAnchors: CriticalPowerAnchor[] = []
@@ -4507,6 +4583,22 @@ export function buildPayload(
     }
     if (inRecentWindow) recentCurves.push(source)
     if (inYear) yearCurves.push(source)
+    const torqueSource =
+      wahooMatches.get(id) ??
+      matchWahooActivity(
+        originalCache.activities[id] ?? a,
+        sport,
+        wahoo ?? null,
+        trackingById.get(a.id)?.wahooFitPath,
+      )
+    const torqueSamples = torqueSource
+      ? cyclingTorqueSamples(
+          wahoo?.streams[torqueSource.activity.id],
+          (Date.parse(torqueSource.activity.startDate) - Date.parse(a.startDate)) / 1_000,
+          a.elapsedTime,
+        )
+      : []
+    torqueSamplesByActivity.set(id, torqueSamples)
     if (a.deviceWatts && timeline) {
       const activityDate = a.startDateLocal.slice(0, 10)
       const anchors = bestObservedPowerWindows(timeline, CRITICAL_POWER_DURATIONS_S).map(
@@ -4517,8 +4609,10 @@ export function buildPayload(
           activityDate,
           startElapsedS: window.start,
           endElapsedS: window.end,
+          mechanics: cyclingMechanics(torqueSamples, window.start, window.end),
         }),
       )
+      criticalPowerAnchorsByActivity.set(id, anchors)
       const activityCriticalPower = fitCriticalPower(
         anchors,
         'activity',
@@ -4668,6 +4762,47 @@ export function buildPayload(
       activityCriticalPowers.get(id) ?? null,
     )
     const detail = details[id]
+    if (sport === 'bike') {
+      const originalStreams = originalCache.streams?.[id]
+      const terrain = cyclingPowerTerrain(a, originalStreams, garminMatch, garmin)
+      const nativePowerOffsetS = wahooMatch
+        ? (Date.parse(wahooMatch.activity.startDate) - Date.parse(a.startDate)) / 1_000
+        : 0
+      const nativePowerTrace = wahooMatch
+        ? buildCyclingPowerTrace({
+            source: 'wahoo',
+            terrainSource: terrain?.source ?? 'wahoo',
+            streams: cyclingPowerStreamsOnTerrain(
+              wahoo?.streams[wahooMatch.activity.id],
+              nativePowerOffsetS,
+              terrain,
+            ),
+            startOffsetS: nativePowerOffsetS,
+            elapsedTimeS: detail.elapsedTimeS,
+          })
+        : null
+      detail.cyclingPowerTrace =
+        nativePowerTrace ??
+        (original.deviceWatts && originalStreams?.time && originalStreams.watts
+          ? buildCyclingPowerTrace({
+              source: 'strava',
+              terrainSource: terrain?.source ?? 'strava',
+              streams: cyclingPowerStreamsOnTerrain(
+                { ...originalStreams, time: originalStreams.time, watts: originalStreams.watts },
+                0,
+                terrain,
+              ),
+              startOffsetS: 0,
+              elapsedTimeS: detail.elapsedTimeS,
+            })
+          : null)
+      detail.criticalPowerAnchors = criticalPowerAnchorsByActivity.get(id) ?? []
+      const samples = torqueSamplesByActivity.get(id) ?? []
+      detail.cyclingTorque = buildCyclingTorqueTrace(samples, detail.elapsedTimeS, detail.route)
+      for (const effort of detail.bestEfforts?.power ?? [])
+        if (effort.startElapsedS != null && effort.endElapsedS != null)
+          effort.mechanics = cyclingMechanics(samples, effort.startElapsedS, effort.endElapsedS)
+    }
     const computerOverride = trackingById.get(a.id)?.computer?.trim()
     if (sport === 'bike' && computerOverride) detail.computerOverride = computerOverride
     if (original.gearId)

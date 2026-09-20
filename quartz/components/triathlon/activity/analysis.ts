@@ -22,12 +22,13 @@ import { speedKph } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
 import { isRecord } from '../../../util/type-guards'
 import { el } from '../runtime/dom'
-import { mountSwimLapPace } from './swim-lap-pace'
+import { mountWorkoutLapHover } from './workout-lap-hover'
 
 export type ScrubSurface = {
   wrap: HTMLElement
   samples: readonly ActivityScrubSample[]
   fmt: (index: number) => string
+  onHover?: (index: number) => void
 }
 
 export type ActivityScrubSample = { d: number; elapsedS: number }
@@ -76,6 +77,20 @@ export const activityScrubElapsedIndexAt = (
   if (low === 0) return 0
   if (low >= samples.length) return samples.length - 1
   return elapsedS - samples[low - 1].elapsedS <= samples[low].elapsedS - elapsedS ? low - 1 : low
+}
+
+export const activityScrubKeyboardIndex = (
+  samples: readonly ActivityScrubSample[],
+  elapsedS: number,
+  key: string,
+): number | null => {
+  if (samples.length === 0) return null
+  const current = activityScrubElapsedIndexAt(samples, elapsedS)
+  if (key === 'Home') return 0
+  if (key === 'End') return samples.length - 1
+  if (key === 'ArrowLeft' || key === 'ArrowDown') return Math.max(0, current - 1)
+  if (key === 'ArrowRight' || key === 'ArrowUp') return Math.min(samples.length - 1, current + 1)
+  return null
 }
 
 export type ActivityAnalysisRange = ActivitySelectionSummary & {
@@ -389,7 +404,7 @@ export const linkActivityAnalysis = (
     showLocked()
   }
   for (const range of ranges) {
-    mountSwimLapPace(range.button, listeners.signal)
+    mountWorkoutLapHover(range.button, listeners.signal)
     range.button.addEventListener(
       'pointerenter',
       () => {
@@ -528,6 +543,7 @@ export const linkScrub = (
     readout: HTMLElement
     samples: readonly ActivityScrubSample[]
     fmt: ScrubSurface['fmt']
+    onHover: ScrubSurface['onHover']
   }[] = []
   for (const s of surfaces) {
     if (s.samples.length < 2) continue
@@ -540,7 +556,15 @@ export const linkScrub = (
         ? s.wrap.querySelector<HTMLElement>(':scope > .tri-elev-cap')
         : null) ?? s.wrap
     readoutHost.appendChild(readout)
-    resolved.push({ wrap: s.wrap, svgEl, cursor, readout, samples: s.samples, fmt: s.fmt })
+    resolved.push({
+      wrap: s.wrap,
+      svgEl,
+      cursor,
+      readout,
+      samples: s.samples,
+      fmt: s.fmt,
+      onHover: s.onHover,
+    })
   }
   if (resolved.length === 0) return rangeController
   const runWalk = act.querySelector<SVGSVGElement>('.tri-run-walk')
@@ -576,9 +600,9 @@ export const linkScrub = (
       anchorIndex: number
       range: ActivityAnalysisRange | null
     } | null = null
-    const show = (clientX: number) => {
-      const sampleIndex = indexAt(clientX, surf)
+    const show = (clientX: number, sampleIndex = indexAt(clientX, surf)) => {
       const sample = surf.samples[sampleIndex]
+      surf.onHover?.(sampleIndex)
       const routeIndex = route.length > 0 ? activityScrubElapsedIndexAt(route, sample.elapsedS) : -1
       const routePoint = route[routeIndex]
       if (drag && routePoint) {
@@ -609,6 +633,10 @@ export const linkScrub = (
         const x = activityScrubCursorX(linkedSample, domain).toFixed(2)
         linked.cursor.setAttribute('x1', x)
         linked.cursor.setAttribute('x2', x)
+        if (linked.svgEl.getAttribute('role') === 'slider') {
+          linked.svgEl.setAttribute('aria-valuenow', String(linkedSample.elapsedS))
+          linked.svgEl.setAttribute('aria-valuetext', linked.fmt(linkedIndex))
+        }
         if (rangeController?.hasLocked() || drag?.range || linked === surf)
           linked.readout.textContent = linked.fmt(linkedIndex)
       }
@@ -682,11 +710,47 @@ export const linkScrub = (
       act.classList.remove('tri-act--scrub')
       for (const r of resolved) r.wrap.classList.remove('tri-elev-wrap--read')
     }
+    const showKeyboardSample = (index: number): void => {
+      if (frame != null) window.cancelAnimationFrame(frame)
+      frame = null
+      pendingX = null
+      const rect = surf.svgEl.getBoundingClientRect()
+      const domain = analysisDomainFromChart(surf.svgEl) ?? {
+        startElapsedS: surf.samples[0].elapsedS,
+        endElapsedS: surf.samples[surf.samples.length - 1].elapsedS,
+      }
+      const fraction = activityScrubCursorX(surf.samples[index], domain) / 100
+      show(rect.left + fraction * rect.width, index)
+    }
+    const onKey = (event: KeyboardEvent): void => {
+      if (
+        surf.svgEl.getAttribute('role') !== 'slider' ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey
+      )
+        return
+      const elapsedS = Number(surf.svgEl.getAttribute('aria-valuenow'))
+      const index = activityScrubKeyboardIndex(surf.samples, elapsedS, event.key)
+      if (index == null) return
+      event.preventDefault()
+      event.stopPropagation()
+      showKeyboardSample(index)
+    }
+    const onFocus = (): void => {
+      if (surf.svgEl.getAttribute('role') !== 'slider') return
+      showKeyboardSample(
+        activityScrubElapsedIndexAt(surf.samples, Number(surf.svgEl.getAttribute('aria-valuenow'))),
+      )
+    }
     surf.svgEl.addEventListener('pointerdown', onDown, { signal: listeners.signal })
     surf.svgEl.addEventListener('pointermove', onMove, { signal: listeners.signal })
     surf.svgEl.addEventListener('pointerup', onUp, { signal: listeners.signal })
     surf.svgEl.addEventListener('pointerleave', onLeave, { signal: listeners.signal })
     surf.svgEl.addEventListener('pointercancel', onCancel, { signal: listeners.signal })
+    surf.svgEl.addEventListener('keydown', onKey, { signal: listeners.signal })
+    surf.svgEl.addEventListener('focus', onFocus, { signal: listeners.signal })
+    surf.svgEl.addEventListener('blur', onLeave, { signal: listeners.signal })
   }
   const base: ActivityAnalysisController = rangeController ?? {
     preview: () => {},

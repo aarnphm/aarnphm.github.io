@@ -1,9 +1,12 @@
+import type { CyclingMechanics } from '../../util/cycling-torque'
+
 export const CRITICAL_POWER_DURATIONS_S = [180, 420, 720] as const
 
 export type CriticalPowerWindow = 'activity' | 'six-weeks' | 'calendar-year'
 export type CriticalPowerConfidence = 'medium' | 'provisional'
 
 export interface CriticalPowerAnchor {
+  mechanics?: CyclingMechanics | null
   durationS: number
   meanPowerWatts: number
   activityId: number

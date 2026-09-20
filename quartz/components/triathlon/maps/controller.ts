@@ -619,6 +619,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     detailCleanup?.()
     detailCleanup = null
     panel.classList.remove('tri-map--detail')
+    detail?.setAttribute('aria-hidden', 'true')
     detail?.replaceChildren()
     selectionOverlay?.replaceChildren()
     program.dispatch({ type: 'clear-route' })
@@ -694,6 +695,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     })
     card.appendChild(routeView.element)
     detail.replaceChildren(card)
+    detail.setAttribute('aria-hidden', 'false')
     detailCleanup = routeView.mount()
     panel.classList.add('tri-map--detail')
     panel.classList.remove('tri-map--searching')

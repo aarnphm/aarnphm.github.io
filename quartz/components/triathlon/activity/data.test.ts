@@ -3,6 +3,7 @@ import { createServer } from 'node:http'
 import test from 'node:test'
 import { buildAnalytics } from '../../../plugins/stores/analytics'
 import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
+import { buildCyclingTorqueTrace, cyclingTorqueSamples } from '../../../util/cycling-torque'
 import { estimateHeartRatePhysiology } from '../../../util/heart-rate-physiology'
 import { STRAVA_DETAIL_INDEX_KIND } from '../../../util/strava-detail'
 import { buildTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
@@ -512,4 +513,122 @@ test('validates HR session estimates for walks and stationary recovery activitie
       false,
     )
   }
+})
+
+test('validates serialized Wahoo torque, bounds, ordering and provider identity', () => {
+  const samples = cyclingTorqueSamples(
+    { time: [0, 1, 2], watts: [250, 0, 250], cadence: [90, 90, 0] },
+    0,
+    3,
+  )
+  const cyclingTorque = buildCyclingTorqueTrace(samples, 3, [])
+  assert.ok(cyclingTorque)
+  const activity = {
+    ...detail(101, '2026-09-19', 'bike'),
+    elapsedTimeS: 3,
+    wahoo: {
+      activityId: 'wahoo:1',
+      fitPath: null,
+      sha256: 'a'.repeat(64),
+      sourceDevice: null,
+      startOffsetS: 0,
+      distanceM: 0,
+      metrics: emptyWahooMetrics(),
+      summarySources: {},
+      streamFallback: null,
+    },
+    cyclingTorque,
+  }
+  assert.equal(isActivityDetail(JSON.parse(JSON.stringify(activity))), true)
+  assert.equal(isActivityDetail({ ...activity, wahoo: undefined }), false)
+  assert.equal(isActivityDetail({ ...activity, sport: 'run' }), false)
+  for (const invalid of [
+    { ...cyclingTorque, source: 'garmin' },
+    { ...cyclingTorque, points: cyclingTorque.points.toReversed() },
+    { ...cyclingTorque, summary: { ...cyclingTorque.summary, coverage: 2 } },
+    { ...cyclingTorque, cells: [{ cadenceRpm: 90, torqueNm: 30, seconds: -1 }] },
+  ])
+    assert.equal(isActivityDetail({ ...activity, cyclingTorque: invalid }), false)
+})
+
+test('validates recorded cycling power provenance, sample bounds and nullable terrain', () => {
+  const trace = {
+    source: 'strava',
+    terrainSource: 'strava',
+    method: 'recorded-power-average-v1',
+    points: [
+      {
+        elapsedS: 0,
+        distanceKm: 0,
+        elevationM: -10,
+        power30sWatts: null,
+        power5mWatts: null,
+        cumulativePowerWatts: null,
+      },
+      {
+        elapsedS: 30,
+        distanceKm: 0.3,
+        elevationM: null,
+        power30sWatts: 0,
+        power5mWatts: null,
+        cumulativePowerWatts: 0,
+      },
+      {
+        elapsedS: 60,
+        distanceKm: 0.6,
+        elevationM: 20,
+        power30sWatts: 200,
+        power5mWatts: null,
+        cumulativePowerWatts: 100,
+      },
+    ],
+  }
+  const activity = {
+    ...detail(101, '2026-09-19', 'bike'),
+    deviceWatts: true,
+    cyclingPowerTrace: trace,
+  }
+  assert.equal(isActivityDetail(JSON.parse(JSON.stringify(activity))), true)
+  assert.equal(isActivityDetail({ ...activity, sport: 'run' }), false)
+  assert.equal(isActivityDetail({ ...activity, deviceWatts: false }), false)
+  const wahooTrace = { ...trace, source: 'wahoo' }
+  assert.equal(isActivityDetail({ ...activity, cyclingPowerTrace: wahooTrace }), false)
+  assert.equal(
+    isActivityDetail({
+      ...activity,
+      cyclingPowerTrace: wahooTrace,
+      wahoo: {
+        activityId: 'wahoo:1',
+        fitPath: null,
+        sha256: 'a'.repeat(64),
+        sourceDevice: null,
+        startOffsetS: 0,
+        distanceM: 600,
+        metrics: emptyWahooMetrics(),
+        summarySources: {},
+        streamFallback: null,
+      },
+    }),
+    true,
+  )
+  for (const invalid of [
+    { ...trace, source: 'garden-estimate' },
+    { ...trace, terrainSource: 'garden-estimate' },
+    { ...trace, method: 'wind-adjusted' },
+    { ...trace, points: trace.points.toReversed() },
+    { ...trace, points: [] },
+    ...[
+      { elapsedS: 3_601 },
+      { elapsedS: -1 },
+      { distanceKm: -1 },
+      { elevationM: Infinity },
+      { power30sWatts: -1 },
+      { power5mWatts: NaN },
+      { cumulativePowerWatts: undefined },
+    ].map(overrides => ({
+      ...trace,
+      points: [trace.points[0], { ...trace.points[1], ...overrides }],
+    })),
+  ])
+    assert.equal(isActivityDetail({ ...activity, cyclingPowerTrace: invalid }), false)
 })

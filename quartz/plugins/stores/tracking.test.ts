@@ -277,6 +277,32 @@ test('parses a manual sauna session without treating its activity kind as a Stra
   assert.equal(parsed?.trainingExclusion, null)
 })
 
+test('parses explicit sauna lap phases and rejects invalid phase labels', () => {
+  const body = [
+    'activity: sauna',
+    'date: 2026-09-17',
+    'time: 19:30',
+    'duration: 75 mins',
+    'temperature: 168F',
+    'humidity: 11%',
+    'cooldown: cold plunge',
+    'strava: 20221226052',
+  ]
+  const parsed = parseTrackingBlock(
+    null,
+    [...body, 'lap-phases: Hot Sauna | Cold Plunge | hot sauna | break'].join('\n'),
+  )
+  assert.deepEqual(parsed?.sauna?.lapPhases, ['hot sauna', 'cold plunge', 'hot sauna', 'break'])
+  assert.equal(parsed?.sauna?.stravaActivityId, 20221226052)
+  assert.equal(parseTrackingBlock(null, body.join('\n'))?.sauna?.lapPhases, undefined)
+  for (const phases of ['', 'hot sauna | swimming', 'hot sauna || break']) {
+    assert.equal(
+      parseTrackingBlock(null, [...body, `lap-phases: ${phases}`].join('\n'))?.sauna,
+      null,
+    )
+  }
+})
+
 test('resolves both Othership locations and preserves unknown sauna locations without coordinates', () => {
   const body = [
     'activity: sauna',

@@ -1,9 +1,9 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
 
-export const mountSwimLapPace = (button: HTMLButtonElement, signal: AbortSignal): void => {
-  const pace = button.querySelector<HTMLElement>('.tri-swim-workout-pace')
-  const bar = button.querySelector<HTMLElement>('.tri-swim-workout-bar')
-  if (!pace || !bar) return
+export const mountWorkoutLapHover = (button: HTMLButtonElement, signal: AbortSignal): void => {
+  const tooltip = button.querySelector<HTMLElement>('.tri-workout-lap-tooltip')
+  const bar = button.querySelector<HTMLElement>('.tri-workout-lap-bar')
+  if (!tooltip || !bar) return
 
   let pointer: { x: number; y: number } | null = null
   let cleanup: (() => void) | null = null
@@ -17,16 +17,16 @@ export const mountSwimLapPace = (button: HTMLButtonElement, signal: AbortSignal)
   }
   const update = async (): Promise<void> => {
     const current = ++revision
-    const { x, y } = await computePosition(reference, pace, {
+    const { x, y } = await computePosition(reference, tooltip, {
       placement: 'right',
       middleware: [offset(8), flip({ crossAxis: false, padding: 2 }), shift({ padding: 2 })],
     })
     if (signal.aborted || current !== revision) return
-    Object.assign(pace.style, { left: `${x}px`, top: `${y}px` })
+    Object.assign(tooltip.style, { left: `${x}px`, top: `${y}px` })
   }
   const start = (): void => {
     if (cleanup) void update()
-    else cleanup = autoUpdate(reference, pace, update)
+    else cleanup = autoUpdate(reference, tooltip, update)
   }
   const stop = (): void => {
     revision++

@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import test from 'node:test'
+import { cyclingMechanics, cyclingTorqueSamples } from '../../util/cycling-torque'
 import { isRecord } from '../../util/type-guards'
+import { decodeWahooFit } from '../../util/wahoo-fit'
 import { buildAnalytics, buildDataFeed } from './analytics'
 import {
   emptyGarminFueling,
@@ -29,7 +32,7 @@ import {
   type StravaStreams,
 } from './strava'
 import { parseTrackingBlock } from './tracking'
-import { emptyWahooMetrics, type WahooCache } from './wahoo'
+import { emptyWahooMetrics, type WahooCache, type WahooData } from './wahoo'
 import { summarizeWeatherDays, type WeatherActivity, type WeatherCache } from './weather'
 
 test('calculates cycling performance condition from six-minute power and heart-rate load', () => {
@@ -1151,6 +1154,10 @@ test('merges an explicit virtual route by time and prefers Strava summaries acro
   assert.equal(detail.route.find(point => point.elapsedS === 2)?.w, 0)
   assert.equal(detail.route.at(-1)?.elapsedS, 10)
   assert.equal(detail.route.at(-1)?.d, 28)
+  assert.equal(detail.cyclingPowerTrace?.source, 'strava')
+  assert.equal(detail.cyclingPowerTrace?.terrainSource, 'garmin')
+  assert.equal(detail.cyclingPowerTrace?.points.at(-1)?.distanceKm, 28)
+  assert.equal(detail.cyclingPowerTrace?.points.at(-1)?.elevationM, 770)
   assert.equal(detail.analysisRanges[0].distanceKm, 28)
   assert.equal(detail.analysisRanges[0].elevationGainM, null)
   assert.ok(detail.mapRoute.flat().length >= 2)
@@ -1728,7 +1735,7 @@ test('manual moves attach only to the matching activity and date', () => {
   assert.deepEqual(payload.details['101'].moves, { entries: moves, source: 'manual' })
 })
 
-test('preserves parsed sauna locations through standalone and linked payload serialization', () => {
+test('preserves parsed sauna locations and lap phases through standalone and linked payload serialization', () => {
   for (const name of ['Othership Adelaide', 'Othership Yorkville']) {
     for (const linked of [false, true]) {
       const parsed = parseTrackingBlock(
@@ -1741,6 +1748,7 @@ test('preserves parsed sauna locations through standalone and linked payload ser
           'temperature: 85C',
           'humidity: 11%',
           'cooldown: natural',
+          'lap-phases: hot sauna | cold plunge | hot sauna | break',
           `location: ${name}`,
           ...(linked ? ['strava: 101'] : []),
         ].join('\n'),
@@ -1764,10 +1772,17 @@ test('preserves parsed sauna locations through standalone and linked payload ser
       applyManualSauna(payload, [parsed.sauna], [])
       const id = String(linked ? 101 : parsed.sauna.id)
       assert.deepEqual(payload.details[id].sauna?.location, parsed.sauna.location)
+      assert.deepEqual(payload.details[id].sauna?.lapPhases, parsed.sauna.lapPhases)
       assert.deepEqual(
         JSON.parse(JSON.stringify(payload)).details[id].sauna.location,
         parsed.sauna.location,
       )
+      assert.deepEqual(JSON.parse(JSON.stringify(payload)).details[id].sauna.lapPhases, [
+        'hot sauna',
+        'cold plunge',
+        'hot sauna',
+        'break',
+      ])
       assert.equal(payload.details[id].distanceKm, 0)
       assert.deepEqual(payload.details[id].mapRoute, [])
     }
@@ -4392,6 +4407,9 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   assert.deepEqual(detail.powerCurveWeight, { kg: 75, date: '2026-06-07', source: 'garmin' })
   assert.equal(efforts.distance.find(effort => effort.label === '10K')?.elapsedTimeS, 14)
   assert.deepEqual(efforts.power[0], {
+    startElapsedS: 0,
+    endElapsedS: 5,
+    mechanics: null,
     durationS: 5,
     averageWatts: 300,
     wattsPerKg: 4,
@@ -4506,5 +4524,270 @@ test('projects HR session estimates into walking and stationary recovery payload
     assert.equal(activity.performanceConditionTrace, null)
     assert.equal(activity.heartRatePhysiology.points.at(-1)?.elapsedS, 600)
     assert.ok((activity.heartRatePhysiology.points.at(-1)?.performanceCondition ?? 0) < 0)
+  }
+})
+
+test('projects Wahoo FIT torque into exact effort windows and serialized CP anchors', () => {
+  const path = 'triathlon/wahoo/26-09-06-FTP.fit'
+  const bytes = readFileSync(new URL('../../../content/' + path, import.meta.url))
+  const fit = decodeWahooFit(bytes)
+  assert.ok(fit.elapsedTimeS && fit.movingTimeS && fit.distanceM)
+  const id = 'wahoo:fixture'
+  const date = fit.startDate.slice(0, 10)
+  const syncedAt = Date.parse(fit.startDate) + 86_400_000
+  const wahoo: WahooData = {
+    lastSync: syncedAt,
+    activities: {
+      [id]: {
+        id,
+        name: 'FTP fixture',
+        sport: 'bike',
+        startDate: fit.startDate,
+        startDateLocal: fit.startDate,
+        distanceM: fit.distanceM,
+        movingTimeS: fit.movingTimeS,
+        elapsedTimeS: fit.elapsedTimeS,
+        sourceDevice: fit.sourceDevice,
+        sourceFile: {
+          path,
+          sha256: 'a'.repeat(64),
+          byteLength: bytes.length,
+          profileVersion: fit.profileVersion,
+        },
+        metrics: fit.metrics,
+        sweatLoss: fit.sweatLoss,
+      },
+    },
+    streams: { [id]: fit.streams },
+    gearShifts: { [id]: fit.gearShifts },
+    cyclingDynamics: { [id]: fit.cyclingDynamics },
+    summitSegments: { [id]: fit.summitSegments },
+  }
+  const cache: StravaRawCache = {
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: syncedAt },
+    lastSync: syncedAt,
+    lastActivityStart: Date.parse(fit.startDate),
+    streams: {
+      101: {
+        time: fit.streams.time,
+        latlng: fit.streams.latlng.map<[number, number]>(value => value ?? [NaN, NaN]),
+        watts: fit.streams.watts.map(value => value ?? NaN),
+        cadence: fit.streams.cadence.map(value => value ?? NaN),
+        heartrate: fit.streams.heartrate.map(value => value ?? NaN),
+        distance: fit.streams.distance.map(value => value ?? NaN),
+        altitude: fit.streams.altitude.map(value => value ?? NaN),
+      },
+    },
+    activities: {
+      101: {
+        id: 101,
+        name: 'FTP fixture',
+        sportType: 'Ride',
+        startDate: fit.startDate,
+        startDateLocal: fit.startDate,
+        distance: fit.distanceM,
+        movingTime: fit.movingTimeS,
+        elapsedTime: fit.elapsedTimeS,
+        totalElevationGain: 0,
+        averageSpeed: fit.distanceM / fit.movingTimeS,
+        deviceWatts: true,
+      },
+    },
+  }
+  const payload = buildPayload(
+    cache,
+    null,
+    null,
+    date,
+    null,
+    250,
+    null,
+    'UTC',
+    wahoo,
+    null,
+    null,
+    syncedAt,
+    [{ activityId: 101, garminActivityId: null, virtual: false, wahooFitPath: path }],
+  )
+  const detail = payload.details['101']
+  assert.ok(detail.cyclingTorque)
+  assert.equal(detail.cyclingTorque.source, 'wahoo')
+  assert.equal(detail.wahoo?.activityId, id)
+  const samples = cyclingTorqueSamples(fit.streams, 0, detail.elapsedTimeS)
+  for (const durationS of [180, 360, 720]) {
+    const effort = detail.bestEfforts?.power.find(effort => effort.durationS === durationS)
+    assert.ok(effort && effort.startElapsedS != null && effort.endElapsedS != null)
+    assert.equal(effort.endElapsedS - effort.startElapsedS, durationS)
+    assert.ok(effort.mechanics)
+    assert.deepEqual(
+      effort.mechanics,
+      cyclingMechanics(samples, effort.startElapsedS, effort.endElapsedS),
+    )
+    assert.equal(effort.averageWatts, detail.powerCurve?.find(point => point.s === durationS)?.w)
+  }
+  assert.deepEqual(
+    detail.criticalPowerAnchors?.map(anchor => anchor.durationS),
+    [180, 420, 720],
+  )
+  for (const anchor of detail.criticalPowerAnchors ?? [])
+    assert.deepEqual(
+      anchor.mechanics,
+      cyclingMechanics(samples, anchor.startElapsedS, anchor.endElapsedS),
+    )
+  const serialized = JSON.parse(JSON.stringify(payload)).details['101']
+  assert.deepEqual(serialized.cyclingTorque, detail.cyclingTorque)
+  assert.deepEqual(serialized.criticalPowerAnchors, detail.criticalPowerAnchors)
+  assert.ok(detail.cyclingPowerTrace)
+  assert.equal(detail.cyclingPowerTrace.source, 'wahoo')
+  assert.ok(detail.cyclingPowerTrace.points.some(point => point.power5mWatts != null))
+  assert.deepEqual(serialized.cyclingPowerTrace, detail.cyclingPowerTrace)
+
+  const offsetStart = new Date(Date.parse(fit.startDate) + 2_000).toISOString()
+  const shiftedCourseCache: StravaRawCache = {
+    ...cache,
+    streams: {
+      101: {
+        time: fit.streams.time,
+        latlng: [],
+        distance: fit.streams.time.map(time => 1_000 + time * 10),
+        altitude: fit.streams.time.map(time => 100 + time / 10),
+        watts: fit.streams.time.map(() => 900),
+      },
+    },
+  }
+  const nativePower = buildPayload(shiftedCourseCache, null, null, date, null, 250, null, 'UTC', {
+    ...wahoo,
+    activities: { [id]: { ...wahoo.activities[id], startDate: offsetStart } },
+    streams: {
+      [id]: {
+        ...fit.streams,
+        watts: fit.streams.time.map((_, index) => (index === 50 ? null : 200)),
+      },
+    },
+  }).details['101'].cyclingPowerTrace
+  assert.ok(nativePower)
+  assert.equal(nativePower.source, 'wahoo')
+  assert.equal(nativePower.terrainSource, 'strava')
+  assert.equal(nativePower.points[0].elapsedS, 0)
+  assert.equal(nativePower.points[0].cumulativePowerWatts, null)
+  assert.ok(
+    nativePower.points.every(
+      point => point.cumulativePowerWatts == null || point.cumulativePowerWatts === 200,
+    ),
+  )
+  assert.ok(
+    nativePower.points
+      .filter(point => point.power30sWatts != null)
+      .every(point => point.elapsedS >= fit.streams.time[0] + 32),
+  )
+  const missingElapsedS = fit.streams.time[50] + 2
+  assert.ok(
+    nativePower.points.some(
+      point =>
+        point.elapsedS >= missingElapsedS &&
+        point.elapsedS < missingElapsedS + 60 &&
+        point.cumulativePowerWatts === 200 &&
+        point.power30sWatts == null,
+    ),
+  )
+  const shiftedPoint = nativePower.points.find(
+    point => point.elevationM != null && point.elapsedS > 10,
+  )
+  assert.ok(shiftedPoint)
+  assert.equal(shiftedPoint.distanceKm, (1_000 + shiftedPoint.elapsedS * 10) / 1_000)
+  assert.equal(shiftedPoint.elevationM, 100 + shiftedPoint.elapsedS / 10)
+
+  const course: GarminCache = {
+    lastSync: syncedAt,
+    activities: {
+      'connect:123': {
+        id: 'connect:123',
+        name: 'Virtual course',
+        sport: 'bike',
+        startDate: fit.startDate,
+        startDateLocal: fit.startDate,
+        distanceM: fit.distanceM / 2,
+        movingTimeS: fit.movingTimeS,
+        elapsedTimeS: fit.elapsedTimeS,
+        sourceDevice: null,
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling(),
+      },
+    },
+    streams: {
+      'connect:123': {
+        time: fit.streams.time,
+        latlng: fit.streams.time.map(() => [45, 6]),
+        distance: fit.streams.time.map(time => time * 5),
+        altitude: fit.streams.time.map(time => 1_000 + time / 10),
+      },
+    },
+  }
+  const virtual = buildPayload(
+    cache,
+    null,
+    course,
+    date,
+    null,
+    250,
+    null,
+    'UTC',
+    wahoo,
+    null,
+    null,
+    syncedAt,
+    [{ activityId: 101, garminActivityId: 123, virtual: true, wahooFitPath: path }],
+  ).details['101'].cyclingPowerTrace
+  assert.ok(virtual)
+  assert.equal(virtual.source, 'wahoo')
+  assert.equal(virtual.terrainSource, 'garmin')
+  const realLast = detail.cyclingPowerTrace.points.at(-1)
+  const virtualLast = virtual.points.at(-1)
+  assert.ok(realLast && virtualLast)
+  const finalCourseTime = Math.min(fit.streams.time.at(-1) ?? 0, virtualLast.elapsedS)
+  assert.equal(virtualLast.distanceKm, (finalCourseTime * 5) / 1_000)
+  assert.equal(virtualLast.elevationM, 1_000 + finalCourseTime / 10)
+  assert.equal(virtualLast.cumulativePowerWatts, realLast.cumulativePowerWatts)
+})
+
+test('builds cycling averages from original Strava device power and preserves missing samples', () => {
+  const time = Array.from({ length: 361 }, (_, index) => index)
+  const activity = ride({ movingTime: 360, elapsedTime: 360, deviceWatts: true })
+  const cache: StravaRawCache = {
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: 0 },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Date.parse(activity.startDate),
+    activities: { 101: activity },
+    streams: {
+      101: {
+        time,
+        latlng: [],
+        distance: time.map(second => second * 10),
+        altitude: time.map(second => 80 + second / 10),
+        watts: time.map(second => (second === 60 ? NaN : second < 30 ? 0 : 200)),
+      },
+    },
+  }
+  const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
+  const trace = detail.cyclingPowerTrace
+  assert.ok(trace)
+  assert.equal(trace.source, 'strava')
+  assert.equal(trace.points.find(point => point.elapsedS === 30)?.power30sWatts, 0)
+  assert.equal(trace.points.find(point => point.elapsedS === 60)?.cumulativePowerWatts, 100)
+  assert.equal(trace.points.find(point => point.elapsedS === 90)?.power30sWatts, null)
+  assert.equal(trace.points.find(point => point.elapsedS === 91)?.power30sWatts, 200)
+  assert.equal(trace.points.at(-1)?.cumulativePowerWatts, 183.287)
+  assert.equal(trace.points.at(-1)?.elevationM, 116)
+  for (const overrides of [{ deviceWatts: false }, { sportType: 'Run' }]) {
+    const unsupported = buildPayload(
+      { ...cache, activities: { 101: { ...activity, ...overrides } } },
+      null,
+      null,
+      '2026-06-01',
+    ).details['101']
+    assert.equal(unsupported.cyclingPowerTrace ?? null, null)
   }
 })

@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { analysisChartSelectionBounds } from '../../../util/triathlon-card'
-import { activityScrubCursorX, activityScrubElapsedIndexAt, activityScrubIndexAt } from './analysis'
+import {
+  activityScrubCursorX,
+  activityScrubElapsedIndexAt,
+  activityScrubIndexAt,
+  activityScrubKeyboardIndex,
+} from './analysis'
 
 const routeLessSamples = [
   { d: 0, elapsedS: 0 },
@@ -30,6 +35,23 @@ test('linked activity charts synchronize samples by elapsed time', () => {
   assert.equal(activityScrubElapsedIndexAt(distanceSamples, 900), 2)
   assert.equal(activityScrubElapsedIndexAt(distanceSamples, 2_000), 3)
   assert.equal(activityScrubElapsedIndexAt([], 900), -1)
+})
+
+test('keyboard scrubbing follows elapsed samples across pauses and clamps at the ride edges', () => {
+  const samples = [
+    { d: 0, elapsedS: 0 },
+    { d: 0.5, elapsedS: 30 },
+    { d: 0.5, elapsedS: 600 },
+    { d: 1, elapsedS: 630 },
+  ]
+  assert.equal(activityScrubKeyboardIndex(samples, 30, 'ArrowRight'), 2)
+  assert.equal(activityScrubKeyboardIndex(samples, 600, 'ArrowLeft'), 1)
+  assert.equal(activityScrubKeyboardIndex(samples, 0, 'ArrowLeft'), 0)
+  assert.equal(activityScrubKeyboardIndex(samples, 630, 'ArrowRight'), 3)
+  assert.equal(activityScrubKeyboardIndex(samples, 600, 'Home'), 0)
+  assert.equal(activityScrubKeyboardIndex(samples, 30, 'End'), 3)
+  assert.equal(activityScrubKeyboardIndex(samples, 30, 'Tab'), null)
+  assert.equal(activityScrubKeyboardIndex([], 0, 'ArrowRight'), null)
 })
 
 test('linked run/walk cursor projects the hovered time onto its own elapsed axis', () => {

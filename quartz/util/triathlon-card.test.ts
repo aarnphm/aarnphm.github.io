@@ -20,6 +20,8 @@ import { calculateActivityExerciseLoad, emptyHealth } from '../plugins/stores/st
 import { parseTrackingBlock } from '../plugins/stores/tracking'
 import { emptyWahooMetrics } from '../plugins/stores/wahoo'
 import { buildCyclingIntensityTrace } from './cycling-intensity'
+import { buildCyclingPowerTrace } from './cycling-power'
+import { buildCyclingTorqueTrace, cyclingTorqueSamples } from './cycling-torque'
 import { estimateHeartRatePhysiology } from './heart-rate-physiology'
 import { resolveSleepMetrics } from './sleep-metrics'
 import {
@@ -29,6 +31,7 @@ import {
   activityComparisonFractionForKey,
   activityComparisonMetricAtDistance as metricAtDistance,
   activityComparisonMetricsForSport,
+  activityCyclingPowerPoints,
   activityGearRatioDistribution,
   activityPowerDistributionPercentages,
   activitySelectionSummary,
@@ -40,6 +43,8 @@ import {
   buildActivityIcon,
   buildActivityComparison,
   buildCyclingBestEfforts,
+  buildCyclingPowerChart,
+  buildCrankTorqueChart,
   buildIntensityFactorChart,
   buildDayAnalytics,
   buildDayCard,
@@ -3124,8 +3129,19 @@ test('builds semantic distance, power, and climbing tables in metric units', () 
   assert.deepEqual(bodyRows(distance), [['10K', '24:31', '24.5 km/h', '151 bpm', '-30 m']])
 
   const power = table(rendered, 'power')
-  assert.deepEqual(headerText(power), ['Time', 'Power', 'W/kg', 'Heart rate', 'Elev'])
-  assert.deepEqual(bodyRows(power), [['5 sec', '565 W', '6.45 W/kg', '150 bpm', '4 m']])
+  assert.deepEqual(headerText(power), [
+    'Time',
+    'Power',
+    'W/kg',
+    'Heart rate',
+    'Cadence',
+    'Torque',
+    'Coverage',
+    'Elev',
+  ])
+  assert.deepEqual(bodyRows(power), [
+    ['5 sec', '565 W', '6.45 W/kg', '150 bpm', '—', '—', '—', '4 m'],
+  ])
 
   const climbing = table(rendered, 'climbing')
   assert.deepEqual(headerText(climbing), [
@@ -4057,12 +4073,52 @@ test('renders cycling laps as selectable power bars over the elevation profile',
   )
   assert.match(String(laps[0].properties.ariaLabel), /^Lap 1, 10\.00 km, \+14 m, 20:00/)
   assert.match(String(laps[0].properties.ariaLabel), /180 W/)
-  assert.deepEqual(byClass(workout, 'tri-cycling-workout-power').map(text), [
-    '180 W',
-    '300 W',
-    '120 W',
+  assert.deepEqual(byClass(workout, 'tri-workout-lap-tooltip').map(text), [
+    '30.0 km/h · 180 W',
+    '30.0 km/h · 300 W',
+    '30.0 km/h · 120 W',
   ])
   assert.deepEqual(byClass(workout, 'tri-cycling-workout-label').map(text), ['1', '2', '3'])
+})
+
+test('renders workout lap hover metrics in the selected units and preserves zero and missing power', () => {
+  const bike = analysisDetail()
+  const lap = bike.analysisRanges.find(range => range.kind === 'lap')!
+  const values = [
+    { averageSpeedKph: 0, averageWatts: 0 },
+    { averageSpeedKph: null, averageWatts: null },
+    { averageSpeedKph: 30, averageWatts: 200 },
+  ]
+  bike.analysisRanges = values.map((value, index) => ({
+    ...lap,
+    ...value,
+    id: `lap-${index + 1}`,
+    startElapsedS: index * 1_600,
+    endElapsedS: (index + 1) * 1_600,
+    startDistanceKm: index * 10,
+    endDistanceKm: (index + 1) * 10,
+  }))
+
+  for (const selected of [METRIC_TRIATHLON_PRESENTATION, imperialPresentation]) {
+    for (const embedded of [false, true]) {
+      const rendered = buildWorkoutAnalysis(factoryFor(selected), bike, embedded)
+      assert.ok(rendered)
+      const laps = byClass(rendered, 'tri-workout-lap')
+      assert.equal(laps.length, 3)
+      assert.deepEqual(
+        laps.map(lap => text(byClass(lap, 'tri-workout-lap-tooltip')[0])),
+        selected.distance === 'imperial'
+          ? ['0.0 mph · 0 W', '—', '18.6 mph · 200 W']
+          : ['0.0 km/h · 0 W', '—', '30.0 km/h · 200 W'],
+      )
+      for (const lap of laps) {
+        assert.equal(lap.tagName, 'button')
+        assert.equal(lap.properties.type, 'button')
+        assert.equal(byClass(lap, 'tri-workout-lap-bar').length, 1)
+        assert.equal(byClass(lap, 'tri-workout-lap-tooltip')[0].properties.ariaHidden, 'true')
+      }
+    }
+  }
 })
 
 test('maps local elevation gradient to distinct climb color bands', () => {
@@ -7147,6 +7203,97 @@ test('renders sauna phases in chronological lap order with recorded timing and H
   assert.equal(byClass(naturalCooldown, 'tri-sauna-lap')[2].properties.dataSaunaPhase, 'break')
 })
 
+test('renders authored sauna phases on chronological laps in cards and timelines', () => {
+  const parsed = parseTrackingBlock(
+    null,
+    [
+      'activity: sauna',
+      'date: 2026-09-17',
+      'time: 19:30',
+      'duration: 75 mins',
+      'temperature: 168F',
+      'humidity: 11%',
+      'cooldown: cold plunge',
+      'location: Othership Adelaide',
+      'lap-phases: hot sauna | cold plunge | hot sauna | break',
+    ].join('\n'),
+  )
+  assert.ok(parsed?.sauna)
+  const durations = [2_482, 356, 1_634, 265]
+  const lap = analysisRanges().find(range => range.kind === 'lap')
+  assert.ok(lap)
+  let elapsedS = 0
+  const laps = durations.map((durationS, index) => {
+    const startElapsedS = elapsedS
+    elapsedS += durationS
+    return {
+      ...lap,
+      id: `sauna:${index}`,
+      startElapsedS,
+      endElapsedS: elapsedS,
+      startDistanceKm: 0,
+      endDistanceKm: 0,
+      distanceKm: 0,
+      durationS,
+    }
+  })
+  const sauna = detail({
+    sport: 'sauna',
+    route: [],
+    mapRoute: [],
+    distanceKm: 0,
+    elapsedTimeS: elapsedS,
+    analysisRanges: laps.toReversed(),
+    heartRateTrace: [heartRateTracePoint(0, 0, 90), heartRateTracePoint(0, elapsedS, 100)],
+    sauna: { ...parsed.sauna, heartRateSource: null, source: 'manual' },
+  })
+  for (const embedded of [false, true]) {
+    for (const location of [parsed.sauna.location, null]) {
+      const rendered: Element = buildActivity(
+        factory,
+        { ...sauna, sauna: { ...parsed.sauna, location, heartRateSource: null, source: 'manual' } },
+        true,
+        ctx(),
+        false,
+        embedded,
+      )
+      const wrap = byClass(rendered, 'tri-sauna-laps')[0]
+      assert.equal(wrap.properties.dataSaunaPhaseSource, 'manual')
+      const phases = byClass(wrap, location ? 'tri-sauna-lap-legend' : 'tri-sauna-lap')
+      assert.deepEqual(
+        phases.map(phase => phase.properties.dataSaunaPhase),
+        parsed.sauna.lapPhases,
+      )
+      assert.deepEqual(
+        phases.map(phase => phase.properties.dataRangeId),
+        laps.map(lap => lap.id),
+      )
+      assert.deepEqual(
+        phases.map(phase => phase.properties.dataDurationS),
+        durations.map(String),
+      )
+      assert.deepEqual(
+        phases.map(phase => phase.properties.dataRangeLabel),
+        ['lap 1 · hot sauna', 'lap 2 · cold plunge', 'lap 3 · hot sauna', 'lap 4 · break'],
+      )
+      assert.match(String(phases[1].properties.ariaLabel), /^lap 2 · cold plunge, 5:56,/)
+    }
+  }
+  const unmatched = buildWorkoutAnalysis(factory, {
+    ...sauna,
+    sauna: {
+      ...parsed.sauna,
+      location: null,
+      lapPhases: ['break'],
+      heartRateSource: null,
+      source: 'manual',
+    },
+  })
+  assert.ok(unmatched)
+  assert.equal(byClass(unmatched, 'tri-sauna-laps')[0].properties.dataSaunaPhaseSource, 'lap-order')
+  assert.equal(byClass(unmatched, 'tri-sauna-lap')[0].properties.dataSaunaPhase, 'hot sauna')
+})
+
 test('renders recorded sauna HTL as ten one-point segments after activity graphs', () => {
   const sauna = detail({
     sport: 'sauna',
@@ -10074,4 +10221,280 @@ test('cycling PD omits missing or invalid distributions and supports rides witho
   })
   const card = buildActivity(factory, filtered, true, ctx())
   assert.deepEqual(byClass(card, 'tri-training-zone-summary-value').map(text), ['100% in zone 2'])
+})
+
+test('renders crank torque views and supports missing cadence', () => {
+  const activity = detail({ elapsedTimeS: 120 })
+  const time = Array.from({ length: 120 }, (_, i) => i)
+  const samples = cyclingTorqueSamples(
+    { time, watts: time.map(() => 250), cadence: time.map(() => 90) },
+    0,
+    120,
+  )
+  activity.cyclingTorque = buildCyclingTorqueTrace(samples, 120, [
+    { elapsedS: 0, d: 0 },
+    { elapsedS: 120, d: 30 },
+  ])
+  const chart = buildCrankTorqueChart(factory, activity)
+  assert.ok(chart)
+  assert.match(text(chart), /crank torque/)
+  assert.match(text(chart), /26.5 N·m/)
+  const headers = byClass(chart, 'tri-elev-cap')
+  assert.equal(headers.length, 2)
+  for (const header of headers) {
+    assert.equal(byClass(header, 'tri-torque-mode').length, 2)
+    assert.equal(byClass(header, 'tri-curve-range').length, 2)
+  }
+  assert.equal(byClass(chart, 'tri-torque-density')[0].properties.role, 'slider')
+  const frenchChart = buildCrankTorqueChart(factoryFor(frenchPresentation), activity)
+  assert.ok(frenchChart)
+  assert.match(text(frenchChart), /couple au pédalier/)
+  const rendered = buildActivity(factory, activity)
+  const more = byClass(rendered, 'tri-act-more')[0]
+  assert.ok(more)
+  assert.equal(byClass(more, 'tri-torque-panel').length, 1)
+  assert.equal(buildCrankTorqueChart(factory, detail()), null)
+  assert.equal(buildCrankTorqueChart(factory, { ...activity, sport: 'run' }), null)
+})
+
+const cyclingPowerDetail = (): StravaActivityDetail =>
+  detail({
+    elapsedTimeS: 1_000,
+    cyclingPowerTrace: {
+      source: 'wahoo',
+      terrainSource: 'wahoo',
+      method: 'recorded-power-average-v1',
+      points: [0, 30, 300, 400, 700, 1_000].map((elapsedS, index) => ({
+        elapsedS,
+        distanceKm: elapsedS / 100,
+        elevationM: [100, 120, 140, null, 80, 100][index],
+        power30sWatts: [null, 0, 200, null, 0, 160][index],
+        power5mWatts: [null, null, 180, null, null, 160][index],
+        cumulativePowerWatts: [null, 0, 100, null, 75, 90][index],
+      })),
+    },
+  })
+
+test('cycling power renders elapsed power over elevation with named averaging controls and gaps', () => {
+  const activity = cyclingPowerDetail()
+  const selection = { ...analysisRanges()[0], startElapsedS: 250, endElapsedS: 750 }
+  const chart = buildCyclingPowerChart(factory, activity, selection)
+  assert.ok(chart)
+  assert.equal(chart.properties.dataTriTrace, 'cycling-power')
+  assert.equal(chart.properties.dataCyclingPowerWindow, '30')
+  assert.equal(chart.properties.dataCyclingPowerSource, 'wahoo')
+  assert.match(text(chart), /30 s averageride averageelevation/)
+  const controls = byClass(chart, 'tri-cycling-power-window')
+  assert.equal(byClass(byClass(chart, 'tri-elev-cap')[0], 'tri-chart-controls').length, 1)
+  assert.equal(
+    byClass(byClass(chart, 'tri-cycling-power-legend')[0], 'tri-chart-controls').length,
+    0,
+  )
+  assert.deepEqual(
+    controls.map(control => text(control)),
+    ['30 s', '5 min'],
+  )
+  assert.deepEqual(
+    controls.map(control => control.properties.ariaPressed),
+    ['true', 'false'],
+  )
+  assert.ok(
+    controls.every(control => control.tagName === 'button' && control.properties.type === 'button'),
+  )
+  const graph = byClass(chart, 'tri-cycling-power-plot')[0]
+  assert.equal(graph.properties.dataDomainStartElapsedS, 0)
+  assert.equal(graph.properties.dataDomainEndElapsedS, 1_000)
+  assert.equal(graph.properties.role, 'slider')
+  assert.equal(graph.properties.tabIndex, 0)
+  assert.equal(graph.properties.ariaValueMax, 1_000)
+  const selected = byClass(chart, 'tri-analysis-selection')[0]
+  assert.equal(selected.properties.x, '25.00')
+  assert.equal(selected.properties.width, '50.00')
+  assert.equal(byClass(chart, 'tri-elev-cursor').length, 1)
+  const series = byClass(chart, 'tri-cycling-power-line')
+  assert.deepEqual(
+    series.map(line => line.properties.dataCyclingPowerSeries),
+    ['30', '300', 'cumulative'],
+  )
+  assert.equal(series[0].properties.hidden, undefined)
+  assert.equal(series[1].properties.hidden, '')
+  assert.equal(String(series[0].properties.d).match(/M /g)?.length, 2)
+  assert.match(String(series[0].properties.d), /^M 3\.00 28\.00 L /)
+  assert.match(String(series[0].properties.d), /M 70\.00 28\.00 L /)
+  assert.equal(String(series[2].properties.d).match(/M /g)?.length, 2)
+  const backdrop = byClass(chart, 'tri-cycling-power-elevation')[0]
+  assert.equal(String(backdrop.properties.d).match(/Z/g)?.length, 2)
+  assert.ok(byClass(chart, 'tri-cax-yt').some(tick => text(tick) === '0 W'))
+  assert.deepEqual(
+    byClass(chart, 'tri-cax-yt--right').map(tick => text(tick)),
+    ['80 m', '110 m', '140 m'],
+  )
+  assert.deepEqual(
+    activityCyclingPowerPoints(activity).map(point => point.d),
+    [0, 30, 300, 400, 700, 1_000],
+  )
+})
+
+test('cycling power retains provider metadata without visible source text', () => {
+  const activity = cyclingPowerDetail()
+  const trace = activity.cyclingPowerTrace
+  assert.ok(trace)
+  const sameSource = buildCyclingPowerChart(factory, activity)
+  assert.ok(sameSource)
+  assert.doesNotMatch(text(sameSource), /Wahoo|Strava|Garmin/)
+  const virtualCourse: StravaActivityDetail = {
+    ...activity,
+    cyclingPowerTrace: { ...trace, terrainSource: 'garmin' },
+  }
+  const chart = buildCyclingPowerChart(factory, virtualCourse)
+  assert.ok(chart)
+  assert.equal(chart.properties.dataCyclingPowerSource, 'wahoo')
+  assert.equal(chart.properties.dataCyclingPowerTerrainSource, 'garmin')
+  assert.doesNotMatch(text(chart), /Wahoo|Strava|Garmin/)
+  const frenchChart = buildCyclingPowerChart(factoryFor(frenchPresentation), virtualCourse)
+  assert.ok(frenchChart)
+  assert.doesNotMatch(text(frenchChart), /Wahoo|Strava|Garmin/)
+})
+
+test('cycling power renders continuous terrain and cumulative power across a recording pause', () => {
+  const time = Array.from({ length: 401 }, (_, index) => (index < 60 ? index : index + 120))
+  const cyclingPowerTrace = buildCyclingPowerTrace({
+    source: 'wahoo',
+    startOffsetS: 0,
+    elapsedTimeS: 520,
+    streams: {
+      time,
+      watts: time.map(() => 200),
+      altitude: time.map(second => (second < 180 ? 120 : 121)),
+    },
+  })
+  assert.ok(cyclingPowerTrace)
+  const chart = buildCyclingPowerChart(factory, detail({ elapsedTimeS: 520, cyclingPowerTrace }))
+  assert.ok(chart)
+  const terrain = String(byClass(chart, 'tri-cycling-power-elevation')[0].properties.d)
+  assert.equal(terrain.match(/M /g)?.length, 1)
+  assert.equal(terrain.match(/Z/g)?.length, 1)
+  const lines = byClass(chart, 'tri-cycling-power-line')
+  assert.equal(String(lines[0].properties.d).match(/M /g)?.length, 2)
+  assert.equal(String(lines[2].properties.d).match(/M /g)?.length, 1)
+})
+
+test('cycling power keeps wind gaps empty and preserves observed calm and signed direction', () => {
+  const activity = cyclingPowerDetail()
+  const analyses = environmentAnalyses()
+  const environment = analyses.derived.environment
+  assert.ok(environment)
+  const sample = environment.samples[0]
+  environment.samples = [0, 0, 8, -4, null, -2, 2].map((headwindKph, index) => ({
+    ...sample,
+    elapsedS: index * 150,
+    headwindKph,
+  }))
+  const chart = buildCyclingPowerChart(factory, { ...activity, analyses })
+  assert.ok(chart)
+  assert.equal(byClass(chart, 'tri-cycling-power-wind--calm').length, 1)
+  assert.equal(byClass(chart, 'tri-cycling-power-wind--headwind').length, 3)
+  assert.equal(byClass(chart, 'tri-cycling-power-wind--tailwind').length, 2)
+  assert.ok(
+    byClass(chart, 'tri-cycling-power-wind').every(segment => {
+      const start = Number(segment.properties.x)
+      const end = start + Number(segment.properties.width)
+      return end <= 45 || start >= 75
+    }),
+  )
+  assert.match(text(chart), /estimated wind\+ headwind− tailwind$/)
+  const noWeather = buildCyclingPowerChart(factory, activity)
+  assert.ok(noWeather)
+  assert.equal(byClass(noWeather, 'tri-cycling-power-wind').length, 0)
+  assert.match(text(noWeather), /wind unavailable/)
+})
+
+test('cycling power uses presentation units and locale while preserving recorded zeroes', () => {
+  const activity = cyclingPowerDetail()
+  const imperial = buildCyclingPowerChart(factoryFor(imperialPresentation), activity)
+  assert.ok(imperial)
+  assert.deepEqual(
+    byClass(imperial, 'tri-cax-yt--right').map(tick => text(tick)),
+    ['262 ft', '361 ft', '459 ft'],
+  )
+  const frenchChart = buildCyclingPowerChart(factoryFor(frenchPresentation), activity)
+  assert.ok(frenchChart)
+  assert.match(text(frenchChart), /puissance et relief/)
+  assert.match(text(frenchChart), /moyenne sur 30 smoyenne de la sortie/)
+  const filtered = buildCyclingPowerChart(
+    factoryFor(excludeZeroPresentation),
+    powerViewActivity(excludeZeroPresentation, activity),
+  )
+  assert.ok(filtered)
+  assert.match(
+    String(byClass(filtered, 'tri-cycling-power-line')[0].properties.d),
+    /^M 3\.00 28\.00 /,
+  )
+  const trace = activity.cyclingPowerTrace
+  assert.ok(trace)
+  const zero = buildCyclingPowerChart(factory, {
+    ...activity,
+    cyclingPowerTrace: {
+      ...trace,
+      points: trace.points.map(point => ({
+        ...point,
+        power30sWatts: 0,
+        power5mWatts: 0,
+        cumulativePowerWatts: 0,
+      })),
+    },
+  })
+  assert.ok(zero)
+  assert.ok(
+    byClass(zero, 'tri-cycling-power-line').every(
+      line => !String(line.properties.d).includes('NaN'),
+    ),
+  )
+  const noElevation = buildCyclingPowerChart(factory, {
+    ...activity,
+    cyclingPowerTrace: {
+      ...trace,
+      points: trace.points.map(point => ({ ...point, elevationM: null })),
+    },
+  })
+  assert.ok(noElevation)
+  assert.equal(byClass(noElevation, 'tri-cycling-power-elevation').length, 0)
+  assert.equal(byClass(noElevation, 'tri-cax-yt--right').length, 0)
+})
+
+test('places cycling graphs after muscle oxygen and before environment in cards and embeds', () => {
+  const activity = cyclingPowerDetail()
+  activity.analyses = environmentAnalyses()
+  activity.route = activity.route.map((point, index) => ({
+    ...point,
+    muscleOxygenPct: [64, 62, 60, 58][index],
+  }))
+  const time = Array.from({ length: 120 }, (_, index) => index)
+  activity.cyclingTorque = buildCyclingTorqueTrace(
+    cyclingTorqueSamples({ time, watts: time.map(() => 250), cadence: time.map(() => 90) }, 0, 120),
+    120,
+    [
+      { elapsedS: 0, d: 0 },
+      { elapsedS: 120, d: 30 },
+    ],
+  )
+  for (const embedded of [false, true]) {
+    const card = buildActivity(factory, activity, true, ctx(), false, embedded)
+    const more = byClass(card, 'tri-act-more')[0]
+    assert.ok(more)
+    const children = more.children.filter((child): child is Element => child.type === 'element')
+    const oxygenIndex = children.findIndex(
+      child => child.properties.dataTriTrace === 'muscle-oxygen',
+    )
+    assert.ok(oxygenIndex >= 0)
+    assert.equal(children[oxygenIndex + 1], byClass(more, 'tri-torque-panel')[0])
+    assert.equal(children[oxygenIndex + 2], byClass(more, 'tri-cycling-power')[0])
+    assert.equal(children[oxygenIndex + 3], byClass(more, 'tri-environment')[0])
+    const disabled = buildActivity(factory, activity, true, ctx(), false, embedded, {
+      'cycling-power': false,
+    })
+    assert.equal(byClass(disabled, 'tri-cycling-power').length, 0)
+  }
+  assert.equal(buildCyclingPowerChart(factory, { ...activity, sport: 'run' }), null)
+  assert.equal(buildCyclingPowerChart(factory, detail()), null)
 })

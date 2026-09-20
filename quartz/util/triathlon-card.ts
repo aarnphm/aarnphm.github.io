@@ -22,6 +22,7 @@ import {
 } from '../plugins/stores/strava'
 import { selectActivityAnalysisSummary } from './activity-analysis-selection'
 import { gardenUvScoreFromDose } from './activity-uv-score'
+import { cyclingTorqueDensity } from './cycling-torque'
 import { RUN_PACE_ZONE_NAMES, runPaceZoneRange } from './run-pace-zones'
 import { resolveSleepMetrics, type SleepMetrics } from './sleep-metrics'
 import {
@@ -1516,6 +1517,385 @@ export const buildIntensityFactorChart = <N>(
     { value: 1, label: '1.00' },
     { wrapAttrs: { 'data-cycling-intensity-source': 'calculated-wahoo' }, capExtra: [source] },
   )
+}
+
+export const activityCyclingTorquePoints = (d: StravaActivityDetail) => {
+  const points = (d.cyclingTorque?.points ?? []).map(point => ({
+    ...point,
+    d: activityTraceUsesElapsedAxis(d) ? point.elapsedS : point.distanceKm,
+  }))
+  const last = points.at(-1)
+  if (last && last.elapsedS < d.elapsedTimeS)
+    points.push({
+      ...last,
+      elapsedS: d.elapsedTimeS,
+      durationS: 0,
+      distanceKm: d.route.at(-1)?.d ?? d.distanceKm,
+      d: activityTraceUsesElapsedAxis(d) ? d.elapsedTimeS : (d.route.at(-1)?.d ?? d.distanceKm),
+    })
+  return points
+}
+
+export const activityCyclingPowerPoints = (d: StravaActivityDetail) =>
+  (d.cyclingPowerTrace?.points ?? []).map(point => ({ ...point, d: point.elapsedS }))
+
+export const buildCyclingPowerChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: AnalysisInterval | null,
+): N | null => {
+  const trace = d.cyclingPowerTrace
+  if (d.sport !== 'bike' || !trace || trace.points.length < 2) return null
+  const points = trace.points
+  const powers = points.flatMap(point =>
+    [point.power30sWatts, point.power5mWatts, point.cumulativePowerWatts].filter(
+      (value): value is number => value != null && Number.isFinite(value),
+    ),
+  )
+  if (powers.length < 2) return null
+  const text = (key: string): string => triText(f.presentation.locale, key)
+  const totalElapsedS = Math.max(d.elapsedTimeS, points.at(-1)?.elapsedS ?? 0)
+  if (!(totalElapsedS > 0)) return null
+  const height = 30
+  const bottom = 28
+  const maxPower = Math.max(10, ...powers) * 1.05
+  const powerTicks = niceTicks(0, maxPower, 3)
+  const powerCeiling = Math.max(maxPower, powerTicks.at(-1) ?? maxPower)
+  const px = (elapsedS: number): number => (elapsedS / totalElapsedS) * 100
+  const powerY = (watts: number): number => bottom - (watts / powerCeiling) * (bottom - 1)
+  const elevations = points.flatMap(point =>
+    point.elevationM != null && Number.isFinite(point.elevationM)
+      ? [elevationValue(f.presentation, point.elevationM)]
+      : [],
+  )
+  const minElevation = elevations.length ? Math.min(...elevations) : 0
+  const elevationSpan = elevations.length ? Math.max(1, Math.max(...elevations) - minElevation) : 1
+  const elevationY = (value: number): number =>
+    bottom - ((value - minElevation) / elevationSpan) * (bottom - 1)
+  const path = (
+    pick: (point: (typeof points)[number]) => number | null,
+    py: (value: number) => number,
+    area = false,
+  ): string => {
+    let result = ''
+    let firstX: number | null = null
+    let lastX = 0
+    const finish = (): void => {
+      if (area && firstX != null) result += `L ${lastX.toFixed(2)} ${bottom} Z `
+      firstX = null
+    }
+    for (const point of points) {
+      const value = pick(point)
+      if (value == null || !Number.isFinite(value)) {
+        finish()
+        continue
+      }
+      const x = px(point.elapsedS)
+      const y = py(value)
+      if (firstX == null) {
+        firstX = x
+        result += area ? `M ${x.toFixed(2)} ${bottom} L ` : 'M '
+      } else result += 'L '
+      result += `${x.toFixed(2)} ${y.toFixed(2)} `
+      lastX = x
+    }
+    finish()
+    return result.trim()
+  }
+  const wrap = f.el('div', 'tri-elev-wrap tri-cycling-power', undefined, {
+    'data-tri-trace': 'cycling-power',
+    'data-cycling-power-window': '30',
+    'data-cycling-power-source': trace.source,
+    'data-cycling-power-terrain-source': trace.terrainSource,
+  })
+  const cap = f.el('div', 'tri-elev-cap')
+  f.add(
+    cap,
+    f.el('span', 'tri-elev-d', text('power over terrain'), {
+      'data-gloss': '',
+      'data-gloss-def': text('recorded power averages'),
+      tabindex: '0',
+    }),
+  )
+  const controls = f.el('div', 'tri-chart-controls tri-cycling-power-controls', undefined, {
+    role: 'group',
+    'aria-label': text('power averaging window'),
+  })
+  for (const window of ['30', '300'])
+    f.add(
+      controls,
+      f.el(
+        'button',
+        'tri-cycling-power-window tri-curve-range',
+        window === '30' ? '30 s' : '5 min',
+        {
+          type: 'button',
+          'data-cycling-power-window': window,
+          'aria-pressed': String(window === '30'),
+          'aria-label': text(window === '30' ? '30 s average' : '5 min average'),
+        },
+      ),
+    )
+  f.add(cap, controls)
+  const legend = f.el('div', 'tri-cycling-power-legend')
+  f.add(
+    legend,
+    f.el('span', 'tri-cycling-power-key tri-cycling-power-key--trailing', text('30 s average'), {
+      'data-cycling-power-label': '',
+    }),
+    f.el('span', 'tri-cycling-power-key tri-cycling-power-key--cumulative', text('ride average')),
+    f.el('span', 'tri-cycling-power-key tri-cycling-power-key--elevation', text('elevation')),
+  )
+  const graph = f.svg('svg', {
+    class: 'tri-elev tri-cycling-power-plot',
+    viewBox: `0 0 100 ${height}`,
+    preserveAspectRatio: 'none',
+    tabindex: '0',
+    role: 'slider',
+    'aria-label': text('power over terrain'),
+    'aria-valuemin': 0,
+    'aria-valuemax': totalElapsedS,
+    'aria-valuenow': 0,
+    'aria-valuetext': zoneClock(0),
+    'data-domain-start-elapsed-s': 0,
+    'data-domain-end-elapsed-s': totalElapsedS,
+  })
+  for (const value of powerTicks)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-elev-grid',
+        x1: 0,
+        x2: 100,
+        y1: powerY(value),
+        y2: powerY(value),
+      }),
+    )
+  if (elevations.length >= 2)
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-cycling-power-elevation',
+        d: path(
+          point =>
+            point.elevationM == null ? null : elevationValue(f.presentation, point.elevationM),
+          elevationY,
+          true,
+        ),
+      }),
+      f.svg('path', {
+        class: 'tri-cycling-power-elevation-line',
+        d: path(
+          point =>
+            point.elevationM == null ? null : elevationValue(f.presentation, point.elevationM),
+          elevationY,
+        ),
+      }),
+    )
+  const wind = d.analyses?.derived.environment?.samples ?? []
+  let windSegments = 0
+  const windSegment = (start: number, end: number, value: number): void => {
+    if (!(end > start)) return
+    const direction = value > 0 ? 'headwind' : value < 0 ? 'tailwind' : 'calm'
+    f.add(
+      graph,
+      f.svg('rect', {
+        class: `tri-cycling-power-wind tri-cycling-power-wind--${direction}`,
+        x: px(start).toFixed(3),
+        y: 29,
+        width: (px(end) - px(start)).toFixed(3),
+        height: 1,
+        'data-headwind-kph': value.toFixed(1),
+      }),
+    )
+    windSegments++
+  }
+  for (let index = 1; index < wind.length; index++) {
+    const previous = wind[index - 1]
+    const current = wind[index]
+    const left = previous.headwindKph
+    const right = current.headwindKph
+    if (left == null || right == null || !Number.isFinite(left) || !Number.isFinite(right)) continue
+    const start = Math.max(0, Math.min(totalElapsedS, previous.elapsedS))
+    const end = Math.max(0, Math.min(totalElapsedS, current.elapsedS))
+    if (left * right < 0) {
+      const crossing = start + (end - start) * (Math.abs(left) / (Math.abs(left) + Math.abs(right)))
+      windSegment(start, crossing, left / 2)
+      windSegment(crossing, end, right / 2)
+    } else windSegment(start, end, (left + right) / 2)
+  }
+  const bounds = selection
+    ? analysisChartSelectionBounds(selection, { startElapsedS: 0, endElapsedS: totalElapsedS })
+    : undefined
+  f.add(graph, buildAnalysisSelectionRect(f, height, bounds))
+  for (const series of [
+    { name: '30', pick: (point: (typeof points)[number]) => point.power30sWatts },
+    { name: '300', pick: (point: (typeof points)[number]) => point.power5mWatts },
+    { name: 'cumulative', pick: (point: (typeof points)[number]) => point.cumulativePowerWatts },
+  ])
+    f.add(
+      graph,
+      f.svg('path', {
+        class: `tri-cycling-power-line${series.name === 'cumulative' ? ' tri-cycling-power-line--cumulative' : ''}`,
+        d: path(series.pick, powerY),
+        'data-cycling-power-series': series.name,
+        ...(series.name === '300' ? { hidden: '' } : {}),
+      }),
+    )
+  f.add(graph, f.svg('line', { class: 'tri-elev-cursor', x1: 0, x2: 0, y1: 0, y2: height }))
+  const windLegend = f.el('div', 'tri-cycling-power-wind-legend')
+  if (windSegments > 0)
+    f.add(
+      windLegend,
+      f.el('span', undefined, text('estimated wind')),
+      f.el('span', 'tri-cycling-power-key tri-cycling-power-key--headwind', text('+ headwind')),
+      f.el('span', 'tri-cycling-power-key tri-cycling-power-key--tailwind', text('− tailwind')),
+    )
+  else f.add(windLegend, f.el('span', undefined, text('wind unavailable')))
+  f.add(
+    wrap,
+    cap,
+    legend,
+    axisFrame(
+      f,
+      graph,
+      powerTicks.map(value => ({ label: `${Math.round(value)} W`, vbY: powerY(value) })),
+      height,
+      elapsedActivityXTicks(totalElapsedS),
+      true,
+      { top: 0, bottom: height },
+      [],
+      elevations.length >= 2
+        ? [minElevation, minElevation + elevationSpan / 2, minElevation + elevationSpan].map(
+            value => ({
+              label: `${Math.round(value)} ${isImperial(f.presentation) ? 'ft' : 'm'}`,
+              vbY: elevationY(value),
+            }),
+          )
+        : [],
+    ),
+    windLegend,
+  )
+  return wrap
+}
+
+export const buildCrankTorqueChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+): N | null => {
+  const trace = d.cyclingTorque
+  if (d.sport !== 'bike' || !trace || trace.cells.length === 0) return null
+  const text = (key: string) => triText(f.presentation.locale, key)
+  const panel = f.el('section', 'tri-zone tri-torque-panel', undefined, {
+    'data-torque-mode': 'distance',
+  })
+  const controls = (selected: 'distance' | 'cadence'): N => {
+    const group = f.el('div', 'tri-chart-controls tri-torque-controls', undefined, {
+      role: 'group',
+      'aria-label': text('crank torque view'),
+    })
+    for (const mode of ['distance', 'cadence'])
+      f.add(
+        group,
+        f.el(
+          'button',
+          'tri-torque-mode tri-curve-range',
+          text(mode === 'distance' && activityTraceUsesElapsedAxis(d) ? 'time' : mode),
+          { type: 'button', 'data-torque-mode': mode, 'aria-pressed': String(mode === selected) },
+        ),
+      )
+    return group
+  }
+  const points = activityCyclingTorquePoints(d)
+  const values = points.flatMap(point => (point.torqueNm == null ? [] : [point.torqueNm]))
+  const source = f.el('span', 'tri-elev-range', `${text('calculated')} · Wahoo`, {
+    'data-gloss': '',
+    tabindex: '0',
+    'data-gloss-def': text('crank torque definition'),
+  })
+  const distance = buildTraceSeries(
+    f,
+    d,
+    points,
+    point => point.torqueNm,
+    'crank torque',
+    () =>
+      `${trace.summary.averageTorqueNm.toFixed(1)} N·m · ${trace.summary.averageCadenceRpm.toFixed(0)} rpm`,
+    value => `${value.toFixed(0)} N·m`,
+    { min: 0, max: Math.max(10, ...values) * 1.05 },
+    d.route.length >= 2 ? selection : undefined,
+    graphDomain,
+    undefined,
+    undefined,
+    { capExtra: [source, controls('distance')], wrapAttrs: { 'data-torque-pane': 'distance' } },
+  )
+  const cadence = f.el('div', 'tri-elev-wrap tri-torque-cadence', undefined, {
+    'data-torque-pane': 'cadence',
+    hidden: '',
+  })
+  const density = cyclingTorqueDensity(trace.cells)
+  const xMax = Math.max(100, ...density.cells.map(cell => cell.cadenceRpm + 5))
+  const yMax = density.limitNm + 5
+  const maxSeconds = Math.max(...density.cells.map(cell => cell.seconds))
+  const graph = f.svg('svg', {
+    class: 'tri-torque-density',
+    viewBox: '0 0 100 30',
+    preserveAspectRatio: 'none',
+    tabindex: '0',
+    role: 'slider',
+    'aria-label': text('crank torque by cadence'),
+    'aria-valuemin': 0,
+    'aria-valuemax': density.cells.length - 1,
+    'aria-valuenow': 0,
+    'aria-valuetext': text('time in cadence and torque bins'),
+  })
+  for (const cell of density.cells) {
+    const torqueLabel =
+      cell.torqueNm === density.limitNm
+        ? `≥${density.limitNm}`
+        : `${cell.torqueNm}–${cell.torqueNm + 5}`
+    const label = `${cell.cadenceRpm}–${cell.cadenceRpm + 5} rpm · ${torqueLabel} N·m · ${zoneClock(cell.seconds)}`
+    const rect = f.svg('rect', {
+      class: 'tri-torque-cell',
+      x: (cell.cadenceRpm / xMax) * 100,
+      y: 30 - ((cell.torqueNm + 5) / yMax) * 30,
+      width: (5 / xMax) * 100,
+      height: (5 / yMax) * 30,
+      opacity: 0.15 + 0.85 * Math.sqrt(cell.seconds / maxSeconds),
+      'data-torque-cell': label,
+    })
+    f.add(graph, rect)
+  }
+  const caption = f.el('div', 'tri-elev-cap')
+  f.add(
+    caption,
+    f.el('span', 'tri-elev-d', text('crank torque by cadence')),
+    f.el('span', 'tri-elev-range', `${text('darker means more time')} · ${text('whole ride')}`),
+    controls('cadence'),
+  )
+  f.add(
+    cadence,
+    caption,
+    axisFrame(
+      f,
+      graph,
+      [0, density.limitNm / 2, density.limitNm].map(value => ({
+        label: `${value === density.limitNm ? '≥' : ''}${Math.round(value)} N·m`,
+        vbY: 30 - (value / yMax) * 30,
+      })),
+      30,
+      [0, xMax / 2, xMax].map(value => ({
+        label: `${Math.round(value)} rpm`,
+        pct: (value / xMax) * 100,
+      })),
+      true,
+    ),
+    f.el('div', 'tri-torque-readout', text('time in cadence and torque bins')),
+  )
+  f.add(panel, distance, cadence)
+  return panel
 }
 
 export const activityHeartRateTracePoints = (
@@ -4158,18 +4538,27 @@ const buildCyclingWorkoutAnalysis = <N>(
     attrs.style = `--tri-cycling-workout-start:${start.toFixed(3)}%;--tri-cycling-workout-width:${Math.max(0, end - start).toFixed(3)}%;--tri-cycling-workout-height:${((power / powerMax) * 100).toFixed(3)}%`
     const button = f.el(
       'button',
-      `tri-cycling-workout-lap${lap.powerWatts == null ? ' tri-cycling-workout-lap--unavailable' : ''}`,
+      `tri-cycling-workout-lap tri-workout-lap${lap.powerWatts == null ? ' tri-cycling-workout-lap--unavailable' : ''}`,
       undefined,
       attrs,
     )
     const column = f.el('span', 'tri-cycling-workout-column', undefined, { 'aria-hidden': 'true' })
+    const lapSpeedKph = lap.range.averageSpeedKph
+    const hoverMetrics = [
+      lapSpeedKph != null && Number.isFinite(lapSpeedKph) && lapSpeedKph >= 0
+        ? speedKph(f.presentation, lapSpeedKph)
+        : null,
+      lap.powerWatts == null ? '—' : `${Math.round(lap.powerWatts)} W`,
+    ].filter(value => value != null)
     f.add(
       column,
-      f.el('span', 'tri-cycling-workout-bar', undefined, { 'aria-hidden': 'true' }),
+      f.el('span', 'tri-cycling-workout-bar tri-workout-lap-bar', undefined, {
+        'aria-hidden': 'true',
+      }),
       f.el(
         'span',
-        'tri-cycling-workout-power',
-        lap.powerWatts == null ? '—' : `${Math.round(lap.powerWatts)} W`,
+        'tri-cycling-workout-metrics tri-workout-lap-tooltip',
+        hoverMetrics.join(' · '),
         { 'aria-hidden': 'true' },
       ),
     )
@@ -4427,12 +4816,16 @@ const buildSwimWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
     attrs['aria-pressed'] = 'false'
     attrs['aria-label'] = `${lap.range.label}, ${metrics.join(', ')}`
     attrs.style = `--tri-swim-workout-start:${start.toFixed(3)}%;--tri-swim-workout-width:${Math.max(0, end - start).toFixed(3)}%;--tri-swim-workout-height:${height.toFixed(3)}%;--tri-swim-workout-opacity:${intensity.toFixed(3)}`
-    const button = f.el('button', 'tri-swim-workout-lap', undefined, attrs)
+    const button = f.el('button', 'tri-swim-workout-lap tri-workout-lap', undefined, attrs)
     const column = f.el('span', 'tri-swim-workout-column', undefined, { 'aria-hidden': 'true' })
     f.add(
       column,
-      f.el('span', 'tri-swim-workout-bar', undefined, { 'aria-hidden': 'true' }),
-      f.el('span', 'tri-swim-workout-pace', `${clock(lap.paceS)} /100m`, { 'aria-hidden': 'true' }),
+      f.el('span', 'tri-swim-workout-bar tri-workout-lap-bar', undefined, {
+        'aria-hidden': 'true',
+      }),
+      f.el('span', 'tri-swim-workout-pace tri-workout-lap-tooltip', `${clock(lap.paceS)} /100m`, {
+        'aria-hidden': 'true',
+      }),
     )
     f.add(
       button,
@@ -4533,14 +4926,17 @@ const buildRunWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
     attrs['aria-pressed'] = 'false'
     attrs['aria-label'] = `${lap.range.label}, ${metrics.join(', ')}`
     attrs.style = `--tri-run-workout-start:${start.toFixed(3)}%;--tri-run-workout-width:${Math.max(0, end - start).toFixed(3)}%;--tri-run-workout-height:${height.toFixed(3)}%;--tri-run-workout-opacity:${intensity.toFixed(3)}`
-    const button = f.el('button', 'tri-run-workout-lap', undefined, attrs)
+    const button = f.el('button', 'tri-run-workout-lap tri-workout-lap', undefined, attrs)
     const column = f.el('span', 'tri-run-workout-column', undefined, { 'aria-hidden': 'true' })
     f.add(
       column,
-      f.el('span', 'tri-run-workout-bar', undefined, { 'aria-hidden': 'true' }),
-      f.el('span', 'tri-run-workout-pace', `${clock(lap.paceS)} ${paceUnit}`, {
-        'aria-hidden': 'true',
-      }),
+      f.el('span', 'tri-run-workout-bar tri-workout-lap-bar', undefined, { 'aria-hidden': 'true' }),
+      f.el(
+        'span',
+        'tri-run-workout-pace tri-workout-lap-tooltip',
+        `${clock(lap.paceS)} ${paceUnit}`,
+        { 'aria-hidden': 'true' },
+      ),
     )
     f.add(
       button,
@@ -4797,9 +5193,10 @@ const buildSaunaLapAnalysis = <N>(
     .filter(range => range.kind === 'lap')
     .sort((left, right) => left.startElapsedS - right.startElapsedS)
   if (laps.length < (layout === 'legend' ? 1 : 2)) return null
+  const lapPhases = d.sauna?.lapPhases?.length === laps.length ? d.sauna.lapPhases : undefined
   const text = (value: string): string => triText(f.presentation.locale, value)
   const wrap = f.el('div', `tri-sauna-laps tri-sauna-laps--${layout}`, undefined, {
-    'data-sauna-phase-source': 'lap-order',
+    'data-sauna-phase-source': lapPhases ? 'manual' : 'lap-order',
     'aria-label': text('sauna phases'),
   })
   const head = f.el('div', 'tri-sauna-laps-head')
@@ -4828,11 +5225,12 @@ const buildSaunaLapAnalysis = <N>(
   )
   laps.forEach((range, index) => {
     const phase =
-      index < 2 || index === 3
+      lapPhases?.[index] ??
+      (index < 2 || index === 3
         ? 'hot sauna'
         : index === 2 && d.sauna?.cooldown !== 'natural'
           ? 'cold plunge'
-          : 'break'
+          : 'break')
     const label = `${text('lap')} ${index + 1} · ${text(phase)}`
     const metrics = analysisRangeMetrics(f.presentation, d, range)
     const bounds = analysisSelectionBounds(d, range)
@@ -7186,12 +7584,15 @@ export const buildCyclingBestEfforts = <N>(
         f,
         'Power',
         'power',
-        ['Time', 'Power', 'W/kg', 'Heart rate', 'Elev'],
+        ['Time', 'Power', 'W/kg', 'Heart rate', 'Cadence', 'Torque', 'Coverage', 'Elev'],
         efforts.power.map(row => [
           effortDuration(row.durationS),
           watts(row.averageWatts),
           wattsPerKg(row.wattsPerKg),
           heartRate(row.averageHeartRate),
+          row.mechanics ? `${row.mechanics.averageCadenceRpm.toFixed(0)} rpm` : '—',
+          row.mechanics ? `${row.mechanics.averageTorqueNm.toFixed(1)} N·m` : '—',
+          row.mechanics ? `${(row.mechanics.coverage * 100).toFixed(0)}%` : '—',
           formatAltitude(f.presentation, row.elevationDeltaM),
         ]),
       ),
@@ -7568,6 +7969,18 @@ export const buildCriticalPowerAnchorLinks = <N>(
         `${anchor.meanPowerWatts.toLocaleString(f.presentation.locale === 'fr' ? 'fr-CA' : 'en-US', { maximumFractionDigits: 1 })}W`,
       ),
     )
+    if (anchor.mechanics)
+      f.add(
+        link,
+        f.el(
+          'span',
+          'tri-critical-power-mechanics',
+          `${anchor.mechanics.averageCadenceRpm.toFixed(0)} rpm · ${anchor.mechanics.averageTorqueNm.toFixed(1)} N·m · ${(anchor.mechanics.coverage * 100).toFixed(0)}% ${triText(f.presentation.locale, 'coverage')}`,
+          {
+            title: `Wahoo · ${(anchor.mechanics.coverage * 100).toFixed(0)}% ${triText(f.presentation.locale, 'coverage')}`,
+          },
+        ),
+      )
     f.add(links, link)
   }
   return links
@@ -8949,12 +9362,21 @@ export const buildActivity = <N>(
       const muscleOxygen = buildMuscleOxygenTrace(f, d, analysisSelection)
       if (muscleOxygen) activityGraphs.push(muscleOxygen)
     }
+    if (triathlonTraceEnabled(traceSettings, 'crank-torque')) {
+      const torque = buildCrankTorqueChart(f, d, analysisSelection)
+      if (torque) activityGraphs.push(torque)
+    }
+    if (triathlonTraceEnabled(traceSettings, 'cycling-power')) {
+      const power = buildCyclingPowerChart(f, d, analysisSelection)
+      if (power) activityGraphs.push(power)
+    }
     f.add(more, ...activityGraphs)
     if (strength && d.sport === 'sauna') f.add(more, strength)
     const environment = buildEnvironmentAnalysis(f, d)
     if (environment) f.add(more, environment)
     if (poolOverview) f.add(more, poolOverview)
     if (swimTrends) f.add(more, swimTrends)
+
     const saunaHtl = saunaSummary ? null : buildSaunaHeatTrainingLoad(f, d)
     if (saunaHtl) f.add(more, saunaHtl)
     if (ctx) {
