@@ -11,6 +11,9 @@ import type {
 import type { OuraCache, OuraDaily } from './oura'
 import type { TrackEntry } from './tracking'
 import type { WeatherCache } from './weather'
+import { applyOuraSleepRows } from '../../scripts/sync-oura'
+import { health as garminHealthFixture } from '../../util/fixtures/garmin-health'
+import { emptyOuraHealth } from '../../util/oura-health'
 import {
   buildTriathlonDailyAnalytics,
   isTriathlonDailyAnalytics,
@@ -463,6 +466,50 @@ test('recovery block computes baselines, series, and flags from oura-merged dail
   assert.equal(day?.tempDevC, 0.1)
 })
 
+test('Garmin health survives analytics, day data and feed serialization without changing Oura recovery', () => {
+  const { cache, oura } = fixtures()
+  const date = garminHealthFixture.date
+  cache.lastSync = Date.parse(`${date}T23:00:00Z`)
+  cache.activities = { '1': activity(1, 'Ride', date, 1500, 12000) }
+  oura.lastSync = cache.lastSync
+  oura.days = { [date]: ouraDay(date, 63) }
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    health: { [date]: garminHealthFixture },
+  }
+  const baseline = buildAnalytics(cache, { oura, since: date })
+  const analytics = buildAnalytics(cache, { oura, garmin, since: date })
+  assert.deepEqual(analytics.recovery, baseline.recovery)
+  assert.deepEqual(
+    analytics.daily.find(day => day.date === date)?.garminHealth,
+    garminHealthFixture,
+  )
+  assert.equal(analytics.daily.find(day => day.date === date)?.readiness, 82)
+  const summaries = buildTriathlonDailyAnalytics(analytics)
+  assert.deepEqual(summaries[date].garminHealth, garminHealthFixture)
+  assert.equal(isTriathlonDailyAnalytics(JSON.parse(JSON.stringify(summaries))), true)
+  assert.equal(
+    isTriathlonDailyAnalytics({
+      [date]: { ...summaries[date], garminHealth: { ...garminHealthFixture, date: '2026-09-20' } },
+    }),
+    false,
+  )
+  const rows: unknown[] = buildDataFeed(cache, analytics, { oura, garmin })
+    .trimEnd()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  const row = rows.find(row => isRecord(row) && row.kind === 'day' && row.date === date)
+  assert.ok(isRecord(row))
+  assert.deepEqual(row.garminHealth, garminHealthFixture)
+  garmin.health = { [date]: { ...garminHealthFixture, date: '2026-09-20' } }
+  assert.equal(
+    buildAnalytics(cache, { oura, garmin, since: date }).daily.find(day => day.date === date)
+      ?.garminHealth,
+    null,
+  )
+})
+
 test('merges exact-night Garmin sleep measurements through analytics, day SSR data and the feed', () => {
   const { cache, oura } = fixtures()
   const date = iso(20)
@@ -594,6 +641,8 @@ test('carries build-time power curves and ranks exact durations at the latest me
   assert.equal(ranked.ranking.massDate, iso(15))
   assert.equal(ranked.ranking.massSource, 'tracking')
   assert.equal(ranked.ranking.intervals.length, 12)
+  assert.equal(ranked.estimatedFtp, null)
+  assert.equal(ranked.estimatedFtpYear, null)
   assert.equal(
     ranked.ranking.intervals.find(interval => interval.durationS === 15)?.efforts['six-weeks']
       ?.level,
@@ -605,6 +654,8 @@ test('carries build-time power curves and ranks exact durations at the latest me
     yearLabel: null,
     criticalPower: null,
     criticalPowerYear: null,
+    estimatedFtp: null,
+    estimatedFtpYear: null,
     ftp: null,
     goalFtp: null,
     ranking: {
@@ -638,6 +689,30 @@ test('carries build-time power curves and ranks exact durations at the latest me
       points: [],
     },
   })
+})
+
+test('emits separate power-curve FTP estimates without changing the configured FTP', () => {
+  const { cache } = fixtures()
+  const recent = { s: 1200, w: 243, activityId: 101, activityDate: iso(15) }
+  const yearly = { s: 1200, w: 300, activityId: 102, activityDate: iso(10) }
+  const { powerCurve } = buildAnalytics(cache, {
+    powerCurve: {
+      sixWeeks: [recent],
+      year: [yearly],
+      yearLabel: 2026,
+      criticalPower: null,
+      criticalPowerYear: null,
+      ftp: 287,
+      goalFtp: 350,
+    },
+  })
+  assert.equal(powerCurve.estimatedFtp?.watts, 231)
+  assert.equal(powerCurve.estimatedFtpYear?.watts, 285)
+  assert.deepEqual(powerCurve.estimatedFtp?.anchor, recent)
+  assert.deepEqual(powerCurve.estimatedFtpYear?.anchor, yearly)
+  assert.equal(powerCurve.ftp, 287)
+  assert.equal(powerCurve.goalFtp, 350)
+  assert.deepEqual(JSON.parse(JSON.stringify(powerCurve)).estimatedFtp, powerCurve.estimatedFtp)
 })
 
 test('keeps Apple-only ranking mass and measurement provenance together', () => {
@@ -3267,4 +3342,101 @@ test('historical effort mechanics and eCP use exact windows and only past anchor
     trend.points[0].criticalPower?.anchors.map(anchor => anchor.durationS),
     [180, 420, 720],
   )
+})
+
+test('nap totals serialize independently of nightly recovery and survive day payload validation', () => {
+  const { cache, oura } = fixtures()
+  const date = iso(20)
+  const baseline = buildAnalytics(cache, { oura })
+  oura.details = {}
+  applyOuraSleepRows(
+    [
+      {
+        id: 'nap-1',
+        type: 'late_nap',
+        day: iso(21),
+        bedtime_start: `${date}T18:30:00-04:00`,
+        bedtime_end: `${date}T19:00:00-04:00`,
+        total_sleep_duration: 1500,
+        sleep_phase_5_min: '422234',
+        average_hrv: 45,
+        lowest_heart_rate: 54,
+        sleep_score_delta: 0,
+        readiness_score_delta: 2,
+      },
+    ],
+    oura.days,
+    oura.details,
+    date,
+    iso(21),
+  )
+  const analytics = buildAnalytics(cache, { oura })
+  const day = analytics.daily.find(day => day.date === date)
+  assert.equal(day?.napDurationS, 1500)
+  assert.equal(day?.napCount, 1)
+  assert.deepEqual(analytics.recovery, baseline.recovery)
+  const summaries = buildTriathlonDailyAnalytics(analytics, oura.details)
+  assert.equal(summaries[date].naps?.[0].reportedDay, iso(21))
+  assert.equal(summaries[date].naps?.[0].sleepScoreDelta, 0)
+  assert.equal(summaries[date].sleep, null)
+  assert.ok(isTriathlonDailyAnalytics(JSON.parse(JSON.stringify(summaries))))
+  assert.equal(isTriathlonDailyAnalytics({ [date]: { ...summaries[date], naps: [null] } }), false)
+  assert.equal(
+    isTriathlonDailyAnalytics({
+      [date]: { ...summaries[date], naps: [{ ...summaries[date].naps?.[0], type: 'rest' }] },
+    }),
+    false,
+  )
+  const rows: unknown[] = buildDataFeed(cache, analytics, { oura })
+    .trim()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  const row = rows.find(row => isRecord(row) && row.kind === 'day' && row.date === date)
+  assert.ok(isRecord(row))
+  assert.equal(row.napDurationS, 1500)
+  assert.equal(row.napCount, 1)
+  assert.equal(row.sleepDurationS, oura.days[date].sleepDurationS)
+  assert.equal(analytics.daily.find(day => day.date === iso(21))?.napDurationS, null)
+})
+
+test('Oura health keeps exact dates through analytics, daily details and exported feed', () => {
+  const { cache, oura } = fixtures()
+  const date = iso(20)
+  oura.details = {}
+  applyOuraSleepRows(
+    [
+      {
+        id: 'night',
+        type: 'long_sleep',
+        day: date,
+        bedtime_start: `${date}T01:00:00Z`,
+        total_sleep_duration: 24000,
+      },
+    ],
+    oura.days,
+    oura.details,
+    date,
+    date,
+  )
+  const health = {
+    ...emptyOuraHealth(date),
+    stress: { stressS: 0, restoredS: 5400, summary: 'restored' },
+    spo2: { averagePct: 95.4, breathingDisturbanceIndex: 0 },
+  }
+  oura.details[date].health = health
+  const analytics = buildAnalytics(cache, { oura })
+  const day = analytics.daily.find(day => day.date === date)
+  assert.deepEqual(day?.ouraHealth, health)
+  assert.equal(day?.sleepMetrics?.oxygenSaturation?.source, 'oura')
+  assert.equal(analytics.daily.find(day => day.date === iso(21))?.ouraHealth, null)
+  const summaries = buildTriathlonDailyAnalytics(analytics, oura.details)
+  assert.deepEqual(summaries[date].ouraHealth, health)
+  assert.equal(isTriathlonDailyAnalytics(JSON.parse(JSON.stringify(summaries))), true)
+  const rows: unknown[] = buildDataFeed(cache, analytics, { oura })
+    .trim()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  const row = rows.find(row => isRecord(row) && row.kind === 'day' && row.date === date)
+  assert.ok(isRecord(row))
+  assert.deepEqual(row.ouraHealth, health)
 })

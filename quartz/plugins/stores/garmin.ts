@@ -1,4 +1,5 @@
 import type { SwimLocation, SwimStroke } from './apple'
+import type { GarminHealthDay } from './garmin-health'
 import type { ActivityKind, RawStravaActivity } from './strava'
 
 const START_TOLERANCE_MS = 20 * 60 * 1000
@@ -277,6 +278,8 @@ export interface GarminCache {
   weight?: GarminWeightSample[]
   sleep?: Record<string, GarminSleepSummary>
   sleepLastSync?: number
+  health?: Record<string, GarminHealthDay>
+  healthLastSync?: number
 }
 
 export function emptyGarminMetrics(): GarminMetrics {

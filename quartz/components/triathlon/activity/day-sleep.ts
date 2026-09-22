@@ -1,8 +1,15 @@
 import type { Locale } from '../../../util/triathlon-presentation'
-import { daySleepStageLabel } from '../../../util/triathlon-card'
+import {
+  daySleepStageLabel,
+  daySleepMovementLabel,
+  daySleepSampleClock,
+} from '../../../util/triathlon-card'
 import { wallClock, wallMin } from '../analytics/panels/recovery'
 
 export type DaySleepValueLabel = (value: number | null) => string
+
+export const daySleepBarIndex = (fraction: number, count: number): number =>
+  Math.max(0, Math.min(count - 1, Math.floor(fraction * count)))
 
 type DaySleepGeometry = { x: (index: number) => number; indexAt: (fraction: number) => number }
 
@@ -47,7 +54,9 @@ export const daySleepReadout = (
 ): string => {
   const boundedIndex = Math.min(Math.max(Math.round(index), 0), values.length - 1)
   const minute = startMinute + (offsetsS?.[boundedIndex] ?? boundedIndex * intervalSeconds) / 60
-  const time = wallClock(offsetsS ? Math.floor(minute) : minute)
+  const time = offsetsS
+    ? wallClock(Math.floor(minute))
+    : daySleepSampleClock(minute, intervalSeconds)
   return `${time} · ${label(values[boundedIndex])}`
 }
 
@@ -102,7 +111,10 @@ const seriesFromElement = (wrap: HTMLElement, locale: () => Locale): DaySleepSer
       : undefined
   const width = finitePositive(wrap.dataset.daySleepWidth)
   const startMinute = startTs
-    ? wallMin(startTs) + (offsetsS ? Number(startTs.slice(17, 19)) / 60 : 0)
+    ? wallMin(startTs) +
+      (offsetsS || (intervalSeconds != null && intervalSeconds < 60)
+        ? Number(startTs.slice(17, 19)) / 60
+        : 0)
     : Number.NaN
   if (
     !values ||
@@ -114,7 +126,8 @@ const seriesFromElement = (wrap: HTMLElement, locale: () => Locale): DaySleepSer
     return null
   const unit = wrap.dataset.daySleepUnit
   const stages = wrap.dataset.daySleepSeries === 'stages'
-  if (!stages && unit !== 'ms' && unit !== 'bpm' && unit !== 'brpm') return null
+  const movement = wrap.dataset.daySleepSeries === 'movement'
+  if (!stages && !movement && unit !== 'ms' && unit !== 'bpm' && unit !== 'brpm') return null
   return {
     values,
     startMinute,
@@ -122,12 +135,15 @@ const seriesFromElement = (wrap: HTMLElement, locale: () => Locale): DaySleepSer
     offsetsS,
     label: stages
       ? value => daySleepStageLabel(locale(), value)
-      : daySleepUnitLabel(unit === 'ms' ? 'ms' : unit === 'brpm' ? 'brpm' : 'bpm'),
-    geometry: stages
-      ? bandGeometry(values.length, width)
-      : offsetsS
-        ? daySleepTimeGeometry(offsetsS, width)
-        : pointGeometry(values.length, width),
+      : movement
+        ? value => daySleepMovementLabel(locale(), value)
+        : daySleepUnitLabel(unit === 'ms' ? 'ms' : unit === 'brpm' ? 'brpm' : 'bpm'),
+    geometry:
+      stages || movement
+        ? bandGeometry(values.length, width)
+        : offsetsS
+          ? daySleepTimeGeometry(offsetsS, width)
+          : pointGeometry(values.length, width),
   }
 }
 
@@ -205,11 +221,32 @@ const mountDaySleepChart = (wrap: HTMLElement, locale: () => Locale): (() => voi
   }
 }
 
+export const setSleepView = (views: HTMLElement, mode: 'night' | 'naps'): void => {
+  for (const option of views.querySelectorAll<HTMLButtonElement>('button[data-sleep-view]'))
+    if (option.closest('[data-sleep-views]') === views)
+      option.setAttribute('aria-pressed', String(option.dataset.sleepView === mode))
+  for (const pane of views.querySelectorAll<HTMLElement>('[data-sleep-pane]'))
+    if (pane.closest('[data-sleep-views]') === views) pane.hidden = pane.dataset.sleepPane !== mode
+}
+
 export const mountDaySleepCharts = (scope: ParentNode, locale: () => Locale): (() => void) => {
   const cleanups = Array.from(
     scope.querySelectorAll<HTMLElement>('[data-day-sleep-series]'),
     wrap => mountDaySleepChart(wrap, locale),
   )
+  for (const views of scope.querySelectorAll<HTMLElement>('[data-sleep-views]')) {
+    const onClick = (event: MouseEvent): void => {
+      const button =
+        event.target instanceof Element
+          ? event.target.closest<HTMLButtonElement>('button[data-sleep-view]')
+          : null
+      if (!button || button.closest('[data-sleep-views]') !== views) return
+      const mode = button.dataset.sleepView
+      if (mode === 'night' || mode === 'naps') setSleepView(views, mode)
+    }
+    views.addEventListener('click', onClick)
+    cleanups.push(() => views.removeEventListener('click', onClick))
+  }
   return () => {
     for (const cleanup of cleanups) cleanup()
   }

@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-20 00:34:38 GMT-04:00
+modified: 2026-09-21 23:00:23 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1664,6 +1664,37 @@ location: Othership Adelaide
 htl: 7.6
 strava: 20248302782
 garmin: 24426208601
+```
+
+```tracking
+title: Guilded Down, Untangled
+date: 2026-09-20
+time: 18:30
+duration: 75 mins
+activity: sauna
+temperature: 167F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: break | hot sauna | cold plunge | hot sauna | break
+location: Othership Adelaide
+htl: 7.6
+strava: 20261500024
+garmin: 24437877325
+```
+
+```tracking
+date: 2026-09-21
+activity: 20276080158
+exercise: Marching in place | 30s
+exercise: Bodyweight squats | 30s
+exercise: Glute bridges | 30s
+exercise: Arm swings | 30s
+exercise: Bodyweight squats | 45s | 45s | 45s
+exercise: Plank hold | 45s | 45s | 45s
+exercise: Alternating reverse lunges | 45s | 45s | 45s
+exercise: Glute bridges | 45s | 45s | 45s
+exercise: Standing single-leg balance with knee lift | 45s | 45s | 45s
+exercise: full-body stretch flows | 2m
 ```
 
 <!-- training plan start

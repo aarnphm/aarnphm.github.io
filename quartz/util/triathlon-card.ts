@@ -33,6 +33,8 @@ import {
   type SwimChartMetric,
 } from './swim-metrics'
 import { triathlonActivityAnchor } from './triathlon-date-route'
+import { buildGarminHealth, buildGarminRecovery } from './triathlon-garmin-health'
+import { healthTooltip } from './triathlon-health'
 import {
   criticalPowerEvidenceText,
   criticalPowerSummaryParts,
@@ -40,6 +42,7 @@ import {
   swimActivityHeaderValue,
   triText,
 } from './triathlon-i18n'
+import { buildOuraHealth } from './triathlon-oura-health'
 import { powerCurveActivityLinkAttributes } from './triathlon-power-activity'
 import {
   triathlonTraceEnabled,
@@ -11188,19 +11191,36 @@ export const sleepSupplementMetrics = (
           : source,
     })
   }
+  const oxygen =
+    sleep.oxygenSaturation ??
+    (garmin?.averageSpO2 != null && garmin.averageSpO2 > 0 && garmin.averageSpO2 <= 100
+      ? { averagePct: garmin.averageSpO2, source: 'garmin' }
+      : null)
+  if (oxygen)
+    metrics.push({
+      label: 'Pulse Ox',
+      value: `${number(oxygen.averagePct, 1)}%`,
+      detail: [
+        oxygen.source === 'oura' ? 'Oura · Garmin unavailable' : 'Garmin',
+        garmin?.lowestSpO2 != null
+          ? `${oxygen.source === 'oura' ? 'Garmin: ' : ''}${detail('lowest Pulse Ox', garmin.lowestSpO2, '%')}`
+          : null,
+      ]
+        .filter(value => value != null)
+        .join('\n'),
+    })
+  if (sleep.breathingDisturbanceIndex != null)
+    metrics.push({
+      label: 'breathing disturbances',
+      value: `${number(sleep.breathingDisturbanceIndex)}/100`,
+      detail:
+        'Oura · breathing disturbance index from overnight oxygen drops; not an apnea diagnosis',
+    })
   if (!garmin) return metrics
   const add = (label: string, value: number | null, unit = '', digits = 0): void => {
     if (value != null)
       metrics.push({ label, value: `${number(value, digits)}${unit}`, detail: 'Garmin' })
   }
-  if (garmin.averageSpO2 != null || garmin.lowestSpO2 != null)
-    metrics.push({
-      label: 'Pulse Ox',
-      value: garmin.averageSpO2 == null ? '—' : `${number(garmin.averageSpO2, 1)}%`,
-      detail: ['Garmin', detail('lowest Pulse Ox', garmin.lowestSpO2, '%')]
-        .filter(value => value != null)
-        .join('\n'),
-    })
   const batteryDetail = [
     'Garmin',
     detail('Body Battery at bedtime', garmin.bodyBatteryStart),
@@ -11467,6 +11487,7 @@ const dayAnalyticsSleepMetrics = (
     metrics.push({
       label: 'restless periods',
       value: dayAnalyticsNumber(presentation, sleep.restlessPeriods),
+      detail: 'Oura',
     })
   if (recovery?.sleepDebtS != null)
     metrics.push({ label: 'sleep debt', value: dayAnalyticsDuration(recovery.sleepDebtS) })
@@ -11503,6 +11524,15 @@ const dayAnalyticsHourTicks = (
 ): AxisXTick[] => {
   const startMinute = dayAnalyticsWallMinute(startIso)
   if (startMinute == null || count < 2 || denominator <= 0) return []
+  if (intervalS * denominator < 7200)
+    return [
+      { label: dayAnalyticsWallClock(startMinute), pct: 0, cls: 'tri-cax-xt--first' },
+      {
+        label: dayAnalyticsWallClock(startMinute + (intervalS * (count - 1)) / 60),
+        pct: ((count - 1) / denominator) * 100,
+        cls: 'tri-cax-xt--last',
+      },
+    ]
   const ticks: AxisXTick[] = []
   const startS = startMinute * 60
   let bucket = Math.floor(startS / 7200)
@@ -11567,7 +11597,20 @@ const DAY_ANALYTICS_SLEEP_LANES = ['awake', 'rem', 'light', 'deep'] as const
 
 const DAY_ANALYTICS_SLEEP_LANE_BY_CODE: Record<string, number> = { '4': 0, '3': 1, '2': 2, '1': 3 }
 
-const DAY_ANALYTICS_SLEEP_STAGE_INTERVAL_S = 300
+const DAY_ANALYTICS_MOVEMENT_LANES = ['quiet', 'restless', 'tossing and turning', 'active'] as const
+
+export const daySleepSampleClock = (minute: number, intervalSeconds: number): string => {
+  if (intervalSeconds >= 60 || intervalSeconds <= 0) return dayAnalyticsWallClock(minute)
+  const seconds = ((Math.round(minute * 60) % 86400) + 86400) % 86400
+  return [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60]
+    .map(part => String(part).padStart(2, '0'))
+    .join(':')
+}
+
+export const daySleepMovementLabel = (locale: Locale, lane: number | null): string =>
+  lane == null || DAY_ANALYTICS_MOVEMENT_LANES[lane] == null
+    ? '—'
+    : triText(locale, DAY_ANALYTICS_MOVEMENT_LANES[lane])
 
 export const daySleepStageLabel = (locale: Locale, lane: number | null): string =>
   lane == null || DAY_ANALYTICS_SLEEP_LANES[lane] == null
@@ -11578,59 +11621,99 @@ const dayAnalyticsSleepStages = <N>(
   f: TriNodeFactory<N>,
   date: string,
   sleep: NonNullable<TriathlonDayAnalytics['sleep']>,
+  kind: 'stages' | 'movement' = 'stages',
 ): N | null => {
-  const durations = [
-    ['deep', sleep.deepS],
-    ['light', sleep.lightS],
-    ['rem', sleep.remS],
-    ['awake', sleep.awakeS],
-  ] as const
-  const phase = sleep.phase5Min
+  const movement = kind === 'movement'
+  const title = movement ? 'sleep movement' : 'sleep stages'
+  const labels = movement ? DAY_ANALYTICS_MOVEMENT_LANES : DAY_ANALYTICS_SLEEP_LANES
+  const labelAt = movement ? daySleepMovementLabel : daySleepStageLabel
+  const finePhase = sleep.phase30Sec && /[1-4]/.test(sleep.phase30Sec) ? sleep.phase30Sec : null
+  const phase = movement ? sleep.movement30Sec : (finePhase ?? sleep.phase5Min)
+  const interval = movement || finePhase ? 30 : 300
+  const durations: readonly (readonly [string, number | null])[] = movement
+    ? DAY_ANALYTICS_MOVEMENT_LANES.map((label, lane) => [
+        label,
+        phase ? Array.from(phase).filter(code => Number(code) === lane + 1).length * 30 : null,
+      ])
+    : [
+        ['deep', sleep.deepS],
+        ['light', sleep.lightS],
+        ['rem', sleep.remS],
+        ['awake', sleep.awakeS],
+      ]
   if (!phase && durations.every(([, seconds]) => seconds == null)) return null
   const bedtimeStart = sleep.bedtimeStart
-  const startMinute = bedtimeStart ? dayAnalyticsWallMinute(bedtimeStart) : null
+  const wallMinute = bedtimeStart ? dayAnalyticsWallMinute(bedtimeStart) : null
+  const startMinute =
+    wallMinute == null
+      ? null
+      : wallMinute + (interval === 30 ? Number(bedtimeStart?.slice(17, 19) || 0) / 60 : 0)
   const hypnogram =
     phase && phase.length >= 2 && bedtimeStart && startMinute != null
       ? {
           bedtimeStart,
           startMinute,
-          lanes: Array.from(phase, code => DAY_ANALYTICS_SLEEP_LANE_BY_CODE[code] ?? null),
+          lanes: Array.from(phase, code =>
+            movement
+              ? /[1-4]/.test(code)
+                ? Number(code) - 1
+                : null
+              : (DAY_ANALYTICS_SLEEP_LANE_BY_CODE[code] ?? null),
+          ),
         }
       : null
-  const readoutId = `tri-day-${date}-sleep-stages-readout`
+  const readoutId = `tri-day-${date}-sleep-${kind}-readout`
   const chart = f.el(
     'section',
-    'tri-day-sleep-chart tri-day-sleep-stages',
+    `tri-day-sleep-chart tri-day-sleep-${kind}`,
     undefined,
     hypnogram
       ? {
-          'data-day-sleep-series': 'stages',
+          'data-day-sleep-series': kind,
           'data-day-sleep-values': hypnogram.lanes.map(lane => lane ?? '').join(','),
           'data-day-sleep-start': hypnogram.bedtimeStart,
-          'data-day-sleep-interval': DAY_ANALYTICS_SLEEP_STAGE_INTERVAL_S.toString(),
+          'data-day-sleep-interval': interval.toString(),
           'data-day-sleep-width': hypnogram.lanes.length.toString(),
         }
       : undefined,
   )
+  const heading = f.el('h4', 'tri-ana-block-title tri-health-tooltip-trigger', undefined, {
+    tabindex: '0',
+    'aria-describedby': `${readoutId}-recording`,
+  })
   f.add(
-    chart,
-    f.el('h4', 'tri-ana-block-title', triText(f.presentation.locale, 'sleep stages'), {
-      'data-i18n': 'sleep stages',
-    }),
+    heading,
+    f.el('span', undefined, triText(f.presentation.locale, title), { 'data-i18n': title }),
+    healthTooltip(
+      f,
+      `${readoutId}-recording`,
+      [
+        `Oura · ${interval}s`,
+        sleep.lowBatteryAlert
+          ? triText(f.presentation.locale, 'sleep low battery description')
+          : '',
+        sleep.sleepAlgorithmVersion
+          ? `${triText(f.presentation.locale, 'algorithm')} ${sleep.sleepAlgorithmVersion}`
+          : '',
+      ]
+        .filter(Boolean)
+        .join('\n'),
+    ),
   )
+  f.add(chart, heading)
   if (hypnogram) {
     const { lanes, startMinute: bedMinute } = hypnogram
     const height = 16
     const measured = lanes.findLastIndex(lane => lane != null)
     const cursorIndex = Math.max(0, measured)
-    const readout = `${dayAnalyticsWallClock(bedMinute + (cursorIndex * DAY_ANALYTICS_SLEEP_STAGE_INTERVAL_S) / 60)} · ${daySleepStageLabel(f.presentation.locale, measured >= 0 ? lanes[measured] : null)}`
+    const readout = `${daySleepSampleClock(bedMinute + (cursorIndex * interval) / 60, interval)} · ${labelAt(f.presentation.locale, measured >= 0 ? lanes[measured] : null)}`
     const svg = f.svg('svg', {
       class: 'tri-ana-svg tri-day-sleep-stage-svg',
       viewBox: `0 0 ${lanes.length} ${height}`,
       preserveAspectRatio: 'none',
       role: 'slider',
       tabindex: 0,
-      'aria-label': triText(f.presentation.locale, 'sleep stages'),
+      'aria-label': triText(f.presentation.locale, title),
       'aria-valuemin': 0,
       'aria-valuemax': lanes.length - 1,
       'aria-valuenow': cursorIndex,
@@ -11650,7 +11733,9 @@ const dayAnalyticsSleepStages = <N>(
             y: lane * 4 + 0.3,
             width: end - start,
             height: 3.4,
-            class: `tri-hyp--${DAY_ANALYTICS_SLEEP_LANES[lane]}`,
+            class: movement
+              ? `tri-movement--${lane}`
+              : `tri-hyp--${DAY_ANALYTICS_SLEEP_LANES[lane]}`,
           }),
         )
       start = end
@@ -11670,17 +11755,13 @@ const dayAnalyticsSleepStages = <N>(
       axisFrame(
         f,
         svg,
-        DAY_ANALYTICS_SLEEP_LANES.map((lane, index) => ({
-          label: triText(f.presentation.locale, lane),
+        labels.map((lane, index) => ({
+          label: triText(f.presentation.locale, movement ? `${lane} short` : lane),
           vbY: index * 4 + 2,
+          ...(movement ? { attrs: { title: triText(f.presentation.locale, lane) } } : {}),
         })),
         height,
-        dayAnalyticsHourTicks(
-          hypnogram.bedtimeStart,
-          DAY_ANALYTICS_SLEEP_STAGE_INTERVAL_S,
-          lanes.length,
-          lanes.length,
-        ),
+        dayAnalyticsHourTicks(hypnogram.bedtimeStart, interval, lanes.length, lanes.length),
         false,
       ),
       f.el('div', 'tri-chart-readout', readout, { id: readoutId }),
@@ -11924,36 +12005,36 @@ export const buildSleepRespirationChart = <N>(
   )
 }
 
-const buildDaySleepAnalytics = <N>(
-  f: TriNodeFactory<N>,
-  summary: TriathlonDayAnalytics,
-): N | null => {
+const buildDaySleepPeriod = <N>(f: TriNodeFactory<N>, summary: TriathlonDayAnalytics): N | null => {
   const sleep = summary.sleep
   const metrics = dayAnalyticsSleepMetrics(f.presentation, summary)
   const metricBar = buildSleepMetricBar(
     f,
     summary.date,
     summary.sleepMetrics ??
-      resolveSleepMetrics({ avgBreath: sleep?.averageBreathsPerMinute ?? null }, null),
+      resolveSleepMetrics(
+        {
+          avgBreath: sleep?.averageBreathsPerMinute ?? null,
+          health: summary.ouraHealth ?? undefined,
+        },
+        null,
+      ),
   )
   const respiration = buildSleepRespirationChart(f, summary.date, summary.sleepMetrics)
-  if (!sleep && metrics.length === 0 && !metricBar && !respiration) return null
-  const titleId = `tri-day-${summary.date}-sleep`
-  const group = f.el(
-    'section',
-    'tri-day-analytics-group tri-day-analytics-group--sleep',
-    undefined,
-    { 'aria-labelledby': titleId },
+  const recovery = buildGarminRecovery(f, summary.garminHealth)
+  const training = buildGarminHealth(f, summary.garminHealth)
+  const oura = buildOuraHealth(f, summary.ouraHealth, summary.restorationBaseline)
+  if (
+    !sleep &&
+    metrics.length === 0 &&
+    !metricBar &&
+    !respiration &&
+    !recovery &&
+    !training &&
+    !oura.length
   )
-  f.add(
-    group,
-    f.el(
-      'h3',
-      'tri-ana-block-title tri-day-analytics-group-title',
-      triText(f.presentation.locale, 'sleep details'),
-      { id: titleId, 'data-i18n': 'sleep details' },
-    ),
-  )
+    return null
+  const group = f.el('div', 'tri-sleep-period')
   if (metrics.length > 0)
     f.add(
       group,
@@ -11966,15 +12047,19 @@ const buildDaySleepAnalytics = <N>(
       ),
     )
   if (metricBar) f.add(group, metricBar)
+  const scoreGroups = [
+    dayAnalyticsContributionGroup(f, 'sleep score', sleep?.sleepContrib ?? null),
+    dayAnalyticsContributionGroup(f, 'readiness', sleep?.readinessContrib ?? null),
+    recovery,
+    training,
+    ...oura,
+  ]
+  if (scoreGroups.some(section => section != null)) {
+    const contributions = f.el('div', 'tri-day-sleep-contributions')
+    for (const section of scoreGroups) if (section) f.add(contributions, section)
+    f.add(group, contributions)
+  }
   if (sleep) {
-    const sleepContrib = dayAnalyticsContributionGroup(f, 'sleep score', sleep.sleepContrib)
-    const readinessContrib = dayAnalyticsContributionGroup(f, 'readiness', sleep.readinessContrib)
-    if (sleepContrib || readinessContrib) {
-      const contributions = f.el('div', 'tri-day-sleep-contributions')
-      if (sleepContrib) f.add(contributions, sleepContrib)
-      if (readinessContrib) f.add(contributions, readinessContrib)
-      f.add(group, contributions)
-    }
     const stages = dayAnalyticsSleepStages(f, summary.date, sleep)
     const hrv = dayAnalyticsSleepSeries(f, summary.date, 'hrv', 'hrv', sleep.hrv)
     const heartRate = dayAnalyticsSleepSeries(
@@ -11984,11 +12069,134 @@ const buildDaySleepAnalytics = <N>(
       'resting heart rate',
       sleep.heartRate,
     )
+    const movement = dayAnalyticsSleepStages(f, summary.date, sleep, 'movement')
     if (stages) f.add(group, stages)
+    if (movement) f.add(group, movement)
     if (hrv) f.add(group, hrv)
     if (heartRate) f.add(group, heartRate)
   }
   if (respiration) f.add(group, respiration)
+  return group
+}
+
+export const buildSleepViews = <N>(
+  f: TriNodeFactory<N>,
+  night: N | null,
+  naps: N,
+  count: number | undefined,
+  title: N,
+): N => {
+  const root = f.el('div', 'tri-sleep-views', undefined, { 'data-sleep-views': '' })
+  const header = f.el('div', 'tri-sleep-head')
+  const controls = f.el('div', 'tri-map-tablist tri-sleep-view-switch', undefined, {
+    role: 'group',
+    'aria-label': triText(f.presentation.locale, 'sleep view'),
+    'data-i18n-aria-label': 'sleep view',
+  })
+  for (const mode of ['night', 'naps']) {
+    const button = f.el('button', 'tri-map-tab tri-sleep-view-button', undefined, {
+      type: 'button',
+      'data-sleep-view': mode,
+      'aria-pressed': String(mode === 'night'),
+    })
+    f.add(
+      button,
+      f.el('span', undefined, triText(f.presentation.locale, mode), { 'data-i18n': mode }),
+    )
+    if (mode === 'naps' && count != null)
+      f.add(button, f.el('span', 'tri-sleep-nap-count', String(count)))
+    f.add(controls, button)
+  }
+  const nightPane = f.el('div', 'tri-sleep-pane', undefined, { 'data-sleep-pane': 'night' })
+  f.add(
+    nightPane,
+    night ??
+      f.el('p', 'tri-ana-empty', triText(f.presentation.locale, 'no sleep logged'), {
+        'data-i18n': 'no sleep logged',
+      }),
+  )
+  const napPane = f.el('div', 'tri-sleep-pane', undefined, {
+    'data-sleep-pane': 'naps',
+    hidden: '',
+  })
+  f.add(napPane, naps)
+  f.add(header, title, controls)
+  f.add(root, header, nightPane, napPane)
+  return root
+}
+
+export const buildDaySleepAnalytics = <N>(
+  f: TriNodeFactory<N>,
+  summary: TriathlonDayAnalytics,
+): N | null => {
+  const night = buildDaySleepPeriod(f, summary)
+  if (!night && !summary.naps?.length) return null
+  const titleId = `tri-day-${summary.date}-sleep`
+  const group = f.el(
+    'section',
+    'tri-day-analytics-group tri-day-analytics-group--sleep',
+    undefined,
+    { 'aria-labelledby': titleId },
+  )
+  const title = f.el(
+    'h3',
+    'tri-ana-block-title tri-day-analytics-group-title',
+    triText(f.presentation.locale, 'sleep details'),
+    { id: titleId, 'data-i18n': 'sleep details' },
+  )
+  const naps = f.el('div', 'tri-sleep-naps')
+  if (summary.naps?.length) {
+    const total = summary.naps.reduce((sum, nap) => sum + (nap.totalSleepS ?? 0), 0)
+    f.add(
+      naps,
+      f.el(
+        'p',
+        'tri-ana-k tri-sleep-nap-summary',
+        `${summary.naps.length} ${triText(f.presentation.locale, summary.naps.length === 1 ? 'nap' : 'naps')} · ${dayAnalyticsDuration(total)} · Oura`,
+      ),
+    )
+    for (const [index, nap] of summary.naps.entries()) {
+      const period = buildDaySleepPeriod(f, {
+        ...summary,
+        date: `${summary.date}-nap-${index}`,
+        sleep: nap,
+        recovery: null,
+        sleepMetrics: null,
+        garminHealth: null,
+        ouraHealth: null,
+        restorationBaseline: null,
+      })
+      const entry = f.el('section', 'tri-sleep-nap', undefined, {
+        'data-nap-id': nap.id,
+        'data-nap-type': nap.type,
+      })
+      f.add(
+        entry,
+        f.el('h4', 'tri-ana-block-title', `${triText(f.presentation.locale, 'nap')} ${index + 1}`),
+      )
+      const deltas: DayAnalyticsMetric[] = []
+      const changes: [string, number | null][] = [
+        ['sleep score change', nap.sleepScoreDelta],
+        ['readiness change', nap.readinessScoreDelta],
+      ]
+      for (const [label, value] of changes)
+        if (value != null)
+          deltas.push({ label, value: `${value > 0 ? '+' : ''}${value}`, detail: 'Oura' })
+      if (nap.reportedDay && nap.reportedDay !== summary.date)
+        deltas.push({ label: 'score date', value: nap.reportedDay, detail: 'Oura' })
+      if (deltas.length)
+        f.add(entry, dayAnalyticsList(f, `${summary.date}-nap-${index}`, 'nap', deltas))
+      if (period) f.add(entry, period)
+      f.add(naps, entry)
+    }
+  } else {
+    const message = summary.naps ? 'no naps recorded' : 'nap data unavailable'
+    f.add(
+      naps,
+      f.el('p', 'tri-ana-empty', triText(f.presentation.locale, message), { 'data-i18n': message }),
+    )
+  }
+  f.add(group, buildSleepViews(f, night, naps, summary.naps?.length, title))
   return group
 }
 

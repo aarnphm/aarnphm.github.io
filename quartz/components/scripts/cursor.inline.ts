@@ -270,7 +270,7 @@ document.addEventListener('nav', () => {
       const pointer = pointerTarget?.closest<HTMLElement>(POINTER_CURSOR_SELECTOR) ?? null
       const text = pointerTarget?.closest<HTMLElement>(TEXT_CURSOR_SELECTOR) ?? null
       const crosshair = pointerTarget?.closest<HTMLElement>(CROSSHAIR_CURSOR_SELECTOR) ?? null
-      if (help) {
+      if (help && !pointer?.matches(BRACKET_ANCHOR_SELECTOR)) {
         setBracketTarget(null)
         mode = 'help'
         visible = true

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { CriticalPowerEstimate } from '../plugins/stores/critical-power'
 import type { GarminRunWalkSegment, GarminSleepSummary } from '../plugins/stores/garmin'
+import type { OuraDayDetail, OuraDaily } from '../plugins/stores/oura'
 import type {
   ActivityAnalyses,
   ActivityAnalysisRange,
@@ -16,12 +17,15 @@ import type {
 import type { TriathlonDayAnalytics } from './triathlon-day-analytics'
 import { metricSpecs } from '../components/triathlon/activity/render'
 import { createTriathlonFormatter } from '../components/triathlon/runtime/formatter'
+import { buildAnalytics } from '../plugins/stores/analytics'
 import { calculateActivityExerciseLoad, emptyHealth } from '../plugins/stores/strava'
 import { parseTrackingBlock } from '../plugins/stores/tracking'
 import { emptyWahooMetrics } from '../plugins/stores/wahoo'
+import { applyOuraSleepRows } from '../scripts/sync-oura'
 import { buildCyclingIntensityTrace } from './cycling-intensity'
 import { buildCyclingPowerTrace } from './cycling-power'
 import { buildCyclingTorqueTrace, cyclingTorqueSamples } from './cycling-torque'
+import { health as garminHealthFixture } from './fixtures/garmin-health'
 import { estimateHeartRatePhysiology } from './heart-rate-physiology'
 import { resolveSleepMetrics } from './sleep-metrics'
 import {
@@ -111,6 +115,7 @@ import {
   type DetailCtx,
   type TriNodeFactory,
 } from './triathlon-card'
+import { buildTriathlonDailyAnalytics } from './triathlon-day-analytics'
 import {
   criticalPowerEvidenceText,
   criticalPowerSummaryText,
@@ -10497,4 +10502,85 @@ test('places cycling graphs after muscle oxygen and before environment in cards 
   }
   assert.equal(buildCyclingPowerChart(factory, { ...activity, sport: 'run' }), null)
   assert.equal(buildCyclingPowerChart(factory, detail()), null)
+})
+
+test('renders night and individual naps with separate charts, unique readouts, and no overnight Garmin leakage', () => {
+  const date = '2026-09-21'
+  const details: Record<string, OuraDayDetail> = {}
+  const days: Record<string, OuraDaily> = {}
+  const sleepRow = (id: string, type: string, hour: string) => ({
+    id,
+    type,
+    day: date,
+    bedtime_start: `${date}T${hour}:00:00-04:00`,
+    bedtime_end: `${date}T${hour}:30:00-04:00`,
+    total_sleep_duration: 1200,
+    sleep_phase_5_min: '423214',
+    average_breath: 14,
+    average_hrv: 45,
+    heart_rate: { timestamp: `${date}T${hour}:00:00-04:00`, interval: 300, items: [55, null, 58] },
+    hrv: { timestamp: `${date}T${hour}:00:00-04:00`, interval: 300, items: [42, null, 44] },
+    sleep_score_delta: 0,
+  })
+  applyOuraSleepRows(
+    [
+      sleepRow('night', 'long_sleep', '01'),
+      sleepRow('nap1', 'sleep', '14'),
+      { ...sleepRow('nap2', 'late_nap', '19'), day: '2026-09-22' },
+    ],
+    days,
+    details,
+    date,
+    date,
+  )
+  const summary = buildTriathlonDailyAnalytics(buildAnalytics(null), details)[date]
+  summary.garminHealth = garminHealthFixture
+  assert.ok(summary.sleep)
+  summary.sleep.sleepContrib = { efficiency: 80 }
+  summary.sleep.readinessContrib = { hrv_balance: 85 }
+  const tree = buildDayAnalytics(factory, summary)
+  const scoreArea = byClass(tree, 'tri-day-sleep-contributions')[0]
+  assert.equal(byClass(scoreArea, 'tri-sleep-contrib').length, 4)
+  assert.equal(byClass(tree, 'tri-health-recovery').length, 1)
+  assert.equal(byClass(tree, 'tri-health-training').length, 1)
+  const nightPeriod = byClass(tree, 'tri-sleep-period')[0]
+  assert.ok(
+    nightPeriod.children.indexOf(scoreArea) <
+      nightPeriod.children.indexOf(byClass(nightPeriod, 'tri-day-sleep-stages')[0]),
+  )
+  const panes = byClass(tree, 'tri-sleep-pane')
+  assert.equal(panes.length, 2)
+  assert.equal(panes[0].properties.hidden, undefined)
+  assert.equal(panes[1].properties.hidden, true)
+  assert.deepEqual(
+    byClass(tree, 'tri-sleep-view-button').map(button => button.properties.ariaPressed),
+    ['true', 'false'],
+  )
+  const naps = byClass(tree, 'tri-sleep-nap')
+  assert.equal(naps.length, 2)
+  assert.match(text(naps[0]), /sleep score change0Oura/)
+  assert.match(text(naps[1]), /score date2026-09-22Oura/)
+  for (const nap of naps) {
+    assert.equal(byClass(nap, 'tri-day-sleep-stages').length, 1)
+    assert.equal(byClass(nap, 'tri-day-sleep-series--hrv').length, 1)
+    assert.equal(byClass(nap, 'tri-day-sleep-series--heart-rate').length, 1)
+    assert.equal(byClass(nap, 'tri-day-sleep-series--respiration').length, 0)
+    assert.doesNotMatch(text(nap), /Garmin|sleep debt|sleep baseline|sleep target/)
+  }
+  const readouts = byClass(tree, 'tri-chart-readout')
+    .map(node => node.properties.id)
+    .filter(Boolean)
+  assert.equal(new Set(readouts).size, readouts.length)
+  const old = buildDayAnalytics(factory, { ...summary, naps: undefined })
+  assert.match(text(old), /nap data unavailable/)
+  assert.match(text(buildDayAnalytics(factory, { ...summary, naps: [] })), /no naps recorded/)
+  const onlyNaps = buildDayAnalytics(factory, {
+    ...summary,
+    sleep: null,
+    recovery: null,
+    sleepMetrics: null,
+    garminHealth: null,
+  })
+  assert.match(text(byClass(onlyNaps, 'tri-sleep-pane')[0]), /no sleep logged/)
+  assert.equal(byClass(onlyNaps, 'tri-sleep-nap').length, 2)
 })

@@ -8,6 +8,8 @@ import {
   type PowerToWeightEffort,
 } from '../../../plugins/stores/analytics'
 import { applyManualSauna, buildPayload, type StravaRawCache } from '../../../plugins/stores/strava'
+import { estimateFtpFromPowerCurve } from '../../../util/cycling-ftp'
+import { health as garminHealthFixture } from '../../../util/fixtures/garmin-health'
 import { resolveSleepMetrics } from '../../../util/sleep-metrics'
 import { DEFAULT_TRIATHLON_FORMATTER } from '../runtime/formatter'
 import { ANALYTICS_CATALOG, ANALYTICS_PANEL_ORDER } from './catalog'
@@ -205,7 +207,7 @@ test('sleep server markup includes Oura respiration and Garmin overnight metrics
   assert.match(html, /sleep stress<\/dt><dd>11\.0<span/)
   assert.match(html, /role="tooltip">Garmin\nlowest Pulse Ox 91%<\/span>/)
   assert.doesNotMatch(html, / · (Oura|Garmin)|<dt>lowest Pulse Ox<\/dt>/)
-  assert.match(html, /sleep details<\/dt><dd>Sep 8/)
+  assert.doesNotMatch(html, /sleep details<\/dt><dd>Sep 8/)
   assert.doesNotMatch(html, /sleep stages|hypnogram/)
 
   analytics.daily = [{ ...day, sleepMetrics: resolveSleepMetrics(null, garmin) }]
@@ -215,6 +217,39 @@ test('sleep server markup includes Oura respiration and Garmin overnight metrics
   assert.match(garminOnly, /respiration<\/dt><dd>15\.0 brpm<span/)
   assert.match(garminOnly, /role="tooltip">Garmin\nlowest Pulse Ox 91%<\/span>/)
   assert.doesNotMatch(garminOnly, /Oura|data-series="sleep duration"|data-series="sleep score"/)
+
+  analytics.meta.today = garminHealthFixture.date
+  analytics.daily = [{ ...day, date: garminHealthFixture.date, garminHealth: garminHealthFixture }]
+  const health = renderToString(<AnalyticsServerPanel definition={definition} data={analytics} />)
+  assert.match(health, /training readiness<\/dt><dd>78/)
+  assert.match(health, /Endurance Score<\/dt><dd>7918/)
+  assert.match(health, /Recovery Time<\/dt><dd>6h 12m/)
+  assert.doesNotMatch(health, /sleep details<\/dt>/)
+})
+
+test('server power summary exposes each estimated FTP separately from configured FTP', () => {
+  const analytics = buildAnalytics(null)
+  analytics.powerCurve.ftp = 287
+  analytics.powerCurve.yearLabel = 2026
+  analytics.powerCurve.estimatedFtp = estimateFtpFromPowerCurve([{ s: 1200, w: 243 }])
+  analytics.powerCurve.estimatedFtpYear = estimateFtpFromPowerCurve([{ s: 1200, w: 300 }])
+  const definition = ANALYTICS_CATALOG.find(panel => panel.key === 'power')
+  assert.ok(definition)
+  const content = definition.server(analytics, DEFAULT_TRIATHLON_FORMATTER)
+  assert.deepEqual(
+    content.values
+      .filter(item => item.label.includes('FTP'))
+      .map(({ label, value }) => ({ label, value })),
+    [
+      { label: 'FTP', value: '287 W' },
+      { label: 'eFTP · last 6 weeks', value: '231 W' },
+      { label: 'eFTP · all of 2026', value: '285 W' },
+    ],
+  )
+  const html = renderToString(<AnalyticsServerPanel definition={definition} data={analytics} />)
+  assert.match(html, /eFTP · last 6 weeks<\/dt><dd>231 W/)
+  assert.match(html, /eFTP · all of 2026<\/dt><dd>285 W/)
+  assert.ok(html.includes('Provisional: effort may be submaximal.'))
 })
 
 test('power-to-weight server series share one zero-based scale', () => {

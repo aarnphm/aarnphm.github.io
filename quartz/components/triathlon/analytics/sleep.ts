@@ -1,65 +1,10 @@
 import type { Analytics } from '../../../plugins/stores/analytics'
-import type { OuraDayDetail, OuraSeries } from '../../../plugins/stores/oura'
+import type { OuraDayDetail } from '../../../plugins/stores/oura'
 import type { TriathlonContext } from '../runtime/context'
-import { mountDaySleepCharts } from '../activity/day-sleep'
-import {
-  buildSleepDayDetail,
-  buildSleeplessRock,
-  OURA_STAGE,
-  wallClock,
-  wallMin,
-} from './panels/recovery'
-import { scrubBind } from './scrub-primitives'
-import { ANA_W, clampN } from './shared'
-
-const mountSeriesScrub = (
-  scope: HTMLElement,
-  key: 'stages' | 'hrv' | 'hr',
-  count: number,
-  width: number,
-  text: (index: number) => string,
-): (() => void) => {
-  const wrap = scope.querySelector<HTMLElement>(`[data-oura-series="${key}"]`)
-  const chart = wrap?.querySelector<SVGElement>('.tri-ana-svg')
-  const cursor = wrap?.querySelector<SVGElement>('.tri-ana-cursor')
-  const readout = wrap?.querySelector<HTMLElement>('.tri-chart-readout')
-  if (!wrap || !chart || !cursor || !readout) return () => {}
-  return scrubBind(wrap, chart, cursor, readout, count, width, text)
-}
-
-const mountDetailScrubs = (
-  scope: HTMLElement,
-  detail: OuraDayDetail,
-  context: TriathlonContext,
-): (() => void) => {
-  const cleanups: (() => void)[] = []
-  const phase = detail.phase5Min
-  if (phase && detail.bedtimeStart) {
-    const start = wallMin(detail.bedtimeStart)
-    cleanups.push(
-      mountSeriesScrub(scope, 'stages', phase.length, phase.length, index => {
-        const stage = OURA_STAGE[phase[index]]
-        return `${wallClock(start + index * 5)} · ${stage ? context.formatter.text(stage.key) : '—'}`
-      }),
-    )
-  }
-  const mountValues = (key: 'hrv' | 'hr', series: OuraSeries | null, unit: string): void => {
-    if (!series) return
-    const start = wallMin(series.startTs)
-    cleanups.push(
-      mountSeriesScrub(scope, key, series.items.length, ANA_W, index => {
-        const value = series.items[index]
-        const time = wallClock(start + (index * series.intervalS) / 60)
-        return `${time} · ${value != null ? Math.round(value) : '—'} ${unit}`
-      }),
-    )
-  }
-  mountValues('hrv', detail.hrv, 'ms')
-  mountValues('hr', detail.hr, 'bpm')
-  return () => {
-    for (const cleanup of cleanups) cleanup()
-  }
-}
+import { ouraRestorationBaseline } from '../../../util/oura-health'
+import { daySleepBarIndex, mountDaySleepCharts, setSleepView } from '../activity/day-sleep'
+import { buildSleepDayDetail, buildSleeplessRock } from './panels/recovery'
+import { clampN } from './shared'
 
 export const mountSleepPanel = (
   panel: HTMLElement,
@@ -67,14 +12,16 @@ export const mountSleepPanel = (
   context: TriathlonContext,
 ): (() => void) => {
   const block = panel.querySelector<HTMLElement>('.tri-ana-sleep')
-  const chart = block?.querySelector<SVGElement>('.tri-sleep-svg')
+  const charts = block?.querySelectorAll<SVGElement>('.tri-sleep-svg')
   const day = block?.querySelector<HTMLElement>('.tri-sleep-day')
   const dayInner = block?.querySelector<HTMLElement>('.tri-sleep-day-inner')
-  if (!block || !chart || !day || !dayInner) return () => {}
+  if (!block || !charts || !day || !dayInner) return () => {}
   const nights = data.recovery.series
   const supplementalByDate = new Map(data.daily.map(day => [day.date, day.sleepMetrics]))
+  const healthByDate = new Map(data.daily.map(day => [day.date, day.garminHealth]))
   let live = true
   let selectedDate: string | null = null
+  let selectedView: 'night' | 'naps' = 'night'
   let detailCleanup: (() => void) | null = null
   let animationFrame: number | null = null
 
@@ -104,7 +51,8 @@ export const mountSleepPanel = (
     clearDetail()
     const detail = details?.[date]
     const supplemental = supplementalByDate.get(date) ?? null
-    if (!detail && !supplemental) {
+    const health = healthByDate.get(date) ?? null
+    if (!detail && !supplemental && !health) {
       dayInner.replaceChildren(
         buildSleeplessRock(context.formatter.text('no detail for this night')),
       )
@@ -112,20 +60,24 @@ export const mountSleepPanel = (
       return
     }
     dayInner.replaceChildren(
-      buildSleepDayDetail(context.formatter, date, detail ?? null, supplemental),
+      buildSleepDayDetail(
+        context.formatter,
+        date,
+        detail ?? null,
+        supplemental,
+        health,
+        ouraRestorationBaseline(date, details ?? {}),
+      ),
     )
-    const ouraCleanup = detail ? mountDetailScrubs(dayInner, detail, context) : () => {}
-    const respirationCleanup = mountDaySleepCharts(dayInner, () => context.presentation.locale)
-    detailCleanup = () => {
-      ouraCleanup()
-      respirationCleanup()
-    }
+    detailCleanup = mountDaySleepCharts(dayInner, () => context.presentation.locale)
+    const views = dayInner.querySelector<HTMLElement>('[data-sleep-views]')
+    if (views) setSleepView(views, selectedView)
     reveal()
   }
   const open = (date: string): void => {
     selectedDate = date
     setActive(date)
-    if (supplementalByDate.get(date)) renderDetail(date, null)
+    if (supplementalByDate.get(date) || healthByDate.get(date)) renderDetail(date, null)
     const path = context.root?.dataset.ouraDetailPath
     if (!path) {
       renderDetail(date, null)
@@ -137,24 +89,35 @@ export const mountSleepPanel = (
     })
   }
   const onChartClick = (event: MouseEvent): void => {
+    const chart = event.currentTarget
+    if (!(chart instanceof SVGElement)) return
     const bounds = chart.getBoundingClientRect()
     if (bounds.width <= 0) return
     const fraction = clampN((event.clientX - bounds.left) / bounds.width, 0, 1)
-    const date = nights[Math.min(nights.length - 1, Math.floor(fraction * nights.length))]?.date
+    const date = nights[daySleepBarIndex(fraction, nights.length)]?.date
     if (!date) return
     if (selectedDate === date) close()
     else open(date)
   }
   const onBlockClick = (event: MouseEvent): void => {
     if (event.target instanceof Element && event.target.closest('.tri-sleep-day-close')) close()
+    const button =
+      event.target instanceof Element
+        ? event.target.closest<HTMLButtonElement>('button[data-sleep-view]')
+        : null
+    const mode = button?.dataset.sleepView
+    if (mode !== 'night' && mode !== 'naps') return
+    selectedView = mode
+    for (const views of block.querySelectorAll<HTMLElement>('[data-sleep-views]'))
+      setSleepView(views, mode)
   }
 
-  chart.addEventListener('click', onChartClick)
+  for (const chart of charts) chart.addEventListener('click', onChartClick)
   block.addEventListener('click', onBlockClick)
   open(data.meta.today)
   return () => {
     live = false
-    chart.removeEventListener('click', onChartClick)
+    for (const chart of charts) chart.removeEventListener('click', onChartClick)
     block.removeEventListener('click', onBlockClick)
     if (animationFrame != null) cancelAnimationFrame(animationFrame)
     clearDetail()

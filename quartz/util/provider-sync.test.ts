@@ -32,3 +32,10 @@ test('a sleep-only Garmin refresh advances rendered data without changing activi
   assert.equal(garmin.lastSync, 100)
   assert.equal(latestProviderSync({ lastSync: 100, sleepLastSync: Number.NaN }), 100)
 })
+
+test('a Garmin health refresh advances rendered data without changing activity freshness', () => {
+  const garmin = { lastSync: 100, sleepLastSync: 150, healthLastSync: 200 }
+  assert.equal(latestProviderSync(garmin), 200)
+  assert.equal(garmin.lastSync, 100)
+  assert.equal(latestProviderSync({ lastSync: 100, healthLastSync: Number.NaN }), 100)
+})

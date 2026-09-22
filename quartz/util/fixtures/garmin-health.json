@@ -1,0 +1,262 @@
+{
+  "bodyBattery": [
+    {
+      "date": "2026-09-21",
+      "charged": 57,
+      "drained": 8,
+      "startTimestampGMT": "2026-09-21T04:00:00.0",
+      "endTimestampGMT": "2026-09-21T18:31:00.0",
+      "startTimestampLocal": "2026-09-21T00:00:00.0",
+      "endTimestampLocal": "2026-09-21T14:31:00.0",
+      "bodyBatteryValuesArray": [
+        [1789963200000, 43],
+        [1789980300000, 62],
+        [1789980660000, 63],
+        [1789996860000, 96],
+        [1789998120000, 96],
+        [1790006580000, 92]
+      ],
+      "bodyBatteryValueDescriptorDTOList": [
+        { "bodyBatteryValueDescriptorIndex": 0, "bodyBatteryValueDescriptorKey": "timestamp" },
+        {
+          "bodyBatteryValueDescriptorIndex": 1,
+          "bodyBatteryValueDescriptorKey": "bodyBatteryLevel"
+        }
+      ],
+      "bodyBatteryDynamicFeedbackEvent": {
+        "eventTimestampGmt": "2026-09-21T16:08:23.0",
+        "bodyBatteryLevel": "HIGH",
+        "feedbackShortType": "MORNING_STRESSFUL_AND_INACTIVE",
+        "feedbackLongType": "MORNING_STRESSFUL_AND_INACTIVE"
+      },
+      "bodyBatteryActivityEvent": [
+        {
+          "eventType": "SLEEP",
+          "eventStartTimeGmt": "2026-09-21T06:53:31.0",
+          "timezoneOffset": -14400000,
+          "durationInMilliseconds": 25020000,
+          "bodyBatteryImpact": 48,
+          "feedbackType": "NONE",
+          "shortFeedback": "NONE"
+        }
+      ],
+      "endOfDayBodyBatteryDynamicFeedbackEvent": {
+        "eventTimestampGmt": "2026-09-21T06:14:12.0",
+        "bodyBatteryLevel": "HIGH",
+        "feedbackShortType": "SLEEP_TIME_PASSED_RECOVERING_AND_INACTIVE",
+        "feedbackLongType": "SLEEP_TIME_PASSED_RECOVERING_AND_INACTIVE"
+      }
+    }
+  ],
+  "readiness": [
+    {
+      "calendarDate": "2026-09-21",
+      "timestamp": "2026-09-22T00:28:04.0",
+      "timestampLocal": "2026-09-21T20:28:04.0",
+      "level": "HIGH",
+      "feedbackLong": "HIGH_NAP",
+      "feedbackShort": "ENERGIZING_NAP",
+      "score": 78,
+      "sleepScore": 76,
+      "sleepScoreFactorPercent": 64,
+      "sleepScoreFactorFeedback": "MODERATE",
+      "recoveryTime": 372,
+      "recoveryTimeFactorPercent": 90,
+      "recoveryTimeFactorFeedback": "GOOD",
+      "acwrFactorPercent": 88,
+      "acwrFactorFeedback": "GOOD",
+      "acuteLoad": 839,
+      "stressHistoryFactorPercent": 100,
+      "stressHistoryFactorFeedback": "GOOD",
+      "hrvFactorPercent": 0,
+      "hrvFactorFeedback": "NONE",
+      "hrvWeeklyAverage": 52,
+      "sleepHistoryFactorPercent": 57,
+      "sleepHistoryFactorFeedback": "MODERATE",
+      "validSleep": true,
+      "inputContext": "UPDATE_REALTIME_VARIABLES",
+      "primaryActivityTracker": true,
+      "recoveryTimeChangePhrase": "NAP"
+    },
+    {
+      "calendarDate": "2026-09-21",
+      "timestamp": "2026-09-21T18:07:21.0",
+      "timestampLocal": "2026-09-21T14:07:21.0",
+      "level": "MODERATE",
+      "feedbackLong": "MOD_RT_LOW_SS_MOD",
+      "feedbackShort": "GOOD_SLEEP_HISTORY",
+      "score": 60,
+      "sleepScore": 76,
+      "sleepScoreFactorPercent": 64,
+      "sleepScoreFactorFeedback": "MODERATE",
+      "recoveryTime": 932,
+      "recoveryTimeFactorPercent": 75,
+      "recoveryTimeFactorFeedback": "GOOD",
+      "acwrFactorPercent": 88,
+      "acwrFactorFeedback": "GOOD",
+      "acuteLoad": 839,
+      "stressHistoryFactorPercent": 100,
+      "stressHistoryFactorFeedback": "GOOD",
+      "hrvFactorPercent": 0,
+      "hrvFactorFeedback": "NONE",
+      "hrvWeeklyAverage": 52,
+      "sleepHistoryFactorPercent": 57,
+      "sleepHistoryFactorFeedback": "MODERATE",
+      "validSleep": true,
+      "inputContext": "AFTER_POST_EXERCISE_RESET",
+      "primaryActivityTracker": true,
+      "recoveryTimeChangePhrase": "REACHED_ZERO"
+    },
+    {
+      "calendarDate": "2026-09-21",
+      "timestamp": "2026-09-21T15:59:32.0",
+      "timestampLocal": "2026-09-21T11:59:32.0",
+      "level": "MODERATE",
+      "feedbackLong": "MOD_RT_LOW_SS_MOD",
+      "feedbackShort": "GOOD_SLEEP_HISTORY",
+      "score": 72,
+      "sleepScore": 76,
+      "sleepScoreFactorPercent": 64,
+      "sleepScoreFactorFeedback": "MODERATE",
+      "recoveryTime": 1,
+      "recoveryTimeFactorPercent": 99,
+      "recoveryTimeFactorFeedback": "GOOD",
+      "acwrFactorPercent": 92,
+      "acwrFactorFeedback": "GOOD",
+      "acuteLoad": 762,
+      "stressHistoryFactorPercent": 100,
+      "stressHistoryFactorFeedback": "GOOD",
+      "hrvFactorPercent": 0,
+      "hrvFactorFeedback": "NONE",
+      "hrvWeeklyAverage": 52,
+      "sleepHistoryFactorPercent": 57,
+      "sleepHistoryFactorFeedback": "MODERATE",
+      "validSleep": true,
+      "inputContext": "AFTER_WAKEUP_RESET",
+      "primaryActivityTracker": true,
+      "recoveryTimeChangePhrase": "NO_CHANGE_SLEEP"
+    }
+  ],
+  "trainingStatus": {
+    "mostRecentVO2Max": {
+      "generic": {
+        "calendarDate": "2026-09-18",
+        "vo2MaxPreciseValue": 55.7,
+        "vo2MaxValue": 56,
+        "fitnessAge": null,
+        "fitnessAgeDescription": null,
+        "maxMetCategory": 0
+      },
+      "cycling": {
+        "calendarDate": "2026-09-09",
+        "vo2MaxPreciseValue": 56,
+        "vo2MaxValue": 56,
+        "fitnessAge": null,
+        "fitnessAgeDescription": null,
+        "maxMetCategory": 1
+      },
+      "heatAltitudeAcclimation": {
+        "calendarDate": "2026-09-21",
+        "altitudeAcclimationDate": "2026-09-21",
+        "previousAltitudeAcclimationDate": "2026-09-21",
+        "heatAcclimationDate": "2026-09-21",
+        "previousHeatAcclimationDate": "2026-09-21",
+        "altitudeAcclimation": 0,
+        "previousAltitudeAcclimation": 0,
+        "heatAcclimationPercentage": 0,
+        "previousHeatAcclimationPercentage": 0,
+        "heatTrend": null,
+        "altitudeTrend": null,
+        "currentAltitude": 0,
+        "previousAltitude": 0,
+        "acclimationPercentage": 0,
+        "previousAcclimationPercentage": 0,
+        "altitudeAcclimationLocalTimestamp": "2026-09-21T14:07:20.0"
+      }
+    },
+    "mostRecentTrainingLoadBalance": {
+      "metricsTrainingLoadBalanceDTOMap": {
+        "primary": {
+          "calendarDate": "2026-09-21",
+          "monthlyLoadAerobicLow": 2419.3406,
+          "monthlyLoadAerobicHigh": 87.84186,
+          "monthlyLoadAnaerobic": 278.2693,
+          "monthlyLoadAerobicLowTargetMin": 674,
+          "monthlyLoadAerobicLowTargetMax": 1109,
+          "monthlyLoadAerobicHighTargetMin": 674,
+          "monthlyLoadAerobicHighTargetMax": 1109,
+          "monthlyLoadAnaerobicTargetMin": 174,
+          "monthlyLoadAnaerobicTargetMax": 500,
+          "trainingBalanceFeedbackPhrase": "AEROBIC_HIGH_SHORTAGE",
+          "primaryTrainingDevice": true
+        }
+      }
+    },
+    "mostRecentTrainingStatus": {
+      "latestTrainingStatusData": {
+        "primary": {
+          "calendarDate": "2026-09-21",
+          "sinceDate": "2026-09-21",
+          "weeklyTrainingLoad": null,
+          "trainingStatus": 4,
+          "timestamp": 1790014040000,
+          "loadTunnelMin": null,
+          "loadTunnelMax": null,
+          "loadLevelTrend": null,
+          "sport": "RUNNING",
+          "subSport": "GENERIC",
+          "fitnessTrendSport": "RUNNING",
+          "fitnessTrend": 2,
+          "trainingStatusFeedbackPhrase": "MAINTAINING_2",
+          "trainingPaused": false,
+          "acuteTrainingLoadDTO": {
+            "acwrPercent": 42,
+            "acwrStatus": "OPTIMAL",
+            "acwrStatusFeedback": "FEEDBACK_2",
+            "dailyTrainingLoadAcute": 839,
+            "maxTrainingLoadChronic": 1183.5,
+            "minTrainingLoadChronic": 631.2,
+            "dailyTrainingLoadChronic": 789,
+            "dailyAcuteChronicWorkloadRatio": 1
+          },
+          "primaryTrainingDevice": true
+        }
+      },
+      "showSelector": false,
+      "lastPrimarySyncDate": "2026-09-21"
+    },
+    "heatAltitudeAcclimationDTO": null
+  },
+  "endurance": {
+    "calendarDate": "2026-09-21",
+    "overallScore": 7918,
+    "classification": 5,
+    "feedbackPhrase": 74,
+    "primaryTrainingDevice": true,
+    "gaugeLowerLimit": 3570,
+    "classificationLowerLimitIntermediate": 5100,
+    "classificationLowerLimitTrained": 5800,
+    "classificationLowerLimitWellTrained": 6600,
+    "classificationLowerLimitExpert": 7300,
+    "classificationLowerLimitSuperior": 8100,
+    "classificationLowerLimitElite": 8800,
+    "gaugeUpperLimit": 10560,
+    "contributors": [
+      { "activityTypeId": null, "group": 1, "contribution": 80.04 },
+      { "activityTypeId": null, "group": 0, "contribution": 6.93 },
+      { "activityTypeId": 11, "group": null, "contribution": 5.7 },
+      { "activityTypeId": null, "group": 8, "contribution": 7.33 }
+    ]
+  },
+  "hill": {
+    "calendarDate": "2026-09-21",
+    "strengthScore": 15,
+    "enduranceScore": 19,
+    "hillScoreClassificationId": 2,
+    "overallScore": 37,
+    "hillScoreFeedbackPhraseId": 42,
+    "vo2Max": 56,
+    "vo2MaxPreciseValue": 55.7,
+    "primaryTrainingDevice": true
+  }
+}

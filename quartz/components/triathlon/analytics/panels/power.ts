@@ -9,6 +9,7 @@ import type {
   PowerSkill,
 } from '../../../../plugins/stores/power-rank'
 import type { PowerCurvePoint } from '../../../../plugins/stores/strava'
+import type { PowerCurveFtpEstimate } from '../../../../util/cycling-ftp'
 import type { AxisXTick } from '../../../../util/triathlon-card'
 import type { TriathlonContext } from '../../runtime/context'
 import type { TriathlonFormatter } from '../../runtime/formatter'
@@ -350,6 +351,12 @@ export const criticalPowerForSeries = (
 ): CriticalPowerEstimate | null =>
   key === 'six-weeks' ? power.criticalPower : power.criticalPowerYear
 
+export const estimatedFtpForSeries = (
+  power: PowerCurveBlock,
+  key: BestPowerSeriesKey,
+): PowerCurveFtpEstimate | null =>
+  key === 'six-weeks' ? power.estimatedFtp : power.estimatedFtpYear
+
 export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext): HTMLElement => {
   const block = el('section', 'tri-best-power')
   const power = data.powerCurve
@@ -357,7 +364,7 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
   head.appendChild(anaTitle(context.formatter, 'best efforts · power curve'))
   const controls = el('div', 'tri-best-power-controls', undefined, {
     role: 'group',
-    'aria-label': context.formatter.text('power curve periods'),
+    'aria-label': context.formatter.text('power curve controls'),
   })
   const series = bestPowerSeries(power)
   for (const { key, curve } of series) {
@@ -377,6 +384,21 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
     )
     controls.appendChild(button)
   }
+  const hasEstimatedFtp = series.some(
+    ({ key, curve }) => curve.length >= 2 && estimatedFtpForSeries(power, key) != null,
+  )
+  const ftpToggle = el('button', 'tri-best-power-toggle tri-best-power-eftp-toggle', 'eFTP', {
+    type: 'button',
+    'aria-label': context.formatter.text('estimated FTP'),
+    'aria-pressed': String(hasEstimatedFtp),
+    title: context.formatter.text(
+      hasEstimatedFtp
+        ? 'eFTP = 95% of best recorded 20-minute power. Provisional: effort may be submaximal.'
+        : 'A recorded 20-minute power effort is required to estimate FTP.',
+    ),
+    ...(hasEstimatedFtp ? {} : { disabled: '' }),
+  })
+  controls.appendChild(ftpToggle)
   head.appendChild(controls)
   block.appendChild(head)
 
@@ -504,6 +526,21 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
       }),
     )
   }
+  for (const { key } of available) {
+    const estimate = estimatedFtpForSeries(power, key)
+    if (!estimate) continue
+    graph.appendChild(
+      svg('line', {
+        class: `tri-best-power-eftp tri-best-power-eftp--${key}`,
+        x1: 0,
+        y1: Y(estimate.watts).toFixed(2),
+        x2: W,
+        y2: Y(estimate.watts).toFixed(2),
+        'data-power-eftp-series': key,
+        'aria-hidden': 'true',
+      }),
+    )
+  }
   if (power.ftp != null)
     graph.appendChild(
       svg('line', {
@@ -625,7 +662,8 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
   if (
     power.ftp != null ||
     criticalPowerCaptions.some(([, estimate]) => estimate != null) ||
-    power.goalFtp != null
+    power.goalFtp != null ||
+    hasEstimatedFtp
   ) {
     const cap = el('div', 'tri-best-power-cap')
     if (power.ftp != null)
@@ -642,6 +680,27 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
         ),
       )
       hasCriticalPowerCaption = true
+    }
+    let hasEstimatedFtpCaption = false
+    for (const { key } of available) {
+      const estimate = estimatedFtpForSeries(power, key)
+      if (!estimate) continue
+      const source = estimate.anchor
+      const period = bestPowerSeriesLabel(context.formatter, power, key)
+      const date = source.activityDate
+        ? ` · ${context.formatter.shortDate(source.activityDate)}`
+        : ''
+      const label = `eFTP ${context.formatter.number(estimate.watts)}W`
+      cap.appendChild(
+        el('a', 'tri-best-power-cap-eftp', label, {
+          'data-power-eftp-caption': key,
+          'aria-label': `${label} · ${period}`,
+          title: `${period} · 20m ${context.formatter.number(source.w)} W${date}`,
+          ...powerCurveActivityLinkAttributes(source),
+          ...(hasEstimatedFtpCaption ? { hidden: '' } : {}),
+        }),
+      )
+      hasEstimatedFtpCaption = true
     }
     if (power.goalFtp != null)
       cap.appendChild(

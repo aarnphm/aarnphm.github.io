@@ -1,13 +1,25 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { daySleepStageLabel } from '../../../util/triathlon-card'
+import { daySleepStageLabel, daySleepMovementLabel } from '../../../util/triathlon-card'
 import {
+  daySleepBarIndex,
   daySleepReadout,
   daySleepTimeGeometry,
   daySleepUnitLabel,
   decodeDaySleepTimes,
   decodeDaySleepValues,
 } from './day-sleep'
+
+test('sleep history selects the same date across each bar and clamps chart edges', () => {
+  assert.deepEqual(
+    [0.05, 0.2, 0.25, 0.49, 0.5, 0.8, 1].map(f => daySleepBarIndex(f, 4)),
+    [0, 0, 1, 1, 2, 3, 3],
+  )
+  assert.equal(daySleepBarIndex(-1, 4), 0)
+  assert.equal(daySleepBarIndex(2, 4), 3)
+  assert.equal(daySleepBarIndex(0.5, 1), 0)
+  assert.equal(daySleepBarIndex(0.5, 0), 0)
+})
 
 test('daily sleep series decoder preserves gaps and rejects malformed values', () => {
   assert.deepEqual(decodeDaySleepValues('54,,56.5,57'), [54, null, 56.5, 57])
@@ -55,4 +67,14 @@ test('respiration scrubbing follows actual sample times across a clipped first i
     daySleepReadout(90 + 56 / 60, 0, [19, 15, null, 12], 2, label, times),
     '01:34 · — brpm',
   )
+})
+
+test('30-second stages and movement preserve seconds and cross midnight', () => {
+  const label = (value: number | null): string => daySleepMovementLabel('en', value)
+  assert.equal(daySleepReadout(1439 + 45 / 60, 30, [0, 2, 3], 0, label), '23:59:45 · quiet')
+  assert.equal(
+    daySleepReadout(1439 + 45 / 60, 30, [0, 2, 3], 1, label),
+    '00:00:15 · tossing and turning',
+  )
+  assert.equal(daySleepReadout(1439 + 45 / 60, 30, [0, 2, 3], 2, label), '00:00:45 · active')
 })
