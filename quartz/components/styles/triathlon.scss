@@ -6298,6 +6298,29 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   stroke: color-mix(in srgb, var(--tri-power-model) 58%, var(--gray));
 }
 
+.tri-best-power-eftp {
+  stroke: var(--tri-accent);
+  stroke-width: 1;
+  stroke-dasharray: 7 3;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-best-power-eftp--year {
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--gray));
+  stroke-dasharray: 2 3;
+}
+
+.tri-best-power [data-power-eftp-series][hidden],
+.tri-best-power-cap-eftp[hidden] {
+  display: none;
+}
+
+.tri-best-power-cap-eftp {
+  color: var(--tri-accent);
+  white-space: nowrap;
+}
+
 .tri-best-power-readout-row[hidden],
 .tri-best-power-model-line[hidden],
 .tri-best-power-cp[hidden] {
@@ -7170,6 +7193,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-compare-readout-value {
+  align-self: baseline;
   justify-self: end;
   font-weight: 600;
   line-height: 1.3;
@@ -8405,20 +8429,15 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 }
 
+.tri-sleep-day-body {
+  container: tri-day-card / inline-size;
+}
+
 .tri-sleep-day-head {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 0.6rem;
-}
-
-.tri-sleep-day-head .tri-elev-cap {
-  margin-top: 0;
-  gap: 0.6rem;
-}
-
-.tri-sleep-day-date {
-  color: var(--dark);
 }
 
 .tri-sleep-metrics {
@@ -8517,23 +8536,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   color: var(--gray);
 }
 
-.tri-sleep-chart {
-  position: relative;
-  margin-top: 1rem;
-}
-
-.tri-sleep-chart .tri-ana-block-title {
-  margin-bottom: 0.3rem;
-}
-
-.tri-hyp-svg {
-  height: 64px;
-}
-
-.tri-sleep-line-svg {
-  height: 84px;
-}
-
 .tri-sleep-empty {
   display: flex;
   flex-direction: column;
@@ -8611,7 +8613,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   opacity: 0;
 }
 
-.tri-sleep-day :is(.tri-sleep-chart, .tri-day-sleep-chart).tri-chart--hover .tri-ana-cursor {
+.tri-sleep-day .tri-day-sleep-chart.tri-chart--hover .tri-ana-cursor {
   opacity: 0.7;
 }
 
@@ -8619,7 +8621,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   opacity: 0;
 }
 
-.tri-sleep-day :is(.tri-sleep-chart, .tri-day-sleep-chart).tri-chart--hover .tri-chart-readout {
+.tri-sleep-day .tri-day-sleep-chart.tri-chart--hover .tri-chart-readout {
   opacity: 1;
 }
 
@@ -8814,7 +8816,8 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   gap: 0.1rem;
 }
 
-.tri-radar-sport {
+.tri-radar-sport,
+.tri-radar-reference {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8840,7 +8843,8 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     }
   }
 
-  &:hover {
+  &:hover,
+  &:focus-visible {
     opacity: 0.8;
   }
 
@@ -8881,10 +8885,12 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-radar-reference {
-  margin-top: 0.4rem;
-  font-size: 0.56rem;
-  color: var(--gray);
-  text-align: center;
+  text-decoration: none;
+
+  &:hover {
+    background: transparent;
+    color: var(--gray);
+  }
 }
 
 .tri-radar-swatch {
@@ -14901,6 +14907,239 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   white-space: nowrap;
 }
 
+.tri-sleep-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 0.5rem;
+
+  > .tri-ana-block-title {
+    margin: 0;
+    font-size: 0.62rem;
+  }
+}
+
+.tri-sleep-view-switch {
+  flex: none;
+}
+
+.tri-sleep-view-button {
+  gap: 0.3rem;
+
+  &[aria-pressed='true'] {
+    color: var(--light);
+    background: var(--tri-accent);
+    border-color: var(--tri-accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}
+
+.tri-sleep-nap-summary {
+  margin: 0 0 0.65rem;
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  line-height: 1.35;
+}
+
+.tri-sleep-pane[hidden] {
+  display: none;
+}
+
+.tri-sleep-nap + .tri-sleep-nap {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--lightgray);
+}
+
+:is(.tri-health-recovery, .tri-health-training, .tri-health-oura) {
+  text-transform: lowercase;
+
+  .tri-ana-block-title {
+    text-transform: inherit;
+  }
+}
+
+.tri-health-score-table {
+  display: table;
+  width: 100%;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0 0.3rem;
+  table-layout: fixed;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  line-height: 1.4;
+
+  tbody {
+    line-height: inherit;
+  }
+
+  :is(th, td) {
+    padding: 0;
+    border: 0;
+    font: inherit;
+    vertical-align: middle;
+  }
+
+  .tri-health-label-column {
+    width: 8.5rem;
+  }
+
+  .tri-health-value-column {
+    width: 2rem;
+  }
+
+  th {
+    text-align: left;
+    color: var(--darkgray);
+  }
+
+  td:last-child {
+    text-align: right;
+  }
+
+  .tri-health-score-bar {
+    padding-inline: 0.5rem;
+  }
+}
+
+.tri-health-tooltip-trigger {
+  position: relative;
+  cursor: help;
+
+  &:focus-visible {
+    outline: 1px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}
+
+.tri-health-tooltip {
+  left: 0;
+  right: auto;
+  width: max-content;
+  max-width: min(24rem, 78cqw);
+  font-family: var(--codeFont);
+  font-weight: normal;
+  white-space: pre-line;
+  transform-origin: left bottom;
+}
+
+.tri-health-tooltip-trigger:focus-visible .tri-health-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-health-tooltip-trigger:hover .tri-health-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.tri-health-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem 1.2rem;
+  margin: 0;
+
+  > :nth-child(even) .tri-health-tooltip {
+    left: auto;
+    right: 0;
+    transform-origin: right bottom;
+  }
+}
+
+.tri-health-load-title {
+  margin-top: 0.75rem;
+}
+
+.tri-health-load-table {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.tri-health-load-row {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) 4.8rem;
+  align-items: end;
+  gap: 0.5rem;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  line-height: 1.35;
+  color: var(--darkgray);
+}
+
+.tri-health-load-plot {
+  position: relative;
+  padding-top: 1rem;
+  padding-bottom: 0.25rem;
+  min-width: 0;
+}
+
+.tri-health-load-rail {
+  position: relative;
+  height: 4px;
+  background: color-mix(in srgb, var(--gray) 18%, transparent);
+}
+
+.tri-health-load-target {
+  position: absolute;
+  height: 100%;
+  background: color-mix(in srgb, var(--tri-bike) 55%, transparent);
+}
+
+.tri-health-load-marker {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 10px;
+  background: var(--dark);
+  transform: translateX(-50%);
+}
+
+.tri-health-load-value {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  color: var(--dark);
+}
+
+.tri-health-load-range {
+  text-align: right;
+  color: var(--gray);
+}
+
+.tri-health-load-note {
+  margin: 0.45rem 0 0;
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  line-height: 1.35;
+  color: var(--gray);
+}
+
+@container tri-day-card (max-width: 23rem) {
+  .tri-health-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-health-load-row {
+    grid-template-columns: minmax(0, 1fr) 4.8rem;
+    row-gap: 0;
+  }
+
+  .tri-health-load-name {
+    grid-column: 1 / -1;
+  }
+}
+
 .tri-day-sleep-summary {
   margin-bottom: 0.2rem;
 }
@@ -17166,4 +17405,32 @@ a.tri-pop-date:hover {
 .tri-critical-power-mechanics {
   grid-column: 1 / -1;
   white-space: normal;
+}
+
+.tri-health-durations .tri-health-value-column {
+  width: 4.5rem;
+}
+
+.tri-health-oura {
+  min-width: 0;
+
+  .tri-health-score-text {
+    overflow-wrap: anywhere;
+  }
+}
+
+.tri-movement--0 {
+  fill: color-mix(in srgb, var(--gray) 35%, transparent);
+}
+
+.tri-movement--1 {
+  fill: var(--tri-bike);
+}
+
+.tri-movement--2 {
+  fill: var(--tri-swim);
+}
+
+.tri-movement--3 {
+  fill: var(--secondary);
 }

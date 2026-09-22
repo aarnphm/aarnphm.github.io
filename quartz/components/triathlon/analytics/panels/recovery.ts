@@ -1,16 +1,12 @@
 import type { Analytics } from '../../../../plugins/stores/analytics'
+import type { GarminHealthDay } from '../../../../plugins/stores/garmin-health'
 import type { OuraDayDetail } from '../../../../plugins/stores/oura'
-import type { OuraSeries } from '../../../../plugins/stores/oura'
-import type { SleepMetrics } from '../../../../util/sleep-metrics'
-import type { AxisXTick } from '../../../../util/triathlon-card'
+import type { OuraRestorationBaseline } from '../../../../util/oura-health'
 import type { TriathlonContext } from '../../runtime/context'
 import type { TriathlonFormatter } from '../../runtime/formatter'
-import { resolveSleepMetrics } from '../../../../util/sleep-metrics'
-import {
-  axisFrame,
-  buildSleepMetricBar,
-  buildSleepRespirationChart,
-} from '../../../../util/triathlon-card'
+import { resolveSleepMetrics, type SleepMetrics } from '../../../../util/sleep-metrics'
+import { axisFrame, buildDaySleepAnalytics } from '../../../../util/triathlon-card'
+import { napSummaries, sleepSummary } from '../../../../util/triathlon-day-analytics'
 import { createDomFactory } from '../../runtime/dom'
 import { el } from '../../runtime/dom'
 import { mathK } from '../../runtime/dom'
@@ -182,184 +178,7 @@ export const wallClock = (min: number): string => {
     .padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`
 }
 
-export const hourTicks = (
-  startIso: string,
-  intervalS: number,
-  count: number,
-  pctOf: (i: number) => number,
-): AxisXTick[] => {
-  const out: AxisXTick[] = []
-  const startS = wallMin(startIso) * 60
-  let bucket = Math.floor(startS / 7200)
-  for (let i = 1; i < count; i++) {
-    const b = Math.floor((startS + i * intervalS) / 7200)
-    if (b === bucket) continue
-    bucket = b
-    out.push({ label: wallClock((b * 7200) / 60), pct: pctOf(i) })
-  }
-  return out
-}
-
-export const OURA_STAGE: Record<string, { key: string; lane: number }> = {
-  '4': { key: 'awake', lane: 0 },
-  '3': { key: 'rem', lane: 1 },
-  '2': { key: 'light', lane: 2 },
-  '1': { key: 'deep', lane: 3 },
-}
-
-export const ouraScoreCls = (v: number): string =>
-  v < 70 ? 'tri-flag--alert' : v < 85 ? 'tri-flag--watch' : 'tri-flag--info'
-
-export const ouraContribGroup = (
-  formatter: TriathlonFormatter,
-  title: string,
-  contrib: Record<string, number | null> | null,
-): HTMLElement | null => {
-  if (!contrib) return null
-  const rows = Object.entries(contrib).filter((e): e is [string, number] => e[1] != null)
-  if (!rows.length) return null
-  const g = el('div', 'tri-sleep-contrib')
-  g.appendChild(el('div', 'tri-ana-block-title', formatter.text(title)))
-  for (const [key, v] of rows) {
-    const row = el('div', 'tri-sleep-contrib-row')
-    const bar = el('div', 'tri-sleep-contrib-bar')
-    const fill = el(
-      'div',
-      v >= 70 ? 'tri-sleep-contrib-fill' : 'tri-sleep-contrib-fill tri-sleep-contrib-fill--low',
-    )
-    fill.style.width = `${clampN(v, 0, 100)}%`
-    bar.appendChild(fill)
-    row.append(
-      el('span', 'tri-sleep-contrib-label', formatter.text(key.replace(/_/g, ' '))),
-      bar,
-      el('span', 'tri-sleep-contrib-val', String(Math.round(v))),
-    )
-    g.appendChild(row)
-  }
-  return g
-}
-
-export const buildHypnogram = (
-  formatter: TriathlonFormatter,
-  d: OuraDayDetail,
-): HTMLElement | null => {
-  const phase = d.phase5Min
-  if (!phase || !phase.length || !d.bedtimeStart) return null
-  const len = phase.length
-  const H = 16
-  const wrap = el('div', 'tri-sleep-chart tri-sleep-hyp', undefined, {
-    'data-oura-series': 'stages',
-  })
-  wrap.appendChild(el('div', 'tri-ana-block-title', formatter.text('sleep stages')))
-  const s = svg('svg', {
-    class: 'tri-ana-svg tri-hyp-svg',
-    viewBox: `0 0 ${len} ${H}`,
-    preserveAspectRatio: 'none',
-  })
-  let i = 0
-  while (i < len) {
-    const c = phase[i]
-    let j = i + 1
-    while (j < len && phase[j] === c) j++
-    const st = OURA_STAGE[c]
-    if (st)
-      s.appendChild(
-        svg('rect', {
-          x: i,
-          y: st.lane * 4 + 0.3,
-          width: j - i,
-          height: 3.4,
-          class: `tri-hyp--${st.key}`,
-        }),
-      )
-    i = j
-  }
-  const cursor = svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' })
-  s.appendChild(cursor)
-  wrap.appendChild(
-    axisFrame(
-      createDomFactory(formatter.presentation),
-      s,
-      [
-        { label: formatter.text('awake'), vbY: 2 },
-        { label: formatter.text('rem'), vbY: 6 },
-        { label: formatter.text('light'), vbY: 10 },
-        { label: formatter.text('deep'), vbY: 14 },
-      ],
-      H,
-      hourTicks(d.bedtimeStart, 300, len, k => (k / len) * 100),
-      false,
-    ),
-  )
-  const readout = el('div', 'tri-chart-readout')
-  wrap.appendChild(readout)
-  const cap = el('div', 'tri-elev-cap')
-  const durs: [string, number | null][] = [
-    ['deep', d.deepS],
-    ['light', d.lightS],
-    ['rem', d.remS],
-    ['awake', d.awakeS],
-  ]
-  for (const [name, sec] of durs)
-    if (sec != null) cap.appendChild(el('span', 'tri-ana-k', `${formatter.text(name)} ${hms(sec)}`))
-  wrap.appendChild(cap)
-  return wrap
-}
-
-export const buildOuraSeriesChart = (
-  formatter: TriathlonFormatter,
-  key: 'hrv' | 'hr',
-  title: string,
-  series: OuraSeries | null,
-  strokeCls: string,
-): HTMLElement | null => {
-  if (!series || series.items.length < 2) return null
-  const items = series.items
-  const n = items.length
-  const vals = items.filter((v): v is number => v != null)
-  if (vals.length < 2) return null
-  let lo = Infinity
-  let hi = -Infinity
-  for (const v of vals) {
-    if (v < lo) lo = v
-    if (v > hi) hi = v
-  }
-  const pad = Math.max((hi - lo) * 0.1, 1)
-  const mn = lo - pad
-  const mx = hi + pad
-  const x = (i: number): number => (i / (n - 1)) * ANA_W
-  const y = (v: number): number => ANA_H - 2 - ((v - mn) / (mx - mn)) * (ANA_H - 4)
-  const wrap = el('div', 'tri-sleep-chart', undefined, { 'data-oura-series': key })
-  wrap.appendChild(el('div', 'tri-ana-block-title', formatter.text(title)))
-  const s = svg('svg', {
-    class: 'tri-ana-svg tri-sleep-line-svg',
-    viewBox: `0 0 ${ANA_W} ${ANA_H}`,
-    preserveAspectRatio: 'none',
-  })
-  const avg = vals.reduce((a, b) => a + b, 0) / vals.length
-  s.appendChild(svg('line', { x1: 0, y1: y(avg), x2: ANA_W, y2: y(avg), class: 'tri-rec-target' }))
-  for (const seg of segRuns(items, v => v, x, y))
-    s.appendChild(svg('path', { d: polyD(seg), class: strokeCls }))
-  const cursor = svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' })
-  s.appendChild(cursor)
-  wrap.appendChild(
-    axisFrame(
-      createDomFactory(formatter.presentation),
-      s,
-      [
-        { label: String(Math.round(hi)), vbY: y(hi) },
-        { label: String(Math.round(lo)), vbY: y(lo) },
-      ],
-      ANA_H,
-      hourTicks(series.startTs, series.intervalS, n, k => (k / (n - 1)) * 100),
-    ),
-  )
-  const readout = el('div', 'tri-chart-readout')
-  wrap.appendChild(readout)
-  return wrap
-}
-
-export const SLEEPLESS_ROCKY_FRAMES = [1, 2, 3, 0].map(
+const SLEEPLESS_ROCKY_FRAMES = [1, 2, 3, 0].map(
   c => `/static/landing/rocky-monomyth/frames/rocky-monomyth-r5-c${c}.webp`,
 )
 
@@ -384,96 +203,48 @@ export const buildSleeplessRock = (caption: string): HTMLElement => {
 export const buildSleepDayDetail = (
   formatter: TriathlonFormatter,
   date: string,
-  d: OuraDayDetail | null,
+  detail: OuraDayDetail | null,
   sleepMetrics: SleepMetrics | null,
+  health: GarminHealthDay | null = null,
+  restorationBaseline: OuraRestorationBaseline | null = null,
 ): HTMLElement => {
   const wrap = el('div', 'tri-sleep-day-body')
   const head = el('div', 'tri-sleep-day-head')
-  const cap = el('div', 'tri-elev-cap')
-  cap.appendChild(el('span', 'tri-ana-k tri-sleep-day-date', formatter.shortDate(date)))
-  if (d?.bedtimeStart)
-    cap.appendChild(
-      el('span', 'tri-ana-k', `${formatter.text('bedtime')} ${wallClock(wallMin(d.bedtimeStart))}`),
-    )
-  if (d?.bedtimeEnd)
-    cap.appendChild(
-      el('span', 'tri-ana-k', `${formatter.text('wake-up')} ${wallClock(wallMin(d.bedtimeEnd))}`),
-    )
-  if (d?.totalSleepS != null)
-    cap.appendChild(el('span', 'tri-ana-k', `${formatter.text('sleep')} ${hms(d.totalSleepS)}`))
-  if (d?.efficiency != null)
-    cap.appendChild(
-      el('span', 'tri-ana-k', `${formatter.text('efficiency')} ${Math.round(d.efficiency)}%`),
-    )
-  if (d?.latencyS != null)
-    cap.appendChild(el('span', 'tri-ana-k', `${formatter.text('latency')} ${hms(d.latencyS)}`))
-  if (d?.lowestHr != null)
-    cap.appendChild(
-      el('span', 'tri-ana-k', `${formatter.text('lowest hr')} ${Math.round(d.lowestHr)}`),
-    )
-  if (d?.sleepScore != null)
-    cap.appendChild(
-      el(
-        'span',
-        `tri-ana-k ${ouraScoreCls(d.sleepScore)}`,
-        `${formatter.text('sleep score')} ${Math.round(d.sleepScore)}`,
-      ),
-    )
-  if (d?.readinessScore != null)
-    cap.appendChild(
-      el(
-        'span',
-        `tri-ana-k ${ouraScoreCls(d.readinessScore)}`,
-        `${formatter.text('readiness')} ${Math.round(d.readinessScore)}`,
-      ),
-    )
-  const metricBar = buildSleepMetricBar(
-    createDomFactory(formatter.presentation),
-    date,
-    sleepMetrics ?? resolveSleepMetrics(d, null),
-  )
-  const respiration = buildSleepRespirationChart(
-    createDomFactory(formatter.presentation),
-    date,
-    sleepMetrics,
-  )
-  head.appendChild(cap)
-  const closeBtn = el('button', 'tri-sleep-day-close', undefined, {
+  const close = el('button', 'tri-sleep-day-close', undefined, {
     type: 'button',
     'aria-label': formatter.text('Close'),
     'data-site-cursor-close': '',
   })
-  closeBtn.appendChild(
+  close.appendChild(
     el('span', undefined, '×', { 'aria-hidden': 'true', 'data-site-cursor-icon': '' }),
   )
-  head.appendChild(closeBtn)
+  head.appendChild(close)
   wrap.appendChild(head)
-  if (metricBar) wrap.appendChild(metricBar)
-  const hyp = d ? buildHypnogram(formatter, d) : null
-  const hrv = d ? buildOuraSeriesChart(formatter, 'hrv', 'hrv', d.hrv, 'tri-rec-hrv') : null
-  const hr = d
-    ? buildOuraSeriesChart(formatter, 'hr', 'resting heart rate', d.hr, 'tri-rec-rhr')
-    : null
-  if (!hyp && !hrv && !hr && !metricBar && !respiration)
-    wrap.appendChild(buildSleeplessRock(formatter.text('rock bottom — no sleep recorded')))
-  const sleepContrib = ouraContribGroup(formatter, 'sleep score', d?.sleepContrib ?? null)
-  if (sleepContrib) wrap.appendChild(sleepContrib)
-  const readyContrib = ouraContribGroup(formatter, 'readiness', d?.readinessContrib ?? null)
-  if (readyContrib) wrap.appendChild(readyContrib)
-  if (hyp) wrap.appendChild(hyp)
-  if (hrv) wrap.appendChild(hrv)
-  if (hr) wrap.appendChild(hr)
-  if (respiration) wrap.appendChild(respiration)
+  const charts = buildDaySleepAnalytics(createDomFactory(formatter.presentation), {
+    date,
+    sleep: sleepSummary(detail ?? undefined),
+    naps: napSummaries(detail ?? undefined),
+    sleepMetrics: detail ? resolveSleepMetrics(detail, sleepMetrics?.garmin) : sleepMetrics,
+    garminHealth: health,
+    ouraHealth: detail?.health ?? null,
+    restorationBaseline,
+    recovery: null,
+    body: null,
+    training: null,
+    heat: null,
+  })
+  if (charts) wrap.appendChild(charts)
   return wrap
 }
 
-export const buildSleep = (data: Analytics, context: TriathlonContext): HTMLElement => {
-  const block = el('div', 'tri-ana-sleep')
-  block.appendChild(anaTitle(context.formatter, 'sleep · debt', 'sleepdebt'))
+const buildSleepTrend = (data: Analytics, context: TriathlonContext): HTMLElement => {
+  const block = el('div', 'tri-sleep-overview tri-sleep-overview--night')
   const rec = data.recovery
   const view = rec.series
   const supplementaryDates = new Set(
-    data.daily.filter(day => day.sleepMetrics != null).map(day => day.date),
+    data.daily
+      .filter(day => day.sleepMetrics != null || day.garminHealth != null || day.ouraHealth != null)
+      .map(day => day.date),
   )
   if (!view.some(d => d.sleepS != null || supplementaryDates.has(d.date))) {
     block.appendChild(el('div', 'tri-ana-empty', context.formatter.text('no sleep logged')))
@@ -603,6 +374,15 @@ export const buildSleep = (data: Analytics, context: TriathlonContext): HTMLElem
       ),
     )
   block.appendChild(cap)
+  return block
+}
+
+export const buildSleep = (data: Analytics, context: TriathlonContext): HTMLElement => {
+  const block = el('div', 'tri-ana-sleep')
+  block.append(
+    anaTitle(context.formatter, 'sleep · debt', 'sleepdebt'),
+    buildSleepTrend(data, context),
+  )
   const dayWrap = el('div', 'tri-sleep-day')
   const dayInner = el('div', 'tri-sleep-day-inner')
   dayWrap.appendChild(dayInner)

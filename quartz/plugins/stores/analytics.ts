@@ -6,11 +6,18 @@ import type {
   GarminStreams,
   GarminWeightSample,
 } from './garmin'
+import type { GarminHealthDay } from './garmin-health'
+import type { OuraHealthDay } from './oura'
 import type { WeatherCache } from './weather'
 import { selectActivityAnalysisSummary } from '../../util/activity-analysis-selection'
 import { matchAppleRun } from '../../util/apple-run-match'
 import { matchAppleSwims } from '../../util/apple-swim-match'
 import { WORLD_TOUR_POWER_REFERENCE } from '../../util/cycling-ability-reference'
+import {
+  estimateFtpFromPowerCurve,
+  FTP_FROM_P20,
+  type PowerCurveFtpEstimate,
+} from '../../util/cycling-ftp'
 import {
   calculateFtpHypothesis,
   FTP_HYPOTHESIS_DEFAULTS,
@@ -358,13 +365,18 @@ export interface PowerCurveBlock {
   yearLabel: number | null
   criticalPower: CriticalPowerEstimate | null
   criticalPowerYear: CriticalPowerEstimate | null
+  estimatedFtp: PowerCurveFtpEstimate | null
+  estimatedFtpYear: PowerCurveFtpEstimate | null
   ftp: number | null
   goalFtp: number | null
   ranking: PowerRankBlock
   powerToWeight: PowerToWeightTrend
 }
 
-export type PowerCurveInput = Omit<PowerCurveBlock, 'ranking' | 'powerToWeight'>
+export type PowerCurveInput = Omit<
+  PowerCurveBlock,
+  'ranking' | 'powerToWeight' | 'estimatedFtp' | 'estimatedFtpYear'
+>
 
 export type Conf = 'firm' | 'low' | 'prior' | 'stale'
 export type TsbZone = 'fresh' | 'neutral' | 'fatigued' | 'deep'
@@ -410,6 +422,10 @@ export interface DailyPoint {
   rhr: number | null
   sleepScore: number | null
   sleepDurationS: number | null
+  napDurationS?: number | null
+  napCount?: number | null
+  garminHealth?: GarminHealthDay | null
+  ouraHealth?: OuraHealthDay | null
   sleepMetrics: SleepMetrics | null
   tempDevC: number | null
   weightKg: number | null
@@ -1065,6 +1081,8 @@ const emptyPowerCurve = (today = '1970-01-01'): PowerCurveBlock => ({
   yearLabel: null,
   criticalPower: null,
   criticalPowerYear: null,
+  estimatedFtp: null,
+  estimatedFtpYear: null,
   ftp: null,
   goalFtp: null,
   ranking: emptyPowerRank(),
@@ -3779,7 +3797,6 @@ const FRIEND_PCT_M: { age: number; rows: [number, number][] }[] = [
 ]
 const ACSM_WATT_K = 10.8
 const ACSM_BASE = 7
-const FTP_FROM_P20 = 0.95
 const MAP_FTP_RATIO = 0.75
 const DANIELS_A = -4.6
 const DANIELS_B = 0.182258
@@ -5507,6 +5524,12 @@ export function buildAnalytics(
   let latestWeight: PowerRankMass | null = null
   for (const d of daily) {
     const o = ouraDays[d.date]
+    const naps = inputs.oura?.details?.[d.date]?.naps
+    d.napDurationS = naps ? naps.reduce((sum, nap) => sum + (nap.totalSleepS ?? 0), 0) : null
+    d.napCount = naps?.length ?? null
+    const garminHealth = inputs.garmin?.health?.[d.date]
+    d.garminHealth = garminHealth?.date === d.date ? garminHealth : null
+    d.ouraHealth = inputs.oura?.details?.[d.date]?.health ?? null
     const garminSleep = inputs.garmin?.sleep?.[d.date]
     d.sleepMetrics = resolveSleepMetrics(
       inputs.oura?.details?.[d.date],
@@ -5635,6 +5658,8 @@ export function buildAnalytics(
   const sourcePowerCurve = inputs.powerCurve ?? emptyPowerCurve(today)
   const powerCurve: PowerCurveBlock = {
     ...sourcePowerCurve,
+    estimatedFtp: estimateFtpFromPowerCurve(sourcePowerCurve.sixWeeks),
+    estimatedFtpYear: estimateFtpFromPowerCurve(sourcePowerCurve.year),
     ranking: buildPowerRank(sourcePowerCurve.sixWeeks, sourcePowerCurve.year, latestWeight, {
       sex: ATHLETE.sex,
       age: ageOn(today),
@@ -5901,6 +5926,10 @@ export const DAY_FIELDS = [
   'hrv',
   'rhr',
   'sleepDurationS',
+  'napDurationS',
+  'napCount',
+  'garminHealth',
+  'ouraHealth',
   'sleepMetrics',
   'tempDeviationC',
   'totalCalories',
@@ -6019,6 +6048,10 @@ export interface FeedDayRow {
   hrv: number | null
   rhr: number | null
   sleepDurationS: number | null
+  napDurationS?: number | null
+  napCount?: number | null
+  garminHealth?: GarminHealthDay | null
+  ouraHealth?: OuraHealthDay | null
   sleepMetrics: SleepMetrics | null
   tempDeviationC: number | null
   totalCalories: number | null
@@ -6195,6 +6228,10 @@ export function buildDataFeed(
         hrv: o?.hrv ?? null,
         rhr: o?.rhr ?? null,
         sleepDurationS: o?.sleepDurationS ?? null,
+        napDurationS: d.napDurationS ?? null,
+        napCount: d.napCount ?? null,
+        garminHealth: d.garminHealth ?? null,
+        ouraHealth: d.ouraHealth ?? null,
         sleepMetrics: d.sleepMetrics,
         tempDeviationC: o?.tempDeviationC ?? null,
         totalCalories: d.totalCalories ?? o?.totalCalories ?? ap?.burnKcal ?? null,

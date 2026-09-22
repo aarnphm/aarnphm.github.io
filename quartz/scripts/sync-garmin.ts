@@ -54,6 +54,7 @@ import { joinSegments, QUARTZ } from '../util/path'
 import { syncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, readString, type UnknownRecord } from '../util/type-guards'
+import { fetchGarminHealthRange } from './garmin-health-sync'
 
 const CACHE_VERSION = 14
 const SWIM_CACHE_VERSION = 13
@@ -466,8 +467,9 @@ export async function fetchGarminSleepRange(
 async function main(): Promise<void> {
   const flags = process.argv.slice(2)
   for (const flag of flags)
-    if (flag !== '--sleep-only' && flag !== '--lactate-threshold-only')
+    if (flag !== '--sleep-only' && flag !== '--lactate-threshold-only' && flag !== '--health-only')
       throw new Error(`unknown flag ${flag}`)
+  if (flags.length > 1) throw new Error('Choose only one Garmin sync scope')
   const sleepOnly = flags.includes('--sleep-only')
   const previous = await readCache()
   const session = await readGarminConnectSession()
@@ -503,6 +505,43 @@ async function main(): Promise<void> {
   const start = await startDate(previous, refreshWindowDays)
   const end = endDate()
   if (start > end) throw new Error(`Garmin sync start ${start} is after end ${end}`)
+
+  let health = previous?.health
+  let healthLastSync = previous?.healthLastSync
+  if (!sleepOnly) {
+    const healthStart =
+      cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
+      cleanDay(process.env.GARMIN_CONNECT_SINCE) ??
+      shiftIsoDay(end, -refreshWindowDays)
+    const result = await fetchGarminHealthRange(
+      session,
+      base,
+      health ?? {},
+      healthStart,
+      end,
+      delayMs,
+    )
+    health = result.health
+    if (result.responses > 0) healthLastSync = Date.now()
+    if (flags.includes('--health-only')) {
+      const latest = await readCache()
+      if (previous && !latest) throw new Error('Garmin cache disappeared during health refresh')
+      const cache: GarminCache = {
+        ...(latest ?? { version: CACHE_VERSION, lastSync: 0, activities: {} }),
+        health,
+        healthLastSync,
+      }
+      await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
+      await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+      await refreshTriathlonRouteSource()
+      console.log(
+        `[garmin] health: ${result.responses} responses, ${result.failures} failures, ${Object.keys(health).length} days`,
+      )
+      if (result.failures)
+        throw new Error(`Garmin health refresh incomplete: ${result.failures} failed requests`)
+      return
+    }
+  }
 
   const sleepStart =
     cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
@@ -833,6 +872,8 @@ async function main(): Promise<void> {
     weight,
     sleep: overnightSleep,
     sleepLastSync,
+    health,
+    healthLastSync,
   }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))

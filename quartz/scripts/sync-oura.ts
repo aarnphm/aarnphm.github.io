@@ -9,11 +9,18 @@ import {
   OuraDayDetail,
   OuraHeartRateSample,
   OuraHeartRateSource,
+  OuraNap,
   OuraSeries,
   ouraSleepCalendarDay,
   OuraUser,
 } from '../plugins/stores/oura'
 import { localDayStartUtcMs, localIsoDayOffset } from '../util/local-date'
+import {
+  applyOuraHealthRow,
+  emptyOuraHealth,
+  ouraHealthCollections,
+  type OuraHealthCollection,
+} from '../util/oura-health'
 import { joinSegments, QUARTZ } from '../util/path'
 import { calendarRefreshStart, syncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
@@ -21,7 +28,7 @@ import { isRecord } from '../util/type-guards'
 
 const API = 'https://api.ouraring.com/v2/usercollection'
 const TOKEN_URL = 'https://api.ouraring.com/oauth/token'
-const CACHE_VERSION = 4
+const CACHE_VERSION = 7
 const LOOKBACK_DAYS = 365
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
 const limiter = new AdaptiveRateLimiter(1500, 60_000)
@@ -143,6 +150,10 @@ async function fetchDateTimeRange(
 }
 
 const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null)
+const positive = (v: unknown): number | null => {
+  const value = num(v)
+  return value != null && value > 0 ? value : null
+}
 const str = (v: unknown): string | null => (typeof v === 'string' ? v : null)
 
 const HEART_RATE_SOURCES: readonly OuraHeartRateSource[] = [
@@ -178,7 +189,7 @@ function sampleSeries(v: unknown): OuraSeries | null {
   const startTs = str(v.timestamp)
   const intervalS = num(v.interval)
   if (!startTs || intervalS == null || !Array.isArray(v.items)) return null
-  return { startTs, intervalS, items: v.items.map(num) }
+  return { startTs, intervalS, items: v.items.map(positive) }
 }
 
 function contributors(v: unknown): Record<string, number | null> | null {
@@ -220,6 +231,102 @@ function emptyDetail(date: string): OuraDayDetail {
 
 const detailEmpty = (d: OuraDayDetail): boolean =>
   Object.entries(d).every(([k, v]) => k === 'date' || v == null)
+
+function sleepDetail(day: string, r: Row): OuraDayDetail {
+  return {
+    ...emptyDetail(day),
+    bedtimeStart: str(r.bedtime_start),
+    bedtimeEnd: str(r.bedtime_end),
+    phase5Min: str(r.sleep_phase_5_min),
+    phase30Sec: str(r.sleep_phase_30_sec),
+    movement30Sec: str(r.movement_30_sec),
+    lowBatteryAlert: r.low_battery_alert === true,
+    sleepAlgorithmVersion: str(r.sleep_algorithm_version),
+    efficiency: num(r.efficiency),
+    latencyS: num(r.latency),
+    timeInBedS: num(r.time_in_bed),
+    totalSleepS: num(r.total_sleep_duration),
+    deepS: num(r.deep_sleep_duration),
+    lightS: num(r.light_sleep_duration),
+    remS: num(r.rem_sleep_duration),
+    awakeS: num(r.awake_time),
+    avgBreath: positive(r.average_breath),
+    avgHr: positive(r.average_heart_rate),
+    avgHrv: positive(r.average_hrv),
+    lowestHr: positive(r.lowest_heart_rate),
+    restlessPeriods: num(r.restless_periods),
+    hrv: sampleSeries(r.hrv),
+    hr: sampleSeries(r.heart_rate),
+  }
+}
+
+export function applyOuraSleepRows(
+  rows: readonly Row[],
+  days: Record<string, OuraDaily>,
+  details: Record<string, OuraDayDetail>,
+  start: string,
+  end: string,
+): void {
+  const ensureDetail = (day: string): OuraDayDetail => (details[day] ??= emptyDetail(day))
+  // Replace the refreshed window so deleted/reclassified naps disappear on the next sync.
+  for (const [day, detail] of Object.entries(details))
+    if (day >= start && day <= end) detail.naps = []
+  const mainSleep = new Map<string, Row>()
+  const naps = new Map<string, OuraNap>()
+  for (const row of rows) {
+    const day = ouraSleepCalendarDay(row)
+    if (!day || day < start || day > end) continue
+    ensureDetail(day).naps ??= []
+    if (row.type === 'sleep' || row.type === 'late_nap') {
+      const detail = sleepDetail(day, row)
+      const id = str(row.id)
+      if (
+        !id ||
+        !detail.bedtimeStart ||
+        !detail.bedtimeEnd ||
+        !Number.isFinite(Date.parse(detail.bedtimeStart)) ||
+        Date.parse(detail.bedtimeEnd) <= Date.parse(detail.bedtimeStart) ||
+        !Number.isFinite(Date.parse(detail.bedtimeEnd)) ||
+        (detail.totalSleepS ?? 0) <= 0
+      )
+        continue
+      naps.set(id, {
+        ...detail,
+        id,
+        type: row.type,
+        reportedDay: str(row.day),
+        sleepScoreDelta: num(row.sleep_score_delta),
+        readinessScoreDelta: num(row.readiness_score_delta),
+      })
+      continue
+    }
+    if (row.type !== undefined && row.type !== null && row.type !== 'long_sleep') continue
+    const current = mainSleep.get(day)
+    if (!current || (num(row.total_sleep_duration) ?? 0) > (num(current.total_sleep_duration) ?? 0))
+      mainSleep.set(day, row)
+  }
+  for (const [day, row] of mainSleep) {
+    const detail = ensureDetail(day)
+    const { readinessScore, readinessContrib, sleepScore, sleepContrib, health } = detail
+    Object.assign(detail, sleepDetail(day, row), {
+      readinessScore,
+      readinessContrib,
+      sleepScore,
+      sleepContrib,
+      health,
+    })
+    const daily = (days[day] ??= emptyOuraDaily(day))
+    daily.hrv = detail.avgHrv
+    daily.rhr = detail.lowestHr
+    daily.sleepDurationS = detail.totalSleepS
+  }
+  for (const nap of [...naps.values()].sort(
+    (a, b) => Date.parse(a.bedtimeStart ?? '') - Date.parse(b.bedtimeStart ?? ''),
+  )) {
+    days[nap.date] ??= emptyOuraDaily(nap.date)
+    ensureDetail(nap.date).naps?.push(nap)
+  }
+}
 
 async function fetchPersonalInfo(token: string): Promise<OuraUser> {
   const res = await fetchWithRetry(
@@ -273,6 +380,22 @@ async function main(): Promise<void> {
   const details: Record<string, OuraDayDetail> = {}
   if (prev?.details) for (const [k, v] of Object.entries(prev.details)) details[k] = { ...v }
   const ensureDetail = (day: string): OuraDayDetail => (details[day] ??= emptyDetail(day))
+  const applyHealth = (collection: OuraHealthCollection, rows: readonly Row[]): void => {
+    for (const [date, detail] of Object.entries(details)) {
+      if (date < start || date > end || !detail.health) continue
+      applyOuraHealthRow(detail.health, collection, {})
+      detail.health.failedCollections = detail.health.failedCollections?.filter(
+        key => key !== collection,
+      )
+    }
+    for (const row of rows) {
+      const date = str(row.day)
+      if (!date || date < start || date > end) continue
+      const detail = ensureDetail(date)
+      applyOuraHealthRow((detail.health ??= emptyOuraHealth(date)), collection, row)
+      days[date] ??= emptyOuraDaily(date)
+    }
+  }
   let heartRate = prev?.heartRate?.slice() ?? []
   let user: OuraUser = prev?.user ?? { id: null, email: null }
   let cacheVersion = prev?.version
@@ -344,46 +467,32 @@ async function main(): Promise<void> {
     dd.sleepScore = num(r.score)
     dd.sleepContrib = contributors(r.contributors)
   }
-  const mainSleep: Record<string, Row> = {}
-  for (const r of sleep) {
-    const day = ouraSleepCalendarDay(r)
-    if (!day) continue
-    if (r.type !== undefined && r.type !== 'long_sleep') continue
-    const cur = mainSleep[day]
-    if (!cur || (num(r.total_sleep_duration) ?? 0) > (num(cur.total_sleep_duration) ?? 0))
-      mainSleep[day] = r
-  }
-  for (const [day, r] of Object.entries(mainSleep)) {
-    const d = ensure(day)
-    d.hrv = num(r.average_hrv)
-    d.rhr = num(r.lowest_heart_rate)
-    d.sleepDurationS = num(r.total_sleep_duration)
-    const dd = ensureDetail(day)
-    dd.bedtimeStart = str(r.bedtime_start)
-    dd.bedtimeEnd = str(r.bedtime_end)
-    dd.phase5Min = str(r.sleep_phase_5_min)
-    dd.efficiency = num(r.efficiency)
-    dd.latencyS = num(r.latency)
-    dd.timeInBedS = num(r.time_in_bed)
-    dd.totalSleepS = num(r.total_sleep_duration)
-    dd.deepS = num(r.deep_sleep_duration)
-    dd.lightS = num(r.light_sleep_duration)
-    dd.remS = num(r.rem_sleep_duration)
-    dd.awakeS = num(r.awake_time)
-    dd.avgBreath = num(r.average_breath)
-    dd.avgHr = num(r.average_heart_rate)
-    dd.avgHrv = num(r.average_hrv)
-    dd.lowestHr = num(r.lowest_heart_rate)
-    dd.restlessPeriods = num(r.restless_periods)
-    dd.hrv = sampleSeries(r.hrv)
-    dd.hr = sampleSeries(r.heart_rate)
-  }
+  applyOuraSleepRows(sleep, days, details, start, end)
   for (const r of activity) {
     const day = str(r.day)
     if (!day) continue
     const d = ensure(day)
     d.totalCalories = num(r.total_calories)
     d.activeCalories = num(r.active_calories)
+  }
+
+  applyHealth('daily_activity', activity)
+  applyHealth('daily_readiness', readiness)
+  for (const collection of ouraHealthCollections) {
+    try {
+      const rows = await fetchRange(access, collection, start, endExclusive)
+      applyHealth(collection, rows)
+      console.log(`[oura] ${collection}: ${rows.length} records`)
+    } catch (error) {
+      console.warn(
+        `[oura] ${collection}: ${error instanceof Error ? error.message : 'refresh failed'}; keeping cached values`,
+      )
+      for (const [date, detail] of Object.entries(details)) {
+        if (date < start || date > end) continue
+        const health = (detail.health ??= emptyOuraHealth(date))
+        health.failedCollections = [...new Set([...(health.failedCollections ?? []), collection])]
+      }
+    }
   }
 
   for (const [day, dd] of Object.entries(details)) if (detailEmpty(dd)) delete details[day]

@@ -6,6 +6,7 @@ import {
   type PowerToWeightDurationS,
 } from '../../../plugins/stores/analytics'
 import { sleepSupplementMetrics } from '../../../util/triathlon-card'
+import { garminHealthSummary } from '../../../util/triathlon-garmin-health'
 import { mountPrimaryPanel } from './panel-mounts-primary'
 import { mountSecondaryPanel } from './panel-mounts-secondary'
 import { buildAbilities } from './panels/abilities'
@@ -15,7 +16,12 @@ import { buildCardio } from './panels/cardio'
 import { buildDistributions } from './panels/distributions'
 import { buildFtpHypothesis } from './panels/ftp'
 import { buildPmc, buildWeekly } from './panels/performance'
-import { buildBestPowerCurve } from './panels/power'
+import {
+  bestPowerSeries,
+  bestPowerSeriesLabel,
+  buildBestPowerCurve,
+  estimatedFtpForSeries,
+} from './panels/power'
 import { buildPowerToWeightTrend, powerToWeightDurationLabel } from './panels/power-to-weight'
 import { buildRecoveryChart, buildSleep } from './panels/recovery'
 import {
@@ -217,7 +223,7 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
     key: 'sleep',
     label: 'sleep',
     search:
-      'sleep debt target score night hypnogram respiration breath pulse ox spo2 body battery stress garmin oura',
+      'sleep debt target score night nap hypnogram respiration breath pulse ox spo2 body battery stress garmin oura training readiness recovery time training status load focus endurance hill',
     render: (data, context) =>
       withPanelMount(buildSleep(data, context), [
         root => mountPrimaryPanel('sleep', root, data, context),
@@ -225,6 +231,7 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
       ]),
     server: (data, formatter) => {
       const latest = data.daily.findLast(day => day.sleepMetrics != null)
+      const health = data.daily.find(day => day.date === data.meta.today)?.garminHealth
       return {
         title: formatter.text('sleep · debt'),
         values: [
@@ -232,13 +239,16 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
           { label: formatter.text('baseline'), value: duration(data.recovery.sleepBaselineS) },
           { label: formatter.text('debt'), value: duration(data.recovery.sleepDebtS) },
           ...(latest
-            ? [
-                { label: formatter.text('sleep details'), value: formatter.shortDate(latest.date) },
-                ...sleepSupplementMetrics(formatter.presentation, latest.sleepMetrics).map(
-                  metric => ({ ...metric, label: formatter.text(metric.label) }),
-                ),
-              ]
+            ? sleepSupplementMetrics(formatter.presentation, latest.sleepMetrics).map(metric => ({
+                ...metric,
+                label: formatter.text(metric.label),
+              }))
             : []),
+          ...garminHealthSummary(health).map(metric => ({
+            ...metric,
+            label: formatter.text(metric.label),
+            detail: metric.detail ? formatter.text(metric.detail) : 'Garmin',
+          })),
         ],
         series: [
           { label: 'sleep duration', values: finite(data.recovery.series.map(day => day.sleepS)) },
@@ -336,7 +346,7 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
     key: 'power',
     label: 'power curve',
     search:
-      'cycling power curve critical power cp w prime ftp watts duration best efforts power rank radar sprint attack climb w kg percentile',
+      'cycling power curve critical power cp w prime ftp estimated eftp p20 watts duration best efforts power rank radar sprint attack climb w kg percentile',
     render: (data, context) => {
       const element = buildBestPowerCurve(data, context)
       const powerToWeight = buildPowerToWeightTrend(data, context)
@@ -345,10 +355,17 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
         root => mountPrimaryPanel('power', root, data, context),
       ])
     },
-    server: data => ({
+    server: (data, formatter) => ({
       title: 'cycling · power · power-to-weight trend',
       values: [
         { label: 'FTP', value: value(data.powerCurve.ftp, ' W') },
+        ...bestPowerSeries(data.powerCurve).map(({ key }) => ({
+          label: `eFTP · ${bestPowerSeriesLabel(formatter, data.powerCurve, key)}`,
+          value: value(estimatedFtpForSeries(data.powerCurve, key)?.watts, ' W'),
+          detail: formatter.text(
+            'eFTP = 95% of best recorded 20-minute power. Provisional: effort may be submaximal.',
+          ),
+        })),
         {
           label: 'eCP',
           value: value(

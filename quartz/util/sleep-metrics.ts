@@ -6,22 +6,39 @@ export interface SleepMetrics {
   averageBreathsPerMinute: number | null
   respirationSource: 'oura' | 'garmin' | null
   garmin: GarminSleepSummary | null
+  oxygenSaturation?: { averagePct: number; source: 'oura' | 'garmin' }
+  breathingDisturbanceIndex?: number
 }
 
 const positive = (value: number | null | undefined): number | null =>
   value != null && Number.isFinite(value) && value > 0 ? value : null
 
 export function resolveSleepMetrics(
-  oura: Pick<OuraDayDetail, 'avgBreath'> | null | undefined,
+  oura: Pick<OuraDayDetail, 'avgBreath' | 'health'> | null | undefined,
   garmin: GarminSleepSummary | null | undefined,
 ): SleepMetrics | null {
   const ouraBreath = positive(oura?.avgBreath)
   const garminBreath = positive(garmin?.averageBreathsPerMinute)
-  if (ouraBreath == null && !garmin) return null
+  const saturation = (value: number | null | undefined): number | null => {
+    const n = positive(value)
+    return n != null && n <= 100 ? n : null
+  }
+  const garminOxygen = saturation(garmin?.averageSpO2)
+  const ouraOxygen = saturation(oura?.health?.spo2?.averagePct)
+  const averagePct = garminOxygen ?? ouraOxygen
+  const bdi = oura?.health?.spo2?.breathingDisturbanceIndex
+  const breathingDisturbanceIndex =
+    bdi != null && Number.isFinite(bdi) && bdi >= 0 && bdi <= 100 ? bdi : null
+  if (ouraBreath == null && !garmin && averagePct == null && breathingDisturbanceIndex == null)
+    return null
   return {
     averageBreathsPerMinute: ouraBreath ?? garminBreath,
     respirationSource: ouraBreath != null ? 'oura' : garminBreath != null ? 'garmin' : null,
     garmin: garmin ?? null,
+    ...(averagePct == null
+      ? {}
+      : { oxygenSaturation: { averagePct, source: garminOxygen != null ? 'garmin' : 'oura' } }),
+    ...(breathingDisturbanceIndex == null ? {} : { breathingDisturbanceIndex }),
   }
 }
 
@@ -76,6 +93,19 @@ export const isSleepMetrics = (value: unknown, date: string): value is SleepMetr
       ? value.respirationSource === null
       : value.respirationSource === 'oura' || value.respirationSource === 'garmin') &&
     garminSleepIsValid(value.garmin, date) &&
+    (value.oxygenSaturation === undefined ||
+      (isRecord(value.oxygenSaturation) &&
+        typeof value.oxygenSaturation.averagePct === 'number' &&
+        value.oxygenSaturation.averagePct > 0 &&
+        value.oxygenSaturation.averagePct <= 100 &&
+        (value.oxygenSaturation.source === 'oura' ||
+          (value.oxygenSaturation.source === 'garmin' &&
+            isRecord(value.garmin) &&
+            value.garmin.averageSpO2 === value.oxygenSaturation.averagePct)))) &&
+    (value.breathingDisturbanceIndex === undefined ||
+      (typeof value.breathingDisturbanceIndex === 'number' &&
+        value.breathingDisturbanceIndex >= 0 &&
+        value.breathingDisturbanceIndex <= 100)) &&
     (value.respirationSource !== 'garmin' ||
       (isRecord(value.garmin) &&
         value.averageBreathsPerMinute === value.garmin.averageBreathsPerMinute)))

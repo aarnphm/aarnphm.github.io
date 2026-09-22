@@ -9,6 +9,7 @@ export const scrubBind = (
   count: number,
   vbW: number,
   textOf: (i: number) => string,
+  indexAt: (fraction: number) => number = fraction => Math.round(fraction * (count - 1)),
 ): (() => void) => {
   if (count < 2) return () => {}
   const onMove = (event: MouseEvent) => {
@@ -17,7 +18,7 @@ export const scrubBind = (
     const cx = (frac * vbW).toFixed(2)
     cursor.setAttribute('x1', cx)
     cursor.setAttribute('x2', cx)
-    setMath(readout, textOf(Math.round(frac * (count - 1))))
+    setMath(readout, textOf(indexAt(frac)))
     hover.classList.add('tri-chart--hover')
   }
   const onLeave = () => hover.classList.remove('tri-chart--hover')

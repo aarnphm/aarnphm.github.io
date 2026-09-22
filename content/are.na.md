@@ -82,6 +82,48 @@ title: are.na
 
 ## discourse
 
+- https://docs.google.com/document/u/1/d/e/2PACX-1vQNl3SEX5IyA6d9qHjjFZN-qzGRZNFI6b63g-yu1Fy-ZYkVfCWm7i9WXRXw63m6yDB_auDuPLyQ7jBm/pub -- Personal Statement on AI Risk
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai risk, personal statement]
+    - later: true
+
+- https://www.bloomberg.com/news/features/2025-07-13/china-drugmakers-catching-up-to-us-big-pharma-with-new-medicine-innovation -- China Biotech's Stunning Advance Is Changing the World's Drug Pipeline
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [china, biotechnology]
+    - later: true
+
+- https://darioamodei.com/post/we-must-pace-the-frontier -- We Must Pace the Frontier
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai governance, frontier models]
+    - later: true
+
+- https://www.beren.io/2026-09-08-Many-Benefits-of-AGI-Could-Still-Be-Realized-In-A-Pause -- Many Benefits Of AGI Could Still Be Realized In A Pause
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [agi, ai pause]
+    - later: true
+
+- https://ai-2040.com -- AI 2040: Plan A
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai governance, scenarios]
+    - later: true
+
+- https://www.theguardian.com/technology/2026/sep/15/syd-barrett-ai-chat-language-poetic-tech-bro-jargon-oversight -- AI models chatting in 'surreal' dialect mixing poetic language and tech bro jargon
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai communication, language]
+    - later: true
+
+- https://openai.com/index/the-defenders-window -- The Defender's Window
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [cybersecurity, ai safety]
+    - later: true
+
 - https://paulfchristiano.substack.com/p/personal-statement-on-joining-the -- Personal statement on joining the OpenAI board
   - [meta]:
     - date: 09/12/2026
@@ -672,6 +714,120 @@ title: are.na
 
 - [meta]:
   - view: list
+
+- https://x.com/teortaxesTex/status/2099574156417229157 -- Teortaxes on Shengyu Liu's reflections on kernel engineering and AI
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [gpu programming, automation]
+    - later: true
+
+- https://x.com/CompleteSkeptic/status/2099925682726002904 -- Diogo Almeida introduces Jev and RLCD
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [decision models, reinforcement learning]
+    - later: true
+
+- https://x.com/i/trending/2099939291707134172 -- Ex-OpenAI Engineer Launches Jev for Fast AI Decisions
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [decision models, ai infrastructure]
+    - later: true
+
+- https://x.com/i/trending/2099906535530913910 -- Periodic Labs Unveils Neon AI Model Excelling in Materials Science
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [materials science, scientific discovery]
+    - later: true
+
+- https://x.com/alth0u/status/2099926141322813599 -- alth0u on high agency and the commons
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [agency, commons]
+    - later: true
+
+- https://x.com/zijie_y/status/2099914865431490787 -- Zijie Yan on training a trillion-parameter model with physics-lab data
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [training infrastructure, scientific discovery]
+    - later: true
+
+- https://x.com/natolambert/status/2099934317753286776 -- Nathan Lambert on Never Give Up: allocating more samples to hard problems
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [reinforcement learning, grpo]
+    - later: true
+
+- https://x.com/emilyzsh/status/2099902602053878073 -- Emily Sihan Zhang on creative work alongside a demanding job
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [creativity, work]
+    - later: true
+
+- https://x.com/tszzl/status/2099993696121065548 -- roon on discussing AI risk inside frontier labs
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai risk, lab culture]
+    - later: true
+
+- https://x.com/NeelNanda5/status/2099996291917119783 -- Neel Nanda on models acquiring fictional characters' quirks
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [fine-tuning, misalignment]
+    - later: true
+
+- https://x.com/cafewindows/status/2099890396532969611 -- cafewindows: Khaite SS27
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [fashion, khaite]
+    - later: true
+
+- https://x.com/upcycledwords/status/2099986487228170434 -- Alicia Guo: 'what if wanting to be legible'
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [language]
+    - later: true
+
+- https://x.com/jiamixue/status/2099933096623616326 -- Michelle Jia introduces irid
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [education, independent research]
+    - later: true
+
+- https://x.com/jonaasw1/status/2100282767711887766 -- Jonas: cool internet things, part 15
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [interactive websites, curation]
+    - later: true
+
+- https://x.com/dwarkesh_sp/status/2100616332144169048 -- Dwarkesh Patel announces an episode with Noam Brown on AI research and alignment
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai research, interviews]
+    - later: true
+
+- https://x.com/_xjdr/status/2100712931906494595 -- xjdr on implementing DeepSeek V4.1 Flash from scratch
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [deepseek, inference]
+    - later: true
+
+- https://x.com/WillManidis/status/2100707739215221092 -- Will Manidis on SPVs marketed to retail investors
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [private markets, fraud]
+    - later: true
+
+- https://x.com/AnthropicAI/status/2100701581109072332 -- Anthropic on the cost of running specialized biology models
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [biology, inference costs]
+    - later: true
+
+- https://x.com/eliebakouch/status/2100701037598535890 -- Elie Bakouch on measuring automation across R&D tasks
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai research, automation]
+    - later: true
 
 - https://x.com/allTheYud/status/2046005913107239323 -- Eliezer Yudkowsky on empiricism and historical Rationalism
   - [meta]:
@@ -2331,6 +2487,24 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://kontinentalist.com -- Kontinentalist
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [data journalism, asia]
+    - later: true
+
+- https://hormonehangover.substack.com -- Hormone Hangover
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [personal writing, parenthood]
+    - later: true
+
+- https://eregis.github.io/blog -- eregis: Blog
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [mathematics, machine learning]
+    - later: true
+
 - https://www.follymagazine.org -- Folly Magazine
   - [meta]:
     - date: 09/15/2026
@@ -3266,6 +3440,54 @@ title: are.na
 
 - [meta]:
   - json: true
+
+- https://ismsx.jp -- isshin
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [motion design, portfolio]
+    - later: true
+
+- https://www.nancychen.xyz -- Nancy Chen
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [design, portfolio]
+    - later: true
+
+- https://www.hyumankind.com -- hyumankind
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [product design, portfolio]
+    - later: true
+
+- https://brianjychan.com -- Brian Chan
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [personal website]
+    - later: true
+
+- https://marijanapav.com -- Marijana Pavlinić
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [branding, web design]
+    - later: true
+
+- https://www.dylan.camera -- Dylan Hageman
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [color grading, film]
+    - later: true
+
+- https://en.wikipedia.org/wiki/Thomas_Massie -- Thomas Massie
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [politics, united states]
+    - later: true
+
+- https://mitchellh.com -- Mitchell Hashimoto
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [software engineering]
+    - later: true
 
 - https://philipgoffphilosophy.com/about -- Philip Goff
   - [meta]:
@@ -4445,6 +4667,12 @@ title: are.na
 
 ## places
 
+- https://en.wikipedia.org/wiki/Memphis_Pyramid -- Memphis Pyramid
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [memphis, architecture]
+    - later: true
+
 - https://oakwood-studio.github.io -- oakwood studio
   - [meta]:
     - date: 09/15/2026
@@ -4760,6 +4988,60 @@ title: are.na
 
 - [meta]:
   - json: true
+
+- https://jasminexli.substack.com/p/slowly-then-all-at-once -- Slowly, then all at once
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [change, history]
+    - later: true
+
+- https://zarazhang.com/2019/06/26/unanswerable-questions -- Unanswerable Questions
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [careers, reflection]
+    - later: true
+
+- https://www.henrikkarlsson.xyz/p/creative-block -- Some remarks on being stuck, with digressions on David Hockney, developing style, and gardens
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [creativity, creative block]
+    - later: true
+
+- https://the6thspence.substack.com/p/my-best-friend-is-cheating-on-her -- My best friend is cheating on her husband, and I can't judge her for it
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [relationships, ethics]
+    - later: true
+
+- https://pauljun.substack.com/p/execution-over-everything -- Execution over everything
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [creative work, execution]
+    - later: true
+
+- https://henry.codes/writing/a-website-to-destroy-all-websites -- A website to destroy all websites
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [indieweb, web culture]
+    - later: true
+
+- https://hereisyourbrain.substack.com/p/ai-generated-content-mind-virus -- The mind virus: Why you should care whether you read AI-generated content
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai writing, epistemology]
+    - later: true
+
+- https://bcantrill.dtrace.org/2026/09/13/the-contagion-of-fear -- The contagion of fear
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [technology, fear]
+    - later: true
+
+- https://velvetnoise.substack.com/p/notes-on-catch-up-conversations -- notes on catch-up conversations
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [friendship, conversation]
+    - later: true
 
 - https://www.freaktakes.com/p/a-report-on-scientific-branch-creation -- A Report on Scientific Branch-Creation: How the Rockefeller Foundation helped bootstrap the field of molecular biology
   - [meta]:
@@ -8396,6 +8678,60 @@ title: are.na
 - [meta]:
   - view: list
   - json: true
+
+- https://www.lesswrong.com/posts/munJKF7iWMsWJLAH2/astra-and-fable-still-hack-on-simple-variants-of-alignment -- Astra and Fable still hack on simple variants of alignment evals from 2025
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai alignment, evaluation, reward hacking]
+    - later: true
+
+- https://sampura.org/news/announcing-sampura-research -- Sampura Research: Human-AI Complementarity for Alignment
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai alignment, human oversight]
+    - later: true
+
+- https://www.anthropic.com/threat-intelligence-report-september-2026 -- Detecting and countering misuse of AI: September 2026
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai misuse, threat intelligence]
+    - later: true
+
+- https://periodic.com/news/nature-is-our-learning-environment -- Nature Is Our Learning Environment
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [scientific discovery, materials science]
+    - later: true
+
+- https://periodic.com/news/ai-infrastructure-at-periodic -- AI Infrastructure at Periodic
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [training infrastructure, gpu programming]
+    - later: true
+
+- https://movingcastles.world/posts/zero -- Zero
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [character models, reinforcement learning]
+    - later: true
+
+- https://laya.convaiinnovations.com -- Laya: Multilingual System 1 Decision Engine with Calibrated Probabilities
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [decision models, reinforcement learning]
+    - later: true
+
+- https://research.google/blog/timesfm-3-a-zero-shot-foundation-model-for-multivariate-forecasting -- TimesFM-3: A zero-shot foundation model for multivariate forecasting
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [time series, forecasting]
+    - later: true
+
+- https://typesafe.ai/manifesto -- TypeSafe AI: Composable AI Manifesto
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [composable ai, decision models]
+    - later: true
 
 - https://docs.google.com/document/d/1TDY3eSjv7gsTXAcUjKEu15QTKSZpUpZqmnaKafywpgw/edit?tab=t.0 -- [Public] SimpleCPUOffloadConnector Design Doc
   - [meta]:
@@ -12542,6 +12878,30 @@ title: are.na
 
 ## life is literature
 
+- https://howtounclench.com -- How to Unclench
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [somatics, stress]
+    - later: true
+
+- https://www.avabear.xyz/p/normalcy -- normalcy
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [relationships, belonging]
+    - later: true
+
+- https://ansonyu.me/tupperware -- To Contain a Brain
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [self-reflection, well-being]
+    - later: true
+
+- https://qchu.substack.com/p/goonworld -- GOON WORLD
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [fiction, experience machine]
+    - later: true
+
 - https://notebook.neelr.dev/stories/getting-older-college-and-dreams -- getting older, college, and dreams
   - [meta]:
     - date: 09/15/2026
@@ -13415,6 +13775,12 @@ title: are.na
 - [meta]:
   - view: list
   - json: true
+
+- https://qntm.org/clean -- It's probably time to stop recommending Clean Code
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [software engineering, code quality]
+    - later: true
 
 - https://www.cs.unc.edu/~stotts/COMP590-059-f24/robsrules.html -- Rob Pike's 5 Rules of Programming
   - [meta]:
@@ -14391,6 +14757,18 @@ title: are.na
 
 - [meta]:
   - json: true
+
+- https://www.nosetgauge.com/p/alignment-and-succession-toward-a -- Alignment & Succession: Toward a Future Sculpted by Human Wills
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai alignment, human agency]
+    - later: true
+
+- https://victorianweb.org/authors/pater/renaissance/conclusion.html -- The Renaissance: Conclusion
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [aesthetics, walter pater]
+    - later: true
 
 - https://generative.ink/prophecies/#2026 -- Prophecies
   - [meta]:
@@ -15704,6 +16082,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.technologynetworks.com/neuroscience/news/common-virus-linked-to-metabolic-changes-in-neurons-415897 -- Common Virus Linked to Metabolic Changes in Neurons
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [neuroscience, virology]
+    - later: true
+
 - https://www.worksinprogress.news/p/more-articles-we-would-like-to-commission-ed3 -- More articles we would like to commission
   - [meta]:
     - date: 06/28/2026
@@ -16176,6 +16560,18 @@ title: are.na
 
 ## finances
 
+- https://www.pm.gc.ca/en/news/news-releases/2026/09/15/prime-minister-carney-introduces-new-productivity-mega-deduction -- Prime Minister Carney introduces new Productivity Mega Deduction
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [canada, investment, tax policy]
+    - later: true
+
+- https://www.fidelity.com/investing/cash-management -- Fidelity Cash Management Account
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [banking, cash management]
+    - later: true
+
 - https://abovethecrowd.com/2011/05/24/all-revenue-is-not-created-equal-the-keys-to-the-10x-revenue-club -- All Revenue is Not Created Equal: The Keys to the 10X Revenue Club - Above the Crowd
   - [meta]:
     - date: 09/15/2026
@@ -16423,6 +16819,18 @@ title: are.na
     > La La Land - “Audition (the fools who dream)”
 
 ## design
+
+- https://justinjay.wang/designing-with-code -- Designing with code
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [creative coding, animation]
+    - later: true
+
+- https://iverson.inc/about -- Iverson
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [branding, design studio]
+    - later: true
 
 - https://www.gutenberg.org/files/26054/26054-h/26054-h.htm -- A Color Notation
   - [meta]:
@@ -17035,6 +17443,24 @@ title: are.na
     - tags: [recipe]
 
 ## video
+
+- https://www.youtube.com/watch?v=euOpy884bgQ -- KING OF MOAB
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [film]
+    - later: true
+
+- https://www.youtube.com/watch?v=OmfP9WcGjBE -- UCLA Film Professor Shows You How to Become an Excellent Storyteller
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [storytelling, film]
+    - later: true
+
+- https://www.youtube.com/watch?v=6rXotBDLLyE -- Emily Blunt Is Up to the Challenge While Eating Spicy Wings
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [interviews, film]
+    - later: true
 
 - https://www.youtube.com/watch?v=MccJdr61xnc -- Geoffrey Litt: Dynamic Documents as Personal Software
   - [meta]:
@@ -17761,6 +18187,18 @@ title: are.na
 
 ## tools
 
+- https://line-of-action.com/practice-tools/app/figure-drawing -- Line of Action: Figure Drawing Practice
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [figure drawing, art practice]
+    - later: true
+
+- https://www.vals.ai/home -- Vals AI
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [ai evaluation, benchmarks]
+    - later: true
+
 - https://www.retellai.com -- Retell AI: Voice Agent Platform
   - [meta]:
     - date: 09/15/2026
@@ -17985,6 +18423,30 @@ title: are.na
     - tags: [solarprotocol]
 
 ## arts
+
+- https://danqiqian321.github.io/art -- Art & Economy
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [art history, visualization]
+    - later: true
+
+- https://www.bubbbly.com/app/flower-life.html -- Camellia life: one flower, from tight bud to wilted bloom
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [botany, visualization]
+    - later: true
+
+- https://art-codec.ai.studio -- Art Codec
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [art history, iconography]
+    - later: true
+
+- https://en.wikipedia.org/wiki/Bay_Bridge_Troll -- Bay Bridge Troll
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [public art, san francisco]
+    - later: true
 
 - https://www.holtrenfrew.com/en/Products/Home/Home-D%C3%A9cor/Art-Collectibles/JELLYCAT-Bashful-Bunny-Grad-Outfit/p/20508919001 -- JELLYCAT Bashful Bunny Grad Outfit | Holt Renfrew
   - [meta]:
@@ -18425,6 +18887,42 @@ title: are.na
     - tags: [maximal depth, sampling]
 
 ## resources
+
+- https://analoguegroup.org/curriculum -- Analogue: Curriculum
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [research funding, reading lists]
+    - later: true
+
+- https://www.openculture.com/2013/07/spike-lee-shares-his-nyu-teaching-list-of-87-essential-films-every-aspiring-director-should-see.html -- Spike Lee's NYU Teaching List of 87 Essential Films
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [film, reading lists]
+    - later: true
+
+- https://p5-brush.cargo.site/license-1 -- p5.brush: MIT License
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [creative coding, licensing]
+    - later: true
+
+- https://www.goodreads.com/list/show/177077.Great_Histories_of_One_Thing -- Great Histories of One Thing
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [history, reading lists]
+    - later: true
+
+- https://en.wikipedia.org/wiki/Occident -- Occident
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [geography, terminology]
+    - later: true
+
+- https://huggingface.co/datasets/secemp9/arxiv-complete -- secemp9/arxiv-complete
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [datasets, arxiv]
+    - later: true
 
 - https://docs.google.com/document/d/1ZW8f0eFEZhwmKeRu1KqxLFMaouajmEGfvZF0Us_G4Iw/edit?tab=t.0 -- 100 Papers to Inspire Wonder
   - [meta]:
@@ -19973,6 +20471,18 @@ title: are.na
   - The idea of “what you see is what you get” (WYSIWYG) would work on paper as well as the monitor. Unfortunately, at that time Xerox saw no point in innovating when their current technology worked so well.
 
 ## interfaces
+
+- https://fuzzywobble.com/projects/streetheart-page -- Streetheart
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [urban exploration, maps]
+    - later: true
+
+- https://blockandpaper.com/skyline -- Building Age Maps: Every Building by the Year It Was Built
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [maps, architectural history]
+    - later: true
 
 - https://wilkinson.graphics/projects/node-based-interfaces -- Designing Node-based Interfaces | Wilkinson.Graphics
   - [meta]:
@@ -21738,6 +22248,24 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://uwaterloo.ca/news/news/pinch-art-and-humour -- 'With a pinch of art and humour'
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [fluid dynamics, ig nobel]
+    - later: true
+
+- https://spakhm.com/tweets/how-to-run-v-teams.html -- How to run v-teams
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [project management, teams]
+    - later: true
+
+- https://developer.chrome.com/blog/container-timing-origin-trial -- Container Timing origin trial
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [web performance, browser apis]
+    - later: true
+
 - https://docs.nvidia.com/cutlass/latest/media/docs/cpp/blackwell_functionality.html -- Blackwell SM100 GEMMs — NVIDIA CUTLASS Documentation
   - [meta]:
     - date: 09/15/2026
@@ -22857,6 +23385,36 @@ title: are.na
 
 ## organizations
 
+- https://standardbots.com -- Standard Bots
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [robotics, manufacturing]
+    - later: true
+
+- https://www.ctgt.ai -- CTGT
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [interpretability, ai policy]
+    - later: true
+
+- https://astera.org/introducing-astera-residents-cohort-3 -- Introducing Astera's New Residents
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [research funding, public goods]
+    - later: true
+
+- https://www.airbnb.ca/e/housingaccelerator -- Airbnb Housing Accelerator
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [housing, investment]
+    - later: true
+
+- https://www.schoolfoodcompany.ca -- Canadian School Food Company
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [school meals, canada]
+    - later: true
+
 - https://idealistscollective.org/join -- Join Us — The Idealists Collective
   - [meta]:
     - date: 09/15/2026
@@ -23163,6 +23721,18 @@ title: are.na
 - [meta]:
   - view: list
   - json: true
+
+- https://en.wikipedia.org/wiki/Implicit_function -- Implicit function
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [calculus, implicit functions]
+    - later: true
+
+- https://en.wikipedia.org/wiki/Morphism -- Morphism
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [category theory]
+    - later: true
 
 - https://www.dpmms.cam.ac.uk/~wtg10/2cultures.pdf -- The Two Cultures of Mathematics
   - [meta]:
@@ -24090,6 +24660,12 @@ title: are.na
 - [meta]:
   - view: list
   - json: true
+
+- https://proceedings.mlr.press/v100/mazoure20a/mazoure20a.pdf -- Leveraging exploration in off-policy algorithms via normalizing flows
+  - [meta]:
+    - date: 09/21/2026
+    - tags: [reinforcement learning, normalizing flows]
+    - later: true
 
 - https://arxiv.org/abs/2601.21351 -- Analytical Provisioning for Attention-FFN Disaggregated LLM Serving under Stochastic Workloads
   - [meta]:

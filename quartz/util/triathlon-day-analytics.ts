@@ -7,8 +7,20 @@ import type {
   RecoveryStatus,
   Vo2Method,
 } from '../plugins/stores/analytics'
-import type { OuraDayDetail, OuraSeries } from '../plugins/stores/oura'
+import type { GarminHealthDay } from '../plugins/stores/garmin-health'
+import type {
+  OuraDayDetail,
+  OuraSeries,
+  OuraSleepDetail,
+  OuraHealthDay,
+} from '../plugins/stores/oura'
 import type { StravaActivityDetail } from '../plugins/stores/strava'
+import { isGarminHealthDay } from './garmin-health'
+import {
+  isOuraHealthDay,
+  ouraRestorationBaseline,
+  type OuraRestorationBaseline,
+} from './oura-health'
 import { isSleepMetrics, resolveSleepMetrics, type SleepMetrics } from './sleep-metrics'
 import { isRecord } from './type-guards'
 
@@ -34,6 +46,10 @@ export interface TriathlonDaySleep {
   bedtimeStart: string | null
   bedtimeEnd: string | null
   phase5Min: string | null
+  phase30Sec?: string | null
+  movement30Sec?: string | null
+  lowBatteryAlert?: boolean
+  sleepAlgorithmVersion?: string | null
   efficiency: number | null
   latencyS: number | null
   timeInBedS: number | null
@@ -62,6 +78,14 @@ export interface TriathlonDayVo2max {
   asOfDate: string
 }
 
+export interface TriathlonDayNap extends TriathlonDaySleep {
+  id: string
+  type: 'sleep' | 'late_nap'
+  reportedDay: string | null
+  sleepScoreDelta: number | null
+  readinessScoreDelta: number | null
+}
+
 export interface TriathlonDayTraining {
   activityCount: number
   load: number | null
@@ -80,6 +104,10 @@ export interface TriathlonDayAnalytics {
   body: BodyCompositionDay | null
   recovery: TriathlonDayRecovery | null
   sleep: TriathlonDaySleep | null
+  naps?: TriathlonDayNap[]
+  garminHealth?: GarminHealthDay | null
+  ouraHealth?: OuraHealthDay | null
+  restorationBaseline?: OuraRestorationBaseline | null
   sleepMetrics: SleepMetrics | null
   training: TriathlonDayTraining | null
   heat: (HeatDay & { coreOrigin: CoreTemperatureOrigin | 'mixed' | null }) | null
@@ -162,6 +190,10 @@ const sleepIsValid = (value: unknown): boolean =>
     nullableString(value.bedtimeStart) &&
     nullableString(value.bedtimeEnd) &&
     nullableString(value.phase5Min) &&
+    (value.phase30Sec === undefined || nullableString(value.phase30Sec)) &&
+    (value.movement30Sec === undefined || nullableString(value.movement30Sec)) &&
+    (value.lowBatteryAlert === undefined || typeof value.lowBatteryAlert === 'boolean') &&
+    (value.sleepAlgorithmVersion === undefined || nullableString(value.sleepAlgorithmVersion)) &&
     nullableFiniteNumber(value.efficiency) &&
     nullableFiniteNumber(value.latencyS) &&
     nullableFiniteNumber(value.timeInBedS) &&
@@ -226,9 +258,30 @@ export const isTriathlonDailyAnalytics = (value: unknown): value is TriathlonDai
       /^\d{4}-\d{2}-\d{2}$/.test(date) &&
       isRecord(summary) &&
       summary.date === date &&
+      (summary.garminHealth == null || isGarminHealthDay(summary.garminHealth, date)) &&
+      (summary.ouraHealth == null || isOuraHealthDay(summary.ouraHealth, date)) &&
+      (summary.restorationBaseline == null ||
+        (isRecord(summary.restorationBaseline) &&
+          finiteNumber(summary.restorationBaseline.seconds) &&
+          summary.restorationBaseline.seconds >= 0 &&
+          finiteNumber(summary.restorationBaseline.days) &&
+          summary.restorationBaseline.days >= 3 &&
+          summary.restorationBaseline.days <= 14)) &&
       bodyIsValid(summary.body, date) &&
       recoveryIsValid(summary.recovery) &&
       sleepIsValid(summary.sleep) &&
+      (summary.naps === undefined ||
+        (Array.isArray(summary.naps) &&
+          summary.naps.every(
+            nap =>
+              isRecord(nap) &&
+              typeof nap.id === 'string' &&
+              (nap.type === 'sleep' || nap.type === 'late_nap') &&
+              nullableString(nap.reportedDay) &&
+              nullableFiniteNumber(nap.sleepScoreDelta) &&
+              nullableFiniteNumber(nap.readinessScoreDelta) &&
+              sleepIsValid(nap),
+          ))) &&
       isSleepMetrics(summary.sleepMetrics, date) &&
       trainingIsValid(summary.training) &&
       heatIsValid(summary.heat, date),
@@ -288,12 +341,19 @@ const vo2maxAt = (analytics: Analytics, date: string): TriathlonDayVo2max | null
   }
 }
 
-const sleepSummary = (detail: OuraDayDetail | undefined): TriathlonDaySleep | null =>
-  detail
+export const sleepSummary = (detail: OuraSleepDetail | undefined): TriathlonDaySleep | null =>
+  detail &&
+  Object.entries(detail).some(
+    ([key, value]) => key !== 'date' && key !== 'naps' && key !== 'health' && value != null,
+  )
     ? {
         bedtimeStart: detail.bedtimeStart,
         bedtimeEnd: detail.bedtimeEnd,
         phase5Min: detail.phase5Min,
+        phase30Sec: detail.phase30Sec,
+        movement30Sec: detail.movement30Sec,
+        lowBatteryAlert: detail.lowBatteryAlert,
+        sleepAlgorithmVersion: detail.sleepAlgorithmVersion,
         efficiency: detail.efficiency,
         latencyS: detail.latencyS,
         timeInBedS: detail.timeInBedS,
@@ -315,6 +375,23 @@ const sleepSummary = (detail: OuraDayDetail | undefined): TriathlonDaySleep | nu
         sleepContrib: detail.sleepContrib,
       }
     : null
+
+export const napSummaries = (detail: OuraDayDetail | undefined): TriathlonDayNap[] | undefined =>
+  detail?.naps?.flatMap(nap => {
+    const sleep = sleepSummary(nap)
+    return sleep
+      ? [
+          {
+            ...sleep,
+            id: nap.id,
+            type: nap.type,
+            reportedDay: nap.reportedDay,
+            sleepScoreDelta: nap.sleepScoreDelta,
+            readinessScoreDelta: nap.readinessScoreDelta,
+          },
+        ]
+      : []
+  })
 
 export function buildTriathlonDailyAnalytics(
   analytics: Analytics,
@@ -410,6 +487,10 @@ export function buildTriathlonDailyAnalytics(
           }
         : null,
       sleep: sleepSummary(ouraDetails[date]),
+      naps: napSummaries(ouraDetails[date]),
+      garminHealth: daily?.garminHealth ?? null,
+      ouraHealth: ouraDetails[date]?.health ?? daily?.ouraHealth ?? null,
+      restorationBaseline: ouraRestorationBaseline(date, ouraDetails),
       sleepMetrics: daily?.sleepMetrics ?? resolveSleepMetrics(ouraDetails[date], null),
       training:
         daily || activitySummaries.length > 0 || activities.length > 0 || vo2max

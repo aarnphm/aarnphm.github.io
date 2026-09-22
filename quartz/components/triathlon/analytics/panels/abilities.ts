@@ -165,6 +165,27 @@ export const buildAbilities = (
     role: 'group',
     'aria-label': 'radar sports',
   })
+  const referenceDetails = `${text('WorldTour reference')} · 5s ${WORLD_TOUR_POWER_REFERENCE.sprint.wattsPerKg} W/kg · 20m ${WORLD_TOUR_POWER_REFERENCE.climb.wattsPerKg.toFixed(1)} W/kg`
+  const reference = el('a', 'tri-radar-reference', undefined, {
+    href: WORLD_TOUR_POWER_SOURCE_URL,
+    'aria-label': referenceDetails,
+    'data-site-cursor-bracket': '',
+    'data-gloss': '',
+    'data-gloss-def': referenceDetails,
+  })
+  const referenceIcon = svg('svg', {
+    class: 'tri-ico',
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    'aria-hidden': 'true',
+  })
+  referenceIcon.append(
+    svg('path', {
+      d: 'M15 3h6v6M10 14 21 3M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6',
+    }),
+  )
+  reference.appendChild(referenceIcon)
+  tabs.appendChild(reference)
   const avgTab = el('button', 'tri-radar-sport tri-radar-sport--avg', undefined, {
     type: 'button',
     'aria-pressed': 'false',
@@ -258,16 +279,6 @@ export const buildAbilities = (
   )
   keyCap.append(nowKey, projKey)
   block.appendChild(keyCap)
-  const reference = el('div', 'tri-radar-reference')
-  reference.appendChild(
-    el(
-      'a',
-      undefined,
-      `${text('WorldTour reference')} · 5s ${WORLD_TOUR_POWER_REFERENCE.sprint.wattsPerKg} W/kg · 20m ${WORLD_TOUR_POWER_REFERENCE.climb.wattsPerKg.toFixed(1)} W/kg`,
-      { href: WORLD_TOUR_POWER_SOURCE_URL },
-    ),
-  )
-  block.appendChild(reference)
 
   const shown = new Map<RadarKey, { solid: number[]; proj: number[] }>()
   for (const k of radarKeys) shown.set(k, { solid: zeros(), proj: zeros() })

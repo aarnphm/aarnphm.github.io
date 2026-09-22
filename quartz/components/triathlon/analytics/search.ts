@@ -39,7 +39,7 @@ export const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = 
   {
     label: 'best efforts · power curve · power rank',
     chart: 'power',
-    hay: 'best efforts power curve critical power cycling watts duration ftp six weeks year power rank radar sprint attack climb w kg percentile weight adjusted',
+    hay: 'best efforts power curve critical power cycling watts duration ftp estimated eftp p20 six weeks year power rank radar sprint attack climb w kg percentile weight adjusted',
   },
   {
     label: 'ftp hypothesis',

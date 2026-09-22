@@ -24,11 +24,15 @@ export interface OuraHeartRateSample {
   source: OuraHeartRateSource
 }
 
-export interface OuraDayDetail {
+export interface OuraSleepDetail {
   date: string
   bedtimeStart: string | null
   bedtimeEnd: string | null
   phase5Min: string | null
+  phase30Sec?: string | null
+  movement30Sec?: string | null
+  lowBatteryAlert?: boolean
+  sleepAlgorithmVersion?: string | null
   efficiency: number | null
   latencyS: number | null
   timeInBedS: number | null
@@ -48,6 +52,60 @@ export interface OuraDayDetail {
   readinessContrib: Record<string, number | null> | null
   sleepScore: number | null
   sleepContrib: Record<string, number | null> | null
+}
+
+export interface OuraNap extends OuraSleepDetail {
+  id: string
+  type: 'sleep' | 'late_nap'
+  reportedDay: string | null
+  sleepScoreDelta: number | null
+  readinessScoreDelta: number | null
+}
+
+export interface OuraDayDetail extends OuraSleepDetail {
+  // Absent in caches that predate nap ingestion; an empty array means no recorded naps.
+  naps?: OuraNap[]
+  health?: OuraHealthDay
+}
+
+export interface OuraHealthDay {
+  date: string
+  failedCollections?: string[]
+  stress: { stressS: number | null; restoredS: number | null; summary: string | null } | null
+  resilience: {
+    level: string | null
+    sleepRecovery: number | null
+    daytimeRecovery: number | null
+    stress: number | null
+  } | null
+  spo2: { averagePct: number | null; breathingDisturbanceIndex: number | null } | null
+  activity: {
+    score: number | null
+    steps: number | null
+    activeCalories: number | null
+    targetCalories: number | null
+    equivalentWalkingDistanceM: number | null
+    targetDistanceM: number | null
+    inactivityAlerts: number | null
+    averageMet: number | null
+    restS: number | null
+    sedentaryS: number | null
+    lowS: number | null
+    mediumS: number | null
+    highS: number | null
+    nonWearS: number | null
+    contributors: Record<string, number | null> | null
+  } | null
+  cardiovascular: { vascularAge: number | null; pulseWaveVelocity: number | null } | null
+  vo2Max: number | null
+  sleepTime: {
+    startOffsetS: number | null
+    endOffsetS: number | null
+    utcOffsetS: number | null
+    recommendation: string | null
+    status: string | null
+  } | null
+  temperatureTrendC: number | null
 }
 
 export interface OuraAuth {

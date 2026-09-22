@@ -11,6 +11,7 @@ import { powerCurveHoverAt } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
 import { weeklyChartIndex } from '../../../util/weekly-target-range'
 import { weeklyChartX } from '../../../util/weekly-target-range'
+import { daySleepBarIndex } from '../activity/day-sleep'
 import { syncPowerCurveActivityLink } from '../activity/power-links'
 import { el } from '../runtime/dom'
 import { setMath } from '../runtime/dom'
@@ -21,6 +22,7 @@ import { wkTrendRows } from './panels/performance'
 import { bestPowerSeries } from './panels/power'
 import { bestPowerSeriesLabel } from './panels/power'
 import { criticalPowerForSeries } from './panels/power'
+import { estimatedFtpForSeries } from './panels/power'
 import { powerRankEffortLabel } from './panels/power'
 import { powerRankRangeRows } from './panels/power'
 import { powerRankProgressLabel } from './panels/power'
@@ -110,13 +112,14 @@ export const mountPrimaryPanel = (
     count: number,
     vbW: number,
     textOf: (i: number) => string,
+    indexAt?: (fraction: number) => number,
   ) => {
     const block = panel.querySelector<HTMLElement>(blockSel)
     const svgEl = block?.querySelector<SVGElement>(svgSel)
     const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
     const readout = block?.querySelector<HTMLElement>('.tri-chart-readout')
     if (block && svgEl && cursor && readout)
-      cleanups.push(scrubBind(block, svgEl, cursor, readout, count, vbW, textOf))
+      cleanups.push(scrubBind(block, svgEl, cursor, readout, count, vbW, textOf, indexAt))
   }
 
   if (kind === 'recovery') {
@@ -130,11 +133,19 @@ export const mountPrimaryPanel = (
 
   if (kind === 'sleep') {
     const sleepView = data.recovery.series
-    bind('.tri-ana-sleep', '.tri-sleep-svg', sleepView.length, sleepView.length, i => {
-      const d = sleepView[i]
-      const debt = d.sleepDebtS != null ? `${(d.sleepDebtS / 3600).toFixed(1)}h` : '—'
-      return `${d.date} · ${d.sleepS != null ? hms(d.sleepS) : '—'} · score ${d.sleepScore ?? '—'} · debt ${debt}`
-    })
+    const indexAt = (fraction: number): number => daySleepBarIndex(fraction, sleepView.length)
+    bind(
+      '.tri-sleep-overview--night',
+      '.tri-sleep-svg',
+      sleepView.length,
+      sleepView.length,
+      i => {
+        const d = sleepView[i]
+        const debt = d.sleepDebtS != null ? `${(d.sleepDebtS / 3600).toFixed(1)}h` : '—'
+        return `${d.date} · ${d.sleepS != null ? hms(d.sleepS) : '—'} · score ${d.sleepScore ?? '—'} · debt ${debt}`
+      },
+      indexAt,
+    )
   }
 
   if (kind === 'vo2max') {
@@ -173,6 +184,22 @@ export const mountPrimaryPanel = (
     const maxSeconds = Number(powerSvg.getAttribute('aria-valuemax'))
     const domainMax = Number(powerSvg.dataset.powerDomainMax)
     const height = powerSvg.viewBox.baseVal.height
+    const ftpToggle = powerBlock.querySelector<HTMLButtonElement>('.tri-best-power-eftp-toggle')
+    let showEstimatedFtp = ftpToggle?.getAttribute('aria-pressed') === 'true'
+    const syncEstimatedFtp = (): void => {
+      const selected = powerSeries.find(
+        ({ key }) => activePowerSeries.has(key) && estimatedFtpForSeries(power, key) != null,
+      )?.key
+      for (const { key } of powerSeries) {
+        const enabled = activePowerSeries.has(key) && estimatedFtpForSeries(power, key) != null
+        for (const element of powerBlock.querySelectorAll<SVGElement>(
+          `[data-power-eftp-series="${key}"]`,
+        ))
+          element.toggleAttribute('hidden', !showEstimatedFtp || !enabled)
+      }
+      for (const caption of powerBlock.querySelectorAll<HTMLElement>('[data-power-eftp-caption]'))
+        caption.hidden = !showEstimatedFtp || caption.dataset.powerEftpCaption !== selected
+    }
     document.body.querySelector('.tri-power-range-tip')?.remove()
     const powerRangeTip =
       rankIntervals.length === 0
@@ -449,7 +476,19 @@ export const mountPrimaryPanel = (
         }
         return
       }
-      const button = event.target.closest<HTMLButtonElement>('.tri-best-power-toggle')
+      if (
+        event.target.closest('.tri-best-power-eftp-toggle') === ftpToggle &&
+        ftpToggle &&
+        !ftpToggle.disabled
+      ) {
+        showEstimatedFtp = !showEstimatedFtp
+        ftpToggle.setAttribute('aria-pressed', String(showEstimatedFtp))
+        syncEstimatedFtp()
+        return
+      }
+      const button = event.target.closest<HTMLButtonElement>(
+        '.tri-best-power-toggle[data-power-series]',
+      )
       if (!button || button.disabled) return
       const key: BestPowerSeriesKey = button.dataset.powerSeries === 'year' ? 'year' : 'six-weeks'
       const enabled = activePowerSeries.has(key)
@@ -470,6 +509,7 @@ export const mountPrimaryPanel = (
       ))
         element.toggleAttribute('hidden', enabled)
       syncPowerCaption()
+      syncEstimatedFtp()
       showSeconds(selectedSeconds, false)
     }
     powerSvg.addEventListener('pointermove', onPowerMove)
@@ -535,6 +575,7 @@ export const mountPrimaryPanel = (
       rankSvg.addEventListener('keydown', onRankKey)
     }
     syncPowerCaption()
+    syncEstimatedFtp()
     showSeconds(selectedSeconds, true)
     cleanups.push(() => {
       powerSvg.removeEventListener('pointermove', onPowerMove)
