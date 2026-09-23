@@ -1,7 +1,31 @@
 import type { PaceSport } from '../../../util/pace-features'
 import { none, type Cmd } from '../../../functional'
+import { shiftIsoDay } from '../../../util/local-date'
 
 export type PredCompareKey = '7' | '14' | '30' | '60' | 'custom'
+
+export interface PaceForecastBounds {
+  min: string
+  max: string
+}
+
+export const paceForecastBounds = (
+  available: PaceForecastBounds | null,
+  selected: PaceForecastBounds,
+): PaceForecastBounds | null => {
+  if (!available) return null
+  const min = available.min > selected.min ? available.min : selected.min
+  const max = available.max < selected.max ? available.max : selected.max
+  return min <= max ? { min, max } : null
+}
+
+export const paceForecastComparisonDate = (
+  bounds: PaceForecastBounds,
+  days: number,
+): string | null => {
+  const date = shiftIsoDay(bounds.max, -days)
+  return date >= bounds.min && date <= bounds.max ? date : null
+}
 
 export interface PaceForecastModel {
   sport: PaceSport

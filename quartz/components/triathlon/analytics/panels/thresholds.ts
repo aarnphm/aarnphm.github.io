@@ -366,7 +366,10 @@ export const buildTrend = (
   block.appendChild(anaTitle(context.formatter, 'pace trend + forecast'))
   for (const sport of ['swim', 'bike', 'run'] as Sport[])
     block.appendChild(buildTrendPanel(data, sport, context))
-  const predictor = buildDistancePredictor(context.pace, context)
+  const predictor = buildDistancePredictor(context.pace, context, {
+    min: data.meta.windowFrom,
+    max: data.meta.today,
+  })
   block.appendChild(predictor.element)
   return { element: block, mount: predictor.mount }
 }

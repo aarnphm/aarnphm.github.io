@@ -16,7 +16,10 @@ import { el } from '../runtime/dom'
 import { buildPredDatePicker } from './date-picker'
 import {
   initialPaceForecastModel,
+  paceForecastBounds,
+  paceForecastComparisonDate,
   updatePaceForecast,
+  type PaceForecastBounds,
   type PaceForecastEffect,
   type PaceForecastMessage,
   type PaceForecastModel,
@@ -90,6 +93,22 @@ export const predCompareKey = (block: HTMLElement): PredCompareKey => {
 export const predCompareOption = (key: PredCompareKey): (typeof PRED_COMPARE_OPTIONS)[number] =>
   PRED_COMPARE_OPTIONS.find(option => option.key === key) ?? PRED_COMPARE_OPTIONS[0]
 
+const predHistoryBounds = (block: HTMLElement, f: PaceForecaster): PaceForecastBounds | null => {
+  const min = block.dataset.historyMin
+  const max = block.dataset.historyMax
+  return min && max ? paceForecastBounds(f.dayBounds(), { min, max }) : null
+}
+
+const predDayAt = (
+  f: PaceForecaster,
+  bounds: PaceForecastBounds | null,
+  date: string | null,
+): PaceDayState | null => {
+  if (!bounds || !date || date < bounds.min || date > bounds.max) return null
+  const day = f.dayStateOnOrBefore(date)
+  return day && day.date >= bounds.min && day.date <= bounds.max ? day : null
+}
+
 export const syncPredDateControl = (
   formatter: TriathlonFormatter,
   block: HTMLElement,
@@ -97,10 +116,15 @@ export const syncPredDateControl = (
 ): void => {
   const trigger = block.querySelector<HTMLButtonElement>('.tri-pred-date')
   const text = block.querySelector<HTMLElement>('.tri-pred-date-text')
-  const bounds = f.dayBounds()
-  if (!trigger || !text || !bounds) return
+  const bounds = predHistoryBounds(block, f)
+  if (!trigger || !text) return
+  trigger.disabled = bounds == null
+  if (!bounds) {
+    text.textContent = formatter.text('no data')
+    return
+  }
   const selected = block.dataset.compareDate
-  const fallback = f.dayStateAgo(30)?.date ?? bounds.min
+  const fallback = predDayAt(f, bounds, paceForecastComparisonDate(bounds, 30))?.date ?? bounds.min
   const date = selected && selected >= bounds.min && selected <= bounds.max ? selected : fallback
   block.dataset.compareMin = bounds.min
   block.dataset.compareMax = bounds.max
@@ -117,8 +141,9 @@ export const predComparison = (
   block: HTMLElement,
 ): PredComparison => {
   const key = predCompareKey(block)
+  const bounds = predHistoryBounds(block, f)
   if (key === 'custom') {
-    const day = f.dayStateOnOrBefore(block.dataset.compareDate ?? '')
+    const day = predDayAt(f, bounds, block.dataset.compareDate ?? null)
     return {
       day,
       label: day?.date
@@ -127,7 +152,7 @@ export const predComparison = (
     }
   }
   const days = predCompareOption(key).days ?? 30
-  const day = f.dayStateAgo(days)
+  const day = predDayAt(f, bounds, bounds ? paceForecastComparisonDate(bounds, days) : null)
   return {
     day,
     label: day?.date
@@ -184,7 +209,7 @@ export const resetPredCard = (card: HTMLElement, preserveVisual: boolean): void 
   }
 }
 
-export const failPredCard = (card: HTMLElement): void => {
+export const failPredCard = (card: HTMLElement, reason = 'model unavailable'): void => {
   delete card.dataset.pending
   delete card.dataset.stale
   card.dataset.error = '1'
@@ -195,7 +220,7 @@ export const failPredCard = (card: HTMLElement): void => {
   const deltaEl = card.querySelector('.tri-pred-delta')
   if (deltaEl) deltaEl.textContent = ''
   card.dataset.tipH = card.dataset.label ?? ''
-  card.dataset.tipD = 'model unavailable'
+  card.dataset.tipD = reason
 }
 
 export const applyPredResult = (r: PredResult, maxSec: number): void => {
@@ -278,7 +303,13 @@ export async function fillDistancePredictor(
   if (!block) return
   if (!f?.ready || !f.day) return
   syncPredDateControl(context.formatter, block, f)
-  const day = f.day
+  const bounds = predHistoryBounds(block, f)
+  const day = predDayAt(f, bounds, bounds?.max ?? null)
+  if (!day) {
+    for (const card of block.querySelectorAll<HTMLElement>('.tri-pred-card'))
+      failPredCard(card, context.formatter.text('no data'))
+    return
+  }
   const comparison = predComparison(context.formatter, f, block)
   const cards = Array.from(scope.querySelectorAll<HTMLElement>('.tri-pred-card')).filter(
     c => !c.dataset.filled,
@@ -312,8 +343,13 @@ export async function fillDistancePredictor(
 export const buildDistancePredictor = (
   runtime: PaceRuntime,
   context: TriathlonContext,
+  bounds: PaceForecastBounds,
 ): { element: HTMLElement; mount: () => () => void } => {
   const block = el('div', 'tri-pred')
+  block.dataset.historyMin = bounds.min
+  block.dataset.historyMax = bounds.max
+  block.dataset.compareMin = bounds.min
+  block.dataset.compareMax = bounds.max
   block.dataset.compareMode = PRED_DEFAULT_COMPARE
   const head = el('div', 'tri-pred-head')
   const headMain = el('div', 'tri-pred-head-main')

@@ -31,6 +31,7 @@ import { wireEmbedCopy } from '../shell/timeline'
 import { TRI_ANALYTICS_BOOT_CLASS } from './boot'
 import { analyticsPanelDefinition } from './catalog'
 import { initialAnalyticsModel, updateAnalytics } from './model'
+import { analyticsForRange, defaultAnalyticsRange } from './range'
 import { activityCommandHints } from './search'
 import { activityQueryTokens } from './search'
 import { activityResultItem } from './search'
@@ -64,6 +65,7 @@ export const setupAnalytics = (
   const body = root.querySelector<HTMLElement>('.tri-ana-body')
   const detail = root.querySelector<HTMLElement>('.tri-ana-detail')
   let live = true
+  let sourceData: Analytics | null = null
   let data: Analytics | null = null
   let detailData: DetailPayload | null = null
   let detailPromise: Promise<boolean> | null = null
@@ -102,7 +104,8 @@ export const setupAnalytics = (
       block.dataset.triHydrated = 'failed'
     }
   }
-  const render = (d: Analytics) => {
+  const render = (source: Analytics) => {
+    const d = analyticsForRange(source, program.retrieve().range)
     data = d
     if (renderFrame !== 0) {
       window.cancelAnimationFrame(renderFrame)
@@ -124,7 +127,7 @@ export const setupAnalytics = (
         new CustomEvent('contentdecrypted', { detail: { article: panel, content: panel } }),
       )
       finishPageBoot()
-      if (panel.classList.contains('tri-analytics--searching')) runSearch()
+      if (panel.classList.contains('tri-analytics--searching')) renderSearch()
     }
     step()
   }
@@ -689,7 +692,10 @@ export const setupAnalytics = (
   }
 
   const program = start({
-    init: () => ({ model: initialAnalyticsModel(), effects: [] }),
+    init: () => ({
+      model: initialAnalyticsModel(defaultAnalyticsRange(root.dataset.triView)),
+      effects: [],
+    }),
     reduce: updateAnalytics,
     effects: (effect, state) => {
       if (effect.type === 'load-artifact') {
@@ -700,8 +706,9 @@ export const setupAnalytics = (
           return
         }
         void context.resources.analytics.load(path).then(result => {
+          if (!live) return
           if (result.status === 'ready') {
-            data = result.value
+            sourceData = result.value
             state.dispatch({ type: 'loaded', request: effect.request })
           } else if (result.status === 'error') {
             finishPageBoot()
@@ -709,7 +716,7 @@ export const setupAnalytics = (
           }
         })
       } else if (effect.type === 'render-panels') {
-        if (data) render(data)
+        if (sourceData) render(sourceData)
       } else if (effect.type === 'render-search') {
         renderSearch()
       } else if (effect.type === 'render-activity') {
@@ -722,6 +729,12 @@ export const setupAnalytics = (
         btn?.focus({ preventScroll: true })
       }
     },
+  })
+
+  root.dataset.triAnalyticsRange = program.retrieve().range
+  const rangeCleanup = context.events.subscribe('analyticsRange', ({ range }) => {
+    root.dataset.triAnalyticsRange = range
+    program.dispatch({ type: 'set-range', range })
   })
 
   const powerActivityCleanup = context.events.subscribe('powerActivity', request => {
@@ -752,8 +765,8 @@ export const setupAnalytics = (
       detail?.querySelector('.tri-compare') != null
     const activityId = detail?.querySelector<HTMLElement>('.tri-act[data-activity-id]')?.dataset
       .activityId
-    if (data) {
-      render(data)
+    if (sourceData) {
+      render(sourceData)
     }
     if (comparisonVisible) showComparison()
     else if (activityId) showActivity(activityId)
@@ -781,6 +794,7 @@ export const setupAnalytics = (
     window.removeEventListener('tri:locale', onUnitChange)
     window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnitChange)
     powerActivityCleanup()
+    rangeCleanup()
     compareCleanup?.()
     activityCleanup?.()
     for (const cleanup of panelCleanups.values()) cleanup()

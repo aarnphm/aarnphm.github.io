@@ -41,6 +41,7 @@ import {
   type TirePressureSelection,
   type TirePressureWidthMode,
 } from '../../../util/triathlon-tire-pressure'
+import { defaultAnalyticsRange, type AnalyticsRange } from '../analytics/range'
 import { el } from '../runtime/dom'
 import { nextTriMapStyle } from '../runtime/preferences'
 import { toggleTriMapStyle } from '../runtime/preferences'
@@ -384,6 +385,11 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
       : 'daily PSI'
   }
 
+  const analyticsRange = (): AnalyticsRange =>
+    root.dataset.triAnalyticsRange === 'all' || root.dataset.triAnalyticsRange === '60d'
+      ? root.dataset.triAnalyticsRange
+      : defaultAnalyticsRange(root.dataset.triView)
+
   const cmds: Cmd[] = [
     ...TRI_PAGES.map(p => ({
       label: () => `${p.label}`,
@@ -470,6 +476,19 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
       },
     },
   ]
+
+  if (root.querySelector('.tri-analytics'))
+    cmds.push({
+      label: () => context.formatter.text('analytics date range'),
+      hint: () => context.formatter.text(analyticsRange() === '60d' ? 'last 60 days' : 'all data'),
+      keys: 'analytics date range toggle history last 60 days 60d all data period période historique jours données',
+      run: () => {
+        context.events.dispatch('analyticsRange', {
+          range: analyticsRange() === '60d' ? 'all' : '60d',
+        })
+        render()
+      },
+    })
 
   let items: Cmd[] = cmds
   let sel = 0
@@ -905,6 +924,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   const onInputKey = (e: KeyboardEvent): void => {
     if (e.key === 'Escape') {
       e.preventDefault()
+      e.stopPropagation()
       close()
     } else if (
       (mode === 'riderMass' ||
@@ -947,6 +967,14 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'k') {
       e.preventDefault()
       e.stopImmediatePropagation()
+      if (
+        isOpen ||
+        root.dataset.triView === 'analytics' ||
+        root.classList.contains('tri-analytics-open')
+      ) {
+        togglePalette()
+        return
+      }
       if (toggleSearchFocus(root, null) || currentSearchShortcut(root)) return
       if (root.matches('.tri-analytics-open, .tri-map-open, .tri-training-open, .tri-calc-open'))
         return

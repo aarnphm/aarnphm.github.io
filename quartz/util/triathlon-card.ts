@@ -4404,7 +4404,12 @@ const cyclingWorkoutLaps = (d: StravaActivityDetail): CyclingWorkoutLap[] =>
           : null,
     }))
 
-const workoutElevationPath = (d: StravaActivityDetail, totalElapsedS: number): string | null => {
+type WorkoutElevationPaths = { area: string; line: string }
+
+const workoutElevationPaths = (
+  d: StravaActivityDetail,
+  totalElapsedS: number,
+): WorkoutElevationPaths | null => {
   if (d.sport === 'swim' && d.swimLocation === 'pool') return null
   const requireGps = d.sport === 'run' || d.sport === 'swim'
   if (requireGps && !d.mapRoute.some(segment => segment.length >= 2)) return null
@@ -4420,23 +4425,28 @@ const workoutElevationPath = (d: StravaActivityDetail, totalElapsedS: number): s
   const altitudeSpan = Math.max(1, maxAltitude - minAltitude)
   const projectX = (elapsedS: number): string =>
     Math.max(0, Math.min(100, (elapsedS / totalElapsedS) * 100)).toFixed(3)
-  const points = route
-    .map(point => {
-      const y = 100 - ((point.alt - minAltitude) / altitudeSpan) * 100
-      return `L ${projectX(point.elapsedS)} ${y.toFixed(3)}`
-    })
-    .join(' ')
-  return `M ${projectX(route[0].elapsedS)} 100 ${points} L ${projectX(route[route.length - 1].elapsedS)} 100 Z`
+  const points = route.map(point => {
+    const y = 100 - ((point.alt - minAltitude) / altitudeSpan) * 100
+    return `${projectX(point.elapsedS)} ${y.toFixed(3)}`
+  })
+  return {
+    area: `M ${projectX(route[0].elapsedS)} 100 L ${points.join(' L ')} L ${projectX(route[route.length - 1].elapsedS)} 100 Z`,
+    line: `M ${points.join(' L ')}`,
+  }
 }
 
-const buildWorkoutElevation = <N>(f: TriNodeFactory<N>, path: string): N => {
+const buildWorkoutElevation = <N>(f: TriNodeFactory<N>, paths: WorkoutElevationPaths): N => {
   const elevation = f.svg('svg', {
     class: 'tri-workout-elevation',
     viewBox: '0 0 100 100',
     preserveAspectRatio: 'none',
     'aria-hidden': 'true',
   })
-  f.add(elevation, f.svg('path', { class: 'tri-workout-elevation-area', d: path }))
+  f.add(
+    elevation,
+    f.svg('path', { class: 'tri-workout-elevation-area', d: paths.area }),
+    f.svg('path', { class: 'tri-workout-elevation-line', d: paths.line }),
+  )
   return elevation
 }
 
@@ -4453,8 +4463,8 @@ const buildCyclingWorkoutAnalysis = <N>(
 
   const routeEndElapsedS = d.route.at(-1)?.elapsedS ?? 0
   const totalElapsedS = Math.max(routeEndElapsedS, ...laps.map(lap => lap.range.endElapsedS))
-  const elevationPath = workoutElevationPath(d, totalElapsedS)
-  if (!elevationPath) return null
+  const elevationPaths = workoutElevationPaths(d, totalElapsedS)
+  if (!elevationPaths) return null
 
   const highestPowerWatts = Math.max(...poweredLaps.map(lap => lap.powerWatts))
   const lowestPowerWatts = Math.min(...poweredLaps.map(lap => lap.powerWatts))
@@ -4500,7 +4510,7 @@ const buildCyclingWorkoutAnalysis = <N>(
     'data-site-cursor-line': '',
     style: `--tri-cycling-workout-laps:${laps.length}`,
   })
-  const elevation = buildWorkoutElevation(f, elevationPath)
+  const elevation = buildWorkoutElevation(f, elevationPaths)
   const grid = f.el('div', 'tri-workout-grid tri-cycling-workout-grid', undefined, {
     'aria-hidden': 'true',
   })
@@ -4757,11 +4767,11 @@ const buildSwimWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
   const averagePaceS = 360 / ((distanceKm / durationS) * 3600)
   const fastestPaceS = Math.min(...laps.map(lap => lap.paceS))
   const slowestPaceS = Math.max(...laps.map(lap => lap.paceS))
-  const elevationPath = workoutElevationPath(d, totalElapsedS)
+  const elevationPaths = workoutElevationPaths(d, totalElapsedS)
 
   const wrap = f.el('section', 'tri-workout tri-swim-workout', undefined, {
     'aria-label': 'Swim workout analysis',
-    'data-swim-workout-elevation': String(elevationPath != null),
+    'data-swim-workout-elevation': String(elevationPaths != null),
   })
   const head = f.el('div', 'tri-workout-head tri-swim-workout-head')
   const stats = f.el('div', 'tri-workout-stats tri-swim-workout-stats')
@@ -4782,7 +4792,7 @@ const buildSwimWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
     'data-site-cursor-line': '',
     style: `--tri-swim-workout-laps:${laps.length}`,
   })
-  if (elevationPath) f.add(plot, buildWorkoutElevation(f, elevationPath))
+  if (elevationPaths) f.add(plot, buildWorkoutElevation(f, elevationPaths))
   const grid = f.el('div', 'tri-workout-grid tri-swim-workout-grid', undefined, {
     'aria-hidden': 'true',
   })
@@ -4854,7 +4864,7 @@ const buildRunWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
     ...laps.map(lap => lap.range.endElapsedS),
   )
   if (totalElapsedS <= 0) return null
-  const elevationPath = workoutElevationPath(d, totalElapsedS)
+  const elevationPaths = workoutElevationPaths(d, totalElapsedS)
   const imperial = isImperial(f.presentation)
   const paceUnit = imperial ? '/mi' : '/km'
   const paceAxis = runWorkoutPaceAxis(laps.map(lap => lap.paceS))
@@ -4874,7 +4884,7 @@ const buildRunWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
 
   const wrap = f.el('section', 'tri-workout tri-run-workout', undefined, {
     'aria-label': 'Run workout analysis',
-    'data-run-workout-elevation': String(elevationPath != null),
+    'data-run-workout-elevation': String(elevationPaths != null),
   })
   const head = f.el('div', 'tri-workout-head tri-run-workout-head')
   const stats = f.el('div', 'tri-workout-stats tri-run-workout-stats')
@@ -4899,7 +4909,7 @@ const buildRunWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
     'data-site-cursor-line': '',
     style: `--tri-run-workout-laps:${laps.length}`,
   })
-  if (elevationPath) f.add(plot, buildWorkoutElevation(f, elevationPath))
+  if (elevationPaths) f.add(plot, buildWorkoutElevation(f, elevationPaths))
   const grid = f.el('div', 'tri-workout-grid tri-run-workout-grid', undefined, {
     'aria-hidden': 'true',
   })

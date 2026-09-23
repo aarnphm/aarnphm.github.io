@@ -1,7 +1,10 @@
+import type { AnalyticsRange } from '../analytics/range'
+
 export interface TriathlonEvents {
   presentation: { previous: TriathlonPresentation; current: TriathlonPresentation }
   command: { name: string; value?: string }
   analyticsWeek: { source: 'load' | 'effort'; index: number }
+  analyticsRange: { range: AnalyticsRange }
   powerActivity: { activityId: string; date: string; source: HTMLAnchorElement; handled: boolean }
 }
 
