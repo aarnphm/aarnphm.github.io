@@ -1,3 +1,4 @@
+import type { AnalyticsRange } from './range'
 import { none, type Cmd } from '../../../functional'
 
 export type AnalyticsLoadStatus = 'idle' | 'loading' | 'ready' | 'failed'
@@ -11,12 +12,14 @@ export interface AnalyticsModel {
   selectedResult: number
   selectedActivityId: string | null
   comparisonActivityIds: readonly string[]
+  range: AnalyticsRange
 }
 
 export type AnalyticsMessage =
   | { type: 'open' }
   | { type: 'close' }
   | { type: 'load' }
+  | { type: 'set-range'; range: AnalyticsRange }
   | { type: 'loaded'; request: number }
   | { type: 'failed'; request: number }
   | { type: 'query'; value: string }
@@ -37,7 +40,7 @@ export type AnalyticsEffect =
   | { type: 'render-comparison'; ids: readonly string[] }
   | { type: 'restore-focus' }
 
-export const initialAnalyticsModel = (): AnalyticsModel => ({
+export const initialAnalyticsModel = (range: AnalyticsRange = '60d'): AnalyticsModel => ({
   status: 'idle',
   request: 0,
   mode: 'main',
@@ -45,6 +48,7 @@ export const initialAnalyticsModel = (): AnalyticsModel => ({
   selectedResult: -1,
   selectedActivityId: null,
   comparisonActivityIds: [],
+  range,
 })
 
 const removeActivity = (ids: readonly string[], id: string): readonly string[] =>
@@ -82,6 +86,13 @@ export const updateAnalytics = (
       return message.request === model.request
         ? { model: { ...model, status: 'ready' }, effects: [{ type: 'render-panels' }] }
         : { model, effects: none() }
+    case 'set-range':
+      return message.range === model.range
+        ? { model, effects: none() }
+        : {
+            model: { ...model, range: message.range },
+            effects: model.status === 'ready' ? [{ type: 'render-panels' }] : none(),
+          }
     case 'failed':
       return message.request === model.request
         ? { model: { ...model, status: 'failed' }, effects: none() }

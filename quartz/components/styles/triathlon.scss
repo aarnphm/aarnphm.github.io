@@ -16580,6 +16580,11 @@ a.tri-pop-date:hover {
   height: 100%;
 }
 
+.tri-workout-plot:has(> .tri-workout-elevation) {
+  --tri-workout-lap-opacity-scale: 0.45;
+  --tri-workout-lap-active-opacity: 0.55;
+}
+
 .tri-run-workout-plot {
   min-width: max(100%, calc(var(--tri-run-workout-laps) * 2rem));
 }
@@ -16613,7 +16618,14 @@ a.tri-pop-date:hover {
 }
 
 .tri-workout-elevation-area {
-  fill: color-mix(in srgb, var(--gray) 22%, transparent);
+  fill: color-mix(in srgb, var(--gray) 36%, transparent);
+}
+
+.tri-workout-elevation-line {
+  fill: none;
+  stroke: var(--darkgray);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
 }
 
 .tri-cycling-workout-average-line {
@@ -16676,7 +16688,7 @@ a.tri-pop-date:hover {
   min-height: 1px;
   height: var(--tri-cycling-workout-height);
   background: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
-  opacity: 0.78;
+  opacity: calc(0.78 * var(--tri-workout-lap-opacity-scale, 1));
 }
 
 .tri-cycling-workout-lap--unavailable .tri-cycling-workout-bar {
@@ -16713,7 +16725,7 @@ a.tri-pop-date:hover {
   .tri-workout-lap-bar {
   outline: 2px solid var(--tri-accent);
   outline-offset: 1px;
-  opacity: 1;
+  opacity: var(--tri-workout-lap-active-opacity, 1);
 }
 
 .tri-cycling-workout-label {
@@ -16795,7 +16807,7 @@ a.tri-pop-date:hover {
   min-height: 1px;
   height: var(--tri-swim-workout-height);
   background: color-mix(in srgb, var(--tri-swim) 78%, var(--dark));
-  opacity: var(--tri-swim-workout-opacity);
+  opacity: calc(var(--tri-swim-workout-opacity) * var(--tri-workout-lap-opacity-scale, 1));
 }
 
 .tri-swim-workout-label {
@@ -16866,7 +16878,7 @@ a.tri-pop-date:hover {
   min-height: 1px;
   height: var(--tri-run-workout-height);
   background: var(--tri-run);
-  opacity: var(--tri-run-workout-opacity);
+  opacity: calc(var(--tri-run-workout-opacity) * var(--tri-workout-lap-opacity-scale, 1));
 }
 
 .tri-run-workout-label {
@@ -17162,7 +17174,7 @@ a.tri-pop-date:hover {
   }
 
   .tri-workout-lap:not([aria-pressed='true']):hover .tri-workout-lap-bar {
-    opacity: 1;
+    opacity: var(--tri-workout-lap-active-opacity, 1);
   }
 
   .tri-workout-lap:hover {

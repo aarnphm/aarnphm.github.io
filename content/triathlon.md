@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-21 23:00:23 GMT-04:00
+modified: 2026-09-22 19:21:14 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1695,6 +1695,22 @@ exercise: Alternating reverse lunges | 45s | 45s | 45s
 exercise: Glute bridges | 45s | 45s | 45s
 exercise: Standing single-leg balance with knee lift | 45s | 45s | 45s
 exercise: full-body stretch flows | 2m
+```
+
+```tracking
+title: Guided All Round, Self-Care Sweats
+date: 2026-09-22
+time: 18:30
+duration: 75 mins
+activity: sauna
+temperature: 167F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: break | hot sauna | cold plunge | break | hot sauna | cold plunge | break | hot sauna | break
+location: Othership Adelaide
+htl: 7.6
+strava: 20288845354
+garmin: 24462598222
 ```
 
 <!-- training plan start
