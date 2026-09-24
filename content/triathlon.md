@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-24 00:22:04 GMT-04:00
+modified: 2026-09-24 16:28:26 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1717,6 +1717,17 @@ garmin: 24462598222
 activity: 20302701086
 garmin: 24475087720
 computer: Wahoo ELEMNT BOLT 3
+```
+
+```tracking
+date: 2026-09-24
+activity: 20315667440
+exercise: Standing Quad Stretch (30s per side) | 1m
+exercise: Crossover hamstring stretch (30s per side) | 1m
+exercise: Upper Calf Stretch (30s per side) | 1m
+exercise: Hip Flexor Stretch Kneeling (30s per side) | 1m
+exercise: Butterfly stretch | 30s
+exercise: Figure 4 glute stretch (30s per side) | 1m
 ```
 
 <!-- training plan start

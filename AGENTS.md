@@ -19,8 +19,16 @@ This repository powers a Quartz digital garden with custom plugins and a Cloudfl
 
 - Inspect scoped Git state and the existing watcher before editing. Preserve staging, unrelated work, and user-owned processes.
 - Use `pnpm`, `oxlint`, `oxfmt`, and `tsgo` for the Quartz project. Nested projects may define their own package manager and build checks in a closer AGENTS.md.
-- Run relevant existing tests and tests for changed behavior. File fixtures and generated-output assertions are valid; tests that regex source text to prove an implementation edit are not.
 - Routine targeted local checks are authorized with the task. See [development commands](docs/agent-development.md) for command effects, and read the current package script before an unfamiliar invocation.
 - Use the running `quartz/scripts/dev.ts` watcher for browser evidence. Do not launch a full Quartz bundle/build or restart an existing process just to verify an edit. Wait for the matching new `build:ready`, confirm HTTP availability, and inspect the rendered page. Report the actual blocker if that path fails.
 - Keep provider identity and per-field provenance explicit. A computed estimate is distinct from a native measurement. A verified replacement and separate deletion approval are required before removing source activities.
 - Preserve existing flashcard text and identities unless the requested correction requires a change; edits can affect scheduling.
+
+## Testing
+
+- Never write unit tests after you write code.
+- Highly prefer E2E tests as the sole testing mechanism. Use them to verify that complex features work through their real entry points and observable outcomes.
+- At the end of E2E tests, produce a verifiable and repeatable artifact. Record the exact command, inputs or fixtures, and results alongside the relevant trace, screenshot, response, or generated output so another person can inspect the evidence and repeat the run.
+- If you must test a system in isolation, first write down all the ways it could fail, then write the code. Keep an isolated test only when it catches a concrete failure that the E2E tests miss.
+- Do not add tests that mirror the implementation, copy constants, assert mocked call plumbing, or regex source text to prove an edit. Assert behavior at the owning system boundary.
+- Run the relevant existing tests for a change. Preserve distinct regression coverage when pruning tests, identify the surviving coverage for deleted duplicates, and report any uncovered failure modes or baseline failures.

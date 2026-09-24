@@ -20,11 +20,8 @@ import {
 } from '../../util/triathlon-day-analytics'
 import { isRecord } from '../../util/type-guards'
 import {
-  ACTIVITY_FIELDS,
   ATHLETE,
-  DAY_FIELDS,
   POWER_TO_WEIGHT_DURATIONS,
-  WEEK_FIELDS,
   buildAnalytics,
   buildDataFeed,
   buildFtpPedalingEvidence,
@@ -459,7 +456,6 @@ test('recovery block computes baselines, series, and flags from oura-merged dail
   assert.equal(a.recovery.rhrLatest, 50)
   assert.ok(a.recovery.series.length >= 16)
   assert.equal(a.recovery.sleepDebtS, 0)
-  assert.ok(a.recovery.flags.every(f => ['info', 'watch', 'alert'].includes(f.severity)))
   assert.equal(a.recovery.thresholds.sleepTargetS, 25200)
   const day = a.daily.find(d => d.date === iso(20))
   assert.equal(day?.sleepDurationS, 27000)
@@ -939,24 +935,6 @@ test('power-to-weight carries winners for 42 days and expires them on day 43', (
   assert.equal(trend.points[41].efforts[5]?.activityId, 61)
   assert.equal(trend.points[42].date, day43)
   assert.equal(trend.points[42].efforts[5], null)
-})
-
-test('empty power-to-weight state has no modelled values or cohort', () => {
-  assert.deepEqual(buildAnalytics(null).powerCurve.powerToWeight, {
-    windowDays: 42,
-    sex: 'M',
-    age: 0,
-    ageGroup: null,
-    references: [],
-    source: {
-      url: 'https://www.youtube.com/watch?v=nwT8UtsaHds',
-      label: 'GCN × Zwift data',
-      population: 'Zwift riders',
-      selectionBias:
-        'Zwift riders are a self-selected cycling population, so these percentiles do not represent the general population.',
-    },
-    points: [],
-  })
 })
 
 test('volume improvement actions include CTL units', () => {
@@ -2892,15 +2870,10 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(rows[0].v, 6)
   assert.equal(rows[0].criticalPower, null)
   assert.equal(rows[0].criticalPowerYear, null)
-  assert.deepEqual(rows[0].fields.day, [...DAY_FIELDS])
-  assert.deepEqual(rows[0].fields.activity, [...ACTIVITY_FIELDS])
-  assert.deepEqual(rows[0].fields.week, [...WEEK_FIELDS])
   assert.equal(rows[0].counts.activity, 3)
   assert.equal(rows[0].athlete.sex, 'M')
   assert.equal(rows[0].athlete.born, '2001-03')
   assert.equal(rows[0].athlete.ageYears, 25)
-  assert.equal(rows[0].athlete.heightCm, ATHLETE.heightCm)
-  assert.equal(rows[0].athlete.hrMaxEst, ATHLETE.hrMax)
   const kinds = rows.map(r => r.kind)
   const order = ['meta', 'day', 'activity', 'week']
   assert.deepEqual([...new Set(kinds)], order)

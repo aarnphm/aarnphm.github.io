@@ -46,7 +46,7 @@ import {
   buildActivity,
   buildActivityIcon,
   buildActivityComparison,
-  buildCyclingBestEfforts,
+  buildBestEfforts,
   buildCyclingPowerChart,
   buildCrankTorqueChart,
   buildIntensityFactorChart,
@@ -3093,8 +3093,72 @@ const analysisDetail = (): StravaActivityDetail =>
     ],
   })
 
+test('renders per-run best efforts with pace, telemetry gaps, and calculation provenance', () => {
+  const run = detail({
+    sport: 'run',
+    bestEfforts: {
+      distanceSource: 'calculated',
+      weightKg: null,
+      weightDate: null,
+      power: [],
+      climbs: [],
+      distance: [
+        {
+          label: '400m',
+          targetDistanceM: 400,
+          elapsedTimeS: 114,
+          averageSpeedKph: (400 / 114) * 3.6,
+          averageHeartRate: 162,
+          elevationDeltaM: -1.2,
+        },
+        {
+          label: '1K',
+          targetDistanceM: 1000,
+          elapsedTimeS: 343,
+          averageSpeedKph: (1000 / 343) * 3.6,
+          averageHeartRate: null,
+          elevationDeltaM: null,
+        },
+      ],
+    },
+  })
+  const rendered = buildBestEfforts(factory, run)
+  assert.ok(rendered)
+  assert.equal(rendered.properties.ariaLabel, 'Running best efforts')
+  assert.equal(rendered.properties.dataEffortSource, 'calculated')
+  assert.deepEqual(headerText(table(rendered, 'distance')), [
+    'Distance',
+    'Time',
+    'Pace',
+    'Heart rate',
+    'Elev',
+  ])
+  assert.deepEqual(bodyRows(table(rendered, 'distance')), [
+    ['400m', '1:54', '4:45/km', '162 bpm', '-1 m'],
+    ['1K', '5:43', '5:43/km', '—', '—'],
+  ])
+  assert.equal(byClass(rendered, 'tri-effort-block').length, 1)
+  assert.match(
+    text(rendered),
+    /Calculated from recorded distance and elapsed time, including pauses\./,
+  )
+  const imperial = buildBestEfforts(factoryFor(imperialPresentation), run)
+  assert.ok(imperial)
+  assert.deepEqual(bodyRows(table(imperial, 'distance'))[0], [
+    '400m',
+    '1:54',
+    '7:39/mi',
+    '162 bpm',
+    '-4 ft',
+  ])
+  const day = buildDayCard(factory, run.date, { details: { [run.id]: run }, health: {} })
+  assert.equal(byClass(day, 'tri-efforts').length, 1)
+  assert.equal(buildBestEfforts(factory, detail({ sport: 'run', bestEfforts: null })), null)
+  assert.equal(buildBestEfforts(factory, detail({ sport: 'walk' })), null)
+})
+
 test('builds semantic distance, power, and climbing tables in metric units', () => {
-  const rendered = buildCyclingBestEfforts(factory, detail())
+  const rendered = buildBestEfforts(factory, detail())
   assert.ok(rendered)
 
   assert.equal(rendered.tagName, 'section')
@@ -6753,7 +6817,7 @@ test('renders imperial effort values and elevation axes with feet grid increment
   assert.equal(formatAltitude(imperialPresentation, -0.1), '0 ft')
   const ride = detail()
   const imperialFactory = factoryFor(imperialPresentation)
-  const efforts = buildCyclingBestEfforts(imperialFactory, ride)
+  const efforts = buildBestEfforts(imperialFactory, ride)
   assert.ok(efforts)
   assert.deepEqual(bodyRows(table(efforts, 'distance')), [
     ['10K', '24:31', '15.2 mph', '151 bpm', '-98 ft'],

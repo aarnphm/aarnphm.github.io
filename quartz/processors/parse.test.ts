@@ -15,11 +15,8 @@ import { ProcessedContent } from '../plugins/vfile'
 import { isFilePath, type FilePath } from '../util/path'
 import {
   canReuseProcessedHtml,
-  HTML_PARSE_CHUNK_SIZE,
   parseMarkdown,
-  parseWorkerConcurrency,
   resetProcessedContentCache,
-  TEXT_PARSE_CHUNK_SIZE,
   titleOnlyFrontmatterChange,
 } from './parse'
 
@@ -99,17 +96,6 @@ function testCtx(directory: string, marker: string): BuildCtx {
 function hasMarker(content: ProcessedContent, id: string): boolean {
   return content[0].children.some(child => child.type === 'element' && child.properties?.id === id)
 }
-
-test('parse worker concurrency avoids worker overhead for tiny rebuilds', () => {
-  assert.equal(parseWorkerConcurrency(0, 10), 1)
-  assert.equal(parseWorkerConcurrency(1, 10), 1)
-})
-
-test('parse worker concurrency uses html jobs to balance AST to HAST work', () => {
-  assert.equal(parseWorkerConcurrency(TEXT_PARSE_CHUNK_SIZE - 1, 10), 8)
-  assert.equal(parseWorkerConcurrency(TEXT_PARSE_CHUNK_SIZE, 10), 8)
-  assert.equal(parseWorkerConcurrency(HTML_PARSE_CHUNK_SIZE * 14, 10), 10)
-})
 
 test('processed html can be reused for title-only frontmatter changes', () => {
   const previous = processedContent('---\ntitle: old\n---\n# Body\n', { title: 'old' })

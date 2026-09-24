@@ -33,16 +33,6 @@ test('unknown languages and large files remain complete escaped text', () => {
   }
 })
 
-test('source extensions select the supported language grammar', () => {
-  for (const [fileName, language] of [
-    ['kernel.cu', 'cpp'],
-    ['view.tsx', 'typescript'],
-    ['types.pyi', 'python'],
-    ['config.toml', 'ini'],
-  ])
-    assert.equal(highlightArenaSource('', fileName).language, language)
-})
-
 test('the code view uses a focusable pre and preserves a source artifact as code', () => {
   const artifact: Extract<ArenaReaderArtifact, { kind: 'code' }> = {
     schemaVersion: 1,

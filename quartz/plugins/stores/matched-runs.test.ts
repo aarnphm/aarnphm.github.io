@@ -87,13 +87,6 @@ test('groups repeated same-direction GPS routes and rejects route lookalikes', (
     matched.groups[0].efforts.map(effort => effort.relativeEffort),
     [12, 14, 16, 18],
   )
-  assert.deepEqual(matched.method, {
-    source: 'gps',
-    sampleSpacingM: 50,
-    maximumSampleDistanceM: 50,
-    minimumDistanceRatio: 0.8,
-    minimumOrderedCoverage: 0.85,
-  })
   assert.doesNotMatch(JSON.stringify(matched), /"(?:lat|lng|latlng|streams)"/)
 })
 

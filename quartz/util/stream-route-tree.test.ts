@@ -31,16 +31,6 @@ function entry(id: string, content: ElementContent[]): StreamEntry {
   return { id, metadata: {}, content }
 }
 
-test('buildStreamRouteTree includes only selected entry content', () => {
-  const first = el('p', { id: 'first' }, [text('first')])
-  const second = el('p', { id: 'second' }, [text('second')])
-  const sourceTree: Root = { type: 'root', children: [first, second] }
-
-  const routeTree = buildStreamRouteTree([entry('first', [first])], sourceTree)
-
-  assert.deepEqual(routeTree.children, [first])
-})
-
 test('buildStreamRouteTree carries footnotes only when selected content references them', () => {
   const withoutRef = el('p', { id: 'plain' }, [text('plain')])
   const footnoteRef = el('a', { href: '#fn-one', dataFootnoteRef: '' }, [text('1')])

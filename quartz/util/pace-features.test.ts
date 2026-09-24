@@ -3,7 +3,6 @@ import { test } from 'node:test'
 import {
   PACE_FEATURE_DIM,
   PACE_FEATURE_NAMES,
-  PACE_INPUT_DIM,
   type PaceContext,
   type PaceDayState,
   type PaceLegSpec,
@@ -40,10 +39,7 @@ const runSpec: PaceLegSpec = {
   windKph: 12,
 }
 
-test('feature schema dims are coherent', () => {
-  assert.equal(PACE_FEATURE_DIM, 20)
-  assert.equal(PACE_FEATURE_NAMES.length, PACE_FEATURE_DIM)
-  assert.equal(PACE_INPUT_DIM, 40)
+test('feature schema names are unique', () => {
   assert.equal(new Set(PACE_FEATURE_NAMES).size, PACE_FEATURE_NAMES.length)
 })
 

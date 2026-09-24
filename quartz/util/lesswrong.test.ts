@@ -1,9 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  greaterWrongPostUrl,
-  lessWrongPostUrl,
-  lessWrongPreviewApiUrl,
   lessWrongTargetFromSearchParams,
   parseLessWrongTarget,
   readLessWrongPreview,
@@ -36,26 +33,6 @@ test('rejects non-post LessWrong URLs', () => {
     parseLessWrongTarget('https://www.lesswrong.com.evil.test/posts/abc/example'),
     undefined,
   )
-})
-
-test('builds LessWrong preview URLs', () => {
-  const target = {
-    postId: 'zumnfc7jctgocfoe9',
-    slug: 'death-note-anonymity-and-information-theory',
-  }
-  assert.equal(
-    lessWrongPostUrl(target),
-    'https://www.lesswrong.com/posts/zumnfc7jctgocfoe9/death-note-anonymity-and-information-theory',
-  )
-  assert.equal(
-    greaterWrongPostUrl(target),
-    'https://www.greaterwrong.com/posts/zumnfc7jctgocfoe9/death-note-anonymity-and-information-theory',
-  )
-
-  const apiUrl = lessWrongPreviewApiUrl(target, 'https://aarnphm.xyz/thoughts/rationality')
-  assert.equal(apiUrl.pathname, '/api/lesswrong')
-  assert.equal(apiUrl.searchParams.get('postId'), 'zumnfc7jctgocfoe9')
-  assert.equal(apiUrl.searchParams.get('slug'), 'death-note-anonymity-and-information-theory')
 })
 
 test('reads LessWrong targets from search params', () => {

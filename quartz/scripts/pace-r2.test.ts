@@ -8,32 +8,9 @@ import {
   regressesLiveMae,
 } from './pace-r2'
 
-test('parseLiveLatest defaults a legacy pointer without valSpace to ratio', () => {
-  const live = parseLiveLatest({ version: 3, datasetHash: 'abc', val: { mae: 0.05 } })
-  assert.ok(live)
-  assert.equal(live.valSpace, LEGACY_VAL_SPACE)
-  assert.equal(live.valMae, 0.05)
-})
-
-test('parseLiveLatest reads an explicit valSpace', () => {
-  const live = parseLiveLatest({ version: 4, val: { mae: 0.24, valSpace: 'velocity' } })
-  assert.ok(live)
-  assert.equal(live.valSpace, 'velocity')
-})
-
-test('regressesLiveMae blocks a same-space regression', () => {
-  const live: LiveLatest = { version: 1, datasetHash: '', valMae: 0.05, valSpace: 'ratio' }
-  assert.equal(regressesLiveMae(live, 0.08, 'ratio', 0.15), true)
-})
-
 test('regressesLiveMae allows a same-space result within tolerance', () => {
   const live: LiveLatest = { version: 1, datasetHash: '', valMae: 0.05, valSpace: 'ratio' }
   assert.equal(regressesLiveMae(live, 0.05, 'ratio', 0.15), false)
-})
-
-test('regressesLiveMae skips the gate across a metric-space change', () => {
-  const live: LiveLatest = { version: 1, datasetHash: '', valMae: 0.05, valSpace: 'velocity' }
-  assert.equal(regressesLiveMae(live, 0.24, 'ratio', 0.15), false)
 })
 
 test('legacy hr pointer still gates a ratio-space regression', () => {

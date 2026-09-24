@@ -579,12 +579,42 @@ const isActivityAnalyses = (value: unknown, activityId: number, elapsedTimeS: nu
   )
 }
 
+const isRunBestEfforts = (value: unknown): boolean => {
+  if (value == null) return true
+  return (
+    isRecord(value) &&
+    value.distanceSource === 'calculated' &&
+    value.weightKg === null &&
+    value.weightDate === null &&
+    Array.isArray(value.power) &&
+    value.power.length === 0 &&
+    Array.isArray(value.climbs) &&
+    value.climbs.length === 0 &&
+    Array.isArray(value.distance) &&
+    value.distance.every(
+      (effort: unknown) =>
+        isRecord(effort) &&
+        typeof effort.label === 'string' &&
+        finite(effort.targetDistanceM) &&
+        effort.targetDistanceM > 0 &&
+        finite(effort.elapsedTimeS) &&
+        effort.elapsedTimeS > 0 &&
+        finite(effort.averageSpeedKph) &&
+        effort.averageSpeedKph > 0 &&
+        (effort.averageHeartRate === null ||
+          (finite(effort.averageHeartRate) && effort.averageHeartRate > 0)) &&
+        nullableFinite(effort.elevationDeltaM),
+    )
+  )
+}
+
 export const isActivityDetail = (value: unknown): value is StravaActivityDetail => {
   if (
     !isRecord(value) ||
     typeof value.id !== 'number' ||
     !/^\d{4}-\d{2}-\d{2}$/.test(typeof value.date === 'string' ? value.date : '') ||
     !isActivityKind(value.sport) ||
+    (value.sport === 'run' && !isRunBestEfforts(value.bestEfforts)) ||
     !isWahooVerification(value.wahoo) ||
     !isActivitySources(value.sources) ||
     !(

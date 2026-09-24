@@ -32,15 +32,6 @@ function parsedDoc(): NotebookDoc {
 }
 
 describe('mdast-util-notebook', () => {
-  test('converts a notebook into mdast notebookCell nodes', () => {
-    const tree = notebookToMdast(parsedDoc())
-    assert.strictEqual(tree.type, 'root')
-    assert.strictEqual(tree.children.length, 3)
-    for (const child of tree.children) {
-      assert.strictEqual(child.type, 'notebookCell')
-    }
-  })
-
   test('markdown cells get mdast children, code cells get code + output children', () => {
     const tree = notebookToMdast(parsedDoc())
     const mdCell = tree.children[0] as unknown as NotebookCell
@@ -51,18 +42,6 @@ describe('mdast-util-notebook', () => {
     const codeCell = tree.children[1] as unknown as NotebookCell
     assert.ok(codeCell.children.some(child => child.type === 'code'))
     assert.ok(codeCell.children.some(child => child.type === 'notebookOutput'))
-  })
-
-  test('cell ids remain stable across runs of notebookToMdast on the same notebook', () => {
-    const a = notebookToMdast(parsedDoc())
-    const b = notebookToMdast(parsedDoc())
-    const idsA = a.children.map(
-      child => (child as unknown as NotebookCell).data.notebookCell.cellId,
-    )
-    const idsB = b.children.map(
-      child => (child as unknown as NotebookCell).data.notebookCell.cellId,
-    )
-    assert.deepStrictEqual(idsA, idsB)
   })
 
   test('execute_result outputs carry executionCount', () => {

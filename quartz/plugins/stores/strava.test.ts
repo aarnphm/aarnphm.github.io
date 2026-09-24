@@ -4490,11 +4490,40 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   const run = { ...cache, activities: { 101: { ...activity, sportType: 'Run' } } }
   const runDetail = buildPayload(run, null, garmin, '2026-06-01').details['101']
   assert.ok(runDetail.powerCurve?.length)
-  assert.equal(runDetail.bestEfforts, null)
+  assert.equal(runDetail.bestEfforts?.distanceSource, 'calculated')
+  assert.equal(runDetail.bestEfforts?.distance[0]?.label, '400m')
+  assert.deepEqual(runDetail.bestEfforts?.power, [])
+  assert.deepEqual(runDetail.bestEfforts?.climbs, [])
   assert.deepEqual(runDetail.powerCurveWeight, { kg: 75, date: '2026-06-07', source: 'garmin' })
   assert.equal(
     buildPayload(run, null, null, '2026-06-01').details['101'].powerCurveWeight,
     undefined,
+  )
+})
+
+test('projects running distance efforts without power and preserves elapsed pauses', () => {
+  const cache: StravaRawCache = {
+    auth: { refreshToken: '', obtainedAt: 0 },
+    athleteId: 1,
+    lastSync: 0,
+    lastActivityStart: 0,
+    activities: {
+      '101': ride({ sportType: 'Run', distance: 400, movingTime: 80, elapsedTime: 140 }),
+    },
+    streams: {
+      '101': { time: [0, 40, 100, 140], distance: [0, 200, 200, 400], altitude: [], latlng: [] },
+    },
+  }
+  const run = buildPayload(cache, null, null, '2026-06-01').details['101']
+  assert.equal(run.powerCurve, null)
+  assert.equal(run.bestEfforts?.distanceSource, 'calculated')
+  assert.equal(run.bestEfforts?.distance[0]?.elapsedTimeS, 140)
+  assert.equal(run.bestEfforts?.distance[0]?.averageHeartRate, null)
+  assert.equal(run.bestEfforts?.distance[0]?.elevationDeltaM, null)
+  assert.deepEqual(run.bestEfforts?.power, [])
+  assert.equal(
+    buildPayload({ ...cache, streams: {} }, null, null, '2026-06-01').details['101'].bestEfforts,
+    null,
   )
 })
 

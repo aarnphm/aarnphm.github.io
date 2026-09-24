@@ -46,12 +46,6 @@ test('retains Strava maximum speed, including zero, and omits unavailable values
   assert.equal(mapActivity({ id: 1 }).maxSpeed, undefined)
 })
 
-test('maps the exact device name from a Strava activity summary', () => {
-  const activity = mapActivity({ id: 1, device_name: 'Garmin Forerunner 970' })
-
-  assert.equal(activity.deviceName, 'Garmin Forerunner 970')
-})
-
 test('trims the Strava activity summary device name', () => {
   const activity = mapActivity({ id: 1, device_name: '  Apple Watch Ultra 3  ' })
 

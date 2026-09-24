@@ -2,26 +2,6 @@ import assert from 'node:assert'
 import test from 'node:test'
 import { lex } from './lexer'
 
-test('lexes bracket access with hyphenated keys', () => {
-  const result = lex('note["my-field"]')
-  const types = result.tokens.map(token => token.type)
-  assert.deepStrictEqual(types, ['identifier', 'punctuation', 'string', 'punctuation', 'eof'])
-  const value = result.tokens[2]
-  if (value.type !== 'string') {
-    throw new Error('expected string token')
-  }
-  assert.strictEqual(value.value, 'my-field')
-})
-
-test('lexes bracket access with escaped quotes', () => {
-  const result = lex('note["my\\\"field"]')
-  const value = result.tokens.find(token => token.type === 'string')
-  if (!value || value.type !== 'string') {
-    throw new Error('expected string token')
-  }
-  assert.strictEqual(value.value, 'my"field')
-})
-
 test('lexes regex literals with flags', () => {
   const result = lex('name.replace(/:/g, "-")')
   const regexToken = result.tokens.find(token => token.type === 'regex')

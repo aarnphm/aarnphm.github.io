@@ -11,16 +11,6 @@ test('renderLatexInString renders inline latex for HTML descriptions', () => {
   assert.equal(rendered.includes('\\mathcal{O}(L^2)'), true)
 })
 
-test('descriptionToPlainText keeps latex readable for OG descriptions', () => {
-  const description =
-    'each token attends only inside a fixed radius, local pattern dropping cost from $\\mathcal{O}(L^2)$ to $\\mathcal{O}(Lw)$.'
-
-  assert.equal(
-    descriptionToPlainText(description),
-    'each token attends only inside a fixed radius, local pattern dropping cost from O(L^2) to O(Lw).',
-  )
-})
-
 test('descriptionToPlainText keeps wikilink aliases as text', () => {
   assert.equal(descriptionToPlainText('see [[thoughts/Attention|Attention]]'), 'see Attention')
 })

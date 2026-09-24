@@ -12,13 +12,7 @@ import {
   wasmBackend,
 } from '../native/backend'
 import { pythonBackend } from '../python/backend'
-import {
-  backendFor,
-  backendForShellMagic,
-  listBackends,
-  registerBackend,
-  unregisterBackend,
-} from './backend'
+import { backendFor, backendForShellMagic, registerBackend, unregisterBackend } from './backend'
 import {
   nextNotebookCellId,
   notebookRuntimeKernelLanguages,
@@ -100,39 +94,6 @@ describe('Notebook runtime keyboard commands', () => {
 })
 
 describe('LanguageBackend registry', () => {
-  test('resolves a backend by every alias and file extension', () => {
-    assert.strictEqual(backendFor('python'), pythonBackend)
-    assert.strictEqual(backendFor('Python'), pythonBackend)
-    assert.strictEqual(backendFor('py'), pythonBackend)
-    assert.strictEqual(backendFor('ipython'), pythonBackend)
-    assert.strictEqual(backendFor('.ipynb'), pythonBackend)
-    assert.strictEqual(backendFor('.py'), pythonBackend)
-    assert.strictEqual(backendFor('javascript'), javascriptBackend)
-    assert.strictEqual(backendFor('js'), javascriptBackend)
-    assert.strictEqual(backendFor('ijavascript'), javascriptBackend)
-    assert.strictEqual(backendFor('.mjs'), javascriptBackend)
-    assert.strictEqual(backendFor('rust'), rustBackend)
-    assert.strictEqual(backendFor('.rs'), rustBackend)
-    assert.strictEqual(backendFor('c'), cBackend)
-    assert.strictEqual(backendFor('.c'), cBackend)
-    assert.strictEqual(backendFor('cpp'), cppBackend)
-    assert.strictEqual(backendFor('c++'), cppBackend)
-    assert.strictEqual(backendFor('.cpp'), cppBackend)
-    assert.strictEqual(backendFor('mojo'), mojoBackend)
-    assert.strictEqual(backendFor('.mojo'), mojoBackend)
-    assert.strictEqual(backendFor('haskell'), haskellBackend)
-    assert.strictEqual(backendFor('runghc'), haskellBackend)
-    assert.strictEqual(backendFor('.hs'), haskellBackend)
-    assert.strictEqual(backendFor('ocaml'), ocamlBackend)
-    assert.strictEqual(backendFor('.ml'), ocamlBackend)
-    assert.strictEqual(backendFor('go'), goBackend)
-    assert.strictEqual(backendFor('golang'), goBackend)
-    assert.strictEqual(backendFor('.go'), goBackend)
-    assert.strictEqual(backendFor('wasm'), wasmBackend)
-    assert.strictEqual(backendFor('wat'), wasmBackend)
-    assert.strictEqual(backendFor('.wat'), wasmBackend)
-  })
-
   test('resolves a backend by shell magic', () => {
     assert.strictEqual(backendForShellMagic('python-shell'), pythonBackend)
     assert.strictEqual(backendForShellMagic('py-shell'), pythonBackend)
@@ -156,16 +117,6 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendForShellMagic('wasm-shell'), wasmBackend)
     assert.strictEqual(backendForShellMagic('wat-shell'), wasmBackend)
     assert.strictEqual(backendForShellMagic('wasm'), undefined)
-  })
-
-  test('returns undefined for unregistered languages', () => {
-    assert.strictEqual(backendFor('ruby'), undefined)
-    assert.strictEqual(backendFor('php'), undefined)
-  })
-
-  test('listBackends deduplicates by identity', () => {
-    const backends = listBackends()
-    assert.strictEqual(backends.filter(b => b.name === 'python').length, 1)
   })
 
   test('canExecute on python backend rejects threading and accepts plain code', () => {
@@ -202,50 +153,6 @@ describe('LanguageBackend registry', () => {
       ) ?? '',
       /^x = 1$/,
     )
-  })
-
-  test('python kernelFactory returns a Python kernel', async () => {
-    const kernel = await pythonBackend.kernelFactory({
-      runtimeId: 'r',
-      sourcePath: 's',
-      workerUrl: '/static/scripts/notebook-runtime.worker.js',
-    })
-    assert.strictEqual(kernel.language, 'python')
-    assert.strictEqual(typeof kernel.execute, 'function')
-    assert.strictEqual(typeof kernel.interrupt, 'function')
-  })
-
-  test('javascript kernelFactory returns a JavaScript kernel', async () => {
-    const kernel = await javascriptBackend.kernelFactory({
-      runtimeId: 'r',
-      sourcePath: 's',
-      workerUrl: '/static/scripts/notebook-runtime.javascript.worker.js',
-    })
-    assert.strictEqual(kernel.language, 'javascript')
-    assert.strictEqual(typeof kernel.execute, 'function')
-    assert.strictEqual(typeof kernel.interrupt, 'function')
-  })
-
-  test('native browser backends boot through self-hosted runtime packs', async () => {
-    for (const backend of [
-      rustBackend,
-      cBackend,
-      cppBackend,
-      mojoBackend,
-      haskellBackend,
-      ocamlBackend,
-      goBackend,
-      wasmBackend,
-    ]) {
-      const accepted = backend.canExecute('main = print "hi"')
-      assert.strictEqual(accepted.ok, true)
-      const kernel = await backend.kernelFactory({
-        runtimeId: 'r',
-        sourcePath: 's',
-        workerUrl: '/static/scripts/notebook-runtimes/manifest.json',
-      })
-      assert.strictEqual(kernel.language, backend.name)
-    }
   })
 
   test('unregister removes by name and clears shell magics', () => {

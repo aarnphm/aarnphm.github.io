@@ -26,7 +26,7 @@ import { buildActivity as buildActivityNode } from '../../../util/triathlon-card
 import { buildActivityIcon } from '../../../util/triathlon-card'
 import { buildAnalysisBar } from '../../../util/triathlon-card'
 import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../../../util/triathlon-card'
-import { buildCyclingBestEfforts as buildCyclingBestEffortsNode } from '../../../util/triathlon-card'
+import { buildBestEfforts as buildBestEffortsNode } from '../../../util/triathlon-card'
 import { buildWorkoutAnalysis as buildWorkoutAnalysisNode } from '../../../util/triathlon-card'
 import { buildHeatStrainTrace as buildHeatStrainTraceNode } from '../../../util/triathlon-card'
 import { buildEnvironmentAnalysis as buildEnvironmentAnalysisNode } from '../../../util/triathlon-card'
@@ -1076,7 +1076,7 @@ export const renderMapDetail = (
       false,
       (opts?.detailContext ?? detailContextFromPayload()).zones,
     ) as HTMLElement | null
-    const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
+    const bestEfforts = buildBestEffortsNode(domF, d)
     const heartRate =
       hasHeartRateTrace(d) && workoutAnalysis?.dataset.workoutAnalysisMetric !== 'hr'
         ? buildHeartRateTrace(presentation, d)
@@ -1149,7 +1149,7 @@ export const renderMapDetail = (
     (opts?.detailContext ?? detailContextFromPayload()).zones,
   ) as HTMLElement | null
   const zoneBox = el('div', 'tri-act-more')
-  const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
+  const bestEfforts = buildBestEffortsNode(domF, d)
   wrap.append(tablist, figs)
   if (workoutAnalysis) wrap.appendChild(workoutAnalysis)
   wrap.appendChild(profileBox)

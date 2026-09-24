@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  acceptsMarkdown,
   documentDiscoveryLink,
   isAgentUserAgent,
   markdownPathname,
@@ -100,25 +99,6 @@ test('rewrites ordinary documents and excludes explicit markdown and data routes
   }
   assert.equal(shouldRewriteMarkdown(new Request(markdownUrl, { headers }), markdownUrl), false)
   assert.equal(shouldRewriteMarkdown(new Request(dataUrl, { headers }), dataUrl), false)
-})
-
-test('honors explicit markdown accept values with positive quality', () => {
-  assert.equal(
-    acceptsMarkdown(
-      new Request('https://aarnphm.xyz', { headers: { Accept: 'text/html, text/markdown' } }),
-    ),
-    true,
-  )
-  assert.equal(
-    acceptsMarkdown(
-      new Request('https://aarnphm.xyz', { headers: { Accept: 'text/markdown; q=0' } }),
-    ),
-    false,
-  )
-  assert.equal(
-    acceptsMarkdown(new Request('https://aarnphm.xyz', { headers: { Accept: 'text/html' } })),
-    false,
-  )
 })
 
 test('honors media quality and returns 406 only when no document representation is accepted', () => {

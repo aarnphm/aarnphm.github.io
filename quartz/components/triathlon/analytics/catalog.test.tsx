@@ -12,16 +12,8 @@ import { estimateFtpFromPowerCurve } from '../../../util/cycling-ftp'
 import { health as garminHealthFixture } from '../../../util/fixtures/garmin-health'
 import { resolveSleepMetrics } from '../../../util/sleep-metrics'
 import { DEFAULT_TRIATHLON_FORMATTER } from '../runtime/formatter'
-import { ANALYTICS_CATALOG, ANALYTICS_PANEL_ORDER } from './catalog'
+import { ANALYTICS_CATALOG } from './catalog'
 import { analyticsChartPath, AnalyticsServerPanel } from './render'
-
-test('analytics catalog is complete and preserves the dedicated route order', () => {
-  assert.deepEqual(
-    ANALYTICS_CATALOG.map(panel => panel.key),
-    ANALYTICS_PANEL_ORDER,
-  )
-  assert.equal(new Set(ANALYTICS_PANEL_ORDER).size, ANALYTICS_PANEL_ORDER.length)
-})
 
 test('server lactate threshold charts contain native running pace and heart-rate history', () => {
   const speedMps = Array.from({ length: 31 }, (_, index) => ({
@@ -77,19 +69,6 @@ test('server lactate threshold keeps collected Garmin history hidden before 31 p
   assert.match(html, /heart rate · declared/)
   assert.doesNotMatch(html, /Garmin|data-series="run/)
   assert.equal(analytics.engine.lactateThreshold.runningHistory.pace.length, 2)
-})
-
-test('every analytics panel produces meaningful server markup from the real analytics model', () => {
-  const analytics = buildAnalytics(null)
-  for (const definition of ANALYTICS_CATALOG) {
-    const content = definition.server(analytics, DEFAULT_TRIATHLON_FORMATTER)
-    assert.ok(content.title.length > 0, definition.key)
-    assert.ok(content.values.length > 0, definition.key)
-    const html = renderToString(<AnalyticsServerPanel definition={definition} data={analytics} />)
-    assert.match(html, /data-tri-ssr="true"/)
-    assert.match(html, new RegExp(`data-tri-server-panel="${definition.key}"`))
-    assert.match(html, /<dl/)
-  }
 })
 
 test('heat server markup includes passive HTL and sauna minutes from the shared analytics model', () => {

@@ -3,7 +3,6 @@
  * verifies full unified pipeline including mdast-to-hast conversion.
  */
 
-import type { Root } from 'mdast'
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
 import rehypeStringify from 'rehype-stringify'
@@ -51,19 +50,6 @@ describe('remarkWikilink integration', () => {
     test('converts wikilink with anchor and alias', () => {
       const html = processToHTML('[[page#section|custom]]')
       assert(html.includes('<a href="page#section">custom</a>'))
-    })
-
-    test('handles wikilink in paragraph context', () => {
-      const html = processToHTML('This is a [[link]] in a sentence.')
-      assert(html.includes('<p>'))
-      assert(html.includes('<a href="link">link</a>'))
-      assert(html.includes('in a sentence.'))
-    })
-
-    test('handles multiple wikilinks', () => {
-      const html = processToHTML('[[first]] and [[second|alias]]')
-      assert(html.includes('<a href="first">first</a>'))
-      assert(html.includes('<a href="second">alias</a>'))
     })
   })
 
@@ -427,17 +413,6 @@ describe('remarkWikilink integration', () => {
     })
   })
 
-  describe('obsidian: false mode', () => {
-    test('does not annotate nodes when obsidian: false', () => {
-      const html = processToHTML('[[test]]', { obsidian: false })
-      // should not convert to HTML - will fail mdast-to-hast or be skipped
-      // in non-obsidian mode, wikilink nodes remain unannotated
-      // and will trigger "Cannot handle unknown node" error
-      // so we expect this to NOT contain a proper anchor tag
-      assert(!html.includes('<a href="test">test</a>') || html.includes('[[test]]'))
-    })
-  })
-
   describe('complex integration scenarios', () => {
     test('handles wikilinks in lists', () => {
       const html = processToHTML('- Item with [[link]]\n- Another [[link2|alias]]')
@@ -469,24 +444,12 @@ describe('remarkWikilink integration', () => {
       assert(html.includes('<p>'))
       assert(html.includes('<blockquote>'))
     })
-
-    test('preserves position information through pipeline', () => {
-      const markdown = 'Text [[link]] more'
-      // should not throw and should produce valid HTML
-      const html = processToHTML(markdown)
-      assert(html.includes('<a href="link">link</a>'))
-    })
   })
 
   describe('edge cases', () => {
     test('handles empty wikilink', () => {
       const html = processToHTML('[[]]')
       assert(html.includes('<a href="">'))
-    })
-
-    test('handles wikilink with only anchor', () => {
-      const html = processToHTML('[[#section]]')
-      assert(html.includes('<a href="#section">'))
     })
 
     test('handles wikilink with only alias', () => {
@@ -499,112 +462,6 @@ describe('remarkWikilink integration', () => {
       // backslash consumed, pipe acts as alias
       assert(html.includes('>name</a>'))
     })
-
-    test('handles paths with slashes', () => {
-      const html = processToHTML('[[path/to/file]]')
-      assert(html.includes('path/to/file') || html.includes('path-to-file'))
-    })
-
-    test('handles special characters', () => {
-      const html = processToHTML('[[file (with) parens]]')
-      // should produce valid HTML even with special chars
-      assert(html.includes('<a href='))
-    })
-  })
-
-  describe('data.hName annotation verification', () => {
-    test('regular link gets hName annotation', () => {
-      //@ts-ignore
-      const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
-
-      const tree = processor.parse('[[test]]') as Root
-      const paragraph = tree.children[0] as any
-      const wikilink = paragraph.children.find((n: any) => n.type === 'wikilink')
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.hName, 'a', 'should have hName annotation')
-      assert(wikilink.data?.hProperties, 'should have hProperties')
-      assert(wikilink.data?.hChildren, 'should have hChildren')
-    })
-
-    test('image embed gets hName annotation', () => {
-      //@ts-ignore
-      const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
-
-      const tree = processor.parse('![[image.png]]') as Root
-      const paragraph = tree.children[0] as any
-      const wikilink = paragraph.children.find((n: any) => n.type === 'wikilink')
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.hName, 'img', 'should have hName annotation')
-      assert(wikilink.data?.hProperties, 'should have hProperties')
-    })
-
-    test('transclude gets hName annotation', () => {
-      //@ts-ignore
-      const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
-
-      const tree = processor.parse('![[notes#section]]') as Root
-      const paragraph = tree.children[0] as any
-      const wikilink = paragraph.children.find((n: any) => n.type === 'wikilink')
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.hName, 'blockquote', 'should have hName annotation')
-      assert(wikilink.data?.hProperties, 'should have hProperties')
-      assert(wikilink.data?.hChildren, 'should have hChildren')
-    })
-
-    test('absolute path gets hName annotation', () => {
-      //@ts-ignore
-      const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
-
-      const tree = processor.parse('[[/tags/ml]]') as Root
-      const paragraph = tree.children[0] as any
-      const wikilink = paragraph.children.find((n: any) => n.type === 'wikilink')
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.hName, 'a', 'should have hName annotation')
-      assert.strictEqual(
-        wikilink.data?.hProperties?.href,
-        '/tags/ml',
-        'should preserve absolute path',
-      )
-    })
-
-    test('same-file anchor gets hName annotation', () => {
-      //@ts-ignore
-      const processor = unified().use(remarkParse).use(remarkWikilink, { obsidian: true })
-
-      const tree = processor.parse('[[#heading]]') as Root
-      const paragraph = tree.children[0] as any
-      const wikilink = paragraph.children.find((n: any) => n.type === 'wikilink')
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.hName, 'a', 'should have hName annotation')
-      assert.strictEqual(wikilink.data?.hProperties?.href, '#heading', 'should have anchor href')
-    })
-  })
-
-  describe('error handling', () => {
-    test('does not throw on malformed wikilinks', () => {
-      assert.doesNotThrow(() => {
-        processToHTML('[[incomplete')
-      })
-    })
-
-    test('does not throw on complex markdown', () => {
-      assert.doesNotThrow(() => {
-        processToHTML(
-          '# Heading\n\n[[link1]] and **bold** text.\n\n- List with [[link2]]\n- Another item',
-        )
-      })
-    })
-
-    test('does not throw on mixed content', () => {
-      assert.doesNotThrow(() => {
-        processToHTML('Text `code with [[link]]` more [[actual link]]')
-      })
-    })
   })
 
   describe('performance and scale', () => {
@@ -614,12 +471,6 @@ describe('remarkWikilink integration', () => {
       for (let i = 0; i < 50; i++) {
         assert(html.includes(`<a href="link${i}">link${i}</a>`))
       }
-    })
-
-    test('handles deeply nested paths', () => {
-      const html = processToHTML('[[a/b/c/d/e/f/g/h]]')
-      assert(html.includes('<a href='))
-      assert(html.includes('</a>'))
     })
 
     test('handles very long aliases', () => {

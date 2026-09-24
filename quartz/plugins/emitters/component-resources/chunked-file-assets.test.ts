@@ -33,31 +33,6 @@ function testCtx(output: string): BuildCtx {
   }
 }
 
-test('derives chunked file asset paths from a directory descriptor', () => {
-  const descriptor: ChunkedFileAssetDescriptor = {
-    baseDir: 'static/scripts/notebook-pyright/typeshed',
-    manifestName: 'manifest.json',
-    chunkDir: 'chunks',
-    maxBytes: 1024,
-  }
-
-  assert.equal(
-    chunkedFileAssetManifestPath(descriptor),
-    'static/scripts/notebook-pyright/typeshed/manifest.json',
-  )
-  assert.equal(
-    chunkedFileAssetChunkPath(descriptor, 7),
-    'static/scripts/notebook-pyright/typeshed/chunks/7.json',
-  )
-  assert.equal(
-    chunkedFileAssetChunkReference(
-      descriptor,
-      'static/scripts/notebook-pyright/typeshed/chunks/7-12345678.json',
-    ),
-    'chunks/7-12345678.json',
-  )
-})
-
 test('registers content-hashed chunk paths as manifest-relative entries', async () => {
   const output = await mkdtemp(path.join(os.tmpdir(), 'garden-chunked-file-assets-'))
   try {

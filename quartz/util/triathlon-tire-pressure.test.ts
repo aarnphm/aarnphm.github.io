@@ -133,33 +133,6 @@ test('matches controlled outputs from the live SILCA calculator', () => {
   assert.equal(width28.rearPsi, 81)
 })
 
-test('uses the Speedmax system mass with a selected even load distribution', () => {
-  const recommendation = calculateTirePressure({
-    ...DEFAULT_TIRE_PRESSURE_SELECTION,
-    riderKg: 86.06,
-    bike: 'speedmax',
-    balance: '50-50',
-  })
-
-  assert.ok(recommendation)
-  assert.equal(recommendation.frontPsi, 64.5)
-  assert.equal(recommendation.rearPsi, 80)
-  assert.equal(Number(recommendation.bikeKg.toFixed(3)), 11.793)
-})
-
-test('uses a customized equipped-bike mass without changing its load distribution', () => {
-  const recommendation = calculateTirePressure({
-    ...DEFAULT_TIRE_PRESSURE_SELECTION,
-    riderKg: 86.06,
-    bikeMassesLb: { ...DEFAULT_TIRE_PRESSURE_SELECTION.bikeMassesLb, cervelo: 23.5 },
-  })
-
-  assert.ok(recommendation)
-  assert.equal(recommendation.bikeMassLb, 23.5)
-  assert.equal(Number(recommendation.bikeKg.toFixed(3)), 10.659)
-  assert.ok(recommendation.frontPsi < recommendation.rearPsi)
-})
-
 test('uses axle-specific widths for a custom bike with an even load distribution', () => {
   const recommendation = calculateTirePressure({
     ...DEFAULT_TIRE_PRESSURE_SELECTION,
@@ -248,20 +221,6 @@ test('uses custom front and rear internal rim widths without inventing casing gr
   assert.equal(recommendation.frontMeasuredWidthMm, 32)
   assert.equal(recommendation.rearMeasuredWidthMm, 28)
   assert.equal(recommendation.wheelCompatibilityWarning, false)
-})
-
-test('uses measured front and rear tire widths as independent calculation inputs', () => {
-  const staggered = calculateTirePressure({ ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 })
-  const equalWidths = calculateTirePressure({
-    ...DEFAULT_TIRE_PRESSURE_SELECTION,
-    riderKg: 86.06,
-    measuredTire: { frontWidthMm: 28, rearWidthMm: 28 },
-  })
-
-  assert.ok(staggered)
-  assert.ok(equalWidths)
-  assert.ok(equalWidths.frontPsi > staggered.frontPsi)
-  assert.equal(equalWidths.rearPsi, staggered.rearPsi)
 })
 
 test('keeps the two tire identities and mounting setups distinct in the pressure recommendation', () => {

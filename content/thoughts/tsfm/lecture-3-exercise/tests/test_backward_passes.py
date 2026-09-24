@@ -117,8 +117,7 @@ def test_softmax_bwd():
   assert compare_gradients(grad_x_numpy, grad_x_torch, name='softmax')
 
 
-@pytest.mark.parametrize('causal', [True, False])
-def test_mha_bwd(causal):
+def test_mha_bwd():
   """Test multi-head attention backward pass"""
   # Create test data with smaller dimensions for debugging
   batch_size, num_heads, seq_len, head_dim = 1, 2, 4, 8

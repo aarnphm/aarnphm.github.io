@@ -7564,19 +7564,23 @@ const effortTable = <N>(
   return block
 }
 
-export const buildCyclingBestEfforts = <N>(
-  f: TriNodeFactory<N>,
-  d: StravaActivityDetail,
-): N | null => {
+export const buildBestEfforts = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   const efforts = d.bestEfforts
   if (
-    d.sport !== 'bike' ||
+    (d.sport !== 'bike' && d.sport !== 'run') ||
     !efforts ||
+    (d.sport === 'run' && efforts.distance.length === 0) ||
     (efforts.distance.length === 0 && efforts.power.length === 0 && efforts.climbs.length === 0)
   )
     return null
 
-  const wrap = f.el('section', 'tri-efforts', undefined, { 'aria-label': 'Cycling best efforts' })
+  const running = d.sport === 'run'
+  const wrap = f.el('section', 'tri-efforts', undefined, {
+    'aria-label': running
+      ? triText(f.presentation.locale, 'Running best efforts')
+      : 'Cycling best efforts',
+    ...(efforts.distanceSource ? { 'data-effort-source': efforts.distanceSource } : {}),
+  })
   if (efforts.distance.length > 0)
     f.add(
       wrap,
@@ -7584,16 +7588,32 @@ export const buildCyclingBestEfforts = <N>(
         f,
         'Distance',
         'distance',
-        ['Distance', 'Time', 'Speed', 'Heart rate', 'Elev'],
+        ['Distance', 'Time', running ? 'Pace' : 'Speed', 'Heart rate', 'Elev'],
         efforts.distance.map(row => [
-          row.label || scrubDist(f.presentation, row.targetDistanceM / 1000, 'bike'),
+          row.label || scrubDist(f.presentation, row.targetDistanceM / 1000, d.sport),
           zoneClock(row.elapsedTimeS),
-          cyclingSpeed(f.presentation, row.averageSpeedKph),
+          running
+            ? `${clock(runPaceSeconds(f.presentation, row.averageSpeedKph))}/${isImperial(f.presentation) ? 'mi' : 'km'}`
+            : cyclingSpeed(f.presentation, row.averageSpeedKph),
           heartRate(row.averageHeartRate),
-          formatAltitude(f.presentation, row.elevationDeltaM),
+          row.elevationDeltaM == null ? '—' : formatAltitude(f.presentation, row.elevationDeltaM),
         ]),
       ),
     )
+  if (running) {
+    f.add(
+      wrap,
+      f.el(
+        'p',
+        'tri-effort-note',
+        triText(
+          f.presentation.locale,
+          'Calculated from recorded distance and elapsed time, including pauses.',
+        ),
+      ),
+    )
+    return wrap
+  }
   if (efforts.power.length > 0) {
     f.add(
       wrap,
@@ -9407,7 +9427,7 @@ export const buildActivity = <N>(
       ]
       for (const chart of charts) if (chart) f.add(more, chart)
     }
-    const bestEfforts = buildCyclingBestEfforts(f, d)
+    const bestEfforts = buildBestEfforts(f, d)
     if (bestEfforts) f.add(more, bestEfforts)
     f.add(
       wrap,

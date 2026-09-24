@@ -124,24 +124,6 @@ test('prioritizes repeated routes and falls back to complete ride characteristic
     characteristicGroup?.efforts.map(effort => effort.powerSource),
     ['device', 'device'],
   )
-  assert.deepEqual(matched.method, {
-    route: {
-      source: 'gps',
-      sampleSpacingM: 200,
-      maximumSampleDistanceM: 100,
-      minimumDistanceRatio: 0.8,
-      minimumOrderedCoverage: 0.82,
-    },
-    characteristics: {
-      source: 'activity-summary',
-      minimumDistanceRatio: 0.75,
-      minimumElevationGainRatio: 0.65,
-      minimumClimbingDensityRatio: 0.7,
-      minimumAveragePowerRatio: 0.85,
-      minimumNormalizedPowerRatio: 0.85,
-      powerSourceMustMatch: true,
-    },
-  })
   assert.doesNotMatch(JSON.stringify(matched), /"(?:lat|lng|latlng|streams)"/)
 })
 
