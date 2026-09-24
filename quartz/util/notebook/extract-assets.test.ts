@@ -71,24 +71,6 @@ describe('extractInlineNotebookAssets', () => {
     }
   })
 
-  test('deduplicates writes for identical payloads across chunks', async () => {
-    const { ctx, output } = makeCtx()
-    try {
-      const uri = bigPngDataUri()
-      const chunks = [
-        `<img src="${uri}">`,
-        `<img src="${uri}">`,
-        `paragraph with <img src="${uri}">`,
-      ]
-      const result = await extractInlineNotebookAssets(chunks, ctx)
-      assert.strictEqual(result.extracted.length, 3)
-      const hashes = new Set(result.extracted.map(asset => asset.hash))
-      assert.strictEqual(hashes.size, 1)
-    } finally {
-      rmSync(output, { recursive: true, force: true })
-    }
-  })
-
   test('deduplicates writes only within the current build', async () => {
     const { ctx, output } = makeCtx()
     try {

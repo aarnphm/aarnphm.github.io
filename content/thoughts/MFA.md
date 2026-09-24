@@ -1,8 +1,8 @@
 ---
 date: '2026-05-27'
-description: low-rank factorisation of the attention matrix into multiple shared bases, reducing quadratic cost to a series of smaller MMs.
+description: factorised query projections with shared keys and values, allowing more attention heads without a separate KV cache for each head.
 id: attention-mfa
-modified: 2026-06-06 01:37:33 GMT-04:00
+modified: 2026-09-24 09:07:00 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/MoE]]'
@@ -14,22 +14,43 @@ tags:
 title: Multi-Matrix Factorization Attention
 ---
 
-idea: factorise the query-key circuit with shared low-rank matrices so the number and dimension of attention heads can grow while the KV cache stays near MQA [@hu2024multimatrixfactorizationattention]. Step3 leans on this: 64 query heads at head size 256, on a smaller 32k cache than DeepSeek-V3's [[thoughts/MLA|MLA]] [@stepfun2025step3largeaffordablemodelsystem].
+idea: keep one shared key and one shared value per token, then use many query heads to read them. MFA factorises the query projection to limit its parameter cost. More query heads leave the KV cache unchanged at fixed head width [@hu2024multimatrixfactorizationattention].
 
-each head still computes ordinary softmax attention; MFA factorises the projections that feed it and leaves the score matrix exact. for head $i$ the score is the bilinear form
+## shared projections
+
+Let $X \in \mathbb{R}^{L \times H}$ contain the token representations, with $h$ query heads of width $d$ and query bottleneck $r$. Omitting normalization and positional encoding, the projections are
 
 $$
-q^{\top} k = (W_{Q,i}\, x_q)^{\top}(W_{K,i}\, x_k) = x_q^{\top}\, C_i\, x_k, \qquad C_i = W_{Q,i}^{\top} W_{K,i},\; \operatorname{rank}(C_i) \le d_h
+Q_i = XS_qU_i, \qquad K = XS_k, \qquad V = XS_v,
 $$
 
-so the full pre-softmax score matrix $S = \sum_i Q_i K_i^{\top}$ is already a sum of low-rank bases $U_i V_i^{\top}$. MHA pays for $n_h$ such bases in both parameters and KV cache; MFA shares one low-rank factorisation of the QK circuit across heads. Adding heads increases parameters and compute while leaving the per-token KV cache nearly fixed.
+where $S_q \in \mathbb{R}^{H \times r}$, $U_i \in \mathbb{R}^{r \times d}$, and $S_k,S_v \in \mathbb{R}^{H \times d}$. The QK circuit for head $i$ is $S_qU_iS_k^\top$. Each head has its own query map; all heads read the same $K$ and $V$.
 
-- the cache holds a single shared key/value latent, the way [[thoughts/GQA|MQA]] does; the factorised $Q,K$ recover the head diversity a single shared head throws away
-- MFA-KR (key reuse) re-parameterises the value projection to read the key cache directly as value, trimming the cache a further ~50%
-- reported KV cache: ~56% below [[thoughts/MLA|MLA]], ~93.7% below MHA, at comparable quality
+With causal mask $M$, attention computes
 
-```jsx imports={Zoomable,MFAFactorBases}
-<Zoomable label="MFA factor basis decomposition">
-  <MFAFactorBases caption="Vary $m$ and $r$ to move $\hat{A} = \sum_i U_i V_i^{\top}$ toward $A$. The displayed residual is $\lVert A - \hat{A}\rVert_F$; gated factors let each token choose a subset of bases." />
-</Zoomable>
-```
+$$
+A_i = \operatorname{softmax}_{\mathrm{row}}\!\left(\frac{Q_iK^\top}{\sqrt{d}} + M\right),
+\qquad Y = \sum_{i=1}^{h} A_iVO_i,
+$$
+
+with output projections $O_i \in \mathbb{R}^{d \times H}$. Each head normalizes its own scores before the outputs are combined. Summing the scores before softmax would define a different model.
+
+Dense attention still takes $O(hL^2d)$ arithmetic over $L$ tokens. With cached keys and values, one decoding step takes $O(hLd)$ attention arithmetic. Projection costs are separate.
+
+## cache
+
+MFA stores $2d$ elements per token per layer: $d$ for the key, $d$ for the value. Increasing the head count leaves this cache unchanged; increasing head width grows it. MFA-KR reparameterises the value path through the key projection, allowing key reuse and halving that storage [@hu2024multimatrixfactorizationattention].
+
+In the paper's 7B experiment, MFA used $1/8$ of the MHA baseline's cache and MFA-KR used $1/16$. Average benchmark accuracy was $49.9\%$, $48.0\%$, and $49.0\%$ for MFA, MFA-KR, and MHA respectively. These ratios describe that experiment's architectures [@hu2024multimatrixfactorizationattention].
+
+## Step-3
+
+Step-3 uses $64$ query heads, each $256$ dimensions wide, with one shared key head and one shared value head. Its query projection goes from $7168$ dimensions to $2048$, applies normalization, then projects to $64 \times 256$ dimensions [@stepfun2025step3largeaffordablemodelsystem].
+
+Across its $61$ layers, the KV payload for each cached token contains
+
+$$
+61 \times (256 + 256) = 31\,232
+$$
+
+scalar elements. At one byte per element, that is $30.5\,\mathrm{KiB}$ per token, excluding quantization metadata and allocation overhead. Sequence length and batch size multiply this storage. The report's full-FP8 configuration uses that one-byte representation; BF16 doubles the payload [@stepfun2025step3largeaffordablemodelsystem].

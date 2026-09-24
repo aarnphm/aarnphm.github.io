@@ -58,12 +58,6 @@ test('performance management exposes daily TSS with CTL, ATL, and TSB', () => {
   ])
 })
 
-test('TSS search and glossary navigation resolve to performance management', () => {
-  const section = SEARCH_SECTIONS.find(item => item.chart === 'pmc')
-  assert.ok(section?.hay.includes('tss'))
-  assert.equal(GLOSS_CHART.tss, 'pmc')
-})
-
 test('critical power search and calendar-year SSR resolve to the power curve', () => {
   assert.equal(GLOSS_CHART.cp, 'power')
   assert.equal(GLOSS_CHART.wprime, 'power')

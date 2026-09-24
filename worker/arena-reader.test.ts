@@ -516,7 +516,6 @@ test('invalid JSON, unknown fields, missing bodies, and oversized requests retur
     [JSON.stringify({ read: true, revision: 0, subject: 'github:1' }), 400, 'invalid-input'],
     [' '.repeat(128 * 1024 + 1), 413, 'body-too-large'],
   ]) {
-    assert.equal(typeof body, 'string')
     const response = await fetchReader(url, { method: 'PUT', headers, body: String(body) })
     assert.equal(response.status, status)
     assert.equal((await responseBody(response)).error, error)

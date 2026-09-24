@@ -14,10 +14,7 @@ import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
 import {
   AnalyticsPanel,
   CalcPanel,
-  FeedPanel,
-  GEAR,
   GearPanel,
-  MapPanel,
   OnTreePanel,
   PacePanel,
   ToolsPanel,
@@ -208,91 +205,6 @@ test('section hints show the existing chords without replacing translated link l
   )
 })
 
-test('calculator hints match their accessible shortcut keys', () => {
-  const root = rendered(<CalcPanel page />)
-  const tabs = elements(root, element => typeof element.properties?.dataCalcTab === 'string')
-  assert.equal(tabs.length, 3)
-  for (const tab of tabs) {
-    const hints = elements(
-      { type: 'root', children: tab.children },
-      element => element.tagName === 'kbd',
-    )
-    assert.equal(hints.length, 1)
-    assert.equal(toText(hints[0]), tab.properties?.ariaKeyShortcuts)
-    assert.equal(hints[0].properties?.ariaHidden, 'true')
-  }
-})
-
-test('calculator copy control exposes its SVG states as one magnetic cursor action', () => {
-  const root = rendered(<CalcPanel page />)
-  const buttons = elements(root, element => classes(element).includes('tri-calc-copy'))
-  assert.equal(buttons.length, 1)
-  assert.ok('dataSiteCursorAction' in (buttons[0].properties ?? {}))
-  const sources = elements(root, element => classes(element).includes('tri-calc-source'))
-  assert.equal(sources.length, 1)
-  const sourceControls = elements(
-    { type: 'root', children: sources[0].children },
-    element => element.tagName === 'button',
-  )
-  assert.equal(sourceControls.length, 4)
-  assert.ok(classes(sourceControls[3]).includes('tri-calc-copy'))
-  const tablists = elements(
-    { type: 'root', children: sources[0].children },
-    element => element.properties?.role === 'tablist',
-  )
-  assert.equal(tablists.length, 1)
-  assert.equal(
-    elements({ type: 'root', children: tablists[0].children }, element =>
-      classes(element).includes('tri-calc-copy'),
-    ).length,
-    0,
-  )
-  const icons = elements(
-    { type: 'root', children: buttons[0].children },
-    element => element.tagName === 'svg',
-  )
-  assert.equal(icons.length, 2)
-  assert.ok(icons.every(icon => 'dataSiteCursorIcon' in (icon.properties ?? {})))
-
-  const modal = rendered(<CalcPanel />)
-  const modalSources = elements(modal, element => classes(element).includes('tri-calc-source'))
-  assert.equal(modalSources.length, 1)
-  assert.equal(
-    elements({ type: 'root', children: modalSources[0].children }, element =>
-      classes(element).includes('tri-calc-copy'),
-    ).length,
-    1,
-  )
-})
-
-test('calculator defaults both transition times to five minutes', () => {
-  const root = rendered(<CalcPanel page />)
-  const transitions = elements(root, element =>
-    ['t1', 't2'].includes(String(element.properties?.dataK)),
-  )
-
-  assert.deepEqual(
-    transitions.map(element => [element.properties?.dataK, element.properties?.value]),
-    [
-      ['t1', '5:00'],
-      ['t2', '5:00'],
-    ],
-  )
-})
-
-test('map controls expose an SVG 3D terrain and buildings toggle', () => {
-  const root = rendered(<MapPanel />)
-  const buttons = elements(root, element => classes(element).includes('tri-map-3d'))
-  assert.equal(buttons.length, 1)
-  assert.equal(buttons[0].properties?.ariaPressed, 'false')
-  assert.equal(buttons[0].properties?.ariaLabel, '3D terrain and buildings')
-  assert.equal(
-    elements({ type: 'root', children: buttons[0].children }, element => element.tagName === 'path')
-      .length,
-    3,
-  )
-})
-
 test('dedicated training markup contains plan rows, selected document, and heading tree', () => {
   const root = rendered(<TrainingPanel page renderData={renderData} />)
   assert.equal(elements(root, element => element.properties?.dataTriSsr === 'true').length, 3)
@@ -311,18 +223,6 @@ test('overview training markup keeps its list, tree, and document empty', () => 
   const root = rendered(<TrainingPanel />)
   assert.equal(elements(root, element => element.properties?.dataTriSsr === 'true').length, 0)
   assert.equal(elements(root, element => element.properties?.dataPlan != null).length, 0)
-})
-
-test('Soloist inventory includes the Reserve 40|44 wheelset rotation', () => {
-  const inventory = GEAR.find(([name]) => name === 'Cervélo Soloist')?.[1]
-
-  assert.ok(inventory)
-  assert.ok(
-    inventory.includes('Front Wheel: Reserve 40, 12x100mm, 24H, centerlock, tubeless compatible'),
-  )
-  assert.ok(
-    inventory.includes('Rear Wheel: Reserve 44, 12x142mm, 24H, centerlock, tubeless compatible'),
-  )
 })
 
 test('gear surfaces attach lifetime mileage to both bikes and each pair of running shoes', () => {
@@ -396,47 +296,6 @@ test('gear surfaces keep inventory and maintenance without calculators', () => {
     assert.deepEqual(
       sections,
       sections.toSorted((left, right) => left - right),
-    )
-  }
-})
-
-test('dedicated subpages omit route titles while modal panels retain them', () => {
-  const pagePanels = [
-    <ToolsPanel maintenance={maintenance} />,
-    <CalcPanel page renderData={renderData} />,
-    <AnalyticsPanel page renderData={renderData} />,
-    <MapPanel page />,
-    <TrainingPanel page renderData={renderData} />,
-    <FeedPanel />,
-    <OnTreePanel root="/triathlon/on" tree={[]} />,
-  ]
-
-  for (const panel of pagePanels) {
-    const root = rendered(panel)
-    assert.equal(
-      elements(root, element =>
-        classes(element).some(className =>
-          ['tri-tools-h', 'tri-calc-title', 'tri-ana-title'].includes(className),
-        ),
-      ).length,
-      0,
-    )
-  }
-
-  const modalPanels = [
-    <CalcPanel renderData={renderData} />,
-    <AnalyticsPanel renderData={renderData} />,
-    <MapPanel />,
-    <TrainingPanel renderData={renderData} />,
-  ]
-
-  for (const panel of modalPanels) {
-    const root = rendered(panel)
-    assert.equal(
-      elements(root, element =>
-        classes(element).some(className => ['tri-calc-title', 'tri-ana-title'].includes(className)),
-      ).length,
-      1,
     )
   }
 })

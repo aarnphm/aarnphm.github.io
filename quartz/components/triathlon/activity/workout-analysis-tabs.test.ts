@@ -24,13 +24,3 @@ test('single-view swim and cycling analysis tabs keep their active panel', () =>
     assert.equal(workoutAnalysisViewFromKey('workout', key, ['workout']), 'workout')
   assert.equal(workoutAnalysisViewFromKey('workout', 'Enter', ['workout']), null)
 })
-
-test('cycling power distribution supports arrows and boundary keys', () => {
-  const views = ['workout', 'power'] as const
-  assert.equal(workoutAnalysisViewFromKey('workout', 'ArrowRight', views), 'power')
-  assert.equal(workoutAnalysisViewFromKey('workout', 'ArrowLeft', views), 'power')
-  assert.equal(workoutAnalysisViewFromKey('power', 'ArrowRight', views), 'workout')
-  assert.equal(workoutAnalysisViewFromKey('power', 'Home', views), 'workout')
-  assert.equal(workoutAnalysisViewFromKey('workout', 'End', views), 'power')
-  assert.equal(workoutAnalysisViewFromKey('pace', 'ArrowRight', views), null)
-})

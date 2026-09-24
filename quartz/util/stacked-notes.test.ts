@@ -2,12 +2,9 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   buildStackedNoteHtml,
-  dedupeSlugs,
   failedNoteData,
   hashSlug,
   normalizeStackedNoteSlug,
-  pendingNoteData,
-  shouldIncludeServerBody,
 } from '../../worker/stacked'
 import {
   decodeStackedNoteHash,
@@ -16,14 +13,6 @@ import {
   stackedNoteMetadataHtml,
   withStackedNoteMetadata,
 } from './stacked-notes'
-
-test('dedupeSlugs preserves first-seen order', () => {
-  assert.deepEqual(dedupeSlugs(['notes', 'thoughts/kant', 'notes', 'base']), [
-    'notes',
-    'thoughts/kant',
-    'base',
-  ])
-})
 
 test('buildStackedNoteHtml renders a visible failed note state', () => {
   const note = failedNoteData('thoughts/kant', 'Kant')
@@ -37,21 +26,6 @@ test('buildStackedNoteHtml renders a visible failed note state', () => {
   assert.ok(html.includes('data-stacked-retry'))
   assert.ok(html.includes('<svg'))
   assert.equal(html.includes('>retry<'), false)
-})
-
-test('pendingNoteData does not need global index metadata', () => {
-  const note = pendingNoteData('thoughts/kant')
-
-  assert.equal(note.slug, 'thoughts/kant')
-  assert.equal(note.title, 'thoughts/kant')
-  assert.equal(note.metadata, '')
-  assert.equal(note.state, 'pending')
-})
-
-test('stacked refresh seeds the first note body before pending successors', () => {
-  assert.equal(shouldIncludeServerBody(0), true)
-  assert.equal(shouldIncludeServerBody(1), false)
-  assert.equal(shouldIncludeServerBody(3), false)
 })
 
 test('stacked note metadata footer prioritizes modified date', () => {

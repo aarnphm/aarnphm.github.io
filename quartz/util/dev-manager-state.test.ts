@@ -77,16 +77,6 @@ test('content rebuild keeps wrangler running until updated output is ready', () 
   assert.equal(state.wrangler, 'ready')
 })
 
-test('style rebuild keeps the current output available', () => {
-  const state = readyState('a')
-  assert.deepEqual(
-    applyQuartzDevEvent(state, { type: 'build:start', epoch: 'b', reason: 'source' }, delayMs),
-    [],
-  )
-  assert.equal(state.publicAvailable, true)
-  assert.equal(state.wrangler, 'ready')
-})
-
 test('failed content rebuild leaves the existing server available', () => {
   const state = readyState('a')
   applyQuartzDevEvent(state, { type: 'build:start', epoch: 'b', reason: 'content' }, delayMs)

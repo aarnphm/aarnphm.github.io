@@ -71,6 +71,7 @@ import {
 } from '../../util/heart-rate-physiology'
 import { localDateTimeUtcMs, localIsoDay } from '../../util/local-date'
 import { latestProviderSync } from '../../util/provider-sync'
+import { runBestEfforts } from '../../util/run-best-efforts'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
 import {
   CRITICAL_POWER_DURATIONS_S,
@@ -290,13 +291,13 @@ export interface PowerCurvePoint {
   activityDate?: string
 }
 
-export interface CyclingDistanceEffort {
+export interface ActivityDistanceEffort {
   label: string
   targetDistanceM: number
   elapsedTimeS: number
   averageSpeedKph: number
   averageHeartRate: number | null
-  elevationDeltaM: number
+  elevationDeltaM: number | null
 }
 
 export interface CyclingPowerEffort {
@@ -329,10 +330,11 @@ export interface CyclingClimbEffort {
   vamMPerHour: number
 }
 
-export interface CyclingBestEfforts {
+export interface ActivityBestEfforts {
+  distanceSource?: 'calculated'
   weightKg: number | null
   weightDate: string | null
-  distance: CyclingDistanceEffort[]
+  distance: ActivityDistanceEffort[]
   power: CyclingPowerEffort[]
   climbs: CyclingClimbEffort[]
 }
@@ -727,7 +729,7 @@ export interface StravaActivityDetail {
   powerCurveWeight?: { kg: number; date: string; source: 'garmin' }
   criticalPowerAnchors?: CriticalPowerAnchor[]
   activityCriticalPower: CriticalPowerEstimate | null
-  bestEfforts: CyclingBestEfforts | null
+  bestEfforts: ActivityBestEfforts | null
   strokes?: Record<string, number> | null
   strokeCount: number | null
   strokeRateSpm: number | null
@@ -2006,13 +2008,13 @@ function maxSpeedKph(timeline: EffortTimeline | null): number | null {
   return bestM > 0 ? round((bestM / windowS) * 3.6, 1) : null
 }
 
-function distanceBestEfforts(timeline: EffortTimeline): CyclingDistanceEffort[] {
+function distanceBestEfforts(timeline: EffortTimeline): ActivityDistanceEffort[] {
   const [hrSum, hrCount] = positivePrefixes(timeline.heartRate)
-  const efforts: CyclingDistanceEffort[] = []
+  const efforts: ActivityDistanceEffort[] = []
   for (const [label, targetDistanceM] of DISTANCE_EFFORTS) {
     if (timeline.distanceM[timeline.distanceM.length - 1] - timeline.distanceM[0] < targetDistanceM)
       break
-    let best: CyclingDistanceEffort | null = null
+    let best: ActivityDistanceEffort | null = null
     let bestElapsed = Infinity
     let end = 1
     for (let start = 0; start < timeline.distanceM.length - 1; start++) {
@@ -3863,6 +3865,7 @@ function projectDetail(
     timeline && effortStreams && 'time' in effortStreams && effortStreams.time?.length
       ? timeline
       : null
+  const runDistanceEfforts = sport === 'run' ? runBestEfforts(effortStreams) : []
   return {
     id: a.id,
     virtual: a.sportType.startsWith('Virtual'),
@@ -3965,7 +3968,16 @@ function projectDetail(
                 : [],
             climbs: cyclingClimbEfforts(climbs, weight?.kg ?? null),
           }
-        : null,
+        : runDistanceEfforts.length > 0
+          ? {
+              distanceSource: 'calculated',
+              weightKg: null,
+              weightDate: null,
+              distance: runDistanceEfforts,
+              power: [],
+              climbs: [],
+            }
+          : null,
     strokeCount: null,
     strokeRateSpm: null,
     swimPaceSPer100m: null,

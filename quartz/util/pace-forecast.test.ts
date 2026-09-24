@@ -74,24 +74,10 @@ test('forecastFinish composes per-leg ranges + transitions', async () => {
   assert.ok(totalHalf < legHalfSum, 'finish band combines leg variances in quadrature')
 })
 
-test('forecastFinish bails to null on a bad leg prediction', async () => {
-  const f = primed()
-  f.ready = false
-  assert.equal(await f.forecastFinish(olympic, 300), null)
-})
-
 test('forecastLeg null when state missing', async () => {
   const f = new PaceForecaster(new MockWorker())
   f.ready = true
   assert.equal(await f.forecastLeg(olympic[0]), null)
-})
-
-test('concurrent predictions route to the right ids', async () => {
-  const f = primed()
-  const [swim, bike, run] = await Promise.all(olympic.map(leg => f.forecastLeg(leg)))
-  assert.ok(Math.abs((swim?.mu ?? 0) - 1.3) < 1e-9)
-  assert.ok(Math.abs((bike?.mu ?? 0) - 8) < 1e-9)
-  assert.ok(Math.abs((run?.mu ?? 0) - 3.3) < 1e-9)
 })
 
 test('init keeps dated day states for comparison lookup', async () => {

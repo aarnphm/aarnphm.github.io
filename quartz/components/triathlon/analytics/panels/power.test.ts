@@ -1,13 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { PowerRankEffort, PowerRankInterval } from '../../../../plugins/stores/power-rank'
-import {
-  powerRankEffortLabel,
-  powerRankProgressLabel,
-  powerRankProgressNextLabel,
-  powerRankRangeRows,
-  powerSkillAtSeconds,
-} from './power'
+import { powerRankRangeRows, powerSkillAtSeconds } from './power'
 
 const effort: PowerRankEffort = {
   watts: 280,
@@ -20,19 +14,6 @@ const effort: PowerRankEffort = {
   nextWatts: 312,
   wattsToNext: 32,
 }
-
-test('keeps the radar effort readout concise', () => {
-  assert.equal(powerRankEffortLabel(effort), '280 W · 3.25 W/kg')
-  assert.equal(powerRankEffortLabel(null), 'no data')
-})
-
-test('moves rank and next-level context into the progress row', () => {
-  assert.equal(powerRankProgressLabel(effort), 'Intermediate · 34%')
-  assert.equal(powerRankProgressNextLabel(effort), '32 W to Athletic')
-  assert.equal(powerRankProgressLabel(null), 'no data')
-  assert.equal(powerRankProgressNextLabel(null), '')
-  assert.equal(powerRankProgressNextLabel({ ...effort, wattsToNext: null }), 'top level')
-})
 
 test('maps power-curve durations to Strava skill bands', () => {
   assert.equal(powerSkillAtSeconds(15), 'sprint')

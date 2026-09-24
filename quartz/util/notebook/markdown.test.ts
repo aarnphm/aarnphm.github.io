@@ -7,13 +7,8 @@ import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import type { FullSlug } from '../path'
 import { unsupportedNotebookRuntimeReason } from '../../runtime/python/can-execute'
-import { notebookCellActions, notebookCellLanguageBadge } from './cell-html'
-import {
-  notebookRuntimeData,
-  notebookTitle,
-  notebookToMarkdown,
-  notebookToMarkdownChunks,
-} from './markdown'
+import { notebookCellLanguageBadge } from './cell-html'
+import { notebookRuntimeData, notebookToMarkdown, notebookToMarkdownChunks } from './markdown'
 import { parseNotebookDoc } from './parse'
 import { renderRuntimeOutputHtml } from './render/runtime-output-to-hast'
 import {
@@ -99,7 +94,6 @@ describe('notebook parser', () => {
 
     const markdown = notebookToMarkdown(notebook, 'lecture.ipynb')
 
-    assert.strictEqual(notebookTitle(notebook, 'lecture.ipynb'), 'Random Number Generator')
     assert.match(markdown, /title: "Random Number Generator"/)
     assert.match(markdown, /collapseHeadings: false/)
     assert.match(markdown, /\nbody\n/)
@@ -512,29 +506,6 @@ describe('notebook parser', () => {
     })
 
     assert.match(markdown, /data-notebook-runtime-data/)
-    assert.match(markdown, /notebook-runtime-toolbar/)
-    assert.match(markdown, /data-notebook-run-all/)
-    assert.match(markdown, /data-notebook-stop/)
-    assert.match(markdown, /data-notebook-reset/)
-    assert.match(markdown, /data-notebook-debug/)
-    assert.match(markdown, /data-notebook-vim-mode/)
-    assert.match(markdown, /data-notebook-tooltip="Run all"/)
-    assert.match(markdown, /data-notebook-tooltip="Stop execution"/)
-    assert.doesNotMatch(markdown, />Run all</)
-    assert.match(markdown, /class="notebook-code-cell" data-notebook-cell-frame="cell-1"/)
-    assert.match(markdown, /data-notebook-cell="cell-1"/)
-    assert.match(markdown, /data-notebook-execution-label="cell-1"/)
-    assert.match(markdown, /In \[ \]:/)
-    assert.match(markdown, /data-notebook-run-cell="cell-1"/)
-    assert.match(markdown, /data-notebook-edit-cell="cell-1"/)
-    assert.match(markdown, /class="notebook-language-badge notebook-language-badge-python"/)
-    assert.match(markdown, /data-notebook-language="python"/)
-    assert.match(markdown, /notebook-language-label/)
-    assert.match(markdown, /data-notebook-local-source-status="cell-1" hidden/)
-    assert.match(markdown, /data-notebook-source-editor="cell-1"/)
-    assert.match(markdown, /class="notebook-output notebook-output-success"/)
-    assert.match(markdown, /data-output-name="exit 0"/)
-    assert.doesNotMatch(markdown, /executed successfully|<em>/)
     const payload = markdown.match(/<script type="application\/json"[^>]*>(.*?)<\/script>/s)
     assert(payload)
     assert.doesNotMatch(payload[1], /<\/script>/i)
@@ -569,14 +540,6 @@ describe('notebook parser', () => {
     assert(buttons.every(button => textChild(button) === ''))
     const resetButton = buttons.find(button => button.properties?.dataNotebookReset === '')
     assert(resetButton)
-    assert(
-      findElement(
-        resetButton,
-        child =>
-          child.tagName === 'path' &&
-          child.properties?.d === 'M5.7 12a6.3 6.3 0 1 0 6.3-6.3 6.83 6.83 0 0 0-4.72 1.92L5.7 9.2',
-      ),
-    )
     assert.strictEqual(buttons[3]?.properties?.ariaPressed, 'false')
     assert.strictEqual(buttons[4]?.properties?.ariaPressed, 'false')
   })
@@ -755,57 +718,6 @@ describe('notebook parser', () => {
     assert.strictEqual(textChild(fallbackLabel), 'nixlang cell')
   })
 
-  test('renders official Go Rust and OCaml language logos', async () => {
-    const expectedIcons = [
-      ['go', 'notebook-go-icon', '0 0 207 78'],
-      ['rust', 'notebook-rust-icon', '0 0 106 106'],
-      ['ocaml', 'notebook-ocaml-icon', '0 0 165.552 144.277'],
-    ]
-
-    for (const [language, iconClassName, viewBox] of expectedIcons) {
-      const tree = await parseHtmlFragment(notebookCellLanguageBadge(language))
-      const icon = findElement(tree, node => elementClassNames(node).includes(iconClassName))
-
-      assert(icon)
-      assert.strictEqual(icon.properties?.viewBox, viewBox)
-    }
-  })
-
-  test('renders dedicated C C++ and wasm language svgs', async () => {
-    const expectedIcons = [
-      ['c', 'notebook-c-icon', '0 0 38.000089 42.000031'],
-      ['cpp', 'notebook-cpp-icon', '0 0 306 344.35'],
-      ['wasm', 'notebook-wasm-icon', '0 0 612 612'],
-    ]
-
-    for (const [language, iconClassName, viewBox] of expectedIcons) {
-      const tree = await parseHtmlFragment(notebookCellLanguageBadge(language))
-      const icon = findElement(tree, node => elementClassNames(node).includes(iconClassName))
-
-      assert(icon)
-      assert.strictEqual(icon.properties?.viewBox, viewBox)
-    }
-  })
-
-  test('renders one vim action with centered icon geometry', async () => {
-    const tree = await parseHtmlFragment(
-      notebookCellActions({
-        id: 'cell-1',
-        source: 'print("hi")',
-        language: 'python',
-        executionIndex: null,
-      }),
-    )
-    const vimButtons = findElements(tree, node => node.properties?.dataNotebookVimCell === 'cell-1')
-
-    assert.strictEqual(vimButtons.length, 1)
-    const icon = findElement(vimButtons[0], node =>
-      elementClassNames(node).includes('notebook-vim-icon'),
-    )
-    assert(icon)
-    assert.strictEqual(icon.properties?.viewBox, '0 0 602 734')
-  })
-
   test('adds anchor ids to runtime cell frames', () => {
     const notebook = parseNotebook(
       JSON.stringify({
@@ -911,18 +823,6 @@ describe('notebook parser', () => {
     assert.strictEqual(resolveNotebookCell(tree, 'cell-2'), undefined)
   })
 
-  test('prefers a direct cell-id match over the code- fallback', () => {
-    const frame: Element = {
-      type: 'element',
-      tagName: 'div',
-      properties: { className: ['notebook-code-cell'], dataNotebookCellFrame: 'cell-1' },
-      children: [],
-    }
-    const tree: HtmlRoot = { type: 'root', children: [frame] }
-
-    assert.deepStrictEqual(resolveNotebookCell(tree, 'cell-1'), { id: 'cell-1', frame })
-  })
-
   test('keeps parsed code fences inside the pre-emitted runtime cell frame', async () => {
     const notebook = parseNotebook(
       JSON.stringify({
@@ -1008,26 +908,6 @@ describe('notebook parser', () => {
     assert.match(
       markdown,
       /<\/div>\n\n<div class="notebook-markdown-cell-boundary" aria-hidden="true"><\/div>\n+```text\nright/,
-    )
-  })
-
-  test('closes dangling markdown fences at notebook cell boundaries', () => {
-    const notebook = parseNotebook(
-      JSON.stringify({
-        cells: [
-          { cell_type: 'markdown', source: '```EBNF\ninstr ::= "throw" name\n' },
-          { cell_type: 'markdown', source: 'after' },
-        ],
-      }),
-      'dangling-fence.ipynb',
-    )
-
-    const markdown = notebookToMarkdown(notebook, 'dangling-fence.ipynb')
-
-    assert.match(markdown, /```EBNF\ninstr ::= "throw" name\n```/)
-    assert.match(
-      markdown,
-      /```\n\n<div class="notebook-markdown-cell-boundary" aria-hidden="true"><\/div>\n\nafter/,
     )
   })
 

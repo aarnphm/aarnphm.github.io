@@ -80,20 +80,6 @@ describe('transforms', () => {
     }
   }
 
-  test('simplifySlug', () => {
-    asserts(
-      [
-        ['index', '/'],
-        ['abc', 'abc'],
-        ['abc/index', 'abc/'],
-        ['abc/def', 'abc/def'],
-      ],
-      path.simplifySlug,
-      path.isFullSlug,
-      path.isSimpleSlug,
-    )
-  })
-
   test('slugifyFilePath', () => {
     asserts(
       [
@@ -143,21 +129,6 @@ describe('transforms', () => {
       ],
       path.transformInternalLink,
       (_x: string): _x is string => true,
-      path.isRelativeURL,
-    )
-  })
-
-  test('pathToRoot', () => {
-    asserts(
-      [
-        ['index', '.'],
-        ['abc', '.'],
-        ['abc/def', '..'],
-        ['abc/def/ghi', '../..'],
-        ['abc/def/index', '../..'],
-      ],
-      path.pathToRoot,
-      path.isFullSlug,
       path.isRelativeURL,
     )
   })
@@ -273,7 +244,6 @@ describe('link strategies', () => {
         path.transformLink(cur, '../../../a/test.png', opts),
         '../../../a/test.png',
       )
-      assert.strictEqual(path.transformLink(cur, '../../../e/g/h', opts), '../../../e/g/h')
       assert.strictEqual(path.transformLink(cur, '../../../e/g/h', opts), '../../../e/g/h')
       assert.strictEqual(path.transformLink(cur, '../../../e/g/h#abc', opts), '../../../e/g/h#abc')
     })

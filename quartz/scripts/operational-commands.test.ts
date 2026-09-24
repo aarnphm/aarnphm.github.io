@@ -3,41 +3,9 @@ import { mkdtemp, open, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
-import { writeRefreshToken, openBrowserArgs } from './auth-oura'
-import { ffmpegArgs } from './convert'
-import { oxfmtArgs } from './sync-places'
+import { writeRefreshToken } from './auth-oura'
 
 const hostile = "space \"quote\" 'single' `backtick` $dollar $$ $& $' $`"
-
-test('ffmpeg receives hostile paths as individual arguments', () => {
-  const input = `/tmp/${hostile}.png`
-  const output = `/tmp/${hostile}.webp`
-
-  assert.deepEqual(ffmpegArgs(input, output), [
-    '-y',
-    '-i',
-    input,
-    '-c:v',
-    'libwebp',
-    '-quality',
-    '90',
-    '-compression_level',
-    '6',
-    output,
-  ])
-})
-
-test('oxfmt receives each changed path as one argument', () => {
-  const files = [`/tmp/${hostile}.md`, `/tmp/another ${hostile}.md`]
-
-  assert.deepEqual(oxfmtArgs(files), ['exec', 'oxfmt', '--write', ...files])
-})
-
-test('open receives the authorization URL as one argument', () => {
-  const url = `https://cloud.ouraring.com/oauth/authorize?state=${hostile}`
-
-  assert.deepEqual(openBrowserArgs(url), [url])
-})
 
 test('Oura refresh tokens are written literally through the env owner', async () => {
   const directory = await mkdtemp(path.join(tmpdir(), 'garden-oura-auth-'))

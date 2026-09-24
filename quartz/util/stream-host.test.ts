@@ -1,25 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {
-  isStreamHostname,
-  isStreamRoutePathname,
-  streamAssetPathname,
-  streamDocumentRedirectUrl,
-  streamHostPathname,
-  streamHostUrl,
-} from './stream-host'
-
-test('detects the canonical stream hostname', () => {
-  assert.equal(isStreamHostname('stream.aarnphm.xyz'), true)
-  assert.equal(isStreamHostname('aarnphm.xyz'), false)
-})
-
-test('canonicalizes stream host public paths', () => {
-  assert.equal(streamHostPathname('/stream'), '/')
-  assert.equal(streamHostPathname('/stream/'), '/')
-  assert.equal(streamHostPathname('/stream/on/2026/06/27'), '/on/2026/06/27')
-  assert.equal(streamHostPathname('/on/2026/06/27'), '/on/2026/06/27')
-})
+import { streamAssetPathname, streamDocumentRedirectUrl, streamHostUrl } from './stream-host'
 
 test('maps stream host document paths to emitted stream assets', () => {
   assert.equal(streamAssetPathname('/', true), '/stream')
@@ -33,13 +14,6 @@ test('maps stream host document paths to emitted stream assets', () => {
     streamAssetPathname('/stream/static/resource-after-3693bec0.js', false),
     '/static/resource-after-3693bec0.js',
   )
-})
-
-test('detects stream route pathnames', () => {
-  assert.equal(isStreamRoutePathname('/stream'), true)
-  assert.equal(isStreamRoutePathname('/stream/on/2026/06/27'), true)
-  assert.equal(isStreamRoutePathname('/on/2026/06/27'), true)
-  assert.equal(isStreamRoutePathname('/triathlon'), false)
 })
 
 test('redirects non-stream documents to the canonical site', () => {

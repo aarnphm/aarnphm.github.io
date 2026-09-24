@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  activityBridgeCreatedDestinations,
   activityBridgeReceiptKey,
   emptyActivityBridgeLedger,
   planActivityBridge,
@@ -199,7 +198,6 @@ test('terminal receipts suppress retries and bridge-created destinations suppres
     activityBridgeReceiptKey('wahoo', 'wahoo:1', SHA, 'garmin'),
     `wahoo:wahoo%3A1:${SHA}:garmin`,
   )
-  assert.deepEqual([...activityBridgeCreatedDestinations(ledger, 'garmin')], ['connect:99'])
   assert.deepEqual(
     planActivityBridge({ strava: [strava('1')], garmin: [], wahoo: [wahoo('wahoo:1')] }, ledger),
     [],

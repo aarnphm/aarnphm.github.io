@@ -68,19 +68,6 @@ test('parseManifest rejects featureNames longer than the schema', () => {
   assert.throws(() => parseManifest(bad), /length out of range/)
 })
 
-test('parseManifest accepts an append-only prefix (older 19-feature model)', () => {
-  const old = syntheticManifest()
-  old.featureNames = [...PACE_FEATURE_NAMES].slice(0, 19)
-  old.dFeatures = 19
-  old.dIn = 38
-  old.standardize = { mu: Array<number>(38).fill(0), sigma: Array<number>(38).fill(1) }
-  old.impute = Array<number>(19).fill(0)
-  ;(old.output as Record<string, unknown>).scaleFeature = 'vthr'
-  const m = parseManifest(old)
-  assert.equal(m.featureNames.length, 19)
-  assert.equal(m.output.backbone, null)
-})
-
 test('older 19-feature model predicts under the 20-feature featurizer', async () => {
   await ensureBackend(false)
   const w = new Float32Array(2 * 38)

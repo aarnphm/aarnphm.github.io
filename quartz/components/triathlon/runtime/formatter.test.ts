@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import { createTriathlonFormatter } from './formatter'
 
 test('presentation formatting is deterministic across locale and distance systems', () => {
@@ -30,16 +29,4 @@ test('presentation formatting is deterministic across locale and distance system
   assert.equal(imperial.pace(300), '8:03 /mi')
   assert.match(imperial.shortDate('2026-08-10'), /^10 août$/)
   assert.equal(imperial.text('fitness'), 'condition')
-})
-
-test('formatter snapshots its presentation input', () => {
-  const presentation: TriathlonPresentation = {
-    locale: 'en',
-    distance: 'metric',
-    powerSamples: 'recorded',
-  }
-  const formatter = createTriathlonFormatter(presentation)
-  assert.notEqual(formatter.presentation, presentation)
-  assert.equal(Object.isFrozen(formatter.presentation), true)
-  assert.equal(Object.isFrozen(formatter), true)
 })

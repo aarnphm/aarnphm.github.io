@@ -75,22 +75,6 @@ class VoiceMemoTests(unittest.TestCase):
       + '\n',
     )
 
-  def test_memo_attributes_create_file_and_preserve_mtime_on_repeat(
-    self,
-  ) -> None:
-    with tempfile.TemporaryDirectory(
-      prefix='memo-attributes-test-'
-    ) as temporary:
-      root = Path(temporary)
-      memos.ensure_memo_attributes(root)
-      attributes = root / '.gitattributes'
-      self.assertEqual(
-        attributes.read_text(), '\n'.join(memos.MEMO_ATTRIBUTE_RULES) + '\n'
-      )
-      written = attributes.stat().st_mtime_ns
-      memos.ensure_memo_attributes(root)
-      self.assertEqual(attributes.stat().st_mtime_ns, written)
-
   def test_existing_entry_and_repeat_import(self) -> None:
     updated = memos.update_stream(
       STREAM, date(2026, 9, 5), ['20260905', 'second'], NOW

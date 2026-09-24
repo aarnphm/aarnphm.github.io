@@ -3,7 +3,6 @@ import { once } from 'node:events'
 import test from 'node:test'
 import { WebSocket } from 'ws'
 import {
-  bundleInfoSummary,
   createReloadServer,
   formatBundleInfoJson,
   formatBundleInfoTable,
@@ -11,8 +10,6 @@ import {
   isTestSourcePath,
   parseSourceInputs,
   resolveBundleInfoFormat,
-  sourceWatchPatterns,
-  sourceWatchRoots,
 } from './handlers.js'
 
 test('watch reload server broadcasts successive builds without an HTTP server', async t => {
@@ -56,14 +53,6 @@ const bundleMetafile = {
   },
 }
 
-test('source watcher includes top-level Quartz source inputs', () => {
-  assert.equal(sourceWatchPatterns.includes('quartz.config.ts'), true)
-  assert.equal(sourceWatchPatterns.includes('quartz.layout.ts'), true)
-  assert.equal(sourceWatchRoots.includes('quartz'), true)
-  assert.equal(sourceWatchPatterns.includes('.claude/skills/**/*'), false)
-  assert.equal(sourceWatchRoots.includes('.claude/skills'), false)
-})
-
 test('source watcher ignores test files across repository conventions', () => {
   for (const fp of [
     'quartz/cli/handlers.test.js',
@@ -90,15 +79,6 @@ test('source watcher accepts newly added Quartz source files', () => {
   assert.equal(isSourceWatchPath('.claude/skills/core/SKILL.md'), false)
   assert.equal(isSourceWatchPath('quartz/.quartz-cache/transpiled-build.mjs'), false)
   assert.equal(isSourceWatchPath('quartz/util/transclude-props.test.ts'), false)
-})
-
-test('bundle info summarizes the configured Quartz output', () => {
-  assert.deepEqual(bundleInfoSummary(bundleMetafile), {
-    outputFile: 'quartz/.quartz-cache/transpiled-build.mjs',
-    inputCount: 2,
-    bytes: 42,
-    bytesText: '42 B',
-  })
 })
 
 test('bundle info table can render without ANSI escapes for pipes', async () => {

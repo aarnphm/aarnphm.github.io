@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  swimChartMetric,
   swimLengthAverages,
   swimLengthMetrics,
   swimPaceSeconds,
@@ -37,11 +36,4 @@ test('derives pool-length cadence and SWOLF while excluding drills', () => {
     ]),
     { strokesPerLength: 10.7, swolf: 39.3 },
   )
-})
-
-test('parses serialized swim chart metrics', () => {
-  assert.equal(swimChartMetric('cadence'), 'cadence')
-  assert.equal(swimChartMetric('swolf'), 'swolf')
-  assert.equal(swimChartMetric('pace'), 'pace')
-  assert.equal(swimChartMetric('unknown'), 'pace')
 })

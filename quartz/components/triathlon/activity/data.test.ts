@@ -42,6 +42,41 @@ test('validates nonempty authored computer text for cycling details', () => {
   )
 })
 
+test('retains calculated run efforts through JSON and rejects invalid telemetry', () => {
+  const effort = {
+    label: '400m',
+    targetDistanceM: 400,
+    elapsedTimeS: 114,
+    averageSpeedKph: 12.63,
+    averageHeartRate: null,
+    elevationDeltaM: null,
+  }
+  const bestEfforts = {
+    distanceSource: 'calculated',
+    weightKg: null,
+    weightDate: null,
+    distance: [effort],
+    power: [],
+    climbs: [],
+  }
+  const activity = { ...detail(1, '2026-09-24', 'run'), bestEfforts }
+  const serialized: unknown = JSON.parse(JSON.stringify(activity))
+  assert.ok(isActivityDetail(serialized))
+  assert.deepEqual(serialized.bestEfforts, bestEfforts)
+  assert.equal(isActivityDetail({ ...activity, bestEfforts: null }), true)
+  for (const invalid of [
+    { ...bestEfforts, distanceSource: 'strava' },
+    ...[
+      { targetDistanceM: 0 },
+      { elapsedTimeS: -1 },
+      { averageSpeedKph: NaN },
+      { averageHeartRate: 0 },
+      { elevationDeltaM: 'unknown' },
+    ].map(fields => ({ ...bestEfforts, distance: [{ ...effort, ...fields }] })),
+  ])
+    assert.equal(isActivityDetail({ ...activity, bestEfforts: invalid }), false)
+})
+
 test('validates same-day power curve weight and retains it through JSON', () => {
   const weight = { kg: 87.09, date: '2026-09-17', source: 'garmin' }
   for (const sport of ['bike', 'run']) {

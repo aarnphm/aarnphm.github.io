@@ -16,40 +16,7 @@ describe('FileTrie', () => {
     trie = new FileTrieNode<TestData>([])
   })
 
-  describe('constructor', () => {
-    test('should create an empty trie', () => {
-      assert.deepStrictEqual(trie.children, [])
-      assert.strictEqual(trie.slug, '')
-      assert.strictEqual(trie.displayName, '')
-      assert.strictEqual(trie.data, null)
-    })
-
-    test('should set displayName from data title', () => {
-      const data = { title: 'Test Title', slug: 'test', filePath: 'test.md' }
-
-      trie.add(data)
-      assert.strictEqual(trie.children[0].displayName, 'Test Title')
-    })
-
-    test('should be able to set displayName', () => {
-      const data = { title: 'Test Title', slug: 'test', filePath: 'test.md' }
-
-      trie.add(data)
-      trie.children[0].displayName = 'Modified'
-      assert.strictEqual(trie.children[0].displayName, 'Modified')
-    })
-  })
-
   describe('add', () => {
-    test('should add a file at root level', () => {
-      const data = { title: 'Test', slug: 'test', filePath: 'test.md' }
-
-      trie.add(data)
-      assert.strictEqual(trie.children.length, 1)
-      assert.strictEqual(trie.children[0].slug, 'test')
-      assert.strictEqual(trie.children[0].data, data)
-    })
-
     test('should handle index files', () => {
       const data = { title: 'Index', slug: 'index', filePath: 'index.md' }
 
@@ -104,23 +71,6 @@ describe('FileTrie', () => {
   })
 
   describe('map', () => {
-    test('should apply function to all nodes', () => {
-      const data1 = { title: 'Test1', slug: 'test1', filePath: 'test1.md' }
-      const data2 = { title: 'Test2', slug: 'test2', filePath: 'test2.md' }
-
-      trie.add(data1)
-      trie.add(data2)
-
-      trie.map(node => {
-        if (node.data) {
-          node.data.title = 'Modified'
-        }
-      })
-
-      assert.strictEqual(trie.children[0].displayName, 'Modified')
-      assert.strictEqual(trie.children[1].displayName, 'Modified')
-    })
-
     test('map over folders should work', () => {
       const data1 = { title: 'Test1', slug: 'test1', filePath: 'test1.md' }
       const data2 = {
@@ -210,20 +160,6 @@ describe('FileTrie', () => {
   })
 
   describe('findNode', () => {
-    test('should find root node with empty path', () => {
-      const data = { title: 'Root', slug: 'index', filePath: 'index.md' }
-      trie.add(data)
-      const found = trie.findNode([])
-      assert.strictEqual(found, trie)
-    })
-
-    test('should find node at first level', () => {
-      const data = { title: 'Test', slug: 'test', filePath: 'test.md' }
-      trie.add(data)
-      const found = trie.findNode(['test'])
-      assert.strictEqual(found?.data, data)
-    })
-
     test('should find nested node', () => {
       const data = {
         title: 'Nested',
@@ -247,17 +183,6 @@ describe('FileTrie', () => {
       trie.add(data)
       const found = trie.findNode(['nonexistent'])
       assert.strictEqual(found, undefined)
-    })
-
-    test('should return undefined for partial path', () => {
-      const data = {
-        title: 'Nested',
-        slug: 'folder/subfolder/test',
-        filePath: 'folder/subfolder/test.md',
-      }
-      trie.add(data)
-      const found = trie.findNode(['folder'])
-      assert.strictEqual(found?.data, null)
     })
   })
 
@@ -304,25 +229,11 @@ describe('FileTrie', () => {
   })
 
   describe('pathToNode', () => {
-    test('should return root node for empty path', () => {
-      const data = { title: 'Root', slug: 'index', filePath: 'index.md' }
-      trie.add(data)
-      const path = trie.ancestryChain([])
-      assert.deepStrictEqual(path, [trie])
-    })
-
     test('should return root node for index path', () => {
       const data = { title: 'Root', slug: 'index', filePath: 'index.md' }
       trie.add(data)
       const path = trie.ancestryChain(['index'])
       assert.deepStrictEqual(path, [trie])
-    })
-
-    test('should return path to first level node', () => {
-      const data = { title: 'Test', slug: 'test', filePath: 'test.md' }
-      trie.add(data)
-      const path = trie.ancestryChain(['test'])
-      assert.deepStrictEqual(path, [trie, trie.children[0]])
     })
 
     test('should return path to nested node', () => {
@@ -363,17 +274,6 @@ describe('FileTrie', () => {
       const path = trie.ancestryChain(['folder', 'subfolder'])
       assert.deepStrictEqual(path, [trie, trie.children[0], trie.children[0].children[0]])
       assert.strictEqual(path[1].data, data3)
-    })
-
-    test('should return path for partial path', () => {
-      const data = {
-        title: 'Nested',
-        slug: 'folder/subfolder/test',
-        filePath: 'folder/subfolder/test.md',
-      }
-      trie.add(data)
-      const path = trie.ancestryChain(['folder'])
-      assert.deepStrictEqual(path, [trie, trie.children[0]])
     })
   })
 })

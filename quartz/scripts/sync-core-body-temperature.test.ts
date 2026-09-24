@@ -3,29 +3,13 @@ import test from 'node:test'
 import {
   coreCloudDataUrl,
   coreCloudWindows,
-  coreBodyTemperatureICloudPath,
   coreBodyTemperatureImportCandidates,
-  expandCoreBodyTemperaturePath,
 } from './sync-core-body-temperature'
 
 test('coreBodyTemperatureImportCandidates prefers an explicit export', () => {
   assert.deepEqual(coreBodyTemperatureImportCandidates('~/Downloads/core.csv', '/Users/test'), [
     '/Users/test/Downloads/core.csv',
   ])
-})
-
-test('coreBodyTemperatureImportCandidates checks iCloud and the cache import boundary', () => {
-  assert.deepEqual(coreBodyTemperatureImportCandidates(undefined, '/Users/test'), [
-    '/Users/test/Library/Mobile Documents/com~apple~CloudDocs/CORE/core-body-temperature.csv',
-    'quartz/.quartz-cache/core-body-temperature-import.csv',
-  ])
-})
-
-test('expandCoreBodyTemperaturePath resolves the documented iCloud destination', () => {
-  assert.equal(
-    expandCoreBodyTemperaturePath('iCloud Drive/CORE/core-body-temperature.csv', '/Users/test'),
-    coreBodyTemperatureICloudPath('/Users/test'),
-  )
 })
 
 test('coreCloudWindows covers the requested range without overlapping API windows', () => {

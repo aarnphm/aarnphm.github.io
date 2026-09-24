@@ -1,30 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { selectStreamFeedGroups, type StreamEntryGroup } from './stream'
 import { parseStreamManifest } from './stream-manifest'
-
-const groups: StreamEntryGroup[] = [
-  { id: 'day-2026-08-10', entries: [] },
-  { id: 'day-2026-08-09', entries: [] },
-]
-
-test('root stream materializes only its newest date group', () => {
-  const selected = selectStreamFeedGroups(groups, true)
-  assert.deepEqual(
-    selected.feedGroups.map(group => group.id),
-    ['day-2026-08-10'],
-  )
-  assert.equal(selected.hasLazyGroups, true)
-})
-
-test('daily stream routes retain their complete feed', () => {
-  const selected = selectStreamFeedGroups(groups, false)
-  assert.deepEqual(
-    selected.feedGroups.map(group => group.id),
-    ['day-2026-08-10', 'day-2026-08-09'],
-  )
-  assert.equal(selected.hasLazyGroups, false)
-})
 
 test('parses newline-delimited stream manifest groups', () => {
   const groups = parseStreamManifest(

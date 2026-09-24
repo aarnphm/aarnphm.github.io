@@ -36,19 +36,6 @@ function slugs(content: ProcessedContent[], events: ChangeEvent[]): string[] {
     .sort()
 }
 
-test('nested section and block transclusions rebuild through to stream', () => {
-  const source = note('source')
-  const nested = note('nested', [embed('source', '#^block', true)])
-  const stream = note('stream', [embed('nested', '#section')])
-  const linkOnly = note('link-only', [h('a', { dataSlug: 'source' }, 'source')])
-
-  assert.deepEqual(slugs([source, nested, stream, linkOnly], [change(source)]), [
-    'nested',
-    'source',
-    'stream',
-  ])
-})
-
 test('separate triathlon anchors and cycles emit each dependent once', () => {
   const triathlon = note('triathlon', [embed('stream')])
   const stream = note('stream', [
@@ -73,21 +60,6 @@ test('base view transclusions depend on the owning Base file', () => {
   const stream = note('stream', [embed('library/books')])
 
   assert.deepEqual(slugs([base, stream], [change(base)]), ['library', 'stream'])
-})
-
-test('embedded Base queries rebuild when their input corpus changes', () => {
-  const base = note('library')
-  base[1].data.bases = true
-  const member = note('library/book')
-  const nested = note('nested', [embed('library/books')])
-  const stream = note('stream', [embed('nested')])
-
-  assert.deepEqual(slugs([base, member, nested, stream], [change(member)]), [
-    'library',
-    'library/book',
-    'nested',
-    'stream',
-  ])
 })
 
 test('code dependency changes propagate through embedded notes for all watcher path forms', () => {

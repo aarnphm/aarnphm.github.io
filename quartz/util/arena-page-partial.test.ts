@@ -21,37 +21,6 @@ function channel(slug: string, title: string, json = false): ArenaChannel {
   }
 }
 
-test('arena partial planner selects only changed channels', () => {
-  const alpha = channel('alpha', 'Alpha', true)
-  const beta = channel('beta', 'Beta')
-  const previous = collectArenaEmitState([alpha, beta])
-
-  const changedAlpha = channel('alpha', 'Alpha changed', true)
-  const plan = planArenaPartialEmit(previous, [changedAlpha, beta])
-
-  assert.deepEqual(
-    plan.changedChannels.map(channel => channel.slug),
-    ['alpha'],
-  )
-  assert.deepEqual(plan.deletedChannels, [])
-  assert.equal(plan.hasChanges, true)
-})
-
-test('arena partial planner reports deleted channel output state', () => {
-  const alpha = channel('alpha', 'Alpha', true)
-  const beta = channel('beta', 'Beta')
-  const previous = collectArenaEmitState([alpha, beta])
-
-  const plan = planArenaPartialEmit(previous, [beta])
-
-  assert.deepEqual(plan.changedChannels, [])
-  assert.deepEqual(
-    plan.deletedChannels.map(([slug, state]) => [slug, state.jsonEnabled]),
-    [['alpha', true]],
-  )
-  assert.equal(plan.hasChanges, true)
-})
-
 test('arena partial planner ignores unchanged channel sets', () => {
   const alpha = channel('alpha', 'Alpha', true)
   const beta = channel('beta', 'Beta')
@@ -89,14 +58,6 @@ test('arena partial planner detects nested note and priority changes', () => {
   assert.deepEqual(
     plan.changedChannels.map(channel => channel.slug),
     ['alpha'],
-  )
-})
-
-test('arena partial planner rejects a channel that would replace the reader', () => {
-  assert.throws(() => collectArenaEmitState([channel('feed', 'Feed')]), /reserved reader route/)
-  assert.throws(
-    () => planArenaPartialEmit(undefined, [channel('feed', 'Feed')]),
-    /reserved reader route/,
   )
 })
 

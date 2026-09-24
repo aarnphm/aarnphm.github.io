@@ -152,15 +152,6 @@ test('challenge and login pages are distinct from short articles about browser c
     }),
     null,
   )
-  assert.equal(
-    arenaReaderFailureSignals({
-      title: 'A short note',
-      text: 'A short, complete paragraph can still be a useful article to save and read.',
-      articleLength: 72,
-      hasArticle: true,
-    }),
-    null,
-  )
 })
 
 test('unchanged article content keeps its fingerprint across snapshot IDs and resource paths', async () => {

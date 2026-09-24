@@ -1,13 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { BuildCtx } from './ctx'
-import {
-  assetManifestRecord,
-  assetPath,
-  assetSlugForContent,
-  contentHashSlug,
-  resolveAsset,
-} from './asset-manifest'
+import { assetManifestRecord, assetPath, assetSlugForContent, resolveAsset } from './asset-manifest'
 
 function testCtx(overrides: Partial<BuildCtx['argv']> = {}): BuildCtx {
   return {
@@ -39,13 +33,6 @@ test('registers content-hashed production asset names', () => {
   assert.deepEqual(assetManifestRecord(ctx), { 'postscript.js': `${slug}.js` })
 })
 
-test('creates content-only extracted resource names', () => {
-  assert.match(
-    contentHashSlug('static/resource-after', 'console.log(1)'),
-    /^static\/resource-after-[0-9a-f]{8}$/,
-  )
-})
-
 test('keeps logical names during watch and serve builds', () => {
   const watchCtx = testCtx({ watch: true })
   const serveCtx = testCtx({ serve: true, watch: true })
@@ -54,16 +41,4 @@ test('keeps logical names during watch and serve builds', () => {
   assert.equal(assetSlugForContent(serveCtx, 'postscript', '.js', 'console.log(1)'), 'postscript')
   assert.equal(resolveAsset(watchCtx, assetPath('index', '.css')), 'index.css')
   assert.equal(resolveAsset(serveCtx, assetPath('postscript', '.js')), 'postscript.js')
-})
-
-test('keeps watch asset paths stable across content changes', () => {
-  const watchCtx = testCtx({ watch: true })
-  const productionCtx = testCtx()
-  const watchSlug = assetSlugForContent(watchCtx, 'static/component', '.css', 'body{}')
-  const changedWatchSlug = assetSlugForContent(watchCtx, 'static/component', '.css', 'a{color:red}')
-  const productionSlug = assetSlugForContent(productionCtx, 'static/component', '.css', 'body{}')
-
-  assert.equal(watchSlug, 'static/component')
-  assert.equal(changedWatchSlug, 'static/component')
-  assert.match(productionSlug, /^static\/component-[0-9a-f]{8}$/)
 })

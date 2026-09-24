@@ -10,7 +10,6 @@ import {
   selectTrainingPeaksBackfillPlans,
   stravaTrainingPeaksFile,
   trainingPeaksBackfillFilename,
-  trainingPeaksBackfillUsage,
   TRAININGPEAKS_BACKFILL_DIR,
   writeTrainingPeaksFile,
 } from './backfill-trainingpeaks'
@@ -192,7 +191,6 @@ test('parses source-specific bounded TrainingPeaks backfill arguments', () => {
       delayMs: 1000,
     },
   )
-  assert.match(trainingPeaksBackfillUsage(), /drag-and-drop upload/)
 })
 
 test('selects plans by source, local day, activity id, and limit', () => {

@@ -494,6 +494,9 @@ const en: TriDict = {
     wet: 'wet',
     'best efforts · power curve': 'best efforts · power curve',
     'best efforts power curve': 'best efforts power curve',
+    'Running best efforts': 'Running best efforts',
+    'Calculated from recorded distance and elapsed time, including pauses.':
+      'Calculated from recorded distance and elapsed time, including pauses.',
     'power curve periods': 'power curve periods',
     'power curve controls': 'power curve controls',
     'estimated FTP': 'estimated FTP',
@@ -1639,6 +1642,9 @@ const fr: TriDict = {
     wet: 'mouillé',
     'best efforts · power curve': 'meilleurs efforts · courbe de puissance',
     'best efforts power curve': 'courbe de puissance des meilleurs efforts',
+    'Running best efforts': 'Meilleurs efforts en course',
+    'Calculated from recorded distance and elapsed time, including pauses.':
+      'Calculés à partir de la distance enregistrée et du temps écoulé, pauses comprises.',
     'power curve periods': 'périodes de la courbe de puissance',
     'power curve controls': 'contrôles de la courbe de puissance',
     'estimated FTP': 'FTP estimée',
