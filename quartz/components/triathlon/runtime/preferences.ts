@@ -22,6 +22,8 @@ export const TRI_MAP_STYLE_EVENT = 'tri:mapstyle'
 
 export const TRI_MAP_3D_KEY = 'tri-map-3d'
 
+export const TRI_MAP_ELEVATION_KEY = 'tri-map-elevation'
+
 export const TRI_PANELS_FULLSCREEN_KEY = 'tri-panels-fullscreen'
 
 export const TRI_MAP_STYLES = ['mono', 'streets', 'satellite'] as const
@@ -146,6 +148,22 @@ export const readTriMap3d = (): boolean => {
 export const setTriMap3d = (enabled: boolean): void => {
   try {
     localStorage.setItem(TRI_MAP_3D_KEY, String(enabled))
+  } catch {
+    void 0
+  }
+}
+
+export const readTriMapElevation = (): boolean => {
+  try {
+    return localStorage.getItem(TRI_MAP_ELEVATION_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+export const setTriMapElevation = (enabled: boolean): void => {
+  try {
+    localStorage.setItem(TRI_MAP_ELEVATION_KEY, String(enabled))
   } catch {
     void 0
   }

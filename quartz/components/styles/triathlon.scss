@@ -14021,6 +14021,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-map-side-fold,
 .tri-map-sport,
+.tri-map-elevation,
 .tri-map-3d,
 .tri-map-style {
   display: flex;
@@ -14054,6 +14055,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-map-sport[aria-pressed='true'],
+.tri-map-elevation[aria-pressed='true'],
 .tri-map-3d[aria-pressed='true'],
 .tri-map-style[aria-pressed='true'] {
   color: var(--dark);

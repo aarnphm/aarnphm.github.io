@@ -14,15 +14,18 @@ import { createDomFactory, el, setMath } from '../runtime/dom'
 import {
   mapboxStyleUrl,
   readTriMap3d,
+  readTriMapElevation,
   readTriMapStyle,
   readTriMapTheme,
   setTriMap3d,
+  setTriMapElevation,
   setTriMapStyle,
   TRI_MAP_STYLE_EVENT,
   TRI_POWER_FILTER_EVENT,
   type TriMapTheme,
 } from '../runtime/preferences'
 import { createMapDetailTransition } from './detail'
+import { applyMapElevation } from './elevation'
 import { createMapboxMap, type MapboxLayerEvent, type TriathlonMapboxMap } from './mapbox'
 import {
   emptyFC,
@@ -84,8 +87,10 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   const side = root.querySelector<HTMLElement>('.tri-map-side')
   const sideFold = side?.querySelector<HTMLButtonElement>('.tri-map-side-fold') ?? null
   const threeDimensionalBtn = side?.querySelector<HTMLButtonElement>('.tri-map-3d') ?? null
+  const elevationBtn = side?.querySelector<HTMLButtonElement>('.tri-map-elevation') ?? null
   const styleBtn = side?.querySelector<HTMLButtonElement>('.tri-map-style') ?? null
   let threeDimensional = readTriMap3d()
+  let elevation = readTriMapElevation()
   const sportFilter = createRouteSportFilter(sportBtns)
   const overview = createOverviewProvider(
     () => context.presentation,
@@ -299,6 +304,16 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         beforeId,
       )
     }
+    const applyElevation = () => {
+      if (!map) return
+      applyMapElevation(
+        map,
+        elevation,
+        readTriMapStyle(),
+        readTriMapTheme(),
+        context.presentation.distance,
+      )
+    }
     const installLayers = () => {
       if (!map) return
       const theme = readTriMapTheme()
@@ -314,6 +329,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         )
       const firstLabelId = typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined
       installThreeDimensionalLayers(theme, firstLabelId)
+      applyElevation()
       addSource('tri-heat', { type: 'geojson', data: emptyFC() })
       addLayer(
         {
@@ -596,6 +612,9 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       clearSelection,
       applyMapStyle,
       applyThreeDimensional,
+      applyElevation: () => {
+        if (readyMap()) applyElevation()
+      },
       resize,
       dispose,
     }
@@ -778,6 +797,13 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   }
   const onStyleClick = () =>
     setTriMapStyle(readTriMapStyle() === 'satellite' ? 'mono' : 'satellite')
+  const syncElevationBtn = () => elevationBtn?.setAttribute('aria-pressed', String(elevation))
+  const onElevationClick = () => {
+    elevation = !elevation
+    setTriMapElevation(elevation)
+    syncElevationBtn()
+    mapCtl.applyElevation()
+  }
   const onFold = () => {
     if (!side) return
     const folded = side.classList.toggle('tri-map-side--folded')
@@ -792,6 +818,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     if (readTriMapStyle() !== 'satellite') mapCtl.applyMapStyle(event.detail.theme)
   }
   const onUnit = () => {
+    mapCtl.applyElevation()
     const model = program.retrieve()
     if (model.selectedRouteId) renderRoute(model.selectedRouteId, model.metric, false)
   }
@@ -873,6 +900,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   })
   syncStyleBtn()
   syncThreeDimensionalBtn()
+  syncElevationBtn()
 
   if (pageMode) {
     load()
@@ -888,6 +916,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   side?.addEventListener('click', onSportClick)
   sideFold?.addEventListener('click', onFold)
   threeDimensionalBtn?.addEventListener('click', onThreeDimensionalClick)
+  elevationBtn?.addEventListener('click', onElevationClick)
   styleBtn?.addEventListener('click', onStyleClick)
   document.addEventListener('keydown', onKey)
   document.addEventListener('themechange', onThemeChange)
@@ -906,6 +935,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     side?.removeEventListener('click', onSportClick)
     sideFold?.removeEventListener('click', onFold)
     threeDimensionalBtn?.removeEventListener('click', onThreeDimensionalClick)
+    elevationBtn?.removeEventListener('click', onElevationClick)
     styleBtn?.removeEventListener('click', onStyleClick)
     document.removeEventListener('keydown', onKey)
     document.removeEventListener('themechange', onThemeChange)

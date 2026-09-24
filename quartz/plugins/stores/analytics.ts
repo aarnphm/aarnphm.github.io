@@ -3497,12 +3497,12 @@ export const ATHLETE = {
   bornAnchor: '2001-03-01',
   hrMax: 200 as number | null,
   vo2max: 47.8 as number | null,
-  ftp: 287 as number | null,
+  ftp: 308 as number | null,
   lt: 174 as number | null,
   goalWeightLb: 170 as number | null,
-  goalFTP: 350 as number | null,
+  goalFTP: 368 as number | null,
   heightCm: 188,
-  tenKmRaceTime: '00:50:00',
+  tenKmRaceTime: '00:46:20',
 }
 
 const goalWeightKg = ATHLETE.goalWeightLb != null ? ATHLETE.goalWeightLb * KG_PER_LB : null

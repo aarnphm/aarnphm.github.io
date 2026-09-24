@@ -579,6 +579,18 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
           ))}
           <span class="tri-map-side-rule" />
           <button
+            class="tri-map-elevation"
+            type="button"
+            aria-pressed="false"
+            aria-label="Elevation contours and hill shading"
+            title="Elevation contours and hill shading"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m3 20 7-16 7 16H3Z" />
+              <path d="m7.5 9.7 2.5 2.8 2.5-2.8M14 13l3-6 5 13h-5" />
+            </svg>
+          </button>
+          <button
             class="tri-map-3d"
             type="button"
             aria-pressed="false"
