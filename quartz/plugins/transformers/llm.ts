@@ -10,6 +10,7 @@ import { sidenoteToMarkdown } from '../../extensions/micromark-extension-ofm-sid
 import { wikilinkToMarkdown } from '../../extensions/micromark-extension-ofm-wikilinks'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { clone } from '../../util/clone'
+import { isWatchMarkdownSlug } from '../../util/llm'
 import { FullSlug, isAbsoluteURL } from '../../util/path'
 import { QuartzPluginData } from '../vfile'
 
@@ -193,7 +194,7 @@ export const LLM: QuartzTransformerPlugin = () => {
           return (tree: MdRoot, file) => {
             const fileData = file.data as QuartzPluginData
             if (!fileData.slug) return
-            if (watch && fileData.slug !== 'triathlon') return
+            if (watch && !isWatchMarkdownSlug(fileData.slug)) return
 
             const cloned = clone(tree) as MdRoot
             const slug = fileData.slug as FullSlug

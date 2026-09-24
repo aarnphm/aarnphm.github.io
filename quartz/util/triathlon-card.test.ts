@@ -3943,6 +3943,27 @@ test('labels Wahoo climb analysis as Summit and efforts as Summit Segments', () 
   assert.equal(bodyRows(climbing)[0][0], 'Summit 2/6')
 })
 
+test('preserves available climb grades in analysis labels and hydration data', () => {
+  for (const grade of [6.1, 0, -2.4, null, undefined, Number.NaN, Number.POSITIVE_INFINITY]) {
+    const activity = analysisDetail()
+    activity.analysisRanges = activity.analysisRanges.map(range =>
+      range.kind === 'climb' ? { ...range, averageGradePct: grade } : range,
+    )
+    const rendered = buildActivity(factory, activity, true)
+    const button = byClass(rendered, 'tri-analysis-range').find(
+      candidate => candidate.properties.dataRangeKind === 'climb',
+    )
+    assert.ok(button)
+    if (grade != null && Number.isFinite(grade)) {
+      assert.equal(button.properties.dataAverageGradePct, String(grade))
+      assert.ok(String(button.properties.ariaLabel).includes(`${grade.toFixed(1)}% avg grade`))
+    } else {
+      assert.equal(button.properties.dataAverageGradePct, undefined)
+      assert.doesNotMatch(String(button.properties.ariaLabel), /avg grade/)
+    }
+  }
+})
+
 test('renders cycling laps as selectable power bars over the elevation profile', () => {
   const bike = analysisDetail()
   bike.analysisRanges = [

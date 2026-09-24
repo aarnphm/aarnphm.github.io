@@ -192,7 +192,8 @@ blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
       color: var(--secondary);
       opacity: 0.4;
 
-      [data-slug='friends'] & {
+      [data-slug='friends'] &,
+      [data-slug='quotes'] & {
         content: none;
         display: none;
       }
@@ -1248,6 +1249,7 @@ body[data-slug='influence'] {
 }
 
 .float-right {
+  text-align: justify;
   margin: calc(1.5 * $baseMargin) 0 calc(1.5 * $baseMargin) calc(3 * $baseMargin);
   padding: calc(1.5 * $baseMargin) 0 calc(1.5 * $baseMargin) calc(1.5 * $baseMargin);
   float: right;
@@ -1262,9 +1264,14 @@ body[data-slug='influence'] {
     margin: 0 auto !important;
     display: block;
   }
+
+  blockquote.quotes {
+    margin-left: 0;
+  }
 }
 
 .float-left {
+  text-align: justify;
   margin: calc(1.5 * $baseMargin) calc(3 * $baseMargin) calc(1.5 * $baseMargin) 0;
   padding: calc(1.5 * $baseMargin) calc(1.5 * $baseMargin) calc(1.5 * $baseMargin) 0;
   float: left;
@@ -1278,6 +1285,10 @@ body[data-slug='influence'] {
   img.float-left {
     margin: 0 auto !important;
     display: block;
+  }
+
+  blockquote.quotes {
+    margin-left: 0;
   }
 }
 

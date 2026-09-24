@@ -4270,6 +4270,8 @@ const analysisRangeAttrs = (range: ActivityAnalysisRange): Record<string, string
     'data-distance-km': `${range.distanceKm}`,
   }
   if (range.elevationGainM != null) attrs['data-elevation-gain-m'] = `${range.elevationGainM}`
+  if (range.averageGradePct != null && Number.isFinite(range.averageGradePct))
+    attrs['data-average-grade-pct'] = `${range.averageGradePct}`
   if (range.averageSpeedKph != null) attrs['data-average-speed-kph'] = `${range.averageSpeedKph}`
   if (range.averageHeartRate != null) attrs['data-average-heart-rate'] = `${range.averageHeartRate}`
   if (range.averageWatts != null) attrs['data-average-watts'] = `${range.averageWatts}`
@@ -4379,6 +4381,8 @@ const analysisRangeMetrics = (
   const values = [scrubDist(presentation, range.distanceKm, d.sport)]
   if (range.elevationGainM != null)
     values.push(`+${formatElevationGain(presentation, range.elevationGainM)}`)
+  if (range.averageGradePct != null && Number.isFinite(range.averageGradePct))
+    values.push(`${range.averageGradePct.toFixed(1)}% avg grade`)
   values.push(clock(range.movingTimeS ?? range.durationS))
   if (range.averageSpeedKph != null)
     values.push(analysisRangeRate(presentation, d.sport, range.averageSpeedKph))

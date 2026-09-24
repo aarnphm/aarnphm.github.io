@@ -1,11 +1,11 @@
 import type { ComponentChild } from 'preact'
-import { ArenaData, ArenaBlock } from '../../plugins/transformers/arena'
+import { ArenaData } from '../../plugins/transformers/arena'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
-import { toArenaHeadingInlineJsx, toArenaJsx, arenaBlockTimestamp } from '../../util/arena'
+import { toArenaHeadingInlineJsx, arenaBlockTimestamp } from '../../util/arena'
 import { classNames } from '../../util/lang'
 import { resolveRelative, joinSegments, FullSlug } from '../../util/path'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
@@ -75,17 +75,6 @@ export default (() => {
 
       return <>{parts}</>
     }
-
-    // Collect all preview blocks for modal data
-    const allPreviewBlocks: Array<{ block: ArenaBlock; channelSlug: string }> = []
-    sortedChannels.forEach(channel => {
-      const previewBlocks = [...channel.blocks]
-        .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
-        .slice(0, limits)
-      previewBlocks.forEach(block => {
-        allPreviewBlocks.push({ block, channelSlug: channel.slug })
-      })
-    })
 
     return (
       <article class="arena-index main-col popover-hint">
@@ -167,7 +156,7 @@ export default (() => {
                     .slice(0, limits)
                     .map(block => {
                       return (
-                        <div
+                        <a
                           key={block.id}
                           class={classNames(
                             undefined,
@@ -175,20 +164,19 @@ export default (() => {
                             block.highlighted ? 'highlighted' : '',
                           )}
                           data-block-id={block.id}
-                          role="button"
-                          tabIndex={0}
+                          data-entry-id={block.entryId}
+                          href={resolveRelative(
+                            currentSlug,
+                            block.entryId
+                              ? (joinSegments(channelPath, block.entryId) as FullSlug)
+                              : channelPath,
+                          )}
+                          data-no-popover
                         >
                           <div class="arena-channel-row-preview-text">
-                            {block.titleHtmlNode
-                              ? toArenaJsx(
-                                  fileData.filePath!,
-                                  block.titleHtmlNode,
-                                  currentSlug,
-                                  componentData,
-                                )
-                              : renderInlineText(block.title || block.content || '')}
+                            {block.title || block.content}
                           </div>
-                        </div>
+                        </a>
                       )
                     })}
                 </div>

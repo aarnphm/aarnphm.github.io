@@ -28,7 +28,7 @@ body.arena-modal-open {
     --arena-control-height: 44px;
   }
 
-  :where(.arena-index, .arena-channel-page)
+  :where(.arena-index, .arena-channel-page, .arena-entry-page)
     :where(button, a, input, summary, [role='button']):focus-visible {
     outline: 2px solid var(--secondary);
     outline-offset: -2px;
@@ -171,6 +171,10 @@ body[data-arena-subpage='true'] {
     font-weight: 600;
     color: var(--dark);
     transition: color 0.2s ease;
+
+    a:hover {
+      background: transparent;
+    }
   }
 
   a {
@@ -213,6 +217,7 @@ body[data-arena-subpage='true'] {
 }
 
 .arena-channel-row-preview-item {
+  text-decoration: none;
   font-size: 0.85rem;
   color: var(--darkgray);
   line-height: 1.45;
@@ -232,6 +237,7 @@ body[data-arena-subpage='true'] {
 
   &:hover {
     background: var(--arena-surface);
+    color: var(--darkgray);
   }
 
   .arena-channel-row-preview-thumb {
@@ -266,6 +272,58 @@ body[data-arena-subpage='true'] {
     color: var(--tertiary);
     font-weight: 500;
   }
+}
+
+.arena-entry-page {
+  width: 100%;
+  margin: 2rem auto 0;
+}
+
+.arena-entry-shell {
+  box-sizing: border-box;
+  height: calc(100dvh - 4rem);
+  min-height: 28rem;
+  border: 1px solid var(--arena-line);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .arena-block-modal-data {
+    display: block;
+  }
+
+  @media all and ($mobile) {
+    height: auto;
+    min-height: 0;
+
+    .arena-modal-layout {
+      display: flex;
+      flex-direction: column;
+      height: auto;
+      overflow: visible;
+    }
+
+    .arena-modal-main {
+      min-height: 65dvh;
+    }
+
+    .arena-modal-sidebar.collapsed {
+      display: none;
+    }
+  }
+}
+
+.arena-modal-text-preview {
+  width: 100%;
+  overflow: auto;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.arena-entry-permalink {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
 }
 
 .arena-channel-row-preview-more {
@@ -599,6 +657,13 @@ body[data-arena-subpage='true'] {
   flex-direction: column;
   gap: 0;
   outline: none;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: inherit;
+    background: transparent;
+  }
 }
 
 .arena-channel-grid[data-view-mode='list'] .arena-block-clickable {
@@ -718,6 +783,7 @@ body[data-arena-subpage='true'] {
   min-height: 0;
   padding: 0;
   color: var(--darkgray);
+  text-decoration: none;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -1190,7 +1256,7 @@ span.tag-link:hover {
   border-bottom: 1px solid var(--arena-line);
   background: var(--arena-surface);
 
-  > button {
+  > :is(button, a) {
     border-left: 1px solid var(--arena-line);
   }
 }

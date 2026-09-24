@@ -575,7 +575,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
       </div>
     `
   } else {
-    mainContentHtml = `<div class="arena-modal-placeholder">No preview available</div>`
+    mainContentHtml = `<div class="arena-modal-text-preview">${block.blockHtml ?? escapeHtml(block.content)}</div>`
   }
 
   container.innerHTML = `
@@ -626,6 +626,11 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
           <h3 class="arena-modal-title">
             ${block.titleHtml ?? escapeHtml(block.title ?? '')}
           </h3>
+          ${
+            block.entryId
+              ? `<a class="arena-entry-permalink internal" href="/${['arena', ...channelSlug.split('/'), block.entryId].map(encodeURIComponent).join('/')}" data-no-popover>open entry</a>`
+              : ''
+          }
           ${
             metadataHtml.length > 0
               ? `
@@ -723,6 +728,7 @@ export async function showModal(blockId: string) {
       sidebar.classList.remove('collapsed')
       collapseBtn?.classList.remove('active')
     }
+    collapseBtn?.setAttribute('aria-expanded', String(!shouldCollapse))
   }
 
   hydrateSubstackEmbeds(modalBody)
@@ -796,6 +802,7 @@ export function handleCopyButton(button: HTMLElement) {
 // Search functionality - JSON-based
 interface ArenaBlockSearchable {
   id: string
+  entryId?: string
   channelSlug: string
   channelName: string
   content: string
@@ -1256,6 +1263,19 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
     if (externalEmbeds === embeds) externalEmbeds = null
   })
 
+  const entryPage = document.querySelector<HTMLElement>('.arena-entry-page')
+  if (entryPage) {
+    hydrateSubstackEmbeds(entryPage)
+    embeds.mount(entryPage)
+    hydrateInternalHosts(entryPage)
+    hydrateMapboxMaps(entryPage)
+    mountPdfEmbeds(entryPage)
+    addCleanup(() => {
+      cleanupMaps(entryPage)
+      cleanupPdfs(entryPage)
+    })
+  }
+
   totalBlocks = document.querySelectorAll('[data-block-id][data-block-index]').length
 
   const channelPage = document.querySelector<HTMLElement>('.arena-channel-page')
@@ -1342,10 +1362,6 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
 
   const onClick = async (e: MouseEvent) => {
     const target = e.target as HTMLElement
-    const isArenaChannelPage = () => {
-      const slug = document.body?.dataset.slug || ''
-      return slug.startsWith('arena/') && slug !== 'arena'
-    }
 
     const internalLink = target.closest('.arena-modal-body a.internal') as HTMLAnchorElement | null
     if (internalLink) {
@@ -1392,78 +1408,6 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
       return
     }
 
-    const blockClickable = target.closest('.arena-block-clickable')
-    if (blockClickable) {
-      const blockEl = blockClickable.closest('.arena-block')
-      const blockId = blockEl?.getAttribute('data-block-id')
-      if (blockId) {
-        e.preventDefault()
-
-        // Check if this is an arxiv block without notes and redirect instead of opening modal
-        if (arenaSearchData) {
-          const blockData = arenaSearchData.blocks.find(b => b.id === blockId)
-          const isArxivUrl = blockData?.url
-            ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url)
-            : false
-
-          if (isArxivUrl && blockData?.url) {
-            // Only redirect if the block has no notes (description or content)
-            const hasNotes = !!blockData.content
-            if (!hasNotes) {
-              window.open(blockData.url, '_blank', 'noopener,noreferrer')
-              return
-            }
-            // If it has notes, continue to show the modal (without embed)
-          }
-        }
-
-        dispatch({ type: 'ui.modal.open', blockId })
-      }
-      return
-    }
-
-    const previewItem = target.closest('.arena-channel-row-preview-item[data-block-id]')
-    if (previewItem) {
-      const blockId = (previewItem as HTMLElement).getAttribute('data-block-id')
-
-      if (isArenaChannelPage()) {
-        // On channel pages: check if arxiv block without notes and redirect instead of modal
-        if (blockId && arenaSearchData) {
-          const blockData = arenaSearchData.blocks.find(b => b.id === blockId)
-          const isArxivUrl = blockData?.url
-            ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url)
-            : false
-
-          if (isArxivUrl && blockData?.url) {
-            // Only redirect if the block has no notes (description or content)
-            const hasNotes = !!blockData.content
-            if (!hasNotes) {
-              e.preventDefault()
-              window.open(blockData.url, '_blank', 'noopener,noreferrer')
-              return
-            }
-            // If it has notes, continue to show the modal (without embed)
-          }
-        }
-
-        if (blockId) {
-          e.preventDefault()
-          dispatch({ type: 'ui.modal.open', blockId })
-        }
-      } else {
-        // On Arena index page, clicking a preview should navigate to the channel
-        const channelRow = previewItem.closest('.arena-channel-row') as HTMLElement | null
-        const headerLink = channelRow?.querySelector(
-          '.arena-channel-row-header a[href]',
-        ) as HTMLAnchorElement | null
-        if (headerLink) {
-          e.preventDefault()
-          headerLink.click()
-        }
-      }
-      return
-    }
-
     // Click anywhere on a channel row should navigate to the header link
     const channelRow = target.closest('.arena-channel-row') as HTMLElement | null
     if (channelRow) {
@@ -1482,26 +1426,27 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
       return
     }
 
-    if (target.closest('.arena-modal-prev')) {
+    if (target.closest('button.arena-modal-prev')) {
       dispatch({ type: 'ui.block.navigate', direction: -1 })
       return
     }
 
-    if (target.closest('.arena-modal-next')) {
+    if (target.closest('button.arena-modal-next')) {
       dispatch({ type: 'ui.block.navigate', direction: 1 })
       return
     }
 
     if (target.closest('.arena-modal-collapse')) {
-      const modal = document.getElementById('arena-modal')
-      const sidebar = modal?.querySelector('.arena-modal-sidebar') as HTMLElement | null
       const collapseBtn = target.closest('.arena-modal-collapse') as HTMLElement | null
+      const host = collapseBtn?.closest('#arena-modal, .arena-entry-shell')
+      const sidebar = host?.querySelector('.arena-modal-sidebar') as HTMLElement | null
       if (sidebar) {
         sidebar.classList.toggle('collapsed')
         collapseBtn?.classList.toggle('active')
+        collapseBtn?.setAttribute('aria-expanded', String(!sidebar.classList.contains('collapsed')))
 
         // Resize maps after layout change - wait for CSS transition
-        const modalBody = modal?.querySelector('.arena-modal-body') as HTMLElement | null
+        const modalBody = host?.querySelector('.arena-modal-body') as HTMLElement | null
         if (modalBody) {
           const resizeMaps = () => {
             modalBody

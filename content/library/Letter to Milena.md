@@ -6,8 +6,10 @@ description: letters from kafka to milena that chart intense, self doubting love
 finished: 2025
 id: Letters to Milena
 language: german
-modified: 2026-06-05 15:07:57 GMT-04:00
+modified: 2026-09-24 00:34:32 GMT-04:00
 posters: '[[library/posters/letter-to-milena.jpg]]'
+seealso:
+  - '[[thoughts/pdfs/letter-to-milena.pdf]]'
 status: finished
 subcategory:
   - o/relationship
@@ -16,5 +18,3 @@ tags:
 title: Letters to Milena
 year: 1952
 ---
-
-see also [[thoughts/pdfs/letter-to-milena.pdf]]

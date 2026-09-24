@@ -361,6 +361,7 @@ body[data-slug='curius'] {
     gap: 0.25rem;
     margin: 0;
     padding: 0;
+    font-size: 0.6rem;
     list-style: none;
 
     &:empty {
@@ -371,6 +372,7 @@ body[data-slug='curius'] {
       padding: 0 0.3rem;
       border: 1px solid var(--curius-line);
       background: var(--curius-surface);
+      line-height: inherit;
     }
 
     a {

@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 import type { BuildCtx } from '../../util/ctx'
-import type { FilePath, FullSlug } from '../../util/path'
 import type { StaticResources } from '../../util/resources'
+import { isFilePath, isFullSlug, type FilePath } from '../../util/path'
 import { defaultProcessedContent } from '../vfile'
 import { LLMText, llmsIndex } from './llm'
 
@@ -44,11 +44,14 @@ function testCtx(root: string): BuildCtx {
 
 const resources: StaticResources = { css: [], js: [], additionalHead: [] }
 
-const note = (slug: FullSlug, text: string) => {
+const note = (slug: string, text: string) => {
+  const filePath = `${slug}.md`
+  assert.ok(isFullSlug(slug))
+  assert.ok(isFilePath(filePath))
   const content = defaultProcessedContent({
     slug,
-    filePath: `${slug}.md` as FilePath,
-    relativePath: `${slug}.md` as FilePath,
+    filePath,
+    relativePath: filePath,
     frontmatter: { title: slug, pageLayout: 'default', tags: [] },
     text,
     links: [],
@@ -89,7 +92,7 @@ test('publishes a proposal-compliant llms.txt with use cases and discovery links
   }
 })
 
-test('watch emit publishes the triathlon route index without rebuilding the garden corpus', async () => {
+test('watch emit publishes triathlon and Arena Markdown without rebuilding the garden corpus', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-llm-watch-'))
   try {
     const ctx = testCtx(root)
@@ -98,41 +101,54 @@ test('watch emit publishes the triathlon route index without rebuilding the gard
       plugin.emit(
         ctx,
         [
-          note('thoughts/example' as FullSlug, '# example'),
-          note('triathlon' as FullSlug, '# triathlon'),
+          note('thoughts/example', '# example'),
+          note('triathlon', '# triathlon'),
+          note('are.na', '## engineering\n\n- https://example.com -- Example'),
         ],
         resources,
       ),
     )
 
-    assert.deepEqual(relativeOutputs(ctx, outputs), ['llms.txt', 'triathlon.md'])
+    assert.deepEqual(relativeOutputs(ctx, outputs), ['are.na.md', 'llms.txt', 'triathlon.md'])
+    const arenaMarkdown = await readFile(path.join(ctx.argv.output, 'are.na.md'), 'utf8')
+    assert.match(arenaMarkdown, /## engineering\n\n- https:\/\/example.com -- Example/)
   } finally {
     await rm(root, { recursive: true, force: true })
   }
 })
 
-test('watch partial emit refreshes the triathlon route index only when its source changes', async () => {
+test('watch partial emit refreshes only the changed triathlon or Arena source', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-llm-watch-partial-'))
   try {
     const ctx = testCtx(root)
     const plugin = LLMText()
-    const triathlon = note('triathlon' as FullSlug, '# triathlon')
-    const example = note('thoughts/example' as FullSlug, '# example')
+    const triathlon = note('triathlon', '# triathlon')
+    const arena = note('are.na', '## engineering\n\n- https://example.com -- Updated entry')
+    const example = note('thoughts/example', '# example')
+    const content = [triathlon, arena, example]
     const partialEmit = plugin.partialEmit
     assert.ok(partialEmit)
 
     const triathlonOutputs = await collectEmitted(
-      partialEmit(ctx, [triathlon, example], resources, [
-        { type: 'change', path: 'triathlon.md' as FilePath, file: triathlon[1] },
+      partialEmit(ctx, content, resources, [
+        { type: 'change', path: triathlon[1].data.filePath!, file: triathlon[1] },
+      ]),
+    )
+    const arenaOutputs = await collectEmitted(
+      partialEmit(ctx, content, resources, [
+        { type: 'change', path: arena[1].data.filePath!, file: arena[1] },
       ]),
     )
     const exampleOutputs = await collectEmitted(
-      partialEmit(ctx, [triathlon, example], resources, [
-        { type: 'change', path: 'thoughts/example.md' as FilePath, file: example[1] },
+      partialEmit(ctx, content, resources, [
+        { type: 'change', path: example[1].data.filePath!, file: example[1] },
       ]),
     )
 
     assert.deepEqual(relativeOutputs(ctx, triathlonOutputs), ['triathlon.md'])
+    assert.deepEqual(relativeOutputs(ctx, arenaOutputs), ['are.na.md'])
+    const arenaMarkdown = await readFile(path.join(ctx.argv.output, 'are.na.md'), 'utf8')
+    assert.match(arenaMarkdown, /Updated entry/)
     assert.deepEqual(exampleOutputs, [])
   } finally {
     await rm(root, { recursive: true, force: true })

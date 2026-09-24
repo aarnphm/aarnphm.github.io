@@ -37,9 +37,17 @@ export function sanitizeReaderHtml(html: string): string {
     ],
     FORBID_ATTR: ['style', 'srcset', 'autofocus'],
     ALLOW_DATA_ATTR: false,
-    ADD_ATTR: ['data-lang', 'data-latex', 'data-callout'],
+    ADD_ATTR: ['data-lang', 'data-latex', 'data-callout', 'data-arena-figure-width'],
   })
   const document = new DOMParser().parseFromString(clean, 'text/html')
+  for (const figure of document.querySelectorAll<HTMLElement>('[data-arena-figure-width]')) {
+    const width = Number(figure.getAttribute('data-arena-figure-width'))
+    if (figure.tagName === 'FIGURE' && Number.isInteger(width) && width > 1 && width <= 1600) {
+      figure.style.setProperty('--arena-figure-width', `${width}px`)
+    } else {
+      figure.removeAttribute('data-arena-figure-width')
+    }
+  }
   // MathML Core uses Unicode alphabets instead of MathJax's legacy mathvariant values.
   for (const token of document.querySelectorAll('math mi, math mn, math mo, math mtext, math ms')) {
     const variant = token.closest('[mathvariant]')?.getAttribute('mathvariant')

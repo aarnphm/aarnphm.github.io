@@ -2,19 +2,15 @@ import yaml from 'js-yaml'
 import { version } from '../../../package.json'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
+import { isWatchMarkdownSlug } from '../../util/llm'
 import { FullSlug } from '../../util/path'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
 const name = 'LLMText'
-const watchMarkdownSlugs = new Set(['triathlon'])
 
 function canEmitMarkdown(fileData: QuartzPluginData): boolean {
   return !fileData.flashcards && fileData.frontmatter?.protected !== true
-}
-
-function canEmitWatchMarkdown(fileData: QuartzPluginData): boolean {
-  return watchMarkdownSlugs.has(fileData.slug ?? '')
 }
 
 export function llmsIndex(baseUrl: string, content: string = ''): string {
@@ -125,7 +121,7 @@ export const LLMText: QuartzEmitterPlugin = () => {
       const reconstructed: string[] = []
       for (const [, file] of content) {
         if (!canEmitMarkdown(file.data)) continue
-        if (watch && !canEmitWatchMarkdown(file.data)) continue
+        if (watch && !isWatchMarkdownSlug(file.data.slug)) continue
         yield llmText(ctx, file.data, reconstructed)
       }
 
@@ -174,7 +170,7 @@ ${reconstructed.join('\n')}`,
         const slug = file.data.slug!
         if (!changedSlugs.has(slug)) continue
         if (!canEmitMarkdown(file.data)) continue
-        if (watch && !canEmitWatchMarkdown(file.data)) continue
+        if (watch && !isWatchMarkdownSlug(file.data.slug)) continue
 
         yield llmText(ctx, file.data, [])
       }

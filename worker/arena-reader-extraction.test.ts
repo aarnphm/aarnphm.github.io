@@ -465,11 +465,33 @@ test('real Chromium extracts articles and strips active content in an isolated d
       idPrefix: 'snapshot-',
       capture: true,
     })
+    inputs.push({
+      html: `<html><head><title>Cellular automaton - Wikipedia</title><meta property="og:title" content="Cellular automaton - Wikipedia"><meta property="og:image" content="https://upload.wikimedia.org/glider.gif?preview=1"></head><body><main>
+        <div id="mw-content-text"><div class="mw-parser-output">
+        <figure class="mw-halign-right" typeof="mw:File/Frame"><a href="/wiki/File:Glider.gif"><img src="//upload.wikimedia.org/glider.gif" width="250" height="180" alt="Glider gun"></a><figcaption><a href="/wiki/Bill_Gosper">Gosper's</a> gun creates <em>gliders</em> in the Game of Life.<sup class="reference" id="cite_ref-1"><a href="#cite_note-1">[1]</a></sup></figcaption></figure>
+        <p>A cellular automaton consists of a grid of cells. ${paragraph.repeat(4)}</p>
+        <h2 id="Overview">Overview</h2>
+        <div class="thumb tmulti floatright"><div class="thumbinner multiimageinner" style="width:408px;max-width:408px"><div class="trow">
+          <div class="tsingle" style="width:202px"><div class="thumbimage"><span typeof="mw:File"><a href="/wiki/File:Moore.svg"><img src="//upload.wikimedia.org/moore.png" width="200" height="200" alt="Moore diagram"></a></span></div><div class="thumbcaption">The red cells are the <a href="/wiki/Moore_neighborhood">Moore neighborhood</a> for the blue cell.</div></div>
+          <div class="tsingle" style="width:202px"><div class="thumbimage"><span typeof="mw:File"><a href="/wiki/File:Neumann.svg"><img src="//upload.wikimedia.org/neumann.png" width="200" height="200" alt="Von Neumann diagram"></a></span></div><div class="thumbcaption">The red cells are the <a href="/wiki/Von_Neumann_neighborhood">von Neumann neighborhood</a> for the blue cell. The range-2 cross includes the pink cells.</div></div>
+        </div></div></div>
+        <p>One way to simulate an automaton uses graph paper. ${paragraph.repeat(4)}</p>
+        <h2 id="Boundary">Boundary</h2>
+        <div class="thumb tleft"><div class="thumbinner"><a href="/wiki/File:Torus.png"><img src="//upload.wikimedia.org/torus.png" width="250" height="160" alt="Torus"></a><div class="thumbcaption">A toroidal shape (the <a href="/wiki/Torus">torus</a>).</div></div></div>
+        <p>Cells at the edge use periodic boundary conditions. ${paragraph.repeat(4)}</p>
+        <h2 id="Rules">Rules</h2>
+        <figure class="mw-halign-none" style="position:fixed"><img src="//upload.wikimedia.org/rules.png" width="100000" alt="Rule space"><figcaption>A <strong>rule space</strong> diagram.</figcaption></figure>
+        <p>${paragraph.repeat(4)}</p>
+        <h2 id="References">References</h2><ol class="references"><li id="cite_note-1"><span class="mw-cite-backlink"><a href="#cite_ref-1">↑</a></span> <span class="reference-text">A reference about the Game of Life.</span></li></ol>
+        </div></div></main></body></html>`,
+      finalUrl: 'https://en.wikipedia.org/wiki/Cellular_automaton',
+      idPrefix: 'snapshot-',
+    })
     const input = JSON.stringify(inputs).replaceAll('<', '\\u003c')
     const fixture = path.join(directory, 'fixture.html')
-    const css = compile(
-      fileURLToPath(new URL('../quartz/components/styles/arena-feed.scss', import.meta.url)),
-    ).css
+    const css = ['../quartz/styles/base.scss', '../quartz/components/styles/arena-feed.scss']
+      .map(file => compile(fileURLToPath(new URL(file, import.meta.url))).css)
+      .join('\n')
     await writeFile(
       fixture,
       `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src ${fixtureOrigin}"><style>${css}</style></head><body><script>${defuddle}\n${purify}\n${bundle.outputFiles[0].text}\n
@@ -518,8 +540,26 @@ test('real Chromium extracts articles and strips active content in an isolated d
             articleWidth: article.getBoundingClientRect().width,
             overflowX: getComputedStyle(equation).overflowX,
           } : null;
+          const figureLayouts = [832, 320].map(width => {
+            article.style.width = width + 'px';
+            return {
+              width, scrollWidth: article.scrollWidth,
+              figures: [...article.querySelectorAll('figure.arena-figure')].map(figure => ({
+                alignment: getComputedStyle(figure).float,
+                ...figure.getBoundingClientRect().toJSON(),
+                captionWidth: figure.querySelector('figcaption')?.getBoundingClientRect().width,
+                captionDisplay: getComputedStyle(figure.querySelector('figcaption')).display,
+                image: figure.querySelector('img')?.alt,
+              })),
+              paragraphs: [...article.querySelectorAll('p')].map(p => {
+                const range = document.createRange();
+                range.selectNodeContents(p);
+                return range.getClientRects()[0]?.toJSON();
+              }),
+            };
+          });
           article.remove();
-          return { ...result, displayHtml, mathLayout, capture };
+          return { ...result, displayHtml, mathLayout, figureLayouts, capture };
         }
         catch (error) { return { error: error.message } }
       })).then(results => { document.body.textContent = btoa(unescape(encodeURIComponent(JSON.stringify(results)))); });</script></body></html>`,
@@ -544,6 +584,22 @@ test('real Chromium extracts articles and strips active content in an isolated d
     const outputs: (
       | (ArenaExtractedDocument & {
           displayHtml: string
+          figureLayouts: {
+            width: number
+            scrollWidth: number
+            figures: {
+              alignment: string
+              x: number
+              y: number
+              width: number
+              height: number
+              bottom: number
+              captionWidth: number
+              captionDisplay: string
+              image: string
+            }[]
+            paragraphs: { x: number; y: number }[]
+          }[]
           capture: {
             originalBytes: number
             bytes: number
@@ -577,6 +633,7 @@ test('real Chromium extracts articles and strips active content in an isolated d
       substack,
       customSubstack,
       largeMath,
+      cellularAutomaton,
     ] = outputs
     assert.ok(output && !('error' in output))
     assert.equal(output.title, 'Reading links')
@@ -667,6 +724,41 @@ test('real Chromium extracts articles and strips active content in an isolated d
         assert.equal(arenaReaderFailureSignals(wikipedia), null)
       },
     )
+    await t.test('Wikipedia retains figure placement, grouped diagrams, and rich captions', () => {
+      assert.ok(cellularAutomaton && !('error' in cellularAutomaton))
+      assert.equal(cellularAutomaton.imageUrls.length, 5)
+      for (const markup of [cellularAutomaton.readerHtml ?? '', cellularAutomaton.displayHtml]) {
+        assert.match(markup, /class="arena-figure arena-figure-right"/)
+        assert.match(markup, /class="arena-figure arena-figure-group arena-figure-right"/)
+        assert.match(markup, /href="https:\/\/en.wikipedia.org\/wiki\/Bill_Gosper"/)
+        assert.match(markup, /href="https:\/\/en.wikipedia.org\/wiki\/Moore_neighborhood"/)
+        assert.match(markup, /href="https:\/\/en.wikipedia.org\/wiki\/Von_Neumann_neighborhood"/)
+        assert.match(markup, /<em>gliders<\/em>/)
+        assert.match(markup, /<strong>rule space<\/strong>/)
+        assert.match(markup, /href="#snapshot-fn:1"/)
+        assert.match(markup, /id="snapshot-fn:1"/)
+        assert.doesNotMatch(markup, /position:fixed|width:408px|100000/)
+      }
+      const [wide, narrow] = cellularAutomaton.figureLayouts
+      assert.equal(wide.figures.length, 6)
+      const [gun, group, moore, neumann, torus, rules] = wide.figures
+      assert.equal(gun.alignment, 'right')
+      assert.equal(gun.width, 250)
+      assert.equal(gun.captionWidth, gun.width)
+      assert.ok(wide.figures.every(figure => figure.captionDisplay === 'block'))
+      assert.ok(wide.paragraphs[0].x < gun.x)
+      assert.ok(wide.paragraphs[0].y < gun.bottom)
+      assert.equal(group.alignment, 'right')
+      assert.equal(moore.y, neumann.y)
+      assert.ok(neumann.x > moore.x)
+      assert.equal(torus.alignment, 'left')
+      assert.equal(rules.alignment, 'none')
+      assert.equal(rules.width, 250)
+      assert.ok(narrow.scrollWidth <= narrow.width)
+      assert.ok(narrow.figures.every(figure => figure.alignment === 'none'))
+      assert.ok(narrow.paragraphs[0].y >= narrow.figures[0].bottom)
+      assert.ok(narrow.figures[3].y >= narrow.figures[2].bottom)
+    })
     await t.test('Defuddle preserves structured titles, equations, figures, and footnotes', () => {
       assert.ok(structured && !('error' in structured))
       assert.equal(structured.title, 'Structured research')

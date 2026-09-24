@@ -199,7 +199,7 @@ export function NotesPanel(props: NotesProps) {
     >
       {toolbar}
       {!props.inbox && (
-        <>
+        <header class="arena-notes-header">
           <p class="arena-reader-status">{props.article?.title}</p>
           <button
             type="button"
@@ -209,7 +209,7 @@ export function NotesPanel(props: NotesProps) {
           >
             Add note
           </button>
-        </>
+        </header>
       )}
       {props.inbox && visible.length === 0 && (
         <p class="arena-reader-empty-hint">Notes you write while reading will appear here.</p>

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { VFile } from 'vfile'
 import type { BuildCtx } from '../../util/ctx'
-import type { FullSlug } from '../../util/path'
+import { isFullSlug, type FullSlug } from '../../util/path'
 import { LLM } from './llm'
 
 type MarkdownTransformer = (tree: Root, file: VFile) => void
@@ -50,4 +50,45 @@ test('watch processing leaves unrelated notes out of the LLM corpus', () => {
   watchTransformer()(tree, file)
 
   assert.equal(file.data.llmsText, undefined)
+})
+
+test('watch processing serializes Arena channels and their links', () => {
+  const file = new VFile()
+  const slug = 'are.na'
+  assert.ok(isFullSlug(slug))
+  file.data.slug = slug
+  const arenaTree: Root = {
+    type: 'root',
+    children: [
+      { type: 'heading', depth: 2, children: [{ type: 'text', value: 'engineering' }] },
+      {
+        type: 'list',
+        ordered: false,
+        children: [
+          {
+            type: 'listItem',
+            children: [
+              {
+                type: 'paragraph',
+                children: [
+                  {
+                    type: 'link',
+                    url: 'https://example.com',
+                    children: [{ type: 'text', value: 'Example' }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+
+  watchTransformer()(arenaTree, file)
+
+  const output = file.data.llmsText
+  assert.ok(typeof output === 'string')
+  assert.match(output, /## engineering/)
+  assert.match(output, /- \[Example\]\(https:\/\/example.com\)/)
 })
