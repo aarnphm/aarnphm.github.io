@@ -39,16 +39,71 @@ two of these carry structure worth naming: `faire de la` + activity (`de la bicy
 
 six photos, six posters, one pairing exercise. the posters are worth reading for their imperative register:
 
-| photo                    | annonce                                                               |
-| ------------------------ | --------------------------------------------------------------------- |
-| des enfants à la piscine | `Cours de natation pour enfants`                                      |
-| un tour de potier        | `CENTRE DE POTERIE` (`Boutique`, `Cours d'initiation`)                |
-| une guitare              | `ÉCOLE DE MUSIQUE` (`Guitare / Piano / Violon`)                       |
-| une poussette de course  | `CARDIOPOUSSETTE` (`Inscription maintenant !`)                        |
-| une salle de classe      | `Hi ! Améliorez votre anglais` (`Cours privés ou de groupe`)          |
-| un mur d'escalade        | `Vous rêvez de faire de l'escalade ?` (`Inscrivez-vous maintenant !`) |
+| image | photo                    | annonce                                                               |
+| ----- | ------------------------ | --------------------------------------------------------------------- |
+| a     | des enfants à la piscine | `Cours de natation pour enfants`                                      |
+| b     | un tour de potier        | `CENTRE DE POTERIE` (`Boutique`, `Cours d'initiation`)                |
+| c     | une guitare              | `ÉCOLE DE MUSIQUE` (`Guitare / Piano / Violon`)                       |
+| d     | une poussette de course  | `CARDIOPOUSSETTE` (`Inscription maintenant !`)                        |
+| e     | une salle de classe      | `Hi ! Améliorez votre anglais` (`Cours privés ou de groupe`)          |
+| f     | un mur d'escalade        | `Vous rêvez de faire de l'escalade ?` (`Inscrivez-vous maintenant !`) |
 
 advertising French runs on two moves here: the imperative (`Inscrivez-vous maintenant !`, `Améliorez votre anglais`) and the bare noun (`Inscription maintenant !`). both are shorter than a full sentence, which is the point.
+
+#### réponses dans l'ordre des annonces
+
+Sur la capture du cours du 23 septembre 2026, de gauche à droite : **b, c, d** sur la première rangée, puis **f, a, e** sur la deuxième. Le bas des trois dernières annonces est coupé ; leurs activités restent reconnaissables.
+
+#### vocabulaire des annonces
+
+| mot ou expression     | sens en anglais             | explication ou exemple                                      |
+| --------------------- | --------------------------- | ----------------------------------------------------------- |
+| une annonce de cours  | a course advertisement      | Une affiche qui présente un cours.                          |
+| la natation           | swimming                    | Je nage. Je suis un cours de natation.                      |
+| la poterie            | pottery                     | Je fais de la poterie : je fabrique des objets en argile.   |
+| un tour de potier     | a potter's wheel            | L'appareil qui tourne sous les mains dans l'image b.        |
+| une boutique          | a shop                      | Le centre de poterie a aussi une boutique.                  |
+| un cours d'initiation | an introductory course      | Un cours pour découvrir les bases d'une activité.           |
+| une poussette         | a stroller                  | On pousse la poussette pour transporter un jeune enfant.    |
+| la cardiopoussette    | a stroller fitness activity | Une activité de mise en forme pratiquée avec une poussette. |
+| l'escalade            | climbing                    | Je fais de l'escalade. Je grimpe sur un mur d'escalade.     |
+| améliorer son anglais | to improve one's English    | Améliorez votre anglais !                                   |
+| maintenant            | now                         | Inscription maintenant ! = Les inscriptions sont ouvertes.  |
+
+Dans `un cours de natation pour enfants`, **de natation** indique la matière ou l'activité ; **pour enfants** indique le public. Dans `Hélène inscrit sa fille`, **sa fille** signifie _her daughter_.
+
+#### construire une phrase sur ses loisirs
+
+| construction            | exemple                         | sens en anglais                  |
+| ----------------------- | ------------------------------- | -------------------------------- |
+| faire de + activité     | Je fais de la poterie.          | I do pottery.                    |
+| faire de + activité     | Je fais de l'escalade.          | I go climbing.                   |
+| jouer de + instrument   | Je joue de la guitare.          | I play the guitar.               |
+| jouer de + instrument   | Je joue du piano et du violon.  | I play the piano and the violin. |
+| rêver de + infinitif    | Je rêve de faire de l'escalade. | I dream of going climbing.       |
+| apprendre à + infinitif | J'apprends à tricoter.          | I am learning to knit.           |
+
+**De + le = du** : `jouer du piano`, `jouer du violon`. Devant un nom féminin, on garde **de la** (`de la guitare`, `de la poterie`) ; devant une voyelle, on emploie **de l'** (`de l'escalade`). Pour les jeux, on emploie **jouer à** : `Je joue aux cartes.`
+
+`Améliorez votre anglais !` est à l'impératif : le sujet **vous** n'est pas exprimé. Au présent, on écrit `Vous améliorez votre anglais.` Le nom **une inscription** correspond au verbe **s'inscrire**, expliqué plus bas.
+
+#### lire, peindre et tricoter
+
+Les annotations visibles en haut de la capture mentionnent aussi la lecture, la peinture et le tricot. Voici les conjugaisons complètes au présent ; la liste de **peindre** est coupée à droite dans la capture.
+
+| sujet          | lire   | peindre  | apprendre  |
+| -------------- | ------ | -------- | ---------- |
+| je / j'        | lis    | peins    | apprends   |
+| tu             | lis    | peins    | apprends   |
+| il / elle / on | lit    | peint    | apprend    |
+| nous           | lisons | peignons | apprenons  |
+| vous           | lisez  | peignez  | apprenez   |
+| ils / elles    | lisent | peignent | apprennent |
+
+- **un essai philosophique** : a philosophical essay. `Je lis des essais philosophiques.`
+- **un roman policier** : a detective novel. `Je lis des romans policiers.`
+- **une BD** : une bande dessinée, a comic. `Elle lit des BD.`
+- **tricoter** : to knit. `Je tricote` décrit l'activité ; `J'apprends à tricoter` indique que je suis en train de l'apprendre.
 
 ## lire une annonce de cours
 

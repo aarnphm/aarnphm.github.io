@@ -13,6 +13,52 @@ export interface LineRange {
   end: number
 }
 
+export interface GithubSourceRef {
+  rawUrl: string
+  fileName: string
+}
+
+export function parseGithubSourceUrl(input: string): GithubSourceRef | null {
+  const url = URL.parse(input)
+  if (
+    !url ||
+    !['http:', 'https:'].includes(url.protocol) ||
+    url.username ||
+    url.password ||
+    url.port
+  )
+    return null
+  const parts = url.pathname.split('/').filter(Boolean)
+  if (['github.com', 'www.github.com'].includes(url.hostname)) {
+    if (parts.length < 5 || !['blob', 'raw'].includes(parts[2])) return null
+    parts.splice(2, 1)
+    url.hostname = 'raw.githubusercontent.com'
+    url.pathname = `/${parts.join('/')}`
+  } else if (['raw.githubusercontent.com', 'raw.github.com'].includes(url.hostname)) {
+    if (parts.length < 4) return null
+    url.hostname = 'raw.githubusercontent.com'
+  } else if (url.hostname === 'gist.githubusercontent.com') {
+    if (parts.length < 4 || parts[2] !== 'raw') return null
+  } else return null
+  url.protocol = 'https:'
+  url.search = ''
+  url.hash = ''
+  try {
+    const fileName = decodeURIComponent(parts[parts.length - 1])
+    if (
+      !fileName ||
+      /[/\\]/.test(fileName) ||
+      Array.from(fileName).some(
+        character => character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127,
+      )
+    )
+      return null
+    return { rawUrl: url.href, fileName }
+  } catch {
+    return null
+  }
+}
+
 export interface GithubRepositoryRef {
   owner: string
   repo: string

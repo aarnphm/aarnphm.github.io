@@ -11,6 +11,7 @@ export interface ToastShowOptions {
   containerId?: string
   containerStyles?: Partial<CSSStyleDeclaration>
   containerHost?: HTMLElement
+  action?: { label: string; onClick: () => void }
 }
 
 export interface ToastEventDetail extends ToastShowOptions {
@@ -75,6 +76,7 @@ const STACK_VIEWPORT_GUTTER = 20
 
 interface ToastEntry {
   element: HTMLDivElement
+  actionButton?: HTMLButtonElement
   hideTimer?: number
   teardownTimer?: number
 }
@@ -103,7 +105,37 @@ export class Toast {
     )
 
     const toast = document.createElement('div')
-    toast.textContent = message
+    let actionButton: HTMLButtonElement | undefined
+    if (options.action) {
+      const text = document.createElement('span')
+      text.textContent = message
+      text.title = message
+      Object.assign(text.style, {
+        minWidth: '0',
+        flex: '1',
+        display: '-webkit-box',
+        WebkitBoxOrient: 'vertical',
+        WebkitLineClamp: '3',
+        overflow: 'hidden',
+        overflowWrap: 'anywhere',
+      })
+      actionButton = document.createElement('button')
+      actionButton.type = 'button'
+      actionButton.textContent = options.action.label
+      Object.assign(actionButton.style, {
+        flexShrink: '0',
+        padding: '0.2rem 0.35rem',
+        color: 'var(--dark)',
+        background: 'transparent',
+        border: '1px solid var(--gray)',
+        borderRadius: '0',
+        font: 'inherit',
+        cursor: 'pointer',
+      })
+      toast.append(text, actionButton)
+    } else {
+      toast.textContent = message
+    }
 
     Object.assign(toast.style, baseToastStyles)
     Object.assign(toast.style, toastSurfaceStyles)
@@ -113,7 +145,15 @@ export class Toast {
     }
 
     container.appendChild(toast)
-    const entry: ToastEntry = { element: toast }
+    const entry: ToastEntry = { element: toast, actionButton }
+    if (actionButton && options.action) {
+      const action = options.action
+      actionButton.addEventListener('click', () => {
+        actionButton.blur()
+        this.fadeOut(entry)
+        action.onClick()
+      })
+    }
     this.toasts.push(entry)
 
     this.enforceVisibleLimit()
@@ -218,6 +258,10 @@ export class Toast {
       const entry = this.toasts[i]
       entry.element.style.display = 'none'
       entry.element.dataset.toastState = 'hidden'
+      if (entry.actionButton) {
+        entry.actionButton.tabIndex = -1
+        entry.actionButton.style.visibility = 'hidden'
+      }
     }
 
     visible.forEach((entry, idx) => {
@@ -256,6 +300,11 @@ export class Toast {
       }
 
       el.style.pointerEvents = depth === 0 ? 'auto' : 'none'
+      if (entry.actionButton) {
+        if (depth > 0 && document.activeElement === entry.actionButton) entry.actionButton.blur()
+        entry.actionButton.tabIndex = depth === 0 ? 0 : -1
+        entry.actionButton.style.visibility = depth === 0 ? 'visible' : 'hidden'
+      }
       el.style.zIndex = `${100 - depth}`
       el.style.clipPath = ''
     })
@@ -273,6 +322,10 @@ export class Toast {
     const el = entry.element
     el.style.pointerEvents = 'none'
     el.dataset.toastState = 'exiting'
+    if (entry.actionButton) {
+      entry.actionButton.tabIndex = -1
+      entry.actionButton.style.visibility = 'hidden'
+    }
 
     const finalize = () => {
       el.removeEventListener('transitionend', finalize)

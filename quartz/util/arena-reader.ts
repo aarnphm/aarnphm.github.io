@@ -71,6 +71,7 @@ export type ArenaReaderArtifact = ArenaReaderArtifactBase &
         diagnostics: string[]
       }
     | { kind: 'pdf'; resourceId: string }
+    | { kind: 'code'; code: string; fileName: string }
     | { kind: 'video'; embedUrl: string | null; description: string | null }
     | { kind: 'internal'; internalUrl: string }
     | { kind: 'external'; reason: string; message: string }

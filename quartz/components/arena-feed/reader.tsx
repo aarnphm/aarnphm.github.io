@@ -5,6 +5,7 @@ import type {
   ArenaNoteQuote,
   ArenaReaderRenderResult,
 } from '../../util/arena-reader'
+import type { ToastShowOptions } from '../scripts/toast'
 import { arenaFeedSourceNames, type ArenaFeedEntry } from '../../util/arena-feed'
 import { isNote, isReadLink, isRecord, ReaderApiError, readerApi } from './api'
 import { ArticleContent, safeHref } from './content'
@@ -24,6 +25,7 @@ import {
   type ReaderPass,
 } from './model'
 import { NotesPanel, type DraftStatus } from './notes'
+import { rangesForQuotes } from './quote-highlights'
 import {
   loadDrafts,
   loadPass,
@@ -37,6 +39,7 @@ import {
 
 type Panel = 'queue' | 'notes' | null
 type BackgroundNotice = 'storage' | 'position' | 'refresh' | 'sync'
+const noteSyncIntervalMs = 5_000
 
 const queueFilters: { value: FeedFilter; label: string }[] = [
   { value: 'unread', label: 'unread' },
@@ -105,18 +108,26 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     () => new URL(location.href).searchParams.get('view') === 'notes',
   )
   const [editing, setEditing] = useState<string | null>(null)
+  const [selectionAction, setSelectionAction] = useState<{
+    quote: ArenaNoteQuote
+    left: number
+    top: number
+  } | null>(null)
   const [drafts, setDrafts] = useState<Record<string, NoteDraft>>({})
   const draftRef = useRef(drafts)
-  const [savedVersions, setSavedVersions] = useState<Record<string, number>>({})
-  const [saving, setSaving] = useState<Set<string>>(new Set())
-  const savingRef = useRef(new Set<string>())
-  const [syncTick, setSyncTick] = useState(0)
+  const [localFailures, setLocalFailures] = useState<Set<string>>(new Set())
+  const [syncFailures, setSyncFailures] = useState<Set<string>>(new Set())
+  const savingTasks = useRef(new Map<string, Promise<void>>())
+  const deleting = useRef(new Set<string>())
+  const syncNowRef = useRef<() => void>(() => undefined)
   const [readBusy, setReadBusy] = useState(false)
   const [result, setResult] = useState<ArenaReaderRenderResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [renderVersion, setRenderVersion] = useState(0)
   const [snapshot, setSnapshot] = useState<string | null>(null)
-  const [undo, setUndo] = useState<{ articleId: string; title: string } | null>(null)
+  const markReadRef = useRef<
+    (entry: ArenaFeedEntry, read: boolean, goNext: boolean) => Promise<void>
+  >(async () => undefined)
   const [viewport, setViewport] = useState({
     height: window.visualViewport?.height ?? window.innerHeight,
     inset: 0,
@@ -139,7 +150,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   feedRef.current = feed
 
   const notify = useCallback(
-    (message: string, background?: BackgroundNotice) => {
+    (message: string, background?: BackgroundNotice, action?: ToastShowOptions['action']) => {
       if (signal.aborted) return
       if (background) {
         const now = Date.now()
@@ -152,6 +163,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
           message,
           durationMs: 6000,
           containerHost: dialog.current?.matches(':modal') ? dialog.current : undefined,
+          action,
         },
       })
       document.dispatchEvent(event)
@@ -172,11 +184,21 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
             !signal.aborted &&
             ownerRef.current === draft.subject &&
             draftRef.current[draft.note.id]?.localVersion === draft.localVersion
-          ) {
-            setSavedVersions(previous => ({ ...previous, [draft.note.id]: draft.localVersion }))
-          }
+          )
+            setLocalFailures(previous => {
+              if (!previous.has(draft.note.id)) return previous
+              const next = new Set(previous)
+              next.delete(draft.note.id)
+              return next
+            })
         })
         .catch(() => {
+          if (
+            !signal.aborted &&
+            ownerRef.current === draft.subject &&
+            draftRef.current[draft.note.id]?.localVersion === draft.localVersion
+          )
+            setLocalFailures(previous => new Set(previous).add(draft.note.id))
           notify(
             'Local note storage failed. Keep this page open and copy your draft until it syncs.',
             'storage',
@@ -224,7 +246,6 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       const localDrafts = Object.fromEntries(local.map(draft => [draft.note.id, draft]))
       const merged = reconcileNotes(response.subject, localDrafts, notes)
       setAllDrafts(merged)
-      setSavedVersions(Object.fromEntries(local.map(draft => [draft.note.id, draft.localVersion])))
       for (const draft of Object.values(merged)) persist(draft)
       const selected = new URL(location.href).searchParams.get('article')
       const unread = eligibleEntries(response.entries, response.readLinks, 'unread')
@@ -339,7 +360,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   }, [signal])
 
   const closePanel = useCallback(() => {
-    setSyncTick(value => value + 1)
+    syncNowRef.current()
     if (panelHistory.current) history.back()
     else setPanel(null)
   }, [])
@@ -367,7 +388,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       event.preventDefault()
       panelHistory.current = false
       setPanel(null)
-      setSyncTick(value => value + 1)
+      syncNowRef.current()
     }
     document.addEventListener('beforepopstate', onPop)
     return () => {
@@ -440,7 +461,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
         const merged = reconcileNotes(fresh.subject, draftRef.current, notes)
         setAllDrafts(merged)
         for (const draft of Object.values(merged)) persist(draft)
-        setSyncTick(value => value + 1)
+        syncNowRef.current()
       } catch (error) {
         notify(errorMessage(error), 'refresh')
       } finally {
@@ -458,64 +479,66 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     }
   }, [feed?.subject, notify, persist, setAllDrafts, signal])
 
-  useEffect(() => {
-    if (!feed) return
-    const timers: number[] = []
-    for (const draft of Object.values(drafts)) {
+  const syncDirtyDrafts = useCallback(() => {
+    if (signal.aborted || !feedRef.current) return
+    for (const draft of Object.values(draftRef.current)) {
       if (
+        ownerRef.current !== draft.subject ||
         !draft.dirty ||
         draft.conflict ||
         !draft.note.body.trim() ||
         draft.note.deletedAt !== null ||
-        savingRef.current.has(draft.note.id)
+        savingTasks.current.has(draft.note.id) ||
+        deleting.current.has(draft.note.id)
       )
         continue
-      const timer = window.setTimeout(() => {
-        const current = draftRef.current[draft.note.id]
-        if (
-          !current ||
-          current.localVersion !== draft.localVersion ||
-          ownerRef.current !== draft.subject
-        )
-          return
-        savingRef.current.add(draft.note.id)
-        setSaving(new Set(savingRef.current))
-        let acknowledged = false
-        void readerApi
-          .save(draft.note, draft.ready, draft.subject, signal)
-          .then(note => {
-            const latest = draftRef.current[draft.note.id]
-            if (signal.aborted || ownerRef.current !== draft.subject || !latest) return
-            updateDraft(acknowledgeDraft(latest, draft, note))
-            acknowledged = true
+      const task = readerApi
+        .save(draft.note, draft.ready, draft.subject, signal)
+        .then(note => {
+          const latest = draftRef.current[draft.note.id]
+          if (signal.aborted || ownerRef.current !== draft.subject || !latest) return
+          updateDraft(acknowledgeDraft(latest, draft, note))
+          setSyncFailures(previous => {
+            if (!previous.has(draft.note.id)) return previous
+            const next = new Set(previous)
+            next.delete(draft.note.id)
+            return next
           })
-          .catch(error => {
-            if (signal.aborted || ownerRef.current !== draft.subject) return
-            const latest = draftRef.current[draft.note.id]
-            if (
-              error instanceof ReaderApiError &&
-              error.status === 409 &&
-              isNote(error.current) &&
-              latest
+        })
+        .catch(error => {
+          if (signal.aborted || ownerRef.current !== draft.subject) return
+          const latest = draftRef.current[draft.note.id]
+          if (
+            error instanceof ReaderApiError &&
+            error.status === 409 &&
+            isNote(error.current) &&
+            latest
+          )
+            updateDraft({ ...latest, conflict: error.current })
+          else {
+            setSyncFailures(previous =>
+              previous.has(draft.note.id) ? previous : new Set(previous).add(draft.note.id),
             )
-              updateDraft({ ...latest, conflict: error.current })
-            else notify(`${errorMessage(error)} Unsynced notes remain on this device.`, 'sync')
-          })
-          .finally(() => {
-            savingRef.current.delete(draft.note.id)
-            if (!signal.aborted) {
-              setSaving(new Set(savingRef.current))
-              if (acknowledged && draftRef.current[draft.note.id]?.dirty)
-                setSyncTick(value => value + 1)
-            }
-          })
-      }, 800)
-      timers.push(timer)
+            notify(`${errorMessage(error)} Unsynced notes remain on this device.`, 'sync')
+          }
+        })
+        .finally(() => {
+          savingTasks.current.delete(draft.note.id)
+        })
+      savingTasks.current.set(draft.note.id, task)
     }
+  }, [notify, signal, updateDraft])
+  syncNowRef.current = syncDirtyDrafts
+
+  useEffect(() => {
+    if (!feed) return
+    syncDirtyDrafts()
+    // Keep device recovery immediate while server saves sample the latest draft on a fixed cadence.
+    const timer = window.setInterval(syncDirtyDrafts, noteSyncIntervalMs)
     return () => {
-      for (const timer of timers) clearTimeout(timer)
+      clearInterval(timer)
     }
-  }, [drafts, feed?.subject, notify, signal, syncTick, updateDraft])
+  }, [feed?.subject, syncDirtyDrafts])
 
   const selected = feed?.entries.find(entry => entry.articleId === pass?.current) ?? null
   const originalUrl = selected ? safeHref(selected.sourceUrl) : undefined
@@ -624,7 +647,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   )
 
   function choose(entry: ArenaFeedEntry) {
-    setSyncTick(value => value + 1)
+    syncDirtyDrafts()
     setSnapshot(null)
     pendingQuote.current = null
     setEditing(null)
@@ -640,7 +663,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     setPass({ ...pass, visited, current: next?.articleId ?? null })
     setSnapshot(null)
     setEditing(null)
-    setSyncTick(value => value + 1)
+    syncDirtyDrafts()
   }
 
   async function markRead(entry: ArenaFeedEntry, read: boolean, goNext: boolean) {
@@ -656,9 +679,17 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
         current =>
           current && { ...current, readLinks: mergeReadLinks(current.readLinks, [readLink]) },
       )
-      if (read) setUndo({ articleId: entry.articleId, title: entry.title })
-      else {
-        setUndo(null)
+      if (read) {
+        notify(`Marked read: ${entry.title}`, undefined, {
+          label: 'Undo',
+          onClick: () => {
+            const current = feedRef.current?.entries.find(
+              current => current.articleId === entry.articleId,
+            )
+            if (current) void markReadRef.current(current, false, false)
+          },
+        })
+      } else {
         setPass(
           current =>
             current && {
@@ -687,13 +718,18 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       if (!signal.aborted) setReadBusy(false)
     }
   }
+  markReadRef.current = markRead
 
-  function addNote() {
+  function createNote(selectedQuote: ArenaNoteQuote | null = null) {
     if (!feed || !selected) return
     const now = Date.now()
     const quote =
-      (contentRef.current ? quoteFromSelection(contentRef.current) : null) ?? pendingQuote.current
+      selectedQuote ??
+      (contentRef.current ? quoteFromSelection(contentRef.current) : null) ??
+      pendingQuote.current
     pendingQuote.current = null
+    setSelectionAction(null)
+    window.getSelection()?.removeAllRanges()
     const occurrence = selected.occurrences[0]
     const note: ArenaNote = {
       id: crypto.randomUUID(),
@@ -719,21 +755,38 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     openPanel('notes')
   }
 
+  function addNote() {
+    createNote()
+  }
+
   async function deleteNote(draft: NoteDraft) {
-    if (savingRef.current.has(draft.note.id)) {
-      notify('Wait for the current save before deleting this note.')
-      return
-    }
+    if (deleting.current.has(draft.note.id)) return
+    deleting.current.add(draft.note.id)
     try {
-      if (draft.note.revision > 0) await readerApi.delete(draft.note, draft.subject, signal)
+      await savingTasks.current.get(draft.note.id)
+      const latest = draftRef.current[draft.note.id]
+      if (!latest || ownerRef.current !== draft.subject) return
+      if (latest.note.revision > 0) await readerApi.delete(latest.note, latest.subject, signal)
       if (signal.aborted || ownerRef.current !== draft.subject) return
       const remaining = { ...draftRef.current }
       delete remaining[draft.note.id]
       setAllDrafts(remaining)
       await removeDraft(database, draft.subject, draft.note.id)
+      setLocalFailures(previous => {
+        const next = new Set(previous)
+        next.delete(draft.note.id)
+        return next
+      })
+      setSyncFailures(previous => {
+        const next = new Set(previous)
+        next.delete(draft.note.id)
+        return next
+      })
       setEditing(null)
     } catch (error) {
       notify(errorMessage(error))
+    } finally {
+      deleting.current.delete(draft.note.id)
     }
   }
 
@@ -764,17 +817,98 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   const status = (draft: NoteDraft): DraftStatus =>
     draft.conflict
       ? 'conflict'
-      : saving.has(draft.note.id)
-        ? 'saving'
-        : !draft.dirty
-          ? 'synced'
-          : savedVersions[draft.note.id] === draft.localVersion
-            ? 'device'
-            : 'unsaved'
+      : !draft.dirty
+        ? 'synced'
+        : localFailures.has(draft.note.id)
+          ? 'unsaved'
+          : syncFailures.has(draft.note.id)
+            ? 'sync-failed'
+            : 'pending'
   const visibleDrafts = Object.values(drafts)
     .filter(draft => draft.note.deletedAt === null || draft.dirty)
     .sort((left, right) => right.note.updatedAt - left.note.updatedAt)
   const selectedDrafts = visibleDrafts.filter(draft => draft.note.articleId === selected?.articleId)
+  const quoteKey = selectedDrafts
+    .filter(draft => draft.note.quote)
+    .map(draft => `${draft.note.id}:${JSON.stringify(draft.note.quote)}`)
+    .join('|')
+
+  useEffect(() => {
+    const name = 'arena-reader-notes'
+    if (!('highlights' in CSS) || typeof Highlight === 'undefined') return
+    CSS.highlights.delete(name)
+    const root = contentRef.current
+    if (!artifact || inbox || !root || !quoteKey) return
+    let frame = 0
+    const paint = () => {
+      frame = 0
+      const quotes = Object.values(draftRef.current).flatMap(draft =>
+        draft.note.articleId === artifact.articleId &&
+        draft.note.deletedAt === null &&
+        draft.note.quote
+          ? [draft.note.quote]
+          : [],
+      )
+      const ranges = rangesForQuotes(root, quotes)
+      if (ranges.length) CSS.highlights.set(name, new Highlight(...ranges))
+      else CSS.highlights.delete(name)
+    }
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(paint)
+    }
+    paint()
+    const observer = artifact.kind === 'pdf' ? new MutationObserver(schedule) : null
+    observer?.observe(root, { childList: true, characterData: true, subtree: true })
+    return () => {
+      observer?.disconnect()
+      if (frame) cancelAnimationFrame(frame)
+      CSS.highlights.delete(name)
+    }
+  }, [artifact?.snapshotId, inbox, quoteKey, selected?.articleId])
+
+  useEffect(() => {
+    if (!artifact || inbox) {
+      setSelectionAction(null)
+      return
+    }
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const root = contentRef.current
+      const selection = window.getSelection()
+      const quote = root ? quoteFromSelection(root) : null
+      const rects = selection?.rangeCount ? selection.getRangeAt(0).getClientRects() : null
+      const rect = rects
+        ? Array.from(rects)
+            .reverse()
+            .find(item => item.width && item.height)
+        : null
+      if (!quote || !rect || !rect.width || !rect.height) {
+        setSelectionAction(null)
+        return
+      }
+      const left = Math.min(window.innerWidth - 48, Math.max(48, rect.left + rect.width / 2))
+      const top = Math.min(window.innerHeight - 40, Math.max(8, rect.bottom + 6))
+      setSelectionAction(previous =>
+        previous?.quote.exact === quote.exact && previous.left === left && previous.top === top
+          ? previous
+          : { quote, left, top },
+      )
+    }
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    const scroller = articleRef.current
+    document.addEventListener('selectionchange', schedule)
+    scroller?.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    return () => {
+      document.removeEventListener('selectionchange', schedule)
+      scroller?.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [artifact?.snapshotId, inbox, selected?.articleId])
 
   const notesProps = {
     drafts: inbox ? visibleDrafts : selectedDrafts,
@@ -784,15 +918,21 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
     status,
     onAdd: addNote,
     onEdit: setEditing,
-    onChange: (draft: NoteDraft, body: string) => updateDraft(editDraft(draft, body)),
-    onReady: (draft: NoteDraft) =>
+    onChange: (draft: NoteDraft, body: string) => {
+      const latest = draftRef.current[draft.note.id]
+      if (latest) updateDraft(editDraft(latest, body))
+    },
+    onReady: (draft: NoteDraft) => {
+      const latest = draftRef.current[draft.note.id]
+      if (!latest) return
       updateDraft({
-        ...draft,
+        ...latest,
         dirty: true,
-        ready: !draft.ready,
-        localVersion: draft.localVersion + 1,
-      }),
-    onRetry: () => setSyncTick(value => value + 1),
+        ready: !latest.ready,
+        localVersion: latest.localVersion + 1,
+      })
+    },
+    onRetry: syncDirtyDrafts,
     onDelete: (draft: NoteDraft) => {
       void deleteNote(draft)
     },
@@ -1102,21 +1242,6 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
           </button>
         </div>
       )}
-      {undo && feed && (
-        <div class="arena-reader-undo" role="status">
-          <span>Marked read: {undo.title}</span>
-          <button
-            type="button"
-            disabled={readBusy}
-            onClick={() => {
-              const entry = feed.entries.find(entry => entry.articleId === undo.articleId)
-              if (entry) void markRead(entry, false, false)
-            }}
-          >
-            Undo
-          </button>
-        </div>
-      )}
       {fatal ? (
         <div class="arena-reader-empty" role="alert">
           <h1>
@@ -1173,6 +1298,18 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
                   Start another pass
                 </button>
               </div>
+            )}
+            {selectionAction && !inbox && artifact && (
+              <button
+                type="button"
+                class="arena-reader-selection-action"
+                style={{ left: `${selectionAction.left}px`, top: `${selectionAction.top}px` }}
+                aria-label="Add selected text to a new note"
+                onPointerDown={event => event.preventDefault()}
+                onClick={() => createNote(selectionAction.quote)}
+              >
+                add note
+              </button>
             )}
           </main>
           <dialog

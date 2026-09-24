@@ -403,6 +403,69 @@ body[data-slug='arena/feed'] {
     margin-block: 1.25rem;
     padding-block: 0.25rem;
   }
+
+  .katex-display {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-block: 1.25rem;
+    padding-block: 0.25rem;
+  }
+}
+
+.arena-reader-code {
+  pre > code {
+    display: block;
+    overflow: visible;
+    white-space: pre;
+    overflow-wrap: normal;
+    tab-size: 4;
+  }
+
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-literal,
+  .hljs-section,
+  .hljs-link {
+    color: var(--code-keyword);
+  }
+
+  .hljs-string,
+  .hljs-regexp,
+  .hljs-addition {
+    color: var(--code-string);
+  }
+
+  .hljs-title,
+  .hljs-name,
+  .hljs-function,
+  .hljs-attr {
+    color: var(--code-function);
+  }
+
+  .hljs-number,
+  .hljs-symbol,
+  .hljs-bullet {
+    color: var(--code-value);
+  }
+
+  .hljs-comment,
+  .hljs-quote {
+    color: var(--code-comment);
+    font-style: italic;
+  }
+
+  .hljs-built_in,
+  .hljs-type,
+  .hljs-class {
+    color: var(--code-tag);
+  }
+
+  .hljs-meta,
+  .hljs-doctag,
+  .hljs-deletion {
+    color: var(--code-important);
+  }
 }
 
 .arena-reader-media iframe {
@@ -459,8 +522,7 @@ body[data-slug='arena/feed'] {
   }
 }
 
-.arena-reader-notice,
-.arena-reader-undo {
+.arena-reader-notice {
   display: flex;
   flex: none;
   align-items: center;
@@ -478,21 +540,6 @@ body[data-slug='arena/feed'] {
 
   button {
     flex-shrink: 0;
-  }
-}
-
-.arena-reader-undo {
-  position: fixed;
-  right: var(--arena-gutter);
-  bottom: calc(var(--arena-control-height) + 2.5rem + env(safe-area-inset-bottom));
-  z-index: var(--z-popover);
-  width: min(26rem, calc(100% - 2 * var(--arena-gutter)));
-  margin: 0;
-  padding: 0.75rem;
-  background: var(--light);
-
-  span {
-    overflow-wrap: anywhere;
   }
 }
 
@@ -808,10 +855,7 @@ body[data-slug='arena/feed'] {
   li {
     margin: 0;
     padding: 0;
-
-    &:not(:last-child) {
-      border-bottom: 1px solid var(--arena-line);
-    }
+    border-bottom: 1px solid var(--arena-line);
   }
 
   button {
@@ -827,6 +871,22 @@ body[data-slug='arena/feed'] {
 .arena-reader-queue-title,
 .arena-reader-queue-meta {
   display: block;
+}
+
+::highlight(arena-reader-notes) {
+  background-color: var(--text-highlight-bg);
+}
+
+.arena-reader .arena-reader-selection-action {
+  position: fixed;
+  z-index: 20;
+  transform: translateX(-50%);
+  min-height: var(--arena-control-height);
+  padding: 0.3rem 0.6rem;
+  color: var(--light);
+  background: var(--dark);
+  border-color: var(--dark);
+  white-space: nowrap;
 }
 
 .arena-reader-queue-title {
@@ -872,9 +932,16 @@ body[data-slug='arena/feed'] {
   flex: 1 0 10rem;
   min-height: 10rem;
   resize: none;
+  font-size: 0.85rem;
   line-height: 1.6;
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+
+@media (pointer: coarse) {
+  .arena-note-input {
+    font-size: 1rem;
+  }
 }
 
 .arena-note-preview {
@@ -937,7 +1004,8 @@ body[data-slug='arena/feed'] {
   margin-top: 0.75rem;
 
   > button {
-    font-size: 0.8rem;
+    font-size: 0.66rem;
+    padding-inline: 0.5rem;
   }
 
   .arena-note-article-link {
@@ -960,13 +1028,14 @@ body[data-slug='arena/feed'] {
 }
 
 .arena-note-card-body {
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.8rem;
+  line-height: 1.5;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 .arena-note-save-status.conflict,
+.arena-note-save-status.sync-failed,
 .arena-note-save-status.unsaved {
   color: var(--tertiary);
 }

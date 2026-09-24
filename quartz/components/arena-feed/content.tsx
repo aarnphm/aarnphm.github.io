@@ -1,9 +1,12 @@
 import type { RefObject } from 'preact'
 import DOMPurify from 'dompurify'
+import katex from 'katex'
 import { useEffect, useMemo, useState } from 'preact/hooks'
 import type { ArenaReaderArtifact, ArenaReaderRenderResult } from '../../util/arena-reader'
+import { customMacros, katexOptions } from '../../cfg'
 import { arenaFeedSourceNames, type ArenaFeedEntry } from '../../util/arena-feed'
 import { parseWikipediaTarget } from '../../util/wikipedia'
+import { CodeContent } from './code'
 import { mathVariantText } from './math'
 
 export function safeHref(raw: string): string | undefined {
@@ -46,6 +49,24 @@ export function sanitizeReaderHtml(html: string): string {
     if (text !== original) {
       token.textContent = text
       token.setAttribute('mathvariant', 'normal')
+    }
+  }
+  for (const math of document.querySelectorAll('math[data-latex]')) {
+    const latex = math.getAttribute('data-latex')?.trim()
+    if (!latex || latex.length > 16_384) continue
+    try {
+      const rendered = katex.renderToString(latex, {
+        ...katexOptions,
+        displayMode: math.getAttribute('display') === 'block',
+        output: 'htmlAndMathml',
+        macros: { ...customMacros },
+        trust: false,
+      })
+      const replacement = document.createElement('span')
+      replacement.innerHTML = rendered
+      math.replaceWith(...Array.from(replacement.childNodes))
+    } catch {
+      // Keep the captured MathML when KaTeX cannot parse publisher TeX or macros.
     }
   }
   for (const element of document.querySelectorAll('[src], [poster]')) {
@@ -232,6 +253,7 @@ export function ArticleContent({
         <HtmlContent key={artifact.snapshotId} artifact={artifact} contentRef={contentRef} />
       )}
       {artifact?.kind === 'pdf' && <PdfContent artifact={artifact} contentRef={contentRef} />}
+      {artifact?.kind === 'code' && <CodeContent artifact={artifact} contentRef={contentRef} />}
       {artifact?.kind === 'video' && (
         <div class="arena-reader-media">
           {artifact.embedUrl &&
