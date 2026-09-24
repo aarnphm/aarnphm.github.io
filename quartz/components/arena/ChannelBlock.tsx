@@ -11,7 +11,7 @@ import {
   type ArenaExternalEmbedMode,
 } from '../../util/arena-embed'
 import { classNames } from '../../util/lang'
-import { FullSlug, slugTag, resolveRelative } from '../../util/path'
+import { FullSlug, slugTag, resolveRelative, joinSegments } from '../../util/path'
 import { hostnameMatches } from '../../util/url'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
 
@@ -45,6 +45,7 @@ type ArenaModalMainContentProps = {
   frameTitle: string
   externalEmbedMode: ArenaExternalEmbedMode
   convertFromText: (html: string) => ComponentChild
+  textContent?: ComponentChild
 }
 
 const ArenaModalMainContent = ({
@@ -56,6 +57,7 @@ const ArenaModalMainContent = ({
   frameTitle,
   externalEmbedMode,
   convertFromText,
+  textContent,
 }: ArenaModalMainContentProps) => {
   let content: ComponentChild
 
@@ -93,7 +95,7 @@ const ArenaModalMainContent = ({
         </span>
       </div>
     )
-  } else {
+  } else if (block.internalSlug) {
     content = (
       <div
         class="arena-modal-internal-host"
@@ -105,6 +107,8 @@ const ArenaModalMainContent = ({
         <div class="arena-modal-internal-preview grid" />
       </div>
     )
+  } else {
+    content = <div class="arena-modal-text-preview">{textContent ?? block.content}</div>
   }
 
   return <div class="arena-modal-main-content">{content}</div>
@@ -163,7 +167,7 @@ const normalizeDate = (value: string): { display: string; dateTime?: string } =>
   }
 
   const date = new Date(Date.UTC(year, month - 1, day))
-  const formatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
+  const formatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'UTC' })
   const display = formatter.format(date)
   const iso = `${yearStr.padStart(4, '0')}-${monthStr.padStart(2, '0')}-${dayStr.padStart(2, '0')}`
 
@@ -237,7 +241,7 @@ export function createArenaChannelRenderer(
     return <>{parts}</>
   }
 
-  return (block: ArenaBlock, blockIndex: number, view: 'card' | 'modal' = 'card') => {
+  return (block: ArenaBlock, blockIndex: number, view: 'card' | 'modal' | 'page' = 'card') => {
     const hasSubItems = block.subItems && block.subItems.length > 0
     const frameTitle = block.title ?? block.content ?? `Block ${blockIndex + 1}`
     const targetUrl = block.url ? rewriteArxivUrl(block.url) : undefined
@@ -363,12 +367,13 @@ export function createArenaChannelRenderer(
     const hasMetaPreview =
       Boolean(accessed) || (block.tags && Array.isArray(block.tags) && block.tags.length > 0)
 
-    if (view === 'modal') {
+    if (view === 'modal' || view === 'page') {
       return (
         <div
           class="arena-block-modal-data"
           id={`arena-modal-data-${block.id}`}
           data-block-id={block.id}
+          data-entry-id={block.entryId}
           data-channel-slug={channel.slug}
           data-sidebar-collapsed={
             typeof block.metadata?.sidebar === 'string' &&
@@ -376,7 +381,7 @@ export function createArenaChannelRenderer(
               ? 'true'
               : undefined
           }
-          style="display: none;"
+          style={view === 'modal' ? 'display: none;' : undefined}
         >
           <div class="arena-modal-layout">
             <div class="arena-modal-main">
@@ -470,22 +475,42 @@ export function createArenaChannelRenderer(
                 <ArenaModalMainContent
                   block={block}
                   embedHtml={embedHtml}
-                  isSubstackCandidate={isSubstackCandidate}
+                  isSubstackCandidate={view === 'modal' && isSubstackCandidate}
                   isPdfCandidate={isPdfCandidate}
                   targetUrl={targetUrl}
                   frameTitle={frameTitle}
                   externalEmbedMode={externalEmbedMode}
                   convertFromText={convertFromText}
+                  textContent={block.htmlNode ? jsxFromNode(block.htmlNode) : undefined}
                 />
               )}
             </div>
-            <div class="arena-modal-sidebar">
+            <div
+              class="arena-modal-sidebar"
+              id={
+                view === 'page' && block.entryId
+                  ? `arena-entry-details-${block.entryId}`
+                  : undefined
+              }
+            >
               <div class="arena-modal-info">
                 <h3 class="arena-modal-title">
                   {block.titleHtmlNode
                     ? jsxFromNode(block.titleHtmlNode)
                     : renderInlineText(block.title ?? '')}
                 </h3>
+                {view === 'modal' && block.entryId && (
+                  <a
+                    class="arena-entry-permalink internal"
+                    href={resolveRelative(
+                      fileData.slug! as FullSlug,
+                      joinSegments('arena', channel.slug, block.entryId) as FullSlug,
+                    )}
+                    data-no-popover
+                  >
+                    open entry
+                  </a>
+                )}
                 {metadataEntries.length > 0 && (
                   <div class="arena-modal-meta">
                     {metadataEntries.map(({ label, value }, index) => (
@@ -555,6 +580,11 @@ export function createArenaChannelRenderer(
         </div>
       )
     }
+    if (!block.entryId) throw new Error(`Arena entry ID missing in ${channel.slug}: ${block.id}`)
+    const entryHref = resolveRelative(
+      fileData.slug! as FullSlug,
+      joinSegments('arena', channel.slug, block.entryId) as FullSlug,
+    )
     return (
       <div
         key={block.id}
@@ -566,6 +596,7 @@ export function createArenaChannelRenderer(
         )}
         id={`arena-block-${block.id}`}
         data-block-id={block.id}
+        data-entry-id={block.entryId}
         data-block-index={blockIndex}
         data-channel-slug={channel.slug}
       >
@@ -607,17 +638,8 @@ export function createArenaChannelRenderer(
             </svg>
           </span>
         )}
-        <div
-          class="arena-block-clickable"
-          role="button"
-          tabIndex={0}
-          aria-label="View block details"
-        >
-          <div class="arena-block-content">
-            {block.titleHtmlNode
-              ? jsxFromNode(block.titleHtmlNode)
-              : renderInlineText(block.title || block.content || '')}
-          </div>
+        <a class="arena-block-clickable" href={entryHref} data-no-popover>
+          <div class="arena-block-content">{block.title || block.content}</div>
           {hasMetaPreview && (
             <div class="arena-block-meta">
               {accessed ? (
@@ -656,7 +678,7 @@ export function createArenaChannelRenderer(
               ) : null}
             </div>
           )}
-        </div>
+        </a>
       </div>
     )
   }

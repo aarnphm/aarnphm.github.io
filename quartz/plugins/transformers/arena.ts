@@ -2,6 +2,7 @@ import Slugger from 'github-slugger'
 import { Element, ElementContent, Root as HastRoot, RootContent } from 'hast'
 import { toString } from 'hast-util-to-string'
 import yaml from 'js-yaml'
+import { createHash } from 'node:crypto'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import {
   ArenaExternalEmbedMode,
@@ -17,6 +18,7 @@ import { externalLinkRegex } from './ofm'
 
 export interface ArenaBlock {
   id: string
+  entryId?: string
   content: string
   url?: string
   title?: string
@@ -54,6 +56,7 @@ export interface ArenaData {
 
 export interface ArenaBlockSearchable {
   id: string
+  entryId?: string
   channelSlug: string
   channelName: string
   content: string
@@ -95,6 +98,7 @@ declare module 'vfile' {
   interface DataMap {
     arenaData?: ArenaData
     arenaChannel?: ArenaChannel
+    arenaEntry?: ArenaBlock
   }
 }
 
@@ -966,6 +970,23 @@ export const Arena: QuartzTransformerPlugin = () => {
 
               if (embedPromises.length > 0) {
                 await Promise.all(embedPromises)
+              }
+
+              const routes = new Set<string>()
+              for (const channel of channels) {
+                const occurrences = new Map<string, number>()
+                for (const block of channel.blocks) {
+                  const source = block.url ?? block.internalHref ?? block.content
+                  const occurrence = occurrences.get(source) ?? 0
+                  occurrences.set(source, occurrence + 1)
+                  const digest = createHash('sha256')
+                    .update(`arena-entry-v1\0${channel.slug}\0${source}\0${occurrence}`)
+                    .digest('hex')
+                  block.entryId = `entry-v1-${digest}`
+                  const route = `${channel.slug}/${block.entryId}`
+                  if (routes.has(route)) throw new Error(`Duplicate Arena entry route: ${route}`)
+                  routes.add(route)
+                }
               }
 
               file.data.arenaData = { channels }

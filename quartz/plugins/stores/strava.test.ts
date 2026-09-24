@@ -28,6 +28,7 @@ import {
   hasFetchedActivityDetail,
   type RawStravaActivity,
   type RawStravaAnalysisRange,
+  type StravaActivityDetail,
   type StravaRawCache,
   type StravaStreams,
 } from './strava'
@@ -2701,6 +2702,7 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
         durationS: 10,
         distanceKm: 1,
         elevationGainM: 50,
+        averageGradePct: 5,
         averageSpeedKph: 360,
         averageHeartRate: 140,
         averageWatts: 220,
@@ -4396,6 +4398,7 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
       durationS: 10,
       distanceKm: 0.5,
       elevationGainM: 25,
+      averageGradePct: 5,
       averageSpeedKph: 18,
       averageHeartRate: 150,
       averageWatts: 225,
@@ -4440,6 +4443,23 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
 
   const baseClimb = garmin.climbs?.edge[0]
   assert.ok(baseClimb)
+  for (const [recordedGrade, expectedGrade] of [
+    [6.25, 6.3],
+    [0, 0],
+    [null, null],
+    [Number.NaN, null],
+  ]) {
+    const projected: StravaActivityDetail = buildPayload(
+      cache,
+      null,
+      { ...garmin, climbs: { edge: [{ ...baseClimb, avgGradePct: recordedGrade }] } },
+      '2026-06-01',
+    ).details['101']
+    assert.equal(
+      projected.analysisRanges.find(range => range.kind === 'climb')?.averageGradePct,
+      expectedGrade,
+    )
+  }
   const clippedClimb = buildPayload(
     cache,
     null,

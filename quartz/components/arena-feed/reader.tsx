@@ -6,7 +6,11 @@ import type {
   ArenaReaderRenderResult,
 } from '../../util/arena-reader'
 import type { ToastShowOptions } from '../scripts/toast'
-import { arenaFeedSourceNames, type ArenaFeedEntry } from '../../util/arena-feed'
+import {
+  arenaFeedSourceNames,
+  orderArenaFeedEntries,
+  type ArenaFeedEntry,
+} from '../../util/arena-feed'
 import { isNote, isReadLink, isRecord, ReaderApiError, readerApi } from './api'
 import { ArticleContent, safeHref } from './content'
 import { ReaderFilter } from './filter'
@@ -99,6 +103,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   const [filter, setFilter] = useState<FeedFilter>('unread')
   const [query, setQuery] = useState('')
   const [limit, setLimit] = useState(50)
+  const [queueFillsViewport, setQueueFillsViewport] = useState(false)
   const [panel, setPanel] = useState<Panel>(null)
   const lastPanel = useRef<Exclude<Panel, null>>('queue')
   const panelContent = panel ?? lastPanel.current
@@ -138,6 +143,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   const pendingQuote = useRef<ArenaNoteQuote | null>(null)
   const articleRef = useRef<HTMLDivElement>(null)
   const queueRef = useRef<HTMLDivElement>(null)
+  const queueListRef = useRef<HTMLOListElement>(null)
   const returnFocus = useRef<HTMLElement | null>(null)
   const panelHistory = useRef(false)
   const ownerRef = useRef<string | null>(null)
@@ -367,6 +373,10 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
 
   const openPanel = useCallback((next: Exclude<Panel, null>) => {
     lastPanel.current = next
+    if (next === 'queue') {
+      const seed = crypto.randomUUID()
+      setPass(current => (current ? { ...current, seed } : current))
+    }
     if (next === 'notes' && contentRef.current)
       pendingQuote.current = quoteFromSelection(contentRef.current)
     if (!panelHistory.current) {
@@ -418,6 +428,21 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
       document.documentElement.style.overflow = original
     }
   }, [panel, wide])
+
+  useLayoutEffect(() => {
+    const queue = queueRef.current
+    const list = queueListRef.current
+    if (panel !== 'queue' || !queue || !list) return
+
+    const update = () => {
+      setQueueFillsViewport(queue.clientHeight > 0 && list.offsetHeight >= queue.clientHeight)
+    }
+    const observer = new ResizeObserver(update)
+    observer.observe(queue)
+    observer.observe(list, { box: 'border-box' })
+    update()
+    return () => observer.disconnect()
+  }, [panel, feed?.subject, fatal])
 
   useEffect(() => {
     if (!feed) return
@@ -543,8 +568,12 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
   const selected = feed?.entries.find(entry => entry.articleId === pass?.current) ?? null
   const originalUrl = selected ? safeHref(selected.sourceUrl) : undefined
   const eligible = useMemo(
-    () => eligibleEntries(feed?.entries ?? [], feed?.readLinks ?? [], filter, query),
-    [feed, filter, query],
+    () =>
+      orderArenaFeedEntries(
+        eligibleEntries(feed?.entries ?? [], feed?.readLinks ?? [], filter, query),
+        pass?.seed ?? '',
+      ),
+    [feed, filter, query, pass?.seed],
   )
   const remaining = useMemo(
     () => eligibleEntries(feed?.entries ?? [], feed?.readLinks ?? [], 'unread'),
@@ -1086,7 +1115,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
           aria-hidden="true"
           focusable="false"
         >
-          <path d="M20 7v5h-5M4 17v-5h5M6.09 7a7 7 0 0 1 11.55-2.61L20 7M4 17l2.36 2.61A7 7 0 0 0 17.91 17" />
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5" />
         </svg>
       </button>
       <button
@@ -1196,7 +1225,6 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
         </div>
         <button
           type="button"
-          class={inbox ? 'arena-reader-icon-button' : undefined}
           aria-label={inbox ? 'back to reading' : 'inbox'}
           title={inbox ? 'back to reading' : 'inbox'}
           onClick={() => {
@@ -1205,22 +1233,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
             if (panel) closePanel()
           }}
         >
-          {inbox ? (
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.25"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path d="m7 3-5 5 5 5M2 8h12" />
-            </svg>
-          ) : (
-            'inbox'
-          )}
+          {inbox ? 'back' : 'inbox'}
         </button>
       </header>
       {pendingFeed && (
@@ -1350,7 +1363,7 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
               {panelContent === 'queue' ? (
                 <div class="arena-reader-queue">
                   <div class="arena-reader-queue-entries" ref={queueRef}>
-                    <ol>
+                    <ol ref={queueListRef} data-fills-viewport={queueFillsViewport}>
                       {eligible.slice(0, limit).map(entry => (
                         <li key={entry.articleId}>
                           <button
@@ -1417,28 +1430,6 @@ export function ArenaReader({ signal }: { signal: AbortSignal }) {
                           </svg>
                         </button>
                       )}
-                      <button
-                        type="button"
-                        class="arena-reader-icon-button"
-                        aria-label="Shuffle queue"
-                        title="Shuffle queue"
-                        onClick={() => {
-                          void shuffle()
-                        }}
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="m17 3 4 4-4 4M17 13l4 4-4 4M3 7h3c5 0 7 10 12 10h3M3 17h3c2 0 3.5-1.6 5-4M13 9c1.5-1.4 3-2 5-2h3" />
-                        </svg>
-                      </button>
                     </div>
                   </div>
                 </div>

@@ -55,6 +55,59 @@ export async function extractArenaReaderDocument(
     // lazy-image heuristic otherwise promotes this metadata URL into src.
     image.removeAttribute('resource')
   }
+  type FigureLayout = { alignment: 'left' | 'right' | 'none'; width: number; group: Element | null }
+  const figureLayouts = new Map<string, FigureLayout | null>()
+  if (/(^|\.)wikipedia\.org$/.test(new URL(input.finalUrl).hostname)) {
+    for (const original of source.querySelectorAll(
+      '#mw-content-text figure, #mw-content-text .thumb:not(.tmulti), #mw-content-text .tmulti .tsingle',
+    )) {
+      const image = original.querySelector('img')
+      const caption = original.querySelector('figcaption, .thumbcaption')
+      if (!image || !caption || original.querySelectorAll('img').length !== 1) continue
+      const group = original.closest('.tmulti')
+      const classes = (group ?? original).classList
+      const alignment =
+        classes.contains('mw-halign-left') ||
+        classes.contains('tleft') ||
+        classes.contains('floatleft')
+          ? 'left'
+          : classes.contains('mw-halign-none') || classes.contains('mw-halign-center')
+            ? 'none'
+            : classes.contains('mw-halign-right') ||
+                classes.contains('tright') ||
+                classes.contains('floatright') ||
+                original.matches('figure[typeof~="mw:File/Thumb"], figure[typeof~="mw:File/Frame"]')
+              ? 'right'
+              : 'none'
+      const width = Number(image.getAttribute('width'))
+      figureLayouts.set(
+        image.src,
+        figureLayouts.has(image.src)
+          ? null
+          : {
+              alignment,
+              width: Number.isInteger(width) && width > 1 && width <= 1600 ? width : 250,
+              group,
+            },
+      )
+      // Defuddle rebuilds native figures from one image and plain caption text.
+      // Keep the caption in its parsing flow so links and footnotes are standardized too.
+      const figure = source.createElement('div')
+      figure.setAttribute('role', 'figure')
+      const legend = source.createElement('figcaption')
+      legend.append(...Array.from(caption.childNodes))
+      figure.append(image, legend)
+      original.replaceWith(figure)
+    }
+    // The reader displays figures inline, so the preview image must not make
+    // Defuddle discard a captioned image as a duplicate cover after normalization.
+    if (figureLayouts.size) {
+      for (const preview of source.querySelectorAll(
+        'meta[property="og:image"], meta[name="twitter:image"]',
+      ))
+        preview.remove()
+    }
+  }
   const headingIds = new Map<string, string | null>()
   for (const heading of source.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
     const text = heading.textContent?.replace(/\s+/g, ' ').trim()
@@ -155,6 +208,20 @@ export async function extractArenaReaderDocument(
     ADD_ATTR: ['data-lang', 'data-latex', 'data-callout'],
   })
   const safe = new DOMParser().parseFromString(sanitized, 'text/html').body
+  const figures = new Map<HTMLElement, FigureLayout>()
+  for (const wrapper of safe.querySelectorAll('div[role="figure"]')) {
+    const image = wrapper.querySelector('img')
+    const caption = wrapper.querySelector(':scope > figcaption')
+    if (!image || !caption || wrapper.querySelectorAll('img').length !== 1) continue
+    const figure = safe.ownerDocument.createElement('figure')
+    figure.append(image, caption)
+    wrapper.replaceWith(figure)
+    const src = image.getAttribute('src') ?? ''
+    if (URL.canParse(src, input.finalUrl)) {
+      const layout = figureLayouts.get(new URL(src, input.finalUrl).href)
+      if (layout) figures.set(figure, layout)
+    }
+  }
   // Defuddle removes heading IDs while retaining links to them. Restore only unique
   // source headings; ambiguous or removed targets link back to the original document.
   const ids = new Set(Array.from(safe.querySelectorAll('[id]'), node => node.id))
@@ -179,6 +246,16 @@ export async function extractArenaReaderDocument(
       if (value && !/^[a-z\d_+-]{1,64}$/i.test(value)) element.removeAttribute(attribute)
     }
     if (element.localName !== 'math') element.removeAttribute('data-latex')
+    for (const attribute of ['width', 'height']) {
+      const dimension = Number(element.getAttribute(attribute))
+      if (
+        element.tagName !== 'IMG' ||
+        !Number.isInteger(dimension) ||
+        dimension < 2 ||
+        dimension > 8192
+      )
+        element.removeAttribute(attribute)
+    }
     // Retain only semantic attributes. Every URL-bearing attribute is handled below.
     for (const attribute of Array.from(element.attributes)) {
       if (
@@ -191,6 +268,8 @@ export async function extractArenaReaderDocument(
           'href',
           'src',
           'alt',
+          'width',
+          'height',
           'title',
           'colspan',
           'rowspan',
@@ -282,6 +361,29 @@ export async function extractArenaReaderDocument(
         // An invalid source image retains its alternative text.
       }
     }
+  }
+  for (const [figure, layout] of figures) {
+    figure.className = `arena-figure arena-figure-${layout.alignment}`
+    figure.setAttribute('data-arena-figure-width', String(layout.width))
+  }
+  for (const [figure, layout] of figures) {
+    if (!layout.group || figure.parentElement?.classList.contains('arena-figure-group')) continue
+    const siblings = [figure]
+    let next = figure.nextElementSibling
+    while (next instanceof HTMLElement && figures.get(next)?.group === layout.group) {
+      siblings.push(next)
+      next = next.nextElementSibling
+    }
+    if (siblings.length < 2) continue
+    const group = safe.ownerDocument.createElement('figure')
+    group.className = `arena-figure arena-figure-group arena-figure-${layout.alignment}`
+    const width = siblings.reduce((sum, sibling) => sum + (figures.get(sibling)?.width ?? 0), 0)
+    group.setAttribute(
+      'data-arena-figure-width',
+      String(Math.min(1600, width + 16 * (siblings.length - 1))),
+    )
+    figure.before(group)
+    group.append(...siblings)
   }
   const html = safe.innerHTML.trim()
   const text = safe.textContent?.trim() ?? ''

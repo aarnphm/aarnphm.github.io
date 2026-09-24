@@ -2,7 +2,11 @@ import crypto from 'node:crypto'
 import type { ArenaChannel } from '../plugins/transformers/arena'
 import { assertArenaFeedRouteAvailable } from './arena-feed'
 
-export type ArenaChannelEmitState = { fingerprint: string; jsonEnabled: boolean }
+export type ArenaChannelEmitState = {
+  fingerprint: string
+  jsonEnabled: boolean
+  entryIds: string[]
+}
 
 export type ArenaEmitState = { channelStates: Map<string, ArenaChannelEmitState> }
 
@@ -30,6 +34,7 @@ export function collectArenaEmitState(channels: ArenaChannel[]): ArenaEmitState 
         {
           fingerprint: fingerprintChannel(channel),
           jsonEnabled: isArenaChannelJsonEnabled(channel),
+          entryIds: channel.blocks.map(block => block.entryId).filter((id): id is string => !!id),
         },
       ]),
     ),

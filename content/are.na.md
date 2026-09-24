@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-09-17 00:05:58 GMT-04:00
+modified: 2026-09-24 00:14:31 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -6578,6 +6578,7 @@ title: are.na
     - date: 05/25/2026
     - tags: [suicide, ending]
     - later: true
+    - unlocked: true
 - https://ambient.institute/domain-naming/ -- Domain naming
   - [meta]:
     - date: 05/23/2026
@@ -6599,6 +6600,7 @@ title: are.na
   - [meta]:
     - date: 05/12/2026
     - tags: [consciousness]
+    - unlocked: true
 - https://www.wired.com/story/he-couldnt-land-a-job-interview-was-ai-to-blame/ -- He Couldn’t Land a Job Interview. Was AI to Blame?
   - [meta]:
     - date: 05/12/2026
@@ -7434,6 +7436,7 @@ title: are.na
   - [meta]:
     - date: 11/29/2025
     - tags: [relationship, eudamonia]
+    - pinned: true
   - Tenets:
     1.  You accept that in choosing who you spend time with you choose who you are.
     2.  Almost everyone who’s unhappy is unhappy because they feel isolated. The best cure for isolation is a strong friend group. So much of happiness is having someone you can get a last-minute dinner with on a Monday night, or ask to water your plants while you’re gone for a week. The opposite of loneliness, as it were.
@@ -15667,10 +15670,11 @@ title: are.na
     - date: 01/02/2026
     - tags: [philosophy, agency]
     - pinned: true
-- https://www.newphilosopher.com/articles/the-paradox-of-choice/#:~:text=It’s%20interesting%20that%20you’re%20talking%20about%20these%20trivial%20matters%20relating%20to%20products%20and%20services.%20Jean-Paul%20Sartre%2C%20he%20believed%20that%20humans%20are%20condemned%20to%20be%20free%3B%20that%20they%20must%20make%20choices.%20With%20the%20number%20of%20choices%20that%20we%20have%20now%2C%20condemned%20is%20probably%20an%20appropriate%20term.
+- https://www.newphilosopher.com/articles/the-paradox-of-choice/ -- The paradox of choice
   - [meta]:
     - date: 12/29/2025
     - tags: [choice, abundance]
+    - unlocked: true
 - https://www.youtube.com/watch?v=rHKwIYsPXLg -- Consciousness in Artificial Intelligence | John Searle | Talks at Google
   - [meta]:
     - date: 12/23/2025
@@ -15801,11 +15805,13 @@ title: are.na
   - [meta]:
     - date: 12/11/2025
     - tags: [love, relationship]
-- https://archive.ph/iin7Z -- Martha Nussbaum, The Philosopher of Feelings [--] [**]
+- https://www.newyorker.com/magazine/2016/07/25/martha-nussbaums-moral-philosophies -- Martha Nussbaum, The Philosopher of Feelings [**]
   - [meta]:
     - date: 12/10/2025
     - tags: [aging, inequality, family]
     - pinned: true
+    - unlocked: true
+    - seealso: https://archive.ph/iin7Z
   - In the lecture, she described how the Roman philosopher Seneca, at the end of each day, reflected on his misdeeds before saying to himself, “This time I pardon you.” The sentence brought Nussbaum to tears. She worried that her ability to work was an act of subconscious aggression, a sign that she didn’t love her mother enough. I shouldn’t be away lecturing, she thought. I shouldn’t have been a philosopher. Nussbaum sensed that her mother saw her work as cold and detached, a posture of invulnerability. “We aren’t very loving creatures, apparently, when we philosophize,” Nussbaum has written.
   - Nussbaum gave her lecture on mercy shortly after her mother’s funeral. She felt that her mother would have preferred that she forgo work for a few weeks, but when Nussbaum isn’t working she feels guilty and lazy, so she revised the lecture until she thought that it was one of the best she had ever written. She imagined her talk as a kind of reparation: the lecture was about the need to recognize how hard it is, even with the best intentions, to live a virtuous life.
   - A few years later, Nussbaum returned to her relationship with her mother in a dramatic dialogue that she wrote for Oxford University’s Philosophical Dialogues Competition, which she won. In the dialogue, a mother accuses her daughter, a renowned moral philosopher, of being ruthless. “You just don’t know what emotions are,” the mother says. Her father tells her, “Aren’t you a philosopher because you want, really, to live inside your own mind most of all? And not to need, not to love, anyone?” Her mother asks, “Isn’t it just because you don’t want to admit that thinking doesn’t control everything?”

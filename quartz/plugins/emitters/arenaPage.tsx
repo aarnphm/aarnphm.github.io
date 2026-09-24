@@ -21,6 +21,7 @@ import {
   createArenaChannelRenderer,
 } from '../../components/arena/ChannelBlock'
 import HeaderConstructor from '../../components/Header'
+import ArenaEntry from '../../components/pages/ArenaEntry'
 import ArenaFeed from '../../components/pages/ArenaFeed'
 import ArenaIndex from '../../components/pages/ArenaIndex'
 import ChannelContent from '../../components/pages/ChannelContent'
@@ -203,6 +204,7 @@ async function processChannel(
     ],
     blocks: ordered.map(block => ({
       id: block.id,
+      entryId: block.entryId,
       channelSlug: channel.slug,
       channelName: channel.name,
       title: block.title,
@@ -225,6 +227,46 @@ async function processChannel(
     }),
   )
   return files
+}
+
+async function processEntries(
+  ctx: BuildCtx,
+  channel: ArenaChannel,
+  baseFileData: QuartzPluginData,
+  allFiles: QuartzPluginData[],
+  opts: FullPageLayout,
+  resources: StaticResources,
+): Promise<FilePath[]> {
+  return mapConcurrent(channel.blocks, defaultIoConcurrency, async block => {
+    if (!block.entryId) throw new Error(`Arena entry ID missing in ${channel.slug}: ${block.id}`)
+    const slug = joinSegments('arena', channel.slug, block.entryId) as FullSlug
+    const frontmatter = {
+      ...baseFileData.frontmatter,
+      title: block.title ?? block.content,
+      description: block.content.slice(0, 240),
+      pageLayout: 'default' as const,
+    }
+    const [tree] = defaultProcessedContent({ slug, frontmatter })
+    const externalResources = pageResources(pathToRoot(slug), resources, ctx)
+    const componentData: QuartzComponentProps = {
+      ctx,
+      fileData: {
+        ...baseFileData,
+        slug,
+        arenaData: undefined,
+        arenaChannel: channel,
+        arenaEntry: block,
+        frontmatter,
+      },
+      externalResources,
+      cfg: ctx.cfg.configuration,
+      children: [],
+      tree,
+      allFiles,
+    }
+    const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
+    return write({ ctx, content, slug, ext: '.html' })
+  })
 }
 
 async function processArenaFeed(
@@ -269,6 +311,7 @@ function serializeBlock(
 ): ArenaBlockSearchable {
   const searchable: ArenaBlockSearchable = {
     id: block.id,
+    entryId: block.entryId,
     channelSlug,
     channelName,
     content: block.content,
@@ -385,9 +428,11 @@ async function processChannelOutputs(
   baseFileData: QuartzPluginData,
   allFiles: QuartzPluginData[],
   opts: FullPageLayout,
+  entryOpts: FullPageLayout,
   resources: StaticResources,
 ): Promise<FilePath[]> {
   const files = await processChannel(ctx, channel, baseFileData, allFiles, opts, resources)
+  files.push(...(await processEntries(ctx, channel, baseFileData, allFiles, entryOpts, resources)))
   if (isArenaChannelJsonEnabled(channel)) {
     files.push(await processChannelJson(ctx, channel))
   }
@@ -397,16 +442,29 @@ async function processChannelOutputs(
 async function processChangedChannelOutputs(
   ctx: BuildCtx,
   channel: ArenaChannel,
-  previous: { jsonEnabled: boolean } | undefined,
+  previous: { jsonEnabled: boolean; entryIds: string[] } | undefined,
   baseFileData: QuartzPluginData,
   allFiles: QuartzPluginData[],
   opts: FullPageLayout,
+  entryOpts: FullPageLayout,
   resources: StaticResources,
 ): Promise<FilePath[]> {
-  const files = await processChannel(ctx, channel, baseFileData, allFiles, opts, resources)
-  if (isArenaChannelJsonEnabled(channel)) {
-    files.push(await processChannelJson(ctx, channel))
-  } else if (previous?.jsonEnabled) {
+  const files = await processChannelOutputs(
+    ctx,
+    channel,
+    baseFileData,
+    allFiles,
+    opts,
+    entryOpts,
+    resources,
+  )
+  const currentIds = new Set(channel.blocks.map(block => block.entryId))
+  for (const entryId of previous?.entryIds ?? []) {
+    if (!currentIds.has(entryId)) {
+      await removeWritten(ctx, joinSegments('arena', channel.slug, entryId), '.html')
+    }
+  }
+  if (!isArenaChannelJsonEnabled(channel) && previous?.jsonEnabled) {
     await fs.rm(joinSegments(ctx.argv.output, 'arena', channel.slug, 'json'), { force: true })
   }
   return files
@@ -423,6 +481,7 @@ async function removeChannelOutputs(
     recursive: true,
     force: true,
   })
+  await fs.rm(joinSegments(ctx.argv.output, 'arena', channelSlug), { recursive: true, force: true })
   if (jsonEnabled) {
     await fs.rm(joinSegments(ctx.argv.output, 'arena', channelSlug, 'json'), { force: true })
   }
@@ -463,6 +522,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
   }
 
   const feedOpts: FullPageLayout = { ...indexOpts, beforeBody: [], pageBody: ArenaFeed() }
+  const entryOpts: FullPageLayout = { ...indexOpts, beforeBody: [], pageBody: ArenaEntry() }
 
   const { head: Head, footer: Footer } = sharedPageComponents
   const Header = HeaderConstructor()
@@ -485,6 +545,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
         ...channelOpts.afterBody,
         ...channelOpts.sidebar,
         feedOpts.pageBody,
+        entryOpts.pageBody,
         Footer,
       ]
     },
@@ -507,7 +568,15 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
         yield emitFeedManifest(ctx, manifest)
 
         const channelFiles = await mapConcurrent(channels, defaultIoConcurrency, channel =>
-          processChannelOutputs(ctx, channel, file.data, allFiles, channelOpts, resources),
+          processChannelOutputs(
+            ctx,
+            channel,
+            file.data,
+            allFiles,
+            channelOpts,
+            entryOpts,
+            resources,
+          ),
         )
 
         for (const files of channelFiles) {
@@ -584,6 +653,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
                 file.data,
                 allFiles,
                 channelOpts,
+                entryOpts,
                 resources,
               )
             },

@@ -12427,7 +12427,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   align-items: flex-start;
   justify-content: center;
   padding-top: 14vh;
-  border: 1px solid var(--gray);
 }
 
 .tri-cmdk--on {
@@ -16624,7 +16623,7 @@ a.tri-pop-date:hover {
 .tri-workout-elevation-line {
   fill: none;
   stroke: var(--darkgray);
-  stroke-width: 1.5;
+  stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 

@@ -428,6 +428,7 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
   t.after(() => assets.deregister())
   const { Arena } = await import('../plugins/transformers/arena')
   const { ArenaPage } = await import('../plugins/emitters/arenaPage')
+  const { arenaChannelSections } = await import('../components/arena/ChannelBlock')
   const { default: collapseHeaderStyle } =
     await import('../components/styles/collapseHeader.inline.scss')
   const output = await mkdtemp(join(tmpdir(), 'quartz-arena-feed-'))
@@ -537,6 +538,7 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
       const initialIds = Array.from(html.matchAll(/data-block-id="([^"]+)"/g), match => match[1])
       assert.equal(initialIds.length, 3 * ARENA_CARD_PAGE_SIZE)
       assert.equal(new Set(initialIds).size, initialIds.length)
+      assert.match(html, new RegExp(`href="[^"]*${channel.blocks[0].entryId}"`))
       assert.doesNotMatch(html, /arena-block-modal-data|Delayed note|data-arena-pdf-src/)
       assert.doesNotMatch(html, /arena-load-more/)
       assert.match(html, /data-arena-count="55"/)
@@ -567,8 +569,44 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
       }
       assert.equal(allIds.length, channel.blocks.length)
       assert.deepEqual(new Set(allIds), new Set(channel.blocks.map(block => block.id)))
-      const last = channel.blocks.at(-1)
+      const sections = arenaChannelSections(channel)
+      const ordered = [...sections.pinned, ...sections.later, ...sections.blocks]
+      const first = ordered[0]
+      const last = ordered.at(-1)
+      const beforeLast = ordered.at(-2)
+      assert.ok(first)
       assert.ok(last)
+      assert.ok(beforeLast)
+      assert.match(last.entryId ?? '', /^entry-v1-[0-9a-f]{64}$/)
+      const firstEntryPage = await readFile(
+        join(output, 'arena/lazy', `${first.entryId}.html`),
+        'utf8',
+      )
+      assert.match(firstEntryPage, /class="arena-modal-nav-btn arena-modal-prev" disabled/)
+      assert.match(
+        firstEntryPage,
+        new RegExp(
+          `class="arena-modal-nav-btn arena-modal-next internal" href="[^"]*${ordered[1].entryId}"`,
+        ),
+      )
+      const entryPage = await readFile(join(output, 'arena/lazy', `${last.entryId}.html`), 'utf8')
+      assert.match(entryPage, /Delayed note blocks 54/)
+      assert.match(entryPage, /Sep 15, 2026/)
+      assert.match(entryPage, /data-arena-pdf-src=/)
+      assert.match(entryPage, new RegExp(`class="arena-entry-page main-col" id="${last.entryId}"`))
+      assert.doesNotMatch(entryPage, /class="page-header/)
+      assert.doesNotMatch(entryPage, /arena-entry-back/)
+      assert.match(entryPage, /aria-label="Entry controls"/)
+      assert.match(entryPage, new RegExp(`aria-controls="arena-entry-details-${last.entryId}"`))
+      assert.match(entryPage, new RegExp(`id="arena-entry-details-${last.entryId}"`))
+      assert.match(
+        entryPage,
+        new RegExp(
+          `class="arena-modal-nav-btn arena-modal-prev internal" href="[^"]*${beforeLast.entryId}"`,
+        ),
+      )
+      assert.match(entryPage, /class="arena-modal-nav-btn arena-modal-next" disabled/)
+      assert.match(entryPage, /href="https:\/\/example.com\/blocks-54.pdf"/)
       const modal = await readFile(join(output, arenaModalSource(assets, last.id).slice(1)), 'utf8')
       assert.match(modal, /Delayed note blocks 54/)
       assert.match(modal, /data-arena-pdf-src=/)
@@ -585,6 +623,9 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
         ]),
       )
       await assert.rejects(access(join(output, assets.slice(1))), { code: 'ENOENT' })
+      await assert.rejects(access(join(output, 'arena/lazy', `${last.entryId}.html`)), {
+        code: 'ENOENT',
+      })
       await assert.rejects(access(join(output, 'arena/lazy.md')), { code: 'ENOENT' })
     },
   )
@@ -623,6 +664,31 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
     await assert.rejects(access(join(output, 'arena/first.md')), { code: 'ENOENT' })
     await access(join(output, 'arena/second.md'))
   })
+  await t.test(
+    'entry routes stay stable after unrelated insertions and remain unique',
+    async () => {
+      const original = await parse(
+        '## essay\n\n- [An essay](https://example.com/essay)\n- [Another](https://example.com/other)\n',
+      )
+      const inserted = await parse(
+        '## essay\n\n- [New](https://example.com/new)\n- [An essay](https://example.com/essay)\n- [Another](https://example.com/other)\n- [Same source](https://example.com/essay)\n',
+      )
+      const before = original[1].data.arenaData?.channels[0].blocks
+      const after = inserted[1].data.arenaData?.channels[0].blocks
+      assert.ok(before && after)
+      assert.equal(before[0].entryId, after[1].entryId)
+      assert.equal(before[1].entryId, after[2].entryId)
+      assert.equal(new Set(after.map(block => block.entryId)).size, after.length)
+      const entryEmitter = ArenaPage()
+      await collect(entryEmitter.emit(ctx, [original], resources))
+      const index = await readFile(join(output, 'arena.html'), 'utf8')
+      assert.match(index, new RegExp(`arena/essay/${before[0].entryId}`))
+      const entry = await readFile(join(output, 'arena/essay', `${before[0].entryId}.html`), 'utf8')
+      assert.match(entry, /An essay/)
+      assert.match(entry, new RegExp(`data-entry-id="${before[0].entryId}"`))
+      assert.match(entry, /data-arena-url="https:\/\/example.com\/essay"/)
+    },
+  )
   await t.test(
     'unlocked links use Wayback consistently across blocks, anchors, and feed entries',
     async () => {

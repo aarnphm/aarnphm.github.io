@@ -440,6 +440,7 @@ interface ActivityAnalysisRangeBase {
   movingTimeS?: number
   distanceKm: number
   elevationGainM: number | null
+  averageGradePct?: number | null
   averageSpeedKph: number | null
   averageHeartRate: number | null
   averageWatts: number | null
@@ -3503,6 +3504,7 @@ function projectAnalysisRanges(
       durationS: climb.durationS,
       distanceKm: round(climb.distanceM / 1000, 3),
       elevationGainM: nullableRound(climb.elevationGainM),
+      averageGradePct: nullableRound(climb.avgGradePct),
       averageSpeedKph: nullableRound(climb.avgSpeedMps == null ? null : climb.avgSpeedMps * 3.6, 2),
       averageHeartRate: nullableRound(climb.avgHeartRate),
       averageWatts: nullableRound(climb.avgPower),

@@ -450,6 +450,12 @@ async function captureHtml(
   if (requestSignal.aborted) controller.abort()
   const timer = setTimeout(() => controller.abort(), CAPTURE_TIMEOUT_MS)
   let browser: Awaited<ReturnType<typeof puppeteer.launch>> | null = null
+  let browserClose: Promise<void> | undefined
+  const closeBrowser = () => {
+    // Cancellation and final cleanup must await the same browser shutdown.
+    if (browser) browserClose ??= browser.close().catch(() => {})
+    return browserClose
+  }
   const diagnostics = new Set<string>()
   const pendingRequests = new Set<Promise<void>>()
   const capturedFigures = new Map<string, Uint8Array<ArrayBuffer>>()
@@ -530,8 +536,7 @@ async function captureHtml(
     } finally {
       if (cancelLaunch) controller.signal.removeEventListener('abort', cancelLaunch)
     }
-    const activeBrowser = browser
-    const closeOnAbort = () => void activeBrowser.close().catch(() => {})
+    const closeOnAbort = () => void closeBrowser()
     controller.signal.addEventListener('abort', closeOnAbort, { once: true })
     let totalBytes = initialBody.byteLength
     let requestCount = 0
@@ -803,7 +808,7 @@ async function captureHtml(
     requestSignal.removeEventListener('abort', cancel)
     clearTimeout(timer)
     controller.abort()
-    if (browser) await browser.close().catch(() => {})
+    await closeBrowser()
     await Promise.allSettled(pendingRequests)
   }
 }

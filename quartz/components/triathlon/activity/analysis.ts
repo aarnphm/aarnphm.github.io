@@ -94,6 +94,7 @@ export const activityScrubKeyboardIndex = (
 }
 
 export type ActivityAnalysisRange = ActivitySelectionSummary & {
+  averageGradePct?: number | null
   heartRateChange?: StravaActivityDetail['analysisRanges'][number]['heartRateChange']
   button: HTMLButtonElement | null
   kind: 'lap' | 'segment' | 'climb' | null
@@ -189,6 +190,7 @@ export const analysisRangeFromButton = (
     distanceKm: analysisFinite(button.dataset.distanceKm) ?? endDistanceKm - startDistanceKm,
     durationS: analysisFinite(button.dataset.durationS) ?? 0,
     elevationGainM: analysisFinite(button.dataset.elevationGainM),
+    averageGradePct: analysisFinite(button.dataset.averageGradePct),
     averageSpeedKph: analysisFinite(button.dataset.averageSpeedKph),
     averageHeartRate: analysisFinite(button.dataset.averageHeartRate),
     averageWatts: analysisFinite(button.dataset.averageWatts),
@@ -287,6 +289,8 @@ export const linkActivityAnalysis = (
     const metrics = [scrubDist(presentation, range.distanceKm, sport)]
     if (range.elevationGainM != null)
       metrics.push(`+${formatAltitude(presentation, range.elevationGainM)}`)
+    if (range.averageGradePct != null && Number.isFinite(range.averageGradePct))
+      metrics.push(`${range.averageGradePct.toFixed(1)}% avg grade`)
     metrics.push(clock(range.durationS))
     return metrics
   }
