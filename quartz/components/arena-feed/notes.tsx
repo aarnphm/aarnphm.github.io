@@ -1,5 +1,5 @@
 import { marked } from 'marked'
-import { useState } from 'preact/hooks'
+import { useLayoutEffect, useRef, useState } from 'preact/hooks'
 import type { ArenaFeedEntry } from '../../util/arena-feed'
 import type { ArenaNote } from '../../util/arena-reader'
 import { sanitizeReaderHtml } from './content'
@@ -7,11 +7,11 @@ import { DeleteNote } from './delete-note'
 import { ReaderFilter } from './filter'
 import { noteStage, type NoteDraft } from './model'
 
-export type DraftStatus = 'device' | 'saving' | 'synced' | 'unsaved' | 'conflict'
+export type DraftStatus = 'pending' | 'sync-failed' | 'synced' | 'unsaved' | 'conflict'
 
 export const draftStatusLabel: Record<DraftStatus, string> = {
-  device: 'Saved on device',
-  saving: 'Saving…',
+  pending: 'Pending sync',
+  'sync-failed': 'Sync failed',
   synced: 'Synced',
   unsaved: 'Not saved on this device',
   conflict: 'Two versions need review',
@@ -49,7 +49,16 @@ const noteFilters: { value: NoteFilter; label: string }[] = [
 export function NotesPanel(props: NotesProps) {
   const [stage, setStage] = useState<NoteFilter>('all')
   const [preview, setPreview] = useState(false)
+  const listRef = useRef<HTMLDivElement>(null)
+  const listScroll = useRef(0)
   const draft = props.drafts.find(item => item.note.id === props.editing)
+  const listContext = props.inbox ? 'inbox' : props.article?.articleId
+  useLayoutEffect(() => {
+    listScroll.current = 0
+  }, [listContext])
+  useLayoutEffect(() => {
+    if (!draft && listRef.current) listRef.current.scrollTop = listScroll.current
+  }, [draft?.note.id, listContext])
   const visible = props.drafts.filter(
     item => stage === 'all' || (item.dirty ? 'draft' : noteStage(item.note)) === stage,
   )
@@ -98,12 +107,13 @@ export function NotesPanel(props: NotesProps) {
         <div class="arena-notes-toolbar">
           <button
             type="button"
+            aria-label="Back to notes list"
             onClick={() => {
               props.onEdit(null)
               setPreview(false)
             }}
           >
-            All notes
+            ← notes
           </button>
           <span role="status" class={`arena-note-save-status ${status}`}>
             {draftStatusLabel[status]}
@@ -162,29 +172,31 @@ export function NotesPanel(props: NotesProps) {
           />
         )}
         <div class="arena-note-actions">
-          {status === 'device' && (
+          {status === 'sync-failed' && (
             <button type="button" onClick={props.onRetry}>
               sync
             </button>
           )}
           <button
             type="button"
-            disabled={!draft.note.body.trim() || Boolean(draft.conflict) || status === 'saving'}
+            disabled={!draft.note.body.trim() || Boolean(draft.conflict)}
             onClick={() => props.onReady(draft)}
           >
             {draft.ready ? 'return to draft' : 'ready to backfill'}
           </button>
-          <DeleteNote
-            key={draft.note.id}
-            disabled={status === 'saving'}
-            onDelete={() => props.onDelete(draft)}
-          />
+          <DeleteNote key={draft.note.id} onDelete={() => props.onDelete(draft)} />
         </div>
       </div>
     )
   }
   return (
-    <div class="arena-notes-list">
+    <div
+      ref={listRef}
+      class="arena-notes-list"
+      onScroll={event => {
+        listScroll.current = event.currentTarget.scrollTop
+      }}
+    >
       {toolbar}
       {!props.inbox && (
         <>

@@ -11,11 +11,13 @@ import type {
 } from '../quartz/util/arena-reader'
 import type { ArenaExtractedDocument, ArenaExtractionResponse } from './arena-reader-extraction'
 import { arenaArxivPdfUrl } from '../quartz/util/arena-embed'
+import { parseGithubSourceUrl, type GithubSourceRef } from '../quartz/util/github-embed'
 import { parseTwitterPostUrl } from '../quartz/util/twitter'
 import {
   ARENA_READER_COOLDOWN_MS,
   ARENA_READER_PROFILE,
   ARENA_TWITTER_PROFILE,
+  ARENA_GITHUB_PROFILE,
   arenaReaderHash,
   arenaRenderCacheDecision,
   claimArenaRenderLease,
@@ -25,9 +27,11 @@ import {
   readArenaRenderCache,
   saveArenaReaderSnapshot,
 } from './arena-reader-cache'
+import { serializeArenaReaderDocument } from './arena-reader-capture'
 import { extractArenaReaderDocument } from './arena-reader-extraction'
 import {
   fetchArenaReaderSource,
+  saveArenaReaderResource,
   serveArenaReaderResource,
   validateArenaReaderTarget,
 } from './arena-reader-resources'
@@ -37,6 +41,8 @@ const DOCUMENT_LIMIT = 2 * 1024 * 1024
 const SCRIPT_LIMIT = 4 * 1024 * 1024
 const SESSION_BYTES_LIMIT = 12 * 1024 * 1024
 const SESSION_REQUEST_LIMIT = 80
+const FIGURE_LIMIT = 24
+const FIGURE_BYTES_LIMIT = 8 * 1024 * 1024
 const SOURCE_CSP =
   "worker-src 'none'; frame-src 'none'; object-src 'none'; media-src 'none'; connect-src http: https:; form-action 'none'"
 
@@ -253,6 +259,14 @@ export function arenaReaderRelayHeaders(
   return output
 }
 
+export function isArenaSubstackArticle(url: string, headers: Headers): boolean {
+  const { hostname, pathname } = new URL(url)
+  return (
+    /^\/p\/[^/]+\/?$/.test(pathname) &&
+    (hostname.endsWith('.substack.com') || headers.get('X-Served-By')?.toLowerCase() === 'substack')
+  )
+}
+
 export function arenaReaderFailureSignals(
   input: { title: string; text: string; articleLength: number; hasArticle: boolean },
   minimumTextLength = 40,
@@ -334,6 +348,59 @@ async function pdfArtifact(
   }
 }
 
+export function decodeArenaSourceCode(bytes: Uint8Array): string {
+  let code: string
+  try {
+    code = new TextDecoder('utf-8', { fatal: true }).decode(bytes)
+  } catch {
+    throw new ArenaCaptureError(
+      'unsupported-code',
+      'This file is not UTF-8 text. Open the original to view it.',
+    )
+  }
+  if (bytes.some(byte => byte <= 8 || (byte >= 14 && byte <= 31) || byte === 127))
+    throw new ArenaCaptureError(
+      'unsupported-code',
+      'This is a binary file. Open the original to view it.',
+    )
+  return code
+}
+
+async function githubArtifact(
+  entry: ArenaFeedEntry,
+  source: GithubSourceRef,
+  signal: AbortSignal,
+): Promise<ArenaReaderArtifact> {
+  const upstream = await fetchArenaReaderSource(source.rawUrl, {
+    signal,
+    headers: { Accept: 'text/plain,application/octet-stream;q=0.9' },
+  })
+  if (!upstream.response.ok) {
+    await upstream.response.body?.cancel()
+    throw new ArenaCaptureError(
+      'github-source-unavailable',
+      `GitHub returned HTTP ${upstream.response.status} for this source file. Open the original or retry later.`,
+    )
+  }
+  const contentType = upstream.response.headers.get('Content-Type')?.split(';')[0].trim()
+  if (!parseGithubSourceUrl(upstream.finalUrl) || contentType === 'text/html') {
+    await upstream.response.body?.cancel()
+    throw new ArenaCaptureError(
+      'unsupported-code',
+      'GitHub did not return raw source text for this file.',
+    )
+  }
+  const code = decodeArenaSourceCode(await boundedBody(upstream.response, DOCUMENT_LIMIT))
+  return {
+    ...(await artifactBase(entry, upstream.finalUrl)),
+    profileVersion: ARENA_GITHUB_PROFILE,
+    fingerprint: await arenaReaderHash(JSON.stringify([source.fileName, code])),
+    kind: 'code',
+    code,
+    fileName: source.fileName,
+  }
+}
+
 export async function buildArenaHtmlArtifact(
   base: ArenaReaderArtifactBase,
   extracted: ArenaExtractedDocument,
@@ -385,6 +452,7 @@ async function captureHtml(
   let browser: Awaited<ReturnType<typeof puppeteer.launch>> | null = null
   const diagnostics = new Set<string>()
   const pendingRequests = new Set<Promise<void>>()
+  const capturedFigures = new Map<string, Uint8Array<ArrayBuffer>>()
   try {
     const twitter = parseTwitterPostUrl(entry.sourceUrl) !== null
     const first = twitter
@@ -469,9 +537,13 @@ async function captureHtml(
     let requestCount = 0
     // A blank parsing document lets Defuddle's async X extractor retrieve the post
     // or full article once, without capturing the timeline and repeated embeds.
-    let html = '<!doctype html><html><head></head><body></body></html>'
-    let finalUrl = entry.sourceUrl
-    if (first) {
+    let html = first
+      ? new TextDecoder().decode(initialBody)
+      : '<!doctype html><html><head></head><body></body></html>'
+    let finalUrl = first?.finalUrl ?? entry.sourceUrl
+    // Substack serves the article in its initial HTML. Hydrating its app adds unrelated
+    // requests and can replace readable content with a signup or rate-limit screen.
+    if (first && !isArenaSubstackArticle(first.finalUrl, first.response.headers)) {
       const sourceContext = await browser.createBrowserContext()
       const page = await sourceContext.newPage()
       await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 1 })
@@ -583,17 +655,54 @@ async function captureHtml(
         }
       })
       if (!mathReady) diagnostics.add('Some equations could not finish typesetting.')
-      html = await page.evaluate(() => {
-        for (const image of document.querySelectorAll('img')) {
-          const source =
-            image.currentSrc ||
-            image.getAttribute('data-src') ||
-            image.getAttribute('data-original') ||
-            image.src
-          if (source) image.setAttribute('src', source)
+      let figureBytes = 0
+      let figureCount = 0
+      const figures = await page.$$('article svg, main svg, [role="main"] svg')
+      for (const figure of figures) {
+        controller.signal.throwIfAborted()
+        const size = await figure.evaluate(element => {
+          if (element.closest('mjx-container, .MathJax, math, nav, button, a, svg svg')) return null
+          const { width, height } = element.getBoundingClientRect()
+          return width >= 48 && height >= 48 ? { width, height } : null
+        })
+        if (!size) continue
+        if (figureCount++ >= FIGURE_LIMIT || figureBytes >= FIGURE_BYTES_LIMIT) {
+          diagnostics.add('Some diagrams exceeded the bounded figure capture limit.')
+          break
         }
-        return document.documentElement.outerHTML.slice(0, 2 * 1024 * 1024 + 1)
-      })
+        if (size.width > 2048 || size.height > 2048) {
+          diagnostics.add('Some diagrams exceeded the bounded figure dimensions.')
+          continue
+        }
+        try {
+          // Rasterize rendered diagrams before sanitization discards active SVG markup.
+          const png = await figure.screenshot({ type: 'png', encoding: 'base64' })
+          const bytes = Uint8Array.from(atob(png), character => character.charCodeAt(0))
+          if (figureBytes + bytes.byteLength > FIGURE_BYTES_LIMIT) {
+            diagnostics.add('Some diagrams exceeded the bounded figure capture limit.')
+            break
+          }
+          const url = new URL(page.url())
+          url.hash = `arena-figure-${await arenaReaderHash(png)}`
+          await figure.evaluate((element, sourceUrl) => {
+            const image = document.createElement('img')
+            image.src = sourceUrl
+            image.alt =
+              element.getAttribute('aria-label') ||
+              element.querySelector('title')?.textContent ||
+              ''
+            const { width, height } = element.getBoundingClientRect()
+            image.width = Math.ceil(width)
+            image.height = Math.ceil(height)
+            element.replaceWith(image)
+          }, url.href)
+          capturedFigures.set(url.href, bytes)
+          figureBytes += bytes.byteLength
+        } catch {
+          diagnostics.add('Some diagrams could not be saved from the rendered page.')
+        }
+      }
+      html = await page.evaluate(serializeArenaReaderDocument, DOCUMENT_LIMIT)
       if (new TextEncoder().encode(html).byteLength > DOCUMENT_LIMIT)
         throw new ArenaCaptureError(
           'too-large',
@@ -659,7 +768,24 @@ async function captureHtml(
     }
     const failure = arenaReaderFailureSignals(extracted, twitter ? 1 : 40)
     if (failure) throw new ArenaCaptureError(failure.reason, failure.message)
-    return buildArenaHtmlArtifact(base, extracted, diagnostics)
+    const artifact = await buildArenaHtmlArtifact(base, extracted, diagnostics)
+    for (const resource of artifact.resources) {
+      const png = capturedFigures.get(resource.url)
+      if (!png) continue
+      await saveArenaReaderResource(
+        env.ARENA_CONTENT,
+        {
+          articleId: artifact.articleId,
+          snapshotId: artifact.snapshotId,
+          resourceId: resource.id,
+          sourceUrl: resource.url,
+          purpose: 'image',
+        },
+        new Response(png, { headers: { 'Content-Type': 'image/png' } }),
+      )
+      resource.contentType = 'image/png'
+    }
+    return artifact
   } catch (error) {
     if (error instanceof ArenaCaptureError) throw error
     if (requestSignal.aborted)
@@ -692,6 +818,11 @@ async function buildArtifact(
     throw new ArenaCaptureError('blocked', 'This saved URL cannot be fetched by the reader.', 400)
   const arxivPdf = arenaArxivPdfUrl(entry.sourceUrl)
   if (arxivPdf) return pdfArtifact(entry, arxivPdf)
+  const githubSource = parseGithubSourceUrl(entry.sourceUrl)
+  if (githubSource)
+    return entry.kind === 'pdf'
+      ? pdfArtifact(entry, githubSource.rawUrl)
+      : githubArtifact(entry, githubSource, signal)
   if (entry.kind === 'pdf') return pdfArtifact(entry)
   if (entry.kind === 'internal')
     return {
@@ -759,6 +890,11 @@ export async function renderArenaArticle(
     parseTwitterPostUrl(entry.sourceUrl) !== null &&
     previous !== null &&
     previous.profileVersion !== ARENA_TWITTER_PROFILE
+  const replaceWithCode =
+    entry.kind !== 'pdf' &&
+    parseGithubSourceUrl(entry.sourceUrl) !== null &&
+    previous !== null &&
+    previous.profileVersion !== ARENA_GITHUB_PROFILE
   // A failed HTML capture must not delay switching to a source-specific representation.
   const cacheState = replaceWithPdf
     ? {
@@ -766,16 +902,18 @@ export async function renderArenaArticle(
         snapshotId: null,
         failure: cached.state.failure?.reason === 'storage-failed' ? cached.state.failure : null,
       }
-    : replaceWithTweet
-      ? {
-          ...cached.state,
-          snapshotId: null,
-          failure:
-            cached.state.failure?.reason === 'twitter-unavailable' ? null : cached.state.failure,
-        }
-      : previous
-        ? cached.state
-        : { ...cached.state, snapshotId: null }
+    : replaceWithCode
+      ? { ...cached.state, snapshotId: null }
+      : replaceWithTweet
+        ? {
+            ...cached.state,
+            snapshotId: null,
+            failure:
+              cached.state.failure?.reason === 'twitter-unavailable' ? null : cached.state.failure,
+          }
+        : previous
+          ? cached.state
+          : { ...cached.state, snapshotId: null }
   const decision = arenaRenderCacheDecision(cacheState, Date.now(), refresh)
   if (decision === 'ready' && previous) return deliverArtifact(env, previous, true)
   if (decision === 'pending') return pending(entry)

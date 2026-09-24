@@ -71,7 +71,7 @@ let activeSignal: AbortSignal | undefined
 
 const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
   const event: CustomEventMap['toast'] = new CustomEvent('toast', {
-    detail: { message: `current theme: ${preference}`, containerId: 'theme-toast-container' },
+    detail: { message: `current theme: ${preference}` },
   })
   document.dispatchEvent(event)
 }

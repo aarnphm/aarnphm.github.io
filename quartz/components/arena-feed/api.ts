@@ -143,6 +143,8 @@ function isArtifact(value: unknown): value is ArenaReaderArtifact {
       value.diagnostics.every(diagnostic => typeof diagnostic === 'string')
     )
   if (value.kind === 'pdf') return typeof value.resourceId === 'string'
+  if (value.kind === 'code')
+    return typeof value.code === 'string' && typeof value.fileName === 'string'
   if (value.kind === 'video')
     return nullableString(value.embedUrl) && nullableString(value.description)
   if (value.kind === 'internal') return typeof value.internalUrl === 'string'
@@ -153,7 +155,7 @@ function isArtifact(value: unknown): value is ArenaReaderArtifact {
   )
 }
 
-function parseRender(value: unknown): ArenaReaderRenderResult {
+export function parseRender(value: unknown): ArenaReaderRenderResult {
   if (isRecord(value)) {
     if (
       value.status === 'ready' &&

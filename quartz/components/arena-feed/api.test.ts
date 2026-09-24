@@ -1,6 +1,37 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { parseFeed, readApiResponse, ReaderApiError } from './api'
+import { parseFeed, parseRender, readApiResponse, ReaderApiError } from './api'
+
+test('source-code responses retain raw text and validate file metadata', () => {
+  const artifact = {
+    schemaVersion: 1,
+    articleId: 'article-v1-fixture',
+    snapshotId: 'snapshot-fixture',
+    title: 'Source file',
+    sourceUrl: 'https://github.com/owner/repo/blob/main/file.py',
+    finalUrl: 'https://raw.githubusercontent.com/owner/repo/main/file.py',
+    capturedAt: 0,
+    profileVersion: 'github-source-1',
+    fingerprint: '',
+    resources: [],
+    kind: 'code',
+    code: 'def f():\n    pass\n',
+    fileName: 'file.py',
+  }
+  const response = { status: 'ready', cached: true, artifact, warning: undefined }
+  assert.deepEqual(parseRender(response), response)
+  for (const patch of [
+    { code: undefined },
+    { code: 123 },
+    { fileName: undefined },
+    { fileName: {} },
+  ]) {
+    assert.throws(
+      () => parseRender({ ...response, artifact: { ...artifact, ...patch } }),
+      /invalid article/,
+    )
+  }
+})
 
 test('feed responses retain Curius provenance and reject links without a valid source', () => {
   const entry = {

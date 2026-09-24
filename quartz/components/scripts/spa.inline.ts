@@ -128,6 +128,7 @@ if (!window.quartzToast) {
       containerId: detail.containerId,
       containerStyles: detail.containerStyles,
       containerHost: detail.containerHost,
+      action: detail.action,
     })
   }
 

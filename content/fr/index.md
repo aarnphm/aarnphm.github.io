@@ -11,4 +11,6 @@ title: French
 
 notes de français québécois: [[fr/episode-1|épisodes]], [[fr/phrases|phrases]], [[fr/les-nombres|nombres]], [[fr/orthography-phonetics|sons et orthographe]].
 
+leçon du 21 septembre : [[fr/words|mots]] et [[fr/verbs|verbes au présent]].
+
 vue d'ensemble : [[fr/parcours.canvas|carte des notes]].

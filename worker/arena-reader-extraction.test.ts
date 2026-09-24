@@ -16,10 +16,46 @@ import {
   arenaReaderFailureSignals,
   arenaReaderRelayHeaders,
   buildArenaHtmlArtifact,
+  isArenaSubstackArticle,
   readArenaReaderResource,
+  decodeArenaSourceCode,
 } from './arena-reader-render'
 
 const run = promisify(execFile)
+
+test('raw source decoding preserves whitespace and rejects binary files', () => {
+  const source = '# café\r\n\tprint("<script> & text")\r\n\r\n'
+  assert.equal(decodeArenaSourceCode(new TextEncoder().encode(source)), source)
+  assert.equal(decodeArenaSourceCode(new Uint8Array()), '')
+  assert.throws(() => decodeArenaSourceCode(new Uint8Array([0, 1, 2])), /binary file/)
+  assert.throws(() => decodeArenaSourceCode(new Uint8Array([0xff, 0xfe])), /not UTF-8/)
+})
+
+test('Substack article captures use their supplied HTML on publication and custom domains', () => {
+  const substackHeaders = new Headers({ 'X-Served-By': 'Substack' })
+  assert.ok(isArenaSubstackArticle('https://example.substack.com/p/article', new Headers()))
+  assert.ok(isArenaSubstackArticle('https://www.astralcodexten.com/p/the-pledge', substackHeaders))
+  assert.ok(
+    isArenaSubstackArticle(
+      'https://publisher.example/p/article/?utm_source=reader',
+      substackHeaders,
+    ),
+  )
+  for (const url of [
+    'https://example.substack.com/',
+    'https://example.substack.com/p/article/comments',
+    'https://substack.com/@example/note/c-123',
+  ]) {
+    assert.equal(isArenaSubstackArticle(url, substackHeaders), false, url)
+  }
+  for (const url of [
+    'https://publisher.example/p/article',
+    'https://substack.com.example/p/article',
+    'https://notsubstack.com/p/article',
+  ]) {
+    assert.equal(isArenaSubstackArticle(url, new Headers()), false, url)
+  }
+})
 
 test('capture allows MathJax-sized scripts while bounding documents and streamed resources', async t => {
   const documentLimit = 2 * 1024 * 1024
@@ -284,6 +320,7 @@ test('real Chromium extracts articles and strips active content in an isolated d
       build({
         stdin: {
           contents: `export { extractArenaReaderDocument } from './arena-reader-extraction'
+            export { serializeArenaReaderDocument } from './arena-reader-capture'
             export { sanitizeReaderHtml } from '../quartz/components/arena-feed/content'`,
           resolveDir: path.dirname(fileURLToPath(import.meta.url)),
           loader: 'ts',
@@ -327,7 +364,13 @@ test('real Chromium extracts articles and strips active content in an isolated d
       <p>${paragraph.repeat(4)}</p>
       <script>window.challenge = 'Verify you are human'; window.Defuddle = null;</script>
       </article><footer>Newsletter signup</footer></body></html>`
-    const inputs = [
+    const inputs: {
+      html: string
+      finalUrl: string
+      idPrefix: string
+      capture?: boolean
+      captureTex?: string[]
+    }[] = [
       html,
       structuredHtml,
       '<html><head><title>A short note</title></head><body><article><p>A short, complete paragraph can still be a useful article to save and read.</p></article></body></html>',
@@ -385,6 +428,42 @@ test('real Chromium extracts articles and strips active content in an isolated d
         </article></body></html>`,
       finalUrl: 'https://example.com/mathjax-research',
       idPrefix: 'snapshot-',
+      capture: true,
+      captureTex: ['\\mathbf{k}(X)\\in\\mathbb{R}', '\\Xb', '\\beta=2'],
+    })
+    const substackHtml = `<html><head><title>A newsletter article</title>
+      <meta property="og:title" content="A newsletter article"></head><body>
+      <nav>Newsletter navigation</nav><article><h1>A newsletter article</h1>
+      <div class="body markup"><p>${paragraph.repeat(5)}</p>
+      <h2 id="a-section">A section</h2><p>${paragraph.repeat(3)}</p>
+      <p><a href="#a-section">Read this section</a> and <a href="/p/another-article">another article</a>.</p>
+      <figure><img data-src="https://substackcdn.com/image/figure.png" width="1200" height="800" alt="A newsletter figure"><figcaption>A figure caption.</figcaption></figure>
+      <p>The final paragraph remains in the saved article.</p></div></article>
+      <form><input type="email"><button>Subscribe</button></form>
+      <script>document.querySelector('.body.markup').textContent = 'Subscribe to continue'; fetch('/api/v1/track');</script>
+      </body></html>`
+    for (const origin of ['https://example.substack.com', 'https://publisher.example']) {
+      inputs.push({ html: substackHtml, finalUrl: `${origin}/p/article`, idPrefix: 'snapshot-' })
+    }
+    inputs.push({
+      html: `<html><head><title>A long mathematical article</title>
+        <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"A long mathematical article"}</script>
+        <style>mjx-c { display: inline-block; }</style></head><body><article>
+        <h1>A long mathematical article</h1><p>${paragraph.repeat(4)}</p>
+        ${Array.from(
+          { length: 577 },
+          (_, index) => `<p>Equation ${index} remains readable.
+          <mjx-container class="MathJax" display="${index % 2 === 0}">
+            <mjx-math aria-hidden="true">${'<mjx-c class="mjx-c1D465 TEX-I"></mjx-c>'.repeat(110)}</mjx-math>
+            <mjx-assistive-mml><math xmlns="http://www.w3.org/1998/Math/MathML"><mi mathvariant="bold">x</mi><mo>=</mo><mn>${index}</mn></math></mjx-assistive-mml>
+          </mjx-container></p>`,
+        ).join('')}
+        <figure><img src="https://publisher.example/large-math#arena-figure-fixture" width="600" height="300" alt="GPU architecture"><figcaption>Generated diagram saved as an image.</figcaption></figure>
+        <h2 id="conclusion">Conclusion</h2><p>The final paragraph survives the capture limit.</p>
+        </article><script>window.publisherCode = true;</script></body></html>`,
+      finalUrl: 'https://publisher.example/large-math',
+      idPrefix: 'snapshot-',
+      capture: true,
     })
     const input = JSON.stringify(inputs).replaceAll('<', '\\u003c')
     const fixture = path.join(directory, 'fixture.html')
@@ -401,8 +480,30 @@ test('real Chromium extracts articles and strips active content in an isolated d
       const serialized = document.createElement('script');
       serialized.textContent = 'globalThis.extractSerialized = ' + ArenaExtraction.extractArenaReaderDocument.toString();
       document.head.appendChild(serialized);
+      const captureScript = document.createElement('script');
+      captureScript.textContent = 'globalThis.captureSerialized = ' + ArenaExtraction.serializeArenaReaderDocument.toString();
+      document.head.appendChild(captureScript);
       Promise.all(${input}.map(async input => {
         try {
+          let capture = null;
+          if (input.capture) {
+            const doc = new DOMParser().parseFromString(input.html, 'text/html');
+            if (input.captureTex) {
+              globalThis.MathJax = { startup: { document: { math: [...doc.querySelectorAll('mjx-container')].map((typesetRoot, index) => ({
+                math: input.captureTex[index], inputJax: { name: 'TeX' }, typesetRoot,
+              })) } } };
+            }
+            const originalBytes = new TextEncoder().encode(input.html).byteLength;
+            input.html = captureSerialized(2 * 1024 * 1024, doc);
+            delete globalThis.MathJax;
+            capture = {
+              originalBytes, bytes: new TextEncoder().encode(input.html).byteLength,
+              math: doc.querySelectorAll('math').length,
+              display: doc.querySelectorAll('math[display="block"]').length,
+              scripts: [...doc.scripts].map(script => script.type),
+              bounded: captureSerialized(64, new DOMParser().parseFromString('<p>' + 'x'.repeat(100) + '</p>', 'text/html')).length,
+            };
+          }
           const result = await extractSerialized(input);
           const displayHtml = ArenaExtraction.sanitizeReaderHtml(result.readerHtml ?? '');
           const article = document.createElement('div');
@@ -418,7 +519,7 @@ test('real Chromium extracts articles and strips active content in an isolated d
             overflowX: getComputedStyle(equation).overflowX,
           } : null;
           article.remove();
-          return { ...result, displayHtml, mathLayout };
+          return { ...result, displayHtml, mathLayout, capture };
         }
         catch (error) { return { error: error.message } }
       })).then(results => { document.body.textContent = btoa(unescape(encodeURIComponent(JSON.stringify(results)))); });</script></body></html>`,
@@ -443,6 +544,14 @@ test('real Chromium extracts articles and strips active content in an isolated d
     const outputs: (
       | (ArenaExtractedDocument & {
           displayHtml: string
+          capture: {
+            originalBytes: number
+            bytes: number
+            math: number
+            display: number
+            scripts: string[]
+            bounded: number
+          } | null
           mathLayout: {
             display: string
             width: number
@@ -465,6 +574,9 @@ test('real Chromium extracts articles and strips active content in an isolated d
       xPost,
       xFallback,
       mathJax,
+      substack,
+      customSubstack,
+      largeMath,
     ] = outputs
     assert.ok(output && !('error' in output))
     assert.equal(output.title, 'Reading links')
@@ -485,6 +597,28 @@ test('real Chromium extracts articles and strips active content in an isolated d
       markup,
       /<script|<iframe|<form|<input|onerror|javascript:|srcset|style=|attacker\.example/,
     )
+    await t.test('Substack HTML reaches Defuddle without running publisher scripts', () => {
+      for (const { article, origin } of [
+        { article: substack, origin: 'https://example.substack.com' },
+        { article: customSubstack, origin: 'https://publisher.example' },
+      ]) {
+        assert.ok(article && !('error' in article))
+        assert.equal(article.title, 'A newsletter article')
+        assert.ok(article.readerHtml?.includes(paragraph.trim()))
+        assert.match(article.displayHtml, /The final paragraph remains in the saved article/)
+        assert.match(article.displayHtml, /id="snapshot-a-section"/)
+        assert.match(article.displayHtml, /href="#snapshot-a-section"/)
+        assert.ok(article.displayHtml.includes(`href="${origin}/p/another-article"`))
+        assert.match(article.displayHtml, /A figure caption/)
+        assert.deepEqual(article.imageUrls, ['https://substackcdn.com/image/figure.png'])
+        assert.doesNotMatch(article.displayHtml, /Newsletter navigation|Subscribe|<script|<form/)
+        assert.equal(arenaReaderFailureSignals(article), null)
+      }
+      assert.equal(
+        requests.some(url => url.includes('/api/v1/track')),
+        false,
+      )
+    })
     await t.test('Defuddle extracts one full X article with formatting and saved images', () => {
       assert.ok(xArticle && !('error' in xArticle))
       assert.equal(xArticle.title, 'An article from X')
@@ -565,34 +699,36 @@ test('real Chromium extracts articles and strips active content in an isolated d
       assert.match(structured.displayHtml, /class="arena-callout"/)
       assert.match(structured.displayHtml, /data-callout="note"/)
       assert.match(structured.displayHtml, /data-lang="python"/)
-      assert.match(structured.displayHtml, /data-latex="\\frac\{a\}\{b\}"/)
+      assert.match(structured.displayHtml, /class="katex-display"/)
       assert.match(structured.displayHtml, /href="#snapshot-fn:1"/)
     })
-    await t.test('MathJax macro expansions survive Defuddle and both sanitizers as MathML', () => {
-      assert.ok(mathJax && !('error' in mathJax))
-      assert.ok(mathJax.readerHtml)
-      for (const markup of [mathJax.readerHtml, mathJax.displayHtml]) {
-        assert.equal((markup.match(/<math[\s>]/g) ?? []).length, 3)
-        assert.match(markup, /<math[^>]*display="block"/)
-        assert.match(markup, /<munder>/)
-        assert.match(markup, /<msubsup>/)
-        assert.match(markup, /<mtext>Delta Operator <\/mtext>/)
-        assert.match(
-          markup,
-          /<td>\s*<math[^>]*><mi>β<\/mi>\s*<mo>=<\/mo>\s*<mn>2<\/mn><\/math>\s*<\/td>/,
-        )
-        assert.doesNotMatch(markup, /mjx-container|mjx-assistive-mml|<svg|<script|\\Xb|\\kb/)
-      }
-      assert.match(mathJax.readerHtml, /<mi mathvariant="bold">k<\/mi>/)
-      assert.match(mathJax.readerHtml, /<mi mathvariant="bold">X<\/mi>/)
-      assert.match(mathJax.displayHtml, /<mi mathvariant="normal">𝐤<\/mi>/)
-      assert.match(mathJax.displayHtml, /<mi mathvariant="normal">𝐗<\/mi>/)
-      assert.match(mathJax.displayHtml, /<mi mathvariant="normal">ℝ<\/mi>/)
-      assert.ok(mathJax.mathLayout)
-      assert.equal(mathJax.mathLayout.display, 'block math')
-      assert.ok(mathJax.mathLayout.width <= mathJax.mathLayout.articleWidth)
-      assert.equal(mathJax.mathLayout.overflowX, 'auto')
-    })
+    await t.test(
+      'MathJax TeX renders with KaTeX while unsupported macros retain captured MathML',
+      () => {
+        assert.ok(mathJax && !('error' in mathJax))
+        assert.ok(mathJax.readerHtml)
+        for (const markup of [mathJax.readerHtml, mathJax.displayHtml]) {
+          assert.equal((markup.match(/<math[\s>]/g) ?? []).length, 3)
+          assert.match(markup, /<math[^>]*display="block"/)
+          assert.match(markup, /<munder>/)
+          assert.match(markup, /<msubsup>/)
+          assert.match(markup, /<mtext>Delta Operator <\/mtext>/)
+          assert.doesNotMatch(markup, /mjx-container|mjx-assistive-mml|<svg|<script|\\kb/)
+        }
+        assert.ok(mathJax.readerHtml.includes('data-latex="\\mathbf{k}(X)\\in\\mathbb{R}"'))
+        assert.ok(mathJax.readerHtml.includes('data-latex="\\Xb"'))
+        assert.equal((mathJax.displayHtml.match(/class="katex"/g) ?? []).length, 2)
+        assert.match(mathJax.displayHtml, /class="katex-mathml"/)
+        assert.match(mathJax.displayHtml, /<td>\s*<span class="katex"/)
+        assert.match(mathJax.readerHtml, /<mi mathvariant="bold">k<\/mi>/)
+        assert.match(mathJax.readerHtml, /<mi mathvariant="bold">X<\/mi>/)
+        assert.match(mathJax.displayHtml, /<mi mathvariant="normal">𝐗<\/mi>/)
+        assert.ok(mathJax.mathLayout)
+        assert.equal(mathJax.mathLayout.display, 'block math')
+        assert.ok(mathJax.mathLayout.width <= mathJax.mathLayout.articleWidth)
+        assert.equal(mathJax.mathLayout.overflowX, 'auto')
+      },
+    )
     await t.test(
       'short articles remain readable and executable payloads do not count as content',
       () => {
@@ -610,6 +746,28 @@ test('real Chromium extracts articles and strips active content in an isolated d
       assert.ok(oversized && 'error' in oversized)
       assert.match(oversized.error, /reader element limit/)
     })
+    await t.test(
+      'rendered math is compacted before size limits without truncating the article',
+      () => {
+        assert.ok(largeMath && !('error' in largeMath))
+        assert.ok(largeMath.capture)
+        assert.ok(largeMath.capture.originalBytes > 2 * 1024 * 1024)
+        assert.ok(largeMath.capture.bytes < 2 * 1024 * 1024)
+        assert.equal(largeMath.capture.math, 577)
+        assert.equal(largeMath.capture.display, 289)
+        assert.deepEqual(largeMath.capture.scripts, ['application/ld+json'])
+        assert.equal(largeMath.capture.bounded, 65)
+        for (const markup of [largeMath.readerHtml ?? '', largeMath.displayHtml]) {
+          assert.equal((markup.match(/<math\b/g) ?? []).length, 577)
+          assert.match(markup, /The final paragraph survives the capture limit/)
+          assert.match(markup, /Generated diagram saved as an image/)
+          assert.doesNotMatch(markup, /mjx-container|mjx-c |<script|<style/)
+        }
+        assert.deepEqual(largeMath.imageUrls, [
+          'https://publisher.example/large-math#arena-figure-fixture',
+        ])
+      },
+    )
     await t.test(
       'URL extraction uses the real asynchronous wiki extractor with sync fallback',
       () => {

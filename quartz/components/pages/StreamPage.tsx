@@ -127,6 +127,30 @@ const entryMeta = (entry: StreamEntry): string => {
 
 const slugFromPath = (path: string): string => path.replace(/^\//, '')
 
+const renderOpenArrow = (path: string, label: string) => (
+  <a
+    class="stream-legend-open internal"
+    href={path}
+    data-slug={slugFromPath(path)}
+    data-no-popover
+    aria-label={`open ${label}`}
+  >
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.75"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  </a>
+)
+
 const formatLegendDay = (isoDate: string | undefined | null): string => {
   if (!isoDate) return ''
   const date = new Date(isoDate)
@@ -301,22 +325,16 @@ export default (() => {
       <div class="stream-legend-groups">
         {months.map(month => {
           const locked = restrictedCount(month.entries)
+          const label = formatLegendMonth(month)
 
           return (
             <details key={month.id} class="stream-legend-group">
               <summary class="stream-legend-summary">
-                <span class="stream-legend-summary-title">{formatLegendMonth(month)}</span>
+                <span class="stream-legend-summary-title">{label}</span>
                 {renderRestrictedMetric(locked)}
                 {renderSummaryMetric(month.entries.length, 'entry')}
                 {renderEmptySummaryMetric()}
-                <a
-                  class="stream-legend-open internal"
-                  href={month.path}
-                  data-slug={slugFromPath(month.path)}
-                  data-no-popover
-                >
-                  open
-                </a>
+                {renderOpenArrow(month.path, `${label} ${month.year}`)}
               </summary>
               {renderLegendEntries(month.entries)}
             </details>
@@ -344,14 +362,7 @@ export default (() => {
                   {renderRestrictedMetric(locked)}
                   {renderSummaryMetric(year.months.length, 'month')}
                   {renderSummaryMetric(year.entries.length, 'entry')}
-                  <a
-                    class="stream-legend-open internal"
-                    href={year.path}
-                    data-slug={slugFromPath(year.path)}
-                    data-no-popover
-                  >
-                    open
-                  </a>
+                  {renderOpenArrow(year.path, year.yearText)}
                 </summary>
                 {renderMonthGroups(year.months)}
               </details>

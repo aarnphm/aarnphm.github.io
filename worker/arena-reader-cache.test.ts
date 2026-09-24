@@ -8,6 +8,7 @@ import type { ArenaReaderArtifact } from '../quartz/util/arena-reader'
 import {
   ARENA_READER_PROFILE,
   ARENA_TWITTER_PROFILE,
+  ARENA_GITHUB_PROFILE,
   arenaReaderHash,
   arenaRenderCacheDecision,
   claimArenaRenderLease,
@@ -96,6 +97,33 @@ test('real R2 leases coalesce misses, reject stale publishers, and retain saved 
   })
   try {
     const bucket = platform.env.CONTENT
+    await t.test(
+      'raw source snapshots preserve code and retain the old article version',
+      async () => {
+        const previous = { ...(await artifact()), articleId: `article-v1-${'d'.repeat(64)}` }
+        assert.equal(await saveArenaReaderSnapshot(bucket, previous), true)
+        const saved = parseArenaReaderArtifact({
+          ...previous,
+          snapshotId: crypto.randomUUID(),
+          profileVersion: ARENA_GITHUB_PROFILE,
+          kind: 'code',
+          fileName: 'file.py',
+          code: '# café\r\n\tprint("<script>")\r\n\r\n',
+        })
+        assert.ok(saved)
+        assert.equal(saved.kind, 'code')
+        assert.equal(keepCompleteArenaSnapshot(previous, saved), false)
+        assert.equal(await saveArenaReaderSnapshot(bucket, saved), true)
+        assert.deepEqual(
+          await loadArenaReaderSnapshot(bucket, saved.articleId, saved.snapshotId),
+          saved,
+        )
+        assert.deepEqual(
+          await loadArenaReaderSnapshot(bucket, previous.articleId, previous.snapshotId),
+          previous,
+        )
+      },
+    )
     await t.test(
       'saved copies from the previous extractor keep their state and snapshot URLs',
       async () => {

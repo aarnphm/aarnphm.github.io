@@ -1,7 +1,7 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
 import { useId, useLayoutEffect, useRef, useState } from 'preact/hooks'
 
-export function DeleteNote({ disabled, onDelete }: { disabled: boolean; onDelete: () => void }) {
+export function DeleteNote({ onDelete }: { onDelete: () => void }) {
   const id = useId()
   const trigger = useRef<HTMLButtonElement>(null)
   const popover = useRef<HTMLDialogElement>(null)
@@ -38,7 +38,6 @@ export function DeleteNote({ disabled, onDelete }: { disabled: boolean; onDelete
       <button
         ref={trigger}
         type="button"
-        disabled={disabled}
         aria-haspopup="dialog"
         aria-expanded={open}
         popovertarget={id}
