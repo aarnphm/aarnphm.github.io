@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-09-18 11:47:27 GMT-04:00
+modified: 2026-09-25 17:45:40 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -354,3 +354,4 @@ title: lists
   - Yankee
   - Zulu
 - paraphernalia
+- staffage
