@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-24 16:28:26 GMT-04:00
+modified: 2026-09-24 21:17:42 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1728,6 +1728,22 @@ exercise: Upper Calf Stretch (30s per side) | 1m
 exercise: Hip Flexor Stretch Kneeling (30s per side) | 1m
 exercise: Butterfly stretch | 30s
 exercise: Figure 4 glute stretch (30s per side) | 1m
+```
+
+```tracking
+title: Guided Down, Sound Immersion
+date: 2026-09-24
+time: 19:30
+duration: 75 mins
+activity: sauna
+temperature: 176F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: hot sauna | cold plunge | hot sauna | break
+location: Othership Adelaide
+htl: 7.6
+strava: 20318048837
+garmin: 24488234111
 ```
 
 <!-- training plan start
