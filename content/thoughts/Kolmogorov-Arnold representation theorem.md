@@ -2,7 +2,9 @@
 date: '2024-12-17'
 description: Representing continuous functions on a cube using continuous functions of one variable and addition.
 id: Kolmogorov-Arnold representation theorem
-modified: 2026-09-23 09:05:11 GMT-04:00
+modified: 2026-09-25 11:15:04 GMT-04:00
+seealso:
+  - '[[thoughts/FFN#universal approximation theorem|universal approximation theorem]]'
 tags:
   - math
 title: Kolmogorov–Arnold representation theorem
@@ -23,5 +25,3 @@ For $n\ge2$, every continuous function $f: [0,1]^n \to \mathbb{R}$ can be repres
 Read the expression from the inside out: transform each coordinate separately, add those values, then apply an outer function to the sum. Adding the $2n+1$ resulting terms recovers $f$ exactly. Continuity alone puts no bound here on the cost of evaluating or learning these functions.
 
 Source: [Kolmogorov's 1957 theorem](https://cs.uwaterloo.ca/~y328yu/classics/Kolmogorov57.pdf), opening theorem and equation (1). The sum here starts at $q=0$ instead of $q=1$, with the same number of terms.
-
-See also [[thoughts/FFN#universal approximation theorem]]

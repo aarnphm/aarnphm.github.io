@@ -2,6 +2,10 @@
 
 body[data-layout='technical-tractatus'],
 body[data-layout='technical'] {
+  .page-content {
+    text-align: justify;
+  }
+
   .page-footer {
     padding: 0;
 

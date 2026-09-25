@@ -18,7 +18,7 @@ title: Logistic regression
 
 ## Model and likelihood
 
-Binary labels $y_i \in \{0,1\}$, features $x_i \in \mathbb{R}^d$. With weights $w \in \mathbb{R}^d$ and (optional) bias $b$, define
+Logistic regression models the probability of a binary label $y_i \in \{0,1\}$ from features $x_i \in \mathbb{R}^d$. With weights $w \in \mathbb{R}^d$ and bias $b$, define
 
 $$
 \begin{aligned}
@@ -27,20 +27,24 @@ p_i &:= P(y_i{=}1\mid x_i; w,b) = \sigma(t_i).
 \end{aligned}
 $$
 
-Under i.i.d. Bernoulli labels, the likelihood and log‑likelihood are
+The model makes the log-odds linear in the features: $\log\frac{p_i}{1-p_i}=w^\top x_i+b$. A probability threshold of $\tfrac12$ therefore gives the decision boundary $w^\top x+b=0$.
+
+For a fixed design, assume the labels are conditionally independent with $y_i\mid x_i;w,b\sim\operatorname{Bernoulli}(p_i)$. Their success probabilities depend on their features, so these conditional distributions generally differ across observations. The likelihood and log-likelihood are
 
 $$
 \mathcal{L}(w,b) = \prod_{i=1}^n p_i^{y_i} (1-p_i)^{1-y_i},\qquad
 \ell(w,b) = \sum_{i=1}^n \big[ y_i\log p_i + (1-y_i)\log(1-p_i) \big].
 $$
 
+This is the conditional likelihood used in the [CS229 logistic regression derivation](https://cs229.stanford.edu/notes-spring2019/cs229-notes1.pdf).
+
 > [!note] Intercept handling
-> You can fold the bias into features by augmenting $x_i'=[x_i;1]$ and $w'=[w;b]$; all derivations below stay the same.
+> Fold the bias into the features with $\tilde x_i=[x_i;1]$ and $\theta=[w;b]$. The augmented design is $\tilde X=[X\;\mathbf{1}]$, whose rows are $\tilde x_i^\top$. To fit a model without an intercept, omit the constant column and $b$.
 
 ## Log‑likelihood forms (two label codings)
 
-- 0/1 labels: $\displaystyle \ell(w,b)=\sum_i \big[y_i\log\sigma(t_i)+(1-y_i)\log(1-\sigma(t_i))\big]$. This equals the negative binary cross‑entropy used in ML.
-- ±1 labels: using $y_i\in\{-1,+1\}$ and $1-\sigma(t)=\sigma(-t)$,
+- $\{0,1\}$ labels: $\displaystyle \ell(w,b)=\sum_i \big[y_i\log\sigma(t_i)+(1-y_i)\log(1-\sigma(t_i))\big]$. This equals the negative binary cross‑entropy used in ML.
+- $\{-1,+1\}$ labels: using $y_i\in\{-1,+1\}$ and $1-\sigma(t)=\sigma(-t)$,
   $\displaystyle \ell(w,b)=\sum_i \log \sigma\big(y_i t_i\big)$,
   so the negative log‑likelihood (logistic loss) is $\sum_i \log\big(1+e^{-y_i t_i}\big)$.
 
@@ -78,13 +82,36 @@ $$
 \nabla_w^2 \mathcal{J} = X^\top S X, \qquad \frac{\partial^2 \mathcal{J}}{\partial b^2} = \mathbf{1}^\top S\, \mathbf{1}, \qquad \frac{\partial^2 \mathcal{J}}{\partial w\, \partial b} = X^\top S\, \mathbf{1}.
 $$
 
-- $S \succeq 0 \Rightarrow$ $\mathcal{J}$ is convex in $(w,b)$; Newton or Fisher scoring (IRLS) apply.
-- IRLS/Newton step (augmented design): $\Delta = (X^\top S X)^{-1} X^\top (y-p)$. In logistic regression, observed and expected information coincide, so Newton and Fisher scoring agree.
+For the joint parameter $\theta$, the Hessian is $H=\tilde X^\top S\tilde X$. For any direction $v$,
+
+$$
+v^\top H v = \sum_{i=1}^n p_i(1-p_i)(\tilde x_i^\top v)^2 \geq 0.
+$$
+
+Hence $\mathcal{J}$ is convex. At finite parameters, every $p_i(1-p_i)$ is positive, so $H$ is invertible exactly when $\tilde X$ has full column rank. In that case the Newton step solves
+
+$$
+H\Delta=\tilde X^\top(y-p),\qquad \theta_{\mathrm{new}}=\theta+\Delta.
+$$
+
+Solve this linear system rather than forming the inverse. A line search can shorten the step if the full step increases the loss. Since $H$ does not depend on the observed labels, it equals its conditional expectation: observed and expected information coincide, so Newton and Fisher scoring give the same step, also expressed as iteratively reweighted least squares (IRLS).
+
+Full column rank still allows a fit with no finite minimizer. Take the two observations $(x,y)=(-1,0),(1,1)$ and set $b=0$. Their loss is
+
+$$
+\mathcal{J}(w,0)=2\log(1+e^{-w})\longrightarrow 0\quad\text{as }w\longrightarrow\infty.
+$$
+
+Every positive $w$ classifies both points correctly, and increasing $w$ keeps improving their likelihood. This is **complete separation**. **Quasi-complete separation** also prevents a finite MLE: there is a direction $v$ whose signed margins $(2y_i-1)\tilde x_i^\top v$ are all nonnegative, some positive and some zero, while complete separation is impossible. Under full column rank, a finite, unique MLE exists when neither kind of separation occurs, called overlap. See [Albert and Anderson's existence theorem](https://doi.org/10.1093/biomet/71.1.1).
 
 ## Regularization (MAP view)
 
+With $\lambda>0$, penalize the slopes:
+
 - L2: add $\tfrac{\lambda}{2} \lVert w \rVert_2^2$ (Gaussian prior). Gradients become $\nabla_w \mathcal{J}_{\lambda}=X^\top(p-y)+\lambda w$.
 - L1: add $\lambda \lVert w \rVert_1$ (Laplace prior). Use proximal/coordinate descent.
+
+These penalties leave $b$ unpenalized. With both classes present, either penalty gives a finite solution even under separation: the penalty bounds the slopes, and observations from both classes keep the intercept finite. L2 gives a unique solution. If all labels are $1$, setting $w=0$ and sending $b\to\infty$ still drives the loss to zero without paying either penalty. Penalizing the intercept too removes that escape direction. The all-zero case has $b\to-\infty$.
 
 See [[thoughts/Maximum likelihood estimation#training statistical models (derivation sketch)|MLE training sketch]] and [[thoughts/regularization]].
 
