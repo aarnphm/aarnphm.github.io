@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-24 21:17:42 GMT-04:00
+modified: 2026-09-25 14:57:28 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1744,6 +1744,12 @@ location: Othership Adelaide
 htl: 7.6
 strava: 20318048837
 garmin: 24488234111
+```
+
+```tracking
+activity: 20327299425
+garmin: 24497153314
+computer: Wahoo ELEMNT BOLT 3
 ```
 
 <!-- training plan start
