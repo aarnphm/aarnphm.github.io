@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict'
+import { once } from 'node:events'
+import { createServer } from 'node:http'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
@@ -327,4 +329,78 @@ test('reuses Summit segments for unchanged cached workouts', async () => {
   assert.strictEqual(refreshed.summitSegments['wahoo:55'], previous.summitSegments['wahoo:55'])
   assert.ok(!calls.some(url => url.includes('/workout_summary')))
   assert.ok(!calls.some(url => url.endsWith('.fit')))
+})
+
+test('refreshes only changed workouts and newly missing summaries through HTTP', async () => {
+  const previous = previousCache()
+  const paths: string[] = []
+  const baseWorkout = {
+    id: 55,
+    starts: '2026-08-27T12:00:00.000Z',
+    minutes: 60,
+    name: 'Ride',
+    workout_token: '55',
+    workout_type_id: 15,
+    workout_summary: null,
+    created_at: '2026-08-27T12:00:00.000Z',
+    updated_at: '2026-08-27T13:00:00.000Z',
+  }
+  const server = createServer((request, response) => {
+    const path = request.url ?? ''
+    paths.push(path)
+    response.setHeader('Content-Type', 'application/json')
+    if (path === '/oauth/token') {
+      response.end(
+        JSON.stringify({ access_token: 'access', refresh_token: 'refresh-two', expires_in: 3600 }),
+      )
+    } else if (path.startsWith('/v1/workouts?')) {
+      response.end(
+        JSON.stringify({
+          workouts: [
+            { ...baseWorkout, workout_summary: summary() },
+            { ...baseWorkout, id: 56, workout_token: '56' },
+            {
+              ...baseWorkout,
+              id: 57,
+              workout_token: '57',
+              created_at: '2026-08-27T15:00:00.000Z',
+              updated_at: '2026-08-27T15:00:00.000Z',
+            },
+          ],
+          total: 3,
+          page: 1,
+          per_page: 100,
+        }),
+      )
+    } else {
+      response.statusCode = 404
+      response.end(JSON.stringify({ error: 'Not Found' }))
+    }
+  })
+  server.listen(0, '127.0.0.1')
+  await once(server, 'listening')
+  try {
+    const address = server.address()
+    if (!address || typeof address === 'string') assert.fail('expected a TCP server')
+    const baseUrl = `http://127.0.0.1:${address.port}`
+    const client = new WahooCloudClient(
+      { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
+      {
+        apiBaseUrl: baseUrl,
+        tokenUrl: `${baseUrl}/oauth/token`,
+        refreshTokenFile: join(tmpdir(), `wahoo-sync-incremental-${process.pid}.token`),
+      },
+    )
+    const refreshed = await fetchWahooCache(client, previous)
+    assert.deepEqual(Object.keys(refreshed.activities), ['wahoo:55'])
+    assert.deepEqual(
+      paths.filter(path => path.includes('/workout_summary')),
+      ['/v1/workouts/57/workout_summary'],
+    )
+    assert.strictEqual(refreshed.activities['wahoo:55'], previous.activities['wahoo:55'])
+  } finally {
+    await new Promise<void>((resolveClose, rejectClose) =>
+      server.close(error => (error ? rejectClose(error) : resolveClose())),
+    )
+  }
 })

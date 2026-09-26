@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict'
+import { once } from 'node:events'
 import fs from 'node:fs/promises'
+import { createServer } from 'node:http'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
@@ -171,8 +173,50 @@ test('rejects unsafe FIT URLs and unknown upload statuses', () => {
   assert.throws(() => parseWahooWorkoutFileUpload(upload('finished')), /invalid status/)
 })
 
-test('uses provider rate-limit reset headers with a bounded fallback', () => {
+test('uses provider rate-limit reset seconds with a one-minute fallback', () => {
   assert.equal(wahooRateLimitDelay(new Headers({ 'retry-after': '12' }), 1_000), 12_000)
-  assert.equal(wahooRateLimitDelay(new Headers({ 'x-ratelimit-reset': '16' }), 1_000), 15_000)
+  assert.equal(wahooRateLimitDelay(new Headers({ 'x-ratelimit-reset': '16' }), 1_000), 16_000)
+  assert.equal(wahooRateLimitDelay(new Headers({ 'x-ratelimit-reset': '3600' }), 1_000), 3_600_000)
   assert.equal(wahooRateLimitDelay(new Headers(), 1_000), 60_000)
+})
+
+test('reports a long Wahoo quota reset without sending repeated requests', async () => {
+  const paths: string[] = []
+  const server = createServer((request, response) => {
+    const path = request.url ?? ''
+    paths.push(path)
+    response.setHeader('Content-Type', 'application/json')
+    if (path === '/oauth/token') {
+      response.end(
+        JSON.stringify({ access_token: 'access', refresh_token: 'refresh-two', expires_in: 3600 }),
+      )
+    } else {
+      response.statusCode = 429
+      response.setHeader('X-RateLimit-Limit', '250, 100, 25')
+      response.setHeader('X-RateLimit-Remaining', '0, 32, 0')
+      response.setHeader('X-RateLimit-Reset', '3600')
+      response.end(JSON.stringify({ error: 'Too Many Requests' }))
+    }
+  })
+  server.listen(0, '127.0.0.1')
+  await once(server, 'listening')
+  try {
+    const address = server.address()
+    if (!address || typeof address === 'string') assert.fail('expected a TCP server')
+    const baseUrl = `http://127.0.0.1:${address.port}`
+    const client = new WahooCloudClient(
+      { clientId: 'client', clientSecret: 'secret', refreshToken: 'refresh-one' },
+      {
+        apiBaseUrl: baseUrl,
+        tokenUrl: `${baseUrl}/oauth/token`,
+        refreshTokenFile: join(tmpdir(), `wahoo-rate-limit-${process.pid}.token`),
+      },
+    )
+    await assert.rejects(client.listWorkouts(), /rate limit.*3600 seconds.*remaining=0, 32, 0/)
+    assert.equal(paths.filter(path => path.startsWith('/v1/workouts?')).length, 1)
+  } finally {
+    await new Promise<void>((resolveClose, rejectClose) =>
+      server.close(error => (error ? rejectClose(error) : resolveClose())),
+    )
+  }
 })

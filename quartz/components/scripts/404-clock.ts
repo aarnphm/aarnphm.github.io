@@ -1,8 +1,13 @@
-import { GATE } from './404-gate'
-
 type Mode = 'idle' | 'hot' | 'enter'
 
-export type Clock = { step(dt: number): void; mode(mode: Mode): void }
+// Hand angles in degrees, clockwise from twelve. The landscape paints them into the rift.
+export type Clock = {
+  hour: number
+  minute: number
+  second: number
+  step(dt: number): void
+  mode(mode: Mode): void
+}
 
 // Hilfiker's railway clock. The master clock sends one impulse a minute: the minute hand jumps on
 // it, the hour hand creeps half a degree, and the red second hand, which sweeps round in 58.5 s,
@@ -11,13 +16,7 @@ export type Clock = { step(dt: number): void; mode(mode: Mode): void }
 const WARP: Record<Mode, number> = { idle: 1, hot: 900, enter: 9000 }
 const SWEEP = 58.5
 
-export function setupClock(scene: HTMLElement, reduce: boolean): Clock | null {
-  const hand = (name: string) => scene.querySelector<SVGGElement>(`[data-hand="${name}"]`)
-  const hourHand = hand('hour')
-  const minuteHand = hand('minute')
-  const secondHand = hand('second')
-  if (!hourHand || !minuteHand || !secondHand) return null
-
+export function makeClock(reduce: boolean): Clock {
   let mode: Mode = 'idle'
   let warp = 1
   let offset = 0
@@ -26,10 +25,10 @@ export function setupClock(scene: HTMLElement, reduce: boolean): Clock | null {
   let way = 1
   let sweep = 0
 
-  const turn = (el: SVGGElement, deg: number) =>
-    el.setAttribute('transform', `rotate(${deg.toFixed(2)} ${GATE.x} ${GATE.y})`)
-
-  return {
+  const clock: Clock = {
+    hour: 0,
+    minute: 0,
+    second: 0,
     step(dt) {
       if (reduce || mode === 'idle') {
         warp = 1
@@ -56,12 +55,13 @@ export function setupClock(scene: HTMLElement, reduce: boolean): Clock | null {
       sweep = Math.abs(gap) < 3 || dt === 0 ? target : sweep + gap * Math.min(1, dt * 10)
       // The minute hand overshoots its jump and rings down, as the real ones do.
       const ring = reduce ? 0 : Math.exp(-since / 0.07) * Math.cos(since * 48)
-      turn(minuteHand, 6 * (n % 60) - 6 * way * ring)
-      turn(hourHand, 0.5 * (n % 720))
-      turn(secondHand, sweep)
+      clock.minute = 6 * (n % 60) - 6 * way * ring
+      clock.hour = 0.5 * (n % 720)
+      clock.second = sweep
     },
     mode(next) {
       mode = next
     },
   }
+  return clock
 }

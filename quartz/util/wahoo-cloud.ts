@@ -25,7 +25,7 @@ const MAX_FIT_BYTES = 64 * 1024 * 1024
 const DEFAULT_ACCESS_TOKEN_LIFETIME_S = 2 * 60 * 60
 const ACCESS_TOKEN_EXPIRY_SKEW_MS = 60_000
 const DEFAULT_RATE_LIMIT_DELAY_MS = 60_000
-const MAX_RATE_LIMIT_DELAY_MS = 5 * 60_000
+const MAX_AUTO_RATE_LIMIT_WAIT_MS = 5 * 60_000
 const MAX_RATE_LIMIT_RETRIES = 8
 
 export interface WahooTokenResponse {
@@ -416,24 +416,21 @@ function cleanBaseUrl(value: string, label: string): string {
   return url.toString().replace(/\/+$/, '')
 }
 
-function boundedRateLimitDelay(value: number): number {
-  return Math.min(MAX_RATE_LIMIT_DELAY_MS, Math.max(0, Math.ceil(value)))
+function rateLimitDelay(value: number): number {
+  return Math.max(0, Math.ceil(value))
 }
 
 export function wahooRateLimitDelay(headers: Headers, nowMs = Date.now()): number {
   const retryAfter = headers.get('retry-after')?.trim()
   if (retryAfter) {
     const seconds = Number(retryAfter)
-    if (Number.isFinite(seconds) && seconds >= 0) return boundedRateLimitDelay(seconds * 1000)
+    if (Number.isFinite(seconds) && seconds >= 0) return rateLimitDelay(seconds * 1000)
     const timestamp = Date.parse(retryAfter)
-    if (Number.isFinite(timestamp)) return boundedRateLimitDelay(timestamp - nowMs)
+    if (Number.isFinite(timestamp)) return rateLimitDelay(timestamp - nowMs)
   }
   const resetHeader = headers.get('x-ratelimit-reset')
   const reset = resetHeader == null ? Number.NaN : Number(resetHeader)
-  if (Number.isFinite(reset) && reset >= 0) {
-    const delay = reset > nowMs / 1000 - 60 ? reset * 1000 - nowMs : reset * 1000
-    return boundedRateLimitDelay(delay)
-  }
+  if (Number.isFinite(reset) && reset > 0) return rateLimitDelay(reset * 1000)
   return DEFAULT_RATE_LIMIT_DELAY_MS
 }
 
@@ -533,15 +530,19 @@ export class WahooCloudClient {
     const accessToken = await this.accessTokenForRequest()
     const headers = new Headers(init.headers)
     headers.set('Authorization', `Bearer ${accessToken}`)
+    let waitedMs = 0
     for (let attempt = 0; attempt <= MAX_RATE_LIMIT_RETRIES; attempt++) {
       const response = await this.request(`${this.apiBaseUrl}${path}`, { ...init, headers })
       if (response.ok) return response
-      const text = await response.text()
-      if (response.status !== 429 || attempt === MAX_RATE_LIMIT_RETRIES)
-        throw new WahooApiError(response.status, path, text.slice(0, 500))
-      await new Promise(resolveDelay =>
-        setTimeout(resolveDelay, wahooRateLimitDelay(response.headers, this.now())),
-      )
+      const detail = (await response.text()).slice(0, 500)
+      if (response.status !== 429) throw new WahooApiError(response.status, path, detail)
+      const delayMs = wahooRateLimitDelay(response.headers, this.now())
+      const quota = `rate limit reset in ${Math.ceil(delayMs / 1000)} seconds (remaining=${response.headers.get('x-ratelimit-remaining') ?? 'unknown'}, limits=${response.headers.get('x-ratelimit-limit') ?? 'unknown'})`
+      if (attempt === MAX_RATE_LIMIT_RETRIES || delayMs > MAX_AUTO_RATE_LIMIT_WAIT_MS - waitedMs)
+        throw new WahooApiError(response.status, path, `${detail}; ${quota}`)
+      console.warn(`[wahoo] ${path}: 429, ${quota}; retrying`)
+      await new Promise(resolveDelay => setTimeout(resolveDelay, delayMs))
+      waitedMs += delayMs
     }
     throw new Error(`Wahoo API ${path} exhausted rate-limit retries`)
   }

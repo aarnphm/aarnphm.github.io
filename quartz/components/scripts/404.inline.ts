@@ -1,4 +1,4 @@
-import { setupClock } from './404-clock'
+import { makeClock } from './404-clock'
 import { setupLandscape, type Landscape } from './404-landscape'
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
@@ -20,6 +20,8 @@ type Falling = {
 }
 type Fly = {
   g: SVGGElement
+  halo: SVGRectElement
+  core: SVGRectElement
   x: number
   y: number
   a: number
@@ -148,22 +150,13 @@ document.addEventListener('nav', () => {
 
   const arrival = scene.querySelector<HTMLElement>('[data-nf-arrival]')
   if (arrival) arrival.textContent = `arr ${hhmm(new Date())}`
-  // The gate's hands read the same time as the board. Without motion they only move once a second.
-  const hands = setupClock(scene, reduce)
-  hands?.step(0)
-  const clockEl = scene.querySelector<HTMLElement>('[data-nf-clock]')
-  const tick = () => {
-    if (clockEl) clockEl.textContent = hhmm(new Date(), true)
-    if (reduce) hands?.step(0)
-    later(tick, 1000 - (Date.now() % 1000))
-  }
-  tick()
+  const hands = makeClock(reduce)
+  hands.step(0)
 
   const fx = scene.querySelector<SVGSVGElement>('.nf-fx')!
   const carving = fx.querySelector<SVGGElement>('.nf-carving')!
   const fallingLayer = fx.querySelector<SVGGElement>('.nf-falling')!
   const flyLayer = fx.querySelector<SVGGElement>('.nf-flies')!
-  const splashLayer = scene.querySelector<SVGGElement>('.nf-splashes')!
   const door = scene.querySelector<SVGAElement>('.nf-door')!
   const layers = Array.from(scene.querySelectorAll<HTMLElement | SVGSVGElement>('.nf-layer'))
   const depths = layers.map(l => Number(l.dataset.depth ?? 0))
@@ -193,21 +186,6 @@ document.addEventListener('nav', () => {
   carving.replaceChildren(...letters.map(l => l.el))
 
   const falling: Falling[] = []
-
-  function ripple(x: number, y: number, size: number) {
-    for (let k = 0; k < 2; k++) {
-      const ring = svgEl('rect', {
-        x: x - size,
-        y: y - size * 0.2,
-        width: size * 2,
-        height: size * 0.4,
-        class: 'nf-splash-ring',
-      })
-      ring.style.animationDelay = `${k * 0.28}s`
-      ring.addEventListener('animationend', () => ring.remove())
-      splashLayer.append(ring)
-    }
-  }
 
   function drop(letter: Letter, push = 0) {
     if (letter.gone) return
@@ -251,11 +229,12 @@ document.addEventListener('nav', () => {
     later(crumble, 1300 + Math.random() * 2200)
   }
 
+  // Droplets are one buffer pixel square and hop from pixel to pixel, like everything printed.
   function splash(x: number, y: number) {
-    ripple(x, y, 34 + Math.random() * 20)
+    land?.splash(x, y, 34 + Math.random() * 20)
+    const s = land?.pixel()?.px ?? 3
     for (let k = 0; k < 4; k++) {
-      const s = 2 + Math.random() * 2
-      const el = svgEl('rect', { x: -s / 2, y: -s / 2, width: s, height: s, class: 'nf-droplet' })
+      const el = svgEl('rect', { x: 0, y: 0, width: s, height: s, class: 'nf-droplet' })
       fallingLayer.append(el)
       falling.push({
         el,
@@ -273,27 +252,17 @@ document.addEventListener('nav', () => {
   }
 
   // Fireflies drift on a heading random walk, get herded back into the scene, and follow the cursor.
+  // Each is a lit pixel in a three-pixel halo, snapped to the canvases' grid.
   const flies: Fly[] = Array.from({ length: 20 }, (_, i) => {
     const g = svgEl('g', { class: 'nf-fly' })
-    g.append(
-      svgEl('rect', {
-        x: -9,
-        y: -9,
-        width: 18,
-        height: 18,
-        class: `nf-fly-halo ${FLY_COLORS[i % 3]}`,
-      }),
-      svgEl('rect', {
-        x: -2.5,
-        y: -2.5,
-        width: 5,
-        height: 5,
-        class: `nf-fly-core ${FLY_COLORS[i % 3]}`,
-      }),
-    )
+    const halo = svgEl('rect', { class: `nf-fly-halo ${FLY_COLORS[i % 3]}` })
+    const core = svgEl('rect', { class: `nf-fly-core ${FLY_COLORS[i % 3]}` })
+    g.append(halo, core)
     flyLayer.append(g)
     return {
       g,
+      halo,
+      core,
       x: 240 + Math.random() * 1120,
       y: 380 + Math.random() * 560,
       a: Math.random() * Math.PI * 2,
@@ -315,7 +284,7 @@ document.addEventListener('nav', () => {
     pointer.vx = p.x - pointer.x
     pointer.x = p.x
     pointer.y = p.y
-    if (reduce) return
+    if (reduce) return void land?.still(pointer)
     for (const l of letters) {
       if (l.gone) continue
       const w = toWorld(l.x, l.y - fontSize * 0.35)
@@ -326,6 +295,7 @@ document.addEventListener('nav', () => {
   }
   const onLeave = () => {
     pointer.x = pointer.y = -1e4
+    if (reduce) land?.still(pointer)
   }
   window.addEventListener('pointermove', onMove, { passive: true })
   document.documentElement.addEventListener('pointerleave', onLeave)
@@ -338,16 +308,26 @@ document.addEventListener('nav', () => {
     requestAnimationFrame(() => active && scene.classList.add('is-ready')),
   )
 
-  const land: Landscape | null = setupLandscape(scene, reduce, water)
+  const land: Landscape | null = setupLandscape(scene, reduce, water, hands)
+  // The gate's hands read the same time as the board. Without motion they only move once a second.
+  const clockEl = scene.querySelector<HTMLElement>('[data-nf-clock]')
+  const tick = () => {
+    if (clockEl) clockEl.textContent = hhmm(new Date(), true)
+    if (reduce) {
+      hands.step(0)
+      land?.refresh()
+    }
+    later(tick, 1000 - (Date.now() % 1000))
+  }
+  tick()
+
   const portalOn = () => {
     land?.portal('hot')
-    hands?.mode('hot')
-    scene.classList.add('is-portal')
+    hands.mode('hot')
   }
   const portalOff = () => {
     land?.portal('idle')
-    hands?.mode('idle')
-    scene.classList.remove('is-portal')
+    hands.mode('idle')
   }
   door.addEventListener('pointerenter', portalOn)
   door.addEventListener('pointerleave', portalOff)
@@ -365,7 +345,7 @@ document.addEventListener('nav', () => {
     const stage = scene.querySelector<HTMLElement>('.nf-stage')!
     stage.style.transformOrigin = `${box.left + box.width / 2}px ${box.top + box.height / 2}px`
     land?.portal('enter')
-    hands?.mode('enter')
+    hands.mode('enter')
     scene.classList.add('is-entering')
     later(go, 820)
   }
@@ -374,6 +354,31 @@ document.addEventListener('nav', () => {
   let raf = 0
   let last = performance.now()
   let clock = 0
+  let pitch = 0
+  const onGrid = (v: number, origin: number, px: number) =>
+    px ? origin + Math.floor((v - origin) / px) * px : v
+  const placeFlies = () => {
+    const grid = land?.pixel()
+    if (grid && grid.px !== pitch) {
+      pitch = grid.px
+      for (const fly of flies) {
+        for (const [el, n] of [
+          [fly.halo, 3],
+          [fly.core, 1],
+        ] as const) {
+          el.setAttribute('x', (-(n >> 1) * pitch).toFixed(2))
+          el.setAttribute('y', (-(n >> 1) * pitch).toFixed(2))
+          el.setAttribute('width', (n * pitch).toFixed(2))
+          el.setAttribute('height', (n * pitch).toFixed(2))
+        }
+      }
+    }
+    for (const fly of flies) {
+      const x = onGrid(fly.x, grid?.x0 ?? 0, pitch)
+      const y = onGrid(fly.y, grid?.y0 ?? 0, pitch)
+      fly.g.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)})`)
+    }
+  }
 
   function frame(now: number) {
     const dt = Math.min(0.05, (now - last) / 1000)
@@ -404,9 +409,9 @@ document.addEventListener('nav', () => {
       fly.x += vx * dt
       fly.y += vy * dt
       const glow = Math.max(0, Math.sin(fly.phase + clock * fly.freq))
-      fly.g.setAttribute('transform', `translate(${fly.x.toFixed(1)} ${fly.y.toFixed(1)})`)
       fly.g.style.opacity = (0.15 + 0.85 * glow ** 3).toFixed(3)
     }
+    placeFlies()
 
     for (let i = falling.length - 1; i >= 0; i--) {
       const p = falling[i]
@@ -432,14 +437,17 @@ document.addEventListener('nav', () => {
           continue
         }
       }
+      const grid = p.letter ? null : land?.pixel()
+      const x = grid ? onGrid(p.x, grid.x0, grid.px) : p.x
+      const y = grid ? onGrid(p.y, grid.y0, grid.px) : p.y
       p.el.setAttribute(
         'transform',
-        `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${p.rot.toFixed(1)})`,
+        `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${p.rot.toFixed(1)})`,
       )
     }
 
+    hands.step(dt)
     land?.step(dt, clock, pointer)
-    hands?.step(dt)
     raf = requestAnimationFrame(frame)
   }
 
@@ -455,7 +463,7 @@ document.addEventListener('nav', () => {
   const onVisibility = () => (document.hidden ? stop() : start())
 
   if (reduce) {
-    flies.forEach(fly => fly.g.setAttribute('transform', `translate(${fly.x} ${fly.y})`))
+    placeFlies()
   } else {
     document.addEventListener('visibilitychange', onVisibility)
     start()

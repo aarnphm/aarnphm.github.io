@@ -1,16 +1,55 @@
 // Pixel landscape for the 404 ruin, painted the way Van Gogh painted the factories at Clichy:
 // low-resolution canvases upscaled with `image-rendering: pixelated`, an ordered-dither
 // underpainting, then short brush strokes laid along flow fields. Each stroke picks its ramp stop
-// once, so the dither happens per stroke instead of per pixel. The ranges and the grain over the
-// temple paint once per size or theme; sky, field, water, canopy and portal repaint in
-// stop-motion ticks.
+// once, so the dither happens per stroke instead of per pixel. The ruin itself is printed into the
+// same grid from the hidden SVG geometry: plates, one-pixel keylines, dial marks and chips, with
+// the moss grown over it as blobs (404-overgrowth). The cat and the survey party (404-cat,
+// 404-crew) stand in the same canvas as the water, which reflects them along with the ruin, the
+// hill and the ranges. The ranges and the ruin paint once per size or theme; sky, field, water,
+// camp, canopy and portal repaint in stop-motion ticks.
 
+import { type Cat, type CatInk, makeCat, paintCat, poseCat, stepCat } from './404-cat'
+import { type CrewInk, makeCrew, paintBubbles, paintCrew, poseCrew, stepCrew } from './404-crew'
 import { GATE, MISSING, STEP_TOP, hourAngle, stoneOuter } from './404-gate'
+import {
+  GROWN,
+  type Greens,
+  makeCurtain,
+  makeOvergrowth,
+  paintCurtain,
+  paintIvy,
+  paintOvergrowth,
+  stepCurtain,
+} from './404-overgrowth'
+import {
+  BAYER,
+  type Grid,
+  type Pt,
+  type RGB,
+  clamp01,
+  clampCol,
+  col,
+  dot,
+  fbm,
+  frac,
+  grid,
+  hash,
+  hex,
+  mix,
+  mul,
+  mulberry,
+  noise,
+  pick,
+  put,
+  ramp,
+  row,
+  smooth,
+  step,
+  type Tones,
+} from './404-pixel'
 
 // Leaf tip: position plus depth toward (+1) or away from (-1) the viewer.
 type Tip = [number, number, number]
-type Pt = [number, number]
-type RGB = [number, number, number]
 type Pointer = { x: number; y: number }
 type Seg = { x0: number; y0: number; x1: number; y1: number; w0: number; w1: number }
 type Tree = { segs: Seg[]; tips: Tip[] }
@@ -37,24 +76,39 @@ type Palette = {
   figure: Record<Ink, RGB>
   shade: [...RGB, number]
   fringe: [...RGB, number]
+  water: RGB[]
+  smoke: RGB[]
+  glow: RGB[]
+  coats: [RGB, RGB]
+  tent: [RGB, RGB]
+  moss: RGB[]
+  // Crest lines: far ridge, mid ridge, hill.
+  contour: [RGB, RGB, RGB]
+  crew: RGB[]
+  rope: RGB
+  fish: RGB
 }
+// Hand angles in degrees, clockwise from twelve.
+type Dial = { hour: number; minute: number; second: number }
 
 export type Landscape = {
   step(dt: number, clock: number, pointer: Pointer): void
   portal(mode: Mode): void
+  splash(x: number, y: number, size: number): void
+  // Repaints the layers that carry the clock, for when nothing else is animating them.
+  refresh(): void
+  // Reduced motion: poses the cat and the crew for where the pointer is, repainting only on a change.
+  still(pointer: Pointer): void
+  // Buffer pixel pitch and origin in scene units, for snapping vector sprites onto the grid.
+  pixel(): { px: number; x0: number; y0: number } | null
   dispose(): void
 }
 
-const W = 1600
-const H = 1000
 const TICK = 1 / 10
-const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + 0.5) / 16)
 // Gold only where the tone is mid-range and the gradient is sharp: fringes, never interiors.
 const GOLD_START = 0.45
 const GOLD_END = 0.7
 const SUN = { x: 1150, y: 118, r: 46 }
-
-const hex = (h: string): RGB => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)) as RGB
 
 const LIGHT: Palette = {
   sky: ['#b8d9d2', '#c9e1d9', '#dae9e0', '#ecf1e6', '#fffcf0'].map(hex),
@@ -82,6 +136,16 @@ const LIGHT: Palette = {
   },
   shade: [...hex('#34435e'), 0.2],
   fringe: [...hex('#d9a93a'), 0.32],
+  water: ['#8fc9be', '#a4d5ca', '#bbe0d6'].map(hex),
+  smoke: ['#8f909c', '#a9aab4', '#c3c3ca'].map(hex),
+  glow: ['#a8984a', '#c9a557', '#e8bf6a'].map(hex),
+  coats: [hex('#bc5215'), hex('#24837b')],
+  tent: [hex('#d98f7e'), hex('#fdb2a2')],
+  moss: ['#4d6212', '#74853a', '#97a652', '#c6cc84'].map(hex),
+  contour: [hex('#8199ab'), hex('#5f6c50'), hex('#56652a')],
+  crew: ['#bc5215', '#24837b', '#205ea6', '#ad8301', '#5e409d', '#a02f6f'].map(hex),
+  rope: hex('#7e6a55'),
+  fish: hex('#6f8fa8'),
 }
 
 const DARK: Palette = {
@@ -110,51 +174,16 @@ const DARK: Palette = {
   },
   shade: [...hex('#fffcf0'), 0.05],
   fringe: [...hex('#d0a215'), 0.14],
-}
-
-function mulberry(seed: number) {
-  let a = seed >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0
-    let t = a
-    t = Math.imul(t ^ (t >>> 15), t | 1)
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-function hash(x: number, y: number, seed: number) {
-  let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 144269504)) | 0
-  h = Math.imul(h ^ (h >>> 13), 1274126177)
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296
-}
-
-function noise(x: number, y: number, seed: number) {
-  const xi = Math.floor(x)
-  const yi = Math.floor(y)
-  const xf = x - xi
-  const yf = y - yi
-  const u = xf * xf * (3 - 2 * xf)
-  const v = yf * yf * (3 - 2 * yf)
-  const a = hash(xi, yi, seed)
-  const b = hash(xi + 1, yi, seed)
-  const c = hash(xi, yi + 1, seed)
-  const d = hash(xi + 1, yi + 1, seed)
-  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v
-}
-
-function fbm(x: number, y: number, seed: number, octaves = 3) {
-  let sum = 0
-  let amp = 0.5
-  let norm = 0
-  for (let i = 0; i < octaves; i++) {
-    sum += amp * noise(x, y, seed + i * 17)
-    norm += amp
-    amp *= 0.5
-    x *= 2.03
-    y *= 2.03
-  }
-  return sum / norm
+  water: ['#132726', '#193230', '#203d3a'].map(hex),
+  smoke: ['#2e323d', '#3b3f4b', '#4a4d58'].map(hex),
+  glow: ['#2e2412', '#5c3514', '#9a5019'].map(hex),
+  coats: [hex('#7a3a12'), hex('#1b5953')],
+  tent: [hex('#4a302b'), hex('#7d4f45')],
+  moss: ['#1a220a', '#2c3a10', '#3d4c10', '#5a6b22'].map(hex),
+  contour: [hex('#39414b'), hex('#3a4530'), hex('#3d4a22')],
+  crew: ['#7a3a12', '#1b5953', '#1a3f6e', '#6e5406', '#3c2a66', '#6a1f4a'].map(hex),
+  rope: hex('#8f8a7c'),
+  fish: hex('#4f6b82'),
 }
 
 // Octaves drift at their own speed, so coarse masses sway while fine leaves shimmer.
@@ -170,33 +199,6 @@ function windFbm(x: number, y: number, seed: number, octaves: number, wind: numb
     y *= 2.03
   }
   return sum / norm
-}
-
-const clamp01 = (t: number) => (t < 0 ? 0 : t > 0.9999 ? 0.9999 : t)
-const smooth = (a: number, b: number, t: number) => {
-  const x = clamp01((t - a) / (b - a))
-  return x * x * (3 - 2 * x)
-}
-const frac = (t: number) => t - Math.floor(t)
-const mul = (c: RGB, k: number): RGB => [c[0] * k, c[1] * k, c[2] * k]
-const mix = (a: RGB, b: RGB, k: number): RGB => [0, 1, 2].map(i => a[i] + (b[i] - a[i]) * k) as RGB
-
-// Ordered dither between neighbouring ramp stops.
-function ramp(stops: RGB[], t: number, bx: number, by: number): RGB {
-  return stops[step(stops.length, t, bx, by)]
-}
-
-function step(n: number, t: number, bx: number, by: number) {
-  const p = clamp01(t) * (n - 1)
-  const i = Math.floor(p)
-  return p - i > BAYER[(by & 3) * 4 + (bx & 3)] ? i + 1 : i
-}
-
-// Stroke-level dither: the stroke, not the pixel, chooses between neighbouring stops.
-function pick(stops: RGB[], t: number, threshold: number): RGB {
-  const p = clamp01(t) * (stops.length - 1)
-  const i = Math.floor(p)
-  return stops[p - i > threshold ? i + 1 : i]
 }
 
 // Probabilistic L-system: X → FX | F[+X]X | F[-X]X | F[+X][-X]X, unrolled until every limb reaches
@@ -260,62 +262,6 @@ export function hillTop(x: number, water: number) {
   const u = Math.max(-1, Math.min(1, (x - 800) / 660))
   const bell = (0.5 + 0.5 * Math.cos(Math.PI * u)) ** 0.55
   return water - 175 * bell + (noise(x * 0.02, 1.3, 7) - 0.5) * 12 * bell
-}
-
-type Grid = {
-  bw: number
-  bh: number
-  sx: Float32Array
-  sy: Float32Array
-  // scene units per buffer pixel
-  px: number
-  toBuffer: DOMMatrix
-}
-
-// Buffer pixel centres mapped into scene units with the same xMidYMid-slice fit as the SVG layers.
-function grid(canvas: HTMLCanvasElement): Grid | null {
-  const cw = canvas.clientWidth
-  const ch = canvas.clientHeight
-  if (!cw || !ch) return null
-  const px = Math.max(3, Math.min(6, Math.round(cw / 380)))
-  const bw = Math.ceil(cw / px)
-  const bh = Math.ceil(ch / px)
-  const scale = Math.max(cw / W, ch / H)
-  const ox = (cw - W * scale) / 2
-  const oy = (ch - H * scale) / 2
-  const sx = new Float32Array(bw)
-  const sy = new Float32Array(bh)
-  for (let i = 0; i < bw; i++) sx[i] = ((i + 0.5) * px - ox) / scale
-  for (let j = 0; j < bh; j++) sy[j] = ((j + 0.5) * px - oy) / scale
-  canvas.width = bw
-  canvas.height = bh
-  const toBuffer = new DOMMatrix([scale / px, 0, 0, scale / px, ox / px, oy / px])
-  return { bw, bh, sx, sy, px: px / scale, toBuffer }
-}
-
-const col = (g: Grid, x: number) => Math.round((x - g.sx[0]) / g.px)
-const row = (g: Grid, y: number) => Math.round((y - g.sy[0]) / g.px)
-const clampCol = (g: Grid, i: number) => Math.max(0, Math.min(g.bw - 1, Math.round(i)))
-
-function put(data: Uint8ClampedArray, k: number, c: RGB | readonly number[], a = 255) {
-  data[k] = c[0]
-  data[k + 1] = c[1]
-  data[k + 2] = c[2]
-  data[k + 3] = a
-}
-
-function dot(d: Uint8ClampedArray, g: Grid, i: number, j: number, c: RGB) {
-  if (i >= 0 && j >= 0 && i < g.bw && j < g.bh) put(d, (j * g.bw + i) * 4, c)
-}
-
-function paint(canvas: HTMLCanvasElement, draw: (d: Uint8ClampedArray, g: Grid) => void) {
-  const g = grid(canvas)
-  if (!g) return null
-  const ctx = canvas.getContext('2d')!
-  const img = ctx.createImageData(g.bw, g.bh)
-  draw(img.data, g)
-  ctx.putImageData(img, 0, 0)
-  return g
 }
 
 // An animated canvas keeps one ImageData and repaints into it every tick.
@@ -665,11 +611,13 @@ function paintLand(d: Uint8ClampedArray, g: Grid, pal: Palette, pines: Cypress[]
     const y = sy[j]
     for (let i = 0; i < bw; i++) {
       const k = (j * bw + i) * 4
+      // Each crest is drawn as a contour, so where the mid ridge passes in front of the far one the
+      // overlap shows as a line. Sun-facing slopes descend to the right; their crest catches gold.
       if (y >= mid[i]) {
-        // Sun-facing slopes descend to the right; the lit crest catches gold.
-        if (y - mid[i] < g.px * 1.2 && midLit[i] > 0.15) put(d, k, pal.gold)
+        if (y - mid[i] < g.px) put(d, k, midLit[i] > 0.15 ? pal.gold : pal.contour[1])
         else put(d, k, ramp(pal.mid, midTone(i, y), i, j))
-      } else if (y >= far[i]) put(d, k, ramp(pal.far, farTone(i, y), i, j))
+      } else if (y >= far[i])
+        put(d, k, y - far[i] < g.px ? pal.contour[0] : ramp(pal.far, farTone(i, y), i, j))
     }
   }
 
@@ -681,7 +629,7 @@ function paintLand(d: Uint8ClampedArray, g: Grid, pal: Palette, pines: Cypress[]
     const i = clampCol(g, bx)
     return ang[i] * (1 - 0.6 * smooth(0, 260, y0 + by * g.px - ridge[i])) + jit
   }
-  const inFar: Keep = (i, j) => sy[j] >= far[i] && sy[j] < mid[i]
+  const inFar: Keep = (i, j) => sy[j] >= far[i] + g.px && sy[j] < mid[i]
   const inMid: Keep = (i, j) => sy[j] >= mid[i] + g.px
   let top = Infinity
   for (const y of far) top = Math.min(top, y)
@@ -704,6 +652,62 @@ function paintLand(d: Uint8ClampedArray, g: Grid, pal: Palette, pines: Cypress[]
     brush(d, g, bx, by, 4 + Math.floor(frac(k * 9.1) * 5), frac(k * 4.3) < 0.4, ink, angle, inMid)
   })
   pines.forEach((c, n) => paintCypress(d, g, c, pal.pine, 300 + n))
+}
+
+// People on the ranges, a pixel wide and three tall: two beside the cypress on the left ridge, one
+// of them waving; someone with a lantern on the right ridge; and another party's fire on the far
+// range, which by day is only a thread of smoke.
+const FOLK = [
+  { x: 246, wave: false, lamp: false },
+  { x: 254, wave: true, lamp: false },
+  { x: 1318, wave: false, lamp: true },
+]
+const CAMP = 1046
+
+function paintFolk(
+  d: Uint8ClampedArray,
+  g: Grid,
+  pal: Palette,
+  base: Uint8ClampedArray,
+  clock: number,
+  dark: boolean,
+) {
+  d.set(base)
+  const beat = Math.floor(clock * 5)
+  const plot = (i: number, j: number, c: RGB, alpha: number) => {
+    if (alpha > BAYER[(j & 3) * 4 + (i & 3)]) dot(d, g, i, j, c)
+  }
+  // First row of ground under a column, so feet land on the ridge rather than near it.
+  const ground = (i: number, ridge: (x: number) => number) =>
+    Math.ceil((ridge(g.sx[clampCol(g, i)]) - g.sy[0]) / g.px)
+  const glow = (i: number, j: number, flick: number) => {
+    for (let dj = -2; dj <= 2; dj++)
+      for (let di = -2; di <= 2; di++) {
+        const r = Math.hypot(di, dj)
+        if (r > 0) plot(i + di, j + dj, pal.glow[1], (1 - r / 2.8) * (0.55 + 0.25 * flick))
+      }
+  }
+  for (const f of FOLK) {
+    const i = col(g, f.x)
+    const top = ground(i, midRidge)
+    if (f.lamp && dark) glow(i + 1, top - 2, hash(beat, 3, 41))
+    for (let k = 1; k <= 3; k++) dot(d, g, i, top - k, pal.figure.K)
+    if (f.wave) dot(d, g, i + 1, top - (Math.floor(clock / 0.45) % 2 ? 4 : 3), pal.figure.K)
+    if (f.lamp) dot(d, g, i + 1, top - 2, hash(beat, 3, 41) < 0.3 ? FLAME[2] : FLAME[1])
+  }
+  const ci = col(g, CAMP)
+  const top = ground(ci, farRidge)
+  const flick = hash(beat, 7, 43)
+  if (dark) glow(ci, top - 1, flick)
+  dot(d, g, ci, top - 1, flick < 0.5 ? FLAME[2] : FLAME[1])
+  // Its smoke leans off with the wind and thins as it climbs.
+  for (let s = 1; s <= 12; s++)
+    plot(
+      ci + Math.round(s * 0.35 + Math.sin(s * 0.7 - clock * 1.3) * 0.6),
+      top - 1 - s,
+      pal.smoke[dark ? 2 : 1],
+      (1 - s / 13) * (dark ? 0.5 : 0.8),
+    )
 }
 
 const HILL_CYPRESSES = [
@@ -743,7 +747,7 @@ function paintHillBase(d: Uint8ClampedArray, g: Grid, pal: Palette, water: numbe
     for (let i = 0; i < bw; i++) {
       if (y < m.top[i]) continue
       const k = (j * bw + i) * 4
-      if (y - m.top[i] < g.px * 1.2 && m.lit[i] > 0.08) put(d, k, pal.gold)
+      if (y - m.top[i] < g.px) put(d, k, m.lit[i] > 0.08 ? pal.gold : pal.contour[2])
       else put(d, k, ramp(pal.hill, hillTone(sx[i], y, m.lit[i], water), i, j))
     }
   }
@@ -820,8 +824,8 @@ const FIGURE = ['.CC.', '.CS.', '.BB.', 'DBBB', 'DBB.', 'DBBB', 'DDBB', 'DBBB']
 const LEGS = ['.K.K', '..K.', '.KK.']
 const HOME = 800
 
-// Wanders the strand in front of the steps, stops now and then to look at the gate, and walks
-// to it while the portal is open.
+// Wanders the strand right of the camp, stops now and then to look at the gate, and walks to it
+// while the portal is open.
 function stepWalker(w: Walker, dt: number, drawn: boolean) {
   if (drawn) {
     const gap = HOME - w.x
@@ -835,7 +839,7 @@ function stepWalker(w: Walker, dt: number, drawn: boolean) {
   } else {
     w.walking = true
     w.x += w.dir * 16 * dt
-    if (w.x < 250) w.dir = 1
+    if (w.x < 720) w.dir = 1
     if (w.x > 1350) w.dir = -1
     w.next -= dt
     if (w.next <= 0) {
@@ -848,18 +852,15 @@ function stepWalker(w: Walker, dt: number, drawn: boolean) {
 }
 
 // Glitter on the water: horizontal dashes wherever a facet tilts the sun (or the open portal)
-// toward us, widening with distance below the horizon, then the walker and her reflection,
-// folded about the waterline with the temple mirror's squash.
-function paintNear(
+// toward us, widening with distance below the horizon.
+function paintGlitter(
   d: Uint8ClampedArray,
   g: Grid,
   pal: Palette,
   water: number,
-  w: Walker,
   heat: number,
   clock: number,
 ) {
-  d.fill(0)
   const { bw, bh, sx, sy } = g
   for (let j = Math.max(0, row(g, water) + 1); j < bh; j += 2) {
     const depth = sy[j] - water
@@ -879,24 +880,393 @@ function paintNear(
       for (let s = 0; s < len; s++) dot(d, g, i + s, j, ink)
     }
   }
+}
 
-  const rows = [...FIGURE, LEGS[w.walking ? Math.floor(w.stride / 0.22) % 2 : 2]]
-  const foot = row(g, Math.max(848, hillTop(w.x, water) + 8))
-  const ci = col(g, w.x)
+type Ripple = { x: number; y: number; w: number; bright: boolean; half: number; phase: number }
+
+function makeRipples(water: number): Ripple[] {
+  const r = mulberry(99)
+  return Array.from({ length: 52 }, () => {
+    const y = water + 12 + r() ** 0.8 * 110
+    const x = r() * 1600
+    const w = 20 + r() * (30 + (y - water) * 0.6)
+    return { x, y, w, bright: r() < 0.35, half: 0.8 + r() * 1.2, phase: r() * 4 }
+  })
+}
+
+// The river: a plate that darkens toward the viewer, with the scene above folded into it. Near the
+// bank the fold keeps the old squash (0.62); further out it steepens, so the bottom of the view
+// reaches up the gate however little water the viewport shows. The fold is cut into slices that
+// shear on a stop-motion beat, and wherever the reflection crosses from one mass to another (a
+// ridge into sky, the ruin into the hill) it draws a contour. Then the campfire's light in broken
+// streaks, ripple dashes that hop back and forth, and the bank as one row of ink.
+const LIFT = 480
+// Reflected layers, front to back, and the ids the contours compare: the ranges split into the mid
+// ridge and the far one, and NONE for open sky.
+const FIGURES = 0
+const WELL = 3
+const RANGES = 4
+const FAR = 5
+const NONE = 6
+// The figures and the rift carry their own keylines, and the rift's dithered bleed would speckle.
+const contoured = (a: number, b: number) =>
+  a !== b && a !== FIGURES && b !== FIGURES && a !== WELL && b !== WELL && (a > 1 || b > 1)
+
+function paintWater(
+  d: Uint8ClampedArray,
+  g: Grid,
+  pal: Palette,
+  water: number,
+  ink: RGB,
+  layers: (Uint8ClampedArray | null)[],
+  ripples: Ripple[],
+  clock: number,
+  dark: boolean,
+) {
+  const { bw, bh, sx, sy } = g
+  const shore = row(g, water)
+  const slice = Math.floor(clock / 0.3)
+  const reach = Math.max(8 * g.px, g.bottom - water)
+  const knee = reach * 0.25
+  const bend = Math.max(0, (LIFT - reach / 0.62) / (reach - knee) ** 2)
+  const contour = mix(pal.water[0], ink, dark ? 0.5 : 0.45)
+  const mid = Float32Array.from(sx, midRidge)
+  let above = new Uint8Array(bw)
+  let here = new Uint8Array(bw)
+  for (let j = Math.max(0, shore + 1); j < bh; j++) {
+    const depth = sy[j] - water
+    const ys = water - depth / 0.62 - bend * Math.max(0, depth - knee) ** 2
+    const src = row(g, ys)
+    // Three flat bands, paler with distance from the bank.
+    const pale = [0.35, 0.5, 0.65][Math.min(2, Math.floor((depth / reach) * 3))]
+    const shear = Math.round((noise(Math.floor(j / 3) * 0.9, slice * 1.7, 91) - 0.5) * 6)
+    for (let i = 0; i < bw; i++) {
+      const k = (j * bw + i) * 4
+      const plate = ramp(pal.water, 1 - depth / 180, i, j)
+      put(d, k, plate)
+      const si = i - shear
+      let id = NONE
+      if (src >= 0 && si >= 0 && si < bw) {
+        const q = (src * bw + si) * 4
+        for (let n = 0; n < layers.length; n++) {
+          const s = layers[n]
+          if (!s || s[q + 3] !== 255) continue
+          id = n === RANGES && ys < mid[si] ? FAR : n
+          put(d, k, mix([s[q], s[q + 1], s[q + 2]], plate, pale))
+          break
+        }
+      }
+      here[i] = id
+      const up = j > shore + 1 ? above[i] : id
+      const left = i > 0 ? here[i - 1] : id
+      if (contoured(id, up) || contoured(id, left)) put(d, k, contour)
+    }
+    ;[above, here] = [here, above]
+  }
+
+  const fc = col(g, FIRE.x)
+  const beat = Math.floor(clock * 6)
+  for (let j = Math.max(0, shore + 1); j < bh; j++) {
+    const depth = sy[j] - water
+    const p = (1 - depth / 110) * (dark ? 0.85 : 0.45)
+    if (p <= 0) break
+    if (hash(j, beat, 29) > p) continue
+    const len = 1 + Math.floor(hash(j, beat, 31) * 3)
+    const off = Math.round((hash(j, beat, 37) - 0.5) * 4) - (len >> 1)
+    const c = depth < 20 && hash(j, beat, 39) < 0.4 ? FLAME[0] : depth < 45 ? FLAME[1] : FLAME[2]
+    for (let s = 0; s < len; s++) dot(d, g, fc + off + s, j, c)
+  }
+
+  const paper: RGB = dark ? [16, 15, 15] : [255, 252, 240]
+  for (const r of ripples) {
+    const j = row(g, r.y)
+    if (j <= shore || j >= bh) continue
+    const hop = Math.floor((clock + r.phase) / r.half) % 2 ? 10 : 0
+    const c = r.bright ? paper : ink
+    const a = r.bright ? 0.75 : 0.35
+    const i0 = col(g, r.x + hop)
+    for (let s = Math.max(1, Math.round(r.w / g.px)) - 1; s >= 0; s--) {
+      const i = i0 + s
+      if (i < 0 || i >= bw) continue
+      const k = (j * bw + i) * 4
+      for (let n = 0; n < 3; n++) d[k + n] += (c[n] - d[k + n]) * a
+    }
+  }
+
+  if (shore >= 0 && shore < bh) for (let i = 0; i < bw; i++) put(d, (shore * bw + i) * 4, ink)
+}
+
+type Splash = { x: number; y: number; size: number; age: number }
+
+// Where a letter lands: two flat rings that widen in five steps, darkening the water under them
+// less at every step until they dither away.
+function paintSplashes(d: Uint8ClampedArray, g: Grid, splashes: Splash[], ink: RGB) {
+  const { bw, bh } = g
+  for (const s of splashes)
+    for (let n = 0; n < 2; n++) {
+      const t = (s.age - n * 0.28) / 1.2
+      if (t < 0 || t >= 1) continue
+      const f = Math.floor(t * 5) / 5
+      const rx = (s.size * (0.15 + 1.15 * f)) / g.px
+      const ry = Math.max(1, rx * 0.2)
+      const cx = (s.x - g.sx[0]) / g.px
+      const cy = (s.y - g.sy[0]) / g.px
+      const seen = new Set<number>()
+      const steps = Math.ceil(2 * Math.PI * rx)
+      for (let k = 0; k < steps; k++) {
+        const a = (k / steps) * 2 * Math.PI
+        const i = Math.round(cx + Math.cos(a) * rx)
+        const j = Math.round(cy + Math.sin(a) * ry)
+        const p = j * bw + i
+        if (i < 0 || j < 0 || i >= bw || j >= bh || seen.has(p)) continue
+        seen.add(p)
+        if (1 - f <= BAYER[(j & 3) * 4 + (i & 3)]) continue
+        for (let c = 0; c < 3; c++) d[p * 4 + c] += (ink[c] - d[p * 4 + c]) * 0.5
+      }
+    }
+}
+
+// A sprite standing on `foot`, and its reflection folded about the waterline with the ruin's
+// squash, on alternate pixels, wobbling row by row.
+function sprite(
+  d: Uint8ClampedArray,
+  g: Grid,
+  rows: string[],
+  ci: number,
+  foot: number,
+  flip: boolean,
+  ink: (ch: string, i: number) => RGB,
+  water: number,
+  clock: number,
+) {
+  const w = rows[0].length
   rows.forEach((line, r) => {
     const j = foot - rows.length + 1 + r
-    const mirror = water + 0.62 * (water - (sy[0] + j * g.px))
+    const mirror = water + 0.62 * (water - (g.sy[0] + j * g.px))
     const mj = row(g, mirror)
     const wobble = Math.round(Math.sin(mj * 1.7 + clock * 5) * 0.7)
-    for (let c = 0; c < 4; c++) {
-      const ink = line[w.dir > 0 ? c : 3 - c]
-      if (ink === '.') continue
-      const i = ci - 2 + c
-      dot(d, g, i, j, pal.figure[ink as Ink])
-      if (mirror > water + g.px && (mj + i) % 2 === 0)
-        dot(d, g, i + wobble, mj, pal.figure[ink as Ink])
+    for (let c = 0; c < w; c++) {
+      const ch = line[flip ? w - 1 - c : c]
+      if (ch === '.') continue
+      const i = ci - (w >> 1) + c
+      const color = ink(ch, i)
+      dot(d, g, i, j, color)
+      if (mirror > water + g.px && (mj + i) % 2 === 0) dot(d, g, i + wobble, mj, color)
     }
   })
+}
+
+// The camp on the bank left of the steps: a rose tent, a ring of hearth stones round two logs, a
+// fire in stop-motion, two people sitting either side of it (one toasting something on a stick),
+// and the walker. Everything within reach of the fire takes its colour on the side facing it.
+const FIRE = { x: 628, y: 848 }
+const TENT = ['....S....', '...SSL...', '..SSSLL..', '.SSSLKLL.', 'SSSSLKKLL']
+const SITTER = ['.CC.', '.CS.', 'BBB.', 'BBBS', 'DDDD']
+const CAMPERS = [
+  { x: 600, flip: false },
+  { x: 658, flip: true },
+]
+const FLAME_ROWS = [2, 4, 7, 5, 2]
+
+// Firelight on the ground: an ellipse that reaches further up the bank than down it, stepped
+// through three warm stops, and breathing with the flames. By day it barely leaves the hearth.
+function paintPool(
+  d: Uint8ClampedArray,
+  g: Grid,
+  pal: Palette,
+  water: number,
+  clock: number,
+  dark: boolean,
+) {
+  const { bw, sx, sy } = g
+  const strength = (dark ? 0.8 : 0.45) * (0.85 + 0.15 * noise(clock * 4, 0.5, 13))
+  const [rx, up, down] = dark ? [130, 64, 34] : [60, 26, 16]
+  const i0 = Math.max(0, col(g, FIRE.x - rx))
+  const i1 = Math.min(bw - 1, col(g, FIRE.x + rx))
+  const j0 = Math.max(0, row(g, FIRE.y - up))
+  const j1 = Math.min(g.bh - 1, row(g, water) - 1)
+  for (let j = j0; j <= j1; j++)
+    for (let i = i0; i <= i1; i++) {
+      const dy = (sy[j] - FIRE.y) / (sy[j] < FIRE.y ? up : down)
+      const q = 1 - Math.hypot((sx[i] - FIRE.x) / rx, dy)
+      if (q <= 0) continue
+      const level = step(4, q ** 1.4 * strength, i, j)
+      if (level) put(d, (j * bw + i) * 4, pal.glow[level - 1])
+    }
+}
+
+function paintCamp(
+  d: Uint8ClampedArray,
+  g: Grid,
+  pal: Palette,
+  water: number,
+  w: Walker,
+  clock: number,
+  dark: boolean,
+) {
+  const foot = row(g, FIRE.y)
+  const fc = col(g, FIRE.x)
+  const warmth = dark ? 0.5 : 0.2
+  const lit = (c: RGB, i: number) => {
+    const k = warmth * Math.max(0, 1 - Math.abs(g.sx[clampCol(g, i)] - FIRE.x) / 90)
+    return k > 0 ? mix(c, FLAME[1], k) : dark ? mul(c, 0.8) : c
+  }
+
+  sprite(
+    d,
+    g,
+    TENT,
+    col(g, 556),
+    foot,
+    false,
+    (ch, i) => lit(ch === 'K' ? pal.figure.K : pal.tent[ch === 'L' ? 1 : 0], i),
+    water,
+    clock,
+  )
+
+  for (const o of [-4, -3, 3, 4]) dot(d, g, fc + o, foot, lit(pal.far[o & 1 ? 1 : 0], fc + o))
+  for (let o = -2; o <= 2; o++) dot(d, g, fc + o, foot, pal.bark[Math.abs(o) === 2 ? 2 : 0])
+  const beat = Math.floor(clock * 9)
+  for (let o = -2; o <= 2; o++) {
+    const h = Math.max(1, Math.round(FLAME_ROWS[o + 2] * (0.55 + 0.6 * hash(o, beat, 5))))
+    for (let r = 0; r < h; r++) {
+      const t = (r + 0.5) / h
+      const c =
+        t < 0.34 && Math.abs(o) < 2 ? FLAME[0] : t < 0.6 ? FLAME[1] : t < 0.85 ? FLAME[2] : FLAME[3]
+      dot(d, g, fc + o, foot - 1 - r, c)
+    }
+  }
+  // Now and then a tongue tears off the tip.
+  if (hash(beat, 1, 7) < 0.35)
+    dot(d, g, fc - (hash(beat, 2, 7) < 0.5 ? 1 : 0), foot - 9 - (beat & 1), FLAME[2])
+
+  CAMPERS.forEach((c, n) => {
+    const ink = (ch: string, i: number) =>
+      lit(
+        ch === 'B' ? pal.coats[n] : ch === 'C' && n === 1 ? pal.tent[1] : pal.figure[ch as Ink],
+        i,
+      )
+    sprite(d, g, SITTER, col(g, c.x), foot, c.flip, ink, water, clock)
+  })
+  // The stick runs from the left camper's hand to just over the flames, where the marshmallow
+  // toasts from cream to gold to brown, and then there is a fresh one.
+  const hand = col(g, CAMPERS[0].x) + 2
+  const run = Math.max(1, fc - 2 - hand, 2)
+  for (let s = 0; s <= run; s++)
+    dot(
+      d,
+      g,
+      hand + Math.round(((fc - 2 - hand) * s) / run),
+      foot - 2 - Math.round((2 * s) / run),
+      pal.bark[1],
+    )
+  const toast = frac(clock / 14)
+  dot(d, g, fc - 1, foot - 5, toast < 0.5 ? FLAME[0] : toast < 0.8 ? FLAME[1] : pal.bark[2])
+
+  const rows = [...FIGURE, LEGS[w.walking ? Math.floor(w.stride / 0.22) % 2 : 2]]
+  const walkerFoot = row(g, Math.max(848, hillTop(w.x, water) + 8))
+  sprite(
+    d,
+    g,
+    rows,
+    col(g, w.x),
+    walkerFoot,
+    w.dir < 0,
+    (ch, i) => lit(pal.figure[ch as Ink], i),
+    water,
+    clock,
+  )
+}
+
+type Puff = {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  age: number
+  life: number
+  seed: number
+}
+type Hearth = { smoke: Puff[]; embers: Puff[]; spawn: number; spark: number }
+
+// Smoke rises off the fire and rides the same air as the sky strokes, so it leans with the wind,
+// curls through the cursor's eddies, and spirals into the gate while it is open. Each puff also
+// keeps a sideways drift of its own, so the column fans out as it climbs. Embers shoot up, slow,
+// and go out.
+function stepHearth(h: Hearth, air: Air, dt: number) {
+  h.spawn -= dt
+  while (h.spawn <= 0) {
+    h.spawn += 0.08
+    h.smoke.push({
+      x: FIRE.x + (Math.random() - 0.5) * 6,
+      y: FIRE.y - 26,
+      vx: 0,
+      vy: -20,
+      age: 0,
+      life: 5 + Math.random() * 2.5,
+      seed: Math.random(),
+    })
+  }
+  h.spark -= dt
+  if (h.spark <= 0) {
+    h.spark = 0.15 + Math.random() * 0.35
+    h.embers.push({
+      x: FIRE.x + (Math.random() - 0.5) * 10,
+      y: FIRE.y - 20,
+      vx: (Math.random() - 0.5) * 24,
+      vy: -50 - Math.random() * 40,
+      age: 0,
+      life: 0.7 + Math.random() * 0.9,
+      seed: Math.random(),
+    })
+  }
+  const ease = Math.min(1, dt * 1.5)
+  for (const p of h.smoke) {
+    const a = airAngle(air, p.x, p.y)
+    const drift = 10 + 30 * air.pull
+    const rise = 24 * (1 - (0.5 * p.age) / p.life)
+    p.vx += (Math.cos(a) * drift + (p.seed - 0.5) * 18 - p.vx) * ease
+    p.vy += (Math.sin(a) * drift - rise - p.vy) * ease
+    p.x += p.vx * dt
+    p.y += p.vy * dt
+    p.age += dt
+  }
+  for (const p of h.embers) {
+    p.vy += 30 * dt
+    p.vx += (Math.random() - 0.5) * 80 * dt
+    p.x += p.vx * dt
+    p.y += p.vy * dt
+    p.age += dt
+  }
+  h.smoke = h.smoke.filter(p => p.age < p.life)
+  h.embers = h.embers.filter(p => p.age < p.life)
+}
+
+// Smoke as short strokes along its own motion that lengthen, widen, pale and thin as they age.
+function paintHearth(d: Uint8ClampedArray, g: Grid, pal: Palette, h: Hearth, clock: number) {
+  const beat = Math.floor(clock * 12)
+  for (const p of h.embers) {
+    if (hash(Math.floor(p.seed * 1e6), beat, 3) < 0.25) continue
+    const t = p.age / p.life
+    dot(d, g, col(g, p.x), row(g, p.y), t < 0.35 ? FLAME[1] : t < 0.75 ? FLAME[2] : FLAME[3])
+  }
+  for (const p of h.smoke) {
+    const t = p.age / p.life
+    const alpha = Math.min(1, p.age / 0.4) * (1 - t) * 0.9
+    const c = pick(pal.smoke, 0.15 + t * 0.8, p.seed)
+    const len = 1 + Math.floor(t * 4.5)
+    const v = Math.hypot(p.vx, p.vy) || 1
+    const ux = p.vx / v
+    const uy = p.vy / v
+    const bx = (p.x - g.sx[0]) / g.px
+    const by = (p.y - g.sy[0]) / g.px
+    for (let w = t > 0.3 ? 1 : 0; w >= 0; w--)
+      for (let s = 0; s < len; s++) {
+        const i = Math.round(bx + ux * (s - len / 2) - uy * w)
+        const j = Math.round(by + uy * (s - len / 2) + ux * w)
+        if (alpha > BAYER[(j & 3) * 4 + (i & 3)]) dot(d, g, i, j, c)
+      }
+  }
 }
 
 // Stone tone at a scene point: 0.5 is the flat plate, each 0.25 is one dither stop. The sun sits
@@ -946,71 +1316,317 @@ const probe = (() => {
 })()
 
 const MATERIALS = ['nf-fill-stone', 'nf-fill-rose', 'nf-fill-sage']
+// Stops 0..4 of the tone dither map onto deep, shade, plate, plate, light.
+const PLATE = [0, 1, 2, 2, 3]
 
-// Grain over the temple's flat plates: its own fill and keyline paths are rasterized into
-// material and exclusion masks, then only the off-plate dither pixels are painted, so the SVG
-// fills show through untouched and the ink keylines stay crisp.
-function paintGrain(d: Uint8ClampedArray, g: Grid, svg: SVGSVGElement, dark: boolean) {
+type Print = { ink: RGB; stone: RGB[]; rose: RGB[]; sage: RGB[] }
+type Masonry = { print: Print; spill: number[]; treads: number[] }
+
+// A point at least every scene unit along an outline, in the element's own coordinates, one list
+// per subpath. The ruin is drawn with lines and circular arcs only, so the path data is walked
+// directly: getPointAtLength re-measures every arc from the start of the path on each call, which
+// cost 670 ms per load for the ring and the soffit.
+function trace(d: string) {
+  const tok = d.match(/[a-zA-Z]|-?(?:\d+\.?\d*|\.\d+)/g) ?? []
+  const chains: number[][] = []
+  let pts: number[] = []
+  let k = 0
+  let cmd = ''
+  let x = 0
+  let y = 0
+  let x0 = 0
+  let y0 = 0
+  const num = () => Number(tok[k++])
+  const line = (tx: number, ty: number) => {
+    const n = Math.max(1, Math.ceil(Math.hypot(tx - x, ty - y)))
+    for (let s = 1; s <= n; s++) pts.push(x + ((tx - x) * s) / n, y + ((ty - y) * s) / n)
+    x = tx
+    y = ty
+  }
+  // Endpoint to centre form, for a circle with no rotation (SVG 1.1 implementation notes, F.6.5).
+  const arc = (r: number, large: number, sweep: number, tx: number, ty: number) => {
+    const hx = (x - tx) / 2
+    const hy = (y - ty) / 2
+    const h2 = hx * hx + hy * hy
+    if (h2 === 0) return
+    r = Math.max(r, Math.sqrt(h2))
+    const c = Math.sqrt(Math.max(0, (r * r - h2) / h2)) * (large === sweep ? -1 : 1)
+    const cx = c * hy + (x + tx) / 2
+    const cy = -c * hx + (y + ty) / 2
+    const a0 = Math.atan2(y - cy, x - cx)
+    let da = Math.atan2(ty - cy, tx - cx) - a0
+    if (sweep && da < 0) da += 2 * Math.PI
+    if (!sweep && da > 0) da -= 2 * Math.PI
+    const n = Math.max(1, Math.ceil(Math.abs(da) * r))
+    for (let s = 1; s <= n; s++) {
+      const a = a0 + (da * s) / n
+      pts.push(cx + r * Math.cos(a), cy + r * Math.sin(a))
+    }
+    x = tx
+    y = ty
+  }
+  while (k < tok.length) {
+    if (/[a-zA-Z]/.test(tok[k])) cmd = tok[k++]
+    const rel = cmd === cmd.toLowerCase()
+    const ox = rel ? x : 0
+    const oy = rel ? y : 0
+    switch (cmd.toUpperCase()) {
+      case 'M':
+        if (pts.length) chains.push(pts)
+        x = x0 = ox + num()
+        y = y0 = oy + num()
+        pts = [x, y]
+        // Pairs after a moveto are linetos.
+        cmd = rel ? 'l' : 'L'
+        break
+      case 'L':
+        line(ox + num(), oy + num())
+        break
+      case 'H':
+        line(ox + num(), y)
+        break
+      case 'V':
+        line(x, oy + num())
+        break
+      case 'A': {
+        const r = num()
+        k += 2
+        const large = num()
+        const sweep = num()
+        arc(r, large, sweep, ox + num(), oy + num())
+        break
+      }
+      case 'Z':
+        line(x0, y0)
+        break
+      default:
+        k++
+    }
+  }
+  if (pts.length) chains.push(pts)
+  return chains
+}
+
+// The pixels each subpath passes through, in order and one pixel thick: repeats are dropped, and
+// so is the corner pixel of every L-shaped step, which keeps diagonals from doubling up.
+function run(chains: number[][], m: DOMMatrix) {
+  const out: number[] = []
+  for (const pts of chains) {
+    const start = out.length
+    for (let s = 0; s < pts.length; s += 2) {
+      const i = Math.floor(m.a * pts[s] + m.c * pts[s + 1] + m.e)
+      const j = Math.floor(m.b * pts[s] + m.d * pts[s + 1] + m.f)
+      const n = out.length - start
+      if (n && out[start + n - 2] === i && out[start + n - 1] === j) continue
+      if (
+        n >= 4 &&
+        Math.abs(i - out[start + n - 4]) === 1 &&
+        Math.abs(j - out[start + n - 3]) === 1
+      )
+        out.length -= 2
+      out.push(i, j)
+    }
+  }
+  return out
+}
+
+// Prints the ruin from the hidden SVG geometry: plates dithered through the stone's lighting,
+// keylines one pixel thick, dial marks wherever they cover half a pixel, and chips bitten out
+// wherever an `nf-void` says, inked where they break into stone. A stone that has slipped is lit
+// in its own place in the ring, so its chamfers travel with it. The light that spills down the
+// steps animates on top of this, so its pixels are returned as a list.
+function rasterRuin(d: Uint8ClampedArray, g: Grid, svg: SVGSVGElement, dark: boolean) {
   const art = svg.querySelector('#nf-temple-art')
   const root = svg.getScreenCTM()
-  if (!art || !root) return
+  if (!art || !root) return null
   const rootInv = root.inverse()
-  const canvasFor = () => {
-    const c = document.createElement('canvas')
-    c.width = g.bw
-    c.height = g.bh
-    return c.getContext('2d', { willReadFrequently: true })!
-  }
-  const mat = canvasFor()
-  const key = canvasFor()
+  const { bw, bh } = g
+  const sheet = document.createElement('canvas')
+  sheet.width = bw
+  sheet.height = bh
+  const scratch = sheet.getContext('2d', { willReadFrequently: true })!
   const stops: RGB[][] = MATERIALS.map(() => [])
-  const channel = ['#ff0000', '#00ff00', '#0000ff']
   const paper: RGB = dark ? [206, 205, 195] : [255, 252, 240]
-
-  for (const el of art.querySelectorAll<SVGPathElement | SVGRectElement>('path, rect')) {
-    const cls = el.getAttribute('class') ?? ''
-    if (cls.includes('nf-light-spill')) continue
+  let ink: RGB | null = null
+  const toBuffer = (el: SVGGraphicsElement) => {
     const ctm = el.getScreenCTM()
-    if (!ctm) continue
-    const path =
-      el instanceof SVGPathElement
-        ? new Path2D(el.getAttribute('d') ?? '')
-        : new Path2D(
-            `M${el.x.baseVal.value} ${el.y.baseVal.value}h${el.width.baseVal.value}v${el.height.baseVal.value}h${-el.width.baseVal.value}Z`,
-          )
-    const m = g.toBuffer.multiply(rootInv.multiply(ctm))
-    const id = MATERIALS.findIndex(c => cls.includes(c))
-    if (id >= 0) {
-      if (stops[id].length === 0) {
-        const base = probe(getComputedStyle(el).fill)
-        stops[id] = dark
-          ? [mul(base, 0.55), mul(base, 0.75), base, mix(base, paper, 0.2)]
-          : [mul(base, 0.7), mul(base, 0.86), base, mix(base, paper, 0.55)]
-      }
-      mat.setTransform(m)
-      mat.fillStyle = channel[id]
-      mat.fill(path)
-    } else {
-      key.setTransform(m)
-      if (cls.includes('nf-key') || cls.includes('nf-stem')) {
-        key.lineWidth = Math.max(2.5, g.px * 1.1)
-        key.stroke(path)
-      } else key.fill(path)
+    return ctm && g.toBuffer.multiply(rootInv.multiply(ctm))
+  }
+  const tone = (el: Element, id: number) => {
+    if (stops[id].length === 0) {
+      const base = probe(getComputedStyle(el).fill)
+      stops[id] = dark
+        ? [mul(base, 0.55), mul(base, 0.75), base, mix(base, paper, 0.2)]
+        : [mul(base, 0.7), mul(base, 0.86), base, mix(base, paper, 0.55)]
     }
+    return stops[id]
+  }
+  const inside = (i: number, j: number) => i >= 0 && j >= 0 && i < bw && j < bh
+  // Which paint owns each pixel, stacked in document order as the SVG would stack them: 1..3 a
+  // material plate, 4 ink, 0 bare. Later elements cover earlier ones, keylines included.
+  const INK = 4
+  const owner = new Uint8Array(bw * bh)
+  const voided = new Uint8Array(bw * bh)
+  // Which frame lights each plate pixel: 0 the scene, n a slipped stone's place before it slipped.
+  const frame = new Uint8Array(bw * bh)
+  const frames: DOMMatrix[] = [new DOMMatrix()]
+  const frameOf = new Map<Element, number>()
+  const frameFor = (el: Element) => {
+    const stone = el.closest<SVGGElement>('.nf-stone')
+    const m = stone?.transform.baseVal.consolidate()?.matrix
+    if (!stone || !m) return 0
+    let f = frameOf.get(stone)
+    if (f === undefined) {
+      f = frames.push(m.inverse()) - 1
+      frameOf.set(stone, f)
+    }
+    return f
+  }
+  const cover = (el: SVGPathElement, m: DOMMatrix, set: number, threshold: number, f = 0) => {
+    const b = el.getBBox()
+    const xs: number[] = []
+    const ys: number[] = []
+    for (const [x, y] of [
+      [b.x, b.y],
+      [b.x + b.width, b.y],
+      [b.x, b.y + b.height],
+      [b.x + b.width, b.y + b.height],
+    ]) {
+      const q = m.transformPoint(new DOMPoint(x, y))
+      xs.push(q.x)
+      ys.push(q.y)
+    }
+    const x0 = Math.max(0, Math.floor(Math.min(...xs)) - 1)
+    const y0 = Math.max(0, Math.floor(Math.min(...ys)) - 1)
+    const w = Math.min(bw, Math.ceil(Math.max(...xs)) + 1) - x0
+    const h = Math.min(bh, Math.ceil(Math.max(...ys)) + 1) - y0
+    if (w <= 0 || h <= 0) return
+    scratch.resetTransform()
+    scratch.clearRect(x0, y0, w, h)
+    scratch.setTransform(m)
+    scratch.fill(new Path2D(el.getAttribute('d') ?? ''))
+    const a = scratch.getImageData(x0, y0, w, h).data
+    for (let j = 0; j < h; j++)
+      for (let i = 0; i < w; i++) {
+        if (a[(j * w + i) * 4 + 3] < threshold) continue
+        const p = (y0 + j) * bw + x0 + i
+        owner[p] = set
+        frame[p] = f
+        if (set === 0) voided[p] = 1
+      }
   }
 
-  const md = mat.getImageData(0, 0, g.bw, g.bh).data
-  const kd = key.getImageData(0, 0, g.bw, g.bh).data
-  for (let j = 0; j < g.bh; j++)
-    for (let i = 0; i < g.bw; i++) {
-      const k = (j * g.bw + i) * 4
-      if (kd[k + 3] > 60 || md[k + 3] < 128) continue
-      const id = md[k] >= md[k + 1] && md[k] >= md[k + 2] ? 0 : md[k + 1] >= md[k + 2] ? 1 : 2
-      const s = step(5, stoneTone(g.sx[i], g.sy[j]) * 0.75 + 0.125, i, j)
-      // Stops 0..4 map onto deep, shade, plate, plate, light; the plate never gets painted.
-      if (s === 2 || s === 3) continue
-      put(d, k, stops[id][s === 4 ? 3 : s])
+  for (const el of art.querySelectorAll<SVGPathElement>('path')) {
+    const m = toBuffer(el)
+    if (!m) continue
+    const cls = el.getAttribute('class') ?? ''
+    const id = MATERIALS.findIndex(c => cls.includes(c))
+    if (cls.includes('nf-key')) {
+      ink ??= probe(getComputedStyle(el).stroke)
+      const px = run(trace(el.getAttribute('d') ?? ''), m)
+      for (let s = 0; s < px.length; s += 2)
+        if (inside(px[s], px[s + 1])) owner[px[s + 1] * bw + px[s]] = INK
+    } else if (id >= 0) {
+      tone(el, id)
+      cover(el, m, id + 1, 128, frameFor(el))
+    } else if (cls.includes('nf-ink')) cover(el, m, INK, 110)
+    else if (cls.includes('nf-void')) cover(el, m, 0, 128)
+  }
+  ink ??= [16, 15, 15]
+  for (let j = 1; j < bh - 1; j++)
+    for (let i = 1; i < bw - 1; i++) {
+      const p = j * bw + i
+      if (owner[p] === 0 || owner[p] === INK) continue
+      if (voided[p - 1] || voided[p + 1] || voided[p - bw] || voided[p + bw]) owner[p] = INK
     }
+
+  const spill: number[] = []
+  const treads: number[] = []
+  for (let j = 0; j < bh; j++)
+    for (let i = 0; i < bw; i++) {
+      const p = j * bw + i
+      const o = owner[p]
+      if (o === INK) put(d, p * 4, ink)
+      if (o === 0 || o === INK) continue
+      const x = g.sx[i]
+      const y = g.sy[j]
+      const f = frames[frame[p]]
+      const lx = f.a * x + f.c * y + f.e
+      const ly = f.b * x + f.d * y + f.f
+      put(d, p * 4, stops[o - 1][PLATE[step(5, stoneTone(lx, ly) * 0.75 + 0.125, i, j)]])
+      const tread = Math.floor((y - STEP_TOP) / 25)
+      if (o === 1 && tread >= 0 && tread < 4 && Math.abs(x - GATE.x) <= 100 + 50 * tread) {
+        spill.push(p)
+        treads.push(tread)
+      }
+    }
+
+  const print = { ink, stone: stops[0], rose: stops[1], sage: stops[2] }
+  return { print, spill, treads } satisfies Masonry
+}
+
+// Rose light from the open gate falls down the steps as a flat wash, one step weaker on every
+// tread: multiplied into the stone by day, screened over it by night.
+function paintSpill(d: Uint8ClampedArray, m: Masonry, glow: number, dark: boolean) {
+  if (glow <= 0) return
+  const rose = m.print.rose[2]
+  for (let s = 0; s < m.spill.length; s++) {
+    const k = m.spill[s] * 4
+    const a = glow * (0.5 - 0.1 * m.treads[s])
+    for (let c = 0; c < 3; c++) {
+      const lit = dark
+        ? 255 - ((255 - d[k + c]) * (255 - rose[c])) / 255
+        : (d[k + c] * rose[c]) / 255
+      d[k + c] += (lit - d[k + c]) * a
+    }
+  }
+}
+
+const HUB = 15
+
+// Station-clock hands on the pole star's arbor, laid into the rift pixel by pixel. The hour and
+// minute hands are bars lit on their sunward edge; the red second hand is a pixel wide with its
+// disc; the hub is an open ring so the star shows through. The rift is night in either theme, so
+// the hands take whichever of stone and ink is the lighter.
+function paintHands(d: Uint8ClampedArray, g: Grid, dial: Dial, print: Print, dark: boolean) {
+  const { bw, bh, sx, sy } = g
+  const face = dark ? print.ink : print.stone[3]
+  const shade = dark ? mix(print.ink, RIFT[3], 0.4) : print.stone[2]
+  const red = print.rose[dark ? 3 : 2]
+  const bars = [
+    { deg: dial.hour, w: 14, len: 112, tail: 40, lit: face },
+    { deg: dial.minute, w: 10, len: 150, tail: 44, lit: face },
+    { deg: dial.second, w: 5, len: 102, tail: 52, lit: red },
+  ].map(b => {
+    const a = (b.deg * Math.PI) / 180
+    const ux = Math.sin(a)
+    const uy = -Math.cos(a)
+    // Which side of the bar faces the sun, up and to the right.
+    const sun = -uy * 0.6 - ux * 0.8 >= 0 ? 1 : -1
+    return { ...b, ux, uy, sun, half: Math.max(b.w / 2, g.px / 2), edged: b.w > g.px * 2 }
+  })
+  const disc = [GATE.x + bars[2].ux * 114, GATE.y + bars[2].uy * 114]
+  const i0 = Math.max(0, col(g, GATE.x - 160))
+  const i1 = Math.min(bw - 1, col(g, GATE.x + 160))
+  const j0 = Math.max(0, row(g, GATE.y - 160))
+  const j1 = Math.min(bh - 1, row(g, GATE.y + 160))
+  for (let j = j0; j <= j1; j++)
+    for (let i = i0; i <= i1; i++) {
+      const dx = sx[i] - GATE.x
+      const dy = sy[j] - GATE.y
+      let c: RGB | null = null
+      for (const b of bars) {
+        const u = dx * b.ux + dy * b.uy
+        if (u > b.len || u < -b.tail || Math.abs(u) < HUB) continue
+        const v = dy * b.ux - dx * b.uy
+        if (Math.abs(v) > b.half) continue
+        c = b.edged && v * b.sun < g.px - b.half ? (b.lit === red ? red : shade) : b.lit
+      }
+      if (Math.hypot(sx[i] - disc[0], sy[j] - disc[1]) <= 12) c = red
+      if (Math.abs(Math.hypot(dx, dy) - HUB) <= g.px / 2) c = face
+      if (c) put(d, (j * bw + i) * 4, c)
+    }
+  paintIvy(d, g, bars[0].ux, bars[0].uy, bars[0].half, () => true)
 }
 
 // Distance from the scene point to the segment, with the signed side for bark lighting.
@@ -1170,8 +1786,10 @@ const RIFT = [
 ].map(hex)
 const STAR_COLORS = ['#fffcf0', '#fffcf0', '#f1d67e', '#fdb2a2', '#cdd597', '#92bfdb'].map(hex)
 const CREAM = hex('#fffcf0')
+const INK = hex('#100f0f')
 const GOLDEN = hex('#f1d67e')
 const ROSE = hex('#e3a19a')
+const FLAME = ['#fffcf0', '#f1d67e', '#da702c', '#af3029'].map(hex)
 const LEAK = 58
 const RIM = GATE.r + LEAK + 4
 const GLOW = 230
@@ -1492,6 +2110,7 @@ export function setupLandscape(
   scene: HTMLElement,
   reduce: boolean,
   water: number,
+  dial: Dial,
 ): Landscape | null {
   const canvas = (cls: string) => scene.querySelector<HTMLCanvasElement>(cls)
   const skyCanvas = canvas('.nf-sky')
@@ -1508,7 +2127,25 @@ export function setupLandscape(
   const pole: Pt = [GATE.x, GATE.y]
   const rift = makeRift(pole)
   const air: Air = { drift: 0, time: 0, pull: 0, pole, vortices: [] }
-  const walker: Walker = { x: 560, dir: 1, pause: 1.5, next: 9, stride: 0, walking: false }
+  const walker: Walker = { x: 900, dir: 1, pause: 1.5, next: 9, stride: 0, walking: false }
+  // Start with the fire already smoking, so the column is standing on the first frame.
+  const hearth: Hearth = { smoke: [], embers: [], spawn: 0, spark: 0 }
+  for (let n = 0; n < 105; n++) stepHearth(hearth, air, 1 / 15)
+  const ripples = makeRipples(water)
+  const splashes: Splash[] = []
+  const bank = (x: number) => hillTop(x, water)
+  const overgrowth = makeOvergrowth()
+  const curtain = makeCurtain()
+  const cat: Cat = makeCat(1250, bank(1250))
+  const crew = makeCrew()
+  // The rift's angular speed at radius r, for whatever it carries round.
+  const turn = (r: number) => (orbit(r) * rift.rate * Math.PI) / 180
+  const inOpening = (i: number, j: number) => {
+    const o = rift.opening
+    return (
+      !!o && i >= o.i0 && i <= o.i1 && j >= o.j0 && j <= o.j1 && o.mask[j * o.grid.bw + i] === 255
+    )
+  }
 
   const pines: Cypress[] = []
   const r = mulberry(612)
@@ -1522,11 +2159,21 @@ export function setupLandscape(
     }
 
   let pal = LIGHT
+  let dark = false
+  let ranges: Layer | null = null
+  let ruin: Layer | null = null
   let sky: Layer | null = null
   let field: Layer | null = null
   let glint: Layer | null = null
   let well: Layer | null = null
   let leaves: Layer | null = null
+  let masonry: Masonry | null = null
+  let greens: Greens | null = null
+  let catInk: CatInk | null = null
+  let crewInk: CrewInk | null = null
+  let figures = new Uint8ClampedArray(0)
+  let landBase = new Uint8ClampedArray(0)
+  let ruinBase = new Uint8ClampedArray(0)
   let skyBase = new Uint8ClampedArray(0)
   let hillBase = new Uint8ClampedArray(0)
   let ridge = new Float32Array(0)
@@ -1539,12 +2186,38 @@ export function setupLandscape(
   let pullTarget = 0
   let drawn = false
   let riftAcc = 0
+  let grown = reduce ? Infinity : 0
+  let lastGlow = -1
+  let lastGrowth = -1
+  let minute = NaN
+  let rest: Pointer = { x: -1e4, y: -1e4 }
+  let stance = ''
+  let lastImpulse = -Infinity
   let lastX = NaN
   let lastY = NaN
   let shed = 0
   let sign = 1
 
   const flush = (l: Layer) => l.ctx.putImageData(l.img, 0, 0)
+  const paintRanges = () => {
+    if (!ranges) return
+    paintFolk(ranges.img.data, ranges.g, pal, landBase, clock, dark)
+    flush(ranges)
+  }
+  // The printed ruin only changes while the moss grows or the spill steps up or down.
+  const paintRuin = () => {
+    if (!ruin || !masonry) return
+    const glow = Math.round(rift.heat * 4) / 4
+    const growth = Math.min(Math.floor(grown * 8) / 8, GROWN)
+    if (glow === lastGlow && growth === lastGrowth) return
+    lastGlow = glow
+    lastGrowth = growth
+    const d = ruin.img.data
+    d.set(ruinBase)
+    paintSpill(d, masonry, glow, dark)
+    if (greens) paintOvergrowth(d, ruin.g, overgrowth, growth, greens)
+    flush(ruin)
+  }
   const paintAir = () => {
     if (!sky) return
     paintSky(sky.img.data, sky.g, pal, air, skyBase, ridge, stars, clock)
@@ -1555,15 +2228,36 @@ export function setupLandscape(
     paintField(field.img.data, field.g, pal, water, ground, hillBase, clock, gust)
     flush(field)
   }
+  // Water, the cat and the crew, camp and smoke. The cat and the crew are painted apart first, so
+  // the water can reflect them with everything else as it all stands right now.
   const paintShore = () => {
     if (!glint) return
-    paintNear(glint.img.data, glint.g, pal, water, walker, rift.heat, clock)
+    const { g } = glint
+    const d = glint.img.data
+    const ink = masonry?.print.ink ?? pal.figure.K
+    const same = (l: Layer | null) => (l && l.g.bw === g.bw && l.g.bh === g.bh ? l.img.data : null)
+    figures.fill(0)
+    if (catInk) paintCat(figures, g, cat, catInk, clock, bank)
+    if (crewInk) paintCrew(figures, g, crew, crewInk, clock, rift.heat, cat.alert, bank)
+    d.fill(0)
+    paintPool(d, g, pal, water, clock, dark)
+    const layers = [figures, same(ruin), same(field), same(well), same(ranges)]
+    paintWater(d, g, pal, water, ink, layers, ripples, clock, dark)
+    paintGlitter(d, g, pal, water, rift.heat, clock)
+    paintSplashes(d, g, splashes, ink)
+    for (let k = 3; k < d.length; k += 4)
+      if (figures[k] === 255) put(d, k - 3, [figures[k - 3], figures[k - 2], figures[k - 1]])
+    paintCamp(d, g, pal, water, walker, clock, dark)
+    paintHearth(d, g, pal, hearth, clock)
+    paintBubbles(d, g, crew, CREAM, INK)
     flush(glint)
   }
   // Only the opening is ever painted, and the underpainting covers all of it each frame.
   const paintPortal = () => {
     if (!well) return
     paintRift(well.img.data, well.g, rift, clock)
+    if (masonry) paintHands(well.img.data, well.g, dial, masonry.print, dark)
+    paintCurtain(well.img.data, well.g, curtain, grown, inOpening)
     flush(well)
   }
   const paintFront = () => {
@@ -1576,10 +2270,58 @@ export function setupLandscape(
   }
 
   const repaint = () => {
-    const dark = document.documentElement.getAttribute('saved-theme') === 'dark'
+    dark = document.documentElement.getAttribute('saved-theme') === 'dark'
     pal = dark ? DARK : LIGHT
-    paint(back, (d, g) => paintLand(d, g, pal, pines))
-    paint(grain, (d, g) => paintGrain(d, g, temple, dark))
+    ranges = layer(back)
+    if (ranges) {
+      paintLand(ranges.img.data, ranges.g, pal, pines)
+      landBase = ranges.img.data.slice()
+    }
+    ruin = layer(grain)
+    masonry = ruin && rasterRuin(ruin.img.data, ruin.g, temple, dark)
+    if (ruin) ruinBase = ruin.img.data.slice()
+    if (masonry) {
+      const { print } = masonry
+      const tones = (stops: RGB[]): Tones => ({
+        ink: print.ink,
+        light: stops[stops.length - 1],
+        plate: stops[stops.length - 2],
+        shade: stops[stops.length - 3],
+      })
+      const flowers = [print.rose[3], CREAM]
+      greens = {
+        moss: tones(pal.moss),
+        bark: tones(pal.bark),
+        crown: tones(pal.leaf),
+        flowers,
+        hair: pal.bark[dark ? 2 : 0],
+      }
+      catInk = {
+        stone: tones(print.stone),
+        moss: tones(pal.moss),
+        eye: GOLDEN,
+        nose: print.rose[2],
+        ear: print.rose[dark ? 1 : 2],
+        flowers,
+      }
+    }
+    crewInk = {
+      skin: pal.figure.S,
+      trousers: pal.figure.D,
+      boots: pal.figure.K,
+      hat: pal.ochre,
+      coats: pal.crew,
+      wood: pal.rope,
+      paper: pal.figure.C,
+      gold: GOLDEN,
+      rose: ROSE,
+      fish: pal.fish,
+      flame: FLAME[2],
+      glow: pal.glow[2],
+      ink: INK,
+      dark,
+    }
+    lastGlow = lastGrowth = -1
     sky = layer(skyCanvas)
     if (sky) {
       ridge = Float32Array.from(sky.g.sx, skyline)
@@ -1596,6 +2338,7 @@ export function setupLandscape(
       paintHillBase(hillBase, field.g, pal, water, ground)
     }
     glint = layer(near)
+    if (glint) figures = new Uint8ClampedArray(glint.img.data.length)
     well = layer(riftCanvas)
     leaves = layer(front)
     if (leaves) {
@@ -1612,10 +2355,12 @@ export function setupLandscape(
         ],
       }
     }
+    paintRanges()
+    paintRuin()
     paintAir()
     paintMeadow()
-    paintShore()
     paintPortal()
+    paintShore()
     paintFront()
   }
   repaint()
@@ -1629,6 +2374,7 @@ export function setupLandscape(
     { run: paintMeadow, every: TICK, acc: 0.03 },
     { run: paintShore, every: TICK, acc: 0.06 },
     { run: paintFront, every: TICK, acc: 0.09 },
+    { run: paintRanges, every: 0.2, acc: 0.12 },
   ]
 
   return {
@@ -1669,8 +2415,22 @@ export function setupLandscape(
       air.time = now
       air.pull += (pullTarget - air.pull) * Math.min(1, dt * 1.5)
 
+      // The moss waits for the reveal.
+      if (scene.classList.contains('is-ready')) grown += dt
+      // The clock's minute impulse, heard at most every 0.8 s while time is warped.
+      const m = Math.round(dial.minute / 6)
+      const impulse = !Number.isNaN(minute) && m !== minute && now - lastImpulse > 0.8
+      if (impulse) lastImpulse = now
+      minute = m
       stepRift(rift, dt)
+      stepCurtain(curtain, dt, now, rift.heat, rift.inflow, turn)
+      stepCat(cat, dt, pointer, rift.heat, impulse)
+      stepCrew(crew, dt, { clock: now, heat: rift.heat, inflow: rift.inflow, impulse, turn })
       stepWalker(walker, dt, drawn)
+      stepHearth(hearth, air, dt)
+      for (let n = splashes.length - 1; n >= 0; n--)
+        if ((splashes[n].age += dt) > 1.6) splashes.splice(n, 1)
+      paintRuin()
       riftAcc += dt
       if (riftAcc >= 1 / 20) {
         riftAcc = 0
@@ -1693,8 +2453,32 @@ export function setupLandscape(
       drawn = mode !== 'idle'
       if (reduce) {
         rift.heat = drawn ? 1 : 0
+        poseCat(cat, rest, drawn)
+        poseCrew(crew, drawn)
+        stance = `${cat.alert}${cat.look}`
+        paintRuin()
         paintPortal()
+        paintShore()
       }
+    },
+    splash(x, y, size) {
+      splashes.push({ x, y, size, age: 0 })
+    },
+    still(pointer) {
+      rest = pointer
+      poseCat(cat, pointer, drawn)
+      const next = `${cat.alert}${cat.look}`
+      if (next === stance) return
+      stance = next
+      paintShore()
+    },
+    refresh() {
+      paintPortal()
+      paintShore()
+    },
+    pixel() {
+      const g = glint?.g
+      return g ? { px: g.px, x0: g.sx[0] - g.px / 2, y0: g.sy[0] - g.px / 2 } : null
     },
     dispose() {
       window.removeEventListener('resize', repaint)

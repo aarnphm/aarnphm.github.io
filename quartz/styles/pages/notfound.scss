@@ -1,10 +1,10 @@
-// Block-print ruin: crisp ink keylines over flat plates, set in a dithered pixel landscape.
-// The printed world moves in stop-motion steps; only the portal, the clock and fireflies move
-// continuously.
+// Pixel print: the ruin, its keylines, the water and the camp are all painted into low-resolution
+// canvases, so every line sits on the same grid. The SVG ruin is kept only as geometry; the door,
+// the carved letters and the fireflies stay live. The printed world moves in stop-motion steps;
+// only the portal, the clock and the fireflies move continuously.
 body[data-slug='404'] {
   --nf-ink: var(--dark);
   --nf-stone: color-mix(in oklab, #fcc192 42%, var(--light));
-  --nf-water: color-mix(in oklab, #3aa99f 45%, var(--light));
   --nf-rose: #fdb2a2;
   --nf-sage: #cdd597;
   --nf-mono: 'Departure Mono', var(--codeFont);
@@ -30,7 +30,6 @@ body[data-slug='404'] {
 
 :root[saved-theme='dark'] body[data-slug='404'] {
   --nf-stone: color-mix(in oklab, #fcc192 18%, var(--light));
-  --nf-water: color-mix(in oklab, #3aa99f 24%, var(--light));
   --nf-rose: color-mix(in oklab, #fdb2a2 78%, var(--light));
   --nf-sage: color-mix(in oklab, #cdd597 72%, var(--light));
 }
@@ -95,17 +94,18 @@ body[data-slug='404'] {
   will-change: transform;
 }
 
-// print primitives
+// Print primitives. Nothing below is drawn: the landscape script reads these colours off the hidden
+// ruin when it prints it.
+.nf-temple #nf-temple-art {
+  visibility: hidden;
+}
+
 .nf-key {
   fill: none;
   stroke: var(--nf-ink);
   stroke-width: 2;
   stroke-linecap: square;
   stroke-linejoin: miter;
-}
-
-.nf-hair {
-  stroke-width: 1;
 }
 
 .nf-fill-stone {
@@ -122,21 +122,6 @@ body[data-slug='404'] {
 }
 
 // gate
-.nf-light-spill {
-  fill: var(--nf-rose);
-  opacity: 0;
-  mix-blend-mode: multiply;
-
-  :root[saved-theme='dark'] & {
-    mix-blend-mode: screen;
-  }
-  transition: opacity 0.5s steps(4);
-
-  .is-portal & {
-    opacity: 0.45;
-  }
-}
-
 .nf-door {
   pointer-events: auto;
   cursor: pointer;
@@ -154,61 +139,6 @@ body[data-slug='404'] {
   &:focus-visible circle {
     stroke: var(--nf-rose);
   }
-}
-
-.nf-stem {
-  fill: none;
-  stroke: var(--nf-ink);
-  stroke-width: 2;
-  stroke-linecap: square;
-  stroke-linejoin: miter;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation-name: nf-grow;
-  animation-fill-mode: forwards;
-}
-
-.nf-leaf {
-  fill: var(--nf-sage);
-  stroke: var(--nf-ink);
-  stroke-width: 1;
-  transform: scale(0);
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: nf-pop 0.3s steps(2, jump-end) forwards;
-}
-
-.nf-bloom {
-  fill: var(--nf-rose);
-}
-
-// water
-.nf-water-body {
-  fill: var(--nf-water);
-}
-
-.nf-shore {
-  stroke-width: 2.5;
-}
-
-.nf-ripple-bar {
-  fill: var(--nf-ink);
-  opacity: 0.35;
-  animation: nf-drift steps(2, jump-none) infinite alternate;
-}
-
-.nf-ripple-bright {
-  fill: var(--light);
-  opacity: 0.75;
-}
-
-.nf-splash-ring {
-  fill: none;
-  stroke: var(--nf-ink);
-  stroke-width: 2;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: nf-ring 1.2s steps(5) forwards;
 }
 
 // fx
@@ -232,11 +162,6 @@ body[data-slug='404'] {
 
 .nf-fly-halo {
   opacity: 0.35;
-}
-
-.nf-fly-core {
-  stroke: var(--nf-ink);
-  stroke-width: 0.8;
 }
 
 .nf-fly-rose {
@@ -412,35 +337,6 @@ body[data-slug='404'] {
   }
 }
 
-@keyframes nf-grow {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes nf-pop {
-  to {
-    transform: scale(1);
-  }
-}
-
-@keyframes nf-drift {
-  to {
-    transform: translateX(10px);
-  }
-}
-
-@keyframes nf-ring {
-  from {
-    transform: scale(0.15);
-    opacity: 1;
-  }
-  to {
-    transform: scale(1.3);
-    opacity: 0;
-  }
-}
-
 @keyframes nf-rise {
   from {
     opacity: 0;
@@ -453,13 +349,5 @@ body[data-slug='404'] {
   .nf-board {
     animation: none !important;
     transition: none !important;
-  }
-
-  .nf-stem {
-    stroke-dashoffset: 0;
-  }
-
-  .nf-leaf {
-    transform: none;
   }
 }
