@@ -171,6 +171,7 @@ export async function fetchWahooCache(
   let skippedThirdParty = 0
   let skippedIncomplete = 0
   let skippedRestricted = 0
+  let skippedPreviouslyMissing = 0
   for (const workout of workouts) {
     const id = `wahoo:${workout.id}`
     const previousActivity = previous?.activities[id]
@@ -179,9 +180,12 @@ export async function fetchWahooCache(
     const previousCyclingDynamics = previous?.cyclingDynamics[id]
     const previousSummitSegments = previous?.summitSegments[id]
     if (
-      workout.summary == null &&
       workout.updatedAt != null &&
       previousActivity?.workoutUpdatedAt === workout.updatedAt &&
+      (workout.name == null || workout.name === previousActivity.name) &&
+      (workout.summary == null ||
+        (workout.summary.updatedAt === previousActivity.summary.updatedAt &&
+          workout.summary.fileUrl === previousActivity.sourceFile.url)) &&
       previousStreams &&
       previousGearShifts &&
       previousCyclingDynamics &&
@@ -192,6 +196,21 @@ export async function fetchWahooCache(
       gearShifts[id] = previousGearShifts
       cyclingDynamics[id] = previousCyclingDynamics
       summitSegments[id] = previousSummitSegments
+      continue
+    }
+    // A completed previous sync already checked unchanged workouts without summaries.
+    if (
+      !previousActivity &&
+      workout.summary == null &&
+      previous &&
+      workout.createdAt &&
+      workout.updatedAt &&
+      Number.isFinite(Date.parse(workout.createdAt)) &&
+      Number.isFinite(Date.parse(workout.updatedAt)) &&
+      Date.parse(workout.createdAt) <= previous.lastSync &&
+      Date.parse(workout.updatedAt) <= previous.lastSync
+    ) {
+      skippedPreviouslyMissing++
       continue
     }
     const resolution = await resolveWahooWorkoutSummary(client, workout)
@@ -223,7 +242,7 @@ export async function fetchWahooCache(
     console.log(`[wahoo] decoded ${activity.id} ${activity.startDate} ${bytes.byteLength} bytes`)
   }
   console.log(
-    `[wahoo] retained ${Object.keys(activities).length}/${workouts.length} completed Wahoo workouts, skipped incomplete=${skippedIncomplete} restricted=${skippedRestricted} third-party=${skippedThirdParty}`,
+    `[wahoo] retained ${Object.keys(activities).length}/${workouts.length} completed Wahoo workouts, skipped incomplete=${skippedIncomplete} restricted=${skippedRestricted} third-party=${skippedThirdParty} previously-missing=${skippedPreviouslyMissing}`,
   )
   return {
     version: WAHOO_CACHE_VERSION,

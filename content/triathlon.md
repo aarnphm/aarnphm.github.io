@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-25 14:57:28 GMT-04:00
+modified: 2026-09-25 21:33:04 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1750,6 +1750,22 @@ garmin: 24488234111
 activity: 20327299425
 garmin: 24497153314
 computer: Wahoo ELEMNT BOLT 3
+```
+
+```tracking
+title: Guided Down, Reset
+date: 2026-09-25
+time: 19:30
+duration: 75 mins
+activity: sauna
+temperature: 162F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: break | hot sauna | break | cold plunge | hot sauna | break
+location: Othership Adelaide
+htl: 7.6
+strava: 20330424202
+garmin: 24499266451
 ```
 
 <!-- training plan start
