@@ -210,7 +210,7 @@ body[data-slug='404'] {
 
   &::after {
     z-index: -1;
-    inset: 0;
+    border: 2px solid var(--dark);
     background: var(--light);
   }
 
@@ -243,16 +243,44 @@ body[data-slug='404'] {
 }
 
 .nf-board-head {
+  box-sizing: border-box;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  list-style: none;
   padding: 0.6rem 0.75rem;
   background: var(--dark);
   color: var(--light);
   font-size: 11px;
   letter-spacing: 0.12em;
+  cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--nf-rose);
+    outline-offset: -2px;
+  }
+
+  &::after {
+    content: '';
+    flex: none;
+    width: 5px;
+    height: 5px;
+    border: solid currentColor;
+    border-width: 0 1px 1px 0;
+    transform: rotate(-45deg);
+  }
+
+  .nf-board details[open] > &::after {
+    transform: rotate(45deg);
+  }
 
   time {
+    flex: none;
     font-variant-numeric: tabular-nums;
   }
 }
@@ -314,7 +342,8 @@ body[data-slug='404'] {
   }
 }
 
-.nf-departures a {
+.nf-departures a,
+.nf-weather {
   color: var(--dark);
   text-decoration: none;
 
@@ -329,11 +358,30 @@ body[data-slug='404'] {
   }
 }
 
+// The date gives way before the conditions do.
+.nf-weather {
+  white-space: nowrap;
+}
+
+.nf-board-place[hidden] {
+  display: none;
+}
+
+.nf-board-place [data-nf-temp] {
+  flex: none;
+}
+
 @media (max-width: 640px) {
   .nf-board {
     top: 0.75rem;
     left: 0.75rem;
     width: calc(100vw - 2rem);
+  }
+}
+
+@media (pointer: coarse) {
+  .nf-board-head {
+    min-height: 44px;
   }
 }
 

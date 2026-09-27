@@ -1,11 +1,11 @@
-// Overgrowth on the 404 ruin. Moss has worked into the joints of the ring and pours down the right
-// of the steps, a sapling has rooted in the keystone, roots bridge the gap the eight o'clock stone
+// Overgrowth on the 404 ruin. Moss has worked into the joints of the ring and pours down its right
+// side onto the island, a sapling has rooted in the keystone (and leans with the ring), roots bridge the gap the eight o'clock stone
 // left, and vines hang into the opening, where the rift pulls their leaves loose while it is open.
 // Every clump is a handful of balls merged with a smooth minimum and wobbled by noise, printed by
 // paintBlob with the ruin's keyline and light, so each one outlines itself where it overlaps the
 // last.
 
-import { GATE, hourAngle, onStone, slipPoint, stoneOuter } from './404-gate'
+import { GATE, hourAngle, onStone, slipPoint, stoneOuter, tilt } from './404-gate'
 import {
   type Grid,
   type Pt,
@@ -99,10 +99,10 @@ export function makeOvergrowth(): Overgrowth {
     const a = onStone(7, ra, deg(133))
     const b = onStone(9, rb, deg(167))
     const mid = deg(150)
-    const c: Pt = [
+    const c = tilt([
       GATE.x + Math.cos(mid) * ((ra + rb) / 2 - sag * 2),
       GATE.y + Math.sin(mid) * ((ra + rb) / 2 - sag * 2),
-    ]
+    ])
     const curve = (t: number): Pt => [
       (1 - t) ** 2 * a[0] + 2 * t * (1 - t) * c[0] + t * t * b[0],
       (1 - t) ** 2 * a[1] + 2 * t * (1 - t) * c[1] + t * t * b[1],
@@ -179,8 +179,8 @@ export function makeOvergrowth(): Overgrowth {
   const base = slipPoint(0, 798, 190)
   trunk.stems.push(
     { a: base, b: [base[0] + 6, base[1] - 26], r0: 4.2, r1: 3.2, at: 2.6 },
-    { a: [base[0] + 6, base[1] - 26], b: [812, 140], r0: 3.2, r1: 2.2, at: 2.75 },
-    { a: [base[0] + 7, base[1] - 30], b: [790, 150], r0: 1.9, r1: 1.3, at: 2.9 },
+    { a: [base[0] + 6, base[1] - 26], b: tilt([812, 140]), r0: 3.2, r1: 2.2, at: 2.75 },
+    { a: [base[0] + 7, base[1] - 30], b: tilt([790, 150]), r0: 1.9, r1: 1.3, at: 2.9 },
   )
   clumps.push(trunk)
   const crown = clump('crown', 0.06, 61)
@@ -191,28 +191,28 @@ export function makeOvergrowth(): Overgrowth {
     [826, 132, 11, 3.2],
     [806, 114, 9, 3.3],
     [820, 116, 8, 3.4],
-  ])
-    crown.balls.push({ x, y, r, at })
+  ]) {
+    const [bx, by] = tilt([x, y])
+    crown.balls.push({ x: bx, y: by, r, at })
+  }
   clumps.push(crown)
 
-  // The cascade: from the four o'clock stone over the plinth's corner and down the ends of the
-  // treads.
+  // The cascade: from the four o'clock stone down the five o'clock's face, over the shoulder of the
+  // six o'clock stone where it comes out of the ground, and away down the island's slope.
   const cascade = clump('moss', 0.045, 67)
   strew(
     cascade,
     [
       slipPoint(4, 966, 560),
       slipPoint(4, 958, 598),
-      [940, 630],
-      [922, 654],
-      [916, 676],
-      [932, 694],
-      [962, 706],
-      [990, 716],
-      [1016, 730],
-      [1040, 744],
-      [1066, 758],
-      [1094, 770],
+      onStone(5, 204, deg(56)),
+      onStone(5, 204, deg(68)),
+      [904, 648],
+      [926, 666],
+      [954, 680],
+      [984, 694],
+      [1014, 706],
+      [1044, 720],
     ],
     11,
     15,
@@ -224,14 +224,14 @@ export function makeOvergrowth(): Overgrowth {
   clumps.push(cascade)
 
   // Tufts: on the three o'clock and two o'clock faces, in the dish of the fallen stone, on the
-  // tablet's corner and at the end of the lowest tread.
+  // tablet's corner and where the ring goes into the ground on the left.
   ;(
     [
-      [1036, 418, 3, 3.6],
-      [985, 330, 3, 3.9],
+      [...tilt([1036, 418]), 3, 3.6],
+      [...tilt([985, 330]), 3, 3.9],
       [372, 748, 4, 4.4],
       [690, 760, 3, 4.8],
-      [486, 764, 3, 5.2],
+      [744, 648, 3, 5.2],
     ] as const
   ).forEach(([x, y, n, at], k) => {
     const tuft = clump('moss', 0.08, 71 + k)
@@ -340,14 +340,16 @@ type Drifter = { r: number; a: number; tone: number }
 export type Curtain = { vines: Vine[]; drifters: Drifter[]; acc: number }
 
 const KNOT = 7
-// Anchors under the inner edge of the ring, with how far each vine hangs.
-const ANCHORS: [number, number, number][] = [
-  [670, 340, 150],
-  [712, 304, 120],
-  [758, 283, 95],
-  [812, 283, 70],
-  [910, 318, 60],
-]
+// Anchors under the inner edge of the ring (upright frame), with how far each vine hangs.
+const ANCHORS = (
+  [
+    [670, 340, 150],
+    [712, 304, 120],
+    [758, 283, 95],
+    [812, 283, 70],
+    [910, 318, 60],
+  ] as const
+).map(([x, y, len]) => [...tilt([x, y]), len] as const)
 
 export function makeCurtain(): Curtain {
   const rand = mulberry(909)

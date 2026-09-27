@@ -4,7 +4,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
-import { GATE, MISSING, STEP_TOP, hourAngle, slipTransform, stoneOuter } from '../scripts/404-gate'
+import { GATE, MISSING, TILT, hourAngle, slipTransform, stoneOuter } from '../scripts/404-gate'
 
 // Every layer shares this viewBox with `slice`, so geometry lines up across the stacked SVGs and the
 // pixel canvases. The ruin below is drawn here but printed by the landscape script into its pixel
@@ -98,9 +98,11 @@ const BITES: Record<number, string> = {
   11: circles([polar(214, 240, 12), polar(212, 244, 7)]),
 }
 
-// The clock gate: twelve voussoirs, one per hour, around an opening onto the rift. The keystone is
-// rose, the mossy five o'clock stone sage, and the eight o'clock stone is gone. Each stone keeps its
-// own group so it can slip, and carries its dial marks, cracks and chips along with it.
+// The clock gate: twelve voussoirs, one per hour, around an opening onto the rift, leaning where it
+// has settled into the island. The keystone is rose, the mossy five o'clock stone sage, and the
+// eight o'clock stone is gone. Each stone keeps its own group so it can slip, and carries its dial
+// marks, cracks and chips along with it; the ring's group leans them all together. The soffit is
+// how the opening's depth shows from below its axis, so it stays level while the ring leans.
 function Ruin() {
   const { x, y, r, depth } = GATE
   const hours = Array.from({ length: 12 }, (_, h) => h).filter(h => h !== MISSING)
@@ -109,17 +111,6 @@ function Ruin() {
   const half = Math.sqrt(r * r - (depth / 2) ** 2)
   const yi = y + depth / 2
   const soffit = `M${f(x - half)} ${f(yi)}A${r} ${r} 0 1 1 ${f(x + half)} ${f(yi)}A${r} ${r} 0 0 0 ${f(x - half)} ${f(yi)}Z`
-  const plinth = box(716, 656, 168, 16) + box(690, 672, 220, STEP_TOP - 672)
-
-  let stepFill = ''
-  for (let i = 0; i < 4; i++) stepFill += box(620 - i * 50, STEP_TOP + i * 25, 360 + i * 100, 25)
-  const worn = circles([
-    [718, 658, 9],
-    [711, 665, 5],
-    [474, 790, 12],
-    [485, 786, 7],
-    [1031, 716, 8],
-  ])
 
   return (
     <svg
@@ -131,24 +122,21 @@ function Ruin() {
       <g id="nf-temple-art">
         <path class="nf-fill-stone" d={soffit} />
         <path class="nf-key" d={soffit} />
-        {hours.map(h => {
-          const stone = voussoir(h, x, y)
-          const plate = h === 0 ? 'nf-fill-rose' : h === 5 ? 'nf-fill-sage' : 'nf-fill-stone'
-          return (
-            <g class="nf-stone" data-hour={h} transform={slipTransform(h)}>
-              <path class={plate} d={stone} />
-              <path class="nf-key" d={stone} />
-              <path class="nf-ink" d={dial(h, x, y)} />
-              {CRACKS[h] && <path class="nf-key" d={CRACKS[h]} />}
-              {BITES[h] && <path class="nf-void" d={BITES[h]} />}
-            </g>
-          )
-        })}
-        <path class="nf-fill-stone" d={stepFill} />
-        <path class="nf-key" d={stepFill} />
-        <path class="nf-fill-stone" d={plinth} />
-        <path class="nf-key" d={plinth} />
-        <path class="nf-void" d={worn} />
+        <g class="nf-ring" transform={`rotate(${TILT} ${x} ${y})`}>
+          {hours.map(h => {
+            const stone = voussoir(h, x, y)
+            const plate = h === 0 ? 'nf-fill-rose' : h === 5 ? 'nf-fill-sage' : 'nf-fill-stone'
+            return (
+              <g class="nf-stone" data-hour={h} transform={slipTransform(h)}>
+                <path class={plate} d={stone} />
+                <path class="nf-key" d={stone} />
+                <path class="nf-ink" d={dial(h, x, y)} />
+                {CRACKS[h] && <path class="nf-key" d={CRACKS[h]} />}
+                {BITES[h] && <path class="nf-void" d={BITES[h]} />}
+              </g>
+            )
+          })}
+        </g>
         <Shore />
         <g class="nf-tablet" transform={`translate(${TABLET.x} ${TABLET.y}) rotate(${TABLET.rot})`}>
           <path class="nf-fill-stone" d={box(-TABLET.w / 2, -TABLET.h / 2, TABLET.w, TABLET.h)} />
@@ -210,42 +198,60 @@ const NotFound: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
         <canvas class="nf-layer nf-canopy" data-depth="1" aria-hidden="true" />
       </div>
       <aside class="nf-board" aria-label="Tableau des départs">
-        <div class="nf-board-head">
-          <span>{cfg.baseUrl ?? cfg.pageTitle}</span>
-          <time data-nf-clock>--:--:--</time>
-        </div>
-        <section>
-          <h2 class="nf-row nf-board-title">
-            Arrivées
-            <i class="nf-lead" />
-          </h2>
-          <p class="nf-row nf-row-you">
-            <span>Vous</span>
-            <i class="nf-lead" />
-            <span data-nf-arrival>arr --:--</span>
-          </p>
-          <p class="nf-row">
-            <code data-nf-path>/</code>
-            <i class="nf-lead" />
-            <span>{t.title}</span>
-          </p>
-        </section>
-        <section>
-          <h2 class="nf-row nf-board-title">
-            Départs
-            <i class="nf-lead" />
-          </h2>
-          <ul class="nf-departures" data-nf-departures>
-            <li>
-              <a class="nf-row" href="/" data-no-popover>
-                <span>Accueil</span>
-                <i class="nf-lead" />
-                <span>quai 0</span>
-              </a>
-            </li>
-          </ul>
-        </section>
-        <p class="nf-row nf-row-you nf-board-foot">voie 404 · service {t.notFound}</p>
+        <details>
+          <summary class="nf-board-head">
+            <time data-nf-clock>--:--:--</time>
+          </summary>
+          <section>
+            <h2 class="nf-row nf-board-title">
+              Arrivées
+              <i class="nf-lead" />
+            </h2>
+            <p class="nf-row nf-row-you">
+              <span>Vous</span>
+              <i class="nf-lead" />
+              <span data-nf-arrival>arr --:--</span>
+            </p>
+            <p class="nf-row">
+              <code data-nf-path>/</code>
+              <i class="nf-lead" />
+              <span>{t.title}</span>
+            </p>
+            <p class="nf-row">
+              <span data-nf-date>--</span>
+              <i class="nf-lead" />
+              <a
+                class="nf-weather"
+                href="https://open-meteo.com/"
+                title="Météo : Open-Meteo"
+                data-nf-weather
+                data-no-popover
+                hidden
+              />
+            </p>
+            <p class="nf-row nf-board-place" data-nf-place-row hidden>
+              <span data-nf-place />
+              <i class="nf-lead" />
+              <span data-nf-temp hidden />
+            </p>
+          </section>
+          <section>
+            <h2 class="nf-row nf-board-title">
+              Départs
+              <i class="nf-lead" />
+            </h2>
+            <ul class="nf-departures" data-nf-departures>
+              <li>
+                <a class="nf-row" href="/" data-no-popover>
+                  <span>Accueil</span>
+                  <i class="nf-lead" />
+                  <span>quai 0</span>
+                </a>
+              </li>
+            </ul>
+          </section>
+          <p class="nf-row nf-row-you nf-board-foot">voie 404 · service {t.notFound}</p>
+        </details>
       </aside>
     </div>
   )

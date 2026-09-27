@@ -1,6 +1,7 @@
 import { OAuthProvider } from '@cloudflare/workers-oauth-provider'
 import { greaterWrongPostUrl, lessWrongTargetFromSearchParams } from '../quartz/util/lesswrong'
 import { readGreaterWrongPreviewHtml } from '../quartz/util/lesswrong-preview'
+import { missingSlugMarkdown } from '../quartz/util/not-found'
 import { sepEntryUrl, sepTargetFromSearchParams } from '../quartz/util/sep'
 import { readSepPreviewHtml } from '../quartz/util/sep-preview'
 import {
@@ -86,12 +87,24 @@ import {
 } from './static-assets'
 import { triathlonDataHtml } from './triathlon-data'
 import { handleWahooOAuthCallback } from './wahoo-oauth'
+import { handleWeather } from './weather'
 
 const MIME = 'application/vnd.git-lfs+json'
 const KEEP_HEADERS = 'Cache-Control'
 const HTML_CONTENT_TYPE = 'text/html; charset=utf-8'
 const PREVIEW_USER_AGENT = 'Mozilla/5.0 (compatible; AarnphmGarden/1.0; +https://aarnphm.xyz)'
 const TRIATHLON_MARKDOWN_PATH = /^\/triathlon(?:\/.*)?\.md$/
+
+function missingMarkdownResponse(request: Request, pathname: string): Response {
+  return new Response(request.method === 'HEAD' ? null : missingSlugMarkdown(pathname), {
+    status: 404,
+    headers: {
+      'Content-Type': 'text/markdown; charset=utf-8',
+      'Cache-Control': 'no-store',
+      Vary: 'Accept, Accept-Encoding, User-Agent',
+    },
+  })
+}
 
 const COOP_COEP_HEADERS: Record<string, string> = {
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -698,6 +711,7 @@ export default {
       markdownUrl.pathname = markdownPathname(url.pathname)
       const markdownReq = new Request(markdownUrl.toString(), request)
       const markdownResp = await env.ASSETS.fetch(markdownReq)
+      if (markdownResp.status === 404) return missingMarkdownResponse(request, url.pathname)
       if (TRIATHLON_MARKDOWN_PATH.test(markdownUrl.pathname)) {
         return withTriathlonMarkdownHeaders(markdownResp)
       }
@@ -708,7 +722,9 @@ export default {
     }
 
     if (TRIATHLON_MARKDOWN_PATH.test(url.pathname)) {
-      return withTriathlonMarkdownHeaders(await env.ASSETS.fetch(new Request(request.url, request)))
+      const markdownResp = await env.ASSETS.fetch(new Request(request.url, request))
+      if (markdownResp.status === 404) return missingMarkdownResponse(request, url.pathname)
+      return withTriathlonMarkdownHeaders(markdownResp)
     }
 
     const apiHeaders: Record<string, string> = {
@@ -941,6 +957,8 @@ export default {
       }
       case '/api/sauna-map':
         return handleSaunaMap(request, env, ctx)
+      case '/api/weather':
+        return handleWeather(request, ctx)
       case '/api/secrets': {
         if (request.method !== 'GET') {
           return new Response('method not allowed', {
@@ -1237,6 +1255,8 @@ export default {
       ? requestWithoutCache(request)
       : requestWithoutStaticAssetCache(request, url.pathname)
     const resp = await env.ASSETS.fetch(assetRequest)
+    if (url.pathname.endsWith('.md') && resp.status === 404)
+      return missingMarkdownResponse(request, url.pathname)
     const staticAssetHeaders = {
       ...cacheHeadersForStaticAsset(url.pathname, resp.status),
       ...isolationHeadersForStaticAsset(url.pathname, resp.status),

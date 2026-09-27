@@ -1,3 +1,4 @@
+import { type Weather, fetchSite, guessSite } from './404-almanac'
 import { makeClock } from './404-clock'
 import { setupLandscape, type Landscape } from './404-landscape'
 
@@ -120,6 +121,39 @@ async function fillDepartures(list: HTMLElement, path: string, isActive: () => b
   list.prepend(...rows)
 }
 
+// The WMO weather codes as a station announcer would read them.
+const CONDITIONS: Record<number, string> = {
+  0: 'dégagé',
+  1: 'peu nuageux',
+  2: 'nuageux',
+  3: 'couvert',
+  45: 'brouillard',
+  48: 'brouillard givrant',
+  51: 'bruine',
+  53: 'bruine',
+  55: 'bruine',
+  56: 'bruine verglaçante',
+  57: 'bruine verglaçante',
+  61: 'pluie',
+  63: 'pluie',
+  65: 'forte pluie',
+  66: 'pluie verglaçante',
+  67: 'pluie verglaçante',
+  71: 'neige',
+  73: 'neige',
+  75: 'forte neige',
+  77: 'grains de neige',
+  80: 'averses',
+  81: 'averses',
+  82: 'fortes averses',
+  85: 'averses de neige',
+  86: 'averses de neige',
+  95: 'orage',
+  96: 'orage de grêle',
+  99: 'orage de grêle',
+}
+const conditions = (w: Weather) => CONDITIONS[w.code] ?? '—'
+
 const pad2 = (n: number) => String(n).padStart(2, '0')
 const hhmm = (d: Date, seconds = false) =>
   [d.getHours(), d.getMinutes(), ...(seconds ? [d.getSeconds()] : [])].map(pad2).join(':')
@@ -150,6 +184,47 @@ document.addEventListener('nav', () => {
 
   const arrival = scene.querySelector<HTMLElement>('[data-nf-arrival]')
   if (arrival) arrival.textContent = `arr ${hhmm(new Date())}`
+  const dateEl = scene.querySelector<HTMLElement>('[data-nf-date]')
+  if (dateEl) {
+    // The weekday sits in its own span so it can give way when the weather needs the room.
+    const now = new Date()
+    const weekday = document.createElement('span')
+    weekday.className = 'nf-weekday'
+    weekday.textContent = `${new Intl.DateTimeFormat('fr', { weekday: 'short' }).format(now)} `
+    dateEl.replaceChildren(
+      weekday,
+      new Intl.DateTimeFormat('fr', { day: 'numeric', month: 'short' }).format(now),
+    )
+  }
+
+  // The sky follows the visitor: the landscape starts from a guess at where they are and takes the
+  // worker's answer, with their weather, as soon as it comes.
+  const font = document.fonts.load("11px 'Departure Mono'").catch(() => undefined)
+  const locating = new AbortController()
+  const located = fetchSite(locating.signal).then(async site => {
+    if (!site || !active) return
+    land?.place(site)
+    const placeRow = scene.querySelector<HTMLElement>('[data-nf-place-row]')
+    const placeEl = scene.querySelector<HTMLElement>('[data-nf-place]')
+    const tempEl = scene.querySelector<HTMLElement>('[data-nf-temp]')
+    if (site.place && placeRow && placeEl) {
+      placeEl.textContent = site.place
+      if (site.weather && tempEl) {
+        tempEl.textContent = `${Math.round(site.weather.temp)}°C`
+        tempEl.hidden = false
+      }
+      placeRow.hidden = false
+    }
+    const weatherEl = scene.querySelector<HTMLAnchorElement>('[data-nf-weather]')
+    if (!weatherEl || !site.weather) return
+    weatherEl.textContent = site.place
+      ? conditions(site.weather)
+      : `${Math.round(site.weather.temp)}° · ${conditions(site.weather)}`
+    weatherEl.hidden = false
+    await font
+    const weekday = dateEl?.querySelector<HTMLElement>('.nf-weekday')
+    if (dateEl && weekday && dateEl.scrollWidth > dateEl.clientWidth) weekday.hidden = true
+  })
   const hands = makeClock(reduce)
   hands.step(0)
 
@@ -303,12 +378,13 @@ document.addEventListener('nav', () => {
   // The SVG ruin arrives with the HTML but the pixel layers paint from here, so the scene stays hidden
   // until they have. The canvases paint synchronously below; the reveal waits for the next frame and
   // for the board's font, and is queued first so a failed paint still shows the page.
-  const font = document.fonts.load("11px 'Departure Mono'").catch(() => undefined)
-  void Promise.race([font, new Promise(resolve => setTimeout(resolve, 400))]).then(() =>
-    requestAnimationFrame(() => active && scene.classList.add('is-ready')),
-  )
+  // The weather joins the wait, so a quick answer is in the first frame seen.
+  void Promise.race([
+    Promise.all([font, located]),
+    new Promise(resolve => setTimeout(resolve, 400)),
+  ]).then(() => requestAnimationFrame(() => active && scene.classList.add('is-ready')))
 
-  const land: Landscape | null = setupLandscape(scene, reduce, water, hands)
+  const land: Landscape | null = setupLandscape(scene, reduce, water, hands, guessSite())
   // The gate's hands read the same time as the board. Without motion they only move once a second.
   const clockEl = scene.querySelector<HTMLElement>('[data-nf-clock]')
   const tick = () => {
@@ -350,6 +426,16 @@ document.addEventListener('nav', () => {
     later(go, 820)
   }
   door.addEventListener('click', onDoor)
+
+  // A click on one of the little people gets a "?" out of them. It is caught on the way down, so a
+  // figure standing in the opening answers instead of letting the door take you home.
+  const onHail = (e: MouseEvent) => {
+    if (e.button !== 0 || (e.target as Element).closest('.nf-board')) return
+    if (!land?.hail(e.clientX, e.clientY)) return
+    e.preventDefault()
+    e.stopPropagation()
+  }
+  scene.addEventListener('click', onHail, true)
 
   let raf = 0
   let last = performance.now()
@@ -472,6 +558,7 @@ document.addEventListener('nav', () => {
 
   window.addCleanup(() => {
     active = false
+    locating.abort()
     land?.dispose()
     stop()
     timers.forEach(id => clearTimeout(id))
@@ -483,5 +570,6 @@ document.addEventListener('nav', () => {
     door.removeEventListener('focus', portalOn)
     door.removeEventListener('blur', portalOff)
     door.removeEventListener('click', onDoor)
+    scene.removeEventListener('click', onHail, true)
   })
 })

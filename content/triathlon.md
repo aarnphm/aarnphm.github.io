@@ -229,7 +229,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-25 21:33:04 GMT-04:00
+modified: 2026-09-26 23:52:05 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1766,6 +1766,31 @@ location: Othership Adelaide
 htl: 7.6
 strava: 20330424202
 garmin: 24499266451
+```
+
+```tracking
+activity: 20343217779
+garmin: 24510598899
+computer: Wahoo ELEMNT BOLT 3
+```
+
+```tracking
+date: 2026-09-26
+activity: 20344424522
+garmin: 24511332675
+strengthVolume: 0 lb
+strengthSets: 6
+strengthReps: 60
+exercise: Hip Circles | 30s
+exercise: Glute Bridge | 30s
+exercise: Walking Knee Hugs | 30s
+exercise: Ankle Bounces | 30s
+exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
+exercise: Reverse Lunge to Knee Drive | 40s | 40s | 40s | 40s
+exercise: Side Plank with Hip Dip | 40s | 40s | 40s | 40s
+exercise: Bodyweight Squat with 2s Pause | 40s | 40s | 40s | 40s
+exercise: Bird Dog | 40s | 40s | 40s | 40s
+exercise: Hip Flexor, Calf, and Standing Quad Stretch Flow | 2m
 ```
 
 <!-- training plan start
