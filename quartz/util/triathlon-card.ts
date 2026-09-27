@@ -8562,9 +8562,9 @@ const TRAINING_EFFECT_LABELS: Record<string, string> = {
   THRESHOLD: 'threshold',
   VO2_MAX: 'VO2max',
   VO2MAX: 'VO2max',
-  ANAEROBIC_CAPACITY: 'anaerobic',
+  ANAEROBIC_CAPACITY: 'anaerobic capacity',
   ANAEROBIC: 'anaerobic',
-  SPEED: 'speed',
+  SPEED: 'sprint',
   SPRINT: 'sprint',
 }
 
@@ -8576,10 +8576,90 @@ export const formatTrainingEffectLabel = (value: string | null): string | null =
 
 export const activityTrainingEffectLabel = (d: StravaActivityDetail): string => {
   if (d.sport === 'sauna') return 'recovery'
-  return (
-    formatTrainingEffectLabel(d.garmin?.trainingEffectLabel ?? null) ??
-    (d.sport === 'strength' || d.sport === 'yoga' || d.sport === 'treatment' ? 'recovery' : 'base')
+  const garminLabel = formatTrainingEffectLabel(d.garmin?.trainingEffectLabel ?? null)
+  if (garminLabel) return garminLabel
+  if (d.sport === 'strength' || d.sport === 'yoga' || d.sport === 'treatment') return 'recovery'
+
+  const calculated = d.calculatedTrainingEffect
+  if (
+    !calculated ||
+    d.garmin?.aerobicTrainingEffect != null ||
+    d.garmin?.anaerobicTrainingEffect != null ||
+    !Number.isFinite(calculated.aerobic) ||
+    !Number.isFinite(calculated.anaerobic)
   )
+    return 'base'
+
+  const anaerobicEvidence = calculated.evidence.anaerobic
+  if (
+    anaerobicEvidence.source !== 'heart-rate' &&
+    calculated.anaerobic >= 3 &&
+    calculated.anaerobic >= calculated.aerobic - 0.5
+  ) {
+    if (
+      anaerobicEvidence.source === 'power' &&
+      anaerobicEvidence.sprintEffortCount != null &&
+      anaerobicEvidence.sprintEffortCount >= 3 &&
+      anaerobicEvidence.sprintStimulus != null &&
+      anaerobicEvidence.stimulus > 0 &&
+      anaerobicEvidence.sprintStimulus / anaerobicEvidence.stimulus >= 0.5
+    )
+      return 'sprint'
+    return 'anaerobic capacity'
+  }
+
+  const powerIntensity = d.calculatedIntensityFactor
+  const ftpWatts =
+    powerIntensity?.source === 'power' &&
+    Number.isFinite(powerIntensity.value) &&
+    powerIntensity.value > 0 &&
+    d.npWatts != null
+      ? d.npWatts / powerIntensity.value
+      : null
+  if (
+    calculated.aerobic >= 3 &&
+    d.sport === 'bike' &&
+    d.powerZones?.length === 7 &&
+    ftpWatts != null &&
+    Number.isFinite(ftpWatts) &&
+    ftpWatts > 0
+  ) {
+    const zoneSeconds = d.powerZones
+    const movingTimeS = d.movingTimeS
+    const hasSustainedEffort = (durationS: number, ftpFraction: number): boolean =>
+      d.bestEfforts?.power.some(
+        effort => effort.durationS >= durationS && effort.averageWatts >= ftpWatts * ftpFraction,
+      ) ?? false
+    if (
+      zoneSeconds[4] >= 480 &&
+      zoneSeconds[4] >= movingTimeS * 0.1 &&
+      hasSustainedEffort(300, 1.05)
+    )
+      return 'VO2max'
+    if (
+      zoneSeconds[3] >= 900 &&
+      zoneSeconds[3] >= movingTimeS * 0.2 &&
+      hasSustainedEffort(1_200, 0.9)
+    )
+      return 'threshold'
+    if (
+      zoneSeconds[2] >= 1_200 &&
+      zoneSeconds[2] >= movingTimeS * 0.25 &&
+      hasSustainedEffort(1_800, 0.75)
+    )
+      return 'tempo'
+  }
+
+  if (
+    calculated.aerobic >= 1 &&
+    calculated.aerobic < 2 &&
+    calculated.anaerobic < 1 &&
+    d.calculatedIntensityFactor?.source !== 'heart-rate' &&
+    d.calculatedIntensityFactor?.value != null &&
+    d.calculatedIntensityFactor.value < 0.65
+  )
+    return 'recovery'
+  return 'base'
 }
 
 export const formatTrainingEffectNote = (value: string | null): string | null => {

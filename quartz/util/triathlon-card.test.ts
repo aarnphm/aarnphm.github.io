@@ -41,6 +41,7 @@ import {
   activitySelectionSummary,
   activityStatRows,
   activityTableRows,
+  activityTrainingEffectLabel,
   activityZonePercentages,
   axisFrame,
   buildActivity,
@@ -2208,6 +2209,180 @@ test('uses base by default and recovery for strength, yoga, and treatment', () =
   assert.equal(strengthRow.properties.dataTrainingEffectGroup, 'low-aerobic')
 })
 
+test('classifies calculated anaerobic capacity and preserves Garmin primary benefits', () => {
+  const calculatedTrainingEffect = {
+    aerobic: 4.5,
+    anaerobic: 4.5,
+    evidence: {
+      aerobic: { source: 'relative-effort' as const, load: 109 },
+      anaerobic: {
+        source: 'power' as const,
+        effect: 4.5,
+        effortCount: 140,
+        stimulus: 9.6,
+        criticalPowerWatts: 250.8,
+        wPrimeKilojoules: 10.1,
+      },
+    },
+  }
+  const ride = detail({ calculatedTrainingEffect })
+  assert.equal(activityTrainingEffectLabel(ride), 'anaerobic capacity')
+  assert.deepEqual(activityStatRows(METRIC_TRIATHLON_PRESENTATION, ride).slice(-1), [
+    ['training effect', 'anaerobic capacity'],
+  ])
+  const summary = byTag(buildActivity(factory, ride), 'tr').find(
+    row => row.properties.dataStatKey === 'training effect',
+  )
+  assert.equal(summary?.properties.dataTrainingEffectGroup, 'anaerobic')
+
+  assert.equal(
+    activityTrainingEffectLabel(
+      detail({ calculatedTrainingEffect: { ...calculatedTrainingEffect, anaerobic: 3.3 } }),
+    ),
+    'base',
+  )
+  assert.equal(
+    activityTrainingEffectLabel(
+      detail({ calculatedTrainingEffect: { ...calculatedTrainingEffect, anaerobic: 2.9 } }),
+    ),
+    'base',
+  )
+  assert.equal(
+    activityTrainingEffectLabel(
+      detail({
+        calculatedTrainingEffect: {
+          ...calculatedTrainingEffect,
+          evidence: {
+            ...calculatedTrainingEffect.evidence,
+            anaerobic: { source: 'heart-rate', seconds: 1_800 },
+          },
+        },
+      }),
+    ),
+    'base',
+  )
+  assert.equal(
+    activityTrainingEffectLabel(
+      detail({
+        garmin: garminVerification({ trainingEffectLabel: 'SPEED' }),
+        calculatedTrainingEffect,
+      }),
+    ),
+    'sprint',
+  )
+  assert.equal(
+    activityTrainingEffectLabel(detail({ sport: 'sauna', calculatedTrainingEffect })),
+    'recovery',
+  )
+})
+
+test('labels calculated sprint work separately from longer anaerobic work', () => {
+  const calculatedTrainingEffect = {
+    aerobic: 3.4,
+    anaerobic: 3.7,
+    evidence: {
+      aerobic: { source: 'relative-effort' as const, load: 70 },
+      anaerobic: {
+        source: 'power' as const,
+        effect: 3.7,
+        effortCount: 12,
+        sprintEffortCount: 10,
+        stimulus: 5.6,
+        sprintStimulus: 4.8,
+        criticalPowerWatts: 300,
+        wPrimeKilojoules: 18,
+      },
+    },
+  }
+  const ride = detail({ calculatedTrainingEffect })
+  assert.equal(activityTrainingEffectLabel(ride), 'sprint')
+  assert.equal(
+    activityTrainingEffectLabel(
+      detail({
+        calculatedTrainingEffect: {
+          ...calculatedTrainingEffect,
+          evidence: {
+            ...calculatedTrainingEffect.evidence,
+            anaerobic: {
+              ...calculatedTrainingEffect.evidence.anaerobic,
+              sprintEffortCount: 2,
+              sprintStimulus: 1.2,
+            },
+          },
+        },
+      }),
+    ),
+    'anaerobic capacity',
+  )
+})
+
+test('classifies sustained calculated aerobic work from recorded power zones', () => {
+  const calculatedTrainingEffect = {
+    aerobic: 3.8,
+    anaerobic: 1.1,
+    evidence: {
+      aerobic: { source: 'relative-effort' as const, load: 80 },
+      anaerobic: { source: 'heart-rate' as const, seconds: 0 },
+    },
+  }
+  const trainingRide = (powerZones: number[], durationS: number, averageWatts: number) =>
+    detail({
+      movingTimeS: 3_600,
+      npWatts: 300,
+      calculatedIntensityFactor: { source: 'power', value: 1 },
+      powerZones,
+      bestEfforts: {
+        weightKg: null,
+        weightDate: null,
+        distance: [],
+        climbs: [],
+        power: [
+          { durationS, averageWatts, wattsPerKg: null, averageHeartRate: null, elevationDeltaM: 0 },
+        ],
+      },
+      calculatedTrainingEffect,
+    })
+  assert.equal(
+    activityTrainingEffectLabel(trainingRide([0, 2_400, 300, 300, 600, 0, 0], 300, 330)),
+    'VO2max',
+  )
+  assert.equal(
+    activityTrainingEffectLabel(trainingRide([0, 2_400, 300, 900, 0, 0, 0], 1_200, 285)),
+    'threshold',
+  )
+  assert.equal(
+    activityTrainingEffectLabel(trainingRide([0, 2_400, 1_200, 0, 0, 0, 0], 1_800, 240)),
+    'tempo',
+  )
+  assert.equal(
+    activityTrainingEffectLabel(trainingRide([0, 2_400, 300, 300, 600, 0, 0], 20, 500)),
+    'base',
+  )
+  assert.equal(
+    activityTrainingEffectLabel(trainingRide([0, 3_600, 0, 0, 0, 0, 0], 1_800, 240)),
+    'base',
+  )
+})
+
+test('uses recovery for a calculated easy session with a small aerobic effect', () => {
+  const easy = detail({
+    calculatedIntensityFactor: { source: 'power', value: 0.52 },
+    calculatedTrainingEffect: {
+      aerobic: 1.4,
+      anaerobic: 0,
+      evidence: {
+        aerobic: { source: 'relative-effort', load: 12 },
+        anaerobic: { source: 'heart-rate', seconds: 0 },
+      },
+    },
+  })
+  assert.equal(activityTrainingEffectLabel(easy), 'recovery')
+  assert.equal(
+    activityTrainingEffectLabel(detail({ ...easy, calculatedIntensityFactor: null })),
+    'base',
+  )
+})
+
 test('labels sauna as recovery while retaining Garmin training effect scores', () => {
   for (const trainingEffectLabel of [null, 'UNKNOWN', 'AEROBIC_BASE', 'VO2_MAX']) {
     const garmin = garminVerification({
@@ -2339,7 +2514,8 @@ test('renders Garmin training effect scores and notes immediately above heart ra
   assert.equal(formatTrainingEffectLabel('AEROBIC_BASE'), 'base')
   assert.equal(formatTrainingEffectLabel('LACTATE_THRESHOLD'), 'threshold')
   assert.equal(formatTrainingEffectLabel('VO2_MAX'), 'VO2max')
-  assert.equal(formatTrainingEffectLabel('SPEED'), 'speed')
+  assert.equal(formatTrainingEffectLabel('SPEED'), 'sprint')
+  assert.equal(formatTrainingEffectLabel('ANAEROBIC_CAPACITY'), 'anaerobic capacity')
   assert.equal(dominantTrainingEffectGroup('RECOVERY'), 'low-aerobic')
   assert.equal(dominantTrainingEffectGroup('LACTATE_THRESHOLD'), 'high-aerobic')
   assert.equal(dominantTrainingEffectGroup('SPRINT'), 'anaerobic')
