@@ -156,11 +156,33 @@ test('scores only W-prime-depleting 10 to 120 second power efforts', () => {
   })
   assert.ok(estimate)
   assert.equal(estimate.effortCount, 1)
+  assert.equal(estimate.sprintEffortCount, 1)
+  assert.equal(estimate.sprintStimulus, estimate.stimulus)
   assert.equal(estimate.criticalPowerWatts, 300)
   assert.equal(estimate.wPrimeKilojoules, 6)
   assert.ok(estimate.effect > 0.8 && estimate.effect < 1.5)
   assert.equal(calculateAnaerobicPowerEstimate([], 3_600, null), null)
   assert.equal(calculateAnaerobicPowerEstimate(watts, 3_600, null), null)
+})
+
+test('separates short sprint work from longer anaerobic intervals', () => {
+  const watts = [
+    ...Array<number>(20).fill(0),
+    ...Array<number>(20).fill(700),
+    ...Array<number>(20).fill(0),
+    ...Array<number>(75).fill(400),
+    ...Array<number>(20).fill(0),
+  ]
+  const estimate = calculateAnaerobicPowerEstimate(watts, 3_600, {
+    criticalPowerWatts: 300,
+    wPrimeJoules: 6_000,
+  })
+  assert.ok(estimate)
+  assert.equal(estimate.effortCount, 2)
+  assert.equal(estimate.sprintEffortCount, 1)
+  assert.ok(estimate.sprintStimulus != null)
+  assert.ok(estimate.sprintStimulus > 0)
+  assert.ok(estimate.sprintStimulus < estimate.stimulus)
 })
 
 test('dilutes repeated anaerobic efforts across moving time', () => {

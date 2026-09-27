@@ -150,6 +150,7 @@ const en: TriDict = {
     tempo: 'tempo',
     aerobic: 'aerobic',
     anaerobic: 'anaerobic',
+    'anaerobic capacity': 'anaerobic capacity',
     'intensity factor': 'intensity factor',
     'variability index': 'variability index',
     '30 s rolling power, cumulative NP, zeros included':
@@ -1253,6 +1254,7 @@ const fr: TriDict = {
     tempo: 'tempo',
     aerobic: 'aérobie',
     anaerobic: 'anaérobie',
+    'anaerobic capacity': 'capacité anaérobie',
     'intensity factor': "facteur d'intensité",
     'variability index': 'indice de variabilité',
     '30 s rolling power, cumulative NP, zeros included':

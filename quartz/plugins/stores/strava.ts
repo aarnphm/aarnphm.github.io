@@ -628,6 +628,8 @@ export interface AnaerobicPowerEstimate {
   effect: number
   effortCount: number
   stimulus: number
+  sprintEffortCount?: number
+  sprintStimulus?: number
   criticalPowerWatts: number
   wPrimeKilojoules: number
 }
@@ -1129,7 +1131,9 @@ export const calculateAnaerobicPowerEstimate = (
   }
 
   let rawStimulus = 0
+  let sprintRawStimulus = 0
   let effortCount = 0
+  let sprintEffortCount = 0
   let intervalStart = -1
   let intervalWorkJoules = 0
   for (let index = 0; index <= smoothed.length; index++) {
@@ -1147,10 +1151,18 @@ export const calculateAnaerobicPowerEstimate = (
     ) {
       const depletionFraction = intervalWorkJoules / wPrimeJoules
       if (depletionFraction > ANAEROBIC_W_PRIME_MIN_FRACTION) {
-        rawStimulus +=
+        const effortStimulus =
           (depletionFraction - ANAEROBIC_W_PRIME_MIN_FRACTION) /
           (1 - ANAEROBIC_W_PRIME_MIN_FRACTION)
+        rawStimulus += effortStimulus
         effortCount++
+        if (
+          durationS <= 30 &&
+          criticalPowerWatts + intervalWorkJoules / durationS >= 1.5 * criticalPowerWatts
+        ) {
+          sprintRawStimulus += effortStimulus
+          sprintEffortCount++
+        }
       }
     }
     intervalStart = -1
@@ -1158,11 +1170,16 @@ export const calculateAnaerobicPowerEstimate = (
   }
   const stimulus =
     rawStimulus / Math.pow(Math.max(1, movingTimeS / 3600), ANAEROBIC_SESSION_DURATION_EXPONENT)
+  const sprintStimulus =
+    sprintRawStimulus /
+    Math.pow(Math.max(1, movingTimeS / 3600), ANAEROBIC_SESSION_DURATION_EXPONENT)
   const effect = 5 * (1 - Math.exp(-ANAEROBIC_TRAINING_EFFECT_RATE * stimulus))
   return {
     effect: round(effect, 2),
     effortCount,
     stimulus: round(stimulus, 3),
+    sprintEffortCount,
+    sprintStimulus: round(sprintStimulus, 3),
     criticalPowerWatts: round(criticalPowerWatts, 1),
     wPrimeKilojoules: round(wPrimeJoules / 1_000, 1),
   }
