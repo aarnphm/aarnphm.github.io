@@ -1,9 +1,11 @@
 // A survey party a few pixels tall, sent to find out what the clock is. One climbs a ladder into
 // the gap to read the roots through a glass, one hangs off the keystone on a rope, one fishes the
 // rift for stars from the one o'clock stone and keeps them in a jar, a child pokes the opening with
-// a stick, a surveyor sights it through a theodolite, someone takes notes on the plinth, someone
-// points, and someone down on the bank is trying to make friends with the cat. They say "?" to
-// each other now and then, and "!" when the clock jumps or the portal opens. While it is open, it
+// a stick, a surveyor sights it through a theodolite, someone sits in the grass at the ring's foot
+// taking notes, someone points, and someone down on the bank is trying to make friends with the
+// cat. They say "?" to
+// each other now and then, "!" when the clock jumps or the portal opens, and "?" to whoever clicks
+// on them (as does everyone else on the bank, whose heads the landscape files here too). While it is open, it
 // pulls: the rope swings wide, the fishing line spirals in, and the child's stick is taken.
 
 import { GATE, slipPoint } from './404-gate'
@@ -12,7 +14,9 @@ import { type Grid, type Pt, type RGB, BAYER, col, dot, line, noise, row, stamp 
 const WHO = ['ladder', 'rope', 'fisher', 'kid', 'surveyor', 'writer', 'pointer', 'friend'] as const
 type Who = (typeof WHO)[number]
 type Glyph = '!' | '?'
-type Bubble = { who: Who; glyph: Glyph; age: number }
+type Bubble = { who: string; glyph: Glyph; age: number }
+// Who is talking, and the top-middle pixel of each figure that can talk, as last painted.
+export type Voices = { bubbles: Bubble[]; heads: Partial<Record<string, Pt>> }
 
 export type Crew = {
   // The rope: angle from plumb, its rate, and its length.
@@ -29,8 +33,7 @@ export type Crew = {
   bubbles: Bubble[]
   chatter: number
   hot: boolean
-  // The top-middle pixel of each figure as last painted, for the bubbles.
-  heads: Partial<Record<Who, Pt>>
+  heads: Partial<Record<string, Pt>>
 }
 
 export type CrewInk = {
@@ -61,11 +64,11 @@ const BOB: Pt = [866, 330]
 const JAR: Pt = [924, 254]
 const CHILD: Pt = [772, 606]
 const POKE: Pt = [800, 570]
-const SURVEYOR = 640
-const TRIPOD = 664
-const TREAD = 690
-const WRITER: Pt = [866, 656]
-const POINTER = 742
+// Where the ones on the island stand, along the crown the ring has sunk into.
+const SURVEYOR = 610
+const TRIPOD = 634
+const WRITER = 912
+const POINTER = 704
 const FRIEND = 1136
 
 // Sprites face right; letters are hat, skin, coat, trousers, boots, paper (W), rose (R), fish (F).
@@ -102,10 +105,37 @@ export function makeCrew(): Crew {
   }
 }
 
-function say(c: Crew, who: Who, glyph: Glyph) {
-  c.bubbles = c.bubbles.filter(b => b.who !== who)
-  if (c.bubbles.length >= 3) c.bubbles.shift()
-  c.bubbles.push({ who, glyph, age: 0 })
+function say(v: Voices, who: string, glyph: Glyph) {
+  v.bubbles = v.bubbles.filter(b => b.who !== who)
+  if (v.bubbles.length >= 3) v.bubbles.shift()
+  v.bubbles.push({ who, glyph, age: 0 })
+}
+
+// Whoever has a head within reach of buffer pixel (i, j), nearest first: a box a few pixels either
+// side of the head and down to the feet of a figure `tall` pixels high.
+export function heard(v: Voices, i: number, j: number, reach: number, tall: number) {
+  let best: string | null = null
+  let near = Infinity
+  for (const [who, head] of Object.entries(v.heads)) {
+    if (!head) continue
+    const di = Math.abs(i - head[0])
+    const dj = j - head[1]
+    if (di > reach || dj < -2 || dj > tall) continue
+    const dist = di + Math.abs(dj - tall / 2) * 0.5
+    if (dist < near) {
+      near = dist
+      best = who
+    }
+  }
+  return best
+}
+
+// Clicked on: they look up and ask.
+export const ask = (v: Voices, who: string) => say(v, who, '?')
+
+export function ageBubbles(v: Voices, dt: number) {
+  for (const b of v.bubbles) b.age += dt
+  v.bubbles = v.bubbles.filter(b => b.age < 1.8)
 }
 
 // Without motion the party holds one pose per state of the portal: open, the child has lost the
@@ -171,8 +201,7 @@ export function stepCrew(
     c.peerNext = 2.5 + Math.random() * 3
   }
 
-  for (const b of c.bubbles) b.age += dt
-  c.bubbles = c.bubbles.filter(b => b.age < 1.8)
+  ageBubbles(c, dt)
   if (hot && !c.hot) for (const who of ['rope', 'pointer', 'friend'] as const) say(c, who, '!')
   c.hot = hot
   if (env.impulse) say(c, anyone(), '!')
@@ -348,10 +377,11 @@ export function paintCrew(
     seg([x - tx, y - ty], [x + tx, y + ty], ink.wood)
   }
 
-  // The surveyor at the theodolite on the top tread.
+  // The surveyor at the theodolite on the slope below the ring.
+  const head = ground(TRIPOD) - 20
   const ti = col(g, TRIPOD)
-  const tj = row(g, TREAD - 22)
-  for (const o of [-7, 0, 7]) seg([TRIPOD, TREAD - 22], [TRIPOD + o, TREAD - 2], ink.wood)
+  const tj = row(g, head)
+  for (const o of [-7, 0, 7]) seg([TRIPOD, head], [TRIPOD + o, ground(TRIPOD + o) + 2], ink.wood)
   dot(d, g, ti - 1, tj, ink.ink)
   dot(d, g, ti, tj, ink.ink)
   dot(d, g, ti, tj - 1, ink.ink)
@@ -360,18 +390,25 @@ export function paintCrew(
     'surveyor',
     c.peer ? PEER : STAND,
     SURVEYOR + (c.peer ? g.px : 0),
-    TREAD,
+    ground(SURVEYOR) + 4,
     false,
     letter(ink.coats[4]),
   )
 
-  // The note-taker on the plinth, facing the gate, pencil going.
-  const [wi, wj] = figure('writer', WRITE, WRITER[0], WRITER[1] + g.px, true, letter(ink.coats[5]))
+  // The note-taker in the grass, facing the gate, pencil going.
+  const [wi, wj] = figure('writer', WRITE, WRITER, ground(WRITER) + 4, true, letter(ink.coats[5]))
   dot(d, g, wi + (beat % 2), wj + 4, ink.ink)
 
   // Someone pointing.
   const pointing = heat > 0.3 || Math.floor(clock / 0.8) % 3 !== 0
-  figure('pointer', pointing ? REACH : STAND, POINTER, TREAD, false, letter(ink.coats[1], ink.rose))
+  figure(
+    'pointer',
+    pointing ? REACH : STAND,
+    POINTER,
+    ground(POINTER) + 4,
+    false,
+    letter(ink.coats[1], ink.rose),
+  )
 
   // Someone on the bank offering the cat a fish: held out while it peeks, dropped when it wakes.
   const floor = ground(FRIEND) + 4
@@ -394,9 +431,9 @@ export function paintCrew(
 
 // Speech bubbles over whoever is talking, drawn after the reflection so they stay out of the water.
 // They blink out over their last third of a second.
-export function paintBubbles(d: Uint8ClampedArray, g: Grid, c: Crew, paper: RGB, ink: RGB) {
-  for (const b of c.bubbles) {
-    const head = c.heads[b.who]
+export function paintBubbles(d: Uint8ClampedArray, g: Grid, v: Voices, paper: RGB, ink: RGB) {
+  for (const b of v.bubbles) {
+    const head = v.heads[b.who]
     if (!head || (b.age > 1.5 && Math.floor(b.age * 10) % 2)) continue
     const [hi, hj] = head
     const i0 = hi - 1
