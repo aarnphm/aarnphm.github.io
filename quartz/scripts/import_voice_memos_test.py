@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -46,6 +47,85 @@ Keep this writing.
 
 
 class VoiceMemoTests(unittest.TestCase):
+  def test_recently_deleted_recording_is_excluded_from_list_and_import(
+    self,
+  ) -> None:
+    with tempfile.TemporaryDirectory(prefix='memo-trash-test-') as temporary:
+      root = Path(temporary)
+      source = root / 'Recordings'
+      source.mkdir()
+      for name, frequency in (
+        ('20260906_active.qta', 440),
+        ('20260906_trash.qta', 880),
+      ):
+        subprocess.run(
+          [
+            'ffmpeg',
+            '-v',
+            'error',
+            '-f',
+            'lavfi',
+            '-i',
+            f'sine=frequency={frequency}:duration=0.2',
+            '-c:a',
+            'aac',
+            '-metadata',
+            'creation_time=2026-09-06T02:00:00Z',
+            '-f',
+            'mov',
+            str(source / name),
+          ],
+          check=True,
+          timeout=30,
+        )
+      with sqlite3.connect(source / 'CloudRecordings.db') as db:
+        db.execute(
+          'CREATE TABLE ZCLOUDRECORDING (ZPATH TEXT, ZEVICTIONDATE REAL)'
+        )
+        db.executemany(
+          'INSERT INTO ZCLOUDRECORDING VALUES (?, ?)',
+          [('20260906_active.qta', None), ('20260906_trash.qta', 1.0)],
+        )
+      repository = root / 'repo'
+      repository.mkdir()
+      (repository / 'content').mkdir()
+      (repository / 'content/stream.md').write_text(STREAM)
+      command = [
+        sys.executable,
+        str(Path(memos.__file__)),
+        '--date',
+        '2026-09-05',
+        '--source',
+        str(source),
+        '--repo',
+        str(repository),
+      ]
+      listed = subprocess.run(
+        [*command, '--list'],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+      )
+      self.assertIn('20260906_active.qta', listed.stdout)
+      self.assertNotIn('20260906_trash.qta', listed.stdout)
+      explicit = subprocess.run(
+        [*command, '--file', str(source / '20260906_trash.qta'), '--list'],
+        capture_output=True,
+        text=True,
+        timeout=30,
+      )
+      self.assertNotEqual(explicit.returncode, 0)
+      self.assertIn('not an active Voice Memo', explicit.stderr)
+      subprocess.run(command, check=True, capture_output=True, timeout=30)
+      output = list(
+        (repository / 'content/triathlon/memos').glob('*.peaks.json')
+      )
+      self.assertEqual(len(output), 1)
+      self.assertEqual(
+        json.loads(output[0].read_text())['source'], '20260906_active.qta'
+      )
+
   def test_memo_attributes_replace_lfs_entries_and_preserve_other_rules(
     self,
   ) -> None:
