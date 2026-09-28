@@ -5,9 +5,11 @@ import json
 import math
 import re
 import shutil
+import sqlite3
 import subprocess
 import sys
 import tempfile
+from contextlib import closing
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -38,6 +40,29 @@ class Recording:
 def sha256(path: Path) -> str:
   with path.open('rb') as source:
     return hashlib.file_digest(source, 'sha256').hexdigest()
+
+
+def active_recording_names(directory: Path) -> set[str] | None:
+  database = directory / 'CloudRecordings.db'
+  if not database.exists():
+    if directory.resolve() == RECORDINGS.resolve():
+      raise ValueError(
+        'Voice Memos metadata is unavailable; cannot exclude Recently Deleted recordings'
+      )
+    return None
+  try:
+    with closing(
+      sqlite3.connect(f'{database.resolve().as_uri()}?mode=ro', uri=True)
+    ) as connection:
+      # Voice Memos can leave Recently Deleted audio on disk.
+      return {
+        path
+        for (path,) in connection.execute(
+          'SELECT ZPATH FROM ZCLOUDRECORDING WHERE ZEVICTIONDATE IS NULL'
+        )
+      }
+  except sqlite3.Error as error:
+    raise ValueError(f'Cannot read Voice Memos metadata: {error}') from error
 
 
 def update_memo_attributes(text: str) -> str:
@@ -331,8 +356,17 @@ def main() -> None:
       raise ValueError(
         'macOS denied access to Voice Memos. Grant the running app Full Disk Access, or copy selected recordings to an accessible folder and pass --file.'
       ) from error
+  active_by_directory: dict[Path, set[str] | None] = {}
   recordings = []
   for path in candidates:
+    directory = path.parent.resolve()
+    if directory not in active_by_directory:
+      active_by_directory[directory] = active_recording_names(directory)
+    active = active_by_directory[directory]
+    if active is not None and path.name not in active:
+      if args.file:
+        raise ValueError(f'{path.name} is not an active Voice Memo')
+      continue
     recording = probe(path)
     if recording.recorded_at.date() == args.date:
       recordings.append(recording)
