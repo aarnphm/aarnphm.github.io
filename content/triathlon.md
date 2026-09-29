@@ -1,4 +1,12 @@
 ---
+calendar:
+  '2027':
+    hyrox-miami: https://hyrox.com/event/sweat-pals-hyrox-miami-beach-26-27/
+    lanzarote: https://www.ironman.com/races/im-lanzarote/register
+    muscat: https://www.ironman.com/races/im703-oman
+    ottawa: https://www.ironman.com/races/im-canada-ottawa
+    toronto: https://supertri.com/toronto-triathlon/
+    vancouver: https://t100triathlon.com/vancouver/participate/
 date: '2026-05-29'
 description: training data and tracking
 dexa:
@@ -229,7 +237,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-26 23:52:05 GMT-04:00
+modified: 2026-09-29 16:05:14 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1791,6 +1799,21 @@ exercise: Side Plank with Hip Dip | 40s | 40s | 40s | 40s
 exercise: Bodyweight Squat with 2s Pause | 40s | 40s | 40s | 40s
 exercise: Bird Dog | 40s | 40s | 40s | 40s
 exercise: Hip Flexor, Calf, and Standing Quad Stretch Flow | 2m
+```
+
+```tracking
+date: 2026-09-28
+activity: 20371684360
+exercise: Glute Bridge | 30s
+exercise: Standing Calf Raise | 30s
+exercise: Walking Lunge | 30s
+exercise: Hip Hinge | 30s
+exercise: Single-Leg Calf Raise | 40s | 40s | 40s | 40s
+exercise: Glute Bridge March | 40s | 40s | 40s | 40s
+exercise: Curtsy Lunge | 40s | 40s | 40s | 40s
+exercise: Wall Sit | 40s | 40s | 40s | 40s
+exercise: Single-Leg Romanian Deadlift | 40s | 40s | 40s | 40s
+exercise: Standing Calf, Seated Forward Fold, and Pigeon Stretch Flow | 2m
 ```
 
 <!-- training plan start

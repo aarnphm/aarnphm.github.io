@@ -2,7 +2,7 @@
 date: '2025-08-12'
 description: and my interests.
 id: research
-modified: 2026-09-14 15:58:43 GMT-04:00
+modified: 2026-09-28 09:07:08 GMT-04:00
 tags:
   - fruit
 title: research
@@ -102,7 +102,9 @@ The scheduler can preempt work when memory is scarce or a policy gives another r
 
 > First, memory management is a **must**.
 
-PagedAttention was more of a paradigm shift. It pushes the whole field of "let's try classical computer science optimization and bring it to language models". Before, we were essentially running one request at a time because KV cache allocation was static. Now, we could pack as many requests as we would like, share memory across requests, even swap to CPU when needed. The paging abstraction is powerful because it's composable — you can build prefix caching, speculative execution, and beam search on top of the same primitive.
+Serving systems already batched requests before PagedAttention. [Orca's 2022 paper](https://www.usenix.org/conference/osdi22/presentation/yu) describes the scheduling problem: new requests had to wait for the current batch to finish. Memory allocation imposed another limit. Reserving a contiguous KV-cache region for each request's maximum possible length left memory unused, which reduced the number of requests that could fit.
+
+[PagedAttention allocates fixed-size blocks as a sequence grows](https://vllm.ai/blog/2023-06-20-vllm). A block table lets the attention kernel find them even when they are scattered through GPU memory. Sequences can share unchanged prefix blocks, with copy-on-write when they diverge. That gives the scheduler room for larger batches. The batch still has to fit the available memory, and moving cache blocks to CPU adds transfer costs.
 
 > Second, it is all about ==scheduling==.
 

@@ -13,7 +13,7 @@ import { type Grid, type Pt, type RGB, BAYER, col, dot, line, noise, row, stamp 
 
 const WHO = ['ladder', 'rope', 'fisher', 'kid', 'surveyor', 'writer', 'pointer', 'friend'] as const
 type Who = (typeof WHO)[number]
-type Glyph = '!' | '?'
+export type Glyph = '!' | '?'
 type Bubble = { who: string; glyph: Glyph; age: number }
 // Who is talking, and the top-middle pixel of each figure that can talk, as last painted.
 export type Voices = { bubbles: Bubble[]; heads: Partial<Record<string, Pt>> }
@@ -105,7 +105,7 @@ export function makeCrew(): Crew {
   }
 }
 
-function say(v: Voices, who: string, glyph: Glyph) {
+export function say(v: Voices, who: string, glyph: Glyph) {
   v.bubbles = v.bubbles.filter(b => b.who !== who)
   if (v.bubbles.length >= 3) v.bubbles.shift()
   v.bubbles.push({ who, glyph, age: 0 })

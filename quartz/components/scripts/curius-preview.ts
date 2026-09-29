@@ -6,6 +6,7 @@ import {
   type CuriusPreviewResponse,
 } from '../../util/curius-preview'
 import { parseGithubRepositoryUrl } from '../../util/github-embed'
+import { parseWikipediaTarget } from '../../util/wikipedia'
 import { buildYouTubeEmbed } from '../../util/youtube'
 import { registerEscapeHandler } from './escape-handler'
 import { currentNavSignal } from './nav-lifecycle'
@@ -127,6 +128,12 @@ function articleContent(html: string): HTMLElement {
       anchor.href = href
       anchor.target = '_blank'
       anchor.rel = 'noopener noreferrer'
+      const wikipediaTarget = parseWikipediaTarget(href)
+      if (wikipediaTarget) {
+        anchor.classList.add('internal')
+        anchor.dataset.wikipediaLang = wikipediaTarget.lang
+        anchor.dataset.wikipediaTitle = wikipediaTarget.title
+      }
     }
   }
   for (const image of article.querySelectorAll('img')) {
@@ -142,6 +149,8 @@ function savedText(link: Link): { text: string; kind: 'article' | 'excerpt' } | 
   const article = link.metadata?.full_text?.trim()
   if (article) return { text: article, kind: 'article' }
   const excerpt = plainText(link.snippet || '')
+  if (parseWikipediaTarget(link.link) && /^Couldn't find lead section for \S+$/i.test(excerpt))
+    return undefined
   return excerpt ? { text: excerpt, kind: 'excerpt' } : undefined
 }
 
@@ -256,8 +265,17 @@ export function setupCuriusPreview(): void {
     }
   }
 
-  const renderFallback = (link: Link) => {
-    content.replaceChildren(...savedContent(link, true))
+  const renderFallback = (link: Link, message?: string) => {
+    const saved = savedContent(link, true)
+    if (message && parseWikipediaTarget(link.link)) {
+      const status = document.createElement('p')
+      status.className = 'curius-preview-status'
+      status.setAttribute('role', 'status')
+      status.textContent = message
+      content.replaceChildren(status, ...saved)
+      return
+    }
+    content.replaceChildren(...saved)
     if (!savedText(link)) {
       document.dispatchEvent(
         new CustomEvent('toast', { detail: { message: 'No preview available for this link.' } }),
@@ -270,7 +288,7 @@ export function setupCuriusPreview(): void {
     if (result.status === 'ready') {
       content.append(articleContent(result.readerHtml), ...savedContent(link, false))
     } else {
-      renderFallback(link)
+      renderFallback(link, result.message)
     }
   }
 
@@ -314,6 +332,8 @@ export function setupCuriusPreview(): void {
       return
     }
 
+    if (parseWikipediaTarget(link.link)) renderFallback(link, 'Loading Wikipedia article…')
+
     const id = link.id
     if (!Number.isSafeInteger(id) || id === undefined || id <= 0) {
       retryButton.disabled = true
@@ -331,10 +351,13 @@ export function setupCuriusPreview(): void {
     panel.setAttribute('aria-busy', 'true')
     retryButton.disabled = true
     try {
-      const response = await fetch(`/api/curius?query=preview&id=${id}`, {
-        signal: AbortSignal.any([controller.signal, AbortSignal.timeout(35_000)]),
-        headers: { Accept: 'application/json' },
-      })
+      const response = await fetch(
+        `/api/curius?query=preview&id=${id}${refresh ? '&refresh=1' : ''}`,
+        {
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(35_000)]),
+          headers: { Accept: 'application/json' },
+        },
+      )
       const result = parseCuriusPreview(await response.json())
       if (controller.signal.aborted || signal.aborted) return
       if (!result || (result.status === 'ready' && result.linkId !== id))
@@ -343,7 +366,7 @@ export function setupCuriusPreview(): void {
       render(result, link)
     } catch (error) {
       if (controller.signal.aborted || signal.aborted) return
-      renderFallback(link)
+      renderFallback(link, 'The preview could not be loaded. Retry or open the original.')
       console.warn('Curius preview could not load', error)
     } finally {
       if (request === controller) {

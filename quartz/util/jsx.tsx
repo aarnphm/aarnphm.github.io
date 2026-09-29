@@ -1,3 +1,4 @@
+import type { JSX } from 'preact'
 import { Node, Root } from 'hast'
 import { Components, Jsx, toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import { Fragment, jsx, jsxs } from 'preact/jsx-runtime'
@@ -6,12 +7,20 @@ import { type FilePath } from './path'
 import '../components/mdx'
 import { trace } from './trace'
 
-const baseComponents: Record<string, any> = {
-  table: (props: any) => (
-    <div class="table-container">
-      <table {...props} />
-    </div>
-  ),
+const componentTableClasses = new Set([
+  'tri-act-stats',
+  'tri-environment-table',
+  'tri-effort-table',
+  'tri-health-score-table',
+])
+
+const baseComponents = {
+  table: (props: JSX.HTMLAttributes<HTMLTableElement>) => {
+    const table = <table {...props} />
+    const classes = typeof props.class === 'string' ? props.class.split(/\s+/) : []
+    if (classes.some(cls => componentTableClasses.has(cls))) return table
+    return <div class="table-container">{table}</div>
+  },
 }
 
 let cachedComponents: Components | undefined
