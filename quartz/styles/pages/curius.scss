@@ -637,13 +637,12 @@ body[data-slug='curius'] {
   .curius-preview {
     position: fixed;
     z-index: var(--z-modal);
-    inset: 0.75rem 0.75rem 0.75rem auto;
+    inset: 2rem 0.75rem 2rem auto;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
     width: var(--curius-preview-width);
     min-width: 0;
-    max-height: calc(100dvh - 1.5rem);
     border: 1px solid var(--curius-line);
     color: var(--darkgray);
     background: var(--light);
@@ -654,6 +653,10 @@ body[data-slug='curius'] {
     &[hidden] {
       display: none;
     }
+  }
+
+  &.curius-preview-open > .wikipedia-popover {
+    z-index: calc(var(--z-modal) + 1);
   }
 
   .curius-preview-header {
@@ -897,9 +900,8 @@ body[data-slug='curius'] {
     }
 
     .curius-preview {
-      inset: 0.5rem;
+      inset: 1rem 0.5rem;
       width: auto;
-      max-height: calc(100dvh - 1rem);
     }
 
     &.curius-preview-open {

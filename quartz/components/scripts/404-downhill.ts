@@ -1,79 +1,95 @@
-// Downhill on the left-hand hill: a bike-park line cut down the face under the crest, where the two
-// people by the cypress stand watching the start. Four riders take it in turn. They drop in from
-// the start hut, carry speed into each berm and brake for it, roll off a wooden drop, fly the
-// tabletop (every other lap with a whip), cross under the finish banner, and push their bikes back
-// up the walkers' path to go again. As everyone on the ranges, they are a pixel wide.
+// Downhill on the left-hand hill: a bike-park line cut down the face under the crest, a drag lift up
+// its left side, and a start hut on the crest where the two people by the cypress stand watching.
+// The line is built as a surface to ride: the ground, plus what the builders put on it (three
+// berms, a wooden drop with a chicken line round it, and a tabletop). Who rides it, and how, is
+// 404-riders.ts; this file owns the shapes, their physics tables and their paint.
+//
+// The face is seen from level, so a unit down the screen is a unit of height, and it falls at
+// thirty degrees, so each of those units also runs √3 units back into the view. Grades, speeds and
+// flights are worked on that ground, and only the drawing goes back onto the screen.
 
-import type { Voices } from './404-crew'
-import { type Grid, type Pt, type RGB, BAYER, col, dot, hash, row } from './404-pixel'
+import { type Grid, type Pt, type RGB, col, dot, row, smooth } from './404-pixel'
 
-// The line through its turns, in scene units, from the start hut between two pines on the crest to
-// the finish above the island's flank. The corners are rounded into berms before anything is
-// measured.
+// People here stand four pixels, some eighteen units, to their metre seventy, so a metre is ten
+// units.
+export const UNIT = 10
+export const G = 9.81 * UNIT
+const DEPTH = Math.sqrt(3)
+// Samples along the line, in screen units.
+const STEP = 2
+
+// The line through its turns, in scene units, from the start hut on the crest to the finish above
+// the island's flank. The corners are rounded into berms before anything is measured.
 const LINE: Pt[] = [
   [318, 484],
   [352, 524],
   [338, 560],
   [262, 598],
   [236, 634],
-  [330, 700],
-  [300, 736],
+  [352, 716],
+  [292, 750],
   [240, 764],
   [205, 790],
 ]
-// The walkers' path back up, left of the line, so nobody pushes up into a rider.
-const PUSH: Pt[] = [
-  [205, 790],
-  [196, 720],
-  [214, 650],
-  [228, 580],
-  [262, 520],
-  [318, 484],
+// The chicken line: it leaves the main line after the first berm, runs below the drop, and comes
+// back in above the second berm.
+const FORK: Pt = [326, 566]
+const DETOUR: Pt[] = [
+  [314, 580],
+  [294, 592],
 ]
-// The wooden drop's deck from where it leaves the ground to its lip, and the tabletop's takeoff and
-// landing, as points on the line.
+const JOIN: Pt = [266, 598]
+// The drop's deck from where it leaves the ground to its lip, and the foot of the tabletop's
+// takeoff ramp.
 const DROP: [Pt, Pt] = [
-  [314, 571],
+  [316, 570],
   [296, 581],
 ]
-const TABLE: [Pt, Pt] = [
-  [250, 644],
-  [312, 687],
-]
-
-// People here stand four pixels, some eighteen units, to their metre seventy, so a metre is about
-// ten units and gravity a hundred units a second squared. A rider tops out near ten metres a
-// second, holds a g and a half round a berm, brakes at 0.8 g, and gains half a g down the fall line.
-const G = 100
-const VMAX = 100
-const GRIP = 150
-const BRAKE = 80
-const PULL = 50
-// The drop's lip stands about a metre off the ground.
+const TABLE: Pt = [258, 650]
+// The drop stands this proud of the ground at its lip; the table's deck this proud all along it.
 const DROP_H = 9
-// Samples along the line, in scene units.
-const STEP = 2
+const TABLE_H = 11
+// The table's takeoff ramp, deck and landing, over the ground.
+const RAMP = 24
+const DECK = 18
+const LAND = 34
+// Turns sharper than this, over the ground, were given a berm.
+const BERMED: [number, number] = [0.006, 0.014]
 
-const RIDERS = 4
-const FINISH = 1.6
-// Pushing a downhill bike up the hill goes at a metre a second.
-const PUSH_SPEED = 10
-const WAIT = 2
+// The drag lift, bottom station to top, on the ground; the path from its top along the crest to
+// the start hut, where the queue for the gate stands; the run-out from the finish to the lift; and
+// the way in from the left edge, which is how everyone arrives and leaves.
+export const LIFT: [Pt, Pt] = [
+  [174, 808],
+  [226, 466],
+]
+const LINK: Pt[] = [LIFT[1], [258, 473], [298, 481], LINE[0]]
+const RUNOUT: Pt[] = [LINE[LINE.length - 1], [190, 800], LIFT[0]]
+const BASE: Pt[] = [[36, 815], [110, 813], LIFT[0]]
+// Where along the lift its two towers stand.
+export const LIFT_TOWERS = [0.36, 0.7]
+// Where the photographer crouches, beside the table's landing.
+export const PHOTO: Pt = [300, 700]
 
-type Course = {
+export type Track = {
+  n: number
   x: Float32Array
   y: Float32Array
-  // Signed curvature, per unit of length: positive where the heading turns clockwise on screen.
+  // Distance from the gate over the ground as seen from above, the height of the surface that is
+  // ridden (whatever is built included), its grade dz/dq arriving at each sample, and how far what
+  // is built stands proud of the ground.
+  q: Float32Array
+  z: Float32Array
+  grade: Float32Array
+  built: Float32Array
+  // Curvature over the ground, signed, and how much of a berm the turn was given, 0..1.
   bend: Float32Array
-  // Seconds from the gate, and height off the ground in scene units.
-  t: Float32Array
-  lift: Float32Array
-  time: number
-  // The samples at the drop's lip and the tabletop's takeoff and landing.
-  lip: number
-  deck: number
-  takeoff: number
-  landing: number
+  bank: Float32Array
+  // Where each sample lies along the main line, so riders on either line keep their distance.
+  main: Float32Array
+  // Samples where the surface runs out from under a rider: the drop's lip, the table's.
+  lips: number[]
+  length: number
 }
 
 function chaikin(p: Pt[], rounds: number): Pt[] {
@@ -111,72 +127,204 @@ function resample(p: Pt[], step: number): Pt[] {
   return out
 }
 
-const nearest = (xs: Float32Array, ys: Float32Array, [x, y]: Pt) => {
+const nearest = (pts: Pt[], [x, y]: Pt) => {
   let best = 0
-  for (let k = 1; k < xs.length; k++)
-    if (Math.hypot(xs[k] - x, ys[k] - y) < Math.hypot(xs[best] - x, ys[best] - y)) best = k
+  for (let k = 1; k < pts.length; k++)
+    if (Math.hypot(pts[k][0] - x, pts[k][1] - y) < Math.hypot(pts[best][0] - x, pts[best][1] - y))
+      best = k
   return best
 }
 
-// Where a rider can go how fast: the grip limit round each berm, then braking back from every
-// slower stretch and pulling away from the gate, the way a lap-time simulation builds its speed
-// trace. The airtime falls out of it: a jump's flight takes the time the trace gives it, and the
-// height is whatever gravity makes of that time.
-const COURSE: Course = (() => {
-  const pts = resample(chaikin(LINE, 3), STEP)
+// Over the ground, as seen from above, and along it.
+const plan = (dx: number, dy: number) => Math.hypot(dx, dy * DEPTH)
+export const slant = (dx: number, dy: number) => Math.hypot(dx, dy * 2)
+
+function survey(pts: Pt[], built: Float32Array): Track {
   const n = pts.length
   const x = Float32Array.from(pts, p => p[0])
   const y = Float32Array.from(pts, p => p[1])
+  const q = new Float32Array(n)
+  for (let k = 1; k < n; k++) q[k] = q[k - 1] + plan(x[k] - x[k - 1], y[k] - y[k - 1])
   const heading = (k: number) => {
     const a = Math.max(0, k - 1)
     const b = Math.min(n - 1, k + 1)
-    return Math.atan2(y[b] - y[a], x[b] - x[a])
+    return Math.atan2((y[b] - y[a]) * DEPTH, x[b] - x[a])
   }
   const bend = new Float32Array(n)
+  const bank = new Float32Array(n)
   for (let k = 3; k < n - 3; k++) {
     const turn = heading(k + 3) - heading(k - 3)
-    bend[k] = Math.atan2(Math.sin(turn), Math.cos(turn)) / (6 * STEP)
+    bend[k] = Math.atan2(Math.sin(turn), Math.cos(turn)) / (q[k + 3] - q[k - 3])
+    bank[k] = smooth(BERMED[0], BERMED[1], Math.abs(bend[k]))
   }
-  const v = Float32Array.from(bend, b =>
-    Math.min(VMAX, Math.sqrt(GRIP / Math.max(1e-4, Math.abs(b)))),
-  )
-  v[n - 1] = Math.min(v[n - 1], 30)
-  for (let k = n - 2; k >= 0; k--)
-    v[k] = Math.min(v[k], Math.sqrt(v[k + 1] ** 2 + 2 * BRAKE * STEP))
-  v[0] = 0
-  for (let k = 1; k < n; k++) v[k] = Math.min(v[k], Math.sqrt(v[k - 1] ** 2 + 2 * PULL * STEP))
-  const t = new Float32Array(n)
-  for (let k = 1; k < n; k++) t[k] = t[k - 1] + STEP / Math.max(1, (v[k] + v[k - 1]) / 2)
+  const z = Float32Array.from(y, (v, k) => -v + built[k])
+  const grade = new Float32Array(n)
+  for (let k = 1; k < n; k++) grade[k] = (z[k] - z[k - 1]) / (q[k] - q[k - 1])
+  grade[0] = grade[1]
+  return { n, x, y, q, z, grade, built, bend, bank, main: q, lips: [], length: q[n - 1] }
+}
 
-  const lift = new Float32Array(n)
-  const deck = nearest(x, y, DROP[0])
-  const lip = nearest(x, y, DROP[1])
-  for (let k = deck; k < n; k++) {
-    if (k <= lip) lift[k] = (DROP_H * (k - deck)) / Math.max(1, lip - deck)
-    else {
-      const fall = t[k] - t[lip]
-      const h = DROP_H - (G * fall * fall) / 2
-      if (h <= 0) break
-      lift[k] = h
-    }
+const MAIN_PTS = resample(chaikin(LINE, 3), STEP)
+const KD0 = nearest(MAIN_PTS, DROP[0])
+const KLIP = nearest(MAIN_PTS, DROP[1])
+const KF = nearest(MAIN_PTS, FORK)
+const KJ = nearest(MAIN_PTS, JOIN)
+const KT = nearest(MAIN_PTS, TABLE)
+
+// What the builders raised on the main line: the drop's deck climbs off the ground and levels out
+// toward its lip, then stops dead; the table rises on a ramp that steepens into its lip, runs level
+// with the ground along its deck, and comes down a landing that is steepest in its middle.
+const MAIN_BUILT = (() => {
+  const n = MAIN_PTS.length
+  const b = new Float32Array(n)
+  const q = new Float32Array(n)
+  for (let k = 1; k < n; k++)
+    q[k] = q[k - 1] + plan(MAIN_PTS[k][0] - MAIN_PTS[k - 1][0], MAIN_PTS[k][1] - MAIN_PTS[k - 1][1])
+  for (let k = KD0; k <= KLIP; k++) b[k] = DROP_H * Math.sqrt((q[k] - q[KD0]) / (q[KLIP] - q[KD0]))
+  const q0 = q[KT]
+  for (let k = KT; k < n; k++) {
+    const u = q[k] - q0
+    if (u < RAMP) b[k] = TABLE_H * (u / RAMP) ** 1.5
+    else if (u < RAMP + DECK) b[k] = TABLE_H
+    else if (u < RAMP + DECK + LAND) b[k] = TABLE_H * (1 - smooth(0, 1, (u - RAMP - DECK) / LAND))
+    else break
   }
-  const takeoff = nearest(x, y, TABLE[0])
-  const landing = nearest(x, y, TABLE[1])
-  const flight = t[landing] - t[takeoff]
-  for (let k = takeoff; k <= landing; k++) {
-    const u = (t[k] - t[takeoff]) / flight
-    lift[k] = Math.max(lift[k], ((G * flight * flight) / 2) * u * (1 - u))
-  }
-  return { x, y, bend, t, lift, time: t[n - 1], lip, deck, takeoff, landing }
+  return b
 })()
 
-const PUSH_PTS = resample(PUSH, STEP)
+export const MAIN: Track = survey(MAIN_PTS, MAIN_BUILT)
+export const KTL = (() => {
+  let k = KT
+  while (MAIN.q[k + 1] - MAIN.q[KT] <= RAMP) k++
+  return k
+})()
+MAIN.lips = [KLIP, KTL]
 
-// Whether an outcrop at this spot, this wide, would sit on the line, its drop or the path up.
+// The chicken line shares the main line's samples up to the fork and after the join, so the table
+// and the berms below are the same ground either way.
+export const CHICKEN: Track = (() => {
+  const detour = resample(chaikin([MAIN_PTS[KF], ...DETOUR, MAIN_PTS[KJ]], 3), STEP)
+  const pts = [...MAIN_PTS.slice(0, KF), ...detour, ...MAIN_PTS.slice(KJ + 1)]
+  const built = new Float32Array(pts.length)
+  const off = KF + detour.length - (KJ + 1)
+  for (let k = KJ + 1; k < MAIN_PTS.length; k++) built[k + off] = MAIN_BUILT[k]
+  const t = survey(pts, built)
+  // The detour's length is spread over the main line's between the fork and the join.
+  const main = new Float32Array(t.n)
+  const a = t.q[KF]
+  const b = t.q[KF + detour.length - 1]
+  for (let k = 0; k < t.n; k++)
+    main[k] =
+      k < KF
+        ? t.q[k]
+        : k < KF + detour.length
+          ? MAIN.q[KF] + ((t.q[k] - a) / (b - a)) * (MAIN.q[KJ] - MAIN.q[KF])
+          : t.q[k] - b + MAIN.q[KJ]
+  t.main = main
+  t.lips = [KTL + off]
+  return t
+})()
+export const TRACKS = [MAIN, CHICKEN] as const
+
+// Height of the ridden surface, and the sample at or before `q`, starting the search from `k`.
+export function seek(t: Track, q: number, k: number) {
+  while (k < t.n - 1 && t.q[k + 1] <= q) k++
+  while (k > 0 && t.q[k] > q) k--
+  return k
+}
+export function surface(t: Track, q: number, k: number) {
+  if (k >= t.n - 1) return t.z[t.n - 1]
+  const u = Math.max(0, Math.min(1, (q - t.q[k]) / (t.q[k + 1] - t.q[k])))
+  // The drop's deck ends in a wall at its lip, so past the lip there is only the ground below it.
+  const z0 = t.built[k + 1] < t.built[k] - 3 ? -t.y[k] : t.z[k]
+  return z0 + (t.z[k + 1] - z0) * u
+}
+
+// A flight from a lip at a given speed along the lip's own grade: where over the ground it comes
+// down, and after how long.
+export function fly(t: Track, lip: number, v: number, pop = 0) {
+  const a = Math.atan(t.grade[lip])
+  let vh = v * Math.cos(a)
+  let vz = v * Math.sin(a) + pop
+  let q = t.q[lip]
+  let z = t.z[lip]
+  let k = lip
+  let time = 0
+  const dt = 1 / 240
+  while (time < 3) {
+    q += vh * dt
+    vz -= G * dt
+    z += vz * dt
+    time += dt
+    k = seek(t, q, k)
+    if (k >= t.n - 1 || z <= surface(t, q, k)) break
+  }
+  return { q, time, vh, vz, k }
+}
+
+// The table's sweet spot, a third of the way down its landing, and the speed off the lip that
+// finds it, by bisection: flights lengthen with speed.
+export const SWEET = MAIN.q[KT] + RAMP + DECK + LAND * 0.4
+export const TABLE_FLIGHT = (() => {
+  let lo = 20
+  let hi = 200
+  for (let n = 0; n < 40; n++) {
+    const mid = (lo + hi) / 2
+    if (fly(MAIN, KTL, mid).q < SWEET) lo = mid
+    else hi = mid
+  }
+  // How much further the flight goes for each unit of speed off the lip, around that speed: the
+  // deck sits level with the lip and the landing drops away under it, so this grows much faster
+  // than the square of the speed would say.
+  const reach = (fly(MAIN, KTL, lo * 1.05).q - fly(MAIN, KTL, lo * 0.95).q) / (lo * 0.1)
+  return { v: lo, time: fly(MAIN, KTL, lo).time, reach }
+})()
+// Off the drop, what speed at the lip comes down where, and how fast along the ground below: the
+// landing turns some of the fall into speed down the hill, and the second berm is not far below
+// it, so riders check their speed on the deck.
+export const DROP_OFF = (() => {
+  const lip = MAIN.lips[0]
+  const out: { v: number; k: number; glide: number }[] = []
+  for (let v = 10; v <= 150; v += 5) {
+    const r = fly(MAIN, lip, v)
+    const gl = MAIN.grade[Math.min(MAIN.n - 1, r.k + 1)]
+    out.push({ v, k: r.k, glide: (r.vh + r.vz * gl) / Math.hypot(1, gl) })
+  }
+  return out
+})()
+// Where the table's landing starts and ends, over the ground: before it is the deck, after it the
+// flat of the hill.
+export const LANDING: [number, number] = [MAIN.q[KT] + RAMP + DECK, MAIN.q[KT] + RAMP + DECK + LAND]
+
+// A path walked or ridden at a steady pace: the points, and their distance along the slope.
+export type Path = { pts: Pt[]; at: Float32Array; length: number }
+function path(p: Pt[]): Path {
+  const pts = resample(p, STEP)
+  const at = new Float32Array(pts.length)
+  for (let k = 1; k < pts.length; k++)
+    at[k] = at[k - 1] + slant(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1])
+  return { pts, at, length: at[pts.length - 1] }
+}
+export const PATHS = { lift: path(LIFT), link: path(LINK), runout: path(RUNOUT), base: path(BASE) }
+// The point `s` along a path, and which way the path heads there.
+export function along(p: Path, s: number): { x: number; y: number; dir: number } {
+  const s1 = Math.max(0, Math.min(p.length, s))
+  let k = 0
+  while (k < p.pts.length - 2 && p.at[k + 1] < s1) k++
+  const [ax, ay] = p.pts[k]
+  const [bx, by] = p.pts[k + 1]
+  const u = (s1 - p.at[k]) / Math.max(1e-6, p.at[k + 1] - p.at[k])
+  return { x: ax + (bx - ax) * u, y: ay + (by - ay) * u, dir: Math.sign(bx - ax) || 1 }
+}
+
+// Whether an outcrop at this spot, this wide, would sit on the line, the chicken line, the lift or
+// the paths.
 export function nearCourse(x: number, y: number, clear: number) {
-  const { x: xs, y: ys } = COURSE
-  for (let k = 0; k < xs.length; k += 2) if (Math.hypot(xs[k] - x, ys[k] - y) < clear) return true
-  return PUSH_PTS.some(([px, py]) => Math.hypot(px - x, py - y) < clear)
+  for (const t of TRACKS)
+    for (let k = 0; k < t.n; k += 2) if (Math.hypot(t.x[k] - x, t.y[k] - y) < clear) return true
+  return Object.values(PATHS).some(p =>
+    p.pts.some(([px, py]) => Math.hypot(px - x, py - y) < clear),
+  )
 }
 
 export type CourseInk = {
@@ -187,38 +335,48 @@ export type CourseInk = {
   path: RGB
   wood: RGB
   post: RGB
+  steel: RGB
   flag: [RGB, RGB]
-  skin: RGB
-  shorts: RGB
-  tyre: RGB
-  dust: RGB
-  lamp: RGB
-  glow: RGB
-  kits: { jersey: RGB; helmet: RGB; frame: RGB }[]
 }
 
 // The line, into the ranges' base: worn dirt a pixel or two wide with a darker pixel under it where
 // it cuts the slope, packed snow where the snow lies, a built-up lip round the outside of each
-// berm, the tabletop's mound, the drop's deck on its post, the start hut, the finish banner, and
-// the walkers' path trodden into the grass.
+// berm, the table's mound with its lit deck, the drop's deck on its post, the chicken line trodden
+// into the grass, the start hut, the finish banner, and the drag lift's track, cable and towers.
 export function paintCourse(d: Uint8ClampedArray, g: Grid, ink: CourseInk, snowline: number) {
-  const { x, y, bend } = COURSE
-  PUSH_PTS.forEach(([px, py], k) => {
-    if (k % 2 === 0) dot(d, g, col(g, px), row(g, py), ink.path)
-  })
-  for (let k = 0; k < x.length; k++) dot(d, g, col(g, x[k]), row(g, y[k]) + 1, ink.rut)
-  for (let k = 0; k < x.length; k++) {
+  const trodden = (p: Pt[]) =>
+    p.forEach(([px, py], k) => {
+      if (k % 2 === 0) dot(d, g, col(g, px), row(g, py), ink.path)
+    })
+  trodden(PATHS.link.pts)
+  trodden(PATHS.runout.pts)
+  trodden(PATHS.base.pts)
+  PATHS.lift.pts.forEach(([px, py]) => dot(d, g, col(g, px), row(g, py), ink.path))
+  const detour = CHICKEN.n - MAIN.n + (KJ - KF)
+  for (let k = KF; k <= KF + detour; k++)
+    dot(d, g, col(g, CHICKEN.x[k]), row(g, CHICKEN.y[k]), ink.path)
+
+  const { x, y, bend, bank, built } = MAIN
+  for (let k = 0; k < MAIN.n; k++) dot(d, g, col(g, x[k]), row(g, y[k]) + 1, ink.rut)
+  for (let k = 0; k < MAIN.n; k++) {
     const i = col(g, x[k])
-    const j = row(g, y[k])
+    const j = row(g, y[k] - built[k])
     const tread = y[k] < snowline ? ink.packed : ink.tread
+    // The table's mound, filled in under its surface; the drop's deck is timber on a post instead.
+    if (k >= KT && built[k] > 0)
+      for (let jj = j + 1; jj <= row(g, y[k]); jj++) dot(d, g, i, jj, ink.rut)
+    if (k >= KD0 && k <= KLIP) {
+      dot(d, g, i, j, ink.wood)
+      continue
+    }
     dot(d, g, i, j, tread)
     // Across the fall line the tread shows a pixel wider.
-    const run = Math.abs(x[Math.min(x.length - 1, k + 1)] - x[Math.max(0, k - 1)]) / (2 * STEP)
+    const run = Math.abs(x[Math.min(MAIN.n - 1, k + 1)] - x[Math.max(0, k - 1)]) / (2 * STEP)
     if (run > 0.6) dot(d, g, i, j - 1, tread)
     // The berm's lip, built up on the outside of the turn.
-    if (Math.abs(bend[k]) > 0.014) {
+    if (bank[k] > 0.6) {
       const a = Math.max(0, k - 1)
-      const b = Math.min(x.length - 1, k + 1)
+      const b = Math.min(MAIN.n - 1, k + 1)
       const len = Math.hypot(x[b] - x[a], y[b] - y[a]) || 1
       const side = Math.sign(bend[k])
       const ox = ((y[b] - y[a]) / len) * side
@@ -226,19 +384,10 @@ export function paintCourse(d: Uint8ClampedArray, g: Grid, ink: CourseInk, snowl
       dot(d, g, col(g, x[k] + ox * 6), row(g, y[k] + oy * 6), ink.berm)
     }
   }
-  for (let k = COURSE.takeoff + 2; k <= COURSE.landing - 2; k++) {
-    const i = col(g, x[k])
-    const j = row(g, y[k])
-    dot(d, g, i, j - 1, y[k] < snowline ? ink.packed : ink.tread)
-    dot(d, g, i, j, ink.rut)
-  }
-  for (let k = COURSE.deck; k <= COURSE.lip; k++)
-    dot(d, g, col(g, x[k]), row(g, y[k] - COURSE.lift[k]) - 1, ink.wood)
-  const pi = col(g, x[COURSE.lip])
-  for (let j = row(g, y[COURSE.lip] - DROP_H); j <= row(g, y[COURSE.lip]); j++)
-    dot(d, g, pi, j, ink.post)
+  const pi = col(g, x[KLIP])
+  for (let j = row(g, y[KLIP] - DROP_H); j <= row(g, y[KLIP]); j++) dot(d, g, pi, j, ink.post)
 
-  // The start hut: two posts under a roof, astride the gate.
+  // The start hut: two posts under a roof, astride the gate. The beacon on its roof is the riders'.
   const si = col(g, x[0])
   const sj = row(g, y[0])
   for (let k = 1; k <= 4; k++) {
@@ -246,9 +395,8 @@ export function paintCourse(d: Uint8ClampedArray, g: Grid, ink: CourseInk, snowl
     dot(d, g, si + 2, sj - k, ink.post)
   }
   for (let di = -3; di <= 3; di++) dot(d, g, si + di, sj - 5, ink.wood)
-  dot(d, g, si, sj - 6, ink.flag[0])
   // The finish: a chequered banner over the line on two poles.
-  const last = x.length - 1
+  const last = MAIN.n - 1
   const fi = col(g, x[last])
   const fj = row(g, y[last])
   for (let k = 1; k <= 5; k++) {
@@ -259,131 +407,24 @@ export function paintCourse(d: Uint8ClampedArray, g: Grid, ink: CourseInk, snowl
     dot(d, g, fi + di, fj - 6, ink.flag[(di + 2) & 1])
     dot(d, g, fi + di, fj - 5, ink.flag[(di + 3) & 1])
   }
-}
 
-// Seconds into a rider's lap at which they are at the top of the tabletop, so a still frame
-// (reduced motion) finds the first of them in the air.
-const APEX = (COURSE.t[COURSE.takeoff] + COURSE.t[COURSE.landing]) / 2
-
-const along = (pts: Pt[], u: number) => {
-  const k = Math.min(pts.length - 1, Math.max(0, Math.floor(u * (pts.length - 1))))
-  const next = pts[Math.min(pts.length - 1, k + 1)]
-  return { x: pts[k][0], y: pts[k][1], dir: Math.sign(next[0] - pts[k][0]) || 1 }
-}
-
-export function paintRiders(
-  d: Uint8ClampedArray,
-  g: Grid,
-  ink: CourseInk,
-  clock: number,
-  dark: boolean,
-  heads: Voices['heads'],
-) {
-  const { x, y, t, lift, bend, time } = COURSE
-  const plot = (i: number, j: number, c: RGB, alpha: number) => {
-    if (alpha > BAYER[(j & 3) * 4 + (i & 3)]) dot(d, g, i, j, c)
+  // The lift runs straight up the fall line, so from across the valley its track, its up and down
+  // cables and its towers stack into one steel thread: the towers show as crossarms on it, and
+  // there is a bullwheel hut at either end.
+  for (const [px, py] of PATHS.lift.pts) dot(d, g, col(g, px), row(g, py), ink.steel)
+  const [b0, b1] = LIFT
+  for (const u of LIFT_TOWERS) {
+    const i = col(g, b0[0] + (b1[0] - b0[0]) * u)
+    const j = row(g, b0[1] + (b1[1] - b0[1]) * u)
+    for (let di = -1; di <= 1; di++) dot(d, g, i + di, j - 1, ink.steel)
   }
-  // A helmet lamp after dark.
-  const lamp = (i: number, j: number) => {
-    for (let dj = -2; dj <= 2; dj++)
-      for (let di = -2; di <= 2; di++) {
-        const r = Math.hypot(di, dj)
-        if (r > 0) plot(i + di, j + dj, ink.glow, (1 - r / 2.8) * 0.6)
-      }
-    dot(d, g, i, j, ink.lamp)
-  }
-  const pushTime = (PUSH_PTS.length * STEP) / PUSH_SPEED
-  const period = time + FINISH + pushTime + WAIT
-  const beat = Math.floor(clock * 8)
-  for (let n = 0; n < RIDERS; n++) {
-    const kit = ink.kits[n % ink.kits.length]
-    let s = (((clock + APEX - (n * period) / RIDERS) % period) + period) % period
-    let i: number
-    let j: number
-    let top: number
-    if (s < time) {
-      // Riding: the sample the trace puts them at, standing on the pedals with the weight back.
-      let k = 0
-      while (k < t.length - 1 && t[k + 1] <= s) k++
-      const a = Math.max(0, k - 2)
-      const b = Math.min(x.length - 1, k + 2)
-      const face = Math.sign(x[b] - x[a]) || 1
-      const air = Math.round(lift[k] / g.px)
-      i = col(g, x[k])
-      const ground = row(g, y[k])
-      j = ground - air
-      // The odd root jolts them a pixel off the saddle.
-      const jolt = !air && hash(beat, n, 71) < 0.08 ? 1 : 0
-      // Every other lap they throw the back end sideways at the top of the tabletop.
-      const whip =
-        air > 1 &&
-        k > COURSE.takeoff &&
-        k < COURSE.landing &&
-        Math.floor(clock / period) % 2 === n % 2
-      dot(d, g, i - face, j - 1 - (whip ? 1 : 0), ink.tyre)
-      dot(d, g, i, j - 1, kit.frame)
-      dot(d, g, i + face, j - 1, ink.tyre)
-      dot(d, g, i + face, j - 2 - jolt, ink.tyre)
-      dot(d, g, i, j - 2 - jolt, ink.shorts)
-      dot(d, g, i - face, j - 3 - jolt, kit.jersey)
-      dot(d, g, i, j - 3 - jolt, kit.jersey)
-      dot(d, g, i - face, j - 4 - jolt, kit.helmet)
-      top = j - 4 - jolt
-      if (air) dot(d, g, i, ground, ink.rut)
-      else if (Math.abs(bend[k]) > 0.02) {
-        // Roost off the back wheel, thrown out of the berm.
-        const out = Math.sign(bend[k]) * face
-        dot(d, g, i - 2 * face, j - 1 - (beat & 1), ink.dust)
-        dot(d, g, i - 2 * face, j - 2 + out, ink.dust)
-        if (beat & 1) dot(d, g, i - 3 * face, j - 2, ink.dust)
-      } else if (beat & 1) dot(d, g, i - 2 * face, j - 1, ink.dust)
-      if (dark) lamp(i - face, top)
-      heads[`rider${n}`] = [i - face, top]
-      continue
-    } else if ((s -= time) < FINISH) {
-      // Astride the bike past the banner, a fist up for the time.
-      const last = x.length - 1
-      i = col(g, x[last]) - 5
-      j = row(g, y[last])
-      dot(d, g, i - 1, j - 1, ink.tyre)
-      dot(d, g, i, j - 1, kit.frame)
-      dot(d, g, i + 1, j - 1, ink.tyre)
-      dot(d, g, i, j - 2, ink.shorts)
-      dot(d, g, i, j - 3, kit.jersey)
-      dot(d, g, i, j - 4, kit.helmet)
-      if (s < 1 && beat & 2) dot(d, g, i + 1, j - 5, ink.skin)
-      top = j - 4
-    } else if ((s -= FINISH) < pushTime) {
-      // Walking up with a hand on the bars, the bike rolling on ahead of them.
-      const at = along(PUSH_PTS, s / pushTime)
-      const f = at.dir
-      i = col(g, at.x)
-      j = row(g, at.y)
-      if (Math.floor(clock * 2.5 + n) % 2) {
-        dot(d, g, i - 1, j - 1, ink.shorts)
-        dot(d, g, i + 1, j - 1, ink.shorts)
-      } else dot(d, g, i, j - 1, ink.shorts)
-      dot(d, g, i, j - 2, kit.jersey)
-      dot(d, g, i, j - 3, kit.helmet)
-      dot(d, g, i + f, j - 2, ink.skin)
-      dot(d, g, i + f, j - 1, ink.tyre)
-      dot(d, g, i + 2 * f, j - 1, kit.frame)
-      dot(d, g, i + 3 * f, j - 1, ink.tyre)
-      dot(d, g, i + 2 * f, j - 2, ink.tyre)
-      top = j - 3
-    } else {
-      // In the hut, waiting for the beep.
-      i = col(g, x[0])
-      j = row(g, y[0])
-      dot(d, g, i - 1, j - 1, ink.tyre)
-      dot(d, g, i, j - 1, kit.frame)
-      dot(d, g, i + 1, j - 1, ink.tyre)
-      dot(d, g, i, j - 2, ink.shorts)
-      dot(d, g, i, j - 3, kit.jersey)
-      dot(d, g, i, j - 4, kit.helmet)
-      top = j - 4
+  for (const [bx, by] of LIFT) {
+    const i = col(g, bx)
+    const j = row(g, by)
+    for (let k = 1; k <= 2; k++) {
+      dot(d, g, i - 2, j - k, ink.post)
+      dot(d, g, i + 2, j - k, ink.post)
     }
-    if (dark) lamp(i, top)
-    heads[`rider${n}`] = [i, top]
+    for (let di = -2; di <= 2; di++) dot(d, g, i + di, j - 3, ink.wood)
   }
 }

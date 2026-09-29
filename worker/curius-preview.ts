@@ -383,7 +383,7 @@ export async function handleCuriusPreview(
     const cached = stored?.preview.sourceUrl === sourceUrl ? stored : null
     if (url.searchParams.get('query') === 'preview-image')
       return await previewImage(request, cache, cached)
-    if (cached)
+    if (cached && (cached.preview.status === 'ready' || url.searchParams.get('refresh') !== '1'))
       return response(
         cached.preview.status === 'ready' ? { ...cached.preview, cached: true } : cached.preview,
       )

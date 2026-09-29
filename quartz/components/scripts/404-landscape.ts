@@ -32,7 +32,7 @@ import {
   poseCrew,
   stepCrew,
 } from './404-crew'
-import { type CourseInk, nearCourse, paintCourse, paintRiders } from './404-downhill'
+import { type CourseInk, nearCourse, paintCourse } from './404-downhill'
 import { GATE, MISSING, TILT, hourAngle, stoneOuter } from './404-gate'
 import {
   GROWN,
@@ -72,6 +72,26 @@ import {
   step,
   type Tones,
 } from './404-pixel'
+import {
+  type Park,
+  type RiderInk,
+  daySeed,
+  makePark,
+  paintPark,
+  parkEnv,
+  posePark,
+  stepPark,
+} from './404-riders'
+import {
+  type Hill,
+  type SkiInk,
+  hillEnv,
+  makeHill,
+  paintHill,
+  poseHill,
+  stepHill,
+  warmHill,
+} from './404-skiers'
 import {
   type TriInk,
   headPixel,
@@ -1165,6 +1185,8 @@ function paintFolk(
   clock: number,
   dark: boolean,
   heads: Voices['heads'],
+  park: Park,
+  hill: Hill,
 ) {
   d.set(base)
   const beat = Math.floor(clock * 5)
@@ -1187,7 +1209,12 @@ function paintFolk(
     heads[`folk${n}`] = [i, top - 3]
     if (f.lamp && dark) glow(i + 1, top - 2, hash(beat, 3, 41))
     for (let k = 1; k <= 3; k++) dot(d, g, i, top - k, pal.figure.K)
-    if (f.wave) dot(d, g, i + 1, top - (Math.floor(clock / 0.45) % 2 ? 4 : 3), pal.figure.K)
+    // The two by the cypress throw both arms up when a rider lands a trick off the table.
+    if (park.cheer > 0 && !f.lamp) {
+      const up = Math.floor(clock / 0.2) % 2
+      dot(d, g, i - 1, top - 3 - up, pal.figure.K)
+      dot(d, g, i + 1, top - 4 + up, pal.figure.K)
+    } else if (f.wave) dot(d, g, i + 1, top - (Math.floor(clock / 0.45) % 2 ? 4 : 3), pal.figure.K)
     if (f.lamp) dot(d, g, i + 1, top - 2, hash(beat, 3, 41) < 0.3 ? FLAME[2] : FLAME[1])
   })
 
@@ -1240,12 +1267,17 @@ function paintFolk(
       pal.smoke[dark ? 2 : 1],
       (1 - s / 13) * (dark ? 0.5 : 0.8),
     )
-  paintPiste(d, g, pal, clock, heads, plot)
-  paintRiders(d, g, courseInk(pal), clock, dark, heads)
+  // The ski hill shows only where the far range does, under its crest and above the mid ridge.
+  const onRange = (i: number, j: number) => {
+    if (i < 0 || j < 0 || i >= g.bw || j >= g.bh) return false
+    const y = g.sy[j]
+    return y > farRidge(g.sx[i]) + g.px && y < midRidge(g.sx[i]) - g.px
+  }
+  paintHill(d, g, skiInk(pal), hill, onRange, dark, heads)
+  paintPark(d, g, riderInk(pal), park, dark, heads)
 }
 
-// The downhill line and its riders, in the ranges' colours: dirt from the bark, the riders in the
-// crew's colours under bright helmets.
+// The downhill line in the ranges' colours: dirt from the bark, timber, and the lift's steel.
 function courseInk(pal: Palette): CourseInk {
   return {
     tread: mix(pal.bark[2], pal.ochre, 0.3),
@@ -1255,203 +1287,53 @@ function courseInk(pal: Palette): CourseInk {
     path: mix(pal.mid[1], pal.bark[2], 0.45),
     wood: pal.bark[2],
     post: pal.bark[0],
+    steel: mix(pal.rock[0], INK, 0.4),
     flag: [CREAM, INK],
+  }
+}
+
+// Its riders in the crew's colours under bright helmets, on frames of any of them; the gate's
+// beacon counts down in poppy and goes in sage.
+function riderInk(pal: Palette): RiderInk {
+  return {
     skin: pal.figure.S,
     shorts: pal.figure.D,
     tyre: pal.figure.K,
     dust: mix(pal.bark[2], CREAM, 0.65),
     lamp: CREAM,
     glow: pal.glow[1],
-    kits: [
-      { jersey: pal.crew[0], helmet: GOLDEN, frame: pal.crew[2] },
-      { jersey: pal.crew[1], helmet: pal.poppy, frame: pal.crew[3] },
-      { jersey: pal.crew[4], helmet: CREAM, frame: pal.crew[0] },
-      { jersey: pal.crew[5], helmet: pal.cornflower, frame: pal.crew[1] },
-    ],
+    steel: mix(pal.rock[0], INK, 0.4),
+    flash: CREAM,
+    beacon: [pal.poppy, LUME],
+    jerseys: pal.crew,
+    helmets: [GOLDEN, pal.poppy, CREAM, pal.cornflower, pal.crew[1], pal.crew[3]],
+    frames: [pal.crew[2], pal.crew[3], pal.crew[0], CREAM, pal.crew[5], pal.rock[1]],
   }
 }
 
-// The glacier lift on the far right range, above the trail's summit: a chair line on two pylons
-// between a station at its foot and one under the crest, and a skier and a snowboarder lapping it.
-// They ride up, walk over to the top of the piste, and come down a groomed run that stays white
-// all year (the glacier feeds it) to the foot of the lift. Every run leaves its line in the
-// corduroy, and the snow sprays off the outside of each turn.
-const LIFT_FOOT: Pt = [1322, 450]
-const LIFT_HEAD: Pt = [1398, 282]
-// The run's fall line, a quadratic from under the head station out and back to the foot.
-const PISTE: [Pt, Pt, Pt] = [
-  [1416, 294],
-  [1474, 372],
-  [1340, 444],
-]
-const RIDERS = [
-  { swing: 11, turns: 5, coat: 0, board: false, head: 'skier', run: 6 },
-  { swing: 13, turns: 7, coat: 2, board: true, head: 'boarder', run: 7.5 },
-] as const
-const RIDE = 10
-
-const quad = ([a, b, c]: [Pt, Pt, Pt], u: number): Pt => {
-  const v = 1 - u
-  return [
-    v * v * a[0] + 2 * v * u * b[0] + u * u * c[0],
-    v * v * a[1] + 2 * v * u * b[1] + u * u * c[1],
-  ]
-}
-
-function paintPiste(
-  d: Uint8ClampedArray,
-  g: Grid,
-  pal: Palette,
-  clock: number,
-  heads: Voices['heads'],
-  plot: (i: number, j: number, c: RGB, alpha: number) => void,
-) {
-  if (col(g, LIFT_FOOT[0]) < 0 || col(g, PISTE[0][0]) >= g.bw) return
-  const along = (a: Pt, b: Pt, u: number): Pt => [
-    a[0] + (b[0] - a[0]) * u,
-    a[1] + (b[1] - a[1]) * u,
-  ]
-  const at = ([x, y]: Pt): Pt => [col(g, x), row(g, y)]
-  const cable = mix(pal.far[0], INK, 0.4)
-  const steel = mix(pal.rock[0], INK, 0.4)
-  // Only where the far range shows: under its crest and above the mid ridge.
-  const onRange = (i: number, j: number) => {
-    if (i < 0 || j < 0 || i >= g.bw || j >= g.bh) return false
-    const x = g.sx[i]
-    const y = g.sy[j]
-    return y > farRidge(x) + g.px && y < midRidge(x) - g.px
+// The ski hill in the ranges' colours: coats from the crew's under bright helmets, skis and boards
+// of any colour, the instructor in a poppy bib, the slalom's gates poppy and cornflower, and the
+// groomer golden with a flame-coloured beacon.
+function skiInk(pal: Palette): SkiInk {
+  return {
+    snow: pal.snow,
+    skin: pal.figure.S,
+    pants: pal.figure.D,
+    boot: pal.figure.K,
+    steel: mix(pal.rock[0], INK, 0.4),
+    cable: mix(pal.far[0], INK, 0.4),
+    rock: [pal.rock[0], pal.rock[1]],
+    coats: pal.crew,
+    helmets: [GOLDEN, pal.poppy, CREAM, pal.cornflower, pal.crew[1], pal.crew[3]],
+    gear: [pal.figure.K, GOLDEN, pal.crew[2], pal.poppy, CREAM, pal.cornflower],
+    school: pal.poppy,
+    gates: [pal.poppy, pal.cornflower],
+    cat: GOLDEN,
+    cab: mix(pal.far[0], INK, 0.4),
+    lamp: CREAM,
+    glow: pal.glow[1],
+    beacon: FLAME[2],
   }
-  // The groomed run, widening as it comes toward us: corduroy in alternate rows, a shaded edge on
-  // the side away from the light and a lit one on the other.
-  const half = (u: number) => 9 + 9 * u
-  for (let j = row(g, PISTE[0][1]); j <= row(g, PISTE[2][1]); j++) {
-    const y = g.sy[j]
-    let u = 0
-    for (let n = 0; n < 24; n++) u = Math.max(0, Math.min(1, u + (y - quad(PISTE, u)[1]) / 200))
-    const [cx] = quad(PISTE, u)
-    const w = half(u)
-    for (let i = col(g, cx - w); i <= col(g, cx + w); i++) {
-      if (!onRange(i, j)) continue
-      const off = (g.sx[i] - cx) / w
-      put(
-        d,
-        (j * g.bw + i) * 4,
-        Math.abs(off) > 0.85 ? pal.snow[off < 0 ? 1 : 3] : j % 2 ? pal.snow[2] : pal.snow[3],
-      )
-    }
-  }
-  // The line sags a little between the stations. From across the valley the up and down cables
-  // are one thread, and the chairs hang off it like beads.
-  const lift = (u: number): Pt => {
-    const [x, y] = along(LIFT_FOOT, LIFT_HEAD, u)
-    return [x, y + Math.sin(Math.PI * u) * 6]
-  }
-  for (let u = 0; u <= 1; u += 0.01) {
-    const [i, j] = at(lift(u))
-    dot(d, g, i, j, cable)
-  }
-  for (const u of [0.36, 0.7]) {
-    const [i, j] = at(lift(u))
-    for (let k = 1; k <= 4; k++) dot(d, g, i, j + k, steel)
-  }
-  for (const p of [LIFT_FOOT, LIFT_HEAD]) {
-    const [i, j] = at(p)
-    for (let di = -1; di <= 1; di++) {
-      dot(d, g, i + di, j, pal.rock[1])
-      dot(d, g, i + di, j + 1, pal.rock[0])
-      dot(d, g, i + di, j - 1, steel)
-    }
-  }
-  // Empty chairs going up and coming down.
-  for (let k = 0; k < 6; k++)
-    for (const back of [false, true]) {
-      const u = frac(k / 6 + (back ? 1 / 12 - clock : clock) / RIDE)
-      const [i, j] = at(lift(u))
-      dot(d, g, i, j + 1, steel)
-    }
-
-  RIDERS.forEach((r, n) => {
-    const line = (u: number): Pt => {
-      const [x, y] = quad(PISTE, u)
-      return [x + r.swing * Math.sin(u * r.turns * Math.PI) * (0.6 + 0.4 * u), y]
-    }
-    const legs = [RIDE, 1.5, r.run, 1]
-    const period = legs.reduce((a, b) => a + b, 0)
-    let t = (clock + (n * period) / 2) % period
-    let pos: Pt
-    let pose: 'chair' | 'walk' | 'ride' = 'walk'
-    let dir = 1
-    let u = 0
-    if (t < RIDE) {
-      pos = lift(t / RIDE)
-      pose = 'chair'
-    } else if ((t -= RIDE) < 1.5) pos = along(LIFT_HEAD, PISTE[0], t / 1.5)
-    else if ((t -= 1.5) < r.run) {
-      // Pushing off slowly, then running on at speed.
-      const s = t / r.run
-      u = s * s * (1.6 - 0.6 * s)
-      pos = line(u)
-      pose = 'ride'
-      dir = Math.sign(line(Math.min(1, u + 0.01))[0] - pos[0]) || 1
-      // The fresh line behind them.
-      for (let v = 0; v < u; v += 0.003) {
-        const [i, j] = at(line(v))
-        if (onRange(i, j + 1)) dot(d, g, i, j + 1, pal.snow[0])
-      }
-    } else pos = LIFT_FOOT
-    const [i, j] = at(pos)
-    const coat = pal.crew[r.coat]
-    if (pose === 'chair') {
-      dot(d, g, i, j + 1, steel)
-      dot(d, g, i, j, coat)
-      dot(d, g, i, j - 1, pal.figure.S)
-      dot(d, g, i + 1, j + 1, r.board ? GOLDEN : pal.figure.K)
-      heads[r.head] = [i, j - 1]
-      return
-    }
-    if (pose === 'walk') {
-      dot(d, g, i, j, pal.figure.D)
-      dot(d, g, i, j - 1, coat)
-      dot(d, g, i, j - 2, pal.figure.S)
-      dot(d, g, i + 1, j - 2, r.board ? GOLDEN : pal.figure.K)
-      heads[r.head] = [i, j - 2]
-      return
-    }
-    // Hardest over at the apex of each turn, where the snow sprays off the outside of it.
-    const bank = Math.sin(u * r.turns * Math.PI)
-    const out = bank > 0 ? 1 : -1
-    const spray = Math.abs(bank)
-    for (let k = 1; k <= 5; k++) {
-      const q = hash(Math.floor(clock * 8), k, 57 + n)
-      if (q > spray) continue
-      plot(
-        i + out * (1 + Math.round(q * 3)),
-        j - Math.round(q * 2) + (k & 1),
-        pal.snow[3],
-        0.9 - k * 0.12,
-      )
-    }
-    // Skis or board across the slope, the body low and leaning into the turn.
-    const deck = r.board ? GOLDEN : pal.figure.K
-    for (let k = -2; k <= 2; k++) dot(d, g, i + k, j + (k * dir > 1 ? 1 : 0), deck)
-    const lean = -out
-    if (r.board) {
-      dot(d, g, i, j - 1, pal.figure.D)
-      dot(d, g, i + lean, j - 2, coat)
-      dot(d, g, i + lean - 1, j - 2, coat)
-      dot(d, g, i + lean, j - 3, pal.figure.S)
-      heads[r.head] = [i + lean, j - 3]
-    } else {
-      // Tucked: knees forward, back flat, poles trailing.
-      dot(d, g, i + dir, j - 1, pal.figure.D)
-      dot(d, g, i, j - 1, pal.figure.D)
-      dot(d, g, i + lean, j - 2, coat)
-      dot(d, g, i + lean + dir, j - 2, coat)
-      dot(d, g, i + lean + 2 * dir, j - 3, pal.figure.S)
-      dot(d, g, i - 2 * dir, j - 2, steel)
-      heads[r.head] = [i + lean + 2 * dir, j - 3]
-    }
-  })
 }
 
 const HILL_CYPRESSES = [
@@ -3204,6 +3086,25 @@ export function setupLandscape(
   let al: Almanac = almanac(new Date(), site)
   let weather: Sky = readSky(site.weather)
   let times: Season = season(al, weather)
+  // The bike park's day: who turns up comes from the date, so everyone looking on a given day sees
+  // the same riders. With motion it has been open a while by the time anyone looks.
+  const weekend = () => {
+    const day = new Date(Date.now() + (site.lon / 15) * 3.6e6).getUTCDay()
+    return day === 0 || day === 6
+  }
+  const park = makePark(daySeed(new Date(), site.lon), parkEnv(al, weather, weekend()))
+  // The ski hill's the same way, with the tracks of the day so far already on its runs; its chair
+  // takes two and a half minutes, so it has been running ten by the time anyone looks.
+  const slopes = makeHill(daySeed(new Date(), site.lon) + 1, hillEnv(al, weather, weekend()))
+  warmHill(slopes)
+  if (reduce) {
+    posePark(park)
+    poseHill(slopes)
+  } else {
+    const quiet: Voices = { bubbles: [], heads: {} }
+    for (let n = 0; n < 1800; n++) stepPark(park, 1 / 15, quiet)
+    for (let n = 0; n < 3000; n++) stepHill(slopes, 1 / 5, quiet)
+  }
   let relief: Relief = {
     side: 1,
     contrast: 1,
@@ -3261,7 +3162,7 @@ export function setupLandscape(
   const paintRanges = () => {
     if (!ranges) return
     const d = ranges.img.data
-    paintFolk(d, ranges.g, pal, landBase, clock, dark, far.heads)
+    paintFolk(d, ranges.g, pal, landBase, clock, dark, far.heads, park, slopes)
     far.heads.athlete =
       (triInk && paintAscent(d, ranges.g, tri, triInk, clock, u => onTrail(u * TRAIL_LEN))) ||
       undefined
@@ -3440,6 +3341,12 @@ export function setupLandscape(
     al = almanac(new Date(), site)
     weather = readSky(site.weather)
     times = season(al, weather)
+    park.env = parkEnv(al, weather, weekend())
+    slopes.env = hillEnv(al, weather, weekend())
+    if (reduce) {
+      posePark(park)
+      poseHill(slopes)
+    }
     lightKey = keyFor(al)
     const [lit, day] = lighting(al, times, weather, dim)
     pal = lit
@@ -3604,7 +3511,20 @@ export function setupLandscape(
   // modelling, otherwise only the sun or the moon creeping along its arc.
   const recheck = () => {
     const next = almanac(new Date(), site)
+    // The park and the lift open and close on their hours whether or not the light has changed,
+    // and the groomer goes out on its own.
+    const env = parkEnv(next, weather, weekend())
+    const snow = hillEnv(next, weather, weekend())
+    const shut =
+      env.open !== park.env.open || snow.open !== slopes.env.open || snow.groom !== slopes.env.groom
+    park.env = env
+    slopes.env = snow
     if (keyFor(next) !== lightKey) return repaint()
+    if (shut && reduce) {
+      posePark(park)
+      poseHill(slopes)
+      paintRanges()
+    }
     al = next
     if (hangBody(false)) paintAir()
   }
@@ -3679,6 +3599,8 @@ export function setupLandscape(
       const away = (p: Pointer) => Math.hypot(p.x - hx, p.y - hy)
       stepCat(cat, dt, seen && away(seen) < away(pointer) ? seen : pointer, rift.heat, impulse)
       stepCrew(crew, dt, { clock: now, heat: rift.heat, inflow: rift.inflow, impulse, turn })
+      stepPark(park, dt, far)
+      stepHill(slopes, dt, far)
       ageBubbles(far, dt)
       ageBubbles(boughs, dt)
       if (leaves) stepShed(litter, canopy.trees, shedding(leaves.g), dt)
