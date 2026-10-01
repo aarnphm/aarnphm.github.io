@@ -96,8 +96,7 @@ function compactText(value: string): string {
 }
 
 function citationTarget(node: Element, from: string): { slug: string; hash: string } | null {
-  // rehype-raw re-parses notes with raw HTML and camelCases data attributes, after which CrawlLinks
-  // leaves an embed's bare `thoughts/x.pdf` alone.
+  // rehype-raw re-parses notes with raw HTML and camelCases data attributes.
   const raw =
     node.tagName === 'a'
       ? node.properties.href
