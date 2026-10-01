@@ -41,6 +41,13 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
   let activeModal: HTMLElement | null = null
   let activeActionsPopover: HTMLElement | null = null
   let selectionHighlightLayer: HTMLElement | null = null
+  let activeModalCleanup: (() => void) | null = null
+  let activeComposerCleanup: (() => void) | null = null
+  let activePopoverCleanup: (() => void) | null = null
+  let threadOpenTimer = 0
+  let composerVersion = 0
+  const editCleanups = new Set<() => void>()
+  const renderedThreads = new WeakMap<HTMLElement, MultiplayerComment[]>()
 
   const canResolve = (comment: MultiplayerComment) => {
     if (comment.author === getAuthor()) return true
@@ -84,6 +91,9 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
   }
 
   const hideComposer = () => {
+    composerVersion++
+    activeComposerCleanup?.()
+    activeComposerCleanup = null
     if (activeComposer) {
       document.body.removeChild(activeComposer)
       activeComposer = null
@@ -92,6 +102,8 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
   }
 
   const hideActionsPopover = () => {
+    activePopoverCleanup?.()
+    activePopoverCleanup = null
     if (activeActionsPopover) {
       document.body.removeChild(activeActionsPopover)
       activeActionsPopover = null
@@ -144,8 +156,6 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
     const layer = document.createElement('div')
     layer.className = 'comment-selection-layer'
-    layer.style.width = `${document.documentElement.scrollWidth}px`
-    layer.style.height = `${document.documentElement.scrollHeight}px`
     for (const rect of rects) {
       const highlight = document.createElement('span')
       highlight.className = 'comment-selection-highlight'
@@ -171,6 +181,9 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
   const closeActiveModal = () => {
     if (!activeModal) return
+    activeModalCleanup?.()
+    activeModalCleanup = null
+    for (const cleanup of editCleanups) cleanup()
     const activeId = activeModal.dataset.commentId
     document.body.removeChild(activeModal)
     activeModal = null
@@ -182,8 +195,17 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     }
   }
 
+  const keepModalInViewport = (modal: HTMLElement) => {
+    const rect = modal.getBoundingClientRect()
+    const maxLeft = document.documentElement.clientWidth - rect.width - 12
+    const left = Math.max(12, Math.min(rect.left, maxLeft))
+    modal.style.left = `${left + window.scrollX}px`
+    modal.style.right = 'auto'
+  }
+
   const refreshActiveModal = () => {
     if (!activeModal) return
+    keepModalInViewport(activeModal)
     const commentId = activeModal.dataset.commentId
     if (!commentId) return
     const comment = getState().comments.find(c => c.id === commentId)
@@ -247,7 +269,14 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
         document.removeEventListener('mousedown', closeOnClickOutside)
       }
     }
-    setTimeout(() => document.addEventListener('mousedown', closeOnClickOutside), 0)
+    const timer = window.setTimeout(
+      () => document.addEventListener('mousedown', closeOnClickOutside),
+      0,
+    )
+    activePopoverCleanup = () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('mousedown', closeOnClickOutside)
+    }
   }
 
   const showThreadActionsPopover = (comment: MultiplayerComment, buttonRect: DOMRect) => {
@@ -312,7 +341,14 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
         document.removeEventListener('mousedown', closeOnClickOutside)
       }
     }
-    setTimeout(() => document.addEventListener('mousedown', closeOnClickOutside), 0)
+    const timer = window.setTimeout(
+      () => document.addEventListener('mousedown', closeOnClickOutside),
+      0,
+    )
+    activePopoverCleanup = () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('mousedown', closeOnClickOutside)
+    }
   }
 
   const enterEditMode = async (comment: MultiplayerComment, textElement: HTMLElement) => {
@@ -325,9 +361,10 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const editorMount = document.createElement('div')
     editorMount.className = 'edit-input'
 
-    let markdownEditor: MarkdownEditor | null
+    let markdownEditor: MarkdownEditor | null = null
 
     const exitEditMode = () => {
+      editCleanups.delete(exitEditMode)
       textElement.style.display = ''
       if (markdownEditor) {
         markdownEditor.destroy()
@@ -373,6 +410,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
     textElement.style.display = 'none'
     textElement.parentNode?.insertBefore(wrapper, textElement)
+    editCleanups.add(exitEditMode)
 
     markdownEditor = await createMarkdownEditor({
       parent: editorMount,
@@ -537,6 +575,13 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     comment: MultiplayerComment,
     replies: MultiplayerComment[],
   ) => {
+    const items = [comment, ...replies]
+    const previous = renderedThreads.get(content)
+    if (previous?.length === items.length && items.every((item, i) => item === previous[i])) {
+      return
+    }
+    for (const cleanup of editCleanups) cleanup()
+    renderedThreads.set(content, items)
     content.replaceChildren()
     content.appendChild(buildThreadItem(comment))
     for (const reply of replies) {
@@ -769,6 +814,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     modal.appendChild(replyComposerContainer)
 
     document.body.appendChild(modal)
+    keepModalInViewport(modal)
 
     void createMarkdownEditor({
       parent: editorMount,
@@ -797,13 +843,22 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && activeModal === modal) {
         closeActiveModal()
-        document.removeEventListener('keydown', handleEscape)
       }
     }
     document.addEventListener('keydown', handleEscape)
+    activeModalCleanup = () => {
+      replyEditor?.destroy()
+      replyEditor = null
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+      document.removeEventListener('keydown', handleEscape)
+    }
   }
 
   const showComposer = async (range: Range) => {
+    const version = ++composerVersion
+    activeComposerCleanup?.()
+    activeComposerCleanup = null
     if (activeComposer) {
       document.body.removeChild(activeComposer)
       activeComposer = null
@@ -813,6 +868,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const offsets = getRangeOffsets(range, article)
     if (!offsets) return
     const anchorHash = await hashText(offsets.text)
+    if (version !== composerVersion || !article.isConnected) return
     const structuralAnchor = computeStructuralAnchor(range, article)
 
     const composer = document.createElement('div')
@@ -846,6 +902,10 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     placeholderWrapper.appendChild(placeholderText)
 
     let editor: MarkdownEditor | null = null
+    activeComposerCleanup = () => {
+      editor?.destroy()
+      editor = null
+    }
 
     const submitButton = document.createElement('button')
     submitButton.className = 'composer-submit'
@@ -931,7 +991,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     dispatch({ type: 'ui.selection.changed', range: range.cloneRange() })
   }
 
-  const renderAllComments = () => {
+  const renderComments = () => {
     const { comments } = getState()
     const hiddenIds = comments
       .filter(comment => comment.deletedAt || comment.resolvedAt)
@@ -950,13 +1010,42 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const article = document.querySelector('article.popover-hint')
     if (!article) return
 
+    const topLevelComments = comments.filter(c => !c.parentId && !c.deletedAt && !c.resolvedAt)
+    if (topLevelComments.length === 0) return
+
+    const replyCounts = new Map<string, number>()
+    for (const comment of comments) {
+      if (comment.parentId && !comment.deletedAt) {
+        replyCounts.set(comment.parentId, (replyCounts.get(comment.parentId) ?? 0) + 1)
+      }
+    }
+
+    const textNodes: Array<{ node: Text; start: number; end: number }> = []
+    const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT)
+    let offset = 0
+    while (walker.nextNode()) {
+      const node = walker.currentNode
+      if (!(node instanceof Text)) continue
+      if (node.length > 0) textNodes.push({ node, start: offset, end: offset + node.length })
+      offset += node.length
+    }
+    const findTextNode = (position: number, isEnd: boolean) => {
+      let low = 0
+      let high = textNodes.length
+      while (low < high) {
+        const mid = (low + high) >>> 1
+        const end = textNodes[mid].end
+        if (isEnd ? end < position : end <= position) low = mid + 1
+        else high = mid
+      }
+      return textNodes[low]
+    }
+
+    // Keep overlays detached while measuring ranges to avoid a layout per comment.
+    const overlays = document.createDocumentFragment()
     const highlightLayer = document.createElement('div')
     highlightLayer.className = 'comment-highlight-layer'
-    highlightLayer.style.width = `${document.documentElement.scrollWidth}px`
-    highlightLayer.style.height = `${document.documentElement.scrollHeight}px`
-    document.body.appendChild(highlightLayer)
-
-    const topLevelComments = comments.filter(c => !c.parentId && !c.deletedAt && !c.resolvedAt)
+    overlays.appendChild(highlightLayer)
 
     for (const comment of topLevelComments) {
       let startIdx = comment.anchorStart
@@ -1044,38 +1133,14 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
         }
       }
 
-      const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT)
-      let currentOffset = 0
-      let startNode: Text | null = null
-      let startNodeOffset = 0
-      let endNode: Text | null = null
-      let endNodeOffset = 0
+      const start = findTextNode(startIdx, false)
+      const end = findTextNode(endIdx, true)
 
-      while (walker.nextNode()) {
-        const currentNode = walker.currentNode
-        if (!(currentNode instanceof Text)) continue
-        const textNode = currentNode
-        const nodeLength = textNode.length
-
-        if (startNode === null && currentOffset + nodeLength > startIdx) {
-          startNode = textNode
-          startNodeOffset = startIdx - currentOffset
-        }
-
-        if (currentOffset + nodeLength >= endIdx) {
-          endNode = textNode
-          endNodeOffset = endIdx - currentOffset
-          break
-        }
-
-        currentOffset += nodeLength
-      }
-
-      if (startNode && endNode) {
+      if (start && end) {
         try {
           const range = document.createRange()
-          range.setStart(startNode, startNodeOffset)
-          range.setEnd(endNode, endNodeOffset)
+          range.setStart(start.node, startIdx - start.start)
+          range.setEnd(end.node, endIdx - end.start)
 
           if (!comment.anchor) {
             const opId = `backfill-anchor:${comment.id}`
@@ -1152,9 +1217,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
           bubble.appendChild(replyTop)
           bubble.appendChild(text)
 
-          const replyCount = getState().comments.filter(
-            c => c.parentId === comment.id && !c.deletedAt,
-          ).length
+          const replyCount = replyCounts.get(comment.id) ?? 0
           if (replyCount > 0) {
             const replies = document.createElement('div')
             replies.className = 'preview-replies'
@@ -1222,7 +1285,10 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
               const parsed = Number.parseFloat(durationRaw)
               if (!Number.isNaN(parsed)) delay = parsed * 1000
             }
-            window.setTimeout(() => {
+            window.clearTimeout(threadOpenTimer)
+            threadOpenTimer = window.setTimeout(() => {
+              threadOpenTimer = 0
+              if (!bubble.isConnected) return
               const bubbleRect = bubble.getBoundingClientRect()
               const scrollTop = window.pageYOffset || document.documentElement.scrollTop
               const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
@@ -1233,12 +1299,32 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
             }, delay)
           }
 
-          document.body.appendChild(bubble)
+          overlays.appendChild(bubble)
         } catch (err) {
           console.warn('failed to highlight comment', err)
         }
       }
     }
+    document.body.appendChild(overlays)
+  }
+
+  let rendering = false
+  let renderAgain = false
+  const renderAllComments = () => {
+    if (rendering) {
+      renderAgain = true
+      return
+    }
+    // Anchor recovery dispatches synchronous updates; finish this pass before rerendering.
+    do {
+      renderAgain = false
+      rendering = true
+      try {
+        renderComments()
+      } finally {
+        rendering = false
+      }
+    } while (renderAgain)
   }
 
   const openPendingCommentThread = () => {
@@ -1270,6 +1356,8 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
   }
 
   const cleanup = () => {
+    window.clearTimeout(threadOpenTimer)
+    threadOpenTimer = 0
     closeActiveModal()
     hideComposer()
     hideActionsPopover()

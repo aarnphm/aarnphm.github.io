@@ -39,9 +39,21 @@ export class MultiplayerComments extends DurableObject<Env> {
   private rateLimits: Map<string, RateLimit>
   private sql: DurableObjectStorage['sql']
 
-  constructor(ctx: DurableObjectState, env: any) {
+  constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
     this.sessions = new Map()
+    for (const socket of ctx.getWebSockets()) {
+      const session: unknown = socket.deserializeAttachment()
+      if (
+        isRecord(session) &&
+        typeof session['pageId'] === 'string' &&
+        typeof session['ip'] === 'string'
+      ) {
+        this.sessions.set(socket, { pageId: session['pageId'], ip: session['ip'] })
+      } else {
+        socket.close(1012, 'reconnect to restore session')
+      }
+    }
     this.rateLimits = new Map()
     this.sql = ctx.storage.sql
     const tableInfo = this.sql.exec('PRAGMA table_info(comment_ops)').toArray() as Array<{
@@ -411,12 +423,13 @@ export class MultiplayerComments extends DurableObject<Env> {
       const [client, server] = Object.values(pair)
 
       this.ctx.acceptWebSocket(server)
+      server.serializeAttachment({ pageId, ip })
       this.sessions.set(server, { pageId, ip })
 
       const { minSeq, maxSeq } = this.getSeqRange(pageId)
       const latestSeq = maxSeq ?? 0
 
-      if (sinceSeq !== null && minSeq !== null && sinceSeq >= minSeq - 1) {
+      if (sinceSeq !== null && minSeq !== null && sinceSeq >= minSeq - 1 && sinceSeq <= latestSeq) {
         const ops = this.readOpsSince(pageId, sinceSeq)
         server.send(JSON.stringify({ type: 'delta', ops, latestSeq }))
       } else {
@@ -460,7 +473,7 @@ export class MultiplayerComments extends DurableObject<Env> {
 
       const encoder = new TextEncoder()
       const stream = new ReadableStream({
-        start(controller) {
+        start: controller => {
           for (const comment of allComments) {
             const line = JSON.stringify(this.normalizeComment(comment)) + '\n'
             controller.enqueue(encoder.encode(line))
