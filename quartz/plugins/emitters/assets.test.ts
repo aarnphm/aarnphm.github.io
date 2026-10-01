@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict'
-import { lstat, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { lstat, mkdir, mkdtemp, readFile, rm, stat, truncate, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 import type { BuildCtx } from '../../util/ctx'
 import type { StaticResources } from '../../util/resources'
 import { isFilePath, type FilePath } from '../../util/path'
-import { Assets } from './assets'
+import { Assets, contentAssetClaims } from './assets'
 
 function testCtx(root: string): BuildCtx {
   return {
@@ -103,7 +103,7 @@ test('watch asset emission writes regular copied files', async () => {
   }
 })
 
-test('watch asset emission copies referenced pdf embeds', async () => {
+test('watch asset emission caps referenced PDF copies at 15 MB through updates', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-assets-watch-pdf-'))
   try {
     const ctx = testCtx(root)
@@ -111,17 +111,56 @@ test('watch asset emission copies referenced pdf embeds', async () => {
     await touch(root, 'notes/index.md')
     await touch(root, 'papers/my-paper.pdf')
     await touch(root, 'papers/unused.pdf')
+    await touch(root, 'papers/limit.pdf')
+    await touch(root, 'papers/oversized.pdf')
+    await truncate(path.join(ctx.argv.directory, 'papers/my-paper.pdf'), 14_999_999)
+    await truncate(path.join(ctx.argv.directory, 'papers/limit.pdf'), 15_000_000)
+    await truncate(path.join(ctx.argv.directory, 'papers/oversized.pdf'), 15_000_001)
     await writeFile(
       path.join(ctx.argv.directory, 'notes/index.md'),
-      '![[papers/my paper.pdf#{page: 2}|paper]]',
+      '![[papers/my paper.pdf#{page: 2}|paper]]\n[[papers/limit.pdf]]\n[[papers/oversized.pdf]]',
     )
-    ctx.allFiles = ['notes/index.md', 'papers/my-paper.pdf', 'papers/unused.pdf'] as FilePath[]
+    const files = [
+      'notes/index.md',
+      'papers/my-paper.pdf',
+      'papers/unused.pdf',
+      'papers/limit.pdf',
+      'papers/oversized.pdf',
+    ]
+    assert.ok(files.every(isFilePath))
+    ctx.allFiles = files
     const plugin = Assets()
+    const expected = ['papers/limit.pdf', 'papers/my-paper.pdf'].map(fp =>
+      path.join(ctx.argv.output, fp),
+    )
+
+    assert.deepEqual((await contentAssetClaims(ctx)).map(claim => claim.output).sort(), expected)
 
     const emitted = await collectEmitted(plugin.emit(ctx, [], resources))
 
-    assert.deepEqual(emitted.sort(), [path.join(ctx.argv.output, 'papers/my-paper.pdf')])
-    assert.equal((await lstat(path.join(ctx.argv.output, 'papers/my-paper.pdf'))).isFile(), true)
+    assert.deepEqual(emitted.sort(), expected)
+    assert.equal((await stat(expected[0])).size, 15_000_000)
+    assert.equal((await stat(expected[1])).size, 14_999_999)
+    await assert.rejects(stat(path.join(ctx.argv.output, 'papers/oversized.pdf')), {
+      code: 'ENOENT',
+    })
+
+    const pdf = 'papers/limit.pdf'
+    assert.ok(isFilePath(pdf))
+    assert.ok(plugin.partialEmit)
+    await truncate(path.join(ctx.argv.directory, pdf), 15_000_001)
+    assert.deepEqual(
+      await collectEmitted(plugin.partialEmit(ctx, [], resources, [{ type: 'change', path: pdf }])),
+      [],
+    )
+    await assert.rejects(stat(expected[0]), { code: 'ENOENT' })
+
+    await truncate(path.join(ctx.argv.directory, pdf), 15_000_000)
+    assert.deepEqual(
+      await collectEmitted(plugin.partialEmit(ctx, [], resources, [{ type: 'change', path: pdf }])),
+      [expected[0]],
+    )
+    assert.equal((await stat(expected[0])).size, 15_000_000)
   } finally {
     await rm(root, { recursive: true, force: true })
   }

@@ -65,6 +65,7 @@ import Garden from './mcp'
 import { MCP_SERVER_CARD_PATH, mcpServerCardResponse } from './mcp-server-card'
 import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
+import { handlePdfReaderRequest } from './pdf-marks'
 import { problemResponse } from './problem-details'
 import { mcpRateLimitExceededResponse, mcpRateLimitKey, withMcpRateLimitPolicy } from './rate-limit'
 import {
@@ -429,6 +430,9 @@ export default {
 
     const arenaReaderResponse = await handleArenaReaderRequest(request, env)
     if (arenaReaderResponse) return arenaReaderResponse
+
+    const pdfReaderResponse = await handlePdfReaderRequest(request, env)
+    if (pdfReaderResponse) return pdfReaderResponse
 
     const wahooOAuthResponse = handleWahooOAuthCallback(request)
     if (wahooOAuthResponse) return wahooOAuthResponse

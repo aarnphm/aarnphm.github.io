@@ -2750,6 +2750,9 @@ export function renderPage(
   const isFlashcards = componentData.fileData.flashcards != null && slug.endsWith('/flashcards')
   const isArena = slug === 'arena' || slug.startsWith('arena/')
   const isCurius = slug === 'curius'
+  // The PDF reader shell renders once at `read` and the worker serves it for every `/read/...` path.
+  const isPdfReader = slug === 'read'
+  const isFullBleed = isArena || isPdfReader
   const isArenaSubpage = slug.startsWith('arena/') && slug !== 'arena'
   const isBase = componentData.fileData.bases ?? false
   const isCanvas = componentData.fileData.filePath?.endsWith('.canvas') ?? false
@@ -2806,7 +2809,7 @@ export function renderPage(
                     undefined,
                     'page-header',
                     'popover-hint',
-                    isArena ? 'all-col' : 'all-col grid',
+                    isFullBleed ? 'all-col' : 'all-col grid',
                   )}
                 >
                   {beforeBody.map(BodyComponent => (
@@ -2818,7 +2821,7 @@ export function renderPage(
                 class={classNames(
                   undefined,
                   'page-content',
-                  slug === 'index' ? 'side-col' : isArena ? 'all-col' : 'grid all-col',
+                  slug === 'index' ? 'side-col' : isFullBleed ? 'all-col' : 'grid all-col',
                 )}
                 {...contentAttrs}
               >
@@ -2830,7 +2833,7 @@ export function renderPage(
                   </aside>
                 )}
                 <Content {...componentData} />
-                {!isSlides && !isFlashcards && !isArena && !isCurius && (
+                {!isSlides && !isFlashcards && !isFullBleed && !isCurius && (
                   <>
                     <div id="wc-modal" class="wc-modal">
                       <div class="wc-inner" />
@@ -2839,7 +2842,7 @@ export function renderPage(
                 )}
                 <Headings {...componentData} />
               </section>
-              {!isFolderTag && !isCurius && (
+              {!isFolderTag && !isCurius && !isPdfReader && (
                 <section class="page-footer popover-hint grid all-col">
                   {retrievalNodes.length > 0 &&
                     htmlToJsx(componentData.fileData.filePath!, {

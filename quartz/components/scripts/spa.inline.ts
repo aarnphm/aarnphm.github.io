@@ -104,6 +104,8 @@ const getOpts = ({ target }: Event): { url: URL; scroll?: boolean } | undefined 
   if (a.target === '_blank') return
   if ('routerIgnore' in a.dataset) return
   if (!isLocalHttpUrl(url)) return
+  // Hosted PDFs are documents: the worker redirects their navigations to the reader.
+  if (/\.pdf$/i.test(url.pathname)) return
   return { url, scroll: 'routerNoscroll' in a.dataset ? false : undefined }
 }
 
