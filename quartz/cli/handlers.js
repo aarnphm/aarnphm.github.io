@@ -109,6 +109,8 @@ async function bundleInlineScript(scriptPath) {
     minify: true,
     platform: 'browser',
     format: 'esm',
+    // npm imports stay bare; script-assets.ts bundles them so page chunks share one copy
+    packages: 'external',
     loader: { '.py': 'text' },
   })
   return transpiled.outputFiles[0].text

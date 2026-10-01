@@ -2761,7 +2761,7 @@ export function renderPage(
     `<!DOCTYPE html>` +
     render(
       <html lang={lang}>
-        <Head {...componentData} />
+        <Head {...componentData} pageSlug={slug} />
         <body
           data-slug={slug}
           data-language={lang}
