@@ -67,6 +67,7 @@ import {
   transcludeVisitKey,
 } from '../util/transclude-props'
 import { buildTriathlonCalcCard, decodeCalcShare } from '../util/triathlon-calculator'
+import { parseTriathlonCalendar, parseTriathlonCalendars } from '../util/triathlon-calendar'
 import {
   buildActivityComparison,
   powerViewActivity,
@@ -106,6 +107,7 @@ import {
   triathlonEmbedDayHref,
   resolveTriathlonEmbedDate,
 } from './triathlon-day-card'
+import { CalendarPanel } from './triathlon/calendar/Calendar'
 
 interface RenderComponents {
   head: QuartzComponent
@@ -705,6 +707,37 @@ type RenderTreeFeatures = {
 const DATE_ANCHOR_RE = /#(\d{4}-\d{2}-\d{2})$/
 const CALC_ANCHOR_RE = /#(calculator-[a-z0-9-]+)$/
 
+function calendarEmbedView(
+  blockRef: string | undefined,
+  anchorPath: string | undefined,
+): { view: 'list' | 'year'; year?: number } | undefined {
+  if (anchorPath) {
+    let segments: unknown
+    try {
+      segments = JSON.parse(anchorPath)
+    } catch {
+      return undefined
+    }
+    if (!Array.isArray(segments) || segments[0] !== 'calendar') return undefined
+    const display = segments.at(-1)
+    const view =
+      display === 'list' || display === 'display=list'
+        ? 'list'
+        : display === 'year' || display === 'display=year'
+          ? 'year'
+          : undefined
+    if (segments.length === 2 && view) return { view }
+    const year = segments[1]
+    if (typeof year !== 'string' || !/^\d{4}$/.test(year) || Number(year) === 0) return undefined
+    if (segments.length === 2) return { view: 'list', year: Number(year) }
+    if (segments.length === 3 && view) return { view, year: Number(year) }
+    return undefined
+  }
+  if (blockRef === '#calendar' || blockRef === '#calendar-list') return { view: 'list' }
+  if (blockRef === '#calendar-year') return { view: 'year' }
+  return undefined
+}
+
 function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
   const features: RenderTreeFeatures = {
     hasTranscludeBlockquote: false,
@@ -1143,6 +1176,7 @@ export function transcludeFinal(
 
   const { dynalist, skipTranscludes } = opts
   const notebookRuntimeTranscludes = new Map<string, number>()
+  let calendarEmbedCount = 0
   const features = collectRenderTreeFeatures(root)
 
   const pruneLeadingHeading = (nodes: ElementContent[]): ElementContent[] => {
@@ -1389,9 +1423,6 @@ export function transcludeFinal(
       if (!transclude) return
       const { anchorPath, inner, targetSlug: transcludeTarget, url, alias } = transclude
       let blockRef = transclude.blockRef
-      const visitKey = transcludeVisitKey(transclude)
-      if (visited.has(visitKey)) return
-      visited.add(visitKey)
 
       let baseViewSlug: FullSlug | undefined
       let page = renderData.bySlug.get(transcludeTarget)
@@ -1406,6 +1437,16 @@ export function transcludeFinal(
       }
       if (!page) {
         return
+      }
+
+      const calendarView =
+        page.frontmatter?.layout === 'triathlon'
+          ? calendarEmbedView(blockRef, anchorPath)
+          : undefined
+      if (!calendarView) {
+        const visitKey = transcludeVisitKey(transclude)
+        if (visited.has(visitKey)) return
+        visited.add(visitKey)
       }
 
       // parse metadata to check for collapsed flag
@@ -1424,6 +1465,63 @@ export function transcludeFinal(
         transcludePageOpts = { ...opts, ...page.frontmatter?.transclude }
       } else {
         transcludePageOpts = opts
+      }
+
+      if (calendarView) {
+        const calendars = parseTriathlonCalendars(
+          page.frontmatter?.calendar,
+          page.frontmatter?.events,
+        )
+        const calendar = parseTriathlonCalendar(
+          page.frontmatter?.calendar,
+          calendarView.year,
+          page.frontmatter?.events,
+        )
+        const id = `tri-calendar-embed-${slug.replace(/[^a-zA-Z0-9_-]/g, '-')}-${++calendarEmbedCount}`
+        const children = fromHtml(
+          render(
+            <CalendarPanel
+              calendar={calendar}
+              calendars={calendars}
+              year={calendarView.year}
+              embedded
+              id={id}
+              view={calendarView.view}
+            />,
+          ),
+          { fragment: true },
+        ).children.filter((child): child is ElementContent => child.type !== 'doctype')
+        if (fileData.frontmatter?.pageLayout !== 'reflection') {
+          const href =
+            joinSegments(pathToRoot(slug), 'triathlon/calendar') +
+            (calendarView.year !== undefined
+              ? `#${calendarView.year}${calendarView.view === 'year' ? '-year' : ''}`
+              : calendarView.view === 'year'
+                ? '#year'
+                : '')
+          children.push(
+            h('a.internal.transclude-src', { href }, [
+              {
+                type: 'text',
+                value:
+                  alias ||
+                  page.frontmatter?.title ||
+                  i18n(cfg.locale).components.transcludes.linkToOriginal,
+              },
+            ]),
+          )
+        }
+        if (transcludeMetadata && 'collapsed' in transcludeMetadata) {
+          wrapCollapsible(
+            node,
+            children,
+            alias || 'calendar',
+            Boolean(transcludeMetadata.collapsed),
+          )
+        } else {
+          node.children = children
+        }
+        return
       }
 
       if (page?.readingTime && !stats.files.has(page.filePath!)) {

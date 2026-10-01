@@ -37,6 +37,7 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     a: '/triathlon/analytics',
     m: '/triathlon/maps',
     t: '/triathlon/training',
+    e: '/triathlon/calendar',
     r: '/triathlon/training',
     f: '/triathlon/feed',
     o: '/triathlon/on',
@@ -108,6 +109,7 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
   const modalChords: Record<string, { btn: string; openClass: string; close: string }> = {
     a: { btn: '.tri-analytics-btn', openClass: 'tri-analytics-open', close: '.tri-ana-close' },
     c: { btn: '.tri-calc-btn', openClass: 'tri-calc-open', close: '.tri-calc-close' },
+    e: { btn: '.tri-calendar-btn', openClass: 'tri-calendar-open', close: '.tri-calendar-close' },
     m: { btn: '.tri-map-btn', openClass: 'tri-map-open', close: '.tri-map-close' },
     t: { btn: '.tri-training-btn', openClass: 'tri-training-open', close: '.tri-training-close' },
   }
@@ -134,7 +136,7 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
       go(path)
       return true
     }
-    if (key === 'a' || key === 'c' || key === 'm' || key === 't') {
+    if (key === 'a' || key === 'c' || key === 'e' || key === 'm' || key === 't') {
       toggleModal(key)
       return true
     }
@@ -159,6 +161,7 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     return false
   }
   const onKey = (e: KeyboardEvent) => {
+    if (e.target instanceof Element && e.target.closest('.tri-workspace')) return
     if (e.shiftKey && (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'g') {
       clearG()
       e.preventDefault()
@@ -217,7 +220,11 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
       return
     }
 
-    const metricTab = e.isComposing || e.repeat ? null : mapDetailMetricTabForKey(root, e.key)
+    const mapActive = subView === 'maps' || root.classList.contains('tri-map-open')
+    const metricTab =
+      !waitingForG && mapActive && !e.isComposing && !e.repeat
+        ? mapDetailMetricTabForKey(root, e.key)
+        : null
     if (metricTab) {
       clearG()
       e.preventDefault()

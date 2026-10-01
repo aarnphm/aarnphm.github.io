@@ -1325,13 +1325,15 @@ function skiInk(pal: Palette): SkiInk {
     rock: [pal.rock[0], pal.rock[1]],
     coats: pal.crew,
     helmets: [GOLDEN, pal.poppy, CREAM, pal.cornflower, pal.crew[1], pal.crew[3]],
-    gear: [pal.figure.K, GOLDEN, pal.crew[2], pal.poppy, CREAM, pal.cornflower],
+    gear: [pal.figure.K, pal.crew[2], mix(pal.rock[0], INK, 0.4), CREAM],
+    boards: [GOLDEN, pal.poppy, pal.cornflower, pal.crew[1], CREAM],
     school: pal.poppy,
     gates: [pal.poppy, pal.cornflower],
     cat: GOLDEN,
     cab: mix(pal.far[0], INK, 0.4),
     lamp: CREAM,
     glow: pal.glow[1],
+    flood: mix(CREAM, GOLDEN, 0.4),
     beacon: FLAME[2],
   }
 }
@@ -3092,19 +3094,25 @@ export function setupLandscape(
     const day = new Date(Date.now() + (site.lon / 15) * 3.6e6).getUTCDay()
     return day === 0 || day === 6
   }
-  const park = makePark(daySeed(new Date(), site.lon), parkEnv(al, weather, weekend()))
   // The ski hill's the same way, with the tracks of the day so far already on its runs; its chair
-  // takes two and a half minutes, so it has been running ten by the time anyone looks.
-  const slopes = makeHill(daySeed(new Date(), site.lon) + 1, hillEnv(al, weather, weekend()))
-  warmHill(slopes)
-  if (reduce) {
-    posePark(park)
-    poseHill(slopes)
-  } else {
-    const quiet: Voices = { bubbles: [], heads: {} }
-    for (let n = 0; n < 1800; n++) stepPark(park, 1 / 15, quiet)
-    for (let n = 0; n < 3000; n++) stepHill(slopes, 1 / 5, quiet)
+  // takes two and a half minutes, so it has been running ten by the time anyone looks. Both start
+  // again once the worker says where the visitor is: the guess from the time zone can be an hour
+  // and more of sun time out, enough to have warmed them up shut.
+  const day = () => {
+    const park = makePark(daySeed(new Date(), site.lon), parkEnv(al, weather, weekend()))
+    const slopes = makeHill(daySeed(new Date(), site.lon) + 1, hillEnv(al, weather, weekend()))
+    warmHill(slopes)
+    if (reduce) {
+      posePark(park)
+      poseHill(slopes)
+    } else {
+      const quiet: Voices = { bubbles: [], heads: {} }
+      for (let n = 0; n < 1800; n++) stepPark(park, 1 / 15, quiet)
+      for (let n = 0; n < 3000; n++) stepHill(slopes, 1 / 5, quiet)
+    }
+    return { park, slopes }
   }
+  let { park, slopes } = day()
   let relief: Relief = {
     side: 1,
     contrast: 1,
@@ -3516,7 +3524,11 @@ export function setupLandscape(
     const env = parkEnv(next, weather, weekend())
     const snow = hillEnv(next, weather, weekend())
     const shut =
-      env.open !== park.env.open || snow.open !== slopes.env.open || snow.groom !== slopes.env.groom
+      env.open !== park.env.open ||
+      env.crowd !== park.env.crowd ||
+      snow.open !== slopes.env.open ||
+      snow.groom !== slopes.env.groom ||
+      snow.tour !== slopes.env.tour
     park.env = env
     slopes.env = snow
     if (keyFor(next) !== lightKey) return repaint()
@@ -3660,6 +3672,9 @@ export function setupLandscape(
     },
     place(next) {
       site = next
+      al = almanac(new Date(), site)
+      weather = readSky(site.weather)
+      ;({ park, slopes } = day())
       repaint()
     },
     hail(x, y) {

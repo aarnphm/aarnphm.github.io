@@ -151,6 +151,11 @@ export function readSky(w: Weather | null): Sky {
 }
 
 // Refresh the visitor's place on each visit; the worker caches the forecast for fifteen minutes.
+// A night bright enough that a lamp is not doing all the work: a moon within four days of full, well
+// up, through a mostly clear sky. Full-moon rides and skin-ups bring people out after midnight.
+export const moonlit = (al: Almanac, sky: Sky) =>
+  al.sun.alt < -6 && al.moon.alt > 10 && Math.abs(al.moon.phase - 0.5) < 0.14 && sky.cover < 0.6
+
 export async function fetchSite(signal: AbortSignal): Promise<Site | null> {
   try {
     const res = await fetch('/api/weather', { signal, cache: 'no-store' })

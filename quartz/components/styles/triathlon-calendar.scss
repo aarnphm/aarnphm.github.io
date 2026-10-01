@@ -1,0 +1,1166 @@
+.tri-calendar-set {
+  width: 100%;
+  max-width: var(--tri-page-w);
+  min-width: 0;
+
+  > [hidden] {
+    display: none !important;
+  }
+}
+
+.tri-calendar {
+  --calendar-control-size: 2rem;
+  --calendar-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --calendar-surface: color-mix(in srgb, var(--lightgray) 24%, var(--light));
+  --calendar-swim: color-mix(in srgb, var(--tri-swim) 80%, var(--dark));
+  --calendar-bike: color-mix(in srgb, var(--tri-bike) 62%, var(--dark));
+  --calendar-run: color-mix(in srgb, var(--tri-run) 72%, var(--dark));
+  width: 100%;
+  max-width: var(--tri-page-w);
+  min-width: 0;
+  box-sizing: border-box;
+  margin-block: 0.8rem 1rem;
+  padding: clamp(0.65rem, 2vw, 1.4rem);
+  border: 1px solid var(--calendar-line);
+  font-variant-numeric: normal;
+
+  // Brand fill for marks, a legible ink for text, and the text colour that sits on the fill.
+  [data-series='ironman'] {
+    --calendar-event: #dc2323;
+    --calendar-event-ink: #c01f1f;
+    --calendar-event-on: #fff;
+  }
+  [data-series='t100'] {
+    --calendar-event: #00ffca;
+    --calendar-event-ink: color-mix(in srgb, #00ffca 38%, #02162d);
+    --calendar-event-on: #02162d;
+  }
+  [data-series='supertri'] {
+    --calendar-event: #12d2ff;
+    --calendar-event-ink: color-mix(in srgb, #12d2ff 45%, #0b1a2b);
+    --calendar-event-on: #0b1a2b;
+  }
+  [data-series='hyrox'] {
+    --calendar-event: #ffed00;
+    --calendar-event-ink: color-mix(in srgb, #ffed00 35%, #1a1a1a);
+    --calendar-event-on: #1a1a1a;
+  }
+  [data-series='other'],
+  [data-series='b4bh'] {
+    --calendar-event: var(--tri-accent);
+    --calendar-event-ink: var(--tri-accent);
+    --calendar-event-on: #fff;
+  }
+  [data-series='tcs'] {
+    --calendar-event: #9a3575;
+    --calendar-event-ink: #9a3575;
+    --calendar-event-on: #fff;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 3px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+:root[saved-theme='dark'] .tri-calendar {
+  --calendar-swim: var(--tri-swim);
+  --calendar-bike: var(--tri-bike);
+  --calendar-run: var(--tri-run);
+
+  [data-series='ironman'] {
+    --calendar-event-ink: color-mix(in srgb, #dc2323 70%, #fff);
+  }
+  [data-series='t100'] {
+    --calendar-event-ink: #00ffca;
+  }
+  [data-series='supertri'] {
+    --calendar-event-ink: #12d2ff;
+  }
+  [data-series='hyrox'] {
+    --calendar-event-ink: #ffed00;
+  }
+  [data-series='tcs'] {
+    --calendar-event-ink: #e9a8d2;
+  }
+}
+
+.tri-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+  padding: 0;
+}
+
+.tri-calendar-header > .tri-calendar-title-group {
+  margin: 0;
+
+  h1,
+  h2 {
+    margin: 0 0 0.2rem;
+    font-size: 1.15rem;
+    line-height: 1.3;
+    font-weight: 500;
+  }
+}
+
+.tri-calendar-season-picker {
+  --tri-picker-font-size: 0.7rem;
+  flex: none;
+  inline-size: 5.2rem;
+  font-family: var(--codeFont);
+
+  .tri-calendar-season-trigger {
+    height: var(--calendar-control-size);
+  }
+
+  .tri-calendar-season-option {
+    min-height: 1.85rem;
+  }
+}
+
+.tri-calendar-summary {
+  margin: 0;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+
+  strong {
+    font-weight: 400;
+    color: var(--dark);
+  }
+}
+
+.tri-calendar-actions,
+.tri-calendar-view-controls {
+  display: flex;
+  align-items: center;
+}
+
+.tri-calendar-actions {
+  gap: 0.45rem;
+}
+
+.tri-calendar-view-controls,
+.tri-calendar-download {
+  box-sizing: border-box;
+  height: var(--calendar-control-size);
+  border: 1px solid var(--calendar-line);
+}
+
+.tri-calendar-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--calendar-control-size);
+  height: var(--calendar-control-size);
+  padding: 0;
+  border-radius: 0;
+  color: var(--darkgray);
+  background: transparent;
+  text-decoration: none;
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    flex-shrink: 0;
+  }
+
+  // Tooltip from the localized aria-label; it opens below so the panel bar never clips it.
+  &::after {
+    content: attr(aria-label);
+    position: absolute;
+    z-index: 5;
+    top: calc(100% + 0.35rem);
+    left: 50%;
+    padding: 0.1rem 0.32rem;
+    color: var(--darkgray);
+    background: var(--light);
+    border: 1px solid var(--calendar-line);
+    font-family: var(--codeFont);
+    font-size: 0.62rem;
+    font-weight: 400;
+    line-height: 1.3;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -0.2rem);
+    transition:
+      opacity 140ms cubic-bezier(0.2, 0, 0, 1),
+      transform 140ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  &:hover,
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    background: var(--calendar-surface);
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.tri-calendar-view-controls .tri-calendar-icon {
+  height: 100%;
+  border: 0;
+}
+
+.tri-calendar-download::after {
+  right: -1px;
+  left: auto;
+  transform: translateY(-0.2rem);
+}
+
+.tri-calendar-download:hover::after,
+.tri-calendar-download:focus-visible::after {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-calendar-icon::after {
+    transition: none;
+  }
+}
+
+.tri-calendar-strip {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  border-block: 1px solid var(--calendar-line);
+
+  > a,
+  > span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-width: 0;
+    min-height: 3.1rem;
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  > a:hover {
+    background: var(--calendar-surface);
+  }
+  > .tri-calendar-strip-empty {
+    color: var(--gray);
+  }
+}
+
+.tri-calendar-strip-dots {
+  display: flex;
+  gap: 0.25rem;
+  height: 0.3rem;
+}
+.tri-calendar-dot {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 0.34rem;
+  height: 0.34rem;
+  flex-shrink: 0;
+  background: var(--calendar-event);
+  // Keeps the yellow and mint marks visible on the cream page.
+  outline: 1px solid color-mix(in srgb, var(--calendar-event-ink) 45%, transparent);
+  outline-offset: -1px;
+}
+
+.tri-calendar-legend {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin-block: 0.7rem 1.15rem;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.65rem;
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+
+// The views take the first column; an open event's detail takes the second, or covers the views
+// when the calendar is too narrow for both.
+.tri-calendar-body {
+  container: tri-calendar-body / inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+// Both views share one grid cell, so the calendar keeps its height when switching views.
+.tri-calendar-views {
+  container: tri-calendar-views / inline-size;
+  grid-area: 1 / 1;
+  display: grid;
+}
+
+.tri-calendar-view {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  &[inert] {
+    visibility: hidden;
+  }
+}
+
+.tri-calendar-list {
+  flex: 1;
+  display: grid;
+  grid-auto-rows: 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tri-calendar-event {
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1fr) auto;
+  gap: 1.1rem;
+  align-items: center;
+  margin: 0;
+  padding: 0.7rem 0.35rem;
+  border-top: 1px solid var(--calendar-line);
+  scroll-margin-block: 1rem;
+
+  &:last-child {
+    border-bottom: 1px solid var(--calendar-line);
+  }
+
+  &[data-selected] {
+    background: var(--calendar-surface);
+  }
+}
+
+.tri-calendar-date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  line-height: 1.2;
+}
+
+.tri-calendar-date-month {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tri-calendar-date-day {
+  font-size: 1.45rem;
+  letter-spacing: -0.055em;
+  color: var(--dark);
+}
+.tri-calendar-date-weekday {
+  font-size: 0.6rem;
+  color: var(--gray);
+}
+.tri-calendar-pending {
+  font-size: 0.7rem;
+}
+
+.tri-calendar-event-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.tri-calendar-event-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.8rem;
+
+  > button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--dark);
+    font-family: var(--bodyFont);
+    font-size: 0.98rem;
+    line-height: 1.4;
+    font-weight: 450;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    text-align: left;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+}
+
+.tri-calendar-external {
+  display: inline-block;
+  margin-left: 0.4rem;
+  color: var(--gray);
+  font-size: 0.8rem;
+}
+.tri-calendar-next,
+.tri-calendar-participated {
+  color: var(--calendar-event-ink);
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  white-space: nowrap;
+}
+.tri-calendar-event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.1rem 0.9rem;
+  margin: 0;
+  color: var(--darkgray);
+  font-size: 0.74rem;
+  line-height: 1.45;
+
+  > span + span {
+    color: var(--gray);
+  }
+}
+
+.tri-calendar-schedule-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.tri-calendar-schedule-day {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.12rem 0.36rem;
+  border: 1px solid var(--calendar-line);
+  background: transparent;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  line-height: 1.3;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--dark);
+    background: var(--light);
+  }
+
+  &[data-race='true'] {
+    color: var(--calendar-event-on);
+    background: var(--calendar-event);
+    border-color: transparent;
+  }
+}
+
+.tri-calendar-event-labels {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  min-width: 0;
+  justify-self: end;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.tri-calendar-format {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  text-align: right;
+
+  &::before {
+    content: '';
+    width: 0.34rem;
+    height: 0.34rem;
+    flex-shrink: 0;
+    background: var(--calendar-event);
+    outline: 1px solid color-mix(in srgb, var(--calendar-event-ink) 45%, transparent);
+    outline-offset: -1px;
+  }
+}
+
+.tri-calendar-year-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-top: 1px solid var(--calendar-line);
+  border-inline-end: 1px solid var(--calendar-line);
+}
+
+.tri-calendar-month {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0.6rem 0.45rem;
+  border-bottom: 1px solid var(--calendar-line);
+  border-inline-start: 1px solid var(--calendar-line);
+
+  h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 0 0 0.5rem;
+    font-family: var(--codeFont);
+    font-size: 0.72rem;
+    font-weight: 400;
+  }
+}
+
+.tri-calendar-month-number {
+  color: var(--gray);
+  font-size: 0.58rem;
+}
+.tri-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-auto-rows: 1.3rem;
+  gap: 0.1rem;
+  align-items: stretch;
+  text-align: center;
+  font-family: var(--codeFont);
+}
+.tri-calendar-weekday {
+  align-self: center;
+  color: var(--gray);
+  font-size: 0.52rem;
+  text-decoration: none;
+}
+.tri-calendar-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--darkgray);
+  font-size: 0.6rem;
+  font-weight: 400;
+  line-height: 1;
+}
+a.tri-calendar-day {
+  color: var(--dark);
+  text-decoration: none;
+  // Schedule days around the race carry a short series-coloured rule under the date.
+  background: linear-gradient(var(--calendar-event), var(--calendar-event)) center bottom 0.12rem /
+    0.8rem 2px no-repeat;
+
+  &:hover {
+    background-color: var(--calendar-surface);
+  }
+
+  &[data-race='true'] {
+    color: var(--calendar-event-on);
+    background: var(--calendar-event);
+    font-weight: 600;
+  }
+  &[data-race='true']:hover {
+    background: color-mix(in srgb, var(--calendar-event) 82%, var(--dark));
+  }
+
+  &[data-selected] {
+    outline: 1px solid var(--dark);
+    outline-offset: -1px;
+  }
+}
+.tri-calendar-undated {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+}
+.tri-calendar-undated h2 {
+  margin: 0;
+  font: inherit;
+}
+
+.tri-calendar-footer {
+  margin-top: 1rem;
+  padding: 0;
+  color: var(--gray);
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  line-height: 1.6;
+}
+
+// Top-layer card: the popover escapes the calendar overlay's transform and overflow clipping.
+.tri-calendar-pop {
+  position: fixed;
+  inset: auto;
+  z-index: 70;
+  display: none;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: min(21rem, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  margin: 0;
+  padding: 0;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
+  border-radius: var(--radius-none);
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  line-height: 1.4;
+  text-align: left;
+  // A long race-day schedule on a short viewport scrolls inside the card instead of being cut off.
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+
+  &:popover-open,
+  &[data-open='true'] {
+    display: flex;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
+}
+
+.tri-calendar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+
+  a:hover {
+    background: transparent;
+    color: var(--dark);
+  }
+
+  & + & {
+    border-top: 1px solid var(--calendar-line);
+  }
+}
+
+.tri-calendar-card-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+
+  strong {
+    color: var(--dark);
+    font-family: var(--bodyFont);
+    font-size: 0.84rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+}
+.tri-calendar-card-series {
+  color: var(--calendar-event-ink);
+  font-size: 0.56rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.tri-calendar-card-where {
+  color: var(--darkgray);
+}
+
+.tri-calendar-card-course {
+  display: grid;
+  grid-template-columns: 4.8rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.tri-calendar-route {
+  width: 4.8rem;
+  height: 4.8rem;
+  background: var(--calendar-surface);
+
+  path {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+}
+.tri-calendar-route-start,
+.tri-calendar-route-finish {
+  fill: var(--light);
+  stroke: var(--dark);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-calendar-legs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.tri-calendar-leg {
+  display: grid;
+  grid-template-columns: 3.4rem 3.3rem minmax(0, 1fr) 3.4rem;
+  gap: 0.4rem;
+  align-items: center;
+
+  dt,
+  dd {
+    margin: 0;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  dt {
+    color: var(--calendar-leg);
+  }
+}
+.tri-calendar-leg-profile svg {
+  display: block;
+  width: 100%;
+  height: 0.95rem;
+  overflow: visible;
+}
+.tri-calendar-profile-area {
+  fill: color-mix(in srgb, var(--calendar-leg) 20%, transparent);
+}
+.tri-calendar-profile-line {
+  fill: none;
+  stroke: var(--calendar-leg);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.tri-calendar-profile-aid {
+  stroke: var(--darkgray);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.tri-calendar-leg .tri-calendar-leg-note {
+  color: var(--darkgray);
+  text-align: right;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.tri-calendar-card [data-leg='swim'] {
+  --calendar-leg: var(--calendar-swim);
+  stroke: var(--calendar-swim);
+}
+.tri-calendar-card [data-leg='bike'] {
+  --calendar-leg: var(--calendar-bike);
+  stroke: var(--calendar-bike);
+}
+.tri-calendar-card [data-leg='run'] {
+  --calendar-leg: var(--calendar-run);
+  stroke: var(--calendar-run);
+}
+
+.tri-calendar-card-conditions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin: 0;
+  color: var(--dark);
+
+  > span > span {
+    color: var(--gray);
+  }
+}
+
+.tri-calendar-card-day {
+  h3 {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    margin: 0 0 0.3rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--calendar-line);
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-size: 0.64rem;
+    font-weight: 500;
+  }
+
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.14rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 4.4rem minmax(0, 1fr);
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--darkgray);
+    line-height: 1.35;
+  }
+
+  li[data-race='true'] {
+    color: var(--dark);
+    font-weight: 600;
+
+    .tri-calendar-card-time {
+      color: var(--calendar-event-ink);
+    }
+  }
+}
+.tri-calendar-card-race {
+  padding: 0 0.28rem;
+  color: var(--calendar-event-on);
+  background: var(--calendar-event);
+  font-weight: 400;
+}
+.tri-calendar-card-edition {
+  margin-left: auto;
+  color: var(--gray);
+  font-weight: 400;
+}
+.tri-calendar-card-time {
+  white-space: nowrap;
+}
+.tri-calendar-card-place {
+  color: var(--gray);
+  font-weight: 400;
+
+  &::before {
+    content: ' · ';
+  }
+}
+.tri-calendar-card-pending {
+  margin: 0;
+  color: var(--gray);
+}
+
+.tri-calendar-detail {
+  position: relative;
+  display: none;
+  grid-area: 1 / 2;
+  box-sizing: border-box;
+  width: min(24rem, 42cqi);
+  margin-left: 1rem;
+  // Size containment keeps the detail out of the row height: the views set it, the detail scrolls.
+  contain: size;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scroll-margin-top: 0.5rem;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid var(--calendar-line);
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  line-height: 1.45;
+
+  .tri-calendar-card {
+    gap: 0.9rem;
+    padding: 0.9rem 1rem 1.2rem;
+  }
+
+  .tri-calendar-card-course {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.8rem;
+  }
+
+  .tri-calendar-route {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+
+    path {
+      stroke-width: 2;
+    }
+  }
+
+  .tri-calendar-legs {
+    gap: 0.6rem;
+  }
+
+  .tri-calendar-leg {
+    grid-template-columns: 3.4rem 3.8rem minmax(0, 1fr) 4rem;
+    row-gap: 0.2rem;
+  }
+
+  .tri-calendar-leg-profile svg {
+    height: 1.7rem;
+  }
+
+  .tri-pop-head--detail + .tri-calendar-card-meta {
+    margin-top: -0.5rem;
+  }
+
+  .tri-calendar-card-day li {
+    grid-template-columns: 5rem minmax(0, 1fr);
+  }
+
+  // Every day comes from the same edition, so the first header carries the label for all of them.
+  .tri-calendar-card-day ~ .tri-calendar-card-day .tri-calendar-card-edition {
+    display: none;
+  }
+}
+
+.tri-calendar[data-calendar-detail] .tri-calendar-detail {
+  display: block;
+}
+
+.tri-calendar-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.8rem;
+  margin: 0;
+  color: var(--darkgray);
+
+  > span + span + span {
+    color: var(--gray);
+  }
+}
+
+.tri-calendar-card-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.6rem, 1fr));
+  gap: 0.6rem 0.8rem;
+  margin: 0;
+  padding-block: 0.6rem;
+  border-block: 1px solid var(--calendar-line);
+
+  &:not(:has(> div:not([hidden]))) {
+    display: none;
+  }
+
+  > div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  dt {
+    color: var(--gray);
+    font-size: 0.56rem;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--dark);
+    font-size: 0.92rem;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+  }
+}
+
+.tri-calendar-card-results h3 {
+  margin: 0;
+  color: var(--dark);
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.tri-calendar-leg .tri-calendar-leg-source {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.1rem 0.7rem;
+  color: var(--gray);
+  white-space: normal;
+
+  a {
+    color: var(--darkgray);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+}
+
+.tri-calendar-card-also {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.7rem;
+  margin: 0;
+  color: var(--gray);
+
+  button {
+    padding: 0;
+    border: 0;
+    color: var(--dark);
+    background: none;
+    font: inherit;
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.tri-calendar-card-day[data-card-focus] h3 {
+  color: var(--calendar-event-ink);
+
+  &::before {
+    content: '';
+    align-self: center;
+    width: 0.34rem;
+    height: 0.34rem;
+    flex-shrink: 0;
+    background: var(--calendar-event);
+  }
+}
+
+.tri-calendar-card-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--calendar-line);
+  color: var(--gray);
+
+  p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.1rem 0.7rem;
+    margin: 0;
+    color: var(--gray);
+  }
+
+  time {
+    color: var(--darkgray);
+  }
+
+  a {
+    color: var(--darkgray);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    overflow-wrap: anywhere;
+  }
+}
+
+.tri-calendar-card-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+}
+
+@container tri-calendar-body (max-width: 50rem) {
+  .tri-calendar-detail {
+    grid-area: 1 / 1 / 2 / 3;
+    width: auto;
+    margin-left: 0;
+  }
+
+  .tri-calendar[data-calendar-detail] .tri-calendar-views {
+    visibility: hidden;
+  }
+}
+
+.tri-calendar-panel {
+  .tri-calendar {
+    flex: none;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .tri-calendar-close {
+    margin-left: auto;
+  }
+}
+
+// Month columns follow the views' own width, which narrows while a detail sits beside them.
+@container tri-calendar-views (max-width: 46rem) {
+  .tri-calendar-year-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@container tri-calendar-views (max-width: 32rem) {
+  .tri-calendar-year-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 36rem) {
+  .tri-calendar-header {
+    gap: 1.2rem;
+  }
+  .tri-calendar-title-group h1,
+  .tri-calendar-title-group h2 {
+    font-size: 1rem;
+  }
+  .tri-calendar-actions {
+    margin-left: auto;
+  }
+  .tri-calendar-strip {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .tri-calendar-strip > :nth-child(n + 7) {
+    border-top: 1px solid var(--calendar-line);
+  }
+  // Twelve months stack three wide here, far taller than the list; rows keep their own height.
+  .tri-calendar-list {
+    grid-auto-rows: auto;
+    align-content: start;
+  }
+  .tri-calendar-event {
+    grid-template-columns: 3.6rem minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+  .tri-calendar-event-labels {
+    grid-column: 2;
+  }
+  .tri-calendar-event-heading > button {
+    font-size: 0.9rem;
+  }
+  .tri-calendar-date-day {
+    font-size: 1.25rem;
+  }
+  .tri-calendar-event-meta {
+    gap: 0.1rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  .tri-calendar-month {
+    padding: 0.55rem 0.35rem;
+  }
+}

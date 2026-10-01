@@ -9267,6 +9267,15 @@ export const buildActivity = <N>(
   })
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildActivityIcon(f, d))
+  f.add(
+    head,
+    f.el('button', 'tri-activity-analyze', triText(f.presentation.locale, 'analyze'), {
+      type: 'button',
+      'data-activity-analyze': `${d.id}`,
+      'aria-haspopup': 'dialog',
+      'data-i18n': 'analyze',
+    }),
+  )
   f.add(wrap, head)
   f.add(
     wrap,

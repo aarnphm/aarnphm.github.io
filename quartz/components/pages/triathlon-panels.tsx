@@ -23,6 +23,7 @@ import {
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
 import { AnalyticsServerPanel } from '../triathlon/analytics/render'
+import { CalendarPanel } from '../triathlon/calendar/Calendar'
 import { ShortcutHint } from '../triathlon/shell/ShortcutHint'
 import { EquipmentUsage } from '../triathlon/tools/EquipmentUsage'
 import { Maintenance } from '../triathlon/tools/Maintenance'
@@ -38,6 +39,7 @@ const NAV = [
   ['analytics', 'analytics', 'g a'],
   ['maps', 'maps', 'g m'],
   ['training', 'training', 'g t'],
+  ['calendar', 'calendar', 'g e'],
   ['feed', 'feed', 'g f'],
   ['on', 'on', 'g o'],
 ] as const
@@ -354,22 +356,26 @@ export const OnTreePanel = ({ tree, root }: { tree: TriathlonTreeYear[]; root: s
   </section>
 )
 
-type TriPanelKind = 'analytics' | 'map' | 'training'
+type TriPanelKind = 'analytics' | 'map' | 'training' | 'calendar'
 
 interface TriPanelShellProps {
   kind: TriPanelKind
+  id?: string
+  panelClass?: string
   page?: boolean
   label: string
   title: string
   barClass?: string
   titleClass?: string
   bodyClass?: string
-  search: ComponentChildren
+  search?: ComponentChildren
   children: ComponentChildren
 }
 
 const TriPanelShell = ({
   kind,
+  id,
+  panelClass,
   page,
   label,
   title,
@@ -384,7 +390,8 @@ const TriPanelShell = ({
     <>
       <div class={`${rootClass}-scrim`} aria-hidden="true" />
       <aside
-        class={`${rootClass}${page ? ` ${rootClass}--page` : ''}`}
+        id={id}
+        class={`${panelClass ?? rootClass}${page ? ` ${rootClass}--page` : ''}`}
         aria-hidden={page ? 'false' : 'true'}
         role="dialog"
         aria-label={label}
@@ -765,6 +772,18 @@ export const TrainingPanel = ({
         <div class="tri-ana-detail tri-training-doc" aria-hidden="true" data-keyboard-scroll />
       </>
     )}
+  </TriPanelShell>
+)
+
+export const CalendarOverlay = ({ renderData }: { renderData?: TriathlonRenderData }) => (
+  <TriPanelShell
+    kind="calendar"
+    id="tri-calendar-panel"
+    panelClass="tri-calendar-panel"
+    label="triathlon race calendar"
+    title="calendar"
+  >
+    <CalendarPanel renderData={renderData} panel />
   </TriPanelShell>
 )
 

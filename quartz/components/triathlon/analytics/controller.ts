@@ -221,13 +221,21 @@ export const setupAnalytics = (
       const d = detailData?.details?.[id]
       if (!d) return
       const card = el('div', 'tri-pop-card')
-      const { head, back } = detailHead(
+      const { head, back, actions } = detailHead(
         context.formatter.shortDate(d.date),
         d.name || d.sport,
         context.formatter.text('go back'),
       )
+      actions.prepend(
+        el('button', 'tri-activity-analyze', context.formatter.text('analyze'), {
+          type: 'button',
+          'data-activity-analyze': `${d.id}`,
+          'aria-haspopup': 'dialog',
+        }),
+      )
       card.appendChild(head)
       const activityView = renderDetail(context.presentation, d, detailData)
+      activityView.element.querySelector('[data-activity-analyze]')?.remove()
       setActivityExpanded(activityView.element, true)
       card.appendChild(activityView.element)
       const h = detailData?.health?.[d.date]

@@ -9,7 +9,10 @@ import { setupPowerCurveActivityLinks } from '../activity/power-links'
 import { createDayCardFacade, type DayCardFacade } from '../activity/public-api'
 import { setupChartScrub } from '../activity/scrub'
 import { setupWorkoutAnalysisTabs } from '../activity/workout-analysis-tabs'
+import { setupActivityWorkspace } from '../activity/workspace'
 import { setupAnalytics } from '../analytics/controller'
+import { setupCalendars } from '../calendar/controller'
+import { setupCalendarPanel } from '../calendar/panel'
 import { setupMap } from '../maps/controller'
 import { setupAxisLabels } from '../shell/axis-labels'
 import { setupCommandPalette } from '../shell/command-palette'
@@ -48,6 +51,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
       root.classList.toggle('tri-panels-fullscreen', readTriPanelsFullscreen())
   }
   addCleanup(setupDayEmbeds(context))
+  addCleanup(setupActivityWorkspace(context))
   addCleanup(setupActivityComparisonEmbeds(context))
   addCleanup(setupPowerCurveActivityLinks(document.body, context))
   addCleanup(setupChartScrub(document.body, () => context.presentation))
@@ -90,6 +94,8 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
     if (window.location.hash === '#tire-pressure')
       root.dispatchEvent(new CustomEvent(TRI_TIRE_PRESSURE_OPEN_EVENT))
   }
+  if (root) addCleanup(setupCalendarPanel(root))
+  addCleanup(setupCalendars(context))
   let active = true
   const cleanup = (): void => {
     if (!active) return

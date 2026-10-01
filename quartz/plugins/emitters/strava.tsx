@@ -23,6 +23,7 @@ import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util
 import { StaticResources } from '../../util/resources'
 import { serializeStravaDetails, type StravaDetailPayload } from '../../util/strava-detail'
 import { loadStravaDataSync, type LoadedStravaPayload } from '../../util/strava-payload'
+import { parseTriathlonCalendars, serializeTriathlonCalendar } from '../../util/triathlon-calendar'
 import {
   triathlonActivityFeedRoutes,
   triathlonDaySlug,
@@ -43,7 +44,16 @@ import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../
 import { removeWritten, write } from './helpers'
 import { createOgImageGenerator } from './ogImage'
 
-const TRI_SUBVIEWS: TriView[] = ['tools', 'calc', 'analytics', 'maps', 'training', 'feed', 'on']
+const TRI_SUBVIEWS: TriView[] = [
+  'tools',
+  'calc',
+  'analytics',
+  'maps',
+  'training',
+  'calendar',
+  'feed',
+  'on',
+]
 const TRIATHLON_DATA_CACHE_DIR = joinSegments(QUARTZ, '.quartz-cache', 'triathlon')
 const TRIATHLON_DATA_CACHE_PATH = joinSegments(TRIATHLON_DATA_CACHE_DIR, 'data.jsonl')
 
@@ -71,6 +81,8 @@ const triathlonDescription = (
       return `Generated route geometry and map metrics across ${activityCount} activities.`
     case 'training':
       return `${planCount} generated triathlon training plans with their complete note content.`
+    case 'calendar':
+      return 'Planned races with official event dates, locations, formats, and calendar download.'
     case 'feed':
       return `Generated training feed across ${activityCount} activities.`
     case 'on':
@@ -120,6 +132,11 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       if (!isTriathlon(file.data)) continue
       const since = file.data.frontmatter?.['strava']
       const maintenance = parseTriathlonMaintenance(file.data.frontmatter?.['maintenance'])
+      const calendars = parseTriathlonCalendars(
+        file.data.frontmatter?.['calendar'],
+        file.data.frontmatter?.['events'],
+      )
+      const calendar = calendars.at(-1) ?? null
       const tracking = file.data.tracking
       const { payload, analytics, trackedCache, sources, generatedAt } = loadStravaDataSync(
         typeof since === 'string' ? since : undefined,
@@ -176,6 +193,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         plans,
         weather: weather?.current ?? null,
         equipment,
+        calendar,
+        calendars,
       }
       const dataFeed = buildDataFeed(trackedCache, analytics, {
         oura,
@@ -229,6 +248,20 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           content: JSON.stringify({ plans }),
         }),
         write({ ctx, slug: 'static/triathlon/data' as FullSlug, ext: '.jsonl', content: dataFeed }),
+        write({
+          ctx,
+          slug: 'triathlon/calendar',
+          ext: '.ics',
+          content: serializeTriathlonCalendar(calendar),
+        }),
+        ...calendars.map(season =>
+          write({
+            ctx,
+            slug: `triathlon/calendar/${season.year}`,
+            ext: '.ics',
+            content: serializeTriathlonCalendar(season),
+          }),
+        ),
       ])
       const slug = file.data.slug!
       const externalResources = pageResources(pathToRoot(slug), resources, ctx)
@@ -272,6 +305,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           analytics,
           payload,
           plans,
+          calendar,
           tools: { conversions: CONVERSIONS, gear: GEAR, maintenance, equipment },
         })
         const [subTree, subFile] = defaultProcessedContent({
