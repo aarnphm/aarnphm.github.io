@@ -145,6 +145,81 @@ describe('parseFlashcards: cloze', () => {
       String.raw`The naive set-builder form <span class="cloze-answer">$\{x \mid P(x)\}$</span> is dangerous.`,
     )
   })
+
+  test('deletion inside a code span splits the span around the blank', () => {
+    const { cards } = parseFlashcards('C: Dates read `le [premier] mars` but `le [deux] mars`.')
+    assert.equal(cards.length, 2)
+    assert.equal(
+      cards[0].front,
+      'Dates read `le` <span class="cloze-blank">[…]</span> `mars` but `le deux mars`.',
+    )
+    assert.equal(
+      cards[0].back,
+      'Dates read `le` <span class="cloze-answer">`premier`</span> `mars` but `le deux mars`.',
+    )
+    assert.equal(
+      cards[1].front,
+      'Dates read `le premier mars` but `le` <span class="cloze-blank">[…]</span> `mars`.',
+    )
+  })
+
+  test('deletion at a code span edge absorbs that delimiter', () => {
+    const whole = parseFlashcards('C: Plural of `le`: `[les]`.').cards[0]
+    assert.equal(whole.front, 'Plural of `le`: <span class="cloze-blank">[…]</span>.')
+    assert.equal(whole.back, 'Plural of `le`: <span class="cloze-answer">`les`</span>.')
+
+    const edges = parseFlashcards("C: `[D'où] viens-tu [?]`").cards
+    assert.equal(edges[0].front, '<span class="cloze-blank">[…]</span> `viens-tu ?`')
+    assert.equal(edges[1].front, '`D\'où viens-tu` <span class="cloze-blank">[…]</span>')
+
+    const glued = parseFlashcards("C: `Je viens [d']Italie.`").cards[0]
+    assert.equal(glued.front, '`Je viens` <span class="cloze-blank">[…]</span>`Italie.`')
+  })
+
+  test('code spans hide dollar signs and honour longer fences', () => {
+    const dollars = parseFlashcards('C: `15,50 $` uses a [comma] and `$` follows.').cards
+    assert.equal(dollars.length, 1)
+    assert.equal(
+      dollars[0].back,
+      '`15,50 $` uses a <span class="cloze-answer">comma</span> and `$` follows.',
+    )
+
+    const fence = parseFlashcards('C: ``a`b [c]`` stays').cards[0]
+    assert.equal(fence.front, '``a`b`` <span class="cloze-blank">[…]</span> stays')
+
+    const padded = parseFlashcards('C: ``a ` [b]`` stays').cards[0]
+    assert.equal(padded.front, '``a ` `` <span class="cloze-blank">[…]</span> stays')
+  })
+
+  test('a deletion wrapping a whole code span keeps the code inside the blank', () => {
+    const { cards } = parseFlashcards('C: Only [`-et-un`] takes `et`.')
+    assert.equal(cards.length, 1)
+    assert.equal(cards[0].back, 'Only <span class="cloze-answer">`-et-un`</span> takes `et`.')
+  })
+})
+
+describe('parseFlashcards: notes', () => {
+  test('N: shows on the back only and leaves the id unchanged', () => {
+    const plain = parseFlashcards("C: J'ai [25] ans.\n---\nQ: 20?\nA: `vingt`").cards
+    const noted = parseFlashcards(
+      "C: J'ai [25] ans.\n\nN: age uses `avoir`.\n---\nQ: 20?\nA: `vingt`\nN: silent `t`\nsecond line",
+    ).cards
+    assert.deepEqual(
+      noted.map(card => card.id),
+      plain.map(card => card.id),
+    )
+    assert.equal(noted[0].front, 'J\'ai <span class="cloze-blank">[…]</span> ans.')
+    assert.equal(noted[0].note, 'age uses `avoir`.')
+    assert.equal(noted[1].back, '`vingt`')
+    assert.equal(noted[1].note, 'silent `t`\nsecond line')
+    assert.equal(plain[0].note, undefined)
+  })
+
+  test('N: before A: is an error', () => {
+    const { cards, errors } = parseFlashcards('Q: a\nN: b\nA: c')
+    assert.equal(cards.length, 0)
+    assert.equal(errors.length, 1)
+  })
 })
 
 describe('content-addressed identity', () => {

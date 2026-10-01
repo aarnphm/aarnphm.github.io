@@ -169,3 +169,63 @@ C: On a Québécois form, the address abbreviation `boul.` stands for [boulevard
 ---
 
 C: On a Québécois form, the address abbreviation `tél.` stands for [téléphone].
+
+---
+
+Q: Say "I am 84."
+A: `J'ai 84 ans.` (`quatre-vingt-quatre`)
+
+---
+
+Q: Say "She is 71."
+A: `Elle a 71 ans.` (`soixante-et-onze`)
+N: `avoir` plus the obligatory `ans`; the number spelling lives in [[fr/les-nombres]].
+
+---
+
+Q: Ask formally for someone's family name.
+A: `Quel est votre nom de famille?`
+
+---
+
+Q: Ask formally where someone comes from.
+A: `D'où venez-vous?`
+
+---
+
+Q: Ask formally for someone's date of birth.
+A: `Quelle est votre date de naissance?`
+N: `quelle` because `la date` is feminine.
+
+---
+
+C: `quel` agrees with the noun it asks about: `[Quel] est votre code postal?`, `[Quelle] est votre nationalité?`, `[Quel] est votre état civil?`
+
+
+---
+
+Q: Write `25 décembre 2001` as a date of birth.
+A: `2001-12-25`
+
+---
+
+Q: Read the date of birth `1967-03-01` aloud.
+A: `le premier mars mille-neuf-cent-soixante-sept`
+N: Only the first of the month becomes `premier`; the year reads as one number.
+
+---
+
+Q: Read `450 682-1199` aloud.
+A: `quatre, cinq, zéro, six, huit, deux, un, un, neuf, neuf`
+N: One digit at a time, never grouped into `onze` or `quatre-vingt-dix-neuf`.
+
+---
+
+Q: Read `h.ferron@videotron.ca` aloud.
+A: `h point ferron arobas videotron point ca`
+
+---
+
+Q: The form field for "first name" on a `fiche d'inscription`?
+A: `Prénom`
+N: The last name goes under `Nom de famille` (or just `Nom`).

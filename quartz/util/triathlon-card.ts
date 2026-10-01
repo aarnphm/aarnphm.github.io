@@ -42,6 +42,7 @@ import {
   swimActivityHeaderValue,
   triText,
 } from './triathlon-i18n'
+import { activityGpsSegments } from './triathlon-map-route'
 import { buildOuraHealth } from './triathlon-oura-health'
 import { powerCurveActivityLinkAttributes } from './triathlon-power-activity'
 import {
@@ -882,6 +883,32 @@ export const buildLayers = <N>(f: TriNodeFactory<N>): N => {
   const icon = f.svg('svg', { class: 'tri-ico', viewBox: '0 0 24 24', fill: 'none' })
   for (const d of LAYERS_ICON) f.add(icon, f.svg('path', { d }))
   return icon
+}
+
+export const buildActivityAnalyzeButton = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N => {
+  const label = triText(f.presentation.locale, 'analyze')
+  const hasGps = activityGpsSegments(d).length > 0
+  const button = f.el('button', 'tri-activity-analyze', undefined, {
+    type: 'button',
+    'data-activity-analyze': `${d.id}`,
+    'aria-label': label,
+    'data-i18n-aria-label': 'analyze',
+    'aria-expanded': 'false',
+    title: hasGps
+      ? label
+      : triText(f.presentation.locale, 'No recorded GPS route for this activity.'),
+    ...(!hasGps ? { disabled: '' } : {}),
+    'data-site-cursor-action': '',
+  })
+  const icon = f.svg('svg', {
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    'aria-hidden': 'true',
+    'data-site-cursor-icon': '',
+  })
+  f.add(icon, f.svg('path', { d: 'M4 4v16h16M7 14l4-5 4 3 5-7' }))
+  f.add(button, icon)
+  return button
 }
 
 type RouteDrawPoint = { x: number; y: number }
@@ -4395,7 +4422,7 @@ const analysisRangeMetrics = (
 
 type CyclingWorkoutLap = { range: ActivityAnalysisRange; index: number; powerWatts: number | null }
 
-const cyclingWorkoutLaps = (d: StravaActivityDetail): CyclingWorkoutLap[] =>
+export const cyclingWorkoutLaps = (d: StravaActivityDetail): CyclingWorkoutLap[] =>
   validAnalysisRanges(d)
     .filter(range => range.kind === 'lap')
     .sort((left, right) => left.startElapsedS - right.startElapsedS)
@@ -4407,6 +4434,37 @@ const cyclingWorkoutLaps = (d: StravaActivityDetail): CyclingWorkoutLap[] =>
           ? range.averageWatts
           : null,
     }))
+
+export const cyclingWorkoutPowerSummary = (laps: readonly CyclingWorkoutLap[]) => {
+  const poweredLaps = laps.filter(
+    (lap): lap is CyclingWorkoutLap & { powerWatts: number } => lap.powerWatts != null,
+  )
+  if (!poweredLaps.length) return null
+  const highest = Math.max(...poweredLaps.map(lap => lap.powerWatts))
+  const lowest = Math.min(...poweredLaps.map(lap => lap.powerWatts))
+  const weighted = poweredLaps.reduce(
+    (summary, lap) => {
+      const durationS =
+        lap.range.movingTimeS != null &&
+        Number.isFinite(lap.range.movingTimeS) &&
+        lap.range.movingTimeS > 0
+          ? lap.range.movingTimeS
+          : lap.range.durationS
+      return {
+        wattsSeconds: summary.wattsSeconds + lap.powerWatts * durationS,
+        durationS: summary.durationS + durationS,
+      }
+    },
+    { wattsSeconds: 0, durationS: 0 },
+  )
+  const step = niceStep(Math.max(1, highest), 4)
+  return {
+    highest,
+    lowest,
+    average: weighted.wattsSeconds / weighted.durationS,
+    maximum: Math.max(step, Math.ceil(highest / step) * step),
+  }
+}
 
 type WorkoutElevationPaths = { area: string; line: string }
 
@@ -4460,36 +4518,19 @@ const buildCyclingWorkoutAnalysis = <N>(
 ): N | null => {
   if (d.sport !== 'bike' || d.route.length < 2) return null
   const laps = cyclingWorkoutLaps(d)
-  const poweredLaps = laps.filter(
-    (lap): lap is CyclingWorkoutLap & { powerWatts: number } => lap.powerWatts != null,
-  )
-  if (laps.length === 0 || poweredLaps.length === 0) return null
+  const summary = cyclingWorkoutPowerSummary(laps)
+  if (!summary) return null
 
   const routeEndElapsedS = d.route.at(-1)?.elapsedS ?? 0
   const totalElapsedS = Math.max(routeEndElapsedS, ...laps.map(lap => lap.range.endElapsedS))
   const elevationPaths = workoutElevationPaths(d, totalElapsedS)
   if (!elevationPaths) return null
 
-  const highestPowerWatts = Math.max(...poweredLaps.map(lap => lap.powerWatts))
-  const lowestPowerWatts = Math.min(...poweredLaps.map(lap => lap.powerWatts))
-  const weightedPower = poweredLaps.reduce(
-    (summary, lap) => {
-      const durationS =
-        lap.range.movingTimeS != null &&
-        Number.isFinite(lap.range.movingTimeS) &&
-        lap.range.movingTimeS > 0
-          ? lap.range.movingTimeS
-          : lap.range.durationS
-      return {
-        wattsSeconds: summary.wattsSeconds + lap.powerWatts * durationS,
-        durationS: summary.durationS + durationS,
-      }
-    },
-    { wattsSeconds: 0, durationS: 0 },
-  )
-  const averagePowerWatts = weightedPower.wattsSeconds / weightedPower.durationS
+  const highestPowerWatts = summary.highest
+  const lowestPowerWatts = summary.lowest
+  const averagePowerWatts = summary.average
   const step = niceStep(Math.max(1, highestPowerWatts), 4)
-  const powerMax = Math.max(step, Math.ceil(highestPowerWatts / step) * step)
+  const powerMax = summary.maximum
   const ticks = niceTicks(0, powerMax, 4).filter(value => value > 0)
 
   const wrap = f.el('section', 'tri-workout tri-cycling-workout', undefined, {
@@ -9267,15 +9308,7 @@ export const buildActivity = <N>(
   })
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildActivityIcon(f, d))
-  f.add(
-    head,
-    f.el('button', 'tri-activity-analyze', triText(f.presentation.locale, 'analyze'), {
-      type: 'button',
-      'data-activity-analyze': `${d.id}`,
-      'aria-haspopup': 'dialog',
-      'data-i18n': 'analyze',
-    }),
-  )
+  f.add(head, buildActivityAnalyzeButton(f, d))
   f.add(wrap, head)
   f.add(
     wrap,

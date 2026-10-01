@@ -140,7 +140,19 @@ async function writeAfterDomLoadedScripts(
     }),
   )
 
-  const postscript = entries.map(({ filename }) => `await import("./${filename}");`).join('\n')
+  // modulepreload fetches every chunk in parallel without evaluating it. The awaited imports then
+  // evaluate chunks in source order, so spa.inline.ts (last) fires the initial `nav` after every
+  // other chunk has attached its listeners; `Promise.all` over `import()` evaluates in arrival order.
+  const chunks = JSON.stringify(entries.map(({ filename }) => `./${filename}`))
+  const postscript = `const chunks = ${chunks};
+for (const src of chunks) {
+  const link = document.createElement("link");
+  link.rel = "modulepreload";
+  link.href = new URL(src, import.meta.url).href;
+  document.head.append(link);
+}
+for (const src of chunks) await import(src);
+`
   return { postscript, files: entries.map(({ file }) => file) }
 }
 

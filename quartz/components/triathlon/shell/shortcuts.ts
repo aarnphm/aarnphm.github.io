@@ -161,7 +161,11 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     return false
   }
   const onKey = (e: KeyboardEvent) => {
-    if (e.target instanceof Element && e.target.closest('.tri-workspace')) return
+    if (
+      e.target instanceof Element &&
+      e.target.closest('.tri-workspace, .tri-activity-analysis-open')
+    )
+      return
     if (e.shiftKey && (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'g') {
       clearG()
       e.preventDefault()

@@ -7,7 +7,7 @@ aliases:
 date: '2024-11-18'
 description: structured generations in vLLM a la carte, or in general
 id: structured outputs
-modified: 2026-06-06 00:10:53 GMT-04:00
+modified: 2026-10-01 09:15:44 GMT-04:00
 tags:
   - ml
   - rfc
@@ -17,25 +17,33 @@ transclude:
   title: false
 ---
 
+Structured decoding restricts the next token to continuations allowed by a grammar. The model still chooses the content wherever the grammar leaves a choice. A valid JSON object can contain a wrong answer.
+
 ## jump-forward decoding
 
-Also known as fast-forward tokens, or forced tokens, or [ff-strings](https://github.com/guidance-ai/llguidance/blob/main/docs/fast_forward.md#safely-converting-ff-strings-to-ff-tokens) (abbrev: ff, jf)
+Also known as fast-forward tokens, forced tokens, or [ff-strings](https://github.com/guidance-ai/llguidance/blob/main/docs/fast_forward.md#safely-converting-ff-strings-to-ff-tokens) (abbrev: ff, jf).
 
-See also: [toktrie implementation in llguidance](https://github.com/guidance-ai/llguidance/blob/main/docs/toktrie.md)
+If every valid continuation begins with the same bytes, the engine can append those bytes without sampling them one at a time. The resulting tokens still need a forward pass to populate the KV cache before generation continues. This is where a short prefill can replace several serial decoding steps.
 
-One can think about this as "[[thoughts/Speculative decoding|speculative decoding]] but with 100% acceptance rate."
+The tempting description is "[[thoughts/Speculative decoding|speculative decoding]] with 100% acceptance." That needs a qualification: a grammar can force a **string** while leaving several tokenizations possible. Choosing one tokenization can change subsequent model probabilities. Grammar validity alone does not give the distribution-preservation guarantee of an exact speculative sampler.
+
+llguidance handles the boundary by withholding trailing tokens when a legal token could extend beyond the forced bytes. See its [fast-forward notes](https://github.com/guidance-ai/llguidance/blob/main/docs/fast_forward.md). Its [token trie](https://github.com/guidance-ai/llguidance/blob/main/docs/toktrie.md) shares work across vocabulary entries with the same byte prefix: once the recognizer rejects a prefix, the traversal skips that subtree.
 
 ## async structured outputs
 
-see also: https://github.com/vllm-project/vllm/pull/26866, https://docs.google.com/document/d/1wmSQk3BYQU3axP4Sb0179IgVNzoMSyE68q0rPZmpdyA
+Design references: https://github.com/vllm-project/vllm/pull/26866, https://docs.google.com/document/d/1wmSQk3BYQU3axP4Sb0179IgVNzoMSyE68q0rPZmpdyA
+
+Process names from those design notes:
 
 - `SchedulerProc`
 - `WorkerProc`
-- `StandaloneProc` <== Scheduler & Worker
+- `StandaloneProc`, combining scheduler and worker
+
+The dependency to preserve: a mask must reflect the request's accepted tokens before it is used to sample the next token. CPU mask generation can overlap a GPU forward pass when the scheduler has already received the preceding sampled token.
 
 ## structural tags
 
-See also: [docs](https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w)
+Design reference: [docs](https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm4higcSGpvKKNdmtY/edit?tab=t.0#heading=h.nc4nxxczgw4w).
 
 ---
 
@@ -43,48 +51,37 @@ See also: [docs](https://docs.google.com/document/d/1o9ZZEFofxb-dJ_cDTi_c3riOJOm
 
 > [!important]
 >
-> This is upstream since 0.8.0. This section serves as historical context. Please see https://docs.vllm.ai for latest information on async scheduler and structured outputs compatibility.
+> Historical V1 design notes, including [RFC #11908](https://github.com/vllm-project/vllm/issues/11908), opened January 9, 2025. Structured-output support is present in the [v0.8.0 source](https://github.com/vllm-project/vllm/tree/v0.8.0/vllm/v1/structured_output). The proposals and meeting questions below record the integration work; consult [vLLM's documentation](https://docs.vllm.ai) for the engine version being deployed.
 
-see also [RFC](https://github.com/vllm-project/vllm/issues/11908)
+The integration had to account for the V1 tensor-parallel execution model described in [PR #9856](https://github.com/vllm-project/vllm/pull/9856):
 
-The following document describes and summarises existing works in vLLM to improve general guided decoding performance.
+- The executor created $N$ worker processes, replacing V0's $N-1$ worker processes.
+- All workers ran `prepare_inputs` and the sampler. Each therefore needed the logits, using an all-gather in place of a gather to one worker.
+- The executor broadcast scheduler output through shared-memory queues; one worker returned the model-runner output.
+- Workers stayed in a model-execution loop with termination as the other control operation.
 
-- **V1 Tensor Parallelism** aware
-  - PR: https://github.com/vllm-project/vllm/pull/9856
-  - Difference between TP in v0 and v1:
-    - The executor creates $N$ worker processes rather than $N-1$ processes
-    - All processes run `prepare_inputs`.
-    - All processes run _the sampler_. In other word, all workers **REQUIRE** result logits such that `logits_processor` can perform `all_gather` instead of local `gather` ops.
-    - The executor broadcasts the scheduler output to the workers and one of them sends back the model runner output -- both of these IPCs use shared memory message queues.
-    - The workers sit in a very tight model execution loop where they **only** handle _model execution_ and _process termination_.
-- _==performance==_ over features/alternative backends
-  - Right way versus flexibility of backends
-  - We will choose the fastest backends.
+Design preference at the time: prioritize backend performance, then justify the compatibility cost of each additional backend.
 
 ## proposal
 
 ![[thoughts/images/constrained-proposal-scheduler.webp|scheduler broadcast bitmask]]
 
-Components of structured decoding will be split into two components:
+Split responsibilities between the scheduler and workers:
 
 1. **Scheduler**:
-   - request-aware for which guided decoding requests (in a sense it won't block other requests in the same batch, from [[posts/structured decoding#tentative plans for v1|motivation]]
-   - Add the guided requests to a "waiting" queue, mark them as `UNREADY`, and the scheduler will skip those requests until FSM is ready. This means all requests will have higher priority once FSM is ready
-     - think of the waiting queue as a `deque`
-     - Better TTFT
-   - Advance the FSM after sampler output is received from workers and broadcast updated bitmask from the FSM to GPU workers 
-     - Note that this can be parallel to the next forward pass occurring on the workers
-     - Requires two broadcast
-   - (P1) Jump-forward decoding support (backtrack versus advance accordingly)
+   - Track which requests need constrained decoding. A request waiting for grammar compilation should not stall unrelated ready requests in the batch; see the [[posts/structured decoding#tentative plans for v1|motivation]].
+   - Keep unready guided requests in a waiting queue until their grammar is compiled. Readiness makes a request eligible for scheduling; it does not by itself give that request higher priority.
+   - After receiving a sampled token, advance that request's grammar matcher and produce its next-token bitmask.
+   - Overlap mask production with the next model forward pass where dependencies permit. The sketch separates scheduler-output and mask broadcasts; workers need the correct mask before sampling.
+   - (P1) Investigate jump-forward support, including advancing or rolling back matcher and KV-cache state after retokenization.
 2. **Worker**:
-   - Apply the logit bias from bitmask received from the scheduler.
+   - Apply the request's bitmask to logits before sampling, setting disallowed entries to $-\infty$.
+
+This moves compilation and matcher state into request scheduling. Cold compilation still contributes to that request's time to first token (TTFT); the benefit is that other requests can proceed.
 
 ## alternatives consideration
 
-The following were rejected from WG meeting:
-
-1. Logit Processor Abstraction
-   - We need more information at the scheduler-level for future proof
+The working-group notes rejected a worker-local logit-processor abstraction as the sole integration point. The scheduler needed request readiness and grammar state to handle compilation and future jump-forward work.
 
 ## background
 
@@ -92,246 +89,171 @@ The following were rejected from WG meeting:
 
 _reference: [vllm-project/vllm#5329](https://github.com/vllm-project/vllm/pull/5329)_
 
-Currently, generations with FSM is super slow, even with warmup steps to initialize given FSM. This behaviour is further exemplified when running with context longer than 4096 tokens.
+The historical V0 path applied logit processors [row by row](https://github.com/vllm-project/vllm/blob/1ea291a4173a82c537ab42487e23375be4926d30/vllm/model_executor/layers/logits_processor.py#L143). Per-request CPU work on this path could delay sampling for the batch. Grammar compilation, mask generation and applying a mask are separate costs; warming a compilation cache only removes the first of these.
 
-Additionally, all outlines logit processors are considered stateful, which slows down the model executor, given in V0 logit processors are applied [row-by-row blocking](https://github.com/vllm-project/vllm/blob/1ea291a4173a82c537ab42487e23375be4926d30/vllm/model_executor/layers/logits_processor.py#L143)
-
-Thus comparing to sglang, vLLM v0 is currently not up to par.
-
-Doesn't have [jump-ahead decoding](https://lmsys.org/blog/2024-02-05-compressed-fsm/#method-1-finite-state-machine-based) with logit processor approach.
+SGLang's [2024 jump-forward design](https://lmsys.org/blog/2024-02-05-compressed-fsm/#method-1-finite-state-machine-based) also skipped serial decoding over forced text. Supporting that requires coordination with token history and the KV cache, beyond changing a row of logits.
 
 > {@cadedaniel}: "tree scoring in [spec decode] could use the same API as multi-path jump decoding."
 
 > [!question] How should we handle FSM per requests?
 >
-> - Currently, users can specify different schemas per request, which means the FSM will be compiled per request. This is suboptimal because it slows down general TTFT.
-> - For most use cases, we should assume JSON schema similar to how the system prompt is currently being handled (pass during server init)
+> - Different schemas can require different compiled grammars. Repeated schemas can share a compiled artifact, while each request keeps its own matcher state.
+> - Original proposal: accept common schemas at server initialization, much as we configure a system prompt. How much cold-compilation work would that remove for the actual workload?
 
 > [!question] Why should we follow the plugins system?
 >
-> - If going with the best options, then what is the reasoning behind supporting different backends?
-> - Agree for extensibility, but seems to add additional overhead.
+> - If we choose the fastest backend, what additional requirements justify supporting others?
+> - Extensibility has an integration cost. Measure that cost separately from each backend's grammar coverage and runtime.
 
 ---
 
 ## appendix.
 
-The following includes background information about guided generations.
+Background for the design above. The finite-state sections cover regular constraints; recursively nested grammars need a stack or an equivalent parser.
 
 ### batched constrained decoding using pushdown automaton
 
-Implemented in [mlc-ai/xgrammar](https://github.com/mlc-ai/xgrammar)
-
-> [!quote]
->
-> calculate adaptive token bit-mask per batch
+Implemented in [mlc-ai/xgrammar](https://github.com/mlc-ai/xgrammar). The XGrammar paper [@dong2025xgrammarflexibleefficientstructured] describes a byte-level pushdown automaton (PDA) for context-free grammars. The stack records returns from nested rules. `GrammarMatcher` carries this parsing state; calling it an FSM loses the stack that makes recursion possible.
 
 > [!important] string and token distinction
 >
-> operating on string level, not `token_id`
+> The model samples token IDs. The grammar checks the bytes represented by those tokens. One token may cross several grammar-rule boundaries or contain only part of a UTF-8 character.
 
-`GrammarMatcher` => FSM in xgrammar
+XGrammar caches checks that depend only on the current rule position. Tokens whose validity depends on the enclosing stack need runtime checks. Each request advances its own matcher after accepting a token; batching collects the resulting masks.
 
 #### questions
 
-- byte-level automaton
+Questions from the original integration discussion, with unresolved measurements kept explicit:
 
-overhead of token_id => string
-
-Token for context-independent tokens vs dependent tokens within the generation masks
-
-async pre-compile
-
-synchronize apply mask for CPU -> GPU?
-
-How do we apply said masks to GPU block? Zero-overhead generations?
+- How much vocabulary preprocessing can be shared across requests using the same tokenizer?
+- How much mask work depends on the full parser stack?
+- Can compilation run before the request reaches the execution batch?
+- Which CPU-to-GPU synchronization remains on the sampling path?
 
 > [!question] worst-case scenario for grammar compilation?
 >
-> mask gen overhead: 36 $\mu s$
+> Measure cold compilation separately from per-token mask generation. The original mask-timing note had no grammar, tokenizer, machine or benchmark attached, so it cannot answer this question.
 
 > [!question] time linearly increase for batch size?
 >
-> parallelize for compilation.
+> There is one matcher state per request. CPU parallelism can overlap their work; the resulting latency depends on available cores and grammar costs.
 
 > [!question] do we need to parallelize on vLLM?
 >
-> no, xgrammar parallelize it, with `pthread`
+> XGrammar exposes [compiler thread controls](https://github.com/mlc-ai/xgrammar/blob/main/python/xgrammar/compiler.py). That does not settle how the serving engine schedules mask generation across requests.
 
 > [!question] shape of masks?
 >
-> bitmask, tensors of vocab size => concat with recast => GPU
+> The [Python matcher API](https://github.com/mlc-ai/xgrammar/blob/main/python/xgrammar/matcher.py) uses an `int32` bitmask with shape $\left(B,\lceil |\mathcal{V}|/32\rceil\right)$ for batch size $B$ and vocabulary $\mathcal{V}$. Each vocabulary entry occupies one bit. The mask and logits must be available on the device used to apply it.
 
 > [!question] supported tokenizers?
 >
-> GLM yet to be supported (Nov 22nd)
+> Historical November 22 note: GLM was still pending. Treat this as a dated integration observation; check the tokenizer adapter for the intended release.
 
 > [!question] Given that detokenizer is in a separate process with vLLM, then can we stops duplicating this process?
 >
-> Currently with `xgrammar`: detokenizer included in mask generations.
->
-> token_id => tokens
+> Mask generation needs token bytes to test grammar transitions. Streaming detokenization also manages text output to the client. Shared vocabulary metadata may help, but the two operations have different state and output requirements.
 
 #### future plans
 
-- Function calling support
-- Support more grammar (CFG, Python grammar)
+Historical integration checklist:
+
+- Function calling support.
+- Grammar coverage, including Python. XGrammar already targets context-free grammars; which language features a particular integration accepts needs its own check.
+
+The paper's low-overhead serving results rely on CPU grammar work overlapping GPU inference. "Zero overhead" is a workload-dependent performance claim; compilation, transfer and mask application still perform work.
 
 ### compressed FSM for jump-ahead tokens.
 
-Implemented in [@zheng2024sglangefficientexecutionstructured]
+Implemented in [@zheng2024sglangefficientexecutionstructured]. The [2024 SGLang description](https://lmsys.org/blog/2024-02-05-compressed-fsm/) motivates the following three approaches.
 
 #### Method 1: [[thoughts/structured outputs#Guided generations with FSM.|FSM]]-based decoding
 
-- intuition: Using FSM [@willard2023efficientguidedgenerationlarge] to guide generations by increasing logit bias for tokens that conform to given JSON schema. This allows us to track the current state during decoding and filter out invalid tokens by applying logit bias to the output.
+An FSM tracks the generated byte prefix. Before sampling, disallowed tokens receive logit $-\infty$, leaving only grammar-valid continuations [@willard2023efficientguidedgenerationlarge].
 
-  ![[thoughts/images/vllm/constrained-json-fsm.webp|Decoding with FSM]]
+![[thoughts/images/vllm/constrained-json-fsm.webp|Decoding with FSM]]
 
-- limitation: we can see that given construction of FSM requires token-level access, it can only transition the state by only _one_ token at a time, resulting in slow decoding.
+A sampled token can traverse several byte transitions. Serial token-by-token model execution comes from the decoding loop, so an FSM need not impose one neural-network call per character or per automaton state.
 
 #### Method 2: Interleaved-based
 
-- intuition: breaks down JSON schemas, each containing either a chunk prefill part or constrained decoding part. They are then executed interleaved by inference system.
-  Faster than per-token decoding given that chunked prefill components can process multiple tokens per forward pass
+A generation program alternates known text with constrained model output. Known text can be processed as a prefill chunk. [Guidance](https://github.com/guidance-ai/guidance#guidance-acceleration) provides this style of programming.
 
-  See also https://github.com/guidance-ai/guidance#guidance-acceleration using llama.cpp as backend.
-
-- limitation:
-  - interleaved-based require custom syntax, making it less expressive compared to regex.
-  - struggles to deal with tokenization boundaries due to conflicts between decode and chunked prefill segments.
-  - frequent communications between interpreter and back-end adds additional overhead.
+The difficult boundary is between the known and generated text: a model token can span both. Interpreter communication and retokenization also contribute to runtime. Expressiveness depends on the language and implementation, so interleaving alone does not imply weaker grammar support.
 
 #### **==Method 3: Jump-Forward Decoding with compressed FSM==**
 
 ![[thoughts/images/vllm/jump-forward-decoding-fsm.webp|Jump-forward decoding via compressed FSM]]
 
+Follow a forced byte path until the grammar offers a choice, then process the forced text as a chunk. A path must also account for possible termination: an accepting state can permit EOS even when it has only one outgoing byte transition.
+
 > [!important]+ tokenization boundary handling
 >
-> During decoding, it is preferred to combine multiple characters into a single tokens.
+> Suppose the output format needs `"Hello",` and the vocabulary contains a token for `",`. Constraining the string field in isolation rejects that token because the comma lies outside the field. A grammar for the whole output can accept it.
 >
-> For example, when decoding `"Hello"` in context of JSON decoding, LLM might output the following token `"`, `He`, `llo`, `",`
->
-> This may cause some strange behaviour if we combine the last `"` with `,` (this regex `"[\w\d\s]*"` with the last `,` will lead to endless decoding because this token `",` is not valid even if the LM wants to stop.)
+> This can alter completion probabilities. It does not prove that generation must loop forever: a separate closing-quote token or a length limit may still end the step.
 
-Fix:
+SGLang's historical implementation appended forced text and retokenized the combined output, reusing the unchanged prefix's KV cache. The cost depends on the changed suffix and the serving implementation. llguidance's boundary treatment is described [[thoughts/structured outputs#jump-forward decoding|above]]. [^coalescence]
 
-- implement ==re-tokenization== mechanism during jump-forward phase (append string instead of the tokens, followed with re-tokenization of the entire text) $\to$ add approximately 4% of overhead
-- use a comprehensive regex to guide the decoding phase, instead of employing multiple concatenated regex [^coalescence]
-
-[^coalescence]: this phenomena is also known as [[thoughts/structured outputs#Coalescence|coalescence]] in structured generations, where it exploit deterministic structures in desired outputs to skip expensive forward pass
+[^coalescence]: [[thoughts/structured outputs#Coalescence|Coalescence]] groups forced text so it can be processed without a sampling step for each token.
 
 ### Coalescence
 
-intuition: Instead of expanding to $n$ state, we can compress certain chunks into one state to reduce the size of said FSM.
+Compress a forced path into a string-labeled edge, stopping where the grammar allows different continuations or termination.
 
 ![[thoughts/images/vllm/part-of-json-fsm.webp|initial FSM state]]
 
 ![[thoughts/images/vllm/compressed-fsm-json.webp|compressed FSM state]]
 
-A way to adapt character regex to work with tokens in `outlines`:
-
-```python
-import outlines.fsm as fsm
-from outlines.fsm.regex import (
-  make_deterministic_fsm,
-  create_fsm_index_tokenizer,
-)
-
-new_fsm, _ = make_deterministic_fsm(fsm)
-idx, _ = create_fsm_index_tokenizer(new_fsm, tokenizer)
-```
+A token-transition index stores the result of consuming each allowed token from a given state. The lookup must use the **current** state, and its keys remain token IDs. Decoded strings are useful labels for inspection; distinct token IDs can decode to the same bytes.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> InputPrompt: Start
-
-    state "input prompt" as InputPrompt
-    state "next-token probability distribution" as GetProb
-    state "valid tokens" as ListTokens {
-        [*] --> CheckTransitions
-        CheckTransitions --> FilterTokens: Get index[0].keys()
-        FilterTokens --> [*]
-    }
-    state "Sample Token" as SampleToken
-    state "Update FSM State" as UpdateState
-
-    InputPrompt --> GetProb: "model.generate"
-    GetProb --> ListTokens: Get next-token distribution
-    ListTokens --> SampleToken: Use filtered token list
-    SampleToken --> UpdateState: Selected token X
-    UpdateState --> [*]: new_state = index[0]["X"]
-```
-
-```python
-idx_with_tokens = {
-  state: {
-    tokenizer.tokenizer.decode([key]): value
-    for key, value in transitions.items()
-  }
-  for state, transitions in idx.items()
-}
+    [*] --> GetProb: Prompt and initial state q
+    state "next-token logits" as GetProb
+    state "mask from index[q] and EOS rule" as Mask
+    state "sample token ID" as SampleToken
+    state "advance q with sampled token" as UpdateState
+    GetProb --> Mask
+    Mask --> SampleToken
+    SampleToken --> UpdateState: Non-EOS token
+    SampleToken --> [*]: EOS in accepting state
+    UpdateState --> GetProb
 ```
 
 > [!note]- example
 >
+> Suppose the vocabulary contains every nonempty substring of `name`. The following graph contains all eight segmentations of that word. This is a toy vocabulary, not a claim about a particular model's tokenizer.
+>
 > ```mermaid
 > stateDiagram-v2
 >     direction LR
->     0 --> 2: n
->     0 --> 1: t
->     1 --> 2: a
->     2 --> 4: na
->     2 --> 3: a
->     3 --> 5: am
->     4 --> 6: me
->     5 --> 6: me
->     2 --> 6: name
->     6 --> 7: e
->     6 --> 8: c
->     7 --> 9: p
->     8 --> 9: p
->     9 --> 11: Paul
->     9 --> 12: Pa
->     9 --> 10: Jo
->     11 --> 13: aul
->     12 --> 14: ul
->     10 --> 26: o
->     26 --> 27: h
->     27 --> 14: n
->     13 --> 14: l
->     14 --> 16: s
->     14 --> 15: s
->     15 --> 17: s
->     16 --> 17: s
->     17 --> 18: a
->     17 --> 19: ag
->     18 --> 20: ge
->     19 --> 20: e
->     20 --> 21: 30
->     20 --> 22: 20
->     21 --> 24: 2
->     22 --> 24: 2
->     22 --> 23: 3
->     24 --> 25: 0
->     25 --> [*]
+>     [*] --> q0
+>     q0 --> q1: n
+>     q0 --> q2: na
+>     q0 --> q3: nam
+>     q0 --> q4: name
+>     q1 --> q2: a
+>     q1 --> q3: am
+>     q1 --> q4: ame
+>     q2 --> q3: m
+>     q2 --> q4: me
+>     q3 --> q4: e
+>     q4 --> [*]
 > ```
 
-_note:_ each state of FSM represents a forward pass to the LM. In vanilla generation, this is essentially necessary. Thus there is no added overhead of FSM for controlling the generated outputs.
+There are three interior character boundaries, each either split or joined, giving $2^3=8$ segmentations:
 
-From state 2-6, we observe that there are eight different paths to get the same generations of `name`. We probably don't need to do this, given that it will all give us result `name`
+- `["name"]`
+- `["n", "a", "m", "e"]`
+- `["na", "m", "e"]`
+- `["nam", "e"]`
+- `["n", "am", "e"]`
+- `["n", "ame"]`
+- `["na", "me"]`
+- `["n", "a", "me"]`
 
-But suffice to say, we can hijack this behaviour to accelerate generations by append either of the following tokens **word** to currently generated sequence:
-
-- [”name”]
-- [”n”, “a”, “m”, “e”]
-- [”na”, “m”, “e”]
-- [”nam”, “e”]
-- [”n”, “am”, “e”]
-- [”n”, “ame”]
-- [”na”, “me”]
-- [”n”, “a”, “me”]
-
-A simplified index can be shown as:
+For a tiny JSON language, a string-labeled index can be written as:
 
 ```python
 simplified_index = {
@@ -347,61 +269,59 @@ simplified_index = {
 }
 ```
 
-That's at least a 5x speedup over structured generations, given that out of the 9 tokens, two states are single-state transitions. Therefore we only need to call the model ==twice==!!
+This accepts four strings: either name paired with either age. There are two branch states, at the name and the age. The edge labels are strings of arbitrary token length, so two branches do not imply two model calls. Forced chunks still need KV-cache computation; compilation, mask production and scheduling also take time. A speedup needs an end-to-end measurement with a specified tokenizer and workload.
 
 > [!important]- difference in sampling distribution
 >
-> All these paths lead to the same string and the same speedup, however they lead to potentially very different states for the LLM when it reaches state 6. That is, the strings are the same, but each path leads to a different conditional probability distribution in stage 6.
+> All eight paths spell `name`. Their token sequences can differ in length, positions and embeddings, which changes the model state used for the next prediction. Choosing a segmentation merely because it reaches the same grammar state can change later output probabilities.
 >
 > ![[thoughts/images/vllm/json-difference-in-sampling-distribution.webp|Variance in sampling distribution for compressed states]]
 
 ### Guided generations with FSM.
 
-[@willard2023efficientguidedgenerationlarge], implemented at <https://github.com/dottxt-ai/outlines>
+[@willard2023efficientguidedgenerationlarge], implemented at <https://github.com/dottxt-ai/outlines>.
 
 _assumption: we are building against [[thoughts/Autoregressive models|autoregressive transformers models]]_
 
-- Let $\mathcal{F} \subset \mathcal{P}(\mathcal{V})$, where $\mathcal{P}$ is the power set operator, be subset of multi-token string that ends with tokens $\text{EOS} \in \mathcal{V}$.
-- Text generation tasks is to draw samples from $\mathcal{F}$
+Let $\mathcal{V}$ be a finite vocabulary of token IDs, including $\mathrm{EOS}$. A generated sequence belongs to $\mathcal{V}^*$, where the star means finite **ordered sequences**. The permitted completed outputs form a language $\mathcal{F}\subseteq\mathcal{V}^*$ ending in EOS. A powerset would lose order and repetition.
 
-Notable ==sampling== methods include greedy decoding (generate tokens recursively with highest probability tokens), beam search (but using heuristic to find the mode of distribution) [^smc]
+Categorical sampling draws from the model's next-token distribution. Greedy decoding picks its largest entry; beam search keeps several candidate prefixes. Those are different decoding procedures. [^smc]
 
-[^smc]:
-    [@lew2023sequentialmontecarlosteering] recently proposes a sequential [[thoughts/Monte-Carlo|Monte Carlo steering]]. The idea is to classify causal generations as a _posteriori inference_ problem in a class of discrete probabilistic sequence models.
+[^smc]: [@lew2023sequentialmontecarlosteering] formulates controlled generation as posterior inference over sequences and develops sequential [[thoughts/Monte-Carlo|Monte Carlo steering]]. See also [[thoughts/Transformers#Feynman-Kac|Feynman-Kac transformers models]].
 
-    See also [[thoughts/Transformers#Feynman-Kac|Feynman-Kac transformers models]]
-
-A pseudocode for sampling procedure is as follow:
+Here $\operatorname{LM}$ returns logits. The prompt $x$ remains fixed and $s$ contains only generated token IDs. A Boolean return value distinguishes EOS termination from exhausting the token budget.
 
 ```pseudo
 \begin{algorithm}
 \caption{LLM token sampling}
 \begin{algorithmic}
-\Function{sample}{$L$}
+\Function{sample}{$x,L$}
     \State $s \gets ()$
     \For{$i \gets 1, L$}
-        \State $\alpha \gets \text{LM}(s, \theta)$
-        \State Sample $w \sim \text{Categorical}(\alpha)$
-        \If{$w = \text{EOS}$}
-            \State \textbf{break}
+        \State $p \gets \operatorname{softmax}(\operatorname{LM}(x,s))$
+        \State Sample $w \sim \operatorname{Categorical}(p)$
+        \If{$w = \mathrm{EOS}$}
+            \State \Return $(s,\mathrm{true})$
         \EndIf
-        \State $s \gets \text{append}(s, w)$
+        \State $s \gets \operatorname{append}(s,w)$
     \EndFor
-    \State \Return $s$
+    \State \Return $(s,\mathrm{false})$
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 ```
 
-Given that we are dealing with finite discrete distribution, we can then compute an un-normalized conditional distribution by applying a boolean mask $m: \mathcal{P}(\mathcal{V}) \to \{0,1\}^N$, which restricts the support of original distribution:
+For a prefix $s$, the mask $m:\mathcal{V}^*\to\{0,1\}^{|\mathcal{V}|}$ marks tokens that can still lead to an allowed completion. EOS is allowed only when the generated text is already complete. With $p_v(s)$ the original next-token probability,
 
 $$
-\begin{aligned}
-\alpha &= \text{LM}(\tilde{S_t}, \theta) \\
-\tilde{\alpha} &= m(\tilde{S_t}) \odot \alpha \\
-\tilde{s_{t+1}} &\approx \text{Categorical}(\tilde{\alpha})
-\end{aligned}
+Z(s)=\sum_{u\in\mathcal{V}}m_u(s)p_u(s),\qquad
+\widetilde p_v(s)=\frac{m_v(s)p_v(s)}{Z(s)},\qquad
+w\sim\operatorname{Categorical}(\widetilde p(s)).
 $$
+
+This requires $Z(s)>0$. For example, probabilities $(1/2,3/10,1/5)$ and mask $(1,0,1)$ give $(5/7,0,2/7)$. Applying a zero-one mask directly to logits would leave a disallowed token with logit zero and positive softmax probability. The equivalent logit operation sets disallowed entries to $-\infty$ before softmax.
+
+Local renormalization preserves the relative probabilities of allowed **next tokens**. It generally changes the model's distribution over whole completed outputs. If first choices `a` and `b` each have probability $1/2$, while valid suffixes have conditional probabilities $1/10$ and $9/10$, local masking keeps the first choice at $(1/2,1/2)$. Conditioning the original model on an entirely valid output would give $(1/10,9/10)$ instead.
 
 > [!math] augmentation upon sampling algorithm
 >
@@ -409,97 +329,110 @@ $$
 > \begin{algorithm}
 > \caption{token sampling with masking}
 > \begin{algorithmic}
-> \Function{sample}{$L$}
+> \Function{sample}{$x,L$}
 >     \State $s \gets ()$
 >     \For{$i \gets 1, L$}
->         \State $\alpha \gets \text{LM}(s, \theta)$
->         \State Construct the mask m($s$)
->         \State $\tilde{\alpha} \gets m \odot \alpha$
->         \State Sample $\tilde{s} \sim \text{Categorical}(\tilde{\alpha})$
->         \If{$\tilde{s} = \text{EOS}$}
->             \State \textbf{break}
+>         \State $p \gets \operatorname{softmax}(\operatorname{LM}(x,s))$
+>         \State $a \gets m(s)\odot p$
+>         \State $Z \gets \sum_{v\in\mathcal{V}} a_v$
+>         \If{$Z=0$}
+>             \State \Return $\mathrm{failure}$
 >         \EndIf
->         \State $s \gets \text{append}(s, \tilde{s})$
+>         \State Sample $w\sim\operatorname{Categorical}(a/Z)$
+>         \If{$w=\mathrm{EOS}$}
+>             \State \Return $(s,\mathrm{true})$
+>         \EndIf
+>         \State $s\gets\operatorname{append}(s,w)$
 >     \EndFor
->     \State \Return $s$
+>     \State \Return $(s,\mathrm{false})$
 > \EndFunction
 > \end{algorithmic}
 > \end{algorithm}
 > ```
 
+A token budget can expire with a valid prefix that is still incomplete. The caller must inspect the termination status before treating the output as a complete structured value.
+
 > [!important] finite automaton
 >
-> We define a _finite-state machine_, given by $(Q, \Sigma , \delta, q_0, F)$ [^automaton-definition] where character comprising the strings in $\mathcal{V}$ are drawn from $\Sigma$, i.e: $\mathcal{V} \in \mathcal{P}(\Sigma)$
+> A DFA is $M=(Q,\Sigma,\delta,q_0,F)$ [^automaton-definition]. For ordinary tokens, let $d:\mathcal{V}\setminus\{\mathrm{EOS}\}\to\Sigma^*$ map token IDs to byte strings. This assumes a tokenizer adapter with context-independent token-byte pieces; special tokens need explicit handling.
 >
 > > [!note]- example
 > >
 > > ![[thoughts/images/vllm/fsm-iterative-generations.webp|FSM illustration]]
 > >
-> > target regex: `([0-9]*)?\.?[0-9]*{:rs}`
+> > The figure uses `([0-9]*)?\.?[0-9]*{:rs}` and the toy token spellings `A`, `.`, `42`, `.2`, `1`.
 > >
-> > For simplicity, let the vocabulary $\mathcal{V}$ consists of strings $\{A, ., 42, .2, 1\}$
+> > - Initially, allow `.`, `42`, `.2`, `1` and reject `A`.
+> > - After `.2`, a second decimal point is forbidden. Only `42` and `1` remain among these five tokens.
+> > - After `1`, allow `.`, `42`, `.2`, `1`. The spelling `.42` is absent from the vocabulary.
 > >
-> > - generations start: FSM in state 0, so it masks "A", since it wouldn't accepted by the FSM. Then we only sample ".", "42", ".2", "1" in this case
-> > - if we sample ".2" then we advance the FSM to state 3. In this case. only "42" and "1" are valid completions, so we mask other values before sampling.
-> > - If we sample "1" instead, then we advance FSM to state 1, in which case ".", ".42", ".2", and "1" are valid completions
+> > This regex also accepts empty text and a bare `.`. It illustrates transitions; use `[0-9]+(?:\.[0-9]+)?{:rs}` if the intended format requires an integer part and digits after any decimal point. EOS follows the accepting-state rule separately from these five tokens.
 
 [^automaton-definition]: [[thoughts/DFA|finite state machine]]
 
-    - $Q$ is a finite set of states
-    - $\Sigma$ is a finite alphabet
-    - $\delta: Q \times \Sigma \to Q$ is the transition function
-    - $q_0 \in Q$ is the start state
-    - $F \subseteq Q$ is the set of all accepted states.
+    - $Q$ is a finite set of states.
+    - $\Sigma$ is a finite alphabet, here bytes.
+    - $\delta:Q\times\Sigma\to Q$ is the transition function, including a rejecting sink for invalid transitions.
+    - $q_0\in Q$ is the start state.
+    - $F\subseteq Q$ is the set of accepting states.
 
 > [!important] determinism
 >
-> Looping through the vocabulary is still the biggest issue. For that, we preprocess the vocabulary using Regex's FSM and build a index.
-> Thus a proceeding for producing matches starting at any point in the FSM is required.
+> For regular constraints, precompute the token transitions from each DFA state. At runtime, looking up the current state's row avoids rechecking every token's bytes. Producing or applying a vocabulary-sized mask still has a cost.
 
-We define finding sub-sequences of FSM $M$ that accept string $v$ as follow:
+Let $\delta^*$ consume a whole byte string. Keep only states $R\subseteq Q$ from which an accepting state can be reached. A token is permitted at $q$ when $\delta^*(q,d(v))\in R$. Assume ordinary tokens have nonempty byte strings and the vocabulary can express the remaining valid bytes. Otherwise, compute reachability using token transitions as well.
+
+The following simple construction records every viable byte path. It consumes the first byte explicitly and retains the start state. The intermediate states need not be accepting: a token may end in the middle of a valid output.
 
 ```pseudo
 \begin{algorithm}
-\caption{Find sub-sequences of the FSM $M$ that accept the string $v$}
+\caption{Find viable paths that consume byte string $v$}
 \begin{algorithmic}
-\Function{FindSubSequences}{$M, v$}
-    \State $M = (Q, \Sigma, \delta, q_0, F)$
-    \State $\texttt{res} \gets ()$
-    \For{$r \in \delta^{-1}(\cdot, v_0)$} \Comment{$\text{ Loop through states that read } v_0$}
-        \State $p \gets (r)$
-        \For{$i \gets 1, |v| - 1$} \Comment{$\text{ Walk the FSM}$}
-            \If{$\delta(r, v_i) = \emptyset$} \Comment{$\text{ The FSM does not read } v_i$}
-                \State $p \gets ()$
-                \State \textbf{break} \Comment{$\text{ Stop walking and try the next start state}$}
+\Function{FindSubSequences}{$M,v,R$}
+    \State $\mathrm{res}\gets ()$
+    \For{$q\in R$}
+        \State $r\gets q$, $p\gets(q)$
+        \For{$i\gets 0,|v|-1$}
+            \State $r\gets\delta(r,v_i)$
+            \If{$r\notin R$}
+                \State $p\gets()$
+                \State \textbf{break}
             \EndIf
-            \State $r \gets \delta(r, v_i)$
-            \State $p \gets \text{append}(p, r)$
+            \State $p\gets\operatorname{append}(p,r)$
         \EndFor
-        \State $\texttt{res} \gets \text{append}(\texttt{res}, p)$
+        \If{$p\ne()$}
+            \State $\mathrm{res}\gets\operatorname{append}(\mathrm{res},p)$
+        \EndIf
     \EndFor
-    \State \Return $\texttt{res}$
+    \State \Return $\mathrm{res}$
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 ```
 
-We can then define construction of $\sigma$
+Build both the allowed-token set $\sigma(q)$ and the next-state map $\tau(q,v)$. The transition map advances the grammar without rescanning the generated prefix. EOS is added only at accepting states and terminates generation instead of taking a byte transition.
 
 ```pseudo
 \begin{algorithm}
-\caption{Construct a map from FSM states to subsets of $\mathcal{V}$}
+\caption{Index tokens by DFA start and end states}
 \begin{algorithmic}
-\Function{MapStatesToVocab}{$M, \mathcal{V}$}
-    \State $M = (Q, \Sigma, \delta, q_0, F)$
-    \State Initialize the map $\sigma$ with empty sets for each element in $Q$
-    \For{$v \in \mathcal{V}$} \Comment{$\text{Loop through the vocabulary}$}
-        \State $Z \gets \text{find\_sub\_sequences}(M, v)$
-        \For{$z \in Z$} \Comment{$\text{Loop through state sequences accepting } v$}
-            \State $\sigma(z_0) \gets \sigma(z_0) \cup v$
+\Function{MapStatesToVocab}{$M,\mathcal{V},d,R$}
+    \State Initialize $\sigma(q)\gets\emptyset$ for each $q\in Q$
+    \State Initialize an empty map $\tau$
+    \For{$v\in\mathcal{V}\setminus\{\mathrm{EOS}\}$}
+        \State $P\gets\operatorname{FindSubSequences}(M,d(v),R)$
+        \For{$p\in P$}
+            \State $\sigma(p_0)\gets\sigma(p_0)\cup\{v\}$
+            \State $\tau(p_0,v)\gets p_{|p|-1}$
         \EndFor
     \EndFor
-    \State \Return $\sigma$
+    \For{$q\in F$}
+        \State $\sigma(q)\gets\sigma(q)\cup\{\mathrm{EOS}\}$
+    \EndFor
+    \State \Return $(\sigma,\tau)$
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 ```
+
+This index has a row for each finite state. A general PDA also depends on its stack, so the same finite table cannot enumerate all recursive parser configurations. That is the caching problem addressed by [[thoughts/structured outputs#batched constrained decoding using pushdown automaton|XGrammar]] above.

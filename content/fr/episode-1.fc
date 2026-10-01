@@ -194,3 +194,135 @@ C: The negation eats the article: `Je n'ai pas [d']enfants.` (`des enfants` → 
 
 Q: Which verb counts children, as in "I have 3 kids: 2 girls and 1 boy"?
 A: `avoir`: `J'ai 3 enfants : 2 filles et 1 garçon.`, the same verb as age in [[fr/episode-2]]; the numbers live in [[fr/les-nombres]].
+
+---
+
+Q: A friend greets you with `Ça va ?`. Answer the Québécois informal way and return the question.
+A: `Pas pire, toi ?`
+N: `Bien ! Toi ?` also works. `Pas pire` stays in the informal column.
+
+---
+
+Q: Your new manager asks `Comment allez-vous ?`. Answer and return the question in the same register.
+A: `Ça va très bien, merci ! Et vous ?`
+N: The question used `vous`, so the answer returns it; `Pas pire, toi ?` would mix registers.
+
+---
+
+Q: Ask a classmate how they are, with `aller` and `tu`.
+A: `Comment vas-tu ?`
+N: From the listening exercise. The formal twin is `Comment allez-vous ?`.
+
+---
+
+Q: Say "I come from Mexico."
+A: `Je viens du Mexique.`
+N: `le Mexique` is masculine despite its final `-e`, so `de + le` gives `du`.
+
+---
+
+Q: Say "I come from China."
+A: `Je viens de Chine.`
+N: Feminine country (`la Chine`): bare `de`, no article.
+
+---
+
+Q: Say "I come from Spain."
+A: `Je viens d'Espagne.`
+N: `l'Espagne` starts with a vowel, so `de` elides.
+
+---
+
+Q: Say "I come from the Philippines."
+A: `Je viens des Philippines.`
+N: Plural country: `de + les` gives `des`.
+
+---
+
+Q: Say "I come from Madagascar."
+A: `Je viens de Madagascar.`
+N: No article, like `Cuba` and `Singapour`.
+
+---
+
+Q: Say "I come from Peru."
+A: `Je viens du Pérou.`
+
+---
+
+Q: Say "She is a pharmacist."
+A: `Elle est pharmacienne.`
+N: `-ien → -ienne`, and no article after `être`.
+
+---
+
+Q: Feminine of `policier`?
+A: `policière` (`-ier → -ière`).
+
+---
+
+Q: Feminine of `producteur`?
+A: `productrice` (`-teur → -trice`).
+
+---
+
+Q: Feminine of `journaliste`?
+A: `journaliste`: it ends in `-e`, so one form serves both genders.
+
+---
+
+Q: Feminine of `enseignant`?
+A: `enseignante` (`-t → -te`).
+
+---
+
+Q: `Je suis infirmière.` takes no article. When does the article come back?
+A: When the profession is modified: `Je suis une infirmière expérimentée.`
+
+---
+
+Q: A woman from Hungary gives her nationality.
+A: `Je suis hongroise.` (`-ois → -oise`)
+
+---
+
+Q: A woman from Portugal gives her nationality.
+A: `Je suis portugaise.` (`-ais → -aise`)
+
+---
+
+Q: A woman from Romania gives her nationality.
+A: `Je suis roumaine.` (`-ain → -aine`)
+
+---
+
+Q: Say "She is Russian."
+A: `Elle est russe.`
+N: Adjectives ending in `-e` do not change in the feminine.
+
+---
+
+Q: `Je suis Canadienne.` or `Je suis canadienne.`?
+A: `Je suis canadienne.` After `être` the nationality is an adjective, so it stays lowercase. The noun takes a capital: `une Canadienne`.
+
+---
+
+Q: Say "I speak English and Arabic."
+A: `Je parle anglais et arabe.`
+N: No article and no capital after `Je parle`.
+
+---
+
+Q: French for "common-law partner", as printed on Québec forms?
+A: `conjoint(e) de fait`
+
+---
+
+Q: Say "I don't have children."
+A: `Je n'ai pas d'enfants.`
+
+---
+
+Q: Introduce yourself as Hélène: nurse, Québécoise, lives in Québec City, speaks French and Italian, one child.
+A: `Je m'appelle Hélène. Je suis infirmière. Je suis québécoise. J'habite à Québec. Je parle français et italien. J'ai 1 enfant.`
+N: The episode's six slots in order: nom, profession, nationalité, résidence, langues, enfants.

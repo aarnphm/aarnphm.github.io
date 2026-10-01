@@ -21,8 +21,10 @@ export const TRI_MAP_STYLE_KEY = 'tri-map-style'
 export const TRI_MAP_STYLE_EVENT = 'tri:mapstyle'
 
 export const TRI_MAP_3D_KEY = 'tri-map-3d'
+export const TRI_MAP_3D_EVENT = 'tri:map3d'
 
 export const TRI_MAP_ELEVATION_KEY = 'tri-map-elevation'
+export const TRI_MAP_ELEVATION_EVENT = 'tri:mapelevation'
 
 export const TRI_PANELS_FULLSCREEN_KEY = 'tri-panels-fullscreen'
 
@@ -151,6 +153,7 @@ export const setTriMap3d = (enabled: boolean): void => {
   } catch {
     void 0
   }
+  window.dispatchEvent(new CustomEvent(TRI_MAP_3D_EVENT))
 }
 
 export const readTriMapElevation = (): boolean => {
@@ -167,6 +170,7 @@ export const setTriMapElevation = (enabled: boolean): void => {
   } catch {
     void 0
   }
+  window.dispatchEvent(new CustomEvent(TRI_MAP_ELEVATION_EVENT))
 }
 
 export const readTriPanelsFullscreen = (): boolean => {

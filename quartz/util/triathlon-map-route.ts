@@ -1,3 +1,14 @@
+import type { StravaActivityDetail, StravaMapPoint } from '../plugins/stores/strava'
+
+export const activityGpsSegments = (
+  activity: StravaActivityDetail,
+): readonly (readonly StravaMapPoint[])[] =>
+  activity.mapRoute.some(segment => segment.length >= 2)
+    ? activity.mapRoute.filter(segment => segment.length >= 2)
+    : activity.route.length >= 2
+      ? [activity.route]
+      : []
+
 export interface MapRoutePoint {
   lat: number
   lng: number

@@ -15658,7 +15658,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     column-gap: 2.4rem;
     align-items: start;
 
-    > .tri-act-head,
     > .table-container,
     > .tri-act-health,
     > .tri-act-toggle {
@@ -15675,7 +15674,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     }
 
     > .tri-act-head {
+      grid-column: 1 / -1;
       grid-row: 1;
+      align-self: stretch;
     }
 
     > .tri-act-figs {

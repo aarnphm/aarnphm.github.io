@@ -14,6 +14,8 @@ export interface Card {
   front: string
   back: string
   raw: string
+  /** Back-only `N:` text; excluded from the id so notes never reset scheduling. */
+  note?: string
   groupId?: string
   deletions?: ClozeDeletion[]
 }
@@ -34,9 +36,20 @@ interface ClozeMatch {
   start: number
   end: number
   value: string
-  mathDelimiter?: MathDelimiter
-  leftMath?: boolean
-  rightMath?: boolean
+  /** Source text kept around the answer when this deletion is not the tested one. */
+  before: string
+  after: string
+  /** Math or code delimiter that wraps a revealed answer, empty for plain text. */
+  wrap: string
+  /** Text that closes and reopens a math or code region around the tested deletion. */
+  open: string
+  shut: string
+}
+
+interface CodeSpan {
+  fence: string
+  open: number
+  close: number
 }
 
 interface ClozeParts {
@@ -100,13 +113,69 @@ function findMathClose(source: string, from: number, delimiter: MathDelimiter): 
   return -1
 }
 
+function backtickRun(source: string, index: number): number {
+  let end = index
+  while (source[end] === '`') end++
+  return end - index
+}
+
+/** CommonMark code span opening at `index`, or undefined when no run of the same length closes it. */
+function codeSpanAt(source: string, index: number): CodeSpan | undefined {
+  const length = backtickRun(source, index)
+  for (let i = index + length; i < source.length; ) {
+    const run = backtickRun(source, i)
+    if (run === length) return { fence: source.slice(index, index + length), open: index, close: i }
+    i += Math.max(run, 1)
+  }
+  return undefined
+}
+
+/**
+ * Splitting a code span moves the whitespace between the deletion and the remaining code outside the
+ * span. Remaining code that would touch the new fence with its own backtick keeps one padding space.
+ */
+function codeEdge(text: string, side: 'start' | 'end'): { gap: string; pad: string } {
+  const gap = (side === 'end' ? /\s*$/ : /^\s*/).exec(text)![0]
+  const rest = side === 'end' ? text.slice(0, text.length - gap.length) : text.slice(gap.length)
+  const edge = side === 'end' ? rest.at(-1) : rest[0]
+  return { gap, pad: edge === '`' ? ' ' : '' }
+}
+
 function findClozeMatches(sentence: string): ClozeMatch[] {
   const matches: ClozeMatch[] = []
   let mathDelimiter: MathDelimiter | undefined
   let mathOpen = -1
+  let code: CodeSpan | undefined
+
+  const push = (
+    start: number,
+    bracket: number,
+    close: number,
+    end: number,
+    region: Pick<ClozeMatch, 'wrap' | 'open' | 'shut'>,
+  ) =>
+    matches.push({
+      start,
+      end,
+      value: sentence.slice(bracket + 1, close),
+      before: sentence.slice(start, bracket),
+      after: sentence.slice(close + 1, end),
+      ...region,
+    })
 
   for (let i = 0; i < sentence.length; i++) {
-    const delimiter = mathDelimiterAt(sentence, i)
+    if (code && i === code.close) {
+      i += code.fence.length - 1
+      code = undefined
+      continue
+    }
+    if (!code && !mathDelimiter && sentence[i] === '`' && !isEscaped(sentence, i)) {
+      code = codeSpanAt(sentence, i)
+      i += backtickRun(sentence, i) - 1
+      continue
+    }
+
+    const delimiter = code ? undefined : mathDelimiterAt(sentence, i)
     if (delimiter) {
       mathDelimiter = mathDelimiter === delimiter ? undefined : delimiter
       if (mathDelimiter === delimiter) mathOpen = i
@@ -125,8 +194,30 @@ function findClozeMatches(sentence: string): ClozeMatch[] {
     if (value.length === 0 || value.includes('[')) continue
     if (after === ']' || after === '(' || after === ')') continue
 
+    if (code) {
+      if (close > code.close) continue
+      const { fence } = code
+      const lastEnd = matches.at(-1)?.end ?? 0
+      const leftText = sentence.slice(Math.max(code.open + fence.length, lastEnd), i)
+      const rightText = sentence.slice(close + 1, code.close)
+      const leftCode = sentence.slice(code.open + fence.length, i).trim().length > 0
+      const rightCode = rightText.trim().length > 0
+      const left = codeEdge(leftText, 'end')
+      const right = codeEdge(rightText, 'start')
+      const start = leftCode ? i - left.gap.length : code.open
+      const end = rightCode ? close + 1 + right.gap.length : code.close + fence.length
+      push(start, i, close, end, {
+        wrap: fence,
+        open: leftCode ? `${left.pad}${fence}${left.gap}` : '',
+        shut: rightCode ? `${right.gap}${fence}${right.pad}` : '',
+      })
+      if (!rightCode) code = undefined
+      i = end - 1
+      continue
+    }
+
     if (!mathDelimiter) {
-      matches.push({ start: i, end: close + 1, value })
+      push(i, i, close, close + 1, { wrap: '', open: '', shut: '' })
       i = close
       continue
     }
@@ -139,7 +230,11 @@ function findClozeMatches(sentence: string): ClozeMatch[] {
     const start = leftMath ? i : mathOpen
     const end = rightMath ? close + 1 : closeIdx + len
     if (!rightMath) mathDelimiter = undefined
-    matches.push({ start, end, value, mathDelimiter: region, leftMath, rightMath })
+    push(start, i, close, end, {
+      wrap: region,
+      open: leftMath ? region : '',
+      shut: rightMath ? region : '',
+    })
     i = end - 1
   }
 
@@ -152,24 +247,11 @@ function renderClozeReplacement(
   face: 'front' | 'back',
 ): string {
   const { answer, hint } = splitClozeValue(match.value)
-  const delimiter = match.mathDelimiter
-  if (!target) {
-    if (!delimiter) return answer
-    const open = match.leftMath ? '' : delimiter
-    const shut = match.rightMath ? '' : delimiter
-    return `${open}${answer}${shut}`
-  }
-  if (!delimiter) {
-    return face === 'front'
-      ? `<span class="cloze-blank">${hint ?? '[…]'}</span>`
-      : `<span class="cloze-answer">${answer}</span>`
-  }
-
-  const left = match.leftMath ? delimiter : ''
-  const right = match.rightMath ? delimiter : ''
+  if (!target) return `${match.before}${answer}${match.after}`
+  const { wrap, open, shut } = match
   return face === 'front'
-    ? `${left}<span class="cloze-blank">${hint ?? '[…]'}</span>${right}`
-    : `${left}<span class="cloze-answer">${delimiter}${answer}${delimiter}</span>${right}`
+    ? `${open}<span class="cloze-blank">${hint ?? '[…]'}</span>${shut}`
+    : `${open}<span class="cloze-answer">${wrap}${answer}${wrap}</span>${shut}`
 }
 
 function renderCloze(
@@ -213,7 +295,9 @@ interface Pending {
   q: string[]
   a: string[]
   c: string[]
+  n: string[]
   sawAnswer: boolean
+  sawNote: boolean
 }
 
 export function parseFlashcards(source: string): Deck {
@@ -227,13 +311,15 @@ export function parseFlashcards(source: string): Deck {
 
   const flush = () => {
     if (!cur) return
+    const note = cur.n.join('\n').trim()
+    const withNote = (card: Card): Card => (note ? { ...card, note } : card)
     if (cur.kind === 'qa') {
       const front = cur.q.join('\n').trim()
       const back = cur.a.join('\n').trim()
       if (!cur.sawAnswer || back.length === 0) {
         errors.push({ line: lineNo(cur.startLine), message: 'Q: card missing A:' })
       } else {
-        cards.push(makeQaCard(front, back))
+        cards.push(withNote(makeQaCard(front, back)))
       }
     } else {
       const sentence = cur.c.join('\n').trim()
@@ -241,7 +327,7 @@ export function parseFlashcards(source: string): Deck {
       if (siblings.length === 0) {
         errors.push({ line: lineNo(cur.startLine), message: 'C: card missing [deletions]' })
       } else {
-        cards.push(...siblings)
+        cards.push(...siblings.map(withNote))
       }
     }
     cur = null
@@ -252,6 +338,7 @@ export function parseFlashcards(source: string): Deck {
     const qMatch = /^\s*Q:(.*)$/.exec(line)
     const aMatch = /^\s*A:(.*)$/.exec(line)
     const cMatch = /^\s*C:(.*)$/.exec(line)
+    const nMatch = /^\s*N:(.*)$/.exec(line)
 
     if (separatorRe.test(line.trim())) {
       flush()
@@ -265,7 +352,9 @@ export function parseFlashcards(source: string): Deck {
         q: [qMatch[1].replace(/^ /, '')],
         a: [],
         c: [],
+        n: [],
         sawAnswer: false,
+        sawNote: false,
       }
       continue
     }
@@ -277,7 +366,9 @@ export function parseFlashcards(source: string): Deck {
         q: [],
         a: [],
         c: [cMatch[1].replace(/^ /, '')],
+        n: [],
         sawAnswer: false,
+        sawNote: false,
       }
       continue
     }
@@ -286,8 +377,19 @@ export function parseFlashcards(source: string): Deck {
       cur.a.push(aMatch[1].replace(/^ /, ''))
       continue
     }
+    if (nMatch && cur && !cur.sawNote) {
+      if (cur.kind === 'qa' && !cur.sawAnswer) {
+        errors.push({ line: lineNo(i), message: 'N: before A:' })
+        cur = null
+        continue
+      }
+      cur.sawNote = true
+      cur.n.push(nMatch[1].replace(/^ /, ''))
+      continue
+    }
     if (!cur) continue
-    if (cur.kind === 'cloze') cur.c.push(line)
+    if (cur.sawNote) cur.n.push(line)
+    else if (cur.kind === 'cloze') cur.c.push(line)
     else if (cur.sawAnswer) cur.a.push(line)
     else cur.q.push(line)
   }

@@ -6,6 +6,7 @@ import type { TriathlonContext } from '../runtime/context'
 import type { AnalyticsPanelRender } from './catalog'
 import { start } from '../../../functional'
 import { activityCompareColor } from '../../../util/triathlon-card'
+import { buildActivityAnalyzeButton } from '../../../util/triathlon-card'
 import { activityComparisonEligible } from '../../../util/triathlon-card'
 import { buildActivityComparison } from '../../../util/triathlon-card'
 import { dist } from '../../../util/triathlon-card'
@@ -226,13 +227,7 @@ export const setupAnalytics = (
         d.name || d.sport,
         context.formatter.text('go back'),
       )
-      actions.prepend(
-        el('button', 'tri-activity-analyze', context.formatter.text('analyze'), {
-          type: 'button',
-          'data-activity-analyze': `${d.id}`,
-          'aria-haspopup': 'dialog',
-        }),
-      )
+      actions.prepend(buildActivityAnalyzeButton(createDomFactory(context.presentation), d))
       card.appendChild(head)
       const activityView = renderDetail(context.presentation, d, detailData)
       activityView.element.querySelector('[data-activity-analyze]')?.remove()
