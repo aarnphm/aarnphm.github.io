@@ -10,7 +10,9 @@ import { FilePath, joinSegments, slugifyFilePath, stripSlashes } from '../../uti
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 
 const heavyWatchAssetExts = new Set(['.ddl', '.mat'])
-const pdfEmbedPattern = /!\[\[([^\]\r\n]+)\]\]/g
+const maxWatchPdfBytes = 15_000_000
+// Embeds render the PDF in place and plain wikilinks open it in the reader, so both need the bytes.
+const pdfReferencePattern = /!?\[\[([^\]\r\n]+)\]\]/g
 
 function isMarkdownReferenceSource(fp: FilePath): boolean {
   const ext = path.extname(fp).toLowerCase()
@@ -39,7 +41,7 @@ async function pdfReferenceKeys(ctx: BuildCtx, fp: FilePath): Promise<string[]> 
   const keys: string[] = []
   if (signature !== 'missing') {
     const body = await readFile(source, 'utf8')
-    for (const match of body.matchAll(pdfEmbedPattern)) {
+    for (const match of body.matchAll(pdfReferencePattern)) {
       const rawTarget = match[1]?.split('|', 1)[0]
       const key = rawTarget ? pdfTargetKey(rawTarget) : undefined
       if (key) keys.push(key)
@@ -75,6 +77,10 @@ async function referencedPdfFiles(
       if (pdf) referenced.add(pdf)
     }
   }
+  await mapConcurrent([...referenced], defaultIoConcurrency, async fp => {
+    const info = await stat(joinSegments(ctx.argv.directory, fp))
+    if (info.size > maxWatchPdfBytes) referenced.delete(fp)
+  })
   logBuildSpan(ctx.argv, 'assets:pdfrefs', `${stale.length} rescanned`, perf.elapsedMs())
   return referenced
 }
@@ -165,6 +171,11 @@ export const Assets: QuartzEmitterPlugin = () => {
         ? await referencedPdfFiles(ctx, ctx.allFiles, changedSources)
         : copiedReferencedPdfs
       const newlyReferencedPdfs = [...referencedPdfs].filter(fp => !copiedReferencedPdfs.has(fp))
+      for (const fp of copiedReferencedPdfs) {
+        if (!referencedPdfs.has(fp)) {
+          await removeOutputAsset(ctx, contentAssetClaim(ctx.argv, fp).output)
+        }
+      }
       copiedReferencedPdfs = referencedPdfs
       const emitted = new Set<string>()
       for (const changeEvent of changeEvents) {

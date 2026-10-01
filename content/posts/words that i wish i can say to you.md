@@ -1,8 +1,8 @@
 ---
 date: '2026-09-25'
 description: hope you are okay.
-id: words that i wish i can say to you
-modified: 2026-09-28 20:39:31 GMT-04:00
+id: words that i wanted to tell you
+modified: 2026-10-01 12:07:20 GMT-04:00
 noindex: true
 signature: vuanh
 tags:

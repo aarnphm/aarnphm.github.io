@@ -777,6 +777,9 @@ function exitWikilink(
             annotateTransclude(node, wikilink, url, displayAnchor)
           }
         } else {
+          // The reader and PDF viewers read `#page=N` literally; heading slugs would drop the `=`.
+          const pdfPage = ext === '.pdf' ? pdfPageFromAnchor(wikilink) : undefined
+          if (pdfPage) displayAnchor = `#page=${pdfPage}`
           annotateRegularLink(node, wikilink, url + displayAnchor, url)
         }
       }

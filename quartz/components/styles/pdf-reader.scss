@@ -1,0 +1,954 @@
+@use '../../styles/variables.scss' as *;
+
+// Flexoki: marks take #cdd597, disagreements #fdb2a2. Pages stay white in both themes, so the
+// mark fills multiply over the raster and keep glyphs black.
+$mark-fill: #cdd597;
+$contra-fill: #fdb2a2;
+$mark-ink: #879a39;
+$contra-ink: #d14d41;
+$page-ink: #100f0f;
+
+body[data-slug='read'] {
+  overflow: hidden;
+
+  #quartz-root {
+    margin: 0;
+  }
+
+  .header {
+    visibility: hidden;
+    height: 0;
+  }
+
+  .page-content {
+    display: block;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .page-header,
+  .page-footer,
+  .byline,
+  .title-col,
+  .sidenotes {
+    display: none;
+  }
+
+  .page-body-grid {
+    display: block;
+  }
+}
+
+.pdf-reader {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  grid-column: 1 / -1;
+}
+
+.pdf-reader-mount {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.pdf-reader-mount > .pdf-reader-status {
+  padding: 2rem;
+}
+
+.pdf-reader-app,
+.pdf-reader-library {
+  --pdf-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --pdf-surface: color-mix(in srgb, var(--light) 90%, var(--lightgray));
+  --pdf-selected: color-mix(in srgb, var(--secondary) 18%, var(--pdf-surface));
+  --pdf-gutter: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
+  --pdf-control-height: 1.5rem;
+  --pdf-side-width: clamp(16rem, 24vw, 22rem);
+  --pdf-strip-width: 0.875rem;
+  box-sizing: border-box;
+  color: var(--darkgray);
+  text-align: start;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  button,
+  input,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35em;
+    min-height: var(--pdf-control-height);
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--pdf-line);
+    border-radius: var(--radius-none);
+    background: transparent;
+    font-family: var(--codeFont);
+    font-size: 0.66rem;
+    line-height: 1.3;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    touch-action: manipulation;
+
+    &[aria-pressed='true'] {
+      color: var(--dark);
+      background: var(--pdf-selected);
+      border-color: var(--gray);
+    }
+  }
+
+  input[type='search'],
+  input:not([type]) {
+    min-height: var(--pdf-control-height);
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--pdf-line);
+    border-radius: var(--radius-none);
+    background: var(--light);
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    button:hover:not([aria-pressed='true']) {
+      color: var(--dark);
+      background: var(--pdf-surface);
+      border-color: var(--gray);
+    }
+  }
+
+  @media (pointer: coarse) {
+    --pdf-control-height: 44px;
+  }
+
+  :where(button, a, input, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: -2px;
+  }
+}
+
+.pdf-reader-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.pdf-reader-segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+
+  > button + button {
+    margin-inline-start: -1px;
+  }
+}
+
+.pdf-reader-danger {
+  .pdf-reader-app & {
+    color: $contra-ink;
+    border-color: color-mix(in srgb, #{$contra-ink} 45%, transparent);
+  }
+}
+
+.pdf-reader-empty,
+.pdf-reader-status {
+  margin: 0;
+  color: var(--gray);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.pdf-kind-glyph {
+  display: inline-block;
+  min-width: 1em;
+  text-align: center;
+  font-family: var(--codeFont);
+
+  &[data-kind='mark'] {
+    color: $mark-ink;
+  }
+
+  &[data-kind='question'] {
+    color: var(--dark);
+  }
+
+  &[data-kind='contra'] {
+    color: $contra-ink;
+  }
+}
+
+// Shell
+
+.pdf-reader-app {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+  background: var(--light);
+}
+
+.pdf-reader-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  padding: 0.5rem var(--pdf-gutter);
+  border-block-end: 1px solid var(--pdf-line);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+}
+
+.pdf-reader-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1 1 18rem;
+
+  h1 {
+    margin: 0;
+    color: var(--dark);
+    font-family: var(--headerFont);
+    font-size: 1rem;
+    font-weight: $semiBoldWeight;
+    line-height: 1.3;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+}
+
+.pdf-reader-crumb {
+  color: var(--gray);
+  flex: none;
+}
+
+.pdf-reader-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.875rem;
+  margin: 0;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+}
+
+.pdf-reader-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-inline-start: auto;
+}
+
+.pdf-reader-page-form {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--gray);
+
+  input {
+    width: auto;
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.pdf-reader-zoom {
+  min-width: 3.5em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+// Document and margin
+
+.pdf-reader-body {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+.pdf-reader-scroller {
+  position: relative;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--pdf-surface);
+
+  &:focus-visible {
+    outline-offset: -3px;
+  }
+}
+
+// The spread is the pages' and margin cards' shared offset parent, so both measure from one origin.
+.pdf-reader-spread {
+  position: relative;
+  display: grid;
+  grid-template-columns: max-content var(--pdf-side-width);
+  justify-content: center;
+  align-items: start;
+  min-width: min-content;
+
+  .pdf-reader-app[data-compact='true'] & {
+    grid-template-columns: max-content;
+  }
+}
+
+.pdf-reader-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem var(--pdf-gutter) 40vh;
+  min-width: 0;
+
+  > .pdf-reader-status {
+    min-width: min(30rem, 80vw);
+    padding-block: 2rem;
+  }
+}
+
+.pdf-reader-side {
+  position: sticky;
+  inset-inline-end: 0;
+  align-self: stretch;
+  padding-block: 1.25rem;
+  padding-inline: 0 var(--pdf-gutter);
+  min-width: 0;
+}
+
+.pdf-reader-page {
+  position: relative;
+  flex: none;
+  background: white;
+  isolation: isolate;
+  contain: layout paint;
+  outline: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+
+  > canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .pdf-reader-app[data-tool='region'] & {
+    cursor: crosshair;
+
+    .pdf-reader-text,
+    .pdf-reader-links {
+      pointer-events: none;
+    }
+  }
+}
+
+.pdf-reader-marks,
+.pdf-reader-text,
+.pdf-reader-links {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.pdf-reader-marks {
+  z-index: 1;
+  pointer-events: none;
+  // The z-index makes this layer its own blending group, so the layer multiplies onto the canvas;
+  // multiply on each mark would only blend against the layer's transparent backdrop and hide glyphs.
+  mix-blend-mode: multiply;
+}
+
+.pdf-reader-links {
+  z-index: 3;
+  pointer-events: none;
+
+  a {
+    position: absolute;
+    pointer-events: auto;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a:hover {
+      background: color-mix(in srgb, #{$mark-ink} 14%, transparent);
+    }
+  }
+}
+
+.pdf-reader-mark {
+  position: absolute;
+
+  &[data-kind='mark'] {
+    background: $mark-fill;
+  }
+
+  &[data-kind='contra'] {
+    background: $contra-fill;
+  }
+
+  // A dotted underline: a question is a doubt about the line, so it leaves the text unfilled.
+  &[data-kind='question'] {
+    background: radial-gradient(circle, rgb(16 15 15 / 0.75) 0.9px, transparent 1.1px) 0 100% / 4px
+      3px repeat-x;
+  }
+
+  &[data-region] {
+    outline: 1.5px dashed rgb(16 15 15 / 0.55);
+    outline-offset: -1px;
+
+    &[data-kind='mark'] {
+      background: color-mix(in srgb, #{$mark-fill} 45%, white);
+    }
+
+    &[data-kind='contra'] {
+      background: color-mix(in srgb, #{$contra-fill} 45%, white);
+    }
+  }
+
+  &[data-active] {
+    outline: 1.5px solid $page-ink;
+    outline-offset: 1px;
+  }
+}
+
+.pdf-reader-region-draft {
+  position: absolute;
+  z-index: 4;
+  border: 1.5px dashed $page-ink;
+  background: color-mix(in srgb, #{$mark-fill} 35%, transparent);
+  pointer-events: none;
+}
+
+// Mirrors the embed text layer (transcludes.scss) so selection matches glyphs at every zoom.
+.pdf-reader-text {
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+  z-index: 2;
+  line-height: 1;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-align: initial;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+
+  &[data-main-rotation='90'] {
+    transform: rotate(90deg) translateY(-100%);
+  }
+
+  &[data-main-rotation='180'] {
+    transform: rotate(180deg) translate(-100%, -100%);
+  }
+
+  &[data-main-rotation='270'] {
+    transform: rotate(270deg) translateX(-100%);
+  }
+
+  span,
+  br {
+    color: transparent;
+    position: absolute;
+    white-space: pre;
+    cursor: text;
+    transform-origin: 0% 0%;
+    user-select: text;
+  }
+
+  > :not(.markedContent),
+  .markedContent span:not(.markedContent) {
+    --font-height: 0;
+    --scale-x: 1;
+    --rotate: 0deg;
+    z-index: 1;
+    font-size: calc(var(--text-scale-factor) * var(--font-height));
+    transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+  }
+
+  .markedContent {
+    display: contents;
+  }
+
+  span[role='img'] {
+    user-select: none;
+    cursor: default;
+  }
+
+  ::selection {
+    color: transparent;
+    background: rgba(135, 154, 57, 0.28);
+  }
+
+  br::selection {
+    background: transparent;
+  }
+
+  // The sentinel keeps a drag past the last glyph from selecting the whole page.
+  .endOfContent {
+    display: block;
+    position: absolute;
+    inset: 100% 0 0;
+    z-index: 0;
+    cursor: default;
+    user-select: none;
+  }
+
+  &.selecting .endOfContent {
+    top: 0;
+  }
+}
+
+.pdf-reader-margin {
+  position: relative;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.pdf-reader-margin-item {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  transition: transform var(--transition-normal);
+}
+
+.pdf-mark-card,
+.pdf-cite-card {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.55rem 0.65rem;
+  background: var(--light);
+  border: 1px solid var(--pdf-line);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.pdf-mark-card {
+  cursor: default;
+
+  &[data-active='true'] {
+    border-color: var(--dark);
+  }
+
+  &[data-status='error'],
+  &[data-status='conflict'] {
+    border-color: $contra-ink;
+  }
+}
+
+.pdf-cite-card {
+  background: transparent;
+  border-style: dashed;
+}
+
+.pdf-mark-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  color: var(--gray);
+
+  a {
+    color: var(--darkgray);
+  }
+}
+
+.pdf-reader-app .pdf-mark-card-jump {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  gap: 0.5rem;
+  color: var(--darkgray);
+  background: transparent;
+
+  &[aria-pressed='true'] {
+    background: transparent;
+    color: var(--dark);
+  }
+}
+
+.pdf-mark-card-page {
+  font-variant-numeric: tabular-nums;
+}
+
+.pdf-mark-card-what,
+.pdf-mark-card-private {
+  padding-inline: 0.3rem;
+  background: var(--pdf-surface);
+}
+
+.pdf-mark-card-status {
+  margin-inline-start: auto;
+}
+
+.pdf-mark-card-quote {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--darkgray);
+  font-family: var(--bodyFont);
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+
+  .pdf-mark-card[data-active='true'] & {
+    display: block;
+  }
+}
+
+.pdf-mark-card-body {
+  color: var(--dark);
+  overflow-wrap: anywhere;
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  p,
+  ul,
+  ol {
+    margin-block: 0.4rem;
+  }
+}
+
+.pdf-mark-card-input {
+  width: 100%;
+  min-height: 5.5rem;
+  padding: 0.4rem 0.5rem;
+  resize: vertical;
+  border: 1px solid var(--pdf-line);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  field-sizing: content;
+}
+
+.pdf-mark-card-error {
+  margin: 0;
+  color: $contra-ink;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+}
+
+.pdf-mark-card-conflict {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  background: color-mix(in srgb, #{$contra-fill} 22%, var(--light));
+
+  p {
+    margin: 0;
+  }
+}
+
+.pdf-mark-card-actions {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.pdf-cite-card-excerpt {
+  margin: 0;
+  color: var(--darkgray);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+
+// Index view
+
+.pdf-reader-index-overlay {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: var(--pdf-strip-width);
+  z-index: var(--z-dropdown);
+  width: calc(var(--pdf-side-width) + var(--pdf-gutter) * 2);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1.25rem var(--pdf-gutter);
+  background: color-mix(in srgb, var(--light) 94%, var(--lightgray));
+}
+
+.pdf-reader-index {
+  display: grid;
+  gap: 1.75rem;
+
+  section {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--gray);
+    font-family: var(--codeFont);
+    font-size: 0.66rem;
+    font-weight: $normalWeight;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+  }
+
+  input[type='search'] {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+.pdf-reader-outline,
+.pdf-reader-mark-list {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pdf-reader-app .pdf-reader-outline button {
+  justify-content: start;
+  width: 100%;
+  min-height: 0;
+  padding: 0.2rem 0;
+  padding-inline-start: calc(var(--depth, 0) * 0.875rem);
+  border: 0;
+  font-family: var(--bodyFont);
+  font-size: 0.82rem;
+  text-align: start;
+  color: var(--darkgray);
+}
+
+.pdf-reader-app .pdf-reader-mark-row {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: baseline;
+  justify-content: stretch;
+  width: 100%;
+  gap: 0.5rem;
+  padding: 0.35rem 0.4rem;
+  border-color: transparent;
+  text-align: start;
+}
+
+.pdf-reader-mark-row-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--bodyFont);
+  font-size: 0.8rem;
+}
+
+// Overview strip
+
+.pdf-reader-strip {
+  position: relative;
+  width: var(--pdf-strip-width);
+  background: color-mix(in srgb, var(--light) 80%, var(--lightgray));
+  cursor: ns-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.pdf-reader-strip-tick {
+  position: absolute;
+  inset-inline: 3px;
+  height: 2px;
+  margin-top: -1px;
+  pointer-events: none;
+
+  &[data-kind='mark'] {
+    background: $mark-ink;
+  }
+
+  &[data-kind='question'] {
+    background: var(--dark);
+  }
+
+  &[data-kind='contra'] {
+    background: $contra-ink;
+  }
+
+  &[data-kind='cite'] {
+    inset-inline: 5px;
+    background: var(--gray);
+  }
+}
+
+.pdf-reader-strip-bracket {
+  position: absolute;
+  inset-inline: 0;
+  background: color-mix(in srgb, var(--dark) 10%, transparent);
+  pointer-events: none;
+}
+
+// Selection bubble
+
+.pdf-reader-bubble {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-popover);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  max-width: calc(100vw - 1.5rem);
+  padding: 0.25rem;
+  visibility: hidden;
+  background: var(--light);
+  border: 1px solid var(--dark);
+}
+
+// Dialogs
+
+.pdf-reader-sheet,
+.pdf-reader-keys {
+  border: 1px solid var(--dark);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--darkgray);
+  padding: 1rem var(--pdf-gutter);
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--dark) 28%, transparent);
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--dark);
+    font-size: 0.95rem;
+  }
+}
+
+.pdf-reader-sheet {
+  width: 100%;
+  max-width: 100%;
+  max-height: 85dvh;
+  margin: auto 0 0;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  border-inline: 0;
+  border-block-end: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  > header {
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    margin-bottom: 1rem;
+  }
+}
+
+.pdf-reader-keys {
+  width: min(32rem, calc(100vw - 2rem));
+
+  dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1rem;
+    margin: 1rem 0;
+    font-size: 0.82rem;
+  }
+
+  dt {
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-size: 0.72rem;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.82rem;
+  }
+}
+
+// Library
+
+.pdf-reader-library {
+  height: 100%;
+  overflow: auto;
+  padding: 2.5rem var(--pdf-gutter) 4rem;
+
+  > * {
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+
+  header {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--dark);
+    font-size: 1.4rem;
+  }
+
+  header p {
+    margin: 0;
+    max-width: 38rem;
+  }
+}
+
+.pdf-reader-library-list {
+  display: grid;
+  gap: 0.125rem;
+  padding: 0;
+  list-style: none;
+
+  a {
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.5rem 0;
+    color: var(--dark);
+    background: transparent;
+    text-decoration: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a:hover .pdf-reader-library-title {
+      text-decoration: underline;
+    }
+  }
+}
+
+.pdf-reader-library-title {
+  font-family: var(--bodyFont);
+  font-size: 0.95rem;
+}
+
+.pdf-reader-library-meta {
+  color: var(--gray);
+  font-family: var(--codeFont);
+  font-size: 0.64rem;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdf-reader-margin-item {
+    transition: none;
+  }
+}
