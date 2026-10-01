@@ -17,7 +17,10 @@ export default (() => {
     fileData,
     externalResources,
     ctx,
+    pageSlug,
   }: QuartzComponentProps) => {
+    // derived pages (flashcards, slides) emit under a deeper slug than their source fileData
+    const slug: FullSlug = pageSlug ?? fileData.slug!
     const titleSuffix = cfg.pageTitleSuffix ?? ''
     const title =
       (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
@@ -32,14 +35,12 @@ export default (() => {
 
     const url = new URL(`https://${cfg.baseUrl ?? 'example.com'}`)
     const path = url.pathname as FullSlug
-    const baseDir = fileData.slug === '404' ? path : pathToRoot(fileData.slug!)
+    const baseDir = slug === '404' ? path : pathToRoot(slug)
     const iconPath = joinSegments(baseDir, 'static/icon.png')
 
     // Url of current page
     const socialUrl =
-      fileData.slug === '404'
-        ? url.toString()
-        : joinSegments(url.toString(), simplifySlug(fileData.slug!))
+      slug === '404' ? url.toString() : joinSegments(url.toString(), simplifySlug(slug))
     const noindex =
       fileData.frontmatter?.noindex === true || fileData.frontmatter?.protected === true
 
@@ -89,7 +90,7 @@ export default (() => {
 
         {cfg.baseUrl && (
           <>
-            {fileData.slug !== '404' && <link rel="canonical" href={socialUrl} />}
+            {slug !== '404' && <link rel="canonical" href={socialUrl} />}
             <meta property="twitter:domain" content={cfg.baseUrl}></meta>
             <meta property="og:url" content={socialUrl}></meta>
             <meta property="twitter:url" content={socialUrl}></meta>
@@ -100,9 +101,7 @@ export default (() => {
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
         {noindex && <meta name="robots" content="noindex, nofollow" />}
-        {fileData.slug === 'index' && (
-          <PersonStructuredData baseUrl={cfg.baseUrl ?? 'example.com'} />
-        )}
+        {slug === 'index' && <PersonStructuredData baseUrl={cfg.baseUrl ?? 'example.com'} />}
 
         {css.map(resource => CSSResourceToStyleElement(resource, true))}
         {js

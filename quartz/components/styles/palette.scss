@@ -76,6 +76,7 @@ ul#helper {
     border: 1px solid var(--gray);
     border-radius: var(--radius-none);
     border-top-width: 0px;
+    border-right-width: 0px;
     border-bottom-width: 0px;
     background-color: var(--light);
     overflow: hidden auto;
@@ -200,6 +201,8 @@ ul#helper {
     justify-content: flex-end;
     border: 1px solid var(--gray);
     border-top-color: var(--lightgray);
+    border-right-width: 0px;
+    border-bottom-width: 0px;
     background: var(--light);
     z-index: var(--z-popover);
     width: 100%;

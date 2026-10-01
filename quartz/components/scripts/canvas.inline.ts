@@ -12,11 +12,12 @@ import {
   zoom as d3Zoom,
   zoomIdentity,
 } from 'd3'
-import { marked } from 'marked'
+import { Marked } from 'marked'
 import { fetchCanonical } from '../../util/fetch-canonical'
 import { normalizeRelativeURLs } from '../../util/path'
 
-marked.setOptions({ breaks: true, gfm: true })
+// page chunks share one `marked` module, so canvas options stay off its global instance
+const marked = new Marked({ breaks: true, gfm: true })
 
 const EDGE_LABEL_LINE_HEIGHT = 1.2
 const syntheticMouseleaveEvents = new WeakSet<Event>()

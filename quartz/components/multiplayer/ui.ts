@@ -475,6 +475,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
     const avatar = document.createElement('img')
     avatar.className = 'reply-avatar'
+    avatar.dataset.ignorePopup = 'true'
     getAvatarUrl(comment.author, 24).then(url => {
       avatar.src = url
     })
@@ -673,6 +674,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
     const avatar = document.createElement('img')
     avatar.className = 'avatar'
+    avatar.dataset.ignorePopup = 'true'
     getAvatarUrl(getAuthor(), 24).then(url => {
       avatar.src = url
     })
@@ -1123,6 +1125,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
           const avatar = document.createElement('img')
           avatar.className = 'reply-avatar'
+          avatar.dataset.ignorePopup = 'true'
           getAvatarUrl(comment.author, 24).then(url => {
             avatar.src = url
           })
