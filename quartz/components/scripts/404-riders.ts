@@ -9,7 +9,7 @@
 // lift and the gate, friends drop in as a train, and now and then somebody goes down and the next
 // rider stops to ask.
 
-import type { Almanac, Sky } from './404-almanac'
+import { type Almanac, type Sky, moonlit } from './404-almanac'
 import { type Voices, say } from './404-crew'
 import {
   DROP_OFF,
@@ -149,15 +149,28 @@ export type Park = {
 }
 
 // The day's conditions: the lift runs from nine to seven, solar time, unless the wind or a storm
-// stops it; weekends bring twice the riders; drizzle halves them; after hours one die-hard pushes
-// up with a head torch. Rain and snow shut the line: its steepest pitches run at about 27°, and
+// stops it; weekends bring twice the riders; drizzle halves them. After hours locals push up with
+// head torches: two or three through the evening until half past ten, one at first light, and
+// through the small hours a die-hard, or two under a full moon. Rain and snow shut the line: its steepest pitches run at about 27°, and
 // wet dirt holds a tyre at about half a g, less than the tan 27° it would take to stop on them.
 // Grip is what knobbly tyres get on the dirt, damp or dry.
 export function parkEnv(al: Almanac, sky: Sky, weekend: boolean): ParkEnv {
   const shut = sky.storm || sky.fall === 'rain' || sky.fall === 'snow'
   const open = al.hour >= 9 && al.hour < 19 && !shut && sky.wind < 0.75
   const grip = sky.fall === 'drizzle' ? 0.65 : sky.fog ? 0.72 : 0.85
-  let crowd = open ? (weekend ? 6 : 3) : 1
+  const evening = al.hour >= 19 && al.hour < 22.5
+  const dawn = al.hour >= 6.5 && al.hour < 9
+  let crowd = open
+    ? weekend
+      ? 6
+      : 3
+    : evening
+      ? weekend
+        ? 3
+        : 2
+      : dawn || !moonlit(al, sky)
+        ? 1
+        : 2
   if (open && sky.fall !== 'none') crowd *= 0.5
   if (sky.temp !== null && (sky.temp < -5 || sky.temp > 32)) crowd *= 0.6
   return { open, grip, crowd: shut ? 0 : Math.max(1, Math.round(crowd)) }
@@ -666,16 +679,18 @@ export function stepPark(p: Park, dt: number, voices: Voices) {
 
 // Without motion, one moment of a busy afternoon: somebody at the top of their flight over the
 // table with the back end thrown out and the photographer's flash going, someone in the gate on the
-// second beep with a friend behind, and someone halfway up the lift. After hours, the die-hard
-// halfway up the lift track with their head torch.
+// second beep with a friend behind, and someone halfway up the lift. After hours, locals up the
+// lift track with their head torches.
 export function posePark(p: Park) {
   p.riders = []
   if (!p.env.crowd) return
   if (!p.env.open) {
-    const one = rider(p, ++p.parties, false, 0.8, true, 3)
-    one.state = 'hike'
-    one.s = PATHS.lift.length * 0.45
-    p.riders.push(one)
+    for (let n = 0; n < Math.min(2, p.env.crowd); n++) {
+      const one = rider(p, ++p.parties, false, 0.8 - n * 0.2, true, 3)
+      one.state = 'hike'
+      one.s = PATHS.lift.length * (0.45 + n * 0.35)
+      p.riders.push(one)
+    }
     return
   }
   const air = rider(p, ++p.parties, false, 0.9, false, 4)

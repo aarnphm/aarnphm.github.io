@@ -1,6 +1,10 @@
 @use './figure.scss' as *;
+@use './triathlon-calendar.scss';
+@use './triathlon-workspace.scss';
 
 .triathlon,
+.tri-calendar-set,
+.tri-calendar,
 .tri-day-embed,
 .tri-compare-embed,
 .triathlon-popover,
@@ -2404,6 +2408,7 @@
 .tri-pace-btn,
 .tri-map-btn,
 .tri-training-btn,
+.tri-calendar-btn,
 .tri-analytics-btn {
   padding: 0;
   background: none;
@@ -3358,14 +3363,16 @@
 }
 
 .tri-ratio-chainring-preset-picker,
-.tri-ratio-cassette-picker {
+.tri-ratio-cassette-picker,
+.tri-calendar-season-picker {
   position: relative;
   z-index: 2;
   min-width: 0;
 }
 
 .tri-ratio-chainring-preset-trigger,
-.tri-ratio-cassette-trigger {
+.tri-ratio-cassette-trigger,
+.tri-calendar-season-trigger {
   appearance: none;
   box-sizing: border-box;
   display: flex;
@@ -3377,7 +3384,7 @@
   margin: 0;
   padding: 0 0.45rem;
   font: inherit;
-  font-size: 0.58rem;
+  font-size: var(--tri-picker-font-size, 0.58rem);
   color: var(--dark);
   background: color-mix(in srgb, var(--light) 88%, transparent);
   border: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
@@ -3394,14 +3401,16 @@
 
 @media (hover: hover) and (pointer: fine) {
   .tri-ratio-chainring-preset-trigger:hover,
-  .tri-ratio-cassette-trigger:hover {
+  .tri-ratio-cassette-trigger:hover,
+  .tri-calendar-season-trigger:hover {
     background: color-mix(in srgb, var(--tri-accent) 5%, var(--light));
     border-color: color-mix(in srgb, var(--gray) 58%, transparent);
   }
 }
 
 .tri-ratio-chainring-preset-value,
-.tri-ratio-cassette-value {
+.tri-ratio-cassette-value,
+.tri-calendar-season-value {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3409,7 +3418,8 @@
 }
 
 .tri-ratio-chainring-preset-chevron,
-.tri-ratio-cassette-chevron {
+.tri-ratio-cassette-chevron,
+.tri-calendar-season-chevron {
   flex: none;
   width: 0.72rem;
   height: 0.72rem;
@@ -3417,12 +3427,14 @@
 }
 
 .tri-ratio-chainring-preset-trigger[aria-expanded='true'] .tri-ratio-chainring-preset-chevron,
-.tri-ratio-cassette-trigger[aria-expanded='true'] .tri-ratio-cassette-chevron {
+.tri-ratio-cassette-trigger[aria-expanded='true'] .tri-ratio-cassette-chevron,
+.tri-calendar-season-trigger[aria-expanded='true'] .tri-calendar-season-chevron {
   transform: rotate(180deg);
 }
 
 .tri-ratio-chainring-preset-menu,
-.tri-ratio-cassette-menu {
+.tri-ratio-cassette-menu,
+.tri-calendar-season-menu {
   position: absolute;
   inset: calc(100% + 0.2rem) 0 auto;
   z-index: var(--z-popover);
@@ -3439,7 +3451,7 @@
   border: 1px solid color-mix(in srgb, var(--gray) 34%, transparent);
   border-radius: var(--radius-none);
   font-family: var(--codeFont);
-  font-size: 0.58rem;
+  font-size: var(--tri-picker-font-size, 0.58rem);
   font-variant-numeric: tabular-nums;
   @include thin-scrollbar;
 
@@ -3476,7 +3488,8 @@
 }
 
 .tri-ratio-chainring-preset-option,
-.tri-ratio-cassette-option {
+.tri-ratio-cassette-option,
+.tri-calendar-season-option {
   display: grid;
   grid-template-columns: 0.75rem minmax(0, 1fr);
   align-items: center;
@@ -3502,25 +3515,29 @@
 
 @media (hover: hover) and (pointer: fine) {
   .tri-ratio-chainring-preset-option:hover,
-  .tri-ratio-cassette-option:hover {
+  .tri-ratio-cassette-option:hover,
+  .tri-calendar-season-option:hover {
     color: var(--dark);
     background: color-mix(in srgb, var(--tri-accent) 10%, var(--light));
   }
 }
 
 .tri-ratio-chainring-preset-check,
-.tri-ratio-cassette-check {
+.tri-ratio-cassette-check,
+.tri-calendar-season-check {
   color: var(--tri-accent);
   opacity: 0;
 }
 
 .tri-ratio-chainring-preset-option[aria-selected='true'] .tri-ratio-chainring-preset-check,
-.tri-ratio-cassette-option[aria-selected='true'] .tri-ratio-cassette-check {
+.tri-ratio-cassette-option[aria-selected='true'] .tri-ratio-cassette-check,
+.tri-calendar-season-option[aria-selected='true'] .tri-calendar-season-check {
   opacity: 1;
 }
 
 .tri-ratio-chainring-preset-option-value,
-.tri-ratio-cassette-option-value {
+.tri-ratio-cassette-option-value,
+.tri-calendar-season-option-value {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4586,7 +4603,8 @@
 
 .triathlon.tri-panels-fullscreen .tri-analytics,
 .triathlon.tri-panels-fullscreen .tri-map,
-.triathlon.tri-panels-fullscreen .tri-training {
+.triathlon.tri-panels-fullscreen .tri-training,
+.triathlon.tri-panels-fullscreen .tri-calendar-panel {
   border: none;
 }
 
@@ -4598,7 +4616,15 @@
   --tri-modal-w: 100%;
   --tri-modal-h: 100%;
 
-  :is(.tri-gear, .tri-pace, .tri-analytics, .tri-map, .tri-training, .tri-calc) {
+  :is(
+    .tri-gear,
+    .tri-pace,
+    .tri-analytics,
+    .tri-map,
+    .tri-training,
+    .tri-calendar-panel,
+    .tri-calc
+  ) {
     position: fixed;
     inset: 0;
     box-sizing: border-box;
@@ -4635,7 +4661,8 @@
 
   .tri-analytics,
   .tri-map,
-  .tri-training {
+  .tri-training,
+  .tri-calendar-panel {
     border: none;
   }
 
@@ -4650,7 +4677,8 @@
 
 .tri-analytics-scrim,
 .tri-map-scrim,
-.tri-training-scrim {
+.tri-training-scrim,
+.tri-calendar-scrim {
   position: fixed;
   inset: 0;
   z-index: 60;
@@ -4663,7 +4691,8 @@
 
 .tri-analytics-open .tri-analytics-scrim,
 .tri-map-open .tri-map-scrim,
-.tri-training-open .tri-training-scrim {
+.tri-training-open .tri-training-scrim,
+.tri-calendar-open .tri-calendar-scrim {
   opacity: 1;
   visibility: visible;
   transition:
@@ -4673,7 +4702,8 @@
 
 .tri-analytics,
 .tri-map,
-.tri-training {
+.tri-training,
+.tri-calendar-panel {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -4707,7 +4737,8 @@
 
 .tri-analytics-open .tri-analytics,
 .tri-map-open .tri-map,
-.tri-training-open .tri-training {
+.tri-training-open .tri-training,
+.tri-calendar-open .tri-calendar-panel {
   opacity: 1;
   visibility: visible;
   content-visibility: visible;
@@ -4722,7 +4753,8 @@
 @media (prefers-reduced-motion: reduce) {
   .tri-analytics,
   .tri-map,
-  .tri-training {
+  .tri-training,
+  .tri-calendar-panel {
     transform: translate(-50%, var(--tri-modal-y));
     transition:
       opacity 0.15s ease,
@@ -4732,7 +4764,8 @@
 
   .tri-analytics-open .tri-analytics,
   .tri-map-open .tri-map,
-  .tri-training-open .tri-training {
+  .tri-training-open .tri-training,
+  .tri-calendar-open .tri-calendar-panel {
     transform: translate(-50%, var(--tri-modal-y));
     transition:
       opacity 0.15s ease,
@@ -7298,6 +7331,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-pmc-dot {
+  flex: none;
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;

@@ -167,7 +167,7 @@ test('overview analytics markup retains empty lazy placeholders', () => {
 test('subpage navigation links remain native pointer targets for the shared bracket cursor', () => {
   const root = rendered(<TriathlonSubnav active="analytics" root="" />)
   const links = elements(root, element => classes(element).includes('tri-subnav-link'))
-  assert.equal(links.length, 7)
+  assert.equal(links.length, 8)
   assert.ok(links.every(link => link.tagName === 'a' && typeof link.properties?.href === 'string'))
   assert.ok(links.every(link => !('dataSiteCursorAction' in (link.properties ?? {}))))
   assert.equal(links.filter(link => link.properties?.ariaCurrent === 'page').length, 1)
@@ -183,6 +183,7 @@ test('section hints show the existing chords without replacing translated link l
     ['../../triathlon/analytics', 'g a'],
     ['../../triathlon/maps', 'g m'],
     ['../../triathlon/training', 'g t'],
+    ['../../triathlon/calendar', 'g e'],
     ['../../triathlon/feed', 'g f'],
     ['../../triathlon/on', 'g o'],
   ]
@@ -201,7 +202,7 @@ test('section hints show the existing chords without replacing translated link l
   )
   assert.equal(
     elements(root, element => typeof element.properties?.dataI18n === 'string').length,
-    7,
+    8,
   )
 })
 

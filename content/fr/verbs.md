@@ -1,12 +1,13 @@
 ---
-title: Verbes de la leçon du 21 septembre
+date: '2026-09-30'
+id: verbs
+modified: 2026-09-30 20:45:00 GMT-04:00
 tags:
   - fr
   - language
   - learning
+title: verbs
 ---
-
-# Verbes de la leçon du 21 septembre
 
 Présent de l'indicatif, d'après [[fr/lessons/260921|la leçon du 21 septembre]]. Les colonnes rendent visibles les changements de radical. Pour `payer`, les deux graphies du radical sont possibles.
 

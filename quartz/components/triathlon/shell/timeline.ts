@@ -9,7 +9,8 @@ import {
 import { createDomFactory, el } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
 
-const OPEN_PANEL_SELECTOR = '.tri-calc-open, .tri-map-open, .tri-training-open, .tri-analytics-open'
+const OPEN_PANEL_SELECTOR =
+  '.tri-calc-open, .tri-map-open, .tri-training-open, .tri-analytics-open, .tri-calendar-open'
 const DROP_TONE_COUNT = 8
 
 export const setup = (root: HTMLElement, context: TriathlonContext): (() => void) | null => {

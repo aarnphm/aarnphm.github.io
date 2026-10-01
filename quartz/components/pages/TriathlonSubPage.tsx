@@ -9,6 +9,7 @@ import { triathlonDateTree, triathlonFeedScopeFromSlug } from '../../util/triath
 import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
 import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
+import { CalendarPanel } from '../triathlon/calendar/Calendar'
 import {
   AnalyticsPanel,
   CalcPanel,
@@ -37,6 +38,7 @@ const PANEL: Record<
   analytics: AnalyticsPanel,
   maps: MapPanel,
   training: TrainingPanel,
+  calendar: CalendarPanel,
 }
 
 export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): QuartzComponent => {

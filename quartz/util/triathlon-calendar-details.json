@@ -1,0 +1,1468 @@
+{
+  "fetched": "2026-09-29",
+  "events": {
+    "https://www.ironman.com/races/im703-oman": {
+      "sources": [
+        "https://www.ironman.com/races/im703-oman",
+        "https://www.ironman.com/races/im703-oman/course",
+        "https://www.ironman.com/races/im703-oman/schedule",
+        "https://www.strava.com/routes/3304754432127080816",
+        "https://www.strava.com/routes/3304755742730544496",
+        "https://www.strava.com/routes/3304758844535690370"
+      ],
+      "venue": null,
+      "terrain": { "swim": "sea", "bike": "rolling", "run": "flat" },
+      "airC": [18, 26],
+      "waterC": [22, 22],
+      "course": [
+        {
+          "leg": "swim",
+          "title": "Experience Oman IRONMAN 70.3 Oman Muscat - Swim Course",
+          "source": "https://www.strava.com/routes/3304754432127080816",
+          "distanceM": 1901,
+          "elevationGainM": null,
+          "polyline": "cbdoCwmzcJei@fTtFfNnd@gY",
+          "profile": [],
+          "aidM": []
+        },
+        {
+          "leg": "bike",
+          "title": "Experience Oman IRONMAN 70.3 Oman Muscat - Bike Course",
+          "source": "https://www.strava.com/routes/3304755742730544496",
+          "distanceM": 89800,
+          "elevationGainM": 783,
+          "polyline": "w{coCwgzcJh@mEeEeArRuS`BlRdm@hyAjObKz^dj@iC`X|E|`BhM~]gFgW_EcCiC}d@sAu{@`CcYe_@mk@eOyJon@c~Ax@wMrUgRsMqKBoq@mPiy@nBs_AeOkq@vBix@xQks@oFgQyRkJiE_IjI{d@}Fg^eOgVNo[_Fqc@zPwNM_ZsIsNxAqc@}JoGaBaJn_@yd@pOqJpCwI~JmDrJ}Vt_@kQfW}BhWdBtm@gH~d@iUha@mLb\\Afi@gTlJfDt`@tu@lHxSjAhSuGx^uLpXux@fuAas@pe@_g@pKqSnN}NhXiP|Jsp@hVee@wBwe@`Ujk@`j@v[dJb[cEpc@{^n`@nJrKtIh@`GsZnh@oFf]sDRzAqChd@fTzZdFnt@qSba@xZvO~@r]_HhSoLtf@wm@tm@cCtLtMzIxXVreAdE|HfSfJf}Cd`AnqCzIfxB|f@gkBie@_r@}GscBwAivDikAeHiOBiaA{Ko[yLqK}l@vCsj@vp@yQpJk]fG}NyBe_@iYsu@hSoYsEwe@gTD`JcFvJ{a@zWqO|[{]pZ{@xi@ok@vpBgAj_@jFxw@aQa@gO`SdEdAy@|E",
+          "profile": [
+            5, 10, 10, 9, 9, 9, 9, 18, 12, 13, 9, 15, 41, 66, 36, 35, 9, 8, 8, 7, 7, 24, 48, 23,
+            107, 100, 69, 54, 46, 38, 16, 40, 39, 29, 43, 54, 77, 87, 95, 68, 68, 80, 93, 105, 115,
+            125, 132, 121, 108, 98, 86, 72, 70, 104, 91, 77, 72, 32, 25, 26, 15, 7, 7, 5
+          ],
+          "aidM": [29444, 35376, 53055, 65339, 77470]
+        },
+        {
+          "leg": "run",
+          "title": "Experience Oman IRONMAN 70.3 Oman Muscat - Run Course",
+          "source": "https://www.strava.com/routes/3304758844535690370",
+          "distanceM": 20300,
+          "elevationGainM": 316,
+          "polyline": "y|coCefzcJs@AoBmG`G_IpCuFJkB`HcEf@_\\YiBsB{De@gWmBq@NwGnAaGu@y@|AwEZ{MmDkBs@}BsBcAV]k@m@cBBiFsBkArDlAzErChCr@AhArEsBvC?tD|B|BxCZnBm@|@x@wAtOlBv@b@bWrBzDV`Bk@v[Uj@eGvCKrBsCnFsClCN`@lCeDrCuFJkB~GgEf@}[YgBsB}De@eWkBq@LyGnAaGu@y@|AwE^{MqDkBs@}BsBaAT_@k@m@_BDgC{AcBYmAlDrA`FjCpCv@AbAfEmBxC?vD~B~BxCXnBm@z@z@wArOJ\\`BXb@bWrBzDV`Bk@v[Wj@cGvCKtBqClFuClCN`@bH{KFmBbGwC\\m@f@}[YgBsB}De@eWmBs@NuGnAcGu@y@|AwE\\}MoDiBs@{BqBcARa@k@i@_BBgC{AeB[iAnDpA`FjCbCz@F~@hEmB~C?tD~B|BxCXnBm@z@z@_AxFWzGlBt@b@dWrBxDVbBm@t[Uj@mGlCA~BcFlIcAl@sAA}JeNm`@m`A|_@z`A~D`G",
+          "profile": [
+            5, 5, 4, 6, 8, 7, 1, 3, 1, 6, 2, 4, 9, 6, 3, 7, 8, 4, 6, 6, 3, 8, 7, 3, 7, 6, 3, 5, 6,
+            4, 9, 2, 6, 9, 6, 4, 4, 2, 6, 8, 7, 3, 14, 6, 2, 4, 8, 5, 13, 4, 8, 6, 3, 3, 1, 0, 0, 0,
+            1, 1, 0, 1, 0, 1
+          ],
+          "aidM": []
+        }
+      ],
+      "schedule": {
+        "source": "https://www.ironman.com/races/im703-oman/schedule",
+        "raceDate": "2026-02-14",
+        "days": [
+          {
+            "offset": -2,
+            "items": [
+              {
+                "start": "08:00",
+                "end": "10:00",
+                "activity": "Coffee Boat Swim",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": "18:00",
+                "activity": "IRONMAN Village and Expo",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "15:00",
+                "end": "18:00",
+                "activity": "DJ & Band Hits",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": "18:00",
+                "activity": "IRONMAN 70.3 Registration",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": "18:00",
+                "activity": "IRONKIDS Registration",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "18:00",
+                "end": null,
+                "activity": "Energy Loading Night",
+                "location": "Hotel Intercontinental Muscat",
+                "race": false
+              },
+              {
+                "start": "18:30",
+                "end": "21:00",
+                "activity": "Opening Ceremony",
+                "location": "Hotel Intercontinental Muscat",
+                "race": false
+              },
+              {
+                "start": "20:00",
+                "end": "21:00",
+                "activity": "Athlete Briefing",
+                "location": "Hotel Intercontinental Muscat",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": -1,
+            "items": [
+              {
+                "start": "08:00",
+                "end": "10:00",
+                "activity": "Coffee Boat Swim",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": null,
+                "activity": "Pre- Race Community Run",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": "18:00",
+                "activity": "IRONMAN Village and Expo Opens",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": "18:00",
+                "activity": "IRONMAN 70.3 Registration",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": "15:00",
+                "activity": "IRONKIDS Registration",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "14:00",
+                "end": "18:00",
+                "activity": "Bike and Transition Bags Check-in",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "15:00",
+                "end": null,
+                "activity": "IRONKIDS Warm-up",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "15:30",
+                "end": "17:00",
+                "activity": "IRONKIDS",
+                "location": "Qurum Beach",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": 0,
+            "items": [
+              {
+                "start": "05:00",
+                "end": "06:00",
+                "activity": "Bike Transition Open",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "05:00",
+                "end": "06:00",
+                "activity": "Swim Warm Up",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "06:30",
+                "end": null,
+                "activity": "Race Start",
+                "location": "Qurum Beach",
+                "race": true
+              },
+              {
+                "start": "11:00",
+                "end": null,
+                "activity": "Flower Ceremony",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": "16:30",
+                "activity": "Bike Check-out",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "16:00",
+                "end": null,
+                "activity": "Athlete Garden Closed",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "16:00",
+                "end": "16:30",
+                "activity": "Official hearing",
+                "location": "Qurum Beach",
+                "race": false
+              },
+              {
+                "start": "18:30",
+                "end": null,
+                "activity": "Awards Ceremony Doors Open",
+                "location": "Hotel Intercontinental Muscat",
+                "race": false
+              },
+              {
+                "start": "19:00",
+                "end": null,
+                "activity": "Awards Ceremony",
+                "location": "Hotel Intercontinental Muscat",
+                "race": false
+              },
+              {
+                "start": "20:00",
+                "end": null,
+                "activity": "Slot Allocation",
+                "location": "Hotel Intercontinental Muscat",
+                "race": false
+              },
+              {
+                "start": "21:00",
+                "end": null,
+                "activity": "A Night to Celebrate: Live Band & Music",
+                "location": "Hotel Intercontinental Muscat",
+                "race": false
+              }
+            ]
+          }
+        ]
+      },
+      "schedulePending": false,
+      "kept": {}
+    },
+    "https://hyrox.com/event/sweat-pals-hyrox-miami-beach-26-27/": {
+      "sources": ["https://hyrox.com/event/sweat-pals-hyrox-miami-beach-26-27/"],
+      "venue": "Miami Beach Convention Center",
+      "terrain": {},
+      "airC": null,
+      "waterC": null,
+      "course": [],
+      "schedule": null,
+      "schedulePending": true,
+      "kept": {}
+    },
+    "https://www.ironman.com/races/im-lanzarote/register": {
+      "sources": [
+        "https://www.ironman.com/races/im-lanzarote",
+        "https://www.ironman.com/races/im-lanzarote/course",
+        "https://www.ironman.com/races/im-lanzarote/schedule",
+        "https://www.strava.com/routes/3333432859679298450",
+        "https://www.strava.com/routes/3333453408389779014",
+        "https://www.strava.com/routes/3334104137787685634"
+      ],
+      "venue": null,
+      "terrain": { "swim": "ocean", "bike": "hilly", "run": "rolling" },
+      "airC": [18, 25],
+      "waterC": [20, 20],
+      "course": [
+        {
+          "leg": "swim",
+          "title": "Salomon IRONMAN Lanzarote - ROKA Swim Course",
+          "source": "https://www.strava.com/routes/3333432859679298450",
+          "distanceM": 3800,
+          "elevationGainM": null,
+          "polyline": "ikooD|lkrAtFfL`@jJvBEsDss@_CH`AvVwDQB~@jG`O`@hJxBGuDss@}BJ~@tVuDO",
+          "profile": [],
+          "aidM": []
+        },
+        {
+          "leg": "bike",
+          "title": "Salomon IRONMAN Lanzarote - ZOOT Bike Course",
+          "source": "https://www.strava.com/routes/3333453408389779014",
+          "distanceM": 180300,
+          "elevationGainM": 2557,
+          "polyline": "wqooDbokrAfIqw@qE{|@mWaUu_@~XrEpw@mT|dBlE~c@i{BwiA_QeG{JtGcEgNiiAva@{@lz@oXf^gCtw@uk@fFhC`}@d]rPpYpa@xr@pjBx}@rcAd\\jGiCvKdKjVyStWoFlp@un@hHeNdNpEro@mH}e@~LuUzLfDoGgL}tDsdBkk@vAoN}Nel@m@}FaWwm@eQiJih@adAg|AylBmfBu@un@d{JoRsk@ubAqpAynE{\\a`@w@ot@_kActBiwA{s@}eCkzDiMog@xDePod@}k@lJ_u@xb@ijAqZay@`]cyCthDhrDxk@jbAyk@kbAuhDirDa]byCpZ`y@eq@fuBkRmtAiT}[{@gg@mdAmCyHmH}Dwk@y^Rsm@qQ`LcGg[eAgmCbXaa@sFuVxO}Ise@Zre@gNwbAcu@_f@kj@tAcTyQceC{e@cbAXue@uQqh@zTk{@i^}[cb@`_@vDv{@yLp~@gv@hWtNxo@aWzAd]~LeB`Psf@~`Aa{@xe@uJ`gDx_Aln@uDzu@nKdyDhdCrjBkBxf@`b@pOjSa]l{CpZvv@yb@hjAyIvv@|a@ni@|F`x@lhCt{DhwAzs@~jAbtBv@nt@z\\``@ppAxnErk@tbAebEhOk]uJg}AbOf}AcOj]tJdbEiOhNbr@rh@iChFsz@nXg^z@mz@hhAea@bFtMzJuG~PdGpzBdjAuDmd@lT}dBoEix@~_@gW~V`TpEz|@}JviA|@{P",
+          "profile": [
+            11, 17, 81, 171, 297, 325, 310, 246, 209, 178, 226, 338, 306, 274, 278, 322, 329, 334,
+            296, 272, 205, 225, 327, 257, 162, 154, 149, 161, 141, 260, 323, 304, 400, 552, 488,
+            324, 290, 364, 435, 366, 216, 107, 18, 44, 88, 119, 218, 306, 275, 199, 241, 289, 322,
+            333, 350, 308, 344, 334, 318, 232, 129, 59, 15, 10
+          ],
+          "aidM": [21726, 39761, 61212, 90147, 109787, 133527, 148629, 165945]
+        },
+        {
+          "leg": "run",
+          "title": "Salomon IRONMAN Lanzarote - SALOMON Run Course",
+          "source": "https://www.strava.com/routes/3334104137787685634",
+          "distanceM": 42100,
+          "elevationGainM": 110,
+          "polyline": "cpooDlnkrAr@eO]}VlGgPwFySUmOjBoIm@sK_IyNqLmDk^cd@oAmXnAiDfGuCn@yDaU}_@{@oIaEwJH}HiAkGyJyPsBwGFcKwe@}QcOyQoJcHgDgI_TaWo@gPgBgBlAiAsAgGAwG_E_AyAiU`CoEKqB{FaIcFa@kC}AhCfBnF`@pFvHJpBaCnExAhU~D~@@vGrAfGmAhAhBhBl@dP~S`WfDfInJbHbOxQve@|QGbKrBvGxJxPdAzQzDdJz@nI`U|_@o@xDgGtCoAhDnAlXf^hd@tLfDfInOd@|JkBnIZfQpF~QmGfP\\|Vs@dOr@eOe@qUtGsQqF_R[gQjBoIe@}JgIoOqLmDk^cd@oAmXnAiDfGuCn@yDaU}_@q@wGuEoLMwJiAkEhAjELvJzDlJjAxI`U|_@o@xDgGtCoAhDnAlXj^bd@pLlDfInOd@|JkBnIZfQpF~QuGrQd@pUq@dOp@eO]}VlGgPqF_R[gQjBoIu@gLwHeNqLmDk^cd@oAmXnAiDfGuCn@yDaU}_@_AyIgEmJMwJiAkEhAjELvJzDlJjAxI`U|_@o@xDgGtCoAhDnAlXj^bd@pLlDfInOd@|JkBnIZfQpF~QmGfP\\|VqA`Op@_C",
+          "profile": [
+            9, 14, 16, 15, 9, 7, 7, 7, 8, 7, 7, 8, 6, 6, 7, 11, 7, 6, 8, 8, 6, 7, 8, 8, 8, 8, 13,
+            16, 14, 15, 10, 9, 16, 13, 11, 7, 7, 7, 9, 8, 7, 8, 9, 14, 16, 15, 10, 12, 16, 14, 11,
+            7, 7, 7, 10, 7, 7, 7, 11, 13, 16, 9, 10, 8
+          ],
+          "aidM": [191, 8200, 9535, 21661, 23604, 25548]
+        }
+      ],
+      "schedule": {
+        "source": "https://www.ironman.com/races/im-lanzarote/schedule",
+        "raceDate": "2026-05-23",
+        "days": [
+          {
+            "offset": -3,
+            "items": [
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "IRONMAN Lanzarote EXPO",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "IRONMAN Lanzarote Merchandise Store",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "11:30",
+                "end": "12:30",
+                "activity": "Technical Meeting PRO",
+                "location": "Online",
+                "race": false
+              },
+              {
+                "start": "00:00",
+                "end": "19:00",
+                "activity": "IRONMAN Spectator info point",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "14:00",
+                "end": "14:45",
+                "activity": "Technical Meeting for Age Groups in English",
+                "location": "Online",
+                "race": false
+              },
+              {
+                "start": "14:45",
+                "end": "15:30",
+                "activity": "Technical Meeting for Age Groups in Spanish",
+                "location": "Online",
+                "race": false
+              },
+              {
+                "start": "17:00",
+                "end": "19:00",
+                "activity": "IRONKIDS Registration",
+                "location": "IRONMAN Lanzarote Transition, Playa Grande",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": -2,
+            "items": [
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "IRONMAN Lanzarote EXPO",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "IRONMAN Lanzarote Merchandise Store",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "Registration, IRONMAN Lanzarote Information Center",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "11:00",
+                "end": "12:00",
+                "activity": "Public Press Conference- Transition Area",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "00:00",
+                "end": "19:00",
+                "activity": "IRONMAN Lanzarote Information Center (Spectators)",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "14:00",
+                "end": "16:00",
+                "activity": "IRONKIDS Registration",
+                "location": "IRONMAN Lanzarote Transition, Playa Grande",
+                "race": false
+              },
+              {
+                "start": "16:30",
+                "end": null,
+                "activity": "IRONKIDS",
+                "location": "IRONMAN Lanzarote Transition, Playa Grande",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": -1,
+            "items": [
+              {
+                "start": "09:00",
+                "end": "13:00",
+                "activity": "Registration, IRONMAN Lanzarote Information Center",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "IRONMAN Lanzarote EXPO",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "IRONMAN Lanzarote Merchandise Store",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "11:00",
+                "end": "19:00",
+                "activity": "Mechanic Services (with charge)",
+                "location": "Avenida de Las Playas (entrance of transition zone)",
+                "race": false
+              },
+              {
+                "start": "00:00",
+                "end": "19:00",
+                "activity": "IRONMAN Lanzarote Information Center (Spectators)",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "15:00",
+                "end": "20:00",
+                "activity": "Bike and bag Check In",
+                "location": "Transition area, Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": 0,
+            "items": [
+              {
+                "start": "05:00",
+                "end": "06:45",
+                "activity": "Transition Open for Athletes",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "06:00",
+                "end": "00:30",
+                "activity": "IRONMAN Lanzarote Information Center (Spectators)",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "05:00",
+                "end": "00:30",
+                "activity": "IRONMAN Lanzarote Information Center (Athletes)",
+                "location": "Transition Area",
+                "race": false
+              },
+              {
+                "start": "05:00",
+                "end": null,
+                "activity": "Mechanic Services at transition for last minutes issues until last cyclist has left transition",
+                "location": "Avenida de Las Playas (entrance of transition zone)",
+                "race": false
+              },
+              {
+                "start": "07:00",
+                "end": null,
+                "activity": "Swim Start PRO male",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "07:05",
+                "end": null,
+                "activity": "Swim Start PRO female",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "07:10",
+                "end": "19:20",
+                "activity": "Age Group Swim Start (Rolling Start)",
+                "location": null,
+                "race": true
+              },
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "IRONMAN Lanzarote Merchandise Store",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "19:00",
+                "end": "00:30",
+                "activity": "Check-out Bag & Bikes",
+                "location": "Transition Area",
+                "race": false
+              },
+              {
+                "start": "00:30",
+                "end": null,
+                "activity": "Transition Area Closes",
+                "location": null,
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": 1,
+            "items": [
+              {
+                "start": "10:00",
+                "end": "16:00",
+                "activity": "IRONMAN Information Center and Spectator",
+                "location": "Transition Area, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": null,
+                "activity": "IRONMAN Lanzarote Merchandise Store",
+                "location": "Avenida de Las Playas, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "12:30",
+                "end": null,
+                "activity": "Slot Allocation & On- Site Registration for IRONMAN World Championship",
+                "location": "Transition Area, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "14:00",
+                "end": null,
+                "activity": "Awards Ceremony Cocktail",
+                "location": "Transition Area, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "14:00",
+                "end": null,
+                "activity": "Awards Ceremony",
+                "location": "Transition Area, Puerto del Carmen",
+                "race": false
+              },
+              {
+                "start": "17:00",
+                "end": "19:00",
+                "activity": "Volunteer Party",
+                "location": "Transition area, Puerto de Carmen",
+                "race": false
+              }
+            ]
+          }
+        ]
+      },
+      "schedulePending": false,
+      "kept": {}
+    },
+    "https://supertri.com/toronto-triathlon/": {
+      "sources": [
+        "https://supertri.com/toronto-triathlon/",
+        "https://supertri.com/toronto-triathlon/olympic",
+        "https://supertri.com/toronto-triathlon/schedule",
+        "https://www.strava.com/routes/3459615466775941042",
+        "https://www.strava.com/routes/3459617551271887794",
+        "https://www.strava.com/routes/3459617422094043424"
+      ],
+      "venue": null,
+      "terrain": {},
+      "airC": null,
+      "waterC": null,
+      "course": [
+        {
+          "leg": "swim",
+          "title": "Supertri Toronto 2026 - Swim Olympic Distance",
+          "source": "https://www.strava.com/routes/3459615466775941042",
+          "distanceM": 1500,
+          "elevationGainM": null,
+          "polyline": "gmhiGtjwcNn@`Qk@zLcBjRvAd@~AaSd@_JMqV}Bb@",
+          "profile": [],
+          "aidM": []
+        },
+        {
+          "leg": "bike",
+          "title": "Supertri Toronto 2026 - Bike Olympic Distance",
+          "source": "https://www.strava.com/routes/3459617551271887794",
+          "distanceM": 40400,
+          "elevationGainM": 226,
+          "polyline": "wzhiGnewcNeAmDeC`IhAjI~AMp@nBAhDrAzQaCbAyA}@u@}BoZmcB_@cGK}UsAe^Bqa@cLeiAcBmJyCiJePm`@{CoJeN}dAgJid@KaG`@kNUaGaCsJgDiHeEwBaFXaG|DkTnVcEvCieAnTuDjBkQfOgGvCkKbCyJhA}Rj@sVkH{Pw@uMoE{GqFoZe_@_CmEmAsEo@}FHsIzAwVAaGg@aFmCsI_JyMgJyXgDiEyFyCuWuE}CwBgSgY_CkBaFgBcF?wEtAuObN{KbGzKcGtOcNvEuAbF?`FfB~BjBfSfY|CvBtWtExFxCfDhEfJxX~IxMlCrIf@`F@`G{AvVIrIn@|FlArE~BlEnZd_@zGpFpMnE~Pv@rVjH|Rk@xJiAjKcCfGwCjQgOtDkBheAoTbEwCnRuT|HwF`FYdExBfDfH`CrJT`Ga@jNJ`GfJhd@dN|dAzCnJdPl`@xChJbBlJbLdiACpa@rAd^J|U^bGv\\~lBHzL}@dJgZp`AiDdQsBpRu@bOOjTb@lLc@mLJgSx@gPrBqRhDeQfZq`AbAmOQuGeAoHt@|Bz@r@~@H~AcAyAsXi@aA_BLgAgHbCeJ~@bC",
+          "profile": [
+            83, 82, 82, 90, 93, 91, 87, 85, 86, 86, 86, 88, 93, 76, 77, 79, 82, 91, 96, 90, 94, 100,
+            100, 92, 95, 108, 122, 121, 121, 120, 106, 94, 95, 103, 101, 91, 89, 97, 90, 80, 78, 77,
+            76, 90, 87, 86, 86, 85, 85, 87, 92, 92, 90, 80, 78, 79, 79, 76, 82, 78, 80, 78, 82, 83
+          ],
+          "aidM": []
+        },
+        {
+          "leg": "run",
+          "title": "Supertri Toronto 2026 - Run Olympic Distance",
+          "source": "https://www.strava.com/routes/3459617422094043424",
+          "distanceM": 10100,
+          "elevationGainM": 9,
+          "polyline": "cxhiG`owcNHf@EHz@HJrApAa@J`@?b@M`@Dj@Z|@@IoBtHoBd@l@hKrA{CtDoORkB?}AeAsYSiAIoAIaBB}@yAsPQc@KiAMN{Bf@?HdBGHTz@pJc@rBVfC[z@x@x@HpBKnA|@Zb@pLe@OE`@w@x@T`BGl@`@xB?b@M`@Dj@Zv@?RmB|GoBd@l@hKrA{CtDoORkB?}AeAsYSiAIoAIaBB}@yAsPQc@Iy@kCf@?HdBGHTz@pJc@rBVfC[z@x@x@HpBKnA|@Zb@pLe@OE`@w@x@T`BGl@`@xB?b@M`@Dj@Zv@?RmB|GoBd@l@hKrA{CtDoORkB?}AeAsYSiAIoAIaBB}@yAsPQc@Iy@kCf@?HdBGHTz@pJc@rBVfC[z@x@x@HpBKnA|@Zb@pLe@OE`@w@x@T`BGl@`@xB?b@M`@Dj@Zv@?RmB|GoBd@l@hKrA{CtDoORkB?}AeAsYSiAIoAIaBB}@yAsPQc@Iy@kCf@?HdBGFL|@xJc@rBVfC[z@x@x@HpBYpFYr@m@\\TxD",
+          "profile": [
+            82, 81, 81, 82, 81, 80, 79, 78, 78, 78, 78, 79, 80, 81, 80, 80, 81, 81, 82, 82, 81, 80,
+            78, 78, 78, 78, 78, 80, 80, 80, 80, 80, 81, 81, 82, 81, 80, 79, 78, 78, 78, 78, 78, 80,
+            81, 80, 80, 81, 81, 82, 82, 81, 80, 78, 78, 78, 78, 78, 80, 80, 81, 81, 82, 82
+          ],
+          "aidM": []
+        }
+      ],
+      "schedule": {
+        "source": "https://supertri.com/toronto-triathlon/schedule",
+        "raceDate": "2026-07-26",
+        "days": [
+          {
+            "offset": -2,
+            "items": [
+              {
+                "start": "14:00",
+                "end": "19:00",
+                "activity": "Race Packet Pick Up Begins at Exhibition Place",
+                "location": "Bandshell Park",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": -1,
+            "items": [
+              {
+                "start": "10:00",
+                "end": null,
+                "activity": "Expo Begins",
+                "location": "Bandshell Park",
+                "race": false
+              },
+              {
+                "start": "10:00",
+                "end": null,
+                "activity": "Race Packet Pick Up Begins",
+                "location": "Bandshell Park",
+                "race": false
+              },
+              {
+                "start": "11:00",
+                "end": "11:30",
+                "activity": "In Person Q&A / Race Briefing Session",
+                "location": "Bandshell Park",
+                "race": false
+              },
+              {
+                "start": "12:00",
+                "end": null,
+                "activity": "Swim Course Familiarization Begins",
+                "location": "Lake Ontario's West Channel",
+                "race": false
+              },
+              {
+                "start": "13:30",
+                "end": "14:00",
+                "activity": "In Person Q&A / Race Briefing Session",
+                "location": "Bandshell Park",
+                "race": false
+              },
+              {
+                "start": "14:00",
+                "end": null,
+                "activity": "Swim Course Familiarization Ends",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "15:00",
+                "end": "15:45",
+                "activity": "PRO Swim Course Familiarization",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "15:30",
+                "end": "16:00",
+                "activity": "In Person Race Briefing / Q&A Session",
+                "location": "Bandshell Park",
+                "race": false
+              },
+              {
+                "start": "17:00",
+                "end": null,
+                "activity": "Expo Closes",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "17:00",
+                "end": null,
+                "activity": "Race Packet Pick Up Closes",
+                "location": null,
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": 0,
+            "items": [
+              {
+                "start": "06:45",
+                "end": null,
+                "activity": "Transition Opens for Olympic Distance Race",
+                "location": "Bandshell Park",
+                "race": false
+              },
+              {
+                "start": "07:00",
+                "end": null,
+                "activity": "Gear Check Opens",
+                "location": "Bandshell Park",
+                "race": false
+              },
+              {
+                "start": "08:00",
+                "end": null,
+                "activity": "Pro Men RACE START",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "08:05",
+                "end": null,
+                "activity": "Pro Women RACE START",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "08:20",
+                "end": null,
+                "activity": "OLYMPIC DISTANCE RACE START",
+                "location": null,
+                "race": true
+              },
+              {
+                "start": "08:20",
+                "end": null,
+                "activity": "Transition Opens for Sprint Distance Race",
+                "location": "Bandshell Park",
+                "race": false
+              },
+              {
+                "start": "08:30",
+                "end": null,
+                "activity": "Finish Line Festival Begins",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "09:30",
+                "end": null,
+                "activity": "Pro Awards Ceremony",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "09:40",
+                "end": null,
+                "activity": "SPRINT DISTANCE RACE START",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "11:30",
+                "end": null,
+                "activity": "Bike Check Out opens",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "11:30",
+                "end": null,
+                "activity": "Olympic Distance Awards Ceremony",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "11:45",
+                "end": null,
+                "activity": "Sprint Distance Awards Ceremony",
+                "location": null,
+                "race": false
+              },
+              {
+                "start": "13:30",
+                "end": null,
+                "activity": "Venue closes",
+                "location": null,
+                "race": false
+              }
+            ]
+          }
+        ]
+      },
+      "schedulePending": false,
+      "kept": {}
+    },
+    "https://www.ironman.com/races/im-canada-ottawa": {
+      "sources": [
+        "https://www.ironman.com/races/im-canada-ottawa",
+        "https://www.ironman.com/races/im-canada-ottawa/course",
+        "https://www.ironman.com/races/im-canada-ottawa/schedule",
+        "https://www.strava.com/routes/3498010742852392600",
+        "https://www.strava.com/routes/3498078436262662932",
+        "https://www.strava.com/routes/3498080238331462298"
+      ],
+      "venue": null,
+      "terrain": { "swim": "river", "bike": "rolling", "run": "flat" },
+      "airC": [15, 28],
+      "waterC": [21, 21],
+      "course": [
+        {
+          "leg": "swim",
+          "title": "IRONMAN Canada-Ottawa - ROKA Swim Course",
+          "source": "https://www.strava.com/routes/3498010742852392600",
+          "distanceM": 3812,
+          "elevationGainM": null,
+          "polyline": "mj{sGnutmMw[fEjg@bhBvHcGqb@q{AzMmE",
+          "profile": [],
+          "aidM": []
+        },
+        {
+          "leg": "bike",
+          "title": "IRONMAN Canada-Ottawa - ZOOT Bike Course",
+          "source": "https://www.strava.com/routes/3498078436262662932",
+          "distanceM": 179603,
+          "elevationGainM": 695,
+          "polyline": "{b{sG~dtmMpH{c@hP_H_\\kaA}{@fCmmB_qCko@kDiN}l@u`@`Mma@|t@r~@whAxR`o@fl@rBfqBzsCv~@qMc}@vN{rBauCum@kDqfAknCwCsaBui@ey@eh@iqBjh@cvA`e@|QjgAg\\nYvOhQn_BpObUrcBvIl]eSm]dSscBwI{a@suBoYwOkgAf\\ae@}Qci@pwA_l@|^miAsg@g^}i@wYzNgTye@cPihD~XegAai@_iCwOscEib@a{AjDg]jSkIjpA|h@s}Akf@yJrl@ra@nsAvOrcE`i@~hC_YdgAbPhhDfTxe@xPmHtOjc@xMsSbgAl|@b_@kMwOfmAdo@|[~_@kZyf@{aBjh@cvAvc@~QhwAuWd]rkBxRvVj`BbHl]eSm]dSscBwI{a@suBoYwOkgAf\\ae@}Qci@pwA_l@|^miAsg@g^}i@wYzNgTye@cPihD~XegAai@_iCwOscEib@a{AjDg]jSkIjpA|h@s}Akf@yJrl@ra@nsAvOrcE`i@~hC_YdgAbPhhDfTxe@xPmHtOjc@xMsSbgAl|@b_@kMwOfmAdo@|[~_@kZyf@{aBjh@cvAvc@~QhwAuWd]rkBxRvVj`BbHl]eSm]dSscBwI{a@suBoYwOkgAf\\ae@}Qci@pwA_l@|^miAsg@g^}i@wYzNgTye@cPihD~XegAai@_iCwOscEib@a{AjDg]jSkIjpA|h@s}Akf@yJrl@ra@nsAvOrcE`i@~hC}XpcApPvmD`Thd@|[hAfDhWxL_ThdA`{@h^uF",
+          "profile": [
+            61, 59, 60, 63, 58, 59, 61, 60, 63, 56, 67, 65, 72, 71, 65, 67, 58, 55, 67, 53, 52, 54,
+            52, 53, 60, 65, 58, 54, 65, 64, 63, 72, 68, 67, 59, 64, 56, 53, 52, 57, 51, 52, 64, 54,
+            59, 57, 80, 65, 65, 77, 65, 65, 67, 66, 57, 56, 52, 54, 54, 52, 57, 56, 60, 65
+          ],
+          "aidM": []
+        },
+        {
+          "leg": "run",
+          "title": "IRONMAN Canada-Ottawa - SALOMON Run Course",
+          "source": "https://www.strava.com/routes/3498080238331462298",
+          "distanceM": 42326,
+          "elevationGainM": 165,
+          "polyline": "iygtGh|_mM}@lGpEwFaAmK|R_QhZd}@}CfCmJoObDzNkAdAkDsMoIcBqB_DaAkMn[m_AtA|Ov@iBmCsL|Tcm@j^`OhNbAxJsJ|\\[bSoMxQrEvEpJhDf`@hJpTb@tb@gA~FkOtSuBtSfSbStJHhKwDbB~@pb@fuAGdIiCfD{ItAfKyB|BcJwg@acBxDeF]sEmGbAcBfFZ~BxDLbA|EcLlFuJIcSyRpB_TjOuSfAaGc@sb@iJqTiDg`@uEoJ{QuEcSnM}\\ZqJzIqNk@k^aO}Tbm@jAjDg@fFp@hC~@yCuCcK|Tcm@j^`OhNbAxJsJ|\\[bSoMbSvFhEvLlC|\\hJpTb@tb@gA~FkOtSuBtSfSbStJHhKwDbB~@pb@fuAIjIgCbD{IrAfKyB|BcJwg@acBxDeF]sEmGbAcBfFZ~BxDLbA|EcLlFuJIcSyRpB_TjOuSfAaGc@sb@iJqTiDg`@uEoJ{QuEcSnM}\\ZqJzIqNk@k^aOmq@pmB`AjMpB~CnIbBjDrMjAeAqCcOzIvOzCcCgZi}@qFhF}CtJ",
+          "profile": [
+            66, 73, 80, 71, 45, 56, 66, 69, 67, 66, 66, 64, 64, 68, 64, 64, 83, 79, 78, 78, 79, 85,
+            79, 74, 65, 66, 67, 64, 65, 65, 67, 69, 69, 69, 66, 65, 65, 63, 66, 66, 65, 70, 87, 79,
+            79, 78, 83, 82, 83, 65, 64, 67, 64, 64, 66, 66, 66, 70, 67, 45, 61, 74, 71, 69
+          ],
+          "aidM": []
+        }
+      ],
+      "schedule": {
+        "source": "https://www.ironman.com/races/im-canada-ottawa/schedule",
+        "raceDate": "2026-08-02",
+        "days": [
+          {
+            "offset": -3,
+            "items": [
+              {
+                "start": "13:00",
+                "end": "17:00",
+                "activity": "Athlete Check-In & Timing Chip Pick-Up",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": "17:00",
+                "activity": "IRONMAN Village",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": "17:00",
+                "activity": "Official IRONMAN Store",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "14:00",
+                "end": null,
+                "activity": "Athlete Briefing",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "15:00",
+                "end": null,
+                "activity": "Athlete Briefing",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "15:30",
+                "end": null,
+                "activity": "Put Your Wetsuit On Like a Pro",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "16:00",
+                "end": null,
+                "activity": "Athlete Briefing",
+                "location": "Major’s Hill Park",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": -2,
+            "items": [
+              {
+                "start": "08:00",
+                "end": "10:00",
+                "activity": "Practice Swim",
+                "location": "Britannia Beach T1",
+                "race": false
+              },
+              {
+                "start": "08:00",
+                "end": "10:00",
+                "activity": "Information/ Lost & Found Booth",
+                "location": "Britannia Beach T1",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "17:00",
+                "activity": "IRONKIDS Fun Run Registration & Packet Pick-Up",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "17:00",
+                "activity": "Athlete Check-In & Timing Chip Pick-Up",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "IRONMAN Village",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "19:00",
+                "activity": "Official IRONMAN Store",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "10:00",
+                "end": null,
+                "activity": "First timer Q&A",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "11:00",
+                "end": null,
+                "activity": "Athlete Briefing",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": null,
+                "activity": "Athlete Briefing",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "15:00",
+                "end": null,
+                "activity": "First timer Q&A",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "16:00",
+                "end": null,
+                "activity": "Athlete Briefing",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "17:30",
+                "end": "19:00",
+                "activity": "Welcome Ceremony",
+                "location": "Major’s Hill Park",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": -1,
+            "items": [
+              {
+                "start": "08:00",
+                "end": "09:00",
+                "activity": "IRONKIDS Fun Run Race",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "11:00",
+                "activity": "Athlete Check-In & Timing Chip Pick-Up",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "15:00",
+                "activity": "IRONMAN Village",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "15:00",
+                "activity": "Official IRONMAN Store",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "10:00",
+                "end": "16:00",
+                "activity": "Mandatory Bike & Gear Bag Check-In",
+                "location": "Britannia Beach T1",
+                "race": false
+              },
+              {
+                "start": "10:00",
+                "end": "16:00",
+                "activity": "Information/ Lost & Found Booth",
+                "location": "Britannia Beach T1",
+                "race": false
+              },
+              {
+                "start": "10:00",
+                "end": "17:00",
+                "activity": "Mandatory Run & Gear Bag Check-In",
+                "location": "National Gallery of Canada T2",
+                "race": false
+              },
+              {
+                "start": "12:00",
+                "end": null,
+                "activity": "Athlete Briefing",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "13:00",
+                "end": null,
+                "activity": "Athlete Briefing",
+                "location": "Major’s Hill Park",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": 0,
+            "items": [
+              {
+                "start": "03:30",
+                "end": "05:30",
+                "activity": "Bike and Run Personal Needs Drop Off",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "03:30",
+                "end": "05:30",
+                "activity": "Shuttle Bus to Britannia Beach Swim Start T1",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "04:00",
+                "end": "06:00",
+                "activity": "Transition Area Open",
+                "location": "Britannia Beach T1",
+                "race": false
+              },
+              {
+                "start": "06:00",
+                "end": null,
+                "activity": "START IRONMAN Canada-Ottawa",
+                "location": "Britannia Beach T1",
+                "race": true
+              },
+              {
+                "start": "07:30",
+                "end": "10:30",
+                "activity": "Return Shuttles will Resume to Downtown",
+                "location": "Britannia Beach T1",
+                "race": false
+              },
+              {
+                "start": "12:00",
+                "end": "19:00",
+                "activity": "IRONMAN Village",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "12:00",
+                "end": "19:00",
+                "activity": "Official IRONMAN Store",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "18:00",
+                "end": "00:30",
+                "activity": "Bike and Gear Check-Out",
+                "location": "National Gallery of Canada T2",
+                "race": false
+              },
+              {
+                "start": "22:00",
+                "end": "00:00",
+                "activity": "Magic Hour",
+                "location": "Major’s Hill Park",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": 1,
+            "items": [
+              {
+                "start": "07:00",
+                "end": "12:00",
+                "activity": "IRONMAN Village",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "07:00",
+                "end": "12:00",
+                "activity": "Official IRONMAN Store",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "08:30",
+                "end": "09:30",
+                "activity": "Celebration Day Breakfast",
+                "location": "Major’s Hill Park",
+                "race": false
+              },
+              {
+                "start": "09:30",
+                "end": "11:00",
+                "activity": "Awards Ceremony & 2026 IRONMAN World Championship Slot Allocation/Rolldown Ceremony",
+                "location": "Major’s Hill Park",
+                "race": false
+              }
+            ]
+          }
+        ]
+      },
+      "schedulePending": false,
+      "kept": {}
+    },
+    "https://t100triathlon.com/vancouver/participate/": {
+      "sources": [
+        "https://t100triathlon.com/vancouver/participate/",
+        "https://t100triathlon.com/vancouver/participate/event-info/",
+        "https://ridewithgps.com/routes/55895960",
+        "https://ridewithgps.com/routes/55344525",
+        "https://ridewithgps.com/routes/56103225"
+      ],
+      "fetched": "2026-09-30",
+      "venue": "Locarno Beach (Jericho Sailing Centre), 1300 Discovery St, Vancouver, BC V6R 4L9, Canada",
+      "venueMap": "https://t100triathlon.com/wp-content/uploads/2025/03/VENUE_VanT100_1600x2000_July_9-scaled.png",
+      "athleteGuide": "https://t100triathlon.com/wp-content/uploads/2026/07/26_Vancouver_Athlete-Guide-.pdf",
+      "terrain": { "swim": "ocean", "bike": "rolling", "run": "packed gravel" },
+      "airC": [14, 19],
+      "waterC": [13.9, 18],
+      "course": [
+        {
+          "leg": "swim",
+          "title": "100km - Swim - Vancouver T100",
+          "source": "https://ridewithgps.com/routes/55895960",
+          "edition": 2026,
+          "mapUrl": "https://t100triathlon.com/wp-content/uploads/2025/03/2km_SWIM_VanT100_1920x1080_July_9-scaled.png",
+          "distanceM": 2080,
+          "raceDistanceM": 2000,
+          "laps": 2,
+          "aidStationsPerLap": null,
+          "elevationGainM": null,
+          "polyline": "cgwkH`b~nV}JxM}C_AiBcC[oIj@sD|BcCdN~GPpA}JxM}C_AiBcC[oIj@sD|BcCdN~GPpA",
+          "profile": [],
+          "aidM": []
+        },
+        {
+          "leg": "bike",
+          "title": "100km - Bike - Vancouver T100",
+          "source": "https://ridewithgps.com/routes/55344525",
+          "edition": 2026,
+          "mapUrl": "https://t100triathlon.com/wp-content/uploads/2025/03/80km_BIKE_VanT100_1920x1080_July_9-scaled.png",
+          "distanceM": 78969,
+          "raceDistanceM": 80000,
+          "laps": 4,
+          "aidStationsPerLap": 1,
+          "elevationGainM": 651,
+          "polyline": "uvvkHh_~nV|XoAxBoMnBdLqC`YUfc@xAflAkUxz@qFjr@hAvj@rJ|\\eNQwRuZkNuc@rGuaB_BbKd@jZsE``@\\z\\fM|_@vRtZfO|AtT`b@fS|CrFsK|NwG`FsMjLeEt]ag@f|@goB~Maj@fM_{AgM~zA_N`j@g|@foBu]`g@kLdEaFrM}NvGyGvKwV}G_R_`@gMc@wRuZgM}_@]{\\rEa`@Vuf@Wtf@sE``@\\z\\fM|_@vRtZfO|AtT`b@fS|CrFsK|NwG`FsMjLeEt]ag@f|@goB~Maj@fM_{AgM~zA_N`j@g|@foBu]`g@kLdEaFrM}NvGyGvKwV}G_R_`@gMc@wRuZgM}_@]{\\rEa`@Vuf@Wtf@sE``@\\z\\fM|_@vRtZfO|AtT`b@fS|CrFsK|NwG`FsMjLeEt]ag@f|@goB~Maj@fM_{AgM~zA_N`j@g|@foBu]`g@kLdEaFrM}NvGyGvKwV}G_R_`@gMc@wRuZgM}_@]{\\rEa`@Vuf@Wtf@sE``@\\z\\fM|_@vRtZfO|AtT`b@fS|CrFsK|NwG`FsMjLeEt]ag@f|@goB~Maj@fM_{AgM~zA_N`j@g|@foBu]`g@kLdEaFrM}NvGyGvKwV}G_R_`@gMc@wRuZkNuc@Jc\\pE{^c@yZxLkuA`Ii`@sAyZ`GANiR",
+          "profile": [
+            5, 59, 90, 75, 69, 14, 6, 32, 77, 81, 69, 53, 35, 34, 50, 67, 82, 77, 54, 7, 9, 41, 78,
+            84, 69, 52, 35, 34, 52, 68, 84, 78, 45, 11, 9, 50, 78, 84, 67, 51, 34, 35, 52, 69, 83,
+            78, 36, 6, 6, 58, 77, 80, 66, 49, 34, 35, 53, 70, 81, 77, 28, 7, 9, 5
+          ],
+          "aidM": []
+        },
+        {
+          "leg": "run",
+          "title": "100km - Run - Vancouver T100",
+          "source": "https://ridewithgps.com/routes/56103225",
+          "edition": 2026,
+          "mapUrl": "https://t100triathlon.com/wp-content/uploads/2025/03/18km_RUN_VanT100_1920x1080_July14-scaled.png",
+          "distanceM": 17843,
+          "raceDistanceM": 18000,
+          "laps": 3,
+          "aidStationsPerLap": null,
+          "elevationGainM": 106,
+          "polyline": "q}vkHb|}nVg@sCjBkDHcEzCeAK{FRo@rAQfD\\~EvDFbGcB|H|ADzA_AhCPdC}SAoD_BMxAiLuDYI_Cf@_CO_EkCoAW\\aDbFqFdSuDjDe@vCkChBTvAjAt@IbEy@zB_C|As@|CnBjRo@tCh@vENlMaCtQ}CfM{Bx_@zBy_@|CgM`CuQOmMi@wEn@uCmAiOh@gEWw@xCgCz@wHhCc@MiFTaAlBSlC^~EvDFbGcB|HhIaA~BcSAoD_BMxAiLuDYI_Cf@_CO_EkCoAW\\aDbFqFdSuDjDe@vCmCzAVdBjAt@IbEy@zB_C|A}@nDr@lBdAjNo@tCh@vENlMaCtQ}CfMyBp_@xBq_@|CgM`CuQOmMi@wEn@uCmAiOp@_Fk@s@bAG`BkBz@wHhCc@MiFTaAlBSlC^~EvDFbGcB|HhIaA~BcSAoD_BMxAiLuDYI_Cf@_CO_EkCoAW\\aDbFqFdSuDjDe@vCkChBTvAjAt@IbEy@zB_C|As@|CnBjRo@tCh@vENlMaCtQ}CfMyBp_@xBq_@|CgM`CuQOmMi@wEn@uCmAiOh@gEWw@q@bCPzAaAhA\\bI",
+          "profile": [
+            5, 6, 8, 9, 19, 21, 9, 6, 6, 7, 6, 5, 4, 4, 6, 6, 6, 6, 4, 3, 5, 6, 7, 7, 10, 21, 15, 6,
+            5, 6, 6, 6, 5, 3, 5, 6, 7, 6, 5, 3, 5, 6, 6, 8, 7, 14, 20, 14, 7, 6, 5, 6, 6, 4, 4, 7,
+            5, 7, 5, 7, 4, 7, 5, 5
+          ],
+          "aidM": []
+        }
+      ],
+      "schedule": {
+        "source": "https://t100triathlon.com/vancouver/participate/event-info/",
+        "raceDate": "2026-08-16",
+        "days": [
+          {
+            "offset": -2,
+            "items": [
+              {
+                "start": "11:30",
+                "end": null,
+                "activity": "Shuttle Service Begins",
+                "location": "UBC North Parkade / Jericho Sailing Centre",
+                "race": false
+              },
+              {
+                "start": "12:00",
+                "end": "18:00",
+                "activity": "Expo Open",
+                "location": "Jericho Sailing Centre",
+                "race": false
+              },
+              {
+                "start": "12:00",
+                "end": "18:00",
+                "activity": "Race Pack Collection (100km, Olympic & Sprint Triathlon)",
+                "location": "Jericho Sailing Centre",
+                "race": false
+              },
+              {
+                "start": "17:30",
+                "end": "18:00",
+                "activity": "In-Person Race Director Q&A (Watch Video Briefing Before Attending)",
+                "location": "Locarno Beach Finish Area – Main Stage",
+                "race": false
+              },
+              {
+                "start": "19:00",
+                "end": null,
+                "activity": "Shuttle Service Ends",
+                "location": "UBC North Parkade / Jericho Sailing Centre",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": -1,
+            "items": [
+              {
+                "start": "04:30",
+                "end": null,
+                "activity": "Shuttle Service Begins",
+                "location": "UBC North Parkade / Jericho Sailing Centre",
+                "race": false
+              },
+              {
+                "start": "07:00",
+                "end": "17:00",
+                "activity": "Expo Open",
+                "location": "Jericho Sailing Centre",
+                "race": false
+              },
+              {
+                "start": "09:00",
+                "end": "15:00",
+                "activity": "Race Pack Collection (100km)",
+                "location": "Jericho Sailing Centre",
+                "race": false
+              },
+              {
+                "start": "12:00",
+                "end": "16:30",
+                "activity": "100km Bike & Transition Check-In",
+                "location": "Jericho Sailing Centre – Transition Area",
+                "race": false
+              },
+              {
+                "start": "17:00",
+                "end": null,
+                "activity": "Shuttle Service Ends",
+                "location": "UBC North Parkade / Jericho Sailing Centre",
+                "race": false
+              }
+            ]
+          },
+          {
+            "offset": 0,
+            "items": [
+              {
+                "start": "04:30",
+                "end": null,
+                "activity": "Shuttle Service Begins",
+                "location": "UBC North Parkade / Jericho Hostel",
+                "race": false
+              },
+              {
+                "start": "05:00",
+                "end": null,
+                "activity": "100km Transition Area Opens",
+                "location": "Jericho Sailing Centre – Transition Area",
+                "race": false
+              },
+              {
+                "start": "06:15",
+                "end": null,
+                "activity": "100km Transition Area Closes",
+                "location": "Jericho Sailing Centre – Transition Area",
+                "race": false
+              },
+              {
+                "start": "06:30",
+                "end": null,
+                "activity": "100km Triathlon Race Start",
+                "location": "Locarno Beach Swim Start",
+                "race": true
+              },
+              {
+                "start": "07:00",
+                "end": "14:00",
+                "activity": "Expo Open",
+                "location": "Jericho Sailing Centre",
+                "race": false
+              },
+              {
+                "start": "12:00",
+                "end": "14:30",
+                "activity": "Bike Check-Out Open",
+                "location": "Jericho Sailing Centre – Transition Area",
+                "race": false
+              },
+              {
+                "start": "14:30",
+                "end": null,
+                "activity": "All 100km Bikes Must Be Removed From Transition & All White Bag Drop Bags Collected",
+                "location": "Jericho Sailing Centre – Transition Area",
+                "race": false
+              },
+              {
+                "start": "14:30",
+                "end": "15:00",
+                "activity": "100km Award Ceremony",
+                "location": "Locarno Beach Finish Area – Main Stage",
+                "race": false
+              },
+              {
+                "start": "15:30",
+                "end": null,
+                "activity": "Shuttle Service Ends",
+                "location": "UBC North Parkade / Jericho Sailing Centre",
+                "race": false
+              }
+            ]
+          }
+        ]
+      },
+      "schedulePending": false,
+      "kept": {}
+    }
+  }
+}

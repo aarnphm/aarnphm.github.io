@@ -627,7 +627,9 @@ function annotateTransclude(
             anchorSegments.map(segment => {
               const value = segment.trim()
               return target.trim() === 'triathlon' &&
-                (value.startsWith('filter=') || value.startsWith('settings='))
+                (value.startsWith('filter=') ||
+                  value.startsWith('settings=') ||
+                  value.startsWith('display='))
                 ? value
                 : slugAnchor(value)
             }),

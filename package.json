@@ -59,6 +59,7 @@
     "garmin:backfill-swims": "tsx --env-file=.env quartz/scripts/backfill-garmin-runs.ts --sport swim",
     "apple:sync": "tsx --env-file=.env quartz/scripts/sync-apple.ts",
     "weather:sync": "tsx --env-file=.env quartz/scripts/sync-weather.ts",
+    "calendar:sync": "tsx quartz/scripts/sync-triathlon-calendar.ts",
     "health": "pnpm strava:sync && pnpm oura:sync && pnpm weather:sync && pnpm apple:sync && pnpm core:sync",
     "health:garmin": "pnpm garmin:sync",
     "health:wahoo": "pnpm wahoo:sync && pnpm wahoo:sync-titles --write",

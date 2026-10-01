@@ -1,12 +1,13 @@
 ---
-title: Mots de la leçon du 21 septembre
+date: '2026-09-30'
+id: words
+modified: 2026-09-30 20:45:13 GMT-04:00
 tags:
   - fr
   - language
   - learning
+title: Mots de la leçon
 ---
-
-# Mots de la leçon du 21 septembre
 
 Vocabulaire de [[fr/lessons/260921|la leçon du 21 septembre]]. Les formes au présent sont dans [[fr/verbs|le tableau des verbes]].
 

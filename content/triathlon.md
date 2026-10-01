@@ -1,11 +1,14 @@
 ---
 calendar:
+  '2026':
+    b4bh-toronto: https://bikeforbrainhealth.ca/
+    toronto: https://supertri.com/toronto-triathlon/
   '2027':
     hyrox-miami: https://hyrox.com/event/sweat-pals-hyrox-miami-beach-26-27/
     lanzarote: https://www.ironman.com/races/im-lanzarote/register
     muscat: https://www.ironman.com/races/im703-oman
-    ottawa: https://www.ironman.com/races/im-canada-ottawa
     toronto: https://supertri.com/toronto-triathlon/
+    toronto-marathon: https://www.torontowaterfrontmarathon.com/
     vancouver: https://t100triathlon.com/vancouver/participate/
 date: '2026-05-29'
 description: training data and tracking
@@ -43,6 +46,16 @@ dexa:
     vatAreaIn2: 8.64
     vatLbs: 1.24
 events:
+  b4bh--tor--26:
+    participated: true
+  ironman-70.3-muscat--oman--27:
+    T1: null
+    T2: null
+    bike: null
+    distance: null
+    overall: null
+    run: null
+    swim: null
   ironman-lanzarote--spain--27:
     T1: null
     T2: null
@@ -237,7 +250,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-29 16:05:14 GMT-04:00
+modified: 2026-09-30 16:36:46 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1814,6 +1827,22 @@ exercise: Curtsy Lunge | 40s | 40s | 40s | 40s
 exercise: Wall Sit | 40s | 40s | 40s | 40s
 exercise: Single-Leg Romanian Deadlift | 40s | 40s | 40s | 40s
 exercise: Standing Calf, Seated Forward Fold, and Pigeon Stretch Flow | 2m
+```
+
+```tracking
+title: Guided All Round, Reset
+date: 2026-09-30
+time: 16:35
+duration: 75 mins
+activity: sauna
+temperature: 158F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: break | hot sauna | break | cold plunge | break | hot sauna | break
+location: Othership Adelaide
+htl: 7.7
+strava: 20396023025
+garmin: 24557452349
 ```
 
 <!-- training plan start

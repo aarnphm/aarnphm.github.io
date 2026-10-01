@@ -9,7 +9,7 @@
 // at speed leaves the skis up the slope for their owner to climb back to. Through the day the runs
 // fill with tracks, and after hours a groomer with its lights on combs the blue run flat again.
 
-import type { Almanac, Sky } from './404-almanac'
+import { type Almanac, type Sky, moonlit } from './404-almanac'
 import { type Voices, say } from './404-crew'
 import { type Grid, type Pt, type RGB, BAYER, col, dot, mulberry, row } from './404-pixel'
 
@@ -153,7 +153,7 @@ const cell = (run: Run, s: number, w: number, k: number) => {
 const GATES = Array.from({ length: 8 }, (_, n) => ({ s: 22 + 26 * n, w: n % 2 ? 4.5 : -4.5 }))
 const FINISH = GATES[GATES.length - 1].s + 8
 
-type Role = 'free' | 'teach' | 'pupil' | 'racer' | 'coach'
+type Role = 'free' | 'teach' | 'pupil' | 'racer' | 'coach' | 'tour'
 type Mode = 'carve' | 'skid' | 'plough' | 'leaf' | 'race'
 type State =
   | 'arrive'
@@ -170,6 +170,7 @@ type State =
   | 'walk'
   | 'leave'
   | 'coach'
+  | 'skin'
 
 export type Skier = {
   id: number
@@ -237,6 +238,8 @@ export type HillEnv = {
   fresh: number
   // Hours of skiing on the runs since the groomer last went over them.
   since: number
+  // Out of hours, how many locals are skinning up to ride it down.
+  tour: number
 }
 
 export type Hill = {
@@ -259,17 +262,21 @@ export type Hill = {
   cheer: number
 }
 
-// The season and the hour: through the winter the chair runs nine to four, solar time; on the
-// summer glacier from half past seven until half past twelve, when the snow goes soft. Wind stops a
-// chair long before a storm does. Winter weekends bring the most, lessons run in the mornings, and
-// summer weekdays bring a race camp to the giant slalom on the blue. The groomer goes out in the
-// evening and again before dawn.
+// The season and the hour: through the winter the chair runs from nine, solar time, and on under
+// floodlights until nine at night, as the small hills round the lake do; on the summer glacier from
+// half past seven until half past twelve, when the snow goes soft. Wind stops a chair long before a
+// storm does. Winter weekends bring the most, lessons run in the mornings, and summer weekdays bring
+// a race camp to the giant slalom on the blue. Once the chair stops, locals skin up the edge of the
+// blue by headlamp: most in the evening until half past ten, a pair at first light, and through the
+// small hours a die-hard, or two under a full moon. The groomer goes out after dark and again
+// before dawn.
 export function hillEnv(al: Almanac, sky: Sky, weekend: boolean): HillEnv {
   const winter = Math.cos((2 * Math.PI * (al.winterDay - 40)) / 365.24) > -0.2
-  const [from, to] = winter ? [9, 16] : [7.5, 12.5]
+  const [from, to] = winter ? [9, 21] : [7.5, 12.5]
   const hours = al.hour >= from && al.hour < to
   const open = hours && !sky.storm && sky.wind < 0.6
   let crowd = winter ? (weekend ? 12 : 6) : 3
+  if (winter && al.hour >= 17) crowd *= 0.6
   if (sky.fog) crowd *= 0.5
   if (sky.fall === 'rain' || sky.fall === 'drizzle') crowd *= 0.3
   if (sky.fall === 'snow' && sky.heavy > 0.6) crowd *= 0.6
@@ -284,7 +291,15 @@ export function hillEnv(al: Almanac, sky: Sky, weekend: boolean): HillEnv {
           : sky.temp < -15
             ? 0.07
             : 0.05
-  const groomed = al.hour >= to + 3 || al.hour < from
+  const groomed = al.hour >= to + 2.5 || al.hour < from
+  const uphill =
+    al.hour >= to && al.hour < 22.5
+      ? weekend
+        ? 3
+        : 2
+      : (al.hour >= 6 && al.hour < from) || moonlit(al, sky)
+        ? 2
+        : 1
   return {
     open,
     hold: hours && !sky.storm && !open,
@@ -293,9 +308,12 @@ export function hillEnv(al: Almanac, sky: Sky, weekend: boolean): HillEnv {
     camp: open && !winter && !weekend,
     school: open && winter && al.hour < 13,
     groom:
-      !hours && ((al.hour >= to + 1.5 && al.hour < 23) || (al.hour >= 4 && al.hour < from - 0.5)),
+      !hours &&
+      ((al.hour >= Math.max(to + 0.5, 17) && al.hour < 23.5) ||
+        (al.hour >= 4 && al.hour < from - 0.5)),
     fresh: sky.fall === 'snow' ? 0.3 + 0.7 * sky.heavy : 0,
     since: hours ? al.hour - from : groomed ? 0 : to - from,
+    tour: !hours && !sky.storm && sky.fall !== 'rain' && sky.wind < 0.75 ? uphill : 0,
   }
 }
 
@@ -394,9 +412,8 @@ function skier(h: Hill, party: number, role: Role, board: boolean, kid: boolean,
 }
 
 // Whoever turns up next, walking in over the crest of the mid ridge: on their own, a crew of
-// friends of about the same level on skis and boards, a parent with a child or two, in the
-// mornings a ski-school class of small children behind their instructor, and on a summer weekday
-// the race camp and its coach.
+// friends of about the same level on skis and boards, a parent with a child or two, and in the
+// mornings a ski-school class of small children behind their instructor.
 function recruit(h: Hill, room: number) {
   const r = h.rng
   const party = ++h.parties
@@ -405,16 +422,6 @@ function recruit(h: Hill, room: number) {
     one.y += m * 4
     h.skiers.push(one)
     return one
-  }
-  if (h.env.camp && !h.skiers.some(o => o.role === 'coach')) {
-    // The coach is already out on the hill beside the fifth gate.
-    const coach = add(skier(h, party, 'coach', false, false, 0.95), 0)
-    const k = seek(RUNS[0], GATES[4].s, 0)
-    ;[coach.x, coach.y] = spot(RUNS[0], GATES[4].s, -RUNS[0].half[k] + 1)
-    coach.state = 'coach'
-    for (let m = 1; m <= 4; m++)
-      add(skier(h, party, 'racer', false, r() < 0.3, 0.82 + r() * 0.15), m).laps = 99
-    return
   }
   if (h.env.school && room >= 4 && r() < 0.3) {
     const teach = add(skier(h, party, 'teach', false, false, 0.95), 0)
@@ -451,7 +458,60 @@ function recruit(h: Hill, room: number) {
   }
 }
 
-const onRun = (o: Skier) => o.state === 'ski' || o.state === 'down' || o.state === 'up'
+// The summer weekday race camp, four racers and their coach, already out beside the fifth gate.
+function camp(h: Hill) {
+  const party = ++h.parties
+  const coach = skier(h, party, 'coach', false, false, 0.95)
+  const k = seek(RUNS[0], GATES[4].s, 0)
+  ;[coach.x, coach.y] = spot(RUNS[0], GATES[4].s, -RUNS[0].half[k] + 1)
+  coach.state = 'coach'
+  h.skiers.push(coach)
+  for (let m = 1; m <= 4; m++) {
+    const one = skier(h, party, 'racer', false, h.rng() < 0.3, 0.82 + h.rng() * 0.15)
+    one.x -= m * 3
+    one.y += m * 4
+    one.laps = 99
+    h.skiers.push(one)
+  }
+}
+
+// After hours, a local or two over the crest with skins on their skis or a splitboard, to climb the
+// edge of the blue and ride it down once or twice.
+function tourers(h: Hill) {
+  const party = ++h.parties
+  const n = h.rng() < 0.35 ? 2 : 1
+  const laps = h.rng() < 0.4 ? 2 : 1
+  const run = RUNS[0]
+  for (let m = 0; m < n; m++) {
+    const one = skier(h, party, 'tour', h.rng() < 0.4, false, 0.55 + h.rng() * 0.4)
+    one.laps = laps
+    one.s = run.length - 3 - 4 * m
+    one.path = [WAY[1], spot(run, run.length - 3 - 4 * m, lane(run, run.n - 1))]
+    one.x -= m * 3
+    one.y += m * 4
+    h.skiers.push(one)
+  }
+}
+
+// The skin track, up the edge of the blue out of everyone's way: the lift line's side, where the
+// trees on the mid ridge leave it in view.
+const lane = (run: Run, k: number) => 1.5 - run.half[k]
+function skin(o: Skier) {
+  const run = RUNS[0]
+  o.state = 'skin'
+  o.run = 0
+  o.s = Math.min(o.s || run.length - 3, run.length - 3)
+  o.k = seek(run, o.s, 0)
+  o.w = lane(run, o.k)
+  o.t = 0
+}
+
+// The crowd the day brings, apart from the camp and the uphillers, who come on their own terms.
+const free = (o: Skier) =>
+  o.state !== 'leave' && o.role !== 'racer' && o.role !== 'coach' && o.role !== 'tour'
+
+const onRun = (o: Skier) =>
+  o.state === 'ski' || o.state === 'down' || o.state === 'up' || o.state === 'skin'
 const byTicket = (a: Skier, b: Skier) => a.ticket - b.ticket
 
 function mark(h: Hill, o: Skier, run: Run) {
@@ -704,14 +764,21 @@ function finish(h: Hill, o: Skier) {
     o.skill = Math.max(o.skill, 0.32)
     o.pace = 4
   }
-  const busy = h.skiers.filter(p => p.state !== 'leave' && p.role !== 'coach').length
+  const busy = h.skiers.filter(free).length
   const [x, y] = spot(RUNS[o.run], RUNS[o.run].length - 3, o.w)
   o.x = x
   o.y = y
-  const home = o.runs >= o.laps || !h.env.open || busy > h.env.crowd + 2
+  const home =
+    o.role === 'racer'
+      ? !h.env.camp
+      : o.runs >= o.laps ||
+        (o.role === 'tour' ? !h.env.tour : !h.env.open || busy > h.env.crowd + 2)
   if (home) {
     o.state = 'leave'
     o.path = [[1322, 452], ...WAY.slice().reverse()]
+  } else if (o.role === 'tour') {
+    o.s = RUNS[0].length - 3
+    skin(o)
   } else {
     o.state = 'walk'
     o.path = [[1322, 452]]
@@ -732,10 +799,16 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
   const board = env.open && slot !== h.loaded
   h.loaded = slot
 
-  const live = h.skiers.filter(o => o.state !== 'leave').length
-  if (live < env.crowd && (h.arrive -= dt) <= 0) {
+  if (env.camp && !h.skiers.some(o => o.role === 'coach')) camp(h)
+  const live = h.skiers.filter(free).length
+  const touring = h.skiers.filter(o => o.role === 'tour' && o.state !== 'leave').length
+  h.arrive = Math.max(0, h.arrive - dt)
+  if (!h.arrive && live < env.crowd) {
     recruit(h, env.crowd - live)
     h.arrive = 8 + h.rng() * 20
+  } else if (!h.arrive && touring < env.tour) {
+    tourers(h)
+    h.arrive = 40 + h.rng() * 150
   }
 
   // Snow falling fills the tracks in.
@@ -751,11 +824,36 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
     o.t += dt
     switch (o.state) {
       case 'arrive':
-        if (walk(o, dt)) {
+        if (!walk(o, dt)) break
+        if (o.role === 'tour') skin(o)
+        else {
           o.state = 'walk'
           o.path = [QUEUE(queue.length)]
         }
         break
+      case 'skin': {
+        // 0.6 to 0.75 m/s up the slope, six to seven hundred vertical metres an hour on the blue's
+        // average of 16°: a fit local's pace on groomed snow, the same all the way up.
+        const run = RUNS[0]
+        o.k = seek(run, o.s, o.k)
+        // The one in front eases off for their partner.
+        const apart = h.skiers.some(
+          p =>
+            p !== o &&
+            p.party === o.party &&
+            (p.state === 'skin' || p.state === 'arrive') &&
+            p.s > o.s + 8,
+        )
+        o.s = Math.max(0, o.s - (0.45 + 0.3 * o.skill) * (apart ? 0.5 : 1) * dt)
+        o.w = lane(run, o.k)
+        mark(h, o, run)
+        if (o.s <= 0) {
+          o.state = 'strap'
+          ;[o.x, o.y] = spot(run, 0, o.w)
+          o.t = 0
+        }
+        break
+      }
       case 'walk':
         if (o.path.length) walk(o, dt)
         else {
@@ -793,7 +891,8 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
         }
         break
       case 'strap':
-        if (o.t > 5 + 10 * (1 - o.skill)) {
+        // Strapping in; at the top of a climb, skins off and the splitboard back together.
+        if (o.t > (o.role === 'tour' ? 60 + 60 * (1 - o.skill) : 5 + 10 * (1 - o.skill))) {
           o.state = 'ready'
           o.t = 0
         }
@@ -858,7 +957,9 @@ function choose(h: Hill, o: Skier) {
 // a few seconds apart; a racer waits until the course below is clear.
 function drop(h: Hill, o: Skier) {
   const party = h.skiers.filter(p => p.party === o.party && p.role !== 'coach')
-  const behind = party.some(p => p.state === 'chair' || p.state === 'top' || p.state === 'strap')
+  const behind = party.some(
+    p => p.state === 'chair' || p.state === 'top' || p.state === 'strap' || p.state === 'skin',
+  )
   if (behind && o.t < 60) return
   const order = party.filter(p => p.state === 'ready' || p.state === 'ski').indexOf(o)
   if (o.role === 'racer') {
@@ -874,7 +975,7 @@ function start(h: Hill, o: Skier) {
   o.t = 0
   o.k = 0
   o.s = 0
-  o.w = spotW(o)
+  if (o.role !== 'tour') o.w = spotW(o)
   o.v = 0
   o.dir = h.rng() < 0.5 ? -1 : 1
   o.psi = o.dir * 0.6
@@ -939,11 +1040,30 @@ export function warmHill(h: Hill) {
 // Without motion, one moment of a busy morning: someone carving across the blue, a boarder sat at
 // the top strapping in, a pair on a chair and one in the queue, a ski-school line halfway down;
 // on a summer weekday a racer between gates with the coach beside them; after hours the groomer
-// halfway down with its lights on.
+// halfway down with its lights on, someone skinning up the edge and a splitboarder at the top.
 export function poseHill(h: Hill) {
   h.skiers = []
   h.cat.s = RUNS[0].length * (h.env.groom ? 0.45 : 1)
   h.cat.dir = h.env.groom ? 1 : -1
+  if (h.env.tour) {
+    // After hours: one climbing the edge of the blue, and when there are more, a splitboarder at
+    // the top putting the board back together.
+    const up = skier(h, ++h.parties, 'tour', false, false, 0.8)
+    up.s = RUNS[0].length * 0.6
+    skin(up)
+    h.skiers.push(up)
+  }
+  if (h.env.tour > 1) {
+    const split = skier(h, ++h.parties, 'tour', true, false, 0.7)
+    const w = lane(RUNS[0], 0)
+    Object.assign(split, {
+      state: 'strap',
+      w,
+      x: spot(RUNS[0], 0, w)[0],
+      y: spot(RUNS[0], 0, w)[1],
+    })
+    h.skiers.push(split)
+  }
   if (!h.env.crowd) return
   const party = () => ++h.parties
   const put = (o: Skier, run: 0 | 1, s: number, w: number, psi: number, v: number) => {
@@ -1022,12 +1142,16 @@ export type SkiInk = {
   coats: RGB[]
   helmets: RGB[]
   gear: RGB[]
+  // Boards, in louder colours than skis, so a boarder reads as one from across the valley.
+  boards: RGB[]
   school: RGB
   gates: [RGB, RGB]
   cat: RGB
   cab: RGB
   lamp: RGB
   glow: RGB
+  // Floodlit snow: the night glow is a brown that reads as dirt on it.
+  flood: RGB
   beacon: RGB
 }
 
@@ -1170,6 +1294,25 @@ export function paintHill(
     }
   }
 
+  // Night skiing: lamp posts down the side of each run, each throwing a pool of light on the snow.
+  if (dark && h.env.open)
+    RUNS.forEach(run => {
+      for (let s = run.length * 0.12; s < run.length * 0.95; s += run.length * 0.27) {
+        const k = seek(run, s, 0)
+        const [i, j] = at(spot(run, s, -run.half[k] - 1))
+        if (!onRange(i, j)) continue
+        for (let dj = -1; dj <= 1; dj++)
+          for (let di = 0; di <= 3; di++) {
+            const r = Math.hypot(di * 0.7, dj)
+            if (r > 0 && onRange(i + di, j + dj))
+              plot(i + di, j + dj, ink.flood, (1 - r / 2.5) * 0.6)
+          }
+        dot(d, g, i, j, ink.steel)
+        dot(d, g, i, j - 1, ink.steel)
+        dot(d, g, i, j - 2, ink.lamp)
+      }
+    })
+
   const where = (o: Skier): Pt => {
     if (o.state === 'chair') {
       const u = clamp((h.lift - o.chair) / LIFT_LEN, 0, 1)
@@ -1186,7 +1329,9 @@ export function paintHill(
     if (!onRange(i, j - 1) && o.state !== 'chair') continue
     const coat = o.role === 'teach' ? ink.school : ink.coats[o.kit[0] % ink.coats.length]
     const helmet = ink.helmets[o.kit[1] % ink.helmets.length]
-    const gear = ink.gear[o.kit[2] % ink.gear.length]
+    const gear = o.board
+      ? ink.boards[o.kit[2] % ink.boards.length]
+      : ink.gear[o.kit[2] % ink.gear.length]
     const tall = o.kid ? 3 : 4
     let head: Pt = [i, j - tall + 1]
     const face = Math.sin(o.psi) >= 0 ? 1 : -1
@@ -1223,11 +1368,13 @@ export function paintHill(
             dot(d, g, i + lean, j - 3, helmet)
             head = [i + lean, j - 3]
           }
-          // Arms out for balance sliding sideways on a board.
+          // Arms out for balance sliding sideways on a board; a boarder stands side-on with the
+          // leading arm down the board, a skier plants a pole.
           if (o.mode === 'leaf') {
             dot(d, g, i - 1, j - 2, ink.skin)
             dot(d, g, i + 1, j - 2, ink.skin)
-          } else if (!o.board) dot(d, g, i - face, j - 1, ink.steel)
+          } else if (o.board) dot(d, g, i + lean + face, j - 2, coat)
+          else dot(d, g, i - face, j - 1, ink.steel)
         }
         // Snow off the outside of a skidded turn or a stop.
         const spray = o.state === 'out' ? 1 : o.v > 3 ? o.skid * Math.abs(Math.sin(o.psi)) : 0
@@ -1252,6 +1399,19 @@ export function paintHill(
           head = [i, j - 2]
         }
         break
+      case 'skin': {
+        // Skinning up, upright, a pole planted on each stride.
+        const stride = Math.floor(h.time * 1.5 + o.id) % 2
+        dot(d, g, i, j, gear)
+        dot(d, g, i, j + 1 - stride, gear)
+        dot(d, g, i, j - 1, ink.pants)
+        dot(d, g, i, j - 2, coat)
+        dot(d, g, i, j - 3, helmet)
+        dot(d, g, i - 1, j - 1 - stride, ink.steel)
+        dot(d, g, i + 1, j - 2 + stride, ink.steel)
+        head = [i, j - 3]
+        break
+      }
       case 'strap':
         // Sat in the snow at the top, strapping in.
         for (let di = -1; di <= 1; di++) dot(d, g, i + di, j, gear)
@@ -1287,6 +1447,16 @@ export function paintHill(
           dot(d, g, i + 1, j - tall, gear)
         }
       }
+    }
+    // Uphillers come in, climb, ride down and go home by headlamp.
+    if (dark && o.role === 'tour') {
+      const [hi, hj] = head
+      for (let dj = -2; dj <= 2; dj++)
+        for (let di = -2; di <= 2; di++) {
+          const r = Math.hypot(di, dj)
+          if (r > 0) plot(hi + di, hj + dj, ink.glow, (1 - r / 2.8) * 0.6)
+        }
+      dot(d, g, hi, hj, ink.lamp)
     }
     // Skis and poles where they came off.
     if (o.gear >= 0) {

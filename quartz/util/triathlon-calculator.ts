@@ -5,11 +5,14 @@ import { triText } from './triathlon-i18n'
 
 export { parseClockSeconds } from './duration'
 
+// Calculator share links persist these indices, so append new distances.
 export const TRI_RACE_DISTANCES: [string, number, number, number][] = [
   ['sprint', 0.75, 20, 5],
   ['olympic', 1.5, 40, 10],
   ['70.3', 1.9, 90, 21.1],
   ['ironman', 3.8, 180, 42.2],
+  ['t50', 1, 40, 9],
+  ['t100', 2, 80, 18],
 ]
 
 export const CALC_ANCHOR_PREFIX = 'calculator-'

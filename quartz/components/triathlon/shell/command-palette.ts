@@ -57,6 +57,7 @@ export const TRI_PAGES: { path: string; label: string; hint: string }[] = [
   { path: '/triathlon/analytics', label: 'analytics', hint: 'charts' },
   { path: '/triathlon/maps', label: 'maps', hint: 'routes' },
   { path: '/triathlon/training', label: 'training', hint: 'plans' },
+  { path: '/triathlon/calendar', label: 'calendar', hint: 'races · events' },
   { path: '/triathlon/feed', label: 'feed', hint: 'all activities' },
   { path: '/triathlon/on', label: 'on', hint: 'by date' },
 ]
@@ -326,11 +327,12 @@ const tirePressureSelectionFromRoot = (root: HTMLElement): TirePressureSelection
 }
 
 export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext): (() => void) => {
-  const trigger = root.querySelector<HTMLButtonElement>('.tri-cmdk-trigger')
-  const overlay = el('div', 'tri-cmdk', undefined, {
-    id: 'tri-command-palette',
-    'aria-hidden': 'true',
-  })
+  const triggers = Array.from(root.querySelectorAll<HTMLButtonElement>('.tri-cmdk-trigger'))
+  const activeTrigger = (): HTMLButtonElement | undefined =>
+    triggers.find(trigger => !trigger.closest('[hidden], [inert]'))
+  const id = 'tri-command-palette'
+  for (const trigger of triggers) trigger.setAttribute('aria-controls', id)
+  const overlay = el('div', 'tri-cmdk', undefined, { id, 'aria-hidden': 'true' })
   const box = el('div', 'tri-cmdk-box', undefined, {
     role: 'dialog',
     'aria-label': 'command palette',
@@ -362,6 +364,13 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
 
   const commandHint = (command: Cmd): string =>
     typeof command.hint === 'function' ? command.hint() : command.hint
+
+  const openCalendar = (): void => {
+    if (root.dataset.triView) return
+    const button = root.querySelector<HTMLButtonElement>('.tri-calendar-btn')
+    if (!button) return
+    if (!root.classList.contains('tri-calendar-open')) button.click()
+  }
 
   const navTo = (path: string) => (): void => {
     close()
@@ -469,7 +478,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
             : 'panels · full screen',
         ),
       hint: 'layout',
-      keys: 'toggle panels fullscreen full screen windowed desktop mobile analytics map training layout',
+      keys: 'toggle panels fullscreen full screen windowed desktop mobile analytics map training calendar layout',
       run: () => {
         toggleTriPanelsFullscreen(root)
         render()
@@ -490,9 +499,60 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
       },
     })
 
+  const calendarCommands = (): Cmd[] => {
+    const calendar = root.querySelector<HTMLElement>('[data-calendar-year]:not([hidden])')
+    if (!calendar) return []
+    const commands: Cmd[] = []
+    for (const view of ['list', 'year']) {
+      const button = calendar.querySelector<HTMLButtonElement>(`[data-calendar-select="${view}"]`)
+      if (!button) continue
+      commands.push({
+        label: () => `${context.formatter.text('calendar')} · ${context.formatter.text(view)}`,
+        hint: () => context.formatter.text('calendar view'),
+        keys: `calendar ${view} ${view === 'list' ? 'liste' : 'année'} races events calendrier`,
+        run: () => {
+          close()
+          openCalendar()
+          button.click()
+          button.focus({ preventScroll: true })
+        },
+      })
+    }
+    for (const opener of calendar.querySelectorAll<HTMLButtonElement>(
+      '.tri-calendar-event-heading [data-calendar-card-open]',
+    )) {
+      const row = opener.closest<HTMLElement>('.tri-calendar-event')
+      const date = row?.querySelector<HTMLElement>('.tri-calendar-date')
+      const name = opener.textContent ?? ''
+      commands.push({
+        label: () => name,
+        hint: () => date?.getAttribute('aria-label') ?? context.formatter.text('date pending'),
+        keys: `${name} ${row?.querySelector('.tri-calendar-event-meta')?.textContent ?? ''} ${row?.querySelector('.tri-calendar-format')?.textContent ?? ''} race event course calendar calendrier`,
+        run: () => {
+          close()
+          openCalendar()
+          if (opener.getAttribute('aria-expanded') !== 'true') opener.click()
+        },
+      })
+    }
+    const download = calendar.querySelector<HTMLAnchorElement>('.tri-calendar-download')
+    if (download)
+      commands.push({
+        label: () => context.formatter.text('download calendar'),
+        hint: '.ics',
+        keys: 'download calendar ics export races events télécharger calendrier',
+        run: () => {
+          close()
+          download.click()
+        },
+      })
+    return commands
+  }
+
   let items: Cmd[] = cmds
   let sel = 0
   let isOpen = false
+  let returnFocus: HTMLElement | null = null
 
   const selectPressure = (change: TirePressureChange): void => {
     if (mode === 'commands' || mode === 'result') return
@@ -840,11 +900,14 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   }
   const render = (continuity = false): void => {
     const q = input.value.trim().toLowerCase()
+    const commands = [...cmds, ...calendarCommands()]
     items =
       mode === 'commands'
         ? q
-          ? cmds.filter(c => `${c.label()} ${commandHint(c)} ${c.keys}`.toLowerCase().includes(q))
-          : cmds
+          ? commands.filter(c =>
+              `${c.label()} ${commandHint(c)} ${c.keys}`.toLowerCase().includes(q),
+            )
+          : commands
         : pressureCommands()
     if (sel >= items.length) sel = Math.max(0, items.length - 1)
     list.replaceChildren(
@@ -879,6 +942,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   }
   const openPalette = (): void => {
     if (isOpen) return
+    returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
     isOpen = true
     mode = 'commands'
     pressureSelection = tirePressureSelectionFromRoot(root)
@@ -890,7 +954,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     render()
     overlay.classList.add('tri-cmdk--on')
     overlay.setAttribute('aria-hidden', 'false')
-    trigger?.setAttribute('aria-expanded', 'true')
+    for (const trigger of triggers) trigger.setAttribute('aria-expanded', 'true')
     input.focus()
   }
   function close(): void {
@@ -898,8 +962,11 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     isOpen = false
     overlay.classList.remove('tri-cmdk--on')
     overlay.setAttribute('aria-hidden', 'true')
-    trigger?.setAttribute('aria-expanded', 'false')
+    for (const trigger of triggers) trigger.setAttribute('aria-expanded', 'false')
     input.blur()
+    const previous = returnFocus?.isConnected ? returnFocus : activeTrigger()
+    if (previous?.isConnected) previous.focus({ preventScroll: true })
+    returnFocus = null
   }
 
   const togglePalette = (): void => {
@@ -970,7 +1037,8 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
       if (
         isOpen ||
         root.dataset.triView === 'analytics' ||
-        root.classList.contains('tri-analytics-open')
+        root.classList.contains('tri-analytics-open') ||
+        root.classList.contains('tri-calendar-open')
       ) {
         togglePalette()
         return
@@ -987,7 +1055,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   input.addEventListener('input', onInput)
   input.addEventListener('keydown', onInputKey)
   overlay.addEventListener('mousedown', onScrim)
-  trigger?.addEventListener('click', togglePalette)
+  for (const trigger of triggers) trigger.addEventListener('click', togglePalette)
   document.addEventListener('keydown', onDocKey, true)
   const analyticsPath = root.dataset.analyticsPath
   if (pressureSelection.riderKg == null && analyticsPath)
@@ -1000,7 +1068,8 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     })
   return () => {
     document.removeEventListener('keydown', onDocKey, true)
-    trigger?.removeEventListener('click', togglePalette)
+    for (const trigger of triggers) trigger.removeEventListener('click', togglePalette)
+    close()
     overlay.remove()
   }
 }

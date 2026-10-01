@@ -19,6 +19,7 @@ import { ShortcutHint } from '../triathlon/shell/ShortcutHint'
 import {
   AnalyticsPanel,
   CalcPanel,
+  CalendarOverlay,
   CONVERSIONS,
   GearPanel,
   MapPanel,
@@ -34,6 +35,10 @@ const MAX_BAR = 300
 const MIN_SEG = 3
 const REST_SEG = 7
 const GAP_PX = 2
+const RACE_TABLE_ORDER = ['sprint', 'olympic', 't50', '70.3', 't100', 'ironman']
+const RACE_TABLE_DISTANCES = TRI_RACE_DISTANCES.toSorted(
+  ([left], [right]) => RACE_TABLE_ORDER.indexOf(left) - RACE_TABLE_ORDER.indexOf(right),
+)
 
 const timelinePxPerMin = (sport: ActivityKind): number => {
   if (sport === 'bike') return BIKE_PX_PER_MIN
@@ -211,7 +216,7 @@ export default (() => {
               </tr>
             </thead>
             <tbody>
-              {TRI_RACE_DISTANCES.map(([label, s, b, r]) => (
+              {RACE_TABLE_DISTANCES.map(([label, s, b, r]) => (
                 <tr>
                   <th>
                     {label === target ? (
@@ -256,6 +261,16 @@ export default (() => {
               <span data-i18n="training">training</span>
               <ShortcutHint>g t</ShortcutHint>
             </button>
+            <button
+              class="tri-calendar-btn tri-key-anchor"
+              type="button"
+              aria-controls="tri-calendar-panel"
+              aria-expanded="false"
+              aria-haspopup="dialog"
+            >
+              <span data-i18n="calendar">calendar</span>
+              <ShortcutHint>g e</ShortcutHint>
+            </button>
             <button class="tri-calc-btn tri-key-anchor" type="button">
               <span data-i18n="calculator">calculator</span>
               <ShortcutHint>g c</ShortcutHint>
@@ -275,6 +290,7 @@ export default (() => {
         <AnalyticsPanel />
         <MapPanel />
         <TrainingPanel />
+        <CalendarOverlay renderData={fileData.triathlonRenderData} />
       </article>
     )
   }

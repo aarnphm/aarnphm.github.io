@@ -1,40 +1,52 @@
 ---
 date: '2024-11-27'
-description: topological space locally resembling euclidean space, generalizing curves and surfaces to arbitrary dimensions with differential structure.
+description: manifolds, coordinate charts, smooth structures, and Lorentzian metrics
 id: manifold
-modified: 2026-06-05 15:08:30 GMT-04:00
+modified: 2026-09-30 09:03:35 GMT-04:00
 tags:
   - math
 title: manifold
 ---
 
-a topological space that locally resembles Euclidean space near each point.
+A circle needs one coordinate to locate a point on a short arc. A sphere needs two on a small patch. Their dimensions count local coordinates, even when we draw them inside a space with more dimensions.
 
-> an $n$-dimensional manifold is a topological space with the property that each point has a [[thoughts/manifold#neighborhood|neighbourhood]] that is [[thoughts/homeomorphism|homeomorphic]] to an open subset of $n$-dimensional Euclidean space.
-
-Formally, a topological manifold is a ==second countable Hausdorff space== that is _locally homeomorphic_ to a Euclidean space.
-
-> [!abstract] Locally homeomorphic to a Euclidean space
->
-> every point has a neighborhood [[thoughts/homeomorphism|homeomorphic]] to an open subset of the Euclidean space $\mathbb{R}^n$ for some non-negative integer $n$
-
-Implies that either the point is an isolated point $n=0$, or it has a neighborhood homeomorphic to the open ball:
+An $n$-dimensional **topological manifold** is a second-countable Hausdorff space in which every point has an open [[thoughts/manifold#neighborhood|neighborhood]] $U$ and a [[thoughts/homeomorphism]]
 
 $$
-\mathbf{B}^n = \{(x_{1},x_{2},\ldots, x_n) \in \mathbb{R}^n : x_1^2 + x_2^2 + \ldots + x_n^2 <1\}
+\varphi:U\longrightarrow V\subseteq\mathbb R^n,
 $$
+
+where $V$ is open. The pair $(U,\varphi)$ is a **chart**. Hausdorff means distinct points have disjoint open neighborhoods; second-countable means the topology has a countable basis of open sets. [Meinrenken, §1.1](https://www.math.toronto.edu/mein/teaching/LectureNotes/Man.pdf).
+
+This definition is for manifolds without boundary. One can shrink a chart around a point so that its image is an open ball,
+
+$$
+\mathbf B^n=\left\{x\in\mathbb R^n:\sum_{i=1}^n x_i^2<1\right\}.
+$$
+
+For $n=0$, the local model is a single point, so every point is isolated. Manifolds with boundary also allow charts into the half-space $\{x\in\mathbb R^n:x_n\ge0\}$, with its relative topology.
 
 ## differentiable manifold
 
-_a topological manifold with a_ _==globally==_ defined differential structure.
+To differentiate a function on a manifold, write it in local coordinates. Its derivatives must transform consistently when two charts describe the same region. A **smooth atlas** is a covering family of charts whose transition maps
+
+$$
+\psi\circ\varphi^{-1}:\varphi(U\cap W)\longrightarrow\psi(U\cap W)
+$$
+
+are smooth, where $(U,\varphi)$ and $(W,\psi)$ are overlapping charts. An atlas determines a smooth structure by including every chart smoothly compatible with it. A smooth manifold is a topological manifold together with this structure. Replacing smooth transitions by $C^k$ transitions gives a $C^k$ differentiable manifold for $k\ge1$. [Gualtieri, §1.2](https://www.math.utoronto.ca/mgualt/courses/18-1300/docs/18-1300-notes-1.pdf).
+
+For a concrete overlap, take the unit circle $x^2+y^2=1$. The coordinate $t=y/(1+x)$ covers the circle except $(-1,0)$, with inverse
+
+$$
+x=\frac{1-t^2}{1+t^2},\qquad y=\frac{2t}{1+t^2}.
+$$
+
+A second coordinate $s=y/(1-x)$ covers the missing point and excludes $(1,0)$. On their overlap, $s=1/t$. This transition is smooth for $t\ne0$, exactly the overlap's coordinate domain.
 
 ### Pseudo-Riemannian manifold
 
-abbrev: Lorentzian manifold
-
-_with a metric tensor that is everywhere non-degenerate_
-
-application used in general relativity is four-dimensional Lorentzian manifold for modeling space-time
+A pseudo-Riemannian manifold is a smooth manifold equipped with a smooth, symmetric, nondegenerate metric tensor. A **Lorentzian manifold** is the special case with one negative direction and all remaining directions positive, or the reverse convention. General relativity uses four-dimensional Lorentzian manifolds to describe spacetime. [Meinrenken, §12](https://www.math.toronto.edu/mein/teaching/LectureNotes/rieall.pdf).
 
 ![[thoughts/Tensor field#metric tensors]]
 
@@ -42,20 +54,10 @@ application used in general relativity is four-dimensional Lorentzian manifold f
 
 ## neighborhood
 
-think of open set or interior.
+A **neighborhood** of $p$ in a topological space $X$ is a subset $V$ containing an open set $U$ with
 
-intuition: a set of point containing that point where one can move some amount in any direction away from that point without leaving the set.
+$$
+p\in U\subseteq V\subseteq X.
+$$
 
-> [!definition]
->
-> if $X$ is a topological space and $p$ is a point in $X$, then a **neighbourhood** of $p$ is a subset $V$ of $X$ that includes an ==open set== $U$ containing $p$:
->
-> $$
-> p \in U \subseteq V \subseteq X
-> $$
->
-> This is equivalent to the point $p \in X$ belonging to the topological interior of $V$ in $X$.
-
-> [!important] properties
->
-> the neighbourhood $V$ _need not be an open subset_ of $X$.
+Equivalently, $p$ lies in the interior of $V$. For example, $[-1,1]$ is a neighborhood of $0$ in $\mathbb R$ because it contains the open interval $(-1,1)$. An open neighborhood is a neighborhood that is itself open.
