@@ -42,10 +42,6 @@ export function createWebSocketManager({ getState, dispatch, getPageId }: WebSoc
     const socket = new WebSocket(wsUrl)
     ws = socket
 
-    socket.onopen = () => {
-      flushPending()
-    }
-
     socket.onmessage = event => {
       const msg: BroadcastMessage = JSON.parse(event.data)
 

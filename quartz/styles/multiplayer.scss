@@ -395,6 +395,8 @@ $avatar-sm: 24px;
   right: 20px;
   top: 20%;
   width: $modal-width;
+  max-width: calc(100vw - 24px);
+  box-sizing: border-box;
   background: var(--light);
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);

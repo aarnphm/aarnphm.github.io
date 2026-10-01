@@ -30,15 +30,6 @@ const parseCommentHash = () => {
   }
 }
 
-async function loadMultiplayerSearchData() {
-  if (typeof fetchSearchData === 'undefined') return fetchData
-  try {
-    return await fetchSearchData
-  } catch {
-    return fetchData
-  }
-}
-
 export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
   const cleanups: Array<() => void> = []
   const addCleanup = (cleanup: () => void) => {
@@ -48,18 +39,9 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
   const isTouchDevice = () =>
     'maxTouchPoints' in navigator ? navigator.maxTouchPoints > 0 : 'ontouchstart' in window
 
-  const init = async () => {
-    dispatch({ type: 'nav.enter', pageId: getCommentPageId() })
-
-    const data = await loadMultiplayerSearchData()
-    const { populateSearchIndex } = await import('../scripts/search-index')
-    await populateSearchIndex(data)
-
-    dispatch({ type: 'nav.ready' })
-    dispatch({ type: 'ui.hash.changed', commentId: parseCommentHash() })
-  }
-
-  void init()
+  dispatch({ type: 'nav.enter', pageId: getCommentPageId() })
+  dispatch({ type: 'nav.ready' })
+  dispatch({ type: 'ui.hash.changed', commentId: parseCommentHash() })
 
   const mouseUp = (event: MouseEvent) => {
     if (event.button !== 0) return
@@ -95,8 +77,8 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
       cancelAnimationFrame(resizeFrame)
     }
     resizeFrame = requestAnimationFrame(() => {
-      services.ui.renderAllComments()
       services.ui.refreshActiveModal()
+      services.ui.renderAllComments()
       const selection = state().activeSelection
       if (selection) {
         services.ui.renderSelectionHighlight(selection)
@@ -127,6 +109,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
   window.addEventListener('hashchange', handleHashChange)
 
   addCleanup(() => {
+    if (resizeFrame) cancelAnimationFrame(resizeFrame)
     services.ui.cleanup()
     services.ws.close()
     document.removeEventListener('mouseup', mouseUp)
