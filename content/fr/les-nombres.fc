@@ -269,7 +269,8 @@ A: `avoir` + cardinal + `ans`: `J'ai 25 ans.` The `ans` cannot be dropped.
 
 ---
 
-C: `J'ai [25] ans.` (age uses `avoir` plus the obligatory noun `ans`).
+C: J'ai [25] ans.
+N: (age uses `avoir` plus the obligatory noun `ans`).
 
 ---
 
@@ -290,3 +291,81 @@ A: Digit by digit, each one separate. Québec does not group them in pairs the w
 
 Q: What is the decimal separator for prices in French, and the colloquial Québec word for dollars?
 A: A comma: `15,50 $` ("quinze dollars cinquante"). Québec colloquially says `piastres` / `piasses`.
+
+---
+
+Q: Write `quatre-vingt-dix-sept` as digits.
+A: 97
+
+---
+
+Q: Write `soixante-quatorze` as digits.
+A: 74
+
+---
+
+Q: Write `quatre-vingt-quatre` as digits.
+A: 84
+
+---
+
+Q: Write `soixante-seize` as digits.
+A: 76
+
+---
+
+Q: Spell out 31 in French (rectified).
+A: `trente-et-un`
+
+---
+
+Q: Spell out 77 in French (rectified).
+A: `soixante-dix-sept`
+
+---
+
+Q: Spell out 85 in French (rectified).
+A: `quatre-vingt-cinq`
+
+---
+
+Q: Spell out 300 in French (rectified).
+A: `trois-cents`
+N: `cent` takes `-s` when multiplied and nothing follows.
+
+---
+
+Q: Spell out 380 in French (rectified).
+A: `trois-cent-quatre-vingts`
+N: `cent` loses its `-s` because a number follows; `quatre-vingts` keeps it because it ends the number.
+
+---
+
+Q: Spell out the year 1980 (rectified).
+A: `mille-neuf-cent-quatre-vingts`
+
+---
+
+Q: Spell out the year 1995 (rectified).
+A: `mille-neuf-cent-quatre-vingt-quinze`
+
+---
+
+Q: Read the price `12,99 $` aloud.
+A: `douze dollars quatre-vingt-dix-neuf`
+
+---
+
+Q: `six minutes` vs `six heures`: how does `six` sound in each?
+A: `six minutes` /si minyt/ drops the final consonant; `six heures` /siz‿œʁ/ liaises with /z/.
+
+---
+
+Q: `huit livres` vs `huit ans`: how does `huit` sound in each?
+A: `huit livres` /ɥi livʁ/ drops the `t`; `huit ans` /ɥit‿ɑ̃/ keeps it.
+
+---
+
+Q: Spell the ordinal for 21st.
+A: `vingt-et-unième`
+N: `un` becomes `unième` inside a compound; `premier` serves only on its own.

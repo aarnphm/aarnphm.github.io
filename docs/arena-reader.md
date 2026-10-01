@@ -38,7 +38,7 @@ Shortcuts pause while typing in search or notes, using a menu, or holding Contro
 
 ## Access and development
 
-The reader uses the existing GitHub comments login. The OAuth callback issues a separate signed, HttpOnly owner session with an immutable `github:<numeric id>` subject. `ARENA_OWNER_LOGIN` defaults to `aarnphm`; `SESSION_SECRET` signs both the session and resource capabilities. Keep the secret in Cloudflare Secrets or local environment files.
+The reader uses the existing GitHub comments login. The OAuth callback issues a separate signed, HttpOnly owner session with an immutable `github:<numeric id>` subject. `ARENA_OWNER_LOGIN` defaults to `aarnphm`; `SESSION_SECRET` signs both the session and resource capabilities. The flashcards API resolves its login from the same owner session, so only the owner's reviews are scheduled. Keep the secret in Cloudflare Secrets or local environment files.
 
 For local development, add this setting to the ignored `.env.local`:
 

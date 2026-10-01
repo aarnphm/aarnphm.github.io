@@ -157,3 +157,65 @@ A: Another player asks you a question. Right answer: you stay put and replay nex
 ---
 
 C: Counting from 2016: born `le 1er mai 1988` you say `J'ai [28] ans.`, and born `le 31 aout 1964` you say `J'ai [52] ans.`
+
+---
+
+Q: Which formal question gets the answer `Je viens du Sénégal.`?
+A: `D'où venez-vous ?`
+
+---
+
+Q: Which formal question gets the answer `J'habite à Sherbrooke.`?
+A: `Où habitez-vous ?`
+
+---
+
+Q: Which formal question gets the answer `Je suis divorcée.`?
+A: `Quel est votre état civil ?`
+
+---
+
+Q: Which formal question gets the answer `J'ai 46 ans.`?
+A: `Quel âge avez-vous ?`
+
+---
+
+Q: Which question gets the answer `Il est midi et quart.`?
+A: `Quelle heure est-il ?`
+
+---
+
+Q: Which question gets the answer `C'est une efface.`?
+A: `Qu'est-ce que c'est ?`
+
+---
+
+Q: Which formal question gets the answer `Je parle espagnol et portugais.`?
+A: `Quelles langues parlez-vous ?`
+
+---
+
+Q: Which formal question gets the answer `Je suis mexicaine.`?
+A: `Quelle est votre nationalité ?`
+
+---
+
+Q: Answer `Êtes-vous marié ?`: no, you are single.
+A: `Non, je suis célibataire.`
+
+---
+
+Q: Answer `Habitez-vous à Montréal ?`: no, you live in Gatineau.
+A: `Non, j'habite à Gatineau.`
+
+---
+
+Q: Answer `Où est votre cahier ?`: it is under the chair.
+A: `Il est sous la chaise.`
+N: `le cahier` is masculine, so `il`.
+
+---
+
+Q: Answer `Avez-vous des enfants ?`: no.
+A: `Non, je n'ai pas d'enfants.`
+N: `des` becomes `d'` under negation.

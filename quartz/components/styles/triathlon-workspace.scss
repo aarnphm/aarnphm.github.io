@@ -1,34 +1,118 @@
 .tri-activity-analyze {
-  margin-left: auto;
-  padding: 0.3rem 0.5rem;
-  font-family: var(--codeFont);
-  font-size: 0.7rem;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: flex-end;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-inline-start: auto;
+  padding-block: 0.35rem;
+  padding-inline: 0.7rem 0;
   color: var(--darkgray);
   cursor: pointer;
   background: transparent;
-  border: 1px solid color-mix(in srgb, var(--gray) 35%, transparent);
+  border: none;
+  transition:
+    color 120ms ease-out,
+    transform 120ms ease-out;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &[aria-expanded='true'] {
+    color: var(--dark);
+  }
+
+  &:disabled {
+    color: var(--gray);
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--darkgray);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-activity-analyze:not(:disabled):hover {
+    color: var(--dark);
+  }
+}
+
+.tri-activity-analysis-open > [data-workspace-hidden] {
+  display: none !important;
+}
+
+.tri-activity-analysis-open.tri-act {
+  display: flex !important;
+  flex-direction: column;
+  min-width: 0;
+}
+
+[data-activity-transition] {
+  view-transition-name: tri-activity-analysis;
+}
+
+[data-activity-transition-head] {
+  view-transition-name: tri-activity-analysis-head;
+}
+
+.tri-activity-transition::view-transition-old(root),
+.tri-activity-transition::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-group(tri-activity-analysis),
+::view-transition-group(tri-activity-analysis-head) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(tri-activity-analysis),
+::view-transition-new(tri-activity-analysis) {
+  animation-duration: 180ms;
+  animation-timing-function: ease-out;
+}
+
+::view-transition-old(tri-activity-analysis-head),
+::view-transition-new(tri-activity-analysis-head) {
+  animation: none;
 }
 
 .tri-workspace {
+  --tri-workspace-graph-height: clamp(18rem, 38dvh, 30rem);
+  --tri-workspace-axis-width: 3.75rem;
+  container: tri-workspace / inline-size;
+  display: block;
   box-sizing: border-box;
-  width: min(92vw, 92rem);
-  max-width: none;
-  max-height: calc(100dvh - 3rem);
+  min-width: 0;
+  width: 100%;
   padding: 0;
-  overflow: auto;
   font-family: var(--codeFont);
   font-size: 0.75rem;
+  line-height: 1.5;
   color: var(--dark);
   background: var(--light);
-  border: 1px solid var(--gray);
-  scrollbar-width: thin;
+  outline: none;
 
-  &::backdrop {
-    background: color-mix(in srgb, var(--light) 72%, transparent);
+  &:focus-visible {
+    outline: 2px solid var(--darkgray);
+    outline-offset: 0.35rem;
   }
 
-  button,
-  select {
+  button {
     font: inherit;
     color: inherit;
     cursor: pointer;
@@ -37,8 +121,8 @@
   }
 
   button:focus-visible,
-  select:focus-visible,
-  [role='slider']:focus-visible {
+  [role='slider']:focus-visible,
+  .tri-workspace-plot-panel:focus-visible {
     outline: 2px solid var(--darkgray);
     outline-offset: 3px;
   }
@@ -48,51 +132,20 @@
   }
 
   button[aria-pressed='true'] {
-    background: color-mix(in srgb, var(--darkgray) 8%, var(--light));
+    background: color-mix(in srgb, var(--darkgray) 6%, var(--light));
   }
 }
 
-.tri-workspace-head {
-  position: sticky;
-  z-index: 1;
-  top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.2rem;
-  background: var(--light);
-  border-bottom: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
-
-  h2 {
-    margin: 0.3rem 0 0;
-    font-family: var(--codeFont);
-    font-size: 0.9rem;
-    font-weight: 400;
-    line-height: 1.4;
-  }
-}
-
-.tri-workspace-date,
 .tri-workspace-note,
 .tri-workspace-attribution {
-  font-size: 0.65rem;
-  color: var(--gray);
-}
-
-.tri-workspace .tri-workspace-close {
-  flex: none;
-  width: 2rem;
-  height: 2rem;
-  font-size: 1.2rem;
-  border: none;
+  font-size: 0.75rem;
+  color: var(--darkgray);
 }
 
 .tri-workspace-content {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1rem 1.2rem 1.2rem;
+  gap: 1.5rem;
 }
 
 .tri-workspace-summary,
@@ -103,43 +156,98 @@
   gap: 0.7rem 1rem;
 }
 
-.tri-workspace-switches {
+.tri-workspace-summary {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-workspace-plot-head {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.6rem;
+  min-height: 2.5rem;
+  grid-column: 2;
+}
+
+.tri-workspace-switches {
+  display: inline-flex;
+  gap: 0.25rem;
 
   button {
-    min-height: 2rem;
-    padding: 0.35rem 0.6rem;
+    min-height: 1.5rem;
+    padding: 0.15rem 0.35rem;
+    font-size: 0.6875rem;
+    border: 0;
   }
 
   button:disabled {
     opacity: 0.45;
   }
+
+  button[aria-pressed='true'] {
+    background: transparent;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.tri-workspace .tri-workspace-range {
+  z-index: var(--z-popover);
 }
 
 .tri-workspace-range {
+  flex: 0 1 22rem;
   min-width: 0;
-  max-width: 100%;
+  max-width: 50%;
+  margin-inline-start: auto;
+}
+
+.tri-workspace .tri-workspace-range-trigger {
+  width: 100%;
+  min-width: 0;
+  min-height: 1.5rem;
+  font-size: 0.75rem;
+}
+
+.tri-workspace-range-value {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.tri-workspace .tri-workspace-range-menu {
+  inline-size: max(100%, 22rem);
+  max-inline-size: min(32rem, 100cqi);
+  max-block-size: min(24rem, 50dvh);
+  overflow-y: auto;
+  padding: 0.35rem;
+  overscroll-behavior: contain;
+  background: var(--light);
+  font-size: 0.75rem;
+}
+
+.tri-workspace .tri-workspace-range-option {
   min-height: 2rem;
-  margin-left: auto;
-  padding: 0.3rem;
+  color: var(--dark);
+  border: 0;
+  text-align: start;
+}
+
+.tri-workspace-range-heading {
+  display: block;
+  padding: 0.65rem 0.4rem 0.25rem;
+  color: var(--darkgray);
 }
 
 .tri-workspace-stage {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
-  gap: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   min-width: 0;
-
-  &[data-layout='graphs'],
-  &[data-layout='map'] {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  &[data-layout='graphs'] .tri-workspace-map-panel,
-  &[data-layout='map'] .tri-workspace-plot-panel {
-    display: none;
-  }
 }
 
 .tri-workspace-map-panel,
@@ -147,8 +255,33 @@
   min-width: 0;
 }
 
+.tri-workspace-map-panel {
+  position: relative;
+
+  .tri-map-side {
+    inset-block-start: 0.75rem;
+    inset-inline-end: 0.75rem;
+    inset-inline-start: auto;
+  }
+
+  .tri-map-side button {
+    width: 2rem;
+    height: 2rem;
+    color: var(--darkgray);
+    border: 0;
+
+    &[aria-pressed='true'] {
+      color: var(--dark);
+    }
+  }
+
+  .tri-compare-map--down ~ .tri-map-side {
+    display: none;
+  }
+}
+
 .tri-workspace-map {
-  height: clamp(14rem, 35dvh, 25rem);
+  height: clamp(16rem, 32dvh, 28rem);
   overflow: hidden;
   background: color-mix(in srgb, var(--gray) 6%, transparent);
   border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
@@ -160,14 +293,19 @@
   align-items: center;
   justify-content: center;
   padding: 0 1rem;
-  color: var(--gray);
+  color: var(--darkgray);
   text-align: center;
 }
 
 .tri-workspace-attribution {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.3rem;
+
+  a {
+    color: inherit;
+  }
 
   &[hidden] {
     display: none;
@@ -177,15 +315,183 @@
 .tri-workspace-graph {
   display: block;
   width: 100%;
-  height: clamp(12rem, 29dvh, 22rem);
+  height: var(--tri-workspace-graph-height);
   overflow: visible;
   touch-action: pan-y;
 }
 
 .tri-workspace-position {
   min-height: 1.2rem;
-  margin-bottom: 0.5rem;
+  min-width: 0;
+  flex: 1 1 auto;
   font-variant-numeric: tabular-nums;
+}
+
+.tri-workspace-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+}
+
+.tri-workspace-current-value {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  white-space: nowrap;
+  cursor: help;
+
+  &::before {
+    align-self: center;
+    width: 0.4rem;
+    height: 0.4rem;
+    content: '';
+    background: var(--trace-color);
+    border-radius: 50%;
+  }
+}
+
+.tri-workspace-plot-panel {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  overscroll-behavior-inline: contain;
+}
+
+.tri-workspace-chart {
+  display: grid;
+  grid-template-columns:
+    calc(var(--tri-workspace-start-axes) * var(--tri-workspace-axis-width))
+    minmax(16rem, 1fr)
+    calc(var(--tri-workspace-end-axes) * var(--tri-workspace-axis-width));
+  column-gap: 0.5rem;
+  min-inline-size: calc(
+    (var(--tri-workspace-start-axes) + var(--tri-workspace-end-axes)) *
+      var(--tri-workspace-axis-width) + 17rem
+  );
+  padding-block: 0.25rem;
+
+  .tri-workspace-graph {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+.tri-workspace-y-axes {
+  display: flex;
+  grid-row: 2;
+}
+
+.tri-workspace-y-axes--start {
+  grid-column: 1;
+}
+
+.tri-workspace-y-axes--end {
+  grid-column: 3;
+}
+
+.tri-workspace-y-axis {
+  position: relative;
+  min-width: 0;
+  inline-size: var(--tri-workspace-axis-width);
+  height: var(--tri-workspace-graph-height);
+  font-size: 0.6875rem;
+  color: var(--darkgray);
+  font-variant-numeric: tabular-nums;
+  cursor: help;
+}
+
+.tri-workspace-y-axes--end .tri-workspace-y-axis {
+  .tri-workspace-y-ticks span {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+  }
+}
+
+.tri-workspace-y-ticks {
+  position: absolute;
+  inset: 0;
+
+  span {
+    position: absolute;
+    inset-inline-end: 0;
+    transform: translateY(-50%);
+    white-space: nowrap;
+  }
+}
+
+.tri-workspace-lap {
+  fill: var(--tri-bike);
+  fill-opacity: 0.4;
+  stroke: var(--light);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-workspace-lap-highlight {
+  fill: none;
+  stroke: var(--tri-accent);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-workspace-laps line {
+  stroke: var(--gray);
+  stroke-opacity: 0.12;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-workspace-lap-average {
+  stroke: var(--darkgray);
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-workspace-lap-labels {
+  position: relative;
+  grid-column: 2;
+  min-block-size: 1rem;
+  margin-block-start: 0.35rem;
+  font-size: 0.625rem;
+  color: var(--darkgray);
+  font-variant-numeric: tabular-nums;
+
+  &[hidden] {
+    display: none;
+  }
+
+  span {
+    position: absolute;
+    overflow: hidden;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+}
+
+.tri-workspace-lap-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 1 1 100%;
+  gap: 0.5rem 1rem;
+  font-size: 0.6875rem;
+  color: var(--darkgray);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.tri-workspace-scroll-hint {
+  align-self: flex-end;
+  font-size: 0.6875rem;
+  color: var(--darkgray);
+
+  &[hidden] {
+    display: none;
+  }
 }
 
 .tri-workspace-grid line {
@@ -200,28 +506,30 @@
   stroke: var(--trace-color);
   stroke-width: 1.4;
   vector-effect: non-scaling-stroke;
+  pointer-events: none;
 }
 
 .tri-workspace-elevation {
   fill: var(--darkgray);
   fill-opacity: 0.1;
   stroke: none;
+  pointer-events: none;
 }
 
 .tri-workspace-cursor {
-  stroke: var(--darkgray);
-  stroke-dasharray: 3 3;
+  stroke: var(--tri-accent);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 
 .tri-workspace-ticks {
+  grid-column: 2;
   display: flex;
   justify-content: space-between;
   gap: 0.4rem;
   margin-top: 0.4rem;
-  font-size: 0.6rem;
-  color: var(--gray);
+  font-size: 0.75rem;
+  color: var(--darkgray);
 }
 
 .tri-workspace-note {
@@ -231,20 +539,25 @@
 
 .tri-workspace-trace-controls {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem 0.5rem;
+  min-width: 0;
 }
 
 .tri-workspace .tri-workspace-trace-toggle {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-content: start;
-  gap: 0.3rem;
-  padding: 0.6rem;
-  text-align: left;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 1.5rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--darkgray) 30%, var(--light));
+  border-radius: var(--radius-none);
+  text-align: start;
 
   &[aria-pressed='true'] {
+    background: color-mix(in srgb, var(--trace-color) 10%, var(--light));
     border-color: var(--trace-color);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 }
 
@@ -252,55 +565,57 @@
   display: flex;
   align-items: baseline;
   gap: 0.35rem;
-  font-size: 0.65rem;
+  font-size: 0.6875rem;
 
   &::before {
     flex: none;
-    width: 0.5rem;
-    height: 0.5rem;
+    align-self: center;
+    width: 0.4rem;
+    height: 0.4rem;
     content: '';
     background: var(--trace-color);
     border-radius: 50%;
   }
 }
 
-.tri-workspace-trace-value {
-  font-size: 0.65rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.tri-workspace-trace-scale,
-.tri-workspace-trace-source {
-  grid-column: 1 / -1;
-  font-size: 0.6rem;
-  color: var(--gray);
-}
-
-@media (max-width: 800px) {
-  .tri-workspace {
-    width: calc(100vw - 1rem);
-    max-height: calc(100dvh - 1rem);
-  }
-
-  .tri-workspace-head,
-  .tri-workspace-content {
-    padding: 0.8rem;
+@container tri-workspace (max-width: 42rem) {
+  .tri-workspace-map {
+    height: 15rem;
   }
 
   .tri-workspace-stage {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .tri-workspace-map {
-    height: 12rem;
-  }
-
-  .tri-workspace-graph {
-    height: 13rem;
+    --tri-workspace-graph-height: 18rem;
   }
 
   .tri-workspace-range {
-    width: 100%;
-    margin-left: 0;
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+
+  .tri-workspace-trace-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tri-workspace-ticks {
+    span:nth-child(even) {
+      display: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-activity-analyze {
+    transition: none;
+
+    &:active {
+      transform: none;
+    }
+  }
+
+  ::view-transition-group(tri-activity-analysis),
+  ::view-transition-group(tri-activity-analysis-head),
+  ::view-transition-old(tri-activity-analysis),
+  ::view-transition-new(tri-activity-analysis) {
+    animation: none;
   }
 }

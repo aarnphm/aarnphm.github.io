@@ -848,14 +848,11 @@ export default {
         const resp = await handleStackedNoteDataRequest(request, env)
         return withHeaders(resp, apiHeaders)
       }
-      case '/api/flashcards/state': {
-        const resp = await handleFlashcardsState(request, env)
-        return withHeaders(resp, apiHeaders)
-      }
-      case '/api/flashcards/review': {
-        const resp = await handleFlashcardsReview(request, env)
-        return withHeaders(resp, apiHeaders)
-      }
+      // Same-origin and session-scoped: no shared caching, no credentialed CORS.
+      case '/api/flashcards/state':
+        return handleFlashcardsState(request, env)
+      case '/api/flashcards/review':
+        return handleFlashcardsReview(request, env)
       case '/api/lean/verify': {
         const resp = await handleLeanVerify(request, env)
         return withHeaders(resp, apiHeaders)

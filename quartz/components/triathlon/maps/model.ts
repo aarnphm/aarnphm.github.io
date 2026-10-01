@@ -12,7 +12,7 @@ import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { clock } from '../../../util/triathlon-card'
 import { KM_TO_MI } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
-import { clipMapRoute } from '../../../util/triathlon-map-route'
+import { activityGpsSegments, clipMapRoute } from '../../../util/triathlon-map-route'
 import { isRecord } from '../../../util/type-guards'
 import { analysisRouteIndex } from '../activity/analysis'
 import { CAD_RAMP, HEAT_RAMP, HR_RAMP, SPD_RAMP } from './palette'
@@ -23,12 +23,7 @@ export const emptyFC = (): GeoFC => ({ type: 'FeatureCollection', features: [] }
 
 export type GeoCoord = [number, number]
 
-export const gpsSegments = (d: StravaActivityDetail): readonly (readonly StravaMapPoint[])[] =>
-  d.mapRoute.some(segment => segment.length >= 2)
-    ? d.mapRoute.filter(segment => segment.length >= 2)
-    : d.route.length >= 2
-      ? [d.route]
-      : []
+export const gpsSegments = activityGpsSegments
 
 export const lineFeatures = (
   route: readonly StravaMapPoint[],

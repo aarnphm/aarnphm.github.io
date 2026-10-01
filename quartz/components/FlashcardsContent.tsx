@@ -94,6 +94,7 @@ export default (() => {
           <span class="flashcards-status" aria-live="polite">
             0 / {count}
           </span>
+          <a class="flashcards-sync" data-router-ignore data-no-popover hidden />
         </header>
         <div class="flashcards-stage">
           <article class="flashcards-card">

@@ -21,6 +21,8 @@ import {
   setTriMapElevation,
   setTriMapStyle,
   TRI_MAP_STYLE_EVENT,
+  TRI_MAP_3D_EVENT,
+  TRI_MAP_ELEVATION_EVENT,
   TRI_POWER_FILTER_EVENT,
   type TriMapTheme,
 } from '../runtime/preferences'
@@ -56,6 +58,7 @@ import {
 import { createOverviewProvider, createRouteSportFilter } from './overview'
 import { HEAT_RAMP, rampGradient } from './palette'
 import { createMapSearchController } from './search-controller'
+import { applyMapTerrain } from './terrain'
 
 export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => void) | null => {
   const domF = createDomFactory(context.presentation)
@@ -255,55 +258,6 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       current.on('moveend', scheduleStreetMap)
       eventsBound = true
     }
-    const installThreeDimensionalLayers = (theme: TriMapTheme, beforeId?: string) => {
-      if (!map || !threeDimensional) return
-      addSource('tri-terrain', {
-        type: 'raster-dem',
-        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-        tileSize: 512,
-        maxzoom: 14,
-      })
-      map.setTerrain({ source: 'tri-terrain', exaggeration: 1.25 })
-      addLayer(
-        {
-          id: 'tri-3d-buildings',
-          source: 'composite',
-          'source-layer': 'building',
-          filter: ['==', ['get', 'extrude'], 'true'],
-          type: 'fill-extrusion',
-          minzoom: 14.5,
-          paint: {
-            'fill-extrusion-color':
-              readTriMapStyle() === 'satellite'
-                ? '#b8b5af'
-                : theme === 'dark'
-                  ? '#34312d'
-                  : '#d8cec1',
-            'fill-extrusion-height': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              14.5,
-              0,
-              14.75,
-              ['coalesce', ['get', 'height'], 3],
-            ],
-            'fill-extrusion-base': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              14.5,
-              0,
-              14.75,
-              ['coalesce', ['get', 'min_height'], 0],
-            ],
-            'fill-extrusion-opacity': 0.72,
-            'fill-extrusion-vertical-gradient': true,
-          },
-        },
-        beforeId,
-      )
-    }
     const applyElevation = () => {
       if (!map) return
       applyMapElevation(
@@ -321,14 +275,8 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       const satellite = style === 'satellite'
       const casingColor = satellite ? '#fff9f3' : theme === 'dark' ? '#100f0f' : '#fff9f3'
       if (style === 'mono') applyMonochromeMapPalette(map, theme)
-      const firstLabelLayer = map
-        .getStyle()
-        ?.layers?.find(
-          (layer: { id?: unknown; type?: unknown }) =>
-            typeof layer.id === 'string' && layer.type === 'symbol',
-        )
-      const firstLabelId = typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined
-      installThreeDimensionalLayers(theme, firstLabelId)
+      const firstLabelId = map.getStyle()?.layers?.find(layer => layer.type === 'symbol')?.id
+      applyMapTerrain(map, threeDimensional, style, theme)
       applyElevation()
       addSource('tri-heat', { type: 'geojson', data: emptyFC() })
       addLayer(
@@ -571,22 +519,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     const applyThreeDimensional = () => {
       const current = readyMap()
       if (!current) return
-      if (threeDimensional) {
-        const firstLabelLayer = current
-          .getStyle()
-          ?.layers?.find(
-            (layer: { id?: unknown; type?: unknown }) =>
-              typeof layer.id === 'string' && layer.type === 'symbol',
-          )
-        installThreeDimensionalLayers(
-          readTriMapTheme(),
-          typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined,
-        )
-      } else {
-        current.setTerrain(null)
-        if (current.getLayer('tri-3d-buildings')) current.removeLayer('tri-3d-buildings')
-        if (current.getSource('tri-terrain')) current.removeSource('tri-terrain')
-      }
+      applyMapTerrain(current, threeDimensional, readTriMapStyle(), readTriMapTheme())
       current.easeTo({ pitch: threeDimensional ? 55 : 0, duration: reduce ? 0 : 240 })
     }
     const dispose = () => {
@@ -790,8 +723,10 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   const syncThreeDimensionalBtn = () =>
     threeDimensionalBtn?.setAttribute('aria-pressed', String(threeDimensional))
   const onThreeDimensionalClick = () => {
-    threeDimensional = !threeDimensional
-    setTriMap3d(threeDimensional)
+    setTriMap3d(!threeDimensional)
+  }
+  const onThreeDimensionalChange = () => {
+    threeDimensional = readTriMap3d()
     syncThreeDimensionalBtn()
     mapCtl.applyThreeDimensional()
   }
@@ -799,8 +734,10 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     setTriMapStyle(readTriMapStyle() === 'satellite' ? 'mono' : 'satellite')
   const syncElevationBtn = () => elevationBtn?.setAttribute('aria-pressed', String(elevation))
   const onElevationClick = () => {
-    elevation = !elevation
-    setTriMapElevation(elevation)
+    setTriMapElevation(!elevation)
+  }
+  const onElevationChange = () => {
+    elevation = readTriMapElevation()
     syncElevationBtn()
     mapCtl.applyElevation()
   }
@@ -921,6 +858,8 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   document.addEventListener('keydown', onKey)
   document.addEventListener('themechange', onThemeChange)
   window.addEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
+  window.addEventListener(TRI_MAP_3D_EVENT, onThreeDimensionalChange)
+  window.addEventListener(TRI_MAP_ELEVATION_EVENT, onElevationChange)
   window.addEventListener('tri:unit', onUnit)
   window.addEventListener(TRI_POWER_FILTER_EVENT, onPowerFilter)
 
@@ -940,6 +879,8 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     document.removeEventListener('keydown', onKey)
     document.removeEventListener('themechange', onThemeChange)
     window.removeEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
+    window.removeEventListener(TRI_MAP_3D_EVENT, onThreeDimensionalChange)
+    window.removeEventListener(TRI_MAP_ELEVATION_EVENT, onElevationChange)
     window.removeEventListener('tri:unit', onUnit)
     window.removeEventListener(TRI_POWER_FILTER_EVENT, onPowerFilter)
     mapSearch.dispose()

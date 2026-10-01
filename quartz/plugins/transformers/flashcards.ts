@@ -51,6 +51,9 @@ export const Flashcards: QuartzTransformerPlugin = () => ({
             html(`</div>`),
             html(`<div class="flashcard-face flashcard-back" data-face="back" hidden>`),
             ...parseFace(card.back),
+            ...(card.note
+              ? [html(`<div class="flashcard-note">`), ...parseFace(card.note), html(`</div>`)]
+              : []),
             html(`</div>`),
             html(`</section>`),
           )

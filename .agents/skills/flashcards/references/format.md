@@ -16,7 +16,9 @@ This example parses to four cards: one Q/A, one single-deletion cloze, and two s
 - Faces may span lines and contain lists, inline math, or display math. A Q/A card needs a nonempty answer. A cloze needs at least one deletion.
 - Use `---` between cards for readability. A new `Q:` or `C:` also starts a card without a separator. A standalone line of three or more dashes ends the card, including inside a multiline answer.
 - `[answer]` hides the answer; `[answer|hint]` supplies a cue. Other deletions remain visible when one sibling is tested.
+- A deletion may sit inside inline math or a code span: `` `Je viens [du] Brésil.` `` renders the blank between two code spans and reveals the answer as code.
+- `N:` after the answer (or after a cloze sentence) starts a note shown only on the back. The note is excluded from the ID, so adding or editing one keeps the card's scheduling. `N:` before `A:` is a parse error.
 - Wikilinks and inline Markdown links are recognized without becoming deletions. Check the parsed result when using other literal bracket syntax, such as array notation, in a cloze.
 - Optional leading YAML frontmatter is stripped by the parser. Usually omit it; a `title` can override the viewer heading. Avoid a leading separator that would be consumed as frontmatter.
 
-`hashCard` hashes normalized text. Q/A IDs use both faces. Cloze group IDs use the sentence; sibling IDs also include the deletion index. Adding a citation to an existing card changes that text and may change its ID. Compare parser output before and after an edit instead of estimating identity changes from appearance.
+`hashCard` hashes normalized text. Q/A IDs use both faces, without the note. Cloze group IDs use the sentence; sibling IDs also include the deletion index. Adding a citation to an existing card changes that text and may change its ID. Compare parser output before and after an edit instead of estimating identity changes from appearance.

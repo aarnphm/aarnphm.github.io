@@ -171,3 +171,46 @@ A: `vos enfants`. It survives only in the `âge` column: you give a child's age,
 ---
 
 C: The 3×3 grid `nom/âge/profession` × `parents/frères et sœurs/enfants` has two cells struck: `le [nom] de vos enfants` and `la [profession] de vos enfants` are both crossed, leaving `l'âge de vos enfants` as the one valid `enfants` cell.
+
+---
+
+Q: `Qui est-ce ? C'est le fils de mon oncle.`
+A: `C'est mon cousin.`
+
+---
+
+Q: `Qui est-ce ? C'est la mère de ma mère.`
+A: `C'est ma grand-mère.`
+
+---
+
+Q: `Qui est-ce ? C'est la fille de mon frère.`
+A: `C'est ma nièce.`
+
+---
+
+Q: `Qui est-ce ? C'est le père de ma conjointe.`
+A: `C'est mon beau-père.`
+
+---
+
+Q: `Qui est-ce ? C'est le mari de ma sœur.`
+A: `C'est mon beau-frère.`
+
+---
+
+Q: Corrigez : `Nous avons canadiens.`
+A: `Nous sommes canadiens.`
+N: Nationality takes `être`.
+
+---
+
+Q: Corrigez : `Ils sont 30 ans.`
+A: `Ils ont 30 ans.`
+N: Age takes `avoir`.
+
+---
+
+Q: Say "Your child needs scissors." (school message, formal)
+A: `Votre enfant a besoin de ciseaux.`
+N: `avoir besoin de` + noun, with no article after `de` here.

@@ -1,16 +1,23 @@
 import type { StravaActivityDetail, StravaMapPoint } from '../../../plugins/stores/strava'
+import type { DistanceSystem } from '../../../util/triathlon-presentation'
 import type { TriathlonMapboxMap } from '../maps/mapbox'
 import type { GeoFC } from '../maps/model'
 import { activityCompareColor } from '../../../util/triathlon-card'
 import { mapRoutePointAtDistance } from '../../../util/triathlon-map-route'
 import { applyMonochromeMapPalette } from '../../scripts/mapbox-client'
+import { applyMapElevation } from '../maps/elevation'
 import { createMapboxMap, type MapboxPointerEvent } from '../maps/mapbox'
 import { emptyFC, fcBounds, gpsSegments, segmentFeatures } from '../maps/model'
+import { applyMapTerrain } from '../maps/terrain'
 import {
   mapboxStyleUrl,
+  readTriMap3d,
+  readTriMapElevation,
   readTriMapStyle,
   readTriMapTheme,
   TRI_MAP_STYLE_EVENT,
+  TRI_MAP_3D_EVENT,
+  TRI_MAP_ELEVATION_EVENT,
 } from '../runtime/preferences'
 
 export interface ActivityComparisonMapController {
@@ -46,7 +53,12 @@ const routeFeatures = (route: ComparisonRoute): GeoFC => ({
 export const mountActivityComparisonMap = (
   container: HTMLElement,
   activities: readonly StravaActivityDetail[],
-  options: { unavailableText: string; onScrub: (distanceKm: number) => void; onLeave: () => void },
+  options: {
+    unavailableText: string
+    distance: DistanceSystem
+    onScrub: (distanceKm: number) => void
+    onLeave: () => void
+  },
 ): ActivityComparisonMapController => {
   const routes: ComparisonRoute[] = activities.flatMap((activity, index) => {
     const segments = gpsSegments(activity)
@@ -111,6 +123,15 @@ export const mountActivityComparisonMap = (
     if (!current) return
     const casing = casingColor()
     if (readTriMapStyle() === 'mono') applyMonochromeMapPalette(current, readTriMapTheme())
+    applyMapTerrain(current, readTriMap3d(), readTriMapStyle(), readTriMapTheme())
+    current.easeTo({ pitch: readTriMap3d() ? 55 : 0, duration: 0 })
+    applyMapElevation(
+      current,
+      readTriMapElevation(),
+      readTriMapStyle(),
+      readTriMapTheme(),
+      options.distance,
+    )
     for (const route of routes) {
       const sourceId = routeSourceId(route)
       if (!current.getSource(sourceId))
@@ -226,39 +247,62 @@ export const mountActivityComparisonMap = (
   const onThemeChange = (): void => {
     if (readTriMapStyle() !== 'satellite') applyStyle()
   }
+  const onTerrainChange = (): void => {
+    if (!map || !ready) return
+    const enabled = readTriMap3d()
+    applyMapTerrain(map, enabled, readTriMapStyle(), readTriMapTheme())
+    map.easeTo({
+      pitch: enabled ? 55 : 0,
+      duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 240,
+    })
+  }
+  const onElevationChange = (): void => {
+    if (map && ready)
+      applyMapElevation(
+        map,
+        readTriMapElevation(),
+        readTriMapStyle(),
+        readTriMapTheme(),
+        options.distance,
+      )
+  }
   const observer = new ResizeObserver(() => {
     map?.resize()
     if (pendingFit) fitRoutes()
   })
   observer.observe(container)
   window.addEventListener(TRI_MAP_STYLE_EVENT, applyStyle)
+  window.addEventListener(TRI_MAP_3D_EVENT, onTerrainChange)
+  window.addEventListener(TRI_MAP_ELEVATION_EVENT, onElevationChange)
   document.addEventListener('themechange', onThemeChange)
 
-  void createMapboxMap(container, mapboxStyleUrl(readTriMapStyle(), readTriMapTheme()), false).then(
-    created => {
-      if (disposed) {
-        created?.remove()
-        return
-      }
-      if (!created) {
-        container.classList.add('tri-compare-map--down')
-        container.textContent = options.unavailableText
-        return
-      }
-      map = created
-      created.on('mousemove', onPointerMove)
-      created.on('mouseout', onPointerOut)
-      created.once('load', () => {
-        if (disposed) return
-        installLayers()
-        const bounds = fcBounds({
-          type: 'FeatureCollection',
-          features: routes.flatMap(route => routeFeatures(route).features),
-        })
-        if (bounds) created.fitBounds(bounds, { padding: 32, maxZoom: 15, duration: 0 })
+  void createMapboxMap(
+    container,
+    mapboxStyleUrl(readTriMapStyle(), readTriMapTheme()),
+    readTriMap3d(),
+  ).then(created => {
+    if (disposed) {
+      created?.remove()
+      return
+    }
+    if (!created) {
+      container.classList.add('tri-compare-map--down')
+      container.textContent = options.unavailableText
+      return
+    }
+    map = created
+    created.on('mousemove', onPointerMove)
+    created.on('mouseout', onPointerOut)
+    created.once('load', () => {
+      if (disposed) return
+      installLayers()
+      const bounds = fcBounds({
+        type: 'FeatureCollection',
+        features: routes.flatMap(route => routeFeatures(route).features),
       })
-    },
-  )
+      if (bounds) created.fitBounds(bounds, { padding: 32, maxZoom: 15, duration: 0 })
+    })
+  })
 
   return {
     setVisible: (activityId, visible) => {
@@ -286,6 +330,8 @@ export const mountActivityComparisonMap = (
       disposed = true
       observer.disconnect()
       window.removeEventListener(TRI_MAP_STYLE_EVENT, applyStyle)
+      window.removeEventListener(TRI_MAP_3D_EVENT, onTerrainChange)
+      window.removeEventListener(TRI_MAP_ELEVATION_EVENT, onElevationChange)
       document.removeEventListener('themechange', onThemeChange)
       if (scrubFrame) window.cancelAnimationFrame(scrubFrame)
       map?.remove()

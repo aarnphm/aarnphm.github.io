@@ -246,3 +246,160 @@ A: `conduire` : `je conduis`, `nous conduisons`, `vous conduisez`, `ils conduise
 
 Q: Quel verbe sert de modèle à `décrire` et `inscrire` au présent ?
 A: `écrire` : `j'écris`, `nous écrivons`, `vous écrivez`, `ils écrivent`.
+
+---
+
+C: `Tu [bois|boire] du café le matin ?`
+
+---
+
+C: `Il [reçoit|recevoir] beaucoup de courriels.`
+
+---
+
+C: `Elle [tient|tenir] la porte.`
+
+---
+
+C: `Ils [viennent|venir] du Brésil.`
+
+---
+
+C: `Il [prend|prendre] l'autobus.`
+
+---
+
+C: `Tu [comprends|comprendre] la question ?`
+
+---
+
+C: `Elle [apprend|apprendre] le français.`
+
+---
+
+C: `Il [devient|devenir] infirmier.`
+
+---
+
+C: `Tu [mets|mettre] ton manteau.`
+
+---
+
+C: `Elle [conduit|conduire] une auto électrique.`
+
+---
+
+C: `Tu [écris|écrire] un courriel.`
+
+---
+
+C: `Il [peint|peindre] la cuisine.`
+
+---
+
+C: `Il [joint|joindre] le document au courriel.`
+
+---
+
+C: `Elle [craint|craindre] les chiens.`
+
+---
+
+C: `Tu [résous|résoudre] le problème.`
+
+N: `il résout` ends in `-t`, with no `d` anywhere in the singular.
+
+---
+
+C: `Elle [envoie|envoyer] une lettre.`
+
+N: `y` becomes `i` before a silent `-e`.
+
+---
+
+C: `Tu [appelles|appeler] ta mère ?`
+
+N: `-es` is silent, so the stem doubles: `tu appelles`, but `nous appelons`.
+
+---
+
+C: `Il [jette|jeter] le papier dans le bac de recyclage.`
+
+N: Before a silent `-e` ending, `jeter` doubles the `t`; `nous jetons` keeps one.
+
+---
+
+C: `Tu [répètes|répéter] la phrase.`
+
+---
+
+C: `Elle [pèse|peser] les fruits.`
+
+---
+
+C: `Nous [commençons|commencer] à 9 h.`
+
+---
+
+C: `Nous [mangeons|manger] à midi.`
+
+---
+
+C: `Vous [faites|faire] du vélo ?`
+
+---
+
+C: `Vous [dites|dire] la vérité.`
+
+---
+
+C: `Ils [vont|aller] au cinéma.`
+
+---
+
+C: `Elles [font|faire] le ménage.`
+
+---
+
+C: `Ils [peuvent|pouvoir] partir.`
+
+---
+
+C: `Elles [veulent|vouloir] un café.`
+
+---
+
+C: `Tu [sais|savoir] nager ?`
+
+---
+
+C: `Nous [buvons|boire] de l'eau.`
+
+N: Three stems: `bois` (je, tu, il), `buv-` (nous, vous), `boiv-` (ils).
+
+---
+
+C: `Ils [reçoivent|recevoir] des invités.`
+
+N: The cedilla keeps /s/ before `o`; `ils reçoivent` has the third stem.
+
+---
+
+C: `Vous [prenez|prendre] le métro ?`
+
+---
+
+C: `Elles [prennent|prendre] le train.`
+
+---
+
+C: `Nous [jetons|jeter] les boites.`
+
+---
+
+C: `Ils [appellent|appeler] le médecin.`
+
+---
+
+Q: Why do `il peint`, `il joint` and `il résout` end in `-t` while `il prend` ends in `-d`?
+A: `prendre` keeps the `d` of its stem and adds nothing. Verbs in `-indre` and `-soudre` lose the `d` in the singular and take the regular `-s, -s, -t`: `je peins`, `il peint`; `je résous`, `il résout`.

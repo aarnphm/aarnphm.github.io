@@ -181,6 +181,15 @@ export async function getArenaReaderIdentity(
   return { subject: `github:${claims.id}` }
 }
 
+/** Flashcards share the owner session; rows stay keyed by the lowercased owner login. */
+export async function getOwnerSessionLogin(
+  request: Request,
+  env: ArenaReaderAuthEnv,
+  now = Date.now(),
+): Promise<string | null> {
+  return (await getArenaReaderIdentity(request, env, now)) ? ownerLogin(env) : null
+}
+
 export function getArenaReaderLoginUrl(request: Request): string {
   const source = new URL(request.url)
   const returnTo =

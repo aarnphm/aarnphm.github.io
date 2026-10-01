@@ -44,11 +44,25 @@ document.addEventListener('nav', () => {
   const revealBtn = root.querySelector<HTMLButtonElement>('.fc-reveal')
   const grades = root.querySelector<HTMLElement>('.fc-grades')
   const endBtn = root.querySelector<HTMLButtonElement>('.fc-end')
+  const syncEl = root.querySelector<HTMLAnchorElement>('.flashcards-sync')
 
+  // The Worker resolves the owner's GitHub session; without one the drill is stateless.
   let login: string | null = null
-  try {
-    login = localStorage.getItem('comment-author-github-login')
-  } catch {}
+
+  const setSync = (sync: 'off' | 'on' | 'error', detail: string) => {
+    if (!syncEl) return
+    syncEl.hidden = false
+    syncEl.dataset.sync = sync
+    syncEl.title = detail
+    if (sync === 'off') {
+      const returnTo = `${window.location.pathname}${window.location.search}`
+      syncEl.href = `/comments/github/login?returnTo=${encodeURIComponent(returnTo)}`
+      syncEl.textContent = 'not saved'
+    } else {
+      syncEl.removeAttribute('href')
+      syncEl.textContent = sync === 'on' ? `@${login}` : 'sync failed'
+    }
+  }
 
   let queue: HTMLElement[] = []
   let total = 0
@@ -153,13 +167,16 @@ document.addEventListener('nav', () => {
         const res = await fetch('/api/flashcards/review', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cardId, deckSlug, grade, login }),
+          body: JSON.stringify({ cardId, deckSlug, grade }),
           signal,
         })
+        if (res.status === 401) login = null
         if (!res.ok) persistError = true
       } catch {
         if (!signal.aborted) persistError = true
       }
+      if (!login) setSync('off', 'session expired; later reviews are not saved')
+      else if (persistError) setSync('error', 'a review failed to save; its schedule is unchanged')
     }
     if (signal.aborted) return
     submitting = false
@@ -266,22 +283,31 @@ document.addEventListener('nav', () => {
 
   const start = async () => {
     let order = cards.slice()
-    if (login && deckSlug) {
+    if (deckSlug) {
       try {
-        const res = await fetch(
-          `/api/flashcards/state?deck=${encodeURIComponent(deckSlug)}&login=${encodeURIComponent(login)}`,
-          { signal },
-        )
-        if (res.ok) {
-          const data = (await res.json()) as { states?: CardState[] }
+        const res = await fetch(`/api/flashcards/state?deck=${encodeURIComponent(deckSlug)}`, {
+          signal,
+        })
+        if (!res.ok) throw new Error(`state ${res.status}`)
+        const data = (await res.json()) as { login?: string | null; states?: CardState[] }
+        login = typeof data.login === 'string' ? data.login : null
+        if (login) {
           const dueByCard = new Map((data.states ?? []).map(s => [s.cardId, s.due]))
           const now = Date.now()
           order = cards.filter(el => {
             const cardId = el.dataset.cardId
             return cardId !== undefined && (dueByCard.get(cardId) ?? 0) <= now
           })
+          setSync('on', `reviews save to ${login}`)
+        } else {
+          setSync(
+            'off',
+            'progress is not saved; only the site owner can sign in to schedule reviews',
+          )
         }
-      } catch {}
+      } catch {
+        if (!signal.aborted) setSync('error', 'could not load progress; showing every card')
+      }
     }
     if (signal.aborted) return
     shuffle(order)

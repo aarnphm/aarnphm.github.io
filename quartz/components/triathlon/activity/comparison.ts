@@ -239,6 +239,7 @@ export const wireActivityComparison = (
     const restore = () => showDistance(distanceState.fraction)
     mapController = mountActivityComparisonMap(map, activities, {
       unavailableText: text('map unavailable'),
+      distance: presentation.distance,
       onScrub: distanceKm => {
         distanceState.fraction = Math.min(1, Math.max(0, distanceKm / maxDistanceKm))
         render(map, restore)
