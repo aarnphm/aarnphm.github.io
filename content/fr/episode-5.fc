@@ -24,7 +24,7 @@ C: Possesseur `il` ou `elle` : `[son] père`, `[sa] famille`, `[ses] stylos`.
 ---
 
 Q: `Son frère est marié.` : his brother or her brother?
-A: Either. The Mémo's example is `Elle a un frère et deux cousins. Son frère est marié.`, her brother; `son` only marks that `frère` is masculine singular.
+A: Either. The Mémo's example is {{`Elle a un frère et deux cousins. Son frère est marié.`}}, her brother; `son` only marks that `frère` is masculine singular.
 
 ---
 
@@ -37,7 +37,7 @@ C: Possesseur `vous` : `[votre] mère`, `[votre] frère`, `[vos] enfants` (`votr
 ---
 
 Q: Which possessives carry le vous de politesse?
-A: `votre` and `vos` : `Quel est votre nom, madame ?`, `Quels sont vos souhaits, monsieur ?`
+A: `votre` and `vos` : {{`Quel est votre nom, madame ?`}}, {{`Quels sont vos souhaits, monsieur ?`}}
 
 ---
 
@@ -50,12 +50,12 @@ C: tu → vous : `Ta femme est québécoise.` devient `[Votre] femme est québé
 ---
 
 Q: French for brother / sister?
-A: `le frère` / `la sœur`.
+A: {{`le frère`}} / {{`la sœur`}}.
 
 ---
 
 Q: French for son / daughter?
-A: `le fils` (pronounced /fis/) / `la fille`; family talk also says `mon garçon` for a son.
+A: {{`le fils`}} (pronounced /fis/) / {{`la fille`}}; family talk also says {{`mon garçon`}} for a son.
 
 ---
 
@@ -69,27 +69,27 @@ A: Partner, married or not; the épisode uses it for every couple. The administr
 ---
 
 Q: How does the épisode use `beau-père` and `belle-mère`?
-A: As in-laws through the couple: Édith, conjointe de Martin, says `Mon beau-père s'appelle Jean-Guy. Ma belle-mère s'appelle Ginette.` The same words also mean stepfather and stepmother.
+A: As in-laws through the couple: Édith, conjointe de Martin, says {{`Mon beau-père s'appelle Jean-Guy. Ma belle-mère s'appelle Ginette.`}} The same words also mean stepfather and stepmother.
 
 ---
 
 Q: French for father-in-law / mother-in-law?
-A: `le beau-père` / `la belle-mère` (also stepfather / stepmother; context decides).
+A: {{`le beau-père`}} / {{`la belle-mère`}} (also stepfather / stepmother; context decides).
 
 ---
 
 Q: Word for a daughter-in-law?
-A: `la belle-fille` : `Ma belle-fille s'appelle Édith.` (Jean-Guy, about his son's conjointe)
+A: {{`la belle-fille`}} : {{`Ma belle-fille s'appelle Édith.`}} (Jean-Guy, about his son's conjointe)
 
 ---
 
 Q: Word for a son-in-law?
-A: `le beau-fils` : `Philippe est le beau-fils de Diane et Réjean Côté.` (the parents of his conjointe Isabelle)
+A: {{`le beau-fils`}} : {{`Philippe est le beau-fils de Diane et Réjean Côté.`}} (the parents of his conjointe Isabelle)
 
 ---
 
 Q: `les beaux-parents`?
-A: The parents-in-law: `André et Claire Dupuis sont les beaux-parents de Dominique Jadotte et d'Isabelle Côté.`
+A: The parents-in-law: {{`André et Claire Dupuis sont les beaux-parents de Dominique Jadotte et d'Isabelle Côté.`}}
 
 ---
 
@@ -98,7 +98,7 @@ C: grandson, granddaughter, grandchildren : `le [petit-fils]`, `la [petite-fille
 ---
 
 Q: `Anne, William et Victor sont les ___ de Diane et Réjean Côté.` (their daughter Isabelle's children)
-A: `les petits-enfants`.
+A: {{`les petits-enfants`}}.
 
 ---
 
@@ -111,12 +111,12 @@ C: `Philippe Dupuis est [l'oncle] de Simon, Amélie et Arthur ; Isabelle Côté 
 ---
 
 Q: `chum` and `blonde` in Québec?
-A: Informal boyfriend and girlfriend, hair colour irrelevant; France says `copain`/`copine`.
+A: Informal boyfriend and girlfriend, hair colour irrelevant; France says {{`copain`}}/{{`copine`}}.
 
 ---
 
 Q: `mon garçon` in family talk?
-A: My son: `Mon conjoint s'appelle Michel et mon garçon s'appelle Théo.`, `Ton garçon a 14 ans.`
+A: My son: {{`Mon conjoint s'appelle Michel et mon garçon s'appelle Théo.`}}, {{`Ton garçon a 14 ans.`}}
 
 ---
 
@@ -134,12 +134,12 @@ C: `C'est qui ? [C'est] mon cousin, Jean-François.` ; `Qu'est-ce que c'est ? [C
 ---
 
 Q: Ask who someone is, formal and informal?
-A: `Qui est-ce ?` (situation formelle) / `C'est qui ?` (situation informelle).
+A: {{`Qui est-ce ?`}} (situation formelle) / {{`C'est qui ?`}} (situation informelle).
 
 ---
 
 Q: Ask what something is, formal and informal?
-A: `Qu'est-ce que c'est ?` (situation formelle) / `C'est quoi ?` (situation informelle).
+A: {{`Qu'est-ce que c'est ?`}} (situation formelle) / {{`C'est quoi ?`}} (situation informelle).
 
 ---
 
@@ -153,12 +153,12 @@ C: `[C'est] Jocelyn. Il [est] infirmier. Il [a] 38 ans.`
 ---
 
 Q: Article after `Il est` + profession?
-A: None: `Il est infirmier.`, never `Il est un infirmier.`, the [[fr/episode-1]] rule.
+A: None: {{`Il est infirmier.`}}, never `Il est un infirmier.`, the [[fr/episode-1]] rule.
 
 ---
 
 Q: Which verb for nationalité, profession, état civil, and which for âge and possession?
-A: `être` for the first three (`Je suis portugais.`, `Il est électricien.`, `Elles sont célibataires.`); `avoir` for âge and possession (`J'ai 28 ans.`, `Ils ont une auto.`), ages counted in [[fr/les-nombres]].
+A: {{`être`}} for the first three ({{`Je suis portugais.`}}, {{`Il est électricien.`}}, {{`Elles sont célibataires.`}}); {{`avoir`}} for âge and possession ({{`J'ai 28 ans.`}}, {{`Ils ont une auto.`}}), ages counted in [[fr/les-nombres]].
 
 ---
 
@@ -188,17 +188,17 @@ A: `Enchanté(e) !`, `Je suis content(e) de vous rencontrer.`, `Je suis heureux/
 ---
 
 Q: Informal equivalents of the meeting expressions?
-A: `Ça me fait plaisir !`, `Je suis content(e) de te rencontrer.`, `Je suis heureux/heureuse de te connaitre.`
+A: {{`Ça me fait plaisir !`}}, `Je suis content(e) de te rencontrer.`, `Je suis heureux/heureuse de te connaitre.`
 
 ---
 
 Q: Why `connaitre` with no circumflex?
-A: Rectified orthography, the book's default, like `aout` in [[fr/episode-2]]; inventory at [[fr/orthography-phonetics]].
+A: Rectified orthography, the book's default, like {{`aout`}} in [[fr/episode-2]]; inventory at [[fr/orthography-phonetics]].
 
 ---
 
 Q: Three ways to build une question fermée (answered by oui or non)?
-A: Intonation ascendante (`Vous êtes dentiste ?`), `est-ce que` en début de phrase (`Est-ce que vous êtes dentiste ?`), inversion verbe-pronom (`Êtes-vous dentiste ?`).
+A: Intonation ascendante ({{`Vous êtes dentiste ?`}}), {{`est-ce que`}} en début de phrase ({{`Est-ce que vous êtes dentiste ?`}}), inversion verbe-pronom ({{`Êtes-vous dentiste ?`}}).
 
 ---
 
@@ -207,22 +207,22 @@ C: `Tu habites à Montréal ?` → `[Est-ce que] tu habites à Montréal ?` → 
 ---
 
 Q: Where does the interrogative word go in une question ouverte?
-A: Informal and oral: start or end of the sentence, no inversion (`Vous habitez où ?`, `C'est quoi ton nom ?`); formal and written: start, followed by verb and pronoun (`Où habitez-vous ?`).
+A: Informal and oral: start or end of the sentence, no inversion ({{`Vous habitez où ?`}}, {{`C'est quoi ton nom ?`}}); formal and written: start, followed by verb and pronoun ({{`Où habitez-vous ?`}}).
 
 ---
 
 Q: Informal double of `Avez-vous des enfants ?`
-A: `Est-ce que tu as des enfants ?` or plain intonation `Tu as des enfants ?`
+A: {{`Est-ce que tu as des enfants ?`}} or plain intonation {{`Tu as des enfants ?`}}
 
 ---
 
 Q: Formal double of `C'est quoi ton numéro de téléphone ?`
-A: `Quel est votre numéro de téléphone ?`
+A: {{`Quel est votre numéro de téléphone ?`}}
 
 ---
 
 Q: The feminized titles under the personnalités québécoises?
-A: `écrivaine` (Kim Thúy), `conférencière` (Danièle Henkel), `auteures, compositrices, interprètes` (Les sœurs Boulay): the OQLF feminizations of [[fr/episode-1]].
+A: {{`écrivaine`}} (Kim Thúy), {{`conférencière`}} (Danièle Henkel), {{`auteures, compositrices, interprètes`}} (Les sœurs Boulay): the OQLF feminizations of [[fr/episode-1]].
 
 ---
 
@@ -231,7 +231,7 @@ C: `Sur cette photo, c'est mon chat [qui] se prépare pour Noël.` (the relative
 ---
 
 Q: `qui` vs `que` in a relative clause?
-A: `qui` stands for the subject, so a verb follows (`le chat qui dort`); `que` stands for the direct object, so a subject follows (`le chat que j'aime`).
+A: `qui` stands for the subject, so a verb follows ({{`le chat qui dort`}}); `que` stands for the direct object, so a subject follows ({{`le chat que j'aime`}}).
 
 ---
 
@@ -244,7 +244,7 @@ C: When the verb carries `de`, the relative is `dont`: `le chat [dont] je parle`
 ---
 
 Q: Which relative pronoun does `avoir besoin de` take, as in the school-message scissors?
-A: `dont`: `les ciseaux dont il a besoin` ([[fr/episode-8]]).
+A: `dont`: {{`les ciseaux dont il a besoin`}} ([[fr/episode-8]]).
 
 ---
 
@@ -262,12 +262,12 @@ C: Converting to `vous` merges two forms into one: `ton nom` et `ta femme` devie
 ---
 
 Q: Why is the `vous` → `tu` direction harder than `tu` → `vous`?
-A: `ton` and `ta` both collapse into `votre`, so `vous` hides the noun's gender. Coming back you must recover it: `Votre garçon a 14 ans.` can only be `Ton garçon a 14 ans.`, never `ta`.
+A: `ton` and `ta` both collapse into `votre`, so `vous` hides the noun's gender. Coming back you must recover it: {{`Votre garçon a 14 ans.`}} can only be {{`Ton garçon a 14 ans.`}}, never `ta`.
 
 ---
 
 Q: In `Ta femme est québécoise.` → `Votre femme est québécoise.`, why does the verb stay `est`?
-A: `tu`/`vous` is only the possessor, not the subject. The verb keeps agreeing with `femme`. The verb moves only when the person is the subject: `Est-ce que tu as des enfants ?` → `Avez-vous des enfants ?`
+A: `tu`/`vous` is only the possessor, not the subject. The verb keeps agreeing with `femme`. The verb moves only when the person is the subject: {{`Est-ce que tu as des enfants ?`}} → {{`Avez-vous des enfants ?`}}
 
 ---
 
@@ -276,12 +276,12 @@ C: The three builds of a closed question climb in register: `Tu as une auto ?` i
 ---
 
 Q: Put `Est-ce que vous êtes étudiant ?` into the other two builds.
-A: Intonation `Vous êtes étudiant ?` and inversion `Êtes-vous étudiant ?`
+A: Intonation {{`Vous êtes étudiant ?`}} and inversion {{`Êtes-vous étudiant ?`}}
 
 ---
 
 Q: Put `As-tu des enfants ?` into the other two builds.
-A: Intonation `Tu as des enfants ?` and `est-ce que` form `Est-ce que tu as des enfants ?`
+A: Intonation {{`Tu as des enfants ?`}} and {{`est-ce que`}} form {{`Est-ce que tu as des enfants ?`}}
 
 ---
 
@@ -303,7 +303,7 @@ C: `Combien` never touches its noun directly, it goes through `de`: `Combien [d'
 ---
 
 Q: In the matching drill, why can `C'est quoi` only pair with `ta nationalité ?`
-A: `c'est quoi` is the one question opener that takes a noun phrase, since its question word already sits inside its own clause. The other four openers are followed by a verb.
+A: {{`c'est quoi`}} is the one question opener that takes a noun phrase, since its question word already sits inside its own clause. The other four openers are followed by a verb.
 
 ---
 
@@ -312,7 +312,7 @@ C: The verb picks the preposition on the question word: `venir de` gives `[D'où
 ---
 
 Q: Give the formal, inverted version of `D'où vous venez ?`
-A: `D'où venez-vous ?`
+A: {{`D'où venez-vous ?`}}
 
 ---
 
@@ -325,12 +325,12 @@ C: The question word moves as a whole block: `Combien d'enfants avez-vous ?` dev
 ---
 
 Q: What is the standard error when moving a question word to the end of the sentence?
-A: Splitting the block. The preposition and noun travel with the question word: `Vous avez combien d'enfants ?`, never `Combien vous avez d'enfants ?`
+A: Splitting the block. The preposition and noun travel with the question word: {{`Vous avez combien d'enfants ?`}}, never `Combien vous avez d'enfants ?`
 
 ---
 
 Q: Formalize `C'est quoi ton adresse ?`
-A: `Quelle est votre adresse ?` The `c'est quoi` frame does not invert; its formal partner is `quel` plus `être`, with `quel` agreeing with the noun.
+A: {{`Quelle est votre adresse ?`}} The {{`c'est quoi`}} frame does not invert; its formal partner is `quel` plus {{`être`}}, with `quel` agreeing with the noun.
 
 ---
 
@@ -339,12 +339,12 @@ C: `quel` agrees with the noun it questions: `[Quelle] est votre adresse ?` but 
 ---
 
 Q: Formalize `Avec qui vous habitez ?`
-A: `Avec qui habitez-vous ?` The preposition stays welded to `qui` at the front; only the verb and pronoun invert.
+A: {{`Avec qui habitez-vous ?`}} The preposition stays welded to `qui` at the front; only the verb and pronoun invert.
 
 ---
 
 Q: In `Quand êtes-vous arrivé ?`, what exactly inverts?
-A: Only the auxiliary: `êtes-vous arrivé`, never `êtes arrivé-vous`. In a compound tense the participle stays put.
+A: Only the auxiliary: {{`êtes-vous arrivé`}}, never `êtes arrivé-vous`. In a compound tense the participle stays put.
 
 ---
 
@@ -353,81 +353,81 @@ C: `arriver` takes `être`, so the participle agrees with the subject: `Quand ê
 ---
 
 Q: Say "her father".
-A: `son père`
+A: {{`son père`}}
 N: The possessive agrees with the thing owned (`le père`), never with the owner; "her" does not force `sa`.
 
 ---
 
 Q: Say "his mother".
-A: `sa mère`
+A: {{`sa mère`}}
 N: `la mère` is feminine, so `sa`, whoever the owner is.
 
 ---
 
 Q: Say "his school".
-A: `son école`
+A: {{`son école`}}
 N: `école` is feminine, but `sa` cannot sit before a vowel, so `son` takes over: `son école`, `mon amie`.
 
 ---
 
 Q: Say "your glasses" to a friend, then to your doctor.
-A: `tes lunettes`, then `vos lunettes`.
+A: {{`tes lunettes`}}, then {{`vos lunettes`}}.
 
 ---
 
 Q: Say "Your son is 14." (formal)
-A: `Votre fils a 14 ans.`
+A: {{`Votre fils a 14 ans.`}}
 
 ---
 
 Q: Say "Your daughter is a nurse." (informal)
-A: `Ta fille est infirmière.`
+A: {{`Ta fille est infirmière.`}}
 
 ---
 
 Q: Say "We are twins."
-A: `Nous sommes jumeaux.`
+A: {{`Nous sommes jumeaux.`}}
 
 ---
 
 Q: Say "They (two women) have three children."
-A: `Elles ont trois enfants.`
+A: {{`Elles ont trois enfants.`}}
 
 ---
 
 Q: Say "She is 40 and she is married."
-A: `Elle a 40 ans et elle est mariée.`
+A: {{`Elle a 40 ans et elle est mariée.`}}
 N: Age takes `avoir`, état civil takes `être`; both halves of the sentence test the split.
 
 ---
 
 Q: Turn `Elle parle français ?` into an inversion.
-A: `Parle-t-elle français ?`
+A: {{`Parle-t-elle français ?`}}
 N: `parle` ends in a vowel, so the euphonic `-t-` appears, as in `A-t-il`.
 
 ---
 
 Q: Turn `Vous habitez à Ottawa ?` into an inversion.
-A: `Habitez-vous à Ottawa ?`
+A: {{`Habitez-vous à Ottawa ?`}}
 
 ---
 
 Q: Ask, with inversion, how many sisters he has.
-A: `Combien de sœurs a-t-il ?`
+A: {{`Combien de sœurs a-t-il ?`}}
 
 ---
 
 Q: Say "This is the book I'm reading."
-A: `C'est le livre que je lis.`
+A: {{`C'est le livre que je lis.`}}
 N: `je` is already the subject of `lis`, so the relative is the object: `que`.
 
 ---
 
 Q: Say "This is the movie I'm talking about."
-A: `C'est le film dont je parle.`
+A: {{`C'est le film dont je parle.`}}
 N: `parler de` carries `de`, so `dont`.
 
 ---
 
 Q: Say "This is the house where I live."
-A: `C'est la maison où j'habite.`
+A: {{`C'est la maison où j'habite.`}}

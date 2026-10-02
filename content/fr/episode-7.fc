@@ -7,7 +7,7 @@ tags:
 ---
 
 Q: The four découvrez expressions for house rules?
-A: `C'est interdit.`, `Ce n'est pas permis.`, `C'est possible.`, `C'est obligatoire.`
+A: {{`C'est interdit.`}}, {{`Ce n'est pas permis.`}}, {{`C'est possible.`}}, {{`C'est obligatoire.`}}
 
 ---
 
@@ -36,7 +36,7 @@ C: `Ils [peuvent] rester.`
 ---
 
 Q: How do the singular forms of `pouvoir` end?
-A: `je peux, tu peux, il peut`: x, x, t. Only `pouvoir` and `vouloir` take `-x`; every other verb takes `-s`.
+A: {{`je peux, tu peux, il peut`}}: x, x, t. Only `pouvoir` and `vouloir` take `-x`; every other verb takes `-s`.
 N: `valoir` (`je vaux`) also takes `-x`; it does not come up at this level.
 
 ---
@@ -46,7 +46,7 @@ C: `Je [ne] peux [pas] utiliser mon téléphone.`
 ---
 
 Q: Where does the negation go with `pouvoir` + infinitive?
-A: `ne … pas` wraps the conjugated `pouvoir`; the infinitive follows outside: `Elle ne peut pas fumer ici.`
+A: `ne … pas` wraps the conjugated `pouvoir`; the infinitive follows outside: {{`Elle ne peut pas fumer ici.`}}
 
 ---
 
@@ -55,12 +55,12 @@ C: `Les étudiants ne [peuvent] pas arriver en retard au cours.`
 ---
 
 Q: What is `Puis-je… ?`
-A: The interrogative inversion of `Je peux`; `puis` appears only in this inverted form.
+A: The interrogative inversion of {{`Je peux`}}; `puis` appears only in this inverted form.
 
 ---
 
 Q: Permission frame with `est-ce que`?
-A: `Est-ce que je peux + infinitif ?`, as in `Est-ce que je peux manger dans la classe ?`
+A: `Est-ce que je peux + infinitif ?`, as in {{`Est-ce que je peux manger dans la classe ?`}}
 
 ---
 
@@ -75,7 +75,7 @@ A: `C'est permis de/d' + infinitif ?`
 ---
 
 Q: The minimal way to ask permission?
-A: `Je peux + infinitif ?` with rising intonation: `Je peux entrer ?`
+A: `Je peux + infinitif ?` with rising intonation: {{`Je peux entrer ?`}}
 
 ---
 
@@ -102,7 +102,7 @@ C: `Ils [doivent] porter la tuque en hiver.`
 ---
 
 Q: Singular endings of `devoir` against `pouvoir`?
-A: `dois, dois, doit` (s, s, t) where `pouvoir` runs `peux, peux, peut` (x, x, t).
+A: {{`dois, dois, doit`}} (s, s, t) where `pouvoir` runs {{`peux, peux, peut`}} (x, x, t).
 
 ---
 
@@ -121,12 +121,12 @@ A: The determiner carries it: `le/les`, `ton/tes`, `mon/mes`.
 ---
 
 Q: What does `texter` mean?
-A: To text (someone); QC-current, filed in the verb bank next to `fumer` and `manger`. France mostly says `envoyer un texto`.
+A: To text (someone); QC-current, filed in the verb bank next to {{`fumer`}} and {{`manger`}}. France mostly says {{`envoyer un texto`}}.
 
 ---
 
 Q: What does `fumer` mean?
-A: To smoke: `Elle ne peut pas fumer ici.`
+A: To smoke: {{`Elle ne peut pas fumer ici.`}}
 
 ---
 
@@ -151,7 +151,7 @@ A: The registrar's office opens Monday through Thursday (`du … au …`, [[fr/e
 ---
 
 Q: The sign `Le cellulaire n'est pas permis dans la bibliothèque.` tells you what?
-A: No cell phones in the library; `un cellulaire` is the QC word from [[fr/episode-3]].
+A: No cell phones in the library; {{`un cellulaire`}} is the QC word from [[fr/episode-3]].
 
 ---
 
@@ -166,17 +166,17 @@ A: Open / closed, the two state words of an établissement's posted messages.
 ---
 
 Q: On the school message board, what is interdit in lunchboxes and what is merely pas permis?
-A: `Les arachides sont interdites` (allergies); croustilles, chocolat, bonbons et boissons gazeuses are `pas permis`; fruits, légumes et fromage are `permis`.
+A: {{`Les arachides sont interdites`}} (allergies); croustilles, chocolat, bonbons et boissons gazeuses are {{`pas permis`}}; fruits, légumes et fromage are `permis`.
 
 ---
 
 Q: `la tuque`, `les mitaines`, `les engelures`?
-A: Toque, mittens, frostbite. The first two are QC words (France: `un bonnet`, `des moufles`), obligatoires outside in winter to avoid the third.
+A: Toque, mittens, frostbite. The first two are QC words (France: {{`un bonnet`}}, {{`des moufles`}}), obligatoires outside in winter to avoid the third.
 
 ---
 
 Q: What is `un casier`?
-A: A locker: `Les étudiants et les étudiantes peuvent utiliser les casiers.`
+A: A locker: {{`Les étudiants et les étudiantes peuvent utiliser les casiers.`}}
 
 ---
 
@@ -205,7 +205,7 @@ C: When the context is uncertain, start with `[vous]`; the other person can invi
 ---
 
 Q: `tutoyer` vs `vouvoyer`?
-A: `tutoyer quelqu'un` means address them with `tu`; `vouvoyer quelqu'un` means address them with `vous`.
+A: {{`tutoyer quelqu'un`}} means address them with `tu`; {{`vouvoyer quelqu'un`}} means address them with `vous`.
 
 ---
 
@@ -228,17 +228,17 @@ A: `Est-ce que je peux arriver à 8 heures ?` A more formal version is `Puis-je 
 ---
 
 Q: In class, ask your professor whether you may use your cell phone.
-A: `Puis-je utiliser mon cellulaire ?` or `Est-ce que je peux utiliser mon cellulaire ?`
+A: {{`Puis-je utiliser mon cellulaire ?`}} or {{`Est-ce que je peux utiliser mon cellulaire ?`}}
 
 ---
 
 Q: At home, ask a parent whether you may invite a friend.
-A: `Je peux inviter mon ami ?` The short frame fits a familiar relationship.
+A: {{`Je peux inviter mon ami ?`}} The short frame fits a familiar relationship.
 
 ---
 
 Q: In a store, ask whether you may try on this sweater.
-A: `Est-ce que je peux essayer ce chandail ?` (`un chandail` is the Québécois word used here for a sweater.)
+A: {{`Est-ce que je peux essayer ce chandail ?`}} ({{`un chandail`}} is the Québécois word used here for a sweater.)
 
 ---
 
@@ -267,12 +267,12 @@ A: `Je peux arriver 30 minutes en retard demain matin ?` A more formal version i
 ---
 
 Q: After `Puis-je jouer à un jeu vidéo ?`, justify the request by saying you finished your exercises.
-A: `J'ai fini mes exercices.`
+A: {{`J'ai fini mes exercices.`}}
 
 ---
 
 Q: In class, ask permission to call home because it is urgent.
-A: `Est-ce que je peux téléphoner à la maison ? C'est urgent.`
+A: {{`Est-ce que je peux téléphoner à la maison ? C'est urgent.`}}
 
 ---
 
@@ -310,7 +310,7 @@ A: Une boisson contenant du gaz, a soft drink or soda.
 ---
 
 Q: Qu'est-ce qu'`une arachide`?
-A: A peanut. `Les arachides sont interdites` à cause des allergies.
+A: A peanut. {{`Les arachides sont interdites`}} à cause des allergies.
 
 ---
 
@@ -397,30 +397,30 @@ C: `Vous [devez|devoir] garder les lieux propres.`
 ---
 
 Q: Tell visitors, formally, that they cannot smoke here.
-A: `Vous ne pouvez pas fumer ici.`
+A: {{`Vous ne pouvez pas fumer ici.`}}
 
 ---
 
 Q: Tell a child they must wear their mittens.
-A: `Tu dois porter tes mitaines.`
+A: {{`Tu dois porter tes mitaines.`}}
 
 ---
 
 Q: Write a sign: eating in the library is forbidden.
-A: `C'est interdit de manger dans la bibliothèque.`
+A: {{`C'est interdit de manger dans la bibliothèque.`}}
 
 ---
 
 Q: Write a sign: cell phones are not allowed in class.
-A: `Le cellulaire n'est pas permis en classe.`
+A: {{`Le cellulaire n'est pas permis en classe.`}}
 
 ---
 
 Q: Tell a classmate they cannot text during class.
-A: `Tu ne peux pas texter pendant le cours.`
+A: {{`Tu ne peux pas texter pendant le cours.`}}
 N: The negation wraps `peux`; the infinitive stays outside.
 
 ---
 
 Q: At work, ask whether you may leave early.
-A: `Est-ce que je peux partir plus tôt ?`
+A: {{`Est-ce que je peux partir plus tôt ?`}}

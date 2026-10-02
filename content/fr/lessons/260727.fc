@@ -5,26 +5,26 @@ tags:
 ---
 
 Q: Dans `la femme dont le fils est médecin`, quel lien exprime `dont` ?
-A: La possession : `le fils de la femme`. `dont` remplace le complément en `de`.
+A: La possession : {{`le fils de la femme`}}. {{`dont`}} remplace le complément en `de`.
 
 ---
 
 Q: Traduisez `the man whose daughter is a nurse`.
-A: `l'homme dont la fille est infirmière`
+A: {{`l'homme dont la fille est infirmière`}}
 
 N: `la fille de l'homme` : le complément en `de` devient `dont`.
 
 ---
 
 Q: Traduisez `the book I need`.
-A: `le livre dont j'ai besoin`
+A: {{`le livre dont j'ai besoin`}}
 
 N: `avoir besoin de` porte `de`, donc `dont`.
 
 ---
 
 Q: Traduisez `Monday is the day when I have my French class.`
-A: `Le lundi est le jour où j'ai mon cours de français.`
+A: {{`Le lundi est le jour où j'ai mon cours de français.`}}
 
 N: L'anglais passe à `when` pour le temps ; le français garde `où`.
 
@@ -53,7 +53,7 @@ C: `C'est le restaurant [où] je mange le vendredi.`
 ---
 
 Q: Traduisez la phrase de la classe : `In this photo, it's my cat getting ready for Christmas.`
-A: `Sur cette photo, c'est mon chat qui se prépare pour Noël.`
+A: {{`Sur cette photo, c'est mon chat qui se prépare pour Noël.`}}
 
 N: On dit `sur cette photo`. `c'est` présente le chat ; `qui` ajoute la description.
 
@@ -81,11 +81,11 @@ C: Selon la leçon : janvier, février et mars, c'est l'[hiver] ; avril, mai et 
 ---
 
 Q: Les quatre saisons, avec leur article ?
-A: `le printemps`, `l'été`, `l'automne`, `l'hiver`.
+A: {{`le printemps`}}, {{`l'été`}}, {{`l'automne`}}, {{`l'hiver`}}.
 
 N: Les quatre noms sont masculins.
 
 ---
 
 Q: Quel mois vient après `juin` ?
-A: `juillet`
+A: {{`juillet`}}

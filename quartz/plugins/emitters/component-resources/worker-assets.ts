@@ -1,6 +1,7 @@
 import { build as bundle } from 'esbuild'
 import { globby } from 'globby'
 import fs from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import path from 'path'
 import type { ChangeEvent } from '../../../types/plugin'
 import type { BuildCtx } from '../../../util/ctx'
@@ -15,6 +16,35 @@ import {
   staticScriptsDir,
 } from './asset-paths'
 import { writeAssetBundleOutput } from './asset-writer'
+
+const speechWorkerEntry = 'quartz/workers/speech.worker.ts'
+const speechRuntimeEntries = new Set([
+  speechWorkerEntry,
+  'quartz/util/speech-model.ts',
+  'quartz/util/speech-protocol.ts',
+  'quartz/util/type-guards.ts',
+  'package.json',
+  'quartz/plugins/emitters/componentResources.tsx',
+  'quartz/plugins/emitters/component-resources/worker-assets.ts',
+])
+
+export function isSpeechRuntimeChange(changeEvent: ChangeEvent): boolean {
+  return speechRuntimeEntries.has(changeEvent.path)
+}
+
+export async function writeSpeechRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const resolve = createRequire(import.meta.url).resolve
+  const wasm = await fs.readFile(resolve('onnxruntime-web/ort-wasm-simd-threaded.wasm'))
+  return [
+    await write({
+      ctx,
+      slug: 'static/speech/ort-wasm-simd-threaded' as FullSlug,
+      ext: '.wasm',
+      content: wasm,
+    }),
+    await writeGenericWorkerAsset(ctx, speechWorkerEntry),
+  ]
+}
 
 export async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const outdir = path.join(ctx.argv.output, staticScriptsDir)
@@ -70,7 +100,7 @@ async function writeGenericWorkerAsset(ctx: BuildCtx, src: string): Promise<File
 
 export async function* writeGenericWorkerAssets(ctx: BuildCtx): AsyncGenerator<FilePath> {
   const workerFiles = (await globby([workerEntryPattern])).filter(
-    src => src !== semanticWorkerEntry,
+    src => src !== semanticWorkerEntry && src !== speechWorkerEntry,
   )
   for (const src of workerFiles) {
     yield writeGenericWorkerAsset(ctx, src)
@@ -81,6 +111,7 @@ export async function handleGenericWorkerChange(
   ctx: BuildCtx,
   changeEvent: ChangeEvent,
 ): Promise<FilePath | undefined> {
+  if (changeEvent.path === speechWorkerEntry) return undefined
   if (changeEvent.type === 'delete') {
     const name = path.basename(changeEvent.path).replace(/\.ts$/, '')
     await fs.rm(joinSegments(ctx.argv.output, `${name}.js`), { force: true })

@@ -7,17 +7,17 @@ tags:
 ---
 
 Q: What does `Qui est-ce ?` ask, and what shape does the answer take?
-A: Who someone is; `C'est mon/ma …` or `Ce sont mes …` : `C'est ma tante.`, `Ce sont mes petits-enfants.` ([[fr/episode-5]])
+A: Who someone is; `C'est mon/ma …` or `Ce sont mes …` : {{`C'est ma tante.`}}, {{`Ce sont mes petits-enfants.`}} ([[fr/episode-5]])
 
 ---
 
 Q: What does `À quel étage se trouve la garderie ?` ask, and what shape does the answer take?
-A: Which floor something is on; `au + ordinal + étage` : `Au 2e étage.`, with `Au sous-sol.` and `Au dernier étage.` at the edges ([[fr/episode-6]])
+A: Which floor something is on; `au + ordinal + étage` : `Au 2e étage.`, with {{`Au sous-sol.`}} and {{`Au dernier étage.`}} at the edges ([[fr/episode-6]])
 
 ---
 
 Q: What does `Est-ce que je peux … ?` ask, and what are the two answer shapes?
-A: Permission; `Oui, tu peux / vous pouvez …` or `Non, on ne peut pas …` : the bilan's model request is `Est-ce que je peux texter pendant un cours ?` ([[fr/episode-7]])
+A: Permission; `Oui, tu peux / vous pouvez …` or `Non, on ne peut pas …` : the bilan's model request is {{`Est-ce que je peux texter pendant un cours ?`}} ([[fr/episode-7]])
 
 ---
 
@@ -42,32 +42,32 @@ C: `Ce sont les enfants de ma fille : ce sont mes [petits-enfants].`
 ---
 
 Q: `Qui est-ce ? C'est la fille du frère de ma mère.`
-A: `Ma cousine.` (two hops: le frère de ma mère est mon oncle, sa fille est ma cousine)
+A: {{`Ma cousine.`}} (two hops: le frère de ma mère est mon oncle, sa fille est ma cousine)
 
 ---
 
 Q: `Qui est-ce ? C'est la femme de mon fils.`
-A: `Ma belle-fille.` (my son's wife)
+A: {{`Ma belle-fille.`}} (my son's wife)
 
 ---
 
 Q: `Qui est-ce ? C'est le frère de ma conjointe.`
-A: `Mon beau-frère.` (my partner's brother)
+A: {{`Mon beau-frère.`}} (my partner's brother)
 
 ---
 
 Q: `Qui est-ce ? C'est le conjoint de ma fille.`
-A: `Mon gendre.` (my daughter's partner, the male counterpart of `ma belle-fille`)
+A: {{`Mon gendre.`}} (my daughter's partner, the male counterpart of {{`ma belle-fille`}})
 
 ---
 
 Q: `Qui est-ce ? C'est la sœur de mon conjoint.`
-A: `Ma belle-sœur.` (my partner's sister)
+A: {{`Ma belle-sœur.`}} (my partner's sister)
 
 ---
 
 Q: Trouvez l'erreur : `Tu es étudiant.` · `Tu as hongrois.` · `Tu es résident permanent.` · `Tu as 1 fille.`
-A: `Tu as hongrois.` → `Tu es hongrois.` : nationality runs on `être`.
+A: `Tu as hongrois.` → {{`Tu es hongrois.`}} : nationality runs on `être`.
 
 ---
 
@@ -77,7 +77,7 @@ A: `Je suis 2 enfants.` → `J'ai 2 enfants.` : children are had, `avoir`.
 ---
 
 Q: Trouvez l'erreur : `Elle s'appelle Sophie.` · `Elle a mariée.` · `Elle est psychologue.` · `Elle habite à Vancouver.`
-A: `Elle a mariée.` → `Elle est mariée.` : marital status runs on `être`.
+A: `Elle a mariée.` → {{`Elle est mariée.`}} : marital status runs on `être`.
 
 ---
 
@@ -87,12 +87,12 @@ A: `Il est 17 ans.` → `Il a 17 ans.` : age runs on `avoir`.
 ---
 
 Q: Trouvez l'erreur : `Je suis dans la classe.` · `J'ai des lunettes.` · `Je suis infirmière.` · `J'ai étudiante.`
-A: `J'ai étudiante.` → `Je suis étudiante.` : profession runs on `être`, no article.
+A: `J'ai étudiante.` → {{`Je suis étudiante.`}} : profession runs on `être`, no article.
 
 ---
 
 Q: Trouvez l'erreur : `Tu es une maison.` · `Tu as un téléphone cellulaire.` · `Tu es avec ton frère.` · `Tu as un problème.`
-A: `Tu es une maison.` → `Tu as une maison.` : possession runs on `avoir` (`Tu es avec ton frère.` stands, `être` + place).
+A: `Tu es une maison.` → {{`Tu as une maison.`}} : possession runs on `avoir` ({{`Tu es avec ton frère.`}} stands, `être` + place).
 
 ---
 
@@ -129,22 +129,22 @@ C: `Le chien est [à côté|beside] de l'homme.`
 ---
 
 Q: `Endroit où on peut manger.` (one word, somewhere in an édifice)
-A: `La cafétéria.` ([[fr/episode-6]])
+A: {{`La cafétéria.`}} ([[fr/episode-6]])
 
 ---
 
 Q: `Étage d'un édifice situé sous la terre.`
-A: `Le sous-sol.`
+A: {{`Le sous-sol.`}}
 
 ---
 
 Q: `Endroit où travaille le ou la secrétaire.`
-A: `Le secrétariat.`
+A: {{`Le secrétariat.`}}
 
 ---
 
 Q: What does `avoir besoin de` mean, and what follows it?
-A: To need; the needed thing follows `de` : `Votre enfant a besoin d'une règle et de ciseaux.`
+A: To need; the needed thing follows `de` : {{`Votre enfant a besoin d'une règle et de ciseaux.`}}
 
 ---
 
@@ -166,7 +166,7 @@ A: `demander à quelqu'un de + infinitif`, to ask someone to do something.
 ---
 
 Q: In the `Parlez de votre famille.` drill (mon, ma, mes), which family group does the corrigé strike out of the `nom` and `profession` columns?
-A: `vos enfants`. It survives only in the `âge` column: you give a child's age, not their name or job, in this exercise.
+A: {{`vos enfants`}}. It survives only in the `âge` column: you give a child's age, not their name or job, in this exercise.
 
 ---
 
@@ -175,32 +175,32 @@ C: The 3×3 grid `nom/âge/profession` × `parents/frères et sœurs/enfants` ha
 ---
 
 Q: `Qui est-ce ? C'est le fils de mon oncle.`
-A: `C'est mon cousin.`
+A: {{`C'est mon cousin.`}}
 
 ---
 
 Q: `Qui est-ce ? C'est la mère de ma mère.`
-A: `C'est ma grand-mère.`
+A: {{`C'est ma grand-mère.`}}
 
 ---
 
 Q: `Qui est-ce ? C'est la fille de mon frère.`
-A: `C'est ma nièce.`
+A: {{`C'est ma nièce.`}}
 
 ---
 
 Q: `Qui est-ce ? C'est le père de ma conjointe.`
-A: `C'est mon beau-père.`
+A: {{`C'est mon beau-père.`}}
 
 ---
 
 Q: `Qui est-ce ? C'est le mari de ma sœur.`
-A: `C'est mon beau-frère.`
+A: {{`C'est mon beau-frère.`}}
 
 ---
 
 Q: Corrigez : `Nous avons canadiens.`
-A: `Nous sommes canadiens.`
+A: {{`Nous sommes canadiens.`}}
 N: Nationality takes `être`.
 
 ---
@@ -212,5 +212,5 @@ N: Age takes `avoir`.
 ---
 
 Q: Say "Your child needs scissors." (school message, formal)
-A: `Votre enfant a besoin de ciseaux.`
+A: {{`Votre enfant a besoin de ciseaux.`}}
 N: `avoir besoin de` + noun, with no article after `de` here.

@@ -21,6 +21,7 @@ function setupCodeCopy(root: Document | HTMLElement = document) {
   }
 
   codeElements.forEach(code => {
+    if (code.closest('.speech-play')) return
     if (hydratedCodeElements.has(code)) return
     hydratedCodeElements.add(code)
     code.style.cursor = 'pointer'

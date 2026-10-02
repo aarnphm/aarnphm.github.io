@@ -182,7 +182,7 @@ blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
     position: relative;
 
     &::before {
-      content: '└└' / '';
+      content: '“' / '';
       position: absolute;
       left: -2.5rem;
       top: 0.15em;

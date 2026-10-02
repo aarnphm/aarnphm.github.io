@@ -7,12 +7,12 @@ tags:
 ---
 
 Q: The formal opener for introducing yourself, full name following?
-A: `Je me présente : Louis Martel.`
+A: {{`Je me présente : Louis Martel.`}}
 
 ---
 
 Q: The casual way to give your name, often when responding to someone who just gave theirs?
-A: `Moi, c'est Louis.` (as in `Bonjour, Judith ! Moi, c'est François.`)
+A: {{`Moi, c'est Louis.`}} (as in {{`Bonjour, Judith ! Moi, c'est François.`}})
 
 ---
 
@@ -25,7 +25,7 @@ C: Origin vs identity: `Je [viens du] Canada.` states where you come from; `Je [
 ---
 
 Q: Why is it `Je viens d'Haïti` and not `de Haïti`?
-A: `Haïti` takes no article and starts with an `h muet`, so `de` elides exactly as before a vowel.
+A: {{`Haïti`}} takes no article and starts with an `h muet`, so `de` elides exactly as before a vowel.
 
 ---
 
@@ -38,7 +38,7 @@ C: Despite the exotic feel, `le Venezuela` and `le Vietnam` are masculine: `Je v
 ---
 
 Q: How reliable is the "feminine countries end in -e" heuristic for picking `de` vs `du`?
-A: A guide, not a law: `de Jordanie`, `de Norvège`, `de Serbie`, `de Thaïlande` fit, but article-less states (`de Monaco`) and masculine exceptions exist; the country's article decides.
+A: A guide, not a law: {{`de Jordanie`}}, {{`de Norvège`}}, {{`de Serbie`}}, {{`de Thaïlande`}} fit, but article-less states ({{`de Monaco`}}) and masculine exceptions exist; the country's article decides.
 
 ---
 
@@ -52,12 +52,12 @@ A: I speak broken French, I jabber it; familier (starred in the cahier).
 ---
 
 Q: How do you say you speak a language fluently?
-A: `Je parle couramment français.`
+A: {{`Je parle couramment français.`}}
 
 ---
 
 Q: How do you say a language is your mother tongue?
-A: `Ma langue maternelle est le français.` (`langue maternelle` takes the article)
+A: {{`Ma langue maternelle est le français.`}} ({{`langue maternelle`}} takes the article)
 
 ---
 
@@ -70,7 +70,7 @@ C: The strongest zero-level denial: `Je ne parle pas [un mot] de français.`
 ---
 
 Q: Which language frames take bare language, `de`, or the article?
-A: `parler` takes it bare (`Je parle français`); `niveau` and `mot` take `de` (`un bon niveau de français`); `baragouiner` and `langue maternelle` take the article (`le français`); `se débrouiller` takes `en`.
+A: {{`parler`}} takes it bare ({{`Je parle français`}}); {{`niveau`}} and {{`mot`}} take `de` ({{`un bon niveau de français`}}); {{`baragouiner`}} and {{`langue maternelle`}} take the article ({{`le français`}}); {{`se débrouiller`}} takes `en`.
 
 ---
 
@@ -79,47 +79,47 @@ C: On the cahier's 0 à 4 language scale: `Je baragouine le…` ranks [1], `Je m
 ---
 
 Q: On the cahier's 0 à 4 scale, which non-native expression shares the top rung with `Ma langue maternelle est le…`?
-A: `J'ai un excellent niveau de…` (4). `couramment` and `un très bon niveau` rank only 3: fluent is not native.
+A: `J'ai un excellent niveau de…` (4). {{`couramment`}} and {{`un très bon niveau`}} rank only 3: fluent is not native.
 
 ---
 
 Q: Say "I come from Cambodia."
-A: `Je viens du Cambodge.`
-N: Masculine despite the final `-e`, like `le Mexique`.
+A: {{`Je viens du Cambodge.`}}
+N: Masculine despite the final `-e`, like {{`le Mexique`}}.
 
 ---
 
 Q: Say "I come from the Netherlands."
-A: `Je viens des Pays-Bas.`
-N: Plural country: `de + les` gives `des`.
+A: {{`Je viens des Pays-Bas.`}}
+N: Plural country: {{`de + les`}} gives `des`.
 
 ---
 
 Q: Say "I come from Algeria."
-A: `Je viens d'Algérie.`
+A: {{`Je viens d'Algérie.`}}
 
 ---
 
 Q: Say "I come from Jordan."
-A: `Je viens de Jordanie.`
+A: {{`Je viens de Jordanie.`}}
 
 ---
 
 Q: Say "I get by well in Spanish."
-A: `Je me débrouille bien en espagnol.`
+A: {{`Je me débrouille bien en espagnol.`}}
 
 ---
 
 Q: Say "My mother tongue is Vietnamese."
-A: `Ma langue maternelle est le vietnamien.`
+A: {{`Ma langue maternelle est le vietnamien.`}}
 
 ---
 
 Q: Say "I don't speak a word of German."
-A: `Je ne parle pas un mot d'allemand.`
+A: {{`Je ne parle pas un mot d'allemand.`}}
 N: `de` elides before the vowel.
 
 ---
 
 Q: Someone says `Je m'appelle Julie.` Give your name back the casual way (you are François).
-A: `Moi, c'est François.`
+A: {{`Moi, c'est François.`}}

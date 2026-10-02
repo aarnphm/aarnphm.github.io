@@ -215,7 +215,11 @@ document.addEventListener('nav', () => {
   }
 
   const onCardClick = (event: MouseEvent) => {
-    if (event.target instanceof Element && event.target.closest('a')) return
+    if (
+      event.target instanceof Element &&
+      event.target.closest('a, button, input, select, textarea, summary')
+    )
+      return
     if (!finished && !revealed && !submitting) setReveal(true)
   }
   const onReveal = () => {
@@ -236,6 +240,7 @@ document.addEventListener('nav', () => {
       target instanceof HTMLInputElement ||
       target instanceof HTMLTextAreaElement ||
       target instanceof HTMLSelectElement ||
+      (target instanceof Element && target.closest('button, a, summary')) ||
       (target instanceof HTMLElement && target.isContentEditable)
     ) {
       return

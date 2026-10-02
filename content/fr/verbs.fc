@@ -175,77 +175,77 @@ C: Au présent, `savoir` : je [sais], nous [savons], vous [savez], ils/elles [sa
 ---
 
 Q: Au présent de `commencer`, quel changement écrit du radical apparaît devant `-ons` ?
-A: `c` devient `ç` : `nous commençons`.
+A: `c` devient `ç` : {{`nous commençons`}}.
 
 ---
 
 Q: Au présent de `manger` et `nager`, quel changement écrit apparaît devant `-ons` ?
-A: On ajoute un `e` après le `g` : `nous mangeons`, `nous nageons`.
+A: On ajoute un `e` après le `g` : {{`nous mangeons`}}, {{`nous nageons`}}.
 
 ---
 
 Q: Au présent de `envoyer`, quel changement de radical distingue `je` et `ils/elles` de `nous` et `vous` ?
-A: `y` devient `i` avec `je` et `ils/elles` : `j'envoie`, `ils envoient`. Le `y` reste avec `nous` et `vous` : `nous envoyons`, `vous envoyez`.
+A: `y` devient `i` avec `je` et `ils/elles` : {{`j'envoie`}}, {{`ils envoient`}}. Le `y` reste avec `nous` et `vous` : {{`nous envoyons`}}, {{`vous envoyez`}}.
 
 ---
 
 Q: Au présent de `payer`, le changement de `y` en `i` est-il obligatoire avec `je` et `ils/elles` ?
-A: Non. Les deux graphies sont possibles : `je paie` ou `je paye`, `ils paient` ou `ils payent`.
+A: Non. Les deux graphies sont possibles : {{`je paie`}} ou {{`je paye`}}, {{`ils paient`}} ou {{`ils payent`}}.
 
 ---
 
 Q: Au présent de `répéter`, quel changement d'accent distingue `je` et `ils/elles` de `nous` et `vous` ?
-A: Le dernier `é` du radical devient `è` : `je répète`, `ils répètent`, mais `nous répétons`, `vous répétez`.
+A: Le dernier `é` du radical devient `è` : {{`je répète`}}, {{`ils répètent`}}, mais {{`nous répétons`}}, {{`vous répétez`}}.
 
 ---
 
 Q: Au présent de `mener` et `peser`, quel changement de voyelle distingue `je` et `ils/elles` de `nous` et `vous` ?
-A: Le `e` du radical devient `è` : `je mène`, `ils pèsent`, mais `nous menons`, `vous pesez`.
+A: Le `e` du radical devient `è` : {{`je mène`}}, {{`ils pèsent`}}, mais {{`nous menons`}}, {{`vous pesez`}}.
 
 ---
 
 Q: Au présent de `appeler`, quel changement de consonne distingue `je` et `ils/elles` de `nous` et `vous` ?
-A: Le `l` est doublé : `j'appelle`, `ils appellent`. Il reste simple dans `nous appelons`, `vous appelez`.
+A: Le `l` est doublé : {{`j'appelle`}}, {{`ils appellent`}}. Il reste simple dans {{`nous appelons`}}, {{`vous appelez`}}.
 
 ---
 
 Q: Au présent de `jeter` et `projeter`, quel changement de consonne distingue `je` et `ils/elles` de `nous` et `vous` ?
-A: Le `t` est doublé : `je jette`, `ils projettent`. Il reste simple dans `nous jetons`, `vous projetez`.
+A: Le `t` est doublé : {{`je jette`}}, {{`ils projettent`}}. Il reste simple dans {{`nous jetons`}}, {{`vous projetez`}}.
 
 ---
 
 Q: Quelle forme prend le pronom `je` devant un verbe qui commence par une voyelle ?
-A: `j'` : `j'envoie`, `j'appelle`, `j'apprends`, `j'écris`.
+A: `j'` : {{`j'envoie`}}, {{`j'appelle`}}, {{`j'apprends`}}, {{`j'écris`}}.
 
 ---
 
 Q: Quels groupes de personnes correspondent aux trois radicaux de `venir`, `tenir`, `prendre`, `boire` et `recevoir` au présent ?
-A: `je/tu/il`, `nous/vous` et `ils/elles`. Par exemple : `je bois`, `nous buvons`, `ils boivent`.
+A: `je/tu/il`, `nous/vous` et `ils/elles`. Par exemple : {{`je bois`}}, {{`nous buvons`}}, {{`ils boivent`}}.
 
 ---
 
 Q: Quel verbe sert de modèle à `apprendre`, `comprendre` et `reprendre` au présent ?
-A: `prendre` : `je prends`, `nous prenons`, `vous prenez`, `ils prennent`.
+A: {{`prendre`}} : {{`je prends`}}, {{`nous prenons`}}, {{`vous prenez`}}, {{`ils prennent`}}.
 
 ---
 
 Q: Quel verbe sert de modèle à `revenir` et `devenir` au présent ?
-A: `venir` : `je viens`, `nous venons`, `vous venez`, `ils viennent`.
+A: {{`venir`}} : {{`je viens`}}, {{`nous venons`}}, {{`vous venez`}}, {{`ils viennent`}}.
 
 ---
 
 Q: Quel verbe sert de modèle à `promettre` et `permettre` au présent ?
-A: `mettre` : `je mets`, `nous mettons`, `vous mettez`, `ils mettent`.
+A: {{`mettre`}} : {{`je mets`}}, {{`nous mettons`}}, {{`vous mettez`}}, {{`ils mettent`}}.
 
 ---
 
 Q: Quel verbe sert de modèle à `produire` et `traduire` au présent ?
-A: `conduire` : `je conduis`, `nous conduisons`, `vous conduisez`, `ils conduisent`.
+A: {{`conduire`}} : {{`je conduis`}}, {{`nous conduisons`}}, {{`vous conduisez`}}, {{`ils conduisent`}}.
 
 ---
 
 Q: Quel verbe sert de modèle à `décrire` et `inscrire` au présent ?
-A: `écrire` : `j'écris`, `nous écrivons`, `vous écrivez`, `ils écrivent`.
+A: {{`écrire`}} : {{`j'écris`}}, {{`nous écrivons`}}, {{`vous écrivez`}}, {{`ils écrivent`}}.
 
 ---
 
@@ -307,7 +307,7 @@ C: `Elle [craint|craindre] les chiens.`
 
 C: `Tu [résous|résoudre] le problème.`
 
-N: `il résout` ends in `-t`, with no `d` anywhere in the singular.
+N: {{`il résout`}} ends in `-t`, with no `d` anywhere in the singular.
 
 ---
 
@@ -319,13 +319,13 @@ N: `y` becomes `i` before a silent `-e`.
 
 C: `Tu [appelles|appeler] ta mère ?`
 
-N: `-es` is silent, so the stem doubles: `tu appelles`, but `nous appelons`.
+N: `-es` is silent, so the stem doubles: {{`tu appelles`}}, but {{`nous appelons`}}.
 
 ---
 
 C: `Il [jette|jeter] le papier dans le bac de recyclage.`
 
-N: Before a silent `-e` ending, `jeter` doubles the `t`; `nous jetons` keeps one.
+N: Before a silent `-e` ending, {{`jeter`}} doubles the `t`; {{`nous jetons`}} keeps one.
 
 ---
 
@@ -375,13 +375,13 @@ C: `Tu [sais|savoir] nager ?`
 
 C: `Nous [buvons|boire] de l'eau.`
 
-N: Three stems: `bois` (je, tu, il), `buv-` (nous, vous), `boiv-` (ils).
+N: Three stems: {{`bois`}} (je, tu, il), `buv-` (nous, vous), `boiv-` (ils).
 
 ---
 
 C: `Ils [reçoivent|recevoir] des invités.`
 
-N: The cedilla keeps /s/ before `o`; `ils reçoivent` has the third stem.
+N: The cedilla keeps /s/ before `o`; {{`ils reçoivent`}} has the third stem.
 
 ---
 
@@ -402,4 +402,4 @@ C: `Ils [appellent|appeler] le médecin.`
 ---
 
 Q: Why do `il peint`, `il joint` and `il résout` end in `-t` while `il prend` ends in `-d`?
-A: `prendre` keeps the `d` of its stem and adds nothing. Verbs in `-indre` and `-soudre` lose the `d` in the singular and take the regular `-s, -s, -t`: `je peins`, `il peint`; `je résous`, `il résout`.
+A: {{`prendre`}} keeps the `d` of its stem and adds nothing. Verbs in `-indre` and `-soudre` lose the `d` in the singular and take the regular `-s, -s, -t`: {{`je peins`}}, {{`il peint`}}; {{`je résous`}}, {{`il résout`}}.

@@ -4,6 +4,8 @@
 @mixin tinyCodeFonts {
   @include tinyFonts;
   font-family: var(--codeFont);
+  font-size: 0.6rem;
+  line-height: 1.4;
 }
 
 .evergreen-content {
@@ -12,6 +14,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
 }
 
 .note-tags {
@@ -40,7 +44,8 @@ a[data-list] {
     }
 
     & > .description {
-      font-size: 11.1px;
+      font-size: 0.66rem;
+      line-height: 1.4;
     }
 
     &[data-tag] {
@@ -72,13 +77,14 @@ a[data-list] {
   text-decoration: none;
   font-weight: $normalWeight;
   color: inherit !important;
+  line-height: 1.45;
 
   &:hover {
     background: inherit;
   }
 
   & > .title {
-    font-size: 0.9em;
+    font-size: 0.85rem;
   }
 }
 

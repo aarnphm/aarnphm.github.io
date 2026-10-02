@@ -5,7 +5,7 @@ tags:
 ---
 
 Q: Comment demander le nom de quelqu'un avec `tu` ?
-A: `Comment tu t'appelles ?` La fiche propose aussi la forme familière `C'est quoi ton nom ?`.
+A: {{`Comment tu t'appelles ?`}} La fiche propose aussi la forme familière {{`C'est quoi ton nom ?`}}.
 
 ---
 
@@ -14,7 +14,7 @@ C: Tu t'appelles Paul. Avec `je` : je [m'appelle|s'appeler] Paul.
 ---
 
 Q: Que demande `Qu'est-ce que tu fais comme travail ?` ?
-A: La profession, le métier exercé. Exemple : `Je suis technicien de laboratoire.`
+A: La profession, le métier exercé. Exemple : {{`Je suis technicien de laboratoire.`}}
 
 ---
 
@@ -28,7 +28,7 @@ A: La profession est le métier exercé ; le domaine est le secteur, par exemple
 ---
 
 Q: Comment demander le lieu d'origine avec le verbe `venir` et le sujet `tu` ?
-A: `D'où viens-tu ?` ou `Tu viens de quel endroit ?`
+A: {{`D'où viens-tu ?`}} ou {{`Tu viens de quel endroit ?`}}
 
 ---
 
@@ -41,12 +41,12 @@ C: Pour indiquer ma résidence actuelle : j'habite [à|préposition] Mirabel.
 ---
 
 Q: Que signifie `Tu restes où ?` dans l'usage québécois familier de la fiche ?
-A: `Tu habites où ?` La question porte sur le lieu de résidence.
+A: {{`Tu habites où ?`}} La question porte sur le lieu de résidence.
 
 ---
 
 Q: Pourquoi écrit-on `Je suis technicien de laboratoire` sans `un` ?
-A: Après `être`, on n'emploie généralement pas d'article pour nommer simplement sa profession.
+A: Après {{`être`}}, on n'emploie généralement pas d'article pour nommer simplement sa profession.
 
 ---
 
@@ -55,12 +55,12 @@ C: Avec `vous`, `D'où viens-tu ?` devient `D'où [venez-vous] ?`
 ---
 
 Q: Comment demander poliment le lieu de résidence avec `habiter` et `vous` ?
-A: `Où habitez-vous ?`
+A: {{`Où habitez-vous ?`}}
 
 ---
 
 Q: Comment demander le nom poliment avec `vous` et le verbe `s'appeler` ?
-A: `Comment vous appelez-vous ?`
+A: {{`Comment vous appelez-vous ?`}}
 
 ---
 
@@ -69,7 +69,7 @@ C: Pour dire `I am originally from Gaspé` : je suis [originaire] de Gaspé.
 ---
 
 Q: Quelle formule familière de la fiche permet à Paul de se présenter sans `s'appeler` ?
-A: `Moi, c'est Paul.`
+A: {{`Moi, c'est Paul.`}}
 
 ---
 
@@ -106,7 +106,7 @@ C: Pour indiquer l'origine avec `Haïti` : je viens [d']Haïti.
 ---
 
 Q: Quel est le genre de `Mexique`, malgré sa terminaison en `-e` ?
-A: Masculin : `le Mexique`, `du Mexique`, `au Mexique`.
+A: Masculin : {{`le Mexique`}}, {{`du Mexique`}}, {{`au Mexique`}}.
 
 ---
 
@@ -127,7 +127,7 @@ C: Au féminin : tunisien → [tunisienne].
 ---
 
 Q: Quelle initiale emploie-t-on pour l'adjectif de nationalité dans `Je suis canadien` ?
-A: Une minuscule : `canadien`. Le nom désignant une personne prend une majuscule : `un Canadien`.
+A: Une minuscule : {{`canadien`}}. Le nom désignant une personne prend une majuscule : {{`un Canadien`}}.
 
 ---
 
@@ -140,17 +140,17 @@ C: Avec `l'Abitibi` : je viens [d']Abitibi et j'habite [en] Abitibi.
 ---
 
 Q: Dans la banque de mots de la piste 2, quel lieu est une province canadienne ?
-A: `Le Manitoba`. Laval et Blainville sont des villes ; l'Abitibi est une région du Québec.
+A: {{`Le Manitoba`}}. Laval et Blainville sont des villes ; l'Abitibi est une région du Québec.
 
 ---
 
 Q: Avec `quel`, comment demander le pays d'origine ?
-A: `De quel pays viens-tu ?` ou `Quel est ton pays d'origine ?`
+A: {{`De quel pays viens-tu ?`}} ou {{`Quel est ton pays d'origine ?`}}
 
 ---
 
 Q: Dans une présentation, quelle information demande `Qu'est-ce que tu fais dans la vie ?` ?
-A: La profession, le métier exercé. Exemple : `Je suis technicien de laboratoire.`
+A: La profession, le métier exercé. Exemple : {{`Je suis technicien de laboratoire.`}}
 
 ---
 
@@ -181,7 +181,7 @@ A: `Je`, sous la forme élidée `j'`. `Moi` est le pronom tonique détaché qui 
 ---
 
 Q: Quel signe de ponctuation sépare le pronom tonique détaché dans `Moi, j'habite à Tadoussac` ?
-A: Une virgule. On la retrouve avant le pronom placé à la fin : `J'habite à Tadoussac, moi.`
+A: Une virgule. On la retrouve avant le pronom placé à la fin : {{`J'habite à Tadoussac, moi.`}}
 
 ---
 
@@ -246,12 +246,12 @@ C: Véronique est la grand-mère de Léonie. Léonie est donc sa [petite-fille].
 ---
 
 Q: Dans l'arbre de Stéphanie, pourquoi Richard est-il son beau-père ?
-A: Il est le conjoint de sa mère, Véronique. Ici, `beau-père` signifie `stepfather`.
+A: Il est le conjoint de sa mère, Véronique. Ici, {{`beau-père`}} signifie `stepfather`.
 
 ---
 
 Q: Dans l'arbre de Stéphanie, pourquoi Joséphine est-elle sa belle-mère ?
-A: Elle est la conjointe de son père, Yvan. Ici, `belle-mère` signifie `stepmother`.
+A: Elle est la conjointe de son père, Yvan. Ici, {{`belle-mère`}} signifie `stepmother`.
 
 ---
 
@@ -269,12 +269,12 @@ C: Stéphanie parle de sa famille : « [Mon] frère s'appelle Colin ; [ma] nièc
 ---
 
 Q: Pourquoi Stéphanie dit-elle `mon frère` ?
-A: `Frère` est un nom masculin singulier. Le possessif s'accorde avec ce nom.
+A: {{`Frère`}} est un nom masculin singulier. Le possessif s'accorde avec ce nom.
 
 ---
 
 Q: `Son frère` peut-il signifier `his brother` et `her brother` ?
-A: Oui. `Son` s'accorde avec le nom masculin `frère` ; le contexte indique de qui l'on parle.
+A: Oui. `Son` s'accorde avec le nom masculin {{`frère`}} ; le contexte indique de qui l'on parle.
 
 ---
 
@@ -291,22 +291,22 @@ N: `adresse` est féminin, mais commence par une voyelle : `son`.
 ---
 
 Q: Demandez le lieu de résidence en québécois familier, avec le verbe `rester`.
-A: `Tu restes où ?`
+A: {{`Tu restes où ?`}}
 
 ---
 
 Q: Avec `tu`, demandez la profession avec l'expression `dans la vie`.
-A: `Qu'est-ce que tu fais dans la vie ?`
+A: {{`Qu'est-ce que tu fais dans la vie ?`}}
 
 ---
 
 Q: Dites que vous venez du Liban et que vous habitez au Canada.
-A: `Je viens du Liban et j'habite au Canada.`
+A: {{`Je viens du Liban et j'habite au Canada.`}}
 
 ---
 
 Q: Dites que vous venez de Tunisie et que vous habitez aux États-Unis.
-A: `Je viens de Tunisie et j'habite aux États-Unis.`
+A: {{`Je viens de Tunisie et j'habite aux États-Unis.`}}
 
 ---
 
@@ -415,19 +415,19 @@ N: Au Québec, **le souper** désigne le repas du soir ; **souper** est aussi le
 ---
 
 Q: Quel est le mot français pour `godfather` ?
-A: **Un parrain**.
+A: {{**Un parrain**}}.
 N: Dans la famille de Martin, le parrain s'appelle Gaston. Ce rôle ne précise pas un lien de parenté biologique.
 
 ---
 
 Q: Quel est le mot français pour `godmother` ?
-A: **Une marraine**.
+A: {{**Une marraine**}}.
 N: Dans la famille de Martin, la marraine s'appelle Simone.
 
 ---
 
 Q: Que reprend `ceux` dans `Ses cheveux sont roux, comme ceux de sa mère` ?
-A: **Les cheveux** : *comme les cheveux de sa mère*.
+A: {{**Les cheveux**}} : *comme les cheveux de sa mère*.
 N: **Ceux** est un pronom démonstratif masculin pluriel. Ici, **sa mère** désigne Caroline, la mère de Lorenzo.
 
 ---
@@ -534,7 +534,7 @@ N: Exemple exact de la fiche : **C'est mes parents, Gisèle et Bertrand.** La fi
 ---
 
 Q: Reformulez `C'est mes parents, Gisèle et Bertrand` avec l'accord pluriel attendu dans une phrase écrite soignée.
-A: **Ce sont mes parents, Gisèle et Bertrand.**
+A: {{**Ce sont mes parents, Gisèle et Bertrand.**}}
 N: Les personnes présentées sont au pluriel. **C'est** au pluriel reste courant dans la conversation informelle.
 
 ---
@@ -552,13 +552,13 @@ N: Au Canada, **maman** est un nom affectueux qu'on emploie pour s'adresser à s
 ---
 
 Q: Quels deux noms affectueux de grand-mère sont donnés dans l'encadré canadien ?
-A: **Grand-maman** et **mamie** : *grandma*.
+A: {{**Grand-maman**}} et {{**mamie**}} : *grandma*.
 N: La fiche donne ces noms pour s'adresser affectueusement à sa grand-mère. **Grand-maman** s'écrit avec un trait d'union.
 
 ---
 
 Q: Quels deux noms affectueux de grand-père sont donnés dans l'encadré canadien ?
-A: **Grand-papa** et **papi** : *grandpa*.
+A: {{**Grand-papa**}} et {{**papi**}} : *grandpa*.
 N: La fiche écrit **papi**. **Grand-papa** s'écrit avec un trait d'union. Ces termes servent à s'adresser affectueusement à son grand-père.
 
 ---

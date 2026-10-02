@@ -576,7 +576,7 @@
   }
 
   .stream-legend-meta {
-    text-align: right;
+    text-align: start;
   }
 
   .stream-legend-lock {
@@ -753,10 +753,6 @@
     flex-wrap: wrap;
     gap: 0.25rem;
     min-width: 0;
-
-    .stream-entry-tag {
-      font-size: 0.85rem;
-    }
   }
 
   .stream-backlink {
@@ -867,7 +863,6 @@
 
       > span:nth-child(4) {
         grid-area: meta;
-        text-align: right;
       }
     }
 

@@ -41,10 +41,10 @@ revoir l'épisode 5, p. 47 et 50. the heavyweight, /19: present six photo cards 
 
 | carte                                | données                                             |
 | ------------------------------------ | --------------------------------------------------- |
-| `Martine`                            | `mariée`, `physiothérapeute`, `38 ans`              |
-| `Éric, le mari de Martine`           | `technicien en aéronautique`, `37 ans`, `2 enfants` |
+| `Martine`                            | {{`mariée`}}, {{`physiothérapeute`}}, `38 ans`              |
+| `Éric, le mari de Martine`           | {{`technicien en aéronautique`}}, `37 ans`, `2 enfants` |
 | la voiture et les skis               | `voiture de Martine et Éric`, `skis de Martine`     |
-| `les parents de Martine`             | `Robert et Madeleine`, `retraités`                  |
+| `les parents de Martine`             | `Robert et Madeleine`, {{`retraités`}}                  |
 | `les enfants de Martine et Éric`     | `Adrienne, 13 ans`, `Léo, 8 ans`                    |
 | `les animaux de Robert et Madeleine` | `Bic, le chien, 10 ans`, `Coco, le chat, 9 mois`    |
 
@@ -59,10 +59,10 @@ then a listening match (piste 71, /3) over three greeting photos (two young frie
 
 ### demander et donner des indications dans un édifice
 
-revoir l'épisode 6, page 52 et 55 ([[fr/episode-6]]). a listening (piste 72, /8): `Écoutez et dites à quel étage se trouve chaque endroit.` for `la garderie`, `la cafétéria`, `la bibliothèque`, `le secrétariat`, `le concierge`, `l'infirmerie`, `le bureau de Micheline Côté` et `le bureau de Paul Lajeunesse`, against a cutaway building labelled `sous-sol`, `1er étage` up to `5e étage (dernier étage)`.[^etage] then trace a spoken trajet on a floor plan (piste 73, /5) whose rooms feed the jeu de rôle: `labo français`, `labo anglais`, `conférence`, two `informatique`, `environnement`, `bibliothèque`, `secrétariat`, `toilettes`, `photocopieurs`, `accueil` (the marked starting point), `association étudiante`, `théâtre`, `musique 105`, salles `106` et `107`. the third exercise (/6) is the jeu de rôle itself, `une personne demande des indications; une personne donne des indications`:
+revoir l'épisode 6, page 52 et 55 ([[fr/episode-6]]). a listening (piste 72, /8): `Écoutez et dites à quel étage se trouve chaque endroit.` for {{`la garderie`}}, {{`la cafétéria`}}, {{`la bibliothèque`}}, {{`le secrétariat`}}, {{`le concierge`}}, {{`l'infirmerie`}}, `le bureau de Micheline Côté` et `le bureau de Paul Lajeunesse`, against a cutaway building labelled {{`sous-sol`}}, `1er étage` up to `5e étage (dernier étage)`.[^etage] then trace a spoken trajet on a floor plan (piste 73, /5) whose rooms feed the jeu de rôle: `labo français`, `labo anglais`, {{`conférence`}}, two {{`informatique`}}, {{`environnement`}}, `bibliothèque`, `secrétariat`, `toilettes`, {{`photocopieurs`}}, {{`accueil`}} (the marked starting point), {{`association étudiante`}}, {{`théâtre`}}, `musique 105`, salles `106` et `107`. the third exercise (/6) is the jeu de rôle itself, `une personne demande des indications; une personne donne des indications`:
 
-- a. `Vous êtes à l'accueil.` → `Vous devez aller à la bibliothèque.`
-- b. `Vous êtes dans la salle de conférence.` → `Vous devez aller dans la salle de musique 107.`[^musique]
+- a. {{`Vous êtes à l'accueil.`}} → {{`Vous devez aller à la bibliothèque.`}}
+- b. {{`Vous êtes dans la salle de conférence.`}} → `Vous devez aller dans la salle de musique 107.`[^musique]
 
 évaluez-vous:
 
@@ -72,7 +72,7 @@ revoir l'épisode 6, page 52 et 55 ([[fr/episode-6]]). a listening (piste 72, /8
 
 ### s'informer sur le fonctionnement d'un établissement et comprendre un message d'un établissement
 
-revoir l'épisode 7, p. 58 et 61 ([[fr/episode-7]]). a listening grid (piste 74, /5): five utterances a à e, one check each under `Permission`, `Interdiction` ou `Obligation`. then form requests with `pouvoir` from four picture pairs (/3), on the handwritten model `Est-ce que je peux texter pendant un cours ?`; the remaining pairs show a phone call over a library, eating over a classroom, a cigarette over a hallway. last, match three school notes to their objects (/3): a child who `a besoin d'une règle et de ciseaux` because `il ne trouve plus les siens` (image: school supplies), a child who `n'avait pas de collation aujourd'hui` and `doit en avoir une tous les jours` (image: a fruit cup), and a request that every child have `des bottes pour jouer dehors` now that `le temps plus froid est arrivé` (image: red winter boots).
+revoir l'épisode 7, p. 58 et 61 ([[fr/episode-7]]). a listening grid (piste 74, /5): five utterances a à e, one check each under `Permission`, `Interdiction` ou `Obligation`. then form requests with `pouvoir` from four picture pairs (/3), on the handwritten model {{`Est-ce que je peux texter pendant un cours ?`}}; the remaining pairs show a phone call over a library, eating over a classroom, a cigarette over a hallway. last, match three school notes to their objects (/3): a child who `a besoin d'une règle et de ciseaux` because {{`il ne trouve plus les siens`}} (image: school supplies), a child who `n'avait pas de collation aujourd'hui` and `doit en avoir une tous les jours` (image: a fruit cup), and a request that every child have `des bottes pour jouer dehors` now that `le temps plus froid est arrivé` (image: red winter boots).
 
 évaluez-vous:
 
@@ -90,16 +90,16 @@ ten kinship riddles, each `C'est … de mon/ma …` over three checkbox choices.
 
 |     | devinette                             | choix                                                     | réponse              |
 | --- | ------------------------------------- | --------------------------------------------------------- | -------------------- |
-| a   | `C'est la sœur de ma mère.`           | `ma cousine`, `ma nièce`, `ma tante`                      | `ma tante`           |
-| b   | `C'est le père de mon père.`          | `mon frère`, `mon grand-père`, `mon cousin`               | `mon grand-père`     |
-| c   | `C'est le fils de ma sœur.`           | `mon cousin`, `mon neveu`, `mon beau-frère`               | `mon neveu`          |
-| d   | `C'est le frère de mon père.`         | `mon cousin`, `mon oncle`, `mon grand-père`               | `mon oncle`          |
-| e   | `Ce sont les enfants de ma fille.`    | `mes parents`, `mes petits-enfants`, `mes grands-parents` | `mes petits-enfants` |
-| f   | `C'est la fille du frère de ma mère.` | `ma cousine`, `ma tante`, `ma sœur`                       | `ma cousine`         |
-| g   | `C'est la femme de mon fils.`         | `ma sœur`, `ma belle-mère`, `ma belle-fille`              | `ma belle-fille`     |
-| h   | `C'est le frère de ma conjointe.`     | `mon oncle`, `mon père`, `mon beau-frère`                 | `mon beau-frère`     |
-| i   | `C'est le conjoint de ma fille.`      | `mon gendre`, `mon neveu`, `mon fils`                     | `mon gendre`         |
-| j   | `C'est la sœur de mon conjoint.`      | `ma belle-sœur`, `ma tante`, `ma belle-mère`              | `ma belle-sœur`      |
+| a   | {{`C'est la sœur de ma mère.`}}           | {{`ma cousine`}}, `ma nièce`, {{`ma tante`}}                      | `ma tante`           |
+| b   | {{`C'est le père de mon père.`}}          | `mon frère`, {{`mon grand-père`}}, `mon cousin`               | `mon grand-père`     |
+| c   | {{`C'est le fils de ma sœur.`}}           | `mon cousin`, {{`mon neveu`}}, {{`mon beau-frère`}}               | `mon neveu`          |
+| d   | {{`C'est le frère de mon père.`}}         | `mon cousin`, {{`mon oncle`}}, `mon grand-père`               | `mon oncle`          |
+| e   | {{`Ce sont les enfants de ma fille.`}}    | `mes parents`, {{`mes petits-enfants`}}, `mes grands-parents` | `mes petits-enfants` |
+| f   | {{`C'est la fille du frère de ma mère.`}} | `ma cousine`, `ma tante`, `ma sœur`                       | `ma cousine`         |
+| g   | {{`C'est la femme de mon fils.`}}         | `ma sœur`, `ma belle-mère`, {{`ma belle-fille`}}              | `ma belle-fille`     |
+| h   | {{`C'est le frère de ma conjointe.`}}     | `mon oncle`, `mon père`, `mon beau-frère`                 | `mon beau-frère`     |
+| i   | {{`C'est le conjoint de ma fille.`}}      | {{`mon gendre`}}, `mon neveu`, `mon fils`                     | `mon gendre`         |
+| j   | {{`C'est la sœur de mon conjoint.`}}      | {{`ma belle-sœur`}}, `ma tante`, `ma belle-mère`              | `ma belle-sœur`      |
 
 the distractors are the near-misses one generation off (`nièce` for `tante`, `cousin` for `neveu`). the in-law answers use `beau-` or `belle-` in `beau-frère`, `belle-sœur`, and `belle-fille`. `gendre` is the separate term for a daughter's spouse.
 
@@ -109,14 +109,14 @@ eight sets of four sentences; each set hides exactly one wrong verb, and the fau
 
 |     | phrases                                                                                                 | l'erreur             | correction           |
 | --- | ------------------------------------------------------------------------------------------------------- | -------------------- | -------------------- |
-| a   | `Tu es étudiant.` · `Tu as hongrois.` · `Tu es résident permanent.` · `Tu as 1 fille.`                  | `Tu as hongrois.`    | `Tu es hongrois.`    |
+| a   | `Tu es étudiant.` · `Tu as hongrois.` · `Tu es résident permanent.` · `Tu as 1 fille.`                  | `Tu as hongrois.`    | {{`Tu es hongrois.`}}    |
 | b   | `J'ai une auto.` · `J'ai une maison.` · `Je suis 2 enfants.` · `Je suis célibataire.`                   | `Je suis 2 enfants.` | `J'ai 2 enfants.`    |
-| c   | `Elle s'appelle Sophie.` · `Elle a mariée.` · `Elle est psychologue.` · `Elle habite à Vancouver.`      | `Elle a mariée.`     | `Elle est mariée.`   |
+| c   | `Elle s'appelle Sophie.` · `Elle a mariée.` · `Elle est psychologue.` · `Elle habite à Vancouver.`      | `Elle a mariée.`     | {{`Elle est mariée.`}}   |
 | d   | `Elle a 1 sœur et 2 frères.` · `Il est 17 ans.` · `Il est né au Brésil.` · `Elle est chef cuisinière.`  | `Il est 17 ans.`     | `Il a 17 ans.`       |
-| e   | `Ils ont des enfants.` · `Ils sont mariés.` · `Ils sont un chat.` · `Ils ont une maison.`               | `Ils sont un chat.`  | `Ils ont un chat.`   |
-| f   | `Son nom est Marc.` · `Il est divorcé.` · `Il a 1 enfant.` · `Il a brésilien.`                          | `Il a brésilien.`    | `Il est brésilien.`  |
-| g   | `Je suis dans la classe.` · `J'ai des lunettes.` · `Je suis infirmière.` · `J'ai étudiante.`            | `J'ai étudiante.`    | `Je suis étudiante.` |
-| h   | `Tu es une maison.` · `Tu as un téléphone cellulaire.` · `Tu es avec ton frère.` · `Tu as un problème.` | `Tu es une maison.`  | `Tu as une maison.`  |
+| e   | `Ils ont des enfants.` · `Ils sont mariés.` · `Ils sont un chat.` · `Ils ont une maison.`               | `Ils sont un chat.`  | {{`Ils ont un chat.`}}   |
+| f   | `Son nom est Marc.` · `Il est divorcé.` · `Il a 1 enfant.` · `Il a brésilien.`                          | `Il a brésilien.`    | {{`Il est brésilien.`}}  |
+| g   | `Je suis dans la classe.` · `J'ai des lunettes.` · `Je suis infirmière.` · `J'ai étudiante.`            | `J'ai étudiante.`    | {{`Je suis étudiante.`}} |
+| h   | `Tu es une maison.` · `Tu as un téléphone cellulaire.` · `Tu es avec ton frère.` · `Tu as un problème.` | `Tu es une maison.`  | {{`Tu as une maison.`}}  |
 
 the sorting rule the game drills: `être` carries identity, state, nationality, profession (`Tu es hongrois.`, `Elle est mariée.`, `Je suis étudiante.`); `avoir` carries possession, family count and age (`Ils ont un chat.`, `Il a 17 ans.`).
 
@@ -126,14 +126,14 @@ the sorting rule the game drills: `être` carries identity, state, nationality, 
 
 |     | phrase                          | préposition |
 | --- | ------------------------------- | ----------- |
-| a   | `La Lune est … de nous.`        | `loin`      |
-| b   | `L'écureuil est … de la femme.` | `près`      |
-| c   | `La mère est … de sa fille.`    | `à gauche`  |
-| d   | `Le fils est … de son père.`    | `à droite`  |
-| e   | `La femme est … du quai.`       | `au bout`   |
-| f   | `L'avion est … des nuages.`     | `au-dessus` |
-| g   | `L'homme est … de la femme.`    | `en face`   |
-| h   | `Le chien est … de l'homme.`    | `à côté`    |
+| a   | `La Lune est … de nous.`        | {{`loin`}}      |
+| b   | `L'écureuil est … de la femme.` | {{`près`}}      |
+| c   | `La mère est … de sa fille.`    | {{`à gauche`}}  |
+| d   | `Le fils est … de son père.`    | {{`à droite`}}  |
+| e   | `La femme est … du quai.`       | {{`au bout`}}   |
+| f   | `L'avion est … des nuages.`     | {{`au-dessus`}} |
+| g   | `L'homme est … de la femme.`    | {{`en face`}}   |
+| h   | `Le chien est … de l'homme.`    | {{`à côté`}}    |
 
 c et d read off the photos (the mother poses left of her daughter, the son right of his father); a against b is `loin`/`près` at four letters each, and the printed hyphen slot gives away `au-dessus`.
 
@@ -143,25 +143,25 @@ seven scrambled words, all places in an édifice, the vocabulary of [[fr/episode
 
 |     | anagramme     | indice                                      | solution         |
 | --- | ------------- | ------------------------------------------- | ---------------- |
-| A   | `NESSCREAU`   | icône : un ascenseur                        | `un ascenseur`   |
-| B   | `ASERCLIE`    | icône : un escalier                         | `un escalier`    |
-| C   | `ELOTTISTE`   | icône : les toilettes                       | `les toilettes`  |
-| D   | `MEIREINFRI`  | icône : une croix                           | `une infirmerie` |
-| E   | `AÉTACFIRÉ`   | `Endroit où on peut manger.`                | `une cafétéria`  |
-| F   | `SOSSOUL-`    | `Étage d'un édifice situé sous la terre.`   | `le sous-sol`    |
-| G   | `CÉRETTARAIS` | `Endroit où travaille le ou la secrétaire.` | `le secrétariat` |
+| A   | `NESSCREAU`   | icône : un ascenseur                        | {{`un ascenseur`}}   |
+| B   | `ASERCLIE`    | icône : un escalier                         | {{`un escalier`}}    |
+| C   | `ELOTTISTE`   | icône : les toilettes                       | {{`les toilettes`}}  |
+| D   | `MEIREINFRI`  | icône : une croix                           | {{`une infirmerie`}} |
+| E   | `AÉTACFIRÉ`   | {{`Endroit où on peut manger.`}}                | {{`une cafétéria`}}  |
+| F   | `SOSSOUL-`    | {{`Étage d'un édifice situé sous la terre.`}}   | {{`le sous-sol`}}    |
+| G   | `CÉRETTARAIS` | {{`Endroit où travaille le ou la secrétaire.`}} | `le secrétariat` |
 
 ## ce qui est nouveau
 
 the review exercises stay inside épisodes 5 à 7; the new language hides in the three school messages and the riddle frame:
 
-- `avoir besoin de` : `Votre enfant a besoin d'une règle et de ciseaux.`, to need something; the needed thing follows `de`.
+- {{`avoir besoin de`}} : {{`Votre enfant a besoin d'une règle et de ciseaux.`}}, to need something; the needed thing follows `de`.
 - `ne … plus` : `il ne trouve plus les siens`, no longer, the next negation after `ne … pas`.
-- `les siens` : his own ones, a possessive pronoun standing in for `sa règle et ses ciseaux`; the message expects recognition, nothing more.
-- `en` : `Il doit en avoir une tous les jours.`, the pronoun stands for the missing `collation`; word for word, he must of-it have one every day.[^imparfait]
-- `Merci de + infinitif` closes a written request, `Merci de nous envoyer le tout dès que possible.`, with `le tout` (the whole lot) and `dès que possible` (as soon as possible); `Merci de votre collaboration.` does the same with a noun.
-- `demander à quelqu'un de + infinitif` : `Nous demandons à chaque enfant d'avoir des bottes pour jouer dehors.`
-- the riddle frame `Qui est-ce ? C'est la sœur de ma mère.` composes kinship by chaining `de`: my mother's sister is `ma tante`, and one more hop (`la fille du frère de ma mère`) still lands on a single word, `ma cousine`.
+- {{`les siens`}} : his own ones, a possessive pronoun standing in for `sa règle et ses ciseaux`; the message expects recognition, nothing more.
+- `en` : {{`Il doit en avoir une tous les jours.`}}, the pronoun stands for the missing `collation`; word for word, he must of-it have one every day.[^imparfait]
+- `Merci de + infinitif` closes a written request, {{`Merci de nous envoyer le tout dès que possible.`}}, with {{`le tout`}} (the whole lot) and {{`dès que possible`}} (as soon as possible); {{`Merci de votre collaboration.`}} does the same with a noun.
+- `demander à quelqu'un de + infinitif` : {{`Nous demandons à chaque enfant d'avoir des bottes pour jouer dehors.`}}
+- the riddle frame {{`Qui est-ce ? C'est la sœur de ma mère.`}} composes kinship by chaining `de`: my mother's sister is `ma tante`, and one more hop (`la fille du frère de ma mère`) still lands on a single word, `ma cousine`.
 - consignes extending the [[fr/episode-3]] list: `Associez`, `Complétez`, `Formulez`, `Identifiez`, `Tracez`, `Trouvez l'erreur`.
 
 related: [[fr/episode-5]], [[fr/episode-6]], [[fr/episode-7]], [[fr/les-nombres]]

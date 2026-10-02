@@ -10,11 +10,11 @@ tags:
 title: 'épisode 6 : demander pour trouver'
 ---
 
-découvrez phrases set the tone: `à gauche, à droite`, `l'accueil`, `le corridor`, `l'étage`, `l'ascenseur`. dans cet épisode, Hélène découvre le centre communautaire.
+découvrez phrases set the tone: {{`à gauche, à droite`}}, {{`l'accueil`}}, {{`le corridor`}}, {{`l'étage`}}, {{`l'ascenseur`}}. dans cet épisode, Hélène découvre le centre communautaire.
 
-the opener asks `Avez-vous un bon sens de l'orientation ?` and offers three strategies for `Vous cherchez un local dans un édifice. Que faites-vous ?` : `Je demande à quelqu'un.`, `Je regarde le plan de l'édifice.`, `Je me débrouille seul(e).` the episode trains the first two, asking and map-reading, in that order.
+the opener asks {{`Avez-vous un bon sens de l'orientation ?`}} and offers three strategies for {{`Vous cherchez un local dans un édifice. Que faites-vous ?`}} : {{`Je demande à quelqu'un.`}}, {{`Je regarde le plan de l'édifice.`}}, `Je me débrouille seul(e).` the episode trains the first two, asking and map-reading, in that order.
 
-vocabulary and spelling are Québécois with rectified orthography, so the Mémo writes `interpeler` with one `l` and `s'il vous plait` without the circumflex.[^rectifie]
+vocabulary and spelling are Québécois with rectified orthography, so the Mémo writes {{`interpeler`}} with one `l` and {{`s'il vous plait`}} without the circumflex.[^rectifie]
 
 ## demander des indications
 
@@ -25,77 +25,77 @@ the Mémo splits the ask into two moves. first you interpeler quelqu'un,[^interp
 - `Pardon…`
 - `Pardon, madame/monsieur…`
 
-adding `madame` ou `monsieur` is the politer half of each pair, and the choice of `madame` follows the Canadian rule in the box below.
+adding {{`madame`}} ou `monsieur` is the politer half of each pair, and the choice of `madame` follows the Canadian rule in the box below.
 
 then the ask itself, four frames printed on five lines (the `Pouvez-vous` frame gets two lines because the embedded verb agrees):
 
 | frame                                | exemple                                                                                                                                | ce qu'elle fait                                          |
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `Je cherche…`                        | `Je cherche les vestiaires de la piscine.`                                                                                             | une affirmation, la plus directe, aucune question posée  |
+| `Je cherche…`                        | {{`Je cherche les vestiaires de la piscine.`}}                                                                                             | une affirmation, la plus directe, aucune question posée  |
 | `Pouvez-vous me dire où est/sont… ?` | `Pouvez-vous me dire où est le secrétariat / la sortie / l'ascenseur ?`, `Pouvez-vous me dire où sont les toilettes / les escaliers ?` | la plus polie, la question logée dans une demande        |
 | `…, s'il vous plait.`                | `Les toilettes / la cafétéria / la sortie, s'il vous plait.`                                                                           | le nom seul, la formule de politesse tient lieu du reste |
 | `…, c'est à quel endroit ?`          | `Le photocopieur / la cafétéria, c'est à quel endroit ?`                                                                               | le nom d'abord, la question ensuite                      |
 
 three details live in these lines.
 
-the verb agrees with the thing you seek, `où est la sortie ?` mais `où sont les toilettes ?`, which is why the Mémo spends two lines on one frame.
+the verb agrees with the thing you seek, {{`où est la sortie ?`}} mais {{`où sont les toilettes ?`}}, which is why the Mémo spends two lines on one frame.
 
 the pronoun `me` attaches to the infinitive it belongs to, not to the conjugated verb: `Pouvez-vous me dire…`, jamais `Pouvez-me-vous dire…`. it is `dire` that is done to you, so `me` sits in front of `dire`.
 
-`Pouvez-vous me dire où est le secrétariat ?` uses a postposed noun subject, a standard order after `où`. the ban applies to pronominal inversion: `Je me demande où il est`, never `Je me demande où est-il`.
+{{`Pouvez-vous me dire où est le secrétariat ?`}} uses a postposed noun subject, a standard order after `où`. the ban applies to pronominal inversion: {{`Je me demande où il est`}}, never `Je me demande où est-il`.
 
-the découvrez listening runs the same request through three of the frames, the bare question (`Où sont les vestiaires de la piscine ?`), the embedded polite one (`Pouvez-vous me dire où sont les vestiaires de la piscine ?`), and the flat statement (`Je cherche les vestiaires de la piscine.`), all three land the same.
+the découvrez listening runs the same request through three of the frames, the bare question ({{`Où sont les vestiaires de la piscine ?`}}), the embedded polite one ({{`Pouvez-vous me dire où sont les vestiaires de la piscine ?`}}), and the flat statement (`Je cherche les vestiaires de la piscine.`), all three land the same.
 
 | mot               | sens                                                                      |
 | ----------------- | ------------------------------------------------------------------------- |
 | `interpeler`      | to call out to someone, to get their attention before speaking            |
-| `un endroit`      | a spot, a place; `c'est à quel endroit ?` is the everyday `where is it ?` |
+| {{`un endroit`}}      | a spot, a place; {{`c'est à quel endroit ?`}} is the everyday `where is it ?` |
 | `s'il vous plait` | please, vous form; it closes the sentence rather than opening it          |
 
 ### le dialogue du découvrez
 
 Hélène cherche les vestiaires de la piscine et s'y prend à deux reprises (CD1, piste 56):
 
-> Hélène : `Pardon, madame ?`
-> Femme : `Oui ?`
+> Hélène : {{`Pardon, madame ?`}}
+> Femme : {{`Oui ?`}}
 > Hélène : `Pouvez-vous me dire où sont les vestiaires de la piscine ?`
-> Femme : `Ah, je ne sais pas. Je suis désolée.`
-> Hélène : `Merci quand même.`
-> Hélène : `Excusez-moi, monsieur.`
+> Femme : {{`Ah, je ne sais pas. Je suis désolée.`}}
+> Hélène : {{`Merci quand même.`}}
+> Hélène : {{`Excusez-moi, monsieur.`}}
 > Homme : `Oui ?`
 > Hélène : `Je cherche les vestiaires de la piscine.`
 > Homme : `Ah, vous n'êtes pas très loin… Allez jusqu'au bout du corridor, puis tournez à droite. Avancez un peu et tournez à droite. Vous allez voir le vestiaire des hommes, puis un peu après, celui des femmes.`
-> Hélène : `Bon, parfait ! Merci beaucoup !`
-> Homme : `Ça me fait plaisir.`
+> Hélène : {{`Bon, parfait ! Merci beaucoup !`}}
+> Homme : {{`Ça me fait plaisir.`}}
 
 | question                                       | réponse                                    |
 | ---------------------------------------------- | ------------------------------------------ |
 | quelle expression pour s'adresser à la femme ? | `Pardon, madame ?`                         |
-| que cherche Hélène ?                           | `les vestiaires de la piscine`             |
-| quelle est la réponse de la femme ?            | `Elle ne sait pas où sont les vestiaires.` |
+| que cherche Hélène ?                           | {{`les vestiaires de la piscine`}}             |
+| quelle est la réponse de la femme ?            | {{`Elle ne sait pas où sont les vestiaires.`}} |
 | qu'est-ce qu'Hélène dit à l'homme ?            | `Je cherche les vestiaires de la piscine.` |
-| selon l'homme, Hélène est…                     | `près des vestiaires`                      |
+| selon l'homme, Hélène est…                     | {{`près des vestiaires`}}                      |
 | est-ce que l'homme donne des indications ?     | `oui`                                      |
 
-two encounters, and every distractor is cross-wired between them: `Excusez-moi, madame.` transplants the man's opener onto the woman, and `Où sont les vestiaires…` transplants the woman's question onto the man. the trap is answering from the right dialogue but the wrong half. the `près/loin` item is a litotes: `vous n'êtes pas très loin` veut dire `près`.
+two encounters, and every distractor is cross-wired between them: {{`Excusez-moi, madame.`}} transplants the man's opener onto the woman, and `Où sont les vestiaires…` transplants the woman's question onto the man. the trap is answering from the right dialogue but the wrong half. the `près/loin` item is a litotes: {{`vous n'êtes pas très loin`}} veut dire `près`.
 
 the exchange also carries the politeness that the frames alone do not:
 
 | expression            | emploi                                                                                  |
 | --------------------- | --------------------------------------------------------------------------------------- |
 | `s'adresser à qqn`    | commencer à parler à quelqu'un                                                          |
-| `chercher qqch`       | to look for something; in this sense, the object is direct: `Je cherche les vestiaires` |
+| `chercher qqch`       | to look for something; in this sense, the object is direct: {{`Je cherche les vestiaires`}} |
 | `Je suis désolé(e).`  | l'excuse quand on ne peut pas aider                                                     |
 | `Merci quand même.`   | thanks anyway, when the answer did not come                                             |
 | `Ça me fait plaisir.` | you're welcome, la réponse québécoise à `merci`[^plaisir]                               |
-| `selon`               | according to: `selon l'homme, Hélène est près des vestiaires`                           |
-| `ouvert` >< `fermé`   | open against closed                                                                     |
-| `au mauvais étage`    | on the wrong floor, `mauvais` opposé de `bon`                                           |
+| `selon`               | according to: {{`selon l'homme, Hélène est près des vestiaires`}}                           |
+| {{`ouvert`}} >< {{`fermé`}}   | open against closed                                                                     |
+| {{`au mauvais étage`}}    | on the wrong floor, `mauvais` opposé de `bon`                                           |
 
-`Vous allez voir le vestiaire des hommes` is a futur proche, `aller` au présent plus l'infinitif, and `celui des femmes` replaces `le vestiaire des femmes` with a demonstrative pronoun.[^celui]
+{{`Vous allez voir le vestiaire des hommes`}} is a futur proche, `aller` au présent plus l'infinitif, and {{`celui des femmes`}} replaces `le vestiaire des femmes` with a demonstrative pronoun.[^celui]
 
 > [!note] ailleurs, autrement ?
-> madame et mademoiselle. au Canada, `madame` addresses any woman; `mademoiselle` is reserved for young girls, or for women who ask for it. est-ce la même chose dans votre pays d'origine ?
+> madame et mademoiselle. au Canada, `madame` addresses any woman; {{`mademoiselle`}} is reserved for young girls, or for women who ask for it. est-ce la même chose dans votre pays d'origine ?
 
 ## les lieux de l'édifice
 
@@ -103,18 +103,18 @@ the plan du centre communautaire numbers eight lieux in its légende, with `Accu
 
 | #   | lieu                          | gloss            |
 | --- | ----------------------------- | ---------------- |
-| 1   | `les toilettes`               | washrooms        |
-| 2   | `l'infirmerie`                | infirmary        |
-| 3   | `la piscine`                  | pool             |
-| 4   | `le secrétariat`              | office           |
-| 5   | `le photocopieur`             | photocopier      |
-| 6   | `les machines distributrices` | vending machines |
-| 7   | `la sortie`                   | exit             |
-| 8   | `la cafétéria`                | cafeteria        |
+| 1   | {{`les toilettes`}}               | washrooms        |
+| 2   | {{`l'infirmerie`}}                | infirmary        |
+| 3   | {{`la piscine`}}                  | pool             |
+| 4   | {{`le secrétariat`}}              | office           |
+| 5   | {{`le photocopieur`}}             | photocopier      |
+| 6   | {{`les machines distributrices`}} | vending machines |
+| 7   | {{`la sortie`}}                   | exit             |
+| 8   | {{`la cafétéria`}}                | cafeteria        |
 
-the asking drill adds `l'accueil` (front desk), `l'ascenseur` (elevator), `l'escalier` (stairs), `l'abreuvoir (la fontaine)` (drinking fountain),[^abreuvoir] `le téléphone public` (a payphone, the book is from 2017), and `le guichet automatique` (ATM).[^guichet] the pictogrammes exercise rounds out the signage: `l'extincteur` (fire extinguisher), `la table à langer` (changing table), `l'information`, `l'accès à un réseau internet sans fil`, `l'accès pour personnes en fauteuil roulant`.
+the asking drill adds `l'accueil` (front desk), `l'ascenseur` (elevator), {{`l'escalier`}} (stairs), `l'abreuvoir (la fontaine)` (drinking fountain),[^abreuvoir] {{`le téléphone public`}} (a payphone, the book is from 2017), and {{`le guichet automatique`}} (ATM).[^guichet] the pictogrammes exercise rounds out the signage: {{`l'extincteur`}} (fire extinguisher), {{`la table à langer`}} (changing table), {{`l'information`}}, {{`l'accès à un réseau internet sans fil`}}, {{`l'accès pour personnes en fauteuil roulant`}}.
 
-the corridor listening seats the people behind the doors: `l'accueil`, `le concierge`, `la directrice`, `l'infirmière`, `le secrétariat`, `les enseignants et les enseignantes`, plus `madame Lepage` and `monsieur Gauthier` by name.
+the corridor listening seats the people behind the doors: `l'accueil`, {{`le concierge`}}, {{`la directrice`}}, {{`l'infirmière`}}, `le secrétariat`, {{`les enseignants et les enseignantes`}}, plus `madame Lepage` and `monsieur Gauthier` by name.
 
 ### les pictogrammes
 
@@ -242,19 +242,19 @@ the matching exercise pairs ten signs with their names. the pictogramme is the s
 
 </div>
 
-the two long ones are noun phrases rather than single words: `l'accès à un réseau internet sans fil` and `l'accès pour personnes en fauteuil roulant` both hang off `l'accès`, then choose their preposition, `à` for what you connect to, `pour` for who it serves. `sans fil` (wireless, literally without wire) is the adjective that does the work; Québec says `sans fil` where an anglophone reflex reaches for `wifi`.
+the two long ones are noun phrases rather than single words: `l'accès à un réseau internet sans fil` and `l'accès pour personnes en fauteuil roulant` both hang off `l'accès`, then choose their preposition, `à` for what you connect to, `pour` for who it serves. {{`sans fil`}} (wireless, literally without wire) is the adjective that does the work; Québec says `sans fil` where an anglophone reflex reaches for `wifi`.
 
-three of these are Québécois and would be said differently in France. `les machines distributrices` (the exercises shorten it to `les distributrices`) are vending machines, France says `distributeurs automatiques`. `le corridor` is the hallway, France says `couloir`. `l'abreuvoir` is the drinking fountain, which in France waters livestock.
+three of these are Québécois and would be said differently in France. `les machines distributrices` (the exercises shorten it to {{`les distributrices`}}) are vending machines, France says {{`distributeurs automatiques`}}. `le corridor` is the hallway, France says {{`couloir`}}. {{`l'abreuvoir`}} is the drinking fountain, which in France waters livestock.
 
 ## les étages et les ordinaux
 
-two frames carry the floor talk: `À quel étage habitez-vous ? J'habite au rez-de-chaussée.` and `Le bureau du psychologue André Deschamps est au troisième étage.` the drill reads a directory, l'Édifice Marcel Didier:
+two frames carry the floor talk: {{`À quel étage habitez-vous ? J'habite au rez-de-chaussée.`}} and {{`Le bureau du psychologue André Deschamps est au troisième étage.`}} the drill reads a directory, l'Édifice Marcel Didier:
 
 | lieu                                         | étage      |
 | -------------------------------------------- | ---------- |
 | `Banque Épargne mondiale`                    | `1er`      |
 | `Cafétéria`                                  | `2e`       |
-| `Concierge`                                  | `sous-sol` |
+| `Concierge`                                  | {{`sous-sol`}} |
 | `Bureau de Desrosiers et Larose, comptables` | `1er`      |
 | `École de secrétariat`                       | `4e et 5e` |
 | `Garderie`                                   | `RC`       |
@@ -262,27 +262,27 @@ two frames carry the floor talk: `À quel étage habitez-vous ? J'habite au rez-
 | `Bureau de Sylvie Leclerc, dentiste`         | `2e`       |
 | `Réception et sécurité`                      | `RC`       |
 
-`RC` abbreviates `le rez-de-chaussée`, the ground floor; below it sits `le sous-sol`.
+`RC` abbreviates {{`le rez-de-chaussée`}}, the ground floor; below it sits {{`le sous-sol`}}.
 
 the exercise is spoken, so the table has to come back out as sentences:
 
-- `Le bureau d'André Deschamps, psychologue, est au troisième étage.`
-- `La Banque Épargne mondiale est au premier étage.`
-- `La cafétéria est au deuxième étage.`
-- `Le concierge est au sous-sol.`
-- `Le bureau de Desrosiers et Larose, comptables, est au premier étage.`
-- `L'École de secrétariat est aux quatrième et cinquième étages.`
-- `La garderie est au rez-de-chaussée.`
-- `Le garage est au sous-sol.`
-- `Le bureau de Sylvie Leclerc, dentiste, est au deuxième étage.`
-- `La réception et la sécurité sont au rez-de-chaussée.`
+- {{`Le bureau d'André Deschamps, psychologue, est au troisième étage.`}}
+- {{`La Banque Épargne mondiale est au premier étage.`}}
+- {{`La cafétéria est au deuxième étage.`}}
+- {{`Le concierge est au sous-sol.`}}
+- {{`Le bureau de Desrosiers et Larose, comptables, est au premier étage.`}}
+- {{`L'École de secrétariat est aux quatrième et cinquième étages.`}}
+- {{`La garderie est au rez-de-chaussée.`}}
+- {{`Le garage est au sous-sol.`}}
+- {{`Le bureau de Sylvie Leclerc, dentiste, est au deuxième étage.`}}
+- {{`La réception et la sécurité sont au rez-de-chaussée.`}}
 
-saying them exposes what the table hides. the frame is `au` plus the ordinal plus `étage`, `au` being `à` plus `le` contracted. a single numbered floor uses the masculine singular: `au troisième étage`. two numbered floors use the plural: `aux quatrième et cinquième étages`, with `aux` for `à les` and one shared `étages` carrying both ordinals. and the two floors that are named rather than numbered take no ordinal at all, `au sous-sol` et `au rez-de-chaussée`, because those are nouns in their own right. the last line also swaps the verb, `La réception et la sécurité sont…`, two subjects joined by `et` taking the plural.
+saying them exposes what the table hides. the frame is `au` plus the ordinal plus `étage`, `au` being `à` plus `le` contracted. a single numbered floor uses the masculine singular: {{`au troisième étage`}}. two numbered floors use the plural: {{`aux quatrième et cinquième étages`}}, with `aux` for `à les` and one shared `étages` carrying both ordinals. and the two floors that are named rather than numbered take no ordinal at all, {{`au sous-sol`}} et {{`au rez-de-chaussée`}}, because those are nouns in their own right. the last line also swaps the verb, `La réception et la sécurité sont…`, two subjects joined by `et` taking the plural.
 
-the Mémo builds les déterminants ordinaux by adding `-ième` to the number: `deuxième (2e)`, `troisième (3e)`, up to `douzième (12e)`. at five spots the spelling shifts, `le «e» final disparait ou la dernière lettre du nombre change`: `quatre → quatrième`, `onze → onzième`, `douze → douzième` (final `e` drops), `cinq → cinquième` (gains a `u`), `neuf → neuvième` (`f` becomes `v`). number 1 gets its own pair, `premier (1er)` / `première (1re)`, and the end gets `dernier` / `dernière`. the cardinal inventory lives in [[fr/les-nombres]].
+the Mémo builds les déterminants ordinaux by adding `-ième` to the number: `deuxième (2e)`, `troisième (3e)`, up to `douzième (12e)`. at five spots the spelling shifts, `le «e» final disparait ou la dernière lettre du nombre change`: `quatre → quatrième`, `onze → onzième`, `douze → douzième` (final `e` drops), `cinq → cinquième` (gains a `u`), `neuf → neuvième` (`f` becomes `v`). number 1 gets its own pair, `premier (1er)` / `première (1re)`, and the end gets {{`dernier`}} / {{`dernière`}}. the cardinal inventory lives in [[fr/les-nombres]].
 
 > [!note] faits d'ici
-> les différentes façons de nommer les étages au Québec. the same three-storey building gets numbered three ways: `rez-de-chaussée, deuxième, troisième`; `rez-de-chaussée, premier, deuxième`; or `premier, deuxième, troisième`. street level can be `le rez-de-chaussée` or `le premier étage` depending on the building, so `au 2e étage` is ambiguous by one flight of stairs.[^etage]
+> les différentes façons de nommer les étages au Québec. the same three-storey building gets numbered three ways: {{`rez-de-chaussée, deuxième, troisième`}}; {{`rez-de-chaussée, premier, deuxième`}}; or {{`premier, deuxième, troisième`}}. street level can be `le rez-de-chaussée` or {{`le premier étage`}} depending on the building, so `au 2e étage` is ambiguous by one flight of stairs.[^etage]
 
 ## les prépositions de localisation (2)
 
@@ -290,18 +290,18 @@ set (1) in [[fr/episode-3]] (`sur, dans, devant, derrière, sous, entre`) parks 
 
 | préposition    | gloss               | rôle      | exemple du livre                                              |
 | -------------- | ------------------- | --------- | ------------------------------------------------------------- |
-| `à gauche de`  | to the left of      | direction | `La mère est à gauche du nid.`                                |
-| `à droite de`  | to the right of     | direction | `La plante est à droite de la porte.`                         |
-| `en face de`   | across from, facing | direction | `Les toilettes sont en face de l'escalier et de l'ascenseur.` |
-| `à côté de`    | next to, beside     | direction | `La cafétéria, c'est à côté du secrétariat.`                  |
-| `au bout de`   | at the end of       | direction | `La sortie, c'est au bout du corridor.`                       |
-| `loin de`      | far from            | distance  | `Ma classe est loin des toilettes.`                           |
-| `près de`      | near, close to      | distance  | `L'ordinateur est près de la fenêtre.`                        |
-| `au-dessus de` | above, over         | hauteur   | `L'aigle est au-dessus de l'arbre.`                           |
+| `à gauche de`  | to the left of      | direction | {{`La mère est à gauche du nid.`}}                                |
+| `à droite de`  | to the right of     | direction | {{`La plante est à droite de la porte.`}}                         |
+| `en face de`   | across from, facing | direction | {{`Les toilettes sont en face de l'escalier et de l'ascenseur.`}} |
+| `à côté de`    | next to, beside     | direction | {{`La cafétéria, c'est à côté du secrétariat.`}}                  |
+| `au bout de`   | at the end of       | direction | {{`La sortie, c'est au bout du corridor.`}}                       |
+| `loin de`      | far from            | distance  | {{`Ma classe est loin des toilettes.`}}                           |
+| `près de`      | near, close to      | distance  | {{`L'ordinateur est près de la fenêtre.`}}                        |
+| `au-dessus de` | above, over         | hauteur   | {{`L'aigle est au-dessus de l'arbre.`}}                           |
 
-the structural break between the two sets is the `de`. set (1) takes its noun bare, `sur la table`, `dans le sac`; every one of set (2) needs `de` first, `à côté de la table`, `au bout du corridor`. that is why the Mémo prints the eight words with a bracket pointing at `de`: the word alone is not usable.
+the structural break between the two sets is the `de`. set (1) takes its noun bare, {{`sur la table`}}, {{`dans le sac`}}; every one of set (2) needs `de` first, {{`à côté de la table`}}, {{`au bout du corridor`}}. that is why the Mémo prints the eight words with a bracket pointing at `de`: the word alone is not usable.
 
-two pairs straddle the sets and are worth keeping apart. `sur` touches, `au-dessus de` does not: `le chat est sur la chaise` sits on it, `l'aigle est au-dessus de l'arbre` flies over it. and `devant` is in front of something, `en face de` is across from it, facing it: `le chat est devant le chien` puts the cat before the dog, `l'arbre est en face de la maison` puts the tree opposite the house, a gap between them.
+two pairs straddle the sets and are worth keeping apart. `sur` touches, `au-dessus de` does not: {{`le chat est sur la chaise`}} sits on it, {{`l'aigle est au-dessus de l'arbre`}} flies over it. and `devant` is in front of something, `en face de` is across from it, facing it: {{`le chat est devant le chien`}} puts the cat before the dog, {{`l'arbre est en face de la maison`}} puts the tree opposite the house, a gap between them.
 
 `de` then contracts with the article of the following noun:
 
@@ -312,50 +312,50 @@ two pairs straddle the sets and are worth keeping apart. `sur` touches, `au-dess
 | voyelle  | `de l'` | `Les toilettes sont en face de l'escalier et de l'ascenseur.` |
 | pluriel  | `des`   | `Ma classe est loin des toilettes.`                           |
 
-the other Mémo sentences run the direction words: `La sortie, c'est au bout du corridor.`, `La plante est à droite de la porte.`, `Le vestiaire, c'est à côté des casiers.`
+the other Mémo sentences run the direction words: `La sortie, c'est au bout du corridor.`, `La plante est à droite de la porte.`, {{`Le vestiaire, c'est à côté des casiers.`}}
 
 the oisillon drawing stages all eight in one scene:
 
-1. `Un oisillon est loin du nid.`
-2. `Un autre oisillon est près du nid.`
-3. `Un troisième oisillon est au bout de la branche.`
+1. {{`Un oisillon est loin du nid.`}}
+2. {{`Un autre oisillon est près du nid.`}}
+3. {{`Un troisième oisillon est au bout de la branche.`}}
 4. `La mère est à gauche du nid.`
-5. `Le père est à droite du nid.`
+5. {{`Le père est à droite du nid.`}}
 6. `L'aigle est au-dessus de l'arbre.`
-7. `Le chat est à côté de l'arbre.`
-8. `L'arbre est en face de la maison.`
+7. {{`Le chat est à côté de l'arbre.`}}
+8. {{`L'arbre est en face de la maison.`}}
 
 the follow-up sends you back to the plan with blanks to fill: `La piscine est … de la cafétéria.`, `L'infirmerie est … des toilettes.`, `L'accueil est … de la sortie.`, `Les distributrices sont … de la sortie.`
 
 ## l'impératif présent
 
-directions come in the impératif, which conjugates sans pronom personnel: the `tu`, `nous`, `vous` disappear and the verb stands alone. `Va tout droit puis tourne à gauche.`
+directions come in the impératif, which conjugates sans pronom personnel: the `tu`, `nous`, `vous` disappear and the verb stands alone. {{`Va tout droit puis tourne à gauche.`}}
 
 | verbe       | (tu)       | (nous)       | (vous)      |
 | ----------- | ---------- | ------------ | ----------- |
-| `aller`     | `va`       | `allons`     | `allez`     |
-| `continuer` | `continue` | `continuons` | `continuez` |
-| `descendre` | `descends` | `descendons` | `descendez` |
-| `monter`    | `monte`    | `montons`    | `montez`    |
-| `prendre`   | `prends`   | `prenons`    | `prenez`    |
-| `tourner`   | `tourne`   | `tournons`   | `tournez`   |
+| `aller`     | {{`va`}}       | {{`allons`}}     | {{`allez`}}     |
+| `continuer` | {{`continue`}} | {{`continuons`}} | {{`continuez`}} |
+| `descendre` | {{`descends`}} | {{`descendons`}} | {{`descendez`}} |
+| `monter`    | {{`monte`}}    | {{`montons`}}    | {{`montez`}}    |
+| `prendre`   | {{`prends`}}   | {{`prenons`}}    | {{`prenez`}}    |
+| `tourner`   | {{`tourne`}}   | {{`tournons`}}   | {{`tournez`}}   |
 
-the book never states it as a rule, its table simply shows it: `-er` verbs and `aller` lose the `-s` of the tu form (`tourne`, `continue`, `monte`, `va`), while `descendre` and `prendre` keep theirs (`descends`, `prends`). the `-s` comes back the moment a pronoun returns, which is why [[fr/episode-5]] has `Parles-tu une autre langue ?` against `Parle plus fort !`
+the book never states it as a rule, its table simply shows it: `-er` verbs and `aller` lose the `-s` of the tu form (`tourne`, `continue`, `monte`, `va`), while `descendre` and `prendre` keep theirs (`descends`, `prends`). the `-s` comes back the moment a pronoun returns, which is why [[fr/episode-5]] has {{`Parles-tu une autre langue ?`}} against {{`Parle plus fort !`}}
 
 the table is three rows deep and that is the whole tense: there is no `je`, no `il`, no `ils`. an order can only reach someone standing there, so the impératif keeps exactly the persons you can address, `tu` and `vous`, plus `nous` for the group you are inside of. most imperative forms match the present-indicative `tu`, `nous`, or `vous` form without the subject pronoun. the `tu` form of `-er` verbs and `aller` normally loses its final `-s`, while `être`, `avoir`, `savoir`, and `vouloir` use irregular forms.
 
-the `nous` form proposes or urges shared action, the usual French equivalent of English “let's”: `Allons au sous-sol.` giving directions you will almost never use it; you use it to propose.
+the `nous` form proposes or urges shared action, the usual French equivalent of English “let's”: {{`Allons au sous-sol.`}} giving directions you will almost never use it; you use it to propose.
 
 | forme    | à qui                    | valeur                                                       |
 | -------- | ------------------------ | ------------------------------------------------------------ |
-| `(tu)`   | une personne, tutoiement | un ordre direct: `Va tout droit.`                            |
+| `(tu)`   | une personne, tutoiement | un ordre direct: {{`Va tout droit.`}}                            |
 | `(nous)` | le groupe, moi inclus    | une proposition: `Allons au sous-sol.`                       |
-| `(vous)` | vouvoiement ou pluriel   | l'ordre poli, le défaut avec un inconnu: `Allez tout droit.` |
+| `(vous)` | vouvoiement ou pluriel   | l'ordre poli, le défaut avec un inconnu: {{`Allez tout droit.`}} |
 
 with a stranger in an édifice it is always the `vous` column, which is why every printed direction in the episode reads `Tournez`, `Continuez`, `Montez`, `Descendez`, `Prenez`.
 
 > [!warning] `tout droit` n'est pas `à droite`
-> the Mémo's own example holds both: `Va tout droit puis tourne à gauche.` `tout droit` is straight ahead, `droit` masculine, no `e`, no article; `à droite` is to the right. one letter apart, ninety degrees apart. `Continuez tout droit.` sends someone forward, `Continuez à droite.` sends them sideways.
+> the Mémo's own example holds both: `Va tout droit puis tourne à gauche.` `tout droit` is straight ahead, `droit` masculine, no `e`, no article; `à droite` is to the right. one letter apart, ninety degrees apart. {{`Continuez tout droit.`}} sends someone forward, {{`Continuez à droite.`}} sends them sideways.
 
 ## donner des indications
 
@@ -363,26 +363,26 @@ six commands, matched to arrows in the listening:
 
 | consigne            | gloss                 |
 | ------------------- | --------------------- |
-| `Tournez à gauche.` | turn left             |
-| `Tournez à droite.` | turn right            |
-| `Continuez.`        | keep going (straight) |
+| {{`Tournez à gauche.`}} | turn left             |
+| {{`Tournez à droite.`}} | turn right            |
+| {{`Continuez.`}}        | keep going (straight) |
 | `Allez au bout de…` | go to the end of      |
-| `Montez.`           | go up                 |
-| `Descendez.`        | go down               |
+| {{`Montez.`}}           | go up                 |
+| {{`Descendez.`}}        | go down               |
 
 the ordering exercise assembles the whole exchange, six moves:
 
 1. `Excusez-moi…`
 2. `Oui ?`
-3. `Pouvez-vous me dire où est le bureau de monsieur Charles Leblanc ?`
-4. `Oui. Continuez tout droit. Tournez à droite au premier corridor. Son bureau est le 2e à gauche.`
-5. `Merci beaucoup !`
-6. `De rien.`
+3. {{`Pouvez-vous me dire où est le bureau de monsieur Charles Leblanc ?`}}
+4. {{`Oui. Continuez tout droit. Tournez à droite au premier corridor. Son bureau est le 2e à gauche.`}}
+5. {{`Merci beaucoup !`}}
+6. {{`De rien.`}}
 
-the answer stacks three imperatives and lands on an ordinal, `le 2e à gauche`, which is the episode's whole grammar in one line. the final exercises trace `trajets` on the centre communautaire plan, `point de départ` to `point d'arrivée`, through rooms named `yoga`, `art floral`, `informatique`, `cours de langues`, `musique`, `secourisme` (first aid), `secrétariat`, `théâtre`, `danse`.
+the answer stacks three imperatives and lands on an ordinal, `le 2e à gauche`, which is the episode's whole grammar in one line. the final exercises trace `trajets` on the centre communautaire plan, {{`point de départ`}} to {{`point d'arrivée`}}, through rooms named `yoga`, `art floral`, `informatique`, `cours de langues`, `musique`, {{`secourisme`}} (first aid), `secrétariat`, `théâtre`, `danse`.
 
 > [!note] faits d'ici
-> les centres communautaires au Canada et leurs services : les centres de santé communautaires (vaccins, prises de sang, suivi des nouveau-né(e)s), les centres de loisirs (activités sportives, cours, soutien scolaire, camps de jour), les organismes à but non lucratif (OBNL) (recherche d'emploi, conseils, cours, repas, défense des droits), les associations nationales (cours, évènements culturels : soupers, conférences, danse). `évènements` wears the rectified grave accent, and `un souper` is the Québécois evening meal.
+> les centres communautaires au Canada et leurs services : les centres de santé communautaires (vaccins, prises de sang, suivi des nouveau-né(e)s), les centres de loisirs (activités sportives, cours, soutien scolaire, camps de jour), les organismes à but non lucratif (OBNL) (recherche d'emploi, conseils, cours, repas, défense des droits), les associations nationales (cours, évènements culturels : soupers, conférences, danse). `évènements` wears the rectified grave accent, and {{`un souper`}} is the Québécois evening meal.
 
 > [!note] ailleurs, autrement ?
 > des édifices « records » : l'Empire State Building à New York a 102 étages, le premier édifice de plus de 100 étages sur la planète. la tour CN à Toronto mesure 553,33 m. the workbook calls it the world's sixth-highest structure, a ranking tied to the source's date and definition of `édifice`. les ascenseurs de la tour de Shanghai montent au 119e étage en 55 secondes, a bit over 2 étages par seconde.
@@ -399,8 +399,8 @@ related: [[fr/episode-5|épisode 5]], [[fr/episode-3|épisode 3]], [[fr/les-nomb
 
 [^etage]: the ambiguity is imported: France counts strictly `rez-de-chaussée, premier, deuxième`, anglo North America calls street level the 1st floor, and Québec buildings inherited both conventions. asking `c'est à quel étage ?` and hearing `au premier` still leaves you checking whether the ground floor already spent the number.
 
-[^plaisir]: `Ça me fait plaisir.` does double duty. here it answers `merci`, where France would say `de rien` or `je vous en prie`. in [[fr/episode-5]] the same phrase answers an introduction, the informal counterpart of `Enchanté(e) !`. one formula, two slots, both of them warm.
+[^plaisir]: `Ça me fait plaisir.` does double duty. here it answers `merci`, where France would say `de rien` or {{`je vous en prie`}}. in [[fr/episode-5]] the same phrase answers an introduction, the informal counterpart of `Enchanté(e) !`. one formula, two slots, both of them warm.
 
 [^celui]: `celui`, `celle`, `ceux`, `celles` stand in for a noun already named, so `le vestiaire des hommes, puis celui des femmes` avoids saying `vestiaire` twice. the course has not taught them; the dialogue uses one the way [[fr/episode-8]]'s messages use `les siens`, for recognition only.
 
-[^interpeler]: `interpeler` is the Mémo's own verb for the move, `interpeler quelqu'un`, to hail someone and open the channel. rectified spelling gives it one `l` in the infinitive (classic `interpeller`), though the sounded forms keep two, `il interpelle`. the noun is `une interpellation`.
+[^interpeler]: `interpeler` is the Mémo's own verb for the move, `interpeler quelqu'un`, to hail someone and open the channel. rectified spelling gives it one `l` in the infinitive (classic `interpeller`), though the sounded forms keep two, {{`il interpelle`}}. the noun is {{`une interpellation`}}.

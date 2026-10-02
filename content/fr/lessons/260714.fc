@@ -5,21 +5,21 @@ tags:
 ---
 
 Q: Elena vient d'Italie. Quelle est sa nationalité ?
-A: `Elle est italienne.`
+A: {{`Elle est italienne.`}}
 
 N: `-ien → -ienne` ; l'adjectif de nationalité prend une minuscule.
 
 ---
 
 Q: Alzira est portugaise. De quel pays vient-elle ?
-A: `Elle vient du Portugal.`
+A: {{`Elle vient du Portugal.`}}
 
 N: `le Portugal` est masculin : `de + le → du`.
 
 ---
 
 Q: Une femme vient des Pays-Bas. Quelle est sa nationalité ?
-A: `Elle est néerlandaise.`
+A: {{`Elle est néerlandaise.`}}
 
 N: Au masculin : `néerlandais`.
 
@@ -37,14 +37,14 @@ C: `at the top` se dit [en haut] ; `at the bottom` se dit [en bas].
 ---
 
 Q: Dites qu'il y a une pause de 15 minutes à 20 h.
-A: `Il y a une pause de quinze minutes à vingt heures.`
+A: {{`Il y a une pause de quinze minutes à vingt heures.`}}
 
 N: `de` introduit la durée de la pause ; `à` introduit l'heure.
 
 ---
 
 Q: Dites que le cours de français a lieu chaque lundi et chaque mercredi.
-A: `Le cours de français est le lundi et le mercredi.`
+A: {{`Le cours de français est le lundi et le mercredi.`}}
 
 N: L'article devant le jour marque l'habitude.
 
@@ -67,7 +67,7 @@ A: De relier deux éléments par un trait, par exemple une question et sa répon
 ---
 
 Q: Avec `à qui`, demandez à qui appartient ce livre.
-A: `À qui est ce livre ?`
+A: {{`À qui est ce livre ?`}}
 
 ---
 
@@ -76,14 +76,14 @@ C: Au pluriel, le verbe s'accorde avec l'objet : `À qui [sont] ces cahiers ?`
 ---
 
 Q: Avec `à qui`, demandez à qui appartiennent ces lunettes.
-A: `À qui sont ces lunettes ?`
+A: {{`À qui sont ces lunettes ?`}}
 
 N: `les lunettes` est pluriel : `ces`, `sont`.
 
 ---
 
 Q: `À qui est cette montre ?` Répondez qu'elle appartient à France.
-A: `C'est la montre de France.`
+A: {{`C'est la montre de France.`}}
 
 ---
 
@@ -92,14 +92,14 @@ C: Devant une voyelle, `de` s'élide : `Ce sont les cahiers [d']Alexandre.`
 ---
 
 Q: Dites `Alexandre's umbrella is behind the door.`
-A: `Le parapluie d'Alexandre est derrière la porte.`
+A: {{`Le parapluie d'Alexandre est derrière la porte.`}}
 
 N: Le possesseur suit `de` ; le français n'a pas de `'s`.
 
 ---
 
 Q: Dites `Alexandre's glasses are on the shelf.`
-A: `Les lunettes d'Alexandre sont sur l'étagère.`
+A: {{`Les lunettes d'Alexandre sont sur l'étagère.`}}
 
 ---
 

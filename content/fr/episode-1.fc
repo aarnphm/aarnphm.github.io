@@ -7,47 +7,47 @@ tags:
 ---
 
 Q: Informal greetings on arrival (saluer à l'arrivée)?
-A: `Allo !` or `Salut !`
+A: {{`Allo !`}} or {{`Salut !`}}
 
 ---
 
 Q: Formal greeting on arrival (saluer à l'arrivée)?
-A: `Bonjour !`
+A: {{`Bonjour !`}}
 
 ---
 
 Q: Informal ways to ask how it's going?
-A: `Ça va ?` or `Comment ça va ?`
+A: {{`Ça va ?`}} or {{`Comment ça va ?`}}
 
 ---
 
 Q: Formal ways to ask how someone is doing?
-A: `Comment allez-vous ?` or `Vous allez bien ?`
+A: {{`Comment allez-vous ?`}} or {{`Vous allez bien ?`}}
 
 ---
 
 Q: Informal goodbyes (saluer au départ)?
-A: `Salut !` or `Bye !`
+A: {{`Salut !`}} or {{`Bye !`}}
 
 ---
 
 Q: Formal goodbyes (saluer au départ)?
-A: `Au revoir !` or `À bientôt !`
+A: {{`Au revoir !`}} or {{`À bientôt !`}}
 
 ---
 
 Q: What does the Québécois reply `Pas pire, toi ?` mean?
-A: "Not bad, you?", a litotes for "fine". France would say `pas mal`.
+A: "Not bad, you?", a litotes for "fine". France would say {{`pas mal`}}.
 
 ---
 
 Q: `Allo !` in Québec vs France?
-A: In Québec it greets someone face to face (informal arrival); in France `Allô` exists only on the telephone.
+A: In Québec it greets someone face to face (informal arrival); in France {{`Allô`}} exists only on the telephone.
 
 ---
 
 Q: Two frames for giving your name, the second one common in Québec?
-A: `Je m'appelle Hélène.` and `Mon nom est Hélène.`
+A: {{`Je m'appelle Hélène.`}} and {{`Mon nom est Hélène.`}}
 
 ---
 
@@ -56,12 +56,12 @@ C: The two dots of `Ïï` are le [tréma]; the hook under `Çç` is la [cédille
 ---
 
 Q: The classic article mistake when stating a profession?
-A: Adding one. Profession takes `être` with no article: `Je suis infirmière.`, never `Je suis une infirmière.`
+A: Adding one. Profession takes {{`être`}} with no article: {{`Je suis infirmière.`}}, never `Je suis une infirmière.`
 
 ---
 
 Q: What is `une garderie` in Québec?
-A: A daycare, as in the profession `éducatrice en garderie`.
+A: A daycare, as in the profession {{`éducatrice en garderie`}}.
 
 ---
 
@@ -95,12 +95,12 @@ C: `-teur → -trice`: `formateur` → [formatrice], `administrateur` → [admin
 ---
 
 Q: Feminine of `serveur`?
-A: `serveuse` (`-eur → -euse`).
+A: {{`serveuse`}} (`-eur → -euse`).
 
 ---
 
 Q: Feminine of `directeur`?
-A: `directrice` (`-teur → -trice`).
+A: {{`directrice`}} (`-teur → -trice`).
 
 ---
 
@@ -125,12 +125,12 @@ C: `Je viens [de] Cuba.`
 ---
 
 Q: Why `Je viens du Brésil` and not `de Brésil`?
-A: The country carries `le` (`le Brésil`), and `de + le` contracts to `du`.
+A: The country carries `le` ({{`le Brésil`}}), and `de + le` contracts to `du`.
 
 ---
 
 Q: Why bare `de` in `Je viens de Cuba`?
-A: Islands and city-states (`Cuba`, `Madagascar`, `Singapour`) take no article, so origin is plain `de`.
+A: Islands and city-states ({{`Cuba`}}, {{`Madagascar`}}, {{`Singapour`}}) take no article, so origin is plain `de`.
 
 ---
 
@@ -159,7 +159,7 @@ C: The feminine of `français` is [française].
 ---
 
 Q: Feminine of `grec`?
-A: `grecque`, the irregular one in the Mémo.
+A: {{`grecque`}}, the irregular one in the Mémo.
 
 ---
 
@@ -169,7 +169,7 @@ A: Nothing: they end in `-e` and stay invariable.
 ---
 
 Q: French for "single" (état civil)?
-A: `célibataire`.
+A: {{`célibataire`}}.
 
 ---
 
@@ -193,122 +193,122 @@ C: The negation eats the article: `Je n'ai pas [d']enfants.` (`des enfants` → 
 ---
 
 Q: Which verb counts children, as in "I have 3 kids: 2 girls and 1 boy"?
-A: `avoir`: `J'ai 3 enfants : 2 filles et 1 garçon.`, the same verb as age in [[fr/episode-2]]; the numbers live in [[fr/les-nombres]].
+A: {{`avoir`}}: {{`J'ai 3 enfants : 2 filles et 1 garçon.`}}, the same verb as age in [[fr/episode-2]]; the numbers live in [[fr/les-nombres]].
 
 ---
 
 Q: A friend greets you with `Ça va ?`. Answer the Québécois informal way and return the question.
-A: `Pas pire, toi ?`
+A: {{`Pas pire, toi ?`}}
 N: `Bien ! Toi ?` also works. `Pas pire` stays in the informal column.
 
 ---
 
 Q: Your new manager asks `Comment allez-vous ?`. Answer and return the question in the same register.
-A: `Ça va très bien, merci ! Et vous ?`
+A: {{`Ça va très bien, merci ! Et vous ?`}}
 N: The question used `vous`, so the answer returns it; `Pas pire, toi ?` would mix registers.
 
 ---
 
 Q: Ask a classmate how they are, with `aller` and `tu`.
-A: `Comment vas-tu ?`
+A: {{`Comment vas-tu ?`}}
 N: From the listening exercise. The formal twin is `Comment allez-vous ?`.
 
 ---
 
 Q: Say "I come from Mexico."
-A: `Je viens du Mexique.`
+A: {{`Je viens du Mexique.`}}
 N: `le Mexique` is masculine despite its final `-e`, so `de + le` gives `du`.
 
 ---
 
 Q: Say "I come from China."
-A: `Je viens de Chine.`
+A: {{`Je viens de Chine.`}}
 N: Feminine country (`la Chine`): bare `de`, no article.
 
 ---
 
 Q: Say "I come from Spain."
-A: `Je viens d'Espagne.`
+A: {{`Je viens d'Espagne.`}}
 N: `l'Espagne` starts with a vowel, so `de` elides.
 
 ---
 
 Q: Say "I come from the Philippines."
-A: `Je viens des Philippines.`
+A: {{`Je viens des Philippines.`}}
 N: Plural country: `de + les` gives `des`.
 
 ---
 
 Q: Say "I come from Madagascar."
-A: `Je viens de Madagascar.`
+A: {{`Je viens de Madagascar.`}}
 N: No article, like `Cuba` and `Singapour`.
 
 ---
 
 Q: Say "I come from Peru."
-A: `Je viens du Pérou.`
+A: {{`Je viens du Pérou.`}}
 
 ---
 
 Q: Say "She is a pharmacist."
-A: `Elle est pharmacienne.`
+A: {{`Elle est pharmacienne.`}}
 N: `-ien → -ienne`, and no article after `être`.
 
 ---
 
 Q: Feminine of `policier`?
-A: `policière` (`-ier → -ière`).
+A: {{`policière`}} (`-ier → -ière`).
 
 ---
 
 Q: Feminine of `producteur`?
-A: `productrice` (`-teur → -trice`).
+A: {{`productrice`}} (`-teur → -trice`).
 
 ---
 
 Q: Feminine of `journaliste`?
-A: `journaliste`: it ends in `-e`, so one form serves both genders.
+A: {{`journaliste`}}: it ends in `-e`, so one form serves both genders.
 
 ---
 
 Q: Feminine of `enseignant`?
-A: `enseignante` (`-t → -te`).
+A: {{`enseignante`}} (`-t → -te`).
 
 ---
 
 Q: `Je suis infirmière.` takes no article. When does the article come back?
-A: When the profession is modified: `Je suis une infirmière expérimentée.`
+A: When the profession is modified: {{`Je suis une infirmière expérimentée.`}}
 
 ---
 
 Q: A woman from Hungary gives her nationality.
-A: `Je suis hongroise.` (`-ois → -oise`)
+A: {{`Je suis hongroise.`}} (`-ois → -oise`)
 
 ---
 
 Q: A woman from Portugal gives her nationality.
-A: `Je suis portugaise.` (`-ais → -aise`)
+A: {{`Je suis portugaise.`}} (`-ais → -aise`)
 
 ---
 
 Q: A woman from Romania gives her nationality.
-A: `Je suis roumaine.` (`-ain → -aine`)
+A: {{`Je suis roumaine.`}} (`-ain → -aine`)
 
 ---
 
 Q: Say "She is Russian."
-A: `Elle est russe.`
+A: {{`Elle est russe.`}}
 N: Adjectives ending in `-e` do not change in the feminine.
 
 ---
 
 Q: `Je suis Canadienne.` or `Je suis canadienne.`?
-A: `Je suis canadienne.` After `être` the nationality is an adjective, so it stays lowercase. The noun takes a capital: `une Canadienne`.
+A: {{`Je suis canadienne.`}} After {{`être`}} the nationality is an adjective, so it stays lowercase. The noun takes a capital: {{`une Canadienne`}}.
 
 ---
 
 Q: Say "I speak English and Arabic."
-A: `Je parle anglais et arabe.`
+A: {{`Je parle anglais et arabe.`}}
 N: No article and no capital after `Je parle`.
 
 ---
@@ -319,10 +319,10 @@ A: `conjoint(e) de fait`
 ---
 
 Q: Say "I don't have children."
-A: `Je n'ai pas d'enfants.`
+A: {{`Je n'ai pas d'enfants.`}}
 
 ---
 
 Q: Introduce yourself as Hélène: nurse, Québécoise, lives in Québec City, speaks French and Italian, one child.
-A: `Je m'appelle Hélène. Je suis infirmière. Je suis québécoise. J'habite à Québec. Je parle français et italien. J'ai 1 enfant.`
+A: {{`Je m'appelle Hélène. Je suis infirmière. Je suis québécoise. J'habite à Québec. Je parle français et italien. J'ai 1 enfant.`}}
 N: The episode's six slots in order: nom, profession, nationalité, résidence, langues, enfants.

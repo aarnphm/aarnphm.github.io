@@ -24,7 +24,12 @@ export const AllTags: QuartzComponent = ({ allFiles }: Props) => {
     ...new Set(
       allFiles.flatMap(data => data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes),
     ),
-  ].sort((a, b) => a.localeCompare(b))
+  ].sort((a, b) => {
+    if (a === b) return 0
+    if (a === 'folder') return -1
+    if (b === 'folder') return 1
+    return a.localeCompare(b)
+  })
 
   return h('section', { class: 'note-tags' }, [
     h(
