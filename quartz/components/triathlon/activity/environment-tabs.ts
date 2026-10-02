@@ -1,7 +1,11 @@
-import type { GardenEnvironmentSample } from '../../../util/activity-environment'
+import type {
+  EnvironmentChartSample,
+  GardenEnvironmentSample,
+} from '../../../util/activity-environment'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import {
   ENVIRONMENT_CHART_VIEWS,
+  ALL_ENVIRONMENT_CHART_VIEWS,
   environmentChartReadout,
   type EnvironmentChartView,
 } from '../../../util/triathlon-card'
@@ -10,7 +14,7 @@ import { isRecord } from '../../../util/type-guards'
 export type EnvironmentView = EnvironmentChartView
 
 const isEnvironmentView = (value: string | undefined): value is EnvironmentView =>
-  ENVIRONMENT_CHART_VIEWS.some(view => view === value)
+  ALL_ENVIRONMENT_CHART_VIEWS.some(view => view === value)
 
 export const environmentViewFromKey = (
   selected: EnvironmentView,
@@ -50,6 +54,14 @@ const isEnvironmentSample = (value: unknown): value is GardenEnvironmentSample =
   if (!('elapsedS' in value) || !finiteNumber(value.elapsedS) || value.elapsedS < 0) return false
   if (!('distanceKm' in value) || !finiteNumber(value.distanceKm) || value.distanceKm < 0)
     return false
+  if (
+    'windSpeedKph' in value &&
+    !(
+      value.windSpeedKph === null ||
+      (finiteNumber(value.windSpeedKph) && value.windSpeedKph >= 0 && value.windSpeedKph <= 1_000)
+    )
+  )
+    return false
   return [
     'uvIndex',
     'cumulativeSed',
@@ -63,9 +75,11 @@ const isEnvironmentSample = (value: unknown): value is GardenEnvironmentSample =
   ].every(key => key in value && nullableFiniteNumber(value[key]))
 }
 
-const readSamples = (analysis: HTMLElement): GardenEnvironmentSample[] => {
+export const parseEnvironmentSamples = (
+  serialized: string | undefined,
+): GardenEnvironmentSample[] => {
   try {
-    const parsed: unknown = JSON.parse(analysis.dataset.environmentSeries ?? 'null')
+    const parsed: unknown = JSON.parse(serialized ?? 'null')
     if (!Array.isArray(parsed) || parsed.length < 2 || parsed.length > 512) return []
     const samples = parsed.filter(isEnvironmentSample)
     if (samples.length !== parsed.length) return []
@@ -76,6 +90,48 @@ const readSamples = (analysis: HTMLElement): GardenEnvironmentSample[] => {
     return []
   }
 }
+
+const currentSampleKeys = new Set([
+  'elapsedS',
+  'surfaceCurrentSpeedMps',
+  'surfaceCurrentDirectionDeg',
+])
+
+const isEnvironmentCurrentSample = (value: unknown): value is EnvironmentChartSample =>
+  isRecord(value) &&
+  Object.keys(value).every(key => currentSampleKeys.has(key)) &&
+  finiteNumber(value.elapsedS) &&
+  value.elapsedS >= 0 &&
+  (value.surfaceCurrentSpeedMps === null ||
+    (finiteNumber(value.surfaceCurrentSpeedMps) &&
+      value.surfaceCurrentSpeedMps >= 0 &&
+      value.surfaceCurrentSpeedMps <= 10)) &&
+  (value.surfaceCurrentDirectionDeg === null ||
+    (finiteNumber(value.surfaceCurrentDirectionDeg) &&
+      value.surfaceCurrentDirectionDeg >= 0 &&
+      value.surfaceCurrentDirectionDeg < 360))
+
+export const parseEnvironmentCurrentSamples = (
+  serialized: string | undefined,
+): EnvironmentChartSample[] => {
+  try {
+    const parsed: unknown = JSON.parse(serialized ?? 'null')
+    if (!Array.isArray(parsed) || parsed.length < 2 || parsed.length > 512) return []
+    const samples = parsed.filter(isEnvironmentCurrentSample)
+    if (samples.length !== parsed.length) return []
+    for (let index = 1; index < samples.length; index += 1)
+      if (samples[index].elapsedS <= samples[index - 1].elapsedS) return []
+    return samples
+  } catch {
+    return []
+  }
+}
+
+const readSamples = (analysis: HTMLElement): EnvironmentChartSample[] =>
+  analysis.dataset.environmentView === 'current-speed' ||
+  analysis.dataset.environmentView === 'current-direction'
+    ? parseEnvironmentCurrentSamples(analysis.dataset.environmentCurrentSeries)
+    : parseEnvironmentSamples(analysis.dataset.environmentSeries)
 
 const selectedViews = (analysis: HTMLElement): EnvironmentView[] =>
   Array.from(analysis.querySelectorAll<HTMLElement>('[data-environment-tab]')).flatMap(tab => {
@@ -129,13 +185,13 @@ const cumulativeMode = (analysis: HTMLElement): 'score' | 'sed' =>
 const updateCursor = (
   analysis: HTMLElement,
   presentation: TriathlonPresentation,
-  samples: readonly GardenEnvironmentSample[],
+  samples: readonly EnvironmentChartSample[],
   index: number,
+  unavailableElapsedS?: number,
 ): void => {
-  const sample = samples[index]
-  if (!sample) return
   const elapsed = Number(analysis.dataset.environmentElapsed)
   if (!Number.isFinite(elapsed) || elapsed <= 0) return
+  const sample = samples[index] ?? { elapsedS: unavailableElapsedS ?? elapsed }
   const x = 2 + Math.min(1, Math.max(0, sample.elapsedS / elapsed)) * 96
   const coefficientSed = coefficient(analysis)
   const doseClock = scoreClock(analysis)
@@ -143,6 +199,9 @@ const updateCursor = (
     presentation,
     sample,
     coefficientSed != null && doseClock != null ? { coefficientSed, doseClock } : null,
+    isEnvironmentView(analysis.dataset.environmentView)
+      ? analysis.dataset.environmentView
+      : undefined,
   )
   for (const chart of analysis.querySelectorAll<SVGElement>('[data-environment-chart]')) {
     const cursor = chart.querySelector<SVGLineElement>('.tri-environment-cursor')
@@ -153,11 +212,13 @@ const updateCursor = (
   }
   const output = analysis.querySelector<HTMLOutputElement>('[data-environment-readout]')
   if (output) output.value = readout
-  analysis.dataset.environmentSampleIndex = `${index}`
+  analysis.dataset.environmentCursorElapsed = `${sample.elapsedS}`
+  if (samples.length > 0) analysis.dataset.environmentSampleIndex = `${index}`
+  else delete analysis.dataset.environmentSampleIndex
 }
 
-const nearestSampleIndex = (
-  samples: readonly GardenEnvironmentSample[],
+export const environmentSampleIndexAtElapsed = (
+  samples: readonly EnvironmentChartSample[],
   elapsedS: number,
 ): number => {
   let closest = 0
@@ -218,6 +279,22 @@ export const setupEnvironmentTabs = (
   const analysisFrom = (target: Element): HTMLElement | null =>
     target.closest<HTMLElement>('[data-environment-tabs]')
 
+  const selectView = (analysis: HTMLElement, view: EnvironmentView, focus: boolean): void => {
+    const previousElapsed = Number(analysis.dataset.environmentCursorElapsed)
+    setView(analysis, view, focus)
+    const samples = readSamples(analysis)
+    const elapsedS = Number.isFinite(previousElapsed)
+      ? previousElapsed
+      : Number(analysis.dataset.environmentElapsed)
+    updateCursor(
+      analysis,
+      presentation(),
+      samples,
+      environmentSampleIndexAtElapsed(samples, elapsedS),
+      elapsedS,
+    )
+  }
+
   const onClick = (event: MouseEvent): void => {
     if (!(event.target instanceof Element)) return
     const analysis = analysisFrom(event.target)
@@ -225,7 +302,7 @@ export const setupEnvironmentTabs = (
     const tab = event.target.closest<HTMLButtonElement>('[data-environment-tab]')
     const view = tab?.dataset.environmentTab
     if (tab && isEnvironmentView(view)) {
-      setView(analysis, view, false)
+      selectView(analysis, view, false)
       return
     }
     const mode =
@@ -245,7 +322,7 @@ export const setupEnvironmentTabs = (
       if (!next) return
       event.preventDefault()
       event.stopPropagation()
-      setView(analysis, next, true)
+      selectView(analysis, next, true)
       return
     }
     const chart = event.target.closest<SVGElement>('[data-environment-chart]')
@@ -277,7 +354,12 @@ export const setupEnvironmentTabs = (
     const elapsed = eventElapsed(analysis, chart, event.clientX)
     const samples = readSamples(analysis)
     if (elapsed == null || samples.length === 0) return
-    updateCursor(analysis, presentation(), samples, nearestSampleIndex(samples, elapsed))
+    updateCursor(
+      analysis,
+      presentation(),
+      samples,
+      environmentSampleIndexAtElapsed(samples, elapsed),
+    )
     if (selection?.analysis === analysis && selection.pointerId === event.pointerId)
       setSelection(analysis, selection.startS, elapsed)
   }
@@ -306,7 +388,7 @@ export const setupEnvironmentTabs = (
     if (initial) setView(analysis, initial, false)
     setMode(analysis, cumulativeMode(analysis))
     const samples = readSamples(analysis)
-    if (samples.length > 0) updateCursor(analysis, presentation(), samples, samples.length - 1)
+    updateCursor(analysis, presentation(), samples, samples.length - 1)
   }
   root.addEventListener('click', onClick)
   root.addEventListener('keydown', onKeyDown)

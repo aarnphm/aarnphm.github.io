@@ -1,5 +1,5 @@
 import type { GarminRunWalkSegment } from '../plugins/stores/garmin'
-import type { GardenEnvironmentSample, GardenUvScore } from './activity-environment'
+import type { EnvironmentChartSample, GardenUvScore } from './activity-environment'
 import type { TriathlonDailyAnalytics, TriathlonDayAnalytics } from './triathlon-day-analytics'
 import type { Locale, TriathlonPresentation } from './triathlon-presentation'
 import { STROKE_LABEL, SWIM_STROKES, type SwimStroke } from '../plugins/stores/apple'
@@ -21,6 +21,7 @@ import {
   type SwimTrendPoint,
 } from '../plugins/stores/strava'
 import { selectActivityAnalysisSummary } from './activity-analysis-selection'
+import { surfaceCurrentChartSamples } from './activity-environment'
 import { gardenUvScoreFromDose } from './activity-uv-score'
 import { cyclingTorqueDensity } from './cycling-torque'
 import { RUN_PACE_ZONE_NAMES, runPaceZoneRange } from './run-pace-zones'
@@ -5506,6 +5507,8 @@ export type EnvironmentChartView =
   | 'temperature'
   | 'cloud-cover'
   | 'wind'
+  | 'current-speed'
+  | 'current-direction'
 
 export const ENVIRONMENT_CHART_VIEWS: readonly EnvironmentChartView[] = [
   'cumulative',
@@ -5515,12 +5518,23 @@ export const ENVIRONMENT_CHART_VIEWS: readonly EnvironmentChartView[] = [
   'wind',
 ]
 
+export const ENVIRONMENT_CURRENT_CHART_VIEWS: readonly EnvironmentChartView[] = [
+  'current-speed',
+  'current-direction',
+]
+
+export const ALL_ENVIRONMENT_CHART_VIEWS: readonly EnvironmentChartView[] = [
+  ...ENVIRONMENT_CHART_VIEWS,
+  ...ENVIRONMENT_CURRENT_CHART_VIEWS,
+]
+
 interface EnvironmentChartSeries {
   path: string
   color: string | null
 }
 
 type EnvironmentScoreModel = Pick<GardenUvScore, 'coefficientSed' | 'doseClock'>
+type EnvironmentWindMetric = 'headwind' | 'ambient'
 
 interface EnvironmentChartScale {
   minimum: number
@@ -5541,22 +5555,31 @@ const environmentUvColor = (uvIndex: number): string => {
   return 'var(--tri-environment-uv-extreme)'
 }
 
+const environmentWindMetric = (samples: readonly EnvironmentChartSample[]): EnvironmentWindMetric =>
+  samples.filter(sample => sample.headwindKph != null && Number.isFinite(sample.headwindKph))
+    .length >= 2
+    ? 'headwind'
+    : 'ambient'
+
 const environmentSampleValue = (
   presentation: TriathlonPresentation,
-  sample: GardenEnvironmentSample,
+  sample: EnvironmentChartSample,
   view: EnvironmentChartView,
   scoreModel: EnvironmentScoreModel | null,
+  windMetric: EnvironmentWindMetric = 'headwind',
 ): number | null => {
-  if (view === 'uv-index') return sample.uvIndex
+  if (view === 'uv-index') return sample.uvIndex ?? null
+  if (view === 'current-speed') return sample.surfaceCurrentSpeedMps ?? null
+  if (view === 'current-direction') return sample.surfaceCurrentDirectionDeg ?? null
   if (view === 'temperature')
     return sample.ambientTemperatureC == null
       ? null
       : temperatureValue(presentation, sample.ambientTemperatureC)
-  if (view === 'cloud-cover') return sample.cloudCoverPct
-  if (view === 'wind')
-    return sample.headwindKph == null
-      ? null
-      : sample.headwindKph * (isImperial(presentation) ? KM_TO_MI : 1)
+  if (view === 'cloud-cover') return sample.cloudCoverPct ?? null
+  if (view === 'wind') {
+    const value = windMetric === 'ambient' ? sample.windSpeedKph : sample.headwindKph
+    return value == null ? null : value * (isImperial(presentation) ? KM_TO_MI : 1)
+  }
   const doseSed =
     scoreModel?.doseClock === 'moving-telemetry'
       ? sample.cumulativeMovingTelemetrySed
@@ -5577,7 +5600,13 @@ const environmentChartScale = (
   values: readonly number[],
   view: EnvironmentChartView,
   scoreModel: EnvironmentScoreModel | null,
+  windMetric: EnvironmentWindMetric = 'headwind',
 ): EnvironmentChartScale => {
+  if (view === 'current-direction') return { minimum: 0, maximum: 360, ticks: [0, 180, 360] }
+  if (view === 'current-speed') {
+    const maximum = environmentNiceCeiling(Math.max(...values))
+    return { minimum: 0, maximum, ticks: [0, maximum / 2, maximum] }
+  }
   if (view === 'cloud-cover' || (view === 'cumulative' && scoreModel != null))
     return { minimum: 0, maximum: 100, ticks: [0, 50, 100] }
   if (view === 'uv-index') {
@@ -5586,6 +5615,7 @@ const environmentChartScale = (
   }
   if (view === 'wind') {
     const maximum = environmentNiceCeiling(Math.max(...values.map(Math.abs)))
+    if (windMetric === 'ambient') return { minimum: 0, maximum, ticks: [0, maximum / 2, maximum] }
     return { minimum: -maximum, maximum, ticks: [-maximum, 0, maximum] }
   }
   if (view === 'cumulative') {
@@ -5614,31 +5644,35 @@ const environmentChartY = (value: number, scale: EnvironmentChartScale): number 
 
 const environmentChartValues = (
   presentation: TriathlonPresentation,
-  samples: readonly GardenEnvironmentSample[],
+  samples: readonly EnvironmentChartSample[],
   view: EnvironmentChartView,
   scoreModel: EnvironmentScoreModel | null,
-): number[] =>
-  samples.flatMap(sample => {
-    const value = environmentSampleValue(presentation, sample, view, scoreModel)
+): number[] => {
+  const windMetric = view === 'wind' ? environmentWindMetric(samples) : 'headwind'
+  return samples.flatMap(sample => {
+    const value = environmentSampleValue(presentation, sample, view, scoreModel, windMetric)
     return value == null || !Number.isFinite(value) ? [] : [value]
   })
+}
 
 export const environmentChartSeries = (
   presentation: TriathlonPresentation,
-  samples: readonly GardenEnvironmentSample[],
+  samples: readonly EnvironmentChartSample[],
   elapsedTimeS: number,
   view: EnvironmentChartView,
   scoreModel: EnvironmentScoreModel | null = null,
 ): EnvironmentChartSeries[] => {
   const values = environmentChartValues(presentation, samples, view, scoreModel)
   if (values.length < 2 || elapsedTimeS <= 0) return []
-  const scale = environmentChartScale(values, view, scoreModel)
+  const windMetric = view === 'wind' ? environmentWindMetric(samples) : 'headwind'
+  const scale = environmentChartScale(values, view, scoreModel, windMetric)
   const x = (elapsedS: number): number =>
     ENVIRONMENT_CHART_LEFT +
     Math.min(1, Math.max(0, elapsedS / elapsedTimeS)) *
       (ENVIRONMENT_CHART_RIGHT - ENVIRONMENT_CHART_LEFT)
   const y = (value: number): number => environmentChartY(value, scale)
-  const stepped = view === 'uv-index' || view === 'cloud-cover'
+  const stepped =
+    view === 'uv-index' || view === 'cloud-cover' || (view === 'wind' && windMetric === 'ambient')
   if (view === 'uv-index') {
     const segments: EnvironmentChartSeries[] = []
     for (let index = 1; index < samples.length; index += 1) {
@@ -5656,7 +5690,7 @@ export const environmentChartSeries = (
   let path = ''
   let previous: number | null = null
   for (const sample of samples) {
-    const value = environmentSampleValue(presentation, sample, view, scoreModel)
+    const value = environmentSampleValue(presentation, sample, view, scoreModel, windMetric)
     if (value == null || !Number.isFinite(value)) {
       if (path) series.push({ path, color: null })
       path = ''
@@ -5665,6 +5699,10 @@ export const environmentChartSeries = (
     }
     const px = x(sample.elapsedS).toFixed(3)
     const py = y(value).toFixed(3)
+    if (view === 'current-direction' && previous != null && Math.abs(value - previous) > 180) {
+      if (path) series.push({ path, color: null })
+      path = ''
+    }
     if (!path) path = `M${px},${py}`
     else path += stepped && previous != null ? `H${px}V${py}` : `L${px},${py}`
     previous = value
@@ -5676,6 +5714,8 @@ export const environmentChartSeries = (
 const environmentViewLabel = (view: EnvironmentChartView): string => {
   if (view === 'uv-index') return 'UV index'
   if (view === 'cloud-cover') return 'cloud cover'
+  if (view === 'current-speed') return 'current speed'
+  if (view === 'current-direction') return 'current direction'
   return view
 }
 
@@ -5684,12 +5724,14 @@ const environmentViewShortLabel = (view: EnvironmentChartView): string => {
   if (view === 'uv-index') return 'UVI'
   if (view === 'temperature') return 'temp.'
   if (view === 'wind') return 'wind'
+  if (view === 'current-speed') return 'current spd.'
+  if (view === 'current-direction') return 'current dir.'
   return 'cloud'
 }
 
 const environmentViewHasSamples = (
   presentation: TriathlonPresentation,
-  samples: readonly GardenEnvironmentSample[],
+  samples: readonly EnvironmentChartSample[],
   view: EnvironmentChartView,
 ): boolean => environmentChartValues(presentation, samples, view, null).length >= 2
 
@@ -5704,10 +5746,23 @@ export const environmentElapsedClock = (elapsedS: number): string => {
 
 export const environmentChartReadout = (
   presentation: TriathlonPresentation,
-  sample: GardenEnvironmentSample,
+  sample: EnvironmentChartSample,
   scoreModel: EnvironmentScoreModel | null,
+  view?: EnvironmentChartView,
 ): string => {
   const values = [environmentElapsedClock(sample.elapsedS)]
+  if (view === 'current-speed' || view === 'current-direction') {
+    const value =
+      view === 'current-speed' ? sample.surfaceCurrentSpeedMps : sample.surfaceCurrentDirectionDeg
+    values.push(
+      value == null
+        ? '—'
+        : view === 'current-speed'
+          ? `${value.toFixed(2)} m/s`
+          : `${value.toFixed(0)}° ${triText(presentation.locale, 'toward')}`,
+    )
+    return values.join(' · ')
+  }
   if (sample.cumulativeSed != null) {
     const scoreDoseSed =
       scoreModel?.doseClock === 'moving-telemetry'
@@ -5724,6 +5779,10 @@ export const environmentChartReadout = (
     values.push(formatTemperature(presentation, sample.ambientTemperatureC))
   if (sample.cloudCoverPct != null)
     values.push(`${Math.round(sample.cloudCoverPct)}% ${triText(presentation.locale, 'cloud')}`)
+  if (sample.windSpeedKph != null)
+    values.push(
+      `${triText(presentation.locale, 'ambient wind speed')} ${speedKph(presentation, sample.windSpeedKph)}`,
+    )
   if (sample.headwindKph != null)
     values.push(
       `${triText(presentation.locale, 'headwind')} ${formatSignedSpeed(presentation, sample.headwindKph)}`,
@@ -5748,12 +5807,15 @@ const environmentAxisLabel = (
   view: EnvironmentChartView,
   scoreModel: EnvironmentScoreModel | null,
   value: number,
+  windMetric: EnvironmentWindMetric,
 ): string => {
   if (view === 'cloud-cover') return `${Math.round(value)}%`
+  if (view === 'current-speed') return `${value.toFixed(2)} m/s`
+  if (view === 'current-direction') return `${Math.round(value)}°`
   if (view === 'uv-index') return value.toFixed(1)
   if (view === 'temperature') return `${Number(value.toFixed(1))}${temperatureUnit(presentation)}`
   if (view === 'wind')
-    return `${value > 0 ? '+' : ''}${Number(value.toFixed(1))} ${isImperial(presentation) ? 'mph' : 'km/h'}`
+    return `${windMetric === 'headwind' && value > 0 ? '+' : ''}${Number(value.toFixed(1))} ${isImperial(presentation) ? 'mph' : 'km/h'}`
   if (scoreModel != null) return `${Math.round(value)}`
   const locale = presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
   return `${value.toLocaleString(locale, { maximumFractionDigits: 2 })} SED`
@@ -5761,16 +5823,17 @@ const environmentAxisLabel = (
 
 const environmentAxisTicks = (
   presentation: TriathlonPresentation,
-  samples: readonly GardenEnvironmentSample[],
+  samples: readonly EnvironmentChartSample[],
   view: EnvironmentChartView,
   scoreModel: EnvironmentScoreModel | null,
   mode?: 'score' | 'sed',
 ): AxisYTick[] => {
   const values = environmentChartValues(presentation, samples, view, scoreModel)
   if (values.length < 2) return []
-  const scale = environmentChartScale(values, view, scoreModel)
+  const windMetric = view === 'wind' ? environmentWindMetric(samples) : 'headwind'
+  const scale = environmentChartScale(values, view, scoreModel, windMetric)
   return scale.ticks.map(value => ({
-    label: environmentAxisLabel(presentation, view, scoreModel, value),
+    label: environmentAxisLabel(presentation, view, scoreModel, value, windMetric),
     vbY: environmentChartY(value, scale),
     ...(mode
       ? {
@@ -5785,19 +5848,35 @@ const environmentAxisTicks = (
 
 const buildEnvironmentChart = <N>(
   f: TriNodeFactory<N>,
-  samples: readonly GardenEnvironmentSample[],
+  samples: readonly EnvironmentChartSample[],
   elapsedTimeS: number,
   view: EnvironmentChartView,
   scoreModel: EnvironmentScoreModel | null,
+  currentModel: { formulaId: string; formulaVersion: number } | null = null,
 ): N => {
   const chart = f.el('div', 'tri-environment-chart')
   const hasSamples = elapsedTimeS > 0 && environmentViewHasSamples(f.presentation, samples, view)
+  const windMetric = view === 'wind' ? environmentWindMetric(samples) : 'headwind'
   const svg = f.svg('svg', {
     class: 'tri-environment-plot',
     viewBox: '0 0 100 32',
     preserveAspectRatio: 'none',
     role: hasSamples ? 'slider' : 'img',
-    'aria-label': triText(f.presentation.locale, environmentViewLabel(view)),
+    'aria-label': triText(
+      f.presentation.locale,
+      view === 'wind' && windMetric === 'ambient'
+        ? 'ambient wind speed'
+        : environmentViewLabel(view),
+    ),
+    ...(view === 'wind' ? { 'data-environment-wind-metric': windMetric } : {}),
+    ...(hasSamples && currentModel
+      ? {
+          'data-analysis-source': 'provider-modeled',
+          'data-analysis-provider': 'noaa-loofs',
+          'data-analysis-formula': currentModel.formulaId,
+          'data-analysis-formula-version': currentModel.formulaVersion,
+        }
+      : {}),
     ...(hasSamples
       ? {
           tabindex: 0,
@@ -5805,6 +5884,16 @@ const buildEnvironmentChart = <N>(
           'aria-valuemax': Math.round(elapsedTimeS),
           'aria-valuenow': Math.round(elapsedTimeS),
           'data-environment-chart': view,
+          ...(view === 'current-speed' || view === 'current-direction'
+            ? {
+                'aria-valuetext': environmentChartReadout(
+                  f.presentation,
+                  samples.at(-1) ?? { elapsedS: elapsedTimeS },
+                  scoreModel,
+                  view,
+                ),
+              }
+            : {}),
         }
       : {}),
     'data-domain-start-elapsed-s': 0,
@@ -5828,7 +5917,7 @@ const buildEnvironmentChart = <N>(
     f.add(
       svg,
       f.svg('line', {
-        class: `tri-environment-gridline${view === 'wind' && hasSamples && tick.vbY === (ENVIRONMENT_CHART_TOP + ENVIRONMENT_CHART_BOTTOM) / 2 ? ' tri-environment-gridline--zero' : ''}`,
+        class: `tri-environment-gridline${view === 'wind' && windMetric === 'headwind' && hasSamples && tick.vbY === (ENVIRONMENT_CHART_TOP + ENVIRONMENT_CHART_BOTTOM) / 2 ? ' tri-environment-gridline--zero' : ''}`,
         x1: ENVIRONMENT_CHART_LEFT,
         x2: ENVIRONMENT_CHART_RIGHT,
         y1: tick.vbY,
@@ -5925,7 +6014,7 @@ const buildEnvironmentChart = <N>(
   return chart
 }
 
-type EnvironmentEvidenceSource = 'pelotan' | 'mywindsock' | 'garden-estimate'
+type EnvironmentEvidenceSource = 'pelotan' | 'mywindsock' | 'garden-estimate' | 'noaa-loofs'
 
 interface EnvironmentEvidenceValue {
   text: string
@@ -5948,7 +6037,7 @@ interface EnvironmentEvidenceGroup {
 
 const providerEnvironmentValue = (
   text: string,
-  source: Exclude<EnvironmentEvidenceSource, 'garden-estimate'>,
+  source: Exclude<EnvironmentEvidenceSource, 'garden-estimate' | 'noaa-loofs'>,
 ): EnvironmentEvidenceValue => ({ text, source })
 
 const gardenEnvironmentValue = (
@@ -5957,6 +6046,16 @@ const gardenEnvironmentValue = (
 ): EnvironmentEvidenceValue => ({
   text,
   source: 'garden-estimate',
+  formulaId: model.formulaId,
+  formulaVersion: model.formulaVersion,
+})
+
+const surfaceCurrentEnvironmentValue = (
+  text: string,
+  model: { formulaId: string; formulaVersion: number },
+): EnvironmentEvidenceValue => ({
+  text,
+  source: 'noaa-loofs',
   formulaId: model.formulaId,
   formulaVersion: model.formulaVersion,
 })
@@ -6015,7 +6114,9 @@ const environmentTable = <N>(
           ? triText(f.presentation.locale, 'Garden estimate')
           : row.value.source === 'pelotan'
             ? 'Pelotan'
-            : 'MyWindsock'
+            : row.value.source === 'mywindsock'
+              ? 'MyWindsock'
+              : 'NOAA LOOFS'
       const sourceAttrs: Record<string, string> =
         row.value.source === 'garden-estimate'
           ? {
@@ -6027,11 +6128,22 @@ const environmentTable = <N>(
               tabindex: '0',
               'aria-label': `${row.value.text}, ${triText(f.presentation.locale, 'estimate')}`,
             }
-          : {
-              'data-analysis-source': 'provider-native',
-              'data-analysis-provider': row.value.source,
-              'aria-label': `${row.value.text}, provider-native ${sourceLabel} report`,
-            }
+          : row.value.source === 'noaa-loofs'
+            ? {
+                'data-analysis-source': 'provider-modeled',
+                'data-analysis-provider': 'noaa-loofs',
+                'data-analysis-formula': row.value.formulaId ?? 'garden-surface-current-v1',
+                'data-analysis-formula-version': String(row.value.formulaVersion ?? 1),
+                'data-gloss': '',
+                'data-gloss-def': triText(f.presentation.locale, 'Surface current speed detail'),
+                tabindex: '0',
+                'aria-label': `${row.value.text}, ${triText(f.presentation.locale, 'provider-modeled')} ${sourceLabel}. ${triText(f.presentation.locale, 'Surface current speed detail')}`,
+              }
+            : {
+                'data-analysis-source': 'provider-native',
+                'data-analysis-provider': row.value.source,
+                'aria-label': `${row.value.text}, provider-native ${sourceLabel} report`,
+              }
       f.add(
         rendered,
         labelCell,
@@ -6084,6 +6196,8 @@ export const buildEnvironmentAnalysis = <N>(
   const pelotan = d.analyses.native.pelotan
   const myWindsock = d.analyses.native.myWindsock
   const environment = d.analyses.derived.environment
+  const openWaterSwim = d.sport === 'swim' && d.swimLocation === 'openWater'
+  const surfaceCurrent = openWaterSwim ? environment?.surfaceCurrent : null
   const uvScore = d.analyses.derived.uvScore
   const wind = d.analyses.derived.apparentWind
   if (!pelotan && !myWindsock && !environment && !wind) return null
@@ -6187,39 +6301,76 @@ export const buildEnvironmentAnalysis = <N>(
             )
           : null,
     },
-    {
-      label: 'CdA',
-      detail: 'CdA detail',
-      value:
-        myWindsock?.cdaM2 != null
-          ? providerEnvironmentValue(myWindsock.cdaM2.toFixed(3), 'mywindsock')
-          : null,
-    },
-    {
-      label: 'Feels Like Elevation',
-      value:
-        myWindsock?.feelsLikeElevationM != null
-          ? providerEnvironmentValue(
-              formatAltitude(f.presentation, myWindsock.feelsLikeElevationM),
-              'mywindsock',
-            )
-          : null,
-    },
-    {
-      label: 'headwind share and range',
-      value:
-        myWindsock?.headwindPct != null
-          ? providerEnvironmentValue(
-              `${myWindsock.headwindPct.toFixed(1)}%${headwindRange}`,
-              'mywindsock',
-            )
-          : wind
-            ? gardenEnvironmentValue(
-                `${wind.summary.headwindSharePct.toFixed(1)}% · ${triText(f.presentation.locale, 'average')} ${formatSignedSpeed(f.presentation, wind.summary.averageHeadwindKph)}`,
-                wind,
+    openWaterSwim
+      ? {
+          label: 'surface current speed',
+          detail: 'Surface current speed detail',
+          value:
+            surfaceCurrent?.summary.averageSpeedMps != null &&
+            surfaceCurrent.summary.coveragePct > 0
+              ? surfaceCurrentEnvironmentValue(
+                  `${surfaceCurrent.summary.averageSpeedMps.toFixed(2)} m/s`,
+                  surfaceCurrent,
+                )
+              : null,
+        }
+      : {
+          label: 'CdA',
+          detail: 'CdA detail',
+          value:
+            myWindsock?.cdaM2 != null
+              ? providerEnvironmentValue(myWindsock.cdaM2.toFixed(3), 'mywindsock')
+              : null,
+        },
+    openWaterSwim
+      ? {
+          label: 'surface current direction',
+          detail: 'Surface current direction detail',
+          value:
+            surfaceCurrent?.summary.averageDirectionDeg != null &&
+            surfaceCurrent.summary.coveragePct > 0
+              ? surfaceCurrentEnvironmentValue(
+                  `${surfaceCurrent.summary.averageDirectionDeg.toFixed(0)}° ${triText(f.presentation.locale, 'toward')}`,
+                  surfaceCurrent,
+                )
+              : null,
+        }
+      : {
+          label: 'Feels Like Elevation',
+          value:
+            myWindsock?.feelsLikeElevationM != null
+              ? providerEnvironmentValue(
+                  formatAltitude(f.presentation, myWindsock.feelsLikeElevationM),
+                  'mywindsock',
+                )
+              : null,
+        },
+    openWaterSwim
+      ? {
+          label: 'surface current coverage',
+          detail: 'Surface current coverage detail',
+          value: surfaceCurrent
+            ? surfaceCurrentEnvironmentValue(
+                `${surfaceCurrent.summary.coveragePct.toFixed(1)}% · ${dlabel(surfaceCurrent.summary.coveredDurationS)} / ${dlabel(surfaceCurrent.summary.elapsedDurationS)}`,
+                surfaceCurrent,
               )
             : null,
-    },
+        }
+      : {
+          label: 'headwind share and range',
+          value:
+            myWindsock?.headwindPct != null
+              ? providerEnvironmentValue(
+                  `${myWindsock.headwindPct.toFixed(1)}%${headwindRange}`,
+                  'mywindsock',
+                )
+              : wind
+                ? gardenEnvironmentValue(
+                    `${wind.summary.headwindSharePct.toFixed(1)}% · ${triText(f.presentation.locale, 'average')} ${formatSignedSpeed(f.presentation, wind.summary.averageHeadwindKph)}`,
+                    wind,
+                  )
+                : null,
+        },
     {
       label: 'longest headwind',
       value:
@@ -6228,6 +6379,20 @@ export const buildEnvironmentAnalysis = <N>(
           : wind
             ? gardenEnvironmentValue(dlabel(wind.summary.longestHeadwindS), wind)
             : null,
+    },
+    {
+      label: 'ambient wind speed',
+      detail: 'Ambient wind speed detail',
+      value:
+        !(d.sport === 'swim' && d.swimLocation === 'pool') &&
+        environment?.summary.averageWindSpeedKph != null &&
+        Number.isFinite(environment.summary.averageWindSpeedKph) &&
+        environment.summary.averageWindSpeedKph >= 0
+          ? gardenEnvironmentValue(
+              speedKph(f.presentation, environment.summary.averageWindSpeedKph),
+              environment,
+            )
+          : null,
     },
     {
       label: 'air speed',
@@ -6277,16 +6442,30 @@ export const buildEnvironmentAnalysis = <N>(
         : null,
     },
   ]
-  const evidenceGroups: EnvironmentEvidenceGroup[] = []
-  if (pelotan || uvScore || environment) evidenceGroups.push({ label: 'UV exposure', rows: uvRows })
-  if (myWindsock || wind) evidenceGroups.push({ label: 'wind and aero', rows: windRows })
-  if (evidenceGroups.length > 0) f.add(wrap, environmentTable(f, evidenceGroups))
-  const environmentSamples = environment?.samples ?? []
+  const evidenceGroups: EnvironmentEvidenceGroup[] = [
+    { label: 'UV exposure', rows: uvRows },
+    { label: 'wind and aero', rows: windRows },
+  ]
+  f.add(wrap, environmentTable(f, evidenceGroups))
+  const environmentSamples =
+    d.sport === 'swim' && d.swimLocation === 'pool'
+      ? (environment?.samples ?? []).map(sample => ({
+          ...sample,
+          windSpeedKph: null,
+          headwindKph: null,
+          crosswindKph: null,
+          apparentAirSpeedKph: null,
+          yawDeg: null,
+        }))
+      : (environment?.samples ?? [])
   const environmentElapsedS = environment?.summary.elapsedDurationS ?? d.elapsedTimeS
-  const environmentViews = ENVIRONMENT_CHART_VIEWS
+  const currentSamples = surfaceCurrentChartSamples(surfaceCurrent?.samples ?? [])
+  const environmentViews = openWaterSwim ? ALL_ENVIRONMENT_CHART_VIEWS : ENVIRONMENT_CHART_VIEWS
+  const samplesForView = (view: EnvironmentChartView): readonly EnvironmentChartSample[] =>
+    ENVIRONMENT_CURRENT_CHART_VIEWS.includes(view) ? currentSamples : environmentSamples
   const selected =
     environmentViews.find(view =>
-      environmentViewHasSamples(f.presentation, environmentSamples, view),
+      environmentViewHasSamples(f.presentation, samplesForView(view), view),
     ) ?? 'cumulative'
   const id = `tri-environment-${d.id}`
   const scoreModel: EnvironmentScoreModel | null = uvScore
@@ -6296,6 +6475,7 @@ export const buildEnvironmentAnalysis = <N>(
     'data-environment-tabs': '',
     'data-environment-view': selected,
     'data-environment-series': JSON.stringify(environmentSamples),
+    ...(openWaterSwim ? { 'data-environment-current-series': JSON.stringify(currentSamples) } : {}),
     'data-environment-elapsed': `${environmentElapsedS}`,
     ...(scoreModel == null
       ? {}
@@ -6363,11 +6543,13 @@ export const buildEnvironmentAnalysis = <N>(
     )
     f.add(controls, mode)
   }
-  const readoutSample = environmentSamples.at(-1)
+  const readoutSample = samplesForView(selected).at(-1)
   const readout = f.el(
     'output',
     'tri-environment-readout',
-    readoutSample ? environmentChartReadout(f.presentation, readoutSample, scoreModel) : '—',
+    readoutSample
+      ? environmentChartReadout(f.presentation, readoutSample, scoreModel, selected)
+      : '—',
     { 'aria-live': 'polite', 'data-environment-readout': '' },
   )
   const stage = f.el('div', 'tri-environment-stage')
@@ -6385,10 +6567,11 @@ export const buildEnvironmentAnalysis = <N>(
       panel,
       buildEnvironmentChart(
         f,
-        environmentSamples,
+        samplesForView(view),
         environmentElapsedS,
         view,
         view === 'cumulative' ? scoreModel : null,
+        ENVIRONMENT_CURRENT_CHART_VIEWS.includes(view) ? (surfaceCurrent ?? null) : null,
       ),
     )
     f.add(stage, panel)
@@ -6418,6 +6601,15 @@ export const buildEnvironmentAnalysis = <N>(
         'Pelotan',
         'https://pelotan.cc/pages/uv-load',
         'Pelotan UV Load™',
+      ),
+    )
+  if (surfaceCurrent)
+    f.add(
+      attribution,
+      environmentLink(
+        f,
+        'NOAA LOOFS',
+        'https://tidesandcurrents.noaa.gov/ofs/loofs/loofs_info.html',
       ),
     )
   if (environment) {
