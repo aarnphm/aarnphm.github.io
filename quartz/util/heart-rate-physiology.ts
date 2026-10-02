@@ -30,7 +30,6 @@ export function applyHeartRatePhysiology(
   maxHeartRateBpm: number | null,
 ): void {
   if (maxHeartRateBpm == null) return
-  if (detail.deviceWatts && detail.route.some(point => point.w > 0)) return
   const samples =
     detail.sport === 'walk' && detail.heartRateTrace.length >= 2
       ? detail.heartRateTrace
@@ -123,7 +122,15 @@ export function estimateHeartRatePhysiology(
     })
   }
   const span = samples[samples.length - 1].elapsedS - samples[0].elapsedS
-  if (baselineHeartRateBpm == null || observedSeconds < span * 0.8) return null
+  if (baselineHeartRateBpm == null) return null
+  if (observedSeconds < span * 0.8) {
+    // Condition uses covered windows; stamina requires coverage across the session.
+    for (const point of points) {
+      point.stamina = null
+      point.potentialStamina = null
+    }
+    if (points.filter(point => point.performanceCondition != null).length < 2) return null
+  }
   return {
     source: 'garden-estimate',
     method: HEART_RATE_PHYSIOLOGY_METHOD,

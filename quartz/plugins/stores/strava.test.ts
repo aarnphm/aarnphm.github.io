@@ -4664,8 +4664,8 @@ test('projects walking metabolic power with same-day weight while preserving pro
   assert.equal(native.avgWatts, 123)
 })
 
-test('projects HR session estimates into walking and stationary recovery payloads', () => {
-  for (const sportType of ['Walk', 'Yoga', 'WeightTraining']) {
+test('projects partial HR condition into all activity kinds while retaining telemetry gaps', () => {
+  for (const sportType of ['Walk', 'Run', 'Swim', 'Yoga', 'WeightTraining', 'Workout', 'Ride']) {
     const time = Array.from({ length: 126 }, (_, index) => index * 5)
     const cache: StravaRawCache = {
       auth: { refreshToken: '', obtainedAt: 0 },
@@ -4675,7 +4675,8 @@ test('projects HR session estimates into walking and stationary recovery payload
       activities: {
         '101': ride({
           sportType,
-          deviceWatts: false,
+          ...(sportType === 'Workout' ? { name: 'Physiotherapy' } : {}),
+          deviceWatts: sportType === 'Ride',
           averageWatts: undefined,
           distance: 0,
           movingTime: 600,
@@ -4685,10 +4686,13 @@ test('projects HR session estimates into walking and stationary recovery payload
       streams: {
         '101': {
           time,
-          latlng: [],
+          latlng: sportType === 'Ride' ? time.map(() => [43.65, -79.4]) : [],
           altitude: [],
           distance: time.map(() => 0),
-          heartrate: time.map(seconds => (seconds < 60 ? 100 : 120)),
+          heartrate: time.map(seconds =>
+            seconds > 100 && seconds < 500 ? 0 : seconds < 60 ? 100 : 120,
+          ),
+          ...(sportType === 'Ride' ? { watts: time.map(() => 150) } : {}),
         },
       },
     }
@@ -4710,6 +4714,12 @@ test('projects HR session estimates into walking and stationary recovery payload
     assert.equal(activity.performanceConditionTrace, null)
     assert.equal(activity.heartRatePhysiology.points.at(-1)?.elapsedS, 600)
     assert.ok((activity.heartRatePhysiology.points.at(-1)?.performanceCondition ?? 0) < 0)
+    assert.ok(activity.heartRatePhysiology.points.every(point => point.stamina === null))
+    assert.ok(
+      activity.heartRatePhysiology.points
+        .filter(point => point.elapsedS > 100 && point.elapsedS <= 500)
+        .every(point => point.performanceCondition === null),
+    )
   }
 })
 
