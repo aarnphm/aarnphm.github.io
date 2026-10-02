@@ -9,14 +9,9 @@ export interface ParsedSidenote {
   content: string
 }
 
-export type TextSegment = {
-  type: "text"
-  value: string
-}
-
-export type SidenoteSegment = {
-  type: "sidenote"
+export interface SidenoteMatch {
+  from: number
+  to: number
+  contentFrom: number
   data: ParsedSidenote
 }
-
-export type Segment = TextSegment | SidenoteSegment

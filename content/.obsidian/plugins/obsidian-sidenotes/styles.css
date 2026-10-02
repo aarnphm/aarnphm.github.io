@@ -1,62 +1,130 @@
 .sidenote {
+  --garden-plugin-line: color-mix(in srgb, var(--text-faint) 55%, transparent);
+  --garden-plugin-surface: color-mix(
+    in srgb,
+    var(--background-primary) 86%,
+    var(--background-secondary)
+  );
+  --garden-plugin-selected: color-mix(
+    in srgb,
+    var(--interactive-accent) 18%,
+    var(--garden-plugin-surface)
+  );
   position: relative;
   display: inline;
+  color: var(--text-normal);
 }
 
-.sidenote-label {
+button.sidenote-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  height: auto;
+  padding: 0.125rem 0.35rem;
+  border: 1px solid var(--garden-plugin-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-monospace);
   font-size: 0.8em;
+  font-weight: normal;
+  line-height: 1.3;
   color: var(--text-accent);
-  border-bottom: 1px dashed var(--text-accent);
-  padding: 0.05rem 0.2rem;
-  line-height: 1.2;
+  vertical-align: baseline;
   cursor: pointer;
-  user-select: none;
+  touch-action: manipulation;
 }
 
-.sidenote-label[data-auto] {
-  opacity: 0.7;
+button.sidenote-label[aria-expanded='true'] {
+  border-color: var(--text-faint);
+  background: var(--garden-plugin-selected);
+  color: var(--text-normal);
+}
+
+.sidenote :is(button, a):focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
 }
 
 .sidenote-content {
-  display: none;
-  max-width: min(26rem, 70vw);
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  background: var(--background-secondary);
-  border-left: 2px solid var(--text-accent);
-  box-shadow: var(--shadow-s, 0 2px 6px rgba(0, 0, 0, 0.08));
-  font-size: 0.95em;
-  line-height: 1.5;
-  z-index: 10;
-}
-
-.sidenote.open .sidenote-content {
   display: block;
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
+  margin-block: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--garden-plugin-line);
+  border-radius: 0;
+  background: var(--garden-plugin-surface);
+  font-family: var(--font-text);
+  font-size: 0.9em;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
-.sidenote-content.sidenote-right {
-  margin-left: 0.35rem;
+.sidenote[hidden],
+.sidenote-content[hidden] {
+  display: none;
+}
+
+.sidenote[data-placement='margin'] {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+.sidenote[data-placement='margin'] > .sidenote-content {
+  position: absolute;
+  max-width: none;
+  max-height: min(24rem, 60vh);
+  margin: 0;
+  overflow: auto;
+  z-index: 5;
 }
 
 .sidenote-content.sidenote-left {
-  margin-right: 0.35rem;
-  border-left: none;
-  border-right: 2px solid var(--text-accent);
+  margin-inline-end: auto;
+}
+
+.sidenote-content.sidenote-right {
+  margin-inline-start: auto;
 }
 
 .sidenote-content.sidenote-inline {
-  background: color-mix(in srgb, var(--background-secondary) 85%, var(--background-primary));
-  border: 1px dashed var(--background-modifier-border);
-  padding: 0.35rem 0.6rem;
-  box-shadow: none;
-  font-size: 0.9em;
+  width: 100%;
   color: var(--text-muted);
 }
 
+.sidenote-content > :first-child {
+  margin-block-start: 0;
+}
+
+.sidenote-content > :last-child {
+  margin-block-end: 0;
+}
+
 .sidenote-internal {
-  margin-top: 0.35rem;
-  padding-top: 0.35rem;
-  border-top: 1px solid var(--background-modifier-border);
+  display: block;
+  margin-block-start: 0.5rem;
+  padding-block-start: 0.5rem;
+  border-top: 1px solid var(--garden-plugin-line);
+  font-family: var(--font-monospace);
   font-size: 0.85em;
   color: var(--text-muted);
+}
+
+.sidenote-internal p {
+  margin: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button.sidenote-label:hover {
+    border-color: var(--text-faint);
+    background: var(--garden-plugin-surface);
+  }
+}
+
+@media (pointer: coarse) {
+  button.sidenote-label {
+    min-height: 44px;
+  }
 }
