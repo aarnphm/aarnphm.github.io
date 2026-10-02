@@ -231,14 +231,18 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
   const [tool, setTool] = useState<'select' | 'region'>('select')
   const [outline, setOutline] = useState<OutlineEntry[]>([])
   const [labels, setLabels] = useState<string[] | null>(null)
-  const [metaTitle, setMetaTitle] = useState<string | null>(null)
+  const [extractedTitle, setExtractedTitle] = useState<string | null>(null)
   const [orphans, setOrphans] = useState<PdfMark[]>([])
   const [pageInput, setPageInput] = useState('1')
 
   useEffect(() => book.subscribe(() => setBookVersion(book.version)), [book])
 
   const label = useCallback((number: number) => labels?.[number - 1] ?? String(number), [labels])
-  const title = metaTitle ?? record.title
+  const title = extractedTitle ?? record.title
+
+  useEffect(() => {
+    if (!signal.aborted) document.title = title
+  }, [title, signal])
 
   // Viewer lifecycle.
   useEffect(() => {
@@ -297,7 +301,7 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
         }
         void viewer.outline().then(nodes => !signal.aborted && setOutline(flattenOutline(nodes)))
         void viewer.pageLabels().then(value => !signal.aborted && setLabels(value))
-        void viewer.metadataTitle().then(value => !signal.aborted && setMetaTitle(value))
+        void viewer.documentTitle().then(value => !signal.aborted && setExtractedTitle(value))
       })
       .catch(error => {
         if (signal.aborted) return

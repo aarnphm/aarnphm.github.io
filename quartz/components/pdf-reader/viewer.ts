@@ -24,8 +24,13 @@ interface PdfRenderTask {
   cancel(): void
 }
 
+interface PdfTextItem {
+  str: string
+  transform: number[]
+}
+
 interface PdfTextContent {
-  items: unknown[]
+  items: PdfTextItem[]
   styles: Record<string, unknown>
 }
 
@@ -63,7 +68,10 @@ interface PdfDocumentProxy {
   getDestination(id: string): Promise<unknown[] | null>
   getPageIndex(ref: unknown): Promise<number>
   getPageLabels(): Promise<string[] | null>
-  getMetadata(): Promise<{ info?: Record<string, unknown> }>
+  getMetadata(): Promise<{
+    info?: Record<string, unknown>
+    metadata?: { get(name: string): unknown } | null
+  }>
 }
 
 interface PdfLoadingTask {
@@ -152,6 +160,59 @@ function idle(callback: () => void) {
 
 function clampZoom(value: number): number {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value))
+}
+
+function cleanTitle(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const title = value.replace(/\s+/g, ' ').trim()
+  if (title.length < 4 || title.length > 200 || /\.(pdf|docx?|tex|dvi)$/i.test(title)) return null
+  if (/^(untitled|microsoft word|title)\b/i.test(title)) return null
+  return title
+}
+
+function firstPageTitle(content: PdfTextContent, viewport: PdfViewport): string | null {
+  const text = content.items
+    .filter(item => item.str.trim() && item.transform.length === 6)
+    .map(item => {
+      const [left, top] = viewport.convertToViewportPoint(item.transform[4], item.transform[5])
+      const [endLeft, endTop] = viewport.convertToViewportPoint(
+        item.transform[4] + item.transform[0],
+        item.transform[5] + item.transform[1],
+      )
+      return {
+        text: item.str.trim(),
+        left,
+        top,
+        size: Math.hypot(item.transform[2], item.transform[3]),
+        horizontal: Math.abs(endTop - top) <= Math.abs(endLeft - left) * 0.1,
+      }
+    })
+    .filter(item => item.horizontal && Number.isFinite(item.size) && item.size > 0)
+  const sizes = text.map(item => item.size).sort((a, b) => a - b)
+  const bodySize = sizes[Math.floor(sizes.length / 2)]
+  const heading = text.filter(item => item.top > 0 && item.top < viewport.height / 2)
+  const largest = Math.max(0, ...heading.map(item => item.size))
+  // Plain body text is too ambiguous; keep the named document when no heading stands out.
+  if (!bodySize || largest < bodySize * 1.15) return null
+  const prominent = heading
+    .filter(item => item.size >= largest * 0.9)
+    .sort((a, b) => (Math.abs(a.top - b.top) < largest / 4 ? a.left - b.left : a.top - b.top))
+  const first = prominent[0]
+  if (!first) return null
+  const parts = [first.text]
+  let bottom = first.top
+  for (const item of prominent.slice(1)) {
+    // Wrapped title lines stay close; the gap before authors starts a separate block.
+    if (item.top - bottom > largest * 1.6) break
+    parts.push(item.text)
+    bottom = Math.max(bottom, item.top)
+  }
+  const title = cleanTitle(parts.join(' '))
+  return title &&
+    title.split(/\s+/).length > 1 &&
+    !/https?:\/\/|^(abstract|contents)\b/i.test(title)
+    ? title
+    : null
 }
 
 export class PdfViewer {
@@ -686,13 +747,13 @@ export class PdfViewer {
     return labels.some((label, index) => label !== String(index + 1)) ? labels : null
   }
 
-  async metadataTitle(): Promise<string | null> {
+  async documentTitle(): Promise<string | null> {
     const metadata = await this.document?.getMetadata().catch(() => null)
-    const title = metadata?.info?.Title
-    if (typeof title !== 'string') return null
-    const clean = title.replace(/\s+/g, ' ').trim()
-    if (clean.length < 4 || clean.length > 200 || /\.(pdf|docx?|tex|dvi)$/i.test(clean)) return null
-    if (/^(untitled|microsoft word|title)\b/i.test(clean)) return null
-    return clean
+    const title =
+      cleanTitle(metadata?.info?.Title) ?? cleanTitle(metadata?.metadata?.get('dc:title'))
+    if (title) return title
+    const first = this.pages[0]
+    const content = await first?.proxy?.getTextContent().catch(() => null)
+    return content && first.base ? firstPageTitle(content, first.base) : null
   }
 }
