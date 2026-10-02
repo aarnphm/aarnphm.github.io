@@ -366,6 +366,8 @@ export const moreStatRows = (
   if (trainingStressScore != null) rows.push(['TSS', `${trainingStressScore}`])
   if (d.avgWatts != null) rows.push([d.deviceWatts ? 'avg power' : 'est power', `${d.avgWatts} W`])
   else if (showRunPower) rows.push(['avg power', '—'])
+  if (d.sport === 'walk' && !d.deviceWatts && d.walkPower)
+    rows.push(['walking power', `${Math.round(d.walkPower.averageWatts)} W · estimated`])
   if (d.deviceWatts && d.maxWatts != null) rows.push(['max power', `${d.maxWatts} W`])
   else if (showRunPower) rows.push(['max power', '—'])
   if (d.kilojoules != null) rows.push(['energy', `${d.kilojoules} kJ`])
@@ -1503,6 +1505,43 @@ export const buildTrace = <N>(
   )
 
 const HEART_RATE_TRACE_MIN_BPM = 80
+
+export const activityWalkPowerPoints = (d: StravaActivityDetail) =>
+  (d.walkPower?.points ?? []).map(point => ({
+    ...point,
+    d: activityTraceUsesElapsedAxis(d) ? point.elapsedS : point.distanceKm,
+  }))
+
+export const buildWalkPowerTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+): N | null => {
+  const estimate = d.walkPower
+  if (d.sport !== 'walk' || d.deviceWatts || !estimate) return null
+  const points = activityWalkPowerPoints(d)
+  const source = f.el('span', 'tri-elev-range', triText(f.presentation.locale, 'calculated'), {
+    'data-gloss': '',
+    'data-gloss-def': `Minetti minimum net metabolic demand above rest, from ${estimate.inputSource === 'strava' ? 'Strava' : 'Garmin'} speed and slope (${estimate.windowSeconds} s smoothing) and Garmin weight ${estimate.weight.kg} kg (${estimate.weight.date}). Experimental estimate, without individual gait, surface, or pack-load calibration. These watts describe walking energy demand and cannot be compared with cycling power-meter watts. Average includes recorded stops and excludes missing intervals.`,
+    tabindex: '0',
+  })
+  return buildTraceSeries(
+    f,
+    d,
+    points,
+    point => point.watts,
+    'walking power',
+    () => `${Math.round(estimate.averageWatts)} W avg`,
+    value => `${Math.round(value)} W`,
+    undefined,
+    d.route.length >= 2 ? selection : undefined,
+    graphDomain,
+    undefined,
+    undefined,
+    { wrapAttrs: { 'data-walking-power-source': 'garden-estimate' }, capExtra: [source] },
+  )
+}
 
 export const activityCyclingIntensityPoints = (d: StravaActivityDetail) =>
   (d.cyclingIntensityTrace?.points ?? []).map(point => ({
@@ -9452,6 +9491,8 @@ export const buildActivity = <N>(
         ),
       )
     if (d.sport === 'walk') {
+      const walkPower = buildWalkPowerTrace(f, d, analysisSelection)
+      if (walkPower) activityGraphs.push(walkPower)
       const pace = buildPaceTrace(f, d, analysisSelection)
       if (pace) activityGraphs.push(pace)
     }

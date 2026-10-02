@@ -73,6 +73,7 @@ import { localDateTimeUtcMs, localIsoDay } from '../../util/local-date'
 import { latestProviderSync } from '../../util/provider-sync'
 import { runBestEfforts } from '../../util/run-best-efforts'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
+import { buildWalkPowerEstimate, type WalkPowerEstimate } from '../../util/walk-power'
 import {
   CRITICAL_POWER_DURATIONS_S,
   fitCriticalPower,
@@ -706,6 +707,7 @@ export interface StravaActivityDetail {
   staminaTrace: ActivityStaminaTrace | null
   performanceConditionTrace: ActivityPerformanceConditionTrace | null
   heartRatePhysiology?: HeartRatePhysiology | null
+  walkPower?: WalkPowerEstimate | null
   calculatedIntensityFactor: CalculatedIntensityFactor | null
   calculatedExerciseLoad: CalculatedExerciseLoad | null
   anaerobicPowerEstimate: AnaerobicPowerEstimate | null
@@ -3046,7 +3048,7 @@ function nativeThermalTimeline(samples: ActivityMetricSamples): number[] {
   return [...elapsed].sort((left, right) => left - right)
 }
 
-function projectRouteLessHeartRateTrace(
+function projectHeartRateTrace(
   sport: ActivityKind,
   streams: StravaStreams | GarminStreams | undefined,
   heartRate: ActivityHeartRate,
@@ -3065,8 +3067,9 @@ function projectRouteLessHeartRateTrace(
     previousTime = elapsedS
   }
   if (time[time.length - 1] <= time[0]) return []
-  const swimAlignment = sport === 'swim' ? timedStreamAlignment(streams) : null
-  if (sport === 'swim' && !swimAlignment) return []
+  const distanceAlignment =
+    sport === 'swim' || sport === 'walk' ? timedStreamAlignment(streams) : null
+  if (sport === 'swim' && !distanceAlignment) return []
   const available = values.map(value => Number.isFinite(value) && value > 0)
   const hasThermal =
     metricSamples.heatStrainIndex.some(sample => sample.value != null) ||
@@ -3083,7 +3086,7 @@ function projectRouteLessHeartRateTrace(
   return sampleIndicesWithRequired(0, values.length - 1, ROUTE_POINTS, required).map(index => {
     const elapsedS = time[index]
     return {
-      distanceKm: swimAlignment ? round(swimAlignment.distance[index] / 1_000, 3) : 0,
+      distanceKm: distanceAlignment ? round(distanceAlignment.distance[index] / 1_000, 3) : 0,
       elapsedS: round(elapsedS, 3),
       heartRate: available[index] ? Math.round(values[index]) : null,
       ...nativeThermalAt(metricSamples, elapsedS),
@@ -3689,6 +3692,31 @@ function projectDetail(
   const lapHeartRateStreams = analysis.ranges.some(range => range.heartRateChange)
     ? stravaStreams
     : undefined
+  // Walk physiology needs the recorded session timeline, including privacy-trimmed route sections.
+  const walkHeartRateStreams =
+    sport === 'walk' &&
+    stravaStreams?.time &&
+    stravaStreams.time.length >= 2 &&
+    stravaStreams.heartrate?.length === stravaStreams.time.length &&
+    stravaStreams.heartrate.some(value => value > 0)
+      ? stravaStreams
+      : undefined
+  const heartRateTraceStreams = walkHeartRateStreams ?? lapHeartRateStreams
+  const estimateWalkPower = (
+    input: StravaStreams | GarminStreams | undefined,
+    inputSource: WalkPowerEstimate['inputSource'],
+  ): WalkPowerEstimate | null =>
+    sport === 'walk' && !a.deviceWatts && garmin?.avgPower == null && weight && input?.time
+      ? buildWalkPowerEstimate({
+          inputSource,
+          weight: { ...weight, source: 'garmin' },
+          streams: { time: input.time, distance: input.distance, altitude: input.altitude },
+          elapsedTimeS: a.elapsedTime > 0 ? a.elapsedTime : a.movingTime,
+        })
+      : null
+  const walkPower =
+    estimateWalkPower(stravaStreams, 'strava') ??
+    (streams !== stravaStreams ? estimateWalkPower(streams, 'garmin') : null)
   let minAlt = 0
   let maxAlt = 0
   let ascentM = 0
@@ -3942,14 +3970,15 @@ function projectDetail(
     cyclingDynamics,
     runWalk,
     route,
+    walkPower,
     heartRateTrace:
-      route.length >= 2
+      route.length >= 2 && sport !== 'walk'
         ? []
-        : projectRouteLessHeartRateTrace(
+        : projectHeartRateTrace(
             sport,
-            lapHeartRateStreams ?? streams,
-            lapHeartRateStreams
-              ? { ...heartRate, stream: lapHeartRateStreams.heartrate ?? [] }
+            heartRateTraceStreams ?? streams,
+            heartRateTraceStreams
+              ? { ...heartRate, stream: heartRateTraceStreams.heartrate ?? [] }
               : heartRate,
             metricSamples,
             analysis.ranges.flatMap(range => [range.startElapsedS, range.endElapsedS]),
