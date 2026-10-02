@@ -22,10 +22,12 @@ import {
 } from './component-resources/style-assets'
 import {
   handleGenericWorkerChange,
+  isSpeechRuntimeChange,
   removeSemanticWorkerAsset,
   writeCollaborativeCommentsAssets,
   writeGenericWorkerAssets,
   writeSemanticWorkerAssets,
+  writeSpeechRuntimeAssets,
 } from './component-resources/worker-assets'
 import { writeXsltPolyfillAsset } from './component-resources/xslt-polyfill-assets'
 
@@ -46,12 +48,14 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         notebookRuntimeFiles,
         collaborativeCommentsFiles,
         semanticWorkerFiles,
+        speechRuntimeFiles,
         emojiFiles,
         xsltPolyfillFile,
       ] = await Promise.all([
         writeNotebookRuntimeAssets(ctx),
         writeCollaborativeCommentsAssets(ctx),
         writeSemanticWorkerAssets(ctx),
+        writeSpeechRuntimeAssets(ctx),
         writeEmojiAssets(ctx),
         writeXsltPolyfillAsset(ctx),
       ])
@@ -69,6 +73,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       yield* yieldFiles(notebookRuntimeFiles)
       yield* yieldFiles(collaborativeCommentsFiles)
       yield* yieldFiles(semanticWorkerFiles)
+      yield* yieldFiles(speechRuntimeFiles)
       yield* yieldFiles(emojiFiles)
       yield xsltPolyfillFile
       yield writeAssetManifest(ctx)
@@ -118,6 +123,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         await removeSemanticWorkerAsset(ctx)
       } else if (changes.semanticWorker) {
         yield* yieldFiles(await writeSemanticWorkerAssets(ctx))
+      }
+
+      if (changeEvents.some(isSpeechRuntimeChange)) {
+        yield* yieldFiles(await writeSpeechRuntimeAssets(ctx))
       }
 
       if (changes.emoji) {

@@ -84,7 +84,11 @@ export default ((userOpts?: Options) => {
     presorted,
   }: Props) => {
     const sorter = sort ?? byDateAndAlphabetical(cfg)
-    let list = presorted ? allFiles : [...allFiles].sort(sorter)
+    const sorted = presorted ? allFiles : [...allFiles].sort(sorter)
+    let list = [
+      ...sorted.filter(page => page.frontmatter?.tags?.includes('folder')),
+      ...sorted.filter(page => !page.frontmatter?.tags?.includes('folder')),
+    ]
     if (limit) {
       list = list.slice(0, limit)
     }
@@ -111,6 +115,10 @@ export default ((userOpts?: Options) => {
                 data-tags={tags.join(',')}
               >
                 <div class="note-grid">
+                  <div class="desc">
+                    {title}
+                    {tags.includes('folder') && <span>/</span>}
+                  </div>
                   {page.dates ? (
                     <div class="meta">
                       <DateComponent date={getDate(cfg, page)!} locale={cfg.locale} />
@@ -120,10 +128,6 @@ export default ((userOpts?: Options) => {
                       <DateComponent date={date} locale={cfg.locale} />
                     </div>
                   )}
-                  <div class="desc">
-                    {title}
-                    {tags.includes('folder') && <span>/</span>}
-                  </div>
                   {hiTags.length > 0 ? (
                     <menu class="tag-highlights">
                       {hiTags.map(el => (

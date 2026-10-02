@@ -1,4 +1,5 @@
 import { createHash } from 'crypto'
+import { stripSpeechMarkup } from '../extensions/micromark-extension-speech/source'
 
 export type CardKind = 'qa' | 'cloze'
 
@@ -64,7 +65,7 @@ export function hashCard(canonical: string): string {
 }
 
 function normalize(text: string): string {
-  return text.trim().replace(/\s+/g, ' ')
+  return stripSpeechMarkup(text).trim().replace(/\s+/g, ' ')
 }
 
 function stripFrontmatter(source: string): { body: string; offset: number } {

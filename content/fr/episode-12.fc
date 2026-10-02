@@ -7,7 +7,7 @@ tags:
 ---
 
 Q: In the printemps bilan, what does a `question fermée` let the other person answer?
-A: `Oui` or `non`, a yes/no answer.
+A: {{`Oui`}} or {{`non`}}, a yes/no answer.
 N: [[fr/episode-12#exercice-3--les-questions-fermées|Questions fermées]], manuel p. 88.
 
 ---
@@ -58,37 +58,37 @@ N: `Il lit.` The infinitive is `lire`. [[fr/episode-12]]
 ---
 
 Q: Make `Tu joues du piano.` a yes/no question with `est-ce que`.
-A: `Est-ce que tu joues du piano ?`
+A: {{`Est-ce que tu joues du piano ?`}}
 N: Manuel p. 88, exercice 3. Keep subject–verb order after `est-ce que`.
 
 ---
 
 Q: Make `Tu joues du piano.` a yes/no question using inversion.
-A: `Joues-tu du piano ?`
+A: {{`Joues-tu du piano ?`}}
 N: Manuel p. 88. The conjugated verb and subject pronoun are joined by a hyphen.
 
 ---
 
 Q: Make `Tu joues du piano.` a spoken Québec yes/no question with interrogative `-tu`.
-A: `Tu joues-tu du piano ?`
+A: {{`Tu joues-tu du piano ?`}}
 N: The first `tu` is the subject; the second is an interrogative particle. Manuel p. 88.
 
 ---
 
 Q: Make `Tu travailles toute la journée.` a yes/no question using inversion.
-A: `Travailles-tu toute la journée ?`
+A: {{`Travailles-tu toute la journée ?`}}
 N: Manuel p. 88. The verb stays in its `tu` form, including the written `-s`.
 
 ---
 
 Q: Make `Tu relaxes.` a yes/no question with `est-ce que`.
-A: `Est-ce que tu relaxes ?`
+A: {{`Est-ce que tu relaxes ?`}}
 N: Manuel p. 88. `Relaxer` means to relax; it follows the regular `-er` pattern.
 
 ---
 
 Q: Make `Tu lis un roman.` a yes/no question using inversion.
-A: `Lis-tu un roman ?`
+A: {{`Lis-tu un roman ?`}}
 N: Manuel p. 88. `Lire` gives `tu lis` at the present.
 
 ---
@@ -100,7 +100,7 @@ N: The particle stays `-tu` with different subjects. [[fr/episode-12#exercice-3-
 ---
 
 Q: Make `Il joue de la guitare.` a yes/no question using inversion.
-A: `Joue-t-il de la guitare ?`
+A: {{`Joue-t-il de la guitare ?`}}
 N: The linking `-t-` appears between `joue` and `il`. It differs from Québec interrogative `-tu`.
 
 ---
@@ -141,37 +141,37 @@ N: Manuel p. 89, transcription p. 137. These vehicles take `en` in this exercise
 ---
 
 Q: CD2 piste 18, statement 1: how do the people get to work?
-A: `En métro.` The printed transcript says `On va au travail en métro.`
+A: {{`En métro.`}} The printed transcript says {{`On va au travail en métro.`}}
 N: Manuel p. 89; transcription p. 137. [[fr/episode-12#piste-18--les-moyens-de-transport|Piste 18]]
 
 ---
 
 Q: CD2 piste 18, statement 2: how does the person get to school?
-A: `À pied.`
+A: {{`À pied.`}}
 N: `Tu vas à l'école à pied.` Manuel p. 89; transcription p. 137.
 
 ---
 
 Q: CD2 piste 18, statement 3: which transport is mentioned in the question about the airport?
-A: `En taxi.`
+A: {{`En taxi.`}}
 N: `Allez-vous à l'aéroport en taxi ?` This is a question. Manuel p. 89; transcription p. 137.
 
 ---
 
 Q: CD2 piste 18, statement 4: how do they get to the listener's place?
-A: `En autobus.`
+A: {{`En autobus.`}}
 N: `Ils vont chez toi en autobus.` Manuel p. 89; transcription p. 137.
 
 ---
 
 Q: CD2 piste 18, statement 5: how does the speaker get to the grocery store?
-A: `À vélo.`
+A: {{`À vélo.`}}
 N: `Je vais à l'épicerie à vélo.` Manuel p. 89; transcription p. 137.
 
 ---
 
 Q: Which means of transport appears in the piste 18 answer grid without being used in the five utterances?
-A: `En train.`
+A: {{`En train.`}}
 N: The train appears in the next exercise, piste 19. Manuel p. 89.
 
 ---
@@ -189,7 +189,7 @@ N: `J'arrive au travail vers 7 h 50.` Transcription p. 137.
 ---
 
 Q: CD2 piste 19: at what time does the speaker have lunch?
-A: `À midi.`
+A: {{`À midi.`}}
 N: `Je dine à midi.` Transcription p. 137. `Diner` is the midday meal in Québec.
 
 ---
@@ -229,25 +229,25 @@ N: Piste 19. `Finir` gives `je finis`, `il finit`, `nous finissons`.
 ---
 
 Q: In Stéphane's schedule, what do the blue activities represent?
-A: `Les activités habituelles`, repeated or usual activities.
+A: {{`Les activités habituelles`}}, repeated or usual activities.
 N: Manuel p. 89. Use forms such as `Le mardi, il travaille.`
 
 ---
 
 Q: In Stéphane's schedule, what do the orange activities represent?
-A: `Les activités ponctuelles`, activities on a particular occasion.
+A: {{`Les activités ponctuelles`}}, activities on a particular occasion.
 N: Manuel p. 89. Use forms such as `Vendredi soir, il va chez Julien.`
 
 ---
 
 Q: For a recurring Tuesday routine, add the missing word: `… mardi, Stéphane travaille.`
-A: `Le mardi, Stéphane travaille.`
+A: {{`Le mardi, Stéphane travaille.`}}
 N: Manuel p. 89. The definite article marks the recurring day in this exercise.
 
 ---
 
 Q: Describe Stéphane's one-off Friday evening visit to Julien, using a day expression.
-A: `Vendredi soir, il va au party chez Julien.`
+A: {{`Vendredi soir, il va au party chez Julien.`}}
 N: Manuel p. 89. The bare day expresses the particular occasion here.
 
 ---
@@ -259,13 +259,13 @@ N: Manuel p. 89. `Le samedi à 10 h, il va au gym.`
 ---
 
 Q: Which meal does Stéphane have with his colleagues on Wednesday, according to the schedule?
-A: `Le diner`, at midday: `Mercredi midi, il dine avec ses collègues.`
+A: {{`Le diner`}}, at midday: {{`Mercredi midi, il dine avec ses collègues.`}}
 N: The corrigé's `Mercredi soir` conflicts with the midday placement of the activity. [[fr/episode-12#lhoraire-de-stéphane|Horaire de Stéphane]]
 
 ---
 
 Q: In Québec, put `le déjeuner`, `le diner`, and `le souper` in day order.
-A: `Le déjeuner` = breakfast; `le diner` = lunch; `le souper` = dinner/the evening meal.
+A: {{`Le déjeuner`}} = breakfast; {{`le diner`}} = lunch; {{`le souper`}} = dinner/the evening meal.
 N: These meal names determine how to read Stéphane's schedule. [[fr/episode-12]]
 
 ---
@@ -283,49 +283,49 @@ N: [[fr/episode-12#le-plan-et-ses-six-repères|Le plan]], manuel p. 90.
 ---
 
 Q: On the p. 90 map, which place is between the flower shop and the cinema?
-A: `La banque` (label d).
+A: {{`La banque`}} (label d).
 N: The flower shop is `le fleuriste`; the cinema is `le cinéma`.
 
 ---
 
 Q: On the p. 90 map, which place has the red roof and envelope symbol?
-A: `Le bureau de poste` (label e).
+A: {{`Le bureau de poste`}} (label e).
 N: Manuel p. 90. The location is on the boulevard des Riverains, beside the bank.
 
 ---
 
 Q: On the p. 90 map, which place has the sombrero-shaped roof beside rue Légendre?
-A: `Le restaurant mexicain` (label c).
+A: {{`Le restaurant mexicain`}} (label c).
 N: Manuel p. 90. Use the visual landmark to locate it.
 
 ---
 
 Q: On the p. 90 map, which place contains the swings beside the school?
-A: `Le parc` (label f).
+A: {{`Le parc`}} (label f).
 N: Manuel p. 90.
 
 ---
 
 Q: On the p. 90 map, which place contains the outdoor pool beside rue Légendre?
-A: `La piscine` (label b).
+A: {{`La piscine`}} (label b).
 N: Manuel p. 90.
 
 ---
 
 Q: CD2 piste 20: where do the directions starting at the cinema lead?
-A: `Au fleuriste`, at the corner of rue Saint-Étienne and avenue Gignac.
+A: {{`Au fleuriste`}}, at the corner of rue Saint-Étienne and avenue Gignac.
 N: Manuel p. 90; printed transcription p. 137.
 
 ---
 
 Q: CD2 piste 20: in which direction do you turn when leaving the cinema?
-A: `À votre gauche`, onto rue Saint-Étienne.
+A: {{`À votre gauche`}}, onto rue Saint-Étienne.
 N: Printed transcription p. 137. [[fr/episode-12#piste-20--du-cinéma-au-fleuriste|Piste 20]]
 
 ---
 
 Q: CD2 piste 20: which street do you cross before reaching avenue Gignac?
-A: `La rue de l'Épée.`
+A: {{`La rue de l'Épée.`}}
 N: Printed transcription p. 137.
 
 ---
@@ -341,19 +341,19 @@ N: Piste 20, manuel p. 90.
 ---
 
 Q: Turn `vous prenez` into a polite direction without a subject pronoun.
-A: `Prenez.` For example: `Prenez la rue Saint-Étienne.`
+A: `Prenez.` For example: {{`Prenez la rue Saint-Étienne.`}}
 N: The `vous` imperative keeps the verb form and removes the subject. [[fr/episode-12#demander-et-donner-un-trajet|Trajets]]
 
 ---
 
 Q: Turn `vous traversez` into a polite direction without a subject pronoun.
-A: `Traversez.` For example: `Traversez le pont Delisle.`
+A: `Traversez.` For example: {{`Traversez le pont Delisle.`}}
 N: Review from [[fr/episode-10]], applied to the p. 90 map.
 
 ---
 
 Q: Ask politely where the post office is, using `Pouvez-vous me dire…`.
-A: `Pouvez-vous me dire où est le bureau de poste, s'il vous plait ?`
+A: {{`Pouvez-vous me dire où est le bureau de poste, s'il vous plait ?`}}
 N: Model role-play for p. 90. After `où`, keep `est le bureau de poste` as the embedded location question.
 
 ---
@@ -365,7 +365,7 @@ N: The statement about `tous les autobus` is false. [[fr/episode-12#lavis-de-mod
 ---
 
 Q: In the p. 90 service notice, does line 4 serve the avenue Théorêt stop during the works?
-A: `Non. Il n'y a pas de service à cet arrêt.`
+A: {{`Non. Il n'y a pas de service à cet arrêt.`}}
 N: The statement `L'autobus n'arrête pas sur l'avenue Théorêt` is true.
 
 ---
@@ -393,7 +393,7 @@ N: Manuel p. 90. `En raison de` introduces the cause.
 ---
 
 Q: In the p. 91 course pictures, which image shows the Spanish course?
-A: `L'image b.`
+A: {{`L'image b.`}}
 N: Full mapping: dance a, Spanish b, cooking c, violin d. [[fr/episode-12#les-quatre-images-de-cours|Cours]]
 
 ---
@@ -416,13 +416,13 @@ N: [[fr/episode-12#lannonce-corps-et-âme|Corps et âme]], manuel p. 91.
 ---
 
 Q: According to the p. 91 yoga advertisement, how can you register?
-A: `Sur place ou par téléphone.`
+A: {{`Sur place ou par téléphone.`}}
 N: Internet registration is not offered in the advertisement.
 
 ---
 
 Q: According to the p. 91 yoga advertisement, which payment methods are accepted?
-A: `Comptant ou par chèque seulement.`
+A: {{`Comptant ou par chèque seulement.`}}
 N: The claim about accepting cash or debit is false because debit is absent from the accepted methods.
 
 ---
@@ -440,7 +440,7 @@ N: `Un cours d'essai`, one trial class. The 17 \$ offer covers three discovery c
 ---
 
 Q: According to the p. 91 yoga advertisement, what does the 17 \$ discovery offer include?
-A: `Trois cours`, valid for one month, for new clients only.
+A: {{`Trois cours`}}, valid for one month, for new clients only.
 N: It differs from the single 10 \$ trial class.
 
 ---
@@ -468,7 +468,7 @@ N: Reading vocabulary from the advertisement, manuel p. 91.
 ---
 
 Q: In `Trouvez qui…`, which answer words are allowed during the game?
-A: Only `oui` or `non`.
+A: Only `oui` or {{`non`}}.
 N: Manuel p. 92–93. The teams discover missing activities through closed questions.
 
 ---
@@ -480,31 +480,31 @@ N: After a “oui”, the same team asks another question. Manuel p. 93.
 ---
 
 Q: Ask whether Max dances salsa on Tuesday evenings, using `est-ce que`.
-A: `Est-ce que Max danse la salsa le mardi soir ?`
+A: {{`Est-ce que Max danse la salsa le mardi soir ?`}}
 N: Fiche A's completed profile says yes. The recurring day takes `le`.
 
 ---
 
 Q: Ask whether Jacques knits on weekends, using a rising-intonation question.
-A: `Jacques tricote la fin de semaine ?`
+A: {{`Jacques tricote la fin de semaine ?`}}
 N: Fiche A's completed profile says yes. `La fin de semaine` means the weekend in Québec.
 
 ---
 
 Q: Ask whether Maude phones on Sunday afternoons, using `est-ce que`.
-A: `Est-ce que Maude parle au téléphone le dimanche après-midi ?`
+A: {{`Est-ce que Maude parle au téléphone le dimanche après-midi ?`}}
 N: Fiche A's completed profile says yes. `Parler au téléphone` means to talk on the phone.
 
 ---
 
 Q: Ask whether Jacques cooks every day, using `est-ce que`.
-A: `Est-ce que Jacques fait la cuisine tous les jours ?`
+A: {{`Est-ce que Jacques fait la cuisine tous les jours ?`}}
 N: Fiche B's completed profile says yes. `Tous les jours` means every day.
 
 ---
 
 Q: Ask whether Woope-Laï speaks eight languages, using a spoken Québec `-tu` question.
-A: `Woope-Laï parle-tu huit langues ?`
+A: {{`Woope-Laï parle-tu huit langues ?`}}
 N: The particle is still `-tu` even with the named third-person subject. The completed profile says yes.
 
 ---
@@ -572,7 +572,7 @@ N: Her complete profile says she listens to francophone music and plays the guit
 ---
 
 Q: Describe Valérie and Jérémie together with the subject pronoun that replaces both names.
-A: `Ils` : for example, `Ils mangent`, `ils rentrent à la maison`, `ils jouent ensemble`.
+A: `Ils` : for example, {{`Ils mangent`}}, {{`ils rentrent à la maison`}}, {{`ils jouent ensemble`}}.
 N: Manuel p. 88. The pair includes Jérémie, so the textbook uses `ils`.
 
 ---

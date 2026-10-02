@@ -5,17 +5,17 @@ tags:
 ---
 
 Q: Comment dit-on `CEO` en français ?
-A: `le PDG`, le président-directeur général.
+A: {{`le PDG`}}, le président-directeur général.
 
 ---
 
 Q: Comment dit-on `UBC` en français ?
-A: `l'Université de la Colombie-Britannique`
+A: {{`l'Université de la Colombie-Britannique`}}
 
 ---
 
 Q: Féminin de `banquier` ?
-A: `banquière` (`-ier → -ière`).
+A: {{`banquière`}} (`-ier → -ière`).
 
 ---
 
@@ -36,7 +36,7 @@ C: `Martine est mariée [à|préposition] Éric.`
 ---
 
 Q: Dites `Éric is an aeronautics technician.`
-A: `Éric est technicien en aéronautique.`
+A: {{`Éric est technicien en aéronautique.`}}
 
 N: Pas d'article après `être` devant la profession.
 
@@ -55,14 +55,14 @@ N: Détaché par une virgule, le pronom prend sa forme tonique.
 ---
 
 Q: Dites que Robert et Madeleine sont retraités.
-A: `Ils sont retraités.`
+A: {{`Ils sont retraités.`}}
 
 N: Groupe mixte : `ils`, accord au masculin pluriel.
 
 ---
 
 Q: Pluriel de `un animal` ?
-A: `des animaux`
+A: {{`des animaux`}}
 
 ---
 
@@ -74,7 +74,7 @@ N: L'âge se dit avec `avoir`, en mois comme en années.
 ---
 
 Q: Une amie que vous revoyez dit `Ça me fait plaisir de te voir.` Répondez que vous aussi, vous êtes content de la voir.
-A: `Moi aussi, je suis content de te voir.` Une femme dit `contente`.
+A: {{`Moi aussi, je suis content de te voir.`}} Une femme dit {{`contente`}}.
 
 ---
 
@@ -83,29 +83,29 @@ C: À monsieur Lebeau : `Moi aussi, je suis content de [vous|pronom] voir, monsi
 ---
 
 Q: `content de vous rencontrer` ou `content de vous voir` : quelle différence ?
-A: `rencontrer` sert à la première rencontre, avec `Enchanté` ; `voir` sert quand on revoit une personne connue.
+A: {{`rencontrer`}} sert à la première rencontre, avec {{`Enchanté`}} ; {{`voir`}} sert quand on revoit une personne connue.
 
 ---
 
 Q: Corrigez : `La secrétariat est au troisième étage.`
-A: `Le secrétariat est au troisième étage.`
+A: {{`Le secrétariat est au troisième étage.`}}
 
 N: `secrétariat` est masculin.
 
 ---
 
 Q: Avec `se trouver`, dites que l'infirmerie est au quatrième étage.
-A: `L'infirmerie se trouve au quatrième étage.`
+A: {{`L'infirmerie se trouve au quatrième étage.`}}
 
 ---
 
 Q: Comment dit-on `conference room` ?
-A: `la salle de conférence`
+A: {{`la salle de conférence`}}
 
 ---
 
 Q: Dites à un inconnu de prendre le couloir à sa gauche.
-A: `Prenez le couloir à votre gauche.`
+A: {{`Prenez le couloir à votre gauche.`}}
 
 ---
 
@@ -115,7 +115,7 @@ A: Continuez votre chemin en longeant la cafétéria : `Go past the cafeteria.`
 ---
 
 Q: Dites `The library door is on your right.`
-A: `La porte de la bibliothèque est sur votre droite.`
+A: {{`La porte de la bibliothèque est sur votre droite.`}}
 
 ---
 
@@ -132,6 +132,6 @@ A: `Usually`, en général.
 ---
 
 Q: Une femme dit `Usually we have class in the afternoon, but today I'm busy.` En français ?
-A: `D'habitude, nous avons cours l'après-midi. Mais aujourd'hui, je suis occupée.`
+A: {{`D'habitude, nous avons cours l'après-midi. Mais aujourd'hui, je suis occupée.`}}
 
 N: `avoir cours` s'emploie sans article.

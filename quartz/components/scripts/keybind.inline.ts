@@ -226,6 +226,8 @@ document.addEventListener('nav', () => {
     return (
       tag === 'input' ||
       tag === 'textarea' ||
+      tag === 'select' ||
+      el.closest('[role="listbox"]') !== null ||
       (el as HTMLElement).isContentEditable ||
       el.closest('.cm-editor') !== null ||
       el.closest('.search .search-container') !== null ||
@@ -589,8 +591,10 @@ document.addEventListener('nav', () => {
 
   // Vim navigation handler
   function vimNavigationHandler(e: KeyboardEvent) {
-    if (shouldIgnoreTarget(e.target)) return
-    if (isPaletteActive()) return
+    if (e.defaultPrevented || e.isComposing || shouldIgnoreTarget(e.target) || isPaletteActive()) {
+      clearGPrefix()
+      return
+    }
 
     // Handle hint mode
     if (hintsActive) {
@@ -620,9 +624,15 @@ document.addEventListener('nav', () => {
     }
 
     if (waitingForSecondG && e.key !== 'g') {
+      const speechSettings = e.key === 'v' ? document.getElementById('speech-settings') : null
       const navigated =
         (e.key === '[' || e.key === ']') && navigateNotebookCell(e.key === '[' ? -1 : 1)
       clearGPrefix()
+      if (speechSettings && !e.repeat) {
+        e.preventDefault()
+        speechSettings.togglePopover()
+        return
+      }
       if (navigated) {
         e.preventDefault()
         return
@@ -652,6 +662,7 @@ document.addEventListener('nav', () => {
         break
 
       case 'g':
+        if (e.repeat) break
         if (waitingForSecondG) {
           // Second 'g' pressed - scroll to top
           e.preventDefault()

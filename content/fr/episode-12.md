@@ -35,10 +35,10 @@ Dans l'ordre de gauche à droite :
 
 | image                  | réponse modèle                            | sens en anglais                    |
 | ---------------------- | ----------------------------------------- | ---------------------------------- |
-| un homme avec un livre | `Il lit.`                                 | He is reading.                     |
-| une femme à la cuisine | `Elle cuisine.` / `Elle fait la cuisine.` | She is cooking.                    |
-| un homme au téléphone  | `Il téléphone à une amie.`                | He is calling a friend.            |
-| une femme et son chien | `Elle fait une promenade avec son chien.` | She is taking a walk with her dog. |
+| un homme avec un livre | {{`Il lit.`}}                                 | He is reading.                     |
+| une femme à la cuisine | {{`Elle cuisine.`}} / {{`Elle fait la cuisine.`}} | She is cooking.                    |
+| un homme au téléphone  | {{`Il téléphone à une amie.`}}                | He is calling a friend.            |
+| une femme et son chien | {{`Elle fait une promenade avec son chien.`}} | She is taking a walk with her dog. |
 
 Le corrigé propose `à une amie` pour l'appel ; l'image seule montre un appel sans identifier la personne appelée. `Il téléphone` décrit aussi l'action visible. Le présent français peut décrire une action en cours : `Il lit` correspond ici à _he is reading_.
 
@@ -48,46 +48,46 @@ Les douze propositions suivent le tableau du livre. Les lignes partagées utilis
 
 | ordre | sujet    | phrase au présent               |
 | ----- | -------- | ------------------------------- |
-| 1     | Valérie  | `Valérie fait du café.`         |
-| 2     | Valérie  | `Elle prépare le déjeuner.`     |
-| 3     | Jérémie  | `Jérémie écoute de la musique.` |
-| 4     | les deux | `Valérie et Jérémie mangent.`   |
-| 5     | Valérie  | `Elle va au travail.`           |
-| 6     | Jérémie  | `Il va à la garderie.`          |
-| 7     | Valérie  | `Elle travaille.`               |
-| 8     | Jérémie  | `Il joue avec ses amis.`        |
-| 9     | les deux | `Ils rentrent à la maison.`     |
-| 10    | les deux | `Ils jouent ensemble.`          |
-| 11    | Valérie  | `Elle prépare le souper.`       |
-| 12    | Jérémie  | `Il dessine.`                   |
+| 1     | Valérie  | {{`Valérie fait du café.`}}         |
+| 2     | Valérie  | {{`Elle prépare le déjeuner.`}}     |
+| 3     | Jérémie  | {{`Jérémie écoute de la musique.`}} |
+| 4     | les deux | {{`Valérie et Jérémie mangent.`}}   |
+| 5     | Valérie  | {{`Elle va au travail.`}}           |
+| 6     | Jérémie  | {{`Il va à la garderie.`}}          |
+| 7     | Valérie  | {{`Elle travaille.`}}               |
+| 8     | Jérémie  | {{`Il joue avec ses amis.`}}        |
+| 9     | les deux | {{`Ils rentrent à la maison.`}}     |
+| 10    | les deux | {{`Ils jouent ensemble.`}}          |
+| 11    | Valérie  | {{`Elle prépare le souper.`}}       |
+| 12    | Jérémie  | {{`Il dessine.`}}                   |
 
-`La garderie` = daycare ; `rentrer à la maison` = to come home ; `ensemble` = together ; `dessiner` = to draw. `Ses amis` signifie _his friends_ ici, puisque le sujet est Jérémie.
+`La garderie` = daycare ; {{`rentrer à la maison`}} = to come home ; `ensemble` = together ; `dessiner` = to draw. `Ses amis` signifie _his friends_ ici, puisque le sujet est Jérémie.
 
 Pour raconter la journée à voix haute :
 
-> Valérie fait du café et prépare le déjeuner. Jérémie écoute de la musique. Ils mangent. Ensuite, elle va au travail et il va à la garderie. Elle travaille ; il joue avec ses amis. Ils rentrent à la maison et jouent ensemble. Enfin, elle prépare le souper et il dessine.
+> {{Valérie fait du café et prépare le déjeuner. Jérémie écoute de la musique. Ils mangent. Ensuite, elle va au travail et il va à la garderie. Elle travaille ; il joue avec ses amis. Ils rentrent à la maison et jouent ensemble. Enfin, elle prépare le souper et il dessine.}}
 
 `Ensuite` et `enfin` sont ajoutés au modèle pour relier les étapes : _then_ et _finally_.
 
 ### exercice 3 : les questions fermées
 
-Une question fermée appelle `oui` ou `non`. Les quatre images montrent le piano, le travail, la détente et la lecture. Le corrigé donne les trois premières structures du tableau ci-dessous ; l'intonation fournit une quatrième forme orale.
+Une question fermée appelle `oui` ou {{`non`}}. Les quatre images montrent le piano, le travail, la détente et la lecture. Le corrigé donne les trois premières structures du tableau ci-dessous ; l'intonation fournit une quatrième forme orale.
 
 | activité | `est-ce que`                                  | inversion                          | `-tu` québécois oral                  | intonation                         |
 | -------- | --------------------------------------------- | ---------------------------------- | ------------------------------------- | ---------------------------------- |
-| piano    | `Est-ce que tu joues du piano ?`              | `Joues-tu du piano ?`              | `Tu joues-tu du piano ?`              | `Tu joues du piano ?`              |
-| travail  | `Est-ce que tu travailles toute la journée ?` | `Travailles-tu toute la journée ?` | `Tu travailles-tu toute la journée ?` | `Tu travailles toute la journée ?` |
-| détente  | `Est-ce que tu relaxes ?`                     | `Relaxes-tu ?`                     | `Tu relaxes-tu ?`                     | `Tu relaxes ?`                     |
-| lecture  | `Est-ce que tu lis un roman ?`                | `Lis-tu un roman ?`                | `Tu lis-tu un roman ?`                | `Tu lis un roman ?`                |
+| piano    | {{`Est-ce que tu joues du piano ?`}}              | {{`Joues-tu du piano ?`}}              | {{`Tu joues-tu du piano ?`}}              | {{`Tu joues du piano ?`}}              |
+| travail  | {{`Est-ce que tu travailles toute la journée ?`}} | {{`Travailles-tu toute la journée ?`}} | {{`Tu travailles-tu toute la journée ?`}} | {{`Tu travailles toute la journée ?`}} |
+| détente  | {{`Est-ce que tu relaxes ?`}}                     | {{`Relaxes-tu ?`}}                     | {{`Tu relaxes-tu ?`}}                     | {{`Tu relaxes ?`}}                     |
+| lecture  | {{`Est-ce que tu lis un roman ?`}}                | {{`Lis-tu un roman ?`}}                | {{`Tu lis-tu un roman ?`}}                | {{`Tu lis un roman ?`}}                |
 
 - **Est-ce que + sujet + verbe** garde l'ordre de l'affirmation. C'est une forme générale pour demander une réponse oui/non.
 - **Verbe-pronom** donne l'inversion : `lis-tu`, `travaillez-vous`. Le trait d'union est obligatoire à l'écrit.
-- Le **`-tu` interrogatif québécois** suit le verbe conjugué. Il reste `-tu` avec `elle`, `vous` ou un nom : `Elle lit-tu ?`, `Vous travaillez-tu ?`, `Max danse-tu ?`. Dans `Tu lis-tu ?`, le premier `tu` est le sujet et le second marque la question.
+- Le **`-tu` interrogatif québécois** suit le verbe conjugué. Il reste `-tu` avec `elle`, `vous` ou un nom : {{`Elle lit-tu ?`}}, `Vous travaillez-tu ?`, {{`Max danse-tu ?`}}. Dans {{`Tu lis-tu ?`}}, le premier `tu` est le sujet et le second marque la question.
 - L'**intonation montante** transforme une phrase affirmative en question orale. À l'écrit, le point d'interrogation indique la lecture interrogative.
 
-L'inversion `Joue-t-il du piano ?` contient un **`-t-` de liaison** entre `joue` et `il`. Ce `-t-` appartient à une construction différente du `-tu` québécois. Voir [[fr/episode-9|le mémo de l'épisode 9]].
+L'inversion {{`Joue-t-il du piano ?`}} contient un **`-t-` de liaison** entre `joue` et `il`. Ce `-t-` appartient à une construction différente du `-tu` québécois. Voir [[fr/episode-9|le mémo de l'épisode 9]].
 
-Réponses possibles : `Oui, je joue du piano.` / `Non, je ne joue pas du piano.` Pour les jeux et les sports, on emploie `jouer à` (`jouer aux cartes`, `jouer au badminton`) ; pour les instruments, `jouer de` (`jouer du piano`, `jouer de la guitare`).
+Réponses possibles : {{`Oui, je joue du piano.`}} / {{`Non, je ne joue pas du piano.`}} Pour les jeux et les sports, on emploie `jouer à` (`jouer aux cartes`, `jouer au badminton`) ; pour les instruments, `jouer de` (`jouer du piano`, `jouer de la guitare`).
 
 ## page 89 : déplacements et temps
 
@@ -95,15 +95,15 @@ Réponses possibles : `Oui, je joue du piano.` / `Non, je ne joue pas du piano.`
 
 | pronom imprimé         | lieu           | réponse                        |
 | ---------------------- | -------------- | ------------------------------ |
-| je, exemple déjà donné | la boulangerie | `Je vais à la boulangerie.`    |
-| tu                     | le dentiste    | `Tu vas chez le dentiste.`     |
-| on                     | le café        | `On va au café avec nos amis.` |
-| vous                   | le cinéma      | `Vous allez au cinéma.`        |
-| elles                  | la piscine     | `Elles vont à la piscine.`     |
+| je, exemple déjà donné | la boulangerie | {{`Je vais à la boulangerie.`}}    |
+| tu                     | le dentiste    | {{`Tu vas chez le dentiste.`}}     |
+| on                     | le café        | {{`On va au café avec nos amis.`}} |
+| vous                   | le cinéma      | {{`Vous allez au cinéma.`}}        |
+| elles                  | la piscine     | {{`Elles vont à la piscine.`}}     |
 
 `Aller` au présent : **je vais, tu vas, il/elle/on va, nous allons, vous allez, ils/elles vont**. `On` prend la troisième personne du singulier, même lorsqu'il signifie _we_.
 
-La destination suit son article : `à + le = au`, `à + les = aux`, puis `à la` et `à l'`. Une personne ou son lieu d'activité prend souvent **chez** : `chez le dentiste`, `chez mes parents`, `chez toi`. Dans le modèle `on va au café avec nos amis`, le verbe reste singulier et `nos` renvoie au groupe de personnes.
+La destination suit son article : `à + le = au`, `à + les = aux`, puis `à la` et `à l'`. Une personne ou son lieu d'activité prend souvent **chez** : {{`chez le dentiste`}}, {{`chez mes parents`}}, {{`chez toi`}}. Dans le modèle `on va au café avec nos amis`, le verbe reste singulier et `nos` renvoie au groupe de personnes.
 
 ### piste 18 : les moyens de transport
 
@@ -111,11 +111,11 @@ La destination suit son article : `à + le = au`, `à + les = aux`, puis `à la`
 
 | no  | phrase de la transcription          | case à cocher  |
 | --- | ----------------------------------- | -------------- |
-| 1   | `On va au travail en métro.`        | **en métro**   |
-| 2   | `Tu vas à l'école à pied.`          | **à pied**     |
-| 3   | `Allez-vous à l'aéroport en taxi ?` | **en taxi**    |
-| 4   | `Ils vont chez toi en autobus.`     | **en autobus** |
-| 5   | `Je vais à l'épicerie à vélo.`      | **à vélo**     |
+| 1   | {{`On va au travail en métro.`}}        | **en métro**   |
+| 2   | {{`Tu vas à l'école à pied.`}}          | **à pied**     |
+| 3   | {{`Allez-vous à l'aéroport en taxi ?`}} | **en taxi**    |
+| 4   | {{`Ils vont chez toi en autobus.`}}     | **en autobus** |
+| 5   | {{`Je vais à l'épicerie à vélo.`}}      | **à vélo**     |
 
 La colonne **en train** reste vide. La troisième phrase est une question ; on coche le moyen de transport qu'elle mentionne.
 
@@ -127,14 +127,14 @@ Dans les formes travaillées ici : **à pied**, **à vélo**, puis **en autobus*
 
 | case sur la page, de gauche à droite | réponse complète                   | lecture de l'heure    |
 | ------------------------------------ | ---------------------------------- | --------------------- |
-| rangée 1, gauche                     | `Je dine à midi.`                  | midi, 12 h            |
+| rangée 1, gauche                     | {{`Je dine à midi.`}}                  | midi, 12 h            |
 | rangée 1, centre                     | `Je regarde la télé à 20 h.`       | vingt heures          |
 | rangée 1, droite                     | `J'arrive au travail vers 7 h 50.` | sept heures cinquante |
 | rangée 2, gauche                     | `Je fais la cuisine vers 18 h.`    | dix-huit heures       |
 | rangée 2, centre                     | `Je prends le train à 7 h 30.`     | sept heures trente    |
 | rangée 2, droite                     | `Je finis mon travail à 16 h.`     | seize heures          |
 
-**À** présente une heure fixée ; **vers** signifie _around_, une heure approximative. On conserve la préposition déjà imprimée : `à 20 h`, `vers 18 h`. `Prendre le train` = to take the train ; `finir son travail` = to finish one's work.
+**À** présente une heure fixée ; **vers** signifie _around_, une heure approximative. On conserve la préposition déjà imprimée : `à 20 h`, `vers 18 h`. {{`Prendre le train`}} = to take the train ; {{`finir son travail`}} = to finish one's work.
 
 ### l'horaire de Stéphane
 
@@ -142,23 +142,23 @@ Dans les formes travaillées ici : **à pied**, **à vélo**, puis **en autobus*
 
 | jour et moment               | type indiqué | phrase modèle                                                     |
 | ---------------------------- | ------------ | ----------------------------------------------------------------- |
-| lundi matin                  | habituelle   | `Le lundi matin, Stéphane a congé.` / `Il ne travaille pas.`      |
-| lundi après-midi             | ponctuelle   | `Lundi après-midi, il visite le musée des beaux-arts avec Julie.` |
-| mardi, travail               | habituelle   | `Le mardi, il travaille.`                                         |
+| lundi matin                  | habituelle   | {{`Le lundi matin, Stéphane a congé.`}} / {{`Il ne travaille pas.`}}      |
+| lundi après-midi             | ponctuelle   | {{`Lundi après-midi, il visite le musée des beaux-arts avec Julie.`}} |
+| mardi, travail               | habituelle   | {{`Le mardi, il travaille.`}}                                         |
 | mardi à 18 h                 | habituelle   | `Le mardi à 18 h, il va au gym.`                                  |
-| mercredi, travail            | habituelle   | `Le mercredi, il travaille.`                                      |
-| mercredi, diner              | ponctuelle   | `Mercredi midi, il dine avec ses collègues.`                      |
-| jeudi, travail               | habituelle   | `Le jeudi, il travaille.`                                         |
+| mercredi, travail            | habituelle   | {{`Le mercredi, il travaille.`}}                                      |
+| mercredi, diner              | ponctuelle   | {{`Mercredi midi, il dine avec ses collègues.`}}                      |
+| jeudi, travail               | habituelle   | {{`Le jeudi, il travaille.`}}                                         |
 | jeudi à 18 h                 | habituelle   | `Le jeudi à 18 h, il va au gym.`                                  |
-| vendredi, travail            | habituelle   | `Le vendredi, il travaille.`                                      |
-| vendredi soir                | ponctuelle   | `Vendredi soir, il va au party chez Julien.`                      |
+| vendredi, travail            | habituelle   | {{`Le vendredi, il travaille.`}}                                      |
+| vendredi soir                | ponctuelle   | {{`Vendredi soir, il va au party chez Julien.`}}                      |
 | samedi à 10 h                | habituelle   | `Le samedi à 10 h, il va au gym.`                                 |
-| dimanche matin               | ponctuelle   | `Dimanche matin, il déjeune au resto avec Alfred.`                |
-| dimanche soir, exemple donné | habituelle   | `Le dimanche, il soupe chez ses parents.`                         |
+| dimanche matin               | ponctuelle   | {{`Dimanche matin, il déjeune au resto avec Alfred.`}}                |
+| dimanche soir, exemple donné | habituelle   | {{`Le dimanche, il soupe chez ses parents.`}}                         |
 
 Le corrigé écrit `Mercredi soir, il dine avec ses collègues`. Le mot **diner** et sa position au milieu de la journée sur l'horaire donnent **mercredi midi**. Cette correction suit le document de l'exercice.[^diner]
 
-`Avoir congé` = to have the day/time off ; `le gym` = the gym ; `un party` = a party, mot employé au Québec ; `le resto` = short for _restaurant_. Les noms des repas ici sont **déjeuner** = breakfast, **diner** = lunch, **souper** = the evening meal.
+{{`Avoir congé`}} = to have the day/time off ; {{`le gym`}} = the gym ; {{`un party`}} = a party, mot employé au Québec ; {{`le resto`}} = short for _restaurant_. Les noms des repas ici sont **déjeuner** = breakfast, **diner** = lunch, **souper** = the evening meal.
 
 ## page 90 : le quartier, les trajets et l'avis
 
@@ -188,7 +188,7 @@ La transcription imprimée p. 137 donne ce trajet :
 3. Continuez **tout droit** jusqu'à l'**avenue Gignac**.
 4. Le fleuriste est **au coin**, à l'intersection de Saint-Étienne et Gignac.
 
-`Tout droit` = straight ahead ; `à droite` = to the right ; `à gauche` = to the left ; `jusqu'à` = as far as/until ; `au coin de` = at the corner of. Le plan abrège `Saint-Étienne` en `St-Étienne`.
+{{`Tout droit`}} = straight ahead ; {{`à droite`}} = to the right ; {{`à gauche`}} = to the left ; `jusqu'à` = as far as/until ; {{`au coin de`}} = at the corner of. Le plan abrège `Saint-Étienne` en `St-Étienne`.
 
 ### demander et donner un trajet
 
@@ -196,19 +196,19 @@ La transcription imprimée p. 137 donne ce trajet :
 
 **De la piscine à l'hôtel de ville :**
 
-> — Excusez-moi, pouvez-vous me dire où est l'hôtel de ville, s'il vous plait ?
-> — Oui. Rejoignez l'avenue Gignac. Prenez cette avenue en direction du pont Delisle et traversez le pont. De l'autre côté, l'hôtel de ville est le grand bâtiment sur la rue du Centre.
-> — Merci beaucoup !
-> — De rien !
+> — {{Excusez-moi, pouvez-vous me dire où est l'hôtel de ville, s'il vous plait ?}}
+> — {{Oui. Rejoignez l'avenue Gignac. Prenez cette avenue en direction du pont Delisle et traversez le pont. De l'autre côté, l'hôtel de ville est le grand bâtiment sur la rue du Centre.}}
+> — {{Merci beaucoup !}}
+> — {{De rien !}}
 
 **Du restaurant mexicain au bureau de poste :**
 
-> — Pardon, je cherche le bureau de poste. Pouvez-vous m'indiquer le chemin ?
-> — Oui. Prenez la rue Légendre jusqu'à la rue Saint-Étienne, puis continuez sur Saint-Étienne vers la rue de l'Épée. Rejoignez le boulevard des Riverains en longeant le fleuriste. Le bureau de poste est le petit bâtiment au toit rouge, à côté de la banque.
-> — D'accord, merci !
-> — Ça me fait plaisir !
+> — {{Pardon, je cherche le bureau de poste. Pouvez-vous m'indiquer le chemin ?}}
+> — {{Oui. Prenez la rue Légendre jusqu'à la rue Saint-Étienne, puis continuez sur Saint-Étienne vers la rue de l'Épée. Rejoignez le boulevard des Riverains en longeant le fleuriste. Le bureau de poste est le petit bâtiment au toit rouge, à côté de la banque.}}
+> — {{D'accord, merci !}}
+> — {{Ça me fait plaisir !}}
 
-Ce sont des productions pour pratiquer, avec une arrivée identifiable sur le dessin. `Rejoignez` = get to/join ; `en direction de` = towards ; `de l'autre côté` = on the other side ; `en longeant` = going along/past the side of.
+Ce sont des productions pour pratiquer, avec une arrivée identifiable sur le dessin. `Rejoignez` = get to/join ; {{`en direction de`}} = towards ; {{`de l'autre côté`}} = on the other side ; {{`en longeant`}} = going along/past the side of.
 
 Les indications utilisent l'impératif de **vous**, sans sujet exprimé : `vous tournez` → **tournez**, `vous continuez` → **continuez**, `vous traversez` → **traversez**, `vous prenez` → **prenez**. `Je cherche le bureau de poste` prend directement le lieu après `chercher`.
 
@@ -225,7 +225,7 @@ Les indications utilisent l'impératif de **vous**, sans sujet exprimé : `vous 
 | affirmation                                                    | réponse  | justification                                    |
 | -------------------------------------------------------------- | -------- | ------------------------------------------------ |
 | L'horaire de tous les autobus est modifié à cause des travaux. | **Faux** | L'avis nomme la ligne 4 et ces trois arrêts.     |
-| L'autobus n'arrête pas sur l'avenue Théorêt.                   | **Vrai** | La colonne indique `Pas de service à cet arrêt`. |
+| L'autobus n'arrête pas sur l'avenue Théorêt.                   | **Vrai** | La colonne indique {{`Pas de service à cet arrêt`}}. |
 | Le 20 juin, la ligne 4 passe à 8 h 20 dans la rue Lemay.       | **Faux** | Le passage matinal affiché est à 8 h.            |
 
 Le titre imprime `DU 1er AU 31 JUIN`. **Juin a 30 jours** : `31 juin` est une coquille du document. Le 20 juin reste une date possible et les trois réponses restent **faux, vrai, faux**.
@@ -311,20 +311,20 @@ Réponses : **vrai, faux, faux, faux, faux**.
 
 | expression                    | sens en anglais ou emploi  |
 | ----------------------------- | -------------------------- |
-| sur place                     | in person, at the location |
-| comptant                      | in cash                    |
-| par chèque                    | by cheque                  |
-| un cours d'essai              | one trial class            |
-| un abonnement mensuel         | a monthly subscription     |
-| une banque de cours           | a pack of prepaid classes  |
-| valide un mois                | valid for one month        |
-| les cours illimités           | unlimited classes          |
-| les tarifs incluent les taxes | prices include taxes       |
-| les postures                  | poses/postures             |
-| la respiration                | breathing                  |
-| la grossesse                  | pregnancy                  |
-| l'accouchement                | childbirth                 |
-| la détente                    | relaxation                 |
+| {{sur place}}                     | in person, at the location |
+| {{comptant}}                      | in cash                    |
+| {{par chèque}}                    | by cheque                  |
+| {{un cours d'essai}}              | one trial class            |
+| {{un abonnement mensuel}}         | a monthly subscription     |
+| {{une banque de cours}}           | a pack of prepaid classes  |
+| {{valide un mois}}                | valid for one month        |
+| {{les cours illimités}}           | unlimited classes          |
+| {{les tarifs incluent les taxes}} | prices include taxes       |
+| {{les postures}}                  | poses/postures             |
+| {{la respiration}}                | breathing                  |
+| {{la grossesse}}                  | pregnancy                  |
+| {{l'accouchement}}                | childbirth                 |
+| {{la détente}}                    | relaxation                 |
 
 Le yoga **prénatal** vise la période de grossesse. Le yoga **+ bébé** propose du yoga et de la mise en forme après l'accouchement. Pour répondre à une annonce, garder séparés **inscription**, **session**, **séance**, **prix** et **conditions** évite de confondre le 1er juin avec le début des cours ou 17 \$ avec le prix d'une seule séance.
 
@@ -334,7 +334,7 @@ Le yoga **prénatal** vise la période de grossesse. Le yoga **+ bébé** propos
 
 Chaque équipe reçoit la fiche A ou B. Les cinq personnes sont les mêmes, avec cinq activités déjà inscrites et **deux activités manquantes par personne**. Les fiches se complètent : les informations de B donnent les dix réponses de A, et celles de A donnent les dix réponses de B.
 
-1. L'équipe A commence et pose une question fermée : `Est-ce que Max tricote la fin de semaine ?`
+1. L'équipe A commence et pose une question fermée : {{`Est-ce que Max tricote la fin de semaine ?`}}
 2. L'autre équipe répond uniquement **oui** ou **non**.
 3. Après **oui**, l'équipe qui pose les questions continue.
 4. Après **non**, elle perd son tour et l'autre équipe pose une question.
@@ -371,61 +371,61 @@ Voici les sept activités de chaque personne après la mise en commun des deux f
 - Il écoute de la musique classique.
 - Il va au travail à vélo.
 - Il regarde des films romantiques.
-- Il joue à des jeux vidéo le vendredi soir.
-- Il passe l'aspirateur le matin.
-- Il danse la salsa le mardi soir.
-- Il lave la vaisselle après le souper.
+- {{Il joue à des jeux vidéo le vendredi soir.}}
+- {{Il passe l'aspirateur le matin.}}
+- {{Il danse la salsa le mardi soir.}}
+- {{Il lave la vaisselle après le souper.}}
 
 **Rose Latulipe, 87 ans**
 
 - Elle soupe à 17 h.
-- Elle envoie des courriels à sa sœur.
-- Elle fait une sieste l'avant-midi.
-- Elle va au restaurant avec des amis le jeudi.
-- Elle joue à des jeux vidéo le samedi soir.
-- Elle passe l'aspirateur le matin.
-- Elle écoute de la musique classique.
+- {{Elle envoie des courriels à sa sœur.}}
+- {{Elle fait une sieste l'avant-midi.}}
+- {{Elle va au restaurant avec des amis le jeudi.}}
+- {{Elle joue à des jeux vidéo le samedi soir.}}
+- {{Elle passe l'aspirateur le matin.}}
+- {{Elle écoute de la musique classique.}}
 
 **Maude Cator, 23 ans**
 
-- Elle va au travail à pied.
-- Elle écoute de la musique francophone.
-- Elle regarde la télé le soir.
-- Elle déjeune dans l'autobus.
-- Elle joue de la guitare.
-- Elle va au restaurant avec sa mère le jeudi.
-- Elle parle au téléphone le dimanche après-midi.
+- {{Elle va au travail à pied.}}
+- {{Elle écoute de la musique francophone.}}
+- {{Elle regarde la télé le soir.}}
+- {{Elle déjeune dans l'autobus.}}
+- {{Elle joue de la guitare.}}
+- {{Elle va au restaurant avec sa mère le jeudi.}}
+- {{Elle parle au téléphone le dimanche après-midi.}}
 
 **Jacques Julien, 66 ans**
 
 - Il danse la salsa le mardi soir.
-- Il joue au badminton le mercredi.
-- Il fait la cuisine tous les jours.
-- Il va chez sa fille le samedi matin.
-- Il joue aux cartes avec ses amis.
-- Il fait une sieste l'après-midi.
-- Il tricote la fin de semaine.
+- {{Il joue au badminton le mercredi.}}
+- {{Il fait la cuisine tous les jours.}}
+- {{Il va chez sa fille le samedi matin.}}
+- {{Il joue aux cartes avec ses amis.}}
+- {{Il fait une sieste l'après-midi.}}
+- {{Il tricote la fin de semaine.}}
 
 **Woope-Laï, 103 ans**
 
 - Il déjeune à 10 h.
 - Il fait une sieste l'après-midi.
-- Il travaille le lundi et le mardi.
-- Il parle huit langues.
-- Il fait le ménage le soir.
-- Il va au travail à pied.
+- {{Il travaille le lundi et le mardi.}}
+- {{Il parle huit langues.}}
+- {{Il fait le ménage le soir.}}
+- {{Il va au travail à pied.}}
 - Il joue à des jeux vidéo le vendredi soir.
 
 ### modèles de questions et réponses
 
 | question                                                       | réponse attendue                    |
 | -------------------------------------------------------------- | ----------------------------------- |
-| `Est-ce que Max danse la salsa le mardi soir ?`                | **Oui.**                            |
-| `Max va au travail à pied ?`                                   | **Non.** Il y va à vélo.            |
-| `Rose tricote la fin de semaine ?`                             | **Non.** C'est Jacques qui tricote. |
-| `Est-ce que Maude parle au téléphone le dimanche après-midi ?` | **Oui.**                            |
-| `Jacques fait-tu la cuisine tous les jours ?`                  | **Oui.**                            |
-| `Woope-Laï parle-tu huit langues ?`                            | **Oui.**                            |
+| {{`Est-ce que Max danse la salsa le mardi soir ?`}}                | **Oui.**                            |
+| {{`Max va au travail à pied ?`}}                                   | **Non.** Il y va à vélo.            |
+| {{`Rose tricote la fin de semaine ?`}}                             | **Non.** C'est Jacques qui tricote. |
+| {{`Est-ce que Maude parle au téléphone le dimanche après-midi ?`}} | **Oui.**                            |
+| {{`Jacques fait-tu la cuisine tous les jours ?`}}                  | **Oui.**                            |
+| {{`Woope-Laï parle-tu huit langues ?`}}                            | **Oui.**                            |
 
 Les explications après **non** sont utiles pour corriger la fiche après le jeu. Pendant le jeu, la règle impose de dire seulement **oui** ou **non**.
 
@@ -433,20 +433,20 @@ Les explications après **non** sont utiles pour corriger la fiche après le jeu
 
 | expression                        | sens en anglais                 |
 | --------------------------------- | ------------------------------- |
-| laver la vaisselle                | wash the dishes                 |
-| passer l'aspirateur               | vacuum                          |
-| faire le ménage                   | do the cleaning/housework       |
-| faire une sieste                  | take a nap                      |
-| tricoter                          | knit                            |
-| envoyer un courriel               | send an email                   |
-| jouer aux cartes                  | play cards                      |
-| jouer à des jeux vidéo            | play video games                |
-| jouer de la guitare               | play the guitar                 |
-| écouter de la musique francophone | listen to French-language music |
-| la fin de semaine                 | the weekend, Québec usage       |
-| l'avant-midi                      | the morning, before noon        |
-| l'après-midi                      | the afternoon                   |
-| tous les jours                    | every day                       |
+| {{laver la vaisselle}}                | wash the dishes                 |
+| {{passer l'aspirateur}}               | vacuum                          |
+| {{faire le ménage}}                   | do the cleaning/housework       |
+| {{faire une sieste}}                  | take a nap                      |
+| {{tricoter}}                          | knit                            |
+| {{envoyer un courriel}}               | send an email                   |
+| {{jouer aux cartes}}                  | play cards                      |
+| {{jouer à des jeux vidéo}}            | play video games                |
+| {{jouer de la guitare}}               | play the guitar                 |
+| {{écouter de la musique francophone}} | listen to French-language music |
+| {{la fin de semaine}}                 | the weekend, Québec usage       |
+| {{l'avant-midi}}                      | the morning, before noon        |
+| {{l'après-midi}}                      | the afternoon                   |
+| {{tous les jours}}                    | every day                       |
 
 ## mémo de conjugaison
 
@@ -457,9 +457,9 @@ Les formes irrégulières et le verbe en `-ir` nécessaires aux réponses se reg
 | je / j'        | fais    | vais   | prends   | lis    | finis     | envoie   |
 | tu             | fais    | vas    | prends   | lis    | finis     | envoies  |
 | il / elle / on | fait    | va     | prend    | lit    | finit     | envoie   |
-| nous           | faisons | allons | prenons  | lisons | finissons | envoyons |
-| vous           | faites  | allez  | prenez   | lisez  | finissez  | envoyez  |
-| ils / elles    | font    | vont   | prennent | lisent | finissent | envoient |
+| nous           | faisons | allons | prenons  | lisons | {{finissons}} | {{envoyons}} |
+| vous           | faites  | allez  | prenez   | lisez  | {{finissez}}  | {{envoyez}}  |
+| ils / elles    | font    | vont   | prennent | lisent | {{finissent}} | {{envoient}} |
 
 Pour `jouer` : **je joue, tu joues, il joue, nous jouons, vous jouez, ils jouent**. Les terminaisons **-e, -es, -e, -ons, -ez, -ent** valent aussi pour `préparer`, `écouter`, `travailler`, `dessiner`, `regarder`, `danser` et `tricoter`.
 

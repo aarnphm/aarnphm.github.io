@@ -7,7 +7,7 @@ tags:
 ---
 
 Q: When you write a time like `9h`, what does the letter `h` abbreviate?
-A: `heure`. So `9h` is read `neuf heures`.
+A: {{`heure`}}. So `9h` is read {{`neuf heures`}}.
 
 ---
 
@@ -24,12 +24,12 @@ C: In the everyday reading of the clock, `moins quart` means `[:45]`, fifteen mi
 ---
 
 Q: This book writes `:45` as `quatre heures moins quart`. What does hexagonal French usually add?
-A: The article: `moins le quart` (`quatre heures moins le quart`). Same meaning.
+A: The article: {{`moins le quart`}} ({{`quatre heures moins le quart`}}). Same meaning.
 
 ---
 
 Q: From `:35` onward, how does the everyday reading state the time?
-A: It borrows the next hour with `moins`: 3:35 is `quatre heures moins vingt-cinq`, 3:40 is `quatre heures moins vingt`.
+A: It borrows the next hour with {{`moins`}}: 3:35 is {{`quatre heures moins vingt-cinq`}}, 3:40 is {{`quatre heures moins vingt`}}.
 
 ---
 
@@ -46,12 +46,12 @@ C: 3:55 in the everyday reading is `[quatre] heures moins [cinq]`.
 ---
 
 Q: How do you say 3:30 in the everyday reading?
-A: `trois heures et demie`.
+A: {{`trois heures et demie`}}.
 
 ---
 
 Q: What is the digital reading of 3:30 (just the minutes)?
-A: `trois heures trente`.
+A: {{`trois heures trente`}}.
 
 ---
 
@@ -60,12 +60,12 @@ C: 12:00 in the daytime is `[midi]`; 12:00 at night is `[minuit]`.
 ---
 
 Q: How do you disambiguate `trois heures` between morning and afternoon?
-A: Add `du matin`, `de l'après-midi`, or `du soir`: `trois heures du matin` vs `trois heures de l'après-midi`.
+A: Add {{`du matin`}}, {{`de l'après-midi`}}, or {{`du soir`}}: {{`trois heures du matin`}} vs {{`trois heures de l'après-midi`}}.
 
 ---
 
 Q: Where is the 24-hour clock (`13 h`, `14 h`, …) used?
-A: In `hôpitaux`, `gares`, `aéroports`, and other formal systems.
+A: In {{`hôpitaux`}}, {{`gares`}}, {{`aéroports`}}, and other formal systems.
 
 ---
 
@@ -78,17 +78,17 @@ C: To give a range of days you use the frame `du … au …`: `Je travaille [du]
 ---
 
 Q: Which verbs mark the start and the end of a course?
-A: `commence à` for the start, `finit à` for the end: `Le cours commence à 9 h.`, `Le cours finit à midi.`
+A: {{`commence à`}} for the start, {{`finit à`}} for the end: {{`Le cours commence à 9 h.`}}, {{`Le cours finit à midi.`}}
 
 ---
 
 Q: Polite ways to ask a stranger for the time (two)?
-A: `Pardon, quelle heure est-il?` and `Excusez-moi madame/monsieur, avez-vous l'heure?`
+A: {{`Pardon, quelle heure est-il?`}} and `Excusez-moi madame/monsieur, avez-vous l'heure?`
 
 ---
 
 Q: Two ways to say you can't give the time?
-A: `Je ne sais pas, désolé(e).` and `Je n'ai pas l'heure.`
+A: `Je ne sais pas, désolé(e).` and {{`Je n'ai pas l'heure.`}}
 
 ---
 
@@ -97,12 +97,12 @@ C: The days of the week, starting where the book's calendar starts: `[dimanche]`
 ---
 
 Q: Le jour après `mardi`?
-A: `mercredi`.
+A: {{`mercredi`}}.
 
 ---
 
 Q: Are the days of the week capitalized in French?
-A: No. They are lowercase: `lundi`, `mardi`, `mercredi`, and so on.
+A: No. They are lowercase: {{`lundi`}}, {{`mardi`}}, {{`mercredi`}}, and so on.
 
 ---
 
@@ -131,12 +131,12 @@ C: `Le chat est [entre] le sac [et] la chaise.` (preposition meaning "between", 
 ---
 
 Q: What is `une efface`, and what does France say?
-A: The eraser (glossed `gomme à effacer`). It is the Québécois word; France says `une gomme`.
+A: The eraser (glossed {{`gomme à effacer`}}). It is the Québécois word; France says {{`une gomme`}}.
 
 ---
 
 Q: What is `un cellulaire`, and what does France say?
-A: A cell phone. It is the Québécois word; France says `un portable`.
+A: A cell phone. It is the Québécois word; France says {{`un portable`}}.
 
 ---
 
@@ -151,7 +151,7 @@ A: An alarm clock.
 ---
 
 Q: `une montre` vs `une horloge`?
-A: `une montre` is a watch (on the wrist); `une horloge` is a clock (on the wall).
+A: {{`une montre`}} is a watch (on the wrist); {{`une horloge`}} is a clock (on the wall).
 
 ---
 
@@ -186,7 +186,7 @@ A: Look at / observe.
 ---
 
 Q: Where do color adjectives go relative to the noun in French?
-A: After the noun: `un cahier rouge`, `une porte verte`.
+A: After the noun: {{`un cahier rouge`}}, {{`une porte verte`}}.
 
 ---
 
@@ -195,7 +195,7 @@ C: The feminine of `blanc` is irregular: `blanc` → `[blanche]`.
 ---
 
 Q: Give the masculine and feminine of "green".
-A: `vert` / `verte`. The feminine `-e` makes the final `t` sound.
+A: {{`vert`}} / {{`verte`}}. The feminine `-e` makes the final `t` sound.
 
 ---
 
@@ -204,18 +204,18 @@ C: Numbers from [[fr/les-nombres]] feed the pattern `il y a` + number + object: 
 ---
 
 Q: Say 7:15 the everyday way.
-A: `sept heures et quart`
+A: {{`sept heures et quart`}}
 
 ---
 
 Q: Say 10:50 the everyday way.
-A: `onze heures moins dix`
+A: {{`onze heures moins dix`}}
 N: From `:35` on, borrow the next hour with `moins`.
 
 ---
 
 Q: Say 1:30 the everyday way.
-A: `une heure et demie`
+A: {{`une heure et demie`}}
 N: `une heure` is feminine and singular; `heures` takes its `-s` from 2 on.
 
 ---
@@ -231,71 +231,71 @@ A: 10:40
 ---
 
 Q: Say 15:00 the way a train station announces it.
-A: `quinze heures`
+A: {{`quinze heures`}}
 
 ---
 
 Q: Say "The course is from Tuesday to Thursday."
-A: `Le cours est du mardi au jeudi.`
+A: {{`Le cours est du mardi au jeudi.`}}
 
 ---
 
 Q: Say "I work from 8 to 4 (16 h)."
-A: `Je travaille de 8 h à 16 h.`
+A: {{`Je travaille de 8 h à 16 h.`}}
 
 ---
 
 Q: Le jour avant `lundi`?
-A: `dimanche`.
+A: {{`dimanche`}}.
 
 ---
 
 Q: Le jour après `vendredi`?
-A: `samedi`.
+A: {{`samedi`}}.
 
 ---
 
 Q: `sur` or `sous`: which one is "under", and what sound separates them?
-A: `sous` /su/ is under; `sur` /syʁ/ is on. The vowel decides: /u/ against /y/.
+A: {{`sous`}} /su/ is under; {{`sur`}} /syʁ/ is on. The vowel decides: /u/ against /y/.
 
 ---
 
 Q: Say "The book is under the chair."
-A: `Le livre est sous la chaise.`
+A: {{`Le livre est sous la chaise.`}}
 
 ---
 
 Q: Say "The cell phone is in the bag." (Québec word)
-A: `Le cellulaire est dans le sac.`
+A: {{`Le cellulaire est dans le sac.`}}
 
 ---
 
 Q: Say "The clock is behind the desk."
-A: `L'horloge est derrière le bureau.`
+A: {{`L'horloge est derrière le bureau.`}}
 N: `une horloge` hangs on the wall; `une montre` is worn.
 
 ---
 
 Q: Québécois word for an eraser?
-A: `une efface`
+A: {{`une efface`}}
 
 ---
 
 Q: Québécois word for a cell phone?
-A: `un cellulaire`
+A: {{`un cellulaire`}}
 
 ---
 
 Q: Say "a white door".
-A: `une porte blanche`
+A: {{`une porte blanche`}}
 N: The colour follows the noun; `blanc` becomes `blanche`.
 
 ---
 
 Q: Say "a green notebook".
-A: `un cahier vert`
+A: {{`un cahier vert`}}
 
 ---
 
 Q: Say "There are 12 students in the class."
-A: `Il y a 12 étudiants dans la classe.`
+A: {{`Il y a 12 étudiants dans la classe.`}}

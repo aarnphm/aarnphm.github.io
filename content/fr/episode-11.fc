@@ -7,7 +7,7 @@ tags:
 ---
 
 Q: What does the expression `Passer le temps` mean?
-A: `Occuper son temps`, to fill or spend your time. Not `Demander l'heure`, which is the other box in the DÉCOUVREZ checklist.
+A: {{`Occuper son temps`}}, to fill or spend your time. Not `Demander l'heure`, which is the other box in the DÉCOUVREZ checklist.
 
 ---
 
@@ -16,7 +16,7 @@ C: Dans cet épisode, Hélène [inscrit|verbe] sa fille à un cours de [natation
 ---
 
 Q: Which two structures do the loisirs use for activities and games?
-A: `faire de la` + activity (`Je fais de la course à pied.`) and `jouer à` + game (`Je joue à des jeux vidéos.`).
+A: `faire de la` + activity ({{`Je fais de la course à pied.`}}) and `jouer à` + game ({{`Je joue à des jeux vidéos.`}}).
 
 ---
 
@@ -25,7 +25,7 @@ C: The poster writes `Inscription en personne à compter du 17 mars`, where spee
 ---
 
 Q: `une session` vs `une séance`?
-A: `une session` is the whole term (`du 24 avril au 16 juin 2017`, `8 semaines`); `une séance` is one single class meeting (`30 minutes par séance`).
+A: {{`une session`}} is the whole term (`du 24 avril au 16 juin 2017`, `8 semaines`); {{`une séance`}} is one single class meeting (`30 minutes par séance`).
 
 ---
 
@@ -44,7 +44,7 @@ A: A new offering this session, something the centre did not run before.
 ---
 
 Q: `inscrire quelqu'un à` vs `s'inscrire à`?
-A: `inscrire qqn à` enrols someone else (`Hélène inscrit sa fille à un cours de natation.`); `s'inscrire à` enrols yourself (`Vous vous inscrivez à un cours de français.`).
+A: `inscrire qqn à` enrols someone else ({{`Hélène inscrit sa fille à un cours de natation.`}}); {{`s'inscrire à`}} enrols yourself ({{`Vous vous inscrivez à un cours de français.`}}).
 
 ---
 
@@ -54,7 +54,7 @@ A: Both the act of signing up and the window for doing it: `Inscription en perso
 ---
 
 Q: Conjugate `suivre` in the present.
-A: `je suis`, `tu suis`, `il/elle/on suit`, `nous suivons`, `vous suivez`, `ils/elles suivent`.
+A: {{`je suis`}}, {{`tu suis`}}, `il/elle/on suit`, {{`nous suivons`}}, {{`vous suivez`}}, `ils/elles suivent`.
 
 ---
 
@@ -74,7 +74,7 @@ A: `La semaine du 24 avril.` `Prochaine session : du 24 avril au 16 juin 2017.`
 ---
 
 Q: `La fille d'Hélène a 4 ans. Quel(s) cours peut-elle suivre ?`
-A: `Loutre de mer`, the `3-5 ans, avec parent` course: `vendredi 18 h ou samedi 10 h 30`.
+A: {{`Loutre de mer`}}, the `3-5 ans, avec parent` course: `vendredi 18 h ou samedi 10 h 30`.
 
 ---
 
@@ -94,22 +94,22 @@ A: `75 $`, le tarif enfants. Adults pay `80 $`.
 ---
 
 Q: `Est-ce qu'on peut s'inscrire par téléphone ?`
-A: `Non, l'inscription est en personne.` The number `450 521-4348` is for information only.
+A: {{`Non, l'inscription est en personne.`}} The number `450 521-4348` is for information only.
 
 ---
 
 Q: Question frame for asking a price?
-A: `Combien coute… ?` as in `Combien coute le cours de natation ?` (rectified spelling, no circumflex on `coute`)
+A: `Combien coute… ?` as in {{`Combien coute le cours de natation ?`}} (rectified spelling, no circumflex on `coute`)
 
 ---
 
 Q: Question frame for asking how long something lasts?
-A: `Combien de temps dure… ?` as in `Combien de temps dure chaque cours ?`
+A: `Combien de temps dure… ?` as in {{`Combien de temps dure chaque cours ?`}}
 
 ---
 
 Q: Question frame for asking who something is aimed at?
-A: `À qui s'adresse… ?` as in `À qui s'adresse le cours d'aqua-détente ?`
+A: `À qui s'adresse… ?` as in {{`À qui s'adresse le cours d'aqua-détente ?`}}
 
 ---
 
@@ -124,27 +124,27 @@ A: `a. comptant`, `b. carte de crédit ou de débit`, `c. chèque`.
 ---
 
 Q: What is the Québécois word for cash, and what does France say instead?
-A: Québec says `comptant` (`payer comptant`, `de l'argent comptant`); France says `en espèces`, colloquially `en liquide`.
+A: Québec says {{`comptant`}} ({{`payer comptant`}}, {{`de l'argent comptant`}}); France says {{`en espèces`}}, colloquially {{`en liquide`}}.
 
 ---
 
 Q: Fill Léa's registration form from `Léa Sauvé • 4 ans • Loutre de mer • Samedi, 10 h 30 • Chèque • Hélène Ronceau • 450 555-0111 • Saint-Jérôme`.
-A: `Prénom et nom de l'enfant : Léa Sauvé`, `Âge : 4 ans`, `Sexe : F`, `Lieu de résidence : Saint-Jérôme`, `Nom du parent : Hélène Ronceau`, `Tél. : 450 555-0111`, `Cours choisi : Loutre de mer`, `Jour et heure : samedi, 10 h 30`, `Mode de paiement : chèque`.
+A: `Prénom et nom de l'enfant : Léa Sauvé`, `Âge : 4 ans`, `Sexe : F`, {{`Lieu de résidence : Saint-Jérôme`}}, {{`Nom du parent : Hélène Ronceau`}}, `Tél. : 450 555-0111`, {{`Cours choisi : Loutre de mer`}}, `Jour et heure : samedi, 10 h 30`, {{`Mode de paiement : chèque`}}.
 
 ---
 
 Q: What does the asterisk mean on the FLS form, and how is it announced?
-A: It marks a required field. The header prints `* Champs obligatoires`; unstarred fields such as `Téléphone cellulaire` and `Téléphone travail` are optional.
+A: It marks a required field. The header prints `* Champs obligatoires`; unstarred fields such as {{`Téléphone cellulaire`}} and {{`Téléphone travail`}} are optional.
 
 ---
 
 Q: Which personal fields are new on the FLS form compared to the fiche d'inscription of [[fr/episode-2]]?
-A: `Province/État`, `Pays`, `Téléphone cellulaire` and `Téléphone travail` split by context, plus the `* Champs obligatoires` convention.
+A: `Province/État`, `Pays`, {{`Téléphone cellulaire`}} and {{`Téléphone travail`}} split by context, plus the `* Champs obligatoires` convention.
 
 ---
 
 Q: Québécois word for a mobile phone, versus France?
-A: `le cellulaire` (often `le cell`), on the form as `Téléphone cellulaire`. France says `le portable`.
+A: {{`le cellulaire`}} (often {{`le cell`}}), on the form as {{`Téléphone cellulaire`}}. France says {{`le portable`}}.
 
 ---
 
@@ -162,7 +162,7 @@ C: Durée des cours de français: `DÉBUTANT` [8] semaines, `INTERMÉDIAIRE` [8]
 ---
 
 Q: Which line of a cheque names the person or business being paid?
-A: `PAYEZ À L'ORDRE DE`. On Hélène's cheque: `Centre Les petits poissons`.
+A: {{`PAYEZ À L'ORDRE DE`}}. On Hélène's cheque: {{`Centre Les petits poissons`}}.
 
 ---
 
@@ -172,7 +172,7 @@ A: The amount in letters, with the cents written as digits over 100: `Cent-trent
 ---
 
 Q: What is the `Pour` line on a Québec cheque for?
-A: The memo, why you are paying. Hélène writes `Cours de natation`.
+A: The memo, why you are paying. Hélène writes {{`Cours de natation`}}.
 
 ---
 
@@ -205,7 +205,7 @@ A: Un cours pour découvrir les bases d'une activité, an introductory course.
 ---
 
 Q: Comment dit-on `a stroller` en français ?
-A: `Une poussette`.
+A: {{`Une poussette`}}.
 
 ---
 
@@ -231,7 +231,7 @@ C: Je rêve [de|préposition] faire de l'escalade.
 ---
 
 Q: Mettez `Vous améliorez votre anglais.` à l'impératif.
-A: `Améliorez votre anglais !` Le sujet `vous` n'est pas exprimé.
+A: {{`Améliorez votre anglais !`}} Le sujet `vous` n'est pas exprimé.
 
 ---
 
@@ -244,28 +244,28 @@ C: Au présent : nous [peignons|peindre].
 ---
 
 Q: Ask how much the yoga class costs.
-A: `Combien coute le cours de yoga ?`
+A: {{`Combien coute le cours de yoga ?`}}
 
 ---
 
 Q: Ask who the aqua-yoga class is for.
-A: `À qui s'adresse le cours d'aqua-yoga ?`
+A: {{`À qui s'adresse le cours d'aqua-yoga ?`}}
 
 ---
 
 Q: Say "I'm signing my son up for a swimming class."
-A: `J'inscris mon fils à un cours de natation.`
+A: {{`J'inscris mon fils à un cours de natation.`}}
 
 ---
 
 Q: Say "I'm signing up for the yoga class."
-A: `Je m'inscris au cours de yoga.`
+A: {{`Je m'inscris au cours de yoga.`}}
 N: Signing yourself up takes the pronominal `s'inscrire`; signing someone else up takes `inscrire quelqu'un`.
 
 ---
 
 Q: Say "We pay cash." (Québec)
-A: `Nous payons comptant.`
+A: {{`Nous payons comptant.`}}
 
 ---
 
@@ -289,16 +289,16 @@ N: `71` keeps its `et`, hyphenated under the rectified spelling.
 ---
 
 Q: Say "I play the piano."
-A: `Je joue du piano.`
+A: {{`Je joue du piano.`}}
 N: Instruments take `jouer de`; `de + le` gives `du`.
 
 ---
 
 Q: Say "I do yoga."
-A: `Je fais du yoga.`
+A: {{`Je fais du yoga.`}}
 
 ---
 
 Q: Say "I play cards."
-A: `Je joue aux cartes.`
+A: {{`Je joue aux cartes.`}}
 N: Games take `jouer à`; `à + les` gives `aux`.

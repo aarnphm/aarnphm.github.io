@@ -153,6 +153,10 @@ body[data-flashcards='true'][data-slug$='/flashcards'] {
       text-underline-offset: 0.2em;
     }
 
+    &:hover {
+      background: transparent;
+    }
+
     &[data-sync='error'] {
       padding: 0 0.35rem;
       color: var(--dark);

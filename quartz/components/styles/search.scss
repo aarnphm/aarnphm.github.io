@@ -422,16 +422,5 @@
       color: var(--search-icon-color);
       flex-shrink: 0;
     }
-
-    .search-shortcut {
-      font-family: var(--codeFont);
-      font-size: 0.75rem;
-      padding: 0.15rem 0.4rem;
-      border-radius: var(--radius-none);
-      border: 1px solid var(--lightgray);
-      color: var(--gray);
-      background: color-mix(in srgb, var(--lightgray) 30%, transparent);
-      text-transform: uppercase;
-    }
   }
 }

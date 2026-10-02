@@ -8,6 +8,7 @@ import { toString } from 'mdast-util-to-string'
 import { visit } from 'unist-util-visit'
 import { sidenoteToMarkdown } from '../../extensions/micromark-extension-ofm-sidenotes'
 import { wikilinkToMarkdown } from '../../extensions/micromark-extension-ofm-wikilinks'
+import { speechToMarkdown } from '../../extensions/micromark-extension-speech'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { clone } from '../../util/clone'
 import { isWatchMarkdownSlug } from '../../util/llm'
@@ -214,6 +215,7 @@ export const LLM: QuartzTransformerPlugin = () => {
                 gfmToMarkdown(),
                 wikilinkToMarkdown(),
                 sidenoteToMarkdown(),
+                speechToMarkdown(),
               ],
             })
 
