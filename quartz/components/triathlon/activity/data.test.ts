@@ -7,6 +7,8 @@ import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
 import { buildCyclingTorqueTrace, cyclingTorqueSamples } from '../../../util/cycling-torque'
 import { estimateHeartRatePhysiology } from '../../../util/heart-rate-physiology'
 import { STRAVA_DETAIL_INDEX_KIND } from '../../../util/strava-detail'
+import { estimateSwimPhysiology } from '../../../util/swim-physiology'
+import { buildSwimPowerEstimate } from '../../../util/swim-power'
 import { buildTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { detailContextFromPayload, isActivityDetail, readDetailPayload } from './data'
 
@@ -29,6 +31,40 @@ const detail = (id: number, date: string, sport: string): Record<string, unknown
   route: [],
   heartRateTrace: [],
   analyses: emptyAnalyses,
+})
+
+test('swim estimates survive JSON and reject invalid values or use on another sport', () => {
+  const samples = Array.from({ length: 61 }, (_, i) => ({
+    elapsedS: i * 10,
+    distanceKm: i * 0.007,
+    heartRate: 140,
+    speedMps: 0.7,
+    strokeRateSpm: 24,
+  }))
+  const swimPhysiology = estimateSwimPhysiology(samples, 200, 'activity-average')
+  const swimPower = buildSwimPowerEstimate(
+    'route',
+    [{ startElapsedS: 0, endElapsedS: 600, durationS: 600, distanceM: 420, stroke: null }],
+    'ground-speed',
+  )
+  assert.ok(swimPhysiology)
+  assert.ok(swimPower)
+  const swim = { ...detail(1, '2026-09-27', 'swim'), swimPhysiology, swimPower }
+  assert.equal(isActivityDetail(JSON.parse(JSON.stringify(swim))), true)
+  assert.equal(isActivityDetail({ ...swim, sport: 'bike' }), false)
+  for (const histogramS of [undefined, [], [-1], [Number.NaN], [601], '600'])
+    assert.equal(isActivityDetail({ ...swim, swimPower: { ...swimPower, histogramS } }), false)
+  assert.equal(
+    isActivityDetail({ ...swim, swimPhysiology: { ...swimPhysiology, baselineSpeedMps: 0 } }),
+    false,
+  )
+  assert.equal(
+    isActivityDetail({
+      ...swim,
+      swimPower: { ...swimPower, curve: [{ ...swimPower.curve[0], index: -1 }] },
+    }),
+    false,
+  )
 })
 
 test('validates nonempty authored computer text for cycling details', () => {

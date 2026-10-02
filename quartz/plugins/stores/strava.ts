@@ -1,4 +1,5 @@
 import type { RunPaceZoneDistribution } from '../../util/run-pace-zones'
+import type { SwimPhysiology } from '../../util/swim-physiology'
 import type { SwimPowerEstimate } from '../../util/swim-power'
 import type { SwimLocation, SwimStroke } from './apple'
 import type {
@@ -709,6 +710,7 @@ export interface StravaActivityDetail {
   performanceConditionTrace: ActivityPerformanceConditionTrace | null
   heartRatePhysiology?: HeartRatePhysiology | null
   walkPower?: WalkPowerEstimate | null
+  swimPhysiology?: SwimPhysiology | null
   calculatedIntensityFactor: CalculatedIntensityFactor | null
   calculatedExerciseLoad: CalculatedExerciseLoad | null
   anaerobicPowerEstimate: AnaerobicPowerEstimate | null

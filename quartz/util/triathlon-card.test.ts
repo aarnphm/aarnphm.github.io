@@ -31,6 +31,8 @@ import { buildCyclingTorqueTrace, cyclingTorqueSamples } from './cycling-torque'
 import { health as garminHealthFixture } from './fixtures/garmin-health'
 import { estimateHeartRatePhysiology } from './heart-rate-physiology'
 import { resolveSleepMetrics } from './sleep-metrics'
+import { estimateSwimPhysiology } from './swim-physiology'
+import { buildSwimPowerEstimate } from './swim-power'
 import {
   activityCompareColor,
   activityComparisonDisplayValueAtDistance as displayValueAtDistance,
@@ -62,6 +64,7 @@ import {
   buildIcon,
   buildPowerBalanceChart,
   buildPowerCurve,
+  buildSwimPowerCurve,
   buildPowerHist,
   buildSaunaHeatTrainingLoad,
   buildShiftingChart,
@@ -10860,6 +10863,73 @@ test('keeps standalone HR for pace, power, and activities without workout analys
       assert.ok(more.children.includes(heartRateGraphs[0]))
     }
   }
+})
+
+test('renders swim physiology and a duration drag curve in full and embedded activity cards', () => {
+  const samples = Array.from({ length: 61 }, (_, i) => ({
+    elapsedS: i * 10,
+    distanceKm: i * 0.007,
+    heartRate: 140,
+    speedMps: 0.7,
+    strokeRateSpm: 24,
+  }))
+  const swim = detail({
+    sport: 'swim',
+    route: [],
+    elapsedTimeS: 600,
+    movingTimeS: 600,
+    distanceKm: 0.42,
+    swimPhysiology: estimateSwimPhysiology(samples, 200, 'activity-average'),
+    swimPower: buildSwimPowerEstimate(
+      'route',
+      [{ startElapsedS: 0, endElapsedS: 600, durationS: 600, distanceM: 420, stroke: null }],
+      'ground-speed',
+    ),
+  })
+  for (const embedded of [false, true]) {
+    const node = buildActivity(factory, swim, true, undefined, false, embedded)
+    assert.equal(
+      byClass(node, 'tri-stamina-chart')[0].properties.dataStaminaSource,
+      'garden-estimate',
+    )
+    assert.match(
+      String(byClass(node, 'tri-performance-condition-source')[0].properties.dataGlossDef),
+      /swim/,
+    )
+    const curve = byClass(node, 'tri-swim-drag-chart')[0]
+    assert.ok(curve)
+    assert.match(text(curve), /idx/)
+    assert.doesNotMatch(text(curve), /2:30| index/)
+    const title = byClass(curve, 'tri-zone-title')[0]
+    assert.match(String(title.properties.dataGlossDef), /2:30\/100m = 100/)
+    assert.equal(title.properties.tabIndex, 0)
+    assert.doesNotMatch(text(curve), /W\/kg|FTP/)
+    assert.equal(byTag(curve, 'svg')[0].properties.ariaLabel, 'modeled swim drag power curve')
+    const distribution = byClass(node, 'tri-swim-power-distribution')[0]
+    assert.ok(distribution)
+    assert.match(text(distribution), /25 idx drag distribution/)
+    assert.doesNotMatch(text(distribution), /\bW\b|FTP|2:30/)
+    const histogram = byClass(distribution, 'tri-hist-svg')[0]
+    assert.equal(histogram.properties.dataHistUnit, 'idx')
+    assert.equal(histogram.properties.role, 'slider')
+    assert.equal(histogram.properties.tabIndex, 0)
+    assert.equal(histogram.properties.ariaLabel, 'modeled swim drag distribution')
+    const bins: unknown = JSON.parse(String(histogram.properties.dataHist))
+    assert.deepEqual(bins, [0, 0, 0, 0, 600])
+    assert.match(
+      String(byClass(distribution, 'tri-zone-title')[0].properties.dataGlossDef),
+      /2:30\/100m = 100/,
+    )
+  }
+  assert.equal(buildSwimPowerCurve(factory, detail({ sport: 'swim' })), null)
+  assert.equal(buildPowerHist(factory, detail({ sport: 'swim', powerHist: [10, 20] })), null)
+  const slow = detail({
+    sport: 'swim',
+    swimPower: buildSwimPowerEstimate('apple', [
+      { startElapsedS: 0, endElapsedS: 80, durationS: 80, distanceM: 25, stroke: 'freestyle' },
+    ]),
+  })
+  assert.ok(buildPowerHist(factory, slow))
 })
 
 test('keeps native physiology ahead of the HR fallback and omits empty workout analysis', () => {

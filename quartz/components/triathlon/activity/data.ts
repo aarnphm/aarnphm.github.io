@@ -16,6 +16,7 @@ import {
   type StravaDetailShard,
 } from '../../../util/strava-detail'
 import { parsePublicSurfaceCurrentEstimate } from '../../../util/surface-current'
+import { SWIM_PHYSIOLOGY_METHOD } from '../../../util/swim-physiology'
 import { SWIM_POWER_REFERENCE_PACE_S_PER_100M } from '../../../util/swim-power'
 import { isTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { isRecord } from '../../../util/type-guards'
@@ -75,9 +76,14 @@ const isHeartRatePhysiology = (value: unknown, elapsedTimeS: number): boolean =>
     value.points.length < 2
   )
     return false
+  return isPhysiologyPoints(value.points, elapsedTimeS)
+}
+
+const isPhysiologyPoints = (points: unknown, elapsedTimeS: number): boolean => {
+  if (!Array.isArray(points) || points.length < 2) return false
   let previous = -1
   let distance = 0
-  return value.points.every((point: unknown) => {
+  return points.every((point: unknown) => {
     if (
       !isRecord(point) ||
       !bounded(point.elapsedS, 0, elapsedTimeS) ||
@@ -94,6 +100,26 @@ const isHeartRatePhysiology = (value: unknown, elapsedTimeS: number): boolean =>
     return true
   })
 }
+
+const isSwimPhysiology = (value: unknown, elapsedTimeS: number): boolean =>
+  value == null ||
+  (isRecord(value) &&
+    value.source === 'garden-estimate' &&
+    value.method === SWIM_PHYSIOLOGY_METHOD &&
+    value.exertionSource === 'heart-rate' &&
+    value.speedBasis === 'ground-speed' &&
+    (value.strokeRateSource === 'stream' ||
+      value.strokeRateSource === 'stream-with-average' ||
+      value.strokeRateSource === 'activity-average' ||
+      value.strokeRateSource === 'unavailable') &&
+    bounded(value.maxHeartRateBpm, 100, 240) &&
+    bounded(value.baselineHeartRateBpm, 35, 240) &&
+    bounded(value.baselineSpeedMps, 100 / 360, 100 / 45) &&
+    nullableBounded(value.baselineStrokesPerM, 0.001, 10) &&
+    value.baselineSeconds === 180 &&
+    value.windowSeconds === 60 &&
+    bounded(value.coverage, 0, 1) &&
+    isPhysiologyPoints(value.points, elapsedTimeS))
 
 const isSwimPower = (value: unknown, elapsedTimeS: number): boolean => {
   if (value == null) return true
@@ -783,8 +809,9 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
       ((value.performanceConditionTrace.source === 'garden-estimate' && value.sport !== 'bike') ||
         (value.sport !== 'bike' && value.sport !== 'run'))) ||
     !finite(value.elapsedTimeS) ||
+    !isSwimPhysiology(value.swimPhysiology, value.elapsedTimeS) ||
     !isSwimPower(value.swimPower, value.elapsedTimeS) ||
-    (value.swimPower != null && value.sport !== 'swim') ||
+    ((value.swimPhysiology != null || value.swimPower != null) && value.sport !== 'swim') ||
     !isHeartRatePhysiology(value.heartRatePhysiology, value.elapsedTimeS) ||
     !isWalkPower(value.walkPower, value.elapsedTimeS, value.date) ||
     (value.walkPower != null && value.sport !== 'walk') ||
