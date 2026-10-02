@@ -32,13 +32,15 @@ export function applyHeartRatePhysiology(
   if (maxHeartRateBpm == null) return
   if (detail.deviceWatts && detail.route.some(point => point.w > 0)) return
   const samples =
-    detail.route.length >= 2
-      ? detail.route.map(point => ({
-          elapsedS: point.elapsedS,
-          distanceKm: point.d,
-          heartRate: point.hr > 0 ? point.hr : null,
-        }))
-      : detail.heartRateTrace
+    detail.sport === 'walk' && detail.heartRateTrace.length >= 2
+      ? detail.heartRateTrace
+      : detail.route.length >= 2
+        ? detail.route.map(point => ({
+            elapsedS: point.elapsedS,
+            distanceKm: point.d,
+            heartRate: point.hr > 0 ? point.hr : null,
+          }))
+        : detail.heartRateTrace
   detail.heartRatePhysiology = estimateHeartRatePhysiology(
     samples.filter(sample => sample.elapsedS <= detail.elapsedTimeS),
     maxHeartRateBpm,

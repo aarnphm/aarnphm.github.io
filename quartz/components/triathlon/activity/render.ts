@@ -9,6 +9,7 @@ import type { ScrubSurface } from './analysis'
 import type { DetailPayload } from './data'
 import { activityCyclingTorquePoints, buildCrankTorqueChart } from '../../../util/triathlon-card'
 import { activityCyclingPowerPoints, buildCyclingPowerChart } from '../../../util/triathlon-card'
+import { activityWalkPowerPoints } from '../../../util/triathlon-card'
 import { activityCadenceScale } from '../../../util/triathlon-card'
 import { activityCadenceUnit } from '../../../util/triathlon-card'
 import { activityStatRows } from '../../../util/triathlon-card'
@@ -23,6 +24,7 @@ import { activityThermalTracePoints } from '../../../util/triathlon-card'
 import { activityTraceUsesElapsedAxis } from '../../../util/triathlon-card'
 import { activityTrainingEffectLabel } from '../../../util/triathlon-card'
 import { buildActivity as buildActivityNode } from '../../../util/triathlon-card'
+import { buildWalkPowerTrace as buildWalkPowerTraceNode } from '../../../util/triathlon-card'
 import { buildActivityIcon } from '../../../util/triathlon-card'
 import { buildAnalysisBar } from '../../../util/triathlon-card'
 import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../../../util/triathlon-card'
@@ -98,6 +100,7 @@ import {
   triathlonTraceEnabled,
   type TriathlonTraceSettings,
 } from '../../../util/triathlon-trace-settings'
+import { walkPowerAt } from '../../../util/walk-power'
 import { buildMatchedRideGroup } from '../analytics/panels/matched'
 import { buildMatchedRunGroup } from '../analytics/panels/matched'
 import {
@@ -302,6 +305,25 @@ const cyclingPowerScrubSurface = (
         d.analyses.derived.environment?.samples ?? [],
         distanceAvailable,
       ),
+  }
+}
+
+const walkPowerScrubSurface = (
+  wrap: HTMLElement,
+  d: StravaActivityDetail,
+  presentation: TriathlonPresentation,
+): ScrubSurface => {
+  const points = activityWalkPowerPoints(d)
+  return {
+    wrap,
+    samples: points,
+    fmt: index => {
+      const point = points[index]
+      const position = activityTraceUsesElapsedAxis(d)
+        ? zoneClock(point.elapsedS)
+        : scrubDist(presentation, point.d, d.sport)
+      return `${position} · ${point.watts == null ? '—' : `${Math.round(point.watts)} W`} · ${triText(presentation.locale, 'estimated')}`
+    },
   }
 }
 
@@ -988,6 +1010,22 @@ export const metricSpecs = (
     if (hasThermal) specs.push(temperatureSpec)
   } else if (d.sport === 'walk') {
     specs.push(paceSpec)
+    if (hasPower) specs.push(powerSpec)
+    else if (!d.deviceWatts && d.walkPower)
+      specs.push({
+        label: 'walking power',
+        shortLabel: 'W',
+        ramp: HEAT_RAMP,
+        valid: point => walkPowerAt(d.walkPower, point.elapsedS) != null,
+        pick: point => walkPowerAt(d.walkPower, point.elapsedS) ?? 0,
+        fmt: value => `${Math.round(value)} W · ${triText(presentation.locale, 'estimated')}`,
+        profile: graphDomain =>
+          requiredMapProfile(buildWalkPowerTraceNode(domF, d, null, graphDomain), 'walking power'),
+        readout: point => {
+          const watts = walkPowerAt(d.walkPower, point.elapsedS)
+          return `${scrubDist(presentation, point.d, d.sport)} · ${watts == null ? '—' : `${Math.round(watts)} W`} · ${triText(presentation.locale, 'estimated')}`
+        },
+      })
     if (hasHr) specs.push(hrSpec)
     if (flags.stamina) specs.push(staminaSpec)
     if (hasCad) specs.push(cadSpec)
@@ -1088,6 +1126,7 @@ export const renderMapDetail = (
       heartRate,
       buildStaminaChartNode(domF, d, null),
       buildPerformanceConditionTraceNode(domF, d, null),
+      buildWalkPowerTraceNode(domF, d, null),
       trainingEffect,
       zoneDuo(
         presentation,
@@ -1115,6 +1154,10 @@ export const renderMapDetail = (
           null,
           [
             ...physiologyScrubSurfaces(wrap, d, presentation),
+            ...Array.from(
+              wrap.querySelectorAll<HTMLElement>('[data-tri-trace="walking-power"]'),
+              trace => walkPowerScrubSurface(trace, d, presentation),
+            ),
             ...Array.from(
               wrap.querySelectorAll<HTMLElement>('[data-tri-trace="crank-torque"]'),
               trace => torqueScrubSurface(trace, d, presentation),
@@ -1196,15 +1239,19 @@ export const renderMapDetail = (
     if (bestEfforts) zoneBox.appendChild(bestEfforts)
     const cyclingChart = zoneBox.querySelector<HTMLElement>('.tri-cycling-mode-chart')
     if (cyclingChart) setCyclingChartMode(cyclingChart, existingCyclingChartMode)
-    linkedSurfaces = [{ wrap: profile, fmt: spec.readout }, ...traces].map(surface => ({
-      wrap: surface.wrap,
-      samples: routeSamples,
-      fmt: index => {
-        const point = d.route[index]
-        opts?.onHover?.(point, index)
-        return surface.fmt(point, index)
-      },
-    }))
+    linkedSurfaces = [{ wrap: profile, fmt: spec.readout }, ...traces].map(surface =>
+      surface.wrap.dataset.triTrace === 'walking-power'
+        ? walkPowerScrubSurface(surface.wrap, d, presentation)
+        : {
+            wrap: surface.wrap,
+            samples: routeSamples,
+            fmt: index => {
+              const point = d.route[index]
+              opts?.onHover?.(point, index)
+              return surface.fmt(point, index)
+            },
+          },
+    )
     const torqueTrace = torque?.querySelector<HTMLElement>('[data-tri-trace="crank-torque"]')
     if (torqueTrace) linkedSurfaces.push(torqueScrubSurface(torqueTrace, d, presentation))
     if (cyclingPower instanceof HTMLElement) {
@@ -1479,6 +1526,8 @@ export const renderDetail = (
           return `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(powerValues?.[i] ?? p.w)} W`
         },
       })
+    else if (trace.dataset.triTrace === 'walking-power')
+      surfaces.push(walkPowerScrubSurface(trace, d, presentation))
     else if (trace.dataset.triTrace === 'power-balance')
       surfaces.push({
         wrap: trace,

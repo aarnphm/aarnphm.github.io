@@ -17,6 +17,48 @@ import {
 } from '../../../util/strava-detail'
 import { isTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { isRecord } from '../../../util/type-guards'
+import { WALK_POWER_METHOD, WALK_POWER_WINDOW_SECONDS } from '../../../util/walk-power'
+
+const isWalkPower = (value: unknown, elapsedTimeS: number, date: unknown): boolean => {
+  if (value == null) return true
+  if (
+    !isRecord(value) ||
+    value.source !== 'garden-estimate' ||
+    (value.inputSource !== 'strava' && value.inputSource !== 'garmin') ||
+    value.method !== WALK_POWER_METHOD ||
+    value.kind !== 'net-metabolic' ||
+    value.windowSeconds !== WALK_POWER_WINDOW_SECONDS ||
+    !isRecord(value.weight) ||
+    !finite(value.weight.kg) ||
+    value.weight.kg <= 0 ||
+    value.weight.date !== date ||
+    value.weight.source !== 'garmin' ||
+    !finite(value.averageWatts) ||
+    value.averageWatts < 0 ||
+    !Array.isArray(value.points) ||
+    value.points.length < 3
+  )
+    return false
+  let previous = -1
+  let distance = 0
+  let usable = 0
+  const valid = value.points.every((point: unknown) => {
+    if (
+      !isRecord(point) ||
+      !bounded(point.elapsedS, 0, elapsedTimeS) ||
+      point.elapsedS <= previous ||
+      !finite(point.distanceKm) ||
+      point.distanceKm < distance ||
+      !(point.watts === null || (finite(point.watts) && point.watts >= 0))
+    )
+      return false
+    previous = point.elapsedS
+    distance = point.distanceKm
+    if (point.watts != null) usable++
+    return true
+  })
+  return valid && usable >= 2
+}
 
 const isHeartRatePhysiology = (value: unknown, elapsedTimeS: number): boolean => {
   if (value == null) return true
@@ -657,6 +699,8 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
         (value.sport !== 'bike' && value.sport !== 'run'))) ||
     !finite(value.elapsedTimeS) ||
     !isHeartRatePhysiology(value.heartRatePhysiology, value.elapsedTimeS) ||
+    !isWalkPower(value.walkPower, value.elapsedTimeS, value.date) ||
+    (value.walkPower != null && value.sport !== 'walk') ||
     value.elapsedTimeS < 0 ||
     value.elapsedTimeS > Number.MAX_SAFE_INTEGER ||
     !isCyclingTorqueTrace(value.cyclingTorque, value.elapsedTimeS) ||

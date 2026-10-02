@@ -83,6 +83,19 @@ export const workspaceTraces = (
       routeSamples(p => p.w),
       numeric('W'),
     )
+  if (d.sport === 'walk' && !d.deviceWatts && d.walkPower)
+    add(
+      'walk-power',
+      'walking power',
+      '#8b6fd6',
+      d.walkPower.points.map(point => ({
+        elapsedS: point.elapsedS,
+        distanceKm: point.distanceKm,
+        value: point.watts,
+      })),
+      numeric('W'),
+      true,
+    )
   const cycling = d.cyclingPowerTrace
   if (cycling) {
     const points = cycling.points

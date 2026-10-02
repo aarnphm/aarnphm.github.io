@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { cyclingMechanics, cyclingTorqueSamples } from '../../util/cycling-torque'
+import { applyHeartRatePhysiology } from '../../util/heart-rate-physiology'
 import { isRecord } from '../../util/type-guards'
 import { decodeWahooFit } from '../../util/wahoo-fit'
 import { buildAnalytics, buildDataFeed } from './analytics'
@@ -4547,6 +4548,120 @@ test('projects running distance efforts without power and preserves elapsed paus
     buildPayload({ ...cache, streams: {} }, null, null, '2026-06-01').details['101'].bestEfforts,
     null,
   )
+})
+
+test('estimates walk performance condition across the recorded HR session when the route is shorter', () => {
+  const activity = ride({
+    sportType: 'Walk',
+    deviceWatts: false,
+    distance: 600,
+    movingTime: 600,
+    elapsedTime: 600,
+  })
+  const time = Array.from({ length: 601 }, (_, index) => index)
+  const cache: StravaRawCache = {
+    auth: { refreshToken: '', obtainedAt: 0 },
+    athleteId: 1,
+    lastSync: 0,
+    lastActivityStart: 0,
+    activities: { '101': activity },
+    streams: {
+      '101': {
+        time,
+        latlng: time.map(seconds => [seconds >= 10 && seconds <= 61 ? 43.65 : 43.64, -79.4]),
+        altitude: time.map(() => 80),
+        distance: time,
+        heartrate: time.map(seconds => (seconds <= 60 ? 100 : 120)),
+      },
+    },
+  }
+  assert.ok(cache.streams)
+  for (let id = 102; id <= 106; id++) {
+    cache.activities[id] = ride({ id, distance: 1, movingTime: 1, elapsedTime: 1 })
+    cache.streams[id] = {
+      time: [0, 1],
+      latlng: [
+        [43.64, -79.4],
+        [43.64, -79.4],
+      ],
+      altitude: [80, 80],
+      distance: [0, 1],
+    }
+  }
+  for (const routeAvailable of [true, false]) {
+    if (!routeAvailable) cache.streams['101'].latlng = []
+    const detail = buildPayload(
+      cache,
+      null,
+      null,
+      undefined,
+      null,
+      null,
+      null,
+      undefined,
+      null,
+      200,
+    ).details['101']
+    assert.equal(detail.route.length >= 2, routeAvailable)
+    if (routeAvailable) assert.equal(detail.route.at(-1)?.elapsedS, 61)
+    assert.equal(detail.heartRatePhysiology?.source, 'garden-estimate')
+    assert.equal(detail.heartRatePhysiology?.points.at(-1)?.elapsedS, 600)
+    assert.equal(detail.heartRatePhysiology?.points.at(-1)?.distanceKm, 0.6)
+    assert.ok((detail.heartRatePhysiology?.points.at(-1)?.performanceCondition ?? 0) < -9)
+    const estimate = detail.heartRatePhysiology
+    applyHeartRatePhysiology(detail, 200)
+    assert.deepEqual(detail.heartRatePhysiology, estimate)
+  }
+})
+
+test('projects walking metabolic power with same-day weight while preserving provider power', () => {
+  const time = Array.from({ length: 61 }, (_, index) => index * 10)
+  const cache: StravaRawCache = {
+    auth: { refreshToken: '', obtainedAt: 0 },
+    athleteId: 1,
+    lastSync: 0,
+    lastActivityStart: 0,
+    activities: {
+      '101': ride({
+        sportType: 'Walk',
+        deviceWatts: false,
+        distance: 600,
+        movingTime: 600,
+        elapsedTime: 600,
+      }),
+    },
+    streams: { '101': { time, latlng: [], distance: time, altitude: time.map(() => 100) } },
+  }
+  const garmin: GarminCache = {
+    lastSync: 0,
+    activities: {},
+    streams: {},
+    weight: [
+      {
+        ts: Date.parse('2026-06-07T06:00:00Z'),
+        date: '2026-06-07',
+        weightKg: 80,
+        bmi: null,
+        bodyFatPct: null,
+        bodyWaterPct: null,
+        muscleMassKg: null,
+        boneMassKg: null,
+      },
+    ],
+  }
+  const walk = buildPayload(cache, null, garmin).details['101']
+  assert.equal(walk.walkPower?.averageWatts, 200)
+  assert.equal(walk.walkPower?.points.at(-1)?.elapsedS, 600)
+  assert.equal(walk.avgWatts, null)
+  assert.equal(walk.deviceWatts, false)
+  assert.equal(buildPayload(cache, null, null).details['101'].walkPower, null)
+  assert.ok(cache.streams)
+  cache.activities['101'].deviceWatts = true
+  cache.activities['101'].averageWatts = 123
+  cache.streams['101'].watts = time.map(() => 123)
+  const native = buildPayload(cache, null, garmin).details['101']
+  assert.equal(native.walkPower, null)
+  assert.equal(native.avgWatts, 123)
 })
 
 test('projects HR session estimates into walking and stationary recovery payloads', () => {

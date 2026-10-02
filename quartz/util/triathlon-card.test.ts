@@ -15,7 +15,9 @@ import type {
   SwimTrendPoint,
 } from '../plugins/stores/strava'
 import type { TriathlonDayAnalytics } from './triathlon-day-analytics'
+import { isActivityDetail } from '../components/triathlon/activity/data'
 import { metricSpecs } from '../components/triathlon/activity/render'
+import { workspaceTraces } from '../components/triathlon/activity/workspace-data'
 import { createTriathlonFormatter } from '../components/triathlon/runtime/formatter'
 import { buildAnalytics } from '../plugins/stores/analytics'
 import { calculateActivityExerciseLoad, emptyHealth } from '../plugins/stores/strava'
@@ -135,6 +137,7 @@ import {
   type TriathlonPresentation,
 } from './triathlon-presentation'
 import { TRIATHLON_TRACE_DISPLAY_SETTINGS } from './triathlon-trace-settings'
+import { buildWalkPowerEstimate } from './walk-power'
 
 const METRIC_TRIATHLON_PRESENTATION: TriathlonPresentation = Object.freeze({
   ...DEFAULT_TRIATHLON_PRESENTATION,
@@ -5627,6 +5630,85 @@ test('keeps a missing run cadence visible as an em dash', () => {
     ['cadence', '—'],
     ['max hr', '171 bpm'],
   ])
+})
+
+test('renders estimated walking power in cards, map metrics, and the workspace while retaining native power', () => {
+  const time = [0, 10, 20, 30, 40, 50, 60]
+  const estimate = buildWalkPowerEstimate({
+    inputSource: 'strava',
+    weight: { kg: 80, date: '2026-09-29', source: 'garmin' },
+    streams: { time, distance: time, altitude: time.map(() => 100) },
+    elapsedTimeS: 60,
+  })
+  assert.ok(estimate)
+  const base = detail()
+  const activity = detail({
+    sport: 'walk',
+    date: '2026-09-29',
+    deviceWatts: false,
+    avgWatts: null,
+    distanceKm: 0.06,
+    elapsedTimeS: 60,
+    movingTimeS: 60,
+    walkPower: estimate,
+    route: time.map((elapsedS, index) => ({ ...base.route[0], elapsedS, d: index / 100, w: 0 })),
+  })
+  assert.ok(isActivityDetail(JSON.parse(JSON.stringify(activity))))
+  assert.equal(
+    isActivityDetail({ ...activity, walkPower: { ...estimate, source: 'garmin' } }),
+    false,
+  )
+  assert.equal(isActivityDetail({ ...activity, sport: 'run' }), false)
+  assert.equal(
+    isActivityDetail({
+      ...activity,
+      walkPower: { ...estimate, points: estimate.points.map(point => ({ ...point, watts: -1 })) },
+    }),
+    false,
+  )
+  for (const embedded of [false, true]) {
+    const card = buildActivity(factory, activity, true, undefined, false, embedded)
+    const chart = descendants(card, node => node.properties.dataTriTrace === 'walking-power')[0]
+    assert.ok(chart)
+    assert.equal(chart.properties.dataWalkingPowerSource, 'garden-estimate')
+    assert.match(text(chart), /walking power.*200 W.*calculated/)
+    assert.deepEqual(
+      moreStatRows(METRIC_TRIATHLON_PRESENTATION, activity).find(
+        ([label]) => label === 'walking power',
+      ),
+      ['walking power', '200 W · estimated'],
+    )
+  }
+  const workspace = workspaceTraces(activity, METRIC_TRIATHLON_PRESENTATION)
+  assert.equal(workspace.find(trace => trace.id === 'walk-power')?.estimated, true)
+  const map = metricSpecs(METRIC_TRIATHLON_PRESENTATION, activity, ctx()).find(
+    metric => metric.label === 'walking power',
+  )
+  assert.ok(map)
+  assert.equal(map.pick(activity.route[3], 3), 200)
+  const native = detail({
+    ...activity,
+    deviceWatts: true,
+    avgWatts: 123,
+    route: activity.route.map(point => ({ ...point, w: 123 })),
+  })
+  const card = buildActivity(factory, native, true)
+  assert.equal(
+    descendants(card, node => node.properties.dataTriTrace === 'walking-power').length,
+    0,
+  )
+  assert.equal(descendants(card, node => node.properties.dataTriTrace === 'power').length, 1)
+  assert.equal(
+    workspaceTraces(native, METRIC_TRIATHLON_PRESENTATION).filter(
+      trace => trace.id === 'walk-power',
+    ).length,
+    0,
+  )
+  assert.ok(
+    metricSpecs(METRIC_TRIATHLON_PRESENTATION, native, ctx()).some(
+      metric => metric.label === 'power',
+    ),
+  )
 })
 
 test('renders Garmin walk pace, cadence, respiration, and elevation', () => {
