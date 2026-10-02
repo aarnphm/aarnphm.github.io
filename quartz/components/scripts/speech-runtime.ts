@@ -3,7 +3,7 @@ import { SpeechClient } from './speech-client'
 
 const MAX_AUDIO_CACHE = 32
 const MAX_STORED_AUDIO_BYTES = 2_000_000
-const AUDIO_CACHE_NAME = `garden-speech-audio-${SPEECH_MODEL_INFO.revision}-${SPEECH_MODEL_INFO.voice}-v1`
+const AUDIO_CACHE_NAME = `garden-speech-audio-${SPEECH_MODEL_INFO.revision}-${SPEECH_MODEL_INFO.voice}-v2`
 
 function wavBlob(audio: Float32Array, samplingRate: number): Blob {
   const bytes = new ArrayBuffer(44 + audio.length * 2)

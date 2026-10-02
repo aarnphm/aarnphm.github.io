@@ -91,8 +91,61 @@ function floatData(tensor: Tensor | undefined, name: string): Float32Array {
   return tensor.data
 }
 
+const FRENCH_UNITS = [
+  'zéro',
+  'un',
+  'deux',
+  'trois',
+  'quatre',
+  'cinq',
+  'six',
+  'sept',
+  'huit',
+  'neuf',
+  'dix',
+  'onze',
+  'douze',
+  'treize',
+  'quatorze',
+  'quinze',
+  'seize',
+]
+
+function frenchCardinal(value: number, terminal = true): string {
+  if (value < 17) return FRENCH_UNITS[value]
+  if (value < 20) return `dix-${FRENCH_UNITS[value - 10]}`
+  if (value < 70) {
+    const tens = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante'][
+      Math.floor(value / 10)
+    ]
+    const unit = value % 10
+    return `${tens}${unit === 0 ? '' : unit === 1 ? '-et-un' : `-${FRENCH_UNITS[unit]}`}`
+  }
+  if (value < 80) return `soixante-${value === 71 ? 'et-' : ''}${frenchCardinal(value - 60)}`
+  if (value < 100)
+    return value === 80
+      ? `quatre-vingt${terminal ? 's' : ''}`
+      : `quatre-vingt-${frenchCardinal(value - 80)}`
+  const divisor = value < 1_000 ? 100 : 1_000
+  const count = Math.floor(value / divisor)
+  const remainder = value % divisor
+  const prefix = count === 1 ? '' : `${frenchCardinal(count, false)}-`
+  const magnitude =
+    divisor === 100 ? `cent${count > 1 && remainder === 0 && terminal ? 's' : ''}` : 'mille'
+  return `${prefix}${magnitude}${remainder === 0 ? '' : `-${frenchCardinal(remainder, terminal)}`}`
+}
+
+function expandFrenchCardinals(text: string): string {
+  // Give the character model the intended French words for plain cardinals. Leave decimals,
+  // ordinals, codes, and leading-zero strings to their existing pronunciation path.
+  return text.replace(/(?<![\p{L}\p{M}\d.,])\d+(?![\p{L}\p{M}\d]|[.,]\d)/gu, digits => {
+    const value = Number(digits)
+    return digits.length <= 6 && !/^0\d/.test(digits) ? frenchCardinal(value) : digits
+  })
+}
+
 function normalizeFrench(text: string): string {
-  let normalized = text
+  let normalized = expandFrenchCardinals(text)
     .normalize('NFKD')
     .replace(/[\p{Extended_Pictographic}\p{Regional_Indicator}]/gu, '')
     .replace(/[–‑—]/g, '-')
