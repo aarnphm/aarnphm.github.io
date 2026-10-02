@@ -1,15 +1,57 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import type { SurfaceCurrentEstimate } from '../../util/surface-current'
 import {
   compassFromDegrees,
   parseWeatherCache,
   summarizeWeatherDays,
   weatherActivityFromHours,
+  weatherActivityFromRouteHours,
   weatherSnapshotFromHours,
   type WeatherActivity,
   type WeatherActivityCandidate,
   type WeatherHour,
 } from './weather'
+
+function currentForActivity(activity: WeatherActivity): SurfaceCurrentEstimate {
+  return {
+    source: 'noaa-loofs',
+    sourceKind: 'modeled',
+    formulaId: 'garden-surface-current-v1',
+    formulaVersion: 1,
+    activityId: activity.activityId,
+    routeFingerprint: activity.routeFingerprint ?? 'route',
+    start: activity.start,
+    end: activity.end,
+    computedAt: Date.parse('2026-06-12T01:00:00Z'),
+    spatialSamplingModel: 'containing-element',
+    temporalSamplingModel: 'hourly-linear-vector',
+    layer: 0,
+    summary: {
+      averageSpeedMps: 1,
+      averageDirectionDeg: 90,
+      coveragePct: 100,
+      coveredDurationS: activity.durationS,
+      elapsedDurationS: activity.durationS,
+    },
+    samples: [0, activity.durationS].map(elapsedS => ({
+      elapsedS,
+      speedMps: 1,
+      directionDeg: 90,
+      uMps: 1,
+      vMps: 0,
+      element: 1,
+      validTime: new Date(
+        Math.floor((Date.parse(activity.start) + elapsedS * 1_000) / 3_600_000) * 3_600_000,
+      ).toISOString(),
+      cycleTime: '2026-06-11T18:00:00.000Z',
+      sourceUrl:
+        elapsedS === 0
+          ? 'https://opendap.co-ops.nos.noaa.gov/thredds/dodsC/NOAA/LOOFS/MODELS/2026/06/11/loofs.t18z.20260611.fields.n005.nc.ascii'
+          : 'https://opendap.co-ops.nos.noaa.gov/thredds/dodsC/NOAA/LOOFS/MODELS/2026/06/11/loofs.t18z.20260611.fields.n003.nc.ascii',
+    })),
+  }
+}
 
 function candidate(values: Partial<WeatherActivityCandidate> = {}): WeatherActivityCandidate {
   return {
@@ -220,6 +262,70 @@ test('parseWeatherCache keeps valid activities and recomputes day summaries', ()
     { elapsedS: 0, temperatureC: 23 },
     { elapsedS: 3600, temperatureC: 24 },
   ])
+})
+
+test('keeps matching NOAA current through weather cache parsing and route-hour refresh', () => {
+  const activity = weatherActivityFromHours(candidate({ routeFingerprint: 'route' }), [
+    hour({ windSpeed: 10, windDirection: 270 }),
+    hour({ forecastStart: '2026-06-11T14:00:00.000Z', windSpeed: 20, windDirection: 270 }),
+  ])
+  assert.ok(activity)
+  const current = currentForActivity(activity)
+  const cache = parseWeatherCache({
+    version: 5,
+    lastSync: 100,
+    activities: { '101': { ...activity, surfaceCurrent: current } },
+  })
+  assert.deepEqual(cache?.activities['101'].surfaceCurrent, current)
+  const refreshed = weatherActivityFromRouteHours(
+    candidate({ routeFingerprint: 'route' }),
+    activity.routeHours ?? [],
+    200,
+    current,
+  )
+  assert.deepEqual(refreshed?.surfaceCurrent, current)
+  assert.equal(refreshed?.fetchedAt, 200)
+})
+
+test('discards mismatched or malformed current while preserving independent WeatherKit data', () => {
+  const activity = weatherActivityFromHours(candidate({ routeFingerprint: 'route' }), [
+    hour({ windSpeed: 10, windDirection: 270 }),
+    hour({ forecastStart: '2026-06-11T14:00:00.000Z', windSpeed: 20, windDirection: 270 }),
+  ])
+  assert.ok(activity)
+  const current = currentForActivity(activity)
+  const mismatches: SurfaceCurrentEstimate[] = [
+    { ...current, activityId: 102 },
+    { ...current, routeFingerprint: 'another-route' },
+    { ...current, start: '2026-06-11T13:00:00.000Z' },
+    { ...current, end: '2026-06-11T15:30:00.000Z' },
+    { ...current, summary: { ...current.summary, elapsedDurationS: activity.durationS - 1 } },
+  ]
+  for (const surfaceCurrent of [
+    undefined,
+    null,
+    {},
+    { ...current, sourceKind: 'measured' },
+    ...mismatches,
+  ]) {
+    const cache = parseWeatherCache({
+      version: 5,
+      lastSync: 100,
+      activities: { '101': { ...activity, surfaceCurrent } },
+    })
+    assert.equal(cache?.activities['101'].surfaceCurrent, undefined)
+    assert.equal(cache?.activities['101'].windKph, 17)
+  }
+  for (const surfaceCurrent of mismatches) {
+    const refreshed = weatherActivityFromRouteHours(
+      candidate({ routeFingerprint: 'route' }),
+      activity.routeHours ?? [],
+      200,
+      surfaceCurrent,
+    )
+    assert.equal(refreshed?.surfaceCurrent, undefined)
+    assert.equal(refreshed?.windKph, 17)
+  }
 })
 
 test('parseWeatherCache retains a valid current WeatherKit snapshot', () => {

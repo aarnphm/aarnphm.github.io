@@ -2,6 +2,10 @@ import {
   parseGardenUvCalibrationArtifact,
   type GardenUvCalibrationArtifact,
 } from '../../util/activity-uv-score'
+import {
+  parseSurfaceCurrentEstimate,
+  type SurfaceCurrentEstimate,
+} from '../../util/surface-current'
 import { isRecord, readNumber, readString } from '../../util/type-guards'
 
 const HOUR_MS = 3_600_000
@@ -44,6 +48,7 @@ export interface WeatherActivity {
   routeFingerprint?: string
   fetchedAt?: number
   routeHours?: WeatherRouteHour[]
+  surfaceCurrent?: SurfaceCurrentEstimate
   source: 'weatherkit'
 }
 
@@ -245,6 +250,7 @@ export function weatherActivityFromRouteHours(
   candidate: WeatherActivityCandidate,
   routeHours: readonly WeatherRouteHour[],
   fetchedAt?: number,
+  previousSurfaceCurrent?: SurfaceCurrentEstimate | null,
 ): WeatherActivity | null {
   const startMs = Date.parse(candidate.start)
   const endMs = Date.parse(candidate.end)
@@ -321,7 +327,7 @@ export function weatherActivityFromRouteHours(
   const relativeHumidityCoveragePct = round(
     Math.min(1, relativeHumidityWeight / (endMs - startMs)) * 100,
   )
-  return {
+  const activity: WeatherActivity = {
     activityId: candidate.activityId,
     date: candidate.date,
     start: candidate.start,
@@ -351,6 +357,24 @@ export function weatherActivityFromRouteHours(
     routeHours: sortedRouteHours.map(hour => ({ ...hour })),
     source: 'weatherkit',
   }
+  const surfaceCurrent = matchingSurfaceCurrent(previousSurfaceCurrent, activity)
+  if (surfaceCurrent) activity.surfaceCurrent = surfaceCurrent
+  return activity
+}
+
+const matchingSurfaceCurrent = (
+  value: unknown,
+  activity: WeatherActivity,
+): SurfaceCurrentEstimate | null => {
+  const current = parseSurfaceCurrentEstimate(value)
+  return current &&
+    current.activityId === activity.activityId &&
+    current.routeFingerprint === activity.routeFingerprint &&
+    Date.parse(current.start) === Date.parse(activity.start) &&
+    Date.parse(current.end) === Date.parse(activity.end) &&
+    current.summary.elapsedDurationS === activity.durationS
+    ? current
+    : null
 }
 
 export function summarizeWeatherDays(
@@ -627,7 +651,7 @@ function readWeatherActivity(value: unknown): WeatherActivity | null {
     temperatureC === undefined
   )
     return null
-  return {
+  const activity: WeatherActivity = {
     activityId,
     date,
     start,
@@ -654,6 +678,9 @@ function readWeatherActivity(value: unknown): WeatherActivity | null {
     ...(routeHours.length > 0 ? { routeHours } : {}),
     source: 'weatherkit',
   }
+  const surfaceCurrent = matchingSurfaceCurrent(value.surfaceCurrent, activity)
+  if (surfaceCurrent) activity.surfaceCurrent = surfaceCurrent
+  return activity
 }
 
 function readWeatherAttribution(value: unknown): WeatherAttribution | null {
