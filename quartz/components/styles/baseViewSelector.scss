@@ -9,6 +9,13 @@ $base-control-height: 2.125rem;
   #base-search-bar {
     box-sizing: border-box;
     height: $base-control-height;
+    border-color: var(--lightgray);
+
+    &:focus-within {
+      border-color: var(--secondary);
+      outline: 2px solid var(--secondary);
+      outline-offset: 2px;
+    }
   }
 }
 
