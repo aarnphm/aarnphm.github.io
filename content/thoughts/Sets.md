@@ -19,7 +19,7 @@ A set is a collection of distinct objects, called its _elements_ or _members_.
 
 Set theory studies which axiom systems make this idea behave; the working axiom system is [ZFC](https://en.wikipedia.org/wiki/Zermelo–Fraenkel_set_theory).
 
-The field began with Cantor's work on infinite cardinalities.
+The field began with Cantor's work on ::infinite cardinalities{h4}::.
 
 [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]] is the canonical obstruction you hit when first studying naive set theory: the set $R = \{x \mid x \notin x\}$ would satisfy $R \in R \iff R \notin R$.
 

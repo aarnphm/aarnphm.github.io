@@ -1,0 +1,10 @@
+{
+  "id": "obsidian-marked",
+  "name": "Garden Marked",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Render ::text:: as configurable rough annotations in Reading view and Live Preview.",
+  "author": "aarnphm",
+  "authorUrl": "https://aarnphm.xyz",
+  "isDesktopOnly": false
+}
