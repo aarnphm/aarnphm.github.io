@@ -1,9 +1,75 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { WeatherActivity, WeatherRouteHour } from '../plugins/stores/weather'
-import { buildActivityEnvironment, type ActivityEnvironmentInput } from './activity-environment'
+import type { SurfaceCurrentEstimate } from './surface-current'
+import {
+  buildActivityEnvironment,
+  surfaceCurrentChartSamples,
+  type ActivityEnvironmentInput,
+} from './activity-environment'
 
 const start = '2026-06-11T13:00:00.000Z'
+
+const surfaceCurrent = (durationS: number): SurfaceCurrentEstimate => ({
+  source: 'noaa-loofs',
+  sourceKind: 'modeled',
+  formulaId: 'garden-surface-current-v1',
+  formulaVersion: 1,
+  activityId: 101,
+  routeFingerprint: 'route',
+  start,
+  end: new Date(Date.parse(start) + durationS * 1_000).toISOString(),
+  computedAt: Date.parse('2026-06-12T01:00:00Z'),
+  spatialSamplingModel: 'containing-element',
+  temporalSamplingModel: 'hourly-linear-vector',
+  layer: 0,
+  summary: {
+    averageSpeedMps: 1,
+    averageDirectionDeg: 90,
+    coveragePct: 100,
+    coveredDurationS: durationS,
+    elapsedDurationS: durationS,
+  },
+  samples: [0, durationS].map(elapsedS => ({
+    elapsedS,
+    speedMps: 1,
+    directionDeg: 90,
+    uMps: 1,
+    vMps: 0,
+    element: 1,
+    validTime: new Date(
+      Math.floor((Date.parse(start) + elapsedS * 1_000) / 3_600_000) * 3_600_000,
+    ).toISOString(),
+    cycleTime: '2026-06-11T18:00:00.000Z',
+    sourceUrl:
+      elapsedS === 0
+        ? 'https://opendap.co-ops.nos.noaa.gov/thredds/dodsC/NOAA/LOOFS/MODELS/2026/06/11/loofs.t18z.20260611.fields.n005.nc.ascii'
+        : 'https://opendap.co-ops.nos.noaa.gov/thredds/dodsC/NOAA/LOOFS/MODELS/2026/06/11/loofs.t18z.20260611.fields.n004.nc.ascii',
+  })),
+})
+
+test('surface-current chart projection preserves gaps without fabricating weather or distance', () => {
+  const samples = surfaceCurrent(120).samples
+  const first = samples[0]
+  const final = samples[1]
+  const gap = {
+    elapsedS: 60,
+    speedMps: null,
+    directionDeg: null,
+    uMps: null,
+    vMps: null,
+    element: null,
+    validTime: null,
+    cycleTime: null,
+    sourceUrl: null,
+  }
+  assert.deepEqual(surfaceCurrentChartSamples([first, gap, { ...final, speedMps: 0 }]), [
+    { elapsedS: 0, surfaceCurrentSpeedMps: 1, surfaceCurrentDirectionDeg: 90 },
+    { elapsedS: 60, surfaceCurrentSpeedMps: null, surfaceCurrentDirectionDeg: null },
+    { elapsedS: 120, surfaceCurrentSpeedMps: 0, surfaceCurrentDirectionDeg: 90 },
+  ])
+  assert.deepEqual(surfaceCurrentChartSamples([]), [])
+})
 
 const routeHour = (
   elapsedStartS: number,
@@ -248,4 +314,102 @@ test('represents calm air and rejects low-speed and telemetry-gap intervals', ()
   assert.equal(calm.apparentWind?.summary.apparentAirRatio, 1)
   assert.equal(lowSpeed.apparentWind, null)
   assert.equal(gap.apparentWind, null)
+})
+
+test('retains hourly ambient wind for slow outdoor routes without meteorological direction', () => {
+  const result = buildActivityEnvironment(
+    input(
+      20,
+      [
+        routeHour(0, 5, { windSpeedKph: 12, windDirectionDeg: null }),
+        routeHour(5, 20, { windSpeedKph: 20, windDirectionDeg: null }),
+      ],
+      {
+        timeS: [0, 5, 10, 20],
+        distanceM: [0, 5, 10, 20],
+        latlng: [
+          [43.64, -79.4],
+          [43.64005, -79.4],
+          [43.6401, -79.4],
+          [43.6402, -79.4],
+        ],
+      },
+    ),
+  )
+
+  assert.equal(result.environment?.summary.averageWindSpeedKph, 18)
+  assert.equal(result.environment?.coverage.windPct, 100)
+  assert.deepEqual(
+    result.environment?.samples.map(sample => sample.windSpeedKph),
+    [12, 20, 20, 20],
+  )
+  assert.equal(result.apparentWind, null)
+  assert(result.environment?.samples.every(sample => sample.apparentAirSpeedKph === null))
+})
+
+test('reports ambient wind coverage independently and preserves missing hourly speed', () => {
+  const result = buildActivityEnvironment(
+    input(20, [routeHour(0, 10, { windSpeedKph: 0 }), routeHour(10, 20, { windSpeedKph: null })], {
+      timeS: [0, 5, 10, 20],
+      distanceM: [0, 5, 10, 20],
+      latlng: [
+        [43.64, -79.4],
+        [43.64005, -79.4],
+        [43.6401, -79.4],
+        [43.6402, -79.4],
+      ],
+    }),
+  )
+
+  assert.equal(result.environment?.summary.averageWindSpeedKph, 0)
+  assert.equal(result.environment?.coverage.windPct, 50)
+  assert.deepEqual(
+    result.environment?.samples.map(sample => sample.windSpeedKph),
+    [0, 0, null, null],
+  )
+})
+
+test('rejects invalid ambient wind speeds without discarding other weather estimates', () => {
+  for (const windSpeedKph of [-1, Number.NaN, Number.POSITIVE_INFINITY]) {
+    const result = buildActivityEnvironment(input(20, [routeHour(0, 20, { windSpeedKph })]))
+
+    assert.equal(result.environment?.summary.averageWindSpeedKph, null)
+    assert.equal(result.environment?.coverage.windPct, 0)
+    assert(result.environment?.samples.every(sample => sample.windSpeedKph === null))
+    assert.equal(result.environment?.summary.averageUvIndex, 4)
+    assert.equal(result.apparentWind, null)
+  }
+})
+
+test('projects matching NOAA surface current with modeled provenance and no private route identity', () => {
+  const current = surfaceCurrent(3_600)
+  const result = buildActivityEnvironment(
+    input(3_600, [routeHour(0, 3_600)], {
+      weather: { ...weather(3_600, [routeHour(0, 3_600)]), surfaceCurrent: current },
+    }),
+  )
+
+  const { routeFingerprint: _fingerprint, ...projected } = current
+  assert.deepEqual(result.environment?.surfaceCurrent, projected)
+  assert.equal(result.environment?.surfaceCurrent?.sourceKind, 'modeled')
+  assert.equal(result.environment?.summary.averageWindSpeedKph, 0)
+})
+
+test('suppresses surface current with mismatched identity or interval while retaining weather', () => {
+  const current = surfaceCurrent(3_600)
+  for (const mismatch of [
+    { ...current, activityId: 102 },
+    { ...current, routeFingerprint: 'another-route' },
+    { ...current, start: '2026-06-11T12:00:00.000Z', end: start },
+    { ...current, end: '2026-06-11T15:00:00.000Z' },
+    { ...current, summary: { ...current.summary, elapsedDurationS: 3_599 } },
+  ]) {
+    const result = buildActivityEnvironment(
+      input(3_600, [routeHour(0, 3_600)], {
+        weather: { ...weather(3_600, [routeHour(0, 3_600)]), surfaceCurrent: mismatch },
+      }),
+    )
+    assert.equal(result.environment?.surfaceCurrent, undefined)
+    assert.equal(result.environment?.summary.averageUvIndex, 4)
+  }
 })

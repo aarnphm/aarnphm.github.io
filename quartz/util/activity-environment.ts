@@ -3,6 +3,11 @@ import type {
   WeatherAttribution,
   WeatherRouteHour,
 } from '../plugins/stores/weather'
+import {
+  parseSurfaceCurrentEstimate,
+  type PublicSurfaceCurrentEstimate,
+  type SurfaceCurrentSample,
+} from './surface-current'
 
 export interface GardenEstimateProvenance {
   source: 'garden-estimate'
@@ -22,6 +27,7 @@ export interface GardenEnvironmentCoverage {
   temperaturePct: number
   cloudPct: number
   daylightPct: number
+  windPct?: number
 }
 
 export interface GardenEnvironmentSummary {
@@ -31,6 +37,7 @@ export interface GardenEnvironmentSummary {
   ambientSed: number | null
   averageAmbientTemperatureC: number | null
   averageCloudCoverPct: number | null
+  averageWindSpeedKph?: number | null
   daylightCoveragePct: number
   weatherCoveragePct: number
   coveredDurationS: number
@@ -50,11 +57,29 @@ export interface GardenEnvironmentSample {
   cumulativeMovingTelemetrySed: number | null
   ambientTemperatureC: number | null
   cloudCoverPct: number | null
+  windSpeedKph?: number | null
   headwindKph: number | null
   crosswindKph: number | null
   apparentAirSpeedKph: number | null
   yawDeg: number | null
 }
+
+export interface EnvironmentChartSample extends Partial<
+  Omit<GardenEnvironmentSample, 'elapsedS' | 'distanceKm'>
+> {
+  elapsedS: number
+  surfaceCurrentSpeedMps?: number | null
+  surfaceCurrentDirectionDeg?: number | null
+}
+
+export const surfaceCurrentChartSamples = (
+  samples: readonly SurfaceCurrentSample[],
+): EnvironmentChartSample[] =>
+  samples.map(sample => ({
+    elapsedS: sample.elapsedS,
+    surfaceCurrentSpeedMps: sample.speedMps,
+    surfaceCurrentDirectionDeg: sample.directionDeg,
+  }))
 
 export interface GardenEnvironmentEstimate extends GardenEstimateProvenance {
   formulaId: 'garden-environment-v1'
@@ -63,6 +88,7 @@ export interface GardenEnvironmentEstimate extends GardenEstimateProvenance {
   coverage: GardenEnvironmentCoverage
   samples: GardenEnvironmentSample[]
   attribution: WeatherAttribution | null
+  surfaceCurrent?: PublicSurfaceCurrentEstimate
 }
 
 export interface GardenApparentWindSummary {
@@ -139,6 +165,9 @@ const round = (value: number, digits = 2): number => {
 
 const percentage = (coveredS: number, durationS: number): number =>
   durationS > 0 ? round(Math.min(1, Math.max(0, coveredS / durationS)) * 100, 1) : 0
+
+const validWindSpeedKph = (value: number | null | undefined): number | null =>
+  value != null && Number.isFinite(value) && value >= 0 && value <= 1_000 ? value : null
 
 const validRouteHours = (weather: WeatherActivity, durationS: number): WeatherRouteHour[] =>
   (weather.routeHours ?? [])
@@ -252,8 +281,9 @@ const windIntervals = (
     const gpsDistanceM = haversineMeters(input.latlng[index - 1], input.latlng[index])
     if (gpsDistanceM > Math.max(250, distanceDeltaM * 3 + 50)) continue
     const weather = conditionAt(hours, startS + durationS / 2)
-    if (weather?.windSpeedKph == null || weather.windDirectionDeg == null) continue
-    const windSpeedMps = weather.windSpeedKph / 3.6
+    const windSpeedKph = validWindSpeedKph(weather?.windSpeedKph)
+    if (windSpeedKph == null || weather?.windDirectionDeg == null) continue
+    const windSpeedMps = windSpeedKph / 3.6
     const courseBearing = bearingDegrees(input.latlng[index - 1], input.latlng[index])
     const relativeBearing = radians(weather.windDirectionDeg - courseBearing)
     const headwindMps = windSpeedMps * Math.cos(relativeBearing)
@@ -479,6 +509,7 @@ export function buildActivityEnvironment(
   const uv = metricAggregate(hours, hour => hour.uvIndex)
   const temperature = metricAggregate(hours, hour => hour.temperatureC)
   const cloud = metricAggregate(hours, hour => hour.cloudCover)
+  const ambientWind = metricAggregate(hours, hour => validWindSpeedKph(hour.windSpeedKph))
   const daylight = metricAggregate(hours, hour =>
     hour.daylight == null ? null : Number(hour.daylight),
   )
@@ -501,31 +532,56 @@ export function buildActivityEnvironment(
   }
   const wind = windIntervals(input, hours)
   const apparentWind = summarizeWind(input, wind.intervals, wind.validDurationS, baseProvenance)
-  const indices = sampleIndices(input, hours, wind.intervals, 320)
-  const samples = indices.map(index => {
-    const elapsedS = Math.min(input.elapsedTimeS, Math.max(0, input.timeS[index]))
+  const length = routeLength(input)
+  const lastRouteElapsedS = input.timeS[length - 1]
+  const lastRecordedDistanceM = input.distanceM
+    .slice(0, length)
+    .findLast(value => Number.isFinite(value) && value >= 0)
+  const hasWeatherTail =
+    Number.isFinite(lastRouteElapsedS) &&
+    lastRouteElapsedS >= 0 &&
+    lastRouteElapsedS < input.elapsedTimeS &&
+    lastRecordedDistanceM != null
+  const indices = sampleIndices(input, hours, wind.intervals, hasWeatherTail ? 319 : 320)
+  const sampleAt = (
+    elapsedS: number,
+    distanceM: number,
+    cumulativeMovingTelemetrySed: number | null,
+    windInterval: WindInterval | null,
+  ): GardenEnvironmentSample => {
     const weather = conditionAt(hours, elapsedS)
-    const windInterval = wind.intervals[index]
     return {
       elapsedS: round(elapsedS, 1),
-      distanceKm: round(Math.max(0, input.distanceM[index]) / 1_000, 3),
+      distanceKm: round(Math.max(0, distanceM) / 1_000, 3),
       uvIndex: weather?.uvIndex ?? null,
       cumulativeSed: elapsedSed == null ? null : cumulativeSedAt(hours, elapsedS),
-      cumulativeMovingTelemetrySed: movingDose.cumulativeSed[index] ?? null,
+      cumulativeMovingTelemetrySed,
       ambientTemperatureC: weather?.temperatureC == null ? null : round(weather.temperatureC, 1),
       cloudCoverPct: weather?.cloudCover == null ? null : round(weather.cloudCover * 100, 1),
+      windSpeedKph: validWindSpeedKph(weather?.windSpeedKph),
       headwindKph: windInterval == null ? null : round(windInterval.headwindKph, 1),
       crosswindKph: windInterval == null ? null : round(windInterval.crosswindKph, 1),
       apparentAirSpeedKph: windInterval == null ? null : round(windInterval.apparentAirSpeedKph, 1),
       yawDeg: windInterval == null ? null : round(windInterval.yawDeg, 1),
-    } satisfies GardenEnvironmentSample
-  })
+    }
+  }
+  const samples = indices.map(index =>
+    sampleAt(
+      Math.min(input.elapsedTimeS, Math.max(0, input.timeS[index])),
+      input.distanceM[index],
+      movingDose.cumulativeSed[index] ?? null,
+      wind.intervals[index],
+    ),
+  )
+  if (hasWeatherTail && lastRecordedDistanceM != null)
+    samples.push(sampleAt(input.elapsedTimeS, lastRecordedDistanceM, movingDose.totalSed, null))
   const coverage: GardenEnvironmentCoverage = {
     weatherPct: percentage(weatherAggregate.coveredS, input.elapsedTimeS),
     uvPct: percentage(uv.coveredS, input.elapsedTimeS),
     temperaturePct: percentage(temperature.coveredS, input.elapsedTimeS),
     cloudPct: percentage(cloud.coveredS, input.elapsedTimeS),
     daylightPct: percentage(daylight.coveredS, input.elapsedTimeS),
+    windPct: percentage(ambientWind.coveredS, input.elapsedTimeS),
   }
   const environment: GardenEnvironmentEstimate = {
     ...baseProvenance,
@@ -541,6 +597,10 @@ export function buildActivityEnvironment(
           : null,
       averageCloudCoverPct:
         cloud.coveredS > 0 ? round((cloud.weightedTotal / cloud.coveredS) * 100, 1) : null,
+      averageWindSpeedKph:
+        ambientWind.coveredS > 0
+          ? round(ambientWind.weightedTotal / ambientWind.coveredS, 1)
+          : null,
       daylightCoveragePct: percentage(daylight.weightedTotal, input.elapsedTimeS),
       weatherCoveragePct: coverage.weatherPct,
       coveredDurationS: round(weatherAggregate.coveredS, 1),
@@ -550,6 +610,19 @@ export function buildActivityEnvironment(
     coverage,
     samples,
     attribution: input.attribution,
+  }
+  const current = parseSurfaceCurrentEstimate(input.weather.surfaceCurrent)
+  if (
+    current &&
+    current.activityId === input.activityId &&
+    current.routeFingerprint === input.weather.routeFingerprint &&
+    Date.parse(current.start) === Date.parse(input.weather.start) &&
+    Date.parse(current.end) === Date.parse(input.weather.end) &&
+    current.summary.elapsedDurationS === input.elapsedTimeS &&
+    input.weather.durationS === input.elapsedTimeS
+  ) {
+    const { routeFingerprint: _routeFingerprint, ...surfaceCurrent } = current
+    environment.surfaceCurrent = surfaceCurrent
   }
   return { environment, apparentWind }
 }

@@ -515,7 +515,9 @@ async function main(): Promise<void> {
         `[weather] ${item.date} ${item.activityId}: ${err instanceof Error ? err.message : err}`,
       )
     }
-    const weather = failed ? null : weatherActivityFromRouteHours(item, routeHours, Date.now())
+    const weather = failed
+      ? null
+      : weatherActivityFromRouteHours(item, routeHours, Date.now(), activities[key]?.surfaceCurrent)
     if (weather && routeHours.length === item.queries.length) {
       activities[key] = weather
       fetched += 1
