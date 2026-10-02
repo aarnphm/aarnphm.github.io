@@ -1,84 +1,81 @@
-import { isFullSlug } from '../../util/path'
-import { isRecord, readString } from '../../util/type-guards'
 import {
-  createPopupContent,
-  type MapProperties,
-  type MarkerData,
-  readBaseMapData,
-  readPopupFields,
-} from './base-map-data'
+  applyMapElevation,
+  applyMapTerrain,
+  type MapboxOverlayMap,
+} from '../../util/mapbox-overlays'
+import { mapboxStyleUrl, type MapboxTheme } from '../../util/mapbox-style'
+import { isRecord, readString } from '../../util/type-guards'
+import { createPopupContent, markerColor, readBaseMapData, type MarkerData } from './base-map-data'
+import { mountBaseMapView } from './base-map-view'
 import { applyMonochromeMapPalette, loadMapbox } from './mapbox-client'
 
 type Coordinates = [number, number]
-
 interface MapBounds {
   extend(coordinates: Coordinates): void
   getCenter(): { toArray(): number[] }
 }
-
 interface MapFeature {
   properties?: unknown
   geometry?: { coordinates?: unknown }
 }
-
 interface MapLayerEvent {
   point: unknown
   features?: MapFeature[]
 }
-
-interface ClusterSource {
+interface MarkerSource {
+  setData(data: unknown): void
   getClusterExpansionZoom(
     clusterId: number,
     callback: (error: unknown, zoom?: number) => void,
   ): void
 }
-
-interface BaseMapInstance {
-  addSource(id: string, source: unknown): void
-  addLayer(layer: unknown): void
+interface BaseMapInstance extends MapboxOverlayMap {
   once(type: 'load', listener: () => void): void
+  on(type: 'style.load', listener: () => void): void
   on(type: 'click', layer: string, listener: (event: MapLayerEvent) => void): void
   on(type: 'mouseenter' | 'mouseleave', layer: string, listener: () => void): void
   queryRenderedFeatures(point: unknown, options: { layers: string[] }): MapFeature[]
-  getSource(id: string): ClusterSource | undefined
-  easeTo(options: { center: Coordinates; zoom: number }): void
+  getSource(id: string): MarkerSource | undefined
+  easeTo(options: { center?: Coordinates; zoom?: number; pitch?: number; duration: number }): void
   getCanvas(): HTMLCanvasElement
+  getZoom(): number
+  isStyleLoaded(): boolean
   fitBounds(
     bounds: MapBounds,
-    options: {
-      padding: { top: number; bottom: number; left: number; right: number }
-      maxZoom: number
-    },
+    options: { padding: number; maxZoom: number; duration: number },
   ): void
+  setPaintProperty(layer: string, property: string, value: string | number): void
+  setStyle(style: string): void
+  resize(): void
   remove(): void
 }
-
+interface BaseMapPopup {
+  setLngLat(coordinates: Coordinates): BaseMapPopup
+  setHTML(content: string): BaseMapPopup
+  addTo(map: BaseMapInstance): BaseMapPopup
+  remove(): void
+}
+interface BaseMapLibrary {
+  Map: new (options: {
+    container: HTMLElement
+    style: string
+    center: Coordinates
+    zoom: number
+    pitch: number
+    attributionControl: boolean
+  }) => BaseMapInstance
+  Popup: new (options: { offset: number; maxWidth: string; className: string }) => BaseMapPopup
+  LngLatBounds: new () => MapBounds
+  Marker: new (options: { element: HTMLElement; anchor: string }) => {
+    setLngLat(coordinates: Coordinates): { addTo(map: BaseMapInstance): void }
+  }
+}
 interface BaseMapState {
   controller: AbortController
   map?: BaseMapInstance
 }
-
 const mapStates = new Map<HTMLElement, BaseMapState>()
 let initializationTimer: number | undefined
-
-function disposeRemovedMaps(node: Node): void {
-  if (!(node instanceof Element)) return
-  const containers = node.matches('.base-map')
-    ? [node]
-    : Array.from(node.querySelectorAll<HTMLElement>('.base-map'))
-  for (const container of containers) {
-    if (!(container instanceof HTMLElement)) continue
-    const state = mapStates.get(container)
-    if (state) disposeMap(container, state)
-  }
-}
-
-const removalObserver = new MutationObserver(records => {
-  for (const record of records) {
-    for (const node of record.removedNodes) disposeRemovedMaps(node)
-  }
-})
-removalObserver.observe(document.documentElement, { childList: true, subtree: true })
 
 function renderEmpty(container: HTMLElement, message: string): void {
   const empty = document.createElement('div')
@@ -86,23 +83,16 @@ function renderEmpty(container: HTMLElement, message: string): void {
   empty.textContent = message
   container.replaceChildren(empty)
 }
-
 function isCurrentState(container: HTMLElement, state: BaseMapState): boolean {
   return (
     container.isConnected && !state.controller.signal.aborted && mapStates.get(container) === state
   )
 }
-
 function disposeMap(container: HTMLElement, state: BaseMapState): void {
   state.controller.abort()
-  try {
-    state.map?.remove()
-  } catch (error) {
-    console.error(error)
-  }
+  state.map?.remove()
   if (mapStates.get(container) === state) mapStates.delete(container)
 }
-
 function coordinatesFromFeature(feature: MapFeature | undefined): Coordinates | undefined {
   const coordinates = feature?.geometry?.coordinates
   if (
@@ -112,176 +102,26 @@ function coordinatesFromFeature(feature: MapFeature | undefined): Coordinates | 
     typeof coordinates[1] !== 'number' ||
     !Number.isFinite(coordinates[0]) ||
     !Number.isFinite(coordinates[1])
-  ) {
+  )
     return undefined
-  }
   return [coordinates[0], coordinates[1]]
 }
-
-function markerFromFeature(feature: MapFeature | undefined): MarkerData | undefined {
-  const coordinates = coordinatesFromFeature(feature)
-  if (!coordinates || !isRecord(feature?.properties)) return undefined
-
-  const title = readString(feature.properties, 'title')
-  const slug = readString(feature.properties, 'slug')
-  if (!title || !slug || !isFullSlug(slug)) return undefined
-
-  return {
-    lat: coordinates[1],
-    lon: coordinates[0],
-    title,
-    slug,
-    icon: readString(feature.properties, 'icon'),
-    color: readString(feature.properties, 'color'),
-    popupFields: readPopupFields(feature.properties.popupFields),
+function readPreference(key: string): boolean {
+  try {
+    return localStorage.getItem(key) === 'true'
+  } catch {
+    return false
   }
 }
-
-function clusterIdFromFeature(feature: MapFeature | undefined): number | undefined {
-  if (!isRecord(feature?.properties)) return undefined
-  const value = feature.properties.cluster_id
-  if (typeof value === 'number' && Number.isFinite(value)) return value
-  if (typeof value !== 'string' || value.trim().length === 0) return undefined
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
-
-function addClusteredMarkers(
-  mapboxgl: typeof window.mapboxgl,
-  map: BaseMapInstance,
-  markers: MarkerData[],
-  currentSlug: MarkerData['slug'],
-  properties: MapProperties,
-  active: () => boolean,
-): void {
-  const geojson = {
-    type: 'FeatureCollection',
-    features: markers.map(marker => ({
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [marker.lon, marker.lat] },
-      properties: {
-        title: marker.title,
-        slug: marker.slug,
-        icon: marker.icon,
-        color: marker.color,
-        popupFields: JSON.stringify(marker.popupFields),
-      },
-    })),
+function savePreference(key: string, enabled: boolean): void {
+  try {
+    localStorage.setItem(key, String(enabled))
+  } catch {
+    /* The map still works when storage is unavailable. */
   }
-
-  map.addSource('markers', {
-    type: 'geojson',
-    data: geojson,
-    cluster: true,
-    clusterMaxZoom: 14,
-    clusterRadius: 50,
-  })
-  map.addLayer({
-    id: 'clusters',
-    type: 'circle',
-    source: 'markers',
-    filter: ['has', 'point_count'],
-    paint: {
-      'circle-color': '#2b2418',
-      'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 30, 40],
-      'circle-opacity': 0.8,
-    },
-  })
-  map.addLayer({
-    id: 'cluster-count',
-    type: 'symbol',
-    source: 'markers',
-    filter: ['has', 'point_count'],
-    layout: {
-      'text-field': '{point_count_abbreviated}',
-      'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-      'text-size': 12,
-    },
-    paint: { 'text-color': '#fff9f3' },
-  })
-  map.addLayer({
-    id: 'unclustered-point',
-    type: 'circle',
-    source: 'markers',
-    filter: ['!', ['has', 'point_count']],
-    paint: {
-      'circle-color': '#2b2418',
-      'circle-radius': 8,
-      'circle-stroke-width': 2,
-      'circle-stroke-color': '#fff9f3',
-    },
-  })
-
-  map.on('click', 'clusters', event => {
-    const feature = map.queryRenderedFeatures(event.point, { layers: ['clusters'] })[0]
-    const coordinates = coordinatesFromFeature(feature)
-    const clusterId = clusterIdFromFeature(feature)
-    const source = map.getSource('markers')
-    if (!coordinates || clusterId === undefined || !source) return
-
-    source.getClusterExpansionZoom(clusterId, (error, zoom) => {
-      if (error || zoom === undefined || !active()) return
-      map.easeTo({ center: coordinates, zoom })
-    })
-  })
-
-  map.on('click', 'unclustered-point', event => {
-    const marker = markerFromFeature(event.features?.[0])
-    if (!marker || !active()) return
-
-    const popupContent = createPopupContent(marker, currentSlug, properties)
-    new mapboxgl.Popup().setLngLat([marker.lon, marker.lat]).setHTML(popupContent).addTo(map)
-  })
-
-  map.on('mouseenter', 'clusters', () => {
-    map.getCanvas().style.cursor = 'pointer'
-  })
-  map.on('mouseleave', 'clusters', () => {
-    map.getCanvas().style.cursor = ''
-  })
-  map.on('mouseenter', 'unclustered-point', () => {
-    map.getCanvas().style.cursor = 'pointer'
-  })
-  map.on('mouseleave', 'unclustered-point', () => {
-    map.getCanvas().style.cursor = ''
-  })
 }
-
-function addMarkerIcon(element: HTMLElement, icon: string): void {
-  const match = icon.match(/^<i class="([a-z0-9_ -]+)" aria-hidden="true"><\/i>$/i)
-  if (!match) {
-    element.textContent = icon
-    return
-  }
-
-  const classes = match[1].split(/\s+/).filter(Boolean)
-  const iconElement = document.createElement('i')
-  iconElement.classList.add(...classes)
-  iconElement.setAttribute('aria-hidden', 'true')
-  element.append(iconElement)
-}
-
-function addIndividualMarkers(
-  mapboxgl: typeof window.mapboxgl,
-  map: BaseMapInstance,
-  markers: MarkerData[],
-  currentSlug: MarkerData['slug'],
-  properties: MapProperties,
-): void {
-  for (const marker of markers) {
-    const element = document.createElement('div')
-    element.className = 'base-map-marker'
-    if (marker.icon) addMarkerIcon(element, marker.icon)
-    if (marker.color && CSS.supports('color', marker.color)) element.style.color = marker.color
-
-    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-      createPopupContent(marker, currentSlug, properties),
-    )
-    new mapboxgl.Marker({ element, anchor: 'bottom' })
-      .setLngLat([marker.lon, marker.lat])
-      .setPopup(popup)
-      .addTo(map)
-  }
+function theme(): MapboxTheme {
+  return document.documentElement.getAttribute('saved-theme') === 'dark' ? 'dark' : 'light'
 }
 
 async function initializeMap(container: HTMLElement, state: BaseMapState): Promise<void> {
@@ -291,70 +131,281 @@ async function initializeMap(container: HTMLElement, state: BaseMapState): Promi
     currentSlug: container.dataset.currentSlug,
     properties: container.dataset.properties,
   })
-  if (!data) {
-    renderEmpty(container, 'map unavailable')
+  if (!data || data.markers.length === 0) {
+    renderEmpty(container, data ? 'no locations to display' : 'map unavailable')
     return
   }
-  if (data.markers.length === 0) {
-    renderEmpty(container, 'no locations to display')
-    return
+  let satellite = readPreference('base-map-satellite')
+  let elevation = readPreference('base-map-elevation')
+  let threeDimensional = readPreference('base-map-3d')
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  let map: BaseMapInstance | undefined
+  let popup: BaseMapPopup | undefined
+  const iconMarkers = new Map<string, HTMLButtonElement>()
+  const geojson = (markers: MarkerData[]) => ({
+    type: 'FeatureCollection',
+    features: markers.map(marker => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [marker.lon, marker.lat] },
+      properties: { slug: marker.slug, title: marker.title, color: markerColor(marker) },
+    })),
+  })
+  const style = () => (satellite ? 'satellite' : 'mono')
+  const fit = () => {
+    if (!map || !library || !view.markers().length) return
+    const bounds = new library.LngLatBounds()
+    for (const marker of view.markers()) bounds.extend([marker.lon, marker.lat])
+    map.fitBounds(bounds, { padding: 48, maxZoom: 15, duration: reduce ? 0 : 450 })
   }
-
-  const mapboxgl = await loadMapbox()
+  const select = (marker: MarkerData, move: boolean) => {
+    if (!map || !library) return
+    popup?.remove()
+    popup = new library.Popup({ offset: 14, maxWidth: '300px', className: 'base-map-spot-popup' })
+      .setLngLat([marker.lon, marker.lat])
+      .setHTML(createPopupContent(marker, data.currentSlug, data.properties))
+      .addTo(map)
+    if (move)
+      map.easeTo({
+        center: [marker.lon, marker.lat],
+        zoom: Math.max(map.getZoom(), 15),
+        duration: reduce ? 0 : 450,
+      })
+  }
+  const view = mountBaseMapView(
+    container,
+    data,
+    {
+      select: marker => select(marker, true),
+      clear: () => popup?.remove(),
+      filter: markers => {
+        if (map?.isStyleLoaded()) map.getSource('markers')?.setData(geojson(markers))
+        for (const [slug, element] of iconMarkers) {
+          element.hidden = !markers.some(marker => marker.slug === slug)
+        }
+        popup?.remove()
+      },
+      fit,
+      control: control => {
+        if (!map) return
+        if (control === 'satellite') {
+          satellite = !satellite
+          savePreference('base-map-satellite', satellite)
+          view.pressed(control, satellite)
+          map.setStyle(mapboxStyleUrl(style(), theme()))
+        } else if (control === 'elevation') {
+          elevation = !elevation
+          savePreference('base-map-elevation', elevation)
+          view.pressed(control, elevation)
+          if (map.isStyleLoaded())
+            applyMapElevation(map, elevation, style(), theme(), 'metric', 'base')
+        } else {
+          threeDimensional = !threeDimensional
+          savePreference('base-map-3d', threeDimensional)
+          view.pressed(control, threeDimensional)
+          if (map.isStyleLoaded()) applyMapTerrain(map, threeDimensional, style(), theme(), 'base')
+          map.easeTo({ pitch: threeDimensional ? 55 : 0, duration: reduce ? 0 : 240 })
+        }
+      },
+    },
+    state.controller.signal,
+  )
+  view.pressed('satellite', satellite)
+  view.pressed('elevation', elevation)
+  view.pressed('3d', threeDimensional)
+  const library: BaseMapLibrary | null = await loadMapbox()
   if (!isCurrentState(container, state)) return
-  if (!mapboxgl) {
+  if (!library || !view.canvas) {
     renderEmpty(container, 'map unavailable')
     disposeMap(container, state)
     return
   }
-
-  const bounds: MapBounds = new mapboxgl.LngLatBounds()
+  const bounds = new library.LngLatBounds()
   for (const marker of data.markers) bounds.extend([marker.lon, marker.lat])
-
-  let center: Coordinates
-  if (data.config.defaultCenter) {
-    center = [data.config.defaultCenter[1], data.config.defaultCenter[0]]
-  } else {
-    const [lon = 0, lat = 0] = bounds.getCenter().toArray()
-    center = [lon, lat]
-  }
-
-  const map: BaseMapInstance = new mapboxgl.Map({
-    container,
-    style: 'mapbox://styles/mapbox/light-v11',
+  const [lon = 0, lat = 0] = bounds.getCenter().toArray()
+  const center: Coordinates = data.config.defaultCenter
+    ? [data.config.defaultCenter[1], data.config.defaultCenter[0]]
+    : [lon, lat]
+  const current = new library.Map({
+    container: view.canvas,
+    style: mapboxStyleUrl(style(), theme()),
     center,
     zoom: data.config.defaultZoom,
+    pitch: threeDimensional ? 55 : 0,
     attributionControl: false,
   })
-  state.map = map
-
+  map = current
+  state.map = current
   const clustered = data.config.clustering && data.markers.length > 10
   if (!clustered) {
-    addIndividualMarkers(mapboxgl, map, data.markers, data.currentSlug, data.properties)
-  }
-
-  map.once('load', () => {
-    if (!isCurrentState(container, state)) return
-    applyMonochromeMapPalette(map)
-    if (clustered) {
-      addClusteredMarkers(mapboxgl, map, data.markers, data.currentSlug, data.properties, () =>
-        isCurrentState(container, state),
+    for (const marker of data.markers) {
+      if (!marker.icon) continue
+      const element = document.createElement('button')
+      element.type = 'button'
+      element.className = 'base-map-marker'
+      element.setAttribute('aria-label', marker.title)
+      element.style.color = markerColor(marker)
+      const match = marker.icon.match(/^<i class="([a-z0-9_ -]+)" aria-hidden="true"><\/i>$/i)
+      if (match) {
+        const glyph = document.createElement('i')
+        glyph.classList.add(...match[1].split(/\s+/).filter(Boolean))
+        glyph.setAttribute('aria-hidden', 'true')
+        element.append(glyph)
+      } else element.textContent = marker.icon
+      element.addEventListener(
+        'click',
+        () => {
+          view.show(marker)
+          select(marker, false)
+        },
+        { signal: state.controller.signal },
       )
+      iconMarkers.set(marker.slug, element)
+      element.hidden = !view.markers().some(item => item.slug === marker.slug)
+      new library.Marker({ element, anchor: 'bottom' })
+        .setLngLat([marker.lon, marker.lat])
+        .addTo(current)
     }
-    if (!data.config.defaultCenter && data.markers.length > 1) {
-      map.fitBounds(bounds, { padding: { top: 50, bottom: 50, left: 50, right: 50 }, maxZoom: 15 })
+  }
+  const installLayers = () => {
+    if (!isCurrentState(container, state)) return
+    if (!satellite) applyMonochromeMapPalette(current, theme())
+    applyMapTerrain(current, threeDimensional, style(), theme(), 'base')
+    applyMapElevation(current, elevation, style(), theme(), 'metric', 'base')
+    if (!current.getSource('markers'))
+      current.addSource('markers', {
+        type: 'geojson',
+        data: geojson(view.markers()),
+        cluster: clustered,
+        clusterMaxZoom: 14,
+        clusterRadius: 44,
+      })
+    if (current.getLayer('clusters')) return
+    current.addLayer({
+      id: 'clusters',
+      type: 'circle',
+      source: 'markers',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': theme() === 'dark' ? '#b7a58b' : '#5c5141',
+        'circle-radius': ['step', ['get', 'point_count'], 17, 10, 23, 30, 30],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': theme() === 'dark' ? '#100f0f' : '#fff9f3',
+      },
+    })
+    current.addLayer({
+      id: 'cluster-count',
+      type: 'symbol',
+      source: 'markers',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}',
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 12,
+      },
+      paint: { 'text-color': theme() === 'dark' ? '#100f0f' : '#fff9f3' },
+    })
+    current.addLayer({
+      id: 'unclustered-point',
+      type: 'circle',
+      source: 'markers',
+      filter: ['!', ['has', 'point_count']],
+      paint: {
+        'circle-color': ['get', 'color'],
+        'circle-radius': 7,
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#fff9f3',
+        'circle-opacity': [
+          'case',
+          ['in', ['get', 'slug'], ['literal', [...iconMarkers.keys()]]],
+          0,
+          1,
+        ],
+        'circle-stroke-opacity': [
+          'case',
+          ['in', ['get', 'slug'], ['literal', [...iconMarkers.keys()]]],
+          0,
+          1,
+        ],
+      },
+    })
+    current.addLayer({
+      id: 'spot-labels',
+      type: 'symbol',
+      source: 'markers',
+      filter: ['!', ['has', 'point_count']],
+      minzoom: 13,
+      layout: {
+        'text-field': ['get', 'title'],
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 11,
+        'text-anchor': 'top',
+        'text-offset': [0, 1],
+        'text-max-width': 15,
+      },
+      paint: {
+        'text-color': satellite || theme() === 'dark' ? '#fff9f3' : '#2b2418',
+        'text-halo-color': satellite || theme() === 'dark' ? '#100f0f' : '#fff9f3',
+        'text-halo-width': 1.5,
+      },
+    })
+    view.ready()
+  }
+  current.on('style.load', installLayers)
+  current.once('load', () => {
+    if (!isCurrentState(container, state)) return
+    if (!data.config.defaultCenter && data.markers.length > 1) fit()
+  })
+  current.on('click', 'clusters', event => {
+    const feature = current.queryRenderedFeatures(event.point, { layers: ['clusters'] })[0]
+    const coordinates = coordinatesFromFeature(feature)
+    if (!coordinates || !isRecord(feature?.properties)) return
+    const clusterId = Number(feature.properties.cluster_id)
+    if (!Number.isFinite(clusterId)) return
+    current.getSource('markers')?.getClusterExpansionZoom(clusterId, (error, zoom) => {
+      if (!error && zoom !== undefined && isCurrentState(container, state))
+        current.easeTo({ center: coordinates, zoom, duration: reduce ? 0 : 450 })
+    })
+  })
+  current.on('click', 'unclustered-point', event => {
+    const properties = event.features?.[0]?.properties
+    if (!isRecord(properties)) return
+    const slug = readString(properties, 'slug')
+    const marker = data.markers.find(item => item.slug === slug)
+    if (marker) {
+      view.show(marker)
+      select(marker, false)
     }
   })
+  for (const layer of ['clusters', 'unclustered-point']) {
+    current.on('mouseenter', layer, () => {
+      current.getCanvas().style.cursor = 'pointer'
+    })
+    current.on('mouseleave', layer, () => {
+      current.getCanvas().style.cursor = ''
+    })
+  }
+  const resize = new ResizeObserver(() => current.resize())
+  resize.observe(view.canvas)
+  document.addEventListener(
+    'themechange',
+    () => current.setStyle(mapboxStyleUrl(style(), theme())),
+    { signal: state.controller.signal },
+  )
+  state.controller.signal.addEventListener(
+    'abort',
+    () => {
+      resize.disconnect()
+      popup?.remove()
+    },
+    { once: true },
+  )
 }
 
 function initBaseMaps(): void {
-  for (const [container, state] of mapStates) {
+  for (const [container, state] of mapStates)
     if (!container.isConnected) disposeMap(container, state)
-  }
-
   for (const container of document.querySelectorAll<HTMLElement>('.base-map')) {
     if (mapStates.has(container)) continue
-
     const state: BaseMapState = { controller: new AbortController() }
     mapStates.set(container, state)
     void initializeMap(container, state).catch(error => {
@@ -365,24 +416,23 @@ function initBaseMaps(): void {
     })
   }
 }
-
-function scheduleBaseMaps(): void {
-  if (initializationTimer !== undefined) return
-  initializationTimer = window.setTimeout(() => {
-    initializationTimer = undefined
-    initBaseMaps()
-  }, 100)
-}
-
-function cleanupBaseMaps(): void {
-  if (initializationTimer !== undefined) {
-    window.clearTimeout(initializationTimer)
-    initializationTimer = undefined
-  }
-  for (const [container, state] of mapStates) disposeMap(container, state)
-}
-
 document.addEventListener('nav', () => {
-  scheduleBaseMaps()
-  window.addCleanup(cleanupBaseMaps)
+  if (initializationTimer === undefined)
+    initializationTimer = window.setTimeout(() => {
+      initializationTimer = undefined
+      initBaseMaps()
+    }, 100)
+  const observer = new MutationObserver(() => {
+    for (const [container, state] of mapStates)
+      if (!container.isConnected) disposeMap(container, state)
+  })
+  observer.observe(document.documentElement, { childList: true, subtree: true })
+  window.addCleanup(() => {
+    observer.disconnect()
+    if (initializationTimer !== undefined) {
+      window.clearTimeout(initializationTimer)
+      initializationTimer = undefined
+    }
+    for (const [container, state] of mapStates) disposeMap(container, state)
+  })
 })

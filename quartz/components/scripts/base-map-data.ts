@@ -17,6 +17,11 @@ export interface MarkerData {
   slug: FullSlug
   icon?: string
   color?: string
+  description?: string
+  address?: string
+  categories?: string[]
+  rating?: number
+  url?: string
   popupFields: Record<string, unknown>
 }
 
@@ -88,6 +93,13 @@ function parseMarker(value: unknown): MarkerData | undefined {
     slug,
     icon: readString(value, 'icon'),
     color: readString(value, 'color'),
+    description: readString(value, 'description'),
+    address: readString(value, 'address'),
+    categories: Array.isArray(value.categories)
+      ? value.categories.filter((item): item is string => typeof item === 'string')
+      : [],
+    rating: readNumber(value, 'rating'),
+    url: readString(value, 'url'),
     popupFields: isRecord(value.popupFields) ? value.popupFields : {},
   }
 }
@@ -274,6 +286,15 @@ export function createPopupContent(
 ): string {
   const href = resolveRelative(currentSlug, marker.slug)
   const fields = Object.entries(marker.popupFields).flatMap(([key, value]) => {
+    const field = key.replace(/^note\./, '')
+    if (
+      key === 'file.name' ||
+      (field === 'rating' && marker.rating !== undefined) ||
+      (field === 'address' && marker.address) ||
+      (field === 'description' && marker.description) ||
+      (field === 'type' && marker.categories?.length)
+    )
+      return []
     const formattedValue = formatPropertyValue(value, currentSlug)
     if (formattedValue.length === 0) return []
 
@@ -291,5 +312,42 @@ export function createPopupContent(
   })
   const metadata =
     fields.length === 0 ? '' : `<div class="base-map-popup-meta">${fields.join('')}</div>`
-  return `<div class="base-map-popup"><a href="${escapeHTML(href)}" class="base-map-popup-title" data-slug="${escapeHTML(marker.slug)}">${escapeHTML(marker.title)}</a>${metadata}</div>`
+  const categories = (marker.categories ?? [])
+    .map(category => `<span>${escapeHTML(category)}</span>`)
+    .join('')
+  const rating =
+    marker.rating !== undefined && Number.isFinite(marker.rating)
+      ? `<span class="base-map-popup-rating" title="Rating from your note">☆ ${escapeHTML(String(marker.rating))}</span>`
+      : ''
+  const description = marker.description
+    ? `<p class="base-map-popup-description">${escapeHTML(marker.description)}</p>`
+    : ''
+  const address = marker.address
+    ? `<p class="base-map-popup-address">${escapeHTML(marker.address)}</p>`
+    : ''
+  const url = safeMapUrl(marker.url)
+  const actions = url
+    ? `<div class="base-map-popup-actions"><a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">open in maps ↗</a></div>`
+    : ''
+  return `<div class="base-map-popup"><div class="base-map-popup-eyebrow">${categories}${rating}</div><a href="${escapeHTML(href)}" class="base-map-popup-title internal" data-slug="${escapeHTML(marker.slug)}">${escapeHTML(marker.title)}</a>${description}${address}${metadata}${actions}</div>`
+}
+
+function safeMapUrl(value: string | undefined): string | undefined {
+  if (!value) return undefined
+  try {
+    const url = new URL(value)
+    return ['https:', 'http:'].includes(url.protocol) ? url.href : undefined
+  } catch {
+    return undefined
+  }
+}
+
+export function markerColor(marker: MarkerData): string {
+  if (marker.color && /^(#[0-9a-f]{3,8}|[a-z]+|(?:rgb|hsl)a?\([\d\s.,%+-]+\))$/i.test(marker.color))
+    return marker.color
+  const colors = ['#916445', '#537467', '#626d91', '#9b5965', '#87713e', '#775b87']
+  const category = marker.categories?.[0] ?? ''
+  let hash = 0
+  for (const character of category) hash = (hash * 31 + character.charCodeAt(0)) >>> 0
+  return colors[hash % colors.length]
 }

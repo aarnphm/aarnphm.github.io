@@ -118,7 +118,9 @@ const icons = {
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
+      <circle cx="12" cy="12" r="10" />
+      <ellipse cx="12" cy="12" rx="4" ry="10" />
+      <path d="M2 12h20" />
     </svg>
   ),
   card: (

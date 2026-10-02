@@ -1,5 +1,6 @@
 import { Root } from 'hast'
 import { h } from 'hastscript'
+import type { MarkerData } from '../../components/scripts/base-map-data'
 import { QuartzPluginData } from '../../plugins/vfile'
 import {
   resolveRelative,
@@ -1072,16 +1073,6 @@ function buildCards(
   return h('div.base-card-grid', varStyle ? { style: varStyle } : {}, cards)
 }
 
-type MapMarker = {
-  lat: number
-  lon: number
-  title: string
-  slug: FullSlug
-  icon?: string
-  color?: string
-  popupFields: Record<string, unknown>
-}
-
 function buildMap(
   files: QuartzPluginData[],
   view: BaseView,
@@ -1113,7 +1104,7 @@ function buildMap(
 
   const coordinatesProp = view.coordinates || 'coordinates'
 
-  const markers: MapMarker[] = []
+  const markers: MarkerData[] = []
 
   for (const file of files) {
     const coordsValue = resolveMapProperty(file, coordinatesProp)
@@ -1157,6 +1148,18 @@ function buildMap(
       slug,
       icon: iconHtml,
       color: color ? String(color) : undefined,
+      description:
+        typeof file.frontmatter?.description === 'string'
+          ? file.frontmatter.description
+          : undefined,
+      address: typeof file.frontmatter?.address === 'string' ? file.frontmatter.address : undefined,
+      categories: Array.isArray(file.frontmatter?.type)
+        ? file.frontmatter.type.filter((value): value is string => typeof value === 'string')
+        : typeof file.frontmatter?.type === 'string'
+          ? [file.frontmatter.type]
+          : [],
+      rating: typeof file.frontmatter?.rating === 'number' ? file.frontmatter.rating : undefined,
+      url: typeof file.frontmatter?.url === 'string' ? file.frontmatter.url : undefined,
       popupFields,
     })
   }
