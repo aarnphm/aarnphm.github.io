@@ -1,8 +1,8 @@
 ---
 date: '2024-11-03'
-description: and cross-layers observations. SAE is a special case of sparse crosscoders.
+description: A shared sparse dictionary for activations across layers or models, and the limits of reading model differences from decoder norms.
 id: sparse crosscoders
-modified: 2026-06-05 15:08:05 GMT-04:00
+modified: 2026-10-02 09:15:16 GMT-04:00
 socials:
   circuits: https://transformer-circuits.pub/2024/crosscoders/index.html
 tags:
@@ -15,23 +15,17 @@ transclude:
 
 > [!important] maturity
 >
-> a research preview from Anthropic and this is pretty much still a work in progress
+> Anthropic introduced this as a research preview in October 2024. Later work below tests whether decoder norms identify model-specific concepts.
 
-see also [reproduction on Gemma 2B](https://colab.research.google.com/drive/124ODki4dUjfi21nuZPHRySALx9I74YHj?usp=sharing) and [github](https://github.com/ckkissane/crosscoder-model-diff-replication)
+A sparse crosscoder extends a [[thoughts/sparse autoencoder]] to several activation spaces. It computes one vector of latent activations and gives each layer or model its own decoder. The same latent can therefore contribute to several reconstructions. [@lindsey2024sparsecrosscoders]
 
-A variant of [[thoughts/sparse autoencoder]] where it reads and writes to multiple layers [@lindsey2024sparsecrosscoders]
-
-Crosscoders produces ==shared features across layers and even models==
+see also the [Gemma 2 2B reproduction notebook](https://colab.research.google.com/drive/124ODki4dUjfi21nuZPHRySALx9I74YHj?usp=sharing) and its [training code](https://github.com/ckkissane/crosscoder-model-diff-replication).
 
 ## motivations
 
-Resolve:
-
-- cross-layer features: resolve cross-layer superposition
-
-- circuit simplification: remove redundant features from analysis and enable jumping across training many uninteresting identity circuit connections
-
-- model diffing: produce shared sets of features across models. This also introduce one model across training, and also completely independent models with different architectures.
+- **Cross-layer features:** fit a dictionary jointly to activity spread across layers.
+- **Persistent features:** give a feature that survives through several layers one latent identity.
+- **Model diffing:** inspect how the decoder contributions differ between models on the same inputs.
 
 ### cross-layer [[thoughts/mechanistic interpretability#superposition hypothesis|superposition]]
 
@@ -39,151 +33,136 @@ Resolve:
 
 > [!important]- intuition
 >
-> In basis of superposition hypothesis, a feature is a linear combinations of neurons at any given layers.
+> Under the linear superposition hypothesis, features occupy directions that can overlap. One neuron can participate in several feature directions.
 >
 > ![[thoughts/images/feature-neurons.webp]]
+
+For a fixed token, write the residual update as
+
+$$
+r_{l+1}=r_l+u_l.
+$$
+
+The update $u_l$ may depend on earlier layers and other tokens. Addition lets contributions accumulate in a common space; it does not make the blocks independent. The diagrams below illustrate a possible computation distributed across two blocks.
 
 ![[thoughts/images/one-step-circuit.webp]]
 
 ![[thoughts/images/parallel-joint-branch.webp]]
 
-_if we think of adjacent layers as being "almost parallel branches that potentially have superposition between them", then we can apply dictionary learning jointly [^jointlysae]_
+Joint dictionary learning can capture correlated contributions in these spaces.[^jointlysae]
 
-[^jointlysae]: [@gorton2024missingcurvedetectorsinceptionv1] denotes that cross-branch superposition is significant in interpreting models with parallel branches (InceptionV1)
+[^jointlysae]: For a related vision example, see Gorton's SAE study of InceptionV1 and its curve detectors. [@gorton2024missingcurvedetectorsinceptionv1]
 
 ### persistent features and complexity
 
 ![[thoughts/images/proposal-formed-by-cross-layers-superposition.webp]]
 
-Current drawbacks of sparse autoencoders is that we have to train it against certain activations layers to extract features. In terms of the residual
-stream per layers, we end up having lots of duplicate features across layers.
+Suppose a signal with strength $z(x)$ persists across three layers. Its contribution at layer $l$ is $z(x)d^l$, where the direction $d^l$ may change. Separate SAEs must discover and match those three occurrences. A crosscoder can assign them one activation $z(x)$ and three decoder vectors.
 
-> Crosscoders can simplify the circuit _given that we use an appropriate architecture_ [^risks]
+![[thoughts/images/dedup-features-persistent.webp]]
 
-[^risks]: causal description it provides likely differs from that of the underlying model.
+This can combine repeated occurrences into one graph node.[^risks] The reconstruction alone leaves open whether the original model carried the signal forward or independently recomputed it.
 
-> The motivation is that some features are persistent across residual stream, which means there will be duplication where the SAEs learn it multiple times
->
-> ![[thoughts/images/dedup-features-persistent.webp]]
+[^risks]: Correlations across layers can support a reconstruction whose causal graph differs from the model's. Interventions are needed to test the proposed mechanism.
 
 ## setup.
 
-> Autoencoders and [[thoughts/mechanistic interpretability#transcoders]] as special cases of crosscoders.
->
-> - autoencoders: reads and predict the same layers
-> - transcoders: read from layer $n$ and predict layer $n+1$
-
-Crosscoder read/write to many layers, subject to causality constraints.
+An SAE reconstructs its input activation space. A [[thoughts/mechanistic interpretability#transcoders|transcoder]] predicts another space, commonly an MLP's output from its input. Both fit within the crosscoder family.
 
 ![[thoughts/images/crosscoder-setup.webp]]
 
 > [!math]+ crosscoders
 >
-> Let one compute the vector of feature activation $f_(x_j)$ on data point $x_j$ by summing over contributions of activations of different layers $a^l(x_j)$ for layers $l \in L$:
+> Let $a^l(x)\in\mathbb{R}^{d_l}$ be the activation at a chosen token and layer $l\in L$. With $F$ latents, the basic acausal crosscoder is
 >
 > $$
 > \begin{aligned}
-> f(x_j) &= \text{ReLU}(\sum_{l\in L}W_{\text{enc}}^l a^l(x_j) + b_{\text{enc}}) \\[8pt]
-> &\because W^l_{\text{enc}} : \text{ encoder weights at layer } l \\[8pt]
-> &\because a^l(x_j) : \text{ activation on datapoint } x_j \text{ at layer } l \\
+> f(x)&=\operatorname{ReLU}\left(\sum_{l\in L}W_{\mathrm{enc}}^l a^l(x)+b_{\mathrm{enc}}\right),\\
+> \hat a^l(x)&=W_{\mathrm{dec}}^l f(x)+b_{\mathrm{dec}}^l.
 > \end{aligned}
 > $$
+>
+> The encoder matrix has shape $F\times d_l$; the decoder has shape $d_l\times F$. Each latent has one activation and a separate decoder column $d_i^l=W_{\mathrm{dec},i}^l$ for each layer.
 
-We have loss
-
-$$
-L = \sum_{l\in L} \|a^l(x_j) - a^{l^{'}}(x_j)\|^2 + \sum_{l\in L}\sum_i f_i(x_j) \|W^l_{\text{dec,i}}\|
-$$
-
-and regularization can be rewritten as:
+The training objective balances reconstruction and sparsity:
 
 $$
-\sum_{l\in L}\sum_{i} f_i(x_j) \|W^l_{\text{dec,i}}\| = \sum_{i} f_i(x_j)(\displaystyle\sum_{l \in L} \|W^l_\text{dec,i}\|)
+\mathcal{L}=\mathbb{E}_x\left[
+\sum_{l\in L}\left\|a^l(x)-\hat a^l(x)\right\|_2^2
++\lambda\sum_{i=1}^{F}f_i(x)\sum_{l\in L}\left\|d_i^l\right\|_2
+\right],\qquad \lambda>0.
 $$
 
-_weight of L1 regularization penalty by L1 norm of per-layer decoder weight norms_ $\sum\limits_{l\in L} \|W^l_\text{dec,i}\|$ [^l2weightnorm]
+The decoder norm matters because activation scale is arbitrary. If the sparsity term penalized only $f_i(x)$, replacing $f_i(x)$ by $f_i(x)/c$ and every $d_i^l$ by $c d_i^l$, for $c>1$, would preserve reconstruction while lowering the sparsity penalty. Weighting by $\sum_{l\in L}\|d_i^l\|_2$ makes that scale change leave the penalty unchanged.
 
-[^l2weightnorm]:
-    $\|W_\text{dec,i}^l\|$ is the L2 norm of a single feature's decoder vector at a given layer.
+The outer sum is an $L_1$ norm of per-layer $L_2$ norms.[^l2weightnorm] For one latent with activation $2$ and decoder norms $3$ and $4$, its penalty is $14\lambda$. Concatenating the decoder vectors and taking one $L_2$ norm would give $10\lambda$. Thus the latter objective gives a discount for spreading a latent across spaces. Which objective is useful depends on what we want to measure; decoder sparsity needs particular care in [[#model diffing]].
 
-    In principe, one might have expected to use L2 norm of per-layer norm $\sqrt{\sum_{l \in L} \|W_\text{dec,i}^l\|^2}$
-
-We use L1 due to
-
-- baseline loss comparison: L2 exhibits lower loss than sum of per-layer SAE losses, as they would effectively obtain a loss "bonus" by spreading features across layers
-
-- ==layer-wise sparsity surfaces layer-specific features==: based on empirical results of [[thoughts/sparse crosscoders#model diffing]], that L1 uncovers a mix of shared and model-specific features, whereas L2 tends to uncover only shared features.
+[^l2weightnorm]: The two weights are $\sum_l\|d_i^l\|_2$ and $\sqrt{\sum_l\|d_i^l\|_2^2}$. The preview uses the first so its loss can be compared with the sum of per-layer SAE losses at the same sparsity coefficient.
 
 ## variants
 
 ![[thoughts/images/crosscoders-variants.webp]]
 
-good to explore:
+The placement of encoders and decoders determines what information a prediction can use:
 
-1. strictly causal crosscoders to capture MLP computation and treat computation performed by attention layers as linear
-2. combine strictly causal crosscoders for MLP outputs without weakly causal crosscoders for attention outputs
-3. interpretable attention replacement layers that could be used in combination with strictly causal crosscoders for a "replacement model"
+- **Acausal:** read from all selected layers and reconstruct them. A reconstruction of an early layer can use later information.
+- **Weakly causal:** read at one residual-stream layer and reconstruct that layer and later layers.
+- **Strictly causal:** read before a computation and predict its output or downstream outputs. Cross-layer transcoders can read an MLP input and predict that MLP's output plus later MLP outputs.
+
+These masks constrain information flow in the crosscoder. Mechanistic faithfulness still needs testing. Attention also needs separate treatment because it mixes token positions. One approximation fixes the observed attention pattern while analysing a prompt. [@lindsey2024sparsecrosscoders]
 
 ## Cross-layer Features
 
 > How can we discover cross-layer structure?
 
-- trained a global, acausal crosscoder on residual stream activations of 18-layer models
-- versus 18 SAEs trained on each residual stream layers
-- fixed L1 coefficient for sparsity penalty
-- MSE + decoder norm-weighed L1 norm
+The preview compared a global acausal crosscoder with separate SAEs on all layers of an 18-layer model. Activations were normalized per layer and the sparsity coefficient was fixed. The crosscoder achieved lower evaluation loss at a matched total dictionary size; at large compute budgets, reaching the same loss cost roughly twice the training FLOPs. Dictionary size and training cost answer different questions here. [@lindsey2024sparsecrosscoders]
 
 ![[thoughts/images/all-layer-crosscoder-vs-per-layer-sae.webp]]
 
 ## model diffing
 
-see also: [[thoughts/model stiching]] and [[thoughts/SVCCA]]
+see also: [[thoughts/model stiching|model stitching]] and [[thoughts/SVCCA]]. These study compatibility or similarity between representations.[^sne]
 
-> [@doi:10.1080/09515080050002726] proposes compare [[thoughts/representations]] by transforming into representations of distances between data points. [^sne]
+[^sne]: Laakso and Cottrell compare representations through distances between examples. [@doi:10.1080/09515080050002726] Colah's [representation-visualization post](https://colah.github.io/posts/2015-01-Visualizing-Representations/) discusses a related construction for visualizing networks.
 
-[^sne]: Chris Colah's [blog post](https://colah.github.io/posts/2015-01-Visualizing-Representations/) explains how t-SNE can be used to visualize collections of networks in a function space.
+For two models, replace the layer index with $m\in\{\mathrm{base},\mathrm{chat}\}$. Run both on matching inputs and learn a shared $f(x)$ with separate decoder vectors $d_i^{\mathrm{base}}$ and $d_i^{\mathrm{chat}}$. Different hidden widths are allowed by the matrix shapes, though choosing corresponding layers and token positions remains part of the experiment.
 
-Crosscoders learn shared dictionaries of interpretable concepts represented as latent directions in both base and fine-tuned models, allowing tracking of how concepts shift or emerge during fine-tuning.
+A zero base decoder means that this fitted dictionary does not use the latent to reconstruct the base model. Inferring that fine-tuning created the concept requires more evidence.
 
 ### challenges with model diffing
 
-**Exclusive feature polysemanticity**: Features exclusive to one model (not shared) tend to be more polysemantic and dense in their activations, making them difficult to interpret. This emerges from competition for limited feature capacity - since shared features can explain neuron activation patterns in both models, exclusive features must encode more information to justify their allocation [@minder2025overcoming].
+Minder et al. identify two failures of decoder-norm attribution: [@minder2025overcomingsparsityartifactscrosscoders]
 
-**L1 sparsity artifacts**: Standard crosscoders with L1 training loss can misattribute concepts as unique to the fine-tuned model when they actually exist in both models. Two specific issues:
+1. **Complete shrinkage:** the sparsity penalty removes a useful base decoder contribution, leaving it in the reconstruction error.
+2. **Latent decoupling:** other latents already reconstruct the concept in the base model, so its nominally chat-only latent receives a zero base decoder.
 
-1. Features may appear exclusive when they're actually shared but represented differently
-2. Latent directions may be incorrectly identified as model-specific due to optimization dynamics
-
-**Latent scaling** provides more accurate measurement of each latent's presence across models to flag these issues.
+Their **Latent Scaling** test fits how much a chat latent's contribution explains the base reconstruction error and the base reconstruction. These probe shrinkage and decoupling, respectively. In their Gemma experiment, both models use the same layer-13 residual-stream coordinates, so a chat decoder vector can be applied to base activations.
 
 ### BatchTopK loss for improved model diffing
 
-@minder2025overcoming shows that training crosscoders with BatchTopK loss (instead of L1) substantially mitigates polysemanticity and misattribution issues:
+BatchTopK selects the largest $nk$ decoder-norm-weighted latent activations across a batch of $n$ examples. The budget averages $k$ active latents per example; individual examples can use different counts.
 
-- Finds more genuinely model-specific and highly interpretable concepts
-- Reduces false attribution of shared concepts as exclusive
-- Identifies chat-specific latents that are both interpretable and causally effective
-- Represents concepts like "false information" and "personal question" with nuanced preferences
-
-BatchTopK also discovers multiple refusal-related latents showing different refusal trigger patterns, advancing best practices for crosscoder-based model diffing.
+On Gemma 2 2B base/chat activations at layer 13, Minder et al. found fewer of the two artifacts and more interpretable chat-specific latents. Patching selected latent contributions into a hybrid forward pass tested their effect on the output distribution. These experiments support the method for that comparison; a new model pair still needs its own checks. [@minder2025overcomingsparsityartifactscrosscoders]
 
 ### model diff amplification
 
-Goodfire's approach for discovering rare, undesired behaviors: given logits before and after post-training, compute amplified logits as:
+[Goodfire's logit diff amplification](https://www.goodfire.com/research/model-diff-amplification) compares output logits directly. It requires no crosscoder. At each generation step, using the same context and aligned token vocabulary, compute
 
 $$
-\text{logits}_{\text{amplified}} = \text{logits}_{\text{after}} + \alpha(\text{logits}_{\text{after}} - \text{logits}_{\text{before}})
+\ell_{\mathrm{amp}}=\ell_{\mathrm{after}}+\alpha(\ell_{\mathrm{after}}-\ell_{\mathrm{before}}),\qquad \alpha>0,
 $$
 
-where $\alpha > 0$. Sampling from amplified logits magnifies differences between models, surfacing rare failure modes that standard evaluations miss.
+then sample from the amplified distribution and repeat with the new context. This magnifies the logit differences introduced by post-training. Goodfire surfaced rare unwanted behaviours in its case studies. Because amplification changes the sampling distribution, those frequencies cannot estimate how often the original model produces the behaviour.
 
 ## open-source implementations
 
-- [Anthropic's circuit tracer](https://github.com/safety-research/circuit-tracer): Full pipeline for training crosscoders and generating attribution graphs
-- [Neuronpedia interface](https://www.neuronpedia.org/gemma-2-2b/graph): Interactive exploration of crosscoder features
-- [Model diffing library](https://github.com/model-diffing/model-diffing): Tools for crosscoder-based model comparison
+- [Gemma reproduction](https://github.com/ckkissane/crosscoder-model-diff-replication): crosscoder training and analysis for the middle residual stream of Gemma 2 2B base and instruction-tuned models.
+- [Crosscoder learning](https://github.com/science-of-finetuning/crosscoder_learning) and [sparsity-artifact experiments](https://github.com/science-of-finetuning/sparsity-artifacts-crosscoders): the training library and analysis code accompanying Minder et al.
+- [Crosscode](https://github.com/oclivegriffin/crosscode): training for multi-layer and multi-model crosscoders, including $L_1$ and BatchTopK variants. The earlier [model-diffing repository](https://github.com/model-diffing/model-diffing) points here.
+- [Circuit tracer](https://github.com/safety-research/circuit-tracer): attribution graphs and interventions using trained transcoders. Its graph pipeline consumes those weights.
+- [Neuronpedia graph interface](https://www.neuronpedia.org/gemma-2-2b/graph): a viewer for attribution graphs; check the selected source set to distinguish per-layer and cross-layer transcoders.
 
-see [[thoughts/circuit tracing]] for comprehensive tooling overview
+see [[thoughts/circuit tracing]] for the graph workflow.
 
 ## questions
 

@@ -1,8 +1,8 @@
 ---
 date: '2024-11-04'
-description: a variations of autoencoders operate on features sparsity, also known as SAEs.
+description: sparse decompositions of model activations, gated encoders, and shrinkage from sparsity penalties.
 id: sparse autoencoder
-modified: 2026-06-05 15:08:24 GMT-04:00
+modified: 2026-10-02 09:15:16 GMT-04:00
 tags:
   - ml
   - interp
@@ -13,146 +13,153 @@ transclude:
 
 see also: [landscape](https://docs.google.com/document/d/1lHvRXJsbi41bNGZ_znGN7DmlLXITXyWyISan7Qx2y6s/edit?tab=t.0#heading=h.j9b3g3x1o1z4)
 
-Often contains one layers of MLP with few linear [[thoughts/optimization#ReLU|ReLU]] that is trained on a subset of datasets the main LLMs is trained on.
+In mechanistic interpretability, a sparse autoencoder (SAE) learns to reconstruct activations collected from a fixed site in a trained model. Run text through the model, record vectors at that site, and train the SAE on those vectors. The text corpus determines which activation patterns it sees.
 
-> empirical example: if we wish to interpret all features related to the author Camus, we might want to train an SAEs based on all given text of Camus to interpret "similar" features from Llama-3.1
+Training on activations from Camus passages would therefore restrict the training distribution. Calling a learned direction a "Camus feature" still requires checking where it activates on held-out text and what changes when we intervene on it. The choice of corpus alone gives us no such result.
 
 > [!abstract] definition
 >
-> We wish to decompose a models' activation $x \in \mathbb{R}^n$ into sparse, linear combination of feature directions:
+> Approximate an activation $x \in \mathbb{R}^n$ with a sparse combination of learned directions:
 >
 > $$
-> \begin{aligned}
-> x \sim x_{0} + &\sum_{i=1}^{M} f_i(x) d_i \\[8pt]
-> \because \quad &d_i M \gg n:\text{ latent unit-norm feature direction} \\
-> &f_i(x) \ge 0: \text{ corresponding feature activation for }x
-> \end{aligned}
+> x \approx b_\text{dec} + \sum_{i=1}^{M} f_i(x)d_i,
+> \qquad f_i(x) \ge 0, \quad \|d_i\|_2=1.
 > $$
+>
+> The dictionary is usually overcomplete, $M>n$, while only a few coefficients are nonzero for any one input. Its directions need not be orthogonal.
 
-Thus, the baseline architecture of SAEs is a linear autoencoder with L1 penalty on the activations:
-
-$$
-\begin{aligned}
-f(x) &\coloneqq \text{ReLU}(W_\text{enc}(x - b_\text{dec}) + b_\text{enc}) \\
-\hat{x}(f) &\coloneqq W_\text{dec} f(x) + b_\text{dec}
-\end{aligned}
-$$
-
-> training it to reconstruct a large dataset of model activations $x \sim \mathcal{D}$, constraining hidden representation $f$ to be sparse
-
-[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/tut/tut1#^l1norm|L1 norm]] with coefficient $\lambda$ to construct loss during training:
+A baseline SAE has a [[thoughts/optimization#ReLU|ReLU]] encoder and a linear decoder:
 
 $$
 \begin{aligned}
-\mathcal{L}(x) &\coloneqq \| x-\hat{x}(f(x)) \|_2^2 + \lambda \| f(x) \|_1 \\[8pt]
-&\because \|x-\hat{x}(f(x)) \|_2^2 : \text{ reconstruction loss}
+f(x) &\coloneqq \operatorname{ReLU}(W_\text{enc}(x-b_\text{dec})+b_\text{enc}), \\
+\hat{x} &\coloneqq W_\text{dec}f(x)+b_\text{dec}.
 \end{aligned}
+$$
+
+With column vectors, $W_\text{enc}\in\mathbb{R}^{M\times n}$ and $W_\text{dec}\in\mathbb{R}^{n\times M}$. The decoder's columns are the directions $d_i$; $f(x)\in\mathbb{R}^M$ contains their coefficients.
+
+Train on activations $x\sim\mathcal{D}$ by minimizing the expected loss
+
+$$
+\mathcal{L}(x)
+=\|x-\hat{x}\|_2^2+\lambda\|f(x)\|_1,
+\qquad \lambda\ge0.
 $$
 
 > [!important] intuition
 >
-> We need to reconstruction fidelity at a given sparsity level, as measured by
-> L0 via a mixture of reconstruction fidelity and L1 regularization.
+> We want good reconstruction with few active directions. The $L_1$ [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/tut/tut1#^l1norm|penalty]] also charges for their magnitudes: halving a positive coefficient halves its penalty even though the number of active directions, $\|f(x)\|_0$, stays the same.
 
-We can reduce sparsity loss term without affecting reconstruction by scaling up norm of
-decoder weights, or constraining norms of columns $W_\text{dec}$ during training
-
-Ideas: output of decoder $f(x)$ has two roles
-
-- detects what features are active <= L1 is crucial to ensure sparsity in decomposition
-- _estimates_ magnitudes of active features <= L1 is unwanted bias
+Unit decoder norms matter here. Without them, replacing $d_i$ by $\alpha d_i$ and $f_i(x)$ by $f_i(x)/\alpha$, for $\alpha>1$, preserves reconstruction while lowering the penalty. Normalizing each decoder column removes this way of reducing the objective without learning a sparser representation. [@rajamanoharan2024improvingdictionarylearninggated]
 
 ## Gated SAE
 
-@rajamanoharan2024improvingdictionarylearninggated applies [[thoughts/optimization#JumpReLU|JumpRELU]] and observe [[thoughts/Pareto distribution|Pareto]] improvement over training.
+The encoder both selects directions and estimates their magnitudes. Penalizing the same coefficients for both jobs causes _shrinkage_: active coefficients become too small. [@sharkey2024feature] [^shrinkage]
 
-Clear consequence of the bias during training is _shrinkage_ [@sharkey2024feature] [^shrinkage]
+[^shrinkage]: With the decoder fixed, the sparsity penalty rewards smaller coefficients even when reconstruction suffers. Rescaling can correct their magnitudes; it leaves the encoder and decoder directions unchanged.
 
-[^shrinkage]:
-    If we hold $\hat{x}(\bullet)$ fixed, thus L1 pushes $f(x) \to 0$, while reconstruction loss pushes $f(x)$ high enough to produce accurate reconstruction.
-
-    An optimal value is somewhere between.
-
-    However, rescaling the [[thoughts/mechanistic interpretability#feature suppression|shrink]] feature activations [@sharkey2024feature] is not necessarily enough to overcome bias induced by L1: a SAE might learnt sub-optimal encoder and decoder directions that is not improved by the fixed.
-
-Idea is to use [[thoughts/optimization#Gated Linear Units and Variants|gated ReLU]] encoder [@shazeer2020gluvariantsimprovetransformer; @dauphin2017languagemodelinggatedconvolutional]:
+Gated SAEs separate these jobs, borrowing the multiplicative structure of [[thoughts/optimization#Gated Linear Units and Variants|gated units]]. [@shazeer2020gluvariantsimprovetransformer; @dauphin2017languagemodelinggatedconvolutional]
 
 $$
-\tilde{f}(\mathbf{x}) \coloneqq \underbrace{\mathbb{1}[\underbrace{(\mathbf{W}_{\text{gate}}(\mathbf{x} - \mathbf{b}_{\text{dec}}) + \mathbf{b}_{\text{gate}}) > 0}_{\pi_{\text{gate}}(\mathbf{x})}]}_{f_{\text{gate}}(\mathbf{x})} \odot \underbrace{\text{ReLU}(\mathbf{W}_{\text{mag}}(\mathbf{x} - \mathbf{b}_{\text{dec}}) + \mathbf{b}_{\text{mag}})}_{f_{\text{mag}}(\mathbf{x})}
+\begin{aligned}
+\pi_\text{gate}(x)
+&=W_\text{gate}(x-b_\text{dec})+b_\text{gate}, \\
+f_\text{gate}(x)&=\mathbb{1}[\pi_\text{gate}(x)>0], \\
+f_\text{mag}(x)
+&=\operatorname{ReLU}(W_\text{mag}(x-b_\text{dec})+b_\text{mag}), \\
+\tilde f(x)&=f_\text{gate}(x)\odot f_\text{mag}(x).
+\end{aligned}
 $$
 
-where $\mathbb{1}[\bullet > 0]$ is the (point-wise) Heaviside step function and $\odot$ denotes element-wise multiplication.
-
-| term                 | annotations                                                                     |
-| -------------------- | ------------------------------------------------------------------------------- |
-| $f_\text{gate}$      | which features are deemed to be active                                          |
-| $f_\text{mag}$       | feature activation magnitudes (for features that have been deemed to be active) |
-| $\pi_\text{gate}(x)$ | $f_\text{gate}$ sub-layer's pre-activations                                     |
-
-to negate the increases in parameters, use ==weight sharing==:
-
-Scale $W_\text{mag}$ in terms of $W_\text{gate}$ with a vector-valued rescaling parameter $r_\text{mag} \in \mathbb{R}^M$:
+Here the gate is binary, and $\odot$ is element-wise multiplication. Weight sharing keeps both encoder paths aligned:
 
 $$
-(W_\text{mag})_{ij} \coloneqq (\exp (r_\text{mag}))_i \cdot (W_\text{gate})_{ij}
+(W_\text{mag})_{ij}
+=\exp((r_\text{mag})_i)(W_\text{gate})_{ij},
+\qquad r_\text{mag}\in\mathbb{R}^M.
 $$
 
 ![[thoughts/images/gated-sae-architecture.webp]]
 
-_Figure 3: Gated SAE with weight sharing between gating and magnitude paths_
+_Figure 3: Gated SAE with shared projection directions and separate scales and biases._
 
-![[thoughts/images/gated_jump_relu.webp]]
-
-_Figure 4: A gated encoder become a single layer linear encoder with [[thoughts/optimization#JumpReLU]]_ [@erichson2019jumpreluretrofitdefensestrategy] _activation function_ $\sigma_\theta$
-
-## feature suppression
-
-See also: [link](https://www.alignmentforum.org/posts/3JuSjTZyMzaSeTxKk/addressing-feature-suppression-in-saes)
-
-Loss function of SAEs combines a MSE reconstruction loss with sparsity term:
+The binary gate has zero derivative almost everywhere. Training therefore uses its rectified preactivation $q(x)=\operatorname{ReLU}(\pi_\text{gate}(x))$:
 
 $$
 \begin{aligned}
-L(x, f(x), y) &= \|y-x\|^2/d + c\mid f(x) \mid \\[8pt]
-&\because d: \text{ dimensionality of }x
+\mathcal{L}_\text{gated}(x)
+={}&\|x-W_\text{dec}\tilde f(x)-b_\text{dec}\|_2^2 \\
+&+\lambda\|q(x)\|_1 \\
+&+\|x-\operatorname{sg}(W_\text{dec})q(x)
+-\operatorname{sg}(b_\text{dec})\|_2^2.
 \end{aligned}
 $$
 
-> the reconstruction is not perfect, given that only one is reconstruction. **For smaller value of $f(x)$, features will be suppressed**
+The auxiliary reconstruction trains the gate through $q$. The stop-gradient operator $\operatorname{sg}$ blocks gradients through the auxiliary decoder. The magnitude output receives no direct sparsity penalty. The paper reports improved reconstruction at matched sparsity across its tested models and sites. [@rajamanoharan2024improvingdictionarylearninggated]
+
+![[thoughts/images/gated_jump_relu.webp]]
+
+_Figure 4: With tied weights, the gated forward pass can be written using a [[thoughts/optimization#JumpReLU]] activation with a nonnegative effective threshold._ [@erichson2019jumpreluretrofitdefensestrategy]
+
+This forward-pass equivalence leaves a training distinction. The later JumpReLU SAE uses positive thresholds and an $L_0$ penalty:
+
+$$
+\operatorname{JumpReLU}_{\theta}(z)=z\,\mathbb{1}[z>\theta],
+\qquad \theta>0.
+$$
+
+It trains through the discontinuity with straight-through gradient estimates. Gated SAE training instead uses the $L_1$ surrogate and auxiliary reconstruction above. [@rajamanoharan2024jumpingaheadimprovingreconstruction]
+
+## feature suppression
+
+See also: [Addressing Feature Suppression in SAEs](https://www.alignmentforum.org/posts/3JuSjTZyMzaSeTxKk/addressing-feature-suppression-in-saes).
+
+Use mean squared error to make the dimension dependence explicit:
+
+$$
+\mathcal{L}(x)=\frac{\|x-\hat{x}\|_2^2}{n}+c\|f(x)\|_1,
+\qquad c\ge0.
+$$
 
 > [!note]- illustrated example
 >
-> consider one binary feature in one dimension $x=1$ with probability $p$ and $x=0$ otherwise. Ideally, optimal SAE would extract feature activation of $f(x) \in \{0,1\}$ and have decoder $W_d=1$
->
-> However, if we train SAE optimizing loss function $L(x, f(x), y)$, let say encoder outputs feature activation $a$ if $x=1$ and 0 otherwise, ignore bias term, the optimization problem becomes:
+> Take one binary feature: $x=1$ with probability $p>0$ and $x=0$ otherwise. Fix the decoder weight to $1$ and both biases to $0$. Let $f(1)=a\ge0$ and $f(0)=0$. Then
 >
 > $$
 > \begin{aligned}
-> a &= \argmin p * L(1,a,a) + (1-p) * L(0,0,0) \\
-> &= \argmin (1-a)^2 + \mid a \mid * c  \\
-> &= \argmin a^2 + (c-2) *a +1
+> a^*&=\underset{a\ge0}{\operatorname{argmin}}\;
+> p\bigl((1-a)^2+ca\bigr) \\
+> &=\max\left(0,1-\frac c2\right).
 > \end{aligned}
-> \Longrightarrow \boxed{a = 1-\frac{c}{2}}
 > $$
+>
+> For an interior minimum, $2(a-1)+c=0$; the nonnegativity constraint clips the solution at zero. With $c=1$, the reconstruction is $1/2$. With $c\ge2$, this feature disappears. The factor $p$ cancels because it multiplies both costs in this restricted example.
+
+For an isolated unit direction with true magnitude $g\ge0$ in $n$ dimensions, the same calculation gives
+
+$$
+a^*=\max\left(0,g-\frac{cn}{2}\right).
+$$
+
+Weak activations can vanish entirely. This calculation holds the direction and biases fixed; a learned, overlapping dictionary introduces other sources of reconstruction error. [@sharkey2024feature]
 
 > [!question]+ How do we fix feature suppression in training SAEs?
 >
-> introduce element-wise scaling factor per feature in-between encoder and decoder, represented by vector $s$:
+> One post-training correction freezes the encoder and fits per-feature scales using reconstruction loss alone:
 >
 > $$
-> \begin{aligned}
-> f(x) &= \text{ReLU}(W_e x + b_e) \\
-> f_s(x) &= s \odot f(x) \\
-> y &= W_d f_s(x) + b_d
-> \end{aligned}
+> f_s(x)=s\odot f(x),
+> \qquad
+> \hat{x}_s=W_\text{dec}f_s(x)+b_\text{dec}.
 > $$
+>
+> Keeping $s_i>0$ preserves which coefficients are nonzero. This can repair magnitudes of detected features; a zero coefficient stays zero, and a wrong dictionary direction stays wrong. [@sharkey2024feature]
 
 ## sparse dictionary learning
 
-_find sparsity representation through linear combination of basic elements_
+The linear representation hypothesis motivates this approach: some features of a model's computation can be represented as directions in activation space. The learned dictionary supplies candidate directions. Reconstruction error measures how well their weighted sum recovers an activation; assigning semantic meaning requires separate evidence.
 
-Assumption based on linear representation hypothesis.
-
-This is useful to describe activations, but doesn't encapsulate "concepts" within a network.
+A label needs evidence: which held-out inputs activate the direction, which apparent counterexamples also activate it, and whether interventions change the model's behavior as the label predicts. Record those checks separately from reconstruction error and the average number of active coefficients. The direction and its proposed interpretation are separate claims.
 
 ![[thoughts/mechanistic interpretability#^geometry]]
