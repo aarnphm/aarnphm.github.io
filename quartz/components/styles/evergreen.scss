@@ -1,20 +1,13 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
 
-@mixin tinyCodeFonts {
-  @include tinyFonts;
-  font-family: var(--codeFont);
-  font-size: 0.6rem;
-  line-height: 1.4;
-}
-
 .evergreen-content {
   position: sticky;
   top: calc(var(--kern) * 4);
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  font-size: 0.85rem;
+  font-size: var(--text-ui);
   line-height: 1.45;
 }
 
@@ -27,13 +20,29 @@
 }
 
 .note-tag {
-  @include tinyCodeFonts;
+  appearance: none;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  @include tagLabel;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: color 0.2s ease;
 
-  &.fade-out {
-    color: rgba(0, 0, 0, 0.2);
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
   }
+
+  &[aria-pressed='true'] {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+// dim by raising the matching tags, so every tag keeps --darkgray contrast or better
+.notes-list:has(> .note-tag.fade-out) > .note-tag:not(.fade-out) {
+  color: var(--dark);
 }
 
 a[data-list] {
@@ -44,13 +53,13 @@ a[data-list] {
     }
 
     & > .description {
-      font-size: 0.66rem;
+      font-size: var(--text-meta);
       line-height: 1.4;
     }
 
     &[data-tag] {
       & > .title {
-        @include tinyCodeFonts;
+        @include tagLabel;
       }
     }
   }
@@ -84,7 +93,7 @@ a[data-list] {
   }
 
   & > .title {
-    font-size: 0.85rem;
+    font-size: var(--text-ui);
   }
 }
 

@@ -108,7 +108,9 @@ export default ((opts?: Partial<TagContentOptions>) => {
             <p>{content}</p>
           </article>
           <SeeAlso {...props} />
-          <p>{i18n(cfg.locale).pages.tagContent.totalTags({ count: tags.length })}</p>
+          <p class="listing-count">
+            {i18n(cfg.locale).pages.tagContent.totalTags({ count: tags.length })}
+          </p>
           <PageListSearch {...props} allTags />
           <div>
             {tags.map(tag => {
@@ -132,7 +134,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
                   </h2>
                   {content && <p>{content}</p>}
                   <div class="page-listing">
-                    <p>
+                    <p class="listing-count">
                       {i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}
                       {pages.length > options.numPages && (
                         <>
@@ -167,7 +169,9 @@ export default ((opts?: Partial<TagContentOptions>) => {
           <article>{content}</article>
           <SeeAlso {...props} />
           <div class="page-listing">
-            <p>{i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}</p>
+            <p class="listing-count">
+              {i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}
+            </p>
             <PageListSearch {...props} />
             <div>
               <PageList {...listProps} sort={opts?.sort} presorted={Boolean(props.tagPageFiles)} />

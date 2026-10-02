@@ -1009,6 +1009,7 @@ body[data-slug^='read/'] {
 // Library
 
 .pdf-reader-library {
+  --pdf-line: var(--dark);
   height: 100%;
   overflow: auto;
   padding: 2.5rem var(--pdf-gutter) 4rem;
@@ -1021,7 +1022,7 @@ body[data-slug^='read/'] {
   header {
     display: grid;
     gap: 0.75rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
 
   h1 {
@@ -1034,39 +1035,81 @@ body[data-slug^='read/'] {
     margin: 0;
     max-width: 38rem;
   }
+
+  input[type='search'] {
+    min-height: 2rem;
+    padding: 0.125rem 0.5rem;
+    color: var(--dark);
+    font-size: var(--text-meta);
+    line-height: 1.4;
+
+    &::placeholder {
+      color: var(--darkgray);
+      opacity: 1;
+    }
+
+    &:focus-visible {
+      outline-color: var(--dark);
+      outline-offset: 2px;
+    }
+
+    @media (pointer: coarse) {
+      min-height: 44px;
+      font-size: 1rem;
+    }
+  }
 }
 
 .pdf-reader-library-list {
   display: grid;
-  gap: 0.125rem;
+  margin-block: 0;
   padding: 0;
+  border: 1px solid var(--pdf-line);
   list-style: none;
+
+  li {
+    margin: 0;
+    padding: 0;
+
+    & + li {
+      border-top: 1px solid var(--pdf-line);
+    }
+  }
 
   a {
     display: grid;
-    gap: 0.1rem;
-    padding: 0.5rem 0;
-    color: var(--dark);
+    gap: 0.25rem;
+    padding: 0.4rem 0.75rem;
+    color: var(--darkgray);
     background: transparent;
     text-decoration: none;
+    font-weight: $normalWeight;
+
+    &:focus-visible {
+      outline-color: var(--dark);
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {
-    a:hover .pdf-reader-library-title {
-      text-decoration: underline;
+    a:hover {
+      background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
     }
   }
 }
 
 .pdf-reader-library-title {
   font-family: var(--bodyFont);
-  font-size: 0.95rem;
+  font-size: var(--text-ui);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
 }
 
 .pdf-reader-library-meta {
-  color: var(--gray);
+  color: var(--darkgray);
   font-family: var(--codeFont);
-  font-size: 0.64rem;
+  font-size: var(--text-meta);
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 

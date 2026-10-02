@@ -53,7 +53,7 @@ export default {
       tagIndex: 'index des étiquettes',
       itemsUnderTag: ({ count }) =>
         count === 1 ? '1 élément avec cette étiquette.' : `${count} éléments avec cette étiquette.`,
-      showingFirst: ({ count }) => `affichage des premières ${count} étiquettes.`,
+      showingFirst: ({ count }) => `affichage des ${count} premiers éléments.`,
       totalTags: ({ count }) => `trouvé ${count} étiquettes au total.`,
     },
   },

@@ -29,10 +29,17 @@
   font-size: 11.1px;
   font-style: normal;
   font-weight: $normalWeight;
-  letter-spacing: 0;
   letter-spacing: 0.4px;
   line-height: 15px;
   text-transform: uppercase;
+}
+
+@mixin tagLabel {
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  font-weight: $normalWeight;
+  line-height: 1.4;
+  color: var(--darkgray);
 }
 
 @mixin closeButton {

@@ -26,7 +26,7 @@ document.addEventListener('nav', () => {
     })
 
     activeTag = tag
-    tag.classList.add('active')
+    tag.setAttribute('aria-pressed', 'true')
   }
 
   function resetFilter() {
@@ -52,7 +52,8 @@ document.addEventListener('nav', () => {
     }
 
     noteTags.forEach(tag => {
-      tag.classList.remove('fade-out', 'active')
+      tag.classList.remove('fade-out')
+      tag.setAttribute('aria-pressed', 'false')
     })
     activeTag = null
   }
@@ -60,7 +61,8 @@ document.addEventListener('nav', () => {
   noteTags.forEach(tag => {
     const tagValue = tag.dataset.tag
 
-    const onMouseEnter = () => {
+    // hover and keyboard focus share the same preview
+    const onPreviewStart = () => {
       if (tagValue && !activeTag) {
         removeFadeOut()
         fadeOutOtherTags(tag)
@@ -68,7 +70,7 @@ document.addEventListener('nav', () => {
       }
     }
 
-    const onMouseLeave = () => {
+    const onPreviewEnd = () => {
       if (!activeTag) {
         removeFadeOut()
       }
@@ -83,14 +85,17 @@ document.addEventListener('nav', () => {
       }
     }
 
-    tag.addEventListener('mouseenter', onMouseEnter)
-    tag.addEventListener('mouseleave', onMouseLeave)
+    tag.addEventListener('mouseenter', onPreviewStart)
+    tag.addEventListener('mouseleave', onPreviewEnd)
+    tag.addEventListener('focus', onPreviewStart)
+    tag.addEventListener('blur', onPreviewEnd)
     tag.addEventListener('click', onClick)
-    tag.style.cursor = 'pointer'
 
     window.addCleanup(() => {
-      tag.removeEventListener('mouseenter', onMouseEnter)
-      tag.removeEventListener('mouseleave', onMouseLeave)
+      tag.removeEventListener('mouseenter', onPreviewStart)
+      tag.removeEventListener('mouseleave', onPreviewEnd)
+      tag.removeEventListener('focus', onPreviewStart)
+      tag.removeEventListener('blur', onPreviewEnd)
       tag.removeEventListener('click', onClick)
     })
   })
