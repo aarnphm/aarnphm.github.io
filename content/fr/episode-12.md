@@ -2,7 +2,7 @@
 date: '2026-10-01'
 description: bilan de printemps, corrigé complet des activités, pistes 18 à 20, horaires, trajets et jeu Trouvez qui
 id: episode-12
-modified: 2026-10-01 20:30:00 GMT-04:00
+modified: 2026-10-02 09:08:39 GMT-04:00
 tags:
   - fr
   - language
@@ -204,11 +204,11 @@ La transcription imprimée p. 137 donne ce trajet :
 **Du restaurant mexicain au bureau de poste :**
 
 > — {{Pardon, je cherche le bureau de poste. Pouvez-vous m'indiquer le chemin ?}}
-> — {{Oui. Prenez la rue Légendre jusqu'à la rue Saint-Étienne, puis continuez sur Saint-Étienne vers la rue de l'Épée. Rejoignez le boulevard des Riverains en longeant le fleuriste. Le bureau de poste est le petit bâtiment au toit rouge, à côté de la banque.}}
+> — {{Oui. Prenez la rue Légendre jusqu'à l'avenue Gignac. Suivez cette avenue vers le pont Delisle. Avant le pont, prenez le boulevard des Riverains et continuez jusqu'au petit bâtiment au toit rouge, à côté de la banque. C'est le bureau de poste.}}
 > — {{D'accord, merci !}}
 > — {{Ça me fait plaisir !}}
 
-Ce sont des productions pour pratiquer, avec une arrivée identifiable sur le dessin. `Rejoignez` = get to/join ; {{`en direction de`}} = towards ; {{`de l'autre côté`}} = on the other side ; {{`en longeant`}} = going along/past the side of.
+Ce sont des productions pour pratiquer, avec une arrivée identifiable sur le dessin. `Rejoignez` = get to/join ; {{`en direction de`}} = towards ; {{`de l'autre côté`}} = on the other side.
 
 Les indications utilisent l'impératif de **vous**, sans sujet exprimé : `vous tournez` → **tournez**, `vous continuez` → **continuez**, `vous traversez` → **traversez**, `vous prenez` → **prenez**. `Je cherche le bureau de poste` prend directement le lieu après `chercher`.
 
