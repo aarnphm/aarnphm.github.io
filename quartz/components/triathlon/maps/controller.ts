@@ -3,6 +3,7 @@ import type { StravaActivityDetail } from '../../../plugins/stores/strava'
 import type { ActivityAnalysisRange } from '../activity/analysis'
 import type { TriathlonContext } from '../runtime/context'
 import { start } from '../../../functional'
+import { applyMapElevation, applyMapTerrain } from '../../../util/mapbox-overlays'
 import { buildAnalysisBar, dist } from '../../../util/triathlon-card'
 import { mapRoutePointAtDistance } from '../../../util/triathlon-map-route'
 import { applyMonochromeMapPalette } from '../../scripts/mapbox-client'
@@ -27,7 +28,6 @@ import {
   type TriMapTheme,
 } from '../runtime/preferences'
 import { createMapDetailTransition } from './detail'
-import { applyMapElevation } from './elevation'
 import { createMapboxMap, type MapboxLayerEvent, type TriathlonMapboxMap } from './mapbox'
 import {
   emptyFC,
@@ -58,7 +58,6 @@ import {
 import { createOverviewProvider, createRouteSportFilter } from './overview'
 import { HEAT_RAMP, rampGradient } from './palette'
 import { createMapSearchController } from './search-controller'
-import { applyMapTerrain } from './terrain'
 
 export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => void) | null => {
   const domF = createDomFactory(context.presentation)

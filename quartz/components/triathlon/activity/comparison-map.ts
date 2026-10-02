@@ -2,13 +2,12 @@ import type { StravaActivityDetail, StravaMapPoint } from '../../../plugins/stor
 import type { DistanceSystem } from '../../../util/triathlon-presentation'
 import type { TriathlonMapboxMap } from '../maps/mapbox'
 import type { GeoFC } from '../maps/model'
+import { applyMapElevation, applyMapTerrain } from '../../../util/mapbox-overlays'
 import { activityCompareColor } from '../../../util/triathlon-card'
 import { mapRoutePointAtDistance } from '../../../util/triathlon-map-route'
 import { applyMonochromeMapPalette } from '../../scripts/mapbox-client'
-import { applyMapElevation } from '../maps/elevation'
 import { createMapboxMap, type MapboxPointerEvent } from '../maps/mapbox'
 import { emptyFC, fcBounds, gpsSegments, segmentFeatures } from '../maps/model'
-import { applyMapTerrain } from '../maps/terrain'
 import {
   mapboxStyleUrl,
   readTriMap3d,
