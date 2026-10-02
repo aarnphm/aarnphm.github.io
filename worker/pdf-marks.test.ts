@@ -44,8 +44,11 @@ const assets = {
   async fetch(input: RequestInfo | URL): Promise<Response> {
     const url = new URL(input instanceof Request ? input.url : input.toString())
     if (url.pathname === '/static/pdf-documents.json') return Response.json(manifest)
-    if (url.pathname === '/read') {
+    if (url.pathname === '/static/pdf-reader') {
       return new Response(shell, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
+    }
+    if (url.pathname === '/read') {
+      return new Response('<!DOCTYPE html><html><body>Reading note</body></html>')
     }
     return new Response('missing', { status: 404 })
   },
@@ -336,7 +339,7 @@ test('reader markdown twin carries public marks only (F10, F12)', async () => {
   assert.match(agent.headers.get('Content-Type') ?? '', /^text\/markdown/)
 })
 
-test('reader shell gets the document record injected', async () => {
+test('reader shell uses its dedicated asset and gets the document record injected', async () => {
   const response = await call(`${VISITOR_ORIGIN}/read/courses/18.100B/pset%201`, {
     headers: { Accept: 'text/html' },
   })

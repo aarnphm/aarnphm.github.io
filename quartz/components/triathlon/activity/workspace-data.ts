@@ -7,11 +7,15 @@ import {
   activityPhysiologyTracePoints,
   activityThermalTracePoints,
   formatAltitude,
+  formatImpactLoadFactor,
+  formatStepSpeedLoss,
   formatTemperature,
   formatThermalTemperature,
   KM_TO_MI,
   routeStreamFlags,
   runGroundContactTimeMs,
+  runImpactLoadFactor,
+  runStepSpeedLossMps,
   runStrideLengthValue,
   runVerticalOscillationCm,
 } from '../../../util/triathlon-card'
@@ -214,6 +218,20 @@ export const workspaceTraces = (
       '#8b6fd6',
       routeSamples(runVerticalOscillationCm),
       numeric('cm', 1),
+    )
+    add(
+      'step-speed-loss',
+      'step speed loss',
+      '#a02f6f',
+      routeSamples(runStepSpeedLossMps),
+      formatStepSpeedLoss,
+    )
+    add(
+      'impact-load-factor',
+      'impact load factor',
+      '#f27440',
+      routeSamples(runImpactLoadFactor),
+      formatImpactLoadFactor,
     )
   }
   const environment = d.analyses.derived.environment

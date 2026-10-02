@@ -300,11 +300,18 @@ const buildWorkspace = (
         title: label,
       })
       const scale = el('div', 'tri-workspace-y-ticks')
+      const fractions = low === high ? [0.5] : [0, 0.25, 0.5, 0.75, 1]
+      const labels = fractions.map(fraction => {
+        const formatted = trace.format(high - fraction * (high - low))
+        return formatted.match(/^[+-]?\d[\d,]*(?:\.\d+)?/)?.[0] ?? formatted
+      })
+      verticalAxis.style.setProperty(
+        '--tri-workspace-axis-chars',
+        String(Math.max(...labels.map(value => value.length))),
+      )
       scale.append(
-        ...(low === high ? [0.5] : [0, 0.25, 0.5, 0.75, 1]).map(fraction =>
-          el('span', undefined, trace.format(high - fraction * (high - low)), {
-            style: `inset-block-start: ${fraction * 100}%`,
-          }),
+        ...fractions.map((fraction, index) =>
+          el('span', undefined, labels[index], { style: `inset-block-start: ${fraction * 100}%` }),
         ),
       )
       verticalAxis.append(scale)
@@ -320,10 +327,10 @@ const buildWorkspace = (
         0,
         lapSummary.maximum,
       )
-    for (const trace of activeTraces.slice(1))
-      addAxis(endAxes, trace, ...workspaceTraceDomain(trace))
-    chart.style.setProperty('--tri-workspace-start-axes', String(startAxes.childElementCount))
-    chart.style.setProperty('--tri-workspace-end-axes', String(endAxes.childElementCount))
+    for (const trace of activeTraces.slice(1)) {
+      const side = startAxes.childElementCount <= endAxes.childElementCount ? startAxes : endAxes
+      addAxis(side, trace, ...workspaceTraceDomain(trace))
+    }
     lines.replaceChildren()
     for (const trace of traces) {
       if (!selected.has(trace.id)) continue

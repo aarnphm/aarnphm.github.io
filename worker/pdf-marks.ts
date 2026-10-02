@@ -6,6 +6,7 @@ import {
   PDF_MANIFEST_PATH,
   PDF_MARK_ID,
   PDF_READER_PREFIX,
+  PDF_READER_SHELL_PATH,
   pdfReaderKey,
   pdfReaderPath,
   normalizePdfSlug,
@@ -388,9 +389,11 @@ async function readerShell(
   title: string,
   data: PdfReaderData,
 ): Promise<Response> {
-  const response = await env.ASSETS.fetch(new Request(new URL('/read', url.origin), request))
+  const response = await env.ASSETS.fetch(
+    new Request(new URL(PDF_READER_SHELL_PATH, url.origin), request),
+  )
   if (!response.ok) return response
-  // The shell is built once at `read`; client routing and link previews need the real path.
+  // The shared shell keeps the reader slug; client routing and previews need the requested path.
   const path = data.mode === 'document' && data.readPath ? data.readPath : PDF_READER_PREFIX
   const html = (await response.text())
     .replaceAll(TITLE_SLOT, escapeHtml(title))

@@ -27,6 +27,58 @@ function KindGlyph({ kind }: { kind: PdfMarkKind }) {
   )
 }
 
+function CopyButton({ label, onCopy }: { label: 'link' | 'quote'; onCopy(): Promise<boolean> }) {
+  const [copied, setCopied] = useState(false)
+  const attempt = useRef(0)
+  const timeout = useRef<number>()
+  const name = label === 'link' ? 'Link' : 'Quote'
+
+  useEffect(
+    () => () => {
+      attempt.current++
+      window.clearTimeout(timeout.current)
+    },
+    [],
+  )
+
+  const copy = async () => {
+    const current = ++attempt.current
+    window.clearTimeout(timeout.current)
+    setCopied(false)
+    const success = await onCopy()
+    if (!success || current !== attempt.current) return
+    setCopied(true)
+    timeout.current = window.setTimeout(() => setCopied(false), 1800)
+  }
+
+  return (
+    <button
+      type="button"
+      class="pdf-mark-copy-button"
+      data-copied={copied}
+      aria-label={copied ? `${name} copied` : `Copy ${label}`}
+      title={copied ? `${name} copied` : `Copy ${label}`}
+      onClick={() => void copy()}
+    >
+      <span aria-hidden="true">{label}</span>
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="m5 12 4 4L19 6" />
+      </svg>
+    </button>
+  )
+}
+
 export interface MarkCardProps {
   entry: MarkEntry
   active: boolean
@@ -39,8 +91,8 @@ export interface MarkCardProps {
   onVisibility(visibility: PdfMark['visibility']): void
   onDelete(): void
   onResolve(choice: 'mine' | 'theirs'): void
-  onCopyLink(): void
-  onCopyQuote(): void
+  onCopyLink(): Promise<boolean>
+  onCopyQuote(): Promise<boolean>
 }
 
 export function MarkCard(props: MarkCardProps) {
@@ -139,44 +191,58 @@ export function MarkCard(props: MarkCardProps) {
       {active && (
         <footer class="pdf-mark-card-actions">
           {canWrite && (
-            <div class="pdf-reader-segmented" role="group" aria-label="Kind">
+            <div class="pdf-mark-card-kinds" role="group" aria-label="Kind">
               {kinds.map(kind => (
                 <button
                   type="button"
                   aria-pressed={mark.kind === kind}
+                  aria-label={kindMeta[kind].label}
                   title={`${kindMeta[kind].label} (${kindMeta[kind].key})`}
                   onClick={() => props.onKind(kind)}
                 >
-                  <KindGlyph kind={kind} /> {kindMeta[kind].label}
+                  <KindGlyph kind={kind} />
                 </button>
               ))}
             </div>
           )}
-          <div class="pdf-reader-row">
-            {canWrite && (
-              <button
-                type="button"
-                aria-pressed={mark.visibility === 'private'}
-                title="Private marks are only visible to you"
-                onClick={() =>
-                  props.onVisibility(mark.visibility === 'private' ? 'public' : 'private')
-                }
+          {canWrite && (
+            <button
+              type="button"
+              aria-pressed={mark.visibility === 'private'}
+              title="Private marks are only visible to you"
+              onClick={() =>
+                props.onVisibility(mark.visibility === 'private' ? 'public' : 'private')
+              }
+            >
+              private
+            </button>
+          )}
+          <CopyButton label="link" onCopy={props.onCopyLink} />
+          <CopyButton label="quote" onCopy={props.onCopyQuote} />
+          {canWrite && (
+            <button
+              type="button"
+              class="pdf-reader-danger pdf-mark-card-delete"
+              aria-label="Delete mark"
+              title="Delete mark"
+              onClick={props.onDelete}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
               >
-                private
-              </button>
-            )}
-            <button type="button" onClick={props.onCopyLink}>
-              copy link
+                <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7" />
+              </svg>
             </button>
-            <button type="button" onClick={props.onCopyQuote}>
-              copy quote
-            </button>
-            {canWrite && (
-              <button type="button" class="pdf-reader-danger" onClick={props.onDelete}>
-                delete
-              </button>
-            )}
-          </div>
+          )}
         </footer>
       )}
     </article>
@@ -351,20 +417,6 @@ export function IndexPanel(props: {
 
   return (
     <div class="pdf-reader-index">
-      {props.outline.length > 0 && (
-        <section aria-labelledby="pdf-index-contents">
-          <h2 id="pdf-index-contents">contents</h2>
-          <ol class="pdf-reader-outline">
-            {props.outline.map(entry => (
-              <li style={{ '--depth': entry.depth }}>
-                <button type="button" onClick={() => props.onOutline(entry)}>
-                  {entry.title}
-                </button>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
       <section aria-labelledby="pdf-index-marks">
         <h2 id="pdf-index-marks">marks</h2>
         <div class="pdf-reader-row">
@@ -423,6 +475,20 @@ export function IndexPanel(props: {
           </ol>
         )}
       </section>
+      {props.outline.length > 0 && (
+        <section aria-labelledby="pdf-index-contents">
+          <h2 id="pdf-index-contents">contents</h2>
+          <ol class="pdf-reader-outline">
+            {props.outline.map(entry => (
+              <li style={{ '--depth': entry.depth }}>
+                <button type="button" onClick={() => props.onOutline(entry)}>
+                  {entry.title}
+                </button>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
       {props.citations.length > 0 && (
         <section aria-labelledby="pdf-index-cited">
           <h2 id="pdf-index-cited">cited by</h2>

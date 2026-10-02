@@ -8,22 +8,36 @@ $mark-ink: #879a39;
 $contra-ink: #d14d41;
 $page-ink: #100f0f;
 
-body[data-slug='read'] {
+body[data-slug='read'],
+body[data-slug^='read/'] {
   overflow: hidden;
 
   #quartz-root {
     margin: 0;
   }
 
-  .header {
-    visibility: hidden;
-    height: 0;
+  // The site header keeps search and the theme toggle; the reader fills the rest of the viewport.
+  .page-body-grid,
+  .page-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    margin-bottom: 0;
   }
 
   .page-content {
-    display: block;
-    min-width: 0;
-    margin-bottom: 0;
+    flex: 1 1 auto;
+  }
+
+  // Above the mobile breakpoint the header only holds an invisible search anchor, so it gives its
+  // row to the reader. Its popovers are fixed and still open.
+  @media all and ($tablet), all and ($desktop) {
+    #quartz-root > .header {
+      height: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
   }
 
   .page-header,
@@ -33,23 +47,24 @@ body[data-slug='read'] {
   .sidenotes {
     display: none;
   }
-
-  .page-body-grid {
-    display: block;
-  }
 }
 
 .pdf-reader {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  min-height: 0;
   margin: 0;
   padding: 0;
   grid-column: 1 / -1;
 }
 
 .pdf-reader-mount {
-  height: 100dvh;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -192,6 +207,8 @@ body[data-slug='read'] {
 
 .pdf-reader-app {
   display: grid;
+  // A fixed minimum keeps the one-line phone title from widening the column to its full text.
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
   height: 100%;
   min-height: 0;
@@ -228,6 +245,21 @@ body[data-slug='read'] {
   }
 }
 
+// Phones keep the bar to one title line; the marks sheet repeats the full title.
+.pdf-reader-app[data-compact='true'] {
+  .pdf-reader-title h1 {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-wrap: normal;
+  }
+
+  .pdf-reader-meta-marks {
+    display: none;
+  }
+}
+
 .pdf-reader-crumb {
   color: var(--gray);
   flex: none;
@@ -236,10 +268,20 @@ body[data-slug='read'] {
 .pdf-reader-meta {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.25rem 0.875rem;
   margin: 0;
   color: var(--gray);
   font-variant-numeric: tabular-nums;
+}
+
+.pdf-reader-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pdf-control-height);
+  height: var(--pdf-control-height);
+  color: var(--darkgray);
 }
 
 .pdf-reader-controls {
@@ -284,6 +326,14 @@ body[data-slug='read'] {
   overflow: auto;
   overscroll-behavior: contain;
   background: var(--pdf-surface);
+
+  .pdf-reader-app[data-compact='false'] & {
+    scrollbar-width: none;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
 
   &:focus-visible {
     outline-offset: -3px;
@@ -334,6 +384,12 @@ body[data-slug='read'] {
   isolation: isolate;
   contain: layout paint;
   outline: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+
+  // A wider cover can expand the spread; keep fitted article pages inside the scrolling viewport.
+  &[data-fits-width] {
+    position: sticky;
+    inset-inline: var(--pdf-gutter) calc(var(--pdf-side-width) + var(--pdf-gutter));
+  }
 
   > canvas {
     position: absolute;
@@ -563,6 +619,11 @@ body[data-slug='read'] {
 
   a {
     color: var(--darkgray);
+
+    &:hover {
+      color: var(--dark);
+      background: transparent;
+    }
   }
 }
 
@@ -664,8 +725,70 @@ body[data-slug='read'] {
 }
 
 .pdf-mark-card-actions {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--pdf-line);
+
+  .pdf-reader-app & button {
+    flex: none;
+    padding-inline: 0.125rem;
+    border: 0;
+    white-space: nowrap;
+  }
+
+  .pdf-kind-glyph {
+    font-size: 0.9rem;
+    line-height: 1;
+  }
+}
+
+.pdf-mark-card-kinds {
+  display: inline-flex;
+  flex: none;
+
+  button {
+    min-width: 1.5rem;
+  }
+}
+
+.pdf-reader-app .pdf-mark-card-delete {
+  margin-inline-start: auto;
+  min-width: 1.5rem;
+}
+
+.pdf-reader-app .pdf-mark-copy-button {
   display: grid;
-  gap: 0.4rem;
+  place-items: center;
+
+  > span,
+  > svg {
+    grid-area: 1 / 1;
+    transition:
+      opacity var(--transition-fast),
+      transform var(--transition-fast);
+  }
+
+  > svg {
+    opacity: 0;
+    transform: translateY(3px) scale(0.8);
+  }
+
+  &[data-copied='true'] {
+    color: $mark-ink;
+
+    > span {
+      opacity: 0;
+      transform: translateY(-3px);
+    }
+
+    > svg {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 .pdf-cite-card-excerpt {
@@ -815,14 +938,14 @@ body[data-slug='read'] {
   padding: 0.25rem;
   visibility: hidden;
   background: var(--light);
-  border: 1px solid var(--dark);
+  border: 1px solid var(--gray);
 }
 
 // Dialogs
 
 .pdf-reader-sheet,
 .pdf-reader-keys {
-  border: 1px solid var(--dark);
+  border: 1px solid var(--gray);
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--darkgray);
@@ -950,5 +1073,13 @@ body[data-slug='read'] {
 @media (prefers-reduced-motion: reduce) {
   .pdf-reader-margin-item {
     transition: none;
+  }
+
+  .pdf-reader-app .pdf-mark-copy-button {
+    > span,
+    > svg {
+      transition: none;
+      transform: none;
+    }
   }
 }

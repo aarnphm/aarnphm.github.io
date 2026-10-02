@@ -2786,7 +2786,9 @@ export function renderPage(
                 ? undefined
                 : isSlides || isFlashcards
                   ? { display: 'flex', flexDirection: 'column' }
-                  : { display: 'flex', flexDirection: 'column', minHeight: '100vh' }
+                  : isPdfReader
+                    ? { display: 'flex', flexDirection: 'column', height: '100dvh' }
+                    : { display: 'flex', flexDirection: 'column', minHeight: '100vh' }
             }
           >
             <Header {...componentData}>
