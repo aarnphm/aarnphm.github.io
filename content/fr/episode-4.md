@@ -66,17 +66,17 @@ revoir l'épisode 3, p. 32. say whose objects are whose on the model {{`Voici le
 
 the full form, worth transcribing because it is the administrative template the course keeps reusing:
 
-| champ                                   | détail                                                                      |
-| --------------------------------------- | --------------------------------------------------------------------------- |
-| {{`Nom de famille`}}                        | family name                                                                 |
-| `Prénom(s)`                             | plural: the form allows several given names                                 |
-| {{`Date de naissance`}}                     | {{`Année`}}, {{`Mois`}}, {{`Jour`}}, the `AAAA-MM-JJ` order of [[fr/episode-2]]         |
-| {{`Sexe`}}                                  | {{`Féminin`}} ou {{`Masculin`}}                                                     |
-| {{`État civil`}}                            | marital status                                                              |
+| champ                                       | détail                                                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| {{`Nom de famille`}}                        | family name                                                                                 |
+| `Prénom(s)`                                 | plural: the form allows several given names                                                 |
+| {{`Date de naissance`}}                     | {{`Année`}}, {{`Mois`}}, {{`Jour`}}, the `AAAA-MM-JJ` order of [[fr/episode-2]]             |
+| {{`Sexe`}}                                  | {{`Féminin`}} ou {{`Masculin`}}                                                             |
+| {{`État civil`}}                            | marital status                                                                              |
 | {{`Adresse actuelle du lieu de résidence`}} | {{`Numéro`}}, {{`Rue`}}, `App.`, {{`Ville`}}, `Province/Territoire/État`, {{`Code postal`}} |
-| `Téléphone (jour)`                      | daytime number, where you can be reached during the day                     |
-| {{`Téléphone cellulaire`}}                  | the Québécois word for a cell phone                                         |
-| `Adresse courriel (facultatif)`         | {{`facultatif`}} : optional, you may leave it empty                             |
+| `Téléphone (jour)`                          | daytime number, where you can be reached during the day                                     |
+| {{`Téléphone cellulaire`}}                  | the Québécois word for a cell phone                                                         |
+| `Adresse courriel (facultatif)`             | {{`facultatif`}} : optional, you may leave it empty                                         |
 
 ## à vous de jouer !
 
@@ -87,15 +87,15 @@ the full form, worth transcribing because it is the administrative template the 
 
 the ladders climb from cases 6 and 26; the snake heads sit on 28 and 44. the other 46 cases, transcribed as a drill bank:
 
-| case | question                                                  |
-| ---- | --------------------------------------------------------- |
+| case | question                                                      |
+| ---- | ------------------------------------------------------------- |
 | 1    | {{`Comment vous appelez-vous ?`}}                             |
 | 2    | {{`Dites les lettres de l'alphabet.`}}                        |
 | 3    | {{`Épelez votre nom.`}}                                       |
 | 4    | {{`Quel est votre état civil ?`}}                             |
 | 5    | {{`Êtes-vous célibataire ?`}}                                 |
-| 6    | (case échelle, sans question)                             |
-| 7    | `Quelle(s) langue(s) parlez-vous ?`                       |
+| 6    | (case échelle, sans question)                                 |
+| 7    | `Quelle(s) langue(s) parlez-vous ?`                           |
 | 8    | {{`Est-ce que vous avez des enfants ?`}}                      |
 | 9    | {{`Où habitez-vous ?`}}                                       |
 | 10   | {{`Quelle est votre nationalité ?`}}                          |
@@ -105,7 +105,7 @@ the ladders climb from cases 6 and 26; the snake heads sit on 28 and 44. the oth
 | 14   | {{`Dans quel pays habitez-vous ?`}}                           |
 | 15   | {{`D'où venez-vous ?`}}                                       |
 | 16   | {{`Habitez-vous à Montréal ?`}}                               |
-| 17   | `Présentez-vous.`                                         |
+| 17   | `Présentez-vous.`                                             |
 | 18   | {{`C'est quoi votre prénom ?`}}                               |
 | 19   | {{`Quel est votre nom ?`}}                                    |
 | 20   | {{`Quel âge avez-vous ?`}}                                    |
@@ -114,9 +114,9 @@ the ladders climb from cases 6 and 26; the snake heads sit on 28 and 44. the oth
 | 23   | {{`C'est quoi votre code postal ?`}}                          |
 | 24   | {{`Quel est votre numéro de téléphone ?`}}                    |
 | 25   | {{`Que veut dire « Mme » ?`}}                                 |
-| 26   | (case échelle, sans question)                             |
+| 26   | (case échelle, sans question)                                 |
 | 27   | {{`Où est votre cahier Par ici ?`}}                           |
-| 28   | (tête de serpent, sans question)                          |
+| 28   | (tête de serpent, sans question)                              |
 | 29   | {{`Quelle heure est-il ?`}}                                   |
 | 30   | {{`Dites la date d'aujourd'hui.`}}                            |
 | 31   | {{`Quel est l'horaire du cours de français ?`}}               |
@@ -132,10 +132,10 @@ the ladders climb from cases 6 and 26; the snake heads sit on 28 and 44. the oth
 | 41   | {{`Que veut dire « Mlle » ?`}}                                |
 | 42   | {{`Que veut dire « M. » ?`}}                                  |
 | 43   | {{`Indiquez que vous ne comprenez pas.`}}                     |
-| 44   | (tête de serpent, sans question)                          |
-| 45   | `Quelle heure est-il ?` (image : une horloge)             |
+| 44   | (tête de serpent, sans question)                              |
+| 45   | `Quelle heure est-il ?` (image : une horloge)                 |
 | 46   | {{`Qu'est-ce que c'est ?`}} (image : un stylo)                |
-| 47   | `Qu'est-ce que c'est ?` (image : un bureau)               |
+| 47   | `Qu'est-ce que c'est ?` (image : un bureau)                   |
 | 48   | {{`Le chat est sous la chaise. Oui ou non ?`}}                |
 | 49   | {{`Le chien est devant le chat. Oui ou non ?`}}               |
 | 50   | {{`Nommez les couleurs.`}} (image : jaune, rouge, bleu, noir) |
@@ -154,8 +154,8 @@ the bilan teaches almost nothing, and the exceptions cluster in the game:
 | -------------------------------------- | ------------------------ |
 | `Allumez la lumière.`                  | turn on the light        |
 | `Éteignez votre téléphone cellulaire.` | turn off your cell phone |
-| {{`Ouvrez la porte.`}}                     | open the door            |
-| {{`Fermez la porte.`}}                     | close the door           |
+| {{`Ouvrez la porte.`}}                 | open the door            |
+| {{`Fermez la porte.`}}                 | close the door           |
 | `Prenez votre sac.`                    | take your bag            |
 | `Trouvez une chose bleue.`             | find a blue thing        |
 

@@ -14,29 +14,29 @@ title: orthography and phonetics
 
 26 base latin letters, same set as english. accented forms (`é è ê ë à â î ï ô ù û ü ÿ ç`) are modified spellings, not separate letters.
 
-| letter | name        | sound      | rough english      |
-| ------ | ----------- | ---------- | ------------------ |
-| a      | `a`         | /a/        | ah                 |
+| letter | name            | sound      | rough english      |
+| ------ | --------------- | ---------- | ------------------ |
+| a      | `a`             | /a/        | ah                 |
 | b      | {{`bé`}}        | /be/       | beh                |
 | c      | {{`cé`}}        | /se/       | seh                |
 | d      | {{`dé`}}        | /de/       | deh                |
-| e      | `e`         | /ø/ or /ə/ | uh                 |
+| e      | `e`             | /ø/ or /ə/ | uh                 |
 | f      | {{`effe`}}      | /ɛf/       | eff                |
 | g      | {{`gé`}}        | /ʒe/       | zheh               |
 | h      | {{`ache`}}      | /aʃ/       | ahsh               |
-| i      | `i`         | /i/        | ee                 |
+| i      | `i`             | /i/        | ee                 |
 | j      | {{`ji`}}        | /ʒi/       | zhee               |
 | k      | {{`ka`}}        | /ka/       | kah                |
 | l      | {{`elle`}}      | /ɛl/       | ell                |
 | m      | {{`emme`}}      | /ɛm/       | em                 |
 | n      | {{`enne`}}      | /ɛn/       | en                 |
-| o      | `o`         | /o/        | oh                 |
+| o      | `o`             | /o/        | oh                 |
 | p      | {{`pé`}}        | /pe/       | peh                |
 | q      | {{`ku`}}        | /ky/       | koo                |
 | r      | {{`erre`}}      | /ɛʁ/       | air                |
 | s      | {{`esse`}}      | /ɛs/       | ess                |
 | t      | {{`té`}}        | /te/       | teh                |
-| u      | `u`         | /y/        | (no english match) |
+| u      | `u`             | /y/        | (no english match) |
 | v      | {{`vé`}}        | /ve/       | veh                |
 | w      | {{`double vé`}} | /dublə ve/ | doo-blah-veh       |
 | x      | {{`ixe`}}       | /iks/      | eeks               |
@@ -57,11 +57,11 @@ written accents mark vowel quality, spelling history, or homograph distinctions.
 
 ## vowel spellings
 
-| spelling                      | sound | example                     |
-| ----------------------------- | ----- | --------------------------- |
-| `u`                           | /y/   | {{`tu`}} /ty/                   |
-| `ou`                          | /u/   | {{`vous`}} /vu/                 |
-| `au`, {{`eau`}}                   | /o/   | {{`chaud`}} /ʃo/, {{`eau`}} /o/     |
+| spelling                      | sound | example                             |
+| ----------------------------- | ----- | ----------------------------------- |
+| `u`                           | /y/   | {{`tu`}} /ty/                       |
+| `ou`                          | /u/   | {{`vous`}} /vu/                     |
+| `au`, {{`eau`}}               | /o/   | {{`chaud`}} /ʃo/, {{`eau`}} /o/     |
 | `oi`                          | /wa/  | {{`moi`}} /mwa/, {{`trois`}} /tʁwa/ |
 | `ui`                          | /ɥi/  | {{`huit`}} /ɥit/, {{`lui`}} /lɥi/   |
 | `ai`, `ei`                    | /ɛ/   | {{`lait`}} /lɛ/, {{`reine`}} /ʁɛn/  |
@@ -76,39 +76,39 @@ French often favors a close-mid vowel in an open syllable and an open-mid vowel 
 
 a vowel followed by `n` or `m` nasalizes when the nasal is word-final or stands before another consonant. it stops nasalizing before a following vowel or when the nasal is doubled: {{`bon`}} /bɔ̃/ but {{`bonne`}} /bɔn/, {{`temps`}} /tɑ̃/ but {{`année`}} /ane/. spelling writes `m` rather than `n` before `b p m` ({{`temps`}}, {{`simple`}}, {{`tomber`}}).
 
-| spelling           | sound | example                                  |
-| ------------------ | ----- | ---------------------------------------- |
-| `an am en em`      | /ɑ̃/   | {{`sans`}} /sɑ̃/, {{`temps`}} /tɑ̃/                |
-| `on om`            | /ɔ̃/   | {{`bon`}} /bɔ̃/, {{`nom`}} /nɔ̃/                   |
+| spelling           | sound | example                                              |
+| ------------------ | ----- | ---------------------------------------------------- |
+| `an am en em`      | /ɑ̃/   | {{`sans`}} /sɑ̃/, {{`temps`}} /tɑ̃/                    |
+| `on om`            | /ɔ̃/   | {{`bon`}} /bɔ̃/, {{`nom`}} /nɔ̃/                       |
 | `in ain ein im ym` | /ɛ̃/   | {{`vin`}} /vɛ̃/, {{`pain`}} /pɛ̃/, {{`simple`}} /sɛ̃pl/ |
-| `un um`            | /œ̃/   | many speakers in france merge to /ɛ̃/     |
-| `ien`              | /jɛ̃/  | {{`bien`}} /bjɛ̃/                             |
-| `oin`              | /wɛ̃/  | {{`loin`}} /lwɛ̃/                             |
+| `un um`            | /œ̃/   | many speakers in france merge to /ɛ̃/                 |
+| `ien`              | /jɛ̃/  | {{`bien`}} /bjɛ̃/                                     |
+| `oin`              | /wɛ̃/  | {{`loin`}} /lwɛ̃/                                     |
 
 ## consonants
 
-| spelling                       | sound              | example                                                              |
-| ------------------------------ | ------------------ | -------------------------------------------------------------------- |
-| `c` before `e i y`             | /s/                | {{`ce`}} /sə/, {{`cinq`}} /sɛ̃k/                                              |
-| `c` before `a o u` / consonant | /k/                | {{`car`}} /kaʁ/, {{`cou`}} /ku/                                              |
-| `g` before `e i y`             | /ʒ/                | {{`geste`}} /ʒɛst/                                                       |
-| `g` before `a o u` / consonant | /g/                | {{`gare`}} /gaʁ/, {{`goût`}} /gu/                                            |
-| `gu` before `e i`              | /g/                | {{`guerre`}} /gɛʁ/, {{`guide`}} /gid/                                        |
-| `ge` before `a o`              | /ʒ/                | {{`mangeons`}} /mɑ̃ʒɔ̃/                                                    |
-| `ch`                           | /ʃ/                | {{`chat`}} /ʃa/                                                          |
-| `ph`                           | /f/                | {{`photo`}} /foto/                                                       |
-| `th`                           | /t/                | {{`thé`}} /te/                                                           |
-| `qu`                           | /k/                | {{`qui`}} /ki/, {{`quatre`}} /katʁ/                                          |
-| `j`                            | /ʒ/                | `jour` /ʒuʁ/                                                         |
-| `s` between vowels             | /z/                | {{`maison`}} /mɛzɔ̃/                                                      |
-| `ss` between vowels            | /s/                | {{`poisson`}} /pwasɔ̃/                                                    |
+| spelling                       | sound              | example                                                                              |
+| ------------------------------ | ------------------ | ------------------------------------------------------------------------------------ |
+| `c` before `e i y`             | /s/                | {{`ce`}} /sə/, {{`cinq`}} /sɛ̃k/                                                      |
+| `c` before `a o u` / consonant | /k/                | {{`car`}} /kaʁ/, {{`cou`}} /ku/                                                      |
+| `g` before `e i y`             | /ʒ/                | {{`geste`}} /ʒɛst/                                                                   |
+| `g` before `a o u` / consonant | /g/                | {{`gare`}} /gaʁ/, {{`goût`}} /gu/                                                    |
+| `gu` before `e i`              | /g/                | {{`guerre`}} /gɛʁ/, {{`guide`}} /gid/                                                |
+| `ge` before `a o`              | /ʒ/                | {{`mangeons`}} /mɑ̃ʒɔ̃/                                                                |
+| `ch`                           | /ʃ/                | {{`chat`}} /ʃa/                                                                      |
+| `ph`                           | /f/                | {{`photo`}} /foto/                                                                   |
+| `th`                           | /t/                | {{`thé`}} /te/                                                                       |
+| `qu`                           | /k/                | {{`qui`}} /ki/, {{`quatre`}} /katʁ/                                                  |
+| `j`                            | /ʒ/                | `jour` /ʒuʁ/                                                                         |
+| `s` between vowels             | /z/                | {{`maison`}} /mɛzɔ̃/                                                                  |
+| `ss` between vowels            | /s/                | {{`poisson`}} /pwasɔ̃/                                                                |
 | `x`                            | /ks/, /gz/, /z/, ∅ | {{`taxi`}}, {{`examen`}} /ɛgzamɛ̃/, liaison {{`dix ans`}}, final silent in {{`deux`}} |
-| `gn`                           | /ɲ/                | {{`montagne`}} /mɔ̃taɲ/                                                   |
-| `-il`, `-ill` after vowel      | /j/                | {{`travail`}} /tʁavaj/, {{`soleil`}} /sɔlɛj/                                 |
-| `ill` after consonant          | /ij/               | {{`fille`}} /fij/, {{`famille`}} /famij/                                     |
-| `-tion`                        | /sjɔ̃/              | {{`nation`}} /nasjɔ̃/                                                     |
-| `-sion` after vowel            | /zjɔ̃/              | {{`vision`}} /vizjɔ̃/                                                     |
-| `r`                            | /ʁ/                | {{`rouge`}} /ʁuʒ/                                                        |
+| `gn`                           | /ɲ/                | {{`montagne`}} /mɔ̃taɲ/                                                               |
+| `-il`, `-ill` after vowel      | /j/                | {{`travail`}} /tʁavaj/, {{`soleil`}} /sɔlɛj/                                         |
+| `ill` after consonant          | /ij/               | {{`fille`}} /fij/, {{`famille`}} /famij/                                             |
+| `-tion`                        | /sjɔ̃/              | {{`nation`}} /nasjɔ̃/                                                                 |
+| `-sion` after vowel            | /zjɔ̃/              | {{`vision`}} /vizjɔ̃/                                                                 |
+| `r`                            | /ʁ/                | {{`rouge`}} /ʁuʒ/                                                                    |
 
 `ill` exceptions read /il/, not /ij/: {{`ville`}} /vil/, {{`mille`}} /mil/, {{`tranquille`}} /tʁɑ̃kil/.
 

@@ -40,11 +40,11 @@ the blue bars in the Mémo are continua, not three switches. moving right on any
 
 the axes can disagree. an older friend may still be `tu`; a young stranger at a service counter may still be `vous`. the Mémo gives no fixed priority among the three, so the relationship and local convention settle conflicts. when the context is uncertain, start with `vous`: the other person can invite the switch with {{`On peut se tutoyer.`}}
 
-| verbe         | sens                        | exemple                                       |
-| ------------- | --------------------------- | --------------------------------------------- |
+| verbe             | sens                        | exemple                                           |
+| ----------------- | --------------------------- | ------------------------------------------------- |
 | {{`tutoyer`}}     | address someone with `tu`   | {{`Je tutoie mes amis.`}}                         |
 | {{`vouvoyer`}}    | address someone with `vous` | {{`Je vouvoie une personne que je connais peu.`}} |
-| {{`se tutoyer`}}  | use `tu` with each other    | `On peut se tutoyer.`                         |
+| {{`se tutoyer`}}  | use `tu` with each other    | `On peut se tutoyer.`                             |
 | {{`se vouvoyer`}} | use `vous` with each other  | {{`Ils se vouvoient au travail.`}}                |
 
 `vous` also serves two jobs. it is the polite singular in {{`Vous pouvez entrer, madame.`}} and the ordinary plural in {{`Vous pouvez entrer, les enfants.`}} the verb form is identical, so the surrounding noun or situation tells you whether one person or several are being addressed.
@@ -59,14 +59,14 @@ the axes can disagree. an older friend may still be `tu`; a young stranger at a 
 
 the Mémo conjugates `pouvoir` au présent de l'indicatif:
 
-| personne     | forme     |
-| ------------ | --------- |
+| personne     | forme         |
+| ------------ | ------------- |
 | `je`         | {{`peux`}}    |
-| `tu`         | `peux`    |
+| `tu`         | `peux`        |
 | `il/elle/on` | {{`peut`}}    |
 | `nous`       | {{`pouvons`}} |
 | `vous`       | {{`pouvez`}}  |
-| `ils/elles`  | `peuvent` |
+| `ils/elles`  | `peuvent`     |
 
 the singular endings run x, x, t.[^x] `pouvoir` est souvent suivi d'un verbe à l'infinitif:
 
@@ -80,8 +80,8 @@ the last two are the polite-request side of `pouvoir`; {{`Pouvez-vous répéter,
 
 the episode's infinitive bank, one verb per image:
 
-| infinitif | gloss     |
-| --------- | --------- |
+| infinitif     | gloss     |
+| ------------- | --------- |
 | {{`aller`}}   | to go     |
 | {{`arriver`}} | to arrive |
 | {{`boire`}}   | to drink  |
@@ -91,7 +91,7 @@ the episode's infinitive bank, one verb per image:
 | {{`fumer`}}   | to smoke  |
 | {{`lire`}}    | to read   |
 | {{`manger`}}  | to eat    |
-| `texter`  | to text   |
+| `texter`      | to text   |
 
 `texter` is the QC-current entry.[^texter]
 
@@ -119,12 +119,12 @@ five frames, all + verbe à l'infinitif + `?`:
 
 the exercise changes the relationship while keeping the grammatical subject fixed. in every row, the speaker asks permission for themself, so the verb remains `je peux`, even when the addressee receives `vous`.
 
-| situation                                      | relation                                          | exemples de questions                                                                |
-| ---------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| situation                                      | relation                                          | exemples de questions                                                                    |
+| ---------------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | au bureau, un employé à son chef               | formal, normally `vous`                           | `Est-ce que je peux arriver à 8 heures ?`<br>{{`Puis-je partir plus tôt aujourd'hui ?`}} |
 | en classe, une étudiante à son professeur      | usually formal; follow the professor's preference | `Est-ce que je peux manger dans la classe ?`<br>{{`Puis-je utiliser mon cellulaire ?`}}  |
-| à la maison, un enfant à sa mère ou à son père | familiar, `tu`                                    | {{`Est-ce que je peux regarder la télévision ?`}}<br>{{`Je peux inviter mon ami ?`}}         |
-| dans un magasin, une cliente à une vendeuse    | formal service encounter, `vous`                  | {{`Est-ce que je peux essayer ce chandail ?`}}<br>{{`Puis-je payer par carte ?`}}            |
+| à la maison, un enfant à sa mère ou à son père | familiar, `tu`                                    | {{`Est-ce que je peux regarder la télévision ?`}}<br>{{`Je peux inviter mon ami ?`}}     |
+| dans un magasin, une cliente à une vendeuse    | formal service encounter, `vous`                  | {{`Est-ce que je peux essayer ce chandail ?`}}<br>{{`Puis-je payer par carte ?`}}        |
 
 the short `Je peux… ?` frame fits home and familiar speech. `Est-ce que je peux… ?` is neutral and works everywhere. `Puis-je… ?` is the most formal of the three and fits a workplace, classroom, or service encounter.
 
@@ -135,11 +135,11 @@ the short `Je peux… ?` frame fits home and familiar speech. `Est-ce que je peu
 
 the screenshot preserves one visible question from case 1, then the complete text of cases 2 and 3. these are normalized for spelling, word order, and agreement:
 
-| cas | situation                                      | demande de permission                                           | justification ou contexte                                                                 |
-| --- | ---------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| 1   | au bureau, un employé à son chef               | `Je peux arriver 30 minutes en retard demain matin ?`           | the more formal alternative is `Puis-je arriver avec 30 minutes de retard demain matin ?` |
-| 2   | en classe, une étudiante à son professeur      | {{`Puis-je jouer à un jeu vidéo ?`}}                                | {{`J'ai fini mes exercices.`}}                                                                |
-| 2   | en classe, une étudiante à son professeur      | {{`Est-ce que je peux téléphoner à la maison ?`}}                   | {{`C'est urgent.`}} or the original {{`Il y a une affaire urgente.`}}                             |
+| cas | situation                                      | demande de permission                                               | justification ou contexte                                                                 |
+| --- | ---------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | au bureau, un employé à son chef               | `Je peux arriver 30 minutes en retard demain matin ?`               | the more formal alternative is `Puis-je arriver avec 30 minutes de retard demain matin ?` |
+| 2   | en classe, une étudiante à son professeur      | {{`Puis-je jouer à un jeu vidéo ?`}}                                | {{`J'ai fini mes exercices.`}}                                                            |
+| 2   | en classe, une étudiante à son professeur      | {{`Est-ce que je peux téléphoner à la maison ?`}}                   | {{`C'est urgent.`}} or the original {{`Il y a une affaire urgente.`}}                     |
 | 2   | en classe, une étudiante à son professeur      | {{`Je peux être absente demain matin ?`}}                           | `absent` becomes `absente` for the female speaker in this case                            |
 | 3   | à la maison, un enfant à sa mère ou à son père | {{`Est-ce que je peux rester à la maison aujourd'hui ?`}}           | `Je suis un peu fatigué(e).`                                                              |
 | 3   | à la maison, un enfant à sa mère ou à son père | {{`Je peux faire la fête à la maison avec mes amis demain soir ?`}} | the screenshot's `mes mis` is `mes amis`                                                  |
@@ -163,10 +163,10 @@ the demandes exercise scales the possessive with the noun: {{`Est-ce que je peux
 
 the second Mémo verb, `devoir` au présent de l'indicatif:
 
-| personne     | forme     |
-| ------------ | --------- |
+| personne     | forme         |
+| ------------ | ------------- |
 | `je`         | {{`dois`}}    |
-| `tu`         | `dois`    |
+| `tu`         | `dois`        |
 | `il/elle/on` | {{`doit`}}    |
 | `nous`       | {{`devons`}}  |
 | `vous`       | {{`devez`}}   |
@@ -240,28 +240,28 @@ posted messages state a condition in the third person (`ouvert`, `fermé`, `perm
 
 ### mots et expressions du babillard
 
-| mot ou expression                    | définition en français                                         | anglais                            |
-| ------------------------------------ | -------------------------------------------------------------- | ---------------------------------- |
+| mot ou expression                        | définition en français                                         | anglais                            |
+| ---------------------------------------- | -------------------------------------------------------------- | ---------------------------------- |
 | {{`un diner`}}                           | le repas du milieu de la journée                               | lunch                              |
 | {{`une collation`}}                      | un petit repas entre les repas principaux                      | snack                              |
 | {{`des croustilles`}}                    | de fines tranches de pomme de terre frites                     | potato chips                       |
 | {{`une boisson gazeuse`}}                | une boisson sucrée contenant du gaz                            | soft drink, soda                   |
 | {{`une arachide`}}                       | une graine qui peut provoquer une allergie                     | peanut                             |
 | {{`allergique`}}                         | qui a une réaction physique à un aliment ou à une substance    | allergic                           |
-| `la tenue vestimentaire`             | l'ensemble des vêtements portés ou exigés                      | clothing, dress requirements       |
-| `un vêtement`, `les vêtements`       | un article porté sur le corps, puis l'ensemble de ces articles | an item of clothing, clothes       |
+| `la tenue vestimentaire`                 | l'ensemble des vêtements portés ou exigés                      | clothing, dress requirements       |
+| `un vêtement`, `les vêtements`           | un article porté sur le corps, puis l'ensemble de ces articles | an item of clothing, clothes       |
 | {{`la récréation`}}                      | la pause des élèves pendant la journée scolaire                | recess                             |
 | {{`à l'extérieur`}}                      | dehors                                                         | outside                            |
 | {{`même par temps froid`}}               | y compris lorsque la température est froide                    | even in cold weather               |
 | {{`une tuque`}}                          | un bonnet chaud porté en hiver                                 | toque, winter hat                  |
-| {{`un gant`}}, {{`une mitaine`}}             | deux vêtements qui protègent les mains                         | glove, mitten                      |
+| {{`un gant`}}, {{`une mitaine`}}         | deux vêtements qui protègent les mains                         | glove, mitten                      |
 | {{`un pantalon de neige`}}               | un pantalon isolé et imperméable pour jouer dans la neige      | snow pants                         |
 | {{`une botte`}}                          | une chaussure haute qui protège le pied et la cheville         | boot                               |
 | {{`une engelure`}}                       | une lésion causée par une exposition prolongée au froid        | frostbite                          |
-| `avoir lieu`                         | se passer à une date ou à un endroit                           | to take place                      |
-| `à compter de`                       | à partir de                                                    | starting at, as of                 |
+| `avoir lieu`                             | se passer à une date ou à un endroit                           | to take place                      |
+| `à compter de`                           | à partir de                                                    | starting at, as of                 |
 | {{`déterminer l'heure`}}                 | choisir ou fixer l'heure                                       | to set the time                    |
-| `la prise de photos`                 | l'action de prendre des photographies                          | photo-taking                       |
+| `la prise de photos`                     | l'action de prendre des photographies                          | photo-taking                       |
 | {{`le congé des Fêtes`}}                 | la période de vacances autour de Noël et du jour de l'An       | holiday break                      |
 | {{`remettre quelque chose à quelqu'un`}} | donner ou livrer quelque chose à une personne                  | to give, hand something to someone |
 | {{`gratuitement`}}                       | sans demander de paiement                                      | free of charge                     |
@@ -270,14 +270,14 @@ posted messages state a condition in the third person (`ouvert`, `fermé`, `perm
 
 | fonction        | structure                         | exemple du babillard                                |
 | --------------- | --------------------------------- | --------------------------------------------------- |
-| permission      | `C'est permis de/d' + infinitif`  | {{`C'est permis d'apporter des fruits.`}}               |
-| non-permission  | `nom + ne pas être permis`        | {{`Les boissons gazeuses ne sont pas permises.`}}       |
-| interdiction    | `nom + être interdit`             | {{`Les arachides sont interdites.`}}                    |
-| obligation      | `nom + être obligatoire`          | {{`Les bottes sont obligatoires.`}}                     |
+| permission      | `C'est permis de/d' + infinitif`  | {{`C'est permis d'apporter des fruits.`}}           |
+| non-permission  | `nom + ne pas être permis`        | {{`Les boissons gazeuses ne sont pas permises.`}}   |
+| interdiction    | `nom + être interdit`             | {{`Les arachides sont interdites.`}}                |
+| obligation      | `nom + être obligatoire`          | {{`Les bottes sont obligatoires.`}}                 |
 | but             | `pour + infinitif`                | `pour éviter les engelures`                         |
 | évènement futur | `avoir lieu` au futur             | `La prise de photos aura lieu le mardi 2 novembre.` |
-| résultat futur  | `être` au futur + adjectif        | {{`Les photos seront prêtes.`}}                         |
-| passif futur    | `être` au futur + participe passé | {{`La photo de groupe sera remise gratuitement.`}}      |
+| résultat futur  | `être` au futur + adjectif        | {{`Les photos seront prêtes.`}}                     |
+| passif futur    | `être` au futur + participe passé | {{`La photo de groupe sera remise gratuitement.`}}  |
 
 tout le registre de l'épisode réapparait ici: permis, pas permis, interdites, obligatoires. les formes au futur ajoutent les dates et les arrangements dont les parents ont besoin.
 

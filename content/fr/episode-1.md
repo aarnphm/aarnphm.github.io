@@ -32,11 +32,11 @@ vocabulary and spelling are Québécois with rectified orthography, so `Allo !` 
 
 the Mémo splits every greeting move by register:
 
-|                        | situation informelle         | situation formelle                          |
-| ---------------------- | ---------------------------- | ------------------------------------------- |
-| saluer à l'arrivée     | `Allo !`, `Salut !`          | `Bonjour !`                                 |
+|                        | situation informelle                 | situation formelle                                  |
+| ---------------------- | ------------------------------------ | --------------------------------------------------- |
+| saluer à l'arrivée     | `Allo !`, `Salut !`                  | `Bonjour !`                                         |
 | demander comment ça va | {{`Ça va ?`}}, {{`Comment ça va ?`}} | {{`Comment allez-vous ?`}}, {{`Vous allez bien ?`}} |
-| saluer au départ       | `Salut !`, {{`Bye !`}}           | {{`Au revoir !`}}, {{`À bientôt !`}}                |
+| saluer au départ       | `Salut !`, {{`Bye !`}}               | {{`Au revoir !`}}, {{`À bientôt !`}}                |
 
 the listening exercise adds {{`Comment vas-tu ?`}} to the informal column. the answers scale the same way:
 
@@ -65,15 +65,15 @@ when you state a profession, the usual frame is `être` without an article: {{`J
 
 the Mémo sorts the feminine by ending:
 
-| patron           | masculin                                                                       | féminin                                                                      |
-| ---------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| `-e` invariable  | {{`architecte`}}, {{`chimiste`}}, {{`comptable`}}, {{`dentiste`}}, {{`journaliste`}}, {{`secrétaire`}} | même forme                                                                   |
-| `-eur → -euse`   | {{`programmeur`}}, {{`vendeur`}}, {{`serveur`}}                                            | {{`programmeuse`}}, {{`vendeuse`}}, {{`serveuse`}}                                       |
-| `-ier → -ière`   | {{`caissier`}}, {{`cuisinier`}}, {{`infirmier`}}, {{`policier`}}, {{`pompier`}}                    | {{`caissière`}}, {{`cuisinière`}}, {{`infirmière`}}, {{`policière`}}, {{`pompière`}}             |
-| `-ien → -ienne`  | {{`mécanicien`}}, {{`musicien`}}, {{`pharmacien`}}, {{`informaticien`}}                        | {{`mécanicienne`}}, {{`musicienne`}}, {{`pharmacienne`}}, {{`informaticienne`}}              |
-| `-t → -te`       | {{`avocat`}}, `enseignant`, {{`étudiant`}}                                             | {{`avocate`}}, {{`enseignante`}}, {{`étudiante`}}                                        |
-| `-eur → -eure`   | {{`ingénieur`}}                                                                    | {{`ingénieure`}}                                                                 |
-| `-teur → -trice` | {{`acuponcteur`}}, {{`administrateur`}}, {{`directeur`}}, {{`formateur`}}, {{`producteur`}}        | {{`acuponctrice`}}, {{`administratrice`}}, {{`directrice`}}, {{`formatrice`}}, {{`productrice`}} |
+| patron           | masculin                                                                                               | féminin                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `-e` invariable  | {{`architecte`}}, {{`chimiste`}}, {{`comptable`}}, {{`dentiste`}}, {{`journaliste`}}, {{`secrétaire`}} | même forme                                                                                       |
+| `-eur → -euse`   | {{`programmeur`}}, {{`vendeur`}}, {{`serveur`}}                                                        | {{`programmeuse`}}, {{`vendeuse`}}, {{`serveuse`}}                                               |
+| `-ier → -ière`   | {{`caissier`}}, {{`cuisinier`}}, {{`infirmier`}}, {{`policier`}}, {{`pompier`}}                        | {{`caissière`}}, {{`cuisinière`}}, {{`infirmière`}}, {{`policière`}}, {{`pompière`}}             |
+| `-ien → -ienne`  | {{`mécanicien`}}, {{`musicien`}}, {{`pharmacien`}}, {{`informaticien`}}                                | {{`mécanicienne`}}, {{`musicienne`}}, {{`pharmacienne`}}, {{`informaticienne`}}                  |
+| `-t → -te`       | {{`avocat`}}, `enseignant`, {{`étudiant`}}                                                             | {{`avocate`}}, {{`enseignante`}}, {{`étudiante`}}                                                |
+| `-eur → -eure`   | {{`ingénieur`}}                                                                                        | {{`ingénieure`}}                                                                                 |
+| `-teur → -trice` | {{`acuponcteur`}}, {{`administrateur`}}, {{`directeur`}}, {{`formateur`}}, {{`producteur`}}            | {{`acuponctrice`}}, {{`administratrice`}}, {{`directrice`}}, {{`formatrice`}}, {{`productrice`}} |
 
 the `-eure` line is the Québécois signature: the feminized forms (`ingénieure`, and elsewhere {{`professeure`}}, {{`docteure`}}) are the default here.[^eure]
 
@@ -81,13 +81,13 @@ the `-eure` line is the Québécois signature: the feminized forms (`ingénieure
 
 `Je viens…` agrees with the article of the country:
 
-| article du pays | pays                                                                          | je viens…        |
-| --------------- | ----------------------------------------------------------------------------- | ---------------- |
+| article du pays | pays                                                                                                  | je viens…            |
+| --------------- | ----------------------------------------------------------------------------------------------------- | -------------------- |
 | `le`            | {{`le Brésil`}}, {{`le Canada`}}, {{`le Danemark`}}, {{`le Pérou`}}, {{`le Mexique`}}, {{`le Mali`}}  | {{`du Brésil`}}      |
 | `la`            | {{`la Belgique`}}, {{`la Chine`}}, {{`la France`}}, {{`la Grèce`}}, {{`la Hongrie`}}, {{`la Russie`}} | {{`de France`}}      |
 | `l'`            | {{`l'Argentine`}}, {{`l'Espagne`}}, {{`l'Équateur`}}, {{`l'Inde`}}, {{`l'Italie`}}, {{`l'Ukraine`}}   | {{`d'Italie`}}       |
-| `les`           | {{`les Philippines`}}, {{`les États-Unis`}}                                           | {{`des États-Unis`}} |
-| sans article    | {{`Cuba`}}, {{`Madagascar`}}, {{`Singapour`}}                                             | {{`de Cuba`}}        |
+| `les`           | {{`les Philippines`}}, {{`les États-Unis`}}                                                           | {{`des États-Unis`}} |
+| sans article    | {{`Cuba`}}, {{`Madagascar`}}, {{`Singapour`}}                                                         | {{`de Cuba`}}        |
 
 `Cuba`, `Madagascar`, and `Singapour` belong to the small group of country names normally used without an article, so origin takes bare `de`.
 
@@ -97,14 +97,14 @@ langues: `Je parle` plus the language, lowercase, no article: {{`allemand`}}, {{
 
 nationality is an adjective after `être`, lowercase,[^majuscule] and the feminine follows suffix families:
 
-| suffixe         | exemples                                                   |
-| --------------- | ---------------------------------------------------------- |
+| suffixe         | exemples                                                                       |
+| --------------- | ------------------------------------------------------------------------------ |
 | `-ien → -ienne` | {{`brésilien`}}, {{`canadien`}}, {{`italien`}}, {{`péruvien`}}, {{`tunisien`}} |
-| `-ain → -aine`  | {{`américain`}}, {{`roumain`}}                                     |
-| `-ois → -oise`  | {{`chinois`}}, {{`hongrois`}}, {{`suédois`}}                           |
-| `-ais → -aise`  | `français`, {{`portugais`}}                                    |
-| `-e` invariable | {{`belge`}}, {{`bulgare`}}, `russe`                                |
-| irrégulier      | `grec → grecque`                                           |
+| `-ain → -aine`  | {{`américain`}}, {{`roumain`}}                                                 |
+| `-ois → -oise`  | {{`chinois`}}, {{`hongrois`}}, {{`suédois`}}                                   |
+| `-ais → -aise`  | `français`, {{`portugais`}}                                                    |
+| `-e` invariable | {{`belge`}}, {{`bulgare`}}, `russe`                                            |
+| irrégulier      | `grec → grecque`                                                               |
 
 the exercises add `espagnol(e)`, `camerounais(e)`, `pakistanais(e)`, `iranien(ne)`, `vietnamien(ne)`, `philippin(e)`.
 

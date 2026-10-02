@@ -32,8 +32,8 @@ first, what they say about the place: {{`C'est dynamique.`}}, {{`C'est propre.`}
 
 then Benoit says he is hungry, and the three options are three different intensities of the same fact:
 
-| expression                | force                | registre              |
-| ------------------------- | -------------------- | --------------------- |
+| expression                    | force                | registre              |
+| ----------------------------- | -------------------- | --------------------- |
 | {{`J'ai un petit creux.`}}    | peckish, a small gap | familier, litotes     |
 | {{`Je suis affamé.`}}         | starving             | neutre, adjectif      |
 | {{`J'ai une faim de loup !`}} | ravenous             | familier, image figée |
@@ -59,8 +59,8 @@ last, {{`Selon la femme, il faut combien de temps pour se rendre au restaurant ?
 
 twelve shops, matched to twelve pictures of what they sell. only the banque is filled in as the example:
 
-| commerce                  | ce qu'on y trouve          | note                                     |
-| ------------------------- | -------------------------- | ---------------------------------------- |
+| commerce                      | ce qu'on y trouve          | note                                     |
+| ----------------------------- | -------------------------- | ---------------------------------------- |
 | {{`la banque`}}               | l'argent, les comptes      | exemple imprimé                          |
 | {{`la boulangerie`}}          | le pain                    |                                          |
 | {{`le salon de coiffure`}}    | la coupe de cheveux        |                                          |
@@ -179,11 +179,11 @@ eight terms matched to eight black-and-white drawings:
 
 </div>
 
-| terme                     | gloss                    |
-| ------------------------- | ------------------------ |
+| terme                         | gloss                    |
+| ----------------------------- | ------------------------ |
 | {{`un trottoir`}}             | sidewalk                 |
 | {{`une rue`}}                 | street                   |
-| `un arrêt (un stop)`      | stop sign                |
+| `un arrêt (un stop)`          | stop sign                |
 | {{`une lumière`}}             | traffic light            |
 | {{`un coin de rue`}}          | street corner            |
 | {{`une rue parallèle`}}       | parallel street          |
@@ -201,8 +201,8 @@ two of the eight are glossed by the book itself, and that is the tell. the list 
 
 third pass, and the interesting part is the delta. set (1) in [[fr/episode-3]] is `sur, dans, devant, derrière, sous, entre`, which parks objects around furniture. set (2) in [[fr/episode-6]] is `à gauche, à droite, en face, à côté, au bout, loin, près, au-dessus`, which points and measures inside a building. set (3) is seven items:
 
-| préposition          | gloss                | statut        | exemple du livre                                |
-| -------------------- | -------------------- | ------------- | ----------------------------------------------- |
+| préposition              | gloss                | statut        | exemple du livre                                    |
+| ------------------------ | -------------------- | ------------- | --------------------------------------------------- |
 | {{`de l'autre côté de`}} | on the other side of | nouveau       | {{`L'épicerie est de l'autre côté de la rue.`}}     |
 | {{`au coin de`}}         | at the corner of     | nouveau       | {{`Mon appartement est au coin de la rue.`}}        |
 | {{`en face de`}}         | across from, facing  | repris de (2) | {{`Le restaurant japonais est en face du cinéma.`}} |
@@ -319,14 +319,14 @@ le pont Gauthier permet de traverser la rivière au Chat. sur ce plan, la rue L�
 
 the encadré is six lines, all impératif vous, the mood [[fr/episode-6]] already conjugated:
 
-| formule                                  | ce qu'elle fait                           |
-| ---------------------------------------- | ----------------------------------------- |
+| formule                                      | ce qu'elle fait                           |
+| -------------------------------------------- | ----------------------------------------- |
 | {{`Prenez la rue Laliberté.`}}               | enter a street and travel along it        |
-| `Continuez tout droit jusqu'à…`          | keep going as far as a landmark           |
-| `Tournez à gauche à la lumière.`         | turn, with the landmark introduced by `à` |
+| `Continuez tout droit jusqu'à…`              | keep going as far as a landmark           |
+| `Tournez à gauche à la lumière.`             | turn, with the landmark introduced by `à` |
 | {{`Traversez le pont et tournez à droite.`}} | cross, then turn                          |
-| `Au deuxième arrêt, tournez à gauche.`   | count landmarks, then turn                |
-| `C'est là. C'est à votre droite/gauche.` | arrival, relative to the walker           |
+| `Au deuxième arrêt, tournez à gauche.`       | count landmarks, then turn                |
+| `C'est là. C'est à votre droite/gauche.`     | arrival, relative to the walker           |
 
 three things are new here rather than recycled.
 
@@ -361,15 +361,15 @@ trajet : **magasin de sport → à droite en sortant → pont Labelle → avenue
 
 dans les deux trajets, **à votre droite / à votre gauche** dépend du sens de la marche. repérez votre direction après chaque virage, puis cherchez le bâtiment du côté indiqué.
 
-| expression                        | sens en anglais                   | note                                                         |
-| --------------------------------- | --------------------------------- | ------------------------------------------------------------ |
-| {{`Descendez la côte.`}}              | Go down the hill.                 | impératif de `descendre`, forme `vous`                       |
-| `En sortant du magasin…`          | As you leave the shop…            | `en sortant de` situe le début du trajet                     |
-| {{`Marchez jusqu'au pont.`}}          | Walk as far as the bridge.        | impératif de `marcher`; `jusqu'à + le = jusqu'au`            |
-| `Prenez le pont puis l'avenue…`   | Take the bridge, then the avenue… | `puis` indique l'étape suivante                              |
-| `À l'intersection avec…`          | At the intersection with…         | le point où les rues se rencontrent                          |
+| expression                            | sens en anglais                   | note                                                                 |
+| ------------------------------------- | --------------------------------- | -------------------------------------------------------------------- |
+| {{`Descendez la côte.`}}              | Go down the hill.                 | impératif de `descendre`, forme `vous`                               |
+| `En sortant du magasin…`              | As you leave the shop…            | `en sortant de` situe le début du trajet                             |
+| {{`Marchez jusqu'au pont.`}}          | Walk as far as the bridge.        | impératif de `marcher`; `jusqu'à + le = jusqu'au`                    |
+| `Prenez le pont puis l'avenue…`       | Take the bridge, then the avenue… | `puis` indique l'étape suivante                                      |
+| `À l'intersection avec…`              | At the intersection with…         | le point où les rues se rencontrent                                  |
 | {{`Tout de suite à votre gauche.`}}   | Immediately on your left.         | {{`tout de suite`}} = immediately; {{`tout droit`}} = straight ahead |
-| {{`Juste après la rue Sainte-Anne.`}} | Just past Sainte-Anne Street.     | continuez jusqu'à dépasser cette rue                         |
+| {{`Juste après la rue Sainte-Anne.`}} | Just past Sainte-Anne Street.     | continuez jusqu'à dépasser cette rue                                 |
 
 les formes {{`descendez`}}, {{`marchez`}}, {{`prenez`}}, {{`continuez`}}, {{`traversez`}} et {{`tournez`}} sont à l'impératif avec `vous`, sans pronom sujet exprimé. revoir [[fr/episode-6#l'impératif présent|l'impératif présent]].
 
@@ -389,8 +389,8 @@ with the model `– Pardon, je cherche le dentiste. – Tournez à gauche sur la
 
 le mémo reprend cinq formulations pour demander des indications, avec le vocabulaire du quartier. les exemples complets prolongent les questions de [[fr/episode-6]] :
 
-| formulation                                  | sens en anglais                                   |
-| -------------------------------------------- | ------------------------------------------------- |
+| formulation                                      | sens en anglais                                   |
+| ------------------------------------------------ | ------------------------------------------------- |
 | {{`Pardon, je cherche le dépanneur.`}}           | Excuse me, I'm looking for the convenience store. |
 | {{`Pouvez-vous me dire où est la pharmacie ?`}}  | Can you tell me where the pharmacy is?            |
 | {{`Pouvez-vous me dire où sont les magasins ?`}} | Can you tell me where the shops are?              |
@@ -401,15 +401,15 @@ le mémo reprend cinq formulations pour demander des indications, avec le vocabu
 
 the matching exercise adds three frames the earlier episode did not have. `où se trouve X ?` uses `se trouver`, a pronominal verb meaning to be situated, interchangeable with `être` and with `être situé`. `Savez-vous où est X ?` wraps the question in a yes-no shell, so the answer opens with `Oui,` or `Non,`. and `est-ce qu'il y a un X dans le coin ?` asks about existence rather than location, which is the only question on the page that can be answered no.
 
-| demande                                                    | réponse                                                                        |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| a. {{`Excusez-moi, je cherche le dépanneur.`}}                 | 5. `Il est au coin de la rue Laliberté et de l'avenue Sainte-Marcelle.`        |
+| demande                                                        | réponse                                                                            |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| a. {{`Excusez-moi, je cherche le dépanneur.`}}                 | 5. `Il est au coin de la rue Laliberté et de l'avenue Sainte-Marcelle.`            |
 | b. {{`Pouvez-vous me dire où est le CLSC, s'il vous plait ?`}} | 4. {{`Il se trouve dans la rue du Domaine, à côté de la garderie.`}}               |
 | c. {{`Je cherche la garderie, s'il vous plait.`}}              | 6. {{`Elle est dans la rue du Domaine, à côté du CLSC.`}}                          |
 | d. {{`Pardon, le musée est à quel endroit ?`}}                 | 1. {{`Il est au-dessus de la bibliothèque municipale, sur la côte Saint-Pierre.`}} |
-| e. {{`Excusez-moi, où se trouve la rue Sainte-Anne ?`}}        | 2. `Elle est parallèle à l'avenue Sainte-Marcelle.`                            |
-| f. `Excusez-moi, est-ce qu'il y a un bar dans le coin ?`   | 7. {{`Non, il n'y en a pas dans le quartier.`}}                                    |
-| g. {{`Savez-vous où est l'épicerie ?`}}                        | 8. `Au coin de la rue Légaré et du pont Labelle.`                              |
+| e. {{`Excusez-moi, où se trouve la rue Sainte-Anne ?`}}        | 2. `Elle est parallèle à l'avenue Sainte-Marcelle.`                                |
+| f. `Excusez-moi, est-ce qu'il y a un bar dans le coin ?`       | 7. {{`Non, il n'y en a pas dans le quartier.`}}                                    |
+| g. {{`Savez-vous où est l'épicerie ?`}}                        | 8. `Au coin de la rue Légaré et du pont Labelle.`                                  |
 | h. {{`Pardon, savez-vous où est le gym ?`}}                    | 3. {{`Oui, c'est juste en face de la station-service.`}}                           |
 
 only a to 5 is printed in the book; the other seven are worked out below.[^appariement]
@@ -422,8 +422,8 @@ the exercise is solvable almost entirely on gender, which is the point worth tak
 
 part B swaps the drawn quartier for three real documents. first the STM network map, four lines:
 
-| ligne             | termini                                              | correspondances                                        |
-| ----------------- | ---------------------------------------------------- | ------------------------------------------------------ |
+| ligne                 | termini                                              | correspondances                                        |
+| --------------------- | ---------------------------------------------------- | ------------------------------------------------------ |
 | {{`la ligne verte`}}  | `Angrignon` et `Honoré-Beaugrand`                    | `Lionel-Groulx`, `Berri-UQAM`                          |
 | {{`la ligne orange`}} | `Côte-Vertu` et `Montmorency`                        | `Snowdon`, `Jean-Talon`, `Berri-UQAM`, `Lionel-Groulx` |
 | {{`la ligne bleue`}}  | `Snowdon` et `Saint-Michel`                          | `Snowdon`, `Jean-Talon`                                |
@@ -435,12 +435,12 @@ the arrows leaving the edges of the map with a train pictogram are not métro: t
 
 the seven vrai-faux statements, with only the first one printed:
 
-| énoncé                                                            | réponse | pourquoi                                             |
-| ----------------------------------------------------------------- | ------- | ---------------------------------------------------- |
-| `Il y a 4 lignes dans le métro de Montréal.`                      | vrai    | imprimé                                              |
-| `La ligne bleue compte 10 stations.`                              | faux    | douze, de `Snowdon` à `Saint-Michel`                 |
+| énoncé                                                                | réponse | pourquoi                                             |
+| --------------------------------------------------------------------- | ------- | ---------------------------------------------------- |
+| `Il y a 4 lignes dans le métro de Montréal.`                          | vrai    | imprimé                                              |
+| `La ligne bleue compte 10 stations.`                                  | faux    | douze, de `Snowdon` à `Saint-Michel`                 |
 | {{`La station Jean-Talon est entre les stations Jarry et Beaubien.`}} | vrai    | sur la ligne orange, dans cet ordre                  |
-| `Il y a 2 stations sur la ligne jaune.`                           | faux    | trois, avec `Jean-Drapeau` au milieu                 |
+| `Il y a 2 stations sur la ligne jaune.`                               | faux    | trois, avec `Jean-Drapeau` au milieu                 |
 | {{`La station de métro Angrignon est la plus au sud.`}}               | vrai    | extrémité sud-ouest de la ligne verte                |
 | {{`Il y a un ascenseur dans la station Côte-Vertu.`}}                 | vrai    | le pictogramme est imprimé à côté du nom             |
 | {{`À la station Parc, je peux prendre le train ou le métro.`}}        | vrai    | correspondance avec la ligne de train Deux-Montagnes |
@@ -482,13 +482,13 @@ the eight stations are the four lines' eight termini, paired, which is why `Berr
 
 `Côte-Vertu` at `05:24` is the only station that is not `05:30`, and the whole first vrai-faux is built on that one cell:
 
-| énoncé                                                                       | réponse | pourquoi                                    |
-| ---------------------------------------------------------------------------- | ------- | ------------------------------------------- |
-| `Le lundi, le premier train passe à 5 h 30 dans les 8 stations de métro.`    | faux    | imprimé, `Côte-Vertu` part à 5 h 24         |
-| {{`Le vendredi soir, le dernier train passe à minuit à la station Snowdon.`}}    | faux    | à 0 h 15                                    |
-| `Le dernier train passe à 00 h 15 tous les soirs à la station Saint-Michel.` | vrai    | les trois lignes du tableau sont identiques |
-| `Le premier train passe à 5 h 30 tous les jours à la station Montmorency.`   | vrai    | semaine, samedi et dimanche                 |
-| `Le métro de Montréal n'est pas ouvert à 3 h du matin.`                      | vrai    | dernier passage 1 h 30 au plus tard         |
+| énoncé                                                                        | réponse | pourquoi                                    |
+| ----------------------------------------------------------------------------- | ------- | ------------------------------------------- |
+| `Le lundi, le premier train passe à 5 h 30 dans les 8 stations de métro.`     | faux    | imprimé, `Côte-Vertu` part à 5 h 24         |
+| {{`Le vendredi soir, le dernier train passe à minuit à la station Snowdon.`}} | faux    | à 0 h 15                                    |
+| `Le dernier train passe à 00 h 15 tous les soirs à la station Saint-Michel.`  | vrai    | les trois lignes du tableau sont identiques |
+| `Le premier train passe à 5 h 30 tous les jours à la station Montmorency.`    | vrai    | semaine, samedi et dimanche                 |
+| `Le métro de Montréal n'est pas ouvert à 3 h du matin.`                       | vrai    | dernier passage 1 h 30 au plus tard         |
 
 two notations sit on the same page. the table uses `05:24`, the prose uses `5 h 24`, and French writing wants the second: the hour, a space, `h`, a space, the minutes, with no leading zero on the hour. `minuit` and `midi` are nouns, so `à minuit`, never `à 12 h de la nuit`.
 
@@ -521,8 +521,8 @@ four transit notices, read for gist. the vocabulary here is the highest-density 
 > `À partir de 19 h 30, du 30 aout au 30 avril.`
 > `À partir de 21 h, du 1er mai au 29 aout.`
 
-| expression                    | sens                                                  |
-| ----------------------------- | ----------------------------------------------------- |
+| expression                        | sens                                                  |
+| --------------------------------- | ----------------------------------------------------- |
 | {{`un avis`}}                     | a notice                                              |
 | {{`une modification de service`}} | a service change                                      |
 | {{`une perturbation de service`}} | a service disruption                                  |
@@ -533,8 +533,8 @@ four transit notices, read for gist. the vocabulary here is the highest-density 
 | {{`en vigueur`}}                  | in effect, in force                                   |
 | {{`à partir de`}}                 | starting from                                         |
 | {{`une durée indéterminée`}}      | an indefinite period                                  |
-| `être à prévoir`              | to be expected: `des retards sont à prévoir`          |
-| `touché`                      | affected: `les lignes suivantes sont touchées`        |
+| `être à prévoir`                  | to be expected: `des retards sont à prévoir`          |
+| `touché`                          | affected: `les lignes suivantes sont touchées`        |
 | {{`sans préavis`}}                | without notice                                        |
 | {{`un achalandage important`}}    | heavy ridership, a crowd                              |
 | {{`un jour férié`}}               | a public holiday                                      |
@@ -542,11 +542,11 @@ four transit notices, read for gist. the vocabulary here is the highest-density 
 
 the eight comprehension statements, only the first printed:
 
-| avis | énoncé                                                                                  | réponse                                                              |
-| ---- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| avis | énoncé                                                                                      | réponse                                                              |
+| ---- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | 1    | {{`L'avis s'adresse à toutes les personnes qui prennent l'autobus à Montréal.`}}            | faux, la ligne 10 De Lorimier, direction sud, est concernée          |
-| 1    | `L'arrêt d'autobus 53033 est déplacé à partir du 14 novembre 2017.`                     | faux, le 14 mai 2017 à 0 h 09                                        |
-| 2    | `On peut transporter son vélo dans le métro le lundi à 16 h.`                           | faux, de 10 h à 15 h et de 19 h à la fin du service                  |
+| 1    | `L'arrêt d'autobus 53033 est déplacé à partir du 14 novembre 2017.`                         | faux, le 14 mai 2017 à 0 h 09                                        |
+| 2    | `On peut transporter son vélo dans le métro le lundi à 16 h.`                               | faux, de 10 h à 15 h et de 19 h à la fin du service                  |
 | 2    | {{`Quand il y a de grands évènements, les vélos sont parfois interdits.`}}                  | vrai, accès parfois refusé sans préavis pour des raisons de sécurité |
 | 3    | {{`Des travaux de construction peuvent ralentir le service d'autobus.`}}                    | vrai                                                                 |
 | 3    | {{`Cet avis s'adresse aux usagers et usagères de plusieurs lignes d'autobus de Montréal.`}} | vrai                                                                 |

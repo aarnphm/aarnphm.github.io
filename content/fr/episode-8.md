@@ -39,14 +39,14 @@ the corrigé strikes `vos enfants` out from the `nom` and `profession` columns a
 
 revoir l'épisode 5, p. 47 et 50. the heavyweight, /19: present six photo cards with `c'est` ou `ce sont`, the right pronoun, and the verbs `avoir` et `être`. the cards hand you one family's raw data:
 
-| carte                                | données                                             |
-| ------------------------------------ | --------------------------------------------------- |
-| `Martine`                            | {{`mariée`}}, {{`physiothérapeute`}}, `38 ans`              |
+| carte                                | données                                                 |
+| ------------------------------------ | ------------------------------------------------------- |
+| `Martine`                            | {{`mariée`}}, {{`physiothérapeute`}}, `38 ans`          |
 | `Éric, le mari de Martine`           | {{`technicien en aéronautique`}}, `37 ans`, `2 enfants` |
-| la voiture et les skis               | `voiture de Martine et Éric`, `skis de Martine`     |
+| la voiture et les skis               | `voiture de Martine et Éric`, `skis de Martine`         |
 | `les parents de Martine`             | `Robert et Madeleine`, {{`retraités`}}                  |
-| `les enfants de Martine et Éric`     | `Adrienne, 13 ans`, `Léo, 8 ans`                    |
-| `les animaux de Robert et Madeleine` | `Bic, le chien, 10 ans`, `Coco, le chat, 9 mois`    |
+| `les enfants de Martine et Éric`     | `Adrienne, 13 ans`, `Léo, 8 ans`                        |
+| `les animaux de Robert et Madeleine` | `Bic, le chien, 10 ans`, `Coco, le chat, 9 mois`        |
 
 then a listening match (piste 71, /3) over three greeting photos (two young friends in a park, two women shaking hands in an office, a man visiting an older man), and production on the same photos (/6): `Posez 2 questions aux personnes sur chaque photo. Choisissez tu ou vous selon le contexte.`
 
@@ -88,16 +88,16 @@ revoir l'épisode 7, p. 58 et 61 ([[fr/episode-7]]). a listening grid (piste 74,
 
 ten kinship riddles, each `C'est … de mon/ma …` over three checkbox choices. relations compose by chaining `de`, and riddle f chains twice.
 
-|     | devinette                             | choix                                                     | réponse              |
-| --- | ------------------------------------- | --------------------------------------------------------- | -------------------- |
-| a   | {{`C'est la sœur de ma mère.`}}           | {{`ma cousine`}}, `ma nièce`, {{`ma tante`}}                      | `ma tante`           |
+|     | devinette                                 | choix                                                         | réponse              |
+| --- | ----------------------------------------- | ------------------------------------------------------------- | -------------------- |
+| a   | {{`C'est la sœur de ma mère.`}}           | {{`ma cousine`}}, `ma nièce`, {{`ma tante`}}                  | `ma tante`           |
 | b   | {{`C'est le père de mon père.`}}          | `mon frère`, {{`mon grand-père`}}, `mon cousin`               | `mon grand-père`     |
-| c   | {{`C'est le fils de ma sœur.`}}           | `mon cousin`, {{`mon neveu`}}, {{`mon beau-frère`}}               | `mon neveu`          |
+| c   | {{`C'est le fils de ma sœur.`}}           | `mon cousin`, {{`mon neveu`}}, {{`mon beau-frère`}}           | `mon neveu`          |
 | d   | {{`C'est le frère de mon père.`}}         | `mon cousin`, {{`mon oncle`}}, `mon grand-père`               | `mon oncle`          |
 | e   | {{`Ce sont les enfants de ma fille.`}}    | `mes parents`, {{`mes petits-enfants`}}, `mes grands-parents` | `mes petits-enfants` |
-| f   | {{`C'est la fille du frère de ma mère.`}} | `ma cousine`, `ma tante`, `ma sœur`                       | `ma cousine`         |
+| f   | {{`C'est la fille du frère de ma mère.`}} | `ma cousine`, `ma tante`, `ma sœur`                           | `ma cousine`         |
 | g   | {{`C'est la femme de mon fils.`}}         | `ma sœur`, `ma belle-mère`, {{`ma belle-fille`}}              | `ma belle-fille`     |
-| h   | {{`C'est le frère de ma conjointe.`}}     | `mon oncle`, `mon père`, `mon beau-frère`                 | `mon beau-frère`     |
+| h   | {{`C'est le frère de ma conjointe.`}}     | `mon oncle`, `mon père`, `mon beau-frère`                     | `mon beau-frère`     |
 | i   | {{`C'est le conjoint de ma fille.`}}      | {{`mon gendre`}}, `mon neveu`, `mon fils`                     | `mon gendre`         |
 | j   | {{`C'est la sœur de mon conjoint.`}}      | {{`ma belle-sœur`}}, `ma tante`, `ma belle-mère`              | `ma belle-sœur`      |
 
@@ -107,12 +107,12 @@ the distractors are the near-misses one generation off (`nièce` for `tante`, `c
 
 eight sets of four sentences; each set hides exactly one wrong verb, and the fault line is always `avoir` against `être`.
 
-|     | phrases                                                                                                 | l'erreur             | correction           |
-| --- | ------------------------------------------------------------------------------------------------------- | -------------------- | -------------------- |
+|     | phrases                                                                                                 | l'erreur             | correction               |
+| --- | ------------------------------------------------------------------------------------------------------- | -------------------- | ------------------------ |
 | a   | `Tu es étudiant.` · `Tu as hongrois.` · `Tu es résident permanent.` · `Tu as 1 fille.`                  | `Tu as hongrois.`    | {{`Tu es hongrois.`}}    |
-| b   | `J'ai une auto.` · `J'ai une maison.` · `Je suis 2 enfants.` · `Je suis célibataire.`                   | `Je suis 2 enfants.` | `J'ai 2 enfants.`    |
+| b   | `J'ai une auto.` · `J'ai une maison.` · `Je suis 2 enfants.` · `Je suis célibataire.`                   | `Je suis 2 enfants.` | `J'ai 2 enfants.`        |
 | c   | `Elle s'appelle Sophie.` · `Elle a mariée.` · `Elle est psychologue.` · `Elle habite à Vancouver.`      | `Elle a mariée.`     | {{`Elle est mariée.`}}   |
-| d   | `Elle a 1 sœur et 2 frères.` · `Il est 17 ans.` · `Il est né au Brésil.` · `Elle est chef cuisinière.`  | `Il est 17 ans.`     | `Il a 17 ans.`       |
+| d   | `Elle a 1 sœur et 2 frères.` · `Il est 17 ans.` · `Il est né au Brésil.` · `Elle est chef cuisinière.`  | `Il est 17 ans.`     | `Il a 17 ans.`           |
 | e   | `Ils ont des enfants.` · `Ils sont mariés.` · `Ils sont un chat.` · `Ils ont une maison.`               | `Ils sont un chat.`  | {{`Ils ont un chat.`}}   |
 | f   | `Son nom est Marc.` · `Il est divorcé.` · `Il a 1 enfant.` · `Il a brésilien.`                          | `Il a brésilien.`    | {{`Il est brésilien.`}}  |
 | g   | `Je suis dans la classe.` · `J'ai des lunettes.` · `Je suis infirmière.` · `J'ai étudiante.`            | `J'ai étudiante.`    | {{`Je suis étudiante.`}} |
@@ -124,8 +124,8 @@ the sorting rule the game drills: `être` carries identity, state, nationality, 
 
 `Complétez les phrases avec une préposition de localisation (à gauche, à droite, à côté, loin, près, etc.).` eight photo sentences; the blanks print one dash per letter, hyphen included, so the puzzle runs half on the photo and half on orthography.
 
-|     | phrase                          | préposition |
-| --- | ------------------------------- | ----------- |
+|     | phrase                          | préposition     |
+| --- | ------------------------------- | --------------- |
 | a   | `La Lune est … de nous.`        | {{`loin`}}      |
 | b   | `L'écureuil est … de la femme.` | {{`près`}}      |
 | c   | `La mère est … de sa fille.`    | {{`à gauche`}}  |
@@ -141,15 +141,15 @@ c et d read off the photos (the mother poses left of her daughter, the son right
 
 seven scrambled words, all places in an édifice, the vocabulary of [[fr/episode-6]]. A à D come with icons, E à G with French definitions:
 
-|     | anagramme     | indice                                      | solution         |
-| --- | ------------- | ------------------------------------------- | ---------------- |
-| A   | `NESSCREAU`   | icône : un ascenseur                        | {{`un ascenseur`}}   |
-| B   | `ASERCLIE`    | icône : un escalier                         | {{`un escalier`}}    |
-| C   | `ELOTTISTE`   | icône : les toilettes                       | {{`les toilettes`}}  |
-| D   | `MEIREINFRI`  | icône : une croix                           | {{`une infirmerie`}} |
+|     | anagramme     | indice                                          | solution             |
+| --- | ------------- | ----------------------------------------------- | -------------------- |
+| A   | `NESSCREAU`   | icône : un ascenseur                            | {{`un ascenseur`}}   |
+| B   | `ASERCLIE`    | icône : un escalier                             | {{`un escalier`}}    |
+| C   | `ELOTTISTE`   | icône : les toilettes                           | {{`les toilettes`}}  |
+| D   | `MEIREINFRI`  | icône : une croix                               | {{`une infirmerie`}} |
 | E   | `AÉTACFIRÉ`   | {{`Endroit où on peut manger.`}}                | {{`une cafétéria`}}  |
 | F   | `SOSSOUL-`    | {{`Étage d'un édifice situé sous la terre.`}}   | {{`le sous-sol`}}    |
-| G   | `CÉRETTARAIS` | {{`Endroit où travaille le ou la secrétaire.`}} | `le secrétariat` |
+| G   | `CÉRETTARAIS` | {{`Endroit où travaille le ou la secrétaire.`}} | `le secrétariat`     |
 
 ## ce qui est nouveau
 
