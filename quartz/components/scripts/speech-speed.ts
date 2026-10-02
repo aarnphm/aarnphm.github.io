@@ -1,3 +1,5 @@
+import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
+
 export type SpeechSpeed = '1' | '0.8'
 
 export function createSpeechSpeed(
@@ -28,10 +30,13 @@ export function createSpeechSpeed(
   menu.className = 'speech-speed-menu'
   menu.setAttribute('role', 'listbox')
   menu.setAttribute('aria-label', 'Vitesse de lecture')
-  menu.hidden = true
+  menu.popover = 'manual'
   const options: { button: HTMLButtonElement; value: SpeechSpeed; label: string }[] = []
+  let stopPositioning: (() => void) | undefined
   const close = (restoreFocus = false) => {
-    menu.hidden = true
+    stopPositioning?.()
+    stopPositioning = undefined
+    menu.hidePopover()
     trigger.setAttribute('aria-expanded', 'false')
     if (restoreFocus) trigger.focus({ preventScroll: true })
   }
@@ -80,15 +85,35 @@ export function createSpeechSpeed(
     option.button.focus({ preventScroll: true })
   }
   const open = () => {
-    menu.hidden = false
+    if (menu.matches(':popover-open')) return
+    menu.style.visibility = 'hidden'
+    menu.showPopover()
     trigger.setAttribute('aria-expanded', 'true')
-    focusOption(options.findIndex(option => option.button.getAttribute('aria-selected') === 'true'))
+    let focusPending = true
+    const position = async () => {
+      const { x, y } = await computePosition(trigger, menu, {
+        placement: 'bottom-end',
+        strategy: 'fixed',
+        middleware: [offset(3), flip(), shift({ padding: 12 })],
+      })
+      if (!menu.matches(':popover-open') || signal.aborted) return
+      Object.assign(menu.style, { left: `${x}px`, top: `${y}px`, visibility: 'visible' })
+      if (focusPending) {
+        focusPending = false
+        focusOption(
+          options.findIndex(option => option.button.getAttribute('aria-selected') === 'true'),
+        )
+      }
+    }
+    stopPositioning = autoUpdate(trigger, menu, position)
   }
-  trigger.addEventListener('click', () => (menu.hidden ? open() : close()), { signal })
+  trigger.addEventListener('click', () => (menu.matches(':popover-open') ? close() : open()), {
+    signal,
+  })
   picker.addEventListener(
     'keydown',
     event => {
-      if (event.key === 'Escape' && !menu.hidden) {
+      if (event.key === 'Escape' && menu.matches(':popover-open')) {
         event.preventDefault()
         event.stopPropagation()
         close(true)
@@ -99,7 +124,7 @@ export function createSpeechSpeed(
         open()
         return
       }
-      if (menu.hidden) return
+      if (!menu.matches(':popover-open')) return
       if (event.key === 'Tab') {
         close()
         return
@@ -136,6 +161,7 @@ export function createSpeechSpeed(
     },
     { signal },
   )
+  signal.addEventListener('abort', () => close(), { once: true })
   picker.append(label, trigger, menu)
   return { element: picker, close }
 }
