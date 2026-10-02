@@ -1469,7 +1469,7 @@ const buildTraceSeries = <N, P extends { d: number; elapsedS: number }>(
       usesElapsedAxis
         ? elapsedActivityXTicks(maxD)
         : d.sport === 'swim'
-          ? swimActivityXTicks(maxD * 1_000)
+          ? swimActivityXTicks(view.endDistanceKm * 1000, view.startDistanceKm * 1000)
           : distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
       true,
       { top: 0, bottom: h },
@@ -3023,12 +3023,26 @@ export interface ActivityPhysiologyTracePoint {
   performanceCondition?: number | null
 }
 
+const swimPhysiologyDescription = (d: StravaActivityDetail, metric: string): string => {
+  const model = d.swimPhysiology
+  if (!model) return ''
+  const strokes =
+    model.strokeRateSource === 'activity-average'
+      ? 'activity-average stroke rate held constant'
+      : model.strokeRateSource === 'stream-with-average'
+        ? 'recorded stroke rate with activity-average fallback for missing strokes'
+        : model.strokeRateSource === 'stream'
+          ? 'recorded stroke rate'
+          : 'stroke rate unavailable'
+  return `Garden swim ${metric} estimate · HR / max HR ${model.maxHeartRateBpm} bpm, ground speed, ${strokes} · first minute excluded from the three-minute opening baseline · 60 s smoothing · ${(model.coverage * 100).toFixed(0)}% telemetry coverage · ${metric === 'stamina' ? 'session starts at 100%; depletion integrates observed intervals only; HR load increases with relative drag demand and strokes per metre; current and potential coincide' : 'speed per HR relative to the opening baseline, penalized by extra strokes per metre'} · experimental session proxy; currents and GPS error affect speed`
+}
+
 export const activityPhysiologyTracePoints = (
   d: StravaActivityDetail,
   metric: 'stamina' | 'performanceCondition',
 ): ActivityPhysiologyTracePoint[] => {
   if (d.route.filter(point => point[metric] != null).length >= 2) return d.route
-  return (d.heartRatePhysiology?.points ?? []).map(point => ({
+  return (d.swimPhysiology?.points ?? d.heartRatePhysiology?.points ?? []).map(point => ({
     ...point,
     d: activityTraceUsesElapsedAxis(d) ? point.elapsedS : point.distanceKm,
   }))
@@ -3085,6 +3099,8 @@ export const buildStaminaChart = <N>(
     return null
   const heartRateEstimate =
     d.route.filter(point => point.stamina != null).length >= 2 ? null : d.heartRatePhysiology
+  const swimEstimate =
+    d.route.filter(point => point.stamina != null).length >= 2 ? null : d.swimPhysiology
   const width = 100
   const height = 30
   const view = graphViewForDistance(tracePoints.at(-1)?.d || 1, graphDomain)
@@ -3133,7 +3149,8 @@ export const buildStaminaChart = <N>(
   )
   const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-stamina-chart', undefined, {
     'data-tri-trace': triathlonTraceName('stamina'),
-    'data-stamina-source': heartRateEstimate?.source ?? d.staminaTrace?.source ?? 'garmin',
+    'data-stamina-source':
+      swimEstimate?.source ?? heartRateEstimate?.source ?? d.staminaTrace?.source ?? 'garmin',
   })
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const estimatedTrace = d.staminaTrace?.source === 'garden-estimate' ? d.staminaTrace : null
@@ -3143,23 +3160,38 @@ export const buildStaminaChart = <N>(
       'span',
       'tri-elev-d',
       triText(f.presentation.locale, 'stamina'),
-      heartRateEstimate
+      swimEstimate
         ? {
             'data-gloss': '',
-            'data-gloss-def': `Garden HR estimate · session starts at 100% · observed HR / max HR ${heartRateEstimate.maxHeartRateBpm} bpm · cycling model HR component only · current and potential coincide · experimental session load proxy`,
+            'data-gloss-def': swimPhysiologyDescription(d, 'stamina'),
             tabindex: '0',
           }
-        : estimatedTrace
+        : heartRateEstimate
           ? {
               'data-gloss': '',
-              'data-gloss-def': `${triText(f.presentation.locale, 'estimate')} · FTP ${estimatedTrace.ftpWatts} W · ${triText(f.presentation.locale, 'max hr')} ${estimatedTrace.maxHeartRateBpm} bpm`,
+              'data-gloss-def': `Garden HR estimate · session starts at 100% · observed HR / max HR ${heartRateEstimate.maxHeartRateBpm} bpm · cycling model HR component only · current and potential coincide · experimental session load proxy`,
               tabindex: '0',
             }
-          : d.staminaTrace?.source === 'garmin'
-            ? { 'data-gloss': '', 'data-gloss-def': 'Garmin Connect', tabindex: '0' }
-            : undefined,
+          : estimatedTrace
+            ? {
+                'data-gloss': '',
+                'data-gloss-def': `${triText(f.presentation.locale, 'estimate')} · FTP ${estimatedTrace.ftpWatts} W · ${triText(f.presentation.locale, 'max hr')} ${estimatedTrace.maxHeartRateBpm} bpm`,
+                tabindex: '0',
+              }
+            : d.staminaTrace?.source === 'garmin'
+              ? { 'data-gloss': '', 'data-gloss-def': 'Garmin Connect', tabindex: '0' }
+              : undefined,
     ),
   )
+  if (swimEstimate)
+    f.add(
+      cap,
+      f.el('span', 'tri-elev-range', 'calculated', {
+        'data-gloss': '',
+        'data-gloss-def': swimPhysiologyDescription(d, 'stamina'),
+        tabindex: '0',
+      }),
+    )
   for (const kind of ['current', 'potential'] as const) {
     const item = f.el('span', `tri-stamina-legend-item tri-stamina-legend-item--${kind}`)
     f.add(
@@ -3179,7 +3211,9 @@ export const buildStaminaChart = <N>(
       height,
       activityTraceUsesElapsedAxis(d)
         ? elapsedActivityXTicks(view.endDistanceKm)
-        : distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+        : d.sport === 'swim'
+          ? swimActivityXTicks(view.endDistanceKm * 1000, view.startDistanceKm * 1000)
+          : distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
       true,
       { top: 0, bottom: height },
     ),
@@ -3527,6 +3561,10 @@ export const buildPerformanceConditionTrace = <N>(
     d.route.filter(point => point.performanceCondition != null).length >= 2
       ? null
       : d.heartRatePhysiology
+  const swimEstimate =
+    d.route.filter(point => point.performanceCondition != null).length >= 2
+      ? null
+      : d.swimPhysiology
   const values = points
     .map(performanceConditionValue)
     .filter((value): value is number => value != null)
@@ -3537,29 +3575,35 @@ export const buildPerformanceConditionTrace = <N>(
   const max = magnitude
   const estimatedTrace =
     d.performanceConditionTrace?.source === 'garden-estimate' ? d.performanceConditionTrace : null
-  const estimateLabel = heartRateEstimate
-    ? f.el(
-        'span',
-        'tri-elev-range tri-performance-condition-source',
-        triText(f.presentation.locale, 'calculated'),
-        {
-          'data-gloss': '',
-          'data-gloss-def': `Garden HR change proxy · 100 × (opening HR ${heartRateEstimate.baselineHeartRateBpm.toFixed(1)} bpm − trailing 60 s HR) / max HR ${heartRateEstimate.maxHeartRateBpm} bpm · first 60 observed seconds establish baseline · positive means lower HR · experimental, not a Garmin fitness assessment`,
-          tabindex: '0',
-        },
-      )
-    : estimatedTrace
+  const estimateLabel = swimEstimate
+    ? f.el('span', 'tri-elev-range tri-performance-condition-source', 'calculated', {
+        'data-gloss': '',
+        'data-gloss-def': swimPhysiologyDescription(d, 'performance condition'),
+        tabindex: '0',
+      })
+    : heartRateEstimate
       ? f.el(
           'span',
           'tri-elev-range tri-performance-condition-source',
           triText(f.presentation.locale, 'calculated'),
           {
             'data-gloss': '',
-            'data-gloss-def': `${triText(f.presentation.locale, 'Garden estimate')} · ${estimatedTrace.windowSeconds / 60} min (NP / FTP) ÷ ((HR − RHR) / (LTHR − RHR)) · FTP ${estimatedTrace.ftpWatts} W · LTHR ${estimatedTrace.lactateThresholdHeartRateBpm} bpm · RHR ${estimatedTrace.restingHeartRateBpm} bpm`,
+            'data-gloss-def': `Garden HR change proxy · 100 × (opening HR ${heartRateEstimate.baselineHeartRateBpm.toFixed(1)} bpm − trailing 60 s HR) / max HR ${heartRateEstimate.maxHeartRateBpm} bpm · first 60 observed seconds establish baseline · each window requires 80% HR coverage; gaps stay unavailable · positive means lower HR · experimental, not a Garmin fitness assessment`,
             tabindex: '0',
           },
         )
-      : null
+      : estimatedTrace
+        ? f.el(
+            'span',
+            'tri-elev-range tri-performance-condition-source',
+            triText(f.presentation.locale, 'calculated'),
+            {
+              'data-gloss': '',
+              'data-gloss-def': `${triText(f.presentation.locale, 'Garden estimate')} · ${estimatedTrace.windowSeconds / 60} min (NP / FTP) ÷ ((HR − RHR) / (LTHR − RHR)) · FTP ${estimatedTrace.ftpWatts} W · LTHR ${estimatedTrace.lactateThresholdHeartRateBpm} bpm · RHR ${estimatedTrace.restingHeartRateBpm} bpm`,
+              tabindex: '0',
+            },
+          )
+        : null
   return buildTraceSeries(
     f,
     d,
@@ -3576,7 +3620,10 @@ export const buildPerformanceConditionTrace = <N>(
     {
       wrapAttrs: {
         'data-performance-condition-source':
-          heartRateEstimate?.source ?? d.performanceConditionTrace?.source ?? 'garmin',
+          swimEstimate?.source ??
+          heartRateEstimate?.source ??
+          d.performanceConditionTrace?.source ??
+          'garmin',
       },
       capExtra: estimateLabel ? [estimateLabel] : undefined,
       areaBaseline: 0,
@@ -7052,11 +7099,11 @@ const swimTrendDomain = (values: number[], kind: SwimChartMetric): { min: number
   return { min, max: max > min ? max : min + step }
 }
 
-const swimActivityXTicks = (totalDistanceM: number): AxisXTick[] => {
+const swimActivityXTicks = (endDistanceM: number, startDistanceM = 0): AxisXTick[] => {
   return [
-    { label: '0 m', pct: 0, cls: 'tri-cax-xt--first' },
-    { label: swimDistanceLabel(totalDistanceM / 2), pct: 50 },
-    { label: swimDistanceLabel(totalDistanceM), pct: 100, cls: 'tri-cax-xt--last' },
+    { label: swimDistanceLabel(startDistanceM), pct: 0, cls: 'tri-cax-xt--first' },
+    { label: swimDistanceLabel((startDistanceM + endDistanceM) / 2), pct: 50 },
+    { label: swimDistanceLabel(endDistanceM), pct: 100, cls: 'tri-cax-xt--last' },
   ]
 }
 

@@ -198,7 +198,8 @@ export const workspaceTraces = (
     physiology('stamina'),
     numeric('%'),
     d.staminaTrace?.source === 'garden-estimate' ||
-      (route.filter(point => point.stamina != null).length < 2 && d.heartRatePhysiology != null),
+      (route.filter(point => point.stamina != null).length < 2 &&
+        (d.swimPhysiology != null || d.heartRatePhysiology != null)),
   )
   add(
     'condition',
@@ -208,7 +209,7 @@ export const workspaceTraces = (
     v => `${v > 0 ? '+' : ''}${v.toFixed(0)}`,
     d.performanceConditionTrace?.source === 'garden-estimate' ||
       (route.filter(point => point.performanceCondition != null).length < 2 &&
-        d.heartRatePhysiology != null),
+        (d.swimPhysiology != null || d.heartRatePhysiology != null)),
   )
   if (d.sport === 'run') {
     add(

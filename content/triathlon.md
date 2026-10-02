@@ -2857,6 +2857,42 @@ $$
 
 The steady-speed model follows [Gatta et al. (2016)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5031421/). [Cortesi et al. (2024)](https://pubmed.ncbi.nlm.nih.gov/38455441/) describe active-drag estimation using force measurements in tethered and semi-tethered swimming.
 
+#### outdoor swim stamina and performance condition
+
+Outdoor swim cards show experimental session estimates when timed HR and distance samples are available. The model uses HR as its exertion input. Perceived exertion is a separate measurement; the current recordings contain no RPE rating. Recorded Garmin stamina and performance-condition traces retain precedence for each metric.
+
+The first minute is excluded from the baseline. The next three observed moving minutes establish duration-weighted reference HR $H_b$, ground speed $v_b$, and strokes per metre $q_b$. Later values use a trailing 60-second window. Recorded stroke rate takes precedence; an activity-average rate fills missing stroke samples when available, and the mixed source is identified. Activities with no stroke stream use that constant average throughout. Missing stroke data leaves the stroke-cost factor at one. HR and speed gaps remain gaps in the graphs.
+
+Let $H$ be smoothed HR, $H_{\max}$ the configured maximum HR, $v$ smoothed ground speed, and $s$ smoothed stroke rate in strokes per minute. Relative demand and stroke cost are
+
+$$
+D=\max\left(1,\left(\frac{v}{v_b}\right)^3\right),
+\qquad
+Q=\max\left(1,\frac{s/(60v)}{q_b}\right).
+$$
+
+Stamina starts at $S(0)=100$ and integrates the existing Garden HR depletion term over observed intervals:
+
+$$
+S(t+\Delta t)
+=\max\left(0,S(t)
+-98.85\left(\frac{H}{H_{\max}}\right)^{10}DQ\frac{\Delta t}{3600}\right).
+$$
+
+Before the baseline is available, $D=Q=1$. Current and potential stamina coincide because this model has no calibrated anaerobic reserve or recovery term. The percentage measures accumulated modeled demand within this recording; it assumes a full starting reserve and omits demand during telemetry gaps.
+
+Performance condition measures session efficiency relative to the opening baseline:
+
+$$
+\mathrm{PC}
+=\operatorname{clip}_{[-20,20]}
+\left[100\left(\frac{v/v_b}{(H/H_b)Q}-1\right)\right].
+$$
+
+It appears after the baseline has formed and at least 48 seconds of the trailing minute are covered. Zero means the opening speed per HR and stroke cost have been maintained. Rising HR or more strokes per metre at the same speed lowers the estimate. Currents, changing stroke, warm-up, and GPS error can shift this value independently of fatigue. The model has no swim-specific VO2max, HRV baseline, or validated time-to-exhaustion calibration.
+
+The equations and coefficients above are Garden heuristics. [Funai et al. (2022)](https://pubmed.ncbi.nlm.nih.gov/35447856/) measured HR, speed, stroke variables, and perceived exertion across swimming intensities; those observations support considering these inputs together, while providing no calibration for this stamina percentage or performance-condition score.
+
 The simple activity-card projections are
 
 $$

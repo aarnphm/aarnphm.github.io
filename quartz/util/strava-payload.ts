@@ -59,6 +59,7 @@ import { joinSegments, QUARTZ } from './path'
 import { latestProviderSync } from './provider-sync'
 import { readStravaCacheFileSync } from './strava-cache-file'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
+import { applySwimPhysiology } from './swim-physiology'
 import { buildSwimPowerEstimate, openWaterPowerIntervals } from './swim-power'
 import {
   buildTriathlonDailyAnalytics,
@@ -969,8 +970,10 @@ export function buildStravaData(
   enrichSwimMetrics(payload, apple, garmin)
   enrichRunDynamics(payload, apple)
   enrichCoreBodyTemperature(payload, core)
-  for (const detail of Object.values(payload.details))
+  for (const detail of Object.values(payload.details)) {
     applyHeartRatePhysiology(detail, ATHLETE.hrMax)
+    applySwimPhysiology(detail, ATHLETE.hrMax)
+  }
   const trackedCache = applyActivityTracking(
     strava,
     garmin,
