@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
 import test from 'node:test'
+import type { PublicSurfaceCurrentEstimate } from '../../../util/surface-current'
 import { buildAnalytics } from '../../../plugins/stores/analytics'
 import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
 import { buildCyclingTorqueTrace, cyclingTorqueSamples } from '../../../util/cycling-torque'
@@ -198,7 +199,7 @@ test('loads activity shards alongside manual sauna daily analytics', async () =>
   }
 })
 
-const gardenEnvironment = (samples: Record<string, unknown>[]): Record<string, unknown> => ({
+const gardenEnvironment = (samples: Record<string, unknown>[]) => ({
   source: 'garden-estimate',
   formulaId: 'garden-environment-v1',
   formulaVersion: 1,
@@ -277,6 +278,146 @@ test('validates public analysis contracts while preserving numeric zero', () => 
     },
   }
   assert.equal(isActivityDetail(value), true)
+})
+
+test('preserves legacy environment data and validates optional ambient wind through JSON', () => {
+  const validate = (environment: Record<string, unknown>): boolean =>
+    isActivityDetail({
+      ...detail(9, '2026-09-27', 'swim'),
+      analyses: {
+        native: { myWindsock: null, pelotan: null },
+        derived: { environment, uvScore: null, apparentWind: null },
+      },
+    })
+  const samples = [environmentSample(0, 0), environmentSample(3_600, 1)]
+  const legacy = gardenEnvironment(samples)
+  assert.equal(validate(legacy), true)
+  for (const windSpeedKph of [null, 0, 18]) {
+    const environment = {
+      ...legacy,
+      summary: { ...gardenEnvironment([]).summary, averageWindSpeedKph: windSpeedKph },
+      coverage: {
+        weatherPct: 100,
+        uvPct: 100,
+        temperaturePct: 100,
+        cloudPct: 100,
+        daylightPct: 100,
+        windPct: 50,
+      },
+      samples: samples.map(sample => ({ ...sample, windSpeedKph })),
+    }
+    const value = {
+      ...detail(9, '2026-09-27', 'swim'),
+      analyses: {
+        native: { myWindsock: null, pelotan: null },
+        derived: { environment, uvScore: null, apparentWind: null },
+      },
+    }
+    const serialized: unknown = JSON.parse(JSON.stringify(value))
+    assert.ok(isActivityDetail(serialized))
+    assert.equal(serialized.analyses.derived.environment?.summary.averageWindSpeedKph, windSpeedKph)
+    assert.equal(serialized.analyses.derived.environment?.samples[0].windSpeedKph, windSpeedKph)
+  }
+
+  for (const windSpeedKph of [-1, 1_001, NaN, Infinity, '18', true, {}, undefined]) {
+    assert.equal(
+      validate({ ...legacy, samples: samples.map(sample => ({ ...sample, windSpeedKph })) }),
+      false,
+    )
+    assert.equal(
+      validate({
+        ...legacy,
+        summary: { ...gardenEnvironment([]).summary, averageWindSpeedKph: windSpeedKph },
+      }),
+      false,
+    )
+  }
+  for (const windPct of [-1, 101, NaN, Infinity, null, '50', {}, undefined])
+    assert.equal(
+      validate({
+        ...legacy,
+        coverage: {
+          weatherPct: 100,
+          uvPct: 100,
+          temperaturePct: 100,
+          cloudPct: 100,
+          daylightPct: 100,
+          windPct,
+        },
+      }),
+      false,
+    )
+})
+
+test('validates public NOAA modeled current against activity identity and recorded interval', () => {
+  const start = '2026-09-27T18:47:25.000Z'
+  const current: PublicSurfaceCurrentEstimate = {
+    source: 'noaa-loofs',
+    sourceKind: 'modeled',
+    formulaId: 'garden-surface-current-v1',
+    formulaVersion: 1,
+    activityId: 9,
+    start,
+    end: '2026-09-27T19:47:25.000Z',
+    computedAt: Date.parse('2026-10-02T20:00:00Z'),
+    spatialSamplingModel: 'containing-element',
+    temporalSamplingModel: 'hourly-linear-vector',
+    layer: 0,
+    summary: {
+      averageSpeedMps: 1,
+      averageDirectionDeg: 90,
+      coveragePct: 100,
+      coveredDurationS: 3_600,
+      elapsedDurationS: 3_600,
+    },
+    samples: [0, 3_600].map(elapsedS => ({
+      elapsedS,
+      speedMps: 1,
+      directionDeg: 90,
+      uMps: 1,
+      vMps: 0,
+      element: 1,
+      validTime: new Date(
+        Math.floor((Date.parse(start) + elapsedS * 1_000) / 3_600_000) * 3_600_000,
+      ).toISOString(),
+      cycleTime: '2026-09-28T00:00:00.000Z',
+      sourceUrl:
+        elapsedS === 0
+          ? 'https://opendap.co-ops.nos.noaa.gov/thredds/dodsC/NOAA/LOOFS/MODELS/2026/09/28/loofs.t00z.20260928.fields.n006.nc.ascii'
+          : 'https://opendap.co-ops.nos.noaa.gov/thredds/dodsC/NOAA/LOOFS/MODELS/2026/09/28/loofs.t00z.20260928.fields.n005.nc.ascii',
+    })),
+  }
+  const validate = (surfaceCurrent: unknown, activityStart = start): boolean =>
+    isActivityDetail({
+      ...detail(9, '2026-09-27', 'swim'),
+      start: activityStart,
+      analyses: {
+        native: { myWindsock: null, pelotan: null },
+        derived: {
+          environment: {
+            ...gardenEnvironment([environmentSample(0, 0), environmentSample(3_600, 1)]),
+            surfaceCurrent,
+          },
+          uvScore: null,
+          apparentWind: null,
+        },
+      },
+    })
+  assert.equal(validate(current), true)
+  assert.equal(validate(null), true)
+  assert.equal(validate(undefined), true)
+  assert.equal(validate(current, '2026-09-27T17:47:25.000Z'), false)
+  for (const surfaceCurrent of [
+    {},
+    { ...current, activityId: 10 },
+    { ...current, sourceKind: 'measured' },
+    { ...current, routeFingerprint: 'private' },
+    { ...current, start: '2026-09-27T17:47:25.000Z', end: start },
+    { ...current, end: '2026-09-27T20:47:25.000Z' },
+    { ...current, summary: { ...current.summary, averageSpeedMps: -1 } },
+    { ...current, summary: { ...current.summary, elapsedDurationS: 3_599 } },
+  ])
+    assert.equal(validate(surfaceCurrent), false)
 })
 
 test('validates manual activity moves and their per-side repetition contract', () => {

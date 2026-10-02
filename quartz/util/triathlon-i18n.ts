@@ -893,6 +893,24 @@ const en: TriDict = {
     'Feels Like Elevation': 'Feels Like Elevation',
     'headwind share and range': 'headwind share and range',
     'longest headwind': 'longest headwind',
+    'ambient wind speed': 'ambient wind speed',
+    'Ambient wind speed detail':
+      'Average modeled atmospheric wind speed from Apple WeatherKit over the recorded session.',
+    'surface current speed': 'surface current speed',
+    'current speed': 'current speed',
+    'current spd.': 'current spd.',
+    'Surface current speed detail':
+      'Modeled water speed in the uppermost NOAA LOOFS layer, sampled along the recorded route and time. Wind and GPS swim speed cannot supply water velocity.',
+    'surface current direction': 'surface current direction',
+    'current direction': 'current direction',
+    'current dir.': 'current dir.',
+    'Surface current direction detail':
+      'Direction the modeled water flows toward, measured clockwise from north.',
+    'surface current coverage': 'surface current coverage',
+    'Surface current coverage detail':
+      'Share of the recorded session covered by valid wet model cells and hourly current vectors.',
+    toward: 'toward',
+    'provider-modeled': 'provider-modeled',
     'air speed': 'air speed',
     'Air speed detail':
       'MyWindsock reports air speed. Garden fallback reports average apparent-air speed from route-relative wind.',
@@ -2124,6 +2142,24 @@ const fr: TriDict = {
     'Feels Like Elevation': 'Feels Like Elevation',
     'headwind share and range': 'part et plage de vent de face',
     'longest headwind': 'plus longue période de vent de face',
+    'ambient wind speed': 'vitesse du vent ambiant',
+    'Ambient wind speed detail':
+      'Vitesse moyenne du vent atmosphérique modélisée par Apple WeatherKit pendant la séance enregistrée.',
+    'surface current speed': 'vitesse du courant de surface',
+    'current speed': 'vitesse du courant',
+    'current spd.': 'vit. courant',
+    'Surface current speed detail':
+      'Vitesse de l’eau modélisée dans la couche supérieure de NOAA LOOFS, échantillonnée le long du parcours et pendant la séance. Le vent et la vitesse GPS de nage ne fournissent pas la vitesse de l’eau.',
+    'surface current direction': 'direction du courant de surface',
+    'current direction': 'direction du courant',
+    'current dir.': 'dir. courant',
+    'Surface current direction detail':
+      'Direction vers laquelle l’eau modélisée s’écoule, mesurée dans le sens horaire depuis le nord.',
+    'surface current coverage': 'couverture du courant de surface',
+    'Surface current coverage detail':
+      'Part de la séance enregistrée couverte par des cellules immergées valides et des vecteurs de courant horaires.',
+    toward: 'vers',
+    'provider-modeled': 'modélisé par le fournisseur',
     'air speed': 'vitesse de l’air',
     'Air speed detail':
       'MyWindsock fournit la vitesse de l’air. L’estimation Garden utilise la vitesse apparente moyenne issue du vent relatif au parcours.',

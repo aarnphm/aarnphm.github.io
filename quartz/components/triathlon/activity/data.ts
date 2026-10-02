@@ -15,6 +15,7 @@ import {
   type StravaDetailPayload,
   type StravaDetailShard,
 } from '../../../util/strava-detail'
+import { parsePublicSurfaceCurrentEstimate } from '../../../util/surface-current'
 import { isTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { isRecord } from '../../../util/type-guards'
 import { WALK_POWER_METHOD, WALK_POWER_WINDOW_SECONDS } from '../../../util/walk-power'
@@ -498,6 +499,7 @@ const isEnvironmentSample = (value: unknown): boolean =>
   nullableBounded(value.cumulativeMovingTelemetrySed, 0, Number.MAX_SAFE_INTEGER) &&
   nullableBounded(value.ambientTemperatureC, -90, 70) &&
   nullableBounded(value.cloudCoverPct, 0, 100) &&
+  (!('windSpeedKph' in value) || nullableBounded(value.windSpeedKph, 0, 1_000)) &&
   nullableBounded(value.headwindKph, -1_000, 1_000) &&
   nullableBounded(value.crosswindKph, -1_000, 1_000) &&
   nullableBounded(value.apparentAirSpeedKph, 0, 1_000) &&
@@ -532,13 +534,34 @@ const isMonotonicSamples = (samples: readonly unknown[], elapsedTimeS: number): 
   return true
 }
 
-const isEnvironmentEstimate = (value: unknown, elapsedTimeS: number): boolean => {
+const isEnvironmentEstimate = (
+  value: unknown,
+  activityId: number,
+  elapsedTimeS: number,
+  activityStart: unknown,
+): boolean => {
   if (value === null) return true
   if (!isRecord(value) || !isGardenProvenance(value, 'garden-environment-v1')) return false
   const summary = value.summary
   const clocks = value.doseClocks
   const coverage = value.coverage
   if (!isRecord(summary) || !isRecord(clocks) || !isRecord(coverage)) return false
+  if (value.surfaceCurrent != null) {
+    const current = parsePublicSurfaceCurrentEstimate(value.surfaceCurrent)
+    if (
+      !current ||
+      current.activityId !== activityId ||
+      current.summary.elapsedDurationS !== elapsedTimeS
+    )
+      return false
+    if (
+      activityStart !== undefined &&
+      (typeof activityStart !== 'string' ||
+        Date.parse(activityStart) !== Date.parse(current.start) ||
+        Date.parse(current.end) - Date.parse(activityStart) !== elapsedTimeS * 1_000)
+    )
+      return false
+  }
   return (
     nullableBounded(summary.averageUvIndex, 0, 30) &&
     nullableBounded(summary.peakUvIndex, 0, 30) &&
@@ -546,6 +569,8 @@ const isEnvironmentEstimate = (value: unknown, elapsedTimeS: number): boolean =>
     nullableBounded(summary.ambientSed, 0, Number.MAX_SAFE_INTEGER) &&
     nullableBounded(summary.averageAmbientTemperatureC, -90, 70) &&
     nullableBounded(summary.averageCloudCoverPct, 0, 100) &&
+    (!('averageWindSpeedKph' in summary) ||
+      nullableBounded(summary.averageWindSpeedKph, 0, 1_000)) &&
     bounded(summary.daylightCoveragePct, 0, 100) &&
     bounded(summary.weatherCoveragePct, 0, 100) &&
     bounded(summary.coveredDurationS, 0, elapsedTimeS + 1) &&
@@ -555,6 +580,7 @@ const isEnvironmentEstimate = (value: unknown, elapsedTimeS: number): boolean =>
     ['weatherPct', 'uvPct', 'temperaturePct', 'cloudPct', 'daylightPct'].every(key =>
       bounded(coverage[key], 0, 100),
     ) &&
+    (!('windPct' in coverage) || bounded(coverage.windPct, 0, 100)) &&
     Array.isArray(value.samples) &&
     value.samples.length <= 320 &&
     isMonotonicSamples(value.samples, elapsedTimeS) &&
@@ -607,7 +633,12 @@ const isGardenWind = (value: unknown): boolean => {
   )
 }
 
-const isActivityAnalyses = (value: unknown, activityId: number, elapsedTimeS: number): boolean => {
+const isActivityAnalyses = (
+  value: unknown,
+  activityId: number,
+  elapsedTimeS: number,
+  activityStart: unknown,
+): boolean => {
   if (!isRecord(value) || hasPrivateAnalysisData(value)) return false
   const native = value.native
   const derived = value.derived
@@ -615,7 +646,7 @@ const isActivityAnalyses = (value: unknown, activityId: number, elapsedTimeS: nu
   return (
     isPelotanReport(native.pelotan, activityId) &&
     isMyWindsockReport(native.myWindsock, activityId) &&
-    isEnvironmentEstimate(derived.environment, elapsedTimeS) &&
+    isEnvironmentEstimate(derived.environment, activityId, elapsedTimeS, activityStart) &&
     isGardenUvScore(derived.uvScore) &&
     isGardenWind(derived.apparentWind)
   )
@@ -721,7 +752,7 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     (value.runWalk !== null && value.sport !== 'run')
   )
     return false
-  return isActivityAnalyses(value.analyses, value.id, value.elapsedTimeS)
+  return isActivityAnalyses(value.analyses, value.id, value.elapsedTimeS, value.start)
 }
 
 const isDetailShard = (value: unknown): value is StravaDetailShard =>

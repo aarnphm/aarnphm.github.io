@@ -14,6 +14,7 @@ import type {
   SwimActivityInterval,
   SwimTrendPoint,
 } from '../plugins/stores/strava'
+import type { PublicSurfaceCurrentEstimate } from './surface-current'
 import type { TriathlonDayAnalytics } from './triathlon-day-analytics'
 import { isActivityDetail } from '../components/triathlon/activity/data'
 import { metricSpecs } from '../components/triathlon/activity/render'
@@ -84,6 +85,7 @@ import {
   dlabel,
   encodePowerCurve,
   environmentElapsedClock,
+  environmentChartReadout,
   environmentChartSeries,
   formatAltitude,
   fuelingRows,
@@ -1378,6 +1380,363 @@ test('renders elapsed lap highlights inside every environment plot', () => {
   }
 })
 
+test('keeps unavailable wind and aero rows for open-water swims with UV evidence', () => {
+  const analyses = environmentAnalyses()
+  analyses.native.myWindsock = null
+  analyses.derived.apparentWind = null
+  const environment = analyses.derived.environment
+  assert.ok(environment)
+  environment.summary.averageWindSpeedKph = 0
+  environment.samples = environment.samples.map(sample => ({
+    ...sample,
+    windSpeedKph: 0,
+    headwindKph: null,
+    crosswindKph: null,
+    apparentAirSpeedKph: null,
+    yawDeg: null,
+  }))
+  const activity = detail({ sport: 'swim', swimLocation: 'openWater', analyses })
+  const rendered = buildEnvironmentAnalysis(factory, activity)
+  assert.ok(rendered)
+  assert.deepEqual(byClass(rendered, 'tri-environment-table-group').map(text), [
+    'UV exposure',
+    'wind and aero',
+  ])
+  const rows = byTag(rendered, 'tr')
+  for (const label of [
+    'Weather Impact',
+    'air speed',
+    'surface current speed',
+    'surface current direction',
+    'surface current coverage',
+  ]) {
+    const row = rows.find(row =>
+      byClass(row, 'tri-environment-row-label').some(cell => text(cell) === label),
+    )
+    assert.ok(row, label)
+    const value = byTag(row, 'td')[0]
+    assert.equal(text(value), '—')
+    assert.equal(value.properties.ariaLabel, 'unavailable')
+    assert.equal(value.properties.dataAnalysisSource, undefined)
+  }
+  const ambientWind = rows.find(row =>
+    byClass(row, 'tri-environment-row-label').some(label => text(label) === 'ambient wind speed'),
+  )
+  assert.ok(ambientWind)
+  const ambientValue = byTag(ambientWind, 'td')[0]
+  assert.equal(text(ambientValue), '0.0 km/h')
+  assert.equal(ambientValue.properties.dataAnalysisSource, 'garden-estimate')
+  assert.equal(ambientValue.properties.dataAnalysisFormula, environment.formulaId)
+
+  const otherSwimLocations: StravaActivityDetail['swimLocation'][] = ['pool', null]
+  for (const swimLocation of otherSwimLocations) {
+    const other = buildEnvironmentAnalysis(factory, { ...activity, swimLocation })
+    assert.ok(other)
+    assert.equal(
+      byClass(other, 'tri-environment-row-label').some(
+        label => text(label) === 'surface current speed',
+      ),
+      false,
+    )
+  }
+  const pool = buildEnvironmentAnalysis(factory, { ...activity, swimLocation: 'pool' })
+  assert.ok(pool)
+  const poolWind = byTag(pool, 'tr').find(row =>
+    byClass(row, 'tri-environment-row-label').some(label => text(label) === 'ambient wind speed'),
+  )
+  assert.ok(poolWind)
+  assert.equal(text(byTag(poolWind, 'td')[0]), '—')
+  const poolWindPanel = byClass(pool, 'tri-environment-panel').at(-1)
+  assert.ok(poolWindPanel)
+  assert.equal(byClass(poolWindPanel, 'tri-environment-line').length, 0)
+  assert.equal(byClass(poolWindPanel, 'tri-environment-empty').length, 1)
+  assert.doesNotMatch(text(byClass(pool, 'tri-environment-readout')[0]), /ambient wind speed/)
+})
+
+const modeledSurfaceCurrent = (): PublicSurfaceCurrentEstimate => ({
+  source: 'noaa-loofs',
+  sourceKind: 'modeled',
+  formulaId: 'garden-surface-current-v1',
+  formulaVersion: 1,
+  activityId: 101,
+  start: '2026-07-09T12:00:00Z',
+  end: '2026-07-09T13:20:00Z',
+  computedAt: Date.parse('2026-07-09T18:05:00Z'),
+  layer: 0,
+  spatialSamplingModel: 'containing-element',
+  temporalSamplingModel: 'hourly-linear-vector',
+  summary: {
+    averageSpeedMps: 0.14,
+    averageDirectionDeg: 237,
+    coveragePct: 75,
+    coveredDurationS: 3_600,
+    elapsedDurationS: 4_800,
+  },
+  samples: [],
+})
+
+test('renders source-backed open-water surface currents as modeled vectors with coverage', () => {
+  const analyses = environmentAnalyses()
+  const environment = analyses.derived.environment
+  assert.ok(environment)
+  environment.surfaceCurrent = modeledSurfaceCurrent()
+  const activity = detail({ sport: 'swim', swimLocation: 'openWater', analyses })
+  const currentRows = (rendered: Element): Element[] =>
+    byTag(rendered, 'tr').filter(row =>
+      byClass(row, 'tri-environment-row-label').some(label =>
+        text(label).startsWith('surface current'),
+      ),
+    )
+  const aeroLabels = ['CdA', 'Feels Like Elevation', 'headwind share and range']
+  const run = buildEnvironmentAnalysis(factory, { ...activity, sport: 'run' })
+  assert.ok(run)
+  assert.equal(currentRows(run).length, 0)
+  assert.ok(
+    aeroLabels.every(label =>
+      byClass(run, 'tri-environment-row-label').some(cell => text(cell) === label),
+    ),
+  )
+  const units: TriathlonPresentation['distance'][] = ['metric', 'imperial']
+  for (const distance of units) {
+    const rendered = buildEnvironmentAnalysis(factoryFor(presentation({ distance })), activity)
+    assert.ok(rendered)
+    assert.equal(byTag(rendered, 'tr').length, byTag(run, 'tr').length)
+    assert.ok(
+      aeroLabels.every(label =>
+        byClass(rendered, 'tri-environment-row-label').every(cell => text(cell) !== label),
+      ),
+    )
+    const windGroup = byTag(rendered, 'tbody')[1]
+    assert.deepEqual(byClass(windGroup, 'tri-environment-row-label').slice(1, 4).map(text), [
+      'surface current speed',
+      'surface current direction',
+      'surface current coverage',
+    ])
+    const rows = currentRows(rendered)
+    assert.deepEqual(
+      rows.map(row => text(byTag(row, 'td')[0])),
+      ['0.14 m/s', '237° toward', '75.0% · 1h / 1h20m'],
+    )
+    const values = rows.map(row => byTag(row, 'td')[0])
+    assert.ok(
+      values.every(
+        value =>
+          value.properties.dataAnalysisSource === 'provider-modeled' &&
+          value.properties.dataAnalysisProvider === 'noaa-loofs' &&
+          value.properties.dataAnalysisFormula === 'garden-surface-current-v1' &&
+          value.properties.dataAnalysisFormulaVersion === '1' &&
+          String(value.properties.ariaLabel).includes('NOAA LOOFS') &&
+          String(value.properties.dataGlossDef).includes('uppermost'),
+      ),
+    )
+    assert.ok(
+      byTag(rendered, 'a').some(
+        link =>
+          text(link) === 'NOAA LOOFS' &&
+          link.properties.href === 'https://tidesandcurrents.noaa.gov/ofs/loofs/loofs_info.html',
+      ),
+    )
+  }
+
+  const surfaceCurrent = environment.surfaceCurrent
+  surfaceCurrent.summary.averageSpeedMps = 0
+  surfaceCurrent.summary.averageDirectionDeg = null
+  const calm = buildEnvironmentAnalysis(factory, activity)
+  assert.ok(calm)
+  assert.equal(text(byTag(currentRows(calm)[0], 'td')[0]), '0.00 m/s')
+  assert.equal(text(byTag(currentRows(calm)[1], 'td')[0]), '—')
+
+  surfaceCurrent.summary.averageSpeedMps = null
+  surfaceCurrent.summary.coveragePct = 0
+  surfaceCurrent.summary.coveredDurationS = 0
+  const missing = buildEnvironmentAnalysis(factory, activity)
+  assert.ok(missing)
+  const missingSpeed = byTag(currentRows(missing)[0], 'td')[0]
+  assert.equal(text(missingSpeed), '—')
+  assert.equal(missingSpeed.properties.dataAnalysisSource, undefined)
+  assert.equal(text(byTag(currentRows(missing)[2], 'td')[0]), '0.0% · 0s / 1h20m')
+
+  const otherLocations: StravaActivityDetail['swimLocation'][] = ['pool', null]
+  for (const swimLocation of otherLocations) {
+    const other = buildEnvironmentAnalysis(factory, { ...activity, swimLocation })
+    assert.ok(other)
+    assert.equal(currentRows(other).length, 0)
+    assert.ok(
+      aeroLabels.every(label =>
+        byClass(other, 'tri-environment-row-label').some(cell => text(cell) === label),
+      ),
+    )
+    assert.ok(byTag(other, 'a').every(link => text(link) !== 'NOAA LOOFS'))
+  }
+})
+
+test('renders open-water current views in the shared environment graph frame with modeled provenance', () => {
+  const analyses = environmentAnalyses()
+  const environment = analyses.derived.environment
+  assert.ok(environment)
+  const current = modeledSurfaceCurrent()
+  current.samples = [350, 10, null, 20].map((directionDeg, index) => {
+    const speedMps = directionDeg == null ? null : 0.14
+    const angle = ((directionDeg ?? 0) * Math.PI) / 180
+    return {
+      elapsedS: index * 1_600,
+      speedMps,
+      directionDeg,
+      uMps: speedMps == null ? null : speedMps * Math.sin(angle),
+      vMps: speedMps == null ? null : speedMps * Math.cos(angle),
+      element: speedMps == null ? null : 101,
+      validTime:
+        speedMps == null
+          ? null
+          : new Date(Date.parse(current.start) + index * 1_600_000).toISOString(),
+      cycleTime: speedMps == null ? null : current.start,
+      sourceUrl:
+        speedMps == null
+          ? null
+          : 'https://www.ncei.noaa.gov/thredds/dodsC/model-loofs-files/2026/07/loofs.t12z.20260709.fields.n001.nc.ascii',
+    }
+  })
+  environment.surfaceCurrent = current
+  const activity = detail({ sport: 'swim', swimLocation: 'openWater', analyses })
+  const units: TriathlonPresentation['distance'][] = ['metric', 'imperial']
+  for (const distance of units) {
+    const rendered = buildEnvironmentAnalysis(factoryFor(presentation({ distance })), activity)
+    assert.ok(rendered)
+    assert.deepEqual(
+      byClass(rendered, 'tri-environment-tab').map(tab => tab.properties.dataEnvironmentTab),
+      [
+        'cumulative',
+        'uv-index',
+        'temperature',
+        'cloud-cover',
+        'wind',
+        'current-speed',
+        'current-direction',
+      ],
+    )
+    assert.equal(byClass(rendered, 'tri-environment-stage').length, 1)
+    const graphs = byClass(rendered, 'tri-environment-graphs')[0]
+    assert.deepEqual(
+      JSON.parse(String(graphs.properties.dataEnvironmentSeries)),
+      environment.samples,
+    )
+    assert.deepEqual(
+      JSON.parse(String(graphs.properties.dataEnvironmentCurrentSeries)),
+      current.samples.map(sample => ({
+        elapsedS: sample.elapsedS,
+        surfaceCurrentSpeedMps: sample.speedMps,
+        surfaceCurrentDirectionDeg: sample.directionDeg,
+      })),
+    )
+    for (const view of ['current-speed', 'current-direction']) {
+      const panel: Element | undefined = byClass(rendered, 'tri-environment-panel').find(
+        candidate => candidate.properties.dataEnvironmentPanel === view,
+      )
+      assert.ok(panel)
+      const plot: Element = byClass(panel, 'tri-environment-plot')[0]
+      assert.equal(plot.properties.viewBox, '0 0 100 32')
+      assert.equal(plot.properties.role, 'slider')
+      assert.equal(plot.properties.dataDomainEndElapsedS, activity.elapsedTimeS)
+      assert.equal(plot.properties.dataAnalysisSource, 'provider-modeled')
+      assert.equal(plot.properties.dataAnalysisProvider, 'noaa-loofs')
+      assert.equal(plot.properties.dataAnalysisFormula, current.formulaId)
+      assert.equal(plot.properties.dataAnalysisFormulaVersion, 1)
+      assert.deepEqual(
+        byClass(panel, 'tri-cax-yt').map(text),
+        view === 'current-direction'
+          ? ['0°', '180°', '360°']
+          : ['0.00 m/s', '0.10 m/s', '0.20 m/s'],
+      )
+      assert.equal(
+        byClass(panel, 'tri-environment-line').length,
+        view === 'current-direction' ? 3 : 2,
+      )
+    }
+  }
+
+  delete environment.surfaceCurrent
+  const missing = buildEnvironmentAnalysis(factory, activity)
+  assert.ok(missing)
+  for (const view of ['current-speed', 'current-direction']) {
+    const panel: Element | undefined = byClass(missing, 'tri-environment-panel').find(
+      candidate => candidate.properties.dataEnvironmentPanel === view,
+    )
+    assert.ok(panel)
+    assert.equal(byClass(panel, 'tri-environment-empty').length, 1)
+    assert.equal(byClass(panel, 'tri-environment-line').length, 0)
+    assert.equal(byClass(panel, 'tri-environment-plot')[0].properties.role, 'img')
+    assert.equal(byClass(panel, 'tri-environment-plot')[0].properties.dataAnalysisSource, undefined)
+  }
+  environment.surfaceCurrent = {
+    ...current,
+    samples: current.samples.map(sample => ({
+      ...sample,
+      speedMps: null,
+      directionDeg: null,
+      uMps: null,
+      vMps: null,
+      element: null,
+      validTime: null,
+      cycleTime: null,
+      sourceUrl: null,
+    })),
+  }
+  const gaps = buildEnvironmentAnalysis(factory, activity)
+  assert.ok(gaps)
+  for (const view of ['current-speed', 'current-direction']) {
+    const panel: Element | undefined = byClass(gaps, 'tri-environment-panel').find(
+      candidate => candidate.properties.dataEnvironmentPanel === view,
+    )
+    assert.ok(panel)
+    const plot: Element = byClass(panel, 'tri-environment-plot')[0]
+    assert.equal(plot.properties.role, 'img')
+    assert.equal(plot.properties.dataAnalysisSource, undefined)
+  }
+  const otherLocations: StravaActivityDetail['swimLocation'][] = ['pool', null]
+  for (const swimLocation of otherLocations) {
+    const other = buildEnvironmentAnalysis(factory, { ...activity, swimLocation })
+    assert.ok(other)
+    assert.equal(byClass(other, 'tri-environment-panel').length, 5)
+  }
+  const run = buildEnvironmentAnalysis(factory, { ...activity, sport: 'run' })
+  assert.ok(run)
+  assert.equal(byClass(run, 'tri-environment-panel').length, 5)
+})
+
+test('current direction paths avoid north-crossing rotations and keep calm and unavailable readouts', () => {
+  const samples = [350, 10, null, 20, 25].map((surfaceCurrentDirectionDeg, index) => ({
+    elapsedS: index * 10,
+    surfaceCurrentSpeedMps: surfaceCurrentDirectionDeg == null ? null : 0.14,
+    surfaceCurrentDirectionDeg,
+  }))
+  const directions = environmentChartSeries(
+    METRIC_TRIATHLON_PRESENTATION,
+    samples,
+    40,
+    'current-direction',
+  )
+  assert.equal(directions.length, 3)
+  assert.ok(directions.slice(0, 2).every(series => !series.path.includes('L')))
+  assert.ok(directions[2].path.includes('L'))
+  assert.equal(
+    environmentChartReadout(
+      METRIC_TRIATHLON_PRESENTATION,
+      { elapsedS: 0, surfaceCurrentSpeedMps: 0 },
+      null,
+      'current-speed',
+    ),
+    '0:00 · 0.00 m/s',
+  )
+  assert.equal(
+    environmentChartReadout(METRIC_TRIATHLON_PRESENTATION, samples[1], null, 'current-direction'),
+    '0:10 · 10° toward',
+  )
+  assert.equal(
+    environmentChartReadout(METRIC_TRIATHLON_PRESENTATION, samples[2], null, 'current-direction'),
+    '0:20 · —',
+  )
+})
+
 test('renders empty environment axes with native evidence and translates their no-data state', () => {
   const analyses = environmentAnalyses()
   analyses.derived.environment = null
@@ -1409,9 +1768,9 @@ test('renders empty environment axes with native evidence and translates their n
     ])
   }
   assert.match(text(nativeOnly), /83 · High/)
-  assert.equal(byTag(nativeOnly, 'tr').length, 19)
+  assert.equal(byTag(nativeOnly, 'tr').length, 20)
   const unavailable = byClass(nativeOnly, 'tri-environment-unavailable')
-  assert.equal(unavailable.length, 6)
+  assert.equal(unavailable.length, 7)
   assert.ok(unavailable.every(cell => text(cell) === '—'))
   assert.ok(
     byClass(nativeOnly, 'tri-environment-row-label').some(label => text(label) === 'air speed'),
@@ -1561,6 +1920,56 @@ test('wind preserves calm zero samples, missing data, and explicit trace gaps', 
     ),
     ['M2.000,5.400L34.000,5.400', 'M98.000,5.400'],
   )
+})
+
+test('open-water wind plots ambient observations independently of unavailable apparent wind', () => {
+  const analyses = environmentAnalyses()
+  analyses.native.myWindsock = null
+  analyses.derived.apparentWind = null
+  const environment = analyses.derived.environment
+  assert.ok(environment)
+  environment.samples = environment.samples.map((sample, index) => ({
+    ...sample,
+    windSpeedKph: index === 2 ? null : 0,
+    headwindKph: null,
+    crosswindKph: null,
+    apparentAirSpeedKph: null,
+    yawDeg: null,
+  }))
+  const activity = detail({ sport: 'swim', swimLocation: 'openWater', analyses })
+  const units: TriathlonPresentation['distance'][] = ['metric', 'imperial']
+  for (const distance of units) {
+    const selected = presentation({ distance })
+    const rendered = buildEnvironmentAnalysis(factoryFor(selected), activity)
+    assert.ok(rendered)
+    const panel = byClass(rendered, 'tri-environment-panel').find(
+      panel => panel.properties.dataEnvironmentPanel === 'wind',
+    )
+    assert.ok(panel)
+    const plot = byClass(panel, 'tri-environment-plot')[0]
+    assert.equal(plot.properties.role, 'slider')
+    assert.equal(plot.properties.dataEnvironmentWindMetric, 'ambient')
+    assert.equal(plot.properties.ariaLabel, 'ambient wind speed')
+    assert.deepEqual(
+      byClass(panel, 'tri-cax-yt').map(text),
+      distance === 'imperial' ? ['0 mph', '0.5 mph', '1 mph'] : ['0 km/h', '0.5 km/h', '1 km/h'],
+    )
+    assert.equal(byClass(panel, 'tri-environment-empty').length, 0)
+    assert.equal(byClass(panel, 'tri-environment-line').length, 2)
+    const readout = text(byClass(rendered, 'tri-environment-readout')[0])
+    assert.match(readout, /ambient wind speed 0\.0 (?:km\/h|mph)/)
+    assert.doesNotMatch(readout, /headwind|apparent air|crosswind/)
+  }
+
+  environment.samples = environment.samples.map(sample => ({ ...sample, windSpeedKph: null }))
+  const missing = buildEnvironmentAnalysis(factory, activity)
+  assert.ok(missing)
+  const missingPanel = byClass(missing, 'tri-environment-panel').find(
+    panel => panel.properties.dataEnvironmentPanel === 'wind',
+  )
+  assert.ok(missingPanel)
+  assert.equal(byClass(missingPanel, 'tri-environment-line').length, 0)
+  assert.equal(byClass(missingPanel, 'tri-environment-empty').length, 1)
 })
 
 test('temperature axes, series, and readouts follow selected units independently of locale', () => {
