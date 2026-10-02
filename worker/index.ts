@@ -11,11 +11,20 @@ import {
   STREAM_HOSTNAME,
 } from '../quartz/util/stream-host'
 import {
+  isTriathlonRoutePathname,
+  triathlonAssetPathname,
+  triathlonDocumentRedirectUrl,
+  triathlonApexRedirectUrl,
+  triathlonHostLinkUrl,
+  triathlonHostPathname,
+  triathlonHostUrl,
+  TRIATHLON_HOSTNAME,
+} from '../quartz/util/triathlon-host'
+import {
   isStravaActivityIndex,
   STRAVA_ACTIVITY_INDEX_PATH,
   stravaActivityIdFromShortcutPath,
   triathlonActivityShortcutRedirectUrl,
-  triathlonShortcutRedirectUrl,
 } from '../quartz/util/triathlon-shortcut'
 import LFS_CONFIG from './.lfsconfig.txt'
 import {
@@ -343,6 +352,55 @@ async function htmlAssetResponse(request: Request, env: Env): Promise<Response> 
   return withHeaders(originResp, { 'Content-Type': HTML_CONTENT_TYPE })
 }
 
+function triathlonHostHtmlResponse(response: Response, assetUrl: URL): Response {
+  if (!response.headers.get('Content-Type')?.startsWith('text/html')) return response
+  // Relative links were emitted one level deeper, under /triathlon on the apex.
+  const reference = new URL(assetUrl)
+  reference.protocol = 'https:'
+  reference.host = 'aarnphm.xyz'
+  const canonical = triathlonHostUrl(assetUrl)
+  const rewriteResource = (element: Element, attribute: string): void => {
+    const href = element.getAttribute(attribute)
+    if (!href || href.startsWith('#')) return
+    const target = new URL(href, reference)
+    if (target.origin === reference.origin && !URL.canParse(href) && !href.startsWith('//')) {
+      target.host = assetUrl.host
+      target.protocol = assetUrl.protocol
+    }
+    element.setAttribute(attribute, target.toString())
+  }
+  return new HTMLRewriter()
+    .on('a[href]', {
+      element(element) {
+        const href = element.getAttribute('href')
+        if (href) element.setAttribute('href', triathlonHostLinkUrl(href, reference))
+      },
+    })
+    .on('[data-href]', {
+      element(element) {
+        const href = element.getAttribute('data-href')
+        if (href) element.setAttribute('data-href', triathlonHostLinkUrl(href, reference))
+      },
+    })
+    .on('link[href]', {
+      element(element) {
+        if (element.getAttribute('rel') === 'canonical') element.setAttribute('href', canonical)
+        else rewriteResource(element, 'href')
+      },
+    })
+    .on('script[src], img[src], source[src]', {
+      element(element) {
+        rewriteResource(element, 'src')
+      },
+    })
+    .on('meta[property="og:url"]', {
+      element(element) {
+        element.setAttribute('content', canonical)
+      },
+    })
+    .transform(response)
+}
+
 async function handleLessWrong(request: Request): Promise<Response> {
   if (request.method !== 'GET') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
@@ -427,6 +485,50 @@ export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
     const localRequest = isLocalRequest(request)
+    const apexTriathlonRedirect = triathlonApexRedirectUrl(url)
+    if (apexTriathlonRedirect) return Response.redirect(apexTriathlonRedirect, 308)
+
+    if (url.hostname === TRIATHLON_HOSTNAME) {
+      const activityId = stravaActivityIdFromShortcutPath(url.pathname)
+      if (activityId) {
+        const indexUrl = new URL(STRAVA_ACTIVITY_INDEX_PATH, url)
+        const indexResponse = await env.ASSETS.fetch(
+          new Request(indexUrl, { headers: { Accept: 'application/json' } }),
+        )
+        const index: unknown = indexResponse.ok
+          ? await indexResponse.json().catch(() => null)
+          : null
+        if (!isStravaActivityIndex(index)) {
+          return new Response('Strava activity index unavailable', {
+            status: 503,
+            headers: { 'Cache-Control': 'no-store' },
+          })
+        }
+        const redirectUrl = triathlonActivityShortcutRedirectUrl(url, index.activities)
+        if (!redirectUrl) {
+          return new Response(`Strava activity ${activityId} not found`, {
+            status: 404,
+            headers: { 'Cache-Control': 'no-store' },
+          })
+        }
+        return Response.redirect(redirectUrl, 308)
+      }
+
+      const isDocument = shouldTreatAsDocument(url.pathname) || url.pathname.endsWith('.md')
+      const documentRedirect = isDocument
+        ? triathlonDocumentRedirectUrl(resolveBaseUrl(env, request), url)
+        : null
+      if (documentRedirect) return Response.redirect(documentRedirect, 308)
+      const canonicalPathname = triathlonHostPathname(url.pathname)
+      if (isTriathlonRoutePathname(url.pathname) && canonicalPathname !== url.pathname) {
+        const canonicalUrl = new URL(url)
+        canonicalUrl.pathname = canonicalPathname
+        return Response.redirect(canonicalUrl.toString(), 308)
+      }
+      // Resolve the microsite before representation negotiation and /triathlon/data dispatch.
+      url.pathname = triathlonAssetPathname(url.pathname)
+      request = new Request(url, request)
+    }
 
     const arenaReaderResponse = await handleArenaReaderRequest(request, env)
     if (arenaReaderResponse) return arenaReaderResponse
@@ -1091,45 +1193,6 @@ export default {
       return response
     }
 
-    if (url.hostname === 't.aarnphm.xyz' && !url.pathname.startsWith('/fonts/')) {
-      const activityId = stravaActivityIdFromShortcutPath(url.pathname)
-      if (activityId) {
-        const indexUrl = new URL(STRAVA_ACTIVITY_INDEX_PATH, url)
-        const indexResponse = await env.ASSETS.fetch(
-          new Request(indexUrl.toString(), { headers: { Accept: 'application/json' } }),
-        )
-        const index: unknown = indexResponse.ok
-          ? await indexResponse.json().catch(() => null)
-          : null
-        if (!isStravaActivityIndex(index)) {
-          return new Response('Strava activity index unavailable', {
-            status: 503,
-            headers: { 'Cache-Control': 'no-store' },
-          })
-        }
-        const redirectUrl = triathlonActivityShortcutRedirectUrl(
-          resolveBaseUrl(env, request),
-          url,
-          index.activities,
-        )
-        if (!redirectUrl) {
-          return new Response(`Strava activity ${activityId} not found`, {
-            status: 404,
-            headers: { 'Cache-Control': 'no-store' },
-          })
-        }
-        return Response.redirect(redirectUrl, 308)
-      }
-      return Response.redirect(
-        triathlonShortcutRedirectUrl(
-          resolveBaseUrl(env, request),
-          url,
-          shouldTreatAsDocument(url.pathname),
-        ),
-        308,
-      )
-    }
-
     const lfsContentType = lfsAssetContentType(url.pathname)
     if (lfsContentType) {
       if (request.method !== 'GET' && request.method !== 'HEAD') {
@@ -1265,7 +1328,7 @@ export default {
     if (shouldTreatAsDocument(url.pathname)) {
       const slugs = await loadNotebookSlugs(env, url.origin)
       const notebookHeaders = isNotebookPath(url.pathname, slugs) ? COOP_COEP_HEADERS : {}
-      return withHeaders(resp, {
+      const documentResponse = withHeaders(resp, {
         ...staticAssetHeaders,
         ...notebookHeaders,
         ...(shouldBypassDocumentCache
@@ -1274,10 +1337,16 @@ export default {
         'X-Frame-Options': null,
         'Content-Security-Policy': "frame-ancestors 'self' *",
         Vary: mergeVary(resp, 'Accept', 'Accept-Encoding', 'User-Agent'),
-        Link: isHomepagePathname(url.pathname)
-          ? `${API_CATALOG_LINK}, ${documentDiscoveryLink(url.pathname)}`
-          : documentDiscoveryLink(url.pathname),
+        Link:
+          url.hostname === TRIATHLON_HOSTNAME
+            ? `<${triathlonHostPathname(markdownPathname(url.pathname))}>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"; type="text/markdown"`
+            : isHomepagePathname(url.pathname)
+              ? `${API_CATALOG_LINK}, ${documentDiscoveryLink(url.pathname)}`
+              : documentDiscoveryLink(url.pathname),
       })
+      return url.hostname === TRIATHLON_HOSTNAME
+        ? triathlonHostHtmlResponse(documentResponse, url)
+        : documentResponse
     }
     return withHeaders(resp, staticAssetHeaders)
   },

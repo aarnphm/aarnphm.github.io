@@ -50,7 +50,7 @@ export const setupTraining = (
     )
     if (meta.childElementCount) head.appendChild(meta)
     const body = el('div', 'tri-training-render')
-    const renderDocument = deriveTrainingDocument(plan)
+    const renderDocument = deriveTrainingDocument(plan, window.location.origin)
     body.innerHTML = renderDocument.html
     preview.replaceChildren(head, body)
     preview.scrollTo({ top: 0 })
