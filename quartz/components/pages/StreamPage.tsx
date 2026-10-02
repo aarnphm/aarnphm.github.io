@@ -7,6 +7,7 @@ import type {
 import {
   buildStreamDayPathFromIso,
   buildStreamEntryPathFromIso,
+  getStreamDatePartsFromIso,
   groupStreamEntries,
   groupStreamEntriesByYear,
   selectStreamFeedGroups,
@@ -127,45 +128,6 @@ const entryMeta = (entry: StreamEntry): string => {
 
 const slugFromPath = (path: string): string => path.replace(/^\//, '')
 
-const renderOpenArrow = (path: string, label: string) => (
-  <a
-    class="stream-legend-open internal"
-    href={path}
-    data-slug={slugFromPath(path)}
-    data-no-popover
-    aria-label={`open ${label}`}
-  >
-    <svg
-      aria-hidden="true"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.75"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path d="M5 12h14m-6-6 6 6-6 6" />
-    </svg>
-  </a>
-)
-
-const formatLegendDay = (isoDate: string | undefined | null): string => {
-  if (!isoDate) return ''
-  const date = new Date(isoDate)
-  if (Number.isNaN(date.getTime())) return ''
-
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
-    .format(date)
-    .toLowerCase()
-}
-
-const formatLegendMonth = (month: StreamMonthGroup): string =>
-  new Intl.DateTimeFormat('en-US', { month: 'long', timeZone: 'UTC' })
-    .format(new Date(Date.UTC(month.year, month.month - 1, 1)))
-    .toLowerCase()
-
 const restrictedCount = (entries: StreamEntry[]): number => entries.filter(isRestrictedEntry).length
 
 export default (() => {
@@ -267,18 +229,12 @@ export default (() => {
 
     const renderLegendEntries = (entries: StreamEntry[]) => (
       <div class="stream-legend-table">
-        <div class="stream-legend-head" aria-hidden="true">
-          <span>date</span>
-          <span>entry</span>
-          <span>tags</span>
-          <span>meta</span>
-        </div>
         <ol class="stream-legend-entries">
           {entries.map(entry => {
             const dayPath = buildStreamDayPathFromIso(entry.date)
             const entryPath = buildStreamEntryPathFromIso(entry.date, entry.id)
             const href = entryPath ?? (dayPath ? `${dayPath}#${entry.id}` : '/stream')
-            const dayLabel = formatLegendDay(entry.date)
+            const dayLabel = getStreamDatePartsFromIso(entry.date)?.dayText
             const tags = tagsForEntry(entry)
             const restricted = isRestrictedEntry(entry)
 
@@ -325,19 +281,25 @@ export default (() => {
       <div class="stream-legend-groups">
         {months.map(month => {
           const locked = restrictedCount(month.entries)
-          const label = formatLegendMonth(month)
+          const label = `${month.yearText} / ${month.monthText}`
 
           return (
-            <details key={month.id} class="stream-legend-group">
-              <summary class="stream-legend-summary">
-                <span class="stream-legend-summary-title">{label}</span>
+            <section key={month.id} class="stream-legend-group stream-legend-month">
+              <div class="stream-legend-row">
+                <a
+                  class="stream-legend-row-title internal"
+                  href={month.path}
+                  data-slug={slugFromPath(month.path)}
+                  data-no-popover
+                >
+                  {label}
+                </a>
                 {renderRestrictedMetric(locked)}
                 {renderSummaryMetric(month.entries.length, 'entry')}
                 {renderEmptySummaryMetric()}
-                {renderOpenArrow(month.path, `${label} ${month.year}`)}
-              </summary>
+              </div>
               {renderLegendEntries(month.entries)}
-            </details>
+            </section>
           )
         })}
       </div>
@@ -356,16 +318,22 @@ export default (() => {
             const locked = restrictedCount(year.entries)
 
             return (
-              <details key={year.id} class="stream-legend-group">
-                <summary class="stream-legend-summary">
-                  <span class="stream-legend-summary-title">{year.yearText}</span>
+              <section key={year.id} class="stream-legend-group stream-legend-year">
+                <div class="stream-legend-row">
+                  <a
+                    class="stream-legend-row-title internal"
+                    href={year.path}
+                    data-slug={slugFromPath(year.path)}
+                    data-no-popover
+                  >
+                    {year.yearText}
+                  </a>
                   {renderRestrictedMetric(locked)}
                   {renderSummaryMetric(year.months.length, 'month')}
                   {renderSummaryMetric(year.entries.length, 'entry')}
-                  {renderOpenArrow(year.path, year.yearText)}
-                </summary>
+                </div>
                 {renderMonthGroups(year.months)}
-              </details>
+              </section>
             )
           })}
         </div>
