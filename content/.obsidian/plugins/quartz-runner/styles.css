@@ -1,0 +1,55 @@
+.quartz-runner-settings {
+  --garden-plugin-line: color-mix(in srgb, var(--text-faint) 55%, transparent);
+  --garden-plugin-surface: color-mix(
+    in srgb,
+    var(--background-primary) 86%,
+    var(--background-secondary)
+  );
+}
+
+.quartz-runner-settings h2 {
+  margin-block: 0 0.5rem;
+  font-family: var(--font-text);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.quartz-runner-description {
+  margin-block: 0 1.5rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.quartz-runner-settings .setting-item {
+  gap: 1rem;
+  padding-block: 0.75rem;
+  border-color: var(--garden-plugin-line);
+}
+
+.quartz-runner-settings .setting-item-description {
+  max-width: 36rem;
+  line-height: 1.5;
+}
+
+.quartz-runner-settings input[type='text'] {
+  width: 6rem;
+  min-height: 1.5rem;
+  border: 1px solid var(--garden-plugin-line);
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--garden-plugin-surface);
+  font-family: var(--font-monospace);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.quartz-runner-settings input:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .quartz-runner-settings .setting-item {
+    flex-wrap: wrap;
+  }
+}

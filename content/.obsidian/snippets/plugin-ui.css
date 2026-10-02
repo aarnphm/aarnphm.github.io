@@ -1,0 +1,71 @@
+/* Shared plugin surfaces follow the Garden Arena controls and inherit the active Obsidian theme. */
+body {
+  --garden-plugin-line: color-mix(in srgb, var(--text-faint) 55%, transparent);
+  --garden-plugin-surface: color-mix(
+    in srgb,
+    var(--background-primary) 86%,
+    var(--background-secondary)
+  );
+  --garden-plugin-selected: color-mix(
+    in srgb,
+    var(--interactive-accent) 18%,
+    var(--garden-plugin-surface)
+  );
+  --garden-plugin-control-height: 1.5rem;
+}
+
+body :is(.modal, .menu, .suggestion-container, .notice) {
+  border: 1px solid var(--garden-plugin-line);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:is(.modal, .menu, .suggestion-container, .notice, .vertical-tab-content)
+  :is(button, select, input:not([type='checkbox']):not([type='range']), textarea) {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:is(.modal, .vertical-tab-content) :is(button:not(.clickable-icon), select) {
+  min-height: var(--garden-plugin-control-height);
+  height: auto;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--garden-plugin-line);
+  background: var(--garden-plugin-surface);
+  font-family: var(--font-monospace);
+  font-size: 0.8rem;
+  font-weight: normal;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  touch-action: manipulation;
+}
+
+:is(.modal, .vertical-tab-content)
+  button:is(.mod-cta, [aria-pressed='true'], [aria-expanded='true']) {
+  background: var(--garden-plugin-selected);
+  color: var(--text-normal);
+}
+
+:is(.modal, .menu, .suggestion-container, .vertical-tab-content)
+  :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
+:is(.menu-item, .suggestion-item).is-selected {
+  background: var(--garden-plugin-selected);
+  border-radius: 0;
+}
+
+body .vertical-tab-content .setting-item {
+  border: 1px solid var(--garden-plugin-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+@media (pointer: coarse) {
+  body {
+    --garden-plugin-control-height: 44px;
+  }
+}

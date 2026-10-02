@@ -9,7 +9,8 @@
   "showViewHeader": false,
   "enabledCssSnippets": [
     "snippet",
-    "gallery"
+    "gallery",
+    "plugin-ui"
   ],
   "baseFontSizeAction": true,
   "theme": "system",
