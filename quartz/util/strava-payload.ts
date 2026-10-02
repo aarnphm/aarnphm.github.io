@@ -59,6 +59,7 @@ import { joinSegments, QUARTZ } from './path'
 import { latestProviderSync } from './provider-sync'
 import { readStravaCacheFileSync } from './strava-cache-file'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
+import { buildSwimPowerEstimate, openWaterPowerIntervals } from './swim-power'
 import {
   buildTriathlonDailyAnalytics,
   type TriathlonDailyAnalytics,
@@ -460,6 +461,10 @@ export function enrichSwimMetrics(
       (detail.avgCadence != null && detail.avgCadence > 0 ? detail.avgCadence : null)
     detail.swimDurationS = garminSwim?.elapsedTimeS ?? activity?.durationS ?? null
     detail.swimIntervals = intervals
+    detail.swimPower = buildSwimPowerEstimate(
+      garminIntervals.length > 0 ? 'garmin' : 'apple',
+      intervals,
+    )
     if (garminAnalysisRanges.length > 0)
       detail.analysisRanges = [
         ...detail.analysisRanges.filter(range => range.kind !== 'lap'),
@@ -467,6 +472,12 @@ export function enrichSwimMetrics(
       ]
     projectSwimHeartRateDistance(detail, intervals)
     detail.swimLocation = garminSwim?.location ?? telemetry?.location ?? null
+    if (detail.swimLocation === 'openWater' && detail.route.length >= 2)
+      detail.swimPower = buildSwimPowerEstimate(
+        'route',
+        openWaterPowerIntervals(detail.route.filter(p => p.elapsedS <= detail.elapsedTimeS)),
+        'ground-speed',
+      )
     detail.waterTemperatureC = telemetry?.waterTemperatureC ?? null
     if (detail.swimPaceSPer100m == null && detail.strokeRateSpm == null) continue
     payload.swimTrend.push({

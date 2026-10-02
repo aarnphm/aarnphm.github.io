@@ -1006,6 +1006,11 @@ test('uses Garmin FIT pool lengths for native swim pace, strokes, cadence, and S
   assert.equal(enriched.swimPaceSPer100m, 102)
   assert.equal(enriched.swimPaceSource, 'stroke')
   assert.equal(enriched.swimDurationS, 66)
+  assert.equal(enriched.swimPower?.inputSource, 'garmin')
+  assert.equal(enriched.swimPower?.source, 'garden-estimate')
+  assert.equal(enriched.swimPower?.validIntervalCount, 2)
+  assert.deepEqual(enriched.swimPower?.curve, [])
+  assert.equal(enriched.avgWatts, null)
   assert.equal(enriched.swimLocation, 'pool')
   assert.equal(enriched.waterTemperatureC, 27.8)
   assert.deepEqual(swimLengthAverages(enriched.swimIntervals), {
