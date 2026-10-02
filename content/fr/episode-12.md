@@ -33,12 +33,12 @@ Les treize exercices totalisent **75 points** selon les barèmes du livre. Les q
 
 Dans l'ordre de gauche à droite :
 
-| image                  | réponse modèle                            | sens en anglais                    |
-| ---------------------- | ----------------------------------------- | ---------------------------------- |
-| un homme avec un livre | {{`Il lit.`}}                                 | He is reading.                     |
+| image                  | réponse modèle                                    | sens en anglais                    |
+| ---------------------- | ------------------------------------------------- | ---------------------------------- |
+| un homme avec un livre | {{`Il lit.`}}                                     | He is reading.                     |
 | une femme à la cuisine | {{`Elle cuisine.`}} / {{`Elle fait la cuisine.`}} | She is cooking.                    |
-| un homme au téléphone  | {{`Il téléphone à une amie.`}}                | He is calling a friend.            |
-| une femme et son chien | {{`Elle fait une promenade avec son chien.`}} | She is taking a walk with her dog. |
+| un homme au téléphone  | {{`Il téléphone à une amie.`}}                    | He is calling a friend.            |
+| une femme et son chien | {{`Elle fait une promenade avec son chien.`}}     | She is taking a walk with her dog. |
 
 Le corrigé propose `à une amie` pour l'appel ; l'image seule montre un appel sans identifier la personne appelée. `Il téléphone` décrit aussi l'action visible. Le présent français peut décrire une action en cours : `Il lit` correspond ici à _he is reading_.
 
@@ -46,8 +46,8 @@ Le corrigé propose `à une amie` pour l'appel ; l'image seule montre un appel s
 
 Les douze propositions suivent le tableau du livre. Les lignes partagées utilisent un sujet pluriel.
 
-| ordre | sujet    | phrase au présent               |
-| ----- | -------- | ------------------------------- |
+| ordre | sujet    | phrase au présent                   |
+| ----- | -------- | ----------------------------------- |
 | 1     | Valérie  | {{`Valérie fait du café.`}}         |
 | 2     | Valérie  | {{`Elle prépare le déjeuner.`}}     |
 | 3     | Jérémie  | {{`Jérémie écoute de la musique.`}} |
@@ -73,8 +73,8 @@ Pour raconter la journée à voix haute :
 
 Une question fermée appelle `oui` ou {{`non`}}. Les quatre images montrent le piano, le travail, la détente et la lecture. Le corrigé donne les trois premières structures du tableau ci-dessous ; l'intonation fournit une quatrième forme orale.
 
-| activité | `est-ce que`                                  | inversion                          | `-tu` québécois oral                  | intonation                         |
-| -------- | --------------------------------------------- | ---------------------------------- | ------------------------------------- | ---------------------------------- |
+| activité | `est-ce que`                                      | inversion                              | `-tu` québécois oral                      | intonation                             |
+| -------- | ------------------------------------------------- | -------------------------------------- | ----------------------------------------- | -------------------------------------- |
 | piano    | {{`Est-ce que tu joues du piano ?`}}              | {{`Joues-tu du piano ?`}}              | {{`Tu joues-tu du piano ?`}}              | {{`Tu joues du piano ?`}}              |
 | travail  | {{`Est-ce que tu travailles toute la journée ?`}} | {{`Travailles-tu toute la journée ?`}} | {{`Tu travailles-tu toute la journée ?`}} | {{`Tu travailles toute la journée ?`}} |
 | détente  | {{`Est-ce que tu relaxes ?`}}                     | {{`Relaxes-tu ?`}}                     | {{`Tu relaxes-tu ?`}}                     | {{`Tu relaxes ?`}}                     |
@@ -93,8 +93,8 @@ Réponses possibles : {{`Oui, je joue du piano.`}} / {{`Non, je ne joue pas du p
 
 ### exercice 1 : les destinations
 
-| pronom imprimé         | lieu           | réponse                        |
-| ---------------------- | -------------- | ------------------------------ |
+| pronom imprimé         | lieu           | réponse                            |
+| ---------------------- | -------------- | ---------------------------------- |
 | je, exemple déjà donné | la boulangerie | {{`Je vais à la boulangerie.`}}    |
 | tu                     | le dentiste    | {{`Tu vas chez le dentiste.`}}     |
 | on                     | le café        | {{`On va au café avec nos amis.`}} |
@@ -109,8 +109,8 @@ La destination suit son article : `à + le = au`, `à + les = aux`, puis `à la`
 
 **Exercice 2.** Transcription imprimée p. 137, dans l'ordre d'écoute :
 
-| no  | phrase de la transcription          | case à cocher  |
-| --- | ----------------------------------- | -------------- |
+| no  | phrase de la transcription              | case à cocher  |
+| --- | --------------------------------------- | -------------- |
 | 1   | {{`On va au travail en métro.`}}        | **en métro**   |
 | 2   | {{`Tu vas à l'école à pied.`}}          | **à pied**     |
 | 3   | {{`Allez-vous à l'aéroport en taxi ?`}} | **en taxi**    |
@@ -127,7 +127,7 @@ Dans les formes travaillées ici : **à pied**, **à vélo**, puis **en autobus*
 
 | case sur la page, de gauche à droite | réponse complète                   | lecture de l'heure    |
 | ------------------------------------ | ---------------------------------- | --------------------- |
-| rangée 1, gauche                     | {{`Je dine à midi.`}}                  | midi, 12 h            |
+| rangée 1, gauche                     | {{`Je dine à midi.`}}              | midi, 12 h            |
 | rangée 1, centre                     | `Je regarde la télé à 20 h.`       | vingt heures          |
 | rangée 1, droite                     | `J'arrive au travail vers 7 h 50.` | sept heures cinquante |
 | rangée 2, gauche                     | `Je fais la cuisine vers 18 h.`    | dix-huit heures       |
@@ -140,19 +140,19 @@ Dans les formes travaillées ici : **à pied**, **à vélo**, puis **en autobus*
 
 **Exercice 4.** Le bleu désigne les **activités habituelles** et l'orange les **activités ponctuelles**. Pour le contraste travaillé dans ce bilan, `le mardi` signifie _on Tuesdays_, tandis que `mardi` désigne un mardi particulier dans le contexte.
 
-| jour et moment               | type indiqué | phrase modèle                                                     |
-| ---------------------------- | ------------ | ----------------------------------------------------------------- |
-| lundi matin                  | habituelle   | {{`Le lundi matin, Stéphane a congé.`}} / {{`Il ne travaille pas.`}}      |
+| jour et moment               | type indiqué | phrase modèle                                                         |
+| ---------------------------- | ------------ | --------------------------------------------------------------------- |
+| lundi matin                  | habituelle   | {{`Le lundi matin, Stéphane a congé.`}} / {{`Il ne travaille pas.`}}  |
 | lundi après-midi             | ponctuelle   | {{`Lundi après-midi, il visite le musée des beaux-arts avec Julie.`}} |
 | mardi, travail               | habituelle   | {{`Le mardi, il travaille.`}}                                         |
-| mardi à 18 h                 | habituelle   | `Le mardi à 18 h, il va au gym.`                                  |
+| mardi à 18 h                 | habituelle   | `Le mardi à 18 h, il va au gym.`                                      |
 | mercredi, travail            | habituelle   | {{`Le mercredi, il travaille.`}}                                      |
 | mercredi, diner              | ponctuelle   | {{`Mercredi midi, il dine avec ses collègues.`}}                      |
 | jeudi, travail               | habituelle   | {{`Le jeudi, il travaille.`}}                                         |
-| jeudi à 18 h                 | habituelle   | `Le jeudi à 18 h, il va au gym.`                                  |
+| jeudi à 18 h                 | habituelle   | `Le jeudi à 18 h, il va au gym.`                                      |
 | vendredi, travail            | habituelle   | {{`Le vendredi, il travaille.`}}                                      |
 | vendredi soir                | ponctuelle   | {{`Vendredi soir, il va au party chez Julien.`}}                      |
-| samedi à 10 h                | habituelle   | `Le samedi à 10 h, il va au gym.`                                 |
+| samedi à 10 h                | habituelle   | `Le samedi à 10 h, il va au gym.`                                     |
 | dimanche matin               | ponctuelle   | {{`Dimanche matin, il déjeune au resto avec Alfred.`}}                |
 | dimanche soir, exemple donné | habituelle   | {{`Le dimanche, il soupe chez ses parents.`}}                         |
 
@@ -222,11 +222,11 @@ Les indications utilisent l'impératif de **vous**, sans sujet exprimé : `vous 
 | rue Bélanger   | 8 h 30 ; 10 h 35 ; 12 h 35 ; 15 h 35 ; 16 h 35 ; 18 h 35 |
 | avenue Théorêt | **pas de service à cet arrêt**                           |
 
-| affirmation                                                    | réponse  | justification                                    |
-| -------------------------------------------------------------- | -------- | ------------------------------------------------ |
-| L'horaire de tous les autobus est modifié à cause des travaux. | **Faux** | L'avis nomme la ligne 4 et ces trois arrêts.     |
+| affirmation                                                    | réponse  | justification                                        |
+| -------------------------------------------------------------- | -------- | ---------------------------------------------------- |
+| L'horaire de tous les autobus est modifié à cause des travaux. | **Faux** | L'avis nomme la ligne 4 et ces trois arrêts.         |
 | L'autobus n'arrête pas sur l'avenue Théorêt.                   | **Vrai** | La colonne indique {{`Pas de service à cet arrêt`}}. |
-| Le 20 juin, la ligne 4 passe à 8 h 20 dans la rue Lemay.       | **Faux** | Le passage matinal affiché est à 8 h.            |
+| Le 20 juin, la ligne 4 passe à 8 h 20 dans la rue Lemay.       | **Faux** | Le passage matinal affiché est à 8 h.                |
 
 Le titre imprime `DU 1er AU 31 JUIN`. **Juin a 30 jours** : `31 juin` est une coquille du document. Le 20 juin reste une date possible et les trois réponses restent **faux, vrai, faux**.
 
@@ -309,8 +309,8 @@ Réponses : **vrai, faux, faux, faux, faux**.
 
 ### vocabulaire de l'annonce
 
-| expression                    | sens en anglais ou emploi  |
-| ----------------------------- | -------------------------- |
+| expression                        | sens en anglais ou emploi  |
+| --------------------------------- | -------------------------- |
 | {{sur place}}                     | in person, at the location |
 | {{comptant}}                      | in cash                    |
 | {{par chèque}}                    | by cheque                  |
@@ -418,8 +418,8 @@ Voici les sept activités de chaque personne après la mise en commun des deux f
 
 ### modèles de questions et réponses
 
-| question                                                       | réponse attendue                    |
-| -------------------------------------------------------------- | ----------------------------------- |
+| question                                                           | réponse attendue                    |
+| ------------------------------------------------------------------ | ----------------------------------- |
 | {{`Est-ce que Max danse la salsa le mardi soir ?`}}                | **Oui.**                            |
 | {{`Max va au travail à pied ?`}}                                   | **Non.** Il y va à vélo.            |
 | {{`Rose tricote la fin de semaine ?`}}                             | **Non.** C'est Jacques qui tricote. |
@@ -431,8 +431,8 @@ Les explications après **non** sont utiles pour corriger la fiche après le jeu
 
 ### les expressions à réutiliser
 
-| expression                        | sens en anglais                 |
-| --------------------------------- | ------------------------------- |
+| expression                            | sens en anglais                 |
+| ------------------------------------- | ------------------------------- |
 | {{laver la vaisselle}}                | wash the dishes                 |
 | {{passer l'aspirateur}}               | vacuum                          |
 | {{faire le ménage}}                   | do the cleaning/housework       |
@@ -452,11 +452,11 @@ Les explications après **non** sont utiles pour corriger la fiche après le jeu
 
 Les formes irrégulières et le verbe en `-ir` nécessaires aux réponses se regroupent ici. Les autres verbes en `-er` suivent le modèle de `jouer`, avec le changement de radical d'`envoyer`.
 
-| sujet          | faire   | aller  | prendre  | lire   | finir     | envoyer  |
-| -------------- | ------- | ------ | -------- | ------ | --------- | -------- |
-| je / j'        | fais    | vais   | prends   | lis    | finis     | envoie   |
-| tu             | fais    | vas    | prends   | lis    | finis     | envoies  |
-| il / elle / on | fait    | va     | prend    | lit    | finit     | envoie   |
+| sujet          | faire   | aller  | prendre  | lire   | finir         | envoyer      |
+| -------------- | ------- | ------ | -------- | ------ | ------------- | ------------ |
+| je / j'        | fais    | vais   | prends   | lis    | finis         | envoie       |
+| tu             | fais    | vas    | prends   | lis    | finis         | envoies      |
+| il / elle / on | fait    | va     | prend    | lit    | finit         | envoie       |
 | nous           | faisons | allons | prenons  | lisons | {{finissons}} | {{envoyons}} |
 | vous           | faites  | allez  | prenez   | lisez  | {{finissez}}  | {{envoyez}}  |
 | ils / elles    | font    | vont   | prennent | lisent | {{finissent}} | {{envoient}} |

@@ -11,8 +11,8 @@ title: Mots de la leçon
 
 Vocabulaire de [[fr/lessons/260921|la leçon du 21 septembre]]. Les formes au présent sont dans [[fr/verbs|le tableau des verbes]].
 
-| Français   | English                        |
-| ---------- | ------------------------------ |
+| Français       | English                        |
+| -------------- | ------------------------------ |
 | {{commencer}}  | to begin, to start             |
 | {{manger}}     | to eat                         |
 | {{nager}}      | to swim                        |
@@ -58,8 +58,8 @@ Vocabulaire de [[fr/lessons/260921|la leçon du 21 septembre]]. Les formes au pr
 
 ## Mots de grammaire
 
-| Français              | Sens                                                                 |
-| --------------------- | -------------------------------------------------------------------- |
+| Français                  | Sens                                                                 |
+| ------------------------- | -------------------------------------------------------------------- |
 | {{le son}}                | sound                                                                |
 | {{l'orthographe}}         | spelling                                                             |
 | {{le radical}}            | the stem of a verb                                                   |

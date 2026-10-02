@@ -26,11 +26,11 @@ les trois questions d'ouverture de l'épisode:
 
 une carte d'identité ({{`fiche d'identité`}}) liste cinq champs:
 
-| champ               | exemple       |
-| ------------------- | ------------- |
-| {{`Nom`}}               | `Desjardins`  |
-| {{`Prénom`}}            | `Nancy`       |
-| {{`Date de naissance`}} | `1980-03-15`  |
+| champ                   | exemple           |
+| ----------------------- | ----------------- |
+| {{`Nom`}}               | `Desjardins`      |
+| {{`Prénom`}}            | `Nancy`           |
+| {{`Date de naissance`}} | `1980-03-15`      |
 | {{`Profession`}}        | {{`professeure`}} |
 | {{`Nationalité`}}       | {{`canadienne`}}  |
 
@@ -52,8 +52,8 @@ le mot `ans` est obligatoire. `J'ai 21.` est faux; il faut `J'ai 21 ans.`
 
 la question:
 
-| registre | question              |
-| -------- | --------------------- |
+| registre | question                  |
+| -------- | ------------------------- |
 | formel   | {{`Quel âge avez-vous?`}} |
 | informel | {{`Quel âge as-tu?`}}     |
 
@@ -70,8 +70,8 @@ orientation rapide pour cet épisode. le détail complet (0–69, les dizaines i
 
 format **`AAAA-MM-JJ`** (année, mois, jour), l'ordre administratif québécois.
 
-| dit                | écrit        |
-| ------------------ | ------------ |
+| dit                    | écrit        |
+| ---------------------- | ------------ |
 | {{`6 mars 1980`}}      | `1980-03-06` |
 | {{`13 novembre 1965`}} | `1965-11-13` |
 
@@ -97,8 +97,8 @@ chaque chiffre se prononce séparément, un par un. l'indicatif régional (`514`
 
 ## le courriel
 
-| symbole | se dit                       |
-| ------- | ---------------------------- |
+| symbole | se dit                           |
+| ------- | -------------------------------- |
 | `@`     | `arobas` (ou {{`a commercial`}}) |
 | `.`     | {{`point`}}                      |
 
@@ -111,9 +111,9 @@ le manuel oppose deux registres qui gardent tous les deux le `vous` de politesse
 | information       | situation informelle                | situation formelle                                        |
 | ----------------- | ----------------------------------- | --------------------------------------------------------- |
 | nom / code postal | `C'est quoi votre nom/code postal?` | `Quel est votre nom/code postal/état civil?`              |
-| téléphone         | {{`Votre numéro de téléphone?`}}        | `Quelle est votre adresse/date de naissance/nationalité?` |
-| âge               | {{`Vous avez quel âge?`}}               | `Quel âge avez-vous?`                                     |
-| identité          | {{`Vous vous appelez comment?`}}        | {{`Comment vous appelez-vous?`}}                              |
+| téléphone         | {{`Votre numéro de téléphone?`}}    | `Quelle est votre adresse/date de naissance/nationalité?` |
+| âge               | {{`Vous avez quel âge?`}}           | `Quel âge avez-vous?`                                     |
+| identité          | {{`Vous vous appelez comment?`}}    | {{`Comment vous appelez-vous?`}}                          |
 
 > [!note] faits d'ici
 > `Ailleurs, autrement?` (`Dire son âge : oui ou non?`). le manuel demande : _dans votre culture, dire son âge, c'est normal? est-ce impoli de demander son âge à une personne?_ au Québec la question reste sensible selon le contexte.
@@ -135,16 +135,16 @@ les expressions pour indiquer qu'on ne comprend pas:
 
 ### titres de civilité
 
-| abréviation | titre          | pour                                                    |
-| ----------- | -------------- | ------------------------------------------------------- |
+| abréviation | titre              | pour                                                    |
+| ----------- | ------------------ | ------------------------------------------------------- |
 | `M.`        | {{`Monsieur`}}     | un homme                                                |
 | `Mme`       | {{`Madame`}}       | une femme                                               |
 | `Mlle`      | {{`Mademoiselle`}} | une très jeune fille, ou une femme qui demande ce titre |
 
 ### l'adresse : abréviations courantes
 
-| abréviation | mot complet   |
-| ----------- | ------------- |
+| abréviation | mot complet       |
+| ----------- | ----------------- |
 | `app.`      | {{`appartement`}} |
 | `av.`       | {{`avenue`}}      |
 | `boul.`     | {{`boulevard`}}   |

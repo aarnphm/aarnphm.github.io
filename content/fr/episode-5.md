@@ -24,7 +24,7 @@ the model photo is three generations in silhouette: `Jean-Guy` et `Ginette`, leu
 | ------------------------------------------------------ | -------------------------------------------------------------------------------- |
 | `le père / la mère / les parents`                      | father / mother / parents                                                        |
 | `le frère / la sœur`                                   | brother / sister                                                                 |
-| `le fils / la fille`                                   | son / daughter; {{`mon garçon`}} in family talk[^garcon]                             |
+| `le fils / la fille`                                   | son / daughter; {{`mon garçon`}} in family talk[^garcon]                         |
 | `le mari / la femme`                                   | husband / wife                                                                   |
 | `le conjoint / la conjointe`                           | partner, married or not; the status is `conjoint(e) de fait` in [[fr/episode-1]] |
 | `le grand-père / la grand-mère / les grands-parents`   | grandfather / grandmother / grandparents                                         |
@@ -53,12 +53,12 @@ la famille Dupuis makes you say all of it at once. `André` et `Claire Dupuis` h
 
 three Mémos spread one rule across the épisode: the determinant sits before the noun, and the noun that follows chooses its form. the possessor picks the series; the possessor's gender changes nothing.
 
-| possesseur     | + nom masculin singulier | + nom féminin singulier | + nom pluriel  |
-| -------------- | ------------------------ | ----------------------- | -------------- |
-| `je`           | {{`mon père`}}               | {{`ma mère`}}               | {{`mes amis`}}     |
-| `tu`           | {{`ton chat`}}               | {{`ta maison`}}             | {{`tes lunettes`}} |
-| `il` ou `elle` | {{`son père`}}               | {{`sa famille`}}            | {{`ses stylos`}}   |
-| `vous`         | {{`votre frère`}}            | {{`votre mère`}}            | {{`vos enfants`}}  |
+| possesseur     | + nom masculin singulier | + nom féminin singulier | + nom pluriel      |
+| -------------- | ------------------------ | ----------------------- | ------------------ |
+| `je`           | {{`mon père`}}           | {{`ma mère`}}           | {{`mes amis`}}     |
+| `tu`           | {{`ton chat`}}           | {{`ta maison`}}         | {{`tes lunettes`}} |
+| `il` ou `elle` | {{`son père`}}           | {{`sa famille`}}        | {{`ses stylos`}}   |
+| `vous`         | {{`votre frère`}}        | {{`votre mère`}}        | {{`vos enfants`}}  |
 
 `votre` covers both genders, only the plural changes. and since the form ignores the possessor, `son frère` is his brother or her brother; the Mémo's own example decides by context: {{`Elle a un frère et deux cousins. Son frère est marié. Il s'appelle Sam. Sa femme s'appelle Claudia. Ses cousins s'appellent Jules et Victor.`}}
 
@@ -78,10 +78,10 @@ the transformation drill converts possession-par-`de`, the `Voici les livres de 
 
 the question frames split by register, and the split is syntactic; both sides keep the polite `vous` elsewhere, the same registre logic as [[fr/episode-2]]:
 
-| cible        | situation formelle      | situation informelle |
-| ------------ | ----------------------- | -------------------- |
-| une personne | {{`Qui est-ce ?`}}          | {{`C'est qui ?`}}        |
-| un objet     | {{`Qu'est-ce que c'est ?`}} | {{`C'est quoi ?`}}       |
+| cible        | situation formelle          | situation informelle |
+| ------------ | --------------------------- | -------------------- |
+| une personne | {{`Qui est-ce ?`}}          | {{`C'est qui ?`}}    |
+| un objet     | {{`Qu'est-ce que c'est ?`}} | {{`C'est quoi ?`}}   |
 
 the picture drill answers with winter things: {{`les raquettes de Martin`}}, {{`le chalet de la famille`}}, {{`des voisins et amis`}}, {{`une cafetière`}}, {{`un chien avec des lunettes et un nœud papillon`}}. possession runs through `de` again.
 
@@ -96,8 +96,8 @@ the other cards scale the frame: `Ce sont Louis et Antoine. Ils ont 5 ans. Ils s
 
 the pronoun Mémo behind the frame:
 
-| pronom  | remplace                                    | exemple                                                    |
-| ------- | ------------------------------------------- | ---------------------------------------------------------- |
+| pronom  | remplace                                    | exemple                                                        |
+| ------- | ------------------------------------------- | -------------------------------------------------------------- |
 | `il`    | un nom masculin singulier                   | {{`Paul est marié. Il habite à Ottawa.`}}                      |
 | `elle`  | un nom féminin singulier                    | {{`Céline est étudiante. Elle habite avec sa sœur.`}}          |
 | `ils`   | un nom masculin pluriel, ou un groupe mixte | {{`Lucas et Sophia sont étudiants. Ils travaillent le soir.`}} |
@@ -105,8 +105,8 @@ the pronoun Mémo behind the frame:
 
 and the two verbs in full:
 
-| personne     | `avoir` | `être`   |
-| ------------ | ------- | -------- |
+| personne     | `avoir`     | `être`       |
+| ------------ | ----------- | ------------ |
 | `je` / `j'`  | {{`ai`}}    | {{`suis`}}   |
 | `tu`         | {{`as`}}    | {{`es`}}     |
 | `il/elle/on` | {{`a`}}     | {{`est`}}    |
@@ -122,11 +122,11 @@ the photo captions want more than {{`C'est mon cousin.`}}: the class ([[fr/lesso
 
 pick the pronoun by what is missing inside the relative clause:
 
-| pronom | remplace              | test                          | exemple                                         |
-| ------ | --------------------- | ----------------------------- | ----------------------------------------------- |
-| `qui`  | le sujet              | un verbe suit directement     | {{`J'ai un frère qui habite à Montréal.`}}          |
-| `que`  | le complément direct  | un sujet + verbe suivent      | {{`C'est le chat que j'aime.`}}                     |
-| `dont` | un complément en `de` | le verbe se construit en `de` | {{`le chat dont je parle`}} (`parler de`)           |
+| pronom | remplace              | test                          | exemple                                                 |
+| ------ | --------------------- | ----------------------------- | ------------------------------------------------------- |
+| `qui`  | le sujet              | un verbe suit directement     | {{`J'ai un frère qui habite à Montréal.`}}              |
+| `que`  | le complément direct  | un sujet + verbe suivent      | {{`C'est le chat que j'aime.`}}                         |
+| `dont` | un complément en `de` | le verbe se construit en `de` | {{`le chat dont je parle`}} (`parler de`)               |
 | `où`   | un lieu ou un temps   | l'antécédent est lieu/temps   | {{`la ville où j'habite`}}, {{`le jour où je suis né`}} |
 
 the elision is asymmetric: `que` drops its vowel ({{`le livre qu'il lit`}}) and `qui` never does ({{`la femme qui est là`}}). `dont` replaces a complement introduced by `de`, as in `le chat dont je parle`, {{`les ciseaux dont il a besoin`}}, and {{`la femme dont le fils est médecin`}}. it cannot be combined with another `de` complement, a possessive determiner, or `en` that repeats the same relation.
@@ -137,7 +137,7 @@ the meeting expressions split by register, and this time the split is `tu` again
 
 | situation informelle                        | situation formelle                            |
 | ------------------------------------------- | --------------------------------------------- |
-| {{`Ça me fait plaisir !`}}                      | `Enchanté(e) !`                               |
+| {{`Ça me fait plaisir !`}}                  | `Enchanté(e) !`                               |
 | `Je suis content(e) de te rencontrer.`      | `Je suis content(e) de vous rencontrer.`      |
 | `Je suis heureux/heureuse de te connaitre.` | `Je suis heureux/heureuse de vous connaitre.` |
 
@@ -145,8 +145,8 @@ the meeting expressions split by register, and this time the split is `tu` again
 
 the tu↔vous conversion table:
 
-| avec `tu`                                   | avec `vous`                                 |
-| ------------------------------------------- | ------------------------------------------- |
+| avec `tu`                                       | avec `vous`                                     |
+| ----------------------------------------------- | ----------------------------------------------- |
 | {{`Quel est ton nom de famille ?`}}             | {{`Quel est votre nom de famille ?`}}           |
 | {{`Ta femme est québécoise.`}}                  | {{`Votre femme est québécoise.`}}               |
 | {{`Ton garçon a 14 ans.`}}                      | {{`Votre garçon a 14 ans.`}}                    |
@@ -156,8 +156,8 @@ the tu↔vous conversion table:
 
 the reformulation drill does the same at question level, and there the verb does move:
 
-| situation informelle                   | situation formelle                     |
-| -------------------------------------- | -------------------------------------- |
+| situation informelle                       | situation formelle                         |
+| ------------------------------------------ | ------------------------------------------ |
 | {{`Ça va ?`}}                              | {{`Comment allez-vous ?`}}                 |
 | {{`Est-ce que tu as des enfants ?`}}       | {{`Avez-vous des enfants ?`}}              |
 | {{`C'est quoi ton adresse ?`}}             | {{`Quelle est votre adresse ?`}}           |
@@ -176,15 +176,15 @@ une question fermée gets `oui` or `non` for an answer. three builds, same sente
 
 the Mémo's own model runs on `vous` : {{`Vous êtes dentiste ?`}}, {{`Est-ce que vous êtes dentiste ?`}}, {{`Êtes-vous dentiste ?`}} the three climb in register, intonation à l'oral, `est-ce que` partout, inversion à l'écrit ou en situation formelle, and the drill runs every sentence through all three:
 
-| intonation                     | `est-ce que`                              | inversion                      |
-| ------------------------------ | ----------------------------------------- | ------------------------------ |
+| intonation                         | `est-ce que`                                  | inversion                          |
+| ---------------------------------- | --------------------------------------------- | ---------------------------------- |
 | {{`Vous êtes étudiant ?`}}         | {{`Est-ce que vous êtes étudiant ?`}}         | {{`Êtes-vous étudiant ?`}}         |
 | {{`Tu es avocate ?`}}              | {{`Est-ce que tu es avocate ?`}}              | {{`Es-tu avocate ?`}}              |
 | {{`Tu as une auto ?`}}             | {{`Est-ce que tu as une auto ?`}}             | {{`As-tu une auto ?`}}             |
 | {{`Vous avez l'heure ?`}}          | {{`Est-ce que vous avez l'heure ?`}}          | {{`Avez-vous l'heure ?`}}          |
 | {{`Vous avez un chien ?`}}         | {{`Est-ce que vous avez un chien ?`}}         | {{`Avez-vous un chien ?`}}         |
 | {{`Tu es célibataire ?`}}          | {{`Est-ce que tu es célibataire ?`}}          | {{`Es-tu célibataire ?`}}          |
-| {{`Tu as des enfants ?`}}          | `Est-ce que tu as des enfants ?`          | {{`As-tu des enfants ?`}}          |
+| {{`Tu as des enfants ?`}}          | `Est-ce que tu as des enfants ?`              | {{`As-tu des enfants ?`}}          |
 | {{`Tu parles une autre langue ?`}} | {{`Est-ce que tu parles une autre langue ?`}} | {{`Parles-tu une autre langue ?`}} |
 
 `Avez-vous l'heure ?` is [[fr/episode-3]]'s asking-the-time frame arriving as plain inversion. the row that teaches something is the last one: `Parles-tu` garde le `-s` que l'impératif efface ({{`Parle plus fort !`}}, {{`Tourne à gauche.`}} in [[fr/episode-6]]). same verb, same person, and the `-s` survives only because the pronoun is still attached. every other verb here is `être` ou `avoir`, so it is the one place the rule shows.
@@ -193,19 +193,19 @@ the hyphen in the inversion is obligatory, and as soon as the subject is `il`, `
 
 une question ouverte starts from un mot interrogatif (`comment`, `quand`, `où`, `combien`, `c'est quoi`, `c'est qui`), and register decides its position:
 
-| registre             | placement                                       | exemples                                                                                 |
-| -------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| registre             | placement                                       | exemples                                                                                                 |
+| -------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | informelle, à l'oral | en début ou en fin de phrase, sans inversion    | {{`Où vous habitez ?`}}, {{`Vous habitez où ?`}}, {{`C'est quoi ton nom ?`}}, {{`Ton nom c'est quoi ?`}} |
-| formelle, à l'écrit  | en début de phrase, suivi du verbe et du pronom | {{`Où habitez-vous ?`}}, {{`Comment t'appelles-tu ?`}}                                           |
+| formelle, à l'écrit  | en début de phrase, suivi du verbe et du pronom | {{`Où habitez-vous ?`}}, {{`Comment t'appelles-tu ?`}}                                                   |
 
 the transformations go both ways: {{`D'où viens-tu ?`}} devient {{`Tu viens d'où ?`}}, and {{`Vous vous appelez comment ?`}} devient {{`Comment vous appelez-vous ?`}}
 
 the matching drill joins a question word to its tail:
 
-| début        | fin                   | question                      |
-| ------------ | --------------------- | ----------------------------- |
+| début        | fin                   | question                          |
+| ------------ | --------------------- | --------------------------------- |
 | `Combien`    | `d'enfants as-tu ?`   | {{`Combien d'enfants as-tu ?`}}   |
-| `Comment`    | `vous appelez-vous ?` | `Comment vous appelez-vous ?` |
+| `Comment`    | `vous appelez-vous ?` | `Comment vous appelez-vous ?`     |
 | `Où`         | `habites-tu ?`        | {{`Où habites-tu ?`}}             |
 | `D'où`       | `vous venez ?`        | {{`D'où vous venez ?`}}           |
 | `C'est quoi` | `ta nationalité ?`    | {{`C'est quoi ta nationalité ?`}} |
@@ -216,16 +216,16 @@ two selection rules fall out. `combien` never touches its noun directly, it goes
 
 the conversion drill runs the same sentences both ways:
 
-| donné                            | transformé                       |
-| -------------------------------- | -------------------------------- |
-| `D'où viens-tu ?`                | `Tu viens d'où ?`                |
-| `Vous vous appelez comment ?`    | `Comment vous appelez-vous ?`    |
+| donné                                | transformé                           |
+| ------------------------------------ | ------------------------------------ |
+| `D'où viens-tu ?`                    | `Tu viens d'où ?`                    |
+| `Vous vous appelez comment ?`        | `Comment vous appelez-vous ?`        |
 | {{`Combien d'enfants avez-vous ?`}}  | {{`Vous avez combien d'enfants ?`}}  |
-| `C'est quoi ton adresse ?`       | `Quelle est votre adresse ?`     |
+| `C'est quoi ton adresse ?`           | `Quelle est votre adresse ?`         |
 | {{`À quelle heure travailles-tu ?`}} | {{`Tu travailles à quelle heure ?`}} |
 | {{`Avec qui vous habitez ?`}}        | {{`Avec qui habitez-vous ?`}}        |
 | {{`Quand êtes-vous arrivé ?`}}       | {{`Vous êtes arrivé quand ?`}}       |
-| `Vous habitez où ?`              | `Où habitez-vous ?`              |
+| `Vous habitez où ?`                  | `Où habitez-vous ?`                  |
 
 the question word travels as a block, never alone: `combien d'enfants`, `à quelle heure`, `avec qui` relocate whole, preposition and noun included, and splitting them is the standard error. `c'est quoi` is the exception that changes construction instead of inverting: its formal partner is `quel` plus `être`, with `quel` accordé au nom (`Quelle est votre adresse ?`, `Quel est votre nom ?`), jamais `Quoi est ton adresse ?`. the register flip alone would give {{`Quelle est ton adresse ?`}}; the book pairs the formal build with `vous`.
 

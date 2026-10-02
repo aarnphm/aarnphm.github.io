@@ -16,8 +16,8 @@ for the general liaison and silent-consonant rules this note leans on, see [[fr/
 
 ## 0 à 10
 
-| numéro | mot      | IPA    |
-| ------ | -------- | ------ |
+| numéro | mot          | IPA    |
+| ------ | ------------ | ------ |
 | 0      | {{`zéro`}}   | /zeʁo/ |
 | 1      | {{`un`}}     | /œ̃/    |
 | 2      | {{`deux`}}   | /dø/   |
@@ -34,8 +34,8 @@ the `p` in {{`sept`}} is silent; the `t` is pronounced. {{`cinq six huit dix`}} 
 
 ## 11 à 20
 
-| numéro | mot        | IPA      |
-| ------ | ---------- | -------- |
+| numéro | mot            | IPA      |
+| ------ | -------------- | -------- |
 | 11     | {{`onze`}}     | /ɔ̃z/     |
 | 12     | {{`douze`}}    | /duz/    |
 | 13     | {{`treize`}}   | /tʁɛz/   |
@@ -51,8 +51,8 @@ the `p` in {{`sept`}} is silent; the `t` is pronounced. {{`cinq six huit dix`}} 
 
 ## les dizaines
 
-| numéro | mot                | IPA          |
-| ------ | ------------------ | ------------ |
+| numéro | mot                    | IPA          |
+| ------ | ---------------------- | ------------ |
 | 20     | {{`vingt`}}            | /vɛ̃/         |
 | 30     | {{`trente`}}           | /tʁɑ̃t/       |
 | 40     | {{`quarante`}}         | /kaʁɑ̃t/      |
@@ -76,11 +76,11 @@ the `p` in {{`sept`}} is silent; the `t` is pronounced. {{`cinq six huit dix`}} 
 - **80–89** = {{`quatre-vingt`}} + 0–9: {{`quatre-vingts`}} (80), {{`quatre-vingt-un`}} (81, no `-s`, no `et`), {{`quatre-vingt-deux`}} (82), … {{`quatre-vingt-neuf`}} (89).
 - **90–99** = {{`quatre-vingt`}} + 10–19: {{`quatre-vingt-dix`}} (90), {{`quatre-vingt-onze`}} (91, no `et`), {{`quatre-vingt-douze`}} (92), … {{`quatre-vingt-dix-neuf`}} (99).
 
-| numéro | mot                     | note                              |
-| ------ | ----------------------- | --------------------------------- |
+| numéro | mot                         | note                              |
+| ------ | --------------------------- | --------------------------------- |
 | 21     | {{`vingt-et-un`}}           | `-et-un`                          |
 | 22     | {{`vingt-deux`}}            | hyphen, no `et`                   |
-| 71     | {{`soixante-et-onze`}}      | `et` (built on {{`onze`}})            |
+| 71     | {{`soixante-et-onze`}}      | `et` (built on {{`onze`}})        |
 | 72     | {{`soixante-douze`}}        | no `et`                           |
 | 80     | {{`quatre-vingts`}}         | `-s` only when it ends the number |
 | 81     | {{`quatre-vingt-un`}}       | no `-s`, no `et`                  |
@@ -92,18 +92,18 @@ the `et` shows up only at `-et-un` (21…61) and {{`soixante-et-onze`}} (71). th
 
 ## centaines et milliers
 
-| numéro    | mot                       | note                               |
-| --------- | ------------------------- | ---------------------------------- |
-| 100       | {{`cent`}}                    | /sɑ̃/                               |
-| 200       | {{`deux-cents`}}              | `-s` on a round multiple           |
-| 201       | {{`deux-cent-un`}}            | `-s` dropped before another number |
-| 234       | {{`deux-cent-trente-quatre`}} | —                                  |
-| 1 000     | {{`mille`}}                   | **invariable**, never `milles`     |
-| 2 000     | {{`deux-mille`}}              | {{`mille`}} stays bare                 |
-| 10 000    | {{`dix-mille`}}               | —                                  |
-| 100 000   | {{`cent-mille`}}              | —                                  |
-| 1 000 000 | {{`un million`}}              | a noun: {{`un million de dollars`}}    |
-| 2 026     | {{`deux-mille-vingt-six`}}    | the current year                   |
+| numéro    | mot                           | note                                |
+| --------- | ----------------------------- | ----------------------------------- |
+| 100       | {{`cent`}}                    | /sɑ̃/                                |
+| 200       | {{`deux-cents`}}              | `-s` on a round multiple            |
+| 201       | {{`deux-cent-un`}}            | `-s` dropped before another number  |
+| 234       | {{`deux-cent-trente-quatre`}} | —                                   |
+| 1 000     | {{`mille`}}                   | **invariable**, never `milles`      |
+| 2 000     | {{`deux-mille`}}              | {{`mille`}} stays bare              |
+| 10 000    | {{`dix-mille`}}               | —                                   |
+| 100 000   | {{`cent-mille`}}              | —                                   |
+| 1 000 000 | {{`un million`}}              | a noun: {{`un million de dollars`}} |
+| 2 026     | {{`deux-mille-vingt-six`}}    | the current year                    |
 
 {{`cent`}} takes `-s` as a round multiple ({{`trois-cents`}}) but drops it before another number ({{`trois-cent-un`}}). {{`mille`}} never inflects. {{`million`}} and {{`milliard`}} are nouns, so they pluralize and take `de` before a counted noun: {{`deux millions de dollars`}}. under the 1990 spelling, they may still be joined to the other elements of a written number: {{`un-million-cent`}}.
 
@@ -116,12 +116,12 @@ the general rule (a silent final consonant surfaces as liaison before a vowel) l
 
 {{`cinq`}} /sɛ̃k/, {{`six`}} /sis/, {{`huit`}} /ɥit/, {{`dix`}} /dis/ pronounce their final consonant **in isolation**, before a pause, and when counting. the trap is what happens next to another word:
 
-| nombre | isolation | + consonne (drop)                  | + voyelle (liaison /z/) |
-| ------ | --------- | ---------------------------------- | ----------------------- |
-| {{`cinq`}} | /sɛ̃k/     | {{`cinq jours`}} /sɛ̃ ʒuʁ/ (often kept) | {{`cinq ans`}} /sɛ̃k‿ɑ̃/      |
-| {{`six`}}  | /sis/     | {{`six livres`}} /si livʁ/             | {{`six ans`}} /siz‿ɑ̃/       |
-| {{`huit`}} | /ɥit/     | {{`huit jours`}} /ɥi ʒuʁ/              | {{`huit ans`}} /ɥit‿ɑ̃/      |
-| {{`dix`}}  | /dis/     | {{`dix minutes`}} /di minyt/           | {{`dix ans`}} /diz‿ɑ̃/       |
+| nombre     | isolation | + consonne (drop)                      | + voyelle (liaison /z/) |
+| ---------- | --------- | -------------------------------------- | ----------------------- |
+| {{`cinq`}} | /sɛ̃k/     | {{`cinq jours`}} /sɛ̃ ʒuʁ/ (often kept) | {{`cinq ans`}} /sɛ̃k‿ɑ̃/  |
+| {{`six`}}  | /sis/     | {{`six livres`}} /si livʁ/             | {{`six ans`}} /siz‿ɑ̃/   |
+| {{`huit`}} | /ɥit/     | {{`huit jours`}} /ɥi ʒuʁ/              | {{`huit ans`}} /ɥit‿ɑ̃/  |
+| {{`dix`}}  | /dis/     | {{`dix minutes`}} /di minyt/           | {{`dix ans`}} /diz‿ɑ̃/   |
 
 > [!note] the most common beginner trap
 > before a consonant, the final consonant of {{`six`}}, {{`dix`}}, and {{`huit`}} **drops**: /si livʁ/, /di minyt/, /ɥi ʒuʁ/. before a vowel, {{`six`}} and {{`dix`}} liaise as /z/ (/siz‿ɑ̃/, /diz‿ɑ̃/), while {{`huit`}} keeps its /t/ (/ɥit‿ɑ̃/). this is the single most frequent number mistake for anglophones.
@@ -136,18 +136,18 @@ other consonant-final cases:
 
 formation: cardinal + `-ième`. drop a final mute `e` first ({{`quatre`}} → {{`quatrième`}}), insert a `u` after {{`cinq`}} ({{`cinquième`}}), and turn the `f` of {{`neuf`}} into `v` ({{`neuvième`}}).
 
-| rang | masculin / forme                  | abrégé        | IPA                 |
-| ---- | --------------------------------- | ------------- | ------------------- |
-| 1er  | {{`premier`}} ({{`première`}})            | `1er` / `1re` | /pʁəmje/, /pʁəmjɛʁ/ |
+| rang | masculin / forme                              | abrégé        | IPA                 |
+| ---- | --------------------------------------------- | ------------- | ------------------- |
+| 1er  | {{`premier`}} ({{`première`}})                | `1er` / `1re` | /pʁəmje/, /pʁəmjɛʁ/ |
 | 2e   | {{`deuxième`}} ({{`second`}} / {{`seconde`}}) | `2e`          | /døzjɛm/            |
-| 3e   | {{`troisième`}}                       | `3e`          | /tʁwazjɛm/          |
-| 4e   | {{`quatrième`}}                       | `4e`          | /katʁijɛm/          |
-| 5e   | {{`cinquième`}}                       | `5e`          | /sɛ̃kjɛm/            |
-| 6e   | {{`sixième`}}                         | `6e`          | /sizjɛm/            |
-| 7e   | {{`septième`}}                        | `7e`          | /sɛtjɛm/            |
-| 8e   | {{`huitième`}}                        | `8e`          | /ɥitjɛm/            |
-| 9e   | {{`neuvième`}}                        | `9e`          | /nœvjɛm/            |
-| 10e  | {{`dixième`}}                         | `10e`         | /dizjɛm/            |
+| 3e   | {{`troisième`}}                               | `3e`          | /tʁwazjɛm/          |
+| 4e   | {{`quatrième`}}                               | `4e`          | /katʁijɛm/          |
+| 5e   | {{`cinquième`}}                               | `5e`          | /sɛ̃kjɛm/            |
+| 6e   | {{`sixième`}}                                 | `6e`          | /sizjɛm/            |
+| 7e   | {{`septième`}}                                | `7e`          | /sɛtjɛm/            |
+| 8e   | {{`huitième`}}                                | `8e`          | /ɥitjɛm/            |
+| 9e   | {{`neuvième`}}                                | `9e`          | /nœvjɛm/            |
+| 10e  | {{`dixième`}}                                 | `10e`         | /dizjɛm/            |
 
 {{`premier`}} / {{`première`}} is the only ordinal that is not built on `-ième`, and it is used only for "1st". {{`second`}} / {{`seconde`}} is interchangeable with {{`deuxième`}} (a slight register preference for {{`second`}} when there are only two items). watch the two irregular stems: {{`cinquième`}} adds a `u` so the `c` stays /k/, and {{`neuvième`}} voices to `v`.
 

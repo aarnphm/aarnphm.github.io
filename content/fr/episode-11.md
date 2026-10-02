@@ -39,13 +39,13 @@ two of these carry structure worth naming: `faire de la` + activity (`de la bicy
 
 six photos, six posters, one pairing exercise. the posters are worth reading for their imperative register:
 
-| image | photo                    | annonce                                                               |
-| ----- | ------------------------ | --------------------------------------------------------------------- |
-| a     | des enfants à la piscine | {{`Cours de natation pour enfants`}}                                      |
-| b     | {{un tour de potier}}        | `CENTRE DE POTERIE` (`Boutique`, {{`Cours d'initiation`}})                |
-| c     | une guitare              | `ÉCOLE DE MUSIQUE` (`Guitare / Piano / Violon`)                       |
-| d     | une poussette de course  | `CARDIOPOUSSETTE` ({{`Inscription maintenant !`}})                        |
-| e     | une salle de classe      | `Hi ! Améliorez votre anglais` ({{`Cours privés ou de groupe`}})          |
+| image | photo                    | annonce                                                                       |
+| ----- | ------------------------ | ----------------------------------------------------------------------------- |
+| a     | des enfants à la piscine | {{`Cours de natation pour enfants`}}                                          |
+| b     | {{un tour de potier}}    | `CENTRE DE POTERIE` (`Boutique`, {{`Cours d'initiation`}})                    |
+| c     | une guitare              | `ÉCOLE DE MUSIQUE` (`Guitare / Piano / Violon`)                               |
+| d     | une poussette de course  | `CARDIOPOUSSETTE` ({{`Inscription maintenant !`}})                            |
+| e     | une salle de classe      | `Hi ! Améliorez votre anglais` ({{`Cours privés ou de groupe`}})              |
 | f     | un mur d'escalade        | {{`Vous rêvez de faire de l'escalade ?`}} ({{`Inscrivez-vous maintenant !`}}) |
 
 advertising French runs on two moves here: the imperative (`Inscrivez-vous maintenant !`, {{`Améliorez votre anglais`}}) and the bare noun (`Inscription maintenant !`). both are shorter than a full sentence, which is the point.
@@ -56,12 +56,12 @@ Sur la capture du cours du 23 septembre 2026, de gauche à droite : **b, c, d** 
 
 #### vocabulaire des annonces
 
-| mot ou expression     | sens en anglais             | explication ou exemple                                      |
-| --------------------- | --------------------------- | ----------------------------------------------------------- |
+| mot ou expression         | sens en anglais             | explication ou exemple                                      |
+| ------------------------- | --------------------------- | ----------------------------------------------------------- |
 | {{une annonce de cours}}  | a course advertisement      | Une affiche qui présente un cours.                          |
 | {{la natation}}           | swimming                    | Je nage. Je suis un cours de natation.                      |
 | {{la poterie}}            | pottery                     | Je fais de la poterie : je fabrique des objets en argile.   |
-| un tour de potier     | a potter's wheel            | L'appareil qui tourne sous les mains dans l'image b.        |
+| un tour de potier         | a potter's wheel            | L'appareil qui tourne sous les mains dans l'image b.        |
 | {{une boutique}}          | a shop                      | Le centre de poterie a aussi une boutique.                  |
 | {{un cours d'initiation}} | an introductory course      | Un cours pour découvrir les bases d'une activité.           |
 | {{une poussette}}         | a stroller                  | On pousse la poussette pour transporter un jeune enfant.    |
@@ -74,8 +74,8 @@ Dans {{`un cours de natation pour enfants`}}, **de natation** indique la matièr
 
 #### construire une phrase sur ses loisirs
 
-| construction            | exemple                         | sens en anglais                  |
-| ----------------------- | ------------------------------- | -------------------------------- |
+| construction            | exemple                             | sens en anglais                  |
+| ----------------------- | ----------------------------------- | -------------------------------- |
 | faire de + activité     | {{Je fais de la poterie.}}          | I do pottery.                    |
 | faire de + activité     | {{Je fais de l'escalade.}}          | I go climbing.                   |
 | jouer de + instrument   | {{Je joue de la guitare.}}          | I play the guitar.               |
@@ -91,10 +91,10 @@ Dans {{`un cours de natation pour enfants`}}, **de natation** indique la matièr
 
 Les annotations visibles en haut de la capture mentionnent aussi la lecture, la peinture et le tricot. Voici les conjugaisons complètes au présent ; la liste de **peindre** est coupée à droite dans la capture.
 
-| sujet          | lire   | peindre  | apprendre  |
-| -------------- | ------ | -------- | ---------- |
+| sujet          | lire   | peindre      | apprendre      |
+| -------------- | ------ | ------------ | -------------- |
 | je / j'        | lis    | {{peins}}    | {{apprends}}   |
-| tu             | lis    | peins    | apprends   |
+| tu             | lis    | peins        | apprends       |
 | il / elle / on | lit    | {{peint}}    | {{apprend}}    |
 | nous           | lisons | {{peignons}} | {{apprenons}}  |
 | vous           | lisez  | {{peignez}}  | {{apprenez}}   |
@@ -130,8 +130,8 @@ every time on the poster uses the `h` abbreviation of [[fr/episode-3]]: `9 h 30`
 
 ### le vocabulaire de la programmation
 
-| mot             | sens                                     | dans l'annonce                                    |
-| --------------- | ---------------------------------------- | ------------------------------------------------- |
+| mot                 | sens                                     | dans l'annonce                                    |
+| ------------------- | ---------------------------------------- | ------------------------------------------------- |
 | {{`une session`}}   | the whole term                           | `Prochaine session : du 24 avril au 16 juin 2017` |
 | {{`une séance`}}    | one single class meeting                 | `Durée : 30 minutes par séance`                   |
 | {{`la durée`}}      | how long something lasts                 | `Durée : 60 minutes par séance`                   |
@@ -145,11 +145,11 @@ every time on the poster uses the `h` abbreviation of [[fr/episode-3]]: `9 h 30`
 
 the verb splits by who is being enrolled:
 
-| forme              | exemple                                           | sens                            |
-| ------------------ | ------------------------------------------------- | ------------------------------- |
-| `inscrire qqn à`   | {{`Hélène inscrit sa fille à un cours de natation.`}} | you enrol someone else          |
+| forme                  | exemple                                               | sens                            |
+| ---------------------- | ----------------------------------------------------- | ------------------------------- |
+| `inscrire qqn à`       | {{`Hélène inscrit sa fille à un cours de natation.`}} | you enrol someone else          |
 | {{`s'inscrire à`}}     | {{`Vous vous inscrivez à un cours de français.`}}     | you enrol yourself              |
-| {{`Inscrivez-vous !`}} | `Inscrivez-vous maintenant !`                     | the poster imperative           |
+| {{`Inscrivez-vous !`}} | `Inscrivez-vous maintenant !`                         | the poster imperative           |
 | {{`suivre un cours`}}  | {{`Est-ce que vous suivez des cours ?`}}              | to take a course, once enrolled |
 
 `suivre` is irregular: {{`je suis`}}, {{`tu suis`}}, {{`il suit`}}, {{`nous suivons`}}, {{`vous suivez`}}, {{`ils suivent`}}. `je suis un cours` is not `être`; context and the object do the disambiguating.[^suivre]
@@ -158,15 +158,15 @@ the verb splits by who is being enrolled:
 
 everything below is deducible from the poster alone, no audio:
 
-| question                                                         | réponse                                                                      |
-| ---------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| a. {{`Quand peut-on s'inscrire à un cours ?`}}                       | `à partir du 17 mars` (`à compter du` says exactly that)                     |
-| b. {{`À quelle date est-ce que les cours commencent ?`}}             | `la semaine du 24 avril`                                                     |
-| c. `La fille d'Hélène a 4 ans. Quel(s) cours peut-elle suivre ?` | `Loutre de mer (3-5 ans)`, `vendredi 18 h ou samedi 10 h 30`                 |
-| d. {{`Combien de temps dure chaque cours ?`}}                        | `30 minutes` pour les cours d'enfants, `60 minutes` pour les cours d'adultes |
-| e. {{`À qui s'adresse le cours d'aqua-détente ?`}}                   | `aux personnes de 55 ans et plus`                                            |
-| f. {{`Combien coute le cours de natation de la fille d'Hélène ?`}}   | `75 $`, le tarif enfants                                                     |
-| g. {{`Est-ce qu'on peut s'inscrire par téléphone ?`}}                | {{`Non, l'inscription est en personne.`}} le numéro sert à l'information         |
+| question                                                           | réponse                                                                      |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| a. {{`Quand peut-on s'inscrire à un cours ?`}}                     | `à partir du 17 mars` (`à compter du` says exactly that)                     |
+| b. {{`À quelle date est-ce que les cours commencent ?`}}           | `la semaine du 24 avril`                                                     |
+| c. `La fille d'Hélène a 4 ans. Quel(s) cours peut-elle suivre ?`   | `Loutre de mer (3-5 ans)`, `vendredi 18 h ou samedi 10 h 30`                 |
+| d. {{`Combien de temps dure chaque cours ?`}}                      | `30 minutes` pour les cours d'enfants, `60 minutes` pour les cours d'adultes |
+| e. {{`À qui s'adresse le cours d'aqua-détente ?`}}                 | `aux personnes de 55 ans et plus`                                            |
+| f. {{`Combien coute le cours de natation de la fille d'Hélène ?`}} | `75 $`, le tarif enfants                                                     |
+| g. {{`Est-ce qu'on peut s'inscrire par téléphone ?`}}              | {{`Non, l'inscription est en personne.`}} le numéro sert à l'information     |
 
 the distractors in a and b are the trap. `le 17 mars seulement` reads `à compter du` as a single date; `le 24 avril seulement` confuses the sign-up window with the start of the session; `dans 8 semaines` reads the duration as a delay. the poster keeps three dates apart: `17 mars` opens registration, `24 avril` opens the session, `16 juin` closes it, and `8 semaines` is what fits between the last two.[^huitsemaines]
 
@@ -176,10 +176,10 @@ four frames worth owning, all of them reusable outside the pool:
 
 | frame                      | exemple                                     | ce qu'on demande |
 | -------------------------- | ------------------------------------------- | ---------------- |
-| `Combien coute… ?`         | {{`Combien coute le cours de natation ?`}}      | le prix          |
+| `Combien coute… ?`         | {{`Combien coute le cours de natation ?`}}  | le prix          |
 | `Combien de temps dure… ?` | `Combien de temps dure chaque cours ?`      | la durée         |
 | `À qui s'adresse… ?`       | `À qui s'adresse le cours d'aqua-détente ?` | le public visé   |
-| `Quand peut-on… ?`         | {{`Quand peut-on s'inscrire ?`}}                | le moment        |
+| `Quand peut-on… ?`         | {{`Quand peut-on s'inscrire ?`}}            | le moment        |
 
 `coute` is printed without the circumflex, the rectified spelling the book uses throughout.[^coute] the `on` in `Quand peut-on s'inscrire ?` and `Est-ce qu'on peut s'inscrire par téléphone ?` is impersonal, English one or you-in-general, not the spoken `on` that replaces `nous` in [[fr/episode-9]]. the answer stays impersonal too: `On peut s'inscrire à partir du 17 mars.`
 
@@ -187,8 +187,8 @@ four frames worth owning, all of them reusable outside the pool:
 
 three payment images to match with three labels:
 
-| lettre | mode                          | image                 |
-| ------ | ----------------------------- | --------------------- |
+| lettre | mode                              | image                 |
+| ------ | --------------------------------- | --------------------- |
 | a.     | {{`comptant`}}                    | des billets canadiens |
 | b.     | {{`carte de crédit ou de débit`}} | des cartes            |
 | c.     | {{`chèque`}}                      | un chèque et un stylo |
@@ -208,14 +208,14 @@ short form, seven lines, filled from one bubble of facts: `Léa Sauvé • 4 ans
 
 | champ                                          | rempli            |
 | ---------------------------------------------- | ----------------- |
-| {{`Prénom et nom de l'enfant`}}                    | `Léa Sauvé`       |
-| {{`Âge de l'enfant`}}                              | `4 ans`           |
+| {{`Prénom et nom de l'enfant`}}                | `Léa Sauvé`       |
+| {{`Âge de l'enfant`}}                          | `4 ans`           |
 | `Sexe : F / M`                                 | `F`               |
-| {{`Lieu de résidence`}}                            | `Saint-Jérôme`    |
-| {{`Nom du parent`}}                                | `Hélène Ronceau`  |
+| {{`Lieu de résidence`}}                        | `Saint-Jérôme`    |
+| {{`Nom du parent`}}                            | `Hélène Ronceau`  |
 | `Tél.`                                         | `450 555-0111`    |
-| {{`Cours choisi`}}                                 | `Loutre de mer`   |
-| {{`Jour et heure du cours`}}                       | `samedi, 10 h 30` |
+| {{`Cours choisi`}}                             | `Loutre de mer`   |
+| {{`Jour et heure du cours`}}                   | `samedi, 10 h 30` |
 | `Mode de paiement : comptant / chèque / débit` | `chèque`          |
 
 the bubble gives the facts in scrambled order and the form imposes the order, which is the whole exercise: match a fact to the field that wants it. `Léa` is 4, so `Loutre de mer (3-5 ans)`, so `vendredi 18 h ou samedi 10 h 30`, and the bubble picks the Saturday slot.
@@ -256,10 +256,10 @@ Hélène writes `75 $` to the centre. seven elements, seven places on the cheque
 | ------ | --------------------------------------------------------------------------------- | ----------------------------------------- |
 | `G`    | `Hélène Ronceau • 54, rue de la Rivière, app. 2 • Saint-Jérôme, Québec (F6H 2J7)` | le bloc en haut à gauche, le tireur       |
 | `F`    | `2017-03-17`                                                                      | les cases `DATE`, `AAAA-MM-JJ`            |
-| `B`    | `Centre Les petits poissons`                                                      | {{`PAYEZ À L'ORDRE DE`}}                      |
+| `B`    | `Centre Les petits poissons`                                                      | {{`PAYEZ À L'ORDRE DE`}}                  |
 | `C`    | `75 $`                                                                            | la case des chiffres                      |
-| `A`    | {{`Soixante-quinze`}}                                                                 | la ligne en lettres, avant `/100 DOLLARS` |
-| `D`    | {{`Cours de natation`}}                                                               | la ligne `Pour`                           |
+| `A`    | {{`Soixante-quinze`}}                                                             | la ligne en lettres, avant `/100 DOLLARS` |
+| `D`    | {{`Cours de natation`}}                                                           | la ligne `Pour`                           |
 | `E`    | `Hélène Ronceau`                                                                  | la signature, en bas à droite             |
 
 the bank is preprinted: `MDBanque, 1818, rue Marcel, Montréal (Québec) H2P 2K6`.

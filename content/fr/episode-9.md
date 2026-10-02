@@ -31,9 +31,9 @@ the transport checklist introduces {{`le vélo`}}, {{`le train`}}, {{`l'auto`}},
 
 three header photos preview the episode's daily-activity vocabulary, each captioned by describing what the person does:
 
-| ce qu'on voit                       | description                                                               |
-| ----------------------------------- | ------------------------------------------------------------------------- |
-| une femme sourit devant sa tablette | {{`Elle lit sur sa tablette.`}}                                               |
+| ce qu'on voit                       | description                                                                       |
+| ----------------------------------- | --------------------------------------------------------------------------------- |
+| une femme sourit devant sa tablette | {{`Elle lit sur sa tablette.`}}                                                   |
 | un adulte fait manger un enfant     | {{`Ils prennent le déjeuner.`}} / {{`Ils mangent le déjeuner.`}}                  |
 | un homme au téléphone dans le métro | {{`Il va au travail en métro.`}} / {{`Il prend le métro pour aller au travail.`}} |
 
@@ -69,13 +69,13 @@ les pronoms toniques (stressed pronouns) s'utilisent notamment après une prépo
 
 | pronom sujet | pronom tonique | english                         |
 | ------------ | -------------- | ------------------------------- |
-| `je`         | {{`moi`}}          | me                              |
-| `tu`         | {{`toi`}}          | you (singular, informal)        |
-| `il`         | {{`lui`}}          | him                             |
+| `je`         | {{`moi`}}      | me                              |
+| `tu`         | {{`toi`}}      | you (singular, informal)        |
+| `il`         | {{`lui`}}      | him                             |
 | `elle`       | `elle`         | her                             |
 | `nous`       | `nous`         | us                              |
 | `vous`       | `vous`         | you (plural or polite)          |
-| `ils`        | {{`eux`}}          | them (masculine or mixed group) |
+| `ils`        | {{`eux`}}      | them (masculine or mixed group) |
 | `elles`      | `elles`        | them (feminine group)           |
 
 - **Après une préposition** : {{`Je vais au cinéma avec toi.`}} (I go to the cinema with you.) {{`Elle va chez lui.`}} (She goes to his place.) {{`Je cuisine pour eux.`}} (I cook for them.)
@@ -94,11 +94,11 @@ the present indicative has three jobs in the Mémo:
 
 remove the infinitive ending `-er`, then add the ending selected by the subject: for a given pronoun the ending is the same across every regular `-er` verb, `parler`, {{`travailler`}}, `écouter`, {{`cuisiner`}}, {{`étudier`}} all included.
 
-| personne     | terminaison | `parler`       | `travailler`        | `écouter`       | `cuisiner`        | `étudier`       |
-| ------------ | ----------- | -------------- | ------------------- | --------------- | ----------------- | --------------- |
+| personne     | terminaison | `parler`           | `travailler`        | `écouter`           | `cuisiner`        | `étudier`           |
+| ------------ | ----------- | ------------------ | ------------------- | ------------------- | ----------------- | ------------------- |
 | `je`         | `-e`        | {{`je parle`}}     | `je travaille`      | {{`j'écoute`}}      | `je cuisine`      | {{`j'étudie`}}      |
-| `tu`         | `-es`       | {{`tu parles`}}    | `tu travailles`     | `tu écoutes`    | `tu cuisines`     | `tu étudies`    |
-| `il/elle/on` | `-e`        | {{`il parle`}}     | `elle travaille`    | `on écoute`     | `il cuisine`      | `elle étudie`   |
+| `tu`         | `-es`       | {{`tu parles`}}    | `tu travailles`     | `tu écoutes`        | `tu cuisines`     | `tu étudies`        |
+| `il/elle/on` | `-e`        | {{`il parle`}}     | `elle travaille`    | `on écoute`         | `il cuisine`      | `elle étudie`       |
 | `nous`       | `-ons`      | {{`nous parlons`}} | `nous travaillons`  | {{`nous écoutons`}} | `nous cuisinons`  | {{`nous étudions`}} |
 | `vous`       | `-ez`       | {{`vous parlez`}}  | `vous travaillez`   | {{`vous écoutez`}}  | `vous cuisinez`   | {{`vous étudiez`}}  |
 | `ils/elles`  | `-ent`      | {{`ils parlent`}}  | `elles travaillent` | {{`ils écoutent`}}  | `elles cuisinent` | {{`ils étudient`}}  |
@@ -107,15 +107,15 @@ remove the infinitive ending `-er`, then add the ending selected by the subject:
 
 ### les activités
 
-| expression               | english                |
-| ------------------------ | ---------------------- |
+| expression                   | english                |
+| ---------------------------- | ---------------------- |
 | {{`écouter de la musique`}}  | listen to music        |
 | {{`relaxer`}}                | relax                  |
 | {{`laver la vaisselle`}}     | wash the dishes        |
-| `cuisiner`               | cook                   |
-| `étudier`                | study                  |
+| `cuisiner`                   | cook                   |
+| `étudier`                    | study                  |
 | {{`parler au téléphone`}}    | talk on the phone      |
-| `travailler`             | work                   |
+| `travailler`                 | work                   |
 | {{`regarder la télévision`}} | watch television       |
 | {{`préparer le déjeuner`}}   | prepare breakfast      |
 | {{`jouer de la musique`}}    | play music             |
@@ -124,7 +124,7 @@ remove the infinitive ending `-er`, then add the ending selected by the subject:
 | {{`manger une collation`}}   | eat a snack            |
 | {{`arriver à la maison`}}    | arrive home            |
 | {{`saluer les collègues`}}   | greet coworkers        |
-| {{`diner`}} / {{`souper`}}       | eat lunch / eat supper |
+| {{`diner`}} / {{`souper`}}   | eat lunch / eat supper |
 
 the people-description exercise adds `entrer dans la classe`, `déposer son sac`, `enlever son manteau`, `poser des questions`, `parler avec ses collègues`, `écouter la professeure`, `regarder un film`, and `marcher au parc avec leur chien`.
 
@@ -139,18 +139,18 @@ Québec French commonly uses intransitive `relaxer`. Francophone Europe more oft
 
 ### les expressions avec `faire`
 
-| expression                             | english                 |
-| -------------------------------------- | ----------------------- |
-| {{`faire une promenade`}}                  | take a walk             |
-| {{`faire le ménage`}}                      | do the cleaning         |
+| expression                                     | english                 |
+| ---------------------------------------------- | ----------------------- |
+| {{`faire une promenade`}}                      | take a walk             |
+| {{`faire le ménage`}}                          | do the cleaning         |
 | {{`faire le lavage`}} / {{`faire la lessive`}} | do the laundry          |
-| {{`faire l'épicerie`}}                     | do the grocery shopping |
-| {{`faire une sieste`}}                     | take a nap              |
-| {{`faire de l'exercice`}}                  | exercise                |
-| {{`faire la vaisselle`}}                   | do the dishes           |
-| {{`faire la cuisine`}}                     | cook                    |
-| {{`faire du café`}}                        | make coffee             |
-| {{`faire ses devoirs`}}                    | do one's homework       |
+| {{`faire l'épicerie`}}                         | do the grocery shopping |
+| {{`faire une sieste`}}                         | take a nap              |
+| {{`faire de l'exercice`}}                      | exercise                |
+| {{`faire la vaisselle`}}                       | do the dishes           |
+| {{`faire la cuisine`}}                         | cook                    |
+| {{`faire du café`}}                            | make coffee             |
+| {{`faire ses devoirs`}}                        | do one's homework       |
 
 these articles belong to the expression and must be learned with it. French says `faire le ménage`, `faire une sieste`, and `faire de l'exercice`; a generic English `do` does not predict the article.
 
@@ -158,10 +158,10 @@ these articles belong to the expression and must be learned with it. French says
 
 `faire` is irregular:
 
-| personne     | forme     |
-| ------------ | --------- |
+| personne     | forme         |
+| ------------ | ------------- |
 | `je`         | {{`fais`}}    |
-| `tu`         | `fais`    |
+| `tu`         | `fais`        |
 | `il/elle/on` | {{`fait`}}    |
 | `nous`       | {{`faisons`}} |
 | `vous`       | {{`faites`}}  |
@@ -171,8 +171,8 @@ these articles belong to the expression and must be learned with it. French says
 
 ### le verbe `aller`
 
-| personne     | forme    |
-| ------------ | -------- |
+| personne     | forme        |
+| ------------ | ------------ |
 | `je`         | {{`vais`}}   |
 | `tu`         | {{`vas`}}    |
 | `il/elle/on` | {{`va`}}     |
@@ -184,25 +184,25 @@ these articles belong to the expression and must be learned with it. French says
 
 with `aller`, the preposition depends on the destination's article, unless the destination is a person:
 
-| destination          | construction      | exemples                                                              |
-| -------------------- | ----------------- | --------------------------------------------------------------------- |
-| masculine singular   | `au` = `à + le`   | `au travail`, `au parc`, `au marché`, `au cinéma`, `au musée`         |
-| feminine singular    | `à la`            | `à la piscine`, `à la banque`, `à la bibliothèque`, `à la plage`      |
-| vowel or h muet      | `à l'`            | `à l'école`, `à l'université`, `à l'hôpital`, `à l'hôtel`             |
-| plural               | `aux` = `à + les` | `aux toilettes`, `aux États-Unis`                                     |
+| destination          | construction      | exemples                                                                          |
+| -------------------- | ----------------- | --------------------------------------------------------------------------------- |
+| masculine singular   | `au` = `à + le`   | `au travail`, `au parc`, `au marché`, `au cinéma`, `au musée`                     |
+| feminine singular    | `à la`            | `à la piscine`, `à la banque`, `à la bibliothèque`, `à la plage`                  |
+| vowel or h muet      | `à l'`            | `à l'école`, `à l'université`, `à l'hôpital`, `à l'hôtel`                         |
+| plural               | `aux` = `à + les` | `aux toilettes`, `aux États-Unis`                                                 |
 | person or profession | `chez`            | {{`chez mon frère`}}, `chez Lise`, {{`chez le coiffeur`}}, {{`chez la dentiste`}} |
 
 `chez` points to someone's home, workplace, or professional office. `Je vais chez le dentiste` means the dentist's office; `Je vais au cabinet dentaire` names the place instead.
 
 ### le moyen de transport
 
-| à        | en           |
-| -------- | ------------ |
+| à            | en               |
+| ------------ | ---------------- |
 | {{`à pied`}} | {{`en auto`}}    |
 | {{`à vélo`}} | {{`en autobus`}} |
-|          | {{`en train`}}   |
-|          | {{`en métro`}}   |
-|          | {{`en taxi`}}    |
+|              | {{`en train`}}   |
+|              | {{`en métro`}}   |
+|              | {{`en taxi`}}    |
 
 the destination and transport phrases can appear in the same sentence: `Je vais au travail en autobus.` `au travail` answers **where**, while `en autobus` answers **how**.
 
@@ -210,8 +210,8 @@ the destination and transport phrases can appear in the same sentence: `Je vais 
 
 `se déplacer` means to travel or get around. `Comment` asks for the means of transport, so the answer combines a conjugated form of `aller`, a destination, and `à` or `en` plus the means of transport.
 
-| no  | phrase entendue                     | moyen de transport |
-| --- | ----------------------------------- | ------------------ |
+| no  | phrase entendue                         | moyen de transport |
+| --- | --------------------------------------- | ------------------ |
 | 1   | {{`Je vais à la bibliothèque à pied.`}} | `à pied`           |
 | 2   | {{`Elle va au travail en autobus.`}}    | `en autobus`       |
 | 3   | {{`Vous allez au restaurant en taxi.`}} | `en taxi`          |
@@ -230,14 +230,14 @@ in {{`Comment chaque personne se déplace-t-elle ?`}}, complex inversion keeps t
 
 ### les repas et les moments de la journée
 
-| moment         | repas associé | english             |
-| -------------- | ------------- | ------------------- |
+| moment             | repas associé     | english             |
+| ------------------ | ----------------- | ------------------- |
 | {{`le matin`}}     | {{`le déjeuner`}} | morning / breakfast |
-| {{`l'avant-midi`}} |               | morning before noon |
+| {{`l'avant-midi`}} |                   | morning before noon |
 | {{`le midi`}}      | {{`le diner`}}    | noon / lunch        |
-| {{`l'après-midi`}} |               | afternoon           |
+| {{`l'après-midi`}} |                   | afternoon           |
 | {{`le soir`}}      | {{`le souper`}}   | evening / supper    |
-| {{`la nuit`}}      |               | night               |
+| {{`la nuit`}}      |                   | night               |
 
 > [!note] les repas au Québec
 > in Québec, `déjeuner` is breakfast, `diner` is lunch, and `souper` is the evening meal. this note keeps the book's Québec vocabulary and rectified spelling.
@@ -246,46 +246,46 @@ the food timeline also introduces `manger une collation`, `prendre l'apéro`, an
 
 ### piste 7 : les heures des repas
 
-| action                   | heure entendue | heure sur 24 heures |
-| ------------------------ | -------------- | ------------------- |
-| {{`Je déjeune.`}}            | `à 7 h`        | `7 h`               |
-| {{`Je mange ma collation.`}} | `à 10 h`       | `10 h`              |
-| {{`Je dine.`}}               | {{`vers midi`}}    | `vers 12 h`         |
-| {{`Je prends l'apéro.`}}     | `vers 5 h`     | `vers 17 h`         |
-| {{`Je soupe.`}}              | `à 6 h`        | `18 h`              |
-| {{`Je grignote.`}}           | `à 9 h`        | `21 h`              |
+| action                       | heure entendue  | heure sur 24 heures |
+| ---------------------------- | --------------- | ------------------- |
+| {{`Je déjeune.`}}            | `à 7 h`         | `7 h`               |
+| {{`Je mange ma collation.`}} | `à 10 h`        | `10 h`              |
+| {{`Je dine.`}}               | {{`vers midi`}} | `vers 12 h`         |
+| {{`Je prends l'apéro.`}}     | `vers 5 h`      | `vers 17 h`         |
+| {{`Je soupe.`}}              | `à 6 h`         | `18 h`              |
+| {{`Je grignote.`}}           | `à 9 h`         | `21 h`              |
 
 the audio uses ordinary twelve-hour speech. the context places `prendre l'apéro`, `souper`, and `grignoter` in the evening, so `5 h`, `6 h`, and `9 h` correspond to `17 h`, `18 h`, and `21 h`.
 
 ### piste 8 : les boissons et les moments de la journée
 
-| moment         | phrase entendue                       | réponse  |
-| -------------- | ------------------------------------- | -------- |
+| moment         | phrase entendue                           | réponse  |
+| -------------- | ----------------------------------------- | -------- |
 | `le matin`     | {{`Je bois du jus d'orange ou du lait.`}} | `c ou b` |
 | `l'avant-midi` | {{`Elle boit du café.`}}                  | `a`      |
 | `le midi`      | {{`Je bois de l'eau.`}}                   | `d`      |
 | `l'après-midi` | {{`Tu bois de la bière.`}}                | `f`      |
 | `le soir`      | {{`Vous buvez du vin.`}}                  | `e`      |
-| `la nuit`      | `Je bois de l'eau.`                   | `d`      |
+| `la nuit`      | `Je bois de l'eau.`                       | `d`      |
 
 `de l'eau` appears twice because it is the answer for both `le midi` and `la nuit`.
 
 ### indiquer une heure approximative
 
-| marqueur     | modèle du livre                      | sens                               |
-| ------------ | ------------------------------------ | ---------------------------------- |
-| {{`vers`}}       | `Je déjeune vers 8 h.`               | around, near a time                |
-| {{`environ`}}    | `Je soupe à 6 h, environ.`           | approximately                      |
+| marqueur         | modèle du livre                          | sens                               |
+| ---------------- | ---------------------------------------- | ---------------------------------- |
+| {{`vers`}}       | `Je déjeune vers 8 h.`                   | around, near a time                |
+| {{`environ`}}    | `Je soupe à 6 h, environ.`               | approximately                      |
 | {{`à peu près`}} | {{`Je dine à midi trente, à peu près.`}} | approximately, more conversational |
 
 `vers` sits directly before the time. the book puts `environ` and `à peu près` after the complete time phrase.
 
 ### le verbe `prendre`
 
-| personne     | forme      |
-| ------------ | ---------- |
+| personne     | forme          |
+| ------------ | -------------- |
 | `je`         | {{`prends`}}   |
-| `tu`         | `prends`   |
+| `tu`         | `prends`       |
 | `il/elle/on` | {{`prend`}}    |
 | `nous`       | {{`prenons`}}  |
 | `vous`       | {{`prenez`}}   |
@@ -297,9 +297,9 @@ common episode phrases are {{`prendre l'autobus`}} and `prendre l'apéro`.
 
 a time phrase can follow the action. it can also begin the sentence, followed by a comma:
 
-| repère               | action puis temps                      | temps puis action                              |
-| -------------------- | -------------------------------------- | ---------------------------------------------- |
-| heure                | `Je prends l'autobus à 7 h 30.`        | `À 5 h 30, je prépare le souper.`              |
+| repère               | action puis temps                          | temps puis action                                  |
+| -------------------- | ------------------------------------------ | -------------------------------------------------- |
+| heure                | `Je prends l'autobus à 7 h 30.`            | `À 5 h 30, je prépare le souper.`                  |
 | moment de la journée | {{`Je passe l'aspirateur l'après-midi.`}}  | {{`Le soir, je regarde la télé.`}}                 |
 | repas                | {{`Je lave la vaisselle après le diner.`}} | {{`Pendant le souper, je parle avec ma famille.`}} |
 
@@ -309,14 +309,14 @@ to place an action relative to a meal, use `avant`, `pendant`, or `après`: {{`a
 
 these are personal answers, so several times are possible. each model keeps the action in the present and adds a time, a moment of the day, or a position relative to a meal.
 
-| action proposée          | exemple de réponse                             | english                                  |
-| ------------------------ | ---------------------------------------------- | ---------------------------------------- |
-| `boire de l'eau`         | {{`Je bois de l'eau toute la journée.`}}           | I drink water throughout the day.        |
-| `prendre l'autobus`      | {{`Le matin, je prends l'autobus.`}}               | In the morning, I take the bus.          |
-| `relaxer`                | {{`Après le travail, je relaxe.`}}                 | After work, I relax.                     |
-| `parler avec ma famille` | `Pendant le souper, je parle avec ma famille.` | During supper, I talk with my family.    |
-| `regarder la télévision` | {{`Je regarde la télévision après le souper.`}}    | I watch television after supper.         |
-| `faire le ménage`        | {{`Le samedi matin, je fais le ménage.`}}          | On Saturday mornings, I do the cleaning. |
+| action proposée          | exemple de réponse                              | english                                  |
+| ------------------------ | ----------------------------------------------- | ---------------------------------------- |
+| `boire de l'eau`         | {{`Je bois de l'eau toute la journée.`}}        | I drink water throughout the day.        |
+| `prendre l'autobus`      | {{`Le matin, je prends l'autobus.`}}            | In the morning, I take the bus.          |
+| `relaxer`                | {{`Après le travail, je relaxe.`}}              | After work, I relax.                     |
+| `parler avec ma famille` | `Pendant le souper, je parle avec ma famille.`  | During supper, I talk with my family.    |
+| `regarder la télévision` | {{`Je regarde la télévision après le souper.`}} | I watch television after supper.         |
+| `faire le ménage`        | {{`Le samedi matin, je fais le ménage.`}}       | On Saturday mornings, I do the cleaning. |
 
 when the time phrase begins the sentence, separate it from the action with a comma: `Le matin, je prends l'autobus.` when it follows the action, no comma is needed: `Je regarde la télévision après le souper.`
 
@@ -324,8 +324,8 @@ when the time phrase begins the sentence, separate it from the action with a com
 
 French separates a habit from one dated occurrence by adding or omitting the article:
 
-| type       | construction           | exemple                               | meaning                              |
-| ---------- | ---------------------- | ------------------------------------- | ------------------------------------ |
+| type       | construction           | exemple                                   | meaning                              |
+| ---------- | ---------------------- | ----------------------------------------- | ------------------------------------ |
 | habituelle | `le/la + moment`       | {{`Je vais à l'école le mardi.`}}         | every Tuesday                        |
 | habituelle | `le/la + moment` first | {{`Le jeudi soir, je vais au cinéma.`}}   | on Thursday evenings                 |
 | ponctuelle | bare day or moment     | {{`Je vais au cinéma mardi après-midi.`}} | this or a specific Tuesday afternoon |
@@ -335,11 +335,11 @@ French separates a habit from one dated occurrence by adding or omitting the art
 
 demonstratives point to a specific current period:
 
-| déterminant | devant                               | exemples                                     |
-| ----------- | ------------------------------------ | -------------------------------------------- |
+| déterminant | devant                               | exemples                                                 |
+| ----------- | ------------------------------------ | -------------------------------------------------------- |
 | `ce`        | masculine beginning with a consonant | {{`ce matin`}}, {{`ce midi`}}, {{`ce soir`}}, `ce lundi` |
-| `cet`       | masculine beginning with a vowel     | {{`cet avant-midi`}}, {{`cet après-midi`}}           |
-| `cette`     | feminine                             | {{`cette semaine`}}                              |
+| `cet`       | masculine beginning with a vowel     | {{`cet avant-midi`}}, {{`cet après-midi`}}               |
+| `cette`     | feminine                             | {{`cette semaine`}}                                      |
 
 the book uses the accepted masculine form `cet après-midi`. general French also accepts the feminine, although the masculine is often preferred.[^apresmidi]
 
@@ -347,15 +347,15 @@ the book uses the accepted masculine form `cet après-midi`. general French also
 
 #### modèles du mémo
 
-| type d'action | ordre des éléments           | modèle                                 | english                                     |
-| ------------- | ---------------------------- | -------------------------------------- | ------------------------------------------- |
-| habituelle    | action + `le/la` + moment    | `Je vais à l'école le mardi.`          | I go to school on Tuesdays.                 |
+| type d'action | ordre des éléments           | modèle                                     | english                                     |
+| ------------- | ---------------------------- | ------------------------------------------ | ------------------------------------------- |
+| habituelle    | action + `le/la` + moment    | `Je vais à l'école le mardi.`              | I go to school on Tuesdays.                 |
 | habituelle    | action + `le/la` + moment    | {{`Je regarde la télé le soir.`}}          | I watch television in the evenings.         |
-| habituelle    | `le/la` + moment + action    | `Le jeudi soir, je vais au cinéma.`    | On Thursday evenings, I go to the cinema.   |
+| habituelle    | `le/la` + moment + action    | `Le jeudi soir, je vais au cinéma.`        | On Thursday evenings, I go to the cinema.   |
 | habituelle    | `la` + moment + action       | {{`La fin de semaine, je travaille.`}}     | On weekends, I work.                        |
-| ponctuelle    | action + jour ou moment      | `Je vais au cinéma mardi après-midi.`  | I am going to the cinema Tuesday afternoon. |
+| ponctuelle    | action + jour ou moment      | `Je vais au cinéma mardi après-midi.`      | I am going to the cinema Tuesday afternoon. |
 | ponctuelle    | action + `ce` + moment       | {{`Je fais le ménage ce soir.`}}           | I am doing the cleaning tonight.            |
-| ponctuelle    | jour ou moment + action      | `Lundi, je reste à la maison.`         | On Monday, I am staying home.               |
+| ponctuelle    | jour ou moment + action      | `Lundi, je reste à la maison.`             | On Monday, I am staying home.               |
 | ponctuelle    | `en fin de semaine` + action | {{`En fin de semaine, je vais à Québec.`}} | This weekend, I am going to Québec.         |
 
 > [!note] `la fin de semaine` ou `en fin de semaine`
@@ -369,8 +369,8 @@ the present can describe a planned or scheduled event when an explicit time phra
 
 the eight utterances in question 1 sort into **five questions** and **three affirmations**. each finite verb and its infinitive are included here:
 
-| no  | transcription                           | type        | forme conjuguée | infinitif    | indice de la question  |
-| --- | --------------------------------------- | ----------- | --------------- | ------------ | ---------------------- |
+| no  | transcription                               | type        | forme conjuguée | infinitif    | indice de la question  |
+| --- | ------------------------------------------- | ----------- | --------------- | ------------ | ---------------------- |
 | 1   | {{`Est-ce que tu vas au cinéma ce soir ?`}} | question    | `vas`           | `aller`      | `est-ce que`           |
 | 2   | {{`Je regarde un film avec mon ami.`}}      | affirmation | `regarde`       | `regarder`   | intonation descendante |
 | 3   | {{`Tu travailles-tu la fin de semaine ?`}}  | question    | `travailles`    | `travailler` | `-tu` interrogatif     |
@@ -399,17 +399,17 @@ this `-tu` is a question particle, not the subject pronoun. the real subjects ab
 
 four closed-question structures now coexist:
 
-| structure                    | exemple                                 | register               |
-| ---------------------------- | --------------------------------------- | ---------------------- |
+| structure                    | exemple                                     | register               |
+| ---------------------------- | ------------------------------------------- | ---------------------- |
 | rising intonation            | {{`Tu vas au travail à pied ?`}}            | informal speech        |
 | `est-ce que`                 | {{`Est-ce que tu vas au travail à pied ?`}} | neutral                |
 | inversion                    | {{`Vas-tu au travail à pied ?`}}            | formal or written      |
-| interrogative particle `-tu` | `Tu vas-tu au travail à pied ?`         | informal Québec speech |
+| interrogative particle `-tu` | `Tu vas-tu au travail à pied ?`             | informal Québec speech |
 
 the reformulation exercise gives these answers:
 
-| départ                                        | avec le `tu` interrogatif                |
-| --------------------------------------------- | ---------------------------------------- |
+| départ                                            | avec le `tu` interrogatif                    |
+| ------------------------------------------------- | -------------------------------------------- |
 | {{`Elle va au parc ce soir ?`}}                   | {{`Elle va-tu au parc ce soir ?`}}           |
 | {{`Laves-tu la vaisselle ?`}}                     | {{`Tu laves-tu la vaisselle ?`}}             |
 | {{`Est-ce qu'il va à l'école à vélo ?`}}          | {{`Il va-tu à l'école à vélo ?`}}            |
@@ -419,10 +419,10 @@ the reformulation exercise gives these answers:
 
 ### le verbe `lire`
 
-| personne     | forme    |
-| ------------ | -------- |
+| personne     | forme        |
+| ------------ | ------------ |
 | `je`         | {{`lis`}}    |
-| `tu`         | `lis`    |
+| `tu`         | `lis`        |
 | `il/elle/on` | {{`lit`}}    |
 | `nous`       | {{`lisons`}} |
 | `vous`       | {{`lisez`}}  |

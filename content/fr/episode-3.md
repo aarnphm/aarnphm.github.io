@@ -23,14 +23,14 @@ the source method writes clock times with a space, `9 h 30`, which i keep in pro
 
 `Il est…` plus the hour. the half-hour splits into two registers: the everyday reading counts up to `et demie`, then switches to the next hour with `moins`; the digital reading just states the minutes.[^moins]
 
-| time | everyday                         | digital                       |
-| ---- | -------------------------------- | ----------------------------- |
-| 3:00 | {{`trois heures`}}                   | `trois heures`                |
-| 3:05 | {{`trois heures cinq`}}              | `trois heures cinq`           |
-| 3:10 | {{`trois heures dix`}}               | `trois heures dix`            |
+| time | everyday                             | digital                           |
+| ---- | ------------------------------------ | --------------------------------- |
+| 3:00 | {{`trois heures`}}                   | `trois heures`                    |
+| 3:05 | {{`trois heures cinq`}}              | `trois heures cinq`               |
+| 3:10 | {{`trois heures dix`}}               | `trois heures dix`                |
 | 3:15 | {{`trois heures et quart`}}          | {{`trois heures quinze`}}         |
-| 3:20 | {{`trois heures vingt`}}             | `trois heures vingt`          |
-| 3:25 | {{`trois heures vingt-cinq`}}        | `trois heures vingt-cinq`     |
+| 3:20 | {{`trois heures vingt`}}             | `trois heures vingt`              |
+| 3:25 | {{`trois heures vingt-cinq`}}        | `trois heures vingt-cinq`         |
 | 3:30 | {{`trois heures et demie`}}          | {{`trois heures trente`}}         |
 | 3:35 | {{`quatre heures moins vingt-cinq`}} | {{`trois heures trente-cinq`}}    |
 | 3:40 | {{`quatre heures moins vingt`}}      | {{`trois heures quarante`}}       |
@@ -70,9 +70,9 @@ the same `de … à …` describes a day: {{`Je travaille de 9 h à 16 h.`}} for
 
 the days are lowercase, no capital. the book's calendar starts on {{`dimanche`}}:
 
-| jour       | gloss     |
-| ---------- | --------- |
-| `dimanche` | Sunday    |
+| jour           | gloss     |
+| -------------- | --------- |
+| `dimanche`     | Sunday    |
 | {{`lundi`}}    | Monday    |
 | {{`mardi`}}    | Tuesday   |
 | {{`mercredi`}} | Wednesday |
@@ -87,9 +87,9 @@ the days are lowercase, no capital. the book's calendar starts on {{`dimanche`}}
 
 the objects on and around the desk, numbered as in the book.
 
-| #   | objet                       | gloss           |
-| --- | --------------------------- | --------------- |
-| 1   | `un réveille-matin`         | alarm clock     |
+| #   | objet                           | gloss           |
+| --- | ------------------------------- | --------------- |
+| 1   | `un réveille-matin`             | alarm clock     |
 | 2   | {{`un calendrier`}}             | calendar        |
 | 3   | {{`une poubelle`}}              | trash can       |
 | 4   | {{`un bac à recyclage`}}        | recycling bin   |
@@ -112,14 +112,14 @@ the objects on and around the desk, numbered as in the book.
 | 21  | {{`un sac à dos`}}              | backpack        |
 | 22  | {{`un sac à main`}}             | handbag         |
 | 23  | {{`des lunettes`}}              | glasses         |
-| 24  | `un cellulaire`             | cell phone      |
+| 24  | `un cellulaire`                 | cell phone      |
 | 25  | {{`une tablette électronique`}} | tablet          |
 | 26  | {{`une étagère`}}               | shelf           |
 | 27  | {{`une table`}}                 | table           |
 | 28  | {{`un étui à crayons`}}         | pencil case     |
 | 29  | {{`un stylo`}}                  | pen             |
 | 30  | {{`des crayons`}}               | pencils         |
-| 31  | `une efface`                | eraser          |
+| 31  | `une efface`                    | eraser          |
 | 32  | {{`un cahier`}}                 | notebook        |
 | 33  | {{`des dictionnaires`}}         | dictionaries    |
 | 34  | {{`des feuilles`}}              | sheets of paper |
@@ -133,8 +133,8 @@ two of these are Québécois and would be said differently in France. `une effac
 
 the cat sits in six places, one preposition each.
 
-| préposition | phrase                                   | gloss       |
-| ----------- | ---------------------------------------- | ----------- |
+| préposition | phrase                                       | gloss       |
+| ----------- | -------------------------------------------- | ----------- |
 | `sur`       | {{`Le chat est sur l'ordinateur.`}}          | on          |
 | `dans`      | {{`Le chat est dans le sac.`}}               | in          |
 | `devant`    | {{`Le chat est devant le chien.`}}           | in front of |
@@ -148,8 +148,8 @@ the cat sits in six places, one preposition each.
 
 une `consigne` is an instruction. in this exercise, the six `consignes` are written in the `vous` form of the imperative.
 
-| consigne    | gloss         |
-| ----------- | ------------- |
+| consigne        | gloss         |
+| --------------- | ------------- |
 | {{`Écoutez`}}   | listen        |
 | {{`Observez`}}  | look at       |
 | {{`Cochez`}}    | check (a box) |
@@ -163,16 +163,16 @@ une `consigne` is an instruction. in this exercise, the six `consignes` are writ
 
 color adjectives follow the noun: {{`un cahier rouge`}}, {{`une porte verte`}}. most add `-e` for the feminine, which often resurfaces a final consonant.
 
-| masculin | féminin   | gloss  |
-| -------- | --------- | ------ |
+| masculin     | féminin       | gloss  |
+| ------------ | ------------- | ------ |
 | {{`vert`}}   | {{`verte`}}   | green  |
 | {{`bleu`}}   | {{`bleue`}}   | blue   |
 | {{`noir`}}   | {{`noire`}}   | black  |
 | {{`brun`}}   | {{`brune`}}   | brown  |
 | {{`blanc`}}  | {{`blanche`}} | white  |
-| {{`jaune`}}  | `jaune`   | yellow |
-| {{`orange`}} | `orange`  | orange |
-| {{`rouge`}}  | `rouge`   | red    |
+| {{`jaune`}}  | `jaune`       | yellow |
+| {{`orange`}} | `orange`      | orange |
+| {{`rouge`}}  | `rouge`       | red    |
 
 `blanc → blanche` is the irregular one; the others either add `-e` (`vert → verte`, where the final `t` now sounds) or already end in `-e` and stay invariable (`jaune`, `orange`, `rouge`). `brun` is the everyday Québécois word for brown.
 

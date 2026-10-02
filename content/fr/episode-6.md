@@ -31,7 +31,7 @@ then the ask itself, four frames printed on five lines (the `Pouvez-vous` frame 
 
 | frame                                | exemple                                                                                                                                | ce qu'elle fait                                          |
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `Je cherche…`                        | {{`Je cherche les vestiaires de la piscine.`}}                                                                                             | une affirmation, la plus directe, aucune question posée  |
+| `Je cherche…`                        | {{`Je cherche les vestiaires de la piscine.`}}                                                                                         | une affirmation, la plus directe, aucune question posée  |
 | `Pouvez-vous me dire où est/sont… ?` | `Pouvez-vous me dire où est le secrétariat / la sortie / l'ascenseur ?`, `Pouvez-vous me dire où sont les toilettes / les escaliers ?` | la plus polie, la question logée dans une demande        |
 | `…, s'il vous plait.`                | `Les toilettes / la cafétéria / la sortie, s'il vous plait.`                                                                           | le nom seul, la formule de politesse tient lieu du reste |
 | `…, c'est à quel endroit ?`          | `Le photocopieur / la cafétéria, c'est à quel endroit ?`                                                                               | le nom d'abord, la question ensuite                      |
@@ -46,11 +46,11 @@ the pronoun `me` attaches to the infinitive it belongs to, not to the conjugated
 
 the découvrez listening runs the same request through three of the frames, the bare question ({{`Où sont les vestiaires de la piscine ?`}}), the embedded polite one ({{`Pouvez-vous me dire où sont les vestiaires de la piscine ?`}}), and the flat statement (`Je cherche les vestiaires de la piscine.`), all three land the same.
 
-| mot               | sens                                                                      |
-| ----------------- | ------------------------------------------------------------------------- |
-| `interpeler`      | to call out to someone, to get their attention before speaking            |
-| {{`un endroit`}}      | a spot, a place; {{`c'est à quel endroit ?`}} is the everyday `where is it ?` |
-| `s'il vous plait` | please, vous form; it closes the sentence rather than opening it          |
+| mot               | sens                                                                          |
+| ----------------- | ----------------------------------------------------------------------------- |
+| `interpeler`      | to call out to someone, to get their attention before speaking                |
+| {{`un endroit`}}  | a spot, a place; {{`c'est à quel endroit ?`}} is the everyday `where is it ?` |
+| `s'il vous plait` | please, vous form; it closes the sentence rather than opening it              |
 
 ### le dialogue du découvrez
 
@@ -68,29 +68,29 @@ Hélène cherche les vestiaires de la piscine et s'y prend à deux reprises (CD1
 > Hélène : {{`Bon, parfait ! Merci beaucoup !`}}
 > Homme : {{`Ça me fait plaisir.`}}
 
-| question                                       | réponse                                    |
-| ---------------------------------------------- | ------------------------------------------ |
-| quelle expression pour s'adresser à la femme ? | `Pardon, madame ?`                         |
+| question                                       | réponse                                        |
+| ---------------------------------------------- | ---------------------------------------------- |
+| quelle expression pour s'adresser à la femme ? | `Pardon, madame ?`                             |
 | que cherche Hélène ?                           | {{`les vestiaires de la piscine`}}             |
 | quelle est la réponse de la femme ?            | {{`Elle ne sait pas où sont les vestiaires.`}} |
-| qu'est-ce qu'Hélène dit à l'homme ?            | `Je cherche les vestiaires de la piscine.` |
+| qu'est-ce qu'Hélène dit à l'homme ?            | `Je cherche les vestiaires de la piscine.`     |
 | selon l'homme, Hélène est…                     | {{`près des vestiaires`}}                      |
-| est-ce que l'homme donne des indications ?     | `oui`                                      |
+| est-ce que l'homme donne des indications ?     | `oui`                                          |
 
 two encounters, and every distractor is cross-wired between them: {{`Excusez-moi, madame.`}} transplants the man's opener onto the woman, and `Où sont les vestiaires…` transplants the woman's question onto the man. the trap is answering from the right dialogue but the wrong half. the `près/loin` item is a litotes: {{`vous n'êtes pas très loin`}} veut dire `près`.
 
 the exchange also carries the politeness that the frames alone do not:
 
-| expression            | emploi                                                                                  |
-| --------------------- | --------------------------------------------------------------------------------------- |
-| `s'adresser à qqn`    | commencer à parler à quelqu'un                                                          |
-| `chercher qqch`       | to look for something; in this sense, the object is direct: {{`Je cherche les vestiaires`}} |
-| `Je suis désolé(e).`  | l'excuse quand on ne peut pas aider                                                     |
-| `Merci quand même.`   | thanks anyway, when the answer did not come                                             |
-| `Ça me fait plaisir.` | you're welcome, la réponse québécoise à `merci`[^plaisir]                               |
-| `selon`               | according to: {{`selon l'homme, Hélène est près des vestiaires`}}                           |
-| {{`ouvert`}} >< {{`fermé`}}   | open against closed                                                                     |
-| {{`au mauvais étage`}}    | on the wrong floor, `mauvais` opposé de `bon`                                           |
+| expression                  | emploi                                                                                      |
+| --------------------------- | ------------------------------------------------------------------------------------------- |
+| `s'adresser à qqn`          | commencer à parler à quelqu'un                                                              |
+| `chercher qqch`             | to look for something; in this sense, the object is direct: {{`Je cherche les vestiaires`}} |
+| `Je suis désolé(e).`        | l'excuse quand on ne peut pas aider                                                         |
+| `Merci quand même.`         | thanks anyway, when the answer did not come                                                 |
+| `Ça me fait plaisir.`       | you're welcome, la réponse québécoise à `merci`[^plaisir]                                   |
+| `selon`                     | according to: {{`selon l'homme, Hélène est près des vestiaires`}}                           |
+| {{`ouvert`}} >< {{`fermé`}} | open against closed                                                                         |
+| {{`au mauvais étage`}}      | on the wrong floor, `mauvais` opposé de `bon`                                               |
 
 {{`Vous allez voir le vestiaire des hommes`}} is a futur proche, `aller` au présent plus l'infinitif, and {{`celui des femmes`}} replaces `le vestiaire des femmes` with a demonstrative pronoun.[^celui]
 
@@ -101,8 +101,8 @@ the exchange also carries the politeness that the frames alone do not:
 
 the plan du centre communautaire numbers eight lieux in its légende, with `Accueil` and `Sortie` labelled on the floor itself:
 
-| #   | lieu                          | gloss            |
-| --- | ----------------------------- | ---------------- |
+| #   | lieu                              | gloss            |
+| --- | --------------------------------- | ---------------- |
 | 1   | {{`les toilettes`}}               | washrooms        |
 | 2   | {{`l'infirmerie`}}                | infirmary        |
 | 3   | {{`la piscine`}}                  | pool             |
@@ -250,17 +250,17 @@ three of these are Québécois and would be said differently in France. `les mac
 
 two frames carry the floor talk: {{`À quel étage habitez-vous ? J'habite au rez-de-chaussée.`}} and {{`Le bureau du psychologue André Deschamps est au troisième étage.`}} the drill reads a directory, l'Édifice Marcel Didier:
 
-| lieu                                         | étage      |
-| -------------------------------------------- | ---------- |
-| `Banque Épargne mondiale`                    | `1er`      |
-| `Cafétéria`                                  | `2e`       |
+| lieu                                         | étage          |
+| -------------------------------------------- | -------------- |
+| `Banque Épargne mondiale`                    | `1er`          |
+| `Cafétéria`                                  | `2e`           |
 | `Concierge`                                  | {{`sous-sol`}} |
-| `Bureau de Desrosiers et Larose, comptables` | `1er`      |
-| `École de secrétariat`                       | `4e et 5e` |
-| `Garderie`                                   | `RC`       |
-| `Garage`                                     | `sous-sol` |
-| `Bureau de Sylvie Leclerc, dentiste`         | `2e`       |
-| `Réception et sécurité`                      | `RC`       |
+| `Bureau de Desrosiers et Larose, comptables` | `1er`          |
+| `École de secrétariat`                       | `4e et 5e`     |
+| `Garderie`                                   | `RC`           |
+| `Garage`                                     | `sous-sol`     |
+| `Bureau de Sylvie Leclerc, dentiste`         | `2e`           |
+| `Réception et sécurité`                      | `RC`           |
 
 `RC` abbreviates {{`le rez-de-chaussée`}}, the ground floor; below it sits {{`le sous-sol`}}.
 
@@ -288,8 +288,8 @@ the Mémo builds les déterminants ordinaux by adding `-ième` to the number: `d
 
 set (1) in [[fr/episode-3]] (`sur, dans, devant, derrière, sous, entre`) parks the cat around the furniture. set (2) points and measures:
 
-| préposition    | gloss               | rôle      | exemple du livre                                              |
-| -------------- | ------------------- | --------- | ------------------------------------------------------------- |
+| préposition    | gloss               | rôle      | exemple du livre                                                  |
+| -------------- | ------------------- | --------- | ----------------------------------------------------------------- |
 | `à gauche de`  | to the left of      | direction | {{`La mère est à gauche du nid.`}}                                |
 | `à droite de`  | to the right of     | direction | {{`La plante est à droite de la porte.`}}                         |
 | `en face de`   | across from, facing | direction | {{`Les toilettes sont en face de l'escalier et de l'ascenseur.`}} |
@@ -331,8 +331,8 @@ the follow-up sends you back to the plan with blanks to fill: `La piscine est �
 
 directions come in the impératif, which conjugates sans pronom personnel: the `tu`, `nous`, `vous` disappear and the verb stands alone. {{`Va tout droit puis tourne à gauche.`}}
 
-| verbe       | (tu)       | (nous)       | (vous)      |
-| ----------- | ---------- | ------------ | ----------- |
+| verbe       | (tu)           | (nous)           | (vous)          |
+| ----------- | -------------- | ---------------- | --------------- |
 | `aller`     | {{`va`}}       | {{`allons`}}     | {{`allez`}}     |
 | `continuer` | {{`continue`}} | {{`continuons`}} | {{`continuez`}} |
 | `descendre` | {{`descends`}} | {{`descendons`}} | {{`descendez`}} |
@@ -346,10 +346,10 @@ the table is three rows deep and that is the whole tense: there is no `je`, no `
 
 the `nous` form proposes or urges shared action, the usual French equivalent of English “let's”: {{`Allons au sous-sol.`}} giving directions you will almost never use it; you use it to propose.
 
-| forme    | à qui                    | valeur                                                       |
-| -------- | ------------------------ | ------------------------------------------------------------ |
+| forme    | à qui                    | valeur                                                           |
+| -------- | ------------------------ | ---------------------------------------------------------------- |
 | `(tu)`   | une personne, tutoiement | un ordre direct: {{`Va tout droit.`}}                            |
-| `(nous)` | le groupe, moi inclus    | une proposition: `Allons au sous-sol.`                       |
+| `(nous)` | le groupe, moi inclus    | une proposition: `Allons au sous-sol.`                           |
 | `(vous)` | vouvoiement ou pluriel   | l'ordre poli, le défaut avec un inconnu: {{`Allez tout droit.`}} |
 
 with a stranger in an édifice it is always the `vous` column, which is why every printed direction in the episode reads `Tournez`, `Continuez`, `Montez`, `Descendez`, `Prenez`.
@@ -361,12 +361,12 @@ with a stranger in an édifice it is always the `vous` column, which is why ever
 
 six commands, matched to arrows in the listening:
 
-| consigne            | gloss                 |
-| ------------------- | --------------------- |
+| consigne                | gloss                 |
+| ----------------------- | --------------------- |
 | {{`Tournez à gauche.`}} | turn left             |
 | {{`Tournez à droite.`}} | turn right            |
 | {{`Continuez.`}}        | keep going (straight) |
-| `Allez au bout de…` | go to the end of      |
+| `Allez au bout de…`     | go to the end of      |
 | {{`Montez.`}}           | go up                 |
 | {{`Descendez.`}}        | go down               |
 

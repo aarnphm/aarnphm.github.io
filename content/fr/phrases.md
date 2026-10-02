@@ -16,11 +16,11 @@ un recueil qui grandit au fil des leçons : des phrases toutes faites, rangées 
 
 des mots pour se présenter :
 
-| pour dire son nom                | pour dire sa nationalité |
-| -------------------------------- | ------------------------ |
-| {{`Je me présente : Louis Martel.`}} | {{`Je viens du Canada.`}}    |
-| {{`Je m'appelle Louis.`}}            | {{`Je suis canadien.`}}      |
-| {{`Moi, c'est Louis.`}}              |                          |
+| pour dire son nom                    | pour dire sa nationalité  |
+| ------------------------------------ | ------------------------- |
+| {{`Je me présente : Louis Martel.`}} | {{`Je viens du Canada.`}} |
+| {{`Je m'appelle Louis.`}}            | {{`Je suis canadien.`}}   |
+| {{`Moi, c'est Louis.`}}              |                           |
 
 three ways to give a name, ranked by formality: `Je me présente : …` opens a formal introduction (full name follows), `Je m'appelle …` is the neutral default, `Moi, c'est …` is the casual one you use responding in kind ({{`Bonjour, Judith ! Moi, c'est François.`}}). Québec also says `Mon nom est …` ([[fr/episode-1]]).
 
@@ -32,11 +32,11 @@ the classement exercise (cahier, piste 16) sorts nineteen countries into the fou
 
 | `Je viens du…` (masculin, consonne) | `Je viens de…` (pays féminin ou sans article, consonne) | `Je viens d'…` (voyelle) | `Je viens des…` (pluriel : états, îles) |
 | ----------------------------------- | ------------------------------------------------------- | ------------------------ | --------------------------------------- |
-| {{`du Bénin`}}                          | {{`de Jordanie`}}                                           | {{`d'Australie`}}            | {{`des États-Unis`}}                        |
-| {{`du Liban`}}                          | {{`de Norvège`}}                                            | {{`d'Égypte`}}               | {{`des Îles Salomon`}}                      |
-| {{`du Togo`}}                           | {{`de Serbie`}}                                             | {{`d'Haïti`}}                | {{`des Pays-Bas`}}                          |
-| {{`du Venezuela`}}                      | {{`de Thaïlande`}}                                          | {{`d'Ouganda`}}              |                                         |
-| {{`du Vietnam`}}                        | {{`de Monaco`}}                                             | {{`d'Uruguay`}}              |                                         |
+| {{`du Bénin`}}                      | {{`de Jordanie`}}                                       | {{`d'Australie`}}        | {{`des États-Unis`}}                    |
+| {{`du Liban`}}                      | {{`de Norvège`}}                                        | {{`d'Égypte`}}           | {{`des Îles Salomon`}}                  |
+| {{`du Togo`}}                       | {{`de Serbie`}}                                         | {{`d'Haïti`}}            | {{`des Pays-Bas`}}                      |
+| {{`du Venezuela`}}                  | {{`de Thaïlande`}}                                      | {{`d'Ouganda`}}          |                                         |
+| {{`du Vietnam`}}                    | {{`de Monaco`}}                                         | {{`d'Uruguay`}}          |                                         |
 
 three traps worth keeping:
 
