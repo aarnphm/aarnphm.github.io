@@ -10,8 +10,8 @@
   gap: 0.5rem;
   gap: 0.25rem;
   font-weight: 300;
-  font-style: italic;
-  font-family: var(--headerFont);
+  font-style: normal;
+  font-family: var(--bodyFont);
 
   @media all and ($mobile) {
     .breadcrumb-element {
@@ -90,8 +90,8 @@ a[data-breadcrumbs] {
   gap: 0.25rem;
   padding: 0.5rem 0.75rem;
   border-radius: var(--radius-none);
-  font-family: var(--headerFont);
-  font-style: italic;
+  font-family: var(--bodyFont);
+  font-style: normal;
   background-color: var(--light);
   border: 1px solid color-mix(in srgb, var(--lightgray) 80%, transparent);
   width: max-content;
