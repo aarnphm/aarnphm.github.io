@@ -1,0 +1,21 @@
+.garden-marked {
+  position: relative;
+  isolation: isolate;
+}
+
+.garden-marked .garden-marked-text {
+  display: inline;
+}
+
+.garden-marked > .rough-annotation {
+  pointer-events: none;
+  user-select: none;
+}
+
+.garden-marked[data-annotation-type='highlight'] > .rough-annotation {
+  opacity: 0.28;
+}
+
+.garden-marked-settings input[aria-invalid='true'] {
+  border-color: var(--text-error);
+}
