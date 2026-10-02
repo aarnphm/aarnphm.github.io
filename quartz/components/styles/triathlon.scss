@@ -14756,18 +14756,16 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-day-embed {
+  --tri-embedded-stat-row-height: calc(0.62rem * 1.6 + 0.28rem + 1px);
   container: tri-day-card / inline-size;
   box-sizing: border-box;
   border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
 
-  .table-container > .tri-act-stats {
-    > * {
-      line-height: 1.6rem;
-    }
-
+  .tri-act-stats {
     th,
     td {
       min-width: 0;
+      line-height: 1.6;
     }
   }
 
@@ -15171,6 +15169,8 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-health-load-value {
   position: absolute;
   top: 0;
+  width: max-content;
+  white-space: nowrap;
   transform: translateX(-50%);
   color: var(--dark);
 }
@@ -15432,7 +15432,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 @container tri-day-card (min-width: 26rem) {
   .tri-day-embed[data-triathlon-embedded='1'] .tri-pop-card:has(> .tri-act + .tri-act) {
-    --tri-embedded-stat-row-height: 1.94rem;
     --tri-embedded-graph-row-height: var(--tri-activity-graph-row-height);
     --tri-embedded-secondary-height: 14.8rem;
     --tri-embedded-visual-height: calc(
