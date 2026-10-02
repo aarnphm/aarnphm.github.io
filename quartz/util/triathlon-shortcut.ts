@@ -1,8 +1,7 @@
-import { triathlonDaySlug, triathlonOnSlugFromShortcutPath } from './triathlon-date-route'
+import { triathlonDaySlug } from './triathlon-date-route'
+import { triathlonHostUrl } from './triathlon-host'
 import { isRecord } from './type-guards'
 
-const TRIATHLON_PREFIX = '/triathlon'
-const SHORTCUT_HOST_PREFIX = 't.'
 const STRAVA_ACTIVITY_PATH = /^\/activities\/([1-9]\d*)\/?$/
 
 export const STRAVA_ACTIVITY_INDEX_KIND = 'strava-activity-index-v1'
@@ -11,24 +10,6 @@ export const STRAVA_ACTIVITY_INDEX_PATH = '/static/strava-activity-index.json'
 export interface StravaActivityIndex {
   kind: typeof STRAVA_ACTIVITY_INDEX_KIND
   activities: Record<string, string>
-}
-
-function canonicalShortcutBase(baseUrl: string, source: URL): URL {
-  const target = new URL(baseUrl)
-  if (target.hostname === source.hostname && target.hostname.startsWith(SHORTCUT_HOST_PREFIX)) {
-    target.hostname = target.hostname.slice(SHORTCUT_HOST_PREFIX.length)
-  }
-  return target
-}
-
-function triathlonShortcutPathname(pathname: string): string {
-  if (pathname === '/' || pathname === TRIATHLON_PREFIX || pathname === `${TRIATHLON_PREFIX}/`) {
-    return TRIATHLON_PREFIX
-  }
-  if (pathname.startsWith(`${TRIATHLON_PREFIX}/`)) return pathname
-  const temporalSlug = triathlonOnSlugFromShortcutPath(pathname)
-  if (temporalSlug) return `/${temporalSlug}`
-  return `${TRIATHLON_PREFIX}${pathname.startsWith('/') ? pathname : `/${pathname}`}`
 }
 
 export function buildStravaActivityIndex(
@@ -61,7 +42,6 @@ export function stravaActivityIdFromShortcutPath(pathname: string): string | nul
 }
 
 export function triathlonActivityShortcutRedirectUrl(
-  baseUrl: string,
   requestUrl: string | URL,
   activityDates: Readonly<Record<string, string>>,
 ): string | null {
@@ -70,22 +50,9 @@ export function triathlonActivityShortcutRedirectUrl(
   if (!activityId) return null
   const slug = triathlonDaySlug(activityDates[activityId] ?? '')
   if (!slug) return null
-  const target = canonicalShortcutBase(baseUrl, source)
+  const target = new URL(source)
   target.pathname = `/${slug}`
   target.search = source.search
   target.hash = source.hash
-  return target.toString()
-}
-
-export function triathlonShortcutRedirectUrl(
-  baseUrl: string,
-  requestUrl: string | URL,
-  isDocument: boolean,
-): string {
-  const source = requestUrl instanceof URL ? requestUrl : new URL(requestUrl)
-  const target = canonicalShortcutBase(baseUrl, source)
-  target.pathname = isDocument ? triathlonShortcutPathname(source.pathname) : source.pathname
-  target.search = source.search
-  target.hash = source.hash
-  return target.toString()
+  return triathlonHostUrl(target)
 }

@@ -31,6 +31,11 @@ import {
   STREAM_HOSTNAME,
   streamHostUrl,
 } from '../../util/stream-host'
+import {
+  triathlonApexRedirectUrl,
+  triathlonHostLinkUrl,
+  TRIATHLON_HOSTNAME,
+} from '../../util/triathlon-host'
 import { cleanupHydratedRoot } from './root-lifecycle'
 import { Toast } from './toast'
 
@@ -1059,6 +1064,9 @@ function transformHostInternalLinks(root: Document | Element) {
       }
       anchor.dataset.noPopover = 'true'
       anchor.dataset.routerIgnore = 'true'
+    } else if (host === TRIATHLON_HOSTNAME) {
+      anchor.href = triathlonHostLinkUrl(anchor.href, window.location.href)
+      anchor.dataset.noPopover = 'true'
     } else if (host === NOTES_HOSTNAME) {
       anchor.dataset.noPopover = 'true'
     }
@@ -1083,6 +1091,18 @@ const stacked = new StackedNoteManager()
 window.stacked = stacked
 
 async function navigate(url: URL, isBack: boolean = false) {
+  const apexTriathlonRedirect = triathlonApexRedirectUrl(url)
+  if (apexTriathlonRedirect) {
+    window.location.assign(apexTriathlonRedirect)
+    return
+  }
+  if (window.location.hostname === TRIATHLON_HOSTNAME) {
+    url = new URL(triathlonHostLinkUrl(url.toString(), window.location.href))
+    if (url.origin !== window.location.origin) {
+      window.location.assign(url)
+      return
+    }
+  }
   const stackedContainer = document.getElementById('stacked-notes-container')
   if (stackedContainer?.classList.contains('active')) {
     return await window.stacked.navigate(url)
