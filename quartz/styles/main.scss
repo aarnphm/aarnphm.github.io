@@ -25,6 +25,9 @@
   --align-cap-height: -6px;
   --align-baseline: -6px;
   --font-size: 16px;
+  // UI steps sit two heading-scale steps apart (r = 1.0699, see base.scss h1-h6)
+  --text-ui: 0.875rem;
+  --text-meta: 0.75rem;
   --line-height: 1.4;
   --rail-width: 1.6rem;
   --sidepanel-padding: 14px;

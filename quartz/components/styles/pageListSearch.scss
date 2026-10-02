@@ -22,10 +22,11 @@
   border: 1px solid var(--dark);
   border-radius: var(--radius-none);
   background: var(--light);
-  transition: border-color 0.2s ease;
 
-  &:focus-within {
-    border-color: var(--secondary);
+  // ring only for the input; the clear button draws its own
+  &:has(> .page-list-search-input:focus) {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
   }
 
   @media (pointer: coarse) {
@@ -35,10 +36,12 @@
 
 .page-list-search-input {
   flex: 1;
+  // fill the wrapper's height so the whole 44px touch box focuses the field
+  align-self: stretch;
   border: none;
   background: transparent;
   font-family: var(--codeFont);
-  font-size: 0.66rem;
+  font-size: var(--text-meta);
   line-height: 1.4;
   color: var(--dark);
   min-width: 0;
@@ -48,8 +51,13 @@
   }
 
   &::placeholder {
-    color: var(--gray);
-    opacity: 0.7;
+    color: var(--darkgray);
+    opacity: 1;
+  }
+
+  // iOS Safari zooms the page when a focused input is under 16px
+  @media (pointer: coarse) {
+    font-size: 1rem;
   }
 }
 
@@ -73,7 +81,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--tertiary);
+    outline: 2px solid var(--dark);
     outline-offset: 2px;
   }
 
@@ -86,7 +94,7 @@
 .page-list-search-status {
   display: block;
   font-family: var(--codeFont);
-  font-size: 0.66rem;
+  font-size: var(--text-meta);
   color: var(--darkgray);
   margin-top: 0.5rem;
   min-height: 1.2em;

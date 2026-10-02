@@ -1,4 +1,5 @@
 @use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
 
 ul.section-ul {
   list-style: none;
@@ -32,10 +33,6 @@ li.section-li {
     );
   }
 
-  &.fade-out > .note-link {
-    opacity: 0.35;
-  }
-
   &[data-tags*='"folder"'] .meta {
     visibility: hidden;
   }
@@ -44,9 +41,9 @@ li.section-li {
     display: block;
     padding: 0.4rem 0.75rem;
     text-decoration: none;
-    transition: opacity 0.2s ease;
+    transition: color 0.2s ease;
     font-weight: $normalWeight;
-    font-size: 0.85rem;
+    font-size: var(--text-ui);
     line-height: 1.45;
     color: var(--darkgray);
     &:hover {
@@ -54,7 +51,7 @@ li.section-li {
     }
 
     &:focus-visible {
-      outline: 2px solid var(--secondary);
+      outline: 2px solid var(--dark);
       outline-offset: -2px;
     }
 
@@ -93,9 +90,7 @@ li.section-li {
           padding: 0.1em 0.4em;
           border: 1px solid var(--gray);
           border-radius: var(--radius-none);
-          font-size: 0.6rem;
-          line-height: 1.4;
-          font-family: var(--codeFont);
+          @include tagLabel;
         }
       }
 
@@ -104,11 +99,21 @@ li.section-li {
         font-family: var(--codeFont);
         font-variant-numeric: tabular-nums;
         white-space: nowrap;
-        font-size: 0.66rem;
+        font-size: var(--text-meta);
         line-height: 1.4;
       }
     }
   }
+}
+
+// tag preview raises matching rows instead of fading the rest below readable contrast
+.section-ul:has(> .section-li.fade-out) > .section-li:not(.fade-out) > .note-link {
+  color: var(--dark);
+}
+
+.listing-count {
+  font-size: var(--text-meta);
+  line-height: 1.4;
 }
 
 .notes-list {
@@ -131,18 +136,29 @@ li.section-li {
   }
 }
 
-@media all and ($mobile), all and ($tablet) {
-  .notes-evergreen {
-    display: none !important;
-  }
-}
-
 .notes-evergreen {
   grid-column: var(--layout-side-column);
   display: flex;
   flex-direction: column;
   padding-left: calc(var(--kern) * 2);
   margin-top: 1rem;
+}
+
+// below desktop the aside follows the list in the reading column; the folder prose,
+// count and tag filters stay reachable, only the permanent-notes grid is dropped
+@media all and ($mobile), all and ($tablet) {
+  .notes-evergreen {
+    grid-column: var(--layout-reading-column);
+    padding-left: 0;
+
+    .evergreen-content {
+      position: static;
+    }
+
+    .note-permanent {
+      display: none;
+    }
+  }
 }
 
 .folder-layout {

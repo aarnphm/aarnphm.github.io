@@ -503,7 +503,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
             <article class="folder-layout--article">
               {content}
               <SeeAlso {...props} />
-              <p>
+              <p class="listing-count">
                 {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
                   count: listProps.allFiles.length,
                 })}
@@ -518,7 +518,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
             <article class="folder-layout--article">
               {content}
               <SeeAlso {...props} />
-              <p>
+              <p class="listing-count">
                 {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
                   count: listProps.allFiles.length,
                 })}

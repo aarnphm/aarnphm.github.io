@@ -2400,7 +2400,7 @@ export const CuriusFriends: QuartzComponent = (props: QuartzComponentProps) => {
       <p id="curius-friends-status" class="curius-sidebar-status" role="status">
         Chargement des amis…
       </p>
-      <ul class="section-ul" id="friends-list" />
+      <ul id="friends-list" />
       <button
         type="button"
         id="see-more-friends"
@@ -2440,7 +2440,7 @@ const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
         <p id="curius-trails-status" class="curius-sidebar-status" role="status">
           Chargement des sentiers…
         </p>
-        <ul class="section-ul" id="trail-list" />
+        <ul id="trail-list" />
       </div>
       <a
         class="curius-profile"

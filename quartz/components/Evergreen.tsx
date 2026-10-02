@@ -35,7 +35,13 @@ export const AllTags: QuartzComponent = ({ allFiles }: Props) => {
     h(
       'div',
       { class: 'notes-list' },
-      tags.map(tag => h('div', { class: 'note-tag', 'data-tag': tag }, [tag])),
+      tags.map(tag =>
+        h(
+          'button',
+          { type: 'button', class: 'note-tag', 'data-tag': tag, 'aria-pressed': 'false' },
+          [tag],
+        ),
+      ),
     ),
   ])
 }
@@ -126,7 +132,9 @@ export default ((opts?: EvergreenNotes) => {
         <Permanent {...props} />
         <article style={{ marginBottom: 0 }}>
           {content}
-          <p>{i18n(cfg.locale).pages.folderContent.itemsUnderFolder({ count: allFiles.length })}</p>
+          <p class="listing-count">
+            {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({ count: allFiles.length })}
+          </p>
           <SeeAlso {...props} />
         </article>
         <AllTags {...props} opts />
