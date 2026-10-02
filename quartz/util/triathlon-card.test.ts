@@ -3866,7 +3866,7 @@ test('renders route stream graphs in the server activity markup', () => {
   )
   assert.deepEqual(
     traces.map(graph => graph.properties.dataTriTrace),
-    ['hr', 'respiration', 'temperature', 'power', 'cadence', 'speed'],
+    ['hr', 'temperature', 'cadence', 'respiration', 'power', 'speed'],
   )
   for (const graph of traces) {
     assert.equal(byClass(graph, 'tri-elev').length, 1)
@@ -3918,10 +3918,10 @@ test('renders CORE bike graphs before heart rate with sub-degree domains', () =>
       'core-temperature',
       'skin-temperature',
       'hr',
-      'respiration',
       'temperature',
-      'power',
       'cadence',
+      'respiration',
+      'power',
       'speed',
     ],
   )
@@ -3957,7 +3957,7 @@ test('renders cycling speed in initial activity HTML with metric and imperial un
     const speedIndex = traces.findIndex(trace => trace.properties.dataTriTrace === 'speed')
     const speed = traces[speedIndex]
     assert.ok(speed)
-    assert.equal(traces[speedIndex - 1].properties.dataTriTrace, 'cadence')
+    assert.equal(traces[speedIndex - 1].properties.dataTriTrace, 'power')
     assert.equal(speed.properties.dataSpeedSource, 'distance-time')
     assert.equal(byClass(speed, 'tri-elev-d').map(text).join(''), 'speed')
     assert.equal(byClass(speed, 'tri-elev-range').map(text).join(''), peak)
@@ -4045,7 +4045,7 @@ test('keeps environment after the full-width activity traces', () => {
       .filter(child => typeof child.properties.dataTriTrace === 'string')
       .slice(-3)
       .map(child => child.properties.dataTriTrace),
-    ['cadence', 'speed', 'muscle-oxygen'],
+    ['power', 'speed', 'muscle-oxygen'],
   )
   const environment = children.find(child => classNames(child).includes('tri-environment'))
   assert.ok(environment)
@@ -5597,7 +5597,7 @@ test('starts the route and stream graphs with empty analysis highlights', () => 
   )
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'respiration', 'temperature', 'power', 'cadence', 'speed'],
+    ['hr', 'temperature', 'cadence', 'respiration', 'power', 'speed'],
   )
   assert.equal(byClass(rendered, 'tri-elev-cursor').length, 7)
 })
@@ -5655,7 +5655,7 @@ test('falls back to legacy stream traces without complete analysis telemetry', (
   )
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'respiration', 'temperature', 'power', 'cadence', 'speed'],
+    ['hr', 'temperature', 'cadence', 'respiration', 'power', 'speed'],
   )
 })
 
@@ -6160,7 +6160,7 @@ test('renders Garmin walk pace, cadence, respiration, and elevation', () => {
   )
   assert.deepEqual(
     traces.map(graph => graph.properties.dataTriTrace),
-    ['hr', 'respiration', 'temperature', 'pace', 'cadence'],
+    ['hr', 'temperature', 'cadence', 'respiration', 'pace'],
   )
   const pace = traces.find(graph => graph.properties.dataTriTrace === 'pace')
   const cadence = traces.find(graph => graph.properties.dataTriTrace === 'cadence')
@@ -8424,8 +8424,7 @@ test('places pedal balance after the available common traces', () => {
   const children = more.children.filter((child): child is Element => child.type === 'element')
   const powerIndex = children.findIndex(child => child.properties.dataTriTrace === 'power')
   assert.ok(powerIndex >= 0)
-  assert.equal(children[powerIndex + 1].properties.dataTriTrace, 'cadence')
-  assert.equal(children[powerIndex + 2].properties.dataTriTrace, 'power-balance')
+  assert.equal(children[powerIndex + 1].properties.dataTriTrace, 'power-balance')
 })
 
 test('renders cycling dynamics and rider position immediately below pedal balance', () => {
@@ -8592,10 +8591,10 @@ test('groups stamina, performance condition, and thermal graphs before heart rat
         'core-temperature',
         'skin-temperature',
         ...(activity.sport === 'walk' ? [] : ['hr']),
-        'respiration',
         'temperature',
-        activity.sport === 'walk' ? 'pace' : 'power',
         'cadence',
+        'respiration',
+        activity.sport === 'walk' ? 'pace' : 'power',
       ]
       assert.deepEqual(traces.slice(0, common.length), common)
       if (activity.sport === 'bike') {
@@ -8730,8 +8729,7 @@ test('places electronic shifting after the available common traces', () => {
   const children = more.children.filter((child): child is Element => child.type === 'element')
   const powerIndex = children.findIndex(child => child.properties.dataTriTrace === 'power')
   assert.ok(powerIndex >= 0)
-  assert.equal(children[powerIndex + 1].properties.dataTriTrace, 'cadence')
-  assert.equal(classNames(children[powerIndex + 2]).includes('tri-shift-chart'), true)
+  assert.equal(classNames(children[powerIndex + 1]).includes('tri-shift-chart'), true)
 })
 
 test('centres a fixed front chainring while the rear cassette changes', () => {

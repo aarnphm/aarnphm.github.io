@@ -9896,8 +9896,26 @@ export const buildActivity = <N>(
     }
     if (flags.hr && workoutAnalysis?.metric !== 'hr')
       activityGraphs.push(buildHeartRateTrace(f, d, analysisSelection))
-    if (flags.resp) activityGraphs.push(buildRespirationTrace(f, d, analysisSelection))
     if (flags.temp) activityGraphs.push(buildTemperatureTrace(f, d, analysisSelection))
+    if (flags.cad) {
+      const cadenceScale = activityCadenceScale(d.sport)
+      const cadenceUnit = activityCadenceUnit(d.sport)
+      activityGraphs.push(
+        buildTrace(
+          f,
+          d,
+          (point, index) => (normalizedCadence?.[index] ?? point.cad) * cadenceScale,
+          'cadence',
+          max => `${max} ${cadenceUnit} peak`,
+          value => `${Math.round(value)}${cadenceUnit}`,
+          normalizedCadence
+            ? positiveMetricDomain(normalizedCadence.map(value => (value ?? 0) * cadenceScale))
+            : undefined,
+          analysisSelection,
+        ),
+      )
+    }
+    if (flags.resp) activityGraphs.push(buildRespirationTrace(f, d, analysisSelection))
     if (flags.power)
       activityGraphs.push(
         buildTrace(
@@ -9924,24 +9942,6 @@ export const buildActivity = <N>(
       if (walkPower) activityGraphs.push(walkPower)
       const pace = buildPaceTrace(f, d, analysisSelection)
       if (pace) activityGraphs.push(pace)
-    }
-    if (flags.cad) {
-      const cadenceScale = activityCadenceScale(d.sport)
-      const cadenceUnit = activityCadenceUnit(d.sport)
-      activityGraphs.push(
-        buildTrace(
-          f,
-          d,
-          (point, index) => (normalizedCadence?.[index] ?? point.cad) * cadenceScale,
-          'cadence',
-          max => `${max} ${cadenceUnit} peak`,
-          value => `${Math.round(value)}${cadenceUnit}`,
-          normalizedCadence
-            ? positiveMetricDomain(normalizedCadence.map(value => (value ?? 0) * cadenceScale))
-            : undefined,
-          analysisSelection,
-        ),
-      )
     }
     if (triathlonTraceEnabled(traceSettings, 'intensity-factor')) {
       const intensity = buildIntensityFactorChart(f, d, analysisSelection)

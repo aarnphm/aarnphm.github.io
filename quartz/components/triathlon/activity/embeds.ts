@@ -61,14 +61,14 @@ const ALIGNED_ACTIVITY_SECTIONS: { selector: string; margin: string }[] = [
   },
   { selector: '.tri-act-more > [data-tri-trace="hr"]', margin: '--tri-hr-margin' },
   {
-    selector: '.tri-act-more > [data-tri-trace="respiration"]',
-    margin: '--tri-respiration-margin',
-  },
-  {
     selector: '.tri-act-more > [data-tri-trace="temperature"]',
     margin: '--tri-temperature-margin',
   },
   { selector: '.tri-act-more > [data-tri-trace="cadence"]', margin: '--tri-cadence-margin' },
+  {
+    selector: '.tri-act-more > [data-tri-trace="respiration"]',
+    margin: '--tri-respiration-margin',
+  },
   { selector: '.tri-act-more > .tri-environment', margin: '--tri-environment-margin' },
 ]
 
