@@ -1455,8 +1455,10 @@ export const renderDetail = (
     activityTraceUsesElapsedAxis(d)
       ? zoneClock(point.elapsedS)
       : scrubDist(presentation, point.d, d.sport)
-  for (const trace of wrap.querySelectorAll<HTMLElement>('[data-tri-trace]')) {
-    const name = trace.dataset.triTrace
+  for (const trace of wrap.querySelectorAll<HTMLElement>(
+    '[data-tri-trace], [data-tri-unavailable]',
+  )) {
+    const name = trace.dataset.triTrace ?? trace.dataset.triUnavailable
     if (!name || !triathlonTraceEnabled(traceSettings, name)) trace.remove()
   }
   for (const chart of wrap.querySelectorAll<HTMLElement>(

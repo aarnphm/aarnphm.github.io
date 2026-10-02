@@ -36,7 +36,7 @@ test('HR change is negative for rising HR and positive for falling HR', () => {
   }
 })
 
-test('HR estimates preserve missing samples and reject insufficient or invalid coverage', () => {
+test('HR estimates preserve missing samples and reject invalid telemetry', () => {
   const points = samples().map(point => ({
     ...point,
     heartRate: point.elapsedS === 300 ? null : point.heartRate,
@@ -46,13 +46,6 @@ test('HR estimates preserve missing samples and reject insufficient or invalid c
   assert.equal(estimate.points[30].stamina, null)
   assert.equal(estimate.points[30].performanceCondition, null)
   assert.equal(estimate.points[31].stamina, null)
-  assert.equal(
-    estimateHeartRatePhysiology(
-      samples().filter(point => point.elapsedS < 100 || point.elapsedS > 500),
-      200,
-    ),
-    null,
-  )
   assert.equal(estimateHeartRatePhysiology(points, Number.NaN), null)
   assert.equal(estimateHeartRatePhysiology([points[1], points[0]], 200), null)
   assert.equal(
@@ -62,4 +55,20 @@ test('HR estimates preserve missing samples and reject insufficient or invalid c
     ),
     null,
   )
+})
+
+test('partial HR sessions retain condition windows without estimating whole-session stamina', () => {
+  const estimate = estimateHeartRatePhysiology(
+    samples().filter(point => point.elapsedS <= 100 || point.elapsedS >= 500),
+    200,
+  )
+  assert.ok(estimate)
+  assert.equal(estimate.points.find(point => point.elapsedS === 60)?.performanceCondition, 0)
+  assert.equal(estimate.points.find(point => point.elapsedS === 500)?.performanceCondition, null)
+  assert.equal(estimate.points.find(point => point.elapsedS === 540)?.performanceCondition, null)
+  assert.equal(estimate.points.find(point => point.elapsedS === 550)?.performanceCondition, 0)
+  assert.ok(
+    estimate.points.every(point => point.stamina === null && point.potentialStamina === null),
+  )
+  assert.equal(estimateHeartRatePhysiology(samples().slice(0, 6), 200), null)
 })

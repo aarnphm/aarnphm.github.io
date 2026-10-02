@@ -3555,7 +3555,7 @@ export const buildPerformanceConditionTrace = <N>(
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
-): N | null => {
+): N => {
   const points = activityPhysiologyTracePoints(d, 'performanceCondition')
   const heartRateEstimate =
     d.route.filter(point => point.performanceCondition != null).length >= 2
@@ -3568,7 +3568,28 @@ export const buildPerformanceConditionTrace = <N>(
   const values = points
     .map(performanceConditionValue)
     .filter((value): value is number => value != null)
-  if (values.length < 2) return null
+  if (values.length < 2) {
+    const wrap = f.el('div', 'tri-elev-wrap tri-elev-wrap--unavailable', undefined, {
+      'data-tri-unavailable': 'performance-condition',
+    })
+    const cap = f.el('div', 'tri-elev-cap')
+    f.add(cap, f.el('span', 'tri-elev-d', triText(f.presentation.locale, 'performance condition')))
+    f.add(
+      wrap,
+      cap,
+      axisFrame(
+        f,
+        f.el('div', 'tri-elev-unavailable', triText(f.presentation.locale, 'no data available'), {
+          'data-i18n': 'no data available',
+        }),
+        [],
+        30,
+        [],
+        false,
+      ),
+    )
+    return wrap
+  }
   const average = values.reduce((total, value) => total + value, 0) / values.length
   const magnitude = Math.max(2, Math.ceil(Math.max(...values.map(Math.abs)) / 2) * 2)
   const min = -magnitude
@@ -9849,10 +9870,8 @@ export const buildActivity = <N>(
     const activityGraphs: N[] = []
     const stamina = buildStaminaChart(f, d, analysisSelection)
     if (stamina) activityGraphs.push(stamina)
-    if (flags.performanceCondition) {
-      const performanceCondition = buildPerformanceConditionTrace(f, d, analysisSelection)
-      if (performanceCondition) activityGraphs.push(performanceCondition)
-    }
+    if (triathlonTraceEnabled(traceSettings, 'performance-condition'))
+      activityGraphs.push(buildPerformanceConditionTrace(f, d, analysisSelection))
     const trainingEffect = buildTrainingEffectDetails(f, d)
     if (trainingEffect) activityGraphs.push(trainingEffect)
     if (ctx) {

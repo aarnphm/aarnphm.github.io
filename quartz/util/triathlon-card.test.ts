@@ -5421,7 +5421,7 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
       .filter((child): child is Element => child.type === 'element')
       .slice(0, 2)
       .map(child => classNames(child)),
-    [['tri-workout-analysis'], ['tri-elev-wrap']],
+    [['tri-workout-analysis'], ['tri-elev-wrap', 'tri-elev-wrap--unavailable']],
   )
 })
 
@@ -5726,7 +5726,7 @@ test('marks every routed sport for the shared desktop figure split', () => {
   })
   assert.equal(byClass(fullPageSwim, 'tri-act-figs--route').length, 1)
   assert.equal(byClass(fullPageSwim, 'tri-act-figs--split').length, 0)
-  assert.equal(byClass(fullPageSwim, 'tri-elev-unavailable').length, 0)
+  assert.equal(byClass(fullPageSwim, 'tri-elev-unavailable').length, 1)
 
   const embeddedSwim = buildDayCard(factory, routeOnlySwim.date, routeOnlyPayload, {
     embedded: true,
@@ -8799,19 +8799,12 @@ test('places training effect and zones directly after performance condition acro
         const effectIndex = children.indexOf(trainingEffect[0])
         assert.equal(children.indexOf(zones[0]), effectIndex + 1)
         const conditionIndex = children.findIndex(
-          child => child.properties.dataTriTrace === 'performance-condition',
+          child =>
+            child.properties.dataTriTrace === 'performance-condition' ||
+            child.properties.dataTriUnavailable === 'performance-condition',
         )
-        if (hasRoute) {
-          assert.ok(conditionIndex >= 0)
-          assert.equal(effectIndex, conditionIndex + 1)
-        } else {
-          assert.equal(conditionIndex, -1)
-          assert.ok(
-            children
-              .slice(0, effectIndex)
-              .every(child => classNames(child).includes('tri-workout-analysis')),
-          )
-        }
+        assert.ok(conditionIndex >= 0)
+        assert.equal(effectIndex, conditionIndex + 1)
       }
     }
   }
@@ -10930,6 +10923,40 @@ test('renders swim physiology and a duration drag curve in full and embedded act
     ]),
   })
   assert.ok(buildPowerHist(factory, slow))
+})
+
+test('retains a labeled unavailable condition row for every activity kind and honors display settings', () => {
+  const sports: StravaActivityDetail['sport'][] = [
+    'bike',
+    'run',
+    'swim',
+    'walk',
+    'yoga',
+    'strength',
+    'treatment',
+    'sauna',
+  ]
+  for (const sport of sports) {
+    for (const embedded of [false, true]) {
+      const activity = detail({ sport, route: [], heartRateTrace: [], deviceWatts: false })
+      const rendered = buildActivity(factory, activity, true, undefined, false, embedded)
+      const unavailable = descendants(
+        rendered,
+        node => node.properties.dataTriUnavailable === 'performance-condition',
+      )
+      assert.equal(unavailable.length, 1, sport)
+      assert.match(text(unavailable[0]), /performance condition.*no data available/)
+      assert.equal(byTag(unavailable[0], 'svg').length, 0)
+      const hidden = buildActivity(factory, activity, true, undefined, false, embedded, {
+        'performance-condition': false,
+      })
+      assert.equal(
+        descendants(hidden, node => node.properties.dataTriUnavailable === 'performance-condition')
+          .length,
+        0,
+      )
+    }
+  }
 })
 
 test('keeps native physiology ahead of the HR fallback and omits empty workout analysis', () => {
