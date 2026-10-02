@@ -169,6 +169,12 @@ const config: QuartzConfig = {
     emitters: [
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
+      Plugin.LazyScripts({
+        scripts: [
+          { name: 'triathlon', entry: 'components/triathlon/runtime/mount.ts' },
+          { name: 'pdf-reader', entry: 'components/pdf-reader/app.tsx' },
+        ],
+      }),
       Plugin.Bibliography({ bibliography: './content/References.bib' }),
       Plugin.ContentPage(),
       Plugin.EmailEmitter(),
