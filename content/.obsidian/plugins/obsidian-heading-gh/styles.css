@@ -1,72 +1,143 @@
-.heading-gh-bg {
-  background: transparent !important;
+.heading-gh-container .modal-bg {
+  background: transparent;
 }
 
-.heading-gh-modal {
+.modal-container .modal.heading-gh-modal {
+  --garden-plugin-line: color-mix(in srgb, var(--text-faint) 55%, transparent);
+  --garden-plugin-surface: color-mix(
+    in srgb,
+    var(--background-primary) 86%,
+    var(--background-secondary)
+  );
+  --garden-plugin-selected: color-mix(
+    in srgb,
+    var(--interactive-accent) 18%,
+    var(--garden-plugin-surface)
+  );
   position: fixed;
-  top: 10%;
-  right: 16px;
-  left: auto;
+  inset: 10% 1rem auto auto;
   transform: none;
   margin: 0;
-  width: clamp(280px, 32vw, 420px);
-  max-height: 70vh;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: var(--shadow-s);
-  background: var(--modal-background, var(--background-primary));
+  width: min(26rem, calc(100vw - 2rem));
+  max-height: 70dvh;
+  padding: 0;
+  border: 1px solid var(--garden-plugin-line);
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--background-primary);
+  color: var(--text-normal);
   overflow: hidden;
+}
+
+.heading-gh-modal .modal-header {
+  margin: 0;
+}
+
+.heading-gh-modal .modal-title {
+  margin: 0;
+  padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+  border-bottom: 1px solid var(--garden-plugin-line);
+  font-family: var(--font-monospace);
+  font-size: 0.8rem;
+  font-weight: normal;
 }
 
 .heading-gh-body {
-  position: relative;
-  display: block;
+  margin: 0;
+  padding: 0;
 }
 
-@media (max-width: 800px) {
-  .heading-gh-modal {
-    top: auto;
-    bottom: 12px;
-    left: 12px;
-    right: 12px;
-    width: auto;
-    max-width: none;
-    max-height: 60vh;
-  }
-}
-
-.heading-gh-modal .heading-gh-list {
+.heading-gh-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  max-height: 60vh;
+  max-height: 50dvh;
   overflow: auto;
-  padding: 12px 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
-.heading-gh-modal .heading-gh-item {
+.modal-container .heading-gh-modal .heading-gh-list > button.heading-gh-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  border-radius: 6px;
-  padding: 4px 6px;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  min-height: 2rem;
+  height: auto;
+  padding: 0.4rem 0.75rem 0.4rem 0.5rem;
+  border: 0;
+  border-bottom: 1px solid var(--garden-plugin-line);
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-normal);
+  font-family: var(--font-text);
+  font-size: 0.9rem;
+  font-weight: normal;
   line-height: 1.4;
+  text-align: start;
+  cursor: pointer;
 }
 
-.heading-gh-modal .heading-gh-item.is-active {
-  background: var(--background-modifier-hover);
+.modal-container .heading-gh-modal .heading-gh-list > button.heading-gh-item:last-child {
+  border-bottom: 0;
 }
 
-.heading-gh-modal .heading-gh-hint {
-  width: 16px;
+.modal-container
+  .heading-gh-modal
+  .heading-gh-list
+  > button.heading-gh-item:is(.is-active, :hover, :focus-visible) {
+  background: var(--garden-plugin-selected);
+}
+
+.modal-container .heading-gh-modal .heading-gh-list > button.heading-gh-item:focus-visible {
+  outline: none;
+}
+
+.heading-gh-hint {
+  flex: 0 0 1rem;
   text-align: center;
   color: var(--text-accent);
-  font-weight: 700;
-  text-transform: lowercase;
+  font-family: var(--font-monospace);
+  font-size: 0.75rem;
 }
 
-.heading-gh-modal .heading-gh-text {
+.heading-gh-hint:empty {
+  display: none;
+}
+
+.heading-gh-text {
+  display: block;
+  min-width: 0;
+  padding-inline-start: calc(var(--heading-depth, 0) * 14px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.heading-gh-modal.is-picking .heading-gh-item:not(.is-candidate) .heading-gh-text {
+  opacity: 0.4;
+}
+
+.heading-gh-text > p {
+  margin: 0;
+}
+
+.heading-gh-text mjx-container {
+  margin: 0;
+}
+
+@media (max-width: 800px) {
+  .modal-container .modal.heading-gh-modal {
+    inset: auto 0.75rem 0.75rem;
+    width: auto;
+    max-width: none;
+    max-height: 60dvh;
+  }
+}
+
+@media (pointer: coarse) {
+  .modal-container .heading-gh-modal .heading-gh-list > button.heading-gh-item {
+    min-height: 44px;
+  }
 }
