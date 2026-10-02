@@ -98,7 +98,7 @@ maintenance:
       - distance: 380.62
       - range:
           - end: null
-            start: '2026-08-22'
+            start: '2026-10-02'
       - reason: null
   brake pads:
     - - type: Shimano Brake Pads
@@ -155,6 +155,19 @@ maintenance:
           - end: null
             reason: null
             start: '2026-08-26'
+  wheelset:
+    - - type: Reserve 40|44 Road
+      - distance: 2760.16
+      - range:
+          - end: '2026-10-04'
+            start: '2026-05-16'
+      - reason: rotates to HUNT 54_58 Aerodynamicist UD Carbon Spoke
+    - - type: HUNT 54_58 Aerodynamicist UD Carbon Spoke
+      - distance: 0
+      - range:
+          - end: null
+            start: '2026-10-05'
+      - reason: null
   service:
     soloist:
       - date: '2026-08-21'
@@ -250,7 +263,7 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-09-30 16:36:46 GMT-04:00
+modified: 2026-10-02 15:20:38 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
