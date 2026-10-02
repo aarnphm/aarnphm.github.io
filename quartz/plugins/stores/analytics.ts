@@ -33,6 +33,7 @@ import {
   swimPaceSeconds,
   swimStrokeRate,
 } from '../../util/swim-metrics'
+import { buildSwimPowerCurveBlock, type SwimPowerCurveBlock } from '../../util/swim-power'
 import { isRecord, numberValue } from '../../util/type-guards'
 import { type WeeklyTargetRange, weeklyTargetRanges } from '../../util/weekly-target-range'
 import { AppleCache } from './apple'
@@ -1035,6 +1036,7 @@ export interface Analytics {
   body: BodyBlock
   recovery: RecoveryBlock
   powerCurve: PowerCurveBlock
+  swimPowerCurve: SwimPowerCurveBlock
   heat: HeatBlock
   distributions: DistributionsBlock
   engine: EngineBlock
@@ -5337,6 +5339,7 @@ function emptyAnalytics(athleteId: number, today: string, garmin?: GarminCache |
     body: emptyBody(),
     recovery: emptyRecovery(),
     powerCurve: emptyPowerCurve(today),
+    swimPowerCurve: buildSwimPowerCurveBlock([], today),
     heat: emptyHeat(),
     distributions: emptyDistributions(),
     engine: {
@@ -5893,6 +5896,7 @@ export function buildAnalytics(
     body,
     recovery,
     powerCurve,
+    swimPowerCurve: buildSwimPowerCurveBlock(Object.values(inputs.activityDetails ?? {}), today),
     heat,
     distributions,
     engine,
