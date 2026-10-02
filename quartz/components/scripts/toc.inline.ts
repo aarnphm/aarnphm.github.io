@@ -1,5 +1,6 @@
 import type { RoughAnnotation } from 'rough-notation/lib/model'
 import { annotate } from 'rough-notation'
+import { revealHeading } from './heading-reveal'
 
 let ag: RoughAnnotation | null = null
 let tocCleanup: (() => void) | null = null
@@ -80,20 +81,7 @@ function scrollToElement(hash: string) {
   const element = document.getElementById(elementId)
   if (!element) return
 
-  const collapsibleParent = element.closest('.collapsible-header-content')
-  if (collapsibleParent) {
-    const wrapper = collapsibleParent.closest('.collapsible-header')
-    const button = wrapper?.querySelector<HTMLButtonElement>('.toggle-button')
-    if (button?.getAttribute('aria-expanded') === 'false') {
-      button.click()
-    }
-  }
-
-  const foldedTransclude = element.closest<HTMLElement>('.transclude-collapsible.is-collapsed')
-  const foldButton = foldedTransclude?.querySelector<HTMLElement>('.transclude-fold')
-  if (foldButton) {
-    foldButton.click()
-  }
+  revealHeading(element)
 
   if (ag) ag.hide()
 

@@ -220,8 +220,8 @@ document.addEventListener('nav', () => {
     const tag = el.tagName.toLowerCase()
 
     // Check if headings modal is open
-    const headingsModal = document.querySelector('.headings-modal-container') as HTMLElement
-    const isHeadingsModalOpen = headingsModal && headingsModal.style.display === 'flex'
+    const isHeadingsModalOpen =
+      document.querySelector<HTMLDialogElement>('dialog.headings-modal')?.open ?? false
 
     return (
       tag === 'input' ||
@@ -427,10 +427,8 @@ document.addEventListener('nav', () => {
 
     // Check headings modal
     if (!rootElement) {
-      const headingsModal = document.querySelector(
-        '.headings-modal-container',
-      ) as HTMLElement | null
-      if (headingsModal && window.getComputedStyle(headingsModal).display === 'flex') {
+      const headingsModal = document.querySelector<HTMLDialogElement>('dialog.headings-modal')
+      if (headingsModal?.open) {
         rootElement = headingsModal.querySelector('.headings-list')
       }
     }

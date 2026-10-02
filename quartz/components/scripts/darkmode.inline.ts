@@ -170,8 +170,8 @@ document.addEventListener('nav', () => {
     if (!el || !(el instanceof Element)) return false
     const tag = el.tagName.toLowerCase()
 
-    const headingsModal = document.querySelector<HTMLElement>('.headings-modal-container')
-    const isHeadingsModalOpen = headingsModal?.style.display === 'flex'
+    const isHeadingsModalOpen =
+      document.querySelector<HTMLDialogElement>('dialog.headings-modal')?.open ?? false
 
     return (
       tag === 'input' ||

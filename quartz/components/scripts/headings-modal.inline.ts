@@ -1,57 +1,27 @@
 import type { RoughAnnotation } from 'rough-notation/lib/model'
 import { annotate } from 'rough-notation'
-import { registerEscapeHandler } from './escape-handler'
+import { revealHeading } from './heading-reveal'
 import { currentNavSignal } from './nav-lifecycle'
 
-let ag: RoughAnnotation | null = null
-
-interface HeadingInfo {
+interface HeadingEntry {
   element: HTMLElement
-  level: number
-  text: string
-  uniqueText: string
-  line: number
+  initial: string | undefined
+  row: HTMLAnchorElement
 }
 
-let modal: HTMLElement | null = null
-let isOpen = false
-let allHeadings: HeadingInfo[] = []
-let filteredHeadings: HeadingInfo[] = []
-let currentIndex = 0
-let isSecondaryMode = false
-let secondaryGroups: Record<string, number[]> = {}
-let secondaryExtmarks: HTMLElement[] = []
-let secondaryKeys: string[] = []
-let searchInput: HTMLInputElement | null = null
-let searchQuery = ''
-let activeHeadingsSignal: AbortSignal | undefined
+// Home row first; j and k stay reserved for movement.
+const PICK_KEYS = 'asdflhguiopwertycvbnmxz'.split('')
+const CHORD_WINDOW_MS = 1000
+const BROWSE_HELP = '{↑↓} {jk} move · {↵} jump · {a–z} first letter · {esc} close'
 
-const SECONDARY_CHOICE_KEYS = [
-  'a',
-  's',
-  'd',
-  'f',
-  'l',
-  ';',
-  'h',
-  'g',
-  'u',
-  'i',
-  'o',
-  'p',
-  'w',
-  'e',
-  'r',
-  't',
-  'y',
-  'c',
-  'v',
-  'b',
-  'n',
-  'm',
-  'x',
-  'z',
-]
+let dialog: HTMLDialogElement | null = null
+let entries: HeadingEntry[] = []
+let cursor = 0
+let picks = new Map<string, number>()
+let help = ''
+let pendingG = -Infinity
+let ag: RoughAnnotation | null = null
+let activeSignal: AbortSignal | undefined
 
 function shouldIgnoreShortcutTarget(target: EventTarget | null): boolean {
   let el: Element | null = target instanceof Element ? target : null
@@ -71,23 +41,26 @@ function shouldIgnoreShortcutTarget(target: EventTarget | null): boolean {
   return false
 }
 
-function getVisibleHeadings(): HeadingInfo[] {
-  return filteredHeadings.length > 0 || searchQuery.trim().length > 0
-    ? filteredHeadings
-    : allHeadings
-}
-
 function normalizeHeadingText(text: string): string {
   return text.replace(/\s+/g, ' ').trim()
 }
 
-function visibleHeadingText(node: Node): string {
+function visibleHeadingText(node: Node, skipMath = false): string {
   if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? ''
   if (!(node instanceof Element)) return ''
   if (node.getAttribute('aria-hidden') === 'true') return ''
   if (node.tagName.toLowerCase() === 'annotation') return ''
+  if (skipMath && node.classList.contains('katex')) return ''
 
-  return Array.from(node.childNodes).map(visibleHeadingText).join('')
+  return Array.from(node.childNodes)
+    .map(child => visibleHeadingText(child, skipMath))
+    .join('')
+}
+
+/** Prose supplies the initial; math does only when the heading has no prose letter, matching the Obsidian picker. */
+function headingInitial(heading: HTMLElement, text: string): string | undefined {
+  const letter = /[a-z]/i
+  return (visibleHeadingText(heading, true).match(letter) ?? text.match(letter))?.[0].toLowerCase()
 }
 
 function headingDisplayText(el: Element): string {
@@ -95,520 +68,331 @@ function headingDisplayText(el: Element): string {
   return alias.length > 0 ? alias : normalizeHeadingText(visibleHeadingText(el))
 }
 
-function updateFilteredHeadings() {
-  const query = searchQuery.trim().toLowerCase()
-  if (query.length === 0) {
-    filteredHeadings = [...allHeadings]
-  } else {
-    filteredHeadings = allHeadings.filter(heading => heading.text.toLowerCase().includes(query))
-  }
+/** Rendered math and code keep their markup; the plain alias would flatten `$\ell_p$` to `ℓp`. */
+function headingLabel(heading: HTMLElement, text: string): Node {
+  const source = heading.querySelector<HTMLElement>('span.highlight-span') ?? heading
+  if (!source.querySelector('.katex, code')) return document.createTextNode(text)
 
-  const visible = getVisibleHeadings()
-  secondaryGroups = buildLetterGroups(visible)
-  if (visible.length === 0) {
-    currentIndex = 0
-  } else if (currentIndex >= visible.length) {
-    currentIndex = visible.length - 1
-  }
-
-  renderHeadings()
-}
-
-function extractHeadings(): HeadingInfo[] {
-  const headingSelectors =
-    '.page-content h2, .page-content h3, .page-content h4, .page-content h5, .page-content h6'
-  const elements = Array.from(document.querySelectorAll(headingSelectors))
-  const textCounts = new Map<string, number>()
-
-  return elements
-    .map((el, index) => {
-      const level = parseInt(el.tagName.charAt(1))
-      const text = headingDisplayText(el)
-
-      if (text.length === 0) {
-        return null
-      }
-
-      const count = textCounts.get(text) || 0
-      textCounts.set(text, count + 1)
-      const uniqueText = count > 0 ? `${text} (${count + 1})` : text
-
-      return { element: el as HTMLElement, level, text, uniqueText, line: index }
-    })
-    .filter((h): h is HeadingInfo => h !== null)
-}
-
-function buildLetterGroups(headings: HeadingInfo[]): Record<string, number[]> {
-  const groups: Record<string, number[]> = {}
-
-  headings.forEach((heading, index) => {
-    const initials = new Set<string>()
-
-    // Function to add initial letters
-    function addInitial(str: string) {
-      if (!str) return
-      const firstLetter = str.match(/[a-zA-Z]/)
-      if (firstLetter) {
-        const letter = firstLetter[0].toLowerCase()
-        initials.add(letter)
-      }
-    }
-
-    const text = heading.text.trim()
-    addInitial(text)
-
-    initials.forEach(letter => {
-      if (!groups[letter]) groups[letter] = []
-      if (!groups[letter].includes(index)) {
-        groups[letter].push(index)
-      }
-    })
+  const clone = source.cloneNode(true) as HTMLElement
+  clone
+    .querySelectorAll(
+      'a[data-role="anchor"], .collapse-rail, .collapsed-dots, button, script, style',
+    )
+    .forEach(node => node.remove())
+  clone.querySelectorAll('[id], [tabindex]').forEach(node => {
+    node.removeAttribute('id')
+    node.removeAttribute('tabindex')
   })
+  // The row is already a link, so links inside the heading collapse to their content.
+  clone.querySelectorAll('a').forEach(link => link.replaceWith(...Array.from(link.childNodes)))
 
-  return groups
+  const fragment = document.createDocumentFragment()
+  fragment.append(...Array.from(clone.childNodes))
+  return fragment
 }
 
-function renderHeadings() {
-  const listContainer = modal?.querySelector('.headings-list')
-  if (!listContainer) return
+function collectHeadings(): HeadingEntry[] {
+  const headings = Array.from(
+    document.querySelectorAll<HTMLElement>('.page-content :is(h2, h3, h4, h5, h6)[id]'),
+  )
+    .map(element => ({ element, text: headingDisplayText(element) }))
+    .filter(({ text }) => text.length > 0)
+  const top = Math.min(...headings.map(({ element }) => Number(element.tagName[1])))
 
-  listContainer.innerHTML = ''
+  return headings.map(({ element, text }, index) => {
+    const depth = Number(element.tagName[1]) - top
+    const url = new URL(window.location.href)
+    url.hash = element.id
 
-  const visible = getVisibleHeadings()
+    const row = document.createElement('a')
+    row.className = 'heading-item'
+    row.href = url.href
+    row.tabIndex = -1
+    row.dataset.index = String(index)
+    row.dataset.depth = String(depth)
+    row.style.setProperty('--depth', String(depth))
 
-  if (visible.length === 0) {
-    const empty = document.createElement('div')
-    empty.className = 'heading-item heading-item-empty'
-    empty.textContent = 'no headings match'
-    listContainer.appendChild(empty)
+    const hint = document.createElement('span')
+    hint.className = 'heading-hint'
+    hint.setAttribute('aria-hidden', 'true')
+
+    const label = document.createElement('span')
+    label.className = 'heading-text'
+    label.append(headingLabel(element, text))
+
+    row.append(hint, label)
+    return { element, initial: headingInitial(element, text), row }
+  })
+}
+
+function renderList() {
+  const list = dialog?.querySelector('.headings-list')
+  if (!list) return
+
+  if (entries.length === 0) {
+    const empty = document.createElement('li')
+    empty.className = 'heading-empty'
+    empty.textContent = 'no headings on this page'
+    list.replaceChildren(empty)
+  } else {
+    list.replaceChildren(
+      ...entries.map(entry => {
+        const item = document.createElement('li')
+        item.append(entry.row)
+        return item
+      }),
+    )
+  }
+}
+
+/** `{key}` segments render as `<kbd>`; the status region only changes when the text does. */
+function setHelp(template: string) {
+  const status = dialog?.querySelector('.headings-modal-help')
+  if (!status || help === template) return
+  help = template
+  status.replaceChildren(
+    ...template.split(/\{([^}]+)\}/).map((part, index) => {
+      if (index % 2 === 0) return part
+      const kbd = document.createElement('kbd')
+      kbd.textContent = part
+      return kbd
+    }),
+  )
+}
+
+/** The section being read is the last heading above the top quarter of the viewport. */
+function currentSectionIndex(): number {
+  const line = window.innerHeight * 0.25
+  let current = -1
+  entries.forEach((entry, index) => {
+    const rect = entry.element.getBoundingClientRect()
+    if (rect.height > 0 && rect.top <= line) current = index
+  })
+  return current
+}
+
+function setCursor(index: number, focus = true) {
+  if (entries.length === 0) return
+  const previous = entries[cursor]?.row
+  cursor = Math.max(0, Math.min(entries.length - 1, index))
+  const row = entries[cursor].row
+
+  if (previous && previous !== row) {
+    previous.classList.remove('is-active')
+    previous.tabIndex = -1
+  }
+  row.classList.add('is-active')
+  row.tabIndex = 0
+  if (focus && document.activeElement !== row) row.focus({ preventScroll: true })
+  row.scrollIntoView({ block: 'nearest' })
+}
+
+function move(delta: number) {
+  if (picks.size === 0) setHelp(BROWSE_HELP)
+  setCursor(cursor + delta)
+}
+
+function resetPick() {
+  for (const index of picks.values()) {
+    const row = entries[index]?.row
+    if (!row) continue
+    row.querySelector('.heading-hint')?.replaceChildren()
+    row.removeAttribute('aria-keyshortcuts')
+  }
+  picks = new Map()
+  if (dialog) delete dialog.dataset.mode
+}
+
+function clearPick() {
+  resetPick()
+  setHelp(BROWSE_HELP)
+}
+
+function chooseInitial(letter: string) {
+  const matches = entries.flatMap((entry, index) => (entry.initial === letter ? [index] : []))
+  if (matches.length === 0) {
+    setHelp(`no heading starts with {${letter}} · {esc} close`)
+    return
+  }
+  if (matches.length === 1) {
+    jump(matches[0])
     return
   }
 
-  visible.forEach((heading, index) => {
-    const item = document.createElement('div')
-    item.className = 'heading-item'
-    item.dataset.index = index.toString()
-
-    const indent = Math.max(heading.level - 1, 0) * 2
-    item.style.paddingLeft = `${indent}ch`
-
-    if (index === currentIndex) {
-      item.classList.add('active')
-    }
-
-    item.textContent = heading.uniqueText
-    item.addEventListener('click', () => jumpToHeading(index))
-
-    listContainer.appendChild(item)
-  })
-}
-
-function updateActiveItem() {
-  const items = modal?.querySelectorAll('.heading-item')
-  if (!items) return
-
-  items.forEach((item, index) => {
-    item.classList.toggle(
-      'active',
-      index === currentIndex && !item.classList.contains('heading-item-empty'),
-    )
-  })
-
-  const activeItem = items[currentIndex]
-  if (activeItem) {
-    activeItem.scrollIntoView({ block: 'nearest' })
+  // Keys go to the matches nearest the cursor, then read top to bottom in list order.
+  const marked = [...matches]
+    .sort((a, b) => Math.abs(a - cursor) - Math.abs(b - cursor))
+    .slice(0, PICK_KEYS.length)
+    .sort((a, b) => a - b)
+  picks = new Map(marked.map((index, i) => [PICK_KEYS[i], index]))
+  for (const [key, index] of picks) {
+    const row = entries[index].row
+    row.querySelector('.heading-hint')?.replaceChildren(key)
+    row.setAttribute('aria-keyshortcuts', key)
   }
+  if (dialog) dialog.dataset.mode = 'pick'
+  setHelp(`{${letter}} ${matches.length} headings · press the marked key · {esc} back`)
 }
 
-function jumpToHeading(index: number) {
-  const visible = getVisibleHeadings()
-  if (index < 0 || index >= visible.length) return
+function jump(index: number) {
+  const entry = entries[index]
+  if (!entry || !dialog) return
+  dialog.close()
+  revealHeading(entry.element)
 
-  const heading = visible[index]
-  closeModal()
-
-  if (ag) ag.hide()
-
-  const highlight = heading.element.querySelector('span.highlight-span') as HTMLElement
+  ag?.remove()
+  const highlight = entry.element.querySelector<HTMLElement>('span.highlight-span')
   if (highlight) {
-    ag = annotate(highlight, {
+    const annotation = annotate(highlight, {
       type: 'box',
       color: 'rgba(234, 157, 52, 0.45)',
       animate: false,
       multiline: true,
-      brackets: ['left', 'right'],
     })
-    setTimeout(() => ag!.show(), 50)
-    setTimeout(() => ag?.hide(), 2500)
+    ag = annotation
+    setTimeout(() => annotation.show(), 50)
+    setTimeout(() => annotation.remove(), 2500)
   }
 
-  heading.element.style.outline = 'none'
-
-  const headingRect = heading.element.getBoundingClientRect()
-  const absoluteTop = window.pageYOffset + headingRect.top
-  const middle = absoluteTop - window.innerHeight / 2 + headingRect.height / 2
-
-  window.scrollTo({ top: middle, behavior: 'smooth' })
-}
-
-function clearSecondaryMode() {
-  secondaryExtmarks.forEach(el => el.remove())
-  secondaryExtmarks = []
-  secondaryKeys = []
-  isSecondaryMode = false
-}
-
-function findKeyLetterIndex(text: string, key: string): number {
-  // Find the first occurrence of the key letter in the text
-  const lowerText = text.toLowerCase()
-  const lowerKey = key.toLowerCase()
-
-  for (let i = 0; i < text.length; i++) {
-    if (lowerText[i] === lowerKey && /[a-zA-Z]/.test(text[i])) {
-      return i
-    }
-  }
-
-  return -1
-}
-
-function enterSecondaryMode(letter: string) {
-  const indices = secondaryGroups[letter]
-  if (!indices || indices.length <= 1) return
-
-  clearSecondaryMode()
-  isSecondaryMode = true
-
-  // Sort by distance from current middle
-  const listContainer = modal?.querySelector('.headings-list')
-  if (!listContainer) return
-
-  const visible = getVisibleHeadings()
-  const middle = Math.ceil(visible.length / 2)
-  indices.sort((a, b) => {
-    const distA = Math.abs(a - middle)
-    const distB = Math.abs(b - middle)
-    if (distA !== distB) return distA - distB
-    return b - a // Prefer later items if distance is same
+  const rect = entry.element.getBoundingClientRect()
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  window.scrollTo({
+    top: window.scrollY + rect.top - window.innerHeight / 2 + rect.height / 2,
+    behavior: reduce ? 'auto' : 'smooth',
   })
-
-  // Assign keys
-  const assigned: Record<number, string> = {}
-  indices.forEach((index, i) => {
-    if (i >= SECONDARY_CHOICE_KEYS.length) return
-    const key = SECONDARY_CHOICE_KEYS[i]
-    assigned[index] = key
-    secondaryKeys.push(key)
-  })
-
-  Object.entries(assigned).forEach(([indexStr, key]) => {
-    const index = parseInt(indexStr)
-    const item = listContainer.querySelector(`[data-index="${index}"]`) as HTMLElement
-    if (!item) return
-
-    const text = visible[index]?.uniqueText || item.textContent || ''
-    const keyIndex = findKeyLetterIndex(text, key)
-
-    if (keyIndex !== -1) {
-      // Wrap the key letter with a mark element
-      const before = text.substring(0, keyIndex)
-      const keyChar = text.substring(keyIndex, keyIndex + 1)
-      const after = text.substring(keyIndex + 1)
-
-      item.innerHTML = ''
-      if (before) item.appendChild(document.createTextNode(before))
-
-      const mark = document.createElement('mark')
-      mark.className = 'key-extmark'
-      mark.textContent = keyChar
-      item.appendChild(mark)
-      secondaryExtmarks.push(mark)
-
-      if (after) item.appendChild(document.createTextNode(after))
-    } else {
-      // Fallback: prepend the key if not found in text
-      const mark = document.createElement('mark')
-      mark.className = 'key-extmark'
-      mark.textContent = key
-      item.prepend(mark)
-      item.prepend(document.createTextNode(' '))
-      secondaryExtmarks.push(mark)
-    }
-  })
-
-  const handleSecondaryKey = (e: KeyboardEvent) => {
-    if (!isSecondaryMode) return
-
-    const key = e.key.toLowerCase()
-    if (secondaryKeys.includes(key)) {
-      e.preventDefault()
-      e.stopPropagation()
-
-      const index = Object.entries(assigned).find(([, k]) => k === key)?.[0]
-      if (index !== undefined) {
-        jumpToHeading(parseInt(index))
-      }
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      clearSecondaryMode()
-      renderHeadings() // Re-render to clear marks
-    }
-  }
-
-  document.addEventListener('keydown', handleSecondaryKey, true)
-  window.addCleanup(() => document.removeEventListener('keydown', handleSecondaryKey, true))
-}
-
-function handleLetterKey(letter: string) {
-  if (isSecondaryMode) return
-
-  const indices = secondaryGroups[letter]
-  if (!indices || indices.length === 0) return
-
-  if (indices.length === 1) {
-    jumpToHeading(indices[0])
-  } else {
-    enterSecondaryMode(letter)
-  }
+  history.pushState(null, '', entry.row.href)
 }
 
 function openModal() {
-  if (isOpen) return
+  if (!dialog || dialog.open) return
+  if (document.documentElement.getAttribute('reader-mode') === 'on') return
 
-  allHeadings = extractHeadings()
-  if (allHeadings.length === 0) return
+  entries = collectHeadings()
+  cursor = 0
+  renderList()
+  setHelp(entries.length === 0 ? '{esc} close' : BROWSE_HELP)
+  dialog.showModal()
 
-  searchQuery = ''
-  if (searchInput) {
-    searchInput.value = ''
+  if (entries.length === 0) {
+    dialog.querySelector<HTMLElement>('.headings-modal-close')?.focus()
+    return
   }
-
-  filteredHeadings = [...allHeadings]
-  currentIndex = 0
-  updateFilteredHeadings()
-  isOpen = true
-
-  if (!modal) {
-    modal = document.querySelector('.headings-modal-container')
-  }
-
-  if (modal) {
-    modal.style.display = 'flex'
-    const modalContent = modal.querySelector('.headings-modal') as HTMLElement
-    modalContent?.focus()
-  }
+  const here = currentSectionIndex()
+  entries[here]?.row.setAttribute('aria-current', 'location')
+  setCursor(Math.max(here, 0))
 }
 
-function closeModal() {
-  if (!isOpen) return
+function onDialogKeyDown(event: KeyboardEvent) {
+  if (event.isComposing || event.metaKey || event.altKey) return
+  const { key } = event
 
-  clearSecondaryMode()
-  isOpen = false
-
-  if (modal) {
-    modal.style.display = 'none'
-  }
-
-  document.body.focus()
-}
-
-function handleKeyDown(e: KeyboardEvent) {
-  if (!isOpen) return
-
-  if (searchInput && e.target === searchInput) {
+  if (event.ctrlKey) {
+    if (key === 'n') move(1)
+    else if (key === 'p') move(-1)
+    else return
+  } else if (key === 'Escape') {
+    if (picks.size > 0) clearPick()
+    else dialog?.close()
+  } else if (key === 'ArrowDown' || key === 'j') {
+    move(1)
+  } else if (key === 'ArrowUp' || key === 'k') {
+    move(-1)
+  } else if (key === 'Home') {
+    move(-entries.length)
+  } else if (key === 'End') {
+    move(entries.length)
+  } else if (key === 'Enter') {
+    if (event.target instanceof Element && event.target.closest('.headings-modal-close')) return
+    jump(cursor)
+  } else if (/^[a-z]$/i.test(key)) {
+    // Shift reaches the j and k initials that movement reserves.
+    const letter = key.toLowerCase()
+    if (picks.size === 0) chooseInitial(letter)
+    else if (picks.has(letter)) jump(picks.get(letter)!)
+  } else {
     return
   }
 
-  if (isSecondaryMode) {
-    // Secondary mode keys are handled by their own listener
-    return
-  }
-
-  switch (e.key) {
-    case 'Escape':
-      e.preventDefault()
-      closeModal()
-      break
-
-    case 'Enter':
-      e.preventDefault()
-      jumpToHeading(currentIndex)
-      break
-
-    case 'ArrowDown':
-    case 'j':
-      e.preventDefault()
-      currentIndex = Math.min(currentIndex + 1, Math.max(getVisibleHeadings().length - 1, 0))
-      updateActiveItem()
-      break
-
-    case 'ArrowUp':
-    case 'k':
-      e.preventDefault()
-      currentIndex = Math.max(currentIndex - 1, 0)
-      updateActiveItem()
-      break
-
-    case '/':
-      e.preventDefault()
-      if (searchInput) {
-        searchInput.focus()
-        searchInput.select()
-      }
-      break
-
-    default:
-      // Handle letter keys
-      if (
-        e.key.length === 1 &&
-        e.key.match(/[a-z]/i) &&
-        !e.ctrlKey &&
-        !e.metaKey &&
-        e.key !== '/'
-      ) {
-        const letter = e.key.toLowerCase()
-        if (letter !== 'j' && letter !== 'k') {
-          // Don't interfere with navigation
-          e.preventDefault()
-          handleLetterKey(letter)
-        }
-      }
-      break
-  }
+  event.preventDefault()
+  event.stopPropagation()
 }
 
-function handleGlobalKeyDown(e: KeyboardEvent) {
-  // Don't trigger if modal is already open
-  if (isOpen) return
-  if (shouldIgnoreShortcutTarget(e.target)) return
-
-  // Check for 'gh' sequence
-  if (e.key === 'g' && !e.ctrlKey && !e.metaKey && !e.altKey) {
-    // Set a temporary flag to wait for 'h'
-    let waitingForH = true
-    const timeout = setTimeout(() => {
-      waitingForH = false
-    }, 1000)
-
-    const handleH = (e2: KeyboardEvent) => {
-      if (shouldIgnoreShortcutTarget(e2.target)) {
-        waitingForH = false
-        clearTimeout(timeout)
-        return
-      }
-      if (waitingForH && e2.key === 'h') {
-        e2.preventDefault()
-        clearTimeout(timeout)
-        document.removeEventListener('keydown', handleH)
-        openModal()
-      }
-      waitingForH = false
-    }
-
-    document.addEventListener('keydown', handleH, { once: true })
-    window.addCleanup(() => {
-      clearTimeout(timeout)
-      document.removeEventListener('keydown', handleH)
-    })
+function onDocumentKeyDown(event: KeyboardEvent) {
+  if (dialog?.open) return
+  if (event.ctrlKey || event.metaKey || event.altKey || shouldIgnoreShortcutTarget(event.target)) {
+    pendingG = -Infinity
+    return
   }
+  if (event.key === 'h' && event.timeStamp - pendingG < CHORD_WINDOW_MS) {
+    event.preventDefault()
+    pendingG = -Infinity
+    openModal()
+    return
+  }
+  pendingG = event.key === 'g' ? event.timeStamp : -Infinity
+}
+
+function rowIndex(target: EventTarget | null): number | undefined {
+  const row = target instanceof Element ? target.closest<HTMLElement>('.heading-item') : null
+  return row ? Number(row.dataset.index) : undefined
 }
 
 document.addEventListener('nav', () => {
   const signal = currentNavSignal()
-  if (activeHeadingsSignal === signal) return
-  activeHeadingsSignal = signal
-  signal.addEventListener(
-    'abort',
-    () => {
-      if (activeHeadingsSignal === signal) activeHeadingsSignal = undefined
+  if (activeSignal === signal) return
+  activeSignal = signal
+
+  dialog = document.querySelector<HTMLDialogElement>('dialog.headings-modal')
+  entries = []
+  picks = new Map()
+  help = ''
+  pendingG = -Infinity
+
+  document.addEventListener('keydown', onDocumentKeyDown, { signal })
+  if (!dialog) return
+  const modal = dialog
+
+  modal.addEventListener('keydown', onDialogKeyDown, { signal })
+  modal.addEventListener('close', resetPick, { signal })
+  modal
+    .querySelector('.headings-modal-close')
+    ?.addEventListener('click', () => modal.close(), { signal })
+
+  // Clicks on the backdrop target the dialog itself, outside its box.
+  modal.addEventListener(
+    'click',
+    event => {
+      if (event.target !== modal) return
+      const rect = modal.getBoundingClientRect()
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom
+      if (!inside) modal.close()
     },
-    { once: true },
+    { signal },
   )
 
-  isOpen = false
-  isSecondaryMode = false
-  allHeadings = []
-  filteredHeadings = []
-  searchQuery = ''
-  currentIndex = 0
-  clearSecondaryMode()
-
-  modal = document.querySelector('.headings-modal-container')
-
-  if (modal) {
-    const modalContent = modal.querySelector('.headings-modal') as HTMLElement
-    if (modalContent) {
-      modalContent.setAttribute('tabindex', '-1')
-    }
-
-    const header = modal.querySelector('.headings-modal-header')
-    if (header && !header.querySelector('.headings-modal-search')) {
-      const searchWrapper = document.createElement('div')
-      searchWrapper.className = 'headings-modal-search'
-
-      const input = document.createElement('input')
-      input.type = 'search'
-      input.placeholder = 'search headings (/)'
-      input.autocomplete = 'off'
-      input.spellcheck = false
-
-      input.addEventListener('input', () => {
-        searchQuery = input.value
-        updateFilteredHeadings()
-        currentIndex = 0
-        updateActiveItem()
-      })
-
-      input.addEventListener('keydown', event => {
-        if (event.key === 'Escape') {
-          event.stopPropagation()
-          if (input.value) {
-            input.value = ''
-            searchQuery = ''
-            updateFilteredHeadings()
-            currentIndex = 0
-            updateActiveItem()
-          } else {
-            closeModal()
-          }
-        } else if (event.key === 'ArrowDown') {
-          event.preventDefault()
-          currentIndex = Math.min(currentIndex + 1, getVisibleHeadings().length - 1)
-          updateActiveItem()
-        } else if (event.key === 'ArrowUp') {
-          event.preventDefault()
-          currentIndex = Math.max(currentIndex - 1, 0)
-          updateActiveItem()
-        } else if (event.key === 'Enter') {
-          event.preventDefault()
-          jumpToHeading(currentIndex)
-        }
-      })
-
-      searchWrapper.appendChild(input)
-      header.appendChild(searchWrapper)
-      searchInput = input
-    } else if (header) {
-      searchInput = header.querySelector('.headings-modal-search input') as HTMLInputElement | null
-    }
-
-    registerEscapeHandler(modal, closeModal, () => isOpen)
-
-    const backdrop = modal.querySelector('.headings-modal-backdrop')
-    if (backdrop) {
-      backdrop.addEventListener('click', closeModal)
-      window.addCleanup(() => backdrop.removeEventListener('click', closeModal))
-    }
-
-    modal.style.display = 'none'
-  }
-
-  document.addEventListener('keydown', handleKeyDown)
-  document.addEventListener('keydown', handleGlobalKeyDown)
-
-  window.addCleanup(() => {
-    document.removeEventListener('keydown', handleKeyDown)
-    document.removeEventListener('keydown', handleGlobalKeyDown)
-    clearSecondaryMode()
-  })
+  const list = modal.querySelector('.headings-list')
+  list?.addEventListener(
+    'click',
+    event => {
+      const index = rowIndex(event.target)
+      const mouse = event as MouseEvent
+      if (index === undefined || mouse.button !== 0) return
+      if (mouse.metaKey || mouse.ctrlKey || mouse.shiftKey || mouse.altKey) return
+      event.preventDefault()
+      jump(index)
+    },
+    { signal },
+  )
+  list?.addEventListener(
+    'focusin',
+    event => {
+      const index = rowIndex(event.target)
+      if (index !== undefined) setCursor(index, false)
+    },
+    { signal },
+  )
 })
