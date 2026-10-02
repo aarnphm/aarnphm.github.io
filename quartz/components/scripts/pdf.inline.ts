@@ -63,7 +63,11 @@ interface PdfTextContent {
 interface PdfPage {
   getViewport(options: { scale: number }): PdfViewport
   getTextContent(): Promise<PdfTextContent>
-  render(options: { canvasContext: CanvasRenderingContext2D; viewport: PdfViewport }): PdfRenderTask
+  render(options: {
+    canvasContext: CanvasRenderingContext2D
+    viewport: PdfViewport
+    transform: number[]
+  }): PdfRenderTask
 }
 
 interface PdfDocument {
@@ -84,6 +88,7 @@ interface PdfJsRuntime {
     cMapUrl: string
     cMapPacked: boolean
     standardFontDataUrl: string
+    wasmUrl: string
   }): PdfLoadingTask
 }
 
@@ -451,6 +456,7 @@ function pdfDocumentOptions(src: string) {
     cMapUrl: '/static/pdfjs/cmaps/',
     cMapPacked: true,
     standardFontDataUrl: '/static/pdfjs/standard_fonts/',
+    wasmUrl: '/static/pdfjs/wasm/',
   }
 }
 
@@ -1803,8 +1809,11 @@ async function renderPage(state: PdfState, slot: PdfPageSlot, epoch: number) {
 
   const context = canvas.getContext('2d')
   if (!context) return
-  context.setTransform(ratio, 0, 0, ratio, 0, 0)
-  const task = page.render({ canvasContext: context, viewport })
+  const task = page.render({
+    canvasContext: context,
+    viewport,
+    transform: [ratio, 0, 0, ratio, 0, 0],
+  })
   slot.renderTask = task
   await task.promise
   if (state.destroyed || epoch !== state.renderEpoch) return

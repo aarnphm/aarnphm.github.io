@@ -121,10 +121,7 @@ function ReaderIndex({ documents }: { documents: IndexDocument[] }) {
     <div class="pdf-reader-library">
       <header>
         <h1>reader</h1>
-        <p>
-          PDFs this garden hosts, ordered by how many notes cite them. Open one to read it with the
-          notes that cite it in the margin.
-        </p>
+        <p>Open any PDFs to read with annotations.</p>
         <input
           type="search"
           value={filter}
@@ -165,8 +162,10 @@ async function copyText(text: string, message: string) {
   try {
     await navigator.clipboard.writeText(text)
     toast(message)
+    return true
   } catch {
     toast('Copy failed. The clipboard is unavailable here.')
+    return false
   }
 }
 
@@ -296,7 +295,6 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
           const position = await loadPosition(record.doc).catch(() => null)
           if (position && !signal.aborted) viewer.scrollToPage(position.page, position.top)
         }
-        if (document.activeElement === document.body) scroller.focus({ preventScroll: true })
         void viewer.outline().then(nodes => !signal.aborted && setOutline(flattenOutline(nodes)))
         void viewer.pageLabels().then(value => !signal.aborted && setLabels(value))
         void viewer.metadataTitle().then(value => !signal.aborted && setMetaTitle(value))
@@ -639,7 +637,7 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
         viewer?.setZoom('width')
       } else if (event.key === 'c' && (selection || activeId)) {
         if (selection) onBubble('quote')
-        else if (activeId) copyMarkQuote(activeId)
+        else if (activeId) void copyMarkQuote(activeId)
       } else if (!book.canWrite) {
         handled = false
       } else if (event.key === 'a' || event.key === 'q' || event.key === 'x') {
@@ -667,11 +665,11 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
     return () => window.removeEventListener('keydown', onKey, true)
   })
 
-  const copyMarkQuote = (id: string) => {
+  const copyMarkQuote = async (id: string): Promise<boolean> => {
     const entry = book.entries.get(id)
-    if (!entry) return
+    if (!entry) return false
     const quote = entry.mark.target.type === 'text' ? entry.mark.target.quote.exact : null
-    void copyText(quoteText(quote, entry.mark.target.page, id), 'Quote copied as a garden link.')
+    return copyText(quoteText(quote, entry.mark.target.page, id), 'Quote copied as a garden link.')
   }
 
   // Pointer: activate painted marks on click, start text selection, or drag a region.
@@ -832,7 +830,7 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
       onDelete={() => removeMark(entry.mark.id)}
       onResolve={choice => book.resolve(entry.mark.id, choice)}
       onCopyLink={() =>
-        void copyText(`${location.origin}${encodeURI(readPath)}#^${entry.mark.id}`, 'Link copied.')
+        copyText(`${location.origin}${encodeURI(readPath)}#^${entry.mark.id}`, 'Link copied.')
       }
       onCopyQuote={() => copyMarkQuote(entry.mark.id)}
     />
@@ -926,12 +924,31 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
         </div>
         <p class="pdf-reader-meta">
           {pageCount > 0 && <span>{pageCount} pp</span>}
-          <span>
+          <span class="pdf-reader-meta-marks">
             {markCount} {markCount === 1 ? 'mark' : 'marks'}
           </span>
           {record.citedBy.length > 0 && <span>cited by {record.citedBy.length}</span>}
-          <a href={`${pdfUrl}?raw=1`} download={slug.split('/').pop()}>
-            pdf ↓
+          <a
+            class="pdf-reader-download"
+            href={`${pdfUrl}?raw=1`}
+            download={slug.split('/').pop()}
+            aria-label="Download PDF"
+            title="Download PDF"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M12 3v12m-5-5 5 5 5-5M5 15v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5" />
+            </svg>
           </a>
         </p>
         <div class="pdf-reader-controls" role="toolbar" aria-label="Reader controls">

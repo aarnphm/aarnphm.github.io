@@ -13,4 +13,6 @@ notes de français québécois: [[fr/episode-1|épisodes]], [[fr/phrases|phrases
 
 leçon du 21 septembre : [[fr/words|mots]] et [[fr/verbs|verbes au présent]].
 
+bilan de printemps : [[fr/episode-12|épisode 12]], corrigé des activités, écoutes, trajets et jeu à deux fiches.
+
 vue d'ensemble : [[fr/parcours.canvas|carte des notes]].

@@ -103,6 +103,10 @@ function metadataDisablesPopover(metadata?: Record<string, unknown>): boolean {
   return false
 }
 
+// ofm's rehype-raw pass re-parses notes containing raw HTML and camelCases data attributes, so
+// `data-*` properties arrive under either spelling depending on the note.
+const PDF_SRC_PROPERTIES = ['data-pdf-src', 'dataPdfSrc']
+
 function transformResourceProperty(
   node: Element,
   property: string,
@@ -151,7 +155,9 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               let dest = node.properties.href as RelativeURL
               const ext: string = path.extname(dest).toLowerCase()
               const metadata = JSON.parse(
-                (node.properties?.['data-metadata'] ?? '{}') as string,
+                (node.properties['data-metadata'] ??
+                  node.properties.dataMetadata ??
+                  '{}') as string,
               ) as Record<string, unknown>
 
               const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(dest)
@@ -547,16 +553,19 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 Boolean(properties.src) &&
                 typeof properties.src === 'string') ||
               (tagName === 'div' &&
-                Boolean(properties['data-pdf-src']) &&
-                typeof properties['data-pdf-src'] === 'string')
+                PDF_SRC_PROPERTIES.some(
+                  property =>
+                    Boolean(properties[property]) && typeof properties[property] === 'string',
+                ))
 
             visit(
               tree,
               node => shouldTransformResources(node as Element),
               node => {
                 if (opts.lazyLoad) node.properties.loading = 'lazy'
-                transformResourceProperty(node, 'src', file.data.slug!, transformOptions)
-                transformResourceProperty(node, 'data-pdf-src', file.data.slug!, transformOptions)
+                for (const property of ['src', ...PDF_SRC_PROPERTIES]) {
+                  transformResourceProperty(node, property, file.data.slug!, transformOptions)
+                }
               },
             )
 

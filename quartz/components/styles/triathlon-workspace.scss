@@ -93,7 +93,6 @@
 
 .tri-workspace {
   --tri-workspace-graph-height: clamp(18rem, 38dvh, 30rem);
-  --tri-workspace-axis-width: 3.75rem;
   container: tri-workspace / inline-size;
   display: block;
   box-sizing: border-box;
@@ -359,15 +358,9 @@
 
 .tri-workspace-chart {
   display: grid;
-  grid-template-columns:
-    calc(var(--tri-workspace-start-axes) * var(--tri-workspace-axis-width))
-    minmax(16rem, 1fr)
-    calc(var(--tri-workspace-end-axes) * var(--tri-workspace-axis-width));
+  grid-template-columns: max-content minmax(16rem, 1fr) max-content;
   column-gap: 0.5rem;
-  min-inline-size: calc(
-    (var(--tri-workspace-start-axes) + var(--tri-workspace-end-axes)) *
-      var(--tri-workspace-axis-width) + 17rem
-  );
+  min-inline-size: 100%;
   padding-block: 0.25rem;
 
   .tri-workspace-graph {
@@ -378,6 +371,7 @@
 
 .tri-workspace-y-axes {
   display: flex;
+  gap: 0.5rem;
   grid-row: 2;
 }
 
@@ -391,8 +385,8 @@
 
 .tri-workspace-y-axis {
   position: relative;
-  min-width: 0;
-  inline-size: var(--tri-workspace-axis-width);
+  flex: none;
+  inline-size: calc(var(--tri-workspace-axis-chars) * 1ch);
   height: var(--tri-workspace-graph-height);
   font-size: 0.6875rem;
   color: var(--darkgray);

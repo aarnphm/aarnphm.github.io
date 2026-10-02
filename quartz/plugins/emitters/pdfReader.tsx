@@ -17,6 +17,7 @@ import {
   normalizePdfSlug,
   parsePdfFragment,
   PDF_MANIFEST_PATH,
+  PDF_READER_SHELL_PATH,
   type PdfCitation,
   type PdfManifest,
 } from '../../util/pdf-marks'
@@ -96,8 +97,7 @@ function compactText(value: string): string {
 }
 
 function citationTarget(node: Element, from: string): { slug: string; hash: string } | null {
-  // rehype-raw re-parses notes with raw HTML and camelCases data attributes, after which CrawlLinks
-  // leaves an embed's bare `thoughts/x.pdf` alone.
+  // rehype-raw re-parses notes with raw HTML and camelCases data attributes.
   const raw =
     node.tagName === 'a'
       ? node.properties.href
@@ -261,7 +261,7 @@ export const PdfReader: QuartzEmitterPlugin = () => {
         ctx,
         // The shell renders at depth 0, so its relative links all mean the site root.
         content: html.replaceAll('href="./', 'href="/').replaceAll('src="./', 'src="/'),
-        slug: PDF_READER_SLUG,
+        slug: PDF_READER_SHELL_PATH.slice(1),
         ext: '.html',
       })
     },

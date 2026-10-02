@@ -1,5 +1,6 @@
 export const PDF_MANIFEST_PATH = '/static/pdf-documents.json'
 export const PDF_READER_PREFIX = '/read'
+export const PDF_READER_SHELL_PATH = '/static/pdf-reader'
 export const PDF_MARK_ID = /^[a-z2-7]{10}$/
 export const PDF_DOCUMENT_ID = /^[0-9a-f]{64}$/
 

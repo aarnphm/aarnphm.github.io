@@ -41,7 +41,11 @@ interface PdfPageProxy {
   getViewport(options: { scale: number }): PdfViewport
   getTextContent(): Promise<PdfTextContent>
   getAnnotations(options: { intent: string }): Promise<PdfAnnotation[]>
-  render(options: { canvasContext: CanvasRenderingContext2D; viewport: PdfViewport }): PdfRenderTask
+  render(options: {
+    canvasContext: CanvasRenderingContext2D
+    viewport: PdfViewport
+    transform: number[]
+  }): PdfRenderTask
   cleanup(): void
 }
 
@@ -189,6 +193,7 @@ export class PdfViewer {
       cMapUrl: '/static/pdfjs/cmaps/',
       cMapPacked: true,
       standardFontDataUrl: '/static/pdfjs/standard_fonts/',
+      wasmUrl: '/static/pdfjs/wasm/',
     })
     this.document = await this.task.promise
     if (this.destroyed) return
@@ -288,8 +293,13 @@ export class PdfViewer {
     const base = page.base ?? this.defaultBase()
     if (!base) return
     const scale = this.zoom * CSS_UNITS
-    page.element.style.width = `${Math.round(base.width * scale)}px`
+    const width = Math.round(base.width * scale)
+    page.element.style.width = `${width}px`
     page.element.style.height = `${Math.round(base.height * scale)}px`
+    page.element.toggleAttribute(
+      'data-fits-width',
+      this.fit === 'width' && width <= Math.round(this.availableWidth()),
+    )
     page.element.style.setProperty('--total-scale-factor', String(scale * (base.userUnit ?? 1)))
   }
 
@@ -316,8 +326,9 @@ export class PdfViewer {
 
   setZoom(value: number | 'width') {
     const next = value === 'width' ? this.fitZoom() : clampZoom(value)
-    this.fit = value === 'width' ? 'width' : 'custom'
-    if (Math.abs(next - this.zoom) < 0.001) return
+    const fit = value === 'width' ? 'width' : 'custom'
+    if (Math.abs(next - this.zoom) < 0.001 && this.fit === fit) return
+    this.fit = fit
     this.preservingAnchor(() => {
       this.zoom = next
       this.layoutPages()
@@ -470,8 +481,11 @@ export class PdfViewer {
     canvas.height = Math.floor(viewport.height * ratio)
     const context = canvas.getContext('2d')
     if (!context) return
-    context.setTransform(ratio, 0, 0, ratio, 0, 0)
-    const task = proxy.render({ canvasContext: context, viewport })
+    const task = proxy.render({
+      canvasContext: context,
+      viewport,
+      transform: [ratio, 0, 0, ratio, 0, 0],
+    })
     page.renderTask = task
     try {
       await task.promise
