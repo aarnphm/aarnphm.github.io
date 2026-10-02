@@ -1,14 +1,14 @@
 ---
 date: '2026-09-25'
-description: hope you are okay.
+description: it was 13 years ago.
 id: words that i wanted to tell you
-modified: 2026-10-01 12:07:20 GMT-04:00
+modified: 2026-10-02 02:22:40 GMT-04:00
 noindex: true
 signature: vuanh
 tags:
   - love
   - o/m
-title: words that i wish i can say to you
+title: words that i wanted to tell you
 ---
 
 hi T,
