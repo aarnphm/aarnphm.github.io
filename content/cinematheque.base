@@ -200,11 +200,11 @@ views:
       property: category
       direction: ASC
     order:
-      - file.name
+      - title
       - director
       - year
     sort:
-      - property: file.name
+      - property: title
         direction: ASC
       - property: year
         direction: DESC

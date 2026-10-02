@@ -11,22 +11,21 @@ function setupBaseSearch() {
 
   const listItems = document.querySelectorAll<HTMLLIElement>('.base-list > li')
   listItems.forEach(li => items.push(li))
+  const listGroups = document.querySelectorAll<HTMLElement>('.base-list-group')
 
   const cardItems = document.querySelectorAll<HTMLDivElement>('.base-card')
   cardItems.forEach(card => items.push(card))
 
   const filterItems = () => {
     const query = searchInput.value.toLowerCase().trim()
-    if (query.length === 0) {
-      items.forEach(item => {
-        item.style.display = ''
-      })
-      return
-    }
-
     items.forEach(item => {
       const text = item.textContent?.toLowerCase() || ''
-      item.style.display = text.includes(query) ? '' : 'none'
+      item.style.display = query.length === 0 || text.includes(query) ? '' : 'none'
+    })
+
+    listGroups.forEach(group => {
+      const entries = group.querySelectorAll<HTMLLIElement>('.base-list > li')
+      group.hidden = !Array.from(entries).some(item => item.style.display !== 'none')
     })
   }
 
