@@ -1,186 +1,255 @@
-.headings-modal-container {
-  position: fixed;
-  top: 0;
-  right: 12px;
-  bottom: 0;
-  z-index: var(--z-tooltip);
-  display: none;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 2rem;
+@use '../../styles/variables.scss' as *;
 
-  > .headings-modal {
-    position: relative;
-    background-color: var(--light);
-    border: 1px solid var(--gray);
-    border-radius: var(--radius-none);
-    width: min(600px, 80vw);
-    max-height: min(600px, 80vh);
+// Same line, surface and selection mix as the arena reader and feed.
+.headings-modal {
+  --headings-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --headings-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --headings-selected: color-mix(in srgb, var(--secondary) 18%, var(--headings-surface));
+  --headings-control: 1.75rem;
+  --headings-offset: 0.75rem, 0;
+  // Centred on the right edge: both block insets plus auto margins, with the height shrunk to the list.
+  position: fixed;
+  inset: 0 1rem 0 auto;
+  width: min(26rem, calc(100vw - 2rem));
+  max-width: none;
+  height: fit-content;
+  max-height: min(70dvh, 44rem);
+  margin: auto 0;
+  padding: 0;
+  border: 1px solid var(--headings-line);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--darkgray);
+  overflow: hidden;
+  overscroll-behavior: contain;
+
+  &:focus {
+    outline: none;
+  }
+
+  &[open] {
     display: flex;
     flex-direction: column;
-    outline: none;
+    opacity: 1;
+    transform: none;
+    // Enter only: a jump closes the panel while the page scrolls, so it leaves at once.
+    transition:
+      opacity $panel-duration $panel-ease,
+      transform $panel-duration $panel-ease;
 
-    > .headings-modal-content {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      overflow: hidden;
+    @starting-style {
+      opacity: 0;
+      transform: translate(var(--headings-offset));
+    }
+  }
 
-      > .headings-modal-header {
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid var(--lightgray);
-        background-color: var(--light);
-        border-radius: var(--radius-none);
-        display: flex;
-        justify-content: space-between;
+  &::backdrop {
+    background: transparent;
+  }
 
-        > h3 {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.1rem;
-          font-weight: 600;
-          color: var(--dark);
-        }
+  @media #{$mobile} {
+    --headings-offset: 0, 1.5rem;
+    inset: auto 0 0;
+    width: 100%;
+    margin: 0;
+    max-height: 60dvh;
+    border-inline: 0;
+    border-bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 
-        > .headings-modal-search {
-          > input[type='search'] {
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid var(--lightgray);
-            border-radius: var(--radius-none);
-            background-color: var(--light);
-            color: var(--dark);
-            font-size: 0.9rem;
-            font-family: var(--bodyFont);
-            outline: none;
-            transition:
-              background-color 0.15s ease,
-              border-color 0.15s ease,
-              color 0.15s ease;
+  @media (pointer: coarse) {
+    --headings-control: 44px;
+  }
 
-            &::placeholder {
-              color: var(--gray);
-            }
+  @media (prefers-reduced-motion: reduce) {
+    --headings-offset: 0, 0;
+  }
 
-            &:focus {
-              border-color: var(--secondary);
-            }
-          }
-        }
-      }
+  button:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: -2px;
+  }
 
-      > .headings-list {
-        flex: 1;
-        overflow-y: auto;
-        padding: 0.5rem 0;
-        min-height: 200px;
-        max-height: calc(100vh - 100px);
+  // Keys read as darker text inside the help line, so it stays one line.
+  kbd {
+    display: inline;
+    width: auto;
+    padding: 0;
+    border: 0;
+    color: var(--dark);
+    font-size: inherit;
+    line-height: inherit;
+  }
+}
 
-        > .heading-item {
-          padding: 0.5rem 1.5rem;
-          cursor: pointer;
-          transition: background-color 0.15s ease;
-          font-size: 0.9rem;
-          line-height: 1.4;
-          color: var(--darkgray);
-          position: relative;
-          display: flex;
-          align-items: center;
+.headings-modal-header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: calc(var(--headings-control) + 0.5rem + 1px);
+  padding-block: 0.25rem;
+  padding-inline: 0.75rem 0.25rem;
+  border-bottom: 1px solid var(--headings-line);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
 
-          &:hover {
-            background-color: var(--lightgray);
-          }
+  // The site header's `header > :nth-last-child(2)` rule would otherwise center the title.
+  > #headings-modal-title {
+    margin-inline: 0 auto;
+    color: var(--dark);
+  }
 
-          &.active {
-            background-color: var(--highlight);
-            color: var(--dark);
-            font-weight: 500;
-          }
+  > .headings-modal-close {
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--headings-control);
+    height: var(--headings-control);
+    padding: 0;
+    color: var(--darkgray);
+    background: transparent;
 
-          mark.key-extmark {
-            background-color: rgba(208, 162, 21, 0.4);
-            color: white;
-            border-radius: var(--radius-none);
-            padding: 0.1rem 0.2rem;
-            font-weight: bold;
-            font-family: var(--codeFont);
-          }
-        }
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
 
-        &::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        &::-webkit-scrollbar-track {
-          background: var(--lightgray);
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background-color: var(--gray);
-          border-radius: var(--radius-none);
-
-          &:hover {
-            background-color: var(--darkgray);
-          }
-        }
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--dark);
+        background: var(--headings-surface);
       }
     }
   }
 }
 
-// dark mode support
-[saved-theme='dark'] {
-  .headings-modal-container {
-    > .headings-modal {
-      background-color: var(--dark);
-      border-color: var(--darkgray);
-      color: var(--light);
+.headings-modal-help {
+  flex: none;
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid var(--headings-line);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-      > .headings-modal-content {
-        > .headings-modal-header {
-          background-color: var(--dark);
-          border-bottom-color: var(--darkgray);
+.headings-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--headings-line) transparent;
+}
 
-          > h3 {
-            color: var(--light);
-          }
+.headings-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 0;
 
-          > .headings-modal-search {
-            > input[type='search'] {
-              background-color: var(--darkgray);
-              border-color: var(--gray);
-              color: var(--light);
+  > li {
+    margin: 0;
+    padding: 0;
+    line-height: inherit;
+  }
 
-              &::placeholder {
-                color: var(--gray);
-              }
+  > .heading-empty {
+    padding: 1.5rem 0.75rem;
+    color: var(--gray);
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    text-align: center;
+  }
+}
 
-              &:focus {
-                border-color: var(--secondary);
-              }
-            }
-          }
-        }
+.heading-item {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.4rem;
+  box-sizing: border-box;
+  min-height: 2rem;
+  padding-block: 0.4rem;
+  padding-inline: 0.5rem 0.75rem;
+  --row-color: var(--darkgray);
+  color: var(--row-color);
+  font-family: var(--bodyFont);
+  font-size: 0.85rem;
+  font-weight: $normalWeight;
+  line-height: 1.35;
+  text-decoration: none;
+  background: transparent;
 
-        > .headings-list {
-          > .heading-item {
-            color: var(--lightgray);
+  &[data-depth='0'] {
+    --row-color: var(--dark);
+  }
 
-            &:hover {
-              background-color: var(--darkgray);
-            }
+  // Overrides the global inverted link hover.
+  &:hover {
+    color: var(--row-color);
+    background: transparent;
+  }
 
-            &.active {
-              background-color: var(--darkgray);
-              color: var(--light);
-            }
+  // Focus always lands on the active row (focusin moves the cursor), so the fill is the focus indicator.
+  &.is-active,
+  &.is-active:hover {
+    color: var(--dark);
+    background: var(--headings-selected);
+    outline: none;
+  }
 
-            mark.key-extmark {
-              background-color: var(--secondary);
-              color: var(--dark);
-            }
-          }
-        }
-      }
+  @media (hover: hover) and (pointer: fine) {
+    &:not(.is-active):hover {
+      color: var(--dark);
+      background: var(--headings-surface);
     }
+  }
+
+  @media (pointer: coarse) {
+    min-height: 44px;
+  }
+
+  // `•` marks the section in view; a pick key replaces it.
+  &[aria-current='location'] > .heading-hint:empty::before {
+    content: '•';
+    color: var(--gray);
+  }
+
+  .headings-modal[data-mode='pick'] &:not([aria-keyshortcuts]) > .heading-text {
+    opacity: 0.4;
+  }
+}
+
+// `--secondary` is too light on cream to carry the pick keys.
+.heading-hint {
+  color: var(--dark);
+  font-weight: $semiBoldWeight;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.heading-text {
+  min-width: 0;
+  padding-inline-start: calc(var(--depth, 0) * 0.875rem);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+
+  .katex {
+    color: inherit;
+    font-size: 1.05em;
+  }
+
+  code {
+    font-size: 0.85em;
   }
 }

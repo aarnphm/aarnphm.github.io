@@ -1,9 +1,6 @@
 @use './arena-controls.scss' as arena;
 @use '../../styles/variables.scss' as *;
 
-$panel-duration: 220ms;
-$panel-ease: cubic-bezier(0.23, 1, 0.32, 1);
-
 body[data-slug='arena/feed'] {
   overflow: hidden;
 

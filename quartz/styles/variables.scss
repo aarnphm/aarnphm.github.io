@@ -21,3 +21,7 @@ $boldWeight: 700;
 $semiBoldWeight: 600;
 $normalWeight: 400;
 $baseMargin: 0.5rem;
+
+// Shared by overlay panels (arena reader, headings navigator).
+$panel-duration: 220ms;
+$panel-ease: cubic-bezier(0.23, 1, 0.32, 1);

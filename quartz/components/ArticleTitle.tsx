@@ -11,6 +11,8 @@ import { StreamUnlockIcon } from './stream/UnlockIcon'
 
 export interface Options {
   enableDescription: boolean
+  /** keep the h1 for heading navigation where the breadcrumb already shows the title */
+  visuallyHidden?: boolean
 }
 
 const defaultOptions: Options = { enableDescription: true }
@@ -79,6 +81,10 @@ export default ((userOpts?: Options) => {
           <p class="description">{channel ? `${channel.blocks.length} blocks` : ''}</p>
         </hgroup>
       )
+    }
+
+    if (title && opts.visuallyHidden) {
+      return <h1 class="visually-hidden">{title}</h1>
     }
 
     if (title) {

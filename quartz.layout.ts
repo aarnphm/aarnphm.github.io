@@ -53,6 +53,7 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [
     Component.Breadcrumbs({ rootName: '~', spacerSymbol: '/', trailingWindow: 1 }),
+    Component.ArticleTitle({ enableDescription: false, visuallyHidden: true }),
     Component.StackedNotes(),
     Component.Image(),
     Component.Palette(),

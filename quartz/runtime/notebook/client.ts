@@ -1095,8 +1095,7 @@ class NotebookRuntime {
     if (shortcuts?.classList.contains('active')) return true
     const search = document.querySelector('.search .search-container.active')
     if (search) return true
-    const headings = document.querySelector<HTMLElement>('.headings-modal-container')
-    return headings?.style.display === 'flex'
+    return document.querySelector<HTMLDialogElement>('dialog.headings-modal')?.open ?? false
   }
 
   private claimNotebookKey(event: KeyboardEvent) {
