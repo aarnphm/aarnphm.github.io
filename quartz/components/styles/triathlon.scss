@@ -6288,6 +6288,15 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   stroke: var(--tri-power-sprint);
 }
 
+.tri-swim-power-line {
+  stroke: var(--tri-accent);
+}
+
+.tri-swim-power .tri-best-power-point,
+.tri-swim-power .tri-best-power-swatch {
+  --tri-power-skill: var(--tri-accent);
+}
+
 .tri-best-power-line--attack {
   stroke: var(--tri-power-attack);
 }

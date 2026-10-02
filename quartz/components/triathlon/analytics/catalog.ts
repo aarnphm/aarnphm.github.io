@@ -24,6 +24,7 @@ import {
 } from './panels/power'
 import { buildPowerToWeightTrend, powerToWeightDurationLabel } from './panels/power-to-weight'
 import { buildRecoveryChart, buildSleep } from './panels/recovery'
+import { buildSwimPowerCurve } from './panels/swim-power'
 import {
   buildActions,
   buildLactateThreshold,
@@ -45,6 +46,7 @@ export const ANALYTICS_PANEL_ORDER = [
   'vo2max',
   'lactate',
   'power',
+  'swim-power',
   'abilities',
   'distributions',
   'cardio',
@@ -394,6 +396,46 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
         label: powerToWeightDurationLabel(durationS),
         values: powerToWeightValues(data, durationS),
       })),
+      seriesDomain: 'shared-zero',
+    }),
+  },
+  'swim-power': {
+    key: 'swim-power',
+    label: 'swim power curve',
+    search:
+      'swim freestyle swimming outdoor modeled relative drag power curve index pace duration best efforts six weeks year',
+    render: buildSwimPowerCurve,
+    server: (data, formatter) => ({
+      title: 'swim · modeled drag power curve',
+      values: [
+        { label: 'swims', value: String(data.swimPowerCurve.activityCount) },
+        {
+          label: 'best 1 minute',
+          value: value(
+            data.swimPowerCurve.sixWeeks.find(point => point.durationS === 60)?.index,
+            ' idx',
+            1,
+          ),
+        },
+        {
+          label: 'best 5 minutes',
+          value: value(
+            data.swimPowerCurve.sixWeeks.find(point => point.durationS === 300)?.index,
+            ' idx',
+            1,
+          ),
+        },
+      ],
+      series: [
+        {
+          label: formatter.text('last 6 weeks'),
+          values: data.swimPowerCurve.sixWeeks.map(point => point.index),
+        },
+        {
+          label: `${formatter.text('all of')} ${data.swimPowerCurve.yearLabel}`,
+          values: data.swimPowerCurve.year.map(point => point.index),
+        },
+      ],
       seriesDomain: 'shared-zero',
     }),
   },

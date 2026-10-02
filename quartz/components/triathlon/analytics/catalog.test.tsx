@@ -11,9 +11,37 @@ import { applyManualSauna, buildPayload, type StravaRawCache } from '../../../pl
 import { estimateFtpFromPowerCurve } from '../../../util/cycling-ftp'
 import { health as garminHealthFixture } from '../../../util/fixtures/garmin-health'
 import { resolveSleepMetrics } from '../../../util/sleep-metrics'
+import { buildSwimPowerEstimate, buildSwimPowerCurveBlock } from '../../../util/swim-power'
 import { DEFAULT_TRIATHLON_FORMATTER } from '../runtime/formatter'
 import { ANALYTICS_CATALOG } from './catalog'
 import { analyticsChartPath, AnalyticsServerPanel } from './render'
+
+test('server swim power presents compact relative units and duration series', () => {
+  const analytics = buildAnalytics(null)
+  const estimate = buildSwimPowerEstimate(
+    'garmin',
+    [0, 40, 80, 120].map(startElapsedS => ({
+      startElapsedS,
+      endElapsedS: startElapsedS + 40,
+      durationS: 40,
+      distanceM: 25,
+      stroke: 'freestyle',
+    })),
+  )
+  assert.ok(estimate)
+  analytics.swimPowerCurve = buildSwimPowerCurveBlock(
+    [{ id: 42, date: '2026-09-29', swimPower: estimate }],
+    '2026-10-02',
+  )
+  const definition = ANALYTICS_CATALOG.find(panel => panel.key === 'swim-power')
+  assert.ok(definition)
+  const html = renderToString(<AnalyticsServerPanel definition={definition} data={analytics} />)
+  assert.match(html, /swim.*drag power/)
+  assert.match(html, /idx/)
+  assert.doesNotMatch(html, /2:30|reference/)
+  assert.match(html, /data-series="last 6 weeks"/)
+  assert.doesNotMatch(html, /W\/kg|FTP/)
+})
 
 test('server lactate threshold charts contain native running pace and heart-rate history', () => {
   const speedMps = Array.from({ length: 31 }, (_, index) => ({

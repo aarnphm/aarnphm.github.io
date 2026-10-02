@@ -42,6 +42,11 @@ export const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = 
     hay: 'best efforts power curve critical power cycling watts duration ftp estimated eftp p20 six weeks year power rank radar sprint attack climb w kg percentile weight adjusted',
   },
   {
+    label: 'swim · modeled drag power curve',
+    chart: 'swim-power',
+    hay: 'swim swimming freestyle modeled relative drag power curve index pace duration best efforts six weeks year',
+  },
+  {
     label: 'ftp hypothesis',
     chart: 'ftp',
     hay: 'ftp watts power vo2 hypothesis slider acsm efficiency threshold lt2 vt2 cycling',

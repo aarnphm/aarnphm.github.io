@@ -81,11 +81,14 @@ test('critical power search and calendar-year SSR resolve to the power curve', (
   const panel = analyticsPanelDefinition('power')
   assert.ok(panel)
   const summary = panel.server(analytics, DEFAULT_TRIATHLON_FORMATTER)
-  assert.deepEqual(summary.values.slice(0, 3), [
-    { label: 'FTP', value: '—' },
-    { label: 'eCP', value: '249 W' },
-    { label: 'eW′', value: '10.3 kJ' },
-  ])
+  assert.deepEqual(
+    summary.values.filter(item => ['FTP', 'eCP', 'eW′'].includes(item.label)),
+    [
+      { label: 'FTP', value: '—' },
+      { label: 'eCP', value: '249 W' },
+      { label: 'eW′', value: '10.3 kJ' },
+    ],
+  )
 })
 
 test('ftp summary carries provenance and observed cycling evidence', () => {
