@@ -40,7 +40,7 @@ const configuration: GlobalConfiguration = {
     fontOrigin: 'local',
     typography: {
       title: 'Space Groteskque',
-      header: 'Parclo Serif',
+      header: { name: 'Space Groteskque', weights: [400] },
       body: 'PP Neue Montreal',
       code: 'Berkeley Mono',
     },

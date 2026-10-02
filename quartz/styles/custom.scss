@@ -172,7 +172,6 @@ a {
   }
 }
 
-// Keep the decorative tree corners in the margin, clear of the quote text.
 blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
   border-left: none;
   padding-left: 0;
@@ -185,12 +184,13 @@ blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
       content: '“' / '';
       position: absolute;
       left: -2.5rem;
-      top: 0.15em;
-      font-family: var(--codeFont);
-      font-size: 1.5rem;
+      top: -0.1em;
+      font-family: Georgia, serif;
+      font-size: 3rem;
+      font-style: normal;
+      font-weight: 400;
       line-height: 1;
-      color: var(--secondary);
-      opacity: 0.4;
+      color: color-mix(in srgb, var(--gray) 80%, var(--foam));
 
       [data-slug='friends'] &,
       [data-slug='quotes'] & {
@@ -205,7 +205,7 @@ blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
 
     &:not([class~='callout']):not([class~='transclude']):not([class~='quotes'])::before {
       left: -1.75rem;
-      font-size: 1rem;
+      font-size: 2.5rem;
     }
   }
 }
