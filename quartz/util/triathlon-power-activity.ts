@@ -8,7 +8,7 @@ export interface PowerCurveActivityTarget {
 }
 
 export const powerCurveActivityTarget = (
-  point: PowerCurvePoint | null | undefined,
+  point: Pick<PowerCurvePoint, 'activityId' | 'activityDate'> | null | undefined,
 ): PowerCurveActivityTarget | null => {
   if (point?.activityId == null || point.activityDate == null) return null
   const href = triathlonActivityHref(point.activityDate, point.activityId)
@@ -16,7 +16,7 @@ export const powerCurveActivityTarget = (
 }
 
 export const powerCurveActivityLinkAttributes = (
-  point: PowerCurvePoint | null | undefined,
+  point: Pick<PowerCurvePoint, 'activityId' | 'activityDate'> | null | undefined,
   currentActivityId?: number | string | null,
 ): Record<string, string> => {
   const target = powerCurveActivityTarget(point)

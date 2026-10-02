@@ -33,6 +33,7 @@ import {
   swimStrokeRate,
   type SwimChartMetric,
 } from './swim-metrics'
+import { SWIM_POWER_BIN_SIZE, type SwimPowerEstimate } from './swim-power'
 import { triathlonActivityAnchor } from './triathlon-date-route'
 import { buildGarminHealth, buildGarminRecovery } from './triathlon-garmin-health'
 import { healthTooltip } from './triathlon-health'
@@ -375,6 +376,8 @@ export const moreStatRows = (
   else if (showRunPower) rows.push(['energy', '—'])
   if (d.calories != null) rows.push(['calories', `${d.calories.toLocaleString('en-US')} kcal`])
   if (d.sport === 'swim') {
+    if (d.swimPower)
+      rows.push(['drag power index', `${d.swimPower.averageIndex.toFixed(1)} · 2:30/100m = 100`])
     const poolMetrics = d.swimLocation === 'pool' ? swimLengthAverages(d.swimIntervals) : null
     rows.push([
       'cadence',
@@ -8106,21 +8109,53 @@ export const buildPowerZones = <N>(
   )
 }
 
+const swimDragPowerDefinition = (speedBasis: SwimPowerEstimate['speedBasis']): string =>
+  speedBasis === 'ground-speed'
+    ? 'Relative drag demand: 2:30/100m = 100 idx; 200 idx means twice that modeled demand. GPS ground speed is averaged over 60 s intervals, then cubed, assuming a constant drag coefficient. Current, waves and GPS error affect the estimate.'
+    : 'Relative freestyle drag demand: 2:30/100m = 100 idx; 200 idx means twice that modeled demand. Recorded length speed is cubed, assuming a constant drag coefficient. Length times include turns and push-offs. Rest and excluded lengths break continuous efforts.'
+
+export const powerHistogramReadout = (
+  histogram: readonly number[],
+  bin: number,
+  unit: 'W' | 'idx',
+): string => {
+  const lower = bin * SWIM_POWER_BIN_SIZE
+  const upper = lower + SWIM_POWER_BIN_SIZE - (unit === 'W' ? 1 : 0)
+  const total = histogram.reduce((sum, seconds) => sum + seconds, 0)
+  const seconds = histogram[bin] ?? 0
+  return `${lower}–${upper} ${unit} · ${zoneClock(seconds)} (${(total > 0 ? (seconds / total) * 100 : 0).toFixed(1)}%)`
+}
+
 export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
-  const hist = d.powerHist
-  if (!hist || hist.length < 2) return null
-  const wrap = f.el('div', 'tri-zone', undefined, {
-    'data-tri-trace': triathlonTraceName('25W power distribution'),
-  })
-  f.add(
-    wrap,
-    f.el('div', 'tri-zone-title', '25W power distribution', {
-      'data-i18n': '25W power distribution',
-    }),
+  const swim = d.sport === 'swim'
+  const hist = swim ? d.swimPower?.histogramS : d.powerHist
+  if (!hist || hist.length < (swim ? 1 : 2)) return null
+  const unit = swim ? 'idx' : 'W'
+  const title = swim ? '25 idx drag distribution' : '25W power distribution'
+  const attrs: Record<string, string> = {
+    'data-tri-trace': swim ? 'swim-drag-distribution' : triathlonTraceName(title),
+  }
+  if (swim && d.swimPower) attrs['data-swim-power-source'] = d.swimPower.source
+  const wrap = f.el(
+    'div',
+    swim ? 'tri-zone tri-swim-power-distribution' : 'tri-zone',
+    undefined,
+    attrs,
   )
+  const titleAttrs: Record<string, string> =
+    swim && d.swimPower
+      ? {
+          'data-gloss': '',
+          'data-gloss-def': `Valid swim time in 25 idx bands, with the upper boundary included in the next band. ${swimDragPowerDefinition(d.swimPower.speedBasis)}`,
+          tabindex: '0',
+        }
+      : { 'data-i18n': title }
+  f.add(wrap, f.el('div', 'tri-zone-title', title, titleAttrs))
   const H = 34
   const n = hist.length
-  const histMaxWatt = n * 25
+  const binSize = SWIM_POWER_BIN_SIZE
+  const histMax = n * binSize
+  const selected = hist.reduce((best, seconds, bin) => (seconds > hist[best] ? bin : best), 0)
   let mx = 1
   for (const t of hist) if (t > mx) mx = t
   const s = f.svg('svg', {
@@ -8128,6 +8163,15 @@ export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
     viewBox: `0 0 ${n} ${H}`,
     preserveAspectRatio: 'none',
     'data-hist': JSON.stringify(hist),
+    'data-hist-unit': unit,
+    role: 'slider',
+    tabindex: 0,
+    'aria-label': swim ? 'modeled swim drag distribution' : 'power distribution',
+    'aria-orientation': 'horizontal',
+    'aria-valuemin': 0,
+    'aria-valuemax': n - 1,
+    'aria-valuenow': selected,
+    'aria-valuetext': powerHistogramReadout(hist, selected, unit),
   })
   hist.forEach((t, i) => {
     if (t <= 0) return
@@ -8144,20 +8188,19 @@ export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
       }),
     )
   })
-  const np = d.npWatts ?? d.avgWatts
-  if (np != null)
-    f.add(
-      s,
-      f.svg('line', { x1: np / 25 + 0.5, y1: 0, x2: np / 25 + 0.5, y2: H, class: 'tri-hist-avg' }),
-    )
+  const np = swim ? d.swimPower?.averageIndex : (d.npWatts ?? d.avgWatts)
+  if (np != null) {
+    const position = np / binSize + (swim ? 0 : 0.5)
+    f.add(s, f.svg('line', { x1: position, y1: 0, x2: position, y2: H, class: 'tri-hist-avg' }))
+  }
   f.add(s, f.svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H }))
-  const histStepW = histMaxWatt <= 300 ? 100 : histMaxWatt <= 700 ? 200 : 300
+  const histStep = histMax <= 300 ? 100 : histMax <= 700 ? 200 : 300
   const histXTicks: AxisXTick[] = []
-  for (let w = 0; w < histMaxWatt; w += histStepW)
+  for (let value = 0; value < histMax; value += histStep)
     histXTicks.push({
-      label: `${w}w`,
-      pct: (w / 25 / n) * 100,
-      cls: w === 0 ? 'tri-cax-xt--first' : undefined,
+      label: swim ? `${value} idx` : `${value}w`,
+      pct: (value / histMax) * 100,
+      cls: value === 0 ? 'tri-cax-xt--first' : undefined,
     })
   f.add(
     wrap,
@@ -8175,8 +8218,9 @@ export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
   )
   f.add(wrap, f.el('div', 'tri-chart-readout'))
   const cap = f.el('div', 'tri-elev-cap')
-  f.add(cap, f.el('span', 'tri-ana-k', `0–${(n - 1) * 25 + 24} W`))
-  if (np != null) f.add(cap, f.el('span', 'tri-ana-k', `wtd avg ${np} W`))
+  f.add(cap, f.el('span', 'tri-ana-k', `0–${histMax - (swim ? 0 : 1)} ${unit}`))
+  if (np != null)
+    f.add(cap, f.el('span', 'tri-ana-k', swim ? `avg ${np.toFixed(1)} idx` : `wtd avg ${np} W`))
   f.add(wrap, cap)
   return wrap
 }
@@ -8401,6 +8445,133 @@ const buildPowerCurveRanges = <N>(
   )
   f.add(ranges, f.el('button', 'tri-curve-range', '6 weeks', sixWeekAttrs), yearButton)
   return ranges
+}
+
+export const buildSwimPowerCurve = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  embedded = false,
+): N | null => {
+  const estimate = d.swimPower
+  if (d.sport !== 'swim' || !estimate?.curve.length) return null
+  const curve = estimate.curve
+  const width = 100,
+    height = 34
+  const min = curve[0].durationS,
+    max = curve[curve.length - 1].durationS
+  const step = niceStep(Math.max(100, ...curve.map(p => p.index)), 4)
+  const domainMax = Math.ceil(Math.max(100, ...curve.map(p => p.index)) / step) * step
+  const X = (seconds: number) => powerCurveFraction(seconds, min, max) * width
+  const Y = (index: number) => height - (index / domainMax) * (height - 1)
+  const selected = curve[0]
+  const wrap = f.el('div', 'tri-zone tri-swim-drag-chart', undefined, {
+    'data-tri-trace': 'swim-drag-power',
+    'data-swim-power-source': estimate.source,
+  })
+  const head = f.el('div', 'tri-curve-head')
+  f.add(
+    head,
+    f.el('div', 'tri-zone-title', 'modeled drag power', {
+      'data-gloss': '',
+      'data-gloss-def': swimDragPowerDefinition(estimate.speedBasis),
+      tabindex: '0',
+    }),
+  )
+  f.add(wrap, head)
+  const graph = f.svg('svg', {
+    class: 'tri-swim-drag-svg',
+    viewBox: `0 0 ${width} ${height}`,
+    preserveAspectRatio: 'none',
+    'data-swim-drag-curve': JSON.stringify(curve),
+    'data-swim-drag-domain-max': domainMax,
+    role: 'slider',
+    tabindex: 0,
+    'aria-label': 'modeled swim drag power curve',
+    'aria-orientation': 'horizontal',
+    'aria-valuemin': min,
+    'aria-valuemax': max,
+    'aria-valuenow': min,
+    'aria-valuetext': `${dlabel(min)} · ${selected.index.toFixed(1)} idx`,
+  })
+  const yTicks = Array.from({ length: Math.round(domainMax / step) + 1 }, (_, i) => ({
+    label: axisNumber(i * step, step),
+    vbY: Y(i * step),
+  }))
+  for (const tick of yTicks)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-best-power-grid',
+        x1: 0,
+        x2: width,
+        y1: tick.vbY,
+        y2: tick.vbY,
+        'aria-hidden': 'true',
+      }),
+    )
+  f.add(
+    graph,
+    f.svg('line', {
+      class: 'tri-curve-ftp',
+      x1: 0,
+      x2: width,
+      y1: Y(100),
+      y2: Y(100),
+      'aria-hidden': 'true',
+    }),
+    f.svg('path', {
+      class: 'tri-curve-line',
+      d: curve
+        .map((p, i) => `${i ? 'L' : 'M'} ${X(p.durationS).toFixed(2)} ${Y(p.index).toFixed(2)}`)
+        .join(' '),
+      'aria-hidden': 'true',
+    }),
+    f.svg('line', {
+      class: 'tri-chart-cursor',
+      x1: 0,
+      x2: 0,
+      y1: 0,
+      y2: height,
+      'aria-hidden': 'true',
+    }),
+  )
+  const marker = f.el('span', 'tri-curve-point tri-curve-point--ride', undefined, {
+    'aria-hidden': 'true',
+    style: `left:0%;top:${(Y(selected.index) / height) * 100}%`,
+  })
+  const readout = f.el('div', 'tri-chart-readout tri-curve-readout')
+  f.add(
+    readout,
+    f.el('span', 'tri-curve-readout-duration', dlabel(min)),
+    f.el('strong', 'tri-swim-drag-value', `${selected.index.toFixed(1)} idx`),
+  )
+  const tickDurations = embedded
+    ? embeddedPowerCurveDurationTicks(min, max, [60, 300, 600, 1200, 1800, 3600])
+    : powerCurveDurationTicks(min, max, [60, 300, 600, 1200, 1800, 3600])
+  f.add(
+    wrap,
+    axisFrame(
+      f,
+      graph,
+      yTicks,
+      height,
+      tickDurations.map(sec => ({
+        label: dlabel(sec),
+        pct: X(sec),
+        cls: 'tri-swim-drag-tick',
+        tag: 'button',
+        attrs: {
+          type: 'button',
+          'data-swim-drag-seconds': String(sec),
+          'aria-pressed': String(sec === min),
+        },
+      })),
+      true,
+      undefined,
+      [marker, readout],
+    ),
+  )
+  return wrap
 }
 
 export const buildPowerCurve = <N>(
@@ -9768,6 +9939,12 @@ export const buildActivity = <N>(
     if (environment) f.add(more, environment)
     if (poolOverview) f.add(more, poolOverview)
     if (swimTrends) f.add(more, swimTrends)
+    const swimPowerCurve = buildSwimPowerCurve(f, d, embedded)
+    if (swimPowerCurve) f.add(more, swimPowerCurve)
+    if (d.sport === 'swim') {
+      const distribution = buildPowerHist(f, d)
+      if (distribution) f.add(more, distribution)
+    }
 
     const saunaHtl = saunaSummary ? null : buildSaunaHeatTrainingLoad(f, d)
     if (saunaHtl) f.add(more, saunaHtl)
@@ -9776,7 +9953,7 @@ export const buildActivity = <N>(
         triathlonTraceEnabled(traceSettings, 'power-curve')
           ? buildPowerCurve(f, d, ctx, embedded)
           : null,
-        triathlonTraceEnabled(traceSettings, '25w-power-distribution')
+        d.sport !== 'swim' && triathlonTraceEnabled(traceSettings, '25w-power-distribution')
           ? buildPowerHist(f, d)
           : null,
       ]

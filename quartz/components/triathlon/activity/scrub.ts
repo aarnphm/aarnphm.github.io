@@ -10,6 +10,7 @@ import { nearestPowerCurvePoint } from '../../../util/triathlon-card'
 import { powerCurveFraction } from '../../../util/triathlon-card'
 import { powerCurveHoverAt } from '../../../util/triathlon-card'
 import { powerCurveAxisTicks, powerCurveValueText } from '../../../util/triathlon-card'
+import { powerHistogramReadout } from '../../../util/triathlon-card'
 import { swimTrendHoverAt } from '../../../util/triathlon-card'
 import { runWalkSegmentAt } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
@@ -21,6 +22,7 @@ import { swimActivityPointText } from '../../../util/triathlon-i18n'
 import { swimActivityValueText } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
 import { syncPowerCurveActivityLink } from './power-links'
+import { setupSwimPowerCharts } from './swim-power'
 import { setupTorqueCharts } from './torque'
 
 export type CyclingChartMode = 'distance' | 'power'
@@ -94,6 +96,7 @@ export const setupChartScrub = (
   presentation: () => TriathlonPresentation,
 ): (() => void) => {
   const cleanupTorque = setupTorqueCharts(scope)
+  const cleanupSwimPower = setupSwimPowerCharts(scope)
   const text = (key: string): string => triText(presentation().locale, key)
   type CurveRange = 'six-weeks' | 'year'
   let activeWrap: HTMLElement | null = null
@@ -108,6 +111,20 @@ export const setupChartScrub = (
     { lengths: SwimTrendChartPoint[]; '100m': SwimTrendChartPoint[] }
   >()
   const swimAnimations = new Map<SVGGElement, Animation>()
+  const histogramCache = new WeakMap<SVGSVGElement, number[]>()
+  const histogramData = (svg: SVGSVGElement): number[] => {
+    const cached = histogramCache.get(svg)
+    if (cached) return cached
+    const parsed: unknown = JSON.parse(svg.dataset.hist ?? '[]')
+    const histogram: number[] = []
+    if (!Array.isArray(parsed)) return histogram
+    for (const seconds of parsed) {
+      if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds < 0) return []
+      histogram.push(seconds)
+    }
+    histogramCache.set(svg, histogram)
+    return histogram
+  }
   const runWalkCache = new WeakMap<SVGSVGElement, GarminRunWalkSegment[]>()
   const runWalkSegments = (svg: SVGSVGElement): GarminRunWalkSegment[] => {
     const cached = runWalkCache.get(svg)
@@ -492,6 +509,28 @@ export const setupChartScrub = (
       return
     showSwim(svg, distanceM / totalDistanceM, activateChart)
   }
+  const showHistogram = (svg: SVGSVGElement, requestedBin: number): void => {
+    const histogram = histogramData(svg)
+    const wrap = svg.closest<HTMLElement>('.tri-zone')
+    if (!wrap || histogram.length === 0) return
+    const bin = Math.max(0, Math.min(histogram.length - 1, requestedBin))
+    const value = powerHistogramReadout(
+      histogram,
+      bin,
+      svg.dataset.histUnit === 'idx' ? 'idx' : 'W',
+    )
+    const cursor = svg.querySelector<SVGElement>('.tri-chart-cursor')
+    cursor?.setAttribute('x1', String(bin + 0.5))
+    cursor?.setAttribute('x2', String(bin + 0.5))
+    activeBar?.classList.remove('tri-hist-bar--on')
+    activeBar = svg.querySelector(`.tri-hist-bar[data-bin="${bin}"]`)
+    activeBar?.classList.add('tri-hist-bar--on')
+    const readout = wrap.querySelector<HTMLElement>('.tri-chart-readout')
+    if (readout) readout.textContent = value
+    svg.setAttribute('aria-valuenow', String(bin))
+    svg.setAttribute('aria-valuetext', value)
+    activate(wrap)
+  }
   const showFocused = (): void => {
     if (!focusedSvg) {
       clear()
@@ -501,6 +540,8 @@ export const setupChartScrub = (
       showCurveIndex(focusedSvg, selectedCurveIndex(focusedSvg))
     else if (focusedSvg.classList.contains('tri-run-walk'))
       showRunWalk(focusedSvg, Number(focusedSvg.getAttribute('aria-valuenow')))
+    else if (focusedSvg.classList.contains('tri-hist-svg'))
+      showHistogram(focusedSvg, Number(focusedSvg.getAttribute('aria-valuenow')))
     else showSwimIndex(focusedSvg, selectedSwimIndex(focusedSvg))
   }
   const showRunWalk = (svg: SVGSVGElement, requestedElapsedS: number): void => {
@@ -529,9 +570,6 @@ export const setupChartScrub = (
       if (activeWrap) showFocused()
       return
     }
-    const wrap = svg.closest<HTMLElement>('.tri-zone')
-    const cursor = svg.querySelector<SVGElement>('.tri-chart-cursor')
-    const readout = wrap?.querySelector<HTMLElement>('.tri-chart-readout')
     const r = svg.getBoundingClientRect()
     const frac = r.width > 0 ? Math.max(0, Math.min(1, (event.clientX - r.left) / r.width)) : 0
     if (svg.classList.contains('tri-run-walk')) {
@@ -550,38 +588,31 @@ export const setupChartScrub = (
     if (svg.classList.contains('tri-swim-trend-svg')) {
       showSwim(svg, frac)
       return
-    } else {
-      const hist = JSON.parse(svg.dataset.hist ?? '[]') as number[]
-      const n = hist.length
-      if (n < 2) return
-      const total = hist.reduce((a, b) => a + b, 0) || 1
-      const bin = Math.max(0, Math.min(n - 1, Math.floor(frac * n)))
-      cursor?.setAttribute('x1', `${bin + 0.5}`)
-      cursor?.setAttribute('x2', `${bin + 0.5}`)
-      activeBar?.classList.remove('tri-hist-bar--on')
-      activeBar = svg.querySelector(`.tri-hist-bar[data-bin="${bin}"]`)
-      activeBar?.classList.add('tri-hist-bar--on')
-      if (readout)
-        readout.textContent = `${bin * 25}–${bin * 25 + 24} W · ${zoneClock(hist[bin])} (${((hist[bin] / total) * 100).toFixed(1)}%)`
     }
-    if (wrap) activate(wrap)
+    showHistogram(svg, Math.floor(frac * histogramData(svg).length))
+    if (event.type === 'pointerdown') {
+      focusedSvg = svg
+      svg.focus({ preventScroll: true })
+    }
   }
   const onFocus = (event: FocusEvent): void => {
     if (!(event.target instanceof Element)) return
     const svg = event.target.closest<SVGSVGElement>(
-      '.tri-curve-svg, .tri-swim-trend-svg, .tri-run-walk',
+      '.tri-curve-svg, .tri-hist-svg, .tri-swim-trend-svg, .tri-run-walk',
     )
     if (!svg) return
     focusedSvg = svg
     if (svg.classList.contains('tri-curve-svg')) showCurveIndex(svg, selectedCurveIndex(svg))
     else if (svg.classList.contains('tri-run-walk'))
       showRunWalk(svg, Number(svg.getAttribute('aria-valuenow')))
+    else if (svg.classList.contains('tri-hist-svg'))
+      showHistogram(svg, Number(svg.getAttribute('aria-valuenow')))
     else showSwimIndex(svg, selectedSwimIndex(svg))
   }
   const onBlur = (event: FocusEvent): void => {
     if (!(event.target instanceof Element)) return
     const svg = event.target.closest<SVGSVGElement>(
-      '.tri-curve-svg, .tri-swim-trend-svg, .tri-run-walk',
+      '.tri-curve-svg, .tri-hist-svg, .tri-swim-trend-svg, .tri-run-walk',
     )
     if (!svg) return
     if (focusedSvg === svg) focusedSvg = null
@@ -590,7 +621,7 @@ export const setupChartScrub = (
   const onKey = (event: KeyboardEvent): void => {
     if (!(event.target instanceof Element)) return
     const svg = event.target.closest<SVGSVGElement>(
-      '.tri-curve-svg, .tri-swim-trend-svg, .tri-run-walk',
+      '.tri-curve-svg, .tri-hist-svg, .tri-swim-trend-svg, .tri-run-walk',
     )
     if (!svg) return
     if (svg.classList.contains('tri-run-walk')) {
@@ -619,9 +650,18 @@ export const setupChartScrub = (
       return
     }
     const isCurve = svg.classList.contains('tri-curve-svg')
-    const length = isCurve ? curveData(svg).curve.length : swimData(svg).length
-    if (length < 2) return
-    const current = isCurve ? selectedCurveIndex(svg) : selectedSwimIndex(svg)
+    const isHistogram = svg.classList.contains('tri-hist-svg')
+    const length = isCurve
+      ? curveData(svg).curve.length
+      : isHistogram
+        ? histogramData(svg).length
+        : swimData(svg).length
+    if (length < (isHistogram ? 1 : 2)) return
+    const current = isCurve
+      ? selectedCurveIndex(svg)
+      : isHistogram
+        ? Number(svg.getAttribute('aria-valuenow'))
+        : selectedSwimIndex(svg)
     let next: number | null = null
     if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') next = current - 1
     else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') next = current + 1
@@ -639,6 +679,7 @@ export const setupChartScrub = (
     event.preventDefault()
     focusedSvg = svg
     if (isCurve) showCurveIndex(svg, next, true, true)
+    else if (isHistogram) showHistogram(svg, next)
     else showSwimIndex(svg, next)
   }
   const setSwimLayer = (svg: SVGSVGElement, mode: SwimTrendMode, animate: boolean): void => {
@@ -842,6 +883,7 @@ export const setupChartScrub = (
   onLocale()
   return () => {
     cleanupTorque()
+    cleanupSwimPower()
     clear()
     for (const animation of swimAnimations.values()) animation.cancel()
     swimAnimations.clear()

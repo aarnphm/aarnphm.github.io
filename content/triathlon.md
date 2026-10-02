@@ -2803,6 +2803,60 @@ p_{\mathrm{CSS},100}
 \frac{t_{400}-t_{200}}{2}.
 $$
 
+#### modeled swim power
+
+At steady speed, the useful power required to overcome water resistance is
+
+$$
+F_{\mathrm{drag}}=kv^2,
+\qquad
+P_{\mathrm{drag}}=kv^3.
+$$
+
+The coefficient $k$ describes active drag for a swimmer and stroke. It requires force and speed measurements to calibrate. The site displays a relative drag-power index with a fixed reference pace $p_0=150$ seconds per 100 m:
+
+$$
+I_i
+=100\left(\frac{v_i}{v_0}\right)^3
+=100\left(\frac{p_0}{p_i}\right)^3,
+\qquad
+v_i=\frac{d_i}{t_i},
+\qquad
+v_0=\frac{100}{150}.
+$$
+
+An index of $100$ corresponds to 2:30/100 m. Moving to 2:15/100 m gives an index of about $137$, assuming the drag coefficient remains constant. Body position, technique, equipment, and water conditions can change that coefficient. This index describes modeled demand associated with pace; it does not measure total mechanical or metabolic output.
+
+Activity averages weight each eligible interval by its duration:
+
+$$
+\overline I
+=\frac{\sum_i I_i t_i}{\sum_i t_i}.
+$$
+
+The swim power curve shows the highest time-weighted index sustained over each displayed duration $T$:
+
+$$
+C(T)
+=\max_{r,a}
+\frac{1}{T}\int_a^{a+T}I_r(t)\,dt.
+$$
+
+Each $r$ is a continuous eligible effort. The calculation treats the interval average as constant within that interval and evaluates windows whose edges meet interval boundaries. Curves begin at 60 seconds and use the same logarithmic duration axis as the recorded power curves. Each eligible activity has its own curve. The analytics panel displays the last six weeks and calendar year separately, with links to the source activities.
+
+Only freestyle lengths with finite positive distance and time, plausible pace, and consistent elapsed timestamps contribute. Unknown strokes, other strokes, drills, invalid lengths, and rest gaps break an effort. A one-second timestamp tolerance accommodates rounded FIT start times. Pool length times include push-offs, glides, and turns, so the result retains those effects. The payload identifies the calculation as a garden estimate and retains Garmin or Apple as the input provider. Recorded watts, cycling FTP, power rankings, and training-load calculations keep their existing inputs.
+
+Outdoor swims use recorded route distance divided by elapsed time. Valid consecutive samples are averaged into 60-second intervals before cubing speed; the final interval can be shorter. Missing samples longer than two minutes, stationary intervals, and implausible pace break an effort. GPS supplies ground speed. Water-relative speed would require a synchronized current vector and swimming direction, so the outdoor index retains current, wave, and GPS effects. It assumes a constant drag coefficient across the activity, with stroke identity left unspecified when the stream does not supply it. The payload records the ground-speed method separately from the pool-length method.
+
+If a measured drag coefficient becomes available, the index converts to modeled useful drag power as
+
+$$
+P_{\mathrm{drag}}
+=k v_0^3\frac{I}{100}.
+$$
+
+The steady-speed model follows [Gatta et al. (2016)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5031421/). [Cortesi et al. (2024)](https://pubmed.ncbi.nlm.nih.gov/38455441/) describe active-drag estimation using force measurements in tethered and semi-tethered swimming.
+
 The simple activity-card projections are
 
 $$

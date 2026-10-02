@@ -23,12 +23,16 @@ export const powerCurveTickVisibility = (ticks: readonly PowerCurveTickBounds[])
 export const setupPowerCurveTicks = (root: ParentNode): (() => void) => {
   const axes = Array.from(root.querySelectorAll<HTMLElement>('.tri-cax-xax')).flatMap(axis => {
     const ticks = Array.from(
-      axis.querySelectorAll<HTMLButtonElement>('.tri-curve-tick, .tri-best-power-tick'),
+      axis.querySelectorAll<HTMLButtonElement>(
+        '.tri-curve-tick, .tri-best-power-tick, .tri-swim-drag-tick',
+      ),
     )
     const optional = ticks.filter(
       tick =>
         POWER_CURVE_EXTRA_AXIS_MARKERS.includes(
-          Number(tick.dataset.curveSeconds ?? tick.dataset.powerSeconds),
+          Number(
+            tick.dataset.curveSeconds ?? tick.dataset.powerSeconds ?? tick.dataset.swimDragSeconds,
+          ),
         ) && !tick.matches('.tri-cax-xt--first, .tri-cax-xt--last'),
     )
     return optional.length > 0 ? [{ axis, ticks, optional }] : []

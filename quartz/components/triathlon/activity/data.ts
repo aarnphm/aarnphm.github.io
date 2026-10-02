@@ -16,6 +16,7 @@ import {
   type StravaDetailShard,
 } from '../../../util/strava-detail'
 import { parsePublicSurfaceCurrentEstimate } from '../../../util/surface-current'
+import { SWIM_POWER_REFERENCE_PACE_S_PER_100M } from '../../../util/swim-power'
 import { isTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { isRecord } from '../../../util/type-guards'
 import { WALK_POWER_METHOD, WALK_POWER_WINDOW_SECONDS } from '../../../util/walk-power'
@@ -90,6 +91,59 @@ const isHeartRatePhysiology = (value: unknown, elapsedTimeS: number): boolean =>
       return false
     previous = point.elapsedS
     distance = point.distanceKm
+    return true
+  })
+}
+
+const isSwimPower = (value: unknown, elapsedTimeS: number): boolean => {
+  if (value == null) return true
+  if (
+    !isRecord(value) ||
+    value.source !== 'garden-estimate' ||
+    !(
+      (value.speedBasis === 'pool-length' &&
+        value.method === 'freestyle-drag-index-v1' &&
+        (value.inputSource === 'garmin' || value.inputSource === 'apple')) ||
+      (value.speedBasis === 'ground-speed' &&
+        value.method === 'open-water-drag-index-v1' &&
+        value.inputSource === 'route')
+    ) ||
+    value.referencePaceSPer100m !== SWIM_POWER_REFERENCE_PACE_S_PER_100M ||
+    !bounded(value.averageIndex, 0.001, 4000) ||
+    !finite(value.activeTimeS) ||
+    value.activeTimeS <= 0 ||
+    !finite(value.distanceM) ||
+    value.distanceM <= 0 ||
+    !finite(value.validIntervalCount) ||
+    !Number.isSafeInteger(value.validIntervalCount) ||
+    value.validIntervalCount <= 0 ||
+    !finite(value.excludedIntervalCount) ||
+    !Number.isSafeInteger(value.excludedIntervalCount) ||
+    value.excludedIntervalCount < 0 ||
+    !Array.isArray(value.curve) ||
+    !Array.isArray(value.histogramS) ||
+    value.histogramS.length === 0 ||
+    value.histogramS.length > 160
+  )
+    return false
+  let histogramTimeS = 0
+  for (const seconds of value.histogramS) {
+    if (!finite(seconds) || seconds < 0) return false
+    histogramTimeS += seconds
+  }
+  if (Math.abs(histogramTimeS - value.activeTimeS) > 0.5) return false
+  let previous = 0
+  return value.curve.every((p: unknown) => {
+    if (
+      !isRecord(p) ||
+      !bounded(p.durationS, 60, elapsedTimeS + 1) ||
+      p.durationS <= previous ||
+      !bounded(p.index, 0.001, 4000) ||
+      !bounded(p.startElapsedS, 0, elapsedTimeS + 1) ||
+      !bounded(p.endElapsedS, p.startElapsedS, elapsedTimeS + 1)
+    )
+      return false
+    previous = p.durationS
     return true
   })
 }
@@ -729,6 +783,8 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
       ((value.performanceConditionTrace.source === 'garden-estimate' && value.sport !== 'bike') ||
         (value.sport !== 'bike' && value.sport !== 'run'))) ||
     !finite(value.elapsedTimeS) ||
+    !isSwimPower(value.swimPower, value.elapsedTimeS) ||
+    (value.swimPower != null && value.sport !== 'swim') ||
     !isHeartRatePhysiology(value.heartRatePhysiology, value.elapsedTimeS) ||
     !isWalkPower(value.walkPower, value.elapsedTimeS, value.date) ||
     (value.walkPower != null && value.sport !== 'walk') ||

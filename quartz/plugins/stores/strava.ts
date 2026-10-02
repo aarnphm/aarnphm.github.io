@@ -1,4 +1,5 @@
 import type { RunPaceZoneDistribution } from '../../util/run-pace-zones'
+import type { SwimPowerEstimate } from '../../util/swim-power'
 import type { SwimLocation, SwimStroke } from './apple'
 import type {
   GarminActivity,
@@ -741,6 +742,7 @@ export interface StravaActivityDetail {
   swimPaceSource: SwimPaceSource | null
   swimDurationS: number | null
   swimIntervals: SwimActivityInterval[]
+  swimPower?: SwimPowerEstimate | null
   swimLocation: SwimLocation | null
   waterTemperatureC: number | null
   analyses: ActivityAnalyses

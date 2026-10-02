@@ -24,6 +24,7 @@ import { activityThermalTracePoints } from '../../../util/triathlon-card'
 import { activityTraceUsesElapsedAxis } from '../../../util/triathlon-card'
 import { activityTrainingEffectLabel } from '../../../util/triathlon-card'
 import { buildActivity as buildActivityNode } from '../../../util/triathlon-card'
+import { buildSwimPowerCurve as buildSwimPowerCurveNode } from '../../../util/triathlon-card'
 import { buildWalkPowerTrace as buildWalkPowerTraceNode } from '../../../util/triathlon-card'
 import { buildActivityIcon } from '../../../util/triathlon-card'
 import { buildAnalysisBar } from '../../../util/triathlon-card'
@@ -1138,6 +1139,7 @@ export const renderMapDetail = (
       environment,
       buildSaunaHeatTrainingLoad(domF, d),
       buildPowerCurve(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
+      buildSwimPowerCurveNode(domF, d),
       buildPowerHist(presentation, d),
     ])
       if (z) more.appendChild(z)
@@ -1236,6 +1238,12 @@ export const renderMapDetail = (
     const environment = buildEnvironmentAnalysisNode(domF, d)
     if (environment) zoneBox.appendChild(environment)
     if (spec.extra) for (const node of spec.extra()) if (node) zoneBox.appendChild(node)
+    const swimPower = buildSwimPowerCurveNode(domF, d)
+    if (swimPower) zoneBox.appendChild(swimPower)
+    if (d.sport === 'swim') {
+      const distribution = buildPowerHist(presentation, d)
+      if (distribution) zoneBox.appendChild(distribution)
+    }
     if (bestEfforts) zoneBox.appendChild(bestEfforts)
     const cyclingChart = zoneBox.querySelector<HTMLElement>('.tri-cycling-mode-chart')
     if (cyclingChart) setCyclingChartMode(cyclingChart, existingCyclingChartMode)
