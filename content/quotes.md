@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-09-05 21:10:41 GMT-04:00
+modified: 2026-10-02 22:45:26 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> this girl on tiktok said that “discernment is an olympic sport” and I’ve decided this is pretty much the driving sentiment of my life. it is Not all the same. all relationships are not equal. you Are responsible for your choices. your passivity is just carelessness
+>
+> [@noampomsky](https://x.com/noampomsky/status/2058993024466911464)
 
 > C'est pas grave
 >

@@ -228,7 +228,7 @@ test('overview training markup keeps its list, tree, and document empty', () => 
 
 test('gear surfaces attach lifetime mileage to both bikes and each pair of running shoes', () => {
   const equipment: NonNullable<TriathlonRenderData['equipment']> = Object.fromEntries(
-    ['b18037537', 'b18595115', 'g31765417', 'g32047204'].map((id, index) => [
+    ['b18037537', 'b18595115', 'g31765417', 'g32047204', 'g34180562'].map((id, index) => [
       id,
       {
         id,
@@ -249,7 +249,7 @@ test('gear surfaces attach lifetime mileage to both bikes and each pair of runni
     const usage = elements(root, element => classes(element).includes('tri-gear-usage'))
     assert.deepEqual(
       usage.map(element => element.properties.dataGearId),
-      ['b18037537', 'b18595115', 'g31765417', 'g32047204'],
+      ['b18037537', 'b18595115', 'g31765417', 'g32047204', 'g34180562'],
     )
     assert.ok(usage.every(element => element.properties.dataEquipmentSource === 'strava'))
     assert.deepEqual(
@@ -259,12 +259,13 @@ test('gear surfaces attach lifetime mileage to both bikes and each pair of runni
         'distance - 0 mi, 0 activities',
         'distance - 1 mi, 2 activities',
         'distance - 1 mi, 2 activities',
+        'distance - 1 mi, 2 activities',
       ],
     )
     const distances = elements(root, element => element.properties.dataKind === 'equipment')
     assert.deepEqual(
       distances.map(element => element.properties.dataKm),
-      ['1.609344', '0', '1.609344', '1.609344'],
+      ['1.609344', '0', '1.609344', '1.609344', '1.609344'],
     )
     const html = renderToString(node)
     assert.match(html, />0 mi</)

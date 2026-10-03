@@ -13703,7 +13703,26 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   fill: var(--darkgray);
 }
 
+.tri-cycling-watts-heat-cell--active {
+  opacity: 1;
+  stroke: var(--dark);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-cycling-watts-heatmap:focus-visible {
+  outline: 1px solid var(--tri-accent);
+  outline-offset: 2px;
+}
+
+.tri-cycling-watts-readout {
+  max-width: 100%;
+  white-space: normal;
+  text-align: right;
+}
+
 .tri-power-balance-reference {
+  pointer-events: none;
   stroke: color-mix(in srgb, var(--darkgray) 68%, transparent);
   stroke-width: 0.7;
   stroke-dasharray: 2 2;

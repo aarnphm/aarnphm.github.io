@@ -2023,8 +2023,21 @@ const routeRightPowerPct = (point: StravaActivityDetail['route'][number]): numbe
 
 type PowerBalanceSample = { watts: number; rightPowerPct: number; distanceKm: number }
 
-type WattsHeatSample = { watts: number; value: number }
-type WattsHeatCell = { count: number; x: number; y: number; width: number; height: number }
+type WattsHeatSample = { watts: number; value: number; label?: string }
+export interface CyclingWattsCell {
+  count: number
+  minWatts: number
+  maxWatts: number
+  value: number
+  label: string
+  side: 'left' | 'right' | 'single'
+}
+type WattsHeatCell = Omit<CyclingWattsCell, 'side'> & {
+  x: number
+  y: number
+  width: number
+  height: number
+}
 type CyclingModeTitle =
   | 'power balance'
   | 'torque effectiveness'
@@ -2033,6 +2046,19 @@ type CyclingModeTitle =
 
 const WATTS_HEAT_X_BINS = 64
 const WATTS_HEAT_Y_BINS = 24
+
+export const cyclingWattsCellText = (
+  cell: CyclingWattsCell,
+  powerBalance: boolean,
+  locale: TriathlonPresentation['locale'],
+): string => {
+  const watts = (value: number): string => Number(value.toFixed(1)).toLocaleString(locale)
+  const metric =
+    cell.label || (powerBalance ? powerBalanceText(cell.value) : `${cell.value.toFixed(1)}%`)
+  const side = cell.side === 'single' ? '' : `${triText(locale, cell.side)} `
+  const average = cell.count > 1 && !cell.label ? ` ${triText(locale, 'avg')}` : ''
+  return `${watts(cell.minWatts)}–${watts(cell.maxWatts)} W · ${side}${metric}${average} · ${cell.count} ${triText(locale, cell.count === 1 ? 'sample' : 'samples')}`
+}
 
 const powerBalanceSamples = (
   d: StravaActivityDetail,
@@ -2081,7 +2107,7 @@ const wattsHeatCells = (
   height: number,
   invertY: boolean,
 ): WattsHeatCell[] => {
-  const counts = new Map<number, number>()
+  const counts = new Map<number, { count: number; totalValue: number; labels: Set<string> }>()
   for (const sample of samples) {
     const xBin = Math.min(
       WATTS_HEAT_X_BINS - 1,
@@ -2094,14 +2120,28 @@ const wattsHeatCells = (
     )
     const yBin = invertY ? WATTS_HEAT_Y_BINS - 1 - valueBin : valueBin
     const key = yBin * WATTS_HEAT_X_BINS + xBin
-    counts.set(key, (counts.get(key) ?? 0) + 1)
+    const cell = counts.get(key) ?? { count: 0, totalValue: 0, labels: new Set<string>() }
+    cell.count++
+    cell.totalValue += sample.value
+    if (sample.label) cell.labels.add(sample.label)
+    counts.set(key, cell)
   }
   const xSize = 100 / WATTS_HEAT_X_BINS
   const ySize = height / WATTS_HEAT_Y_BINS
-  return Array.from(counts, ([key, count]) => {
+  return Array.from(counts, ([key, cell]) => {
     const xBin = key % WATTS_HEAT_X_BINS
     const yBin = Math.floor(key / WATTS_HEAT_X_BINS)
-    return { count, x: xBin * xSize, y: yBin * ySize, width: xSize, height: ySize }
+    return {
+      count: cell.count,
+      minWatts: (xBin / WATTS_HEAT_X_BINS) * maxWatts,
+      maxWatts: ((xBin + 1) / WATTS_HEAT_X_BINS) * maxWatts,
+      value: cell.totalValue / cell.count,
+      label: [...cell.labels].join(' / '),
+      x: xBin * xSize,
+      y: yBin * ySize,
+      width: xSize,
+      height: ySize,
+    }
   }).sort((left, right) => left.y - right.y || left.x - right.x)
 }
 
@@ -2116,14 +2156,23 @@ const buildWattsHeatmap = <N>(
   domainMax: number,
   height: number,
   invertY = true,
-): { svg: N; wattsTicks: AxisXTick[] } => {
+): { svg: N; wattsTicks: AxisXTick[]; readout: N } => {
   const allSamples = series.flatMap(item => item.samples)
   const axis = wattsAxis(d, allSamples)
+  const layers = series.map(item => ({
+    side: item.side,
+    cells: wattsHeatCells(item.samples, axis.max, domainMin, domainMax, height, invertY),
+  }))
+  const cellCount = layers.reduce((total, layer) => total + layer.cells.length, 0)
   const svg = f.svg('svg', {
     class: `tri-cycling-watts-heatmap ${className}`,
     viewBox: `0 0 100 ${height}`,
     preserveAspectRatio: 'none',
-    role: 'img',
+    role: 'slider',
+    tabindex: '0',
+    'aria-valuemin': 0,
+    'aria-valuemax': Math.max(0, cellCount - 1),
+    'aria-valuenow': 0,
     'aria-label': triText(f.presentation.locale, `${title} by watts`),
     'data-i18n-aria-label': `${title} by watts`,
     [`data-${dataName}-samples`]: allSamples.length,
@@ -2131,28 +2180,41 @@ const buildWattsHeatmap = <N>(
   })
   const splitSides =
     series.some(item => item.side === 'left') && series.some(item => item.side === 'right')
-  for (const item of series) {
-    const cells = wattsHeatCells(item.samples, axis.max, domainMin, domainMax, height, invertY)
+  for (const { side, cells } of layers) {
     const maxCellCount = Math.max(1, ...cells.map(cell => cell.count))
     for (const cell of cells) {
       const density = 0.16 + 0.84 * Math.sqrt(cell.count / maxCellCount)
       const width = splitSides ? cell.width / 2 : cell.width
-      const x = cell.x + (splitSides && item.side === 'right' ? width : 0)
+      const x = cell.x + (splitSides && side === 'right' ? width : 0)
       f.add(
         svg,
         f.svg('rect', {
-          class: `tri-cycling-watts-heat-cell tri-cycling-watts-heat-cell--${item.side}`,
+          class: `tri-cycling-watts-heat-cell tri-cycling-watts-heat-cell--${side}`,
           x: x.toFixed(3),
           y: cell.y.toFixed(3),
           width: width.toFixed(3),
           height: cell.height.toFixed(3),
           style: `--tri-cycling-watts-density:${density.toFixed(3)}`,
           'data-samples': cell.count,
+          'data-watts-min': cell.minWatts,
+          'data-watts-max': cell.maxWatts,
+          'data-value': cell.value,
+          'data-value-label': cell.label,
+          'data-side': side,
+          'aria-label': cyclingWattsCellText(
+            { ...cell, side },
+            title === 'power balance',
+            f.presentation.locale,
+          ),
         }),
       )
     }
   }
-  return { svg, wattsTicks: axis.ticks }
+  return {
+    svg,
+    wattsTicks: axis.ticks,
+    readout: f.el('span', 'tri-chart-readout tri-cycling-watts-readout', undefined, { hidden: '' }),
+  }
 }
 
 const buildCyclingChartModes = <N>(f: TriNodeFactory<N>): N => {
@@ -2421,6 +2483,7 @@ export const buildPowerBalanceChart = <N>(
   )
   f.add(
     powerPane,
+    heatmap.readout,
     axisFrame(
       f,
       heatSvg,
@@ -2787,6 +2850,7 @@ const buildCyclingDynamicsPercentChart = <N>(
   )
   f.add(
     powerPane,
+    heatmap.readout,
     axisFrame(f, heatmap.svg, yTicks, height, heatmap.wattsTicks, true, { top: 0, bottom: height }),
   )
   f.add(wrap, cap, distancePane, powerPane)
@@ -3346,7 +3410,14 @@ const shiftingWattsData = (
     samples: observed.flatMap(sample => {
       const index = rowIndex.get(sample.key)
       if (index == null) return []
-      return [{ watts: sample.watts, value: rows.length === 1 ? 0.5 : index }]
+      const row = rows[index]
+      return [
+        {
+          watts: sample.watts,
+          value: rows.length === 1 ? 0.5 : index,
+          label: `${row.frontTeeth}×${row.rearTeeth}`,
+        },
+      ]
     }),
   }
 }
@@ -3536,6 +3607,7 @@ export const buildShiftingChart = <N>(
   )
   f.add(
     powerPane,
+    heatmap.readout,
     axisFrame(
       f,
       heatmap.svg,
@@ -7854,6 +7926,8 @@ const effortDuration = (seconds: number): string => {
     const hours = seconds / 3600
     return `${hours} hr`
   }
+  if (seconds >= 3600 && seconds % 60 === 0)
+    return `${Math.floor(seconds / 3600)}h${String((seconds % 3600) / 60).padStart(2, '0')}`
   return zoneClock(seconds)
 }
 
@@ -7881,7 +7955,8 @@ const effortTable = <N>(
   })
   const thead = f.el('thead')
   const heading = f.el('tr')
-  for (const label of headers) f.add(heading, f.el('th', undefined, label, { scope: 'col' }))
+  for (const label of headers)
+    f.add(heading, f.el('th', undefined, label.toLowerCase(), { scope: 'col' }))
   f.add(thead, heading)
   const tbody = f.el('tbody')
   for (const cells of rows) {
@@ -7903,7 +7978,7 @@ const effortTable = <N>(
   f.add(scroll, table)
   const viewport = f.el('div', 'tri-effort-viewport')
   f.add(viewport, scroll)
-  f.add(block, f.el('div', 'tri-zone-title tri-effort-title', title), viewport)
+  f.add(block, f.el('div', 'tri-zone-title tri-effort-title', title.toLowerCase()), viewport)
   return block
 }
 

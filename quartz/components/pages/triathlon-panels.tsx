@@ -174,6 +174,7 @@ export const GEAR: [string, string[]][] = [
     [
       'Shoes: HOKA Clifton 10',
       'Shoes: Saucony Endorphin Elite 3',
+      'Shoes: On Cloudmonster 3 Hyper LS',
       'Hat: Ciele Athletic Gocap',
       'Socks: Saucony Inferno Cushion Mid 3-Pack Sock',
       'Pants: Salomon SHAKEOUT CORE 5',
@@ -1088,6 +1089,7 @@ const STRAVA_GEAR_IDS: Readonly<Record<string, string>> = {
   'Canyon Speedmax CFR Di2 2027': 'b18595115',
   'Shoes: HOKA Clifton 10': 'g31765417',
   'Shoes: Saucony Endorphin Elite 3': 'g32047204',
+  'Shoes: On Cloudmonster 3 Hyper LS': 'g34180562',
 }
 
 const GearRows = ({

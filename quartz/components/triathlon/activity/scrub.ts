@@ -21,6 +21,7 @@ import { swimActivityHeaderValue } from '../../../util/triathlon-i18n'
 import { swimActivityPointText } from '../../../util/triathlon-i18n'
 import { swimActivityValueText } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
+import { setupCyclingWattsCharts } from './cycling-watts'
 import { syncPowerCurveActivityLink } from './power-links'
 import { setupSwimPowerCharts } from './swim-power'
 import { setupTorqueCharts } from './torque'
@@ -81,6 +82,12 @@ export const setCyclingChartMode = (chart: HTMLElement, mode: CyclingChartMode):
   for (const sibling of charts) {
     sibling.dataset.cyclingChartMode = mode
     sibling.classList.remove('tri-elev-wrap--read')
+    sibling.classList.remove('tri-chart--hover')
+    const wattsReadout = sibling.querySelector<HTMLElement>('.tri-cycling-watts-readout')
+    if (wattsReadout) wattsReadout.hidden = true
+    sibling
+      .querySelector('.tri-cycling-watts-heat-cell--active')
+      ?.classList.remove('tri-cycling-watts-heat-cell--active')
     for (const option of sibling.querySelectorAll<HTMLButtonElement>('.tri-cycling-chart-mode'))
       option.setAttribute('aria-pressed', String(option.dataset.cyclingChartMode === mode))
     for (const pane of sibling.querySelectorAll<HTMLElement>('.tri-cycling-chart-pane')) {
@@ -95,6 +102,7 @@ export const setupChartScrub = (
   scope: HTMLElement,
   presentation: () => TriathlonPresentation,
 ): (() => void) => {
+  const cleanupCyclingWatts = setupCyclingWattsCharts(scope, presentation)
   const cleanupTorque = setupTorqueCharts(scope)
   const cleanupSwimPower = setupSwimPowerCharts(scope)
   const text = (key: string): string => triText(presentation().locale, key)
@@ -882,6 +890,7 @@ export const setupChartScrub = (
   window.addEventListener('tri:locale', onLocale)
   onLocale()
   return () => {
+    cleanupCyclingWatts()
     cleanupTorque()
     cleanupSwimPower()
     clear()

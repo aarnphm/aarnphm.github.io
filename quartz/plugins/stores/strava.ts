@@ -1697,7 +1697,8 @@ export function resolveActivityHeartRate(
 const MILE_M = 1609.344
 const MAX_EFFORT_TIMELINE_S = (7 * DAY_MS) / 1000
 const POWER_EFFORT_SECS = [
-  5, 15, 30, 60, 120, 180, 300, 360, 420, 480, 600, 720, 900, 1200, 1800, 2700, 3600, 7200,
+  3, 5, 6, 15, 30, 45, 60, 120, 180, 300, 360, 420, 480, 600, 720, 900, 1200, 1800, 2700, 3600,
+  5400, 7200,
 ]
 const DISTANCE_EFFORTS = [
   ['5 mile', 5 * MILE_M],

@@ -4432,16 +4432,19 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   assert.equal(efforts.weightDate, '2026-06-07')
   assert.deepEqual(detail.powerCurveWeight, { kg: 75, date: '2026-06-07', source: 'garmin' })
   assert.equal(efforts.distance.find(effort => effort.label === '10K')?.elapsedTimeS, 14)
-  assert.deepEqual(efforts.power[0], {
-    startElapsedS: 0,
-    endElapsedS: 5,
-    mechanics: null,
-    durationS: 5,
-    averageWatts: 300,
-    wattsPerKg: 4,
-    averageHeartRate: 142,
-    elevationDeltaM: 4,
-  })
+  assert.deepEqual(
+    efforts.power.find(effort => effort.durationS === 5),
+    {
+      startElapsedS: 0,
+      endElapsedS: 5,
+      mechanics: null,
+      durationS: 5,
+      averageWatts: 300,
+      wattsPerKg: 4,
+      averageHeartRate: 142,
+      elevationDeltaM: 4,
+    },
+  )
   assert.equal(efforts.power.find(effort => effort.durationS === 15)?.averageWatts, 126)
   assert.deepEqual(efforts.climbs, [
     {
@@ -4811,7 +4814,7 @@ test('projects Wahoo FIT torque into exact effort windows and serialized CP anch
   assert.equal(detail.cyclingTorque.source, 'wahoo')
   assert.equal(detail.wahoo?.activityId, id)
   const samples = cyclingTorqueSamples(fit.streams, 0, detail.elapsedTimeS)
-  for (const durationS of [180, 360, 720]) {
+  for (const durationS of [3, 6, 45, 180, 360, 720]) {
     const effort = detail.bestEfforts?.power.find(effort => effort.durationS === durationS)
     assert.ok(effort && effort.startElapsedS != null && effort.endElapsedS != null)
     assert.equal(effort.endElapsedS - effort.startElapsedS, durationS)
