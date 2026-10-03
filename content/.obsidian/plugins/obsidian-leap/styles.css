@@ -1,0 +1,43 @@
+.garden-leap-overlay {
+  --garden-plugin-line: color-mix(in srgb, var(--text-faint) 55%, transparent);
+  --garden-plugin-selected: color-mix(in srgb, var(--interactive-accent) 18%, transparent);
+  position: fixed;
+  inset: 0;
+  z-index: var(--layer-popover);
+  pointer-events: none;
+}
+
+.garden-leap-target {
+  position: fixed;
+  box-sizing: border-box;
+  border: 1px solid var(--garden-plugin-line);
+  border-radius: 0;
+  background: var(--garden-plugin-selected);
+  color: var(--text-normal);
+  pointer-events: none;
+}
+
+.garden-leap-target.is-active {
+  border-color: var(--interactive-accent);
+}
+
+.garden-leap-label {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0;
+  min-width: 1ch;
+  padding-inline: 0.125em;
+  border: 1px solid var(--garden-plugin-line);
+  border-radius: 0;
+  background: var(--background-primary);
+  color: var(--text-accent);
+  font-family: var(--font-monospace);
+  font-size: var(--font-smallest);
+  font-weight: var(--font-semibold);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.garden-leap-settings .setting-item {
+  border-radius: 0;
+}

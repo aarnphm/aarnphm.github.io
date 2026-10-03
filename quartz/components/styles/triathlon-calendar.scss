@@ -77,6 +77,10 @@
   }
 }
 
+.tri-subpage[data-tri-view='calendar'] .tri-calendar {
+  margin-block-start: 0;
+}
+
 :root[saved-theme='dark'] .tri-calendar {
   --calendar-swim: var(--tri-swim);
   --calendar-bike: var(--tri-bike);

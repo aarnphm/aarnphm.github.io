@@ -14,6 +14,7 @@ content/.obsidian/plugins/*
 !content/.obsidian/plugins/obsidian-metadata/
 !content/.obsidian/plugins/obsidian-sidenotes/
 !content/.obsidian/plugins/obsidian-marked/
+!content/.obsidian/plugins/obsidian-leap/
 !content/.obsidian/plugins/quartz-runner/
 content/.obsidian/plugins/*/.hotreload
 !content/.obsidian/snippets/

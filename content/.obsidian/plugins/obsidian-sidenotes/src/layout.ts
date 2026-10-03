@@ -3,7 +3,7 @@ import { Component } from 'obsidian'
 interface MarginNote {
   wrapper: HTMLElement
   content: HTMLElement
-  label: HTMLButtonElement
+  anchor: HTMLElement
   pane: HTMLElement
   column: HTMLElement
   leftSpace: number
@@ -88,14 +88,15 @@ export class SidenoteLayout extends Component {
         content.style.removeProperty('top')
         continue
       }
-      notes.push({ wrapper, content, label, pane, column, leftSpace, rightSpace })
+      const anchor = wrapper.classList.contains('sidenote-source') ? wrapper : label
+      notes.push({ wrapper, content, anchor, pane, column, leftSpace, rightSpace })
     }
 
     const bottoms = new Map<HTMLElement, { left: number; right: number }>()
     for (const note of notes.sort(
-      (a, b) => a.label.getBoundingClientRect().top - b.label.getBoundingClientRect().top,
+      (a, b) => a.anchor.getBoundingClientRect().top - b.anchor.getBoundingClientRect().top,
     )) {
-      const labelRect = note.label.getBoundingClientRect()
+      const anchorRect = note.anchor.getBoundingClientRect()
       const columnRect = note.column.getBoundingClientRect()
       const previous = bottoms.get(note.pane) ?? { left: -Infinity, right: -Infinity }
       // Each pane balances its margins independently, keeping explicit side restrictions.
@@ -107,9 +108,9 @@ export class SidenoteLayout extends Component {
       const target = side === 'right' ? columnRect.right + 16 : columnRect.left - 16 - width
       note.wrapper.dataset.side = side
       note.content.style.width = `${width}px`
-      note.content.style.left = `${target - labelRect.left}px`
-      const top = Math.max(labelRect.top, previous[side] + 8)
-      note.content.style.top = `${top - labelRect.top}px`
+      note.content.style.left = `${target - anchorRect.left}px`
+      const top = Math.max(anchorRect.top, previous[side] + 8)
+      note.content.style.top = `${top - anchorRect.top}px`
       if (!note.content.hidden) previous[side] = top + note.content.getBoundingClientRect().height
       bottoms.set(note.pane, previous)
     }

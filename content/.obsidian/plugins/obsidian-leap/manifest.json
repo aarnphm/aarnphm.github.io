@@ -1,0 +1,10 @@
+{
+  "id": "obsidian-leap",
+  "name": "Garden Leap",
+  "version": "1.0.0",
+  "minAppVersion": "1.8.0",
+  "description": "Viewport character jumps and syntax-node selection using your Neovim Leap mappings.",
+  "author": "aarnphm",
+  "authorUrl": "https://aarnphm.xyz",
+  "isDesktopOnly": false
+}

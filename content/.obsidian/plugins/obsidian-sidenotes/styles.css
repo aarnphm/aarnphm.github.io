@@ -62,6 +62,10 @@ button.sidenote-label[aria-expanded='true'] {
   overflow-wrap: anywhere;
 }
 
+.sidenote:not(.sidenote-source) > .sidenote-label:focus-visible + .sidenote-content {
+  border-color: var(--interactive-accent);
+}
+
 .sidenote[hidden],
 .sidenote-content[hidden] {
   display: none;
@@ -70,6 +74,15 @@ button.sidenote-label[aria-expanded='true'] {
 .sidenote[data-placement='margin'] {
   display: inline-block;
   vertical-align: baseline;
+}
+
+.sidenote-source > .sidenote-label {
+  display: none;
+}
+
+.sidenote-source[data-placement='margin'] {
+  width: 0;
+  height: 0;
 }
 
 .sidenote[data-placement='margin'] > .sidenote-content {
@@ -120,6 +133,10 @@ button.sidenote-label[aria-expanded='true'] {
   button.sidenote-label:hover {
     border-color: var(--text-faint);
     background: var(--garden-plugin-surface);
+  }
+
+  .sidenote:not(.sidenote-source) > .sidenote-label:hover + .sidenote-content {
+    border-color: var(--interactive-accent);
   }
 }
 
