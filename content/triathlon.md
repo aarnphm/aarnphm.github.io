@@ -1859,6 +1859,21 @@ garmin: 24557452349
 ```
 
 ```tracking
+date: 2026-10-02
+activity: 20425548072
+exercise: Leg Swings | 30s
+exercise: Inchworms | 30s
+exercise: Bodyweight Squat | 30s
+exercise: Arm Circles and Torso Twists | 30s
+exercise: Squat Jump | 40s | 40s | 40s | 40s
+exercise: Plank Shoulder Taps | 40s | 40s | 40s | 40s
+exercise: Split Squat with Rear Foot Elevated (or Flat) | 40s | 40s | 40s | 40s
+exercise: Mountain Climbers | 40s | 40s | 40s | 40s
+exercise: Step-Back Lunge to Balance Hold | 40s | 40s | 40s | 40s
+exercise: Figure-4 Glute Stretch, Downward Dogs, Seated Hamstring Stretch | 2m
+```
+
+```tracking
 title: Guided All Round, Reflect
 date: 2026-10-02
 time: 19:30

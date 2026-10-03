@@ -3718,11 +3718,11 @@ test('renders per-run best efforts with pace, telemetry gaps, and calculation pr
   assert.equal(rendered.properties.ariaLabel, 'Running best efforts')
   assert.equal(rendered.properties.dataEffortSource, 'calculated')
   assert.deepEqual(headerText(table(rendered, 'distance')), [
-    'Distance',
-    'Time',
-    'Pace',
-    'Heart rate',
-    'Elev',
+    'distance',
+    'time',
+    'pace',
+    'heart rate',
+    'elev',
   ])
   assert.deepEqual(bodyRows(table(rendered, 'distance')), [
     ['400m', '1:54', '4:45/km', '162 bpm', '-1 m'],
@@ -3758,9 +3758,9 @@ test('builds semantic distance, power, and climbing tables in metric units', () 
   assert.deepEqual(
     byClass(rendered, 'tri-effort-title').map(title => [title.tagName, text(title)]),
     [
-      ['div', 'Distance'],
-      ['div', 'Power'],
-      ['div', 'ClimbPro'],
+      ['div', 'distance'],
+      ['div', 'power'],
+      ['div', 'climbpro'],
     ],
   )
   assert.deepEqual(
@@ -3785,19 +3785,19 @@ test('builds semantic distance, power, and climbing tables in metric units', () 
 
   const distance = table(rendered, 'distance')
   assert.equal(distance.properties.ariaLabel, 'Distance efforts')
-  assert.deepEqual(headerText(distance), ['Distance', 'Time', 'Speed', 'Heart rate', 'Elev'])
+  assert.deepEqual(headerText(distance), ['distance', 'time', 'speed', 'heart rate', 'elev'])
   assert.deepEqual(bodyRows(distance), [['10K', '24:31', '24.5 km/h', '151 bpm', '-30 m']])
 
   const power = table(rendered, 'power')
   assert.deepEqual(headerText(power), [
-    'Time',
-    'Power',
-    'W/kg',
-    'Heart rate',
-    'Cadence',
-    'Torque',
-    'Coverage',
-    'Elev',
+    'time',
+    'power',
+    'w/kg',
+    'heart rate',
+    'cadence',
+    'torque',
+    'coverage',
+    'elev',
   ])
   assert.deepEqual(bodyRows(power), [
     ['5 sec', '565 W', '6.45 W/kg', '150 bpm', '—', '—', '—', '4 m'],
@@ -3805,16 +3805,16 @@ test('builds semantic distance, power, and climbing tables in metric units', () 
 
   const climbing = table(rendered, 'climbing')
   assert.deepEqual(headerText(climbing), [
-    'Climb',
-    'Time',
-    'Distance',
-    'Gain',
-    'Grade',
-    'Speed',
-    'Heart rate',
-    'Power',
-    'W/kg',
-    'VAM',
+    'climb',
+    'time',
+    'distance',
+    'gain',
+    'grade',
+    'speed',
+    'heart rate',
+    'power',
+    'w/kg',
+    'vam',
   ])
   assert.deepEqual(bodyRows(climbing), [
     [
