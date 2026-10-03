@@ -27,6 +27,7 @@ export default ((userOpts?: Options) => {
     const isArenaIndex = slug === 'arena'
     const isArenaChannel = slug.startsWith('arena/') && slug !== 'arena'
     const isStreamPage = slug === 'stream' || slug.startsWith('stream/on')
+    const isStreamIndex = slug === 'stream/on'
     const hasStreamProtectedContent =
       isStreamPage && Object.keys(fileData.streamData?.protectedPayloads ?? {}).length > 0
 
@@ -118,8 +119,13 @@ export default ((userOpts?: Options) => {
               >
                 rss
               </a>
-              <a href="/stream/on" class="internal" style="font-style: italic" data-no-popover>
-                list
+              <a
+                href={isStreamIndex ? '/stream' : '/stream/on'}
+                class="internal"
+                style="font-style: italic"
+                data-no-popover
+              >
+                {isStreamIndex ? 'stream' : 'list'}
               </a>
             </nav>
           )}

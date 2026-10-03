@@ -1,0 +1,20 @@
+{
+  "name": "obsidian-leap",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Neovim-style Leap motions and syntax selections for Obsidian",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production"
+  },
+  "dependencies": {
+    "@lezer/markdown": "1.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.6",
+    "esbuild": "0.28.1",
+    "obsidian": "1.10.3",
+    "typescript": "5.3.3"
+  }
+}

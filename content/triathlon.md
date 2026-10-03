@@ -155,19 +155,6 @@ maintenance:
           - end: null
             reason: null
             start: '2026-08-26'
-  wheelset:
-    - - type: Reserve 40|44 Road
-      - distance: 2760.16
-      - range:
-          - end: '2026-10-04'
-            start: '2026-05-16'
-      - reason: rotates to HUNT 54_58 Aerodynamicist UD Carbon Spoke
-    - - type: HUNT 54_58 Aerodynamicist UD Carbon Spoke
-      - distance: 0
-      - range:
-          - end: null
-            start: '2026-10-05'
-      - reason: null
   service:
     soloist:
       - date: '2026-08-21'
@@ -263,7 +250,20 @@ maintenance:
                 start: '2026-08-17'
               - end: null
                 start: '2026-09-04'
-modified: 2026-10-02 15:20:38 GMT-04:00
+  wheelset:
+    - - type: Reserve 40|44 Road
+      - distance: 2760.16
+      - range:
+          - end: null
+            start: '2026-05-16'
+      - reason: rotates to HUNT 54_58 Aerodynamicist UD Carbon Spoke
+    - - type: HUNT 54_58 Aerodynamicist UD Carbon Spoke
+      - distance: 0
+      - range:
+          - end: null
+            start: '2026-10-05'
+      - reason: null
+modified: 2026-10-02 21:20:00 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1856,6 +1856,22 @@ location: Othership Adelaide
 htl: 7.7
 strava: 20396023025
 garmin: 24557452349
+```
+
+```tracking
+title: Guided All Round, Reflect
+date: 2026-10-02
+time: 19:30
+duration: 75 mins
+activity: sauna
+temperature: 167F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: break | hot sauna | cold plunge | break | hot sauna | break
+location: Othership Adelaide
+htl: 7.6
+strava: 20426494341
+garmin: 24584149374
 ```
 
 <!-- training plan start
