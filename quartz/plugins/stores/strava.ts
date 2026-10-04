@@ -2283,12 +2283,24 @@ function activityWeight(
   const startMs = Date.parse(activity.startDate)
   let sameDayBefore: ActivityWeight | null = null
   let sameDayAfter: ActivityWeight | null = null
+  let earlier: ActivityWeight | null = null
   let sameDayBeforeTs = -Infinity
   let sameDayAfterTs = Infinity
+  let earlierTs = -Infinity
   for (const sample of samples) {
-    if (sample.weightKg == null || !Number.isFinite(sample.weightKg) || sample.weightKg <= 0)
+    if (
+      sample.weightKg == null ||
+      !Number.isFinite(sample.weightKg) ||
+      sample.weightKg <= 0 ||
+      !Number.isFinite(sample.ts) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(sample.date)
+    )
       continue
     const weight = { kg: sample.weightKg, date: sample.date }
+    if (sample.date < activityDate && sample.ts <= startMs && sample.ts > earlierTs) {
+      earlier = weight
+      earlierTs = sample.ts
+    }
     if (sample.date !== activityDate) continue
     if (sample.ts <= startMs && sample.ts > sameDayBeforeTs) {
       sameDayBefore = weight
@@ -2298,7 +2310,7 @@ function activityWeight(
       sameDayAfterTs = sample.ts
     }
   }
-  return sameDayBefore ?? sameDayAfter
+  return sameDayBefore ?? sameDayAfter ?? earlier
 }
 
 function activityRestingHeartRate(oura: OuraCache | null, date: string): number | null {
@@ -3711,7 +3723,11 @@ function projectDetail(
     input: StravaStreams | GarminStreams | undefined,
     inputSource: WalkPowerEstimate['inputSource'],
   ): WalkPowerEstimate | null =>
-    sport === 'walk' && !a.deviceWatts && garmin?.avgPower == null && weight && input?.time
+    sport === 'walk' &&
+    !a.deviceWatts &&
+    garmin?.avgPower == null &&
+    weight?.date === a.startDateLocal.slice(0, 10) &&
+    input?.time
       ? buildWalkPowerEstimate({
           inputSource,
           weight: { ...weight, source: 'garmin' },

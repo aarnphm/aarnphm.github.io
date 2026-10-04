@@ -24,6 +24,13 @@ import { selectActivityAnalysisSummary } from './activity-analysis-selection'
 import { surfaceCurrentChartSamples } from './activity-environment'
 import { gardenUvScoreFromDose } from './activity-uv-score'
 import { cyclingTorqueDensity } from './cycling-torque'
+import {
+  encodePowerCurves,
+  powerCurvePointAt,
+  powerCurveSecondsAt,
+  powerCurveWattsAt,
+  type PowerCurveData,
+} from './power-curve'
 import { RUN_PACE_ZONE_NAMES, runPaceZoneRange } from './run-pace-zones'
 import { resolveSleepMetrics, type SleepMetrics } from './sleep-metrics'
 import {
@@ -7697,107 +7704,6 @@ export type PowerCurveHover = {
 
 const POWER_CURVE_PATH_POINTS = 1_024
 
-const encodePowerCurveActivities = (curve: readonly PowerCurvePoint[]): string => {
-  if (
-    curve.length === 0 ||
-    curve.some(
-      point =>
-        point.activityId == null ||
-        !Number.isInteger(point.activityId) ||
-        point.activityId < 0 ||
-        point.activityDate == null ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(point.activityDate),
-    )
-  )
-    return ''
-  const segments: string[] = []
-  let start = 0
-  for (let index = 1; index <= curve.length; index++) {
-    const previous = curve[index - 1]
-    const point = curve[index]
-    if (
-      point &&
-      point.activityId === previous.activityId &&
-      point.activityDate === previous.activityDate
-    )
-      continue
-    segments.push(`${previous.activityId},${previous.activityDate},${index - start}`)
-    start = index
-  }
-  return segments.join(';')
-}
-
-export const encodePowerCurve = (curve: PowerCurvePoint[]): string => {
-  if (curve.length === 0) return ''
-  const consecutive = curve.every((point, index) => point.s === curve[0].s + index)
-  const encoded = consecutive
-    ? `d|${curve[0].s}|${curve.map(point => point.w).join(',')}`
-    : `s|${curve.map(point => `${point.s}:${point.w}`).join(',')}`
-  const activities = encodePowerCurveActivities(curve)
-  return activities ? `${encoded}|${activities}` : encoded
-}
-
-const decodePowerCurveActivities = (
-  points: PowerCurvePoint[],
-  encoded: string | undefined,
-): boolean => {
-  if (encoded == null) return true
-  if (encoded.length === 0) return false
-  let index = 0
-  for (const segment of encoded.split(';')) {
-    const fields = segment.split(',')
-    if (fields.length !== 3) return false
-    const activityId = Number(fields[0])
-    const activityDate = fields[1]
-    const count = Number(fields[2])
-    if (
-      !Number.isInteger(activityId) ||
-      activityId < 0 ||
-      !/^\d{4}-\d{2}-\d{2}$/.test(activityDate) ||
-      !Number.isInteger(count) ||
-      count <= 0 ||
-      index + count > points.length
-    )
-      return false
-    for (let offset = 0; offset < count; offset++) {
-      points[index] = { ...points[index], activityId, activityDate }
-      index += 1
-    }
-  }
-  return index === points.length
-}
-
-export const decodePowerCurve = (encoded: string | undefined): PowerCurvePoint[] => {
-  if (!encoded) return []
-  const fields = encoded.split('|')
-  const points: PowerCurvePoint[] = []
-  if (fields[0] === 'd' && (fields.length === 3 || fields.length === 4)) {
-    const start = Number(fields[1])
-    if (!Number.isInteger(start) || start <= 0 || fields[2].length === 0) return []
-    for (const [index, raw] of fields[2].split(',').entries()) {
-      if (raw.length === 0) return []
-      const watts = Number(raw)
-      if (!Number.isFinite(watts)) return []
-      points.push({ s: start + index, w: watts })
-    }
-    return decodePowerCurveActivities(points, fields[3]) ? points : []
-  }
-  if (fields[0] !== 's' || (fields.length !== 2 && fields.length !== 3) || fields[1].length === 0)
-    return []
-  let previousSeconds = 0
-  for (const raw of fields[1].split(',')) {
-    const separator = raw.indexOf(':')
-    if (separator <= 0 || separator === raw.length - 1) return []
-    const seconds = Number(raw.slice(0, separator))
-    const watts = Number(raw.slice(separator + 1))
-    if (!Number.isInteger(seconds) || seconds <= previousSeconds || !Number.isFinite(watts))
-      return []
-    points.push({ s: seconds, w: watts })
-    previousSeconds = seconds
-  }
-  return decodePowerCurveActivities(points, fields[2]) ? points : []
-}
-
 export const powerCurveFraction = (
   seconds: number,
   minSeconds: number,
@@ -7844,18 +7750,18 @@ const embeddedPowerCurveDurationTicks = (
   )
 }
 
-const nearestPowerCurveIndex = (curve: readonly PowerCurvePoint[], seconds: number): number => {
+const nearestPowerCurveIndex = (curve: PowerCurveData, seconds: number): number => {
   let low = 0
   let high = curve.length - 1
   while (low < high) {
     const mid = Math.floor((low + high) / 2)
-    if (curve[mid].s < seconds) low = mid + 1
+    if (powerCurveSecondsAt(curve, mid) < seconds) low = mid + 1
     else high = mid
   }
   if (
     low > 0 &&
-    Math.abs(Math.log(curve[low - 1].s) - Math.log(seconds)) <
-      Math.abs(Math.log(curve[low].s) - Math.log(seconds))
+    Math.abs(Math.log(powerCurveSecondsAt(curve, low - 1)) - Math.log(seconds)) <
+      Math.abs(Math.log(powerCurveSecondsAt(curve, low)) - Math.log(seconds))
   )
     return low - 1
   return low
@@ -7882,28 +7788,28 @@ export const powerCurvePathPoints = (curve: PowerCurvePoint[]): PowerCurvePoint[
 }
 
 export const powerCurveHoverAt = (
-  curve: PowerCurvePoint[],
-  reference: PowerCurvePoint[],
+  curve: PowerCurveData,
+  reference: PowerCurveData,
   pointerFraction: number,
 ): PowerCurveHover | null => {
   if (curve.length < 2) return null
   const fraction = Math.min(1, Math.max(0, pointerFraction))
-  const minSeconds = curve[0].s
-  const maxSeconds = curve[curve.length - 1].s
+  const minSeconds = powerCurveSecondsAt(curve, 0)
+  const maxSeconds = powerCurveSecondsAt(curve, curve.length - 1)
   const targetSeconds = Math.exp(
     Math.log(minSeconds) + fraction * (Math.log(maxSeconds) - Math.log(minSeconds)),
   )
   const index = nearestPowerCurveIndex(curve, targetSeconds)
-  const point = curve[index]
+  const point = powerCurvePointAt(curve, index)
   let referenceWatts: number | null = null
   let low = 0
   let high = reference.length - 1
   while (low <= high) {
     const mid = Math.floor((low + high) / 2)
-    if (reference[mid].s < point.s) low = mid + 1
-    else if (reference[mid].s > point.s) high = mid - 1
+    if (powerCurveSecondsAt(reference, mid) < point.s) low = mid + 1
+    else if (powerCurveSecondsAt(reference, mid) > point.s) high = mid - 1
     else {
-      referenceWatts = reference[mid].w
+      referenceWatts = powerCurveWattsAt(reference, mid)
       break
     }
   }
@@ -8374,11 +8280,13 @@ export const powerCurveWeight = (
   detail: StravaActivityDetail,
 ): StravaActivityDetail['powerCurveWeight'] => {
   const weight = detail.powerCurveWeight
-  if (weight && Number.isFinite(weight.kg) && weight.kg > 0 && weight.date === detail.date)
+  const eligibleDate = (date: string): boolean =>
+    /^\d{4}-\d{2}-\d{2}$/.test(date) && date <= detail.date
+  if (weight && Number.isFinite(weight.kg) && weight.kg > 0 && eligibleDate(weight.date))
     return weight
   const kg = detail.bestEfforts?.weightKg
   const date = detail.bestEfforts?.weightDate
-  return kg != null && Number.isFinite(kg) && kg > 0 && date === detail.date
+  return kg != null && Number.isFinite(kg) && kg > 0 && date != null && eligibleDate(date)
     ? { kg, date, source: 'garmin' }
     : undefined
 }
@@ -8771,7 +8679,7 @@ export const buildPowerCurve = <N>(
               disabled: '',
               title: triText(
                 f.presentation.locale,
-                'W/kg unavailable: no weight recorded for this activity',
+                'W/kg unavailable: no weight recorded on or before this activity',
               ),
             }
           : {}),
@@ -8809,10 +8717,8 @@ export const buildPowerCurve = <N>(
     class: 'tri-curve-svg',
     viewBox: `0 0 ${W} ${H}`,
     preserveAspectRatio: 'none',
-    'data-curve': encodePowerCurve(curve),
+    'data-power-curves': encodePowerCurves([curve, visibleSixWeekRef, visibleYearRef]),
     'data-curve-sport': d.sport,
-    'data-curve-ref-six-weeks': encodePowerCurve(visibleSixWeekRef),
-    'data-curve-ref-year': encodePowerCurve(visibleYearRef),
     'data-curve-range': defaultRange,
     'data-curve-year': ctx.curveYear ?? '',
     'data-curve-domain-max': curveMax,
@@ -9028,10 +8934,12 @@ export const buildPowerCurve = <N>(
   if (weight)
     f.add(
       criticalPowerCaption ?? cap,
-      f.el('span', 'tri-curve-weight-note', `${criticalPowerCaption ? ' · ' : ''}${weight.kg} kg`, {
-        hidden: '',
-        title: `Garmin · ${weight.date}`,
-      }),
+      f.el(
+        'span',
+        'tri-curve-weight-note',
+        `${criticalPowerCaption ? ' · ' : ''}${weight.kg} kg${weight.date < d.date ? ` · ${weight.date}` : ''}`,
+        { hidden: '', title: `Garmin · ${weight.date}` },
+      ),
     )
   f.add(wrap, cap)
   return wrap
@@ -10655,23 +10563,21 @@ export const normalizePowerCurvePoints = (
 }
 
 export const nearestPowerCurvePoint = (
-  points: readonly PowerCurvePoint[],
+  points: PowerCurveData,
   durationS: number,
 ): PowerCurvePoint | null => {
   if (
     points.length === 0 ||
     !Number.isFinite(durationS) ||
-    durationS < points[0].s ||
-    durationS > points[points.length - 1].s
+    durationS < powerCurveSecondsAt(points, 0) ||
+    durationS > powerCurveSecondsAt(points, points.length - 1)
   )
     return null
-  return points[nearestPowerCurveIndex(points, durationS)]
+  return powerCurvePointAt(points, nearestPowerCurveIndex(points, durationS))
 }
 
-export const nearestPowerCurveValue = (
-  points: readonly PowerCurvePoint[],
-  durationS: number,
-): number | null => nearestPowerCurvePoint(points, durationS)?.w ?? null
+export const nearestPowerCurveValue = (points: PowerCurveData, durationS: number): number | null =>
+  nearestPowerCurvePoint(points, durationS)?.w ?? null
 
 export const activityZonePercentages = (values: readonly number[] | null | undefined): number[] => {
   if (!values) return []
@@ -11072,8 +10978,7 @@ const buildComparisonPowerCurve = <N>(
     'data-domain-y-max': domain.max,
     'data-available': availableCurves.length,
     'data-selected': activities.length,
-    'data-curve-ref-six-weeks': encodePowerCurve(sixWeekReference),
-    'data-curve-ref-year': encodePowerCurve(yearReference),
+    'data-power-curves': encodePowerCurves([sixWeekReference, yearReference]),
     'data-curve-range': defaultRange,
     'data-curve-year': ctx?.curveYear ?? '',
   })

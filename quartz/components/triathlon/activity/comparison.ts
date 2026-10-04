@@ -1,4 +1,3 @@
-import type { PowerCurvePoint } from '../../../plugins/stores/strava'
 import type { StravaActivityDetail } from '../../../plugins/stores/strava'
 import type { ActivityComparisonMetric } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
@@ -6,12 +5,12 @@ import type { ActivityComparisonDragSelection } from './comparison-graph'
 import type { ActivityComparisonScrubState } from './comparison-graph'
 import type { ActivityComparisonSelectionRange } from './comparison-graph'
 import type { ActivityComparisonMapController } from './comparison-map'
+import { decodePowerCurves, type PowerCurveData } from '../../../util/power-curve'
 import { activityComparisonDisplayValueAtDistance } from '../../../util/triathlon-card'
 import { activityComparisonMetricsForSport } from '../../../util/triathlon-card'
 import { activityGearRatioDistribution } from '../../../util/triathlon-card'
 import { activityPowerDistributionPercentages } from '../../../util/triathlon-card'
 import { activityZonePercentages } from '../../../util/triathlon-card'
-import { decodePowerCurve } from '../../../util/triathlon-card'
 import { dlabel } from '../../../util/triathlon-card'
 import { nearestPowerCurveValue } from '../../../util/triathlon-card'
 import { normalizePowerCurvePoints } from '../../../util/triathlon-card'
@@ -281,9 +280,10 @@ export const wireActivityComparison = (
     const curveState: ActivityComparisonScrubState = { fraction: 0, selectedFraction: 0 }
     const minDurationS = Math.min(...curves.map(curve => curve[0].s))
     const maxDurationS = Math.max(...curves.map(curve => curve[curve.length - 1].s))
-    const curveReferences: Record<ComparisonCurveRange, PowerCurvePoint[]> = {
-      'six-weeks': decodePowerCurve(curveGraph.dataset.curveRefSixWeeks),
-      year: decodePowerCurve(curveGraph.dataset.curveRefYear),
+    const [sixWeeks, year] = decodePowerCurves(curveGraph.dataset.powerCurves)
+    const curveReferences: Record<ComparisonCurveRange, PowerCurveData> = {
+      'six-weeks': sixWeeks ?? [],
+      year: year ?? [],
     }
     let curveRange: ComparisonCurveRange =
       curveGraph.dataset.curveRange === 'year' ? 'year' : 'six-weeks'
