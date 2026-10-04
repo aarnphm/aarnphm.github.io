@@ -32,6 +32,7 @@ import { buildCyclingPowerTrace } from './cycling-power'
 import { buildCyclingTorqueTrace, cyclingTorqueSamples } from './cycling-torque'
 import { health as garminHealthFixture } from './fixtures/garmin-health'
 import { estimateHeartRatePhysiology } from './heart-rate-physiology'
+import { decodePowerCurves, encodePowerCurves, powerCurvePointAt } from './power-curve'
 import { resolveSleepMetrics } from './sleep-metrics'
 import { estimateSwimPhysiology } from './swim-physiology'
 import { buildSwimPowerEstimate } from './swim-power'
@@ -86,9 +87,7 @@ import {
   buildWorkoutAnalysis,
   climbGradeBand,
   clock,
-  decodePowerCurve,
   dlabel,
-  encodePowerCurve,
   environmentElapsedClock,
   environmentChartReadout,
   environmentChartSeries,
@@ -168,6 +167,11 @@ const factory: TriNodeFactory<Element> = {
   svg: (tag, attrs) => s(tag, attrs),
   add: (parent, ...children) => parent.children.push(...children),
 }
+
+const decodedPowerCurves = (svg: Element) =>
+  decodePowerCurves(String(svg.properties.dataPowerCurves)).map(curve =>
+    Array.from({ length: curve.length }, (_, index) => powerCurvePointAt(curve, index)),
+  )
 
 const presentation = (overrides: Partial<TriathlonPresentation> = {}): TriathlonPresentation => ({
   ...METRIC_TRIATHLON_PRESENTATION,
@@ -474,30 +478,58 @@ test('keeps a long-duration hover honest when its reference point is missing', (
   })
 })
 
-test('round trips dense and sparse power curve attributes', () => {
-  const dense = [
-    { s: 1, w: 700 },
-    { s: 2, w: 660 },
-    { s: 3, w: 635 },
+test('shares one duration axis across dense, sparse, and shorter power curves', () => {
+  const curves = [
+    [
+      { s: 1, w: 700 },
+      { s: 2, w: 660 },
+      { s: 3, w: 0 },
+    ],
+    [
+      { s: 1, w: 800, activityId: 11, activityDate: '2026-08-01' },
+      { s: 3, w: 750, activityId: 12, activityDate: '2026-08-02' },
+      { s: 60, w: 350, activityId: 12, activityDate: '2026-08-02' },
+    ],
+    [{ s: 2, w: 900 }],
+    [],
   ]
-  const sparse = [
-    { s: 1, w: 700 },
-    { s: 5, w: 590 },
-    { s: 60, w: 350 },
-  ]
-  const sourced = [
-    { s: 1, w: 700, activityId: 11, activityDate: '2026-08-01' },
-    { s: 2, w: 660, activityId: 11, activityDate: '2026-08-01' },
-    { s: 3, w: 635, activityId: 12, activityDate: '2026-08-02' },
-  ]
-  assert.deepEqual(decodePowerCurve(encodePowerCurve(dense)), dense)
-  assert.deepEqual(decodePowerCurve(encodePowerCurve(sparse)), sparse)
-  assert.deepEqual(decodePowerCurve(encodePowerCurve(sourced)), sourced)
-  assert.deepEqual(nearestPowerCurvePoint(sourced, 2.7), sourced[2])
-  assert.deepEqual(decodePowerCurve('d|1|700,nope'), [])
-  assert.deepEqual(decodePowerCurve('d|1|700,'), [])
-  assert.deepEqual(decodePowerCurve('d|1|700|11,2026-08-01,2'), [])
-  assert.deepEqual(decodePowerCurve('s|1:700,2:'), [])
+  const decoded = decodePowerCurves(encodePowerCurves(curves))
+  assert.equal(decoded.length, curves.length)
+  for (const curve of decoded) assert.equal(curve.durations, decoded[0].durations)
+  assert.deepEqual(decoded[0].durations, [1, 2, 3, 60])
+  assert.deepEqual(
+    decoded.map(curve =>
+      Array.from({ length: curve.length }, (_, index) => powerCurvePointAt(curve, index)),
+    ),
+    curves,
+  )
+  assert.deepEqual(nearestPowerCurvePoint(decoded[1], 2.7), curves[1][1])
+  assert.equal(nearestPowerCurvePoint(decoded[2], 3), null)
+  assert.deepEqual(powerCurveHoverAt(decoded[0], decoded[1], powerCurveFraction(2, 1, 3)), {
+    index: 1,
+    durationS: 2,
+    watts: 660,
+    referenceWatts: null,
+    xPct: powerCurveFraction(2, 1, 3) * 100,
+  })
+  for (const encoded of [
+    undefined,
+    '',
+    '{',
+    JSON.stringify({ durations: 'd|1|3', series: [{ offset: 2, watts: [700, 600] }] }),
+    JSON.stringify({ durations: 's|1,3,60', series: [{ offset: 0, watts: [700], indices: [3] }] }),
+    JSON.stringify({
+      durations: 's|1,3,60',
+      series: [{ offset: 0, watts: [700, 600], indices: [1, 0] }],
+    }),
+    JSON.stringify({ durations: 's|1,1', series: [] }),
+    JSON.stringify({ durations: 'd|1|2', series: [{ offset: 0, watts: [700, 'nope'] }] }),
+    JSON.stringify({
+      durations: 'd|1|2',
+      series: [{ offset: 0, watts: [700, 600], activities: '11,2026-08-01,1' }],
+    }),
+  ])
+    assert.deepEqual(decodePowerCurves(encoded), [])
 })
 
 test('selects the nearest serialized swim trend point and clamps the scrub range', () => {
@@ -8986,7 +9018,7 @@ test('renders power curve unit controls and activity-day weight for full and emb
     const svg = byClass(curve, 'tri-curve-svg')[0]
     assert.equal(svg.properties.dataCurveWeightKg, 87.55)
     assert.equal(svg.properties.dataCurveWattStep, 100)
-    assert.deepEqual(decodePowerCurve(String(svg.properties.dataCurve)), activity.powerCurve)
+    assert.deepEqual(decodedPowerCurves(svg)[0], activity.powerCurve)
     const note = byClass(curve, 'tri-curve-weight-note')[0]
     assert.equal(note.properties.hidden, true)
     assert.equal(note.tagName, 'span')
@@ -9011,7 +9043,34 @@ test('renders power curve unit controls and activity-day weight for full and emb
   assert.equal(byClass(curve, 'tri-curve-svg')[0].properties.dataCurveWeightKg, 75)
 })
 
-test('disables power curve W/kg without a valid same-day weight', () => {
+test('renders power curve W/kg with earlier Garmin weight and its measurement date', () => {
+  for (const embedded of [false, true]) {
+    const weight = { kg: 76.79, date: '2026-07-08', source: 'garmin' } satisfies NonNullable<
+      StravaActivityDetail['powerCurveWeight']
+    >
+    const activity = { ...zonedDetail(), powerCurveWeight: weight }
+    const curve = buildPowerCurve(factory, activity, ctx(), embedded)
+    assert.ok(curve)
+    assert.deepEqual(powerCurveWeight(activity), weight)
+    assert.equal(byClass(curve, 'tri-curve-unit')[1].properties.disabled, undefined)
+    assert.equal(byClass(curve, 'tri-curve-svg')[0].properties.dataCurveWeightKg, weight.kg)
+    const note = byClass(curve, 'tri-curve-weight-note')[0]
+    assert.equal(text(note), '76.79 kg · 2026-07-08')
+    assert.equal(note.properties.title, 'Garmin · 2026-07-08')
+    assert.equal(note.properties.hidden, true)
+    assert.ok(activity.bestEfforts)
+    assert.deepEqual(
+      powerCurveWeight({
+        ...activity,
+        powerCurveWeight: undefined,
+        bestEfforts: { ...activity.bestEfforts, weightKg: weight.kg, weightDate: weight.date },
+      }),
+      weight,
+    )
+  }
+})
+
+test('disables power curve W/kg without a valid weight on or before the activity date', () => {
   for (const kg of [null, 0, -75, NaN, Infinity]) {
     const activity = zonedDetail()
     assert.ok(activity.bestEfforts)
@@ -9024,7 +9083,7 @@ test('disables power curve W/kg without a valid same-day weight', () => {
     assert.equal(byClass(curve, 'tri-curve-weight-note').length, 0)
     assert.equal(
       byClass(curve, 'tri-curve-unit')[1].properties.title,
-      'W/kg unavailable: no weight recorded for this activity',
+      'W/kg unavailable: no weight recorded on or before this activity',
     )
   }
   assert.equal(powerCurveWeight(detail({ bestEfforts: null })), undefined)
@@ -9037,6 +9096,13 @@ test('disables power curve W/kg without a valid same-day weight', () => {
     ),
     undefined,
   )
+  for (const date of ['', '2026-7-08', 'unknown'])
+    assert.equal(
+      powerCurveWeight(
+        detail({ bestEfforts: null, powerCurveWeight: { kg: 75, date, source: 'garmin' } }),
+      ),
+      undefined,
+    )
 })
 
 test('converts power curve values with fractional kilograms and preserves measured zero', () => {
@@ -9210,8 +9276,8 @@ test('keeps every hover value while bounding a dense power curve path', () => {
   const path = byClass(curve, 'tri-curve-line')[0]
   assert.ok(svg)
   assert.ok(path)
-  const encoded = String(svg.properties.dataCurve)
-  const decoded = decodePowerCurve(encoded)
+  const encoded = String(svg.properties.dataPowerCurves)
+  const decoded = decodedPowerCurves(svg)[0]
   assert.equal(decoded.length, powerCurve.length)
   for (const seconds of [61, 3_601, 7_200, 10_800]) {
     assert.deepEqual(decoded[seconds - 1], powerCurve[seconds - 1])
@@ -9266,12 +9332,16 @@ test('serializes daily cards with long activity and reference power curves', asy
         assert.equal(svg.properties.ariaValueMax, pointCount)
         assert.ok(Number(svg.properties.dataCurveDomainMax) >= 2_600)
         assert.ok(Number(svg.properties.dataCurveDomainMax) < 20_000)
-        for (const [attribute, expected] of [
-          ['dataCurve', powerCurve],
-          ['dataCurveRefSixWeeks', sixWeeks],
-          ['dataCurveRefYear', year.slice(0, -1)],
-        ] satisfies [string, typeof powerCurve][]) {
-          const decoded = decodePowerCurve(String(svg.properties[attribute]))
+        const series = decodePowerCurves(String(svg.properties.dataPowerCurves))
+        assert.equal(series.length, 3)
+        assert.equal(series[0].durations, series[1].durations)
+        assert.equal(series[0].durations, series[2].durations)
+        for (const [seriesIndex, expected] of [
+          [0, powerCurve],
+          [1, sixWeeks],
+          [2, year.slice(0, -1)],
+        ] satisfies [number, typeof powerCurve][]) {
+          const decoded = decodedPowerCurves(svg)[seriesIndex]
           assert.equal(decoded.length, pointCount)
           for (const index of [0, 3_600, pointCount - 1])
             assert.deepEqual(decoded[index], expected[index])
@@ -9366,8 +9436,8 @@ test('renders six-week and calendar-year comparison ranges on one watt domain', 
   assert.ok(svg)
   assert.equal(svg.properties.dataCurveRange, 'six-weeks')
   assert.equal(svg.properties.dataCurveYear, 2026)
-  assert.equal(decodePowerCurve(String(svg.properties.dataCurveRefSixWeeks))[0].w, 700)
-  assert.equal(decodePowerCurve(String(svg.properties.dataCurveRefYear))[0].w, 1_060)
+  assert.equal(decodedPowerCurves(svg)[1][0].w, 700)
+  assert.equal(decodedPowerCurves(svg)[2][0].w, 1_060)
   const stage = byClass(curve, 'tri-cax-stage')[0]
   assert.ok(stage)
   assert.equal(byClass(stage, 'tri-curve-readout').length, 1)
@@ -9499,14 +9569,8 @@ test('renders running power comparison ranges with run sources and keeps cycling
   const svg = byClass(curve, 'tri-curve-svg')[0]
   assert.equal(svg.properties.dataCurveSport, 'run')
   assert.equal(svg.properties.dataCurveDomainMax, 800)
-  assert.deepEqual(
-    decodePowerCurve(String(svg.properties.dataCurveRefSixWeeks)),
-    context.runCurveRef,
-  )
-  assert.deepEqual(
-    decodePowerCurve(String(svg.properties.dataCurveRefYear)),
-    context.runCurveYearRef,
-  )
+  assert.deepEqual(decodedPowerCurves(svg)[1], context.runCurveRef)
+  assert.deepEqual(decodedPowerCurves(svg)[2], context.runCurveYearRef)
   assert.deepEqual(byClass(curve, 'tri-curve-range').map(text), ['6 weeks', 'all of 2026'])
   assert.deepEqual(byClass(curve, 'tri-curve-readout-label').map(text), ['this run', '6-week best'])
   assert.equal(
@@ -10208,7 +10272,7 @@ test('overlays the six-week best and threshold lines on the comparison power cur
   assert.ok(refPath)
   assert.ok(Number(graph.properties.dataDomainYMax) >= 1_100)
   assert.deepEqual(
-    decodePowerCurve(String(graph.properties.dataCurveRefSixWeeks)),
+    decodedPowerCurves(graph)[0],
     [
       { s: 1, w: 1_100 },
       { s: 5, w: 900 },
@@ -10366,8 +10430,8 @@ test('gives comparison power curves the shared ranges and clickable duration seg
   )
   assert.equal(graph.properties.dataCurveRange, 'six-weeks')
   assert.equal(graph.properties.dataCurveYear, 2026)
-  assert.equal(decodePowerCurve(String(graph.properties.dataCurveRefSixWeeks))[0].w, 740)
-  assert.equal(decodePowerCurve(String(graph.properties.dataCurveRefYear))[0].w, 780)
+  assert.equal(decodedPowerCurves(graph)[0][0].w, 740)
+  assert.equal(decodedPowerCurves(graph)[1][0].w, 780)
   assert.equal(references.length, 2)
   assert.equal('hidden' in references[0].properties, false)
   assert.equal('hidden' in references[1].properties, true)

@@ -775,7 +775,10 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
       (isRecord(value.powerCurveWeight) &&
         finite(value.powerCurveWeight.kg) &&
         value.powerCurveWeight.kg > 0 &&
-        value.powerCurveWeight.date === value.date &&
+        typeof value.powerCurveWeight.date === 'string' &&
+        /^\d{4}-\d{2}-\d{2}$/.test(value.powerCurveWeight.date) &&
+        typeof value.date === 'string' &&
+        value.powerCurveWeight.date <= value.date &&
         value.powerCurveWeight.source === 'garmin')
     ) ||
     !(

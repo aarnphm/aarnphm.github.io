@@ -114,7 +114,7 @@ test('retains calculated run efforts through JSON and rejects invalid telemetry'
     assert.equal(isActivityDetail({ ...activity, bestEfforts: invalid }), false)
 })
 
-test('validates same-day power curve weight and retains it through JSON', () => {
+test('validates power curve weight on or before the activity date and retains it through JSON', () => {
   const weight = { kg: 87.09, date: '2026-09-17', source: 'garmin' }
   for (const sport of ['bike', 'run']) {
     const activity = detail(1, weight.date, sport)
@@ -124,11 +124,18 @@ test('validates same-day power curve weight and retains it through JSON', () => 
     assert.ok(isActivityDetail(serialized))
     assert.deepEqual(serialized.powerCurveWeight, weight)
     assert.equal(isActivityDetail(activity), true)
+    const earlierWeight = { ...weight, date: '2026-09-16' }
+    const earlier: unknown = JSON.parse(
+      JSON.stringify({ ...activity, powerCurveWeight: earlierWeight }),
+    )
+    assert.ok(isActivityDetail(earlier))
+    assert.deepEqual(earlier.powerCurveWeight, earlierWeight)
     for (const powerCurveWeight of [
       null,
       {},
       ...[0, -1, NaN, Infinity, '87.09'].map(kg => ({ ...weight, kg })),
       { ...weight, date: '2026-09-18' },
+      ...['', '2026-9-16', 'unknown'].map(date => ({ ...weight, date })),
       { ...weight, source: 'strava' },
     ])
       assert.equal(isActivityDetail({ ...activity, powerCurveWeight }), false)

@@ -3,9 +3,13 @@ import type { PowerCurvePoint } from '../../../plugins/stores/strava'
 import type { SwimTrendChartPoint } from '../../../util/triathlon-card'
 import type { SwimTrendMode } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import {
+  decodePowerCurves,
+  powerCurveSecondsAt,
+  type PowerCurveData,
+} from '../../../util/power-curve'
 import { swimChartMetric, type SwimChartMetric } from '../../../util/swim-metrics'
 import { clock } from '../../../util/triathlon-card'
-import { decodePowerCurve } from '../../../util/triathlon-card'
 import { nearestPowerCurvePoint } from '../../../util/triathlon-card'
 import { powerCurveFraction } from '../../../util/triathlon-card'
 import { powerCurveHoverAt } from '../../../util/triathlon-card'
@@ -112,7 +116,7 @@ export const setupChartScrub = (
   let focusedSvg: SVGSVGElement | null = null
   const curveCache = new WeakMap<
     SVGSVGElement,
-    { curve: PowerCurvePoint[]; sixWeeks: PowerCurvePoint[]; year: PowerCurvePoint[] }
+    { curve: PowerCurveData; sixWeeks: PowerCurveData; year: PowerCurveData }
   >()
   const swimCache = new WeakMap<
     SVGSVGElement,
@@ -155,14 +159,11 @@ export const setupChartScrub = (
   }
   const curveData = (
     svg: SVGSVGElement,
-  ): { curve: PowerCurvePoint[]; sixWeeks: PowerCurvePoint[]; year: PowerCurvePoint[] } => {
+  ): { curve: PowerCurveData; sixWeeks: PowerCurveData; year: PowerCurveData } => {
     const cached = curveCache.get(svg)
     if (cached) return cached
-    const value = {
-      curve: decodePowerCurve(svg.dataset.curve),
-      sixWeeks: decodePowerCurve(svg.dataset.curveRefSixWeeks),
-      year: decodePowerCurve(svg.dataset.curveRefYear),
-    }
+    const [curve, sixWeeks, year] = decodePowerCurves(svg.dataset.powerCurves)
+    const value = { curve: curve ?? [], sixWeeks: sixWeeks ?? [], year: year ?? [] }
     curveCache.set(svg, value)
     return value
   }
@@ -210,8 +211,8 @@ export const setupChartScrub = (
     svg.dataset.curveRange === 'year' ? 'year' : 'six-weeks'
   const curveReference = (
     svg: SVGSVGElement,
-    data: { sixWeeks: PowerCurvePoint[]; year: PowerCurvePoint[] },
-  ): PowerCurvePoint[] => (curveRange(svg) === 'year' ? data.year : data.sixWeeks)
+    data: { sixWeeks: PowerCurveData; year: PowerCurveData },
+  ): PowerCurveData => (curveRange(svg) === 'year' ? data.year : data.sixWeeks)
   const curveReferenceYear = (svg: SVGSVGElement): number | null => {
     if (curveRange(svg) !== 'year') return null
     const year = Number(svg.dataset.curveYear)
@@ -254,7 +255,7 @@ export const setupChartScrub = (
     const maxWatts = Number(svg.dataset.curveDomainMax)
     const height = svg.viewBox.baseVal.height
     if (!axis || !Number.isFinite(maxWatts) || maxWatts <= 0 || height <= 0) return
-    // All series share the activity-day weight, so their watt-domain geometry stays valid.
+    // All series share the selected Garmin weight, so their watt-domain geometry stays valid.
     const ticks = powerCurveAxisTicks(
       maxWatts,
       Number(svg.dataset.curveWattStep),
@@ -459,7 +460,11 @@ export const setupChartScrub = (
     const index = Math.min(curve.length - 1, Math.max(0, requestedIndex))
     showCurve(
       svg,
-      powerCurveFraction(curve[index].s, curve[0].s, curve[curve.length - 1].s),
+      powerCurveFraction(
+        powerCurveSecondsAt(curve, index),
+        powerCurveSecondsAt(curve, 0),
+        powerCurveSecondsAt(curve, curve.length - 1),
+      ),
       activateChart,
       commit,
     )
@@ -789,7 +794,11 @@ export const setupChartScrub = (
         if (seconds > 0 && data.length >= 2)
           showCurve(
             curveSvg,
-            powerCurveFraction(seconds, data[0].s, data[data.length - 1].s),
+            powerCurveFraction(
+              seconds,
+              powerCurveSecondsAt(data, 0),
+              powerCurveSecondsAt(data, data.length - 1),
+            ),
             true,
             true,
           )

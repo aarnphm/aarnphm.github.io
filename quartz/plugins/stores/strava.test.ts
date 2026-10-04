@@ -4503,15 +4503,59 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   assert.deepEqual(climbOnly.power, [])
   assert.equal(climbOnly.climbs.length, 1)
 
-  const withoutSameDayWeight = buildPayload(
+  const earlierWeightDetail = buildPayload(
     cache,
     null,
     { ...garmin, weight: garmin.weight?.filter(sample => sample.date !== '2026-06-07') },
     '2026-06-01',
-  ).details['101'].bestEfforts
-  assert.ok(withoutSameDayWeight)
-  assert.equal(withoutSameDayWeight.weightKg, null)
-  assert.equal(withoutSameDayWeight.power[0].wattsPerKg, null)
+  ).details['101']
+  assert.deepEqual(earlierWeightDetail.powerCurveWeight, {
+    kg: 76,
+    date: '2026-06-06',
+    source: 'garmin',
+  })
+  assert.equal(earlierWeightDetail.bestEfforts?.weightKg, 76)
+  assert.equal(earlierWeightDetail.bestEfforts?.weightDate, '2026-06-06')
+  assert.equal(
+    earlierWeightDetail.bestEfforts?.power.find(effort => effort.durationS === 5)?.wattsPerKg,
+    3.95,
+  )
+
+  const weightSample = garmin.weight?.[0]
+  assert.ok(weightSample)
+  const earlierSamples = [
+    { ...weightSample, weightKg: 77, ts: Date.parse('2026-06-06T18:00:00Z') },
+    { ...weightSample, weightKg: 0, ts: Date.parse('2026-06-06T19:00:00Z') },
+    { ...weightSample, weightKg: NaN, ts: Date.parse('2026-06-06T20:00:00Z') },
+    { ...weightSample, weightKg: 72, date: '2026-06-08', ts: Date.parse('2026-06-08T06:00:00Z') },
+    weightSample,
+  ]
+  const latestEarlier = buildPayload(
+    cache,
+    null,
+    { ...garmin, weight: earlierSamples },
+    '2026-06-01',
+  ).details['101']
+  assert.deepEqual(latestEarlier.powerCurveWeight, { kg: 77, date: '2026-06-06', source: 'garmin' })
+  const futureOnly = buildPayload(
+    cache,
+    null,
+    { ...garmin, weight: earlierSamples.filter(sample => sample.date === '2026-06-08') },
+    '2026-06-01',
+  ).details['101']
+  assert.equal(futureOnly.powerCurveWeight, undefined)
+  assert.equal(futureOnly.bestEfforts?.weightKg, null)
+  assert.equal(futureOnly.bestEfforts?.power[0].wattsPerKg, null)
+  const sameDayAfter = buildPayload(
+    cache,
+    null,
+    {
+      ...garmin,
+      weight: garmin.weight?.filter(sample => sample.ts !== Date.parse('2026-06-07T11:00:00Z')),
+    },
+    '2026-06-01',
+  ).details['101']
+  assert.deepEqual(sameDayAfter.powerCurveWeight, { kg: 74, date: '2026-06-07', source: 'garmin' })
 
   const run = { ...cache, activities: { 101: { ...activity, sportType: 'Run' } } }
   const runDetail = buildPayload(run, null, garmin, '2026-06-01').details['101']
@@ -4658,6 +4702,17 @@ test('projects walking metabolic power with same-day weight while preserving pro
   assert.equal(walk.avgWatts, null)
   assert.equal(walk.deviceWatts, false)
   assert.equal(buildPayload(cache, null, null).details['101'].walkPower, null)
+  assert.equal(
+    buildPayload(cache, null, {
+      ...garmin,
+      weight: garmin.weight?.map(sample => ({
+        ...sample,
+        date: '2026-06-06',
+        ts: Date.parse('2026-06-06T06:00:00Z'),
+      })),
+    }).details['101'].walkPower,
+    null,
+  )
   assert.ok(cache.streams)
   cache.activities['101'].deviceWatts = true
   cache.activities['101'].averageWatts = 123
