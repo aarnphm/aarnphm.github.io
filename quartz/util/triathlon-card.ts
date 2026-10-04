@@ -8788,16 +8788,14 @@ export const buildPowerCurve = <N>(
   f.add(controls, units)
   f.add(head, controls)
   f.add(wrap, head)
-  const observedMaxW = Math.max(
+  let observedMaxW = Math.max(
     1,
-    ...curve.map(c => c.w),
-    ...visibleSixWeekRef.map(c => c.w),
-    ...visibleYearRef.map(c => c.w),
-    ...activityModel.map(c => c.w),
     activityCriticalPower?.criticalPowerWatts ?? 0,
     ftpRef ?? 0,
     goalRef ?? 0,
   )
+  for (const points of [curve, visibleSixWeekRef, visibleYearRef, activityModel])
+    for (const point of points) observedMaxW = Math.max(observedMaxW, point.w)
   const curveStep = niceStep(observedMaxW, 4)
   const curveMax = Math.ceil(observedMaxW / curveStep) * curveStep
   const X = (sec: number): number => powerCurveFraction(sec, secs[0], secs[secs.length - 1]) * W
