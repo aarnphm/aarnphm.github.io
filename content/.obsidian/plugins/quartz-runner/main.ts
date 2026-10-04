@@ -1,1 +1,1 @@
-export { default } from "./src/main"
+export { default } from './src/main'
