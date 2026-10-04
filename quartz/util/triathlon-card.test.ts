@@ -1,4 +1,5 @@
 import type { Element, ElementContent } from 'hast'
+import { toHtml } from 'hast-util-to-html'
 import { h, s } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
@@ -16,6 +17,7 @@ import type {
 } from '../plugins/stores/strava'
 import type { PublicSurfaceCurrentEstimate } from './surface-current'
 import type { TriathlonDayAnalytics } from './triathlon-day-analytics'
+import { triathlonDayCard } from '../components/triathlon-day-card'
 import { isActivityDetail } from '../components/triathlon/activity/data'
 import { metricSpecs } from '../components/triathlon/activity/render'
 import { workspaceTraces } from '../components/triathlon/activity/workspace-data'
@@ -9224,6 +9226,61 @@ test('keeps every hover value while bounding a dense power curve path', () => {
   }
   assert.equal((String(path.properties.d).match(/[ML]/g) ?? []).length <= 1_024, true)
   assert.equal(encoded.length < JSON.stringify(powerCurve).length / 2, true)
+})
+
+test('serializes daily cards with long activity and reference power curves', async t => {
+  const pointCount = 53_736
+  const powerCurve = Array.from({ length: pointCount }, (_, index) => ({
+    s: index + 1,
+    w: index === pointCount - 1 ? 1_600 : 600,
+  }))
+  const reference = (watts: number) =>
+    powerCurve.map(point => ({
+      ...point,
+      w: point.s === pointCount - 1 ? watts : 700,
+      activityId: 202,
+      activityDate: '2026-07-08',
+    }))
+  const sixWeeks = reference(2_000)
+  const year = [...reference(2_600), { s: pointCount + 1, w: 20_000 }]
+  for (const sport of ['bike', 'run'] satisfies StravaActivityDetail['sport'][]) {
+    for (const embedded of [false, true]) {
+      await t.test(`${sport}, embedded=${embedded}`, () => {
+        const activity = detail({ sport, powerCurve })
+        const card = triathlonDayCard(
+          activity.date,
+          { details: { [activity.id]: activity }, health: {} },
+          { embedded },
+          ctx({
+            curveRef: sixWeeks,
+            curveYearRef: year,
+            runCurveRef: sixWeeks,
+            runCurveYearRef: year,
+          }),
+        )
+        const html = toHtml(card)
+        const svg = byClass(card, 'tri-curve-svg')[0]
+        assert.ok(svg)
+        assert.match(html, /class="tri-curve-svg"/)
+        assert.doesNotMatch(html, /NaN|Infinity/)
+        assert.equal(svg.properties.ariaValueMax, pointCount)
+        assert.ok(Number(svg.properties.dataCurveDomainMax) >= 2_600)
+        assert.ok(Number(svg.properties.dataCurveDomainMax) < 20_000)
+        for (const [attribute, expected] of [
+          ['dataCurve', powerCurve],
+          ['dataCurveRefSixWeeks', sixWeeks],
+          ['dataCurveRefYear', year.slice(0, -1)],
+        ] satisfies [string, typeof powerCurve][]) {
+          const decoded = decodePowerCurve(String(svg.properties[attribute]))
+          assert.equal(decoded.length, pointCount)
+          for (const index of [0, 3_600, pointCount - 1])
+            assert.deepEqual(decoded[index], expected[index])
+        }
+        for (const path of [...byClass(card, 'tri-curve-line'), ...byClass(card, 'tri-curve-ref')])
+          assert.ok((String(path.properties.d).match(/[ML]/g) ?? []).length <= 1_024)
+      })
+    }
+  }
 })
 
 test('scales the power curve axis above the six-week peak and renders selected points', () => {
