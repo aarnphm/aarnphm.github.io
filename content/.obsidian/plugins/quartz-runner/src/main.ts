@@ -1,19 +1,19 @@
-import { Plugin } from "obsidian"
-import { DEFAULT_SETTINGS, type QuartzRunnerSettings } from "./settings"
-import { QuartzRunnerSettingTab } from "./settingsTab"
-import { registerQuartzRunnerCommands } from "./registerCommands"
+import { Plugin } from 'obsidian'
+import { registerQuartzRunnerCommands } from './registerCommands'
+import { DEFAULT_SETTINGS, type QuartzRunnerSettings } from './settings'
+import { QuartzRunnerSettingTab } from './settingsTab'
 
 export default class QuartzRunner extends Plugin {
-	settings: QuartzRunnerSettings
+  settings: QuartzRunnerSettings
 
-	async onload(): Promise<void> {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
-		this.addSettingTab(new QuartzRunnerSettingTab(this.app, this))
-		registerQuartzRunnerCommands(this)
-	}
+  async onload(): Promise<void> {
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
+    this.addSettingTab(new QuartzRunnerSettingTab(this.app, this))
+    registerQuartzRunnerCommands(this)
+  }
 
-	async saveSettings(settings: QuartzRunnerSettings): Promise<void> {
-		this.settings = settings
-		await this.saveData(settings)
-	}
+  async saveSettings(settings: QuartzRunnerSettings): Promise<void> {
+    this.settings = settings
+    await this.saveData(settings)
+  }
 }
