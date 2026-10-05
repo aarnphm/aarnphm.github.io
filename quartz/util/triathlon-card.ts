@@ -21,6 +21,13 @@ import {
   type SwimTrendPoint,
 } from '../plugins/stores/strava'
 import { selectActivityAnalysisSummary } from './activity-analysis-selection'
+import {
+  activityComparisonStats,
+  type ActivityComparisonStat,
+  type ActivityComparisonStatKey,
+  type ActivityComparisonStatSource,
+  type ActivityComparisonWindow,
+} from './activity-comparison-metrics'
 import { surfaceCurrentChartSamples } from './activity-environment'
 import { gardenUvScoreFromDose } from './activity-uv-score'
 import { cyclingTorqueDensity } from './cycling-torque'
@@ -51,7 +58,6 @@ import {
   swimActivityHeaderValue,
   triText,
 } from './triathlon-i18n'
-import { activityGpsSegments } from './triathlon-map-route'
 import { buildOuraHealth } from './triathlon-oura-health'
 import { powerCurveActivityLinkAttributes } from './triathlon-power-activity'
 import {
@@ -900,17 +906,17 @@ export const buildLayers = <N>(f: TriNodeFactory<N>): N => {
 
 export const buildActivityAnalyzeButton = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N => {
   const label = triText(f.presentation.locale, 'analyze')
-  const hasGps = activityGpsSegments(d).length > 0
+  const available = activityAnalysisAvailable(d)
   const button = f.el('button', 'tri-activity-analyze', undefined, {
     type: 'button',
     'data-activity-analyze': `${d.id}`,
     'aria-label': label,
     'data-i18n-aria-label': 'analyze',
     'aria-expanded': 'false',
-    title: hasGps
+    title: available
       ? label
-      : triText(f.presentation.locale, 'No recorded GPS route for this activity.'),
-    ...(!hasGps ? { disabled: '' } : {}),
+      : triText(f.presentation.locale, 'No recorded telemetry for this activity.'),
+    ...(!available ? { disabled: '' } : {}),
     'data-site-cursor-action': '',
   })
   const icon = f.svg('svg', {
@@ -923,6 +929,23 @@ export const buildActivityAnalyzeButton = <N>(f: TriNodeFactory<N>, d: StravaAct
   f.add(button, icon)
   return button
 }
+
+export const activityAnalysisAvailable = (d: StravaActivityDetail): boolean =>
+  d.route.length >= 2 ||
+  d.heartRateTrace.filter(
+    point =>
+      point.heartRate != null ||
+      point.coreTemperatureC != null ||
+      point.skinTemperatureC != null ||
+      point.heatStrainIndex != null,
+  ).length >= 2 ||
+  (d.sport === 'swim' &&
+    d.swimIntervals.some(
+      interval =>
+        interval.endElapsedS > interval.startElapsedS &&
+        interval.distanceM > 0 &&
+        (interval.paceSPer100m != null || interval.strokeRateSpm != null),
+    ))
 
 type RouteDrawPoint = { x: number; y: number }
 
@@ -11624,6 +11647,800 @@ const buildComparisonMap = <N>(
   return panel
 }
 
+type ComparisonStatGroup =
+  | 'load'
+  | 'session'
+  | 'power'
+  | 'peak power'
+  | 'heart rate'
+  | 'technique'
+  | 'conditions'
+  | 'athlete'
+  | 'fueling'
+
+const COMPARISON_STAT_GROUPS: readonly ComparisonStatGroup[] = [
+  'load',
+  'session',
+  'power',
+  'peak power',
+  'heart rate',
+  'technique',
+  'conditions',
+  'athlete',
+  'fueling',
+]
+
+// Day and session context stays visible when a distance selection rescopes the table.
+const COMPARISON_CONTEXT_STATS: readonly ActivityComparisonStatKey[] = [
+  'temperature',
+  'humidity',
+  'wind',
+  'water-temperature',
+  'body-weight',
+  'readiness',
+  'hrv',
+  'resting-hr',
+  'sleep-score',
+  'sleep-duration',
+]
+
+const COMPARISON_STAT_SOURCE: Record<ActivityComparisonStatSource, string> = {
+  wahoo: 'Wahoo',
+  garmin: 'Garmin',
+  strava: 'Strava',
+  oura: 'Oura',
+  apple: 'Apple Watch',
+  weather: 'weather',
+  manual: 'manual',
+  garden: 'calculated',
+}
+
+// A selection whose distance falls short of the window by more than this is partial.
+const COMPARISON_STAT_FULL_COVERAGE = 0.98
+
+type ComparisonStatDirection = 'up' | 'down' | 'balance'
+
+export const activityComparisonMathText = (text: string): string =>
+  text
+    .replace(/W′/g, '$W^{\\prime}$')
+    .replace(/≈/g, '$\\approx$')
+    .replace(/±/g, '$\\pm$')
+    .replace(/−/g, '$-$')
+    .replace(/\+/g, '$+$')
+    .replace(/≠/g, '$\\ne$')
+    .replace(/×/g, '$\\times$')
+    .replace(/°/g, '$^{\\circ}$')
+    .replace(/·/g, '$\\cdot$')
+
+const comparisonMathNode = <N>(
+  f: TriNodeFactory<N>,
+  className: string,
+  value: string,
+  attrs: Record<string, string> = {},
+): N => {
+  const math = activityComparisonMathText(value)
+  if (math === value) return f.el('span', className, value, attrs)
+  const node = f.el('span', className, undefined, { role: 'img', 'aria-label': value, ...attrs })
+  f.add(node, f.math('tri-compare-math', math))
+  return node
+}
+
+type ComparisonStatSpec = {
+  key: ActivityComparisonStatKey
+  group: ComparisonStatGroup
+  label: (sport: ActivityKind) => string
+  gloss?: string
+  format: (stat: ActivityComparisonStat, sport: ActivityKind) => string
+  delta: (stat: ActivityComparisonStat, base: ActivityComparisonStat, sport: ActivityKind) => string
+  /** Quantity behind the better or worse direction. */
+  scalar: (stat: ActivityComparisonStat) => number
+  /** Quantity behind the relative change, matching the sign of the displayed delta. */
+  relativeScalar?: (stat: ActivityComparisonStat, sport: ActivityKind) => number
+  better?: ComparisonStatDirection | ((selection: boolean) => ComparisonStatDirection | undefined)
+  relative: boolean
+  /** Firstbeat training effect and load differ in kind from the garden proxy, so deltas need one source. */
+  sameSourceDelta?: boolean
+}
+
+const comparisonFixed = (value: number, digits: number): string => {
+  const rounded = Number(value.toFixed(digits))
+  const text = Math.abs(rounded).toLocaleString('en-US', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  })
+  return rounded < 0 ? `−${text}` : text
+}
+
+const comparisonSigned = (value: number, digits: number): string => {
+  const rounded = Number(value.toFixed(digits))
+  if (rounded === 0) return '±0'
+  return `${rounded > 0 ? '+' : '−'}${comparisonFixed(Math.abs(rounded), digits)}`
+}
+
+const comparisonClock = (seconds: number): string => {
+  const total = Math.round(Math.abs(seconds))
+  const hours = Math.floor(total / 3_600)
+  const minutes = Math.floor((total % 3_600) / 60)
+  const rest = (total % 60).toString().padStart(2, '0')
+  return hours > 0
+    ? `${hours}:${minutes.toString().padStart(2, '0')}:${rest}`
+    : `${minutes}:${rest}`
+}
+
+const comparisonSignedClock = (seconds: number): string =>
+  Math.round(seconds) === 0 ? '±0:00' : `${seconds > 0 ? '+' : '−'}${comparisonClock(seconds)}`
+
+type ComparisonUnit = string | ((sport: ActivityKind) => string)
+
+const comparisonUnit = (unit: ComparisonUnit | undefined, sport: ActivityKind): string =>
+  typeof unit === 'function' ? unit(sport) : (unit ?? '')
+
+const numericStat = (
+  key: ActivityComparisonStatKey,
+  group: ComparisonStatGroup,
+  label: string | ((sport: ActivityKind) => string),
+  options: {
+    unit?: ComparisonUnit
+    deltaUnit?: ComparisonUnit
+    digits?: number
+    display?: (value: number) => number
+    better?: ComparisonStatSpec['better']
+    relative?: boolean
+    gloss?: string
+    sameSourceDelta?: boolean
+  } = {},
+): ComparisonStatSpec => {
+  const digits = options.digits ?? 0
+  const display = options.display ?? ((value: number) => value)
+  return {
+    key,
+    group,
+    label: typeof label === 'string' ? () => label : label,
+    gloss: options.gloss,
+    format: (stat, sport) =>
+      `${comparisonFixed(display(stat.value), digits)}${comparisonUnit(options.unit, sport)}`,
+    delta: (stat, base, sport) =>
+      `${comparisonSigned(display(stat.value) - display(base.value), digits)}${comparisonUnit(options.deltaUnit ?? options.unit, sport)}`,
+    scalar: stat => stat.value,
+    better: options.better,
+    relative: options.relative ?? true,
+    sameSourceDelta: options.sameSourceDelta,
+  }
+}
+
+const durationStat = (
+  key: ActivityComparisonStatKey,
+  group: ComparisonStatGroup,
+  label: string,
+  better?: ComparisonStatSpec['better'],
+): ComparisonStatSpec => ({
+  key,
+  group,
+  label: () => label,
+  format: stat => comparisonClock(stat.value),
+  delta: (stat, base) => comparisonSignedClock(stat.value - base.value),
+  scalar: stat => stat.value,
+  better,
+  relative: true,
+})
+
+const pairedSideStat = (
+  key: ActivityComparisonStatKey,
+  label: string,
+  gloss: string,
+): ComparisonStatSpec => {
+  const mean = (stat: ActivityComparisonStat): number =>
+    stat.right == null ? stat.value : (stat.value + stat.right) / 2
+  return {
+    key,
+    group: 'technique',
+    label: () => label,
+    gloss,
+    format: stat =>
+      stat.right == null
+        ? `${Math.round(stat.value)}%`
+        : `${Math.round(stat.value)} / ${Math.round(stat.right)}%`,
+    delta: (stat, base) => `${comparisonSigned(mean(stat) - mean(base), 1)} pp`,
+    scalar: mean,
+    relative: false,
+  }
+}
+
+const peakStat = (key: ActivityComparisonStatKey, label: string): ComparisonStatSpec =>
+  numericStat(key, 'peak power', label, {
+    unit: ' W',
+    better: 'up',
+    gloss:
+      'Best rolling mean power over the duration, from the power curve. A selection reads the 30 s and 5 min rolling traces inside it.',
+  })
+
+const activityComparisonStatSpecs = (
+  presentation: TriathlonPresentation,
+): readonly ComparisonStatSpec[] => {
+  const imperial = isImperial(presentation)
+  const speedDisplay = (kph: number): number => (imperial ? kph * KM_TO_MI : kph)
+  const speedUnit = imperial ? ' mph' : ' km/h'
+  const paceSeconds = (kph: number, sport: ActivityKind): number =>
+    sport === 'swim' ? 360 / kph : 3_600 / speedDisplay(kph)
+  const paceUnit = (sport: ActivityKind): string =>
+    sport === 'swim' ? ' /100m' : imperial ? ' /mi' : ' /km'
+  const distanceText = (km: number, sport: ActivityKind): string =>
+    sport === 'swim'
+      ? `${comparisonFixed(km * 1_000, 0)} m`
+      : `${comparisonFixed(imperial ? km * KM_TO_MI : km, 2)}${imperial ? ' mi' : ' km'}`
+  const signedDistance = (km: number, sport: ActivityKind): string =>
+    sport === 'swim'
+      ? `${comparisonSigned(km * 1_000, 0)} m`
+      : `${comparisonSigned(imperial ? km * KM_TO_MI : km, 2)}${imperial ? ' mi' : ' km'}`
+  const temperature = (celsius: number): number => temperatureValue(presentation, celsius)
+  const millilitres = (stat: ActivityComparisonStat): string => formatMl(stat.value)
+  const millilitreDelta = (stat: ActivityComparisonStat, base: ActivityComparisonStat): string =>
+    `${comparisonSigned(stat.value - base.value, 0)} ml`
+  return [
+    numericStat('tss', 'load', 'TSS', {
+      gloss:
+        '$\\mathrm{TSS} = h \\cdot \\mathrm{IF}^2 \\cdot 100$. Native from Wahoo or Garmin; a selection recomputes it from the 30 s power trace and FTP.',
+    }),
+    numericStat('intensity-factor', 'load', 'IF', {
+      digits: 2,
+      relative: false,
+      gloss: '$\\mathrm{IF} = \\mathrm{NP} / \\mathrm{FTP}$',
+    }),
+    numericStat('aerobic-effect', 'load', 'aerobic TE', {
+      digits: 1,
+      relative: false,
+      sameSourceDelta: true,
+      gloss:
+        'Garmin training effect on a 0–5 scale, or the garden estimate when Garmin did not report. Deltas compare same-source columns only.',
+    }),
+    numericStat('anaerobic-effect', 'load', 'anaerobic TE', {
+      digits: 1,
+      relative: false,
+      sameSourceDelta: true,
+      gloss:
+        'Garmin anaerobic training effect on a 0–5 scale, or the garden estimate when Garmin did not report. Deltas compare same-source columns only.',
+    }),
+    numericStat('exercise-load', 'load', 'exercise load', {
+      sameSourceDelta: true,
+      gloss:
+        'Garmin load from heart-rate EPOC, or the garden estimate from $\\mathrm{IF}$ and moving time when Garmin did not report. The two diverge on long easy rides, so deltas compare same-source columns only.',
+    }),
+    numericStat('relative-effort', 'load', 'relative effort'),
+    durationStat('moving-time', 'session', 'moving time'),
+    durationStat('elapsed-time', 'session', 'elapsed time', selection =>
+      selection ? 'down' : undefined,
+    ),
+    {
+      key: 'distance',
+      group: 'session',
+      label: () => 'distance',
+      format: (stat, sport) => distanceText(stat.value, sport),
+      delta: (stat, base, sport) => signedDistance(stat.value - base.value, sport),
+      scalar: stat => stat.value,
+      relative: true,
+    },
+    {
+      key: 'speed',
+      group: 'session',
+      label: sport => (sport === 'bike' ? 'speed' : 'pace'),
+      format: (stat, sport) =>
+        sport === 'bike'
+          ? `${comparisonFixed(speedDisplay(stat.value), 1)}${speedUnit}`
+          : `${clock(paceSeconds(stat.value, sport))}${paceUnit(sport)}`,
+      delta: (stat, base, sport) =>
+        sport === 'bike'
+          ? `${comparisonSigned(speedDisplay(stat.value) - speedDisplay(base.value), 1)}${speedUnit}`
+          : comparisonSignedClock(paceSeconds(stat.value, sport) - paceSeconds(base.value, sport)),
+      scalar: stat => stat.value,
+      relativeScalar: (stat, sport) =>
+        sport === 'bike' ? stat.value : paceSeconds(stat.value, sport),
+      better: 'up',
+      relative: true,
+    },
+    numericStat('max-speed', 'session', 'max speed', {
+      digits: 1,
+      unit: speedUnit,
+      display: speedDisplay,
+      relative: false,
+    }),
+    numericStat('elevation-gain', 'session', 'elevation gain', {
+      unit: imperial ? ' ft' : ' m',
+      display: meters => elevationValue(presentation, meters),
+    }),
+    numericStat('grade', 'session', 'net grade', {
+      digits: 1,
+      unit: '%',
+      deltaUnit: ' pp',
+      relative: false,
+
+      gloss: 'Altitude change from the start to the end of the selection, over its distance.',
+    }),
+    numericStat('work', 'session', 'work', {
+      unit: ' kJ',
+      gloss: 'Mechanical work, $W = \\sum P \\, \\Delta t$.',
+    }),
+    numericStat('calories', 'session', 'calories', { unit: ' kcal' }),
+    numericStat('average-power', 'power', 'avg power', { unit: ' W', better: 'up' }),
+    numericStat('normalized-power', 'power', 'NP', {
+      unit: ' W',
+      better: 'up',
+      gloss:
+        '$\\mathrm{NP} = \\left(\\overline{P_{30}^{\\,4}}\\right)^{1/4}$, the fourth-power mean of 30 s rolling power. Strava-only rides carry Strava weighted average power.',
+    }),
+    numericStat('watts-per-kg', 'power', 'NP / kg', {
+      digits: 2,
+      unit: ' W/kg',
+      better: 'up',
+      gloss: 'NP over the Garmin weigh-in nearest the ride.',
+    }),
+    numericStat('variability-index', 'power', 'VI', {
+      digits: 2,
+      better: 'down',
+      relative: false,
+
+      gloss: '$\\mathrm{VI} = \\mathrm{NP} / \\bar{P}$. Values near 1 mean steady pacing.',
+    }),
+    numericStat('max-power', 'power', 'max power', { unit: ' W', better: 'up' }),
+    numericStat('critical-power', 'power', 'CP', {
+      unit: ' W',
+      better: 'up',
+      gloss: 'Critical power from a two-parameter fit to this activity’s power curve.',
+    }),
+    numericStat('w-prime', 'power', 'W′', {
+      digits: 1,
+      unit: ' kJ',
+      better: 'up',
+      gloss: 'Work capacity above CP from the same fit.',
+    }),
+    {
+      key: 'power-balance',
+      group: 'power',
+      label: () => 'L / R',
+      gloss: 'Power-weighted left and right split from the pedal balance samples.',
+      format: stat => `${stat.value.toFixed(1)} / ${(100 - stat.value).toFixed(1)}`,
+      delta: (stat, base) => `${comparisonSigned(stat.value - base.value, 1)} pp L`,
+      scalar: stat => stat.value,
+      better: 'balance',
+      relative: false,
+    },
+    peakStat('peak-5s', 'peak 5 s'),
+    peakStat('peak-30s', 'peak 30 s'),
+    peakStat('peak-1m', 'peak 1 min'),
+    peakStat('peak-5m', 'peak 5 min'),
+    peakStat('peak-20m', 'peak 20 min'),
+    peakStat('peak-60m', 'peak 60 min'),
+    numericStat('average-hr', 'heart rate', 'avg hr', { unit: ' bpm', relative: false }),
+    numericStat('max-hr', 'heart rate', 'max hr', { unit: ' bpm', relative: false }),
+    numericStat('efficiency-factor', 'heart rate', 'EF', {
+      digits: 2,
+      better: 'up',
+      gloss:
+        'Output per heartbeat: $\\mathrm{NP} / \\overline{\\mathrm{HR}}$ on the bike, $v_{\\mathrm{m/min}} / \\overline{\\mathrm{HR}}$ on foot.',
+    }),
+    numericStat('decoupling', 'heart rate', sport => (sport === 'bike' ? 'Pw:HR' : 'Pa:HR'), {
+      digits: 1,
+      unit: '%',
+      deltaUnit: ' pp',
+      better: 'down',
+      relative: false,
+
+      gloss:
+        '$(\\mathrm{EF}_1 - \\mathrm{EF}_2) / \\mathrm{EF}_1$ across two halves of at least 20 min. Under 5% reads as aerobically durable.',
+    }),
+    numericStat('cadence', 'technique', 'cadence', {
+      unit: sport => ` ${activityCadenceUnit(sport)}`,
+      relative: false,
+    }),
+    numericStat('stride-length', 'technique', 'stride length', {
+      digits: 2,
+      unit: imperial ? ' ft' : ' m',
+      display: meters => (imperial ? meters * M_TO_FT : meters),
+    }),
+    numericStat('ground-contact-time', 'technique', 'ground contact time', {
+      unit: ' ms',
+      better: 'down',
+      relative: false,
+    }),
+    numericStat('vertical-oscillation', 'technique', 'vertical oscillation', {
+      digits: 1,
+      unit: imperial ? ' in' : ' cm',
+      display: centimeters => (imperial ? centimeters / 2.54 : centimeters),
+      better: 'down',
+      relative: false,
+    }),
+    numericStat('vertical-ratio', 'technique', 'vertical ratio', {
+      digits: 1,
+      unit: '%',
+      deltaUnit: ' pp',
+      better: 'down',
+      relative: false,
+    }),
+    numericStat('stroke-rate', 'technique', 'stroke rate', {
+      digits: 1,
+      unit: ' str/min',
+      relative: false,
+    }),
+    numericStat('strokes-per-length', 'technique', 'strokes / length', {
+      digits: 1,
+      better: 'down',
+      relative: false,
+    }),
+    pairedSideStat(
+      'torque-effectiveness',
+      'torque effectiveness',
+      'Left / right share of each pedal stroke that pushes forward.',
+    ),
+    pairedSideStat(
+      'pedal-smoothness',
+      'pedal smoothness',
+      'Left / right mean over peak power within each pedal stroke.',
+    ),
+    numericStat('average-torque', 'technique', 'avg torque', { digits: 1, unit: ' N·m' }),
+    numericStat('standing-time', 'technique', 'standing', {
+      unit: '%',
+      deltaUnit: ' pp',
+      relative: false,
+    }),
+    numericStat('temperature', 'conditions', 'temperature', {
+      unit: temperatureUnit(presentation),
+      display: temperature,
+      relative: false,
+    }),
+    numericStat('humidity', 'conditions', 'humidity', {
+      unit: '%',
+      deltaUnit: ' pp',
+      relative: false,
+    }),
+    numericStat('wind', 'conditions', 'wind', {
+      unit: speedUnit,
+      display: speedDisplay,
+      relative: false,
+    }),
+    numericStat('water-temperature', 'conditions', 'water temp', {
+      digits: 1,
+      unit: temperatureUnit(presentation),
+      display: temperature,
+      relative: false,
+    }),
+    numericStat('body-weight', 'athlete', 'weight', {
+      digits: 1,
+      unit: imperial ? ' lb' : ' kg',
+      display: kg => (imperial ? kg / LB_TO_KG : kg),
+      relative: false,
+    }),
+    numericStat('readiness', 'athlete', 'readiness', { better: 'up', relative: false }),
+    numericStat('hrv', 'athlete', 'hrv', { unit: ' ms', better: 'up' }),
+    numericStat('resting-hr', 'athlete', 'resting hr', {
+      unit: ' bpm',
+      better: 'down',
+      relative: false,
+    }),
+    numericStat('sleep-score', 'athlete', 'sleep score', { better: 'up', relative: false }),
+    {
+      key: 'sleep-duration',
+      group: 'athlete',
+      label: () => 'slept',
+      format: stat => dur(stat.value),
+      delta: (stat, base) => {
+        const minutes = Math.round((stat.value - base.value) / 60)
+        return minutes === 0 ? '±0′' : `${minutes > 0 ? '+' : '−'}${dur(Math.abs(minutes) * 60)}`
+      },
+      scalar: stat => stat.value,
+      better: 'up',
+      relative: false,
+    },
+    numericStat('carbs', 'fueling', 'carbs', { unit: ' g' }),
+    numericStat('carbs-per-hour', 'fueling', 'carbs / h', { unit: ' g/h', better: 'up' }),
+    {
+      key: 'fluid',
+      group: 'fueling',
+      label: () => 'fluid',
+      format: millilitres,
+      delta: millilitreDelta,
+      scalar: stat => stat.value,
+      relative: true,
+    },
+    {
+      key: 'sweat-loss',
+      group: 'fueling',
+      label: () => 'sweat',
+      format: millilitres,
+      delta: millilitreDelta,
+      scalar: stat => stat.value,
+      relative: true,
+    },
+  ]
+}
+
+const comparisonStatTrend = (
+  direction: ComparisonStatDirection,
+  value: number,
+  base: number,
+): 'better' | 'worse' | undefined => {
+  const distance =
+    direction === 'balance' ? Math.abs(base - 50) - Math.abs(value - 50) : value - base
+  if (distance === 0) return undefined
+  return (direction === 'down' ? distance < 0 : distance > 0) ? 'better' : 'worse'
+}
+
+const comparisonRelativeChange = (value: number, base: number): string | null => {
+  if (!Number.isFinite(value) || !Number.isFinite(base) || base === 0) return null
+  const percent = ((value - base) / Math.abs(base)) * 100
+  const text = comparisonSigned(percent, Math.abs(percent) < 10 ? 1 : 0)
+  return text === '±0' ? null : `${text}%`
+}
+
+export type ActivityComparisonStatsScope = 'whole' | 'selection'
+
+export type ActivityComparisonStatsView = {
+  hiddenIds?: ReadonlySet<string>
+  /** Distance window of the chart selection, available to the selection scope. */
+  window?: ActivityComparisonWindow | null
+  scope?: ActivityComparisonStatsScope
+  health?: Readonly<Record<string, ActivityHealth>> | null
+}
+
+export const buildActivityComparisonStats = <N>(
+  f: TriNodeFactory<N>,
+  activities: readonly StravaActivityDetail[],
+  ctx?: DetailCtx,
+  view: ActivityComparisonStatsView = {},
+): N => {
+  const text = (key: string): string => triText(f.presentation.locale, key)
+  const sport = activities[0]?.sport ?? 'bike'
+  const window = view.window && view.window.endKm > view.window.startKm ? view.window : null
+  const selection = view.scope === 'selection' && window != null
+  const selected = activities.map((activity, index) => ({ activity, index, id: `${activity.id}` }))
+  const columns = selected.filter(({ id }) => !view.hiddenIds?.has(id))
+  const baseline = selected[0]
+  const statsById = new Map(
+    selected.map(({ activity, id }) => {
+      const options = {
+        health: view.health?.[activity.date] ?? null,
+        athleteFtpWatts: ctx?.ftp ?? null,
+        averageCadence: activityAverageCadence(activity),
+        cadenceScale: activityCadenceScale(activity.sport),
+        excludeZeroPower: excludesZeroPower(f.presentation),
+      }
+      const whole = activityComparisonStats(activity, options)
+      if (!selection) return [id, whole]
+      const scoped = activityComparisonStats(activity, { ...options, window })
+      for (const key of COMPARISON_CONTEXT_STATS) scoped[key] ??= whole[key]
+      return [id, scoped]
+    }),
+  )
+  const windowKm = window ? window.endKm - window.startKm : 0
+  const coverage = (id: string): number =>
+    selection ? Math.min(1, (statsById.get(id)?.distance?.value ?? 0) / windowKm) : 1
+  const partial = (id: string): boolean => coverage(id) < COMPARISON_STAT_FULL_COVERAGE
+
+  const panel = f.el('section', 'tri-compare-stats-panel', undefined, {
+    'data-compare-stats': '',
+    'data-scope': selection ? 'selection' : 'whole',
+    'data-baseline': baseline?.id ?? '',
+    'aria-label': 'metrics',
+    'data-i18n-aria-label': 'metrics',
+  })
+  const controls = f.el('div', 'tri-compare-stats-controls')
+  const scopes = f.el('div', 'tri-compare-stats-scopes', undefined, {
+    role: 'group',
+    'aria-label': 'metrics scope',
+    'data-i18n-aria-label': 'metrics scope',
+  })
+  for (const scope of ['whole', 'selection'] as const) {
+    const attrs: Record<string, string> = {
+      type: 'button',
+      'data-compare-scope': scope,
+      'aria-pressed': String((scope === 'selection') === selection),
+      'data-i18n': scope,
+    }
+    if (scope === 'selection' && !window) attrs.disabled = ''
+    f.add(scopes, f.el('button', 'tri-compare-stats-scope', text(scope), attrs))
+  }
+  f.add(controls, scopes)
+  if (window)
+    f.add(
+      controls,
+      f.el(
+        'span',
+        'tri-compare-stats-window',
+        `${scrubDist(f.presentation, window.startKm, sport)} – ${scrubDist(f.presentation, window.endKm, sport)}`,
+        { 'data-compare-stats-window': '' },
+      ),
+    )
+  f.add(panel, comparisonChartHead(f, 'metrics', controls))
+
+  const specs = activityComparisonStatSpecs(f.presentation)
+  const table = f.el('table', 'tri-compare-stats', undefined, {
+    'aria-label': baseline
+      ? `${text('metrics')} (${text('baseline')}: ${baseline.activity.name})`
+      : text('metrics'),
+  })
+  const head = f.el('thead')
+  const headRow = f.el('tr')
+  f.add(
+    headRow,
+    f.el('th', 'tri-compare-stats-corner', undefined, {
+      scope: 'col',
+      'aria-label': text('metric'),
+    }),
+  )
+  for (const { activity, index, id } of columns) {
+    const isBaseline = id === baseline?.id
+    const attrs: Record<string, string> = {
+      scope: 'col',
+      'data-activity-id': id,
+      style: `--tri-compare-color:${activityCompareColor(index)}`,
+    }
+    if (partial(id)) attrs['data-coverage'] = 'partial'
+    const cell = f.el(
+      'th',
+      `tri-compare-stats-activity${isBaseline ? ' tri-compare-stats-activity--baseline' : ''}`,
+      undefined,
+      attrs,
+    )
+    const heading = f.el('div', 'tri-compare-stats-heading', undefined, { title: activity.name })
+    f.add(
+      heading,
+      f.el('span', 'tri-compare-stats-swatch', undefined, { 'aria-hidden': 'true' }),
+      f.el('span', 'tri-compare-stats-date', shortDate(activity.date)),
+      f.el('span', 'tri-compare-stats-name', activity.name),
+    )
+    f.add(cell, heading)
+    if (partial(id))
+      f.add(
+        cell,
+        f.el('span', 'tri-compare-stats-tag', `${Math.round(coverage(id) * 100)}%`, {
+          title: text('partial coverage'),
+        }),
+      )
+    f.add(headRow, cell)
+  }
+  f.add(head, headRow)
+  f.add(table, head)
+
+  let rowCount = 0
+  for (const group of COMPARISON_STAT_GROUPS) {
+    const rows = specs.filter(
+      spec => spec.group === group && columns.some(({ id }) => statsById.get(id)?.[spec.key]),
+    )
+    if (rows.length === 0) continue
+    const body = f.el('tbody', 'tri-compare-stats-group', undefined, { 'data-stat-group': group })
+    const groupRow = f.el('tr')
+    f.add(
+      groupRow,
+      f.el('th', 'tri-compare-stats-group-head', text(group), {
+        scope: 'colgroup',
+        colspan: `${columns.length + 1}`,
+        'data-i18n': group,
+      }),
+    )
+    f.add(body, groupRow)
+    for (const spec of rows) {
+      rowCount++
+      const cells = columns.map(column => ({
+        ...column,
+        stat: statsById.get(column.id)?.[spec.key],
+      }))
+      const baseStat = baseline ? statsById.get(baseline.id)?.[spec.key] : undefined
+      const sources = [...new Set(cells.flatMap(({ stat }) => (stat ? [stat.source] : [])))]
+      const direction = typeof spec.better === 'function' ? spec.better(selection) : spec.better
+      const label = spec.label(sport)
+      const row = f.el('tr', 'tri-compare-stats-row', undefined, { 'data-stat': spec.key })
+      const labelCell = f.el('th', 'tri-compare-stats-label', undefined, { scope: 'row' })
+      const labelAttrs: Record<string, string> = {}
+      if (spec.gloss) {
+        labelAttrs['data-gloss'] = ''
+        labelAttrs['data-gloss-def'] = spec.gloss
+        labelAttrs.tabindex = '0'
+      }
+      f.add(
+        labelCell,
+        comparisonMathNode(f, 'tri-compare-stats-label-text', text(label), labelAttrs),
+      )
+      if (sources.length > 1) {
+        const mixed = `${text('mixed sources')}: ${sources.map(source => text(COMPARISON_STAT_SOURCE[source])).join(', ')}`
+        f.add(
+          labelCell,
+          comparisonMathNode(f, 'tri-compare-stats-mixed', '≠', {
+            role: 'img',
+            'aria-label': mixed,
+            title: mixed,
+          }),
+        )
+      }
+      f.add(row, labelCell)
+      for (const { id, index, stat } of cells) {
+        const isBaseline = id === baseline?.id
+        const attrs: Record<string, string> = {
+          'data-activity-id': id,
+          style: `--tri-compare-color:${activityCompareColor(index)}`,
+        }
+        if (stat) {
+          attrs['data-source'] = stat.source
+          attrs.title = [
+            text(COMPARISON_STAT_SOURCE[stat.source]),
+            ...(stat.estimate ? [text('estimate')] : []),
+          ].join(' · ')
+          if (stat.estimate) attrs['data-estimate'] = ''
+        }
+        const cell = f.el(
+          'td',
+          `tri-compare-stats-cell${isBaseline ? ' tri-compare-stats-cell--baseline' : ''}`,
+          undefined,
+          attrs,
+        )
+        if (!stat) {
+          f.add(cell, f.el('span', 'tri-compare-stats-value tri-compare-stats-value--missing', '—'))
+          f.add(row, cell)
+          continue
+        }
+        const content = f.el('span', 'tri-compare-stats-content')
+        f.add(
+          content,
+          comparisonMathNode(
+            f,
+            'tri-compare-stats-value',
+            `${stat.estimate ? '≈' : ''}${spec.format(stat, sport)}`,
+          ),
+        )
+        if (
+          !isBaseline &&
+          baseStat &&
+          baseline &&
+          (!spec.sameSourceDelta || stat.source === baseStat.source)
+        ) {
+          const delta = spec.delta(stat, baseStat, sport)
+          const same = delta.startsWith('±')
+          const relativeScalar = spec.relativeScalar ?? spec.scalar
+          const relative =
+            spec.relative && !same
+              ? comparisonRelativeChange(
+                  relativeScalar(stat, sport),
+                  relativeScalar(baseStat, sport),
+                )
+              : null
+          const trend =
+            direction && !same && !partial(id) && !partial(baseline.id)
+              ? comparisonStatTrend(direction, spec.scalar(stat), spec.scalar(baseStat))
+              : undefined
+          const deltaNode = f.el(
+            'span',
+            'tri-compare-stats-delta',
+            undefined,
+            trend ? { 'data-trend': trend } : undefined,
+          )
+          f.add(deltaNode, comparisonMathNode(f, 'tri-compare-stats-delta-abs', delta))
+          if (relative)
+            f.add(deltaNode, comparisonMathNode(f, 'tri-compare-stats-delta-rel', relative))
+          f.add(content, deltaNode)
+        }
+        f.add(
+          cell,
+          content,
+          f.el('span', 'tri-compare-stats-line', undefined, { 'aria-hidden': 'true' }),
+        )
+        f.add(row, cell)
+      }
+      f.add(body, row)
+    }
+    f.add(table, body)
+  }
+
+  if (rowCount === 0) {
+    f.add(panel, f.el('p', 'tri-compare-empty', text('no data'), { 'data-i18n': 'no data' }))
+    return panel
+  }
+  const scroll = f.el('div', 'tri-compare-stats-scroll', undefined, {
+    tabindex: '0',
+    'aria-label': 'metrics',
+    'data-i18n-aria-label': 'metrics',
+  })
+  f.add(scroll, table)
+  f.add(panel, scroll)
+  return panel
+}
+
 const comparisonState = (
   activities: readonly StravaActivityDetail[],
 ): 'empty' | 'insufficient' | 'mixed-sport' | 'route-unavailable' | 'ready' => {
@@ -11647,7 +12464,7 @@ export const buildActivityComparison = <N>(
   f: TriNodeFactory<N>,
   activities: StravaActivityDetail[],
   ctx?: DetailCtx,
-  options: { removable?: boolean } = {},
+  options: { removable?: boolean; health?: Readonly<Record<string, ActivityHealth>> | null } = {},
 ): N => {
   const state = comparisonState(activities)
   const rootAttrs: Record<string, string> = {
@@ -11666,11 +12483,13 @@ export const buildActivityComparison = <N>(
     return root
   }
   const maxDistanceKm = Math.max(comparisonMaxDistanceKm(activities), 1e-6)
+  const content = f.el('div', 'tri-compare-content')
   const body = f.el('div', 'tri-compare-body')
   const routed = activities.filter(
     activity => comparisonGeographicSegments(activity).length > 0,
   ).length
-  if (routed > 0) f.add(body, buildComparisonMap(f, activities, routed))
+  if (routed > 0) f.add(content, buildComparisonMap(f, activities, routed))
+  f.add(body, buildActivityComparisonStats(f, activities, ctx, { health: options.health }))
   const chartViewport = f.el('div', 'tri-compare-charts-viewport')
   const charts = f.el('div', 'tri-compare-charts', undefined, { 'data-keyboard-scroll': '' })
   const sport = activities[0].sport
@@ -11688,7 +12507,8 @@ export const buildActivityComparison = <N>(
   if (sport !== 'swim') f.add(charts, buildComparisonZones(f, activities, 'power-zones'))
   f.add(chartViewport, charts)
   f.add(body, chartViewport)
-  f.add(root, body)
+  f.add(content, body)
+  f.add(root, content)
   return root
 }
 

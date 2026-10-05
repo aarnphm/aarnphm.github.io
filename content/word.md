@@ -356,3 +356,9 @@ title: lists
 - paraphernalia
 - staffage
 - bemoan
+- diffident
+- infantilism
+- exasperated
+- scholastic
+- stupefied
+- consternation

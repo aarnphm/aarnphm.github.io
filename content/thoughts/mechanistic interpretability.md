@@ -1,13 +1,13 @@
 ---
-abstract: The subfield of alignment, or reverse engineering neural network. In a sense, it is the field of learning models' world representation.
+abstract: Reverse engineering the representations and computations inside neural networks, then testing those explanations through interventions.
 aliases:
   - mechinterp
   - reveng neural net
   - interp
 date: '2024-10-30'
-description: and reverse engineering neural networks.
+description: Features, circuits, and causal tests for reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2026-06-05 15:08:26 GMT-04:00
+modified: 2026-10-05 09:12:12 GMT-04:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -26,183 +26,158 @@ tags:
 title: mechanistic interpretability
 ---
 
-> The subfield of alignment that delves into reverse engineering of a neural network, especially [[thoughts/LLMs]]
+mechanistic interpretability asks how a neural network produces a behaviour. An explanation identifies representations and computations inside the network, then predicts what will happen when we change them. Alignment supplies many of the motivating questions, especially for [[thoughts/LLMs]].
 
-To attack the _curse of dimensionality_, the question remains: _==how do we hope to understand a function over such a large space, without an exponential amount of time?==_ [^lesswrongarc]
+The scale problem remains: _==how do we hope to understand a function over such a large space, without an exponential amount of time?==_ [^lesswrongarc] Decomposition is one proposed answer. If the same components recur across inputs, we can study their interactions and reuse that explanation. We still have to establish where it holds.
 
-[^lesswrongarc]: good read from [Lawrence C](https://www.lesswrong.com/posts/6FkWnktH3mjMAxdRT/what-i-would-do-if-i-wasn-t-at-arc-evals#Ambitious_mechanistic_interpretability) for ambitious mech interp.
+[^lesswrongarc]: [Lawrence C's ambitious mechanistic interpretability agenda](https://www.lesswrong.com/posts/6FkWnktH3mjMAxdRT/what-i-would-do-if-i-wasn-t-at-arc-evals#Ambitious_mechanistic_interpretability).
 
 ## open problems
 
-see also: [neuronpedia aug 25 landscape reports](https://www.neuronpedia.org/graph/info#section-directions-for-future-work), @sharkey2025openproblemsmechanisticinterpretability
+see also: [Neuronpedia's August 2025 landscape](https://www.neuronpedia.org/graph/info#section-directions-for-future-work), @sharkey2025openproblemsmechanisticinterpretability
 
-- differentiate between "reverse engineering" versus "concept-based"
-  - reverse engineer:
-    - decomposition -> hypotheses -> validation
-      - Decomposition via dimensionality [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis|reduction]]
-  - drawbacks with [[thoughts/sparse autoencoder#sparse dictionary learning|SDL]]:
-    - SDL reconstruction error are way too high [@rajamanoharan2024improvingdictionarylearninggated{see section 2.3}]
-    - SDL assumes linear representation hypothesis against non-linear feature space.
-    - SDL leaves feature geometry unexplained ^geometry
+Finding a direction associated with a concept gives us a hypothesis about representation. Reverse engineering also requires an account of how the model uses it. The working sequence is decomposition, hypotheses, and intervention tests.
 
-![[thoughts/circuit tracing#open problems]]
+- **Choosing components.** [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/principal component analysis|PCA]] finds directions of variance. [[thoughts/sparse autoencoder#sparse dictionary learning|Sparse dictionary learning]] finds directions that reconstruct activations with sparse coefficients. Each objective imposes a different decomposition; neither objective establishes a component's causal role.
+- **Reconstruction.** Sparse autoencoders trade reconstruction fidelity against sparsity. Gated SAEs improve this tradeoff in their experiments by separating feature selection from magnitude estimation. The remaining error needs to be measured at the activation and model-output levels. [@rajamanoharan2024improvingdictionarylearninggated]
+- **Representation assumptions.** A linear decoder assumes that activations can be approximated by sums of feature directions. Curved or context-dependent representations can require many such directions.
+- **Geometry.** A dictionary can identify useful directions while leaving their relationships unexplained. What determines their angles, groups, and dependence on context? ^geometry
+
+![[thoughts/circuit tracing#limits]]
 
 ## transcoders
 
-[@paulo2025transcodersbeatsparseautoencoders]. SAE variant: reconstruct component output from input, not activations from themselves. CLT (cross-layer transcoder): feature reads residual at L, writes into MLPs at layers > L. ~50% substitution match. Skip transcoders: affine skip connections.
+An SAE reconstructs the activations it receives. A transcoder receives a component's input and predicts its output, commonly the output of an MLP. @paulo2025transcodersbeatsparseautoencoders reports more interpretable features in the tested setting. Their skip transcoder adds an affine input-to-output path and improves reconstruction at comparable interpretability.
 
-linear attribution: MLP replaced by transcoder → feature edges linear → [[thoughts/Attribution parameter decomposition|attribution graphs]] well-defined.
+A cross-layer transcoder, or CLT, extends this across layers. A feature read at layer $\ell$ contributes to reconstructed MLP outputs at layers $\ell,\ell+1,\ldots,L$. Including its own layer matters. See [[thoughts/circuit tracing#the replacement model|the replacement-model equations]] and the [CLT architecture](https://transformer-circuits.pub/2025/attribution-graphs/methods.html).
 
 ## inference
 
-Application in the wild: [Goodfire](https://goodfire.ai/) and [Transluce](https://transluce.org/)
+Projects to follow: [Goodfire](https://goodfire.ai/) and [Transluce](https://transluce.org/).
 
-> [!question]- How we would do inference with SAE?
+> [!question]- How would we do inference with an SAE?
 >
 > https://x.com/aarnphm/status/1839016131321016380
 
-idea: treat SAEs as a logit bias, similar to [[thoughts/structured outputs]]
+idea: expose feature controls during generation. A logit bias changes scores for vocabulary tokens at the output. An SAE intervention changes an internal activation, after which the remaining network computes new logits. That distinction determines where an inference engine needs a hook. [[thoughts/structured outputs|Structured output constraints]] operate at the token-selection boundary and can enforce a grammar; an internal steering vector supplies no equivalent guarantee.
 
-> [!abstract] proposal for [[thoughts/vllm|vLLM]] plugin
+> [!abstract] proposal for a [[thoughts/vllm|vLLM]] plugin
 >
-> Design goals: <5% latency overhead, support for CLTs and matryoshka SAEs, feature drift detection, production-grade observability
+> Design targets: less than $5\%$ latency overhead, support for CLTs and matryoshka SAEs, feature drift detection, and measurements of latency and intervention effects. These are requirements to test, with overhead measured against the same workload without the plugin.
 
-see also: [[hinterland/attn/interp plugins|proposal for designing an efficient SAE plugin support]], but most of the field have now moved beyond SAE.
+see also: [[hinterland/attn/interp plugins|proposal for efficient SAE plugin support]]. The intervention interface depends on the representation: a CLT feature has decoder vectors for several layers, while a single-site SAE feature has one decoder direction at its training site.
 
 ## steering
 
-refers to the process of manually modifying certain activations and hidden state of the neural net to influence its
-outputs
+Steering changes a model's activations during a forward pass. For an activation $h_{\ell,t}$ at layer $\ell$ and token position $t$, an additive intervention is
 
-For example, the following is a toy example of how a decoder-only transformers (i.e: GPT-2) generate text given the prompt "The weather in California is"
+$$
+h'_{\ell,t}=h_{\ell,t}+\alpha d_i.
+$$
 
-```mermaid
-flowchart LR
-  A[The weather in California is] --> B[H0] --> D[H1] --> E[H2] --> C[... hot]
-```
+Here $d_i$ is a chosen direction, such as decoder feature $i$ from a [[thoughts/sparse autoencoder|sparse autoencoder]], and $\alpha$ sets the strength. The feature index and the strength are separate choices. [^1]
 
-To steer to model, we modify $H_2$ layers with certain features amplifier with scale 20 (called it $H_{3}$)[^1]
+[^1]: Some implementations set $\alpha=s m_i$, where $m_i$ is a reference activation magnitude for feature $i$ and $s$ is a dimensionless multiplier. State the reference dataset and statistic when using this convention. A recorded maximum depends on which examples were sampled.
 
-[^1]: An example steering function can be:
-
-    $$
-    H_{3} = H_{2} + \text{steering\_strength} * \text{SAE}.W_{\text{dec}}[20] * \text{max\_activation}
-    $$
+For the prompt “The weather in California is”, the unmodified computation might favour “hot”. An intervention could change that distribution:
 
 ```mermaid
 flowchart LR
-  A[The weather in California is] --> B[H0] --> D[H1] --> E[H3] --> C[... cold]
+  A[The weather in California is] --> B[earlier layers] --> D[chosen activation] --> E[remaining layers] --> C[next-token distribution]
 ```
 
-One usually use techniques such as [[thoughts/mechanistic interpretability#sparse autoencoders]] to decompose model activations into a set of
-interpretable features.
+```mermaid
+flowchart LR
+  A[The weather in California is] --> B[earlier layers] --> D[edited activation] --> E[remaining layers] --> C[changed next-token distribution]
+```
 
-For feature [[thoughts/mechanistic interpretability#ablation]], we observe that manipulation of features activation can be strengthened or weakened
-to directly influence the model's outputs
-
-@panickssery2024steeringllama2contrastive uses [[thoughts/contrastive representation learning|contrastive activation additions]] to [steer](https://github.com/nrimsky/CAA) Llama 2
+“Cold” becoming more likely would be an experimental result to measure. Naming the direction “cold” does not establish that effect, and large edits can disrupt unrelated behaviour. [[thoughts/mechanistic interpretability#ablation|Ablation]] tests what happens when a component's contribution is removed or replaced.
 
 ### [[thoughts/contrastive representation learning|contrastive]] activation additions
 
-intuition: using a contrast pair for steering vector additions at certain activations layers
+Contrastive activation addition (CAA) constructs a direction from paired examples. In @panickssery2024steeringllama2contrastive, each pair shares a multiple-choice question and differs in its final answer letter. One answer expresses the target behaviour. Activations are read at the answer-letter position.
 
-Uses _mean difference_ which produce difference vector similar to PCA:
-
-Given a dataset $\mathcal{D}$ of prompt $p$ with positive completion $c_p$ and negative completion $c_n$, we calculate mean-difference $v_\text{MD}$ at layer $L$ as follow:
+For triples $(p,c_p,c_n)\in\mathcal{D}$, define
 
 $$
-v_\text{MD} = \frac{1}{\mid \mathcal{D} \mid} \sum_{p,c_p,c_n \in \mathcal{D}} a_L(p,c_p) - a_L(p, c_n)
+v_{\mathrm{MD}}^{(L)}
+=\frac{1}{|\mathcal{D}|}
+\sum_{(p,c_p,c_n)\in\mathcal{D}}
+\left[a_L(p,c_p)-a_L(p,c_n)\right].
 $$
 
-> [!important] implication
+The subtraction belongs inside the sum. Pairing reduces variation from the question's wording; averaging combines the remaining differences. This mean-difference estimator uses the behaviour labels. PCA instead selects directions by variance.
+
+At inference, the paper adds $\alpha v_{\mathrm{MD}}^{(L)}$ at post-prompt token positions. See the [method and experiments](https://aclanthology.org/2024.acl-long.828/) and [code](https://github.com/nrimsky/CAA).
+
+> [!important] scope of the result
 >
-> by steering existing learned representations of behaviors, CAA results in better out-of-distribution generalization than basic supervised finetuning of the entire model.
+> On the paper's Llama 2 sycophancy experiment, CAA transferred from multiple-choice examples to open-ended generation where the tested finetuning setup failed. This supports transfer in that setting. A general advantage over supervised finetuning remains a separate claim.
 
 ## superposition hypothesis
 
-see also: [toy notebook](https://colab.research.google.com/github/anthropics/toy-models-of-superposition/blob/main/toy_models.ipynb)
+A linear representation uses superposition when its feature directions are linearly dependent. In the common overcomplete case, there are more feature directions than dimensions. Sparse features make this useful because only a few are active on a given input, reducing interference between them. @elhage2022superposition demonstrates this in small networks with synthetic features; the [toy notebook](https://colab.research.google.com/github/anthropics/toy-models-of-superposition/blob/main/toy_models.ipynb) makes the assumptions inspectable.
 
-a phenomena when a neural network represents _more_ than $n$ features in a $n$-dimensional space
+Suppose a model represents feature strengths $x_i$ using directions $w_i$:
 
-> [!abstract]+ tl/dr
->
-> Linear representation of neurons can represent more features than dimensions. As sparsity increases, model use
-> superposition to represent more [[thoughts/mechanistic interpretability#features]] than dimensions.
->
-> neural networks “want to represent more features than they have neurons”.
+$$
+h=Wx=\sum_{i=1}^{m}x_iw_i,
+\qquad W\in\mathbb{R}^{d\times m}.
+$$
 
-When features are sparsed, superposition allows compression beyond what linear model can do, at a cost of interference that requires {{sidenotes<dropdown:true>[non-linear]: or "noisy simulation", where small neural networks exploit feature sparsity and properties of high-dimensional spaces to approximately simulate much larger much sparser neural networks}} filtering.
+For unit-length directions, reading along $w_j$ gives
 
-In a sense, superposition is a form of **lossy [[thoughts/Compression|compression]]**
+$$
+w_j^\top h=x_j+\sum_{i\ne j}x_i w_j^\top w_i.
+$$
 
-This is plausible because:
+The second term is interference. Sparsity sets many of its coefficients to zero; small pairwise inner products reduce the remaining terms. Nonlinear filtering can then help recover features. This explains how superposition can act as **lossy [[thoughts/Compression|compression]]**.
 
-- almost _orthogonal vectors_
-  - it's only possible to have $n$ orthogonal vectors in an $n$-dimensional space, it's possible to have $\exp (n)$ many "almost orthogonal" ($< \epsilon$ cosine similarity) vectors in {{sidenotes[high-dimensional spaces.]: See the [[thoughts/Johnson-Lindenstrauss lemma]] for the mathematical foundation.}}
-- compressed sensing
-  - In general, if one projects a vector into a lower-dimensional space, one can't reconstruct the {{sidenotes<inline: true>[original vector.]: However, this changes if one knows that the original vector is sparse - in this case, it is often possible to recover the original vector.}}
+High-dimensional geometry permits many directions with small pairwise inner products. The number depends on the tolerated overlap and the dimension; see the [[thoughts/Johnson-Lindenstrauss lemma]]. Compressed sensing adds another condition: recovery from fewer measurements can be possible when the original signal is sparse and the measurement matrix has suitable properties. Sparsity alone does not guarantee recovery.
 
 ### properties
 
-One can think in terms of _four progressively more strict properties_ that [[/tags/ml|neural network]] representations might have:
+These are distinct questions about a representation:
 
-- **Decomposability**:
-  - Neural network activations which are _decomposable_ can be into features, the meaning of which is not dependent on the value of other features.
-  - This property is ultimately the most important — see the role of decomposition in defeating the curse of dimensionality.
-- **Linearity**:
-  - Features correspond to directions. Each feature $f_i$ has a corresponding representation direction $W_i$.
-  - The presence of multiple features $f_1, f_2, \dots$ activating with values $x_{f_1}, x_{f_2}, \dots$ is represented by
-  - $$
-    x_{f_1} W_{f_1} + x_{f_2} W_{f_2} + \dots.
-    $$
-- **Superposition vs Non-Superposition**:
-  - A linear representation exhibits superposition if $W^\top W$ is _not_ invertible.
-  - If $W^\top W$ _is_ invertible, it does _not_ exhibit superposition.
-- **Basis-Aligned**:
-  - A representation is [[thoughts/basis]] aligned if _all_ $W_i$ are one-hot basis vectors.
-  - A representation is partially basis aligned if _all_ $W_i$ are sparse. This requires a privileged basis.
+- **Decomposability:** can we assign stable meanings to components across inputs?
+- **Linearity:** can their contributions be approximated by the sum above?
+- **Superposition:** are the represented directions linearly dependent? With columns $w_i$, this is equivalent to $W^\top W$ being singular. It necessarily holds when $m>d$.
+- **Basis alignment:** does a feature align with an individual neuron, or use several coordinates in the model's [[thoughts/basis|basis]]?
 
-The first two (decomposability and linearity) are properties we hypothesize to be widespread, while the latter (non-superposition and basis-aligned) are properties we believe only sometimes occur.
+Several linearly independent features can each use many neurons. Keeping these questions separate prevents “distributed” and “superposed” from becoming interchangeable labels.
 
 ### importance
 
-- sparsity: how _frequently_ is it in the input?
-
-- importance: how useful is it for lowering loss?
+The toy model varies two quantities: how often a feature is active, and how heavily its reconstruction error contributes to the loss. The first controls sparsity; the second encodes importance. Changing either can change which features the trained model retains and how they share dimensions. [@elhage2022superposition]
 
 ### over-complete basis
 
-_reasoning for the set of $n$ directions [^direction]_
-
-[^direction]: Even though features still correspond to directions, the set of interpretable direction is larger than the number of dimensions
+“Overcomplete basis” usually means a dictionary with more vectors than the activation space has dimensions. It is linearly dependent, so it is not a basis in the strict linear-algebra sense. [[thoughts/sparse autoencoder|SAEs]] learn such dictionaries by seeking sparse reconstructions. The resulting directions are candidates for features, with their meaning and causal role still to check.
 
 ## features
 
-> A property of an input to the model
+A feature is a property represented in a model, such as a word's grammatical role or the presence of an edge in an image. In toy models we choose the features ourselves. In a trained language model, identifying them is part of the research problem.
 
-When we talk about features [@elhage2022superposition{see "Empirical Phenomena"}], the theory building around
-several observed empirical phenomena:
+Word embeddings supply an early example of semantic directions. Their analogy results include approximate relations of the form
 
-1. Word Embeddings: have direction which corresponding to semantic properties [@mikolov-etal-2013-linguistic]. For
-   example:
-   ```prolog
-   V(king) - V(man) = V(monarch)
-   ```
-2. Latent space: similar vector arithmetics and interpretable directions have also been found in generative adversarial
-   network.
+$$
+v_{\mathrm{king}}-v_{\mathrm{man}}+v_{\mathrm{woman}}
+\approx v_{\mathrm{queen}}.
+$$
 
-We can define features as properties of inputs which a sufficiently large neural network will reliably dedicate
-a neuron to represent [@elhage2022superposition{see "Features as Direction"}]
+The operation retrieves a nearby word vector; it does not assert an exact identity or isolate every aspect of the words' meanings. [@mikolov-etal-2013-linguistic]
+
+The same burden applies when interpreting an SAE latent. Examples with high activation suggest a label. Held-out examples test the label's coverage, and interventions test whether the direction affects the proposed computation.
 
 ## ablation
 
-> refers to the process of removing a subset of a model's parameters to evaluate its predictions outcome.
+Ablation removes or replaces a chosen component's contribution and measures how model behaviour changes. The component can be an activation, feature, attention head, or parameter subset.
 
-idea: deletes one activation of the network to see how performance on a task changes.
+- **Zero ablation:** replace the chosen activation with zero.
+- **Mean ablation:** replace it with an average over a stated reference dataset.
+- **Resample ablation:** replace it with an activation from another example, chosen according to a stated sampling rule.
 
-- zero ablation or _pruning_: Deletion by setting activations to zero
-- mean ablation: Deletion by setting activations to the mean of the dataset
-- random ablation or _resampling_
+The replacement defines the experiment. Zero can be atypical at a chosen site; a mean can erase context; resampling can introduce unrelated information. Record the task, replacement, and output metric. A drop in performance supports a contribution under that intervention, with the replacement's side effects still to examine. An unchanged output can also reflect redundant paths. [@heimersheim2024useinterpretactivationpatching] Parameter pruning is a related use of removal, usually aimed at changing the model permanently.
 
 ## mathematical frameworks to transformers
 
@@ -216,103 +191,95 @@ see also: @elhage2021mathematical, [[thoughts/mathematical framework transformer
 </Zoomable>
 ```
 
-intuition: we can think of residual as highway networks, in a sense portrays linearity of the {{sidenotes[network]: Constructing models with a residual stream traces back to early work by the Schmidhuber group, such as highway networks and LSTMs, which have found significant modern success in the more recent residual network architecture. In transformers, the residual stream vectors are often called the "embedding" - we prefer the residual stream terminology because it emphasizes the residual nature and because the residual stream often dedicates subspaces to tokens other than the present token.}}
-
-residual stream $x_{0}$ has dimension $\mathit{(C,E)}$ where
-
-- $\mathit{C}$: the number of tokens in context windows and
-- $\mathit{E}$: embedding dimension.
-
-[[thoughts/Attention]] mechanism $\mathit{H}$ process given residual stream $x_{0}$ as the result is added back to $x_{1}$:
+For a sequence of $C$ tokens and model width $d$, write the residual stream as $x_0\in\mathbb{R}^{C\times d}$. An [[thoughts/Attention|attention]] sublayer computes an update and adds it to the stream:
 
 $$
-x_{1} = \mathit{H}{(x_{0})} + x_{0}
+x_1=x_0+H(x_0).
 $$
+
+Here $H$ includes any normalization at that sublayer's input. An MLP sublayer then adds its own update. Addition lets us track which component wrote a contribution and which later component reads it. The functions producing those updates remain nonlinear, and attention can move information between token positions.
 
 ![[thoughts/induction heads|induction heads]]
 
 ## grokking
 
-See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mechanistic-interpretability-analysis-of-grokking), [code](https://colab.research.google.com/drive/1F6_1_cWXE5M7WocUcpQWp3v8z4b1jL20), [circuit threads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html)
+Grokking is delayed generalization: training performance becomes good well before test performance improves. @power2022grokkinggeneralizationoverfittingsmall observed this on small algorithmic datasets.
 
-> A phenomena discovered by @power2022grokkinggeneralizationoverfittingsmall where small algorithmic tasks like modular addition will initially memorise training data, but after a long time ti will suddenly learn to generalise to unseen data
+For modular addition, a later [mechanistic analysis](https://arxiv.org/abs/2301.05217) identified a learned algorithm using [[thoughts/Fourier transform|Fourier]] components. Its circuitry developed before the sharp rise in test accuracy. The Fourier structure describes that model's algorithm; the delay in generalization is the phenomenon to explain.
 
-The idea is somewhat similar to phase change in [[thoughts/Fourier transform|Fourier transform]]
+see also: [author's writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mechanistic-interpretability-analysis-of-grokking), [analysis notebook](https://colab.research.google.com/drive/1F6_1_cWXE5M7WocUcpQWp3v8z4b1jL20), [induction-head training dynamics](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html).
 
 ## attribution graph
 
-see also [[thoughts/Attribution parameter decomposition]], [Circuit Tracing: Revealing Computational Graphs in Language Models](https://transformer-circuits.pub/2025/attribution-graphs/methods.html), [On the Biology of a Large Language Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
-
-graphs over replacement-model features. nodes: feature activations + tokens + recon-error + logits. edges: linear contributions.
+An attribution graph describes a chosen output on one prompt. In [Circuit Tracing](https://transformer-circuits.pub/2025/attribution-graphs/methods.html), nodes are active CLT features, input embeddings, reconstruction errors, and logits. Direct edges become linear contributions after fixing attention patterns and normalization denominators at their observed values. See [[thoughts/circuit tracing]] for the equations and [On the Biology of a Large Language Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html) for case studies.
 
 ```jsx imports={MethodologyStep,MethodologyTree}
-<MethodologyTree title="methodology" description="transcoders + frozen attention + pruning.">
+<MethodologyTree
+  title="methodology"
+  description="construct a local explanation, then test its predictions."
+>
   <MethodologyStep
     title="train transcoders"
     badge="replacement"
-    summary="CLT preferred. feature reads residual L, writes MLP > L."
+    summary="approximate MLP outputs with sparse features."
   >
-    <MethodologyStep title="cross-layer" summary="shallower circuits. ~50% substitution match." />
+    <MethodologyStep
+      title="cross-layer"
+      summary="features can write to their own and later layers."
+    />
   </MethodologyStep>
   <MethodologyStep
     title="freeze attention"
     badge="context"
-    summary="freeze QK + LayerNorm denom. (b) needs QK attribution."
+    summary="hold attention patterns and normalization denominators fixed."
   />
   <MethodologyStep
     title="build graph"
     badge="graph"
-    summary="node = activation. edge = linear contribution."
+    summary="attribute direct contributions between nodes."
   >
     <MethodologyStep
-      title="encode"
-      summary="token nodes anchor. recon-error nodes for approximation."
+      title="include error"
+      summary="retain MLP output left unexplained by the reconstruction."
     />
   </MethodologyStep>
   <MethodologyStep
     title="prune"
     badge="sparsity"
-    summary="smallest subgraph hitting target logit."
+    summary="retain nodes and edges above chosen influence thresholds."
   />
   <MethodologyStep
     title="validate"
     badge="verify"
-    summary="ablate features. measure logit delta."
+    summary="intervene in the original model and compare downstream effects."
   />
 </MethodologyTree>
 ```
 
 ### parameter decomposition
 
-activation level vs weight level. see [[thoughts/Attribution parameter decomposition|APD]], @bushnaq2025stochasticparameterdecomposition.
+[[thoughts/Attribution parameter decomposition|APD]] decomposes weights into sparsely used components. Those components can span several layers. Connecting them to an attribution graph requires a definition of their interactions and tests of the proposed edges.
 
 ### limitations
 
-- attention circuits missing → [[thoughts/QK attributions]]
-- replacement model $\neq$ base
-- pruning subjective
-- single-forward-pass only
+The replacement model can compute differently from the original. Pruning hides paths, and the graph is local to a forward pass. Frozen attention leaves the causes of its attention weights unexplained; [[thoughts/mechanistic interpretability#QK attributions|QK attributions]] examine how query and key features assign weight to source positions.
 
 ### applications
 
-- mechanism discovery
-- targeted editing (via APD)
-- mechanistic anomaly detection
-- cross-model circuit transfer
-- developmental: IOI emergence in training
+Circuit graphs guide mechanism discovery and candidate interventions. Anomaly detection, cross-model circuit transfer, and tracking how circuits emerge during training are research directions. Each needs its own evaluation: output agreement, correspondence between models, or evidence across training checkpoints.
 
 ## stochastic parameter decomposition
 
-@bushnaq2025stochasticparameterdecomposition improves upon [[thoughts/Attribution parameter decomposition|APD]] by being more scalable and robust to {{sidenotes[hyperparameters.]: SPD demonstrates decomposition on models slightly larger and more complex than was possible with APD, avoids parameter shrinkage issues, and better identifies ground truth mechanisms in toy models.}}
+@bushnaq2025stochasticparameterdecomposition follows [[thoughts/Attribution parameter decomposition|APD]] with a stochastic ablation objective. Its experiments recover known mechanisms in toy models that are larger or more complex than the earlier APD examples, with improved robustness to hyperparameters. These results establish progress within that test suite; decomposition of large deployed models requires further evidence.
 
-see also: https://github.com/goodfire-ai/spd
+see also: [paper](https://arxiv.org/abs/2506.20790), [code](https://github.com/goodfire-ai/spd).
 
 ## QK attributions
 
-https://transformer-circuits.pub/2025/attention-qk
-
-> describe attention head scores as a bilinear function of feature activations on the respective query and key positions.
+[Tracing Attention Computation Through Feature Interactions](https://transformer-circuits.pub/2025/attention-qk) decomposes attention scores into interactions between query-side and key-side features. The score before softmax is bilinear in the query and key representations. Expanding both into feature contributions gives terms that help explain why an attention head selected particular tokens. Softmax still couples the resulting attention weights across candidate positions.
 
 ## manipulate manifolds
 
-https://transformer-circuits.pub/2025/linebreaks/index.html
+[When Models Manipulate Manifolds](https://transformer-circuits.pub/2025/linebreaks/index.html) studies how Claude 3.5 Haiku predicts line breaks in fixed-width text. Character counts lie along curved, low-dimensional representations. Attention heads transform those representations to compare the current count with the line width, then the model combines the space remaining with the next word's length.
+
+This gives a concrete reason to inspect feature geometry. Several discrete dictionary features can describe nearby parts of one counting representation. Parameterizing the count exposes the computation shared across those features, and targeted interventions test that account.

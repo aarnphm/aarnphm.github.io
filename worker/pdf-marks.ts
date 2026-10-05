@@ -423,7 +423,6 @@ async function handleReaderRoute(
 
   if (!key) {
     const documents = Object.entries(entry.manifest.documents)
-      .filter(([, record]) => record.citedBy.length > 0)
       .map(([slug, record]) => ({
         slug,
         readPath: pdfReaderPath(slug),

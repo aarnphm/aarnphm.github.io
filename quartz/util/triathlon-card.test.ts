@@ -20,7 +20,13 @@ import type { TriathlonDayAnalytics } from './triathlon-day-analytics'
 import { triathlonDayCard } from '../components/triathlon-day-card'
 import { isActivityDetail } from '../components/triathlon/activity/data'
 import { metricSpecs } from '../components/triathlon/activity/render'
-import { workspaceTraces } from '../components/triathlon/activity/workspace-data'
+import {
+  workspaceTraces,
+  workspaceTracePaths,
+  workspaceValueAt,
+  workspaceTimeline,
+  workspaceLocationAt,
+} from '../components/triathlon/activity/workspace-data'
 import { createTriathlonFormatter } from '../components/triathlon/runtime/formatter'
 import { buildAnalytics } from '../plugins/stores/analytics'
 import { calculateActivityExerciseLoad, emptyHealth } from '../plugins/stores/strava'
@@ -31,7 +37,7 @@ import { buildCyclingIntensityTrace } from './cycling-intensity'
 import { buildCyclingPowerTrace } from './cycling-power'
 import { buildCyclingTorqueTrace, cyclingTorqueSamples } from './cycling-torque'
 import { health as garminHealthFixture } from './fixtures/garmin-health'
-import { estimateHeartRatePhysiology } from './heart-rate-physiology'
+import { applyHeartRatePhysiology, estimateHeartRatePhysiology } from './heart-rate-physiology'
 import { decodePowerCurves, encodePowerCurves, powerCurvePointAt } from './power-curve'
 import { resolveSleepMetrics } from './sleep-metrics'
 import { estimateSwimPhysiology } from './swim-physiology'
@@ -53,6 +59,7 @@ import {
   activityZonePercentages,
   axisFrame,
   buildActivity,
+  buildActivityAnalyzeButton,
   buildActivityIcon,
   buildActivityComparison,
   buildBestEfforts,
@@ -6315,6 +6322,83 @@ const swimToggleDetail = (): StravaActivityDetail => {
     swimIntervals,
   })
 }
+
+test('pool analysis accepts recorded telemetry without GPS and omits empty activities', () => {
+  const pool = swimTrendDetail({ heartRateTrace: [] })
+  const button = buildActivityAnalyzeButton(factory, pool)
+  assert.equal(button.properties.disabled, undefined)
+  assert.equal(button.properties.title, 'analyze')
+  const empty = buildActivityAnalyzeButton(factory, detail({ route: [], heartRateTrace: [] }))
+  assert.equal(empty.properties.disabled, true)
+  assert.equal(empty.properties.title, 'No recorded telemetry for this activity.')
+})
+
+test('pool overlays retain measured distance, length metrics, rest gaps, and missing strokes', () => {
+  const pool = swimTrendDetail({
+    heartRateTrace: [heartRateTracePoint(0, 0, 100), heartRateTracePoint(0.1, 144, 130)],
+  })
+  const traces = workspaceTraces(pool, METRIC_TRIATHLON_PRESENTATION)
+  const pace = traces.find(trace => trace.id === 'swim-pace')
+  const cadence = traces.find(trace => trace.id === 'swim-cadence')
+  const swolf = traces.find(trace => trace.id === 'swolf')
+  const heartRate = traces.find(trace => trace.id === 'hr')
+  assert.ok(pace && cadence && swolf && heartRate)
+  assert.equal(pace.format(104), '1:44 /100m')
+  assert.equal(workspaceValueAt(pace, 12), 100)
+  assert.equal(workspaceValueAt(pace, 30), null)
+  assert.equal(workspaceValueAt(pace, 50), 104)
+  assert.equal(workspaceValueAt(cadence, 90), null)
+  assert.equal(workspaceValueAt(swolf, 50), 37)
+  assert.equal(heartRate.samples.at(-1)?.distanceKm, 0.1)
+  assert.equal(pace.samples.at(-1)?.distanceKm, 0.1)
+  assert.ok(workspaceTracePaths(pace, 'time', 0, 144).line.split('M').length > 2)
+  const timeline = workspaceTimeline(pool)
+  assert.deepEqual(workspaceLocationAt(timeline, 'time', 12.5), {
+    elapsedS: 12.5,
+    distanceKm: 0.0125,
+  })
+  assert.deepEqual(workspaceLocationAt(timeline, 'time', 30), { elapsedS: 30, distanceKm: 0.025 })
+  assert.deepEqual(workspaceLocationAt(timeline, 'distance', 0.0375), {
+    elapsedS: 53,
+    distanceKm: 0.0375,
+  })
+})
+
+test('pool swimming retains calculated condition and recorded physiology without HR stamina', () => {
+  const pool = swimTrendDetail({
+    elapsedTimeS: 600,
+    heartRateTrace: Array.from({ length: 61 }, (_, i) =>
+      heartRateTracePoint(i / 100, i * 10, i <= 6 ? 140 : 160),
+    ),
+  })
+  applyHeartRatePhysiology(pool, 200)
+  assert.ok(pool.heartRatePhysiology)
+  assert.equal(pool.heartRatePhysiology.points.at(-1)?.performanceCondition, -10)
+  assert.ok(
+    pool.heartRatePhysiology.points.every(
+      point => point.stamina == null && point.potentialStamina == null,
+    ),
+  )
+  const rendered = buildActivity(factory, pool, true)
+  assert.equal(byClass(rendered, 'tri-stamina-chart').length, 0)
+  const condition = descendants(
+    rendered,
+    node => node.properties.dataTriTrace === 'performance-condition',
+  )[0]
+  assert.ok(condition)
+  assert.equal(condition.properties.dataPerformanceConditionSource, 'garden-estimate')
+  const source = byClass(condition, 'tri-performance-condition-source')[0]
+  assert.equal(text(source), 'calculated')
+  assert.match(String(source.properties.dataGlossDef), /Garden HR change proxy/)
+  const traces = workspaceTraces(pool, METRIC_TRIATHLON_PRESENTATION)
+  assert.ok(traces.some(trace => trace.id === 'hr'))
+  assert.ok(traces.some(trace => trace.id === 'condition' && trace.estimated))
+  assert.ok(traces.every(trace => trace.id !== 'stamina'))
+  const native = detail({ sport: 'swim' })
+  native.route = native.route.map(point => ({ ...point, stamina: 70, potentialStamina: 80 }))
+  applyHeartRatePhysiology(native, 200)
+  assert.ok(buildStaminaChart(factory, native))
+})
 
 const swimTrendPoints: SwimTrendPoint[] = [
   {

@@ -75,7 +75,11 @@ export const createTriathlonFormatter = (value: TriathlonPresentation): Triathlo
         .toUpperCase(),
     distance: (kilometres: number, sport: ActivityKind) => {
       if (sport === 'swim') return `${Math.round(kilometres * 1000).toLocaleString(locale)} m`
-      return imperial ? `${(kilometres * KM_TO_MI).toFixed(1)} mi` : `${kilometres.toFixed(1)} km`
+      const distance = (imperial ? kilometres * KM_TO_MI : kilometres).toLocaleString(locale, {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      })
+      return `${distance} ${imperial ? 'mi' : 'km'}`
     },
     elevation: (metres: number) =>
       imperial

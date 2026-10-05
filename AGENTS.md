@@ -6,7 +6,8 @@ This repository powers a Quartz digital garden with custom plugins and a Cloudfl
 
 - Fix the owning boundary with the simplest implementation that meets current requirements. Reuse established helpers and dependencies before introducing abstractions or packages.
 - Remove obsolete code when its callers no longer need it. Preserve required provider recovery, external API contracts, and persisted data. Add compatibility or migration code only for an identified current requirement.
-- Keep components modular. Use Preact and the existing SCSS tokens for Quartz UI. Avoid `box-shadow` and decorative `border-left` styling.
+- Check `docs` for any additional notes on design patterns as well as relevant information. If possible, always use 80% of ASD-STE100 for description et al.
+- Keep components modular. Use Preact and the existing SCSS tokens for Quartz UI. NO `box-shadow` and decorative `border-left` styling, unless specified so.
 - Keep utility filenames kebab-case. Share a helper in `quartz/util` when multiple owners need it; keep a script-specific helper with its script.
 - Use comments for non-obvious constraints or decisions; omit comments that repeat the code.
 - Keep filesystem access out of Quartz transformers. Emitters own filesystem output.

@@ -5,11 +5,12 @@ import {
   scrubDist,
   cyclingWorkoutLaps,
   cyclingWorkoutPowerSummary,
+  activityAnalysisAvailable,
 } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
 import { gpsSegments } from '../maps/model'
 import { el, svg } from '../runtime/dom'
-import { activityScrubElapsedIndexAt, activityScrubIndexAt } from './analysis'
+import { activityScrubIndexAt } from './analysis'
 import { bindActivityComparisonGraph, type ActivityComparisonScrubState } from './comparison-graph'
 import { mountActivityComparisonMap, type ActivityComparisonMapController } from './comparison-map'
 import { buildActivityMapControls } from './map-controls'
@@ -19,6 +20,8 @@ import {
   workspaceTracePaths,
   workspaceTraces,
   workspaceValueAt,
+  workspaceTimeline,
+  workspaceLocationAt,
   type WorkspaceAxis,
   type WorkspaceTrace,
 } from './workspace-data'
@@ -32,9 +35,9 @@ const buildWorkspace = (
   const text = (key: string): string => triText(presentation.locale, key)
   const d = activity
   const traces = workspaceTraces(d, presentation)
-  const selected = new Set<string>(
-    traces.some(trace => trace.id === 'elevation') ? ['elevation'] : [],
-  )
+  const timeline = workspaceTimeline(d)
+  const hasGps = gpsSegments(d).length > 0
+  const selected = new Set<string>(traces.length ? [traces[0].id] : [])
   const laps = cyclingWorkoutLaps(d)
   const lapColor = 'color-mix(in srgb, var(--tri-bike) 55%, var(--dark))'
   let axis: WorkspaceAxis = 'time'
@@ -50,7 +53,7 @@ const buildWorkspace = (
     d.distanceKm,
     ...traces.map(trace => trace.samples.at(-1)?.distanceKm ?? 0),
   )
-  const hasDistance = maxDistance > 0
+  const hasDistance = timeline.some(point => point.distanceKm > 0)
   const header = el('div', 'tri-workspace-summary')
   header.append(
     el(
@@ -139,7 +142,7 @@ const buildWorkspace = (
     const button = el('button', 'tri-workspace-trace-toggle', undefined, {
       type: 'button',
       'data-workspace-trace': trace.id,
-      'aria-pressed': 'false',
+      'aria-pressed': String(selected.has(trace.id)),
       'aria-label': text(trace.label).toLocaleLowerCase(),
       ...(trace.estimated ? { title: text('Garden estimate') } : {}),
     })
@@ -157,18 +160,7 @@ const buildWorkspace = (
   const sampleAt = (fraction: number): { elapsedS: number; distanceKm: number } => {
     const [start, end] = bounds()
     const position = start + fraction * (end - start)
-    const samples = d.route.length
-      ? d.route.map(p => ({ elapsedS: p.elapsedS, d: p.d }))
-      : (traces[0]?.samples.map(p => ({ elapsedS: p.elapsedS, d: p.distanceKm })) ?? [])
-    const index =
-      axis === 'time'
-        ? activityScrubElapsedIndexAt(samples, position)
-        : activityScrubIndexAt(samples, position)
-    const point = samples[index]
-    return {
-      elapsedS: axis === 'time' ? position : (point?.elapsedS ?? 0),
-      distanceKm: axis === 'distance' ? position : (point?.d ?? 0),
-    }
+    return workspaceLocationAt(timeline, axis, position)
   }
   const show = (fraction: number): void => {
     state.fraction = fraction
@@ -303,7 +295,7 @@ const buildWorkspace = (
       const fractions = low === high ? [0.5] : [0, 0.25, 0.5, 0.75, 1]
       const labels = fractions.map(fraction => {
         const formatted = trace.format(high - fraction * (high - low))
-        return formatted.match(/^[+-]?\d[\d,]*(?:\.\d+)?/)?.[0] ?? formatted
+        return formatted.match(/^[+-]?\d[\d,]*(?::\d{2})*(?:\.\d+)?/)?.[0] ?? formatted
       })
       verticalAxis.style.setProperty(
         '--tri-workspace-axis-chars',
@@ -376,15 +368,9 @@ const buildWorkspace = (
   })
   toolbar.append(header, rangePicker.element)
   stage.append(plotPanel, scrollHint, controls)
-  host.append(toolbar, mapPanel, stage)
-  if (!traces.some(trace => trace.id === 'elevation'))
-    header.append(
-      el(
-        'span',
-        'tri-workspace-note',
-        text('No recorded elevation. Enable an available trace below.'),
-      ),
-    )
+  host.append(toolbar)
+  if (hasGps) host.append(mapPanel)
+  host.append(stage)
   if (!traces.length)
     host.append(el('p', 'tri-workspace-note', text('No recorded telemetry for this activity.')))
   const onClick = (event: MouseEvent): void => {
@@ -421,7 +407,7 @@ const buildWorkspace = (
   })
   resize.observe(plotPanel)
   resize.observe(chart)
-  if (gpsSegments(d).length)
+  if (hasGps)
     map = mountActivityComparisonMap(mapHost, [d], {
       unavailableText: text('map unavailable'),
       distance: presentation.distance,
@@ -435,11 +421,6 @@ const buildWorkspace = (
       },
       onLeave: () => show(state.selectedFraction ?? state.fraction),
     })
-  else {
-    mapHost.classList.add('tri-workspace-map--empty')
-    mapHost.textContent = text('No recorded GPS route for this activity.')
-    attribution.hidden = true
-  }
   return () => {
     resize.disconnect()
     cleanupGraph()
@@ -550,9 +531,9 @@ export const setupActivityWorkspace = (context: TriathlonContext): (() => void) 
     button.removeAttribute('aria-busy')
     loadingButton = null
     const activity = result.status === 'ready' ? result.value.details[id] : null
-    if (activity && !gpsSegments(activity).length) {
+    if (activity && !activityAnalysisAvailable(activity)) {
       button.disabled = true
-      button.title = context.formatter.text('No recorded GPS route for this activity.')
+      button.title = context.formatter.text('No recorded telemetry for this activity.')
       return
     }
     const region = el('section', 'tri-workspace', undefined, {

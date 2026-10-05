@@ -44,6 +44,12 @@ export function applyHeartRatePhysiology(
     samples.filter(sample => sample.elapsedS <= detail.elapsedTimeS),
     maxHeartRateBpm,
   )
+  // Swimming retains the HR condition proxy; the cycling HR term has no swim stamina calibration.
+  if (detail.sport === 'swim' && detail.heartRatePhysiology)
+    for (const point of detail.heartRatePhysiology.points) {
+      point.stamina = null
+      point.potentialStamina = null
+    }
 }
 
 // The HR term used by Garden's cycling stamina model, expressed as percentage points/hour.

@@ -156,9 +156,12 @@ export const mountActivityComparisonMap = (
             'line-cap': route.dash ? 'butt' : 'round',
             'line-join': 'round',
             visibility: hidden.has(route.id) ? 'none' : 'visible',
+          },
+          paint: {
+            'line-color': route.color,
+            'line-width': 2.4,
             ...(route.dash ? { 'line-dasharray': route.dash } : {}),
           },
-          paint: { 'line-color': route.color, 'line-width': 2.4 },
         })
     }
     if (!current.getSource('tri-cmp-dot'))
@@ -295,11 +298,7 @@ export const mountActivityComparisonMap = (
     created.once('load', () => {
       if (disposed) return
       installLayers()
-      const bounds = fcBounds({
-        type: 'FeatureCollection',
-        features: routes.flatMap(route => routeFeatures(route).features),
-      })
-      if (bounds) created.fitBounds(bounds, { padding: 32, maxZoom: 15, duration: 0 })
+      fitRoutes()
     })
   })
 

@@ -1682,7 +1682,7 @@ export function transcludeFinal(
                   goalFtp: ATHLETE.goalFTP,
                   vt1: null,
                 } satisfies DetailCtx,
-                { removable: false },
+                { removable: false, health: payload.health },
               ),
             ],
           ),

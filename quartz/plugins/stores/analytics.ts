@@ -12,6 +12,12 @@ import type { WeatherCache } from './weather'
 import { selectActivityAnalysisSummary } from '../../util/activity-analysis-selection'
 import { matchAppleRun } from '../../util/apple-run-match'
 import { matchAppleSwims } from '../../util/apple-swim-match'
+import {
+  buildBestEffortsBlock,
+  emptyBestEfforts,
+  type BestEffortNative,
+  type BestEffortsBlock,
+} from '../../util/best-efforts'
 import { WORLD_TOUR_POWER_REFERENCE } from '../../util/cycling-ability-reference'
 import {
   estimateFtpFromPowerCurve,
@@ -463,8 +469,11 @@ export interface ThresholdEstimate {
   paceLabel: string
   unit: string
   conf: Conf
+  /** heart-rate-anchored: run speed at LTHR; pace-p90: 90th percentile of session averages. */
+  method: 'heart-rate-anchored' | 'pace-p90' | 'pace-max' | 'prior'
   sampleSize: number
   staleDays: number
+  heartRateAnchor: RunHeartRateAnchor | null
 }
 
 export interface SportTrendForecastPoint {
@@ -735,38 +744,40 @@ export interface Vo2maxBlock {
   bikeSource: Vo2BikeSource | null
 }
 
-export interface LactateThresholdProjectionPoint {
-  date: string
-  value: number
-  lo: number
-  hi: number
-}
-
 export type LactateThresholdHeartRate =
   | { value: number; unit: 'bpm'; source: 'declared' }
   | { value: number; unit: 'bpm'; source: 'garmin'; sport: 'run'; date: string }
 
-export interface LactateThresholdSportProjection {
-  sport: Sport
-  unit: string
-  current: number
-  projected: number | null
-  low: number | null
-  high: number | null
+/** Garmin's running threshold pace, checked against the garden estimate before use. */
+export interface LactateThresholdDeviceEstimate {
+  value: number
+  date: string
+  /** Positive when Garmin's pace is faster than the garden estimate. */
   deltaPct: number | null
+  accepted: boolean
+}
+
+export interface LactateThresholdSportEstimate {
+  sport: Sport
+  unit: 's/100m' | 's/km' | 'W'
+  value: number
   conf: Conf | null
-  method: TrendMethod
-  sampleSize: number
-  horizonDays: number
-  source: 'training-pace-trend' | 'garmin'
+  source:
+    | ThresholdEstimate['method']
+    | 'garmin'
+    | 'critical-power'
+    | 'critical-power-year'
+    | 'twenty-minute-power'
+    | 'declared-ftp'
   date: string | null
-  points: LactateThresholdProjectionPoint[]
+  sampleSize: number
+  heartRateAnchor: RunHeartRateAnchor | null
+  device: LactateThresholdDeviceEstimate | null
 }
 
 export interface LactateThresholdBlock {
   heartRate: LactateThresholdHeartRate | null
-  sports: LactateThresholdSportProjection[]
-  runningHistory: { pace: GarminLactateThresholdValue[]; heartRate: GarminLactateThresholdValue[] }
+  sports: LactateThresholdSportEstimate[]
 }
 
 export interface RadarAxis {
@@ -1037,6 +1048,8 @@ export interface Analytics {
   recovery: RecoveryBlock
   powerCurve: PowerCurveBlock
   swimPowerCurve: SwimPowerCurveBlock
+  /** All-time ranks: the 60-day range view leaves this block whole. */
+  bestEfforts: BestEffortsBlock
   heat: HeatBlock
   distributions: DistributionsBlock
   engine: EngineBlock
@@ -1244,29 +1257,33 @@ function weightedPercentile(values: number[], weights: number[], p: number): num
   return pairs[pairs.length - 1].v
 }
 
-function gradeFactorRun(g: number): number {
-  if (g >= 0) return 1 + 8.85 * g + 44 * g * g
-  return Math.max(0.83, 1 + 8 * g + 44 * g * g)
+// Minetti et al. (2002), doi:10.1152/japplphysiol.01177.2001: running cost in J/kg/m,
+// normalised to level running (3.6 J/kg/m).
+function runGradeFactor(grade: number): number {
+  const g = clamp(grade, -0.3, 0.3)
+  return (155.4 * g ** 5 - 30.4 * g ** 4 - 43.3 * g ** 3 + 46.3 * g ** 2 + 19.5 * g + 3.6) / 3.6
 }
 
-function segGrades(
-  stream: StravaStreams | undefined,
-): { grades: number[]; lengths: number[] } | null {
-  if (!stream) return null
-  const alt = stream.altitude
-  const dist = stream.distance
-  if (!alt || !dist || alt.length < 2 || dist.length < 2) return null
-  const grades: number[] = []
-  const lengths: number[] = []
+// Per-sample altitude deltas over ~3 m are mostly barometer noise; the cost curve is convex, so
+// noise alone inflates grade-adjusted speed. Each sample takes the grade of its trailing 30 m.
+const RUN_GRADE_SPAN_M = 30
+
+/** Grade factor for each segment ending at sample i (index 0 is unused), or null without altitude. */
+function runGradeFactors(stream: StravaStreams | undefined): Float64Array | null {
+  const alt = stream?.altitude
+  const dist = stream?.distance
+  if (!alt || !dist) return null
   const n = Math.min(alt.length, dist.length)
+  if (n < 2) return null
+  const factors = new Float64Array(n).fill(1)
+  let start = 0
   for (let i = 1; i < n; i++) {
-    const len = dist[i] - dist[i - 1]
-    if (len <= 0) continue
-    grades.push(clamp((alt[i] - alt[i - 1]) / len, -0.3, 0.3))
-    lengths.push(len)
+    while (start + 1 < i && dist[i] - dist[start + 1] >= RUN_GRADE_SPAN_M) start++
+    const span = dist[i] - dist[start]
+    const rise = alt[i] - alt[start]
+    if (span > 0 && Number.isFinite(rise)) factors[i] = runGradeFactor(rise / span)
   }
-  if (grades.length < 1) return null
-  return { grades, lengths }
+  return factors
 }
 
 function gradeAdjSpeed(
@@ -1282,36 +1299,191 @@ function gradeAdjSpeed(
     const factor = Math.min(1 + 3.5 * Math.max(gOverall, 0), 1.25)
     return v * factor
   }
-  const seg = segGrades(stream)
-  if (seg) {
-    const totalLen = seg.lengths.reduce((s, x) => s + x, 0)
-    if (totalLen > 0) {
-      const weighted =
-        seg.grades.reduce((s, g, i) => s + gradeFactorRun(g) * seg.lengths[i], 0) / totalLen
-      return v * weighted
+  const factors = runGradeFactors(stream)
+  if (factors) {
+    const dist = stream!.distance
+    let weighted = 0
+    let length = 0
+    for (let i = 1; i < factors.length; i++) {
+      const segment = dist[i] - dist[i - 1]
+      if (!(segment > 0)) continue
+      weighted += factors[i] * segment
+      length += segment
     }
+    if (length > 0) return v * (weighted / length)
   }
-  return v * gradeFactorRun(gOverall)
+  // Strava reports gain only. Treat the route as a loop that climbs and descends over equal halves.
+  return v * ((runGradeFactor(2 * gOverall) + runGradeFactor(-2 * gOverall)) / 2)
 }
 
-function estimateThreshold(acts: Act[], sport: Sport, today: number): ThresholdEstimate {
+const RUN_LT_WINDOW_S = 8 * 60
+const RUN_LT_STEP_S = 60
+const RUN_LT_CHUNK_S = 60
+// Bootstrapping runs: 56 days with these tolerances keeps the 80% range near ±12 s/km. Tighter
+// tolerances leave too few windows and the slope swings by a minute per km.
+const RUN_LT_LOOKBACK_DAYS = 56
+const RUN_LT_MAX_PACE_CV = 0.2
+const RUN_LT_MAX_HR_SD = 10
+const RUN_LT_MIN_WINDOWS = 20
+const RUN_LT_MIN_RUNS = 4
+const RUN_LT_MIN_HR_SPAN = 8
+const RUN_LT_MAX_EXTRAPOLATION_BPM = 20
+const RUN_LT_FIRM_EXTRAPOLATION_BPM = 5
+
+const isTreadmillRun = (a: RawStravaActivity): boolean =>
+  a.trainer === true || /\btreadmill\b/i.test(a.name)
+
+/** Steady 8-minute windows of one run: mean heart rate and grade-adjusted speed. */
+function steadyRunWindows(stream: StravaStreams): { heartRate: number; gapSpeed: number }[] {
+  const { time, distance, heartrate } = stream
+  if (!time || !heartrate || time.length !== distance.length || heartrate.length !== time.length)
+    return []
+  const factors = runGradeFactors(stream)
+  const n = time.length
+  const windows: { heartRate: number; gapSpeed: number }[] = []
+  let end = 0
+  let nextStartS = -Infinity
+  for (let start = 0; start < n; start++) {
+    if (time[start] < nextStartS) continue
+    nextStartS = time[start] + RUN_LT_STEP_S
+    while (end < n && time[end] - time[start] < RUN_LT_WINDOW_S) end++
+    if (end >= n) break
+    const elapsedS = time[end] - time[start]
+    // A pause inside the window leaves heart rate and pace out of step.
+    if (elapsedS > RUN_LT_WINDOW_S * 1.1) continue
+
+    const beats: number[] = []
+    for (let i = start; i < end; i++) if (heartrate[i] > 0) beats.push(heartrate[i])
+    if (beats.length < 0.9 * (end - start) || sd(beats) > RUN_LT_MAX_HR_SD) continue
+
+    const chunkSpeeds: number[] = []
+    let chunkStart = start
+    for (let i = start + 1; i <= end; i++) {
+      if (time[i] - time[chunkStart] < RUN_LT_CHUNK_S) continue
+      if (time[i] > time[chunkStart])
+        chunkSpeeds.push((distance[i] - distance[chunkStart]) / (time[i] - time[chunkStart]))
+      chunkStart = i
+    }
+    const chunkMean = mean(chunkSpeeds)
+    if (
+      chunkSpeeds.length < 3 ||
+      !(chunkMean > 0) ||
+      sd(chunkSpeeds) / chunkMean > RUN_LT_MAX_PACE_CV
+    )
+      continue
+
+    let weighted = 0
+    let length = 0
+    for (let i = start + 1; i <= end; i++) {
+      const segment = distance[i] - distance[i - 1]
+      if (!(segment > 0)) continue
+      weighted += (factors?.[i] ?? 1) * segment
+      length += segment
+    }
+    if (!(length > 0)) continue
+    const gapSpeed = (length / elapsedS) * (weighted / length)
+    if (gapSpeed < RUN_MOVING_MIN_MPS || gapSpeed > SPRINT_CAP_MS.run) continue
+    windows.push({ heartRate: mean(beats), gapSpeed })
+  }
+  return windows
+}
+
+export interface RunHeartRateAnchor {
+  heartRateBpm: number
+  windows: number
+  runs: number
+  maxWindowHeartRateBpm: number
+  lookbackDays: number
+}
+
+/**
+ * Grade-adjusted speed at the lactate-threshold heart rate, from a line through steady outdoor
+ * windows of recent runs. Heart rate and speed are close to linear below threshold.
+ */
+function runSpeedAtThresholdHeartRate(
+  runs: readonly Act[],
+  streams: Readonly<Record<string, StravaStreams>> | undefined,
+  heartRateBpm: number,
+  today: number,
+): { vThr: number; conf: Conf; anchor: RunHeartRateAnchor } | null {
+  const cutoff = today - RUN_LT_LOOKBACK_DAYS * DAY_MS
+  const heartRates: number[] = []
+  const speeds: number[] = []
+  let runCount = 0
+  for (const run of runs) {
+    if (dayMs(run.day) < cutoff || isTreadmillRun(run.a)) continue
+    const stream = streams?.[String(run.a.id)]
+    if (!stream) continue
+    const windows = steadyRunWindows(stream)
+    if (!windows.length) continue
+    runCount++
+    for (const window of windows) {
+      heartRates.push(window.heartRate)
+      speeds.push(window.gapSpeed)
+    }
+  }
+  if (speeds.length < RUN_LT_MIN_WINDOWS || runCount < RUN_LT_MIN_RUNS) return null
+  const maxHeartRate = Math.max(...heartRates)
+  if (
+    maxHeartRate - Math.min(...heartRates) < RUN_LT_MIN_HR_SPAN ||
+    heartRateBpm - maxHeartRate > RUN_LT_MAX_EXTRAPOLATION_BPM
+  )
+    return null
+  const slope = olsSlope(heartRates, speeds)
+  if (slope == null || !(slope > 0)) return null
+  const vThr = mean(speeds) + slope * (heartRateBpm - mean(heartRates))
+  if (!(vThr >= RUN_MOVING_MIN_MPS) || vThr > SPRINT_CAP_MS.run) return null
+  return {
+    vThr,
+    conf: heartRateBpm - maxHeartRate <= RUN_LT_FIRM_EXTRAPOLATION_BPM ? 'firm' : 'low',
+    anchor: {
+      heartRateBpm,
+      windows: speeds.length,
+      runs: runCount,
+      maxWindowHeartRateBpm: Math.round(maxHeartRate),
+      lookbackDays: RUN_LT_LOOKBACK_DAYS,
+    },
+  }
+}
+
+function estimateThreshold(
+  acts: Act[],
+  sport: Sport,
+  today: number,
+  runAnchor?: {
+    streams: Readonly<Record<string, StravaStreams>> | undefined
+    heartRateBpm: number | null
+  },
+): ThresholdEstimate {
   const mine = acts.filter(x => x.sport === sport)
   const lastDay = mine.length ? mine[mine.length - 1].day : null
   const staleDays = lastDay ? Math.round((today - dayMs(lastDay)) / DAY_MS) : 0
   const n = mine.length
+  const anchored =
+    sport === 'run' && runAnchor?.heartRateBpm != null
+      ? runSpeedAtThresholdHeartRate(mine, runAnchor.streams, runAnchor.heartRateBpm, today)
+      : null
   let vThr: number
   let conf: Conf
-  if (n >= 4) {
+  let method: ThresholdEstimate['method']
+  if (anchored) {
+    vThr = anchored.vThr
+    conf = anchored.conf
+    method = 'heart-rate-anchored'
+  } else if (n >= 4) {
     const values = mine.map(x => x.vGap)
     const weights = mine.map(x => Math.floor(x.a.movingTime / 600) + 1)
     vThr = weightedPercentile(values, weights, 0.9)
     conf = 'firm'
+    method = 'pace-p90'
   } else if (n >= 2) {
     vThr = 0.97 * Math.max(...mine.map(x => x.vGap))
     conf = 'low'
+    method = 'pace-max'
   } else {
     vThr = SPORT_PRIOR[sport]
     conf = 'prior'
+    method = 'prior'
   }
   if (sport === 'run' && staleDays > 45) conf = 'stale'
 
@@ -1327,7 +1499,17 @@ function estimateThreshold(acts: Act[], sport: Sport, today: number): ThresholdE
     unit = 'km/h'
     paceLabel = String(round(vThr * 3.6, 0))
   }
-  return { sport, vThr: round(vThr, 4), paceLabel, unit, conf, sampleSize: n, staleDays }
+  return {
+    sport,
+    vThr: round(vThr, 4),
+    paceLabel,
+    unit,
+    conf,
+    method,
+    sampleSize: n,
+    staleDays,
+    heartRateAnchor: anchored?.anchor ?? null,
+  }
 }
 
 function activityLoad(act: Act, vThr: number): number {
@@ -1723,7 +1905,7 @@ function runPaceZoneSeconds(
     previousDistance = Math.max(previousDistance, value)
     distance.push(previousDistance)
   }
-  const hasAltitude = stream.altitude.length === distance.length
+  const gradeFactors = stream.altitude.length === distance.length ? runGradeFactors(stream) : null
   const seconds = Array.from({ length: paceZoneBoundsSPerKm.length + 1 }, () => 0)
   let windowStart = 0
   for (let index = 1; index < time.length; index++) {
@@ -1734,10 +1916,7 @@ function runPaceZoneSeconds(
     const distanceM = distance[index] - distance[windowStart]
     if (!(intervalS > 0) || !(elapsedS > 0) || !(distanceM > 0)) continue
     const speedMps = distanceM / elapsedS
-    const grade = hasAltitude
-      ? clamp((stream.altitude[index] - stream.altitude[windowStart]) / distanceM, -0.3, 0.3)
-      : 0
-    const gapSpeedMps = speedMps * gradeFactorRun(grade)
+    const gapSpeedMps = speedMps * (gradeFactors?.[index] ?? 1)
     if (!(gapSpeedMps >= RUN_MOVING_MIN_MPS) || gapSpeedMps > SPRINT_CAP_MS.run) continue
     const paceSPerKm = 1000 / gapSpeedMps
     const zone = paceZoneBoundsSPerKm.findIndex(boundary => paceSPerKm > boundary)
@@ -2782,112 +2961,147 @@ const lactateThresholdHistory = (
   return [...days.values()].sort((left, right) => left.date.localeCompare(right.date))
 }
 
-const GARMIN_LACTATE_MIN_PACE_READINGS = 31
-
-const buildLactateThreshold = (
-  thresholds: ReadonlyMap<Sport, ThresholdEstimate>,
-  trends: ReadonlyMap<Sport, SportTrend>,
+/** Latest valid Garmin running LTHR, otherwise the declared anchor. */
+export const resolveLactateThresholdHeartRate = (
+  garmin: GarminCache | null | undefined,
   today: string,
-  garmin?: GarminCache | null,
-): LactateThresholdBlock => {
+): LactateThresholdHeartRate | null => {
   const native = garmin?.runningLactateThreshold
-  const speeds = lactateThresholdHistory(native?.speedMps, native?.history?.speedMps ?? [], today)
-  const heartRates = lactateThresholdHistory(
+  const heartRate = lactateThresholdHistory(
     native?.heartRateBpm,
     native?.history?.heartRateBpm ?? [],
     today,
-  )
-  const speed = speeds.at(-1)
-  const heartRate = heartRates.at(-1)
-  const useGarmin = speeds.length >= GARMIN_LACTATE_MIN_PACE_READINGS
+  ).at(-1)
+  return heartRate
+    ? { value: heartRate.value, unit: 'bpm', source: 'garmin', sport: 'run', date: heartRate.date }
+    : declaredLactateThresholdHeartRate()
+}
+
+// Garmin derives running threshold pace from its own VO2max estimate. Use it only when it agrees
+// with the heart-rate-anchored estimate from the athlete's runs.
+const GARMIN_LACTATE_PACE_TOLERANCE = 0.05
+
+const runLactateThreshold = (
+  threshold: ThresholdEstimate | undefined,
+  garmin: GarminCache | null | undefined,
+  today: string,
+): LactateThresholdSportEstimate | null => {
+  const native = garmin?.runningLactateThreshold
+  const speed = lactateThresholdHistory(
+    native?.speedMps,
+    native?.history?.speedMps ?? [],
+    today,
+  ).at(-1)
+  const modelled = threshold && threshold.conf !== 'prior' ? threshold : null
+  const deltaPct = speed && modelled ? round((speed.value / modelled.vThr - 1) * 100, 1) : null
+  const device: LactateThresholdDeviceEstimate | null = speed
+    ? {
+        value: humanPaceValue('run', speed.value),
+        date: speed.date,
+        deltaPct,
+        accepted:
+          modelled == null || Math.abs(deltaPct ?? 0) <= GARMIN_LACTATE_PACE_TOLERANCE * 100,
+      }
+    : null
+  if (device?.accepted)
+    return {
+      sport: 'run',
+      unit: 's/km',
+      value: device.value,
+      conf: null,
+      source: 'garmin',
+      date: device.date,
+      sampleSize: 1,
+      heartRateAnchor: modelled?.heartRateAnchor ?? null,
+      device,
+    }
+  if (!threshold) return null
   return {
-    runningHistory: {
-      pace: speeds.map(point => ({ date: point.date, value: humanPaceValue('run', point.value) })),
-      heartRate: heartRates,
-    },
-    heartRate:
-      useGarmin && usableGarminThreshold(heartRate, today)
-        ? {
-            value: heartRate.value,
-            unit: 'bpm',
-            source: 'garmin',
-            sport: 'run',
-            date: heartRate.date,
-          }
-        : declaredLactateThresholdHeartRate(),
-    sports: SPORT_ORDER.flatMap((sport): LactateThresholdSportProjection[] => {
-      if (sport === 'run' && useGarmin && speed) {
-        return [
-          {
-            sport,
-            unit: 's/km',
-            current: humanPaceValue(sport, speed.value),
-            projected: null,
-            low: null,
-            high: null,
-            deltaPct: null,
-            conf: null,
-            method: 'none',
-            sampleSize: speeds.length,
-            horizonDays: 0,
-            source: 'garmin',
-            date: speed.date,
-            points: [],
-          },
-        ]
-      }
-      const threshold = thresholds.get(sport)
-      if (!threshold) return []
-      const trend = trends.get(sport)
-      const level = trend?.level
-      const current = thresholdHuman(threshold)!
-      const usable =
-        threshold.conf !== 'prior' &&
-        threshold.conf !== 'stale' &&
-        trend != null &&
-        !trend.stale &&
-        level != null &&
-        level > 0 &&
-        trend.forecast.length > 0 &&
-        trend.forecast.every(
-          point => point.lo > 0 && point.lo <= point.value && point.value <= point.hi,
-        )
-      const points: LactateThresholdProjectionPoint[] = [
-        { date: today, value: current, lo: current, hi: current },
-      ]
-      if (usable) {
-        for (const point of trend.forecast) {
-          const ratio = clamp(point.value / level, 1 - TREND_PROJ_CLAMP, 1 + TREND_PROJ_CLAMP)
-          const value = current * ratio
-          const halfFrac = (point.hi - point.lo) / (2 * point.value)
-          points.push({
-            date: point.date,
-            value: round(value, 1),
-            lo: round(value * (1 - halfFrac), 1),
-            hi: round(value * (1 + halfFrac), 1),
-          })
-        }
-      }
-      const end = usable ? points[points.length - 1] : null
-      return [
-        {
-          sport,
-          unit: threshold.unit,
-          current,
-          projected: end?.value ?? null,
-          low: end?.lo ?? null,
-          high: end?.hi ?? null,
-          deltaPct: end ? fasterPct(sport, end.value, current) : null,
-          conf: usable ? 'low' : threshold.conf,
-          method: usable ? trend.method : 'none',
-          sampleSize: trend?.sampleSize ?? 0,
-          horizonDays: usable ? TREND_FORECAST_DAYS : 0,
-          source: 'training-pace-trend',
+    sport: 'run',
+    unit: 's/km',
+    value: humanPaceValue('run', threshold.vThr),
+    conf: threshold.conf,
+    source: threshold.method,
+    date: null,
+    sampleSize: threshold.heartRateAnchor?.windows ?? threshold.sampleSize,
+    heartRateAnchor: threshold.heartRateAnchor,
+    device,
+  }
+}
+
+const bikeLactateThreshold = (
+  powerCurve: PowerCurveBlock | null,
+): LactateThresholdSportEstimate | null => {
+  const base = { sport: 'bike', unit: 'W', heartRateAnchor: null, device: null } as const
+  const recent = powerCurve?.criticalPower
+  if (recent)
+    return {
+      ...base,
+      value: Math.round(recent.criticalPowerWatts),
+      conf: recent.confidence === 'medium' ? 'firm' : 'low',
+      source: 'critical-power',
+      date: recent.windowTo,
+      sampleSize: recent.independentEffortCount,
+    }
+  // A calendar-year fit can predate current fitness, so it is never firm.
+  const year = powerCurve?.criticalPowerYear
+  if (year)
+    return {
+      ...base,
+      value: Math.round(year.criticalPowerWatts),
+      conf: 'low',
+      source: 'critical-power-year',
+      date: year.windowTo,
+      sampleSize: year.independentEffortCount,
+    }
+  const twentyMinute = powerCurve?.estimatedFtp ?? powerCurve?.estimatedFtpYear
+  if (twentyMinute)
+    return {
+      ...base,
+      value: twentyMinute.watts,
+      conf: 'low',
+      source: 'twenty-minute-power',
+      date: twentyMinute.anchor.activityDate ?? null,
+      sampleSize: 1,
+    }
+  if (powerCurve?.ftp == null) return null
+  return {
+    ...base,
+    value: powerCurve.ftp,
+    conf: null,
+    source: 'declared-ftp',
+    date: null,
+    sampleSize: 0,
+  }
+}
+
+const buildLactateThreshold = (
+  thresholds: ReadonlyMap<Sport, ThresholdEstimate>,
+  today: string,
+  garmin: GarminCache | null | undefined,
+  powerCurve: PowerCurveBlock | null,
+): LactateThresholdBlock => {
+  const swim = thresholds.get('swim')
+  const sports = [
+    swim
+      ? ({
+          sport: 'swim',
+          unit: 's/100m',
+          value: humanPaceValue('swim', swim.vThr),
+          conf: swim.conf,
+          source: swim.method,
           date: null,
-          points: usable ? points : [],
-        },
-      ]
-    }),
+          sampleSize: swim.sampleSize,
+          heartRateAnchor: null,
+          device: null,
+        } satisfies LactateThresholdSportEstimate)
+      : null,
+    bikeLactateThreshold(powerCurve),
+    runLactateThreshold(thresholds.get('run'), garmin, today),
+  ]
+  return {
+    heartRate: resolveLactateThresholdHeartRate(garmin, today),
+    sports: sports.filter((sport): sport is LactateThresholdSportEstimate => sport != null),
   }
 }
 
@@ -4415,11 +4629,7 @@ function emptyEngine(): EngineBlock {
       },
       bikeSource: null,
     },
-    lactateThreshold: {
-      heartRate: declaredLactateThresholdHeartRate(),
-      sports: [],
-      runningHistory: { pace: [], heartRate: [] },
-    },
+    lactateThreshold: { heartRate: declaredLactateThresholdHeartRate(), sports: [] },
     abilities: { sports: [] },
     cardio: { metrics: [], rhrSeries: [], hrvSeries: [], efSeries: [], decouplingSeries: [] },
     ftpHypothesis: null,
@@ -4526,7 +4736,6 @@ function buildEngine(
   daily: DailyPoint[],
   body: BodyBlock,
   thresholds: Map<Sport, ThresholdEstimate>,
-  trends: Map<Sport, SportTrend>,
   today: string,
   garminVo2: GarminVo2Point[],
   appleVo2: { date: string; v: number }[],
@@ -5307,7 +5516,7 @@ function buildEngine(
       trendSummary: buildVo2TrendSummary(trend),
       bikeSource,
     },
-    lactateThreshold: buildLactateThreshold(thresholds, trends, today, garmin),
+    lactateThreshold: buildLactateThreshold(thresholds, today, garmin, powerCurve),
     abilities: { sports: SPORT_ORDER.map(buildSportAbilities) },
     cardio: {
       metrics,
@@ -5340,11 +5549,12 @@ function emptyAnalytics(athleteId: number, today: string, garmin?: GarminCache |
     recovery: emptyRecovery(),
     powerCurve: emptyPowerCurve(today),
     swimPowerCurve: buildSwimPowerCurveBlock([], today),
+    bestEfforts: emptyBestEfforts(),
     heat: emptyHeat(),
     distributions: emptyDistributions(),
     engine: {
       ...emptyEngine(),
-      lactateThreshold: buildLactateThreshold(new Map(), new Map(), today, garmin),
+      lactateThreshold: buildLactateThreshold(new Map(), today, garmin, null),
     },
     events: [],
     activities: [],
@@ -5449,7 +5659,11 @@ export function buildAnalytics(
     inputs.garmin,
   )
 
-  const thresholdList = SPORT_ORDER.map(sport => estimateThreshold(acts, sport, todayMs))
+  const runAnchor = {
+    streams: cache.streams,
+    heartRateBpm: resolveLactateThresholdHeartRate(inputs.garmin, today)?.value ?? null,
+  }
+  const thresholdList = SPORT_ORDER.map(sport => estimateThreshold(acts, sport, todayMs, runAnchor))
   const thresholds = new Map<Sport, ThresholdEstimate>(thresholdList.map(t => [t.sport, t]))
 
   const loadById = new Map<number, number>()
@@ -5719,7 +5933,6 @@ export function buildAnalytics(
     daily,
     body,
     thresholds,
-    trendMap,
     today,
     garminVo2,
     appleVo2,
@@ -5897,6 +6110,20 @@ export function buildAnalytics(
     recovery,
     powerCurve,
     swimPowerCurve: buildSwimPowerCurveBlock(Object.values(inputs.activityDetails ?? {}), today),
+    bestEfforts: buildBestEffortsBlock(
+      Object.values(inputs.activityDetails ?? {}),
+      new Map<number, BestEffortNative>(
+        Object.values(cache.activities).map(activity => [
+          activity.id,
+          {
+            trainer: activity.trainer === true,
+            distanceM: activity.distance,
+            elapsedTimeS: activity.elapsedTime,
+            elevationGainM: activity.totalElevationGain,
+          },
+        ]),
+      ),
+    ),
     heat,
     distributions,
     engine,

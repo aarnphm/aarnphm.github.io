@@ -54,13 +54,6 @@ export const analyticsForRange = (data: Analytics, range: AnalyticsRange): Analy
         ...data.engine.vo2max,
         trend: data.engine.vo2max.trend.filter(point => contains(point.weekStart)),
       },
-      lactateThreshold: {
-        ...data.engine.lactateThreshold,
-        runningHistory: {
-          pace: dated(data.engine.lactateThreshold.runningHistory.pace),
-          heartRate: dated(data.engine.lactateThreshold.runningHistory.heartRate),
-        },
-      },
       abilities: {
         ...data.engine.abilities,
         sports: data.engine.abilities.sports.map(sport => ({

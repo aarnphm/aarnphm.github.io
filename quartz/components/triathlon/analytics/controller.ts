@@ -245,6 +245,11 @@ export const setupAnalytics = (
       back.addEventListener('click', closeDetail, { once: true })
     })
   }
+  // Wide comparisons scroll the chart column; narrow ones scroll the whole comparison.
+  const comparisonScroller = (comparison: Element) =>
+    [...comparison.querySelectorAll<HTMLElement>('.tri-compare-content, .tri-compare-charts')].find(
+      node => ['auto', 'scroll'].includes(getComputedStyle(node).overflowY),
+    )
   const showComparison = (chartScrollTop = 0) => {
     if (!detail) return
     const activities = selectedCompareActivities().map(activity =>
@@ -296,24 +301,30 @@ export const setupAnalytics = (
     const copyCleanup = wireEmbedCopy(context.formatter, copy, () =>
       activityComparisonEmbed(comparisonIds()),
     )
+    const comparisonContext = detailContextFromPayload(detailData)
+    const health = detailData?.health ?? null
     const comparison = buildActivityComparison(
       createDomFactory(context.presentation),
       activities,
-      detailContextFromPayload(detailData),
+      comparisonContext,
+      { health },
     )
     applyI18n(comparison, context.presentation)
     card.append(head, comparison)
     detail.replaceChildren(card)
-    const interactionCleanup = wireActivityComparison(context.presentation, comparison, activities)
+    const interactionCleanup = wireActivityComparison(
+      context.presentation,
+      comparison,
+      activities,
+      { ctx: comparisonContext, health },
+    )
     const onComparisonClick = (event: Event) => {
       if (!(event.target instanceof Element)) return
       const remove = event.target.closest<HTMLButtonElement>('[data-compare-activity-remove]')
       const activityId = remove?.dataset.compareActivityRemove
       if (!activityId || comparisonIds().length <= 2) return
       event.stopPropagation()
-      const nextScrollTop =
-        comparison.querySelector<HTMLElement>('.tri-compare-charts')?.scrollTop ?? 0
-      comparisonScrollTop = nextScrollTop
+      comparisonScrollTop = comparisonScroller(comparison)?.scrollTop ?? 0
       program.dispatch({ type: 'remove-comparison-activity', id: activityId })
     }
     comparison.addEventListener('click', onComparisonClick)
@@ -324,7 +335,7 @@ export const setupAnalytics = (
     }
     panel.classList.add('tri-analytics--comparison')
     showDetail()
-    const chartScroller = comparison.querySelector<HTMLElement>('.tri-compare-charts')
+    const chartScroller = comparisonScroller(comparison)
     if (chartScroller && chartScrollTop > 0) chartScroller.scrollTop = chartScrollTop
     back.addEventListener('click', closeDetail, { once: true })
   }
@@ -677,7 +688,7 @@ export const setupAnalytics = (
     })
   }
   const onKey = (event: KeyboardEvent) => {
-    if (event.key !== 'Escape') return
+    if (event.defaultPrevented || event.key !== 'Escape') return
     if (panel.classList.contains('tri-analytics--detail')) {
       closeDetail()
       return

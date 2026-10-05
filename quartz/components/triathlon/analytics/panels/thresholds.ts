@@ -374,221 +374,78 @@ export const buildTrend = (
   return { element: block, mount: predictor.mount }
 }
 
-export type LactateThresholdProjection = Analytics['engine']['lactateThreshold']['sports'][number]
+export type LactateThresholdEstimate = Analytics['engine']['lactateThreshold']['sports'][number]
 
-export type LactateHistoryPoint =
-  Analytics['engine']['lactateThreshold']['runningHistory']['pace'][number]
-export type LactateHistoryMetric = 'pace' | 'heartRate'
-
-export const lactateHistoryFraction = (
-  points: readonly LactateHistoryPoint[],
-  date: string,
-): number => {
-  const first = Date.parse(points[0]?.date ?? date)
-  const last = Date.parse(points.at(-1)?.date ?? date)
-  return last === first ? 0.5 : clampN((Date.parse(date) - first) / (last - first), 0, 1)
-}
-
-export const lactateHistoryAt = (
-  points: readonly LactateHistoryPoint[],
-  fraction: number,
-): LactateHistoryPoint | null => {
-  if (!points.length) return null
-  let nearest = points[0]
-  for (const point of points)
-    if (
-      Math.abs(lactateHistoryFraction(points, point.date) - fraction) <
-      Math.abs(lactateHistoryFraction(points, nearest.date) - fraction)
-    )
-      nearest = point
-  return nearest
-}
-
-export const lactateHistoryValue = (
+export const fmtLactateValue = (
   formatter: TriathlonFormatter,
-  metric: LactateHistoryMetric,
-  value: number,
-): string => (metric === 'pace' ? fmtTrendVal(formatter, 'run', value) : `${Math.round(value)} bpm`)
+  estimate: Pick<LactateThresholdEstimate, 'sport' | 'value'>,
+): string =>
+  estimate.sport === 'bike'
+    ? `${Math.round(estimate.value)} W`
+    : fmtTrendVal(formatter, estimate.sport, estimate.value)
 
-const appendLactateHistoryChart = (
-  wrap: HTMLElement,
-  metric: LactateHistoryMetric,
-  points: readonly LactateHistoryPoint[],
+/** Method, sample and date of one sport's LT2, in display order. */
+export const lactateSourceText = (
   formatter: TriathlonFormatter,
-): void => {
-  if (!points.length) return
-  const history = el('div', 'tri-trend-panel tri-lt-history')
-  history.dataset.ltHistory = metric
-  const label = formatter.text(metric === 'pace' ? 'pace' : 'heart rate')
-  history.appendChild(el('div', 'tri-trend-head', `${label} · Garmin · n ${points.length}`))
-  const values = points.map(point => point.value)
-  const min = Math.min(...values)
-  const max = Math.max(...values)
-  const pad = Math.max((max - min) * 0.15, metric === 'pace' ? 1 : 0.5)
-  const lo = min - pad
-  const hi = max + pad
-  const x = (date: string): number => lactateHistoryFraction(points, date) * ANA_W
-  const y = (value: number): number =>
-    metric === 'pace' ? 4 + ((value - lo) / (hi - lo)) * 20 : 24 - ((value - lo) / (hi - lo)) * 20
-  const chart = svg('svg', {
-    class: 'tri-ana-svg tri-lt-history-svg',
-    viewBox: `0 0 ${ANA_W} ${ANA_H}`,
-    preserveAspectRatio: 'none',
-    role: 'img',
-    'aria-label': `${formatter.text('Garmin running threshold history')} · ${label}`,
-  })
-  chart.appendChild(
-    svg('line', { x1: 0, y1: ANA_H, x2: ANA_W, y2: ANA_H, class: 'tri-trend-axis' }),
-  )
-  if (points.length > 1)
-    chart.appendChild(
-      svg('path', {
-        d: polyD(points.map((point): [number, number] => [x(point.date), y(point.value)])),
-        class: 'tri-elev-line tri-line-run',
-      }),
-    )
-  chart.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
-  const track = el('div', 'tri-trend-track')
-  if (points.length === 1)
-    chart.appendChild(
-      svg('line', {
-        x1: x(points[0].date) - 1,
-        x2: x(points[0].date) + 1,
-        y1: y(points[0].value),
-        y2: y(points[0].value),
-        class: 'tri-elev-line tri-line-run',
-      }),
-    )
-  track.appendChild(chart)
-  const yax = el('div', 'tri-trend-yax')
-  const format = (value: number): string =>
-    metric === 'pace' ? fmtTrendShort(formatter, 'run', value) : value.toFixed(0)
-  yax.append(
-    el('span', '', format(metric === 'pace' ? lo : hi)),
-    el('span', '', format(metric === 'pace' ? hi : lo)),
-  )
-  const frame = el('div', 'tri-trend-chart')
-  frame.append(yax, track)
-  const xax = el('div', 'tri-trend-xax')
-  xax.append(el('span', '', formatter.shortDate(points[0].date)))
-  if (points.length > 1)
-    xax.appendChild(el('span', '', formatter.shortDate(points[points.length - 1].date)))
-  history.append(frame, xax, el('div', 'tri-chart-readout tri-trend-readout'))
-  wrap.appendChild(history)
-}
-
-export const lactateThresholdSamples = (
-  projection: LactateThresholdProjection,
-): TrendSamples | null => {
-  if (projection.points.length < 2) return null
-  return {
-    centers: projection.points.map(point => point.value),
-    los: projection.points.map(point => point.lo),
-    his: projection.points.map(point => point.hi),
-    days: projection.points.length - 1,
+  estimate: LactateThresholdEstimate,
+): string => {
+  const text = (key: string): string => formatter.text(key)
+  const anchor = estimate.heartRateAnchor
+  switch (estimate.source) {
+    case 'heart-rate-anchored':
+      return anchor
+        ? `${text('pace at LTHR')} ${anchor.heartRateBpm} bpm · ${anchor.windows} ${text('steady windows')} · ${anchor.runs} ${text('runs')} · ${anchor.lookbackDays} ${text('days')}`
+        : text('pace at LTHR')
+    case 'garmin':
+      return `${text('Garmin running estimate')} · ${estimate.date}${estimate.device?.deltaPct != null ? ` · ${signedFixed(estimate.device.deltaPct, 1)}% ${text('vs pace at LTHR')}` : ''}`
+    case 'pace-p90':
+      return `${text('training pace P90')} · n=${estimate.sampleSize}`
+    case 'pace-max':
+      return `${text('97% of fastest session')} · n=${estimate.sampleSize}`
+    case 'prior':
+      return text('population prior')
+    case 'critical-power':
+      return `${text('critical power')} · ${estimate.sampleSize} ${text('efforts')} · ${estimate.date}`
+    case 'critical-power-year':
+      return `${text('critical power')} · ${text('calendar year')} · ${estimate.sampleSize} ${text('efforts')} · ${estimate.date}`
+    case 'twenty-minute-power':
+      return `${text('95% of 20-min power')} · ${estimate.date}`
+    case 'declared-ftp':
+      return text('declared FTP')
   }
 }
 
-export const buildLactateThresholdPanel = (
-  data: Analytics,
-  sport: Sport,
+const buildLactateThresholdRow = (
+  estimate: LactateThresholdEstimate,
   context: TriathlonContext,
 ): HTMLElement => {
-  const projection = bySport(data.engine.lactateThreshold.sports, sport)
-  const threshold = bySport(data.thresholds, sport)
-  const wrap = el(
-    'div',
-    `tri-trend-panel tri-lt-panel${projection?.source !== 'garmin' && projection?.projected == null ? ' tri-trend-stale' : ''}`,
-  )
-  wrap.dataset.sport = sport
-  if (projection) wrap.dataset.source = projection.source
+  const { formatter } = context
+  const row = el('div', 'tri-lt-row')
+  row.dataset.sport = estimate.sport
+  row.dataset.source = estimate.source
   const head = el('div', 'tri-trend-head')
   head.append(
-    buildIconLeg(context.formatter, sport),
+    buildIconLeg(formatter, estimate.sport),
     markGloss(
-      el(
-        'span',
-        'tri-trend-unit',
-        projection
-          ? `LT2 ${fmtTrendVal(context.formatter, sport, projection.current)}`
-          : (threshold?.paceLabel ?? sport),
-      ),
+      el('span', 'tri-trend-unit', `LT2 ${fmtLactateValue(formatter, estimate)}`),
       'lactate',
     ),
   )
-  if (projection?.conf)
+  if (estimate.conf)
     head.appendChild(
-      markGloss(el('span', `tri-ana-conf tri-conf-${projection.conf}`, projection.conf), 'conf'),
+      markGloss(el('span', `tri-ana-conf tri-conf-${estimate.conf}`, estimate.conf), 'conf'),
     )
-  wrap.appendChild(head)
-  if (projection?.source === 'garmin') {
-    appendLactateHistoryChart(
-      wrap,
-      'pace',
-      data.engine.lactateThreshold.runningHistory.pace,
-      context.formatter,
-    )
-    appendLactateHistoryChart(
-      wrap,
-      'heartRate',
-      data.engine.lactateThreshold.runningHistory.heartRate,
-      context.formatter,
-    )
-    wrap.appendChild(
+  row.append(head, el('div', 'tri-trend-note', lactateSourceText(formatter, estimate)))
+  const device = estimate.device
+  if (device && !device.accepted)
+    row.appendChild(
       el(
         'div',
-        'tri-trend-note',
-        `${context.formatter.text('Garmin running estimate')} · ${projection.date}`,
+        'tri-trend-note tri-lt-device',
+        `${formatter.text('Garmin device estimate')} ${fmtTrendVal(formatter, 'run', device.value)} · ${device.date}${device.deltaPct != null ? ` · ${signedFixed(device.deltaPct, 1)}% · ${formatter.text('outside ±5%, not used')}` : ''}`,
       ),
     )
-    return wrap
-  }
-  if (!projection || projection.projected == null) {
-    wrap.appendChild(
-      el(
-        'div',
-        'tri-trend-note',
-        trendUnavailableText(
-          context.presentation.locale,
-          projection?.sampleSize ?? null,
-          threshold?.staleDays ?? null,
-        ),
-      ),
-    )
-    return wrap
-  }
-  const samples = lactateThresholdSamples(projection)
-  if (samples) appendTrendChart(context.formatter, wrap, sport, sport !== 'bike', samples, false)
-  const cap = el('div', 'tri-elev-cap tri-trend-cap')
-  cap.append(
-    el(
-      'span',
-      'tri-ana-k',
-      `${context.formatter.text('projected')} ${fmtTrendVal(context.formatter, sport, projection.projected)}`,
-    ),
-    el(
-      'span',
-      `tri-ana-k tri-dir-${(projection.deltaPct ?? 0) > 0 ? 'up' : (projection.deltaPct ?? 0) < 0 ? 'down' : 'flat'}`,
-      `${signedFixed(projection.deltaPct ?? 0, 1)}% · ${projection.horizonDays}d`,
-    ),
-  )
-  if (projection.low != null && projection.high != null)
-    cap.appendChild(
-      el(
-        'span',
-        'tri-ana-k',
-        `${context.formatter.text('80% range')} ${fmtTrendShort(context.formatter, sport, projection.low)}–${fmtTrendShort(context.formatter, sport, projection.high)}`,
-      ),
-    )
-  cap.appendChild(el('span', 'tri-ana-k', `n ${projection.sampleSize}`))
-  wrap.appendChild(cap)
-  const note = el('div', 'tri-trend-note')
-  note.append(
-    el('span', 'tri-ana-k', context.formatter.text('training-derived LT2 proxy')),
-    buildMethod(context.formatter, projection.method, projection.sampleSize),
-  )
-  wrap.appendChild(note)
-  return wrap
+  return row
 }
 
 export const buildLactateThreshold = (data: Analytics, context: TriathlonContext): HTMLElement => {
@@ -609,8 +466,12 @@ export const buildLactateThreshold = (data: Analytics, context: TriathlonContext
     )
     block.appendChild(cap)
   }
-  for (const sport of ['swim', 'bike', 'run'] as Sport[])
-    block.appendChild(buildLactateThresholdPanel(data, sport, context))
+  const sports = data.engine.lactateThreshold.sports
+  if (!sports.length) block.appendChild(el('div', 'tri-ana-empty', '—'))
+  for (const sport of ['swim', 'bike', 'run'] as Sport[]) {
+    const estimate = bySport(sports, sport)
+    if (estimate) block.appendChild(buildLactateThresholdRow(estimate, context))
+  }
   return block
 }
 

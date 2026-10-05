@@ -1,11 +1,14 @@
 import type { StravaActivityDetail } from '../../../plugins/stores/strava'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import { swimLengthMetrics } from '../../../util/swim-metrics'
 import {
   activityCadenceScale,
   activityCadenceUnit,
   activityHeartRateTracePoints,
   activityPhysiologyTracePoints,
   activityThermalTracePoints,
+  activityTraceUsesElapsedAxis,
+  clock,
   formatAltitude,
   formatImpactLoadFactor,
   formatStepSpeedLoss,
@@ -35,6 +38,76 @@ export interface WorkspaceTrace {
   estimated?: boolean
 }
 
+const swimIntervals = (d: StravaActivityDetail) =>
+  d.sport === 'swim'
+    ? d.swimIntervals.filter(
+        interval =>
+          Number.isFinite(interval.startElapsedS) &&
+          Number.isFinite(interval.endElapsedS) &&
+          interval.startElapsedS >= 0 &&
+          interval.endElapsedS > interval.startElapsedS &&
+          interval.distanceM > 0 &&
+          interval.cumulativeDistanceM >= interval.distanceM,
+      )
+    : []
+
+export const workspaceTimeline = (
+  d: StravaActivityDetail,
+): Pick<WorkspaceSample, 'elapsedS' | 'distanceKm'>[] => {
+  if (d.route.length >= 2 && d.swimLocation !== 'pool')
+    return d.route.map(p => ({ elapsedS: p.elapsedS, distanceKm: p.d }))
+  const intervals = swimIntervals(d)
+  if (intervals.length) {
+    const points: Pick<WorkspaceSample, 'elapsedS' | 'distanceKm'>[] = []
+    for (const interval of intervals) {
+      // FIT length starts can be rounded to seconds while ends retain fractions.
+      const start = Math.max(interval.startElapsedS, points.at(-1)?.elapsedS ?? 0)
+      if (start >= interval.endElapsedS) continue
+      points.push(
+        { elapsedS: start, distanceKm: (interval.cumulativeDistanceM - interval.distanceM) / 1000 },
+        { elapsedS: interval.endElapsedS, distanceKm: interval.cumulativeDistanceM / 1000 },
+      )
+    }
+    return points
+  }
+  if (d.route.length >= 2) return d.route.map(p => ({ elapsedS: p.elapsedS, distanceKm: p.d }))
+  return d.heartRateTrace.map(p => ({ elapsedS: p.elapsedS, distanceKm: p.distanceKm }))
+}
+
+export const workspaceLocationAt = (
+  samples: readonly Pick<WorkspaceSample, 'elapsedS' | 'distanceKm'>[],
+  axis: WorkspaceAxis,
+  position: number,
+): Pick<WorkspaceSample, 'elapsedS' | 'distanceKm'> => {
+  const pick = (p: Pick<WorkspaceSample, 'elapsedS' | 'distanceKm'>) =>
+    axis === 'time' ? p.elapsedS : p.distanceKm
+  let low = 0
+  let high = samples.length
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2)
+    if (pick(samples[middle]) < position) low = middle + 1
+    else high = middle
+  }
+  const right = samples[Math.min(low, samples.length - 1)]
+  const left = samples[Math.max(0, low - 1)]
+  const span = right && left ? pick(right) - pick(left) : 0
+  const fraction = span > 0 ? Math.max(0, Math.min(1, (position - pick(left)) / span)) : 0
+  return {
+    elapsedS:
+      axis === 'time'
+        ? position
+        : left
+          ? left.elapsedS + fraction * (right.elapsedS - left.elapsedS)
+          : 0,
+    distanceKm:
+      axis === 'distance'
+        ? position
+        : left
+          ? left.distanceKm + fraction * (right.distanceKm - left.distanceKm)
+          : 0,
+  }
+}
+
 export const workspaceTraces = (
   d: StravaActivityDetail,
   presentation: TriathlonPresentation,
@@ -60,9 +133,8 @@ export const workspaceTraces = (
     (unit: string, digits = 0) =>
     (value: number) =>
       `${value.toFixed(digits)} ${unit}`
-  const hasDistance = d.distanceKm > 0 && route.length >= 2
-  // Route-less physiology helpers use seconds in their d field, so distance must stay absent.
-  const traceDistance = (point: { d: number }): number => (hasDistance ? point.d : 0)
+  const traceDistance = (point: { d: number }): number =>
+    activityTraceUsesElapsedAxis(d) ? 0 : point.d
   const terrain =
     route.length >= 2 &&
     !(d.sport === 'swim' && d.swimLocation === 'pool') &&
@@ -114,6 +186,58 @@ export const workspaceTraces = (
       '#da702c',
       samples(p => p.power5mWatts),
       numeric('W'),
+    )
+  }
+  const intervals = swimIntervals(d)
+  const swimSamples = (
+    pick: (interval: StravaActivityDetail['swimIntervals'][number]) => number | null,
+  ): WorkspaceSample[] => {
+    const samples: WorkspaceSample[] = []
+    for (const interval of intervals) {
+      const previous = samples.at(-1)
+      const start = Math.max(interval.startElapsedS, previous?.elapsedS ?? 0)
+      if (start >= interval.endElapsedS) continue
+      if (previous && start > previous.elapsedS) samples.push({ ...previous, value: null })
+      const value = pick(interval)
+      samples.push(
+        {
+          elapsedS: start,
+          distanceKm: (interval.cumulativeDistanceM - interval.distanceM) / 1000,
+          value,
+        },
+        { elapsedS: interval.endElapsedS, distanceKm: interval.cumulativeDistanceM / 1000, value },
+      )
+    }
+    return samples
+  }
+  add(
+    'swim-pace',
+    'pace',
+    '#287dd1',
+    swimSamples(p => p.paceSPer100m),
+    v => `${clock(v)} /100m`,
+  )
+  add(
+    'stroke-rate',
+    'stroke rate',
+    '#3aa99f',
+    swimSamples(p => p.strokeRateSpm),
+    numeric('spm'),
+  )
+  if (d.swimLocation === 'pool') {
+    add(
+      'swim-cadence',
+      'cadence',
+      '#a47c1b',
+      swimSamples(p => swimLengthMetrics(p)?.strokesPerLength ?? null),
+      numeric('str/length', 1),
+    )
+    add(
+      'swolf',
+      'SWOLF',
+      '#8b6fd6',
+      swimSamples(p => swimLengthMetrics(p)?.swolf ?? null),
+      v => v.toFixed(0),
     )
   }
   add(

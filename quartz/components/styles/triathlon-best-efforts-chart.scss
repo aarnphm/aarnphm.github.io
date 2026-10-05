@@ -1,0 +1,200 @@
+// Best efforts progression chart (panels/best-efforts-chart.ts).
+// The builder maps values into a 100-unit viewBox with the best effort at 15% from the top; that
+// headroom holds a rank box only while the plot height stays near 10rem.
+
+.tri-be-chart {
+  --tri-be-chart-height: 10rem;
+  --tri-be-chart-yax: 2.8rem;
+  --tri-be-chart-dot: 0.34rem;
+  --tri-be-chart-dot-color: color-mix(in srgb, var(--gray) 62%, transparent);
+
+  min-width: 0;
+  margin: 0;
+
+  > .tri-cax-frame {
+    grid-template-columns: var(--tri-be-chart-yax) minmax(0, 1fr);
+  }
+
+  .tri-cax-stage {
+    cursor: crosshair;
+  }
+}
+
+// Muted marks on the near-black theme need the brighter grey to stay legible.
+:root[saved-theme='dark'] .tri-be-chart {
+  --tri-be-chart-dot-color: color-mix(in srgb, var(--darkgray) 62%, transparent);
+}
+
+.tri-be-chart--hot .tri-cax-stage {
+  cursor: pointer;
+}
+
+.tri-be-chart-svg {
+  display: block;
+  width: 100%;
+  height: var(--tri-be-chart-height);
+  overflow: visible;
+}
+
+.tri-be-chart-year {
+  fill: color-mix(in srgb, var(--gray) 9%, transparent);
+}
+
+.tri-be-chart-grid {
+  stroke: color-mix(in srgb, var(--gray) 22%, transparent);
+  stroke-width: 1px;
+  stroke-dasharray: 2 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-be-chart-best {
+  fill: none;
+  stroke: var(--tri-accent);
+  stroke-width: 1.6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-be-chart-points,
+.tri-be-chart-ranks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+// The link box is the focus ring; ::before is the visible dot. Pointer targeting is done by the
+// stage (nearest effort), so the links never intercept pointer events.
+.tri-be-chart-dot {
+  position: absolute;
+  z-index: 1;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin: -0.4rem 0 0 -0.4rem;
+  border-radius: 50%;
+  pointer-events: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--tri-be-chart-dot);
+    height: var(--tri-be-chart-dot);
+    border-radius: 50%;
+    background: var(--tri-be-chart-dot-color);
+    transform: translate(-50%, -50%);
+    transition: opacity 120ms ease-out;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    z-index: 4;
+    outline: 1.5px solid var(--tri-accent);
+    outline-offset: -1px;
+  }
+}
+
+.tri-be-chart-dot--pr {
+  --tri-be-chart-dot-color: var(--tri-accent);
+
+  z-index: 2;
+}
+
+// Outliers past the fence: a ring in the floor lane, so the axis never claims their value.
+.tri-be-chart-dot--floor::before {
+  border: 1px solid var(--tri-be-chart-dot-color);
+  background: transparent;
+}
+
+.tri-be-chart-dot--other::before {
+  opacity: 0.35;
+}
+
+.tri-be-chart-dot--hot {
+  z-index: 4;
+
+  &:not(.tri-be-chart-dot--pr) {
+    --tri-be-chart-dot-color: var(--dark);
+  }
+
+  &::before {
+    opacity: 1;
+    outline: 1.5px solid var(--light);
+  }
+}
+
+.tri-be-chart-rank {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  // Hang the box just above its effort so the dot stays visible; the builder sets the shift when
+  // boxes would overlap.
+  transform: translate(calc(-50% + var(--tri-be-chart-rank-shift, 0px)), calc(-100% - 0.3rem));
+
+  .tri-be-rank {
+    font-size: 0.5rem;
+  }
+}
+
+.tri-be-chart-caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.2rem 0.8rem;
+  margin-top: 0.1rem;
+  padding-inline-start: calc(var(--tri-be-chart-yax) + 0.4rem);
+  font-family: var(--codeFont);
+  font-size: 0.55rem;
+  line-height: 1.3;
+  color: var(--gray);
+}
+
+.tri-be-chart-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.tri-be-chart-swatch {
+  width: 0.9rem;
+  border-top: 1.6px solid var(--tri-accent);
+}
+
+// Mounted on the .triathlon root, outside the chart.
+.tri-be-chart-tip {
+  max-width: min(17rem, calc(100vw - 1rem));
+}
+
+.tri-be-chart-tip-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.45rem;
+  font-family: var(--codeFont);
+  font-size: 0.74rem;
+  line-height: 1.3;
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+
+  > strong {
+    font-weight: 600;
+  }
+}
+
+.tri-be-chart-tip-secondary {
+  color: var(--darkgray);
+}
+
+.tri-be-chart-tip-name {
+  color: var(--dark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-be-chart-dot::before {
+    transition: none;
+  }
+}

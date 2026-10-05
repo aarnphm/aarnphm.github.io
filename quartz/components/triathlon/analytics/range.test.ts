@@ -111,11 +111,6 @@ test('sparse histories use calendar dates rather than taking the last 60 observa
   source.body.bmrSeries = dates.map(date => ({ date, ts: Date.parse(date), bmr: 1900 }))
   source.body.ffmiSeries = dates.map(date => ({ date, ts: Date.parse(date), ffmi: 20 }))
   source.engine.vo2max.trend = dates.map(weekStart => ({ weekStart, vo2max: 50, method: 'garmin' }))
-  source.engine.lactateThreshold.runningHistory.pace = dates.map(date => ({ date, value: 240 }))
-  source.engine.lactateThreshold.runningHistory.heartRate = dates.map(date => ({
-    date,
-    value: 170,
-  }))
   source.engine.cardio.rhrSeries = dates.map(date => ({ date, rhr: 50 }))
   source.engine.cardio.hrvSeries = dates.map(date => ({ date, hrv: 65 }))
   source.engine.cardio.efSeries = dates.map(date => ({ date, ef: 1.5, sport: 'run' }))
@@ -127,8 +122,6 @@ test('sparse histories use calendar dates rather than taking the last 60 observa
     selected.body.series,
     selected.body.bmrSeries,
     selected.body.ffmiSeries,
-    selected.engine.lactateThreshold.runningHistory.pace,
-    selected.engine.lactateThreshold.runningHistory.heartRate,
     selected.engine.cardio.rhrSeries,
     selected.engine.cardio.hrvSeries,
     selected.engine.cardio.efSeries,

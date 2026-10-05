@@ -22,12 +22,12 @@ test('finds the fastest distance anywhere in a run, including a fractional start
 
 test('interpolates a fractional finish and weights heart rate by elapsed time', () => {
   const [effort] = runBestEfforts({
-    time: [0, 10, 100],
+    time: [0, 40, 400],
     distance: [0, 300, 600],
     altitude: [0, 3, 9],
     heartrate: [100, 100, 160],
   })
-  assert.equal(effort.elapsedTimeS, 40)
+  assert.equal(effort.elapsedTimeS, 160)
   assert.equal(effort.averageHeartRate, 108)
   assert.equal(effort.elevationDeltaM, 5)
 })
