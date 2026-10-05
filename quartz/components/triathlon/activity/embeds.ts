@@ -801,17 +801,21 @@ export const setupActivityComparisonEmbeds = (context: TriathlonContext): (() =>
         const activity = data.details[activityId]
         return activity ? [powerViewActivity(context.presentation, activity)] : []
       })
+      const comparisonContext = detailContextFromPayload(data)
       const comparison = buildActivityComparison(
         createDomFactory(context.presentation),
         activities,
-        detailContextFromPayload(data),
-        { removable: false },
+        comparisonContext,
+        { removable: false, health: data.health },
       )
       applyI18n(comparison, context.presentation)
       embed.replaceChildren(comparison)
       interactionCleanup =
         comparison.dataset.compareState === 'ready'
-          ? wireActivityComparison(context.presentation, comparison, activities)
+          ? wireActivityComparison(context.presentation, comparison, activities, {
+              ctx: comparisonContext,
+              health: data.health,
+            })
           : null
     }
     const upgrade = () => {

@@ -1,6 +1,8 @@
 @use './figure.scss' as *;
 @use './triathlon-calendar.scss';
 @use './triathlon-workspace.scss';
+@use './triathlon-best-efforts.scss';
+@use './triathlon-best-efforts-chart.scss';
 
 .triathlon,
 .tri-calendar-set,
@@ -6828,6 +6830,16 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   padding-bottom: 0.5rem;
 }
 
+.tri-compare-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .tri-compare-body {
   display: grid;
   flex: 1 1 auto;
@@ -6838,18 +6850,46 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-compare-charts-viewport {
-  container: tri-compare-charts / inline-size;
   position: relative;
   display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.45rem;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
 }
 
-@container tri-compare (min-width: 52rem) {
+.tri-compare-chart-tabs {
+  flex: 0 0 auto;
+  padding: 2px;
+
+  .tri-map-tab {
+    flex: none;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    margin: 0;
+    font-weight: 400;
+    color: var(--darkgray);
+    border-radius: var(--radius-none);
+
+    &[aria-selected='true'] {
+      color: var(--light);
+      background: var(--dark);
+      border-color: var(--dark);
+    }
+
+    &:focus-visible,
+    &[aria-selected='true']:focus-visible {
+      outline: 2px solid var(--darkgray);
+      outline-offset: 1px;
+    }
+  }
+}
+
+@container tri-compare (min-width: 48rem) {
   .tri-compare-body {
-    grid-template-columns: minmax(15rem, 0.82fr) minmax(0, 1.18fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
   }
 }
@@ -6862,7 +6902,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-compare-legend-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 0.9rem;
+  grid-template-columns: minmax(0, 1fr) 1.5rem;
   align-items: center;
   gap: 0.42rem;
   min-width: 0;
@@ -6882,6 +6922,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   align-items: center;
   gap: 0.42rem;
   min-width: 0;
+  min-height: 1.5rem;
   margin: 0;
   padding: 0;
   font: inherit;
@@ -6895,7 +6936,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-compare-legend-toggle:focus-visible {
-  outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+  outline: 2px solid var(--darkgray);
   outline-offset: 2px;
 }
 
@@ -6904,7 +6945,11 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-compare-legend-item[data-compare-hidden='true'] .tri-compare-legend-toggle {
-  opacity: 0.42;
+  color: var(--darkgray);
+}
+
+.tri-compare-legend-item[data-compare-hidden='true'] .tri-compare-legend-name {
+  color: inherit;
 }
 
 .tri-compare-legend-item[data-compare-hidden='true'] .tri-compare-legend-swatch {
@@ -6914,7 +6959,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-compare-legend-date {
-  color: var(--gray);
+  color: var(--darkgray);
   font-variant-numeric: tabular-nums;
 }
 
@@ -6930,8 +6975,8 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-compare-legend-remove {
   display: grid;
   place-items: center;
-  width: 0.9rem;
-  height: 0.9rem;
+  width: 1.5rem;
+  height: 1.5rem;
   margin: 0;
   padding: 0;
   color: var(--gray);
@@ -6948,7 +6993,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-compare-legend-remove:focus-visible {
-  outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+  outline: 2px solid var(--darkgray);
   outline-offset: 1px;
 }
 
@@ -6970,6 +7015,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-compare-map-panel {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 0.45rem;
   min-height: 0;
@@ -6979,6 +7025,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+}
+
+.tri-compare-chart[hidden] {
+  display: none;
 }
 
 .tri-compare-chart-head {
@@ -6999,17 +7049,16 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-compare-map {
+  box-sizing: border-box;
   width: 100%;
-  height: clamp(11rem, 30dvh, 17rem);
+  height: clamp(10rem, 25dvh, 16rem);
   overflow: hidden;
   background: color-mix(in srgb, var(--gray) 6%, transparent);
   border: 1px solid color-mix(in srgb, var(--gray) 20%, transparent);
 }
 
-@container tri-compare (min-width: 52rem) {
-  .tri-compare-map {
-    height: 100%;
-  }
+.tri-compare-map--down ~ .tri-map-side {
+  display: none;
 }
 
 .tri-compare-map--down {
@@ -7017,12 +7066,11 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   align-items: center;
   justify-content: center;
   font-size: 0.62rem;
-  color: var(--gray);
+  color: var(--darkgray);
 }
 
 .tri-compare-map-stage {
   position: relative;
-  flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
 }
@@ -7154,12 +7202,8 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-compare-graph:focus-visible {
-  outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+  outline: 2px solid var(--darkgray);
   outline-offset: 2px;
-}
-
-.tri-compare--selection .tri-compare-graph:focus-visible {
-  outline: none;
 }
 
 .tri-compare-grid {
@@ -7246,7 +7290,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-compare-readout-row--missing {
-  opacity: 0.48;
+  color: var(--darkgray);
 }
 
 .tri-compare-readout[data-visible='true'] {
@@ -7262,9 +7306,333 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   border: 1px solid color-mix(in srgb, var(--gray) 24%, transparent);
 }
 
-@container tri-compare-charts (min-width: 42rem) {
+.tri-compare-stats-panel {
+  --tri-compare-better: color-mix(in srgb, #66800b 90%, var(--dark));
+  --tri-compare-worse: #af3029;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+  min-height: 0;
+}
+
+:root[saved-theme='dark'] .tri-compare-stats-panel {
+  --tri-compare-better: #879a39;
+  --tri-compare-worse: color-mix(in srgb, #d14d41 90%, var(--dark));
+}
+
+.tri-compare-stats-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.55rem;
+  margin-inline-start: auto;
+  font-size: 0.56rem;
+}
+
+.tri-compare-stats-panel > .tri-compare-chart-head {
+  align-items: center;
+}
+
+.tri-compare-stats-scopes {
+  display: inline-grid;
+  flex: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+}
+
+.tri-compare-stats-scope {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  min-width: 4rem;
+  min-height: 1.5rem;
+  padding: 0.12rem 0.45rem;
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.25;
+  white-space: nowrap;
+  color: var(--darkgray);
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-none);
+}
+
+.tri-compare-stats-scope[aria-pressed='true'] {
+  color: var(--light);
+  background: var(--dark);
+}
+
+.tri-compare-stats-scope:disabled {
+  cursor: default;
+  color: var(--gray);
+}
+
+.tri-compare-stats-scope:focus-visible,
+.tri-compare-stats-label-text[data-gloss]:focus-visible,
+.tri-compare-stats-scroll:focus-visible {
+  outline: 2px solid var(--darkgray);
+  outline-offset: 1px;
+}
+
+.tri-compare-stats-window {
+  color: var(--darkgray);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tri-compare-stats-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  overflow: auto;
+  overscroll-behavior: contain;
+  @include thin-scrollbar;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 20%, transparent);
+}
+
+.tri-compare-stats {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+
+  // base.scss rules every th with a 2px gray border and loosens tbody line-height.
+  th,
+  td {
+    padding: 0.35rem 0.42rem 0.48rem;
+    font-weight: normal;
+    text-align: end;
+    vertical-align: middle;
+    background: var(--light);
+    border: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--gray) 10%, transparent);
+  }
+
+  tbody,
+  thead {
+    line-height: inherit;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    vertical-align: top;
+    border-bottom-color: color-mix(in srgb, var(--gray) 20%, transparent);
+  }
+}
+
+.tri-compare-stats :is(.tri-compare-stats-corner, .tri-compare-stats-label) {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  text-align: start;
+}
+
+.tri-compare-stats thead .tri-compare-stats-corner {
+  z-index: 3;
+  color: var(--gray);
+}
+
+.tri-compare-stats .tri-compare-stats-group-head {
+  padding-top: 0.75rem;
+  padding-bottom: 0.2rem;
+  font-size: 0.52rem;
+  color: var(--darkgray);
+  text-align: start;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+}
+
+.tri-compare-stats-label {
+  color: var(--dark);
+  min-width: 6rem;
+  white-space: nowrap;
+}
+
+.tri-compare-stats-label-text[data-gloss] {
+  cursor: help;
+  text-decoration: underline dotted color-mix(in srgb, var(--gray) 55%, transparent);
+  text-underline-offset: 2px;
+}
+
+.tri-compare-stats-mixed {
+  margin-inline-start: 0.3rem;
+  color: var(--darkgray);
+  cursor: help;
+}
+
+.tri-compare-stats-activity,
+.tri-compare-stats-cell {
+  min-width: 4.4rem;
+}
+
+.tri-compare-stats :is(.tri-compare-stats-activity--baseline, .tri-compare-stats-cell--baseline) {
+  background: color-mix(in srgb, var(--tri-compare-color) 8%, var(--light));
+}
+
+.tri-compare-stats-heading {
+  display: grid;
+  grid-template-rows: 2px auto auto;
+  justify-items: end;
+  gap: 0.22rem;
+  width: 100%;
+  min-width: 7rem;
+  color: var(--dark);
+  text-align: end;
+}
+
+.tri-compare-stats-swatch {
+  align-self: start;
+  width: 100%;
+  height: 2px;
+  background: var(--tri-compare-color);
+}
+
+.tri-compare-stats-date {
+  color: var(--darkgray);
+}
+
+.tri-compare-stats-name {
+  max-width: 100%;
+  color: var(--dark);
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+.tri-compare-stats-tag {
+  display: block;
+  margin-top: 0.12rem;
+  font-size: 0.5rem;
+  color: var(--darkgray);
+  text-transform: lowercase;
+}
+
+.tri-compare-stats-activity[data-coverage='partial'] .tri-compare-stats-tag {
+  color: var(--darkgray);
+}
+
+.tri-compare-stats-cell {
+  position: relative;
+  white-space: nowrap;
+}
+
+.tri-compare-stats-content {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.tri-compare-stats-value {
+  flex: none;
+  margin-inline-start: auto;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.tri-compare-stats-cell[data-estimate] .tri-compare-stats-value {
+  font-weight: 500;
+  color: color-mix(in srgb, var(--dark) 76%, var(--gray));
+}
+
+.tri-compare-stats-value--missing {
+  font-weight: normal;
+  color: var(--darkgray);
+}
+
+.tri-compare-stats-delta {
+  display: inline-flex;
+  flex: none;
+  order: -1;
+  align-items: baseline;
+  gap: 0.32rem;
+  font-size: 0.52rem;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--darkgray);
+  text-align: start;
+}
+
+.tri-compare-stats-delta[data-trend='better'] {
+  color: var(--tri-compare-better);
+}
+
+.tri-compare-stats-delta[data-trend='worse'] {
+  color: var(--tri-compare-worse);
+}
+
+.tri-compare-stats-line {
+  position: absolute;
+  inset-inline: 0.42rem;
+  bottom: 0.14rem;
+  height: 2px;
+  background: var(--tri-compare-color);
+}
+
+.tri-compare :is(.tri-cax-yt, .tri-cax-xt, .tri-ana-k, .tri-compare-empty) {
+  color: var(--darkgray);
+}
+
+.tri-compare .tri-map-side button:focus-visible {
+  outline: 2px solid var(--darkgray);
+  outline-offset: 2px;
+}
+
+.tri-compare .tri-map-side button {
+  color: var(--darkgray);
+  border: 1px solid transparent;
+}
+
+.tri-compare .tri-map-side button[aria-pressed='true'] {
+  border-color: currentColor;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-compare-stats-row:hover :is(th, td) {
+    background: color-mix(in srgb, var(--gray) 8%, var(--light));
+  }
+
+  .tri-compare-stats-scope:not(:disabled, [aria-pressed='true']):hover {
+    color: var(--dark);
+  }
+}
+
+// Narrow comparisons use one scroll surface so the map and both lower panels stay reachable.
+@container tri-compare (max-width: 47.99rem) {
+  .tri-compare-content {
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    @include thin-scrollbar;
+  }
+
+  .tri-compare-body {
+    flex: 0 0 auto;
+    grid-auto-rows: max-content;
+  }
+
+  .tri-compare-charts-viewport {
+    overflow: visible;
+  }
+
   .tri-compare-charts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+    padding-inline-end: 0;
+    scrollbar-gutter: auto;
+  }
+
+  .tri-compare-stats-scroll {
+    flex: 0 0 auto;
+    max-height: min(24rem, 55dvh);
   }
 }
 
@@ -7886,7 +8254,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-bodywt-plot,
 .tri-trend-svg,
-.tri-lt-history-svg,
 .tri-sleep-svg,
 .tri-engine-vo2-spark,
 .tri-wkt-svg {
@@ -10869,6 +11236,11 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   gap: 0.9rem;
 }
 
+// The LTHR cap sits under the title with no chart above it, so the flex gap spaces it.
+.tri-ana-lactate > .tri-elev-cap {
+  margin-top: 0;
+}
+
 .tri-trend-panel {
   position: relative;
   display: flex;
@@ -10880,32 +11252,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   opacity: 0.5;
 }
 
-.tri-ana-lactate .tri-trend-readout {
-  position: static;
-  min-height: 1.8em;
-  white-space: normal;
-  padding: 0;
-  background: none;
-  backdrop-filter: none;
-  line-height: 1.5;
-}
-
-.tri-ana-lactate svg:focus-visible {
-  outline: 1px solid var(--secondary);
-  outline-offset: 2px;
-}
-
-.tri-ana-lactate .tri-trend-proj {
-  stroke-dasharray: none;
-  stroke-width: 1.5;
-}
-
-.tri-ana-lactate .tri-trend-band {
-  fill-opacity: 0.12;
-}
-
-.tri-ana-lactate .tri-trend-cap {
-  margin-top: 0;
+.tri-lt-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .tri-ana-lactate .tri-trend-note {
@@ -11601,7 +11951,8 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   margin-left: auto;
 }
 
-.tri-lab-date-trigger {
+.tri-lab-date-trigger,
+.tri-be-picker-trigger {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -11654,13 +12005,18 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   transform: rotate(180deg);
 }
 
-.tri-lab-date-menu {
+.tri-lab-date-menu,
+.tri-be-picker-menu {
   position: absolute;
   inset: calc(100% + 0.2rem) 0 auto auto;
   z-index: var(--z-popover);
   display: none;
   box-sizing: border-box;
   inline-size: 100%;
+  max-block-size: min(22rem, 50dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  @include thin-scrollbar;
   gap: 1px;
   margin: 0;
   padding: 0.2rem;
@@ -11677,7 +12033,8 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 }
 
-.tri-lab-date-option {
+.tri-lab-date-option,
+.tri-be-picker-option {
   display: grid;
   grid-template-columns: 0.75rem minmax(0, 1fr);
   align-items: center;
@@ -11709,12 +12066,14 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 }
 
-.tri-lab-date-check {
+.tri-lab-date-check,
+.tri-be-picker-check {
   color: var(--tri-accent);
   opacity: 0;
 }
 
-.tri-lab-date-option[aria-selected='true'] .tri-lab-date-check {
+.tri-lab-date-option[aria-selected='true'] .tri-lab-date-check,
+.tri-be-picker-option[aria-selected='true'] .tri-be-picker-check {
   opacity: 1;
 }
 
@@ -11728,7 +12087,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 @media (prefers-reduced-motion: reduce) {
   .tri-lab-date-trigger,
   .tri-lab-date-chevron,
-  .tri-lab-date-option {
+  .tri-lab-date-option,
+  .tri-be-picker-trigger,
+  .tri-be-picker-option {
     transition-duration: 0.01ms;
   }
 }

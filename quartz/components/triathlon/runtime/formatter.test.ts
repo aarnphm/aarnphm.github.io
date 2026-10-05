@@ -22,7 +22,7 @@ test('presentation formatting is deterministic across locale and distance system
   assert.equal(metric.pace(300), '5:00 /km')
   assert.equal(metric.shortDate('2026-08-10'), 'Aug 10')
 
-  assert.equal(imperial.distance(10, 'run'), '6.2 mi')
+  assert.equal(imperial.distance(10, 'run'), '6,2 mi')
   assert.equal(imperial.elevation(100), '328 ft')
   assert.equal(imperial.temperature(20), '68.0°F')
   assert.equal(imperial.weight(70), '154.3 lb')

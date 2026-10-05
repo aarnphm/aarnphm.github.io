@@ -1,34 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {
-  lactateHistoryAt,
-  lactateHistoryFraction,
-  sampleTrend,
-  trendChartGeometry,
-} from './thresholds'
+import { sampleTrend, trendChartGeometry } from './thresholds'
 
-const points = [
-  { date: '2026-09-01', value: 280 },
-  { date: '2026-09-02', value: 275 },
-  { date: '2026-09-08', value: 266.7 },
-]
-
-test('lactate history uses elapsed dates rather than equally spaced observations', () => {
-  assert.equal(lactateHistoryFraction(points, points[0].date), 0)
-  assert.equal(lactateHistoryFraction(points, points[1].date), 1 / 7)
-  assert.equal(lactateHistoryFraction(points, points[2].date), 1)
-  assert.equal(lactateHistoryAt(points, 0.4), points[1])
-  assert.equal(lactateHistoryAt(points, 0.8), points[2])
-})
-
-test('sparse lactate history keeps one observation visible and invents no dates', () => {
-  assert.equal(lactateHistoryAt([], 0.5), null)
-  assert.equal(lactateHistoryFraction([points[0]], points[0].date), 0.5)
-  assert.equal(lactateHistoryAt([points[0]], 0), points[0])
-  assert.equal(lactateHistoryAt([points[0]], 1), points[0])
-})
-
-test('LT2 chart preserves asymmetric model bounds and maps its labels to the plot edges', () => {
+test('trend chart preserves asymmetric model bounds and maps its labels to the plot edges', () => {
   const samples = { centers: [100, 110], los: [100, 90], his: [100, 160], days: 1 }
   const chart = trendChartGeometry(false, samples, false)
   assert.equal(chart.low, 87)

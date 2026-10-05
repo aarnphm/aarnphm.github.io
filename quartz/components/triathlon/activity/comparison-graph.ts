@@ -61,6 +61,7 @@ export const bindActivityComparisonGraph = (
   let frame = 0
   let pointerActive = false
   let focused = false
+  let keyboardAnchor: number | null = null
   let drag: {
     pointerId: number
     startClientX: number
@@ -116,11 +117,25 @@ export const bindActivityComparisonGraph = (
     deactivate(graph)
   }
   const onKeyDown = (event: KeyboardEvent) => {
+    if (selection && event.key === 'Escape') {
+      event.preventDefault()
+      keyboardAnchor = null
+      cancelPending()
+      selection.clear()
+      return
+    }
     const next = activityComparisonFractionForKey(event.key, selectedFraction(), keyboardStep)
     if (next == null) return
     event.preventDefault()
+    cancelPending()
+    if (selection && event.shiftKey) {
+      keyboardAnchor ??= selectedFraction()
+      selection.preview(keyboardAnchor, next)
+      selection.commit()
+    } else keyboardAnchor = null
     if (state.selectedFraction != null) state.selectedFraction = next
-    queue(next)
+    state.fraction = next
+    render(graph, restore)
   }
   const onPointerLeave = () => {
     if (drag) return
@@ -140,10 +155,12 @@ export const bindActivityComparisonGraph = (
   }
   const onBlur = () => {
     focused = false
+    keyboardAnchor = null
     release()
   }
   const onPointerDown = (event: PointerEvent) => {
     if (!event.isPrimary || event.button !== 0 || drag) return
+    keyboardAnchor = null
     const fraction = fractionAt(event.clientX)
     if (fraction == null) return
     if (!selection) {

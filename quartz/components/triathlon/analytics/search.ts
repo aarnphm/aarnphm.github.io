@@ -34,17 +34,22 @@ export const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = 
   {
     label: 'lactate threshold',
     chart: 'lactate',
-    hay: 'lactate threshold projection lt lthr lt2 mlss heart rate bpm pace power proxy forecast garmin running',
+    hay: 'lactate threshold lt lthr lt2 mlss heart rate bpm pace critical power watts garmin running',
   },
   {
-    label: 'best efforts · power curve · power rank',
+    label: 'power curve · power rank',
     chart: 'power',
-    hay: 'best efforts power curve critical power cycling watts duration ftp estimated eftp p20 six weeks year power rank radar sprint attack climb w kg percentile weight adjusted',
+    hay: 'power curve critical power cycling watts duration ftp estimated eftp p20 six weeks year power rank radar sprint attack climb w kg percentile weight adjusted',
   },
   {
     label: 'swim · modeled drag power curve',
     chart: 'swim-power',
-    hay: 'swim swimming freestyle modeled relative drag power curve index pace duration best efforts six weeks year',
+    hay: 'swim swimming freestyle modeled relative drag power curve index pace duration six weeks year',
+  },
+  {
+    label: 'best efforts · pr · top 10',
+    chart: 'best-efforts',
+    hay: 'best efforts personal record pr top 10 medals all-time fastest 400m 1k mile 5k 10k half marathon longest ride elevation gain climb power watts run cycling bike year',
   },
   {
     label: 'ftp hypothesis',

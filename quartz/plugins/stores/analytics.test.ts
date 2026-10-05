@@ -2157,132 +2157,96 @@ test('personal bests reject implausible swim results', () => {
   ])
 })
 
-test('lactate threshold projection stays a low-confidence training proxy with its model band', () => {
-  const { cache } = fixtures()
-  const durations = [1800, 1740, 1680, 1620, 1560, 1500]
-  cache.activities = Object.fromEntries(
-    durations.map((movingTime, index) => {
+const sixRuns = (): StravaRawCache['activities'] =>
+  Object.fromEntries(
+    [1800, 1740, 1680, 1620, 1560, 1500].map((movingTime, index) => {
       const id = 20 + index
-      const day = iso(-6 + index * 7)
-      return [String(id), activity(id, 'Run', day, movingTime, 5000, { totalElevationGain: 0 })]
+      return [String(id), activity(id, 'Run', iso(-6 + index * 7), movingTime, 5000)]
     }),
   )
+
+test('lactate threshold without heart-rate windows uses the training pace proxy and declared anchor', () => {
+  const { cache } = fixtures()
+  cache.activities = sixRuns()
   cache.streams = {}
 
   const analytics = buildAnalytics(cache, { since: '2026-05-01' })
-  const projection = analytics.engine.lactateThreshold.sports.find(sport => sport.sport === 'run')
+  const run = analytics.engine.lactateThreshold.sports.find(sport => sport.sport === 'run')
+  const threshold = analytics.thresholds.find(item => item.sport === 'run')
 
   assert.deepEqual(analytics.engine.lactateThreshold.heartRate, {
     value: ATHLETE.lt,
     unit: 'bpm',
     source: 'declared',
   })
-  assert.ok(projection)
-  assert.equal(projection.source, 'training-pace-trend')
-  assert.equal(projection.method, 'ols')
-  assert.equal(projection.conf, 'low')
-  assert.equal(projection.horizonDays, 14)
-  assert.equal(projection.points.length, 15)
-  assert.ok(projection.projected != null && projection.projected < projection.current)
-  assert.ok(projection.deltaPct != null && projection.deltaPct > 0)
-  assert.ok(projection.low != null && projection.projected >= projection.low)
-  assert.ok(projection.high != null && projection.projected <= projection.high)
+  assert.ok(run && threshold)
+  assert.equal(run.source, 'pace-p90')
+  assert.equal(threshold.method, 'pace-p90')
+  assert.equal(run.value, Math.round((1000 / threshold.vThr) * 10) / 10)
+  assert.equal(run.device, null)
 })
 
-const garminPaceHistory = (end: string, count = 31): GarminLactateThresholdValue[] =>
+const garminPaceHistory = (end: string, count = 31, value = 3.75): GarminLactateThresholdValue[] =>
   Array.from({ length: count }, (_, index) => ({
     date: new Date(Date.parse(end) - (count - 1 - index) * DAY).toISOString().slice(0, 10),
-    value: 3.75,
+    value,
   }))
 
-test('running lactate threshold waits for 31 distinct valid pace dates and preserves its projection', () => {
+test('Garmin running pace is used only within 5% of the garden threshold, from the latest valid date', () => {
   const { cache } = fixtures()
-  cache.activities = Object.fromEntries(
-    [1800, 1740, 1680, 1620, 1560, 1500].map((movingTime, index) => {
-      const id = 20 + index
-      return [String(id), activity(id, 'Run', iso(-6 + index * 7), movingTime, 5000)]
-    }),
-  )
+  cache.activities = sixRuns()
   cache.streams = {}
-  const baseline = buildAnalytics(cache).engine.lactateThreshold
-  assert.ok(baseline.sports.find(sport => sport.sport === 'run')?.projected != null)
-  const heartRateBpm = garminPaceHistory(iso(25)).map(point => ({ ...point, value: 174 }))
-  for (const count of [2, 30, 31]) {
-    const speedMps = garminPaceHistory(iso(25), count)
-    const block = buildAnalytics(cache, {
+  const baseline = buildAnalytics(cache)
+  const model = baseline.thresholds.find(item => item.sport === 'run')!.vThr
+  const blockFor = (speed: number) =>
+    buildAnalytics(cache, {
       garmin: {
         lastSync: cache.lastSync,
         activities: {},
         runningLactateThreshold: {
-          speedMps: speedMps.at(-1) ?? null,
-          heartRateBpm: heartRateBpm.at(-1) ?? null,
+          speedMps: null,
+          heartRateBpm: null,
           history: {
             speedMps: [
-              ...speedMps,
-              ...speedMps,
+              ...garminPaceHistory(iso(25), 2, speed),
               { date: iso(26), value: 0 },
               { date: iso(27), value: NaN },
-              { date: '2026-02-30', value: 3.75 },
-              { date: '2027-01-01', value: 3.75 },
+              { date: '2026-02-30', value: speed },
+              { date: '2027-01-01', value: speed },
             ],
-            heartRateBpm,
+            heartRateBpm: [],
           },
         },
       },
     }).engine.lactateThreshold
-    assert.equal(block.runningHistory.pace.length, count)
-    assert.equal(block.runningHistory.heartRate.length, 31)
-    if (count < 31) {
-      assert.deepEqual(block.sports, baseline.sports)
-      assert.deepEqual(block.heartRate, baseline.heartRate)
-    } else {
-      assert.equal(block.sports.find(sport => sport.sport === 'run')?.source, 'garmin')
-      assert.equal(block.heartRate?.source, 'garmin')
-    }
-    assert.deepEqual(JSON.parse(JSON.stringify(block)).runningHistory, block.runningHistory)
-  }
+
+  const near = blockFor(model * 1.03)
+  const nearRun = near.sports.find(sport => sport.sport === 'run')
+  assert.equal(nearRun?.source, 'garmin')
+  assert.equal(nearRun?.date, iso(25))
+  assert.equal(nearRun?.value, Math.round((1000 / (model * 1.03)) * 10) / 10)
+  assert.equal(nearRun?.device?.accepted, true)
+
+  const far = blockFor(model * 1.1)
+  const farRun = far.sports.find(sport => sport.sport === 'run')
+  const baselineRun = baseline.engine.lactateThreshold.sports.find(sport => sport.sport === 'run')
+  assert.equal(farRun?.source, 'pace-p90')
+  assert.equal(farRun?.value, baselineRun?.value)
+  assert.equal(farRun?.device?.accepted, false)
+  assert.equal(farRun?.device?.date, iso(25))
+  assert.equal(farRun?.device?.deltaPct, 10)
+
+  for (const block of [near, far])
+    for (const sport of ['swim', 'bike'])
+      assert.deepEqual(
+        block.sports.find(item => item.sport === sport),
+        baseline.engine.lactateThreshold.sports.find(item => item.sport === sport),
+      )
+  assert.deepEqual(JSON.parse(JSON.stringify(far)), far)
 })
 
-test('running lactate threshold prefers Garmin at 31 pace readings and preserves other sport calculations', () => {
-  const { cache } = fixtures()
-  const garmin: GarminCache = {
-    lastSync: cache.lastSync,
-    activities: {},
-    runningLactateThreshold: {
-      speedMps: { value: 3.75, date: iso(25) },
-      heartRateBpm: { value: 174, date: iso(24) },
-      history: { speedMps: garminPaceHistory(iso(25)), heartRateBpm: [] },
-    },
-  }
-  const baseline = buildAnalytics(cache).engine.lactateThreshold
-  const block = buildAnalytics(cache, { garmin }).engine.lactateThreshold
-  assert.deepEqual(block.heartRate, {
-    value: 174,
-    unit: 'bpm',
-    source: 'garmin',
-    sport: 'run',
-    date: iso(24),
-  })
-  const run = block.sports.find(sport => sport.sport === 'run')
-  assert.ok(run)
-  assert.equal(run.current, 266.7)
-  assert.equal(run.source, 'garmin')
-  assert.equal(run.date, iso(25))
-  assert.equal(run.projected, null)
-  assert.equal(run.conf, null)
-  assert.equal(run.method, 'none')
-  assert.equal(run.horizonDays, 0)
-  assert.deepEqual(run.points, [])
-  for (const sport of ['swim', 'bike'])
-    assert.deepEqual(
-      block.sports.find(item => item.sport === sport),
-      baseline.sports.find(item => item.sport === sport),
-    )
-  assert.deepEqual(JSON.parse(JSON.stringify(block)), block)
-})
-
-test('Garmin lactate threshold history carries recorded dates and latest values into analytics', () => {
-  const analytics = buildAnalytics(null, {
+test('Garmin lactate threshold merges history with the latest endpoint without Strava training data', () => {
+  const block = buildAnalytics(null, {
     garmin: {
       lastSync: Date.parse('2026-09-08T20:00:00Z'),
       activities: {},
@@ -2303,20 +2267,24 @@ test('Garmin lactate threshold history carries recorded dates and latest values 
         },
       },
     },
+  }).engine.lactateThreshold
+  assert.deepEqual(block.heartRate, {
+    value: 174,
+    unit: 'bpm',
+    source: 'garmin',
+    sport: 'run',
+    date: '2026-09-08',
   })
-  const block = analytics.engine.lactateThreshold
-  assert.deepEqual(block.runningHistory.pace, [
-    { date: '2026-09-03', value: 264.6 },
-    { date: '2026-09-08', value: 266.7 },
-  ])
-  assert.deepEqual(block.runningHistory.heartRate, [
-    { date: '2026-05-31', value: 166 },
-    { date: '2026-09-03', value: 174 },
-    { date: '2026-09-08', value: 174 },
-  ])
-  assert.deepEqual(block.sports, [])
-  assert.equal(block.heartRate?.source, 'declared')
-  assert.deepEqual(JSON.parse(JSON.stringify(block)).runningHistory, block.runningHistory)
+  assert.equal(block.sports.length, 1)
+  assert.equal(block.sports[0].source, 'garmin')
+  assert.equal(block.sports[0].value, 266.7)
+  assert.equal(block.sports[0].date, '2026-09-08')
+  assert.deepEqual(block.sports[0].device, {
+    value: 266.7,
+    date: '2026-09-08',
+    deltaPct: null,
+    accepted: true,
+  })
 })
 
 test('historical Garmin lactate threshold remains usable when the latest endpoint has no reading', () => {
@@ -2328,38 +2296,39 @@ test('historical Garmin lactate threshold remains usable when the latest endpoin
         speedMps: null,
         heartRateBpm: null,
         history: {
-          speedMps: garminPaceHistory('2026-09-03'),
+          speedMps: garminPaceHistory('2026-09-03', 2),
           heartRateBpm: [{ date: '2026-09-03', value: 174 }],
         },
       },
     },
   }).engine.lactateThreshold
   assert.equal(block.heartRate?.value, 174)
-  assert.equal(block.sports[0].current, 266.7)
+  assert.equal(block.sports[0].value, 266.7)
   assert.equal(block.sports[0].date, '2026-09-03')
-  assert.equal(block.runningHistory.pace.length, 31)
 })
 
-test('Garmin running threshold requires pace history and keeps the declared anchor when Garmin heart rate is missing', () => {
+test('Garmin LTHR applies without Garmin pace, and missing Garmin LTHR keeps the declared anchor', () => {
   const { cache } = fixtures()
   const garmin: GarminCache = {
     lastSync: cache.lastSync,
     activities: {},
-    runningLactateThreshold: { speedMps: null, heartRateBpm: { value: 174, date: iso(24) } },
+    runningLactateThreshold: { speedMps: null, heartRateBpm: { value: 171, date: iso(24) } },
   }
   const baseline = buildAnalytics(cache).engine.lactateThreshold
   const hrOnly = buildAnalytics(cache, { garmin }).engine.lactateThreshold
-  assert.deepEqual(hrOnly.heartRate, baseline.heartRate)
+  assert.deepEqual(hrOnly.heartRate, {
+    value: 171,
+    unit: 'bpm',
+    source: 'garmin',
+    sport: 'run',
+    date: iso(24),
+  })
   assert.deepEqual(hrOnly.sports, baseline.sports)
 
-  garmin.runningLactateThreshold = {
-    speedMps: { value: 3.75, date: iso(25) },
-    heartRateBpm: null,
-    history: { speedMps: garminPaceHistory(iso(25)), heartRateBpm: [] },
-  }
+  garmin.runningLactateThreshold = { speedMps: { value: 3.75, date: iso(25) }, heartRateBpm: null }
   const paceOnly = buildAnalytics(cache, { garmin }).engine.lactateThreshold
   assert.deepEqual(paceOnly.heartRate, baseline.heartRate)
-  assert.equal(paceOnly.sports.find(sport => sport.sport === 'run')?.source, 'garmin')
+  assert.equal(paceOnly.sports.find(sport => sport.sport === 'run')?.device?.date, iso(25))
 })
 
 test('invalid or future Garmin lactate threshold fields use the existing fallback', () => {
@@ -2391,7 +2360,7 @@ test('invalid or future Garmin lactate threshold fields use the existing fallbac
   }
 })
 
-test('Garmin lactate threshold with enough pace history remains available without Strava training data', () => {
+test('Garmin lactate threshold dated by its own sync remains available without Strava training data', () => {
   const block = buildAnalytics(null, {
     garmin: {
       lastSync: 0,
@@ -2400,14 +2369,13 @@ test('Garmin lactate threshold with enough pace history remains available withou
       runningLactateThreshold: {
         speedMps: { value: 3.75, date: '2026-09-08' },
         heartRateBpm: { value: 174, date: '2026-09-07' },
-        history: { speedMps: garminPaceHistory('2026-09-08'), heartRateBpm: [] },
       },
     },
   }).engine.lactateThreshold
   assert.equal(block.heartRate?.value, 174)
   assert.equal(block.sports.length, 1)
   assert.equal(block.sports[0].source, 'garmin')
-  assert.equal(block.sports[0].current, 266.7)
+  assert.equal(block.sports[0].value, 266.7)
 })
 
 test('suffer score flows into daily effort, activity summaries, and weekly totals', () => {

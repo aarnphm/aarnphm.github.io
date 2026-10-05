@@ -43,40 +43,7 @@ test('server swim power presents compact relative units and duration series', ()
   assert.doesNotMatch(html, /W\/kg|FTP/)
 })
 
-test('server lactate threshold charts contain native running pace and heart-rate history', () => {
-  const speedMps = Array.from({ length: 31 }, (_, index) => ({
-    date: new Date(Date.parse('2026-09-08') - (30 - index) * 86_400_000).toISOString().slice(0, 10),
-    value: 3.78,
-  }))
-  const analytics = buildAnalytics(null, {
-    garmin: {
-      lastSync: Date.parse('2026-09-08T20:00:00Z'),
-      activities: {},
-      runningLactateThreshold: {
-        speedMps: { value: 3.75, date: '2026-09-08' },
-        heartRateBpm: { value: 174, date: '2026-09-08' },
-        history: { speedMps, heartRateBpm: [{ date: '2026-05-31', value: 166 }] },
-      },
-    },
-  })
-  const definition = ANALYTICS_CATALOG.find(panel => panel.key === 'lactate')
-  assert.ok(definition)
-  const content = definition.server(analytics, DEFAULT_TRIATHLON_FORMATTER)
-  assert.deepEqual(
-    content.series?.find(series => series.label === 'run pace · Garmin')?.dates,
-    speedMps.map(point => point.date),
-  )
-  const html = renderToString(<AnalyticsServerPanel definition={definition} data={analytics} />)
-  assert.match(html, /data-series="run pace · Garmin"/)
-  assert.match(html, /data-series="run heart rate · Garmin"/)
-  assert.equal(analytics.engine.lactateThreshold.sports[0].projected, null)
-  assert.equal(
-    analyticsChartPath([10, 10, 10], undefined, ['2026-09-01', '2026-09-02', '2026-09-11']),
-    'M0.00 29.00 L10.00 29.00 L100.00 29.00',
-  )
-})
-
-test('server lactate threshold keeps collected Garmin history hidden before 31 pace readings', () => {
+test('server lactate threshold lists values without charts', () => {
   const analytics = buildAnalytics(null, {
     garmin: {
       lastSync: Date.parse('2026-09-08T20:00:00Z'),
@@ -93,10 +60,19 @@ test('server lactate threshold keeps collected Garmin history hidden before 31 p
   })
   const definition = ANALYTICS_CATALOG.find(panel => panel.key === 'lactate')
   assert.ok(definition)
+  const content = definition.server(analytics, DEFAULT_TRIATHLON_FORMATTER)
+  assert.equal(content.series, undefined)
   const html = renderToString(<AnalyticsServerPanel definition={definition} data={analytics} />)
-  assert.match(html, /heart rate · declared/)
-  assert.doesNotMatch(html, /Garmin|data-series="run/)
-  assert.equal(analytics.engine.lactateThreshold.runningHistory.pace.length, 2)
+  assert.match(html, /running heart rate · Garmin · 2026-09-08/)
+  assert.match(html, /run · Garmin running estimate · 2026-09-08/)
+  assert.doesNotMatch(html, /data-series=/)
+})
+
+test('dated server chart paths space points by calendar date', () => {
+  assert.equal(
+    analyticsChartPath([10, 10, 10], undefined, ['2026-09-01', '2026-09-02', '2026-09-11']),
+    'M0.00 29.00 L10.00 29.00 L100.00 29.00',
+  )
 })
 
 test('heat server markup includes passive HTL and sauna minutes from the shared analytics model', () => {

@@ -360,8 +360,30 @@ test('reader shell uses its dedicated asset and gets the document record injecte
   assert.equal(index.status, 200)
   const indexHtml = await index.text()
   assert.match(indexHtml, /"mode":"index"/)
+  const indexJson = /<script type="application\/json" id="pdf-reader-data">(.*?)<\/script>/.exec(
+    indexHtml,
+  )
+  assert.ok(indexJson)
+  const indexData = JSON.parse(indexJson[1])
+  assert.deepEqual(indexData.documents, [
+    {
+      slug: SLUG_A,
+      readPath: '/read/thoughts/pdfs/holt',
+      title: 'Holt, linear algebra',
+      citations: 1,
+    },
+    { slug: SLUG_B, readPath: '/read/courses/18.100B/pset 1', title: 'pset 1', citations: 0 },
+  ])
   assert.match(indexHtml, /<body data-slug="read">/)
   assert.match(indexHtml, /href="https:\/\/aarnphm\.xyz\/read"/)
+
+  const markdownIndex = await call(`${VISITOR_ORIGIN}/read`, {
+    headers: { Accept: 'text/markdown' },
+  })
+  assert.match(
+    await markdownIndex.text(),
+    /\[pset 1\]\(\/read\/courses\/18\.100B\/pset%201\) \(0\)/,
+  )
 })
 
 test('unknown reader paths fall through to the 404 handling (F11)', async () => {

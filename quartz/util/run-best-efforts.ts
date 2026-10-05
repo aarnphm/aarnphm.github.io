@@ -1,6 +1,9 @@
 import type { ActivityDistanceEffort, StravaStreams } from '../plugins/stores/strava'
 
 const MILE_M = 1609.344
+// Above peak human sprint speed (12.4 m/s): a one-second step past it is GPS error, while
+// ordinary jitter on a real stride stays below it, so Strava's own efforts reproduce exactly.
+const MAX_RUN_SPEED_MPS = 12.5
 const RUN_DISTANCES: readonly (readonly [string, number])[] = [
   ['400m', 400],
   ['1/2 mile', MILE_M / 2],
@@ -59,6 +62,7 @@ export function runBestEfforts(
     return []
 
   const samples: Sample[] = []
+  const recorded: number[] = []
   for (let index = 0; index < streams.time.length; index++) {
     const time = streams.time[index]
     const distance = streams.distance[index]
@@ -68,12 +72,13 @@ export function runBestEfforts(
       !Number.isFinite(distance) ||
       time < 0 ||
       distance < 0 ||
-      (previous && (time < previous.time || distance < previous.distance))
+      (previous && (time < previous.time || distance < recorded[recorded.length - 1]))
     )
       return []
     // Multiple records can share a whole-second timestamp; retain its final sample.
     if (previous?.time === time) {
       samples.pop()
+      recorded.pop()
       previous = samples.at(-1)
     }
     const hr = streams.heartrate?.[index]
@@ -81,9 +86,16 @@ export function runBestEfforts(
     const previousHeartRate = previous?.heartRate
     const covered = previousHeartRate != null && heartRate != null
     const duration = previous ? time - previous.time : 0
+    // GPS teleports (watch resumes, signal loss) jump hundreds of metres in a second. Crediting at
+    // most MAX_RUN_SPEED_MPS keeps them from forming an effort at an impossible pace.
+    const credited = previous
+      ? previous.distance +
+        Math.min(distance - recorded[recorded.length - 1], MAX_RUN_SPEED_MPS * duration)
+      : distance
+    recorded.push(distance)
     samples.push({
       time,
-      distance,
+      distance: credited,
       altitude: Number.isFinite(streams.altitude[index]) ? streams.altitude[index] : null,
       heartRate,
       heartRateSum:

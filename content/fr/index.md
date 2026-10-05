@@ -13,6 +13,8 @@ notes de français québécois: [[fr/episode-1|épisodes]], [[fr/phrases|phrases
 
 leçon du 21 septembre : [[fr/words|mots]] et [[fr/verbs|verbes au présent]].
 
+vocabulaire de l'anglais vers le français : [[fr/mots|mots par thème]], de l'école à la cuisine, avec un paquet de cartes.
+
 bilan de printemps : [[fr/episode-12|épisode 12]], corrigé des activités, écoutes, trajets et jeu à deux fiches.
 
 vue d'ensemble : [[fr/parcours.canvas|carte des notes]].

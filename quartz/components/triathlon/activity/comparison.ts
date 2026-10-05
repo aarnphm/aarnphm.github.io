@@ -1,16 +1,21 @@
-import type { StravaActivityDetail } from '../../../plugins/stores/strava'
+import type { ActivityHealth, StravaActivityDetail } from '../../../plugins/stores/strava'
+import type { ActivityComparisonWindow } from '../../../util/activity-comparison-metrics'
 import type { ActivityComparisonMetric } from '../../../util/triathlon-card'
+import type { ActivityComparisonStatsScope } from '../../../util/triathlon-card'
+import type { DetailCtx } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import type { ActivityComparisonDragSelection } from './comparison-graph'
 import type { ActivityComparisonScrubState } from './comparison-graph'
 import type { ActivityComparisonSelectionRange } from './comparison-graph'
 import type { ActivityComparisonMapController } from './comparison-map'
 import { decodePowerCurves, type PowerCurveData } from '../../../util/power-curve'
+import { activityComparisonMathText } from '../../../util/triathlon-card'
 import { activityComparisonDisplayValueAtDistance } from '../../../util/triathlon-card'
 import { activityComparisonMetricsForSport } from '../../../util/triathlon-card'
 import { activityGearRatioDistribution } from '../../../util/triathlon-card'
 import { activityPowerDistributionPercentages } from '../../../util/triathlon-card'
 import { activityZonePercentages } from '../../../util/triathlon-card'
+import { buildActivityComparisonStats } from '../../../util/triathlon-card'
 import { dlabel } from '../../../util/triathlon-card'
 import { nearestPowerCurveValue } from '../../../util/triathlon-card'
 import { normalizePowerCurvePoints } from '../../../util/triathlon-card'
@@ -18,19 +23,41 @@ import { powerCurveFraction } from '../../../util/triathlon-card'
 import { scrubDist } from '../../../util/triathlon-card'
 import { powerCurveReferenceLabel } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
+import { applyI18n } from '../runtime/dom'
+import { createDomFactory, setMath } from '../runtime/dom'
 import { setupPowerCurveTicks } from '../shell/power-curve-ticks'
+import { mountComparisonChartTabs } from './comparison-chart-tabs'
 import { activityComparisonMetric } from './comparison-graph'
 import { activityComparisonMetricLabel } from './comparison-graph'
 import { bindActivityComparisonGraph } from './comparison-graph'
 import { positionActivityComparisonCursor } from './comparison-graph'
 import { mountActivityComparisonMap } from './comparison-map'
+import { buildActivityMapControls } from './map-controls'
 
 export const wireActivityComparison = (
   presentation: TriathlonPresentation,
   comparison: HTMLElement | SVGElement,
   activities: StravaActivityDetail[],
+  statsContext: { ctx?: DetailCtx; health?: Readonly<Record<string, ActivityHealth>> | null } = {},
 ): (() => void) => {
   const text = (key: string): string => triText(presentation.locale, key)
+  const setComparisonMath = (node: HTMLElement, value: string): void => {
+    const math = activityComparisonMathText(value)
+    if (math !== value) {
+      node.setAttribute('role', 'img')
+      node.setAttribute('aria-label', value)
+    } else if (node.getAttribute('role') === 'img') {
+      node.removeAttribute('role')
+      node.removeAttribute('aria-label')
+    }
+    setMath(node, math)
+  }
+  for (const node of comparison.querySelectorAll<HTMLElement>(
+    '.tri-cax-yt, .tri-cax-xt:not(button), .tri-curve-cp-k, .tri-critical-power-mechanics, .tri-critical-power-anchor-separator',
+  )) {
+    const value = node.textContent ?? ''
+    if (activityComparisonMathText(value) !== value) setComparisonMath(node, value)
+  }
   const cleanups: (() => void)[] = [setupPowerCurveTicks(comparison)]
   const charts = Array.from(
     comparison.querySelectorAll<HTMLElement>('.tri-compare-chart[data-compare-chart]'),
@@ -51,6 +78,72 @@ export const wireActivityComparison = (
   let mapController: ActivityComparisonMapController | null = null
   const hiddenActivities = new Set<string>()
 
+  let statsScope: ActivityComparisonStatsScope = 'whole'
+  let statsWindow: ActivityComparisonWindow | null = null
+  let statsFrame = 0
+  const renderStats = () => {
+    const current = comparison.querySelector<HTMLElement>('[data-compare-stats]')
+    if (!current) return
+    const scroller = current.querySelector<HTMLElement>('.tri-compare-stats-scroll')
+    const scrollTop = scroller?.scrollTop ?? 0
+    const scrollLeft = scroller?.scrollLeft ?? 0
+    const focused =
+      document.activeElement instanceof HTMLElement && current.contains(document.activeElement)
+        ? document.activeElement
+        : null
+    const focusSelector = focused?.dataset.compareScope
+      ? `[data-compare-scope="${focused.dataset.compareScope}"]`
+      : focused?.classList.contains('tri-compare-stats-scroll')
+        ? '.tri-compare-stats-scroll'
+        : null
+    const next = buildActivityComparisonStats(
+      createDomFactory(presentation),
+      activities,
+      statsContext.ctx,
+      {
+        hiddenIds: hiddenActivities,
+        window: statsWindow,
+        scope: statsScope,
+        health: statsContext.health,
+      },
+    ) as HTMLElement
+    applyI18n(next, presentation)
+    current.replaceWith(next)
+    const nextScroller = next.querySelector<HTMLElement>('.tri-compare-stats-scroll')
+    if (nextScroller) {
+      nextScroller.scrollTop = scrollTop
+      nextScroller.scrollLeft = scrollLeft
+    }
+    if (focusSelector)
+      next.querySelector<HTMLElement>(focusSelector)?.focus({ preventScroll: true })
+  }
+  // Drag previews fire per pointer move; one table rebuild per frame is enough.
+  const scheduleStats = () => {
+    if (statsFrame !== 0) return
+    statsFrame = requestAnimationFrame(() => {
+      statsFrame = 0
+      renderStats()
+    })
+  }
+  const selectionWindow = (
+    selection: ActivityComparisonSelectionRange | null,
+  ): ActivityComparisonWindow | null =>
+    selection && maxDistanceKm > 0 && selection.endFraction > selection.startFraction
+      ? {
+          startKm: selection.startFraction * maxDistanceKm,
+          endKm: selection.endFraction * maxDistanceKm,
+        }
+      : null
+  const scopeStatsToSelection = (selection: ActivityComparisonSelectionRange | null) => {
+    statsWindow = selectionWindow(selection)
+    statsScope = statsWindow ? 'selection' : 'whole'
+    scheduleStats()
+  }
+  cleanups.push(() => {
+    if (statsFrame !== 0) cancelAnimationFrame(statsFrame)
+    statsFrame = 0
+  })
+
   const setReadout = (
     mode:
       | ActivityComparisonMetric
@@ -63,14 +156,16 @@ export const wireActivityComparison = (
     context = '',
   ) => {
     if (!readout) return
-    const head = charts
-      .find(chart => chart.dataset.compareChart === mode)
-      ?.querySelector<HTMLElement>('.tri-compare-chart-head')
+    const head =
+      charts
+        .find(chart => chart.dataset.compareChart === mode && !chart.hidden)
+        ?.querySelector<HTMLElement>('.tri-compare-chart-head') ??
+      map?.closest('.tri-compare-map-panel')?.querySelector<HTMLElement>('.tri-compare-chart-head')
     if (head && readout.parentElement !== head) head.append(readout)
     readout.dataset.visible = 'true'
     readout.dataset.compareReadoutMode = mode
     if (readoutContext) {
-      readoutContext.textContent = context
+      setComparisonMath(readoutContext, context)
       readoutContext.hidden = context.length === 0
     }
     for (const { activity, value, missing } of values) {
@@ -78,7 +173,7 @@ export const wireActivityComparison = (
         `.tri-compare-readout-row[data-activity-id="${activity.id}"]`,
       )
       const valueNode = row?.querySelector<HTMLElement>('[data-compare-readout-value]')
-      if (valueNode) valueNode.textContent = value
+      if (valueNode) setComparisonMath(valueNode, value)
       row?.classList.toggle('tri-compare-readout-row--missing', missing)
     }
   }
@@ -141,24 +236,37 @@ export const wireActivityComparison = (
         endFraction: Math.max(anchorFraction, focusFraction),
       }
       showSelection(previewSelection, true)
+      scopeStatsToSelection(previewSelection)
     },
     commit: () => {
       if (!previewSelection) return
       lockedSelection = previewSelection
       previewSelection = null
       showSelection(lockedSelection, false)
+      scopeStatsToSelection(lockedSelection)
     },
     clear: () => {
       lockedSelection = null
       previewSelection = null
       showSelection(null, false)
+      scopeStatsToSelection(null)
     },
     restore: () => {
       previewSelection = null
       showSelection(lockedSelection, false)
+      scopeStatsToSelection(lockedSelection)
     },
   }
   let activeMetric: ActivityComparisonMetric = comparisonMetrics[0] ?? 'elevation'
+  cleanups.push(
+    mountComparisonChartTabs(comparison, presentation, charts, chart => {
+      const metric = activityComparisonMetric(chart?.dataset.compareChart)
+      if (metric) activeMetric = metric
+      activeSources.clear()
+      activeSource = null
+      hide()
+    }),
+  )
   const showDistance = (fraction: number, metric: ActivityComparisonMetric = activeMetric) => {
     if (!Number.isFinite(maxDistanceKm) || maxDistanceKm <= 0) return
     distanceState.fraction = Math.min(1, Math.max(0, fraction))
@@ -217,7 +325,14 @@ export const wireActivityComparison = (
     mapController?.showCursors(distanceKm)
   }
 
-  for (const { graph } of distanceCharts)
+  for (const { graph } of distanceCharts) {
+    const help = text('comparison keyboard help')
+    graph.setAttribute('aria-description', help)
+    graph.setAttribute('title', help)
+    graph.setAttribute(
+      'aria-keyshortcuts',
+      'Shift+ArrowLeft Shift+ArrowRight Shift+Home Shift+End Escape',
+    )
     cleanups.push(
       bindActivityComparisonGraph(
         graph,
@@ -233,9 +348,16 @@ export const wireActivityComparison = (
         distanceSelection,
       ),
     )
+  }
 
   if (map && Number(map.dataset.available) > 0 && maxDistanceKm > 0) {
     const restore = () => showDistance(distanceState.fraction)
+    const controls = buildActivityMapControls(text)
+    map.parentElement?.append(controls.element)
+    cleanups.push(() => {
+      controls.dispose()
+      controls.element.remove()
+    })
     mapController = mountActivityComparisonMap(map, activities, {
       unavailableText: text('map unavailable'),
       distance: presentation.distance,
@@ -265,9 +387,20 @@ export const wireActivityComparison = (
     ))
       node.setAttribute('data-compare-hidden', String(!visible))
     mapController?.setVisible(activityId, visible)
+    renderStats()
   }
   comparison.addEventListener('click', onLegendToggle)
   cleanups.push(() => comparison.removeEventListener('click', onLegendToggle))
+
+  const onStatsClick = (event: Event) => {
+    if (!(event.target instanceof Element)) return
+    const scope = event.target.closest<HTMLButtonElement>('[data-compare-scope]')
+    if (!scope || scope.disabled) return
+    statsScope = scope.dataset.compareScope === 'selection' && statsWindow ? 'selection' : 'whole'
+    renderStats()
+  }
+  comparison.addEventListener('click', onStatsClick)
+  cleanups.push(() => comparison.removeEventListener('click', onStatsClick))
 
   const curveChart = charts.find(chart => chart.dataset.compareChart === 'power-curve')
   const curveGraph = curveChart?.querySelector<SVGElement>('.tri-compare-graph')

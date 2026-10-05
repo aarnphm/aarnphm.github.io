@@ -272,3 +272,5 @@ quartz/runtime/native/packs/**/_build/
 !.claude/
 .claude/*
 !.claude/skills
+docs/design-audit-*
+docs/design-audit/*

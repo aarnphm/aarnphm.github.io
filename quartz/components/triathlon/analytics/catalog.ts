@@ -1,3 +1,4 @@
+import type { BestEffortCategory } from '../../../util/best-efforts'
 import type { TriathlonContext } from '../runtime/context'
 import type { TriathlonFormatter } from '../runtime/formatter'
 import {
@@ -10,6 +11,8 @@ import { garminHealthSummary } from '../../../util/triathlon-garmin-health'
 import { mountPrimaryPanel } from './panel-mounts-primary'
 import { mountSecondaryPanel } from './panel-mounts-secondary'
 import { buildAbilities } from './panels/abilities'
+import { buildBestEfforts } from './panels/best-efforts'
+import { bestEffortCategoryLabel, bestEffortDisplay } from './panels/best-efforts-format'
 import { buildBody, buildEffort, buildHeatAcclimatisation } from './panels/body'
 import { buildDexa } from './panels/body-composition'
 import { buildCardio } from './panels/cardio'
@@ -28,7 +31,8 @@ import { buildSwimPowerCurve } from './panels/swim-power'
 import {
   buildActions,
   buildLactateThreshold,
-  fmtTrendVal,
+  fmtLactateValue,
+  lactateSourceText,
   buildReadiness,
   buildTrend,
 } from './panels/thresholds'
@@ -45,6 +49,7 @@ export const ANALYTICS_PANEL_ORDER = [
   'sleep',
   'vo2max',
   'lactate',
+  'best-efforts',
   'power',
   'swim-power',
   'abilities',
@@ -138,6 +143,74 @@ const powerToWeightValues = (data: Analytics, durationS: PowerToWeightDurationS)
 
 const latestPowerToWeight = (data: Analytics, durationS: PowerToWeightDurationS): number | null =>
   data.powerCurve.powerToWeight.points.at(-1)?.efforts[durationS]?.wattsPerKg ?? null
+
+type BestEffortMatch = (category: BestEffortCategory) => boolean
+
+const runDistance =
+  (label: string): BestEffortMatch =>
+  category =>
+    category.sport === 'run' && category.group === 'distance' && category.label === label
+
+const bikePower =
+  (durationS: number): BestEffortMatch =>
+  category =>
+    category.sport === 'bike' && category.group === 'power' && category.durationS === durationS
+
+const BEST_EFFORT_SUMMARY: readonly BestEffortMatch[] = [
+  runDistance('1K'),
+  runDistance('5K'),
+  runDistance('10K'),
+  runDistance('Half marathon'),
+  category => category.sport === 'bike' && category.group === 'longest',
+  category => category.sport === 'bike' && category.group === 'elevation',
+  bikePower(300),
+  bikePower(1200),
+]
+
+const BEST_EFFORT_SERIES: readonly BestEffortMatch[] = [runDistance('5K'), bikePower(1200)]
+
+const bestEffortSummaryLabel = (
+  category: BestEffortCategory,
+  formatter: TriathlonFormatter,
+): string =>
+  `${formatter.text(category.group === 'power' ? 'power' : category.sport)} · ${bestEffortCategoryLabel(category, formatter)}`
+
+const bestEffortsServer = (
+  data: Analytics,
+  formatter: TriathlonFormatter,
+): AnalyticsPanelContent => {
+  const { categories } = data.bestEfforts
+  const values: AnalyticsSummaryValue[] = []
+  for (const match of BEST_EFFORT_SUMMARY) {
+    const category = categories.find(match)
+    const best = category?.efforts.find(entry => entry.rank === 1)
+    if (!category || !best) continue
+    values.push({
+      label: bestEffortSummaryLabel(category, formatter),
+      value: bestEffortDisplay(category, best, formatter).primary,
+      detail: formatter.longDate(best.date),
+    })
+  }
+  const series: AnalyticsPanelSeries[] = []
+  for (const match of BEST_EFFORT_SERIES) {
+    const category = categories.find(match)
+    const records = category?.efforts.filter(entry => entry.pr) ?? []
+    if (!category || records.length === 0) continue
+    series.push({
+      label: bestEffortSummaryLabel(category, formatter),
+      values: records.map(entry => entry.value),
+      dates: records.map(entry => entry.date),
+    })
+  }
+  return {
+    title: formatter.text('best efforts'),
+    values:
+      values.length > 0
+        ? values
+        : [{ label: formatter.text('status'), value: formatter.text('no best efforts yet') }],
+    series,
+  }
+}
 
 const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   body: {
@@ -284,11 +357,8 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   lactate: {
     key: 'lactate',
     label: 'lactate threshold',
-    search: 'lactate threshold lt2 pace heart rate projection garmin running',
-    render: (data, context) =>
-      withPanelMount(buildLactateThreshold(data, context), [
-        root => mountSecondaryPanel('lactate', root, data, context),
-      ]),
+    search: 'lactate threshold lt2 lthr pace heart rate critical power watts garmin running',
+    render: (data, context) => buildLactateThreshold(data, context),
     server: (data, formatter) => ({
       title: 'lactate threshold',
       values: [
@@ -299,48 +369,10 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
               : 'heart rate · declared',
           value: value(data.engine.lactateThreshold.heartRate?.value, ' bpm'),
         },
-        ...data.engine.lactateThreshold.sports
-          .filter(sport => sport.sport === 'run')
-          .map(sport => ({
-            label:
-              sport.source === 'garmin'
-                ? `running pace · Garmin · ${sport.date}`
-                : 'running pace · training-derived',
-            value: fmtTrendVal(formatter, sport.sport, sport.current),
-          })),
-        { label: 'sports', value: String(data.engine.lactateThreshold.sports.length) },
-        {
-          label: 'projected',
-          value: String(
-            data.engine.lactateThreshold.sports.filter(sport => sport.projected != null).length,
-          ),
-        },
-      ],
-      series: [
         ...data.engine.lactateThreshold.sports.map(sport => ({
-          label: sport.source === 'garmin' ? 'run pace · Garmin' : sport.sport,
-          values:
-            sport.source === 'garmin'
-              ? data.engine.lactateThreshold.runningHistory.pace.map(point => point.value)
-              : sport.points.map(point => point.value),
-          dates:
-            sport.source === 'garmin'
-              ? data.engine.lactateThreshold.runningHistory.pace.map(point => point.date)
-              : sport.points.map(point => point.date),
+          label: `${sport.sport} · ${lactateSourceText(formatter, sport)}`,
+          value: fmtLactateValue(formatter, sport),
         })),
-        ...(data.engine.lactateThreshold.heartRate?.source === 'garmin'
-          ? [
-              {
-                label: 'run heart rate · Garmin',
-                values: data.engine.lactateThreshold.runningHistory.heartRate.map(
-                  point => point.value,
-                ),
-                dates: data.engine.lactateThreshold.runningHistory.heartRate.map(
-                  point => point.date,
-                ),
-              },
-            ]
-          : []),
       ],
     }),
   },
@@ -438,6 +470,14 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
       ],
       seriesDomain: 'shared-zero',
     }),
+  },
+  'best-efforts': {
+    key: 'best-efforts',
+    label: 'best efforts',
+    search:
+      'best efforts personal record pr top 10 medals 400m 1k mile 5k 10k half marathon marathon longest ride elevation climb power fastest',
+    render: buildBestEfforts,
+    server: bestEffortsServer,
   },
   abilities: {
     key: 'abilities',

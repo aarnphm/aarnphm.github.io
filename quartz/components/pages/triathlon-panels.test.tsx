@@ -69,7 +69,7 @@ const renderData: TriathlonRenderData = {
   },
 }
 
-test('server analytics exposes Garmin running lactate threshold values and dates after 31 pace readings', () => {
+test('server analytics exposes Garmin running lactate threshold values and dates', () => {
   const native = buildAnalytics(null, {
     garmin: {
       lastSync: Date.parse('2026-09-08T20:00:00Z'),
@@ -77,15 +77,6 @@ test('server analytics exposes Garmin running lactate threshold values and dates
       runningLactateThreshold: {
         speedMps: { value: 3.75, date: '2026-09-08' },
         heartRateBpm: { value: 174, date: '2026-09-07' },
-        history: {
-          speedMps: Array.from({ length: 31 }, (_, index) => ({
-            date: new Date(Date.parse('2026-09-08') - (30 - index) * 86_400_000)
-              .toISOString()
-              .slice(0, 10),
-            value: 3.75,
-          })),
-          heartRateBpm: [],
-        },
       },
     },
   })
@@ -94,7 +85,7 @@ test('server analytics exposes Garmin running lactate threshold values and dates
   )
   assert.match(html, /running heart rate · Garmin · 2026-09-07/)
   assert.match(html, /174 bpm/)
-  assert.match(html, /running pace · Garmin · 2026-09-08/)
+  assert.match(html, /run · Garmin running estimate · 2026-09-08/)
   assert.match(html, /4:27|7:09/)
   assert.doesNotMatch(html, /heart rate · declared/)
 })
