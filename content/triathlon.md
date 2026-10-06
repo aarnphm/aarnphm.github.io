@@ -254,16 +254,16 @@ maintenance:
     - - type: Reserve 40|44 Road
       - distance: 2760.16
       - range:
-          - end: null
+          - end: '2026-10-05'
+            reason: rotates to HUNT 54_58 Aerodynamicist UD Carbon Spoke
             start: '2026-05-16'
-      - reason: rotates to HUNT 54_58 Aerodynamicist UD Carbon Spoke
     - - type: HUNT 54_58 Aerodynamicist UD Carbon Spoke
       - distance: 0
       - range:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-10-02 21:20:00 GMT-04:00
+modified: 2026-10-05 21:52:29 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1887,6 +1887,21 @@ location: Othership Adelaide
 htl: 7.6
 strava: 20426494341
 garmin: 24584149374
+```
+
+```tracking
+date: 2026-10-05
+activity: 20467680308
+exercise: Cat-cow | 30s
+exercise: Standing torso rotations | 30s
+exercise: Glute bridges | 30s
+exercise: Deep squat hold with gentle rocking | 30s
+exercise: Dead bug | 40s | 40s | 40s | 40s
+exercise: Forearm plank | 40s | 40s | 40s | 40s
+exercise: Single-leg Romanian deadlift reach | 40s | 40s | 40s | 40s
+exercise: Side plank | 40s | 40s | 40s | 40s
+exercise: Superman hold with alternating leg lift | 40s | 40s | 40s | 40s
+exercise: Child's pose and thread-the-needle stretch | 2m
 ```
 
 <!-- training plan start
