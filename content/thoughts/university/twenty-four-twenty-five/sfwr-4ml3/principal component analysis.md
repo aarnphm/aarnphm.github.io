@@ -1,8 +1,8 @@
 ---
 date: '2024-10-07'
-description: dimensionality reduction through eigenvalue decomposition minimizing reconstruction error with orthonormal transformations.
+description: PCA as orthogonal projection, with covariance dimensions, reconstruction error, and the connection to SVD.
 id: principal component analysis
-modified: 2026-06-05 15:08:39 GMT-04:00
+modified: 2026-10-06 09:05:53 GMT-04:00
 tags:
   - sfwr4ml3
 title: principal component analysis
@@ -10,66 +10,105 @@ title: principal component analysis
 
 ## problem statement
 
-- map $x \in R^d$ to $z \in \mathbb{R}^q$ with $q < d$
-- A $q \times d$ matrix can represent a linear mapping:
-  $$
-  z = Ax
-  $$
-  - Assume that $A A^T = I$ (orthonormal matrix)
+Given points $x^1,\ldots,x^n\in\mathbb{R}^d$, retain $q<d$ coordinates while minimising squared reconstruction error. Put observations in **columns**:
+
+$$
+\mu=\frac{1}{n}\sum_{i=1}^n x^i,
+\qquad
+X_c=\begin{bmatrix}x^1-\mu&\cdots&x^n-\mu\end{bmatrix}
+\in\mathbb{R}^{d\times n}.
+$$
+
+The encoder $A\in\mathbb{R}^{q\times d}$ has orthonormal rows, so $AA^T=I_q$. Encoding and reconstruction are
+
+$$
+z=A(x-\mu)\in\mathbb{R}^q,
+\qquad
+\widehat x=\mu+A^Tz.
+$$
+
+The matrix $A^TA$ projects onto the retained subspace. Adding $\mu$ restores the location of the data.
 
 ## minimising reconstruction error
 
-- Given $X \in \mathbb{R}^{d \times n}$, find $A$ that minimises the reconstruction error:
-  $$
-  \min\limits_{A,B} \sum_{i} \| x^i - B A x^i \|_2^2
-  $$
+Within any chosen subspace, orthogonal projection gives the closest point. We can therefore find an optimal linear encoder and decoder by solving
 
-> if $q=d$, then error is zero.
+$$
+\min_{A:\,AA^T=I_q}
+\left\|X_c-A^TAX_c\right\|_F^2
+=\min_{A:\,AA^T=I_q}
+\sum_{i=1}^n
+\left\|(x^i-\mu)-A^TA(x^i-\mu)\right\|_2^2.
+$$
 
-Solution:
+One optimal encoder-decoder pair has $B=A^T$. This choice follows from finding the projection subspace; an arbitrary fixed encoder need not have its transpose as its best decoder.
 
-- $B = A^T$
-- $\min\limits_{A} \sum_i \| x^i - A^T A x^i \|^2$ is subjected to $A A^T = I_{q \times q}$
-- assuming data is centered, or $\frac{1}{n} \sum\_{i} x^i = \begin{bmatrix} 0 & \cdots & 0 \end{bmatrix}^T $
+Projection and residual are perpendicular. Pythagoras gives
+
+$$
+\left\|X_c-A^TAX_c\right\|_F^2
+=\|X_c\|_F^2-\|AX_c\|_F^2.
+$$
+
+Thus minimising discarded squared length maximises retained variance. This is the reconstruction objective in [Guestrin's PCA lecture](https://cs229.stanford.edu/notes2022fall/pca.pdf).
 
 ## eigenvalue decomposition
 
+Use the empirical covariance with denominator $n$:
+
 $$
-\begin{aligned}
-X^T X \mathcal{u} &= \lambda \mathcal{u} \\
-X^T X &= U^T \Lambda U \\
-\\
-\\
-\because \Lambda &= \text{diag}(\lambda_1, \lambda_2, \cdots, \lambda_d) \\ &= \begin{bmatrix} \lambda_1 & 0 & \cdots & 0 \\
-0 & \lambda_2 & \cdots & 0 \\
-\vdots & \vdots & \ddots & \vdots \\
-0 & 0 & \cdots & \lambda_q \end{bmatrix}
-\end{aligned}
+C=\frac{1}{n}X_cX_c^T
+=\frac{1}{n}\sum_{i=1}^n(x^i-\mu)(x^i-\mu)^T
+\in\mathbb{R}^{d\times d}.
 $$
+
+For $n>1$, using $n-1$ instead rescales every eigenvalue and leaves the principal directions unchanged. The unnormalised sum is the scatter matrix.
+
+Since $C$ is symmetric and positive semidefinite, choose orthonormal eigenvectors as the **columns** of $U$:
+
+$$
+Cu_j=\lambda_j u_j,
+\qquad
+C=U\Lambda U^T,
+\qquad
+\Lambda=\operatorname{diag}(\lambda_1,\ldots,\lambda_d),
+\qquad
+\lambda_1\geq\cdots\geq\lambda_d\geq0.
+$$
+
+The variance along a unit direction $u$ is $u^TCu$. Choosing the top $q$ eigenvectors maximises the sum of retained variances, as derived in [Ng's PCA notes](https://cs229.stanford.edu/notes2020spring/cs229-notes10.pdf).
+
+Watch the dimensions: $X_c^TX_c\in\mathbb{R}^{n\times n}$ acts on sample coordinates. Its eigenvectors are not directly feature directions. With the full [[thoughts/Singular Value Decomposition|SVD]],
+
+$$
+X_c=U\Sigma V^T,
+\qquad
+C=U\frac{\Sigma\Sigma^T}{n}U^T,
+\qquad
+\lambda_j=\frac{\sigma_j^2}{n}.
+$$
+
+Here $\sigma_j$ are singular values, with zeros supplied where needed. The left singular vectors give the feature directions because observations are columns. Putting observations in rows makes them the right singular vectors instead.
 
 ## pca
 
-Idea: given input $x^1, \cdots, x^n \in \mathbb{R}^d$, $\mu = \frac{1}{n} \sum_{i} x^i$
-
-Thus
+For observations $x^i\in\mathbb{R}^d$, compute their mean $\mu$ and the covariance $C=\frac{1}{n}\sum_i(x^i-\mu)(x^i-\mu)^T$. Let $U_q=[u_1\ \cdots\ u_q]$ contain its top $q$ orthonormal eigenvectors. Then
 
 $$
-C = \sum (x^i - \mu)(x^i - \mu)^T
+A=U_q^T,
+\qquad
+z^i=U_q^T(x^i-\mu),
+\qquad
+\widehat x^i=\mu+U_qz^i.
 $$
 
-Find the eigenvectors/values of $C$:
+The minimum total squared reconstruction error is
 
 $$
-C = U^T \Lambda U
+\sum_{i=1}^n\|x^i-\widehat x^i\|_2^2
+=n\sum_{j=q+1}^d\lambda_j.
 $$
 
-Optimal $A$ is:
+If the covariance eigenvalues are $9$ and $1$, retaining the first direction preserves $9/10$ of total variance and leaves per-observation squared reconstruction error $1$. Zero error needs $q\geq\operatorname{rank}(X_c)$; the data may already occupy fewer than $d$ dimensions. Tied eigenvalues at the cutoff allow several equally good subspaces.
 
-$$
-A = \begin{bmatrix}
-u_1^T \\
-u_2^T \\
-\vdots \\
-u_q^T
-\end{bmatrix}
-$$
+Centering is part of this derivation. Scaling each feature to unit variance is a separate choice that changes the distance being minimised. Large variance alone also says nothing about whether a direction helps predict a label.
