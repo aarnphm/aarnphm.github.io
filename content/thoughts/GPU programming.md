@@ -128,6 +128,12 @@ I_{\mathrm{ridge}}
 \approx295\ \mathrm{FLOP/byte}.
 $$
 
+```jsx imports={Zoomable,Roofline}
+<Zoomable label="Roofline for H100 SXM">
+  <Roofline caption="One H100 SXM in dense BF16: $P_{\max}=989.5\ \mathrm{TFLOP/s}$, $B=3.35\ \mathrm{TB/s}$. In decode, each 2-byte weight feeds $2b$ FLOPs across a batch of $b$ sequences, so $I\approx b$ FLOP/byte. This counts the weight GEMMs only. KV-cache reads grow with context length and move each point left. Prefill over $2048$ tokens reuses each weight $2048$ times and sits on the compute roof." />
+</Zoomable>
+```
+
 Using the sparse peak would double this ceiling and require matching sparsity assumptions. Tiling can increase reuse and reduce $Q$, but larger tiles also consume more registers and shared memory. Measure runtime after the change. Crossing the ridge point alone does not establish a speedup. NVIDIA's [occupancy guidance](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#thread-and-block-heuristics) explains the resource tradeoff.
 
 ### profiling tools
