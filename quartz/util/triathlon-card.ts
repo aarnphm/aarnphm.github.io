@@ -50,7 +50,7 @@ import {
 import { SWIM_POWER_BIN_SIZE, type SwimPowerEstimate } from './swim-power'
 import { triathlonActivityAnchor } from './triathlon-date-route'
 import { buildGarminHealth, buildGarminRecovery } from './triathlon-garmin-health'
-import { healthTooltip } from './triathlon-health'
+import { healthTooltip, ouraScoreStatus } from './triathlon-health'
 import {
   criticalPowerEvidenceText,
   criticalPowerSummaryParts,
@@ -4985,7 +4985,7 @@ type SwimWorkoutLap = {
   paceS: number
 }
 
-const swimWorkoutLaps = (d: StravaActivityDetail): SwimWorkoutLap[] => {
+export const swimWorkoutLaps = (d: StravaActivityDetail): SwimWorkoutLap[] => {
   const laps: SwimWorkoutLap[] = []
   for (const range of validAnalysisRanges(d)
     .filter(candidate => candidate.kind === 'lap')
@@ -7676,8 +7676,8 @@ export type AxisXTick = {
 
 export type AxisYTick = { label: string; vbY: number; cls?: string; attrs?: Record<string, string> }
 
-const HR_ZONE_NAMES = ['recovery', 'endurance', 'tempo', 'threshold', 'anaerobic']
-const POWER_ZONE_NAMES = [
+export const HR_ZONE_NAMES = ['recovery', 'endurance', 'tempo', 'threshold', 'anaerobic']
+export const POWER_ZONE_NAMES = [
   'recovery',
   'endurance',
   'tempo',
@@ -12996,27 +12996,36 @@ const dayAnalyticsContributionGroup = <N>(
     }),
   )
   for (const [key, value] of rows) {
-    const row = f.el('div', 'tri-sleep-contrib-row')
-    const bar = f.el('div', 'tri-sleep-contrib-bar', undefined, { 'aria-hidden': 'true' })
+    const label = key.replaceAll('_', ' ')
+    const status = ouraScoreStatus(value)
+    const row = f.el('div', 'tri-sleep-contrib-row', undefined, {
+      'data-health-tone': status?.tone ?? 'neutral',
+    })
+    const valueText = `${dayAnalyticsNumber(f.presentation, value)}${status ? ` · ${triText(f.presentation.locale, status.label)}` : ''}`
+    const bar = f.el('div', 'tri-sleep-contrib-bar', undefined, {
+      role: 'meter',
+      'aria-label': triText(f.presentation.locale, label),
+      'aria-valuemin': '0',
+      'aria-valuemax': '100',
+      'aria-valuenow': String(value),
+      'aria-valuetext': valueText,
+      'data-health-tone': status?.tone ?? 'neutral',
+    })
     f.add(
       bar,
-      f.el(
-        'div',
-        value >= 70
-          ? 'tri-sleep-contrib-fill'
-          : 'tri-sleep-contrib-fill tri-sleep-contrib-fill--low',
-        undefined,
-        { style: `width:${Math.max(0, Math.min(100, value))}%` },
-      ),
+      f.el('div', 'tri-sleep-contrib-fill', undefined, {
+        style: `width:${Math.max(0, Math.min(100, value))}%`,
+      }),
     )
-    const label = key.replaceAll('_', ' ')
     f.add(
       row,
       f.el('span', 'tri-sleep-contrib-label', triText(f.presentation.locale, label), {
         'data-i18n': label,
       }),
       bar,
-      f.el('span', 'tri-sleep-contrib-val', dayAnalyticsNumber(f.presentation, value)),
+      f.el('span', 'tri-sleep-contrib-val', dayAnalyticsNumber(f.presentation, value), {
+        title: valueText,
+      }),
     )
     f.add(group, row)
   }

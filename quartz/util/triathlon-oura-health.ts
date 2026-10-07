@@ -1,7 +1,12 @@
 import type { OuraHealthDay } from '../plugins/stores/oura'
 import type { OuraRestorationBaseline } from './oura-health'
 import type { TriNodeFactory } from './triathlon-card'
-import { healthScoreTable, type HealthRow } from './triathlon-health'
+import {
+  healthScoreTable,
+  ouraScoreStatus,
+  type HealthRow,
+  type HealthStatus,
+} from './triathlon-health'
 import { triText } from './triathlon-i18n'
 
 const duration = (seconds: number): string => {
@@ -55,11 +60,24 @@ export function buildOuraHealth<N>(
   ): HealthRow[] =>
     value == null
       ? []
-      : [{ label, value: value.toFixed(0), score: value, detail: source(description) }]
+      : [
+          {
+            label,
+            value: value.toFixed(0),
+            score: value,
+            status: ouraScoreStatus(value),
+            detail: source(description),
+          },
+        ]
   const stress = day.stress
   if (stress && (stress.stressS != null || stress.restoredS != null)) {
     const max = Math.max(1, stress.stressS ?? 0, stress.restoredS ?? 0, baseline?.seconds ?? 0)
-    const row = (label: string, seconds: number | null, description: string): HealthRow[] =>
+    const row = (
+      label: string,
+      seconds: number | null,
+      description: string,
+      status: HealthStatus | null,
+    ): HealthRow[] =>
       seconds == null
         ? []
         : [
@@ -67,6 +85,7 @@ export function buildOuraHealth<N>(
               label,
               value: duration(seconds),
               score: (seconds / max) * 100,
+              status,
               detail: source(description),
             },
           ]
@@ -77,13 +96,24 @@ export function buildOuraHealth<N>(
           'stressed',
           stress.stressS,
           `${t('oura stress description')}\n${stress.summary ?? ''}`,
+          { tone: 'watch', label: 'stressed' },
         ),
-        ...row('restored', stress.restoredS, t('oura restoration description')),
+        ...row(
+          'restored',
+          stress.restoredS,
+          t('oura restoration description'),
+          baseline && baseline.seconds > 0 && stress.restoredS != null
+            ? stress.restoredS >= baseline.seconds
+              ? { tone: 'good', label: 'at or above usual restoration' }
+              : { tone: 'watch', label: 'below usual restoration' }
+            : { tone: 'info', label: 'restored' },
+        ),
         ...(baseline && stress.restoredS != null
           ? row(
               'usual restoration',
               baseline.seconds,
               `${t('restoration baseline description')} · n=${baseline.days}`,
+              { tone: 'neutral', label: 'usual restoration' },
             )
           : []),
       ],
@@ -121,7 +151,7 @@ export function buildOuraHealth<N>(
       'movement',
       [
         ...numberRow('steps', activity.steps, t('movement description')),
-        ...periods.flatMap(period =>
+        ...periods.flatMap((period): HealthRow[] =>
           period.seconds == null
             ? []
             : [
@@ -129,6 +159,16 @@ export function buildOuraHealth<N>(
                   label: period.label,
                   value: duration(period.seconds),
                   score: (period.seconds / Math.max(1, total)) * 100,
+                  // These widths are time shares, so a short active period is not a poor score.
+                  status: {
+                    tone:
+                      period.label === 'sedentary'
+                        ? 'watch'
+                        : period.label === 'resting' || period.label === 'not worn'
+                          ? 'neutral'
+                          : 'info',
+                    label: period.label,
+                  },
                   detail: source(
                     `${t('movement description')}\n${t('recorded duration')} ${duration(total)}`,
                   ),
@@ -146,6 +186,10 @@ export function buildOuraHealth<N>(
         label: 'activity goal',
         value: `${percent.toFixed(0)}%`,
         score: Math.min(100, percent),
+        status: {
+          tone: percent >= 100 ? 'good' : 'watch',
+          label: percent >= 100 ? 'target met' : 'below target',
+        },
         detail: source(
           `${activity.activeCalories.toFixed(0)} / ${activity.targetCalories.toFixed(0)} kcal\n${t('activity goal description')}`,
         ),
@@ -157,6 +201,10 @@ export function buildOuraHealth<N>(
         label: 'walking equivalent',
         value: `${percent.toFixed(0)}%`,
         score: Math.min(100, percent),
+        status: {
+          tone: percent >= 100 ? 'good' : 'watch',
+          label: percent >= 100 ? 'target met' : 'below target',
+        },
         detail: source(
           `${(activity.equivalentWalkingDistanceM / 1000).toFixed(1)} / ${(activity.targetDistanceM / 1000).toFixed(1)} km\n${t('walking equivalent description')}`,
         ),

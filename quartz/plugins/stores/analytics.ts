@@ -29,7 +29,7 @@ import {
   FTP_HYPOTHESIS_DEFAULTS,
   type FtpHypothesisParams,
 } from '../../util/ftp-hypothesis'
-import { localIsoDay } from '../../util/local-date'
+import { localIsoDay, shiftIsoDay } from '../../util/local-date'
 import { latestProviderSync } from '../../util/provider-sync'
 import { runPaceZoneReference } from '../../util/run-pace-zones'
 import { resolveSleepMetrics, type SleepMetrics } from '../../util/sleep-metrics'
@@ -388,7 +388,9 @@ export type PowerCurveInput = Omit<
 export type Conf = 'firm' | 'low' | 'prior' | 'stale'
 export type TsbZone = 'fresh' | 'neutral' | 'fatigued' | 'deep'
 export type AcwrState = 'building' | 'low' | 'ok' | 'caution' | 'high'
-export type TrendMethod = 'none' | 'ewma' | 'ols'
+export type TrendMethod = 'none' | 'kalman'
+/** pace: session average. The heart-rate signals are speed or power at the trend's reference heart rate. */
+export type TrendSignal = 'pace' | 'pace-at-heart-rate' | 'power-at-heart-rate'
 export type RaceDistance = 'sprint' | 'olympic' | '70.3' | 'ironman'
 
 export interface MethodConstants {
@@ -483,11 +485,27 @@ export interface SportTrendForecastPoint {
   hi: number
 }
 
+export interface SportTrendSession {
+  date: string
+  /** In the trend's signal: at the reference heart rate when the trend is heart-rate anchored. */
+  value: number
+  /** Steady-window mean before the heart-rate correction. */
+  steady: number | null
+  heartRate: number | null
+  windows: number
+  /** Huber-weighted: the filter counted this session at reduced weight. */
+  outlier: boolean
+}
+
 export interface SportTrend {
   sport: Sport
   unit: string
   invert: boolean
   method: TrendMethod
+  signal: TrendSignal
+  referenceHeartRate: number | null
+  /** Change in speed or power per beat, in percent, from steady windows within sessions. */
+  heartRateSlopePct: number | null
   stale: boolean
   sampleSize: number
   spanDays: number
@@ -496,6 +514,13 @@ export interface SportTrend {
   etaNow: number | null
   daysSinceLastEffort: number | null
   forecast: SportTrendForecastPoint[]
+  /** Smoothed daily level of every fitted day, ending today. */
+  history: SportTrendForecastPoint[]
+  sessions: SportTrendSession[]
+  /** The forecast issued fourteen days ago, from then to today. */
+  issued: SportTrendForecastPoint[]
+  /** Days whose smoothed level fell inside the 80% band issued fourteen days before. */
+  hindcast: { hits: number; days: number } | null
 }
 
 export type CalibrationDirection = 'faster' | 'slower' | 'flat' | 'unknown'
@@ -1033,6 +1058,20 @@ export interface DataFeedInputs {
   generatedAt?: number
 }
 
+export type CalibrationProjection = Pick<
+  SportCalibration,
+  'sport' | 'projected' | 'projectedDelta' | 'projectedDeltaPct'
+>
+
+/** Trend, race readiness and pace projections fitted on the recent window alone. */
+export interface RecentEstimates {
+  /** First day of the window; the window ends at `meta.today`. */
+  from: string
+  trends: SportTrend[]
+  races: RaceReadiness[]
+  projections: CalibrationProjection[]
+}
+
 export interface Analytics {
   meta: AnalyticsMeta
   calibration: CalibrationBlock
@@ -1058,6 +1097,8 @@ export interface Analytics {
   weakestSport: Sport
   actions: TrainingAction[]
   tests: LabTests
+  /** The 60-day range swaps these in for `trends`, `races` and the calibration projections. */
+  recent: RecentEstimates
 }
 
 function powerToWeightAgeGroup(age: number): PowerToWeightAgeGroup | null {
@@ -2421,158 +2462,461 @@ function buildWeekly(
 }
 
 const TREND_FORECAST_DAYS = 14
-const TREND_HALFLIFE_DAYS = 28
+// The analytics "last 60 days" range; trend and readiness refit on it.
+const RECENT_RANGE_DAYS = 60
 const TREND_DAMP = 0.94
 const TREND_Z = 1.28
+// Innovations past 2.5 standard deviations get Huber weights, so a broken heart-rate strap or a GPS
+// jump moves the trend by a bounded amount.
+const TREND_HUBER = 2.5
+const TREND_MIN_SESSIONS = 6
+const TREND_MIN_SPAN_DAYS = 21
+// Within-session slopes outside 0.5–2 % per beat come from too few or too similar windows.
+const TREND_HR_SLOPE_MIN = 0.005
+const TREND_HR_SLOPE_MAX = 0.02
+// Maximum-likelihood grid for day-to-day noise (log units) and the level and slope random walks.
+const TREND_DAY_SD = [0.01, 0.015, 0.02, 0.03, 0.04, 0.055, 0.075, 0.1, 0.14, 0.2, 0.28]
+const TREND_LEVEL_Q = [0, 1e-7, 3e-7, 1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3]
+const TREND_SLOPE_Q = [0, 1e-10, 1e-9, 1e-8, 1e-7, 1e-6, 1e-5]
+const RIDE_STEADY_MIN_WATTS = 50
+const RIDE_STEADY_MAX_POWER_CV = 0.25
+const RIDE_STEADY_MAX_COAST = 0.1
 
-const dampedTrendForecast = (
-  today: number,
-  etaNow: number,
-  slopePerDay: number,
-  halfAt: (d: number) => number,
-): SportTrendForecastPoint[] => {
-  const out: SportTrendForecastPoint[] = []
-  let phi = 1
-  let cum = 0
-  for (let d = 1; d <= TREND_FORECAST_DAYS; d++) {
-    phi *= TREND_DAMP
-    cum += phi
-    const value = etaNow + slopePerDay * cum
-    const half = halfAt(d)
-    out.push({
-      date: new Date(today + d * DAY_MS).toISOString().slice(0, 10),
-      value: round(value, 1),
-      lo: round(value - half, 1),
-      hi: round(value + half, 1),
+/** Steady 8-minute windows of one ride with a power meter: mean heart rate and mean power. */
+function steadyRideWindows(stream: StravaStreams): { heartRate: number; watts: number }[] {
+  const { time, heartrate, watts } = stream
+  if (
+    !time ||
+    !heartrate ||
+    !watts ||
+    heartrate.length !== time.length ||
+    watts.length !== time.length
+  )
+    return []
+  const n = time.length
+  const windows: { heartRate: number; watts: number }[] = []
+  let end = 0
+  let nextStartS = -Infinity
+  for (let start = 0; start < n; start++) {
+    if (time[start] < nextStartS) continue
+    nextStartS = time[start] + RUN_LT_STEP_S
+    while (end < n && time[end] - time[start] < RUN_LT_WINDOW_S) end++
+    if (end >= n) break
+    if (time[end] - time[start] > RUN_LT_WINDOW_S * 1.1) continue
+
+    const beats: number[] = []
+    let coasting = 0
+    for (let i = start; i < end; i++) {
+      if (heartrate[i] > 0) beats.push(heartrate[i])
+      if (!(watts[i] > 0)) coasting++
+    }
+    if (beats.length < 0.9 * (end - start) || sd(beats) > RUN_LT_MAX_HR_SD) continue
+    if (coasting > RIDE_STEADY_MAX_COAST * (end - start)) continue
+
+    const chunks: number[] = []
+    let chunkStart = start
+    let chunkSum = 0
+    let total = 0
+    for (let i = start; i < end; i++) {
+      const w = watts[i] > 0 ? watts[i] : 0
+      chunkSum += w
+      total += w
+      if (time[i] - time[chunkStart] < RUN_LT_CHUNK_S) continue
+      chunks.push(chunkSum / (i - chunkStart + 1))
+      chunkStart = i + 1
+      chunkSum = 0
+    }
+    const chunkMean = mean(chunks)
+    if (
+      chunks.length < 3 ||
+      !(chunkMean > RIDE_STEADY_MIN_WATTS) ||
+      sd(chunks) / chunkMean > RIDE_STEADY_MAX_POWER_CV
+    )
+      continue
+    windows.push({ heartRate: mean(beats), watts: total / (end - start) })
+  }
+  return windows
+}
+
+interface TrendObservation {
+  day: string
+  /** Log speed or log power; at the reference heart rate when the trend is heart-rate anchored. */
+  y: number
+  /** Sampling variance of y from the steady windows. */
+  windowVar: number
+  /** Steady-window mean before the heart-rate correction, in log units. */
+  steady: number | null
+  heartRate: number | null
+  windows: number
+}
+
+/**
+ * Sessions as speed or power at one reference heart rate. A pooled within-session slope through the
+ * steady windows removes how hard each session was, so the series follows fitness instead of the mix
+ * of easy and hard days. The reference is the median window heart rate, which keeps extrapolation short.
+ */
+function heartRateTrendObservations(
+  mine: readonly Act[],
+  sport: Sport,
+  streams: Readonly<Record<string, StravaStreams>> | undefined,
+): { observations: TrendObservation[]; referenceHeartRate: number; slope: number } | null {
+  if (sport === 'swim' || !streams) return null
+  const sessions: { day: string; heartRates: number[]; logs: number[] }[] = []
+  for (const act of mine) {
+    // Strava's estimated watts follow speed and grade, so only power-meter rides carry power.
+    if (sport === 'run' ? isTreadmillRun(act.a) : act.a.deviceWatts !== true) continue
+    const stream = streams[String(act.a.id)]
+    if (!stream) continue
+    const windows =
+      sport === 'run'
+        ? steadyRunWindows(stream).map(w => ({ heartRate: w.heartRate, value: w.gapSpeed }))
+        : steadyRideWindows(stream).map(w => ({ heartRate: w.heartRate, value: w.watts }))
+    if (!windows.length) continue
+    sessions.push({
+      day: act.day,
+      heartRates: windows.map(w => w.heartRate),
+      logs: windows.map(w => Math.log(w.value)),
     })
+  }
+  if (sessions.length < TREND_MIN_SESSIONS) return null
+  const span = (dayMs(sessions[sessions.length - 1].day) - dayMs(sessions[0].day)) / DAY_MS
+  if (span < TREND_MIN_SPAN_DAYS) return null
+
+  const centred = sessions.map(s => ({ ...s, hr: mean(s.heartRates), log: mean(s.logs) }))
+  let sxx = 0
+  let sxy = 0
+  let count = 0
+  for (const s of centred) {
+    for (let i = 0; i < s.logs.length; i++) {
+      sxx += (s.heartRates[i] - s.hr) ** 2
+      sxy += (s.heartRates[i] - s.hr) * (s.logs[i] - s.log)
+    }
+    count += s.logs.length
+  }
+  if (!(sxx > 0)) return null
+  const slope = clamp(sxy / sxx, TREND_HR_SLOPE_MIN, TREND_HR_SLOPE_MAX)
+  let rss = 0
+  for (const s of centred)
+    for (let i = 0; i < s.logs.length; i++)
+      rss += (s.logs[i] - s.log - slope * (s.heartRates[i] - s.hr)) ** 2
+  const windowVar = rss / Math.max(1, count - centred.length - 1)
+  const referenceHeartRate = 5 * Math.round(median(centred.flatMap(s => s.heartRates)) / 5)
+  return {
+    observations: centred.map(s => ({
+      day: s.day,
+      y: s.log + slope * (referenceHeartRate - s.hr),
+      windowVar: windowVar / s.logs.length,
+      steady: s.log,
+      heartRate: s.hr,
+      windows: s.logs.length,
+    })),
+    referenceHeartRate,
+    slope,
+  }
+}
+
+interface TrendState {
+  l: number
+  s: number
+  p00: number
+  p01: number
+  p11: number
+}
+
+interface TrendNoise {
+  r: number
+  ql: number
+  qs: number
+}
+
+const predictTrend = (x: TrendState, phi: number, noise: TrendNoise): TrendState => ({
+  l: x.l + phi * x.s,
+  s: phi * x.s,
+  p00: x.p00 + 2 * phi * x.p01 + phi * phi * x.p11 + noise.ql,
+  p01: phi * x.p01 + phi * phi * x.p11,
+  p11: phi * phi * x.p11 + noise.qs,
+})
+
+/**
+ * Local linear trend stepped one calendar day at a time, so gaps between sessions widen the
+ * uncertainty. Returns the predicted and filtered state of every day.
+ */
+function filterTrend(
+  observations: readonly TrendObservation[],
+  byDay: ReadonlyMap<number, number[]>,
+  days: number,
+  noise: TrendNoise,
+): { predicted: TrendState[]; filtered: TrendState[]; logLik: number; outliers: Set<number> } {
+  let x: TrendState = { l: observations[0].y, s: 0, p00: 1, p01: 0, p11: 1e-4 }
+  const predicted: TrendState[] = []
+  const filtered: TrendState[] = []
+  const outliers = new Set<number>()
+  let logLik = 0
+  for (let k = 0; k < days; k++) {
+    if (k > 0) x = predictTrend(x, 1, noise)
+    predicted.push(x)
+    for (const i of byDay.get(k) ?? []) {
+      const o = observations[i]
+      const v = o.y - x.l
+      let r = noise.r + o.windowVar
+      let S = x.p00 + r
+      const z = Math.abs(v) / Math.sqrt(S)
+      if (z > TREND_HUBER) {
+        r *= (z / TREND_HUBER) ** 2
+        S = x.p00 + r
+        outliers.add(i)
+      }
+      const k0 = x.p00 / S
+      const k1 = x.p01 / S
+      x = {
+        l: x.l + k0 * v,
+        s: x.s + k1 * v,
+        p00: x.p00 * (1 - k0),
+        p01: x.p01 * (1 - k0),
+        p11: x.p11 - k1 * x.p01,
+      }
+      logLik -= 0.5 * (Math.log(S) + (v * v) / S)
+    }
+    filtered.push(x)
+  }
+  return { predicted, filtered, logLik, outliers }
+}
+
+/** Rauch–Tung–Striebel pass: each day's level and its variance given every session. */
+function smoothTrend(
+  predicted: readonly TrendState[],
+  filtered: readonly TrendState[],
+): { l: number; v: number }[] {
+  const last = filtered.length - 1
+  let sm = filtered[last]
+  const out = filtered.map(f => ({ l: f.l, v: f.p00 }))
+  for (let k = last - 1; k >= 0; k--) {
+    const f = filtered[k]
+    const p = predicted[k + 1]
+    const det = p.p00 * p.p11 - p.p01 * p.p01
+    // Without process noise the predicted covariance can go singular; keep the filtered state.
+    if (!(det > 1e-30)) {
+      sm = f
+      continue
+    }
+    // C = Pf·Fᵀ·Pp⁻¹ with F = [[1, 1], [0, 1]].
+    const a00 = f.p00 + f.p01
+    const a10 = f.p01 + f.p11
+    const i00 = p.p11 / det
+    const i01 = -p.p01 / det
+    const i11 = p.p00 / det
+    const c00 = a00 * i00 + f.p01 * i01
+    const c01 = a00 * i01 + f.p01 * i11
+    const c10 = a10 * i00 + f.p11 * i01
+    const c11 = a10 * i01 + f.p11 * i11
+    const dl = sm.l - p.l
+    const ds = sm.s - p.s
+    const d00 = sm.p00 - p.p00
+    const d01 = sm.p01 - p.p01
+    const d11 = sm.p11 - p.p11
+    const e00 = c00 * d00 + c01 * d01
+    const e01 = c00 * d01 + c01 * d11
+    const e10 = c10 * d00 + c11 * d01
+    const e11 = c10 * d01 + c11 * d11
+    sm = {
+      l: f.l + c00 * dl + c01 * ds,
+      s: f.s + c10 * dl + c11 * ds,
+      p00: f.p00 + e00 * c00 + e01 * c01,
+      p01: f.p01 + e00 * c10 + e01 * c11,
+      p11: f.p11 + e10 * c10 + e11 * c11,
+    }
+    out[k] = { l: sm.l, v: Math.max(0, sm.p00) }
   }
   return out
 }
 
-function buildTrend(
+/** Damped projection of the level: the slope decays by TREND_DAMP per day. Index 0 is the state. */
+const projectTrend = (
+  x: TrendState,
+  noise: TrendNoise,
+  days: number,
+): { l: number; v: number }[] => {
+  const out = [{ l: x.l, v: x.p00 }]
+  let state = x
+  for (let d = 1; d <= days; d++) {
+    state = predictTrend(state, TREND_DAMP, noise)
+    out.push({ l: state.l, v: state.p00 })
+  }
+  return out
+}
+
+function fitTrendNoise(
+  observations: readonly TrendObservation[],
+  byDay: ReadonlyMap<number, number[]>,
+  days: number,
+): TrendNoise {
+  let best: TrendNoise = { r: TREND_DAY_SD[0] ** 2, ql: 0, qs: 0 }
+  let bestLogLik = -Infinity
+  for (const daySd of TREND_DAY_SD)
+    for (const ql of TREND_LEVEL_Q)
+      for (const qs of TREND_SLOPE_Q) {
+        const noise = { r: daySd ** 2, ql, qs }
+        const { logLik } = filterTrend(observations, byDay, days, noise)
+        if (logLik > bestLogLik) {
+          bestLogLik = logLik
+          best = noise
+        }
+      }
+  return best
+}
+
+/** Speed ratio between two values of a trend. Air drag dominates cycling, so power converts by the cube root. */
+function trendSpeedRatio(trend: SportTrend, from: number, to: number): number {
+  if (trend.signal === 'power-at-heart-rate') return Math.cbrt(to / from)
+  return trend.invert ? from / to : to / from
+}
+
+interface TrendSource extends Pick<
+  SportTrend,
+  'sport' | 'unit' | 'invert' | 'signal' | 'referenceHeartRate' | 'heartRateSlopePct'
+> {
+  observations: TrendObservation[]
+  /** Converts a fitted log value to the unit the trend reports. */
+  human: (y: number) => number
+}
+
+/** One sport's observations. The heart-rate normalisation uses every session, whatever window is fitted. */
+function trendSource(
   acts: Act[],
   threshold: ThresholdEstimate,
   sport: Sport,
-  today: number,
-): SportTrend {
+  streams: Readonly<Record<string, StravaStreams>> | undefined,
+): TrendSource {
   const mine = acts.filter(x => x.sport === sport)
-  const unit = threshold.unit
-  const invert = sport !== 'bike'
-  const toHuman = (v: number): number => {
-    if (sport === 'swim') return round(100 / v, 1)
-    if (sport === 'run') return round(1000 / v, 1)
-    return round(v * 3.6, 1)
-  }
-
-  if (mine.length === 0) {
-    return {
-      sport,
-      unit,
-      invert,
-      method: 'none',
-      stale: true,
-      sampleSize: 0,
-      spanDays: 0,
-      level: null,
-      slopePerWeek: null,
-      etaNow: null,
-      daysSinceLastEffort: null,
-      forecast: [],
-    }
-  }
-
-  const firstMs = dayMs(mine[0].day)
-  const lastMs = dayMs(mine[mine.length - 1].day)
-  const spanDays = Math.round((lastMs - firstMs) / DAY_MS)
-  const daysSinceLast = Math.round((today - lastMs) / DAY_MS)
-  const n = mine.length
-  const xs = mine.map(x => (dayMs(x.day) - firstMs) / DAY_MS)
-  const ys = mine.map(x => toHuman(x.vGap))
-  let maxGap = 0
-  for (let i = 1; i < xs.length; i++) maxGap = Math.max(maxGap, xs[i] - xs[i - 1])
-  const todayX = (today - firstMs) / DAY_MS
-
-  if (daysSinceLast > 45 || n < 3) {
-    return {
-      sport,
-      unit,
-      invert,
-      method: 'none',
-      stale: true,
-      sampleSize: n,
-      spanDays,
-      level: round(ys[ys.length - 1], 1),
-      slopePerWeek: null,
-      etaNow: null,
-      daysSinceLastEffort: daysSinceLast,
-      forecast: [],
-    }
-  }
-
-  if (n >= 6 && spanDays >= 21 && maxGap <= 14) {
-    const w = xs.map(x => 0.5 ** ((todayX - x) / TREND_HALFLIFE_DAYS))
-    const wSum = w.reduce((s, v) => s + v, 0)
-    const mx = xs.reduce((s, x, i) => s + w[i] * x, 0) / wSum
-    const my = ys.reduce((s, y, i) => s + w[i] * y, 0) / wSum
-    let sxx = 0
-    let sxy = 0
-    for (let i = 0; i < n; i++) {
-      sxx += w[i] * (xs[i] - mx) ** 2
-      sxy += w[i] * (xs[i] - mx) * (ys[i] - my)
-    }
-    const b = sxx > 0 ? sxy / sxx : 0
-    const a = my - b * mx
-    const wr2 = ys.reduce((s, y, i) => s + w[i] * (y - (a + b * xs[i])) ** 2, 0)
-    const nEff = wSum ** 2 / w.reduce((s, v) => s + v * v, 0)
-    const se = Math.sqrt(wr2 / wSum) * Math.sqrt(nEff / Math.max(1, nEff - 2))
-    const etaNow = a + b * todayX
-    const halfAt = (d: number): number =>
-      TREND_Z * se * Math.sqrt(1 / nEff + (todayX + d - mx) ** 2 / (sxx || 1))
-    return {
-      sport,
-      unit,
-      invert,
-      method: 'ols',
-      stale: false,
-      sampleSize: n,
-      spanDays,
-      level: round(etaNow, 1),
-      slopePerWeek: round(b * 7, 2),
-      etaNow: round(etaNow, 1),
-      daysSinceLastEffort: daysSinceLast,
-      forecast: dampedTrendForecast(today, etaNow, b, halfAt),
-    }
-  }
-
-  const alpha = 0.3
-  let level = ys[0]
-  for (let i = 1; i < ys.length; i++) level += alpha * (ys[i] - level)
-  const resid = ys.map((y, i) => {
-    let l = ys[0]
-    for (let j = 1; j <= i; j++) l += alpha * (ys[j] - l)
-    return y - l
-  })
-  const sigma = sd(resid)
-  const firstHalf = mean(ys.slice(0, Math.max(1, Math.floor(ys.length / 2))))
-  const secondHalf = mean(ys.slice(Math.floor(ys.length / 2)))
-  const perPoint = ys.length > 1 ? (secondHalf - firstHalf) / Math.max(1, ys.length / 2) : 0
-  const avgGap = spanDays > 0 && n > 1 ? spanDays / (n - 1) : 7
-  const slopePerWeek = avgGap > 0 ? round((perPoint / avgGap) * 7, 2) : 0
-  const sigmaLevel = sigma * Math.sqrt(alpha / (2 - alpha))
-  const halfAt = (d: number): number => TREND_Z * sigmaLevel * Math.sqrt(d / TREND_FORECAST_DAYS)
+  const anchored = heartRateTrendObservations(mine, sport, streams)
+  const signal: TrendSignal = !anchored
+    ? 'pace'
+    : sport === 'bike'
+      ? 'power-at-heart-rate'
+      : 'pace-at-heart-rate'
+  const power = signal === 'power-at-heart-rate'
   return {
     sport,
-    unit,
-    invert,
-    method: 'ewma',
+    unit: power ? 'W' : threshold.unit,
+    invert: !power && sport !== 'bike',
+    signal,
+    referenceHeartRate: anchored?.referenceHeartRate ?? null,
+    heartRateSlopePct: anchored ? round(anchored.slope * 100, 2) : null,
+    observations:
+      anchored?.observations ??
+      mine
+        .filter(x => x.vGap > 0)
+        .map(x => ({
+          day: x.day,
+          y: Math.log(x.vGap),
+          windowVar: 0,
+          steady: null,
+          heartRate: null,
+          windows: 0,
+        })),
+    human: y => {
+      const v = Math.exp(y)
+      if (power) return v
+      if (sport === 'swim') return 100 / v
+      if (sport === 'run') return 1000 / v
+      return v * 3.6
+    },
+  }
+}
+
+/** Fits the sessions from `fromMs` to today. */
+function buildTrend(source: TrendSource, today: number, fromMs = -Infinity): SportTrend {
+  const { observations: every, human, ...base } = source
+  const observations = every.filter(o => dayMs(o.day) >= fromMs)
+  const none = (level: number | null, daysSinceLastEffort: number | null): SportTrend => ({
+    ...base,
+    method: 'none',
+    stale: true,
+    sampleSize: observations.length,
+    spanDays: 0,
+    level,
+    slopePerWeek: null,
+    etaNow: null,
+    daysSinceLastEffort,
+    forecast: [],
+    history: [],
+    sessions: [],
+    issued: [],
+    hindcast: null,
+  })
+  if (observations.length === 0) return none(null, null)
+
+  const startMs = dayMs(observations[0].day)
+  const lastMs = dayMs(observations[observations.length - 1].day)
+  const daysSinceLast = Math.round((today - lastMs) / DAY_MS)
+  if (daysSinceLast > 45 || observations.length < 3)
+    return none(round(human(observations[observations.length - 1].y), 1), daysSinceLast)
+
+  const days = Math.round((today - startMs) / DAY_MS) + 1
+  const byDay = new Map<number, number[]>()
+  observations.forEach((o, i) => {
+    const k = Math.round((dayMs(o.day) - startMs) / DAY_MS)
+    byDay.set(k, [...(byDay.get(k) ?? []), i])
+  })
+  const noise = fitTrendNoise(observations, byDay, days)
+  const { predicted, filtered, outliers } = filterTrend(observations, byDay, days, noise)
+  const smoothed = smoothTrend(predicted, filtered)
+  const lastK = days - 1
+  const dateAt = (k: number): string => new Date(startMs + k * DAY_MS).toISOString().slice(0, 10)
+  const banded = (k: number, p: { l: number; v: number }): SportTrendForecastPoint => {
+    const half = TREND_Z * Math.sqrt(p.v)
+    const a = human(p.l - half)
+    const b = human(p.l + half)
+    return {
+      date: dateAt(k),
+      value: round(human(p.l), 1),
+      lo: round(Math.min(a, b), 1),
+      hi: round(Math.max(a, b), 1),
+    }
+  }
+
+  const issuedAt = lastK - TREND_FORECAST_DAYS
+  // Each eligible day asks whether the band issued 14 days earlier held the smoothed level.
+  let hits = 0
+  let checked = 0
+  for (let k = TREND_MIN_SPAN_DAYS + TREND_FORECAST_DAYS; k <= lastK; k++) {
+    const p = projectTrend(filtered[k - TREND_FORECAST_DAYS], noise, TREND_FORECAST_DAYS)[
+      TREND_FORECAST_DAYS
+    ]
+    checked++
+    if (Math.abs(smoothed[k].l - p.l) <= TREND_Z * Math.sqrt(p.v)) hits++
+  }
+  const now = filtered[lastK]
+  const level = human(now.l)
+  return {
+    ...base,
+    method: 'kalman',
     stale: false,
-    sampleSize: n,
-    spanDays,
+    sampleSize: observations.length,
+    spanDays: Math.round((lastMs - startMs) / DAY_MS),
     level: round(level, 1),
-    slopePerWeek,
+    slopePerWeek: round(human(now.l + 7 * now.s) - level, 2),
     etaNow: round(level, 1),
     daysSinceLastEffort: daysSinceLast,
-    forecast: dampedTrendForecast(today, level, slopePerWeek / 7, halfAt),
+    forecast: projectTrend(now, noise, TREND_FORECAST_DAYS)
+      .slice(1)
+      .map((p, i) => banded(lastK + i + 1, p)),
+    history: smoothed.map((p, k) => banded(k, p)),
+    sessions: observations.map((o, i) => ({
+      date: o.day,
+      value: round(human(o.y), 1),
+      steady: o.steady == null ? null : round(human(o.steady), 1),
+      heartRate: o.heartRate == null ? null : Math.round(o.heartRate),
+      windows: o.windows,
+      outlier: outliers.has(i),
+    })),
+    issued:
+      issuedAt >= 0
+        ? projectTrend(filtered[issuedAt], noise, TREND_FORECAST_DAYS).map((p, i) =>
+            banded(issuedAt + i, p),
+          )
+        : [],
+    hindcast: checked > 0 ? { hits, days: checked } : null,
   }
 }
 
@@ -2687,6 +3031,7 @@ const RACE_LEGS: Record<RaceDistance, Record<Sport, number>> = {
   '70.3': { swim: 1.9, bike: 90, run: 21.1 },
   ironman: { swim: 3.8, bike: 180, run: 42.2 },
 }
+const RACE_DISTANCES = Object.keys(RACE_LEGS) as RaceDistance[]
 const RACE_REF: Record<RaceDistance, number> = { sprint: 35, olympic: 50, '70.3': 70, ironman: 90 }
 const T1_S = 300
 const T2_S = 300
@@ -2726,11 +3071,15 @@ function trendVelocityRatios(tr: SportTrend | undefined): {
   const last = tr.forecast[tr.forecast.length - 1]
   if (!last || last.value <= 0 || last.lo <= 0 || last.hi <= 0) return none
   const mid = clamp(
-    tr.invert ? tr.level / last.value : last.value / tr.level,
+    trendSpeedRatio(tr, tr.level, last.value),
     1 - TREND_PROJ_CLAMP,
     1 + TREND_PROJ_CLAMP,
   )
-  const halfFrac = clamp((last.hi - last.lo) / (2 * last.value), 0, TREND_BAND_CLAMP)
+  const halfFrac = clamp(
+    Math.abs(trendSpeedRatio(tr, last.lo, last.hi) - 1) / 2,
+    0,
+    TREND_BAND_CLAMP,
+  )
   return { mid, fast: mid * (1 + halfFrac), slow: mid * (1 - halfFrac), usable: true }
 }
 
@@ -3118,7 +3467,22 @@ const projectedHuman = (
       ? trend.level
       : trend.level + trend.slopePerWeek * (projectionDays / 7))
   if (!(end > 0)) return average
-  return round(average * (end / trend.level), 1)
+  const ratio = trendSpeedRatio(trend, trend.level, end)
+  return round(trend.invert ? average / ratio : average * ratio, 1)
+}
+
+const calibrationProjection = (
+  sport: Sport,
+  average: number | null,
+  trend: SportTrend | undefined,
+): CalibrationProjection => {
+  const projected = projectedHuman(average, trend, CALIBRATION_PROJECTION_DAYS)
+  return {
+    sport,
+    projected,
+    projectedDelta: projected != null && average != null ? round(projected - average, 1) : null,
+    projectedDeltaPct: fasterPct(sport, projected, average),
+  }
 }
 
 type VolumeBucket = {
@@ -3215,22 +3579,15 @@ function buildCalibration(
     const th = thresholds.get(sport)
     const average = weightedHumanPace(sport, currentActs) ?? (th ? thresholdHuman(th) : null)
     const previous = weightedHumanPace(sport, previousActs)
-    const projected = projectedHuman(average, trends.get(sport), CALIBRATION_PROJECTION_DAYS)
     const delta = average != null && previous != null ? round(average - previous, 1) : null
     const deltaPct = fasterPct(sport, average, previous)
-    const projectedDelta =
-      projected != null && average != null ? round(projected - average, 1) : null
-    const projectedDeltaPct = fasterPct(sport, projected, average)
     return {
-      sport,
+      ...calibrationProjection(sport, average, trends.get(sport)),
       unit: th?.unit ?? (sport === 'bike' ? 'km/h' : sport === 'swim' ? 's/100m' : 's/km'),
       average,
-      projected,
       previous,
       delta,
       deltaPct,
-      projectedDelta,
-      projectedDeltaPct,
       direction: directionOf(deltaPct),
       sampleSize: currentActs.length,
       previousSampleSize: previousActs.length,
@@ -5561,6 +5918,7 @@ function emptyAnalytics(athleteId: number, today: string, garmin?: GarminCache |
     weakestSport: 'run',
     actions: [],
     tests: { dexa: [], vo2max: [] },
+    recent: { from: today, trends: [], races: [], projections: [] },
   }
 }
 
@@ -5896,7 +6254,10 @@ export function buildAnalytics(
     windowFrom,
     windowTo,
   )
-  const trends = SPORT_ORDER.map(sport => buildTrend(acts, thresholds.get(sport)!, sport, todayMs))
+  const trendSources = SPORT_ORDER.map(sport =>
+    trendSource(acts, thresholds.get(sport)!, sport, cache.streams),
+  )
+  const trends = trendSources.map(source => buildTrend(source, todayMs))
   const trendMap = new Map<Sport, SportTrend>(trends.map(t => [t.sport, t]))
   const calibration = buildCalibration(acts, thresholds, trendMap, loadById, today, todayMs)
   const bestList = SPORT_ORDER.map(sport => buildBest(acts, sport))
@@ -5905,16 +6266,37 @@ export function buildAnalytics(
   const recovery = buildRecovery(daily, risk)
 
   const ctlNow = daily.length ? daily[daily.length - 1].ctl : 0
-  const races = (['sprint', 'olympic', '70.3', 'ironman'] as RaceDistance[]).map(distance =>
+  const races = RACE_DISTANCES.map(distance =>
     buildReadiness(distance, thresholds, bests, ctlNow, trendMap),
   )
 
-  const recentCut = todayMs - 42 * DAY_MS
-  const recentActs = acts.filter(act => dayMs(act.day) >= recentCut)
-  const recentLoad = recentActs.reduce((s, act) => s + (loadById.get(act.a.id) ?? 0), 0)
+  // Thresholds and fitness stay current; the trend and the longest sessions come from the window.
+  const recentCutoff = shiftIsoDay(today, -(RECENT_RANGE_DAYS - 1))
+  const recentFrom = firstDay > recentCutoff ? firstDay : recentCutoff
+  const recentFromMs = dayMs(recentFrom)
+  const recentTrends = trendSources.map(source => buildTrend(source, todayMs, recentFromMs))
+  const recentTrendMap = new Map<Sport, SportTrend>(recentTrends.map(t => [t.sport, t]))
+  const recentActs = acts.filter(act => dayMs(act.day) >= recentFromMs)
+  const recentBests = new Map<Sport, SportBest>(
+    SPORT_ORDER.map(sport => [sport, buildBest(recentActs, sport)]),
+  )
+  const recent: RecentEstimates = {
+    from: recentFrom,
+    trends: recentTrends,
+    races: RACE_DISTANCES.map(distance =>
+      buildReadiness(distance, thresholds, recentBests, ctlNow, recentTrendMap),
+    ),
+    projections: calibration.paces.map(pace =>
+      calibrationProjection(pace.sport, pace.average, recentTrendMap.get(pace.sport)),
+    ),
+  }
+
+  const loadCut = todayMs - 42 * DAY_MS
+  const loadActs = acts.filter(act => dayMs(act.day) >= loadCut)
+  const recentLoad = loadActs.reduce((s, act) => s + (loadById.get(act.a.id) ?? 0), 0)
   const loadShare: Record<Sport, number> = { swim: 0, bike: 0, run: 0 }
   if (recentLoad > 0) {
-    for (const act of recentActs) loadShare[act.sport] += (loadById.get(act.a.id) ?? 0) / recentLoad
+    for (const act of loadActs) loadShare[act.sport] += (loadById.get(act.a.id) ?? 0) / recentLoad
   }
 
   const appleVo2: { date: string; v: number }[] = []
@@ -6132,6 +6514,7 @@ export function buildAnalytics(
     weakestSport: weakest,
     actions,
     tests: { dexa: dexaTests, vo2max: vo2Tests },
+    recent,
   }
 }
 

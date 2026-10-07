@@ -1,5 +1,4 @@
 import type { Analytics } from '../../../plugins/stores/analytics'
-import { shiftIsoDay } from '../../../util/local-date'
 
 export type AnalyticsRange = '60d' | 'all'
 
@@ -9,24 +8,31 @@ export const defaultAnalyticsRange = (view?: string): AnalyticsRange =>
 export const analyticsForRange = (data: Analytics, range: AnalyticsRange): Analytics => {
   if (range === 'all') return data
 
-  const cutoff = shiftIsoDay(data.meta.today, -59)
-  const from = data.meta.windowFrom > cutoff ? data.meta.windowFrom : cutoff
+  const { recent } = data
+  const from = recent.from
   const contains = (date: string): boolean => date >= from && date <= data.meta.today
   const dated = <T extends { date: string }>(points: T[]): T[] =>
     points.filter(point => contains(point.date))
   const activities = dated(data.activities)
 
-  // Keep estimates calculated from their complete history; limit the displayed observations.
+  // Trend, readiness and pace projections were refitted on the window by the store. Other estimates
+  // keep their complete history; only their displayed observations are limited.
   return {
     ...data,
     meta: { ...data.meta, windowFrom: from, activityCount: activities.length },
     daily: dated(data.daily),
     weekly: data.weekly.filter(point => contains(point.weekStart)),
     activities,
+    trends: recent.trends,
+    races: recent.races,
     bests: data.bests.map(sport => ({ ...sport, bestToDate: dated(sport.bestToDate) })),
     calibration: {
       ...data.calibration,
-      paces: data.calibration.paces.map(sport => ({ ...sport, points: dated(sport.points) })),
+      paces: data.calibration.paces.map(sport => ({
+        ...sport,
+        ...recent.projections.find(projection => projection.sport === sport.sport),
+        points: dated(sport.points),
+      })),
     },
     body: {
       ...data.body,

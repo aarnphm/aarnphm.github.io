@@ -7,11 +7,15 @@ import { parseTrackingBlock, type ManualSaunaEntry } from '../plugins/stores/tra
 import { readStravaCacheFile } from '../util/strava-cache-file'
 import { TrainingPeaksApi } from '../util/trainingpeaks-api'
 import {
-  selectTrainingPeaksSaunaSources,
-  trainingPeaksSaunaCandidates,
+  selectTrainingPeaksTitleSources,
+  trainingPeaksTitleCandidates,
   trainingPeaksSaunaDescription,
   trainingPeaksWorkoutSummary,
-  type TrainingPeaksSaunaSource,
+  trainingPeaksStrengthWorkoutSummary,
+  trainingPeaksSupportedTitle,
+  trainingPeaksTitleProtection,
+  trainingPeaksStrengthTitleProtection,
+  type TrainingPeaksTitleSource,
 } from '../util/trainingpeaks-title-sync'
 
 const ROOT = resolve(import.meta.dirname, '../..')
@@ -83,10 +87,20 @@ interface TitleResult {
   date: string
   title: string
   workoutId?: string
-  status: 'updated' | 'unchanged' | 'planned' | 'unmatched' | 'ambiguous' | 'skipped' | 'failed'
+  status:
+    | 'updated'
+    | 'unchanged'
+    | 'planned'
+    | 'protected'
+    | 'unmatched'
+    | 'ambiguous'
+    | 'skipped'
+    | 'failed'
   reason?: string
   before?: { title: string; description: string | null }
-  after?: { title: string; description: string }
+  after?: { title: string; description: string | null }
+  candidateWorkoutIds?: string[]
+  titleAdjusted?: boolean
 }
 
 interface TitleRun {
@@ -97,51 +111,115 @@ interface TitleRun {
 
 async function syncTitles(
   api: TrainingPeaksApi,
-  sources: readonly TrainingPeaksSaunaSource[],
+  sources: readonly TrainingPeaksTitleSource[],
+  allSources: readonly TrainingPeaksTitleSource[],
   write: boolean,
   state: TitleRun,
 ): Promise<void> {
   const athleteId = await api.athleteId()
   state.athleteId = athleteId
   const dates = sources.map(source => source.date).sort()
-  const inventory = (await api.workouts(athleteId, dates[0], dates.at(-1) ?? dates[0])).map(
-    trainingPeaksWorkoutSummary,
+  const until = dates.at(-1) ?? dates[0]
+  const workouts = await api.workouts(athleteId, dates[0], until)
+  const strengthWorkouts = await api.strengthWorkouts(athleteId, dates[0], until)
+  const records = new Map(workouts.map(workout => [String(workout.workoutId), workout]))
+  const strengthRecords = new Map(
+    strengthWorkouts.map(workout => [`strength:${workout.id}`, workout]),
   )
+  const inventory = [
+    ...workouts.map(trainingPeaksWorkoutSummary),
+    ...strengthWorkouts.map(trainingPeaksStrengthWorkoutSummary),
+  ]
   for (const source of sources) {
-    const candidates = trainingPeaksSaunaCandidates(source, inventory)
+    const candidates = trainingPeaksTitleCandidates(source, inventory)
     const result: TitleResult = {
       stravaId: source.stravaId,
       date: source.date,
       title: source.title,
       status: 'unmatched',
+      candidateWorkoutIds: candidates.map(candidate => candidate.id),
     }
     state.results.push(result)
     if (candidates.length !== 1) {
       result.status = candidates.length ? 'ambiguous' : 'unmatched'
       result.reason = candidates.length
         ? 'Multiple workouts match the recording'
-        : 'No matching completed cardio workout'
+        : 'No matching completed workout'
       continue
     }
     const candidate = candidates[0]
     result.workoutId = candidate.id
     if (
-      sources.filter(other => trainingPeaksSaunaCandidates(other, [candidate]).length).length !== 1
+      allSources.filter(other => trainingPeaksTitleCandidates(other, [candidate]).length).length !==
+      1
     ) {
       result.status = 'ambiguous'
       result.reason = 'Multiple Strava recordings match this workout'
       continue
     }
+    const title = candidate.id.startsWith('strength:')
+      ? source.title.trim()
+      : trainingPeaksSupportedTitle(source.title)
+    result.titleAdjusted = title !== source.title
+    if (!title) {
+      result.status = 'skipped'
+      result.reason = 'The title contains only characters TrainingPeaks cannot save'
+      continue
+    }
     result.status = 'failed'
+    const strengthRecord = strengthRecords.get(candidate.id)
+    if (strengthRecord) {
+      const current = write
+        ? await api.strengthWorkout(athleteId, strengthRecord.id)
+        : strengthRecord
+      const protection = trainingPeaksStrengthTitleProtection(current)
+      if (protection) {
+        result.status = 'protected'
+        result.reason = protection
+        continue
+      }
+      if (
+        current.isLocked ||
+        !trainingPeaksTitleCandidates(source, [trainingPeaksStrengthWorkoutSummary(current)]).length
+      ) {
+        result.status = 'skipped'
+        result.reason = current.isLocked
+          ? 'Workout is locked'
+          : 'Workout no longer matches the recording'
+        continue
+      }
+      if (current.title === title) {
+        result.status = 'unchanged'
+        continue
+      }
+      result.before = { title: current.title, description: current.instructions }
+      result.after = { title, description: current.instructions }
+      if (!write) result.status = 'planned'
+      else {
+        await api.updateStrengthTitle(current, title)
+        result.status = 'updated'
+        console.log(`[trainingpeaks-titles] updated ${candidate.id}: ${title}`)
+      }
+      continue
+    }
     // Fetch again before constructing a full-record PUT, including any newly edited notes.
-    const current = await api.workout(athleteId, Number(candidate.id))
+    const current = write
+      ? await api.workout(athleteId, Number(candidate.id))
+      : records.get(candidate.id)
+    if (!current) throw new Error(`TrainingPeaks workout ${candidate.id} is missing`)
+    const protection = trainingPeaksTitleProtection(current)
+    if (protection) {
+      result.status = 'protected'
+      result.reason = protection
+      continue
+    }
     const otherSource = [
       ...(current.description ?? '').matchAll(/strava\.com\/activities\/(\d+)/g),
     ].some(match => Number(match[1]) !== source.stravaId)
     if (
       current.isLocked ||
       otherSource ||
-      !trainingPeaksSaunaCandidates(source, [trainingPeaksWorkoutSummary(current)]).length
+      !trainingPeaksTitleCandidates(source, [trainingPeaksWorkoutSummary(current)]).length
     ) {
       result.status = 'skipped'
       result.reason = current.isLocked
@@ -151,17 +229,24 @@ async function syncTitles(
           : 'Workout no longer matches the recording'
       continue
     }
-    const description = trainingPeaksSaunaDescription(source, current.description ?? '')
-    if (current.title === source.title && current.description === description) {
+    const description =
+      source.description == null
+        ? current.description
+        : trainingPeaksSaunaDescription(
+            { stravaId: source.stravaId, description: source.description },
+            current.description ?? '',
+          )
+    if (current.title === title && current.description === description) {
       result.status = 'unchanged'
       continue
     }
     result.before = { title: current.title, description: current.description }
-    result.after = { title: source.title, description }
+    result.after = { title, description }
     if (!write) result.status = 'planned'
     else {
-      await api.updateMetadata(current, source.title, description)
+      await api.updateMetadata(current, title, description)
       result.status = 'updated'
+      console.log(`[trainingpeaks-titles] updated ${candidate.id}: ${title}`)
     }
   }
 }
@@ -172,7 +257,7 @@ async function main(argv: readonly string[]): Promise<void> {
       'usage: pnpm trainingpeaks:titles [--write | --dry-run | --sources] [--since YYYY-MM-DD] [--until YYYY-MM-DD] [--id STRAVA_ID] [--limit N]',
     )
     console.log(
-      'Syncs Strava sauna titles and descriptions through the authenticated TrainingPeaks web API. Defaults to a dry run. Set TRAININGPEAKS_AUTH_COOKIE or TRAININGPEAKS_ACCESS_TOKEN in .env; --sources requires no authentication.',
+      'Syncs Strava titles for matched completed, unplanned activities. Protects planned workouts and authored instructions, including structured strength. Removes unsupported emoji from fitness titles and reports each adjustment. Retains the existing sauna description sync for unplanned sessions. Defaults to a dry run. Set TRAININGPEAKS_AUTH_COOKIE or TRAININGPEAKS_ACCESS_TOKEN in .env; --sources requires no authentication.',
     )
     return
   }
@@ -182,7 +267,8 @@ async function main(argv: readonly string[]): Promise<void> {
   const tracking = trainingPeaksSaunaTracking(
     await fs.readFile(resolve(ROOT, 'content/triathlon.md'), 'utf8'),
   )
-  const sources = selectTrainingPeaksSaunaSources(cache, tracking)
+  const allSources = selectTrainingPeaksTitleSources(cache, tracking)
+  const sources = allSources
     .filter(
       source =>
         (!args.since || source.date >= args.since) &&
@@ -195,7 +281,7 @@ async function main(argv: readonly string[]): Promise<void> {
     return
   }
   console.log(
-    `[trainingpeaks-titles] ${sources.length} Strava sauna recordings; ${args.write ? 'write' : 'dry run'}`,
+    `[trainingpeaks-titles] ${sources.length} Strava activities; ${args.write ? 'write' : 'dry run'}`,
   )
   if (!sources.length) return
   const api = new TrainingPeaksApi({
@@ -203,7 +289,7 @@ async function main(argv: readonly string[]): Promise<void> {
     authCookie: process.env.TRAININGPEAKS_AUTH_COOKIE,
   })
   const state: TitleRun = { results: [] }
-  await syncTitles(api, sources, args.write, state).catch((error: unknown) => {
+  await syncTitles(api, sources, allSources, args.write, state).catch((error: unknown) => {
     state.error = error instanceof Error ? error.message : String(error)
   })
   const output = resolve(
@@ -220,6 +306,8 @@ async function main(argv: readonly string[]): Promise<void> {
         sourceLastSync: cache.lastSync,
         write: args.write,
         transport: 'trainingpeaks-web-api',
+        command: ['pnpm', 'trainingpeaks:titles', ...argv],
+        selectedSourceCount: sources.length,
         ...state,
       },
       null,
@@ -233,8 +321,14 @@ async function main(argv: readonly string[]): Promise<void> {
     )
   console.log(`[trainingpeaks-titles] report: ${output}`)
   if (state.error) throw new Error(state.error)
-  if (state.results.some(result => ['ambiguous', 'skipped', 'failed'].includes(result.status)))
-    process.exitCode = 1
+  const counts = new Map<string, number>()
+  for (const result of state.results)
+    counts.set(result.status, (counts.get(result.status) ?? 0) + 1)
+  console.log(
+    `[trainingpeaks-titles] ${[...counts].map(([status, count]) => `${status}=${count}`).join(' ')}`,
+  )
+  if (state.results.some(result => ['ambiguous', 'skipped'].includes(result.status)))
+    console.warn('[trainingpeaks-titles] Unresolved matches were left unchanged; see the report.')
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

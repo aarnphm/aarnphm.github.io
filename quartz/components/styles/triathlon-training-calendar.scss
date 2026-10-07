@@ -1,0 +1,1020 @@
+.tri-training-gate {
+  max-width: 32rem;
+  padding-block: var(--space-6);
+
+  h2 {
+    margin-block: 0 var(--space-2);
+  }
+  p {
+    font-size: var(--text-ui);
+  }
+  form {
+    margin-top: var(--space-6);
+  }
+  label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-size: var(--text-ui);
+  }
+
+  .tri-training-gate-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  input {
+    flex: 1 1 12rem;
+    min-width: 0;
+    width: 100%;
+    font-size: 1rem;
+  }
+  input,
+  button {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--gray);
+    background: var(--light);
+    color: var(--dark);
+    font-family: inherit;
+  }
+  button {
+    cursor: pointer;
+    font-size: var(--text-ui);
+  }
+  :disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+  :is(input, button):focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 3px;
+  }
+  .tri-training-gate-status {
+    min-height: 1.5em;
+    margin-block: var(--space-2) 0;
+  }
+}
+
+.tri-training-lock {
+  display: block;
+  margin: 0 0 var(--space-2) auto;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--gray);
+  background: var(--light);
+  color: var(--dark);
+  font: inherit;
+  font-size: var(--text-ui);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 3px;
+  }
+}
+
+.tri-training-calendar {
+  container: tri-training / inline-size;
+
+  .tri-training-header {
+    margin-bottom: 0.85rem;
+  }
+
+  .tri-calendar-summary {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.85rem;
+    font-size: var(--text-meta, 0.75rem);
+
+    a {
+      color: var(--darkgray);
+      font-weight: 400;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+    }
+  }
+
+  &.tri-calendar a:focus-visible,
+  &.tri-calendar button:focus-visible {
+    outline-color: var(--dark);
+  }
+
+  a:hover {
+    color: var(--dark);
+    background: transparent;
+  }
+}
+
+.tri-training-sync {
+  color: var(--darkgray);
+}
+
+.tri-training-jump {
+  display: flex;
+
+  .tri-pred-date-wrap {
+    display: flex;
+    inline-size: 7.6rem;
+  }
+
+  .tri-pred-date {
+    color: var(--darkgray);
+  }
+}
+
+.tri-training-week-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.7rem 1rem;
+  padding-block: 0.5rem 0.75rem;
+}
+
+.tri-training-eyebrow {
+  display: block;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+}
+
+.tri-training-week-heading h2 {
+  margin: 0.16rem 0 0;
+  font-family: var(--bodyFont);
+  font-size: clamp(1.05rem, 2.3cqi, 1.55rem);
+  font-weight: 450;
+  letter-spacing: -0.03em;
+}
+
+.tri-training-week-controls {
+  flex: none;
+
+  .tri-pred-cal-nav,
+  .tri-pred-cal-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    block-size: calc(var(--tri-pred-control-height) + 2px);
+    border: 1px solid var(--calendar-line);
+    border-radius: var(--radius-none);
+    background: var(--tri-pred-surface);
+  }
+
+  .tri-pred-cal-nav {
+    inline-size: calc(var(--tri-pred-control-height) + 2px);
+  }
+
+  .tri-pred-cal-action {
+    padding: 0 0.55rem;
+    font-size: 0.58rem;
+    line-height: 1;
+  }
+
+  .tri-pred-date {
+    border-color: var(--calendar-line);
+  }
+
+  .tri-pred-cal-nav,
+  .tri-pred-date-ico {
+    color: var(--darkgray);
+  }
+}
+
+.tri-training-week-buttons {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.tri-training-week-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem 2rem;
+  margin-bottom: 1.1rem;
+  padding-block: 0.25rem;
+}
+
+.tri-training-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.7rem;
+  padding: 0.7rem;
+  border: 1px dashed var(--calendar-line);
+  color: var(--darkgray);
+  font-size: 0.75rem;
+  line-height: 1.5;
+
+  button {
+    padding: 0.2rem 0;
+    border: 0;
+    background: transparent;
+    color: var(--dark);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.tri-training-week {
+  --training-week-height: clamp(24rem, 50dvh, 34rem);
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  height: var(--training-week-height);
+  border: 1px solid var(--calendar-line);
+}
+
+.tri-training-day {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+
+  & + & {
+    border-inline-start: 1px solid var(--calendar-line);
+  }
+
+  &[data-today] .tri-training-day-header {
+    color: var(--dark);
+    background: var(--calendar-surface);
+  }
+}
+
+.tri-training-day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.3rem;
+  // Keep the same header height with or without the day-notes button.
+  min-height: 1rem;
+  margin: 0;
+  padding: 0.65rem;
+  border-bottom: 1px solid var(--calendar-line);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.2;
+
+  h3 {
+    margin: 0;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 400;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  time {
+    font-size: var(--text-meta, 0.75rem);
+  }
+}
+
+.tri-training-today-label {
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: inherit;
+}
+
+.tri-training-day-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.tri-training-session,
+.tri-training-workout-detail,
+.tri-training-legend > li {
+  --training-execution: var(--darkgray);
+  --training-execution-ink: color-mix(in srgb, var(--training-execution) 65%, var(--dark));
+
+  &[data-execution='on-target'] {
+    --training-execution: var(--color-green);
+  }
+  &[data-execution='off-target'] {
+    --training-execution: var(--color-yellow);
+  }
+  &[data-execution='far-off-target'] {
+    --training-execution: var(--color-orange);
+  }
+  &[data-execution='missed'] {
+    --training-execution: var(--color-red);
+  }
+  &[data-execution='planned'] {
+    --training-execution: var(--lightgray);
+  }
+}
+
+.tri-training-legend {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 1rem;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.6875rem;
+  line-height: 1.6;
+
+  > li {
+    margin: 0;
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 1.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    white-space: nowrap;
+    cursor: help;
+  }
+}
+
+.tri-training-legend-swatch {
+  width: 0.55rem;
+  height: 0.55rem;
+  background: var(--training-execution);
+  border: 1px solid var(--training-execution-ink);
+  flex: none;
+}
+
+.tri-training-legend-tip {
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: 0;
+  bottom: 100%;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--calendar-line);
+  background: var(--light);
+  color: var(--darkgray);
+  white-space: normal;
+
+  strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--dark);
+    font-weight: 500;
+  }
+}
+
+.tri-training-session {
+  --training-sport: var(--lightgray);
+  --training-workout-text: color-mix(in srgb, var(--darkgray) 80%, var(--dark));
+  --training-card-tint: 16%;
+  flex: none;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--calendar-line);
+  border-radius: var(--radius-none);
+  background: color-mix(in srgb, var(--training-execution) var(--training-card-tint), var(--light));
+
+  &[data-selected] {
+    --training-card-tint: 24%;
+  }
+
+  &[data-sport='swim'] {
+    --training-sport: var(--tri-swim);
+  }
+  &[data-sport='bike'] {
+    --training-sport: var(--tri-bike);
+  }
+  &[data-sport='run'] {
+    --training-sport: var(--tri-run);
+  }
+  &[data-sport='strength'] {
+    --training-sport: var(--tri-zone-power);
+  }
+  &[data-sport='other'] {
+    --training-sport: var(--color-blue);
+  }
+}
+
+.tri-training-workout-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  // Reserve the structure strip's row even when the workout has no chart.
+  grid-template-rows: auto auto auto 1rem [actions] auto;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.65rem;
+  cursor: pointer;
+}
+
+.tri-training-execution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+  color: var(--training-execution-ink);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.5;
+}
+
+.tri-training-execution-ratio {
+  color: var(--darkgray);
+}
+
+.tri-training-activity-link {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  min-height: 1.5rem;
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  font-weight: 400;
+  line-height: 1.4;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  white-space: nowrap;
+}
+
+.tri-training-workout-kind {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+  font-family: var(--codeFont);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+}
+
+.tri-training-sport,
+.tri-training-status {
+  padding: 0.1rem 0.25rem;
+  white-space: nowrap;
+}
+
+.tri-training-sport {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--training-sport) 32%, var(--light));
+}
+
+.tri-training-status {
+  flex: none;
+  color: var(--training-execution-ink);
+}
+
+.tri-training-workout-title {
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: var(--text-ui, 0.875rem);
+  font-weight: 450;
+  line-height: 1.45;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-training-workout-metrics {
+  display: grid;
+  grid-template-rows: repeat(2, 1.5em);
+  gap: 0.12rem;
+  color: var(--training-workout-text);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.5;
+}
+
+.tri-training-workout-volume {
+  display: flex;
+  gap: 0.55rem;
+  min-width: 0;
+
+  > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.tri-training-workout-bottom {
+  display: flex;
+  grid-row: actions;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 1.5rem;
+  color: var(--training-workout-text);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+}
+
+.tri-training-workout-open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-none);
+  background: transparent;
+  color: var(--darkgray);
+
+  svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &:hover,
+  &[aria-expanded='true'] {
+    color: var(--dark);
+  }
+}
+
+.tri-training-detail {
+  container: tri-training-detail / inline-size;
+}
+
+.tri-training-workout-detail {
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.6;
+
+  .tri-pop-title {
+    margin: 0;
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .tri-pop-date {
+    line-height: 1.4;
+  }
+}
+
+// Planned against completed metrics, shared by the weekly totals and each workout's detail.
+.tri-training-table {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin: 0;
+  border-collapse: collapse;
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+
+  th,
+  td {
+    padding: 0.3rem 0.1rem;
+    border: 0;
+    background: transparent;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
+    text-align: right;
+  }
+
+  th {
+    color: var(--training-workout-text, var(--darkgray));
+    font-weight: 400;
+  }
+  th[scope='row'] {
+    text-align: left;
+  }
+  td {
+    color: var(--dark);
+  }
+}
+
+.tri-training-week-table {
+  width: min(100%, 24rem);
+}
+
+.tri-training-week-peaks {
+  min-width: 0;
+}
+
+.tri-training-peaks-table {
+  th:first-child {
+    width: 28%;
+    text-align: left;
+  }
+
+  a {
+    color: var(--dark);
+    font-weight: 400;
+    line-height: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--calendar-line);
+    text-underline-offset: 0.2em;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+}
+
+.tri-training-peak-unit {
+  color: var(--darkgray);
+}
+
+.tri-training-instructions {
+  margin: 0;
+  color: var(--darkgray);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tri-training-day-header:has(.tri-training-day-notes) {
+  position: relative;
+}
+
+// The hover area spans the whole day header; the button and tooltip sit above it.
+.tri-training-day-notes {
+  display: inline-flex;
+  margin-inline-end: auto;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.tri-training-workout-kind .tri-training-notes-button {
+  margin-inline-end: auto;
+}
+
+.tri-training-notes-button {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--darkgray);
+  cursor: pointer;
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--dark);
+    outline-offset: 1px;
+  }
+}
+
+// Tooltips ignore the pointer, so moving onto the next card closes them.
+.tri-training-notes-tip {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  box-sizing: border-box;
+  width: max(calc(100% + 2px), 16rem);
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--calendar-line);
+  background: var(--light);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+
+  &[hidden] {
+    display: none;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: var(--dark);
+    font-weight: 500;
+    white-space: normal;
+  }
+}
+
+.tri-training-day-notes .tri-training-notes-tip {
+  inset-inline-start: -1px;
+  top: 100%;
+}
+
+// A card tooltip takes the day column as its containing block, so the sessions scroller does not
+// clip it; without insets it keeps its static position under the card.
+.tri-training-day:has(.tri-training-session > .tri-training-notes-tip) {
+  position: relative;
+}
+
+.tri-training-session > .tri-training-notes-tip {
+  margin-inline-start: -1px;
+}
+
+.tri-training-day:nth-child(n + 5) .tri-training-notes-tip {
+  inset-inline: auto -1px;
+}
+
+.tri-training-pre-activity-label {
+  display: block;
+  color: var(--training-workout-text, var(--darkgray));
+  font-family: var(--codeFont);
+}
+
+// Workout structure. Bars reuse the zone fill ramp; the dashed rule marks 100% of threshold.
+.tri-training-structure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.tri-training-structure-title {
+  margin: 0;
+  color: var(--training-workout-text, var(--darkgray));
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.tri-training-structure-chart {
+  position: relative;
+  display: flex;
+  gap: 3px;
+  height: 3rem;
+
+  &[data-threshold]::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: var(--structure-threshold);
+    border-top: 1px dashed var(--calendar-line);
+    pointer-events: none;
+  }
+}
+
+.tri-training-structure-block {
+  display: flex;
+  flex: 1 1 0;
+  align-items: flex-end;
+  gap: 1px;
+  min-width: 0;
+}
+
+.tri-training-structure-bar {
+  display: flex;
+  flex: 1 1 0;
+  align-items: flex-end;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+
+  > .tri-zone-fill {
+    width: 100%;
+    pointer-events: none;
+  }
+
+  > .tri-zone-fill:not([class*='tri-zone-fill--']) {
+    background: var(--lightgray);
+  }
+
+  &[data-active] > .tri-zone-fill {
+    outline: 1px solid var(--dark);
+    outline-offset: -1px;
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.tri-training-structure-chart[data-active] .tri-training-structure-bar:not([data-active]) {
+  opacity: 0.45;
+}
+
+.tri-training-session:has(.tri-training-structure-chart[data-active]) > .tri-training-notes-tip {
+  display: none;
+}
+
+.tri-training-structure-tip {
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(20rem, calc(100vw - 1rem));
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--calendar-line);
+  background: var(--light);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  visibility: hidden;
+  pointer-events: none;
+
+  strong {
+    color: var(--dark);
+    font-weight: 500;
+  }
+}
+
+.tri-training-structure-chart--compact {
+  gap: 2px;
+  height: 1rem;
+
+  &[data-threshold]::after {
+    content: none;
+  }
+}
+
+.tri-training-structure-table {
+  tr[data-active] > * {
+    background: color-mix(in srgb, var(--darkgray) 12%, transparent);
+    color: var(--dark);
+  }
+
+  thead th:nth-child(1) {
+    width: 30%;
+  }
+  thead th:nth-child(3) {
+    width: 38%;
+  }
+
+  thead th:first-child,
+  th[scope='rowgroup'] {
+    text-align: left;
+  }
+
+  th[scope='rowgroup'] {
+    color: var(--dark);
+  }
+
+  tbody[data-grouped] th[scope='row'] {
+    padding-inline-start: 0.75rem;
+  }
+}
+
+// The set label already carries the distance, so the swim table keeps rest and effort only.
+.tri-training-structure-table--swim {
+  thead th:nth-child(1) {
+    width: 48%;
+  }
+  thead th:nth-child(3) {
+    width: 30%;
+  }
+
+  td:last-child {
+    overflow-wrap: normal;
+  }
+}
+
+.tri-training-structure-note {
+  display: block;
+  color: var(--darkgray);
+}
+
+.tri-training-structure-source {
+  margin: 0;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+}
+
+.tri-training-empty {
+  margin: 0;
+  padding: 0.65rem;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+  line-height: 1.5;
+}
+
+@container tri-training (max-width: 52rem) {
+  .tri-training-week-overview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container tri-calendar-views (max-width: 52rem) {
+  .tri-training-week {
+    display: block;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+
+    &::after {
+      content: '';
+      display: block;
+      height: var(--training-scroll-tail, 0px);
+    }
+  }
+
+  .tri-training-day {
+    display: block;
+
+    & + & {
+      border-inline-start: 0;
+    }
+  }
+
+  .tri-training-day-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--light);
+  }
+
+  .tri-training-day-sessions {
+    overflow: visible;
+  }
+}
+
+@container tri-training-detail (max-width: 14rem) {
+  .tri-training-workout-detail {
+    table,
+    thead,
+    tbody {
+      display: block;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.15rem 0.3rem;
+    }
+
+    th,
+    td {
+      text-align: left;
+      overflow-wrap: normal;
+    }
+
+    thead td {
+      display: none;
+    }
+    th[scope='row'] {
+      grid-column: 1 / -1;
+      padding-top: 0.6rem;
+    }
+  }
+}

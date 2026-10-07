@@ -51,6 +51,10 @@ const swimIntervals = (d: StravaActivityDetail) =>
       )
     : []
 
+const swimIntervalStart = (startElapsedS: number, previousEndElapsedS: number): number =>
+  // FIT starts are rounded to whole seconds; subsecond gaps are not recorded rests.
+  startElapsedS <= previousEndElapsedS + 1 ? previousEndElapsedS : startElapsedS
+
 export const workspaceTimeline = (
   d: StravaActivityDetail,
 ): Pick<WorkspaceSample, 'elapsedS' | 'distanceKm'>[] => {
@@ -60,8 +64,10 @@ export const workspaceTimeline = (
   if (intervals.length) {
     const points: Pick<WorkspaceSample, 'elapsedS' | 'distanceKm'>[] = []
     for (const interval of intervals) {
-      // FIT length starts can be rounded to seconds while ends retain fractions.
-      const start = Math.max(interval.startElapsedS, points.at(-1)?.elapsedS ?? 0)
+      const previous = points.at(-1)
+      const start = previous
+        ? swimIntervalStart(interval.startElapsedS, previous.elapsedS)
+        : interval.startElapsedS
       if (start >= interval.endElapsedS) continue
       points.push(
         { elapsedS: start, distanceKm: (interval.cumulativeDistanceM - interval.distanceM) / 1000 },
@@ -195,7 +201,9 @@ export const workspaceTraces = (
     const samples: WorkspaceSample[] = []
     for (const interval of intervals) {
       const previous = samples.at(-1)
-      const start = Math.max(interval.startElapsedS, previous?.elapsedS ?? 0)
+      const start = previous
+        ? swimIntervalStart(interval.startElapsedS, previous.elapsedS)
+        : interval.startElapsedS
       if (start >= interval.endElapsedS) continue
       if (previous && start > previous.elapsedS) samples.push({ ...previous, value: null })
       const value = pick(interval)
@@ -427,40 +435,64 @@ export const workspaceTraceDomain = (trace: WorkspaceTrace): [number, number] =>
   return [low, high]
 }
 
+export const workspaceTraceY = (value: number, [low, high]: readonly [number, number]): number =>
+  high === low ? 50 : ((high - value) / (high - low)) * 100
+
 export const workspaceTracePaths = (
   trace: WorkspaceTrace,
   axis: WorkspaceAxis,
   start: number,
   end: number,
 ): { line: string; area: string } => {
-  const [low, high] = workspaceTraceDomain(trace)
+  const domain = workspaceTraceDomain(trace)
   let line = ''
   let area = ''
   let segment = ''
   let firstX = 0
   let lastX = 0
+  let previous: (WorkspaceSample & { value: number }) | null = null
   const close = (): void => {
     if (!segment) return
     line += `${segment} `
     area += `${segment} L ${lastX} 100 L ${firstX} 100 Z `
     segment = ''
   }
-  for (const sample of trace.samples) {
-    const position = workspacePosition(sample, axis)
-    if (
-      sample.value == null ||
-      !Number.isFinite(sample.value) ||
-      position < start ||
-      position > end
-    ) {
-      close()
-      continue
-    }
+  const append = (position: number, value: number): void => {
     const x = Number((((position - start) / Math.max(end - start, 0.001)) * 100).toFixed(3))
-    const y = (high === low ? 50 : ((high - sample.value) / (high - low)) * 100).toFixed(3)
+    const y = workspaceTraceY(value, domain).toFixed(3)
     if (!segment) firstX = x
     segment += `${segment ? ' L' : 'M'} ${x} ${y}`
     lastX = x
+  }
+  for (const sample of trace.samples) {
+    const position = workspacePosition(sample, axis)
+    if (sample.value == null || !Number.isFinite(sample.value)) {
+      close()
+      previous = null
+      continue
+    }
+    const value = sample.value
+    if (previous) {
+      const leftSample = previous
+      const previousPosition = workspacePosition(leftSample, axis)
+      if (position >= start && previousPosition <= end) {
+        const valueAt = (boundary: number): number => {
+          if (boundary === position) return value
+          const fraction = (boundary - previousPosition) / (position - previousPosition)
+          return leftSample.value + fraction * (value - leftSample.value)
+        }
+        if (!segment) {
+          const left = Math.max(start, previousPosition)
+          append(left, left === previousPosition ? previous.value : valueAt(left))
+        }
+        const right = Math.min(end, position)
+        append(right, valueAt(right))
+      }
+    } else if (position >= start && position <= end) {
+      append(position, sample.value)
+    }
+    if (position > end) close()
+    previous = { ...sample, value: sample.value }
   }
   close()
   return { line, area }

@@ -95,6 +95,11 @@ import {
   requestWithoutCache,
   requestWithoutStaticAssetCache,
 } from './static-assets'
+import {
+  handleTrainingCalendarRequest,
+  TrainingCalendarAccess,
+  type TrainingCalendarEnv,
+} from './training-calendar'
 import { triathlonDataHtml } from './triathlon-data'
 import { handleWahooOAuthCallback } from './wahoo-oauth'
 import { handleWeather } from './weather'
@@ -345,7 +350,8 @@ type Env = {
   LEAN_VERIFY_ORIGIN?: string
   LEAN_VERIFY_TOKEN?: string
   MCP_RATE_LIMITER: RateLimit
-} & Cloudflare.Env
+} & Cloudflare.Env &
+  TrainingCalendarEnv
 
 async function htmlAssetResponse(request: Request, env: Env): Promise<Response> {
   const originResp = await env.ASSETS.fetch(request)
@@ -483,6 +489,8 @@ async function handleSep(request: Request): Promise<Response> {
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
+    const trainingResponse = await handleTrainingCalendarRequest(request, env)
+    if (trainingResponse) return trainingResponse
     const url = new URL(request.url)
     const localRequest = isLocalRequest(request)
     const apexTriathlonRedirect = triathlonApexRedirectUrl(url)
@@ -1352,4 +1360,4 @@ export default {
   },
 } satisfies ExportedHandler<Env>
 
-export { Garden, MultiplayerComments }
+export { Garden, MultiplayerComments, TrainingCalendarAccess }

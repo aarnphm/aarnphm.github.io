@@ -8,6 +8,7 @@ import {
   calendarToday,
   calendarWeekdayLabel,
 } from './display'
+import { mountTrainingCalendar } from './training'
 
 const configuredCalendars = new WeakMap<HTMLElement, AbortSignal>()
 const DAY_MS = 86_400_000
@@ -549,11 +550,75 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
 const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => void) => {
   const calendars = Array.from(root.querySelectorAll<HTMLElement>('[data-calendar-year]'))
   let active = calendars.find(calendar => !calendar.hidden)
-  if (!active) return () => {}
   const localHash =
-    active.dataset.calendarEmbedded === 'true' || Boolean(root.closest('.sidepanel-container'))
+    root.dataset.calendarEmbedded === 'true' || Boolean(root.closest('.sidepanel-container'))
   const inPanel = Boolean(root.closest('.tri-calendar-panel'))
   let dispose: (() => void) | undefined
+  let source: 'races' | 'training' =
+    root.dataset.calendarSource === 'training' ? 'training' : 'races'
+  // The overlay keeps the source switch in its panel bar, outside the calendar set.
+  const sourceScope = root.closest<HTMLElement>('.tri-calendar-panel') ?? root
+  const sourceButtons = Array.from(
+    sourceScope.querySelectorAll<HTMLButtonElement>('[data-calendar-source-select]'),
+  )
+  const sourcePanels = Array.from(
+    root.querySelectorAll<HTMLElement>('[data-calendar-source-panel]'),
+  )
+  const trainingRoot = root.querySelector<HTMLElement>('[data-training-calendar]')
+  const updateHash = (hash: string): void => {
+    if (localHash) return
+    const url = new URL(window.location.href)
+    url.hash = `${inPanel ? 'calendar-' : ''}${hash}`
+    window.history.replaceState(window.history.state, '', url)
+  }
+  const training = trainingRoot
+    ? mountTrainingCalendar(trainingRoot, context, week => updateHash(`training-${week}`))
+    : null
+
+  if (root.closest('.sidepanel-container'))
+    for (const panel of sourcePanels)
+      if (!panel.id.startsWith('sidepanel-')) panel.id = `sidepanel-${panel.id}`
+  for (const button of sourceButtons) {
+    const panel = sourcePanels.find(
+      panel => panel.dataset.calendarSourcePanel === button.dataset.calendarSourceSelect,
+    )
+    if (panel) button.setAttribute('aria-controls', panel.id)
+  }
+
+  const selectSource = (next: 'races' | 'training', navigate = false, date?: string): void => {
+    if (navigate && next === source) return
+    source = next
+    root.dataset.calendarSource = next
+    for (const button of sourceButtons)
+      button.setAttribute('aria-pressed', String(button.dataset.calendarSourceSelect === next))
+    for (const panel of sourcePanels) {
+      panel.hidden = panel.dataset.calendarSourcePanel !== next
+      panel.inert = panel.hidden
+    }
+    if (next === 'training') {
+      dispose?.()
+      dispose = undefined
+      training?.activate(date)
+      if (navigate && training) updateHash(`training-${training.week()}`)
+    } else if (active) {
+      if (navigate)
+        updateHash(
+          `${active.dataset.calendarYear}${active.dataset.calendarView === 'year' ? '-year' : ''}`,
+        )
+      dispose ??= mountCalendar(active, context)
+    }
+  }
+  const localizeSources = (): void => {
+    const controls = sourceScope.querySelector<HTMLElement>('.tri-calendar-source-controls')
+    if (controls) applyI18n(controls, context.presentation)
+  }
+  const onSourceClick = (event: MouseEvent): void => {
+    if (!(event.currentTarget instanceof HTMLButtonElement)) return
+    const selected = event.currentTarget.dataset.calendarSourceSelect
+    if (selected !== 'races' && selected !== 'training') return
+    closeYearPickers()
+    selectSource(selected, true)
+  }
 
   const closeYearPicker = (picker: HTMLElement, restoreFocus = false): void => {
     const menu = picker.querySelector<HTMLElement>('.tri-calendar-season-menu')
@@ -607,7 +672,7 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
       window.history.replaceState(window.history.state, '', url)
     }
     active = next
-    dispose = mountCalendar(next, context)
+    if (source === 'races') dispose = mountCalendar(next, context)
     if (fromSelect)
       next
         .querySelector<HTMLButtonElement>('[data-calendar-year-select]')
@@ -618,6 +683,12 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
     const hash = inPanel
       ? window.location.hash.replace(/^#calendar(?:-|#)?/, '')
       : window.location.hash.slice(1)
+    const trainingHash = /^training(?:-(\d{4}-\d{2}-\d{2}))?$/.exec(hash)
+    if (trainingHash) {
+      selectSource('training', false, trainingHash[1])
+      return
+    }
+    selectSource('races')
     const year = /^(\d{4})(?:-year)?$/.exec(hash)?.[1] ?? /(?:^race-.+)-(\d{4})$/.exec(hash)?.[1]
     activate(year ?? root.dataset.calendarDefaultYear ?? '')
   }
@@ -684,16 +755,22 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
     for (const picker of root.querySelectorAll<HTMLElement>('.tri-calendar-season-picker'))
       if (!event.composedPath().includes(picker)) closeYearPicker(picker)
   }
+  for (const button of sourceButtons) button.addEventListener('click', onSourceClick)
   root.addEventListener('click', onYearClick)
   root.addEventListener('keydown', onYearKeydown, true)
   root.addEventListener('focusout', onYearFocusout)
   document.addEventListener('pointerdown', onPointerdown)
   window.addEventListener('hashchange', onHashChange)
-  onHashChange()
-  dispose ??= mountCalendar(active, context)
+  const unsubscribe = context.events.subscribe('presentation', localizeSources)
+  localizeSources()
+  if (localHash) selectSource(source)
+  else onHashChange()
   return () => {
     dispose?.()
+    training?.dispose()
+    unsubscribe()
     closeYearPickers()
+    for (const button of sourceButtons) button.removeEventListener('click', onSourceClick)
     root.removeEventListener('click', onYearClick)
     root.removeEventListener('keydown', onYearKeydown, true)
     root.removeEventListener('focusout', onYearFocusout)

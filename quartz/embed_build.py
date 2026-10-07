@@ -193,8 +193,7 @@ def notebook_text(doc: dict) -> str:
 
 def sluggify(value: str) -> str:
   return '/'.join(
-    segment
-    .replace(' ', '-')
+    segment.replace(' ', '-')
     .replace('\t', '-')
     .replace('\n', '-')
     .replace('\r', '-')
@@ -526,8 +525,8 @@ def count_tokens(text: str) -> int:
 def get_text_splitter(chunk_size: int, overlap: int):
   encoder = get_tiktoken_encoder()
   return RecursiveCharacterTextSplitter(
-    chunk_size=chunk_size * 4,
-    chunk_overlap=overlap * 4,
+    chunk_size=chunk_size,
+    chunk_overlap=overlap,
     separators=['\n\n', '\n', '. ', ' ', ''],
     length_function=lambda t: len(encoder.encode(t)),
     is_separator_regex=False,
@@ -538,16 +537,21 @@ def chunk_document(
   doc: dict,
   chunk_size: int = 512,
   overlap_tokens: int = 128,
-  min_chunk_size: int = 100,
   model_id: str = '',
   model_max_tokens: int = 512,
 ) -> list[dict]:
   text = doc['text']
   token_count = count_tokens(text)
 
-  prefix_overhead = get_prefix_overhead(model_id)
+  prefix_overhead = get_prefix_overhead(model_id, doc.get('title'))
   effective_model_limit = model_max_tokens - prefix_overhead
   actual_chunk_size = min(chunk_size, effective_model_limit)
+  if actual_chunk_size <= 0:
+    raise ValueError('document title leaves no room within the token limit')
+  if overlap_tokens < 0 or overlap_tokens >= actual_chunk_size:
+    raise ValueError(
+      'chunk overlap must be non-negative and smaller than chunk size'
+    )
 
   if token_count <= actual_chunk_size:
     return [
@@ -564,7 +568,7 @@ def chunk_document(
   splitter = get_text_splitter(actual_chunk_size, overlap_tokens)
   raw_chunks = splitter.split_text(text)
 
-  valid_chunks = [c for c in raw_chunks if count_tokens(c) >= min_chunk_size]
+  valid_chunks = [c for c in raw_chunks if c.strip()]
 
   return [
     {
@@ -665,25 +669,39 @@ def write_hnsw_graph(
   return meta, digest.hexdigest()
 
 
-def get_prefix_overhead(model_id: str) -> int:
+def format_document_texts(
+  texts: list[str], model_id: str, titles: list[str] | None = None
+) -> list[str]:
+  if titles is not None and len(titles) != len(texts):
+    raise ValueError('document titles must align with document texts')
   model_lower = model_id.lower()
   if 'embeddinggemma' in model_lower:
-    return count_tokens('title: none | text: ')
-  elif 'e5' in model_lower:
-    return count_tokens('passage: ')
-  return 0
+    return [
+      f'title: {titles[i] if titles and titles[i] else "none"} | text: {text}'
+      for i, text in enumerate(texts)
+    ]
+  if 'e5' in model_lower:
+    return [f'passage: {text}' for text in texts]
+  return texts
+
+
+def get_prefix_overhead(model_id: str, title: str | None = None) -> int:
+  return count_tokens(
+    format_document_texts([''], model_id, [title or 'none'])[0]
+  )
 
 
 def validate_token_limits(
-  texts: list[str], max_tokens: int, model_id: str
+  texts: list[str],
+  max_tokens: int,
+  model_id: str,
+  titles: list[str] | None = None,
 ) -> None:
-  prefix_overhead = get_prefix_overhead(model_id)
-  effective_max = max_tokens - prefix_overhead
   over_limit = []
-  for i, text in enumerate(texts):
+  for i, text in enumerate(format_document_texts(texts, model_id, titles)):
     tokens = count_tokens(text)
-    if tokens > effective_max:
-      over_limit.append((i, tokens, effective_max))
+    if tokens > max_tokens:
+      over_limit.append((i, tokens, max_tokens))
   if over_limit:
     logger.error(
       'ERROR: %d/%d chunks exceed token limit after prefix. First few: %s. '
@@ -691,10 +709,10 @@ def validate_token_limits(
       len(over_limit),
       len(texts),
       over_limit[:3],
-      effective_max,
+      max_tokens,
     )
     raise ValueError(
-      f'{len(over_limit)} chunks exceed {max_tokens} token limit (effective: {effective_max} after prefix)'
+      f'{len(over_limit)} chunks exceed {max_tokens} token limit including the document prefix'
     )
 
 
@@ -705,6 +723,7 @@ def embed_vllm(
   batch_size: int = 64,
   concurrency: int = 8,
   max_tokens: int = 512,
+  titles: list[str] | None = None,
 ) -> np.ndarray:
   base_url = resolve_vllm_base_url(vllm_url)
   api_key = (
@@ -714,15 +733,8 @@ def embed_vllm(
   )
   client = OpenAI(base_url=base_url, api_key=api_key, timeout=300)
 
-  validate_token_limits(texts, max_tokens, model_id)
-
-  model_lower = model_id.lower()
-  if 'e5' in model_lower:
-    prefixed = [f'passage: {t}' for t in texts]
-  elif 'embeddinggemma' in model_lower:
-    prefixed = [f'title: none | text: {t}' for t in texts]
-  else:
-    prefixed = texts
+  validate_token_limits(texts, max_tokens, model_id, titles)
+  prefixed = format_document_texts(texts, model_id, titles)
 
   print(
     f'Embedding {len(prefixed)} texts with vLLM (model={model_id}, batch_size={batch_size}, concurrency={concurrency})'
@@ -770,24 +782,22 @@ def embed_vllm(
 
 
 def embed_hf(
-  texts: list[str], model_id: str, device: str, max_tokens: int = 512
+  texts: list[str],
+  model_id: str,
+  device: str,
+  max_tokens: int = 512,
+  titles: list[str] | None = None,
 ) -> np.ndarray:
   from sentence_transformers import SentenceTransformer
 
   model = SentenceTransformer(model_id, device=device)
 
-  validate_token_limits(texts, max_tokens, model_id)
-
-  model_lower = model_id.lower()
-  if 'e5' in model_lower:
-    prefixed = [f'passage: {t}' for t in texts]
-  elif 'embeddinggemma' in model_lower:
-    prefixed = [f'title: none | text: {t}' for t in texts]
-  else:
-    prefixed = texts
+  validate_token_limits(texts, max_tokens, model_id, titles)
+  prefixed = format_document_texts(texts, model_id, titles)
 
   vecs = model.encode(
     prefixed,
+    prompt='',
     batch_size=64,
     normalize_embeddings=True,
     convert_to_numpy=True,
@@ -849,7 +859,7 @@ def main():
     '--max-tokens',
     type=int,
     default=512,
-    help="Model's maximum context length in tokens (e5-large: 512, embeddinggemma: 8192)",
+    help="Model's maximum context length in tokens (e5-large: 512, embeddinggemma-300m: 2048, embeddinggemma-2: 8192)",
   )
   ap.add_argument(
     '--concurrency',
@@ -949,10 +959,13 @@ def main():
       batch_size=args.batch_size,
       concurrency=args.concurrency,
       max_tokens=args.max_tokens,
+      titles=titles,
     )
   else:
     device = 'cuda' if os.environ.get('CUDA_VISIBLE_DEVICES') else 'cpu'
-    vecs = embed_hf(texts, args.model, device, max_tokens=args.max_tokens)
+    vecs = embed_hf(
+      texts, args.model, device, max_tokens=args.max_tokens, titles=titles
+    )
 
   if vecs.shape[1] != args.dims:
     if vecs.shape[1] > args.dims:

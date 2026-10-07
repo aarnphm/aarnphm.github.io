@@ -63,6 +63,14 @@ class_name = "MultiplayerComments"
 tag = "comments-001"
 new_sqlite_classes = ["MultiplayerComments"]
 
+[[durable_objects.bindings]]
+name = "TRAINING_CALENDAR_ACCESS"
+class_name = "TrainingCalendarAccess"
+
+[[migrations]]
+tag = "training-calendar-001"
+new_sqlite_classes = ["TrainingCalendarAccess"]
+
 [[d1_databases]]
 binding = "COMMENTS_ROOM"
 database_name = "COMMENTS_ROOM"

@@ -28,6 +28,7 @@ import {
   calendarToday,
   calendarWeekdayLabel,
 } from './display'
+import { TrainingCalendar } from './TrainingCalendar'
 
 const MONTHS = Array.from({ length: 12 }, (_, month) => month)
 const WEEKDAYS = Array.from({ length: 7 }, (_, day) => day)
@@ -634,6 +635,50 @@ const EventCard = ({
   )
 }
 
+// The overlay renders these in its panel bar beside the close button; pages and embeds keep them
+// above the calendar.
+export const CalendarSourceControls = ({ id }: { id: string }) => (
+  <div
+    class="tri-calendar-source-controls"
+    role="group"
+    aria-label="calendar source"
+    data-i18n-aria-label="calendar source"
+  >
+    <button
+      type="button"
+      class="tri-calendar-icon"
+      data-calendar-source-select="races"
+      aria-pressed="true"
+      aria-controls={`${id}-races`}
+      aria-label="race calendar"
+      data-i18n-aria-label="race calendar"
+    >
+      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path d="M3.5 15V1.5M3.5 2h10v7.5h-10" />
+        <path
+          class="tri-calendar-icon-fill"
+          d="M3.5 2H6v2.5H3.5zM8.5 2H11v2.5H8.5zM6 4.5h2.5V7H6zM11 4.5h2.5V7H11zM3.5 7H6v2.5H3.5zM8.5 7H11v2.5H8.5z"
+        />
+      </svg>
+    </button>
+    <button
+      type="button"
+      class="tri-calendar-icon"
+      data-calendar-source-select="training"
+      aria-pressed="false"
+      aria-controls={`${id}-training`}
+      aria-label="training calendar"
+      data-i18n-aria-label="training calendar"
+    >
+      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path d="M6.25 1.5h3.5M8 1.5V4M12 5.25l1-1" />
+        <circle cx="8" cy="9.25" r="5.25" />
+        <path class="tri-calendar-icon-fill" d="M8 9.25V5.75A3.5 3.5 0 0 1 11.03 11z" />
+      </svg>
+    </button>
+  </div>
+)
+
 interface CalendarPanelProps {
   renderData?: TriathlonRenderData
   calendar?: TriathlonCalendar | null
@@ -655,12 +700,6 @@ export const CalendarPanel = ({
   panel = false,
   view = 'list',
 }: CalendarPanelProps) => {
-  if (calendars.length === 0)
-    return (
-      <section class="tri-calendar">
-        <p data-i18n="No events planned.">No events planned.</p>
-      </section>
-    )
   const selectedYear =
     calendars.find(calendar => calendar.year === year)?.year ?? calendars.at(-1)?.year
   return (
@@ -669,18 +708,32 @@ export const CalendarPanel = ({
       class="tri-calendar-set"
       data-calendar-set
       data-calendar-default-year={selectedYear}
+      data-calendar-source="races"
+      data-calendar-embedded={embedded ? 'true' : undefined}
     >
-      {calendars.map(calendar => (
-        <CalendarSeason
-          calendar={calendar}
-          calendars={calendars}
-          id={`${id}-${calendar.year}`}
-          embedded={embedded}
-          panel={panel}
-          view={view}
-          hidden={calendar.year !== selectedYear}
-        />
-      ))}
+      {!panel && <CalendarSourceControls id={id} />}
+      <div id={`${id}-races`} data-calendar-source-panel="races">
+        {calendars.length > 0 ? (
+          calendars.map(calendar => (
+            <CalendarSeason
+              calendar={calendar}
+              calendars={calendars}
+              id={`${id}-${calendar.year}`}
+              embedded={embedded}
+              panel={panel}
+              view={view}
+              hidden={calendar.year !== selectedYear}
+            />
+          ))
+        ) : (
+          <section class="tri-calendar">
+            <p data-i18n="No events planned.">No events planned.</p>
+          </section>
+        )}
+      </div>
+      <div id={`${id}-training`} data-calendar-source-panel="training" hidden inert>
+        <TrainingCalendar id={`${id}-training-calendar`} embedded={embedded} panel={panel} />
+      </div>
     </div>
   )
 }

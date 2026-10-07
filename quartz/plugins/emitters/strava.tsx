@@ -23,6 +23,11 @@ import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util
 import { StaticResources } from '../../util/resources'
 import { serializeStravaDetails, type StravaDetailPayload } from '../../util/strava-detail'
 import { loadStravaDataSync, type LoadedStravaPayload } from '../../util/strava-payload'
+import { sealTrainingCalendar } from '../../util/training-calendar-crypto'
+import { linkTrainingPeaksCalendarActivities } from '../../util/trainingpeaks-activity-links'
+import { readTrainingPeaksCalendar } from '../../util/trainingpeaks-calendar-cache'
+import { trainingPeaksActivityPeaks } from '../../util/trainingpeaks-calendar-peaks'
+import { trainingPeaksLocalZones } from '../../util/trainingpeaks-calendar-zones'
 import { parseTriathlonCalendars, serializeTriathlonCalendar } from '../../util/triathlon-calendar'
 import {
   triathlonActivityFeedRoutes,
@@ -82,7 +87,7 @@ const triathlonDescription = (
     case 'training':
       return `${planCount} generated triathlon training plans with their complete note content.`
     case 'calendar':
-      return 'Planned races with official event dates, locations, formats, and calendar download.'
+      return 'Race dates and the TrainingPeaks training calendar, with weekly planned and completed sessions.'
     case 'feed':
       return `Generated training feed across ${activityCount} activities.`
     case 'on':
@@ -137,6 +142,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         file.data.frontmatter?.['events'],
       )
       const calendar = calendars.at(-1) ?? null
+      const importedTrainingCalendar = await readTrainingPeaksCalendar()
       const tracking = file.data.tracking
       const { payload, analytics, trackedCache, sources, generatedAt } = loadStravaDataSync(
         typeof since === 'string' ? since : undefined,
@@ -158,6 +164,34 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             detailActivityIds.has(String(activity.id)),
           )
         : []
+      const linkedTrainingCalendar = importedTrainingCalendar
+        ? linkTrainingPeaksCalendarActivities(
+            importedTrainingCalendar,
+            matchedActivities.flatMap(activity => {
+              const detail = payload.details[String(activity.id)]
+              return detail
+                ? [
+                    {
+                      ...activity,
+                      sport: detail.sport,
+                      garmin: detail.garmin,
+                      peaks: trainingPeaksActivityPeaks({
+                        strava: cache?.streams?.[String(activity.id)],
+                        garmin: detail.garmin
+                          ? garmin?.streams?.[detail.garmin.activityId]
+                          : undefined,
+                        powerCurve: detail.powerCurve,
+                      }),
+                    },
+                  ]
+                : []
+            }),
+          )
+        : null
+      const trainingCalendar = linkedTrainingCalendar && {
+        ...linkedTrainingCalendar,
+        localZones: trainingPeaksLocalZones(analytics, payload.zones.ftp),
+      }
       const matchedRuns = cache
         ? buildMatchedRuns(matchedActivities, trackedCache?.streams ?? {})
         : emptyMatchedRuns()
@@ -246,6 +280,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           slug: 'static/training' as FullSlug,
           ext: '.json',
           content: JSON.stringify({ plans }),
+        }),
+        write({
+          ctx,
+          slug: 'static/training-calendar',
+          ext: '.json',
+          content: sealTrainingCalendar(trainingCalendar, process.env.TRAINING_CALENDAR_DATA_KEY),
         }),
         write({ ctx, slug: 'static/triathlon/data' as FullSlug, ext: '.jsonl', content: dataFeed }),
         write({

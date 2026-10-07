@@ -1,8 +1,10 @@
 import type { Element } from 'hast'
 import { toHtml } from 'hast-util-to-html'
+import { toString } from 'hast-util-to-string'
 import { h, s } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { visit } from 'unist-util-visit'
 import type { GarminEnduranceScore } from '../plugins/stores/garmin-health'
 import type { TriNodeFactory } from './triathlon-card'
 import { health } from './fixtures/garmin-health'
@@ -22,6 +24,51 @@ const factory: TriNodeFactory<Element> = {
   svg: (tag, attrs) => s(tag, attrs),
   add: (parent, ...children) => parent.children.push(...children),
 }
+
+test('recovery colors follow each native rating and load colors follow the target range', () => {
+  const day = structuredClone(health)
+  const ready = day.trainingReadiness.value?.at(-1)
+  assert.ok(ready)
+  ready.score = 51
+  ready.factors = [
+    { name: 'sleep history', percent: 43, feedback: 'MODERATE' },
+    { name: 'recovery time', percent: 45, feedback: 'POOR' },
+    { name: 'acute load', percent: 96, feedback: 'GOOD' },
+    { name: 'HRV status', percent: 0, feedback: 'NONE' },
+  ]
+  const recovery = buildGarminRecovery(factory, day)
+  assert.ok(recovery)
+  const tones = new Map<string, unknown>()
+  visit(recovery, 'element', node => {
+    const label = node.children[0]
+    if (node.tagName === 'tr' && label?.type === 'element')
+      tones.set(toString(label.children[0]), node.properties.dataHealthTone)
+  })
+  assert.equal(tones.get('training readiness'), 'watch')
+  assert.equal(tones.get('sleep history'), 'watch')
+  assert.equal(tones.get('recovery score'), 'alert')
+  assert.equal(tones.get('load contribution'), 'good')
+  assert.equal(tones.get('HRV status'), 'neutral')
+  assert.match(toHtml(recovery), /45% · poor/)
+  const focus = day.trainingStatus.value?.loadFocus
+  assert.ok(focus)
+  focus.categories = [
+    { name: 'low aerobic', load: 2877, targetMin: 698, targetMax: 1535 },
+    { name: 'high aerobic', load: 371, targetMin: 837, targetMax: 1675 },
+    { name: 'anaerobic', load: 663, targetMin: 279, targetMax: 837 },
+  ]
+  const training = buildGarminHealth(factory, day)
+  assert.ok(training)
+  const loads: unknown[] = []
+  visit(training, 'element', node => {
+    if (node.properties.role === 'row') loads.push(node.properties.dataHealthTone)
+  })
+  assert.deepEqual(loads, ['alert', 'watch', 'good'])
+  focus.categories[0].targetMin = null
+  const missingTarget = buildGarminHealth(factory, day)
+  assert.ok(missingTarget)
+  assert.match(toHtml(missingTarget), /data-health-tone="neutral"/)
+})
 
 test('daily health renders compact recovery meters, accessible hovers and native load ranges', () => {
   const recovery = buildGarminRecovery(factory, health)

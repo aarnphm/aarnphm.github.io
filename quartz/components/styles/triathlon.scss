@@ -29,6 +29,11 @@
   --tri-power-attack: #67a82f;
   --tri-power-climb: #f27440;
   --tri-power-model: #8b7ec8;
+  --tri-health-good: color-mix(in srgb, var(--color-green) 94%, var(--dark));
+  --tri-health-watch: color-mix(in srgb, var(--color-yellow) 80%, var(--dark));
+  --tri-health-alert: color-mix(in srgb, var(--color-red) 94%, var(--dark));
+  --tri-health-info: var(--color-blue);
+  --tri-health-neutral: var(--darkgray);
   --tri-activity-graph-row-height: calc(var(--tri-activity-chart-height, 104px) + 2.45rem + 0.66lh);
 }
 
@@ -8935,12 +8940,32 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-sleep-contrib-fill {
   position: absolute;
   inset: 0 auto 0 0;
-  background: color-mix(in srgb, var(--tri-bike) 70%, var(--dark));
+  background: var(--tri-health-color, var(--tri-health-neutral));
   border-radius: var(--radius-none);
 }
 
-.tri-sleep-contrib-fill--low {
-  background: #d14d41;
+[data-health-tone='good'] {
+  --tri-health-color: var(--tri-health-good);
+}
+
+[data-health-tone='watch'] {
+  --tri-health-color: var(--tri-health-watch);
+}
+
+[data-health-tone='alert'] {
+  --tri-health-color: var(--tri-health-alert);
+}
+
+[data-health-tone='info'] {
+  --tri-health-color: var(--tri-health-info);
+}
+
+[data-health-tone='neutral'] {
+  --tri-health-color: var(--tri-health-neutral);
+}
+
+[data-health-tone] .tri-sleep-contrib-val {
+  color: var(--tri-health-color);
 }
 
 .tri-sleep-contrib-val {
@@ -10808,6 +10833,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   color: color-mix(in srgb, var(--gray) 72%, var(--dark));
 }
 .tri-pred-calendar {
+  box-sizing: border-box;
   display: none;
   position: fixed;
   z-index: 70;
@@ -11300,27 +11326,103 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-trend-band {
-  fill-opacity: 0.2;
+  fill-opacity: 0.18;
+  stroke: none;
+}
+
+.tri-trend-future {
+  fill: color-mix(in srgb, var(--gray) 8%, transparent);
+}
+
+.tri-trend-tick {
+  stroke: color-mix(in srgb, var(--gray) 22%, transparent);
   stroke-width: 0.5;
-  stroke-opacity: 0.6;
   vector-effect: non-scaling-stroke;
 }
 
-.tri-trend-band.tri-fill-swim {
-  stroke: var(--tri-swim);
+.tri-trend-now {
+  stroke: var(--dark);
+  stroke-opacity: 0.35;
+  stroke-width: 0.75;
+  stroke-dasharray: 1 2;
+  vector-effect: non-scaling-stroke;
 }
-.tri-trend-band.tri-fill-bike {
-  stroke: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+
+// The forecast issued two weeks ago, drawn over the days it covered.
+.tri-trend-issued,
+.tri-trend-issued-mid {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
 }
-.tri-trend-band.tri-fill-run {
-  stroke: var(--tri-run);
+
+.tri-trend-issued {
+  stroke-opacity: 0.45;
+  stroke-dasharray: 2 2;
+}
+
+.tri-trend-issued-mid {
+  stroke-opacity: 0.3;
+  stroke-dasharray: 0.5 2.5;
+  stroke-linecap: round;
+}
+
+.tri-trend-level {
+  stroke-width: 1.5;
 }
 
 .tri-trend-proj {
   fill: none;
-  stroke-width: 1;
+  stroke-width: 1.2;
   stroke-dasharray: 2.5 2;
   vector-effect: non-scaling-stroke;
+}
+
+// Dots are zero-length round-cap paths, so they stay round in the stretched viewBox.
+.tri-trend-dot path,
+.tri-trend-mark path {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-width: var(--tri-dot-w, 5px);
+  transition: stroke-width 120ms ease;
+}
+
+.tri-trend-dot-o {
+  stroke-opacity: 0.55;
+}
+
+.tri-trend-dot-swim .tri-trend-dot-o {
+  stroke: var(--tri-swim);
+}
+.tri-trend-dot-bike .tri-trend-dot-o {
+  stroke: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-trend-dot-run .tri-trend-dot-o {
+  stroke: var(--tri-run);
+}
+
+.tri-trend-dot--out .tri-trend-dot-o {
+  stroke: var(--gray);
+  stroke-opacity: 0.8;
+}
+
+.tri-trend-dot-i {
+  stroke: var(--light);
+}
+
+.tri-chart--hover .tri-trend-dot--hot .tri-trend-dot-o {
+  stroke-opacity: 1;
+  stroke-width: calc(var(--tri-dot-w, 5px) + 3px);
+}
+
+.tri-trend-mark-o {
+  stroke: var(--dark);
+}
+
+.tri-trend-mark-i {
+  stroke: var(--light);
 }
 
 .tri-trend-axis {
@@ -11352,13 +11454,66 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-trend-xax {
-  display: flex;
-  justify-content: space-between;
-  padding-left: 2.9rem;
+  position: relative;
+  height: 0.9rem;
   margin-top: 0.1rem;
+  margin-left: 2.9rem;
   font-size: 0.56rem;
   font-variant-numeric: tabular-nums;
   color: var(--gray);
+}
+
+.tri-trend-xax > span {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.tri-trend-xax > .tri-trend-x0 {
+  transform: none;
+}
+
+.tri-trend-xax > .tri-trend-xend {
+  transform: translateX(-100%);
+}
+
+.tri-trend-xax > .tri-trend-xnow {
+  color: var(--dark);
+}
+
+.tri-trend-signal {
+  font-size: 0.56rem;
+  color: var(--gray);
+}
+
+.tri-trend-rate {
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-trend-calls + .tri-trend-cap {
+  margin-top: 0;
+}
+
+.tri-trend-held {
+  color: var(--tri-swim);
+}
+
+.tri-trend-missed {
+  color: var(--tri-run);
+}
+
+// A session readout outgrows a phone-width panel; wrap it across the head row instead.
+@media all and (max-width: 48rem) {
+  .tri-trend-panel .tri-trend-readout {
+    left: 0;
+    white-space: normal;
+  }
+
+  .tri-trend-xax--long > .tri-trend-xend {
+    display: none;
+  }
 }
 
 .tri-trend-note {
@@ -15534,7 +15689,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-health-load-target {
   position: absolute;
   height: 100%;
-  background: color-mix(in srgb, var(--tri-bike) 55%, transparent);
+  background: color-mix(in srgb, var(--tri-health-good) 32%, transparent);
 }
 
 .tri-health-load-marker {
@@ -15542,7 +15697,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   top: -3px;
   width: 2px;
   height: 10px;
-  background: var(--dark);
+  background: var(--tri-health-color, var(--tri-health-neutral));
   transform: translateX(-50%);
 }
 
@@ -15552,7 +15707,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   width: max-content;
   white-space: nowrap;
   transform: translateX(-50%);
-  color: var(--dark);
+  color: var(--tri-health-color, var(--tri-health-neutral));
 }
 
 .tri-health-load-range {

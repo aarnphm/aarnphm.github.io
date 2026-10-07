@@ -1,5 +1,7 @@
 const calendarAnchor = (): boolean =>
-  /^#calendar(?:(?:-|#)(?:list|year|\d{4}(?:-year)?|race-[a-z0-9-]+))?$/.test(window.location.hash)
+  /^#calendar(?:(?:-|#)(?:list|year|\d{4}(?:-year)?|race-[a-z0-9-]+|training(?:-\d{4}-\d{2}-\d{2})?))?$/.test(
+    window.location.hash,
+  )
 
 export const setupCalendarPanel = (root: HTMLElement): (() => void) | null => {
   if (root.dataset.triView) return null
