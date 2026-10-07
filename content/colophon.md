@@ -3,7 +3,7 @@ date: '2024-12-10'
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2026-06-27 23:38:06 GMT-04:00
+modified: 2026-10-07 16:15:36 GMT-04:00
 socials:
   twitter: https://x.com/aarnphm/status/1861550609834402129
 tags:
@@ -16,7 +16,7 @@ title: colophon
 
 [^sidepanel]: You can hold <kbd>alt+click</kbd> on any internal links to [popover](https://x.com/aarnphm/status/1884954569341272345) a side panel 😃
 
-**typography** -- [PP Neue Montreal](https://pangrampangram.com/products/neue-montreal), [<span style="font-family: 'Parclo Serif'">Parclo Serif</span>](https://lettermatic.com/fonts/parclo-serif?plan=student), [<span style="font-family: 'ITCGaramondStdLtCond'">ITC Garamond</span>](https://www.typewolf.com/itc-garamond) and [`berkeley mono{:text}`](https://usgraphics.com/products/berkeley-mono)
+**typography** -- [PP Neue Montreal](https://pangrampangram.com/products/neue-montreal), [<span style="font-family: 'Space Groteskque'">Space Grotesk</span>](https://fonts.google.com/specimen/Space+Grotesk?preview.script=Latn), [<span style="font-family: 'Parclo Serif'">Parclo Serif</span>](https://lettermatic.com/fonts/parclo-serif?plan=student), [<span style="font-family: 'ITCGaramondStdLtCond'">ITC Garamond</span>](https://www.typewolf.com/itc-garamond) and [`berkeley mono{:text}`](https://usgraphics.com/products/berkeley-mono)
 
 **accessibility** -- follow ARIA spec. I tried to modify a few value in rose-pine to add a bit more contrast. Press <span style="text-transform: uppercase"><kbd>D</kbd></span> anywhere to toggle between light and dark mode.
 
