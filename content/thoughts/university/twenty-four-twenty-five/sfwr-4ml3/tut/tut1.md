@@ -4,7 +4,7 @@ aliases:
 date: '2024-09-11'
 description: linear algebra a la carte.
 id: tut1
-modified: 2026-06-05 15:08:39 GMT-04:00
+modified: 2026-10-07 09:14:19 GMT-04:00
 tags:
   - sfwr4ml3
   - math/linalg
@@ -13,148 +13,197 @@ transclude:
   title: false
 ---
 
-See also [matrix cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)
+See also [matrix cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf).
 
 ## matrix representation of a system of linear equations
+
+The rows of a matrix collect the coefficients of each equation:
 
 $$
 \begin{aligned}
 x_1 + x_2 + x_3 &= 5 \\
 x_1 - 2x_2 - 3x_3 &= -1 \\
-2x_1 + x_2 - x_3 &= 3
+2x_1 + x_2 - x_3 &= 3.
 \end{aligned}
 $$
 
-Equivalent matrix representation of $Ax = b$
+Writing this system as $Ax=b$ gives
 
 $$
-\begin{aligned}
-A &= \begin{bmatrix}
+A = \begin{bmatrix}
 1 & 1 & 1 \\
 1 & -2 & -3 \\
 2 & 1 & -1
-\end{bmatrix} \\
-
-x &= \begin{bmatrix}
-x_1 \\
-x_2 \\
-x_3
-\end{bmatrix} \\
-
-b &= \begin{bmatrix}
-5 \\
--1 \\
-3
-\end{bmatrix}
-\end{aligned}
-
-\because A \in R^{m \times n}, x \in R^n, b \in R^m
+\end{bmatrix},
+\qquad
+x = \begin{bmatrix}x_1 \\ x_2 \\ x_3\end{bmatrix},
+\qquad
+b = \begin{bmatrix}5 \\ -1 \\ 3\end{bmatrix}.
 $$
+
+In general, $A \in \mathbb{R}^{m \times n}$ maps $x \in \mathbb{R}^n$ to $Ax \in \mathbb{R}^m$. There are $m$ equations and $n$ unknowns. Each row produces one entry of the output.
 
 > [!important] Transpose of a matrix
 >
-> $A \in R^{m \times n}$ and $A^T \in R^{n \times m}$
+> Transposing exchanges rows and columns. If $A \in \mathbb{R}^{m \times n}$, then $A^T \in \mathbb{R}^{n \times m}$, with $(A^T)_{ij}=A_{ji}$.
 
 ## dot product.
 
+For $x,y \in \mathbb{R}^n$,
+
 $$
-\begin{aligned}
-\langle x, y \rangle &= \sum_{i=1}^{n} x_i y_i \\
-&= \sum_{i=1}^{n} x_i \cdot y_i
-\end{aligned}
+\langle x,y\rangle = x^T y = \sum_{i=1}^{n} x_i y_i.
 $$
+
+The result is a scalar. Two vectors are orthogonal when their dot product is zero.
 
 ## linear combination of columns
 
-Let $A \in R^{m \times n}$, $X \in R^n$, $Ax \in R^n$
+Write $A=[a_1\ \cdots\ a_n]$, where each column $a_i \in \mathbb{R}^m$. Then
 
-Then $Ax = \sum_{i=1}^{n}{\langle a_i \rangle} x_i \in R^n$
+$$
+Ax = \sum_{i=1}^{n} x_i a_i \in \mathbb{R}^m.
+$$
+
+Each entry of $x$ weights one column. Varying those weights gives every vector the matrix can produce.
 
 ## inverse of a matrix
 
-The inverse of a square matrix $A \in R^{n \times n}$ is a **unique** matrix denoted by $A^{-1} \in \mathbb{R}^{n\times{n}}$
+An invertible square matrix $A \in \mathbb{R}^{n \times n}$ has a unique inverse $A^{-1}$ satisfying
 
 $$
-A^{-1} A = I = A A^{-1}
+A^{-1}A = AA^{-1} = I_n.
 $$
+
+A square matrix is invertible exactly when its columns are linearly independent, or equivalently when $\operatorname{rank}(A)=n$. A singular matrix has no inverse: some nonzero input maps to zero, so the output cannot determine the input uniquely.
 
 ## euclidean norm
 
-$L_{2}$ norm:
+The Euclidean, or $L_2$, norm measures a vector's length:
 
 $$
-\| x \|_{2} = \sqrt{\sum_{i=1}^{n}{x_i^2}} = X^TX
+\|x\|_2 = \sqrt{\sum_{i=1}^{n}x_i^2} = \sqrt{x^T x}.
 $$
 
-L1 norm: $\| x \|_{1} = \sum_{i=1}^{n}{|x_i|}$ ^l1norm
+The square matters: $x^T x=\|x\|_2^2$. For $x=(3,4)^T$, the norm is $5$ and its square is $25$.
 
-$L_{\infty}$ norm: $\| x \|_{\infty} = \max_{i}{|x_i|}$
+$L_1$ norm: $\|x\|_1 = \sum_{i=1}^{n}|x_i|$. ^l1norm
 
-p-norm: $\| x \|_{p} = (\sum_{i=1}^{n}{|x_i|^p})^{1/p}$
+$L_{\infty}$ norm: $\|x\|_{\infty} = \max_{1\leq i\leq n}|x_i|$.
+
+For $1\leq p<\infty$, the $p$-norm is
+
+$$
+\|x\|_p = \left(\sum_{i=1}^{n}|x_i|^p\right)^{1/p}.
+$$
 
 > [!important] Comparison
-> $ \|x\|_{\infty} \leq \|x\|_{2} \leq \|x\|\_{1}$
+>
+> $$
+> \|x\|_{\infty} \leq \|x\|_2 \leq \|x\|_1.
+> $$
 
-> One can prove this with Cauchy-Schwarz inequality
+The largest squared entry is at most the sum of all squared entries. Squaring the sum of absolute entries adds nonnegative cross terms. Taking square roots gives the two inequalities.
 
 ## linear dependence of vectors
 
-Given $\{x_1, x_2, \ldots, x_n\} \subseteq \mathbb{R}^d$ and $\alpha_1, \alpha_2, \ldots, \alpha_n \in \mathbb{R}$
+Vectors $x_1,\ldots,x_n \in \mathbb{R}^d$ are **linearly dependent** if some choice of scalar coefficients, with at least one nonzero coefficient, satisfies
 
 $$
-\forall i \in [ n ], \forall \{a_1, a_2, \ldots, a_n\} \subseteq \mathbb{R}^d \space s.t. \space x_i \neq \sum_{j=1}^{n}{a_j x_j}
+\sum_{i=1}^{n}\alpha_i x_i=0.
 $$
+
+They are **linearly independent** if the only such choice is
+
+$$
+\alpha_1=\cdots=\alpha_n=0.
+$$
+
+In a dependent family, choose an index $k$ with $\alpha_k\neq0$. Rearranging expresses that vector using the others:
+
+$$
+x_k = -\sum_{i\neq k}\frac{\alpha_i}{\alpha_k}x_i.
+$$
+
+For example, $(2,0)^T=2(1,0)^T$, so these two vectors are dependent.
 
 ## Span
 
-> Given a set of vectors $\{x_1, x_2, \ldots, x_n\} \subseteq \mathbb{R}^d$, the span of the set is the set of all possible linear combinations of the vectors.
->
-> $$
-> \text{span}(\{x_1, x_2, \ldots, x_n\}) = \{ y: y =  \sum_{i=1}^{n}{\alpha_i x_i} \mid \alpha_i \in \mathbb{R} \}
-> $$
+The span is the set of all vectors obtainable by linear combinations:
 
-If $x_{1}, x_{2}, \ldots, x_{n}$ are linearly independent, then the span of the set is the entire space $\mathbb{R}^d$
+$$
+\operatorname{span}\{x_1,\ldots,x_n\}
+=\left\{\sum_{i=1}^{n}\alpha_i x_i \;\middle|\; \alpha_1,\ldots,\alpha_n\in\mathbb{R}\right\}.
+$$
+
+Independent vectors form a basis for their span. To form a basis for all of $\mathbb{R}^d$, they must also span that space. This requires exactly $d$ independent vectors. For example, $(1,0,0)^T$ and $(0,1,0)^T$ are independent, and their combinations fill the plane with third coordinate zero. Adding $(0,0,1)^T$ gives a basis for $\mathbb{R}^3$. See [Strang's notes on independence, basis, and dimension](https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/0bbc30e3f1d7933ea07a2d2e9ab050d9_MIT18_06SCF11_Ses1.9sum.pdf).
 
 ## Rank
 
-For a matrix $A \in \mathbb{R}^{m \times n}$:
+For $A \in \mathbb{R}^{m\times n}$, the column rank counts the largest number of independent columns. The row rank counts the largest number of independent rows. These counts agree:
 
-- column rank: max number of linearly independent columns of $A$
-- row rank: max number of linearly independent rows of $A$
+$$
+\operatorname{rank}(A)=\operatorname{rank}(A^T)\leq\min(m,n).
+$$
 
-If $\text{rank}(A) \leq m$, then the rows are linearly independent. If $\text{rank}(A) \leq n$, then the columns are linearly independent.
+- The columns are independent exactly when $\operatorname{rank}(A)=n$.
+- The rows are independent exactly when $\operatorname{rank}(A)=m$.
+- The matrix has full rank when $\operatorname{rank}(A)=\min(m,n)$.
 
-> rank of a matrix $A$ is the number of linearly independent columns of $A$:
->
-> - if $A$ is full rank, then $\text{rank}(A) = \min(m, n)$ ($\text{rank}(A) \leq \min(m, n)$)
-> - $\text{rank}(A) = \text{rank}(A^T)$
+The inequality alone says nothing about independence. A zero matrix satisfies the bound and has rank zero. A tall full-rank matrix has independent columns; a wide full-rank matrix has independent rows.
 
 ## solving linear system of equations
 
-If $A \in \mathbb{R}^{n}$ is invertible, there exists a solution:
+If $A \in \mathbb{R}^{n\times n}$ is invertible, then every $b \in \mathbb{R}^n$ has exactly one solution:
 
 $$
-x = A^{-1}b
+x=A^{-1}b.
 $$
+
+For a general matrix, an exact solution exists when $b$ lies in the span of its columns. A nontrivial null space makes any existing solution nonunique, since adding a vector that maps to zero leaves $Ax$ unchanged.
 
 ## Range and Projection
 
-Given a matrix $A \in \mathbb{R}^{m \times n}$, the range of $A$, denoted by $\mathcal{R}(A)$ is the span of columns of $A$:
+The range of $A \in \mathbb{R}^{m\times n}$ is its column span:
 
 $$
-\mathcal{R}(A) = \{ y \in \mathbb{R}^m \mid y = Ax \mid x \in \mathbb{R}^m \}
+\mathcal{R}(A)=\{Ax\mid x\in\mathbb{R}^n\}\subseteq\mathbb{R}^m.
 $$
 
-Projection of a vector $y \in \mathbb{R}^m$ onto $\text{span}(\{x_1, \cdots, x_n\})$, $x_i \in \mathbb{R}^m$ is a vector in the span that is as close as possible to $y$ wrt $l_2$ norm
+The orthogonal projection of $y \in \mathbb{R}^m$ onto this range is its unique closest vector in Euclidean distance:
 
 $$
-\text{Proj}(y; \{x_{1}, \cdots, x_n\}) = \argmin_{{v \in \text{span}(\{x_1, \cdots, x_n\})}} \| y - v \|_2
+p=\operatorname*{argmin}_{v\in\mathcal{R}(A)}\|y-v\|_2^2.
 $$
+
+At the minimum, the residual $y-p$ is perpendicular to every column of $A$. Writing $p=A\hat{x}$ gives the normal equations:
+
+$$
+A^T(y-A\hat{x})=0,
+\qquad
+A^T A\hat{x}=A^Ty.
+$$
+
+If $A$ has independent columns, then
+
+$$
+p=A(A^TA)^{-1}A^Ty.
+$$
+
+With dependent columns, several coefficient vectors can produce the same projection. The closest vector $p$ remains unique. This is the geometry behind [least squares](https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/pages/least-squares-determinants-and-eigenvalues/projection-matrices-and-least-squares/).
 
 ## Null space of $A$
 
-is the set of all vectors that satisfies the following:
+The null space contains the inputs that map to zero:
 
 $$
-\mathcal{N}(A) = \{ x \in \mathbb{R}^n \mid Ax = 0 \}
+\mathcal{N}(A)=\{x\in\mathbb{R}^n\mid Ax=0\}.
 $$
+
+It is a subspace of the input space. Its dimension and the rank account for all $n$ input dimensions:
+
+$$
+\dim\mathcal{N}(A)+\operatorname{rank}(A)=n.
+$$
+
+In particular, independent columns give $\mathcal{N}(A)=\{0\}$.
