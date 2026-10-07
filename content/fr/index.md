@@ -17,4 +17,6 @@ vocabulaire de l'anglais vers le français : [[fr/mots|mots par thème]], de l'�
 
 bilan de printemps : [[fr/episode-12|épisode 12]], corrigé des activités, écoutes, trajets et jeu à deux fiches.
 
+début de l'été : [[fr/episode-13|épisode 13, petit bobo]], parties du corps, problèmes de santé, souhaits et enveloppes.
+
 vue d'ensemble : [[fr/parcours.canvas|carte des notes]].

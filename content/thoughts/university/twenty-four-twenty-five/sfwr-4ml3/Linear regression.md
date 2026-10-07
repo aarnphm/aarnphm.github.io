@@ -1,8 +1,8 @@
 ---
 date: '2024-09-10'
-description: also known as linear predictor functions
+description: least-squares fitting for linear predictors, normal equations, and intercept columns.
 id: Linear regression
-modified: 2026-06-05 15:08:39 GMT-04:00
+modified: 2026-10-07 09:15:31 GMT-04:00
 seealso:
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|curve fitting]]'
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture2.pdf|regression]]'
@@ -17,165 +17,157 @@ title: Linear regression
 
 ## curve fitting
 
-> [!question] how do we fit a distribution of data over a curve?
-> Given a set of $n$ data points $S=\set{(x^i, y^i)}^{n}_{n=1}$
+Given observations
 
-- $x \in \mathbb{R}^{d}$
-- $y \in \mathbb{R}$ (or $\mathbb{R}^{k}$)
+$$
+S=\{(x^i,y^i)\}_{i=1}^{n},
+\qquad x^i\in\mathbb{R}^d,
+\qquad y^i\in\mathbb{R},
+$$
+
+we want a function that predicts the response from the features. The superscript $i$ indexes an observation; the subscript $j$ in $x_j^i$ indexes a feature. Here we fit one scalar response. Vector-valued responses can be handled by fitting each output coordinate.
+
+A fit needs both a family of functions and a rule for measuring error. Linear regression uses functions that are linear in their coefficients. Ordinary least squares chooses the coefficients by minimizing squared prediction errors. These notes follow [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|Lecture 1]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture2.pdf|Lecture 2]].
 
 ## ols.
 
 > [!important] Ordinary Least Squares (OLS)
-> Let $\hat{y^i}$ be the prediction of a model $X$, $d^i = \| y^i - \hat{y^i} \|$ is the error, minimize $\sum_{i=1}^{n} (y^i - \hat{y^i})^2$
+>
+> For predictions $\hat{y}^i$, minimize the sum of squared residuals:
+>
+> $$
+> \sum_{i=1}^{n}(\hat{y}^i-y^i)^2.
+> $$
 
-In the case of 1-D ordinary least square, the problems equates find $a,b \in \mathbb{R}$ to minimize $\min\limits_{a,b} \sum_{i=1}^{n} (ax^i + b - y^i)^2$ ^1dols
+Squaring prevents positive and negative residuals from cancelling. A residual twice as large contributes four times as much to the objective.
+
+For one input feature, fit a line by choosing its slope $a$ and intercept $b$ to minimize $\sum_{i=1}^{n}(ax^i+b-y^i)^2$. ^1dols
 
 ### optimal solution
 
+Define the sample means, using the same number of observations throughout:
+
 $$
 \begin{aligned}
-a &= \frac{\overline{xy} - \overline{x} \cdot \overline{y}}{\overline{x^2} - (\overline{x})^2} = \frac{\text{COV}(x,y)}{\text{Var}(x)} \\
-b &= \overline{y} - a \overline{x}
+\bar{x}&=\frac{1}{n}\sum_{i=1}^{n}x^i,
+&\bar{y}&=\frac{1}{n}\sum_{i=1}^{n}y^i,\\
+\overline{xy}&=\frac{1}{n}\sum_{i=1}^{n}x^iy^i,
+&\overline{x^2}&=\frac{1}{n}\sum_{i=1}^{n}(x^i)^2.
 \end{aligned}
 $$
 
-where $\overline{x} = \frac{1}{N} \sum{x^i}$, $\overline{y} = \frac{1}{N} \sum{y^i}$, $\overline{xy} = \frac{1}{N} \sum{x^i y^i}$, $\overline{x^2} = \frac{1}{N} \sum{(x^i)^2}$
+Differentiating the objective with respect to $b$ and setting the derivative to zero gives $b=\bar{y}-a\bar{x}$. The fitted line therefore passes through $(\bar{x},\bar{y})$. Substituting this intercept leaves a problem in the slope alone:
+
+$$
+\min_{a\in\mathbb{R}}\sum_{i=1}^{n}
+\bigl(a(x^i-\bar{x})-(y^i-\bar{y})\bigr)^2.
+$$
+
+When the inputs have nonzero variance, differentiating gives the unique solution
+
+$$
+\begin{aligned}
+a
+&=\frac{\sum_{i=1}^{n}(x^i-\bar{x})(y^i-\bar{y})}
+{\sum_{i=1}^{n}(x^i-\bar{x})^2}\\
+&=\frac{\overline{xy}-\bar{x}\bar{y}}
+{\overline{x^2}-\bar{x}^2}
+=\frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)},\\
+b&=\bar{y}-a\bar{x}.
+\end{aligned}
+$$
+
+The covariance and variance here are empirical quantities, both normalized by $n$. Using $n-1$ for both gives the same ratio when $n>1$.
+
+If every input equals a constant $c$, the denominator is zero. The data only determine the prediction at that one input. Every pair satisfying $ac+b=\bar{y}$ minimizes the error, so the slope and intercept cannot be identified separately. For example, when all inputs are $2$ and the responses are $1,2,6$, both $(a,b)=(0,3)$ and $(1,1)$ predict the optimal constant $3$ at every observed input.
 
 ### hyperplane
 
-> [!abstract] Hyperplane equation
->
-> $$
-> \begin{aligned}
-> \hat{y} &= w_{0} + \sum_{j=1}^{d}{w_j x_j}\\[12pt]
-> &\because w_0: \text{the y-intercept (bias)}
-> \end{aligned}
-> $$
-
-Homogeneous hyperplane:
+With $d$ features, the predictor is
 
 $$
-\begin{aligned}
-w_{0} & = 0 \\
-\hat{y} &= \sum_{j=1}^{d}{w_j x_j} = \langle{w,x} \rangle \\
-&= w^Tx
-\end{aligned}
+\hat{y}=w_0+\sum_{j=1}^{d}w_jx_j=w_0+w^Tx,
+\qquad w\in\mathbb{R}^d.
 $$
 
-Matrix form OLS:
+The intercept $w_0$ is the prediction at the zero feature vector. The graph is an affine hyperplane in $\mathbb{R}^{d+1}$. Setting $w_0=0$ constrains it to pass through the origin and gives the homogeneous model
 
 $$
-X_{n\times d} = \begin{pmatrix}
-x_1^1 & \cdots & x_d^1 \\
-\vdots & \ddots & \vdots \\
+\hat{y}=w^Tx.
+$$
+
+For this model, collect observations into rows of the design matrix:
+
+$$
+X=\begin{pmatrix}
+x_1^1 & \cdots & x_d^1\\
+\vdots & \ddots & \vdots\\
 x_1^n & \cdots & x_d^n
-\end{pmatrix}, Y_{n\times 1} = \begin{pmatrix}
-y^1 \\
-\vdots \\
-y^n
-\end{pmatrix}, W_{d\times 1} = \begin{pmatrix}
-w_1 \\
-\vdots \\
-w_d
-\end{pmatrix}
+\end{pmatrix}\in\mathbb{R}^{n\times d},
+\qquad
+Y=\begin{pmatrix}y^1\\\vdots\\y^n\end{pmatrix}\in\mathbb{R}^{n},
+\qquad
+W=\begin{pmatrix}w_1\\\vdots\\w_d\end{pmatrix}\in\mathbb{R}^{d}.
 $$
 
+The predictions are $XW$, one per row. The residual vector and objective are
+
 $$
-\begin{aligned}
-\text{Obj} &: \sum_{i=1}^n (\hat{y}^i - y^i)^2 = \sum_{i=1}^n (\langle w, x^i \rangle - y^i)^2 \\
-
-&\\\
-
-\text{Def} &:
-
-\Delta = \begin{pmatrix}
-\Delta_1 \\
-\vdots \\
-\Delta_n
-\end{pmatrix} = \begin{pmatrix}
-x_1^1 & \cdots & x_d^1 \\
-\vdots & \ddots & \vdots \\
-x_1^n & \cdots & x_d^n
-\end{pmatrix} \begin{pmatrix}
-w_1 \\
-\vdots \\
-w_d
-\end{pmatrix} - \begin{pmatrix}
-y^1 \\
-\vdots \\
-y^n
-\end{pmatrix} = \begin{pmatrix}
-\hat{y}^1 - y^1 \\
-\vdots \\
-\hat{y}^n - y^n
-\end{pmatrix}
-
-\end{aligned}
+\Delta=XW-Y\in\mathbb{R}^n,
+\qquad
+\min_{W\in\mathbb{R}^d}\|XW-Y\|_2^2.
 $$
 
-> [!question] minimize $w$
->
-> $$
-> \min\limits_{W \in \mathbb{R}^{d \times 1}} \|XW - Y\|_2^2
-> $$
+Setting the gradient to zero gives the normal equations:
+
+$$
+2X^T(XW-Y)=0,
+\qquad
+X^TXW=X^TY.
+$$
 
 > [!abstract] OLS solution
 >
+> If $X$ has full column rank, then $X^TX$ is invertible and the unique coefficient vector is
+>
 > $$
-> W^{\text{LS}} = (X^T X)^{-1}{X^T Y}
+> W^{\mathrm{LS}}=(X^TX)^{-1}X^TY.
 > $$
 
-Example:
+The rank condition matters because $z^TX^TXz=\|Xz\|_2^2$. This is positive for every nonzero $z$ exactly when the columns of $X$ are independent. Dependent columns allow different coefficient vectors to produce the same predictions. Least squares still has a unique fitted vector, the projection of $Y$ onto the column space, while the coefficients are nonunique. The Moore-Penrose pseudoinverse selects the minimizer with the smallest Euclidean coefficient norm:
 
 $$
-\hat{y} = w_{0} + w_{1} \cdot x_{1} + w_{2} \cdot x_{2}
+W^{\mathrm{LS}}=X^{+}Y.
 $$
 
-With
+See [projection matrices and least squares](https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/pages/least-squares-determinants-and-eigenvalues/projection-matrices-and-least-squares/). In numerical code, use a least-squares solver based on QR or SVD. Forming an explicit inverse is unnecessary; [Bindel's notes](https://www.cs.cornell.edu/courses/cs6210/2025fa/lec/2025-09-24.html) derive these factorizations.
+
+To include an intercept, append a column of ones to $X$ and append $w_0$ to $W$:
 
 $$
-X_{n \times 2} = \begin{pmatrix}
-x^{1}_{1} & x^{1}_{2} \\
-x^{2}_{1} & x^{2}_{2} \\
-x^{3}_{1} & x^{3}_{2}
-\end{pmatrix}
+X'=\begin{pmatrix}X&\mathbf{1}_n\end{pmatrix}
+\in\mathbb{R}^{n\times(d+1)},
+\qquad
+W'=\begin{pmatrix}W\\w_0\end{pmatrix}
+\in\mathbb{R}^{d+1}.
 $$
 
-and
+For two features, this is
 
 $$
-X^{'}_{n \times 3} = \begin{pmatrix}
-x^{1}_{1} & x^{1}_{2} & 1 \\
-x^{2}_{1} & x^{2}_{2} & 1 \\
-x^{3}_{1} & x^{3}_{2} & 1
-\end{pmatrix}
+X'=\begin{pmatrix}
+x_1^1 & x_2^1 & 1\\
+\vdots & \vdots & \vdots\\
+x_1^n & x_2^n & 1
+\end{pmatrix},
+\qquad
+W'=\begin{pmatrix}w_1\\w_2\\w_0\end{pmatrix},
+\qquad
+X'W'=\begin{pmatrix}
+w_1x_1^1+w_2x_2^1+w_0\\
+\vdots\\
+w_1x_1^n+w_2x_2^n+w_0
+\end{pmatrix}.
 $$
 
-With
-
-$$
-W = \begin{pmatrix}
-w_1 \\
-w_2
-\end{pmatrix}
-$$
-
-and
-
-$$
-W^{'} = \begin{pmatrix}
-w_1 \\
-w_2 \\
-w_0
-\end{pmatrix}
-$$
-
-thus
-
-$$
-X^{'} \times W = \begin{pmatrix}
-w_0 + \sum{w_i \times x_i^{1}} \\
-\vdots \\
-w_0 + \sum{w_i \times x_i^{n}}
-\end{pmatrix}
-$$
+Solve the same least-squares problem with $X'$ and $W'$. The inverse formula now requires $\operatorname{rank}(X')=d+1$, which also requires $n\geq d+1$. A constant feature column is dependent on the intercept column, so those two coefficients cannot be determined separately.

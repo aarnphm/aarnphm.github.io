@@ -2,7 +2,7 @@
 date: '2024-09-09'
 description: efficient LLM serving engine.
 id: vllm
-modified: 2026-06-05 15:08:24 GMT-04:00
+modified: 2026-10-07 09:12:14 GMT-04:00
 permalinks:
   - /vllm
 seealso:
@@ -24,23 +24,13 @@ title: vLLM
 
 ### dual-batch overlaps (DBO)
 
-advanced batching strategy for training efficiency.
+An MoE layer has to send tokens to the GPUs holding their selected experts, then collect the results. Those transfers can leave compute waiting. vLLM's [Dual Batch Overlap](https://docs.vllm.ai/en/latest/design/dbo/) splits an inference batch into two microbatches and schedules computation from one during communication from the other.
 
-_problem_: large batches improve utilization but hurt generalization. small batches generalize better but waste compute.
+Both microbatches run forward through the model. The implementation uses two CPU worker threads, with yield points around the MoE dispatch and combine operations to coordinate their work. The model weights stay fixed throughout inference.
 
-_solution_: overlap two batch sizes in single training step.
+The useful question is how much communication can be hidden behind computation. Splitting a batch also changes the amount of work in each kernel, so a speedup needs a benchmark with the model, hardware, batch sizes, and request lengths recorded.
 
-1. forward pass: large batch (4096 tokens)
-2. backward pass: small batch (512 tokens) sampled from large batch
-3. gradient accumulation: average over multiple small batches
-
-trains with small-batch generalization while maintaining large-batch throughput.
-
-**sampling strategy**: prioritize high-loss examples from large batch for backward pass.
-
-- matches small-batch generalization
-- achieves large-batch throughput
-- 1.4x speedup over standard batching
+The documented deployment uses data parallelism (DP) with expert parallelism (EP). `--enable-dbo` enables the feature; separate prefill and decode token thresholds control when a batch is large enough to split. All DP ranks must agree to microbatch, because their expert layers communicate with each other.
 
 ---
 
@@ -48,68 +38,25 @@ trains with small-batch generalization while maintaining large-batch throughput.
 
 ![[thoughts/context parallelism]]
 
-specialized parallelism for long-context training.
+For serving, [context parallelism](https://docs.vllm.ai/en/latest/serving/context_parallel_deployment/) splits work within a request. The two inference phases have different constraints:
 
-**standard approaches**:
+- **Prefill** computes queries for many prompt tokens. Splitting those queries across GPUs can reduce time to first token. Each query still needs the keys and values allowed by its attention mask. The deployment design describes gathering KV tensors or circulating KV chunks with ring attention.
+- **Decode** usually adds one query token per request while reading a growing KV cache. DCP shards that cache along the token dimension. It can reduce KV duplication within a tensor-parallel group, leaving room for longer contexts or more requests. It also introduces communication between ranks.
 
-- tensor parallel: split within layer (communication overhead)
-- pipeline parallel: split across layers (bubble time)
-- sequence parallel: split along sequence dimension (limited by attention)
+For a fixed model and cache dtype, KV storage grows linearly with context length $T$. The cache and the attention-score matrix are different objects; a quadratic attention-memory estimate does not describe KV storage. With prefill context parallelism disabled, DCP uses the existing tensor-parallel GPUs, so enabling it changes their cache layout without adding GPUs to the deployment.
 
-**context parallel approach**:
+**vLLM implementation**
 
-split long sequence across devices, run local attention + global aggregation.
+[DP](https://docs.vllm.ai/en/latest/serving/data_parallel_deployment/) distributes requests between engines, each with its own KV cache. [EP](https://docs.vllm.ai/en/latest/serving/expert_parallel_deployment/) distributes MoE experts across GPUs. With EP enabled and prefill context parallelism disabled, the expert group spans $\mathrm{DP} \times \mathrm{TP}$ ranks; attention uses tensor parallelism within each DP group. For example, $\mathrm{DP}=4$ and $\mathrm{TP}=2$ gives four request-serving groups of two GPUs, with experts spread across all eight.
 
-1. partition sequence: $[s_1, s_2, ..., s_p]$ across $p$ devices
-2. local attention: each device computes attention within partition
-3. global exchange: all-to-all communication of attention statistics
-4. final aggregation: combine local and global attention
+These MoE engines must align their forward passes so every rank participates in expert communication. An engine with no scheduled requests may therefore run a dummy forward pass while other ranks are busy. DCP addresses the separate problem of distributing a request's cached tokens.
 
-for sequence length $n$, context parallel reduces per-device memory from $O(n^2)$ to $O(n^2/p)$.
+**decode context parallel (DCP)**
 
-**ring attention integration**: combine with ring attention for extreme lengths (1M+ tokens).
-
-communication pattern:
-
-```
-Device 0: [q0, k0, v0] -> compute local attention A0
-Device 1: [q1, k1, v1] -> compute local attention A1
-All-to-all: exchange attention stats
-Device 0: aggregate(A0, stats_from_1) -> final attention
-```
-
-**scaling results**:
-
-- 512K context: 8x devices, 92% efficiency
-- 1M context: 16x devices, 87% efficiency
-
-training on book-length contexts without prohibitive memory costs.
-
-**vLLM implementation**:
-
-vLLM uses expert parallelism (EP) + data parallelism (DP) for DeepSeek models rather than traditional context parallelism. EP assigns specific experts to dedicated GPUs, while DP distributes batched sequences between GPUs for attention layers—avoiding KV cache duplication.
-
-implementation details (from [vLLM docs](https://docs.vllm.ai/en/latest/serving/data_parallel_deployment.html)):
-
-- data parallel for attention layers, expert/tensor parallel for expert layers
-- separate "core engine" processes per DP rank
-- ZMQ sockets for communication with frontend
-- DP coordinator ensures synchronized forward passes
-- collective operations every N steps for idle detection
-- expert layers form (DP × TP) sized groups
-
-**decode context parallel (DCP)**: [PR #24453](https://github.com/vllm-project/vllm/pull/24453) adds DCP support for FLASH_ATTN_MLA backend. distributes decoding across multiple devices for long-context inference:
-
-- splits KV cache across DCP ranks
-- handles attention metadata for distributed decoding
-- correct `seqlen_k` calculation per rank
-- currently restricted to query length = 1
-- future work: multi-token queries require custom causal masking
-
-day-0 support for DeepSeek-V3.2-Exp with sparse attention on H100/H200/H20 and B200/GB200.
+[PR #24453](https://github.com/vllm-project/vllm/pull/24453), merged on 10 September 2025, added DCP to `FLASH_ATTN_MLA`. Its one-query-token restriction belongs to that implementation: with several new queries, each rank needs the correct causal mask for its local KV tokens. The review explains the failure with two queries whose keys land on different ranks. Use the [current backend support table](https://docs.vllm.ai/en/latest/design/attention_backends/) and the deployed version's implementation when checking compatibility.
 
 ---
 
 ## design docs
 
-- https://github.com/vllm-project/vllm/issues/32358: vLLM IR for kernel implementation
+- [vLLM IR for kernel implementation](https://github.com/vllm-project/vllm/issues/32358)

@@ -307,6 +307,39 @@ Le titre **Pour nouveaux clients seulement** porte sur les deux offres d'essai e
 
 Réponses : **vrai, faux, faux, faux, faux**.
 
+### expliquer les réponses de l'exercice 2
+
+Pour chaque affirmation, relever les mots de l'annonce qui donnent la réponse :
+
+1. **Vrai.** `Inscriptions du 1er au 15 juin` donne la date de début : **le premier juin**. La session commence **le 16 juin** ; inscription et début des cours ont des dates distinctes.
+2. **Faux.** `Paiement comptant ou par chèque seulement` limite les moyens acceptés. L'affirmation ajoute **la carte de débit**, ce qui la rend fausse, même si le paiement en argent est accepté.
+3. **Faux.** `Sur place ou par téléphone` donne les deux moyens de s'inscrire. Le logo Facebook ne donne aucune indication d'inscription par internet.
+4. **Faux.** La légende associe le **vert** au yoga + bébé. Les cases du samedi sont **violettes et jaunes** ; {{`Il n'y a pas de cours de yoga avec bébé le samedi.`}}
+5. **Faux.** `Un cours d'essai : 10 \$` désigne une séance. `Découverte - 3 cours : 17 \$` désigne trois séances, avec une validité d'un mois. {{`Un nouveau client paie dix dollars pour un cours d'essai.`}}
+
+**Seulement** = _only_. Ce mot limite aussi l'offre `Pour nouveaux clients seulement` : les offres d'essai et de découverte s'adressent aux nouveaux clients.
+
+### questions et réponses pour l'oral
+
+Ces modèles reprennent les informations de l'annonce. Les prix et les coordonnées sont ceux de l'exercice.
+
+| question                                                      | réponse modèle                                                |
+| ------------------------------------------------------------- | ------------------------------------------------------------- |
+| {{`Quand commencent les inscriptions ?`}}                     | {{`Elles commencent le premier juin.`}}                       |
+| {{`Quand a lieu la session d'été ?`}}                         | {{`Elle a lieu du seize juin au trente-et-un aout.`}}         |
+| {{`Comment est-ce qu'on peut s'inscrire ?`}}                  | {{`On peut s'inscrire sur place ou par téléphone.`}}          |
+| {{`Comment peut-on payer ?`}}                                 | {{`On peut payer comptant ou par chèque seulement.`}}         |
+| {{`Est-ce qu'il y a un cours de yoga avec bébé le samedi ?`}} | {{`Non, il n'y a pas de cours de yoga avec bébé le samedi.`}} |
+| {{`Combien coute un cours d'essai ?`}}                        | {{`Un cours d'essai coute dix dollars.`}}                     |
+
+`Quand` demande une date ou une période ; `comment` demande le moyen ; `combien` demande ici le prix. Pour lire la première date du mois, **1er juin** se dit **premier juin**. Les autres dates prennent le nombre cardinal : **seize juin**, **trente-et-un aout**.
+
+**Il y a / il n'y a pas de.** Pour nier la présence d'un cours, `un` devient **de** après `pas` : {{`Il y a un cours le samedi.`}} → {{`Il n'y a pas de cours le samedi.`}} Ces deux phrases illustrent la construction ; la réponse pour le yoga + bébé est la phrase négative.
+
+**Pouvoir + infinitif.** Dans {{`On peut s'inscrire`}}, `peut` est conjugué et `s'inscrire` reste à l'infinitif. Le pronom de `s'inscrire` suit la personne : {{`Je peux m'inscrire.`}}, {{`Vous pouvez vous inscrire.`}}
+
+**Assister à un cours** = _to attend a class_. Pour poser une question sur le prix, on peut aussi dire {{`Combien est-ce que je paie pour assister à un cours d'essai ?`}} Le présent de `payer` accepte `je paie / je paye` et `il paie / il paye` ; l'exercice utilise **paie**.
+
 ### vocabulaire de l'annonce
 
 | expression                        | sens en anglais ou emploi  |
@@ -314,6 +347,10 @@ Réponses : **vrai, faux, faux, faux, faux**.
 | {{sur place}}                     | in person, at the location |
 | {{comptant}}                      | in cash                    |
 | {{par chèque}}                    | by cheque                  |
+| {{s'inscrire}}                    | register, sign up          |
+| {{les inscriptions}}              | registration               |
+| {{seulement}}                     | only                       |
+| {{assister à un cours}}           | attend a class             |
 | {{un cours d'essai}}              | one trial class            |
 | {{un abonnement mensuel}}         | a monthly subscription     |
 | {{une banque de cours}}           | a pack of prepaid classes  |

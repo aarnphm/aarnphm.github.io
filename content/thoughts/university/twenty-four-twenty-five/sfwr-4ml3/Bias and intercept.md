@@ -1,8 +1,8 @@
 ---
 date: '2024-09-16'
-description: an estimation between scalar response with one or more explanatory variables (regressor or <strong>independent variables</strong>)
+description: Least squares with an intercept, polynomial features, regularization, and kernels.
 id: Bias and intercept
-modified: 2026-06-05 15:08:39 GMT-04:00
+modified: 2026-10-07 09:13:29 GMT-04:00
 seealso:
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture3.pdf|slides 3]]'
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture4.pdf|slides 4]]'
@@ -14,179 +14,301 @@ title: Bias and intercept
 
 ## adding bias in D-dimensions OLS
 
+The intercept gives the model a value at the origin that it can learn from the data. For an input $x \in \mathbb{R}^d$, the prediction is
+
 $$
-X^{'}_{n \times (d+1)} = \begin{pmatrix}
-x_1^{1} & \cdots & x_1^{d} & 1 \\
+\hat y = w^T x + w_0.
+$$
+
+Here, _bias_ means the intercept $w_0$. Statistical bias, which concerns an estimator's expected error, is a different use of the word.
+
+Let $X \in \mathbb{R}^{n \times d}$ contain one observation per row and let $Y \in \mathbb{R}^n$ contain the responses. Append a column of ones so the intercept becomes another coefficient:[^ols]
+
+$$
+X' = \begin{pmatrix}
+x_1^1 & \cdots & x_1^d & 1 \\
 \vdots & \ddots & \vdots & \vdots \\
-x_n^{1} & \cdots & x_n^{d} & 1
+x_n^1 & \cdots & x_n^d & 1
 \end{pmatrix}
+\in \mathbb{R}^{n \times (d+1)},
+\qquad
+W = \begin{pmatrix}w_1 \\ \vdots \\ w_d \\ w_0\end{pmatrix}
+\in \mathbb{R}^{d+1}.
 $$
 
-and
+Then ordinary least squares solves
 
 $$
-W_{(d+1) \times 1} = \begin{pmatrix}
-w_1 \\
-\vdots \\
-w_d \\
-w_0
+\widehat W \in \operatorname*{arg\,min}_{W \in \mathbb{R}^{d+1}}
+\|X'W-Y\|_2^2.
+$$
+
+$X'W\in\mathbb{R}^n$ gives one prediction per row. The appended ones column is paired with the appended coefficient $w_0$.
+
+For a scalar function $f:\mathbb{R}^p \to \mathbb{R}$, use a column gradient:
+
+$$
+\nabla f(w)=
+\begin{pmatrix}
+\partial f/\partial w_1 \\ \vdots \\ \partial f/\partial w_p
 \end{pmatrix}
+\in\mathbb{R}^p.
 $$
 
-Add an new auxiliary dimension to the input data, $x_{d+1} = 1$
-
-Solve OLS:
+For $g:\mathbb{R}^m \to \mathbb{R}^n$, the [[thoughts/Vector calculus#Jacobian matrix|Jacobian]] has one row per output and one column per input:
 
 $$
-\min\limits_{W \in \mathbb{R}^{d \times 1}} \|XW - Y\|_2^2
-$$
-
-Gradient for $f: \mathbb{R}^d \rightarrow \mathbb{R}$
-
-$$
-\triangledown_{w} \space f = \begin{bmatrix}
-\frac{\partial f}{\partial w_1} \\
-\vdots \\
-\frac{\partial f}{\partial w_d} \\
-\end{bmatrix}
-$$
-
-[[thoughts/Vector calculus#Jacobian matrix|Jacobian]] for $g: \mathbb{R}^m \rightarrow \mathbb{R}^n$
-
-$$
-\begin{aligned}
-\triangledown_{w} \space g &= \begin{bmatrix}
-\frac{\partial g_1}{\partial w_1} & \cdots & \frac{\partial g_1}{\partial w_d} \\
+J_g(w)=
+\begin{pmatrix}
+\partial g_1/\partial w_1 & \cdots & \partial g_1/\partial w_m \\
 \vdots & \ddots & \vdots \\
-\frac{\partial g_n}{\partial w_1} & \cdots & \frac{\partial g_n}{\partial w_d}
-\end{bmatrix}_{n \times m} \\
-\\
-&u, t \in \mathbb{R}^d \\
-&\because g(u) = u^T v \implies \triangledown_{w} \space g = v \text{ (gradient) } \\
-\\
-&A \in \mathbb{R}^{n \times n}; u \in \mathbb{R}^n \\
-&\because g(u) = u^T A u \implies \triangledown_{w} \space g = (A + A^T) u \text{ (Jacobian) }
-\end{aligned}
+\partial g_n/\partial w_1 & \cdots & \partial g_n/\partial w_m
+\end{pmatrix}
+\in\mathbb{R}^{n\times m}.
 $$
+
+Two useful scalar derivatives, with $u,v\in\mathbb{R}^p$ and $A\in\mathbb{R}^{p\times p}$, are
+
+$$
+\nabla_u(u^Tv)=v,
+\qquad
+\nabla_u(u^TAu)=(A+A^T)u.
+$$
+
+Both expressions are gradients. Under the Jacobian convention above, a scalar function's Jacobian is the transpose of its gradient.
+
+Applying the quadratic derivative to $f(W)=\|X'W-Y\|_2^2$ gives
+
+$$
+\nabla f(W)=2X'^T(X'W-Y).
+$$
+
+Setting this to zero gives the normal equations $X'^TX'\widehat W=X'^TY$.
 
 > [!important] result
 >
+> If $X'$ has full column rank, the minimizer is unique:
+>
 > $$
-> W^{\text{LS}} = (X^T X)^{-1} X^T Y
+> W^{\mathrm{LS}}=(X'^TX')^{-1}X'^TY.
 > $$
+>
+> This requires $n\ge d+1$ and linearly independent columns. If the columns are dependent, least-squares minimizers still exist; the pseudoinverse $X'^+Y$ selects the one with the smallest Euclidean norm.
+
+The inverse is useful for the derivation. A numerical implementation should solve the least-squares problem with a suitable factorization, such as QR or SVD.
 
 ## non-linear data
 
-Idea is to include adding an additional padding
+A curve can be nonlinear in its input while remaining linear in its coefficients. For a quadratic in one variable,
+
+$$
+\hat y=ax^2+bx+c
+=\begin{pmatrix}a&b&c\end{pmatrix}
+\begin{pmatrix}x^2\\x\\1\end{pmatrix}.
+$$
+
+Use $\phi(x)=(x^2,x,1)^T$ as the input to least squares. Each training row now contains the square, the original value, and a constant. The feature map determines which curves the model can express.[^polynomials]
 
 ## multivariate polynomials.
 
-> question the case of multivariate polynomials
->
-> - Assume $M >> d$
-> - Number of terms (monomials): $\approx (\frac{M}{d})^d$
-> - `#` of training samples $\approx$ `#` parameters
+For $d$ input variables and total degree at most $M$, count all monomials, including the constant:
 
-An example of `Curse of dimensionality`
+$$
+p=\binom{d+M}{M}=\binom{d+M}{d}.
+$$
+
+For example, $d=2$ and $M=2$ give six features:
+
+$$
+1,\quad x_1,\quad x_2,\quad x_1^2,\quad x_1x_2,\quad x_2^2.
+$$
+
+To count them, write a monomial as $x_1^{a_1}\cdots x_d^{a_d}$ with nonnegative integer exponents whose sum is at most $M$. A slack exponent $a_0=M-\sum_{j=1}^d a_j$ turns this into the stars-and-bars count for $d+1$ exponents summing to $M$.
+
+The growth rate depends on what stays fixed:
+
+$$
+\binom{d+M}{d}\sim\frac{M^d}{d!}
+\quad\text{as }M\to\infty\text{ with fixed }d,
+$$
+
+$$
+\binom{d+M}{M}\sim\frac{d^M}{M!}
+\quad\text{as }d\to\infty\text{ with fixed }M.
+$$
+
+At degree three, ten inputs already produce $\binom{13}{3}=286$ coefficients. This expansion can make fitting and estimation expensive. Calling it exponential in the input dimension requires a regime in which the degree also grows; a fixed-degree expansion grows polynomially in $d$.
 
 ## overfitting.
 
-strategies to avoid:
+Adding polynomial terms lets a fit follow smaller variations in the training observations, including noise. Choose the degree and regularization strength using a validation set or cross-validation, then evaluate the chosen procedure on held-out test data. Fit preprocessing within each training fold so validation observations do not influence it.[^selection]
 
-- add more training data
-- L1 (Lasso) or L2 (Ridge) regularization
-  - add a penalty term to the objective function
-  - L1 makes sparse models, since it forces some parameters to be zero (robust to outliers). Since having the absolute value to the weights, forcing some model coefficients to become exactly 0.
-    $$
-    \text{Loss}(w) = \text{Error} + \lambda \times \| w \|
-    $$
-  - L2 is better for feature interpretability, for higher non-linear. Since it doesn't perform feature selection, since weights are only reduced near 0 instead of exactly 0 like L1
-    $$
-    \text{Loss}(w) = \text{Error} + \lambda \times w^2
-    $$
-- Cross-validation
-  - split data into k-fold
-- early stopping
-- dropout, see [example](https://keras.io/api/layers/regularization_layers/dropout/)
-  - randomly selected neurons are ignored => makes network less sensitive
+For coefficients $w$ and a separately fitted intercept, two common penalties are
 
-**sample complexity** of learning multivariate polynomials
+$$
+\begin{aligned}
+L_{\mathrm{lasso}}(w,w_0)
+&=\|Xw+w_0\mathbf{1}-Y\|_2^2+\lambda\|w\|_1,\\
+L_{\mathrm{ridge}}(w,w_0)
+&=\|Xw+w_0\mathbf{1}-Y\|_2^2+\lambda\|w\|_2^2.
+\end{aligned}
+$$
+
+Lasso can set coefficients exactly to zero. Ridge shrinks coefficients and usually retains all features. Feature scaling affects both penalties: changing a feature's units changes the coefficient needed to produce the same prediction. Standardize using training data when a common penalty across features is intended. The value of $\lambda$ also depends on whether the squared error is summed or averaged.[^penalties]
+
+The absolute values in lasso apply to the coefficients. Its residual loss is still squared, so a large response error can dominate the fit. Outlier resistance requires attention to the residual loss and the contamination pattern. Ridge likewise provides no general guarantee of interpretability; correlated features can make individual coefficients difficult to read.[^penalties]
+
+More representative training data can improve estimation. For iterative fitting, early stopping chooses when to stop using validation performance. Neural networks can also use [dropout](https://keras.io/api/layers/regularization_layers/dropout/), which randomly zeros and rescales activations during training. These are choices for particular training procedures, rather than extra steps in the closed-form OLS calculation.
+
+**Sample complexity** asks how many observations are needed to meet a stated prediction-error target under stated assumptions. Counting $p$ coefficients only gives an algebraic condition here: unregularized least squares needs at least $p$ observations to have full column rank. It gives no guarantee about test error. Noise, the input distribution, regularization, and the required accuracy all affect that question.[^polynomials]
 
 ## regularization.
 
-L2 regularization:
+First use the lecture's convention of penalizing every coordinate of $W$, including an intercept if it is present:[^ridge]
 
 $$
-\text{min}_{W \in \mathbb{R}^{d}} \| XW - Y \|^{2}_{2} + \lambda \| W \|_{2}^{2}
+W^{\mathrm{RLS}}=
+\operatorname*{arg\,min}_{W\in\mathbb{R}^{d+1}}
+\left\{\|X'W-Y\|_2^2+\lambda\|W\|_2^2\right\}.
+$$
+
+Differentiating gives
+
+$$
+(X'^TX'+\lambda I_{d+1})W^{\mathrm{RLS}}=X'^TY.
 $$
 
 > [!important] Solving $W^{\text{RLS}}$
 >
-> Solve that
+> For $\lambda>0$,
 >
 > $$
-> W^{\text{RLS}} = (X^T X + \lambda I)^{-1} X^T Y
+> W^{\mathrm{RLS}}=(X'^TX'+\lambda I_{d+1})^{-1}X'^TY.
 > $$
 >
-> Inverse exists as long as $\lambda > 0$
+> The inverse exists even when $X'$ has dependent columns, because every nonzero $v$ satisfies
+>
+> $$
+> v^T(X'^TX'+\lambda I_{d+1})v
+> =\|X'v\|_2^2+\lambda\|v\|_2^2>0.
+> $$
+
+Usually the intercept is left unpenalized, as in the previous section. Shrinking it would make the fit depend on the chosen zero of the response. With the constant in the last column, use
+
+$$
+D=\operatorname{diag}(1,\ldots,1,0),
+\qquad
+(X'^TX'+\lambda D)\widehat W=X'^TY.
+$$
+
+For this design, the matrix remains positive definite when $n\ge1$ and $\lambda>0$: the penalty controls every slope direction, and the observed constant column controls the remaining intercept direction. Equivalently, center the features and response, fit ridge to the centered data, and recover
+
+$$
+\widehat w_0=\bar y-\bar x^T\widehat w.
+$$
 
 ## polynomial curve-fitting revisited
 
-feature map: $\phi{(x)}: R^{d_1} \rightarrow R^{d_2}$ where $d_{2} >> d_{1}$
+Let $\phi:\mathbb{R}^d\to\mathbb{R}^p$ be a fixed feature map and define a matrix with one mapped observation per row:
 
-training:
+$$
+\Phi_{ij}=\phi_j(x_i),
+\qquad \Phi\in\mathbb{R}^{n\times p}.
+$$
 
-- $W^{*} = \min\limits_{W} \| \phi W - Y \|^{2}_{2} + \lambda \| W \|_{2}^{2}$
-- $W^{*} = (\phi^T \phi  + \lambda I)^{-1} \phi^T Y$
+With all mapped coefficients penalized and $\lambda>0$,
 
-prediction:
+$$
+\begin{aligned}
+W^*&=\operatorname*{arg\,min}_{W\in\mathbb{R}^p}
+\left\{\|\Phi W-Y\|_2^2+\lambda\|W\|_2^2\right\},\\
+W^*&=(\Phi^T\Phi+\lambda I_p)^{-1}\Phi^TY,\\
+\hat y(x)&=W^{*T}\phi(x).
+\end{aligned}
+$$
 
-- $\hat{y} = \langle{W^{*}, \phi{(x)}} \rangle = {W^{*}}^T \phi(x)$
+Here $\operatorname*{arg\,min}$ returns the fitted coefficients; $\min$ would return the objective value. If a constant feature should be unpenalized, use the corresponding penalty matrix from the previous section.
 
 > [!abstract] choices of $\phi(x)$
 >
-> - Gaussian basis functions: $\phi(x) = \exp{(-\frac{\| x - \mu \|^{2}}{2\sigma^{2}})}$
-> - Polynomial basis functions: $\phi(x) = \{1, x, x^{2}, \ldots, x^{d}\}$
-> - Fourier basis functions: DFT, FFT
+> - Polynomial features contain powers and products of the inputs, including a constant if needed.
+> - Gaussian features have chosen centers $\mu_j$ and widths $\sigma_j>0$:
+>
+>   $$
+>   \phi_j(x)=\exp\left(-\frac{\|x-\mu_j\|_2^2}{2\sigma_j^2}\right).
+>   $$
+>
+> - A Fourier feature map for a scalar input can contain $\cos(\omega_jx)$ and $\sin(\omega_jx)$ for chosen frequencies $\omega_j$. The DFT is a transform of discrete samples, and the FFT is an algorithm for computing that transform. Neither names a basis function by itself. [SciPy's Fourier-transform guide](https://docs.scipy.org/doc/scipy/tutorial/fft.html) makes this distinction explicit.
 
 ## computational complexity
 
-calculate $W^{\text{RLS}} = (\phi^T \phi  + \lambda I)^{-1} \phi^T Y$
+For dense $\Phi\in\mathbb{R}^{n\times p}$, forming and solving the regularized normal equations involves three costs:
 
-matmul:
+| Operation                                               | Arithmetic cost |
+| ------------------------------------------------------- | --------------- |
+| Form $\Phi^T\Phi$                                       | $O(np^2)$       |
+| Form $\Phi^TY$                                          | $O(np)$         |
+| Factor and solve a positive-definite $p\times p$ system | $O(p^3)$        |
 
-- Native: $O(d^3)$
-- Strassen's algorithm: $O(d^{2.81})$
-- Copper-Smith-Winograd: $O(d^{2.376})$
+The total is $O(np^2+p^3)$, excluding feature construction. Dense storage for $\Phi$ and its Gram matrix takes $O(np+p^2)$ space. [[thoughts/Cholesky decomposition]] factors the positive-definite system; explicitly constructing its inverse is unnecessary. A prediction costs $O(p)$ after evaluating the features.
 
-matrix inversion:
-
-- Gaussian elimination: $O(d^3)$
-- [[thoughts/Cholesky decomposition]]: $O(d^3)$ (involved around $\frac{1}{3}n^3$ FLOPs)
+The number of observations matters here. A bound for multiplying two square matrices alone leaves out the work of constructing $\Phi^T\Phi$ from all $n$ rows.
 
 ## kernels
 
-compute higher dimension inner products
+A kernel evaluates an inner product in a feature space:
 
 $$
-K(x^i, x^j) = \langle \phi(x^i), \phi(x^j) \rangle
+k(x,z)=\langle\phi(x),\phi(z)\rangle.
 $$
 
-Polynomial kernels of degree 2:
+For the degree-two polynomial kernel, the feature coordinates need the correct scaling. With $x,z\in\mathbb{R}^2$, choose
 
 $$
-k(x^i, x^j) = (1 + (x^i)^T x^j)^2 = (1 + \langle{x^i, x^j} \rangle)^2
-\\
-\\
-\because O(d) \text{ operations}
+\phi(x)=
+\begin{pmatrix}
+1\\ \sqrt{2}x_1\\ \sqrt{2}x_2\\ x_1^2\\ \sqrt{2}x_1x_2\\ x_2^2
+\end{pmatrix}.
 $$
+
+Expanding its inner product gives
+
+$$
+\phi(x)^T\phi(z)
+=1+2x^Tz+(x^Tz)^2
+=(1+x^Tz)^2.
+$$
+
+The factors of $\sqrt{2}$ supply the cross-term coefficients in the expansion. An unscaled list of the same monomials gives a different kernel and, under ridge, a different penalty on the represented functions.
 
 > [!abstract] degree M polynomial
 >
+> For a positive integer $M$,
+>
 > $$
-> k(x^i, x^j) = (1 + (x^i)^T x^j)^M
+> k(x,z)=(1+x^Tz)^M.
 > $$
+>
+> The multinomial expansion supplies a scaled feature map containing all monomials up to degree $M$. This is the polynomial kernel with unit scale and constant offset in the [scikit-learn kernel reference](https://scikit-learn.org/stable/modules/metrics.html#polynomial-kernel).
 
-How many operations?
+One evaluation costs $O(d)$ for the input dot product and $O(\log M)$ multiplications for integer exponentiation by squaring. This counts arithmetic operations at fixed precision. For a fixed degree, the cost is $O(d)$.
 
-- improved: $d + \log M$ ops
+For [kernel ridge regression](https://scikit-learn.org/stable/modules/kernel_ridge.html) with $\lambda>0$ under the all-coefficients-penalized convention above, form $K_{ij}=k(x_i,x_j)$ and solve
+
+$$
+\alpha=(K+\lambda I_n)^{-1}Y,
+\qquad
+\hat y(x)=\sum_{i=1}^n\alpha_i k(x_i,x).
+$$
+
+A dense implementation stores $O(n^2)$ kernel entries and spends $O(n^3)$ on the solve. It avoids constructing the expanded polynomial features, which is useful when their count is much larger than the number of observations.
+
+[^ols]: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture3.pdf|Lecture 3]], pp. 3–14, develops the normal equations and the intercept column. The inverse formula assumes full column rank.
+
+[^polynomials]: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture4.pdf|Lecture 4]], pp. 9–16. The exact feature count follows from the exponent count above. The lecture's rough comparison between parameters and samples motivates the problem; it does not specify a generalization guarantee.
+
+[^selection]: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture5.pdf|Lecture 5]], p. 4, separates model selection from testing. See also scikit-learn's [cross-validation guide](https://scikit-learn.org/stable/modules/cross_validation.html).
+
+[^penalties]: Scikit-learn's [linear-model guide](https://scikit-learn.org/stable/modules/linear_model.html) describes ridge, lasso, and robust regression separately. Its lasso objective divides squared error by $2n$; the convention here leaves it unnormalized.
+
+[^ridge]: [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture5.pdf|Lecture 5]], pp. 6–15, develops regularized least squares and feature maps. The unpenalized-intercept equations here follow by separating the constant coefficient from the penalty.

@@ -7,9 +7,9 @@ description: a hopeless romantic breaks the one wish willow to make his crush lo
 director:
   - Curry Barker
 id: Obsession
-modified: 2026-08-21 23:36:31 GMT-04:00
+modified: 2026-10-06 16:39:28 GMT-04:00
 posters: '[[movies/posters/obsession.webp]]'
-rating: 9.2
+rating: 9.8
 status: finished
 studio: focus features
 tags:
