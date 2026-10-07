@@ -3,7 +3,6 @@ import 'onnxruntime-web/webgpu'
 import 'onnxruntime-web/wasm'
 import { vector as vectorExtension } from '@electric-sql/pglite-pgvector'
 import { env, AutoModel, AutoTokenizer } from '@huggingface/transformers'
-import { init, defaultDevice, numpy as np } from '@jax-js/jax'
 import { dependencies } from '../../package.json'
 
 type VectorShardMeta = {
@@ -50,7 +49,7 @@ type ErrorMessage = { type: 'error'; seq?: number; message: string; retryWithout
 
 type WorkerState = 'idle' | 'loading' | 'ready' | 'error'
 
-type CandidateRow = { id: number; vec: string; score: number }
+type CandidateRow = { id: number; score: number }
 
 type MetaRow = { value: string }
 
@@ -85,7 +84,6 @@ let model: any = null
 let envConfigured = false
 let abortController: AbortController | null = null
 let dbPromise: Promise<PGlite> | null = null
-let jaxPromise: Promise<void> | null = null
 let manifestId: string | null = null
 
 function toAssetUrl(path: string): string {
@@ -115,10 +113,6 @@ async function compileWasm(path: string): Promise<WebAssembly.Module> {
 
 function vectorToLiteral(vec: Float32Array): string {
   return `[${vec.join(',')}]`
-}
-
-function parseVectorLiteral(text: string): number[] {
-  return JSON.parse(text)
 }
 
 function buildManifestId(data: Manifest): string {
@@ -155,19 +149,6 @@ async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> 
     })()
   }
   return dbPromise
-}
-
-async function ensureJax(): Promise<void> {
-  if (!jaxPromise) {
-    jaxPromise = (async () => {
-      const devices = await init('webgpu')
-      if (!devices.includes('webgpu')) {
-        throw new Error('webgpu unavailable for jax-js')
-      }
-      defaultDevice('webgpu')
-    })()
-  }
-  return jaxPromise
 }
 
 async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string) {
@@ -378,53 +359,6 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
   return vec
 }
 
-async function rerank(queryVec: Float32Array, candidates: CandidateRow[]): Promise<SearchHit[]> {
-  if (candidates.length === 0) return []
-  await ensureJax()
-  const queryArr = Array.from(queryVec)
-  const flat = new Float32Array(candidates.length * dims)
-  for (let i = 0; i < candidates.length; i++) {
-    const parsed = parseVectorLiteral(candidates[i].vec)
-    for (let j = 0; j < dims; j++) {
-      flat[i * dims + j] = parsed[j] ?? 0
-    }
-  }
-  const q = np.array(queryArr)
-  const m = np.array(flat).reshape([candidates.length, dims])
-  const scoresArr = np.dot(m.ref, q.ref)
-  m.dispose()
-  q.dispose()
-  const scoresRaw = await scoresArr.ref.data()
-  scoresArr.dispose()
-  const scores = toNumberArray(scoresRaw)
-
-  const hits: SearchHit[] = []
-  for (let i = 0; i < candidates.length; i++) {
-    const fallback = Number(candidates[i].score)
-    const score = scores[i]
-    const resolved = Number.isFinite(score) ? score : fallback
-    const validated =
-      Number.isFinite(fallback) && Math.abs(resolved - fallback) > 1e-3 ? fallback : resolved
-    hits.push({ id: candidates[i].id, score: validated })
-  }
-  return hits
-}
-
-function toNumberArray(value: unknown): number[] {
-  if (Array.isArray(value)) {
-    return value.map(entry => Number(entry))
-  }
-  if (value instanceof Float32Array) return Array.from(value)
-  if (value instanceof Float64Array) return Array.from(value)
-  if (value instanceof Int32Array) return Array.from(value)
-  if (value instanceof Uint32Array) return Array.from(value)
-  if (value instanceof Int16Array) return Array.from(value)
-  if (value instanceof Uint16Array) return Array.from(value)
-  if (value instanceof Int8Array) return Array.from(value)
-  if (value instanceof Uint8Array) return Array.from(value)
-  throw new Error('unexpected score payload')
-}
-
 async function handleInit(msg: InitMessage) {
   if (state === 'loading' || state === 'ready') {
     throw new Error('worker already initialized or loading')
@@ -459,7 +393,7 @@ async function handleInit(msg: InitMessage) {
       if (!persistentCache) throw err
       throw new PersistentCacheError(err instanceof Error ? err.message : String(err))
     })
-    const [db] = await Promise.all([database, ensureJax()])
+    const db = await database
     await ensureSchema(db, manifest, manifestId)
 
     state = 'ready'
@@ -488,12 +422,10 @@ async function handleSearch(msg: SearchMessage) {
     await db.exec(`set hnsw.ef_search = ${efSearch}`)
   } catch {}
   const res = await db.query<CandidateRow>(
-    `select id, vec, 1 - (vec <=> $1::vector) as score from ${EMBEDDINGS_TABLE} order by vec <=> $1::vector limit $2`,
+    `select id, 1 - (vec <=> $1::vector) as score from ${EMBEDDINGS_TABLE} order by vec <=> $1::vector limit $2`,
     [queryLiteral, limit],
   )
-  const reranked = await rerank(queryVec, res.rows)
-  reranked.sort((a, b) => b.score - a.score)
-  const semanticHits = reranked.slice(0, limit)
+  const semanticHits = res.rows.filter(hit => Number.isFinite(hit.score))
 
   const message: SearchResultMessage = {
     type: 'search-result',

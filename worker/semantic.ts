@@ -1,3 +1,5 @@
+import { aggregateSemanticResults } from '../quartz/util/semantic-search'
+
 type VectorShardMeta = {
   path: string
   rows: number
@@ -240,46 +242,6 @@ class SemanticSearchEngine {
     return best.slice(0, k)
   }
 
-  private getParentSlug(slug: string): string {
-    const meta = this.chunkMetadata[slug]
-    return meta ? meta.parentSlug : slug
-  }
-
-  private aggregateChunkResults(
-    results: SearchHit[],
-  ): Map<string, { rrfScore: number; maxScore: number }> {
-    const docChunks = new Map<string, Array<{ score: number }>>()
-
-    results.forEach(({ id, score }) => {
-      const chunkSlug = this.manifestIds[id]
-      if (!chunkSlug) return
-
-      const parentSlug = this.getParentSlug(chunkSlug)
-
-      if (!docChunks.has(parentSlug)) {
-        docChunks.set(parentSlug, [])
-      }
-
-      docChunks.get(parentSlug)!.push({ score })
-    })
-
-    const aggregated = new Map<string, { rrfScore: number; maxScore: number }>()
-    const RRF_K = 36
-    const MAX_CHUNKS_PER_DOC = 20
-
-    for (const [parentSlug, chunks] of Array.from(docChunks)) {
-      chunks.sort((a, b) => b.score - a.score)
-
-      const topChunks = chunks.slice(0, MAX_CHUNKS_PER_DOC)
-      const rrfScore = topChunks.reduce((sum, _, rank) => sum + 1.0 / (RRF_K + rank), 0)
-      const maxScore = chunks[0].score
-
-      aggregated.set(parentSlug, { rrfScore, maxScore })
-    }
-
-    return aggregated
-  }
-
   async search(
     queryEmbedding: number[],
     k: number,
@@ -291,15 +253,10 @@ class SemanticSearchEngine {
     const queryVec = this.formatQueryEmbedding(queryEmbedding)
     const chunkResults = this.hnswSearch(queryVec, Math.max(1, k) * 8)
 
-    const aggregated = this.aggregateChunkResults(chunkResults)
-
-    const results = Array.from(aggregated.entries())
-      .map(([slug, { rrfScore, maxScore }]) => ({ slug, score: maxScore, rrfScore }))
-      .sort((a, b) => b.rrfScore - a.rrfScore)
-      .slice(0, k)
-      .map(({ slug, score }) => ({ slug, score }))
-
-    return results
+    return aggregateSemanticResults(chunkResults, {
+      ids: this.manifestIds,
+      chunkMetadata: this.chunkMetadata,
+    }).slice(0, k)
   }
 
   getModelId(): string | undefined {
@@ -326,12 +283,18 @@ class SemanticSearchEngine {
   }
 }
 
-let searchEngine: SemanticSearchEngine | null = null
+let searchEngine: Promise<SemanticSearchEngine> | null = null
 
 export async function getSearchEngine(): Promise<SemanticSearchEngine> {
   if (!searchEngine) {
-    searchEngine = new SemanticSearchEngine()
-    await searchEngine.initialize()
+    const engine = new SemanticSearchEngine()
+    searchEngine = engine
+      .initialize()
+      .then(() => engine)
+      .catch((error: unknown) => {
+        searchEngine = null
+        throw error
+      })
   }
   return searchEngine
 }

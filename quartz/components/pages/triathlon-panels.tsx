@@ -23,7 +23,7 @@ import {
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
 import { AnalyticsServerPanel } from '../triathlon/analytics/render'
-import { CalendarPanel } from '../triathlon/calendar/Calendar'
+import { CalendarPanel, CalendarSourceControls } from '../triathlon/calendar/Calendar'
 import { ShortcutHint } from '../triathlon/shell/ShortcutHint'
 import { EquipmentUsage } from '../triathlon/tools/EquipmentUsage'
 import { Maintenance } from '../triathlon/tools/Maintenance'
@@ -369,7 +369,7 @@ interface TriPanelShellProps {
   barClass?: string
   titleClass?: string
   bodyClass?: string
-  search?: ComponentChildren
+  controls?: ComponentChildren
   children: ComponentChildren
 }
 
@@ -383,7 +383,7 @@ const TriPanelShell = ({
   barClass,
   titleClass,
   bodyClass,
-  search,
+  controls,
   children,
 }: TriPanelShellProps) => {
   const rootClass = `tri-${kind}`
@@ -405,7 +405,7 @@ const TriPanelShell = ({
               {title}
             </span>
           )}
-          {search}
+          {controls}
           <button
             class={`tri-ana-close tri-key-anchor${kind === 'analytics' ? '' : ` tri-${kind}-close`}`}
             type="button"
@@ -438,7 +438,7 @@ export const AnalyticsPanel = ({
     page={page}
     label="triathlon analytics"
     title="analytics"
-    search={
+    controls={
       <div class="tri-analytics-search-wrap tri-key-anchor tri-key-search">
         <input
           class="tri-ana-search"
@@ -485,7 +485,7 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
     barClass="tri-map-bar"
     titleClass="tri-map-title"
     bodyClass="tri-map-body"
-    search={
+    controls={
       <div class="tri-map-search-wrap tri-key-anchor tri-key-search">
         <input
           class="tri-ana-search tri-map-search"
@@ -748,7 +748,7 @@ export const TrainingPanel = ({
     barClass="tri-training-bar"
     titleClass="tri-training-title"
     bodyClass="tri-training-body"
-    search={
+    controls={
       <div class="tri-training-search-wrap tri-key-anchor tri-key-search">
         <input
           class="tri-ana-search tri-training-search"
@@ -781,10 +781,11 @@ export const CalendarOverlay = ({ renderData }: { renderData?: TriathlonRenderDa
     kind="calendar"
     id="tri-calendar-panel"
     panelClass="tri-calendar-panel"
-    label="triathlon race calendar"
+    label="triathlon calendar"
     title="calendar"
+    controls={<CalendarSourceControls id="tri-calendar" />}
   >
-    <CalendarPanel renderData={renderData} panel />
+    <CalendarPanel renderData={renderData} id="tri-calendar" panel />
   </TriPanelShell>
 )
 

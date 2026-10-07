@@ -5,6 +5,7 @@ import {
   scrubDist,
   cyclingWorkoutLaps,
   cyclingWorkoutPowerSummary,
+  swimWorkoutLaps,
   activityAnalysisAvailable,
 } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
@@ -18,6 +19,7 @@ import { buildActivityRangePicker } from './range-picker'
 import {
   workspaceTraceDomain,
   workspaceTracePaths,
+  workspaceTraceY,
   workspaceTraces,
   workspaceValueAt,
   workspaceTimeline,
@@ -39,7 +41,11 @@ const buildWorkspace = (
   const hasGps = gpsSegments(d).length > 0
   const selected = new Set<string>(traces.length ? [traces[0].id] : [])
   const laps = cyclingWorkoutLaps(d)
-  const lapColor = 'color-mix(in srgb, var(--tri-bike) 55%, var(--dark))'
+  const swimLaps = new Map(
+    (d.sport === 'swim' ? swimWorkoutLaps(d) : []).map(lap => [lap.range.id, lap]),
+  )
+  const swimPaceTrace = traces.find(trace => trace.id === 'swim-pace')
+  const lapColor = `color-mix(in srgb, var(--tri-${d.sport === 'swim' ? 'swim' : 'bike'}) 55%, var(--dark))`
   let axis: WorkspaceAxis = 'time'
   let range: StravaActivityDetail['analysisRanges'][number] | null = null
   let map: ActivityComparisonMapController | null = null
@@ -116,6 +122,10 @@ const buildWorkspace = (
   for (const y of [0, 25, 50, 75, 100]) grid.append(svg('line', { x1: 0, x2: 100, y1: y, y2: y }))
   const lines = svg('g', { class: 'tri-workspace-traces' })
   const lapBands = svg('g', { class: 'tri-workspace-laps' })
+  lapBands.style.setProperty(
+    '--tri-workspace-lap-color',
+    d.sport === 'swim' ? 'var(--tri-swim)' : 'var(--tri-bike)',
+  )
   const lapAverage = svg('line', {
     class: 'tri-workspace-lap-average',
     x1: 0,
@@ -127,6 +137,20 @@ const buildWorkspace = (
   const cursor = svg('line', { class: 'tri-workspace-cursor', x1: 0, x2: 0, y1: 0, y2: 100 })
   graph.append(lapBands, grid, lines, lapAverage, lapHighlight, cursor)
   const lapLabels = el('div', 'tri-workspace-lap-labels', undefined, { 'aria-hidden': 'true' })
+  const fitLapLabels = (): void => {
+    lapLabels.hidden = lapLabels.childElementCount === 0
+    if (lapLabels.hidden) return
+    let visible = 0
+    for (const label of lapLabels.querySelectorAll<HTMLElement>('span')) {
+      const textRange = document.createRange()
+      textRange.selectNodeContents(label)
+      const fits =
+        textRange.getBoundingClientRect().width + 8 <= label.getBoundingClientRect().width
+      label.style.visibility = fits ? '' : 'hidden'
+      if (fits) visible++
+    }
+    lapLabels.hidden = visible === 0
+  }
   const ticks = el('div', 'tri-workspace-ticks')
   const plotHead = el('div', 'tri-workspace-plot-head')
   const lapStats = el('div', 'tri-workspace-lap-stats')
@@ -195,6 +219,9 @@ const buildWorkspace = (
         `${lapLabel} ${text('average power')}`,
         `${Math.round(lap.powerWatts)} W`,
       )
+    const swimLap = lap ? swimLaps.get(lap.range.id) : undefined
+    if (swimLap && swimPaceTrace && selected.has(swimPaceTrace.id))
+      addValue('laps', lapColor, `${lapLabel} ${text('pace')}`, swimPaceTrace.format(swimLap.paceS))
     for (const trace of traces) {
       if (!selected.has(trace.id)) continue
       const value = workspaceValueAt(trace, point.elapsedS)
@@ -229,6 +256,8 @@ const buildWorkspace = (
       return right > start && left < end
     })
     const lapSummary = cyclingWorkoutPowerSummary(visibleLaps)
+    const swimPaceDomain =
+      swimPaceTrace && selected.has(swimPaceTrace.id) ? workspaceTraceDomain(swimPaceTrace) : null
     lapBands.replaceChildren()
     lapLabels.replaceChildren()
     lapLabels.hidden = !visibleLaps.length
@@ -255,8 +284,13 @@ const buildWorkspace = (
       if (right <= left) continue
       const x = ((left - start) / (end - start)) * 100
       const width = ((right - left) / (end - start)) * 100
+      const swimLap = swimLaps.get(lap.range.id)
       const height =
-        lapSummary && lap.powerWatts != null ? (lap.powerWatts / lapSummary.maximum) * 100 : 0
+        swimLap && swimPaceDomain
+          ? 100 - workspaceTraceY(swimLap.paceS, swimPaceDomain)
+          : lapSummary && lap.powerWatts != null
+            ? (lap.powerWatts / lapSummary.maximum) * 100
+            : 0
       const band = svg('rect', {
         x,
         y: 100 - height,
@@ -264,10 +298,11 @@ const buildWorkspace = (
         height,
         'data-lap': lap.range.id,
         'data-lap-watts': lap.powerWatts ?? '',
+        'data-lap-pace': swimLap?.paceS ?? '',
         class: 'tri-workspace-lap',
       })
       const title = svg('title', {})
-      title.textContent = `${text('lap')} ${lap.index} · ${zoneClock(lap.range.durationS)}${lap.powerWatts == null ? '' : ` · ${Math.round(lap.powerWatts)} W`}`
+      title.textContent = `${text('lap')} ${lap.index} · ${zoneClock(lap.range.durationS)}${swimLap && swimPaceTrace ? ` · ${swimPaceTrace.format(swimLap.paceS)}` : lap.powerWatts == null ? '' : ` · ${Math.round(lap.powerWatts)} W`}`
       band.append(title)
       lapBands.append(band, svg('line', { x1: x, x2: x, y1: 0, y2: 100 }))
       lapLabels.append(
@@ -338,6 +373,7 @@ const buildWorkspace = (
         el('span', undefined, formatAxis(start + fraction * (end - start))),
       ),
     )
+    fitLapLabels()
     show(state.selectedFraction ?? state.fraction)
   }
   const axisButtons = new Map<WorkspaceAxis, HTMLElement>()
@@ -403,6 +439,7 @@ const buildWorkspace = (
   )
   draw()
   const resize = new ResizeObserver(() => {
+    fitLapLabels()
     scrollHint.hidden = chart.scrollWidth <= plotPanel.clientWidth
   })
   resize.observe(plotPanel)

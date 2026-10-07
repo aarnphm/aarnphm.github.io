@@ -57,7 +57,7 @@ export const TRI_PAGES: { path: string; label: string; hint: string }[] = [
   { path: '/triathlon/analytics', label: 'analytics', hint: 'charts' },
   { path: '/triathlon/maps', label: 'maps', hint: 'routes' },
   { path: '/triathlon/training', label: 'training', hint: 'plans' },
-  { path: '/triathlon/calendar', label: 'calendar', hint: 'races · events' },
+  { path: '/triathlon/calendar', label: 'calendar', hint: 'races · training' },
   { path: '/triathlon/feed', label: 'feed', hint: 'all activities' },
   { path: '/triathlon/on', label: 'on', hint: 'by date' },
 ]
@@ -500,9 +500,33 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     })
 
   const calendarCommands = (): Cmd[] => {
-    const calendar = root.querySelector<HTMLElement>('[data-calendar-year]:not([hidden])')
-    if (!calendar) return []
     const commands: Cmd[] = []
+    const calendarSet = root.querySelector<HTMLElement>('[data-calendar-set]')
+    if (!calendarSet) return commands
+    const sourceScope = calendarSet.closest<HTMLElement>('.tri-calendar-panel') ?? calendarSet
+    for (const source of ['races', 'training']) {
+      const button = sourceScope.querySelector<HTMLButtonElement>(
+        `[data-calendar-source-select="${source}"]`,
+      )
+      if (!button) continue
+      commands.push({
+        label: () =>
+          context.formatter.text(source === 'races' ? 'race calendar' : 'training calendar'),
+        hint: () => context.formatter.text('calendar source'),
+        keys: `calendar ${source} TrainingPeaks schedule week courses entraînement calendrier`,
+        run: () => {
+          close()
+          openCalendar()
+          button.click()
+          button.focus({ preventScroll: true })
+        },
+      })
+    }
+    const calendar = calendarSet.querySelector<HTMLElement>('[data-calendar-year]:not([hidden])')
+    if (!calendar) return commands
+    const showRaces = (): void => {
+      sourceScope.querySelector<HTMLButtonElement>('[data-calendar-source-select="races"]')?.click()
+    }
     for (const view of ['list', 'year']) {
       const button = calendar.querySelector<HTMLButtonElement>(`[data-calendar-select="${view}"]`)
       if (!button) continue
@@ -513,6 +537,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
         run: () => {
           close()
           openCalendar()
+          showRaces()
           button.click()
           button.focus({ preventScroll: true })
         },
@@ -531,6 +556,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
         run: () => {
           close()
           openCalendar()
+          showRaces()
           if (opener.getAttribute('aria-expanded') !== 'true') opener.click()
         },
       })

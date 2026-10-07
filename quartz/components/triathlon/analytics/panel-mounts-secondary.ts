@@ -17,10 +17,7 @@ import { radarNotationDefinition } from './panels/abilities'
 import { radarPaceHint } from './panels/abilities'
 import { cardioSeriesOf } from './panels/cardio'
 import { cardioValueText } from './panels/cardio'
-import { fmtTrendShort } from './panels/thresholds'
-import { fmtTrendVal } from './panels/thresholds'
-import { sampleTrend } from './panels/thresholds'
-import { trendSamples } from './panels/thresholds'
+import { trendFrame, trendReadout } from './panels/pace-trend'
 import { scrubGroup, type ScrubItem } from './scrub-primitives'
 import { ANA_W } from './shared'
 import { bySport } from './shared'
@@ -209,7 +206,8 @@ export const mountSecondaryPanel = (
   }
 
   const trendBlock = kind === 'trend' ? panel.querySelector<HTMLElement>('.tri-ana-trend') : null
-  if (trendBlock) {
+  const frame = trendBlock ? trendFrame(data.trends) : null
+  if (trendBlock && frame) {
     const items: ScrubItem[] = []
     for (const sport of ['swim', 'bike', 'run'] as Sport[]) {
       const wrap = trendBlock.querySelector<HTMLElement>(`.tri-trend-panel[data-sport="${sport}"]`)
@@ -217,21 +215,22 @@ export const mountSecondaryPanel = (
       const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
       const readout = wrap?.querySelector<HTMLElement>('.tri-chart-readout')
       const tr = bySport(data.trends, sport)
-      const samples = tr ? trendSamples(tr) : null
-      if (!wrap || !svgEl || !cursor || !readout || !tr || !samples) continue
+      if (!wrap || !svgEl || !cursor || !readout || !tr || !tr.history.length) continue
+      const dots = Array.from(svgEl.querySelectorAll<SVGElement>('.tri-trend-dot'))
       items.push({
         svgEl,
         cursor,
         readout,
         hover: wrap,
         textOf: f => {
-          const at = sampleTrend(samples, f)
-          const band = `${fmtTrendShort(context.formatter, sport, Math.min(at.lo, at.hi))}–${fmtTrendShort(context.formatter, sport, Math.max(at.lo, at.hi))}`
-          return `+${(at.days / 7).toFixed(1)} wk · ${fmtTrendVal(context.formatter, sport, at.value)} · ${band}`
+          const at = trendReadout(context.formatter, frame, tr, f)
+          for (const dot of dots)
+            dot.classList.toggle('tri-trend-dot--hot', dot.dataset.date === at.date)
+          return at.text
         },
       })
     }
-    cleanups.push(scrubGroup(items, f => f * ANA_W))
+    cleanups.push(scrubGroup(items, f => f * ANA_W, frame.before + frame.after))
   }
 
   const radarBlock =

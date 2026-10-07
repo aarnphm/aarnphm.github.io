@@ -4,8 +4,9 @@ import { escapeHTML } from '../../util/escape'
 import { fetchCanonical } from '../../util/fetch-canonical'
 import { FullSlug, getFullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
 import { encode, highlight, tokenizeTerm } from '../../util/search-text'
+import { aggregateSemanticResults, fuseSearchRanks } from '../../util/semantic-search'
 import { registerEscapeHandler } from './escape-handler'
-import { SemanticClient, type SemanticResult } from './semantic.inline'
+import { SemanticClient } from './semantic.inline'
 
 interface Item extends DocumentData {
   id: number
@@ -61,58 +62,6 @@ const configuredSearchElements = new WeakSet<HTMLDivElement>()
 type SimilarityResult = { item: Item; similarity: number }
 let chunkMetadata: Record<string, { parentSlug: string; chunkId: number }> = {}
 let manifestIds: string[] = []
-
-function getParentSlug(slug: string): string {
-  const meta = chunkMetadata[slug]
-  return meta ? meta.parentSlug : slug
-}
-
-function aggregateChunkResults(
-  results: SemanticResult[],
-  slugToDocIndex: Map<FullSlug, number>,
-): { rrfScores: Map<number, number>; maxScores: Map<number, number> } {
-  const docChunks = new Map<string, Array<{ score: number }>>()
-
-  results.forEach(({ id, score }) => {
-    const chunkSlug = manifestIds[id]
-    if (!chunkSlug) return
-
-    const parentSlug = getParentSlug(chunkSlug)
-
-    if (!docChunks.has(parentSlug)) {
-      docChunks.set(parentSlug, [])
-    }
-
-    docChunks.get(parentSlug)!.push({ score })
-  })
-
-  const rrfScores = new Map<number, number>()
-  const maxScores = new Map<number, number>()
-  // This can probably be tuned a bit better, i.e from the range 30-58 would be nice.
-  // depending on the distribution  of chunks per documents, but for 20 i found this works decently well...
-  const RRF_K = 36
-  // now, some files, such as content/are.na.md that has 423 chunks (in case they are all match) RRF = sum(1/(60+i) for i in range(423)) ~ 2.8
-  // comparing to a docs with 7 chunks (which is the average, currently.) with RRF = 1/60 + 1/61 + ... + 1/66 ~ 0.111
-  // essentially, we will limit the MAX_CHUNKS_PER_DOCS = 20 such that we should cap the distribution a bit.
-  // another strategy is to avoid/filter out outliers, and display it separately.
-  const MAX_CHUNKS_PER_DOC = 20
-
-  for (const [parentSlug, chunks] of docChunks) {
-    const docIdx = slugToDocIndex.get(parentSlug as FullSlug)
-    if (typeof docIdx !== 'number') continue
-
-    chunks.sort((a, b) => b.score - a.score)
-    // TODO: we might want to find out the distribution based on docs that has a lot of chunks, to see which part is relevant
-    const topChunks = chunks.slice(0, MAX_CHUNKS_PER_DOC)
-    const rrfScore = topChunks.reduce((sum, _, rank) => sum + 1.0 / (RRF_K + rank), 0)
-    const maxScore = chunks[0].score
-
-    rrfScores.set(docIdx, rrfScore)
-    maxScores.set(docIdx, maxScore)
-  }
-
-  return { rrfScores, maxScores }
-}
 
 const index = new FlexSearch.Document<Item>({
   tokenize: 'forward',
@@ -265,7 +214,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
 
   let data: ContentIndex | null = null
   let idDataMap: FullSlug[] = []
-  let slugToIndex = new Map<FullSlug, number>()
+  let slugToIndex = new Map<string, number>()
   const requireData = () => {
     if (!data) throw new Error('search data is not loaded')
     return data
@@ -274,7 +223,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     if (data) return data
     data = await getSearchData()
     idDataMap = Object.keys(data) as FullSlug[]
-    slugToIndex = new Map<FullSlug, number>()
+    slugToIndex = new Map<string, number>()
     idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
     await fillDocument(data)
     return data
@@ -351,26 +300,17 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     setSemanticState('loading')
     try {
       await client.ensureReady()
+      const res = await fetch('/embeddings/manifest.json')
+      if (!res.ok) throw new Error(`failed to load semantic metadata: ${res.status}`)
+      const manifest = (await res.json()) as {
+        chunkMetadata?: Record<string, { parentSlug: string; chunkId: number }>
+        ids: string[]
+      }
+      chunkMetadata = manifest.chunkMetadata ?? {}
+      manifestIds = manifest.ids
       semantic = client
       semanticReady = true
       setSemanticState('ready')
-
-      try {
-        const manifestUrl = '/embeddings/manifest.json'
-        const res = await fetch(manifestUrl)
-        if (res.ok) {
-          const manifest = (await res.json()) as {
-            chunkMetadata?: Record<string, { parentSlug: string; chunkId: number }>
-            ids?: string[]
-          }
-          chunkMetadata = manifest.chunkMetadata || {}
-          manifestIds = manifest.ids || []
-        }
-      } catch (err) {
-        console.warn('[Search] failed to load chunk metadata:', err)
-        chunkMetadata = {}
-        manifestIds = []
-      }
       return true
     } catch (err) {
       console.warn('[SemanticClient] initialization failed:', err)
@@ -672,20 +612,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     return new URL(resolveRelative(baseSlug, slug), location.toString())
   }
 
-  const resultToHTML = ({ item, percent }: { item: Item; percent: number | null }) => {
+  const resultToHTML = ({ item, similarity }: SimilarityResult) => {
     const { slug, title, content, tags, target, fileName } = item
     const isProtected = item.protected === true
     const htmlTags = tags.length > 0 ? `<ul class="tags">${tags.join('')}</ul>` : ``
     const itemTile = document.createElement('a')
     const titleContent = target ? highlight(currentSearchTerm, target) : title
     const subscript = target ? `<b>${slug}</b>` : ``
-    let percentLabel = '—'
-    let percentAttr = ''
-    if (percent !== null && Number.isFinite(percent)) {
-      const bounded = Math.max(0, Math.min(100, percent))
-      percentLabel = `${bounded.toFixed(1)}%`
-      percentAttr = bounded.toFixed(3)
-    }
+    const similarityLabel = Number.isFinite(similarity) ? similarity.toFixed(3) : '—'
     itemTile.classList.add('result-card')
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
@@ -710,20 +644,19 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
           font-style: italic;
           margin-left: 0.5rem;
         ">🔒 protected content</span>
-        ${searchMode === 'semantic' ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ''}
+        ${searchMode === 'semantic' ? `<span class="result-likelihood" title="cosine similarity">&nbsp;${similarityLabel}</span>` : ''}
       </hgroup>`
     } else {
       delete itemTile.dataset.protected
       itemTile.innerHTML = `<hgroup>
         <h3>${titleContent}</h3>
         ${subscript}${htmlTags}
-        ${searchMode === 'semantic' ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ''}
+        ${searchMode === 'semantic' ? `<span class="result-likelihood" title="cosine similarity">&nbsp;${similarityLabel}</span>` : ''}
         ${enablePreview && window.innerWidth > 600 ? '' : `<p>${content}</p>`}
       </hgroup>`
     }
 
-    if (percentAttr) itemTile.dataset.scorePercent = percentAttr
-    else delete itemTile.dataset.scorePercent
+    if (Number.isFinite(similarity)) itemTile.dataset.similarity = String(similarity)
 
     const handler = (evt: MouseEvent) => {
       if (evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) return
@@ -756,13 +689,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       </a>`
       currentHover = null
     } else {
-      const decorated = finalResults.map(({ item, similarity }) => {
-        if (!Number.isFinite(similarity)) return { item, percent: null }
-        const bounded = Math.max(-1, Math.min(1, similarity))
-        const percent = ((bounded + 1) / 2) * 100
-        return { item, percent }
-      })
-      results.append(...decorated.map(resultToHTML))
+      results.append(...finalResults.map(resultToHTML))
     }
 
     if (finalResults.length === 0 && preview) {
@@ -982,56 +909,27 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     let semanticIds: number[] = []
     const semanticSimilarity = new Map<number, number>()
 
-    const orchestrator = semanticReady && semantic ? semantic : null
+    const orchestrator = modeForRanking === 'semantic' && semanticReady ? semantic : null
 
     const render = async () => {
       if (token !== searchSeq) return
       const useSemantic = semanticReady && semanticIds.length > 0
-      const weights =
-        modeForRanking === 'semantic' && useSemantic
-          ? { base: 0.3, semantic: 1.0 }
-          : { base: 1.0, semantic: useSemantic ? 0.3 : 0 }
-      const rrf = new Map<string, number>()
-      const push = (ids: number[], weight: number, applyTitleBoost: boolean = false) => {
-        if (!ids.length || weight <= 0) return
-        ids.forEach((docId, rank) => {
-          const slug = idDataMap[docId]
-          if (!slug) return
-          const item = ensureItem(docId)
-          if (!item) return
-
-          let effectiveWeight = weight
-          if (applyTitleBoost && item.titleMatch) {
-            effectiveWeight *= 1.5
-          }
-
-          const prev = rrf.get(slug) ?? 0
-          rrf.set(slug, prev + effectiveWeight / (1 + rank))
-        })
+      const boosts = new Map<number, number>()
+      for (const id of baseIndices) {
+        if (ensureItem(id)?.titleMatch) boosts.set(id, 1.5)
       }
-
-      push(baseIndices, weights.base, true)
-      push(semanticIds, weights.semantic, false)
-
-      const entries = Array.from(candidateItems.values()).map(item => ({
-        item,
-        score: rrf.get(item.slug) ?? 0,
-        similarity: semanticSimilarity.get(item.id) ?? Number.NaN,
-      }))
-
-      const rankedEntries =
-        modeForRanking === 'semantic' && useSemantic
-          ? entries
-              .sort((a, b) => {
-                const aHas = Number.isFinite(a.similarity)
-                const bHas = Number.isFinite(b.similarity)
-                if (aHas && bHas) return b.similarity - a.similarity
-                if (aHas) return -1
-                if (bHas) return 1
-                return b.score - a.score
-              })
-              .slice(0, getNumSearchResults(modeForRanking))
-          : entries.sort((a, b) => b.score - a.score).slice(0, getNumSearchResults(modeForRanking))
+      const rankedEntries = fuseSearchRanks(
+        [
+          { ids: baseIndices, weight: 1, boosts },
+          { ids: semanticIds, weight: useSemantic ? 1 : 0 },
+        ],
+        useSemantic ? 60 : 0,
+      )
+        .flatMap(({ id }) => {
+          const item = ensureItem(id)
+          return item ? [{ item, similarity: semanticSimilarity.get(id) ?? Number.NaN }] : []
+        })
+        .slice(0, getNumSearchResults(modeForRanking))
 
       const displayEntries: SimilarityResult[] = []
       for (const entry of rankedEntries) {
@@ -1043,7 +941,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
 
     await render()
 
-    if (workingType === 'tags' || !orchestrator || !semanticReady || highlightTerm.length < 2) {
+    if (initialType === 'tags' || !orchestrator || !semanticReady || highlightTerm.length < 2) {
       return
     }
 
@@ -1062,20 +960,16 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         return
       }
 
-      const { rrfScores: semRrfScores, maxScores: semMaxScores } = aggregateChunkResults(
-        semRes,
-        slugToIndex,
-      )
-
-      semanticIds = Array.from(semRrfScores.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, getNumSearchResults(modeForRanking))
-        .map(([docIdx]) => docIdx)
-
+      const documents = aggregateSemanticResults(semRes, { ids: manifestIds, chunkMetadata })
+      semanticIds = []
       semanticSimilarity.clear()
-      semMaxScores.forEach((score, docIdx) => {
-        semanticSimilarity.set(docIdx, score)
-      })
+      for (const { slug, score } of documents) {
+        const id = slugToIndex.get(slug)
+        if (id === undefined || !ensureItem(id)) continue
+        semanticIds.push(id)
+        semanticSimilarity.set(id, score)
+        if (semanticIds.length >= getNumSearchResults(modeForRanking)) break
+      }
 
       semanticIds.forEach(docId => {
         ensureItem(docId)

@@ -1,7 +1,13 @@
 import type { GarminHealthDay, GarminHealthReading } from '../plugins/stores/garmin-health'
 import type { TriNodeFactory } from './triathlon-card'
 import { latestGarminReadiness, morningGarminReadiness } from '../plugins/stores/garmin-health'
-import { healthScoreTable, healthTooltip, type HealthRow } from './triathlon-health'
+import {
+  healthRangeStatus,
+  healthScoreTable,
+  healthTooltip,
+  type HealthRow,
+  type HealthStatus,
+} from './triathlon-health'
 import { triText } from './triathlon-i18n'
 
 export interface GarminHealthMetric {
@@ -67,6 +73,40 @@ const wallClock = (timestamp: number, offset: number | null): string =>
   new Date(timestamp + (offset ?? 0) * 60_000).toISOString().slice(11, 16) +
   (offset == null ? ' UTC' : '')
 
+// Keep Garmin's native bands; amber includes moderate readiness and medium reserves.
+const readinessStatus = (score: number | null | undefined): HealthStatus | null => {
+  if (score == null || !Number.isFinite(score) || score < 0 || score > 100) return null
+  if (score >= 95) return { tone: 'good', label: 'prime' }
+  if (score >= 75) return { tone: 'good', label: 'high' }
+  if (score >= 50) return { tone: 'watch', label: 'moderate' }
+  if (score >= 25) return { tone: 'watch', label: 'low' }
+  return { tone: 'alert', label: 'poor' }
+}
+
+const batteryStatus = (score: number | null | undefined): HealthStatus | null => {
+  if (score == null || !Number.isFinite(score) || score < 0 || score > 100) return null
+  if (score > 75) return { tone: 'good', label: 'high' }
+  if (score > 50) return { tone: 'watch', label: 'medium' }
+  if (score > 25) return { tone: 'watch', label: 'low' }
+  return { tone: 'alert', label: 'very low' }
+}
+
+const factorStatus = (feedback: string | null): HealthStatus | null => {
+  const label = phrase(feedback)
+  switch (feedback) {
+    case 'GOOD':
+    case 'VERY_GOOD':
+      return { tone: 'good', label }
+    case 'MODERATE':
+      return { tone: 'watch', label }
+    case 'POOR':
+    case 'VERY_POOR':
+      return { tone: 'alert', label }
+    default:
+      return null
+  }
+}
+
 export function buildGarminRecovery<N>(
   f: TriNodeFactory<N>,
   day: GarminHealthDay | null | undefined,
@@ -93,6 +133,7 @@ export function buildGarminRecovery<N>(
       label: 'Body Battery',
       value: number(latestBattery?.value),
       score: latestBattery?.value,
+      status: batteryStatus(latestBattery?.value),
       detail: source(day.bodyBattery, [
         t('body battery description'),
         latestBattery &&
@@ -106,6 +147,7 @@ export function buildGarminRecovery<N>(
       label: 'training readiness',
       value: number(ready?.score),
       score: ready?.score,
+      status: readinessStatus(ready?.score),
       detail: source(day.trainingReadiness, [
         t('training readiness description'),
         observed && `${t('observed at')} ${observed}`,
@@ -118,6 +160,9 @@ export function buildGarminRecovery<N>(
     {
       label: 'Recovery Time',
       value: minutes(ready?.recoveryTimeMinutes),
+      status: factorStatus(
+        ready?.factors.find(factor => factor.name === 'recovery time')?.feedback ?? null,
+      ),
       detail: source(day.trainingReadiness, [
         t('recovery time description'),
         ...(day.trainingReadiness.value ?? []).map(
@@ -140,6 +185,7 @@ export function buildGarminRecovery<N>(
               : factor.name,
       value: score == null ? '—' : `${number(score)}%`,
       score,
+      status: score == null ? null : factorStatus(factor.feedback),
       detail: source(day.trainingReadiness, [
         t('readiness factor description'),
         t(`${factor.name} factor description`),
@@ -288,15 +334,17 @@ export function buildGarminHealth<N>(
     })
     for (const [index, category] of focus.categories.entries()) {
       const range = garminLoadRange(category.load, category.targetMin, category.targetMax, max)
+      const status = healthRangeStatus(category.load, category.targetMin, category.targetMax)
       const id = `tri-health-${day.date}-load-${index}`
       const target =
         range.low == null ? '—' : `${number(category.targetMin)}–${number(category.targetMax)}`
-      const text = `${t(category.name)} · ${t('load')} ${number(category.load)} · ${t('target range')} ${target}`
+      const text = `${t(category.name)} · ${t('load')} ${number(category.load)} · ${t('target range')} ${target}${status ? ` · ${t(status.label)}` : ''}`
       const row = f.el('div', 'tri-health-load-row tri-health-tooltip-trigger', undefined, {
         role: 'row',
         tabindex: '0',
         'aria-label': text,
         'aria-describedby': id,
+        'data-health-tone': status?.tone ?? 'neutral',
       })
       const plot = f.el('div', 'tri-health-load-plot', undefined, { role: 'cell' })
       const rail = f.el('div', 'tri-health-load-rail', undefined, { 'aria-hidden': 'true' })

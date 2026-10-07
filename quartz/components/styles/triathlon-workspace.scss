@@ -413,7 +413,7 @@
 }
 
 .tri-workspace-lap {
-  fill: var(--tri-bike);
+  fill: var(--tri-workspace-lap-color, var(--tri-bike));
   fill-opacity: 0.4;
   stroke: var(--light);
   stroke-width: 1;

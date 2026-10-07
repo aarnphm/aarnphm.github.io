@@ -1,17 +1,24 @@
+@use './triathlon-training-calendar.scss';
+
 .tri-calendar-set {
   width: 100%;
   max-width: var(--tri-page-w);
   min-width: 0;
 
-  > [hidden] {
+  > [hidden],
+  [data-calendar-source-panel] > [hidden] {
     display: none !important;
   }
 }
 
-.tri-calendar {
+.tri-calendar,
+.tri-calendar-source-controls {
   --calendar-control-size: 2rem;
   --calendar-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --calendar-surface: color-mix(in srgb, var(--lightgray) 24%, var(--light));
+}
+
+.tri-calendar {
   --calendar-swim: color-mix(in srgb, var(--tri-swim) 80%, var(--dark));
   --calendar-bike: color-mix(in srgb, var(--tri-bike) 62%, var(--dark));
   --calendar-run: color-mix(in srgb, var(--tri-run) 72%, var(--dark));
@@ -77,8 +84,24 @@
   }
 }
 
-.tri-subpage[data-tri-view='calendar'] .tri-calendar {
-  margin-block-start: 0;
+.tri-subpage[data-tri-view='calendar'] .tri-calendar-set {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+  padding: 1.2rem 1.3rem 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--gray) 80%, transparent);
+  background: var(--light);
+
+  > .tri-calendar-source-controls {
+    margin: 0;
+  }
+
+  .tri-calendar {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
 }
 
 :root[saved-theme='dark'] .tri-calendar {
@@ -234,6 +257,33 @@
   border: 0;
 }
 
+// Races and training share one calendar set; the overlay renders this switch in its panel bar.
+.tri-calendar-source-controls {
+  display: flex;
+  flex: none;
+  box-sizing: border-box;
+  width: fit-content;
+  height: var(--calendar-control-size);
+  margin-bottom: 0.6rem;
+  border: 1px solid var(--calendar-line);
+
+  .tri-calendar-icon {
+    height: 100%;
+    border: 0;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 3px;
+    }
+  }
+}
+
+.tri-calendar-icon .tri-calendar-icon-fill {
+  fill: currentColor;
+  stroke: none;
+}
+
 .tri-calendar-download::after {
   right: -1px;
   left: auto;
@@ -254,7 +304,6 @@
 .tri-calendar-strip {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  border-block: 1px solid var(--calendar-line);
 
   > a,
   > span {
@@ -1107,8 +1156,13 @@ a.tri-calendar-day {
     border: none;
   }
 
-  .tri-calendar-close {
-    margin-left: auto;
+  > .tri-ana-bar {
+    gap: 0.5rem;
+  }
+
+  > .tri-ana-bar > .tri-calendar-source-controls {
+    --calendar-control-size: 1.9rem;
+    margin: 0 0 0 auto;
   }
 }
 
@@ -1138,9 +1192,6 @@ a.tri-calendar-day {
   }
   .tri-calendar-strip {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-  .tri-calendar-strip > :nth-child(n + 7) {
-    border-top: 1px solid var(--calendar-line);
   }
   // Twelve months stack three wide here, far taller than the list; rows keep their own height.
   .tri-calendar-list {

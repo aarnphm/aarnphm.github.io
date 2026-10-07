@@ -6364,6 +6364,31 @@ test('pool overlays retain measured distance, length metrics, rest gaps, and mis
   })
 })
 
+test('pool overlays connect rounded length boundaries while preserving recorded rests', () => {
+  const pool = swimTrendDetail()
+  const first = pool.swimIntervals[0]
+  const second = pool.swimIntervals[1]
+  pool.swimIntervals = [first, { ...second, startElapsedS: 25.4, endElapsedS: 51.4 }]
+  const pace = workspaceTraces(pool, METRIC_TRIATHLON_PRESENTATION).find(
+    trace => trace.id === 'swim-pace',
+  )
+  assert.ok(pace)
+  assert.equal(workspaceValueAt(pace, 25.2), 104)
+  assert.equal(workspaceTracePaths(pace, 'time', 0, 60).line.split('M').length, 2)
+  const location = workspaceLocationAt(workspaceTimeline(pool), 'time', 25.2)
+  assert.equal(location.elapsedS, 25.2)
+  assert.ok(Math.abs(location.distanceKm - 0.025189393939) < 1e-10)
+})
+
+test('workspace range clipping retains a continuous length spanning both range edges', () => {
+  const pace = workspaceTraces(swimTrendDetail(), METRIC_TRIATHLON_PRESENTATION).find(
+    trace => trace.id === 'swim-pace',
+  )
+  assert.ok(pace)
+  assert.match(workspaceTracePaths(pace, 'time', 10, 20).line, /^M 0 [\d.]+ L 100 [\d.]+/)
+  assert.equal(workspaceTracePaths(pace, 'time', 26, 39).line, '')
+})
+
 test('pool swimming retains calculated condition and recorded physiology without HR stamina', () => {
   const pool = swimTrendDetail({
     elapsedTimeS: 600,

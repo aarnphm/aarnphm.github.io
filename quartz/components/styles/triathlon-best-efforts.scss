@@ -3,6 +3,7 @@
 // Emitted before triathlon.scss rules, so overrides of shared control classes need extra specificity.
 
 .tri-best-efforts {
+  --tri-be-control-height: calc(var(--tri-pred-control-height, 1.55rem) + 4px);
   --tri-be-focus: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
   // arena.scss line and surface; its tokens are scoped to the arena pages.
   --tri-be-line: color-mix(in srgb, var(--gray) 55%, transparent);
@@ -22,7 +23,7 @@
 .tri-be-tabs.tri-map-tablist {
   flex: none;
   margin-inline-start: auto;
-  block-size: calc(var(--tri-pred-control-height, 1.55rem) + 2px);
+  block-size: var(--tri-be-control-height);
   // Two tabs never scroll; a scroll container would clip the focus outline.
   overflow: visible;
 }
@@ -46,13 +47,15 @@
   inline-size: 100%;
 }
 
-.tri-be-sports {
+.tri-be-sports.tri-dist-sports {
   flex: none;
+  box-sizing: border-box;
+  block-size: var(--tri-be-control-height);
 }
 
 .tri-be-category-row {
   min-width: 0;
-  min-block-size: calc(1.5rem + 4px);
+  min-block-size: calc(var(--tri-be-control-height) + 4px);
 }
 
 .tri-be-cats[hidden] {
@@ -71,7 +74,7 @@
 .tri-be-cats .tri-map-tab {
   flex: none;
   min-inline-size: 1.5rem;
-  min-block-size: 1.5rem;
+  block-size: var(--tri-be-control-height);
 
   &[aria-selected='true'] {
     background: var(--tri-be-tab-color, var(--tri-be-category-color));

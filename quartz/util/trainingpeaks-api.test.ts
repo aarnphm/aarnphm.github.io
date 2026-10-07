@@ -6,8 +6,15 @@ import {
   trainingPeaksMetadataPayload,
   verifyTrainingPeaksMetadata,
   type TrainingPeaksWorkout,
+  parseTrainingPeaksStrengthWorkout,
+  trainingPeaksStrengthTitlePayload,
+  verifyTrainingPeaksStrengthTitle,
 } from './trainingpeaks-api'
-import { trainingPeaksWorkoutSummary } from './trainingpeaks-title-sync'
+import {
+  trainingPeaksWorkoutSummary,
+  trainingPeaksTitleProtection,
+  trainingPeaksStrengthTitleProtection,
+} from './trainingpeaks-title-sync'
 
 // Field shapes follow a completed Other workout returned by the TrainingPeaks web API.
 function workout(overrides: Partial<TrainingPeaksWorkout> = {}): TrainingPeaksWorkout {
@@ -65,21 +72,53 @@ test('converts API hours and local timestamps without relying on the nullable co
     startTime: '18:26:21',
     durationS: 4195,
     title: 'Cardio',
-    sport: 'Other',
+    workoutTypeId: 100,
     distance: 0,
-    planned: false,
+    completed: true,
   })
+  for (const change of [{ totalTime: null }, { totalTime: 0 }])
+    assert.equal(trainingPeaksWorkoutSummary(workout(change)).completed, false)
   for (const change of [
-    { totalTime: null },
-    { totalTime: 0 },
     { startTimePlanned: '2026-09-20T18:30:00' },
     { totalTimePlanned: 1 },
     { tssPlanned: 0 },
     { distancePlanned: 1000 },
   ])
-    assert.ok(trainingPeaksWorkoutSummary(workout(change)).planned)
-  assert.equal(trainingPeaksWorkoutSummary(workout({ workoutTypeValueId: 2 })).sport, '')
+    assert.equal(trainingPeaksWorkoutSummary(workout(change)).completed, true)
+  assert.equal(trainingPeaksWorkoutSummary(workout({ workoutTypeValueId: 2 })).workoutTypeId, 2)
   assert.equal(trainingPeaksWorkoutSummary(workout({ startTime: null })).startTime, '')
+})
+
+test('protects completed plans and authored instructions from Strava title changes', () => {
+  const imported = workout({ description: null, workoutComments: [] })
+  assert.equal(trainingPeaksTitleProtection(imported), null)
+  for (const change of [
+    { totalTimePlanned: 1 },
+    { distancePlanned: 0 },
+    { tssPlanned: 0 },
+    { ifPlanned: 0.7 },
+    { caloriesPlanned: 250 },
+    { velocityPlanned: 3 },
+    { energyPlanned: 300 },
+    { elevationGainPlanned: 0 },
+    { startTimePlanned: '2026-09-20T18:30:00' },
+    { structure: '{"structure":[]}' },
+  ])
+    assert.equal(trainingPeaksTitleProtection({ ...imported, ...change }), 'Planned workout')
+  assert.equal(
+    trainingPeaksTitleProtection({ ...imported, description: 'Half mile warmup, then 4 x 800m.' }),
+    'Workout has authored instructions',
+  )
+  const managed =
+    'Sauna / passive heat session.\n\nHTL 7.7\n\nStrava: https://www.strava.com/activities/123'
+  assert.equal(trainingPeaksTitleProtection({ ...imported, description: managed }), null)
+  assert.equal(
+    trainingPeaksTitleProtection({
+      ...imported,
+      description: managed + '\n\nJames: keep this short.',
+    }),
+    'Workout has authored instructions',
+  )
 })
 
 test('metadata payload preserves metrics, comments, structure, and unknown provider fields', () => {
@@ -92,6 +131,11 @@ test('metadata payload preserves metrics, comments, structure, and unknown provi
     description: 'Updated description.',
   })
   assert.deepEqual(current, snapshot)
+  const withoutDescription = workout({ description: null })
+  assert.deepEqual(trainingPeaksMetadataPayload(withoutDescription, 'New title'), {
+    ...withoutDescription,
+    title: 'New title',
+  })
   assert.throws(() => trainingPeaksMetadataPayload(current, ' ', ''), /must not be empty/)
   assert.throws(
     () => trainingPeaksMetadataPayload(workout({ isLocked: true }), 'Sauna', ''),
@@ -136,4 +180,89 @@ test('requires scoped authentication and rejects cookie header injection', () =>
       () => new TrainingPeaksApi({ authCookie }),
       /only the Production_tpAuth cookie value/,
     )
+})
+
+test('strength titles preserve exercises, files, plans and completed metrics', () => {
+  const current = parseTrainingPeaksStrengthWorkout(
+    {
+      id: '42',
+      calendarId: 1,
+      title: 'Yoga',
+      instructions: null,
+      prescribedDate: '2026-09-20',
+      startDateTime: '2026-09-20T18:15:20',
+      completedDateTime: '2026-09-20T18:24:12',
+      executedDurationInSeconds: 532,
+      workoutType: 'StructuredStrength',
+      workoutSubTypeId: 22,
+      isLocked: false,
+      prescribedDurationInSeconds: null,
+      completedTss: 5,
+      blocks: [{ id: 'block', sets: [1, 2] }],
+      files: [{ fileName: 'recording.fit' }],
+    },
+    1,
+  )
+  const payload = trainingPeaksStrengthTitlePayload(current, 'Lower body stretch')
+  assert.deepEqual(payload, { ...current, title: 'Lower body stretch' })
+  verifyTrainingPeaksStrengthTitle(payload, { ...payload, lastUpdatedAt: '2026-10-06T20:00:00' })
+  for (const change of [{ title: 'Yoga' }, { blocks: [] }, { completedTss: 0 }, { calendarId: 2 }])
+    assert.throws(
+      () => verifyTrainingPeaksStrengthTitle(payload, { ...payload, ...change }),
+      /readback/,
+    )
+  assert.throws(() => parseTrainingPeaksStrengthWorkout(current, 2), /another athlete/)
+  assert.throws(() => parseTrainingPeaksStrengthWorkout({ ...current, id: null }, 1), /schema/)
+  assert.throws(
+    () => trainingPeaksStrengthTitlePayload({ ...current, isLocked: true }, 'Stretch'),
+    /locked/,
+  )
+  assert.throws(() => trainingPeaksStrengthTitlePayload(current, ''), /empty/)
+})
+
+test('protects strength prescriptions without treating an imported activity date as a plan', () => {
+  const imported = parseTrainingPeaksStrengthWorkout(
+    {
+      id: '42',
+      calendarId: 1,
+      title: 'Yoga',
+      instructions: null,
+      prescribedDate: '2026-09-20',
+      prescribedStartTime: null,
+      startDateTime: '2026-09-20T18:15:20',
+      completedDateTime: '2026-09-20T18:24:12',
+      executedDurationInSeconds: 532,
+      workoutType: 'StructuredStrength',
+      workoutSubTypeId: 22,
+      isLocked: false,
+      hasPrescribedData: false,
+      complianceState: 'Unplanned',
+      prescribedDurationInSeconds: null,
+      prescribedTss: null,
+      prescribedIntensityFactor: null,
+      blocks: [],
+      sequenceSummary: [],
+      completedTss: 5,
+    },
+    1,
+  )
+  assert.equal(trainingPeaksStrengthTitleProtection(imported), null)
+  for (const change of [
+    { hasPrescribedData: true },
+    { prescribedDurationInSeconds: 1200 },
+    { prescribedTss: 0 },
+    { prescribedIntensityFactor: 0.5 },
+    { prescribedStartTime: '18:00:00' },
+    { blocks: [{ id: 'exercise' }] },
+    { sequenceSummary: [{ id: 'exercise' }] },
+    { complianceState: 'Complete' },
+  ])
+    assert.equal(
+      trainingPeaksStrengthTitleProtection({ ...imported, ...change }),
+      'Planned workout',
+    )
+  assert.equal(
+    trainingPeaksStrengthTitleProtection({ ...imported, instructions: '3 x 10 split squats' }),
+    'Workout has authored instructions',
+  )
 })

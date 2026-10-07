@@ -18,6 +18,7 @@ import { buildDexa } from './panels/body-composition'
 import { buildCardio } from './panels/cardio'
 import { buildDistributions } from './panels/distributions'
 import { buildFtpHypothesis } from './panels/ftp'
+import { buildTrend } from './panels/pace-trend'
 import { buildPmc, buildWeekly } from './panels/performance'
 import {
   bestPowerSeries,
@@ -34,7 +35,6 @@ import {
   fmtLactateValue,
   lactateSourceText,
   buildReadiness,
-  buildTrend,
 } from './panels/thresholds'
 import { buildVo2max } from './panels/vo2'
 import { buildGauge } from './shared'

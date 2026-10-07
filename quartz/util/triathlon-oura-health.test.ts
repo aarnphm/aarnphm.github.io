@@ -1,8 +1,10 @@
 import type { Element } from 'hast'
 import { toHtml } from 'hast-util-to-html'
+import { toString } from 'hast-util-to-string'
 import { h, s } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { visit } from 'unist-util-visit'
 import type { GarminSleepSummary } from '../plugins/stores/garmin'
 import type { OuraDayDetail, OuraDaily } from '../plugins/stores/oura'
 import { buildAnalytics } from '../plugins/stores/analytics'
@@ -27,6 +29,46 @@ const factory: TriNodeFactory<Element> = {
 }
 const date = '2026-09-21'
 
+test('Oura scores use ratings while durations keep their category and baseline meaning', () => {
+  const day = emptyOuraHealth(date)
+  applyOuraHealthRow(day, 'daily_resilience', {
+    level: 'strong',
+    contributors: { sleep_recovery: 64, daytime_recovery: 60, stress: 44 },
+  })
+  applyOuraHealthRow(day, 'daily_stress', { stress_high: 900, recovery_high: 1800 })
+  applyOuraHealthRow(day, 'daily_activity', {
+    score: 91,
+    active_calories: 100,
+    target_calories: 200,
+    resting_time: 31200,
+    sedentary_time: 10260,
+    high_activity_time: 2100,
+    non_wear_time: 3300,
+    contributors: { recovery_time: 66, meet_daily_targets: 100 },
+  })
+  const rendered = h('div', buildOuraHealth(factory, day, { seconds: 3240, days: 14 }))
+  const tones = new Map<string, unknown>()
+  visit(rendered, 'element', node => {
+    const label = node.children[0]
+    if (node.tagName === 'tr' && label?.type === 'element')
+      tones.set(toString(label.children[0]), node.properties.dataHealthTone)
+  })
+  assert.equal(tones.get('sleep recovery'), 'watch')
+  assert.equal(tones.get('daytime recovery'), 'watch')
+  assert.equal(tones.get('stress balance'), 'alert')
+  assert.equal(tones.get('activity score'), 'good')
+  assert.equal(tones.get('recovery time'), 'watch')
+  assert.equal(tones.get('stressed'), 'watch')
+  assert.equal(tones.get('restored'), 'watch')
+  assert.equal(tones.get('usual restoration'), 'neutral')
+  assert.equal(tones.get('resting'), 'neutral')
+  assert.equal(tones.get('sedentary'), 'watch')
+  assert.equal(tones.get('high activity'), 'info')
+  assert.equal(tones.get('not worn'), 'neutral')
+  assert.equal(tones.get('activity goal'), 'watch')
+  assert.match(toHtml(rendered), /30m · below usual restoration/)
+})
+
 test('Oura bars preserve zero, cap goal progress, explain baseline and omit missing groups', () => {
   const day = emptyOuraHealth(date)
   assert.deepEqual(buildOuraHealth(factory, day, null), [])
@@ -47,7 +89,7 @@ test('Oura bars preserve zero, cap goal progress, explain baseline and omit miss
   assert.match(html, /23:30–00:45/)
   assert.match(html, /aria-valuenow="0"/)
   assert.match(html, /aria-valuenow="50"/)
-  assert.match(html, /aria-valuenow="100" aria-valuetext="200%"/)
+  assert.match(html, /aria-valuenow="100" aria-valuetext="200% · target met"/)
   assert.match(html, /Garden calculation/)
   assert.match(html, /n=7/)
   assert.match(html, /role="tooltip"/)
@@ -90,6 +132,7 @@ test('daily details use one fine hypnogram, movement and a single oxygen row wit
     stress: { stressS: 0, restoredS: 3600, summary: null },
   }
   details[date].health = health
+  details[date].sleepContrib = { efficiency: 62, latency: 4, total_sleep: 94 }
   const summary = buildTriathlonDailyAnalytics(buildAnalytics(null), details)[date]
   assert.equal(isTriathlonDailyAnalytics(JSON.parse(JSON.stringify({ [date]: summary }))), true)
   const render = () => {
@@ -105,6 +148,14 @@ test('daily details use one fine hypnogram, movement and a single oxygen row wit
   assert.equal((html.match(/data-day-sleep-interval="30"/g) ?? []).length, 4)
   assert.match(html, /01:03:45 · deep/)
   assert.match(html, /14:03:45 · active/)
+  const contributions: unknown[] = []
+  const sleepAnalytics = buildDaySleepAnalytics(factory, summary)
+  assert.ok(sleepAnalytics)
+  visit(sleepAnalytics, 'element', node => {
+    if (node.properties.role === 'meter' && node.properties.ariaLabel === 'efficiency')
+      contributions.push(node.properties.dataHealthTone)
+  })
+  assert.deepEqual(contributions, ['watch'])
   assert.ok(summary.sleep)
   summary.sleep.phase30Sec = null
   assert.match(render(), /data-day-sleep-interval="300"/)
