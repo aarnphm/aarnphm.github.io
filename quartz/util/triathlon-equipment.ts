@@ -9,6 +9,7 @@ export const formatEquipmentDistance = (metres: number, system: DistanceSystem):
 export interface TriathlonEquipmentUsage {
   id: string
   name: string | null
+  description: string | null
   lifetimeDistanceM: number | null
   activityCount: number
   firstRecorded: string | null
@@ -24,6 +25,7 @@ export const buildTriathlonEquipment = (
     equipment[gear.id] = {
       id: gear.id,
       name: gear.name,
+      description: gear.description ?? null,
       lifetimeDistanceM:
         gear.distanceM != null && Number.isFinite(gear.distanceM) && gear.distanceM >= 0
           ? gear.distanceM

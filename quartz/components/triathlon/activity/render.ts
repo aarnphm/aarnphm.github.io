@@ -97,6 +97,7 @@ import { scrubDist } from '../../../util/triathlon-card'
 import { speedKph } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
+import { buildMyWindsockGraphs } from '../../../util/triathlon-mywindsock'
 import {
   triathlonTraceEnabled,
   type TriathlonTraceSettings,
@@ -1120,6 +1121,8 @@ export const renderMapDetail = (
       hasHeartRateTrace(d) && workoutAnalysis?.dataset.workoutAnalysisMetric !== 'hr'
         ? buildHeartRateTrace(presentation, d)
         : null
+    const windGraphs = buildMyWindsockGraphs(domF, d)
+    if (windGraphs) more.appendChild(windGraphs)
     const environment = buildEnvironmentAnalysisNode(domF, d)
     const trainingEffect = buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null
     for (const z of [
@@ -1235,6 +1238,8 @@ export const renderMapDetail = (
     if (torque) zoneBox.appendChild(torque)
     const cyclingPower = buildCyclingPowerChart(domF, d, graphDomain)
     if (cyclingPower) zoneBox.appendChild(cyclingPower)
+    const windGraphs = buildMyWindsockGraphs(domF, d)
+    if (windGraphs) zoneBox.appendChild(windGraphs)
     const environment = buildEnvironmentAnalysisNode(domF, d)
     if (environment) zoneBox.appendChild(environment)
     if (spec.extra) for (const node of spec.extra()) if (node) zoneBox.appendChild(node)

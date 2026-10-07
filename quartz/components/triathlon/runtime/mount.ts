@@ -5,8 +5,8 @@ import { setupActivityComparisonEmbeds } from '../activity/embeds'
 import { setupDayEmbeds } from '../activity/embeds'
 import { setupEnvironmentTabs } from '../activity/environment-tabs'
 import { setupMatchedActivities } from '../activity/matched'
+import { setupMyWindsockGraphs } from '../activity/mywindsock-graphs'
 import { setupPowerCurveActivityLinks } from '../activity/power-links'
-import { createDayCardFacade, type DayCardFacade } from '../activity/public-api'
 import { setupChartScrub } from '../activity/scrub'
 import { setupWorkoutAnalysisTabs } from '../activity/workout-analysis-tabs'
 import { setupActivityWorkspace } from '../activity/workspace'
@@ -29,13 +29,13 @@ import { setupCheat } from '../tools/cheat'
 import { setupGearRatios } from '../tools/gear-ratios'
 import { setupPaceForecast } from '../tools/pace-forecast'
 import { setupTirePressure } from '../tools/tire-pressure'
+import { setupToolsTabs } from '../tools/tools-tabs'
 import { setupTraining } from '../training/controller'
 import { createTriathlonContext } from './context'
 import { readTriPanelsFullscreen } from './preferences'
 
 export interface MountedTriathlon {
   cleanup(): void
-  dayCard: DayCardFacade
 }
 
 export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
@@ -52,6 +52,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   }
   addCleanup(setupDayEmbeds(context))
   addCleanup(setupActivityWorkspace(context))
+  addCleanup(setupMyWindsockGraphs(document.body, signal))
   addCleanup(setupActivityComparisonEmbeds(context))
   addCleanup(setupPowerCurveActivityLinks(document.body, context))
   addCleanup(setupChartScrub(document.body, () => context.presentation))
@@ -68,6 +69,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
     addCleanup(setupPerformanceDebug(root))
     addCleanup(setupCalc(root, context))
     addCleanup(setupCalculatorTabs(root))
+    addCleanup(setupToolsTabs(root))
     addCleanup(setupPaceForecast(root, context))
     addCleanup(setupGearRatios(root, context))
     addCleanup(setupDropdown(root, '.tri-gear-wrap', '.tri-gear-btn', '.tri-gear', 'tri-gear-open'))
@@ -103,5 +105,5 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
     for (let i = cleanups.length - 1; i >= 0; i--) cleanups[i]()
   }
   signal.addEventListener('abort', cleanup, { once: true })
-  return { cleanup, dayCard: createDayCardFacade(context) }
+  return { cleanup }
 }

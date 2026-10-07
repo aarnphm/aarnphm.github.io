@@ -15,6 +15,7 @@ import { activityScrubIndexAt } from './analysis'
 import { bindActivityComparisonGraph, type ActivityComparisonScrubState } from './comparison-graph'
 import { mountActivityComparisonMap, type ActivityComparisonMapController } from './comparison-map'
 import { buildActivityMapControls } from './map-controls'
+import { loadMyWindsockGraphs } from './mywindsock-graphs'
 import { buildActivityRangePicker } from './range-picker'
 import {
   workspaceTraceDomain,
@@ -24,6 +25,7 @@ import {
   workspaceValueAt,
   workspaceTimeline,
   workspaceLocationAt,
+  myWindsockWorkspaceTraces,
   type WorkspaceAxis,
   type WorkspaceTrace,
 } from './workspace-data'
@@ -161,20 +163,25 @@ const buildWorkspace = (
     role: 'group',
     'aria-label': text('graph overlays'),
   })
-  for (const trace of traces) {
-    if (trace.id === 'elevation') continue
-    const button = el('button', 'tri-workspace-trace-toggle', undefined, {
-      type: 'button',
-      'data-workspace-trace': trace.id,
-      'aria-pressed': String(selected.has(trace.id)),
-      'aria-label': text(trace.label).toLocaleLowerCase(),
-      ...(trace.estimated ? { title: text('Garden estimate') } : {}),
-    })
-    button.style.setProperty('--trace-color', trace.color)
-    const label = el('span', 'tri-workspace-trace-label', text(trace.label).toLocaleLowerCase())
-    button.append(label)
-    controls.append(button)
+  const addTraceControls = (additions: WorkspaceTrace[]): void => {
+    for (const trace of additions) {
+      if (trace.id === 'elevation') continue
+      const button = el('button', 'tri-workspace-trace-toggle', undefined, {
+        type: 'button',
+        'data-workspace-trace': trace.id,
+        'aria-pressed': String(selected.has(trace.id)),
+        'aria-label': text(trace.label).toLocaleLowerCase(),
+        ...(trace.source || trace.estimated
+          ? { title: trace.source ?? text('Garden estimate') }
+          : {}),
+      })
+      button.style.setProperty('--trace-color', trace.color)
+      const label = el('span', 'tri-workspace-trace-label', text(trace.label).toLocaleLowerCase())
+      button.append(label)
+      controls.append(button)
+    }
   }
+  addTraceControls(traces)
   const bounds = (): [number, number] =>
     axis === 'time'
       ? [range?.startElapsedS ?? 0, range?.endElapsedS ?? maxTime]
@@ -227,7 +234,11 @@ const buildWorkspace = (
       const value = workspaceValueAt(trace, point.elapsedS)
       const formatted = value == null ? '—' : trace.format(value)
       const label = text(trace.label)
-      const source = trace.estimated ? ` · ${text('Garden estimate')}` : ''
+      const source = trace.source
+        ? ` · ${trace.source}`
+        : trace.estimated
+          ? ` · ${text('Garden estimate')}`
+          : ''
       addValue(trace.id, trace.color, `${label}${source}`, formatted)
     }
     let activeBand: SVGRectElement | null = null
@@ -354,7 +365,11 @@ const buildWorkspace = (
         0,
         lapSummary.maximum,
       )
+    const axisGroups = new Set(firstTrace ? [firstTrace.axisGroup ?? firstTrace.id] : [])
     for (const trace of activeTraces.slice(1)) {
+      const group = trace.axisGroup ?? trace.id
+      if (axisGroups.has(group)) continue
+      axisGroups.add(group)
       const side = startAxes.childElementCount <= endAxes.childElementCount ? startAxes : endAxes
       addAxis(side, trace, ...workspaceTraceDomain(trace))
     }
@@ -407,12 +422,64 @@ const buildWorkspace = (
   host.append(toolbar)
   if (hasGps) host.append(mapPanel)
   host.append(stage)
+  const archiveReference = d.analyses.native.myWindsockArchive
+  const windRequest = new AbortController()
+  const windLoad = el('button', 'tri-workspace-wind-load', 'Load myWindsock overlays', {
+    type: 'button',
+    'data-workspace-wind-load': '',
+  })
+  const windNote = el(
+    'p',
+    'tri-workspace-note',
+    'Native chart traces use their own elapsed clock. Distance follows the recorded route clock.',
+  )
+  if (archiveReference) host.append(windLoad, windNote)
+  let windLoading = false
+  let windLoaded = false
+  const loadWind = async (): Promise<void> => {
+    if (!archiveReference || windLoading || windLoaded) return
+    windLoading = true
+    windLoad.setAttribute('disabled', '')
+    windLoad.setAttribute('aria-busy', 'true')
+    try {
+      const archive = await loadMyWindsockGraphs(archiveReference, windRequest.signal)
+      if (windRequest.signal.aborted || !host.isConnected) return
+      const additions = myWindsockWorkspaceTraces(archive, d, presentation)
+      traces.push(...additions)
+      for (const group of ['mywindsock-cda', 'elevation']) {
+        const members = traces.filter(trace => trace.axisGroup === group)
+        let low = Infinity,
+          high = -Infinity
+        for (const trace of members)
+          for (const sample of trace.samples) {
+            if (sample.value == null) continue
+            low = Math.min(low, sample.value)
+            high = Math.max(high, sample.value)
+          }
+        if (Number.isFinite(low)) for (const trace of members) trace.domain = [low, high]
+      }
+      addTraceControls(additions)
+      windLoaded = true
+      windLoad.textContent = `${additions.length} myWindsock overlays loaded`
+      windNote.textContent = `Powered by myWindsock · captured ${archive.capturedAt}.`
+      draw()
+    } catch (error) {
+      if (windRequest.signal.aborted || !host.isConnected) return
+      windLoad.textContent = 'Retry myWindsock overlays'
+      windNote.textContent = error instanceof Error ? error.message : 'Wind archive unavailable.'
+    } finally {
+      windLoading = false
+      windLoad.toggleAttribute('disabled', windLoaded)
+      windLoad.removeAttribute('aria-busy')
+    }
+  }
   if (!traces.length)
     host.append(el('p', 'tri-workspace-note', text('No recorded telemetry for this activity.')))
   const onClick = (event: MouseEvent): void => {
     if (!(event.target instanceof Element)) return
     const button = event.target.closest<HTMLButtonElement>('button')
     if (!button || !host.contains(button)) return
+    if (button.hasAttribute('data-workspace-wind-load')) void loadWind()
     const traceId = button.dataset.workspaceTrace
     if (traceId && traceId !== 'elevation') {
       if (selected.has(traceId)) selected.delete(traceId)
@@ -459,6 +526,7 @@ const buildWorkspace = (
       onLeave: () => show(state.selectedFraction ?? state.fraction),
     })
   return () => {
+    windRequest.abort()
     resize.disconnect()
     cleanupGraph()
     map?.destroy()

@@ -1,6 +1,10 @@
 @use '../../styles/variables.scss' as *;
 
-body:has(.protected-content-wrapper:not(.inline) .password-prompt-overlay[style*='display: flex']) {
+// A cached popover holding a locked page stays in the body; it must not lock page scroll.
+body:has(
+  .protected-content-wrapper:not(.inline, .popover *)
+    .password-prompt-overlay[style*='display: flex']
+) {
   overflow: hidden;
 }
 
@@ -124,6 +128,55 @@ body:has(.protected-content-wrapper:not(.inline) .password-prompt-overlay[style*
     margin: 0.5rem 0 0;
     font-size: 0.875rem;
     color: var(--rose);
+  }
+}
+
+// The popover is transformed, so a fixed overlay would size itself to the popover and spill past its
+// frame. Inside one, the prompt is ordinary popover content under the page header.
+.popover .protected-content-wrapper:not(.inline) {
+  min-height: 0;
+
+  &:not(:has(.decrypted-content)) {
+    width: auto;
+    height: auto;
+    z-index: auto;
+  }
+
+  .password-prompt-overlay {
+    position: static;
+    padding: 0.25rem 0 0;
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .password-prompt-container {
+    width: auto;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+
+    & > p {
+      margin: 0 0 0.6rem;
+      font-size: var(--text-meta);
+    }
+  }
+
+  .password-form {
+    flex-direction: row;
+    gap: 0.5rem;
+
+    .password-input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.5rem 0.65rem;
+      font-size: 0.9rem;
+    }
+
+    .password-submit {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.9rem;
+    }
   }
 }
 

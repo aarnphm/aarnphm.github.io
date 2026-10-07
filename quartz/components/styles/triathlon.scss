@@ -1,6 +1,7 @@
 @use './figure.scss' as *;
 @use './triathlon-calendar.scss';
 @use './triathlon-workspace.scss';
+@use './triathlon-mywindsock.scss';
 @use './triathlon-best-efforts.scss';
 @use './triathlon-best-efforts-chart.scss';
 
@@ -2258,19 +2259,36 @@
     grid-template-columns: 2.4rem minmax(0, 1fr) 2.4rem;
   }
 
+  > .tri-elev-cap {
+    flex-wrap: nowrap;
+    column-gap: 0.6rem;
+  }
+
   .tri-elev-cap > .tri-fig-readout {
+    top: 0;
+    z-index: 2;
+    transform: none;
+    box-sizing: border-box;
+    height: 100%;
     max-width: 100%;
-    white-space: normal;
-    overflow-wrap: anywhere;
+    padding-block: 0;
+    font-size: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: var(--light);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
-.tri-cycling-power-legend,
-.tri-cycling-power-wind-legend {
+.tri-cycling-power-legend {
   display: flex;
   align-items: center;
+  flex: 1;
   flex-wrap: wrap;
-  gap: 0.35rem 0.85rem;
+  min-width: 0;
+  gap: 0.35rem 0.6rem;
   font-family: var(--codeFont);
   font-size: 0.58rem;
   color: var(--gray);
@@ -2361,12 +2379,6 @@
 .tri-cycling-power-key--cumulative::before {
   border-color: var(--dark);
   border-top-style: dashed;
-}
-
-.tri-cycling-power-key--elevation::before {
-  height: 0.4rem;
-  border: 0;
-  background: color-mix(in srgb, var(--gray) 42%, transparent);
 }
 
 .tri-cycling-power-key--headwind::before {
@@ -3815,6 +3827,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.tri-gear-description {
+  display: block;
+  margin-block-end: 0.5rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-indent: 0;
+}
+
 .tri-pace-wrap {
   position: relative;
   display: inline-flex;
@@ -3981,32 +4001,38 @@
   margin-right: auto;
 }
 
-.tri-calc-tabs {
-  --tri-calc-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+.tri-calc-tabs,
+.tri-tools-tabs,
+.tri-calendar-source-controls:not(.tri-calendar-source-controls--icons) {
+  --tri-header-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
 
   display: inline-flex;
+  box-sizing: border-box;
   align-items: stretch;
   align-self: flex-start;
   max-width: 100%;
-  background: var(--tri-calc-tab-surface);
+  height: 1.6rem;
+  background: var(--tri-header-tab-surface);
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
   isolation: isolate;
 }
 
-.tri-calc-tab {
+.tri-calc-tab,
+.tri-tools-tab,
+.tri-calendar-source-tab {
   appearance: none;
   box-sizing: border-box;
   flex: 0 0 auto;
   margin: 0;
-  padding: 0.22rem 0.7rem;
+  padding: 0.3rem 0.5rem;
   color: var(--gray);
   background: transparent;
   border: 0;
   border-radius: var(--radius-none);
   font-family: var(--codeFont);
-  font-size: 0.66rem;
-  line-height: 1.3;
+  font-size: 0.72rem;
+  line-height: normal;
   white-space: nowrap;
   cursor: pointer;
 
@@ -4017,15 +4043,38 @@
   }
 }
 
+.tri-calendar-source-tab {
+  flex-shrink: 1;
+  min-width: 0;
+
+  > span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .tri-calc-tab:not(.tri-calc-tab--on):hover {
+  .tri-calc-tab:not(.tri-calc-tab--on):hover,
+  .tri-tools-tab[aria-selected='false']:hover,
+  .tri-calendar-source-tab[aria-pressed='false']:hover {
     color: var(--dark);
   }
 }
 
-.tri-calc-tab--on {
+.tri-calc-tab--on,
+.tri-tools-tab[aria-selected='true'],
+.tri-calendar-source-tab[aria-pressed='true'] {
   color: var(--dark);
-  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-calc-tab-surface));
+  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-header-tab-surface));
+}
+
+@media (max-width: 48rem) {
+  .tri-calc-tabs,
+  .tri-tools-tabs,
+  .tri-calendar-source-controls:not(.tri-calendar-source-controls--icons) {
+    height: 1.65rem;
+  }
 }
 
 .tri-calc-panel {
@@ -4897,14 +4946,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
   width: 100%;
   max-width: var(--tri-page-w);
   height: calc(100dvh - 7rem);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  @include thin-scrollbar;
-  padding: 1.3rem 1.4rem 2rem;
+  overflow: hidden;
   font-family: var(--codeFont);
   font-variant-numeric: tabular-nums;
   background: var(--light);
@@ -4914,8 +4959,23 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-tools-sec {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 0.6rem;
+  min-height: 0;
+  padding: 1.3rem 1.4rem 2rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  @include thin-scrollbar;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--tri-accent) 72%, transparent);
+    outline-offset: -2px;
+  }
 }
 
 .tri-tools .tri-gear-btn,
@@ -4966,10 +5026,15 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   max-width: var(--tri-page-w);
   max-height: none;
   margin: 0 auto;
+  padding-top: 0;
   overflow: visible;
   opacity: 1;
   visibility: visible;
   transform: none;
+
+  > .tri-ana-bar {
+    margin-inline: -1.3rem;
+  }
 }
 
 .tri-calc--page .tri-calc-close {
@@ -14232,8 +14297,16 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-cycling-watts-readout {
+  z-index: 2;
+  box-sizing: border-box;
+  height: 100%;
   max-width: 100%;
-  white-space: normal;
+  padding-block: 0;
+  font-size: inherit;
+  background: var(--light);
+  backdrop-filter: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: right;
 }
 
@@ -15914,7 +15987,13 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
       text-overflow: ellipsis;
     }
 
-    > :not(.tri-elev-d, .tri-fig-readout, .tri-chart-controls) {
+    > :not(
+      .tri-elev-d,
+      .tri-fig-readout,
+      .tri-cycling-watts-readout,
+      .tri-cycling-power-legend,
+      .tri-chart-controls
+    ) {
       display: none;
     }
   }
@@ -15928,6 +16007,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     background: transparent;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+
+  .tri-cycling-power .tri-fig-readout {
+    background: var(--light);
   }
 }
 
@@ -16960,6 +17043,18 @@ a.tri-pop-date:hover {
   }
 }
 
+.tri-environment-panel[data-environment-panel='wind']:not([hidden]) {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 0.2rem;
+}
+
+.tri-environment-wind-source {
+  color: var(--gray);
+  font-size: 0.54rem;
+  text-align: right;
+}
+
 .tri-environment-chart {
   min-width: 0;
   height: 100%;
@@ -17025,6 +17120,86 @@ a.tri-pop-date:hover {
 
 .tri-environment-series[hidden] {
   display: none;
+}
+
+.tri-environment-rose {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 8.5rem;
+  padding: 1rem 0;
+}
+
+.tri-environment-rose-frame {
+  position: relative;
+  height: 100%;
+  max-height: 16rem;
+  aspect-ratio: 1;
+}
+
+.tri-environment-rose-plot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+
+  circle {
+    fill: none;
+  }
+}
+
+.tri-environment-rose-sector {
+  stroke: var(--light);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+
+  &--head {
+    fill: var(--tri-run);
+  }
+
+  &--tail {
+    fill: var(--tri-bike);
+  }
+
+  &--cross {
+    fill: color-mix(in srgb, var(--gray) 38%, transparent);
+  }
+}
+
+.tri-environment-rose-rider {
+  fill: var(--dark);
+}
+
+.tri-environment-rose-label {
+  position: absolute;
+  color: var(--gray);
+  font-size: 0.54rem;
+  white-space: nowrap;
+
+  &--top {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &--bottom {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &--left {
+    top: 50%;
+    right: calc(100% + 0.35rem);
+    transform: translateY(-50%);
+  }
+
+  &--right {
+    top: 50%;
+    left: calc(100% + 0.35rem);
+    transform: translateY(-50%);
+  }
 }
 
 .tri-environment-selection {
@@ -17870,6 +18045,24 @@ a.tri-pop-date:hover {
 
   .tri-cycling-workout-plot {
     min-width: 100%;
+  }
+
+  .tri-swim-drag-chart {
+    height: calc(
+      var(--tri-activity-graph-row-height) + var(--tri-activity-graph-row-height) + 0.7rem
+    );
+
+    > .tri-cax-frame {
+      flex: 1;
+      min-height: 0;
+      grid-template-rows: minmax(0, 1fr) auto;
+
+      .tri-cax-plot,
+      .tri-swim-drag-svg {
+        height: 100%;
+        min-height: 0;
+      }
+    }
   }
 
   .tri-curve-chart > .tri-cax-frame {

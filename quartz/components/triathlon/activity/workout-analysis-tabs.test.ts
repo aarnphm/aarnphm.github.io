@@ -4,11 +4,11 @@ import { workoutAnalysisViewFromKey } from './workout-analysis-tabs'
 
 test('workout analysis tabs wrap across arrows and respect boundary keys', () => {
   assert.equal(workoutAnalysisViewFromKey('workout', 'ArrowRight'), 'laps')
-  assert.equal(workoutAnalysisViewFromKey('workout', 'ArrowLeft'), 'power')
+  assert.equal(workoutAnalysisViewFromKey('workout', 'ArrowLeft'), 'heart-rate')
   assert.equal(workoutAnalysisViewFromKey('laps', 'ArrowRight'), 'pace')
   assert.equal(workoutAnalysisViewFromKey('laps', 'ArrowLeft'), 'workout')
   assert.equal(workoutAnalysisViewFromKey('laps', 'Home'), 'workout')
-  assert.equal(workoutAnalysisViewFromKey('workout', 'End'), 'power')
+  assert.equal(workoutAnalysisViewFromKey('workout', 'End'), 'heart-rate')
   assert.equal(workoutAnalysisViewFromKey('workout', 'Enter'), null)
 })
 

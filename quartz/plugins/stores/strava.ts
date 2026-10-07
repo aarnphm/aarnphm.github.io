@@ -198,6 +198,7 @@ export interface StravaGear {
   name: string | null
   brandName: string | null
   modelName: string | null
+  description?: string | null
   distanceM: number | null
 }
 
@@ -3819,6 +3820,7 @@ function projectDetail(
         timeS: routeTime,
         distanceM: distance,
         latlng,
+        openWater: sport === 'swim',
         weather,
         attribution: weatherAttribution,
         computedAt: generatedAt,

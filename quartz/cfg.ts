@@ -1,3 +1,4 @@
+import type { SemanticQueryDType } from './util/semantic-search'
 import { ValidDateType } from './components/Date'
 import { ValidLocale } from './i18n'
 import { QuartzComponent } from './types/component'
@@ -19,7 +20,10 @@ type DType = 'fp16' | 'fp32'
 type SemanticIndexOptions = {
   /** Enable semantic search (default: true) */
   enable: boolean
-  /** HuggingFace model ID for embeddings (e.g., "intfloat/multilingual-e5-large") */
+  /**
+   * HuggingFace model ID for embeddings (e.g., "google/embeddinggemma-2").
+   * Keep the canonical Hub ID here, not the name of a server or MLX conversion. The browser maps it to an ONNX repo.
+   */
   model: string
   /**
    * Ahead-of-time embedding generation (default: false)
@@ -32,6 +36,13 @@ type SemanticIndexOptions = {
   dims: number
   /** Precision for stored vectors (fp16: smaller files, fp32: higher precision) */
   dtype: DType
+  /**
+   * ONNX precision of the query encoder that runs in the browser (default: "q4").
+   * This is independent of `dtype`, which only describes the stored vectors.
+   * For google/embeddinggemma-2 the text graph is 175 MB at q4, 314 MB at q8 and 1085 MB at fp32.
+   * The model repo must ship the chosen variant.
+   */
+  queryDtype?: SemanticQueryDType
   /** Number of vectors per shard file (default: 1024, higher = fewer files but larger downloads) */
   shardSizeRows: number
   /**

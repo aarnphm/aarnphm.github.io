@@ -1,0 +1,733 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "type": "number", "const": 1 },
+    "provider": { "type": "string", "const": "mywindsock" },
+    "activity": {
+      "type": "object",
+      "properties": {
+        "stravaId": { "type": "string", "pattern": "^[1-9]\\d*$" },
+        "sport": { "type": "string", "enum": ["run", "bike"] },
+        "stravaSportType": { "type": "string" },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+        },
+        "localDate": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "stravaBaseline": {
+          "type": "object",
+          "properties": {
+            "distanceM": { "type": "number", "minimum": 0 },
+            "movingTimeS": { "type": "number", "minimum": 0 },
+            "elapsedTimeS": { "type": "number", "minimum": 0 },
+            "elevationGainM": { "type": ["number", "null"] }
+          },
+          "required": ["distanceM", "movingTimeS", "elapsedTimeS", "elevationGainM"],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "stravaId",
+        "sport",
+        "stravaSportType",
+        "startedAt",
+        "localDate",
+        "stravaBaseline"
+      ],
+      "additionalProperties": false
+    },
+    "entrypoints": {
+      "type": "object",
+      "properties": {
+        "stravaUrl": { "type": "string", "format": "uri" },
+        "myWindsockUrl": { "type": "string", "format": "uri" },
+        "providerCourseId": {
+          "anyOf": [{ "type": "string", "pattern": "^[1-9]\\d*$" }, { "type": "null" }]
+        }
+      },
+      "required": ["stravaUrl", "myWindsockUrl", "providerCourseId"],
+      "additionalProperties": false
+    },
+    "ingestion": {
+      "type": "object",
+      "properties": {
+        "state": { "type": "string", "enum": ["summary-only", "captured", "ready"] },
+        "pending": { "type": "array", "items": { "type": "string" } },
+        "sections": {
+          "type": "object",
+          "propertyNames": { "type": "string" },
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["captured", "not-captured", "unavailable"]
+          }
+        },
+        "attempts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["success", "partial", "unavailable", "failed"]
+              },
+              "note": { "type": "string" }
+            },
+            "required": ["at", "status", "note"],
+            "additionalProperties": false
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "at": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "description-import",
+                  "browser-import",
+                  "graph-import",
+                  "manual-edit",
+                  "verify"
+                ]
+              },
+              "note": { "type": "string" },
+              "captureSha256": {
+                "anyOf": [{ "type": "string", "pattern": "^[a-f0-9]{64}$" }, { "type": "null" }]
+              }
+            },
+            "required": ["at", "type", "note", "captureSha256"],
+            "additionalProperties": false
+          }
+        },
+        "captureSha256": {
+          "anyOf": [{ "type": "string", "pattern": "^[a-f0-9]{64}$" }, { "type": "null" }]
+        },
+        "graphsSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "required": ["state", "pending", "sections", "attempts", "events", "captureSha256"],
+      "additionalProperties": false
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "rawReport": { "type": "string" },
+            "parsed": {
+              "type": "object",
+              "properties": {
+                "source": { "type": "string", "const": "provider-native" },
+                "transport": { "type": "string", "const": "strava-description" },
+                "schemaVersion": { "type": "number", "const": 1 },
+                "activityId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "retrievedAt": { "type": "number", "minimum": 0 },
+                "provider": { "type": "string", "const": "mywindsock" },
+                "weatherImpactPct": { "type": ["number", "null"] },
+                "cdaM2": { "type": ["number", "null"] },
+                "feelsLikeElevationM": { "type": ["number", "null"] },
+                "headwindPct": { "type": ["number", "null"] },
+                "headwindMinKph": { "type": ["number", "null"] },
+                "headwindMaxKph": { "type": ["number", "null"] },
+                "longestHeadwindS": { "type": ["number", "null"] },
+                "airSpeedKph": { "type": ["number", "null"] },
+                "averageTemperatureC": { "type": ["number", "null"] },
+                "precipitationProbabilityPct": { "type": ["number", "null"] },
+                "precipitationRateMmPerHour": { "type": ["number", "null"] }
+              },
+              "required": [
+                "source",
+                "transport",
+                "schemaVersion",
+                "activityId",
+                "retrievedAt",
+                "provider",
+                "weatherImpactPct",
+                "cdaM2",
+                "feelsLikeElevationM",
+                "headwindPct",
+                "headwindMinKph",
+                "headwindMaxKph",
+                "longestHeadwindS",
+                "airSpeedKph",
+                "averageTemperatureC",
+                "precipitationProbabilityPct",
+                "precipitationRateMmPerHour"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": ["rawReport", "parsed"],
+          "additionalProperties": false
+        },
+        { "type": "null" }
+      ]
+    },
+    "browserCapture": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "adapterVersion": { "type": "string", "const": "mywindsock-classic-browser-v1" },
+            "transport": { "type": "string", "const": "browser-runtime" },
+            "valueKind": { "type": "string", "const": "provider-analysis" },
+            "conditionKind": { "type": "string", "enum": ["historical", "forecast", "unknown"] },
+            "capturedAt": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+            },
+            "pageUrl": { "type": "string", "format": "uri" },
+            "stravaId": { "type": "string", "pattern": "^[1-9]\\d*$" },
+            "viewOnStravaId": { "type": "string", "pattern": "^[1-9]\\d*$" },
+            "providerCourseId": { "type": "string", "pattern": "^[1-9]\\d*$" },
+            "providerStravaId": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+            "rideTimestamp": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+            "pageType": { "type": "string", "const": "activity" },
+            "pageMode": { "type": "string", "const": "analyst" },
+            "runtime": {
+              "type": "object",
+              "properties": {
+                "averages": {
+                  "type": "object",
+                  "propertyNames": { "type": "string" },
+                  "additionalProperties": { "type": ["number", "null"] }
+                },
+                "series": {
+                  "type": "object",
+                  "propertyNames": { "type": "string" },
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        { "type": ["number", "null"] },
+                        {
+                          "type": "array",
+                          "prefixItems": [{ "type": "string" }, { "type": ["number", "null"] }],
+                          "items": false,
+                          "minItems": 2,
+                          "maxItems": 2
+                        }
+                      ]
+                    }
+                  }
+                },
+                "course": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "prefixItems": [{ "type": "number" }, { "type": "number" }],
+                    "items": false,
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "distancesM": { "type": "array", "items": { "type": "number", "minimum": 0 } },
+                "elevationM": { "type": "array", "items": { "type": "number" } }
+              },
+              "required": ["averages", "series", "course", "distancesM", "elevationM"],
+              "additionalProperties": false
+            },
+            "weather": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "latitude": { "type": "number" },
+                  "longitude": { "type": "number" },
+                  "timezone": { "type": "string" },
+                  "offset": { "type": "number" },
+                  "side_of_road": { "type": "string" },
+                  "hourly": { "$ref": "#/$defs/__schema0" },
+                  "daily": { "$ref": "#/$defs/__schema1" },
+                  "currently": { "$ref": "#/$defs/__schema2" }
+                },
+                "required": [
+                  "latitude",
+                  "longitude",
+                  "timezone",
+                  "offset",
+                  "side_of_road",
+                  "hourly",
+                  "daily",
+                  "currently"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "modelProfileCandidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "typeID": { "type": ["string", "number"] },
+                  "weight": { "type": ["string", "number", "null"] },
+                  "rr": { "type": ["string", "number", "null"] },
+                  "dtl": { "type": ["string", "number", "null"] },
+                  "cda": { "type": ["string", "number", "null"] },
+                  "cda_up": { "type": ["string", "number", "null"] },
+                  "cda_down": { "type": ["string", "number", "null"] },
+                  "watts": { "type": ["string", "number", "null"] },
+                  "watts_up": { "type": ["string", "number", "null"] },
+                  "watts_down": { "type": ["string", "number", "null"] },
+                  "height": { "type": ["string", "number", "null"] },
+                  "ftp": { "type": ["string", "number", "null"] },
+                  "critical_power": { "type": ["string", "number", "null"] }
+                },
+                "required": [
+                  "typeID",
+                  "weight",
+                  "rr",
+                  "dtl",
+                  "cda",
+                  "cda_up",
+                  "cda_down",
+                  "watts",
+                  "watts_up",
+                  "watts_down",
+                  "height",
+                  "ftp",
+                  "critical_power"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "charts": {
+              "type": "object",
+              "properties": {
+                "cda": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string" },
+                      "title": { "type": "string" },
+                      "series": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "label": { "type": ["string", "null"] },
+                            "values": {
+                              "type": "array",
+                              "items": {
+                                "type": "array",
+                                "prefixItems": [
+                                  { "type": "number", "minimum": 0 },
+                                  {
+                                    "anyOf": [
+                                      { "type": ["number", "null"] },
+                                      {
+                                        "type": "array",
+                                        "prefixItems": [
+                                          { "type": ["number", "null"] },
+                                          { "type": ["number", "null"] }
+                                        ],
+                                        "items": false,
+                                        "minItems": 2,
+                                        "maxItems": 2
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "items": false,
+                                "minItems": 2,
+                                "maxItems": 2
+                              }
+                            },
+                            "scale": { "type": ["string", "null"] }
+                          },
+                          "required": ["label", "values", "scale"],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": ["type", "series"],
+                    "additionalProperties": false
+                  }
+                },
+                "gradient": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string" },
+                      "title": { "type": "string" },
+                      "series": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "label": { "type": ["string", "null"] },
+                            "values": {
+                              "type": "array",
+                              "items": {
+                                "type": "array",
+                                "prefixItems": [
+                                  { "type": "number", "minimum": 0 },
+                                  {
+                                    "anyOf": [
+                                      { "type": ["number", "null"] },
+                                      {
+                                        "type": "array",
+                                        "prefixItems": [
+                                          { "type": ["number", "null"] },
+                                          { "type": ["number", "null"] }
+                                        ],
+                                        "items": false,
+                                        "minItems": 2,
+                                        "maxItems": 2
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "items": false,
+                                "minItems": 2,
+                                "maxItems": 2
+                              }
+                            },
+                            "scale": { "type": ["string", "null"] }
+                          },
+                          "required": ["label", "values", "scale"],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": ["type", "series"],
+                    "additionalProperties": false
+                  }
+                },
+                "feelsLike": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string" },
+                      "title": { "type": "string" },
+                      "series": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "label": { "type": ["string", "null"] },
+                            "values": {
+                              "type": "array",
+                              "items": {
+                                "type": "array",
+                                "prefixItems": [
+                                  { "type": "number", "minimum": 0 },
+                                  {
+                                    "anyOf": [
+                                      { "type": ["number", "null"] },
+                                      {
+                                        "type": "array",
+                                        "prefixItems": [
+                                          { "type": ["number", "null"] },
+                                          { "type": ["number", "null"] }
+                                        ],
+                                        "items": false,
+                                        "minItems": 2,
+                                        "maxItems": 2
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "items": false,
+                                "minItems": 2,
+                                "maxItems": 2
+                              }
+                            },
+                            "scale": { "type": ["string", "null"] }
+                          },
+                          "required": ["label", "values", "scale"],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": ["type", "series"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["cda", "gradient"],
+              "additionalProperties": false
+            },
+            "observations": {
+              "type": "object",
+              "properties": {
+                "summaryText": { "type": "string" },
+                "weatherText": { "type": "string" },
+                "navigationText": { "type": "string" }
+              },
+              "required": ["summaryText", "weatherText", "navigationText"],
+              "additionalProperties": false
+            },
+            "excludedFields": { "type": "array", "items": { "type": "string" } },
+            "nonFiniteValues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "format": "starts_with",
+                    "pattern": "^\\/runtime\\/.*"
+                  },
+                  "kind": { "type": "string", "enum": ["NaN", "Infinity", "-Infinity"] },
+                  "start": {
+                    "anyOf": [
+                      { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+                      { "type": "null" }
+                    ]
+                  },
+                  "end": {
+                    "anyOf": [
+                      { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+                      { "type": "null" }
+                    ]
+                  },
+                  "component": { "type": "number", "const": 1 }
+                },
+                "required": ["path", "kind", "start", "end"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "adapterVersion",
+            "transport",
+            "valueKind",
+            "conditionKind",
+            "capturedAt",
+            "pageUrl",
+            "stravaId",
+            "viewOnStravaId",
+            "providerCourseId",
+            "providerStravaId",
+            "rideTimestamp",
+            "pageType",
+            "pageMode",
+            "runtime",
+            "weather",
+            "modelProfileCandidates",
+            "charts",
+            "excludedFields",
+            "nonFiniteValues"
+          ],
+          "additionalProperties": false
+        },
+        { "type": "null" }
+      ]
+    },
+    "graphCapture": {
+      "type": "object",
+      "properties": {
+        "adapterVersion": { "type": "string", "const": "mywindsock-graphs-browser-v1" },
+        "capturedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+        },
+        "pageUrl": { "type": "string", "format": "uri" },
+        "stravaId": { "type": "string", "pattern": "^[1-9]\\d*$" },
+        "viewOnStravaId": { "type": "string", "pattern": "^[1-9]\\d*$" },
+        "providerCourseId": { "type": "string", "pattern": "^[1-9]\\d*$" },
+        "rideTimestamp": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "menu": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": { "type": "string", "minLength": 1 },
+              "label": { "type": "string", "minLength": 1 }
+            },
+            "required": ["key", "label"],
+            "additionalProperties": false
+          }
+        },
+        "graphs": {
+          "type": "object",
+          "propertyNames": { "type": "string" },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "label": { "type": "string" },
+              "source": { "type": "string", "enum": ["menu", "inline"] },
+              "state": { "type": "string", "enum": ["captured", "empty", "unavailable", "failed"] },
+              "capturedAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "configuration": { "anyOf": [{ "$ref": "#/$defs/__schema3" }, { "type": "null" }] },
+              "nonFiniteValues": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": { "type": "string", "format": "starts_with", "pattern": "^\\/.*" },
+                    "kind": { "type": "string", "enum": ["NaN", "Infinity", "-Infinity"] }
+                  },
+                  "required": ["path", "kind"],
+                  "additionalProperties": false
+                }
+              },
+              "note": { "type": ["string", "null"] }
+            },
+            "required": [
+              "label",
+              "source",
+              "state",
+              "capturedAt",
+              "configuration",
+              "nonFiniteValues",
+              "note"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "adapterVersion",
+        "capturedAt",
+        "pageUrl",
+        "stravaId",
+        "viewOnStravaId",
+        "providerCourseId",
+        "rideTimestamp",
+        "menu",
+        "graphs"
+      ],
+      "additionalProperties": false
+    },
+    "mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string" },
+          "meaning": { "type": "string" },
+          "unit": { "type": ["string", "null"] },
+          "multiplier": { "type": ["number", "null"] },
+          "status": { "type": "string", "enum": ["verified", "unresolved"] },
+          "evidence": { "type": "string" }
+        },
+        "required": ["path", "meaning", "unit", "multiplier", "status", "evidence"],
+        "additionalProperties": false
+      }
+    },
+    "normalized": { "anyOf": [{ "$ref": "#/$defs/__schema4" }, { "type": "null" }] },
+    "context": {
+      "type": "object",
+      "properties": {
+        "notes": { "type": "array", "items": { "type": "string" } },
+        "equipment": { "type": ["string", "null"] },
+        "position": { "type": ["string", "null"] }
+      },
+      "required": ["notes", "equipment", "position"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "provider",
+    "activity",
+    "entrypoints",
+    "ingestion",
+    "description",
+    "browserCapture",
+    "mappings",
+    "normalized",
+    "context"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "__schema0": {
+      "anyOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "null" },
+        { "type": "array", "items": { "$ref": "#/$defs/__schema0" } },
+        {
+          "type": "object",
+          "propertyNames": { "type": "string" },
+          "additionalProperties": { "$ref": "#/$defs/__schema0" }
+        }
+      ]
+    },
+    "__schema1": {
+      "anyOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "null" },
+        { "type": "array", "items": { "$ref": "#/$defs/__schema1" } },
+        {
+          "type": "object",
+          "propertyNames": { "type": "string" },
+          "additionalProperties": { "$ref": "#/$defs/__schema1" }
+        }
+      ]
+    },
+    "__schema2": {
+      "anyOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "null" },
+        { "type": "array", "items": { "$ref": "#/$defs/__schema2" } },
+        {
+          "type": "object",
+          "propertyNames": { "type": "string" },
+          "additionalProperties": { "$ref": "#/$defs/__schema2" }
+        }
+      ]
+    },
+    "__schema3": {
+      "anyOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "null" },
+        { "type": "array", "items": { "$ref": "#/$defs/__schema3" } },
+        {
+          "type": "object",
+          "propertyNames": { "type": "string" },
+          "additionalProperties": { "$ref": "#/$defs/__schema3" }
+        }
+      ]
+    },
+    "__schema4": {
+      "anyOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "null" },
+        { "type": "array", "items": { "$ref": "#/$defs/__schema4" } },
+        {
+          "type": "object",
+          "propertyNames": { "type": "string" },
+          "additionalProperties": { "$ref": "#/$defs/__schema4" }
+        }
+      ]
+    }
+  }
+}

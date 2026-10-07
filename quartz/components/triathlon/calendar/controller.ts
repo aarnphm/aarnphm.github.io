@@ -1,4 +1,5 @@
 import type { TriathlonContext } from '../runtime/context'
+import type { TrainingView } from './TrainingCalendar'
 import { rootNavSignal } from '../../scripts/root-lifecycle'
 import { detailHead } from '../analytics/search'
 import { applyI18n, el } from '../runtime/dom'
@@ -571,9 +572,7 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
     url.hash = `${inPanel ? 'calendar-' : ''}${hash}`
     window.history.replaceState(window.history.state, '', url)
   }
-  const training = trainingRoot
-    ? mountTrainingCalendar(trainingRoot, context, week => updateHash(`training-${week}`))
-    : null
+  const training = trainingRoot ? mountTrainingCalendar(trainingRoot, context, updateHash) : null
 
   if (root.closest('.sidepanel-container'))
     for (const panel of sourcePanels)
@@ -585,7 +584,12 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
     if (panel) button.setAttribute('aria-controls', panel.id)
   }
 
-  const selectSource = (next: 'races' | 'training', navigate = false, date?: string): void => {
+  const selectSource = (
+    next: 'races' | 'training',
+    navigate = false,
+    date?: string,
+    view?: TrainingView,
+  ): void => {
     if (navigate && next === source) return
     source = next
     root.dataset.calendarSource = next
@@ -598,9 +602,10 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
     if (next === 'training') {
       dispose?.()
       dispose = undefined
-      training?.activate(date)
-      if (navigate && training) updateHash(`training-${training.week()}`)
+      training?.activate(date, view)
+      if (navigate && training) updateHash(training.location())
     } else if (active) {
+      training?.deactivate()
       if (navigate)
         updateHash(
           `${active.dataset.calendarYear}${active.dataset.calendarView === 'year' ? '-year' : ''}`,
@@ -683,9 +688,16 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
     const hash = inPanel
       ? window.location.hash.replace(/^#calendar(?:-|#)?/, '')
       : window.location.hash.slice(1)
-    const trainingHash = /^training(?:-(\d{4}-\d{2}-\d{2}))?$/.exec(hash)
+    const trainingHash = /^training(?:-(\d{4}-\d{2}-\d{2}))?(?:-(list|week|month))?$/.exec(hash)
     if (trainingHash) {
-      selectSource('training', false, trainingHash[1])
+      selectSource(
+        'training',
+        false,
+        trainingHash[1],
+        trainingHash[2] === 'list' || trainingHash[2] === 'week' || trainingHash[2] === 'month'
+          ? trainingHash[2]
+          : undefined,
+      )
       return
     }
     selectSource('races')

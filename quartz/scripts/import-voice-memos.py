@@ -320,33 +320,44 @@ def main() -> None:
   parser = argparse.ArgumentParser(
     description='Import Apple Voice Memos into triathlon training logs'
   )
-  parser.add_argument(
-    '--date', type=date.fromisoformat, default=datetime.now(TORONTO).date()
+  dates = parser.add_mutually_exclusive_group()
+  dates.add_argument(
+    '--date',
+    type=date.fromisoformat,
+    metavar='YYYY-MM-DD',
+    help='Import one recording date in America/Toronto (default: today)',
+  )
+  dates.add_argument(
+    '--since',
+    type=date.fromisoformat,
+    metavar='YYYY-MM-DD',
+    help='Import all recording dates on or after this date in America/Toronto',
   )
   parser.add_argument('--source', type=Path, default=RECORDINGS)
   parser.add_argument('--file', type=Path, action='append')
   parser.add_argument('--repo', type=Path, default=REPOSITORY)
   parser.add_argument('--list', action='store_true')
   args = parser.parse_args()
+  day = args.since or args.date or datetime.now(TORONTO).date()
   if not shutil.which('ffmpeg') or not shutil.which('ffprobe'):
     raise ValueError('ffmpeg and ffprobe must be available on PATH')
   if args.file:
     candidates = args.file
   else:
     try:
-      nearby_days = [
-        args.date + timedelta(days=offset) for offset in (-1, 0, 1)
-      ]
-      prefixes = tuple(
-        day.strftime(pattern)
-        for day in nearby_days
-        for pattern in ('%Y%m%d', '%Y-%m-%d')
-      )
+      prefixes = ()
+      if args.since is None:
+        nearby_days = [day + timedelta(days=offset) for offset in (-1, 0, 1)]
+        prefixes = tuple(
+          nearby.strftime(pattern)
+          for nearby in nearby_days
+          for pattern in ('%Y%m%d', '%Y-%m-%d')
+        )
       candidates = sorted(
         path
         for path in args.source.iterdir()
         if path.suffix.lower() in {'.qta', '.m4a'}
-        and path.name.startswith(prefixes)
+        and (args.since is not None or path.name.startswith(prefixes))
         and not (
           path.suffix.lower() == '.m4a'
           and path.with_suffix('.peaks.json').exists()
@@ -368,15 +379,22 @@ def main() -> None:
         raise ValueError(f'{path.name} is not an active Voice Memo')
       continue
     recording = probe(path)
-    if recording.recorded_at.date() == args.date:
+    recorded_day = recording.recorded_at.date()
+    selected = recorded_day >= day if args.since else recorded_day == day
+    if selected:
       recordings.append(recording)
     elif args.file:
+      if args.since:
+        raise ValueError(
+          f'{path.name} was recorded on {recorded_day}, before {day}'
+        )
       raise ValueError(
-        f'{path.name} was recorded on {recording.recorded_at.date()}, not {args.date}'
+        f'{path.name} was recorded on {recorded_day}, not {day}'
       )
   recordings.sort(key=lambda item: (item.recorded_at, item.digest))
   if not recordings:
-    print(f'No recordings for {args.date}; nothing changed')
+    selection = f'since {day}' if args.since else f'for {day}'
+    print(f'No recordings {selection}; nothing changed')
     return
   if args.list:
     for recording in recordings:
@@ -387,12 +405,16 @@ def main() -> None:
   destination = args.repo / 'content/triathlon/memos'
   stream = args.repo / 'content/stream.md'
   current = stream.read_text()
-  names = list(
-    dict.fromkeys(
-      memo_name(recording, destination) for recording in recordings
-    )
-  )
-  updated = update_stream(current, args.date, names, datetime.now(TORONTO))
+  names_by_day: dict[date, list[str]] = {}
+  for recording in recordings:
+    names = names_by_day.setdefault(recording.recorded_at.date(), [])
+    name = memo_name(recording, destination)
+    if name not in names:
+      names.append(name)
+  updated = current
+  now = datetime.now(TORONTO)
+  for recorded_day, names in names_by_day.items():
+    updated = update_stream(updated, recorded_day, names, now)
   for recording in recordings:
     name = import_recording(recording, destination)
     print(f'{name}.m4a  {recording.duration:.1f}s')

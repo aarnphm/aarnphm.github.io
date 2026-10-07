@@ -129,7 +129,7 @@ export const SemanticIndex: QuartzEmitterPlugin<
     async *partialEmit() {},
     async *emit(ctx, content, _resources) {
       if (!o.enable) return
-      if (ctx.argv.watch && o.aot) {
+      if (ctx.argv.watch && ctx.argv.force && o.aot) {
         console.log(
           styleText('yellow', `[emit:Semantic] Skipping embedding text (watch=true, aot=${o.aot})`),
         )

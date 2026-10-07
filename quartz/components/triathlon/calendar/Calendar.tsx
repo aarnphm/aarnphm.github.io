@@ -637,44 +637,52 @@ const EventCard = ({
 
 // The overlay renders these in its panel bar beside the close button; pages and embeds keep them
 // above the calendar.
-export const CalendarSourceControls = ({ id }: { id: string }) => (
+export const CalendarSourceControls = ({ id, icons = false }: { id: string; icons?: boolean }) => (
   <div
-    class="tri-calendar-source-controls"
+    class={`tri-calendar-source-controls${icons ? ' tri-calendar-source-controls--icons' : ''}`}
     role="group"
     aria-label="calendar source"
     data-i18n-aria-label="calendar source"
   >
     <button
       type="button"
-      class="tri-calendar-icon"
+      class={icons ? 'tri-calendar-icon' : 'tri-calendar-source-tab'}
       data-calendar-source-select="races"
       aria-pressed="true"
       aria-controls={`${id}-races`}
-      aria-label="race calendar"
-      data-i18n-aria-label="race calendar"
+      aria-label={icons ? 'race calendar' : 'race'}
+      data-i18n-aria-label={icons ? 'race calendar' : 'race'}
     >
-      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-        <path d="M3.5 15V1.5M3.5 2h10v7.5h-10" />
-        <path
-          class="tri-calendar-icon-fill"
-          d="M3.5 2H6v2.5H3.5zM8.5 2H11v2.5H8.5zM6 4.5h2.5V7H6zM11 4.5h2.5V7H11zM3.5 7H6v2.5H3.5zM8.5 7H11v2.5H8.5z"
-        />
-      </svg>
+      {icons ? (
+        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <path d="M3.5 15V1.5M3.5 2h10v7.5h-10" />
+          <path
+            class="tri-calendar-icon-fill"
+            d="M3.5 2H6v2.5H3.5zM8.5 2H11v2.5H8.5zM6 4.5h2.5V7H6zM11 4.5h2.5V7H11zM3.5 7H6v2.5H3.5zM8.5 7H11v2.5H8.5z"
+          />
+        </svg>
+      ) : (
+        <span data-i18n="race">race</span>
+      )}
     </button>
     <button
       type="button"
-      class="tri-calendar-icon"
+      class={icons ? 'tri-calendar-icon' : 'tri-calendar-source-tab'}
       data-calendar-source-select="training"
       aria-pressed="false"
       aria-controls={`${id}-training`}
-      aria-label="training calendar"
-      data-i18n-aria-label="training calendar"
+      aria-label={icons ? 'training calendar' : 'training'}
+      data-i18n-aria-label={icons ? 'training calendar' : 'training'}
     >
-      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-        <path d="M6.25 1.5h3.5M8 1.5V4M12 5.25l1-1" />
-        <circle cx="8" cy="9.25" r="5.25" />
-        <path class="tri-calendar-icon-fill" d="M8 9.25V5.75A3.5 3.5 0 0 1 11.03 11z" />
-      </svg>
+      {icons ? (
+        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <path d="M6.25 1.5h3.5M8 1.5V4M12 5.25l1-1" />
+          <circle cx="8" cy="9.25" r="5.25" />
+          <path class="tri-calendar-icon-fill" d="M8 9.25V5.75A3.5 3.5 0 0 1 11.03 11z" />
+        </svg>
+      ) : (
+        <span data-i18n="training">training</span>
+      )}
     </button>
   </div>
 )
@@ -711,7 +719,14 @@ export const CalendarPanel = ({
       data-calendar-source="races"
       data-calendar-embedded={embedded ? 'true' : undefined}
     >
-      {!panel && <CalendarSourceControls id={id} />}
+      {!panel &&
+        (embedded ? (
+          <CalendarSourceControls id={id} icons />
+        ) : (
+          <div class="tri-ana-bar">
+            <CalendarSourceControls id={id} />
+          </div>
+        ))}
       <div id={`${id}-races`} data-calendar-source-panel="races">
         {calendars.length > 0 ? (
           calendars.map(calendar => (

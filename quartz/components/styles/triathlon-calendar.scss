@@ -19,9 +19,10 @@
 }
 
 .tri-calendar {
-  --calendar-swim: color-mix(in srgb, var(--tri-swim) 80%, var(--dark));
-  --calendar-bike: color-mix(in srgb, var(--tri-bike) 62%, var(--dark));
-  --calendar-run: color-mix(in srgb, var(--tri-run) 72%, var(--dark));
+  // Label ink: each mix is the lightest that keeps 4.5:1 on light and on --calendar-surface.
+  --calendar-swim: color-mix(in srgb, var(--tri-swim) 71%, var(--dark));
+  --calendar-bike: color-mix(in srgb, var(--tri-bike) 50%, var(--dark));
+  --calendar-run: color-mix(in srgb, var(--tri-run) 54%, var(--dark));
   width: 100%;
   max-width: var(--tri-page-w);
   min-width: 0;
@@ -87,14 +88,16 @@
 .tri-subpage[data-tri-view='calendar'] .tri-calendar-set {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   box-sizing: border-box;
-  padding: 1.2rem 1.3rem 1.4rem;
   border: 1px solid color-mix(in srgb, var(--gray) 80%, transparent);
   background: var(--light);
 
-  > .tri-calendar-source-controls {
+  > .tri-ana-bar > .tri-calendar-source-controls {
     margin: 0;
+  }
+
+  > [data-calendar-source-panel] {
+    padding: 1.2rem 1.3rem 1.4rem;
   }
 
   .tri-calendar {
@@ -128,7 +131,7 @@
 
 .tri-calendar-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
@@ -138,14 +141,14 @@
 
 .tri-calendar-header > .tri-calendar-title-group {
   margin: 0;
+}
 
-  h1,
-  h2 {
-    margin: 0 0 0.2rem;
-    font-size: 1.15rem;
-    line-height: 1.3;
-    font-weight: 500;
-  }
+.tri-calendar-header > .tri-calendar-title-group :is(h1, h2),
+.tri-training-gate > h2 {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+  line-height: 1.3;
+  font-weight: 500;
 }
 
 .tri-calendar-season-picker {
@@ -263,9 +266,12 @@
   flex: none;
   box-sizing: border-box;
   width: fit-content;
-  height: var(--calendar-control-size);
   margin-bottom: 0.6rem;
-  border: 1px solid var(--calendar-line);
+
+  &--icons {
+    height: var(--calendar-control-size);
+    border: 1px solid var(--calendar-line);
+  }
 
   .tri-calendar-icon {
     height: 100%;
@@ -1163,6 +1169,42 @@ a.tri-calendar-day {
   > .tri-ana-bar > .tri-calendar-source-controls {
     --calendar-control-size: 1.9rem;
     margin: 0 0 0 auto;
+  }
+
+  > .tri-ana-body:has(> [data-calendar-source='training']) {
+    gap: 0;
+    padding-bottom: 1.2rem;
+  }
+
+  :is(
+    .tri-calendar-set[data-calendar-source='training'],
+    [data-calendar-source-panel='training']:not([hidden]),
+    [data-training-calendar],
+    [data-training-content],
+    .tri-training-calendar
+  ) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .tri-training-calendar {
+    .tri-calendar-body {
+      flex: 1 0 20rem;
+      min-height: 20rem;
+    }
+
+    .tri-calendar-views {
+      min-height: 0;
+    }
+
+    .tri-training-week,
+    .tri-training-month {
+      height: 100%;
+      min-height: 0;
+      box-sizing: border-box;
+    }
   }
 }
 

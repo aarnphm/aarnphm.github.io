@@ -1,5 +1,5 @@
-import { readFileSync, statSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { basename, resolve } from 'node:path'
 import type {
   AppleCache,
   AppleRunningDynamicsSample,
@@ -15,6 +15,7 @@ import type {
   ManualSaunaEntry,
   ManualStrengthEntry,
 } from '../plugins/stores/tracking'
+import type { MyWindsockArchive } from './mywindsock-archive'
 import {
   ATHLETE,
   buildAnalytics,
@@ -55,6 +56,8 @@ import { parseWeatherCache, type WeatherCache } from '../plugins/stores/weather'
 import { matchAppleRun } from './apple-run-match'
 import { matchAppleSwims, matchAppleSwimTelemetry } from './apple-swim-match'
 import { applyHeartRatePhysiology } from './heart-rate-physiology'
+import { parseMyWindsockGraphs, type MyWindsockArchiveReference } from './mywindsock-graphs'
+import { projectMyWindsockRoute, type MyWindsockRoute } from './mywindsock-route'
 import { joinSegments, QUARTZ } from './path'
 import { latestProviderSync } from './provider-sync'
 import { readStravaCacheFileSync } from './strava-cache-file'
@@ -65,6 +68,7 @@ import {
   buildTriathlonDailyAnalytics,
   type TriathlonDailyAnalytics,
 } from './triathlon-day-analytics'
+import { isRecord } from './type-guards'
 import { loadTrackedWahooFits, wahooTrackingStamp } from './wahoo-tracking'
 
 export const stravaCachePath = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
@@ -158,6 +162,86 @@ const stamp = (path: string): number => {
     return statSync(path).mtimeMs
   } catch {
     return 0
+  }
+}
+
+const windArchiveDirectory = (contentDirectory: string): string =>
+  resolve(contentDirectory, 'triathlon', 'wind')
+
+const windArchiveFiles = (contentDirectory: string): { path: string; key: string }[] => {
+  const directory = windArchiveDirectory(contentDirectory)
+  try {
+    return readdirSync(directory)
+      .filter(name => /^[1-9]\d*\.json$/.test(name))
+      .flatMap(name => {
+        const path = resolve(directory, name)
+        try {
+          const info = statSync(path)
+          return [{ path, key: `${path}:${info.mtimeMs}:${info.size}` }]
+        } catch {
+          return []
+        }
+      })
+  } catch {
+    return []
+  }
+}
+
+const windArchiveStamp = (contentDirectory: string): string =>
+  windArchiveFiles(contentDirectory)
+    .map(file => file.key)
+    .join('|')
+
+const routeMemo = new Map<
+  string,
+  { route: MyWindsockRoute | null; archive: MyWindsockArchiveReference | null }
+>()
+
+// Full schema validation runs in the ingest and validate scripts; this read checks the identity
+// fields and lets the projection reject non-numeric series.
+const readWindRoute = (
+  path: string,
+): { route: MyWindsockRoute | null; archive: MyWindsockArchiveReference | null } => {
+  const empty = { route: null, archive: null }
+  const id = basename(path, '.json')
+  const value = readJson<unknown>(path)
+  if (!isRecord(value) || value.provider !== 'mywindsock' || value.schemaVersion !== 1) return empty
+  const activity = value.activity
+  const capture = value.browserCapture
+  if (
+    !isRecord(activity) ||
+    activity.stravaId !== id ||
+    !isRecord(capture) ||
+    capture.stravaId !== id ||
+    !Array.isArray(value.mappings)
+  )
+    return empty
+  const graphs = parseMyWindsockGraphs(value, Number(id))
+  return {
+    route: projectMyWindsockRoute(value as unknown as MyWindsockArchive),
+    archive: graphs
+      ? {
+          activityId: Number(id),
+          capturedAt: graphs.capturedAt,
+          path: `/triathlon/wind/${id}.json`,
+        }
+      : null,
+  }
+}
+
+export function enrichMyWindsockRoutes(payload: StravaPayload, contentDirectory: string): void {
+  const files = windArchiveFiles(contentDirectory)
+  const live = new Set(files.map(file => file.key))
+  for (const key of routeMemo.keys()) if (!live.has(key)) routeMemo.delete(key)
+  for (const file of files) {
+    if (!routeMemo.has(file.key)) routeMemo.set(file.key, readWindRoute(file.path))
+    const source = routeMemo.get(file.key)
+    const id = source?.archive?.activityId ?? source?.route?.activityId
+    const detail = id ? payload.details[String(id)] : undefined
+    if (source && detail && (detail.sport === 'run' || detail.sport === 'bike')) {
+      if (source.route) detail.analyses.native.myWindsockRoute = source.route
+      if (source.archive) detail.analyses.native.myWindsockArchive = source.archive
+    }
   }
 }
 
@@ -896,7 +980,7 @@ export function loadStravaDataSync(
     sauna: manualTracking?.sauna ?? [],
     analytics: analyticsInputs,
   })
-  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${wahooTrackingStamp(manualTracking?.activities ?? [], contentDirectory)}`
+  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${wahooTrackingStamp(manualTracking?.activities ?? [], contentDirectory)}:${windArchiveStamp(contentDirectory)}`
   if (payloadMemoStamps !== stamps) {
     payloadMemo.clear()
     payloadMemoStamps = stamps
@@ -970,6 +1054,7 @@ export function buildStravaData(
   enrichSwimMetrics(payload, apple, garmin)
   enrichRunDynamics(payload, apple)
   enrichCoreBodyTemperature(payload, core)
+  enrichMyWindsockRoutes(payload, contentDirectory)
   for (const detail of Object.values(payload.details)) {
     applyHeartRatePhysiology(detail, ATHLETE.hrMax)
     applySwimPhysiology(detail, ATHLETE.hrMax)

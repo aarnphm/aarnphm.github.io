@@ -246,6 +246,8 @@ export const Arena: QuartzTransformerPlugin = () => {
   return {
     name: 'Arena',
     htmlPlugins(ctx) {
+      if (ctx.argv.watch && !ctx.argv.force) return []
+
       return [
         () => {
           return (tree: HastRoot, file) => {

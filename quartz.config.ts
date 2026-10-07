@@ -75,10 +75,12 @@ const configuration: GlobalConfiguration = {
     // intfloat/multilingual-e5-large
     // intfloat/multilingual-e5-large-instruct
     // google/embeddinggemma-300m
-    model: 'google/embeddinggemma-300m',
+    // google/embeddinggemma-2 (768d, MRL 512/256/128, query encoder: onnx-community/embeddinggemma-2-ONNX)
+    model: 'google/embeddinggemma-2',
     aot: true,
     dims: 768,
     dtype: 'fp32',
+    queryDtype: 'q4',
     shardSizeRows: 1024,
     hnsw: { M: 16, efConstruction: 200 },
     chunking: { chunkSize: 128, chunkOverlap: 64 },

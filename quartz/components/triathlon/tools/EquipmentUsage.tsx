@@ -5,18 +5,30 @@ export const EquipmentUsage = ({ usage }: { usage: TriathlonEquipmentUsage | und
   if (!usage) return null
   const kilometres = usage.lifetimeDistanceM == null ? null : usage.lifetimeDistanceM / 1_000
   return (
-    <span class="tri-gear-usage" data-gear-id={usage.id} data-equipment-source={usage.source}>
-      <span data-i18n="distance">distance</span>
-      {' - '}
-      {kilometres == null ? (
-        '—'
-      ) : (
-        <span class="tri-unit-distance" data-kind="equipment" data-km={kilometres}>
-          {formatEquipmentDistance(kilometres * 1_000, 'imperial')}
+    <>
+      <span class="tri-gear-usage" data-gear-id={usage.id} data-equipment-source={usage.source}>
+        <span data-i18n="distance">distance</span>
+        {' - '}
+        {kilometres == null ? (
+          '—'
+        ) : (
+          <span class="tri-unit-distance" data-kind="equipment" data-km={kilometres}>
+            {formatEquipmentDistance(kilometres * 1_000, 'imperial')}
+          </span>
+        )}
+        {', '}
+        {usage.activityCount} <span data-i18n="activities">activities</span>
+      </span>
+      {usage.description && (
+        <span
+          class="tri-gear-description"
+          data-gear-id={usage.id}
+          data-equipment-source={usage.source}
+          title="Strava gear description"
+        >
+          {usage.description}
         </span>
       )}
-      {', '}
-      {usage.activityCount} <span data-i18n="activities">activities</span>
-    </span>
+    </>
   )
 }

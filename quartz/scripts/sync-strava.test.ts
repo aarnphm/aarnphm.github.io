@@ -33,6 +33,17 @@ test('parses named bikes and shoes, zero mileage, and detailed model fallback', 
     assert.equal(parseGear(value), null)
 })
 
+test('retains detailed gear descriptions and explicit clearing without inventing summary text', () => {
+  assert.equal(
+    parseGear({ id: 'b123', description: '  Crankset: 54/40T\nWheels: 85 mm  ' })?.description,
+    'Crankset: 54/40T\nWheels: 85 mm',
+  )
+  for (const description of [null, '', ' \t '])
+    assert.equal(parseGear({ id: 'b123', description })?.description, null)
+  for (const value of [{ id: 'b123' }, { id: 'b123', description: 123 }])
+    assert.equal(Object.hasOwn(parseGear(value) ?? {}, 'description'), false)
+})
+
 test('preserves explicit Strava trainer flags without inventing missing values', () => {
   assert.equal(mapActivity({ id: 1, trainer: true }).trainer, true)
   assert.equal(mapActivity({ id: 2, trainer: false }).trainer, false)

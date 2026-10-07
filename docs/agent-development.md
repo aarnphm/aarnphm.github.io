@@ -24,6 +24,8 @@ Run commands from the owning package. Read its current `package.json` or task ru
 
 `trainingpeaks:titles` uses the local Strava cache and explicit sauna links in `content/triathlon.md`. Refresh Strava with `pnpm strava:sync` when needed. It calls the authenticated API used by the TrainingPeaks website, which can change independently of this repository. TrainingPeaks limits its [published partner API](https://help.trainingpeaks.com/hc/en-us/articles/234441128-TrainingPeaks-API) to approved commercial developers.
 
+`pnpm strava:sync --gear-only` refreshes equipment from the athlete's bikes and shoes, cached gear IDs, and recorded activity assignments. It reads each gear's native name, brand, model, description, and lifetime distance, including unused equipment. It preserves activities, streams, activity details, zones, and the activity sync timestamp. The command needs an existing Strava cache and uses the normal token refresh flow. Failed gear requests preserve the cache. A successful refresh replaces the equipment cache and touches the triathlon source timestamp for the existing watcher. Gear descriptions appear beside mileage in the gear panel, tools page, and tools Markdown. Regular Strava syncs also refresh these descriptions.
+
 `weather:sync` also runs `water-current:sync`. The current sync uses the existing Strava GPS stream and WeatherKit activity window to sample NOAA's uppermost Lake Ontario model layer. It keeps current speed and flow direction separate from atmospheric wind, preserves dry cells and missing hours as gaps, and records coverage and model provenance. It needs no credentials. Use `pnpm water-current:sync --id STRAVA_ID` for a bounded activity refresh, and `--force` to replace an existing matching estimate. Unsupported routes remain unavailable.
 
 Set `TRAININGPEAKS_AUTH_COOKIE` in the ignored `.env` file to the value of your own signed-in account's `Production_tpAuth` cookie. In browser developer tools, find it under Application → Cookies → trainingpeaks.com. Copy only its value, without the cookie name or other cookies. The command exchanges it for a short-lived bearer token and renews that token once on HTTP 401. A session cookie eventually expires or can be revoked by signing out; refresh the saved value when authentication fails. Alternatively, set `TRAININGPEAKS_ACCESS_TOKEN` to an existing web API bearer token. The command runs through HTTP without an open browser or Apple Events permission. Never commit either credential.
@@ -48,4 +50,26 @@ Use `--since YYYY-MM-DD`, `--until YYYY-MM-DD`, `--id STRAVA_ID`, or `--limit N`
 
 Do not delete generated files as a routine step after starting the watcher. Let the owning emitter handle its output. For browser checks, use the matching `build:ready` and successful HTTP response before inspecting source-rendered markup and interactions. DOM injection proves only a prototype unless the served implementation is separately verified.
 
+`uv run --locked python quartz/scripts/import-voice-memos.py --since YYYY-MM-DD --list` previews active Voice Memos recorded on or after that date. Remove `--list` to import the batch. Selection uses the embedded creation time in `America/Toronto`, with an inclusive lower bound and no upper bound. Batch discovery scans supported recordings regardless of their filenames. Recently Deleted recordings and existing web exports are excluded. Memos are grouped by local recording date, then appended to the corresponding training entries in `content/stream.md`. Missing entries are created with the next training log numbers. Existing writing and metadata are preserved; repeated imports verify the existing audio and do not duplicate embeds. `--date YYYY-MM-DD` keeps the single-day behavior, and omitting both selectors imports today. `--date` and `--since` cannot be combined. Repeated `--file` options restrict a batch to selected recordings; an explicit file before the lower bound fails. Use `--source` for an accessible alternative recordings directory and `--repo` for an isolated destination.
+
+Run `uv run --locked python -m unittest quartz/scripts/import_voice_memos_test.py -v` for the importer checks. Set `VOICE_MEMO_TEST_ARTIFACTS=quartz/.quartz-cache/voice-memos-since` to save the batch fixture definitions, CLI commands and responses, generated waveform metadata, and resulting stream entries. The tests generate AAC recordings with FFmpeg and use a temporary repository and Voice Memos database.
+
 On macOS, `pnpm swarm` uses polling for Wrangler's file watchers. Watching the large `public/` tree with native file watchers can exceed Darwin's `OPEN_MAX` descriptor range and cause esbuild to fail with `spawn EBADF`, even with a higher `ulimit`. Text files use a one-second polling interval; Chokidar retains its default binary-file interval. Explicit `CHOKIDAR_USEPOLLING` and `CHOKIDAR_INTERVAL` settings override these defaults. Quartz's watcher and Linux container launches retain their existing behavior.
+
+The durable myWindsock archives at `content/triathlon/wind/**/*.json` use Git LFS. After adding the tracking rule, convert existing tracked JSON blobs when staging the change:
+
+```sh
+git add .gitattributes
+git add --renormalize -- content/triathlon/wind
+```
+
+New archives use the LFS filter when added normally. This conversion preserves the working JSON and existing Git history. Agents must leave staging to the human under the repository's Git write restriction.
+
+`deploy.sh` skips automatic LFS downloads during `git pull`, then explicitly pulls LFS objects. Its required-asset pull includes the native runtime packs and all myWindsock JSON, with an empty exclusion list to override local fetch exclusions. It checks out downloaded objects and runs `pnpm exec tsx quartz/scripts/validate-wind-archive.ts` before building. Unresolved LFS pointers or invalid archive records stop deployment. To hydrate only the wind archives in a checkout manually, run:
+
+```sh
+git lfs pull --include="content/triathlon/wind/**/*.json" --exclude=""
+pnpm exec tsx quartz/scripts/validate-wind-archive.ts
+```
+
+`git lfs pull` downloads and checks out the selected objects. These commands leave the site deployment to a separate invocation.

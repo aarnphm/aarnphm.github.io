@@ -25,6 +25,29 @@ export const trainingWeekStart = (value: string): string => {
 export const trainingWeekDates = (start: string): string[] =>
   Array.from({ length: 7 }, (_, day) => trainingAddDays(start, day))
 
+export const trainingMonthStart = (value: string): string =>
+  trainingDate(value) ? `${value.slice(0, 7)}-01` : value
+
+export const trainingAddMonths = (value: string, months: number): string => {
+  const date = trainingDate(trainingMonthStart(value))
+  if (!date) return value
+  date.setUTCMonth(date.getUTCMonth() + months)
+  return date.toISOString().slice(0, 10)
+}
+
+export const trainingMonthDates = (value: string): string[] => {
+  const start = trainingWeekStart(trainingMonthStart(value))
+  const end = trainingAddDays(
+    trainingWeekStart(trainingAddDays(trainingAddMonths(value, 1), -1)),
+    6,
+  )
+  const first = trainingDate(start)
+  const last = trainingDate(end)
+  if (!first || !last) return []
+  const days = Math.round((last.getTime() - first.getTime()) / DAY_MS) + 1
+  return Array.from({ length: days }, (_, day) => trainingAddDays(start, day))
+}
+
 export const trainingWeekLabel = (start: string, locale: Locale): string => {
   const first = trainingDate(start)
   const last = trainingDate(trainingAddDays(start, 6))
@@ -40,11 +63,11 @@ export const trainingWeekLabel = (start: string, locale: Locale): string => {
 export const trainingDayCovered = (calendar: TrainingPeaksCalendar, date: string): boolean =>
   calendar.coverage.some(range => date >= range.since && date <= range.until)
 
-export const trainingWeekWorkouts = (
+export const trainingWorkouts = (
   calendar: TrainingPeaksCalendar | null,
   start: string,
+  end: string,
 ): TrainingPeaksCalendarWorkout[] => {
-  const end = trainingAddDays(start, 6)
   return (calendar?.workouts ?? [])
     .filter(workout => workout.date >= start && workout.date <= end)
     .sort(

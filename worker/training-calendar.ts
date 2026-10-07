@@ -25,8 +25,7 @@ export interface TrainingCalendarEnv extends TrainingCalendarSecrets {
 }
 
 const cookieName = '__Host-TRAINING_CALENDAR'
-const sessionSeconds = 8 * 60 * 60
-const idleMilliseconds = 30 * 60 * 1000
+const sessionSeconds = 7 * 24 * 60 * 60
 const rateWindow = 15 * 60 * 1000
 const privateHeaders = {
   'Content-Type': 'application/json; charset=utf-8',
@@ -101,7 +100,10 @@ export class TrainingCalendarAccess extends DurableObject<TrainingCalendarSecret
     super(ctx, env)
     ctx.storage.sql.exec(`CREATE TABLE IF NOT EXISTS sessions (
       token_hash TEXT PRIMARY KEY, origin TEXT NOT NULL, credential TEXT NOT NULL,
-      expires_at INTEGER NOT NULL, idle_expires_at INTEGER NOT NULL)`)
+      expires_at INTEGER NOT NULL)`)
+    const columns = ctx.storage.sql.exec<{ name: string }>('PRAGMA table_info(sessions)').toArray()
+    if (columns.some(column => column.name === 'idle_expires_at'))
+      ctx.storage.sql.exec('ALTER TABLE sessions DROP COLUMN idle_expires_at')
     ctx.storage.sql.exec(`CREATE TABLE IF NOT EXISTS attempts (
       key TEXT PRIMARY KEY, count INTEGER NOT NULL, resets_at INTEGER NOT NULL)`)
   }
@@ -122,12 +124,7 @@ export class TrainingCalendarAccess extends DurableObject<TrainingCalendarSecret
     const credential = digest(`${hash}:${this.env.TRAINING_CALENDAR_DATA_KEY}`)
     const sql = this.ctx.storage.sql
     const now = Date.now()
-    sql.exec(
-      'DELETE FROM sessions WHERE expires_at <= ? OR idle_expires_at <= ? OR credential != ?',
-      now,
-      now,
-      credential,
-    )
+    sql.exec('DELETE FROM sessions WHERE expires_at <= ? OR credential != ?', now, credential)
     sql.exec('DELETE FROM attempts WHERE resets_at <= ?', now)
     const origin = new URL(request.url).origin
     const token = sessionToken(request)
@@ -147,13 +144,7 @@ export class TrainingCalendarAccess extends DurableObject<TrainingCalendarSecret
             .toArray()
         : []
       if (!sessions[0] || !token) return json({ error: 'Authentication required.' }, 401)
-      const expiresAt = Math.min(sessions[0].expires_at, now + idleMilliseconds)
-      sql.exec(
-        'UPDATE sessions SET idle_expires_at = ? WHERE token_hash = ?',
-        expiresAt,
-        digest(token),
-      )
-      return json({ authenticated: true, expiresAt })
+      return json({ authenticated: true, expiresAt: sessions[0].expires_at })
     }
     if (password === undefined) return json({ error: 'Method not allowed.' }, 405)
     // Only the edge's client IP is trusted. Missing IPs share a single throttle bucket.
@@ -185,17 +176,15 @@ export class TrainingCalendarAccess extends DurableObject<TrainingCalendarSecret
     const nextToken = randomBytes(32).toString('hex')
     if (token)
       sql.exec('DELETE FROM sessions WHERE token_hash = ? AND origin = ?', digest(token), origin)
+    const expiresAt = now + sessionSeconds * 1000
     sql.exec(
-      'INSERT INTO sessions (token_hash, origin, credential, expires_at, idle_expires_at) VALUES (?, ?, ?, ?, ?)',
+      'INSERT INTO sessions (token_hash, origin, credential, expires_at) VALUES (?, ?, ?, ?)',
       digest(nextToken),
       origin,
       credential,
-      now + sessionSeconds * 1000,
-      now + idleMilliseconds,
+      expiresAt,
     )
-    return json({ authenticated: true, expiresAt: now + idleMilliseconds }, 200, {
-      'Set-Cookie': sessionCookie(nextToken),
-    })
+    return json({ authenticated: true, expiresAt }, 200, { 'Set-Cookie': sessionCookie(nextToken) })
   }
 }
 

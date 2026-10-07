@@ -1,0 +1,201 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.roofline {
+  @include figure-frame('rfl-figure', 30rem);
+}
+
+.rfl-graph {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 560 / 262;
+  margin: 0 auto;
+  overflow: visible;
+
+  .rfl-grid line {
+    stroke: var(--fig-div);
+    stroke-width: 1;
+  }
+
+  .rfl-tick,
+  .rfl-axis,
+  .rfl-mark {
+    font-family: var(--codeFont);
+    fill: var(--darkgray);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rfl-tick {
+    font-size: 10px;
+  }
+
+  .rfl-axis {
+    font-size: 10.5px;
+  }
+
+  .rfl-mark {
+    font-size: 10.5px;
+    fill: var(--dark);
+  }
+
+  .rfl-roof {
+    fill: none;
+    stroke: var(--dark);
+    stroke-width: 1.5;
+  }
+
+  .rfl-ridge {
+    stroke: var(--darkgray);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+  }
+
+  .rfl-trail circle {
+    fill: var(--light);
+    stroke: var(--darkgray);
+    stroke-width: 1;
+  }
+
+  .rfl-prefill {
+    fill: var(--fig-sage);
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .rfl-decode {
+    fill: var(--fig-salmon);
+    stroke: var(--dark);
+    stroke-width: 1;
+    transition:
+      cx 220ms cubic-bezier(0.23, 1, 0.32, 1),
+      cy 220ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rfl-decode {
+      transition: none;
+    }
+  }
+}
+
+.rfl-fo {
+  @include figure-fo;
+  font-size: 0.82rem;
+}
+
+.rfl-fo--end {
+  justify-content: flex-end;
+}
+
+.rfl-math {
+  @include figure-inline-math;
+}
+
+.rfl-controls {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.6rem 0.8rem;
+  align-items: center;
+}
+
+.rfl-label {
+  color: var(--fig-note);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.rfl-slider {
+  width: 100%;
+  min-width: 0;
+  @include stableRangeControl;
+}
+
+.rfl-readout {
+  grid-column: 1 / -1;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: 1px solid var(--fig-frame-border);
+
+  > div {
+    padding: 0.45rem 0.6rem;
+    min-width: 0;
+  }
+
+  > div + div {
+    border-inline-start: 1px solid var(--fig-frame-border);
+  }
+
+  dt {
+    color: var(--fig-note);
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  dd {
+    margin: 0.15rem 0 0;
+    font-family: var(--codeFont);
+    font-size: 0.86rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--dark);
+  }
+}
+
+.roofline[data-rfl-regime='compute'] // Dark ink on a light chip fails contrast in the dark theme, so the chip fill drops instead.
+:root[saved-theme='dark'] .roofline {
+  &[data-rfl-regime='compute'] [data-rfl-state] {
+    background: color-mix(in srgb, var(--fig-sage) 28%, transparent);
+  }
+
+  &[data-rfl-regime='memory'] [data-rfl-state] {
+    background: color-mix(in srgb, var(--fig-salmon) 28%, transparent);
+  }
+}
+
+[data-rfl-state] {
+  background: color-mix(in srgb, var(--fig-sage) 55%, transparent);
+}
+
+.roofline[data-rfl-regime='memory'] [data-rfl-state] {
+  background: color-mix(in srgb, var(--fig-salmon) 45%, transparent);
+}
+
+[data-rfl-state] {
+  display: inline-block;
+  padding: 0 0.3rem;
+  margin-inline-start: -0.3rem;
+}
+
+.rfl-caption {
+  @include figure-caption;
+}
+
+@container rfl-figure (max-width: 520px) {
+  .rfl-readout {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    > div:nth-child(4) {
+      border-inline-start: 0;
+    }
+
+    > div:nth-child(n + 4) {
+      border-top: 1px solid var(--fig-frame-border);
+    }
+  }
+}
+
+@container rfl-figure (max-width: 440px) {
+  .rfl-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .roofline {
+    padding: 1rem 0.75rem;
+  }
+}

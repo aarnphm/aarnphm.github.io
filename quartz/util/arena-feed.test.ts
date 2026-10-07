@@ -5,7 +5,7 @@ import { toHast } from 'mdast-util-to-hast'
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
-import { access, mkdtemp, readFile, rm } from 'node:fs/promises'
+import { access, mkdtemp, readFile, readdir, rm } from 'node:fs/promises'
 import { registerHooks } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -487,7 +487,7 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
   const filePath = 'content/are.na.md'
   assert.ok(isFullSlug(slug))
   assert.ok(isFilePath(filePath))
-  const parse = async (markdown: string): Promise<ProcessedContent> => {
+  const parse = async (markdown: string, buildCtx = ctx): Promise<ProcessedContent> => {
     const [, file] = defaultProcessedContent({
       slug,
       filePath,
@@ -496,7 +496,7 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
     const tree = toHast(fromMarkdown(markdown))
     assert.ok(tree)
     assert.ok(tree.type === 'root')
-    const plugins = Arena().htmlPlugins?.(ctx)
+    const plugins = Arena().htmlPlugins?.(buildCtx)
     assert.ok(plugins)
     await unified().use(plugins).run(tree, file)
     return [tree, file]
@@ -515,6 +515,44 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
     return manifest
   }
   const resources = { css: [], js: [], additionalHead: [] }
+  await t.test('development skips Arena parsing, resources and all output changes', async t => {
+    const markdown = '## saved\n\n- [Saved article](https://example.com/saved.pdf)\n'
+    const fixture = await parse(markdown)
+    assert.ok(fixture[1].data.arenaData)
+
+    for (const serve of [false, true]) {
+      const devOutput = await mkdtemp(join(tmpdir(), 'quartz-arena-dev-'))
+      t.after(() => rm(devOutput, { recursive: true, force: true }))
+      const devCtx = { ...ctx, argv: { ...ctx.argv, output: devOutput, watch: true, serve } }
+      const parsed = await parse(markdown, devCtx)
+      assert.equal(parsed[1].data.arenaData, undefined)
+      assert.deepEqual(parsed[0], toHast(fromMarkdown(markdown)))
+
+      const devEmitter = ArenaPage()
+      assert.deepEqual(devEmitter.getQuartzComponents?.(devCtx), [])
+      assert.deepEqual(await collect(devEmitter.emit(devCtx, [fixture], resources)), [])
+      assert.deepEqual(await readdir(devOutput), [])
+
+      const productionCtx = { ...devCtx, argv: { ...devCtx.argv, watch: false } }
+      const paths = await collect(devEmitter.emit(productionCtx, [fixture], resources))
+      assert.ok(paths.includes(join(devOutput, 'arena/saved.html')))
+      const before = await Promise.all(paths.map(path => readFile(path)))
+      const filenames = await readdir(devOutput, { recursive: true })
+
+      assert.deepEqual(await collect(devEmitter.emit(devCtx, [fixture], resources)), [])
+      for (const changeEvent of [
+        { type: 'change', path: filePath, file: parsed[1], previousFile: fixture[1] },
+        { type: 'delete', path: filePath, previousFile: fixture[1] },
+      ] satisfies Parameters<NonNullable<QuartzEmitterPluginInstance['partialEmit']>>[3]) {
+        assert.deepEqual(
+          await collect(devEmitter.partialEmit?.(devCtx, [parsed], resources, [changeEvent])),
+          [],
+        )
+      }
+      assert.deepEqual(await readdir(devOutput, { recursive: true }), filenames)
+      assert.deepEqual(await Promise.all(paths.map(path => readFile(path))), before)
+    }
+  })
   await t.test(
     'virtual channel cards support random access and preserve separate modal content',
     async () => {
@@ -629,8 +667,10 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
       await assert.rejects(access(join(output, 'arena/lazy.md')), { code: 'ENOENT' })
     },
   )
-  await t.test('watch builds emit a separate Markdown source for every channel', async () => {
-    const fixture = await parse(`## first
+  await t.test('forced watch builds parse Arena and emit every channel source', async () => {
+    const watchCtx = { ...ctx, argv: { ...ctx.argv, watch: true, force: true } }
+    const fixture = await parse(
+      `## first
 
 - [First article](https://example.com/first)
   - **First channel note.**
@@ -639,9 +679,12 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
 
 - [Second article](https://example.com/second)
   - Second channel note.
-`)
-    const watchCtx = { ...ctx, argv: { ...ctx.argv, watch: true } }
+`,
+      watchCtx,
+    )
+    assert.ok(fixture[1].data.arenaData)
     const sourceEmitter = ArenaPage()
+    assert.ok(sourceEmitter.getQuartzComponents?.(watchCtx).length)
     const paths = await collect(sourceEmitter.emit(watchCtx, [fixture], resources))
     for (const name of ['first', 'second']) {
       assert.ok(paths.includes(join(output, `arena/${name}.md`)))
@@ -655,7 +698,10 @@ test('real Arena parsing emits the reader shell and refreshes its catalogue on p
       const html = await readFile(join(output, `arena/${name}.html`), 'utf8')
       assert.match(html, new RegExp(`href="[^"]*/${name}\\.md"[^>]*class="llm-source"`))
     }
-    const remaining = await parse('## second\n\n- [Second article](https://example.com/second)\n')
+    const remaining = await parse(
+      '## second\n\n- [Second article](https://example.com/second)\n',
+      watchCtx,
+    )
     await collect(
       sourceEmitter.partialEmit?.(watchCtx, [remaining], resources, [
         { type: 'change', path: filePath, file: remaining[1], previousFile: fixture[1] },

@@ -54,8 +54,11 @@
 }
 
 .tri-be-category-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   min-width: 0;
-  min-block-size: calc(var(--tri-be-control-height) + 4px);
+  block-size: calc(var(--tri-be-control-height) + 4px);
 }
 
 .tri-be-cats[hidden] {
@@ -69,6 +72,33 @@
   padding: 2px;
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--gray) 45%, transparent) transparent;
+}
+
+.tri-be-controls > .tri-be-cats {
+  padding-block: 0;
+}
+
+.tri-be-category-row > .tri-be-cats {
+  flex: 0 1 auto;
+}
+
+.tri-be-category-row > .tri-be-field {
+  flex: none;
+}
+
+.tri-be-category-row .tri-be-picker-trigger {
+  inline-size: 9rem;
+  block-size: var(--tri-be-control-height);
+  padding-block: 0;
+  overflow: hidden;
+  font-size: 0.62rem;
+  white-space: nowrap;
+
+  &[data-active='true'] {
+    border-color: var(--tri-be-category-color);
+    background: var(--tri-be-category-color);
+    color: var(--light);
+  }
 }
 
 .tri-be-cats .tri-map-tab {
@@ -89,6 +119,10 @@
 .tri-be-cats .tri-map-tab[aria-selected='true']:focus-visible {
   outline: 1px solid var(--tri-be-focus);
   outline-offset: 2px;
+}
+
+.tri-be-controls > .tri-be-cats .tri-map-tab:focus-visible {
+  outline-offset: -3px;
 }
 
 .tri-be-panel {

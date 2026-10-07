@@ -224,6 +224,7 @@ test('gear surfaces attach lifetime mileage to both bikes and each pair of runni
       {
         id,
         name: 'Renamed in Strava',
+        description: index === 0 ? 'Ultegra Di2, 2025\nWheels: <carbon>' : null,
         lifetimeDistanceM: index === 1 ? 0 : 1_609.344,
         activityCount: index === 1 ? 0 : 2,
         firstRecorded: index === 1 ? null : '2026-05-26',
@@ -259,6 +260,15 @@ test('gear surfaces attach lifetime mileage to both bikes and each pair of runni
       ['1.609344', '0', '1.609344', '1.609344', '1.609344'],
     )
     const html = renderToString(node)
+    const descriptions = elements(root, element =>
+      classes(element).includes('tri-gear-description'),
+    )
+    assert.equal(descriptions.length, 1)
+    assert.equal(toText(descriptions[0]), 'Ultegra Di2, 2025 Wheels: <carbon>')
+    assert.equal(descriptions[0].properties.dataEquipmentSource, 'strava')
+    assert.equal(descriptions[0].properties.dataGearId, 'b18037537')
+    assert.match(html, /Wheels: &lt;carbon/)
+    assert.match(html, /Ultegra Di2, 2025\nWheels:/)
     assert.match(html, />0 mi</)
     assert.match(html, /UFO Wax Drip-On/)
   }
@@ -274,8 +284,8 @@ test('gear surfaces keep inventory and maintenance without calculators', () => {
     assert.match(html, /2026-08-10/)
     assert.match(html, /Pirelli P Zero Race SL-R/)
     assert.match(html, /P Zero Race TLR SL-R/)
-    assert.match(html, /HUNT 54 Aerodynamicist UD Carbon Spoke/)
-    assert.match(html, /HUNT 58 Aerodynamicist UD Carbon Spoke/)
+    assert.match(html, /Front Wheel: HUNT 54_58 Aerodynamicist UD Carbon Spoke/)
+    assert.match(html, /Rear Wheel: HUNT 54_58 Aerodynamicist UD Carbon Spoke/)
     assert.doesNotMatch(html, /class="tri-ratio"/)
     assert.doesNotMatch(html, /class="tri-pressure"/)
 

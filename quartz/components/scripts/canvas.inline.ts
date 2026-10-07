@@ -13,6 +13,7 @@ import {
   zoomIdentity,
 } from 'd3'
 import { Marked } from 'marked'
+import { canvasEdgeGeometry, canvasEdgeMidpoint, canvasEdgePath } from '../../util/canvas-edge'
 import { fetchCanonical } from '../../util/fetch-canonical'
 import { normalizeRelativeURLs } from '../../util/path'
 
@@ -1088,65 +1089,17 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
 
       groupNode.attr('transform', d => `translate(${d.x},${d.y})`)
 
-      edge.select('path').attr('d', d => {
-        const sourceCenterX = d.source.x + d.source.width / 2
-        const sourceCenterY = d.source.y + d.source.height / 2
-        const targetCenterX = d.target.x + d.target.width / 2
-        const targetCenterY = d.target.y + d.target.height / 2
-
-        const p1 = getNodeEdgePoint(d.source, d.fromSide, targetCenterX, targetCenterY)
-        const p2 = getNodeEdgePoint(d.target, d.toSide, sourceCenterX, sourceCenterY)
-
-        const straightLength = 20
-        const ext1 = getExtendedPoint(p1, straightLength)
-        const ext2 = getExtendedPoint(p2, straightLength)
-
-        const dx = ext2.x - ext1.x
-        const dy = ext2.y - ext1.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        const controlDist = Math.min(dist * 0.4, 100)
-
-        const cp1 = getControlPoint(ext1, p1.side, controlDist)
-        const cp2 = getControlPoint(ext2, p2.side, controlDist)
-
-        return `M ${p1.x} ${p1.y} L ${ext1.x} ${ext1.y} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${ext2.x} ${ext2.y} L ${p2.x} ${p2.y}`
-      })
+      edge
+        .select('path')
+        .attr('d', d =>
+          canvasEdgePath(canvasEdgeGeometry(d.source, d.target, d.fromSide, d.toSide)),
+        )
 
       edgeLabels.attr('transform', d => {
-        const sourceCenterX = d.source.x + d.source.width / 2
-        const sourceCenterY = d.source.y + d.source.height / 2
-        const targetCenterX = d.target.x + d.target.width / 2
-        const targetCenterY = d.target.y + d.target.height / 2
-
-        const p1 = getNodeEdgePoint(d.source, d.fromSide, targetCenterX, targetCenterY)
-        const p2 = getNodeEdgePoint(d.target, d.toSide, sourceCenterX, sourceCenterY)
-
-        const straightLength = 20
-        const ext1 = getExtendedPoint(p1, straightLength)
-        const ext2 = getExtendedPoint(p2, straightLength)
-
-        const dx = ext2.x - ext1.x
-        const dy = ext2.y - ext1.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        const controlDist = Math.min(dist * 0.4, 100)
-
-        const cp1 = getControlPoint(ext1, p1.side, controlDist)
-        const cp2 = getControlPoint(ext2, p2.side, controlDist)
-
-        const t = 0.5
-        const mt = 1 - t
-        const mx =
-          mt * mt * mt * ext1.x +
-          3 * mt * mt * t * cp1.x +
-          3 * mt * t * t * cp2.x +
-          t * t * t * ext2.x
-        const my =
-          mt * mt * mt * ext1.y +
-          3 * mt * mt * t * cp1.y +
-          3 * mt * t * t * cp2.y +
-          t * t * t * ext2.y
-
-        return `translate(${mx},${my})`
+        const { x, y } = canvasEdgeMidpoint(
+          canvasEdgeGeometry(d.source, d.target, d.fromSide, d.toSide),
+        )
+        return `translate(${x},${y})`
       })
 
       edgeLabels.each(function () {
@@ -1477,85 +1430,6 @@ function wrapTextHtml(text: string): string {
   const div = document.createElement('div')
   div.textContent = text
   return div.innerHTML
-}
-
-function getNodeEdgePoint(
-  node: NodeData,
-  side?: string,
-  targetX?: number,
-  targetY?: number,
-): { x: number; y: number; side: string } {
-  const cx = node.x + node.width / 2
-  const cy = node.y + node.height / 2
-  const hw = node.width / 2
-  const hh = node.height / 2
-
-  if (side) {
-    switch (side) {
-      case 'top':
-        return { x: cx, y: cy - hh, side: 'top' }
-      case 'right':
-        return { x: cx + hw, y: cy, side: 'right' }
-      case 'bottom':
-        return { x: cx, y: cy + hh, side: 'bottom' }
-      case 'left':
-        return { x: cx - hw, y: cy, side: 'left' }
-    }
-  }
-
-  if (targetX !== undefined && targetY !== undefined) {
-    const dx = targetX - cx
-    const dy = targetY - cy
-
-    if (dx === 0 && dy === 0) return { x: cx, y: cy, side: 'right' }
-
-    const tx = Math.abs(dx) > 0 ? hw / Math.abs(dx) : Infinity
-    const ty = Math.abs(dy) > 0 ? hh / Math.abs(dy) : Infinity
-    const t = Math.min(tx, ty)
-
-    const x = cx + dx * t
-    const y = cy + dy * t
-
-    let determinedSide = 'right'
-    if (Math.abs(y - (cy - hh)) < 1) determinedSide = 'top'
-    else if (Math.abs(y - (cy + hh)) < 1) determinedSide = 'bottom'
-    else if (Math.abs(x - (cx - hw)) < 1) determinedSide = 'left'
-    else if (Math.abs(x - (cx + hw)) < 1) determinedSide = 'right'
-
-    return { x, y, side: determinedSide }
-  }
-
-  return { x: cx, y: cy, side: 'right' }
-}
-
-function getExtendedPoint(point: { x: number; y: number; side: string }, length: number = 20) {
-  switch (point.side) {
-    case 'top':
-      return { x: point.x, y: point.y - length }
-    case 'right':
-      return { x: point.x + length, y: point.y }
-    case 'bottom':
-      return { x: point.x, y: point.y + length }
-    case 'left':
-      return { x: point.x - length, y: point.y }
-    default:
-      return { x: point.x, y: point.y }
-  }
-}
-
-function getControlPoint(extPoint: { x: number; y: number }, side: string, distance: number) {
-  switch (side) {
-    case 'top':
-      return { x: extPoint.x, y: extPoint.y - distance }
-    case 'right':
-      return { x: extPoint.x + distance, y: extPoint.y }
-    case 'bottom':
-      return { x: extPoint.x, y: extPoint.y + distance }
-    case 'left':
-      return { x: extPoint.x - distance, y: extPoint.y }
-    default:
-      return { x: extPoint.x, y: extPoint.y }
-  }
 }
 
 document.addEventListener('nav', () => {

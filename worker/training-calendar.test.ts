@@ -10,9 +10,11 @@ import renderToString from 'preact-render-to-string'
 import { createTestHarness } from 'wrangler'
 import { TrainingCalendar } from '../quartz/components/triathlon/calendar/TrainingCalendar'
 import { hashTrainingPassword, sealTrainingCalendar } from '../quartz/util/training-calendar-crypto'
+import { isRecord } from './type-guards'
 
 // Failure modes: public HTML/asset leaks, alternate hosts and encoded paths, wrong passwords,
-// CSRF, cookie forgery, expired/revoked sessions, credential rotation, brute force, and
+// CSRF, cookie forgery, week-long persistence, expired/revoked sessions, legacy storage,
+// credential rotation, brute force, and
 // missing keys or an old plaintext asset. Exercise the real Worker, assets, crypto, and DO.
 const origin = 'https://t.aarnphm.xyz'
 const password = 'test-only calendar passphrase 2026'
@@ -44,7 +46,7 @@ before(async () => {
   await writeFile(path.join(assets, 'triathlon.html'), `<!doctype html>${html}`)
   await writeFile(
     path.join(evidence, 'README.md'),
-    'Command: `pnpm test worker/training-calendar.test.ts`\n\nSynthetic calendar and encrypted assets only. The full Worker runs in workerd with real static assets and a SQLite Durable Object. Requests save status, headers (session cookies redacted), and response bodies. No provider data or production credentials are used.\n',
+    'Command: `pnpm test worker/training-calendar.test.ts`\n\nSynthetic calendar and encrypted assets only. The full Worker runs in workerd with real static assets and a SQLite Durable Object. Its temporary configuration root excludes local credential files. Requests save status, headers (session token values redacted), and response bodies. No provider data or production credentials are used.\n\nLifetime fixtures: a fresh login must set Max-Age=604800 and return a deadline seven days ahead; repeated reads must preserve that deadline. The final-day fixture sets the stored absolute expiry to 24 hours ahead and verifies session resumption and private data access. The legacy-storage fixture adds the former non-null idle-expiry column with an expired value, reloads the Worker, and verifies that the existing session and a new login both work. Expiry, logout, credential rotation, and rate limits remain covered.\n',
   )
   config = {
     name: 'training-calendar-test',
@@ -66,7 +68,7 @@ before(async () => {
     },
     migrations: [{ tag: 'training-calendar-001', new_sqlite_classes: ['TrainingCalendarAccess'] }],
   }
-  server = createTestHarness({ root: process.cwd(), workers: [{ config }] })
+  server = createTestHarness({ root: evidence, workers: [{ config }] })
   await server.listen()
 })
 
@@ -78,7 +80,8 @@ after(async () => {
 async function request(route: string, init?: RequestInit, host = origin): Promise<Response> {
   const response = await server.getWorker('training-calendar-test').fetch(`${host}${route}`, init)
   const headers = Object.fromEntries(response.headers)
-  if (headers['set-cookie']) headers['set-cookie'] = '[redacted]'
+  if (headers['set-cookie'])
+    headers['set-cookie'] = headers['set-cookie'].replace(/^([^=]+)=[^;]*/, '$1=[redacted]')
   await writeFile(
     path.join(evidence, `${++counter}.json`),
     JSON.stringify(
@@ -212,6 +215,39 @@ test('cross-origin login/logout, invalid media, and oversized bodies are rejecte
   )
 })
 
+test('sessions last seven days and reads preserve their original deadline', async () => {
+  const started = Date.now()
+  const response = await request('/api/training-calendar/session', mutation(password, '192.0.2.6'))
+  assert.equal(response.status, 200)
+  const cookieHeader = response.headers.get('Set-Cookie')
+  assert.ok(cookieHeader)
+  assert.match(cookieHeader, /Max-Age=604800(?:;|$)/)
+  const session: unknown = await response.json()
+  assert.ok(isRecord(session))
+  assert.equal(session.authenticated, true)
+  assert.ok(typeof session.expiresAt === 'number')
+  const week = 7 * 24 * 60 * 60 * 1000
+  assert.ok(session.expiresAt >= started + week)
+  assert.ok(session.expiresAt <= Date.now() + week)
+  const cookie = cookieHeader.split(';')[0]
+  const status = await request('/api/training-calendar/session', { headers: { Cookie: cookie } })
+  assert.equal(status.status, 200)
+  assert.deepEqual(await status.json(), session)
+
+  // Model the final day without waiting a week; the Worker must retain its stored deadline.
+  const sql = await server
+    .getWorker('training-calendar-test')
+    .getDurableObjectStorage('TRAINING_CALENDAR_ACCESS', { name: 'calendar' })
+  const deadline = Date.now() + 24 * 60 * 60 * 1000
+  await sql.exec('UPDATE sessions SET expires_at = ?', deadline)
+  const resumed = await request('/api/training-calendar/session', { headers: { Cookie: cookie } })
+  assert.equal(resumed.status, 200)
+  assert.deepEqual(await resumed.json(), { authenticated: true, expiresAt: deadline })
+  const data = await request('/api/training-calendar', { headers: { Cookie: cookie } })
+  assert.equal(data.status, 200)
+  assert.deepEqual(await data.json(), calendar)
+})
+
 test('expiry and credential rotation invalidate previously valid sessions', async () => {
   const cookie = await login('192.0.2.3')
   const sql = await server
@@ -228,9 +264,6 @@ test('expiry and credential rotation invalidate previously valid sessions', asyn
     (await request('/api/training-calendar', { headers: { Cookie: rotated } })).status,
     401,
   )
-  const idle = await login('192.0.2.5')
-  await sql.exec('UPDATE sessions SET idle_expires_at = 0')
-  assert.equal((await request('/api/training-calendar', { headers: { Cookie: idle } })).status, 401)
 })
 
 test('login throttling survives repeated requests and blocks even a correct password', async () => {
@@ -266,13 +299,31 @@ test('parallel attempts share a global limit across client IPs and hosts', async
   await sql.exec('DELETE FROM attempts')
 })
 
+test('legacy idle-expiry storage preserves valid sessions and accepts new logins', async () => {
+  const cookie = await login('192.0.2.13')
+  const sql = await server
+    .getWorker('training-calendar-test')
+    .getDurableObjectStorage('TRAINING_CALENDAR_ACCESS', { name: 'calendar' })
+  await sql.exec('ALTER TABLE sessions ADD COLUMN idle_expires_at INTEGER NOT NULL DEFAULT 0')
+  await server.update({ root: evidence, workers: [{ config }] })
+  assert.equal(
+    (await request('/api/training-calendar', { headers: { Cookie: cookie } })).status,
+    200,
+  )
+  const nextCookie = await login('192.0.2.14')
+  assert.equal(
+    (await request('/api/training-calendar', { headers: { Cookie: nextCookie } })).status,
+    200,
+  )
+})
+
 test('missing secrets and legacy plaintext assets fail closed even for a valid session', async () => {
   const cookie = await login('192.0.2.12')
   await writeFile(
     path.join(evidence, 'assets/static/training-calendar.json'),
     JSON.stringify(calendar),
   )
-  await server.update({ root: process.cwd(), workers: [{ config }] })
+  await server.update({ root: evidence, workers: [{ config }] })
   assert.equal(
     (await request('/api/training-calendar', { headers: { Cookie: cookie } })).status,
     503,
@@ -284,7 +335,7 @@ test('missing secrets and legacy plaintext assets fail closed even for a valid s
     { TRAINING_CALENDAR_PASSWORD_HASH: config.vars?.TRAINING_CALENDAR_PASSWORD_HASH },
     { TRAINING_CALENDAR_DATA_KEY: config.vars?.TRAINING_CALENDAR_DATA_KEY },
   ]) {
-    await server.update({ root: process.cwd(), workers: [{ config: { ...config, vars } }] })
+    await server.update({ root: evidence, workers: [{ config: { ...config, vars } }] })
     assert.equal(
       (await request('/api/training-calendar', { headers: { Cookie: cookie } })).status,
       503,

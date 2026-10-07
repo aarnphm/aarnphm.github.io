@@ -1,9 +1,5 @@
-import { PGlite } from '@electric-sql/pglite'
-import 'onnxruntime-web/webgpu'
-import 'onnxruntime-web/wasm'
-import { vector as vectorExtension } from '@electric-sql/pglite-pgvector'
-import { env, AutoModel, AutoTokenizer } from '@huggingface/transformers'
-import { dependencies } from '../../package.json'
+import { env, AutoConfig, AutoModel, AutoTokenizer } from '@huggingface/transformers'
+import { SEMANTIC_ONNX_MODELS, type SemanticQueryDType } from '../util/semantic-search'
 
 type VectorShardMeta = {
   path: string
@@ -28,10 +24,9 @@ type Manifest = {
   ids: string[]
   titles?: string[]
   chunkMetadata?: Record<string, ChunkMetadata>
-  hnsw?: { M: number; efConstruction: number }
 }
 
-type InitMessage = { type: 'init'; cfg?: SemanticWorkerConfig; disableCache?: boolean }
+type InitMessage = { type: 'init'; cfg?: SemanticWorkerConfig }
 
 type SearchMessage = { type: 'search'; text: string; k: number; seq: number }
 
@@ -45,35 +40,13 @@ type SearchHit = { id: number; score: number }
 
 type SearchResultMessage = { type: 'search-result'; seq: number; semantic: SearchHit[] }
 
-type ErrorMessage = { type: 'error'; seq?: number; message: string; retryWithoutCache?: boolean }
+type ErrorMessage = { type: 'error'; seq?: number; message: string }
 
 type WorkerState = 'idle' | 'loading' | 'ready' | 'error'
 
-type CandidateRow = { id: number; score: number }
+type SemanticWorkerConfig = { model?: string; queryDtype?: SemanticQueryDType }
 
-type MetaRow = { value: string }
-
-type RuntimeDType = 'fp16' | 'fp32'
-
-type SemanticWorkerConfig = { model?: string; dtype?: RuntimeDType; disableCache?: boolean }
-
-class PersistentCacheError extends Error {}
-
-const PGLITE_VERSION = dependencies['@electric-sql/pglite']
-const PGVECTOR_VERSION = dependencies['@electric-sql/pglite-pgvector']
-const DB_NAME = `semantic-search-cache-${PGLITE_VERSION}-${PGVECTOR_VERSION}`
-const META_TABLE = 'semantic_meta'
-const EMBEDDINGS_TABLE = 'semantic_embeddings'
-const INDEX_NAME = 'semantic_embeddings_vec_hnsw'
 const MANIFEST_URL = '/embeddings/manifest.json'
-const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${PGLITE_VERSION}/dist`
-const PGVECTOR_CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite-pgvector@${PGVECTOR_VERSION}/dist`
-const ORT_CDN_BASE = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${dependencies['onnxruntime-web'].slice(1)}/dist/`
-const ORT_WASM_PATHS = {
-  mjs: `${ORT_CDN_BASE}ort-wasm-simd-threaded.asyncify.mjs`,
-  wasm: `${ORT_CDN_BASE}ort-wasm-simd-threaded.asyncify.wasm`,
-}
-const VECTOR_BUNDLE_URL = new URL(`${PGVECTOR_CDN_BASE}/vector.tar.gz`)
 
 let state: WorkerState = 'idle'
 let manifest: Manifest | null = null
@@ -81,10 +54,11 @@ let cfg: SemanticWorkerConfig | null = null
 let dims = 0
 let tokenizer: any = null
 let model: any = null
+let encoderLoading: Promise<void> | null = null
 let envConfigured = false
 let abortController: AbortController | null = null
-let dbPromise: Promise<PGlite> | null = null
-let manifestId: string | null = null
+// Row-major unit vectors, `rows * dims` floats. Every query scans all of them.
+let vectors: Float32Array | null = null
 
 function toAssetUrl(path: string): string {
   const url = new URL(path, self.location.origin)
@@ -107,187 +81,92 @@ async function fetchAsset(path: string): Promise<Response> {
   return res
 }
 
-async function compileWasm(path: string): Promise<WebAssembly.Module> {
-  return await WebAssembly.compileStreaming(fetchAsset(path))
-}
-
-function vectorToLiteral(vec: Float32Array): string {
-  return `[${vec.join(',')}]`
-}
-
-function buildManifestId(data: Manifest): string {
-  const shardHashes = data.vectors.shards.map(shard => shard.sha256 ?? '').join('|')
-  return [data.version, data.model, data.dims, data.rows, shardHashes].join(':')
-}
-
-async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> {
-  if (!dbPromise) {
-    dbPromise = (async () => {
-      const [pgliteWasmModule, initdbWasmModule, fsBundle] = await Promise.all([
-        compileWasm(`${CDN_BASE}/pglite.wasm`),
-        compileWasm(`${CDN_BASE}/initdb.wasm`),
-        fetchAsset(`${CDN_BASE}/pglite.data`).then(r => r.blob()),
-      ])
-
-      const vector = {
-        ...vectorExtension,
-        async setup(pg: unknown, emscriptenOpts: unknown) {
-          const setupResult = await vectorExtension.setup(pg as never, emscriptenOpts)
-          return { ...setupResult, bundlePath: VECTOR_BUNDLE_URL }
-        },
-      }
-      const dataDir = disableCache ? `memory://${DB_NAME}` : `idb://${DB_NAME}`
-      const db = await PGlite.create({
-        dataDir,
-        pgliteWasmModule,
-        initdbWasmModule,
-        fsBundle,
-        extensions: { vector },
-      })
-      await db.exec('create extension if not exists vector')
-      return db
-    })()
-  }
-  return dbPromise
-}
-
-async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string) {
-  await db.exec(
-    `create table if not exists ${META_TABLE} (key text primary key, value text not null)`,
-  )
-  let currentKey: string | null = null
-  try {
-    const meta = await db.query<MetaRow>(`select value from ${META_TABLE} where key = $1`, [
-      'manifest_id',
-    ])
-    currentKey = meta.rows[0]?.value ?? null
-  } catch {
-    currentKey = null
-  }
-
-  if (currentKey === manifestKey) {
-    try {
-      const res = await db.query<{ count: number }>(
-        `select count(*)::int as count from ${EMBEDDINGS_TABLE}`,
-      )
-      if (res.rows[0]?.count === manifest.rows) {
-        return
-      }
-    } catch {}
-  }
-
-  await db.exec(`drop index if exists ${INDEX_NAME}`)
-  await db.exec(`drop table if exists ${EMBEDDINGS_TABLE}`)
-  await db.exec(
-    `create table ${EMBEDDINGS_TABLE} (id integer primary key, vec vector(${manifest.dims}))`,
-  )
-
-  const batchSize = 512
+async function loadVectors(data: Manifest): Promise<Float32Array> {
+  const all = new Float32Array(data.rows * data.dims)
   let loadedRows = 0
-
   await Promise.all(
-    manifest.vectors.shards.map(async shard => {
-      const absolute = toAssetUrl(shard.path)
-      const payload = await fetchBinary(absolute)
-      const view = new Float32Array(payload)
-      if (view.length !== shard.rows * manifest.dims) {
+    data.vectors.shards.map(async shard => {
+      const view = new Float32Array(await fetchBinary(toAssetUrl(shard.path)))
+      if (view.length !== shard.rows * data.dims) {
         throw new Error(
-          `shard ${shard.path} has mismatched length (expected ${shard.rows * manifest.dims}, got ${view.length})`,
+          `shard ${shard.path} has mismatched length (expected ${shard.rows * data.dims}, got ${view.length})`,
         )
       }
-
-      let batchIds: number[] = []
-      let batchVecs: string[] = []
-
-      for (let i = 0; i < shard.rows; i++) {
-        const id = shard.rowOffset + i
-        const offset = i * manifest.dims
-        const vec = view.subarray(offset, offset + manifest.dims)
-        batchIds.push(id)
-        batchVecs.push(vectorToLiteral(vec))
-
-        if (batchIds.length >= batchSize) {
-          await insertBatch(db, batchIds, batchVecs)
-          batchIds = []
-          batchVecs = []
-        }
+      if (shard.rowOffset + shard.rows > data.rows) {
+        throw new Error(`shard ${shard.path} reaches past the ${data.rows} rows of the manifest`)
       }
-
-      if (batchIds.length > 0) {
-        await insertBatch(db, batchIds, batchVecs)
-      }
-
-      loadedRows = Math.min(manifest.rows, loadedRows + shard.rows)
-      const progress: ProgressMessage = { type: 'progress', loadedRows, totalRows: manifest.rows }
+      all.set(view, shard.rowOffset * data.dims)
+      loadedRows += shard.rows
+      const progress: ProgressMessage = { type: 'progress', loadedRows, totalRows: data.rows }
       self.postMessage(progress)
     }),
   )
-
-  const m = manifest.hnsw?.M ?? 16
-  const efc = manifest.hnsw?.efConstruction ?? 200
-  try {
-    await db.exec(
-      `create index ${INDEX_NAME} on ${EMBEDDINGS_TABLE} using hnsw (vec vector_cosine_ops) with (m=${m}, ef_construction=${efc})`,
-    )
-  } catch {
-    try {
-      await db.exec(
-        `create index ${INDEX_NAME} on ${EMBEDDINGS_TABLE} using ivfflat (vec vector_cosine_ops) with (lists=100)`,
-      )
-    } catch {}
-  }
-  await db.query(
-    `insert into ${META_TABLE} (key, value) values ($1, $2) on conflict (key) do update set value = excluded.value`,
-    ['manifest_id', manifestKey],
-  )
+  return all
 }
 
-async function insertBatch(db: PGlite, ids: number[], vecs: string[]) {
-  const values: string[] = []
-  const params: Array<number | string> = []
-  let idx = 1
-  for (let i = 0; i < ids.length; i++) {
-    values.push(`($${idx}, $${idx + 1}::vector)`)
-    params.push(ids[i], vecs[i])
-    idx += 2
+// Exact cosine search. The rows and the query are unit vectors, so the dot product is the cosine.
+// A scan costs rows * dims multiply-adds (about 25 million for 32k rows of 768), which is cheaper
+// than building an approximate index in the page on every cold visit.
+function topK(query: Float32Array, k: number): SearchHit[] {
+  if (!manifest || !vectors) throw new Error('semantic index is not loaded')
+  const hits: SearchHit[] = []
+  let floor = -Infinity
+  for (let row = 0, base = 0; row < manifest.rows; row++, base += dims) {
+    let score = 0
+    for (let d = 0; d < dims; d++) score += query[d] * vectors[base + d]
+    if (!Number.isFinite(score) || score <= floor) continue
+    let pos = hits.length
+    while (pos > 0 && hits[pos - 1].score < score) pos--
+    hits.splice(pos, 0, { id: row, score })
+    if (hits.length > k) hits.pop()
+    if (hits.length === k) floor = hits[k - 1].score
   }
-  await db.query(`insert into ${EMBEDDINGS_TABLE} (id, vec) values ${values.join(',')}`, params)
+  return hits
 }
 
 function configureRuntimeEnv() {
   if (envConfigured) return
   env.allowLocalModels = false
   env.allowRemoteModels = true
-  const wasmBackend = env.backends?.onnx?.wasm
-  if (!wasmBackend) {
-    throw new Error('transformers.js ONNX runtime backend unavailable')
-  }
-  wasmBackend.wasmPaths = ORT_WASM_PATHS
+  // The ONNX wasm paths stay at the transformers.js default: it pins them to the onnxruntime-web build it bundles.
   envConfigured = true
 }
 
-const MODEL_MAPPING: Record<string, string> = {
-  'intfloat/multilingual-e5-large': 'Xenova/multilingual-e5-large',
-  'google/embeddinggemma-300m': 'onnx-community/embeddinggemma-300m-ONNX',
-  'Qwen/Qwen3-Embedding-0.6B': 'onnx-community/Qwen3-Embedding-0.6B-ONNX',
+const QUERY_DTYPES: readonly SemanticQueryDType[] = ['q4', 'q8', 'fp32']
+
+function resolveQueryDType(value: unknown): SemanticQueryDType {
+  return QUERY_DTYPES.find(dtype => dtype === value) ?? 'q4'
 }
 
-function resolveDType(value: unknown): RuntimeDType {
-  return value === 'fp16' ? 'fp16' : 'fp32'
+function ensureEncoder(): Promise<void> {
+  encoderLoading ??= loadEncoder().catch((err: unknown) => {
+    encoderLoading = null
+    throw err
+  })
+  return encoderLoading
 }
 
-async function ensureEncoder() {
-  if (tokenizer && model) return
+async function loadEncoder() {
   const modelId = manifest?.model ?? cfg?.model
   if (!modelId) {
     throw new Error('semantic model is not configured')
   }
-  const mappedModel = MODEL_MAPPING[modelId] ?? modelId
+  const mappedModel = SEMANTIC_ONNX_MODELS[modelId] ?? modelId
   configureRuntimeEnv()
-  const dtype = resolveDType(cfg?.dtype)
+  // Every quantized embeddinggemma graph stores its token table with GatherBlockQuantized.
+  // The wasm backend has no kernel for it (session creation fails), and the fp32 graph is over 1 GB.
+  // Without WebGPU the search stays lexical.
+  if (!(await navigator.gpu?.requestAdapter().catch(() => null))) {
+    throw new Error('semantic query encoder needs WebGPU')
+  }
+  const dtype = resolveQueryDType(cfg?.queryDtype)
+  const config = await AutoConfig.from_pretrained(mappedModel)
+  // embeddinggemma-2 ships vision and audio encoders (1.8 GB at fp32); queries only need the text graph.
+  if (config.model_type === 'embedding_gemma2') {
+    Object.assign(config, { vision_config: null, audio_config: null })
+  }
   tokenizer = await AutoTokenizer.from_pretrained(mappedModel)
-  model = await AutoModel.from_pretrained(mappedModel, { dtype })
-  if (cfg) cfg.dtype = dtype
+  model = await AutoModel.from_pretrained(mappedModel, { config, dtype, device: 'webgpu' })
 }
 
 async function embed(text: string, isQuery: boolean = false): Promise<Float32Array> {
@@ -348,8 +227,12 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
   }
 
   const data = embedding.data
+  if (data.length < dims) {
+    throw new Error(`model emits ${data.length} dims but the index stores ${dims}`)
+  }
+  // Matryoshka models (embeddinggemma-2: 768/512/256/128) keep the leading dims, then renormalize below.
   const vec = new Float32Array(dims)
-  for (let i = 0; i < dims; i++) vec[i] = data[i] ?? 0
+  for (let i = 0; i < dims; i++) vec[i] = data[i]
   let norm = 0
   for (let i = 0; i < dims; i++) norm += vec[i] * vec[i]
   norm = Math.sqrt(norm)
@@ -386,15 +269,11 @@ async function handleInit(msg: InitMessage) {
     }
 
     dims = manifest.dims
-    manifestId = buildManifestId(manifest)
 
-    const persistentCache = !msg.disableCache
-    const database = openDatabase(Boolean(msg.disableCache)).catch((err: unknown) => {
-      if (!persistentCache) throw err
-      throw new PersistentCacheError(err instanceof Error ? err.message : String(err))
-    })
-    const db = await database
-    await ensureSchema(db, manifest, manifestId)
+    // The encoder loads beside the vectors, so "ready" means a query can run and a missing
+    // WebGPU adapter fails now, not after the vectors are downloaded.
+    const [loaded] = await Promise.all([loadVectors(manifest), ensureEncoder()])
+    vectors = loaded
 
     state = 'ready'
     const ready: ReadyMessage = { type: 'ready' }
@@ -414,23 +293,10 @@ async function handleSearch(msg: SearchMessage) {
   }
 
   const queryVec = await embed(msg.text, true)
-  const queryLiteral = vectorToLiteral(queryVec)
-  const limit = Math.max(1, msg.k)
-  const db = await openDatabase(Boolean(cfg?.disableCache))
-  const efSearch = Math.min(1000, Math.max(64, limit * 10))
-  try {
-    await db.exec(`set hnsw.ef_search = ${efSearch}`)
-  } catch {}
-  const res = await db.query<CandidateRow>(
-    `select id, 1 - (vec <=> $1::vector) as score from ${EMBEDDINGS_TABLE} order by vec <=> $1::vector limit $2`,
-    [queryLiteral, limit],
-  )
-  const semanticHits = res.rows.filter(hit => Number.isFinite(hit.score))
-
   const message: SearchResultMessage = {
     type: 'search-result',
     seq: msg.seq,
-    semantic: semanticHits,
+    semantic: topK(queryVec, Math.max(1, msg.k)),
   }
   self.postMessage(message)
 }
@@ -446,7 +312,6 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
       const message: ErrorMessage = {
         type: 'error',
         message: err instanceof Error ? err.message : String(err),
-        retryWithoutCache: err instanceof PersistentCacheError,
       }
       self.postMessage(message)
     })

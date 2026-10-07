@@ -140,6 +140,7 @@ const input = (
     [43.64, -79.4],
     [43.65, -79.4],
   ],
+  openWater: false,
   weather: weather(durationS, routeHours),
   attribution: null,
   computedAt: Date.parse('2026-06-12T01:00:00Z'),
@@ -238,7 +239,7 @@ test('uses WeatherKit UVI without applying cloud attenuation a second time', () 
   assert.equal(overcast.environment?.summary.ambientSed, 4.5)
 })
 
-test('resolves meteorological from-direction into headwind, tailwind, and crosswind', () => {
+test('resolves 10 m from-direction wind into rider-height headwind, tailwind, and crosswind', () => {
   const northbound: Partial<ActivityEnvironmentInput> = {
     timeS: [0, 10],
     distanceM: [0, 100],
@@ -261,18 +262,40 @@ test('resolves meteorological from-direction into headwind, tailwind, and crossw
     input(10, [routeHour(0, 10, { windSpeedKph: 18, windDirectionDeg: 270 })], northbound),
   ).apparentWind
 
-  assert.equal(headwind?.summary.averageHeadwindKph, 18)
+  // 18 km/h at 10 m is 5.1 km/h at 1 m over suburban roughness.
+  assert.equal(headwind?.summary.averageHeadwindKph, 5.1)
   assert.equal(headwind?.summary.headwindSharePct, 100)
-  assert.equal(tailwind?.summary.averageHeadwindKph, -18)
+  assert.equal(headwind?.summary.apparentAirRatio, 1.142)
+  assert.equal(tailwind?.summary.averageHeadwindKph, -5.1)
   assert.equal(tailwind?.summary.tailwindTimeS, 10)
   assert.equal(crosswind?.summary.averageHeadwindKph, 0)
-  assert.equal(crosswind?.summary.averageCrosswindKph, 18)
-  assert.equal(crosswind?.summary.maximumCrosswindKph, 18)
+  assert.equal(crosswind?.summary.averageCrosswindKph, 5.1)
+  assert.equal(crosswind?.summary.maximumCrosswindKph, 5.1)
   assert((crosswind?.summary.averageYawDeg ?? 0) > 0)
   assert.equal(oppositeCrosswind?.summary.averageHeadwindKph, 0)
-  assert.equal(oppositeCrosswind?.summary.averageCrosswindKph, -18)
-  assert.equal(oppositeCrosswind?.summary.maximumCrosswindKph, 18)
+  assert.equal(oppositeCrosswind?.summary.averageCrosswindKph, -5.1)
+  assert.equal(oppositeCrosswind?.summary.maximumCrosswindKph, 5.1)
   assert((oppositeCrosswind?.summary.averageYawDeg ?? 0) < 0)
+})
+
+test('keeps open-water swim pace and resolves wind at the water surface', () => {
+  const swimPace = {
+    timeS: [0, 20],
+    distanceM: [0, 11],
+    latlng: [
+      [43.64, -79.4],
+      [43.6401, -79.4],
+    ] as [number, number][],
+    movingTimeS: 20,
+  }
+  const northWind = [routeHour(0, 20, { windSpeedKph: 18, windDirectionDeg: 0 })]
+  const swim = buildActivityEnvironment(input(20, northWind, { ...swimPace, openWater: true }))
+  const land = buildActivityEnvironment(input(20, northWind, swimPace))
+
+  // 18 km/h at 10 m is 11.5 km/h at 0.2 m over open water.
+  assert.equal(swim.apparentWind?.summary.averageHeadwindKph, 11.5)
+  assert.equal(swim.apparentWind?.summary.coveragePct, 100)
+  assert.equal(land.apparentWind?.summary.coveragePct ?? 0, 0)
 })
 
 test('represents calm air and rejects low-speed and telemetry-gap intervals', () => {
@@ -290,10 +313,10 @@ test('represents calm air and rejects low-speed and telemetry-gap intervals', ()
   const lowSpeed = buildActivityEnvironment(
     input(10, [routeHour(0, 10)], {
       timeS: [0, 10],
-      distanceM: [0, 20],
+      distanceM: [0, 5],
       latlng: [
         [43.64, -79.4],
-        [43.6401, -79.4],
+        [43.64005, -79.4],
       ],
       movingTimeS: 10,
     }),
@@ -314,6 +337,61 @@ test('represents calm air and rejects low-speed and telemetry-gap intervals', ()
   assert.equal(calm.apparentWind?.summary.apparentAirRatio, 1)
   assert.equal(lowSpeed.apparentWind, null)
   assert.equal(gap.apparentWind, null)
+})
+
+test('keeps running pace and measures headwind sections across short reversals and stops', () => {
+  const runningRoute = (
+    legs: { seconds: number; heading: 'north' | 'south' | 'stop' }[],
+  ): Partial<ActivityEnvironmentInput> & { durationS: number } => {
+    const stepDegrees = 2.5 / 111_195
+    const timeS = [0]
+    const distanceM = [0]
+    const latlng: [number, number][] = [[43.64, -79.4]]
+    for (const leg of legs) {
+      if (leg.heading === 'stop') {
+        timeS.push(timeS.at(-1)! + leg.seconds)
+        distanceM.push(distanceM.at(-1)!)
+        latlng.push(latlng.at(-1)!)
+        continue
+      }
+      for (let second = 0; second < leg.seconds; second += 1) {
+        const [latitude, longitude] = latlng.at(-1)!
+        timeS.push(timeS.at(-1)! + 1)
+        distanceM.push(distanceM.at(-1)! + 2.5)
+        latlng.push([latitude + (leg.heading === 'north' ? stepDegrees : -stepDegrees), longitude])
+      }
+    }
+    const durationS = timeS.at(-1)!
+    return { timeS, distanceM, latlng, movingTimeS: durationS, durationS }
+  }
+  const apparentWind = (legs: Parameters<typeof runningRoute>[0]) => {
+    const { durationS, ...route } = runningRoute(legs)
+    return buildActivityEnvironment(
+      input(durationS, [routeHour(0, durationS, { windSpeedKph: 18, windDirectionDeg: 0 })], route),
+    ).apparentWind
+  }
+  const outAndBack = [
+    { seconds: 120, heading: 'north' },
+    { seconds: 10, heading: 'south' },
+    { seconds: 100, heading: 'north' },
+  ] as const
+  const longStop = apparentWind([
+    ...outAndBack,
+    { seconds: 300, heading: 'stop' },
+    { seconds: 60, heading: 'north' },
+  ])
+  const trafficLight = apparentWind([
+    ...outAndBack,
+    { seconds: 60, heading: 'stop' },
+    { seconds: 60, heading: 'north' },
+  ])
+
+  // 2.5 m/s running pace is inside the wind estimate; the 10 s reversal stays in the section.
+  assert.equal(longStop?.summary.averageGroundSpeedKph, 9)
+  assert.equal(longStop?.summary.headwindTimeS, 280)
+  assert.equal(longStop?.summary.tailwindTimeS, 10)
+  assert.equal(longStop?.summary.longestHeadwindS, 230)
+  assert.equal(trafficLight?.summary.longestHeadwindS, 350)
 })
 
 test('retains hourly ambient wind for slow outdoor routes without meteorological direction', () => {

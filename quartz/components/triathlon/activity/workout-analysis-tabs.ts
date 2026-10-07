@@ -1,6 +1,12 @@
-export type WorkoutAnalysisView = 'workout' | 'laps' | 'pace' | 'power'
+export type WorkoutAnalysisView = 'workout' | 'laps' | 'pace' | 'power' | 'heart-rate'
 
-const WORKOUT_ANALYSIS_VIEWS: readonly WorkoutAnalysisView[] = ['workout', 'laps', 'pace', 'power']
+const WORKOUT_ANALYSIS_VIEWS: readonly WorkoutAnalysisView[] = [
+  'workout',
+  'laps',
+  'pace',
+  'power',
+  'heart-rate',
+]
 
 const isWorkoutAnalysisView = (value: string | undefined): value is WorkoutAnalysisView =>
   WORKOUT_ANALYSIS_VIEWS.some(view => view === value)

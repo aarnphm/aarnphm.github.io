@@ -21,6 +21,8 @@ export interface BestEffortsChartOptions {
   year: number | null
   /** Right edge of the x axis (YYYY-MM-DD), normally `data.meta.today`. The left edge is the first effort. */
   today: string
+  /** Inclusive local dates selected by the whole-ride filter. */
+  range?: { from: string; to: string }
 }
 
 export interface BestEffortsChartView {
@@ -172,18 +174,19 @@ export const buildBestEffortsChart = ({
   context,
   year,
   today,
+  range: dateRange,
 }: BestEffortsChartOptions): BestEffortsChartView => {
   const formatter = context.formatter
   const efforts = category.efforts
   const figure = el('figure', 'tri-be-chart', undefined, { 'data-category': category.key })
   if (year != null) figure.dataset.year = String(year)
-  const firstDay = efforts.length > 0 ? utcDay(efforts[0].date) : Number.NaN
+  const firstDay = efforts.length > 0 ? utcDay(dateRange?.from ?? efforts[0].date) : Number.NaN
   if (!Number.isFinite(firstDay)) {
     figure.appendChild(el('div', 'tri-ana-empty', formatter.text('not enough data')))
     return { element: figure, mount: () => () => {} }
   }
 
-  const todayDay = utcDay(today)
+  const todayDay = utcDay(dateRange?.to ?? today)
   const lastDay = Math.max(
     firstDay,
     Number.isFinite(todayDay) ? todayDay : utcDay(efforts[efforts.length - 1].date),
@@ -283,7 +286,11 @@ export const buildBestEffortsChart = ({
   }
 
   const categoryLabel = bestEffortCategoryLabel(category, formatter)
-  const rangeText = `${formatter.longDate(efforts[0].date)} – ${formatter.text('today')}`
+  const rangeText = `${formatter.longDate(dateRange?.from ?? efforts[0].date)} – ${
+    !dateRange || dateRange.to === today
+      ? formatter.text('today')
+      : formatter.longDate(dateRange.to)
+  }`
   const goldIndex = points.findIndex(point => point.entry.rank === 1)
   const initialIndex = goldIndex >= 0 ? goldIndex : points.length - 1
 

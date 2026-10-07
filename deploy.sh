@@ -41,12 +41,13 @@ load_env() {
 deploy() {
   require_health
   load_env
-  git pull
+  GIT_LFS_SKIP_SMUDGE=1 git pull
   require_health
   git lfs install --local
   git lfs pull
-  git lfs pull --include="quartz/runtime/native/packs/**"
+  git lfs pull --include="quartz/runtime/native/packs/**,content/triathlon/wind/**/*.json" --exclude=""
   git lfs checkout
+  pnpm exec tsx quartz/scripts/validate-wind-archive.ts
 
   export GITHUB_SHA="$(git rev-parse HEAD)"
 

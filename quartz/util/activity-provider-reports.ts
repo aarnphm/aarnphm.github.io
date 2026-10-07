@@ -1,3 +1,6 @@
+import type { MyWindsockArchiveReference } from './mywindsock-graphs'
+import type { MyWindsockRoute } from './mywindsock-route'
+
 export type UvSeverity = 'negligible' | 'low' | 'moderate' | 'high' | 'serious' | 'extreme'
 
 export interface ProviderNativeProvenance {
@@ -36,6 +39,9 @@ export interface MyWindsockNativeReport extends ProviderNativeProvenance {
 export interface NativeActivityReports {
   myWindsock: MyWindsockNativeReport | null
   pelotan: PelotanNativeReport | null
+  // Attached after payload assembly from content/triathlon/wind archives.
+  myWindsockRoute?: MyWindsockRoute | null
+  myWindsockArchive?: MyWindsockArchiveReference | null
 }
 
 const number = (value: string | undefined): number | null => {

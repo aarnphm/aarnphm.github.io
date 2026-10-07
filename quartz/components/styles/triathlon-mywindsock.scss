@@ -1,0 +1,185 @@
+.tri-mywindsock {
+  margin-block: 1.25rem;
+  min-width: 0;
+  font-family: var(--codeFont);
+  font-size: 0.74rem;
+
+  button,
+  select {
+    color: var(--dark);
+    background: var(--light);
+    border: 1px solid var(--lightgray);
+    border-radius: var(--radius-none);
+    padding: 0.4rem 0.55rem;
+    font: inherit;
+    cursor: pointer;
+    min-height: 32px;
+  }
+
+  :is(button, select, summary):focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.tri-mywindsock-provenance {
+  margin-block: 0.5rem;
+}
+
+.tri-mywindsock-source,
+.tri-mywindsock-note {
+  color: var(--darkgray);
+  overflow-wrap: anywhere;
+  margin-block: 0.5rem;
+}
+
+.tri-mywindsock-content {
+  margin-block: 0.75rem;
+}
+.tri-mywindsock-picker {
+  display: block;
+  width: 100%;
+  margin-block: 0.3rem;
+}
+.tri-mywindsock-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-block: 0.65rem;
+}
+.tri-mywindsock .tri-mywindsock-toggle {
+  border-color: color-mix(in srgb, var(--trace-color) 50%, var(--lightgray));
+  &[aria-pressed='true'] {
+    color: var(--trace-color);
+    background: color-mix(in srgb, var(--trace-color) 9%, var(--light));
+    border-color: var(--trace-color);
+  }
+}
+
+.tri-mywindsock-native-graph {
+  margin-block: 1rem;
+  min-width: 0;
+}
+.tri-mywindsock-frame {
+  display: flex;
+  gap: 0.5rem;
+  height: 230px;
+}
+.tri-mywindsock-y-axes {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.tri-mywindsock-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: end;
+  position: relative;
+  min-width: 3ch;
+  font-size: 0.65rem;
+  color: var(--darkgray);
+}
+.tri-mywindsock-axis-title {
+  position: absolute;
+  top: -1.2rem;
+  right: 0;
+  white-space: nowrap;
+  max-width: 12ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tri-mywindsock-plot {
+  flex: 1;
+  min-width: 0;
+  height: 230px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.tri-mywindsock-grid {
+  fill: none;
+  stroke: var(--lightgray);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.tri-mywindsock-line {
+  fill: none;
+  stroke: var(--trace-color);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.tri-mywindsock-band {
+  fill: var(--trace-color);
+  fill-opacity: 0.16;
+}
+.tri-mywindsock-bar {
+  fill: var(--trace-color);
+  fill-opacity: 0.75;
+}
+.tri-mywindsock-cursor {
+  stroke: var(--darkgray);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.tri-mywindsock-ticks {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--darkgray);
+  font-size: 0.65rem;
+}
+.tri-mywindsock-x-label {
+  text-align: center;
+  color: var(--darkgray);
+}
+.tri-mywindsock-readout {
+  margin-block: 0.4rem;
+  min-height: 2lh;
+  overflow-wrap: anywhere;
+}
+.tri-mywindsock-polar {
+  display: block;
+  width: min(100%, 260px);
+  height: 260px;
+  margin-inline: auto;
+}
+.tri-mywindsock-polar-values {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.2rem 1rem;
+}
+.tri-mywindsock-polar-values dd {
+  margin: 0;
+}
+.tri-mywindsock-gauge {
+  width: 100%;
+  height: 2rem;
+}
+.tri-mywindsock-json pre {
+  max-height: 260px;
+  overflow: auto;
+  white-space: pre;
+  font-size: 0.7rem;
+}
+.tri-mywindsock-json summary {
+  cursor: pointer;
+}
+.tri-workspace-wind-load {
+  margin-block: 0.5rem;
+  font: inherit;
+}
+
+@media (max-width: 600px) {
+  .tri-mywindsock-frame,
+  .tri-mywindsock-plot {
+    height: 180px;
+  }
+  .tri-mywindsock-ticks {
+    font-size: 0.58rem;
+  }
+}
