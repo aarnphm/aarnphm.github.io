@@ -581,6 +581,7 @@ async function main(): Promise<void> {
       timeS: item.stream.timeS,
       distanceM: item.stream.distanceM,
       latlng: item.stream.latlng,
+      openWater: normalizeKind(sourceActivities.get(item.activityId)?.sportType ?? '') === 'swim',
       weather: activityWeather,
       attribution,
       computedAt: Date.now(),

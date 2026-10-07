@@ -9,7 +9,6 @@ import type {
 } from '../../../util/trainingpeaks-calendar'
 import { parseTrainingPeaksCalendar } from '../../../util/trainingpeaks-calendar'
 import { calendarToday } from './display'
-import { trainingWeekStart } from './training-display'
 import { TrainingCalendarView } from './TrainingCalendar'
 
 const recordedRun: TrainingPeaksCalendarWorkout = {
@@ -40,11 +39,7 @@ function renderedWorkouts(workouts: TrainingPeaksCalendarWorkout[]): Element[] {
   const parsed = parseTrainingPeaksCalendar(payload)
   assert.ok(parsed, 'the public payload must survive JSON and validation')
   const html = renderToString(
-    <TrainingCalendarView
-      calendar={parsed}
-      week={trainingWeekStart(workouts[0].date)}
-      id="test-training"
-    />,
+    <TrainingCalendarView calendar={parsed} date={workouts[0].date} id="test-training" />,
   )
   const found: Element[] = []
   const visit = (nodes: RootContent[]): void => {

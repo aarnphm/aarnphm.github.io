@@ -1,3 +1,5 @@
+import type { SemanticQueryDType } from '../../util/semantic-search'
+
 export type SemanticResult = { id: number; score: number }
 
 type ProgressMessage = { type: 'progress'; loadedRows: number; totalRows: number }
@@ -6,20 +8,13 @@ type ReadyMessage = { type: 'ready' }
 
 type ResultMessage = { type: 'search-result'; seq: number; semantic: SemanticResult[] }
 
-type ErrorMessage = { type: 'error'; seq?: number; message: string; retryWithoutCache?: boolean }
+type ErrorMessage = { type: 'error'; seq?: number; message: string }
 
 type SearchPayload = { semantic: SemanticResult[] }
 
 type PendingResolver = { resolve: (payload: SearchPayload) => void; reject: (err: Error) => void }
 
-type RuntimeDType = 'fp16' | 'fp32'
-
-type SemanticConfig = {
-  enable?: boolean
-  disableCache?: boolean
-  model?: string
-  dtype?: RuntimeDType
-}
+type SemanticConfig = { enable?: boolean; model?: string; queryDtype?: SemanticQueryDType }
 
 export class SemanticClient {
   private ready: Promise<void>
@@ -30,7 +25,6 @@ export class SemanticClient {
   private disposed = false
   private readySettled = false
   private configured = false
-  private cacheRecoveryAttempted = false
   private lastError: Error | null = null
 
   constructor(private cfg?: SemanticConfig) {
@@ -48,10 +42,10 @@ export class SemanticClient {
       return
     }
 
-    this.startWorker(Boolean(this.cfg?.disableCache))
+    this.startWorker()
   }
 
-  private startWorker(disableCache: boolean) {
+  private startWorker() {
     try {
       this.worker = new Worker(new URL('semantic.worker.js', import.meta.url), { type: 'module' })
     } catch (err) {
@@ -59,7 +53,7 @@ export class SemanticClient {
       return
     }
     this.setupWorker()
-    this.worker.postMessage({ type: 'init', cfg: this.cfg, disableCache })
+    this.worker.postMessage({ type: 'init', cfg: this.cfg })
   }
 
   private setupWorker() {
@@ -92,24 +86,11 @@ export class SemanticClient {
             this.pending.delete(msg.seq)
             pending.reject(new Error(msg.message))
           }
-        } else if (msg.retryWithoutCache && this.retryWithoutCache()) {
-          return
         } else {
           this.handleFatal(msg.message)
         }
       }
     }
-  }
-
-  private retryWithoutCache(): boolean {
-    if (this.disposed || this.configured || this.cacheRecoveryAttempted || this.cfg?.disableCache) {
-      return false
-    }
-    this.cacheRecoveryAttempted = true
-    this.worker?.terminate()
-    this.worker = null
-    this.startWorker(true)
-    return true
   }
 
   private rejectAll(err: Error, fatal = false) {

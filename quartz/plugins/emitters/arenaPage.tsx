@@ -530,7 +530,9 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
 
   return {
     name: 'ArenaPage',
-    getQuartzComponents() {
+    getQuartzComponents(ctx) {
+      if (ctx.argv.watch && !ctx.argv.force) return []
+
       return [
         Head,
         Header,
@@ -550,6 +552,8 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
       ]
     },
     async *emit(ctx, content, resources) {
+      if (ctx.argv.watch && !ctx.argv.force) return
+
       const allFiles = contentDataFor(content)
 
       for (const [tree, file] of content) {
@@ -589,6 +593,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
       }
     },
     partialEmit(ctx, content, resources, changeEvents) {
+      if (ctx.argv.watch && !ctx.argv.force) return null
       if (!hasArenaPageChange(changeEvents)) return null
 
       return (async function* () {

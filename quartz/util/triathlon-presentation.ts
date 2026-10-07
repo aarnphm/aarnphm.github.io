@@ -16,5 +16,7 @@ export const DEFAULT_TRIATHLON_PRESENTATION: TriathlonPresentation = Object.free
   powerSamples: 'recorded',
 })
 
+export const TRI_UNIT_KEY = 'tri-dist-unit'
+
 export const distanceSystemFromStoredUnit = (unit: string | null): DistanceSystem =>
   unit === 'km' ? 'metric' : 'imperial'

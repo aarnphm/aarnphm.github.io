@@ -8,6 +8,7 @@ import {
 import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
 import { CYCLING_POWER_MAX_POINTS } from '../../../util/cycling-power'
 import { HEART_RATE_PHYSIOLOGY_METHOD } from '../../../util/heart-rate-physiology'
+import { isMyWindsockArchiveReference } from '../../../util/mywindsock-graphs'
 import {
   isStravaDetailShardPath,
   STRAVA_DETAIL_INDEX_KIND,
@@ -107,7 +108,7 @@ const isSwimPhysiology = (value: unknown, elapsedTimeS: number): boolean =>
     value.source === 'garden-estimate' &&
     value.method === SWIM_PHYSIOLOGY_METHOD &&
     value.exertionSource === 'heart-rate' &&
-    value.speedBasis === 'ground-speed' &&
+    (value.speedBasis === 'ground-speed' || value.speedBasis === 'pool-length') &&
     (value.strokeRateSource === 'stream' ||
       value.strokeRateSource === 'stream-with-average' ||
       value.strokeRateSource === 'activity-average' ||
@@ -557,6 +558,52 @@ const isMyWindsockReport = (value: unknown, activityId: number): boolean => {
   )
 }
 
+const ROUTE_SAMPLE_KEYS = new Set([
+  'elapsedS',
+  'distanceKm',
+  'providerHeadwindKph',
+  'providerCrosswindKph',
+  'weatherCostW',
+  'movingAirPenaltyKm',
+])
+
+const isMyWindsockRoute = (value: unknown, activityId: number, elapsedTimeS: number): boolean => {
+  if (value == null) return true
+  if (
+    !isRecord(value) ||
+    value.source !== 'provider-native' ||
+    value.transport !== 'browser-runtime' ||
+    value.provider !== 'mywindsock' ||
+    value.activityId !== activityId ||
+    typeof value.capturedAt !== 'string' ||
+    !nullableBounded(value.referenceWatts, 0, 10_000) ||
+    !Array.isArray(value.relativeWindPct) ||
+    value.relativeWindPct.length !== 8 ||
+    !value.relativeWindPct.every(share => bounded(share, 0, 100)) ||
+    !Array.isArray(value.samples) ||
+    value.samples.length < 2 ||
+    value.samples.length > 320
+  )
+    return false
+  let elapsed = -1
+  return value.samples.every((sample: unknown) => {
+    if (
+      !isRecord(sample) ||
+      !Object.keys(sample).every(key => ROUTE_SAMPLE_KEYS.has(key)) ||
+      !bounded(sample.elapsedS, 0, elapsedTimeS + 120) ||
+      sample.elapsedS <= elapsed ||
+      !bounded(sample.distanceKm, 0, 10_000) ||
+      !nullableBounded(sample.providerHeadwindKph, -1_000, 1_000) ||
+      !nullableBounded(sample.providerCrosswindKph, -1_000, 1_000) ||
+      !nullableBounded(sample.weatherCostW, -10_000, 10_000) ||
+      !nullableBounded(sample.movingAirPenaltyKm, -10_000, 10_000)
+    )
+      return false
+    elapsed = sample.elapsedS
+    return true
+  })
+}
+
 const isGardenProvenance = (value: Record<string, unknown>, formulaId: string): boolean =>
   value.source === 'garden-estimate' &&
   value.formulaId === formulaId &&
@@ -691,7 +738,7 @@ const isGardenUvScore = (value: unknown): boolean => {
 
 const isGardenWind = (value: unknown): boolean => {
   if (value === null) return true
-  if (!isRecord(value) || !isGardenProvenance(value, 'garden-apparent-wind-v1')) return false
+  if (!isRecord(value) || !isGardenProvenance(value, 'garden-apparent-wind-v2')) return false
   const summary = value.summary
   const coverage = value.coverage
   if (!isRecord(summary) || !isRecord(coverage)) return false
@@ -726,6 +773,9 @@ const isActivityAnalyses = (
   return (
     isPelotanReport(native.pelotan, activityId) &&
     isMyWindsockReport(native.myWindsock, activityId) &&
+    isMyWindsockRoute(native.myWindsockRoute, activityId, elapsedTimeS) &&
+    (native.myWindsockArchive == null ||
+      isMyWindsockArchiveReference(native.myWindsockArchive, activityId)) &&
     isEnvironmentEstimate(derived.environment, activityId, elapsedTimeS, activityStart) &&
     isGardenUvScore(derived.uvScore) &&
     isGardenWind(derived.apparentWind)

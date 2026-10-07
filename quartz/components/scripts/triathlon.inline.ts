@@ -5,7 +5,7 @@ import { currentNavSignal } from './nav-lifecycle'
 type TriathlonRuntime = typeof import('../triathlon/runtime/mount')
 
 // Every page loads this chunk, so the runtime (~1 MB) ships as the LazyScripts bundle
-// `triathlon.js` (quartz.config.ts), fetched only by triathlon content or a triathlon day popover.
+// `triathlon.js` (quartz.config.ts), fetched only by triathlon content.
 const TRIATHLON_CONTENT =
   '.triathlon, .tri-day-embed, .tri-compare-embed, .tri-calc-embed, [data-calendar-set]'
 
@@ -33,10 +33,6 @@ document.addEventListener('nav', () => {
     (mounted ??= loadRuntime().then(({ mountTriathlon }) =>
       signal.aborted ? null : mountTriathlon(signal),
     ))
-  window.quartzTriathlon = {
-    dayCard: async (date, detailPath, extras) =>
-      (await mount())?.dayCard(date, detailPath, extras) ?? null,
-  }
   const onDecrypted = ({ detail }: CustomEventMap['contentdecrypted']) => {
     if (detail.content.querySelector(TRIATHLON_CONTENT)) mount().catch(console.error)
   }

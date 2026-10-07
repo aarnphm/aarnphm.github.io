@@ -1,10 +1,6 @@
 .tri-training-gate {
   max-width: 32rem;
-  padding-block: var(--space-6);
 
-  h2 {
-    margin-block: 0 var(--space-2);
-  }
   p {
     font-size: var(--text-ui);
   }
@@ -54,20 +50,20 @@
   }
 }
 
+// Sits where the race calendar keeps its download link, with the same right-aligned tooltip.
 .tri-training-lock {
-  display: block;
-  margin: 0 0 var(--space-2) auto;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--gray);
-  background: var(--light);
-  color: var(--dark);
-  font: inherit;
-  font-size: var(--text-ui);
-  cursor: pointer;
+  flex: none;
+  border: 1px solid var(--calendar-line);
 
-  &:focus-visible {
-    outline: 2px solid var(--dark);
-    outline-offset: 3px;
+  &.tri-calendar-icon::after {
+    right: -1px;
+    left: auto;
+    transform: translateY(-0.2rem);
+  }
+
+  &.tri-calendar-icon:hover::after,
+  &.tri-calendar-icon:focus-visible::after {
+    transform: none;
   }
 }
 
@@ -125,31 +121,27 @@
   }
 }
 
-.tri-training-week-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.tri-training-header-controls {
   flex-wrap: wrap;
-  gap: 0.7rem 1rem;
-  padding-block: 0.5rem 0.75rem;
+  justify-content: flex-end;
+  row-gap: var(--space-2);
 }
 
-.tri-training-eyebrow {
-  display: block;
+.tri-training-week-label {
+  margin: 0;
+  padding-block: 0.5rem 0.75rem;
   color: var(--darkgray);
   font-family: var(--codeFont);
   font-size: var(--text-meta, 0.75rem);
+  line-height: 1.4;
+
+  time {
+    color: var(--dark);
+  }
 }
 
-.tri-training-week-heading h2 {
-  margin: 0.16rem 0 0;
-  font-family: var(--bodyFont);
-  font-size: clamp(1.05rem, 2.3cqi, 1.55rem);
-  font-weight: 450;
-  letter-spacing: -0.03em;
-}
-
-.tri-training-week-controls {
+.tri-training-calendar .tri-training-week-controls {
+  --tri-pred-control-height: calc(var(--calendar-control-size) - 2px);
   flex: none;
 
   .tri-pred-cal-nav,
@@ -230,6 +222,204 @@
   border: 1px solid var(--calendar-line);
 }
 
+.tri-training-month {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  height: clamp(28rem, 65dvh, 54rem);
+  box-sizing: border-box;
+  border: 1px solid var(--calendar-line);
+}
+
+.tri-training-month-weekdays,
+.tri-training-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.tri-training-month-weekdays {
+  border-bottom: 1px solid var(--calendar-line);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta, 0.75rem);
+
+  > span {
+    padding: 0.5rem;
+  }
+}
+
+.tri-training-month-grid {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.tri-training-month-day {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  border-inline-end: 1px solid var(--calendar-line);
+  border-bottom: 1px solid var(--calendar-line);
+
+  &:nth-child(7n) {
+    border-inline-end: 0;
+  }
+
+  &:nth-last-child(-n + 7) {
+    border-bottom: 0;
+  }
+
+  &[data-outside] {
+    background: var(--calendar-surface);
+  }
+
+  &[data-today] .tri-training-month-day-header time {
+    color: var(--light);
+    background: var(--dark);
+  }
+}
+
+.tri-training-month-day-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.3rem;
+
+  h3 {
+    margin: 0;
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta, 0.75rem);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  time {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.4rem;
+    min-height: 1.4rem;
+  }
+}
+
+.tri-training-month-sessions {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 0 0.25rem 0.25rem;
+}
+
+.tri-training-session.tri-training-month-workout {
+  display: grid;
+  grid-template-columns: 0.35rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.3rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 1.5rem;
+  margin-bottom: 0.2rem;
+  padding: 0.25rem;
+  border: 0;
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  text-align: left;
+
+  &:hover,
+  &:focus-visible {
+    --training-card-tint: 28%;
+  }
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+}
+
+.tri-training-month-mark {
+  width: 0.35rem;
+  height: 0.35rem;
+  background: var(--training-sport);
+}
+
+.tri-training-month-workout-title,
+.tri-training-month-sport {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-training-month-sport {
+  display: none;
+}
+
+.tri-training-month-duration {
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  white-space: nowrap;
+}
+
+.tri-training-month-empty {
+  display: block;
+  padding: 0.15rem 0.25rem;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.6875rem;
+}
+
+.tri-calendar-pop.tri-training-month-pop {
+  width: min(24rem, calc(100vw - 16px));
+
+  .tri-training-session {
+    border: 0;
+  }
+
+  .tri-training-workout-title {
+    overflow: visible;
+    white-space: normal;
+  }
+}
+
+@container tri-calendar-views (max-width: 36rem) {
+  .tri-training-month-weekdays > span {
+    padding-inline: 0.3rem;
+    font-size: 0.625rem;
+  }
+
+  .tri-training-month-day-header {
+    flex-wrap: wrap;
+    padding: 0.15rem;
+  }
+
+  .tri-training-month-sessions {
+    padding-inline: 0.1rem;
+  }
+
+  .tri-training-session.tri-training-month-workout {
+    grid-template-columns: minmax(0, 1fr);
+    font-size: 0.625rem;
+  }
+
+  .tri-training-month-workout-title,
+  .tri-training-month-duration,
+  .tri-training-month-mark {
+    display: none;
+  }
+
+  .tri-training-month-sport {
+    display: block;
+  }
+}
+
 .tri-training-day {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -293,6 +483,15 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
+}
+
+.tri-training-calendar:where([data-training-view='week']) .tri-training-week {
+  // Paint inside the scroll area so the frame and a bottom card share one pixel.
+  border: 0;
+  // Keep positioned, tinted day headers below the top outline.
+  padding-block-start: 1px;
+  outline: 1px solid var(--calendar-line);
+  outline-offset: -1px;
 }
 
 .tri-training-session,
@@ -756,7 +955,9 @@
   margin-inline-start: -1px;
 }
 
-.tri-training-day:nth-child(n + 5) .tri-training-notes-tip {
+.tri-training-calendar:where([data-training-view='week'])
+  .tri-training-day:nth-child(n + 5)
+  .tri-training-notes-tip {
   inset-inline: auto -1px;
 }
 
@@ -955,7 +1156,9 @@
   }
 }
 
-@container tri-calendar-views (max-width: 52rem) {
+// The list stacks the days in the week's box and scrolls it as one; each day header stays on top.
+// `:where` keeps today's header tint, which is more specific.
+.tri-training-calendar:where([data-training-view='list']) {
   .tri-training-week {
     display: block;
     overflow-y: auto;
@@ -972,7 +1175,7 @@
   .tri-training-day {
     display: block;
 
-    & + & {
+    & + .tri-training-day {
       border-inline-start: 0;
     }
   }
@@ -986,6 +1189,59 @@
 
   .tri-training-day-sessions {
     overflow: visible;
+  }
+}
+
+// Wide enough, each session is one row. Every row is its own grid, so fixed tracks keep the columns
+// aligned down the list; the structure cell stays empty for a workout without a chart.
+@container tri-calendar-views (min-width: 50rem) {
+  .tri-training-calendar:where([data-training-view='list']) {
+    .tri-training-workout-summary {
+      grid-template-columns: 9rem minmax(0, 1fr) 14rem 7rem 6.5rem;
+      grid-template-rows: auto;
+      align-items: center;
+      column-gap: 1rem;
+
+      > * {
+        grid-row: 1;
+      }
+    }
+
+    .tri-training-workout-kind {
+      grid-column: 1;
+    }
+    .tri-training-workout-title {
+      grid-column: 2;
+    }
+    .tri-training-workout-metrics {
+      grid-column: 3;
+      grid-template-rows: none;
+      grid-auto-flow: column;
+      justify-content: start;
+      gap: 0.55rem;
+    }
+    .tri-training-structure-chart--compact {
+      grid-column: 4;
+    }
+    .tri-training-workout-bottom {
+      grid-column: 5;
+      justify-content: end;
+    }
+  }
+}
+
+// Seven columns below about 51rem would squeeze the cards; the week scrolls sideways instead.
+@container tri-calendar-views (max-width: 52rem) {
+  .tri-training-calendar:where([data-training-view='week']) .tri-training-week {
+    grid-template-columns: repeat(7, minmax(7.25rem, 1fr));
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+
+    > .tri-training-day {
+      scroll-snap-align: start;
+    }
   }
 }
 

@@ -31,6 +31,7 @@ import { trainingPeaksLocalZones } from '../../util/trainingpeaks-calendar-zones
 import { parseTriathlonCalendars, serializeTriathlonCalendar } from '../../util/triathlon-calendar'
 import {
   triathlonActivityFeedRoutes,
+  triathlonDateFromSlug,
   triathlonDaySlug,
   triathlonFeedScopeFromSlug,
 } from '../../util/triathlon-date-route'
@@ -40,6 +41,7 @@ import {
   type TriathlonMaintenance,
 } from '../../util/triathlon-maintenance'
 import { buildTriathlonMarkdown } from '../../util/triathlon-markdown'
+import { buildTriathlonPreview, triathlonPreviewSlug } from '../../util/triathlon-preview'
 import { buildStravaActivityIndex } from '../../util/triathlon-shortcut'
 import { ATHLETE, buildDataFeed, parseVo2Lab } from '../stores/analytics'
 import { buildMatchedRides, emptyMatchedRides } from '../stores/matched-rides'
@@ -413,6 +415,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       })
       for (const { slug: daySlug } of dayRoutes) nextTemporalSlugs.add(daySlug)
       const location = file.data.frontmatter?.['location']
+      const activityLoads = new Map(analytics.activities.map(activity => [activity.id, activity]))
+      const dailyLoads = new Map(analytics.daily.map(day => [day.date, day]))
       const dayRenderCacheEligible = ctx.argv.watch
       const globalDayKey = dayRenderCacheEligible
         ? hashContent({
@@ -453,6 +457,14 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
               plans,
               tools: { conversions: CONVERSIONS, gear: GEAR, maintenance, equipment },
             })
+            const track = tracking?.days?.find(t => t.date === date)
+            const preview = buildTriathlonPreview({
+              date,
+              details: Object.values(payload.details).filter(d => d.date === date),
+              activities: activityLoads,
+              daily: dailyLoads.get(date) ?? null,
+              event: track?.event ?? (track?.race ? 'race' : null),
+            })
             const [dayTree, dayFile] = defaultProcessedContent({
               slug: daySlug,
               filePath: file.data.filePath,
@@ -490,6 +502,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             return Promise.all([
               write({ ctx, content: dayHtml, slug: daySlug, ext: '.html' }),
               write({ ctx, content: markdown, slug: daySlug, ext: '.md' }),
+              write({
+                ctx,
+                content: JSON.stringify(preview),
+                slug: triathlonPreviewSlug(date),
+                ext: '.json',
+              }),
               ...(queueOgImage ? [queueOgImage(dayFile.data)] : []),
             ])
           },
@@ -499,11 +517,15 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     await Promise.all(
       [...emittedTemporalSlugs]
         .filter(temporalSlug => !nextTemporalSlugs.has(temporalSlug))
-        .flatMap(temporalSlug => [
-          removeWritten(ctx, temporalSlug, '.html'),
-          removeWritten(ctx, temporalSlug, '.md'),
-          removeWritten(ctx, `${temporalSlug}-og-image`, '.webp'),
-        ]),
+        .flatMap(temporalSlug => {
+          const date = triathlonDateFromSlug(temporalSlug)
+          return [
+            removeWritten(ctx, temporalSlug, '.html'),
+            removeWritten(ctx, temporalSlug, '.md'),
+            removeWritten(ctx, `${temporalSlug}-og-image`, '.webp'),
+            ...(date ? [removeWritten(ctx, triathlonPreviewSlug(date), '.json')] : []),
+          ]
+        }),
     )
     emittedTemporalSlugs = nextTemporalSlugs
   }

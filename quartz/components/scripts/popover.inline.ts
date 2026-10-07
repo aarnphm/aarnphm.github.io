@@ -2,6 +2,11 @@ import type { Placement, ReferenceElement, Strategy, VirtualElement } from '@flo
 import { arrow as floatingArrow, computePosition, flip, offset, shift } from '@floating-ui/dom'
 import xmlFormat from 'xml-formatter'
 import { arenaPdfViewerSource } from '../../util/arena-embed'
+import {
+  documentPreviewUrl,
+  isDocumentPreviewType,
+  readDocumentPreview,
+} from '../../util/document-preview'
 import { fetchCanonical } from '../../util/fetch-canonical'
 import {
   lessWrongPreviewApiUrl,
@@ -21,13 +26,22 @@ import {
   type StackedNotePayload,
 } from '../../util/stacked-notes'
 import {
+  readTriathlonPreview,
+  triathlonPreviewDayHref,
+  triathlonPreviewTarget,
+  triathlonPreviewUrl,
+  type TriathlonPreviewTarget,
+} from '../../util/triathlon-preview'
+import {
   readWikipediaPreviewResponse,
   wikipediaActionApiUrl,
   type WikipediaPreview,
   type WikipediaTarget,
 } from '../../util/wikipedia'
+import { renderDocumentPreview } from './document-preview-card'
 import { currentNavSignal } from './nav-lifecycle'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
+import { renderTriathlonPreview, triathlonPreviewPresentation } from './triathlon-preview-card'
 
 type ContentHandler = (
   response: Response,
@@ -881,63 +895,6 @@ function renderWikipediaPreview(preview: WikipediaPreview, popoverInner: HTMLDiv
   popoverInner.appendChild(card)
 }
 
-async function handleWikipedia(
-  link: HTMLAnchorElement,
-  pointer: { clientX: number; clientY: number },
-) {
-  const target = wikipediaTargetFromLink(link)
-  if (!target) return
-
-  const popoverId =
-    link.dataset.popoverId ?? `popover-wikipedia-${target.lang}-${encodeURIComponent(target.title)}`
-  const existingPopover = document.getElementById(popoverId)
-  if (existingPopover) {
-    await showPopover(link, existingPopover, pointer)
-    return
-  }
-
-  if (activePopoverReq && activePopoverReq.link !== link) {
-    activePopoverReq.abort()
-    activePopoverReq = null
-  }
-
-  const controller = new AbortController()
-  activePopoverReq = { abort: () => controller.abort(), link }
-
-  const response = await fetch(wikipediaActionApiUrl(target), { signal: controller.signal }).catch(
-    error => {
-      if (!isAbortError(error)) console.error(error)
-      return null
-    },
-  )
-  if (!response || !response.ok) {
-    activePopoverReq = null
-    return
-  }
-
-  const preview = readWikipediaPreviewResponse(await response.json(), target)
-  if (!preview || activeAnchor !== link) {
-    activePopoverReq = null
-    return
-  }
-
-  const { popoverElement, popoverInner } = createPopoverElement('wikipedia-popover')
-  popoverElement.id = popoverId
-  renderWikipediaPreview(preview, popoverInner)
-
-  if (document.getElementById(popoverId)) {
-    activePopoverReq = null
-    return
-  }
-
-  link.dataset.popoverId = popoverId
-  document.body.appendChild(popoverElement)
-  activePopoverReq = null
-
-  if (activeAnchor !== link) return
-  await showPopover(link, popoverElement, pointer, { popoverInner })
-}
-
 function lessWrongTargetFromLink(link: HTMLAnchorElement): LessWrongTarget | undefined {
   const { lesswrongPostId, lesswrongSlug } = link.dataset
   if (!lesswrongPostId) return undefined
@@ -1083,62 +1040,6 @@ function renderLessWrongPreview(preview: LessWrongPreview, popoverInner: HTMLDiv
   popoverInner.appendChild(card)
 }
 
-async function handleLessWrong(
-  link: HTMLAnchorElement,
-  pointer: { clientX: number; clientY: number },
-) {
-  const target = lessWrongTargetFromLink(link)
-  if (!target) return
-
-  const popoverId = link.dataset.popoverId ?? `popover-lesswrong-${target.postId}`
-  const existingPopover = document.getElementById(popoverId)
-  if (existingPopover) {
-    await showPopover(link, existingPopover, pointer)
-    return
-  }
-
-  if (activePopoverReq && activePopoverReq.link !== link) {
-    activePopoverReq.abort()
-    activePopoverReq = null
-  }
-
-  const controller = new AbortController()
-  activePopoverReq = { abort: () => controller.abort(), link }
-
-  const response = await fetch(lessWrongPreviewApiUrl(target, window.location.toString()), {
-    signal: controller.signal,
-  }).catch(error => {
-    if (!isAbortError(error)) console.error(error)
-    return null
-  })
-  if (!response || !response.ok) {
-    activePopoverReq = null
-    return
-  }
-
-  const preview = readLessWrongPreview(await response.json())
-  if (!preview || activeAnchor !== link) {
-    activePopoverReq = null
-    return
-  }
-
-  const { popoverElement, popoverInner } = createPopoverElement('lesswrong-popover')
-  popoverElement.id = popoverId
-  renderLessWrongPreview(preview, popoverInner)
-
-  if (document.getElementById(popoverId)) {
-    activePopoverReq = null
-    return
-  }
-
-  link.dataset.popoverId = popoverId
-  document.body.appendChild(popoverElement)
-  activePopoverReq = null
-
-  if (activeAnchor !== link) return
-  await showPopover(link, popoverElement, pointer, { popoverInner })
-}
-
 function sepTargetFromLink(link: HTMLAnchorElement): SepTarget | undefined {
   const { sepEntry, sepArchive } = link.dataset
   if (!sepEntry) return undefined
@@ -1191,14 +1092,126 @@ function renderSepPreview(preview: SepPreview, popoverInner: HTMLDivElement) {
   popoverInner.appendChild(card)
 }
 
-async function handleSep(link: HTMLAnchorElement, pointer: { clientX: number; clientY: number }) {
-  const target = sepTargetFromLink(link)
-  if (!target) return
+interface SummaryPreviewSource {
+  popoverId: string
+  className: string
+  load(signal: AbortSignal): Promise<((popoverInner: HTMLDivElement) => void) | null>
+}
 
-  const popoverId =
-    link.dataset.popoverId ?? `popover-sep-${target.archive ?? 'current'}-${target.entry}`
+function wikipediaPreviewSource(target: WikipediaTarget): SummaryPreviewSource {
+  return {
+    popoverId: `popover-wikipedia-${target.lang}-${encodeURIComponent(target.title)}`,
+    className: 'wikipedia-popover',
+    async load(signal) {
+      const response = await fetch(wikipediaActionApiUrl(target), { signal })
+      if (!response.ok) return null
+      const preview = readWikipediaPreviewResponse(await response.json(), target)
+      return preview ? popoverInner => renderWikipediaPreview(preview, popoverInner) : null
+    },
+  }
+}
+
+function lessWrongPreviewSource(target: LessWrongTarget): SummaryPreviewSource {
+  return {
+    popoverId: `popover-lesswrong-${target.postId}`,
+    className: 'lesswrong-popover',
+    async load(signal) {
+      const url = lessWrongPreviewApiUrl(target, window.location.toString())
+      const response = await fetch(url, { signal })
+      if (!response.ok) return null
+      const preview = readLessWrongPreview(await response.json())
+      return preview ? popoverInner => renderLessWrongPreview(preview, popoverInner) : null
+    },
+  }
+}
+
+function sepPreviewSource(target: SepTarget): SummaryPreviewSource {
+  return {
+    popoverId: `popover-sep-${target.archive ?? 'current'}-${target.entry}`,
+    className: 'sep-popover',
+    async load(signal) {
+      const response = await fetch(sepPreviewApiUrl(target, window.location.toString()), { signal })
+      if (!response.ok) return null
+      const preview = readSepPreview(await response.json())
+      return preview ? popoverInner => renderSepPreview(preview, popoverInner) : null
+    },
+  }
+}
+
+function triathlonTargetFromLink(link: HTMLAnchorElement): TriathlonPreviewTarget | null {
+  const date = link.dataset.triathlonDate
+  if (date) return { date, activityId: null }
+  // A same-page activity anchor scrolls to content already on screen.
+  if (compareUrls(new URL(document.location.href), new URL(link.href))) return null
+  return triathlonPreviewTarget(link.href)
+}
+
+function triathlonPreviewSource(
+  link: HTMLAnchorElement,
+  target: TriathlonPreviewTarget,
+): SummaryPreviewSource {
+  const presentation = triathlonPreviewPresentation()
+  const dayHref = triathlonPreviewDayHref(target.date, link.href)
+  return {
+    popoverId: `popover-triathlon-${target.date}-${target.activityId ?? 'day'}-${presentation.distance}`,
+    className: 'triathlon-popover',
+    async load(signal) {
+      const url = triathlonPreviewUrl(target.date, window.location.href)
+      const response = await fetch(url, { signal })
+      if (!response.ok) return null
+      const preview = readTriathlonPreview(await response.json(), target.date)
+      return preview
+        ? popoverInner =>
+            renderTriathlonPreview(preview, target, dayHref, presentation, popoverInner)
+        : null
+    },
+  }
+}
+
+function documentPreviewSource(link: HTMLAnchorElement): SummaryPreviewSource | null {
+  const type = link.dataset.documentPreview
+  const slug = link.dataset.slug
+  if (!isDocumentPreviewType(type) || !slug) return null
+  if (compareUrls(new URL(document.location.href), new URL(link.href))) return null
+  const href = new URL(link.href)
+  href.hash = ''
+  return {
+    popoverId: `popover-${type}-${slug}`,
+    className: 'document-popover',
+    async load(signal) {
+      const response = await fetch(documentPreviewUrl(slug, window.location.href), { signal })
+      if (!response.ok) return null
+      const preview = readDocumentPreview(await response.json(), type, slug)
+      return preview
+        ? popoverInner => renderDocumentPreview(preview, href.toString(), popoverInner)
+        : null
+    },
+  }
+}
+
+/** Links that open a summary card (title, metadata, extract, source) from a small JSON payload. */
+function summaryPreviewSource(link: HTMLAnchorElement): SummaryPreviewSource | null {
+  const page = documentPreviewSource(link)
+  if (page) return page
+  const wikipedia = wikipediaTargetFromLink(link)
+  if (wikipedia) return wikipediaPreviewSource(wikipedia)
+  const lessWrong = lessWrongTargetFromLink(link)
+  if (lessWrong) return lessWrongPreviewSource(lessWrong)
+  const sep = sepTargetFromLink(link)
+  if (sep) return sepPreviewSource(sep)
+  const triathlon = triathlonTargetFromLink(link)
+  return triathlon ? triathlonPreviewSource(link, triathlon) : null
+}
+
+async function handleSummaryPreview(
+  link: HTMLAnchorElement,
+  pointer: { clientX: number; clientY: number },
+  source: SummaryPreviewSource,
+) {
+  const { popoverId } = source
   const existingPopover = document.getElementById(popoverId)
   if (existingPopover) {
+    link.dataset.popoverId = popoverId
     await showPopover(link, existingPopover, pointer)
     return
   }
@@ -1210,74 +1223,18 @@ async function handleSep(link: HTMLAnchorElement, pointer: { clientX: number; cl
 
   const controller = new AbortController()
   activePopoverReq = { abort: () => controller.abort(), link }
-
-  const response = await fetch(sepPreviewApiUrl(target, window.location.toString()), {
-    signal: controller.signal,
-  }).catch(error => {
+  const render = await source.load(controller.signal).catch(error => {
     if (!isAbortError(error)) console.error(error)
     return null
   })
-  if (!response || !response.ok) {
-    activePopoverReq = null
-    return
-  }
+  if (activePopoverReq?.link === link) activePopoverReq = null
+  if (!render || activeAnchor !== link || document.getElementById(popoverId)) return
 
-  const preview = readSepPreview(await response.json())
-  if (!preview || activeAnchor !== link) {
-    activePopoverReq = null
-    return
-  }
-
-  const { popoverElement, popoverInner } = createPopoverElement('sep-popover')
+  const { popoverElement, popoverInner } = createPopoverElement(source.className)
   popoverElement.id = popoverId
-  renderSepPreview(preview, popoverInner)
-
-  if (document.getElementById(popoverId)) {
-    activePopoverReq = null
-    return
-  }
-
+  render(popoverInner)
   link.dataset.popoverId = popoverId
   document.body.appendChild(popoverElement)
-  activePopoverReq = null
-
-  if (activeAnchor !== link) return
-  await showPopover(link, popoverElement, pointer, { popoverInner })
-}
-
-async function handleTriathlon(
-  link: HTMLAnchorElement,
-  pointer: { clientX: number; clientY: number },
-) {
-  const date = link.dataset.triathlonDate
-  if (!date) return
-
-  const popoverId = link.dataset.popoverId ?? `popover-triathlon-${date}`
-  const existingPopover = document.getElementById(popoverId)
-  if (existingPopover) {
-    await showPopover(link, existingPopover, pointer)
-    return
-  }
-
-  const card = await window.quartzTriathlon
-    ?.dayCard(date, new URL('/static/strava-detail.json', link.href).toString(), {
-      location: link.dataset.triathlonLoc,
-      event: link.dataset.triathlonEvent,
-    })
-    .catch(() => null)
-  if (!card || activeAnchor !== link) return
-
-  const { popoverElement, popoverInner } = createPopoverElement('triathlon-popover')
-  popoverElement.id = popoverId
-  popoverInner.dataset.contentType = 'text/x-triathlon'
-  popoverInner.appendChild(card)
-
-  if (document.getElementById(popoverId)) return
-
-  link.dataset.popoverId = popoverId
-  document.body.appendChild(popoverElement)
-
-  if (activeAnchor !== link) return
   await showPopover(link, popoverElement, pointer, { popoverInner })
 }
 
@@ -1417,10 +1374,7 @@ function mouseLeaveHandler(this: HTMLAnchorElement, event: MouseEvent | FocusEve
 }
 
 function allowsStackedPopover(link: HTMLAnchorElement): boolean {
-  if (link.dataset.wikipediaLang && link.dataset.wikipediaTitle) return false
-  if (link.dataset.lesswrongPostId) return false
-  if (link.dataset.sepEntry) return false
-  if (link.dataset.triathlonDate) return false
+  if (summaryPreviewSource(link)) return false
   if (link.dataset.noPopover === '' || link.dataset.noPopover === 'true') {
     return link.dataset.backlink !== undefined
   }
@@ -1518,23 +1472,9 @@ async function mouseEnterHandler(
     return
   }
 
-  if (link.dataset.wikipediaLang && link.dataset.wikipediaTitle) {
-    await handleWikipedia(link, { clientX, clientY })
-    return
-  }
-
-  if (link.dataset.lesswrongPostId) {
-    await handleLessWrong(link, { clientX, clientY })
-    return
-  }
-
-  if (link.dataset.sepEntry) {
-    await handleSep(link, { clientX, clientY })
-    return
-  }
-
-  if (link.dataset.triathlonDate) {
-    await handleTriathlon(link, { clientX, clientY })
+  const summary = summaryPreviewSource(link)
+  if (summary) {
+    await handleSummaryPreview(link, { clientX, clientY }, summary)
     return
   }
 
@@ -1847,7 +1787,7 @@ function setupPopoverDelegation(): void {
     'focusin',
     event => {
       const link = closestPopoverLink(event.target)
-      if (!link || !wikipediaTargetFromLink(link) || !link.matches(':focus-visible')) return
+      if (!link || !summaryPreviewSource(link) || !link.matches(':focus-visible')) return
       const rect = link.getBoundingClientRect()
       void mouseEnterHandler.call(link, {
         clientX: rect.left + rect.width / 2,
@@ -1860,7 +1800,7 @@ function setupPopoverDelegation(): void {
     'focusout',
     event => {
       const link = closestPopoverLink(event.target)
-      if (link && wikipediaTargetFromLink(link)) mouseLeaveHandler.call(link, event)
+      if (link && summaryPreviewSource(link)) mouseLeaveHandler.call(link, event)
     },
     { signal },
   )

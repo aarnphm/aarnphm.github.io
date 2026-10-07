@@ -25,6 +25,7 @@ test('uses native lifetime distance and joins activity history by stable gear ID
         name: 'Renamed Soloist',
         brandName: null,
         modelName: null,
+        description: 'Ultegra Di2, 2025',
         distanceM: 100_000,
       },
       b2: { id: 'b2', name: 'Speedmax', brandName: null, modelName: null, distanceM: 0 },
@@ -41,6 +42,7 @@ test('uses native lifetime distance and joins activity history by stable gear ID
     b1: {
       id: 'b1',
       name: 'Renamed Soloist',
+      description: 'Ultegra Di2, 2025',
       lifetimeDistanceM: 100_000,
       activityCount: 2,
       firstRecorded: '2026-05-26',
@@ -50,6 +52,7 @@ test('uses native lifetime distance and joins activity history by stable gear ID
     b2: {
       id: 'b2',
       name: 'Speedmax',
+      description: null,
       lifetimeDistanceM: 0,
       activityCount: 0,
       firstRecorded: null,
@@ -59,6 +62,7 @@ test('uses native lifetime distance and joins activity history by stable gear ID
     g1: {
       id: 'g1',
       name: 'Shoes',
+      description: null,
       lifetimeDistanceM: null,
       activityCount: 1,
       firstRecorded: '2026-09-11',

@@ -1406,9 +1406,20 @@ export function transcludeFinal(
       if (typeof targetSlug !== 'string' || !isFullSlug(targetSlug)) return
       const page = renderData.bySlug.get(targetSlug)
       if (page?.frontmatter?.layout !== 'triathlon') return
-      Object.assign(props, triathlonDayProps(triathlonDayExtras(page, date), date))
+      props['data-triathlon-date'] = date
     })
   }
+
+  // Canvas and base pages render through their own runtime; the popover reads a summary instead.
+  const previewData = renderDataFor(componentData.ctx, allFiles)
+  visit(root, { tagName: 'a' }, node => {
+    const props = node.properties
+    const targetSlug = props?.['dataSlug'] ?? props?.['data-slug']
+    if (typeof targetSlug !== 'string' || !isFullSlug(targetSlug)) return
+    const page = previewData.bySlug.get(targetSlug)
+    const type = page?.bases ? 'base' : page?.jsonCanvas ? 'canvas' : null
+    if (type) props['data-document-preview'] = type
+  })
 
   if (features.hasTranscludeBlockquote) {
     const renderData = renderDataFor(componentData.ctx, allFiles)

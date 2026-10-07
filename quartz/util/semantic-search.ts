@@ -1,3 +1,15 @@
+/**
+ * ONNX weight precision for the in-browser query encoder. The fp16 variants are
+ * left out on purpose: embeddinggemma-2 returns NaN or silently degraded vectors in float16.
+ */
+export type SemanticQueryDType = 'q4' | 'q8' | 'fp32'
+/** Browser-side ONNX repo for each indexed model id. The manifest keeps the canonical Hub id. */
+export const SEMANTIC_ONNX_MODELS: Readonly<Record<string, string>> = {
+  'intfloat/multilingual-e5-large': 'Xenova/multilingual-e5-large',
+  'google/embeddinggemma-300m': 'onnx-community/embeddinggemma-300m-ONNX',
+  'google/embeddinggemma-2': 'onnx-community/embeddinggemma-2-ONNX',
+  'Qwen/Qwen3-Embedding-0.6B': 'onnx-community/Qwen3-Embedding-0.6B-ONNX',
+}
 export type SemanticHit = { id: number; score: number }
 export type SemanticDocument = { slug: string; score: number }
 export type SemanticIndex = {

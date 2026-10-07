@@ -198,6 +198,7 @@ const options = (
         b1: {
           id: 'b1',
           name: 'Soloist',
+          description: 'Ultegra Di2, 2025',
           lifetimeDistanceM: 3_723_142,
           activityCount: 103,
           firstRecorded: '2026-05-26',

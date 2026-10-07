@@ -6,7 +6,9 @@ import type { TriathlonPresentation } from '../../../util/triathlon-presentation
 import {
   ENVIRONMENT_CHART_VIEWS,
   ALL_ENVIRONMENT_CHART_VIEWS,
+  ENVIRONMENT_PROVIDER_CHART_VIEWS,
   environmentChartReadout,
+  relativeWindReadout,
   type EnvironmentChartView,
 } from '../../../util/triathlon-card'
 import { isRecord } from '../../../util/type-guards'
@@ -127,11 +129,72 @@ export const parseEnvironmentCurrentSamples = (
   }
 }
 
-const readSamples = (analysis: HTMLElement): EnvironmentChartSample[] =>
-  analysis.dataset.environmentView === 'current-speed' ||
-  analysis.dataset.environmentView === 'current-direction'
-    ? parseEnvironmentCurrentSamples(analysis.dataset.environmentCurrentSeries)
-    : parseEnvironmentSamples(analysis.dataset.environmentSeries)
+const providerSampleKeys = new Set([
+  'elapsedS',
+  'distanceKm',
+  'providerHeadwindKph',
+  'providerCrosswindKph',
+  'weatherCostW',
+  'movingAirPenaltyKm',
+  'headwindKph',
+  'crosswindKph',
+])
+
+const isEnvironmentProviderSample = (value: unknown): value is EnvironmentChartSample =>
+  isRecord(value) &&
+  Object.keys(value).every(key => providerSampleKeys.has(key)) &&
+  finiteNumber(value.elapsedS) &&
+  value.elapsedS >= 0 &&
+  [
+    'providerHeadwindKph',
+    'providerCrosswindKph',
+    'weatherCostW',
+    'movingAirPenaltyKm',
+    'headwindKph',
+    'crosswindKph',
+  ].every(key => key in value && nullableFiniteNumber(value[key]))
+
+export const parseEnvironmentProviderSamples = (
+  serialized: string | undefined,
+): EnvironmentChartSample[] => {
+  try {
+    const parsed: unknown = JSON.parse(serialized ?? 'null')
+    if (!Array.isArray(parsed) || parsed.length < 2 || parsed.length > 512) return []
+    const samples = parsed.filter(isEnvironmentProviderSample)
+    if (samples.length !== parsed.length) return []
+    for (let index = 1; index < samples.length; index += 1)
+      if (samples[index].elapsedS <= samples[index - 1].elapsedS) return []
+    return samples
+  } catch {
+    return []
+  }
+}
+
+const relativeWindShares = (analysis: HTMLElement): number[] | null => {
+  try {
+    const parsed: unknown = JSON.parse(analysis.dataset.environmentRelativeWind ?? 'null')
+    return Array.isArray(parsed) &&
+      parsed.length === 8 &&
+      parsed.every(share => finiteNumber(share) && share >= 0 && share <= 100)
+      ? parsed
+      : null
+  } catch {
+    return null
+  }
+}
+
+const readSamples = (analysis: HTMLElement): EnvironmentChartSample[] => {
+  const view = analysis.dataset.environmentView
+  if (view === 'current-speed' || view === 'current-direction')
+    return parseEnvironmentCurrentSamples(analysis.dataset.environmentCurrentSeries)
+  if (view === 'relative-wind') return []
+  if (
+    (view === 'wind' && analysis.dataset.environmentWindSource === 'mywindsock') ||
+    ENVIRONMENT_PROVIDER_CHART_VIEWS.some(providerView => providerView === view)
+  )
+    return parseEnvironmentProviderSamples(analysis.dataset.environmentProviderSeries)
+  return parseEnvironmentSamples(analysis.dataset.environmentSeries)
+}
 
 const selectedViews = (analysis: HTMLElement): EnvironmentView[] =>
   Array.from(analysis.querySelectorAll<HTMLElement>('[data-environment-tab]')).flatMap(tab => {
@@ -189,6 +252,12 @@ const updateCursor = (
   index: number,
   unavailableElapsedS?: number,
 ): void => {
+  const output = analysis.querySelector<HTMLOutputElement>('[data-environment-readout]')
+  if (analysis.dataset.environmentView === 'relative-wind') {
+    const shares = relativeWindShares(analysis)
+    if (output) output.value = shares ? relativeWindReadout(presentation, shares) : '—'
+    return
+  }
   const elapsed = Number(analysis.dataset.environmentElapsed)
   if (!Number.isFinite(elapsed) || elapsed <= 0) return
   const sample = samples[index] ?? { elapsedS: unavailableElapsedS ?? elapsed }
@@ -210,7 +279,6 @@ const updateCursor = (
     chart.setAttribute('aria-valuenow', `${Math.round(sample.elapsedS)}`)
     chart.setAttribute('aria-valuetext', readout)
   }
-  const output = analysis.querySelector<HTMLOutputElement>('[data-environment-readout]')
   if (output) output.value = readout
   analysis.dataset.environmentCursorElapsed = `${sample.elapsedS}`
   if (samples.length > 0) analysis.dataset.environmentSampleIndex = `${index}`

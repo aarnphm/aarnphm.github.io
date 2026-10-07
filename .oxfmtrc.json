@@ -50,6 +50,8 @@
     "content/are.na.md",
     "content/hinterland/healthexporter/**/*.json",
     "migrations/",
-    "quartz/static/pdfjs/"
+    "quartz/static/pdfjs/",
+    "content/triathlon/wind/",
+    "content/triathlon/memos/"
   ]
 }

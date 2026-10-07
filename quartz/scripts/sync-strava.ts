@@ -267,6 +267,9 @@ export function parseGear(value: unknown): StravaGear | null {
       readString(value, 'name')?.trim() || [brandName, modelName].filter(Boolean).join(' ') || null,
     brandName,
     modelName,
+    ...(value.description === null || typeof value.description === 'string'
+      ? { description: readString(value, 'description')?.trim() || null }
+      : {}),
     distanceM: distance != null && distance >= 0 ? distance : null,
   }
 }
@@ -294,6 +297,7 @@ async function fetchAthleteFtp(
       const summary = parseGear(item)
       if (summary)
         gear[summary.id] = {
+          ...gear[summary.id],
           ...summary,
           brandName: gear[summary.id]?.brandName ?? summary.brandName,
           modelName: gear[summary.id]?.modelName ?? summary.modelName,
@@ -301,6 +305,28 @@ async function fetchAthleteFtp(
     }
   }
   return typeof data.ftp === 'number' && data.ftp > 0 ? Math.round(data.ftp) : null
+}
+
+async function refreshGear(
+  token: string,
+  gear: Record<string, StravaGear>,
+  activities: Record<string, RawStravaActivity>,
+): Promise<string[]> {
+  const usedIds = Object.values(activities).flatMap(activity =>
+    activity.gearId ? [activity.gearId] : [],
+  )
+  const gearIds = [...new Set([...Object.keys(gear), ...usedIds])]
+  const failed: string[] = []
+  await mapPool(gearIds, CONCURRENCY, async id => {
+    const fetched = await fetchGear(token, id)
+    if (fetched)
+      gear[id] = { ...gear[id], ...fetched, name: fetched.name ?? gear[id]?.name ?? null }
+    else failed.push(id)
+  })
+  console.log(
+    `[strava] equipment: ${gearIds.length - failed.length}/${gearIds.length} refreshed, ${failed.length} deferred or unavailable`,
+  )
+  return failed
 }
 
 async function fetchZones(
@@ -448,7 +474,27 @@ function progress(label: string, done: number, total: number): void {
 
 async function main(): Promise<void> {
   const prev = await readCache()
+  const gearOnly = process.argv.includes('--gear-only')
+  if (gearOnly && !prev) throw new Error('--gear-only needs an existing Strava cache')
   const { access, refreshToken } = await resolveToken(prev)
+  if (gearOnly && prev) {
+    const gear: Record<string, StravaGear> = { ...prev.gear }
+    await fetchAthleteFtp(access, gear)
+    const failed = await refreshGear(access, gear, prev.activities)
+    if (failed.length > 0)
+      throw new Error(`equipment refresh incomplete for ${failed.join(', ')}; cache preserved`)
+    const current = await readCache()
+    if (!current || current.athleteId !== prev.athleteId)
+      throw new Error('Strava cache athlete changed during equipment refresh; cache preserved')
+    await writeStravaCacheFile(cacheFile, {
+      ...current,
+      auth: { refreshToken, obtainedAt: Date.now() },
+      gear: { ...current.gear, ...gear },
+    })
+    await refreshTriathlonRouteSource()
+    console.log(`[strava] wrote ${Object.keys(gear).length} equipment records → ${cacheFile}`)
+    return
+  }
   const stale = (prev?.version ?? 0) < CACHE_VERSION
   if (stale && prev)
     console.log('[strava] cache schema bumped → re-pulling all summaries to backfill')
@@ -509,15 +555,7 @@ async function main(): Promise<void> {
   if (fetchedZones) zones = fetchedZones
   else if (!zones) console.log('[strava] no athlete zones (needs profile:read_all) — deriving')
 
-  const gearIds = [...new Set(Object.values(merged).flatMap(a => (a.gearId ? [a.gearId] : [])))]
-  await mapPool(gearIds, CONCURRENCY, async id => {
-    const fetched = await fetchGear(access, id)
-    if (fetched) gear[id] = { ...fetched, name: fetched.name ?? gear[id]?.name ?? null }
-  })
-  const unresolvedGear = gearIds.filter(id => !gear[id]?.name)
-  console.log(
-    `[strava] equipment: ${gearIds.length} used, ${Object.keys(gear).length} cached, ${unresolvedGear.length} unresolved`,
-  )
+  await refreshGear(access, gear, merged)
 
   const needStreams = Object.values(merged)
     .filter(a => {

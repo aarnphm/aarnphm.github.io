@@ -1,5 +1,8 @@
 import type { StravaActivityDetail } from '../../../plugins/stores/strava'
+import type { MyWindsockGraphs } from '../../../util/mywindsock-graphs'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import { preferredActivityWind } from '../../../util/activity-wind'
+import { myWindsockTimelineSeries } from '../../../util/mywindsock-graphs'
 import { swimLengthMetrics } from '../../../util/swim-metrics'
 import {
   activityCadenceScale,
@@ -36,6 +39,9 @@ export interface WorkspaceTrace {
   samples: WorkspaceSample[]
   format(value: number): string
   estimated?: boolean
+  source?: string
+  domain?: [number, number]
+  axisGroup?: string
 }
 
 const swimIntervals = (d: StravaActivityDetail) =>
@@ -128,10 +134,20 @@ export const workspaceTraces = (
     samples: WorkspaceSample[],
     format: WorkspaceTrace['format'],
     estimated = false,
+    source?: string,
   ): void => {
     if (samples.filter(sample => sample.value != null && Number.isFinite(sample.value)).length < 2)
       return
-    traces.push({ id, label, color, samples, format, estimated })
+    traces.push({
+      id,
+      label,
+      color,
+      samples,
+      format,
+      estimated,
+      ...(source ? { source } : {}),
+      ...(id === 'elevation' ? { axisGroup: 'elevation' } : {}),
+    })
   }
   const routeSamples = (pick: (point: StravaActivityDetail['route'][number]) => number | null) =>
     route.map(point => ({ elapsedS: point.elapsedS, distanceKm: point.d, value: pick(point) }))
@@ -398,18 +414,6 @@ export const workspaceTraces = (
       true,
     )
     add(
-      'wind',
-      'headwind',
-      '#205ea6',
-      samples(p => p.headwindKph),
-      v =>
-        numeric(
-          presentation.distance === 'imperial' ? 'mph' : 'km/h',
-          1,
-        )(v * (presentation.distance === 'imperial' ? KM_TO_MI : 1)),
-      true,
-    )
-    add(
       'uv',
       'UV index',
       '#a47c1b',
@@ -418,13 +422,118 @@ export const workspaceTraces = (
       true,
     )
   }
+  const wind = preferredActivityWind(d)
+  add(
+    'wind',
+    'headwind',
+    '#205ea6',
+    wind.samples.map(point => ({
+      elapsedS: point.elapsedS,
+      distanceKm: point.distanceKm,
+      value: point.headwindKph,
+    })),
+    value =>
+      numeric(
+        presentation.distance === 'imperial' ? 'mph' : 'km/h',
+        1,
+      )(value * (presentation.distance === 'imperial' ? KM_TO_MI : 1)),
+    wind.provider === 'garden',
+    wind.provider === 'mywindsock'
+      ? `myWindsock · captured ${wind.capturedAt}`
+      : 'Garden wind estimate',
+  )
+  const provider = d.analyses.native.myWindsockRoute
+  if (provider) {
+    type ProviderSample = (typeof provider.samples)[number]
+    for (const [id, label, pick, unit] of [
+      [
+        'provider-crosswind',
+        'myWindsock crosswind',
+        (point: (typeof provider.samples)[number]) => point.providerCrosswindKph,
+        'km/h',
+      ],
+      [
+        'provider-weather-cost',
+        'myWindsock weather cost',
+        (point: (typeof provider.samples)[number]) => point.weatherCostW,
+        'W',
+      ],
+      [
+        'provider-air-penalty',
+        'myWindsock moving air penalty',
+        (point: (typeof provider.samples)[number]) => point.movingAirPenaltyKm,
+        'km',
+      ],
+    ] satisfies [string, string, (point: ProviderSample) => number | null, string][]) {
+      add(
+        id,
+        label,
+        '#205ea6',
+        provider.samples.map(point => ({
+          elapsedS: point.elapsedS,
+          distanceKm: point.distanceKm,
+          value: pick(point),
+        })),
+        value =>
+          unit === 'km/h'
+            ? numeric(
+                presentation.distance === 'imperial' ? 'mph' : 'km/h',
+                1,
+              )(value * (presentation.distance === 'imperial' ? KM_TO_MI : 1))
+            : unit === 'km'
+              ? numeric(
+                  presentation.distance === 'imperial' ? 'mi' : 'km',
+                  2,
+                )(value * (presentation.distance === 'imperial' ? KM_TO_MI : 1))
+              : numeric('W', 1)(value),
+      )
+    }
+  }
   return traces
+}
+
+export const myWindsockWorkspaceTraces = (
+  archive: MyWindsockGraphs,
+  d: StravaActivityDetail,
+  presentation: TriathlonPresentation,
+): WorkspaceTrace[] => {
+  const timeline = workspaceTimeline(d)
+  const colors = ['#205ea6', '#da702c', '#3aa99f', '#8b6fd6', '#d14d41', '#a47c1b']
+  return myWindsockTimelineSeries(archive).flatMap((series, index) => {
+    if (series.points.some(point => point.elapsedS > d.elapsedTimeS + 60)) return []
+    const format = (value: number): string => {
+      if (series.unit === 'm') return formatAltitude(presentation, value)
+      if (series.unit === 'km/h')
+        return `${(value * (presentation.distance === 'imperial' ? KM_TO_MI : 1)).toFixed(1)} ${presentation.distance === 'imperial' ? 'mph' : 'km/h'}`
+      if (series.unit === 'km')
+        return `${(value * (presentation.distance === 'imperial' ? KM_TO_MI : 1)).toFixed(2)} ${presentation.distance === 'imperial' ? 'mi' : 'km'}`
+      return `${value.toFixed(series.unit === 'm2' ? 3 : 1)} ${series.unit === 'deg' ? '°' : series.unit === 'm2' ? 'm²' : series.unit}`
+    }
+    return [
+      {
+        id: series.id,
+        label: `myWindsock ${series.label}`,
+        color: colors[index % colors.length],
+        samples: series.points.map(point => ({
+          elapsedS: point.elapsedS,
+          distanceKm: workspaceLocationAt(timeline, 'time', point.elapsedS).distanceKm,
+          value: point.value,
+        })),
+        format,
+        source: `myWindsock native chart · ${archive.capturedAt}`,
+        ...(series.domain ? { domain: series.domain, axisGroup: 'mywindsock-resistance' } : {}),
+        ...(series.unit === 'm2' ? { axisGroup: 'mywindsock-cda' } : {}),
+        ...(series.unit === 'm' ? { axisGroup: 'elevation' } : {}),
+      },
+    ]
+  })
 }
 
 export const workspacePosition = (sample: WorkspaceSample, axis: WorkspaceAxis): number =>
   axis === 'time' ? sample.elapsedS : sample.distanceKm
 
 export const workspaceTraceDomain = (trace: WorkspaceTrace): [number, number] => {
+  if (trace.domain) return trace.domain
   let low = Infinity
   let high = -Infinity
   for (const sample of trace.samples) {

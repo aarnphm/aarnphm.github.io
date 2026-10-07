@@ -102,7 +102,7 @@ export const GEAR: [string, string[]][] = [
       'Seatpost: Cervélo SP27 Carbon',
       'Saddle: Prologo Nago R4 PAS Tirox Lightweight',
       'Bottom Bracket: FSA, T47 BBright for 24mm spindle',
-      'Bottom Bracket: CeramicSpeed T47 BBRight for Shimano',
+      'Bottom Bracket: CeramicSpeed T47 BBright for Shimano',
       'Headset: FSA IS2 1-1/4, 45° x 45° / 1-1/2, 36° x 45°',
       'Cervélo Aero Thru Axle Front, M12x1.5mm, 127mm length',
       'Cervélo Aero Thru Axle Rear, M12x1.5mm, 170.5mm length',
@@ -110,21 +110,24 @@ export const GEAR: [string, string[]][] = [
       'Rear Wheel: Reserve 44, 12x142mm, 24H, centerlock, tubeless compatible',
       'Front Wheel: Reserve 42TA, DT Swiss 350, 12x100mm, 24H, centerlock, tubeless compatible',
       'Rear Wheel: Reserve 49TA, DT Swiss 350, 12x142mm, HG freehub 24H, centerlock, tubeless compatible',
-      'Front Wheel: HUNT 54 Aerodynamicist UD Carbon Spoke',
-      'Rear Wheel: HUNT 58 Aerodynamicist UD Carbon Spoke',
+      'Front Wheel: HUNT 54_58 Aerodynamicist UD Carbon Spoke',
+      'Rear Wheel: HUNT 54_58 Aerodynamicist UD Carbon Spoke',
       'Tube: Pirelli P Zero TPU',
       'Tires: Pirelli P Zero Race SL-R 700x28c',
-      'Tires: Pirelli P Zero Race TLR SL-R 700x28c',
+      'Front Tire: Pirelli P Zero Race TLR SL-R 700x28c',
+      'Rear Tire: Pirelli P Zero Race TLR RS 700x28C',
       'Tires: Vittoria Corsa N.EXT TLR G2.0 700x29c',
       'Shifter/Break: Shimano Ultegra, R8170',
       'Crankset: Shimano Ultegra, R8100, 52/36T',
       'Chain: Shimano M8100',
-      'Chain: CeramicSpeed UFO Chain for Shimano',
-      'Chainring: Carbon-Ti 2x, 54-40T',
+      'Chain: CeramicSpeed UFO optimized chain, 12-speed (#4); base-chain model and UFO variant unrecorded',
+      'Chainring: CarbonTi 2x, 54-40T',
       'Pulley Wheel: CeramicSpeed OSPW RS 5 Spoke',
       'Cassette: Shimano Ultegra, R8100, 11-34T, 12-Speed',
-      'Front/Rear Derailleur: Shimano Ultegra, R8150',
+      'Front Derailleur: Shimano Ultegra, R8150',
+      'Rear Derailleur: Shimano Ultegra Di2 with CeramicSpeed OSPW RS 5 Spoke',
       'Brake Rotors: Shimano CL800 Centerlock',
+      'Front/Rear Brake Pads: BRAKCO Airpads Graphene Venting Disc Brake Pads',
       'Powermeter: Magene P715 S Pedal',
       'Bike Computer: Garmin Edge 1050',
       'HR monitor: Garmin HRM 600',
@@ -783,7 +786,7 @@ export const CalendarOverlay = ({ renderData }: { renderData?: TriathlonRenderDa
     panelClass="tri-calendar-panel"
     label="triathlon calendar"
     title="calendar"
-    controls={<CalendarSourceControls id="tri-calendar" />}
+    controls={<CalendarSourceControls id="tri-calendar" icons />}
   >
     <CalendarPanel renderData={renderData} id="tri-calendar" panel />
   </TriPanelShell>
@@ -1323,48 +1326,50 @@ export const CalcPanel = ({
         </div>
       )}
       {page && (
-        <div class="tri-calc-tabs" role="tablist" aria-label="calculators">
-          <button
-            id="tri-calc-tab-race"
-            class="tri-calc-tab tri-calc-tab--on tri-key-anchor"
-            type="button"
-            role="tab"
-            aria-selected="true"
-            aria-controls="tri-calc-panel-race"
-            aria-keyshortcuts="r"
-            data-calc-tab="race"
-          >
-            race
-            <ShortcutHint>r</ShortcutHint>
-          </button>
-          <button
-            id="tri-calc-tab-gear-ratios"
-            class="tri-calc-tab tri-key-anchor"
-            type="button"
-            role="tab"
-            aria-selected="false"
-            aria-controls="tri-calc-panel-gear-ratios"
-            aria-keyshortcuts="c"
-            data-calc-tab="gear-ratios"
-            tabindex={-1}
-          >
-            gear ratios
-            <ShortcutHint>c</ShortcutHint>
-          </button>
-          <button
-            id="tri-calc-tab-tire-pressure"
-            class="tri-calc-tab tri-key-anchor"
-            type="button"
-            role="tab"
-            aria-selected="false"
-            aria-controls="tri-calc-panel-tire-pressure"
-            aria-keyshortcuts="t"
-            data-calc-tab="tire-pressure"
-            tabindex={-1}
-          >
-            tire pressure
-            <ShortcutHint>t</ShortcutHint>
-          </button>
+        <div class="tri-ana-bar">
+          <div class="tri-calc-tabs" role="tablist" aria-label="calculators">
+            <button
+              id="tri-calc-tab-race"
+              class="tri-calc-tab tri-calc-tab--on tri-key-anchor"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="tri-calc-panel-race"
+              aria-keyshortcuts="r"
+              data-calc-tab="race"
+            >
+              race
+              <ShortcutHint>r</ShortcutHint>
+            </button>
+            <button
+              id="tri-calc-tab-gear-ratios"
+              class="tri-calc-tab tri-key-anchor"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="tri-calc-panel-gear-ratios"
+              aria-keyshortcuts="c"
+              data-calc-tab="gear-ratios"
+              tabindex={-1}
+            >
+              gear ratios
+              <ShortcutHint>c</ShortcutHint>
+            </button>
+            <button
+              id="tri-calc-tab-tire-pressure"
+              class="tri-calc-tab tri-key-anchor"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="tri-calc-panel-tire-pressure"
+              aria-keyshortcuts="t"
+              data-calc-tab="tire-pressure"
+              tabindex={-1}
+            >
+              tire pressure
+              <ShortcutHint>t</ShortcutHint>
+            </button>
+          </div>
         </div>
       )}
       <div
@@ -1599,11 +1604,57 @@ export const ToolsPanel = ({
   maintenance?: TriathlonMaintenance | null
   renderData?: TriathlonRenderData
 }) => (
-  <div class="tri-tools" data-keyboard-scroll>
-    <section class="tri-tools-sec">
+  <div class="tri-tools">
+    <div class="tri-ana-bar">
+      <div class="tri-tools-tabs" role="tablist" aria-label="tools" data-i18n-aria-label="tools">
+        <button
+          id="tri-tools-tab-tools"
+          class="tri-tools-tab"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="tri-tools-panel-tools"
+          data-tools-tab="tools"
+          data-i18n="tools"
+        >
+          tools
+        </button>
+        <button
+          id="tri-tools-tab-pace-chart"
+          class="tri-tools-tab"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="tri-tools-panel-pace-chart"
+          data-tools-tab="pace-chart"
+          data-i18n="pace chart"
+          tabindex={-1}
+        >
+          pace chart
+        </button>
+      </div>
+    </div>
+    <section
+      id="tri-tools-panel-tools"
+      class="tri-tools-sec"
+      role="tabpanel"
+      aria-labelledby="tri-tools-tab-tools"
+      data-tools-panel="tools"
+      data-keyboard-scroll
+      tabindex={0}
+    >
       <GearPanel page maintenance={maintenance} equipment={renderData?.equipment} />
     </section>
-    <section class="tri-tools-sec">
+    <section
+      id="tri-tools-panel-pace-chart"
+      class="tri-tools-sec"
+      role="tabpanel"
+      aria-labelledby="tri-tools-tab-pace-chart"
+      data-tools-panel="pace-chart"
+      data-keyboard-scroll
+      tabindex={0}
+      hidden
+    >
       <PacePanel page />
     </section>
   </div>

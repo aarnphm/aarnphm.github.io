@@ -193,7 +193,8 @@ def notebook_text(doc: dict) -> str:
 
 def sluggify(value: str) -> str:
   return '/'.join(
-    segment.replace(' ', '-')
+    segment
+    .replace(' ', '-')
     .replace('\t', '-')
     .replace('\n', '-')
     .replace('\r', '-')

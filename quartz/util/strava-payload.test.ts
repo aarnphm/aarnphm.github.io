@@ -8,6 +8,7 @@ import type {
 } from '../plugins/stores/apple'
 import type { CoreBodyTemperatureCache } from '../plugins/stores/core-body-temperature'
 import type { OuraCache } from '../plugins/stores/oura'
+import { isActivityDetail } from '../components/triathlon/activity/data'
 import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from '../plugins/stores/garmin'
 import {
   emptyPayload,
@@ -17,6 +18,7 @@ import {
   type StravaPayload,
 } from '../plugins/stores/strava'
 import { parseTrackingBlock } from '../plugins/stores/tracking'
+import { applyHeartRatePhysiology } from './heart-rate-physiology'
 import {
   applyManualActivityTracking,
   buildStravaData,
@@ -33,6 +35,7 @@ import {
   type StravaDataSources,
 } from './strava-payload'
 import { swimLengthAverages } from './swim-metrics'
+import { applySwimPhysiology } from './swim-physiology'
 
 const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetail => ({
   id: 1,
@@ -204,6 +207,94 @@ const payloadWith = (...details: StravaActivityDetail[]): StravaPayload => {
   for (const item of details) payload.details[String(item.id)] = item
   return payload
 }
+
+const poolPhysiologyDetail = (): StravaActivityDetail =>
+  detail({
+    swimLocation: 'pool',
+    elapsedTimeS: 1_020,
+    movingTimeS: 900,
+    distanceKm: 0.6,
+    strokeRateSpm: 24,
+    heartRateTrace: Array.from({ length: 103 }, (_, i) => ({
+      elapsedS: i * 10,
+      distanceKm: 0,
+      heartRate: 150,
+      heatStrainIndex: null,
+      heatStrainSource: null,
+      coreTemperatureC: null,
+      coreTemperatureSource: null,
+      skinTemperatureC: null,
+      skinTemperatureSource: null,
+    })),
+    swimIntervals: Array.from({ length: 24 }, (_, i) => {
+      const startElapsedS = i * 37.5 + (i >= 12 ? 120 : 0)
+      return {
+        startElapsedS,
+        endElapsedS: startElapsedS + 37.5,
+        durationS: 37.5,
+        distanceM: 25,
+        cumulativeDistanceM: (i + 1) * 25,
+        paceSPer100m: 150,
+        strokeCount: 15,
+        strokeTimeS: 37.5,
+        strokeRateSpm: 24,
+        stroke: 'freestyle',
+      }
+    }),
+  })
+
+test('pool swim stamina uses length timing and HR, excludes rests, and survives the browser contract', () => {
+  const swim = poolPhysiologyDetail()
+  applyHeartRatePhysiology(swim, 200)
+  applySwimPhysiology(swim, 200)
+  const model = swim.swimPhysiology
+  assert.ok(model)
+  assert.equal(model.speedBasis, 'pool-length')
+  assert.equal(model.strokeRateSource, 'stream')
+  assert.equal(model.points[0].stamina, 100)
+  const beforeRest = model.points.find(p => p.elapsedS === 450)
+  const afterRest = model.points.find(p => p.elapsedS === 580)
+  assert.ok(beforeRest?.stamina != null && afterRest?.stamina != null)
+  assert.ok(beforeRest.stamina > afterRest.stamina)
+  assert.ok(beforeRest.stamina - afterRest.stamina < 0.1)
+  assert.ok(model.points.some(p => p.elapsedS === 500 && p.stamina === null))
+  assert.equal(model.points.at(-1)?.distanceKm, 0.6)
+  assert.ok((model.points.at(-1)?.stamina ?? 100) < 100)
+  assert.equal(model.points.at(-1)?.stamina, model.points.at(-1)?.potentialStamina)
+  assert.equal(isActivityDetail(JSON.parse(JSON.stringify(swim))), true)
+  assert.equal(
+    isActivityDetail({ ...swim, swimPhysiology: { ...model, speedBasis: 'activity-average' } }),
+    false,
+  )
+})
+
+test('pool swim stamina preserves HR gaps and requires observed HR and measured lengths', () => {
+  const swim = poolPhysiologyDetail()
+  swim.heartRateTrace = swim.heartRateTrace.filter(p => p.elapsedS < 600 || p.elapsedS > 800)
+  applySwimPhysiology(swim, 200)
+  assert.ok(swim.swimPhysiology)
+  assert.ok(
+    swim.swimPhysiology.points
+      .filter(p => p.elapsedS > 600 && p.elapsedS < 800)
+      .every(p => p.stamina === null),
+  )
+  for (const values of [{ heartRateTrace: [] }, { swimIntervals: [] }]) {
+    const missing = { ...poolPhysiologyDetail(), ...values }
+    applySwimPhysiology(missing, 200)
+    assert.equal(missing.swimPhysiology ?? null, null)
+  }
+})
+
+test('pool swim stamina accepts provider timestamp rounding without moving distance backwards', () => {
+  const swim = poolPhysiologyDetail()
+  swim.swimIntervals = swim.swimIntervals.map(p => ({
+    ...p,
+    startElapsedS: Math.floor(p.startElapsedS),
+  }))
+  applySwimPhysiology(swim, 200)
+  assert.ok(swim.swimPhysiology)
+  assert.equal(isActivityDetail(JSON.parse(JSON.stringify(swim))), true)
+})
 
 test('resolves run, walk, and swim devices only from exact model evidence', () => {
   const run = detail({

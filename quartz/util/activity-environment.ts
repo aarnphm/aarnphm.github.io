@@ -70,6 +70,10 @@ export interface EnvironmentChartSample extends Partial<
   elapsedS: number
   surfaceCurrentSpeedMps?: number | null
   surfaceCurrentDirectionDeg?: number | null
+  providerHeadwindKph?: number | null
+  providerCrosswindKph?: number | null
+  weatherCostW?: number | null
+  movingAirPenaltyKm?: number | null
 }
 
 export const surfaceCurrentChartSamples = (
@@ -108,7 +112,7 @@ export interface GardenApparentWindSummary {
 }
 
 export interface GardenApparentWindEstimate extends GardenEstimateProvenance {
-  formulaId: 'garden-apparent-wind-v1'
+  formulaId: 'garden-apparent-wind-v2'
   summary: GardenApparentWindSummary
   coverage: { windPct: number }
 }
@@ -130,6 +134,8 @@ export interface ActivityEnvironmentInput {
   timeS: readonly number[]
   distanceM: readonly number[]
   latlng: readonly [number, number][]
+  // GPS swims are open water: lower speeds and a smooth water surface below the swimmer.
+  openWater: boolean
   weather: WeatherActivity
   attribution: WeatherAttribution | null
   computedAt: number
@@ -225,6 +231,23 @@ const cumulativeSedAt = (hours: readonly WeatherRouteHour[], elapsedS: number): 
   return round(joules / 4_000, 3)
 }
 
+// WeatherKit reports wind at the 10 m anemometer height. A neutral log profile gives
+// ln(z / z0) / ln(10 / z0). Riders and runners: drag near z = 1 m, suburban z0 = 0.4 m, 0.285;
+// myWindsock applies a fixed 0.2866, so source wind speed remains the main difference.
+// Swimmers: head and recovering arm near z = 0.2 m over open water, z0 = 0.0002 m, 0.638.
+const LAND_WIND_FACTOR = Math.log(1 / 0.4) / Math.log(10 / 0.4)
+const WATER_WIND_FACTOR = Math.log(0.2 / 0.0002) / Math.log(10 / 0.0002)
+
+// Excludes stops, where the course bearing is undefined. 1 m/s keeps running and walking pace;
+// open-water swims move at 0.5-0.6 m/s, so they use a lower floor.
+const MINIMUM_GROUND_SPEED_MPS = 1
+const MINIMUM_SWIM_SPEED_MPS = 0.3
+// Headwind sections follow the 60 s centred mean of the along-track component, and continue
+// across stops up to the bridge. This reproduces myWindsock's longest headwind within 4% on
+// four of six captured activities; strict one-second runs were 2-3x shorter.
+const HEADWIND_SMOOTHING_S = 60
+const HEADWIND_BRIDGE_S = 120
+
 const radians = (degrees: number): number => (degrees * Math.PI) / 180
 
 const degrees = (radiansValue: number): number => (radiansValue * 180) / Math.PI
@@ -262,6 +285,8 @@ const windIntervals = (
   const length = routeLength(input)
   const intervals: (WindInterval | null)[] = Array.from({ length }, () => null)
   let validDurationS = 0
+  const minimumSpeedMps = input.openWater ? MINIMUM_SWIM_SPEED_MPS : MINIMUM_GROUND_SPEED_MPS
+  const windFactor = input.openWater ? WATER_WIND_FACTOR : LAND_WIND_FACTOR
   for (let index = 1; index < length; index += 1) {
     const startS = input.timeS[index - 1]
     const endS = input.timeS[index]
@@ -277,13 +302,13 @@ const windIntervals = (
     )
       continue
     const groundSpeedMps = distanceDeltaM / durationS
-    if (groundSpeedMps < 3) continue
+    if (groundSpeedMps < minimumSpeedMps) continue
     const gpsDistanceM = haversineMeters(input.latlng[index - 1], input.latlng[index])
     if (gpsDistanceM > Math.max(250, distanceDeltaM * 3 + 50)) continue
     const weather = conditionAt(hours, startS + durationS / 2)
     const windSpeedKph = validWindSpeedKph(weather?.windSpeedKph)
     if (windSpeedKph == null || weather?.windDirectionDeg == null) continue
-    const windSpeedMps = windSpeedKph / 3.6
+    const windSpeedMps = (windSpeedKph / 3.6) * windFactor
     const courseBearing = bearingDegrees(input.latlng[index - 1], input.latlng[index])
     const relativeBearing = radians(weather.windDirectionDeg - courseBearing)
     const headwindMps = windSpeedMps * Math.cos(relativeBearing)
@@ -421,6 +446,43 @@ const sampleIndices = (
   return [...required].sort((left, right) => left - right)
 }
 
+const longestHeadwindSection = (valid: readonly WindInterval[]): number => {
+  let longestS = 0
+  let sectionStartS: number | null = null
+  let previousEndS: number | null = null
+  let low = 0
+  let high = 0
+  let weightedHeadwind = 0
+  let weightS = 0
+  for (const interval of valid) {
+    const middleS = (interval.startS + interval.endS) / 2
+    while (
+      high < valid.length &&
+      (valid[high].startS + valid[high].endS) / 2 <= middleS + HEADWIND_SMOOTHING_S / 2
+    ) {
+      weightedHeadwind += valid[high].headwindKph * valid[high].durationS
+      weightS += valid[high].durationS
+      high += 1
+    }
+    while ((valid[low].startS + valid[low].endS) / 2 < middleS - HEADWIND_SMOOTHING_S / 2) {
+      weightedHeadwind -= valid[low].headwindKph * valid[low].durationS
+      weightS -= valid[low].durationS
+      low += 1
+    }
+    if (weightedHeadwind / weightS > 0) {
+      if (
+        sectionStartS == null ||
+        previousEndS == null ||
+        interval.startS - previousEndS > HEADWIND_BRIDGE_S
+      )
+        sectionStartS = interval.startS
+      longestS = Math.max(longestS, interval.endS - sectionStartS)
+    } else sectionStartS = null
+    previousEndS = interval.endS
+  }
+  return longestS
+}
+
 const summarizeWind = (
   input: ActivityEnvironmentInput,
   intervals: readonly (WindInterval | null)[],
@@ -430,9 +492,6 @@ const summarizeWind = (
   if (validDurationS <= 0) return null
   let headwindTimeS = 0
   let tailwindTimeS = 0
-  let longestHeadwindS = 0
-  let currentHeadwindS = 0
-  let previousEndS: number | null = null
   let headwindTotal = 0
   let crosswindTotal = 0
   let groundSpeedTotal = 0
@@ -440,24 +499,10 @@ const summarizeWind = (
   let yawTotal = 0
   let maximumHeadwindKph = 0
   let maximumCrosswindKph = 0
-  for (const interval of intervals) {
-    if (!interval) {
-      currentHeadwindS = 0
-      previousEndS = null
-      continue
-    }
-    if (interval.headwindKph > 0) {
-      headwindTimeS += interval.durationS
-      currentHeadwindS =
-        previousEndS != null && interval.startS - previousEndS <= 1
-          ? currentHeadwindS + interval.durationS
-          : interval.durationS
-      longestHeadwindS = Math.max(longestHeadwindS, currentHeadwindS)
-    } else {
-      if (interval.headwindKph < 0) tailwindTimeS += interval.durationS
-      currentHeadwindS = 0
-    }
-    previousEndS = interval.endS
+  const valid = intervals.filter((interval): interval is WindInterval => interval != null)
+  for (const interval of valid) {
+    if (interval.headwindKph > 0) headwindTimeS += interval.durationS
+    else if (interval.headwindKph < 0) tailwindTimeS += interval.durationS
     headwindTotal += interval.headwindKph * interval.durationS
     crosswindTotal += interval.crosswindKph * interval.durationS
     groundSpeedTotal += interval.groundSpeedKph * interval.durationS
@@ -466,12 +511,13 @@ const summarizeWind = (
     maximumHeadwindKph = Math.max(maximumHeadwindKph, interval.headwindKph)
     maximumCrosswindKph = Math.max(maximumCrosswindKph, Math.abs(interval.crosswindKph))
   }
+  const longestHeadwindS = longestHeadwindSection(valid)
   const averageGroundSpeedKph = groundSpeedTotal / validDurationS
   const averageApparentAirSpeedKph = apparentSpeedTotal / validDurationS
   const coveragePct = percentage(validDurationS, input.movingTimeS)
   return {
     ...provenance,
-    formulaId: 'garden-apparent-wind-v1',
+    formulaId: 'garden-apparent-wind-v2',
     summary: {
       headwindSharePct: round((headwindTimeS / validDurationS) * 100, 1),
       headwindTimeS: round(headwindTimeS, 1),

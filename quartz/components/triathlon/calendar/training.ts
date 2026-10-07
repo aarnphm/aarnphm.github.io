@@ -10,25 +10,40 @@ import { parseTrainingPeaksCalendar } from '../../../util/trainingpeaks-calendar
 import { isRecord } from '../../../util/type-guards'
 import { buildDatePicker } from '../tools/date-picker'
 import { calendarToday } from './display'
-import { trainingAddDays, trainingDate, trainingWeekStart } from './training-display'
-import { TrainingCalendarView } from './TrainingCalendar'
+import {
+  trainingAddDays,
+  trainingAddMonths,
+  trainingDate,
+  trainingMonthDates,
+  trainingMonthStart,
+  trainingWeekStart,
+} from './training-display'
+import { TrainingCalendarView, type TrainingView } from './TrainingCalendar'
 import { TrainingCalendarGate } from './TrainingCalendarGate'
 
+// Seven day columns need about 52rem of views, plus the calendar's padding.
+const WEEK_MIN_REM = 54
+
 export interface TrainingCalendarController {
-  activate(date?: string): void
-  week(): string
+  activate(date?: string, view?: TrainingView): void
+  deactivate(): void
+  /** The selected local date and chosen view, retained when switching between periods. */
+  location(): string
   dispose(): void
 }
 
 export const mountTrainingCalendar = (
   root: HTMLElement,
   context: TriathlonContext,
-  onNavigate: (week: string) => void,
+  onNavigate: (location: string) => void,
 ): TrainingCalendarController => {
   const content = root.querySelector<HTMLElement>('[data-training-content]')
   let calendar: TrainingPeaksCalendar | null = null
   const id = `${root.closest('.sidepanel-container') ? 'sidepanel-' : ''}${root.dataset.trainingId ?? 'tri-training-calendar'}`
-  let week = trainingWeekStart(calendarToday())
+  let anchorDate = calendarToday()
+  // Without a chosen view, the calendar's width picks one and the hash leaves it out.
+  let chosenView: TrainingView | null = null
+  let shownView: TrainingView | null = null
   let selectedWorkoutId: string | null = null
   let mounted = false
   let loading = false
@@ -45,6 +60,7 @@ export const mountTrainingCalendar = (
   let datePicker: PredDatePicker | undefined
   let datePickerCleanup: (() => void) | undefined
   let pickerLocale = context.presentation.locale
+  let pickerMonth = false
 
   const removeDatePicker = (): void => {
     datePicker?.close()
@@ -58,20 +74,26 @@ export const mountTrainingCalendar = (
     if (!host) return
     if (
       datePicker &&
-      (!host.contains(datePicker.wrap) || pickerLocale !== context.presentation.locale)
+      (!host.contains(datePicker.wrap) ||
+        pickerLocale !== context.presentation.locale ||
+        pickerMonth !== (shownView === 'month'))
     )
       removeDatePicker()
     if (!datePicker) {
       pickerLocale = context.presentation.locale
+      pickerMonth = shownView === 'month'
       const choose = (date: string): void => {
-        selectWeek(date, true)
+        selectDate(date, true)
         datePicker?.trigger.focus({ preventScroll: true })
       }
       datePicker = buildDatePicker({
-        id: `${id}-week-picker`,
+        id: `${id}-date-picker`,
         formatter: context.formatter,
-        label: context.formatter.text('choose training week'),
-        selected: () => week,
+        label: context.formatter.text(
+          pickerMonth ? 'choose training month' : 'choose training week',
+        ),
+        selected: () =>
+          pickerMonth ? trainingMonthStart(anchorDate) : trainingWeekStart(anchorDate),
         min: () => undefined,
         max: () => undefined,
         onOpen: () => {},
@@ -83,38 +105,43 @@ export const mountTrainingCalendar = (
       datePickerCleanup = datePicker.mount()
     }
     const label = datePicker.trigger.querySelector<HTMLElement>('.tri-pred-date-text')
-    if (label) label.textContent = context.formatter.shortDate(week)
-    datePicker.trigger.dataset.value = week
+    const start = pickerMonth ? trainingMonthStart(anchorDate) : trainingWeekStart(anchorDate)
+    if (label)
+      label.textContent = pickerMonth
+        ? `${context.formatter.month(start)} ${start.slice(0, 4)}`
+        : context.formatter.shortDate(start)
+    datePicker.trigger.dataset.value = start
   }
 
+  const currentView = (): TrainingView => {
+    if (chosenView) return chosenView
+    const width = root.clientWidth
+    const rem = Number.parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16
+    return width > 0 && width < WEEK_MIN_REM * rem ? 'list' : 'week'
+  }
+  const location = (): string => `training-${anchorDate}${chosenView ? `-${chosenView}` : ''}`
+
   const update = (): void => {
-    if (!content || controller.signal.aborted) return
+    if (!content || !active || controller.signal.aborted) return
     if (!selectedWorkoutId)
       content
         .querySelector<HTMLElement>('.tri-training-week')
         ?.style.removeProperty('--training-scroll-tail')
-    root.dataset.trainingWeek = week
+    root.dataset.trainingDate = anchorDate
+    shownView = authenticated ? currentView() : null
     const view = authenticated
-      ? createElement(
-          'div',
-          {},
-          createElement(
-            'button',
-            { type: 'button', class: 'tri-training-lock', 'data-training-lock': '' },
-            context.formatter.text('lock calendar'),
-          ),
-          createElement(TrainingCalendarView, {
-            calendar,
-            week,
-            id,
-            embedded: root.dataset.trainingEmbedded === 'true',
-            panel: root.dataset.trainingPanel === 'true',
-            presentation: context.presentation,
-            loading,
-            failed,
-            selectedWorkoutId,
-          }),
-        )
+      ? createElement(TrainingCalendarView, {
+          calendar,
+          date: anchorDate,
+          id,
+          view: shownView ?? undefined,
+          embedded: root.dataset.trainingEmbedded === 'true',
+          panel: root.dataset.trainingPanel === 'true',
+          presentation: context.presentation,
+          loading,
+          failed,
+          selectedWorkoutId,
+        })
       : createElement(TrainingCalendarGate, {
           id,
           busy: authenticating,
@@ -272,15 +299,37 @@ export const mountTrainingCalendar = (
   const onPageShow = (event: PageTransitionEvent): void => {
     if (event.persisted && active) void authenticate()
   }
-  const selectWeek = (date: string, navigate: boolean): void => {
+  const selectDate = (date: string, navigate: boolean): void => {
     if (!trainingDate(date)) return
     datePicker?.close()
     selectedWorkoutId = null
-    week = trainingWeekStart(date)
+    anchorDate = date
     update()
-    if (navigate) onNavigate(week)
+    if (navigate) onNavigate(location())
+  }
+  const selectView = (next: TrainingView): void => {
+    // A narrow calendar shows the detail in place of the views; close it so the switch is visible.
+    const views = content?.querySelector<HTMLElement>('.tri-calendar-views')
+    if (
+      next === 'month' ||
+      shownView === 'month' ||
+      (views && window.getComputedStyle(views).visibility === 'hidden')
+    )
+      selectedWorkoutId = null
+    chosenView = next
+    update()
+    if (selectedWorkoutId) scrollWorkoutToTop(selectedWorkoutId)
+    onNavigate(location())
   }
   const scrollWorkoutToTop = (workoutId: string): void => {
+    if (shownView === 'month') {
+      const views = content?.querySelector<HTMLElement>('.tri-calendar-views')
+      if (views && window.getComputedStyle(views).visibility !== 'hidden')
+        views
+          .querySelector<HTMLElement>(`[data-training-workout-open="${CSS.escape(workoutId)}"]`)
+          ?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' })
+      return
+    }
     const card = content?.querySelector<HTMLElement>(
       `[data-training-workout="${CSS.escape(workoutId)}"]`,
     )
@@ -288,10 +337,17 @@ export const mountTrainingCalendar = (
     const day = sessions?.closest<HTMLElement>('.tri-training-day')
     const header = day?.querySelector<HTMLElement>('.tri-training-day-header')
     const list = day?.closest<HTMLElement>('.tri-training-week')
-    if (!card || !sessions || !header || !list) return
-    const isList = window.getComputedStyle(header).position === 'sticky'
+    if (!card || !sessions || !day || !header || !list) return
+    const isList = shownView === 'list'
     const scroller = isList ? list : sessions
     if (isList) list.style.removeProperty('--training-scroll-tail')
+    else {
+      // A narrow week scrolls sideways; bring the workout's day column into view.
+      const left =
+        day.getBoundingClientRect().left - list.getBoundingClientRect().left - list.clientLeft
+      if (left < 0 || left + day.offsetWidth > list.clientWidth)
+        list.scrollTo({ left: list.scrollLeft + left, behavior: 'instant' })
+    }
     const top = Math.max(
       0,
       scroller.scrollTop +
@@ -325,7 +381,11 @@ export const mountTrainingCalendar = (
     }
     if (
       !calendar?.workouts.some(
-        workout => workout.id === workoutId && trainingWeekStart(workout.date) === week,
+        workout =>
+          workout.id === workoutId &&
+          (shownView === 'month'
+            ? trainingMonthDates(anchorDate).includes(workout.date)
+            : trainingWeekStart(workout.date) === trainingWeekStart(anchorDate)),
       )
     )
       return
@@ -354,12 +414,24 @@ export const mountTrainingCalendar = (
       closeDetail()
       return
     }
-    const shift = event.target.closest<HTMLButtonElement>('[data-training-shift]')
-    if (shift) {
-      selectWeek(trainingAddDays(week, shift.dataset.trainingShift === '-7' ? -7 : 7), true)
+    const viewSelect = event.target.closest<HTMLButtonElement>('[data-training-view-select]')
+    const nextView = viewSelect?.dataset.trainingViewSelect
+    if (nextView === 'list' || nextView === 'week' || nextView === 'month') {
+      selectView(nextView)
       return
     }
-    if (event.target.closest('[data-training-today]')) selectWeek(calendarToday(), true)
+    const shift = event.target.closest<HTMLButtonElement>('[data-training-shift]')
+    if (shift) {
+      const direction = shift.dataset.trainingShift === '-1' ? -1 : 1
+      selectDate(
+        shownView === 'month'
+          ? trainingAddMonths(anchorDate, direction)
+          : trainingAddDays(anchorDate, direction * 7),
+        true,
+      )
+      return
+    }
+    if (event.target.closest('[data-training-today]')) selectDate(calendarToday(), true)
     else if (event.target.closest('[data-training-retry]')) void load()
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0)
       return
@@ -391,16 +463,32 @@ export const mountTrainingCalendar = (
   window.addEventListener('pagehide', onPageHide)
   window.addEventListener('pageshow', onPageShow)
   const unsubscribe = context.events.subscribe('presentation', update)
+  // Re-render only when the width-picked view changes; a chosen view stays put.
+  const resize = new ResizeObserver(() => {
+    if (shownView && shownView !== currentView()) update()
+  })
+  resize.observe(root)
   return {
-    activate: date => {
+    activate: (date, view) => {
       active = true
-      if (date && trainingDate(date)) week = trainingWeekStart(date)
+      if (date && trainingDate(date)) {
+        anchorDate = date
+        chosenView = view ?? null
+      } else if (view) chosenView = view
       selectedWorkoutId = null
       update()
       if (!authenticated) void authenticate()
       else if (!loaded && !failed) void load()
     },
-    week: () => week,
+    deactivate: () => {
+      active = false
+      selectedWorkoutId = null
+      shownView = null
+      removeDatePicker()
+      if (content && mounted) render(null, content)
+      mounted = false
+    },
+    location,
     dispose: () => {
       controller.abort()
       revision++
@@ -408,6 +496,7 @@ export const mountTrainingCalendar = (
       clearTimeout(expiryTimer)
       channel.close()
       unsubscribe()
+      resize.disconnect()
       removeDatePicker()
       root.removeEventListener('click', onClick)
       root.removeEventListener('submit', onSubmit)

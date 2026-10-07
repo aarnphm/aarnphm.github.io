@@ -4,11 +4,10 @@ export { mapboxStyleUrl } from '../../../util/mapbox-style'
 import {
   DEFAULT_TRIATHLON_PRESENTATION,
   distanceSystemFromStoredUnit,
+  TRI_UNIT_KEY,
   type TriathlonPresentation,
 } from '../../../util/triathlon-presentation'
 import { createTriathlonFormatter, type TriathlonFormatter } from './formatter'
-
-export const TRI_UNIT_KEY = 'tri-dist-unit'
 
 export const TRI_POWER_FILTER_KEY = 'tri-power-zero-filter'
 

@@ -1,5 +1,7 @@
 import importlib.util
 import json
+import os
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -274,6 +276,264 @@ class VoiceMemoTests(unittest.TestCase):
       (destination / f'{name}.m4a').write_bytes(b'changed')
       with self.assertRaisesRegex(ValueError, 'incomplete or changed'):
         memos.import_recording(recording, destination)
+
+
+class VoiceMemoBatchTests(unittest.TestCase):
+  def setUp(self) -> None:
+    temporary = tempfile.TemporaryDirectory(prefix='memo-batch-test-')
+    self.addCleanup(temporary.cleanup)
+    self.root = Path(temporary.name)
+    self.source = self.root / 'Recordings'
+    self.source.mkdir()
+    self.repository = self.root / 'repo'
+    self.stream = self.repository / 'content/stream.md'
+    self.stream.parent.mkdir(parents=True)
+    self.stream.write_text(STREAM)
+    self.attributes = self.repository / '.gitattributes'
+    self.attributes.write_text('*.pdf filter=lfs diff=lfs merge=lfs -text\n')
+    self.destination = self.repository / 'content/triathlon/memos'
+    self.fixtures = [
+      ('20260905_before.qta', '2026-09-05T03:59:59Z', 220),
+      ('20260905_boundary.qta', '2026-09-05T04:00:00Z', 330),
+      ('20260906_evening.qta', '2026-09-06T02:00:00Z', 440),
+      ('20260906_next.m4a', '2026-09-06T04:00:00Z', 550),
+      ('renamed.qta', '2026-09-07T16:00:00Z', 660),
+      ('20260907_deleted.qta', '2026-09-07T17:00:00Z', 770),
+    ]
+    for name, created, frequency in self.fixtures:
+      subprocess.run(
+        [
+          'ffmpeg',
+          '-v',
+          'error',
+          '-f',
+          'lavfi',
+          '-i',
+          f'sine=frequency={frequency}:duration=0.2',
+          '-c:a',
+          'aac',
+          '-metadata',
+          f'creation_time={created}',
+          '-f',
+          'mov',
+          str(self.source / name),
+        ],
+        check=True,
+        timeout=30,
+      )
+    with sqlite3.connect(self.source / 'CloudRecordings.db') as db:
+      db.execute(
+        'CREATE TABLE ZCLOUDRECORDING (ZPATH TEXT, ZEVICTIONDATE REAL)'
+      )
+      db.executemany(
+        'INSERT INTO ZCLOUDRECORDING VALUES (?, ?)',
+        [
+          (name, 1.0 if 'deleted' in name else None)
+          for name, _, _ in self.fixtures
+        ],
+      )
+    # An exported web memo has no creation_time and must not be reimported.
+    (self.source / 'exported.m4a').write_bytes(b'already exported')
+    (self.source / 'exported.peaks.json').write_text('{}\n')
+    self.command = [
+      sys.executable,
+      str(Path(memos.__file__)),
+      '--source',
+      str(self.source),
+      '--repo',
+      str(self.repository),
+    ]
+
+  def run_import(self, *arguments: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+      [*self.command, *arguments], capture_output=True, text=True, timeout=30
+    )
+
+  def test_since_lists_and_imports_each_local_day_idempotently(self) -> None:
+    original_sources = {
+      path.name: memos.sha256(path) for path in self.source.iterdir()
+    }
+    listed = self.run_import('--since', '2026-09-05', '--list')
+    self.assertEqual(listed.returncode, 0, listed.stderr)
+    self.assertEqual(
+      [line.split()[-1] for line in listed.stdout.splitlines()],
+      [
+        '20260905_boundary.qta',
+        '20260906_evening.qta',
+        '20260906_next.m4a',
+        'renamed.qta',
+      ],
+    )
+    self.assertIn('2026-09-05T00:00:00-04:00', listed.stdout)
+    self.assertEqual(self.stream.read_text(), STREAM)
+    self.assertFalse(self.destination.exists())
+    self.assertEqual(
+      self.attributes.read_text(),
+      '*.pdf filter=lfs diff=lfs merge=lfs -text\n',
+    )
+
+    imported = self.run_import('--since', '2026-09-05')
+    self.assertEqual(imported.returncode, 0, imported.stderr)
+    updated = self.stream.read_text()
+    self.assertTrue(
+      updated.index('## 2026-09-07')
+      < updated.index('## 2026-09-06')
+      < updated.index('## 2026-09-05')
+    )
+    self.assertIn('description: training log 042', updated)
+    self.assertIn('description: training log 043', updated)
+    self.assertEqual(updated.count('description: training log'), 3)
+    existing = updated[updated.index('## 2026-09-05') :]
+    self.assertIn(
+      STREAM.split('## 2026-09-05')[1].strip().split('\n\n---')[0], existing
+    )
+    self.assertTrue(updated.endswith('Keep this writing.\n'))
+    self.assertEqual(len(list(self.destination.iterdir())), 8)
+    for peaks in self.destination.glob('*.peaks.json'):
+      metadata = json.loads(peaks.read_text())
+      name = peaks.name.removesuffix('.peaks.json')
+      audio = self.destination / f'{name}.m4a'
+      self.assertEqual(memos.sha256(audio), metadata['audioSha256'])
+      self.assertEqual(
+        memos.sha256(self.source / metadata['source']),
+        metadata['sourceSha256'],
+      )
+      self.assertEqual(len(metadata['peaks']), 512)
+      day = datetime.fromisoformat(metadata['recordedAt']).date().isoformat()
+      section = updated.split(f'## {day}\n')[1].split('\n## ')[0]
+      self.assertEqual(section.count(f'![[triathlon/memos/{name}.m4a]]'), 1)
+      self.assertIn(f'![[triathlon#{day}#analytics]]', section)
+      result = subprocess.run(
+        [
+          'ffprobe',
+          '-v',
+          'error',
+          '-show_entries',
+          'stream=codec_name,duration',
+          '-of',
+          'json',
+          str(audio),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+      )
+      track = json.loads(result.stdout)['streams'][0]
+      self.assertEqual(track['codec_name'], 'aac')
+      self.assertAlmostEqual(
+        float(track['duration']), metadata['duration'], places=3
+      )
+    before = {
+      str(path.relative_to(self.repository)): (
+        memos.sha256(path),
+        path.stat().st_mtime_ns,
+      )
+      for path in self.repository.rglob('*')
+      if path.is_file()
+    }
+    repeated = self.run_import('--since', '2026-09-05')
+    self.assertEqual(repeated.returncode, 0, repeated.stderr)
+    self.assertEqual(
+      before,
+      {
+        str(path.relative_to(self.repository)): (
+          memos.sha256(path),
+          path.stat().st_mtime_ns,
+        )
+        for path in self.repository.rglob('*')
+        if path.is_file()
+      },
+    )
+    self.assertEqual(
+      original_sources,
+      {path.name: memos.sha256(path) for path in self.source.iterdir()},
+    )
+    if artifact_path := os.environ.get('VOICE_MEMO_TEST_ARTIFACTS'):
+      artifact = Path(artifact_path)
+      artifact.mkdir(parents=True, exist_ok=True)
+      shutil.copyfile(self.stream, artifact / 'stream.md')
+      report = {
+        'fixtures': [
+          {'name': name, 'creationTime': created, 'frequency': frequency}
+          for name, created, frequency in self.fixtures
+        ],
+        'list': {'command': listed.args, 'stdout': listed.stdout},
+        'import': {'command': imported.args, 'stdout': imported.stdout},
+        'repeat': {'command': repeated.args, 'stdout': repeated.stdout},
+        'metadata': [
+          json.loads(path.read_text())
+          for path in sorted(self.destination.glob('*.peaks.json'))
+        ],
+        'sourceFilesUnchanged': True,
+        'repeatPreservedBytesAndMtimes': True,
+      }
+      (artifact / 'report.json').write_text(
+        json.dumps(report, indent=2) + '\n'
+      )
+
+  def test_since_accepts_explicit_files_across_days(self) -> None:
+    result = self.run_import(
+      '--since',
+      '2026-09-05',
+      '--file',
+      str(self.source / 'renamed.qta'),
+      '--file',
+      str(self.source / '20260905_boundary.qta'),
+      '--file',
+      str(self.source / 'renamed.qta'),
+    )
+    self.assertEqual(result.returncode, 0, result.stderr)
+    self.assertEqual(len(list(self.destination.glob('*.m4a'))), 2)
+    self.assertNotIn('## 2026-09-06', self.stream.read_text())
+    self.assertEqual(self.stream.read_text().count('![[triathlon/memos/'), 3)
+
+  def test_since_rejects_explicit_file_before_start(self) -> None:
+    result = self.run_import(
+      '--since',
+      '2026-09-05',
+      '--file',
+      str(self.source / '20260905_before.qta'),
+    )
+    self.assertNotEqual(result.returncode, 0)
+    self.assertIn('2026-09-04', result.stderr)
+    self.assertIn('before', result.stderr)
+    self.assertEqual(self.stream.read_text(), STREAM)
+    self.assertFalse(self.destination.exists())
+
+  def test_since_empty_range_leaves_repository_unchanged(self) -> None:
+    result = self.run_import('--since', '2026-09-08')
+    self.assertEqual(result.returncode, 0, result.stderr)
+    self.assertIn('No recordings since 2026-09-08', result.stdout)
+    self.assertEqual(self.stream.read_text(), STREAM)
+    self.assertFalse(self.destination.exists())
+    self.assertEqual(
+      self.attributes.read_text(),
+      '*.pdf filter=lfs diff=lfs merge=lfs -text\n',
+    )
+
+  def test_since_rejects_conflicting_and_invalid_dates(self) -> None:
+    for arguments in (
+      ('--since', '2026-09-05', '--date', '2026-09-06'),
+      ('--since', '2026-02-30'),
+    ):
+      with self.subTest(arguments=arguments):
+        result = self.run_import(*arguments)
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(self.stream.read_text(), STREAM)
+        self.assertFalse(self.destination.exists())
+
+  def test_since_validates_all_training_entries_before_importing(self) -> None:
+    duplicate = STREAM.replace('2026-09-05', '2026-09-07')
+    original = STREAM + duplicate + duplicate
+    self.stream.write_text(original)
+    result = self.run_import('--since', '2026-09-05')
+    self.assertNotEqual(result.returncode, 0)
+    self.assertIn(
+      'Multiple training entries exist for 2026-09-07', result.stderr
+    )
+    self.assertEqual(self.stream.read_text(), original)
+    self.assertFalse(self.destination.exists())
 
 
 if __name__ == '__main__':

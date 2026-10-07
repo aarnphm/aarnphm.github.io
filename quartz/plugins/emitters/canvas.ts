@@ -1,6 +1,7 @@
 import { Root } from 'hast'
 import { h } from 'hastscript'
 import path from 'path'
+import type { JsonCanvas } from '../transformers/jcast/types'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
 import { Content } from '../../components'
@@ -9,6 +10,7 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { contentDataFor } from '../../util/ctx'
+import { buildCanvasPreview, documentPreviewSlug } from '../../util/document-preview'
 import { pathToRoot, simplifySlug, SimpleSlug, slugifyFilePath } from '../../util/path'
 import { collectCanvasMeta } from '../transformers/canvas'
 import { QuartzPluginData } from '../vfile'
@@ -60,6 +62,24 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
         const jscastMetadata = collectCanvasMeta(jcast)
 
         yield write({ ctx, content: JSON.stringify(jscastMetadata), slug, ext: '.meta.json' })
+
+        const displayNames = new Map<string, string>()
+        for (const [id, node] of jcast.data.nodeMap) {
+          const displayName = node.data?.resolved?.displayName
+          if (displayName) displayNames.set(id, displayName)
+        }
+        const preview = buildCanvasPreview({
+          slug,
+          title: path.basename(file.data.filePath!, '.canvas'),
+          canvas: JSON.parse(file.data.canvasContent) as JsonCanvas,
+          displayNames,
+        })
+        yield write({
+          ctx,
+          content: JSON.stringify(preview),
+          slug: documentPreviewSlug(slug),
+          ext: '.json',
+        })
 
         // default canvas configuration
         const defaultConfig = {

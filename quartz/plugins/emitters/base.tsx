@@ -11,8 +11,10 @@ import {
   BaseViewPartialState,
   planBaseViewPartialEmit,
 } from '../../util/base/partial-emit'
+import { buildBasePreview } from '../../util/base/preview'
 import { BaseMetadata } from '../../util/base/render'
 import { BuildCtx } from '../../util/ctx'
+import { documentPreviewSlug } from '../../util/document-preview'
 import { FilePath, pathToRoot, FullSlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
@@ -73,10 +75,19 @@ async function emitBaseViewsForPlan(
   allFiles: QuartzPluginData[],
   resources: StaticResources,
   layout: FullPageLayout,
-) {
-  return mapConcurrent(plan.rendered.views, defaultIoConcurrency, renderedView =>
-    emitBaseView(ctx, baseSlug, plan, allFiles, resources, layout, renderedView),
-  )
+): Promise<FilePath[]> {
+  const [views, preview] = await Promise.all([
+    mapConcurrent(plan.rendered.views, defaultIoConcurrency, renderedView =>
+      emitBaseView(ctx, baseSlug, plan, allFiles, resources, layout, renderedView),
+    ),
+    write({
+      ctx,
+      content: JSON.stringify(buildBasePreview(baseSlug, plan.baseData, plan.rendered.views)),
+      slug: documentPreviewSlug(baseSlug),
+      ext: '.json',
+    }),
+  ])
+  return [...views, preview]
 }
 
 export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {

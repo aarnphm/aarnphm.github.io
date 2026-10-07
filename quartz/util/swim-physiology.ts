@@ -1,6 +1,7 @@
 import type { StravaActivityDetail } from '../plugins/stores/strava'
 import type { HeartRatePhysiologyPoint } from './heart-rate-physiology'
 import { heartRateStaminaDepletionPerHour } from './heart-rate-physiology'
+import { swimPaceSeconds } from './swim-metrics'
 
 export const SWIM_PHYSIOLOGY_METHOD = 'garden-swim-session-v1'
 export type SwimStrokeRateSource =
@@ -21,7 +22,7 @@ export interface SwimPhysiology {
   source: 'garden-estimate'
   method: typeof SWIM_PHYSIOLOGY_METHOD
   exertionSource: 'heart-rate'
-  speedBasis: 'ground-speed'
+  speedBasis: 'ground-speed' | 'pool-length'
   strokeRateSource: SwimStrokeRateSource
   maxHeartRateBpm: number
   baselineHeartRateBpm: number
@@ -36,50 +37,157 @@ export interface SwimPhysiology {
 const bounded = (v: number | null, min: number, max: number): v is number =>
   v != null && Number.isFinite(v) && v >= min && v <= max
 
+function poolSamples(detail: StravaActivityDetail): SwimPhysiologySample[] {
+  const lengths: {
+    start: number
+    end: number
+    startDistanceM: number
+    distanceM: number
+    speed: number
+    rate: number | null
+  }[] = []
+  for (const interval of detail.swimIntervals) {
+    const previous = lengths.at(-1)
+    // Pool start timestamps can be rounded to seconds while length durations retain fractions.
+    const start = Math.max(previous?.end ?? 0, interval.startElapsedS)
+    if (
+      !Number.isFinite(start) ||
+      (previous && previous.end - interval.startElapsedS > 1) ||
+      !Number.isFinite(interval.endElapsedS) ||
+      interval.endElapsedS <= start ||
+      interval.endElapsedS > detail.elapsedTimeS ||
+      swimPaceSeconds(interval.distanceM, interval.durationS) == null ||
+      !Number.isFinite(interval.cumulativeDistanceM) ||
+      interval.cumulativeDistanceM < interval.distanceM
+    )
+      continue
+    lengths.push({
+      start,
+      end: interval.endElapsedS,
+      startDistanceM: Math.max(
+        previous ? previous.startDistanceM + previous.distanceM : 0,
+        interval.cumulativeDistanceM - interval.distanceM,
+      ),
+      distanceM: interval.distanceM,
+      speed: interval.distanceM / interval.durationS,
+      rate: interval.strokeRateSpm,
+    })
+  }
+  const hr = detail.heartRateTrace
+    .filter(
+      p => Number.isFinite(p.elapsedS) && p.elapsedS >= 0 && p.elapsedS <= detail.elapsedTimeS,
+    )
+    .sort((a, b) => a.elapsedS - b.elapsedS)
+  if (lengths.length === 0 || hr.length < 2) return []
+  const times = [
+    ...new Set([...hr.map(p => p.elapsedS), ...lengths.flatMap(p => [p.start, p.end])]),
+  ].sort((a, b) => a - b)
+  let hrIndex = 0
+  let lengthIndex = 0
+  return times.map((elapsedS, i) => {
+    while (hrIndex < hr.length - 1 && hr[hrIndex].elapsedS < elapsedS) hrIndex++
+    const next = hr[hrIndex]
+    const previous = hr[hrIndex - 1]
+    let heartRate: number | null = null
+    if (next.elapsedS === elapsedS && bounded(next.heartRate, 35, 240)) heartRate = next.heartRate
+    else if (
+      previous &&
+      next.elapsedS > elapsedS &&
+      next.elapsedS - previous.elapsedS <= 120 &&
+      bounded(previous.heartRate, 35, 240) &&
+      bounded(next.heartRate, 35, 240)
+    )
+      heartRate =
+        previous.heartRate +
+        ((next.heartRate - previous.heartRate) * (elapsedS - previous.elapsedS)) /
+          (next.elapsedS - previous.elapsedS)
+    const midpoint = i > 0 ? (times[i - 1] + elapsedS) / 2 : elapsedS
+    while (lengthIndex < lengths.length - 1 && lengths[lengthIndex].end < midpoint) lengthIndex++
+    const length = lengths[lengthIndex]
+    const active = midpoint >= length.start && midpoint <= length.end
+    const fraction = Math.max(
+      0,
+      Math.min(1, (elapsedS - length.start) / (length.end - length.start)),
+    )
+    const completed = lengths[lengthIndex - 1]
+    const distanceM =
+      elapsedS < length.start
+        ? completed
+          ? completed.startDistanceM + completed.distanceM
+          : 0
+        : length.startDistanceM + length.distanceM * fraction
+    return {
+      elapsedS,
+      distanceKm: distanceM / 1000,
+      heartRate,
+      speedMps: active ? length.speed : null,
+      strokeRateSpm: active ? length.rate : null,
+    }
+  })
+}
+
 export function applySwimPhysiology(
   detail: StravaActivityDetail,
   maxHeartRateBpm: number | null,
 ): void {
-  if (detail.sport !== 'swim' || detail.swimLocation !== 'openWater' || maxHeartRateBpm == null)
-    return
-  const streamStrokeRate = detail.route.some(p => bounded(p.cad, 5, 100))
+  if (detail.sport !== 'swim' || maxHeartRateBpm == null) return
+  const pool =
+    detail.swimLocation === 'pool' || (detail.route.length < 2 && detail.swimIntervals.length > 0)
+  if (!pool && detail.swimLocation !== 'openWater') return
+  const streamStrokeRate = pool
+    ? detail.swimIntervals.some(p => bounded(p.strokeRateSpm, 5, 100))
+    : detail.route.some(p => bounded(p.cad, 5, 100))
   const averageStrokeRate = bounded(detail.strokeRateSpm, 5, 100) ? detail.strokeRateSpm : null
   const strokeRateSource = streamStrokeRate
-    ? averageStrokeRate != null && detail.route.some(p => !bounded(p.cad, 5, 100))
+    ? averageStrokeRate != null &&
+      (pool
+        ? detail.swimIntervals.some(p => !bounded(p.strokeRateSpm, 5, 100))
+        : detail.route.some(p => !bounded(p.cad, 5, 100)))
       ? 'stream-with-average'
       : 'stream'
     : averageStrokeRate != null
       ? 'activity-average'
       : 'unavailable'
-  const samples = detail.route
-    .filter(p => p.elapsedS <= detail.elapsedTimeS)
-    .map((point, i, route) => {
-      const previous = route[i - 1]
-      const duration = previous ? point.elapsedS - previous.elapsedS : 0
-      return {
-        elapsedS: point.elapsedS,
-        distanceKm: point.d,
-        heartRate: point.hr > 0 ? point.hr : null,
-        speedMps:
-          previous && duration > 0 && duration <= 120
-            ? (1000 * (point.d - previous.d)) / duration
-            : null,
-        strokeRateSpm: streamStrokeRate
-          ? bounded(point.cad, 5, 100)
-            ? point.cad
-            : averageStrokeRate
-          : averageStrokeRate,
-      }
-    })
-  detail.swimPhysiology = estimateSwimPhysiology(samples, maxHeartRateBpm, strokeRateSource)
-  // Missing swimming telemetry stays missing instead of reverting to an HR-only condition proxy.
-  detail.heartRatePhysiology = null
+  const samples = pool
+    ? poolSamples(detail).map(p => ({
+        ...p,
+        strokeRateSpm: bounded(p.strokeRateSpm, 5, 100) ? p.strokeRateSpm : averageStrokeRate,
+      }))
+    : detail.route
+        .filter(p => p.elapsedS <= detail.elapsedTimeS)
+        .map((point, i, route) => {
+          const previous = route[i - 1]
+          const duration = previous ? point.elapsedS - previous.elapsedS : 0
+          return {
+            elapsedS: point.elapsedS,
+            distanceKm: point.d,
+            heartRate: point.hr > 0 ? point.hr : null,
+            speedMps:
+              previous && duration > 0 && duration <= 120
+                ? (1000 * (point.d - previous.d)) / duration
+                : null,
+            strokeRateSpm: streamStrokeRate
+              ? bounded(point.cad, 5, 100)
+                ? point.cad
+                : averageStrokeRate
+              : averageStrokeRate,
+          }
+        })
+  detail.swimPhysiology = estimateSwimPhysiology(
+    samples,
+    maxHeartRateBpm,
+    strokeRateSource,
+    pool ? 'pool-length' : 'ground-speed',
+  )
+  // Pool swims retain the HR fallback when length telemetry cannot support the combined model.
+  if (detail.swimPhysiology || !pool) detail.heartRatePhysiology = null
 }
 
 export function estimateSwimPhysiology(
   samples: readonly SwimPhysiologySample[],
   maxHeartRateBpm: number,
   strokeRateSource: SwimStrokeRateSource,
+  speedBasis: SwimPhysiology['speedBasis'] = 'ground-speed',
 ): SwimPhysiology | null {
   if (!bounded(maxHeartRateBpm, 100, 240) || samples.length < 2) return null
   const intervals: {
@@ -211,7 +319,7 @@ export function estimateSwimPhysiology(
     source: 'garden-estimate',
     method: SWIM_PHYSIOLOGY_METHOD,
     exertionSource: 'heart-rate',
-    speedBasis: 'ground-speed',
+    speedBasis,
     strokeRateSource,
     maxHeartRateBpm,
     baselineHeartRateBpm: baseline.hr,

@@ -101,7 +101,6 @@ export const TrainingWorkoutCard = ({
               href={activityHref}
               aria-label={`${text('view activity')}: ${activity.title}`}
               data-training-activity
-              data-no-popover
             >
               {text('activity')} →
             </a>
@@ -243,7 +242,6 @@ export const TrainingWorkoutDetail = ({
           href={activityHref}
           aria-label={`${text('view activity')}: ${activity.title}`}
           data-training-activity
-          data-no-popover
         >
           {text('activity')} →
         </a>

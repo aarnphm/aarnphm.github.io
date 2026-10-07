@@ -38,6 +38,8 @@ Shortcuts pause while typing in search or notes, using a menu, or holding Contro
 
 ## Access and development
 
+Arena's build-time parsing, page emission, feed and search manifests, and component resources are skipped in ordinary watch and serve builds, using the same `watch && !force` condition as the LLM corpus. Use `pnpm swarm --force` to enable Arena for local development. Production builds include Arena. Skipped incremental updates preserve existing Arena output.
+
 The reader uses the existing GitHub comments login. The OAuth callback issues a separate signed, HttpOnly owner session with an immutable `github:<numeric id>` subject. `ARENA_OWNER_LOGIN` defaults to `aarnphm`; `SESSION_SECRET` signs both the session and resource capabilities. The flashcards API resolves its login from the same owner session, so only the owner's reviews are scheduled. Keep the secret in Cloudflare Secrets or local environment files.
 
 For local development, add this setting to the ignored `.env.local`:

@@ -1226,7 +1226,7 @@ const environmentAnalyses = (): ActivityAnalyses => ({
     },
     apparentWind: {
       source: 'garden-estimate',
-      formulaId: 'garden-apparent-wind-v1',
+      formulaId: 'garden-apparent-wind-v2',
       formulaVersion: 1,
       inputVersion: 'weatherkit-route-hour-v1+strava-stream-v1',
       normalizationVersion: 1,
@@ -1531,7 +1531,7 @@ test('renders source-backed open-water surface currents as modeled vectors with 
         text(label).startsWith('surface current'),
       ),
     )
-  const aeroLabels = ['CdA', 'Feels Like Elevation', 'headwind share and range']
+  const aeroLabels = ['CdA', 'Feels Like Elevation', 'headwind share']
   const run = buildEnvironmentAnalysis(factory, { ...activity, sport: 'run' })
   assert.ok(run)
   assert.equal(currentRows(run).length, 0)
@@ -1812,7 +1812,7 @@ test('renders empty environment axes with native evidence and translates their n
     ])
   }
   assert.match(text(nativeOnly), /83 · High/)
-  assert.equal(byTag(nativeOnly, 'tr').length, 20)
+  assert.equal(byTag(nativeOnly, 'tr').length, 21)
   const unavailable = byClass(nativeOnly, 'tri-environment-unavailable')
   assert.equal(unavailable.length, 7)
   assert.ok(unavailable.every(cell => text(cell) === '—'))
@@ -11365,7 +11365,10 @@ test('cycling power renders elapsed power over elevation with named averaging co
   assert.equal(chart.properties.dataTriTrace, 'cycling-power')
   assert.equal(chart.properties.dataCyclingPowerWindow, '30')
   assert.equal(chart.properties.dataCyclingPowerSource, 'wahoo')
-  assert.match(text(chart), /30 s averageride averageelevation/)
+  const caption = byClass(chart, 'tri-elev-cap')[0]
+  assert.match(text(caption), /30 s averageride average/)
+  assert.equal(byClass(caption, 'tri-cycling-power-legend').length, 1)
+  assert.equal(byClass(chart, 'tri-cycling-power-key--elevation').length, 0)
   const controls = byClass(chart, 'tri-cycling-power-window')
   assert.equal(byClass(byClass(chart, 'tri-elev-cap')[0], 'tri-chart-controls').length, 1)
   assert.equal(
@@ -11484,7 +11487,8 @@ test('cycling power keeps wind gaps empty and preserves observed calm and signed
       return end <= 45 || start >= 75
     }),
   )
-  assert.match(text(chart), /estimated wind\+ headwind− tailwind$/)
+  assert.match(text(byClass(chart, 'tri-elev-cap')[0]), /\+ headwind− tailwind/)
+  assert.doesNotMatch(text(chart), /estimated wind/)
   const noWeather = buildCyclingPowerChart(factory, activity)
   assert.ok(noWeather)
   assert.equal(byClass(noWeather, 'tri-cycling-power-wind').length, 0)
