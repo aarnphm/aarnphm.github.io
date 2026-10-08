@@ -1121,8 +1121,6 @@ export const renderMapDetail = (
       hasHeartRateTrace(d) && workoutAnalysis?.dataset.workoutAnalysisMetric !== 'hr'
         ? buildHeartRateTrace(presentation, d)
         : null
-    const windGraphs = buildMyWindsockGraphs(domF, d)
-    if (windGraphs) more.appendChild(windGraphs)
     const environment = buildEnvironmentAnalysisNode(domF, d)
     const trainingEffect = buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null
     for (const z of [
@@ -1140,6 +1138,7 @@ export const renderMapDetail = (
       buildCrankTorqueChart(domF, d, null),
       buildCyclingPowerChart(domF, d, null),
       environment,
+      buildMyWindsockGraphs(domF, d) as HTMLElement | null,
       buildSaunaHeatTrainingLoad(domF, d),
       buildPowerCurve(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
       buildSwimPowerCurveNode(domF, d),
@@ -1238,10 +1237,10 @@ export const renderMapDetail = (
     if (torque) zoneBox.appendChild(torque)
     const cyclingPower = buildCyclingPowerChart(domF, d, graphDomain)
     if (cyclingPower) zoneBox.appendChild(cyclingPower)
-    const windGraphs = buildMyWindsockGraphs(domF, d)
-    if (windGraphs) zoneBox.appendChild(windGraphs)
     const environment = buildEnvironmentAnalysisNode(domF, d)
     if (environment) zoneBox.appendChild(environment)
+    const windGraphs = buildMyWindsockGraphs(domF, d)
+    if (windGraphs) zoneBox.appendChild(windGraphs)
     if (spec.extra) for (const node of spec.extra()) if (node) zoneBox.appendChild(node)
     const swimPower = buildSwimPowerCurveNode(domF, d)
     if (swimPower) zoneBox.appendChild(swimPower)

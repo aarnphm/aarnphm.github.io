@@ -25,6 +25,7 @@ import {
   runStrideLengthValue,
   runVerticalOscillationCm,
 } from '../../../util/triathlon-card'
+import { WIND_TRACE_COLORS } from './trace-colors'
 
 export type WorkspaceAxis = 'time' | 'distance'
 export interface WorkspaceSample {
@@ -445,30 +446,33 @@ export const workspaceTraces = (
   const provider = d.analyses.native.myWindsockRoute
   if (provider) {
     type ProviderSample = (typeof provider.samples)[number]
-    for (const [id, label, pick, unit] of [
+    for (const [id, label, color, pick, unit] of [
       [
         'provider-crosswind',
-        'myWindsock crosswind',
+        'crosswind',
+        '#3aa99f',
         (point: (typeof provider.samples)[number]) => point.providerCrosswindKph,
         'km/h',
       ],
       [
         'provider-weather-cost',
-        'myWindsock weather cost',
+        'weather cost',
+        '#da702c',
         (point: (typeof provider.samples)[number]) => point.weatherCostW,
         'W',
       ],
       [
         'provider-air-penalty',
-        'myWindsock moving air penalty',
+        'moving air penalty',
+        '#8b6fd6',
         (point: (typeof provider.samples)[number]) => point.movingAirPenaltyKm,
         'km',
       ],
-    ] satisfies [string, string, (point: ProviderSample) => number | null, string][]) {
+    ] satisfies [string, string, string, (point: ProviderSample) => number | null, string][]) {
       add(
         id,
         label,
-        '#205ea6',
+        color,
         provider.samples.map(point => ({
           elapsedS: point.elapsedS,
           distanceKm: point.distanceKm,
@@ -486,6 +490,8 @@ export const workspaceTraces = (
                   2,
                 )(value * (presentation.distance === 'imperial' ? KM_TO_MI : 1))
               : numeric('W', 1)(value),
+        false,
+        `myWindsock route analysis · captured ${provider.capturedAt}`,
       )
     }
   }
@@ -498,7 +504,6 @@ export const myWindsockWorkspaceTraces = (
   presentation: TriathlonPresentation,
 ): WorkspaceTrace[] => {
   const timeline = workspaceTimeline(d)
-  const colors = ['#205ea6', '#da702c', '#3aa99f', '#8b6fd6', '#d14d41', '#a47c1b']
   return myWindsockTimelineSeries(archive).flatMap((series, index) => {
     if (series.points.some(point => point.elapsedS > d.elapsedTimeS + 60)) return []
     const format = (value: number): string => {
@@ -512,8 +517,8 @@ export const myWindsockWorkspaceTraces = (
     return [
       {
         id: series.id,
-        label: `myWindsock ${series.label}`,
-        color: colors[index % colors.length],
+        label: series.label,
+        color: WIND_TRACE_COLORS[index % WIND_TRACE_COLORS.length],
         samples: series.points.map(point => ({
           elapsedS: point.elapsedS,
           distanceKm: workspaceLocationAt(timeline, 'time', point.elapsedS).distanceKm,

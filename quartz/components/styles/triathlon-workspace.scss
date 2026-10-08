@@ -338,6 +338,7 @@
   gap: 0.35rem;
   white-space: nowrap;
   cursor: help;
+  color: color-mix(in srgb, var(--trace-color) 65%, var(--dark));
 
   &::before {
     align-self: center;
@@ -388,7 +389,7 @@
   inline-size: calc(var(--tri-workspace-axis-chars) * 1ch);
   height: var(--tri-workspace-graph-height);
   font-size: 0.6875rem;
-  color: var(--darkgray);
+  color: color-mix(in srgb, var(--trace-color, var(--darkgray)) 65%, var(--dark));
   font-variant-numeric: tabular-nums;
   cursor: help;
 }
@@ -559,6 +560,7 @@
   align-items: baseline;
   gap: 0.35rem;
   font-size: 0.6875rem;
+  color: color-mix(in srgb, var(--trace-color) 65%, var(--dark));
 
   &::before {
     flex: none;
@@ -569,6 +571,45 @@
     background: var(--trace-color);
     border-radius: 50%;
   }
+}
+
+.tri-workspace-wind-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.8rem;
+  margin-top: 0.85rem;
+  font-size: 0.6875rem;
+
+  [hidden] {
+    display: none;
+  }
+}
+
+.tri-workspace-wind-status {
+  color: var(--dark);
+}
+
+.tri-workspace-wind-credit {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: auto;
+
+  img {
+    display: block;
+    width: auto;
+    height: 1.5em;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--darkgray);
+    outline-offset: 3px;
+  }
+}
+
+.tri-workspace-wind-captured {
+  color: var(--darkgray);
 }
 
 @container tri-workspace (max-width: 42rem) {

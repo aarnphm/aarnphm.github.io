@@ -24,6 +24,8 @@ export interface MyWindsockGraphAxis {
   label: string
   minimum: number | null
   maximum: number | null
+  // ZingChart writes a reversed scale as `values: "high:low"`.
+  reversed: boolean
 }
 
 export interface MyWindsockGraphPlot {
@@ -37,7 +39,8 @@ export interface MyWindsockGraphPlot {
 export interface MyWindsockGraph {
   key: string
   label: string
-  state: 'captured' | 'empty' | 'unavailable' | 'failed'
+  category: string
+  state: 'captured' | 'empty' | 'unavailable' | 'failed' | 'invalid'
   note: string | null
   plots: MyWindsockGraphPlot[]
   configuration: unknown
@@ -56,6 +59,36 @@ const numeric = (value: unknown): number | null =>
 const string = (value: unknown): string => (typeof value === 'string' ? value : '')
 const record = (value: unknown): Record<string, unknown> => (isRecord(value) ? value : {})
 const text = (value: unknown): string => string(record(value).text)
+
+export const MYWINDSOCK_GRAPH_CATEGORIES: Record<string, string[]> = {
+  'Interval Designer': ['interval_designer'],
+  Experiments: ['ai_power'],
+  'Last Change Comparison': ['delta_compare', 'delta_compare_avg'],
+  Weather: ['weather', 'bearing', 'windspeed'],
+  'Feels Like Elevation™': ['virt_elev', 'virt_grade', '3dcourse_virt'],
+  Dynamics: [
+    'airdist_acc',
+    'effective',
+    'sidewind',
+    'groundspd',
+    'ground_dist',
+    'diff',
+    'direction',
+    'rollingavg',
+    'wwatts',
+    'yaw',
+    'yawdist',
+  ],
+  Aerodynamics: ['cda', 'cda_dist', 'brake'],
+  Power: ['kj_acc', 'power', 'rollingavg_power', 'pdc', 'wprime', 'pcp'],
+  Course: ['grade', 'gradient_dist', 'watts'],
+  Summary: ['inline:pointsgraph', 'inline:summary_windrose_chart'],
+}
+
+const inlineLabels: Record<string, string> = {
+  'inline:pointsgraph': 'Activity Weather Rankings',
+  'inline:summary_windrose_chart': 'Wind direction and headwind share',
+}
 
 export const isMyWindsockArchiveReference = (
   value: unknown,
@@ -95,13 +128,18 @@ const graphPlot = (value: unknown, key: string, plotIndex: number): MyWindsockGr
     if (!/^scale-(y(?:-\d+)?|r)$/.test(name)) continue
     const axis = record(value)
     const limits = string(axis.values).split(':').map(Number)
+    const start = limits.length > 1 ? numeric(limits[0]) : null
+    const end = limits.length > 1 ? numeric(limits[1]) : null
+    const reversed = start != null && end != null && start > end
     axes[name] = {
       label: text(axis.label),
-      minimum: numeric(axis['min-value']) ?? (limits.length > 1 ? numeric(limits[0]) : null),
-      maximum: numeric(axis['max-value']) ?? (limits.length > 1 ? numeric(limits[1]) : null),
+      minimum: numeric(axis['min-value']) ?? (reversed ? end : start),
+      maximum: numeric(axis['max-value']) ?? (reversed ? start : end),
+      reversed,
     }
   }
-  if (!axes['scale-y']) axes['scale-y'] = { label: '', minimum: null, maximum: null }
+  if (!axes['scale-y'])
+    axes['scale-y'] = { label: '', minimum: null, maximum: null, reversed: false }
   const series = rawSeries.map((value, index): MyWindsockGraphSeries => {
     const source = record(value)
     const axis =
@@ -111,14 +149,20 @@ const graphPlot = (value: unknown, key: string, plotIndex: number): MyWindsockGr
     const nativeKind = source.type ?? nativeType
     const seriesKind =
       nativeKind === 'area' || nativeKind === 'bar' || nativeKind === 'range' ? nativeKind : 'line'
-    const label =
+    let label =
       string(source.text) ||
+      string(source.label) ||
       axes[axis]?.label ||
       (axis === 'scale-y-2'
         ? 'Elevation'
         : key === 'virt_elev'
           ? 'Feels Like elevation'
-          : `Series ${index + 1}`)
+          : key === 'inline:pointsgraph'
+            ? 'Weather score'
+            : `Series ${index + 1}`)
+    // virt_elev pairs [actual, Feels Like] in its range band, and the area myWindsock labels
+    // "Elevation" repeats the Feels Like end at every point. Name each by the value it carries.
+    if (key === 'virt_elev') label = seriesKind === 'range' ? 'Elevation' : 'Feels Like elevation'
     const values = Array.isArray(source.values) ? source.values : []
     const points = values.map((value, pointIndex): MyWindsockGraphPoint => {
       if (Array.isArray(value)) {
@@ -145,6 +189,23 @@ const graphPlot = (value: unknown, key: string, plotIndex: number): MyWindsockGr
   }
 }
 
+const wPrimeIssue = (plots: MyWindsockGraphPlot[]): string | null => {
+  const balances = plots.flatMap(plot =>
+    plot.series.filter(series => plot.axes[series.axis]?.label === 'Joules'),
+  )
+  if (!balances.length) return 'W′ balance unavailable: the captured report has no balance series.'
+  for (const balance of balances) {
+    const capacity = balance.points[0]?.y
+    if (capacity == null || capacity <= 0)
+      return 'W′ balance unavailable: the captured report has no positive starting capacity.'
+    // The provider starts this curve at full capacity. Recovery cannot exceed it;
+    // allow half a joule for rounded captures and retain negative model balances.
+    if (balance.points.some(point => point.y != null && point.y > capacity + 0.5))
+      return 'W′ balance unavailable: captured myWindsock values exceed the starting capacity. Check Critical Power and W′ Joules in myWindsock.'
+  }
+  return null
+}
+
 // Read only data fields from native configurations. Formatter/rule source remains inert JSON.
 export function parseMyWindsockGraphs(value: unknown, activityId: number): MyWindsockGraphs | null {
   if (!isRecord(value) || value.schemaVersion !== 1 || value.provider !== 'mywindsock') return null
@@ -168,14 +229,18 @@ export function parseMyWindsockGraphs(value: unknown, activityId: number): MyWin
     if (state !== 'captured' && state !== 'empty' && state !== 'unavailable' && state !== 'failed')
       return null
     const native = record(value.configuration).graphset
-    const plots = Array.isArray(native) ? native : isRecord(native) ? [native] : []
+    const nativePlots = Array.isArray(native) ? native : isRecord(native) ? [native] : []
+    const plots = nativePlots.map((plot, index) => graphPlot(plot, key, index))
+    const issue = key === 'wprime' && state === 'captured' ? wPrimeIssue(plots) : null
     graphs.push({
       key,
-      label:
-        key === 'inline:summary_windrose_chart' ? 'Wind direction and headwind share' : value.label,
-      state,
-      note: typeof value.note === 'string' ? value.note : null,
-      plots: plots.map((plot, index) => graphPlot(plot, key, index)),
+      label: inlineLabels[key] ?? value.label,
+      category:
+        Object.entries(MYWINDSOCK_GRAPH_CATEGORIES).find(([, keys]) => keys.includes(key))?.[0] ??
+        'Other',
+      state: issue ? 'invalid' : state,
+      note: issue ?? (typeof value.note === 'string' ? value.note : null),
+      plots: issue ? [] : plots,
       configuration: value.configuration,
     })
   }

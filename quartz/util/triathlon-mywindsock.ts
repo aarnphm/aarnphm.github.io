@@ -1,5 +1,32 @@
 import type { StravaActivityDetail } from '../plugins/stores/strava'
 import type { TriNodeFactory } from './triathlon-card'
+import { triText } from './triathlon-i18n'
+
+export const myWindsockLogoLink = <N>(
+  f: Pick<TriNodeFactory<N>, 'el' | 'add'>,
+  activityId: number,
+  cls: string,
+): N => {
+  const link = f.el('a', cls, undefined, {
+    href: `https://mywindsock.com/activity/${activityId}/`,
+    target: '_blank',
+    rel: 'noreferrer',
+    title: 'Powered by myWindsock',
+    'aria-label': 'myWindsock activity analysis',
+  })
+  f.add(
+    link,
+    f.el('img', undefined, undefined, {
+      src: '/static/triathlon/mywindsock.svg',
+      alt: 'myWindsock',
+      width: '600',
+      height: '265',
+      loading: 'lazy',
+      decoding: 'async',
+    }),
+  )
+  return link
+}
 
 export const buildMyWindsockGraphs = <N>(
   f: TriNodeFactory<N>,
@@ -12,19 +39,21 @@ export const buildMyWindsockGraphs = <N>(
     'data-mywindsock-path': reference.path,
     'data-mywindsock-captured-at': reference.capturedAt,
     'data-mywindsock-state': 'pending',
-    'aria-label': 'myWindsock graphs',
+    'aria-label': triText(f.presentation.locale, 'wind graphs'),
+    'data-i18n-aria-label': 'wind graphs',
   })
-  const provenance = f.el('details', 'tri-mywindsock-provenance tri-mywindsock-json', undefined, {
-    'data-mywindsock-provenance': '',
-  })
-  const captured = f.el('p', 'tri-mywindsock-source', 'Captured ')
-  f.add(captured, f.el('time', undefined, reference.capturedAt, { datetime: reference.capturedAt }))
-  f.add(provenance, f.el('summary', undefined, 'Provider analysis'), captured)
+  const head = f.el('div', 'tri-mywindsock-head')
+  f.add(head, f.el('div', 'tri-mywindsock-picker', undefined, { 'data-mywindsock-picker': '' }))
+  const credit = f.el('div', 'tri-environment-attribution tri-mywindsock-credit')
+  f.add(
+    credit,
+    myWindsockLogoLink(f, d.id, 'tri-environment-provider-logo tri-environment-mywindsock-logo'),
+  )
   f.add(
     section,
-    f.el('span', 'tri-ana-block-title', 'myWindsock graphs'),
-    provenance,
+    head,
     f.el('div', 'tri-mywindsock-content', undefined, { 'data-mywindsock-content': '' }),
+    credit,
   )
   return section
 }

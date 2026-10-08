@@ -9,6 +9,7 @@ import {
   activityAnalysisAvailable,
 } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
+import { myWindsockLogoLink } from '../../../util/triathlon-mywindsock'
 import { gpsSegments } from '../maps/model'
 import { el, svg } from '../runtime/dom'
 import { activityScrubIndexAt } from './analysis'
@@ -42,6 +43,8 @@ const buildWorkspace = (
   const timeline = workspaceTimeline(d)
   const hasGps = gpsSegments(d).length > 0
   const selected = new Set<string>(traces.length ? [traces[0].id] : [])
+  if (d.analyses.native.myWindsockArchive && traces.some(trace => trace.id === 'wind'))
+    selected.add('wind')
   const laps = cyclingWorkoutLaps(d)
   const swimLaps = new Map(
     (d.sport === 'swim' ? swimWorkoutLaps(d) : []).map(lap => [lap.range.id, lap]),
@@ -326,7 +329,8 @@ const buildWorkspace = (
     endAxes.replaceChildren()
     const addAxis = (
       parent: HTMLElement,
-      trace: Pick<WorkspaceTrace, 'id' | 'label' | 'format'>,
+      trace: Pick<WorkspaceTrace, 'id' | 'label' | 'format'> &
+        Partial<Pick<WorkspaceTrace, 'color'>>,
       low: number,
       high: number,
     ): void => {
@@ -338,6 +342,7 @@ const buildWorkspace = (
         title: label,
       })
       const scale = el('div', 'tri-workspace-y-ticks')
+      if (trace.color) verticalAxis.style.setProperty('--trace-color', trace.color)
       const fractions = low === high ? [0.5] : [0, 0.25, 0.5, 0.75, 1]
       const labels = fractions.map(fraction => {
         const formatted = trace.format(high - fraction * (high - low))
@@ -361,7 +366,12 @@ const buildWorkspace = (
     if (lapSummary)
       addAxis(
         endAxes,
-        { id: 'laps', label: 'lap average power', format: value => `${Math.round(value)} W` },
+        {
+          id: 'laps',
+          label: 'lap average power',
+          color: lapColor,
+          format: value => `${Math.round(value)} W`,
+        },
         0,
         lapSummary.maximum,
       )
@@ -424,23 +434,33 @@ const buildWorkspace = (
   host.append(stage)
   const archiveReference = d.analyses.native.myWindsockArchive
   const windRequest = new AbortController()
-  const windLoad = el('button', 'tri-workspace-wind-load', 'Load myWindsock overlays', {
+  const windFooter = el('div', 'tri-workspace-wind-footer')
+  const windStatus = el('span', 'tri-workspace-wind-status', 'Loading wind overlays…', {
+    role: 'status',
+    'aria-live': 'polite',
+  })
+  const windRetry = el('button', 'tri-workspace-wind-retry', 'Retry overlays', {
     type: 'button',
     'data-workspace-wind-load': '',
   })
-  const windNote = el(
-    'p',
-    'tri-workspace-note',
-    'Native chart traces use their own elapsed clock. Distance follows the recorded route clock.',
+  windRetry.hidden = true
+  const windCredit = myWindsockLogoLink(
+    { el, add: (parent, ...children) => parent.append(...children) },
+    d.id,
+    'tri-workspace-wind-credit',
   )
-  if (archiveReference) host.append(windLoad, windNote)
+  const windCaptured = el('time', 'tri-workspace-wind-captured')
+  windFooter.append(windStatus, windRetry, windCredit, windCaptured)
+  if (archiveReference) host.append(windFooter)
   let windLoading = false
   let windLoaded = false
   const loadWind = async (): Promise<void> => {
     if (!archiveReference || windLoading || windLoaded) return
     windLoading = true
-    windLoad.setAttribute('disabled', '')
-    windLoad.setAttribute('aria-busy', 'true')
+    windStatus.hidden = false
+    windStatus.textContent = 'Loading wind overlays…'
+    windFooter.setAttribute('aria-busy', 'true')
+    windRetry.hidden = true
     try {
       const archive = await loadMyWindsockGraphs(archiveReference, windRequest.signal)
       if (windRequest.signal.aborted || !host.isConnected) return
@@ -458,19 +478,24 @@ const buildWorkspace = (
           }
         if (Number.isFinite(low)) for (const trace of members) trace.domain = [low, high]
       }
+      for (const trace of additions)
+        if (trace.label === 'Feels Like elevation') selected.add(trace.id)
       addTraceControls(additions)
       windLoaded = true
-      windLoad.textContent = `${additions.length} myWindsock overlays loaded`
-      windNote.textContent = `Powered by myWindsock · captured ${archive.capturedAt}.`
+      windStatus.textContent = additions.length ? '' : 'No wind overlays available'
+      windStatus.hidden = additions.length > 0
+      windCaptured.setAttribute('datetime', archive.capturedAt)
+      windCaptured.textContent = `captured ${archive.capturedAt.slice(0, 10)}`
+      windCaptured.title = `Captured ${archive.capturedAt}. Native chart traces use their own elapsed clock; distance follows the recorded route clock.`
       draw()
     } catch (error) {
       if (windRequest.signal.aborted || !host.isConnected) return
-      windLoad.textContent = 'Retry myWindsock overlays'
-      windNote.textContent = error instanceof Error ? error.message : 'Wind archive unavailable.'
+      windStatus.hidden = false
+      windStatus.textContent = error instanceof Error ? error.message : 'Wind archive unavailable.'
+      windRetry.hidden = false
     } finally {
       windLoading = false
-      windLoad.toggleAttribute('disabled', windLoaded)
-      windLoad.removeAttribute('aria-busy')
+      windFooter.removeAttribute('aria-busy')
     }
   }
   if (!traces.length)
@@ -505,6 +530,7 @@ const buildWorkspace = (
     0.005,
   )
   draw()
+  if (archiveReference) void loadWind()
   const resize = new ResizeObserver(() => {
     fitLapLabels()
     scrollHint.hidden = chart.scrollWidth <= plotPanel.clientWidth
