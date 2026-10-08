@@ -9154,7 +9154,6 @@ test('renders power curve unit controls and activity-day weight for full and emb
     assert.equal(byClass(curve, 'tri-curve-units')[0].properties.ariaLabel, 'power curve units')
     const svg = byClass(curve, 'tri-curve-svg')[0]
     assert.equal(svg.properties.dataCurveWeightKg, 87.55)
-    assert.equal(svg.properties.dataCurveWattStep, 100)
     assert.deepEqual(decodedPowerCurves(svg)[0], activity.powerCurve)
     const note = byClass(curve, 'tri-curve-weight-note')[0]
     assert.equal(note.properties.hidden, true)
@@ -9253,35 +9252,27 @@ test('converts power curve values with fractional kilograms and preserves measur
 })
 
 test('keeps power curve W/kg ticks on the common watt geometry and restores the watt axis', () => {
-  const watts = powerCurveAxisTicks(1_200, 200, null, 'en')
-  const relative = powerCurveAxisTicks(1_200, 200, 80, 'en')
+  const watts = powerCurveAxisTicks(1_200, null, 'en')
+  const relative = powerCurveAxisTicks(1_200, 80, 'en')
   assert.deepEqual(relative, [
     { label: '0', watts: 0 },
     { label: '5 W/kg', watts: 400 },
     { label: '10 W/kg', watts: 800 },
     { label: '15 W/kg', watts: 1_200 },
   ])
-  assert.deepEqual(powerCurveAxisTicks(1_200, 200, null, 'en'), watts)
+  assert.deepEqual(powerCurveAxisTicks(1_200, null, 'en'), watts)
   assert.deepEqual(
     watts.map(tick => tick.label),
     ['0', '200w', '400w', '600w', '800w', '1,000w', '1,200w'],
   )
-  assert.ok(powerCurveAxisTicks(1_500, 500, 87.09, 'en').every(tick => tick.watts <= 1_500))
-  assert.deepEqual(powerCurveAxisTicks(1_200, 200, 0, 'en'), watts)
+  assert.ok(powerCurveAxisTicks(1_500, 87.09, 'en').every(tick => tick.watts <= 1_500))
+  assert.deepEqual(powerCurveAxisTicks(1_200, 0, 'en'), watts)
 })
 
-test('scales power curve y axis with nice watt ticks', () => {
+test('scales power curve y axis in 200 watt increments', () => {
   const curve = buildPowerCurve(factory, zonedDetail(), ctx())
   assert.ok(curve)
-  assert.deepEqual(byClass(curve, 'tri-cax-yt').map(text), [
-    '0',
-    '100w',
-    '200w',
-    '300w',
-    '400w',
-    '500w',
-    '600w',
-  ])
+  assert.deepEqual(byClass(curve, 'tri-cax-yt').map(text), ['0', '200w', '400w', '600w'])
 })
 
 test('labels a power curve through its endpoint beyond three hours', () => {

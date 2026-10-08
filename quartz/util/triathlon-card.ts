@@ -9006,15 +9006,16 @@ export const powerCurveValueText = (
   })}${compact ? '' : ' '}${relative ? 'W/kg' : 'W'}`
 }
 
+export const POWER_CURVE_WATT_STEP = 200
+
 export const powerCurveAxisTicks = (
   maxWatts: number,
-  wattStep: number,
   weightKg: number | null,
   locale: Locale,
 ): { label: string; watts: number }[] => {
   const mass = weightKg != null && Number.isFinite(weightKg) && weightKg > 0 ? weightKg : null
   const max = maxWatts / (mass ?? 1)
-  const step = mass == null ? wattStep : niceStep(max, 4)
+  const step = mass == null ? POWER_CURVE_WATT_STEP : niceStep(max, 4)
   if (!Number.isFinite(max) || max <= 0 || !Number.isFinite(step) || step <= 0) return []
   return Array.from({ length: Math.floor(max / step + 1e-9) + 1 }, (_, index) => {
     const value = index * step
@@ -9430,13 +9431,13 @@ export const buildPowerCurve = <N>(
   )
   for (const points of [curve, visibleSixWeekRef, visibleYearRef, activityModel])
     for (const point of points) observedMaxW = Math.max(observedMaxW, point.w)
-  const curveStep = niceStep(observedMaxW, 4)
-  const curveMax = Math.ceil(observedMaxW / curveStep) * curveStep
+  const curveMax = Math.ceil(observedMaxW / POWER_CURVE_WATT_STEP) * POWER_CURVE_WATT_STEP
   const X = (sec: number): number => powerCurveFraction(sec, secs[0], secs[secs.length - 1]) * W
   const Y = (w: number): number => H - (w / curveMax) * (H - 1)
-  const powerTicks = powerCurveAxisTicks(curveMax, curveStep, null, f.presentation.locale).map(
-    tick => ({ label: tick.label, vbY: Y(tick.watts) }),
-  )
+  const powerTicks = powerCurveAxisTicks(curveMax, null, f.presentation.locale).map(tick => ({
+    label: tick.label,
+    vbY: Y(tick.watts),
+  }))
   const durationMarkers = [1, 60, 300, 1200, 3600, 10_800]
   const curveDurTicks = embedded
     ? embeddedPowerCurveDurationTicks(secs[0], secs[secs.length - 1], durationMarkers)
@@ -9455,7 +9456,6 @@ export const buildPowerCurve = <N>(
     'data-curve-range': defaultRange,
     'data-curve-year': ctx.curveYear ?? '',
     'data-curve-domain-max': curveMax,
-    'data-curve-watt-step': curveStep,
     'data-curve-weight-kg': weight?.kg ?? '',
     'data-curve-selected-index': 0,
     'data-i18n-aria-label': 'power curve',

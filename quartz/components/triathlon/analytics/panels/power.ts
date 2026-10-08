@@ -18,10 +18,10 @@ import { criticalPowerCurve } from '../../../../plugins/stores/critical-power'
 import { POWER_RANK_LEVELS } from '../../../../plugins/stores/power-rank'
 import { axisFrame } from '../../../../util/triathlon-card'
 import { buildPowerCurveGrid } from '../../../../util/triathlon-card'
-import { axisNumber } from '../../../../util/triathlon-card'
 import { dlabel } from '../../../../util/triathlon-card'
 import { nearestPowerCurvePoint } from '../../../../util/triathlon-card'
-import { niceStep } from '../../../../util/triathlon-card'
+import { POWER_CURVE_WATT_STEP } from '../../../../util/triathlon-card'
+import { powerCurveAxisTicks } from '../../../../util/triathlon-card'
 import { powerCurveDurationTicks } from '../../../../util/triathlon-card'
 import { powerCurveFraction } from '../../../../util/triathlon-card'
 import { powerCurveHoverAt } from '../../../../util/triathlon-card'
@@ -423,14 +423,13 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
       return estimate ? [estimate.criticalPowerWatts + estimate.wPrimeJoules / 180] : []
     }),
   )
-  const step = niceStep(observedMax, 4)
-  const domainMax = Math.ceil(observedMax / step) * step
+  const domainMax = Math.ceil(observedMax / POWER_CURVE_WATT_STEP) * POWER_CURVE_WATT_STEP
   const X = (seconds: number): number => powerCurveFraction(seconds, minSeconds, maxSeconds) * W
   const Y = (watts: number): number => H - (watts / domainMax) * (H - 1)
-  const yTicks = Array.from(
-    { length: Math.round(domainMax / step) + 1 },
-    (_, index) => index * step,
-  ).map(value => ({ label: value === 0 ? '0' : `${axisNumber(value, step)}w`, vbY: Y(value) }))
+  const yTicks = powerCurveAxisTicks(domainMax, null, context.presentation.locale).map(tick => ({
+    label: tick.label,
+    vbY: Y(tick.watts),
+  }))
   const durations = powerCurveDurationTicks(
     minSeconds,
     maxSeconds,
