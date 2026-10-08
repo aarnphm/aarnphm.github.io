@@ -24,6 +24,8 @@ import {
 } from '../../util/path'
 import { concatenateResources } from '../../util/resources'
 import { parseWikilink } from '../../util/wikilinks'
+import CoursesIndexConstructor from '../CoursesIndex'
+import CourseSpineConstructor from '../CourseSpine'
 import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from '../Evergreen'
 import PageListConstructor, {
   byDateAndAlphabetical,
@@ -87,7 +89,14 @@ const slugForDirectoryEntry = (fp: FilePath): string => {
   return stripSlashes(slugifyFilePath(fp, path.extname(fp) === '.ipynb'))
 }
 
-const Layout = { defn: 'L->EAT', etas: 'L->ET|A', alsp: 'A|L', lovp: 'L' } as const
+const Layout = {
+  defn: 'L->EAT',
+  etas: 'L->ET|A',
+  alsp: 'A|L',
+  lovp: 'L',
+  course: 'COURSE',
+  courses: 'COURSES',
+} as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
 type FolderSortMode = 'date' | 'natural' | 'title'
@@ -321,6 +330,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const PermanentNotes = EvergreenPermanentNotes({ lg, sm, tags })
   const PageListSearch = PageListSearchConstructor()
   const SeeAlso = SeeAlsoComponent()
+  const CourseSpine = CourseSpineConstructor()
+  const CoursesIndex = CoursesIndexConstructor()
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
@@ -531,6 +542,22 @@ export default ((opts?: Partial<FolderContentOptions>) => {
           </div>
         )
 
+      case Layout.course:
+        return (
+          <div class="folder-layout folder-layout--course">
+            <article class="folder-layout--article">{content}</article>
+            <CourseSpine {...props} />
+          </div>
+        )
+
+      case Layout.courses:
+        return (
+          <div class="folder-layout folder-layout--course">
+            <article class="folder-layout--article">{content}</article>
+            <CoursesIndex {...props} />
+          </div>
+        )
+
       case Layout.lovp:
         return (
           <div class="folder-layout folder-layout--l" data-pagelist>
@@ -560,16 +587,25 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
   }
 
-  FolderContent.css = concatenateResources(style, Evergreen.css, PageListSearch.css, SeeAlso.css)
+  FolderContent.css = concatenateResources(
+    style,
+    Evergreen.css,
+    PageListSearch.css,
+    SeeAlso.css,
+    CourseSpine.css,
+  )
   FolderContent.sourceNames = inheritComponentSourceNames('FolderContent', [
     Evergreen,
     PageList,
     PageListSearch,
     SeeAlso,
+    CourseSpine,
+    CoursesIndex,
   ])
   FolderContent.afterDOMLoaded = concatenateResources(
     Evergreen.afterDOMLoaded,
     PageListSearch.afterDOMLoaded,
+    CourseSpine.afterDOMLoaded,
   )
 
   return FolderContent

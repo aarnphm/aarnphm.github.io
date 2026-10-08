@@ -8,6 +8,8 @@ import CanvasContainer from './Canvas'
 import CodeCopy from './CodeCopy'
 import Comments from './Comments'
 import ContentMeta from './ContentMeta'
+import CoursesIndex from './CoursesIndex'
+import CourseSpine from './CourseSpine'
 import Cursor from './Cursor'
 import Darkmode from './Darkmode'
 import DesktopOnly from './DesktopOnly'
@@ -94,4 +96,6 @@ export {
   SeeAlso,
   BaseViewSelector,
   FlashcardsContent,
+  CourseSpine,
+  CoursesIndex,
 }
