@@ -29,8 +29,61 @@ export async function loadMyWindsockGraphs(
   return archive
 }
 
-const number = (value: number): string =>
-  value.toLocaleString('en-US', { maximumFractionDigits: 3 }).replace('-', '\u2212')
+// Reader help per native graph key. Sign and angle conventions were checked against the archived
+// series: Head/Tail Wind reads 360° where air speed exceeds ground speed, and wImpact% is positive there.
+const GRAPH_DESCRIPTIONS: Record<string, string> = {
+  interval_designer:
+    'Power through the ride with the CdA and total weight that the model uses. myWindsock uses this view to plan target power for course sections.',
+  delta_compare:
+    'Time difference in seconds against your rides before the last recorded performance change, such as a new position or new equipment.',
+  delta_compare_avg: 'Spread of the time difference through the ride.',
+  weather:
+    'Temperature, precipitation and air density at your position and time. Denser air increases drag at the same speed.',
+  windspeed:
+    'Wind speed and gusts along the route at the standard 10 m measurement height. Wind at rider height is lower.',
+  virt_elev:
+    'Your elevation profile with the wind changed into climbing. A headwind adds height and a tailwind removes it. The gap to the real profile is the cost of the wind as climbing.',
+  virt_grade:
+    'Road gradient adjusted for the wind, next to the actual gradient. The gap shows how much steeper or flatter the wind made the road feel.',
+  '3dcourse_virt': 'Elevation profile that the 3D route view uses.',
+  airdist_acc:
+    'Extra distance of air that you rode through, added up over the ride. The line rises in headwinds and falls in tailwinds. The last value is how much longer the ride was in air than on the road.',
+  effective:
+    'Speed of the air against you: ground speed plus the headwind part of the wind at rider height. Aerodynamic drag follows this speed.',
+  sidewind:
+    'Part of the wind that crosses your direction of travel. A strong crosswind pushes the bike sideways and increases yaw.',
+  groundspd: 'Speed over the road from the recorded activity.',
+  ground_dist: 'Minutes spent in each ground speed band.',
+  diff: 'Air speed minus ground speed. Above zero is a net headwind. Below zero is a net tailwind.',
+  direction:
+    'Wind angle relative to your direction of travel. 360° is a direct headwind, 270° is a direct crosswind and 180° is a direct tailwind.',
+  rollingavg:
+    'Moving average of ground speed. It removes short changes so that the trend is clear.',
+  wwatts:
+    'Percent of your power that the wind added or removed at each moment. Above zero means that the wind made you work harder.',
+  yaw: 'Angle between your direction of travel and the air that hits you. 0° is air from straight ahead. Crosswind makes the angle larger.',
+  yawdist:
+    'Time spent at each yaw angle. Compare it with the yaw range in wind tunnel data for wheels and frames.',
+  cda: 'Drag area (CdA, m²) that the model calculates from power, speed, wind and gradient. Lower is more aerodynamic. CdA is the ride average and Live CdA is the estimate at each moment. Where available, Test Average and the shaded Test Range show the provider’s aero-test results.',
+  cda_dist: 'Time spent at each CdA value.',
+  brake:
+    'Places where the model detects braking: the bike slowed more than power, gradient and drag can explain.',
+  kj_acc:
+    'Mechanical work that you did, added up over the ride in kilojoules. On a bike, 1 kJ of work is approximately 1 kcal of food energy.',
+  power: 'Power output through the ride.',
+  rollingavg_power: 'Moving average of power. It removes short surges so that the trend is clear.',
+  pdc: 'Best average power that you held for each duration in this ride, from short sprints on the left to the full ride on the right.',
+  wprime:
+    'W′ balance: the energy above Critical Power that you have left, in joules. It falls when you ride above Critical Power and refills below it. Near zero means that you are close to exhaustion.',
+  pcp: 'Moving average of power that gives more weight to hard efforts, as Normalized Power does. It shows the physiological cost of a variable effort.',
+  grade: 'Road gradient through the ride, in percent.',
+  gradient_dist: 'Minutes spent in each gradient band.',
+  watts:
+    'Share of the resistance from rolling, gravity, acceleration and air at each moment. When air resistance is the largest part, aerodynamics matter more than power to weight.',
+}
+
+const number = (value: number, maximumFractionDigits = 3): string =>
+  value.toLocaleString('en-US', { maximumFractionDigits }).replace('-', '\u2212')
 const clock = (milliseconds: number): string => {
   const seconds = Math.max(0, Math.round(milliseconds / 1000))
   return `${Math.floor(seconds / 3600)}:${String(Math.floor(seconds / 60) % 60).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
@@ -164,10 +217,10 @@ const renderCartesian = (
         ((reversed ? value - domain[0] : domain[1] - value) / (domain[1] - domain[0])) * 100,
       ),
     )
-  // Terrain is painted first so its fill stays behind the native data lines.
-  for (const line of [...series].sort(
-    (a, b) => Number(b.label === 'Elevation') - Number(a.label === 'Elevation'),
-  )) {
+  // Terrain and range fills stay behind the native data lines.
+  const layer = (line: MyWindsockGraphSeries): number =>
+    line.label === 'Elevation' ? 2 : line.kind === 'range' ? 1 : 0
+  for (const line of [...series].sort((a, b) => layer(b) - layer(a))) {
     const domain = domains.get(line.axis) ?? [0, 1]
     const reversed = plot.axes[line.axis]?.reversed ?? false
     const elevation = line.label === 'Elevation'
@@ -198,6 +251,9 @@ const renderCartesian = (
       upper = []
     }
     let continuous = false
+    let previousX = 0
+    let previousY = ''
+    let previousUpper = ''
     for (const point of line.points) {
       if (point.y == null || (line.kind === 'range' && point.upper == null)) {
         continuous = false
@@ -205,7 +261,15 @@ const renderCartesian = (
         closeBand()
         continue
       }
-      const px = x(point.x).toFixed(3)
+      const currentX = x(point.x)
+      const px = currentX.toFixed(3)
+      const stepX = (
+        line.step === 'before'
+          ? previousX
+          : line.step === 'after'
+            ? currentX
+            : (previousX + currentX) / 2
+      ).toFixed(3)
       const py = y(point.y, domain, reversed).toFixed(3)
       if (filled) {
         if (!areaOpen) {
@@ -228,10 +292,22 @@ const renderCartesian = (
           }),
         )
       } else if (line.kind === 'range' && point.upper != null) {
+        const currentUpper = y(point.upper, domain, reversed).toFixed(3)
+        if (continuous && line.step) {
+          lower += ` L ${stepX} ${previousY} L ${stepX} ${py}`
+          upper.push(`L ${stepX} ${previousUpper}`, `L ${stepX} ${currentUpper}`)
+        }
         lower += `${lower ? ' L' : 'M'} ${px} ${py}`
-        upper.push(`L ${px} ${y(point.upper, domain, reversed).toFixed(3)}`)
+        previousUpper = currentUpper
+        upper.push(`L ${px} ${previousUpper}`)
         if (elevation) path += `${continuous ? ' L' : ' M'} ${px} ${py}`
-      } else path += `${continuous ? ' L' : ' M'} ${px} ${py}`
+      } else
+        path +=
+          continuous && line.step
+            ? ` H ${stepX} V ${py} H ${px}`
+            : `${continuous ? ' L' : ' M'} ${px} ${py}`
+      previousY = py
+      previousX = currentX
       continuous = true
     }
     closeBand()
@@ -287,16 +363,30 @@ const renderCartesian = (
     location.textContent = `${text(plot.xLabel).toLocaleLowerCase()} ${formatX(at)}`
     values.replaceChildren()
     for (const line of series) {
-      let nearest: MyWindsockGraphSeries['points'][number] | undefined = line.points[0]
+      let nearest: MyWindsockGraphSeries['points'][number] | undefined =
+        line.step === 'after' || line.step === 'before' ? undefined : line.points[0]
       for (const point of line.points)
-        if (!nearest || Math.abs(position(point.x) - at) < Math.abs(position(nearest.x) - at))
+        if (
+          line.step === 'after'
+            ? position(point.x) <= at && (!nearest || position(point.x) > position(nearest.x))
+            : line.step === 'before'
+              ? position(point.x) >= at && (!nearest || position(point.x) < position(nearest.x))
+              : !nearest || Math.abs(position(point.x) - at) < Math.abs(position(nearest.x) - at)
+        )
           nearest = point
       const first = line.points[0]
       const last = line.points.at(-1)
       if (elapsed && first && last && (at < position(first.x) || at > position(last.x)))
         nearest = undefined
-      // A range band's upper end is plotted as its own series, so the readout names the lower end.
-      const formatted = nearest?.y == null ? '—' : number(nearest.y)
+      const precision = plot.axes[line.axis]?.label === 'CdA' ? 4 : 3
+      // Feels Like's range pairs actual elevation with the separately named Feels Like trace.
+      const showRange = line.kind === 'range' && line.label !== 'Elevation'
+      const formatted =
+        nearest?.y == null || (showRange && nearest.upper == null)
+          ? '—'
+          : showRange && nearest.upper != null
+            ? `${number(nearest.y, precision)}–${number(nearest.upper, precision)}`
+            : number(nearest.y, precision)
       const description = `${text(line.label)} ${formatted}`
       // The readout doubles as the legend: colour key, series name, then the value under the cursor.
       const item = el('span', 'tri-workspace-current-value', undefined, {
@@ -500,9 +590,21 @@ function mountMyWindsockGraphs(
   const picker = el('div', 'tri-lab-date-picker')
   picker.append(trigger, menu)
   pickerHost.replaceChildren(picker)
+  // Every description shares one grid cell, so the block keeps the tallest one's height at the
+  // current width and switching graphs never moves the chart.
+  const descriptions = el('div', 'tri-mywindsock-descriptions')
+  const descriptionItems = new Map<string, HTMLElement>()
+  for (const graph of visibleGraphs) {
+    if (!GRAPH_DESCRIPTIONS[graph.key]) continue
+    const item = el('p', 'tri-mywindsock-description', undefined, {
+      id: `${pickerId}-description-${graph.key.replace(/[^\w-]/g, '-')}`,
+    })
+    descriptionItems.set(graph.key, item)
+    descriptions.append(item)
+  }
   const status = el('p', 'tri-mywindsock-note', undefined, { role: 'status' })
   const plots = el('div', 'tri-mywindsock-plots')
-  host.replaceChildren(plots, status)
+  host.replaceChildren(descriptions, plots, status)
   let selected =
     visibleGraphs.find(graph => graph.key === (archive.cyclingCda ? 'cda' : 'virt_elev')) ??
     visibleGraphs[0]
@@ -510,6 +612,13 @@ function mountMyWindsockGraphs(
   const colors = new Map<string, string>()
   const color = (id: string): string => colors.get(id) ?? WIND_TRACE_COLORS[0]
   const updateStatus = (): void => {
+    for (const [key, item] of descriptionItems) {
+      item.textContent = text(GRAPH_DESCRIPTIONS[key])
+      item.toggleAttribute('data-active', key === selected.key)
+    }
+    const description = descriptionItems.get(selected.key)
+    if (description) trigger.setAttribute('aria-describedby', description.id)
+    else trigger.removeAttribute('aria-describedby')
     status.textContent = [
       selected.note ? text(selected.note) : null,
       archive.sport === 'run' && (selected.key === 'cda' || selected.key === 'interval_designer')
@@ -550,14 +659,16 @@ function mountMyWindsockGraphs(
     colors.clear()
     const series = selected.plots.flatMap(plot => plot.series)
     series.forEach((line, index) => {
-      if (selected.key === 'cda' && (line.label === 'Test Average' || line.label === 'Test Range'))
-        return
       if (hasSeriesData(line)) active.add(line.id)
       colors.set(
         line.id,
         line.label === 'Elevation'
           ? 'var(--gray)'
-          : WIND_TRACE_COLORS[index % WIND_TRACE_COLORS.length],
+          : selected.key === 'cda' && (line.label === 'Test Average' || line.label === 'Test Range')
+            ? WIND_TRACE_COLORS[1]
+            : selected.key === 'cda' && line.label === 'CdA'
+              ? WIND_TRACE_COLORS[0]
+              : WIND_TRACE_COLORS[index % WIND_TRACE_COLORS.length],
       )
     })
     updateStatus()

@@ -557,7 +557,7 @@ test('validates native Garmin running dynamics and run/walk segments', () => {
       ...value,
       staminaTrace: {
         source: 'garden-estimate',
-        method: 'garden-stamina-v1',
+        method: 'garden-stamina-v2',
         ftpWatts: 287,
         maxHeartRateBpm: 196,
       },
@@ -702,6 +702,7 @@ test('validates HR session estimates for walks and stationary recovery activitie
       heartRate: 100,
     })),
     200,
+    'walk',
   )
   assert.ok(physiology)
   for (const sport of ['walk', 'yoga', 'treatment', 'sauna', 'strength']) {

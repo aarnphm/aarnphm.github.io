@@ -7,6 +7,7 @@ import type { ActivityAnalysisController } from './analysis'
 import type { ActivityRangeChange } from './analysis'
 import type { ScrubSurface } from './analysis'
 import type { DetailPayload } from './data'
+import { preferredActivityWind } from '../../../util/activity-wind'
 import { activityCyclingTorquePoints, buildCrankTorqueChart } from '../../../util/triathlon-card'
 import { activityCyclingPowerPoints, buildCyclingPowerChart } from '../../../util/triathlon-card'
 import { activityWalkPowerPoints } from '../../../util/triathlon-card'
@@ -143,7 +144,13 @@ import {
   statRow,
   zoneDuo,
 } from './primitives'
-import { cyclingChartMode, runMetricMode, setCyclingChartMode, setRunMetricMode } from './scrub'
+import {
+  cyclingChartMode,
+  runMetricMode,
+  setCyclingChartMode,
+  setRunMetricMode,
+  restoreShiftSettings,
+} from './scrub'
 
 export const buildHeatRoute = (
   route: StravaActivityDetail['route'],
@@ -292,6 +299,7 @@ const cyclingPowerScrubSurface = (
 ): ScrubSurface => {
   const points = activityCyclingPowerPoints(d)
   const distanceAvailable = d.distanceKm > 0 || points.some(point => point.distanceKm > 0)
+  const wind = preferredActivityWind(d).samples
   return {
     wrap,
     samples: points,
@@ -304,7 +312,7 @@ const cyclingPowerScrubSurface = (
         presentation,
         points[index],
         cyclingPowerWindow(wrap),
-        d.analyses.derived.environment?.samples ?? [],
+        wind,
         distanceAvailable,
       ),
   }
@@ -1253,6 +1261,7 @@ export const renderMapDetail = (
     if (bestEfforts) zoneBox.appendChild(bestEfforts)
     const cyclingChart = zoneBox.querySelector<HTMLElement>('.tri-cycling-mode-chart')
     if (cyclingChart) setCyclingChartMode(cyclingChart, existingCyclingChartMode)
+    restoreShiftSettings(wrap)
     linkedSurfaces = [{ wrap: profile, fmt: spec.readout }, ...traces].map(surface =>
       surface.wrap.dataset.triTrace === 'walking-power'
         ? walkPowerScrubSurface(surface.wrap, d, presentation)

@@ -1,6 +1,6 @@
-import type { StravaActivityDetail } from '../plugins/stores/strava'
+import type { ActivityKind, StravaActivityDetail } from '../plugins/stores/strava'
 
-export const HEART_RATE_PHYSIOLOGY_METHOD = 'garden-hr-session-v1'
+export const HEART_RATE_PHYSIOLOGY_METHOD = 'garden-hr-session-v2'
 
 export interface HeartRatePhysiologyPoint {
   elapsedS: number
@@ -43,8 +43,9 @@ export function applyHeartRatePhysiology(
   detail.heartRatePhysiology = estimateHeartRatePhysiology(
     samples.filter(sample => sample.elapsedS <= detail.elapsedTimeS),
     maxHeartRateBpm,
+    detail.sport,
   )
-  // Swimming retains the HR condition proxy; the cycling HR term has no swim stamina calibration.
+  // Swim stamina belongs to the swim model; this fallback keeps only the HR condition proxy.
   if (detail.sport === 'swim' && detail.heartRatePhysiology)
     for (const point of detail.heartRatePhysiology.points) {
       point.stamina = null
@@ -52,13 +53,22 @@ export function applyHeartRatePhysiology(
     }
 }
 
-// The HR term used by Garden's cycling stamina model, expressed as percentage points/hour.
-export const heartRateStaminaDepletionPerHour = (heartRate: number, maxHeartRate: number): number =>
-  98.85 * (heartRate / maxHeartRate) ** 10
+// Potential stamina loss in percentage points/hour. Least-squares fit of a·(HR/max HR)^b to 107
+// Garmin native traces (2026-06..10): 91 rides, 16 runs. Adding power did not reduce ride error,
+// so every sport uses HR. Swims and other sessions have no native trace and take the ride curve.
+export const staminaDepletionPerHour = (
+  sport: ActivityKind,
+  heartRate: number,
+  maxHeartRate: number,
+): number =>
+  sport === 'run'
+    ? 373.6 * (heartRate / maxHeartRate) ** 9.5
+    : 145.9 * (heartRate / maxHeartRate) ** 7.26
 
 export function estimateHeartRatePhysiology(
   samples: readonly HeartRateSample[],
   maxHeartRateBpm: number,
+  sport: ActivityKind,
 ): HeartRatePhysiology | null {
   if (!Number.isFinite(maxHeartRateBpm) || maxHeartRateBpm < 100 || maxHeartRateBpm > 240)
     return null
@@ -92,7 +102,7 @@ export function estimateHeartRatePhysiology(
       observedSeconds += duration
       stamina = Math.max(
         0,
-        stamina - (heartRateStaminaDepletionPerHour(hr, maxHeartRateBpm) * duration) / 3600,
+        stamina - (staminaDepletionPerHour(sport, hr, maxHeartRateBpm) * duration) / 3600,
       )
       intervals.push({ start: previous.elapsedS, end: sample.elapsedS, hr })
       const baselineDuration = Math.max(0, Math.min(60 - baselineSeconds, duration))

@@ -53,6 +53,25 @@ type CourseCollection = {
   extraLinks: string[]
 }
 
+type CourseUnitKind = 'lecture' | 'week' | 'session'
+
+type CourseUnit = {
+  n: number
+  title: string
+  sessions: string
+  part: number
+  keyDates: string[]
+  resources: { id: string; file: string; youtube: string }[]
+  due: string[]
+}
+
+type CourseStudy = {
+  unitKind: CourseUnitKind
+  parts: string[]
+  trailing: string[]
+  units: CourseUnit[]
+}
+
 const defaultCourseRoot = path.join('content', 'courses')
 const contentRoot = path.resolve('content')
 const mitBaseUrl = 'https://ocw.mit.edu/'
@@ -217,10 +236,11 @@ function frontmatter(fields: Record<string, string | string[]>): string {
 function courseFrontmatter(
   context: CourseContext,
   fields: Record<string, string | string[]>,
+  layout: string = ocwLayout,
 ): string {
   return frontmatter({
     ...fields,
-    layout: ocwLayout,
+    layout,
     license: context.licenseName,
     license_url: context.licenseUrl,
   })
@@ -532,6 +552,196 @@ function resourceCollectionRelDir(resourceType: string): string {
   return path.posix.join('resources', slugTitle(resourceType))
 }
 
+function cellText(html: string): string[] {
+  return html
+    .replace(/<\/(?:p|br|li)\s*>|<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .split('\n')
+    .map(line => normalizeText(line.replace(/&nbsp;/g, ' ')))
+    .filter(line => line.length > 0)
+}
+
+function unitKindFromHeader(header: string): CourseUnitKind {
+  const value = header.toLowerCase()
+  if (value.includes('week')) return 'week'
+  if (/\bses/.test(value)) return 'session'
+  return 'lecture'
+}
+
+// The OCW calendar table: a header row names the unit kind, a `<th colspan>` row opens a part,
+// a row whose first cell is an integer is a unit, and a numberless row with text is trailing.
+function parseCalendarUnits(html: string): CourseStudy | null {
+  const rows = Array.from(html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi), match => match[1])
+  if (rows.length === 0) return null
+  const study: CourseStudy = { unitKind: 'lecture', parts: [], trailing: [], units: [] }
+  let sawHeader = false
+  for (const row of rows) {
+    const cells = Array.from(
+      row.matchAll(/<(t[hd])\b([^>]*)>([\s\S]*?)<\/t[hd]>/gi),
+      match => ({ tag: match[1].toLowerCase(), attrs: match[2], lines: cellText(match[3]) }),
+    )
+    if (cells.length === 0) continue
+    const first = cells[0]
+    if (!sawHeader && first.tag === 'th' && cells.length > 1) {
+      sawHeader = true
+      study.unitKind = unitKindFromHeader(first.lines.join(' '))
+      continue
+    }
+    if (first.tag === 'th' && /colspan/i.test(first.attrs)) {
+      const label = first.lines.join(' ').replace(/^[IVXLC]+\.\s*/i, '')
+      if (label.length > 0) study.parts.push(label.toLowerCase())
+      continue
+    }
+    const number = first.lines.join(' ')
+    const topicLines = cells[1]?.lines ?? []
+    const keyDates = cells.slice(2).flatMap(cell => cell.lines)
+    if (/^\d+$/.test(number)) {
+      const topic = topicLines.join(' ')
+      const session = topic.match(/^ses(?:sion)?s?\.?\s*([\d\s,and-]+?):\s*(.*)$/i)
+      study.units.push({
+        n: Number(number),
+        title: normalizeTitle(session ? session[2] : topic),
+        sessions: session ? normalizeText(session[1]).replace(/\s+/g, '') : '',
+        part: study.parts.length,
+        keyDates: keyDates.map(value => value.toLowerCase()),
+        resources: [],
+        due: [],
+      })
+      continue
+    }
+    const text = [...first.lines, ...topicLines, ...keyDates].join(' ').toLowerCase()
+    if (text.length > 0) study.trailing.push(text)
+  }
+  if (study.units.length === 0) return null
+  const seen = new Set<number>()
+  study.units = study.units.filter(unit => !seen.has(unit.n) && seen.add(unit.n))
+  return study
+}
+
+const lectureNumberRe = /\blec(?:ture)?[\s_#]*0*(\d+)\b/i
+const problemSetNumberRe = /\b(?:pset|problem set|ps)[\s_#]*0*(\d+)\b/i
+
+function lectureNumber(resource: CourseResource): number | null {
+  const match =
+    path.posix.basename(resource.relDir).match(lectureNumberRe) ??
+    resource.title.match(lectureNumberRe)
+  return match ? Number(match[1]) : null
+}
+
+function problemSetNumber(resource: CourseResource): number | null {
+  const match =
+    path.posix.basename(resource.relDir).match(problemSetNumberRe) ??
+    resource.title.match(problemSetNumberRe)
+  return match ? Number(match[1]) : null
+}
+
+// Courses without a calendar page take their units from numbered lecture-note resources.
+function unitsFromResources(resources: CourseResource[]): CourseStudy | null {
+  const byNumber = new Map<number, CourseUnit>()
+  for (const resource of resources) {
+    if (!resource.resourceTypes.includes('Lecture Notes')) continue
+    const n = lectureNumber(resource)
+    if (n === null || byNumber.has(n)) continue
+    const title = resource.title.replace(/^.*?\blecture\s*\d+\s*[:.-]?\s*/i, '')
+    byNumber.set(n, {
+      n,
+      title: normalizeTitle(title.length > 0 ? title : resource.title),
+      sessions: '',
+      part: 0,
+      keyDates: [],
+      resources: [],
+      due: [],
+    })
+  }
+  if (byNumber.size === 0) return null
+  const units = Array.from(byNumber.values()).sort((left, right) => left.n - right.n)
+  return { unitKind: 'lecture', parts: [], trailing: [], units }
+}
+
+function attachUnitResources(study: CourseStudy, resources: CourseResource[]): void {
+  const units = new Map(study.units.map(unit => [unit.n, unit]))
+  const psets = new Map<number, string>()
+  for (const resource of resources) {
+    const id = path.posix.basename(resource.relDir)
+    const isNotes =
+      resource.resourceTypes.includes('Lecture Notes') ||
+      resource.resourceTypes.includes('Lecture Videos') ||
+      resource.youtubeId.length > 0
+    const lecture = isNotes ? lectureNumber(resource) : null
+    if (lecture !== null && units.has(lecture)) {
+      const unit = units.get(lecture)!
+      if (!unit.resources.some(entry => entry.id === id)) {
+        unit.resources.push({
+          id,
+          file: resource.localFile ? path.posix.join('static_resources', resource.localFile) : '',
+          youtube: resource.youtubeId,
+        })
+      }
+    }
+    const pset = problemSetNumber(resource)
+    if (pset !== null && !resource.resourceTypes.some(type => /solution/i.test(type))) {
+      if (!psets.has(pset)) psets.set(pset, id)
+    }
+  }
+  for (const unit of study.units) {
+    for (const date of unit.keyDates) {
+      const match = date.match(problemSetNumberRe)
+      if (!match) continue
+      const id = psets.get(Number(match[1]))
+      if (id && !unit.due.includes(id)) unit.due.push(id)
+    }
+  }
+}
+
+function courseStudy(
+  pages: CoursePage[],
+  resources: CourseResource[],
+): CourseStudy | null {
+  const calendar = pages.find(page => slugTitle(page.title) === 'calendar')
+  const study = (calendar && parseCalendarUnits(calendar.content)) || unitsFromResources(resources)
+  if (!study) return null
+  attachUnitResources(study, resources)
+  return study
+}
+
+function yamlFlow(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(yamlFlow).join(', ')}]`
+  if (typeof value === 'number') return String(value)
+  if (value && typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>).filter(([, entry]) =>
+      Array.isArray(entry) ? entry.length > 0 : entry !== '' && entry !== null && entry !== 0
+    )
+    return `{${entries.map(([key, entry]) => `${key}: ${yamlFlow(entry)}`).join(', ')}}`
+  }
+  return yamlString(String(value))
+}
+
+// The study block is one flow-style line per unit, so a 38-lecture course adds ~45 lines.
+function courseStudyYaml(context: CourseContext, data: JsonRecord, study: CourseStudy): string[] {
+  const instructors = recordList(data, 'instructors')
+    .map(instructor => normalizeText(stringValue(instructor, 'title')).toLowerCase())
+    .filter(value => value.length > 0)
+  const course: Record<string, unknown> = {
+    number: context.number || stringValue(data, 'site_short_id'),
+    name: context.title,
+    term: `${normalizeText(stringValue(data, 'term')).toLowerCase()} ${stringValue(data, 'year')}`.trim(),
+    level: stringList(data, 'level').map(value => value.toLowerCase()).join(', '),
+    instructors,
+    source: context.sourceUrl,
+    unitKind: study.unitKind,
+    parts: study.parts,
+    trailing: study.trailing,
+  }
+  const lines = ['course:']
+  for (const [key, value] of Object.entries(course)) {
+    if (Array.isArray(value) ? value.length === 0 : value === '') continue
+    lines.push(`  ${key}: ${yamlFlow(value)}`)
+  }
+  lines.push('  units:')
+  for (const unit of study.units) lines.push(`    - ${yamlFlow(unit)}`)
+  return lines
+}
+
 function courseCollections(
   context: CourseContext,
   data: JsonRecord,
@@ -598,6 +808,7 @@ async function courseHome(
   data: JsonRecord,
   pages: CoursePage[],
   collections: CourseCollection[],
+  study: CourseStudy | null,
 ): Promise<string> {
   const description = normalizeText(
     stringValue(data, 'course_description') || stringValue(data, 'course_description_html'),
@@ -612,14 +823,23 @@ async function courseHome(
   const collectionLinks = collections.map(
     collection => `- ${resourceLink(context, collection.relDir, collection.title)}`,
   )
-  const body = [
-    courseFrontmatter(context, {
+  const head = courseFrontmatter(
+    context,
+    {
       title: `${context.label}: ${context.title}`,
       description,
       id: context.idPrefix,
       tags: context.tags,
       aliases: context.aliases,
-    }),
+    },
+    study ? 'course' : ocwLayout,
+  )
+  // A course with units renders the study spine; the frontmatter closes after the study block.
+  const front = study
+    ? [...head.split('\n').slice(0, -1), ...courseStudyYaml(context, data, study), '---'].join('\n')
+    : head
+  const body = [
+    front,
     '',
     assetEmbed(context, image),
     '',
@@ -853,17 +1073,30 @@ async function mapWithConcurrency<T>(
   await Promise.all(workers)
 }
 
+// Renamed course directories are frozen: their names sit inside every stored deck slug.
+async function existingRootForSite(siteUid: string): Promise<string | null> {
+  if (siteUid.length === 0) return null
+  const files = await globby(['*/data.json'], { cwd: defaultCourseRoot, onlyFiles: true })
+  for (const file of files) {
+    const data = await readJson(path.join(defaultCourseRoot, file))
+    if (stringValue(data, 'site_uid') === siteUid) {
+      return path.join(defaultCourseRoot, path.dirname(file))
+    }
+  }
+  return null
+}
+
 async function fetchCourse(input: string): Promise<string> {
   const slug = courseSlug(input)
   const base = new URL(`courses/${slug}/`, mitBaseUrl).toString()
-  const courseRoot = path.join(defaultCourseRoot, slug)
+  const rootText = await fetchText(`${base}data.json`)
+  const parsedRoot: unknown = JSON.parse(rootText)
+  const siteUid = isRecord(parsedRoot) ? stringValue(parsedRoot, 'site_uid') : ''
+  const courseRoot =
+    (await existingRootForSite(siteUid)) ?? path.join(defaultCourseRoot, slug)
   await fs.mkdir(courseRoot, { recursive: true })
 
-  const rootData = await writeFetchedJson(
-    courseRoot,
-    'data.json',
-    await fetchText(`${base}data.json`),
-  )
+  const rootData = await writeFetchedJson(courseRoot, 'data.json', rootText)
   const contentMapText = await fetchText(`${base}content_map.json`)
   await fs.writeFile(path.join(courseRoot, 'content_map.json'), contentMapText, 'utf8')
   const imageMeta = nestedRecord(rootData, 'course_image_metadata')
@@ -916,7 +1149,12 @@ async function vendorCourse(courseRoot: string): Promise<void> {
   indexLinkableDirs(context, pages, resources, collections)
 
   await removeGeneratedCollectionMarkdown(context)
-  await writeMarkdown(context, '', await courseHome(context, rootData, pages, collections))
+  const study = courseStudy(pages, resources)
+  await writeMarkdown(
+    context,
+    '',
+    await courseHome(context, rootData, pages, collections, study),
+  )
 
   for (const page of pages) {
     await writeMarkdown(context, page.relDir, await pageMarkdown(context, page))

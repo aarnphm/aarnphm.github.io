@@ -1708,11 +1708,13 @@ export const buildCyclingPowerChart = <N>(
     finish()
     return result.trim()
   }
+  const windSource = preferredActivityWind(d)
   const wrap = f.el('div', 'tri-elev-wrap tri-cycling-power', undefined, {
     'data-tri-trace': 'cycling-power',
     'data-cycling-power-window': '30',
     'data-cycling-power-source': trace.source,
     'data-cycling-power-terrain-source': trace.terrainSource,
+    'data-cycling-power-wind-provider': windSource.provider,
   })
   const cap = f.el('div', 'tri-elev-cap')
   f.add(
@@ -1796,7 +1798,6 @@ export const buildCyclingPowerChart = <N>(
         ),
       }),
     )
-  const windSource = preferredActivityWind(d)
   const wind = windSource.samples
   let windSegments = 0
   const windSegment = (start: number, end: number, value: number): void => {
@@ -1856,6 +1857,16 @@ export const buildCyclingPowerChart = <N>(
       legend,
       f.el('span', 'tri-cycling-power-key tri-cycling-power-key--headwind', text('+ headwind')),
       f.el('span', 'tri-cycling-power-key tri-cycling-power-key--tailwind', text('− tailwind')),
+      f.el(
+        'span',
+        'tri-elev-range',
+        text(windSource.provider === 'mywindsock' ? 'myWindsock' : 'Garden wind estimate'),
+        {
+          'data-analysis-provider': windSource.provider,
+          'data-analysis-source':
+            windSource.provider === 'mywindsock' ? 'provider-native' : 'garden-estimate',
+        },
+      ),
     )
   else f.add(legend, f.el('span', undefined, text('wind unavailable')))
   f.add(cap, legend, controls)
@@ -3138,7 +3149,7 @@ const swimPhysiologyDescription = (d: StravaActivityDetail, metric: string): str
     model.speedBasis === 'pool-length'
       ? 'length times include turns and push-offs; rests and missing HR remain gaps'
       : 'currents and GPS error affect speed'
-  return `Garden swim ${metric} estimate · HR / max HR ${model.maxHeartRateBpm} bpm, ${speed}, ${strokes} · first minute excluded from the three-minute opening baseline · 60 s smoothing · ${(model.coverage * 100).toFixed(0)}% telemetry coverage · ${metric === 'stamina' ? 'session starts at 100%; depletion integrates observed intervals only; HR load increases with relative drag demand and strokes per metre; current and potential coincide' : 'speed per HR relative to the opening baseline, penalized by extra strokes per metre'} · experimental session proxy; ${limitation}`
+  return `Garden swim ${metric} estimate · HR / max HR ${model.maxHeartRateBpm} bpm, ${speed}, ${strokes} · first minute excluded from the three-minute opening baseline · 60 s smoothing · ${(model.coverage * 100).toFixed(0)}% telemetry coverage · ${metric === 'stamina' ? 'starts from the stamina carried from earlier sessions (4 h recovery); depletion integrates observed intervals only; HR load increases with relative drag demand and strokes per metre; current and potential coincide' : 'speed per HR relative to the opening baseline, penalized by extra strokes per metre'} · experimental session proxy; ${limitation}`
 }
 
 export const activityPhysiologyTracePoints = (
@@ -3273,7 +3284,7 @@ export const buildStaminaChart = <N>(
         : heartRateEstimate
           ? {
               'data-gloss': '',
-              'data-gloss-def': `Garden HR estimate · session starts at 100% · observed HR / max HR ${heartRateEstimate.maxHeartRateBpm} bpm · cycling model HR component only · current and potential coincide · experimental session load proxy`,
+              'data-gloss-def': `Garden HR estimate · starts from the stamina carried from earlier sessions (4 h recovery) · observed HR / max HR ${heartRateEstimate.maxHeartRateBpm} bpm · ${d.sport === 'run' ? 'run' : 'ride'} curve fit to Garmin native traces${d.sport === 'run' || d.sport === 'bike' ? ', scaled to recent native sessions' : ''} · current and potential coincide`,
               tabindex: '0',
             }
           : estimatedTrace
@@ -3526,6 +3537,268 @@ export const activityGearRatioDistribution = (
     }))
 }
 
+interface GearTeethTime {
+  teeth: number
+  gearNum: number
+  durationS: number
+}
+
+interface GearComboTime {
+  front: GearTeethTime
+  rear: GearTeethTime
+  durationS: number
+}
+
+// Time on each chainring, cog and combination inside the graph domain. Every gear seen in the
+// ride keeps a row so zooming changes bar lengths without reshuffling the rows.
+const gearTeethDurations = (
+  d: StravaActivityDetail,
+  graphDomain?: ActivityGraphDomain | null,
+): { front: GearTeethTime[]; rear: GearTeethTime[]; combos: GearComboTime[]; totalS: number } => {
+  const shifts = d.gearShifts
+  const endS = Math.max(d.movingTimeS, d.route.at(-1)?.elapsedS ?? 0, shifts.at(-1)?.elapsedS ?? 0)
+  const elapsedAt = (distanceKm: number, fallback: number): number =>
+    d.route.find(point => point.d >= distanceKm)?.elapsedS ?? fallback
+  const windowStartS = graphDomain ? elapsedAt(graphDomain.startDistanceKm, 0) : 0
+  const windowEndS = graphDomain ? elapsedAt(graphDomain.endDistanceKm, endS) : endS
+  const front = new Map<number, GearTeethTime>()
+  const rear = new Map<number, GearTeethTime>()
+  const combos = new Map<string, GearComboTime>()
+  let totalS = 0
+  for (const [index, shift] of shifts.entries()) {
+    const ring = front.get(shift.frontTeeth) ?? {
+      teeth: shift.frontTeeth,
+      gearNum: shift.frontGearNum,
+      durationS: 0,
+    }
+    const cog = rear.get(shift.rearTeeth) ?? {
+      teeth: shift.rearTeeth,
+      gearNum: shift.rearGearNum,
+      durationS: 0,
+    }
+    front.set(ring.teeth, ring)
+    rear.set(cog.teeth, cog)
+    const key = `${ring.teeth}:${cog.teeth}`
+    const combo = combos.get(key) ?? { front: ring, rear: cog, durationS: 0 }
+    combos.set(key, combo)
+    const startS = Math.max(windowStartS, index === 0 ? 0 : shift.elapsedS)
+    const stopS = Math.min(windowEndS, shifts[index + 1]?.elapsedS ?? endS)
+    if (!(stopS > startS)) continue
+    ring.durationS += stopS - startS
+    cog.durationS += stopS - startS
+    combo.durationS += stopS - startS
+    totalS += stopS - startS
+  }
+  const byTeeth = (left: GearTeethTime, right: GearTeethTime) => right.teeth - left.teeth
+  return {
+    front: [...front.values()].sort(byTeeth),
+    rear: [...rear.values()].sort(byTeeth),
+    combos: [...combos.values()].sort(
+      (left, right) =>
+        right.front.teeth / right.rear.teeth - left.front.teeth / left.rear.teeth ||
+        right.front.teeth - left.front.teeth,
+    ),
+    totalS,
+  }
+}
+
+// Every label and value variant is in the markup; the chart's data-shift-* attributes pick one.
+const buildShiftingHistogramRow = <N>(
+  f: TriNodeFactory<N>,
+  labels: { teeth: string; number: string },
+  durationS: number,
+  peakS: number,
+  totalS: number,
+  ratio?: number,
+): N => {
+  const share = totalS > 0 ? (durationS / totalS) * 100 : 0
+  const row = f.el('div', 'tri-shift-hist-row', undefined, {
+    role: 'listitem',
+    title: `${labels.teeth} · ${zoneClock(durationS)} · ${Math.round(share)}%`,
+  })
+  const label = f.el('span', 'tri-shift-hist-teeth')
+  f.add(
+    label,
+    f.el('span', undefined, labels.teeth, { 'data-shift-label': 'teeth' }),
+    f.el('span', undefined, labels.number, { 'data-shift-label': 'number' }),
+  )
+  f.add(row, label)
+  if (ratio != null) f.add(row, f.el('span', 'tri-shift-hist-ratio', ratio.toFixed(2)))
+  const track = f.el('span', 'tri-shift-hist-track', undefined, { 'aria-hidden': 'true' })
+  f.add(
+    track,
+    f.el('span', 'tri-shift-hist-bar', undefined, {
+      style: `width: ${peakS > 0 ? ((durationS / peakS) * 100).toFixed(2) : '0'}%`,
+    }),
+  )
+  const value = f.el('span', 'tri-shift-hist-time')
+  f.add(
+    value,
+    f.el('span', undefined, zoneClock(durationS), { 'data-shift-value': 'duration' }),
+    f.el('span', undefined, `${Math.round(share)}%`, { 'data-shift-value': 'percent' }),
+  )
+  f.add(row, track, value)
+  return row
+}
+
+const buildShiftingHistogram = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  graphDomain?: ActivityGraphDomain | null,
+): N => {
+  const { front, rear, combos, totalS } = gearTeethDurations(d, graphDomain)
+  const hist = f.el('div', 'tri-shift-hist', undefined, {
+    'data-shift-pane': 'hist',
+    style: `--tri-shift-hist-rows: ${Math.max(front.length, rear.length, 1)}; --tri-shift-hist-combo-rows: ${Math.max(combos.length, 1)}`,
+  })
+  for (const [kind, gears] of [
+    ['front', front],
+    ['rear', rear],
+  ] as const) {
+    const group = f.el('div', `tri-shift-hist-group tri-shift-hist-group--${kind}`, undefined, {
+      role: 'list',
+      'aria-label': triText(f.presentation.locale, kind),
+      'data-i18n-aria-label': kind,
+    })
+    // Bars scale to the busiest gear in the group; the percentage carries the share of time.
+    const peakS = Math.max(...gears.map(gear => gear.durationS), 0)
+    for (const gear of gears)
+      f.add(
+        group,
+        buildShiftingHistogramRow(
+          f,
+          { teeth: `${gear.teeth}T`, number: `${gear.gearNum}` },
+          gear.durationS,
+          peakS,
+          totalS,
+        ),
+      )
+    f.add(hist, group)
+  }
+  const comboGroup = f.el('div', 'tri-shift-hist-group tri-shift-hist-group--combos', undefined, {
+    role: 'list',
+    'aria-label': triText(f.presentation.locale, 'combinations'),
+    'data-i18n-aria-label': 'combinations',
+  })
+  const comboPeakS = Math.max(...combos.map(combo => combo.durationS), 0)
+  for (const combo of combos)
+    f.add(
+      comboGroup,
+      buildShiftingHistogramRow(
+        f,
+        {
+          teeth: `${combo.front.teeth}×${combo.rear.teeth}`,
+          number: `${combo.front.gearNum}×${combo.rear.gearNum}`,
+        },
+        combo.durationS,
+        comboPeakS,
+        totalS,
+        combo.front.teeth / combo.rear.teeth,
+      ),
+    )
+  f.add(hist, comboGroup)
+  return hist
+}
+
+export const SHIFTING_SETTINGS = [
+  { setting: 'view', label: 'view', options: ['graph', 'hist'] },
+  { setting: 'group', label: 'group by', options: ['sides', 'combos'] },
+  { setting: 'label', label: 'show gears as', options: ['teeth', 'number'] },
+  { setting: 'value', label: 'show data as', options: ['duration', 'percent'] },
+] as const
+
+export type ShiftingSetting = (typeof SHIFTING_SETTINGS)[number]['setting']
+
+const SHIFTING_OPTION_LABELS: Record<string, string> = {
+  graph: 'graph',
+  hist: 'hist',
+  sides: 'front / rear',
+  combos: 'combinations',
+  teeth: 'teeth',
+  number: 'gear number',
+  percent: 'percentage',
+  duration: 'duration',
+}
+
+const buildShiftingSettings = <N>(f: TriNodeFactory<N>, id: string): N => {
+  const text = (key: string) => triText(f.presentation.locale, key)
+  const picker = f.el('div', 'tri-chart-controls tri-lab-date-picker tri-shift-settings')
+  const trigger = f.el('button', 'tri-lab-date-trigger tri-shift-settings-trigger', undefined, {
+    type: 'button',
+    'aria-haspopup': 'menu',
+    'aria-expanded': 'false',
+    'aria-controls': `${id}-shift-settings`,
+    'aria-label': text('electronic shifting view'),
+    'data-i18n-aria-label': 'electronic shifting view',
+  })
+  const value = f.el('span', 'tri-lab-date-value')
+  f.add(
+    value,
+    f.el('span', undefined, text('graph'), { 'data-shift-trigger': 'graph', 'data-i18n': 'graph' }),
+    f.el('span', undefined, text('hist'), { 'data-shift-trigger': 'hist', 'data-i18n': 'hist' }),
+  )
+  const chevron = f.svg('svg', {
+    class: 'tri-lab-date-chevron',
+    viewBox: '0 0 16 16',
+    fill: 'none',
+    'aria-hidden': 'true',
+    focusable: 'false',
+  })
+  f.add(
+    chevron,
+    f.svg('path', {
+      d: 'm4 6 4 4 4-4',
+      stroke: 'currentColor',
+      'stroke-width': 1.4,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    }),
+  )
+  f.add(trigger, value, chevron)
+  const menu = f.el('div', 'tri-lab-date-menu tri-shift-settings-menu', undefined, {
+    id: `${id}-shift-settings`,
+    role: 'menu',
+    hidden: '',
+    'aria-label': text('electronic shifting view'),
+    'data-i18n-aria-label': 'electronic shifting view',
+  })
+  for (const { setting, label, options } of SHIFTING_SETTINGS) {
+    const group = f.el('div', 'tri-shift-settings-group', undefined, {
+      role: 'group',
+      'aria-label': text(label),
+      'data-i18n-aria-label': label,
+    })
+    f.add(
+      group,
+      f.el('span', 'tri-shift-settings-heading', text(label), {
+        'aria-hidden': 'true',
+        'data-i18n': label,
+      }),
+    )
+    for (const [index, option] of options.entries()) {
+      const item = f.el('button', 'tri-lab-date-option tri-shift-settings-option', undefined, {
+        type: 'button',
+        role: 'menuitemradio',
+        tabindex: '-1',
+        'aria-checked': String(index === 0),
+        'data-shift-setting': setting,
+        'data-shift-option': option,
+      })
+      f.add(
+        item,
+        f.el('span', 'tri-lab-date-check', '✓', { 'aria-hidden': 'true' }),
+        f.el('span', 'tri-lab-date-option-value', text(SHIFTING_OPTION_LABELS[option]), {
+          'data-i18n': SHIFTING_OPTION_LABELS[option],
+        }),
+      )
+      f.add(group, item)
+    }
+    f.add(menu, group)
+  }
+  f.add(picker, trigger, menu)
+  return picker
+}
+
 export const buildShiftingChart = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
@@ -3591,6 +3864,10 @@ export const buildShiftingChart = <N>(
     undefined,
     {
       'data-tri-trace': triathlonTraceName('electronic shifting'),
+      'data-shift-view': 'graph',
+      'data-shift-group': 'sides',
+      'data-shift-label': 'teeth',
+      'data-shift-value': 'duration',
       ...(heatmap ? { 'data-cycling-chart-mode': 'distance' } : {}),
     },
   )
@@ -3618,7 +3895,9 @@ export const buildShiftingChart = <N>(
     cap,
     f.el('span', 'tri-elev-d', 'electronic shifting', { 'data-i18n': 'electronic shifting' }),
     summary,
+    buildShiftingSettings(f, `tri-shift-${d.id}`),
   )
+  const histogram = buildShiftingHistogram(f, d, graphDomain)
   const distanceFrame = axisFrame(
     f,
     svgEl,
@@ -3629,7 +3908,7 @@ export const buildShiftingChart = <N>(
     { top: 0, bottom: height },
   )
   if (!heatmap) {
-    f.add(wrap, cap, distanceFrame)
+    f.add(wrap, cap, distanceFrame, histogram)
     return wrap
   }
   f.add(cap, heatmap.readout)
@@ -3658,7 +3937,7 @@ export const buildShiftingChart = <N>(
       { top: 0, bottom: height },
     ),
   )
-  f.add(wrap, cap, distancePane, powerPane)
+  f.add(wrap, cap, distancePane, powerPane, histogram)
   return wrap
 }
 
@@ -8707,6 +8986,31 @@ export const powerCurveAxisTicks = (
   })
 }
 
+export const buildPowerCurveGrid = <N>(
+  f: TriNodeFactory<N>,
+  axis: 'power' | 'duration',
+  positions: readonly number[],
+  height: number,
+): N => {
+  const grid = f.svg('g', {
+    class: `tri-power-curve-grid tri-power-curve-grid--${axis}`,
+    'aria-hidden': 'true',
+  })
+  for (const position of positions) {
+    const value = position.toFixed(2)
+    f.add(
+      grid,
+      f.svg(
+        'line',
+        axis === 'power'
+          ? { x1: 0, x2: 100, y1: value, y2: value }
+          : { x1: value, x2: value, y1: 1, y2: height, 'data-curve-grid-pct': value },
+      ),
+    )
+  }
+  return grid
+}
+
 const powerCurveValueNode = <N>(f: TriNodeFactory<N>, watts: number, compact = true): N =>
   f.el(
     'span',
@@ -9086,6 +9390,13 @@ export const buildPowerCurve = <N>(
   const curveMax = Math.ceil(observedMaxW / curveStep) * curveStep
   const X = (sec: number): number => powerCurveFraction(sec, secs[0], secs[secs.length - 1]) * W
   const Y = (w: number): number => H - (w / curveMax) * (H - 1)
+  const powerTicks = powerCurveAxisTicks(curveMax, curveStep, null, f.presentation.locale).map(
+    tick => ({ label: tick.label, vbY: Y(tick.watts) }),
+  )
+  const durationMarkers = [1, 60, 300, 1200, 3600, 10_800]
+  const curveDurTicks = embedded
+    ? embeddedPowerCurveDurationTicks(secs[0], secs[secs.length - 1], durationMarkers)
+    : powerCurveDurationTicks(secs[0], secs[secs.length - 1], durationMarkers)
   const toPath = (pts: PowerCurvePoint[]): string =>
     powerCurvePathPoints(pts)
       .map((c, i) => `${i ? 'L' : 'M'} ${X(c.s).toFixed(2)} ${Y(c.w).toFixed(2)}`)
@@ -9113,6 +9424,16 @@ export const buildPowerCurve = <N>(
     'aria-valuenow': curve[0].s,
     'aria-valuetext': initialValueText,
   })
+  f.add(
+    s,
+    buildPowerCurveGrid(
+      f,
+      'power',
+      powerTicks.map(tick => tick.vbY),
+      H,
+    ),
+    buildPowerCurveGrid(f, 'duration', curveDurTicks.map(X), H),
+  )
   if (visibleSixWeekRef.length >= 2)
     f.add(
       s,
@@ -9178,10 +9499,6 @@ export const buildPowerCurve = <N>(
     )
   f.add(s, f.svg('path', { d: toPath(curve), class: 'tri-curve-line' }))
   f.add(s, f.svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H }))
-  const durationMarkers = [1, 60, 300, 1200, 3600, 10_800]
-  const curveDurTicks = embedded
-    ? embeddedPowerCurveDurationTicks(secs[0], secs[secs.length - 1], durationMarkers)
-    : powerCurveDurationTicks(secs[0], secs[secs.length - 1], durationMarkers)
   const pointMarkers: N[] = []
   if (visibleRef.length > 0) {
     const initialRef = visibleRef.find(point => point.s === curve[0].s)
@@ -9272,10 +9589,7 @@ export const buildPowerCurve = <N>(
     axisFrame(
       f,
       s,
-      powerCurveAxisTicks(curveMax, curveStep, null, f.presentation.locale).map(tick => ({
-        label: tick.label,
-        vbY: Y(tick.watts),
-      })),
+      powerTicks,
       H,
       curveDurTicks.map((sec, idx) => ({
         label: dlabel(sec),

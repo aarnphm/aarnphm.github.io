@@ -74,6 +74,7 @@ import {
 import { localDateTimeUtcMs, localIsoDay } from '../../util/local-date'
 import { latestProviderSync } from '../../util/provider-sync'
 import { runBestEfforts } from '../../util/run-best-efforts'
+import { DEFAULT_GEAR_CASSETTE } from '../../util/triathlon-gear-ratio'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
 import { buildWalkPowerEstimate, type WalkPowerEstimate } from '../../util/walk-power'
 import {
@@ -409,6 +410,8 @@ export interface ActivityGearShift {
   frontTeeth: number
   rearGearNum: number
   rearTeeth: number
+  // Present when the head unit's teeth were wrong and teeth come from the gear number instead.
+  teethSource?: 'gear-number'
 }
 
 export interface ActivityRiderPositionChange {
@@ -3216,6 +3219,41 @@ function projectedGearShifts(
   })
 }
 
+// Until the Edge bike profile was set (first correct ride 2026-07-22), the Garmin wrote its
+// default Di2 teeth while the bike ran 52/36 with an Ultegra 11-34. Di2 gear numbers stayed
+// right (front 1 = small ring, rear 1 = largest cog), so teeth are read back from them.
+const GARMIN_DEFAULT_PROFILE_UNTIL = Date.parse('2026-07-22T00:00:00Z')
+const GARMIN_DEFAULT_PROFILES = [
+  { front: [39, 53], rear: [23, 21, 19, 18, 17, 16, 15, 14, 13, 12, 11] },
+  { front: [39, 53], rear: [26, 23, 21, 19, 17, 16, 15, 14, 13, 12, 11, 10] },
+] as const
+const FITTED_DRIVETRAIN = {
+  front: [36, 52],
+  rear: [...DEFAULT_GEAR_CASSETTE.cogs].reverse(),
+} as const
+
+function garminGearShiftsWithFittedTeeth(
+  activity: RawStravaActivity,
+  shifts: ActivityGearShift[],
+): ActivityGearShift[] {
+  if (!(Date.parse(activity.startDate) < GARMIN_DEFAULT_PROFILE_UNTIL)) return shifts
+  const recordedDefault = GARMIN_DEFAULT_PROFILES.some(profile =>
+    shifts.every(
+      shift =>
+        profile.front[shift.frontGearNum - 1] === shift.frontTeeth &&
+        profile.rear[shift.rearGearNum - 1] === shift.rearTeeth,
+    ),
+  )
+  if (!recordedDefault) return shifts
+  return shifts.map(shift => {
+    const frontTeeth = FITTED_DRIVETRAIN.front[shift.frontGearNum - 1]
+    const rearTeeth = FITTED_DRIVETRAIN.rear[shift.rearGearNum - 1]
+    return frontTeeth == null || rearTeeth == null
+      ? shift
+      : { ...shift, frontTeeth, rearTeeth, teethSource: 'gear-number' }
+  })
+}
+
 function activityGearShifts(
   activity: RawStravaActivity,
   garminMatch: GarminActivityMatch | null,
@@ -3239,7 +3277,7 @@ function activityGearShifts(
       garmin?.gearShifts?.[garminMatch.activity.id] ?? [],
       timedStreamAlignment(garmin?.streams?.[garminMatch.activity.id]),
     )
-    if (projected.length > 0) return projected
+    if (projected.length > 0) return garminGearShiftsWithFittedTeeth(activity, projected)
   }
   return []
 }
@@ -4755,12 +4793,7 @@ export function buildPayload(
         : ftp != null
           ? derivePowerBounds(ftp)
           : []
-  const wahooStamina = estimateWahooCyclingStamina(
-    wahoo ?? null,
-    garmin,
-    ftp,
-    inputMaxHeartRate ?? hrmax,
-  )
+  const wahooStamina = estimateWahooCyclingStamina(wahoo ?? null, ftp, inputMaxHeartRate ?? hrmax)
 
   const starts: [number, number][] = []
   for (const { a } of activities) {

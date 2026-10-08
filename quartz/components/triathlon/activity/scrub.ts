@@ -10,12 +10,14 @@ import {
 } from '../../../util/power-curve'
 import { swimChartMetric, type SwimChartMetric } from '../../../util/swim-metrics'
 import { clock } from '../../../util/triathlon-card'
+import { buildPowerCurveGrid } from '../../../util/triathlon-card'
 import { nearestPowerCurvePoint } from '../../../util/triathlon-card'
 import { powerCurveFraction } from '../../../util/triathlon-card'
 import { powerCurveHoverAt } from '../../../util/triathlon-card'
 import { powerCurveAxisTicks, powerCurveValueText } from '../../../util/triathlon-card'
 import { powerHistogramReadout } from '../../../util/triathlon-card'
 import { swimTrendHoverAt } from '../../../util/triathlon-card'
+import { SHIFTING_SETTINGS, type ShiftingSetting } from '../../../util/triathlon-card'
 import { runWalkSegmentAt } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
 import { powerCurveReferenceLabel } from '../../../util/triathlon-i18n'
@@ -25,6 +27,7 @@ import { swimActivityHeaderValue } from '../../../util/triathlon-i18n'
 import { swimActivityPointText } from '../../../util/triathlon-i18n'
 import { swimActivityValueText } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
+import { createDomFactory } from '../runtime/dom'
 import { setupCyclingWattsCharts } from './cycling-watts'
 import { syncPowerCurveActivityLink } from './power-links'
 import { setupSwimPowerCharts } from './swim-power'
@@ -100,6 +103,67 @@ export const setCyclingChartMode = (chart: HTMLElement, mode: CyclingChartMode):
       pane.setAttribute('aria-hidden', String(!visible))
     }
   }
+}
+
+const shiftDatasetKey = (setting: ShiftingSetting): string =>
+  `shift${setting[0].toUpperCase()}${setting.slice(1)}`
+
+const shiftOption = (setting: ShiftingSetting, option: string | undefined): string | null =>
+  SHIFTING_SETTINGS.find(entry => entry.setting === setting)?.options.find(
+    candidate => candidate === option,
+  ) ?? null
+
+// Settings live on the activity so a profile re-render (zoom, metric switch) keeps them.
+export const setShiftSetting = (chart: HTMLElement, setting: ShiftingSetting, option: string) => {
+  if (!shiftOption(setting, option)) return
+  const activity = chart.closest<HTMLElement>('.tri-act')
+  const key = shiftDatasetKey(setting)
+  if (activity) activity.dataset[key] = option
+  const charts = activity
+    ? Array.from(activity.querySelectorAll<HTMLElement>('.tri-shift-chart'))
+    : [chart]
+  for (const sibling of charts) {
+    sibling.dataset[key] = option
+    if (setting === 'view') sibling.classList.remove('tri-elev-wrap--read', 'tri-chart--hover')
+    for (const item of sibling.querySelectorAll<HTMLElement>(
+      `.tri-shift-settings-option[data-shift-setting="${setting}"]`,
+    ))
+      item.setAttribute('aria-checked', String(item.dataset.shiftOption === option))
+  }
+}
+
+export const restoreShiftSettings = (root: HTMLElement): void => {
+  const chart = root.querySelector<HTMLElement>('.tri-shift-chart')
+  const activity = chart?.closest<HTMLElement>('.tri-act')
+  if (!chart || !activity) return
+  for (const { setting } of SHIFTING_SETTINGS) {
+    const option = shiftOption(setting, activity.dataset[shiftDatasetKey(setting)])
+    if (option) setShiftSetting(chart, setting, option)
+  }
+}
+
+const shiftMenuItems = (menu: HTMLElement): HTMLButtonElement[] =>
+  Array.from(menu.querySelectorAll<HTMLButtonElement>('.tri-shift-settings-option'))
+
+const closeShiftMenu = (picker: HTMLElement, restoreFocus = false): void => {
+  const trigger = picker.querySelector<HTMLButtonElement>('.tri-shift-settings-trigger')
+  const menu = picker.querySelector<HTMLElement>('.tri-shift-settings-menu')
+  if (!trigger || !menu || menu.hidden) return
+  menu.hidden = true
+  trigger.setAttribute('aria-expanded', 'false')
+  if (restoreFocus) trigger.focus({ preventScroll: true })
+}
+
+const openShiftMenu = (picker: HTMLElement): void => {
+  const trigger = picker.querySelector<HTMLButtonElement>('.tri-shift-settings-trigger')
+  const menu = picker.querySelector<HTMLElement>('.tri-shift-settings-menu')
+  if (!trigger || !menu) return
+  menu.hidden = false
+  trigger.setAttribute('aria-expanded', 'true')
+  const items = shiftMenuItems(menu)
+  ;(items.find(item => item.getAttribute('aria-checked') === 'true') ?? items[0])?.focus({
+    preventScroll: true,
+  })
 }
 
 export const setupChartScrub = (
@@ -270,6 +334,14 @@ export const setupChartScrub = (
         label.style.top = `${(((height - (tick.watts / maxWatts) * (height - 1)) / height) * 100).toFixed(2)}%`
         return label
       }),
+    )
+    svg.querySelector('.tri-power-curve-grid--power')?.replaceWith(
+      buildPowerCurveGrid(
+        createDomFactory(presentation()),
+        'power',
+        ticks.map(tick => height - (tick.watts / maxWatts) * (height - 1)),
+        height,
+      ),
     )
   }
   type CurveModelValue = { label: string; watts: number }
@@ -759,7 +831,68 @@ export const setupChartScrub = (
     setRunMetricMode(chart, mode)
     return true
   }
+  const shiftSettingsFromTarget = (target: EventTarget | null): boolean => {
+    if (!(target instanceof Element)) return false
+    const picker = target.closest<HTMLElement>('.tri-shift-settings')
+    const chart = picker?.closest<HTMLElement>('.tri-shift-chart')
+    if (!picker || !chart) return false
+    if (target.closest('.tri-shift-settings-trigger')) {
+      const menu = picker.querySelector<HTMLElement>('.tri-shift-settings-menu')
+      if (menu?.hidden) openShiftMenu(picker)
+      else closeShiftMenu(picker)
+      return true
+    }
+    const item = target.closest<HTMLButtonElement>('.tri-shift-settings-option')
+    const setting = SHIFTING_SETTINGS.find(entry => entry.setting === item?.dataset.shiftSetting)
+    if (!item || !setting || !item.dataset.shiftOption) return true
+    setShiftSetting(chart, setting.setting, item.dataset.shiftOption)
+    // Group, label and value only shape the histogram, so picking one shows it.
+    if (setting.setting !== 'view') setShiftSetting(chart, 'view', 'hist')
+    return true
+  }
+  const onShiftMenuKey = (event: KeyboardEvent): void => {
+    if (!(event.target instanceof Element)) return
+    const picker = event.target.closest<HTMLElement>('.tri-shift-settings')
+    const menu = picker?.querySelector<HTMLElement>('.tri-shift-settings-menu')
+    if (!picker || !menu) return
+    if (event.key === 'Escape' && !menu.hidden) {
+      event.preventDefault()
+      event.stopPropagation()
+      closeShiftMenu(picker, true)
+      return
+    }
+    if (event.target.closest('.tri-shift-settings-trigger')) {
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+      event.preventDefault()
+      openShiftMenu(picker)
+      return
+    }
+    const items = shiftMenuItems(menu)
+    const current = items.indexOf(event.target as HTMLButtonElement)
+    if (current < 0) return
+    const next =
+      event.key === 'ArrowDown'
+        ? (current + 1) % items.length
+        : event.key === 'ArrowUp'
+          ? (current - 1 + items.length) % items.length
+          : event.key === 'Home'
+            ? 0
+            : event.key === 'End'
+              ? items.length - 1
+              : -1
+    if (next < 0) {
+      if (event.key === 'Tab') closeShiftMenu(picker)
+      return
+    }
+    event.preventDefault()
+    items[next].focus({ preventScroll: true })
+  }
+  const onShiftMenuOutside = (event: PointerEvent): void => {
+    for (const picker of scope.querySelectorAll<HTMLElement>('.tri-shift-settings'))
+      if (!(event.target instanceof Node && picker.contains(event.target))) closeShiftMenu(picker)
+  }
   const onChartClick = (event: MouseEvent): void => {
+    if (shiftSettingsFromTarget(event.target)) return
     if (setRunMetricModeFromTarget(event.target)) return
     if (setCyclingChartModeFromTarget(event.target)) return
     if (!(event.target instanceof Element)) return
@@ -895,6 +1028,8 @@ export const setupChartScrub = (
   scope.addEventListener('keydown', onKey)
   scope.addEventListener('keydown', onModeKey)
   scope.addEventListener('click', onChartClick)
+  scope.addEventListener('keydown', onShiftMenuKey)
+  document.addEventListener('pointerdown', onShiftMenuOutside)
   scope.addEventListener('tri:swim-restore', onSwimRestore)
   window.addEventListener('tri:locale', onLocale)
   onLocale()
@@ -914,6 +1049,8 @@ export const setupChartScrub = (
     scope.removeEventListener('keydown', onKey)
     scope.removeEventListener('keydown', onModeKey)
     scope.removeEventListener('click', onChartClick)
+    scope.removeEventListener('keydown', onShiftMenuKey)
+    document.removeEventListener('pointerdown', onShiftMenuOutside)
     scope.removeEventListener('tri:swim-restore', onSwimRestore)
     window.removeEventListener('tri:locale', onLocale)
   }

@@ -2767,7 +2767,7 @@ test('projects Wahoo balance, respiration, shifting, and cycling dynamics onto a
   assert.equal(withoutSummit.bestEfforts?.climbs[0]?.source, 'garmin-climbpro')
   assert.deepEqual(detail.staminaTrace, {
     source: 'garden-estimate',
-    method: 'garden-stamina-v1',
+    method: 'garden-stamina-v2',
     ftpWatts: 230,
     maxHeartRateBpm: 196,
   })

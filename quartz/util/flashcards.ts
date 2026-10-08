@@ -80,9 +80,9 @@ function stripFrontmatter(source: string): { body: string; offset: number } {
   return { body: source, offset: 0 }
 }
 
-function makeQaCard(front: string, back: string): Card {
+function makeQaCard(front: string, back: string, pin?: string): Card {
   return {
-    id: hashCard(`Q:${normalize(front)} A:${normalize(back)}`),
+    id: pin ?? hashCard(`Q:${normalize(front)} A:${normalize(back)}`),
     kind: 'qa',
     front,
     back,
@@ -272,14 +272,14 @@ function renderCloze(
   return out
 }
 
-function makeClozeCards(sentence: string): Card[] {
+function makeClozeCards(sentence: string, pins?: string[]): Card[] {
   const matches = findClozeMatches(sentence)
   if (matches.length === 0) return []
   const groupId = hashCard(`C:${normalize(sentence)}`)
   return matches.map((match, index) => {
     const { answer, hint } = splitClozeValue(match.value)
     return {
-      id: hashCard(`C:${normalize(sentence)} ${index}`),
+      id: pins?.[index] ?? hashCard(`C:${normalize(sentence)} ${index}`),
       kind: 'cloze' as const,
       front: renderCloze(sentence, matches, index, 'front'),
       back: renderCloze(sentence, matches, index, 'back'),
@@ -297,9 +297,15 @@ interface Pending {
   a: string[]
   c: string[]
   n: string[]
+  /** `ID:` pins, one per card (Q/A) or one per deletion (cloze), in order. */
+  pins?: string[]
+  pinLine?: number
   sawAnswer: boolean
   sawNote: boolean
 }
+
+// Strict hex keeps a face line such as "ID: identity morphism" out of the pin syntax.
+const pinRe = /^\s*ID:\s*([0-9a-f]{8}(?:\s+[0-9a-f]{8})*)\s*$/
 
 export function parseFlashcards(source: string): Deck {
   const { body, offset } = stripFrontmatter(source)
@@ -319,14 +325,21 @@ export function parseFlashcards(source: string): Deck {
       const back = cur.a.join('\n').trim()
       if (!cur.sawAnswer || back.length === 0) {
         errors.push({ line: lineNo(cur.startLine), message: 'Q: card missing A:' })
+      } else if (cur.pins && cur.pins.length !== 1) {
+        errors.push({ line: lineNo(cur.pinLine!), message: 'ID: a Q: card takes one id' })
       } else {
-        cards.push(withNote(makeQaCard(front, back)))
+        cards.push(withNote(makeQaCard(front, back, cur.pins?.[0])))
       }
     } else {
       const sentence = cur.c.join('\n').trim()
-      const siblings = makeClozeCards(sentence)
+      const siblings = makeClozeCards(sentence, cur.pins)
       if (siblings.length === 0) {
         errors.push({ line: lineNo(cur.startLine), message: 'C: card missing [deletions]' })
+      } else if (cur.pins && cur.pins.length !== siblings.length) {
+        errors.push({
+          line: lineNo(cur.pinLine!),
+          message: `ID: ${cur.pins.length} ids for ${siblings.length} deletions`,
+        })
       } else {
         cards.push(...siblings.map(withNote))
       }
@@ -340,9 +353,23 @@ export function parseFlashcards(source: string): Deck {
     const aMatch = /^\s*A:(.*)$/.exec(line)
     const cMatch = /^\s*C:(.*)$/.exec(line)
     const nMatch = /^\s*N:(.*)$/.exec(line)
+    const pinMatch = pinRe.exec(line)
 
     if (separatorRe.test(line.trim())) {
       flush()
+      continue
+    }
+    if (pinMatch && cur) {
+      if (cur.kind === 'qa' && !cur.sawAnswer) {
+        errors.push({ line: lineNo(i), message: 'ID: before A:' })
+        cur = null
+      } else if (cur.pins) {
+        errors.push({ line: lineNo(i), message: 'ID: given twice' })
+        cur = null
+      } else {
+        cur.pins = pinMatch[1].split(/\s+/)
+        cur.pinLine = i
+      }
       continue
     }
     if (qMatch) {
@@ -395,6 +422,14 @@ export function parseFlashcards(source: string): Deck {
     else cur.q.push(line)
   }
   flush()
+
+  // A duplicate id would share one schedule row between two prompts, so the deck refuses it.
+  const seen = new Map<string, number>()
+  cards.forEach((card, index) => {
+    const first = seen.get(card.id)
+    if (first === undefined) seen.set(card.id, index)
+    else errors.push({ line: 0, message: `duplicate card id ${card.id}` })
+  })
 
   return { cards, errors }
 }

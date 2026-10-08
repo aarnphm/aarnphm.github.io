@@ -60,6 +60,7 @@ import { parseMyWindsockGraphs, type MyWindsockArchiveReference } from './mywind
 import { projectMyWindsockRoute, type MyWindsockRoute } from './mywindsock-route'
 import { joinSegments, QUARTZ } from './path'
 import { latestProviderSync } from './provider-sync'
+import { applyStaminaLedger } from './stamina-ledger'
 import { readStravaCacheFileSync } from './strava-cache-file'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
 import { applySwimPhysiology } from './swim-physiology'
@@ -1059,6 +1060,7 @@ export function buildStravaData(
     applyHeartRatePhysiology(detail, ATHLETE.hrMax)
     applySwimPhysiology(detail, ATHLETE.hrMax)
   }
+  applyStaminaLedger(payload.details, ATHLETE.hrMax)
   const trackedCache = applyActivityTracking(
     strava,
     garmin,

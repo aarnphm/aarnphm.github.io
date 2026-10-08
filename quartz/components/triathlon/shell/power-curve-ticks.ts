@@ -35,13 +35,17 @@ export const setupPowerCurveTicks = (root: ParentNode): (() => void) => {
           ),
         ) && !tick.matches('.tri-cax-xt--first, .tri-cax-xt--last'),
     )
-    return optional.length > 0 ? [{ axis, ticks, optional }] : []
+    const grid = axis.closest('.tri-cax-frame')?.querySelector('.tri-power-curve-grid--duration')
+    const lines = Array.from(grid?.querySelectorAll<SVGLineElement>('line') ?? [])
+    return ticks.length > 0 && (optional.length > 0 || lines.length > 0)
+      ? [{ axis, ticks, optional, lines }]
+      : []
   })
   if (axes.length === 0) return () => {}
   let frame = 0
   const update = (): void => {
     frame = 0
-    for (const { axis, ticks, optional } of axes) {
+    for (const { axis, ticks, optional, lines } of axes) {
       if (axis.getBoundingClientRect().width === 0) continue
       for (const tick of optional) tick.hidden = false
       const visible = powerCurveTickVisibility(
@@ -53,6 +57,13 @@ export const setupPowerCurveTicks = (root: ParentNode): (() => void) => {
       ticks.forEach((tick, index) => {
         if (optional.includes(tick)) tick.hidden = !visible[index]
       })
+      const visiblePositions = new Set(
+        ticks
+          .filter(tick => tick.getBoundingClientRect().width > 0)
+          .map(tick => Number.parseFloat(tick.style.left).toFixed(2)),
+      )
+      for (const line of lines)
+        line.toggleAttribute('hidden', !visiblePositions.has(line.dataset.curveGridPct ?? ''))
     }
   }
   const schedule = (): void => {
@@ -69,6 +80,9 @@ export const setupPowerCurveTicks = (root: ParentNode): (() => void) => {
     resize.disconnect()
     window.removeEventListener('resize', schedule)
     if (frame !== 0) window.cancelAnimationFrame(frame)
-    for (const { optional } of axes) for (const tick of optional) tick.hidden = false
+    for (const { optional, lines } of axes) {
+      for (const tick of optional) tick.hidden = false
+      for (const line of lines) line.removeAttribute('hidden')
+    }
   }
 }

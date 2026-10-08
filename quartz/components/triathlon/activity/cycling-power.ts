@@ -1,7 +1,8 @@
 import type { StravaActivityDetail } from '../../../plugins/stores/strava'
-import type { GardenEnvironmentSample } from '../../../util/activity-environment'
+import type { ActivityWindSample } from '../../../util/activity-wind'
 import type { CyclingPowerPoint } from '../../../util/cycling-power'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import { preferredActivityWind } from '../../../util/activity-wind'
 import { formatAltitude, scrubDist, speedKph, zoneClock } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
 
@@ -34,7 +35,7 @@ export const setCyclingPowerWindow = (
 type WindMetric = 'headwindKph' | 'crosswindKph' | 'apparentAirSpeedKph' | 'yawDeg'
 
 export const cyclingPowerWindAtElapsed = (
-  samples: readonly GardenEnvironmentSample[],
+  samples: readonly ActivityWindSample[],
   elapsedS: number,
   metric: WindMetric,
 ): number | null => {
@@ -47,18 +48,20 @@ export const cyclingPowerWindAtElapsed = (
   const rightIndex = samples.findIndex(sample => sample.elapsedS >= elapsedS)
   const right = samples[rightIndex]
   if (!right) return null
-  if (right.elapsedS === elapsedS) return right[metric]
+  if (right.elapsedS === elapsedS) return right[metric] ?? null
   const left = samples[rightIndex - 1]
-  if (!left || left[metric] == null || right[metric] == null) return null
+  const leftValue = left?.[metric]
+  const rightValue = right[metric]
+  if (leftValue == null || rightValue == null) return null
   const fraction = (elapsedS - left.elapsedS) / (right.elapsedS - left.elapsedS)
-  return left[metric] + (right[metric] - left[metric]) * fraction
+  return leftValue + (rightValue - leftValue) * fraction
 }
 
 export const cyclingPowerReadout = (
   presentation: TriathlonPresentation,
   point: CyclingPowerPoint,
   window: CyclingPowerWindow,
-  weather: readonly GardenEnvironmentSample[],
+  wind: readonly ActivityWindSample[],
   distanceAvailable = true,
 ): string => {
   const label = (key: string): string => triText(presentation.locale, key)
@@ -71,10 +74,10 @@ export const cyclingPowerReadout = (
     `${label(window === '30' ? '30 s average' : '5 min average')} ${watts(power)}`,
     `${label('ride average')} ${watts(point.cumulativePowerWatts)}`,
   ]
-  const headwind = cyclingPowerWindAtElapsed(weather, point.elapsedS, 'headwindKph')
-  const crosswind = cyclingPowerWindAtElapsed(weather, point.elapsedS, 'crosswindKph')
-  const apparent = cyclingPowerWindAtElapsed(weather, point.elapsedS, 'apparentAirSpeedKph')
-  const yaw = cyclingPowerWindAtElapsed(weather, point.elapsedS, 'yawDeg')
+  const headwind = cyclingPowerWindAtElapsed(wind, point.elapsedS, 'headwindKph')
+  const crosswind = cyclingPowerWindAtElapsed(wind, point.elapsedS, 'crosswindKph')
+  const apparent = cyclingPowerWindAtElapsed(wind, point.elapsedS, 'apparentAirSpeedKph')
+  const yaw = cyclingPowerWindAtElapsed(wind, point.elapsedS, 'yawDeg')
   const signedSpeed = (value: number): string =>
     `${value < 0 ? '−' : '+'}${speedKph(presentation, Math.abs(value))}`
   if (headwind != null) values.push(`${label('headwind')} ${signedSpeed(headwind)}`)
@@ -93,7 +96,7 @@ export const setupCyclingPowerCharts = (
 ): (() => void) => {
   const points = detail.cyclingPowerTrace?.points ?? []
   const distanceAvailable = detail.distanceKm > 0 || points.some(point => point.distanceKm > 0)
-  const weather = detail.analyses.derived.environment?.samples ?? []
+  const wind = preferredActivityWind(detail).samples
   const onClick = (event: MouseEvent): void => {
     if (!(event.target instanceof Element)) return
     const button = event.target.closest<HTMLButtonElement>('.tri-cycling-power-window')
@@ -112,7 +115,7 @@ export const setupCyclingPowerCharts = (
       null,
     )
     if (point) {
-      const readout = cyclingPowerReadout(presentation, point, window, weather, distanceAvailable)
+      const readout = cyclingPowerReadout(presentation, point, window, wind, distanceAvailable)
       graph?.setAttribute('aria-valuetext', readout)
       const output = chart.querySelector<HTMLElement>('.tri-fig-readout')
       if (output) output.textContent = readout
