@@ -6,7 +6,7 @@ import type { TriathlonRenderData } from '../triathlon/render-data'
 import { ROUTE_SPORTS, SPORT_ICON } from '../../plugins/stores/strava'
 import { InlineMath } from '../../util/math-text'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
-import { distCombined, KM_TO_MI, LAYERS_ICON } from '../../util/triathlon-card'
+import { distCombined, LAYERS_ICON } from '../../util/triathlon-card'
 import {
   CERAMICSPEED_CROSS_CHAIN_RESEARCH,
   CERAMICSPEED_TEST_CADENCE_RPM,
@@ -27,8 +27,11 @@ import { CalendarPanel, CalendarSourceControls } from '../triathlon/calendar/Cal
 import { ShortcutHint } from '../triathlon/shell/ShortcutHint'
 import { EquipmentUsage } from '../triathlon/tools/EquipmentUsage'
 import { Maintenance } from '../triathlon/tools/Maintenance'
+import { PacePanel } from '../triathlon/tools/PaceChart'
 import { TirePressure } from '../triathlon/tools/TirePressure'
 import { deriveTrainingDocument, type TrainingTreeNode } from '../triathlon/training/tree'
+
+export { PacePanel } from '../triathlon/tools/PaceChart'
 
 export const DISPATCH_ICON =
   'M189 375Q189 338 207 306.5Q225 275 256.5 257Q288 239 325 239H675Q712 239 743.5 257Q775 275 793 306.5Q811 338 811 375V775Q811 812 793 843.5Q775 875 743.5 893Q712 911 675 911H325Q288 911 256.5 893Q225 875 207 843.5Q189 812 189 775ZM261 375V775Q261 802 279.5 820.5Q298 839 325 839H675Q702 839 720.5 820.5Q739 802 739 775V375Q739 348 720.5 329.5Q702 311 675 311H325Q298 311 279.5 329.5Q261 348 261 375ZM411 275H339V100Q339 85 349.5 74.5Q360 64 375 64Q390 64 400.5 74.5Q411 85 411 100ZM661 275H589V150Q589 135 599.5 124.5Q610 114 625 114Q640 114 650.5 124.5Q661 135 661 150ZM375 539H625A36 36 0 0 1 625 611H375A36 36 0 0 1 375 539Z'
@@ -45,43 +48,6 @@ const NAV = [
 ] as const
 
 export type TriView = (typeof NAV)[number][0]
-
-const PACE_MI = [
-  '3:30',
-  '4:00',
-  '4:30',
-  '5:00',
-  '5:30',
-  '6:00',
-  '6:30',
-  '7:00',
-  '7:30',
-  '8:00',
-  '8:30',
-  '9:00',
-  '9:30',
-  '10:00',
-  '10:30',
-  '11:00',
-  '11:30',
-  '12:00',
-  '12:30',
-]
-const SWIM_100 = ['1:20', '1:30', '1:40', '1:50', '2:00', '2:10', '2:20', '2:30']
-const TOUR_DE_FRANCE_2026_AVERAGE_KMH = 3197 / (73 + 56 / 60 + 26 / 3600)
-const BIKE_SPEEDS = [
-  { kmh: 25 },
-  { kmh: 28 },
-  { kmh: 30 },
-  { kmh: 32 },
-  { kmh: 35 },
-  { kmh: 38 },
-  { kmh: 40 },
-  { kmh: TOUR_DE_FRANCE_2026_AVERAGE_KMH, reference: 'TdF' },
-  { kmh: 45 },
-  { kmh: 30 / KM_TO_MI },
-  { kmh: 35 / KM_TO_MI },
-]
 
 export const CONVERSIONS: [string, string][] = [
   ['pace', '/100m × 16.09 → /mi'],
@@ -225,35 +191,6 @@ export const GEAR: [string, string[]][] = [
 ]
 
 const BIKE_GEAR_GROUP_COUNT = 2
-
-const paceKm = (mi: string): string => {
-  const [m = '0', s = '0'] = mi.split(':')
-  const secKm = Math.round((Number(m) * 60 + Number(s)) * KM_TO_MI)
-  return `${Math.floor(secKm / 60)}:${(secKm % 60).toString().padStart(2, '0')}`
-}
-const swimMi = (p: string): string => {
-  const [m = '0', s = '0'] = p.split(':')
-  const secMi = Math.round((Number(m) * 60 + Number(s)) * 16.0934)
-  return `${Math.floor(secMi / 60)}:${(secMi % 60).toString().padStart(2, '0')}`
-}
-const runKmh = (mi: string): string => {
-  const [m = '0', s = '0'] = mi.split(':')
-  const minPerMi = Number(m) + Number(s) / 60
-  return minPerMi > 0 ? (60 / minPerMi / KM_TO_MI).toFixed(1) : '0'
-}
-const swimKmh = (p: string): string => {
-  const [m = '0', s = '0'] = p.split(':')
-  const sec = Number(m) * 60 + Number(s)
-  return sec > 0 ? ((100 / sec) * 3.6).toFixed(1) : '0'
-}
-const kmhToMph = (kmh: number): string => (kmh * KM_TO_MI).toFixed(1)
-const bikeKmh = (kmh: number): string => (Number.isInteger(kmh) ? String(kmh) : kmh.toFixed(1))
-const clockFromSec = (sec: number): string => {
-  const s = Math.round(sec)
-  return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`
-}
-const bikePaceKm = (kmh: number): string => clockFromSec(3600 / kmh)
-const bikePaceMi = (kmh: number): string => clockFromSec(3600 / (kmh * KM_TO_MI))
 
 export const TriathlonSubnav = ({ active, root }: { active?: TriView; root: string }) => (
   <nav class="tri-subnav" aria-label="triathlon sections">
@@ -1154,98 +1091,6 @@ export const GearPanel = ({
         <Maintenance maintenance={maintenance} />
         <GearRows groups={GEAR.slice(BIKE_GEAR_GROUP_COUNT)} equipment={equipment} />
       </div>
-    </div>
-  </div>
-)
-
-export const PacePanel = ({ page }: { page?: boolean }) => (
-  <div class="tri-pace-wrap">
-    {!page && (
-      <button
-        class="tri-pace-btn tri-key-anchor"
-        type="button"
-        aria-expanded="false"
-        aria-controls="tri-pace-panel"
-      >
-        <span data-i18n="pace">pace</span>
-        <ShortcutHint>g p</ShortcutHint>
-      </button>
-    )}
-    <div
-      id={page ? undefined : 'tri-pace-panel'}
-      class="tri-pace"
-      aria-hidden={page ? 'false' : 'true'}
-    >
-      <span class="tri-pace-sec" data-i18n="run">
-        run
-      </span>
-      <div class="tri-pace-row tri-pace-head">
-        <span>/mi</span>
-        <span>/km</span>
-        <button class="tri-pace-unit" type="button">
-          mph
-        </button>
-      </div>
-      {PACE_MI.map(mi => {
-        const k = runKmh(mi)
-        return (
-          <div class="tri-pace-row">
-            <span class="tri-pace-mi">{mi}</span>
-            <span class="tri-pace-km">{paceKm(mi)}</span>
-            <span class="tri-pace-spd" data-kph={k} data-mph={kmhToMph(Number(k))}>
-              {kmhToMph(Number(k))}
-            </span>
-          </div>
-        )
-      })}
-      <span class="tri-pace-sec" data-i18n="swim">
-        swim
-      </span>
-      <div class="tri-pace-row tri-pace-head">
-        <span>/100m</span>
-        <span>/mi</span>
-        <button class="tri-pace-unit" type="button">
-          mph
-        </button>
-      </div>
-      {SWIM_100.map(p => {
-        const k = swimKmh(p)
-        return (
-          <div class="tri-pace-row">
-            <span class="tri-pace-mi">{p}</span>
-            <span class="tri-pace-km">{swimMi(p)}</span>
-            <span class="tri-pace-spd" data-kph={k} data-mph={kmhToMph(Number(k))}>
-              {kmhToMph(Number(k))}
-            </span>
-          </div>
-        )
-      })}
-      <span class="tri-pace-sec" data-i18n="bike">
-        bike
-      </span>
-      <div class="tri-pace-row tri-pace-head">
-        <span>/mi</span>
-        <span>/km</span>
-        <button class="tri-pace-unit" type="button">
-          mph
-        </button>
-      </div>
-      {BIKE_SPEEDS.map(({ kmh, reference }) => (
-        <div class="tri-pace-row">
-          <span class="tri-pace-mi">{bikePaceMi(kmh)}</span>
-          <span class="tri-pace-km">{bikePaceKm(kmh)}</span>
-          <span class="tri-pace-spd">
-            <span data-kph={bikeKmh(kmh)} data-mph={kmhToMph(kmh)}>
-              {kmhToMph(kmh)}
-            </span>
-            {reference && (
-              <abbr class="tri-pace-ref" title="2026 Tour de France winner average">
-                {reference}
-              </abbr>
-            )}
-          </span>
-        </div>
-      ))}
     </div>
   </div>
 )
