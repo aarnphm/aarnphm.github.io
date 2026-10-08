@@ -4,7 +4,7 @@ aliases:
 date: '2025-09-08'
 description: CUDA execution, memory traffic, and precision-specific performance limits
 id: GPU programming
-modified: 2026-06-07 01:19:33 GMT-04:00
+modified: 2026-10-08 09:07:57 GMT-04:00
 permalinks:
   - /gpus
 socials:
@@ -130,7 +130,7 @@ $$
 
 ```jsx imports={Zoomable,Roofline}
 <Zoomable label="Roofline for H100 SXM">
-  <Roofline caption="One H100 SXM in dense BF16: $P_{\max}=989.5\ \mathrm{TFLOP/s}$, $B=3.35\ \mathrm{TB/s}$. In decode, each 2-byte weight feeds $2b$ FLOPs across a batch of $b$ sequences, so $I\approx b$ FLOP/byte. This counts the weight GEMMs only. KV-cache reads grow with context length and move each point left. Prefill over $2048$ tokens reuses each weight $2048$ times and sits on the compute roof." />
+  <Roofline caption="One H100 SXM in dense BF16: $P_{\max}=989.5\ \mathrm{TFLOP/s}$, $B=3.35\ \mathrm{TB/s}$. The plotted points use a weight-only model: each 2-byte weight is read from HBM once and contributes $2b$ FLOPs across $b$ token rows, giving $I\approx b$ FLOP/byte. Activation traffic and repeated weight loads are omitted. Under these assumptions, a $2048$-token prefill lies beyond the ridge. The roof is an upper bound; actual throughput can be lower. Attention and its context-dependent KV-cache traffic need a separate calculation." />
 </Zoomable>
 ```
 
