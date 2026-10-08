@@ -240,7 +240,9 @@ describe('ID: pins', () => {
   test('a pinned Q/A keeps the old id after rewording', () => {
     const before = parseFlashcards('Q: What is ∂∂?\nA: zero')
     const old = before.cards[0].id
-    const deck = parseFlashcards(`Q: Why is ∂∂ = 0?\nA: faces cancel in pairs\nN: see notes\nID: ${old}`)
+    const deck = parseFlashcards(
+      `Q: Why is ∂∂ = 0?\nA: faces cancel in pairs\nN: see notes\nID: ${old}`,
+    )
     assert.deepEqual(deck.errors, [])
     assert.equal(deck.cards[0].id, old)
     assert.equal(deck.cards[0].note, 'see notes')

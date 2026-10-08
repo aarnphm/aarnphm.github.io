@@ -576,10 +576,11 @@ function parseCalendarUnits(html: string): CourseStudy | null {
   const study: CourseStudy = { unitKind: 'lecture', parts: [], trailing: [], units: [] }
   let sawHeader = false
   for (const row of rows) {
-    const cells = Array.from(
-      row.matchAll(/<(t[hd])\b([^>]*)>([\s\S]*?)<\/t[hd]>/gi),
-      match => ({ tag: match[1].toLowerCase(), attrs: match[2], lines: cellText(match[3]) }),
-    )
+    const cells = Array.from(row.matchAll(/<(t[hd])\b([^>]*)>([\s\S]*?)<\/t[hd]>/gi), match => ({
+      tag: match[1].toLowerCase(),
+      attrs: match[2],
+      lines: cellText(match[3]),
+    }))
     if (cells.length === 0) continue
     const first = cells[0]
     if (!sawHeader && first.tag === 'th' && cells.length > 1) {
@@ -693,10 +694,7 @@ function attachUnitResources(study: CourseStudy, resources: CourseResource[]): v
   }
 }
 
-function courseStudy(
-  pages: CoursePage[],
-  resources: CourseResource[],
-): CourseStudy | null {
+function courseStudy(pages: CoursePage[], resources: CourseResource[]): CourseStudy | null {
   const calendar = pages.find(page => slugTitle(page.title) === 'calendar')
   const study = (calendar && parseCalendarUnits(calendar.content)) || unitsFromResources(resources)
   if (!study) return null
@@ -709,7 +707,7 @@ function yamlFlow(value: unknown): string {
   if (typeof value === 'number') return String(value)
   if (value && typeof value === 'object') {
     const entries = Object.entries(value as Record<string, unknown>).filter(([, entry]) =>
-      Array.isArray(entry) ? entry.length > 0 : entry !== '' && entry !== null && entry !== 0
+      Array.isArray(entry) ? entry.length > 0 : entry !== '' && entry !== null && entry !== 0,
     )
     return `{${entries.map(([key, entry]) => `${key}: ${yamlFlow(entry)}`).join(', ')}}`
   }
@@ -725,7 +723,9 @@ function courseStudyYaml(context: CourseContext, data: JsonRecord, study: Course
     number: context.number || stringValue(data, 'site_short_id'),
     name: context.title,
     term: `${normalizeText(stringValue(data, 'term')).toLowerCase()} ${stringValue(data, 'year')}`.trim(),
-    level: stringList(data, 'level').map(value => value.toLowerCase()).join(', '),
+    level: stringList(data, 'level')
+      .map(value => value.toLowerCase())
+      .join(', '),
     instructors,
     source: context.sourceUrl,
     unitKind: study.unitKind,
@@ -1092,8 +1092,7 @@ async function fetchCourse(input: string): Promise<string> {
   const rootText = await fetchText(`${base}data.json`)
   const parsedRoot: unknown = JSON.parse(rootText)
   const siteUid = isRecord(parsedRoot) ? stringValue(parsedRoot, 'site_uid') : ''
-  const courseRoot =
-    (await existingRootForSite(siteUid)) ?? path.join(defaultCourseRoot, slug)
+  const courseRoot = (await existingRootForSite(siteUid)) ?? path.join(defaultCourseRoot, slug)
   await fs.mkdir(courseRoot, { recursive: true })
 
   const rootData = await writeFetchedJson(courseRoot, 'data.json', rootText)
@@ -1150,11 +1149,7 @@ async function vendorCourse(courseRoot: string): Promise<void> {
 
   await removeGeneratedCollectionMarkdown(context)
   const study = courseStudy(pages, resources)
-  await writeMarkdown(
-    context,
-    '',
-    await courseHome(context, rootData, pages, collections, study),
-  )
+  await writeMarkdown(context, '', await courseHome(context, rootData, pages, collections, study))
 
   for (const page of pages) {
     await writeMarkdown(context, page.relDir, await pageMarkdown(context, page))
