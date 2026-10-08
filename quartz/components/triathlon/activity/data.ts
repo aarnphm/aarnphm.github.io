@@ -10,6 +10,7 @@ import { CYCLING_POWER_MAX_POINTS } from '../../../util/cycling-power'
 import { GARDEN_CYCLING_STAMINA_METHOD } from '../../../util/cycling-stamina'
 import { HEART_RATE_PHYSIOLOGY_METHOD } from '../../../util/heart-rate-physiology'
 import { isMyWindsockArchiveReference } from '../../../util/mywindsock-graphs'
+import { STAMINA_LEDGER_METHOD, STAMINA_LEDGER_OFFSET_METHOD } from '../../../util/stamina-ledger'
 import {
   isStravaDetailShardPath,
   STRAVA_DETAIL_INDEX_KIND,
@@ -251,6 +252,14 @@ const isStaminaTrace = (value: unknown): boolean => {
     return (
       value.method === 'garmin-native' && value.ftpWatts === null && value.maxHeartRateBpm === null
     )
+  if (value.method === STAMINA_LEDGER_OFFSET_METHOD)
+    return (
+      value.source === 'garden-estimate' &&
+      value.ftpWatts === null &&
+      value.maxHeartRateBpm === null &&
+      finite(value.garminOffset) &&
+      value.garminOffset > 0
+    )
   return (
     value.source === 'garden-estimate' &&
     value.method === GARDEN_CYCLING_STAMINA_METHOD &&
@@ -262,6 +271,15 @@ const isStaminaTrace = (value: unknown): boolean => {
     value.maxHeartRateBpm > 0
   )
 }
+
+const isStaminaLedger = (value: unknown): boolean =>
+  value == null ||
+  (isRecord(value) &&
+    value.method === STAMINA_LEDGER_METHOD &&
+    typeof value.garminVisible === 'boolean' &&
+    [value.fatigueDeficit, value.recoveryHours, value.recoveryFloor, value.garminOffset].every(
+      item => finite(item) && item >= 0,
+    ))
 
 const isPerformanceConditionTrace = (value: unknown): boolean => {
   if (!isRecord(value)) return false
@@ -850,8 +868,12 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     ) ||
     !(value.device === null || isActivityDevice(value.device)) ||
     !isStaminaTrace(value.staminaTrace) ||
+    !isStaminaLedger(value.staminaLedger) ||
     (isRecord(value.staminaTrace) &&
-      ((value.staminaTrace.source === 'garden-estimate' && value.sport !== 'bike') ||
+      ((value.staminaTrace.source === 'garden-estimate' &&
+        (value.staminaTrace.method === STAMINA_LEDGER_OFFSET_METHOD
+          ? value.sport !== 'bike' && value.sport !== 'run'
+          : value.sport !== 'bike')) ||
         (value.staminaTrace.source === 'garmin' &&
           value.sport !== 'bike' &&
           value.sport !== 'run'))) ||

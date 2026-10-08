@@ -42,6 +42,7 @@ import {
 } from './power-curve'
 import { RUN_PACE_ZONE_NAMES, runPaceZoneRange } from './run-pace-zones'
 import { resolveSleepMetrics, type SleepMetrics } from './sleep-metrics'
+import { STAMINA_LEDGER_OFFSET_METHOD } from './stamina-ledger'
 import {
   swimLengthAverages,
   swimLengthMetrics,
@@ -3143,6 +3144,18 @@ export interface ActivityPhysiologyTracePoint {
   performanceCondition?: number | null
 }
 
+const staminaLedgerDescription = (d: StravaActivityDetail): string | null => {
+  const ledger = d.staminaLedger
+  if (!ledger) return null
+  const recovery =
+    ledger.recoveryHours < 1
+      ? ''
+      : ledger.recoveryFloor > 0
+        ? ` · ${ledger.recoveryHours.toFixed(0)} h recovery time left holds a ${ledger.recoveryFloor.toFixed(1)}-point floor`
+        : ` · ${ledger.recoveryHours.toFixed(0)} h recovery time left (no floor before Garmin recovery readings)`
+  return `starts ${Math.max(ledger.fatigueDeficit, ledger.recoveryFloor).toFixed(1)} points down: ${ledger.fatigueDeficit.toFixed(1)} carried from earlier sessions (5.6 h recovery)${recovery}`
+}
+
 const swimPhysiologyDescription = (d: StravaActivityDetail, metric: string): string => {
   const model = d.swimPhysiology
   if (!model) return ''
@@ -3162,7 +3175,7 @@ const swimPhysiologyDescription = (d: StravaActivityDetail, metric: string): str
     model.speedBasis === 'pool-length'
       ? 'length times include turns and push-offs; rests and missing HR remain gaps'
       : 'currents and GPS error affect speed'
-  return `Garden swim ${metric} estimate · HR / max HR ${model.maxHeartRateBpm} bpm, ${speed}, ${strokes} · first minute excluded from the three-minute opening baseline · 60 s smoothing · ${(model.coverage * 100).toFixed(0)}% telemetry coverage · ${metric === 'stamina' ? 'starts from the stamina carried from earlier sessions (4 h recovery); depletion integrates observed intervals only; HR load increases with relative drag demand and strokes per metre; current and potential coincide' : 'speed per HR relative to the opening baseline, penalized by extra strokes per metre'} · experimental session proxy; ${limitation}`
+  return `Garden swim ${metric} estimate · HR / max HR ${model.maxHeartRateBpm} bpm, ${speed}, ${strokes} · first minute excluded from the three-minute opening baseline · 60 s smoothing · ${(model.coverage * 100).toFixed(0)}% telemetry coverage · ${metric === 'stamina' ? `${staminaLedgerDescription(d) ?? 'starts from the stamina carried from earlier sessions'}; depletion integrates observed intervals only; HR load increases with relative drag demand and strokes per metre; current and potential coincide` : 'speed per HR relative to the opening baseline, penalized by extra strokes per metre'} · experimental session proxy; ${limitation}`
 }
 
 export const activityPhysiologyTracePoints = (
@@ -3297,18 +3310,24 @@ export const buildStaminaChart = <N>(
         : heartRateEstimate
           ? {
               'data-gloss': '',
-              'data-gloss-def': `Garden HR estimate · starts from the stamina carried from earlier sessions (4 h recovery) · observed HR / max HR ${heartRateEstimate.maxHeartRateBpm} bpm · ${d.sport === 'run' ? 'run' : 'ride'} curve fit to Garmin native traces${d.sport === 'run' || d.sport === 'bike' ? ', scaled to recent native sessions' : ''} · current and potential coincide`,
+              'data-gloss-def': `Garden HR estimate · ${staminaLedgerDescription(d) ?? 'starts from the stamina carried from earlier sessions'} · observed HR / max HR ${heartRateEstimate.maxHeartRateBpm} bpm · ${d.sport === 'run' ? 'run' : 'ride'} curve fit to Garmin native traces${d.sport === 'run' || d.sport === 'bike' ? ', scaled to recent native sessions' : ''} · current and potential coincide`,
               tabindex: '0',
             }
-          : estimatedTrace
+          : estimatedTrace?.method === STAMINA_LEDGER_OFFSET_METHOD
             ? {
                 'data-gloss': '',
-                'data-gloss-def': `${triText(f.presentation.locale, 'estimate')} · FTP ${estimatedTrace.ftpWatts} W · ${triText(f.presentation.locale, 'max hr')} ${estimatedTrace.maxHeartRateBpm} bpm`,
+                'data-gloss-def': `Garmin Connect trace lowered ${estimatedTrace.garminOffset.toFixed(1)} points for sessions Garmin did not record${staminaLedgerDescription(d) ? ` · ${staminaLedgerDescription(d)}` : ''}`,
                 tabindex: '0',
               }
-            : d.staminaTrace?.source === 'garmin'
-              ? { 'data-gloss': '', 'data-gloss-def': 'Garmin Connect', tabindex: '0' }
-              : undefined,
+            : estimatedTrace
+              ? {
+                  'data-gloss': '',
+                  'data-gloss-def': `${triText(f.presentation.locale, 'estimate')} · FTP ${estimatedTrace.ftpWatts} W · ${triText(f.presentation.locale, 'max hr')} ${estimatedTrace.maxHeartRateBpm} bpm${staminaLedgerDescription(d) ? ` · ${staminaLedgerDescription(d)}` : ''}`,
+                  tabindex: '0',
+                }
+              : d.staminaTrace?.source === 'garmin'
+                ? { 'data-gloss': '', 'data-gloss-def': 'Garmin Connect', tabindex: '0' }
+                : undefined,
     ),
   )
   if (swimEstimate)
