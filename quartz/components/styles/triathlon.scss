@@ -5009,14 +5009,94 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   max-height: min(22rem, 50vh);
 }
 
-.tri-tools .tri-pace .tri-pace-row > :nth-child(1) {
-  text-align: left;
+.tri-tools .tri-pace--page {
+  max-width: none;
+  min-width: 0;
+  gap: var(--space-6);
+  padding: 0;
+  overflow: visible;
+  background: none;
+  backdrop-filter: none;
+  border: 0;
 }
-.tri-tools .tri-pace .tri-pace-row > :nth-child(2) {
-  text-align: center;
+
+.tri-pace-note {
+  margin: 0;
+  color: var(--darkgray);
+  font-size: 0.58rem;
+  line-height: 1.5;
 }
-.tri-tools .tri-pace .tri-pace-row > :nth-child(3) {
-  text-align: right;
+
+.tri-pace-table-scroll {
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  @include thin-scrollbar;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.tri-pace-table {
+  width: 100%;
+  min-width: 44rem;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.66rem;
+  line-height: 1.5;
+  color: var(--dark);
+
+  caption {
+    padding: 0 0 var(--space-2);
+    color: var(--dark);
+    font-size: 0.58rem;
+    text-align: left;
+  }
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid color-mix(in srgb, var(--gray) 22%, transparent);
+    text-align: right;
+    white-space: nowrap;
+    font-weight: 400;
+
+    &:first-child {
+      text-align: left;
+    }
+  }
+
+  thead th {
+    font-size: 0.58rem;
+    color: var(--darkgray);
+    background: color-mix(in srgb, var(--lightgray) 28%, var(--light));
+  }
+
+  .tri-pace-unit {
+    min-height: 1.5rem;
+    color: var(--darkgray);
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+
+  .tri-pace-spd {
+    color: var(--darkgray);
+  }
+
+  .tri-pace-split {
+    background: color-mix(in srgb, var(--lightgray) 12%, transparent);
+  }
+
+  @media (hover: hover) {
+    tbody tr:hover {
+      background: color-mix(in srgb, var(--tri-accent) 6%, var(--light));
+    }
+  }
 }
 
 .tri-calc--page {
