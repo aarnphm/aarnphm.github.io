@@ -47,7 +47,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
     getQuartzComponents() {
       return [Head, ...Header, ...BeforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
-    async *partialEmit(ctx, content, resources) {},
+    async *partialEmit(_ctx, _content, _resources) {},
     async *emit(ctx, content, resources) {
       if (ctx.argv.watch && !ctx.argv.force) return []
 
