@@ -83,7 +83,7 @@ const configuration: GlobalConfiguration = {
     queryDtype: 'q4',
     shardSizeRows: 1024,
     hnsw: { M: 16, efConstruction: 200 },
-    chunking: { chunkSize: 128, chunkOverlap: 64 },
+    chunking: { chunkSize: 512, chunkOverlap: 128 },
     vllm: { concurrency: 16, batchSize: 128 },
   },
   keybinds: {
