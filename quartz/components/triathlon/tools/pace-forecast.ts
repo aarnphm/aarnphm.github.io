@@ -9,11 +9,11 @@ import { start } from '../../../functional'
 import { isPaceSport } from '../../../util/pace-features'
 import { PaceForecaster } from '../../../util/pace-forecast'
 import { Z80 } from '../../../util/pace-forecast'
+import { buildDatePicker, DATE_PICKER_RENDER_EVENT } from '../../controls/date-picker'
 import { buildIcon } from '../activity/primitives'
 import { hms } from '../analytics/shared'
 import { raceLegPace } from '../analytics/shared'
 import { el } from '../runtime/dom'
-import { buildPredDatePicker } from './date-picker'
 import {
   initialPaceForecastModel,
   paceForecastBounds,
@@ -114,8 +114,8 @@ export const syncPredDateControl = (
   block: HTMLElement,
   f: PaceForecaster,
 ): void => {
-  const trigger = block.querySelector<HTMLButtonElement>('.tri-pred-date')
-  const text = block.querySelector<HTMLElement>('.tri-pred-date-text')
+  const trigger = block.querySelector<HTMLButtonElement>('.g-datepicker-trigger')
+  const text = block.querySelector<HTMLElement>('.g-datepicker-text')
   const bounds = predHistoryBounds(block, f)
   if (!trigger || !text) return
   trigger.disabled = bounds == null
@@ -131,8 +131,9 @@ export const syncPredDateControl = (
   block.dataset.compareDate = date
   trigger.dataset.value = date
   text.textContent = formatter.longDate(date)
-  const panel = block.querySelector<HTMLElement>('.tri-pred-calendar')
-  if (panel?.matches(':popover-open')) panel.dispatchEvent(new CustomEvent('tri:date-render'))
+  const panel = block.querySelector<HTMLElement>('.g-datepicker-panel')
+  if (panel?.matches(':popover-open'))
+    panel.dispatchEvent(new CustomEvent(DATE_PICKER_RENDER_EVENT))
 }
 
 export const predComparison = (
@@ -438,13 +439,17 @@ export const buildDistancePredictor = (
   const clearPredDate = (): void => {
     dispatchMessage({ type: 'clear-date' })
   }
-  const datePicker = buildPredDatePicker(
-    context.formatter,
-    block,
-    activateCustomCompare,
-    selectPredDate,
-    clearPredDate,
-  )
+  const datePicker = buildDatePicker({
+    id: 'tri-pred-comparison-date',
+    label: context.formatter.text('comparison date'),
+    labels: context.formatter,
+    selected: () => block.dataset.compareDate,
+    min: () => block.dataset.compareMin,
+    max: () => block.dataset.compareMax,
+    onOpen: activateCustomCompare,
+    onSelect: selectPredDate,
+    onClear: clearPredDate,
+  })
   for (const s of PRED_SPORTS) {
     const on = s.sport === 'run'
     const tab = el(

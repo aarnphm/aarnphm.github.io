@@ -295,18 +295,18 @@ export const TrainingCalendarView = ({
         </div>
         <div class="tri-calendar-actions tri-training-header-controls">
           <div class="tri-pred-controls tri-training-week-controls">
-            <button type="button" class="tri-pred-cal-action" data-training-today>
+            <button type="button" class="g-text-button" data-training-today>
               {text('today')}
             </button>
             <div class="tri-training-jump" data-training-date-picker />
             <div class="tri-training-week-buttons">
               <button
                 type="button"
-                class="tri-pred-cal-nav"
+                class="g-icon-button"
                 data-training-shift="-1"
                 aria-label={text(month ? 'previous month' : 'previous week')}
               >
-                <svg class="tri-pred-cal-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <svg class="g-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path
                     d="M10 3.5 5.5 8l4.5 4.5"
                     stroke="currentColor"
@@ -318,11 +318,11 @@ export const TrainingCalendarView = ({
               </button>
               <button
                 type="button"
-                class="tri-pred-cal-nav"
+                class="g-icon-button"
                 data-training-shift="1"
                 aria-label={text(month ? 'next month' : 'next week')}
               >
-                <svg class="tri-pred-cal-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <svg class="g-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path
                     d="M6 3.5 10.5 8 6 12.5"
                     stroke="currentColor"

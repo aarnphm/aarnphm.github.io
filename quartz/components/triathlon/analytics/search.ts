@@ -1,8 +1,8 @@
 import type { ActivitySummary } from '../../../plugins/stores/analytics'
 import type { ActivityKind } from '../../../plugins/stores/strava'
+import { isoDateFromLocal } from '../../controls/dates'
 import { el } from '../runtime/dom'
 import { svg } from '../runtime/dom'
-import { predDateFromLocal } from '../tools/date-picker'
 
 export const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
   {
@@ -224,13 +224,13 @@ export interface ActivityQuery {
 export const daySpan = (days: number): DateSpan => {
   const now = new Date()
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1))
-  return { start: predDateFromLocal(start), end: predDateFromLocal(now) }
+  return { start: isoDateFromLocal(start), end: isoDateFromLocal(now) }
 }
 
 export const monthSpan = (months: number): DateSpan => {
   const now = new Date()
   const start = new Date(now.getFullYear(), now.getMonth() - months, now.getDate())
-  return { start: predDateFromLocal(start), end: predDateFromLocal(now) }
+  return { start: isoDateFromLocal(start), end: isoDateFromLocal(now) }
 }
 
 export const dateFilterSpan = (value: string): DateSpan | null => {

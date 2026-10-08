@@ -111,13 +111,9 @@
 .tri-training-jump {
   display: flex;
 
-  .tri-pred-date-wrap {
+  .g-datepicker {
     display: flex;
     inline-size: 7.6rem;
-  }
-
-  .tri-pred-date {
-    color: var(--darkgray);
   }
 }
 
@@ -141,38 +137,32 @@
 }
 
 .tri-training-calendar .tri-training-week-controls {
-  --tri-pred-control-height: calc(var(--calendar-control-size) - 2px);
+  --control-height: calc(var(--calendar-control-size) - 2px);
   flex: none;
 
-  .tri-pred-cal-nav,
-  .tri-pred-cal-action {
+  .g-icon-button,
+  .g-text-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    block-size: calc(var(--tri-pred-control-height) + 2px);
+    block-size: calc(var(--control-height) + 2px);
     border: 1px solid var(--calendar-line);
-    border-radius: var(--radius-none);
-    background: var(--tri-pred-surface);
+    background: var(--control-surface);
   }
 
-  .tri-pred-cal-nav {
-    inline-size: calc(var(--tri-pred-control-height) + 2px);
+  .g-icon-button {
+    inline-size: calc(var(--control-height) + 2px);
   }
 
-  .tri-pred-cal-action {
+  .g-text-button {
     padding: 0 0.55rem;
     font-size: 0.58rem;
     line-height: 1;
   }
 
-  .tri-pred-date {
+  .g-datepicker-trigger {
     border-color: var(--calendar-line);
-  }
-
-  .tri-pred-cal-nav,
-  .tri-pred-date-ico {
-    color: var(--darkgray);
   }
 }
 

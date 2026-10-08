@@ -6,12 +6,12 @@ import { formatThermalTemperature } from '../../../../util/triathlon-card'
 import { KM_TO_MI } from '../../../../util/triathlon-card'
 import { zoneClock } from '../../../../util/triathlon-card'
 import { isRecord } from '../../../../util/type-guards'
+import { buildDatePicker } from '../../../controls/date-picker'
+import { parseIsoDate } from '../../../controls/dates'
 import { buildIcon } from '../../activity/primitives'
 import { el } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
 import { nextMapMetricShortcutIndex } from '../../shell/command-palette'
-import { buildDatePicker } from '../../tools/date-picker'
-import { parsePredDate } from '../../tools/date-picker'
 import { anaTitle } from '../shared'
 import { buildTrendGlyph } from '../shared'
 import { clampN } from '../shared'
@@ -216,8 +216,8 @@ export const buildDistributions = (
 
   const startPicker = buildDatePicker({
     id: 'tri-distribution-start-date',
-    formatter: context.formatter,
     label: text('range start'),
+    labels: context.formatter,
     selected: () => startDate,
     min: () => minimumDate,
     max: () => maximumDate,
@@ -771,8 +771,7 @@ export const buildDistributions = (
       button.classList.toggle('tri-dist-range--on', selected)
       button.setAttribute('aria-pressed', String(selected))
     }
-    const dateText = startPicker.trigger.querySelector<HTMLElement>('.tri-pred-date-text')
-    if (dateText) dateText.textContent = context.formatter.shortDate(startDate)
+    startPicker.text.textContent = context.formatter.shortDate(startDate)
     startPicker.trigger.dataset.value = startDate
     if (startPicker.panel.matches(':popover-open')) startPicker.render()
     const points = selectedActivities()
@@ -809,7 +808,7 @@ export const buildDistributions = (
           : model.range
       const restoredStartDate =
         typeof stored.startDate === 'string' &&
-        parsePredDate(stored.startDate) &&
+        parseIsoDate(stored.startDate) &&
         stored.startDate >= minimumDate &&
         stored.startDate <= maximumDate
           ? stored.startDate
