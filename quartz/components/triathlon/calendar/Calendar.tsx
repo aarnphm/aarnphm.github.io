@@ -28,6 +28,7 @@ import {
   calendarToday,
   calendarWeekdayLabel,
 } from './display'
+import { RaceProjection } from './RaceProjection'
 import { TrainingCalendar } from './TrainingCalendar'
 
 const MONTHS = Array.from({ length: 12 }, (_, month) => month)
@@ -998,11 +999,33 @@ const CalendarSeason = ({
               </div>
             )}
           </div>
+          <div class="tri-calendar-projection" data-race-projection-slot hidden />
+        </div>
+        <div class="tri-calendar-preview-empty">
+          <h2 data-i18n="race preview">race preview</h2>
+          <p data-i18n="Select a race to see its course and schedule.">
+            Select a race to see its course and schedule.
+          </p>
+          {next && (
+            <a
+              href={`#${linkPrefix}race-${next.id}`}
+              data-calendar-target={`${prefix}race-${next.id}`}
+              data-calendar-card={next.id}
+            >
+              <span data-i18n="next up">next up</span>
+              <strong>{next.name}</strong>
+            </a>
+          )}
         </div>
         <div id={`${id}-detail`} class="tri-calendar-detail" role="region" aria-hidden="true" />
       </div>
       {calendar.events.map(event => (
-        <EventCard event={event} year={calendar.year} fetched={calendar.fetched} />
+        <>
+          <EventCard event={event} year={calendar.year} fetched={calendar.fetched} />
+          <template data-race-projection-template={event.id}>
+            <RaceProjection event={event} />
+          </template>
+        </>
       ))}
       <div id={`${id}-card`} class="tri-calendar-pop" popover="manual" role="tooltip" />
       {calendar.checked && (

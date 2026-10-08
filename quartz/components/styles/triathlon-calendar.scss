@@ -107,6 +107,10 @@
   }
 }
 
+.tri-calendar[data-calendar-year] {
+  container: tri-race-calendar / inline-size;
+}
+
 :root[saved-theme='dark'] .tri-calendar {
   --calendar-swim: var(--tri-swim);
   --calendar-bike: var(--tri-bike);
@@ -310,6 +314,7 @@
 .tri-calendar-strip {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
+  border-block: 1px solid var(--calendar-line);
 
   > a,
   > span {
@@ -377,11 +382,32 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
-// Both views share one grid cell, so the calendar keeps its height when switching views.
+.tri-calendar[data-calendar-view='year'] .tri-calendar-body {
+  grid-template-columns: minmax(0, 72rem) minmax(22rem, 1fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.tri-calendar[data-calendar-view='year'][data-calendar-detail] .tri-calendar-body {
+  min-height: max(24rem, calc(100dvh - 18rem));
+}
+
 .tri-calendar-views {
   container: tri-calendar-views / inline-size;
   grid-area: 1 / 1;
   display: grid;
+}
+
+.tri-calendar-views:has(> .tri-calendar-projection) {
+  align-content: start;
+}
+
+.tri-calendar-projection {
+  grid-area: 2 / 1;
+  min-width: 0;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--calendar-line);
 }
 
 .tri-calendar-view {
@@ -391,14 +417,13 @@
   min-width: 0;
 
   &[inert] {
-    visibility: hidden;
+    display: none;
   }
 }
 
 .tri-calendar-list {
-  flex: 1;
   display: grid;
-  grid-auto-rows: 1fr;
+  align-content: start;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -576,9 +601,10 @@
 }
 
 .tri-calendar-year-grid {
-  flex: 1;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-content: start;
+  align-items: start;
   border-top: 1px solid var(--calendar-line);
   border-inline-end: 1px solid var(--calendar-line);
 }
@@ -586,7 +612,10 @@
 .tri-calendar-month {
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  aspect-ratio: 1;
   min-width: 0;
+  min-height: 0;
   padding: 0.6rem 0.45rem;
   border-bottom: 1px solid var(--calendar-line);
   border-inline-start: 1px solid var(--calendar-line);
@@ -606,10 +635,269 @@
   color: var(--gray);
   font-size: 0.58rem;
 }
+
+.tri-calendar-race-projection {
+  --projection-label-size: 0.56rem;
+  --projection-value-size: 0.62rem;
+  --projection-note-size: 0.54rem;
+  container: tri-race-projection / inline-size;
+  min-width: 0;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  line-height: 1.5;
+
+  h3 {
+    margin: 0 0 0.6rem;
+    font-family: var(--codeFont);
+    font-size: 0.72rem;
+    font-weight: 400;
+  }
+}
+
+.tri-calendar-projection-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.6rem 1.6rem;
+}
+
+.tri-calendar-scenario,
+.tri-calendar-race-inputs {
+  th {
+    white-space: normal;
+  }
+
+  td {
+    text-align: right;
+  }
+
+  label {
+    cursor: pointer;
+  }
+
+  input,
+  select,
+  button {
+    box-sizing: border-box;
+    min-height: 1.35rem;
+    max-width: 100%;
+    padding: 0.08rem 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--dark);
+    font: inherit;
+    font-size: 0.58rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  input {
+    appearance: textfield;
+    width: 4rem;
+    text-align: right;
+    cursor: text;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+
+    &:hover {
+      text-decoration: underline dotted var(--calendar-line);
+    }
+
+    &:focus-visible {
+      outline: 0;
+      text-decoration: underline solid var(--dark);
+    }
+  }
+
+  :is(select, button):focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  input:invalid {
+    outline: 1px solid var(--dark);
+  }
+}
+
+.tri-calendar-scenario {
+  width: 18rem;
+  max-width: 100%;
+}
+
+.tri-calendar-scenario button {
+  margin: 0.25rem 0 0 auto;
+  min-height: 1.25rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--calendar-line);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: var(--projection-note-size);
+
+  &:hover {
+    border-color: var(--dark);
+  }
+}
+
+.tri-calendar-scenario tfoot td {
+  text-align: right;
+}
+
+.tri-calendar-projection-basis,
+.tri-calendar-projection-method {
+  margin-block: 0.45rem;
+  font-family: var(--codeFont);
+  font-size: var(--projection-note-size);
+  line-height: 1.5;
+  color: var(--darkgray);
+}
+
+.tri-calendar-race-prediction,
+.tri-calendar-race-assumptions {
+  min-width: 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.tri-calendar-race-prediction {
+  &[aria-busy='true'] {
+    opacity: 0.6;
+  }
+
+  p {
+    margin-block: 0.35rem;
+  }
+}
+
+.tri-calendar-race-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: 0.35rem 1.6rem;
+}
+
+.tri-calendar-projection-table {
+  border-collapse: collapse;
+  margin: 0;
+  font-size: var(--projection-label-size);
+  line-height: 1.45;
+
+  th,
+  td {
+    border: 0;
+    padding: 0.2rem 0;
+    vertical-align: middle;
+  }
+
+  th {
+    padding-right: 0.75rem;
+    color: var(--darkgray);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  td {
+    font-size: var(--projection-value-size);
+    color: var(--dark);
+    font-variant-numeric: tabular-nums;
+  }
+
+  td + td {
+    padding-left: 0.75rem;
+    color: var(--darkgray);
+    font-size: var(--projection-label-size);
+  }
+
+  tr {
+    border-bottom: 1px solid var(--calendar-line);
+
+    &:last-child {
+      border: 0;
+    }
+  }
+}
+
+.tri-calendar-race-note {
+  color: var(--darkgray);
+  font-size: var(--projection-note-size);
+  line-height: 1.45;
+}
+
+.tri-calendar-race-trend {
+  margin-block: 0.35rem;
+
+  td:nth-child(2) {
+    white-space: nowrap;
+  }
+
+  svg {
+    display: block;
+    width: 5rem;
+    height: 1.5rem;
+    color: var(--calendar-event-ink);
+  }
+
+  polyline {
+    stroke: currentColor;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+}
+
+.tri-calendar-race-assumptions {
+  summary {
+    padding-block: 0.25rem;
+    font-size: var(--projection-label-size);
+    cursor: pointer;
+  }
+
+  summary:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  p {
+    color: var(--darkgray);
+    margin-block: 0.45rem;
+    font-size: var(--projection-note-size);
+    line-height: 1.45;
+  }
+}
+
+.tri-calendar-race-inputs {
+  width: 100%;
+  margin-block: 0.5rem;
+
+  small {
+    display: block;
+    font-size: 0.5rem;
+    color: var(--darkgray);
+  }
+}
+
+.tri-calendar-race-extra label {
+  white-space: nowrap;
+}
+
+@container tri-race-projection (max-width: 40rem) {
+  .tri-calendar-projection-overview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-calendar-scenario {
+    width: 100%;
+  }
+}
+
 .tri-calendar-days {
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  grid-auto-rows: 1.3rem;
+  grid-template-rows: repeat(7, minmax(0, 1fr));
   gap: 0.1rem;
   align-items: stretch;
   text-align: center;
@@ -997,6 +1285,69 @@ a.tri-calendar-day {
   display: block;
 }
 
+.tri-calendar[data-calendar-view='year'] .tri-calendar-detail {
+  container: tri-calendar-detail / inline-size;
+  width: auto;
+  margin-left: 0;
+  align-self: stretch;
+}
+
+.tri-calendar-preview-empty {
+  display: none;
+  grid-area: 1 / 2;
+  align-self: start;
+  box-sizing: border-box;
+  min-height: 12rem;
+  padding: 1.2rem;
+  border: 1px solid var(--calendar-line);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  h2 {
+    color: var(--dark);
+    font-family: var(--bodyFont);
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    width: fit-content;
+    margin-top: 0.5rem;
+    color: var(--darkgray);
+    text-decoration: none;
+
+    strong {
+      color: var(--dark);
+      font-family: var(--bodyFont);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
+}
+
+.tri-calendar[data-calendar-view='year']:not([data-calendar-detail]) .tri-calendar-preview-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+@container tri-calendar-detail (min-width: 34rem) {
+  .tri-calendar-detail .tri-calendar-card-course {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 1fr);
+    align-items: start;
+    gap: 1.4rem;
+  }
+}
+
 .tri-calendar-card-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1141,6 +1492,17 @@ a.tri-calendar-day {
   gap: 0.4rem 1rem;
 }
 
+@container tri-race-calendar (max-width: 50rem) {
+  .tri-calendar[data-calendar-year] .tri-calendar-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .tri-calendar[data-calendar-view='year']:not([data-calendar-detail]) .tri-calendar-preview-empty {
+    display: none;
+  }
+}
+
 @container tri-calendar-body (max-width: 50rem) {
   .tri-calendar-detail {
     grid-area: 1 / 1 / 2 / 3;
@@ -1150,6 +1512,15 @@ a.tri-calendar-day {
 
   .tri-calendar[data-calendar-detail] .tri-calendar-views {
     visibility: hidden;
+  }
+
+  .tri-calendar[data-calendar-year][data-calendar-detail] .tri-calendar-views {
+    visibility: visible;
+  }
+
+  .tri-calendar[data-calendar-year] .tri-calendar-detail {
+    grid-area: 2 / 1;
+    block-size: min(36rem, 75dvh);
   }
 }
 
@@ -1209,15 +1580,25 @@ a.tri-calendar-day {
 }
 
 // Month columns follow the views' own width, which narrows while a detail sits beside them.
-@container tri-calendar-views (max-width: 46rem) {
+@container tri-calendar-views (max-width: 68rem) {
   .tri-calendar-year-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-@container tri-calendar-views (max-width: 32rem) {
+@container tri-calendar-views (max-width: 44rem) {
   .tri-calendar-year-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container tri-calendar-views (max-width: 30rem) {
+  .tri-calendar-race-trend svg {
+    width: 3rem;
+  }
+
+  .tri-calendar-year-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1234,11 +1615,6 @@ a.tri-calendar-day {
   }
   .tri-calendar-strip {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-  // Twelve months stack three wide here, far taller than the list; rows keep their own height.
-  .tri-calendar-list {
-    grid-auto-rows: auto;
-    align-content: start;
   }
   .tri-calendar-event {
     grid-template-columns: 3.6rem minmax(0, 1fr);
