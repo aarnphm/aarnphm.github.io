@@ -205,10 +205,7 @@ def main() -> None:
     help='MLX allocator limit (weights take 1.5 GiB)',
   )
   parser.add_argument(
-    '--cache-limit-mb',
-    type=int,
-    default=512,
-    help='MLX buffer cache limit',
+    '--cache-limit-mb', type=int, default=512, help='MLX buffer cache limit'
   )
   args = parser.parse_args()
   uvicorn.run(create_app(args), host=args.host, port=args.port)
