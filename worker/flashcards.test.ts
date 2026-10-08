@@ -40,18 +40,21 @@ async function sessionCookie(
 
 before(async () => {
   directory = await mkdtemp(path.join(tmpdir(), 'flashcards-router-'))
-  const migration = await readFile(
-    new URL('../migrations/flashcards/0000_sticky_meltdown.sql', import.meta.url),
-    'utf8',
-  )
+  const migration = (
+    await Promise.all(
+      ['0000_sticky_meltdown', '0001_charming_network'].map(name =>
+        readFile(new URL(`../migrations/flashcards/${name}.sql`, import.meta.url), 'utf8'),
+      ),
+    )
+  ).join('\n--> statement-breakpoint\n')
   const handlerPath = fileURLToPath(new URL('./flashcards.ts', import.meta.url))
   const main = path.join(directory, 'entry.ts')
   // Rows for two logins mirror production keys; the router only ever sees the owner session.
   await writeFile(
     main,
-    `import { handleFlashcardsReview, handleFlashcardsState } from ${JSON.stringify(handlerPath)}
+    `import { handleFlashcardsReview, handleFlashcardsState, handleFlashcardsUndo } from ${JSON.stringify(handlerPath)}
 const migration = ${JSON.stringify(migration)}
-const seed = (login, cardId) => ({ login, cardId, due: Date.now() + 86_400_000 })
+const seed = (login, cardId, deck = ${JSON.stringify(deck)}, due = Date.now() + 86_400_000) => ({ login, cardId, deck, due })
 export default {
   async fetch(request, env) {
     const pathname = new URL(request.url).pathname
@@ -63,10 +66,19 @@ export default {
     }
     if (pathname === '/__test/reset') {
       const insert = 'INSERT INTO flashcard_reviews VALUES (?, ?, ?, 3.1, 5, ?, 2, 1, 0, 0, ?)'
+      const rows = [
+        seed('aarnphm', 'owner-card'),
+        seed('mallory', 'mallory-card'),
+        seed('aarnphm', 'course-a', 'courses/x/lectures/01/flashcards', Date.now() - 1000),
+        seed('aarnphm', 'course-b', 'courses/x/lectures/02/flashcards'),
+        seed('aarnphm', 'course-other', 'courses/y/lectures/01/flashcards'),
+        seed('mallory', 'mallory-course', 'courses/x/lectures/01/flashcards'),
+      ]
       await env.FLASHCARDS.batch([
         env.FLASHCARDS.prepare('DELETE FROM flashcard_reviews'),
-        ...[seed('aarnphm', 'owner-card'), seed('mallory', 'mallory-card')].map(row =>
-          env.FLASHCARDS.prepare(insert).bind(row.login, row.cardId, ${JSON.stringify(deck)}, row.due, Date.now()),
+        env.FLASHCARDS.prepare('DELETE FROM flashcard_review_log'),
+        ...rows.map(row =>
+          env.FLASHCARDS.prepare(insert).bind(row.login, row.cardId, row.deck, row.due, Date.now() - 3_600_000),
         ),
       ])
       return Response.json({ reset: true })
@@ -77,8 +89,15 @@ export default {
       ).all()
       return Response.json(results)
     }
+    if (pathname === '/__test/log') {
+      const { results } = await env.FLASHCARDS.prepare(
+        'SELECT id, login, card_id AS cardId, grade, prior_reps AS priorReps FROM flashcard_review_log ORDER BY id',
+      ).all()
+      return Response.json(results)
+    }
     if (pathname === '/api/flashcards/state') return handleFlashcardsState(request, env)
     if (pathname === '/api/flashcards/review') return handleFlashcardsReview(request, env)
+    if (pathname === '/api/flashcards/undo') return handleFlashcardsUndo(request, env)
     return new Response('not found', { status: 404 })
   }
 }`,
@@ -153,9 +172,19 @@ async function rows() {
 }
 
 const seeded = [
+  { login: 'aarnphm', cardId: 'course-a', reps: 1 },
+  { login: 'aarnphm', cardId: 'course-b', reps: 1 },
+  { login: 'aarnphm', cardId: 'course-other', reps: 1 },
   { login: 'aarnphm', cardId: 'owner-card', reps: 1 },
   { login: 'mallory', cardId: 'mallory-card', reps: 1 },
+  { login: 'mallory', cardId: 'mallory-course', reps: 1 },
 ]
+
+const ownerHeaders = () => ({ Cookie: cookie, Origin: origin, 'Sec-Fetch-Site': 'same-origin' })
+
+async function log() {
+  return (await harness().fetch(`${origin}/__test/log`)).json()
+}
 
 test('state ignores a requested login without an owner session', async () => {
   const sessions: Record<string, string>[] = [
@@ -225,8 +254,84 @@ test('owner reviews land under the owner login, whatever login the body names', 
     assert.ok(typeof body.state.due === 'number' && body.state.due > Date.now())
   }
   assert.deepEqual(await rows(), [
+    { login: 'aarnphm', cardId: 'course-a', reps: 1 },
+    { login: 'aarnphm', cardId: 'course-b', reps: 1 },
+    { login: 'aarnphm', cardId: 'course-other', reps: 1 },
     { login: 'aarnphm', cardId: 'new-card', reps: 1 },
     { login: 'aarnphm', cardId: 'owner-card', reps: 2 },
     { login: 'mallory', cardId: 'mallory-card', reps: 1 },
+    { login: 'mallory', cardId: 'mallory-course', reps: 1 },
   ])
+})
+
+test('state requires exactly one of deck and prefix', async () => {
+  for (const query of ['', `?deck=${encodeURIComponent(deck)}&prefix=courses/`]) {
+    const response = await call(`/api/flashcards/state${query}`, { Cookie: cookie })
+    assert.equal(response.status, 400)
+    await response.text()
+  }
+})
+
+test('prefix state returns the owner rows under that prefix with deck, stability and r', async () => {
+  const response = await call('/api/flashcards/state?prefix=courses/x/', { Cookie: cookie })
+  assert.equal(response.status, 200)
+  const body = await json(response)
+  assert.equal(body.login, 'aarnphm')
+  assert.ok(Array.isArray(body.states))
+  const states = body.states.filter(isRecord)
+  assert.deepEqual(states.map(state => [state.cardId, state.deckSlug]).sort(), [
+    ['course-a', 'courses/x/lectures/01/flashcards'],
+    ['course-b', 'courses/x/lectures/02/flashcards'],
+  ])
+  for (const state of states) {
+    assert.equal(state.stability, 3.1)
+    assert.ok(typeof state.r === 'number' && state.r > 0 && state.r <= 1, JSON.stringify(state))
+  }
+  const anonymous = await call('/api/flashcards/state?prefix=courses/')
+  assert.deepEqual(await json(anonymous), { login: null, states: [] })
+})
+
+test('a review logs the prior state and undo restores it', async () => {
+  const graded = await review({ cardId: 'owner-card', deckSlug: deck, grade: 3 }, ownerHeaders())
+  assert.equal(graded.status, 200)
+  const body = await json(graded)
+  assert.ok(typeof body.reviewId === 'number')
+  assert.deepEqual(await log(), [
+    { id: body.reviewId, login: 'aarnphm', cardId: 'owner-card', grade: 3, priorReps: 1 },
+  ])
+
+  const undone = await call('/api/flashcards/undo', ownerHeaders(), { reviewId: body.reviewId })
+  assert.equal(undone.status, 200)
+  const restored = await json(undone)
+  assert.ok(isRecord(restored.state))
+  assert.equal(restored.state.reps, 1)
+  assert.deepEqual(await rows(), seeded)
+  assert.deepEqual(await log(), [])
+})
+
+test('undo of a new card deletes its row; unauthenticated and stale undos write nothing', async () => {
+  const graded = await json(
+    await review({ cardId: 'fresh', deckSlug: deck, grade: 4 }, ownerHeaders()),
+  )
+  const first = graded.reviewId
+  const again = await json(
+    await review({ cardId: 'fresh', deckSlug: deck, grade: 4 }, ownerHeaders()),
+  )
+  assert.ok(typeof first === 'number' && typeof again.reviewId === 'number')
+
+  const anonymous = await call('/api/flashcards/undo', { Origin: origin }, { reviewId: first })
+  assert.equal(anonymous.status, 401)
+  await anonymous.text()
+  const stale = await call('/api/flashcards/undo', ownerHeaders(), { reviewId: first })
+  assert.equal(stale.status, 409)
+  await stale.text()
+  assert.equal((await log()).length, 2)
+
+  const latest = await call('/api/flashcards/undo', ownerHeaders(), { reviewId: again.reviewId })
+  assert.equal(latest.status, 200)
+  const oldest = await call('/api/flashcards/undo', ownerHeaders(), { reviewId: first })
+  assert.equal(oldest.status, 200)
+  assert.deepEqual(await json(oldest), { state: null })
+  assert.deepEqual(await rows(), seeded)
+  assert.deepEqual(await log(), [])
 })
