@@ -7,9 +7,11 @@ import {
   QuartzComponentProps,
 } from '../types/component'
 import { clone } from '../util/clone'
+import { courseViews, unitManifest } from '../util/course'
 import { flashcardsSlug } from '../util/flashcards-path'
 import { htmlToJsx } from '../util/jsx'
 import {
+  FilePath,
   FullSlug,
   joinSegments,
   pathToRoot,
@@ -22,55 +24,97 @@ import { transcludeFinal } from './renderPage'
 import drillScript from './scripts/flashcards.inline'
 import style from './styles/flashcards.scss'
 
-export default (() => {
+interface Options {
+  /** Render an empty drill that pulls due cards from every deck under this slug prefix. */
+  merge?: { prefix: string; exit: FullSlug }
+}
+
+interface Shell {
+  deckSlug: FullSlug
+  cards: ElementContent[]
+  count: number
+  deckTitle: string
+  sourceHref: string
+  filePath: FilePath
+  data: Record<string, string>
+}
+
+function mergedShell(
+  componentData: QuartzComponentProps,
+  merge: NonNullable<Options['merge']>,
+): Shell {
+  const { ctx, fileData, allFiles } = componentData
+  const slug = fileData.slug as FullSlug
+  const decks = courseViews(allFiles, ctx.decks)
+    .flatMap(unitManifest)
+    .filter(deck => deck.deck.startsWith(merge.prefix))
+  return {
+    deckSlug: slug,
+    cards: [],
+    count: 0,
+    deckTitle: 'review',
+    sourceHref: resolveRelative(slug, merge.exit),
+    filePath: (fileData.filePath ?? `${slug}.md`) as FilePath,
+    data: { 'data-prefix': merge.prefix, 'data-decks': JSON.stringify(decks) },
+  }
+}
+
+function deckShell(componentData: QuartzComponentProps): Shell {
+  const { fileData } = componentData
+  const { htmlAst, filePath } = fileData
+  const ast = clone(htmlAst) as Root
+  const visited = new Set<FullSlug>([fileData.slug!])
+  const processed = transcludeFinal(ast, componentData, { visited }, { dynalist: false })
+
+  const origSlug = fileData.slug as FullSlug
+  const sourceSlug = fileData.flashcards!.sourceSlug
+  const deckSlug = flashcardsSlug(sourceSlug)
+  const baseForUrl = `https://local/${stripSlashes(origSlug)}.html`
+  const allowedAbsoluteProtocols = new Set(['http:', 'https:', 'mailto:', 'tel:', 'data:'])
+  const isAllowedAbsoluteAttr = (value: string): boolean => {
+    try {
+      return allowedAbsoluteProtocols.has(new URL(value).protocol.toLowerCase())
+    } catch {
+      return false
+    }
+  }
+
+  const rebaseAttr = (val: string): string => {
+    if (!val) return val
+    if (val.startsWith('#')) return val
+    if (val.startsWith('/static')) return val
+    if (isAbsoluteURL(val)) return isAllowedAbsoluteAttr(val) ? val : ''
+
+    try {
+      const u = new URL(val, baseForUrl)
+      const absolutePath = u.pathname + (u.hash ?? '')
+      return joinSegments(pathToRoot(deckSlug), stripSlashes(absolutePath))
+    } catch {
+      return val
+    }
+  }
+
+  visit(processed, 'element', (node: Element) => {
+    const props = node.properties ?? {}
+    if (props.href) props.href = rebaseAttr(String(props.href))
+    if (props.src) props.src = rebaseAttr(String(props.src))
+  })
+
+  const cards = (processed.children as ElementContent[]) || []
+  const count = fileData.flashcards!.cards.length
+  const deckTitle = fileData.frontmatter?.title ?? 'flashcards'
+  const sourceHref = resolveRelative(deckSlug, sourceSlug)
+  return { deckSlug, cards, count, deckTitle, sourceHref, filePath: filePath!, data: {} }
+}
+
+export default ((opts?: Options) => {
   const FlashcardsContent: QuartzComponent = (componentData: QuartzComponentProps) => {
-    const { fileData } = componentData
-    const { htmlAst, filePath } = fileData
-    const ast = clone(htmlAst) as Root
-    const visited = new Set<FullSlug>([fileData.slug!])
-    const processed = transcludeFinal(ast, componentData, { visited }, { dynalist: false })
-
-    const origSlug = fileData.slug as FullSlug
-    const sourceSlug = fileData.flashcards!.sourceSlug
-    const deckSlug = flashcardsSlug(sourceSlug)
-    const baseForUrl = `https://local/${stripSlashes(origSlug)}.html`
-    const allowedAbsoluteProtocols = new Set(['http:', 'https:', 'mailto:', 'tel:', 'data:'])
-    const isAllowedAbsoluteAttr = (value: string): boolean => {
-      try {
-        return allowedAbsoluteProtocols.has(new URL(value).protocol.toLowerCase())
-      } catch {
-        return false
-      }
-    }
-
-    const rebaseAttr = (val: string): string => {
-      if (!val) return val
-      if (val.startsWith('#')) return val
-      if (val.startsWith('/static')) return val
-      if (isAbsoluteURL(val)) return isAllowedAbsoluteAttr(val) ? val : ''
-
-      try {
-        const u = new URL(val, baseForUrl)
-        const absolutePath = u.pathname + (u.hash ?? '')
-        return joinSegments(pathToRoot(deckSlug), stripSlashes(absolutePath))
-      } catch {
-        return val
-      }
-    }
-
-    visit(processed, 'element', (node: Element) => {
-      const props = node.properties ?? {}
-      if (props.href) props.href = rebaseAttr(String(props.href))
-      if (props.src) props.src = rebaseAttr(String(props.src))
-    })
-
-    const cards = (processed.children as ElementContent[]) || []
-    const count = fileData.flashcards!.cards.length
-    const deckTitle = fileData.frontmatter?.title ?? 'flashcards'
-    const sourceHref = resolveRelative(deckSlug, sourceSlug)
+    const { deckSlug, cards, count, deckTitle, sourceHref, filePath, data } = opts?.merge
+      ? mergedShell(componentData, opts.merge)
+      : deckShell(componentData)
 
     return (
-      <div class="flashcards-root" data-deck={deckSlug} data-total={count}>
+      <div class="flashcards-root" data-deck={deckSlug} data-total={count} {...data}>
         <header class="flashcards-bar">
           <a
             href={sourceHref}
@@ -102,7 +146,7 @@ export default (() => {
               <h1>{deckTitle}</h1>
             </div>
             <div class="flashcards-card-body">
-              {htmlToJsx(filePath!, h('div', { class: 'flashcards-deck', role: 'list' }, cards))}
+              {htmlToJsx(filePath, h('div', { class: 'flashcards-deck', role: 'list' }, cards))}
             </div>
           </article>
         </div>
