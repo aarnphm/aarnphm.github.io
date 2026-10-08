@@ -62,7 +62,7 @@ import {
   MultiplayerComments,
 } from './comments'
 import handleCurius from './curius'
-import { handleFlashcardsReview, handleFlashcardsState } from './flashcards'
+import { handleFlashcardsReview, handleFlashcardsState, handleFlashcardsUndo } from './flashcards'
 import { handleLeanVerify } from './lean'
 import {
   getObjectFromBucket,
@@ -967,6 +967,8 @@ export default {
         return handleFlashcardsState(request, env)
       case '/api/flashcards/review':
         return handleFlashcardsReview(request, env)
+      case '/api/flashcards/undo':
+        return handleFlashcardsUndo(request, env)
       case '/api/lean/verify': {
         const resp = await handleLeanVerify(request, env)
         return withHeaders(resp, apiHeaders)
