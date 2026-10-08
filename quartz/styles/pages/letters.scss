@@ -70,7 +70,7 @@ body[data-slides='true'] {
   }
 }
 
-body[data-slug$='/slides'] {
+body[data-slides='true'] {
   .page-footer {
     display: none !important;
   }

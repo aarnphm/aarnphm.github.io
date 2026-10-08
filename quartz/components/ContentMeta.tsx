@@ -119,7 +119,7 @@ export default (() => {
     meta.push({ title: 'durée', classes: ['reading-time'], item: h('span', {}, [displayedTime]) })
 
     if (fileData.frontmatter?.slides) {
-      const slidesSlug = joinSegments(fileData.slug!, 'slides') as FullSlug
+      const slidesSlug = joinSegments(fileData.slug!, 'slides', '1') as FullSlug
       const slidesHref = resolveRelative(fileData.slug!, slidesSlug)
 
       meta.push({
