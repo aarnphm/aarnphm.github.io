@@ -253,6 +253,85 @@ const cumulativeMode = (analysis: HTMLElement): 'score' | 'sed' =>
     ? 'score'
     : 'sed'
 
+const moveChartCursors = (analysis: HTMLElement, elapsedS: number): void => {
+  const elapsed = Number(analysis.dataset.environmentElapsed)
+  if (!Number.isFinite(elapsed) || elapsed <= 0) return
+  const x = 2 + Math.min(1, Math.max(0, elapsedS / elapsed)) * 96
+  for (const chart of analysis.querySelectorAll<SVGElement>('[data-environment-chart]')) {
+    const cursor = chart.querySelector<SVGLineElement>('.tri-environment-cursor')
+    cursor?.setAttribute('x1', x.toFixed(3))
+    cursor?.setAttribute('x2', x.toFixed(3))
+    chart.setAttribute('aria-valuenow', `${Math.round(elapsedS)}`)
+  }
+  analysis.dataset.environmentCursorElapsed = `${elapsedS}`
+}
+
+const roseDots = (plot: Element): SVGCircleElement[] =>
+  Array.from(plot.querySelectorAll<SVGCircleElement>('[data-environment-sample-index]'))
+
+const roseDotIndex = (dot: SVGCircleElement): number =>
+  Number(dot.dataset.environmentSampleIndex ?? Number.NaN)
+
+const providerSamples = (analysis: HTMLElement): EnvironmentChartSample[] =>
+  parseEnvironmentProviderSamples(analysis.dataset.environmentProviderSeries)
+
+// Ring the dot whose bin sits nearest the shared cursor; dots exist only for moving bins.
+const placeRoseCursor = (analysis: HTMLElement, elapsedS: number | null): void => {
+  const samples = elapsedS == null ? [] : providerSamples(analysis)
+  for (const plot of analysis.querySelectorAll<SVGSVGElement>('[data-environment-rose]')) {
+    const ring = plot.querySelector<SVGCircleElement>('.tri-environment-rose-cursor')
+    if (!ring) continue
+    let nearest: SVGCircleElement | null = null
+    let delta = Number.POSITIVE_INFINITY
+    for (const dot of elapsedS == null ? [] : roseDots(plot)) {
+      const sample = samples[roseDotIndex(dot)]
+      const next = sample ? Math.abs(sample.elapsedS - (elapsedS ?? 0)) : Number.POSITIVE_INFINITY
+      if (next >= delta) continue
+      nearest = dot
+      delta = next
+    }
+    if (!nearest) {
+      ring.setAttribute('visibility', 'hidden')
+      delete plot.dataset.environmentRoseIndex
+      continue
+    }
+    ring.setAttribute('cx', nearest.getAttribute('cx') ?? '0')
+    ring.setAttribute('cy', nearest.getAttribute('cy') ?? '0')
+    ring.removeAttribute('visibility')
+    plot.dataset.environmentRoseIndex = `${roseDotIndex(nearest)}`
+  }
+}
+
+const selectRoseSample = (
+  analysis: HTMLElement,
+  plot: SVGSVGElement,
+  presentation: TriathlonPresentation,
+  index: number,
+): void => {
+  const sample = providerSamples(analysis)[index]
+  if (!sample) return
+  analysis.dataset.environmentCursorActive = ''
+  moveChartCursors(analysis, sample.elapsedS)
+  placeRoseCursor(analysis, sample.elapsedS)
+  const readout = environmentChartReadout(presentation, sample, null, 'wind')
+  plot.setAttribute('aria-valuenow', `${Math.round(sample.elapsedS)}`)
+  plot.setAttribute('aria-valuetext', readout)
+  const output = analysis.querySelector<HTMLOutputElement>('[data-environment-readout]')
+  if (output) output.value = readout
+}
+
+const restoreRoseReadout = (
+  analysis: HTMLElement,
+  plot: SVGSVGElement,
+  presentation: TriathlonPresentation,
+): void => {
+  const shares = relativeWindShares(analysis)
+  const summary = shares ? relativeWindReadout(presentation, shares) : '—'
+  plot.setAttribute('aria-valuetext', plot.getAttribute('aria-label') ?? summary)
+  const output = analysis.querySelector<HTMLOutputElement>('[data-environment-readout]')
+  if (output) output.value = summary
+}
+
 const updateCursor = (
   analysis: HTMLElement,
   presentation: TriathlonPresentation,
@@ -264,12 +343,16 @@ const updateCursor = (
   if (analysis.dataset.environmentView === 'relative-wind') {
     const shares = relativeWindShares(analysis)
     if (output) output.value = shares ? relativeWindReadout(presentation, shares) : '—'
+    const elapsedS = Number(analysis.dataset.environmentCursorElapsed)
+    placeRoseCursor(
+      analysis,
+      'environmentCursorActive' in analysis.dataset && Number.isFinite(elapsedS) ? elapsedS : null,
+    )
     return
   }
   const elapsed = Number(analysis.dataset.environmentElapsed)
   if (!Number.isFinite(elapsed) || elapsed <= 0) return
   const sample = samples[index] ?? { elapsedS: unavailableElapsedS ?? elapsed }
-  const x = 2 + Math.min(1, Math.max(0, sample.elapsedS / elapsed)) * 96
   const coefficientSed = coefficient(analysis)
   const doseClock = scoreClock(analysis)
   const readout = environmentChartReadout(
@@ -280,15 +363,10 @@ const updateCursor = (
       ? analysis.dataset.environmentView
       : undefined,
   )
-  for (const chart of analysis.querySelectorAll<SVGElement>('[data-environment-chart]')) {
-    const cursor = chart.querySelector<SVGLineElement>('.tri-environment-cursor')
-    cursor?.setAttribute('x1', x.toFixed(3))
-    cursor?.setAttribute('x2', x.toFixed(3))
-    chart.setAttribute('aria-valuenow', `${Math.round(sample.elapsedS)}`)
+  moveChartCursors(analysis, sample.elapsedS)
+  for (const chart of analysis.querySelectorAll<SVGElement>('[data-environment-chart]'))
     chart.setAttribute('aria-valuetext', readout)
-  }
   if (output) output.value = readout
-  analysis.dataset.environmentCursorElapsed = `${sample.elapsedS}`
   if (samples.length > 0) analysis.dataset.environmentSampleIndex = `${index}`
   else delete analysis.dataset.environmentSampleIndex
 }
@@ -401,8 +479,30 @@ export const setupEnvironmentTabs = (
       selectView(analysis, next, true)
       return
     }
+    const rose = event.target.closest<SVGSVGElement>('[data-environment-rose]')
+    if (rose) {
+      const dots = roseDots(rose).map(roseDotIndex)
+      if (dots.length === 0) return
+      const current = dots.indexOf(Number(rose.dataset.environmentRoseIndex ?? Number.NaN))
+      const position =
+        event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? dots.length - 1
+            : event.key === 'ArrowLeft' || event.key === 'ArrowDown'
+              ? Math.max(0, (current < 0 ? dots.length : current) - 1)
+              : event.key === 'ArrowRight' || event.key === 'ArrowUp'
+                ? Math.min(dots.length - 1, current + 1)
+                : -1
+      if (position < 0) return
+      event.preventDefault()
+      event.stopPropagation()
+      selectRoseSample(analysis, rose, presentation(), dots[position])
+      return
+    }
     const chart = event.target.closest<SVGElement>('[data-environment-chart]')
     if (!chart) return
+    analysis.dataset.environmentCursorActive = ''
     const samples = readSamples(analysis)
     if (samples.length === 0) return
     const current = environmentCursorIndex(analysis.dataset.environmentSampleIndex, samples.length)
@@ -434,14 +534,49 @@ export const setupEnvironmentTabs = (
       tab.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   }
 
+  const onRosePointerMove = (event: PointerEvent, rose: SVGSVGElement): void => {
+    const analysis = analysisFrom(rose)
+    const matrix = rose.getScreenCTM()?.inverse()
+    if (!analysis || !root.contains(analysis) || !matrix) return
+    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix)
+    let nearest: SVGCircleElement | null = null
+    let delta = Number.POSITIVE_INFINITY
+    for (const dot of roseDots(rose)) {
+      const next = Math.hypot(
+        Number(dot.getAttribute('cx')) - point.x,
+        Number(dot.getAttribute('cy')) - point.y,
+      )
+      if (next >= delta) continue
+      nearest = dot
+      delta = next
+    }
+    // Viewbox units: the rim is 40 from the rider, so 6 stays on the dot's own ring.
+    if (nearest && delta <= 6)
+      selectRoseSample(analysis, rose, presentation(), roseDotIndex(nearest))
+  }
+
+  const onPointerOut = (event: PointerEvent): void => {
+    if (!(event.target instanceof Element)) return
+    const rose = event.target.closest<SVGSVGElement>('[data-environment-rose]')
+    if (!rose || (event.relatedTarget instanceof Node && rose.contains(event.relatedTarget))) return
+    const analysis = analysisFrom(rose)
+    if (analysis && root.contains(analysis)) restoreRoseReadout(analysis, rose, presentation())
+  }
+
   const onPointerMove = (event: PointerEvent): void => {
     if (!(event.target instanceof Element)) return
+    const rose = event.target.closest<SVGSVGElement>('[data-environment-rose]')
+    if (rose) {
+      onRosePointerMove(event, rose)
+      return
+    }
     const chart = event.target.closest<SVGElement>('[data-environment-chart]')
     const analysis = chart ? analysisFrom(chart) : null
     if (!chart || !analysis || !root.contains(analysis)) return
     const elapsed = eventElapsed(analysis, chart, event.clientX)
     const samples = readSamples(analysis)
     if (elapsed == null || samples.length === 0) return
+    analysis.dataset.environmentCursorActive = ''
     updateCursor(
       analysis,
       presentation(),
@@ -482,6 +617,7 @@ export const setupEnvironmentTabs = (
   root.addEventListener('keydown', onKeyDown)
   root.addEventListener('transitionend', onLabelTransitionEnd)
   root.addEventListener('pointermove', onPointerMove)
+  root.addEventListener('pointerout', onPointerOut)
   root.addEventListener('pointerdown', onPointerDown)
   root.addEventListener('pointerup', endSelection)
   root.addEventListener('pointercancel', endSelection)
@@ -490,6 +626,7 @@ export const setupEnvironmentTabs = (
     root.removeEventListener('keydown', onKeyDown)
     root.removeEventListener('transitionend', onLabelTransitionEnd)
     root.removeEventListener('pointermove', onPointerMove)
+    root.removeEventListener('pointerout', onPointerOut)
     root.removeEventListener('pointerdown', onPointerDown)
     root.removeEventListener('pointerup', endSelection)
     root.removeEventListener('pointercancel', endSelection)

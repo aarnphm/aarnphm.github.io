@@ -1,5 +1,6 @@
 import type { GarminRunWalkSegment } from '../plugins/stores/garmin'
 import type { EnvironmentChartSample, GardenUvScore } from './activity-environment'
+import type { MyWindsockRouteSample } from './mywindsock-route'
 import type { TriathlonDailyAnalytics, TriathlonDayAnalytics } from './triathlon-day-analytics'
 import type { Locale, TriathlonPresentation } from './triathlon-presentation'
 import { STROKE_LABEL, SWIM_STROKES, type SwimStroke } from '../plugins/stores/apple'
@@ -6312,7 +6313,7 @@ export const relativeWindReadout = (
   shares: readonly number[],
 ): string => {
   const share = (indices: readonly number[]) =>
-    Math.round(indices.reduce((total, index) => total + (shares[index] ?? 0), 0))
+    Math.round(indices.reduce<number>((total, index) => total + (shares[index] ?? 0), 0))
   return [
     `${triText(presentation.locale, 'head side')} ${share([7, 0, 1])}%`,
     `${triText(presentation.locale, 'crosswind')} ${share([2, 6])}%`,
@@ -6320,23 +6321,78 @@ export const relativeWindReadout = (
   ].join(' · ')
 }
 
-const buildRelativeWindRose = <N>(f: TriNodeFactory<N>, shares: readonly number[]): N => {
+// Rider-frame wind cloud: each moving bin sits at (crosswind, headwind), so angle reads as
+// time share and distance from the rider reads as strength, which sector shares alone hide.
+const buildRelativeWindRose = <N>(
+  f: TriNodeFactory<N>,
+  shares: readonly number[],
+  samples: readonly MyWindsockRouteSample[],
+): N => {
   const rose = f.el('div', 'tri-environment-rose')
-  const peak = Math.max(...shares)
+  const scale = isImperial(f.presentation) ? KM_TO_MI : 1
+  // index is the position in the provider series, which the client cursor shares with the wind tab.
+  const points = samples.flatMap((sample, index) =>
+    sample.providerHeadwindKph == null || sample.providerCrosswindKph == null
+      ? []
+      : [
+          {
+            index,
+            elapsedS: sample.elapsedS,
+            head: sample.providerHeadwindKph * scale,
+            cross: sample.providerCrosswindKph * scale,
+          },
+        ],
+  )
+  const magnitudes = points.map(point => Math.hypot(point.head, point.cross)).sort((a, b) => a - b)
+  // The 95th percentile sets the rim so one gusty bin cannot shrink the cloud; outliers pin to it.
+  const reach = magnitudes[Math.floor(magnitudes.length * 0.95)] ?? 0
+  const step = reach > 30 ? 10 : reach > 12 ? 5 : reach > 4 ? 2 : 1
+  const rim = Math.max(step, Math.ceil(reach / step) * step)
+  const unitRadius = RELATIVE_WIND_RADIUS / rim
+  const meanHead = points.reduce((total, point) => total + point.head, 0) / (points.length || 1)
+  const meanCross = points.reduce((total, point) => total + point.cross, 0) / (points.length || 1)
+  const unit = isImperial(f.presentation) ? 'mph' : 'km/h'
+  const signed = (value: number) => `${value > 0 ? '+' : ''}${value.toFixed(1)} ${unit}`
+  const mean =
+    points.length > 0
+      ? `${triText(f.presentation.locale, 'average')} ${triText(f.presentation.locale, 'head')} ${signed(meanHead)} · ${triText(f.presentation.locale, 'crosswind')} ${signed(meanCross)}`
+      : null
+  const summary = [
+    `${triText(f.presentation.locale, 'relative wind')}: ${relativeWindReadout(f.presentation, shares)}`,
+    ...(mean ? [mean] : []),
+  ].join(' · ')
   const svg = f.svg('svg', {
     class: 'tri-environment-rose-plot',
     viewBox: `${-RELATIVE_WIND_RADIUS - 2} ${-RELATIVE_WIND_RADIUS - 2} ${RELATIVE_WIND_RADIUS * 2 + 4} ${RELATIVE_WIND_RADIUS * 2 + 4}`,
-    role: 'img',
-    'aria-label': `${triText(f.presentation.locale, 'relative wind')}: ${relativeWindReadout(f.presentation, shares)}`,
+    'aria-label': summary,
+    ...(points.length > 0
+      ? {
+          role: 'slider',
+          tabindex: 0,
+          'aria-valuemin': 0,
+          'aria-valuemax': Math.round(points.at(-1)?.elapsedS ?? 0),
+          'aria-valuenow': Math.round(points.at(-1)?.elapsedS ?? 0),
+          'aria-valuetext': summary,
+          'data-environment-rose': '',
+        }
+      : { role: 'img' }),
   })
-  for (const fraction of [0.25, 1])
-    f.add(
-      svg,
-      f.svg('circle', {
-        class: 'tri-environment-gridline',
-        r: RELATIVE_WIND_RADIUS * Math.sqrt(fraction),
-      }),
+  const ringLabels: N[] = []
+  const span = RELATIVE_WIND_RADIUS * 2 + 4
+  for (let ring = step; ring <= rim; ring += step) {
+    const radius = ring * unitRadius
+    f.add(svg, f.svg('circle', { class: 'tri-environment-gridline', r: radius }))
+    // SVG text would scale with the plot; an HTML label at the ring's 45° point keeps type size.
+    const offset = (radius * Math.SQRT1_2 + RELATIVE_WIND_RADIUS + 2) / span
+    ringLabels.push(
+      f.el(
+        'span',
+        'tri-environment-rose-ring-label',
+        ring === rim ? `${ring} ${unit}` : `${ring}`,
+        { style: `left: ${(offset * 100).toFixed(2)}%; bottom: ${(offset * 100).toFixed(2)}%` },
+      ),
     )
+  }
   f.add(
     svg,
     f.svg('line', {
@@ -6354,49 +6410,72 @@ const buildRelativeWindRose = <N>(f: TriNodeFactory<N>, shares: readonly number[
       y2: 0,
     }),
   )
-  const point = (degrees: number, radius: number): string => {
-    const angle = (degrees * Math.PI) / 180
-    return `${(radius * Math.sin(angle)).toFixed(3)},${(-radius * Math.cos(angle)).toFixed(3)}`
-  }
-  shares.forEach((share, index) => {
-    if (!(share > 0) || !(peak > 0)) return
-    // Area, not radius, is proportional to time, so a doubled share reads as twice the ink.
-    const radius = RELATIVE_WIND_RADIUS * Math.sqrt(share / peak)
-    const tone =
-      index === 0 || index === 1 || index === 7
-        ? 'head'
-        : index === 2 || index === 6
-          ? 'cross'
-          : 'tail'
+  const cloud = f.svg('g', { class: 'tri-environment-rose-cloud' })
+  for (const point of points) {
+    const magnitude = Math.hypot(point.head, point.cross)
+    const clamp = magnitude > rim ? rim / magnitude : 1
+    // Same split as the readout: head side is within 67.5° of the nose, tail side of the tail.
+    const angle = (Math.atan2(point.cross, point.head) * 180) / Math.PI
+    const tone = Math.abs(angle) <= 67.5 ? 'head' : Math.abs(angle) >= 112.5 ? 'tail' : 'cross'
     f.add(
-      svg,
-      f.svg('path', {
-        class: `tri-environment-rose-sector tri-environment-rose-sector--${tone}`,
-        d: `M0,0L${point(index * 45 - 22.5, radius)}A${radius.toFixed(3)},${radius.toFixed(3)} 0 0 1 ${point(index * 45 + 22.5, radius)}Z`,
-        'data-relative-wind-sector': index,
-        'data-relative-wind-share': share,
+      cloud,
+      f.svg('circle', {
+        class: `tri-environment-rose-dot tri-environment-rose-dot--${tone}`,
+        cx: (point.cross * clamp * unitRadius).toFixed(3),
+        cy: (-point.head * clamp * unitRadius).toFixed(3),
+        r: 0.9,
+        'data-environment-sample-index': point.index,
       }),
     )
-  })
-  f.add(svg, f.svg('path', { class: 'tri-environment-rose-rider', d: 'M0,-5L3.5,4L0,2L-3.5,4Z' }))
+  }
+  f.add(svg, cloud)
+  if (points.length > 0)
+    f.add(
+      svg,
+      f.svg('line', {
+        class: 'tri-environment-rose-mean',
+        x1: 0,
+        y1: 0,
+        x2: (meanCross * unitRadius).toFixed(3),
+        y2: (-meanHead * unitRadius).toFixed(3),
+      }),
+      f.svg('circle', {
+        class: 'tri-environment-rose-mean-tip',
+        cx: (meanCross * unitRadius).toFixed(3),
+        cy: (-meanHead * unitRadius).toFixed(3),
+        r: 1.3,
+      }),
+    )
+  if (points.length > 0)
+    f.add(
+      svg,
+      f.svg('circle', {
+        class: 'tri-environment-rose-cursor',
+        cx: 0,
+        cy: 0,
+        r: 2.2,
+        visibility: 'hidden',
+      }),
+    )
   const labels = [
-    ['head', 0, 'top'],
-    ['right', 2, 'right'],
-    ['tail', 4, 'bottom'],
-    ['left', 6, 'left'],
+    ['head', [7, 0, 1], 'top'],
+    ['right', [2], 'right'],
+    ['tail', [3, 4, 5], 'bottom'],
+    ['left', [6], 'left'],
   ] as const
   const frame = f.el('div', 'tri-environment-rose-frame')
-  f.add(frame, svg)
-  for (const [label, index, side] of labels)
+  f.add(frame, svg, ...ringLabels)
+  for (const [label, indices, side] of labels)
     f.add(
       frame,
       f.el(
         'span',
         `tri-environment-rose-label tri-environment-rose-label--${side}`,
-        `${triText(f.presentation.locale, label)} ${Math.round(shares[index] ?? 0)}%`,
+        `${triText(f.presentation.locale, label)} ${Math.round(indices.reduce<number>((total, index) => total + (shares[index] ?? 0), 0))}%`,
       ),
     )
   f.add(rose, frame)
+  if (mean) f.add(rose, f.el('span', 'tri-environment-rose-caption', mean))
   return rose
 }
 
@@ -6991,7 +7070,7 @@ export const buildEnvironmentAnalysis = <N>(
     f.add(
       panel,
       view === 'relative-wind' && route
-        ? buildRelativeWindRose(f, route.relativeWindPct)
+        ? buildRelativeWindRose(f, route.relativeWindPct, route.samples)
         : buildEnvironmentChart(
             f,
             samplesForView(view),
