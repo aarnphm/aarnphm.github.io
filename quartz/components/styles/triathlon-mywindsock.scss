@@ -235,4 +235,23 @@
   .tri-mywindsock .tri-workspace-ticks:not(.tri-mywindsock-ticks--elapsed) span:nth-child(even) {
     display: none;
   }
+
+  // Graphs draw at most four series. Two fixed columns keep the legend within the two lines
+  // that the plot head reserves, in any locale; the full label stays in the item's title.
+  .tri-mywindsock .tri-workspace-values {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tri-mywindsock .tri-workspace-current-value {
+    flex-wrap: nowrap;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .tri-mywindsock-legend-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
