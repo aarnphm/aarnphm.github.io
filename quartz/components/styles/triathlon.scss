@@ -6471,6 +6471,21 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   pointer-events: none;
 }
 
+.tri-power-curve-grid {
+  stroke: color-mix(in srgb, var(--gray) 30%, transparent);
+  stroke-width: 0.65;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+
+  line {
+    vector-effect: non-scaling-stroke;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+}
+
 .tri-best-power-line--year {
   stroke-width: 0.8;
   stroke-dasharray: 3 2;
@@ -14621,6 +14636,129 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   stroke-width: 0.9;
 }
 
+.tri-shift-chart[data-shift-view='hist'] > :is(.tri-cax-frame, .tri-cycling-chart-pane),
+.tri-shift-chart:not([data-shift-view='hist']) > .tri-shift-hist {
+  display: none;
+}
+
+// Same box as the graph pane (plot plus the 0.85rem + 0.2rem .tri-cax-xax row) so toggling
+// never moves the cards below.
+.tri-shift-hist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  column-gap: 1.6rem;
+  box-sizing: border-box;
+  height: calc(var(--tri-activity-chart-height, 104px) + 1.05rem);
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.tri-shift-hist-group {
+  display: grid;
+  grid-template-rows: repeat(var(--tri-shift-hist-rows, 1), minmax(0, 1fr));
+  min-width: 0;
+  min-height: 0;
+}
+
+.tri-shift-hist-row {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) 3.4rem;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 0;
+  margin: 0;
+}
+
+.tri-shift-hist-teeth {
+  color: var(--darkgray);
+}
+
+.tri-shift-hist-time {
+  color: var(--dark);
+  text-align: right;
+}
+
+.tri-shift-hist-track {
+  height: min(0.32rem, 70%);
+  background: color-mix(in srgb, var(--gray) 14%, transparent);
+}
+
+.tri-shift-hist-bar {
+  display: block;
+  height: 100%;
+  background: var(--tri-accent);
+}
+
+.tri-shift-hist-group--rear .tri-shift-hist-bar {
+  background: var(--darkgray);
+}
+
+.tri-shift-chart:not([data-shift-label='number']) [data-shift-label='number'],
+.tri-shift-chart[data-shift-label='number'] [data-shift-label='teeth'],
+.tri-shift-chart:not([data-shift-value='percent']) [data-shift-value='percent'],
+.tri-shift-chart[data-shift-value='percent'] [data-shift-value='duration'],
+.tri-shift-chart:not([data-shift-view='hist']) [data-shift-trigger='hist'],
+.tri-shift-chart[data-shift-view='hist'] [data-shift-trigger='graph'],
+.tri-shift-chart[data-shift-group='combos']
+  :is(.tri-shift-hist-group--front, .tri-shift-hist-group--rear),
+.tri-shift-chart:not([data-shift-group='combos']) .tri-shift-hist-group--combos {
+  display: none;
+}
+
+// Up to 24 combinations: rows keep a readable floor and the group scrolls inside the fixed box.
+.tri-shift-hist-group--combos {
+  grid-column: 1 / -1;
+  grid-template-rows: repeat(var(--tri-shift-hist-combo-rows, 1), minmax(0.62rem, 1fr));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  @include thin-scrollbar;
+
+  .tri-shift-hist-row {
+    grid-template-columns: 3.2rem 2.2rem minmax(0, 1fr) 3.4rem;
+  }
+}
+
+.tri-shift-hist-ratio {
+  color: var(--gray);
+  text-align: right;
+}
+
+.tri-shift-settings {
+  .tri-lab-date-trigger {
+    min-width: 4.6rem;
+  }
+
+  .tri-lab-date-menu {
+    inline-size: max-content;
+    min-inline-size: 100%;
+  }
+}
+
+.tri-shift-settings-group {
+  display: grid;
+  gap: 1px;
+
+  & + & {
+    margin-top: 0.2rem;
+    padding-top: 0.2rem;
+    border-top: 1px solid color-mix(in srgb, var(--gray) 18%, transparent);
+  }
+}
+
+.tri-shift-settings-heading {
+  padding: 0.22rem 0.34rem 0.12rem;
+  color: var(--gray);
+  font-size: 0.56rem;
+  text-transform: lowercase;
+}
+
+.tri-shift-settings-option[aria-checked='true'] .tri-lab-date-check {
+  opacity: 1;
+}
+
 .tri-map {
   container: tri-map / inline-size;
 }
@@ -16077,6 +16215,11 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     overflow: hidden;
     white-space: nowrap;
 
+    // The settings menu drops below the cap; the title keeps its own ellipsis.
+    &:has(> .tri-shift-settings) {
+      overflow: visible;
+    }
+
     > .tri-elev-d {
       min-width: 0;
       overflow: hidden;
@@ -16973,10 +17116,15 @@ a.tri-pop-date:hover {
   gap: 0.65rem;
   min-width: 0;
   margin-bottom: 0.5rem;
-  padding: 0.55rem 0.6rem 0.65rem;
+  padding: 0.55rem 0 0.65rem;
   background: color-mix(in srgb, var(--lightgray) 34%, transparent);
   font-family: var(--codeFont);
   font-variant-numeric: tabular-nums;
+
+  > .tri-zone-title {
+    font-size: 0.66rem;
+    margin-top: 0;
+  }
 }
 
 .tri-environment-table {
@@ -17156,9 +17304,9 @@ a.tri-pop-date:hover {
 }
 
 .tri-environment-chart > .tri-cax-frame {
-  grid-template-columns: 2.8rem minmax(0, 1fr);
+  grid-template-columns: 2.4rem minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
-  column-gap: 0.35rem;
+  column-gap: 0.4rem;
   height: 100%;
 }
 
@@ -17359,7 +17507,10 @@ a.tri-pop-date:hover {
   font-size: 0.52rem;
 
   a {
+    display: inline-flex;
+    align-items: center;
     color: inherit;
+    line-height: 1;
 
     &:hover {
       background: transparent;
@@ -17383,6 +17534,7 @@ a.tri-pop-date:hover {
 
 .tri-environment-mywindsock-logo {
   aspect-ratio: 600 / 265;
+  height: 1.5em;
 }
 
 .tri-environment-pelotan-logo {

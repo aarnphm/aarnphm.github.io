@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from '../plugins/stores/garmin'
 import {
   emptyWahooMetrics,
   type WahooActivity,
@@ -91,15 +90,12 @@ const cache = (stream: WahooStreams, values: Partial<WahooActivity> = {}): Wahoo
 test('estimates slower potential loss and a recoverable current stamina deficit', () => {
   const watts = Array.from({ length: 661 }, (_, index) => (index <= 60 ? 400 : 100))
   const heartrate = Array.from({ length: 661 }, (_, index) => (index <= 60 ? 180 : 125))
-  const estimate = estimateWahooCyclingStamina(
-    cache(streams(watts, heartrate)),
-    null,
-    250,
-    200,
-  ).get('wahoo:1')
+  const estimate = estimateWahooCyclingStamina(cache(streams(watts, heartrate)), 250, 200).get(
+    'wahoo:1',
+  )
 
   assert.ok(estimate)
-  assert.equal(estimate.method, 'garden-stamina-v1')
+  assert.equal(estimate.method, 'garden-stamina-v2')
   assert.equal(estimate.samples[0].stamina, 100)
   assert.ok(estimate.samples[60].stamina < estimate.samples[60].potentialStamina)
   const highIntensityDeficit = estimate.samples[60].potentialStamina - estimate.samples[60].stamina
@@ -124,47 +120,7 @@ test('fails closed when aligned power and heart rate cover less than eighty perc
     watts[index] = 200
     heartrate[index] = 150
   }
-  const estimates = estimateWahooCyclingStamina(cache(streams(watts, heartrate)), null, 250, 200)
-
-  assert.equal(estimates.size, 0)
-})
-
-test('keeps a matching Garmin native stamina trace ahead of the Garden estimate', () => {
-  const native: GarminCache = {
-    lastSync: Date.parse('2026-08-30T00:00:00Z'),
-    activities: {
-      edge: {
-        id: 'edge',
-        name: 'Ride',
-        sport: 'bike',
-        startDate: start,
-        startDateLocal: '2026-08-29T08:00:00',
-        distanceM: 20_000,
-        movingTimeS: 660,
-        elapsedTimeS: 660,
-        sourceDevice: 'Edge 1050',
-        sourceFile: null,
-        metrics: emptyGarminMetrics(),
-        fueling: emptyGarminFueling('Edge 1050'),
-      },
-    },
-    streams: {
-      edge: {
-        time: [0, 660],
-        latlng: [],
-        altitude: [],
-        distance: [0, 20_000],
-        stamina: [100, 72],
-        potentialStamina: [100, 80],
-      },
-    },
-  }
-  const estimates = estimateWahooCyclingStamina(
-    cache(streams(Array(661).fill(200), Array(661).fill(150))),
-    native,
-    250,
-    200,
-  )
+  const estimates = estimateWahooCyclingStamina(cache(streams(watts, heartrate)), 250, 200)
 
   assert.equal(estimates.size, 0)
 })

@@ -17,6 +17,7 @@ import { criticalPowerAtDuration } from '../../../../plugins/stores/critical-pow
 import { criticalPowerCurve } from '../../../../plugins/stores/critical-power'
 import { POWER_RANK_LEVELS } from '../../../../plugins/stores/power-rank'
 import { axisFrame } from '../../../../util/triathlon-card'
+import { buildPowerCurveGrid } from '../../../../util/triathlon-card'
 import { axisNumber } from '../../../../util/triathlon-card'
 import { dlabel } from '../../../../util/triathlon-card'
 import { nearestPowerCurvePoint } from '../../../../util/triathlon-card'
@@ -430,6 +431,11 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
     { length: Math.round(domainMax / step) + 1 },
     (_, index) => index * step,
   ).map(value => ({ label: value === 0 ? '0' : `${axisNumber(value, step)}w`, vbY: Y(value) }))
+  const durations = powerCurveDurationTicks(
+    minSeconds,
+    maxSeconds,
+    [1, 15, 60, 300, 600, 1_200, 1_800, 2_700, 3_600, 5_400, 7_200, 10_800, 14_400, 18_000],
+  )
   const path = (curve: PowerCurvePoint[]): string =>
     powerCurvePathPoints(curve)
       .map(
@@ -479,17 +485,16 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
     'data-power-selected-seconds': selectedSeconds,
     'data-power-domain-max': domainMax,
   })
-  for (const tick of yTicks)
-    graph.appendChild(
-      svg('line', {
-        class: 'tri-best-power-grid',
-        x1: 0,
-        y1: tick.vbY.toFixed(2),
-        x2: W,
-        y2: tick.vbY.toFixed(2),
-        'aria-hidden': 'true',
-      }),
-    )
+  const factory = createDomFactory(context.presentation)
+  graph.append(
+    buildPowerCurveGrid(
+      factory,
+      'power',
+      yTicks.map(tick => tick.vbY),
+      H,
+    ),
+    buildPowerCurveGrid(factory, 'duration', durations.map(X), H),
+  )
   for (const { key, curve } of available)
     for (const { skill, d } of skillPaths(curve))
       graph.appendChild(
@@ -626,11 +631,7 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
   }
   overlays.push(readout)
 
-  const durationTicks: AxisXTick[] = powerCurveDurationTicks(
-    minSeconds,
-    maxSeconds,
-    [1, 15, 60, 300, 600, 1_200, 1_800, 2_700, 3_600, 5_400, 7_200, 10_800, 14_400, 18_000],
-  ).map((seconds, index, ticks) => ({
+  const durationTicks: AxisXTick[] = durations.map((seconds, index, ticks) => ({
     label: dlabel(seconds),
     pct: X(seconds),
     cls: `tri-best-power-tick${index === 0 ? ' tri-cax-xt--first' : index === ticks.length - 1 ? ' tri-cax-xt--last' : ''}`,

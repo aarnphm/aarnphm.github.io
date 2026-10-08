@@ -53,6 +53,7 @@ export const ACTIVITY_BRIDGE_LEDGER_FILE = joinSegments(
 export interface ActivityBridgeArgs {
   write: boolean
   limit: number | null
+  direction: ActivityBridgeDirection | null
 }
 
 export interface ActivityBridgeFile {
@@ -71,6 +72,8 @@ interface ActivityBridgeExecution {
 export function parseActivityBridgeArgs(argv: readonly string[]): ActivityBridgeArgs {
   let write = false
   let limit: number | null = null
+  let from: ActivityBridgeProvider | null = null
+  let to: ActivityBridgeProvider | null = null
   for (let index = 0; index < argv.length; index++) {
     const arg = argv[index]
     if (arg === '--write') write = true
@@ -80,9 +83,27 @@ export function parseActivityBridgeArgs(argv: readonly string[]): ActivityBridge
       if (!value || !Number.isInteger(parsed) || parsed <= 0)
         throw new Error('--limit requires a positive integer')
       limit = parsed
+    } else if (arg === '--from' || arg === '--to') {
+      const value = argv[++index]
+      if (value !== 'garmin' && value !== 'wahoo')
+        throw new Error(`${arg} requires garmin or wahoo`)
+      if (arg === '--from') from = value
+      else to = value
     } else throw new Error(`unknown activity bridge argument: ${arg}`)
   }
-  return { write, limit }
+  if ((from === null) !== (to === null)) throw new Error('--from and --to must be used together')
+  if (from !== null && from === to) throw new Error('--from and --to require different providers')
+  const direction = from === null ? null : from === 'garmin' ? 'garmin-to-wahoo' : 'wahoo-to-garmin'
+  return { write, limit, direction }
+}
+
+export function selectActivityBridgePlans(
+  plans: readonly ActivityBridgePlan[],
+  args: ActivityBridgeArgs,
+): ActivityBridgePlan[] {
+  const matching =
+    args.direction === null ? plans : plans.filter(plan => plan.direction === args.direction)
+  return matching.slice(0, args.limit ?? matching.length)
 }
 
 function requiredRecord(value: unknown, label: string): UnknownRecord {
@@ -482,8 +503,7 @@ async function main(): Promise<void> {
     readActivityBridgeInputs(),
     readActivityBridgeLedger(),
   ])
-  const planned = planActivityBridge(inputs, initialLedger)
-  const plans = args.limit == null ? planned : planned.slice(0, args.limit)
+  const plans = selectActivityBridgePlans(planActivityBridge(inputs, initialLedger), args)
   for (const plan of plans) console.log(`[activity-bridge] ${planSummary(plan)}`)
   if (!args.write) {
     console.log(`[activity-bridge] dry run: ${plans.length} upload${plans.length === 1 ? '' : 's'}`)

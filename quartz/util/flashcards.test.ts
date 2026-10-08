@@ -235,3 +235,50 @@ describe('content-addressed identity', () => {
     assert.equal(a, b)
   })
 })
+
+describe('ID: pins', () => {
+  test('a pinned Q/A keeps the old id after rewording', () => {
+    const before = parseFlashcards('Q: What is ∂∂?\nA: zero')
+    const old = before.cards[0].id
+    const deck = parseFlashcards(`Q: Why is ∂∂ = 0?\nA: faces cancel in pairs\nN: see notes\nID: ${old}`)
+    assert.deepEqual(deck.errors, [])
+    assert.equal(deck.cards[0].id, old)
+    assert.equal(deck.cards[0].note, 'see notes')
+    assert.equal(deck.cards[0].raw.includes('ID:'), false)
+  })
+
+  test('a cloze pins one id per deletion, in order', () => {
+    const deck = parseFlashcards('C: [a] then [b].\nID: 0123abcd 89efcdef')
+    assert.deepEqual(deck.errors, [])
+    assert.deepEqual(
+      deck.cards.map(c => c.id),
+      ['0123abcd', '89efcdef'],
+    )
+  })
+
+  test('a pin count that does not match the deletions is an error', () => {
+    const deck = parseFlashcards('C: [a] then [b].\nID: 0123abcd')
+    assert.equal(deck.cards.length, 0)
+    assert.match(deck.errors[0].message, /1 ids for 2 deletions/)
+  })
+
+  test('non-hex ID: text stays part of the face', () => {
+    const deck = parseFlashcards('Q: name it\nA: the map\nID: identity morphism')
+    assert.deepEqual(deck.errors, [])
+    assert.equal(deck.cards[0].back, 'the map\nID: identity morphism')
+  })
+
+  test('ID: before A: and a second ID: are errors', () => {
+    assert.match(parseFlashcards('Q: q\nID: 0123abcd\nA: a').errors[0].message, /before A:/)
+    assert.match(
+      parseFlashcards('Q: q\nA: a\nID: 0123abcd\nID: 0123abce').errors[0].message,
+      /twice/,
+    )
+  })
+
+  test('duplicate ids in one deck are an error', () => {
+    const deck = parseFlashcards('Q: a\nA: b\n---\nQ: a\nA: b')
+    assert.equal(deck.cards.length, 2)
+    assert.match(deck.errors[0].message, /duplicate card id/)
+  })
+})

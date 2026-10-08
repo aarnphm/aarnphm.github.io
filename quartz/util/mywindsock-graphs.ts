@@ -17,6 +17,7 @@ export interface MyWindsockGraphSeries {
   label: string
   axis: string
   kind: 'line' | 'area' | 'bar' | 'range'
+  step: 'before' | 'middle' | 'after' | null
   points: MyWindsockGraphPoint[]
 }
 
@@ -147,6 +148,15 @@ const graphPlot = (value: unknown, key: string, plotIndex: number): MyWindsockGr
         .split(',')
         .find(name => name.startsWith('scale-y')) ?? 'scale-y'
     const nativeKind = source.type ?? nativeType
+    const defaults = record(plot.plot)
+    const stepStart =
+      source['step-start'] ?? source.stepStart ?? defaults['step-start'] ?? defaults.stepStart
+    const step =
+      (source.aspect ?? defaults.aspect) === 'stepped'
+        ? stepStart === 'before' || stepStart === 'after'
+          ? stepStart
+          : 'middle'
+        : null
     const seriesKind =
       nativeKind === 'area' || nativeKind === 'bar' || nativeKind === 'range' ? nativeKind : 'line'
     let label =
@@ -163,17 +173,27 @@ const graphPlot = (value: unknown, key: string, plotIndex: number): MyWindsockGr
     // virt_elev pairs [actual, Feels Like] in its range band, and the area myWindsock labels
     // "Elevation" repeats the Feels Like end at every point. Name each by the value it carries.
     if (key === 'virt_elev') label = seriesKind === 'range' ? 'Elevation' : 'Feels Like elevation'
+    const aeroTest = key === 'cda' && (label === 'Test Average' || label === 'Test Range')
+    // Aero-test charts use zero outside a detected test. Keep those positions as gaps.
+    const testValue = (value: unknown): number | null => {
+      const number = numeric(value)
+      return aeroTest && number === 0 ? null : number
+    }
     const values = Array.isArray(source.values) ? source.values : []
     const points = values.map((value, pointIndex): MyWindsockGraphPoint => {
       if (Array.isArray(value)) {
         const x = typeof value[0] === 'string' ? value[0] : (numeric(value[0]) ?? pointIndex)
-        if (Array.isArray(value[1]))
-          return { x, y: numeric(value[1][0]), upper: numeric(value[1][1]) }
-        return { x, y: numeric(value[1]) }
+        if (Array.isArray(value[1])) {
+          const lower = numeric(value[1][0])
+          const upper = numeric(value[1][1])
+          const absent = aeroTest && lower === 0 && upper === 0
+          return { x, y: absent ? null : lower, upper: absent ? null : upper }
+        }
+        return { x, y: testValue(value[1]) }
       }
-      return { x: labels[pointIndex] || string(source.text) || pointIndex, y: numeric(value) }
+      return { x: labels[pointIndex] || string(source.text) || pointIndex, y: testValue(value) }
     })
-    return { id: `${key}:${plotIndex}:${index}`, label, axis, kind: seriesKind, points }
+    return { id: `${key}:${plotIndex}:${index}`, label, axis, kind: seriesKind, step, points }
   })
   return {
     kind,

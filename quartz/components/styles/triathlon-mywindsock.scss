@@ -96,6 +96,9 @@
 
 .tri-mywindsock .tri-workspace-plot-head {
   grid-column: 1 / -1;
+  // Readout line plus two legend lines: four-series graphs wrap on phones, and the plot must not
+  // move when the picker switches graphs.
+  min-height: calc(3lh + 0.25rem);
   text-align: start;
 }
 
@@ -108,6 +111,7 @@
   span {
     position: absolute;
     transform: translateX(-50%);
+    white-space: nowrap;
   }
 
   &:not(.tri-mywindsock-ticks--category) {
@@ -150,6 +154,27 @@
   margin: 0;
   color: var(--darkgray);
   overflow-wrap: anywhere;
+}
+
+.tri-mywindsock-descriptions {
+  display: grid;
+  min-width: 0;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.tri-mywindsock-description {
+  grid-area: 1 / 1;
+  margin: 0;
+  color: var(--gray);
+  line-height: 1.45;
+  text-wrap: pretty;
+
+  &:not([data-active]) {
+    visibility: hidden;
+  }
 }
 
 .tri-mywindsock-native-graph {

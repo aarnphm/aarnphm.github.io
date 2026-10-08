@@ -10,7 +10,7 @@ const samples = (step = 10, heartRate = 120) =>
   }))
 
 test('HR estimates use elapsed duration and a measured opening baseline', () => {
-  const estimate = estimateHeartRatePhysiology(samples(), 200)
+  const estimate = estimateHeartRatePhysiology(samples(), 200, 'bike')
   assert.ok(estimate)
   assert.equal(estimate.source, 'garden-estimate')
   assert.equal(estimate.baselineHeartRateBpm, 120)
@@ -20,7 +20,7 @@ test('HR estimates use elapsed duration and a measured opening baseline', () => 
   const ending = estimate.points.at(-1)
   assert.ok(ending?.stamina != null && ending.stamina < 100 && ending.stamina > 99)
   assert.equal(ending.potentialStamina, ending.stamina)
-  const coarse = estimateHeartRatePhysiology(samples(30), 200)
+  const coarse = estimateHeartRatePhysiology(samples(30), 200, 'bike')
   assert.ok(coarse?.points.at(-1)?.stamina != null)
   assert.ok(Math.abs((coarse.points.at(-1)?.stamina ?? 0) - ending.stamina) < 1e-10)
 })
@@ -30,6 +30,7 @@ test('HR change is negative for rising HR and positive for falling HR', () => {
     const estimate = estimateHeartRatePhysiology(
       samples().map(point => ({ ...point, heartRate: point.elapsedS <= 60 ? 120 : endHr })),
       200,
+      'bike',
     )
     assert.ok(estimate)
     assert.equal(estimate.points.at(-1)?.performanceCondition, endHr === 100 ? 10 : -10)
@@ -41,17 +42,18 @@ test('HR estimates preserve missing samples and reject invalid telemetry', () =>
     ...point,
     heartRate: point.elapsedS === 300 ? null : point.heartRate,
   }))
-  const estimate = estimateHeartRatePhysiology(points, 200)
+  const estimate = estimateHeartRatePhysiology(points, 200, 'bike')
   assert.ok(estimate)
   assert.equal(estimate.points[30].stamina, null)
   assert.equal(estimate.points[30].performanceCondition, null)
   assert.equal(estimate.points[31].stamina, null)
-  assert.equal(estimateHeartRatePhysiology(points, Number.NaN), null)
-  assert.equal(estimateHeartRatePhysiology([points[1], points[0]], 200), null)
+  assert.equal(estimateHeartRatePhysiology(points, Number.NaN, 'bike'), null)
+  assert.equal(estimateHeartRatePhysiology([points[1], points[0]], 200, 'bike'), null)
   assert.equal(
     estimateHeartRatePhysiology(
       samples().map(point => ({ ...point, heartRate: null })),
       200,
+      'bike',
     ),
     null,
   )
@@ -61,6 +63,7 @@ test('partial HR sessions retain condition windows without estimating whole-sess
   const estimate = estimateHeartRatePhysiology(
     samples().filter(point => point.elapsedS <= 100 || point.elapsedS >= 500),
     200,
+    'bike',
   )
   assert.ok(estimate)
   assert.equal(estimate.points.find(point => point.elapsedS === 60)?.performanceCondition, 0)
@@ -70,5 +73,5 @@ test('partial HR sessions retain condition windows without estimating whole-sess
   assert.ok(
     estimate.points.every(point => point.stamina === null && point.potentialStamina === null),
   )
-  assert.equal(estimateHeartRatePhysiology(samples().slice(0, 6), 200), null)
+  assert.equal(estimateHeartRatePhysiology(samples().slice(0, 6), 200, 'bike'), null)
 })

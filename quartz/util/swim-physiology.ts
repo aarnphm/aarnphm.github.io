@@ -1,9 +1,9 @@
 import type { StravaActivityDetail } from '../plugins/stores/strava'
 import type { HeartRatePhysiologyPoint } from './heart-rate-physiology'
-import { heartRateStaminaDepletionPerHour } from './heart-rate-physiology'
+import { staminaDepletionPerHour } from './heart-rate-physiology'
 import { swimPaceSeconds } from './swim-metrics'
 
-export const SWIM_PHYSIOLOGY_METHOD = 'garden-swim-session-v1'
+export const SWIM_PHYSIOLOGY_METHOD = 'garden-swim-session-v2'
 export type SwimStrokeRateSource =
   | 'stream'
   | 'stream-with-average'
@@ -296,7 +296,7 @@ export function estimateSwimPhysiology(
       stamina = Math.max(
         0,
         stamina -
-          (heartRateStaminaDepletionPerHour(hr, maxHeartRateBpm) * demand * strokeCost * duration) /
+          (staminaDepletionPerHour('swim', hr, maxHeartRateBpm) * demand * strokeCost * duration) /
             3600,
       )
       if (baseline && seconds >= 48)

@@ -109,23 +109,24 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
     getQuartzComponents() {
       return [Head, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
-    partialEmit(ctx, content, resources, changeEvents) {
+    async *partialEmit(ctx, content, resources, changeEvents) {
+      if (ctx.argv.watch && !ctx.argv.force) return
+
       const plan = planBaseViewPartialEmit(content, changeEvents, partialState)
       partialState = plan.nextState
-      if (plan.slugsToRebuild.size === 0) return null
+      if (plan.slugsToRebuild.size === 0) return
 
-      return (async function* () {
-        const plans = [...plan.slugsToRebuild].flatMap(slug => {
-          const basePlan = plan.basePlans.get(slug)
-          return basePlan ? ([[slug, basePlan]] as [FullSlug, BaseRenderPlan][]) : []
-        })
-        const files = await mapConcurrent(plans, defaultIoConcurrency, ([slug, basePlan]) =>
+      const files = await mapConcurrent(
+        [...plan.basePlans].filter(([slug]) => plan.slugsToRebuild.has(slug)),
+        defaultIoConcurrency,
+        ([slug, basePlan]) =>
           emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts),
-        )
-        yield* files.flat()
-      })()
+      )
+      yield* files.flat()
     },
     async *emit(ctx, content, resources) {
+      if (ctx.argv.watch && !ctx.argv.force) return []
+
       const plan = planBaseViewPartialEmit(content, [], undefined)
       partialState = plan.nextState
 

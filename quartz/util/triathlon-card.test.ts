@@ -8427,7 +8427,7 @@ test('keeps estimated stamina provenance in the title gloss', () => {
   const ride = detail({
     staminaTrace: {
       source: 'garden-estimate',
-      method: 'garden-stamina-v1',
+      method: 'garden-stamina-v2',
       ftpWatts: 287,
       maxHeartRateBpm: 196,
     },
@@ -11014,7 +11014,7 @@ test('renders HR workout analysis and session estimates for activities without p
         elapsedTimeS: 300,
         movingTimeS: 300,
         heartRateTrace,
-        heartRatePhysiology: estimateHeartRatePhysiology(heartRateTrace, 200),
+        heartRatePhysiology: estimateHeartRatePhysiology(heartRateTrace, 200, 'walk'),
       })
       const rendered = buildActivity(factory, activity, true, undefined, false, embedded)
       const analysis = byClass(rendered, 'tri-workout-analysis')[0]
@@ -11048,7 +11048,7 @@ test('renders HR workout analysis and session estimates for activities without p
       assert.match(String(byTag(stamina, 'svg')[0].properties.dataDomainEndElapsedS), /300/)
       assert.match(
         String(byClass(stamina, 'tri-elev-d')[0].properties.dataGlossDef),
-        /session starts at 100%/,
+        /carried from earlier sessions/,
       )
       assert.match(
         String(byClass(rendered, 'tri-performance-condition-source')[0].properties.dataGlossDef),
@@ -11183,7 +11183,7 @@ test('retains a labeled unavailable condition row for every activity kind and ho
 test('keeps native physiology ahead of the HR fallback and omits empty workout analysis', () => {
   const activity = cyclingDynamicsDetail()
   const points = Array.from({ length: 31 }, (_, index) => heartRateTracePoint(0, index * 10, 100))
-  activity.heartRatePhysiology = estimateHeartRatePhysiology(points, 200)
+  activity.heartRatePhysiology = estimateHeartRatePhysiology(points, 200, 'bike')
   activity.staminaTrace = {
     source: 'garmin',
     method: 'garmin-native',

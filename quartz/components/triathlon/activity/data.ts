@@ -7,6 +7,7 @@ import {
 } from '../../../plugins/stores/strava'
 import { emptyWahooMetrics } from '../../../plugins/stores/wahoo'
 import { CYCLING_POWER_MAX_POINTS } from '../../../util/cycling-power'
+import { GARDEN_CYCLING_STAMINA_METHOD } from '../../../util/cycling-stamina'
 import { HEART_RATE_PHYSIOLOGY_METHOD } from '../../../util/heart-rate-physiology'
 import { isMyWindsockArchiveReference } from '../../../util/mywindsock-graphs'
 import {
@@ -252,7 +253,7 @@ const isStaminaTrace = (value: unknown): boolean => {
     )
   return (
     value.source === 'garden-estimate' &&
-    value.method === 'garden-stamina-v1' &&
+    value.method === GARDEN_CYCLING_STAMINA_METHOD &&
     typeof value.ftpWatts === 'number' &&
     Number.isFinite(value.ftpWatts) &&
     value.ftpWatts > 0 &&

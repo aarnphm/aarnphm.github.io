@@ -145,7 +145,15 @@
   }
 }
 
-.roofline[data-rfl-regime='compute'] // Dark ink on a light chip fails contrast in the dark theme, so the chip fill drops instead.
+.roofline[data-rfl-regime='compute'] [data-rfl-state] {
+  background: color-mix(in srgb, var(--fig-sage) 55%, transparent);
+}
+
+.roofline[data-rfl-regime='memory'] [data-rfl-state] {
+  background: color-mix(in srgb, var(--fig-salmon) 45%, transparent);
+}
+
+// Dark ink on a light chip fails contrast in the dark theme, so the chip fill drops instead.
 :root[saved-theme='dark'] .roofline {
   &[data-rfl-regime='compute'] [data-rfl-state] {
     background: color-mix(in srgb, var(--fig-sage) 28%, transparent);
@@ -154,14 +162,6 @@
   &[data-rfl-regime='memory'] [data-rfl-state] {
     background: color-mix(in srgb, var(--fig-salmon) 28%, transparent);
   }
-}
-
-[data-rfl-state] {
-  background: color-mix(in srgb, var(--fig-sage) 55%, transparent);
-}
-
-.roofline[data-rfl-regime='memory'] [data-rfl-state] {
-  background: color-mix(in srgb, var(--fig-salmon) 45%, transparent);
 }
 
 [data-rfl-state] {
