@@ -1,4 +1,5 @@
 import type { RunPaceZoneDistribution } from '../../util/run-pace-zones'
+import type { STAMINA_LEDGER_OFFSET_METHOD, StaminaLedgerStart } from '../../util/stamina-ledger'
 import type { SwimPhysiology } from '../../util/swim-physiology'
 import type { SwimPowerEstimate } from '../../util/swim-power'
 import type { SwimLocation, SwimStroke } from './apple'
@@ -546,6 +547,13 @@ export type ActivityStaminaTrace =
       ftpWatts: number
       maxHeartRateBpm: number
     }
+  | {
+      source: 'garden-estimate'
+      method: typeof STAMINA_LEDGER_OFFSET_METHOD
+      ftpWatts: null
+      maxHeartRateBpm: null
+      garminOffset: number
+    }
 
 export const GARDEN_CYCLING_PERFORMANCE_CONDITION_METHOD = 'garden-cycling-performance-condition-v1'
 
@@ -711,6 +719,7 @@ export interface StravaActivityDetail {
   computerOverride?: string
   device: ActivityDevice | null
   staminaTrace: ActivityStaminaTrace | null
+  staminaLedger?: StaminaLedgerStart | null
   performanceConditionTrace: ActivityPerformanceConditionTrace | null
   heartRatePhysiology?: HeartRatePhysiology | null
   walkPower?: WalkPowerEstimate | null
