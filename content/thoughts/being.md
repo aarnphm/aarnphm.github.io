@@ -1,8 +1,8 @@
 ---
 date: '2024-06-12'
-description: en sein.
+description: reading notes on Dasein, being-in-the-world, and readiness-to-hand.
 id: being
-modified: 2026-06-05 15:08:07 GMT-04:00
+modified: 2026-10-08 09:07:07 GMT-04:00
 tags:
   - seed
   - philosophy
@@ -17,41 +17,36 @@ Practice anything, no matter how well or how bad, we practice art as a act of be
 
 ## Heidegger's Being and Time
 
-_NOTE: Heidegger's writing are relatively technical, hence I found this [glossary](http://www.visual-memory.co.uk/b_resources/b_and_t_glossary.html) useful when reading BnT_
+_NOTE: I found this [glossary](http://www.visual-memory.co.uk/b_resources/b_and_t_glossary.html) useful when reading BnT._
 
-To answer "What is being?", Heidegger began to ask "_Whom_ is asking the question being?"
-
-> In a sense, he emphasize that being cannot exists without the context of other being in the world
+Heidegger approaches the question of being through the being that can ask it: Dasein. Each of us already has some understanding of what it means to be, through how we live and what we take ourselves to be. That gives the inquiry its starting point ([§4](https://www.beyng.is/pages/en/BeingandTimeMR/BeingandTimeMR.032.html)).
 
 ```quotes
 Being that in its Being is concerned about its very Being.
 ```
 
-There are similarities between Kierkegaard and Heidegger understanding of existence, but Heidegger integrates it into his ontological difference.
+Two words to keep apart: _Seiendes_ means a being or entity; _Sein_ concerns what it means for that entity to be. This is the ontological difference. Dasein is an entity whose own being matters to it ([Stanford Encyclopedia of Philosophy, §2.1](https://plato.stanford.edu/entries/heidegger/#KindBein)).
 
 ```quotes
 In the Being (Sein, ontological) of this being (Seiendes, ontical) it is related to its Being (Sein, ontological).
 ```
 
-This is what distinguishes Dasein from any other being (Seiendes) - it is fully related to its own Being(Sein) and therefore privileged for an analysis of Being(Sein).
+The word _Dasein_ joins _da_ (there) and _sein_ (to be), literally "being-there" ([translators' note, p.27](https://libraryofagartha.com/Philosophy/Martin%20Heidegger/Being%20and%20Time%20%28Martin%20Heidegger_Berserker%20Books%29.pdf)).
 
-The word dasein:
-
-- das + seiendes
-- to exists is to stand outside ourselves
-- able to ask myself "who I am"
-- rooted in my ==situated-ness== in the world
+==Situated-ness== means that our lives already involve tasks, other people, and shared practices through which things matter to us. Heidegger calls this being-in-the-world. Even asking who I am starts from this involvement ([§12](https://www.beyng.is/pages/en/BeingandTimeMR/BeingandTimeMR.078.html)).
 
 ### tenet
 
-Two core characteristics of dasein:
+Two characteristics of Dasein:
 
 1. Dasein exists: "The essence of Dasein lies in its existence" (p.42).
 
 2. Dasein is mine: "the Being, whose analysis our task is, is always mine" (p.42).
 
+Existence here includes the possibilities through which someone lives: what they pursue, avoid, or leave open. Mineness means those possibilities concern someone's own life ([Stanford Encyclopedia of Philosophy, §2.1.3](https://plato.stanford.edu/entries/heidegger/#Dase)).
+
 ### context
 
-[[thoughts/Value|Values]] are just meaningless facts (hammer is for hammering).
-It leaves out information defining the relation of hammers to nails and the rest of the environment (readiness-to-hand)
-In a sense, it explains entanglement (the example of workman and hammering)
+A hammer's use involves nails, materials, and something being built. In hammering, attention usually goes to the work. Heidegger calls this way of encountering equipment _readiness-to-hand_: the hammer is understood through using it within a task ([§15](https://www.beyng.com/pages/en/BeingandTimeMR/BeingandTimeMR.098.html)).
+
+Measuring its weight or inspecting its material properties brings a different aspect into view, which Heidegger calls _presence-at-hand_. The distinction concerns how equipment is encountered. Calling the hammer "for hammering" leaves the wider task unexplained; the relations among tool, materials, and purpose supply that context ([Stanford Encyclopedia of Philosophy, §§2.1.1–2.1.2](https://plato.stanford.edu/entries/heidegger/#OccuPresHand)).
