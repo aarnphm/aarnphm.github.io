@@ -792,6 +792,22 @@ const text = (root: Element): string => {
   return value
 }
 
+// Text a reader sees with the shifting chart's 'show gears as' setting on `label`.
+const shiftText = (root: Element, label: 'teeth' | 'number'): string => {
+  let value = ''
+  const visit = (children: ElementContent[]): void => {
+    for (const child of children) {
+      if (child.type === 'text') value += child.value
+      else if (child.type === 'element') {
+        const variant = child.properties.dataShiftLabel
+        if (variant == null || variant === label) visit(child.children)
+      }
+    }
+  }
+  visit(root.children)
+  return value
+}
+
 const table = (root: Element, kind: string): Element => {
   const result = byClass(root, `tri-effort-table--${kind}`)[0]
   assert.ok(result)
@@ -8753,7 +8769,15 @@ test('renders front and rear shifting on separate overlaid y axes', () => {
   const chart = buildShiftingChart(factory, shiftedDetail(), null)
   assert.ok(chart)
   assert.deepEqual(byClass(chart, 'tri-elev-d').map(text), ['electronic shifting'])
-  assert.deepEqual(byClass(chart, 'tri-elev-range').map(text), ['52×27 · 26:40'])
+  const range = byClass(chart, 'tri-elev-range')
+  assert.deepEqual(
+    range.map(node => shiftText(node, 'teeth')),
+    ['52×27 · 26:40'],
+  )
+  assert.deepEqual(
+    range.map(node => shiftText(node, 'number')),
+    ['2×3 · 26:40'],
+  )
   assert.deepEqual(byClass(chart, 'tri-shift-legend-item').map(text), ['front', 'rear'])
   assert.equal(byClass(chart, 'tri-shift-legend-line').length, 2)
   assert.equal(
@@ -8762,7 +8786,12 @@ test('renders front and rear shifting on separate overlaid y axes', () => {
   )
   const distancePane = byClass(chart, 'tri-shift-pane--distance')[0]
   const powerPane = byClass(chart, 'tri-shift-pane--power')[0]
-  assert.deepEqual(byClass(distancePane, 'tri-cax-yt').map(text), ['36T', '52T'])
+  const ticksAs = (pane: Element, label: 'teeth' | 'number'): string[] =>
+    byClass(pane, 'tri-cax-yt')
+      .filter(tick => tick.properties.dataShiftLabel === label)
+      .map(text)
+  assert.deepEqual(ticksAs(distancePane, 'teeth'), ['36T', '52T'])
+  assert.deepEqual(ticksAs(distancePane, 'number'), ['1', '2'])
   assert.equal(byClass(chart, 'tri-cax-yt--right').length, 0)
   assert.deepEqual(byClass(distancePane, 'tri-cax-xt').map(text), ['10 km', '20 km'])
   assert.equal(chart.properties.dataCyclingChartMode, 'distance')
@@ -8771,7 +8800,7 @@ test('renders front and rear shifting on separate overlaid y axes', () => {
   assert.equal(powerPane.properties.hidden, true)
   assert.equal(powerPane.properties.ariaHidden, 'true')
   assert.deepEqual(byClass(chart, 'tri-cycling-chart-modes'), [])
-  assert.deepEqual(byClass(powerPane, 'tri-cax-yt').map(text), ['36×19', '52×27', '52×19', '36×11'])
+  assert.deepEqual(ticksAs(powerPane, 'teeth'), ['36×19', '52×27', '52×19', '36×11'])
   assert.deepEqual(byClass(powerPane, 'tri-cax-xt').map(text), [
     '0 W',
     '100 W',
@@ -8820,7 +8849,10 @@ test('aggregates repeated visits when choosing the longest-held gear pairing', (
   ]
   const chart = buildShiftingChart(factory, ride)
   assert.ok(chart)
-  assert.deepEqual(byClass(chart, 'tri-elev-range').map(text), ['52×19 · 50:00'])
+  assert.deepEqual(
+    byClass(chart, 'tri-elev-range').map(node => shiftText(node, 'teeth')),
+    ['52×19 · 50:00'],
+  )
 })
 
 test('normalizes electronic shifting time by exact gear ratio', () => {
@@ -8880,12 +8912,15 @@ test('centres a fixed front chainring while the rear cassette changes', () => {
   ride.gearShifts = ride.gearShifts.map(shift => ({ ...shift, frontGearNum: 1, frontTeeth: 40 }))
   const chart = buildShiftingChart(factory, ride)
   assert.ok(chart)
-  assert.deepEqual(
-    byClass(byClass(chart, 'tri-shift-pane--distance')[0], 'tri-cax-yt')
-      .filter(tick => !classNames(tick).includes('tri-cax-yt--right'))
-      .map(text),
-    ['40T'],
+  const ticks = byClass(byClass(chart, 'tri-shift-pane--distance')[0], 'tri-cax-yt').filter(
+    tick => !classNames(tick).includes('tri-cax-yt--right'),
   )
+  assert.deepEqual(ticks.filter(tick => tick.properties.dataShiftLabel === 'teeth').map(text), [
+    '40T',
+  ])
+  assert.deepEqual(ticks.filter(tick => tick.properties.dataShiftLabel === 'number').map(text), [
+    '1',
+  ])
   assert.match(String(byClass(chart, 'tri-shift-line--front')[0].properties.d), /^M 0 15\.00/)
 })
 
