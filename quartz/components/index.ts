@@ -10,6 +10,7 @@ import Comments from './Comments'
 import ContentMeta from './ContentMeta'
 import CoursesIndex from './CoursesIndex'
 import CourseSpine from './CourseSpine'
+import { CourseUnitBar, CourseUnitFoot } from './CourseUnit'
 import Cursor from './Cursor'
 import Darkmode from './Darkmode'
 import DesktopOnly from './DesktopOnly'
@@ -98,4 +99,6 @@ export {
   FlashcardsContent,
   CourseSpine,
   CoursesIndex,
+  CourseUnitBar,
+  CourseUnitFoot,
 }
