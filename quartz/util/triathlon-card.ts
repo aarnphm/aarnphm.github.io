@@ -7226,6 +7226,7 @@ export const buildSwimStrokes = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
       li,
       f.el('span', `tri-stroke-dot tri-stroke-${s}`),
       f.el('span', 'tri-stroke-name', STROKE_LABEL[s]),
+      f.el('span', 'tri-stroke-distance', dist(f.presentation, m / 1000, 'swim')),
     )
     f.add(legend, li)
   }
@@ -7242,7 +7243,7 @@ export const buildPool = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N =
     f.el('span', 'tri-pool-lengths', `${lengths} × 25m`),
     f.el('span', 'tri-pool-distance', dist(f.presentation, d.distanceKm, 'swim')),
   )
-  f.add(wrap, cap)
+  f.add(wrap, buildPoolOverview(f), cap)
   const strokes = buildSwimStrokes(f, d)
   if (strokes) f.add(wrap, strokes)
   return wrap
@@ -10121,9 +10122,7 @@ export const buildActivity = <N>(
     hasSummaryVisual = true
   } else if (d.sport === 'swim') {
     const figs = f.el('div', 'tri-act-figs tri-act-figs--pool')
-    const pool = buildPool(f, d)
-    if (embedded) f.add(pool, buildPoolOverview(f))
-    f.add(figs, pool)
+    f.add(figs, buildPool(f, d))
     f.add(wrap, figs)
     hasSummaryVisual = true
   }
@@ -10137,8 +10136,6 @@ export const buildActivity = <N>(
       wrap,
       f.el('div', 'tri-act-figs tri-act-figs--empty', undefined, { 'aria-hidden': 'true' }),
     )
-  const poolOverview =
-    d.sport === 'swim' && d.route.length < 2 && !embedded ? buildPoolOverview(f) : null
   const swimTrends = buildSwimTrends(f, d, traceSettings)
   {
     const moreId = `tri-act-more-${d.id}`
@@ -10284,7 +10281,6 @@ export const buildActivity = <N>(
     if (environment) f.add(more, environment)
     const windGraphs = buildMyWindsockGraphs(f, d)
     if (windGraphs) f.add(more, windGraphs)
-    if (poolOverview) f.add(more, poolOverview)
     if (swimTrends) f.add(more, swimTrends)
     const swimPowerCurve = buildSwimPowerCurve(f, d, embedded)
     if (swimPowerCurve) f.add(more, swimPowerCurve)

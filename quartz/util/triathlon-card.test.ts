@@ -9033,7 +9033,7 @@ test('removes zone duos from simplified activity details', () => {
     )
 })
 
-test('places heart rate zones before the pool overview and swim charts in expanded details', () => {
+test('places heart rate zones before swim charts in expanded details', () => {
   const rendered = buildActivity(
     factory,
     swimTrendDetail({ hrZones: [20, 40, 30, 10, 0] }),
@@ -9043,15 +9043,13 @@ test('places heart rate zones before the pool overview and swim charts in expand
   const more = byClass(rendered, 'tri-act-more')[0]
   assert.ok(more)
   const children = more.children.filter((child): child is Element => child.type === 'element')
-  const overviewIndex = children.findIndex(child => classNames(child).includes('tri-pool'))
   const swimIndex = children.findIndex(child => classNames(child).includes('tri-swim-trends'))
   const zonesIndex = children.findIndex(child =>
     byClass(child, 'tri-zone-title').some(title => text(title) === 'heart rate zones'),
   )
 
-  assert.ok(overviewIndex >= 0)
-  assert.equal(swimIndex, overviewIndex + 1)
-  assert.ok(zonesIndex >= 0 && zonesIndex < overviewIndex)
+  assert.ok(swimIndex >= 0)
+  assert.ok(zonesIndex >= 0 && zonesIndex < swimIndex)
 })
 
 test('glosses the swim rate, cadence, and SWOLF titles', () => {
@@ -9072,30 +9070,25 @@ test('glosses the swim rate, cadence, and SWOLF titles', () => {
   }
 })
 
-test('places the pool overview immediately before non-embedded swim trends', () => {
+test('places the pool overview above stroke distances in full and embedded swim summaries', () => {
   const activity = { ...swimToggleDetail(), strokes: { freestyle: 75, breaststroke: 25 } }
-  const rendered = buildActivity(factory, activity, true)
-  const summary = byClass(rendered, 'tri-act-figs--pool')[0]
-  const more = byClass(rendered, 'tri-act-more')[0]
-  assert.ok(summary)
-  assert.ok(more)
-  assert.equal(byClass(summary, 'tri-pool').length, 0)
-  assert.equal(byClass(summary, 'tri-pool-cap').length, 1)
-  assert.equal(byClass(summary, 'tri-pool-strokes').length, 1)
-
-  const children = more.children.filter((child): child is Element => child.type === 'element')
-  const overviewIndex = children.findIndex(child => classNames(child).includes('tri-pool'))
-  const trendsIndex = children.findIndex(child => classNames(child).includes('tri-swim-trends'))
-  assert.ok(overviewIndex >= 0)
-  assert.equal(trendsIndex, overviewIndex + 1)
-
-  const embedded = buildActivity(factory, activity, true, undefined, false, true)
-  const embeddedSummary = byClass(embedded, 'tri-act-figs--pool')[0]
-  const embeddedMore = byClass(embedded, 'tri-act-more')[0]
-  assert.ok(embeddedSummary)
-  assert.ok(embeddedMore)
-  assert.equal(byClass(embeddedSummary, 'tri-pool').length, 1)
-  assert.equal(byClass(embeddedMore, 'tri-pool').length, 0)
+  for (const embedded of [false, true]) {
+    const rendered = buildActivity(factory, activity, true, undefined, false, embedded)
+    const summary = byClass(rendered, 'tri-act-figs--pool')[0]
+    const more = byClass(rendered, 'tri-act-more')[0]
+    assert.ok(summary)
+    assert.ok(more)
+    assert.equal(byClass(rendered, 'tri-pool').length, 1)
+    assert.equal(byClass(more, 'tri-pool').length, 0)
+    const pool = byClass(summary, 'tri-pool-wrap')[0]
+    assert.ok(pool)
+    const children = pool.children.filter((child): child is Element => child.type === 'element')
+    assert.ok(classNames(children[0]).includes('tri-pool'))
+    assert.ok(classNames(children[1]).includes('tri-pool-cap'))
+    assert.ok(classNames(children[2]).includes('tri-pool-strokes'))
+    assert.deepEqual(byClass(pool, 'tri-stroke-name').map(text), ['freestyle', 'breast'])
+    assert.deepEqual(byClass(pool, 'tri-stroke-distance').map(text), ['75 m', '25 m'])
+  }
 })
 
 test('places cycling efforts after the expanded charts', () => {
