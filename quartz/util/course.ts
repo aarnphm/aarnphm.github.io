@@ -52,6 +52,8 @@ export interface CourseView {
   home: QuartzPluginData
   record: CourseRecord
   units: CourseUnitView[]
+  /** Authored `psets/<nn>.md` solutions, by problem set number. */
+  psets: Map<number, QuartzPluginData>
 }
 
 const unitRe = /^courses\/([^/]+)\/(lectures|psets)\/(\d{2,3})$/
@@ -126,14 +128,20 @@ export function courseDirOf(slug: string): string | null {
 }
 
 /** Unit coordinates derived from a slug such as `courses/18.905-fall-2016/lectures/07`. */
-export function unitOf(slug: string): { dir: string; kind: 'lectures' | 'psets'; n: number } | null {
+export function unitOf(
+  slug: string,
+): { dir: string; kind: 'lectures' | 'psets'; n: number } | null {
   const match = unitRe.exec(slug)
   if (!match) return null
   return { dir: match[1], kind: match[2] as 'lectures' | 'psets', n: Number(match[3]) }
 }
 
-export function unitSlug(dir: string, n: number): FullSlug {
-  return `courses/${dir}/lectures/${String(n).padStart(2, '0')}` as FullSlug
+export function unitSlug(
+  dir: string,
+  n: number,
+  kind: 'lectures' | 'psets' = 'lectures',
+): FullSlug {
+  return `courses/${dir}/${kind}/${String(n).padStart(2, '0')}` as FullSlug
 }
 
 export function unitDeckSlug(dir: string, n: number): FullSlug {
@@ -154,13 +162,21 @@ function studyDate(note: QuartzPluginData | undefined, key: string): string | un
   return undefined
 }
 
-export function courseView(home: QuartzPluginData, allFiles: QuartzPluginData[]): CourseView | null {
+/**
+ * Joins a course home with its authored notes and decks. `allFiles` is the page list every
+ * component receives; `deckFiles` is `ctx.decks`, since decks are filtered out of `allFiles`.
+ */
+export function courseView(
+  home: QuartzPluginData,
+  allFiles: QuartzPluginData[],
+  deckFiles: QuartzPluginData[] = [],
+): CourseView | null {
   const record = parseCourseRecord(home.frontmatter)
   const dir = courseDirOf(home.slug ?? '')
   if (!record || !dir) return null
   const bySlug = new Map(allFiles.map(file => [file.slug as string, file]))
   const decks = new Map(
-    allFiles
+    deckFiles
       .filter(file => file.flashcards)
       .map(file => [file.flashcards!.sourceSlug as string, file]),
   )
@@ -183,14 +199,22 @@ export function courseView(home: QuartzPluginData, allFiles: QuartzPluginData[])
       ...(problems ? { problems } : {}),
     }
   })
-  return { dir, slug: home.slug as FullSlug, home, record, units }
+  const psets = new Map<number, QuartzPluginData>()
+  for (const file of allFiles) {
+    const unit = unitOf(file.slug ?? '')
+    if (unit && unit.dir === dir && unit.kind === 'psets') psets.set(unit.n, file)
+  }
+  return { dir, slug: home.slug as FullSlug, home, record, units, psets }
 }
 
 /** Every course home with a study block, in course-number order. */
-export function courseViews(allFiles: QuartzPluginData[]): CourseView[] {
+export function courseViews(
+  allFiles: QuartzPluginData[],
+  deckFiles: QuartzPluginData[] = [],
+): CourseView[] {
   return allFiles
     .filter(file => /^courses\/[^/]+\/index$/.test(file.slug ?? ''))
-    .map(file => courseView(file, allFiles))
+    .map(file => courseView(file, allFiles, deckFiles))
     .filter((view): view is CourseView => view !== null)
     .sort((a, b) => a.record.number.localeCompare(b.record.number, undefined, { numeric: true }))
 }
