@@ -11,6 +11,16 @@ import { FullSlug, getFileExtension, joinSegments, pathToRoot, simplifySlug } fr
 import { CSSResourceToStyleElement, JSResourceToScriptElement } from '../util/resources'
 import { googleFontHref, googleFontSubsetHref } from '../util/theme'
 import { PersonStructuredData } from './AgentIdentity'
+
+// The regular faces of the body, header and code typography in fonts.scss. Their
+// requests otherwise start only after the stylesheet is parsed and layout finds text
+// that needs them, so text paints in a fallback face and swaps. The hrefs match the
+// @font-face URLs so the browser reuses the preloaded response.
+const preloadFonts = [
+  { href: '/fonts/PPNeueMontreal-Regular.woff2', type: 'font/woff2' },
+  { href: '/static/SpaceGrotesk-VariableFont_wght.ttf', type: 'font/ttf' },
+  { href: '/fonts/TX-02-Regular.woff2', type: 'font/woff2' },
+]
 export default (() => {
   const Head: QuartzComponent = ({
     cfg,
@@ -53,6 +63,9 @@ export default (() => {
       <head>
         <title>{title}</title>
         <meta charSet="utf-8" />
+        {preloadFonts.map(font => (
+          <link rel="preload" as="font" type={font.type} href={font.href} crossOrigin="anonymous" />
+        ))}
         {cfg.theme.cdnCaching && cfg.theme.fontOrigin === 'googleFonts' && (
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
