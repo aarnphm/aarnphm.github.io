@@ -9,6 +9,7 @@ import {
   calendarToday,
   calendarWeekdayLabel,
 } from './display'
+import { mountRaceProjections } from './race-projections'
 import { mountTrainingCalendar } from './training'
 
 const configuredCalendars = new WeakMap<HTMLElement, AbortSignal>()
@@ -24,6 +25,7 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
   const panels = calendar.querySelectorAll<HTMLElement>('[data-calendar-panel]')
   const views = calendar.querySelector<HTMLElement>('.tri-calendar-views')
   const detail = calendar.querySelector<HTMLElement>('.tri-calendar-detail')
+  const raceProjections = mountRaceProjections(calendar, context)
   const pop = calendar.querySelector<HTMLElement>('.tri-calendar-pop')
   let active: HTMLElement | null = null
   let activeX: number | null = null
@@ -135,6 +137,7 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
     detail.setAttribute('aria-hidden', 'true')
     detail.removeAttribute('aria-label')
     detail.replaceChildren()
+    raceProjections.select()
     for (const node of calendar.querySelectorAll<HTMLElement>('[data-selected]'))
       delete node.dataset.selected
     for (const button of calendar.querySelectorAll<HTMLElement>('[data-calendar-card-open]'))
@@ -146,7 +149,6 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
     target?.focus()
     restoringFocus = false
   }
-  // Both views share one grid cell so switching never changes the calendar's height.
   const select = (view: 'list' | 'year'): void => {
     hideCard()
     if (detailCoversViews()) closeDetail()
@@ -230,6 +232,7 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
     shown = id
     calendar.dataset.calendarDetail = id
     detail.replaceChildren(node)
+    raceProjections.select()
     detail.setAttribute('aria-hidden', 'false')
     detail.setAttribute('aria-label', name)
     fillCountdown(detail)
@@ -527,10 +530,12 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
   window.addEventListener('scroll', onScroll, { capture: true, passive: true })
   window.addEventListener('hashchange', onHashChange)
   window.addEventListener('tri:locale', localize)
+  fillCountdown(calendar)
   localize()
   select(calendar.dataset.calendarView === 'year' ? 'year' : 'list')
   onHashChange()
   return () => {
+    raceProjections.dispose()
     hideCard()
     closeDetail()
     calendar.removeEventListener('click', onClick)
