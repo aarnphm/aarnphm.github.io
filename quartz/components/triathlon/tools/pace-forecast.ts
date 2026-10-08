@@ -627,27 +627,33 @@ export const setupPaceForecast = (
     return null
   }
   const forecaster = new PaceForecaster(worker)
+  worker.onerror = () => forecaster.dispose()
   context.pace.forecaster = forecaster
   context.pace.unavailable = false
-  initPaceForecaster(forecaster)
+  context.pace.loading = initPaceForecaster(forecaster)
     .then(ok => {
-      if (context.pace.forecaster !== forecaster) return
+      if (context.pace.forecaster !== forecaster) return false
       context.pace.unavailable = !ok
       if (!ok) {
         markDistancePredictorUnavailable(root)
-        return
+        return false
       }
       void fillDistancePredictor(root, context.pace, context)
+      return true
     })
     .catch(() => {
-      if (context.pace.forecaster !== forecaster) return
+      if (context.pace.forecaster !== forecaster) return false
       context.pace.unavailable = true
       markDistancePredictorUnavailable(root)
+      return false
     })
   const tipCleanup = wirePredTip(root)
   return () => {
     tipCleanup()
     forecaster.dispose()
-    if (context.pace.forecaster === forecaster) context.pace.forecaster = null
+    if (context.pace.forecaster === forecaster) {
+      context.pace.forecaster = null
+      context.pace.loading = null
+    }
   }
 }

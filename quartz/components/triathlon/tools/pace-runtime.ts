@@ -4,10 +4,12 @@ export interface PaceRuntime {
   forecaster: PaceForecaster | null
   unavailable: boolean
   sequence: number
+  loading: Promise<boolean> | null
 }
 
 export const createPaceRuntime = (): PaceRuntime => ({
   forecaster: null,
   unavailable: false,
   sequence: 0,
+  loading: null,
 })

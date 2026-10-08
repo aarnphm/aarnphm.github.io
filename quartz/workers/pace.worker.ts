@@ -1,5 +1,6 @@
+import { PACE_SPORTS } from '../util/pace-features'
 import { PaceModel, ensureBackend, parseManifest, parseSafetensors } from '../util/pace-model'
-import { isRecord, readString } from '../util/type-guards'
+import { isRecord, readNumber, readString } from '../util/type-guards'
 
 type LoadMessage = { type: 'load'; base: string; family: string }
 type PredictMessage = { type: 'predict'; id: number; raw: number[]; presence: number[] }
@@ -32,7 +33,8 @@ async function handleLoad(base: string, family: string): Promise<void> {
   const weightsKey = readString(latest, 'weights')
   if (!manifestKey || !weightsKey) throw new Error('latest.json missing keys')
 
-  const manifest = parseManifest(await fetchJson(`${base}/${manifestKey}`))
+  const rawManifest = await fetchJson(`${base}/${manifestKey}`)
+  const manifest = parseManifest(rawManifest)
   const weightsRes = await fetch(`${base}/${weightsKey}`)
   if (!weightsRes.ok) throw new Error(`weights ${weightsRes.status}`)
   const buf = await weightsRes.arrayBuffer()
@@ -45,7 +47,24 @@ async function handleLoad(base: string, family: string): Promise<void> {
   if (!gate.ok) throw new Error(`golden parity ${gate.maxErr} > ${tol}`)
 
   model = candidate
-  self.postMessage({ type: 'loaded', ok: true, version: manifest.version, device })
+  const validationErrors: Partial<Record<(typeof PACE_SPORTS)[number], number>> = {}
+  const validation = isRecord(rawManifest) && isRecord(rawManifest.val) ? rawManifest.val : null
+  const metrics = validation && isRecord(validation.bySport) ? validation.bySport : null
+  const units = { swim: 's/100m', bike: 'km/h', run: 's/km' }
+  for (const sport of PACE_SPORTS) {
+    const row = metrics?.[sport]
+    if (!isRecord(row) || row.unit !== units[sport]) continue
+    const error = readNumber(row, 'mae')
+    if (error != null && Number.isFinite(error) && error > 0 && (readNumber(row, 'nVal') ?? 0) > 0)
+      validationErrors[sport] = error
+  }
+  self.postMessage({
+    type: 'loaded',
+    ok: true,
+    version: manifest.version,
+    device,
+    validationErrors,
+  })
 }
 
 async function handlePredict(msg: PredictMessage): Promise<void> {
