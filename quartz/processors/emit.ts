@@ -81,7 +81,7 @@ function runPartialEmitter(
 export async function emitPartialEmitter(
   ctx: BuildCtx,
   content: ProcessedContent[],
-  changeEvents: ChangeEvent[],
+  changeEvents: ChangeEvent[] | undefined,
   emitterName: string,
 ): Promise<void> {
   const emitter = ctx.cfg.plugins.emitters.find(candidate => candidate.name === emitterName)
@@ -91,14 +91,10 @@ export async function emitPartialEmitter(
   const log = new QuartzLogger(ctx.argv.verbose)
   const staticResources = getStaticResourcesFromPlugins(ctx)
   log.start(``)
-  const emittedFiles = await runPartialEmitter(
-    emitter,
-    ctx,
-    content,
-    staticResources,
-    log,
-    changeEvents,
-  )
+  // Without change events the emitter regenerates everything it owns.
+  const emittedFiles = changeEvents
+    ? await runPartialEmitter(emitter, ctx, content, staticResources, log, changeEvents)
+    : await runEmitter(emitter, ctx, content, staticResources, log)
   log.end(`Emitted ${emittedFiles} files to \`${ctx.argv.output}\` in ${perf.timeSince()}`)
 }
 

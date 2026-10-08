@@ -4,7 +4,7 @@ import type { ChangeEvent } from '../../../types/plugin'
 import {
   classifyResourceChanges,
   hasComponentResourceChanges,
-  isStyleOnlySourceChange,
+  sourceRebuildScope,
 } from './change-classifier'
 
 function change(path: string, type: ChangeEvent['type'] = 'change'): ChangeEvent {
@@ -114,23 +114,61 @@ test('detects when component resources can skip content-only partial emits', () 
   assert.equal(hasComponentResourceChanges(scriptChanges), true)
 })
 
-test('gates the style-only rebuild path to component stylesheet changes', () => {
-  assert.equal(isStyleOnlySourceChange(['quartz/components/styles/triathlon.scss']), true)
+test('scopes source rebuilds by the server bundle closure', () => {
+  const server = new Set([
+    'quartz/util/triathlon-card.ts',
+    'quartz/components/scripts/spa.inline.ts',
+  ])
+  const partial = (overrides: object) => ({
+    kind: 'partial',
+    staticFiles: false,
+    styles: false,
+    scripts: false,
+    ...overrides,
+  })
+
+  assert.deepEqual(sourceRebuildScope([], server), { kind: 'full' })
+  assert.deepEqual(sourceRebuildScope(['quartz/util/triathlon-card.ts'], server), { kind: 'full' })
+  assert.deepEqual(sourceRebuildScope(['quartz.config.ts'], server), { kind: 'full' })
+  assert.deepEqual(sourceRebuildScope(['quartz/worker.ts'], server), { kind: 'full' })
+  assert.deepEqual(
+    sourceRebuildScope(['quartz/components/styles/triathlon.scss', 'quartz/build.ts'], server),
+    { kind: 'full' },
+  )
+  assert.deepEqual(
+    sourceRebuildScope(
+      [
+        'quartz/components/scripts/spa.inline.ts',
+        'quartz/components/triathlon/activity/workspace.ts',
+      ],
+      server,
+    ),
+    partial({ scripts: true }),
+  )
+  assert.deepEqual(
+    sourceRebuildScope(['quartz/styles/pages/triathlon.scss'], server),
+    partial({ styles: true }),
+  )
+  assert.deepEqual(
+    sourceRebuildScope(['quartz/static/triathlon/mywindsock.svg'], server),
+    partial({ staticFiles: true }),
+  )
+  assert.deepEqual(
+    sourceRebuildScope(
+      ['quartz/scripts/verify-semantic-index.ts', 'quartz/embed_build.py'],
+      server,
+    ),
+    partial({}),
+  )
+})
+
+test('recompiles component styles when a shared partial changes', () => {
   assert.equal(
-    isStyleOnlySourceChange([
-      'quartz/components/styles/triathlon.scss',
-      'quartz/components/styles/stream.scss',
-    ]),
+    classifyResourceChanges([change('quartz/styles/variables.scss')]).componentStyles,
     true,
   )
-  assert.equal(isStyleOnlySourceChange([]), false)
-  assert.equal(isStyleOnlySourceChange(['quartz/styles/custom.scss']), false)
-  assert.equal(isStyleOnlySourceChange(['quartz/components/styles/protected.scss']), false)
   assert.equal(
-    isStyleOnlySourceChange([
-      'quartz/components/styles/triathlon.scss',
-      'quartz/util/triathlon-card.ts',
-    ]),
+    classifyResourceChanges([change('quartz/styles/pages/triathlon.scss')]).componentStyles,
     false,
   )
 })
