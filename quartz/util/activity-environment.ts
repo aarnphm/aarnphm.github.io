@@ -100,8 +100,10 @@ export interface GardenApparentWindSummary {
   headwindTimeS: number
   tailwindTimeS: number
   longestHeadwindS: number
-  averageHeadwindKph: number
-  averageCrosswindKph: number
+  // Signed route means cancel on loops (a closed route integrates uniform wind to zero),
+  // so the summary keeps the headwind mean over headwind time and the crosswind magnitude.
+  averageHeadwindWhileIntoKph: number
+  averageCrosswindMagnitudeKph: number
   maximumHeadwindKph: number
   maximumCrosswindKph: number
   averageGroundSpeedKph: number
@@ -112,7 +114,7 @@ export interface GardenApparentWindSummary {
 }
 
 export interface GardenApparentWindEstimate extends GardenEstimateProvenance {
-  formulaId: 'garden-apparent-wind-v2'
+  formulaId: 'garden-apparent-wind-v3'
   summary: GardenApparentWindSummary
   coverage: { windPct: number }
 }
@@ -492,8 +494,8 @@ const summarizeWind = (
   if (validDurationS <= 0) return null
   let headwindTimeS = 0
   let tailwindTimeS = 0
-  let headwindTotal = 0
-  let crosswindTotal = 0
+  let headwindIntoTotal = 0
+  let crosswindMagnitudeTotal = 0
   let groundSpeedTotal = 0
   let apparentSpeedTotal = 0
   let yawTotal = 0
@@ -501,10 +503,11 @@ const summarizeWind = (
   let maximumCrosswindKph = 0
   const valid = intervals.filter((interval): interval is WindInterval => interval != null)
   for (const interval of valid) {
-    if (interval.headwindKph > 0) headwindTimeS += interval.durationS
-    else if (interval.headwindKph < 0) tailwindTimeS += interval.durationS
-    headwindTotal += interval.headwindKph * interval.durationS
-    crosswindTotal += interval.crosswindKph * interval.durationS
+    if (interval.headwindKph > 0) {
+      headwindTimeS += interval.durationS
+      headwindIntoTotal += interval.headwindKph * interval.durationS
+    } else if (interval.headwindKph < 0) tailwindTimeS += interval.durationS
+    crosswindMagnitudeTotal += Math.abs(interval.crosswindKph) * interval.durationS
     groundSpeedTotal += interval.groundSpeedKph * interval.durationS
     apparentSpeedTotal += interval.apparentAirSpeedKph * interval.durationS
     yawTotal += interval.yawDeg * interval.durationS
@@ -517,14 +520,15 @@ const summarizeWind = (
   const coveragePct = percentage(validDurationS, input.movingTimeS)
   return {
     ...provenance,
-    formulaId: 'garden-apparent-wind-v2',
+    formulaId: 'garden-apparent-wind-v3',
     summary: {
       headwindSharePct: round((headwindTimeS / validDurationS) * 100, 1),
       headwindTimeS: round(headwindTimeS, 1),
       tailwindTimeS: round(tailwindTimeS, 1),
       longestHeadwindS: round(longestHeadwindS, 1),
-      averageHeadwindKph: round(headwindTotal / validDurationS, 1),
-      averageCrosswindKph: round(crosswindTotal / validDurationS, 1),
+      averageHeadwindWhileIntoKph:
+        headwindTimeS > 0 ? round(headwindIntoTotal / headwindTimeS, 1) : 0,
+      averageCrosswindMagnitudeKph: round(crosswindMagnitudeTotal / validDurationS, 1),
       maximumHeadwindKph: round(maximumHeadwindKph, 1),
       maximumCrosswindKph: round(maximumCrosswindKph, 1),
       averageGroundSpeedKph: round(averageGroundSpeedKph, 1),
