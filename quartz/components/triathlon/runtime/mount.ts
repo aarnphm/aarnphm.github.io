@@ -52,7 +52,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   }
   addCleanup(setupDayEmbeds(context))
   addCleanup(setupActivityWorkspace(context))
-  addCleanup(setupMyWindsockGraphs(document.body, signal))
+  addCleanup(setupMyWindsockGraphs(document.body, signal, () => context.presentation))
   addCleanup(setupActivityComparisonEmbeds(context))
   addCleanup(setupPowerCurveActivityLinks(document.body, context))
   addCleanup(setupChartScrub(document.body, () => context.presentation))

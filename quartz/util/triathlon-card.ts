@@ -59,7 +59,7 @@ import {
   swimActivityHeaderValue,
   triText,
 } from './triathlon-i18n'
-import { buildMyWindsockGraphs } from './triathlon-mywindsock'
+import { buildMyWindsockGraphs, myWindsockLogoLink } from './triathlon-mywindsock'
 import { buildOuraHealth } from './triathlon-oura-health'
 import { powerCurveActivityLinkAttributes } from './triathlon-power-activity'
 import {
@@ -7015,16 +7015,14 @@ export const buildEnvironmentAnalysis = <N>(
   f.add(charts, controls, readout, stage)
   f.add(wrap, charts)
   const attribution = f.el('div', 'tri-environment-attribution')
-  if (myWindsock || route)
+  const myWindsockActivityId = myWindsock?.activityId ?? route?.activityId
+  if (myWindsockActivityId != null)
     f.add(
       attribution,
-      environmentLogoLink(
+      myWindsockLogoLink(
         f,
-        'tri-environment-mywindsock-logo',
-        '/static/triathlon/mywindsock.png',
-        'myWindsock',
-        `https://mywindsock.com/activity/${myWindsock?.activityId ?? route?.activityId}/`,
-        'Powered by myWindsock',
+        myWindsockActivityId,
+        'tri-environment-provider-logo tri-environment-mywindsock-logo',
       ),
     )
   if (pelotan)
@@ -10268,10 +10266,10 @@ export const buildActivity = <N>(
     }
     f.add(more, ...activityGraphs)
     if (strength && d.sport === 'sauna') f.add(more, strength)
-    const windGraphs = buildMyWindsockGraphs(f, d)
-    if (windGraphs) f.add(more, windGraphs)
     const environment = buildEnvironmentAnalysis(f, d)
     if (environment) f.add(more, environment)
+    const windGraphs = buildMyWindsockGraphs(f, d)
+    if (windGraphs) f.add(more, windGraphs)
     if (poolOverview) f.add(more, poolOverview)
     if (swimTrends) f.add(more, swimTrends)
     const swimPowerCurve = buildSwimPowerCurve(f, d, embedded)

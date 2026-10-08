@@ -1377,7 +1377,7 @@ test('renders one provider-first environment table with explicit Garden estimate
   assert.deepEqual(
     byTag(attribution, 'img').map(image => image.properties.src),
     [
-      '/static/triathlon/mywindsock.png',
+      '/static/triathlon/mywindsock.svg',
       '/static/triathlon/pelotan.png',
       '/static/triathlon/apple-weather-light.png',
     ],

@@ -1,185 +1,188 @@
+// Wind graphs reuse the environment panel surface and the workspace chart grammar.
 .tri-mywindsock {
-  margin-block: 1.25rem;
+  --tri-workspace-graph-height: 14rem;
+  container: tri-mywindsock / inline-size;
+  grid-column: 1 / -1;
+  box-sizing: border-box;
+  display: grid;
+  gap: 0.65rem;
   min-width: 0;
+  margin-bottom: 0.5rem;
+  padding: 0.55rem 0.6rem 0.65rem;
+  background: color-mix(in srgb, var(--lightgray) 34%, transparent);
   font-family: var(--codeFont);
-  font-size: 0.74rem;
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
 
-  button,
-  select {
-    color: var(--dark);
-    background: var(--light);
-    border: 1px solid var(--lightgray);
-    border-radius: var(--radius-none);
-    padding: 0.4rem 0.55rem;
+  button {
     font: inherit;
+    color: inherit;
     cursor: pointer;
-    min-height: 32px;
+    background: transparent;
   }
 
-  :is(button, select, summary):focus-visible {
-    outline: 2px solid var(--secondary);
-    outline-offset: 2px;
+  button:focus-visible,
+  [role='slider']:focus-visible {
+    outline: 2px solid var(--darkgray);
+    outline-offset: 3px;
   }
 
   button:disabled {
-    opacity: 0.5;
     cursor: default;
+    opacity: 0.45;
+  }
+
+  [hidden] {
+    display: none;
   }
 }
 
-.tri-mywindsock-provenance {
-  margin-block: 0.5rem;
+.tri-mywindsock-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem 0.75rem;
+  min-width: 0;
 }
 
-.tri-mywindsock-source,
-.tri-mywindsock-note {
-  color: var(--darkgray);
-  overflow-wrap: anywhere;
-  margin-block: 0.5rem;
+.tri-mywindsock-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  color: var(--gray);
+
+  .tri-lab-date-picker {
+    margin-left: 0;
+  }
+
+  .tri-lab-date-trigger {
+    min-width: 10rem;
+  }
+
+  .tri-lab-date-menu {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    inline-size: max-content;
+    min-inline-size: 100%;
+    max-inline-size: min(20rem, 80vw);
+  }
 }
 
 .tri-mywindsock-content {
-  margin-block: 0.75rem;
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
 }
-.tri-mywindsock-picker {
-  display: block;
-  width: 100%;
-  margin-block: 0.3rem;
+
+.tri-mywindsock-plots {
+  min-width: 0;
 }
-.tri-mywindsock-toggles {
-  display: flex;
-  flex-wrap: wrap;
+
+.tri-mywindsock .tri-workspace-chart {
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  min-width: 0;
+}
+
+.tri-mywindsock-legend-label {
+  color: var(--darkgray);
+}
+
+.tri-mywindsock-legend-key {
+  display: inline-flex;
+  align-items: center;
   gap: 0.35rem;
-  margin-block: 0.65rem;
-}
-.tri-mywindsock .tri-mywindsock-toggle {
-  border-color: color-mix(in srgb, var(--trace-color) 50%, var(--lightgray));
-  &[aria-pressed='true'] {
-    color: var(--trace-color);
-    background: color-mix(in srgb, var(--trace-color) 9%, var(--light));
-    border-color: var(--trace-color);
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--trace-color);
   }
 }
 
-.tri-mywindsock-native-graph {
-  margin-block: 1rem;
-  min-width: 0;
-}
-.tri-mywindsock-frame {
-  display: flex;
-  gap: 0.5rem;
-  height: 230px;
-}
-.tri-mywindsock-y-axes {
-  display: flex;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-.tri-mywindsock-y-axis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  text-align: end;
-  position: relative;
-  min-width: 3ch;
-  font-size: 0.65rem;
+.tri-mywindsock-picker-heading {
+  display: block;
+  padding: 0.65rem 0.35rem 0.25rem;
   color: var(--darkgray);
 }
-.tri-mywindsock-axis-title {
-  position: absolute;
-  top: -1.2rem;
-  right: 0;
-  white-space: nowrap;
-  max-width: 12ch;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+.tri-mywindsock-note {
+  margin: 0;
+  color: var(--darkgray);
+  overflow-wrap: anywhere;
 }
-.tri-mywindsock-plot {
-  flex: 1;
+
+.tri-mywindsock-native-graph {
   min-width: 0;
-  height: 230px;
-  overflow: hidden;
-  touch-action: pan-y;
+
+  & + & {
+    margin-top: 0.65rem;
+  }
 }
-.tri-mywindsock-grid {
-  fill: none;
-  stroke: var(--lightgray);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-.tri-mywindsock-line {
-  fill: none;
-  stroke: var(--trace-color);
-  stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
-}
+
 .tri-mywindsock-band {
   fill: var(--trace-color);
   fill-opacity: 0.16;
 }
+
 .tri-mywindsock-bar {
   fill: var(--trace-color);
   fill-opacity: 0.75;
 }
-.tri-mywindsock-cursor {
-  stroke: var(--darkgray);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-.tri-mywindsock-ticks {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  color: var(--darkgray);
-  font-size: 0.65rem;
-}
-.tri-mywindsock-x-label {
-  text-align: center;
-  color: var(--darkgray);
-}
-.tri-mywindsock-readout {
-  margin-block: 0.4rem;
-  min-height: 2lh;
-  overflow-wrap: anywhere;
-}
+
 .tri-mywindsock-polar {
   display: block;
   width: min(100%, 260px);
   height: 260px;
   margin-inline: auto;
+
+  .tri-mywindsock-grid {
+    fill: none;
+    stroke: var(--gray);
+    stroke-opacity: 0.2;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .tri-workspace-line {
+    stroke-width: 1.4;
+  }
 }
+
 .tri-mywindsock-polar-values {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.2rem 1rem;
-}
-.tri-mywindsock-polar-values dd {
   margin: 0;
+  color: var(--darkgray);
+
+  dd {
+    margin: 0;
+    color: var(--dark);
+  }
 }
+
 .tri-mywindsock-gauge {
   width: 100%;
   height: 2rem;
 }
-.tri-mywindsock-json pre {
-  max-height: 260px;
-  overflow: auto;
-  white-space: pre;
-  font-size: 0.7rem;
-}
-.tri-mywindsock-json summary {
-  cursor: pointer;
-}
-.tri-workspace-wind-load {
-  margin-block: 0.5rem;
-  font: inherit;
+
+.tri-mywindsock-credit {
+  min-width: 0;
+  margin: 0;
 }
 
-@media (max-width: 600px) {
-  .tri-mywindsock-frame,
-  .tri-mywindsock-plot {
-    height: 180px;
+@container tri-mywindsock (max-width: 42rem) {
+  .tri-mywindsock-content {
+    --tri-workspace-graph-height: 11rem;
   }
-  .tri-mywindsock-ticks {
-    font-size: 0.58rem;
+
+  .tri-mywindsock .tri-workspace-ticks span:nth-child(even) {
+    display: none;
   }
 }
