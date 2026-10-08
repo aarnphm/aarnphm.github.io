@@ -20,7 +20,12 @@ export const sharedPageComponents: SharedLayout = {
     Component.Darkmode(),
     Component.CodeCopy(),
   ],
-  afterBody: [Component.License(), Component.Recommendations(), Component.Backlinks()],
+  afterBody: [
+    Component.CourseUnitFoot(),
+    Component.License(),
+    Component.Recommendations(),
+    Component.Backlinks(),
+  ],
   footer: Component.Footer({
     layout: 'minimal',
     links: {
@@ -45,6 +50,7 @@ export const defaultContentPageLayout: PageLayout = {
       }),
       Component.ContentMeta(),
     ),
+    Component.CourseUnitBar(),
   ],
   sidebar: [Component.DesktopOnly(Component.TableOfContents()), Component.Reader()],
 }
