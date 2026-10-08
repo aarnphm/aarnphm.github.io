@@ -252,6 +252,10 @@ export async function handleBuild(argv) {
 
   const buildMutex = new Mutex()
   let activeBuild = null
+  // Modules the build bundle evaluates, from the latest and the previous metafile, so an edit that
+  // drops a module from the closure still counts as a server change.
+  let serverSourceInputs = new Set()
+  let previousServerSourceInputs = new Set()
 
   const disposeActiveBuild = async () => {
     if (!activeBuild) return
@@ -263,6 +267,8 @@ export async function handleBuild(argv) {
     try {
       const result = await ctx.rebuild()
       globalThis.__quartzParseSourceInputs = parseSourceInputs(result.metafile)
+      previousServerSourceInputs = serverSourceInputs
+      serverSourceInputs = new Set(Object.keys(result.metafile.inputs))
       if (argv.bundleInfo) {
         await printBundleInfo(result.metafile)
       }
@@ -286,9 +292,19 @@ export async function handleBuild(argv) {
       return
     }
 
-    if (activeBuild && bundle.isStyleOnlySourceChange(changedPaths)) {
+    const scope = activeBuild
+      ? bundle.sourceRebuildScope(
+          changedPaths,
+          new Set([...previousServerSourceInputs, ...serverSourceInputs]),
+        )
+      : { kind: 'full' }
+    if (scope.kind === 'partial') {
       release()
-      await bundle.buildStyles(argv, buildMutex, changedPaths)
+      if (!scope.staticFiles && !scope.styles && !scope.scripts) {
+        console.log(styleText('gray', 'Source change is outside every bundle, skipping rebuild'))
+        return
+      }
+      await bundle.buildSourceResources(argv, buildMutex, changedPaths, scope)
       clientRefresh()
       return
     }

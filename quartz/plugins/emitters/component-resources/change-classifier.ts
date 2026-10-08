@@ -119,8 +119,10 @@ export function classifyResourceChanges(
     changeEvents.some(changeEvent => isPageScriptChange(changeEvent.path))
 
   return {
-    componentStyles: changeEvents.some(changeEvent =>
-      isComponentStylesheetChange(changeEvent.path),
+    componentStyles: changeEvents.some(
+      changeEvent =>
+        isComponentStylesheetChange(changeEvent.path) ||
+        isSharedStylePartialChange(changeEvent.path),
     ),
     staticStyles: changeEvents.some(changeEvent => isStaticStylesheetChange(changeEvent.path)),
     staticScripts: changeEvents.some(changeEvent => isStaticScriptChange(changeEvent.path)),
@@ -146,8 +148,68 @@ export function classifyResourceChanges(
   }
 }
 
-export function isStyleOnlySourceChange(changedPaths: readonly string[]): boolean {
-  return changedPaths.length > 0 && changedPaths.every(isComponentStylesheetChange)
+// Component stylesheets `@use` these partials, so their edits recompile component.css as well.
+const sharedStylePartials = new Set(['quartz/styles/variables.scss', 'quartz/styles/mixin.scss'])
+
+function isSharedStylePartialChange(changePath: string): boolean {
+  return sharedStylePartials.has(changePath)
+}
+
+export type SourceRebuildScope =
+  | { kind: 'full' }
+  | { kind: 'partial'; staticFiles: boolean; styles: boolean; scripts: boolean }
+
+const clientScriptRoots = [
+  'quartz/components/',
+  'quartz/util/',
+  'quartz/workers/',
+  'quartz/runtime/',
+]
+const inlineScriptPattern = /\.inline\.[jt]s$/
+const scriptPattern = /\.[jt]sx?$/
+
+function isClientScriptChange(changePath: string, serverInputs: ReadonlySet<string>): boolean {
+  // The build bundle loads an inline script as text, so its edits only change page chunks.
+  if (inlineScriptPattern.test(changePath)) return true
+  return (
+    !serverInputs.has(changePath) &&
+    scriptPattern.test(changePath) &&
+    clientScriptRoots.some(root => changePath.startsWith(root))
+  )
+}
+
+/**
+ * Decides how much of the site a source edit invalidates. `serverInputs` is the esbuild metafile
+ * closure of the build bundle (before and after the edit). A module outside it cannot change rendered
+ * HTML, so it only needs the client bundles (ComponentResources, LazyScripts). Anything unrecognised
+ * is a full rebuild.
+ */
+export function sourceRebuildScope(
+  changedPaths: readonly string[],
+  serverInputs: ReadonlySet<string>,
+): SourceRebuildScope {
+  if (changedPaths.length === 0) return { kind: 'full' }
+  const scope = { kind: 'partial' as const, staticFiles: false, styles: false, scripts: false }
+  for (const changePath of changedPaths) {
+    if (changePath.startsWith('quartz/static/')) {
+      scope.staticFiles = true
+    } else if (
+      isComponentStylesheetChange(changePath) ||
+      isIndexStylesheetChange(changePath) ||
+      isStaticStylesheetChange(changePath)
+    ) {
+      scope.styles = true
+    } else if (isClientScriptChange(changePath, serverInputs)) {
+      scope.scripts = true
+    } else if (
+      serverInputs.has(changePath) ||
+      !(changePath.startsWith('quartz/scripts/') || changePath.endsWith('.py'))
+    ) {
+      return { kind: 'full' }
+    }
+    // Remaining paths are CLI scripts and Python helpers that no bundle imports.
+  }
+  return scope
 }
 
 export function hasComponentResourceChanges(changes: ComponentResourceChanges): boolean {

@@ -506,9 +506,19 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
   }
 }
 
-export { isStyleOnlySourceChange } from './plugins/emitters/component-resources/change-classifier'
+export { sourceRebuildScope } from './plugins/emitters/component-resources/change-classifier'
 
-export async function buildStyles(argv: Argv, mut: Mutex, changedPaths: FilePath[]) {
+/**
+ * Rebuilds what a source edit outside the server render path invalidates, without cleaning `public`
+ * or re-emitting pages. Dev serves postscript.js and the stylesheets under stable names, so pages keep
+ * pointing at the regenerated files.
+ */
+export async function buildSourceResources(
+  argv: Argv,
+  mut: Mutex,
+  changedPaths: FilePath[],
+  scope: { staticFiles: boolean; styles: boolean; scripts: boolean },
+) {
   const { default: cfg } = await import('../quartz.config')
   const ctx: BuildCtx = {
     buildId: randomIdNonSecure(),
@@ -523,9 +533,28 @@ export async function buildStyles(argv: Argv, mut: Mutex, changedPaths: FilePath
   try {
     emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason: 'source' })
     syncCtxFiles(ctx, await glob('**', argv.directory, cfg.configuration.ignorePatterns))
-    const changeEvents: ChangeEvent[] = changedPaths.map(fp => ({ type: 'change', path: fp }))
-    await emitPartialEmitter(ctx, [], changeEvents, 'ComponentResources')
-    console.log(styleText('green', `Restyled in ${perf.timeSince()}`))
+    const changeEvents: ChangeEvent[] = await Promise.all(
+      changedPaths.map(async fp => ({
+        type: (await stat(fp).then(
+          () => true,
+          () => false,
+        ))
+          ? ('change' as const)
+          : ('delete' as const),
+        path: fp,
+      })),
+    )
+    if (scope.staticFiles) await emitPartialEmitter(ctx, [], changeEvents, 'Static')
+    if (scope.scripts) {
+      // A script edit can reach any client bundle: ComponentResources owns the page chunks, workers,
+      // notebook runtime and the asset manifest, LazyScripts owns triathlon.js and the pdf reader.
+      // Both regenerate everything they own; LazyScripts has no partial emit.
+      await emitPartialEmitter(ctx, [], undefined, 'ComponentResources')
+      await emitPartialEmitter(ctx, [], undefined, 'LazyScripts')
+    } else if (scope.styles) {
+      await emitPartialEmitter(ctx, [], changeEvents, 'ComponentResources')
+    }
+    console.log(styleText('green', `Rebuilt source resources in ${perf.timeSince()}`))
     emitQuartzDevEvent({
       type: 'build:ready',
       epoch: ctx.buildId,
@@ -538,7 +567,7 @@ export async function buildStyles(argv: Argv, mut: Mutex, changedPaths: FilePath
       epoch: ctx.buildId,
       message: describeBuildError(err),
     })
-    trace('Failed to rebuild Quartz styles', err as Error)
+    trace('Failed to rebuild Quartz source resources', err as Error)
   } finally {
     release()
   }
