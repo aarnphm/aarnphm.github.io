@@ -38,6 +38,7 @@ export const buildMyWindsockGraphs = <N>(
     'data-mywindsock-id': String(d.id),
     'data-mywindsock-path': reference.path,
     'data-mywindsock-captured-at': reference.capturedAt,
+    'data-mywindsock-elapsed-s': String(d.elapsedTimeS),
     'data-mywindsock-state': 'pending',
     'aria-label': triText(f.presentation.locale, 'wind graphs'),
     'data-i18n-aria-label': 'wind graphs',

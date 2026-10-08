@@ -8,7 +8,7 @@
   gap: 0.65rem;
   min-width: 0;
   margin-bottom: 0.5rem;
-  padding: 0.55rem 0.6rem 0.65rem;
+  padding: 0.55rem 0 0.65rem;
   background: color-mix(in srgb, var(--lightgray) 34%, transparent);
   font-family: var(--codeFont);
   font-size: 0.62rem;
@@ -33,6 +33,7 @@
     opacity: 0.45;
   }
 
+  &[hidden],
   [hidden] {
     display: none;
   }
@@ -82,8 +83,42 @@
 }
 
 .tri-mywindsock .tri-workspace-chart {
-  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  grid-template-columns: minmax(2.4rem, max-content) minmax(0, 1fr) minmax(2.4rem, max-content);
+  column-gap: 0.4rem;
   min-width: 0;
+
+  .tri-workspace-y-axis {
+    inline-size: max(2.4rem, calc(var(--tri-workspace-axis-chars) * 1ch));
+    font-size: 0.5rem;
+    color: var(--gray);
+  }
+}
+
+.tri-mywindsock .tri-workspace-plot-head {
+  grid-column: 1 / -1;
+  text-align: start;
+}
+
+.tri-mywindsock .tri-workspace-ticks {
+  position: relative;
+  display: block;
+  height: 1lh;
+  font-size: 0.62rem;
+
+  span {
+    position: absolute;
+    transform: translateX(-50%);
+  }
+
+  &:not(.tri-mywindsock-ticks--category) {
+    span:first-child {
+      transform: none;
+    }
+
+    span:last-child {
+      transform: translateX(-100%);
+    }
+  }
 }
 
 .tri-mywindsock-legend-label {
@@ -182,7 +217,7 @@
     --tri-workspace-graph-height: 11rem;
   }
 
-  .tri-mywindsock .tri-workspace-ticks span:nth-child(even) {
+  .tri-mywindsock .tri-workspace-ticks:not(.tri-mywindsock-ticks--elapsed) span:nth-child(even) {
     display: none;
   }
 }

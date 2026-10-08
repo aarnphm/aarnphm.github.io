@@ -60,6 +60,8 @@ const yDomain = (plot: MyWindsockGraphPlot, series: MyWindsockGraphSeries[]): [n
   const maximum = Math.max(high, axis?.maximum ?? high)
   return maximum > minimum ? [minimum, maximum] : [minimum, minimum + 1]
 }
+const hasSeriesData = (series: MyWindsockGraphSeries): boolean =>
+  series.points.some(point => point.y != null && (series.kind !== 'range' || point.upper != null))
 
 const renderCartesian = (
   host: HTMLElement,
@@ -67,18 +69,24 @@ const renderCartesian = (
   active: Set<string>,
   color: (id: string) => string,
   text: (key: string) => string,
+  elapsedTimeS: number,
 ): void => {
   const series = plot.series.filter(series => active.has(series.id))
+  const categorical = plot.xKind === 'category'
   const categories = [
     ...new Set(plot.series.flatMap(series => series.points.map(point => String(point.x)))),
   ]
   const xs = plot.series.flatMap(series =>
     series.points.flatMap(point => (typeof point.x === 'number' ? [point.x] : [])),
   )
-  const [xLow, xHigh] =
-    plot.xKind === 'category' ? [0, Math.max(1, categories.length - 1)] : extent(xs)
+  const [nativeLow, nativeHigh] = categorical
+    ? [-0.5, Math.max(1, categories.length) - 0.5]
+    : extent(xs)
+  const elapsed = plot.xKind === 'elapsed'
+  const xLow = elapsed ? Math.min(0, nativeLow) : nativeLow
+  const xHigh = elapsed ? Math.max(nativeHigh, elapsedTimeS * 1000) : nativeHigh
   const position = (x: number | string): number =>
-    plot.xKind === 'category' ? categories.indexOf(String(x)) : typeof x === 'number' ? x : 0
+    categorical ? categories.indexOf(String(x)) : typeof x === 'number' ? x : 0
   const x = (value: number | string): number => ((position(value) - xLow) / (xHigh - xLow)) * 100
   const panel = el('div', 'tri-workspace-plot-panel')
   const chart = el('div', 'tri-workspace-chart')
@@ -100,6 +108,12 @@ const renderCartesian = (
     'aria-valuemin': 0,
     'aria-valuemax': 100,
     'aria-valuenow': 0,
+    ...(elapsed
+      ? {
+          'data-domain-start-elapsed-s': String(xLow / 1000),
+          'data-domain-end-elapsed-s': String(xHigh / 1000),
+        }
+      : {}),
   })
   const grid = svg('g', { class: 'tri-workspace-grid' })
   for (const y of [0, 25, 50, 75, 100]) grid.append(svg('line', { x1: 0, x2: 100, y1: y, y2: y }))
@@ -150,14 +164,26 @@ const renderCartesian = (
         ((reversed ? value - domain[0] : domain[1] - value) / (domain[1] - domain[0])) * 100,
       ),
     )
-  for (const line of series) {
+  // Terrain is painted first so its fill stays behind the native data lines.
+  for (const line of [...series].sort(
+    (a, b) => Number(b.label === 'Elevation') - Number(a.label === 'Elevation'),
+  )) {
     const domain = domains.get(line.axis) ?? [0, 1]
     const reversed = plot.axes[line.axis]?.reversed ?? false
+    const elevation = line.label === 'Elevation'
+    const filled = line.kind === 'area' || elevation
     const group = svg('g', {
       'data-native-series': line.id,
       style: `--trace-color: ${color(line.id)}`,
     })
     let path = ''
+    let area = ''
+    let areaOpen = false
+    let areaEnd = ''
+    const closeArea = (): void => {
+      if (areaOpen) area += ` L ${areaEnd} 100 Z`
+      areaOpen = false
+    }
     let lower = ''
     let upper: string[] = []
     const closeBand = (): void => {
@@ -175,14 +201,23 @@ const renderCartesian = (
     for (const point of line.points) {
       if (point.y == null || (line.kind === 'range' && point.upper == null)) {
         continuous = false
+        closeArea()
         closeBand()
         continue
       }
       const px = x(point.x).toFixed(3)
       const py = y(point.y, domain, reversed).toFixed(3)
+      if (filled) {
+        if (!areaOpen) {
+          areaOpen = true
+          area += ` M ${px} 100`
+        }
+        area += ` L ${px} ${py}`
+        areaEnd = px
+      }
       if (line.kind === 'bar') {
         const base = y(0, domain, reversed)
-        const width = plot.xKind === 'category' ? 85 / Math.max(1, categories.length) : 0.5
+        const width = categorical ? 50 / Math.max(1, categories.length) : 0.5
         group.append(
           svg('rect', {
             x: Number(px) - width / 2,
@@ -195,22 +230,53 @@ const renderCartesian = (
       } else if (line.kind === 'range' && point.upper != null) {
         lower += `${lower ? ' L' : 'M'} ${px} ${py}`
         upper.push(`L ${px} ${y(point.upper, domain, reversed).toFixed(3)}`)
+        if (elevation) path += `${continuous ? ' L' : ' M'} ${px} ${py}`
       } else path += `${continuous ? ' L' : ' M'} ${px} ${py}`
       continuous = true
     }
     closeBand()
-    if (path) group.append(svg('path', { d: path, class: 'tri-workspace-line' }))
+    closeArea()
+    if (area)
+      group.prepend(
+        svg('path', {
+          d: area,
+          class: elevation ? 'tri-cycling-power-elevation' : 'tri-mywindsock-band',
+        }),
+      )
+    if (path)
+      group.append(
+        svg('path', {
+          d: path,
+          class: elevation ? 'tri-cycling-power-elevation-line' : 'tri-workspace-line',
+        }),
+      )
     graph.append(group)
   }
   const formatX = (value: number): string =>
-    plot.xKind === 'category'
-      ? (categories[Math.round(value)] ?? '')
+    categorical
+      ? (categories[Math.max(0, Math.min(categories.length - 1, Math.round(value)))] ?? '')
       : plot.xKind === 'elapsed' || plot.xKind === 'duration'
         ? clock(value)
         : number(value)
-  const ticks = el('div', 'tri-workspace-ticks')
-  for (const fraction of [0, 0.25, 0.5, 0.75, 1])
-    ticks.append(el('span', undefined, formatX(xLow + fraction * (xHigh - xLow))))
+  const ticks = el(
+    'div',
+    `tri-workspace-ticks${elapsed ? ' tri-mywindsock-ticks--elapsed' : ''}${categorical ? ' tri-mywindsock-ticks--category' : ''}`,
+  )
+  const tickValues = categorical
+    ? [
+        ...new Set(
+          [0, 0.25, 0.5, 0.75, 1].map(fraction => Math.round(fraction * (categories.length - 1))),
+        ),
+      ]
+    : (elapsed ? [0, 0.5, 1] : [0, 0.25, 0.5, 0.75, 1]).map(
+        fraction => xLow + fraction * (xHigh - xLow),
+      )
+  for (const value of tickValues)
+    ticks.append(
+      el('span', undefined, formatX(value), {
+        style: `inset-inline-start: ${((value - xLow) / (xHigh - xLow)) * 100}%`,
+      }),
+    )
   const cursor = svg('line', { x1: 0, x2: 0, y1: 0, y2: 100, class: 'tri-workspace-cursor' })
   graph.append(cursor)
   let fraction = 0
@@ -221,10 +287,14 @@ const renderCartesian = (
     location.textContent = `${text(plot.xLabel).toLocaleLowerCase()} ${formatX(at)}`
     values.replaceChildren()
     for (const line of series) {
-      let nearest = line.points[0]
+      let nearest: MyWindsockGraphSeries['points'][number] | undefined = line.points[0]
       for (const point of line.points)
         if (!nearest || Math.abs(position(point.x) - at) < Math.abs(position(nearest.x) - at))
           nearest = point
+      const first = line.points[0]
+      const last = line.points.at(-1)
+      if (elapsed && first && last && (at < position(first.x) || at > position(last.x)))
+        nearest = undefined
       // A range band's upper end is plotted as its own series, so the readout names the lower end.
       const formatted = nearest?.y == null ? '—' : number(nearest.y)
       const description = `${text(line.label)} ${formatted}`
@@ -361,22 +431,21 @@ function mountMyWindsockGraphs(
   archive: MyWindsockGraphs,
   pickerHost: HTMLElement,
   presentation: () => TriathlonPresentation,
-): () => void {
+  elapsedTimeS: number,
+): (() => void) | null {
   const text = (key: string): string => triText(presentation().locale, key)
   const visibleGraphs = archive.graphs.filter(
     graph =>
       !['ai_power', 'bearing', 'inline:pointsgraph', 'inline:summary_windrose_chart'].includes(
         graph.key,
-      ) && graph.state !== 'unavailable',
+      ) &&
+      graph.state === 'captured' &&
+      graph.plots.some(plot => plot.series.some(hasSeriesData)),
   )
   if (!visibleGraphs.length) {
     pickerHost.replaceChildren()
-    host.replaceChildren(
-      el('p', 'tri-mywindsock-note', text('No graphs available.'), {
-        'data-i18n': 'No graphs available.',
-      }),
-    )
-    return () => {}
+    host.replaceChildren()
+    return null
   }
   const pickerId = `tri-mywindsock-${archive.activityId}`
   const trigger = el('button', 'tri-lab-date-trigger', undefined, {
@@ -395,8 +464,7 @@ function mountMyWindsockGraphs(
     'data-i18n-aria-label': 'wind graph',
   })
   menu.hidden = true
-  const graphLabel = (graph: MyWindsockGraphs['graphs'][number]): string =>
-    graph.state === 'captured' ? text(graph.label) : `${text(graph.label)} · ${text(graph.state)}`
+  const graphLabel = (graph: MyWindsockGraphs['graphs'][number]): string => text(graph.label)
   const options: HTMLElement[] = []
   for (const category of [...Object.keys(MYWINDSOCK_GRAPH_CATEGORIES), 'Other']) {
     const graphs = visibleGraphs.filter(graph => graph.category === category)
@@ -443,7 +511,6 @@ function mountMyWindsockGraphs(
   const color = (id: string): string => colors.get(id) ?? WIND_TRACE_COLORS[0]
   const updateStatus = (): void => {
     status.textContent = [
-      selected.state === 'captured' ? null : text(selected.state),
       selected.note ? text(selected.note) : null,
       archive.sport === 'run' && (selected.key === 'cda' || selected.key === 'interval_designer')
         ? text('Run model output · aerodynamic meaning unverified.')
@@ -455,13 +522,13 @@ function mountMyWindsockGraphs(
   }
   const draw = (): void => {
     plots.replaceChildren()
-    if (selected.state !== 'captured') return
     for (const plot of selected.plots) {
+      if (!plot.series.some(hasSeriesData)) continue
       const panel = el('div', 'tri-mywindsock-native-graph', undefined, {
         'data-native-kind': plot.kind,
         'data-native-axis': plot.xKind,
       })
-      if (plot.kind === 'cartesian') renderCartesian(panel, plot, active, color, text)
+      if (plot.kind === 'cartesian') renderCartesian(panel, plot, active, color, text, elapsedTimeS)
       else if (plot.kind === 'unsupported')
         panel.append(
           el(
@@ -485,8 +552,13 @@ function mountMyWindsockGraphs(
     series.forEach((line, index) => {
       if (selected.key === 'cda' && (line.label === 'Test Average' || line.label === 'Test Range'))
         return
-      if (line.points.some(point => point.y != null)) active.add(line.id)
-      colors.set(line.id, WIND_TRACE_COLORS[index % WIND_TRACE_COLORS.length])
+      if (hasSeriesData(line)) active.add(line.id)
+      colors.set(
+        line.id,
+        line.label === 'Elevation'
+          ? 'var(--gray)'
+          : WIND_TRACE_COLORS[index % WIND_TRACE_COLORS.length],
+      )
     })
     updateStatus()
     draw()
@@ -626,8 +698,17 @@ export function setupMyWindsockGraphs(
         request.signal,
       )
       if (signal.aborted || !section.isConnected) return
-      mounted.set(section, mountMyWindsockGraphs(content, archive, pickerHost, presentation))
-      section.dataset.mywindsockState = 'ready'
+      const elapsedTimeS = Number(section.dataset.mywindsockElapsedS)
+      const cleanup = mountMyWindsockGraphs(
+        content,
+        archive,
+        pickerHost,
+        presentation,
+        Number.isFinite(elapsedTimeS) && elapsedTimeS > 0 ? elapsedTimeS : 0,
+      )
+      section.hidden = cleanup === null
+      if (cleanup) mounted.set(section, cleanup)
+      section.dataset.mywindsockState = cleanup ? 'ready' : 'empty'
     } catch (error) {
       if (signal.aborted || request.signal.aborted || !section.isConnected) return
       section.dataset.mywindsockState = 'error'
