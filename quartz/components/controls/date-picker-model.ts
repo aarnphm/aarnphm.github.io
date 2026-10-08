@@ -1,4 +1,4 @@
-import { none, type Cmd } from '../../../functional'
+import { none, type Cmd } from '../../functional'
 
 export interface DatePickerModel {
   open: boolean

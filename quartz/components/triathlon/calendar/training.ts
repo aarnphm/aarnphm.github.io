@@ -1,14 +1,14 @@
 import { createElement, render } from 'preact'
 import type { TrainingPeaksCalendar } from '../../../util/trainingpeaks-calendar'
+import type { DatePicker } from '../../controls/date-picker'
 import type { TriathlonContext } from '../runtime/context'
-import type { PredDatePicker } from '../tools/date-picker'
 import {
   TRAINING_CALENDAR_API,
   TRAINING_CALENDAR_SESSION_API,
 } from '../../../util/training-calendar-access'
 import { parseTrainingPeaksCalendar } from '../../../util/trainingpeaks-calendar'
 import { isRecord } from '../../../util/type-guards'
-import { buildDatePicker } from '../tools/date-picker'
+import { buildDatePicker } from '../../controls/date-picker'
 import { calendarToday } from './display'
 import {
   trainingAddDays,
@@ -57,7 +57,7 @@ export const mountTrainingCalendar = (
   let expiryTimer: ReturnType<typeof setTimeout> | undefined
   const channel = new BroadcastChannel('training-calendar-session')
   const controller = new AbortController()
-  let datePicker: PredDatePicker | undefined
+  let datePicker: DatePicker | undefined
   let datePickerCleanup: (() => void) | undefined
   let pickerLocale = context.presentation.locale
   let pickerMonth = false
@@ -88,15 +88,12 @@ export const mountTrainingCalendar = (
       }
       datePicker = buildDatePicker({
         id: `${id}-date-picker`,
-        formatter: context.formatter,
         label: context.formatter.text(
           pickerMonth ? 'choose training month' : 'choose training week',
         ),
+        labels: context.formatter,
         selected: () =>
           pickerMonth ? trainingMonthStart(displayDate()) : trainingWeekStart(displayDate()),
-        min: () => undefined,
-        max: () => undefined,
-        onOpen: () => {},
         onSelect: choose,
         onClear: () => choose(calendarToday()),
       })
@@ -104,12 +101,10 @@ export const mountTrainingCalendar = (
       host.append(datePicker.wrap)
       datePickerCleanup = datePicker.mount()
     }
-    const label = datePicker.trigger.querySelector<HTMLElement>('.tri-pred-date-text')
     const start = pickerMonth ? trainingMonthStart(displayDate()) : trainingWeekStart(displayDate())
-    if (label)
-      label.textContent = pickerMonth
-        ? `${context.formatter.month(start)} ${start.slice(0, 4)}`
-        : context.formatter.shortDate(start)
+    datePicker.text.textContent = pickerMonth
+      ? `${context.formatter.month(start)} ${start.slice(0, 4)}`
+      : context.formatter.shortDate(start)
     datePicker.trigger.dataset.value = start
   }
 
