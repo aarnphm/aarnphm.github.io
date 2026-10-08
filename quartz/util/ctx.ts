@@ -53,6 +53,8 @@ export interface BuildCtx {
   outputAssetManifest?: OutputAssetManifest
   outputAssetClaims?: OutputAssetClaim[]
   outputAssetPreserved?: Set<FilePath>
+  /** Parsed `.fc` decks. `contentDataFor` drops them from `allFiles`; course views need them. */
+  decks?: QuartzPluginData[]
 }
 
 export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<BuildTimeTrieData> {
@@ -152,5 +154,15 @@ export function contentDataFor(content: ProcessedContent[]): QuartzPluginData[] 
   if (cached) return cached
   const data = content.map(([, file]) => file.data).filter(file => !file.flashcards)
   contentDataCache.set(content, data)
+  return data
+}
+
+const deckDataCache = new WeakMap<ProcessedContent[], QuartzPluginData[]>()
+
+export function deckDataFor(content: ProcessedContent[]): QuartzPluginData[] {
+  const cached = deckDataCache.get(content)
+  if (cached) return cached
+  const data = content.map(([, file]) => file.data).filter(file => Boolean(file.flashcards))
+  deckDataCache.set(content, data)
   return data
 }

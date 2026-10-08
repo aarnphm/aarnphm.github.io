@@ -3,7 +3,7 @@ import type { ChangeEvent, QuartzEmitterPluginInstance } from '../types/plugin'
 import type { FilePath } from '../util/path'
 import { ProcessedContent } from '../plugins/vfile'
 import { defaultEmitterConcurrency, mapConcurrent } from '../util/async-pool'
-import { BuildCtx } from '../util/ctx'
+import { BuildCtx, deckDataFor } from '../util/ctx'
 import { QuartzLogger } from '../util/log'
 import { logBuildSpan, PerfTimer } from '../util/perf'
 import { getStaticResourcesFromPlugins } from '../util/static-resources'
@@ -61,6 +61,7 @@ function runEmitter(
   staticResources: ReturnType<typeof getStaticResourcesFromPlugins>,
   log: QuartzLogger,
 ) {
+  ctx.decks = deckDataFor(content)
   return runEmitterOutput(emitter, ctx, log, emitter.emit(ctx, content, staticResources))
 }
 
@@ -72,6 +73,7 @@ function runPartialEmitter(
   log: QuartzLogger,
   changeEvents: ChangeEvent[],
 ) {
+  ctx.decks = deckDataFor(content)
   const output = emitter.partialEmit
     ? emitter.partialEmit(ctx, content, staticResources, changeEvents)
     : emitter.emit(ctx, content, staticResources)
