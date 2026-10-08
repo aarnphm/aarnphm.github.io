@@ -43,7 +43,10 @@ export function setupCyclingWattsCharts(
         minWatts: Number(cell.dataset.wattsMin),
         maxWatts: Number(cell.dataset.wattsMax),
         value: Number(cell.dataset.value),
-        label: cell.dataset.valueLabel ?? '',
+        label:
+          (chart.dataset.shiftLabel === 'number' ? cell.dataset.valueLabelNumber : undefined) ??
+          cell.dataset.valueLabel ??
+          '',
         side,
       },
       chart.dataset.triTrace === 'power-balance',

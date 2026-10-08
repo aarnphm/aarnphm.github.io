@@ -846,8 +846,9 @@ export const setupChartScrub = (
     const setting = SHIFTING_SETTINGS.find(entry => entry.setting === item?.dataset.shiftSetting)
     if (!item || !setting || !item.dataset.shiftOption) return true
     setShiftSetting(chart, setting.setting, item.dataset.shiftOption)
-    // Group, label and value only shape the histogram, so picking one shows it.
-    if (setting.setting !== 'view') setShiftSetting(chart, 'view', 'hist')
+    // Group and value only shape the histogram, so picking one shows it; labels apply to both views.
+    if (setting.setting === 'group' || setting.setting === 'value')
+      setShiftSetting(chart, 'view', 'hist')
     return true
   }
   const onShiftMenuKey = (event: KeyboardEvent): void => {

@@ -2066,7 +2066,8 @@ const routeRightPowerPct = (point: StravaActivityDetail['route'][number]): numbe
 
 type PowerBalanceSample = { watts: number; rightPowerPct: number; distanceKm: number }
 
-type WattsHeatSample = { watts: number; value: number; label?: string }
+// numberLabel is the gear-number form of label, for the shifting chart's 'show gears as' setting.
+type WattsHeatSample = { watts: number; value: number; label?: string; numberLabel?: string }
 export interface CyclingWattsCell {
   count: number
   minWatts: number
@@ -2076,6 +2077,7 @@ export interface CyclingWattsCell {
   side: 'left' | 'right' | 'single'
 }
 type WattsHeatCell = Omit<CyclingWattsCell, 'side'> & {
+  numberLabel: string
   x: number
   y: number
   width: number
@@ -2150,7 +2152,10 @@ const wattsHeatCells = (
   height: number,
   invertY: boolean,
 ): WattsHeatCell[] => {
-  const counts = new Map<number, { count: number; totalValue: number; labels: Set<string> }>()
+  const counts = new Map<
+    number,
+    { count: number; totalValue: number; labels: Set<string>; numberLabels: Set<string> }
+  >()
   for (const sample of samples) {
     const xBin = Math.min(
       WATTS_HEAT_X_BINS - 1,
@@ -2163,10 +2168,16 @@ const wattsHeatCells = (
     )
     const yBin = invertY ? WATTS_HEAT_Y_BINS - 1 - valueBin : valueBin
     const key = yBin * WATTS_HEAT_X_BINS + xBin
-    const cell = counts.get(key) ?? { count: 0, totalValue: 0, labels: new Set<string>() }
+    const cell = counts.get(key) ?? {
+      count: 0,
+      totalValue: 0,
+      labels: new Set<string>(),
+      numberLabels: new Set<string>(),
+    }
     cell.count++
     cell.totalValue += sample.value
     if (sample.label) cell.labels.add(sample.label)
+    if (sample.numberLabel) cell.numberLabels.add(sample.numberLabel)
     counts.set(key, cell)
   }
   const xSize = 100 / WATTS_HEAT_X_BINS
@@ -2180,6 +2191,7 @@ const wattsHeatCells = (
       maxWatts: ((xBin + 1) / WATTS_HEAT_X_BINS) * maxWatts,
       value: cell.totalValue / cell.count,
       label: [...cell.labels].join(' / '),
+      numberLabel: [...cell.numberLabels].join(' / '),
       x: xBin * xSize,
       y: yBin * ySize,
       width: xSize,
@@ -2243,6 +2255,7 @@ const buildWattsHeatmap = <N>(
           'data-watts-max': cell.maxWatts,
           'data-value': cell.value,
           'data-value-label': cell.label,
+          ...(cell.numberLabel ? { 'data-value-label-number': cell.numberLabel } : {}),
           'data-side': side,
           'aria-label': cyclingWattsCellText(
             { ...cell, side },
@@ -3376,6 +3389,8 @@ function gearStepPath(
 interface GearPairingDuration {
   frontTeeth: number
   rearTeeth: number
+  frontGearNum: number
+  rearGearNum: number
   durationS: number
 }
 
@@ -3399,7 +3414,14 @@ function gearPairingDurations(
     const key = `${shift.frontTeeth}:${shift.rearTeeth}`
     const existing = durations.get(key)
     if (existing) existing.durationS += durationS
-    else durations.set(key, { frontTeeth: shift.frontTeeth, rearTeeth: shift.rearTeeth, durationS })
+    else
+      durations.set(key, {
+        frontTeeth: shift.frontTeeth,
+        rearTeeth: shift.rearTeeth,
+        frontGearNum: shift.frontGearNum,
+        rearGearNum: shift.rearGearNum,
+        durationS,
+      })
   }
   return [...durations.values()]
 }
@@ -3418,6 +3440,8 @@ interface ShiftingWattsRow {
   key: string
   frontTeeth: number
   rearTeeth: number
+  frontGearNum: number
+  rearGearNum: number
   ratio: number
 }
 
@@ -3445,6 +3469,8 @@ const shiftingWattsData = (
       key,
       frontTeeth: shift.frontTeeth,
       rearTeeth: shift.rearTeeth,
+      frontGearNum: shift.frontGearNum,
+      rearGearNum: shift.rearGearNum,
       ratio: shift.frontTeeth / shift.rearTeeth,
     })
     observed.push({ key, watts: point.w })
@@ -3467,6 +3493,7 @@ const shiftingWattsData = (
           watts: sample.watts,
           value: rows.length === 1 ? 0.5 : index,
           label: `${row.frontTeeth}×${row.rearTeeth}`,
+          numberLabel: `${row.frontGearNum}×${row.rearGearNum}`,
         },
       ]
     }),
@@ -3477,7 +3504,7 @@ const shiftingWattsTicks = (
   rows: readonly ShiftingWattsRow[],
   height: number,
   limit = 4,
-): { label: string; vbY: number }[] => {
+): AxisYTick[] => {
   if (rows.length === 0) return []
   const indices =
     rows.length <= limit
@@ -3489,10 +3516,18 @@ const shiftingWattsTicks = (
             ),
           ),
         )
-  return indices.map(index => ({
-    label: `${rows[index].frontTeeth}×${rows[index].rearTeeth}`,
-    vbY: rows.length === 1 ? height / 2 : height - (index / (rows.length - 1)) * (height - 1),
-  }))
+  return indices.flatMap(index => {
+    const row = rows[index]
+    const vbY = rows.length === 1 ? height / 2 : height - (index / (rows.length - 1)) * (height - 1)
+    return [
+      { label: `${row.frontTeeth}×${row.rearTeeth}`, vbY, attrs: { 'data-shift-label': 'teeth' } },
+      {
+        label: `${row.frontGearNum}×${row.rearGearNum}`,
+        vbY,
+        attrs: { 'data-shift-label': 'number' },
+      },
+    ]
+  })
 }
 
 export interface ActivityGearRatioDistributionPoint {
@@ -3722,8 +3757,8 @@ const SHIFTING_OPTION_LABELS: Record<string, string> = {
 
 const buildShiftingSettings = <N>(f: TriNodeFactory<N>, id: string): N => {
   const text = (key: string) => triText(f.presentation.locale, key)
-  const picker = f.el('div', 'tri-chart-controls tri-lab-date-picker tri-shift-settings')
-  const trigger = f.el('button', 'tri-lab-date-trigger tri-shift-settings-trigger', undefined, {
+  const picker = f.el('div', 'tri-chart-controls g-select tri-shift-settings')
+  const trigger = f.el('button', 'g-select-trigger tri-shift-settings-trigger', undefined, {
     type: 'button',
     'aria-haspopup': 'menu',
     'aria-expanded': 'false',
@@ -3731,14 +3766,14 @@ const buildShiftingSettings = <N>(f: TriNodeFactory<N>, id: string): N => {
     'aria-label': text('electronic shifting view'),
     'data-i18n-aria-label': 'electronic shifting view',
   })
-  const value = f.el('span', 'tri-lab-date-value')
+  const value = f.el('span', 'g-select-value')
   f.add(
     value,
     f.el('span', undefined, text('graph'), { 'data-shift-trigger': 'graph', 'data-i18n': 'graph' }),
     f.el('span', undefined, text('hist'), { 'data-shift-trigger': 'hist', 'data-i18n': 'hist' }),
   )
   const chevron = f.svg('svg', {
-    class: 'tri-lab-date-chevron',
+    class: 'g-select-chevron',
     viewBox: '0 0 16 16',
     fill: 'none',
     'aria-hidden': 'true',
@@ -3755,7 +3790,7 @@ const buildShiftingSettings = <N>(f: TriNodeFactory<N>, id: string): N => {
     }),
   )
   f.add(trigger, value, chevron)
-  const menu = f.el('div', 'tri-lab-date-menu tri-shift-settings-menu', undefined, {
+  const menu = f.el('div', 'g-select-menu tri-shift-settings-menu', undefined, {
     id: `${id}-shift-settings`,
     role: 'menu',
     hidden: '',
@@ -3763,20 +3798,17 @@ const buildShiftingSettings = <N>(f: TriNodeFactory<N>, id: string): N => {
     'data-i18n-aria-label': 'electronic shifting view',
   })
   for (const { setting, label, options } of SHIFTING_SETTINGS) {
-    const group = f.el('div', 'tri-shift-settings-group', undefined, {
+    const group = f.el('div', 'g-select-group', undefined, {
       role: 'group',
       'aria-label': text(label),
       'data-i18n-aria-label': label,
     })
     f.add(
       group,
-      f.el('span', 'tri-shift-settings-heading', text(label), {
-        'aria-hidden': 'true',
-        'data-i18n': label,
-      }),
+      f.el('span', 'g-select-heading', text(label), { 'aria-hidden': 'true', 'data-i18n': label }),
     )
     for (const [index, option] of options.entries()) {
-      const item = f.el('button', 'tri-lab-date-option tri-shift-settings-option', undefined, {
+      const item = f.el('button', 'g-select-option tri-shift-settings-option', undefined, {
         type: 'button',
         role: 'menuitemradio',
         tabindex: '-1',
@@ -3786,8 +3818,8 @@ const buildShiftingSettings = <N>(f: TriNodeFactory<N>, id: string): N => {
       })
       f.add(
         item,
-        f.el('span', 'tri-lab-date-check', '✓', { 'aria-hidden': 'true' }),
-        f.el('span', 'tri-lab-date-option-value', text(SHIFTING_OPTION_LABELS[option]), {
+        f.el('span', 'g-select-check', '✓', { 'aria-hidden': 'true' }),
+        f.el('span', 'g-select-label', text(SHIFTING_OPTION_LABELS[option]), {
           'data-i18n': SHIFTING_OPTION_LABELS[option],
         }),
       )
@@ -3873,15 +3905,20 @@ export const buildShiftingChart = <N>(
   )
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-shift-summary')
-  if (dominant)
+  if (dominant) {
+    const range = f.el('span', 'tri-elev-range')
     f.add(
-      summary,
-      f.el(
-        'span',
-        'tri-elev-range',
-        `${dominant.frontTeeth}×${dominant.rearTeeth} · ${zoneClock(dominant.durationS)}`,
-      ),
+      range,
+      f.el('span', undefined, `${dominant.frontTeeth}×${dominant.rearTeeth}`, {
+        'data-shift-label': 'teeth',
+      }),
+      f.el('span', undefined, `${dominant.frontGearNum}×${dominant.rearGearNum}`, {
+        'data-shift-label': 'number',
+      }),
+      f.el('span', undefined, ` · ${zoneClock(dominant.durationS)}`),
     )
+    f.add(summary, range)
+  }
   for (const kind of ['front', 'rear'] as const) {
     const item = f.el('span', `tri-shift-legend-item tri-shift-legend-item--${kind}`)
     f.add(
@@ -3901,7 +3938,14 @@ export const buildShiftingChart = <N>(
   const distanceFrame = axisFrame(
     f,
     svgEl,
-    sampledGearTicks(frontValues).map(value => ({ label: `${value}T`, vbY: frontY(value) })),
+    sampledGearTicks(frontValues).flatMap(value => [
+      { label: `${value}T`, vbY: frontY(value), attrs: { 'data-shift-label': 'teeth' } },
+      {
+        label: `${shifts.find(shift => shift.frontTeeth === value)?.frontGearNum ?? '—'}`,
+        vbY: frontY(value),
+        attrs: { 'data-shift-label': 'number' },
+      },
+    ]),
     height,
     distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
     true,

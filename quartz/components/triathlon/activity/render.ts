@@ -1605,7 +1605,12 @@ export const renderDetail = (
         fmt: i => {
           const p = d.route[i]
           const shift = gearAtPoint(d, p)
-          return `${zoneClock(p.elapsedS)} · ${scrubDist(presentation, p.d, d.sport)}${shift ? ` · ${shift.frontTeeth}×${shift.rearTeeth}` : ''}`
+          const gears = !shift
+            ? ''
+            : trace.dataset.shiftLabel === 'number'
+              ? ` · ${shift.frontGearNum}×${shift.rearGearNum}`
+              : ` · ${shift.frontTeeth}×${shift.rearTeeth}`
+          return `${zoneClock(p.elapsedS)} · ${scrubDist(presentation, p.d, d.sport)}${gears}`
         },
       })
     else if (trace.dataset.triTrace === 'stamina')

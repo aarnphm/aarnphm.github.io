@@ -12056,155 +12056,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   margin-left: auto;
 }
 
-.tri-lab-date-picker {
-  position: relative;
-  z-index: 1;
-  margin-left: auto;
-}
-
-.tri-lab-date-trigger,
-.tri-be-picker-trigger {
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.55rem;
-  min-width: 7.65rem;
-  min-height: 1.55rem;
-  padding: 0.2rem 0.42rem;
-  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
-  border-radius: 0;
-  background: color-mix(in srgb, var(--light) 88%, transparent);
-  font-family: var(--codeFont);
-  font-size: 0.62rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--dark);
-  cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease;
-
-  &:hover {
-    border-color: color-mix(in srgb, var(--gray) 44%, transparent);
-    background: color-mix(in srgb, var(--tri-accent) 5%, var(--light));
-  }
-
-  &:focus-visible,
-  &[aria-expanded='true'] {
-    outline: 0;
-    border-color: color-mix(in srgb, var(--tri-accent) 48%, var(--lightgray));
-    background: color-mix(in srgb, var(--tri-accent) 8%, var(--light));
-  }
-}
-
-.tri-lab-date-value {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tri-lab-date-chevron {
-  flex: none;
-  width: 0.72rem;
-  height: 0.72rem;
-  color: color-mix(in srgb, var(--gray) 78%, var(--dark));
-  transition: transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.tri-lab-date-trigger[aria-expanded='true'] .tri-lab-date-chevron {
-  transform: rotate(180deg);
-}
-
-.tri-lab-date-menu,
-.tri-be-picker-menu {
-  position: absolute;
-  inset: calc(100% + 0.2rem) 0 auto auto;
-  z-index: var(--z-popover);
-  display: none;
-  box-sizing: border-box;
-  inline-size: 100%;
-  max-block-size: min(22rem, 50dvh);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  @include thin-scrollbar;
-  gap: 1px;
-  margin: 0;
-  padding: 0.2rem;
-  border: 1px solid color-mix(in srgb, var(--gray) 34%, transparent);
-  border-radius: 0;
-  background: color-mix(in srgb, var(--light) 96%, transparent);
-  color: var(--dark);
-  font-family: var(--codeFont);
-  font-size: 0.62rem;
-  font-variant-numeric: tabular-nums;
-
-  &:not([hidden]) {
-    display: grid;
-  }
-}
-
-.tri-lab-date-option,
-.tri-be-picker-option {
-  display: grid;
-  grid-template-columns: 0.75rem minmax(0, 1fr);
-  align-items: center;
-  gap: 0.35rem;
-  width: 100%;
-  padding: 0.28rem 0.34rem;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: color-mix(in srgb, var(--gray) 86%, var(--dark));
-  font: inherit;
-  font-variant-numeric: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    color 0.15s ease,
-    background 0.15s ease,
-    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
-
-  &:hover,
-  &:focus-visible {
-    outline: 0;
-    background: color-mix(in srgb, var(--tri-accent) 10%, var(--light));
-    color: var(--dark);
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-}
-
-.tri-lab-date-check,
-.tri-be-picker-check {
-  color: var(--tri-accent);
-  opacity: 0;
-}
-
-.tri-lab-date-option[aria-selected='true'] .tri-lab-date-check,
-.tri-be-picker-option[aria-selected='true'] .tri-be-picker-check {
-  opacity: 1;
-}
-
-.tri-lab-date-option-value {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tri-lab-date-trigger,
-  .tri-lab-date-chevron,
-  .tri-lab-date-option,
-  .tri-be-picker-trigger,
-  .tri-be-picker-option {
-    transition-duration: 0.01ms;
-  }
-}
-
 .tri-lab-session > .tri-vo2t {
   margin-top: 0.9rem;
   padding-top: 0.75rem;
@@ -14517,36 +14368,26 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-shift-settings {
-  .tri-lab-date-trigger {
+  .g-select-trigger {
     min-width: 4.6rem;
   }
 
-  .tri-lab-date-menu {
+  .g-select-menu {
     inline-size: max-content;
     min-inline-size: 100%;
   }
-}
 
-.tri-shift-settings-group {
-  display: grid;
-  gap: 1px;
-
-  & + & {
+  .g-select-group + .g-select-group {
     margin-top: 0.2rem;
     padding-top: 0.2rem;
     border-top: 1px solid color-mix(in srgb, var(--gray) 18%, transparent);
   }
-}
 
-.tri-shift-settings-heading {
-  padding: 0.22rem 0.34rem 0.12rem;
-  color: var(--gray);
-  font-size: 0.56rem;
-  text-transform: lowercase;
-}
-
-.tri-shift-settings-option[aria-checked='true'] .tri-lab-date-check {
-  opacity: 1;
+  .g-select-heading {
+    padding: 0.22rem 0.34rem 0.12rem;
+    font-size: 0.9em;
+    text-transform: lowercase;
+  }
 }
 
 .tri-map {
