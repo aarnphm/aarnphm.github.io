@@ -3,6 +3,8 @@ import { headingRank } from 'hast-util-heading-rank'
 import { toString as hastToString } from 'hast-util-to-string'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 
+export type SlideSubsection = { id: string; title: string; level: number }
+
 export type SlideSection = {
   type: 'intro' | 'section'
   id?: string
@@ -10,6 +12,8 @@ export type SlideSection = {
   level?: number
   startIndex: number
   endIndex: number // exclusive
+  // headings nested under the slide heading, in document order
+  subsections: SlideSubsection[]
 }
 
 export const Slides: QuartzTransformerPlugin = () => {
@@ -43,6 +47,7 @@ export const Slides: QuartzTransformerPlugin = () => {
                 title: 'intro',
                 startIndex: 0,
                 endIndex: firstHeadingIdx,
+                subsections: [],
               })
             } else if (firstHeadingIdx === -1 && children.length > 0) {
               // No headings at all; treat whole doc as single intro slide
@@ -51,6 +56,7 @@ export const Slides: QuartzTransformerPlugin = () => {
                 title: 'intro',
                 startIndex: 0,
                 endIndex: children.length,
+                subsections: [],
               })
             }
 
@@ -81,7 +87,28 @@ export const Slides: QuartzTransformerPlugin = () => {
               const id = (headingEl.properties?.id as string) || undefined
               const title = hastToString(headingEl)
 
-              sections.push({ type: 'section', id, title, level, startIndex, endIndex })
+              const subsections: SlideSubsection[] = []
+              for (let j = startIndex + 1; j < endIndex; j++) {
+                const node = children[j]
+                if (!(node?.type === 'element' && headingRank(node as Element))) continue
+                const subId = (node as Element).properties?.id
+                if (typeof subId !== 'string' || !subId) continue
+                subsections.push({
+                  id: subId,
+                  title: hastToString(node as Element),
+                  level: headingRank(node as Element) as number,
+                })
+              }
+
+              sections.push({
+                type: 'section',
+                id,
+                title,
+                level,
+                startIndex,
+                endIndex,
+                subsections,
+              })
 
               i = endIndex - 1 // skip to end of section
             }

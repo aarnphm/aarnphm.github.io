@@ -2758,7 +2758,8 @@ export function renderPage(
   const lang =
     (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split('-')[0] ?? 'en'
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? 'default'
-  const isSlides = (componentData.fileData.frontmatter?.slides ?? false) && slug.endsWith('/slides')
+  const isSlides =
+    (componentData.fileData.frontmatter?.slides ?? false) && /\/slides\/\d+$/.test(slug)
   const isFlashcards = componentData.fileData.flashcards != null && slug.endsWith('/flashcards')
   const isArena = slug === 'arena' || slug.startsWith('arena/')
   const isCurius = slug === 'curius'

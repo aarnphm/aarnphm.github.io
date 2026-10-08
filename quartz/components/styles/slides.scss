@@ -1,81 +1,116 @@
 @use '../../styles/variables.scss' as *;
 
-html:has(body[data-slides='true'][data-slug$='/slides']),
-body[data-slides='true'][data-slug$='/slides'] {
+html:has(body[data-slides='true']),
+body[data-slides='true'] {
   height: 100dvh;
   overflow: hidden;
 }
 
-body[data-slides='true'][data-slug$='/slides'] main#quartz-root {
+body[data-slides='true'] main#quartz-root {
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
 }
 
-body[data-slides='true'][data-slug$='/slides'] .page-header,
-body[data-slides='true'][data-slug$='/slides'] .page-footer {
+body[data-slides='true'] .page-header,
+body[data-slides='true'] .page-footer {
   display: none;
 }
 
-body[data-slides='true'][data-slug$='/slides'] .page-body-grid {
+body[data-slides='true'] .page-body-grid {
   grid-template-rows: minmax(0, 1fr);
   min-height: 0;
   overflow: hidden;
 }
 
-body[data-slides='true'][data-slug$='/slides'] .page-content {
+// the frame centres in the page like the flashcards shell
+body[data-slides='true'] .page-content {
+  box-sizing: border-box;
+  grid-row: 1;
   min-height: 0;
+  margin-bottom: 0;
+  padding: clamp(0.75rem, 4dvh, 2.5rem) 1rem;
   overflow: hidden;
 }
 
+// Reading workspace: the rail and controls use the shared tool recipe under the
+// slides prefix; slide content keeps the prose defaults.
 .slides-root {
+  --slides-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --slides-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --slides-control-height: 1.5rem;
+  --slides-feedback: 150ms ease;
+  // space between the rail's separator and the deck column
+  --slides-gutter: clamp(2rem, 4vw, 4.5rem);
+  // inset from the frame border to the rail and the deck
+  --slides-inset: var(--space-4);
+
+  box-sizing: border-box;
   position: relative;
   display: grid;
-  grid-column: 4/10;
+  grid-column: 1 / -1;
   grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
-  column-gap: clamp(2rem, 4vw, 4.5rem);
+  column-gap: 0;
   align-items: stretch;
+  align-self: center;
+  justify-self: center;
+  width: 100%;
   height: 100%;
+  min-width: 0;
   min-height: 0;
+  background: var(--light);
+  border: 1px solid var(--slides-line);
+  border-radius: var(--radius-none);
+}
+
+@media (pointer: coarse) {
+  .slides-root {
+    --slides-control-height: 44px;
+  }
 }
 
 @media all and ($tablet) {
   .slides-root {
     --main-col-padding-left: 0px;
     --main-col-padding-right: calc(var(--kern) * 2);
-    grid-column: 3 / -3;
+    --slides-gutter: calc(var(--kern) * 2);
     grid-template-columns: minmax(9rem, 12rem) minmax(0, 1fr);
-    column-gap: calc(var(--kern) * 2);
   }
 }
 @media all and ($mobile) {
   .slides-root {
     --main-col-padding-right: 0px;
+    --slides-gutter: 0px;
+    --slides-inset: var(--space-2);
     display: flex;
     flex-direction: column;
-    grid-column: 3 / -3;
+    height: 100%;
   }
 }
 
 .slides-toc {
   --slides-toc-rail-width: var(--rail-width);
   --slides-toc-rail-center: calc(var(--slides-toc-rail-width) / 2);
-  --slides-toc-node-center: 0.53rem;
-  --slides-toc-dot-size: 0.35rem;
-  --slides-toc-dot-top: 0.355rem;
+  --slides-toc-line-height: 1.4;
+  // the dot sits on the first line of its label
+  --slides-toc-node-center: calc(var(--text-ui) * var(--slides-toc-line-height) / 2);
+  // every marker is a square; depth shows as size
+  --slides-toc-node-size: 0.4rem;
+  --slides-toc-node-top: calc(var(--slides-toc-node-center) - var(--slides-toc-node-size) / 2);
+  --slides-toc-subnode-size: 0.25rem;
+  --slides-toc-subnode-center: calc(var(--text-meta) * var(--slides-toc-line-height) / 2);
+  --slides-toc-subnode-top: calc(
+    var(--slides-toc-subnode-center) - var(--slides-toc-subnode-size) / 2
+  );
   --slides-toc-entry-height: clamp(2.7rem, 5.8svh, 4.7rem);
   --slides-toc-last-entry-height: 2.2rem;
-  --slides-toc-list-tail: 3rem;
-  --slides-toc-header-gap: 1.4rem;
-  --slides-toc-rail-start: 1.1rem;
+  --slides-toc-list-tail: var(--space-12);
+  --slides-toc-header-gap: var(--space-6);
   --slides-toc-mask-buffer: 1.8rem;
-  --slides-toc-line-end: calc(
-    var(--slides-toc-list-tail) +
-      var(--slides-toc-last-entry-height) - var(--slides-toc-node-center)
-  );
 
   position: relative;
+  // the rail is its own column above the bottom bar, with a separator toward the deck
   grid-row: 1;
   grid-column: 1;
   display: flex;
@@ -83,75 +118,48 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   align-self: stretch;
   min-height: 0;
   overflow: hidden;
-  color: var(--gray);
-  padding: 1rem 0.25rem 1rem 0;
+  color: var(--darkgray);
+  padding-block: var(--space-4);
+  padding-inline: var(--slides-inset) var(--space-4);
+  border-inline-end: 1px solid var(--slides-line);
 }
 
-.slides-toc::before {
-  content: '';
-  position: absolute;
-  top: var(--slides-toc-rail-start);
-  bottom: 1rem;
-  left: var(--slides-toc-rail-center);
-  width: 1px;
-  border-radius: var(--radius-none);
-  background: color-mix(in srgb, var(--gray) 24%, transparent);
-  pointer-events: none;
-  transform: translateX(-50%);
-}
-
+// the header holds the exit and the rail toggle, top-left of the frame
 .slides-toc-header {
-  position: relative;
   flex: 0 0 auto;
-  padding-right: 2.1rem;
-  padding-left: var(--slides-toc-rail-width);
-  margin-bottom: 0;
+  display: flex;
+  gap: var(--space-2);
 }
 
-.slides-toc-back {
-  position: absolute;
-  top: -0.2rem;
-  right: 0;
+// collapsed, the rail column is just its toggle
+.slides-root.is-rail-collapsed {
+  grid-template-columns: max-content minmax(0, 1fr);
+}
+
+.slides-root.is-rail-collapsed :is(.slides-toc-list-scroll, .slides-toc-back) {
+  display: none;
+}
+
+.slides-toc-back,
+.slides-toc-toggle {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.7rem;
-  height: 1.7rem;
+  width: var(--slides-control-height);
+  height: var(--slides-control-height);
   color: var(--dark);
-  border: 1px solid var(--lightgray);
+  background: transparent;
+  border: 1px solid var(--slides-line);
   border-radius: var(--radius-none);
+  padding: 0;
+  font: var(--text-ui) / 1 var(--codeFont);
   text-decoration: none;
-  transition-property: border-color, color, background-color;
-  transition-duration: 160ms;
-  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
-}
-
-.slides-toc-back:hover,
-.slides-toc-back:focus-visible {
-  background: color-mix(in srgb, var(--dark) 6%, transparent);
-  border-color: color-mix(in srgb, var(--darkgray) 56%, var(--lightgray));
-  color: var(--dark);
-}
-
-.slides-toc-title,
-.slides-toc-meta {
-  margin: 0;
-}
-
-.slides-toc-title {
-  color: var(--dark);
-  font-family: var(--headerFont);
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.12;
-  text-wrap: balance;
-}
-
-.slides-toc-meta {
-  color: var(--gray);
-  font-size: 0.86rem;
-  line-height: 1.4;
-  margin-top: 0.45rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition-property: background-color, border-color, color;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
 }
 
 .slides-toc-list-scroll {
@@ -159,7 +167,8 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding-top: var(--slides-toc-header-gap);
+  padding-block-start: var(--slides-toc-header-gap);
+  scroll-padding-block: var(--slides-toc-mask-buffer);
   scrollbar-width: none;
 
   &.is-scrollable {
@@ -218,27 +227,10 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
 }
 
 .slides-toc-list {
-  --slides-toc-progress: 0;
-
   position: relative;
   list-style: none;
   margin: 0;
   padding: 0 0 var(--slides-toc-list-tail);
-}
-
-.slides-toc-list::after {
-  content: '';
-  position: absolute;
-  top: var(--slides-toc-node-center);
-  bottom: var(--slides-toc-line-end);
-  left: var(--slides-toc-rail-center);
-  width: 1px;
-  border-radius: var(--radius-none);
-  background: var(--dark);
-  pointer-events: none;
-  transform: translateX(-50%) scaleY(var(--slides-toc-progress));
-  transform-origin: top center;
-  transition: transform 180ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 .slides-toc-entry {
@@ -247,73 +239,224 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   margin: 0;
 }
 
+// The rail is one segment per entry, from its square to the next square. An entry
+// grows with its open sublist, so each segment spans the gap without measurement and
+// follows the sublists' curve. Segments above the current slide fill in ink.
+.slides-toc-entry:not(:last-child)::before,
+.slides-toc-entry:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: var(--slides-toc-node-center);
+  left: var(--slides-toc-rail-center);
+  width: 1px;
+  height: 100%;
+  border-radius: var(--radius-none);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.slides-toc-entry:not(:last-child)::before {
+  background: var(--slides-line);
+}
+
+.slides-toc-entry:not(:last-child)::after {
+  background: var(--dark);
+  transform: translateX(-50%) scaleY(0);
+  transform-origin: top;
+}
+
+.slides-toc-entry:has(~ .slides-toc-entry.is-active)::after {
+  transform: translateX(-50%) scaleY(1);
+}
+
+// the current slide's segment fills as far as the deck has scrolled through it
+.slides-toc-entry.is-active:not(:last-child)::after {
+  transform: translateX(-50%) scaleY(var(--slides-toc-sub-progress, 0));
+}
+
+.slides-toc-list.is-settled .slides-toc-entry::after {
+  transition: transform $panel-duration $panel-ease;
+}
+
 .slides-toc-entry:last-child {
   min-height: var(--slides-toc-last-entry-height);
 }
 
+// The link box starts after the rail so its focus ring hugs the label.
 .slides-toc-item {
   position: relative;
   display: block;
-  min-height: 40px;
-  padding: 0 0 0 var(--slides-toc-rail-width);
-  color: var(--gray);
-  font-size: 0.9rem;
-  line-height: 1.18;
-  opacity: 0.72;
+  min-height: max(2.5rem, var(--slides-control-height));
+  margin-inline-start: var(--slides-toc-rail-width);
+  padding: 0 var(--space-1) 0 0;
+  color: var(--darkgray);
+  font-size: var(--text-ui);
+  line-height: var(--slides-toc-line-height);
   text-decoration: none;
   text-wrap: pretty;
-  transition-property: color, opacity, transform;
-  transition-duration: 160ms;
-  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
-  outline: none;
+  transition: color var(--slides-feedback);
 }
 
+// slide marker: a hollow square ahead, ink once reached
 .slides-toc-item::before {
   content: '';
   position: absolute;
-  top: var(--slides-toc-dot-top);
-  left: var(--slides-toc-rail-center);
+  top: var(--slides-toc-node-top);
+  left: calc(var(--slides-toc-rail-center) - var(--slides-toc-rail-width));
   z-index: 1;
-  width: var(--slides-toc-dot-size);
-  height: var(--slides-toc-dot-size);
-  border-radius: var(--radius-circle);
-  background: color-mix(in srgb, var(--gray) 62%, transparent);
-  opacity: 1;
+  box-sizing: border-box;
+  width: var(--slides-toc-node-size);
+  height: var(--slides-toc-node-size);
+  border: 1px solid var(--gray);
+  border-radius: var(--radius-none);
+  background: var(--light);
   transform: translateX(-50%);
-  transition-property: background-color, transform, opacity;
-  transition-duration: 160ms;
-  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  transition-property: background-color, border-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
 }
 
-.slides-toc-item:hover,
-.slides-toc-item:focus-visible {
-  background: transparent;
-  color: var(--dark);
-  opacity: 1;
-}
-
-.slides-toc-item:hover::before,
-.slides-toc-item:focus-visible::before {
-  background: color-mix(in srgb, var(--darkgray) 80%, transparent);
-}
-
-.slides-toc-item.is-complete {
-  color: var(--dark);
-  opacity: 1;
-}
-
-.slides-toc-item.is-complete::before {
+.slides-toc-item.is-complete::before,
+.slides-toc-item.is-active::before {
+  border-color: var(--dark);
   background: var(--dark);
 }
 
 .slides-toc-item.is-active {
   color: var(--dark);
-  font-style: italic;
-  opacity: 1;
 }
 
-.slides-toc-item.is-active::before {
+// Subsections: disclosed for the current slide only, so the rail stays a rail.
+// The script sets each sublist's height so the closing and opening lists move
+// together; the closed list stays out of the tab order once it has folded.
+.slides-toc-sublist {
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.slides-toc-entry.is-active > .slides-toc-sublist {
+  height: auto;
+  visibility: visible;
+}
+
+.slides-toc-list.is-settled .slides-toc-sublist {
+  transition:
+    height $panel-duration $panel-ease,
+    visibility 0s linear $panel-duration;
+}
+
+.slides-toc-list.is-settled .slides-toc-entry.is-active > .slides-toc-sublist {
+  transition:
+    height $panel-duration $panel-ease,
+    visibility 0s;
+}
+
+.slides-toc-subentry {
+  position: relative;
+  margin: 0;
+}
+
+// inside the folding box, so the closed height is zero
+.slides-toc-subentry:last-child {
+  padding-block-end: var(--space-2);
+}
+
+// Subsections settle in one after another behind the opening box and fade out
+// ahead of the closing one, so the box edge never cuts through solid text.
+.slides-toc-subentry {
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--space-1)));
+}
+
+.slides-toc-entry.is-active .slides-toc-subentry {
+  opacity: 1;
+  transform: none;
+}
+
+.slides-toc-list.is-settled .slides-toc-subentry {
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+.slides-toc-list.is-settled .slides-toc-entry.is-active .slides-toc-subentry {
+  transition:
+    opacity $panel-duration $panel-ease,
+    transform $panel-duration $panel-ease;
+  transition-delay: calc(40ms + var(--slides-toc-sub-index, 0) * 30ms);
+}
+
+.slides-toc-subitem {
+  position: relative;
+  display: block;
+  min-height: var(--slides-control-height);
+  margin-inline-start: var(--slides-toc-rail-width);
+  padding: 0 var(--space-1) 0 var(--space-2);
+  color: var(--darkgray);
+  font-size: var(--text-meta);
+  line-height: var(--slides-toc-line-height);
+  text-decoration: none;
+  text-wrap: pretty;
+  transition: color var(--slides-feedback);
+}
+
+.slides-toc-subitem::before {
+  content: '';
+  position: absolute;
+  top: var(--slides-toc-subnode-top);
+  left: calc(var(--slides-toc-rail-center) - var(--slides-toc-rail-width));
+  z-index: 1;
+  width: var(--slides-toc-subnode-size);
+  height: var(--slides-toc-subnode-size);
+  border-radius: var(--radius-none);
+  background: var(--gray);
+  transform: translateX(-50%);
+  transition: background-color var(--slides-feedback);
+}
+
+.slides-toc-subitem.is-active {
+  color: var(--dark);
+}
+
+.slides-toc-subitem.is-active::before {
   background: var(--dark);
+}
+
+.slides-toc-item:focus-visible,
+.slides-toc-subitem:focus-visible {
+  outline: none;
+}
+
+.slides-toc-item:focus-visible .slides-toc-label,
+.slides-toc-subitem:focus-visible .slides-toc-label {
+  outline: 2px solid var(--dark);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .slides-toc-item:hover,
+  .slides-toc-subitem:hover {
+    background: transparent;
+    color: var(--dark);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .slides-toc-back:hover,
+  .slides-toc-toggle:hover,
+  .slides-controls :is(button:enabled, a[href]):hover {
+    color: var(--dark);
+    background: var(--slides-surface);
+    border-color: var(--gray);
+  }
+
+  .slides-root.is-overview .slide:hover {
+    background: var(--slides-surface);
+  }
 }
 
 .slides-deck {
@@ -322,8 +465,11 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   display: block;
   min-width: 0;
   min-height: 0;
+  padding-inline: var(--slides-gutter) var(--slides-inset);
   overflow-y: auto;
   scrollbar-width: none;
+  // horizontal swipes turn the slide; the browser keeps vertical panning
+  touch-action: pan-y pinch-zoom;
 
   &::-webkit-scrollbar {
     display: none;
@@ -342,50 +488,286 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   display: block;
 }
 
+@keyframes slides-enter {
+  from {
+    opacity: 0;
+    translate: 0 var(--space-1);
+  }
+}
+
+.slides-root:not(.is-overview) .slide.active {
+  animation: slides-enter $panel-duration $panel-ease;
+}
+
+// overview: every slide as a scaled card; the current one carries the ink border
+// the script sets the column count and the card scale from the deck's size
+.slides-root.is-overview .slides-deck {
+  display: grid;
+  grid-template-columns: repeat(var(--slides-overview-cols, 4), minmax(0, 1fr));
+  gap: var(--space-4);
+  align-content: start;
+  padding: var(--space-1);
+  counter-reset: slide;
+}
+
+.slides-root.is-overview .slide {
+  --slides-card-scale: var(--slides-overview-scale, 0.45);
+  --slides-card-pad: var(--space-3);
+  // caption line plus its gap
+  --slides-card-caption: calc(var(--text-meta) * 1.4 + var(--space-2));
+
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--slides-card-pad);
+  border: 1px solid var(--slides-line);
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  counter-increment: slide;
+  transition-property: background-color, border-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+.slides-root.is-overview .slide.active {
+  border-color: var(--dark);
+}
+
+.slides-root.is-overview .slide::before {
+  content: counter(slide) ' · ' attr(data-title);
+  display: block;
+  margin-block-end: var(--space-2);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.slides-root.is-overview .slide.active::before {
+  color: var(--dark);
+}
+
+// the card clips; a page-coloured fade marks the cut
+.slides-root.is-overview .slide::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--light));
+  pointer-events: none;
+}
+
+// the body is scaled with a transform, so its size never feeds the grid rows
+.slides-root.is-overview .slide-body {
+  position: absolute;
+  inset: calc(var(--slides-card-pad) + var(--slides-card-caption)) auto auto var(--slides-card-pad);
+  width: calc((100% - 2 * var(--slides-card-pad)) / var(--slides-card-scale));
+  height: calc(
+    (100% - 2 * var(--slides-card-pad) - var(--slides-card-caption)) / var(--slides-card-scale)
+  );
+  overflow: hidden;
+  transform: scale(var(--slides-card-scale));
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+// present: fullscreen on the root, chrome reduced to the ruler and the counter
+.slides-root.is-presenting {
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 0;
+  width: 100%;
+  height: 100%;
+  padding: var(--space-8) clamp(var(--space-6), 6vw, 8rem) 0;
+  background: var(--light);
+  border: 0;
+}
+
+.slides-root.is-presenting .slides-toc {
+  display: none;
+}
+
+.slides-root.is-presenting .slides-deck {
+  grid-column: 1;
+  padding-inline: 0;
+  inline-size: min(100%, 60rem);
+  margin-inline: auto;
+  zoom: 1.25;
+}
+
+.slides-root.is-presenting .slides-controls {
+  position: absolute;
+  inset: auto var(--space-6) var(--space-4) auto;
+  grid-column: auto;
+  gap: var(--space-4);
+  padding: 0;
+  background: transparent;
+}
+
+.slides-root.is-presenting .slides-controls :is(button, a) {
+  display: none;
+}
+
+.slides-root.is-presenting .slides-progress {
+  position: fixed;
+  inset: auto 0 0 0;
+}
+
+// the bottom bar spans the frame; the ruler is its full-width top edge
 .slides-controls {
   grid-row: 2;
   grid-column: 1 / -1;
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 0;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
+  padding-inline: var(--slides-inset);
   background: var(--light);
-  border-top: 1px solid var(--lightgray);
   flex-shrink: 0;
 }
 
+// ruler: one segment per slide, widths follow the slide's text, ink to the current
 .slides-progress {
   position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
+  top: 0;
+  inset-inline: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 2px;
   height: 2px;
-  overflow: hidden;
   pointer-events: none;
 }
 
-.slides-progress-bar {
-  height: 100%;
-  width: 0%;
-  background: var(--secondary);
-  transition: width 220ms ease-out;
+.slides-progress-segment {
+  background: var(--slides-line);
+  transition: background-color var(--slides-feedback);
 }
 
-.slides-controls .prev,
-.slides-controls .next {
-  font: inherit;
+.slides-progress-segment.is-complete {
+  background: var(--dark);
+}
+
+.slides-modes {
+  display: inline-flex;
+  gap: var(--space-2);
+}
+
+// the pair reads as one pager
+.slides-pager {
+  display: inline-flex;
+  gap: var(--space-1);
+}
+
+.slides-icon {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+}
+
+// square, the same box as the rail's toggle and home link
+.slides-controls :is(button, a) {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--slides-control-height);
+  block-size: var(--slides-control-height);
+  padding: 0;
   color: var(--dark);
-  border: 1px solid var(--lightgray);
-  padding: 0.25rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--slides-line);
   border-radius: var(--radius-none);
+  font: var(--text-ui) / 1 var(--codeFont);
+  cursor: pointer;
+  text-decoration: none;
+  touch-action: manipulation;
+  transition-property: background-color, border-color, color, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+.slides-controls :is(button:disabled, a[aria-disabled='true']) {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.slides-controls button[hidden] {
+  display: none;
+}
+
+.slides-controls button[aria-pressed='true'] {
+  color: var(--light);
+  background: var(--dark);
+  border-color: var(--dark);
+}
+
+.slides-toc-back:focus-visible,
+.slides-toc-toggle:focus-visible,
+.slides-controls :is(button, a):focus-visible {
+  outline: 2px solid var(--dark);
+  outline-offset: 2px;
+}
+
+.slides-controls .status,
+.slides-controls .slides-timer {
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
 }
 
 .slides-controls .status {
-  flex: 1;
-  text-align: center;
-  color: var(--gray);
+  margin-inline-end: auto;
+}
+
+@media (forced-colors: active) {
+  .slides-toc-item:focus-visible .slides-toc-label,
+  .slides-toc-subitem:focus-visible .slides-toc-label,
+  .slides-toc-back:focus-visible,
+  .slides-toc-toggle:focus-visible,
+  .slides-controls :is(button, a):focus-visible {
+    outline-color: Highlight;
+  }
+
+  .slides-toc-item.is-complete::before,
+  .slides-toc-item.is-active::before,
+  .slides-toc-subitem.is-active::before,
+  .slides-progress-segment.is-complete {
+    background: Highlight;
+    border-color: Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slides-toc-list.is-settled .slides-toc-entry::after,
+  .slides-toc-list.is-settled .slides-toc-sublist,
+  .slides-toc-list.is-settled .slides-toc-entry.is-active > .slides-toc-sublist,
+  .slides-toc-list.is-settled .slides-toc-subentry,
+  .slides-toc-list.is-settled .slides-toc-entry.is-active .slides-toc-subentry,
+  .slides-toc-item,
+  .slides-toc-item::before,
+  .slides-toc-subitem,
+  .slides-toc-subitem::before,
+  .slides-toc-back,
+  .slides-toc-toggle,
+  .slides-progress-segment,
+  .slides-controls :is(button, a),
+  .slides-root.is-overview .slide {
+    transition: none;
+  }
+
+  .slides-root:not(.is-overview) .slide.active {
+    animation: none;
+  }
 }
 
 @media all and ($mobile) {
@@ -398,15 +780,53 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   }
 
   .slides-controls {
-    padding: 0.375rem 0.5rem;
+    padding: calc(var(--space-1) * 1.5) var(--slides-inset);
   }
+
+  .slides-deck {
+    padding-inline: var(--slides-inset);
+  }
+  // the rail is hidden here, so the readout is the only position cue
   .slides-controls .status {
-    font-size: 0.875rem;
+    font-size: var(--text-ui);
   }
 }
 
 [data-slides='true'] {
   .transclude-collapsible {
     width: 100%;
+  }
+}
+
+@media print {
+  html:has(body[data-slides='true']),
+  body[data-slides='true'],
+  body[data-slides='true'] main#quartz-root,
+  body[data-slides='true'] .page-body-grid,
+  body[data-slides='true'] .page-content {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .slides-root {
+    display: block;
+    height: auto;
+  }
+
+  .slides-toc,
+  .slides-controls {
+    display: none;
+  }
+
+  .slides-deck {
+    overflow: visible;
+    mask-image: none;
+  }
+
+  .slide {
+    display: block;
+    break-after: page;
+    animation: none;
   }
 }
