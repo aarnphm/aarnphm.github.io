@@ -272,6 +272,7 @@ const config: QuartzConfig = {
       Plugin.PressKit(),
       Plugin.SlidesPage(),
       Plugin.FlashcardsPage(),
+      Plugin.CourseReviewPage(),
       Plugin.ArenaPage(),
       Plugin.PdfReader(),
       Plugin.BasePage(),

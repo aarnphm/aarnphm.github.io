@@ -1,3 +1,4 @@
+import { normalizeRelativeURLs } from '../../util/path'
 import { currentNavSignal } from './nav-lifecycle'
 
 interface CardState {
@@ -15,6 +16,31 @@ interface LogEntry {
   reviewId?: number
 }
 
+/** One deck in the merged drill's manifest, in calendar order. */
+interface DeckEntry {
+  deck: string
+  course: string
+  n: number
+  read: boolean
+  ids: string[]
+}
+
+const parseManifest = (raw: string | undefined): DeckEntry[] => {
+  try {
+    const value: unknown = JSON.parse(raw ?? '[]')
+    return Array.isArray(value) ? (value as DeckEntry[]) : []
+  } catch {
+    return []
+  }
+}
+
+const age = (ms: number): string => {
+  const hours = Math.round(ms / 3_600_000)
+  if (hours < 1) return 'under an hour'
+  if (hours < 48) return `${hours}h`
+  return `${Math.round(hours / 24)}d`
+}
+
 let activeSignal: AbortSignal | undefined
 
 document.addEventListener('nav', () => {
@@ -23,8 +49,9 @@ document.addEventListener('nav', () => {
 
   const root = document.querySelector<HTMLElement>('.flashcards-root')
   if (!root) return
-  const cards = Array.from(root.querySelectorAll<HTMLElement>('.flashcard[data-card-id]'))
-  if (cards.length === 0) return
+  let cards = Array.from(root.querySelectorAll<HTMLElement>('.flashcard[data-card-id]'))
+  const prefix = root.dataset.prefix
+  if (cards.length === 0 && !prefix) return
 
   activeSignal = signal
   signal.addEventListener(
@@ -36,6 +63,9 @@ document.addEventListener('nav', () => {
   )
 
   const deckSlug = root.dataset.deck ?? ''
+  // merged pages carry the deck on each card
+  const deckOf = (el: HTMLElement) => el.dataset.deck ?? deckSlug
+  const deckList = root.querySelector<HTMLElement>('.flashcards-deck')
   const cardBox = root.querySelector<HTMLElement>('.flashcards-card')
   const cardBody = root.querySelector<HTMLElement>('.flashcards-card-body')
   const progressEl = root.querySelector<HTMLElement>('.flashcards-progress')
@@ -173,12 +203,13 @@ document.addEventListener('nav', () => {
     }
     const entry: LogEntry = { el, cardId, grade, requeued, buried }
     log.push(entry)
-    if (login && deckSlug) {
+    const cardDeck = deckOf(el)
+    if (login && cardDeck) {
       try {
         const res = await fetch('/api/flashcards/review', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cardId, deckSlug, grade }),
+          body: JSON.stringify({ cardId, deckSlug: cardDeck, grade }),
           signal,
         })
         if (res.status === 401) login = null
@@ -321,7 +352,121 @@ document.addEventListener('nav', () => {
   window.addEventListener('keyup', onModUp, { signal })
   window.addEventListener('blur', onBlur, { signal })
 
+  // Merged drill: one state fetch for the prefix, then pull only the chosen cards' HTML.
+  const startMerged = async (prefix: string) => {
+    const params = new URLSearchParams(window.location.search)
+    const inDir = params.get('in')
+    const manifest = parseManifest(root.dataset.decks).filter(
+      deck => !inDir || deck.course === inDir,
+    )
+    const scope = inDir ? `${prefix}${inDir}/` : prefix
+    let rows = new Map<string, CardState>()
+    try {
+      const res = await fetch(`/api/flashcards/state?prefix=${encodeURIComponent(scope)}`, {
+        signal,
+      })
+      if (!res.ok) throw new Error(`state ${res.status}`)
+      const data = (await res.json()) as { login?: string | null; states?: CardState[] }
+      login = typeof data.login === 'string' ? data.login : null
+      rows = new Map((data.states ?? []).map(s => [s.cardId, s]))
+    } catch {
+      if (signal.aborted) return
+      setSync('error', 'could not load progress')
+      finish()
+      return
+    }
+    if (signal.aborted) return
+    if (!login) {
+      setSync('off', 'reviews save only for the site owner')
+      total = 0
+      finish()
+      if (summaryEl) summaryEl.textContent = 'reviews save only for the site owner.'
+      return
+    }
+    setSync('on', `reviews save to ${login}`)
+
+    const now = Date.now()
+    const newRaw = params.get('new')
+    const newParam = newRaw === null ? NaN : Number(newRaw)
+    let newBudget = Number.isInteger(newParam) && newParam >= 0 ? newParam : 10
+    const wanted = new Map<string, { due: string[]; fresh: string[] }>()
+    let nextDue = Infinity
+    let nextLabel = ''
+    for (const deck of manifest) {
+      const due: string[] = []
+      const fresh: string[] = []
+      for (const id of deck.ids) {
+        const row = rows.get(id)
+        if (row) {
+          if (row.due <= now) due.push(id)
+          else if (row.due < nextDue) {
+            nextDue = row.due
+            nextLabel = `${deck.course} ${String(deck.n).padStart(2, '0')}`
+          }
+        } else if (deck.read && newBudget > 0) {
+          fresh.push(id)
+          newBudget--
+        }
+      }
+      if (due.length > 0 || fresh.length > 0) wanted.set(deck.deck, { due, fresh })
+    }
+
+    const dueCards: HTMLElement[] = []
+    const freshCards: HTMLElement[] = []
+    await Promise.all(
+      Array.from(wanted.entries()).map(async ([deck, pick]) => {
+        try {
+          const res = await fetch(`/${deck}`, { headers: { Accept: 'text/html' }, signal })
+          if (!res.ok) throw new Error(`deck ${res.status}`)
+          const doc = new DOMParser().parseFromString(await res.text(), 'text/html')
+          normalizeRelativeURLs(doc, new URL(`/${deck}`, window.location.origin))
+          const byId = new Map<string, HTMLElement>()
+          for (const el of doc.querySelectorAll<HTMLElement>('.flashcard[data-card-id]')) {
+            byId.set(el.dataset.cardId ?? '', el)
+          }
+          const lift = (id: string) => {
+            const el = byId.get(id)
+            if (!el) return undefined
+            const copy = document.importNode(el, true)
+            copy.dataset.deck = deck
+            deckList?.append(copy)
+            return copy
+          }
+          for (const id of pick.due) {
+            const el = lift(id)
+            if (el) dueCards.push(el)
+          }
+          for (const id of pick.fresh) {
+            const el = lift(id)
+            if (el) freshCards.push(el)
+          }
+        } catch {
+          if (!signal.aborted) persistError = true
+        }
+      }),
+    )
+    if (signal.aborted) return
+    shuffle(dueCards)
+    cards = [...dueCards, ...freshCards]
+    let order = cards.slice()
+    const limit = Number(params.get('n'))
+    if (Number.isInteger(limit) && limit > 0) order = order.slice(0, limit)
+    queue = order
+    total = queue.length
+    root.dataset.total = String(total)
+    startedAt = Date.now()
+    if (total === 0) {
+      finish()
+      if (summaryEl && Number.isFinite(nextDue)) {
+        summaryEl.textContent = `nothing due right now. next: ${age(nextDue - now)} (${nextLabel})`
+      }
+      return
+    }
+    show()
+  }
+
   const start = async () => {
+    if (prefix) return startMerged(prefix)
     let order = cards.slice()
     if (deckSlug) {
       try {

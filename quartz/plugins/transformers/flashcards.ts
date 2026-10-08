@@ -6,7 +6,7 @@ import { wikilink, wikilinkFromMarkdown } from '../../extensions/micromark-exten
 import { speech, speechFromMarkdown } from '../../extensions/micromark-extension-speech'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { CardKind, parseFlashcards } from '../../util/flashcards'
-import { isFlashcardPath, sourceSlugForDeck } from '../../util/flashcards-path'
+import { flashcardsSlug, isFlashcardPath, sourceSlugForDeck } from '../../util/flashcards-path'
 import { FullSlug } from '../../util/path'
 
 const html = (value: string): RootContent => ({ type: 'html', value })
@@ -29,8 +29,11 @@ export const Flashcards: QuartzTransformerPlugin = () => ({
       () => (tree: Root, file) => {
         if (!isFlashcardPath(file.data.relativePath ?? file.data.filePath ?? '')) return
         const deck = parseFlashcards(file.data.rawMarkdownSource ?? '')
+        const sourceSlug = sourceSlugForDeck(file.data.slug!) as FullSlug
+        // the merged drill lifts cards out of their deck page, so each card names its deck
+        const deckSlug = flashcardsSlug(sourceSlug)
         file.data.flashcards = {
-          sourceSlug: sourceSlugForDeck(file.data.slug!) as FullSlug,
+          sourceSlug,
           cards: deck.cards.map(card => ({ id: card.id, kind: card.kind, groupId: card.groupId })),
         }
 
@@ -49,7 +52,7 @@ export const Flashcards: QuartzTransformerPlugin = () => ({
           const group = card.groupId ? ` data-group="${card.groupId}"` : ''
           children.push(
             html(
-              `<section class="flashcard" data-card-id="${card.id}" data-kind="${card.kind}"${group}>`,
+              `<section class="flashcard" data-card-id="${card.id}" data-kind="${card.kind}" data-deck="${deckSlug}"${group}>`,
             ),
             html(`<div class="flashcard-face flashcard-front" data-face="front">`),
             ...parseFace(card.front),
