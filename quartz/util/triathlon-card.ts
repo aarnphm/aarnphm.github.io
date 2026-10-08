@@ -5619,6 +5619,7 @@ const buildWorkoutAnalysisSection = <N>(
   embedded = false,
   zones: StravaZones | null = null,
   vt1: number | null = null,
+  expandTabs = false,
 ): { element: N; metric: 'elapsed' | 'hr' | 'power' | 'pace' } | null => {
   const sport = {
     bike: 'Cycling',
@@ -5678,24 +5679,33 @@ const buildWorkoutAnalysisSection = <N>(
   const stage = f.el('div', 'tri-workout-analysis-stage')
   for (const view of views) {
     const active = view.key === selected
-    f.add(
-      tabs,
-      f.el(
-        'button',
-        'tri-map-tab tri-workout-analysis-tab',
-        embedded ? view.shortLabel : view.label,
-        {
-          id: `${id}-${view.key}-tab`,
-          type: 'button',
-          role: 'tab',
-          tabindex: active ? '0' : '-1',
-          'aria-label': view.label,
-          'aria-controls': `${id}-${view.key}-panel`,
-          'aria-selected': String(active),
-          'data-workout-analysis-tab': view.key,
-        },
-      ),
+    const tab = f.el(
+      'button',
+      'tri-map-tab tri-workout-analysis-tab',
+      expandTabs ? undefined : embedded ? view.shortLabel : view.label,
+      {
+        id: `${id}-${view.key}-tab`,
+        type: 'button',
+        role: 'tab',
+        tabindex: active ? '0' : '-1',
+        'aria-label': view.label,
+        'aria-controls': `${id}-${view.key}-panel`,
+        'aria-selected': String(active),
+        'data-workout-analysis-tab': view.key,
+        ...(expandTabs
+          ? {
+              style: `--tri-map-tab-shortcut-width: ${view.shortLabel.length}ch; --tri-map-tab-label-width: ${view.label.length}ch`,
+            }
+          : {}),
+      },
     )
+    if (expandTabs)
+      f.add(
+        tab,
+        f.el('span', 'tri-map-tab-shortcut', view.shortLabel, { 'aria-hidden': 'true' }),
+        f.el('span', 'tri-map-tab-label', view.label, { 'aria-hidden': 'true' }),
+      )
+    f.add(tabs, tab)
     const panel = f.el('div', 'tri-workout-analysis-panel', undefined, {
       id: `${id}-${view.key}-panel`,
       role: 'tabpanel',
@@ -5716,7 +5726,8 @@ export const buildWorkoutAnalysis = <N>(
   d: StravaActivityDetail,
   embedded = false,
   zones: StravaZones | null = null,
-): N | null => buildWorkoutAnalysisSection(f, d, embedded, zones)?.element ?? null
+  expandTabs = false,
+): N | null => buildWorkoutAnalysisSection(f, d, embedded, zones, null, expandTabs)?.element ?? null
 
 export type EnvironmentChartView =
   | 'cumulative'
@@ -6906,27 +6917,30 @@ export const buildEnvironmentAnalysis = <N>(
     const active = view === selected
     const label = environmentViewLabel(view)
     const shortLabel = environmentViewShortLabel(view)
+    const translatedLabel = triText(f.presentation.locale, label)
+    const translatedShortLabel = triText(f.presentation.locale, shortLabel)
     const tab = f.el('button', 'tri-map-tab tri-environment-tab', undefined, {
       id: `${id}-${view}-tab`,
       type: 'button',
       role: 'tab',
       tabindex: active ? '0' : '-1',
-      title: triText(f.presentation.locale, label),
-      'aria-label': triText(f.presentation.locale, label),
+      title: translatedLabel,
+      'aria-label': translatedLabel,
       'aria-controls': `${id}-${view}-panel`,
       'aria-selected': String(active),
       'data-environment-tab': view,
       'data-i18n-aria-label': label,
+      style: `--tri-map-tab-shortcut-width: ${translatedShortLabel.length}ch; --tri-map-tab-label-width: ${translatedLabel.length}ch`,
     })
     f.add(
       tab,
-      f.el('span', 'tri-environment-tab-full', triText(f.presentation.locale, label), {
-        'aria-hidden': 'true',
-        'data-i18n': label,
-      }),
-      f.el('span', 'tri-environment-tab-short', triText(f.presentation.locale, shortLabel), {
+      f.el('span', 'tri-environment-tab-short tri-map-tab-shortcut', translatedShortLabel, {
         'aria-hidden': 'true',
         'data-i18n': shortLabel,
+      }),
+      f.el('span', 'tri-environment-tab-full tri-map-tab-label', translatedLabel, {
+        'aria-hidden': 'true',
+        'data-i18n': label,
       }),
     )
     f.add(tabs, tab)

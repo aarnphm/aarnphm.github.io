@@ -213,12 +213,20 @@ const setView = (analysis: HTMLElement, selected: EnvironmentView, focus: boolea
     !views.includes(selected)
   )
     return
+  const tablist = analysis.querySelector<HTMLElement>('.tri-environment-tablist')
+  if (focus && tablist) tablist.dataset.motion = 'instant'
   analysis.dataset.environmentView = selected
   for (const tab of tabs) {
     const active = tab.dataset.environmentTab === selected
     tab.setAttribute('aria-selected', String(active))
     tab.tabIndex = active ? 0 : -1
-    if (active && focus) tab.focus({ preventScroll: true })
+  }
+  if (focus) {
+    tablist?.getBoundingClientRect()
+    if (tablist) delete tablist.dataset.motion
+    const activeTab = tabs.find(tab => tab.dataset.environmentTab === selected)
+    activeTab?.focus({ preventScroll: true })
+    activeTab?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   }
   for (const panel of panels) {
     const active = panel.dataset.environmentPanel === selected
@@ -414,6 +422,18 @@ export const setupEnvironmentTabs = (
     updateCursor(analysis, presentation(), samples, next)
   }
 
+  const onLabelTransitionEnd = (event: TransitionEvent): void => {
+    if (
+      (event.propertyName !== 'inline-size' && event.propertyName !== 'width') ||
+      !(event.target instanceof HTMLElement) ||
+      !event.target.classList.contains('tri-environment-tab-full')
+    )
+      return
+    const tab = event.target.closest<HTMLButtonElement>('[data-environment-tab]')
+    if (tab?.getAttribute('aria-selected') === 'true')
+      tab.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }
+
   const onPointerMove = (event: PointerEvent): void => {
     if (!(event.target instanceof Element)) return
     const chart = event.target.closest<SVGElement>('[data-environment-chart]')
@@ -460,6 +480,7 @@ export const setupEnvironmentTabs = (
   }
   root.addEventListener('click', onClick)
   root.addEventListener('keydown', onKeyDown)
+  root.addEventListener('transitionend', onLabelTransitionEnd)
   root.addEventListener('pointermove', onPointerMove)
   root.addEventListener('pointerdown', onPointerDown)
   root.addEventListener('pointerup', endSelection)
@@ -467,6 +488,7 @@ export const setupEnvironmentTabs = (
   return () => {
     root.removeEventListener('click', onClick)
     root.removeEventListener('keydown', onKeyDown)
+    root.removeEventListener('transitionend', onLabelTransitionEnd)
     root.removeEventListener('pointermove', onPointerMove)
     root.removeEventListener('pointerdown', onPointerDown)
     root.removeEventListener('pointerup', endSelection)

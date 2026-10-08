@@ -14615,6 +14615,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   stroke-width: 0.9;
 }
 
+.tri-map {
+  container: tri-map / inline-size;
+}
+
 .tri-map-body {
   position: relative;
   flex-direction: row;
@@ -14894,8 +14898,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-map-sidebar {
   box-sizing: border-box;
   contain: layout paint style;
-  flex: 0 0 min(34%, 460px);
+  flex: 0 0 clamp(20rem, 44%, 28rem);
   min-width: 0;
+  min-height: 0;
   max-width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
@@ -15232,7 +15237,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   .tri-map.tri-map--detail {
     width: 100vw;
   }
+}
 
+@container tri-map (max-width: 48rem) {
   .tri-map--detail .tri-map-body {
     flex-direction: column;
   }
@@ -15240,6 +15247,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   .tri-map--detail .tri-map-pane {
     flex: 0 0 45%;
     border-right: 0;
+    border-bottom: 1px solid var(--lightgray);
   }
 
   .tri-map--detail .tri-map-sidebar {
@@ -15301,6 +15309,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-map-tab {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
@@ -15337,6 +15346,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-map-tab-shortcut,
 .tri-map-tab-label {
   display: block;
+  flex: none;
   overflow: hidden;
   transition:
     inline-size 180ms cubic-bezier(0.2, 0, 0, 1),
@@ -16602,10 +16612,22 @@ a.tri-pop-date:hover {
   flex: none;
   width: fit-content;
   max-width: 100%;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .tri-workout-analysis-tab {
+  &[data-workout-analysis-tab='power'] {
+    --tri-workout-analysis-color: var(--tri-zone-power);
+  }
+
+  &[data-workout-analysis-tab='heart-rate'] {
+    --tri-workout-analysis-color: var(--tri-zone-heart-rate);
+
+    &[aria-selected='true'] {
+      color: #000;
+    }
+  }
+
   &[aria-selected='true'] {
     color: #111;
     background: var(--tri-workout-analysis-color);
@@ -17043,26 +17065,13 @@ a.tri-pop-date:hover {
   flex: 1 1 16rem;
   min-width: 0;
   max-width: 100%;
+  padding-block-end: 0.5rem;
   overflow-x: auto;
   @include thin-scrollbar;
 }
 
 .tri-environment-tab {
   flex-shrink: 0;
-}
-
-.tri-environment-tab-short {
-  display: none;
-}
-
-@container tri-environment (max-width: 22rem) {
-  .tri-environment-tab-full {
-    display: none;
-  }
-
-  .tri-environment-tab-short {
-    display: inline;
-  }
 }
 
 .tri-environment-mode {
