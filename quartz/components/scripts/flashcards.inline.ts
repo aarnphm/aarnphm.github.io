@@ -10,6 +10,9 @@ interface LogEntry {
   cardId: string
   grade: number
   requeued: boolean
+  /** siblings of a cloze group pulled from the queue when this card was graded */
+  buried: HTMLElement[]
+  reviewId?: number
 }
 
 let activeSignal: AbortSignal | undefined
@@ -161,7 +164,15 @@ document.addEventListener('nav', () => {
     queue.shift()
     const requeued = grade <= 2
     if (requeued) queue.push(el)
-    log.push({ el, cardId, grade, requeued })
+    // cloze siblings show the answer just graded, so they wait for the next session
+    const group = el.dataset.group
+    const buried = group ? queue.filter(other => other !== el && other.dataset.group === group) : []
+    if (buried.length > 0) {
+      queue = queue.filter(other => !buried.includes(other))
+      total -= buried.length
+    }
+    const entry: LogEntry = { el, cardId, grade, requeued, buried }
+    log.push(entry)
     if (login && deckSlug) {
       try {
         const res = await fetch('/api/flashcards/review', {
@@ -172,6 +183,10 @@ document.addEventListener('nav', () => {
         })
         if (res.status === 401) login = null
         if (!res.ok) persistError = true
+        else {
+          const data = (await res.json()) as { reviewId?: number }
+          if (typeof data.reviewId === 'number') entry.reviewId = data.reviewId
+        }
       } catch {
         if (!signal.aborted) persistError = true
       }
@@ -196,6 +211,26 @@ document.addEventListener('nav', () => {
       if (idx !== -1) queue.splice(idx, 1)
     }
     queue.unshift(last.el)
+    if (last.buried.length > 0) {
+      queue.push(...last.buried)
+      total += last.buried.length
+    }
+    if (login && last.reviewId !== undefined) {
+      const reviewId = last.reviewId
+      void fetch('/api/flashcards/undo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId }),
+        signal,
+      })
+        .then(res => {
+          if (!res.ok) setSync('error', 'undo did not save; the review stands on the server')
+        })
+        .catch(() => {
+          if (!signal.aborted)
+            setSync('error', 'undo did not save; the review stands on the server')
+        })
+    }
     if (finished) {
       finished = false
       root.removeAttribute('data-state')
