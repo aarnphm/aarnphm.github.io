@@ -4,6 +4,7 @@
 @use './syntax.scss';
 @use './callouts.scss';
 @use './transcludes.scss';
+@use '../components/styles/controls.scss';
 @use './mixin.scss' as *;
 
 html,

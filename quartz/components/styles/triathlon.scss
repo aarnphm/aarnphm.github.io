@@ -38,6 +38,29 @@
   --tri-activity-graph-row-height: calc(var(--tri-activity-chart-height, 104px) + 2.45rem + 0.66lh);
 }
 
+// Skin hooks for the shared controls (styles/controls.scss).
+.triathlon,
+.tri-calendar-set,
+.tri-calendar,
+.tri-day-embed,
+.tri-compare-embed {
+  --control-height: 1.55rem;
+  --control-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --control-accent: var(--tri-accent);
+  --control-accent-ink: color-mix(in srgb, var(--tri-accent) 78%, var(--dark));
+}
+
+// Zero specificity, so a host block can resize its own control.
+:where(.triathlon, .tri-calendar-set, .tri-calendar, .tri-day-embed, .tri-compare-embed) {
+  :where(.g-datepicker) {
+    --control-font-size: 0.58rem;
+  }
+
+  :where(.g-select) {
+    --control-font-size: 0.62rem;
+  }
+}
+
 @mixin thin-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--gray) 45%, transparent) transparent;
