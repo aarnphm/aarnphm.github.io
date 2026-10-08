@@ -2,8 +2,8 @@ import type { Analytics } from '../../../../plugins/stores/analytics'
 import type { DexaRecord } from '../../../../plugins/stores/analytics'
 import type { TriathlonContext } from '../../runtime/context'
 import type { TriathlonFormatter } from '../../runtime/formatter'
+import { buildSelect } from '../../../controls/select'
 import { el } from '../../runtime/dom'
-import { svg } from '../../runtime/dom'
 import { anaTitle } from '../shared'
 import { KG_PER_LB } from '../shared'
 import { pctFmt } from '../shared'
@@ -176,26 +176,6 @@ export const buildDexaDetail = (formatter: TriathlonFormatter, d: DexaRecord): H
   return detail
 }
 
-export const buildLabDateChevron = (): SVGElement => {
-  const icon = svg('svg', {
-    class: 'tri-lab-date-chevron',
-    viewBox: '0 0 16 16',
-    fill: 'none',
-    'aria-hidden': 'true',
-    focusable: 'false',
-  })
-  icon.appendChild(
-    svg('path', {
-      d: 'm4 6 4 4 4-4',
-      stroke: 'currentColor',
-      'stroke-width': '1.4',
-      'stroke-linecap': 'round',
-      'stroke-linejoin': 'round',
-    }),
-  )
-  return icon
-}
-
 export const buildDexa = (
   data: Analytics,
   context: TriathlonContext,
@@ -216,40 +196,22 @@ export const buildDexa = (
     return { element: block }
   }
 
-  const datePicker = el('div', 'tri-lab-date-picker')
-  const dateTrigger = document.createElement('button')
-  dateTrigger.type = 'button'
-  dateTrigger.className = 'tri-lab-date-trigger'
-  dateTrigger.setAttribute('aria-label', text('lab test date'))
-  dateTrigger.setAttribute('aria-haspopup', 'listbox')
-  dateTrigger.setAttribute('aria-expanded', 'false')
-  const dateValue = el('span', 'tri-lab-date-value')
-  dateTrigger.append(dateValue, buildLabDateChevron())
-
-  const dateMenu = el('div', 'tri-lab-date-menu', undefined, {
-    role: 'listbox',
-    'aria-label': text('lab test date'),
+  const datePicker = buildSelect<number>({
+    id: 'tri-lab-date-menu',
+    label: text('lab test date'),
+    groups: [
+      {
+        options: labDates.map((date, index) => ({
+          value: index,
+          label: context.formatter.longDate(date),
+        })),
+      },
+    ],
+    selected: labDates.length - 1,
+    onSelect: index => selectLabDate(index, true),
+    className: 'tri-dexa-date',
   })
-  dateMenu.hidden = true
-  dateMenu.id = 'tri-lab-date-menu'
-  dateTrigger.setAttribute('aria-controls', dateMenu.id)
-  const dateOptions: HTMLButtonElement[] = []
-  for (const [index, date] of labDates.entries()) {
-    const option = document.createElement('button')
-    option.type = 'button'
-    option.className = 'tri-lab-date-option'
-    option.dataset.index = String(index)
-    option.setAttribute('role', 'option')
-    option.setAttribute('aria-selected', 'false')
-    option.append(
-      el('span', 'tri-lab-date-check', '✓', { 'aria-hidden': 'true' }),
-      el('span', 'tri-lab-date-option-value', context.formatter.longDate(date)),
-    )
-    dateOptions.push(option)
-    dateMenu.appendChild(option)
-  }
-  datePicker.append(dateTrigger, dateMenu)
-  titleRow.appendChild(datePicker)
+  titleRow.appendChild(datePicker.element)
   block.appendChild(titleRow)
 
   const sessions = labDates.map(date => {
@@ -268,9 +230,7 @@ export const buildDexa = (
   const selectLabDate = (index: number, persist: boolean): void => {
     const date = labDates[index]
     if (!date) return
-    dateValue.textContent = context.formatter.longDate(date)
-    for (const [optionIndex, option] of dateOptions.entries())
-      option.setAttribute('aria-selected', String(optionIndex === index))
+    datePicker.setSelected(index)
     for (const [sessionIndex, session] of sessions.entries())
       session.hidden = sessionIndex !== index
     if (persist) {
@@ -278,66 +238,6 @@ export const buildDexa = (
         localStorage.setItem(TRI_LAB_DATE_KEY, date)
       } catch {}
     }
-  }
-  const closeDateMenu = (restoreFocus = false): void => {
-    dateMenu.hidden = true
-    dateTrigger.setAttribute('aria-expanded', 'false')
-    if (restoreFocus) dateTrigger.focus()
-  }
-  const openDateMenu = (): void => {
-    if (!dateMenu.hidden) return
-    dateMenu.hidden = false
-    dateTrigger.setAttribute('aria-expanded', 'true')
-    dateOptions.find(option => option.getAttribute('aria-selected') === 'true')?.focus()
-  }
-  const onTriggerClick = (): void => {
-    if (dateMenu.hidden) openDateMenu()
-    else closeDateMenu()
-  }
-  const onTriggerKeydown = (event: KeyboardEvent): void => {
-    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
-    event.preventDefault()
-    openDateMenu()
-  }
-  const onMenuClick = (event: MouseEvent): void => {
-    const target = event.target
-    if (!(target instanceof Element)) return
-    const option = target.closest<HTMLButtonElement>('.tri-lab-date-option')
-    if (!option || !dateMenu.contains(option)) return
-    const index = Number(option.dataset.index)
-    if (!Number.isInteger(index)) return
-    selectLabDate(index, true)
-    closeDateMenu(true)
-  }
-  const onMenuKeydown = (event: KeyboardEvent): void => {
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      event.stopPropagation()
-      closeDateMenu(true)
-      return
-    }
-    const activeIndex = dateOptions.findIndex(option => option === document.activeElement)
-    const targetIndex =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? dateOptions.length - 1
-          : event.key === 'ArrowDown'
-            ? Math.min(dateOptions.length - 1, activeIndex + 1)
-            : event.key === 'ArrowUp'
-              ? Math.max(0, activeIndex - 1)
-              : -1
-    if (targetIndex < 0) return
-    event.preventDefault()
-    dateOptions[targetIndex]?.focus()
-  }
-  const onPickerFocusout = (event: FocusEvent): void => {
-    if (event.relatedTarget instanceof Node && datePicker.contains(event.relatedTarget)) return
-    closeDateMenu()
-  }
-  const onDocumentPointerdown = (event: PointerEvent): void => {
-    if (event.composedPath().includes(datePicker) || dateMenu.hidden) return
-    closeDateMenu()
   }
   selectLabDate(labDates.length - 1, false)
   return {
@@ -348,20 +248,7 @@ export const buildDexa = (
         const storedIndex = labDates.findIndex(date => date === storedDate)
         if (storedIndex >= 0) selectLabDate(storedIndex, false)
       } catch {}
-      dateTrigger.addEventListener('click', onTriggerClick)
-      dateTrigger.addEventListener('keydown', onTriggerKeydown)
-      dateMenu.addEventListener('click', onMenuClick)
-      dateMenu.addEventListener('keydown', onMenuKeydown)
-      datePicker.addEventListener('focusout', onPickerFocusout)
-      document.addEventListener('pointerdown', onDocumentPointerdown)
-      return () => {
-        dateTrigger.removeEventListener('click', onTriggerClick)
-        dateTrigger.removeEventListener('keydown', onTriggerKeydown)
-        dateMenu.removeEventListener('click', onMenuClick)
-        dateMenu.removeEventListener('keydown', onMenuKeydown)
-        datePicker.removeEventListener('focusout', onPickerFocusout)
-        document.removeEventListener('pointerdown', onDocumentPointerdown)
-      }
+      return datePicker.mount()
     },
   }
 }

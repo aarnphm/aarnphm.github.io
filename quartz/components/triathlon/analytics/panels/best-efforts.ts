@@ -9,6 +9,7 @@ import type { TriathlonContext } from '../../runtime/context'
 import { shiftIsoDay } from '../../../../util/local-date'
 import { powerCurveActivityLinkAttributes } from '../../../../util/triathlon-power-activity'
 import { isRecord } from '../../../../util/type-guards'
+import { buildSelect, type Select } from '../../../controls/select'
 import { setupPowerCurveActivityLinks } from '../../activity/power-links'
 import { buildIcon } from '../../activity/primitives'
 import { ELEV_RAMP, HEAT_RAMP, SPD_RAMP, STRIDE_RAMP } from '../../maps/palette'
@@ -43,10 +44,8 @@ interface BestEffortsState {
 
 interface Picker {
   name: 'year' | 'sort' | 'month'
-  wrap: HTMLElement
-  trigger: HTMLButtonElement
-  menu: HTMLElement
-  options: HTMLButtonElement[]
+  select: Select<string>
+  dispose: (() => void) | null
 }
 
 interface CategoryTabOption {
@@ -412,20 +411,15 @@ export const buildBestEfforts = (
   let listSlot: HTMLElement | null = null
   let pickers: Picker[] = []
 
-  const pickerFor = (node: unknown): Picker | undefined =>
-    node instanceof Node ? pickers.find(picker => picker.wrap.contains(node)) : undefined
-
-  const closeMenu = (picker: Picker, restoreFocus = false): void => {
-    picker.menu.hidden = true
-    picker.trigger.setAttribute('aria-expanded', 'false')
-    if (restoreFocus) picker.trigger.focus({ preventScroll: true })
+  // Pickers are rebuilt on every render; only the ones in the DOM hold listeners.
+  const mountPickers = (): void => {
+    if (mounted) for (const picker of pickers) picker.dispose ??= picker.select.mount()
   }
-
-  const openMenu = (picker: Picker): void => {
-    for (const other of pickers) if (other !== picker) closeMenu(other)
-    picker.menu.hidden = false
-    picker.trigger.setAttribute('aria-expanded', 'true')
-    picker.options.find(option => option.getAttribute('aria-selected') === 'true')?.focus()
+  const dropPickers = (): void => {
+    for (const picker of pickers) {
+      picker.dispose?.()
+      picker.dispose = null
+    }
   }
 
   const dropChart = (): void => {
@@ -668,53 +662,28 @@ export const buildBestEfforts = (
     mountChart()
   }
 
-  // Listbox pickers use the lab date picker's styling and keyboard behavior.
   const buildPicker = (
     name: Picker['name'],
     labelText: string,
-    choices: readonly { value: string; label: string }[],
+    choices: { value: string; label: string }[],
     selected: string,
   ): HTMLElement => {
     const field = el('div', 'tri-be-field')
-    const label = el('span', 'tri-be-field-label', labelText, { id: `tri-be-${name}-label` })
+    // The trigger's own name repeats the label, so the visible copy is hidden from assistive tech.
+    const label = el('span', 'tri-be-field-label', labelText, { 'aria-hidden': 'true' })
     if (name === 'month') label.hidden = true
-    const wrap = el('div', 'tri-be-picker')
-    const trigger = document.createElement('button')
-    trigger.type = 'button'
-    trigger.className = 'tri-be-picker-trigger'
-    trigger.id = `tri-be-${name}-trigger`
-    trigger.dataset.bePicker = name
-    trigger.dataset.beFocus = name
-    trigger.textContent = choices.find(choice => choice.value === selected)?.label ?? ''
-    trigger.setAttribute('aria-labelledby', `${label.id} ${trigger.id}`)
-    trigger.setAttribute('aria-haspopup', 'listbox')
-    trigger.setAttribute('aria-expanded', 'false')
-    trigger.setAttribute('aria-controls', `tri-be-${name}-menu`)
-    if (name === 'month') trigger.dataset.active = String(state.rideRange === 'month')
-    const menu = el('div', 'tri-be-picker-menu', undefined, {
+    const select = buildSelect({
       id: `tri-be-${name}-menu`,
-      role: 'listbox',
-      'aria-labelledby': label.id,
+      label: labelText,
+      groups: [{ options: choices }],
+      selected,
+      onSelect: value => choosePickerOption(name, value),
+      className: 'tri-be-picker',
     })
-    menu.hidden = true
-    const options = choices.map(choice => {
-      const option = document.createElement('button')
-      option.type = 'button'
-      option.className = 'tri-be-picker-option'
-      option.dataset.beOption = choice.value
-      option.setAttribute('role', 'option')
-      option.setAttribute('aria-selected', String(choice.value === selected))
-      option.tabIndex = -1
-      option.append(
-        el('span', 'tri-be-picker-check', '✓', { 'aria-hidden': 'true' }),
-        el('span', 'tri-be-picker-text', choice.label),
-      )
-      return option
-    })
-    menu.append(...options)
-    wrap.append(trigger, menu)
-    pickers.push({ name, wrap, trigger, menu, options })
-    field.append(label, wrap)
+    select.trigger.dataset.beFocus = name
+    if (name === 'month') select.trigger.dataset.active = String(state.rideRange === 'month')
+    pickers.push({ name, select, dispose: null })
+    field.append(label, select.element)
     return field
   }
 
@@ -795,10 +764,12 @@ export const buildBestEfforts = (
 
   const render = (animate = false): void => {
     const category = activeCategory()
+    dropPickers()
     pickers = []
     syncState(category)
     renderCategories(category, animate)
     renderPanel(category)
+    mountPickers()
   }
 
   // Rebuilt controls lose focus; move it to the replacement for the activated control.
@@ -870,40 +841,29 @@ export const buildBestEfforts = (
     }
   }
 
-  // The pickers live outside the list, so a year or sort change keeps them and only syncs them.
-  const choosePickerOption = (picker: Picker, value: string): void => {
-    if (picker.name === 'month') {
+  // The year and sort pickers live outside the list, so their changes keep them in place.
+  const choosePickerOption = (name: Picker['name'], value: string): void => {
+    if (name === 'month') {
       if (!rideMonths.includes(value)) return
-      closeMenu(picker)
       update(() => {
         state.rideRange = 'month'
         state.rideMonth = value
       })
-      pickers.find(option => option.name === 'month')?.trigger.focus({ preventScroll: true })
-      return
-    } else if (picker.name === 'year') {
+      // The render replaced the month picker; focus its new trigger.
+      pickers.find(picker => picker.name === 'month')?.select.trigger.focus({ preventScroll: true })
+    } else if (name === 'year') {
       const next = value === 'all' ? null : years.find(year => String(year) === value)
-      if (next === undefined) return
-      if (next !== state.year)
+      if (next !== undefined && next !== state.year)
         update(() => {
           state.year = next
         }, 'year')
     } else {
       const next = SORTS.find(option => option.key === value)?.key
-      if (!next) return
-      if (next !== state.sort)
+      if (next && next !== state.sort)
         update(() => {
           state.sort = next
         }, 'list')
     }
-    for (const option of picker.options) {
-      const selected = option.dataset.beOption === value
-      option.setAttribute('aria-selected', String(selected))
-      if (selected)
-        picker.trigger.textContent =
-          option.querySelector('.tri-be-picker-text')?.textContent ?? value
-    }
-    closeMenu(picker, true)
   }
 
   const onClick = (event: MouseEvent): void => {
@@ -911,21 +871,9 @@ export const buildBestEfforts = (
     if (!(target instanceof Element)) return
     const control = target.closest<HTMLButtonElement>('button')
     if (!control || !block.contains(control)) return
-    const {
-      beSportOption,
-      beViewOption,
-      beGroupOption,
-      beCategoryOption,
-      beRangeOption,
-      beOption,
-    } = control.dataset
-    const picker = pickerFor(control)
-    if (picker && control === picker.trigger) {
-      if (picker.menu.hidden) openMenu(picker)
-      else closeMenu(picker)
-    } else if (picker && beOption != null) {
-      choosePickerOption(picker, beOption)
-    } else if (beSportOption) {
+    const { beSportOption, beViewOption, beGroupOption, beCategoryOption, beRangeOption } =
+      control.dataset
+    if (beSportOption) {
       const sport = sports.find(option => option === beSportOption)
       if (!sport || sport === state.sport) return
       update(() => {
@@ -992,65 +940,13 @@ export const buildBestEfforts = (
     tab.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   }
 
-  const onPickerKeydown = (event: KeyboardEvent): void => {
-    const picker = pickerFor(event.target)
-    if (!picker) return
-    if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return
-    if (event.key === 'Escape' && !picker.menu.hidden) {
-      event.preventDefault()
-      event.stopPropagation()
-      closeMenu(picker, true)
-      return
-    }
-    if (event.key === 'Tab') {
-      closeMenu(picker, true)
-      return
-    }
-    if (event.target === picker.trigger) {
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-        event.preventDefault()
-        event.stopPropagation()
-        openMenu(picker)
-      }
-      return
-    }
-    const active = picker.options.findIndex(option => option === document.activeElement)
-    const next =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? picker.options.length - 1
-          : event.key === 'ArrowDown'
-            ? Math.min(picker.options.length - 1, active + 1)
-            : event.key === 'ArrowUp'
-              ? Math.max(0, active - 1)
-              : -1
-    if (next < 0) return
-    event.preventDefault()
-    event.stopPropagation()
-    picker.options[next]?.focus()
-  }
-
-  const onPickerFocusout = (event: FocusEvent): void => {
-    for (const picker of pickers)
-      if (!(event.relatedTarget instanceof Node && picker.wrap.contains(event.relatedTarget)))
-        closeMenu(picker)
-  }
-
-  const onDocumentPointerdown = (event: PointerEvent): void => {
-    const path = event.composedPath()
-    for (const picker of pickers) if (!path.includes(picker.wrap)) closeMenu(picker)
-  }
-
   render()
   return {
     element: block,
     mount: () => {
       mounted = true
+      mountPickers()
       block.addEventListener('click', onClick)
-      block.addEventListener('keydown', onPickerKeydown)
-      block.addEventListener('focusout', onPickerFocusout)
-      document.addEventListener('pointerdown', onDocumentPointerdown)
       tablist.addEventListener('keydown', onTabKeydown)
       catbar.addEventListener('keydown', onCategoryKeydown)
       const linksCleanup = setupPowerCurveActivityLinks(block, context)
@@ -1058,10 +954,7 @@ export const buildBestEfforts = (
       return () => {
         mounted = false
         block.removeEventListener('click', onClick)
-        block.removeEventListener('keydown', onPickerKeydown)
-        block.removeEventListener('focusout', onPickerFocusout)
-        document.removeEventListener('pointerdown', onDocumentPointerdown)
-        for (const picker of pickers) closeMenu(picker)
+        dropPickers()
         tablist.removeEventListener('keydown', onTabKeydown)
         catbar.removeEventListener('keydown', onCategoryKeydown)
         linksCleanup()

@@ -86,7 +86,7 @@
   flex: none;
 }
 
-.tri-be-category-row .tri-be-picker-trigger {
+.tri-be-category-row .g-select-trigger {
   inline-size: 9rem;
   block-size: var(--tri-be-control-height);
   padding-block: 0;
@@ -328,7 +328,7 @@
   z-index: 2;
 }
 
-.tri-best-efforts .tri-be-picker-trigger {
+.tri-best-efforts .g-select-trigger {
   min-width: 6.5rem;
 }
 
