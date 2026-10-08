@@ -55,15 +55,11 @@
   min-width: 0;
   color: var(--gray);
 
-  .tri-lab-date-picker {
-    margin-left: 0;
-  }
-
-  .tri-lab-date-trigger {
+  .g-select-trigger {
     min-width: 10rem;
   }
 
-  .tri-lab-date-menu {
+  .g-select-menu {
     inset-inline-start: 0;
     inset-inline-end: auto;
     inline-size: max-content;
@@ -142,12 +138,6 @@
     border-radius: 50%;
     background: var(--trace-color);
   }
-}
-
-.tri-mywindsock-picker-heading {
-  display: block;
-  padding: 0.65rem 0.35rem 0.25rem;
-  color: var(--darkgray);
 }
 
 .tri-mywindsock-note {

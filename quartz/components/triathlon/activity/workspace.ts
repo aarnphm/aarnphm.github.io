@@ -730,7 +730,8 @@ export const setupActivityWorkspace = (context: TriathlonContext): (() => void) 
       !active.owner.contains(event.target)
     )
       return
-    if (active.region.querySelector('.tri-workspace-range-trigger[aria-expanded="true"]')) return
+    if (active.region.querySelector('.tri-workspace-range .g-select-trigger[aria-expanded="true"]'))
+      return
     event.preventDefault()
     event.stopImmediatePropagation()
     void close(false, true)

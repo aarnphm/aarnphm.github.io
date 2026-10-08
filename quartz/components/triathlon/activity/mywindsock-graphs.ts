@@ -11,7 +11,7 @@ import {
   parseMyWindsockGraphs,
 } from '../../../util/mywindsock-graphs'
 import { triText } from '../../../util/triathlon-i18n'
-import { buildLabDateChevron } from '../analytics/panels/body-composition'
+import { buildSelect, type Select } from '../../controls/select'
 import { applyI18n, el, svg } from '../runtime/dom'
 import { WIND_TRACE_COLORS } from './trace-colors'
 
@@ -538,58 +538,35 @@ function mountMyWindsockGraphs(
     return null
   }
   const pickerId = `tri-mywindsock-${archive.activityId}`
-  const trigger = el('button', 'tri-lab-date-trigger', undefined, {
-    type: 'button',
-    id: `${pickerId}-trigger`,
-    'aria-haspopup': 'listbox',
-    'aria-expanded': 'false',
-    'aria-controls': `${pickerId}-menu`,
-  })
-  const value = el('span', 'tri-lab-date-value')
-  trigger.append(value, buildLabDateChevron())
-  const menu = el('div', 'tri-lab-date-menu', undefined, {
-    id: `${pickerId}-menu`,
-    role: 'listbox',
-    'aria-label': text('wind graph'),
-    'data-i18n-aria-label': 'wind graph',
-  })
-  menu.hidden = true
   const graphLabel = (graph: MyWindsockGraphs['graphs'][number]): string => text(graph.label)
-  const options: HTMLElement[] = []
-  for (const category of [...Object.keys(MYWINDSOCK_GRAPH_CATEGORIES), 'Other']) {
-    const graphs = visibleGraphs.filter(graph => graph.category === category)
-    if (!graphs.length) continue
-    const group = el('div', 'tri-mywindsock-picker-group', undefined, {
-      role: 'group',
-      'aria-label': text(category),
-      'data-i18n-aria-label': category,
-    })
-    group.append(
-      el('span', 'tri-mywindsock-picker-heading', text(category), {
-        'aria-hidden': 'true',
-        'data-i18n': category,
+  let selected =
+    visibleGraphs.find(graph => graph.key === (archive.cyclingCda ? 'cda' : 'virt_elev')) ??
+    visibleGraphs[0]
+  // Labels follow the locale, so a locale change rebuilds the picker.
+  const buildPicker = (): Select<string> =>
+    buildSelect({
+      id: `${pickerId}-menu`,
+      label: text('wind graph'),
+      groups: [...Object.keys(MYWINDSOCK_GRAPH_CATEGORIES), 'Other'].flatMap(category => {
+        const graphs = visibleGraphs.filter(graph => graph.category === category)
+        return graphs.length
+          ? [
+              {
+                label: text(category),
+                options: graphs.map(graph => ({ value: graph.key, label: graphLabel(graph) })),
+              },
+            ]
+          : []
       }),
-    )
-    for (const graph of graphs) {
-      const option = el('button', 'tri-lab-date-option', undefined, {
-        type: 'button',
-        role: 'option',
-        'aria-selected': 'false',
-        'data-mywindsock-graph': graph.key,
-        tabindex: '-1',
-      })
-      option.append(
-        el('span', 'tri-lab-date-check', '✓', { 'aria-hidden': 'true' }),
-        el('span', 'tri-lab-date-option-value', graphLabel(graph)),
-      )
-      options.push(option)
-      group.append(option)
-    }
-    menu.append(group)
-  }
-  const picker = el('div', 'tri-lab-date-picker')
-  picker.append(trigger, menu)
-  pickerHost.replaceChildren(picker)
+      selected: selected.key,
+      onSelect: key => {
+        selected = visibleGraphs.find(graph => graph.key === key) ?? selected
+        update()
+      },
+    })
+  let picker = buildPicker()
+  let disposePicker = picker.mount()
+  pickerHost.replaceChildren(picker.element)
   // Every description shares one grid cell, so the block keeps the tallest one's height at the
   // current width and switching graphs never moves the chart.
   const descriptions = el('div', 'tri-mywindsock-descriptions')
@@ -605,9 +582,6 @@ function mountMyWindsockGraphs(
   const status = el('p', 'tri-mywindsock-note', undefined, { role: 'status' })
   const plots = el('div', 'tri-mywindsock-plots')
   host.replaceChildren(descriptions, plots, status)
-  let selected =
-    visibleGraphs.find(graph => graph.key === (archive.cyclingCda ? 'cda' : 'virt_elev')) ??
-    visibleGraphs[0]
   const active = new Set<string>()
   const colors = new Map<string, string>()
   const color = (id: string): string => colors.get(id) ?? WIND_TRACE_COLORS[0]
@@ -617,8 +591,8 @@ function mountMyWindsockGraphs(
       item.toggleAttribute('data-active', key === selected.key)
     }
     const description = descriptionItems.get(selected.key)
-    if (description) trigger.setAttribute('aria-describedby', description.id)
-    else trigger.removeAttribute('aria-describedby')
+    if (description) picker.trigger.setAttribute('aria-describedby', description.id)
+    else picker.trigger.removeAttribute('aria-describedby')
     status.textContent = [
       selected.note ? text(selected.note) : null,
       archive.sport === 'run' && (selected.key === 'cda' || selected.key === 'interval_designer')
@@ -651,10 +625,7 @@ function mountMyWindsockGraphs(
     }
   }
   const update = (): void => {
-    value.textContent = graphLabel(selected)
-    trigger.setAttribute('aria-label', `${text('wind graph')}: ${graphLabel(selected)}`)
-    for (const option of options)
-      option.setAttribute('aria-selected', String(option.dataset.mywindsockGraph === selected.key))
+    picker.setSelected(selected.key)
     active.clear()
     colors.clear()
     const series = selected.plots.flatMap(plot => plot.series)
@@ -674,100 +645,20 @@ function mountMyWindsockGraphs(
     updateStatus()
     draw()
   }
-  const close = (restoreFocus = false): void => {
-    menu.hidden = true
-    trigger.setAttribute('aria-expanded', 'false')
-    if (restoreFocus) trigger.focus({ preventScroll: true })
-  }
-  const focusOption = (index: number): void => {
-    const option = options[index]
-    if (!option) return
-    for (const candidate of options) candidate.tabIndex = candidate === option ? 0 : -1
-    option.focus({ preventScroll: true })
-    option.scrollIntoView({ block: 'nearest' })
-  }
-  const open = (): void => {
-    if (!menu.hidden) return
-    menu.hidden = false
-    trigger.setAttribute('aria-expanded', 'true')
-    focusOption(options.findIndex(option => option.getAttribute('aria-selected') === 'true'))
-  }
-  const onTriggerClick = (): void => (menu.hidden ? open() : close())
-  const onTriggerKeydown = (event: KeyboardEvent): void => {
-    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
-    event.preventDefault()
-    open()
-  }
-  const onMenuClick = (event: MouseEvent): void => {
-    const option =
-      event.target instanceof Element
-        ? event.target.closest<HTMLElement>('[data-mywindsock-graph]')
-        : null
-    const next = visibleGraphs.find(graph => graph.key === option?.dataset.mywindsockGraph)
-    if (!next) return
-    selected = next
-    update()
-    close(true)
-  }
-  const onMenuKeydown = (event: KeyboardEvent): void => {
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      event.stopPropagation()
-      close(true)
-      return
-    }
-    const current = options.findIndex(option => option === document.activeElement)
-    const target =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? options.length - 1
-          : event.key === 'ArrowDown'
-            ? Math.min(options.length - 1, current + 1)
-            : event.key === 'ArrowUp'
-              ? Math.max(0, current - 1)
-              : -1
-    if (target < 0) return
-    event.preventDefault()
-    focusOption(target)
-  }
-  const onFocusout = (event: FocusEvent): void => {
-    if (event.relatedTarget instanceof Node && picker.contains(event.relatedTarget)) return
-    close()
-  }
-  const onPointerdown = (event: PointerEvent): void => {
-    if (menu.hidden || event.composedPath().includes(picker)) return
-    close()
-  }
   const onLocale = (): void => {
     if (!host.isConnected) return
-    applyI18n(pickerHost, presentation())
+    disposePicker()
+    picker = buildPicker()
+    disposePicker = picker.mount()
+    pickerHost.replaceChildren(picker.element)
     applyI18n(host, presentation())
-    value.textContent = graphLabel(selected)
-    trigger.setAttribute('aria-label', `${text('wind graph')}: ${graphLabel(selected)}`)
-    for (const option of options) {
-      const graph = visibleGraphs.find(graph => graph.key === option.dataset.mywindsockGraph)
-      const label = option.querySelector('.tri-lab-date-option-value')
-      if (graph && label) label.textContent = graphLabel(graph)
-    }
     updateStatus()
     draw()
   }
-  trigger.addEventListener('click', onTriggerClick)
-  trigger.addEventListener('keydown', onTriggerKeydown)
-  menu.addEventListener('click', onMenuClick)
-  menu.addEventListener('keydown', onMenuKeydown)
-  picker.addEventListener('focusout', onFocusout)
-  document.addEventListener('pointerdown', onPointerdown)
   window.addEventListener('tri:locale', onLocale)
   update()
   return () => {
-    trigger.removeEventListener('click', onTriggerClick)
-    trigger.removeEventListener('keydown', onTriggerKeydown)
-    menu.removeEventListener('click', onMenuClick)
-    menu.removeEventListener('keydown', onMenuKeydown)
-    picker.removeEventListener('focusout', onFocusout)
-    document.removeEventListener('pointerdown', onPointerdown)
+    disposePicker()
     window.removeEventListener('tri:locale', onLocale)
   }
 }

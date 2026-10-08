@@ -203,43 +203,33 @@
   min-width: 0;
   max-width: 50%;
   margin-inline-start: auto;
-}
+  --control-font-size: 0.75rem;
 
-.tri-workspace .tri-workspace-range-trigger {
-  width: 100%;
-  min-width: 0;
-  min-height: 1.5rem;
-  font-size: 0.75rem;
-}
+  .g-select-trigger {
+    width: 100%;
+    min-width: 0;
+    min-height: 1.5rem;
+  }
 
-.tri-workspace-range-value {
-  min-width: 0;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
+  .g-select-value,
+  .g-select-label {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 
-.tri-workspace .tri-workspace-range-menu {
-  inline-size: max(100%, 22rem);
-  max-inline-size: min(32rem, 100cqi);
-  max-block-size: min(24rem, 50dvh);
-  overflow-y: auto;
-  padding: 0.35rem;
-  overscroll-behavior: contain;
-  background: var(--light);
-  font-size: 0.75rem;
-}
+  .g-select-menu {
+    inline-size: max(100%, 22rem);
+    max-inline-size: min(32rem, 100cqi);
+    max-block-size: min(24rem, 50dvh);
+    padding: 0.35rem;
+    background: var(--light);
+  }
 
-.tri-workspace .tri-workspace-range-option {
-  min-height: 2rem;
-  color: var(--dark);
-  border: 0;
-  text-align: start;
-}
-
-.tri-workspace-range-heading {
-  display: block;
-  padding: 0.65rem 0.4rem 0.25rem;
-  color: var(--darkgray);
+  .g-select-option {
+    min-height: 2rem;
+    border: 0;
+    color: var(--dark);
+  }
 }
 
 .tri-workspace-stage {
