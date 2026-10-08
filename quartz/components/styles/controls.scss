@@ -1,0 +1,562 @@
+// Skin for the shared controls in quartz/components/controls. Loaded on every page.
+//
+// A host tints the controls through these properties, set on any ancestor:
+//   --control-height       trigger height (date picker adds its 2px border)
+//   --control-font-size    root size; inner sizes scale from it in em
+//   --control-surface      trigger and panel ground
+//   --control-accent       hover, expanded and selected tints
+//   --control-accent-ink   text-button and check-mark ink; keep 4.5:1 on paper
+//   --control-focus        focus ring
+
+.g-datepicker,
+.g-select,
+.g-calendar {
+  font-size: var(--control-font-size, var(--text-meta, 0.75rem));
+}
+
+// Date picker
+
+// Root boxes use :where() so a host's own width or position wins regardless of stylesheet order.
+:where(.g-datepicker) {
+  box-sizing: border-box;
+  flex: none;
+  inline-size: 19.75em;
+  max-inline-size: 100%;
+}
+
+.g-datepicker-trigger {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  inline-size: 100%;
+  block-size: calc(var(--control-height, 1.625rem) + 2px);
+  min-block-size: 0;
+  padding: 0.13rem 0.45rem;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  background: var(--control-surface, color-mix(in srgb, var(--light) 86%, var(--lightgray)));
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 1em;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &[aria-expanded='true'] {
+    border-color: color-mix(in srgb, var(--control-accent, var(--secondary)) 42%, var(--lightgray));
+    background: color-mix(
+      in srgb,
+      var(--control-accent, var(--secondary)) 8%,
+      var(--control-surface, var(--light))
+    );
+    color: var(--dark);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.g-datepicker-text {
+  min-inline-size: 0;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.g-datepicker-icon {
+  flex: none;
+  inline-size: 1.25em;
+  block-size: 1.25em;
+}
+
+.g-datepicker-panel {
+  box-sizing: border-box;
+  display: none;
+  position: fixed;
+  z-index: var(--z-popover, 999);
+  margin: 0;
+  padding: 0.62rem;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  background: color-mix(
+    in srgb,
+    var(--light) 92%,
+    var(--control-surface, color-mix(in srgb, var(--light) 86%, var(--lightgray)))
+  );
+  color: var(--dark);
+  font-family: var(--codeFont);
+  line-height: 1;
+  opacity: 0;
+  transform: translateY(-0.12rem) scale(0.985);
+  transform-origin: top left;
+  transition:
+    opacity 0.16s cubic-bezier(0.23, 1, 0.32, 1),
+    transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:popover-open,
+  &[data-open='true'] {
+    display: block;
+    opacity: 1;
+    transform: none;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
+}
+
+.g-cal-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.2rem;
+  margin-bottom: 0.55rem;
+}
+
+.g-cal-title {
+  min-inline-size: 0;
+  overflow: hidden;
+  color: var(--dark);
+  font-size: 1.2em;
+  font-weight: 650;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.g-cal-week,
+.g-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.g-cal-week {
+  margin-bottom: 0.18rem;
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 1.25rem;
+    color: var(--darkgray);
+  }
+}
+
+.g-cal-grid {
+  gap: 0.08rem;
+}
+
+.g-cal-day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  min-inline-size: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-none);
+  background: transparent;
+  color: inherit;
+  font-family: var(--codeFont);
+  font-size: 1.07em;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &[data-outside]:not([aria-pressed='true']) {
+    color: color-mix(in srgb, var(--gray) 50%, transparent);
+  }
+
+  &[data-today]:not([aria-pressed='true']) {
+    border-color: color-mix(in srgb, var(--gray) 42%, transparent);
+  }
+
+  &[aria-pressed='true'] {
+    border-color: color-mix(in srgb, var(--control-accent, var(--secondary)) 62%, var(--lightgray));
+    background: color-mix(
+      in srgb,
+      var(--control-accent, var(--secondary)) 24%,
+      var(--control-surface, var(--light))
+    );
+    color: var(--dark);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  &:disabled {
+    color: color-mix(in srgb, var(--gray) 32%, transparent);
+    cursor: default;
+  }
+}
+
+.g-cal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.56rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--lightgray) 80%, transparent);
+}
+
+// Icon and text buttons, shared by the picker and by toolbars beside it
+
+.g-icon-button,
+.g-text-button {
+  border: 0;
+  border-radius: var(--radius-none);
+  background: transparent;
+  font-family: var(--codeFont);
+  cursor: pointer;
+}
+
+.g-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.35rem;
+  block-size: 1.35rem;
+  padding: 0;
+  color: var(--darkgray);
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  &:disabled {
+    color: color-mix(in srgb, var(--gray) 36%, transparent);
+    cursor: default;
+  }
+}
+
+.g-icon {
+  inline-size: 0.85rem;
+  block-size: 0.85rem;
+}
+
+.g-text-button {
+  padding: 0.12rem 0;
+  color: var(--control-accent-ink, var(--dark));
+  font-size: 1.03em;
+  transition:
+    color 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+// Select
+
+:where(.g-select) {
+  position: relative;
+  z-index: 1;
+}
+
+.g-select-trigger {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  min-width: 12.3em;
+  min-height: var(--control-height, 1.625rem);
+  padding: 0.2rem 0.42rem;
+  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  border-radius: var(--radius-none);
+  background: color-mix(in srgb, var(--light) 88%, transparent);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 1em;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  &[aria-expanded='true'] {
+    border-color: color-mix(in srgb, var(--control-accent, var(--secondary)) 48%, var(--lightgray));
+    background: color-mix(in srgb, var(--control-accent, var(--secondary)) 8%, var(--light));
+  }
+}
+
+.g-select-value,
+.g-select-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.g-select-chevron {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+  color: var(--darkgray);
+  transition: transform 0.16s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.g-select-trigger[aria-expanded='true'] .g-select-chevron {
+  transform: rotate(180deg);
+}
+
+.g-select-menu {
+  position: absolute;
+  inset: calc(100% + 0.2rem) 0 auto auto;
+  z-index: var(--z-popover, 999);
+  display: none;
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-block-size: min(22rem, 50dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--gray) 45%, transparent) transparent;
+  gap: 1px;
+  margin: 0;
+  padding: 0.2rem;
+  border: 1px solid color-mix(in srgb, var(--gray) 34%, transparent);
+  border-radius: var(--radius-none);
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+
+  &:not([hidden]) {
+    display: grid;
+  }
+}
+
+.g-select-group {
+  display: grid;
+  gap: 1px;
+}
+
+.g-select-heading {
+  display: block;
+  padding: 0.65rem 0.4rem 0.25rem;
+  color: var(--darkgray);
+}
+
+.g-select-option {
+  display: grid;
+  grid-template-columns: 0.75rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.28rem 0.34rem;
+  border: 0;
+  border-radius: var(--radius-none);
+  background: transparent;
+  color: var(--darkgray);
+  font: inherit;
+  font-variant-numeric: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &[aria-selected='true'],
+  &[aria-checked='true'] {
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    background: color-mix(in srgb, var(--control-accent, var(--secondary)) 10%, var(--light));
+    color: var(--dark);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.g-select-check {
+  color: var(--control-accent-ink, var(--dark));
+  opacity: 0;
+}
+
+// A listbox marks its choice with aria-selected; a menu of radio items uses aria-checked.
+.g-select-option:is([aria-selected='true'], [aria-checked='true']) .g-select-check {
+  opacity: 1;
+}
+
+// Month grid
+
+.g-calendar-weekdays,
+.g-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.g-calendar-weekdays > span {
+  padding: 0.25rem 0.4rem;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  text-transform: lowercase;
+}
+
+// Gaps over a line-coloured ground draw the grid rules, so no cell needs its own border.
+.g-calendar-grid {
+  gap: 1px;
+  border: 1px solid color-mix(in srgb, var(--gray) 55%, transparent);
+  background: color-mix(in srgb, var(--gray) 55%, transparent);
+}
+
+.g-calendar-day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.3rem 0.4rem;
+  background: var(--light);
+
+  &[data-outside] {
+    background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  }
+}
+
+.g-calendar-day-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem;
+
+  h3 {
+    margin: 0;
+    color: var(--darkgray);
+    font-family: var(--codeFont);
+    font-size: 1em;
+    font-weight: 400;
+  }
+}
+
+.g-calendar-day[data-today] .g-calendar-day-header time {
+  color: var(--dark);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+// Shared states
+
+@media (hover: hover) and (pointer: fine) {
+  .g-datepicker-trigger:hover:not(:disabled) {
+    color: var(--dark);
+  }
+
+  .g-icon-button:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--control-accent, var(--secondary)) 10%, transparent);
+    color: var(--dark);
+  }
+
+  .g-text-button:hover {
+    color: var(--dark);
+  }
+
+  .g-cal-day:hover:not(:disabled) {
+    background: color-mix(
+      in srgb,
+      var(--control-accent, var(--secondary)) 9%,
+      var(--control-surface, var(--light))
+    );
+    color: var(--dark);
+  }
+
+  .g-select-trigger:hover {
+    border-color: color-mix(in srgb, var(--gray) 44%, transparent);
+    background: color-mix(in srgb, var(--control-accent, var(--secondary)) 5%, var(--light));
+  }
+
+  .g-select-option:hover {
+    background: color-mix(in srgb, var(--control-accent, var(--secondary)) 10%, var(--light));
+    color: var(--dark);
+  }
+}
+
+.g-datepicker-trigger,
+.g-icon-button,
+.g-text-button,
+.g-select-trigger {
+  &:focus-visible {
+    outline: 2px solid var(--control-focus, var(--dark));
+    outline-offset: 2px;
+  }
+}
+
+// Inside a framed panel, an inset ring stays clear of the frame and the next cell.
+.g-cal-day,
+.g-select-option {
+  &:focus-visible {
+    outline: 2px solid var(--control-focus, var(--dark));
+    outline-offset: -2px;
+  }
+}
+
+@media (pointer: coarse) {
+  .g-select-option {
+    min-height: 44px;
+  }
+
+  .g-icon-button {
+    inline-size: 44px;
+    block-size: 44px;
+  }
+}
+
+@media (forced-colors: active) {
+  .g-datepicker-trigger,
+  .g-icon-button,
+  .g-text-button,
+  .g-select-trigger,
+  .g-cal-day,
+  .g-select-option {
+    &:focus-visible {
+      outline-color: Highlight;
+    }
+  }
+
+  .g-cal-day[aria-pressed='true'],
+  .g-select-option:is([aria-selected='true'], [aria-checked='true']) {
+    outline: 1px solid CanvasText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-datepicker-trigger,
+  .g-datepicker-panel,
+  .g-cal-day,
+  .g-icon-button,
+  .g-text-button,
+  .g-select-trigger,
+  .g-select-chevron,
+  .g-select-option {
+    transition-duration: 0.01ms;
+  }
+}
