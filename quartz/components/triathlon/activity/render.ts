@@ -1115,6 +1115,7 @@ export const renderMapDetail = (
       d,
       false,
       (opts?.detailContext ?? detailContextFromPayload()).zones,
+      true,
     ) as HTMLElement | null
     const bestEfforts = buildBestEffortsNode(domF, d)
     const heartRate =
@@ -1194,6 +1195,7 @@ export const renderMapDetail = (
     d,
     false,
     (opts?.detailContext ?? detailContextFromPayload()).zones,
+    true,
   ) as HTMLElement | null
   const zoneBox = el('div', 'tri-act-more')
   const bestEfforts = buildBestEffortsNode(domF, d)

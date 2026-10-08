@@ -6,7 +6,13 @@ import { triText } from '../../../util/triathlon-i18n'
 export const applyI18n = (root: ParentNode, presentation: TriathlonPresentation): void => {
   for (const node of root.querySelectorAll<HTMLElement>('[data-i18n]')) {
     const key = node.dataset.i18n
-    if (key) node.textContent = triText(presentation.locale, key)
+    if (!key) continue
+    const text = triText(presentation.locale, key)
+    node.textContent = text
+    if (node.classList.contains('tri-map-tab-label'))
+      node.parentElement?.style.setProperty('--tri-map-tab-label-width', `${text.length}ch`)
+    if (node.classList.contains('tri-map-tab-shortcut'))
+      node.parentElement?.style.setProperty('--tri-map-tab-shortcut-width', `${text.length}ch`)
   }
   for (const node of root.querySelectorAll<HTMLElement>('[data-i18n-aria-label]')) {
     const key = node.dataset.i18nAriaLabel
