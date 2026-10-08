@@ -263,19 +263,39 @@ test('resolves 10 m from-direction wind into rider-height headwind, tailwind, an
   ).apparentWind
 
   // 18 km/h at 10 m is 5.1 km/h at 1 m over suburban roughness.
-  assert.equal(headwind?.summary.averageHeadwindKph, 5.1)
+  assert.equal(headwind?.summary.averageHeadwindWhileIntoKph, 5.1)
   assert.equal(headwind?.summary.headwindSharePct, 100)
   assert.equal(headwind?.summary.apparentAirRatio, 1.142)
-  assert.equal(tailwind?.summary.averageHeadwindKph, -5.1)
+  assert.equal(tailwind?.summary.averageHeadwindWhileIntoKph, 0)
   assert.equal(tailwind?.summary.tailwindTimeS, 10)
-  assert.equal(crosswind?.summary.averageHeadwindKph, 0)
-  assert.equal(crosswind?.summary.averageCrosswindKph, 5.1)
+  assert.equal(crosswind?.summary.averageHeadwindWhileIntoKph, 0)
+  assert.equal(crosswind?.summary.averageCrosswindMagnitudeKph, 5.1)
   assert.equal(crosswind?.summary.maximumCrosswindKph, 5.1)
   assert((crosswind?.summary.averageYawDeg ?? 0) > 0)
-  assert.equal(oppositeCrosswind?.summary.averageHeadwindKph, 0)
-  assert.equal(oppositeCrosswind?.summary.averageCrosswindKph, -5.1)
+  assert.equal(oppositeCrosswind?.summary.averageHeadwindWhileIntoKph, 0)
+  assert.equal(oppositeCrosswind?.summary.averageCrosswindMagnitudeKph, 5.1)
   assert.equal(oppositeCrosswind?.summary.maximumCrosswindKph, 5.1)
   assert((oppositeCrosswind?.summary.averageYawDeg ?? 0) < 0)
+})
+
+test('keeps out-and-back wind visible where signed route means cancel', () => {
+  const outAndBack = buildActivityEnvironment(
+    input(20, [routeHour(0, 20, { windSpeedKph: 18, windDirectionDeg: 45 })], {
+      timeS: [0, 10, 20],
+      distanceM: [0, 100, 200],
+      latlng: [
+        [43.64, -79.4],
+        [43.641, -79.4],
+        [43.64, -79.4],
+      ],
+      movingTimeS: 20,
+    }),
+  ).apparentWind
+
+  // Out: 5.1 km/h from 45° right of the course. Back: the same wind from 135° left.
+  assert.equal(outAndBack?.summary.headwindSharePct, 50)
+  assert.equal(outAndBack?.summary.averageHeadwindWhileIntoKph, 3.6)
+  assert.equal(outAndBack?.summary.averageCrosswindMagnitudeKph, 3.6)
 })
 
 test('keeps open-water swim pace and resolves wind at the water surface', () => {
@@ -293,7 +313,7 @@ test('keeps open-water swim pace and resolves wind at the water surface', () => 
   const land = buildActivityEnvironment(input(20, northWind, swimPace))
 
   // 18 km/h at 10 m is 11.5 km/h at 0.2 m over open water.
-  assert.equal(swim.apparentWind?.summary.averageHeadwindKph, 11.5)
+  assert.equal(swim.apparentWind?.summary.averageHeadwindWhileIntoKph, 11.5)
   assert.equal(swim.apparentWind?.summary.coveragePct, 100)
   assert.equal(land.apparentWind?.summary.coveragePct ?? 0, 0)
 })
@@ -333,7 +353,7 @@ test('represents calm air and rejects low-speed and telemetry-gap intervals', ()
     }),
   )
 
-  assert.equal(calm.apparentWind?.summary.averageHeadwindKph, 0)
+  assert.equal(calm.apparentWind?.summary.averageHeadwindWhileIntoKph, 0)
   assert.equal(calm.apparentWind?.summary.apparentAirRatio, 1)
   assert.equal(lowSpeed.apparentWind, null)
   assert.equal(gap.apparentWind, null)

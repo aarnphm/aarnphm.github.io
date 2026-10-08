@@ -738,7 +738,7 @@ const isGardenUvScore = (value: unknown): boolean => {
 
 const isGardenWind = (value: unknown): boolean => {
   if (value === null) return true
-  if (!isRecord(value) || !isGardenProvenance(value, 'garden-apparent-wind-v2')) return false
+  if (!isRecord(value) || !isGardenProvenance(value, 'garden-apparent-wind-v3')) return false
   const summary = value.summary
   const coverage = value.coverage
   if (!isRecord(summary) || !isRecord(coverage)) return false
@@ -747,8 +747,8 @@ const isGardenWind = (value: unknown): boolean => {
     bounded(summary.headwindTimeS, 0, Number.MAX_SAFE_INTEGER) &&
     bounded(summary.tailwindTimeS, 0, Number.MAX_SAFE_INTEGER) &&
     bounded(summary.longestHeadwindS, 0, Number.MAX_SAFE_INTEGER) &&
-    bounded(summary.averageHeadwindKph, -1_000, 1_000) &&
-    bounded(summary.averageCrosswindKph, -1_000, 1_000) &&
+    bounded(summary.averageHeadwindWhileIntoKph, 0, 1_000) &&
+    bounded(summary.averageCrosswindMagnitudeKph, 0, 1_000) &&
     bounded(summary.maximumHeadwindKph, 0, 1_000) &&
     bounded(summary.maximumCrosswindKph, 0, 1_000) &&
     bounded(summary.averageGroundSpeedKph, 0, 1_000) &&

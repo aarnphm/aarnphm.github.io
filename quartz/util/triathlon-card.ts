@@ -6797,10 +6797,11 @@ export const buildEnvironmentAnalysis = <N>(
           : null,
     },
     {
-      label: 'signed headwind / crosswind',
+      label: 'headwind when into it / crosswind',
+      detail: 'Wind components detail',
       value: wind
         ? gardenEnvironmentValue(
-            `${formatSignedSpeed(f.presentation, wind.summary.averageHeadwindKph)} / ${formatSignedSpeed(f.presentation, wind.summary.averageCrosswindKph)}`,
+            `${speedKph(f.presentation, wind.summary.averageHeadwindWhileIntoKph)} / ${speedKph(f.presentation, wind.summary.averageCrosswindMagnitudeKph)}`,
             wind,
           )
         : null,

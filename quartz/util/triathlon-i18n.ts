@@ -1095,7 +1095,9 @@ const en: TriDict = {
     'Air speed detail':
       'MyWindsock reports air speed. Garden fallback reports average apparent-air speed from route-relative wind.',
     precipitation: 'precipitation',
-    'signed headwind / crosswind': 'signed headwind / crosswind',
+    'headwind when into it / crosswind': 'headwind when into it / crosswind',
+    'Wind components detail':
+      'Rider-height wind resolved on the course. Headwind is the average over the time with a headwind component. Crosswind is the average size from either side. Signed averages cancel on a loop, so neither value keeps the sign.',
     'apparent-air ratio': 'apparent-air ratio',
     'Apparent-air ratio detail': 'Average apparent-air speed divided by average ground speed.',
     'yaw and wind coverage': 'yaw and wind coverage',
@@ -2609,7 +2611,9 @@ const fr: TriDict = {
     'Air speed detail':
       'MyWindsock fournit la vitesse de l’air. L’estimation Garden utilise la vitesse apparente moyenne issue du vent relatif au parcours.',
     precipitation: 'précipitations',
-    'signed headwind / crosswind': 'vent de face / latéral signé',
+    'headwind when into it / crosswind': 'vent de face quand il est contre / vent latéral',
+    'Wind components detail':
+      'Vent à hauteur du cycliste, projeté sur le parcours. Le vent de face est la moyenne sur le temps avec une composante de face. Le vent latéral est la moyenne de son intensité, quel que soit le côté. Les moyennes signées s’annulent sur une boucle, donc aucune des deux valeurs ne garde le signe.',
     'apparent-air ratio': "rapport de vitesse de l'air apparente",
     'Apparent-air ratio detail': 'Vitesse apparente moyenne divisée par la vitesse sol moyenne.',
     'yaw and wind coverage': 'lacet et couverture du vent',
