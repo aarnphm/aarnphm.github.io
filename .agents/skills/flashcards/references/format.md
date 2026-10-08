@@ -21,4 +21,6 @@ This example parses to four cards: one Q/A, one single-deletion cloze, and two s
 - Wikilinks and inline Markdown links are recognized without becoming deletions. Check the parsed result when using other literal bracket syntax, such as array notation, in a cloze.
 - Optional leading YAML frontmatter is stripped by the parser. Usually omit it; a `title` can override the viewer heading. Avoid a leading separator that would be consumed as frontmatter.
 
+- `ID:` after the answer (or after `N:`) pins the card's id to a previous content hash: `ID: 7c41e09a`. A cloze lists one id per deletion in order: `ID: 1a2b3c4d 5e6f7a8b`. Pin when the recall target is unchanged (typo, notation, clearer wording, added hint) so the FSRS row survives the edit. Do not pin when the card now asks for different knowledge. Only 8-char lowercase hex is a pin; other `ID:` text stays on the face. A duplicate id inside one deck is a parse error.
+
 `hashCard` hashes normalized text. Q/A IDs use both faces, without the note. Cloze group IDs use the sentence; sibling IDs also include the deletion index. Adding a citation to an existing card changes that text and may change its ID. Compare parser output before and after an edit instead of estimating identity changes from appearance.
