@@ -6,6 +6,8 @@ import {
   contextFromMetaRow,
   dayStateFromFeedRow,
   parsePaceFeed,
+  PACE_SPORTS,
+  type PaceSport,
 } from './pace-features'
 import { isRecord, readNumber, readString } from './type-guards'
 
@@ -43,10 +45,13 @@ export class PaceForecaster {
   ready = false
   day: PaceDayState | null = null
   ctx: PaceContext | null = null
+  modelVersion: number | null = null
+  validationErrors: Partial<Record<PaceSport, number>> = {}
   private dayList: PaceDayState[] = []
   private seq = 0
   private pending = new Map<number, (p: PaceForecast | null) => void>()
   private loadResolve: ((ok: boolean) => void) | null = null
+  private disposed = false
 
   constructor(private readonly worker: WorkerLike) {
     worker.onmessage = (event: MessageEvent): void => this.onMessage(event.data)
@@ -54,7 +59,9 @@ export class PaceForecaster {
 
   async init(base: string, family: string, feedUrl: string): Promise<boolean> {
     try {
-      const text = await (await fetch(feedUrl)).text()
+      const response = await fetch(feedUrl)
+      if (!response.ok) return false
+      const text = await response.text()
       const feed = parsePaceFeed(text)
       this.dayList = feed.days.map(dayStateFromFeedRow).filter((d): d is PaceDayState => d !== null)
       this.day = this.dayList.at(-1) ?? null
@@ -62,7 +69,7 @@ export class PaceForecaster {
     } catch {
       return false
     }
-    if (!this.day || !this.ctx) return false
+    if (this.disposed || !this.day || !this.ctx) return false
     const loaded = await new Promise<boolean>(resolve => {
       this.loadResolve = resolve
       this.worker.postMessage({ type: 'load', base, family })
@@ -142,8 +149,12 @@ export class PaceForecaster {
   }
 
   dispose(): void {
+    this.disposed = true
     this.worker.terminate?.()
+    for (const resolve of this.pending.values()) resolve(null)
     this.pending.clear()
+    this.loadResolve?.(false)
+    this.loadResolve = null
     this.ready = false
   }
 
@@ -151,6 +162,14 @@ export class PaceForecaster {
     if (!isRecord(data)) return
     const type = readString(data, 'type')
     if (type === 'loaded') {
+      this.modelVersion = readNumber(data, 'version') ?? null
+      this.validationErrors = {}
+      if (isRecord(data.validationErrors))
+        for (const sport of PACE_SPORTS) {
+          const error = readNumber(data.validationErrors, sport)
+          if (error != null && Number.isFinite(error) && error > 0)
+            this.validationErrors[sport] = error
+        }
       this.loadResolve?.(data.ok === true)
       this.loadResolve = null
       return
