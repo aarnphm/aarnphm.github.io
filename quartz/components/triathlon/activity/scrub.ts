@@ -320,12 +320,7 @@ export const setupChartScrub = (
     const height = svg.viewBox.baseVal.height
     if (!axis || !Number.isFinite(maxWatts) || maxWatts <= 0 || height <= 0) return
     // All series share the selected Garmin weight, so their watt-domain geometry stays valid.
-    const ticks = powerCurveAxisTicks(
-      maxWatts,
-      Number(svg.dataset.curveWattStep),
-      weightKg,
-      presentation().locale,
-    )
+    const ticks = powerCurveAxisTicks(maxWatts, weightKg, presentation().locale)
     axis.replaceChildren(
       ...ticks.map(tick => {
         const label = document.createElement('span')
