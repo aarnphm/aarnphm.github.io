@@ -93,7 +93,7 @@ export const mountTrainingCalendar = (
           pickerMonth ? 'choose training month' : 'choose training week',
         ),
         selected: () =>
-          pickerMonth ? trainingMonthStart(anchorDate) : trainingWeekStart(anchorDate),
+          pickerMonth ? trainingMonthStart(displayDate()) : trainingWeekStart(displayDate()),
         min: () => undefined,
         max: () => undefined,
         onOpen: () => {},
@@ -105,7 +105,7 @@ export const mountTrainingCalendar = (
       datePickerCleanup = datePicker.mount()
     }
     const label = datePicker.trigger.querySelector<HTMLElement>('.tri-pred-date-text')
-    const start = pickerMonth ? trainingMonthStart(anchorDate) : trainingWeekStart(anchorDate)
+    const start = pickerMonth ? trainingMonthStart(displayDate()) : trainingWeekStart(displayDate())
     if (label)
       label.textContent = pickerMonth
         ? `${context.formatter.month(start)} ${start.slice(0, 4)}`
@@ -114,11 +114,15 @@ export const mountTrainingCalendar = (
   }
 
   const currentView = (): TrainingView => {
+    // Details use the list temporarily; closing them restores the chosen overview.
+    if (selectedWorkoutId) return 'list'
     if (chosenView) return chosenView
     const width = root.clientWidth
     const rem = Number.parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16
     return width > 0 && width < WEEK_MIN_REM * rem ? 'list' : 'week'
   }
+  const displayDate = (): string =>
+    calendar?.workouts.find(workout => workout.id === selectedWorkoutId)?.date ?? anchorDate
   const location = (): string => `training-${anchorDate}${chosenView ? `-${chosenView}` : ''}`
 
   const update = (): void => {
@@ -127,12 +131,12 @@ export const mountTrainingCalendar = (
       content
         .querySelector<HTMLElement>('.tri-training-week')
         ?.style.removeProperty('--training-scroll-tail')
-    root.dataset.trainingDate = anchorDate
+    root.dataset.trainingDate = displayDate()
     shownView = authenticated ? currentView() : null
     const view = authenticated
       ? createElement(TrainingCalendarView, {
           calendar,
-          date: anchorDate,
+          date: displayDate(),
           id,
           view: shownView ?? undefined,
           embedded: root.dataset.trainingEmbedded === 'true',
@@ -308,13 +312,9 @@ export const mountTrainingCalendar = (
     if (navigate) onNavigate(location())
   }
   const selectView = (next: TrainingView): void => {
-    // A narrow calendar shows the detail in place of the views; close it so the switch is visible.
     const views = content?.querySelector<HTMLElement>('.tri-calendar-views')
-    if (
-      next === 'month' ||
-      shownView === 'month' ||
-      (views && window.getComputedStyle(views).visibility === 'hidden')
-    )
+    anchorDate = displayDate()
+    if (next !== 'list' || (views && window.getComputedStyle(views).visibility === 'hidden'))
       selectedWorkoutId = null
     chosenView = next
     update()
@@ -370,7 +370,9 @@ export const mountTrainingCalendar = (
     update()
     scrollWorkoutToTop(previous)
     content
-      ?.querySelector<HTMLButtonElement>(`[data-training-workout-open="${CSS.escape(previous)}"]`)
+      ?.querySelector<HTMLButtonElement>(
+        `[data-training-workout-open="${CSS.escape(previous)}"][aria-controls]`,
+      )
       ?.focus({ preventScroll: true })
     return true
   }
@@ -385,7 +387,7 @@ export const mountTrainingCalendar = (
           workout.id === workoutId &&
           (shownView === 'month'
             ? trainingMonthDates(anchorDate).includes(workout.date)
-            : trainingWeekStart(workout.date) === trainingWeekStart(anchorDate)),
+            : trainingWeekStart(workout.date) === trainingWeekStart(displayDate())),
       )
     )
       return
@@ -425,8 +427,8 @@ export const mountTrainingCalendar = (
       const direction = shift.dataset.trainingShift === '-1' ? -1 : 1
       selectDate(
         shownView === 'month'
-          ? trainingAddMonths(anchorDate, direction)
-          : trainingAddDays(anchorDate, direction * 7),
+          ? trainingAddMonths(displayDate(), direction)
+          : trainingAddDays(displayDate(), direction * 7),
         true,
       )
       return
