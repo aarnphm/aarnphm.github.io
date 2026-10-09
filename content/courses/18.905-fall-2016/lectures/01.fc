@@ -2,18 +2,21 @@ Q: Define the standard $n$-simplex $\Delta^n$.
 A: The convex hull of the standard basis $e_0, \dots, e_n$ in $\mathbb{R}^{n+1}$: all $\sum t_i e_i$ with $\sum t_i = 1$ and $t_i \geq 0$. The $t_i$ are barycentric coordinates.
 ---
 C: The face inclusion $d^i : \Delta^{n-1} \to \Delta^n$ is the affine map sending vertices to vertices in order and [omitting the vertex $e_i$].
+N: Defined for $n \geq 1$ and $0 \leq i \leq n$; a $0$-simplex has no faces here.
 ---
 Q: What is a singular $n$-simplex in a space $X$?
 A: A continuous map $\sigma : \Delta^n \to X$. The set of all of them is $\mathrm{Sin}_n(X)$.
 ---
 C: The $i$-th face of a singular simplex $\sigma$ is $d_i \sigma = $ [$\sigma \circ d^i$|precompose], an element of $\mathrm{Sin}_{n-1}(X)$.
+N: This uses $n \geq 1$ and $0 \leq i \leq n$.
 ---
 Q: Define the group $S_n(X)$ of singular $n$-chains.
 A: The free abelian group on $\mathrm{Sin}_n(X)$: finite sums $\sum a_i \sigma_i$ with integer coefficients. For $n < 0$ it is $0$.
 N: The free group exists so that $d_0 \sigma - d_1 \sigma$ makes sense for a loop $\sigma$.
 ---
 Q: Write the boundary operator $d : S_n(X) \to S_{n-1}(X)$ on a simplex.
-A: $d\sigma = \sum_{i=0}^{n} (-1)^i d_i \sigma$, extended additively.
+A: For $n \geq 1$, $d\sigma = \sum_{i=0}^{n} (-1)^i d_i \sigma$, extended additively. In degree zero, $d : S_0(X) \to S_{-1}(X) = 0$ is the zero map.
+ID: af06142a
 ---
 C: An $n$-cycle is a chain $c$ with [$dc = 0$]; the cycles form $Z_n(X) = \ker d$.
 ---

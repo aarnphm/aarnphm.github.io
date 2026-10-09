@@ -212,6 +212,7 @@ export interface ActivitySummary {
   date: string
   sport: ActivityKind
   virtual?: boolean
+  commute?: boolean
   treadmill?: boolean
   name: string
   distanceKm: number
@@ -3567,7 +3568,7 @@ function buildCalibration(
   const prevFrom = curFrom - CALIBRATION_WINDOW_DAYS * DAY_MS
   const prevTo = curFrom - DAY_MS
   const paces = SPORT_ORDER.map(sport => {
-    const mine = acts.filter(act => act.sport === sport)
+    const mine = acts.filter(act => act.sport === sport && act.a.commute !== true)
     const currentActs = mine.filter(act => {
       const ms = dayMs(act.day)
       return ms >= curFrom && ms <= todayMs
@@ -4500,7 +4501,7 @@ function buildPowerToWeightTrend(
     (left, right) => left.date.localeCompare(right.date) || left.id - right.id,
   )
   for (const detail of details) {
-    if (detail.sport !== 'bike' || detail.deviceWatts !== true) continue
+    if (detail.commute === true || detail.sport !== 'bike' || detail.deviceWatts !== true) continue
     const mass = powerToWeightMass(detail, historicalMass)
     if (mass == null || !Number.isFinite(dayMs(detail.date))) continue
     for (const durationS of POWER_TO_WEIGHT_DURATIONS) {
@@ -5974,7 +5975,7 @@ export function buildAnalytics(
   const todayMs = dayMs(today)
   const effortByDay = new Map<string, EffortBucket>()
   for (const activity of sourceActivities) {
-    if (saunaActivityIds.has(activity.id)) continue
+    if (saunaActivityIds.has(activity.id) || activity.commute === true) continue
     const effort = activity.sufferScore
     if (effort == null || !Number.isFinite(effort)) continue
     const day = activity.startDateLocal.slice(0, 10)
@@ -6005,10 +6006,11 @@ export function buildAnalytics(
     distanceKm: round(a.distance / 1000, 1),
     vGap: gradeAdjSpeed(a, sport, cache.streams?.[String(a.id)]),
   }))
+  const trainingActs = acts.filter(act => act.a.commute !== true)
   const swimMetrics = swimMetricsByActivityId(acts, inputs.apple)
   const runningDynamics = runningDynamicsByActivityId(acts, inputs.apple)
   const distributions = buildDistributions(
-    acts,
+    trainingActs,
     inputs.zones,
     inputs.activityDetails,
     cache.streams,
@@ -6021,12 +6023,18 @@ export function buildAnalytics(
     streams: cache.streams,
     heartRateBpm: resolveLactateThresholdHeartRate(inputs.garmin, today)?.value ?? null,
   }
-  const thresholdList = SPORT_ORDER.map(sport => estimateThreshold(acts, sport, todayMs, runAnchor))
+  const thresholdList = SPORT_ORDER.map(sport =>
+    estimateThreshold(trainingActs, sport, todayMs, runAnchor),
+  )
   const thresholds = new Map<Sport, ThresholdEstimate>(thresholdList.map(t => [t.sport, t]))
 
   const loadById = new Map<number, number>()
   const paceIntensityFactorById = new Map<number, number>()
   for (const act of acts) {
+    if (act.a.commute === true) {
+      loadById.set(act.a.id, 0)
+      continue
+    }
     const vThr = thresholds.get(act.sport)!.vThr
     loadById.set(act.a.id, activityLoad(act, vThr))
     if (act.sport !== 'bike') paceIntensityFactorById.set(act.a.id, round(act.vGap / vThr, 3))
@@ -6255,12 +6263,12 @@ export function buildAnalytics(
     windowTo,
   )
   const trendSources = SPORT_ORDER.map(sport =>
-    trendSource(acts, thresholds.get(sport)!, sport, cache.streams),
+    trendSource(trainingActs, thresholds.get(sport)!, sport, cache.streams),
   )
   const trends = trendSources.map(source => buildTrend(source, todayMs))
   const trendMap = new Map<Sport, SportTrend>(trends.map(t => [t.sport, t]))
   const calibration = buildCalibration(acts, thresholds, trendMap, loadById, today, todayMs)
-  const bestList = SPORT_ORDER.map(sport => buildBest(acts, sport))
+  const bestList = SPORT_ORDER.map(sport => buildBest(trainingActs, sport))
   const bests = new Map<Sport, SportBest>(bestList.map(b => [b.sport, b]))
   const risk = buildRisk(daily, weekly)
   const recovery = buildRecovery(daily, risk)
@@ -6276,7 +6284,7 @@ export function buildAnalytics(
   const recentFromMs = dayMs(recentFrom)
   const recentTrends = trendSources.map(source => buildTrend(source, todayMs, recentFromMs))
   const recentTrendMap = new Map<Sport, SportTrend>(recentTrends.map(t => [t.sport, t]))
-  const recentActs = acts.filter(act => dayMs(act.day) >= recentFromMs)
+  const recentActs = trainingActs.filter(act => dayMs(act.day) >= recentFromMs)
   const recentBests = new Map<Sport, SportBest>(
     SPORT_ORDER.map(sport => [sport, buildBest(recentActs, sport)]),
   )
@@ -6311,7 +6319,7 @@ export function buildAnalytics(
   garminVo2.sort((p, q) => p.date.localeCompare(q.date))
   const engine = buildEngine(
     cache,
-    acts,
+    trainingActs,
     daily,
     body,
     thresholds,
@@ -6442,6 +6450,7 @@ export function buildAnalytics(
       virtual:
         inputs.activityDetails?.[String(act.a.id)]?.virtual ??
         act.a.sportType.startsWith('Virtual'),
+      commute: act.a.commute === true,
       treadmill:
         act.sport === 'run' && (act.a.trainer === true || /\btreadmill\b/i.test(act.a.name)),
       name: act.a.name ?? '',
@@ -6491,9 +6500,12 @@ export function buildAnalytics(
     body,
     recovery,
     powerCurve,
-    swimPowerCurve: buildSwimPowerCurveBlock(Object.values(inputs.activityDetails ?? {}), today),
+    swimPowerCurve: buildSwimPowerCurveBlock(
+      Object.values(inputs.activityDetails ?? {}).filter(detail => detail.commute !== true),
+      today,
+    ),
     bestEfforts: buildBestEffortsBlock(
-      Object.values(inputs.activityDetails ?? {}),
+      Object.values(inputs.activityDetails ?? {}).filter(detail => detail.commute !== true),
       new Map<number, BestEffortNative>(
         Object.values(cache.activities).map(activity => [
           activity.id,

@@ -1,8 +1,8 @@
 ---
 date: '2024-02-28'
-description: root locus control for improving transient response and steady-state error using pid controllers, ideal integral compensation, and lag compensators.
+description: using the root locus to choose a gain for a transient specification, then adding a PI or lag compensator to cut steady-state error without moving the dominant poles.
 id: Root locus control
-modified: 2026-06-05 15:08:43 GMT-04:00
+modified: 2026-10-09 11:00:00 GMT-04:00
 tags:
   - sfwr3dx4
 title: Root locus control
@@ -10,7 +10,7 @@ title: Root locus control
 
 See also [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/root_locus_control.pdf|slides]] and [[thoughts/Root locus]]
 
-closed-loop properties of the function of $K_1 G(s)$
+The loop below puts a gain $K$ in front of the plant $G(s)$ under unity negative feedback. The closed-loop poles are the roots of $1 + KG(s) = 0$, so the [[thoughts/Root locus|root locus]] of $KG(s)$ shows every closed-loop pole placement that gain alone can reach. Design with this loop has two steps: choose $K$ for the transient, then add a compensator for the steady-state error.
 
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 652.1217638634798 291.00981025621786" width="652.1217638634798" height="291.00981025621786">
   <!-- svg-source:excalidraw -->
@@ -39,40 +39,67 @@ closed-loop properties of the function of $K_1 G(s)$
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/transient-response-root-locus.webp]]
 
-> [!question]
-> How to calculate K?
+A transient specification such as percent overshoot fixes the damping ratio $\zeta$, and a closed-loop pole pair with that damping lies on the ray from the origin at angle $\pi - \cos^{-1}\zeta$. Where this ray crosses the locus is the design point $s_0$.
 
-- Product of distances from open-loop pole to point in question
+> [!question] How to calculate K?
+>
+> Use the magnitude condition at $s_0$. Write $G(s)$ with leading coefficients $1$ in numerator and denominator, and move any constant factor into $K$. Then
+>
+> $$
+> K = \frac{\prod_i \lvert s_0 - p_i \rvert}{\prod_j \lvert s_0 - z_j \rvert},
+> $$
+>
+> the product of distances from the open-loop poles to $s_0$ divided by the product of distances from the open-loop zeros. With no finite zeros, the denominator is $1$.
 
-> Second-order poles for the second-order system.
+The overshoot and settling-time formulas belong to a pure second-order system. They describe the higher-order loop well only when the pair at $s_0$ dominates: the other closed-loop poles are much farther left (a common rule is at least five times the real part of $s_0$), or a nearby zero nearly cancels them. Check that assumption by simulating the step response.
 
 ## improving steady state error (SSE)
 
-adding PID (compensator) with an integrator ($\frac{1}{s}$) in feed forward path.
+Raising the [[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/steady-state error|system type]] by one removes the step error of a stable type-$0$ loop and turns an unbounded ramp error into a finite one. An integrator $1/s$ in the forward path does this. A pure integrator also adds a pole at the origin, which changes the angle sum everywhere, so the design point $s_0$ usually falls off the new locus and the transient changes.
 
 ### ideal integral compensation
 
 _proportional-plus-integral (PI) controller_
---> causing error to go to zero.
+
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/ideal-integral-compensator.webp]]
 
 > [!important]
-> Add zero! on the pole near the origin at $s=-a$
+> Add the integrator pole at $s = 0$ together with a zero at $s = -a$ close to the origin.
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/zero-add-compensator.webp]]
 
+Seen from a distant $s_0$, the new pole and zero lie at nearly the same place, so their angles nearly cancel and their distances nearly cancel. The locus near the dominant poles barely moves, and the gain found above still roughly applies. The integrator still acts at $s = 0$, so the steady-state error to a step goes to zero. The closed loop gains one slow pole near $-a$. Its response term is small because the zero nearly cancels it, though it can leave a slow tail before the error fully settles.
+
+The compensator is
+
 $$
-\frac{K}{s}(s+a) = K_p + \frac{K_i}{s}
+\frac{K(s+a)}{s} = K_p + \frac{K_i}{s}, \qquad K_p = K,\quad K_i = Ka,
 $$
 
-where $K_p$ is the proportional gain, and $K_i$ is the integral gain.
+where $K_p$ is the proportional gain and $K_i$ is the integral gain.
 
 > [!important] Implementation $G_c(s)$
 >
 > $$
 > G_c(s) = K_p + \frac{K_i}{s} = \frac{K_p(s+\frac{K_i}{K_p})}{s}
 > $$
+>
+> The zero sits at $s = -K_i/K_p$, so a small ratio $K_i/K_p$ keeps it near the origin.
 
 ![[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/images/idea-integral-compensator-impl.webp]]
 
 ### lag compensation
+
+A pure integrator needs an active element, such as an op-amp circuit or software. A passive network can only place the pole slightly left of the origin:
+
+$$
+G_c(s) = \frac{s + z_c}{s + p_c}, \qquad 0 < p_c < z_c,
+$$
+
+with both close to the origin. This does not raise the system type, so the error stays finite. It multiplies the static error constant by $G_c(0) = z_c/p_c$. For a type-$1$ loop,
+
+$$
+K_{v,\text{new}} = \lim_{s \to 0} sKG(s)G_c(s) = K_{v,\text{old}}\,\frac{z_c}{p_c}.
+$$
+
+To cut a ramp error tenfold, choose for example $z_c = 0.1$ and $p_c = 0.01$. As with the PI case, the pair sits close together and close to the origin, so the dominant poles and the gain at $s_0$ change little.

@@ -1,15 +1,17 @@
 ---
 date: '2024-03-05'
-description: also known as window of discourse
+description: the range of policies politicians can support without losing public backing
 id: Overton Window
-modified: 2026-06-05 15:08:23 GMT-04:00
+modified: 2026-10-09 09:05:00 GMT-04:00
 tags:
   - pattern
 title: Overton Window
 ---
 
-> A window into the ideas that frames ideas that people are prepared to entertain. All ideas outside the window are not seriously considered.
+The Overton window describes the range of policies politicians can support without losing too much public backing. Joseph Overton developed the model at the [Mackinac Center](https://www.mackinac.org/OvertonWindow). Its boundaries depend on the society and the time.
 
-More prominent in the land of policy-making, but also apply to general idea [[library/Phenomenology of Perception|perception]].
+A proposal outside the window can still be discussed, researched or defended. The constraint is the political cost of endorsing it. Public acceptance also says nothing by itself about whether a policy is sound.
 
-To move the window requires people, ideas outside of the window to shift what is considered "generally" acceptable by the public.
+The window can shift, widen or narrow as public beliefs and norms change. Advocacy and institutions can contribute to that change; merely stating an extreme position gives no assurance that support will follow.
+
+Applying the term to general idea [[library/Phenomenology of Perception|perception]] extends the model beyond its original policy setting. That use needs a specified audience: acceptable to whom, and with what consequence for dissent?

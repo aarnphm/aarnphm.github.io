@@ -35,7 +35,9 @@ const maintenance = {
     '3': { distance: null, lubricant: 'UFO Wax Drip-On', since: '2026-08-10', waxed: true },
   },
   service: {
-    soloist: [{ date: '2026-08-20', distance: 1721.5, place: 'Racer Sportif' }],
+    soloist: [
+      { date: '2026-08-20', distance: 1721.5, place: 'Racer Sportif', type: 'bike fit' },
+    ],
     speedmax: null,
   },
   tires: {
@@ -81,7 +83,13 @@ const maintenance = {
 test('normalizes service, component, chain, and wheel maintenance records from frontmatter', () => {
   const parsed = parseTriathlonMaintenance(maintenance)
   assert.deepEqual(parsed?.services, [
-    { bike: 'soloist', date: '2026-08-20', distanceMiles: 1721.5, place: 'Racer Sportif' },
+    {
+      bike: 'soloist',
+      date: '2026-08-20',
+      distanceMiles: 1721.5,
+      place: 'Racer Sportif',
+      type: 'bike fit',
+    },
   ])
   assert.deepEqual(parsed?.components, [
     {
@@ -222,6 +230,16 @@ test('drops malformed records and rejects empty maintenance data', () => {
   )
   assert.equal(
     parseTriathlonMaintenance({
+      service: {
+        soloist: [
+          { date: '2026-08-20', distance: null, place: 'Racer Sportif', type: 42 },
+        ],
+      },
+    }),
+    null,
+  )
+  assert.equal(
+    parseTriathlonMaintenance({
       OSPW: [[{ type: 'CeramicSpeed OSPW' }, { distance: null }, { range: [] }]],
     }),
     null,
@@ -238,5 +256,24 @@ test('drops malformed records and rejects empty maintenance data', () => {
       },
     }),
     null,
+  )
+})
+
+test('keeps legacy service records without a service type', () => {
+  assert.deepEqual(
+    parseTriathlonMaintenance({
+      service: {
+        soloist: [{ date: '2026-08-20', distance: null, place: 'Racer Sportif' }],
+      },
+    })?.services,
+    [
+      {
+        bike: 'soloist',
+        date: '2026-08-20',
+        distanceMiles: null,
+        place: 'Racer Sportif',
+        type: null,
+      },
+    ],
   )
 })

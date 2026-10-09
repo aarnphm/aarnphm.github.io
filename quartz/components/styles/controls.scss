@@ -286,7 +286,7 @@
   min-width: 12.3em;
   min-height: var(--control-height, 1.625rem);
   padding: 0.2rem 0.42rem;
-  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--light) 88%, transparent);
   color: var(--dark);

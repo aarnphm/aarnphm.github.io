@@ -208,7 +208,13 @@ const options = (
       },
       maintenance: {
         services: [
-          { bike: 'soloist', date: '2026-08-20', distanceMiles: 1721.5, place: 'Racer Sportif' },
+          {
+            bike: 'soloist',
+            date: '2026-08-20',
+            distanceMiles: 1721.5,
+            place: 'Racer Sportif',
+            type: 'bike fit',
+          },
         ],
         components: [
           {
@@ -286,7 +292,10 @@ test('turns generated training HTML and tool constants into markdown', () => {
   assert.match(tools, /units: race distance km, maintenance distance mi/)
   assert.match(tools, /## maintenance/)
   assert.match(tools, /### maintenance\.services/)
-  assert.match(tools, /\| 1 \| "soloist" \| "2026-08-20" \| "Racer Sportif" \| 1721\.5 \|/)
+  assert.match(
+    tools,
+    /\| 1 \| "soloist" \| "bike fit" \| "2026-08-20" \| "Racer Sportif" \| 1721\.5 \|/,
+  )
   assert.match(tools, /### maintenance\.components/)
   assert.match(
     tools,

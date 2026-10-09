@@ -106,6 +106,7 @@ export const detectLocale = (): Locale => {
 const en: TriDict = {
   ui: {
     analyze: 'analyze',
+    commute: 'commute',
     'activity analysis': 'activity analysis',
     'analysis layout': 'analysis layout',
     'graph axis': 'graph axis',
@@ -1614,6 +1615,7 @@ const en: TriDict = {
 const fr: TriDict = {
   ui: {
     analyze: 'analyser',
+    commute: 'trajet domicile-travail',
     'activity analysis': 'analyse de l’activité',
     'analysis layout': 'disposition de l’analyse',
     'graph axis': 'axe du graphique',

@@ -98,7 +98,7 @@ maintenance:
       - distance: 380.62
       - range:
           - end: null
-            start: '2026-10-02'
+            start: '2026-10-08'
       - reason: null
   brake pads:
     - - type: Shimano Brake Pads
@@ -155,6 +155,19 @@ maintenance:
           - end: null
             reason: null
             start: '2026-08-26'
+  saddle:
+    - - type: Prologo Nago R4 PAS Tirox Lightweight
+      - distance: 3101.78
+      - range:
+          - end: '2026-10-08'
+            start: '2026-05-16'
+      - reason: upgrades to Selle Italia SLR 3D Elite L3 145mm
+    - - type: Selle Italia SLR 3D Elite L3 145mm
+      - distance: 11.34
+      - range:
+          - end: null
+            start: '2026-10-09'
+      - reason: null
   service:
     soloist:
       - date: '2026-08-21'
@@ -263,7 +276,7 @@ maintenance:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-10-05 21:52:29 GMT-04:00
+modified: 2026-10-09 14:03:23 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'

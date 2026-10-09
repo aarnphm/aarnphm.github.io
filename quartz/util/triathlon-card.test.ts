@@ -4927,7 +4927,7 @@ test('omits cycling workout analysis when lap power is unavailable', () => {
   )
 })
 
-test('renders consecutive pool swim pace bars while preserving elapsed selection ranges', () => {
+test('renders consecutive swim pace bars while preserving elapsed selection ranges', () => {
   const swim = swimTrendDetail({
     distanceKm: 0.15,
     movingTimeS: 195,
@@ -5040,11 +5040,11 @@ test('renders consecutive pool swim pace bars while preserving elapsed selection
   const openWaterLaps = byClass(openWater, 'tri-swim-workout-lap')
   assert.match(
     String(openWaterLaps[0].properties.style),
-    /--tri-swim-workout-start:24\.000%;--tri-swim-workout-width:40\.000%/,
+    /--tri-swim-workout-start:0\.000%;--tri-swim-workout-width:61\.538%/,
   )
   assert.match(
     String(openWaterLaps[1].properties.style),
-    /--tri-swim-workout-start:74\.000%;--tri-swim-workout-width:25\.000%/,
+    /--tri-swim-workout-start:61\.538%;--tri-swim-workout-width:38\.462%/,
   )
 })
 
@@ -5111,7 +5111,7 @@ test('adds elevation behind open-water swim laps only when GPS data exists', () 
   assert.equal(byClass(pool, 'tri-workout-elevation').length, 0)
 })
 
-test('aligns GPS run elevation and unequal lap widths on elapsed time, including rest gaps', () => {
+test('aligns GPS run elevation and unequal lap widths on active lap duration, omitting rest gaps', () => {
   const seed = detail().route[0]
   const route = [
     { ...seed, d: 0, alt: 0, elapsedS: 0 },
@@ -5167,16 +5167,16 @@ test('aligns GPS run elevation and unequal lap widths on elapsed time, including
     assert.equal(layers[0].properties.ariaHidden, 'true')
     assert.equal(
       byClass(workout, 'tri-workout-elevation-area')[0].properties.d,
-      'M 0.000 100 L 0.000 100.000 L 20.000 50.000 L 30.000 0.000 L 100.000 100.000 L 100.000 100 Z',
+      'M 0.000 100 L 0.000 100.000 L 22.222 50.000 L 22.222 0.000 L 100.000 100.000 L 100.000 100 Z',
     )
     const laps = byClass(workout, 'tri-run-workout-lap')
     assert.match(
       String(laps[0].properties.style),
-      /--tri-run-workout-start:0\.000%;--tri-run-workout-width:20\.000%/,
+      /--tri-run-workout-start:0\.000%;--tri-run-workout-width:22\.222%/,
     )
     assert.match(
       String(laps[1].properties.style),
-      /--tri-run-workout-start:30\.000%;--tri-run-workout-width:70\.000%/,
+      /--tri-run-workout-start:22\.222%;--tri-run-workout-width:77\.778%/,
     )
   }
 
@@ -5195,6 +5195,89 @@ test('aligns GPS run elevation and unequal lap widths on elapsed time, including
     )
     assert.equal(byClass(rendered, 'tri-workout-elevation').length, 0)
     assert.equal(byClass(rendered, 'tri-run-workout-lap').length, 2)
+  }
+})
+
+test('keeps workout terrain aligned with active laps across internal pauses and unequal speeds', () => {
+  // Failures: pauses inside/between laps consume width, distance replaces lap-duration
+  // weighting, or compact plotting changes the recorded range used by selection.
+  const seed = detail().route[0]
+  const lap = analysisRanges().find(range => range.kind === 'lap')!
+  const route = [
+    { ...seed, d: 0, alt: 0, elapsedS: 0 },
+    { ...seed, d: 0.5, alt: 10, elapsedS: 60 },
+    { ...seed, d: 0.5, alt: 10, elapsedS: 440 },
+    { ...seed, d: 1, alt: 20, elapsedS: 500 },
+    { ...seed, d: 1, alt: 20, elapsedS: 900 },
+    { ...seed, d: 2, alt: 10, elapsedS: 1_350 },
+    { ...seed, d: 3, alt: 0, elapsedS: 1_800 },
+  ]
+  const ranges: ActivityAnalysisRange[] = [
+    {
+      ...lap,
+      id: 'active-1',
+      startElapsedS: 0,
+      endElapsedS: 500,
+      startDistanceKm: 0,
+      endDistanceKm: 1,
+      distanceKm: 1,
+      durationS: 500,
+      movingTimeS: 120,
+      averageSpeedKph: 30,
+      averageWatts: 200,
+    },
+    {
+      ...lap,
+      id: 'active-2',
+      startElapsedS: 900,
+      endElapsedS: 1_800,
+      startDistanceKm: 1,
+      endDistanceKm: 3,
+      distanceKm: 2,
+      durationS: 360,
+      averageSpeedKph: 20,
+      averageWatts: 100,
+    },
+  ]
+  for (const sport of ['bike', 'run', 'swim'] as const) {
+    for (const embedded of [false, true]) {
+      const workout = buildWorkoutAnalysis(
+        factory,
+        detail({
+          sport,
+          route,
+          elapsedTimeS: 2_400,
+          movingTimeS: 480,
+          distanceKm: 3,
+          swimLocation: 'openWater',
+          analysisRanges: ranges,
+          mapRoute: [route.map(point => ({ lat: point.lat, lng: point.lng, d: point.d }))],
+        }),
+        embedded,
+      )
+      assert.ok(workout)
+      assert.equal(
+        byClass(workout, 'tri-workout-elevation-line')[0].properties.d,
+        'M 0.000 100.000 L 12.500 50.000 L 12.500 50.000 L 25.000 0.000 L 25.000 0.000 L 62.500 50.000 L 100.000 100.000',
+      )
+      const prefix = sport === 'bike' ? 'cycling' : sport
+      const bars = byClass(workout, `tri-${prefix}-workout-lap`)
+      assert.match(
+        String(bars[0].properties.style),
+        /workout-start:0\.000%;--tri-\w+-workout-width:25\.000%/,
+      )
+      assert.match(
+        String(bars[1].properties.style),
+        /workout-start:25\.000%;--tri-\w+-workout-width:75\.000%/,
+      )
+      assert.deepEqual(
+        bars.map(bar => [bar.properties.dataStartElapsedS, bar.properties.dataEndElapsedS]),
+        [
+          ['0', '500'],
+          ['900', '1800'],
+        ],
+      )
+    }
   }
 })
 

@@ -67,6 +67,7 @@ export const GEAR: [string, string[]][] = [
       'Stem Sizing: Size 56 - 100mm',
       'Seatpost: Cervélo SP27 Carbon',
       'Saddle: Prologo Nago R4 PAS Tirox Lightweight',
+      'Saddle: Selle Italia SLR 3D Elite L3 145mm',
       'Bottom Bracket: FSA, T47 BBright for 24mm spindle',
       'Bottom Bracket: CeramicSpeed T47 BBright for Shimano',
       'Headset: FSA IS2 1-1/4, 45° x 45° / 1-1/2, 36° x 45°',
