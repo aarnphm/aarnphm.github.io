@@ -25,7 +25,7 @@ const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
 const API = normalizeApiBaseUrl(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
 const PER_PAGE = 200
-const CACHE_VERSION = 7
+const CACHE_VERSION = 8
 const ENV_FILE = '.env'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(400, 60_000)
@@ -183,6 +183,7 @@ export function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
     name: String(raw.name ?? ''),
     sportType: String(raw.sport_type ?? raw.type ?? ''),
     ...(typeof raw.trainer === 'boolean' ? { trainer: raw.trainer } : {}),
+    ...(typeof raw.commute === 'boolean' ? { commute: raw.commute } : {}),
     distance: Number(raw.distance ?? 0),
     movingTime: Number(raw.moving_time ?? 0),
     elapsedTime: Number(raw.elapsed_time ?? 0),

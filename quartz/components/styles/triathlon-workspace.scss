@@ -45,6 +45,30 @@
   }
 }
 
+.tri-act-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-inline-start: auto;
+}
+
+.tri-act-head-actions .tri-activity-analyze {
+  margin-inline-start: 0;
+}
+
+.tri-activity-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.08rem 0.3rem;
+  border: 1px solid color-mix(in srgb, var(--gray) 42%, transparent);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.52rem;
+  line-height: 1.25;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .tri-activity-analyze:not(:disabled):hover {
     color: var(--dark);

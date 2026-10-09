@@ -5033,31 +5033,65 @@ export const cyclingWorkoutPowerSummary = (laps: readonly CyclingWorkoutLap[]) =
 
 type WorkoutElevationPaths = { area: string; line: string }
 
+const workoutLapTimeline = (laps: readonly { range: ActivityAnalysisRange }[]) => {
+  let durationS = 0
+  const spans = laps.map(({ range }) => {
+    const startS = durationS
+    const activeS = range.movingTimeS
+    durationS +=
+      activeS != null && Number.isFinite(activeS) && activeS > 0 ? activeS : range.durationS
+    return { range, startS, endS: durationS }
+  })
+  return {
+    durationS,
+    spans,
+    project: (point: StravaActivityDetail['route'][number]): number | null => {
+      const span = spans.find(
+        ({ range }) => point.elapsedS >= range.startElapsedS && point.elapsedS <= range.endElapsedS,
+      )
+      if (!span || !Number.isFinite(point.d)) return null
+      const { range, startS, endS } = span
+      // Lap summaries supply active duration, but no per-record timer. Distance
+      // places terrain within that lap without allocating width to stopped time.
+      const fraction = Math.max(
+        0,
+        Math.min(
+          1,
+          (point.d - range.startDistanceKm) / (range.endDistanceKm - range.startDistanceKm),
+        ),
+      )
+      return ((startS + fraction * (endS - startS)) / durationS) * 100
+    },
+  }
+}
+
 const workoutElevationPaths = (
   d: StravaActivityDetail,
-  totalElapsedS: number,
+  timeline: ReturnType<typeof workoutLapTimeline>,
 ): WorkoutElevationPaths | null => {
   if (d.sport === 'swim' && d.swimLocation === 'pool') return null
   const requireGps = d.sport === 'run' || d.sport === 'swim'
   if (requireGps && !d.mapRoute.some(segment => segment.length >= 2)) return null
-  const route = d.route.filter(
-    point =>
-      Number.isFinite(point.elapsedS) &&
-      Number.isFinite(point.alt) &&
-      (!requireGps || (Number.isFinite(point.lat) && Number.isFinite(point.lng))),
-  )
-  if (route.length < 2 || totalElapsedS <= 0) return null
+  const route = d.route.flatMap(point => {
+    if (
+      !Number.isFinite(point.elapsedS) ||
+      !Number.isFinite(point.alt) ||
+      (requireGps && (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)))
+    )
+      return []
+    const x = timeline.project(point)
+    return x == null ? [] : [{ x, alt: point.alt }]
+  })
+  if (route.length < 2 || timeline.durationS <= 0) return null
   const minAltitude = Math.min(...route.map(point => point.alt))
   const maxAltitude = Math.max(...route.map(point => point.alt))
   const altitudeSpan = Math.max(1, maxAltitude - minAltitude)
-  const projectX = (elapsedS: number): string =>
-    Math.max(0, Math.min(100, (elapsedS / totalElapsedS) * 100)).toFixed(3)
   const points = route.map(point => {
     const y = 100 - ((point.alt - minAltitude) / altitudeSpan) * 100
-    return `${projectX(point.elapsedS)} ${y.toFixed(3)}`
+    return `${point.x.toFixed(3)} ${y.toFixed(3)}`
   })
   return {
-    area: `M ${projectX(route[0].elapsedS)} 100 L ${points.join(' L ')} L ${projectX(route[route.length - 1].elapsedS)} 100 Z`,
+    area: `M ${route[0].x.toFixed(3)} 100 L ${points.join(' L ')} L ${route[route.length - 1].x.toFixed(3)} 100 Z`,
     line: `M ${points.join(' L ')}`,
   }
 }
@@ -5086,10 +5120,8 @@ const buildCyclingWorkoutAnalysis = <N>(
   const summary = cyclingWorkoutPowerSummary(laps)
   if (!summary) return null
 
-  const routeEndElapsedS = d.route.at(-1)?.elapsedS ?? 0
-  const totalElapsedS = Math.max(routeEndElapsedS, ...laps.map(lap => lap.range.endElapsedS))
-  const elevationPaths = workoutElevationPaths(d, totalElapsedS)
-  if (!elevationPaths) return null
+  const timeline = workoutLapTimeline(laps)
+  const elevationPaths = workoutElevationPaths(d, timeline)
 
   const highestPowerWatts = summary.highest
   const lowestPowerWatts = summary.lowest
@@ -5120,7 +5152,6 @@ const buildCyclingWorkoutAnalysis = <N>(
     'data-site-cursor-line': '',
     style: `--tri-cycling-workout-laps:${laps.length}`,
   })
-  const elevation = buildWorkoutElevation(f, elevationPaths)
   const grid = f.el('div', 'tri-workout-grid tri-cycling-workout-grid', undefined, {
     'aria-hidden': 'true',
   })
@@ -5150,11 +5181,12 @@ const buildCyclingWorkoutAnalysis = <N>(
   })
   f.add(annotations, averageLine)
   const bars = f.el('div', 'tri-cycling-workout-bars')
-  for (const lap of laps) {
+  for (const [index, lap] of laps.entries()) {
     const metrics = analysisRangeMetrics(f.presentation, d, lap.range)
     const attrs = analysisRangeAttrs(lap.range)
-    const start = Math.max(0, Math.min(100, (lap.range.startElapsedS / totalElapsedS) * 100))
-    const end = Math.max(start, Math.min(100, (lap.range.endElapsedS / totalElapsedS) * 100))
+    const span = timeline.spans[index]
+    const start = (span.startS / timeline.durationS) * 100
+    const end = (span.endS / timeline.durationS) * 100
     const power = lap.powerWatts ?? 0
     attrs['aria-pressed'] = 'false'
     attrs['aria-label'] = `${lap.range.label}, ${metrics.join(', ')}`
@@ -5193,7 +5225,8 @@ const buildCyclingWorkoutAnalysis = <N>(
     f.add(bars, button)
   }
 
-  f.add(plot, elevation, grid, bars, annotations)
+  if (elevationPaths) f.add(plot, buildWorkoutElevation(f, elevationPaths))
+  f.add(plot, grid, bars, annotations)
   f.add(viewport, plot)
   f.add(chart, yAxis, viewport)
   f.add(wrap, head, chart)
@@ -5300,6 +5333,7 @@ const runWorkoutLaps = (
   const laps: RunLapSplit[] = []
   for (const [index, range] of validAnalysisRanges(d)
     .filter(candidate => candidate.kind === 'lap')
+    .sort((left, right) => left.startElapsedS - right.startElapsedS)
     .entries()) {
     const speedKph =
       range.averageSpeedKph != null && range.averageSpeedKph > 0
@@ -5357,12 +5391,7 @@ const buildSwimWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
   if (d.sport !== 'swim') return null
   const laps = swimWorkoutLaps(d)
   if (laps.length === 0) return null
-  const totalElapsedS = Math.max(
-    d.elapsedTimeS,
-    d.route.at(-1)?.elapsedS ?? 0,
-    ...laps.map(lap => lap.range.endElapsedS),
-  )
-  if (totalElapsedS <= 0) return null
+  const timeline = workoutLapTimeline(laps)
   const paceAxis = runWorkoutPaceAxis(laps.map(lap => lap.paceS))
   const paceSpan = paceAxis.max - paceAxis.min
   const speeds = laps.map(lap => lap.speedKph)
@@ -5377,7 +5406,7 @@ const buildSwimWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
   const averagePaceS = 360 / ((distanceKm / durationS) * 3600)
   const fastestPaceS = Math.min(...laps.map(lap => lap.paceS))
   const slowestPaceS = Math.max(...laps.map(lap => lap.paceS))
-  const elevationPaths = workoutElevationPaths(d, totalElapsedS)
+  const elevationPaths = workoutElevationPaths(d, timeline)
 
   const wrap = f.el('section', 'tri-workout tri-swim-workout', undefined, {
     'aria-label': 'Swim workout analysis',
@@ -5422,18 +5451,12 @@ const buildSwimWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
     )
   }
   const bars = f.el('div', 'tri-swim-workout-bars')
-  const pool = d.swimLocation === 'pool'
-  const plotDurationS = pool ? durationS : totalElapsedS
-  let activeTimeS = 0
-  for (const lap of laps) {
+  for (const [index, lap] of laps.entries()) {
     const metrics = analysisRangeMetrics(f.presentation, d, lap.range)
     const attrs = analysisRangeAttrs(lap.range)
-    // Pool bars omit rests; selection attributes retain the recorded elapsed ranges.
-    const startS = pool ? activeTimeS : lap.range.startElapsedS
-    activeTimeS += lap.range.movingTimeS ?? lap.range.durationS
-    const endS = pool ? activeTimeS : lap.range.endElapsedS
-    const start = Math.max(0, Math.min(100, (startS / plotDurationS) * 100))
-    const end = Math.max(start, Math.min(100, (endS / plotDurationS) * 100))
+    const span = timeline.spans[index]
+    const start = (span.startS / timeline.durationS) * 100
+    const end = (span.endS / timeline.durationS) * 100
     const height = Math.max(3, ((paceAxis.max - lap.paceS) / paceSpan) * 100)
     const intensity = speedSpan > 0 ? 0.42 + ((lap.speedKph - minSpeedKph) / speedSpan) * 0.5 : 0.72
     attrs['aria-pressed'] = 'false'
@@ -5468,13 +5491,8 @@ const buildRunWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
   if (d.sport !== 'run') return null
   const laps = runWorkoutLaps(f.presentation, d)
   if (laps.length === 0) return null
-  const totalElapsedS = Math.max(
-    d.elapsedTimeS,
-    d.route.at(-1)?.elapsedS ?? 0,
-    ...laps.map(lap => lap.range.endElapsedS),
-  )
-  if (totalElapsedS <= 0) return null
-  const elevationPaths = workoutElevationPaths(d, totalElapsedS)
+  const timeline = workoutLapTimeline(laps)
+  const elevationPaths = workoutElevationPaths(d, timeline)
   const imperial = isImperial(f.presentation)
   const paceUnit = imperial ? '/mi' : '/km'
   const paceAxis = runWorkoutPaceAxis(laps.map(lap => lap.paceS))
@@ -5539,11 +5557,12 @@ const buildRunWorkoutAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
       }),
     )
   }
-  for (const lap of laps) {
+  for (const [index, lap] of laps.entries()) {
     const metrics = analysisRangeMetrics(f.presentation, d, lap.range)
     const attrs = analysisRangeAttrs(lap.range)
-    const start = Math.max(0, Math.min(100, (lap.range.startElapsedS / totalElapsedS) * 100))
-    const end = Math.max(start, Math.min(100, (lap.range.endElapsedS / totalElapsedS) * 100))
+    const span = timeline.spans[index]
+    const start = (span.startS / timeline.durationS) * 100
+    const end = (span.endS / timeline.durationS) * 100
     const height = Math.max(3, ((paceAxis.max - lap.paceS) / paceSpan) * 100)
     const intensity = speedSpan > 0 ? 0.42 + ((lap.speedKph - minSpeedKph) / speedSpan) * 0.5 : 0.72
     attrs['aria-pressed'] = 'false'
@@ -10514,7 +10533,17 @@ export const buildActivity = <N>(
   })
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildActivityIcon(f, d))
-  f.add(head, buildActivityAnalyzeButton(f, d))
+  const headActions = f.el('div', 'tri-act-head-actions')
+  if (d.commute === true)
+    f.add(
+      headActions,
+      f.el('span', 'tri-activity-tag', triText(f.presentation.locale, 'commute'), {
+        title: triText(f.presentation.locale, 'commute'),
+        'data-activity-tag': 'commute',
+      }),
+    )
+  f.add(headActions, buildActivityAnalyzeButton(f, d))
+  f.add(head, headActions)
   f.add(wrap, head)
   f.add(
     wrap,

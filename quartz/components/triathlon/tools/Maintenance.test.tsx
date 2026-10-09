@@ -8,7 +8,13 @@ import { Maintenance } from './Maintenance'
 
 const maintenance: TriathlonMaintenance = {
   services: [
-    { bike: 'soloist', date: '2026-08-20', distanceMiles: 1721.5, place: 'Racer Sportif' },
+    {
+      bike: 'soloist',
+      date: '2026-08-20',
+      distanceMiles: 1721.5,
+      place: 'Racer Sportif',
+      type: 'bike fit',
+    },
   ],
   components: [
     {
@@ -90,6 +96,7 @@ test('renders service, component, chain, and wheel maintenance records', () => {
   const root = fromHtml(html, { fragment: true })
   assert.equal(elements(root, element => hasClass(element, 'tri-maintenance-entry')).length, 7)
   assert.match(html, /Racer Sportif/)
+  assert.match(html, /bike fit/)
   assert.match(html, /CeramicSpeed OSPW RS 5 Spoke/)
   assert.match(html, /FSA T47 BBright/)
   assert.match(html, /data-i18n="components">components/)

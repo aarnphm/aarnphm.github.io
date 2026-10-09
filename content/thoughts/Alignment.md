@@ -1,21 +1,19 @@
 ---
 date: '2024-03-05'
-description: and safety-related topics
+description: human intent, model behavior, and safety research
 id: Alignment
-modified: 2026-06-05 15:08:23 GMT-04:00
+modified: 2026-10-09 09:05:00 GMT-04:00
 tags:
   - ml
   - alignment
 title: Alignment
 ---
 
-resources: [[thoughts/Overton Window|frame-context collapse]] and [OpenAI's on alignment research (before all the safety disband)](https://openai.com/blog/our-approach-to-alignment-research)
+resources: [[thoughts/Overton Window|political acceptability]] and [OpenAI's 2022 alignment agenda](https://openai.com/index/our-approach-to-alignment-research/)
 
-The act of aligning oneself with a particular group or ideology. This can be done for a variety of reasons, including:
+AI alignment concerns whether a system reliably acts according to the human intentions and values it is meant to serve. Choosing whose values count, translating them into training signals, and testing the resulting behavior are all parts of the problem.
 
-- To gain social acceptance
-- To gain power
-- To gain resources
+Social alignment can mean adopting a group's beliefs to gain acceptance, power or resources. A model trained to give socially acceptable answers can still be wrong. The Overton window describes political acceptability; it supplies no test of factual accuracy or reliable instruction-following.
 
 > [!abstract]- thoughts
 >
@@ -23,35 +21,32 @@ The act of aligning oneself with a particular group or ideology. This can be don
 > enhance human capability while remaining accountable to human values. I'm optimistic about this because it's fundamentally an engineering problem,
 > not an [[thoughts/Existentialism|existential]] one.
 
-Often known as a solution to solve "hallucination" in [[thoughts/LLMs|large language models]] token-generation. [^enterprise]
+Factual accuracy is one concern in aligning [[thoughts/LLMs|large language models]]. A hallucinated answer may come from missing knowledge or from mishandling available evidence. Fixing it requires identifying the failure, including failures in the surrounding retrieval system.[^enterprise]
 
-[^enterprise]: In production use cases, systems solutions such as [[thoughts/RAG]] are more relevant where there are multiple components, or "sensors" involved to be factually correct with internal databases.
+[^enterprise]: [[thoughts/RAG]] supplies retrieved documents as context for generation. [Lewis et al.](https://arxiv.org/abs/2005.11401) found factuality improvements over their parametric-only baseline. Retrieval can still return the wrong document, and generation can add claims the document never made. Access to an internal database does not guarantee a correct answer or aligned behavior.
 
-> To align a model is simply teaching it to generate tokens that is within the bound of the Overton Window.
-
-The goal is to build a aligned system that help us solve other alignment problems
+The proposal to build an aligned system that helps solve further alignment problems comes from the OpenAI agenda linked above. It depends on being able to evaluate the research those systems produce.
 
 > Should we build a [[thoughts/ethics|ethical]] aligned systems, or [[thoughts/moral|morally]] aligned systems?
 
-One of [[thoughts/mechanistic interpretability]]'s goal is to [[thoughts/mechanistic interpretability#ablation|ablate]] harmful features.
+[[thoughts/mechanistic interpretability]] tries to explain how a model computes its outputs. [[thoughts/mechanistic interpretability#ablation|Ablation]] can test whether a feature contributes to a behavior. [Anthropic's 2024 feature experiments](https://www.anthropic.com/research/mapping-mind-language-model) showed that interventions can change responses; whether the identified features could reliably improve safety remained an open question in that work.
 
 ## RSP
 
-_published by [Anthropic](https://assets.anthropic.com/m/24a47b00f10301cd/original/Anthropic-Responsible-Scaling-Policy-2024-10-15.pdf)_
+_Notes on [Anthropic's Responsible Scaling Policy v2.0](https://www-cdn.anthropic.com/616dee633636e5bd309cb73aed8622e80fe47839.pdf), effective October 15, 2024._
 
-The idea is to create a standard for risk mitigation strategy when AI system advances. Essentially create a scale to judge "how capable a system can cause harm"
+This version links capability thresholds to required safeguards. Deployment standards address dangerous use; security standards address theft or compromise of the model and its weights. An AI Safety Level specifies protections to apply as capabilities increase. Later versions are listed in [Anthropic's policy archive](https://www.anthropic.com/responsible-scaling-policy).
 
 ![[thoughts/images/alignment-asl-scale.webp]]
 
+_Historical ASL overview. "Present large models" refers to the period when the diagram was made._
+
 ## trustworthy and untrustworthy models
 
-also known as _scheming and deceptive alignment_
+[Olli Järviniemi's 2024 post](https://www.lesswrong.com/posts/ShgAxjgN55gmq47ou/trustworthy-and-untrustworthy-models-1), which credits Buck Shlegeris and Ryan Greenblatt, separates ::capability for scheming{h5}:: from ==in-fact scheming==. Being able to deceive in a test is different evidence from choosing to deceive an operator. A monitor can also miss an attack through lack of ability; that alone establishes no deliberate betrayal.
 
-cf _Buck Shlegeris_ and _Ryan Greenblatt_, the goal is:
-
-- distinguish ::capability for scheming{h5}:: versus ==in-fact scheming==
-- difference between _active planners_, _sleeper agents_ and _opportunists_
+His initial categories were _active planners_, _sleeper agents_ and _opportunists_. He later found these labels too specific and potentially misleading. His [revised distinction](https://www.lesswrong.com/posts/dEER2W3goTsopt48i/olli-jaerviniemi-s-shortform?commentId=9LmnbyuGoeARqrHe7) asks separately about behavior on ordinary inputs and behavior at rare moments when one bad action could have large consequences. Routine good behavior leaves that second question open.
 
 ## giving AI safe motivations
 
-_https://joecarlsmith.com/2025/08/18/giving-ais-safe-motivations_
+[Joe Carlsmith's essay](https://joecarlsmith.com/2025/08/18/giving-ais-safe-motivations) asks how instruction-following might generalize to situations where a system has a real opportunity to act against us. His proposed decomposition includes accurate evaluations, ruling out alignment faking, studying generalization, and giving suitable instructions. These are research problems, with no demonstrated end-to-end solution supplied by the essay.

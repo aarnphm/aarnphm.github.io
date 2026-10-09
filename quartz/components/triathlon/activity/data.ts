@@ -836,6 +836,7 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
     typeof value.id !== 'number' ||
     !/^\d{4}-\d{2}-\d{2}$/.test(typeof value.date === 'string' ? value.date : '') ||
     !isActivityKind(value.sport) ||
+    !(value.commute === undefined || typeof value.commute === 'boolean') ||
     (value.sport === 'run' && !isRunBestEfforts(value.bestEfforts)) ||
     !isWahooVerification(value.wahoo) ||
     !isActivitySources(value.sources) ||

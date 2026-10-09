@@ -172,6 +172,7 @@ export interface RawStravaActivity {
   name: string
   sportType: string
   trainer?: boolean
+  commute?: boolean
   distance: number
   movingTime: number
   elapsedTime: number
@@ -677,6 +678,7 @@ export interface StravaActivityDetail {
   equipment?: ActivityEquipment
   sources?: ActivitySource[]
   virtual?: boolean
+  commute?: boolean
   distanceSource?: 'garmin' | 'strava'
   wahoo?: WahooVerification
   cyclingTorque?: CyclingTorqueTrace | null
@@ -946,7 +948,7 @@ export function round(value: number, dp: number): number {
 export const calculateActivityIntensityFactor = (
   activity: Pick<
     StravaActivityDetail,
-    'sport' | 'avgHr' | 'npWatts' | 'deviceWatts' | 'garmin' | 'wahoo'
+    'sport' | 'commute' | 'avgHr' | 'npWatts' | 'deviceWatts' | 'garmin' | 'wahoo'
   >,
   paceIntensityFactor: number | null,
   ftp: number | null,
@@ -955,6 +957,7 @@ export const calculateActivityIntensityFactor = (
   if (
     activity.wahoo?.metrics.intensityFactor != null ||
     activity.garmin?.intensityFactor != null ||
+    activity.commute === true ||
     activity.sport === 'treatment' ||
     activity.sport === 'sauna'
   )
@@ -1037,10 +1040,10 @@ export const calculateExerciseLoad = (
 export const calculateActivityExerciseLoad = (
   activity: Pick<
     StravaActivityDetail,
-    'movingTimeS' | 'garmin' | 'wahoo' | 'calculatedIntensityFactor'
+    'commute' | 'movingTimeS' | 'garmin' | 'wahoo' | 'calculatedIntensityFactor'
   >,
 ): CalculatedExerciseLoad | null => {
-  if (activity.garmin?.exerciseLoad != null) return null
+  if (activity.commute === true || activity.garmin?.exerciseLoad != null) return null
   const source =
     activity.wahoo?.metrics.intensityFactor != null
       ? 'wahoo'
@@ -1314,6 +1317,7 @@ export const calculateActivityTrainingEffect = (
   activity: Pick<
     StravaActivityDetail,
     | 'sport'
+    | 'commute'
     | 'distanceKm'
     | 'movingTimeS'
     | 'sufferScore'
@@ -1327,6 +1331,7 @@ export const calculateActivityTrainingEffect = (
     | 'swimIntervals'
   >,
 ): CalculatedTrainingEffect | null => {
+  if (activity.commute === true) return null
   const garmin = activity.garmin
   if (
     garmin?.aerobicTrainingEffect != null ||
@@ -3984,6 +3989,7 @@ function projectDetail(
   return {
     id: a.id,
     virtual: a.sportType.startsWith('Virtual'),
+    commute: a.commute === true,
     sport,
     name: a.name,
     date: a.startDateLocal.slice(0, 10),
@@ -4686,7 +4692,7 @@ export function buildPayload(
   const recentCriticalPowerAnchors: CriticalPowerAnchor[] = []
   const yearCriticalPowerAnchors: CriticalPowerAnchor[] = []
   for (const { a, sport } of allActivities) {
-    if (sport !== 'bike' && sport !== 'run') continue
+    if ((sport !== 'bike' && sport !== 'run') || a.commute === true) continue
     const id = String(a.id)
     const activityDay = dayMs(a.startDateLocal.slice(0, 10))
     const inRecentWindow = activityDay >= recentCut && activityDay <= end
