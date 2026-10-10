@@ -11,6 +11,7 @@ import { inheritComponentSourceNames } from '../../util/component-source'
 import { BuildCtx } from '../../util/ctx'
 import { FileTrieNode } from '../../util/fileTrie'
 import { isFlashcardPath } from '../../util/flashcards-path'
+import { folderPageSourceSlug, isFolderPageSourcePath } from '../../util/folder-page'
 import { htmlToJsx } from '../../util/jsx'
 import {
   stripSlashes,
@@ -202,16 +203,6 @@ function parentFolders(slug: string): string[] {
     folder = path.posix.dirname(folder)
   }
   return folders
-}
-
-const folderPageSourceExtensions = new Set(['.md', '.base', '.canvas', '.ipynb'])
-
-function isFolderPageSourcePath(fp: FilePath): boolean {
-  return folderPageSourceExtensions.has(path.extname(fp))
-}
-
-function folderPageSourceSlug(fp: FilePath): string {
-  return stripSlashes(slugifyFilePath(fp, path.extname(fp) === '.ipynb'))
 }
 
 function folderPageAncestors(slug: string): string[] {
