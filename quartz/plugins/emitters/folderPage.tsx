@@ -9,6 +9,7 @@ import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
+import { folderPageSourceSlug, isFolderPageSourcePath } from '../../util/folder-page'
 import { pageListingChanged } from '../../util/listing-signature'
 import {
   FilePath,
@@ -18,23 +19,12 @@ import {
   joinSegments,
   pathToRoot,
   simplifySlug,
-  slugifyFilePath,
 } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from '../vfile'
 import { write } from './helpers'
 interface FolderPageOptions extends FullPageLayout {
   sort?: (f1: QuartzPluginData, f2: QuartzPluginData) => number
-}
-
-const folderPageSourceExtensions = new Set(['.md', '.base', '.canvas', '.ipynb'])
-
-function isFolderPageSourcePath(fp: FilePath): boolean {
-  return folderPageSourceExtensions.has(path.extname(fp))
-}
-
-function sourcePathSlug(fp: FilePath): FullSlug {
-  return slugifyFilePath(fp, path.extname(fp) === '.ipynb')
 }
 
 async function* processFolderInfo(
@@ -143,7 +133,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
       const folders: Set<SimpleSlug> = new Set(
         ctx.allFiles
           .filter(isFolderPageSourcePath)
-          .map(sourcePathSlug)
+          .map(folderPageSourceSlug)
           .flatMap(slug =>
             _getFolders(slug).filter(folderName => folderName !== '.' && folderName !== 'tags'),
           ),
@@ -158,14 +148,15 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
 
       const affectedFolders: Set<SimpleSlug> = new Set()
       for (const changeEvent of changeEvents) {
-        if (!changeEvent.file) continue
+        if (!changeEvent.file && !isFolderPageSourcePath(changeEvent.path)) continue
         if (
+          changeEvent.file &&
           changeEvent.type === 'change' &&
           !pageListingChanged(changeEvent.file.data, changeEvent.previousFile?.data)
         ) {
           continue
         }
-        const slug = changeEvent.file.data.slug!
+        const slug = changeEvent.file?.data.slug ?? folderPageSourceSlug(changeEvent.path)
         const folders = _getFolders(slug).filter(
           folderName => folderName !== '.' && folderName !== 'tags',
         )
