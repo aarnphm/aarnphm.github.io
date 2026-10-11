@@ -276,7 +276,7 @@ maintenance:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-10-09 14:03:23 GMT-04:00
+modified: 2026-10-10 19:03:27 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
@@ -1915,6 +1915,37 @@ exercise: Single-leg Romanian deadlift reach | 40s | 40s | 40s | 40s
 exercise: Side plank | 40s | 40s | 40s | 40s
 exercise: Superman hold with alternating leg lift | 40s | 40s | 40s | 40s
 exercise: Child's pose and thread-the-needle stretch | 2m
+```
+
+```tracking
+date: 2026-10-09
+activity: 20521929664
+exercise: Marching in place | 30s
+exercise: Bodyweight squats | 30s
+exercise: Glute bridges | 30s
+exercise: Arm swings | 30s
+exercise: Bodyweight squats | 45s | 45s | 45s
+exercise: Plank hold | 45s | 45s | 45s
+exercise: Alternating reverse lunges | 45s | 45s | 45s
+exercise: Glute bridges | 45s | 45s | 45s
+exercise: Standing single-leg balance with knee lift | 45s | 45s | 45s
+exercise: Hip flexor, hamstring, calf, and lower back stretch flow | 2m
+```
+
+```tracking
+title: Free Flow
+date: 2026-10-09
+time: 16:00
+duration: 45 mins
+activity: sauna
+temperature: 196F
+humidity: 11%
+cooldown: cold plunge
+lap-phases: hot sauna | break | cold plunge | break | break | hot sauna | break
+location: Othership Adelaide
+htl: 6.6
+strava: 20519634483
+garmin: 24667016038
 ```
 
 <!-- training plan start
