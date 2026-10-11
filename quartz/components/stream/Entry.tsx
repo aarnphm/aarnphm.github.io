@@ -8,6 +8,7 @@ import type { EncryptedPayload } from '../../util/protected'
 import { htmlToJsx } from '../../util/jsx'
 import {
   buildStreamDayPathFromIso,
+  buildStreamEntryPathFromIso,
   formatStreamDate,
   isDraftEntry,
   isPrivateEntry,
@@ -254,6 +255,18 @@ export const renderStreamEntry = (
               )
             })}
           </div>
+        )}
+        {!protectedEntry && !privateEntry && (
+          <button
+            type="button"
+            class="stream-entry-share"
+            data-press-kit="note"
+            data-press-kit-entry={entry.id}
+            data-press-kit-url={buildStreamEntryPathFromIso(resolvedIsoDate, entry.id) ?? undefined}
+            aria-label="partager cette entrée en image"
+          >
+            partager
+          </button>
         )}
         {entry.importance !== undefined && (
           <div class="stream-entry-importance">

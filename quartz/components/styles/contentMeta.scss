@@ -36,3 +36,17 @@ ul.content-meta {
   font-weight: inherit;
   text-decoration: underline;
 }
+
+// Press kit triggers read as the neighbouring links.
+button.content-meta-link {
+  display: inline;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}

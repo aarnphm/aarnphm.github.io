@@ -39,6 +39,7 @@ import TagContent from './pages/TagContent'
 import TriathlonPage from './pages/TriathlonPage'
 import PageTitle from './PageTitle'
 import Palette from './Palette'
+import PressKitConstructor from './PressKit'
 import Reader from './Reader'
 import RecentNotes from './RecentNotes'
 import Recommendations from './Recommendations'
@@ -94,6 +95,7 @@ export {
   SlidesContent,
   Grid,
   HeadingsConstructor,
+  PressKitConstructor,
   CodeCopy,
   SeeAlso,
   BaseViewSelector,

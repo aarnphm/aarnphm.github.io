@@ -51,6 +51,9 @@ interface CustomEventMap {
   commentauthorupdated: CustomEvent<{ oldAuthor: string; newAuthor: string }>
   contentdecrypted: CustomEvent<{ article: HTMLElement; content: HTMLElement; slug?: string }>
   'tri-weightunit': CustomEvent<{}>
+  presskitopen: CustomEvent<{
+    tab?: import('./quartz/components/scripts/press-kit.inline').PressKitTab
+  }>
 }
 
 type ContentIndex = Record<FullSlug, ContentDetails>

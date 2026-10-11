@@ -331,6 +331,27 @@
     }
   }
 
+  .stream-entry-share {
+    display: inline;
+    width: fit-content;
+    padding: 0;
+    color: var(--gray);
+    font: inherit;
+    font-size: 0.85rem;
+    text-decoration: underline;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--dark);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: 2px;
+    }
+  }
+
   .stream-entry-importance {
     font-size: 0.85rem;
     color: var(--gray);

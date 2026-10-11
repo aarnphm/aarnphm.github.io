@@ -179,6 +179,17 @@ export default (() => {
     }
 
     if (fileData.frontmatter?.protected !== true) {
+      const shareButton = (tab: string, label: string) =>
+        h('button', { type: 'button', class: 'content-meta-link', 'data-press-kit': tab }, [label])
+      meta.push({
+        title: 'partager',
+        classes: ['press-kit-links'],
+        item: [
+          shareButton('note', 'carte'),
+          shareButton('quote', 'citation'),
+          shareButton('links', 'liens'),
+        ],
+      })
       meta.push({
         title: 'source',
         classes: ['readable-source'],

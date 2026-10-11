@@ -231,6 +231,7 @@ document.addEventListener('nav', () => {
       (el as HTMLElement).isContentEditable ||
       el.closest('.cm-editor') !== null ||
       el.closest('.search .search-container') !== null ||
+      el.closest('dialog.press-kit') !== null ||
       isHeadingsModalOpen
     )
   }
