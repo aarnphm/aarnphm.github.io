@@ -1,19 +1,66 @@
 ---
-date: '2026-06-05'
-description: mit 18.905 lecture notes
-id: mit-18-905-fall-2016-collection-resources-lecture-notes
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:31 GMT-04:00
+title: 'lecture notes'
+description: 'mit 18.905 lecture notes'
+id: 'mit-18-905-fall-2016-collection-resources-lecture-notes'
 tags:
-  - course
-  - mit
-  - ocw
-  - math
-  - math/topology
-  - geometry
-title: lecture notes
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'topology and geometry'
+  - 'topology'
+  - 'geometry'
+resource:
+  {
+    kind: 'collection',
+    type: 'Lecture Notes',
+    items:
+      [
+        'mit18_905f16_lec1',
+        'mit18_905f16_lec2',
+        'mit18_905f16_lec3',
+        'mit18_905f16_lec4',
+        'mit18_905f16_lec5',
+        'mit18_905f16_lec6',
+        'mit18_905f16_lec7',
+        'mit18_905f16_lec8',
+        'mit18_905f16_lec9',
+        'mit18_905f16_lec10',
+        'mit18_905f16_lec11',
+        'mit18_905f16_lec12',
+        'mit18_905f16_lec13',
+        'mit18_905f16_lec14',
+        'mit18_905f16_lec15',
+        'mit18_905f16_lec16',
+        'mit18_905f16_lec17',
+        'mit18_905f16_lec18',
+        'mit18_905f16_lec19',
+        'mit18_905f16_lec20',
+        'mit18_905f16_lec21',
+        'mit18_905f16_lec22',
+        'mit18_905f16_lec23',
+        'mit18_905f16_lec24',
+        'mit18_905f16_lec25',
+        'mit18_905f16_lec26',
+        'mit18_905f16_lec27',
+        'mit18_905f16_lec28',
+        'mit18_905f16_lec29',
+        'mit18_905f16_lec30',
+        'mit18_905f16_lec31',
+        'mit18_905f16_lec32',
+        'mit18_905f16_lec33',
+        'mit18_905f16_lec34',
+        'mit18_905f16_lec35',
+        'mit18_905f16_lec36',
+        'mit18_905f16_lec37',
+        'mit18_905f16_lec38',
+        'mit18_905f16_lecture_notes',
+      ],
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.905-fall-2016/|mit 18.905]]

@@ -1,23 +1,23 @@
 ---
+title: 'mit 18.905: algebraic topology i'
+description: 'This is a course on the singular homology of topological spaces. Topics include: Singular homology, CW complexes, Homological algebra, Cohomology, and Poincare duality.'
+id: 'mit-18-905-fall-2016'
+tags:
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'topology and geometry'
+  - 'topology'
+  - 'geometry'
 aliases:
   - '18.905'
-  - algebraic topology i
-  - 18.905-Fall-2016
-date: '2026-06-05'
-description: 'This is a course on the singular homology of topological spaces. Topics include: Singular homology, CW complexes, Homological algebra, Cohomology, and Poincare duality.'
-id: mit-18-905-fall-2016
-layout: course
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:10 GMT-04:00
-tags:
-  - course
-  - mit
-  - ocw
-  - math
-  - math/topology
-  - geometry
-title: 'mit 18.905: algebraic topology i'
+  - 'algebraic topology i'
+  - '18.905-Fall-2016'
+layout: 'course'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 course:
   number: '18.905'
   name: 'algebraic topology i'

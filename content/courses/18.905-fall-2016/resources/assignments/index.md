@@ -1,19 +1,38 @@
 ---
-date: '2026-06-05'
-description: mit 18.905 assignments
-id: mit-18-905-fall-2016-collection-resources-assignments
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:31 GMT-04:00
+title: 'assignments'
+description: 'mit 18.905 assignments'
+id: 'mit-18-905-fall-2016-collection-resources-assignments'
 tags:
-  - course
-  - mit
-  - ocw
-  - math
-  - math/topology
-  - geometry
-title: assignments
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'topology and geometry'
+  - 'topology'
+  - 'geometry'
+resource:
+  {
+    kind: 'collection',
+    type: 'Assignments',
+    items:
+      [
+        'mit18_905f16_pset1',
+        'mit18_905f16_pset2',
+        'mit18_905f16_pset3',
+        'mit18_905f16_pset4',
+        'mit18_905f16_pset5',
+        'mit18_905f16_pset6',
+      ],
+    links:
+      [
+        'courses/18.905-fall-2016/pages/assignments/',
+        'courses/18.905-fall-2016/resources/problem-sets/',
+      ],
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.905-fall-2016/|mit 18.905]]
