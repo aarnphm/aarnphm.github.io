@@ -7,9 +7,12 @@
 // the table carries more speed into it next time, whoever slid in a berm trusts the dirt less, and
 // whoever keeps getting away with it takes the drop instead of the chicken line. They queue for the
 // lift and the gate, friends drop in as a train, and now and then somebody goes down and the next
-// rider stops to ask.
+// rider stops to ask. Whoever goes down hard enough to stay down gets the medic from the hut at the
+// bottom, who walks them out, or with a second medic carries them out on a board, while the starter
+// holds the gate. The hill's cattle (404-herd.ts) graze between the turns, and riders ease off
+// past any that wander onto the line.
 
-import { type Almanac, type Sky, moonlit } from './404-almanac'
+import { type Almanac, type Sky, moonlit, winter } from './404-almanac'
 import { type Voices, say } from './404-crew'
 import {
   DROP_OFF,
@@ -19,16 +22,29 @@ import {
   MAIN,
   PATHS,
   PHOTO,
+  type Path,
   SWEET,
   TABLE_FLIGHT,
   TRACKS,
   type Track,
   UNIT,
   along,
+  path,
   seek,
   surface,
 } from './404-downhill'
-import { type Grid, type RGB, BAYER, col, dot, mulberry, noise, row } from './404-pixel'
+import {
+  type Herd,
+  type HerdEnv,
+  type HerdInk,
+  type Passer,
+  herdEnv,
+  makeHerd,
+  paintBeast,
+  poseHerd,
+  stepHerd,
+} from './404-herd'
+import { type Grid, type Pt, type RGB, BAYER, col, dot, mulberry, noise, row } from './404-pixel'
 
 // Rolling resistance of knobbly tyres in dirt, and air drag per unit of speed squared for a rider
 // and bike of 95 kg with 0.55 m² of frontal area.
@@ -70,6 +86,12 @@ type State =
   | 'up'
   | 'runout'
   | 'leave'
+  // Down for good, waiting for the medic; walking out beside them; out on the board; sat by the
+  // hut being seen to.
+  | 'hurt'
+  | 'limp'
+  | 'carried'
+  | 'rest'
 
 export type Rider = {
   id: number
@@ -116,17 +138,22 @@ export type Rider = {
   fell: boolean
   asked: number
   gone: boolean
+  // The way they are walking or being carried out.
+  walk: Walk | null
 }
 
 export type ParkEnv = {
-  // Whether the lift runs and the starter is at the gate, how many riders the day brings out, and
-  // how much grip the dirt has.
+  // Whether the lift runs and the starter is at the gate, how many riders the day brings out, how
+  // much grip the dirt has, and how much of it the berm below the drop has lost to the day's riding.
   open: boolean
   crowd: number
   grip: number
+  loose: number
+  herd: HerdEnv
 }
 
 export type Park = {
+  seed: number
   rng: () => number
   env: ParkEnv
   riders: Rider[]
@@ -146,25 +173,39 @@ export type Park = {
   // The spectators' cheer, and the photographer's flash.
   cheer: number
   flash: number
+  // The two medics, bikes left on the line after a board call, and bikes fetched down that lean
+  // on the hut until someone comes for them.
+  medics: Medic[]
+  wrecks: { line: 0 | 1; q: number; frame: number }[]
+  leaning: { frame: number; t: number }[]
+  herd: Herd
 }
 
 // The day's conditions: the lift runs from nine to seven, solar time, unless the wind or a storm
-// stops it; weekends bring twice the riders; drizzle halves them. After hours locals push up with
-// head torches: two or three through the evening until half past ten, one at first light, and
-// through the small hours a die-hard, or two under a full moon. Rain and snow shut the line: its steepest pitches run at about 27°, and
+// stops it; weekends bring twice the riders; drizzle halves them. From the first snow on the ranges
+// until it melts the park is shut for the season, and the locals push up on fat bikes and ride the
+// packed snow, which holds a studded tyre at about half a g. After hours they come with head
+// torches: two or three through the evening until half past ten, one at first light, and through
+// the small hours a die-hard, or two under a full moon. Rain and snow shut the line: its steepest pitches run at about 27°, and
 // wet dirt holds a tyre at about half a g, less than the tan 27° it would take to stop on them.
-// Grip is what knobbly tyres get on the dirt, damp or dry.
+// Grip is what knobbly tyres get on the dirt, damp or dry. Everyone off the drop brakes hard into
+// the berm below it, and through the day they dig bumps into its entry and push its dirt over the
+// top, so by a busy late afternoon it holds a sixth less than when the crew raked it that morning.
 export function parkEnv(al: Almanac, sky: Sky, weekend: boolean): ParkEnv {
+  const season = !winter(al)
   const shut = sky.storm || sky.fall === 'rain' || sky.fall === 'snow'
-  const open = al.hour >= 9 && al.hour < 19 && !shut && sky.wind < 0.75
-  const grip = sky.fall === 'drizzle' ? 0.65 : sky.fog ? 0.72 : 0.85
-  const evening = al.hour >= 19 && al.hour < 22.5
+  const day = al.hour >= 9 && al.hour < 19
+  const open = season && day && !shut && sky.wind < 0.75
+  const grip = !season ? 0.55 : sky.fall === 'drizzle' ? 0.65 : sky.fog ? 0.72 : 0.85
+  const ridden = clamp(al.hour - 9, 0, 10) * (weekend ? 6 : 3)
+  const loose = season ? 0.2 * (1 - Math.exp(-ridden / 24)) : 0
+  const awake = al.hour >= 9 && al.hour < 22.5
   const dawn = al.hour >= 6.5 && al.hour < 9
   let crowd = open
     ? weekend
       ? 6
       : 3
-    : evening
+    : awake
       ? weekend
         ? 3
         : 2
@@ -173,11 +214,18 @@ export function parkEnv(al: Almanac, sky: Sky, weekend: boolean): ParkEnv {
         : 2
   if (open && sky.fall !== 'none') crowd *= 0.5
   if (sky.temp !== null && (sky.temp < -5 || sky.temp > 32)) crowd *= 0.6
-  return { open, grip, crowd: shut ? 0 : Math.max(1, Math.round(crowd)) }
+  return {
+    open,
+    grip,
+    loose,
+    herd: herdEnv(al, sky),
+    crowd: shut ? 0 : Math.max(1, Math.round(crowd)),
+  }
 }
 
 export function makePark(seed: number, env: ParkEnv): Park {
   return {
+    seed,
     rng: mulberry(seed),
     env,
     riders: [],
@@ -193,6 +241,10 @@ export function makePark(seed: number, env: ParkEnv): Park {
     last: -1,
     cheer: 0,
     flash: 0,
+    medics: [medic(), medic()],
+    wrecks: [],
+    leaning: [],
+    herd: makeHerd(seed, env.herd),
   }
 }
 
@@ -241,6 +293,7 @@ function rider(p: Park, party: number, kid: boolean, skill: number, hikes: boole
     fell: false,
     asked: 0,
     gone: false,
+    walk: null,
   }
   return one
 }
@@ -282,6 +335,13 @@ const mainQ = (r: Rider) => {
   return t.main[k] + ((r.q - t.q[k]) * (t.main[k + 1] - t.main[k])) / (t.q[k + 1] - t.q[k])
 }
 const byTicket = (a: Rider, b: Rider) => a.ticket - b.ticket
+
+// The berm below the drop, along the main line, and what the dirt holds at a sample of a line.
+const WORN: [number, number] = [255, 310]
+const gripAt = (p: Park, t: Track, k: number) =>
+  p.env.grip * (t.main[k] > WORN[0] && t.main[k] < WORN[1] ? 1 - p.env.loose : 1)
+// Past the limit in a turn, the odds the slide goes from under them, per unit past it.
+const LOSE = 10
 
 const brakeOf = (r: Rider) => G * r.grip * (0.6 + 0.25 * r.skill)
 // Six watts a kilo out of the gate (four for a child), capped at what the tyres put down.
@@ -343,11 +403,13 @@ function release(p: Park, r: Rider) {
   p.go = 0.6
 }
 
+// How badly they are hurt: how far past the limit they came off, times the energy they came off
+// with against eight metres a second, times how they happened to land.
 function crash(p: Park, r: Rider, hit: number, v: number, voices: Voices) {
   r.state = 'down'
   r.t = 0
   r.v = v * 0.6
-  r.hurt = hit
+  r.hurt = hit * (v / (8 * UNIT)) ** 2 * Math.exp(0.6 * (p.rng() + p.rng() + p.rng() - 1.5))
   r.trick = null
   r.fell = true
   r.conf = clamp(r.conf - 0.2 * hit, 0.05, 1)
@@ -389,6 +451,27 @@ function ride(p: Park, r: Rider, dt: number, voices: Voices) {
   const reach = Math.min(lipAhead, seek(t, r.q + r.v * 0.25 + 1, r.k) + 1)
   let want = safe
   for (let k = r.k + 1; k <= reach; k++) want = Math.min(want, plan[k])
+  // Past someone hurt on the line, or anyone on foot on it, at a walk.
+  for (const o of p.riders) {
+    const at =
+      o.state === 'hurt'
+        ? mainQ(o)
+        : o.state === 'limp' || o.state === 'carried'
+          ? footQ(o.walk)
+          : null
+    if (at === null) continue
+    if (at - me > -15 && at - me < 90) want = Math.min(want, PASS)
+    if (o.state === 'hurt' && at > me && at - me < 100 && r.asked !== o.id) {
+      r.asked = o.id
+      say(voices, `rider${r.id}`, '?')
+    }
+  }
+  for (const m of p.medics) {
+    const at = footQ(m.walk)
+    if (at !== null && at - me > -15 && at - me < 90) want = Math.min(want, PASS)
+  }
+  for (const b of p.herd.beasts)
+    if (b.line !== null && b.line - me > -15 && b.line - me < 90) want = Math.min(want, PASS)
   const gr = t.grade[Math.min(t.n - 1, r.k + 1)]
   const cos = 1 / Math.hypot(1, gr)
   const pull = -G * gr * cos - CRR * G * cos - DRAG * r.v * r.v
@@ -405,13 +488,15 @@ function ride(p: Park, r: Rider, dt: number, voices: Voices) {
     say(voices, `rider${r.id}`, '?')
   }
   // In a turn the tyres hold what the dirt and the banking give them, braking included. Past it
-  // they slide: a foot down if it is not far past, otherwise they are off.
-  const limit = G * (p.env.grip + BANK * t.bank[r.k])
-  const demand = Math.hypot(lat, Math.min(0, control))
-  if (demand > limit * 1.04 && r.v > 20) {
-    r.grip += (p.env.grip - r.grip) * 0.6
+  // they slide, and the further past and the less skilled they are, the likelier it goes from under
+  // them; otherwise a foot down saves it.
+  const dirt = gripAt(p, t, r.k)
+  const over = Math.hypot(lat, Math.min(0, control)) / (G * (dirt + BANK * t.bank[r.k]))
+  if (over > 1.04 && r.v > 20) {
+    r.grip += (dirt - r.grip) * 0.6
     r.conf = clamp(r.conf - 0.06, 0.05, 1)
-    if (demand > limit * 1.18) return crash(p, r, demand / limit, r.v, voices)
+    if (over > 1.18 || p.rng() < (over - 1.04) * LOSE * (1.2 - r.skill))
+      return crash(p, r, over, r.v, voices)
     r.v *= 0.82
     r.dab = 0.5
   }
@@ -531,8 +616,9 @@ function down(p: Park, r: Rider, dt: number) {
     r.q = Math.min(t.length, r.q + r.v * dt)
     r.k = seek(t, r.q, r.k)
     if (r.t > 1.2 + 1.6 * r.hurt) {
-      r.state = 'up'
+      r.state = r.hurt > HURT ? 'hurt' : 'up'
       r.t = 0
+      r.v = 0
     }
   } else if (r.t > 1.4) {
     r.state = 'ride'
@@ -548,7 +634,7 @@ function next(p: Park, r: Rider) {
   const done =
     r.runs >= r.laps ||
     p.riders.filter(o => !o.gone && o.state !== 'leave').length > p.env.crowd + 1 ||
-    (r.fell && r.hurt > 1.5 && p.rng() < 0.5) ||
+    (r.fell && r.hurt > 1 && p.rng() < 0.5) ||
     p.env.crowd === 0
   if (done) {
     r.state = 'leave'
@@ -562,6 +648,245 @@ function next(p: Park, r: Rider) {
     r.s = 0
   }
   r.t = 0
+}
+
+// The first-aid hut on the grass below the way in, the point on the way in above its door, and the
+// trodden path between them.
+const HUT: Pt = [138, 846]
+const POST = 117
+const DOOR: Path = (() => {
+  const at = along(PATHS.base, POST)
+  return path([
+    [HUT[0] + 14, HUT[1]],
+    [at.x, at.y],
+  ])
+})()
+// Worse than this and they stay down for the medic; worse than that and they go out on a board.
+const HURT = 1.5
+const BOARD = 2
+// On foot: a jog along the flat, a climb up the line, and down it beside someone hurt or carrying
+// them on the board. Riders go by anyone on foot on the line at a walk.
+const JOG = 2.5 * UNIT
+const CLIMB = 1.3 * UNIT
+const LIMP = 0.8 * UNIT
+const CARRY = 0.7 * UNIT
+const PASS = 2.5 * UNIT
+
+// A way on foot: legs along the paths or up and down a line, each from one distance to another at
+// its own pace, and how far along the current one the walker has got.
+type Leg = { on: Path | Track; from: number; to: number; v: number }
+type Walk = { legs: Leg[]; n: number; u: number }
+const isTrack = (on: Path | Track): on is Track => 'n' in on
+
+export type Medic = {
+  // In the hut, up the line to someone down, knelt by them, walking them down, carrying them out
+  // on the board, gone with them to the car park, back from it, up for the bike left on the line,
+  // and down with it.
+  state: 'post' | 'go' | 'tend' | 'lead' | 'carry' | 'away' | 'back' | 'fetch' | 'wheel'
+  t: number
+  until: number
+  walk: Walk | null
+  who: Rider | null
+  board: boolean
+}
+const medic = (): Medic => ({ state: 'post', t: 0, until: 0, walk: null, who: null, board: false })
+
+// On a line at `q`: the point, and which way the line runs there.
+function onTrack(t: Track, q: number) {
+  const k = Math.min(t.n - 2, seek(t, q, 0))
+  const u = clamp((q - t.q[k]) / (t.q[k + 1] - t.q[k]), 0, 1)
+  return {
+    x: t.x[k] + (t.x[k + 1] - t.x[k]) * u,
+    y: -surface(t, q, k),
+    face: Math.sign(t.x[Math.min(t.n - 1, k + 3)] - t.x[Math.max(0, k - 3)]) || 1,
+  }
+}
+
+function walkAt(w: Walk) {
+  const l = w.legs[w.n]
+  const dir = Math.sign(l.to - l.from) || 1
+  const s = l.from + dir * w.u
+  if (isTrack(l.on)) {
+    const at = onTrack(l.on, s)
+    return { x: at.x, y: at.y, face: at.face * dir }
+  }
+  const at = along(l.on, s)
+  return { x: at.x, y: at.y, face: at.dir * dir }
+}
+
+// Where along the main line someone on foot on a line is, or null when they are off it.
+function footQ(w: Walk | null) {
+  const l = w?.legs[w.n]
+  if (!w || !l || !isTrack(l.on)) return null
+  const t = l.on
+  const q = l.from + (Math.sign(l.to - l.from) || 1) * w.u
+  const k = Math.min(t.n - 2, seek(t, q, 0))
+  return t.main[k] + ((q - t.q[k]) * (t.main[k + 1] - t.main[k])) / (t.q[k + 1] - t.q[k])
+}
+
+// On along a walk; true once at its end.
+function stepWalk(w: Walk, dt: number) {
+  let l = w.legs[w.n]
+  w.u += l.v * dt
+  while (w.u >= Math.abs(l.to - l.from)) {
+    if (w.n === w.legs.length - 1) {
+      w.u = Math.abs(l.to - l.from)
+      return true
+    }
+    w.u = (w.u - Math.abs(l.to - l.from)) * (w.legs[w.n + 1].v / l.v)
+    l = w.legs[++w.n]
+  }
+  return false
+}
+
+// From the hut along the way in, up the run-out, and up the line to just below someone down on it.
+const upTo = (line: 0 | 1, q: number, climb: number): Walk => {
+  const { base, runout } = PATHS
+  const t = TRACKS[line]
+  return {
+    legs: [
+      { on: DOOR, from: 0, to: DOOR.length, v: JOG },
+      { on: base, from: POST, to: base.length, v: JOG },
+      { on: runout, from: runout.length, to: 0, v: JOG },
+      { on: t, from: t.length, to: Math.min(t.length, q + 6), v: climb },
+    ],
+    n: 0,
+    u: 0,
+  }
+}
+// Down the line from there and along the run-out, then back along the way in to the hut's door, or
+// on out past it to the car park.
+const downFrom = (line: 0 | 1, q: number, v: number, hut: boolean): Walk => {
+  const { base, runout } = PATHS
+  const t = TRACKS[line]
+  const legs: Leg[] = [
+    { on: t, from: q, to: t.length, v },
+    { on: runout, from: 0, to: runout.length, v: v * 1.4 },
+    { on: base, from: base.length, to: hut ? POST : -30, v: v * 1.4 },
+  ]
+  if (hut) legs.push({ on: DOOR, from: DOOR.length, to: 0, v: v * 1.4 })
+  return { legs, n: 0, u: 0 }
+}
+const OUT = (v: number): Walk => ({
+  legs: [
+    { on: DOOR, from: 0, to: DOOR.length, v },
+    { on: PATHS.base, from: POST, to: -30, v },
+  ],
+  n: 0,
+  u: 0,
+})
+
+// The line stays shut while anyone hurt is still on it.
+const held = (p: Park) =>
+  p.riders.some(
+    o =>
+      o.state === 'hurt' ||
+      ((o.state === 'limp' || o.state === 'carried') && footQ(o.walk) !== null),
+  )
+
+// Someone down for good gets the first medic out of the hut; on a board call a second follows with
+// the board. They walk the hurt down to sit by the hut, or with the board carry them out to the car
+// park, and later one goes back up for the bike. Out of hours there is nobody in the hut, and the
+// hurt get up in their own time and walk themselves down and home.
+function stepMedics(p: Park, dt: number, voices: Voices) {
+  // A call already answered gets its board whatever the hour.
+  for (const r of p.riders) {
+    if (r.state !== 'hurt') continue
+    const on = p.medics.filter(m => m.who === r)
+    const second = r.hurt > BOARD && on.length === 1 && on[0].state === 'tend'
+    const free = p.medics.find(m => m.state === 'post')
+    if (!free || (on.length ? !second : !p.env.open)) continue
+    Object.assign(free, { state: 'go', t: 0, who: r, board: second })
+    free.walk = upTo(r.line, r.q, second ? CLIMB * 0.75 : CLIMB)
+  }
+  p.medics.forEach((m, n) => {
+    m.t += dt
+    const r = m.who
+    switch (m.state) {
+      case 'go':
+        if (!stepWalk(m.walk!, dt)) break
+        m.state = 'tend'
+        m.t = 0
+        m.until = 40 + 60 * (r!.hurt - HURT) + 30 * p.rng()
+        if (!m.board) say(voices, `rider-m${n}`, '?')
+        break
+      case 'tend': {
+        if (!r) break
+        const both = p.medics.filter(o => o.who === r && o.state === 'tend')
+        if (r.hurt > BOARD) {
+          // Strapped to the board once the second medic has been there a while.
+          if (both.length < 2 || Math.min(...both.map(o => o.t)) < 15) break
+          r.state = 'carried'
+          r.t = 0
+          r.walk = downFrom(r.line, r.q, CARRY, false)
+          p.wrecks.push({ line: r.line, q: r.q, frame: r.kit[2] })
+          for (const o of both) Object.assign(o, { state: 'carry', t: 0, walk: null })
+        } else if (m.t > m.until) {
+          // Up on their feet, and the folk at the top clap.
+          r.state = 'limp'
+          r.t = 0
+          r.walk = downFrom(r.line, r.q, LIMP, true)
+          m.state = 'lead'
+          m.walk = downFrom(r.line, r.q, LIMP, true)
+          m.walk.u = -8
+          if (p.rng() < 0.7) say(voices, p.rng() < 0.5 ? 'folk0' : 'folk1', '!')
+        }
+        break
+      }
+      case 'lead':
+        if (stepWalk(m.walk!, dt)) Object.assign(m, { state: 'post', walk: null, who: null })
+        break
+      case 'away':
+        if (m.t > 25) {
+          m.state = 'back'
+          m.walk = {
+            legs: [
+              { on: PATHS.base, from: 0, to: POST, v: 1.5 * UNIT },
+              { on: DOOR, from: DOOR.length, to: 0, v: 1.5 * UNIT },
+            ],
+            n: 0,
+            u: 0,
+          }
+        }
+        break
+      case 'back': {
+        if (!stepWalk(m.walk!, dt)) break
+        const wreck = p.wrecks[0]
+        if (wreck && !p.medics.some(o => o.state === 'fetch' || o.state === 'wheel')) {
+          m.state = 'fetch'
+          m.walk = upTo(wreck.line, wreck.q - 6, CLIMB)
+        } else Object.assign(m, { state: 'post', walk: null, board: false })
+        break
+      }
+      case 'fetch': {
+        if (!stepWalk(m.walk!, dt)) break
+        const wreck = p.wrecks[0]
+        m.state = 'wheel'
+        m.walk = downFrom(wreck.line, wreck.q, 1.2 * UNIT, true)
+        break
+      }
+      case 'wheel':
+        if (!stepWalk(m.walk!, dt)) break
+        p.leaning.push({ frame: p.wrecks.shift()!.frame, t: 0 })
+        Object.assign(m, { state: 'post', walk: null })
+        break
+    }
+  })
+  for (const b of p.leaning) b.t += dt
+  p.leaning = p.leaning.filter(b => b.t < 900).slice(-2)
+}
+
+// Whom the herd takes notice of: bikes going by fast, and anyone lying hurt.
+function passers(p: Park): Passer[] {
+  const out: Passer[] = []
+  for (const r of p.riders) {
+    const fast = (r.state === 'ride' || r.state === 'air') && r.v > 3 * UNIT
+    const hurt = r.state === 'hurt'
+    if (!fast && !hurt) continue
+    const at = place(r)
+    out.push({ x: at.x, y: at.ground, fast, hurt })
+  }
+  return out
 }
 
 const toward = (from: number, to: number, step: number) =>
@@ -657,21 +982,54 @@ export function stepPark(p: Park, dt: number, voices: Voices) {
         r.s -= ROLL * 1.2 * dt
         if (r.s <= -24) r.gone = true
         break
+      case 'hurt':
+        // Nobody coming out of hours: up in their own time, and down and home.
+        if (!p.env.open && !p.medics.some(m => m.who === r) && r.t > 15 + 10 * r.hurt) {
+          r.state = 'limp'
+          r.t = 0
+          r.walk = downFrom(r.line, r.q, LIMP, false)
+        }
+        break
+      case 'limp':
+        if (!stepWalk(r.walk!, dt)) break
+        if (r.walk!.legs[r.walk!.legs.length - 1].to < 0) r.gone = true
+        else Object.assign(r, { state: 'rest', t: 0, walk: null })
+        break
+      case 'carried':
+        if (!stepWalk(r.walk!, dt)) break
+        r.gone = true
+        for (const m of p.medics)
+          if (m.who === r) Object.assign(m, { state: 'away', t: 0, who: null })
+        break
+      case 'rest':
+        // Patched up and sat a while by the hut, then off home on foot.
+        if (r.t > 40 + 10 * (r.id % 6)) Object.assign(r, { state: 'limp', t: 0, walk: OUT(WALK) })
+        break
     }
   }
   p.riders = p.riders.filter(r => !r.gone)
+  stepMedics(p, dt, voices)
+  stepHerd(
+    p.herd,
+    p.env.herd,
+    dt,
+    passers(p),
+    q => !p.riders.some(o => onCourse(o) && mainQ(o) > q - 160 && mainQ(o) < q + 10),
+  )
 
   // The starter lets the next rider go once whoever went before is well down the line and nobody
   // is down on it: a few seconds between strangers, a couple between friends, who go as a train.
   // Three beeps, and green. After hours there is no starter, and the rider just goes.
   const head = gateq[0]
   const ready = head && head.state === 'gate' && head.s >= link.length - 0.5
-  const clear = !p.riders.some(
-    o =>
-      o.state === 'down' ||
-      o.state === 'up' ||
-      (onCourse(o) && mainQ(o) < (o.party === head?.party ? 30 : 160)),
-  )
+  const clear =
+    !held(p) &&
+    !p.riders.some(
+      o =>
+        o.state === 'down' ||
+        o.state === 'up' ||
+        (onCourse(o) && mainQ(o) < (o.party === head?.party ? 30 : 160)),
+    )
   if (!ready || !clear || p.since < (head.party === p.last ? 2.2 : 5)) p.count = -1
   else if (!p.env.open) release(p, head)
   else if ((p.count = Math.max(0, p.count) + dt) >= 1.8) release(p, head)
@@ -679,10 +1037,19 @@ export function stepPark(p: Park, dt: number, voices: Voices) {
 
 // Without motion, one moment of a busy afternoon: somebody at the top of their flight over the
 // table with the back end thrown out and the photographer's flash going, someone in the gate on the
-// second beep with a friend behind, and someone halfway up the lift. After hours, locals up the
-// lift track with their head torches.
+// second beep with a friend behind, and someone halfway up the lift; on some days someone sat by the
+// first-aid hut with an arm in a sling. After hours, locals up the lift track with their head
+// torches.
 export function posePark(p: Park) {
+  // Each resize or change of theme poses it again, and the same riders come back in the same kit.
+  p.rng = mulberry(p.seed)
+  p.ids = 0
+  p.parties = 0
   p.riders = []
+  p.medics = [medic(), medic()]
+  p.wrecks = []
+  p.leaning = []
+  poseHerd(p.herd, p.env.herd)
   if (!p.env.crowd) return
   if (!p.env.open) {
     for (let n = 0; n < Math.min(2, p.env.crowd); n++) {
@@ -716,6 +1083,11 @@ export function posePark(p: Park) {
   Object.assign(friend, { state: 'gate', s: PATHS.link.length - SLOT, ticket: 2 })
   Object.assign(up, { state: 'lift', s: PATHS.lift.length * 0.55 })
   p.riders.push(air, gate, friend, up)
+  if (p.rng() < 0.4) {
+    const sore = rider(p, ++p.parties, false, 0.5, false, 4)
+    Object.assign(sore, { state: 'rest', hurt: 1.8, fell: true })
+    p.riders.push(sore)
+  }
   p.count = 0.7
   p.flash = 1
   p.cheer = 1
@@ -730,11 +1102,17 @@ export type RiderInk = {
   glow: RGB
   steel: RGB
   flash: RGB
-  // The gate's beacon: counting down, then go.
+  // The gate's beacon: counting down (and held, lit steady), then go.
   beacon: [RGB, RGB]
   jerseys: RGB[]
   helmets: RGB[]
   frames: RGB[]
+  // The medics' jerseys, their kit bag and board, and the hut's walls and cross.
+  patrol: RGB
+  kit: RGB
+  hut: RGB
+  cross: RGB
+  herd: HerdInk
 }
 
 // Where on the screen a rider is and which way they face, and, in the air, the ground under them.
@@ -762,14 +1140,17 @@ function place(r: Rider): { x: number; y: number; face: number; ground: number }
       return on(r.s, link)
     case 'runout':
       return on(r.s, runout)
+    case 'limp':
+    case 'carried': {
+      const at = walkAt(r.walk!)
+      return { ...at, ground: at.y }
+    }
+    // On the grass beside the hut's door.
+    case 'rest':
+      return { x: HUT[0] + 24, y: HUT[1], face: -1, ground: HUT[1] }
     default: {
-      const t = TRACKS[r.line]
-      const k = Math.min(t.n - 2, r.k)
-      const u = clamp((r.q - t.q[k]) / (t.q[k + 1] - t.q[k]), 0, 1)
-      const x = t.x[k] + (t.x[k + 1] - t.x[k]) * u
-      const ground = -surface(t, r.q, k)
-      const face = Math.sign(t.x[Math.min(t.n - 1, k + 3)] - t.x[Math.max(0, k - 3)]) || 1
-      return { x, y: r.state === 'air' ? -r.z : ground, face, ground }
+      const at = onTrack(TRACKS[r.line], r.q)
+      return { x: at.x, y: r.state === 'air' ? -r.z : at.y, face: at.face, ground: at.y }
     }
   }
 }
@@ -815,6 +1196,7 @@ export function paintPark(
   const sj = row(g, MAIN.y[0])
   if (p.go > 0) dot(d, g, si, sj - 6, ink.beacon[1])
   else if (p.count >= 0 && p.count % 0.6 < 0.3) dot(d, g, si, sj - 6, ink.beacon[0])
+  else if (p.env.open && held(p)) dot(d, g, si, sj - 6, ink.beacon[0])
 
   // The photographer, crouched by the table's landing through opening hours, camera up.
   if (p.env.open) {
@@ -835,8 +1217,63 @@ export function paintPark(
     }
   }
 
+  // The first-aid hut: white under a tin roof with a red cross on its side, a lamp over the door
+  // when it is dark, and bikes fetched down off the line against its far wall.
+  const hi = col(g, HUT[0])
+  const hj = row(g, HUT[1])
+  for (let dj = 1; dj <= 4; dj++)
+    for (let di = -2; di <= 2; di++) {
+      const cross = (di === 0 && dj >= 2) || (dj === 3 && Math.abs(di) === 1)
+      dot(d, g, hi + di, hj - dj, cross ? ink.cross : ink.hut)
+    }
+  for (let di = -3; di <= 3; di++) dot(d, g, hi + di, hj - 5, ink.steel)
+  if (dark && p.env.open) lamp(hi + 3, hj - 4)
+  p.leaning.forEach((b, n) => {
+    dot(d, g, hi - 3 - n, hj - 1, ink.tyre)
+    dot(d, g, hi - 3 - n, hj - 2, ink.frames[b.frame % ink.frames.length])
+    dot(d, g, hi - 3 - n, hj - 3, ink.tyre)
+  })
+  // Bikes left lying on the line after a board call. The first stays on the list until it reaches
+  // the hut, so skip it while a medic wheels it down.
+  const wheeling = p.medics.some(m => m.state === 'wheel')
+  for (const w of p.wrecks) {
+    if (wheeling && w === p.wrecks[0]) continue
+    const at = onTrack(TRACKS[w.line], w.q)
+    const [wi, wj] = [col(g, at.x), row(g, at.y)]
+    dot(d, g, wi - 1, wj - 1, ink.tyre)
+    dot(d, g, wi, wj - 1, ink.frames[w.frame % ink.frames.length])
+    dot(d, g, wi + 1, wj - 1, ink.tyre)
+  }
+
+  // A medic: shorts, the patrol jersey with the kit bag on its back, and a dark helmet; knelt, the
+  // jersey sits on the knee and a hand reaches out.
+  const standing = (i: number, j: number, f: number, walking: boolean) => {
+    if (walking) {
+      dot(d, g, i - 1, j - 1, ink.shorts)
+      dot(d, g, i + 1, j - 1, ink.shorts)
+    } else dot(d, g, i, j - 1, ink.shorts)
+    dot(d, g, i, j - 2, ink.patrol)
+    dot(d, g, i, j - 3, ink.tyre)
+    dot(d, g, i - f, j - 2, ink.kit)
+  }
+  const kneeling = (i: number, j: number, f: number) => {
+    dot(d, g, i, j - 1, ink.shorts)
+    dot(d, g, i, j - 2, ink.patrol)
+    dot(d, g, i, j - 3, ink.tyre)
+    dot(d, g, i + f, j - 2, ink.skin)
+  }
+  const medicHead = (m: Medic, at: Pt) => {
+    heads[`rider-m${p.medics.indexOf(m)}`] = at
+  }
+
+  // The herd and the riders, nearer over farther.
+  const herd = p.herd.beasts
+  const beasts = [...herd].sort((a, b) => a.y - b.y)
+  let nb = 0
   const order = p.riders.map(r => ({ r, at: place(r) })).sort((a, b) => a.at.ground - b.at.ground)
   for (const { r, at } of order) {
+    for (; nb < beasts.length && beasts[nb].y <= at.ground; nb++)
+      paintBeast(d, g, ink.herd, beasts[nb], p.time, herd.indexOf(beasts[nb]))
     const jersey = ink.jerseys[r.kit[0] % ink.jerseys.length]
     const helmet = ink.helmets[r.kit[1] % ink.helmets.length]
     const frame = ink.frames[r.kit[2] % ink.frames.length]
@@ -845,7 +1282,7 @@ export function paintPark(
     const j = row(g, at.y)
     const tall = r.kid ? 3 : 4
     let head: [number, number] = [i, j - tall]
-    const moving = r.state !== 'gate' && r.state !== 'liftq' && r.state !== 'down'
+    const moving = !['gate', 'liftq', 'down', 'hurt', 'carried', 'rest'].includes(r.state)
     switch (r.state) {
       case 'ride':
       case 'air':
@@ -906,13 +1343,15 @@ export function paintPark(
         }
         break
       }
-      case 'down': {
+      case 'down':
+      case 'hurt': {
         // The bike on its side where it stopped, the rider tumbling past it and then lying there.
         dot(d, g, i - 1, j - 1, ink.tyre)
         dot(d, g, i, j - 1, frame)
         dot(d, g, i + 1, j - 1, ink.tyre)
         const r0 = i + 2 * f
-        if (r.t < 0.35 && beat & 1) {
+        const fresh = r.state === 'down'
+        if (fresh && r.t < 0.35 && beat & 1) {
           dot(d, g, r0, j - 1, helmet)
           dot(d, g, r0, j - 2, jersey)
           dot(d, g, r0, j - 3, ink.shorts)
@@ -923,11 +1362,64 @@ export function paintPark(
           dot(d, g, r0 + 2 * f, j - 1, helmet)
           head = [r0 + 2 * f, j - 2]
         }
-        if (r.t < 0.6) {
+        if (fresh && r.t < 0.6) {
           plot(i - f, j - 2, ink.dust, 0.9)
           plot(i + 3 * f, j - 3, ink.dust, 0.6)
           plot(i, j - 3, ink.dust, 0.7)
         }
+        // A medic knelt at their head with the bag beside; on a board call the second knelt across
+        // the bike with the board slid under them.
+        for (const m of p.medics) {
+          if (m.who !== r || m.state !== 'tend') continue
+          if (m.board) {
+            kneeling(i - 2 * f, j, f)
+            for (let di = 2; di <= 4; di++) dot(d, g, i + di * f, j, ink.kit)
+            medicHead(m, [i - 2 * f, j - 3])
+          } else {
+            kneeling(i + 5 * f, j, -f)
+            dot(d, g, i + 6 * f, j - 1, ink.kit)
+            medicHead(m, [i + 5 * f, j - 3])
+          }
+        }
+        break
+      }
+      case 'carried': {
+        // Feet first down the hill on the board, a medic at either end.
+        for (let di = -2; di <= 2; di++) dot(d, g, i + di, j - 2, ink.kit)
+        dot(d, g, i + f, j - 3, ink.shorts)
+        dot(d, g, i, j - 3, jersey)
+        dot(d, g, i - f, j - 3, helmet)
+        head = [i - f, j - 3]
+        const step = Math.floor(p.time * 2.2) % 2
+        p.medics
+          .filter(m => m.state === 'carry')
+          .forEach((m, n) => {
+            const e = n ? -1 : 1
+            const at: Pt = [i + 3 * e * f, j]
+            if ((step + n) % 2) {
+              dot(d, g, at[0] - 1, j - 1, ink.shorts)
+              dot(d, g, at[0] + 1, j - 1, ink.shorts)
+            } else dot(d, g, at[0], j - 1, ink.shorts)
+            dot(d, g, at[0], j - 2, ink.patrol)
+            dot(d, g, at[0], j - 3, ink.tyre)
+            if (dark) lamp(at[0], j - 3)
+            medicHead(m, [at[0], j - 3])
+          })
+        break
+      }
+      case 'rest': {
+        // Sat on the grass by the hut with the helmet off beside them, an arm in a white sling, and
+        // the bike laid down.
+        dot(d, g, i, j - 1, ink.shorts)
+        dot(d, g, i + 1, j - 1, ink.shorts)
+        dot(d, g, i, j - 2, jersey)
+        dot(d, g, i + 1, j - 2, ink.hut)
+        dot(d, g, i, j - 3, ink.skin)
+        dot(d, g, i - 1, j - 1, helmet)
+        dot(d, g, i + 3, j - 1, ink.tyre)
+        dot(d, g, i + 4, j - 1, frame)
+        dot(d, g, i + 5, j - 1, ink.tyre)
+        head = [i, j - 3]
         break
       }
       case 'lift': {
@@ -957,7 +1449,8 @@ export function paintPark(
         // On foot beside the bike, a hand on the bars, walking or standing: arriving, queueing,
         // pushing up the lift track, or getting up after a fall.
         const walking =
-          (r.state === 'arrive' || r.state === 'hike') && Math.floor(p.time * 2.5 + r.id) % 2
+          (r.state === 'arrive' || r.state === 'hike' || r.state === 'limp') &&
+          Math.floor(p.time * (r.state === 'limp' ? 1.5 : 2.5) + r.id) % 2
         if (walking) {
           dot(d, g, i - 1, j - 1, ink.shorts)
           dot(d, g, i + 1, j - 1, ink.shorts)
@@ -974,6 +1467,33 @@ export function paintPark(
     }
     if (dark && moving) lamp(head[0], head[1])
     heads[`rider${r.id}`] = head
+  }
+  for (; nb < beasts.length; nb++)
+    paintBeast(d, g, ink.herd, beasts[nb], p.time, herd.indexOf(beasts[nb]))
+
+  // The medics on their feet: one at the hut's door through opening hours, and whoever is out on a
+  // call, the second up the line with the board on their back, the last down it wheeling the bike.
+  const door = p.medics.find(m => m.state === 'post')
+  for (const m of p.medics) {
+    const out = m.walk && ['go', 'lead', 'back', 'fetch', 'wheel'].includes(m.state)
+    if (!out && !(m === door && p.env.open)) continue
+    const at = out ? walkAt(m.walk!) : { x: HUT[0] + 14, y: HUT[1], face: 1 }
+    const i = col(g, at.x)
+    const j = row(g, at.y)
+    const f = at.face
+    standing(i, j, f, !!out && Math.floor(p.time * 2.5 + p.medics.indexOf(m)) % 2 === 1)
+    if (m.state === 'go' && m.board)
+      for (let dj = 1; dj <= 3; dj++) dot(d, g, i - f, j - dj, ink.kit)
+    const wreck = p.wrecks[0]
+    if (m.state === 'wheel' && wreck) {
+      dot(d, g, i + f, j - 2, ink.skin)
+      dot(d, g, i + f, j - 1, ink.tyre)
+      dot(d, g, i + 2 * f, j - 1, ink.frames[wreck.frame % ink.frames.length])
+      dot(d, g, i + 3 * f, j - 1, ink.tyre)
+      dot(d, g, i + 2 * f, j - 2, ink.tyre)
+    }
+    if (dark && out) lamp(i, j - 3)
+    medicHead(m, [i, j - 3])
   }
 }
 

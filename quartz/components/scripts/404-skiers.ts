@@ -9,7 +9,7 @@
 // at speed leaves the skis up the slope for their owner to climb back to. Through the day the runs
 // fill with tracks, and after hours a groomer with its lights on combs the blue run flat again.
 
-import { type Almanac, type Sky, moonlit } from './404-almanac'
+import { type Almanac, type Sky, moonlit, winter as snowSeason } from './404-almanac'
 import { type Voices, say } from './404-crew'
 import { type Grid, type Pt, type RGB, BAYER, col, dot, mulberry, row } from './404-pixel'
 
@@ -45,6 +45,23 @@ const WAY: Pt[] = [
 ]
 // The groomer's spot by day, beside the lift's foot.
 const SHED: Pt = [1306, 452]
+// The start zones under the crest that the patrol shoots on a powder morning, one left of the head
+// station above the lift line and two right of it above the blue: where the patroller stands to
+// throw, where the charge lands, and where they wait for it behind a rib.
+const ZONES: { stand: Pt; lands: Pt; hide: Pt }[] = [
+  { stand: [1378, 309], lands: [1368, 327], hide: [1390, 297] },
+  { stand: [1438, 263], lands: [1447, 281], hide: [1424, 272] },
+  { stand: [1468, 245], lands: [1478, 263], hide: [1454, 253] },
+]
+// A hand charge: the igniter pulled, the charge thrown, and a ninety-second fuse.
+const LIGHT = 2
+const THROW = 4
+const BOOM = LIGHT + 90
+// A start zone pitches at about 38°, so a metre down it is 0.74 scene units down the screen. A slide
+// gets away at 4 m/s² and runs on at 12 m/s until it runs out of slope.
+const DOWN = M * Math.sin((38 * Math.PI) / 180)
+const slid = (t: number, length: number) => Math.min(length, t < 3 ? 2 * t * t : 18 + 12 * (t - 3))
+const stopped = (length: number) => (length <= 18 ? Math.sqrt(length / 2) : 3 + (length - 18) / 12)
 
 type Run = {
   n: number
@@ -153,7 +170,7 @@ const cell = (run: Run, s: number, w: number, k: number) => {
 const GATES = Array.from({ length: 8 }, (_, n) => ({ s: 22 + 26 * n, w: n % 2 ? 4.5 : -4.5 }))
 const FINISH = GATES[GATES.length - 1].s + 8
 
-type Role = 'free' | 'teach' | 'pupil' | 'racer' | 'coach' | 'tour'
+type Role = 'free' | 'teach' | 'pupil' | 'racer' | 'coach' | 'tour' | 'patrol'
 type Mode = 'carve' | 'skid' | 'plough' | 'leaf' | 'race'
 type State =
   | 'arrive'
@@ -171,6 +188,13 @@ type State =
   | 'leave'
   | 'coach'
   | 'skin'
+  | 'hurt'
+  | 'rescue'
+  | 'tend'
+  | 'sled'
+  | 'haul'
+  | 'route'
+  | 'charge'
 
 export type Skier = {
   id: number
@@ -221,6 +245,9 @@ export type Skier = {
   lead: Skier | null
   slot: number
   trail: Float32Array
+  // A patroller's casualty, or on a powder morning the start zone they are shooting (-1 otherwise).
+  patient: Skier | null
+  shot: number
   gone: boolean
 }
 
@@ -240,9 +267,16 @@ export type HillEnv = {
   since: number
   // Out of hours, how many locals are skinning up to ride it down.
   tour: number
+  // A powder morning before the chair opens: the patrol is shooting the start zones.
+  control: boolean
 }
 
+// A charge gone off: where, how long ago, and how far the slope it released ran, in metres (0 when
+// the slope held).
+type Blast = { x: number; y: number; t: number; slide: number }
+
 export type Hill = {
+  seed: number
   rng: () => number
   env: HillEnv
   skiers: Skier[]
@@ -260,6 +294,7 @@ export type Hill = {
   cat: { s: number; lane: number; dir: number }
   flick: Float32Array
   cheer: number
+  blasts: Blast[]
 }
 
 // The season and the hour: through the winter the chair runs from nine, solar time, and on under
@@ -271,10 +306,17 @@ export type Hill = {
 // small hours a die-hard, or two under a full moon. The groomer goes out after dark and again
 // before dawn.
 export function hillEnv(al: Almanac, sky: Sky, weekend: boolean): HillEnv {
-  const winter = Math.cos((2 * Math.PI * (al.winterDay - 40)) / 365.24) > -0.2
+  const winter = snowSeason(al)
   const [from, to] = winter ? [9, 21] : [7.5, 12.5]
-  const hours = al.hour >= from && al.hour < to
+  // A powder morning: a hand's depth of new snow loads the slopes under the crest, and from first
+  // light the patrol shoots their start zones with hand charges. The chair opens half an hour late,
+  // or up to an hour and a half after a big fall, with the line for first chair already waiting.
+  const powder = winter && sky.snow >= 10
+  const opens = from + (powder ? Math.min(1.5, 0.5 + (sky.snow - 10) / 30) : 0)
+  const hours = al.hour >= opens && al.hour < to
   const open = hours && !sky.storm && sky.wind < 0.6
+  const control = powder && al.sun.alt > -6 && al.hour < opens && !sky.storm && sky.wind < 0.75
+  const line = control && al.hour >= from - 0.75
   let crowd = winter ? (weekend ? 12 : 6) : 3
   if (winter && al.hour >= 17) crowd *= 0.6
   if (sky.fog) crowd *= 0.5
@@ -291,7 +333,7 @@ export function hillEnv(al: Almanac, sky: Sky, weekend: boolean): HillEnv {
           : sky.temp < -15
             ? 0.07
             : 0.05
-  const groomed = al.hour >= to + 2.5 || al.hour < from
+  const groomed = al.hour >= to + 2.5 || al.hour < opens
   const uphill =
     al.hour >= to && al.hour < 22.5
       ? weekend
@@ -303,17 +345,19 @@ export function hillEnv(al: Almanac, sky: Sky, weekend: boolean): HillEnv {
   return {
     open,
     hold: hours && !sky.storm && !open,
-    crowd: open ? Math.max(1, Math.round(crowd)) : 0,
+    crowd: open || line ? Math.max(1, Math.round(crowd)) : 0,
     glide,
     camp: open && !winter && !weekend,
     school: open && winter && al.hour < 13,
     groom:
       !hours &&
+      !control &&
       ((al.hour >= Math.max(to + 0.5, 17) && al.hour < 23.5) ||
         (al.hour >= 4 && al.hour < from - 0.5)),
     fresh: sky.fall === 'snow' ? 0.3 + 0.7 * sky.heavy : 0,
-    since: hours ? al.hour - from : groomed ? 0 : to - from,
-    tour: !hours && !sky.storm && sky.fall !== 'rain' && sky.wind < 0.75 ? uphill : 0,
+    since: hours ? al.hour - opens : groomed ? 0 : to - opens,
+    tour: !hours && !control && !sky.storm && sky.fall !== 'rain' && sky.wind < 0.75 ? uphill : 0,
+    control,
   }
 }
 
@@ -322,6 +366,7 @@ export function makeHill(seed: number, env: HillEnv): Hill {
   // Nobody grooms the lift line, so it is always skied out.
   lines[1].fill(6)
   return {
+    seed: seed * 7 + 3,
     rng: mulberry(seed * 7 + 3),
     env,
     skiers: [],
@@ -338,6 +383,7 @@ export function makeHill(seed: number, env: HillEnv): Hill {
     cat: { s: 0, lane: 0, dir: -1 },
     flick: new Float32Array(GATES.length),
     cheer: 0,
+    blasts: [],
   }
 }
 
@@ -406,6 +452,8 @@ function skier(h: Hill, party: number, role: Role, board: boolean, kid: boolean,
     lead: null,
     slot: 0,
     trail: new Float32Array(0),
+    patient: null,
+    shot: -1,
     gone: false,
   }
   return one
@@ -508,10 +556,17 @@ function skin(o: Skier) {
 
 // The crowd the day brings, apart from the camp and the uphillers, who come on their own terms.
 const free = (o: Skier) =>
-  o.state !== 'leave' && o.role !== 'racer' && o.role !== 'coach' && o.role !== 'tour'
+  o.state !== 'leave' && (o.role === 'free' || o.role === 'teach' || o.role === 'pupil')
 
 const onRun = (o: Skier) =>
-  o.state === 'ski' || o.state === 'down' || o.state === 'up' || o.state === 'skin'
+  o.state === 'ski' ||
+  o.state === 'down' ||
+  o.state === 'up' ||
+  o.state === 'skin' ||
+  o.state === 'hurt' ||
+  o.state === 'rescue' ||
+  o.state === 'tend' ||
+  o.state === 'sled'
 const byTicket = (a: Skier, b: Skier) => a.ticket - b.ticket
 
 function mark(h: Hill, o: Skier, run: Run) {
@@ -524,13 +579,15 @@ function mark(h: Hill, o: Skier, run: Run) {
 }
 
 function fall(h: Hill, o: Skier, voices: Voices) {
+  // A bad one, likelier the faster it was, keeps them down for the patrol: `hurt` above 1.
+  const bad = o.v > 6 && h.rng() < 0.08 + 0.12 * clamp((o.v - 6) / 8, 0, 1)
   o.state = 'down'
   o.t = 0
-  o.hurt = h.rng()
+  o.hurt = bad ? 1 + h.rng() : h.rng()
   o.conf = clamp(o.conf - 0.2, 0.05, 1)
   o.pace *= 0.85
   // Off the skis at speed, the skis and poles stay where it happened.
-  if (!o.board && o.v > 7 && h.rng() < 0.6) {
+  if (!o.board && !bad && o.v > 7 && h.rng() < 0.6) {
     o.gear = o.s
     o.gearW = o.w
   }
@@ -542,7 +599,8 @@ function fall(h: Hill, o: Skier, voices: Voices) {
       if (!near || p.s > near.s) near = p
   if (near && near.asked !== o.id) {
     near.asked = o.id
-    near.stop = 6
+    // After a bad one they stay with them until the patrol comes.
+    near.stop = bad ? 600 : 6
   }
 }
 
@@ -711,9 +769,10 @@ function tumble(o: Skier, dt: number) {
     const a = run.pitch[o.k]
     o.v = Math.max(0, o.v - Math.max(1.5, SLIDE * G * Math.cos(a) - G * Math.sin(a)) * dt)
     o.s = Math.min(run.length - 7, o.s + o.v * dt)
-    if (o.t > 1.5 + 2.5 * o.hurt) {
-      o.state = 'up'
+    if (o.t > 1.5 + 2.5 * Math.min(1, o.hurt)) {
+      o.state = o.hurt > 1 ? 'hurt' : 'up'
       o.t = 0
+      if (o.hurt > 1) o.v = 0
     }
   } else if (o.state === 'up' && o.t > (o.board ? 3 : 2)) {
     o.state = o.gear >= 0 ? 'collect' : 'ski'
@@ -729,6 +788,95 @@ function tumble(o: Skier, dt: number) {
       o.state = 'ski'
       o.v = 0
       o.psi = o.dir * 1.2
+    }
+  }
+}
+
+// The patrol: called by whoever stopped with a casualty, or after half a minute by someone who saw it
+// from the chair, a patroller skis down from the hut by the head station with a toboggan behind,
+// spends a while with them, and takes them down to the shed at the foot in the toboggan.
+// A powder morning's round: at first light a patroller up the chair with a pack of hand charges,
+// before anyone else; looked in on later, somewhere along the crest already.
+function control(h: Hill) {
+  const p = skier(h, ++h.parties, 'patrol', false, false, 0.95)
+  if (h.time > 1)
+    Object.assign(p, { state: 'chair', chair: Math.floor(h.lift / GAP) * GAP, seat: 0, shot: 0 })
+  else {
+    const shot = Math.floor(h.rng() * ZONES.length)
+    const t = h.rng() * (BOOM + 15)
+    const [x, y] = t < THROW ? ZONES[shot].stand : ZONES[shot].hide
+    Object.assign(p, { state: 'charge', shot, t, x, y })
+  }
+  h.skiers.push(p)
+}
+// The round done, or the chair open: back to the top of the blue and down it, first tracks.
+const descend = (o: Skier) => {
+  o.state = 'top'
+  o.run = 0
+  o.path = [spot(RUNS[0], 0, 0)]
+  o.t = 0
+}
+
+function patrol(h: Hill, o: Skier) {
+  const p = skier(h, ++h.parties, 'patrol', false, false, 0.95)
+  Object.assign(p, { state: 'rescue', patient: o, run: o.run, s: 0, k: 0, w: 0, v: 0 })
+  h.skiers.push(p)
+}
+
+function rescue(h: Hill, o: Skier, dt: number, voices: Voices) {
+  const c = o.patient
+  const run = RUNS[o.run]
+  o.k = seek(run, o.s, o.k)
+  if (!c) return
+  if (o.state === 'rescue') {
+    // Straight down to them, as fast as the empty toboggan behind lets them: about 20 km/h.
+    o.v = Math.min(5.5, o.v + 2 * dt)
+    o.s += o.v * dt
+    o.w += clamp(c.w - Math.sign(c.w || 1) * 1.5 - o.w, -1.5 * dt, 1.5 * dt)
+    mark(h, o, run)
+    if (o.s >= c.s - 3) {
+      o.state = 'tend'
+      o.t = 0
+      o.v = 0
+      say(voices, `ski${o.id}`, '?')
+      // Whoever stayed with them goes on.
+      for (const p of h.skiers) if (Math.abs(p.asked) === c.id) p.stop = Math.min(p.stop, 2)
+    }
+  } else if (o.state === 'tend') {
+    if (o.t > 45 + 30 * (c.hurt - 1)) {
+      // Into the handles, below the toboggan.
+      o.state = 'sled'
+      c.state = 'sled'
+      o.s = c.s + 2.5
+      o.w = c.w
+      o.t = 0
+    }
+  } else if (o.state === 'sled') {
+    o.v = Math.min(3, o.v + dt)
+    o.s = Math.min(run.length - 4, o.s + o.v * dt)
+    c.s = o.s - 2.5
+    c.w = o.w
+    mark(h, o, run)
+    if (o.s >= run.length - 4) {
+      o.state = 'haul'
+      c.state = 'haul'
+      ;[o.x, o.y] = spot(run, o.s, o.w)
+      o.path = [[1322, 452], SHED]
+    }
+  } else if (o.state === 'haul') {
+    const ahead = o.path[0]?.[0] ?? o.x
+    const there = walk(o, dt * 0.6)
+    // The toboggan trails them.
+    c.x = o.x + (ahead < o.x ? 3 : -3)
+    c.y = o.y
+    if (there) {
+      c.gone = true
+      o.patient = null
+      // Back up on the chair to the hut, or into the shed when it has stopped.
+      if (h.env.open) {
+        o.state = 'walk'
+        o.path = [QUEUE(h.skiers.filter(p => p.state === 'queue').length)]
+      } else o.gone = true
     }
   }
 }
@@ -768,6 +916,14 @@ function finish(h: Hill, o: Skier) {
   const [x, y] = spot(RUNS[o.run], RUNS[o.run].length - 3, o.w)
   o.x = x
   o.y = y
+  // The patrol rides straight back up while the zones still want shooting, and goes in once the
+  // chair opens.
+  if (o.shot >= 0) {
+    o.state = h.env.control ? 'walk' : 'leave'
+    o.path = h.env.control ? [LIFT_FOOT] : [[1322, 452], SHED]
+    o.t = 0
+    return
+  }
   const home =
     o.role === 'racer'
       ? !h.env.camp
@@ -800,6 +956,7 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
   h.loaded = slot
 
   if (env.camp && !h.skiers.some(o => o.role === 'coach')) camp(h)
+  if (env.control && !h.skiers.some(o => o.shot >= 0)) control(h)
   const live = h.skiers.filter(free).length
   const touring = h.skiers.filter(o => o.role === 'tour' && o.state !== 'leave').length
   h.arrive = Math.max(0, h.arrive - dt)
@@ -819,6 +976,15 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
   stepCat(h, dt)
 
   const queue = h.skiers.filter(o => o.state === 'queue').sort(byTicket)
+  // A charge is seen at the foot a second before it is heard, some four hundred metres off, and the
+  // line for first chair cheers it.
+  for (const b of h.blasts) {
+    if (b.t < 1.1 && b.t + dt >= 1.1)
+      for (const o of queue) if (h.rng() < 0.25) say(voices, `ski${o.id}`, '!')
+    b.t += dt
+  }
+  // A slide's crown and bed stay on the face for the rest of the morning; smoke alone is soon gone.
+  h.blasts = h.blasts.filter(b => b.t < (b.slide ? 6 * 3600 : 40))
   const steps = Math.ceil(dt * 30)
   for (const o of h.skiers) {
     o.t += dt
@@ -856,7 +1022,13 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
       }
       case 'walk':
         if (o.path.length) walk(o, dt)
-        else {
+        else if (o.shot >= 0) {
+          // The patrol boards past the line.
+          o.state = 'chair'
+          o.chair = Math.floor(h.lift / GAP) * GAP
+          o.seat = 0
+          o.shot = 0
+        } else {
           o.state = 'queue'
           o.ticket = ++h.tickets
           queue.push(o)
@@ -866,14 +1038,25 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
         const n = queue.indexOf(o)
         o.path = [QUEUE(n)]
         walk(o, dt)
-        if (!env.open && !env.hold) {
+        if (!env.open && !env.hold && !env.control) {
           o.state = 'leave'
           o.path = WAY.slice().reverse()
         }
         break
       }
       case 'chair':
-        if (h.lift - o.chair >= LIFT_LEN) {
+        if (h.lift - o.chair >= LIFT_LEN && o.role === 'patrol') {
+          o.x = LIFT_HEAD[0]
+          o.y = LIFT_HEAD[1]
+          if (o.shot >= 0 && env.control) {
+            o.state = 'route'
+            o.path = [ZONES[o.shot].stand]
+          } else if (o.shot >= 0) descend(o)
+          else {
+            o.state = 'leave'
+            o.path = [[LIFT_HEAD[0] + 5, LIFT_HEAD[1] + 1]]
+          }
+        } else if (h.lift - o.chair >= LIFT_LEN) {
           o.state = 'top'
           o.x = LIFT_HEAD[0]
           o.y = LIFT_HEAD[1]
@@ -908,6 +1091,48 @@ export function stepHill(h: Hill, dt: number, voices: Voices) {
       case 'collect':
         tumble(o, dt)
         break
+      case 'hurt': {
+        const by = h.skiers.some(p => p.asked === -o.id && p.stop > 0 && Math.abs(p.s - o.s) < 20)
+        if ((by || o.t > 30) && !h.skiers.some(p => p.patient === o)) patrol(h, o)
+        break
+      }
+      case 'rescue':
+      case 'tend':
+        rescue(h, o, dt, voices)
+        break
+      case 'sled':
+      case 'haul':
+        if (o.role === 'patrol') rescue(h, o, dt, voices)
+        break
+      case 'route':
+        // Along under the crest on foot, skis on the shoulder; once the chair opens, down.
+        if (!env.control) descend(o)
+        else if (walk(o, dt)) {
+          o.state = 'charge'
+          o.t = 0
+        }
+        break
+      case 'charge': {
+        const z = ZONES[o.shot]
+        if (o.t >= THROW && o.t - dt < THROW) o.path = [z.hide]
+        walk(o, dt)
+        if (o.t >= BOOM && o.t - dt < BOOM)
+          h.blasts.push({
+            x: z.lands[0],
+            y: z.lands[1],
+            t: 0,
+            slide: h.rng() < 0.55 ? 20 + h.rng() * 50 : 0,
+          })
+        // A look at what it did, then the next zone, or down once the last is shot.
+        if (o.t >= BOOM + 15) {
+          if (env.control && o.shot < ZONES.length - 1) {
+            o.shot++
+            o.state = 'route'
+            o.path = [ZONES[o.shot].stand]
+          } else descend(o)
+        }
+        break
+      }
       case 'out':
         // A hockey stop.
         o.v = Math.max(0, o.v - 0.7 * G * dt)
@@ -1039,10 +1264,16 @@ export function warmHill(h: Hill) {
 
 // Without motion, one moment of a busy morning: someone carving across the blue, a boarder sat at
 // the top strapping in, a pair on a chair and one in the queue, a ski-school line halfway down;
-// on a summer weekday a racer between gates with the coach beside them; after hours the groomer
-// halfway down with its lights on, someone skinning up the edge and a splitboarder at the top.
+// on a summer weekday a racer between gates with the coach beside them; on a busy day, now and
+// then, the patrol's toboggan on its way down; after hours the groomer halfway down with its lights
+// on, someone skinning up the edge and a splitboarder at the top.
 export function poseHill(h: Hill) {
+  // Each resize or change of theme poses it again, and the same people come back in the same kit.
+  h.rng = mulberry(h.seed)
+  h.ids = 0
+  h.parties = 0
   h.skiers = []
+  h.blasts = []
   h.cat.s = RUNS[0].length * (h.env.groom ? 0.45 : 1)
   h.cat.dir = h.env.groom ? 1 : -1
   if (h.env.tour) {
@@ -1063,6 +1294,24 @@ export function poseHill(h: Hill) {
       y: spot(RUNS[0], 0, w)[1],
     })
     h.skiers.push(split)
+  }
+  if (h.env.control) {
+    // A powder morning: the patroller back behind the rib, a charge just gone off under the
+    // cornice, the slope letting go below it, last round's slide on the next face, and the line
+    // for first chair stood waiting.
+    const z = ZONES[1]
+    const p = skier(h, ++h.parties, 'patrol', false, false, 0.95)
+    Object.assign(p, { state: 'charge', shot: 1, t: BOOM + 1.5, x: z.hide[0], y: z.hide[1] })
+    h.skiers.push(p)
+    h.blasts.push({ x: z.lands[0], y: z.lands[1], t: 1.5, slide: 45 })
+    h.blasts.push({ x: ZONES[2].lands[0], y: ZONES[2].lands[1], t: 900, slide: 35 })
+    for (let n = 0; n < h.env.crowd; n++) {
+      const o = skier(h, ++h.parties, 'free', h.rng() < 0.35, false, 0.3 + 0.6 * h.rng())
+      const [qx, qy] = QUEUE(n)
+      Object.assign(o, { state: 'queue', x: qx, y: qy })
+      h.skiers.push(o)
+    }
+    return
   }
   if (!h.env.crowd) return
   const party = () => ++h.parties
@@ -1129,6 +1378,20 @@ export function poseHill(h: Hill) {
       kid.slot = m
     }
   }
+  // On a busy day, about one moment in three: the patrol bringing someone down in the toboggan.
+  if (h.env.crowd >= 6 && h.rng() < 0.35) {
+    const fallen = put(
+      skier(h, party(), 'free', false, false, 0.5),
+      0,
+      RUNS[0].length * 0.7,
+      -4,
+      0,
+      0,
+    )
+    const p = put(skier(h, party(), 'patrol', false, false, 0.95), 0, fallen.s + 2.5, -4, 0, 2.5)
+    Object.assign(fallen, { state: 'sled', hurt: 1.5 })
+    Object.assign(p, { state: 'sled', patient: fallen })
+  }
 }
 
 export type SkiInk = {
@@ -1152,7 +1415,12 @@ export type SkiInk = {
   glow: RGB
   // Floodlit snow: the night glow is a brown that reads as dirt on it.
   flood: RGB
+  // The patrol's jackets and its toboggan.
+  patrol: RGB
+  sled: RGB
   beacon: RGB
+  // A charge's smoke, dark against the snow it throws up.
+  smoke: RGB
 }
 
 // The runs, the chair and its riders, and everyone on the hill, over the far range. `onRange` says
@@ -1313,6 +1581,60 @@ export function paintHill(
       }
     })
 
+  // Avalanche control: the flash, the charge's black smoke and the snow it throws up, rising and
+  // thinning; where the slope lets go, the slide runs down the fall line under its powder cloud. Its
+  // crown and bed stay on the face after the cloud settles. White on a white face reads only by the
+  // cloud's shaded underside, and a slide path one pixel wide reads as a run border until the crown
+  // crosses its top.
+  const cloud = (ci: number, cj: number, r: number, alpha: number) => {
+    const n = Math.ceil(r)
+    for (let dj = -n; dj <= n; dj++)
+      for (let di = -n; di <= n; di++) {
+        const q = Math.hypot(di, dj) / r
+        if (q > 1 || !onRange(ci + di, cj + dj)) continue
+        const under = dj > 0 && q > 0.5
+        plot(ci + di, cj + dj, under ? ink.snow[1] : ink.snow[3], alpha * (1 - 0.5 * q * q))
+      }
+  }
+  for (const b of h.blasts) {
+    const [bi, bj] = at([b.x, b.y])
+    const rise = b.t * 0.35
+    if (b.slide) {
+      const [, hj] = at([b.x, b.y + slid(b.t, b.slide) * DOWN])
+      const settle = Math.exp(-Math.max(0, b.t - stopped(b.slide)) / 6)
+      const w = Math.min(2, Math.round(b.slide / 25))
+      // The crown bows down at its flanks, as a slab breaks.
+      if (b.t > 0.2)
+        for (let i = bi - w; i <= bi + w; i++) {
+          const cj = bj + (Math.abs(i - bi) === w ? 1 : 0)
+          if (onRange(i, cj)) plot(i, cj, ink.snow[0], 1)
+        }
+      for (let j = bj + 1; j <= hj; j++)
+        if (onRange(bi, j)) plot(bi, j, ink.snow[0], 0.5 + 0.4 * settle)
+      cloud(bi, hj - 1, 1.8, 0.95 * settle)
+    }
+    if (b.t >= 40) continue
+    cloud(bi, bj - Math.round(rise * 0.5), 1.5 + 3 * (1 - Math.exp(-b.t / 1.5)), Math.exp(-b.t / 8))
+    const puff = 1 + 1.5 * (1 - Math.exp(-b.t / 0.6))
+    const sooty = b.t < 1 ? 1 : Math.exp(-(b.t - 1) / 2.5)
+    for (let dj = -2; dj <= 2; dj++)
+      for (let di = -2; di <= 2; di++) {
+        const q = Math.hypot(di, dj) / puff
+        const [si, sj] = [bi + di, bj - Math.round(rise) + dj]
+        if (q <= 1 && onRange(si, sj)) plot(si, sj, ink.smoke, sooty * (1 - 0.4 * q))
+      }
+    if (b.t < 0.2) {
+      for (const [di, dj] of [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+      ])
+        dot(d, g, bi + di, bj + dj, ink.flood)
+      dot(d, g, bi, bj, ink.lamp)
+    }
+  }
+
   const where = (o: Skier): Pt => {
     if (o.state === 'chair') {
       const u = clamp((h.lift - o.chair) / LIFT_LEN, 0, 1)
@@ -1322,13 +1644,34 @@ export function paintHill(
     if (o.state === 'out') return spot(RUNS[o.run], RUNS[o.run].length - 4, o.w)
     return [o.x, o.y]
   }
+  const coatOf = (o: Skier) =>
+    o.role === 'teach'
+      ? ink.school
+      : o.role === 'patrol'
+        ? ink.patrol
+        : ink.coats[o.kit[0] % ink.coats.length]
+  const helmetOf = (o: Skier) =>
+    o.role === 'patrol' ? ink.boot : ink.helmets[o.kit[1] % ink.helmets.length]
+  // The patrol's toboggan is a little over two metres long, under a pixel at this range, so it is
+  // drawn to the scale of the people: on the snow behind the patroller in the handles, with whoever
+  // is strapped in lying on it feet first.
+  const toboggan = (i: number, j: number, side: number, c: Skier | null) => {
+    dot(d, g, i + side, j - 1, ink.steel)
+    for (let n = 2; n <= 4; n++) dot(d, g, i + side * n, j, ink.sled)
+    if (!c) return
+    dot(d, g, i + side * 2, j - 1, ink.pants)
+    dot(d, g, i + side * 3, j - 1, coatOf(c))
+    dot(d, g, i + side * 4, j - 1, helmetOf(c))
+  }
   const order = h.skiers.map(o => ({ o, p: at(where(o)) })).sort((a, b) => a.p[1] - b.p[1])
   for (const { o, p } of order) {
     let [i, j] = p
     if (o.state === 'chair') i += o.seat
     if (!onRange(i, j - 1) && o.state !== 'chair') continue
-    const coat = o.role === 'teach' ? ink.school : ink.coats[o.kit[0] % ink.coats.length]
-    const helmet = ink.helmets[o.kit[1] % ink.helmets.length]
+    // Strapped into the toboggan, drawn with the patroller.
+    if (o.role !== 'patrol' && (o.state === 'sled' || o.state === 'haul')) continue
+    const coat = coatOf(o)
+    const helmet = helmetOf(o)
     const gear = o.board
       ? ink.boards[o.kit[2] % ink.boards.length]
       : ink.gear[o.kit[2] % ink.gear.length]
@@ -1412,6 +1755,79 @@ export function paintHill(
         head = [i, j - 3]
         break
       }
+      case 'hurt': {
+        // Flat out where they stopped, and above them their skis crossed in the snow, or the board
+        // stood on its tail, so that nobody comes over the rise into them.
+        dot(d, g, i - 1, j - 1, helmet)
+        dot(d, g, i, j - 1, coat)
+        dot(d, g, i + 1, j - 1, ink.pants)
+        head = [i - 1, j - 1]
+        if (o.board) for (let n = 3; n < 6; n++) dot(d, g, i, j - n, gear)
+        else
+          for (const [di, dj] of [
+            [-1, -5],
+            [1, -5],
+            [0, -4],
+            [-1, -3],
+            [1, -3],
+          ])
+            dot(d, g, i + di, j + dj, gear)
+        break
+      }
+      case 'rescue':
+      case 'sled':
+      case 'haul': {
+        // In the handles: down to them with the toboggan empty, down to the lift's foot with them in
+        // it, and walking it in to the shed. It goes on the side it trails to.
+        const c = o.state === 'rescue' ? null : o.patient
+        const tow = c ? where(c) : spot(RUNS[o.run], Math.max(0, o.s - 2.5), o.w)
+        dot(d, g, i, j, o.state === 'haul' ? ink.boot : gear)
+        dot(d, g, i, j - 1, ink.pants)
+        dot(d, g, i, j - 2, coat)
+        dot(d, g, i, j - 3, helmet)
+        head = [i, j - 3]
+        toboggan(i, j, Math.sign(tow[0] - where(o)[0]) || 1, c)
+        break
+      }
+      case 'charge': {
+        // Stood under the crest pulling the igniter, the charge thrown out over the slope, then back
+        // behind the rib to wait for it.
+        dot(d, g, i, j, ink.boot)
+        dot(d, g, i, j - 1, ink.pants)
+        dot(d, g, i, j - 2, coat)
+        dot(d, g, i, j - 3, helmet)
+        head = [i, j - 3]
+        const z = ZONES[o.shot]
+        const side = Math.sign(z.lands[0] - z.stand[0]) || 1
+        if (o.t >= LIGHT && o.t < THROW && beat % 2) dot(d, g, i + side, j - 2, ink.lamp)
+        if (o.t >= THROW && o.t < THROW + 1) {
+          const u = o.t - THROW
+          dot(d, g, i + side, j - 4, ink.skin)
+          dot(
+            d,
+            g,
+            ...at([
+              z.stand[0] + (z.lands[0] - z.stand[0]) * u,
+              z.stand[1] + (z.lands[1] - z.stand[1]) * u - 16 * u * (1 - u),
+            ]),
+            ink.boot,
+          )
+        }
+        break
+      }
+      case 'tend': {
+        // Knelt beside them on the side they skied in from, the toboggan laid out beyond.
+        if (!o.patient) break
+        const [ki, kj] = at(where(o.patient))
+        const side = Math.sign(o.w - o.patient.w) || 1
+        const ti = ki + 2 * side
+        dot(d, g, ti, kj, ink.boot)
+        dot(d, g, ti, kj - 1, coat)
+        dot(d, g, ti, kj - 2, helmet)
+        head = [ti, kj - 2]
+        for (let n = 2; n <= 4; n++) dot(d, g, ti + side * n, kj, ink.sled)
+        break
+      }
       case 'strap':
         // Sat in the snow at the top, strapping in.
         for (let di = -1; di <= 1; di++) dot(d, g, i + di, j, gear)
@@ -1448,8 +1864,9 @@ export function paintHill(
         }
       }
     }
-    // Uphillers come in, climb, ride down and go home by headlamp.
-    if (dark && o.role === 'tour') {
+    // Uphillers come in, climb, ride down and go home by headlamp, and the patrol wears one once
+    // the floodlights are off.
+    if (dark && (o.role === 'tour' || (o.role === 'patrol' && !h.env.open))) {
       const [hi, hj] = head
       for (let dj = -2; dj <= 2; dj++)
         for (let di = -2; di <= 2; di++) {

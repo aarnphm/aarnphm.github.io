@@ -34,6 +34,7 @@ import {
 } from './404-crew'
 import { type CourseInk, nearCourse, paintCourse } from './404-downhill'
 import { GATE, MISSING, TILT, hourAngle, stoneOuter } from './404-gate'
+import { TERRACES, onTerrace } from './404-herd'
 import {
   GROWN,
   type Greens,
@@ -1008,19 +1009,20 @@ function paintLand(d: Uint8ClampedArray, g: Grid, pal: Palette, pines: Cypress[]
   // Below the snow the near range's grass takes the night's frost as the island's does.
   const rimed = rimeOver(pal.mid, pal.snow)
   // What the face shows at a point: its ink for strokes and the flat underpainting alike.
-  const surface = (i: number, y: number, h: number, back: boolean) => {
+  // `shift` lightens or darkens it, for the steps trodden into the grass.
+  const surface = (i: number, y: number, h: number, back: boolean, shift = 0) => {
     const top = back ? far[i] : mid[i]
     const down = y - top
     const [lit, crest] = facet(i, down, back)
     const cover = snowy(sx[i], y, down, lit, crest)
-    if (cover === 2) return pick(pal.rock, 0.35 + lit * 0.35, h)
-    if (cover === 1) return pick(pal.snow, snowTone(lit, y, top), h)
-    if (back) return pick(pal.far, farTone(i, y, lit), h)
+    if (cover === 2) return pick(pal.rock, 0.35 + lit * 0.35 + shift, h)
+    if (cover === 1) return pick(pal.snow, snowTone(lit, y, top) + shift, h)
+    if (back) return pick(pal.far, farTone(i, y, lit) + shift, h)
     // Read off the face's tone as on the island, less the haze that lightens it toward the foot,
     // where the cold air pools.
     const frosted =
       rimeAt(relief, midTone(i, y, lit) - 0.35 * smooth(40, 320, down)) > frac(h * 7.31)
-    return pick(frosted ? rimed : pal.mid, midTone(i, y, lit), h)
+    return pick(frosted ? rimed : pal.mid, midTone(i, y, lit) + shift, h)
   }
 
   for (let j = 0; j < bh; j++) {
@@ -1066,6 +1068,25 @@ function paintLand(d: Uint8ClampedArray, g: Grid, pal: Palette, pines: Cypress[]
     jit = (k - 0.5) * 0.5
     const ink = surface(i, y, h, false)
     brush(d, g, bx, by, 4 + Math.floor(frac(k * 9.1) * 5), frac(k * 4.3) < 0.4, ink, angle, inMid)
+  })
+  // The herd's terracettes (404-herd.ts), laid as broken strokes along each step: the riser one or
+  // two stops darker than the slope and the tread over it lighter, each stroke choosing its stops
+  // once, so a step reads as a run of short shadows and never as a dotted rule.
+  TERRACES.forEach((t, n) => {
+    const r = mulberry(t.seed)
+    for (let x = t.x0; x < t.x1; x += 4 + r() * 8) {
+      const h = r()
+      for (const end = Math.min(t.x1, x + 16 + r() * 32); x <= end; x += g.px) {
+        const y = onTerrace(n, x)
+        if (y === null || nearCourse(x, y, 8)) continue
+        const i = col(g, x)
+        const j = row(g, y)
+        if (i < 0 || i >= bw || j < 0 || j + 1 >= bh) continue
+        const fade = smooth(0, 14, Math.min(x - t.x0, t.x1 - x))
+        put(d, (j * bw + i) * 4, surface(i, y, h, false, 0.4 * fade))
+        put(d, ((j + 1) * bw + i) * 4, surface(i, y + g.px, h, false, -0.75 * fade))
+      }
+    }
   })
   for (const rock of ROCKS) paintRock(d, g, pal, rock, relief)
   paintCourse(d, g, courseInk(pal), snowline)
@@ -1293,7 +1314,9 @@ function courseInk(pal: Palette): CourseInk {
 }
 
 // Its riders in the crew's colours under bright helmets, on frames of any of them; the gate's
-// beacon counts down in poppy and goes in sage.
+// beacon counts down in poppy and goes in sage. Its medics wear the ski patrol's flame, and their
+// hut is the figures' white with a poppy cross. The herd on its grass is white, black and the
+// autumn's deepest red, with the figures' skin for a muzzle; the ewes white with black faces.
 function riderInk(pal: Palette): RiderInk {
   return {
     skin: pal.figure.S,
@@ -1308,6 +1331,17 @@ function riderInk(pal: Palette): RiderInk {
     jerseys: pal.crew,
     helmets: [GOLDEN, pal.poppy, CREAM, pal.cornflower, pal.crew[1], pal.crew[3]],
     frames: [pal.crew[2], pal.crew[3], pal.crew[0], CREAM, pal.crew[5], pal.rock[1]],
+    patrol: FLAME[3],
+    kit: FLAME[2],
+    hut: pal.figure.C,
+    cross: pal.poppy,
+    herd: {
+      coats: [pal.figure.C, pal.figure.K, pal.autumn[0]],
+      muzzle: pal.figure.S,
+      leg: pal.bark[0],
+      fleece: pal.figure.C,
+      face: pal.figure.K,
+    },
   }
 }
 
@@ -1334,7 +1368,10 @@ function skiInk(pal: Palette): SkiInk {
     lamp: CREAM,
     glow: pal.glow[1],
     flood: mix(CREAM, GOLDEN, 0.4),
+    patrol: FLAME[3],
+    sled: FLAME[2],
     beacon: FLAME[2],
+    smoke: mix(pal.smoke[0], INK, 0.5),
   }
 }
 
@@ -3528,7 +3565,8 @@ export function setupLandscape(
       env.crowd !== park.env.crowd ||
       snow.open !== slopes.env.open ||
       snow.groom !== slopes.env.groom ||
-      snow.tour !== slopes.env.tour
+      snow.tour !== slopes.env.tour ||
+      snow.control !== slopes.env.control
     park.env = env
     slopes.env = snow
     if (keyFor(next) !== lightKey) return repaint()

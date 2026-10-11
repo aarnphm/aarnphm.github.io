@@ -298,7 +298,7 @@ export const LANDING: [number, number] = [MAIN.q[KT] + RAMP + DECK, MAIN.q[KT] +
 
 // A path walked or ridden at a steady pace: the points, and their distance along the slope.
 export type Path = { pts: Pt[]; at: Float32Array; length: number }
-function path(p: Pt[]): Path {
+export function path(p: Pt[]): Path {
   const pts = resample(p, STEP)
   const at = new Float32Array(pts.length)
   for (let k = 1; k < pts.length; k++)
