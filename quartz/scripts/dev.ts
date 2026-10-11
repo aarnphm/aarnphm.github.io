@@ -8,6 +8,7 @@ import { createServer } from 'node:net'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { COURSE_STUDY_PORT_OFFSET } from '../util/course-study'
 import { parseQuartzDevEvent, splitDevEventLines, type QuartzDevEvent } from '../util/dev-events'
 import {
   applyQuartzDevEvent,
@@ -15,6 +16,7 @@ import {
   resetQuartzManagerState,
 } from '../util/dev-manager-state'
 import { stopProcessTree, stopProcessTreeByPid } from '../util/process-tree'
+import { startCourseStudyServer } from './course-study-server'
 import { syncLatestLocalPaceModels } from './local-pace-models'
 
 const gitRoot = resolveGitRoot()
@@ -319,6 +321,11 @@ async function main(): Promise<void> {
   }
   log('main', `launching pnpm dev (attempt 1/${totalPnpmDevAttempts})`)
   watchModelArchive()
+  startCourseStudyServer({
+    root: gitRoot,
+    port: runtimeConfig.port + COURSE_STUDY_PORT_OFFSET,
+    log: (message, error) => log('main', message, error ? 'stderr' : 'stdout'),
+  }).unref()
   launchPnpmDev()
   registerLifecycle()
   registerCtrlCHandler()

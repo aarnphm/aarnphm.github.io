@@ -30,6 +30,7 @@ import { parseWikilink } from '../../util/wikilinks'
 import CourseHomeConstructor from '../CourseHome'
 import CourseResourceConstructor, { CoursePageHead, coursePageOf } from '../CourseResource'
 import CoursesIndexConstructor from '../CoursesIndex'
+import CourseStudyLogConstructor from '../CourseStudy'
 import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from '../Evergreen'
 import PageListConstructor, {
   byDateAndAlphabetical,
@@ -101,6 +102,7 @@ const Layout = {
   course: 'COURSE',
   courses: 'COURSES',
   resource: 'RESOURCE',
+  studyLog: 'STUDY-LOG',
 } as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
@@ -335,6 +337,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const CourseHome = CourseHomeConstructor()
   const CoursesIndex = CoursesIndexConstructor()
   const CourseResource = CourseResourceConstructor()
+  const CourseStudyLog = CourseStudyLogConstructor()
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
@@ -565,6 +568,10 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       case Layout.resource:
         return <CourseResource {...props} />
 
+      // `lectures/index.md`: the authored study log of a course
+      case Layout.studyLog:
+        return <CourseStudyLog {...props} />
+
       case Layout.lovp:
         return (
           <div class="folder-layout folder-layout--l" data-pagelist>
@@ -601,6 +608,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     SeeAlso.css,
     CourseHome.css,
     CourseResource.css,
+    CourseStudyLog.css,
   )
   FolderContent.sourceNames = inheritComponentSourceNames('FolderContent', [
     Evergreen,
@@ -610,6 +618,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     CourseHome,
     CoursesIndex,
     CourseResource,
+    CourseStudyLog,
   ])
   FolderContent.afterDOMLoaded = concatenateResources(
     Evergreen.afterDOMLoaded,

@@ -27,10 +27,12 @@ import {
   unitDeckSlug,
   unitSources,
 } from '../util/course'
+import { courseStudyEndpoint } from '../util/course-study'
 import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { concatenateResources } from '../util/resources'
+import { StudyState } from './CourseStudy'
 import { CourseWatch } from './CourseWatch'
 
 export { coursePageOf } from '../util/course'
@@ -39,6 +41,7 @@ import watchScript from './scripts/course-watch.inline'
 // @ts-ignore
 import script from './scripts/course.inline'
 import resourceStyle from './styles/course-resource.scss'
+import studyStyle from './styles/course-study.scss'
 import style from './styles/course.scss'
 
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -76,7 +79,12 @@ interface StripLink {
 }
 
 /** The strip's link list for one resource, by kind (docs/plans/course-resources.md §2). */
-function stripLinks(rv: ResourceView, from: FullSlug, ocw: string | undefined): StripLink[] {
+function stripLinks(
+  rv: ResourceView,
+  from: FullSlug,
+  ocw: string | undefined,
+  endpoint: string | undefined,
+): StripLink[] {
   const { ref, view, unit, resources } = rv
   const kind = ref.record.kind
   const links: StripLink[] = []
@@ -133,7 +141,11 @@ function stripLinks(rv: ResourceView, from: FullSlug, ocw: string | undefined): 
       const latex = latexOf(unit.text)
       push('latex', internal(unit.text.slug as FullSlug, `latex §${latex?.section ?? n}`))
     }
-    if (unit.read) push('read', <span>read {unit.read}</span>)
+    // the unit's own reading surfaces (pdf, chapter, video) carry the toggles; others show dates
+    const owns = kind === 'notes' || kind === 'chapter' || kind === 'video'
+    const study = <StudyState view={view} unit={unit} endpoint={owns ? endpoint : undefined} />
+    if (owns ? endpoint || unit.read || unit.problems : unit.read || unit.problems)
+      push('read', study)
   }
 
   if (kind === 'notes-full') {
@@ -241,7 +253,7 @@ function rowOf(key: string): string {
     cards: 'unit',
     notes: 'notes',
     latex: 'notes',
-    read: 'notes',
+    read: 'study',
     due: 'set',
     solutions: 'set',
     rendered: 'set',
@@ -256,7 +268,7 @@ function rowOf(key: string): string {
   return rows[key] ?? 'links'
 }
 
-const ROW_ORDER = ['prev', 'next', 'unit', 'notes', 'set', 'exam', 'in', 'source', 'links']
+const ROW_ORDER = ['prev', 'next', 'unit', 'study', 'notes', 'set', 'exam', 'in', 'source', 'links']
 
 /**
  * The links as a key/value table in the triathlon cheat-sheet grammar: a gray row label on the
@@ -343,15 +355,18 @@ export function ResourceHead({
   from,
   ocw,
   pager = true,
+  endpoint,
 }: {
   rv: ResourceView
   from: FullSlug
   ocw?: string
   pager?: boolean
+  /** Dev study endpoint; the toggles render only when it is set. */
+  endpoint?: string
 }): JSX.Element {
   const { ref, view, unit, siblings, index, label, crumb } = rv
   const homeSlug = `courses/${ref.dir}/index` as FullSlug
-  const links = stripLinks(rv, from, ocw)
+  const links = stripLinks(rv, from, ocw, endpoint)
   const prev = pager && index > 0 ? siblings[index - 1] : undefined
   const next = pager && index >= 0 ? siblings[index + 1] : undefined
   const pagerLabel = (sibling: CourseResourceRef, rel: 'prev' | 'next') => {
@@ -441,12 +456,13 @@ export const CourseResourceStrip = (() => {
           from={from}
           ocw={ocwLink(tree as Root)}
           pager={rv.ref.record.kind !== 'notes-full'}
+          endpoint={courseStudyEndpoint(ctx.argv)}
         />
       </nav>
     )
   }
   Strip.displayName = 'CourseResourceStrip'
-  Strip.css = style
+  Strip.css = concatenateResources(style, studyStyle)
   Strip.afterDOMLoaded = script
   return Strip
 }) satisfies QuartzComponentConstructor
@@ -966,7 +982,7 @@ export default (() => {
     )
   }
   CourseResource.displayName = 'CourseResource'
-  CourseResource.css = concatenateResources(style, resourceStyle)
+  CourseResource.css = concatenateResources(style, resourceStyle, studyStyle)
   CourseResource.afterDOMLoaded = concatenateResources(script, watchScript)
   return CourseResource
 }) satisfies QuartzComponentConstructor

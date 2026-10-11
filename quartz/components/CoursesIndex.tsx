@@ -32,6 +32,7 @@ export default (() => {
     const views = homes.map(h => h.view).filter((v): v is CourseView => v !== null)
     const total = views.reduce((sum, v) => sum + v.units.length, 0)
     const notes = views.reduce((sum, v) => sum + v.units.filter(u => u.note).length, 0)
+    const read = views.reduce((sum, v) => sum + v.units.filter(u => u.read).length, 0)
     const cardIds = views.flatMap(v => v.units.flatMap(u => u.cardIds))
     const hasDecks = cardIds.length > 0
 
@@ -46,6 +47,7 @@ export default (() => {
             from={from}
             heading={`${homes.length} ${homes.length === 1 ? 'course' : 'courses'}`}
             headingId="course-index-h"
+            read={read}
             notes={notes}
             total={total}
             cards={cardIds.length}
@@ -72,6 +74,7 @@ export default (() => {
                   .join(' · ')
                 const ids = view?.units.flatMap(u => u.cardIds) ?? []
                 const noted = view?.units.filter(u => u.note).length
+                const readCount = view?.units.filter(u => u.read).length
                 return (
                   <li class="course-row">
                     <a
@@ -83,8 +86,11 @@ export default (() => {
                       <span class="course-row-title">{title}</span>
                       <span class="course-row-term">{term || '–'}</span>
                       <span class="course-stats" data-cards={ids.join(' ')} data-unit={dir}>
-                        notes {view ? `${noted}/${view.units.length}` : '–'} · cards{' '}
-                        {ids.length > 0 ? ids.length : '–'} · due <span data-due="">–</span> · last{' '}
+                        {view
+                          ? `read ${readCount}/${view.units.length} · notes ${noted}/${view.units.length}`
+                          : 'read – · notes –'}{' '}
+                        · cards {ids.length > 0 ? ids.length : '–'} · due <span data-due="">–</span>{' '}
+                        · last{' '}
                         <span data-last="" data-for={dir}>
                           –
                         </span>

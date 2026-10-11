@@ -24,15 +24,19 @@ import {
   unitSources,
   unitVideo,
 } from '../util/course'
+import { courseStudyEndpoint } from '../util/course-study'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { pdfReaderPath } from '../util/pdf-marks'
+import { concatenateResources } from '../util/resources'
 import { psetNumber } from './CourseHome'
 import { CoursesCrumb } from './CourseResource'
+import { StudyState } from './CourseStudy'
 // @ts-ignore
 import workspaceScript from './scripts/course-workspace.inline'
 // @ts-ignore
 import script from './scripts/course.inline'
+import studyStyle from './styles/course-study.scss'
 import workspaceStyle from './styles/course-workspace.scss'
 import style from './styles/course.scss'
 
@@ -145,7 +149,6 @@ export const CourseUnitBar = (() => {
     if (isNotes && taught) meta.push(`taught ${taught}`)
     if (latex?.dateSource === 'previous') meta.push('date from the previous lecture')
     if (due) meta.push(`due at ${view.record.unitKind} ${pad(due.record.n)}`)
-    if (unit?.read && kind === 'lectures') meta.push(`read ${unit.read}`)
 
     return (
       <nav
@@ -185,6 +188,9 @@ export const CourseUnitBar = (() => {
             ))}
           </span>
         ) : null}
+        {unit && (kind === 'lectures' || kind === 'notes') ? (
+          <StudyState view={view} unit={unit} endpoint={courseStudyEndpoint(props.ctx.argv)} />
+        ) : null}
         {isNotes ? (
           <button
             type="button"
@@ -215,7 +221,7 @@ export const CourseUnitBar = (() => {
     )
   }
   Bar.displayName = 'CourseUnitBar'
-  Bar.css = style
+  Bar.css = concatenateResources(style, studyStyle)
   Bar.afterDOMLoaded = script
   return Bar
 }) satisfies QuartzComponentConstructor

@@ -2,6 +2,7 @@ import type { Root } from 'hast'
 import { JSX } from 'preact'
 import { QuartzComponentProps } from '../types/component'
 import { ResourceView, courseFileSlug, lecturerName } from '../util/course'
+import { courseStudyEndpoint } from '../util/course-study'
 import { htmlToJsx } from '../util/jsx'
 import { ResourceHead, ocwLink } from './CourseResource'
 
@@ -42,7 +43,7 @@ export function CourseWatch({
       data-course-watch-source={ocw}
       data-course-watch-captions={captions}
     >
-      <ResourceHead rv={rv} from={from} ocw={ocw} />
+      <ResourceHead rv={rv} from={from} ocw={ocw} endpoint={courseStudyEndpoint(props.ctx.argv)} />
       <div class="course-watch-body">
         {lecturer || description ? (
           <div class="course-watch-meta">

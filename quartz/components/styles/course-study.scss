@@ -1,0 +1,220 @@
+// study log: read/problems toggles (dev), the schedule `state` slots, the log page, the pset desk
+// and the statement index. Tokens come from course.scss (`--course-line`, `--course-selected`).
+
+.course-study {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  text-transform: lowercase;
+  color: var(--darkgray);
+}
+
+.course-study-toggle,
+.course-desk-toggle {
+  min-height: var(--course-control-height, 1.75rem);
+  padding: 0 var(--space-2);
+  font: inherit;
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
+  text-transform: lowercase;
+  color: var(--dark);
+  background: transparent;
+  border: 1px solid var(--course-line, var(--gray));
+  border-radius: 0;
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    background: var(--course-selected, var(--light));
+    border-color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  &[aria-busy='true'] {
+    cursor: progress;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--dark);
+    }
+  }
+}
+
+.course-study-status:empty {
+  display: none;
+}
+
+.course-spine-table {
+  .course-c-state,
+  .course-c-date,
+  .course-c-what {
+    width: 1%;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .course-state {
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 2ch;
+    gap: var(--space-1);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+  }
+
+  .course-state-slot {
+    text-align: center;
+    text-decoration: none;
+    color: var(--dark);
+  }
+}
+
+.course-study-log .course-log-table {
+  .course-c-date,
+  .course-c-what {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// promotion preview on the resource strip
+.course-promote {
+  grid-column: 1 / -1;
+  min-width: 0;
+
+  > summary {
+    width: fit-content;
+    cursor: pointer;
+    color: var(--dark);
+    text-decoration: underline;
+    text-decoration-color: var(--gray);
+    text-underline-offset: 0.2em;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+
+  .course-promote-body {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--dark);
+  }
+
+  .course-promote-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  pre {
+    max-height: 18rem;
+    margin: 0;
+    padding: var(--space-2);
+    overflow: auto;
+    font-size: var(--text-meta);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--dark);
+    background: transparent;
+    border: 1px solid var(--course-line);
+  }
+}
+
+// problem set desk: one row per problem, state toggles in dev
+.course-desk {
+  grid-column: var(--layout-byline-column);
+  min-width: 0;
+  margin: 0 0 var(--space-4);
+  container-type: inline-size;
+  container-name: course-spine;
+
+  .course-desk-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    margin: 0 0 var(--space-2);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    text-transform: lowercase;
+    color: var(--darkgray);
+
+    h2 {
+      margin: 0;
+      font-family: var(--codeFont);
+      font-size: var(--text-ui);
+      font-weight: 400;
+      color: var(--dark);
+    }
+  }
+
+  .course-desk-states {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .course-c-uses,
+  .course-c-log {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+  }
+
+  .course-c-log {
+    width: 1%;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .course-desk-reveal {
+    margin-top: var(--space-2);
+  }
+
+  @container course-spine (max-width: 30rem) {
+    .course-c-uses {
+      display: none;
+    }
+  }
+}
+
+// statement index
+.course-statements {
+  .course-c-kind,
+  .course-c-lec,
+  .course-c-cards {
+    width: 1%;
+    white-space: nowrap;
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .course-c-used {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+  }
+
+  .course-muted {
+    color: var(--darkgray);
+  }
+
+  @container course-spine (max-width: 36rem) {
+    .course-c-used {
+      display: none;
+    }
+  }
+}

@@ -15,6 +15,7 @@ import {
   courseView,
   formatCount,
   formatDuration,
+  psetNumber,
   psetTextSlug,
   resourceSlug,
   unitDeckSlug,
@@ -23,25 +24,26 @@ import {
 } from '../util/course'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
+import { concatenateResources } from '../util/resources'
 import { CoursesCrumb } from './CourseResource'
+import { StudySlots } from './CourseStudy'
 // @ts-ignore
 import script from './scripts/course.inline'
+import studyStyle from './styles/course-study.scss'
 import style from './styles/course.scss'
 
 const roman = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x']
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-export const psetNumber = (id: string): number | undefined => {
-  const match = /(?:pset|ps|problem[-_ ]?set)[-_ ]?0*(\d+)/i.exec(id)
-  return match ? Number(match[1]) : undefined
-}
+export { psetNumber } from '../util/course'
 
 /** Bar shared by the schedule and the courses index: counts, then one review link. */
 export function CourseBar({
   from,
   heading,
   headingId,
+  read,
   notes,
   total,
   cards,
@@ -52,6 +54,7 @@ export function CourseBar({
   from: FullSlug
   heading: string
   headingId: string
+  read: number
   notes: number
   total: number
   cards: number
@@ -63,8 +66,8 @@ export function CourseBar({
     <header class="course-bar">
       <h2 id={headingId}>{heading}</h2>
       <p class="course-count" data-cards={cardIds.join(' ')} data-unit="all">
-        notes {notes}/{total} · cards {hasDecks ? formatCount(cards) : '–'} · due{' '}
-        <span data-due="">–</span> · last{' '}
+        read {read}/{total} · notes {notes}/{total} · cards {hasDecks ? formatCount(cards) : '–'} ·
+        due <span data-due="">–</span> · last{' '}
         <span data-last="" data-for="all">
           –
         </span>{' '}
@@ -234,6 +237,9 @@ function unitRow(
         {dates.length > 0 ? <span class="course-unit-dates">{dates}</span> : null}
         {slotCell(links, slots, 'course-unit-src')}
       </td>
+      <td class="course-c-state">
+        <StudySlots unit={unit} />
+      </td>
       <td class="course-c-src">{slotCell(links, slots, 'course-slots')}</td>
       <td
         class="course-num course-c-marks"
@@ -315,6 +321,7 @@ function psetRows(
             </span>
             {slotCell(links, slots, 'course-unit-src')}
           </td>
+          <td class="course-c-state" />
           <td class="course-c-src">{slotCell(links, slots, 'course-slots')}</td>
           <td class="course-num course-c-marks" data-marks-src={marksSrc}>
             –
@@ -368,11 +375,11 @@ export default (() => {
     const { record } = view
     const total = view.units.length
     const notes = view.units.filter(unit => unit.note).length
+    const read = view.units.filter(unit => unit.read).length
     const cardIds = view.units.flatMap(unit => unit.cardIds)
     const hasDecks = view.units.some(unit => unit.deck)
-    // the frontier is the first unit without notes after the last one that has them
-    const lastNoted = view.units.map(u => Boolean(u.note)).lastIndexOf(true)
-    const frontierIdx = view.units.findIndex((u, i) => i > lastNoted && !u.note)
+    // the frontier is the first unit not yet read
+    const frontierIdx = view.units.findIndex(u => !u.read)
     const resources = courseResources(view.dir, allFiles)
 
     // src slots: the union over the course, so the column lines up down the table
@@ -410,7 +417,7 @@ export default (() => {
     const licenseUrl = str(frontmatter?.license_url)
     const topics = (frontmatter?.tags ?? []).filter(tag => !mirrorTags.has(tag))
     const meta = [record.term, record.level, ...record.instructors].filter(Boolean)
-    const columns = 7
+    const columns = 8
 
     return (
       <div
@@ -494,6 +501,7 @@ export default (() => {
               from={from}
               heading={kindPlural}
               headingId="course-spine-h"
+              read={read}
               notes={notes}
               total={total}
               cards={cardIds.length}
@@ -508,6 +516,9 @@ export default (() => {
                     #
                   </th>
                   <th scope="col">topic</th>
+                  <th scope="col" class="course-c-state" title="r read · p problems">
+                    state
+                  </th>
                   <th scope="col" class="course-c-src">
                     src
                   </th>
@@ -532,7 +543,8 @@ export default (() => {
                       <th scope="rowgroup" colSpan={columns}>
                         {roman[part - 1] ?? part}. {record.parts[part - 1]}
                         <span class="course-count">
-                          notes {units.filter(u => u.note).length}/{units.length}
+                          read {units.filter(u => u.read).length}/{units.length} · notes{' '}
+                          {units.filter(u => u.note).length}/{units.length}
                         </span>
                       </th>
                     </tr>
@@ -571,7 +583,7 @@ export default (() => {
       </div>
     )
   }
-  CourseHome.css = style
+  CourseHome.css = concatenateResources(style, studyStyle)
   CourseHome.afterDOMLoaded = script
   return CourseHome
 }) satisfies QuartzComponentConstructor
