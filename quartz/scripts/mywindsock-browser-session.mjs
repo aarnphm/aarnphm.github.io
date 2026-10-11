@@ -1,4 +1,5 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 
 // Run this module inside cua_repl, passing its documented tab and CDP handles.
 const graphScript = await readFile(
@@ -9,7 +10,9 @@ const captureScript = await readFile(
   new URL('./mywindsock-browser-capture.js', import.meta.url),
   'utf8',
 )
-const checkpointDirectory = '/Users/aarnphm/workspace/garden/quartz/.quartz-cache/mywindsock-graphs'
+const checkpointDirectory = fileURLToPath(
+  new URL('../../docs/verification/mywindsock-ingestion/artifacts/checkpoints', import.meta.url),
+)
 
 async function evaluate(cdp, expression) {
   const result = await cdp.send(

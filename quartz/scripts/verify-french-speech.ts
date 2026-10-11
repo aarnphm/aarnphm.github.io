@@ -20,7 +20,7 @@ function argument(name: string, fallback: string): string {
   return value
 }
 
-const output = argument('--output', 'quartz/.quartz-cache/speech-evidence')
+const output = argument('--output', 'docs/verification/french-speech/artifacts')
 const baselinePath = argument('--baseline', 'docs/verification/french-speech/deck-identities.json')
 mkdirSync(output, { recursive: true })
 const artifact = (name: string) => path.join(output, name)
