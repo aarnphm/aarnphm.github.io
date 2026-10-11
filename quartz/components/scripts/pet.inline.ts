@@ -96,6 +96,7 @@ let wanderTimer: number | undefined
 let reminderTimer: number | undefined
 let reminderHideTimer: number | undefined
 let resizeObserver: ResizeObserver | null = null
+let trailWalk: { path: SVGPathElement; geometry: string; feet: Point[] } | null = null
 
 const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max)
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -135,6 +136,8 @@ const render = () => {
   const next = state(performance.now())
   if (svg.dataset.state !== next) svg.dataset.state = next
   svg.dataset.kind = perch?.kind ?? 'stand'
+  // On the home page's trail it wears its walking hat, from the hop on until it leaves the path.
+  svg.toggleAttribute('data-hat', !carry && !!perch?.el?.classList.contains('trail-path'))
   // On the rail it faces the page, its back to the pole.
   root.style.setProperty('--pet-face', String(carry ? 1 : face))
   root.dataset.bubble = center().y - height() / 2 < 64 ? 'below' : 'above'
@@ -411,7 +414,7 @@ const wander = () => {
   const now = performance.now()
   const s = state(now)
   const free = s === 'idle' || s === 'wait' || s === 'work'
-  if (!free || now - lastMove < 3000 || hop || carry || reducedMotion()) return
+  if (!free || now - lastMove < 3000 || hop || carry || reducedMotion() || document.hidden) return
   settled = now
   armQuietTimer()
   const note = Math.random() < 0.4 ? sidenoteInView() : null
@@ -461,26 +464,28 @@ const readSidenote = (note: Element) => {
   moveTo({ el: note, kind: 'stand', t: 0.3 + Math.random() * 0.4 })
 }
 
-// The home page's walking trail, when it is showing: points every 10 user units along each
-// drawn route, kept until the route is redrawn.
-const trailPoints = new WeakMap<SVGPathElement, { d: string; pts: DOMPoint[] }>()
+// The upper route belongs to the pet. Meadow and Alpine routes belong to the travelers.
+const trailPoints = new WeakMap<SVGPathElement, { d: string; step: number; pts: DOMPoint[] }>()
 const trailRoutes = () =>
   Array.from(
-    document.querySelectorAll<SVGPathElement>('.homepage-trail-scene:not([hidden]) .trail-path'),
+    document.querySelectorAll<SVGPathElement>(
+      '.homepage-trail-scene:not([hidden]) [data-pet-walk-path]',
+    ),
   ).flatMap(path => {
     const d = path.getAttribute('d')
-    if (!d) return []
+    const m = path.getScreenCTM()
+    if (!d || !m) return []
+    const step = 4 / Math.max(Math.hypot(m.a, m.b), Math.hypot(m.c, m.d), 0.001)
     let hit = trailPoints.get(path)
-    if (hit?.d !== d) {
+    if (hit?.d !== d || hit.step !== step) {
       const length = path.getTotalLength()
-      const pts = Array.from({ length: Math.floor(length / 10) + 1 }, (_, k) =>
-        path.getPointAtLength(k * 10),
+      const segments = Math.max(1, Math.ceil(length / step))
+      const pts = Array.from({ length: segments + 1 }, (_, k) =>
+        path.getPointAtLength((k * length) / segments),
       )
-      hit = { d, pts }
+      hit = { d, step, pts }
       trailPoints.set(path, hit)
     }
-    const m = path.getScreenCTM()
-    if (!m) return []
     // Feet in document coordinates.
     const feet = hit.pts.map(p => {
       const c = p.matrixTransform(m)
@@ -489,40 +494,103 @@ const trailRoutes = () =>
     return [{ path, feet }]
   })
 
-// Takes a walk along the trail: onto the nearest point of a route in view, then 150–400 px along
-// it at a stroll, all in one animation of the points it passes.
+const trailGeometry = (path: SVGPathElement) => {
+  const m = path.getScreenCTM()
+  if (!m) return ''
+  return `${path.getAttribute('d')}|${m.a},${m.b},${m.c},${m.d},${m.e},${m.f}|${window.innerWidth},${window.innerHeight}`
+}
+
+const trailPointClear = (p: Point, path: SVGPathElement) => {
+  const at = { x: p.x - window.scrollX, y: p.y - window.scrollY }
+  const top = at.y - (edgeY.stand - viewTop) * unit
+  return (
+    at.x >= margin + width / 2 &&
+    at.x <= window.innerWidth - margin - width / 2 &&
+    top >= margin &&
+    top + height() <= window.innerHeight - margin &&
+    !coversText({ el: path, kind: 'stand', t: 0, at, score: 0 })
+  )
+}
+
+type TrailRun = { path: SVGPathElement; feet: Point[]; length: number }
+const longestTrailRun = (): TrailRun | null => {
+  let best: TrailRun | null = null
+  for (const { path, feet } of trailRoutes()) {
+    let run: Point[] = []
+    let length = 0
+    const finish = () => {
+      if (length >= 50 && (!best || length > best.length)) best = { path, feet: run, length }
+      run = []
+      length = 0
+    }
+    for (const foot of feet) {
+      if (!trailPointClear(foot, path)) {
+        finish()
+        continue
+      }
+      const previous = run[run.length - 1]
+      if (previous) length += Math.hypot(foot.x - previous.x, foot.y - previous.y)
+      run.push(foot)
+    }
+    finish()
+  }
+  return best
+}
+
+const leaveTrail = () => {
+  if (!trailWalk) return
+  trailWalk = null
+  const rect = root?.isConnected ? root.getBoundingClientRect() : null
+  hop?.cancel()
+  hop = null
+  afterMove = null
+  override = null
+  perch = null
+  resizeObserver?.disconnect()
+  cancelAnimationFrame(anchorFrame)
+  if (root && rect) {
+    doc = { x: rect.left + window.scrollX, y: rect.top + window.scrollY }
+    root.style.transform = transformFor(doc)
+  }
+  settled = performance.now()
+  render()
+  armQuietTimer()
+  scheduleWander()
+}
+
+// Follow increasing path length, using the longest visible run that clears the whole pet frame.
 const walkTrail = () => {
-  const c = center()
-  const here = { x: c.x + window.scrollX, y: c.y + window.scrollY }
-  const inView = (p: Point) => {
-    const y = p.y - window.scrollY
-    return y > 60 && y < window.innerHeight - 40 && p.x > margin + width / 2
-  }
-  let best: { path: SVGPathElement; feet: Point[]; k: number; d: number } | null = null
-  for (const { path, feet } of trailRoutes())
-    feet.forEach((p, k) => {
-      const d = Math.hypot(p.x - here.x, p.y - here.y)
-      if (inView(p) && (!best || d < best.d)) best = { path, feet, k, d }
-    })
+  if (!root || hop || carry || reducedMotion() || document.hidden) return false
+  const best = longestTrailRun()
   if (!best) return false
-  const { path, feet, k } = best as { path: SVGPathElement; feet: Point[]; k: number }
-  let dir = Math.random() < 0.5 ? -1 : 1
-  const steps = 15 + Math.floor(Math.random() * 25)
-  const run = (sign: number) => {
-    const out: Point[] = []
-    for (let j = k; j >= 0 && j < feet.length && out.length <= steps && inView(feet[j]); j += sign)
-      out.push(feet[j])
-    return out
+  const { path, feet } = best
+  let route = feet
+  if (perch?.el === path && perch.foot) {
+    const foot = perch.foot
+    const k = feet.findIndex(p => Math.hypot(p.x - foot.x, p.y - foot.y) < 8)
+    if (k >= 0) route = feet.slice(k)
   }
-  let route = run(dir)
-  if (route.length < 6) route = run((dir = -dir))
-  if (route.length < 6) return false
-  const walk = () => follow(route, path)
+  if (route.length < 11) return false
+  trailWalk = { path, geometry: trailGeometry(path), feet: route }
+  const walk = () => {
+    if (
+      !path.isConnected ||
+      path.closest<HTMLElement>('.homepage-trail-scene')?.hidden !== false ||
+      trailWalk?.geometry !== trailGeometry(path) ||
+      reducedMotion() ||
+      document.hidden
+    ) {
+      leaveTrail()
+      return
+    }
+    follow(route, path)
+  }
   const start = route[0]
   if (perch?.foot && Math.hypot(perch.foot.x - start.x, perch.foot.y - start.y) < 12) walk()
   else {
     afterMove = walk
-    moveTo({ el: path, kind: 'stand', t: 0, foot: start })
+    // An entry hop could cross prose. Fade onto the checked start before the walking animation.
+    moveTo({ el: path, kind: 'stand', t: 0, foot: start }, 'fade')
   }
   return true
 }
@@ -663,10 +731,12 @@ function stopGround() {
       if ((Number(anim.currentTime) || 0) < delay) anim.cancel()
 }
 
-function moveTo(next: Perch, how: 'swim' | 'chute' | 'stroll' | null = null) {
+function moveTo(next: Perch, how: 'swim' | 'chute' | 'stroll' | 'fade' | null = null) {
   const after = afterMove
   afterMove = null
   if (!root) return
+  if (!(next.el instanceof SVGPathElement) || !next.el.hasAttribute('data-pet-walk-path'))
+    trailWalk = null
   root.hidden = false
   stopGround()
   gaze = ''
@@ -701,7 +771,13 @@ function moveTo(next: Perch, how: 'swim' | 'chute' | 'stroll' | null = null) {
   if (Math.abs(target.x - from.x) > 2) face = target.x > from.x ? -1 : 1
   let frames: Keyframe[]
   let duration: number
-  if (chute) {
+  if (how === 'fade') {
+    frames = [
+      { transform: end, opacity: 0 },
+      { transform: end, opacity: 1 },
+    ]
+    duration = 180
+  } else if (chute) {
     // Eased down and across, drifting side to side as it swings, the drift dying out as it lands.
     const drift = Math.min(26, d * 0.08)
     const ease = (u: number) => u * u * (3 - 2 * u)
@@ -747,10 +823,13 @@ function moveTo(next: Perch, how: 'swim' | 'chute' | 'stroll' | null = null) {
     ]
     duration = clamp(320 + d * 0.45, 380, 900)
   }
-  const walking = !swim && !chute && frames.length === 2 && !offscreen && d <= 900
+  const walking = how !== 'fade' && !swim && !chute && frames.length === 2 && !offscreen && d <= 900
   const pace = how === 'stroll' ? 'walk' : 'run'
   if (walking && next.kind === 'floor') layGround(from, target, duration)
-  override = { state: chute ? 'chute' : swim ? 'swim' : walking ? pace : 'fly', until: Infinity }
+  override = {
+    state: how === 'fade' ? 'idle' : chute ? 'chute' : swim ? 'swim' : walking ? pace : 'fly',
+    until: Infinity,
+  }
   render()
   const anim = root.animate(frames, {
     duration,
@@ -764,7 +843,7 @@ function moveTo(next: Perch, how: 'swim' | 'chute' | 'stroll' | null = null) {
     hop = null
     override = null
     savePosition()
-    if (walking) render()
+    if (walking || how === 'fade') render()
     else play('land', 380)
     scheduleWander()
     after?.()
@@ -800,6 +879,7 @@ function startCarry() {
   hop?.cancel()
   hop = null
   override = null
+  trailWalk = null
   perch = null
   resizeObserver?.disconnect()
   stopGround()
@@ -992,6 +1072,8 @@ const spawn = () => {
 const despawn = () => {
   hop?.cancel()
   hop = null
+  trailWalk = null
+  afterMove = null
   if (doc || carry) savePosition()
   carry = null
   for (const timer of [stateTimer, dwellTimer, scrollTimer, wanderTimer, reminderTimer])
@@ -1028,6 +1110,8 @@ const syncPets = () => {
     doc = null
     carry = null
     perch = null
+    trailWalk = null
+    afterMove = null
     spawn()
     relocate(before, null)
   } else if (perch?.el && !perch.el.isConnected) relocate(center(), null)
@@ -1052,6 +1136,80 @@ document.addEventListener('nav', () => {
 
   const controller = new AbortController()
   const { signal } = controller
+  const scene = document.querySelector<HTMLElement>('.homepage-trail-scene')
+  let trailFrame = 0
+  let trailWanted = false
+  let waiting: Animation | null = null
+  const refreshTrail = () => {
+    trailFrame = 0
+    if (signal.aborted || !scene || scene.hidden || document.hidden || reducedMotion()) return
+    const currentTrail = trailWalk
+    if (
+      currentTrail &&
+      (currentTrail.geometry !== trailGeometry(currentTrail.path) ||
+        currentTrail.feet.some(foot => !trailPointClear(foot, currentTrail.path)))
+    ) {
+      leaveTrail()
+      trailWanted = true
+    }
+    if (!trailWanted || carry) return
+    const current = hop
+    if (current) {
+      if (waiting === current) return
+      waiting = current
+      const ready = () => {
+        if (waiting !== current || signal.aborted) return
+        waiting = null
+        queueTrail()
+      }
+      void current.finished.then(ready, ready)
+      return
+    }
+    if (walkTrail()) trailWanted = false
+  }
+  // The frame can redraw in its own animation callback after the host's reflow event.
+  const queueTrail = () => {
+    if (trailFrame || signal.aborted) return
+    trailFrame = requestAnimationFrame(() => {
+      trailFrame = requestAnimationFrame(refreshTrail)
+    })
+  }
+  const closeTrail = () => {
+    cancelAnimationFrame(trailFrame)
+    trailFrame = 0
+    waiting = null
+    trailWanted = false
+    leaveTrail()
+  }
+  if (scene) {
+    const openTrail = () => {
+      if (scene.hidden) return
+      trailWanted = true
+      queueTrail()
+    }
+    scene.addEventListener('trail:show', openTrail, { signal })
+    scene.addEventListener('trail:hide', closeTrail, { signal })
+    scene.addEventListener('trail:dispose', closeTrail, { signal })
+    scene.addEventListener('trail:reflow', queueTrail, { signal })
+    scene.addEventListener('load', openTrail, { capture: true, signal })
+    window.addEventListener('resize', queueTrail, { passive: true, signal })
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    motion.addEventListener('change', () => (motion.matches ? closeTrail() : openTrail()), {
+      signal,
+    })
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (document.hidden) {
+          const resume = trailWanted || !!trailWalk
+          closeTrail()
+          trailWanted = resume
+        } else queueTrail()
+      },
+      { signal },
+    )
+    if (!scene.hidden) openTrail()
+  }
   document.addEventListener('pointermove', onPointerMove, { passive: true, signal })
   document.addEventListener('pointerdown', onPointerDown, { passive: true, signal })
   document.addEventListener(
@@ -1098,5 +1256,8 @@ document.addEventListener('nav', () => {
     { passive: true, signal },
   )
   window.addEventListener('pagehide', () => (doc || carry) && savePosition(), { signal })
-  window.addCleanup(() => controller.abort())
+  window.addCleanup(() => {
+    closeTrail()
+    controller.abort()
+  })
 })
