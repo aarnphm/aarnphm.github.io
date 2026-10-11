@@ -10,7 +10,17 @@ tags:
   - 'math'
   - 'differential equations'
   - 'mathematical analysis'
-layout: 'A|L'
+resource:
+  {
+    kind: 'collection',
+    type: 'Pages',
+    links:
+      [
+        'courses/18-156-projection-theory-spring-2025/pages/final-project/',
+        'courses/18-156-projection-theory-spring-2025/pages/syllabus/',
+      ],
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
