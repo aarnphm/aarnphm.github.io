@@ -24,8 +24,11 @@ There are two kinds of assignments: Weekly exercises that are not to be handed i
 ### problem sets
 
 The problem sets are assigned from the textbook: Munkres, James R. _Topology_. 2nd ed. Upper Saddle River, NJ: Prentice-Hall, 28 December 1999. ISBN: 0131816292.
+
 Problem set 0 is a "diagnostic" problem set. It is designed to determine whether you are comfortable enough with the language of set theory to begin the study of topology. We will grade it in class at the second session. lf you miss more than 8 answers, you should probably take another proof-based course before trying this one. The grade on this problem set is intended for advising purposes only.
+
 For problem sets 1-4, the solutions are to be written out carefully and legibly, in good mathematical style. "Careful" has an obvious meaning. "Legible" means to do it in LATEX or (if handwritten) in ink and double-spaced. "Good mathematical style" means the style demanded by editors of math journals. Please read these comments about what the mathematics profession means by "good mathematical style ([[courses/18.901-fall-2004/resources/commentsonstyle/|pdf]])." Follow them!
+
 Note well: your first written solutions constitute your first draft; this is not acceptable. It will need to be rewritten, to clean up grammar and sentence structure and exposition. Treat it like a paper in a humanities class. (Unless you hand in sloppy papers there too!)
 
 | PROBLEM SETS  | DESCRIPTION                                                                                                                                                                                                                                                                                                                           |
