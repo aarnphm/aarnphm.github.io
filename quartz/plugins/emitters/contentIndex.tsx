@@ -58,6 +58,10 @@ export type ContentLayout =
   | 'A|L'
   | 'L'
   | 'triathlon'
+  | 'course'
+  | 'courses'
+  | 'flashcards'
+  | 'resource'
 export type ContentDetails = {
   slug: string
   title: string
