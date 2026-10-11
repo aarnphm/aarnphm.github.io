@@ -50,8 +50,10 @@ import Spacer from './Spacer'
 import StackedNotes from './StackedNotes'
 import TableOfContents from './TableOfContents'
 import TagList from './TagList'
+import VisitorWeather from './VisitorWeather'
 
 export {
+  VisitorWeather,
   MasonryPage,
   TriathlonPage,
   CanvasContainer,

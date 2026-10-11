@@ -1,0 +1,235 @@
+@use '../../styles/variables.scss' as *;
+
+.visitor-weather {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: var(--z-dropdown);
+}
+
+.visitor-weather-toggle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--darkgray);
+  cursor: pointer;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover,
+  &[aria-expanded='true'] {
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.visitor-weather-panel {
+  position: fixed;
+  inset: 4rem 1rem auto auto;
+  width: min(18rem, calc(100vw - 2rem));
+  margin: 0;
+  padding: 0.75rem;
+  color: var(--darkgray);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 0;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  text-transform: lowercase;
+  transform-origin: top right;
+  opacity: 0;
+  transform: translate(8px, -12px) scale(0.94);
+  transition:
+    opacity 180ms ease-out,
+    transform $panel-duration $panel-ease,
+    display $panel-duration allow-discrete,
+    overlay $panel-duration allow-discrete;
+
+  &:popover-open {
+    opacity: 1;
+    transform: none;
+  }
+  @starting-style {
+    &:popover-open {
+      opacity: 0;
+      transform: translate(8px, -12px) scale(0.94);
+    }
+  }
+}
+
+.visitor-weather-heading,
+.visitor-weather-readout,
+.visitor-weather-foot,
+.visitor-weather-source {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.visitor-weather-heading {
+  margin-bottom: 0.5rem;
+}
+
+.visitor-weather-country {
+  color: var(--darkgray);
+  text-transform: uppercase;
+}
+
+.visitor-weather-map {
+  position: relative;
+  height: 145px;
+  margin-bottom: 0.5rem;
+  background: var(--lightgray);
+  overflow: hidden;
+
+  [data-weather-map] {
+    width: 100%;
+    height: 100%;
+  }
+  .mapboxgl-ctrl-attrib {
+    font-size: 9px;
+    line-height: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visitor-weather-panel {
+    transform: none;
+    transition: none;
+    @starting-style {
+      &:popover-open {
+        transform: none;
+      }
+    }
+  }
+}
+
+.visitor-weather-map-status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  border: 0;
+  padding: 0.5rem;
+  background: var(--light);
+  color: var(--darkgray);
+  font: inherit;
+  cursor: pointer;
+  &:disabled {
+    cursor: default;
+  }
+  &[hidden] {
+    display: none !important;
+  }
+}
+
+.visitor-weather-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.visitor-weather-moon,
+.visitor-weather[data-weather-day='false'] .visitor-weather-sun {
+  display: none;
+}
+.visitor-weather[data-weather-day='false'] .visitor-weather-moon {
+  display: block;
+}
+
+.visitor-weather-readout {
+  color: var(--dark);
+
+  [data-weather-temperature] {
+    text-transform: none;
+  }
+}
+
+.visitor-weather-foot {
+  flex-wrap: wrap;
+  column-gap: 0.5rem;
+  row-gap: 0;
+  margin-top: 0.15rem;
+  font-size: 0.6rem;
+}
+
+.visitor-weather-source {
+  margin-top: 0.5rem;
+  font-size: 0.55rem;
+
+  a,
+  button {
+    color: var(--darkgray);
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .visitor-weather-icon {
+    animation: visitor-weather-sun-float 6s ease-in-out infinite alternate;
+  }
+  .visitor-weather-rays {
+    transform-origin: 12px 12px;
+    animation: visitor-weather-sun-turn 36s linear infinite;
+  }
+}
+
+@keyframes visitor-weather-sun-float {
+  from {
+    transform: translateY(1px);
+  }
+  to {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes visitor-weather-sun-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+  .visitor-weather {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  .visitor-weather-panel {
+    inset: 3.5rem 0.75rem auto auto;
+  }
+}
