@@ -1,6 +1,6 @@
 // Where the sun and moon stand for whoever is looking, the season where they are, and the weather
 // they are standing in. The worker places the visitor from Cloudflare's reading of their address,
-// rounded to a half degree, and passes on Open-Meteo's current conditions for that cell. Without it
+// rounded to a tenth of a degree, and passes on Open-Meteo's current conditions for that cell. Without it
 // the page guesses 45° of latitude on whichever side of the equator the time zone lies, and a
 // longitude from the clock's offset from UTC.
 
@@ -14,6 +14,8 @@ export type Weather = {
   wind: number
   // Air temperature at 2 m, °C.
   temp: number
+  // Snow that fell over the twelve hours to now, cm.
+  snow?: number | null
 }
 export type Site = { lat: number; lon: number; place: string | null; weather: Weather | null }
 
@@ -28,6 +30,8 @@ export type Sky = {
   // 0 calm .. 1 a gale.
   wind: number
   temp: number | null
+  // Centimetres of snow over the last twelve hours.
+  snow: number
 }
 
 // A body in the sky: degrees above the horizon, and how far across the view it stands, from -1 at
@@ -126,7 +130,16 @@ export function guessSite(): Site {
 // The WMO code, read for what the scene has to paint.
 export function readSky(w: Weather | null): Sky {
   if (!w)
-    return { cover: 0.3, fall: 'none', heavy: 0, fog: false, storm: false, wind: 0.2, temp: null }
+    return {
+      cover: 0.3,
+      fall: 'none',
+      heavy: 0,
+      fog: false,
+      storm: false,
+      wind: 0.2,
+      temp: null,
+      snow: 0,
+    }
   const c = w.code
   const steps = (codes: number[], at: number[]) => at[Math.max(0, codes.indexOf(c))]
   let fall: Fall = 'none'
@@ -147,15 +160,30 @@ export function readSky(w: Weather | null): Sky {
   const fog = c === 45 || c === 48
   // Showers and storms need cloud even when the cover reading lags behind them.
   const cover = Math.max(w.cloud, fall === 'none' ? 0 : 0.75, fog ? 0.9 : 0)
-  return { cover, fall, heavy, fog, storm: c >= 95, wind: Math.min(1, w.wind / 45), temp: w.temp }
+  const snow = typeof w.snow === 'number' && Number.isFinite(w.snow) ? Math.max(0, w.snow) : 0
+  return {
+    cover,
+    fall,
+    heavy,
+    fog,
+    storm: c >= 95,
+    wind: Math.min(1, w.wind / 45),
+    temp: w.temp,
+    snow,
+  }
 }
 
-// Refresh the visitor's place on each visit; the worker caches the forecast for fifteen minutes.
+// The snow season on the ranges, from about the middle of October to the middle of May: the ski hill
+// keeps its winter hours and the bike park's dirt line is shut, as the lift-served parks round here
+// are.
+export const winter = (al: Almanac) => Math.cos((2 * Math.PI * (al.winterDay - 40)) / 365.24) > -0.2
+
 // A night bright enough that a lamp is not doing all the work: a moon within four days of full, well
 // up, through a mostly clear sky. Full-moon rides and skin-ups bring people out after midnight.
 export const moonlit = (al: Almanac, sky: Sky) =>
   al.sun.alt < -6 && al.moon.alt > 10 && Math.abs(al.moon.phase - 0.5) < 0.14 && sky.cover < 0.6
 
+// Refresh the visitor's place on each visit; the worker caches the forecast for fifteen minutes.
 export async function fetchSite(signal: AbortSignal): Promise<Site | null> {
   try {
     const res = await fetch('/api/weather', { signal, cache: 'no-store' })
