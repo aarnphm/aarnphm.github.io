@@ -1664,6 +1664,7 @@ async function mouseEnterHandler(
 
 async function mouseClickHandler(evt: MouseEvent, link: HTMLAnchorElement) {
   clearActivePopover()
+  if (getFullSlug(window) === 'index') return
 
   const thisUrl = new URL(document.location.href)
   const targetUrl = new URL(link.href)
