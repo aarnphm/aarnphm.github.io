@@ -1,24 +1,29 @@
 ---
-date: '2026-06-05'
+title: 'notes e'
 description: 'Notes E: These Supplementary Notes are optional reading for the corresponding lecture sessions.'
-id: mit-18-901-fall-2004-resource-resources-notes-e
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-06 04:50:54 GMT-04:00
+id: 'mit-18-901-fall-2004-resource-resources-notes-e'
 tags:
-  - course
-  - mit
-  - ocw
-  - math
-  - math/topology
-  - geometry
-title: notes e
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'topology and geometry'
+  - 'topology'
+  - 'geometry'
+  - 'lecture notes'
+resource:
+  {
+    kind: 'chapter',
+    file: 'static_resources/f3446e7677c30d7cf6926248861c168d_notes_e.pdf',
+    bytes: 116556,
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]
-
-![[courses/18.901-fall-2004/static_resources/f3446e7677c30d7cf6926248861c168d_notes_e.pdf]]
 
 Notes E: These Supplementary Notes are optional reading for the corresponding lecture sessions.
 

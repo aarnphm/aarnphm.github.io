@@ -1,24 +1,29 @@
 ---
-date: '2026-06-05'
+title: 'notes a'
 description: 'Notes A: These Supplementary Notes are optional reading for the corresponding lecture sessions. (Notes courtesy of Dr. Joao P. Santos. Used with permission.)'
-id: mit-18-901-fall-2004-resource-resources-18901
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-06 13:13:54 GMT-04:00
+id: 'mit-18-901-fall-2004-resource-resources-18901'
 tags:
-  - course
-  - mit
-  - ocw
-  - math
-  - math/topology
-  - geometry
-title: notes a
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'topology and geometry'
+  - 'topology'
+  - 'geometry'
+  - 'lecture notes'
+resource:
+  {
+    kind: 'chapter',
+    file: 'static_resources/0162d186ff55f17b25d9c57f6fd211cc_18901.pdf',
+    bytes: 224078,
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]
-
-![[courses/18.901-fall-2004/static_resources/0162d186ff55f17b25d9c57f6fd211cc_18901.pdf]]
 
 Notes A: These Supplementary Notes are optional reading for the corresponding lecture sessions. (Notes courtesy of Dr. Joao P. Santos. Used with permission.)
 

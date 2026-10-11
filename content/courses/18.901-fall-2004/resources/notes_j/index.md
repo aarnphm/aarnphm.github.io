@@ -1,24 +1,29 @@
 ---
-date: '2026-06-05'
+title: 'notes j'
 description: 'Notes J: These Supplementary Notes are optional reading for the corresponding lecture sessions.'
-id: mit-18-901-fall-2004-resource-resources-notes-j
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-06 04:50:52 GMT-04:00
+id: 'mit-18-901-fall-2004-resource-resources-notes-j'
 tags:
-  - course
-  - mit
-  - ocw
-  - math
-  - math/topology
-  - geometry
-title: notes j
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'topology and geometry'
+  - 'topology'
+  - 'geometry'
+  - 'lecture notes'
+resource:
+  {
+    kind: 'chapter',
+    file: 'static_resources/d9f0937d9951710b8cb8bba08fcf8d69_notes_j.pdf',
+    bytes: 167415,
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]
-
-![[courses/18.901-fall-2004/static_resources/d9f0937d9951710b8cb8bba08fcf8d69_notes_j.pdf]]
 
 Notes J: These Supplementary Notes are optional reading for the corresponding lecture sessions.
 
