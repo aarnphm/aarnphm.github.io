@@ -179,6 +179,10 @@ export default (() => {
     }
 
     if (fileData.frontmatter?.protected !== true) {
+      const sourceHref = resolveRelative(
+        fileData.slug!,
+        ((fileData.slug === 'arena' ? 'are.na' : fileData.slug!) + '.md') as FullSlug,
+      )
       const shareButton = (tab: string, label: string) =>
         h('button', { type: 'button', class: 'content-meta-link', 'data-press-kit': tab }, [label])
       meta.push({
@@ -196,36 +200,31 @@ export default (() => {
         item: [
           h(
             'a',
-            {
-              href: resolveRelative(
-                fileData.slug!,
-                ((fileData.slug === 'arena' ? 'are.na' : fileData.slug!) + '.md') as FullSlug,
-              ),
-              target: '_blank',
-              rel: 'noopener noreferrer',
-              class: 'llm-source',
-            },
+            { href: sourceHref, target: '_blank', rel: 'noopener noreferrer', class: 'llm-source' },
             [h('span', { title: 'voir https://github.com/AnswerDotAI/llms-txt' }, ['llms.txt'])],
           ),
           h(
-            'span',
+            'button',
             {
               type: 'button',
-              ariaLabel: 'copy source',
+              'aria-label': 'Copier la source Markdown',
+              title: 'Copier la source Markdown',
               class: 'clipboard-button',
-              'data-href': resolveRelative(
-                fileData.slug!,
-                ((fileData.slug === 'arena' ? 'are.na' : fileData.slug!) + '.md') as FullSlug,
-              ),
+              'data-href': sourceHref,
             },
 
-            h('svg', { ...svgOptions, viewbox: '0 -8 24 24', class: 'copy-icon' }, [
-              h('use', { href: '#github-copy' }),
-            ]),
-            h('svg', { ...svgOptions, viewbox: '0 -8 24 24', class: 'check-icon' }, [
-              h('use', { href: '#github-check' }),
-            ]),
+            h(
+              'svg',
+              { ...svgOptions, viewbox: '0 -8 24 24', class: 'copy-icon', 'aria-hidden': true },
+              [h('use', { href: '#github-copy' })],
+            ),
+            h(
+              'svg',
+              { ...svgOptions, viewbox: '0 -8 24 24', class: 'check-icon', 'aria-hidden': true },
+              [h('use', { href: '#github-check' })],
+            ),
           ),
+          h('span', { class: 'source-copy-status', role: 'status' }),
         ],
       })
     }

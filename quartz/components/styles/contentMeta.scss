@@ -27,6 +27,30 @@ ul.content-meta {
 
   .clipboard-button {
     position: relative;
+    float: none;
+    padding: 0.2rem;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    opacity: 1;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+
+    &[aria-busy='true'] {
+      cursor: wait;
+    }
+  }
+
+  .readable-source > .container {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .source-copy-status {
+    font-size: 0.85em;
   }
 }
 
