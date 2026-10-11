@@ -35,6 +35,8 @@
 }
 
 .visitor-weather-panel {
+  // Keep the closed map measurable so its tiles render before the first hover.
+  display: block;
   position: fixed;
   inset: 4rem 4.25rem auto auto;
   width: min(13.5rem, calc(100vw - 5rem));
@@ -51,15 +53,19 @@
   font-variant-numeric: tabular-nums;
   text-transform: lowercase;
   transform-origin: top right;
+  visibility: hidden;
+  pointer-events: none;
   opacity: 0;
   transform: translate(8px, -12px) scale(0.94);
   transition:
     opacity 180ms ease-out,
     transform $panel-duration $panel-ease,
-    display $panel-duration allow-discrete,
+    visibility $panel-duration,
     overlay $panel-duration allow-discrete;
 
   &:popover-open {
+    visibility: visible;
+    pointer-events: auto;
     opacity: 1;
     transform: none;
   }
@@ -72,8 +78,7 @@
 }
 
 .visitor-weather-heading,
-.visitor-weather-readout,
-.visitor-weather-foot {
+.visitor-weather-readout {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -82,6 +87,9 @@
 
 .visitor-weather-heading {
   margin-bottom: 0.25rem;
+  [data-weather-temperature] {
+    text-transform: none;
+  }
 }
 
 .visitor-weather-country {
@@ -154,15 +162,11 @@
   display: block;
 }
 
-.visitor-weather-foot {
-  flex-wrap: wrap;
+.visitor-weather-readout {
   column-gap: 0.5rem;
   font-size: 0.55rem;
-}
-
-.visitor-weather-readout {
-  margin-bottom: 0.2rem;
-  [data-weather-temperature] {
+  white-space: nowrap;
+  [data-weather-wind] {
     text-transform: none;
   }
 }

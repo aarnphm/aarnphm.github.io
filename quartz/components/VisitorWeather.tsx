@@ -44,7 +44,9 @@ export default (() => {
           aria-label="Weather near you"
         >
           <div class="visitor-weather-heading" role="status">
-            <span data-weather-condition>loading weather</span>
+            <span>
+              <span data-weather-temperature /> <span data-weather-condition>loading weather</span>
+            </span>
             <span class="visitor-weather-country" data-weather-country />
           </div>
           <div
@@ -63,11 +65,8 @@ export default (() => {
             </button>
           </div>
           <div class="visitor-weather-readout">
-            <span data-weather-temperature />
-            <span data-weather-wind />
-          </div>
-          <div class="visitor-weather-foot">
             <span data-weather-countdown>local daylight</span>
+            <span data-weather-wind />
           </div>
           <button class="visitor-weather-retry" type="button" data-weather-retry hidden>
             try again
