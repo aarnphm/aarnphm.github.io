@@ -9,8 +9,8 @@
 // lift and the gate, friends drop in as a train, and now and then somebody goes down and the next
 // rider stops to ask. Whoever goes down hard enough to stay down gets the medic from the hut at the
 // bottom, who walks them out, or with a second medic carries them out on a board, while the starter
-// holds the gate. The hill's cattle (404-herd.ts) graze between the turns, and riders ease off
-// past any that wander onto the line.
+// holds the gate. The hill's cattle (404-herd.ts) graze between the turns, and riders swerve to the
+// far side of the line past any grazing at its edge.
 
 import { type Almanac, type Sky, moonlit, winter } from './404-almanac'
 import { type Voices, say } from './404-crew'
@@ -38,9 +38,12 @@ import {
   type HerdEnv,
   type HerdInk,
   type Passer,
+  BARN,
   herdEnv,
   makeHerd,
+  paintBarn,
   paintBeast,
+  paintFarmer,
   poseHerd,
   stepHerd,
 } from './404-herd'
@@ -140,6 +143,8 @@ export type Rider = {
   gone: boolean
   // The way they are walking or being carried out.
   walk: Walk | null
+  // How far they have swerved off the middle of the line, across it.
+  swerve: number
 }
 
 export type ParkEnv = {
@@ -294,6 +299,7 @@ function rider(p: Park, party: number, kid: boolean, skill: number, hikes: boole
     asked: 0,
     gone: false,
     walk: null,
+    swerve: 0,
   }
   return one
 }
@@ -396,6 +402,7 @@ function release(p: Park, r: Rider) {
   r.v = 0
   r.fell = false
   r.shaken = false
+  r.swerve = 0
   r.plan = planFor(p, r)
   p.since = 0
   p.last = r.party
@@ -470,8 +477,18 @@ function ride(p: Park, r: Rider, dt: number, voices: Voices) {
     const at = footQ(m.walk)
     if (at !== null && at - me > -15 && at - me < 90) want = Math.min(want, PASS)
   }
-  for (const b of p.herd.beasts)
-    if (b.line !== null && b.line - me > -15 && b.line - me < 90) want = Math.min(want, PASS)
+  // A beast grazing at the line's edge, ahead or alongside: they hold their speed and swerve to the
+  // far side of the line, the more the closer it stands.
+  const [nx, ny] = across(t, r.k)
+  let away = 0
+  for (const b of p.herd.beasts) {
+    const bx = b.x - t.x[r.k]
+    const by = b.y - t.y[r.k]
+    if (b.in || bx * ny - by * nx < -8) continue
+    const lean = -Math.sign(bx * nx + by * ny) * SWERVE * clamp((24 - Math.hypot(bx, by)) / 6, 0, 1)
+    if (Math.abs(lean) > Math.abs(away)) away = lean
+  }
+  r.swerve += clamp(away - r.swerve, -SWERVE * 3 * dt, SWERVE * 3 * dt)
   const gr = t.grade[Math.min(t.n - 1, r.k + 1)]
   const cos = 1 / Math.hypot(1, gr)
   const pull = -G * gr * cos - CRR * G * cos - DRAG * r.v * r.v
@@ -671,6 +688,8 @@ const CLIMB = 1.3 * UNIT
 const LIMP = 0.8 * UNIT
 const CARRY = 0.7 * UNIT
 const PASS = 2.5 * UNIT
+// The furthest a rider swerves across the line, about two pixels.
+const SWERVE = 8
 
 // A way on foot: legs along the paths or up and down a line, each from one distance to another at
 // its own pace, and how far along the current one the walker has got.
@@ -692,6 +711,15 @@ export type Medic = {
 const medic = (): Medic => ({ state: 'post', t: 0, until: 0, walk: null, who: null, board: false })
 
 // On a line at `q`: the point, and which way the line runs there.
+// Across a line at a sample, square to the way down it on the screen.
+function across(t: Track, k: number): Pt {
+  const j = Math.min(t.n - 2, k)
+  const dx = t.x[j + 1] - t.x[j]
+  const dy = t.y[j + 1] - t.y[j]
+  const l = Math.hypot(dx, dy) || 1
+  return [-dy / l, dx / l]
+}
+
 function onTrack(t: Track, q: number) {
   const k = Math.min(t.n - 2, seek(t, q, 0))
   const u = clamp((q - t.q[k]) / (t.q[k + 1] - t.q[k]), 0, 1)
@@ -1009,13 +1037,7 @@ export function stepPark(p: Park, dt: number, voices: Voices) {
   }
   p.riders = p.riders.filter(r => !r.gone)
   stepMedics(p, dt, voices)
-  stepHerd(
-    p.herd,
-    p.env.herd,
-    dt,
-    passers(p),
-    q => !p.riders.some(o => onCourse(o) && mainQ(o) > q - 160 && mainQ(o) < q + 10),
-  )
+  stepHerd(p.herd, p.env.herd, dt, passers(p))
 
   // The starter lets the next rider go once whoever went before is well down the line and nobody
   // is down on it: a few seconds between strangers, a couple between friends, who go as a train.
@@ -1149,8 +1171,12 @@ function place(r: Rider): { x: number; y: number; face: number; ground: number }
     case 'rest':
       return { x: HUT[0] + 24, y: HUT[1], face: -1, ground: HUT[1] }
     default: {
-      const at = onTrack(TRACKS[r.line], r.q)
-      return { x: at.x, y: r.state === 'air' ? -r.z : at.y, face: at.face, ground: at.y }
+      const t = TRACKS[r.line]
+      const at = onTrack(t, r.q)
+      const [nx, ny] = across(t, r.k)
+      const s = r.state === 'ride' ? r.swerve : 0
+      const y = at.y + ny * s
+      return { x: at.x + nx * s, y: r.state === 'air' ? -r.z : y, face: at.face, ground: y }
     }
   }
 }
@@ -1228,6 +1254,13 @@ export function paintPark(
     }
   for (let di = -3; di <= 3; di++) dot(d, g, hi + di, hj - 5, ink.steel)
   if (dark && p.env.open) lamp(hi + 3, hj - 4)
+  // The barn, with the yard light over its doors through the dark, and the farmer at it with a
+  // lantern.
+  paintBarn(d, g, ink.herd, p.herd)
+  if (dark) lamp(col(g, BARN[0]), row(g, BARN[1]) - 4)
+  paintFarmer(d, g, ink.herd, p.herd, p.time)
+  const farmer = p.herd.farmer
+  if (dark && farmer.chore !== 'home') lamp(col(g, farmer.x) + farmer.face, row(g, farmer.y) - 2)
   p.leaning.forEach((b, n) => {
     dot(d, g, hi - 3 - n, hj - 1, ink.tyre)
     dot(d, g, hi - 3 - n, hj - 2, ink.frames[b.frame % ink.frames.length])
