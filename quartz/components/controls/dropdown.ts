@@ -38,7 +38,7 @@ export const setupDropdown = ({
     closeButton.type = 'button'
     closeButton.className = close.className
     closeButton.textContent = '×'
-    closeButton.setAttribute('aria-label', `Close ${trigger.textContent?.trim() || 'panel'}`)
+    closeButton.setAttribute('aria-label', `close ${trigger.textContent?.trim() || 'panel'}`)
     closeButton.addEventListener('click', onClose)
     close.container.prepend(closeButton)
   }

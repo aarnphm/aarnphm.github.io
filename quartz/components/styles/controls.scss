@@ -24,7 +24,7 @@
   max-inline-size: 100%;
 }
 
-.g-datepicker-trigger {
+button.g-datepicker-trigger {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -45,11 +45,9 @@
   transition:
     color 0.15s ease,
     background-color 0.15s ease,
-    border-color 0.15s ease,
     transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
 
   &[aria-expanded='true'] {
-    border-color: color-mix(in srgb, var(--control-accent, var(--secondary)) 42%, var(--lightgray));
     background: color-mix(
       in srgb,
       var(--control-accent, var(--secondary)) 8%,
@@ -184,8 +182,11 @@
     color: color-mix(in srgb, var(--gray) 50%, transparent);
   }
 
-  &[data-today]:not([aria-pressed='true']) {
-    border-color: color-mix(in srgb, var(--gray) 42%, transparent);
+  // Today is marked in text ink, like the month grid's day header; a faint border fell under 3:1.
+  &[data-today] {
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   &[aria-pressed='true'] {
@@ -277,7 +278,7 @@
   z-index: 1;
 }
 
-.g-select-trigger {
+button.g-select-trigger {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -294,12 +295,9 @@
   font-size: 1em;
   font-variant-numeric: tabular-nums;
   cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    background-color 0.15s ease;
+  transition: background-color 0.15s ease;
 
   &[aria-expanded='true'] {
-    border-color: color-mix(in srgb, var(--control-accent, var(--secondary)) 48%, var(--lightgray));
     background: color-mix(in srgb, var(--control-accent, var(--secondary)) 8%, var(--light));
   }
 }
@@ -339,7 +337,7 @@
   gap: 1px;
   margin: 0;
   padding: 0.2rem;
-  border: 1px solid color-mix(in srgb, var(--gray) 34%, transparent);
+  border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--light) 96%, transparent);
   color: var(--dark);
@@ -490,7 +488,6 @@
   }
 
   .g-select-trigger:hover {
-    border-color: color-mix(in srgb, var(--gray) 44%, transparent);
     background: color-mix(in srgb, var(--control-accent, var(--secondary)) 5%, var(--light));
   }
 
