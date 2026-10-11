@@ -7,15 +7,15 @@ export default (() => {
   const VisitorWeather: QuartzComponent = ({ fileData }) => {
     if (fileData.slug !== 'index') return null
     return (
-      <div class="visitor-weather" data-weather-state="loading" data-weather-day="true">
+      <div class="visitor-weather" data-weather-state="loading">
         <button
           class="visitor-weather-toggle"
           type="button"
           popovertarget="visitor-weather-panel"
-          aria-label="Weather near you"
+          aria-label="Switch theme"
           aria-expanded="false"
           aria-controls="visitor-weather-panel"
-          title="Weather near you"
+          title="Switch theme"
         >
           <svg
             class="visitor-weather-icon"
