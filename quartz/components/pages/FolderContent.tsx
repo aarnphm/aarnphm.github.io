@@ -483,7 +483,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     const isCourseHome =
       courseDir !== null &&
       fileData.slug !== undefined &&
-      simplifySlug(fileData.slug) === `courses/${courseDir}`
+      stripSlashes(simplifySlug(fileData.slug)) === `courses/${courseDir}`
     const baseClassList = ['popover-hint', 'notes-list', 'side-col', ...cssClasses]
     const baseListClass = baseClassList.join(' ')
     const listClassName =
