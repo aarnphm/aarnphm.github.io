@@ -735,9 +735,12 @@ blockquote.callout:is(
     padding: var(--space-2) 0 var(--space-3);
   }
 
+  // children stay overflow: visible, so the zero-height content box must clip them itself
   &.is-collapsed > .callout-content {
     padding-bottom: 0;
     padding-top: 0;
+    overflow: hidden;
+    visibility: hidden;
   }
 
   & > .callout-content > * {

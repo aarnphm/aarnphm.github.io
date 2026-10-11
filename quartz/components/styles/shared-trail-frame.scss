@@ -1,4 +1,9 @@
 @use '../../styles/mixin.scss' as *;
+@use './trail-wayfarers.scss';
+@use './trail-weather.scss';
+@use './trail-fauna.scss';
+@use './trail-mountains.scss';
+@use './trail-alpine-travelers.scss';
 
 .homepage-trail-scene {
   .trail-scene {
@@ -37,6 +42,13 @@
   .trail-hiker-tracks {
     fill: var(--darkgray);
     opacity: 0.38;
+  }
+  .trail-reader-tracks {
+    fill: var(--darkgray);
+    opacity: 0.3;
+  }
+  .trail-reader-tracks path:nth-last-child(n + 25) {
+    opacity: 0.4;
   }
   .trail-backpacker {
     shape-rendering: crispEdges;
@@ -98,6 +110,88 @@
   }
   .trail-upland {
     shape-rendering: crispEdges;
+  }
+  .trail-terrain,
+  .trail-pond,
+  .trail-pasture,
+  .trail-map-reader {
+    shape-rendering: crispEdges;
+  }
+  .trail-terrace {
+    fill: color-mix(in srgb, var(--lightgray) 18%, var(--light));
+  }
+  .trail-terrace-1 {
+    fill: color-mix(in srgb, var(--lightgray) 24%, var(--light));
+  }
+  .trail-terrace-2 {
+    fill: color-mix(in srgb, var(--gray) 9%, var(--light));
+  }
+  .trail-meadow-tuft {
+    fill: color-mix(in srgb, var(--gray) 36%, var(--light));
+  }
+  .trail-meadow-reed {
+    fill: color-mix(in srgb, var(--gray) 55%, #84916b);
+  }
+  .trail-reed-head {
+    fill: color-mix(in srgb, var(--darkgray) 60%, #ac9068);
+  }
+  .trail-water {
+    fill: color-mix(in srgb, var(--light) 64%, #9caeb0);
+  }
+  .trail-pond-bank .trail-water {
+    fill: color-mix(in srgb, var(--lightgray) 42%, var(--light));
+  }
+  .trail-pond-ripple,
+  .trail-goose-wake {
+    fill: color-mix(in srgb, var(--light) 80%, #829a9f);
+  }
+  .trail-animal-coat {
+    fill: color-mix(in srgb, var(--gray) 45%, #b6a084);
+  }
+  .trail-animal-tone-1 .trail-animal-coat {
+    fill: var(--darkgray);
+  }
+  .trail-animal-tone-2 .trail-animal-coat {
+    fill: color-mix(in srgb, var(--lightgray) 45%, #c1aa86);
+  }
+  .trail-animal-patch,
+  .trail-animal-paw,
+  .trail-animal-nose {
+    fill: var(--darkgray);
+  }
+  .trail-animal-tone-1 .trail-animal-patch {
+    fill: var(--lightgray);
+  }
+  .trail-animal-eye,
+  .trail-goose-neck {
+    fill: var(--dark);
+  }
+  .trail-goose-feather,
+  .trail-goose-cheek {
+    fill: var(--lightgray);
+  }
+  .trail-goose-wing {
+    fill: var(--darkgray);
+  }
+  .trail-goose-bill {
+    fill: color-mix(in srgb, var(--gray) 40%, #c69b60);
+  }
+  .trail-animal-shadow {
+    fill: var(--gray);
+    opacity: 0.25;
+  }
+  .trail-map-paper {
+    fill: var(--light);
+  }
+  .trail-map-edge,
+  .trail-map-fold {
+    fill: var(--gray);
+  }
+  .trail-map-route {
+    fill: color-mix(in srgb, var(--darkgray) 65%, #84916b);
+  }
+  .trail-reader-1 .trail-camper-coat {
+    fill: color-mix(in srgb, var(--gray) 55%, #a87564);
   }
   .trail-upland-ground {
     fill: color-mix(in srgb, var(--lightgray) 28%, var(--light));
@@ -368,6 +462,21 @@
     font-variant-numeric: tabular-nums;
     pointer-events: auto;
   }
+  .trail-tree-hint {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -100%);
+    color: var(--darkgray);
+    font: 10px/1.6 var(--codeFont);
+    white-space: nowrap;
+  }
+  .trail-scene[data-camp-tools='open'] .trail-tree-hint,
+  .trail-tree-toggle:hover .trail-tree-hint,
+  .trail-tree-toggle:focus-visible .trail-tree-hint {
+    display: block;
+  }
   .trail-tree-panel-head {
     display: flex;
     align-items: baseline;
@@ -549,6 +658,13 @@
     .trail-landmarks {
       animation: trail-arrive 400ms ease-out 200ms both;
     }
+    .trail-ground {
+      animation: trail-arrive 500ms ease-out 200ms both;
+    }
+    .trail-fauna,
+    .trail-wayfarers {
+      animation: trail-arrive 600ms ease-out 1200ms both;
+    }
     .trail-stone {
       animation: trail-arrive 160ms ease-out var(--trail-arrival, 0ms) both;
     }
@@ -566,6 +682,13 @@
     }
     .trail-cow-tail {
       animation: trail-tail-flick 9s steps(1, end) var(--trail-cow-delay) infinite;
+    }
+    .trail-dog-tail {
+      transform-origin: 4px 6px;
+      animation: trail-dog-wag 1400ms steps(2, end) var(--trail-animal-delay) infinite;
+    }
+    .trail-cat-tail {
+      animation: trail-tail-flick 11s steps(1, end) var(--trail-animal-delay) infinite;
     }
     .trail-stone:focus-visible,
     .trail-campsite:focus-within {
@@ -602,9 +725,6 @@
     .trail-hint-wisp {
       animation: trail-hint-drift 4s ease-in-out infinite alternate;
     }
-    .trail-hint-wisp-high {
-      animation-duration: 5s;
-    }
     .trail-hint-wisp-middle {
       animation-direction: alternate-reverse;
     }
@@ -637,6 +757,15 @@
     82%,
     86% {
       transform: translateX(-2px);
+    }
+  }
+  @keyframes trail-dog-wag {
+    0%,
+    100% {
+      transform: rotate(-12deg);
+    }
+    50% {
+      transform: rotate(12deg);
     }
   }
   @keyframes trail-arrive {

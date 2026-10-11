@@ -20,6 +20,7 @@ export function forestControlsMarkup(id: string) {
   return `
     <button class="trail-tree-toggle" type="button" aria-label="Tree settings" aria-expanded="false" aria-controls="${id}-forest">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2h2v2h2v2h2v2h-2v2h3v2h2v2h-4v2h5v3H3v-3h5v-2H4v-2h2v-2h3V8H7V6h2V4h2ZM11 19h2v4h-2Z"/></svg>
+      <span class="trail-tree-hint" aria-hidden="true">click me</span>
     </button>
     <div class="trail-tree-panel" id="${id}-forest" role="group" aria-label="Tree generation" hidden>
       <div class="trail-tree-panel-head"><span>grove</span><span>l-system</span><button class="trail-tree-close" type="button" aria-label="Close tree settings"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button></div>

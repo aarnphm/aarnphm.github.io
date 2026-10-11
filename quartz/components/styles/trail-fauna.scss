@@ -1,0 +1,49 @@
+.trail-scene {
+  [data-trail-wander] {
+    shape-rendering: crispEdges;
+  }
+
+  .trail-goose {
+    animation: none;
+  }
+
+  [data-phase='wandering'][data-stride='0'] {
+    .trail-animal-leg-front {
+      transform: translateX(var(--trail-animal-step));
+    }
+    .trail-animal-leg-back {
+      transform: translateX(calc(-1 * var(--trail-animal-step)));
+    }
+  }
+
+  [data-phase='wandering'][data-stride='1'] {
+    .trail-animal-leg-front {
+      transform: translateX(calc(-1 * var(--trail-animal-step)));
+    }
+    .trail-animal-leg-back {
+      transform: translateX(var(--trail-animal-step));
+    }
+    .trail-goose-wake {
+      opacity: 0.8;
+      transform: translateX(-1px);
+    }
+  }
+
+  [data-trail-animal='cow'][data-phase='resting'] .trail-cow-head {
+    transform: translateY(calc(4 * var(--trail-animal-step)));
+  }
+
+  [data-motion='paused'] :is(.trail-cow-tail, .trail-dog-tail, .trail-cat-tail) {
+    animation-play-state: paused;
+  }
+
+  [data-motion='still'] :is(.trail-cow-tail, .trail-dog-tail, .trail-cat-tail) {
+    animation: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-trail-wander][data-motion='active'] .trail-cow-head {
+      transition: transform 400ms steps(2, end);
+    }
+  }
+}

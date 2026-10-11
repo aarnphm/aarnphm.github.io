@@ -49,9 +49,9 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
 
   const duration = () => {
     if (phase === 'waiting') return (incoming?.readyAfter ?? 0) + 250
-    if (phase === 'arriving') return Math.max(14000, Math.min(34000, (incoming?.length ?? 0) * 20))
+    if (phase === 'arriving') return Math.max(20000, Math.min(50000, (incoming?.length ?? 0) * 28))
     if (phase === 'departing')
-      return Math.max(16000, Math.min(34000, ((outgoing?.length ?? 0) + exitLength) * 20))
+      return Math.max(22000, Math.min(52000, ((outgoing?.length ?? 0) + exitLength) * 28))
     if (phase === 'resting') return 9000
     return 1400
   }
@@ -87,6 +87,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     hiker.dataset.motion = reducedMotion.matches ? 'still' : 'walking'
     const progress = Math.min(1, elapsed / duration())
     hiker.dataset.progress = progress.toFixed(3)
+    hiker.dataset.walkingDuration = moving() ? String(duration()) : ''
     const leg: WalkingPhase | null = phase === 'arriving' || phase === 'departing' ? phase : null
     const position = leg ? onLeg(leg, progress) : incoming.point(incoming.length)
     hiker.setAttribute(

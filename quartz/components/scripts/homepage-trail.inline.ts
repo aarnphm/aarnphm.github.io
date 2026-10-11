@@ -1,11 +1,13 @@
+import { mountTrailClock } from '../visitor-trail/local-clock'
 import { registerEscapeHandler } from './escape-handler'
 
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.homepage-trail')
   const toggle = root?.querySelector<HTMLButtonElement>('.homepage-trail-toggle')
   const scene = root?.querySelector<HTMLElement>('.homepage-trail-scene')
+  const clock = root?.querySelector<HTMLTimeElement>('.trail-local-time')
   const content = document.querySelector<HTMLElement>('#quartz-root > .page-body-grid')
-  if (!root || !toggle || !scene || !content) return
+  if (!root || !toggle || !scene || !clock || !content) return
 
   const controller = new AbortController()
   const { signal } = controller
@@ -18,11 +20,12 @@ document.addEventListener('nav', () => {
   let layoutFrame = 0
   // Prepare the local renderer; it connects only after the trail is shown.
   document.body.append(root)
+  mountTrailClock(clock, signal)
   scene.append(frame)
   const align = () => {
     if (scene.hidden) return
     const bottom = content.getBoundingClientRect().bottom + window.scrollY
-    scene.style.height = `${Math.max(window.innerHeight, bottom + 380)}px`
+    scene.style.height = `${Math.max(window.innerHeight, bottom + 720)}px`
     scene.dispatchEvent(new Event('trail:reflow'))
   }
   const scheduleAlign = () => {
