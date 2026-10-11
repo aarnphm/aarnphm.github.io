@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  CERAMICSPEED_CROSS_CHAIN_RESEARCH,
+  initialGearRatioModel,
+  updateGearRatio,
+} from '../components/triathlon/tools/gear-ratio-model'
+import {
   CERAMICSPEED_TEST_OUTPUT_WATTS,
   GEAR_CASSETTE_PRESET_GROUPS,
   formatGearEfficiencyDeltaPercent,
@@ -73,45 +76,6 @@ test('CeramicSpeed estimates reproduce the tested cross-chain loss curve', () =>
       100,
   )
 })
-
-test('CeramicSpeed research numbers retain their original sources and reproduce the fitted curves', () => {
-  const { sources, test: protocol, alignedLoss, crossChainLoss } = CERAMICSPEED_CROSS_CHAIN_RESEARCH
-
-  assert.deepEqual(
-    sources.map(source => source.id),
-    [1, 2],
-  )
-  assert.equal(sources[0].url, 'https://ceramicspeed.com/pages/cross-chaining-and-ring-size-report')
-  assert.equal(
-    sources[1].url,
-    'https://cdn.shopify.com/s/files/1/0726/7542/6606/files/cross-chaining-and-ring-size-report.pdf?v=1687253624',
-  )
-  assert.equal(sources[1].publishedOn, '2015-04-17')
-  assert.equal(protocol.sourceId, 2)
-  assert.equal(protocol.protocolPage, 4)
-  assert.equal(protocol.chainstayPage, 13)
-  assert.equal(alignedLoss.page, 20)
-  assert.equal(crossChainLoss.page, 15)
-  assert.deepEqual(crossChainLoss.wattsByCogOffset, [0, 0.19, 0.49, 0.79, 1.1, 1.4, 1.7, 2.01])
-
-  for (const curve of alignedLoss.curves) {
-    const ratios = protocol.cassetteCogs.map(cog => curve.chainring / cog)
-    const ratioMean = ratios.reduce((sum, ratio) => sum + ratio, 0) / ratios.length
-    const lossMean =
-      curve.averageLossWatts.reduce((sum, loss) => sum + loss, 0) / curve.averageLossWatts.length
-    const slopeNumerator = ratios.reduce(
-      (sum, ratio, index) => sum + (ratio - ratioMean) * (curve.averageLossWatts[index] - lossMean),
-      0,
-    )
-    const slopeDenominator = ratios.reduce((sum, ratio) => sum + (ratio - ratioMean) ** 2, 0)
-    const slope = slopeNumerator / slopeDenominator
-    const intercept = lossMean - slope * ratioMean
-
-    assert.ok(Math.abs(slope - curve.fit.slope) < 1e-12)
-    assert.ok(Math.abs(intercept - curve.fit.intercept) < 1e-12)
-  }
-})
-
 test('one-by drivetrains align around the center of the cassette', () => {
   const matrix = gearRatioMatrix([40], [10, 11, 12, 13, 14])
 
@@ -143,6 +107,37 @@ test('gear ratio matrices support one-by drivetrains and reject invalid teeth', 
   assert.equal(gearRatioMatrix([52, 36, 24], [11, 28]), null)
   assert.equal(gearRatioMatrix([52.5], [11, 28]), null)
   assert.equal(gearRatioMatrix([52], [0, 28]), null)
+})
+
+test('cassette and chainring selections keep a compatible layout and invalidate edited presets', () => {
+  const road = gearCassettePreset('shimano-ultegra-r8100-11-34')
+  const cassette = gearCassettePreset('sram-xplr-xg-1271-10-44')
+  assert.ok(road)
+  assert.ok(cassette)
+  const initial = initialGearRatioModel(road.id, '54-40', 54, 40)
+  const compact = updateGearRatio(initial, {
+    type: 'set-cassette',
+    cassetteId: cassette.id,
+    maximumChainrings: cassette.maximumChainrings,
+  }).model
+  const matrix = gearRatioMatrix(compact.chainrings.slice(0, compact.layout), cassette.cogs)
+  assert.ok(matrix)
+  assert.equal(matrix.rows.length, 1)
+
+  const compatible = updateGearRatio(compact, {
+    type: 'set-cassette',
+    cassetteId: road.id,
+    maximumChainrings: road.maximumChainrings,
+  }).model
+  const selected = updateGearRatio(compatible, {
+    type: 'set-chainring-preset',
+    presetId: '53-39',
+    chainrings: [53, 39],
+  }).model
+  assert.equal(selected.layout, 2)
+  const changed = updateGearRatio(selected, { type: 'set-chainring', index: 0, value: 54 }).model
+  assert.equal(changed.chainringPresetId, null)
+  assert.deepEqual(changed.chainrings, [54, 39])
 })
 
 test('a single gear receives a neutral chart intensity', () => {

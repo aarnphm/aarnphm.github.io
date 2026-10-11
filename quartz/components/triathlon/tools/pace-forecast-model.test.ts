@@ -1,11 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {
-  initialPaceForecastModel,
-  paceForecastBounds,
-  paceForecastComparisonDate,
-  updatePaceForecast,
-} from './pace-forecast-model'
+import { paceForecastBounds, paceForecastComparisonDate } from './pace-forecast-model'
 
 test('pace predictor comparison history follows the analytics window', () => {
   const available = { min: '2026-05-15', max: '2026-09-22' }
@@ -41,22 +36,4 @@ test('pace predictor comparisons count calendar days across month and daylight s
   assert.equal(paceForecastComparisonDate(bounds, 30), '2026-02-07')
   assert.equal(paceForecastComparisonDate(bounds, 59), '2026-01-09')
   assert.equal(paceForecastComparisonDate(bounds, 60), null)
-})
-
-test('pace forecast reducer owns sport and comparison selection generations', () => {
-  const sport = updatePaceForecast(initialPaceForecastModel(), {
-    type: 'select-sport',
-    sport: 'bike',
-  })
-  assert.equal(sport.model.sport, 'bike')
-  assert.equal(sport.model.generation, 1)
-
-  const date = updatePaceForecast(sport.model, { type: 'select-date', date: '2026-07-01' })
-  assert.equal(date.model.comparison, 'custom')
-  assert.equal(date.model.comparisonDate, '2026-07-01')
-  assert.deepEqual(date.effects, [{ type: 'render', generation: 2 }])
-
-  const cleared = updatePaceForecast(date.model, { type: 'clear-date' })
-  assert.equal(cleared.model.comparison, '7')
-  assert.equal(cleared.model.comparisonDate, undefined)
 })

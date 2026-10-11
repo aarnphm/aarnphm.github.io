@@ -35,9 +35,7 @@ const maintenance = {
     '3': { distance: null, lubricant: 'UFO Wax Drip-On', since: '2026-08-10', waxed: true },
   },
   service: {
-    soloist: [
-      { date: '2026-08-20', distance: 1721.5, place: 'Racer Sportif', type: 'bike fit' },
-    ],
+    soloist: [{ date: '2026-08-20', distance: 1721.5, place: 'Racer Sportif', type: 'bike fit' }],
     speedmax: null,
   },
   tires: {
@@ -231,9 +229,7 @@ test('drops malformed records and rejects empty maintenance data', () => {
   assert.equal(
     parseTriathlonMaintenance({
       service: {
-        soloist: [
-          { date: '2026-08-20', distance: null, place: 'Racer Sportif', type: 42 },
-        ],
+        soloist: [{ date: '2026-08-20', distance: null, place: 'Racer Sportif', type: 42 }],
       },
     }),
     null,
@@ -262,9 +258,7 @@ test('drops malformed records and rejects empty maintenance data', () => {
 test('keeps legacy service records without a service type', () => {
   assert.deepEqual(
     parseTriathlonMaintenance({
-      service: {
-        soloist: [{ date: '2026-08-20', distance: null, place: 'Racer Sportif' }],
-      },
+      service: { soloist: [{ date: '2026-08-20', distance: null, place: 'Racer Sportif' }] },
     })?.services,
     [
       {
