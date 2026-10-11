@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exam solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'exam-solution',
+    file: 'static_resources/00a16a14431ed934d646d4a8bada5a82_MIT18_100BF10_Practice1sol.pdf',
+    bytes: 218311,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/00a16a14431ed934d646d4a8bada5a82_MIT18_100BF10_Practice1sol.pdf]]
 
 This resource contains information about the definition of compactness and A n B is at most countable, using the definition of countability.
 

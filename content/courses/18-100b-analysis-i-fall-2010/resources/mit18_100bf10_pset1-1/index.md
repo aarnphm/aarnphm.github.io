@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset',
+    file: 'static_resources/c0e8d2dcdf7bb86edf1b6ae1b4101209_MIT18_100BF10_pset1.pdf',
+    bytes: 97446,
+    n: 1,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/c0e8d2dcdf7bb86edf1b6ae1b4101209_MIT18_100BF10_pset1.pdf]]
 
 This resource contains problems about no rational number, statement about parallelograms and an integer or irrational.
 

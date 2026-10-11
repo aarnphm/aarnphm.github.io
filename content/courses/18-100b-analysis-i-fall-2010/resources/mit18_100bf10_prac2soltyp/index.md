@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exam solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'exam-solution',
+    file: 'static_resources/38e24109af287b54a8d9204a7f66118a_MIT18_100BF10_Prac2solTyp.pdf',
+    bytes: 184173,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/38e24109af287b54a8d9204a7f66118a_MIT18_100BF10_Prac2solTyp.pdf]]
 
 This resource contains information about metric space and sequences bounded.
 

@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset',
+    file: 'static_resources/7473319a1d37e08763d369a2c0e2cdf4_MIT18_100BF10_pset11.pdf',
+    bytes: 50428,
+    n: 11,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/7473319a1d37e08763d369a2c0e2cdf4_MIT18_100BF10_pset11.pdf]]
 
 This resource contains 5 problems about Stieltjes integral,fundamental theorem of calculus and Rudin.
 

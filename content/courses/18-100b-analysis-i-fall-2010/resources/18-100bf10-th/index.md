@@ -11,19 +11,25 @@ tags:
   - 'mathematical analysis'
   - 'differential equations'
   - 'calculus'
-layout: 'A|L'
+resource:
+  {
+    kind: 'image',
+    file: 'static_resources/8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.jpg',
+    bytes: 5823,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
 
-![[courses/18-100b-analysis-i-fall-2010/static_resources/8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.webp]]
+![[courses/18-100b-analysis-i-fall-2010/static_resources/8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.jpg]]
 
 New image Upload
 
 ## metadata
 
 - type: image
-- file: [[courses/18-100b-analysis-i-fall-2010/static_resources/8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.webp|8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.webp]]
-- source: [mit opencourseware](https://ocw.mit.edu/courses/18-100b-analysis-i-fall-2010/8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.webp)
+- file: [[courses/18-100b-analysis-i-fall-2010/static_resources/8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.jpg|8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.jpg]]
+- source: [mit opencourseware](https://ocw.mit.edu/courses/18-100b-analysis-i-fall-2010/8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.jpg)

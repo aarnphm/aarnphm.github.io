@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset',
+    file: 'static_resources/526600b661d0c63a195b71798449711b_MIT18_100BF10_pset2.pdf',
+    bytes: 107548,
+    n: 2,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/526600b661d0c63a195b71798449711b_MIT18_100BF10_pset2.pdf]]
 
 This resource contains problems about natural numbers, consider the function f: and an odd number of ancestors.
 

@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exams'
-layout: 'A|L'
+resource:
+  {
+    kind: 'exam',
+    file: 'static_resources/b9cc7d84fed6640c9efbdaa5b094bf44_MIT18_100BF10_Practice1.pdf',
+    bytes: 102759,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/b9cc7d84fed6640c9efbdaa5b094bf44_MIT18_100BF10_Practice1.pdf]]
 
 New file Upload
 

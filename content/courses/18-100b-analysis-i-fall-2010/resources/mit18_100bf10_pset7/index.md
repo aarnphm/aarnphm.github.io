@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset',
+    file: 'static_resources/d28588d2e24920c5b095d05e3dbec3ca_MIT18_100BF10_pset7.pdf',
+    bytes: 61126,
+    n: 7,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/d28588d2e24920c5b095d05e3dbec3ca_MIT18_100BF10_pset7.pdf]]
 
 This resource contains problems about continuity and Rudin.
 

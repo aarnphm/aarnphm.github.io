@@ -11,7 +11,20 @@ tags:
   - 'mathematical analysis'
   - 'differential equations'
   - 'calculus'
-layout: 'A|L'
+resource:
+  {
+    kind: 'collection',
+    type: 'Exams',
+    items:
+      [
+        'mit18_100bf10_final_prac',
+        'mit18_100bf10_prac3',
+        'mit18_100bf10_prac4',
+        'mit18_100bf10_practice1',
+        'mit18_100bf10_practice2',
+      ],
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---

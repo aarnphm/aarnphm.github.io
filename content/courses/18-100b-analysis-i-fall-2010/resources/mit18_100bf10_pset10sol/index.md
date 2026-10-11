@@ -11,14 +11,18 @@ tags:
   - 'mathematical analysis'
   - 'differential equations'
   - 'calculus'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset-solution',
+    file: 'static_resources/f086b6c6aa28f0867d002c3102bfd6f4_MIT18_100BF10_pset10sol.pdf',
+    bytes: 100244,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/f086b6c6aa28f0867d002c3102bfd6f4_MIT18_100BF10_pset10sol.pdf]]
 
 This resource contains solutions to PS 10.
 

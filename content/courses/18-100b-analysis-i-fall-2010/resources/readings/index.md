@@ -11,7 +11,21 @@ tags:
   - 'mathematical analysis'
   - 'differential equations'
   - 'calculus'
-layout: 'A|L'
+resource:
+  {
+    kind: 'collection',
+    type: 'Readings',
+    items:
+      [
+        'mit18_100bf10_compactness',
+        'mit18_100bf10_const_of_r',
+        'mit18_100bf10_dvl_strcs',
+        'mit18_100bf10_lpcompletens',
+        'mit18_100bf10_riemanninte',
+        'mit18_100bf10_weierstfunc',
+      ],
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---

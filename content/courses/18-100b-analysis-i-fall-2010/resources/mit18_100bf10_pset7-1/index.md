@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset',
+    file: 'static_resources/b9e8a0bf816b0e883cff98884a512132_MIT18_100BF10_pset7.pdf',
+    bytes: 107408,
+    n: 7,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/b9e8a0bf816b0e883cff98884a512132_MIT18_100BF10_pset7.pdf]]
 
 This resource contains problems about consider an infinite series with alternating signs, positive integers with no common factor and continuous mappings of a metric space.
 

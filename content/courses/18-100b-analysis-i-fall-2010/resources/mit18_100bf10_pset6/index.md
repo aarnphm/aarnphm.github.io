@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset',
+    file: 'static_resources/2471b2f2d05355b54e324ff185e47086_MIT18_100BF10_pset6.pdf',
+    bytes: 78149,
+    n: 6,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/2471b2f2d05355b54e324ff185e47086_MIT18_100BF10_pset6.pdf]]
 
 This resource contains 5 problems about banach fixed-point theorem, Rudin problem, metric space and telescoping sum.
 
