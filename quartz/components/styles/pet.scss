@@ -12,6 +12,9 @@ $pet-looks: (
     eyes-dash,
     speed,
   ),
+  walk: (
+    eyes-dash,
+  ),
   fly: (
     eyes-wide,
     speed,
@@ -58,6 +61,15 @@ $pet-looks: (
     eyes-dash,
     arms-pole,
   ),
+  chute: (
+    eyes-dash,
+    arms-hang,
+    chute,
+  ),
+  think: (
+    eyes-dash,
+    thought,
+  ),
 );
 
 .pet-svg {
@@ -76,6 +88,7 @@ $pet-looks: (
 
   .pet-hop,
   .pet-lean,
+  .pet-canopy,
   .pet-body,
   .pet-look,
   .pet-eye,
@@ -96,6 +109,7 @@ $pet-looks: (
 
   .pet-look {
     translate: calc(var(--pet-lx, 0) * 1px) calc(var(--pet-ly, 0) * 1px);
+    transition: translate 120ms cubic-bezier(0.2, 0, 0, 1);
   }
 
   .pet-eye {
@@ -118,6 +132,14 @@ $pet-looks: (
   [data-part='arm-r'] {
     transform-origin: 0 100%;
   }
+}
+
+// Perched and watching, the body tips toward the pointer from where it rests. A hanger's body
+// hangs from its arms, so it stays plumb.
+.pet-svg:is([data-state='idle'], [data-state='happy'], [data-state='wait']):not([data-kind='hang'])
+  .pet-body {
+  rotate: calc(var(--pet-tilt, 0) * 1deg);
+  transition: rotate 160ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 @each $state, $parts in $pet-looks {
@@ -189,6 +211,26 @@ $pet-looks: (
 
   .pet-speed {
     animation: pet-whoosh 0.32s steps(4) infinite;
+  }
+}
+
+// A stroll: upright, a slow stride, a bob on each step.
+.pet-svg[data-state='walk'] {
+  .pet-lean {
+    rotate: -3deg;
+    animation: none;
+  }
+
+  .pet-hop {
+    animation: pet-trot 0.6s steps(4) infinite;
+  }
+
+  .pet-leg {
+    animation: pet-amble 0.6s steps(6) infinite alternate;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-direction: alternate-reverse;
   }
 }
 
@@ -306,6 +348,64 @@ $pet-looks: (
   }
 }
 
+// Floating down off the rail under its parachute: swinging under the canopy, legs dangling. The
+// canopy's line boils between its three drawings and the canopy puffs as it fills.
+.pet-svg[data-state='chute'] {
+  [data-part='ground'] {
+    display: none;
+  }
+
+  .pet-lean {
+    transform-origin: 50% 0;
+    animation: pet-sway 2.4s steps(24) infinite alternate;
+  }
+
+  .pet-canopy {
+    transform-origin: 50% 100%;
+    animation: pet-puff 1.1s steps(5) infinite alternate;
+  }
+
+  .pet-canopy-frame {
+    animation: pet-boil 0.42s step-end infinite;
+  }
+
+  .pet-canopy-frame:nth-child(2) {
+    animation-delay: -0.14s;
+  }
+
+  .pet-canopy-frame:nth-child(3) {
+    animation-delay: -0.28s;
+  }
+
+  .pet-leg {
+    rotate: 0deg;
+    animation: pet-dangle 1.6s steps(16) infinite alternate;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-delay: -0.8s;
+  }
+}
+
+// Reading a sidenote from on top of it: eyes down on the text, a thought ticking over.
+.pet-svg[data-state='think'] {
+  .pet-look {
+    translate: -0.04px 0.12px;
+  }
+
+  .pet-dot {
+    animation: pet-dot 1.5s steps(6) infinite;
+  }
+
+  .pet-dot:nth-of-type(2) {
+    animation-delay: 0.25s;
+  }
+
+  .pet-dot:nth-of-type(3) {
+    animation-delay: 0.5s;
+  }
+}
+
 // Swimming back from the rail to an edge: leaning forward, arms paddling in turn, feet fluttering.
 .pet-svg[data-state='swim'] {
   [data-part='arms-hang'],
@@ -364,6 +464,25 @@ $pet-looks: (
   }
 }
 
+@keyframes pet-puff {
+  from {
+    scale: 1.05 0.94;
+  }
+  to {
+    scale: 0.96 1.05;
+  }
+}
+
+// One of three drawings shows at a time, each for a third of the cycle.
+@keyframes pet-boil {
+  0% {
+    opacity: 1;
+  }
+  33.33% {
+    opacity: 0;
+  }
+}
+
 @keyframes pet-sway {
   from {
     rotate: -4deg;
@@ -399,6 +518,15 @@ $pet-looks: (
   }
   to {
     rotate: -28deg;
+  }
+}
+
+@keyframes pet-amble {
+  from {
+    rotate: 16deg;
+  }
+  to {
+    rotate: -16deg;
   }
 }
 
