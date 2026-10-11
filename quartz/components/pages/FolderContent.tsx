@@ -23,6 +23,7 @@ import {
   SimpleSlug,
   sluggify,
 } from '../../util/path'
+import { pdfTitlesFor } from '../../util/pdf-titles'
 import { concatenateResources } from '../../util/resources'
 import { parseWikilink } from '../../util/wikilinks'
 import CourseHomeConstructor from '../CourseHome'
@@ -186,6 +187,7 @@ type FolderContentIndex = {
   immediateMarkdownByFolder: Map<string, QuartzPluginData[]>
   mdBySlug: Map<string, QuartzPluginData>
   navigableFolders: Set<string>
+  pdfTitles: Map<string, string>
 }
 
 function pushMapArray<K, V>(map: Map<K, V[]>, key: K, value: V): void {
@@ -240,6 +242,7 @@ function buildFolderContentIndex(
   const immediateMarkdownByFolder = new Map<string, QuartzPluginData[]>()
   const aliases = new Set<string>()
   const navigableFolders = new Set<string>()
+  const pdfTitles = pdfTitlesFor(allFiles)
 
   for (const file of allFiles) {
     const slug = file.slug
@@ -288,7 +291,11 @@ function buildFolderContentIndex(
     const ext = path.extname(fp)
     const base = path.basename(fp, ext)
     const md = mdBySlug.get(fileSlug)
-    fullTrie.add({ slug: fileSlug, title: md?.frontmatter?.title ?? base, filePath: fp })
+    fullTrie.add({
+      slug: fileSlug,
+      title: md?.frontmatter?.title ?? pdfTitles.get(fileSlug) ?? base,
+      filePath: fp,
+    })
   }
 
   return {
@@ -302,6 +309,7 @@ function buildFolderContentIndex(
     immediateMarkdownByFolder,
     mdBySlug,
     navigableFolders,
+    pdfTitles,
   }
 }
 
@@ -345,6 +353,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       immediateMarkdownByFolder,
       mdBySlug,
       navigableFolders,
+      pdfTitles,
     } = folderContentIndex
 
     const folderSlug = stripSlashes(simplifySlug(fileData.slug!))
@@ -391,12 +400,15 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         folderBaseKey(folderSlug, baseFileName),
       )
 
-      const dates = associatedFirst?.dates || currentFolderDates || fileData.dates || defaultDate
+      const dates =
+        ext.toLowerCase() === '.pdf'
+          ? undefined
+          : associatedFirst?.dates || currentFolderDates || fileData.dates || defaultDate
 
       entries.push({
         slug: (fileSlug as FullSlug) ?? (joinSegments(folderSlug, baseFileName) as FullSlug),
         frontmatter: {
-          title: mdBySlug.get(fileSlug)?.frontmatter?.title ?? baseFileName,
+          title: pdfTitles.get(fileSlug) ?? baseFileName,
           tags: [ext.replace('.', '') || 'file'],
           pageLayout: 'default',
         },

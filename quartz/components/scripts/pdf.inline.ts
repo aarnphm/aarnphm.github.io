@@ -1842,7 +1842,16 @@ async function renderTextLayer(state: PdfState, slot: PdfPageSlot, epoch: number
     viewport,
   })
   slot.textRenderTask = textLayer
-  await textLayer.render()
+  // pdf.js sets its measuring canvas font on every font change, and Chrome resolves that font
+  // through a document style update; with the spans it just appended still dirty, a math page
+  // costs hundreds of full recalcs (a 6 s task in the trace). A display: none layer keeps the
+  // new spans out of every recalc until the layer is complete.
+  slot.textLayer.style.display = 'none'
+  try {
+    await textLayer.render()
+  } finally {
+    slot.textLayer.style.display = ''
+  }
   if (state.destroyed || epoch !== state.renderEpoch) return
   slot.textRenderTask = undefined
   slot.textRenderedScale = state.scale

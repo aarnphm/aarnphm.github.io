@@ -22,6 +22,7 @@ import { resolveAsset, resolveExtractedStaticResource } from '../util/asset-mani
 import { compileBaseConfig } from '../util/base/compile'
 import { renderBaseViewsForFile } from '../util/base/render'
 import { clone } from '../util/clone'
+import { pdfResourceOf } from '../util/course'
 import { BuildCtx, renderDataFor } from '../util/ctx'
 import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
@@ -2763,8 +2764,9 @@ export function renderPage(
   const isFlashcards = componentData.fileData.flashcards != null && slug.endsWith('/flashcards')
   const isArena = slug === 'arena' || slug.startsWith('arena/')
   const isCurius = slug === 'curius'
-  // The PDF reader shell renders once at `read` and the worker serves it for every `/read/...` path.
-  const isPdfReader = slug === 'read'
+  // The PDF reader shell renders once at `read` and the worker serves it for every `/read/...`
+  // path; course PDF resource pages carry the same shell under their own slug.
+  const isPdfReader = slug === 'read' || pdfResourceOf(componentData.fileData) !== null
   const isFullBleed = isArena || isPdfReader
   const isArenaSubpage = slug.startsWith('arena/') && slug !== 'arena'
   const isBase = componentData.fileData.bases ?? false
@@ -2785,6 +2787,7 @@ export function renderPage(
           data-slides={isSlides}
           data-flashcards={isFlashcards}
           data-layout={pageLayout}
+          data-pdf-reader={isPdfReader}
           data-is-folder-tag={isFolderTag}
           data-is-base={isBase}
           data-is-canvas={isCanvas}

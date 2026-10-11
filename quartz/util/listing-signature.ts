@@ -5,6 +5,7 @@ type ListingFrontmatter = NonNullable<QuartzPluginData['frontmatter']>
 function listingFrontmatter(frontmatter?: ListingFrontmatter) {
   return {
     title: frontmatter?.title,
+    pdfTitles: frontmatter?.pdfTitles,
     tags: frontmatter?.tags ?? [],
     date: frontmatter?.date,
     published: frontmatter?.published,

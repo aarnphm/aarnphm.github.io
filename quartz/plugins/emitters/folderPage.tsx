@@ -8,6 +8,7 @@ import { i18n, TRANSLATIONS } from '../../i18n'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
+import { pdfResourceOf } from '../../util/course'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { folderPageSourceSlug, isFolderPageSourcePath } from '../../util/folder-page'
 import { pageListingChanged } from '../../util/listing-signature'
@@ -20,6 +21,7 @@ import {
   pathToRoot,
   simplifySlug,
 } from '../../util/path'
+import { pdfTitlesFor } from '../../util/pdf-titles'
 import { StaticResources } from '../../util/resources'
 import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from '../vfile'
 import { write } from './helpers'
@@ -88,15 +90,19 @@ function computeFolderInfo(
 
   for (const [tree, file] of content) {
     const slug = stripSlashes(simplifySlug(file.data.slug!)) as SimpleSlug
-    if (folders.has(slug)) {
-      folderInfo[slug] = [tree, file]
+    if (!folders.has(slug)) continue
+    // A course PDF resource page is rendered by the PdfReader emitter (R7: one writer per path).
+    if (pdfResourceOf(file.data)) {
+      delete folderInfo[slug]
+      continue
     }
+    folderInfo[slug] = [tree, file]
   }
 
   return folderInfo
 }
 
-function _getFolders(slug: FullSlug): SimpleSlug[] {
+function _getFolders(slug: string): SimpleSlug[] {
   var folderName = path.dirname(slug ?? '') as SimpleSlug
   const parentFolderNames = [folderName]
 
@@ -120,6 +126,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
 
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
   const Header = HeaderConstructor()
+  let previousPdfTitles = new Map<string, string>()
 
   return {
     name: 'FolderPage',
@@ -141,12 +148,20 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
 
       const folderInfo = computeFolderInfo(folders, content, cfg.locale)
       yield* processFolderInfo(ctx, folderInfo, mdFiles, opts, resources)
+      previousPdfTitles = pdfTitlesFor(mdFiles)
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
       const allFiles = contentDataFor(content)
       const cfg = ctx.cfg.configuration
 
       const affectedFolders: Set<SimpleSlug> = new Set()
+      const currentPdfTitles = pdfTitlesFor(allFiles)
+      for (const slug of new Set([...previousPdfTitles.keys(), ...currentPdfTitles.keys()])) {
+        if (previousPdfTitles.get(slug) === currentPdfTitles.get(slug)) continue
+        for (const folder of _getFolders(slug)) {
+          if (folder !== '.' && folder !== 'tags') affectedFolders.add(folder)
+        }
+      }
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file && !isFolderPageSourcePath(changeEvent.path)) continue
         if (
@@ -167,6 +182,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
         const folderInfo = computeFolderInfo(affectedFolders, content, cfg.locale)
         yield* processFolderInfo(ctx, folderInfo, allFiles, opts, resources)
       }
+      previousPdfTitles = currentPdfTitles
     },
   }
 }
