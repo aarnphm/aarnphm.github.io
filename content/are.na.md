@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-09-24 00:14:31 GMT-04:00
+modified: 2026-10-10 00:50:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -16831,13 +16831,11 @@ title: are.na
     - date: 09/21/2026
     - tags: [creative coding, animation]
     - later: true
-
 - https://iverson.inc/about -- Iverson
   - [meta]:
     - date: 09/21/2026
     - tags: [branding, design studio]
     - later: true
-
 - https://www.gutenberg.org/files/26054/26054-h/26054-h.htm -- A Color Notation
   - [meta]:
     - date: 09/15/2026

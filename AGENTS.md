@@ -27,7 +27,7 @@ This repository powers a Quartz digital garden with custom plugins and a Cloudfl
 
 ## Testing
 
-- Never write unit tests after you write code.
+- NEVER write unit tests after you write code.
 - Highly prefer E2E tests as the sole testing mechanism. Use them to verify that complex features work through their real entry points and observable outcomes.
 - At the end of E2E tests, produce a verifiable and repeatable artifact. Record the exact command, inputs or fixtures, and results alongside the relevant trace, screenshot, response, or generated output so another person can inspect the evidence and repeat the run.
 - If you must test a system in isolation, first write down all the ways it could fail, then write the code. Keep an isolated test only when it catches a concrete failure that the E2E tests miss.

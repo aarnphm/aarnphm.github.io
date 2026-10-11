@@ -272,62 +272,62 @@ L'encadré **« L'amitié et l'affection »** est repris ici à partir de la cap
 
 #### les usages décrits dans l'encadré
 
-| contexte | geste ou signe | sens |
-| --- | --- | --- |
-| fin d'un message affectueux, en Amérique du Nord | **x** | un bisou |
-| fin d'un message affectueux, en Amérique du Nord | **o** | un câlin |
-| rencontre entre personnes proches, au Québec | s'embrasser sur les deux joues | se saluer |
+| contexte                                         | geste ou signe                 | sens      |
+| ------------------------------------------------ | ------------------------------ | --------- |
+| fin d'un message affectueux, en Amérique du Nord | **x**                          | un bisou  |
+| fin d'un message affectueux, en Amérique du Nord | **o**                          | un câlin  |
+| rencontre entre personnes proches, au Québec     | s'embrasser sur les deux joues | se saluer |
 
 **XOXO** se comprend donc comme _bisous et câlins_. L'encadré parle d'amis et d'amies auxquels on exprime son affection. Pour la salutation au Québec, il précise **personnes proches** : la relation entre les personnes compte dans cette description. Les gestes varient selon les personnes ; cette note culturelle ne constitue pas une obligation à chaque rencontre.
 
 #### le vocabulaire
 
-| français | anglais ou explication |
-| --- | --- |
-| {{l'amitié}} | friendship ; nom féminin |
-| {{l'affection}} | affection, fondness ; nom féminin |
-| {{un bisou}} | a kiss ; mot familier |
-| {{un câlin}} | a hug |
-| {{une joue}} | a cheek ; **les deux joues** = both cheeks |
-| {{des personnes proches}} | people who are close to each other |
-| {{faire la bise}} | to greet someone with cheek kisses |
-| {{se rencontrer}} | to meet each other |
-| {{se saluer}} | to greet each other |
-| {{montrer son affection}} | to show one's affection |
+| français                  | anglais ou explication                     |
+| ------------------------- | ------------------------------------------ |
+| {{l'amitié}}              | friendship ; nom féminin                   |
+| {{l'affection}}           | affection, fondness ; nom féminin          |
+| {{un bisou}}              | a kiss ; mot familier                      |
+| {{un câlin}}              | a hug                                      |
+| {{une joue}}              | a cheek ; **les deux joues** = both cheeks |
+| {{des personnes proches}} | people who are close to each other         |
+| {{faire la bise}}         | to greet someone with cheek kisses         |
+| {{se rencontrer}}         | to meet each other                         |
+| {{se saluer}}             | to greet each other                        |
+| {{montrer son affection}} | to show one's affection                    |
 
 #### embrasser et s'embrasser
 
 **Embrasser quelqu'un** signifie donner un bisou à cette personne. Avec plusieurs personnes, **s'embrasser** peut exprimer une action réciproque, comme dans la salutation décrite ici.
 
-| construction | exemple | sens |
-| --- | --- | --- |
-| embrasser quelqu'un | {{`J'embrasse mon amie.`}} | I kiss my friend. |
-| formule à la fin d'un message | {{`Je t'embrasse.`}} | Sending you a kiss. |
-| s'embrasser, sens réciproque | {{`Elles s'embrassent sur les deux joues.`}} | They kiss each other on both cheeks. |
-| nous + nous | {{`Nous nous embrassons.`}} | We kiss each other. |
-| vous + vous | {{`Vous vous embrassez.`}} | You kiss each other, plusieurs personnes. |
-| ils/elles + se | {{`Ils s'embrassent.`}} / {{`Elles s'embrassent.`}} | They kiss each other. |
+| construction                  | exemple                                             | sens                                      |
+| ----------------------------- | --------------------------------------------------- | ----------------------------------------- |
+| embrasser quelqu'un           | {{`J'embrasse mon amie.`}}                          | I kiss my friend.                         |
+| formule à la fin d'un message | {{`Je t'embrasse.`}}                                | Sending you a kiss.                       |
+| s'embrasser, sens réciproque  | {{`Elles s'embrassent sur les deux joues.`}}        | They kiss each other on both cheeks.      |
+| nous + nous                   | {{`Nous nous embrassons.`}}                         | We kiss each other.                       |
+| vous + vous                   | {{`Vous vous embrassez.`}}                          | You kiss each other, plusieurs personnes. |
+| ils/elles + se                | {{`Ils s'embrassent.`}} / {{`Elles s'embrassent.`}} | They kiss each other.                     |
 
 **Se** devient **s'** devant la voyelle de `embrassent`. Dans ce contexte, **s'embrasser** décrit des bisous. Pour exprimer un câlin : {{`Elles se font un câlin.`}} = _They hug each other._
 
 #### questions fermées et ouvertes
 
-| type | question | réponse modèle |
-| --- | --- | --- |
-| fermée | {{`Est-ce que « x » signifie un bisou ?`}} | {{`Oui, « x » signifie un bisou.`}} |
-| fermée | {{`Est-ce que « o » signifie un bisou ?`}} | {{`Non, « o » signifie un câlin.`}} |
-| ouverte | {{`Que signifie « XOXO » ?`}} | {{`Cela signifie des bisous et des câlins.`}} |
-| ouverte | {{`Comment les personnes proches se saluent-elles dans l'encadré ?`}} | {{`Elles s'embrassent sur les deux joues.`}} |
+| type    | question                                                              | réponse modèle                                |
+| ------- | --------------------------------------------------------------------- | --------------------------------------------- |
+| fermée  | {{`Est-ce que « x » signifie un bisou ?`}}                            | {{`Oui, « x » signifie un bisou.`}}           |
+| fermée  | {{`Est-ce que « o » signifie un bisou ?`}}                            | {{`Non, « o » signifie un câlin.`}}           |
+| ouverte | {{`Que signifie « XOXO » ?`}}                                         | {{`Cela signifie des bisous et des câlins.`}} |
+| ouverte | {{`Comment les personnes proches se saluent-elles dans l'encadré ?`}} | {{`Elles s'embrassent sur les deux joues.`}}  |
 
 #### répondre à la discussion
 
 La question du manuel est : {{`Dans votre pays d'origine, comment montrez-vous à vos amis et amies que vous les aimez ?`}} Elle invite à parler des messages et du début ou de la fin d'une rencontre. Il n'y a pas une seule réponse correcte ; les réponses suivantes sont des **modèles à adapter à ses habitudes**.
 
-| moment | question de pratique | réponse possible |
-| --- | --- | --- |
-| message | {{`Qu'est-ce que tu écris à la fin d'un message à un ami ?`}} | {{`J'écris « Je t'embrasse » ou « Bisous ».`}} |
-| début d'une rencontre | {{`Comment salues-tu tes amis ?`}} | {{`Je les salue et je leur souris.`}} |
-| fin d'une rencontre | {{`Qu'est-ce que tu dis avant de partir ?`}} | {{`Je leur dis « À bientôt ! ».`}} |
+| moment                | question de pratique                                          | réponse possible                               |
+| --------------------- | ------------------------------------------------------------- | ---------------------------------------------- |
+| message               | {{`Qu'est-ce que tu écris à la fin d'un message à un ami ?`}} | {{`J'écris « Je t'embrasse » ou « Bisous ».`}} |
+| début d'une rencontre | {{`Comment salues-tu tes amis ?`}}                            | {{`Je les salue et je leur souris.`}}          |
+| fin d'une rencontre   | {{`Qu'est-ce que tu dis avant de partir ?`}}                  | {{`Je leur dis « À bientôt ! ».`}}             |
 
 **Paragraphe modèle :**
 
