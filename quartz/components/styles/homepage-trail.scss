@@ -6,7 +6,7 @@
   position: fixed;
   z-index: var(--z-dropdown);
   top: 1rem;
-  right: 4rem;
+  right: calc(1rem + 44px);
   min-width: 44px;
   height: 44px;
   padding: 0 0.25rem;
@@ -55,6 +55,6 @@
 @media (max-width: 600px) {
   .homepage-trail-toggle {
     top: 0.5rem;
-    right: 3.5rem;
+    right: calc(0.5rem + 44px);
   }
 }

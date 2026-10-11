@@ -43,8 +43,8 @@ export default (() => {
           role="region"
           aria-label="Weather near you"
         >
-          <div class="visitor-weather-heading">
-            <span data-weather-place>near you</span>
+          <div class="visitor-weather-heading" role="status">
+            <span data-weather-condition>loading weather</span>
             <span class="visitor-weather-country" data-weather-country />
           </div>
           <div
@@ -52,7 +52,7 @@ export default (() => {
             role="region"
             aria-label="Map near your approximate location"
           >
-            <div data-weather-map />
+            <div data-weather-map aria-hidden="true" />
             <button
               type="button"
               class="visitor-weather-map-status"
@@ -62,28 +62,16 @@ export default (() => {
               map near you
             </button>
           </div>
-          <div class="visitor-weather-readout" role="status">
-            <span data-weather-condition>loading weather</span>
+          <div class="visitor-weather-readout">
             <span data-weather-temperature />
+            <span data-weather-wind />
           </div>
           <div class="visitor-weather-foot">
             <span data-weather-countdown>local daylight</span>
-            <span data-weather-wind />
           </div>
-          <div class="visitor-weather-source">
-            <a
-              href="https://open-meteo.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-no-popover
-              data-skip-icons
-            >
-              Open-Meteo
-            </a>
-            <button type="button" data-weather-retry hidden>
-              try again
-            </button>
-          </div>
+          <button class="visitor-weather-retry" type="button" data-weather-retry hidden>
+            try again
+          </button>
         </div>
       </div>
     )

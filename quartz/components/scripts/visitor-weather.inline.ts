@@ -117,7 +117,6 @@ document.addEventListener('nav', () => {
       const mapStatus = panel.querySelector<HTMLButtonElement>('[data-weather-map-status]')
       if (mapStatus) mapStatus.textContent = pending ? 'loading location' : 'location unavailable'
     }
-    write('place', forecast?.place ?? 'near you')
     write('country', forecast?.country ?? '')
     if (!weather) {
       write('condition', pending ? 'loading weather' : 'weather unavailable')
@@ -135,7 +134,7 @@ document.addEventListener('nav', () => {
     write('condition', condition)
     write('temperature', `${Math.round(weather.temp)}°C`)
     write('wind', `${Math.round(weather.wind)} km/h wind`)
-    toggle.title = `${forecast?.place ?? 'near you'}: ${condition}, ${Math.round(weather.temp)}°C`
+    toggle.title = `${condition}, ${Math.round(weather.temp)}°C`
 
     if (next) {
       const minutes = Math.ceil((next.at - now) / 60000)
