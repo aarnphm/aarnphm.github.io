@@ -1,23 +1,23 @@
 ---
+title: 'mit 18.901: introduction to topology'
+description: 'This course introduces topology, covering topics fundamental to modern analysis and geometry. It also deals with subjects like topological spaces and continuous functions, connectedness, compactness, separation axioms, and selected further topics such as function spaces, metrization theorems, embedding theorems and the fundamental group.'
+id: 'mit-18-901-fall-2004'
+tags:
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'topology and geometry'
+  - 'topology'
+  - 'geometry'
 aliases:
   - '18.901'
-  - introduction to topology
-  - 18.901-fall-2004
-date: '2026-06-03'
-description: This course introduces topology, covering topics fundamental to modern analysis and geometry. It also deals with subjects like topological spaces and continuous functions, connectedness, compactness, separation axioms, and selected further topics such as function spaces, metrization theorems, embedding theorems and the fundamental group.
-id: mit-18-901-fall-2004
-layout: course
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:33 GMT-04:00
-tags:
-  - course
-  - mit
-  - ocw
-  - math
-  - math/topology
-  - geometry
-title: 'mit 18.901: introduction to topology'
+  - 'introduction to topology'
+  - '18.901-fall-2004'
+layout: 'course'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 course:
   number: '18.901'
   name: 'introduction to topology'
@@ -65,7 +65,7 @@ course:
     - { n: 15, title: 'imbedding in euclidean space', sessions: '26' }
 ---
 
-![[courses/18.901-fall-2004/static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.webp]]
+![[courses/18.901-fall-2004/static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg]]
 
 This course introduces topology, covering topics fundamental to modern analysis and geometry. It also deals with subjects like topological spaces and continuous functions, connectedness, compactness, separation axioms, and selected further topics such as function spaces, metrization theorems, embedding theorems and the fundamental group.
 
@@ -91,5 +91,4 @@ This course introduces topology, covering topics fundamental to modern analysis 
 
 - [[courses/18.901-fall-2004/resources/lecture-notes/|lecture notes]]
 - [[courses/18.901-fall-2004/resources/problem-sets/|problem sets]]
-- [[courses/18.901-fall-2004/resources/readings/|readings]]
 - [[courses/18.901-fall-2004/resources/assignments/|assignments]]

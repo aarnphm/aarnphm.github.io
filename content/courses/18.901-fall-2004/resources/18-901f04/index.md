@@ -1,29 +1,35 @@
 ---
-date: '2026-06-05'
-description: A standard example in topology called "the topologist's sine curve." (Image courtesy of Prof. James Munkres.)
-id: mit-18-901-fall-2004-resource-resources-18-901f04
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:32 GMT-04:00
+title: '18 901f04'
+description: 'A standard example in topology called "the topologist''s sine curve." (Image courtesy of Prof. James Munkres.)'
+id: 'mit-18-901-fall-2004-resource-resources-18-901f04'
 tags:
-  - course
-  - mit
-  - ocw
-  - math
-  - math/topology
-  - geometry
-title: 18 901f04
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'topology and geometry'
+  - 'topology'
+  - 'geometry'
+resource:
+  {
+    kind: 'image',
+    file: 'static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg',
+    bytes: 60764,
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]
 
-![[courses/18.901-fall-2004/static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.webp]]
+![[courses/18.901-fall-2004/static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg]]
 
 A standard example in topology called "the topologist's sine curve." (Image courtesy of Prof. James Munkres.)
 
 ## metadata
 
 - type: image
-- file: [[courses/18.901-fall-2004/static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.webp|fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.webp]]
-- source: [mit opencourseware](https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.webp)
+- file: [[courses/18.901-fall-2004/static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg|fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg]]
+- source: [mit opencourseware](https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg)
