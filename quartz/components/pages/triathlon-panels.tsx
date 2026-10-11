@@ -5,6 +5,7 @@ import type { TriathlonMaintenance } from '../../util/triathlon-maintenance'
 import type { TriathlonRenderData } from '../triathlon/render-data'
 import { ROUTE_SPORTS, SPORT_ICON } from '../../plugins/stores/strava'
 import { InlineMath } from '../../util/math-text'
+import { MOUNTAIN_OUTLINE_PATH } from '../../util/mountain-icon'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { distCombined, LAYERS_ICON } from '../../util/triathlon-card'
 import {
@@ -535,8 +536,7 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
             title="Elevation contours and hill shading"
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m3 20 7-16 7 16H3Z" />
-              <path d="m7.5 9.7 2.5 2.8 2.5-2.8M14 13l3-6 5 13h-5" />
+              <path d={MOUNTAIN_OUTLINE_PATH} />
             </svg>
           </button>
           <button
