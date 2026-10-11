@@ -1,5 +1,6 @@
 import { followTerrain, trailLandscape, type Landscape } from './landscape'
 import { trailRandom } from './random'
+import { readingRoutes } from './reading-routes'
 
 type Point = { x: number; y: number }
 type Rect = { left: number; top: number; right: number; bottom: number }
@@ -211,25 +212,13 @@ export function trailLayout(scene: HTMLElement, seed: number) {
   }
   const clear = clearSpace(width, height, obstacles)
   const reading = landing.getBoundingClientRect()
-  const edge = width < 700 ? 8 : 12
-  const left = Math.max(edge, reading.left - bounds.left - 54)
-  const right = Math.min(width - edge, reading.right - bounds.left + 54)
-  const readingRoute = curvedPath(
-    [
-      { x: left, y: 48 },
-      { x: left - 6, y: bottom * 0.32 },
-      { x: left + 6, y: bottom * 0.65 },
-      { x: left, y: bottom - 24 },
-      { x: left + 32, y: bottom + 72 },
-      { x: (left + right) / 2, y: bottom + 72 },
-      { x: right - 32, y: bottom + 72 },
-      { x: right, y: bottom - 24 },
-      { x: right + 6, y: bottom * 0.6 },
-      { x: right - 6, y: bottom * 0.3 },
-      { x: right, y: 48 },
-    ],
+  const upperRoutes = readingRoutes(
     width,
-    height,
+    bottom,
+    reading.left - bounds.left,
+    reading.right - bounds.left,
+    lines,
+    seed,
   )
   const backdropClear = clearSpace(width, height, [
     ...obstacles,
@@ -247,7 +236,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     camp,
     landscape,
     routes,
-    readingRoute,
+    readingRoutes: upperRoutes,
     clear,
     backdropClear,
     obstacles,

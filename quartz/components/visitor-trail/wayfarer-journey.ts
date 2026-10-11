@@ -2,6 +2,7 @@ import type { JourneyRoute } from './hiker-journey'
 import type { TrailId } from './layout'
 import {
   actorSpacing,
+  placeOnReflow,
   publishActor,
   readActors,
   readTrunks,
@@ -71,6 +72,25 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     const blend = approach * approach * (3 - 2 * approach)
     const index = Number(reader.element.dataset.reader)
     return { x: point.x + (-14 + index * 34) * blend, y: point.y + (38 + (index % 2) * 6) * blend }
+  }
+  const placeReader = (reader: Reader, obstacles: CollisionActor[]) => {
+    const route = routeFor(reader)
+    if (!route || !landscape) return
+    const terrain = landscape
+    placeOnReflow(
+      reader.element,
+      reader.id,
+      positionAt(reader, route, reader.progress),
+      point => 12 * trailGroundScale(point.y, terrain),
+      reader.spacing,
+      obstacles,
+      {
+        left: 12,
+        right: terrain.width - 12,
+        top: Math.max(terrain.treeline, terrain.alpine.base - 18),
+        bottom: terrain.height - 12,
+      },
+    )
   }
   const placeImpression = (reader: Reader, stamp: Impression) => {
     const route = routes.find(route => route.id === stamp.route)
@@ -142,6 +162,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
         scale,
         reader.spacing,
         reducedMotion.matches || reader.phase !== 'waiting',
+        previousTime ?? view.performance.now(),
       )
       reader.element.dataset.phase = reducedMotion.matches ? 'reading' : reader.phase
       reader.element.dataset.motion = reducedMotion.matches
@@ -206,7 +227,10 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     if (reader.phase !== 'walking') {
       reader.remaining -= elapsed
       if (reader.remaining <= 0) {
-        if (reader.phase === 'waiting') reader.phase = 'walking'
+        if (reader.phase === 'waiting') {
+          placeReader(reader, obstacles)
+          reader.phase = 'walking'
+        }
         else resume(reader)
       }
       return
@@ -324,6 +348,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
   return {
     pause,
     update(nextRoutes: JourneyRoute[], nextLandscape: Landscape, nextSeed: number) {
+      pause()
       routes = nextRoutes
       landscape = nextLandscape
       const count = landscape.width < 700 ? 2 : 3
@@ -380,8 +405,11 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
           spacing: actorSpacing(),
         })
       }
-      for (const reader of readers)
+      const obstacles = [...readActors(scene, true), ...readTrunks(scene)]
+      for (const reader of readers) {
+        placeReader(reader, obstacles)
         for (const stamp of reader.impressions) placeImpression(reader, stamp)
+      }
       render()
       schedule()
     },

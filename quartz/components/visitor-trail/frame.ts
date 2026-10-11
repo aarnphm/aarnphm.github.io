@@ -43,11 +43,11 @@ scene.innerHTML = `
       <defs>
         <clipPath id="${clip}"><path data-trail-clear clip-rule="evenodd"/></clipPath>
         <clipPath id="${clip}-backdrop"><path data-trail-backdrop-clear clip-rule="evenodd"/></clipPath>
-        <mask id="${clip}-reading" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><path class="trail-reveal" data-pet-walk-reveal pathLength="1"/></mask>
+        <g data-pet-walk-masks></g>
         ${trailIds.map(id => `<mask id="${clip}-${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><path class="trail-reveal" data-trail-reveal="${id}" pathLength="1"/></mask>`).join('')}
       </defs>
       ${trailIds.map(id => `<path class="trail-path" data-trail-route="${id}"/>`).join('')}
-      <path class="trail-path" data-pet-walk-path/>
+      <g data-pet-walk-paths></g>
       <g clip-path="url(#${clip})">
       <g data-trail-backdrop-container></g>
       <g class="trail-ground"></g>
@@ -282,7 +282,7 @@ const drawScene = () => {
   if (host.hidden || !scene.isConnected) return
   const layout = trailLayout(scene, sceneSeed)
   if (!layout) return
-  const signature = `${sceneSeed}|${layout.width}|${layout.height}|${layout.bottom}|${layout.readingRoute}|${JSON.stringify(layout.routes)}`
+  const signature = `${sceneSeed}|${layout.width}|${layout.height}|${layout.bottom}|${JSON.stringify(layout.readingRoutes)}|${JSON.stringify(layout.routes)}`
   const clearance = `${layout.clear}|${layout.backdropClear}`
   if (signature === layoutSignature && clearance === clearSignature) return
   const { width, height } = layout
@@ -297,13 +297,21 @@ const drawScene = () => {
   }
   groundDepth.restore()
   layoutSignature = signature
-  const readingPath = svg.querySelector<SVGPathElement>('[data-pet-walk-path]')
-  if (readingPath) readingPath.setAttribute('d', layout.readingRoute)
-  const readingReveal = svg.querySelector<SVGPathElement>('[data-pet-walk-reveal]')
-  if (readingReveal) {
-    readingReveal.setAttribute('d', layout.readingRoute)
-    readingReveal.style.setProperty('--trail-duration', '4200ms')
-  }
+  const readingPaths = svg.querySelector('[data-pet-walk-paths]')
+  if (readingPaths)
+    readingPaths.innerHTML = layout.readingRoutes
+      .map(
+        (route, index) => `<path class="trail-path" data-pet-walk-path="${index}" d="${route}"/>`,
+      )
+      .join('')
+  const readingMasks = svg.querySelector('[data-pet-walk-masks]')
+  if (readingMasks)
+    readingMasks.innerHTML = layout.readingRoutes
+      .map(
+        (route, index) =>
+          `<mask id="${clip}-reading-${index}" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><path class="trail-reveal" data-pet-walk-reveal="${index}" pathLength="1" d="${route}" style="--trail-duration:4200ms;--trail-delay:${index * 550}ms"/></mask>`,
+      )
+      .join('')
   geometries = trailIds.flatMap(id => {
     const path = svg.querySelector<SVGPathElement>(`[data-trail-route="${id}"]`)
     if (!path) return []
@@ -345,7 +353,7 @@ const drawScene = () => {
         return `<g data-route="${id}" mask="url(#${clip}-${id})">${marks.join('')}</g>`
       })
       .join('')
-    if (readingPath) {
+    for (const readingPath of svg.querySelectorAll<SVGPathElement>('[data-pet-walk-path]')) {
       const length = readingPath.getTotalLength()
       const marks = []
       for (let distance = 6; distance < length - 6; distance += 12) {
@@ -360,7 +368,7 @@ const drawScene = () => {
       }
       steps.insertAdjacentHTML(
         'beforeend',
-        `<g data-route="reading" mask="url(#${clip}-reading)">${marks.join('')}</g>`,
+        `<g data-route="reading" mask="url(#${clip}-reading-${readingPath.dataset.petWalkPath})">${marks.join('')}</g>`,
       )
     }
   }
