@@ -1,9 +1,5 @@
-// Draws the garden's mascot into the site icon and the default social card: a hand-drawn circle
-// with two short upright eyes shifted off to the left, traced from aarnphm's Freeform sketch. Each
-// line is a pen stroke rather than an SVG stroke: a filled ribbon around a wobbly centre line whose
-// width swells and thins as pen pressure would, tapering where the pen lands and lifts. On the card
-// the mascot walks over a small planet under a pink sun drawn the same way. Seeds are fixed, so
-// each run draws the same wobble.
+// Rasterises the garden's mascot (quartz/util/mascot.ts) into the site icon and the default social
+// card, where it climbs a mountain range.
 //
 //   pnpm exec tsx quartz/scripts/brand-art.ts              writes the static assets
 //   pnpm exec tsx quartz/scripts/brand-art.ts --preview D  writes previews (and favicon sizes) to D
@@ -11,86 +7,22 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import sharp from 'sharp'
-import { mulberry } from '../components/scripts/404-pixel'
+import {
+  densify,
+  hand,
+  loop,
+  mascot,
+  PAPER,
+  PINK,
+  poly,
+  pressure,
+  rounded,
+  SAGE,
+  stroke,
+  type Pt,
+} from '../util/mascot'
 
 const ROOT = path.resolve(import.meta.dirname, '../..')
-
-const PAPER = '#fffcf0'
-const INK = '#1c1b1a'
-const PINK = '#fdb2a2'
-const SAGE = '#cdd597'
-
-type Pt = readonly [number, number]
-
-const poly = (pts: readonly Pt[]) =>
-  pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(3)} ${y.toFixed(3)}`).join('') + 'Z'
-
-// A few slow sines with seeded phases, summing to roughly [-1, 1].
-function drift(seed: number, ks: readonly number[]) {
-  const rand = mulberry(seed)
-  const waves = ks.map(k => ({ k, phase: rand() * 2 * Math.PI, a: 1 / Math.sqrt(k) }))
-  const norm = waves.reduce((s, w) => s + w.a, 0)
-  return (t: number) => waves.reduce((s, w) => s + w.a * Math.sin(w.k * t + w.phase), 0) / norm
-}
-
-// A pen stroke along `pts`: the centre line offset both ways by half of `width(t)`, closed with a
-// round end at each tip so the pen's landing and lift read as dots of ink.
-function stroke(pts: readonly Pt[], width: (t: number) => number) {
-  const n = pts.length - 1
-  const left: Pt[] = []
-  const right: Pt[] = []
-  for (let i = 0; i <= n; i++) {
-    const [ax, ay] = pts[Math.max(0, i - 1)]
-    const [bx, by] = pts[Math.min(n, i + 1)]
-    const len = Math.hypot(bx - ax, by - ay) || 1
-    const h = width(i / n) / 2
-    const [x, y] = pts[i]
-    left.push([x - ((by - ay) / len) * h, y + ((bx - ax) / len) * h])
-    right.push([x + ((by - ay) / len) * h, y - ((bx - ax) / len) * h])
-  }
-  const tip = ([x, y]: Pt, r: number) =>
-    `<circle cx="${x.toFixed(3)}" cy="${y.toFixed(3)}" r="${r.toFixed(3)}"/>`
-  return `<g fill="${INK}"><path d="${poly([...left, ...right.reverse()])}"/>${tip(pts[0], width(0) / 2)}${tip(pts[n], width(1) / 2)}</g>`
-}
-
-// Pressure along a stroke: thin where the pen lands and lifts, swelling in a few places between.
-const pressure = (seed: number, base: number, swell = 0.45) => {
-  const wave = drift(seed, [3, 5, 8])
-  return (t: number) =>
-    base * (0.45 + 0.55 * Math.sin(Math.PI * t) ** 0.35) * (1 + swell * wave(t * 6))
-}
-
-// A circle drawn by hand, radius 1 around the origin: the radius drifts, the circle leans a little
-// egg-ward, and the pen runs past where it started so the line overlaps itself near the top.
-function loop(seed: number, wobble = 0.06, overrun = 0.03): Pt[] {
-  const r = drift(seed, [2, 3, 5, 7])
-  const start = -2.1
-  const n = 220
-  return Array.from({ length: n + 1 }, (_, i) => {
-    const t = i / n
-    const a = start + t * (2 * Math.PI + 0.3)
-    const out = 1 + wobble * r(a) + overrun * Math.max(0, t - 0.9) * 10
-    return [out * Math.cos(a) * 1.02, out * Math.sin(a) * (0.98 + 0.03 * Math.sin(a))] as const
-  })
-}
-
-// An upright eye: a short stroke that bulges in the middle like a pressed pen.
-function eye(x: number, base: number): string {
-  const pts: Pt[] = Array.from({ length: 13 }, (_, i) => {
-    const t = i / 12
-    return [x + 0.025 * t + 0.012 * Math.sin(Math.PI * t), -0.36 + 0.32 * t] as const
-  })
-  return stroke(pts, t => base * (0.7 + 0.5 * Math.sin(Math.PI * t)))
-}
-
-// The mascot in its own units, radius about 1 around the origin, filled with paper inside the line
-// so it reads on a dark tab bar.
-function mascot(line: number, seed: number) {
-  const outline = loop(seed)
-  return `<path d="${poly(outline)}" fill="${PAPER}"/>
-  ${stroke(outline, pressure(seed + 1, line))}
-  ${eye(-0.6, line * 1.7)}${eye(0.24, line * 1.7)}`
-}
 
 const svg = (w: number, h: number, body: string) =>
   Buffer.from(
@@ -98,52 +30,11 @@ const svg = (w: number, h: number, body: string) =>
   )
 
 const icon = () =>
-  svg(1024, 1024, `<g transform="translate(512 512) scale(410)">${mascot(0.055, 7)}</g>`)
-
-// Points along a polyline, about `step` apart, so a hand wobble has somewhere to live.
-function densify(pts: readonly Pt[], step: number): Pt[] {
-  const out: Pt[] = []
-  for (let i = 0; i < pts.length - 1; i++) {
-    const [ax, ay] = pts[i]
-    const [bx, by] = pts[i + 1]
-    const n = Math.max(1, Math.ceil(Math.hypot(bx - ax, by - ay) / step))
-    for (let s = 0; s < n; s++) out.push([ax + ((bx - ax) * s) / n, ay + ((by - ay) * s) / n])
-  }
-  out.push(pts[pts.length - 1])
-  return out
-}
-
-// A polyline as the hand draws it: densified, then nudged sideways by a slow seeded drift.
-function hand(pts: readonly Pt[], step: number, amp: number, seed: number): Pt[] {
-  const line = densify(pts, step)
-  const wave = drift(seed, [3, 5, 9])
-  const n = line.length - 1
-  return line.map(([x, y], i) => {
-    const [ax, ay] = line[Math.max(0, i - 1)]
-    const [bx, by] = line[Math.min(n, i + 1)]
-    const len = Math.hypot(bx - ax, by - ay) || 1
-    const o = amp * wave((i / n) * 2 * Math.PI)
-    return [x - ((by - ay) / len) * o, y + ((bx - ax) / len) * o] as const
-  })
-}
-
-// A rounded rectangle's outline, clockwise from the top left, closed back on itself.
-function rounded(cx: number, cy: number, w: number, h: number, r: number): Pt[] {
-  const corners: [number, number, number][] = [
-    [cx + w / 2 - r, cy - h / 2 + r, -Math.PI / 2],
-    [cx + w / 2 - r, cy + h / 2 - r, 0],
-    [cx - w / 2 + r, cy + h / 2 - r, Math.PI / 2],
-    [cx - w / 2 + r, cy - h / 2 + r, Math.PI],
-  ]
-  const pts: Pt[] = []
-  for (const [x, y, a0] of corners)
-    for (let i = 0; i <= 6; i++) {
-      const a = a0 + (i / 6) * (Math.PI / 2)
-      pts.push([x + r * Math.cos(a), y + r * Math.sin(a)])
-    }
-  pts.push(pts[0])
-  return pts
-}
+  svg(
+    1024,
+    1024,
+    `<g transform="translate(512 512) scale(410)">${mascot({ line: 0.055, seed: 7 })}</g>`,
+  )
 
 // A closed shape in one colour inside a pen line.
 const shape = (pts: readonly Pt[], fill: string, width: (t: number) => number) =>
@@ -276,7 +167,8 @@ function card() {
       69,
     ),
     () => 4 * u,
-  ).replace(INK, PINK)
+    PINK,
+  )
   const brim = stroke(
     hand(
       [
@@ -354,7 +246,7 @@ function card() {
   ${legs}
   <g transform="translate(${bx} ${by}) rotate(${(tilt * 180) / Math.PI}) scale(${r})">
     ${pack}${roll}
-    ${mascot(3.2 * u, 11)}
+    ${mascot({ line: 3.2 * u, seed: 11 })}
     ${crown}${band}${brim}
   </g>
   </g>`,
