@@ -78,6 +78,10 @@ document.addEventListener('nav', () => {
   const grades = root.querySelector<HTMLElement>('.fc-grades')
   const endBtn = root.querySelector<HTMLButtonElement>('.fc-end')
   const syncEl = root.querySelector<HTMLAnchorElement>('.flashcards-sync')
+  const notesEl = root.querySelector<HTMLElement>('.flashcards-notes')
+  const notesBody = root.querySelector<HTMLElement>('.flashcards-notes-body')
+  const notesTitle = root.querySelector<HTMLAnchorElement>('.flashcards-notes-title')
+  const notesBtn = root.querySelector<HTMLButtonElement>('.fc-notes')
 
   // The Worker resolves the owner's GitHub session; without one the drill is stateless.
   let login: string | null = null
@@ -169,6 +173,72 @@ document.addEventListener('nav', () => {
     if (persistError) summaryEl.append(document.createTextNode(' reviews did not save.'))
   }
 
+  // The note rail shows the page the active card came from: the deck slug minus
+  // `/flashcards`. Pages are fetched once per note and kept for the session.
+  interface Note {
+    title: string
+    body: DocumentFragment
+  }
+  const noteCache = new Map<string, Promise<Note | null>>()
+  let notesOpen = false
+  let currentNote = ''
+  const noteOf = (el: HTMLElement) => deckOf(el).replace(/\/flashcards$/, '')
+
+  const loadNote = (slug: string): Promise<Note | null> => {
+    let pending = noteCache.get(slug)
+    if (!pending) {
+      pending = fetch(`/${slug}`, { headers: { Accept: 'text/html' }, signal })
+        .then(async res => {
+          if (!res.ok) return null
+          const doc = new DOMParser().parseFromString(await res.text(), 'text/html')
+          normalizeRelativeURLs(doc, new URL(`/${slug}`, window.location.origin))
+          const article = doc.querySelector('.page-content article')
+          if (!article) return null
+          for (const el of article.querySelectorAll('script')) el.remove()
+          const body = document.createDocumentFragment()
+          body.append(document.importNode(article, true))
+          const title = doc.querySelector('h1.article-title')?.textContent?.trim() || slug
+          return { title, body }
+        })
+        .catch(() => null)
+      noteCache.set(slug, pending)
+    }
+    return pending
+  }
+
+  const renderNote = async (slug: string) => {
+    if (!notesBody || !notesTitle || slug === currentNote) return
+    currentNote = slug
+    notesTitle.href = `/${slug}`
+    notesTitle.dataset.slug = slug
+    notesTitle.textContent = 'loading…'
+    const note = await loadNote(slug)
+    if (signal.aborted || currentNote !== slug) return
+    if (!note) {
+      notesTitle.textContent = slug
+      const p = document.createElement('p')
+      p.className = 'flashcards-notes-empty'
+      p.textContent = 'could not load the note.'
+      notesBody.replaceChildren(p)
+      return
+    }
+    notesTitle.textContent = note.title
+    notesBody.replaceChildren(note.body.cloneNode(true))
+    notesBody.scrollTop = 0
+  }
+
+  const syncNotes = () => {
+    if (notesOpen && active) void renderNote(noteOf(active))
+  }
+
+  const setNotes = (open: boolean) => {
+    notesOpen = open
+    root.dataset.notes = open ? 'open' : 'closed'
+    notesEl?.toggleAttribute('hidden', !open)
+    notesBtn?.setAttribute('aria-pressed', String(open))
+    if (open) syncNotes()
+  }
+
   const show = () => {
     for (const el of cards) el.classList.remove('is-active')
     active = queue[0] ?? null
@@ -181,6 +251,7 @@ document.addEventListener('nav', () => {
     active.classList.add('is-active')
     if (cardBody) cardBody.scrollTop = 0
     updateProgress()
+    syncNotes()
   }
 
   const submit = async (grade: number) => {
@@ -328,6 +399,9 @@ document.addEventListener('nav', () => {
       if (finished) return
       event.preventDefault()
       finish()
+    } else if (event.key === 'n') {
+      event.preventDefault()
+      setNotes(!notesOpen)
     }
   }
 
@@ -347,6 +421,8 @@ document.addEventListener('nav', () => {
   grades?.addEventListener('click', onGrade, { signal })
   undoBtn?.addEventListener('click', undo, { signal })
   endBtn?.addEventListener('click', onEnd, { signal })
+  notesBtn?.addEventListener('click', () => setNotes(!notesOpen), { signal })
+  if (notesEl) setNotes(window.matchMedia('(min-width: 64rem)').matches)
   window.addEventListener('keydown', onKey, { signal })
   window.addEventListener('keydown', onModDown, { signal })
   window.addEventListener('keyup', onModUp, { signal })
