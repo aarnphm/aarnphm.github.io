@@ -62,6 +62,7 @@ export type ContentLayout =
   | 'courses'
   | 'flashcards'
   | 'resource'
+  | 'study-log'
 export type ContentDetails = {
   slug: string
   title: string

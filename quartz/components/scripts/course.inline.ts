@@ -282,3 +282,59 @@ document.addEventListener('nav', () => {
     { signal },
   )
 })
+
+const today = (): string => {
+  const now = new Date()
+  const pad = (value: number) => String(value).padStart(2, '0')
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+}
+
+// Dev only: the read/problems toggles post to the study endpoint in quartz/scripts/dev.ts, which
+// edits `lectures/index.md` and leaves the change for a commit. The watcher rebuilds the pages.
+document.addEventListener('nav', () => {
+  const signal = currentNavSignal()
+  for (const root of document.querySelectorAll<HTMLElement>('.course-study[data-study-endpoint]')) {
+    const status = root.querySelector<HTMLElement>('.course-study-status')
+    const say = (message: string) => {
+      if (status) status.textContent = message
+    }
+    for (const button of root.querySelectorAll<HTMLButtonElement>('[data-study-key]')) {
+      button.addEventListener(
+        'click',
+        async () => {
+          if (button.getAttribute('aria-busy') === 'true') return
+          const key = button.dataset.studyKey
+          const date = button.getAttribute('aria-pressed') === 'true' ? null : today()
+          button.setAttribute('aria-busy', 'true')
+          try {
+            const res = await fetch(`${root.dataset.studyEndpoint}/study`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                dir: root.dataset.studyDir,
+                n: Number(root.dataset.studyN),
+                key,
+                date,
+              }),
+              signal,
+            })
+            const body = (await res.json().catch(() => ({}))) as { error?: string; path?: string }
+            if (!res.ok) throw new Error(body.error ?? `study ${res.status}`)
+            button.setAttribute('aria-pressed', date ? 'true' : 'false')
+            if (date) button.dataset.studyDate = date
+            else delete button.dataset.studyDate
+            button.textContent = date ? `${key} ${date.slice(5)}` : (key ?? '')
+            button.title = date ? `${key} ${date} · click to clear` : `mark ${key} today`
+            say(`${body.path ?? 'lectures/index.md'} (uncommitted)`)
+          } catch (error) {
+            if (signal.aborted) return
+            say(`not saved: ${error instanceof Error ? error.message : 'error'}`)
+          } finally {
+            button.removeAttribute('aria-busy')
+          }
+        },
+        { signal },
+      )
+    }
+  }
+})

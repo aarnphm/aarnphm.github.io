@@ -47,6 +47,7 @@ export interface CourseUnitView {
   text?: QuartzPluginData
   state: CourseUnitState
   cardIds: string[]
+  /** Dates from the study log. */
   read?: string
   problems?: string
 }
@@ -61,6 +62,8 @@ export interface CourseView {
   psets: Map<number, QuartzPluginData>
   /** Generated `notes/pset-<nn>` pages, by problem set number. */
   psetText: Map<number, QuartzPluginData>
+  /** The authored study log page, when the course has one. */
+  log?: QuartzPluginData
 }
 
 export type CourseResourceKind =
@@ -328,12 +331,19 @@ export function hasCourseCrumb(data: QuartzPluginData): boolean {
     resourceOf(data) !== null ||
     unitOf(slug) !== null ||
     latexOf(data)?.pset !== undefined ||
-    coursePageOf(slug) !== null
+    coursePageOf(slug) !== null ||
+    data.frontmatter?.pageLayout === 'study-log'
   )
 }
 
 export function unitSlug(dir: string, n: number, kind: CourseUnitPath = 'lectures'): FullSlug {
   return `courses/${dir}/${kind}/${String(n).padStart(2, '0')}` as FullSlug
+}
+
+/** Problem set number from a resource id: `mit18_156_s25_pset2_pdf` → 2. */
+export const psetNumber = (id: string): number | undefined => {
+  const match = /(?:pset|ps|problem[-_ ]?set)[-_ ]?0*(\d+)/i.exec(id)
+  return match ? Number(match[1]) : undefined
 }
 
 export function psetTextSlug(dir: string, n: number): FullSlug {
@@ -348,14 +358,40 @@ export function unitLabel(kind: CourseUnitKind, n: number, total: number): strin
   return `${kind} ${String(n).padStart(2, '0')} of ${total}`
 }
 
-/** A `study.<key>` date on a unit note, formatted as it was written. */
-function studyDate(note: QuartzPluginData | undefined, key: string): string | undefined {
-  const study = note?.frontmatter?.study
-  if (!isRecord(study)) return undefined
-  const value = study[key]
+/** The authored study log: `courses/<dir>/lectures/index.md`. The vendor script never writes there. */
+export function studyLogSlug(dir: string): FullSlug {
+  return `courses/${dir}/lectures/index` as FullSlug
+}
+
+export type StudyKey = 'read' | 'problems'
+
+export interface StudyLog {
+  read: Map<number, string>
+  problems: Map<number, string>
+}
+
+/** `2026-10-08`, from a YAML date or a string as it was written. */
+export function studyDay(value: unknown): string | undefined {
   if (value instanceof Date) return value.toISOString().slice(0, 10)
-  if (typeof value === 'string' && value.length > 0) return value.slice(0, 10)
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) return value.slice(0, 10)
   return undefined
+}
+
+/** The `study: {read: {n: date}, problems: {n: date}}` map of a study log page. */
+export function parseStudyLog(frontmatter: unknown): StudyLog {
+  const log: StudyLog = { read: new Map(), problems: new Map() }
+  const study = isRecord(frontmatter) ? frontmatter.study : undefined
+  if (!isRecord(study)) return log
+  for (const key of ['read', 'problems'] as const) {
+    const map = study[key]
+    if (!isRecord(map)) continue
+    for (const [raw, value] of Object.entries(map)) {
+      const n = Number(raw)
+      const day = studyDay(value)
+      if (Number.isInteger(n) && n > 0 && day) log[key].set(n, day)
+    }
+  }
+  return log
 }
 
 /**
@@ -376,6 +412,8 @@ export function courseView(
       .filter(file => file.flashcards)
       .map(file => [file.flashcards!.sourceSlug as string, file]),
   )
+  const logPage = bySlug.get(studyLogSlug(dir))
+  const log = parseStudyLog(logPage?.frontmatter)
   const units = record.units.map((unit): CourseUnitView => {
     const slug = unitSlug(dir, unit.n)
     const note = bySlug.get(slug)
@@ -383,8 +421,8 @@ export function courseView(
     const text = bySlug.get(unitSlug(dir, unit.n, 'notes'))
     const cardIds = deck?.flashcards?.cards.map(card => card.id) ?? []
     const state: CourseUnitState = deck ? 'deck' : note ? 'notes' : 'new'
-    const read = studyDate(note, 'read')
-    const problems = studyDate(note, 'problems')
+    const read = log.read.get(unit.n)
+    const problems = log.problems.get(unit.n)
     return {
       record: unit,
       slug,
@@ -406,7 +444,16 @@ export function courseView(
     const pset = /^courses\/([^/]+)\/notes\/pset-(\d{2,3})$/.exec(slug)
     if (pset && pset[1] === dir) psetText.set(Number(pset[2]), file)
   }
-  return { dir, slug: home.slug as FullSlug, home, record, units, psets, psetText }
+  return {
+    dir,
+    slug: home.slug as FullSlug,
+    home,
+    record,
+    units,
+    psets,
+    psetText,
+    ...(logPage ? { log: logPage } : {}),
+  }
 }
 
 /** Every course home with a study block, in course-number order. */
