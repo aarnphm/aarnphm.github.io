@@ -198,32 +198,38 @@ export default (() => {
         title: 'source',
         classes: ['readable-source'],
         item: [
-          h(
-            'a',
-            { href: sourceHref, target: '_blank', rel: 'noopener noreferrer', class: 'llm-source' },
-            [h('span', { title: 'voir https://github.com/AnswerDotAI/llms-txt' }, ['llms.txt'])],
-          ),
-          h(
-            'button',
-            {
-              type: 'button',
-              'aria-label': 'Copier la source Markdown',
-              title: 'Copier la source Markdown',
-              class: 'clipboard-button',
-              'data-href': sourceHref,
-            },
-
+          h('span', { class: 'source-actions' }, [
             h(
-              'svg',
-              { ...svgOptions, viewbox: '0 -8 24 24', class: 'copy-icon', 'aria-hidden': true },
-              [h('use', { href: '#github-copy' })],
+              'a',
+              {
+                href: sourceHref,
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                class: 'llm-source',
+              },
+              [h('span', { title: 'voir https://github.com/AnswerDotAI/llms-txt' }, ['llms.txt'])],
             ),
             h(
-              'svg',
-              { ...svgOptions, viewbox: '0 -8 24 24', class: 'check-icon', 'aria-hidden': true },
-              [h('use', { href: '#github-check' })],
+              'button',
+              {
+                type: 'button',
+                'aria-label': 'Copier la source Markdown',
+                title: 'Copier la source Markdown',
+                class: 'clipboard-button',
+                'data-href': sourceHref,
+              },
+              h(
+                'svg',
+                { ...svgOptions, viewbox: '-4 -4 24 24', class: 'copy-icon', 'aria-hidden': true },
+                [h('use', { href: '#github-copy' })],
+              ),
+              h(
+                'svg',
+                { ...svgOptions, viewbox: '-4 -4 24 24', class: 'check-icon', 'aria-hidden': true },
+                [h('use', { href: '#github-check' })],
+              ),
             ),
-          ),
+          ]),
           h('span', { class: 'source-copy-status', role: 'status' }),
         ],
       })

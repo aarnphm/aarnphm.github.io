@@ -4,7 +4,9 @@ document.addEventListener('nav', () => {
   )
   for (const button of buttons) {
     const href = button.dataset.href
-    const status = button.parentElement?.querySelector<HTMLElement>('.source-copy-status')
+    const status = button
+      .closest('.readable-source')
+      ?.querySelector<HTMLElement>('.source-copy-status')
     if (!href || !status) continue
     const controller = new AbortController()
     let resetTimer: ReturnType<typeof setTimeout> | undefined
