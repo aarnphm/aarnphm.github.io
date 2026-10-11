@@ -30,6 +30,11 @@ export function pondDistance(point: Point, pond: Pond) {
   return Math.hypot((point.x - pond.x) / pond.rx, (point.y - pond.y) / pond.ry)
 }
 
+export function trailGroundScale(y: number, landscape: Landscape) {
+  const depth = (y - landscape.treeline) / (landscape.meadowTop + 160 - landscape.treeline)
+  return 0.35 + 0.65 * Math.max(0, Math.min(1, depth))
+}
+
 export function trailLandscape(
   width: number,
   height: number,
@@ -38,13 +43,12 @@ export function trailLandscape(
   seed: number,
 ): Landscape {
   const random = trailRandom(seed ^ 0x51ed270b)
-  const alpineWidth = Math.min(1180, width * (width < 700 ? 0.86 : 0.82))
-  const alpineHeight = Math.min(width < 700 ? 112 : 206, alpineWidth * 0.27)
-  const alpineTop = bottom + 44
+  const alpineHeight = Math.min(width < 700 ? 112 : 206, width * 0.27)
+  const alpineTop = bottom + 112
   const alpine: Alpine = {
-    left: Math.round((width - alpineWidth) / 2),
+    left: 0,
     top: alpineTop,
-    width: alpineWidth,
+    width,
     height: alpineHeight,
     base: alpineTop + alpineHeight,
   }
@@ -113,9 +117,9 @@ export function onDryLand(point: Point, landscape: Landscape, margin = 1.5): Poi
 }
 
 export function followTerrain(points: Point[], landscape: Landscape) {
-  const { pond, bottom, camp, alpine } = landscape
+  const { pond, bottom, camp } = landscape
   const adjusted = points.map((point, index) => {
-    if (point.y <= bottom || index === points.length - 1) return point
+    if (point.y <= bottom || index === 0 || index === points.length - 1) return point
     const weight = Math.min(1, (point.y - bottom) / Math.max(1, camp.y - bottom))
     const raised = { x: point.x, y: point.y + groundOffset(point.x, landscape) * weight }
     if (pondDistance(raised, pond) >= 1.8) return raised
@@ -129,26 +133,6 @@ export function followTerrain(points: Point[], landscape: Landscape) {
   for (let index = 1; index < adjusted.length; index++) {
     const from = adjusted[index - 1]
     const to = adjusted[index]
-    if (from.y < alpine.base && to.y >= alpine.base && from.y < to.y) {
-      const atHeight = (y: number) =>
-        from.x + (to.x - from.x) * Math.max(0, Math.min(1, (y - from.y) / (to.y - from.y)))
-      const entry = atHeight(alpine.top - 16)
-      const exit = atHeight(alpine.base + 16)
-      if (
-        Math.max(entry, exit) > alpine.left - 16 &&
-        Math.min(entry, exit) < alpine.left + alpine.width + 16
-      ) {
-        const flank =
-          from.x < landscape.width / 2
-            ? Math.max(10, alpine.left - 26)
-            : Math.min(landscape.width - 10, alpine.left + alpine.width + 26)
-        routed.push(
-          { x: flank, y: Math.min(alpine.top - 20, Math.max(from.y, bottom + 18)) },
-          { x: flank, y: alpine.top + alpine.height * 0.5 },
-          { x: flank, y: alpine.base + 36 },
-        )
-      }
-    }
     const a = { x: (from.x - pond.x) / pond.rx, y: (from.y - pond.y) / pond.ry }
     const b = { x: (to.x - pond.x) / pond.rx, y: (to.y - pond.y) / pond.ry }
     const dx = b.x - a.x

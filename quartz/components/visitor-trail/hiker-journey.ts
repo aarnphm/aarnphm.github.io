@@ -1,5 +1,14 @@
 import type { TrailId } from './layout'
-import { bootImpression, footprintTransform } from './footprints'
+import {
+  actorSpacing,
+  publishActor,
+  readActors,
+  readTrunks,
+  spacedPosition,
+  spacedStep,
+} from './actor-spacing'
+import { bootImpression } from './footprints'
+import { trailGroundScale, type Landscape } from './landscape'
 import { trailRandom } from './random'
 
 type Point = { x: number; y: number }
@@ -11,7 +20,13 @@ export type JourneyRoute = {
 }
 type Phase = 'waiting' | 'arriving' | 'unpacking' | 'resting' | 'packing' | 'departing' | 'gone'
 type WalkingPhase = 'arriving' | 'departing'
-type Impression = { phase: WalkingPhase; progress: number; side: number; element: SVGPathElement }
+type Impression = {
+  phase: WalkingPhase
+  progress: number
+  side: number
+  offset: Point
+  element: SVGPathElement
+}
 const phases: Phase[] = [
   'waiting',
   'arriving',
@@ -35,8 +50,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
   const reducedMotion = view.matchMedia('(prefers-reduced-motion: reduce)')
   let incoming: JourneyRoute | undefined
   let outgoing: JourneyRoute | undefined
-  let exit: Point = { x: 0, y: 0 }
-  let exitLength = 0
+  let landscape: Landscape | undefined
   let seed: number | undefined
   let phase: Phase = 'waiting'
   let elapsed = 0
@@ -46,53 +60,58 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
   let timer: number | null = null
   let nextStep = 10
   const impressions: Impression[] = []
+  let spacing = actorSpacing()
 
   const duration = () => {
     if (phase === 'waiting') return (incoming?.readyAfter ?? 0) + 250
     if (phase === 'arriving') return Math.max(20000, Math.min(50000, (incoming?.length ?? 0) * 28))
-    if (phase === 'departing')
-      return Math.max(22000, Math.min(52000, ((outgoing?.length ?? 0) + exitLength) * 28))
+    if (phase === 'departing') return Math.max(22000, Math.min(52000, (outgoing?.length ?? 0) * 28))
     if (phase === 'resting') return 9000
     return 1400
   }
   const moving = () => phase === 'arriving' || phase === 'departing'
   const legLength = (leg: WalkingPhase) =>
-    leg === 'arriving' ? (incoming?.length ?? 0) : (outgoing?.length ?? 0) + exitLength
+    leg === 'arriving' ? (incoming?.length ?? 0) : (outgoing?.length ?? 0)
   const onLeg = (leg: WalkingPhase, progress: number): Point => {
     const route = leg === 'arriving' ? incoming : outgoing
     if (!route) return { x: 0, y: 0 }
     const distance = Math.max(0, Math.min(1, progress)) * legLength(leg)
-    if (leg === 'arriving') return route.point(distance)
-    if (distance <= route.length) return route.point(route.length - distance)
-    const start = route.point(0)
-    const fraction = exitLength ? (distance - route.length) / exitLength : 1
-    return {
-      x: start.x + (exit.x - start.x) * fraction,
-      y: start.y + (exit.y - start.y) * fraction,
-    }
+    const remaining = leg === 'arriving' ? route.length - distance : distance
+    const point = route.point(leg === 'arriving' ? distance : route.length - distance)
+    const approach = Math.max(0, 1 - remaining / 110)
+    const blend = approach * approach * (3 - 2 * approach)
+    return { x: point.x - 48 * blend, y: point.y + 30 * blend }
   }
-  const impressionTransform = (leg: WalkingPhase, progress: number, side: number) => {
-    const point = onLeg(leg, progress)
-    const ahead = onLeg(leg, Math.min(1, progress + 1 / legLength(leg)))
-    return footprintTransform(
-      point.x,
-      point.y,
-      Math.atan2(ahead.y - point.y, ahead.x - point.x),
-      side,
-    )
+  const impressionTransform = (stamp: Impression) => {
+    const base = onLeg(stamp.phase, stamp.progress)
+    const point = { x: base.x + stamp.offset.x, y: base.y + stamp.offset.y }
+    const ahead = onLeg(stamp.phase, Math.min(1, stamp.progress + 1 / legLength(stamp.phase)))
+    const scale = landscape ? trailGroundScale(point.y, landscape) : 1
+    const angle = (Math.atan2(ahead.y - base.y, ahead.x - base.x) * 180) / Math.PI
+    return `translate(${point.x.toFixed(2)} ${point.y.toFixed(2)}) rotate(${angle.toFixed(2)}) scale(${scale.toFixed(4)}) translate(0 ${stamp.side * 2}) scale(1 ${stamp.side})`
   }
   const render = () => {
     if (!incoming) return
     hiker.dataset.phase = phase
-    hiker.dataset.motion = reducedMotion.matches ? 'still' : 'walking'
+    hiker.dataset.motion = reducedMotion.matches
+      ? 'still'
+      : host.hidden || document.hidden
+        ? 'paused'
+        : 'walking'
     const progress = Math.min(1, elapsed / duration())
     hiker.dataset.progress = progress.toFixed(3)
     hiker.dataset.walkingDuration = moving() ? String(duration()) : ''
     const leg: WalkingPhase | null = phase === 'arriving' || phase === 'departing' ? phase : null
-    const position = leg ? onLeg(leg, progress) : incoming.point(incoming.length)
-    hiker.setAttribute(
-      'transform',
-      `translate(${Math.round(position.x)} ${Math.round(position.y)})`,
+    const base = leg ? onLeg(leg, progress) : onLeg('arriving', phase === 'waiting' ? 0 : 1)
+    const position = spacedPosition(base, spacing)
+    const scale = landscape ? trailGroundScale(position.y, landscape) : 1
+    publishActor(
+      hiker,
+      'hiker-camp',
+      position,
+      scale,
+      spacing,
+      phase !== 'waiting' && phase !== 'gone',
     )
     if (leg) {
       const ahead = onLeg(leg, Math.min(1, progress + 2 / legLength(leg)))
@@ -106,8 +125,14 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
       while (nextStep < distance - 6) {
         const side = Math.floor(nextStep / 10) % 2 ? -1 : 1
         const mark = bootImpression(document)
-        const stamp = { phase: leg, progress: nextStep / legLength(leg), side, element: mark }
-        mark.setAttribute('transform', impressionTransform(stamp.phase, stamp.progress, side))
+        const stamp = {
+          phase: leg,
+          progress: nextStep / legLength(leg),
+          side,
+          offset: { ...spacing.offset },
+          element: mark,
+        }
+        mark.setAttribute('transform', impressionTransform(stamp))
         tracks.append(mark)
         impressions.push(stamp)
         if (impressions.length > 128) impressions.shift()?.element.remove()
@@ -127,6 +152,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     if (frame !== null) view.cancelAnimationFrame(frame)
     if (timer !== null) view.clearTimeout(timer)
     frame = timer = previousTime = null
+    hiker.dataset.motion = reducedMotion.matches ? 'still' : 'paused'
   }
   const schedule = () => {
     if (
@@ -149,7 +175,23 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     frame = timer = null
     if (host.hidden || document.hidden || signal.aborted) return pause()
     const delta = previousTime === null ? 0 : Math.max(0, time - previousTime)
-    elapsed += moving() ? Math.min(200, delta) : delta
+    if (moving() && time - renderedAt < 1000 / 30) return schedule()
+    if (moving() && landscape) {
+      const leg: WalkingPhase = phase === 'arriving' ? 'arriving' : 'departing'
+      const progress = Math.min(1, elapsed / duration())
+      const base = onLeg(leg, progress)
+      const scale = trailGroundScale(base.y, landscape)
+      const increment = Math.min(200, delta) * scale
+      const next = onLeg(leg, Math.min(1, (elapsed + increment) / duration()))
+      const budget = Math.max(0.01, (legLength(leg) * increment) / duration())
+      if (
+        spacedStep('hiker-camp', base, next, 12 * scale, budget, spacing, [
+          ...readActors(scene),
+          ...readTrunks(scene),
+        ])
+      )
+        elapsed += increment
+    } else elapsed += delta
     previousTime = time
     if (elapsed >= duration()) {
       elapsed = 0
@@ -193,22 +235,15 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
 
   return {
     pause,
-    update(routes: JourneyRoute[], width: number, nextSeed: number) {
+    update(routes: JourneyRoute[], nextLandscape: Landscape, nextSeed: number) {
       const fraction = elapsed / duration()
+      landscape = nextLandscape
       incoming = routes.find(route => route.id === 'main')
       const departures = routes.filter(
         route => route.id === 'pines' || route.id === 'ridge' || route.id === 'meadow',
       )
       outgoing = departures[Math.floor(trailRandom(nextSeed ^ 0x78ae12d3)() * departures.length)]
       if (!incoming || !outgoing) return pause()
-      const start = outgoing.point(0)
-      exit =
-        outgoing.id === 'pines'
-          ? { x: start.x + 16, y: -30 }
-          : outgoing.id === 'ridge'
-            ? { x: width + 30, y: start.y - 16 }
-            : { x: -30, y: start.y - 10 }
-      exitLength = Math.hypot(exit.x - start.x, exit.y - start.y)
       if (nextSeed !== seed) {
         pause()
         seed = nextSeed
@@ -218,15 +253,13 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
         nextStep = 10
         tracks.replaceChildren()
         impressions.length = 0
+        spacing = actorSpacing()
       } else {
         elapsed = fraction * duration()
         if (phase === 'arriving' || phase === 'departing')
           nextStep = (Math.floor((fraction * legLength(phase)) / 10) + 1) * 10
         for (const stamp of impressions)
-          stamp.element.setAttribute(
-            'transform',
-            impressionTransform(stamp.phase, stamp.progress, stamp.side),
-          )
+          stamp.element.setAttribute('transform', impressionTransform(stamp))
       }
       if (reducedMotion.matches) still()
       else {
