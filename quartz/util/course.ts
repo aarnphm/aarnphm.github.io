@@ -332,7 +332,8 @@ export function hasCourseCrumb(data: QuartzPluginData): boolean {
     unitOf(slug) !== null ||
     latexOf(data)?.pset !== undefined ||
     coursePageOf(slug) !== null ||
-    data.frontmatter?.pageLayout === 'study-log'
+    data.frontmatter?.pageLayout === 'study-log' ||
+    data.frontmatter?.pageLayout === 'statements'
   )
 }
 
@@ -476,6 +477,30 @@ export function courseOf(
 ): { home?: QuartzPluginData; view: CourseView | null } {
   const home = allFiles.find(file => file.slug === `courses/${dir}/index`)
   return { home, view: home ? courseView(home, allFiles, deckFiles) : null }
+}
+
+export interface CourseCadence {
+  sessions: number
+  minutes: number
+}
+
+/**
+ * Lecture meetings from the vendored syllabus, as OCW writes them: "Lectures: 2 sessions / week,
+ * 1.5 hours / session". Undefined when the course has no syllabus or the line is missing.
+ */
+export function courseCadence(
+  dir: string,
+  allFiles: QuartzPluginData[],
+): CourseCadence | undefined {
+  const syllabus = allFiles.find(file => file.slug === `courses/${dir}/pages/syllabus/index`)
+  const match =
+    /lectures?:\s*(\d+)\s*sessions?\s*\/\s*week\s*[,;]\s*([\d.]+)\s*hours?\s*\/\s*session/i.exec(
+      syllabus?.text ?? '',
+    )
+  if (!match) return undefined
+  const sessions = Number(match[1])
+  const minutes = Math.round(Number(match[2]) * 60)
+  return sessions > 0 && sessions <= 7 && minutes > 0 ? { sessions, minutes } : undefined
 }
 
 export function unitWordCount(note: QuartzPluginData | undefined): number | undefined {

@@ -1188,3 +1188,61 @@ article.course-notes {
     margin: 0;
   }
 }
+
+// --- pages/calendar: the shared month calendar over the vendored table ---
+// a month needs the course home's span: the reading edge through the side column
+@media all and ($desktop) {
+  .folder-layout--article.course-page:has(> .course-calendar) {
+    grid-column: 5 / -3;
+  }
+}
+
+.course-calendar {
+  --control-focus: var(--dark);
+
+  .g-calendar-day-header h3 {
+    font-size: 1em;
+  }
+
+  a.g-event {
+    text-decoration: none;
+  }
+}
+
+.course-calendar-due {
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.course-calendar-foot {
+  margin-top: var(--space-3);
+  color: var(--darkgray);
+  font: 400 var(--text-meta) / 1.5 var(--codeFont);
+
+  p {
+    margin: var(--space-2) 0 0;
+  }
+
+  code {
+    padding: 0;
+    background: transparent;
+  }
+}
+
+.course-calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+  }
+}

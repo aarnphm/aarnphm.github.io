@@ -1,4 +1,9 @@
-import type { ComponentChildren, KeyboardEventHandler, MouseEventHandler } from 'preact'
+import type {
+  ComponentChildren,
+  KeyboardEventHandler,
+  MouseEventHandler,
+  PointerEventHandler,
+} from 'preact'
 
 export interface MonthGridClasses {
   root: string
@@ -34,6 +39,7 @@ export const MonthGrid = ({
   renderDay,
   onKeyDown,
   onClickCapture,
+  onPointerDownCapture,
   children,
 }: {
   id: string
@@ -51,10 +57,16 @@ export const MonthGrid = ({
   renderDay: (date: string) => ComponentChildren
   onKeyDown?: KeyboardEventHandler<HTMLDivElement>
   onClickCapture?: MouseEventHandler<HTMLDivElement>
+  onPointerDownCapture?: PointerEventHandler<HTMLDivElement>
   /** Rendered after the grid, inside the root: a preview popover, for instance. */
   children?: ComponentChildren
 }) => (
-  <div class={classes.root} onKeyDown={onKeyDown} onClickCapture={onClickCapture}>
+  <div
+    class={classes.root}
+    onKeyDown={onKeyDown}
+    onClickCapture={onClickCapture}
+    onPointerDownCapture={onPointerDownCapture}
+  >
     <div class={classes.weekdays} aria-hidden="true">
       {dates.slice(0, 7).map(date => (
         <span key={date}>{weekdayLabel(date)}</span>

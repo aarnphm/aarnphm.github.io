@@ -110,13 +110,33 @@ function stripLinks(
       push('pdf', resourceLink(sources.pdf, 'lecture pdf'))
     }
     if (unit.note) push('notes', internal(unit.slug, 'notes'))
-    else
-      push(
-        'notes',
-        <span>
-          notes: <code>lectures/{pad(n)}.md</code>
-        </span>,
-      )
+    else {
+      push('notes', <code>lectures/{pad(n)}.md</code>)
+      // the lecture pdf drafts the note from its marks (course.inline.ts builds the preview)
+      const file = ref.record.file
+      if (kind === 'notes' && file && /\.pdf$/i.test(file))
+        push(
+          'notes',
+          <details
+            class="course-promote"
+            data-promote-dir={view.dir}
+            data-promote-n={String(n)}
+            data-promote-kind={view.record.unitKind}
+            data-promote-title={unit.record.title}
+            data-promote-resource={ref.slug.replace(/\/index$/, '')}
+            data-promote-pdf={courseFileSlug(ref.dir, file)}
+            data-promote-unit={unit.slug}
+            data-promote-endpoint={endpoint}
+          >
+            <summary>start notes</summary>
+            <div class="course-promote-body">
+              <p class="course-promote-status" role="status" aria-live="polite">
+                reading marks…
+              </p>
+            </div>
+          </details>,
+        )
+    }
     if (unit.deck) {
       push(
         'cards',
@@ -176,6 +196,24 @@ function stripLinks(
         )
       const text = view.psetText.get(n)
       if (text && kind !== 'tex') push('rendered', internal(psetTextSlug(ref.dir, n), 'rendered'))
+      // the desk sits on the rendered set, else on psets/<nn>.md; dev creates that file
+      if (kind === 'pset' && text)
+        push('rendered', internal(psetTextSlug(ref.dir, n), 'desk', { 'data-no-popover': '' }))
+      else if (kind === 'pset' && ours)
+        push('solutions', internal(ours.slug as FullSlug, 'desk', { 'data-no-popover': '' }))
+      else if (kind === 'pset' && endpoint)
+        push(
+          'solutions',
+          <button
+            type="button"
+            class="course-desk-toggle"
+            data-desk-open={endpoint}
+            data-desk-dir={view.dir}
+            data-desk-n={String(n)}
+          >
+            open desk
+          </button>,
+        )
     }
     for (const other of resources.values()) {
       if (other.id === ref.id || other.record.n !== n || n === undefined) continue

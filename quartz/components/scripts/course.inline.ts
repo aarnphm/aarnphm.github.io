@@ -1,3 +1,5 @@
+import { parsePdfMark, type PdfMark } from '../../util/pdf-marks'
+import { promoteDrafts, type PromoteSource } from './course-promote'
 import { currentNavSignal } from './nav-lifecycle'
 
 /** Clipboard write with the legacy fallback for panes that deny the async clipboard. */
@@ -336,5 +338,223 @@ document.addEventListener('nav', () => {
         { signal },
       )
     }
+  }
+})
+
+async function marksFor(src: string, signal: AbortSignal): Promise<PdfMark[] | null> {
+  const res = await fetch(`/api/pdf/marks?src=${encodeURIComponent(src)}`, {
+    credentials: 'same-origin',
+    cache: 'no-store',
+    signal,
+  }).catch(() => null)
+  if (!res?.ok) return null
+  const body = (await res.json().catch(() => null)) as { marks?: unknown } | null
+  if (!Array.isArray(body?.marks)) return null
+  return body.marks.map(parsePdfMark).filter((mark): mark is PdfMark => mark !== null)
+}
+
+// `start notes` on the pdf strip of a unit without notes: the pdf's marks (and any passage
+// marks on the unit slug) become a `lectures/<nn>.md` skeleton and a `.fc` draft. Dev writes
+// both through the study endpoint; the built site copies them.
+document.addEventListener('nav', () => {
+  const signal = currentNavSignal()
+  for (const details of document.querySelectorAll<HTMLDetailsElement>('details.course-promote')) {
+    const body = details.querySelector<HTMLElement>('.course-promote-body')
+    if (!body) continue
+    let loaded = false
+    details.addEventListener(
+      'toggle',
+      async () => {
+        if (!details.open || loaded) return
+        loaded = true
+        const data = details.dataset
+        const status = body.querySelector<HTMLElement>('.course-promote-status')
+        const say = (message: string) => {
+          if (status) status.textContent = message
+        }
+        const source: PromoteSource = {
+          dir: data.promoteDir ?? '',
+          n: Number(data.promoteN),
+          unitKind: data.promoteKind ?? 'lecture',
+          title: data.promoteTitle ?? '',
+          resource: data.promoteResource ?? '',
+          pdf: data.promotePdf ?? '',
+          unit: data.promoteUnit ?? '',
+          date: today(),
+        }
+        const [pdfMarks, unitMarks] = await Promise.all([
+          marksFor(source.pdf, signal),
+          marksFor(source.unit, signal),
+        ])
+        if (signal.aborted) return
+        const drafts = await promoteDrafts(source, pdfMarks ?? [], unitMarks ?? [])
+        const file = `lectures/${String(source.n).padStart(2, '0')}`
+        say(
+          pdfMarks === null
+            ? `marks unavailable here; ${file}.md is an empty skeleton`
+            : `${drafts.marks} marks · ${drafts.questions} questions → ${file}.md${drafts.fc ? ` + ${file}.fc` : ''}`,
+        )
+        const actions = document.createElement('div')
+        actions.className = 'course-promote-actions'
+        const button = (label: string, run: () => Promise<string>) => {
+          const element = document.createElement('button')
+          element.type = 'button'
+          element.className = 'course-desk-toggle'
+          element.textContent = label
+          element.addEventListener(
+            'click',
+            async () => {
+              if (element.getAttribute('aria-busy') === 'true') return
+              element.setAttribute('aria-busy', 'true')
+              try {
+                say(await run())
+              } catch (error) {
+                if (!signal.aborted)
+                  say(`failed: ${error instanceof Error ? error.message : 'error'}`)
+              } finally {
+                element.removeAttribute('aria-busy')
+              }
+            },
+            { signal },
+          )
+          actions.append(element)
+        }
+        const endpoint = data.promoteEndpoint
+        if (endpoint)
+          button(`write ${file}.md${drafts.fc ? ' + .fc' : ''}`, async () => {
+            const res = await fetch(`${endpoint}/promote`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ dir: source.dir, n: source.n, md: drafts.md, fc: drafts.fc }),
+              signal,
+            })
+            const result = (await res.json().catch(() => ({}))) as {
+              error?: string
+              written?: string[]
+            }
+            if (!res.ok) throw new Error(result.error ?? `promote ${res.status}`)
+            return `wrote ${(result.written ?? []).join(', ')} (uncommitted)`
+          })
+        button('copy note', async () => {
+          await copyText(drafts.md)
+          return `copied ${file}.md`
+        })
+        if (drafts.fc)
+          button('copy cards', async () => {
+            await copyText(drafts.fc)
+            return `copied ${file}.fc`
+          })
+        const preview = (label: string, text: string) => {
+          const pre = document.createElement('pre')
+          pre.setAttribute('aria-label', label)
+          pre.textContent = text
+          return pre
+        }
+        body.append(actions, preview(`${file}.md`, drafts.md))
+        if (drafts.fc) body.append(preview(`${file}.fc`, drafts.fc))
+      },
+      { signal },
+    )
+  }
+})
+
+async function postPset(endpoint: string, input: Record<string, unknown>, signal: AbortSignal) {
+  const res = await fetch(`${endpoint}/pset`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+    signal,
+  })
+  const body = (await res.json().catch(() => ({}))) as {
+    error?: string
+    path?: string
+    record?: { state: string; date?: string; reveal?: string } | null
+  }
+  if (!res.ok) throw new Error(body.error ?? `pset ${res.status}`)
+  return body
+}
+
+// Dev only: the desk's state buttons and `reveal` write `psets/<nn>.md` through the study
+// endpoint; `open desk` on a problem set strip creates that file.
+document.addEventListener('nav', () => {
+  const signal = currentNavSignal()
+  for (const desk of document.querySelectorAll<HTMLElement>('.course-desk[data-desk-endpoint]')) {
+    const endpoint = desk.dataset.deskEndpoint!
+    const status = desk.querySelector<HTMLElement>('.course-study-status')
+    const say = (message: string) => {
+      if (status) status.textContent = message
+    }
+    const base = { dir: desk.dataset.deskDir, n: Number(desk.dataset.deskN) }
+    for (const row of desk.querySelectorAll<HTMLElement>('[data-desk-problem]')) {
+      const problem = Number(row.dataset.deskProblem)
+      const logCell = row.querySelector<HTMLElement>('[data-desk-log]')
+      const show = (record: { state: string; date?: string; reveal?: string } | null) => {
+        for (const button of row.querySelectorAll<HTMLButtonElement>('[data-desk-state]'))
+          button.setAttribute(
+            'aria-pressed',
+            button.dataset.deskState === (record?.state ?? 'open') ? 'true' : 'false',
+          )
+        if (!logCell) return
+        const parts: string[] = []
+        if (record && record.state !== 'open')
+          parts.push(`${record.state}${record.date ? ` ${record.date}` : ''}`)
+        if (record?.reveal) parts.push(`revealed ${record.reveal}`)
+        logCell.textContent = parts.join(' · ') || '–'
+      }
+      const run = async (button: HTMLButtonElement, input: Record<string, unknown>) => {
+        if (button.getAttribute('aria-busy') === 'true') return false
+        button.setAttribute('aria-busy', 'true')
+        try {
+          const body = await postPset(endpoint, { ...base, problem, ...input }, signal)
+          show(body.record ?? null)
+          say(`${body.path ?? 'psets'} (uncommitted)`)
+          return true
+        } catch (error) {
+          if (!signal.aborted) say(`not saved: ${error instanceof Error ? error.message : 'error'}`)
+          return false
+        } finally {
+          button.removeAttribute('aria-busy')
+        }
+      }
+      for (const button of row.querySelectorAll<HTMLButtonElement>('[data-desk-state]'))
+        button.addEventListener(
+          'click',
+          () => void run(button, { state: button.dataset.deskState, date: today() }),
+          { signal },
+        )
+      const reveal = row.querySelector<HTMLButtonElement>('[data-desk-reveal]')
+      reveal?.addEventListener(
+        'click',
+        async () => {
+          if (await run(reveal, { reveal: today() }))
+            window.location.assign(reveal.dataset.deskReveal!)
+        },
+        { signal },
+      )
+    }
+  }
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-desk-open]')) {
+    button.addEventListener(
+      'click',
+      async () => {
+        if (button.getAttribute('aria-busy') === 'true') return
+        button.setAttribute('aria-busy', 'true')
+        try {
+          const body = await postPset(
+            button.dataset.deskOpen!,
+            { dir: button.dataset.deskDir, n: Number(button.dataset.deskN) },
+            signal,
+          )
+          button.textContent = `${body.path ?? 'psets'} (uncommitted)`
+          button.disabled = true
+        } catch (error) {
+          if (!signal.aborted)
+            button.textContent = `not created: ${error instanceof Error ? error.message : 'error'}`
+        } finally {
+          button.removeAttribute('aria-busy')
+        }
+      },
+      { signal },
+    )
   }
 })

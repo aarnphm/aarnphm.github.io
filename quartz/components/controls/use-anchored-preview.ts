@@ -45,6 +45,11 @@ export const useAnchoredPreview = <T>({
     cancelHide()
     if (canShow(item) && preview?.anchor !== anchor) setPreview({ item, anchor })
   }
+  /** Opens the preview from a click or tap, which has no hover to open it. */
+  const openFrom = (item: T, anchor: HTMLElement) => {
+    dismissed.current = false
+    show(item, anchor)
+  }
   const dismissFrom = (anchor: HTMLElement) => {
     dismissed.current = true
     dismissedAnchor.current = preview?.anchor ?? anchor
@@ -141,5 +146,5 @@ export const useAnchoredPreview = <T>({
     anchor.focus({ preventScroll: true })
   }
 
-  return { preview, popoverRef, anchorProps, popoverProps, onKeyDown, dismissFrom }
+  return { preview, popoverRef, anchorProps, popoverProps, onKeyDown, dismissFrom, openFrom }
 }

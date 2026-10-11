@@ -29,6 +29,7 @@ import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { pdfReaderPath } from '../util/pdf-marks'
 import { concatenateResources } from '../util/resources'
+import { CourseDesk } from './CourseDesk'
 import { psetNumber } from './CourseHome'
 import { CoursesCrumb } from './CourseResource'
 import { StudyState } from './CourseStudy'
@@ -150,74 +151,83 @@ export const CourseUnitBar = (() => {
     if (latex?.dateSource === 'previous') meta.push('date from the previous lecture')
     if (due) meta.push(`due at ${view.record.unitKind} ${pad(due.record.n)}`)
 
+    const endpoint = courseStudyEndpoint(props.ctx.argv)
+    const desk =
+      kind === 'psets' || kind === 'pset-notes' ? (
+        <CourseDesk view={view} n={n} from={from} resources={ctx.resources} endpoint={endpoint} />
+      ) : null
+
     return (
-      <nav
-        class={classNames(props.displayClass, 'course-unit-bar')}
-        aria-label="unit"
-        data-course-prefix={prefix}
-        data-course-card
-      >
-        <span class="course-crumb">
-          <CoursesCrumb from={from} />
-          <a class="internal" href={homeHref} data-slug={view.slug} data-no-popover>
-            {view.record.number}
-          </a>
-          {isNotes ? (
-            <>
-              <span class="course-unit-sep">/</span>
-              {notesCrumb(view, from)}
-            </>
-          ) : partName ? (
-            <>
-              <span class="course-unit-sep">/</span>
-              <span>
-                {roman[part! - 1] ?? part}. {partName}
-              </span>
-            </>
-          ) : null}
-          <span class="course-unit-sep">/</span>
-          <span class="course-num">{label}</span>
-        </span>
-        {meta.length > 0 ? (
-          <span class="course-count course-unit-dates">
-            {meta.map((item, i) => (
+      <>
+        <nav
+          class={classNames(props.displayClass, 'course-unit-bar')}
+          aria-label="unit"
+          data-course-prefix={prefix}
+          data-course-card
+        >
+          <span class="course-crumb">
+            <CoursesCrumb from={from} />
+            <a class="internal" href={homeHref} data-slug={view.slug} data-no-popover>
+              {view.record.number}
+            </a>
+            {isNotes ? (
               <>
-                {i > 0 ? ' · ' : ''}
-                {item}
+                <span class="course-unit-sep">/</span>
+                {notesCrumb(view, from)}
               </>
-            ))}
+            ) : partName ? (
+              <>
+                <span class="course-unit-sep">/</span>
+                <span>
+                  {roman[part! - 1] ?? part}. {partName}
+                </span>
+              </>
+            ) : null}
+            <span class="course-unit-sep">/</span>
+            <span class="course-num">{label}</span>
           </span>
-        ) : null}
-        {unit && (kind === 'lectures' || kind === 'notes') ? (
-          <StudyState view={view} unit={unit} endpoint={courseStudyEndpoint(props.ctx.argv)} />
-        ) : null}
-        {isNotes ? (
-          <button
-            type="button"
-            class="course-action course-fold"
-            data-course-fold-proofs
-            aria-pressed="false"
-          >
-            fold proofs
-          </button>
-        ) : unit?.deck ? (
-          <a
-            class="course-action internal"
-            href={resolveRelative(from, unitDeckSlug(view.dir, n))}
-            data-slug={unitDeckSlug(view.dir, n)}
-            data-no-popover
-            data-course-action="drill"
-            data-cards={unit.cardIds.join(' ')}
-            data-unit={String(n)}
-          >
-            due <span data-due="">–</span> of {unit.cardIds.length}
-          </a>
-        ) : (
-          <span class="course-action" aria-disabled="true">
-            no deck
-          </span>
-        )}
-      </nav>
+          {meta.length > 0 ? (
+            <span class="course-count course-unit-dates">
+              {meta.map((item, i) => (
+                <>
+                  {i > 0 ? ' · ' : ''}
+                  {item}
+                </>
+              ))}
+            </span>
+          ) : null}
+          {unit && (kind === 'lectures' || kind === 'notes') ? (
+            <StudyState view={view} unit={unit} endpoint={endpoint} />
+          ) : null}
+          {isNotes ? (
+            <button
+              type="button"
+              class="course-action course-fold"
+              data-course-fold-proofs
+              aria-pressed="false"
+            >
+              fold proofs
+            </button>
+          ) : unit?.deck ? (
+            <a
+              class="course-action internal"
+              href={resolveRelative(from, unitDeckSlug(view.dir, n))}
+              data-slug={unitDeckSlug(view.dir, n)}
+              data-no-popover
+              data-course-action="drill"
+              data-cards={unit.cardIds.join(' ')}
+              data-unit={String(n)}
+            >
+              due <span data-due="">–</span> of {unit.cardIds.length}
+            </a>
+          ) : (
+            <span class="course-action" aria-disabled="true">
+              no deck
+            </span>
+          )}
+        </nav>
+        {desk}
+      </>
     )
   }
   Bar.displayName = 'CourseUnitBar'

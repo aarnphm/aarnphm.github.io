@@ -1,5 +1,5 @@
-import type { PdfQuote } from '../../util/pdf-marks'
 import type { LectureNote } from './store'
+import { PDF_QUOTE_LIMIT, type PdfQuote } from '../../util/pdf-marks'
 import { rangesForQuotes } from '../arena-feed/quote-highlights'
 import { findClosestHeading, getRangeOffsets } from '../multiplayer/anchor'
 
@@ -28,7 +28,7 @@ export function lectureSelection(article: HTMLElement): LectureSelection | null 
   const range = selection.getRangeAt(0)
   if (!article.contains(range.startContainer) || !article.contains(range.endContainer)) return null
   const offsets = getRangeOffsets(range, article)
-  if (!offsets || !offsets.text.trim() || offsets.text.length > 10_000) return null
+  if (!offsets || !offsets.text.trim() || offsets.text.length > PDF_QUOTE_LIMIT) return null
   const text = article.textContent ?? ''
   return {
     range: range.cloneRange(),

@@ -1,6 +1,8 @@
 import { render } from 'preact'
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks'
+import { isUnitMarkSrc, newPdfMarkId, PDF_BODY_LIMIT } from '../../util/pdf-marks'
 import { renderBody } from '../pdf-reader/body'
+import { conflictMark, deleteMark, fetchMarks, MarkApiError, putMark } from '../pdf-reader/marks'
 import { kindMeta } from '../pdf-reader/parts'
 import { lectureSelection, noteRange, showNoteRange, type LectureSelection } from './anchors'
 import { DraftEditor } from './editor'
@@ -11,7 +13,10 @@ import {
   loadNotes,
   loadScratchpad,
   markdownExport,
+  markInputOf,
+  noteFromMark,
   noteLimit,
+  removeNote,
   saveNote,
   saveScratchpad,
   scratchpadLimit,
@@ -32,6 +37,27 @@ interface WorkspaceProps {
   workspace: HTMLElement
   root: HTMLElement
   signal: AbortSignal
+}
+
+/** Signed in: notes live on the marks API under the unit slug. */
+interface Account {
+  doc: string
+}
+
+const SAVE_DELAY = 600
+const RETRY_DELAY = 4000
+
+function accountMessage(error: unknown): string {
+  if (error instanceof MarkApiError) {
+    if (error.status === 409)
+      return conflictMark(error)
+        ? 'This note changed in another tab. Reload to see the saved version.'
+        : 'This note was deleted elsewhere.'
+    if (error.status === 401) return 'Signed out. Sign in again to save notes.'
+    if (error.retryable) return 'Not saved yet; retrying.'
+    return error.message
+  }
+  return 'Not saved to your account.'
 }
 
 function storageMessage(error: unknown): string {
@@ -61,6 +87,14 @@ function Workspace(props: WorkspaceProps) {
   const notesRef = useRef(notes)
   const activeRef = useRef(activeId)
   activeRef.current = activeId
+  const [account, setAccount] = useState<Account | null>(null)
+  const accountRef = useRef(account)
+  const [signInUrl, setSignInUrl] = useState<string | null>(null)
+  const [browserNotes, setBrowserNotes] = useState<LectureNote[]>([])
+  const [saving, setSaving] = useState(0)
+  const timers = useRef(new Map<string, number>())
+  const chains = useRef(new Map<string, Promise<void>>())
+  const revisions = useRef(new Map<string, number>())
 
   const replaceScratch = (draft: Scratchpad) => {
     scratchRef.current = draft
@@ -97,7 +131,7 @@ function Workspace(props: WorkspaceProps) {
           }
         }
       }
-      if (event.key?.includes(':note:') || event.key === null) {
+      if (!accountRef.current && (event.key?.includes(':note:') || event.key === null)) {
         const activeDraft = editing?.closest('#course-workspace-notes')
           ? notesRef.current.find(note => note.id === activeRef.current)
           : undefined
@@ -189,6 +223,123 @@ function Workspace(props: WorkspaceProps) {
     }
   }, [notes, props.article])
 
+  useEffect(() => {
+    if (!isUnitMarkSrc(props.slug)) return
+    fetchMarks(props.slug, props.signal)
+      .then(response => {
+        if (!response.canWrite) {
+          setSignInUrl(response.signInUrl)
+          return
+        }
+        const next = { doc: response.doc }
+        accountRef.current = next
+        setAccount(next)
+        setBrowserNotes(notesRef.current.filter(note => note.deletedAt === null))
+        const remote = response.marks
+          .map(noteFromMark)
+          .filter((note): note is LectureNote => note !== null)
+        for (const note of remote) revisions.current.set(note.id, note.revision)
+        replaceNotes(remote.sort((a, b) => a.createdAt - b.createdAt || a.id.localeCompare(b.id)))
+        setNotesIssue('')
+      })
+      // offline or no marks API (static preview): the browser copy stays in charge
+      .catch(() => undefined)
+    const pending = timers.current
+    return () => {
+      // a navigation flushes debounced edits; the requests outlive the page
+      for (const [id, timer] of pending) {
+        window.clearTimeout(timer)
+        void sendNote(id)
+      }
+      pending.clear()
+    }
+  }, [props.slug, props.signal])
+
+  const enqueue = (id: string, task: () => Promise<void>) => {
+    setSaving(count => count + 1)
+    const chain = (chains.current.get(id) ?? Promise.resolve())
+      .then(task)
+      .catch(error => {
+        setNotesIssue(accountMessage(error))
+        if (error instanceof MarkApiError && error.retryable) schedule(id, RETRY_DELAY)
+      })
+      .finally(() => setSaving(count => count - 1))
+    chains.current.set(id, chain)
+    return chain
+  }
+
+  const sendNote = (id: string) =>
+    enqueue(id, async () => {
+      const current = accountRef.current
+      const note = notesRef.current.find(entry => entry.id === id)
+      if (!current || !note) return
+      const revision = revisions.current.get(id) ?? 0
+      const saved = await putMark(id, markInputOf(props.slug, current.doc, { ...note, revision }))
+      revisions.current.set(id, saved.revision)
+      replaceNotes(
+        notesRef.current.map(entry =>
+          entry.id === id ? { ...entry, revision: saved.revision } : entry,
+        ),
+      )
+      setNotesIssue('')
+    })
+
+  const schedule = (id: string, delay = SAVE_DELAY) => {
+    window.clearTimeout(timers.current.get(id))
+    timers.current.set(
+      id,
+      window.setTimeout(() => {
+        timers.current.delete(id)
+        void sendNote(id)
+      }, delay),
+    )
+  }
+
+  const updateRemote = (draft: LectureNote) => {
+    const current = notesRef.current
+    if (draft.deletedAt !== null) {
+      window.clearTimeout(timers.current.get(draft.id))
+      timers.current.delete(draft.id)
+      replaceNotes(current.filter(note => note.id !== draft.id))
+      void enqueue(draft.id, async () => {
+        const revision = revisions.current.get(draft.id)
+        if (revision === undefined) return
+        await deleteMark(draft.id, revision)
+        revisions.current.delete(draft.id)
+      })
+      return
+    }
+    replaceNotes(
+      current.some(note => note.id === draft.id)
+        ? current.map(note => (note.id === draft.id ? draft : note))
+        : [...current, draft],
+    )
+    schedule(draft.id)
+  }
+
+  const moveBrowserNotes = async () => {
+    const current = accountRef.current
+    if (!current) return
+    let moved = 0
+    for (const note of browserNotes) {
+      const id = newPdfMarkId()
+      const copy = { ...note, id, revision: 0, body: note.body.slice(0, PDF_BODY_LIMIT) }
+      try {
+        const saved = await putMark(id, markInputOf(props.slug, current.doc, copy))
+        revisions.current.set(id, saved.revision)
+        replaceNotes([...notesRef.current, { ...copy, revision: saved.revision }])
+        removeNote(props.slug, note.id)
+        moved++
+      } catch (error) {
+        setNotesIssue(accountMessage(error))
+        break
+      }
+    }
+    const left = browserNotes.slice(moved)
+    setBrowserNotes(left)
+    if (left.length === 0) setNotesIssue('')
+  }
+
   const editScratch = (body: string) => {
     const draft = { ...scratchRef.current, body }
     try {
@@ -201,6 +352,7 @@ function Workspace(props: WorkspaceProps) {
   }
 
   const updateNote = (draft: LectureNote) => {
+    if (accountRef.current) return updateRemote(draft)
     let updated = draft
     try {
       updated = saveNote(props.slug, draft)
@@ -230,7 +382,7 @@ function Workspace(props: WorkspaceProps) {
     } else {
       const kind = action === 'note' || action === 'scratchpad' ? 'mark' : action
       const note: LectureNote = {
-        id: crypto.randomUUID(),
+        id: accountRef.current ? newPdfMarkId() : crypto.randomUUID(),
         kind,
         quote: selected?.quote ?? null,
         quoteText: selected?.text,
@@ -444,7 +596,18 @@ function Workspace(props: WorkspaceProps) {
           hidden={tab !== 'notes'}
         >
           <div class="course-draft-toolbar">
-            <span>private · this browser</span>
+            <span>private · {account ? 'your account' : 'this browser'}</span>
+            {!account && signInUrl && (
+              <a href={signInUrl} data-router-ignore>
+                sign in to keep notes
+              </a>
+            )}
+            {account && browserNotes.length > 0 && (
+              <button type="button" onClick={() => void moveBrowserNotes()}>
+                move {browserNotes.length} browser {browserNotes.length === 1 ? 'note' : 'notes'} to
+                account
+              </button>
+            )}
             <button type="button" onClick={() => addNote('note')}>
               add note
             </button>
@@ -487,7 +650,7 @@ function Workspace(props: WorkspaceProps) {
                   label="Lecture note"
                   autoFocus
                   value={active.body}
-                  limit={noteLimit}
+                  limit={account ? PDF_BODY_LIMIT : noteLimit}
                   onChange={body => {
                     const current = notesRef.current.find(note => note.id === active.id)
                     if (current) updateNote({ ...current, body })
@@ -605,7 +768,12 @@ function Workspace(props: WorkspaceProps) {
             </>
           )}
           <p class="course-draft-status" role="status">
-            {notesIssue || 'saved in this browser'}
+            {notesIssue ||
+              (account
+                ? saving > 0
+                  ? 'saving to your account…'
+                  : 'saved to your account'
+                : 'saved in this browser')}
           </p>
         </section>
         <footer class="course-workspace-footer">
