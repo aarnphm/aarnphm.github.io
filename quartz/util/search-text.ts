@@ -98,3 +98,10 @@ export function encode(value: string): string[] {
   if (bufferStart !== -1) tokens.push(lower.slice(bufferStart))
   return tokens
 }
+
+// encode splits on whitespace only, so `lectures/2/afp` is one token and only its prefix matches.
+// Index the full path, each folder segment (`03-varint`), and each word (`varint`).
+export function pathSearchText(path: string): string {
+  const tokens = [path, ...path.split('/'), ...path.split(/[/_.-]+/)]
+  return [...new Set(tokens.filter(token => token.length > 0))].join(' ')
+}

@@ -1,11 +1,12 @@
 import FlexSearch, { DocumentData } from 'flexsearch'
 import { FullSlug, FilePath } from '../../util/path'
-import { encode } from '../../util/search-text'
+import { encode, pathSearchText } from '../../util/search-text'
 
 export interface SearchItem extends DocumentData {
   id: number
   slug: FullSlug
   name: FilePath
+  path: string
   title: string
   content: string
   aliases: string[]
@@ -19,7 +20,7 @@ const searchIndex = new FlexSearch.Document<SearchItem>({
     tag: 'slug',
     index: [
       { field: 'title', tokenize: 'forward' },
-      { field: 'name', tokenize: 'forward' },
+      { field: 'path', tokenize: 'forward' },
       { field: 'aliases', tokenize: 'forward' },
       { field: 'content', tokenize: 'forward' },
     ],
@@ -27,11 +28,11 @@ const searchIndex = new FlexSearch.Document<SearchItem>({
 })
 
 const itemsById = new Map<number, SearchItem>()
-let isPopulated = false
+let populated: Promise<void> | null = null
 
 async function queryFields(
   query: string,
-  fields: Array<'title' | 'name' | 'aliases' | 'content'>,
+  fields: Array<'title' | 'path' | 'aliases' | 'content'>,
   limit: number,
 ): Promise<SearchItem[]> {
   if (!query || query.trim() === '') {
@@ -52,9 +53,16 @@ async function queryFields(
     .slice(0, limit)
 }
 
-export async function populateSearchIndex(data: ContentIndex): Promise<void> {
-  if (isPopulated) return
+// Callers share one fill so a query never runs against a partly built index.
+export function populateSearchIndex(data: ContentIndex): Promise<void> {
+  populated ??= addDocuments(data).catch(err => {
+    populated = null
+    throw err
+  })
+  return populated
+}
 
+async function addDocuments(data: ContentIndex): Promise<void> {
   let id = 0
   const promises = []
 
@@ -63,6 +71,7 @@ export async function populateSearchIndex(data: ContentIndex): Promise<void> {
       id,
       slug: slug as FullSlug,
       name: fileData.fileName,
+      path: pathSearchText(fileData.fileName),
       title: fileData.title ?? '',
       content: fileData.content ?? '',
       aliases: fileData.aliases,
@@ -74,16 +83,15 @@ export async function populateSearchIndex(data: ContentIndex): Promise<void> {
   }
 
   await Promise.all(promises)
-  isPopulated = true
 }
 
 export async function querySearchIndex(query: string, limit: number = 10): Promise<SearchItem[]> {
-  return queryFields(query, ['title', 'name', 'aliases'], limit)
+  return queryFields(query, ['title', 'path', 'aliases'], limit)
 }
 
 export async function querySiteSearchIndex(
   query: string,
   limit: number = 10,
 ): Promise<SearchItem[]> {
-  return queryFields(query, ['title', 'name', 'aliases', 'content'], limit)
+  return queryFields(query, ['title', 'path', 'aliases', 'content'], limit)
 }
