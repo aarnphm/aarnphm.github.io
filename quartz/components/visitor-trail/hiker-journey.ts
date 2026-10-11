@@ -105,6 +105,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     const base = leg ? onLeg(leg, progress) : onLeg('arriving', phase === 'waiting' ? 0 : 1)
     const position = spacedPosition(base, spacing)
     const scale = landscape ? trailGroundScale(position.y, landscape) : 1
+    hiker.dataset.moveSpeed = leg ? ((legLength(leg) * 1000 * scale) / duration()).toFixed(4) : '0'
     publishActor(
       hiker,
       'hiker-camp',
@@ -180,15 +181,41 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
       const leg: WalkingPhase = phase === 'arriving' ? 'arriving' : 'departing'
       const progress = Math.min(1, elapsed / duration())
       const base = onLeg(leg, progress)
-      const scale = trailGroundScale(base.y, landscape)
-      const increment = Math.min(200, delta) * scale
-      const next = onLeg(leg, Math.min(1, (elapsed + increment) / duration()))
-      const budget = Math.max(0.01, (legLength(leg) * increment) / duration())
+      const scale = trailGroundScale(spacedPosition(base, spacing).y, landscape)
+      const interval = Math.min(200, delta) * scale
+      const budget = (legLength(leg) * interval) / duration()
+      const factor = Math.hypot(spacing.offset.x, spacing.offset.y) > 0.1 ? 0.7 : 1
+      const advance = budget * factor
+      let increment = interval * factor
+      let next = onLeg(leg, Math.min(1, (elapsed + increment) / duration()))
+      for (let iteration = 0; iteration < 2; iteration++) {
+        const distance = Math.hypot(next.x - base.x, next.y - base.y)
+        if (distance <= advance || !distance) break
+        increment *= (advance / distance) * 0.999
+        next = onLeg(leg, Math.min(1, (elapsed + increment) / duration()))
+      }
+      const radius =
+        12 *
+        Math.max(
+          scale,
+          trailGroundScale(Math.max(base.y, next.y) + spacing.offset.y + budget, landscape),
+        )
       if (
-        spacedStep('hiker-camp', base, next, 12 * scale, budget, spacing, [
-          ...readActors(scene),
-          ...readTrunks(scene),
-        ])
+        spacedStep(
+          'hiker-camp',
+          base,
+          next,
+          radius,
+          budget,
+          spacing,
+          [...readActors(scene), ...readTrunks(scene)],
+          {
+            left: radius,
+            right: landscape.width - radius,
+            top: Math.max(landscape.treeline, landscape.alpine.base - 18),
+            bottom: landscape.height - radius,
+          },
+        )
       )
         elapsed += increment
     } else elapsed += delta

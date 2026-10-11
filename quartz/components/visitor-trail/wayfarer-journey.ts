@@ -216,7 +216,8 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     const base = positionAt(reader, route, reader.progress)
     const scale = trailGroundScale(spacedPosition(base, reader.spacing).y, landscape)
     const budget = (reader.speed * elapsed * scale) / 1000
-    const advance = budget * (Math.hypot(reader.spacing.offset.x, reader.spacing.offset.y) > 0.1 ? 0.7 : 1)
+    const advance =
+      budget * (Math.hypot(reader.spacing.offset.x, reader.spacing.offset.y) > 0.1 ? 0.7 : 1)
     const next = reader.progress + (reader.direction * advance) / route.length
     const stop = reader.checkAt ?? reader.target
     const reached = reader.direction > 0 ? next >= stop : next <= stop
@@ -225,10 +226,18 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     for (let iteration = 0; iteration < 2; iteration++) {
       const distance = Math.hypot(destination.x - base.x, destination.y - base.y)
       if (distance <= advance || !distance) break
-      progress = reader.progress + (progress - reader.progress) * advance / distance * 0.999
+      progress = reader.progress + (((progress - reader.progress) * advance) / distance) * 0.999
       destination = positionAt(reader, route, progress)
     }
-    const radius = 12 * Math.max(scale, trailGroundScale(Math.max(base.y, destination.y) + reader.spacing.offset.y + budget, landscape))
+    const radius =
+      12 *
+      Math.max(
+        scale,
+        trailGroundScale(
+          Math.max(base.y, destination.y) + reader.spacing.offset.y + budget,
+          landscape,
+        ),
+      )
     const advances = spacedStep(
       reader.id,
       base,
@@ -237,7 +246,12 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
       budget,
       reader.spacing,
       obstacles,
-      { left: radius, right: landscape.width - radius, top: landscape.alpine.base - 18, bottom: landscape.height - radius },
+      {
+        left: radius,
+        right: landscape.width - radius,
+        top: Math.max(landscape.treeline, landscape.alpine.base - 18),
+        bottom: landscape.height - radius,
+      },
     )
     if (advances) reader.progress = progress
     const point = spacedPosition(positionAt(reader, route, reader.progress), reader.spacing)

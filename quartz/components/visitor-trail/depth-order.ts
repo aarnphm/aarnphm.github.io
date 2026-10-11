@@ -1,4 +1,4 @@
-type GroundObject = { element: SVGGElement; owner: Element; index: number }
+type GroundObject = { element: SVGGElement; owner: Element; layer: SVGGElement; index: number }
 
 export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: AbortSignal) {
   const document = scene.ownerDocument
@@ -16,13 +16,15 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
   const sort = () => {
     frame = null
     if (host.hidden || document.hidden || signal.aborted) return
-    const ordered = objects
-      .filter(object => object.element.isConnected)
-      .sort((a, b) => foot(a.element) - foot(b.element) || a.index - b.index)
-    let next = layer.firstElementChild
-    for (const { element } of ordered) {
-      if (element === next) next = next.nextElementSibling
-      else layer.insertBefore(element, next)
+    for (const paint of new Set(objects.map(object => object.layer))) {
+      const ordered = objects
+        .filter(object => object.layer === paint && object.element.isConnected)
+        .sort((a, b) => foot(a.element) - foot(b.element) || a.index - b.index)
+      let next = paint.firstElementChild
+      for (const { element } of ordered) {
+        if (element === next) next = next.nextElementSibling
+        else paint.insertBefore(element, next)
+      }
     }
     scene.dataset.depthOrderMotion = 'idle'
   }
@@ -47,11 +49,20 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
   }
   const refresh = () => {
     restore()
+    const distant = scene.querySelector<SVGGElement>('.trail-foothill-objects')
     for (const element of scene.querySelectorAll<SVGGElement>(
-      '.trail-tree[data-tree-depth="meadow"], [data-trail-wander], .trail-map-reader, .trail-backpacker',
+      '.trail-tree, [data-trail-wander], .trail-map-reader, .trail-backpacker, [data-alpine-traveler]',
     )) {
       const owner = element.parentElement
-      if (owner) objects.push({ element, owner, index: objects.length })
+      const far =
+        element.dataset.treeDepth === 'foothill' || element.hasAttribute('data-alpine-traveler')
+      if (owner && (!far || distant))
+        objects.push({
+          element,
+          owner,
+          layer: far && distant ? distant : layer,
+          index: objects.length,
+        })
     }
     sort()
     if (!host.hidden && !document.hidden && !signal.aborted)

@@ -1,4 +1,3 @@
-import type { Landscape, Point } from './landscape'
 import {
   actorSpacing,
   publishActor,
@@ -10,7 +9,13 @@ import {
   type CollisionActor,
 } from './actor-spacing'
 import { bootImpression } from './footprints'
-import { buildMountainRanges, mountainGroundAt } from './mountain-profile'
+import { trailGroundScale, type Landscape, type Point } from './landscape'
+import {
+  buildMountainRanges,
+  mountainCrestAt,
+  mountainGroundAt,
+  type MountainRange,
+} from './mountain-profile'
 import { pixels } from './pixels'
 import { trailRandom } from './random'
 
@@ -23,7 +28,11 @@ type Impression = {
   offset: Point
   element: SVGPathElement
 }
-type Route = { length: number; point: (progress: number) => Point }
+type Route = {
+  length: number
+  point: (progress: number) => Point
+  scale: (progress: number) => number
+}
 type Traveler = {
   id: number
   element: SVGGElement
@@ -43,8 +52,6 @@ type Traveler = {
   impressions: Impression[]
   spacing: ActorSpacing
 }
-
-const perspective = (progress: number) => 0.65 - 0.47 * progress
 
 function alpineBackpacker() {
   const tones = {
@@ -88,6 +95,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
   if (!view) throw new Error('Alpine travelers need a visible document')
   const reducedMotion = view.matchMedia('(prefers-reduced-motion: reduce)')
   let landscape: Landscape | undefined
+  let mountainRanges: MountainRange[] = []
   let travelerLayer: SVGGElement | null = null
   let trackLayer: SVGGElement | null = null
   let travelers: Traveler[] = []
@@ -106,7 +114,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     if (!landscape) throw new Error('Alpine routes need their terrain')
     const random = trailRandom(nextSeed ^ (0x7431c59f + id * 0x27d4eb2d))
     const { alpine } = landscape
-    const ranges = buildMountainRanges(alpine, nextSeed)
+    const ranges = mountainRanges
     const range = ranges[id % ranges.length]
     const peak = [0.25, 0.46, 0.7][id % 3]
     const target = {
@@ -166,7 +174,13 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       length += Math.hypot(next.x - before.x, next.y - before.y)
       before = next
     }
-    return { length, point }
+    const entryScale = trailGroundScale(point(0).y, landscape)
+    return {
+      length,
+      point,
+      scale: (progress: number) =>
+        entryScale - (entryScale - 0.18) * Math.max(0, Math.min(1, progress)),
+    }
   }
   const placeImpression = (traveler: Traveler, impression: Impression) => {
     const base = traveler.route.point(impression.progress)
@@ -174,7 +188,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     const ahead = traveler.route.point(
       Math.max(0, Math.min(1, impression.progress + impression.direction * 0.001)),
     )
-    const scale = perspective(impression.progress)
+    const scale = traveler.route.scale(impression.progress)
     const angle = (Math.atan2(ahead.y - base.y, ahead.x - base.x) * 180) / Math.PI
     impression.element.setAttribute(
       'transform',
@@ -196,7 +210,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     )
       return
     const direction = traveler.phase === 'climbing' ? 1 : -1
-    let interval = (8 * perspective(traveler.stamped)) / traveler.route.length
+    let interval = (8 * traveler.route.scale(traveler.stamped)) / traveler.route.length
     while (direction * (traveler.progress - traveler.stamped) >= interval) {
       traveler.stamped += direction * interval
       const impression = {
@@ -210,7 +224,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       traveler.tracks.append(impression.element)
       traveler.impressions.push(impression)
       if (traveler.impressions.length > 64) traveler.impressions.shift()?.element.remove()
-      interval = (8 * perspective(traveler.stamped)) / traveler.route.length
+      interval = (8 * traveler.route.scale(traveler.stamped)) / traveler.route.length
     }
   }
   const render = () => {
@@ -227,7 +241,11 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
         ? Math.max(0, Math.min(1, stillProgress))
         : traveler.progress
       const point = spacedPosition(traveler.route.point(progress), traveler.spacing)
-      const scale = perspective(progress)
+      const scale = traveler.route.scale(progress)
+      traveler.element.dataset.moveSpeed = (
+        (traveler.route.length * 1000) /
+        traveler.duration
+      ).toFixed(4)
       const direction = traveler.phase === 'descending' || traveler.next === 'descending' ? -1 : 1
       const ahead = traveler.route.point(Math.max(0, Math.min(1, progress + direction * 0.003)))
       publishActor(traveler.element, `alpine-${traveler.id}`, point, scale, traveler.spacing)
@@ -275,13 +293,23 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     }
     const direction = traveler.phase === 'climbing' ? 1 : -1
     const target = traveler.checkAt ?? (direction > 0 ? 1 : 0)
-    const next = traveler.progress + (direction * elapsed) / traveler.duration
+    const budget = (traveler.route.length * elapsed) / traveler.duration
+    const advance =
+      budget * (Math.hypot(traveler.spacing.offset.x, traveler.spacing.offset.y) > 0.1 ? 0.7 : 1)
+    const next = traveler.progress + (direction * advance) / traveler.route.length
     const reached = direction > 0 ? next >= target : next <= target
-    const progress = reached ? target : next
+    let progress = reached ? target : next
     const base = traveler.route.point(traveler.progress)
-    const destination = traveler.route.point(progress)
-    const radius = 12 * Math.max(perspective(traveler.progress), perspective(progress))
-    const budget = Math.max(0.01, (traveler.route.length * elapsed) / traveler.duration)
+    let destination = traveler.route.point(progress)
+    for (let iteration = 0; iteration < 2; iteration++) {
+      const distance = Math.hypot(destination.x - base.x, destination.y - base.y)
+      if (distance <= advance || !distance) break
+      progress = traveler.progress + (((progress - traveler.progress) * advance) / distance) * 0.999
+      destination = traveler.route.point(progress)
+    }
+    const radius =
+      12 * Math.max(traveler.route.scale(traveler.progress), traveler.route.scale(progress))
+    const crest = mountainCrestAt(base.x + traveler.spacing.offset.x, mountainRanges)
     const advances = spacedStep(
       `alpine-${traveler.id}`,
       base,
@@ -290,19 +318,28 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       budget,
       traveler.spacing,
       obstacles,
+      landscape
+        ? {
+            left: radius,
+            right: landscape.width - radius,
+            top: Math.max(landscape.alpine.top, (crest ?? landscape.alpine.top) + radius * 2 + 3),
+            bottom: landscape.meadowTop,
+          }
+        : undefined,
     )
     if (advances) traveler.progress = progress
     const point = spacedPosition(traveler.route.point(traveler.progress), traveler.spacing)
     const circle = obstacles.find(other => other.id === `alpine-${traveler.id}`)
-    if (circle) Object.assign(circle, point, { radius: 12 * perspective(traveler.progress) })
+    if (circle)
+      Object.assign(circle, point, { radius: 12 * traveler.route.scale(traveler.progress) })
     else
       obstacles.push({
         ...point,
         id: `alpine-${traveler.id}`,
         kind: 'traveler',
-        radius: 12 * perspective(traveler.progress),
+        radius: 12 * traveler.route.scale(traveler.progress),
       })
-    if (!reached || !advances) return
+    if (progress !== target || !advances) return
     traveler.next = traveler.phase === 'climbing' ? 'climbing' : 'descending'
     if (traveler.checkAt !== null) {
       traveler.phase = 'reading'
@@ -376,6 +413,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     update(nextLandscape: Landscape, nextSeed: number) {
       pause()
       landscape = nextLandscape
+      mountainRanges = buildMountainRanges(landscape.alpine, nextSeed)
       const group = scene.querySelector<SVGGElement>('.trail-alpine-travelers')
       const tracks = scene.querySelector<SVGGElement>('.trail-alpine-tracks')
       if (!group || !tracks || signal.aborted) return

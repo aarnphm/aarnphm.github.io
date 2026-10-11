@@ -211,8 +211,9 @@ export function trailLayout(scene: HTMLElement, seed: number) {
   }
   const clear = clearSpace(width, height, obstacles)
   const reading = landing.getBoundingClientRect()
-  const left = Math.max(12, reading.left - bounds.left - 54)
-  const right = Math.min(width - 12, reading.right - bounds.left + 54)
+  const edge = width < 700 ? 8 : 12
+  const left = Math.max(edge, reading.left - bounds.left - 54)
+  const right = Math.min(width - edge, reading.right - bounds.left + 54)
   const readingRoute = curvedPath(
     [
       { x: left, y: 48 },
