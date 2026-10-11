@@ -18,6 +18,13 @@
     fill: none;
     stroke: none;
   }
+  .trail-reveal {
+    fill: none;
+    stroke: white;
+    stroke-width: 14;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+  }
   .trail-steps {
     fill: var(--gray);
     opacity: 0.55;
@@ -52,16 +59,42 @@
   .trail-hearth {
     fill: color-mix(in srgb, var(--tertiary) 25%, var(--light));
   }
-  .trail-log {
-    stroke: var(--darkgray);
-    stroke-width: 3;
-  }
-  .trail-flame {
-    transform-origin: 0 0;
+  .trail-camp {
     shape-rendering: crispEdges;
   }
+  .trail-camp-shadow {
+    fill: var(--gray);
+    opacity: 0.25;
+  }
+  .trail-log {
+    fill: color-mix(in srgb, var(--darkgray) 70%, #745439);
+  }
+  .trail-log-lit {
+    fill: #a36a40;
+  }
+  .trail-camper-hair {
+    fill: var(--darkgray);
+  }
+  .trail-camper-skin {
+    fill: #bd9773;
+  }
+  .trail-camper-coat {
+    fill: color-mix(in srgb, var(--gray) 55%, #7c8b66);
+  }
+  .trail-camper-right .trail-camper-coat {
+    fill: color-mix(in srgb, var(--gray) 55%, #a87564);
+  }
+  .trail-camper-trousers {
+    fill: var(--darkgray);
+  }
+  .trail-flame-frame {
+    opacity: 0;
+    &:first-child {
+      opacity: 1;
+    }
+  }
   .trail-flame-core {
-    fill: var(--light);
+    fill: #fff1c4;
   }
   .trail-flame-gold {
     fill: #f1d67e;
@@ -80,9 +113,25 @@
     fill: var(--gray);
     opacity: 0.45;
   }
+  .trail-ember {
+    fill: #da702c;
+    opacity: 0;
+  }
+  .trail-toasting-stick {
+    fill: none;
+    stroke: #a36a40;
+    stroke-width: 1.5;
+  }
+  .trail-marshmallow {
+    fill: #f7e7bc;
+  }
+  .trail-marshmallow-edge {
+    fill: #be8952;
+  }
 
   .trail-stone {
     position: absolute;
+    z-index: 1;
     display: grid;
     place-items: center;
     width: 44px;
@@ -97,14 +146,28 @@
     touch-action: none;
   }
   .trail-stone svg {
-    width: 10px;
-    height: 10px;
+    width: 16px;
+    height: 16px;
     overflow: visible;
   }
   .trail-stone path {
     fill: var(--darkgray);
     stroke: var(--light);
     stroke-width: 1;
+  }
+  .trail-stone-ring {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 0.75;
+    stroke-dasharray: 2 2;
+  }
+  .trail-stone-owner {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    line-height: 13px;
   }
   .trail-stone:focus-visible {
     outline: 1px solid var(--darkgray);
@@ -120,14 +183,14 @@
   }
   .trail-campsite {
     position: absolute;
-    width: 64px;
+    width: 128px;
     transform: translate(-50%, -50%);
     pointer-events: auto;
   }
   .trail-camp-toggle {
     display: block;
-    width: 64px;
-    height: 64px;
+    width: 128px;
+    height: 96px;
     padding: 0;
     border: 0;
     background: none;
@@ -135,8 +198,8 @@
     cursor: pointer;
     svg {
       display: block;
-      width: 64px;
-      height: 64px;
+      width: 128px;
+      height: 96px;
       overflow: visible;
     }
     &:focus-visible {
@@ -146,13 +209,23 @@
   }
   .trail-camp-tools {
     position: absolute;
-    bottom: 64px;
-    right: -20px;
+    bottom: 48px;
+    right: -8px;
     width: min(240px, calc(100vw - 32px));
-    padding: 8px 12px 0;
-    background: var(--light);
-    border: 1px solid var(--lightgray);
     font-size: 10px;
+  }
+  .trail-hint-fumes {
+    display: block;
+    width: 100%;
+    overflow: visible;
+    fill: var(--darkgray);
+    font: inherit;
+  }
+  .trail-hint-wisp-high {
+    opacity: 0.75;
+  }
+  .trail-hint-wisp-middle {
+    opacity: 0.88;
   }
   .trail-status {
     position: absolute;
@@ -164,6 +237,9 @@
     white-space: nowrap;
   }
   .trail-tools {
+    position: absolute;
+    right: 64px;
+    bottom: -32px;
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
@@ -194,28 +270,134 @@
     display: none !important;
   }
   @media (prefers-reduced-motion: no-preference) {
+    .trail-reveal {
+      animation: trail-unfold 1700ms linear both;
+    }
+    .trail-landmarks {
+      animation: trail-arrive 400ms ease-out 200ms both;
+    }
+    .trail-stone {
+      animation: trail-arrive 160ms ease-out var(--trail-arrival, 0ms) both;
+    }
+    .trail-campsite {
+      animation: trail-arrive 240ms ease-out 1700ms both;
+    }
+    .trail-stone:focus-visible,
+    .trail-campsite:focus-within {
+      animation: none;
+    }
     .trail-stone:not([data-dragging]) svg {
       transition: transform 120ms ease-out;
     }
     .trail-stone:hover svg {
       transform: rotate(-12deg) scale(1.2);
     }
-    .trail-flame {
-      animation: trail-fire var(--flicker) steps(3, end) var(--phase) infinite alternate;
+    .trail-flame-frame {
+      animation: trail-fire 1050ms steps(1, end) var(--phase) infinite;
     }
     .trail-smoke {
       animation: trail-smoke 4s steps(8, end) infinite;
     }
+    .trail-smoke-late {
+      animation-delay: -2s;
+    }
+    .trail-ember {
+      animation: trail-ember 1800ms steps(8, end) infinite;
+    }
+    .trail-ember-late {
+      animation-duration: 2400ms;
+      animation-delay: -1600ms;
+    }
+    .trail-marshmallow {
+      animation: trail-toast 14s linear infinite;
+    }
+    .trail-hint-fumes {
+      animation: trail-hint-emerge 240ms ease-out both;
+    }
+    .trail-hint-wisp {
+      animation: trail-hint-drift 4s ease-in-out infinite alternate;
+    }
+    .trail-hint-wisp-high {
+      animation-duration: 5s;
+    }
+    .trail-hint-wisp-middle {
+      animation-direction: alternate-reverse;
+    }
+  }
+  @keyframes trail-unfold {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes trail-arrive {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
   @keyframes trail-fire {
-    to {
-      transform: scaleY(0.75);
+    0%,
+    33.333% {
+      opacity: 1;
+    }
+    33.334%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes trail-ember {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    15% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(7px, -24px);
+    }
+  }
+  @keyframes trail-toast {
+    0%,
+    25%,
+    100% {
+      fill: #f7e7bc;
+    }
+    65% {
+      fill: #d5aa62;
+    }
+    95% {
+      fill: #95623d;
     }
   }
   @keyframes trail-smoke {
     to {
       transform: translate(6px, -16px);
       opacity: 0;
+    }
+  }
+  @keyframes trail-hint-emerge {
+    from {
+      opacity: 0;
+      transform: translate(2px, 10px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+  @keyframes trail-hint-drift {
+    from {
+      transform: translate(2px, 2px);
+    }
+    to {
+      transform: translate(-3px, -5px);
     }
   }
 }

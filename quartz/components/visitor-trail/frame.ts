@@ -1,4 +1,5 @@
 import { playhtml } from 'playhtml'
+import { trailCampsite } from './campsite'
 import { clearSpace, trailLayout, type TrailId } from './layout'
 import { trailTrees } from './scenery'
 
@@ -18,25 +19,45 @@ scene.className = 'trail-scene'
 const clip = `trail-clear-${crypto.randomUUID()}`
 scene.innerHTML = `
     <svg class="trail-canvas" aria-hidden="true">
-      <defs><clipPath id="${clip}"><path data-trail-clear clip-rule="evenodd"/></clipPath></defs>
+      <defs>
+        <clipPath id="${clip}"><path data-trail-clear clip-rule="evenodd"/></clipPath>
+        ${trailIds.map(id => `<mask id="${clip}-${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><path class="trail-reveal" data-trail-reveal="${id}" pathLength="1"/></mask>`).join('')}
+      </defs>
       ${trailIds.map(id => `<path class="trail-path" data-trail-route="${id}"/>`).join('')}
       <g clip-path="url(#${clip})">
       <g class="trail-steps"></g>
       <g class="trail-landmarks"></g>
-      <g data-trail-stones></g>
+      <g data-trail-stones>${trailIds.map(id => `<g data-trail-stone-route="${id}" mask="url(#${clip}-${id})"></g>`).join('')}</g>
       </g>
     </svg>
     <div class="trail-stone" role="slider" aria-label="Your stone on the shared trail" tabindex="-1"
       aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-describedby="trail-hint" aria-disabled="true"
       aria-keyshortcuts="Shift+ArrowLeft Shift+ArrowRight">
-      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 8 4 3 8 2 11 7 9 10 3 10Z"/></svg>
+      <span class="trail-stone-owner" aria-hidden="true">you</span>
+      <svg viewBox="-4 -4 20 20" aria-hidden="true"><circle class="trail-stone-ring" cx="6" cy="6" r="9"/><path d="M2 8 4 3 8 2 11 7 9 10 3 10Z"/></svg>
     </div>
     <div class="trail-campsite">
-      <button class="trail-camp-toggle" type="button" aria-label="Trail controls" aria-expanded="false" aria-controls="trail-camp-tools">
-        <svg viewBox="0 0 64 64" aria-hidden="true"><g class="trail-camp"></g></svg>
+      <button class="trail-camp-toggle" type="button" aria-label="Trail controls" aria-expanded="false" aria-controls="trail-camp-tools" aria-describedby="trail-hint">
+        <svg viewBox="0 0 128 96" aria-hidden="true"><g class="trail-camp" transform="translate(64 64)">${trailCampsite()}</g></svg>
       </button>
       <div class="trail-camp-tools" id="trail-camp-tools" hidden>
-        <span id="trail-hint">drag between trails; arrow keys walk, shift + arrows switch</span>
+        <span class="trail-status" id="trail-hint">drag between trails; arrow keys walk, shift + arrows switch</span>
+        <svg class="trail-hint-fumes" viewBox="0 0 240 180" aria-hidden="true">
+          <defs>
+            <path id="${clip}-hint-switch" d="M12 46C52 12 117 16 157 36S209 62 230 37"/>
+            <path id="${clip}-hint-walk" d="M72 91C97 65 131 69 157 83S192 103 216 82"/>
+            <path id="${clip}-hint-drag" d="M142 157C166 136 199 136 222 149S237 161 242 153"/>
+          </defs>
+          <g class="trail-hint-wisp trail-hint-wisp-high">
+            <text><textPath href="#${clip}-hint-switch" startOffset="50%" text-anchor="middle">shift + arrows switch paths</textPath></text>
+          </g>
+          <g class="trail-hint-wisp trail-hint-wisp-middle">
+            <text><textPath href="#${clip}-hint-walk" startOffset="50%" text-anchor="middle">arrow keys walk</textPath></text>
+          </g>
+          <g class="trail-hint-wisp trail-hint-wisp-low">
+            <text><textPath href="#${clip}-hint-drag" startOffset="50%" text-anchor="middle">drag your stone</textPath></text>
+          </g>
+        </svg>
         <div class="trail-tools">
           <button type="button" data-trail-retry hidden>reconnect</button>
         </div>
@@ -106,6 +127,7 @@ let ownRoute: TrailId = 'main'
 let geometries: TrailGeometry[] = []
 let redrawStones = () => {}
 let layoutSignature = ''
+let clearSignature = ''
 let obstacles: { left: number; right: number; top: number; bottom: number }[] = []
 const point = (position: number, route: TrailId = ownRoute) => {
   const geometry = geometries.find(geometry => geometry.id === route)
@@ -126,6 +148,7 @@ const placeOwnStone = (position: number, route: TrailId = ownRoute) => {
   const p = point(position)
   stone.style.left = `${p.x}px`
   stone.style.top = `${p.y}px`
+  stone.style.setProperty('--trail-arrival', `${Math.round(position * 1700)}ms`)
   // A slider's generous hit area must leave the adjacent text selectable.
   const cuts = obstacles.filter(
     rect =>
@@ -152,19 +175,26 @@ const placeOwnStone = (position: number, route: TrailId = ownRoute) => {
   )
 }
 const drawScene = () => {
+  if (host.hidden || !scene.isConnected) return
   const layout = trailLayout(scene)
-  if (!layout || !scene.isConnected) return
-  const signature = `${JSON.stringify(layout.routes)}|${layout.clear}`
-  if (signature === layoutSignature) return
-  layoutSignature = signature
+  if (!layout) return
+  const signature = `${layout.width}|${layout.height}|${layout.bottom}|${JSON.stringify(layout.routes)}`
+  if (signature === layoutSignature && layout.clear === clearSignature) return
   const { width, height, bottom } = layout
   obstacles = layout.obstacles
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
   svg.querySelector('[data-trail-clear]')?.setAttribute('d', layout.clear)
+  clearSignature = layout.clear
+  if (signature === layoutSignature) {
+    placeOwnStone(ownPosition)
+    return
+  }
+  layoutSignature = signature
   geometries = trailIds.flatMap(id => {
     const path = svg.querySelector<SVGPathElement>(`[data-trail-route="${id}"]`)
     if (!path) return []
     path.setAttribute('d', layout.routes[id])
+    svg.querySelector(`[data-trail-reveal="${id}"]`)?.setAttribute('d', layout.routes[id])
     const length = path.getTotalLength()
     const samples = Array.from({ length: Math.ceil(length / 4) + 1 }, (_, index) => {
       const position = Math.min(1, (index * 4) / length)
@@ -189,42 +219,12 @@ const drawScene = () => {
             `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="2" ry="1.3" transform="rotate(${((angle * 180) / Math.PI).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`,
           )
         }
-        return `<g data-route="${id}">${marks.join('')}</g>`
+        return `<g data-route="${id}" mask="url(#${clip}-${id})">${marks.join('')}</g>`
       })
       .join('')
   }
   campsite.style.left = `${layout.camp.x}px`
   campsite.style.top = `${layout.camp.y}px`
-  const camp = scene.querySelector('.trail-camp')
-  if (camp) {
-    camp.setAttribute('transform', 'translate(32 48)')
-    // The 404's hearth uses five flame columns, logs and a ring of stones.
-    camp.innerHTML = `<ellipse class="trail-hearth" cx="0" cy="2" rx="25" ry="8"/>
-      <path class="trail-log" d="M-12 1 10 5M-10 5 12 1"/>
-      ${[2, 4, 7, 5, 2]
-        .map(
-          (rows, column) =>
-            `<g class="trail-flame" style="--flicker:${560 + column * 90}ms;--phase:${column * -170}ms">${Array.from(
-              { length: rows },
-              (_, row) => {
-                const t = (row + 0.5) / rows
-                const tone =
-                  t < 0.34 && column > 0 && column < 4
-                    ? 'core'
-                    : t < 0.6
-                      ? 'gold'
-                      : t < 0.85
-                        ? 'orange'
-                        : 'tip'
-                return `<rect class="trail-flame-${tone}" x="${(column - 2) * 3}" y="${-(row + 1) * 3}" width="3" height="3"/>`
-              },
-            ).join('')}</g>`,
-        )
-        .join('')}
-      <g class="trail-smoke"><rect x="0" y="-32" width="3" height="3"/><rect x="6" y="-43" width="3" height="3"/></g>
-      <g class="trail-rocks"><rect x="-17" y="3" width="5" height="3"/><rect x="13" y="3" width="5" height="3"/><rect x="-8" y="9" width="5" height="3"/><rect x="4" y="9" width="5" height="3"/></g>
-      `
-  }
   const landmarks = scene.querySelector('.trail-landmarks')
   if (landmarks) landmarks.innerHTML = trailTrees(width, bottom, layout.camp.y)
   placeOwnStone(ownPosition)
@@ -238,7 +238,8 @@ const unavailable = () => {
   retry.hidden = false
   scene.dataset.trailState = 'unavailable'
 }
-const timeout = parent.setTimeout(unavailable, 12000)
+let timeout = 0
+let connectionStarted = false
 let disposeConnection = () => {}
 const dispose = () => {
   if (signal.aborted) return
@@ -270,9 +271,16 @@ const connect = async () => {
     value === 'pines' || value === 'grove' ? value : 'main'
 
   const render = (data: TrailData) => {
-    if (!data || typeof data !== 'object' || !data.stones || typeof data.stones !== 'object') return
+    if (
+      host.hidden ||
+      !data ||
+      typeof data !== 'object' ||
+      !data.stones ||
+      typeof data.stones !== 'object'
+    )
+      return
     const entries = Object.entries(data.stones).filter(([, value]) => readPosition(value) !== null)
-    stones.replaceChildren()
+    const fragments = new Map(trailIds.map(id => [id, document.createDocumentFragment()]))
     for (const [visitor, value] of entries) {
       if (visitor === id) continue
       const position = readPosition(value)
@@ -283,8 +291,10 @@ const connect = async () => {
       pebble.setAttribute('d', 'M-3 1-2-2 1-3 3 0 2 2-2 2Z')
       pebble.setAttribute('transform', `translate(${p.x} ${p.y})`)
       pebble.dataset.route = visitorRoute
-      stones.append(pebble)
+      fragments.get(visitorRoute)?.append(pebble)
     }
+    for (const [route, fragment] of fragments)
+      stones.querySelector(`[data-trail-stone-route="${route}"]`)?.replaceChildren(fragment)
     const saved = readPosition(data.stones[id])
     if (saved !== null && pointer === null && frame === 0) {
       position = saved
@@ -426,4 +436,27 @@ const connect = async () => {
     channel.destroy()
   }
 }
-void connect().catch(unavailable)
+const startConnection = () => {
+  if (host.hidden || connectionStarted || signal.aborted) return
+  connectionStarted = true
+  scene.dataset.trailState = 'connecting'
+  timeout = parent.setTimeout(unavailable, 12000)
+  void connect().catch(unavailable)
+}
+host.addEventListener(
+  'trail:show',
+  () => {
+    redrawStones()
+    startConnection()
+  },
+  { signal },
+)
+host.addEventListener(
+  'trail:hide',
+  () => {
+    campPinned = false
+    showTools(false)
+  },
+  { signal },
+)
+startConnection()
