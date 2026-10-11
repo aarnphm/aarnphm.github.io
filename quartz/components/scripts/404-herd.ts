@@ -8,6 +8,8 @@
 // are gone. At sundown they walk in file behind the tall cypress to the barn, with the farmer up
 // from the house below the island's brow to see them in and shut the doors on them, and come out
 // again after sunrise once the farmer has come back up to open them; through the winter they stay in.
+// When the farmer is home from fishing (404-angler.ts) they make up feed and carry it out to the
+// trough at the lane's mouth, and the cattle come over and take their turns at it.
 
 import { type Almanac, type Sky, winter } from './404-almanac'
 import { PHOTO, UNIT, nearCourse, slant } from './404-downhill'
@@ -30,7 +32,7 @@ export function herdEnv(al: Almanac, sky: Sky): HerdEnv {
 }
 
 type Kind = 'cow' | 'calf' | 'sheep'
-type Doing = 'graze' | 'walk' | 'look' | 'lie' | 'run'
+type Doing = 'graze' | 'walk' | 'look' | 'lie' | 'run' | 'eat'
 
 export type Beast = {
   kind: Kind
@@ -55,11 +57,15 @@ export type Beast = {
   // In the barn, and the rest of its way into it or out of it to the grass.
   in: boolean
   path: Pt[]
+  // The place at the trough it is headed for or eating at, and the last feed it had there.
+  spot: number
+  fed: number
 }
 
 // The farmer: at the house, on the way to a point and what to do there, at the barn's doors swinging
-// them a leaf at a time, or stood clear of them while the stock go out or come in.
-type Chore = 'home' | 'walk' | 'doors' | 'watch'
+// them a leaf at a time, stood clear of them while the stock go out or come in, making up feed in
+// the house, or tipping it into the trough.
+type Chore = 'home' | 'walk' | 'doors' | 'watch' | 'make' | 'pour'
 export type Farmer = {
   chore: Chore
   after: Chore
@@ -71,7 +77,8 @@ export type Farmer = {
 }
 
 // Whether the herd has been called out or in, the stock's seconds since through open doors, how
-// many leaves of the doors stand open, and the farmer.
+// many leaves of the doors stand open, the farmer, and the feed in the trough (1 full) and how many
+// times it has been filled.
 export type Herd = {
   seed: number
   rng: () => number
@@ -80,6 +87,8 @@ export type Herd = {
   since: number
   doors: number
   farmer: Farmer
+  trough: number
+  feeds: number
 }
 
 // Someone on the hill as the herd sees them: where they are, whether they are going by fast on a
@@ -112,6 +121,18 @@ const ASIDE: Pt = [484, 680]
 const FRONT: Pt = [460, 680]
 const STRIDE = 1.1 * UNIT
 const SWING = 0.8
+// The trough by the mouth of the lane, left of the cypress, with a place for a beast at either
+// end; the way out to it along the lane, where the farmer stands behind it to tip the feed in; the
+// seconds it takes to make the feed up, and the beast-seconds of eating a trough holds.
+export const TROUGH: Pt = [356, 686]
+const PLACES: Pt[] = [
+  [TROUGH[0] - 20, TROUGH[1]],
+  [TROUGH[0] + 20, TROUGH[1]],
+]
+const MOUTH: Pt = [400, 682]
+const BEHIND: Pt = [TROUGH[0], TROUGH[1] - 5]
+const MAKE = 12
+const HOLDS = 110
 
 // The pasture on a grid of four units, about a pixel: grass clear of the line, the paths and the
 // photographer, in one piece with the lane along the slope behind the cypress to the barn's doors.
@@ -376,6 +397,7 @@ function graze(b: Beast, until: number) {
 }
 // Along a way in or out, which nothing turns it from.
 function follow(b: Beast, path: Pt[]) {
+  b.spot = -1
   b.doing = 'walk'
   b.path = path
   b.to = path[0]
@@ -466,6 +488,8 @@ function scatter(h: Herd, env: HerdEnv) {
   h.since = Infinity
   h.doors = env.out ? 2 : 0
   h.farmer = { chore: 'home', after: 'home', way: [], x: HOUSE[0], y: HOUSE[1], face: -1, t: 0 }
+  h.trough = 0
+  h.feeds = 0
   const herd = near(h, null, 'cow', 318, 668, 40) ?? [318, 668]
   const flock = near(h, null, 'sheep', 336, 592, 30) ?? [336, 592]
   for (const s of STOCK) {
@@ -491,6 +515,8 @@ function scatter(h: Herd, env: HerdEnv) {
       calm: 0,
       in: !env.out,
       path: [],
+      spot: -1,
+      fed: 0,
     }
     h.beasts.push(b)
     if (r() < Math.min(0.9, lying(env) + (s.kind === 'calf' ? 0.2 : 0))) {
@@ -556,6 +582,16 @@ function stepFarmer(h: Herd, dt: number) {
       else send(f, [ASIDE, HOUSE], 'home')
       break
     }
+    case 'make':
+      if (f.t > MAKE) send(f, [ASIDE, FRONT, MOUTH, BEHIND], 'pour')
+      break
+    case 'pour':
+      f.face = 1
+      if (f.t < 2.5) break
+      h.trough = 1
+      h.feeds++
+      send(f, [MOUTH, FRONT, ASIDE, HOUSE], 'home')
+      break
     case 'watch': {
       // Facing the lane until the last is out and clear of its mouth, or in, and a moment after.
       f.face = -1
@@ -570,6 +606,45 @@ function stepFarmer(h: Herd, dt: number) {
       break
     }
   }
+}
+
+// Home from the river with the stock out: the farmer goes in and makes up their feed.
+export function feedHerd(h: Herd) {
+  const f = h.farmer
+  if (!h.out || f.chore !== 'home') return
+  f.chore = 'make'
+  f.t = 0
+}
+
+// At the trough: whichever of the cattle that have not eaten from this filling is nearest a free
+// place walks over to it, until the trough is empty. A beast that has turned to something else on
+// the way gives its place up.
+function serve(h: Herd) {
+  if (h.trough <= 0) return
+  for (const b of h.beasts) if (b.spot >= 0 && b.doing !== 'eat' && b.doing !== 'walk') b.spot = -1
+  for (const [k, at] of PLACES.entries()) {
+    if (h.beasts.some(b => b.spot === k)) continue
+    let best: Beast | null = null
+    for (const b of h.beasts) {
+      if (b.in || b.kind === 'sheep' || b.fed === h.feeds || b.spot >= 0) continue
+      if (b.path.length || b.watch || b.doing === 'run') continue
+      if (!best || slant(b.x - at[0], b.y - at[1]) < slant(best.x - at[0], best.y - at[1])) best = b
+    }
+    if (!best) return
+    best.spot = k
+    toPlace(h, best)
+  }
+}
+function toPlace(h: Herd, b: Beast) {
+  const at = PLACES[b.spot]
+  const to = sight([b.x, b.y], at) ? at : near(h, b, b.kind, at[0], at[1], 12)
+  // Nowhere to get at it from: it misses this filling.
+  if (!to) {
+    b.fed = h.feeds
+    b.spot = -1
+    return
+  }
+  go(b, to)
 }
 
 export function stepHerd(h: Herd, env: HerdEnv, dt: number, people: Passer[]) {
@@ -589,6 +664,7 @@ export function stepHerd(h: Herd, env: HerdEnv, dt: number, people: Passer[]) {
   // farmer is clear of them.
   const open = h.doors === 2 && slant(h.farmer.x - FRONT[0], h.farmer.y - FRONT[1]) > 20
   if (open) h.since += dt
+  serve(h)
   const hurt = people.filter(o => o.hurt)
   for (const [n, b] of h.beasts.entries()) {
     // Called in, each in its turn sets off for the barn from whatever it was doing; called out,
@@ -695,6 +771,17 @@ export function stepHerd(h: Herd, env: HerdEnv, dt: number, people: Passer[]) {
             b.t = 0
             b.until = 3 + h.rng() * 4
             b.at = null
+          } else if (b.spot >= 0) {
+            const at = PLACES[b.spot]
+            if (slant(b.x - at[0], b.y - at[1]) > 1) toPlace(h, b)
+            else {
+              // Head down in the trough, facing along it.
+              b.doing = 'eat'
+              b.to = null
+              b.t = 0
+              b.until = 22 + h.rng() * 14
+              b.face = Math.sign(TROUGH[0] - b.x)
+            }
           } else graze(b, 20 + h.rng() * 70)
         } else if (b.t > b.until) next(h, b, env)
         break
@@ -705,6 +792,13 @@ export function stepHerd(h: Herd, env: HerdEnv, dt: number, people: Passer[]) {
         break
       case 'lie':
         if (b.t > b.until) next(h, b, env)
+        break
+      case 'eat':
+        h.trough = Math.max(0, h.trough - dt / HOLDS)
+        if (b.t < b.until && h.trough > 0) break
+        b.fed = h.feeds
+        b.spot = -1
+        next(h, b, env)
         break
     }
   }
@@ -727,6 +821,9 @@ export type HerdInk = {
   skin: RGB
   bib: RGB
   trousers: RGB
+  // The pail and the feed in it.
+  pail: RGB
+  feed: RGB
 }
 
 // The barn, end on: boards under a tin roof pitched at forty-five degrees, a hay door up in the
@@ -755,11 +852,24 @@ export function paintBarn(d: Uint8ClampedArray, g: Grid, ink: HerdInk, h: Herd) 
   dot(d, g, i, j - 6, ink.dark)
 }
 
+// The trough, galvanised like the roof, with the feed heaped in it while there is any.
+export function paintTrough(d: Uint8ClampedArray, g: Grid, ink: HerdInk, h: Herd) {
+  const i = col(g, TROUGH[0])
+  const j = row(g, TROUGH[1])
+  const heap = Math.ceil(h.trough * 3)
+  for (let di = -2; di <= 2; di++) {
+    const inside = Math.abs(di) < 2
+    const fed = inside && Math.abs(di) * 2 < heap
+    dot(d, g, i + di, j - 2, inside ? (fed ? ink.feed : ink.dark) : ink.roof)
+    dot(d, g, i + di, j - 1, ink.roof)
+  }
+}
+
 // The farmer in a straw hat and denim overalls, legs apart in a stride; at the doors, an arm out to
-// the leaf in hand.
+// the leaf in hand; carrying the pail of feed out to the trough, and tipping it in.
 export function paintFarmer(d: Uint8ClampedArray, g: Grid, ink: HerdInk, h: Herd, time: number) {
   const f = h.farmer
-  if (f.chore === 'home') return
+  if (f.chore === 'home' || f.chore === 'make') return
   const i = col(g, f.x)
   const j = row(g, f.y)
   if (f.chore === 'walk' && Math.floor(time * 2.5) % 2) {
@@ -773,6 +883,10 @@ export function paintFarmer(d: Uint8ClampedArray, g: Grid, ink: HerdInk, h: Herd
     // Opening, the left leaf and then the right; shutting, the right and then the left.
     const left = h.out ? h.doors === 0 : h.doors === 1
     dot(d, g, i + (left ? -1 : 1), j - 2, ink.skin)
+  } else if (f.chore === 'walk' && f.after === 'pour') dot(d, g, i + f.face, j - 1, ink.pail)
+  else if (f.chore === 'pour') {
+    dot(d, g, i + 1, j - 3, ink.pail)
+    if (Math.floor(time * 6) % 2) dot(d, g, i + 1, j - 2, ink.feed)
   }
 }
 
@@ -809,7 +923,7 @@ export function paintBeast(
     if (low) {
       dot(d, g, i + 2 * f, j - 2, head)
       dot(d, g, i + 3 * f, j - 2, ink.muzzle)
-    } else if (b.doing === 'graze') {
+    } else if (b.doing === 'graze' || b.doing === 'eat') {
       dot(d, g, i + 2 * f, j - 2, head)
       dot(d, g, i + 3 * f, j - 1, ink.muzzle)
     } else if (b.doing === 'look') {

@@ -8,7 +8,16 @@
 // reflects them along with the ruin, the hill and the ranges. The ranges and the ruin paint once per size or theme; sky, field, water,
 // camp, canopy and portal repaint in stop-motion ticks.
 
-import { type Almanac, type Body, type Site, type Sky, almanac, readSky } from './404-almanac'
+import {
+  type Almanac,
+  type Body,
+  type Site,
+  type Sky,
+  almanac,
+  readSky,
+  winter,
+} from './404-almanac'
+import { type AnglerInk, layAngler, makeAngler, paintAngler, stepAngler } from './404-angler'
 import {
   type Bough,
   type BoughInk,
@@ -19,7 +28,16 @@ import {
   stepShed,
   workFor,
 } from './404-boughs'
-import { type Cat, type CatInk, catHead, makeCat, paintCat, poseCat, stepCat } from './404-cat'
+import {
+  type Cat,
+  type CatInk,
+  catHead,
+  makeCat,
+  mealFor,
+  paintCat,
+  poseCat,
+  stepCat,
+} from './404-cat'
 import {
   type CrewInk,
   type Voices,
@@ -30,11 +48,12 @@ import {
   paintBubbles,
   paintCrew,
   poseCrew,
+  say,
   stepCrew,
 } from './404-crew'
 import { type CourseInk, nearCourse, paintCourse } from './404-downhill'
 import { GATE, MISSING, TILT, hourAngle, stoneOuter } from './404-gate'
-import { TERRACES, onTerrace } from './404-herd'
+import { TERRACES, feedHerd, onTerrace } from './404-herd'
 import {
   GROWN,
   type Greens,
@@ -73,6 +92,7 @@ import {
   step,
   type Tones,
 } from './404-pixel'
+import { type PlaneInk, makeSkyway, paintPlanes, stepSkyway } from './404-planes'
 import {
   type Park,
   type RiderInk,
@@ -637,6 +657,14 @@ function airAngle(air: Air, x: number, y: number) {
 
 // What a sky stroke carries: the sun or the lit part of the moon, its banded halo, drifting cloud,
 // or the sky gradient. More cloud lowers the threshold and lets the bank reach further down.
+// How much cloud stands at a point in the sky, and the field it is cut from.
+function cloudAt(air: Air, x: number, y: number) {
+  const c = fbm((x - air.drift) * 0.0035, y * 0.012, 131, 3)
+  const lo = 0.62 - 0.4 * air.cover
+  const low = Math.max(0, air.cover - 0.5) * 2
+  return [smooth(lo, lo + 0.18, c) * (1 - smooth(230 + 260 * low, 480 + 300 * low, y)), c] as const
+}
+
 function skyInk(pal: Palette, air: Air, x: number, y: number, thr: number, mask: number) {
   const b = air.body
   if (b && b.veil < 0.85) {
@@ -648,10 +676,7 @@ function skyInk(pal: Palette, air: Air, x: number, y: number, thr: number, mask:
       if (band * fall > 0.3 + mask * 0.25) return pick(pal.sun, fall * 0.9, thr)
     }
   }
-  const c = fbm((x - air.drift) * 0.0035, y * 0.012, 131, 3)
-  const lo = 0.62 - 0.4 * air.cover
-  const low = Math.max(0, air.cover - 0.5) * 2
-  const cloud = smooth(lo, lo + 0.18, c) * (1 - smooth(230 + 260 * low, 480 + 300 * low, y))
+  const [cloud, c] = cloudAt(air, x, y)
   if (cloud > mask) return pick(pal.cloud, (c - 0.5) * 3.5, thr)
   return pick(pal.sky, smooth(60, 520, y) + (c - 0.5) * 0.35, thr)
 }
@@ -1352,6 +1377,8 @@ function riderInk(pal: Palette): RiderInk {
       skin: pal.figure.S,
       bib: pal.figure.B,
       trousers: pal.figure.D,
+      pail: mix(pal.rock[2], CREAM, 0.3),
+      feed: mix(GOLDEN, pal.bark[2], 0.3),
     },
   }
 }
@@ -3161,6 +3188,10 @@ export function setupLandscape(
     return { park, slopes }
   }
   let { park, slopes } = day()
+  // The farmer's fishing weather: a fair day out of the winter, the sun well up, and the stock out.
+  const fair = () => !winter(al) && al.sun.alt > 10 && !weather.storm && park.herd.out
+  const angler = makeAngler(fair(), reduce)
+  const skyway = makeSkyway()
   let relief: Relief = {
     side: 1,
     contrast: 1,
@@ -3186,6 +3217,8 @@ export function setupLandscape(
   let catInk: CatInk | null = null
   let crewInk: CrewInk | null = null
   let triInk: TriInk | null = null
+  let anglerInk: AnglerInk | null = null
+  let planeInk: PlaneInk | null = null
   let figures = new Uint8ClampedArray(0)
   let people = new Uint8ClampedArray(0)
   let landBase = new Uint8ClampedArray(0)
@@ -3242,6 +3275,18 @@ export function setupLandscape(
   const paintAir = () => {
     if (!sky) return
     paintSky(sky.img.data, sky.g, pal, air, skyBase, ridge, stars, clock)
+    if (planeInk)
+      paintPlanes(
+        sky.img.data,
+        sky.g,
+        skyway,
+        planeInk,
+        clock,
+        night,
+        air.drift,
+        weather.cover,
+        (x, y) => cloudAt(air, x, y)[0],
+      )
     if (weather.storm && !reduce) paintBolt(sky.img.data, sky.g, clock, ridge)
     flush(sky)
   }
@@ -3266,6 +3311,8 @@ export function setupLandscape(
     people.fill(0)
     if (crewInk) paintCrew(people, g, crew, crewInk, clock, rift.heat, cat.alert, bank)
     if (triInk) paintTriathlete(people, g, tri, triInk, strand, water)
+    crew.heads.angler =
+      (anglerInk && paintAngler(people, g, angler, anglerInk, clock, bank)) ?? undefined
     relight(people, g, rim, rift.heat)
     for (let k = 3; k < people.length; k += 4)
       if (people[k] === 255) put(figures, k - 3, [people[k - 3], people[k - 2], people[k - 1]])
@@ -3457,6 +3504,7 @@ export function setupLandscape(
         nose: print.rose[2],
         ear: print.rose[dark ? 1 : 2],
         flowers,
+        fish: pal.fish,
       }
     }
     crewInk = {
@@ -3490,6 +3538,34 @@ export function setupLandscape(
       flag: pal.poppy,
       dust: mix(pal.mid[2], CREAM, dark ? 0.3 : 0.6),
     }
+    // The farmer as on the hill, and the boat in the barn's red.
+    const hull = mix(pal.poppy, pal.autumn[0], 0.5)
+    anglerInk = {
+      hat: GOLDEN,
+      skin: pal.figure.S,
+      shirt: pal.figure.C,
+      bib: pal.figure.B,
+      trousers: pal.figure.D,
+      boots: pal.figure.K,
+      hull,
+      keel: mix(hull, INK, 0.35),
+      wood: pal.rope,
+      rod: pal.bark[0],
+      line: dark ? mix(pal.glint[0], pal.water[2], 0.5) : mix(CREAM, pal.rock[1], 0.35),
+      float: pal.poppy,
+      cork: CREAM,
+      fish: pal.fish,
+      deep: triInk.deep,
+      foam: pal.glint[0],
+    }
+    planeInk = {
+      body: mix(pal.sky[0], INK, 0.45),
+      glint: CREAM,
+      trail: pal.cloud[pal.cloud.length - 1],
+      red: pal.poppy,
+      green: mix(pal.leaf[pal.leaf.length - 1], CREAM, 0.3),
+      strobe: CREAM,
+    }
     lastGlow = lastGrowth = -1
     sky = layer(skyCanvas)
     if (sky) {
@@ -3510,6 +3586,7 @@ export function setupLandscape(
       const { g } = glint
       camp = campSpan(g.px)
       layCourse(tri, g, water, camp, TRAIL[TRAIL.length - 1][0] + 8 * g.px < g.sx[g.bw - 1] - 48)
+      layAngler(angler, g, water)
     }
     well = layer(riftCanvas)
     // The tree folk's heads and speech are in the old grid's pixels, and a resize may leave no one
@@ -3658,8 +3735,49 @@ export function setupLandscape(
       const seen = sighting(tri, strand)
       const [hx, hy] = catHead(cat)
       const away = (p: Pointer) => Math.hypot(p.x - hx, p.y - hy)
-      stepCat(cat, dt, seen && away(seen) < away(pointer) ? seen : pointer, rift.heat, impulse)
-      stepCrew(crew, dt, { clock: now, heat: rift.heat, inflow: rift.inflow, impulse, turn })
+      stepCat(
+        cat,
+        dt,
+        seen && away(seen) < away(pointer) ? seen : pointer,
+        rift.heat,
+        impulse,
+        bank,
+      )
+      stepCrew(crew, dt, {
+        clock: now,
+        heat: rift.heat,
+        inflow: rift.inflow,
+        impulse,
+        turn,
+        cat: cat.x,
+      })
+      // The farmer throws only to a cat lying in front of the boat and within a throw of it.
+      const meal = mealFor(cat, bank)
+      stepAngler(angler, dt, {
+        fit: fair(),
+        home: park.herd.farmer.chore === 'home',
+        swimmer: tri.leg === 'swim' ? tri.x : null,
+        cat: meal && meal[0] < angler.x && angler.x - meal[0] < 320 ? meal : null,
+        say: glyph => say(crew, 'angler', glyph),
+        splash: (x, y, size) => splashes.push({ x, y, size, age: 0 }),
+        toss: () => (cat.coming = true),
+        landed: ([x, y]) => {
+          cat.coming = false
+          cat.meal = { x, y, left: 1 }
+          // The one who has been holding out a fish to it all along.
+          say(crew, 'friend', '?')
+        },
+        back: () => feedHerd(park.herd),
+      })
+      if (sky)
+        stepSkyway(skyway, dt, {
+          cover: weather.cover,
+          day: !night,
+          flyable: !weather.fog && !weather.storm,
+          drift: air.drift,
+          left: sky.g.sx[0],
+          right: sky.g.sx[sky.g.bw - 1],
+        })
       stepPark(park, dt, far)
       stepHill(slopes, dt, far)
       ageBubbles(far, dt)
