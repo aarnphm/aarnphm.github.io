@@ -148,6 +148,16 @@ export function formatMathCalloutTitle(
   const prefix = mathCalloutTitlePrefixes[canonicalType]
   const trimmedTitle = titleContent.trim()
   const trimmedFullTitle = fullTitle.trim()
+
+  // proofs are not numbered: `Proof.` or `Proof of lemma 3.2.`
+  if (canonicalType === 'proof') {
+    const name = trimMathCalloutTitlePrefix(trimmedTitle, prefix)
+    // inline nodes after the text (a link, math) follow the title; the period waits for them
+    const rest = trimmedFullTitle.length > trimmedTitle.length
+    if (rest) return name.length > 0 ? `${prefix} ${name}` : prefix
+    return name.length > 0 ? `${prefix} ${name}.` : `${prefix}.`
+  }
+
   const explicitTitle = explicitMathCalloutNumberedTitle(trimmedFullTitle, prefix)
 
   if (explicitTitle) {
