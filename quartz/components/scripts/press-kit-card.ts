@@ -1,4 +1,7 @@
+import { drawMath, mathKey, prepareMath, type MathImage } from './press-kit-math'
 import { BREAK, type Run, type RunStyle } from './press-kit-text'
+
+type CardRun = Run & { math?: MathImage }
 
 export type FormatKey = 'story' | 'portrait' | 'square' | 'landscape'
 export type ThemeKey = 'papier' | 'encre' | 'rose' | 'sauge'
@@ -157,17 +160,19 @@ type Voice = 'header' | 'body' | 'serif'
 export interface CardModel {
   kind: CardKind
   crumbs: string[]
-  title: Run[]
-  description: Run[]
-  body: Run[]
+  title: CardRun[]
+  description: CardRun[]
+  body: CardRun[]
   date?: string
   reading?: string
   tags: string[]
   section?: string
   author: string
   avatar?: CanvasImageSource
-  /** the site's base social card, `/static/og-image.webp` */
+  /** the site's base social card, or its night twin on encre (`/static/og-image{,-dark}.webp`) */
   art?: HTMLImageElement
+  /** the point crops keep in view, in the 1200×630 card's pixels */
+  artFocus?: [number, number]
   show: {
     art: boolean
     description: boolean
@@ -195,12 +200,15 @@ interface Piece {
   font: string
   width: number
   space: boolean
+  math?: MathImage
+  mathSize?: number
 }
 
 interface Line {
   pieces: Piece[]
   width: number
   paragraphEnd: boolean
+  center?: boolean
 }
 
 interface Fitted {
@@ -229,12 +237,12 @@ function family(fonts: Fonts, voice: Voice): string {
 }
 
 function fontFor(fonts: Fonts, block: Block, style: RunStyle, size: number): string {
-  if (style === 'mono' || style === 'math') {
+  if (style === 'mono') {
     return `400 ${Math.round(size * MONO_SCALE)}px ${fonts.mono}`
   }
   const base = block.weight ?? (block.voice === 'header' ? fonts.headerWeight : 400)
-  const weight = style === 'bold' ? Math.max(600, base) : base
-  const italic = style === 'italic' ? !block.italic : !!block.italic
+  const weight = style === 'bold' || style === 'bold-italic' ? Math.max(600, base) : base
+  const italic = style === 'italic' || style === 'bold-italic' || !!block.italic
   return `${italic ? 'italic ' : ''}${weight} ${Math.round(size)}px ${family(fonts, block.voice)}`
 }
 
@@ -273,7 +281,7 @@ function chars(text: string): string[] {
 function layout(
   ctx: CanvasRenderingContext2D,
   fonts: Fonts,
-  runs: Run[],
+  runs: CardRun[],
   block: Block,
   size: number,
   maxWidth: number,
@@ -282,9 +290,9 @@ function layout(
   let pieces: Piece[] = []
   let width = 0
 
-  const flush = (paragraphEnd: boolean) => {
+  const flush = (paragraphEnd: boolean, center = false) => {
     while (pieces.at(-1)?.space) width -= pieces.pop()!.width
-    if (pieces.length > 0 || paragraphEnd) lines.push({ pieces, width, paragraphEnd })
+    if (pieces.length > 0 || paragraphEnd) lines.push({ pieces, width, paragraphEnd, center })
     pieces = []
     width = 0
   }
@@ -295,6 +303,16 @@ function layout(
       continue
     }
     const font = fontFor(fonts, block, run.style, size)
+    if (run.math) {
+      if (run.display && pieces.length > 0) flush(false)
+      const mathSize = Math.min(size, maxWidth / run.math.width)
+      const w = run.math.width * mathSize
+      if (width + w > maxWidth && pieces.length > 0) flush(false)
+      pieces.push({ text: run.text, font, width: w, space: false, math: run.math, mathSize })
+      width += w
+      if (run.display) flush(false, true)
+      continue
+    }
     for (const word of words(run.text)) {
       const space = /^\s+$/.test(word)
       if (space) {
@@ -316,7 +334,7 @@ function layout(
         width = w
         continue
       }
-      // A word wider than the line (a URL, a long formula) breaks between graphemes.
+      // A word wider than the line (for example, a URL) breaks between graphemes.
       let chunk = ''
       for (const ch of chars(word)) {
         const next = measure(ctx, font, chunk + ch)
@@ -345,9 +363,22 @@ function layout(
   return lines
 }
 
+function lineMetrics(line: Line, size: number, block: Block) {
+  let ascent = size * ASCENT
+  let descent = size * (1 - ASCENT)
+  for (const piece of line.pieces) {
+    if (!piece.math || piece.mathSize === undefined) continue
+    ascent = Math.max(ascent, piece.math.ascent * piece.mathSize)
+    descent = Math.max(descent, piece.math.descent * piece.mathSize)
+  }
+  return { ascent, descent, height: Math.max(size * block.leading, ascent + descent) }
+}
+
 function heightOf(lines: Line[], size: number, block: Block): number {
-  const lh = size * block.leading
-  return lines.reduce((h, line) => h + lh + (line.paragraphEnd ? lh * 0.45 : 0), 0)
+  return lines.reduce((h, line) => {
+    const { height } = lineMetrics(line, size, block)
+    return h + height + (line.paragraphEnd ? size * block.leading * 0.45 : 0)
+  }, 0)
 }
 
 function ellipsize(ctx: CanvasRenderingContext2D, line: Line, maxWidth: number): Line {
@@ -358,7 +389,7 @@ function ellipsize(ctx: CanvasRenderingContext2D, line: Line, maxWidth: number):
   let width = pieces.reduce((w, piece) => w + piece.width, 0)
   while (pieces.length > 0 && (width + dots > maxWidth || pieces.at(-1)!.space)) {
     const last = pieces.at(-1)!
-    if (last.space || last.text.length <= 1) {
+    if (last.math || last.space || last.text.length <= 1) {
       width -= last.width
       pieces.pop()
       continue
@@ -370,8 +401,10 @@ function ellipsize(ctx: CanvasRenderingContext2D, line: Line, maxWidth: number):
     width += last.width
   }
   const end = pieces.at(-1)
-  if (end) end.text = end.text.replace(/[\s.,;:!?·—–-]+$/, '')
-  if (end) end.width = measure(ctx, end.font, end.text)
+  if (end && !end.math) {
+    end.text = end.text.replace(/[\s.,;:!?·—–-]+$/, '')
+    end.width = measure(ctx, end.font, end.text)
+  }
   width = pieces.reduce((w, piece) => w + piece.width, 0)
   pieces.push({ text: '…', font: end?.font ?? font, width: dots, space: false })
   return { pieces, width: width + dots, paragraphEnd: false }
@@ -380,7 +413,7 @@ function ellipsize(ctx: CanvasRenderingContext2D, line: Line, maxWidth: number):
 function fit(
   ctx: CanvasRenderingContext2D,
   fonts: Fonts,
-  runs: Run[],
+  runs: CardRun[],
   block: Block,
   maxWidth: number,
   maxHeight: number,
@@ -399,7 +432,7 @@ function fit(
   let height = 0
   const lh = min * block.leading
   for (const line of lines) {
-    const next = height + lh
+    const next = height + lineMetrics(line, min, block).height
     if (kept >= maxLines || next > maxHeight) break
     height = next + (line.paragraphEnd ? lh * 0.45 : 0)
     kept++
@@ -425,20 +458,26 @@ function draw(
   let top = y
   ctx.textBaseline = 'alphabetic'
   for (const line of lines) {
-    const baseline = top + (lh - size) / 2 + size * ASCENT
+    const metrics = lineMetrics(line, size, block)
+    const baseline = top + (metrics.height - metrics.ascent - metrics.descent) / 2 + metrics.ascent
     let cx = align === 'right' ? x + maxWidth - line.width : x
+    if (line.center && maxWidth > 0) cx = x + (maxWidth - line.width) / 2
     if (highlight && line.width > 0) {
       const padX = size * 0.12
       ctx.fillStyle = highlight.bg
-      ctx.fillRect(cx - padX, baseline - size * 0.84, line.width + padX * 2, size * 1.1)
+      ctx.fillRect(cx - padX, top, line.width + padX * 2, metrics.height)
     }
     ctx.fillStyle = highlight ? highlight.ink : color
     for (const piece of line.pieces) {
-      ctx.font = piece.font
-      ctx.fillText(piece.text, cx, baseline)
+      if (piece.math && piece.mathSize !== undefined) {
+        drawMath(ctx, piece.math, cx, baseline, piece.mathSize, highlight ? highlight.ink : color)
+      } else {
+        ctx.font = piece.font
+        ctx.fillText(piece.text, cx, baseline)
+      }
       cx += piece.width
     }
-    top += lh + (line.paragraphEnd ? lh * 0.45 : 0)
+    top += metrics.height + (line.paragraphEnd ? lh * 0.45 : 0)
   }
   return top - y
 }
@@ -651,10 +690,11 @@ function chrome(
 // The mascot on the ridge, in the base card's own pixels; crops keep it in view.
 const ART_FOCUS: [number, number] = [640, 360]
 
-/** Cover-crops `art` into the box around ART_FOCUS. */
+/** Cover-crops `art` into the box around `focus`. */
 function drawCover(
   ctx: CanvasRenderingContext2D,
   art: HTMLImageElement,
+  focus: [number, number],
   x: number,
   y: number,
   w: number,
@@ -665,15 +705,16 @@ function drawCover(
   const scale = Math.max(w / aw, h / ah)
   const sw = w / scale
   const sh = h / scale
-  const sx = Math.min(Math.max(ART_FOCUS[0] * (aw / 1200) - sw / 2, 0), aw - sw)
-  const sy = Math.min(Math.max(ART_FOCUS[1] * (ah / 630) - sh / 2, 0), ah - sh)
+  const sx = Math.min(Math.max(focus[0] * (aw / 1200) - sw / 2, 0), aw - sw)
+  const sy = Math.min(Math.max(focus[1] * (ah / 630) - sh / 2, 0), ah - sh)
   ctx.drawImage(art, sx, sy, sw, sh, x, y, w, h)
 }
 
 /**
  * Lays the base card into the free middle and returns what is left for text. Paysage takes a
- * right-hand column; the taller formats take a band above the text. On papier the card shares
- * the art's paper, so the band runs edge to edge; other grounds get it as a ruled print.
+ * right-hand column; the taller formats take a band above the text. Papier and encre share their
+ * art's ground (the day card's paper, the night card's sky), so the band runs edge to edge; other
+ * grounds get it as a ruled print.
  */
 function drawArt(
   ctx: CanvasRenderingContext2D,
@@ -685,7 +726,7 @@ function drawArt(
   const art = model.art
   if (!model.show.art || !art?.naturalWidth) return frame
   const avail = frame.bottom - frame.top
-  const bleed = palette.label === 'papier'
+  const bleed = palette.label === 'papier' || palette.label === 'encre'
   // Without a frame the crop would cut the ridges in straight lines, so cut edges fade to paper.
   const fade = (x: number, y: number, w: number, h: number, edge: 'left' | 'bottom') => {
     const gradient =
@@ -698,7 +739,7 @@ function drawArt(
     ctx.fillRect(x, y, w, h)
   }
   const print = (x: number, y: number, w: number, h: number, cut: ('left' | 'bottom')[]) => {
-    drawCover(ctx, art, x, y, w, h)
+    drawCover(ctx, art, model.artFocus ?? ART_FOCUS, x, y, w, h)
     if (bleed) {
       const band = Math.round(h * 0.28)
       if (cut.includes('bottom')) fade(x, y + h - band, w, band, 'bottom')
@@ -858,6 +899,8 @@ function drawQuote(
       y,
       palette.ink,
       model.show.highlight ? { bg: palette.hl, ink: palette.hlInk } : undefined,
+      'left',
+      frame.w - inset * 2,
     ) + gap
   y += draw(ctx, attribution, frame.x, y, palette.ink)
   if (section) draw(ctx, section, frame.x, y + spec.meta * 0.3, palette.muted)
@@ -920,11 +963,23 @@ export function cardFaces(fonts: Fonts, size = 48): string[] {
     { voice: 'serif', leading: 1 },
   ]
   for (const block of blocks) {
-    for (const style of ['roman', 'italic', 'bold', 'mono'] as RunStyle[]) {
+    for (const style of ['roman', 'italic', 'bold', 'bold-italic', 'mono'] satisfies RunStyle[]) {
       out.add(fontFor(fonts, block, style, size))
     }
   }
   return [...out]
+}
+
+export async function prepareCard(model: CardModel): Promise<CardModel> {
+  const images = await prepareMath([...model.title, ...model.description, ...model.body])
+  const prepare = (runs: Run[]): CardRun[] =>
+    runs.map(run => (run.style === 'math' ? { ...run, math: images.get(mathKey(run)) } : run))
+  return {
+    ...model,
+    title: prepare(model.title),
+    description: prepare(model.description),
+    body: prepare(model.body),
+  }
 }
 
 export function renderCard(

@@ -277,6 +277,22 @@ export default ((userOpts?: Partial<Options>) => {
                 </p>
               </div>
 
+              <div class="press-kit-field" data-for="quote">
+                <label class="press-kit-legend" for="press-kit-attribution">
+                  attribution
+                </label>
+                <input
+                  id="press-kit-attribution"
+                  class="press-kit-input"
+                  type="text"
+                  spellcheck={false}
+                  aria-describedby="press-kit-attribution-hint"
+                />
+                <p class="press-kit-hint" id="press-kit-attribution-hint">
+                  laisser vide pour utiliser le titre d’origine.
+                </p>
+              </div>
+
               <fieldset class="press-kit-field">
                 <legend>inclure</legend>
                 <div class="press-kit-segments press-kit-includes">
