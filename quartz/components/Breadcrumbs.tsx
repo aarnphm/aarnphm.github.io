@@ -3,6 +3,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { hasCourseCrumb } from '../util/course'
 import { trieFromAllFiles } from '../util/ctx'
 import { classNames } from '../util/lang'
 import { FullSlug, SimpleSlug, joinSegments, resolveRelative, simplifySlug } from '../util/path'
@@ -104,6 +105,8 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
     displayClass,
     ctx,
   }: QuartzComponentProps) => {
+    // course pages draw their own crumb (masthead, strip, unit bar, page head)
+    if (hasCourseCrumb(fileData)) return null
     const trie = (ctx.trie ??= trieFromAllFiles(allFiles))
     const slugParts = fileData.slug!.split('/').filter(part => part.length > 0)
     const pathNodes = trie.ancestryChain(slugParts)

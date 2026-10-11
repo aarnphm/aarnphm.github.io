@@ -40,6 +40,8 @@ export const sharedPageComponents: SharedLayout = {
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [
     Component.NotebookRuntimeLoader(),
+    // the course crumb is the trail on unit pages (the site breadcrumbs stay off them)
+    Component.CourseUnitBar(),
     Component.ArticleTitle(),
     Component.Byline(
       Component.Flex({
@@ -50,7 +52,6 @@ export const defaultContentPageLayout: PageLayout = {
       }),
       Component.ContentMeta(),
     ),
-    Component.CourseUnitBar(),
   ],
   sidebar: [Component.DesktopOnly(Component.TableOfContents()), Component.Reader()],
 }

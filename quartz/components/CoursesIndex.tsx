@@ -6,7 +6,7 @@ import {
 import { courseDirOf, courseView, CourseView } from '../util/course'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
-import { CourseBar } from './CourseSpine'
+import { CourseBar } from './CourseHome'
 // @ts-ignore
 import script from './scripts/course.inline'
 import style from './styles/course.scss'
@@ -36,66 +36,67 @@ export default (() => {
     const hasDecks = cardIds.length > 0
 
     return (
-      <section
-        class={classNames(displayClass, 'course-index')}
-        data-course-prefix="courses/"
-        aria-labelledby="course-index-h"
-      >
-        <CourseBar
-          from={from}
-          heading={`${homes.length} ${homes.length === 1 ? 'course' : 'courses'}`}
-          headingId="course-index-h"
-          notes={notes}
-          total={total}
-          cards={cardIds.length}
-          cardIds={cardIds}
-          reviewSlug={'courses/review' as FullSlug}
-          hasDecks={hasDecks}
-        />
-        {homes.length === 0 ? (
-          <p class="course-count">
-            no courses vendored. run <code>pnpm vendor:ocw &lt;url&gt;</code>.
-          </p>
-        ) : (
-          <ol class="course-index-list">
-            {homes.map(({ home, view }) => {
-              const dir = courseDirOf(home.slug ?? '') ?? ''
-              const title = view?.record.name || String(home.frontmatter?.title ?? dir)
-              // homes without a study block still carry the number in their title
-              const number =
-                view?.record.number ??
-                /\b\d+\.\d+[a-z]?\b/i.exec(String(home.frontmatter?.title ?? ''))?.[0] ??
-                dir
-              const term = [view?.record.term, view?.record.instructors[0]]
-                .filter(Boolean)
-                .join(' · ')
-              const ids = view?.units.flatMap(u => u.cardIds) ?? []
-              const noted = view?.units.filter(u => u.note).length
-              return (
-                <li class="course-row">
-                  <a
-                    class="course-row-link internal"
-                    href={resolveRelative(from, home.slug as FullSlug)}
-                    data-slug={home.slug}
-                    data-no-popover
-                  >
-                    <span class="course-num">{number}</span>
-                    <span class="course-row-title">{title}</span>
-                    <span class="course-row-term">{term || '–'}</span>
-                    <span class="course-stats" data-cards={ids.join(' ')} data-unit={dir}>
-                      notes {view ? `${noted}/${view.units.length}` : '–'} · cards{' '}
-                      {ids.length > 0 ? ids.length : '–'} · due <span data-due="">–</span> · last{' '}
-                      <span data-last="" data-for={dir}>
-                        –
+      <div class={classNames(displayClass, 'course-home', 'course-home--index')}>
+        <section
+          class="course-index"
+          data-course-prefix="courses/"
+          aria-labelledby="course-index-h"
+        >
+          <CourseBar
+            from={from}
+            heading={`${homes.length} ${homes.length === 1 ? 'course' : 'courses'}`}
+            headingId="course-index-h"
+            notes={notes}
+            total={total}
+            cards={cardIds.length}
+            cardIds={cardIds}
+            reviewSlug={'courses/review' as FullSlug}
+            hasDecks={hasDecks}
+          />
+          {homes.length === 0 ? (
+            <p class="course-count">
+              no courses vendored. run <code>pnpm vendor:ocw &lt;url&gt;</code>.
+            </p>
+          ) : (
+            <ol class="course-index-list">
+              {homes.map(({ home, view }) => {
+                const dir = courseDirOf(home.slug ?? '') ?? ''
+                const title = view?.record.name || String(home.frontmatter?.title ?? dir)
+                // homes without a study block still carry the number in their title
+                const number =
+                  view?.record.number ??
+                  /\b\d+\.\d+[a-z]?\b/i.exec(String(home.frontmatter?.title ?? ''))?.[0] ??
+                  dir
+                const term = [view?.record.term, view?.record.instructors[0]]
+                  .filter(Boolean)
+                  .join(' · ')
+                const ids = view?.units.flatMap(u => u.cardIds) ?? []
+                const noted = view?.units.filter(u => u.note).length
+                return (
+                  <li class="course-row">
+                    <a
+                      class="course-row-link internal"
+                      href={resolveRelative(from, home.slug as FullSlug)}
+                      data-slug={home.slug}
+                    >
+                      <span class="course-num">{number}</span>
+                      <span class="course-row-title">{title}</span>
+                      <span class="course-row-term">{term || '–'}</span>
+                      <span class="course-stats" data-cards={ids.join(' ')} data-unit={dir}>
+                        notes {view ? `${noted}/${view.units.length}` : '–'} · cards{' '}
+                        {ids.length > 0 ? ids.length : '–'} · due <span data-due="">–</span> · last{' '}
+                        <span data-last="" data-for={dir}>
+                          –
+                        </span>
                       </span>
-                    </span>
-                  </a>
-                </li>
-              )
-            })}
-          </ol>
-        )}
-      </section>
+                    </a>
+                  </li>
+                )
+              })}
+            </ol>
+          )}
+        </section>
+      </div>
     )
   }
   CoursesIndex.css = style

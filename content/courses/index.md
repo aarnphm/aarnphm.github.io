@@ -1,11 +1,12 @@
 ---
-title: courses
+date: '2026-10-09'
 description: mit opencourseware mirrors, studied with notes, decks, and spaced repetition
+id: index
 layout: courses
+modified: 2026-10-09 23:47:32 GMT-04:00
 tags:
   - course
   - mit
   - ocw
+title: courses
 ---
-
-the courses below are mirrors of mit opencourseware material, kept regenerable, with our own notes and flashcard decks beside each lecture. a row's ratio is how much of the course has notes. due counts and review state show for the site owner; everyone else can read the notes and drill a deck without saving.
