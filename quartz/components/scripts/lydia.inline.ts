@@ -1,10 +1,8 @@
 import { getFullSlug } from '../../util/path'
 import { loadMapbox, applyMonochromeMapPalette } from './mapbox-client'
+import { rootNavSignal } from './root-lifecycle'
 
-function initScrollMask() {
-  const root = document.querySelector("[data-slug='lyd']") as HTMLElement
-  if (!root) return
-
+function initScrollMask(root: HTMLElement, signal: AbortSignal) {
   function updateMaskOpacity() {
     const scrollY = window.scrollY
     const documentHeight = document.documentElement.scrollHeight
@@ -26,26 +24,30 @@ function initScrollMask() {
   updateMaskOpacity()
 
   // Update on scroll with throttling for better performance
-  let ticking = false
+  let frame = 0
+  signal.addEventListener(
+    'abort',
+    () => {
+      cancelAnimationFrame(frame)
+      root.style.removeProperty('--mask-opacity')
+    },
+    { once: true },
+  )
   window.addEventListener(
     'scroll',
     () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
+      if (frame === 0) {
+        frame = window.requestAnimationFrame(() => {
           updateMaskOpacity()
-          ticking = false
+          frame = 0
         })
-        ticking = true
       }
     },
-    { passive: true },
+    { passive: true, signal },
   )
 }
 
-function initHoverModal() {
-  const root = document.querySelector("[data-slug='lyd']") as HTMLElement
-  if (!root) return
-
+function initHoverModal(root: HTMLElement, signal: AbortSignal) {
   // Create modal element
   let modal = document.querySelector('.lydia-modal') as HTMLElement
   if (!modal) {
@@ -53,6 +55,8 @@ function initHoverModal() {
     modal.className = 'lydia-modal'
     root.appendChild(modal)
   }
+
+  signal.addEventListener('abort', () => modal.remove(), { once: true })
 
   // Find all timeline items with hover text
   const timelineItems = root.querySelectorAll('.timeline-item[data-hover-text]')
@@ -79,16 +83,13 @@ function initHoverModal() {
       modal.style.top = `${e.pageY + 15}px`
     }
 
-    content.addEventListener('mouseenter', onMouseEnter)
-    content.addEventListener('mouseleave', onMouseLeave)
-    content.addEventListener('mousemove', onMouseMove)
+    content.addEventListener('mouseenter', onMouseEnter, { signal })
+    content.addEventListener('mouseleave', onMouseLeave, { signal })
+    content.addEventListener('mousemove', onMouseMove, { signal })
   })
 }
 
-function initPictureFrameDecorations() {
-  const root = document.querySelector("[data-slug='lyd']") as HTMLElement
-  if (!root) return
-
+function initPictureFrameDecorations(root: HTMLElement, signal: AbortSignal) {
   const historyItems = root.querySelectorAll(".timeline-item[data-type='history']")
 
   historyItems.forEach((item, index) => {
@@ -98,12 +99,18 @@ function initPictureFrameDecorations() {
     // Check if decorations already exist
     if (content.querySelector('.frame-corner')) return
 
+    const decorations: HTMLElement[] = []
+    signal.addEventListener('abort', () => decorations.forEach(node => node.remove()), {
+      once: true,
+    })
+
     // Create corner decorations (4 corners)
     for (let i = 0; i < 4; i++) {
       const corner = document.createElement('div')
       corner.className = `frame-corner frame-corner-${i + 1}`
       corner.innerHTML = generateCornerOrnament(i, index)
       content.appendChild(corner)
+      decorations.push(corner)
     }
 
     // Create edge decorations (top, right, bottom, left)
@@ -112,40 +119,49 @@ function initPictureFrameDecorations() {
       edge.className = `frame-edge frame-edge-${i + 1}`
       edge.innerHTML = generateEdgePattern(i, index)
       content.appendChild(edge)
+      decorations.push(edge)
     }
 
     // Create particle shower container
     const showerContainer = document.createElement('div')
     showerContainer.className = 'particle-shower'
     content.appendChild(showerContainer)
+    decorations.push(showerContainer)
 
     // Add hover effect to trigger shower
-    content.addEventListener('mouseenter', () => {
-      showerContainer.innerHTML = ''
-      for (let i = 0; i < 15; i++) {
-        const particle = document.createElement('div')
-        particle.className = 'particle'
-        particle.style.left = `${Math.random() * 100}%`
-        particle.style.animationDelay = `${Math.random() * 0.6}s`
-        particle.style.animationDuration = `${1.2 + Math.random() * 1.2}s`
+    content.addEventListener(
+      'mouseenter',
+      () => {
+        showerContainer.innerHTML = ''
+        for (let i = 0; i < 15; i++) {
+          const particle = document.createElement('div')
+          particle.className = 'particle'
+          particle.style.left = `${Math.random() * 100}%`
+          particle.style.animationDelay = `${Math.random() * 0.6}s`
+          particle.style.animationDuration = `${1.2 + Math.random() * 1.2}s`
 
-        // Vary particle shapes
-        if (Math.random() > 0.7) {
-          particle.classList.add('particle-star')
-        } else if (Math.random() > 0.5) {
-          particle.classList.add('particle-dot')
+          // Vary particle shapes
+          if (Math.random() > 0.7) {
+            particle.classList.add('particle-star')
+          } else if (Math.random() > 0.5) {
+            particle.classList.add('particle-dot')
+          }
+
+          showerContainer.appendChild(particle)
         }
+      },
+      { signal },
+    )
 
-        showerContainer.appendChild(particle)
-      }
-    })
-
-    content.addEventListener('animationend', e => {
-      if ((e.target as HTMLElement).classList.contains('particle')) {
-        // @ts-ignore
-        e.target?.remove()
-      }
-    })
+    content.addEventListener(
+      'animationend',
+      e => {
+        if (e.target instanceof HTMLElement && e.target.classList.contains('particle')) {
+          e.target.remove()
+        }
+      },
+      { signal },
+    )
   })
 }
 
@@ -283,12 +299,12 @@ function generateEdgePattern(edge: number, frameIndex: number): string {
   return patternSet[edge]
 }
 
-function initCharacter() {
-  const timelineContainer = document.querySelector('.timeline-container') as HTMLElement
+function initCharacter(root: HTMLElement, signal: AbortSignal) {
+  const timelineContainer = root.querySelector<HTMLElement>('.timeline-container')
   if (!timelineContainer) return
 
   // Check if character already exists
-  if (document.querySelector('.lydia-character')) return
+  if (root.querySelector('.lydia-character')) return
 
   // Create character container
   const characterDiv = document.createElement('div')
@@ -301,6 +317,7 @@ function initCharacter() {
   characterDiv.innerHTML = randomVariant()
 
   timelineContainer.appendChild(characterDiv)
+  signal.addEventListener('abort', () => characterDiv.remove(), { once: true })
 
   // Add cursor interaction
   const alien = characterDiv.querySelector('svg') as SVGElement
@@ -313,7 +330,6 @@ function initCharacter() {
 
   const handlePointerMove = (event: PointerEvent) => {
     if (!document.body.contains(characterDiv)) {
-      cleanupEyeTracking()
       return
     }
 
@@ -339,21 +355,8 @@ function initCharacter() {
     eyes.forEach(eye => eye.setAttribute('transform', 'translate(0, 0)'))
   }
 
-  const handleNav = (event: CustomEventMap['nav']) => {
-    if (event.detail?.url !== 'lyd') {
-      cleanupEyeTracking()
-    }
-  }
-
-  function cleanupEyeTracking() {
-    document.body.removeEventListener('pointermove', handlePointerMove)
-    document.body.removeEventListener('pointerleave', resetEyes)
-    document.removeEventListener('nav', handleNav)
-  }
-
-  document.body.addEventListener('pointermove', handlePointerMove)
-  document.body.addEventListener('pointerleave', resetEyes)
-  document.addEventListener('nav', handleNav)
+  document.body.addEventListener('pointermove', handlePointerMove, { signal })
+  document.body.addEventListener('pointerleave', resetEyes, { signal })
 }
 
 function readCoordinates(node: HTMLElement): { lat: number; lon: number } | null {
@@ -370,10 +373,7 @@ function formatCoordinate(value: number, axis: 'lat' | 'lon'): string {
   return `${Math.abs(value).toFixed(4)} ${direction}`
 }
 
-function initTimelineLocationPreview() {
-  const root = document.querySelector("[data-slug='lyd']") as HTMLElement | null
-  if (!root) return
-
+function initTimelineLocationPreview(root: HTMLElement, signal: AbortSignal) {
   if (root.dataset.locationMapReady === '1') {
     return
   }
@@ -430,7 +430,7 @@ function initTimelineLocationPreview() {
     if (!mapBundlePromise) {
       mapBundlePromise = loadMapbox()
         .then(mapboxgl => {
-          if (!mapboxgl) {
+          if (!mapboxgl || signal.aborted) {
             return null
           }
 
@@ -494,7 +494,7 @@ function initTimelineLocationPreview() {
     statusEl.textContent = ''
 
     ensureMapBundle().then(bundle => {
-      if (requestId !== previewToken) return
+      if (signal.aborted || requestId !== previewToken) return
       if (!bundle) {
         statusEl.textContent = `• map offline`
         return
@@ -505,6 +505,7 @@ function initTimelineLocationPreview() {
       statusEl.textContent = '• map online'
 
       window.requestAnimationFrame(() => {
+        if (signal.aborted) return
         try {
           bundle.map.resize()
         } catch (error) {
@@ -532,44 +533,59 @@ function initTimelineLocationPreview() {
       marker.setAttribute('tabindex', '0')
     }
 
-    marker.addEventListener('pointerenter', event => {
-      showPreview(item, { x: event.clientX, y: event.clientY })
-    })
+    marker.addEventListener(
+      'pointerenter',
+      event => {
+        showPreview(item, { x: event.clientX, y: event.clientY })
+      },
+      { signal },
+    )
 
-    marker.addEventListener('pointermove', event => {
-      if (!tooltip.classList.contains('active')) return
-      updateTooltipPosition({ x: event.clientX, y: event.clientY })
-    })
+    marker.addEventListener(
+      'pointermove',
+      event => {
+        if (!tooltip.classList.contains('active')) return
+        updateTooltipPosition({ x: event.clientX, y: event.clientY })
+      },
+      { signal },
+    )
 
-    marker.addEventListener('pointerleave', hidePreview)
-    marker.addEventListener('pointercancel', hidePreview)
+    marker.addEventListener('pointerleave', hidePreview, { signal })
+    marker.addEventListener('pointercancel', hidePreview, { signal })
 
-    marker.addEventListener('focus', () => {
-      showPreview(item, centroidFromMarker(marker))
-    })
+    marker.addEventListener(
+      'focus',
+      () => {
+        showPreview(item, centroidFromMarker(marker))
+      },
+      { signal },
+    )
 
-    marker.addEventListener('blur', hidePreview)
+    marker.addEventListener('blur', hidePreview, { signal })
   })
 
-  const handleNav = (event: CustomEventMap['nav']) => {
-    if (event.detail?.url === 'lyd') return
-    if (mapBundlePromise) {
-      mapBundlePromise.then(bundle => {
-        const mapInstance = bundle?.map
-        if (mapInstance && typeof mapInstance.remove === 'function') {
-          try {
-            mapInstance.remove()
-          } catch (error) {
-            console.error(error)
+  signal.addEventListener(
+    'abort',
+    () => {
+      hidePreview()
+      tooltip.remove()
+      delete root.dataset.locationMapReady
+      if (mapBundlePromise) {
+        mapBundlePromise.then(bundle => {
+          const mapInstance = bundle?.map
+          if (mapInstance && typeof mapInstance.remove === 'function') {
+            try {
+              mapInstance.remove()
+            } catch (error) {
+              console.error(error)
+            }
           }
-        }
-      })
-      mapBundlePromise = null
-    }
-    document.removeEventListener('nav', handleNav)
-  }
-
-  document.addEventListener('nav', handleNav)
+        })
+        mapBundlePromise = null
+      }
+    },
+    { once: true },
+  )
 }
 
 function drawAlienVariant1(): string {
@@ -661,23 +677,18 @@ function drawAlienVariant2(): string {
   `
 }
 
-// Initialize when DOM is ready
-document.addEventListener('nav', () => {
-  const slug = getFullSlug(window)
-  if (slug === 'lyd') {
-    initScrollMask()
-    initHoverModal()
-    initPictureFrameDecorations()
-    initCharacter()
-    initTimelineLocationPreview()
-  }
-})
+const configuredRoots = new WeakMap<HTMLElement, AbortSignal>()
 
-// Also run on initial page load
-if (getFullSlug(window) === 'lyd') {
-  initScrollMask()
-  initHoverModal()
-  initPictureFrameDecorations()
-  initCharacter()
-  initTimelineLocationPreview()
-}
+document.addEventListener('nav', () => {
+  if (getFullSlug(window) !== 'lyd') return
+  const root = document.querySelector<HTMLElement>("[data-slug='lyd']")
+  if (!root) return
+  const signal = rootNavSignal(root)
+  if (configuredRoots.get(root) === signal) return
+  configuredRoots.set(root, signal)
+  initScrollMask(root, signal)
+  initHoverModal(root, signal)
+  initPictureFrameDecorations(root, signal)
+  initCharacter(root, signal)
+  initTimelineLocationPreview(root, signal)
+})

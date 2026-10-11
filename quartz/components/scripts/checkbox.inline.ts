@@ -1,4 +1,5 @@
 import { getFullSlug } from '../../util/path'
+import { rootNavSignal } from './root-lifecycle'
 
 const hydratedCheckboxes = new WeakSet<HTMLInputElement>()
 
@@ -11,16 +12,17 @@ function setupCheckbox(
     const elId = `${slug}-checkbox-${index}`
     if (hydratedCheckboxes.has(el)) return
     hydratedCheckboxes.add(el)
+    const signal = rootNavSignal(el)
 
-    function switchState(e: Event) {
-      const newCheckboxState = (e.target as HTMLInputElement)?.checked ? 'true' : 'false'
+    function switchState() {
+      const newCheckboxState = el.checked ? 'true' : 'false'
       localStorage.setItem(elId, newCheckboxState)
     }
 
-    el.addEventListener('change', switchState)
-    if (localStorage.getItem(elId) === 'true') {
-      el.checked = true
-    }
+    el.addEventListener('change', switchState, { signal })
+    signal.addEventListener('abort', () => hydratedCheckboxes.delete(el), { once: true })
+    const stored = localStorage.getItem(elId)
+    el.checked = stored === null ? el.defaultChecked : stored === 'true'
   })
 }
 

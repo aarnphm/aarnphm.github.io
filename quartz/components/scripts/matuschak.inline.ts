@@ -1,12 +1,19 @@
 let toggleAbort: AbortController | null = null
-let pendingToggle = false
 
-document.addEventListener('nav', async ev => {
-  const button = document.getElementById('stacked-note-toggle') as HTMLButtonElement
+document.addEventListener('nav', ev => {
+  toggleAbort?.abort()
+  toggleAbort = null
+
+  const button = document.querySelector<HTMLButtonElement>('#stacked-note-toggle')
   const container = document.getElementById('stacked-notes-container')
-  const header = document.getElementsByClassName('header')[0] as HTMLElement
+  const header = document.querySelector<HTMLElement>('.header')
 
   if (!button || !container || !header) return
+  if (window.location.hostname.startsWith('notes.aarnphm.xyz')) return
+
+  let pendingToggle = false
+  const controller = new AbortController()
+  toggleAbort = controller
 
   const switchCheckState = async () => {
     if (pendingToggle) return
@@ -35,9 +42,7 @@ document.addEventListener('nav', async ev => {
     }
   }
 
-  if (window.location.hostname.startsWith('notes.aarnphm.xyz')) return
-
-  toggleAbort?.abort()
-  toggleAbort = new AbortController()
-  button.addEventListener('click', switchCheckState, { signal: toggleAbort.signal })
+  button.addEventListener('click', switchCheckState, { signal: controller.signal })
+  // Micromorph can reuse this button for a different page control.
+  window.addCleanup(() => controller.abort())
 })

@@ -367,9 +367,13 @@ document.addEventListener('nav', () => {
     iframe.title = root.dataset.courseWatchTitle ?? 'lecture video'
     iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'
     iframe.setAttribute('allowfullscreen', '')
-    iframe.addEventListener('load', () => {
-      post({ event: 'listening', id: 1, channel: 'widget' })
-    })
+    iframe.addEventListener(
+      'load',
+      () => {
+        post({ event: 'listening', id: 1, channel: 'widget' })
+      },
+      { signal },
+    )
     readyTimer = window.setTimeout(() => {
       if (ready || signal.aborted) return
       failed = true

@@ -1,10 +1,15 @@
+import { rootNavSignal } from './root-lifecycle'
+
 interface EncryptedPayload {
   ciphertext: string
   salt: string
   iv: string
 }
 
-const unlockTimers = new Map<string, number>()
+const unlockTimers = new WeakMap<Element, number>()
+const configuredUnlockTriggers = new WeakMap<HTMLElement, AbortSignal>()
+const configuredUnlockForms = new WeakMap<HTMLFormElement, AbortSignal>()
+const configuredArticles = new WeakMap<Element, AbortSignal>()
 type ProtectedContentContainer = Document | DocumentFragment | Element
 
 const unlockKey = (slug: string): string => `protected-until:${slug}`
@@ -22,11 +27,11 @@ function readUnlockUntil(slug: string) {
   return unlockUntil
 }
 
-function clearUnlockTimer(slug: string) {
-  const timerId = unlockTimers.get(slug)
+function clearUnlockTimer(article: Element) {
+  const timerId = unlockTimers.get(article)
   if (typeof timerId === 'number') {
     window.clearTimeout(timerId)
-    unlockTimers.delete(slug)
+    unlockTimers.delete(article)
   }
 }
 
@@ -216,21 +221,25 @@ function reLockContent(article: Element, slug: string): void {
     input.value = ''
   }
 
-  clearUnlockTimer(slug)
+  clearUnlockTimer(article)
   window.localStorage.removeItem(unlockKey(slug))
   updateUnlockTriggers(article)
 }
 
 const scheduleReLock = (article: Element, slug: string, unlockUntil: number): void => {
-  clearUnlockTimer(slug)
+  clearUnlockTimer(article)
   const delay = Math.max(unlockUntil - Date.now(), 0)
   const timerId = window.setTimeout(() => {
     reLockContent(article, slug)
   }, delay)
-  unlockTimers.set(slug, timerId)
+  unlockTimers.set(article, timerId)
 }
 
-async function unlockArticle(article: Element, password: string): Promise<HTMLElement> {
+async function unlockArticle(
+  article: Element,
+  password: string,
+  signal: AbortSignal,
+): Promise<HTMLElement> {
   const existingContent = article.querySelector<HTMLElement>('.decrypted-content')
   if (existingContent) {
     updateUnlockTriggers(article)
@@ -242,6 +251,7 @@ async function unlockArticle(article: Element, password: string): Promise<HTMLEl
   if (!slug || !encryptedData) throw new Error('missing protected content payload')
 
   const decryptedHtml = await decryptContent(encryptedData, password)
+  signal.throwIfAborted()
 
   const promptOverlay = article.querySelector<HTMLElement>('.password-prompt-overlay')
   if (promptOverlay) promptOverlay.style.display = 'none'
@@ -261,7 +271,7 @@ async function unlockArticle(article: Element, password: string): Promise<HTMLEl
   updateUnlockTriggers(article)
 
   document.dispatchEvent(
-    new CustomEvent('contentdecrypted', { detail: { article, content: contentDiv } }),
+    new CustomEvent('contentdecrypted', { detail: { article, content: contentDiv, slug } }),
   )
 
   return contentDiv
@@ -275,7 +285,7 @@ function findUnlockPanel(trigger?: Element): HTMLElement | null {
   )
 }
 
-function showUnlockPanel(trigger?: Element): void {
+function showUnlockPanel(trigger?: Element, signal?: AbortSignal): void {
   if (!triggerHasLockedContent(trigger)) {
     updateUnlockTriggers(trigger ?? document)
     return
@@ -286,6 +296,7 @@ function showUnlockPanel(trigger?: Element): void {
     panel.hidden = false
     panel.classList.add('is-open')
     window.requestAnimationFrame(() => {
+      if (signal?.aborted || !panel.isConnected) return
       panel.querySelector<HTMLInputElement>('.password-input')?.focus()
     })
     return
@@ -307,13 +318,18 @@ function setupUnlockTriggers(container: ProtectedContentContainer): void {
   ].filter((trigger): trigger is HTMLElement => trigger instanceof HTMLElement)
 
   triggers.forEach(trigger => {
-    if (trigger.dataset.protectedUnlockTriggerSetup === 'true') return
-    trigger.dataset.protectedUnlockTriggerSetup = 'true'
+    const signal = rootNavSignal(trigger)
+    if (configuredUnlockTriggers.get(trigger) === signal) return
+    configuredUnlockTriggers.set(trigger, signal)
 
-    trigger.addEventListener('click', event => {
-      event.preventDefault()
-      showUnlockPanel(trigger)
-    })
+    trigger.addEventListener(
+      'click',
+      event => {
+        event.preventDefault()
+        showUnlockPanel(trigger, signal)
+      },
+      { signal },
+    )
   })
 }
 
@@ -326,51 +342,60 @@ function setupUnlockAllForms(container: ProtectedContentContainer): void {
   ].filter((form): form is HTMLFormElement => form instanceof HTMLFormElement)
 
   forms.forEach(form => {
-    if (form.dataset.protectedUnlockAllSetup === 'true') return
-    form.dataset.protectedUnlockAllSetup = 'true'
+    const signal = rootNavSignal(form)
+    if (configuredUnlockForms.get(form) === signal) return
+    configuredUnlockForms.set(form, signal)
 
-    form.addEventListener('submit', async event => {
-      event.preventDefault()
+    form.addEventListener(
+      'submit',
+      async event => {
+        event.preventDefault()
 
-      const input = form.querySelector<HTMLInputElement>('.password-input')
-      if (!input) return
+        const input = form.querySelector<HTMLInputElement>('.password-input')
+        if (!input) return
 
-      const password = input.value.trim()
-      if (!password) return
+        const password = input.value.trim()
+        if (!password) return
 
-      const panel = form.closest<HTMLElement>('[data-protected-unlock-panel]')
-      const errorEl =
-        panel?.querySelector<HTMLElement>('.password-error') ??
-        form.querySelector<HTMLElement>('.password-error')
-      const stream = form.closest('.stream') ?? document.querySelector('.stream') ?? document
-      const articles = lockedProtectedArticlesIn(stream)
+        const panel = form.closest<HTMLElement>('[data-protected-unlock-panel]')
+        const errorEl =
+          panel?.querySelector<HTMLElement>('.password-error') ??
+          form.querySelector<HTMLElement>('.password-error')
+        const stream = form.closest('.stream') ?? document.querySelector('.stream') ?? document
+        const articles = lockedProtectedArticlesIn(stream)
 
-      if (articles.length === 0) {
-        input.value = ''
-        if (panel) {
-          panel.hidden = true
-          panel.classList.remove('is-open')
+        if (articles.length === 0) {
+          input.value = ''
+          if (panel) {
+            panel.hidden = true
+            panel.classList.remove('is-open')
+          }
+          updateUnlockTriggers(stream)
+          return
         }
-        updateUnlockTriggers(stream)
-        return
-      }
 
-      try {
-        if (errorEl) errorEl.style.display = 'none'
-        await Promise.all(articles.map(article => unlockArticle(article, password)))
-        input.value = ''
-        if (panel) {
-          panel.hidden = true
-          panel.classList.remove('is-open')
+        try {
+          if (errorEl) errorEl.style.display = 'none'
+          await Promise.all(
+            articles.map(article => unlockArticle(article, password, rootNavSignal(article))),
+          )
+          if (signal.aborted) return
+          input.value = ''
+          if (panel) {
+            panel.hidden = true
+            panel.classList.remove('is-open')
+          }
+          updateUnlockTriggers(stream)
+        } catch (err) {
+          if (signal.aborted) return
+          console.error('decryption error:', err)
+          if (errorEl) errorEl.style.display = 'block'
+          input.value = ''
+          input.focus()
         }
-        updateUnlockTriggers(stream)
-      } catch (err) {
-        console.error('decryption error:', err)
-        if (errorEl) errorEl.style.display = 'block'
-        input.value = ''
-        input.focus()
-      }
-    })
+      },
+      { signal },
+    )
   })
 }
 
@@ -386,7 +411,13 @@ function setupProtectedContent(container: ProtectedContentContainer = document):
   }
 
   protectedArticles.forEach(article => {
+    const signal = rootNavSignal(article)
+    if (configuredArticles.get(article) === signal) return
+    configuredArticles.set(article, signal)
     const slug = article.getAttribute('data-slug')
+    if (slug) {
+      signal.addEventListener('abort', () => clearUnlockTimer(article), { once: true })
+    }
 
     if (slug) {
       const unlockUntil = readUnlockUntil(slug)
@@ -394,22 +425,16 @@ function setupProtectedContent(container: ProtectedContentContainer = document):
         scheduleReLock(article, slug, unlockUntil)
       } else {
         window.localStorage.removeItem(unlockKey(slug))
-        clearUnlockTimer(slug)
+        clearUnlockTimer(article)
       }
     }
 
-    if (article.getAttribute('data-setup-complete') === 'true') {
-      return
-    }
-
-    article.setAttribute('data-setup-complete', 'true')
     const form = article.querySelector<HTMLFormElement>('.password-form')
     const input = article.querySelector<HTMLInputElement>('.password-input')
     const errorEl = article.querySelector<HTMLElement>('.password-error')
     const encryptedDataAttr = article.getAttribute('data-encrypted-content')
 
     if (!encryptedDataAttr || !slug) {
-      article.removeAttribute('data-setup-complete')
       return
     }
 
@@ -417,26 +442,32 @@ function setupProtectedContent(container: ProtectedContentContainer = document):
       return
     }
 
-    form.addEventListener('submit', async e => {
-      e.preventDefault()
-      const password = input.value.trim()
-      if (!password) return
+    form.addEventListener(
+      'submit',
+      async e => {
+        e.preventDefault()
+        const password = input.value.trim()
+        if (!password) return
 
-      if (isDecrypted(article)) {
-        return
-      }
+        if (isDecrypted(article)) {
+          return
+        }
 
-      try {
-        if (errorEl) errorEl.style.display = 'none'
-        await unlockArticle(article, password)
-        input.value = ''
-      } catch (err) {
-        console.error('decryption error:', err)
-        if (errorEl) errorEl.style.display = 'block'
-        input.value = ''
-        input.focus()
-      }
-    })
+        try {
+          if (errorEl) errorEl.style.display = 'none'
+          await unlockArticle(article, password, signal)
+          if (signal.aborted) return
+          input.value = ''
+        } catch (err) {
+          if (signal.aborted) return
+          console.error('decryption error:', err)
+          if (errorEl) errorEl.style.display = 'block'
+          input.value = ''
+          input.focus()
+        }
+      },
+      { signal },
+    )
   })
 
   updateUnlockTriggers(container)

@@ -1,3 +1,5 @@
+import { rootNavSignal } from './root-lifecycle'
+
 function isElement(target: EventTarget | null): target is Element {
   return target instanceof Element
 }
@@ -85,17 +87,21 @@ function hydrateCollapsibleHeaders(
 
       hydratedCollapseToggles.add(toggle)
       toggle.dataset.collapseSlug = storageSlug
-      toggle.addEventListener('click', handleToggleClick)
-      toggle.addEventListener('keydown', handleToggleKeydown)
+      const signal = rootNavSignal(toggle)
+      toggle.addEventListener('click', handleToggleClick, { signal })
+      toggle.addEventListener('keydown', handleToggleKeydown, { signal })
+      signal.addEventListener('abort', () => hydratedCollapseToggles.delete(toggle), { once: true })
     }
   })
 
   const transcludeButtons = root.querySelectorAll('button.transclude-title-link')
   for (const button of transcludeButtons) {
     if (hydratedTranscludeButtons.has(button)) continue
-    hydratedTranscludeButtons.add(button)
-    const parent = button.parentElement as HTMLElement | null
+    const parent = button.parentElement
     if (!parent || !parent.dataset.href) continue
+    hydratedTranscludeButtons.add(button)
+    const signal = rootNavSignal(button)
+    signal.addEventListener('abort', () => hydratedTranscludeButtons.delete(button), { once: true })
 
     const navigate = () => {
       const href = parent.dataset.href
@@ -115,14 +121,11 @@ function hydrateCollapsibleHeaders(
       window.spaNavigate(targetUrl)
     }
 
-    button.addEventListener('click', navigate)
+    button.addEventListener('click', navigate, { signal })
   }
 }
 
 document.addEventListener('nav', () => {
-  hydrateCollapsibleHeaders()
-})
-window.addEventListener('resize', () => {
   hydrateCollapsibleHeaders()
 })
 document.addEventListener('contentdecrypted', event => {

@@ -1,3 +1,5 @@
+import { rootNavSignal } from './root-lifecycle'
+
 const hydratedCodeElements = new WeakSet<HTMLElement>()
 
 function setupCodeCopy(root: Document | HTMLElement = document) {
@@ -24,6 +26,7 @@ function setupCodeCopy(root: Document | HTMLElement = document) {
     if (code.closest('.speech-play')) return
     if (hydratedCodeElements.has(code)) return
     hydratedCodeElements.add(code)
+    const signal = rootNavSignal(code)
     code.style.cursor = 'pointer'
     code.title = 'Click to copy'
 
@@ -31,12 +34,13 @@ function setupCodeCopy(root: Document | HTMLElement = document) {
       e.preventDefault()
       const text = code.textContent || ''
       const success = await copyToClipboard(text)
-      if (success) {
+      if (success && !signal.aborted) {
         showCopyToast()
       }
     }
 
-    code.addEventListener('click', onClick)
+    code.addEventListener('click', onClick, { signal })
+    signal.addEventListener('abort', () => hydratedCodeElements.delete(code), { once: true })
   })
 }
 
