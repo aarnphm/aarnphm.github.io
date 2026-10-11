@@ -7,6 +7,8 @@ tags:
   - ml
   - math/linalg
 title: 0[dot]411
+pdfTitles:
+  'infer-0.411.pdf': 'Infer 0.411: Linear Algebra'
 ---
 
 slides: [[lectures/411/infer-0.411.pdf]]

@@ -7,6 +7,8 @@ tags:
   - evergreen
   - fruit
 title: thoughts
+pdfTitles:
+  'images/htn-openllm.pdf': 'OpenLLM, and Everything About Running LLMs in Production'
 ---
 
 Collection of scattered thoughts and ideas, concepts, thoughts that I entertain quite a lot.

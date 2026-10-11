@@ -9,4 +9,6 @@ sort: title
 tags:
   - tsfm
 title: toronto school of foundational modeling
+pdfTitles:
+  'tsfm-optimizer.pdf': 'TSFM - Optimizer'
 ---

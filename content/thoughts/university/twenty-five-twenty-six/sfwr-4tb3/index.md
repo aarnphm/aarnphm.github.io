@@ -11,6 +11,12 @@ tags:
   - university
   - sfwr4tb3
 title: Syntax-Based Tools and Compilers
+pdfTitles:
+  '08 A RISC Architecture as Target/MIPS Architecture as Target.pdf': 'Compiler Construction: MIPS Architecture as Target'
+  '08 A RISC Architecture as Target/MIPS Green Card.pdf': 'MIPS Reference Data'
+  '08 A RISC Architecture as Target/MIPS Slides.pdf': 'MIPS Slides'
+  '08 A RISC Architecture as Target/RISC-V Reference Card.pdf': 'RISC-V Reference Data'
+  '88 Assignment 2/prettyprintgrammar.pdf': 'Syntax Diagrams for Expressions'
 ---
 
 _Lexical analysis, syntax analysis, type checking; syntax-directed translation, attribute grammars; compiler structure; implications of computer architecture; mapping of programming language concepts; code generation and optimization._

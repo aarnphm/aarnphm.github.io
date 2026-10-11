@@ -7,6 +7,21 @@ tags:
   - university
   - sfwr3a04
 title: Large System Design
+pdfTitles:
+  'ArchitectureDesignSpace.pdf': 'Software Architecture Design Space'
+  'book.pdf': 'Software Architecture and Design Illuminated'
+  'DataCenteredSoftwareArchitecture.pdf': 'Data-Centered Software Architecture: Repository and Blackboard Styles'
+  'DataFlowArchitecture.pdf': 'Data Flow Architecture'
+  'DistributedArchitecture.pdf': 'Distributed Architecture'
+  'HeterogeneousArchitecture2.pdf': 'Heterogeneous Architecture: Architecture Decisions and Quality Attributes'
+  'HierarchyArchitecture.pdf': 'Hierarchy Architecture'
+  'InteractionOrientedSoftwareArchitecture.pdf': 'Interaction-Oriented Software Architecture'
+  'IntroductionToArchitectureDesign2023.pdf': 'Software Design III: Introduction to Architecture Design'
+  'ModelsForSoftwareArchitecture.pdf': 'Models for Software Architecture: UML'
+  'Parnas_SoftwareStructuresCarefulLook.pdf': 'Software Structures: A Careful Look'
+  'projects/SE3A04Project_Winter2026.pdf': 'Smart City Environmental Monitoring & Alert System: Project Outline'
+  'Requirements Highlights.pdf': 'Software Requirements Highlights'
+  'Winter-2026-SFWRENG-3A04-T03-KHEDRI-Software-Design-III-Large-System-Design.pdf': 'Software Design III: Large System Design, Winter 2026 Course Outline'
 ---
 
 _time not to fail this course_

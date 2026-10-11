@@ -7,6 +7,15 @@ tags:
   - university
   - astron2e03
 title: Planetary Astronomy
+pdfTitles:
+  '05_HeatingCooling_StarPlanetInteractions_2024.pdf': 'Lecture 4: Heating / Cooling, Star-Planet Interactions'
+  '06_Atmospheres_2024.pdf': 'Lecture 6: Planetary Atmospheres'
+  '06_HeatingCooling_GHeffect_2024.pdf': 'Lecture 5: Heating / Cooling, The Greenhouse Effect'
+  'assignment2.pdf': 'ASTRON 2E03: Assignment 2, Winter 2024'
+  'Instructor Solutions.pdf': 'Fundamental Planetary Sciences: Solutions to Selected Problems'
+  'Jack J. Lissauer, Imke de Pater - Fundamental Planetary Science_ Physics, Chemistry and Habitability-Cambridge University Press (2019).pdf': 'Fundamental Planetary Science: Physics, Chemistry and Habitability, Updated Edition'
+  'quiz_8.pdf': 'Quizzes - ASTRON 2E03:Planetary Astronomy - McMaster University'
+  'Solar System Exoplanets 2024.pdf': 'Lecture 1: Our Solar System in the Context of Exoplanets'
 ---
 
 Dr. [Ryan Cloutier](mailto:ryan.cloutier@mcmaster.ca) or [link](https://avenue.cllmcmaster.ca/d2l/home/598689)

@@ -7,6 +7,11 @@ tags:
   - university
   - sfwr2fa3
 title: Discrete Mathematics
+pdfTitles:
+  'Automata and Computability.pdf': 'Automata and Computability'
+  'pdfs/A1.pdf': 'Automata and Computability: Assignment 1'
+  'pdfs/A2.pdf': 'Automata and Computability: Assignment 2'
+  'pdfs/A3.pdf': 'Automata and Computability: Assignment 3'
 ---
 
 Aight, let's think how to strategically pass this course.

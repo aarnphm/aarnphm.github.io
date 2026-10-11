@@ -12,6 +12,8 @@ tags:
 title: 0[dot]420
 transclude:
   title: false
+pdfTitles:
+  'infer-0.420.pdf': 'Infer 0.420: GPUs, CUTLASS and CuTe Optimization'
 ---
 
 slides: [[lectures/420/infer-0.420.pdf]]

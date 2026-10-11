@@ -7,6 +7,8 @@ tags:
   - university
   - sfwr4g06ab
 title: Software Enginering Capstone a la carte.
+pdfTitles:
+  'VnVPlan.pdf': 'SE 4G06 (Capstone Design Project) Fall & Winter 2024–2025 [2ex] Verification and Validation Plan'
 ---
 
 ## projects

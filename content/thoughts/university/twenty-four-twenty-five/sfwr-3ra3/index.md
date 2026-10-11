@@ -7,6 +7,13 @@ tags:
   - sfwr3ra3
   - university
 title: Software Requirements and Security Considerations
+pdfTitles:
+  'CaseStudy_Fall2024.pdf': 'Fall 2024 Case Study: The ACME Visit! Product'
+  'cheatsheet.pdf': 'Software Requirements: Exam Reference Notes'
+  'exercise_results.pdf': 'Lecture 2: What Are (Good) Requirements? MacNav Exercise Results'
+  'Instructions.pdf': 'SFWRENG 3RA3 Assignment: Software Requirement Document'
+  'Midterm_firstpage.pdf': 'Software Requirements: Midterm Test Exam Cover, Fall 2024'
+  'T02.pdf': 'Tutorial 2: Identifying Stakeholders'
 ---
 
 prof: [Dr. Sébastien Mosser](https://mosser.github.io/teaching/)

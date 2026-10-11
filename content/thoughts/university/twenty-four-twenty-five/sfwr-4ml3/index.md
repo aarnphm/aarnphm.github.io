@@ -8,6 +8,23 @@ tags:
   - sfwr4ml3
   - ml
 title: Introduction to Machine Learning
+pdfTitles:
+  'a1/assignment.pdf': 'Introduction to Machine Learning: Assignment 1, Fall 2024'
+  'a1/solution.pdf': 'Introduction to Machine Learning: Assignment 1 Solution, October 14, 2024'
+  'a2/assignment.pdf': 'Introduction to Machine Learning: Assignment 2, Fall 2024'
+  'a2/solution.pdf': 'Introduction to Machine Learning: Assignment 1 Solution, October 18, 2024'
+  'F24-midterm-sols.pdf': 'Machine Learning Midterm Solutions (Fall 2024)'
+  'Pattern Recognition and Machine Learning.pdf': 'Pattern Recognition and Machine Learning'
+  'tut/4ML3_F24_Tutorial_1.pdf': 'COMPSCI 4ML3: Tutorial 1'
+  'tut/4ML3_F24_Tutorial_2.pdf': 'COMPSCI 4ML3: Tutorial 2'
+  'tut/4ML3_F24_Tutorial_3.pdf': 'Tutorial 3: Ordinary Least Squares in Python'
+  'tut/4ML3_F24_Tutorial_4.pdf': 'COMPSCI 4ML3 Tutorial 4: Review of Probability Theory'
+  'tut/4ML3_F24_Tutorial_5.pdf': 'Tutorial 5: Maximum Likelihood Estimation'
+  'Understand Machine Learning.pdf': 'Understanding Machine Learning: From Theory to Algorithms'
+  'W23-final-sols.pdf': 'Introduction to Machine Learning: Final Exam Solutions, April 2023'
+  'W23-final.pdf': 'Introduction to Machine Learning: Final Exam, April 2023'
+  'W23-midterm-sols.pdf': 'Introduction to Machine Learning: Midterm Exam Solutions, March 2023'
+  'W23-midterm.pdf': 'Introduction to Machine Learning: Midterm Exam, March 2023'
 ---
 
 See also [[thoughts/Machine learning|machine learning]] and [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|introduction]]

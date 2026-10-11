@@ -7,6 +7,10 @@ tags:
   - university
   - swfr4x03
 title: Scientific Computation
+pdfTitles:
+  '4X03.pdf': 'Runge-Kutta Methods - CS/SE 4X03'
+  'Assignment 3.pdf': 'COMPSCI 4X03: Assignment 3'
+  'Assignment 4 COMPSCI 4X03.pdf': 'COMPSCI 4X03: Assignment 4'
 ---
 
 Introduction to Scientific Computation
