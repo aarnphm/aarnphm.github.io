@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'readings'
-layout: 'A|L'
+resource:
+  {
+    kind: 'reading',
+    file: 'static_resources/0fd469d484daa1477141879ef252dba4_MIT18_100BF10_RiemannInte.pdf',
+    bytes: 118348,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/0fd469d484daa1477141879ef252dba4_MIT18_100BF10_RiemannInte.pdf]]
 
 This resource contains information about riemann integrability and continuity almost everywhere.
 

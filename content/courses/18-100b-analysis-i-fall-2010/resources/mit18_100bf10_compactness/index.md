@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'readings'
-layout: 'A|L'
+resource:
+  {
+    kind: 'reading',
+    file: 'static_resources/b7780b2a0629359b11c5de998c72a147_MIT18_100BF10_compactness.pdf',
+    bytes: 103347,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/b7780b2a0629359b11c5de998c72a147_MIT18_100BF10_compactness.pdf]]
 
 This resource contains information about sequential compactness.
 

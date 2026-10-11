@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'readings'
-layout: 'A|L'
+resource:
+  {
+    kind: 'reading',
+    file: 'static_resources/51cf2948850e386592b69c7167d2d5bb_MIT18_100BF10_Const_of_R.pdf',
+    bytes: 238084,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/51cf2948850e386592b69c7167d2d5bb_MIT18_100BF10_Const_of_R.pdf]]
 
 This resource contains information about construction of the real numbers.
 

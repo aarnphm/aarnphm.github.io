@@ -11,7 +11,37 @@ tags:
   - 'mathematical analysis'
   - 'differential equations'
   - 'calculus'
-layout: 'A|L'
+resource:
+  {
+    kind: 'collection',
+    type: 'Problem Sets',
+    items:
+      [
+        'mit18_100bf10_pset1',
+        'mit18_100bf10_pset1-1',
+        'mit18_100bf10_pset2',
+        'mit18_100bf10_pset2-1',
+        'mit18_100bf10_pset3',
+        'mit18_100bf10_pset3-1',
+        'mit18_100bf10_pset4',
+        'mit18_100bf10_pset4-1',
+        'mit18_100bf10_pset5',
+        'mit18_100bf10_pset5-1',
+        'mit18_100bf10_pset6',
+        'mit18_100bf10_pset6-1',
+        'mit18_100bf10_pset7',
+        'mit18_100bf10_pset7-1',
+        'mit18_100bf10_pset8',
+        'mit18_100bf10_pset8-1',
+        'mit18_100bf10_pset9',
+        'mit18_100bf10_pset9-1',
+        'mit18_100bf10_pset10',
+        'mit18_100bf10_pset10-1',
+        'mit18_100bf10_pset11',
+        'mit18_100bf10_pset12',
+      ],
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---

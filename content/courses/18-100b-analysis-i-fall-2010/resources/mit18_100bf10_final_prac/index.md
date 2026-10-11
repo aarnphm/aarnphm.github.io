@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exams'
-layout: 'A|L'
+resource:
+  {
+    kind: 'exam',
+    file: 'static_resources/9c37ddf215ec9e49511fafacf315705d_MIT18_100BF10_final_prac.pdf',
+    bytes: 97551,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/9c37ddf215ec9e49511fafacf315705d_MIT18_100BF10_final_prac.pdf]]
 
 This resource contains information about axiomsof R, sequence of positive real numbers and continuous function.
 

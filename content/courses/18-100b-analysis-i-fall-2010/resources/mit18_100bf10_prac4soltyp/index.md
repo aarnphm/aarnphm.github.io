@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exam solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'exam-solution',
+    file: 'static_resources/c644774efa2d5839ad4fc3a72da9f9a0_MIT18_100BF10_Prac4solTyp.pdf',
+    bytes: 189951,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/c644774efa2d5839ad4fc3a72da9f9a0_MIT18_100BF10_Prac4solTyp.pdf]]
 
 This resource contains information about Riemann integrable, continuous, non negative, converges uniformly and sequence of continuous functions.
 

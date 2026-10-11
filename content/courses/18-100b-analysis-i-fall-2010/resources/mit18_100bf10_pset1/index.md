@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset',
+    file: 'static_resources/de805e384f5ada4ea6f895d74cfda53d_MIT18_100BF10_pset1.pdf',
+    bytes: 54194,
+    n: 1,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/de805e384f5ada4ea6f895d74cfda53d_MIT18_100BF10_pset1.pdf]]
 
 This resource contains problems about ordered sets and fields, Rudin.
 

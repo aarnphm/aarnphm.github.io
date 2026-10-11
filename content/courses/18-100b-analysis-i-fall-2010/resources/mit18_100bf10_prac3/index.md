@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exams'
-layout: 'A|L'
+resource:
+  {
+    kind: 'exam',
+    file: 'static_resources/e7cdeead3c01afdda5b3feb4cdf39ac2_MIT18_100BF10_prac3.pdf',
+    bytes: 74323,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/e7cdeead3c01afdda5b3feb4cdf39ac2_MIT18_100BF10_prac3.pdf]]
 
 This resource contains information about metric space, continuous map s and the euclidean metric.
 

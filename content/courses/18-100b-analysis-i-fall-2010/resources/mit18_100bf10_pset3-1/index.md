@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset',
+    file: 'static_resources/0d979bcc777c5d054cbe5649f0f87a76_MIT18_100BF10_pset3.pdf',
+    bytes: 93846,
+    n: 3,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/0d979bcc777c5d054cbe5649f0f87a76_MIT18_100BF10_pset3.pdf]]
 
 This resource contains problems about vector spaces, metric space, the set of interior points of A and extra problems.
 

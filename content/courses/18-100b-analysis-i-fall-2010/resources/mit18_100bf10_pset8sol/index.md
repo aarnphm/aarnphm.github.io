@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem set solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset-solution',
+    file: 'static_resources/f857568d92f82a31d353019aba3277c3_MIT18_100BF10_pset8sol.pdf',
+    bytes: 137298,
+    n: 8,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/f857568d92f82a31d353019aba3277c3_MIT18_100BF10_pset8sol.pdf]]
 
 This resource contains solutions to PS 8.
 

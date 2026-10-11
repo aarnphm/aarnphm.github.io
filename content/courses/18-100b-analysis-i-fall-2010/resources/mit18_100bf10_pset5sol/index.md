@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem set solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset-solution',
+    file: 'static_resources/11e0df2644bfa348ff141f91f3446974_MIT18_100BF10_pset5sol.pdf',
+    bytes: 147550,
+    n: 5,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/11e0df2644bfa348ff141f91f3446974_MIT18_100BF10_pset5sol.pdf]]
 
 This resource contains solutions about Cauchy sequence of X converges and the quadratic equation.
 

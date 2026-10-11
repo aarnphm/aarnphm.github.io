@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exam solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'exam-solution',
+    file: 'static_resources/e1a73efa224c8f93d5ed1e007f9f867f_MIT18_100BF10_Prac3solTyp.pdf',
+    bytes: 178967,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/e1a73efa224c8f93d5ed1e007f9f867f_MIT18_100BF10_Prac3solTyp.pdf]]
 
 This resource contains information about metric space and Euclidean metric.
 

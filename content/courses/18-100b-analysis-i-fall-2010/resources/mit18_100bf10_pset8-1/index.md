@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset',
+    file: 'static_resources/30c405d8ad7e7ee3db6dd660437c6d4f_MIT18_100BF10_pset8.pdf',
+    bytes: 109097,
+    n: 8,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/30c405d8ad7e7ee3db6dd660437c6d4f_MIT18_100BF10_pset8.pdf]]
 
 This resource contains problems about one real root between 0 and 1, an open interval and H¨older continuous function is uniformly continuous.
 

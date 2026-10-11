@@ -12,14 +12,18 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exam solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'exam-solution',
+    file: 'static_resources/11379f14842a39ab7c538198b5b15f9d_MIT18_100BF10_fin_prac_sol.pdf',
+    bytes: 93553,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/11379f14842a39ab7c538198b5b15f9d_MIT18_100BF10_fin_prac_sol.pdf]]
 
 This resource contains solutions to practice final exam.
 

@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem set solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset-solution',
+    file: 'static_resources/6fb2555b29c7a4f07410f790db38d696_MIT18_100BF10_pset4sol.pdf',
+    bytes: 146758,
+    n: 4,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/6fb2555b29c7a4f07410f790db38d696_MIT18_100BF10_pset4sol.pdf]]
 
 This resource contains solutions to PS4.
 

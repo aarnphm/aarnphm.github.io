@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem set solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset-solution',
+    file: 'static_resources/53869ac8ff5c1f03729ec74348b84001_MIT18_100BF10_pset1sol.pdf',
+    bytes: 174805,
+    n: 1,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/53869ac8ff5c1f03729ec74348b84001_MIT18_100BF10_pset1sol.pdf]]
 
 This resource contains problems about unique positive real number, the parallelogram and the geometric interpretation.
 

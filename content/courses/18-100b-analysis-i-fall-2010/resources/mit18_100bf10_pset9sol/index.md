@@ -12,14 +12,19 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem set solutions'
-layout: 'A|L'
+resource:
+  {
+    kind: 'pset-solution',
+    file: 'static_resources/055469b783c37c833c0a5342d30aaf67_MIT18_100BF10_pset9sol.pdf',
+    bytes: 133348,
+    n: 9,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
-
-![[courses/18-100b-analysis-i-fall-2010/static_resources/055469b783c37c833c0a5342d30aaf67_MIT18_100BF10_pset9sol.pdf]]
 
 This resource contains<br>Problem Set 9 Solutions.
 
