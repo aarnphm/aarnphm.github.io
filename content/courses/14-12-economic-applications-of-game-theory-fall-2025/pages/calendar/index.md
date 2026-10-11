@@ -1,19 +1,17 @@
 ---
-date: '2026-06-05'
-description: This lists the topic and key dates for the course.
-id: mit-14-12-fall-2025-page-pages-calendar
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:35 GMT-04:00
+title: 'calendar'
+description: 'This lists the topic and key dates for the course.'
+id: 'mit-14-12-fall-2025-page-pages-calendar'
 tags:
-  - course
-  - mit
-  - ocw
-  - social science
-  - economics
-  - game-theory
-title: calendar
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'social science'
+  - 'economics'
+  - 'game theory'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/14-12-economic-applications-of-game-theory-fall-2025/|mit 14.12]]
