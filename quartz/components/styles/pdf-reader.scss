@@ -8,8 +8,7 @@ $mark-ink: #879a39;
 $contra-ink: #d14d41;
 $page-ink: #100f0f;
 
-body[data-slug='read'],
-body[data-slug^='read/'] {
+body[data-pdf-reader='true'] {
   overflow: hidden;
 
   #quartz-root {
@@ -40,7 +39,11 @@ body[data-slug^='read/'] {
     }
   }
 
-  .page-header,
+  // The course strip renders in .page-header; the shell has no beforeBody at all.
+  .page-header {
+    flex: none;
+  }
+
   .page-footer,
   .byline,
   .title-col,
@@ -60,6 +63,16 @@ body[data-slug^='read/'] {
   margin: 0;
   padding: 0;
   grid-column: 1 / -1;
+}
+
+body[data-pdf-embedded='course'] {
+  #quartz-root > .header {
+    display: none;
+  }
+
+  .pdf-reader-crumb {
+    display: none;
+  }
 }
 
 .pdf-reader-mount {

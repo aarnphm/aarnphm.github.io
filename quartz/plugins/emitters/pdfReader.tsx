@@ -6,13 +6,22 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
+import { CourseResourceStrip } from '../../components/CourseResource'
 import PdfReaderPage from '../../components/pages/PdfReader'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
-import { BuildCtx } from '../../util/ctx'
-import { FilePath, FullSlug, joinSegments, QUARTZ, slugifyFilePath } from '../../util/path'
+import { courseDirOf, courseFileSlug, pdfResourceOf, resourceOf } from '../../util/course'
+import { BuildCtx, contentDataFor } from '../../util/ctx'
+import {
+  FilePath,
+  FullSlug,
+  joinSegments,
+  pathToRoot,
+  QUARTZ,
+  slugifyFilePath,
+} from '../../util/path'
 import {
   normalizePdfSlug,
   parsePdfFragment,
@@ -20,9 +29,19 @@ import {
   PDF_READER_SHELL_PATH,
   type PdfCitation,
   type PdfManifest,
+  type PdfReaderData,
 } from '../../util/pdf-marks'
+import { pdfTitlesFor } from '../../util/pdf-titles'
+import { StaticResources } from '../../util/resources'
 import { ProcessedContent, defaultProcessedContent } from '../vfile'
 import { write } from './helpers'
+
+declare module 'vfile' {
+  interface DataMap {
+    /** Set on a course PDF resource page before render; the reader page inlines it. */
+    pdfReader?: PdfReaderData
+  }
+}
 
 export const PDF_READER_SLUG = 'read' as FullSlug
 export const PDF_READER_TITLE_SLOT = 'PDF_READER_TITLE_SLOT'
@@ -146,7 +165,7 @@ function collectCitations(
           out.set(target.slug, list)
         }
         if (node.tagName === 'div') {
-          // `![[x.pdf|title]]` is the one place a note names the document; the bare filename is no title.
+          // An embed alias can name the document when its folder has no title override.
           const alias = node.properties['data-pdf-title'] ?? node.properties.dataPdfTitle
           if (
             typeof alias === 'string' &&
@@ -180,9 +199,22 @@ export async function buildPdfManifest(
   const hosted = new Set(identities.filter(item => item.identity).map(item => item.slug))
   const citations = new Map<string, PdfCitation[]>()
   const titles = new Map<string, string>()
+  const namedTitles = pdfTitlesFor(content.map(([, file]) => file.data))
+  // A course resource page is the PDF's own page: canonical path, never a citation.
+  const readPaths = new Map<string, string>()
   for (const [tree, file] of content) {
     const from = file.data.slug
     if (!from || from.endsWith('.pdf')) continue
+    const resource = resourceOf(file.data)
+    if (resource) {
+      const pdf = pdfResourceOf(file.data)
+      if (pdf)
+        readPaths.set(
+          courseFileSlug(pdf.dir, pdf.record.file!),
+          `/${pdf.slug.replace(/\/index$/, '')}/`,
+        )
+      continue
+    }
     const title = file.data.frontmatter?.title ?? from
     collectCitations(tree as Root, from, title, hosted, citations, titles)
   }
@@ -190,11 +222,15 @@ export async function buildPdfManifest(
   const documents: PdfManifest['documents'] = {}
   for (const { slug, identity } of identities.sort((a, b) => a.slug.localeCompare(b.slug))) {
     if (!identity) continue
+    const namedTitle = namedTitles.get(slug)
+    const aliasTitle = titles.get(slug)
     documents[slug] = {
       doc: identity.doc,
       bytes: identity.bytes,
-      title: titles.get(slug) ?? prettyTitle(slug),
+      title: namedTitle ?? aliasTitle ?? prettyTitle(slug),
+      titleSource: namedTitle ? 'frontmatter' : aliasTitle ? 'alias' : 'filename',
       citedBy: (citations.get(slug) ?? []).sort((a, b) => a.from.localeCompare(b.from)),
+      ...(readPaths.has(slug) ? { readPath: readPaths.get(slug) } : {}),
     }
   }
 
@@ -218,24 +254,77 @@ export const PdfReader: QuartzEmitterPlugin = () => {
     sidebar: [],
     afterBody: [],
   }
+  // Course PDF pages: the strip above the reader, the shared header, no footer components.
+  const resourceOpts: FullPageLayout = { ...opts, beforeBody: [CourseResourceStrip()] }
+  let previousDocuments: PdfManifest['documents'] = {}
 
-  async function* emitManifest(ctx: BuildCtx, content: ProcessedContent[]) {
+  async function emitManifest(ctx: BuildCtx, content: ProcessedContent[]) {
     const manifest = await buildPdfManifest(ctx, content)
-    yield write({
-      ctx,
-      content: JSON.stringify(manifest),
-      slug: PDF_MANIFEST_PATH.slice(1).replace(/\.json$/, '') as FullSlug,
-      ext: '.json',
+    return {
+      manifest,
+      file: write({
+        ctx,
+        content: JSON.stringify(manifest),
+        slug: PDF_MANIFEST_PATH.slice(1).replace(/\.json$/, '') as FullSlug,
+        ext: '.json',
+      }),
+    }
+  }
+
+  /** Renders the course PDF resource pages whose folder index passes `pdfResourceOf`. */
+  async function emitResourcePages(
+    ctx: BuildCtx,
+    content: ProcessedContent[],
+    resources: StaticResources,
+    manifest: PdfManifest,
+    include: (slug: string, pdfSlug: string) => boolean,
+  ): Promise<FilePath[]> {
+    const allFiles = contentDataFor(content)
+    const pages = content.flatMap(([tree, file]) => {
+      const ref = pdfResourceOf(file.data)
+      if (!ref) return []
+      const pdfSlug = courseFileSlug(ref.dir, ref.record.file!)
+      if (!include(ref.slug, pdfSlug)) return []
+      return [{ tree, file, ref, pdfSlug }]
+    })
+    const cfg = ctx.cfg.configuration
+    return mapConcurrent(pages, defaultIoConcurrency, async ({ tree, file, ref, pdfSlug }) => {
+      const record = manifest.documents[pdfSlug]
+      // No record (R2): the page still emits with the strip and a static message, no mount.
+      file.data.pdfReader = record
+        ? {
+            mode: 'document',
+            slug: pdfSlug,
+            readPath: `/${ref.slug.replace(/\/index$/, '')}/`,
+            chrome: 'course',
+            document: record,
+          }
+        : undefined
+      const externalResources = pageResources(pathToRoot(ref.slug), resources, ctx)
+      const componentData: QuartzComponentProps = {
+        ctx,
+        fileData: file.data,
+        externalResources,
+        cfg,
+        children: [],
+        tree,
+        allFiles,
+      }
+      const html = renderPage(ctx, ref.slug, componentData, resourceOpts, externalResources)
+      return write({ ctx, content: html, slug: ref.slug, ext: '.html' })
     })
   }
 
   return {
     name: 'PdfReader',
     getQuartzComponents() {
-      return [opts.head, ...header, opts.pageBody, opts.footer]
+      return [opts.head, ...header, ...resourceOpts.beforeBody, opts.pageBody, opts.footer]
     },
     async *emit(ctx, content, resources) {
-      yield* emitManifest(ctx, content)
+      const { manifest, file } = await emitManifest(ctx, content)
+      previousDocuments = manifest.documents
+      yield await file
+      yield* await emitResourcePages(ctx, content, resources, manifest, () => true)
 
       const cfg = ctx.cfg.configuration
       const url = new URL(`https://${cfg.baseUrl ?? 'example.com'}`)
@@ -265,11 +354,31 @@ export const PdfReader: QuartzEmitterPlugin = () => {
         ext: '.html',
       })
     },
-    async *partialEmit(ctx, content, _resources, changeEvents) {
+    async *partialEmit(ctx, content, resources, changeEvents) {
       const touchesPdfs = changeEvents.some(event =>
-        ['.md', '.pdf'].includes(path.extname(event.path).toLowerCase()),
+        ['.md', '.pdf', '.fc'].includes(path.extname(event.path).toLowerCase()),
       )
-      if (touchesPdfs) yield* emitManifest(ctx, content)
+      if (!touchesPdfs) return
+      const { manifest, file } = await emitManifest(ctx, content)
+      yield await file
+      // R13: a note, deck or home edit changes the strip of every PDF page in that course.
+      const dirs = new Set(
+        changeEvents.flatMap(event => {
+          const dir = courseDirOf(slugifyFilePath(event.path as FilePath))
+          return dir ? [dir] : []
+        }),
+      )
+      const changed = (pdfSlug: string) =>
+        JSON.stringify(manifest.documents[pdfSlug]) !== JSON.stringify(previousDocuments[pdfSlug])
+      previousDocuments = manifest.documents
+      yield* await emitResourcePages(
+        ctx,
+        content,
+        resources,
+        manifest,
+        (slug, pdfSlug) =>
+          (courseDirOf(slug) !== null && dirs.has(courseDirOf(slug)!)) || changed(pdfSlug),
+      )
     },
   }
 }

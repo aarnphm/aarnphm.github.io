@@ -7,7 +7,22 @@ type PdfReaderModule = typeof import('../pdf-reader/app')
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('[data-pdf-reader-mount]')
   if (!root) return
+  document.body.dataset.pdfEmbedded =
+    new URLSearchParams(location.search).get('embed') === 'course' ? 'course' : ''
   const signal = currentNavSignal()
+  if (document.body.dataset.pdfEmbedded === 'course' && window.frameElement) {
+    const parentHtml = window.parent.document.documentElement
+    const syncTheme = () => {
+      const theme = parentHtml.getAttribute('saved-theme')
+      if (theme !== 'light' && theme !== 'dark') return
+      document.documentElement.setAttribute('saved-theme', theme)
+      document.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }))
+    }
+    syncTheme()
+    const observer = new MutationObserver(syncTheme)
+    observer.observe(parentHtml, { attributes: true, attributeFilter: ['saved-theme'] })
+    window.addCleanup(() => observer.disconnect())
+  }
   let unmount: (() => void) | undefined
   window.addCleanup(() => unmount?.())
   void (import(new URL('pdf-reader.js', import.meta.url).href) as Promise<PdfReaderModule>)

@@ -43,6 +43,8 @@ interface DocumentData {
   slug: string
   readPath: string
   document: PdfDocumentRecord
+  /** `course`: the page's strip owns the title; the bar drops its `reader /` block. */
+  chrome?: 'course'
 }
 
 interface IndexDocument {
@@ -79,11 +81,16 @@ function readData(): ReaderData | null {
     }
     const parsed = parsePdfDocumentRecord(record.document)
     if (record.mode === 'document' && typeof record.slug === 'string' && parsed) {
+      const readPath =
+        typeof record.readPath === 'string' && /^\/[^/]/.test(record.readPath)
+          ? record.readPath
+          : pdfReaderPath(record.slug)
       return {
         mode: 'document',
         slug: record.slug,
-        readPath: pdfReaderPath(record.slug),
+        readPath,
         document: parsed,
+        ...(record.chrome === 'course' ? { chrome: 'course' as const } : {}),
       }
     }
   } catch {
@@ -200,9 +207,33 @@ interface ActiveSelection extends PageSelection {
   range: Range
 }
 
+/** R1: a dev checkout without `git lfs pull` serves the pointer text instead of the bytes. */
+async function describeLoadFailure(pdfUrl: string, message: string): Promise<string> {
+  try {
+    const response = await fetch(pdfUrl, { headers: { Range: 'bytes=0-63' } })
+    const head = await response.text()
+    if (head.startsWith('version https://git-lfs')) {
+      return `the file is a Git LFS pointer, not the PDF. Run git lfs pull --include "${pdfUrl.slice(1)}"`
+    }
+    if (response.status === 404) return 'the file is missing from the build (404)'
+  } catch {
+    /* keep the viewer's message */
+  }
+  return message
+}
+
+/** Clicks the strip link the keymap names (`prev`, `next`, `up`); true when one exists. */
+function followCourseKey(key: string): boolean {
+  const link = document.querySelector<HTMLAnchorElement>(`a[data-course-key="${key}"]`)
+  if (!link) return false
+  link.click()
+  return true
+}
+
 function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSignal }) {
-  const { slug, readPath, document: record } = data
+  const { slug, readPath, document: record, chrome } = data
   const pdfUrl = `/${encodeURI(slug)}`
+  const embedded = document.body.dataset.pdfEmbedded === 'course'
   const rootRef = useRef<HTMLDivElement>(null)
   const scrollerRef = useRef<HTMLDivElement>(null)
   const columnRef = useRef<HTMLDivElement>(null)
@@ -224,7 +255,7 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
   const [layoutTick, setLayoutTick] = useState(0)
   const [viewportTick, setViewportTick] = useState(0)
   const [view, setView] = useState<'margin' | 'index'>('margin')
-  const [compact, setCompact] = useState(false)
+  const [compact, setCompact] = useState(embedded)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [focusId, setFocusId] = useState<string | null>(null)
   const [selection, setSelection] = useState<ActiveSelection | null>(null)
@@ -238,7 +269,8 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
   useEffect(() => book.subscribe(() => setBookVersion(book.version)), [book])
 
   const label = useCallback((number: number) => labels?.[number - 1] ?? String(number), [labels])
-  const title = extractedTitle ?? record.title
+  const title =
+    record.titleSource === 'frontmatter' ? record.title : (extractedTitle ?? record.title)
 
   useEffect(() => {
     if (!signal.aborted) document.title = title
@@ -303,11 +335,14 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
         void viewer.pageLabels().then(value => !signal.aborted && setLabels(value))
         void viewer.documentTitle().then(value => !signal.aborted && setExtractedTitle(value))
       })
-      .catch(error => {
+      .catch(async error => {
         if (signal.aborted) return
         console.error(error)
         setPhase('error')
-        setFailure(error instanceof Error ? error.message : String(error))
+        const message = error instanceof Error ? error.message : String(error)
+        setFailure(message)
+        const described = await describeLoadFailure(pdfUrl, message)
+        if (!signal.aborted) setFailure(described)
       })
     return () => {
       window.cancelAnimationFrame(layoutFrame)
@@ -339,14 +374,16 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
     }
   }, [book])
 
-  // Phone layout: the margin becomes a sheet below 720 px of reader width.
+  // Embedded readers keep marks in a sheet so resizing gives the width to the PDF.
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
-    const observer = new ResizeObserver(() => setCompact(root.clientWidth < COMPACT_WIDTH))
+    const observer = new ResizeObserver(() =>
+      setCompact(embedded || root.clientWidth < COMPACT_WIDTH),
+    )
     observer.observe(root)
     return () => observer.disconnect()
-  }, [])
+  }, [embedded])
 
   useEffect(() => {
     viewerRef.current?.setZoom(viewerRef.current.fit === 'width' ? 'width' : viewerRef.current.zoom)
@@ -623,7 +660,9 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
       } else if (mod) {
         handled = false
       } else if (event.key === 'Escape') {
-        if (tool === 'region') setTool('select')
+        const sheet = document.querySelector<HTMLElement>('[popover]:popover-open')
+        if (sheet) sheet.hidePopover()
+        else if (tool === 'region') setTool('select')
         else if (selection) {
           document.getSelection()?.removeAllRanges()
           setSelection(null)
@@ -633,6 +672,8 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
         keysRef.current?.showModal()
       } else if (event.key === '[' || event.key === ']') {
         step(event.key === ']' ? 1 : -1)
+      } else if (event.key === '<' || event.key === '>' || event.key === 'u') {
+        handled = followCourseKey(event.key === '<' ? 'prev' : event.key === '>' ? 'next' : 'up')
       } else if (event.key === '+' || event.key === '=') {
         viewer?.zoomBy(1.1)
       } else if (event.key === '-') {
@@ -919,13 +960,15 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
       data-compact={compact}
     >
       <header class="pdf-reader-bar">
-        <div class="pdf-reader-title">
-          <a href="/read" class="pdf-reader-crumb" aria-label="All documents">
-            reader
-          </a>
-          <span aria-hidden="true">/</span>
-          <h1 title={slug}>{title}</h1>
-        </div>
+        {chrome !== 'course' && (
+          <div class="pdf-reader-title">
+            <a href="/read" class="pdf-reader-crumb" aria-label="All documents">
+              reader
+            </a>
+            <span aria-hidden="true">/</span>
+            <h1 title={slug}>{title}</h1>
+          </div>
+        )}
         <p class="pdf-reader-meta">
           {pageCount > 0 && <span>{pageCount} pp</span>}
           <span class="pdf-reader-meta-marks">
@@ -1149,6 +1192,12 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
           <dd>previous or next mark</dd>
           <dt>+ · − · 0</dt>
           <dd>zoom in, out, fit width</dd>
+          {chrome === 'course' && (
+            <>
+              <dt>&lt; · &gt; · u</dt>
+              <dd>previous, next, up to the course</dd>
+            </>
+          )}
           <dt>esc</dt>
           <dd>clear the selection, tool or active mark</dd>
         </dl>
