@@ -211,6 +211,40 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK)
       .join(''),
   )
 
+  // Clinging to an upright pole on its right (the scroll rail), one hand above the other; the pole
+  // runs through x = 1.32.
+  const pole = part(
+    'arms-pole',
+    pen(
+      hand(
+        [
+          [1.32, -1.9],
+          [1.33, 1.6],
+        ],
+        0.02,
+        0.01,
+        52,
+      ),
+      pressure(53, L * 0.9, 0.2),
+    ) +
+      (
+        [
+          [
+            [0.7, -0.62],
+            [1.04, -0.96],
+            [1.32, -1.06],
+          ],
+          [
+            [0.96, -0.02],
+            [1.16, -0.38],
+            [1.32, -0.5],
+          ],
+        ] as Pt[][]
+      )
+        .map((pts, i) => pen(densify(pts, 0.05), pressure(54 + i, L * 1.1, 0.2)))
+        .join(''),
+  )
+
   const body = `<path d="${poly(outline)}" style="fill:${paper}"/>${pen(outline, pressure(8, L))}`
 
   const dash = part(
@@ -372,5 +406,22 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK)
         .join(''),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip"><g class="pet-hop"><g class="pet-lean">${legs}${speed}<g class="pet-body">${body}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${arms}${grip}${laptop}</g>${sweat}${dots}</g></g></g></svg>`
+  // A short line of its own to stand on, for when no box nearby has an edge.
+  const ground = part(
+    'ground',
+    pen(
+      hand(
+        [
+          [-1.2, 1.43],
+          [1.2, 1.45],
+        ],
+        0.05,
+        0.015,
+        57,
+      ),
+      pressure(58, L * 0.8, 0.3),
+    ),
+  )
+
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${legs}${speed}<g class="pet-body">${body}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${arms}${grip}${pole}${laptop}</g>${sweat}${dots}</g></g></g></svg>`
 }
