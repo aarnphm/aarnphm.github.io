@@ -22,13 +22,18 @@ import {
   unitPdf,
   unitSlug,
   unitSources,
+  unitVideo,
 } from '../util/course'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
+import { pdfReaderPath } from '../util/pdf-marks'
 import { psetNumber } from './CourseHome'
 import { CoursesCrumb } from './CourseResource'
 // @ts-ignore
+import workspaceScript from './scripts/course-workspace.inline'
+// @ts-ignore
 import script from './scripts/course.inline'
+import workspaceStyle from './styles/course-workspace.scss'
 import style from './styles/course.scss'
 
 const roman = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x']
@@ -236,6 +241,42 @@ export const CourseUnitBar = (() => {
   Bar.css = style
   Bar.afterDOMLoaded = script
   return Bar
+}) satisfies QuartzComponentConstructor
+
+export const CourseUnitWorkspace = (() => {
+  const Workspace: QuartzComponent = (props: QuartzComponentProps) => {
+    const ctx = unitContext(props)
+    const slug = props.fileData.slug
+    if (!ctx || ctx.kind !== 'lectures' || !slug) return null
+    const { view, unit, n } = ctx
+    const pdf = unit ? unitPdf(unit.record) : undefined
+    const video = unit ? unitVideo(unit.record) : undefined
+    const pdfPath = pdf?.file ? `courses/${view.dir}/${pdf.file}` : undefined
+    const title = `${view.record.unitKind} ${pad(n)}: ${unit?.record.title ?? props.fileData.frontmatter?.title ?? ''}`
+    return (
+      <aside class="course-workspace" aria-label="lecture workspace">
+        <div
+          data-course-workspace-mount
+          data-course-workspace-slug={slug}
+          data-course-workspace-title={title}
+          data-course-workspace-pdf={pdfPath}
+          data-course-workspace-reader={pdfPath ? pdfReaderPath(pdfPath) : undefined}
+          data-course-workspace-video={video?.youtube}
+        >
+          <p role="status">Loading lecture workspace…</p>
+          {pdfPath && (
+            <a href={`${pdfReaderPath(pdfPath)}?view=reader`} data-router-ignore>
+              open source in reader
+            </a>
+          )}
+        </div>
+      </aside>
+    )
+  }
+  Workspace.displayName = 'CourseUnitWorkspace'
+  Workspace.css = workspaceStyle
+  Workspace.afterDOMLoaded = workspaceScript
+  return Workspace
 }) satisfies QuartzComponentConstructor
 
 export const CourseUnitFoot = (() => {

@@ -175,6 +175,7 @@ const config: QuartzConfig = {
         scripts: [
           { name: 'triathlon', entry: 'components/triathlon/runtime/mount.ts' },
           { name: 'pdf-reader', entry: 'components/pdf-reader/app.tsx' },
+          { name: 'course-workspace', entry: 'components/course-workspace/app.tsx' },
         ],
       }),
       Plugin.Bibliography({ bibliography: './content/References.bib' }),

@@ -4,8 +4,10 @@ import {
   QuartzComponentProps,
 } from '../../types/component'
 import { inheritComponentSourceNames } from '../../util/component-source'
+import { unitOf } from '../../util/course'
 import { htmlToJsx } from '../../util/jsx'
 import { concatenateResources } from '../../util/resources'
+import { CourseUnitWorkspace } from '../CourseUnit'
 //@ts-ignore
 import lydiaScript from '../scripts/lydia.inline'
 //@ts-ignore
@@ -14,23 +16,50 @@ import SeeAlsoComponent from '../SeeAlso'
 
 export default (() => {
   const SeeAlso = SeeAlsoComponent()
+  const Workspace = CourseUnitWorkspace()
 
   const Content: QuartzComponent = (props: QuartzComponentProps) => {
     const { fileData, tree } = props
     const content = htmlToJsx(fileData.filePath!, tree)
     const classes: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classString = ['popover-hint', 'main-col', ...classes].join(' ')
+    const isLecture = unitOf(fileData.slug ?? '')?.kind === 'lectures'
+    const classString = [
+      'popover-hint',
+      'main-col',
+      ...(isLecture ? ['course-lecture'] : []),
+      ...classes,
+    ].join(' ')
+    const article = (
+      <article
+        class={classString}
+        id={isLecture ? 'course-lecture-reading' : undefined}
+        tabIndex={isLecture ? -1 : undefined}
+      >
+        {content}
+      </article>
+    )
     return (
       <>
-        <article class={classString}>{content}</article>
+        {isLecture ? (
+          <div class="course-reading-split">
+            {article}
+            <Workspace {...props} />
+          </div>
+        ) : (
+          article
+        )}
         <SeeAlso {...props} />
       </>
     )
   }
 
-  Content.afterDOMLoaded = concatenateResources(lydiaScript, unbadgeScript)
-  Content.css = concatenateResources(SeeAlso.css)
-  Content.sourceNames = inheritComponentSourceNames('Content', [SeeAlso])
+  Content.afterDOMLoaded = concatenateResources(
+    lydiaScript,
+    unbadgeScript,
+    Workspace.afterDOMLoaded,
+  )
+  Content.css = concatenateResources(SeeAlso.css, Workspace.css)
+  Content.sourceNames = inheritComponentSourceNames('Content', [SeeAlso, Workspace])
 
   return Content
 }) satisfies QuartzComponentConstructor
