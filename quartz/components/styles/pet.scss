@@ -49,6 +49,15 @@ $pet-looks: (
     arm-l,
     arm-r,
   ),
+  swim: (
+    eyes-dash,
+    arm-l,
+    arm-r,
+  ),
+  slide: (
+    eyes-dash,
+    arms-pole,
+  ),
 );
 
 .pet-svg {
@@ -117,6 +126,11 @@ $pet-looks: (
       display: inline;
     }
   }
+}
+
+// Standing on its own pen line where no box offers an edge.
+.pet-svg[data-kind='floor'] [data-part='ground'] {
+  display: inline;
 }
 
 // Sitting on a ledge: the body rests on the edge and the legs hang over its face, swinging.
@@ -272,6 +286,62 @@ $pet-looks: (
 
 .pet-svg[data-state='cheer'][data-kind='hang'] .pet-hop {
   animation: none;
+}
+
+// Sliding down the scroll rail: hugging the pole, legs wrapped toward it, leaning in.
+.pet-svg[data-state='slide'] {
+  .pet-lean {
+    transform-origin: 50% 0;
+    rotate: 6deg;
+    animation: none;
+  }
+
+  .pet-leg {
+    rotate: -22deg;
+    animation: none;
+  }
+
+  .pet-leg + .pet-leg {
+    rotate: -34deg;
+  }
+}
+
+// Swimming back from the rail to an edge: leaning forward, arms paddling in turn, feet fluttering.
+.pet-svg[data-state='swim'] {
+  [data-part='arms-hang'],
+  [data-part='ground'] {
+    display: none;
+  }
+
+  [data-part^='arm-'] {
+    display: inline;
+  }
+
+  .pet-lean {
+    transform-origin: 50% 100%;
+    rotate: -14deg;
+    animation: none;
+  }
+
+  .pet-hop {
+    animation: pet-bob 0.8s steps(8) infinite alternate;
+  }
+
+  .pet-arm {
+    animation: pet-paddle 0.6s steps(6) infinite alternate;
+  }
+
+  [data-part='arm-r'] {
+    animation-direction: alternate-reverse;
+  }
+
+  .pet-leg {
+    animation: pet-flutter 0.24s steps(3) infinite alternate;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-direction: alternate-reverse;
+  }
 }
 
 @keyframes pet-blink {
@@ -446,6 +516,42 @@ $pet-looks: (
   }
 }
 
+@keyframes pet-rail {
+  from {
+    translate: 0 var(--pet-rail-from, 0);
+  }
+  to {
+    translate: 0 var(--pet-rail-to, 0);
+  }
+}
+
+@keyframes pet-bob {
+  from {
+    translate: 0 -0.06px;
+  }
+  to {
+    translate: 0 0.06px;
+  }
+}
+
+@keyframes pet-paddle {
+  from {
+    rotate: -34deg;
+  }
+  to {
+    rotate: 26deg;
+  }
+}
+
+@keyframes pet-flutter {
+  from {
+    rotate: 18deg;
+  }
+  to {
+    rotate: -18deg;
+  }
+}
+
 @keyframes pet-cheer {
   from {
     rotate: -10deg;
@@ -474,12 +580,20 @@ $pet-looks: (
   z-index: var(--z-popover);
   width: 4.5rem;
   pointer-events: none;
-  will-change: transform;
   opacity: 0;
   transition: opacity 180ms cubic-bezier(0.2, 0, 0, 1);
 
   &.is-visible {
     opacity: 1;
+  }
+
+  // On the scroll rail: pinned to the viewport, its height tied to the page's scroll position by a
+  // scroll timeline, so it tracks the scroll on the compositor. pet.inline.ts sets the run and moves
+  // it by hand where scroll timelines are missing.
+  &.is-carried {
+    position: fixed;
+    animation: pet-rail linear both;
+    animation-timeline: scroll(root block);
   }
 
   .pet-svg {
