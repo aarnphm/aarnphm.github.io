@@ -36,16 +36,17 @@
 
 .visitor-weather-panel {
   position: fixed;
-  inset: 4rem 1rem auto auto;
-  width: min(18rem, calc(100vw - 2rem));
+  inset: 4rem 4.25rem auto auto;
+  width: min(13.5rem, calc(100vw - 5rem));
+  box-sizing: border-box;
   margin: 0;
-  padding: 0.75rem;
+  padding: 0.35rem 0.5rem;
   color: var(--darkgray);
   background: var(--light);
   border: 1px solid var(--lightgray);
   border-radius: 0;
   font-family: var(--codeFont);
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   line-height: 1.6;
   font-variant-numeric: tabular-nums;
   text-transform: lowercase;
@@ -72,8 +73,7 @@
 
 .visitor-weather-heading,
 .visitor-weather-readout,
-.visitor-weather-foot,
-.visitor-weather-source {
+.visitor-weather-foot {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -81,28 +81,29 @@
 }
 
 .visitor-weather-heading {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .visitor-weather-country {
   color: var(--darkgray);
   text-transform: uppercase;
+  border: 1px solid var(--gray);
+  border-radius: 0.45rem;
+  padding: 0 0.2rem;
+  line-height: 1.2;
 }
 
 .visitor-weather-map {
   position: relative;
-  height: 145px;
-  margin-bottom: 0.5rem;
-  background: var(--lightgray);
+  height: 90px;
+  margin-bottom: 0.25rem;
+  background: var(--light);
   overflow: hidden;
 
   [data-weather-map] {
     width: 100%;
-    height: 100%;
-  }
-  .mapboxgl-ctrl-attrib {
-    font-size: 9px;
-    line-height: 14px;
+    height: 150px;
+    pointer-events: none;
   }
 }
 
@@ -153,47 +154,33 @@
   display: block;
 }
 
-.visitor-weather-readout {
-  color: var(--dark);
+.visitor-weather-foot {
+  flex-wrap: wrap;
+  column-gap: 0.5rem;
+  font-size: 0.55rem;
+}
 
+.visitor-weather-readout {
+  margin-bottom: 0.2rem;
   [data-weather-temperature] {
     text-transform: none;
   }
 }
 
-.visitor-weather-foot {
-  flex-wrap: wrap;
-  column-gap: 0.5rem;
-  row-gap: 0;
-  margin-top: 0.15rem;
-  font-size: 0.6rem;
-}
-
-.visitor-weather-source {
-  margin-top: 0.5rem;
-  font-size: 0.55rem;
-
-  a,
-  button {
-    color: var(--darkgray);
-    background: none;
-    border: 0;
-    padding: 0;
-    font: inherit;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-
-  button {
-    cursor: pointer;
-  }
-
-  [hidden] {
+.visitor-weather-retry {
+  margin-top: 0.25rem;
+  color: var(--darkgray);
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  &[hidden] {
     display: none !important;
   }
-
-  a:focus-visible,
-  button:focus-visible {
+  &:focus-visible {
     outline: 2px solid var(--dark);
     outline-offset: 2px;
   }
@@ -230,6 +217,6 @@
     right: 0.5rem;
   }
   .visitor-weather-panel {
-    inset: 3.5rem 0.75rem auto auto;
+    inset: 3.5rem 3.75rem auto auto;
   }
 }
