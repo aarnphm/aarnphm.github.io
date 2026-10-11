@@ -252,6 +252,8 @@ export async function handleBuild(argv) {
 
   const buildMutex = new Mutex()
   let activeBuild = null
+  // Bundle that ran activeBuild; a hard rebuild releases its module caches.
+  let activeBundle = null
   // Modules the build bundle evaluates, from the latest and the previous metafile, so an edit that
   // drops a module from the closure still counts as a server change.
   let serverSourceInputs = new Set()
@@ -305,6 +307,7 @@ export async function handleBuild(argv) {
         return
       }
       await bundle.buildSourceResources(argv, buildMutex, changedPaths, scope)
+      bundle.releaseModuleCaches()
       clientRefresh()
       return
     }
@@ -313,6 +316,8 @@ export async function handleBuild(argv) {
       console.log(styleText('yellow', 'Detected a source code change, doing a hard rebuild...'))
       await disposeActiveBuild()
     }
+    activeBundle?.releaseModuleCaches()
+    activeBundle = bundle
     release()
 
     activeBuild = await bundle.default(argv, buildMutex, clientRefresh, buildReason)

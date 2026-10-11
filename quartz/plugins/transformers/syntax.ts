@@ -7,6 +7,7 @@ import { Processor } from 'unified'
 import { visit } from 'unist-util-visit'
 import { svgOptions } from '../../components/svg'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import { releasedOnReload } from '../../util/module-caches'
 import { isRecord } from '../../util/type-guards'
 
 interface Theme extends Record<string, CodeTheme> {
@@ -25,7 +26,7 @@ const defaultOptions: Options = {
 }
 
 const MAX_HIGHLIGHT_CACHE_ENTRIES = 4096
-const highlightedCodeCache = new Map<string, Element>()
+const highlightedCodeCache = releasedOnReload(new Map<string, Element>())
 
 type HastChild = RootContent | ElementContent
 type HastParent = { children: HastChild[] }

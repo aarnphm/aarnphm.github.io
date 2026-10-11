@@ -5,6 +5,7 @@ import { i18n } from '../../i18n'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { processWikilinksToHtml, renderLatexInString } from '../../util/description'
 import { escapeHTML } from '../../util/escape'
+import { releasedOnReload } from '../../util/module-caches'
 import { simplifySlug, type FullSlug, type SimpleSlug } from '../../util/path'
 import {
   stripWikilinkFormatting,
@@ -30,7 +31,9 @@ const urlRegex = new RegExp(
 )
 
 const MAX_TEXT_CACHE_ENTRIES = 512
-const textCache = new Map<string, { text: string; readingTime: ReadTimeResults }>()
+const textCache = releasedOnReload(
+  new Map<string, { text: string; readingTime: ReadTimeResults }>(),
+)
 
 function markdownBody(source: string): string {
   const frontmatter = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/.exec(source)

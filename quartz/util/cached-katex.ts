@@ -3,6 +3,7 @@ import type { VFile } from 'vfile'
 import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { toText } from 'hast-util-to-text'
 import katex, { type KatexOptions } from 'katex'
+import { releasedOnReload } from './module-caches'
 
 type Options = Omit<KatexOptions, 'displayMode' | 'throwOnError'>
 type Macros = NonNullable<Options['macros']>
@@ -11,7 +12,7 @@ type MacroValue = Macros[string]
 const emptyOptions: Readonly<Options> = {}
 const emptyClasses: ReadonlyArray<unknown> = []
 const maxCacheEntries = 4096
-const cache = new Map<string, ElementContent[]>()
+const cache = releasedOnReload(new Map<string, ElementContent[]>())
 const settingsIds = new WeakMap<Readonly<Options>, number>()
 let nextSettingsId = 0
 
