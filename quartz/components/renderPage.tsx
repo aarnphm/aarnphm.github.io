@@ -110,6 +110,7 @@ import {
   resolveTriathlonEmbedDate,
 } from './triathlon-day-card'
 import { CalendarPanel } from './triathlon/calendar/Calendar'
+import VisitorWeather from './VisitorWeather'
 
 interface RenderComponents {
   head: QuartzComponent
@@ -2686,6 +2687,7 @@ export function renderPage(
     components = {
       ...components,
       header: [
+        VisitorWeather(),
         Image(),
         Graph({ localGraph: undefined }),
         Search(),
