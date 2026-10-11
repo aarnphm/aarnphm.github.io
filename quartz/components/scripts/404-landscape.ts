@@ -8,6 +8,7 @@
 // reflects them along with the ruin, the hill and the ranges. The ranges and the ruin paint once per size or theme; sky, field, water,
 // camp, canopy and portal repaint in stop-motion ticks.
 
+import { readPetSpot } from '../../util/pet-spot'
 import {
   type Almanac,
   type Body,
@@ -64,6 +65,16 @@ import {
   paintOvergrowth,
   stepCurtain,
 } from './404-overgrowth'
+import {
+  type Pet,
+  type PetInk,
+  arrive,
+  dive,
+  makePet,
+  paintPet,
+  paintSpeck,
+  stepPet,
+} from './404-pet'
 import {
   BAYER,
   type Grid,
@@ -2769,6 +2780,7 @@ const STAR_COLORS = ['#fffcf0', '#fffcf0', '#f1d67e', '#fdb2a2', '#cdd597', '#92
 const CREAM = hex('#fffcf0')
 const INK = hex('#100f0f')
 const GOLDEN = hex('#f1d67e')
+const SLATE = hex('#8090a6')
 const ROSE = hex('#e3a19a')
 const FLAME = ['#fffcf0', '#f1d67e', '#da702c', '#af3029'].map(hex)
 const LEAK = 58
@@ -3120,6 +3132,21 @@ export function setupLandscape(
   const curtain = makeCurtain()
   const cat: Cat = makeCat(1250, bank(1250))
   const crew = makeCrew()
+  const pet: Pet = makePet(reduce)
+  // The site pet's on/off switch (pet.inline.ts) stands on <body>.
+  const pets = () => document.body.dataset.pets !== 'off'
+  const spotInScene = (): Pt | null => {
+    const spot = readPetSpot()
+    const g = glint?.g
+    if (!spot || !g || !near) return null
+    const r = near.getBoundingClientRect()
+    if (spot.x < 0 || spot.y < 0 || spot.x > window.innerWidth || spot.y > window.innerHeight)
+      return null
+    return [
+      g.sx[0] + ((spot.x - r.left) / r.width) * g.bw * g.px,
+      g.sy[0] + ((spot.y - r.top) / r.height) * g.bh * g.px,
+    ]
+  }
   const tri = makeTriathlete(reduce)
   // The people on the far ridges talk in their own layer, so their bubbles travel with them.
   const far: Voices = { bubbles: [], heads: {} }
@@ -3216,6 +3243,7 @@ export function setupLandscape(
   let greens: Greens | null = null
   let catInk: CatInk | null = null
   let crewInk: CrewInk | null = null
+  let petInk: PetInk | null = null
   let triInk: TriInk | null = null
   let anglerInk: AnglerInk | null = null
   let planeInk: PlaneInk | null = null
@@ -3255,6 +3283,7 @@ export function setupLandscape(
     far.heads.athlete =
       (triInk && paintAscent(d, ranges.g, tri, triInk, clock, u => onTrail(u * TRAIL_LEN))) ||
       undefined
+    far.heads.pet = (petInk && pets() && paintSpeck(d, ranges.g, pet, petInk, clock)) || undefined
     paintBubbles(d, ranges.g, far, CREAM, INK)
     flush(ranges)
   }
@@ -3307,6 +3336,7 @@ export function setupLandscape(
     const same = (l: Layer | null) => (l && l.g.bw === g.bw && l.g.bh === g.bh ? l.img.data : null)
     figures.fill(0)
     if (catInk) paintCat(figures, g, cat, catInk, clock, bank)
+    crew.heads.pet = (petInk && pets() && paintPet(figures, g, pet, petInk, clock)) || undefined
     // The people are lit apart from the cat, which is stone and carries its own modelling.
     people.fill(0)
     if (crewInk) paintCrew(people, g, crew, crewInk, clock, rift.heat, cat.alert, bank)
@@ -3497,15 +3527,31 @@ export function setupLandscape(
         flowers,
         hair: pal.bark[dark ? 2 : 0],
       }
+      // A British Blue with copper eyes. On a light page it is the ruin's stone with a slate cast,
+      // so it still greys with the ruin under the moon. A dark page's stone is near black, so
+      // there it is half slate.
+      const slate = ([r, g, b]: RGB): RGB =>
+        dim ? mix([r, g, b], SLATE, 0.55) : [r * 0.68, g * 0.765, b * 0.91]
       catInk = {
-        stone: tones(print.stone),
+        stone: tones(print.stone.map(slate)),
         moss: tones(pal.moss),
-        eye: GOLDEN,
+        eye: mix(GOLDEN, pal.poppy, 0.4),
         nose: print.rose[2],
         ear: print.rose[dark ? 1 : 2],
         flowers,
         fish: pal.fish,
       }
+    }
+    // The pet keeps the page's paper and the print's ink, as the site draws it.
+    const petLine = masonry?.print.ink ?? INK
+    petInk = {
+      body: {
+        ink: petLine,
+        light: CREAM,
+        plate: mix(CREAM, pal.rock[1], 0.12),
+        shade: mix(CREAM, petLine, 0.3),
+      },
+      ink: petLine,
     }
     crewInk = {
       skin: pal.figure.S,
@@ -3743,6 +3789,10 @@ export function setupLandscape(
         impulse,
         bank,
       )
+      // The pet hops in once the scene shows, from wherever the site pet last stood on screen.
+      if (pet.mode === 'away' && pets() && scene.classList.contains('is-ready'))
+        arrive(pet, spotInScene())
+      stepPet(pet, dt, inside ? [pointer.x, pointer.y] : null, u => onTrail(u * TRAIL_LEN))
       stepCrew(crew, dt, {
         clock: now,
         heat: rift.heat,
@@ -3804,6 +3854,12 @@ export function setupLandscape(
       }
     },
     portal(mode) {
+      pet.hot = mode !== 'idle'
+      if (mode === 'hot' && pet.mode === 'sit' && pets()) say(crew, 'pet', '!')
+      if (mode === 'enter') {
+        crew.bubbles = crew.bubbles.filter(b => b.who !== 'pet')
+        dive(pet)
+      }
       rift.target = mode === 'enter' ? 90 : mode === 'hot' ? 26 : 1.1
       rift.inflowTarget = mode === 'enter' ? 1.8 : mode === 'hot' ? 0.22 : 0
       pullTarget = mode === 'enter' ? 2.5 : mode === 'hot' ? 1 : 0

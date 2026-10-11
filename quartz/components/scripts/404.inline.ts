@@ -1,3 +1,4 @@
+import { writePetSpot } from '../../util/pet-spot'
 import { type Weather, fetchSite, guessSite } from './404-almanac'
 import { makeClock } from './404-clock'
 import { setupLandscape, type Landscape } from './404-landscape'
@@ -416,8 +417,10 @@ document.addEventListener('nav', () => {
     e.preventDefault()
     const home = new URL('/', location.href)
     const go = () => (window.spaNavigate ? window.spaNavigate(home) : location.assign(home))
-    if (reduce) return void go()
     const box = door.querySelector('circle')!.getBoundingClientRect()
+    // The pet goes through with the reader, and comes out on the other side from the middle.
+    writePetSpot({ x: box.left + box.width / 2, y: box.top + box.height / 2 })
+    if (reduce) return void go()
     const stage = scene.querySelector<HTMLElement>('.nf-stage')!
     stage.style.transformOrigin = `${box.left + box.width / 2}px ${box.top + box.height / 2}px`
     land?.portal('enter')
