@@ -15,6 +15,7 @@ import {
 } from '../util/mywindsock-archive'
 import { verifyMyWindsockRouteMappings } from '../util/mywindsock-route'
 import { readStravaCacheFile } from '../util/strava-cache-file'
+import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 
 const cutoff = '2026-10-03'
 const today = new Intl.DateTimeFormat('en-CA', {
@@ -53,6 +54,7 @@ const attemptSchema = z.strictObject({
 })
 const ledgerSchema = z.record(z.string().regex(/^[1-9]\d*$/), z.array(attemptSchema))
 type Archive = MyWindsockArchive
+let archiveChanged = false
 
 function date(value: string): string {
   if (
@@ -197,6 +199,7 @@ async function save(record: Archive, previous: string | null): Promise<void> {
   const id = record.activity.stravaId
   validateMyWindsockArchive(record, id)
   await atomicWrite(path.join(directory, `${id}.json`), serialize(record), previous)
+  archiveChanged = true
 }
 function addDescription(record: Archive, report: NonNullable<Archive['description']>): boolean {
   if (record.description?.rawReport === report.rawReport) return false
@@ -302,8 +305,7 @@ if (command === 'queue') {
         const report = description(activity)
         if (report) addDescription(record, report)
         record.browserCapture = capture
-        // Mappings were verified against the previous capture.
-        record.mappings = []
+        record.mappings = verifyMyWindsockRouteMappings(record)
         record.entrypoints.providerCourseId = capture.providerCourseId
         record.ingestion.captureSha256 = hash
         record.ingestion.state = 'captured'
@@ -409,8 +411,7 @@ if (command === 'queue') {
         const { record, previous } = await readArchive(id)
         if (!record?.browserCapture) continue
         const computed = verifyMyWindsockRouteMappings(record)
-        // A verified record describes the current capture and keeps its evidence; a replaced capture
-        // starts with no mappings. Unresolved records are recomputed.
+        // Keep existing verification evidence for this capture. Recompute unresolved fields.
         const changed = computed.filter(item => {
           const existing = record.mappings.find(entry => entry.path === item.path)
           return (
@@ -467,5 +468,7 @@ if (command === 'queue') {
     }
   } finally {
     await rm(lock, { recursive: true, force: true })
+    if (archiveChanged && path.resolve(directory) === path.resolve('content/triathlon/wind'))
+      await refreshTriathlonRouteSource()
   }
 }
