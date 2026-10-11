@@ -1,3 +1,4 @@
+import { MOUNTAIN_OUTLINE_PATH } from '../../../util/mountain-icon'
 import { LAYERS_ICON } from '../../../util/triathlon-card'
 import { el, svg } from '../runtime/dom'
 import {
@@ -34,8 +35,7 @@ export const buildActivityMapControls = (
   fold.setAttribute('aria-expanded', 'true')
   const body = el('div', 'tri-map-side-body')
   const elevation = button('tri-map-elevation', 'Elevation contours and hill shading', [
-    'm3 20 7-16 7 16H3Z',
-    'm7.5 9.7 2.5 2.8 2.5-2.8M14 13l3-6 5 13h-5',
+    MOUNTAIN_OUTLINE_PATH,
   ])
   const terrain = button('tri-map-3d', '3D terrain and buildings', [
     'M12 3 20 7.5 12 12 4 7.5 12 3Z',
