@@ -7,6 +7,19 @@ tags:
   - university
   - eng3px3
 title: Engineering Economics
+pdfTitles:
+  '3PX3 04 Conversion Factors.pdf': 'Engineering Economics: Detailed Conversion Factors'
+  '3PX3 05 Tech Design.pdf': 'Technical Analysis in Engineering Design'
+  '3PX3 06 Sensitivity Analysis.pdf': 'Engineering Economics: Sensitivity Analysis'
+  '3PX3 07 Optimization Problem Formulation.pdf': 'Optimization: Problem Formulation'
+  '3PX3 08 - Linear Optimization.pdf': 'Linear Optimization'
+  '3PX3 09 - Nonlinear Optimization.pdf': 'Nonlinear Optimization'
+  '3PX3 Net Value Functions.pdf': 'Net Value Functions and Design Project Introduction'
+  'Conversion Factors.pdf': 'Engineering Economics: Unit Conversions'
+  'Engineering Economics & Net Value Applications.pdf': 'Engineering Economics & Net Value Applications'
+  'FP07_Final_ComplexReport.pdf': 'ENGINEER 3PX3: Group FP-07 Complex Report'
+  'nous.pdf': 'Engineering Economics: Exam Reference Notes'
+  'sheets.pdf': 'Engineering Economics: Formula Sheets'
 ---
 
 Dr. [Matt Minnick](mailto:prof3px3@mcmaster.ca)

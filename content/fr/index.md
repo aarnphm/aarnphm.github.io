@@ -7,6 +7,10 @@ tags:
   - language
   - learning
 title: French
+pdfTitles:
+  'par-ici-cahier-d-exercices-niveau-a1-1-2.pdf': 'Par ici: Cahier d’exercices, Grammaire et vocabulaire, A1 / niveaux 1–2'
+  'par-ici-niveau-a1.pdf': 'Par ici: Méthode de français, A1 / niveaux 1–2'
+  'station-2_corrigé_v1.pdf': 'Par ici: Station 2, Corrigé'
 ---
 
 notes de français québécois: [[fr/episode-1|épisodes]], [[fr/phrases|phrases]], [[fr/les-nombres|nombres]], [[fr/orthography-phonetics|sons et orthographe]].

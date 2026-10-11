@@ -7,6 +7,9 @@ tags:
   - philos1aa3
   - university
 title: Philosophical Text
+pdfTitles:
+  '1A3Reader(2019).pdf': 'Philosophical Texts: Philosophy 1A03 Reader, 2019'
+  'All.pdf': 'Philosophy 1A03: Philosophical Texts'
 ---
 
 An introduction to philosophy through the close reading of selected classical texts.

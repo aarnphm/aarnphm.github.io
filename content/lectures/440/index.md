@@ -9,6 +9,8 @@ tags:
 title: 0[dot]440
 transclude:
   title: false
+pdfTitles:
+  'vllm-toronto-2025.pdf': '[Public] Toronto vLLM Meetup - September 25, 2025'
 ---
 
 [[lectures/440/vllm-toronto-2025.pdf|slides]], [[lectures/440/notes|deck]]

@@ -8,6 +8,8 @@ tags:
   - ml
   - math/linalg
 title: 0[dot]412
+pdfTitles:
+  'infer-0.412.pdf': 'Infer 0.412: One-Layer Transformers, MLP and Superposition'
 ---
 
 slides: [[lectures/412/infer-0.412.pdf]]

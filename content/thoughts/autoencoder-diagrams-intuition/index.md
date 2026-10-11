@@ -8,6 +8,12 @@ noindex: true
 tags:
   - ml
 title: panoramic representations
+pdfTitles:
+  '00-Autoencoder-panoramic.pdf': 'Autoencoder: Panoramic Overview'
+  'Autoencoder-Implementation-simple.pdf': 'Autoencoder: Implementation, Simplified'
+  'Autoencoder-Implementation.pdf': 'Autoencoder: Implementation'
+  'Autoencoder-Representation-simple.pdf': 'Autoencoder: Representation, Simplified'
+  'Autoencoder-Representation.pdf': 'Autoencoder: Representation'
 ---
 
 Two complementary illustrations help convey both (i) what a “vanilla” autoencoder represents, and (ii) how it gets implemented as a neural network. Several versions of these files are included, in the [Portable Document Format (PDF)](https://en.wikipedia.org/wiki/PDF).

@@ -6,6 +6,8 @@ modified: 2026-06-05 15:07:56 GMT-04:00
 tags:
   - ml
 title: 0[dot]3
+pdfTitles:
+  'infer-0.3.pdf': 'Infer 0.3: K, V and KVCache'
 ---
 
 slides: [[lectures/3/infer-0.3.pdf]]

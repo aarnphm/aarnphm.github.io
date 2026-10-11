@@ -7,6 +7,34 @@ tags:
   - university
   - sfwr2c03
 title: Data Structures and Algorithm
+pdfTitles:
+  'a1/A1.pdf': 'Data Structures and Algorithms: Assignment 1'
+  'a10/assignment_10.pdf': 'Data Structures and Algorithms: Assignment 10'
+  'a11/assignment_11.pdf': 'Data Structures and Algorithms: Assignment 11'
+  'a12/assignment_12.pdf': 'Data Structures and Algorithms: Assignment 12'
+  'a2/A2.pdf': 'Data Structures and Algorithms: Assignment 2'
+  'a3/assignment_3.pdf': 'Data Structures and Algorithms: Assignment 3'
+  'a4/assignment_4.pdf': 'Data Structures and Algorithms: Assignment 4'
+  'a5/assignment_5.pdf': 'Data Structures and Algorithms: Assignment 5'
+  'a6/assignment_6.pdf': 'Data Structures and Algorithms: Assignment 6'
+  'a7/assignment_7.pdf': 'Data Structures and Algorithms: Assignment 7'
+  'a8/assignment_8.pdf': 'Data Structures and Algorithms: Assignment 8'
+  'a9/assignment_9.pdf': 'Data Structures and Algorithms: Assignment 9'
+  'Algorithms 4th Edition.pdf': 'Algorithms, Fourth Edition'
+  'balanced-search-tree-hash.pdf': 'Searching - SFWRENG 2CO3: Data Structures and Algorithms'
+  'binary-search.pdf': 'Fundamentals - SFWRENG 2CO3: Data Structures and Algorithms'
+  'collections.pdf': 'Fundamentals - SFWRENG 2CO3: Data Structures and Algorithms'
+  'elementary-graph-algorithm.pdf': 'Graphs - SFWRENG 2CO3: Data Structures and Algorithms'
+  'heap-sort-intro-sort.pdf': 'Sorting - SFWRENG 2CO3: Data Structures and Algorithms'
+  'L1.pdf': 'Fundamentals - SFWRENG 2CO3: Data Structures and Algorithms'
+  'merge-sort-a-la-carte.pdf': 'Sorting - SFWRENG 2CO3: Data Structures and Algorithms'
+  'minimal-spanning-tree.pdf': 'Graphs - SFWRENG 2CO3: Data Structures and Algorithms'
+  'notes.pdf': 'Data Structures and Algorithms: Lecture Notes, Winter 2024'
+  'org.pdf': 'Course Organization - SFWRENG 2CO3: Data Structures and Algorithms'
+  'outline.pdf': 'Data Structures and Algorithms: Course Outline, Winter 2024'
+  'search-intro-binary-search.pdf': 'Searching - SFWRENG 2CO3: Data Structures and Algorithms'
+  'sortings.pdf': 'Sorting - SFWRENG 2CO3: Data Structures and Algorithms'
+  'string.pdf': 'Strings - SFWRENG 2CO3: Data Structures and Algorithms'
 ---
 
 Pretty explanatory, collection of notes for Data Structures and Algorithms course.

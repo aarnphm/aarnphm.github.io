@@ -7,6 +7,15 @@ tags:
   - university
   - commerce3fi3
 title: Market Trading with Options and Securities
+pdfTitles:
+  'Lecture 2 The Cash Market.pdf': 'Lecture 2: Understanding Essential Trading Properties, The Cash Market'
+  'Lecture 3 Market Direction Indices and ETFs.pdf': 'Lecture 3: Market Direction, Indices and ETFs'
+  'Lecture 4 Trading with April Option.pdf': 'Lecture 4: The Option Market'
+  'Lecture 5 Delta Trading.pdf': 'Lecture 5: Delta Trading'
+  'Lecture 6 Directional Spreads - Spreading Options.pdf': 'Lecture 6: Directional Spreads, Spreading Options'
+  'Sample Quiz Two with Solutions.pdf': 'Sample Quiz Two with Solutions'
+  'Tutorial 4  Trading Case RE2s.pdf': 'Tutorial Four: Market Efficiency Case RE2s'
+  'Tutorial 5 Trading Case OP2s and OP1s.pdf': 'OP2 Case Option Trading'
 ---
 
 Book: THE Trading Manual, Forth Canadian Edition Version 4.0, John J. Siam

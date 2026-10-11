@@ -7,6 +7,10 @@ tags:
   - university
   - commerce4qa3
 title: Operations Modelling and Analysis
+pdfTitles:
+  '4QA3-2025-Fall-2025-08-27.pdf': 'Commerce 4QA3: Operations Modelling & Analysis, Fall 2025 Course Outline'
+  'Contents-NO-8E.pdf': 'Production & Operations Analytics, Eighth Edition'
+  'RS36808_DecisionModelling.pdf': 'Decision Modelling'
 ---
 
 Book: Production and Operations Analytics, 8th Edition, Steven Nahmias and Tava Lennon Olsen, Waveland Press, Long Grove, Ill. 2021
