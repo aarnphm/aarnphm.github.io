@@ -1,19 +1,41 @@
 ---
-date: '2026-06-05'
-description: mit 14.12 lecture notes
-id: mit-14-12-fall-2025-collection-resources-lecture-notes
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:42 GMT-04:00
+title: 'lecture notes'
+description: 'These lecture notes were created by Prof. Muhamet Yildiz and were used in the 2012 version of this class.'
+id: 'mit-14-12-fall-2025-collection-resources-lecture-notes'
 tags:
-  - course
-  - mit
-  - ocw
-  - social science
-  - economics
-  - game-theory
-title: lecture notes
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'social science'
+  - 'economics'
+  - 'game theory'
+resource:
+  {
+    kind: 'collection',
+    type: 'Lecture Notes',
+    items:
+      [
+        'mit14_12f12_chapter1_f12_pdf',
+        'mit14_12f12_chapter2_f12_pdf',
+        'mit14_12f12_chapter3_f12_pdf',
+        'mit14_12f12_chapter4_f12_pdf',
+        'mit14_12_f25_chapter5_f12_pdf',
+        'mit14_12f12_chapter6_f12_pdf',
+        'mit14_12f12_chapter7_f12_pdf',
+        'mit14_12f12_chapter8_f12_pdf',
+        'mit14_12f12_chapter9_f12_pdf',
+        'mit14_12f12_chapter10_f12_pdf',
+        'mit14_12f12_chapter11_f12_pdf',
+        'mit14_12f12_chapter12_f12_pdf',
+        'mit14_12f12_chapter13_f12_pdf',
+        'mit14_12f12_chapter14_f12_pdf',
+        'mit14_12f12_chapter15_f12_pdf',
+        'mit14_12f12_chapter16_f12_pdf',
+      ],
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/14-12-economic-applications-of-game-theory-fall-2025/|mit 14.12]]
