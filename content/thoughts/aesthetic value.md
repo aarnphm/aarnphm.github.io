@@ -2,7 +2,7 @@
 date: '2024-01-30'
 description: a branch of [[/thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable
 id: aesthetic value
-modified: 2026-06-05 15:08:25 GMT-04:00
+modified: 2026-10-11 11:43:45 GMT-04:00
 socials:
   sep: https://plato.stanford.edu/entries/aesthetic-concept/
 tags:
@@ -10,6 +10,12 @@ tags:
   - aesthetics
 title: aesthetic value
 ---
+
+```quotes
+What strikes me is the fact that in our society, **art has become something which is related only to objects and not to individuals, or to life**. That art is something which is specialized or which is done by experts who are artists. **But couldn't everyone's life become a work of art?** Why should the lamp or the house be an art object, but not our life?
+
+“On the Genealogy of Ethics,” Michel Foucault
+```
 
 Related to but distinct from [[thoughts/taste|taste]] (capacity for aesthetic judgment) and beauty (one type of aesthetic value among others).
 
