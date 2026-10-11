@@ -28,10 +28,13 @@ ul.content-meta {
   .clipboard-button {
     position: relative;
     float: none;
+    align-items: center;
+    justify-content: center;
     padding: 0.2rem;
     border: 0;
     color: inherit;
     font: inherit;
+    line-height: 0;
     opacity: 1;
 
     &:focus-visible {
@@ -47,6 +50,29 @@ ul.content-meta {
   .readable-source > .container {
     flex-wrap: wrap;
     align-items: center;
+  }
+
+  .source-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .source-actions {
+      .clipboard-button {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      &:hover,
+      &:focus-within {
+        .clipboard-button {
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+    }
   }
 
   .source-copy-status {
