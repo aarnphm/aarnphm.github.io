@@ -3,6 +3,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { unitOf } from '../util/course'
 import { renderDataFor } from '../util/ctx'
 import { LCG } from '../util/helpers'
 import { classNames } from '../util/lang'
@@ -15,6 +16,7 @@ export default (() => {
     displayClass,
     ctx,
   }: QuartzComponentProps) => {
+    if (unitOf(fileData.slug ?? '')?.kind === 'lectures') return null
     let p = fileData.slug as string
     if (fileData.filePath) p = fileData.filePath
     const seed =

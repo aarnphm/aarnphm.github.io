@@ -1,0 +1,423 @@
+@use '../../styles/variables.scss' as *;
+
+.course-reading-split {
+  grid-column: var(--layout-wide-column);
+  min-width: 0;
+
+  > article.course-lecture {
+    min-width: 0;
+  }
+}
+
+@media all and (min-width: 1401px) {
+  .course-reading-split:has(> .course-workspace) {
+    grid-column: 5 / -3;
+    display: grid;
+    grid-template-columns:
+      minmax(22rem, var(--course-reading-track, 1fr))
+      minmax(20rem, var(--course-workspace-track, 1fr));
+    column-gap: var(--space-4);
+    align-items: start;
+
+    > article.course-lecture {
+      grid-column: 1;
+      grid-row: 1;
+      min-width: 22rem;
+    }
+
+    > .course-workspace {
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 20rem;
+    }
+
+    &:has(.course-workspace-app[data-open='false']) {
+      grid-template-columns: minmax(0, 1fr) auto;
+
+      > .course-workspace {
+        min-width: 0;
+      }
+    }
+
+    &[data-resizing='true'] {
+      cursor: col-resize;
+      user-select: none;
+
+      iframe {
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+.course-workspace {
+  --course-workspace-top: 5rem;
+  --course-workspace-line: color-mix(in srgb, var(--gray) 45%, transparent);
+  grid-column: 9 / -3;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: var(--course-workspace-top);
+  min-width: 0;
+  font: var(--text-ui) / 1.5 var(--bodyFont);
+  color: var(--darkgray);
+}
+
+.course-workspace-app {
+  position: relative;
+}
+
+.course-workspace-divider {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(-1 * var(--space-4));
+  width: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+
+  > span {
+    width: 2px;
+    height: 2rem;
+    background: var(--gray);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--highlight);
+
+    > span {
+      background: var(--dark);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -2px;
+  }
+}
+
+.course-workspace-app,
+.course-selection-actions {
+  box-sizing: border-box;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  button {
+    appearance: none;
+    border: 1px solid var(--course-workspace-line, var(--lightgray));
+    border-radius: var(--radius-none);
+    min-height: 2rem;
+    padding: var(--space-1) var(--space-2);
+    background: transparent;
+    color: var(--dark);
+    font: var(--text-meta) / 1.4 var(--codeFont);
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+      color: var(--gray);
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--highlight);
+    }
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  a {
+    color: var(--dark);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+}
+
+.course-workspace-open {
+  display: none;
+}
+
+.course-workspace-app[data-open='false'] .course-workspace-open {
+  display: inline-flex;
+}
+
+.course-workspace-dialog {
+  position: static;
+  width: 100%;
+  max-width: none;
+  height: min(48rem, calc(100dvh - var(--course-workspace-top) - var(--space-6)));
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--course-workspace-line);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: inherit;
+  overflow: hidden;
+
+  &[open] {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.course-workspace-header,
+.course-workspace-tabs,
+.course-workspace-footer,
+.course-draft-toolbar,
+.course-note-actions,
+.course-note-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.course-workspace-header {
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+
+  h2 {
+    margin: 0;
+    font: var(--text-meta) / 1.4 var(--codeFont);
+    color: var(--darkgray);
+  }
+
+  button {
+    border-color: transparent;
+    width: 2rem;
+  }
+}
+
+.course-workspace-tabs {
+  flex-wrap: nowrap;
+  padding-inline: var(--space-3);
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--course-workspace-line);
+
+  button {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: var(--space-2) 0;
+
+    &[aria-selected='true'] {
+      border-bottom-color: var(--dark);
+    }
+  }
+}
+
+.course-workspace-pane {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.course-workspace-source {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.course-source-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  font: var(--text-meta) / 1.5 var(--codeFont);
+
+  span {
+    flex-basis: 100%;
+    color: var(--darkgray);
+  }
+}
+
+.course-source-frame {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+}
+
+.course-workspace-draft,
+.course-workspace-notes {
+  padding: var(--space-3);
+}
+
+.course-draft-toolbar {
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+  color: var(--darkgray);
+  font: var(--text-meta) / 1.5 var(--codeFont);
+}
+
+.course-draft-editor {
+  min-height: 14rem;
+  padding: var(--space-2);
+  border: 1px solid var(--course-workspace-line);
+  font: var(--text-ui) / 1.6 var(--codeFont);
+
+  &:focus-within {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  .cm-tooltip {
+    box-shadow: none !important;
+  }
+
+  .cm-scroller {
+    overflow: auto !important;
+  }
+}
+
+.course-draft-preview {
+  overflow-wrap: anywhere;
+
+  p {
+    margin: var(--space-2) 0;
+  }
+
+  pre {
+    max-width: 100%;
+    overflow: auto;
+  }
+}
+
+.course-draft-status,
+.course-notes-empty {
+  margin: var(--space-3) 0;
+  color: var(--darkgray);
+  font-size: var(--text-meta);
+}
+
+.course-notes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.course-note-card {
+  margin-bottom: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--course-workspace-line);
+
+  blockquote {
+    margin: var(--space-3) 0;
+    padding: 0;
+    border: 0;
+    color: var(--darkgray);
+    font-size: var(--text-ui);
+    overflow-wrap: anywhere;
+  }
+
+  .course-note-actions {
+    margin-top: var(--space-3);
+
+    button[aria-pressed='true'] {
+      background: var(--highlight);
+    }
+  }
+}
+
+.course-note-meta {
+  justify-content: space-between;
+  font: var(--text-meta) / 1.4 var(--codeFont);
+}
+
+.course-deleted-notes {
+  font-size: var(--text-meta);
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+  }
+
+  summary {
+    cursor: pointer;
+  }
+}
+
+.course-workspace-footer {
+  justify-content: flex-end;
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--course-workspace-line);
+}
+
+.course-selection-actions {
+  position: fixed;
+  z-index: var(--z-popover);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  max-width: calc(100vw - var(--space-6));
+  padding: var(--space-1);
+  border: 1px solid var(--gray);
+  background: var(--light);
+  visibility: hidden;
+}
+
+::highlight(course-mark),
+::highlight(course-question) {
+  background: var(--textHighlight);
+  color: var(--dark);
+}
+
+::highlight(course-contra) {
+  background: color-mix(in srgb, var(--red) 30%, var(--light));
+  color: var(--dark);
+  text-decoration: underline;
+}
+
+@media all and (max-width: 1400px) {
+  .course-workspace {
+    position: fixed;
+    inset: auto max(var(--space-3), env(safe-area-inset-right))
+      max(var(--space-3), env(safe-area-inset-bottom)) auto;
+    z-index: var(--z-popover);
+  }
+
+  .course-workspace-dialog {
+    position: fixed;
+    inset: var(--space-3);
+    margin: auto;
+    width: calc(100vw - var(--space-6));
+    height: calc(100dvh - var(--space-6));
+    max-width: 40rem;
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--dark) 30%, transparent);
+    }
+  }
+
+  .course-workspace-open {
+    background: var(--light) !important;
+  }
+
+  .course-workspace-app button,
+  .course-selection-actions button {
+    min-height: 2.75rem;
+  }
+}

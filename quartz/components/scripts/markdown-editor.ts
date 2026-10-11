@@ -3,7 +3,7 @@ import { defaultKeymap, historyKeymap, history, indentWithTab } from '@codemirro
 import { markdown } from '@codemirror/lang-markdown'
 import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language'
 import { EditorState, Prec, type Extension } from '@codemirror/state'
-import { EditorView, keymap, lineNumbers } from '@codemirror/view'
+import { EditorView, keymap, lineNumbers, placeholder } from '@codemirror/view'
 import TurndownService from 'turndown'
 import { codemirrorCodeLanguage } from '../../util/codemirror-language'
 import { codemirrorChangedTextIsBlank, codemirrorTextIsBlank } from '../../util/codemirror-text'
@@ -26,6 +26,9 @@ export interface MarkdownEditorConfig {
   mode?: 'markdown' | 'code'
   language?: string
   lineWrapping?: boolean
+  ariaLabel?: string
+  placeholder?: string
+  maxLength?: number
 }
 
 export class MarkdownEditor {
@@ -168,6 +171,16 @@ export class MarkdownEditor {
       EditorState.tabSize.of(2),
       transparentTheme,
     ]
+    if (config.ariaLabel) {
+      extensions.push(EditorView.contentAttributes.of({ 'aria-label': config.ariaLabel }))
+    }
+    if (config.placeholder) extensions.push(placeholder(config.placeholder))
+    if (config.maxLength !== undefined) {
+      const limit = config.maxLength
+      extensions.push(
+        EditorState.changeFilter.of(transaction => transaction.newDoc.length <= limit),
+      )
+    }
 
     if (config.lineWrapping ?? mode === 'markdown') {
       extensions.push(EditorView.lineWrapping)
