@@ -610,7 +610,19 @@ export class PdfViewer {
         viewport: proxy.getViewport({ scale: zoom * CSS_UNITS }),
       })
       page.textTask = layer
-      await layer.render()
+      // pdf.js appends one span per text item and resets its measuring canvas font between
+      // items; that canvas sits in <body>, so every font change forces a document style update
+      // over whatever is dirty. With the spans landing in the live tree, a math lecture page
+      // cost 364 full recalcs (a 6 s task at 1280). Rendering into the detached layer keeps the
+      // live tree clean; reattaching is one insertion.
+      const parent = page.textLayer.parentNode
+      const anchor = page.textLayer.nextSibling
+      page.textLayer.remove()
+      try {
+        await layer.render()
+      } finally {
+        parent?.insertBefore(page.textLayer, anchor)
+      }
       if (this.destroyed || this.zoom !== zoom) return
       // PDF.js's viewer keeps selections from jumping across gaps with this sentinel.
       const end = document.createElement('div')
