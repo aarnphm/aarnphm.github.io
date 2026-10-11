@@ -1,5 +1,6 @@
 import {
   actorSpacing,
+  placeOnReflow,
   publishActor,
   readActors,
   readTrunks,
@@ -227,19 +228,21 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       interval = (8 * traveler.route.scale(traveler.stamped)) / traveler.route.length
     }
   }
+  const posedProgress = (traveler: Traveler) => {
+    if (!reducedMotion.matches || !landscape) return traveler.progress
+    const from = traveler.route.point(0)
+    const to = traveler.route.point(1)
+    const progress =
+      (from.y - (landscape.alpine.base - landscape.alpine.height * 0.1)) / (from.y - to.y)
+    return Math.max(0, Math.min(1, progress))
+  }
   const render = () => {
     if (!landscape) return
     layerMotion(
       reducedMotion.matches ? 'still' : host.hidden || document.hidden ? 'paused' : 'active',
     )
     for (const traveler of travelers) {
-      const from = traveler.route.point(0)
-      const to = traveler.route.point(1)
-      const stillProgress =
-        (from.y - (landscape.alpine.base - landscape.alpine.height * 0.1)) / (from.y - to.y)
-      const progress = reducedMotion.matches
-        ? Math.max(0, Math.min(1, stillProgress))
-        : traveler.progress
+      const progress = posedProgress(traveler)
       const point = spacedPosition(traveler.route.point(progress), traveler.spacing)
       const scale = traveler.route.scale(progress)
       traveler.element.dataset.moveSpeed = (
@@ -248,7 +251,15 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       ).toFixed(4)
       const direction = traveler.phase === 'descending' || traveler.next === 'descending' ? -1 : 1
       const ahead = traveler.route.point(Math.max(0, Math.min(1, progress + direction * 0.003)))
-      publishActor(traveler.element, `alpine-${traveler.id}`, point, scale, traveler.spacing)
+      publishActor(
+        traveler.element,
+        `alpine-${traveler.id}`,
+        point,
+        scale,
+        traveler.spacing,
+        true,
+        previousTime ?? view.performance.now(),
+      )
       traveler.element.dataset.phase = reducedMotion.matches ? 'reading' : traveler.phase
       traveler.element.dataset.progress = progress.toFixed(6)
       traveler.element.dataset.motion = reducedMotion.matches
@@ -465,8 +476,27 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       }
       group.replaceChildren(...travelers.map(traveler => traveler.element))
       tracks.replaceChildren(...travelers.map(traveler => traveler.tracks))
+      const obstacles = [...readActors(scene, true), ...readTrunks(scene)]
       for (const traveler of travelers) {
         traveler.route = ascent(traveler.id, nextSeed)
+        const progress = posedProgress(traveler)
+        placeOnReflow(
+          traveler.element,
+          `alpine-${traveler.id}`,
+          traveler.route.point(progress),
+          () => 12 * traveler.route.scale(progress),
+          traveler.spacing,
+          obstacles,
+          {
+            left: 12,
+            right: nextLandscape.width - 12,
+            top: nextLandscape.alpine.top,
+            bottom: nextLandscape.meadowTop,
+          },
+          (point, radius) =>
+            point.y >=
+            (mountainCrestAt(point.x, mountainRanges) ?? nextLandscape.alpine.top) + radius * 2 + 3,
+        )
         for (const impression of traveler.impressions) placeImpression(traveler, impression)
       }
       resume()

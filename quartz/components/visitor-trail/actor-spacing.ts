@@ -12,13 +12,25 @@ export type ActorSpacing = {
   lane: Point
   blocker: string | null
   status: SpacingStatus
+  placement: {
+    bounds: SpacingBounds
+    grounded: (point: Point, radius: number) => boolean
+  } | null
 }
 export type SpacingBounds = { left: number; right: number; top: number; bottom: number }
 
-export function readActors(scene: ParentNode): CollisionActor[] {
+export function readActors(scene: ParentNode, includeWaiting = false): CollisionActor[] {
   const actors: CollisionActor[] = []
   for (const element of scene.querySelectorAll<SVGGElement>('[data-trail-collision]')) {
-    if (element.dataset.collisionActive === 'false' || !element.transform.baseVal.numberOfItems)
+    if (
+      (element.dataset.collisionActive === 'false' &&
+        !(
+          includeWaiting &&
+          element.dataset.phase === 'waiting' &&
+          element.dataset.placement !== 'blocked'
+        )) ||
+      !element.transform.baseVal.numberOfItems
+    )
       continue
     const kind = element.dataset.trailCollision
     const radius = Number(element.dataset.collisionRadius)
@@ -87,11 +99,78 @@ export function canMove(
 }
 
 export function actorSpacing(): ActorSpacing {
-  return { offset: { x: 0, y: 0 }, lane: { x: 0, y: 0 }, blocker: null, status: 'clear' }
+  return {
+    offset: { x: 0, y: 0 },
+    lane: { x: 0, y: 0 },
+    blocker: null,
+    status: 'clear',
+    placement: null,
+  }
 }
 
 export function spacedPosition(base: Point, spacing: ActorSpacing): Point {
   return { x: base.x + spacing.offset.x, y: base.y + spacing.offset.y }
+}
+
+export function placeOnReflow(
+  element: SVGGElement,
+  id: string,
+  base: Point,
+  radiusAt: (point: Point) => number,
+  spacing: ActorSpacing,
+  obstacles: CollisionActor[],
+  bounds: SpacingBounds,
+  grounded: (point: Point, radius: number) => boolean = () => true,
+) {
+  const others = obstacles.filter(other => other.id !== id)
+  const free = (point: Point) => {
+    const radius = radiusAt(point)
+    return (
+      point.x >= bounds.left &&
+      point.x <= bounds.right &&
+      point.y >= bounds.top &&
+      point.y <= bounds.bottom &&
+      grounded(point, radius) &&
+      others.every(other => circleClearance(point, radius, other) >= 0)
+    )
+  }
+  const desired = spacedPosition(base, spacing)
+  let placed: Point | undefined = free(desired) ? desired : undefined
+  const center = {
+    x: Math.max(bounds.left, Math.min(bounds.right, desired.x)),
+    y: Math.max(bounds.top, Math.min(bounds.bottom, desired.y)),
+  }
+  if (!placed && free(center)) placed = center
+  for (let distance = 4; distance <= 96 && !placed; distance += 4)
+    for (let index = 0; index < 16 && !placed; index++) {
+      const angle = Math.PI / 2 + (index * Math.PI * 2) / 16
+      const candidate = {
+        x: center.x + Math.cos(angle) * distance,
+        y: center.y + Math.sin(angle) * distance,
+      }
+      if (free(candidate)) placed = candidate
+    }
+  for (let row = 0; row < 25 && !placed; row++)
+    for (let column = 0; column < 25 && !placed; column++) {
+      const candidate = {
+        x: bounds.left + ((column + 0.5) * (bounds.right - bounds.left)) / 25,
+        y: bounds.top + ((row + 0.5) * (bounds.bottom - bounds.top)) / 25,
+      }
+      if (free(candidate)) placed = candidate
+    }
+  element.dataset.placement = placed ? 'ready' : 'blocked'
+  spacing.placement = placed ? null : { bounds, grounded }
+  if (!placed) return
+  if (placed !== desired) {
+    spacing.offset = { x: placed.x - base.x, y: placed.y - base.y }
+    spacing.lane = { ...spacing.offset }
+    spacing.blocker = null
+    spacing.status = Math.hypot(spacing.offset.x, spacing.offset.y) > 0.1 ? 'passing' : 'clear'
+  }
+  const reservation = obstacles.find(other => other.id === id)
+  const circle = { ...placed, id, kind: 'traveler', radius: radiusAt(placed) } satisfies CollisionActor
+  if (reservation) Object.assign(reservation, circle)
+  else obstacles.push(circle)
 }
 
 function towards(from: Point, to: Point, distance: number): Point {
@@ -126,7 +205,7 @@ export function spacedStep(
     const remaining = outside(point)
     return (
       (remaining === 0 || remaining < outside(from) - 0.00001) &&
-      Math.hypot(point.x - from.x, point.y - from.y) <= budget + 0.01 &&
+      Math.hypot(point.x - from.x, point.y - from.y) <= budget &&
       canMove(from, point, radius, others)
     )
   }
@@ -158,7 +237,8 @@ export function spacedStep(
     spacing.blocker = null
     const recovered = towards(spacing.offset, { x: 0, y: 0 }, Math.max(0, budget - distance))
     const point = { x: next.x + recovered.x, y: next.y + recovered.y }
-    if (clears(point)) {
+    const recovery = Math.hypot(recovered.x - spacing.offset.x, recovered.y - spacing.offset.y)
+    if (distance + recovery <= budget && clears(point)) {
       spacing.offset = recovered
       spacing.status = Math.hypot(recovered.x, recovered.y) > 0.1 ? 'passing' : 'clear'
       return true
@@ -241,17 +321,40 @@ export function publishActor(
   scale: number,
   spacing: ActorSpacing,
   active = true,
+  motionTime?: number,
 ) {
   const x = Number(point.x.toFixed(2))
   const y = Number(point.y.toFixed(2))
+  if (spacing.placement) {
+    const scene = element.ownerSVGElement
+    const circle = { x, y }
+    const { bounds, grounded } = spacing.placement
+    if (
+      scene &&
+      x >= bounds.left &&
+      x <= bounds.right &&
+      y >= bounds.top &&
+      y <= bounds.bottom &&
+      grounded(circle, 12 * scale) &&
+      [...readActors(scene), ...readTrunks(scene)]
+        .filter(other => other.id !== id)
+        .every(other => circleClearance(circle, 12 * scale, other) >= 0)
+    ) {
+      spacing.placement = null
+      element.dataset.placement = 'ready'
+    }
+  }
+  const placed = !spacing.placement
   element.setAttribute('transform', `translate(${x} ${y}) scale(${scale.toFixed(4)})`)
+  element.style.visibility = placed ? '' : 'hidden'
   element.dataset.trailCollision = 'traveler'
   element.dataset.collisionId = id
-  element.dataset.collisionActive = String(active)
+  element.dataset.collisionActive = String(active && placed)
   element.dataset.collisionRadius = (12 * scale).toFixed(4)
   element.dataset.groundX = String(x)
   element.dataset.groundY = String(y)
   element.dataset.scale = scale.toFixed(4)
   element.dataset.spacing = spacing.status
   element.dataset.pathOffset = Math.hypot(spacing.offset.x, spacing.offset.y).toFixed(2)
+  if (motionTime !== undefined) element.dataset.motionTime = String(motionTime)
 }

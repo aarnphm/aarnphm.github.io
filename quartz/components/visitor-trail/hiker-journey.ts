@@ -1,6 +1,7 @@
 import type { TrailId } from './layout'
 import {
   actorSpacing,
+  placeOnReflow,
   publishActor,
   readActors,
   readTrunks,
@@ -82,6 +83,30 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     const blend = approach * approach * (3 - 2 * approach)
     return { x: point.x - 48 * blend, y: point.y + 30 * blend }
   }
+  const placeHiker = () => {
+    if (!landscape || !incoming) return
+    const terrain = landscape
+    const progress = Math.min(1, elapsed / duration())
+    const base = reducedMotion.matches
+      ? onLeg('arriving', 1)
+      : moving()
+        ? onLeg(phase === 'arriving' ? 'arriving' : 'departing', progress)
+        : onLeg('arriving', phase === 'waiting' ? 0 : 1)
+    placeOnReflow(
+      hiker,
+      'hiker-camp',
+      base,
+      point => 12 * trailGroundScale(point.y, terrain),
+      spacing,
+      [...readActors(scene, true), ...readTrunks(scene)],
+      {
+        left: 12,
+        right: terrain.width - 12,
+        top: Math.max(terrain.treeline, terrain.alpine.base - 18),
+        bottom: terrain.height - 12,
+      },
+    )
+  }
   const impressionTransform = (stamp: Impression) => {
     const base = onLeg(stamp.phase, stamp.progress)
     const point = { x: base.x + stamp.offset.x, y: base.y + stamp.offset.y }
@@ -113,6 +138,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
       scale,
       spacing,
       phase !== 'waiting' && phase !== 'gone',
+      previousTime ?? view.performance.now(),
     )
     if (leg) {
       const ahead = onLeg(leg, Math.min(1, progress + 2 / legLength(leg)))
@@ -223,6 +249,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     if (elapsed >= duration()) {
       elapsed = 0
       phase = phases[Math.min(phases.length - 1, phases.indexOf(phase) + 1)]
+      if (phase === 'arriving') placeHiker()
       nextStep = 10
       renderedAt = -Infinity
     }
@@ -263,6 +290,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
   return {
     pause,
     update(routes: JourneyRoute[], nextLandscape: Landscape, nextSeed: number) {
+      pause()
       const fraction = elapsed / duration()
       landscape = nextLandscape
       incoming = routes.find(route => route.id === 'main')
@@ -288,6 +316,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
         for (const stamp of impressions)
           stamp.element.setAttribute('transform', impressionTransform(stamp))
       }
+      placeHiker()
       if (reducedMotion.matches) still()
       else {
         render()
