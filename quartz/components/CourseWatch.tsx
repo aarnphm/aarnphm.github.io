@@ -34,7 +34,6 @@ export function CourseWatch({
       ? `/${courseFileSlug(view.dir, ref.record.captions)}`
       : undefined
   const content = htmlToJsx(fileData.filePath!, tree)
-  const watchUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(youtube)}`
   return (
     <div
       class="course-watch"
@@ -65,14 +64,6 @@ export function CourseWatch({
           </div>
           <p class="course-player-line course-count">
             <span class="course-player-status" role="status" aria-live="polite" />
-            <a
-              class="course-player-fallback"
-              href={watchUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              open on youtube
-            </a>
           </p>
         </div>
         <section id="transcript" class="course-transcript" aria-labelledby="course-transcript-h">

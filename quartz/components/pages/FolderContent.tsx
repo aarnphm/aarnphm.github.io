@@ -8,6 +8,7 @@ import {
   QuartzComponentProps,
 } from '../../types/component'
 import { inheritComponentSourceNames } from '../../util/component-source'
+import { courseDirOf } from '../../util/course'
 import { BuildCtx } from '../../util/ctx'
 import { FileTrieNode } from '../../util/fileTrie'
 import { isFlashcardPath } from '../../util/flashcards-path'
@@ -478,6 +479,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     )
 
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
+    const courseDir = courseDirOf(fileData.slug ?? '')
+    const isCourseHome =
+      courseDir !== null &&
+      fileData.slug !== undefined &&
+      simplifySlug(fileData.slug) === `courses/${courseDir}`
     const baseClassList = ['popover-hint', 'notes-list', 'side-col', ...cssClasses]
     const baseListClass = baseClassList.join(' ')
     const listClassName =
@@ -528,7 +534,10 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
       case Layout.alsp:
         return (
-          <div class="folder-layout folder-layout--a-l" data-pagelist>
+          <div
+            class={`folder-layout folder-layout--a-l${isCourseHome ? ' course-home--folder' : ''}`}
+            data-pagelist
+          >
             <article class="folder-layout--article">
               {content}
               <SeeAlso {...props} />

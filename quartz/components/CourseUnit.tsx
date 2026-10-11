@@ -146,7 +146,6 @@ export const CourseUnitBar = (() => {
     if (latex?.dateSource === 'previous') meta.push('date from the previous lecture')
     if (due) meta.push(`due at ${view.record.unitKind} ${pad(due.record.n)}`)
     if (unit?.read && kind === 'lectures') meta.push(`read ${unit.read}`)
-    const solution = kind === 'pset-notes' ? view.psets.get(n) : undefined
 
     return (
       <nav
@@ -186,28 +185,6 @@ export const CourseUnitBar = (() => {
             ))}
           </span>
         ) : null}
-        {kind === 'notes' ? (
-          unit?.note ? (
-            <a class="internal" href={resolveRelative(from, unit.slug)} data-slug={unit.slug}>
-              your notes
-            </a>
-          ) : (
-            <span class="course-unit-dates">
-              your notes: <code>lectures/{pad(n)}.md</code>
-            </span>
-          )
-        ) : null}
-        {kind === 'pset-notes' ? (
-          solution ? (
-            <a class="internal" href={resolveRelative(from, solution.slug as FullSlug)}>
-              our solutions
-            </a>
-          ) : (
-            <span class="course-unit-dates">
-              solutions: <code>psets/{pad(n)}.md</code>
-            </span>
-          )
-        ) : null}
         {isNotes ? (
           <button
             type="button"
@@ -241,6 +218,40 @@ export const CourseUnitBar = (() => {
   Bar.css = style
   Bar.afterDOMLoaded = script
   return Bar
+}) satisfies QuartzComponentConstructor
+
+/** Byline cell on OCW notes: where the reader's own notes for the unit live, a link once they exist. */
+export const CourseUnitNotes = (() => {
+  const Notes: QuartzComponent = (props: QuartzComponentProps) => {
+    const ctx = unitContext(props)
+    if (!ctx || (ctx.kind !== 'notes' && ctx.kind !== 'pset-notes')) return null
+    const { view, kind, n, unit } = ctx
+    const from = props.fileData.slug!
+    const path = kind === 'notes' ? `lectures/${pad(n)}.md` : `psets/${pad(n)}.md`
+    const target =
+      kind === 'notes'
+        ? unit?.note
+          ? unit.slug
+          : undefined
+        : (view.psets.get(n)?.slug as FullSlug | undefined)
+    return (
+      <div class={classNames(props.displayClass, 'course-unit-notes')}>
+        <h2>{kind === 'notes' ? 'your notes' : 'solutions'}</h2>
+        <p>
+          {target ? (
+            <a class="internal" href={resolveRelative(from, target)} data-slug={target}>
+              {path}
+            </a>
+          ) : (
+            <span>{path}</span>
+          )}
+        </p>
+      </div>
+    )
+  }
+  Notes.displayName = 'CourseUnitNotes'
+  Notes.css = style
+  return Notes
 }) satisfies QuartzComponentConstructor
 
 export const CourseUnitWorkspace = (() => {

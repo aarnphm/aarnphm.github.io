@@ -277,10 +277,6 @@
   .course-player-status:empty {
     display: none;
   }
-
-  .course-player-fallback {
-    color: var(--darkgray);
-  }
 }
 
 .course-transcript {
@@ -303,8 +299,9 @@
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  // the pane clips at its padding box: room for the follow box, which pads past the text
-  padding-inline: var(--space-2);
+  // the pane clips at its padding box: room for the follow box, which pads past the text on
+  // every side (the top stroke of the first paragraph's box was cut)
+  padding: var(--space-2);
   margin-inline-start: calc(-1 * var(--space-2));
 }
 

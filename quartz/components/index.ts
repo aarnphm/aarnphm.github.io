@@ -11,7 +11,7 @@ import ContentMeta from './ContentMeta'
 import CourseHome from './CourseHome'
 import { CourseResourceStrip } from './CourseResource'
 import CoursesIndex from './CoursesIndex'
-import { CourseUnitBar, CourseUnitFoot } from './CourseUnit'
+import { CourseUnitBar, CourseUnitFoot, CourseUnitNotes } from './CourseUnit'
 import Cursor from './Cursor'
 import Darkmode from './Darkmode'
 import DesktopOnly from './DesktopOnly'
@@ -108,5 +108,6 @@ export {
   CoursesIndex,
   CourseUnitBar,
   CourseUnitFoot,
+  CourseUnitNotes,
   CourseResourceStrip,
 }
