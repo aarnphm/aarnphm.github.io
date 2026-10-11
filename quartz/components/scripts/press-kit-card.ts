@@ -686,21 +686,37 @@ function drawArt(
   if (!model.show.art || !art?.naturalWidth) return frame
   const avail = frame.bottom - frame.top
   const bleed = palette.label === 'papier'
-  const print = (x: number, y: number, w: number, h: number) => {
+  // Without a frame the crop would cut the ridges in straight lines, so cut edges fade to paper.
+  const fade = (x: number, y: number, w: number, h: number, edge: 'left' | 'bottom') => {
+    const gradient =
+      edge === 'left'
+        ? ctx.createLinearGradient(x, 0, x + w, 0)
+        : ctx.createLinearGradient(0, y + h, 0, y)
+    gradient.addColorStop(0, palette.bg)
+    gradient.addColorStop(1, alpha(palette.bg, 0))
+    ctx.fillStyle = gradient
+    ctx.fillRect(x, y, w, h)
+  }
+  const print = (x: number, y: number, w: number, h: number, cut: ('left' | 'bottom')[]) => {
     drawCover(ctx, art, x, y, w, h)
-    if (bleed) return
+    if (bleed) {
+      const band = Math.round(h * 0.28)
+      if (cut.includes('bottom')) fade(x, y + h - band, w, band, 'bottom')
+      if (cut.includes('left')) fade(x, y, band, h, 'left')
+      return
+    }
     ctx.strokeStyle = palette.rule
     ctx.lineWidth = 2
     ctx.strokeRect(x + 1, y + 1, w - 2, h - 2)
   }
   if (spec === FORMATS.landscape) {
     const w = Math.round(frame.w * 0.4)
-    print(frame.x + frame.w - w, frame.top, w, avail)
+    print(frame.x + frame.w - w, frame.top, w, avail, ['left', 'bottom'])
     return { ...frame, w: frame.w - w - spec.gap * 1.5 }
   }
   const h = Math.round(Math.min(frame.w / 2.2, avail * 0.4))
-  if (bleed) print(0, frame.top, spec.width, h)
-  else print(frame.x, frame.top, frame.w, h)
+  if (bleed) print(0, frame.top, spec.width, h, ['bottom'])
+  else print(frame.x, frame.top, frame.w, h, [])
   return { ...frame, top: frame.top + h + spec.gap }
 }
 
@@ -766,7 +782,8 @@ function drawNote(
     (part): part is Fitted => !!part && part.lines.length > 0,
   )
   const total = parts.reduce((h, part) => h + part.height, 0) + gap * (parts.length - 1)
-  const anchor: Anchor = spec === FORMATS.landscape ? 'start' : 'end'
+  // Paysage has no room for a low-slung title, so the block centres between header and footer.
+  const anchor: Anchor = spec === FORMATS.landscape ? 'center' : 'end'
   let y = place(anchor, frame.top, frame.bottom, total)
 
   y += draw(ctx, title, frame.x, y, palette.ink) + gap
@@ -824,8 +841,7 @@ function drawQuote(
   )
 
   const total = markH + quote.height + gap + attrH + gap * 0.4
-  const anchor: Anchor = spec === FORMATS.landscape ? 'start' : 'center'
-  let y = place(anchor, frame.top, frame.bottom, total)
+  let y = place('center', frame.top, frame.bottom, total)
 
   ctx.font = `400 ${Math.round(markSize)}px ${fonts.serif}`
   ctx.fillStyle = palette.mark
