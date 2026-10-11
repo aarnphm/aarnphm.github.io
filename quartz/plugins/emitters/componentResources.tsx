@@ -13,6 +13,7 @@ import {
   writePageScripts,
   writeStaticJsResourceBundles,
 } from './component-resources/script-assets'
+import { writeSharedTrailAsset } from './component-resources/shared-trail-assets'
 import { externalResources, writeSiteManifest } from './component-resources/site-manifest'
 import {
   writeComponentStyles,
@@ -51,6 +52,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         speechRuntimeFiles,
         emojiFiles,
         xsltPolyfillFile,
+        sharedTrailFile,
       ] = await Promise.all([
         writeNotebookRuntimeAssets(ctx),
         writeCollaborativeCommentsAssets(ctx),
@@ -58,6 +60,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         writeSpeechRuntimeAssets(ctx),
         writeEmojiAssets(ctx),
         writeXsltPolyfillAsset(ctx),
+        writeSharedTrailAsset(ctx),
       ])
       resolveComponentResourceAssets(ctx, componentResources)
 
@@ -76,6 +79,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       yield* yieldFiles(speechRuntimeFiles)
       yield* yieldFiles(emojiFiles)
       yield xsltPolyfillFile
+      yield sharedTrailFile
       yield writeAssetManifest(ctx)
     },
     async *partialEmit(ctx, _content, resources, changeEvents) {
@@ -109,6 +113,8 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       if (changes.notebookRuntime) {
         yield* yieldFiles(await writeNotebookRuntimeAssets(ctx))
       }
+
+      if (changes.pageScripts) yield await writeSharedTrailAsset(ctx)
 
       if (changes.pageScripts && componentResources) {
         resolveComponentResourceAssets(ctx, componentResources)

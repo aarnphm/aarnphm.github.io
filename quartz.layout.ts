@@ -6,6 +6,7 @@ export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
     Component.VisitorWeather(),
+    Component.HomepageTrail(),
     Component.Cursor(),
     Component.Breadcrumbs({
       rootName: '~',

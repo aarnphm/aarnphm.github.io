@@ -1,0 +1,60 @@
+@use './shared-trail-frame.scss';
+
+.homepage-trail-toggle {
+  display: grid;
+  place-items: center;
+  position: fixed;
+  z-index: var(--z-dropdown);
+  top: 1rem;
+  right: 4rem;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 0.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  cursor: pointer;
+
+  svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    path:first-child {
+      stroke-dasharray: 0.5 3;
+    }
+  }
+
+  &:hover,
+  &[aria-expanded='true'] {
+    color: var(--dark);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+.homepage-trail-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  background: transparent;
+  pointer-events: none;
+  overflow: clip;
+  &[hidden] {
+    display: none !important;
+  }
+}
+@media (max-width: 600px) {
+  .homepage-trail-toggle {
+    top: 0.5rem;
+    right: 3.5rem;
+  }
+}

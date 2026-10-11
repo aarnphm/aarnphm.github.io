@@ -23,6 +23,7 @@ import Graph from './Graph'
 import Grid from './Grid'
 import Head from './Head'
 import HeadingsConstructor from './Headings'
+import HomepageTrail from './HomepageTrail'
 import Image from './Image'
 import Keybind from './Keybind'
 import License from './License'
@@ -54,6 +55,7 @@ import VisitorWeather from './VisitorWeather'
 
 export {
   VisitorWeather,
+  HomepageTrail,
   MasonryPage,
   TriathlonPage,
   CanvasContainer,

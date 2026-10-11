@@ -283,6 +283,9 @@ importers:
       pixi.js:
         specifier: ^8.20.1
         version: 8.20.1
+      playhtml:
+        specifier: 2.15.0
+        version: 2.15.0(@cloudflare/workers-types@4.20260702.1)(partyserver@0.5.10(@cloudflare/workers-types@4.20260702.1))(react@19.2.7)
       preact:
         specifier: ^10.29.8
         version: 10.29.8(preact-render-to-string@6.7.0)
@@ -2674,6 +2677,9 @@ packages:
   '@pixi/colord@2.9.6':
     resolution: {integrity: sha512-nezytU2pw587fQstUu1AsJZDVEynjskwOL+kibwcdxsMBFqPsFFNA7xl0ii/gXuDi6M0xj3mfRJj8pBSc2jCfA==}
 
+  '@playhtml/common@0.10.0':
+    resolution: {integrity: sha512-1Z/vY/CBJIcOUPRej8ezwMkr/520kJTYo31go0R8yxFR0YTO6c6KWpBeVZtJ/s6lGhHxFS1mHP1hS8Nc/8xqAQ==}
+
   '@poppinss/colors@4.1.6':
     resolution: {integrity: sha512-H9xkIdFswbS8n1d6vmRd8+c10t2Qe+rZITbbDHHkQixH5+2x1FDGmi/0K+WgWiqQFKPSlIYB7jlH6Kpfn6Fleg==}
 
@@ -2717,6 +2723,9 @@ packages:
     resolution: {integrity: sha512-BdG2qiI1dn89OTUUsx2GZSpUzW+DRffR1wlMJyKxVHYrhnKoELSDxDd+2XImUkuWPEKk76H5FcM/gPFrEK1Tfw==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@reactivedata/reactive@0.2.2':
+    resolution: {integrity: sha512-KnINM/Sng25QAv6sHkJO9q/XyslLegCF5jTsTSVu+AouY3uZDVf4Am99xNCqsfqFZFvnTBBDvCsHNdvTVGvPEA==}
 
   '@replit/codemirror-vim-core@0.1.0':
     resolution: {integrity: sha512-1i6EBKpcNfDKvTmTh6N6g9lL6udD5t+uFNh4JCqozRnVlvUGOps7h/QzS2ne4zcvPUjvApKpmcP7Grc3fNbZiQ==}
@@ -2894,6 +2903,16 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@syncedstore/core@0.6.0':
+    resolution: {integrity: sha512-6TtjEoYJsceYi8u1oRecXwbbLmjHaU0S7HvVfOaEdDfphZLGm/faVuA2fpazqc28F0yIFGvYzvPEBUJn9vqRNw==}
+    peerDependencies:
+      yjs: ^13.5.13
+
+  '@syncedstore/yjs-reactive-bindings@0.6.0':
+    resolution: {integrity: sha512-VF78h0J4iOt79YU9d6j5E6bFKu7WXYuiI2ue9ZnA+T4SNVn8viRvg0AHm3NqHzudZZUgYT3dpnbv1/ZmU7yPZQ==}
+    peerDependencies:
+      yjs: ^13.5.13
 
   '@tokenizer/inflate@0.4.1':
     resolution: {integrity: sha512-2mAv+8pkG6GIZiF1kNg1jAjh27IDxEPKwdGul3snfztFerfPGI1LjDezZp3i7BElXompqEtPmoPx6c2wgtWsOA==}
@@ -4747,6 +4766,9 @@ packages:
   ismobilejs@1.1.1:
     resolution: {integrity: sha512-VaFW53yt8QO61k2WJui0dHf4SlL8lxBofUuUmwBo0ljPk0Drz2TiuDW4jo3wDcv41qy/SxrJ+VAzJ/qYqsmzRw==}
 
+  isomorphic.js@0.2.5:
+    resolution: {integrity: sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw==}
+
   jose@6.2.12:
     resolution: {integrity: sha512-9NiFmJEex0sy2Dk58j2UGBSHgUs2ypF9eZSu4L6vjOX3Dp96Sw1F3uL+H+D1sx02jZZdzUT0HgvCy59CuvXcWw==}
 
@@ -4844,6 +4866,11 @@ packages:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
 
+  lib0@0.2.119:
+    resolution: {integrity: sha512-vh+TiejVy8Xm+hCdnRfn9BthGNvNUZdEXltNjVZL3TzRIKP3s1lnQh8pWd/Q0wCgY0FPAGVVjFF4ZiHUV3LFgA==}
+    engines: {node: '>=16'}
+    hasBin: true
+
   lightningcss-android-arm64@1.33.0:
     resolution: {integrity: sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==}
     engines: {node: '>= 12.0.0'}
@@ -4930,6 +4957,9 @@ packages:
       canvas:
         optional: true
 
+  lit-html@3.3.3:
+    resolution: {integrity: sha512-el8M6jK2o3RXBnrSHX3ZKrsN8zEV63pSExTO1wYJz7QndGYZ8353e2a5PPX+qHe2aGayfnchQmkAojaWAREOIA==}
+
   locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
@@ -4939,6 +4969,9 @@ packages:
 
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
+
+  lodash.debounce@4.0.8:
+    resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
 
   long@5.3.2:
     resolution: {integrity: sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==}
@@ -5481,6 +5514,14 @@ packages:
       react:
         optional: true
 
+  partysocket@1.3.0:
+    resolution: {integrity: sha512-1zToNyolZFK/7nuAw/K2bZrNzFqaZyRoCEkS+9vG6WSC5ikrN6qWRe96q6ImU51uptz2r+dAwSkwhJVdQi4LiA==}
+    peerDependencies:
+      react: '>=17'
+    peerDependenciesMeta:
+      react:
+        optional: true
+
   path-browserify@1.0.1:
     resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
 
@@ -5540,6 +5581,9 @@ packages:
 
   platform@1.3.6:
     resolution: {integrity: sha512-fnWVljUchTro6RiCFvCXBbNhJc2NijN7oIQxbwsyL0buWJPG85v81ehlHI9fXrJsMNgTofEoWIQeClKpgxFLrg==}
+
+  playhtml@2.15.0:
+    resolution: {integrity: sha512-u80i3QaU31DGEcVp4IKHwBHj9QuLCrmNefdPjtyxBfzt8kF/NLIMcAjf5LIasrrB7eN9HoiVzU8IdTentHW1dw==}
 
   points-on-curve@0.2.0:
     resolution: {integrity: sha512-0mYKnYYe9ZcqMCWhUjItv/oHjvgEsfKvnUTg8sAtnHr3GVy7rGkXCb6d5cSyqrWqL4k81b9CPg3urd+T7aop3A==}
@@ -5621,7 +5665,7 @@ packages:
     version: 1.1.410
 
   pyright-root@https://github.com/DetachHead/basedpyright/archive/refs/tags/v1.39.6.tar.gz:
-    resolution: {tarball: https://github.com/DetachHead/basedpyright/archive/refs/tags/v1.39.6.tar.gz}
+    resolution: {integrity: sha512-JJzTQaS6U5reT8gcx/GurFWnBuwqdbIxlS2zqSzpgCjOL9O3BM7aRXrCu1l1VXQJrtG3//Ytl+4KcotITpm/9g==, tarball: https://github.com/DetachHead/basedpyright/archive/refs/tags/v1.39.6.tar.gz}
     version: 0.0.0
 
   pyright-to-gitlab-ci@0.1.3:
@@ -6683,6 +6727,19 @@ packages:
   xslt-polyfill@1.0.23:
     resolution: {integrity: sha512-zd72YusvHjDrYHR/a/Xf6y1PsfElPFNJUJ+TFBA9D/oj/N7aC8GPsdI2oe3PWoJwXfLej1Af+cSymrOjT9Jd5Q==}
 
+  y-partyserver@2.2.0:
+    resolution: {integrity: sha512-AIsTEZ3jPicBe3VHO5c/VdSGSaFr0J9cAGj6+sgRL/RnXLTNSkP3oQXyXf1y8hQNeXv/j9zYDT5NnRv2k1eMGA==}
+    peerDependencies:
+      '@cloudflare/workers-types': ^4.20260424.1
+      partyserver: '>=0.2.0 <1.0.0'
+      yjs: ^13.6.14
+
+  y-protocols@1.0.7:
+    resolution: {integrity: sha512-YSVsLoXxO67J6eE/nV4AtFtT3QEotZf5sK5BHxFBXso7VDUT3Tx07IfA6hsu5Q5OmBdMkQVmFZ9QOA7fikWvnw==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
+    peerDependencies:
+      yjs: ^13.0.0
+
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
@@ -6713,6 +6770,10 @@ packages:
 
   yauzl@2.10.0:
     resolution: {integrity: sha512-p4a9I6X6nu6IhoGmBqAcbJy1mlC4j27vEPZX9F4L4/vZT3Lyq1VkFHw/V/PUcB9Buo+DG3iHkT0x3Qya58zc3g==}
+
+  yjs@13.6.18:
+    resolution: {integrity: sha512-GBTjO4QCmv2HFKFkYIJl7U77hIB1o22vSCSQD1Ge8ZxWbIbn8AltI4gyXbtL+g5/GJep67HCMq3Y5AmNwDSyEg==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
 
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
@@ -8573,6 +8634,8 @@ snapshots:
 
   '@pixi/colord@2.9.6': {}
 
+  '@playhtml/common@0.10.0': {}
+
   '@poppinss/colors@4.1.6':
     dependencies:
       kleur: 4.1.5
@@ -8624,6 +8687,8 @@ snapshots:
       - bare-buffer
       - react-native-b4a
       - supports-color
+
+  '@reactivedata/reactive@0.2.2': {}
 
   '@replit/codemirror-vim-core@0.1.0': {}
 
@@ -8747,6 +8812,16 @@ snapshots:
   '@speed-highlight/core@1.2.24': {}
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@syncedstore/core@0.6.0(yjs@13.6.18)':
+    dependencies:
+      '@reactivedata/reactive': 0.2.2
+      '@syncedstore/yjs-reactive-bindings': 0.6.0(yjs@13.6.18)
+      yjs: 13.6.18
+
+  '@syncedstore/yjs-reactive-bindings@0.6.0(yjs@13.6.18)':
+    dependencies:
+      yjs: 13.6.18
 
   '@tokenizer/inflate@0.4.1':
     dependencies:
@@ -8937,8 +9012,7 @@ snapshots:
     dependencies:
       source-map: 0.6.1
 
-  '@types/trusted-types@2.0.7':
-    optional: true
+  '@types/trusted-types@2.0.7': {}
 
   '@types/turndown@5.0.6': {}
 
@@ -10732,6 +10806,8 @@ snapshots:
 
   ismobilejs@1.1.1: {}
 
+  isomorphic.js@0.2.5: {}
+
   jose@6.2.12: {}
 
   js-base64@3.9.3: {}
@@ -10846,6 +10922,10 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
+  lib0@0.2.119:
+    dependencies:
+      isomorphic.js: 0.2.5
+
   lightningcss-android-arm64@1.33.0:
     optional: true
 
@@ -10909,6 +10989,10 @@ snapshots:
       uhyphen: 0.2.0
     optional: true
 
+  lit-html@3.3.3:
+    dependencies:
+      '@types/trusted-types': 2.0.7
+
   locate-path@6.0.0:
     dependencies:
       p-locate: 5.0.0
@@ -10916,6 +11000,8 @@ snapshots:
   lodash-es@4.18.1: {}
 
   lodash.camelcase@4.3.0: {}
+
+  lodash.debounce@4.0.8: {}
 
   long@5.3.2: {}
 
@@ -11830,6 +11916,12 @@ snapshots:
     optionalDependencies:
       react: 19.2.7
 
+  partysocket@1.3.0(react@19.2.7):
+    dependencies:
+      event-target-polyfill: 0.0.4
+    optionalDependencies:
+      react: 19.2.7
+
   path-browserify@1.0.1: {}
 
   path-data-parser@0.1.0: {}
@@ -11876,6 +11968,19 @@ snapshots:
   pkce-challenge@5.0.1: {}
 
   platform@1.3.6: {}
+
+  playhtml@2.15.0(@cloudflare/workers-types@4.20260702.1)(partyserver@0.5.10(@cloudflare/workers-types@4.20260702.1))(react@19.2.7):
+    dependencies:
+      '@playhtml/common': 0.10.0
+      '@syncedstore/core': 0.6.0(yjs@13.6.18)
+      lit-html: 3.3.3
+      partysocket: 1.3.0(react@19.2.7)
+      y-partyserver: 2.2.0(@cloudflare/workers-types@4.20260702.1)(partyserver@0.5.10(@cloudflare/workers-types@4.20260702.1))(yjs@13.6.18)
+      yjs: 13.6.18
+    transitivePeerDependencies:
+      - '@cloudflare/workers-types'
+      - partyserver
+      - react
 
   points-on-curve@0.2.0: {}
 
@@ -13281,6 +13386,21 @@ snapshots:
 
   xslt-polyfill@1.0.23: {}
 
+  y-partyserver@2.2.0(@cloudflare/workers-types@4.20260702.1)(partyserver@0.5.10(@cloudflare/workers-types@4.20260702.1))(yjs@13.6.18):
+    dependencies:
+      '@cloudflare/workers-types': 4.20260702.1
+      lib0: 0.2.119
+      lodash.debounce: 4.0.8
+      nanoid: 5.1.16
+      partyserver: 0.5.10(@cloudflare/workers-types@4.20260702.1)
+      y-protocols: 1.0.7(yjs@13.6.18)
+      yjs: 13.6.18
+
+  y-protocols@1.0.7(yjs@13.6.18):
+    dependencies:
+      lib0: 0.2.119
+      yjs: 13.6.18
+
   y18n@5.0.8: {}
 
   yallist@3.1.1: {}
@@ -13314,6 +13434,10 @@ snapshots:
     dependencies:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
+
+  yjs@13.6.18:
+    dependencies:
+      lib0: 0.2.119
 
   yocto-queue@0.1.0: {}
 

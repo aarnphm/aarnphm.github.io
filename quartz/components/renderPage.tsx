@@ -86,6 +86,7 @@ import FooterConstructor from './Footer'
 import Graph from './Graph'
 import HeaderConstructor from './Header'
 import HeadingsConstructor from './Headings'
+import HomepageTrail from './HomepageTrail'
 import Image from './Image'
 import Keybind from './Keybind'
 import { byDateAndAlphabetical } from './PageList'
@@ -2688,6 +2689,7 @@ export function renderPage(
       ...components,
       header: [
         VisitorWeather(),
+        HomepageTrail(),
         Image(),
         Graph({ localGraph: undefined }),
         Search(),
