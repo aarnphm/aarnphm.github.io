@@ -1,3 +1,5 @@
+import { rootNavSignal } from './root-lifecycle'
+
 function toggleCallout(this: HTMLElement) {
   const outerBlock = this.parentElement!
   outerBlock.classList.toggle('is-collapsed')
@@ -19,7 +21,9 @@ function setupCallout(root: Document | HTMLElement = document) {
 
     if (!hydratedCalloutTitles.has(title)) {
       hydratedCalloutTitles.add(title)
-      title.addEventListener('click', toggleCallout)
+      const signal = rootNavSignal(title)
+      title.addEventListener('click', toggleCallout, { signal })
+      signal.addEventListener('abort', () => hydratedCalloutTitles.delete(title), { once: true })
     }
 
     const collapsed = div.classList.contains('is-collapsed')
