@@ -3884,7 +3884,7 @@ export function setupLandscape(
         hand = OFF
         if (paw.dir) {
           paw.along += (paw.dir * -cat.face * dt) / STROKE
-          const lifted = paw.along < 0 || paw.along > 1
+          const lifted = paw.along < 0 || paw.along >= 1
           paw.along -= Math.floor(paw.along)
           if (!lifted) {
             const [x, y] = alongCat(cat, paw.along)
