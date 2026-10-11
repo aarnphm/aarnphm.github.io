@@ -788,7 +788,7 @@
   align-items: stretch;
   gap: var(--space-4);
   justify-self: end;
-  // the first row sits on the crumb line, not centred on the whole head
+  // the first row sits on the head's top line, not centred on the whole head
   align-self: start;
   margin: 0;
   padding: 0;
@@ -842,6 +842,39 @@
   .course-sep {
     margin: 0 0.45em;
     color: var(--gray);
+  }
+}
+
+// With a title, the crumb spans the strip and the table's first row shares the title's baseline.
+@media (width > 50rem) {
+  .course-strip:has(> .course-strip-head > .course-card-title) {
+    grid-template-areas:
+      'crumb crumb'
+      'title links'
+      'meta links';
+    grid-template-rows: auto auto 1fr;
+    row-gap: 0;
+
+    > .course-strip-head {
+      display: contents;
+    }
+
+    .course-crumb {
+      grid-area: crumb;
+    }
+
+    .course-card-title {
+      grid-area: title;
+      align-self: first baseline;
+    }
+
+    .course-count {
+      grid-area: meta;
+    }
+
+    > .course-strip-links {
+      align-self: first baseline;
+    }
   }
 }
 
@@ -1196,6 +1229,11 @@ article.course-notes {
   .course-page-links {
     margin: 0;
   }
+}
+
+// a file path inside a meta line takes the line's size; the base `code` rule pins 14px
+code.course-path {
+  font-size: inherit;
 }
 
 // --- pages/calendar: the shared month calendar over the vendored table ---

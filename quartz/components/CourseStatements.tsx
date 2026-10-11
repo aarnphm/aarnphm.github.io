@@ -148,7 +148,7 @@ export default (() => {
         {statements.length === 0 ? (
           <p class="course-count">
             no statements yet: numbered callouts in the notes and bold-lead terms in{' '}
-            <code>lectures/&lt;nn&gt;.md</code> land here.
+            <code class="course-path">lectures/&lt;nn&gt;.md</code> land here.
           </p>
         ) : (
           <div class="course-desk">

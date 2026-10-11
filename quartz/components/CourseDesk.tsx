@@ -133,7 +133,8 @@ export function CourseDesk({
       <div class="course-desk-head">
         <h2 id={`course-desk-${n}`}>desk</h2>
         <span>
-          solved {solved}/{problems.length} · revealed {revealed} · states in <code>{file}</code>
+          solved {solved}/{problems.length} · revealed {revealed} · states in{' '}
+          <code class="course-path">{file}</code>
         </span>
         <span class="course-study-status" role="status" aria-live="polite" />
       </div>
