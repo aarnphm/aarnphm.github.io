@@ -4,8 +4,9 @@ import type { BuildCtx } from '../../../util/ctx'
 import { getMdxComponents } from '../../../components/mdx/registry'
 import audioStyle from '../../../components/styles/audio.scss'
 import clipboardStyle from '../../../components/styles/clipboard.scss'
-import popoverStyle from '../../../components/styles/popover.scss'
+import petStyle from '../../../components/styles/pet.scss'
 import '../../../components/mdx'
+import popoverStyle from '../../../components/styles/popover.scss'
 import pseudoStyle from '../../../components/styles/pseudocode.scss'
 import { bundleInlineScript } from '../../../util/inline-script-bundler'
 import { notebookRuntimeInlineEntry } from './asset-paths'
@@ -118,7 +119,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
   }
 
   componentResources.beforeDOMLoaded.push(markerScript)
-  componentResources.css.push(clipboardStyle, pseudoStyle, audioStyle)
+  componentResources.css.push(clipboardStyle, pseudoStyle, audioStyle, petStyle)
   componentResources.afterDOMLoaded.push(
     clipboardScript,
     pseudoScript,
