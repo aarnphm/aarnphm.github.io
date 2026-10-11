@@ -65,7 +65,10 @@ export interface PdfDocumentRecord {
   doc: string
   bytes: number
   title: string
+  titleSource?: 'frontmatter' | 'alias' | 'filename'
   citedBy: PdfCitation[]
+  /** Canonical page for this PDF when a course resource page renders it (`/courses/<dir>/resources/<id>/`). */
+  readPath?: string
 }
 
 export interface PdfManifest {
@@ -86,8 +89,25 @@ export interface PdfReaderData {
   mode: 'document' | 'index'
   slug?: string
   readPath?: string
+  /** `course`: the page carries its own strip, so the app drops the `reader /` title block. */
+  chrome?: 'course'
   document?: PdfDocumentRecord
   documents?: { slug: string; readPath: string; title: string; citations: number }[]
+}
+
+export type PdfMarkCounts = Record<PdfMarkKind, number>
+
+export interface PdfMarkCountsResponse {
+  canWrite: boolean
+  counts: Record<string, PdfMarkCounts>
+}
+
+/** JSON safe inside a `<script>` element: `<` and the line separators are escaped. */
+export function scriptJson(value: unknown): string {
+  return JSON.stringify(value)
+    .replaceAll('<', '\\u003c')
+    .replaceAll('\u2028', '\\u2028')
+    .replaceAll('\u2029', '\\u2029')
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -132,6 +152,20 @@ export function normalizePdfSlug(value: string): string | null {
   }
   decoded = decoded.replace(/^\/+/, '').split(/[?#]/, 1)[0]
   return isPdfSlug(decoded) ? decoded : null
+}
+
+function isReadPath(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    value.startsWith('/') &&
+    value.length <= MAX_SRC_LENGTH &&
+    !/[?#\s]/.test(value)
+  )
+}
+
+/** Where a hosted PDF opens: its resource page when one claims it, else `/read/<slug>`. */
+export function pdfOpenPath(slug: string, record?: Pick<PdfDocumentRecord, 'readPath'>): string {
+  return record?.readPath ?? pdfReaderPath(slug)
 }
 
 export function pdfReaderKey(slug: string): string {
@@ -275,14 +309,26 @@ export function parsePdfDocumentRecord(value: unknown): PdfDocumentRecord | null
     return null
   }
   if (typeof value.title !== 'string' || !Array.isArray(value.citedBy)) return null
+  if (
+    value.titleSource !== undefined &&
+    value.titleSource !== 'frontmatter' &&
+    value.titleSource !== 'alias' &&
+    value.titleSource !== 'filename'
+  ) {
+    return null
+  }
   const citedBy = value.citedBy.map(parseCitation)
   if (citedBy.some(citation => citation === null)) return null
-  return {
+  if (value.readPath !== undefined && !isReadPath(value.readPath)) return null
+  const record: PdfDocumentRecord = {
     doc: value.doc,
     bytes: value.bytes,
     title: value.title,
     citedBy: citedBy as PdfCitation[],
   }
+  if (value.titleSource !== undefined) record.titleSource = value.titleSource
+  if (typeof value.readPath === 'string') record.readPath = value.readPath
+  return record
 }
 
 export function parsePdfManifest(value: unknown): PdfManifest | null {

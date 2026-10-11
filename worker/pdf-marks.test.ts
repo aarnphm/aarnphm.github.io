@@ -15,8 +15,14 @@ interface TestEnv {
 const DOC_A = 'a'.repeat(64)
 const DOC_B = 'b'.repeat(64)
 const DOC_OLD = 'c'.repeat(64)
+const DOC_C = 'd'.repeat(64)
+const DOC_D = 'e'.repeat(64)
 const SLUG_A = 'thoughts/pdfs/holt.pdf'
 const SLUG_B = 'courses/18.100B/pset 1.pdf'
+const SLUG_C = 'courses/18-156/static_resources/mit18_156_s25_lec07.pdf'
+const SLUG_D = 'courses/18-156/static_resources/mit18_156_s25_lec08.pdf'
+const READ_C = '/courses/18-156/resources/mit18_156_s25_lec07_pdf/'
+const READ_D = '/courses/18-156/resources/mit18_156_s25_lec08_pdf/'
 
 const manifest: PdfManifest = {
   version: 1,
@@ -30,6 +36,8 @@ const manifest: PdfManifest = {
       ],
     },
     [SLUG_B]: { doc: DOC_B, bytes: 2048, title: 'pset 1', citedBy: [] },
+    [SLUG_C]: { doc: DOC_C, bytes: 4096, title: 'lecture 07', citedBy: [], readPath: READ_C },
+    [SLUG_D]: { doc: DOC_D, bytes: 4096, title: 'lecture 08', citedBy: [], readPath: READ_D },
   },
 }
 
@@ -93,7 +101,7 @@ before(async () => {
     remoteBindings: false,
     envFiles: [],
   })
-  for (const file of ['0000_arena_reader.sql', '0001_pdf_marks.sql']) {
+  for (const file of ['0000_arena_reader.sql', '0001_pdf_marks.sql', '0002_pdf_marks_src.sql']) {
     const migration = await readFile(
       new URL(`../migrations/arena-reader/${file}`, import.meta.url),
       'utf8',
@@ -372,6 +380,8 @@ test('reader shell uses its dedicated asset and gets the document record injecte
       title: 'Holt, linear algebra',
       citations: 1,
     },
+    { slug: SLUG_C, readPath: READ_C, title: 'lecture 07', citations: 0 },
+    { slug: SLUG_D, readPath: READ_D, title: 'lecture 08', citations: 0 },
     { slug: SLUG_B, readPath: '/read/courses/18.100B/pset 1', title: 'pset 1', citations: 0 },
   ])
   assert.match(indexHtml, /<body data-slug="read">/)
@@ -422,5 +432,122 @@ test('hosted PDF navigations redirect to the reader, fetches do not', async () =
       'Sec-Fetch-Dest': 'iframe',
     }),
     null,
+  )
+})
+
+// Course PDFs: the resource page is canonical (plan docs/plans/course-resources.md, decision 3, R9–R11).
+
+async function seedCourseMarks() {
+  const now = Date.now()
+  const rows: [string, string, string, string, string][] = [
+    ['m1aaaaaaaa', 'aarnphm', DOC_C, SLUG_C, 'public'],
+    ['m2aaaaaaaa', 'aarnphm', DOC_C, SLUG_C, 'public'],
+    ['m3aaaaaaaa', 'aarnphm', DOC_C, SLUG_C, 'private'],
+    ['m4aaaaaaaa', 'aarnphm', DOC_OLD, SLUG_C, 'public'],
+    ['m5aaaaaaaa', 'aarnphm', DOC_D, SLUG_D, 'public'],
+  ]
+  for (const [id, owner, doc, src, visibility] of rows) {
+    const kind = id === 'm2aaaaaaaa' ? 'question' : 'mark'
+    await env()
+      .ARENA_READER!.prepare(
+        `INSERT INTO pdf_marks (mark_id, owner, doc, src, kind, page, target, body, visibility, revision, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, 1, ?, '', ?, 1, ?, ?)`,
+      )
+      .bind(
+        id,
+        owner,
+        doc,
+        src,
+        kind,
+        JSON.stringify({ type: 'page', page: 1 }),
+        visibility,
+        now,
+        now,
+      )
+      .run()
+  }
+  await env()
+    .ARENA_READER!.prepare(`UPDATE pdf_marks SET deleted_at = ? WHERE mark_id = 'm5aaaaaaaa'`)
+    .bind(now)
+    .run()
+}
+
+test('mark counts by prefix: owner sees private, visitors public only, orphan docs and deleted rows dropped', async () => {
+  await seedCourseMarks()
+  const prefix = encodeURIComponent('courses/18-156/')
+  const owner = await call(`${OWNER_ORIGIN}/api/pdf/marks/counts?prefix=${prefix}`)
+  assert.equal(owner.status, 200)
+  assert.equal(owner.headers.get('Cache-Control'), 'private, no-store')
+  assert.deepEqual(await owner.json(), {
+    canWrite: true,
+    counts: { [SLUG_C]: { mark: 2, question: 1, contra: 0 } },
+  })
+  const visitor = await call(`${VISITOR_ORIGIN}/api/pdf/marks/counts?prefix=${prefix}`)
+  assert.deepEqual(await visitor.json(), {
+    canWrite: false,
+    counts: { [SLUG_C]: { mark: 1, question: 1, contra: 0 } },
+  })
+  const other = await call(
+    `${OWNER_ORIGIN}/api/pdf/marks/counts?prefix=${encodeURIComponent('/courses/18.905/')}`,
+  )
+  assert.deepEqual(await other.json(), { canWrite: true, counts: {} })
+})
+
+test('mark counts refuse a missing, traversing, wildcard or oversized prefix', async () => {
+  for (const prefix of ['', '..', 'courses/../x/', 'courses/%25', 'courses/_', 'a'.repeat(600)]) {
+    const response = await call(`${OWNER_ORIGIN}/api/pdf/marks/counts?prefix=${prefix}`)
+    assert.equal(response.status, 422, prefix)
+  }
+  const post = await call(`${OWNER_ORIGIN}/api/pdf/marks/counts?prefix=courses/`, {
+    method: 'POST',
+  })
+  assert.equal(post.status, 405)
+})
+
+test('course PDF navigations and /read HTML go to the resource page; markdown stays', async () => {
+  const navigate = { 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Dest': 'document' }
+  const pdf = await call(`${VISITOR_ORIGIN}/${SLUG_C}`, { headers: navigate })
+  assert.equal(pdf.status, 301)
+  assert.equal(pdf.headers.get('Location'), READ_C)
+
+  const html = await call(
+    `${VISITOR_ORIGIN}/read/courses/18-156/static_resources/mit18_156_s25_lec07`,
+    { headers: { Accept: 'text/html' } },
+  )
+  assert.equal(html.status, 301)
+  assert.equal(html.headers.get('Location'), READ_C)
+  assert.equal(html.headers.get('Cache-Control'), 'no-store')
+
+  for (const query of ['embed=course', 'view=reader']) {
+    const reader = await call(
+      `${VISITOR_ORIGIN}/read/courses/18-156/static_resources/mit18_156_s25_lec07?${query}`,
+      { headers: { Accept: 'text/html' } },
+    )
+    assert.equal(reader.status, 200, query)
+    const body = await reader.text()
+    assert.ok(body.includes(`"slug":"${SLUG_C}"`), query)
+    assert.ok(body.includes(`"doc":"${DOC_C}"`), query)
+    assert.match(body, /"mode":"document"/)
+  }
+
+  const markdown = await call(
+    `${VISITOR_ORIGIN}/read/courses/18-156/static_resources/mit18_156_s25_lec07`,
+    { headers: { Accept: 'text/markdown' } },
+  )
+  assert.equal(markdown.status, 200)
+  const text = await markdown.text()
+  assert.match(text, /^# lecture 07/)
+  assert.match(text, new RegExp(`Reader: ${READ_C}`))
+
+  const plain = await call(`${VISITOR_ORIGIN}/read/thoughts/pdfs/holt`, {
+    headers: { Accept: 'text/html' },
+  })
+  assert.equal(plain.status, 200)
+
+  const unauthorized = await put('mnaaaaaaaa', input({ src: SLUG_C, doc: DOC_C }), VISITOR_ORIGIN)
+  assert.equal(unauthorized.status, 401)
+  assert.equal(
+    (await unauthorized.json()).signInUrl,
+    `/comments/github/login?returnTo=${encodeURIComponent(READ_C)}`,
   )
 })

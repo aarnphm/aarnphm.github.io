@@ -1,4 +1,4 @@
-import { and, asc, eq, isNull, ne } from 'drizzle-orm'
+import { and, asc, count, eq, isNull, ne, sql } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/d1'
 import {
   parsePdfManifest,
@@ -7,12 +7,16 @@ import {
   PDF_MARK_ID,
   PDF_READER_PREFIX,
   PDF_READER_SHELL_PATH,
+  pdfOpenPath,
   pdfReaderKey,
   pdfReaderPath,
   normalizePdfSlug,
+  scriptJson,
   type PdfDocumentRecord,
   type PdfManifest,
   type PdfMark,
+  type PdfMarkCounts,
+  type PdfMarkCountsResponse,
   type PdfMarkInput,
   type PdfMarksResponse,
   type PdfReaderData,
@@ -66,9 +70,66 @@ function privateJson(value: unknown, status = 200): Response {
   })
 }
 
-function signInUrl(slug: string): string {
-  const returnTo = encodeURIComponent(encodeURI(pdfReaderPath(slug)))
+function signInUrl(slug: string, record?: PdfDocumentRecord): string {
+  const returnTo = encodeURIComponent(encodeURI(pdfOpenPath(slug, record)))
   return `/comments/github/login?returnTo=${returnTo}`
+}
+
+function redirect(location: string): Response {
+  // no-store: a cached 301 would also answer PDF.js's same-URL byte fetches.
+  return new Response(null, {
+    status: 301,
+    headers: {
+      Location: encodeURI(location),
+      'Cache-Control': 'no-store',
+      Vary: 'Accept, Sec-Fetch-Mode, Sec-Fetch-Dest',
+    },
+  })
+}
+
+const MAX_PREFIX_LENGTH = 512
+
+/** A slug prefix for the counts route: relative, no traversal, no LIKE wildcards. */
+function parsePrefix(raw: string | null): string | null {
+  if (raw === null) return null
+  let decoded: string
+  try {
+    decoded = decodeURIComponent(raw)
+  } catch {
+    return null
+  }
+  const prefix = decoded.replace(/^\/+/, '')
+  if (prefix.length === 0 || prefix.length > MAX_PREFIX_LENGTH) return null
+  if (/[%_\\]/.test(prefix)) return null
+  if (prefix.split('/').some(segment => segment === '..' || segment === '.')) return null
+  return prefix
+}
+
+async function countMarks(
+  env: PdfReaderEnv,
+  entry: ManifestCacheEntry,
+  prefix: string,
+  includePrivate: boolean,
+): Promise<Record<string, PdfMarkCounts>> {
+  const rows = await drizzle(database(env))
+    .select({ src: pdfMarks.src, doc: pdfMarks.doc, kind: pdfMarks.kind, n: count() })
+    .from(pdfMarks)
+    .where(
+      and(
+        sql`${pdfMarks.src} LIKE ${`${prefix}%`}`,
+        isNull(pdfMarks.deletedAt),
+        includePrivate ? undefined : eq(pdfMarks.visibility, 'public'),
+      ),
+    )
+    .groupBy(pdfMarks.src, pdfMarks.doc, pdfMarks.kind)
+  const counts: Record<string, PdfMarkCounts> = {}
+  for (const row of rows) {
+    // Marks on a previous version of the file are stale, not counted.
+    if (entry.manifest.documents[row.src]?.doc !== row.doc) continue
+    counts[row.src] ??= { mark: 0, question: 0, contra: 0 }
+    counts[row.src][row.kind] += row.n
+  }
+  return counts
 }
 
 async function loadManifest(env: PdfReaderEnv, origin: string): Promise<ManifestCacheEntry> {
@@ -236,11 +297,16 @@ async function readJsonBody(request: Request): Promise<unknown> {
   }
 }
 
-async function requireOwner(request: Request, env: PdfReaderEnv, slug?: string): Promise<string> {
+async function requireOwner(
+  request: Request,
+  env: PdfReaderEnv,
+  slug?: string,
+  record?: PdfDocumentRecord,
+): Promise<string> {
   const owner = await getOwnerSessionLogin(request, env)
   if (!owner) {
     throw new PdfRequestError(401, 'unauthorized', 'Sign in to annotate.', {
-      signInUrl: slug ? signInUrl(slug) : '/comments/github/login?returnTo=%2Fread',
+      signInUrl: slug ? signInUrl(slug, record) : '/comments/github/login?returnTo=%2Fread',
     })
   }
   if (!isArenaReaderMutationAllowed(request)) {
@@ -272,9 +338,23 @@ async function handleMarksApi(request: Request, env: PdfReaderEnv, url: URL): Pr
       src: slug,
       doc: record.doc,
       canWrite: owner !== null,
-      signInUrl: signInUrl(slug),
+      signInUrl: signInUrl(slug, record),
       marks: await listMarks(env, record.doc, owner !== null),
       stale: owner ? await listStaleMarks(env, owner, slug, record.doc) : [],
+    }
+    return privateJson(body)
+  }
+
+  if (parts.length === 4 && parts[2] === 'marks' && parts[3] === 'counts') {
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      throw new PdfRequestError(405, 'method-not-allowed', 'Use GET to count marks.')
+    }
+    const prefix = parsePrefix(url.searchParams.get('prefix'))
+    if (!prefix) throw new PdfRequestError(422, 'invalid-input', 'A slug prefix is required.')
+    const owner = await getOwnerSessionLogin(request, env)
+    const body: PdfMarkCountsResponse = {
+      canWrite: owner !== null,
+      counts: await countMarks(env, entry, prefix, owner !== null),
     }
     return privateJson(body)
   }
@@ -297,10 +377,10 @@ async function handleMarksApi(request: Request, env: PdfReaderEnv, url: URL): Pr
     const id = parts[3]
     if (!PDF_MARK_ID.test(id)) throw new PdfRequestError(404, 'not-found', 'Unknown mark.')
     if (request.method === 'PUT') {
-      const owner = await requireOwner(request, env)
       const input = parsePdfMarkInput(await readJsonBody(request))
       if (!input) throw new PdfRequestError(422, 'invalid-input', 'The mark is malformed.')
       const { slug, record } = resolveDocument(entry, input.src)
+      const owner = await requireOwner(request, env, slug, record)
       if (record.doc !== input.doc) {
         throw new PdfRequestError(409, 'stale-document', 'The PDF changed since you opened it.', {
           doc: record.doc,
@@ -332,13 +412,6 @@ function escapeHtml(value: string): string {
     .replaceAll('"', '&quot;')
 }
 
-function scriptJson(value: unknown): string {
-  return JSON.stringify(value)
-    .replaceAll('<', '\\u003c')
-    .replaceAll(' ', '\\u2028')
-    .replaceAll(' ', '\\u2029')
-}
-
 function quoteBlock(text: string): string {
   return text
     .replace(/\s+/g, ' ')
@@ -360,7 +433,7 @@ function marksMarkdown(
     `# ${record.title}`,
     '',
     `PDF: [/${slug}](/${encodeURI(slug)}?raw=1)`,
-    `Reader: ${encodeURI(pdfReaderPath(slug))}`,
+    `Reader: ${encodeURI(pdfOpenPath(slug, record))}`,
     '',
   ]
   if (record.citedBy.length > 0) {
@@ -425,7 +498,7 @@ async function handleReaderRoute(
     const documents = Object.entries(entry.manifest.documents)
       .map(([slug, record]) => ({
         slug,
-        readPath: pdfReaderPath(slug),
+        readPath: pdfOpenPath(slug, record),
         title: record.title,
         citations: record.citedBy.length,
       }))
@@ -468,6 +541,13 @@ async function handleReaderRoute(
       },
     })
   }
+  // A course PDF's page is its resource page, which carries the course strip.
+  if (
+    record.readPath &&
+    url.searchParams.get('embed') !== 'course' &&
+    url.searchParams.get('view') !== 'reader'
+  )
+    return redirect(record.readPath)
   return readerShell(env, request, url, record.title, {
     mode: 'document',
     slug,
@@ -493,16 +573,9 @@ async function handleHostedPdfNavigation(
   const slug = normalizePdfSlug(url.pathname)
   if (!slug) return null
   const entry = await loadManifest(env, url.origin)
-  if (!entry.manifest.documents[slug]) return null
-  // no-store: a cached 301 would also answer PDF.js's same-URL byte fetches.
-  return new Response(null, {
-    status: 301,
-    headers: {
-      Location: encodeURI(pdfReaderPath(slug)),
-      'Cache-Control': 'no-store',
-      Vary: 'Sec-Fetch-Mode, Sec-Fetch-Dest',
-    },
-  })
+  const record = entry.manifest.documents[slug]
+  if (!record) return null
+  return redirect(pdfOpenPath(slug, record))
 }
 
 export async function handlePdfReaderRequest(

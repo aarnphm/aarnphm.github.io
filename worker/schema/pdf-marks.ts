@@ -22,6 +22,7 @@ export const pdfMarks = sqliteTable(
   table => [
     index('idx_pdf_marks_doc').on(table.doc, table.deletedAt, table.visibility, table.page),
     index('idx_pdf_marks_src').on(table.owner, table.src, table.deletedAt),
+    index('idx_pdf_marks_src_live').on(table.src, table.deletedAt, table.visibility),
     check('pdf_marks_kind', sql`${table.kind} IN ('mark', 'question', 'contra')`),
     check('pdf_marks_visibility', sql`${table.visibility} IN ('public', 'private')`),
     check('pdf_marks_revision', sql`${table.revision} > 0`),
