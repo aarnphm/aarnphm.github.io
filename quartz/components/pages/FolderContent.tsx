@@ -418,55 +418,42 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
 
     if (folderNode) {
-      // Immediate children only: files and subfolders
-      const subfolders: FileTrieNode<any>[] = []
-      for (const child of folderNode.children) {
-        if (child.isFolder) {
-          subfolders.push(child)
-          continue
-        }
-        if (!child.data) continue
-        const fileSlug = stripSlashes(child.slug)
-        const isAlias = aliases.has(stripSlashes(simplifySlug(fileSlug as FullSlug)))
-        if (isAlias) continue
-        pushFileEntry(fileSlug, child.data.filePath)
-      }
-
-      // Add subfolders
+      const subfolders = folderNode.children.filter(child => child.isFolder)
       for (const sub of subfolders) {
-        // Trie folder slug includes `index` (e.g., a/b/index)
         const subfolderSlugWithIndex = stripSlashes(sub.slug)
-        const subfolderSimple = stripSlashes(simplifySlug(sub.slug as FullSlug))
+        const subfolderSimple = stripSlashes(simplifySlug(sub.slug))
         if (isImagesPath(subfolderSimple) || isImagesPath(subfolderSlugWithIndex)) continue
         if (!navigableFolders.has(subfolderSimple)) continue
 
-        // If there is a markdown index for this folder, rely on that page (avoid duplicate)
         const folderIndex = mdBySlug.get(subfolderSimple)
+        if (folderIndex?.frontmatter?.noindex === true) continue
 
-        // Determine dates from files under the subfolder
         const filesInSubfolder = descendantsByFolder.get(subfolderSimple) ?? []
-
         const subfolderDates =
           filesInSubfolder.length > 0
             ? firstDescendantByFolder.get(subfolderSimple)?.dates
             : (folderIndex?.dates ?? fileData?.dates)
 
-        // Only generate a synthetic folder entry if no explicit folder index exists
-        if (!folderIndex) {
-          entries.push({
-            // keep `.../index` so it?s treated as a folder in sorting
-            slug: subfolderSlugWithIndex as FullSlug,
-            frontmatter: {
-              title: sub.displayName || sub.slugSegment,
-              tags: ['folder'],
-              pageLayout: 'default',
-            },
-            dates: subfolderDates,
-          })
-          // Mark both forms as processed to prevent any fallback duplication
-          processed.add(subfolderSlugWithIndex)
-          processed.add(subfolderSimple)
-        }
+        entries.push({
+          ...folderIndex,
+          slug: sub.slug,
+          frontmatter: {
+            ...folderIndex?.frontmatter,
+            title: folderIndex?.frontmatter?.title ?? sub.displayName,
+            tags: [...new Set(['folder', ...(folderIndex?.frontmatter?.tags ?? [])])],
+            pageLayout: folderIndex?.frontmatter?.pageLayout ?? 'default',
+          },
+          dates: folderIndex?.dates ?? subfolderDates,
+        })
+        processed.add(subfolderSlugWithIndex)
+        processed.add(subfolderSimple)
+      }
+
+      for (const child of folderNode.children) {
+        if (child.isFolder || !child.data) continue
+        const fileSlug = stripSlashes(child.slug)
+        if (aliases.has(stripSlashes(simplifySlug(child.slug)))) continue
+        pushFileEntry(fileSlug, child.data.filePath)
       }
     }
 

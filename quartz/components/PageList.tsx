@@ -99,7 +99,9 @@ export default ((userOpts?: Options) => {
           const title = page.frontmatter?.title
           const tags = page.frontmatter?.tags ?? []
           const hiTags = opts.highlightTags.filter(v => tags.includes(v))
-          const date = new Date(0)
+          const date = getDate(cfg, page) ?? new Date(0)
+          const isPdf = /\.pdf$/i.test(page.slug ?? '')
+          const isFolder = tags.includes('folder')
 
           return (
             <li
@@ -117,18 +119,9 @@ export default ((userOpts?: Options) => {
                 <div class="note-grid">
                   <div class="desc">
                     {title}
-                    {tags.includes('folder') && <span>/</span>}
+                    {isFolder && <span>/</span>}
                   </div>
-                  {page.dates ? (
-                    <div class="meta">
-                      <DateComponent date={getDate(cfg, page)!} locale={cfg.locale} />
-                    </div>
-                  ) : (
-                    <div class="meta">
-                      <DateComponent date={date} locale={cfg.locale} />
-                    </div>
-                  )}
-                  {hiTags.length > 0 ? (
+                  {hiTags.length > 0 && (
                     <menu class="tag-highlights">
                       {hiTags.map(el => (
                         <li class="tag" data-tag={el}>
@@ -136,8 +129,11 @@ export default ((userOpts?: Options) => {
                         </li>
                       ))}
                     </menu>
-                  ) : (
-                    <></>
+                  )}
+                  {!isPdf && !isFolder && (
+                    <div class="meta">
+                      <DateComponent date={date} locale={cfg.locale} />
+                    </div>
                   )}
                 </div>
               </a>
