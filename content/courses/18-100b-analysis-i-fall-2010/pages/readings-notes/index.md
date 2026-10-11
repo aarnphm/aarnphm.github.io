@@ -20,6 +20,7 @@ license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
 
 Readings are assigned in Rudin, W. _Principles of Mathematical Analysis_. 3rd ed. McGraw-Hill Science/Engineering/Math, New York, NY: McGraw-Hill, 1976. ISBN: 9780070542358.
+
 The supplementary notes are courtesy of [Prof. Todd Kemp](http://www.math.ucsd.edu/~tkemp/) and are used with permission.
 
 | SES # | TOPICS                                                     | READINGS                                                                                                                                                                                                        |

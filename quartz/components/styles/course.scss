@@ -788,7 +788,8 @@
   align-items: stretch;
   gap: var(--space-4);
   justify-self: end;
-  align-self: center;
+  // the first row sits on the crumb line, not centred on the whole head
+  align-self: start;
   margin: 0;
   padding: 0;
 
@@ -1198,10 +1199,14 @@ article.course-notes {
 }
 
 // --- pages/calendar: the shared month calendar over the vendored table ---
-// a month needs the course home's span: the reading edge through the side column
-@media all and ($desktop) {
-  .folder-layout--article.course-page:has(> .course-calendar) {
-    grid-column: 5 / -3;
+// a month takes the course home's frame: 66rem, centred on the full column
+.page:has(> .page-body-grid > .page-content > .course-page > .course-calendar) {
+  > .header > .header-content,
+  > .page-body-grid > .page-content > .course-page {
+    grid-column: 3 / -3;
+    inline-size: 100%;
+    max-inline-size: 66rem;
+    justify-self: center;
   }
 }
 
