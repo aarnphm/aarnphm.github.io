@@ -57,7 +57,7 @@ export default (() => {
           />
           {homes.length === 0 ? (
             <p class="course-count">
-              no courses vendored. run <code>pnpm vendor:ocw &lt;url&gt;</code>.
+              no courses vendored. run <code class="course-path">pnpm vendor:ocw &lt;url&gt;</code>.
             </p>
           ) : (
             <ol class="course-index-list">

@@ -335,7 +335,7 @@ export const CourseUnitFoot = (() => {
                   link(solution.slug as FullSlug, 'our solutions')
                 ) : (
                   <span>
-                    solutions: <code>psets/{pad(psetN ?? 0)}.md</code>
+                    solutions: <code class="course-path">psets/{pad(psetN ?? 0)}.md</code>
                   </span>
                 )}
               </li>

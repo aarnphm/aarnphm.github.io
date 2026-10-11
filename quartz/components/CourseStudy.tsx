@@ -137,7 +137,7 @@ export default (() => {
           <h1 class="course-masthead-title course-card-title">{title}</h1>
           <p class="course-count">
             read {read}/{total} · problems {problems}/{total} · source{' '}
-            <code>lectures/index.md</code>
+            <code class="course-path">lectures/index.md</code>
             {endpoint ? ' · dev: the read and problems toggles write here' : ''}
           </p>
         </header>

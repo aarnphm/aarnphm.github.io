@@ -111,7 +111,7 @@ function stripLinks(
     }
     if (unit.note) push('notes', internal(unit.slug, 'notes'))
     else {
-      push('notes', <code>lectures/{pad(n)}.md</code>)
+      push('notes', <code class="course-path">lectures/{pad(n)}.md</code>)
       // the lecture pdf drafts the note from its marks (course.inline.ts builds the preview);
       // ResourceHead sets it left of the table, not in a row
       const file = ref.record.file
@@ -192,7 +192,7 @@ function stripLinks(
         push(
           'solutions',
           <span>
-            solutions: <code>psets/{pad(n)}.md</code>
+            solutions: <code class="course-path">psets/{pad(n)}.md</code>
           </span>,
         )
       const text = view.psetText.get(n)
