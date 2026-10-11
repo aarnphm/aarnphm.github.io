@@ -504,6 +504,9 @@ body[data-slides='true'] .page-content {
 .slides-root.is-overview .slides-deck {
   display: grid;
   grid-template-columns: repeat(var(--slides-overview-cols, 4), minmax(0, 1fr));
+  // the deck's height is fixed by the frame, so auto rows would shrink to share it
+  // and the cards would overlap; rows take the card's aspect height and the grid scrolls
+  grid-auto-rows: max-content;
   gap: var(--space-4);
   align-content: start;
   padding: var(--space-1);
