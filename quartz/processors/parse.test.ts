@@ -2,7 +2,7 @@ import type { Root as HtmlRoot } from 'hast'
 import type { Processor } from 'unified'
 import { toHtml } from 'hast-util-to-html'
 import assert from 'node:assert/strict'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
@@ -197,4 +197,57 @@ test('editing a transcluded code file invalidates the unchanged Markdown parse',
   assert.notEqual(rebuilt, first)
   assert.match(toHtml(rebuilt[0]), /after dependency edit/)
   assert.doesNotMatch(toHtml(rebuilt[0]), /before/)
+})
+
+test('notebook files render Markdown, code, and stored outputs through the file parser', async t => {
+  const directory = await mkdtemp(join(tmpdir(), 'quartz-notebook-parse-'))
+  t.after(async () => {
+    resetProcessedContentCache()
+    await rm(directory, { recursive: true, force: true })
+  })
+  const fp = join(directory, 'fixture.ipynb')
+  if (!isFilePath(fp)) throw new Error('invalid fixture path')
+  const source = JSON.stringify({
+    metadata: { language_info: { name: 'python' } },
+    cells: [
+      { cell_type: 'markdown', source: '# Heading\n\nbody text' },
+      {
+        cell_type: 'code',
+        source: 'print("hi")',
+        execution_count: 1,
+        outputs: [{ output_type: 'stream', name: 'stdout', text: ['hi\n'] }],
+      },
+      {
+        cell_type: 'code',
+        source: '1 + 1',
+        execution_count: 2,
+        outputs: [
+          { output_type: 'execute_result', data: { 'text/plain': '2' }, execution_count: 2 },
+        ],
+      },
+    ],
+  })
+  await writeFile(fp, source)
+  const ctx = testCtx(directory, 'notebook')
+  ctx.cfg.plugins.transformers = []
+  resetProcessedContentCache()
+  const parsed = await parseMarkdown(ctx, [fp])
+  assert.equal(parsed.length, 1)
+  const html = toHtml(parsed[0][0], { allowDangerousHtml: true })
+
+  const artifacts = process.env.QUARTZ_PARSE_TEST_ARTIFACTS
+  if (artifacts) {
+    await mkdir(artifacts, { recursive: true })
+    await writeFile(join(artifacts, 'fixture.ipynb'), source)
+    await writeFile(join(artifacts, 'fixture.html'), html)
+  }
+
+  assert.match(html, /<h1>Heading<\/h1>/)
+  assert.match(html, /<p>body text<\/p>/)
+  assert.match(html, /<code class="language-python">print\("hi"\)/)
+  assert.match(html, /data-output-name="stdout"><samp>hi<\/samp>/)
+  assert.match(html, /data-output-name="result"><samp>2<\/samp>/)
+  assert.match(html, /id="cell-1"/)
+  assert.match(html, /id="cell-2"/)
+  assert.match(html, /id="notebook-md-1"/)
 })

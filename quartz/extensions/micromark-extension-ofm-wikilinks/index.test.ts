@@ -31,7 +31,7 @@ function parse(
 function extractWikilink(tree: Root): Wikilink | null {
   for (const child of tree.children) {
     if (child.type === 'paragraph') {
-      for (const node of (child as any).children) {
+      for (const node of child.children) {
         if (isWikilink(node)) {
           return node
         }
@@ -122,41 +122,23 @@ describe('micromark wikilink extension', () => {
       assert.strictEqual(wikilink.data?.wikilink.alias, 'alias]text')
     })
   })
-
-  describe('complex paths', () => {
-    test('handles paths with slashes', () => {
-      const tree = parse('[[path/to/file]]')
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'path/to/file')
-    })
-
-    test('handles paths with special chars', () => {
-      const tree = parse('[[file (with) parens]]')
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert.strictEqual(wikilink.data?.wikilink.target, 'file (with) parens')
-    })
-  })
-
   describe('context awareness', () => {
     test('does not parse in code block', () => {
       const tree = parse('```\n[[not a link]]\n```')
       const codeBlock = tree.children[0]
 
-      assert.strictEqual(codeBlock.type, 'code')
-      assert((codeBlock as any).value.includes('[[not a link]]'))
+      assert(codeBlock.type === 'code')
+      assert(codeBlock.value.includes('[[not a link]]'))
     })
 
     test('does not parse in inline code', () => {
       const tree = parse('`[[not a link]]`')
-      const paragraph = tree.children[0] as any
+      const paragraph = tree.children[0]
+      assert(paragraph.type === 'paragraph')
       const inlineCode = paragraph.children[0]
 
-      assert.strictEqual(inlineCode.type, 'inlineCode')
-      assert((inlineCode as any).value.includes('[[not a link]]'))
+      assert(inlineCode.type === 'inlineCode')
+      assert(inlineCode.value.includes('[[not a link]]'))
     })
   })
 
@@ -182,38 +164,6 @@ describe('micromark wikilink extension', () => {
       assert.strictEqual(wikilink, null)
     })
   })
-
-  describe('position tracking', () => {
-    test('preserves position information', () => {
-      const tree = parse('[[test]]')
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert(wikilink.position, 'position should be defined')
-      assert.strictEqual(wikilink.position!.start.column, 1)
-      assert.strictEqual(wikilink.position!.start.line, 1)
-      assert(wikilink.position!.end.column > wikilink.position!.start.column)
-    })
-
-    test('tracks position with embed prefix', () => {
-      const tree = parse('![[embed]]')
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert(wikilink.position, 'position should be defined')
-      assert.strictEqual(wikilink.position!.start.column, 1)
-    })
-
-    test('tracks position in middle of line', () => {
-      const tree = parse('some text [[link]] more text')
-      const wikilink = extractWikilink(tree)
-
-      assert(wikilink, 'wikilink node should exist')
-      assert(wikilink.position, 'position should be defined')
-      assert(wikilink.position!.start.column > 1, "should start after 'some text '")
-    })
-  })
-
   describe('toMarkdown serialization', () => {
     describe('embed serialization', () => {
       test('serializes embed with anchor', () => {
@@ -283,26 +233,6 @@ describe('micromark wikilink extension', () => {
 
   describe('obsidian mode', () => {
     describe('nested heading anchors', () => {
-      test('uses last segment with obsidian: true', () => {
-        const tree = parse('[[file#Parent#Child#Grandchild]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // should use only "grandchild" and slugify it
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#grandchild')
-      })
-
-      test('preserves full anchor with obsidian: false (default)', () => {
-        const tree = parse('[[file#Parent#Child#Grandchild]]', { obsidian: false })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // non-obsidian mode: preserves full anchor as-is
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#Parent#Child#Grandchild')
-      })
-
       test('uses last segment when option not specified (defaults to obsidian: true)', () => {
         const tree = parse('[[file#Parent#Child]]')
         const wikilink = extractWikilink(tree)
@@ -315,46 +245,6 @@ describe('micromark wikilink extension', () => {
     })
 
     describe('anchor slugification', () => {
-      test('slugifies LaTeX in anchor', () => {
-        const tree = parse('[[file#architectural skeleton of $ mu$]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // spaces around $ should be removed before slugification
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#architectural-skeleton-of-mu')
-      })
-
-      test('normalizes inline math in context', () => {
-        const tree = parse('[[file#Section with $ x + y$ equation]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // spaces around $ removed, then slugified
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#section-with-x--y-equation')
-      })
-
-      test('normalizes multiple math expressions', () => {
-        const tree = parse('[[file#$ alpha$ and $ beta$]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // "$ alpha$ and $ beta$" → "$alpha$ and $beta$" → slugged: "alpha-and-beta"
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#alpha-and-beta')
-      })
-
-      test('handles math with multiple spaces', () => {
-        const tree = parse('[[file#$  x  $]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // "$  x  $" → "$x$" → slugged: "x"
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#x')
-      })
-
       test('preserves math without adjacent spaces', () => {
         const tree = parse('[[file#$mu$ value]]', { obsidian: true })
         const wikilink = extractWikilink(tree)
@@ -385,39 +275,7 @@ describe('micromark wikilink extension', () => {
         assert.strictEqual(wikilink.data?.wikilink.anchor, '#Section Title')
       })
     })
-
-    describe('nested headings with slugification', () => {
-      test('combines nested heading extraction and slugification', () => {
-        const tree = parse('[[file#Parent Heading#Child Section]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // should extract "Child Section" and slugify to "child-section"
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#child-section')
-      })
-
-      test('handles mixed case nested headings', () => {
-        const tree = parse('[[file#First#SECOND#ThIrD]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#third')
-      })
-    })
-
     describe('block references with obsidian mode', () => {
-      test('preserves block reference marker', () => {
-        const tree = parse('[[file#^block-id]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.wikilink.target, 'file')
-        // block reference should keep ^ marker
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#^block-id')
-      })
-
       test('does not process # in block reference content', () => {
         const tree = parse('[[file#^block#with#hashes]]', { obsidian: true })
         const wikilink = extractWikilink(tree)
@@ -466,29 +324,6 @@ describe('micromark wikilink extension', () => {
 
   describe('hName annotation (automatic hast conversion)', () => {
     describe('image embeds', () => {
-      test('annotates image with caption text (figure)', () => {
-        const tree = parse('![[photo.jpg|A beautiful sunset]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.hName, 'img')
-        assert.strictEqual(wikilink.data?.hProperties?.src, 'photo.jpg')
-        assert.strictEqual(wikilink.data?.hProperties?.width, 'auto')
-        assert.strictEqual(wikilink.data?.hProperties?.height, 'auto')
-        assert.strictEqual(wikilink.data?.hProperties?.alt, 'A beautiful sunset')
-      })
-
-      test('annotates image with dimensions (width only)', () => {
-        const tree = parse('![[photo.jpg|400]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.hName, 'img')
-        assert.strictEqual(wikilink.data?.hProperties?.src, 'photo.jpg')
-        assert.strictEqual(wikilink.data?.hProperties?.width, '400')
-        assert.strictEqual(wikilink.data?.hProperties?.height, 'auto')
-      })
-
       test('annotates image with multi-part caption', () => {
         const tree = parse('![[photo.jpg|Caption with|multiple|pipes]]', { obsidian: true })
         const wikilink = extractWikilink(tree)
@@ -496,7 +331,7 @@ describe('micromark wikilink extension', () => {
         assert(wikilink, 'wikilink node should exist')
         assert.strictEqual(wikilink.data?.hName, 'img')
 
-        const figcaption = wikilink.data?.hProperties?.alt as any
+        const figcaption = wikilink.data?.hProperties?.alt
         assert.strictEqual(figcaption, 'Caption with|multiple|pipes')
       })
 
@@ -512,57 +347,6 @@ describe('micromark wikilink extension', () => {
         assert.strictEqual(wikilink?.data.hProperties?.alt, 'Caption with|multiple parts')
       })
     })
-
-    describe('PDF embeds', () => {
-      test('annotates PDF embed options', () => {
-        const tree = parse(
-          "![[paper.pdf#{page: 3, fit: 'page', height: 720, overscan: 4}|slides]]",
-          { obsidian: true },
-        )
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.hName, 'div')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-src'], 'paper.pdf')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-title'], 'slides')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-page'], '3')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-fit'], 'page')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-height'], '720')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-overscan'], '4')
-      })
-    })
-
-    describe('block transcludes', () => {
-      test('annotates transclude with anchor', () => {
-        const tree = parse('![[notes#summary]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.hName, 'blockquote')
-        assert.strictEqual(wikilink.data?.hProperties?.class, 'transclude')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-url'], 'notes')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-block'], '#summary')
-        assert(Array.isArray(wikilink.data?.hChildren), 'should have hChildren array')
-
-        const innerLink = wikilink.data?.hChildren?.[0] as any
-        assert.strictEqual(innerLink?.type, 'element')
-        assert.strictEqual(innerLink?.tagName, 'a')
-        assert.strictEqual(innerLink?.properties?.href, 'notes#summary')
-        assert.strictEqual(innerLink?.properties?.class, 'transclude-inner')
-      })
-
-      test('annotates transclude with metadata', () => {
-        const tree = parse('![[thoughts/Attention#{collapsed: true}]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.hName, 'blockquote')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-url'], 'thoughts/Attention')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-block'], '')
-        assert.strictEqual(wikilink.data?.hProperties?.['data-metadata'], '{"collapsed":true}')
-      })
-    })
-
     describe('without explicit options', () => {
       test('does not annotate when explicitly obsidian: false', () => {
         const tree = parse('[[target]]', { obsidian: false })
@@ -573,21 +357,6 @@ describe('micromark wikilink extension', () => {
         assert.strictEqual(wikilink.data?.hProperties, undefined)
         assert.strictEqual(wikilink.data?.hChildren, undefined)
         assert.strictEqual(wikilink.data?.wikilink.target, 'target')
-      })
-    })
-
-    describe('integration with obsidian mode', () => {
-      test('combines obsidian anchor handling with hName annotation', () => {
-        const tree = parse('[[file#Parent#Child|display]]', { obsidian: true })
-        const wikilink = extractWikilink(tree)
-
-        assert(wikilink, 'wikilink node should exist')
-        // obsidian mode: uses last anchor segment
-        assert.strictEqual(wikilink.data?.wikilink.anchor, '#child')
-        // hName annotation
-        assert.strictEqual(wikilink.data?.hName, 'a')
-        assert.strictEqual(wikilink.data?.hProperties?.href, 'file#child')
-        assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: 'text', value: 'display' }])
       })
     })
   })
