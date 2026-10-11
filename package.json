@@ -178,6 +178,7 @@
     "onnxruntime-web": "^1.30.0",
     "path-browserify": "1.0.1",
     "pixi.js": "^8.20.1",
+    "playhtml": "2.15.0",
     "preact": "^10.29.8",
     "preact-render-to-string": "^6.7.0",
     "pretty-bytes": "^7.1.3",
