@@ -22,6 +22,7 @@ This repository powers a Quartz digital garden with custom plugins and a Cloudfl
 - Use `pnpm`, `oxlint`, `oxfmt`, and `tsgo` for the Quartz project. Nested projects may define their own package manager and build checks in a closer AGENTS.md.
 - Routine targeted local checks are authorized with the task. See [development commands](docs/agent-development.md) for command effects, and read the current package script before an unfamiliar invocation.
 - Use the running `quartz/scripts/dev.ts` watcher for browser evidence. Do not launch a full Quartz bundle/build or restart an existing process just to verify an edit. Wait for the matching new `build:ready`, confirm HTTP availability, and inspect the rendered page. Report the actual blocker if that path fails.
+- Save browser evidence and generated verification fixtures under `docs/verification/<task>/artifacts/`, with the command, inputs, and results. Generated files expire 72 hours after their last modification through `pnpm artifacts:clean`, scheduled hourly. Keep replay scripts and durable task documentation outside `artifacts/`. Reserve `.quartz-cache` for operational caches, authentication, and sync state; preserve existing Claude design-system files there.
 - Keep provider identity and per-field provenance explicit. A computed estimate is distinct from a native measurement. A verified replacement and separate deletion approval are required before removing source activities.
 - Preserve existing flashcard text and identities unless the requested correction requires a change; edits can affect scheduling.
 
