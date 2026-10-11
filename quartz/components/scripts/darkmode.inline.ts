@@ -77,6 +77,13 @@ const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
 }
 
 const updateTogglePresentation = (resolvedTheme: Theme, preference: ThemePreference) => {
+  const weatherButton = document.querySelector<HTMLButtonElement>('.visitor-weather-toggle')
+  if (weatherButton) {
+    const action = `Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} theme`
+    weatherButton.setAttribute('aria-label', action)
+    weatherButton.title = action
+  }
+
   if (!toggleElement) return
 
   toggleElement.setAttribute('aria-label', describePreference(preference, resolvedTheme))
@@ -165,6 +172,16 @@ document.addEventListener('nav', () => {
     themeButton.addEventListener('click', activateButton, { signal })
     themeButton.addEventListener('keydown', keyActivate, { signal })
   }
+
+  const weatherButton = document.querySelector<HTMLButtonElement>('.visitor-weather-toggle')
+  weatherButton?.addEventListener(
+    'click',
+    () => {
+      const resolved = activePreference === 'system' ? getSystemTheme() : activePreference
+      applyPreference(resolved === 'dark' ? 'light' : 'dark')
+    },
+    { signal },
+  )
 
   const shouldIgnoreTarget = (el: EventTarget | null) => {
     if (!el || !(el instanceof Element)) return false

@@ -1,3 +1,4 @@
+import { createVisitorTrailWeatherSource } from '../../util/visitor-trail-weather'
 import {
   nextSunEvent,
   readVisitorForecast,
@@ -34,15 +35,16 @@ document.addEventListener('nav', () => {
 
   const controller = new AbortController()
   const { signal } = controller
+  const trailWeather = createVisitorTrailWeatherSource(document, signal)
   let forecast: VisitorForecast | null = null
   let pending = false
   let fetchedAt = 0
   let map: ReturnType<typeof mountVisitorWeatherMap> | null = null
   let mapLocation = ''
-  let pinned = false
   let dismissed = false
   let overToggle = false
   let overPanel = false
+  let pointerActivated = false
   let closeTimer = 0
   const cancelClose = () => {
     window.clearTimeout(closeTimer)
@@ -57,8 +59,8 @@ document.addEventListener('nav', () => {
     closeTimer = window.setTimeout(() => {
       if (overToggle || overPanel) return
       dismissed = false
-      if (root.contains(document.activeElement)) return
-      if (!pinned && panel.matches(':popover-open')) panel.hidePopover()
+      if (!pointerActivated && root.querySelector(':focus-visible')) return
+      if (panel.matches(':popover-open')) panel.hidePopover()
     }, 180)
   }
   const hover = window.matchMedia('(hover: hover) and (pointer: fine)')
@@ -86,21 +88,35 @@ document.addEventListener('nav', () => {
       { signal },
     )
   }
-  root.addEventListener('focusin', open, { signal })
+  root.addEventListener(
+    'focusin',
+    () => {
+      pointerActivated = false
+      open()
+    },
+    { signal },
+  )
   root.addEventListener('focusout', leave, { signal })
+  root.addEventListener(
+    'click',
+    event => {
+      pointerActivated = event.detail > 0
+    },
+    { signal },
+  )
+  root.addEventListener(
+    'keydown',
+    () => {
+      pointerActivated = false
+    },
+    { signal },
+  )
   toggle.addEventListener(
     'click',
     event => {
       event.preventDefault()
-      cancelClose()
-      if (pinned && panel.matches(':popover-open')) {
-        dismissed = true
-        panel.hidePopover()
-      } else {
-        pinned = true
-        dismissed = false
-        open()
-      }
+      dismissed = false
+      open()
     },
     { signal },
   )
@@ -130,6 +146,7 @@ document.addEventListener('nav', () => {
   )
 
   const render = () => {
+    trailWeather.publish(forecast)
     const weather = forecast?.weather
     if (!map && (!forecast || forecast.lat === null || forecast.lon === null)) {
       const mapStatus = panel.querySelector<HTMLButtonElement>('[data-weather-map-status]')
@@ -147,7 +164,6 @@ document.addEventListener('nav', () => {
     const now = Date.now()
     const next = nextSunEvent(forecast?.solar ?? null, now)
     const day = next ? next.kind === 'sunset' : weather.day
-    if (day !== null) root.dataset.weatherDay = String(day)
     const condition = visitorConditionsLabel(weather.code)
     const temperature = `${Math.round((weather.temp * 9) / 5 + 32)}°F`
     const direction =
@@ -157,7 +173,6 @@ document.addEventListener('nav', () => {
     write('condition', condition)
     write('temperature', temperature)
     write('wind', `${Math.round(weather.wind / 1.609344)} mph${direction ? ` ${direction}` : ''}`)
-    toggle.title = `${condition}, ${temperature}`
 
     if (next) {
       const minutes = Math.ceil((next.at - now) / 60000)
@@ -204,7 +219,6 @@ document.addEventListener('nav', () => {
     () => {
       const visible = panel.matches(':popover-open')
       toggle.setAttribute('aria-expanded', String(visible))
-      if (!visible) pinned = false
       render()
       mountScene()
     },
@@ -224,7 +238,6 @@ document.addEventListener('nav', () => {
     root,
     () => {
       dismissed = true
-      pinned = false
       cancelClose()
       panel.hidePopover()
       toggle.focus({ preventScroll: true })

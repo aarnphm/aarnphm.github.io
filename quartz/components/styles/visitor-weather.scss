@@ -155,10 +155,10 @@
 }
 
 .visitor-weather-moon,
-.visitor-weather[data-weather-day='false'] .visitor-weather-sun {
+:root[saved-theme='dark'] .visitor-weather-sun {
   display: none;
 }
-.visitor-weather[data-weather-day='false'] .visitor-weather-moon {
+:root[saved-theme='dark'] .visitor-weather-moon {
   display: block;
 }
 
