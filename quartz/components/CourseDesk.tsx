@@ -41,8 +41,8 @@ function leadTitle(text: string): string {
 /**
  * Problems of one set from its generated `notes/pset-<nn>` page: `**problem N.**` leads, else
  * `## N` headings, else one row for the whole set. `uses` are the statement links inside each
- * problem. The LaTeX converter points `\ref` at `notes/00#^x`; an anchor the pset restates
- * resolves to the pset page, anything else keeps its label without a link.
+ * problem. The LaTeX converter points `\ref` at the pset's own statement, or at the notes statement
+ * it restates; an anchor on the pset page links there, anything else keeps its label without a link.
  */
 export function psetProblems(text: QuartzPluginData | undefined): DeskProblem[] {
   const source = text?.rawMarkdownSource ?? ''

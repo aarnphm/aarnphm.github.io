@@ -742,7 +742,14 @@ function cellText(html: string): string[] {
     .replace(/<\/(?:p|br|li)\s*>|<br\s*\/?>/gi, '\n')
     .replace(/<[^>]+>/g, ' ')
     .split('\n')
-    .map(line => normalizeText(line.replace(/&nbsp;/g, ' ')))
+    .map(line =>
+      normalizeText(
+        line
+          .replace(/&nbsp;/g, ' ')
+          .replace(/&[lr]squo;/g, "'")
+          .replace(/&[lr]dquo;/g, '"'),
+      ),
+    )
     .filter(line => line.length > 0)
 }
 
@@ -755,7 +762,8 @@ function unitKindFromHeader(header: string): CourseUnitKind {
 
 // The OCW calendar table: a header row names the unit kind, a `<th colspan>` row opens a part,
 // a row whose first cell is an integer is a unit, and a numberless row with text is trailing.
-function parseCalendarUnits(html: string): CourseStudy | null {
+// Columns past the topic are key dates only on a calendar; a readings table lists sections there.
+function parseCalendarUnits(html: string, withKeyDates = true): CourseStudy | null {
   const rows = Array.from(html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi), match => match[1])
   if (rows.length === 0) return null
   const study: CourseStudy = { unitKind: 'lecture', parts: [], trailing: [], units: [] }
@@ -780,7 +788,7 @@ function parseCalendarUnits(html: string): CourseStudy | null {
     }
     const number = first.lines.join(' ')
     const topicLines = cells[1]?.lines ?? []
-    const keyDates = cells.slice(2).flatMap(cell => cell.lines)
+    const keyDates = withKeyDates ? cells.slice(2).flatMap(cell => cell.lines) : []
     if (/^\d+$/.test(number)) {
       const topic = topicLines.join(' ')
       const session = topic.match(/^ses(?:sion)?s?\.?\s*([\d\s,and-]+?):\s*(.*)$/i)
@@ -882,7 +890,12 @@ function attachUnitResources(study: CourseStudy, resources: CourseResource[]): v
 
 function courseStudy(pages: CoursePage[], resources: CourseResource[]): CourseStudy | null {
   const calendar = pages.find(page => slugTitle(page.title) === 'calendar')
-  const study = (calendar && parseCalendarUnits(calendar.content)) || unitsFromResources(resources)
+  // last, the session table of a readings page (18.100b has neither calendar nor numbered notes)
+  const readings = pages.find(page => /^readings|^lecture-notes/.test(slugTitle(page.title)))
+  const study =
+    (calendar && parseCalendarUnits(calendar.content)) ||
+    unitsFromResources(resources) ||
+    (readings && parseCalendarUnits(readings.content, false))
   if (!study) return null
   attachUnitResources(study, resources)
   return study

@@ -5,6 +5,7 @@ import {
   QuartzComponentProps,
 } from '../types/component'
 import { CourseView, courseDirOf, courseOf } from '../util/course'
+import { BOLD_LEAD, STATEMENT_KINDS, statementRowId, termAnchor } from '../util/course-statements'
 import { classNames } from '../util/lang'
 import { MathText } from '../util/math-text'
 import { FullSlug, resolveRelative } from '../util/path'
@@ -16,16 +17,6 @@ import style from './styles/course.scss'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-/** Callout kinds that state something; proofs, examples, remarks and figures stay out. */
-const STATEMENT_KINDS = new Set([
-  'theorem',
-  'lemma',
-  'corollary',
-  'proposition',
-  'definition',
-  'conjecture',
-])
-
 export interface Statement {
   kind: string
   /** `3.1` for a numbered callout; empty for a bold-lead term. */
@@ -33,8 +24,8 @@ export interface Statement {
   name: string
   unit: number
   slug: FullSlug
-  /** Block anchor without `^`; absent for bold leads, which carry no anchor. */
-  anchor?: string
+  /** Block anchor without `^`; a bold lead's comes from the CourseStatements transformer. */
+  anchor: string
   cards: number
   usedBy: string[]
 }
@@ -49,19 +40,24 @@ const body = (file: QuartzPluginData) =>
 /** `> [!theorem|latex] 3.1 Name` callouts paired with the `^theorem-3-1` anchor after them. */
 function calloutStatements(file: QuartzPluginData, unit: number) {
   const out: Omit<Statement, 'cards' | 'usedBy'>[] = []
-  let pending: { kind: string; number: string; name: string } | null = null
+  // by quote depth: a lemma nested in a proof closes with its anchor one level up
+  const pending = new Map<number, { kind: string; number: string; name: string } | null>()
   for (const line of body(file).split('\n')) {
-    const head = /^> \[!(\w+)\|latex\][+-]?\s*(.*)$/.exec(line)
-    if (head) {
+    const [quotes = ''] = /^(?:> ?)*/.exec(line) ?? []
+    const depth = (quotes.match(/>/g) ?? []).length
+    const rest = line.slice(quotes.length)
+    const head = /^\[!(\w+)\|latex\][+-]?\s*(.*)$/.exec(rest)
+    if (head && depth > 0) {
       const kind = head[1].toLowerCase()
       const [, number = '', name = ''] = /^([\d.]+[a-z]?)?\s*(.*)$/i.exec(head[2].trim()) ?? []
-      pending = STATEMENT_KINDS.has(kind) ? { kind, number, name } : null
+      pending.set(depth, STATEMENT_KINDS.has(kind) ? { kind, number, name } : null)
       continue
     }
-    const anchor = /^\^([\w-]+)\s*$/.exec(line)?.[1]
-    if (anchor && pending && anchor.startsWith(`${pending.kind}-`)) {
-      out.push({ ...pending, unit, slug: file.slug as FullSlug, anchor })
-      pending = null
+    const anchor = /^\^([\w-]+)\s*$/.exec(rest)?.[1]
+    const open = pending.get(depth + 1)
+    if (anchor && open && anchor.startsWith(`${open.kind}-`)) {
+      out.push({ ...open, unit, slug: file.slug as FullSlug, anchor })
+      pending.set(depth + 1, null)
     }
   }
   return out
@@ -69,12 +65,13 @@ function calloutStatements(file: QuartzPluginData, unit: number) {
 
 /** `**Name.**` at the start of a paragraph in an authored note: a term, often a definition. */
 function boldLeads(file: QuartzPluginData, unit: number): Omit<Statement, 'cards' | 'usedBy'>[] {
-  return Array.from(body(file).matchAll(/^\*\*([^*\n]{2,60}?)\.\*\*/gm), match => ({
+  return Array.from(body(file).matchAll(BOLD_LEAD), match => ({
     kind: 'term',
     number: '',
     name: match[1],
     unit,
     slug: file.slug as FullSlug,
+    anchor: termAnchor(match[1]),
   }))
 }
 
@@ -105,7 +102,7 @@ export function courseStatements(view: CourseView): Statement[] {
         uses.set(use.anchor, [...(uses.get(use.anchor) ?? []), `pset ${n} #${problem.n}`])
       }
   return found.map(statement => {
-    const anchor = statement.anchor
+    const anchor = statement.kind === 'term' ? undefined : statement.anchor
     const cited = anchor
       ? cards.filter(card => card.raw.includes(`${statement.slug}#^${anchor}`)).length
       : cards.filter(
@@ -180,11 +177,12 @@ export default (() => {
               <tbody>
                 {statements.map(statement => {
                   const label = [statement.number, statement.name].filter(Boolean).join(' ')
-                  const href =
-                    resolveRelative(from, statement.slug) +
-                    (statement.anchor ? `#${statement.anchor}` : '')
+                  const href = `${resolveRelative(from, statement.slug)}#${statement.anchor}`
                   return (
-                    <tr class="course-unit-row">
+                    <tr
+                      class="course-unit-row"
+                      id={statementRowId(statement.unit, statement.anchor)}
+                    >
                       <td class="course-num course-c-lec">{pad(statement.unit)}</td>
                       <td class="course-c-kind">{statement.kind}</td>
                       <td>

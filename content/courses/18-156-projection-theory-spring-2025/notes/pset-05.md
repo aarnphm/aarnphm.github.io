@@ -100,7 +100,7 @@ Using this, check that if $|X| = N^\alpha$ with $\alpha > 1/2$, then most $p \in
 
 c. On the other hand, if $|X| = N^\alpha$ with $\alpha < 1/2$, then there is no smoothing effect. Suppose $\alpha < 1/2$. If $X$ is an arithmetic progression of length $N^\alpha$, then show that for each $p \in P_{N^{1/2}}$, the support of $(\pi_p 1_X)^{*r}$ has size $\lesssim r N^\alpha$, which is much smaller than $p$.
 
-d. The bound ([[courses/18-156-projection-theory-spring-2025/notes/00#eq-2|2]]) can actually be improved a little, especially if $r$ is small like $r=2$. This is good practice for a common Fourier analysis tactic: noticing when $L^2$ norms appear and estimating them with Plancherel. First recall that the large sieve inequality tells us that
+d. The bound ([[courses/18-156-projection-theory-spring-2025/notes/pset-05#eq-2|2]]) can actually be improved a little, especially if $r$ is small like $r=2$. This is good practice for a common Fourier analysis tactic: noticing when $L^2$ norms appear and estimating them with Plancherel. First recall that the large sieve inequality tells us that
 
 <a id="eq-3" class="latex-eq"></a>
 
@@ -116,7 +116,7 @@ $$
 \sum_{p \in P_{N^{1/2}}} \frac{1}{p} \sum_{\alpha \in \mathbb{Z}_p^*}  \left| \widehat{\pi_p 1_X} (\alpha) \right|^2   \lesssim N^{1/2} |X|, \tag{4}
 $$
 
-If you look back at the proof you did in Part b, a quantity similar to the left-hand side of ([[courses/18-156-projection-theory-spring-2025/notes/00#eq-4|4]]) appears, and so you can take advantage of this bound. In this way, you can improve ([[courses/18-156-projection-theory-spring-2025/notes/00#eq-2|2]]) to the following. For 90 % of $p \in P_{N^{1/2}}$,
+If you look back at the proof you did in Part b, a quantity similar to the left-hand side of ([[courses/18-156-projection-theory-spring-2025/notes/pset-05#eq-4|4]]) appears, and so you can take advantage of this bound. In this way, you can improve ([[courses/18-156-projection-theory-spring-2025/notes/pset-05#eq-2|2]]) to the following. For 90 % of $p \in P_{N^{1/2}}$,
 
 <a id="eq-5" class="latex-eq"></a>
 
@@ -126,11 +126,11 @@ $$
 
 Optional exploration. In the example in 2c, $X$ is an arithmetic progression and so $1_X^{*r}$ is itself very concentrated. This causes $\pi_p 1_X^{*r}$ to be concentrated. But what if $1_X^{*r}$ is not concentrated? Can we get a better estimate for $\pi_p 1_X^{*r}$?
 
-For a precise question, suppose that $X \subset [N]$ with $|X| \sim N^{1/2}$, and suppose that $\| 1_X^{*2} \|_{L^\infty} \lessapprox 1$. For most $p \in P_{N^{1/2}}$, can we prove a bound for $\| (\pi_p 1_X)^{*2}_h \|_{L^\infty(\mathbb{Z}_p)}$ which improves on ([[courses/18-156-projection-theory-spring-2025/notes/00#eq-5|5]])?
+For a precise question, suppose that $X \subset [N]$ with $|X| \sim N^{1/2}$, and suppose that $\| 1_X^{*2} \|_{L^\infty} \lessapprox 1$. For most $p \in P_{N^{1/2}}$, can we prove a bound for $\| (\pi_p 1_X)^{*2}_h \|_{L^\infty(\mathbb{Z}_p)}$ which improves on ([[courses/18-156-projection-theory-spring-2025/notes/pset-05#eq-5|5]])?
 
 I don't know the answer to this question. I'm curious about it and I'm not sure how difficult it is.
 
-This optional question is somewhat analogous to improving the Bombieri-Vinogradov theorem to the range $q > N^{1/2}$. In the setting of the Bombieri-Vinogradov theorem, we would want a similar estimate with multiplicative convolution instead of additive convolution. In that setup, we would have $X \subset [N^{1/2}]$ with $|X| \approx N^{1/2}$ and we would study $1_X *_M 1_X$. Because a number $n \le N$ has $\lessapprox 1$ factors, we automatically get $\| 1_X *_M 1_X \|_{L^\infty} \lessapprox 1$. Using the large sieve as in Bombieri-Vinogradov, we get the following bound, which matches ([[courses/18-156-projection-theory-spring-2025/notes/00#eq-5|5]]) when $r=2$: for most $p \in P_{N^{1/2}}$,
+This optional question is somewhat analogous to improving the Bombieri-Vinogradov theorem to the range $q > N^{1/2}$. In the setting of the Bombieri-Vinogradov theorem, we would want a similar estimate with multiplicative convolution instead of additive convolution. In that setup, we would have $X \subset [N^{1/2}]$ with $|X| \approx N^{1/2}$ and we would study $1_X *_M 1_X$. Because a number $n \le N$ has $\lessapprox 1$ factors, we automatically get $\| 1_X *_M 1_X \|_{L^\infty} \lessapprox 1$. Using the large sieve as in Bombieri-Vinogradov, we get the following bound, which matches ([[courses/18-156-projection-theory-spring-2025/notes/pset-05#eq-5|5]]) when $r=2$: for most $p \in P_{N^{1/2}}$,
 
 <a id="eq-6" class="latex-eq"></a>
 

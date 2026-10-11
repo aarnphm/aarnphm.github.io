@@ -368,6 +368,10 @@
 
 .course-selection-actions {
   position: fixed;
+  // Measure at the viewport origin, not at the launcher's corner, so flip sees the real size.
+  top: 0;
+  left: 0;
+  width: max-content;
   z-index: var(--z-popover);
   display: flex;
   flex-wrap: wrap;

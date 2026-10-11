@@ -19,17 +19,24 @@ export function SelectionActions({
     if (!floating) return
     let disposed = false
     const reference = {
+      // Union of the painted line boxes, so the toolbar centers on the text. A range that ends at
+      // offset 0 of the next block (triple-click) also reports an empty rect there, which is skipped.
       getBoundingClientRect: () => {
-        const rects = range.getClientRects()
-        return rects[rects.length - 1] ?? range.getBoundingClientRect()
+        const rects = [...range.getClientRects()].filter(rect => rect.width > 0)
+        if (!rects.length) return range.getBoundingClientRect()
+        const left = Math.min(...rects.map(rect => rect.left))
+        const top = Math.min(...rects.map(rect => rect.top))
+        const right = Math.max(...rects.map(rect => rect.right))
+        const bottom = Math.max(...rects.map(rect => rect.bottom))
+        return new DOMRect(left, top, right - left, bottom - top)
       },
       contextElement: range.endContainer.parentElement ?? undefined,
     }
     const cleanup = autoUpdate(reference, floating, async () => {
       const { x, y } = await computePosition(reference, floating, {
-        placement: 'bottom-start',
+        placement: 'bottom',
         strategy: 'fixed',
-        middleware: [offset(6), flip({ padding: 12 }), shift({ padding: 12 })],
+        middleware: [offset(6), flip({ padding: 12 }), shift({ padding: 12, crossAxis: true })],
       })
       if (!disposed)
         Object.assign(floating.style, { left: `${x}px`, top: `${y}px`, visibility: 'visible' })

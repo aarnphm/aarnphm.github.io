@@ -780,6 +780,8 @@ export interface ConvertOptions {
   /** `notes/<nn>` slug for section n; used by `\ref` targets. */
   noteSlug: (section: number) => string
   mode: 'notes' | 'pset'
+  /** Statement anchor → `slug#^anchor` of the notes statement it restates; `\ref`s follow it. */
+  restates?: (statements: StatementText[]) => Map<string, string>
 }
 
 export interface ConvertedSection {
@@ -796,9 +798,20 @@ export interface ConvertedSection {
   unhandled: string[]
 }
 
+/** A numbered statement's rendered body, for matching a pset's restatement to the notes. */
+export interface StatementText {
+  anchor: string
+  section: number
+  number: string
+  title: string
+  text: string
+  line: number
+}
+
 export interface ConvertedDocument {
   sections: ConvertedSection[]
   labels: Map<string, LabelEntry>
+  statements: StatementText[]
   report: string[]
   katexErrors: string[]
 }
@@ -902,6 +915,7 @@ function mathToPlain(src: string): string {
 
 class Converter {
   readonly labels = new Map<string, LabelEntry>()
+  readonly statements: StatementText[] = []
   readonly report: string[] = []
   readonly katexErrors: string[] = []
   readonly refs: { placeholder: string; key: string; kind: 'ref' | 'eqref'; line: number }[] = []
@@ -1343,6 +1357,14 @@ class Converter {
       ? `> [!${calloutType}|latex] ${number}${title && !mathInTitle ? ` ${title}` : ''}`
       : `> [!${calloutType}|latex] ${theorem.name} ${number}${title && !mathInTitle ? `. ${title}` : ''}`
     const body = this.blocks(children)
+    this.statements.push({
+      anchor,
+      section: this.counters.section,
+      number,
+      title,
+      text: body.join('\n\n'),
+      line: node.line,
+    })
     if (mathInTitle) body.unshift(`_(${title})_`)
     const page = this.options.pageLink?.(node.line) ?? null
     if (page) body.push(`[p. ${page.page}](${page.href})`)
@@ -1670,6 +1692,7 @@ class Converter {
 
   /** Replaces `\ref` placeholders once every label is known. */
   resolveRefs(sections: ConvertedSection[]): void {
+    const restated = this.options.restates?.(this.statements) ?? new Map<string, string>()
     const resolve = (ref: (typeof this.refs)[number]): string => {
       const entry = this.labels.get(ref.key)
       if (!entry) {
@@ -1680,6 +1703,8 @@ class Converter {
       const slug = this.options.noteSlug(entry.section)
       if (entry.kind === 'section') return `[[${slug}|${value}]]`
       if (entry.kind === 'equation' && entry.anchor) return `[[${slug}#${entry.anchor}|${value}]]`
+      const target = entry.anchor ? restated.get(entry.anchor) : undefined
+      if (target) return `[[${target}|${value}]]`
       if (entry.anchor) return `[[${slug}#^${entry.anchor}|${value}]]`
       return value
     }
@@ -1806,6 +1831,7 @@ export function convertLatexDocument(source: string, options: ConvertOptions): C
   return {
     sections,
     labels: converter.labels,
+    statements: converter.statements,
     report: [
       ...converter.report,
       ...preamble.bodyDefinitions.map(entry => `definition in body: ${entry}`),
@@ -1921,6 +1947,77 @@ function jaccard(a: string, b: string): number {
   let shared = 0
   for (const word of left) if (right.has(word)) shared++
   return shared / (left.size + right.size - shared)
+}
+
+/** Normalized token bigrams of a statement body; spelling variants of one symbol collapse. */
+function statementBigrams(text: string): Set<string> {
+  const words = Array.from(
+    text
+      .replace(/\uE000REF\d+\uE000/g, ' ')
+      .replace(/\\\|/g, '||')
+      .replace(/\\(?:le|leq)\b/g, '≤')
+      .replace(/\\(?:ge|geq)\b/g, '≥')
+      .replace(/\\rightarrow\b/g, '\\to')
+      .replace(/\\[dt]frac\b/g, '\\frac')
+      .replace(/\\(?:left|right|big|Big|bigg|Bigg)\b/g, '')
+      .matchAll(/\\[A-Za-z]+|[A-Za-z]+|[^\sA-Za-z0-9{}$>]/g),
+    match => match[0].toLowerCase(),
+  )
+  const out = new Set<string>()
+  for (let i = 0; i + 1 < words.length; i++) out.add(`${words[i]} ${words[i + 1]}`)
+  return out
+}
+
+function setJaccard(left: Set<string>, right: Set<string>): number {
+  let shared = 0
+  for (const item of left) if (right.has(item)) shared++
+  return shared === 0 ? 0 : shared / (left.size + right.size - shared)
+}
+
+/**
+ * Pairs each pset statement with the notes statement it restates. On 18.156 restatements score
+ * 0.46 to 0.97 and the best wrong candidate 0.36, so 0.4 separates them. Pairs are one to one,
+ * best score first, so a pset variant beside its restatement stays the pset's own; the notes
+ * repeat some statements word for word, and only the first copy is a candidate.
+ */
+function restatementMatcher(
+  notes: StatementText[],
+  noteSlug: (section: number) => string,
+  report: string[],
+  source: string,
+): (statements: StatementText[]) => Map<string, string> {
+  const seen = new Set<string>()
+  const candidates = notes.flatMap(statement => {
+    const key = statementBigrams(statement.text)
+    const fingerprint = Array.from(key).sort().join('\n')
+    if (seen.has(fingerprint)) return []
+    seen.add(fingerprint)
+    return [{ statement, key }]
+  })
+  return statements => {
+    const pairs = statements
+      .flatMap(statement => {
+        const key = statementBigrams(statement.text)
+        return candidates.map(candidate => ({
+          statement,
+          note: candidate.statement,
+          score: setJaccard(key, candidate.key),
+        }))
+      })
+      .filter(pair => pair.score >= 0.4)
+      .sort((a, b) => b.score - a.score)
+    const out = new Map<string, string>()
+    const taken = new Set<string>()
+    for (const pair of pairs) {
+      if (out.has(pair.statement.anchor) || taken.has(pair.note.anchor)) continue
+      out.set(pair.statement.anchor, `${noteSlug(pair.note.section)}#^${pair.note.anchor}`)
+      taken.add(pair.note.anchor)
+      report.push(
+        `${source}: ${pair.statement.anchor} restates ${pair.note.anchor} (${pair.score.toFixed(2)})`,
+      )
+    }
+    return out
+  }
 }
 
 const lectureNumberRe = /\blec(?:ture)?[\s_#]*0*(\d+)\b/i
@@ -2185,6 +2282,7 @@ export async function convertLatexCourse(input: LatexCourseInput): Promise<Latex
     )
 
   let preambleForFigures: Preamble | null = null
+  let noteStatements: StatementText[] = []
 
   if (full) {
     const sourcePath = path.join(input.root, 'static_resources', full.localFile)
@@ -2227,6 +2325,7 @@ export async function convertLatexCourse(input: LatexCourseInput): Promise<Latex
     })
     void pending
     report.push(...doc.report)
+    noteStatements = doc.statements
     if (doc.katexErrors.length > 0) {
       throw new LatexGateError(
         `${full.localFile}: KaTeX refused ${doc.katexErrors.length} expression(s):\n  ${doc.katexErrors.slice(0, 12).join('\n  ')}`,
@@ -2393,7 +2492,12 @@ export async function convertLatexCourse(input: LatexCourseInput): Promise<Latex
     const n = problemSetNumber(resource)!
     const sourcePath = path.join(input.root, 'static_resources', resource.localFile)
     const source = await fs.readFile(sourcePath, 'utf8')
-    const doc = convertLatexDocument(source, { mode: 'pset', noteSlug })
+    const slug = `${input.slug}/notes/pset-${pad(n)}`
+    const doc = convertLatexDocument(source, {
+      mode: 'pset',
+      noteSlug: () => slug,
+      restates: restatementMatcher(noteStatements, noteSlug, report, resource.localFile),
+    })
     report.push(...doc.report.map(entry => `${resource.localFile}: ${entry}`))
     if (doc.katexErrors.length > 0) {
       throw new LatexGateError(
@@ -2448,14 +2552,14 @@ export async function convertLatexCourse(input: LatexCourseInput): Promise<Latex
     ])
     files.set(path.join(notesDir, `pset-${pad(n)}.md`), `${head}\n\n${body}\n`)
     psetNotes.push({
-      slug: `${input.slug}/notes/pset-${pad(n)}`,
+      slug,
       n,
       title: `problem set ${pad(n)}`,
       date: '',
       pages: null,
       statements: section.statements,
     })
-    pointers.set(resource.relDir, `${input.slug}/notes/pset-${pad(n)}`)
+    pointers.set(resource.relDir, slug)
     for (const figure of section.figures) figureJobs.push({ ...figure, section })
   }
 
