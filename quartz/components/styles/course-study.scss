@@ -111,6 +111,8 @@
 .course-promote {
   grid-column: 1 / -1;
   min-width: 0;
+  // the strip's link cells align right; the preview reads left to right
+  text-align: start;
 
   > summary {
     width: fit-content;
@@ -214,6 +216,12 @@
 
 // statement index
 .course-statements {
+  // the desk sits in the one-column course-home grid here, so the page grid's byline column
+  // would open implicit tracks and push the table to the far edge
+  > .course-desk {
+    grid-column: 1 / -1;
+  }
+
   .course-c-kind,
   .course-c-lec,
   .course-c-cards {
