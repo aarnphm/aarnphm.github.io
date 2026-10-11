@@ -6,6 +6,8 @@
   --pk-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --pk-selected: color-mix(in srgb, var(--secondary) 26%, var(--light));
   --pk-control: 1.75rem;
+  // One inline inset for header, controls and help line, so their edges line up.
+  --pk-pad: 0.85rem;
   --pk-offset: 0, 0.75rem;
   position: fixed;
   inset: 0;
@@ -100,7 +102,7 @@
   gap: 0.75rem;
   min-height: calc(var(--pk-control) + 0.5rem + 1px);
   padding-block: 0.25rem;
-  padding-inline: 0.75rem 0.25rem;
+  padding-inline: var(--pk-pad);
   border-bottom: 1px solid var(--pk-line);
   font-family: var(--codeFont);
   font-size: 0.7rem;
@@ -121,6 +123,8 @@
     justify-content: center;
     width: var(--pk-control);
     height: var(--pk-control);
+    // Pull the hit area outward so the 1rem glyph, not the button box, meets the inset.
+    margin-inline-end: calc((1rem - var(--pk-control)) / 2);
     padding: 0;
     color: var(--darkgray);
     background: transparent;
@@ -266,7 +270,7 @@
 .press-kit-controls {
   min-width: 0;
   min-height: 0;
-  padding: 0.85rem 0.85rem 1rem;
+  padding: var(--pk-pad) var(--pk-pad) 1rem;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
@@ -326,11 +330,15 @@
   min-width: 0;
   min-height: var(--pk-control);
   padding: 0.35rem 0.45rem;
+  border: 0;
+  border-radius: 0;
   background: var(--light);
   color: var(--darkgray);
   font-family: var(--codeFont);
   font-size: 0.66rem;
+  font-weight: 400;
   line-height: 1.2;
+  text-align: left;
   cursor: pointer;
 
   input {
@@ -348,18 +356,20 @@
     font-size: 0.56rem;
   }
 
-  &:has(input:checked) {
+  &:has(input:checked),
+  &[aria-pressed='true'] {
     color: var(--dark);
     background: var(--pk-selected);
   }
 
-  &:has(input:focus-visible) {
+  &:has(input:focus-visible),
+  &:focus-visible {
     outline: 2px solid var(--secondary);
     outline-offset: -2px;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    &:not(:has(input:checked)):hover {
+    &:not(:has(input:checked), [aria-pressed='true']):hover {
       color: var(--dark);
       background: var(--pk-surface);
     }
@@ -392,29 +402,12 @@
   }
 }
 
-.press-kit-checks {
+.press-kit-includes {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem 1rem;
-}
 
-.press-kit-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  min-height: 1.5rem;
-  color: var(--darkgray);
-  font-family: var(--codeFont);
-  font-size: 0.68rem;
-  cursor: pointer;
-
-  input {
-    margin: 0;
-    accent-color: var(--dark);
-  }
-
-  &:has(input:checked) {
-    color: var(--dark);
+  > .press-kit-segment {
+    flex: 1 0 auto;
   }
 }
 
@@ -524,6 +517,17 @@
   }
 }
 
+.press-kit-intent {
+  width: var(--pk-control);
+  padding: 0;
+  color: var(--darkgray);
+
+  svg {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+}
+
 .press-kit-action[data-action='download'] {
   border-color: var(--dark);
   background: var(--dark);
@@ -554,7 +558,7 @@
 .press-kit-help {
   flex: none;
   margin: 0;
-  padding: 0.4rem 0.75rem;
+  padding: 0.4rem var(--pk-pad);
   border-top: 1px solid var(--pk-line);
   color: var(--darkgray);
   font-family: var(--codeFont);

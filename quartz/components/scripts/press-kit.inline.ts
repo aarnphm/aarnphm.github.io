@@ -74,12 +74,20 @@ let quote: Quote = { runs: [], chosen: false }
 let anchor = 'page'
 let format: FormatKey = 'portrait'
 let theme: ThemeKey = 'papier'
-const show = { description: true, excerpt: false, meta: true, highlight: false, section: true }
+const show = {
+  art: false,
+  description: true,
+  excerpt: false,
+  meta: true,
+  highlight: false,
+  section: true,
+}
 let noteEdited = false
 let anchorSelect: Select<string> | null = null
 let unmountAnchor: (() => void) | null = null
 let fonts: Fonts | null = null
 let avatar: HTMLImageElement | undefined
+let art: HTMLImageElement | undefined
 let frame = 0
 let blob: Promise<Blob | null> | null = null
 let blobTimer = 0
@@ -101,8 +109,10 @@ function readPrefs() {
     const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? 'null') as {
       format?: FormatKey
       theme?: ThemeKey
+      art?: boolean
     } | null
     if (saved?.format && FORMAT_KEYS.includes(saved.format)) format = saved.format
+    if (typeof saved?.art === 'boolean') show.art = saved.art
     if (saved?.theme && THEME_KEYS.includes(saved.theme)) {
       theme = saved.theme
       return
@@ -113,7 +123,7 @@ function readPrefs() {
 
 function writePrefs() {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ format, theme }))
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ format, theme, art: show.art }))
   } catch {}
 }
 
@@ -149,6 +159,20 @@ function loadAvatar() {
   img.onload = () => {
     avatar = img
     if (subject?.kind === 'entry') schedule()
+  }
+}
+
+// The base social card; same-origin, so drawing it leaves the canvas exportable.
+const ART_SRC = '/static/og-image.webp'
+
+function loadArt() {
+  if (art) return
+  const img = new Image()
+  img.decoding = 'async'
+  img.src = ART_SRC
+  img.onload = () => {
+    art = img
+    if (show.art) schedule()
   }
 }
 
@@ -294,12 +318,6 @@ function shareUrl(): string {
   return subject.url
 }
 
-function cardUrl(): string {
-  if (!subject) return ''
-  const section = tab === 'quote' && show.section ? sectionForCard() : undefined
-  return display(section ? `${subject.url.split('#')[0]}#${section.id}` : subject.url)
-}
-
 function model(): CardModel {
   const s = subject!
   const section = sectionForCard()
@@ -313,10 +331,10 @@ function model(): CardModel {
     date: s.date,
     reading: s.reading,
     tags: s.tags,
-    url: cardUrl(),
     section: section ? headingText(section) : undefined,
     author: kind === 'entry' ? page!.handle : page!.author,
     avatar,
+    art,
     show: { ...show, excerpt: kind === 'entry' || show.excerpt },
   }
 }
@@ -572,13 +590,11 @@ function renderLinks() {
     count.toggleAttribute('data-over', used > X_LIMIT)
   }
   const image = $<HTMLImageElement>('.press-kit-unfurl-image')
-  const og =
-    subject?.kind === 'entry'
-      ? null
-      : document.querySelector<HTMLMetaElement>('meta[property="og:image"]')?.content
-  if (image) {
-    const src = og ?? '/static/og-image.webp'
-    if (image.getAttribute('src') !== src) image.src = src
+  if (image && image.getAttribute('src') !== ART_SRC) {
+    // A missing card image collapses the preview to its text rather than a broken frame.
+    image.hidden = false
+    image.onerror = () => (image.hidden = true)
+    image.src = ART_SRC
   }
   const title = $('.press-kit-unfurl-title')
   if (title) title.textContent = titleText()
@@ -621,8 +637,8 @@ function syncControls() {
   dialog
     .querySelectorAll<HTMLInputElement>('input[name="press-kit-theme"]')
     .forEach(input => (input.checked = input.value === theme))
-  dialog.querySelectorAll<HTMLInputElement>('.press-kit-check input').forEach(input => {
-    input.checked = show[input.name as keyof typeof show]
+  dialog.querySelectorAll<HTMLButtonElement>('[data-include]').forEach(button => {
+    if (isIncludeKey(button.name)) button.setAttribute('aria-pressed', String(show[button.name]))
   })
   const textarea = $<HTMLTextAreaElement>('#press-kit-quote')
   if (textarea && document.activeElement !== textarea) textarea.value = runsToText(quote.runs)
@@ -647,6 +663,7 @@ function open(request: OpenRequest = {}) {
   fonts = resolveFonts()
   loadFonts(fonts)
   loadAvatar()
+  loadArt()
 
   subject = request.entry ? entrySubject(request.entry, request.entryUrl) : pageSubject()
   const recent =
@@ -788,6 +805,10 @@ function onSelectionSettled() {
   showPill(range)
 }
 
+function isIncludeKey(name: string): name is keyof CardModel['show'] {
+  return Object.hasOwn(show, name)
+}
+
 function bindDialog(signal: AbortSignal) {
   const modal = dialog!
   modal.addEventListener('keydown', onDialogKeyDown, { signal })
@@ -820,6 +841,19 @@ function bindDialog(signal: AbortSignal) {
     .forEach(button =>
       button.addEventListener('click', () => setTab(button.dataset.tab as PressKitTab), { signal }),
     )
+  modal.querySelectorAll<HTMLButtonElement>('[data-include]').forEach(button => {
+    button.addEventListener(
+      'click',
+      () => {
+        if (!isIncludeKey(button.name)) return
+        show[button.name] = !show[button.name]
+        button.setAttribute('aria-pressed', String(show[button.name]))
+        writePrefs()
+        schedule()
+      },
+      { signal },
+    )
+  })
   modal.addEventListener(
     'change',
     event => {
@@ -827,9 +861,7 @@ function bindDialog(signal: AbortSignal) {
       if (!(input instanceof HTMLInputElement)) return
       if (input.name === 'press-kit-format') format = input.value as FormatKey
       else if (input.name === 'press-kit-theme') theme = input.value as ThemeKey
-      else if (input.type === 'checkbox' && input.name in show) {
-        show[input.name as keyof typeof show] = input.checked
-      } else return
+      else return
       writePrefs()
       schedule()
     },
