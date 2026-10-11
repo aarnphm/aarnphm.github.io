@@ -44,6 +44,7 @@ import {
   paintBarn,
   paintBeast,
   paintFarmer,
+  paintTrough,
   poseHerd,
   stepHerd,
 } from './404-herd'
@@ -1259,8 +1260,10 @@ export function paintPark(
   paintBarn(d, g, ink.herd, p.herd)
   if (dark) lamp(col(g, BARN[0]), row(g, BARN[1]) - 4)
   paintFarmer(d, g, ink.herd, p.herd, p.time)
+  paintTrough(d, g, ink.herd, p.herd)
   const farmer = p.herd.farmer
-  if (dark && farmer.chore !== 'home') lamp(col(g, farmer.x) + farmer.face, row(g, farmer.y) - 2)
+  if (dark && farmer.chore !== 'home' && farmer.chore !== 'make')
+    lamp(col(g, farmer.x) + farmer.face, row(g, farmer.y) - 2)
   p.leaning.forEach((b, n) => {
     dot(d, g, hi - 3 - n, hj - 1, ink.tyre)
     dot(d, g, hi - 3 - n, hj - 2, ink.frames[b.frame % ink.frames.length])

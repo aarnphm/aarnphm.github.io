@@ -2,6 +2,10 @@
 // crack down its flank and moss on its back. It sleeps. A pointer nearby makes it peek with one
 // eye; the open portal wakes it with round pupils and a puffed tail. Awake, it blinks, and it
 // twitches an ear on every impulse of the clock. Now and then the tip of its tail flicks.
+// Every few minutes it gets up and walks the crest, up toward the gate or down toward the water,
+// stands there a while with its tail up, and comes home to lie down again facing the gate. A fish
+// thrown up the bank from the boat (404-angler.ts) it eats where it lies, eyes shut, and leaves the
+// bones.
 // Each part is its own blob, painted back to front, so the head, the tail and the paws are
 // outlined where they lie over the body.
 
@@ -21,8 +25,11 @@ import {
   row,
   segment,
   smin,
+  stamp,
   triangle,
 } from './404-pixel'
+
+type Doing = 'lie' | 'rise' | 'turn' | 'walk' | 'stand' | 'settle'
 
 export type Cat = {
   x: number
@@ -38,12 +45,51 @@ export type Cat = {
   nextFlick: number
   puff: number
   look: number
+  // -1 facing the gate, as it lies at home.
+  face: number
+  doing: Doing
+  t: number
+  // Where it is walking to, how long it stands there, and seconds until it next gets up.
+  to: number
+  until: number
+  roam: number
+  // 0 lying, 1 on its feet; the walk's progress in strides; the head down to eat.
+  stand: number
+  gait: number
+  dip: number
+  // Where its frame sits on the ground, and how far it pitches with the slope under its feet.
+  oy: number
+  pitch: number
+  // A thrown fish on its way, the one it is eating (1 whole, 0 gone), and the bones it leaves.
+  coming: boolean
+  meal: { x: number; y: number; left: number } | null
+  bones: number
 }
 
-export type CatInk = { stone: Tones; moss: Tones; eye: RGB; nose: RGB; ear: RGB; flowers: RGB[] }
+export type CatInk = {
+  stone: Tones
+  moss: Tones
+  eye: RGB
+  nose: RGB
+  ear: RGB
+  flowers: RGB[]
+  fish: RGB
+}
 
-// Where the chest meets the ground, and the head relative to it.
+// Where the chest meets the ground, and the head relative to it: lying, standing, and down at a
+// fish in front of its paws.
 const HEAD: Pt = [-62, -50]
+const UP_HEAD: Pt = [-72, -80]
+const DOWN_HEAD: Pt = [-80, -26]
+// The shelf on the flank it lies on, the spots it walks to up and down the crest, its pace in units
+// a second, and the ground covered in a full cycle of its legs.
+const HOME = 1250
+const UPHILL = 1140
+const DOWNHILL = 1385
+const PACE = 12
+const STRIDE = 52
+// Where a thrown fish lands, in front of its paws.
+const MEAL = 104
 
 export function makeCat(x: number, ground: number): Cat {
   return {
@@ -59,10 +105,46 @@ export function makeCat(x: number, ground: number): Cat {
     nextFlick: 5,
     puff: 0,
     look: 0,
+    face: -1,
+    doing: 'lie',
+    t: 0,
+    to: x,
+    until: 0,
+    roam: 60 + Math.random() * 240,
+    stand: 0,
+    gait: 0,
+    dip: 0,
+    oy: ground + 2,
+    pitch: 0,
+    coming: false,
+    meal: null,
+    bones: 0,
   }
 }
 
-export const catHead = (c: Cat): Pt => [c.x + HEAD[0], c.y + HEAD[1]]
+// A local point on the cat, x toward its tail and y down, to the scene.
+function world(c: Cat, x: number, y: number): Pt {
+  const s = -c.face
+  const u = x * Math.cos(c.pitch) - y * Math.sin(c.pitch)
+  const v = x * Math.sin(c.pitch) + y * Math.cos(c.pitch)
+  return [c.x + u * s, c.oy + v]
+}
+
+const headAt = (c: Cat): Pt => [
+  HEAD[0] + (UP_HEAD[0] - HEAD[0]) * c.stand + (DOWN_HEAD[0] - HEAD[0]) * c.dip,
+  HEAD[1] + (UP_HEAD[1] - HEAD[1]) * c.stand + (DOWN_HEAD[1] - HEAD[1]) * c.dip,
+]
+
+export const catHead = (c: Cat): Pt => world(c, ...headAt(c))
+
+// Where a fish thrown to it should land: in front of its paws while it lies at home with nothing
+// to eat, or nowhere.
+export function mealFor(c: Cat, ground: (x: number) => number): Pt | null {
+  if (c.doing !== 'lie' || c.stand > 0 || c.meal || c.coming || c.bones > 0 || c.puff > 0.2)
+    return null
+  const x = c.x - MEAL
+  return [x, ground(x) + 2]
+}
 
 const NEAR = 260
 const near = (c: Cat, pointer: { x: number; y: number }) => {
@@ -91,9 +173,13 @@ export function stepCat(
   pointer: { x: number; y: number },
   heat: number,
   impulse: boolean,
+  ground: (x: number) => number,
 ) {
+  const hot = heat > 0.3
   c.near = near(c, pointer) ? c.near + dt : 0
-  const target = heat > 0.3 ? 2 : c.near > 0.35 ? 1 : 0
+  // Up and about, or with a fish coming, it is wide awake.
+  const busy = c.stand > 0.3 || c.coming || !!c.meal
+  const target = hot || busy ? 2 : c.near > 0.35 ? 1 : 0
   // Quick to wake, slow to settle.
   if (target > c.alert) {
     c.alert = target
@@ -105,7 +191,7 @@ export function stepCat(
       c.calm = 0
     }
   } else c.calm = 0
-  gaze(c, pointer, heat > 0.3)
+  gaze(c, pointer, hot)
 
   c.shut = Math.max(0, c.shut - dt)
   c.blink -= dt
@@ -120,7 +206,81 @@ export function stepCat(
     c.flick = 0.6
   }
   c.flick = Math.max(0, c.flick - dt)
-  c.puff += ((heat > 0.3 ? 1 : 0) - c.puff) * Math.min(1, dt * 4)
+  c.puff += ((hot ? 1 : 0) - c.puff) * Math.min(1, dt * 4)
+
+  // Head down to the fish, eaten in five seconds, and the bones left a while.
+  c.bones = Math.max(0, c.bones - dt)
+  if (c.meal) {
+    c.dip = Math.min(1, c.dip + dt / 0.6)
+    if (c.dip >= 1) c.meal.left -= dt / 5
+    if (c.meal.left <= 0) {
+      c.meal = null
+      c.bones = 40
+    }
+  } else c.dip = Math.max(0, c.dip - dt / 0.6)
+
+  stepWalk(c, dt, hot)
+  // Its frame stands on the ground under its feet once it is up, pitched with the slope.
+  const s = -c.face
+  const front = ground(c.x - 40 * s)
+  const hind = ground(c.x + 40 * s)
+  c.y = ground(c.x) + 2
+  c.oy = c.y + ((front + hind) / 2 + 2 - c.y) * c.stand
+  c.pitch = Math.atan2(hind - front, 80) * c.stand
+}
+
+function stepWalk(c: Cat, dt: number, hot: boolean) {
+  c.t += dt
+  const go = (doing: Doing) => {
+    c.doing = doing
+    c.t = 0
+  }
+  // Which way it should face for what comes next: toward where it is going, or the gate at home.
+  const want = c.x === c.to ? -1 : Math.sign(c.to - c.x)
+  switch (c.doing) {
+    case 'lie':
+      c.stand = Math.max(0, c.stand - dt / 1.5)
+      if (hot || c.coming || c.meal || (c.roam -= dt) > 0) break
+      c.to = Math.random() < 0.5 ? UPHILL : DOWNHILL
+      go('rise')
+      break
+    case 'rise':
+      c.stand = Math.min(1, c.stand + dt / 1.2)
+      if (c.stand >= 1) go(want === c.face ? 'walk' : 'turn')
+      break
+    case 'turn':
+      if (c.t < 0.6) break
+      c.face = want
+      go(c.x === c.to ? 'settle' : 'walk')
+      break
+    case 'walk': {
+      // It stops where it is while the portal is open.
+      if (hot) break
+      const gap = c.to - c.x
+      const step = Math.min(Math.abs(gap), PACE * dt)
+      c.x += Math.sign(gap) * step
+      c.gait += step / STRIDE
+      if (Math.abs(c.to - c.x) > 0.01) break
+      c.x = c.to
+      if (c.to === HOME) go(c.face === -1 ? 'settle' : 'turn')
+      else {
+        c.until = 15 + Math.random() * 25
+        go('stand')
+      }
+      break
+    }
+    case 'stand':
+      if (c.t < c.until || hot) break
+      c.to = HOME
+      go(Math.sign(HOME - c.x) === c.face ? 'walk' : 'turn')
+      break
+    case 'settle':
+      c.stand = Math.max(0, c.stand - dt / 1.5)
+      if (c.stand > 0) break
+      c.roam = 150 + Math.random() * 210
+      go('lie')
+      break
+  }
 }
 
 const ellipse = (x: number, y: number, rx: number, ry: number) =>
@@ -132,6 +292,20 @@ function rect(x: number, y: number, x0: number, y0: number, x1: number, y1: numb
   return dx > 0 || dy > 0 ? Math.hypot(Math.max(dx, 0), Math.max(dy, 0)) : Math.max(dx, dy)
 }
 
+const lerp = (a: Pt, b: Pt, t: number): Pt => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]
+
+// The legs in a walk: left hind, left fore, right hind, right fore, a quarter of a cycle apart. Each
+// foot swings forward clear of the ground and stays planted while the body passes over it.
+const LEGS = [
+  { x: 40, off: 0, r: 8 },
+  { x: -36, off: 0.25, r: 7 },
+  { x: 32, off: 0.5, r: 8 },
+  { x: -28, off: 0.75, r: 7 },
+]
+// The fish, eaten from the head down to the bones.
+const FISH = [['F..FF.', '.FFFFF', 'F..FF.'], ['F..F..', '.FFF..', 'F..F..'], ['F.....']]
+const BONES = ['F.F.F.', 'FFFFFF', 'F.F.F.']
+
 export function paintCat(
   d: Uint8ClampedArray,
   g: Grid,
@@ -140,25 +314,62 @@ export function paintCat(
   clock: number,
   ground: (x: number) => number,
 ) {
-  const { x: ox, y: oy } = c
+  const s = -c.face
   const keep = (x: number, y: number) => y <= ground(x) + 2
+  const cos = Math.cos(c.pitch)
+  const sin = Math.sin(c.pitch)
   // Everything below is in the cat's own frame: x to its tail, y down, the chest on the ground.
-  const local = (f: (x: number, y: number) => number) => (x: number, y: number) => f(x - ox, y - oy)
-  const box = (x0: number, y0: number, x1: number, y1: number) =>
-    [ox + x0, oy + y0, ox + x1, oy + y1] as const
+  const local = (f: (x: number, y: number) => number) => (x: number, y: number) => {
+    const u = (x - c.x) * s
+    const v = y - c.oy
+    return f(u * cos + v * sin, -u * sin + v * cos)
+  }
+  const box = (x0: number, y0: number, x1: number, y1: number) => {
+    const corners = [world(c, x0, y0), world(c, x1, y0), world(c, x0, y1), world(c, x1, y1)]
+    const xs = corners.map(p => p[0])
+    const ys = corners.map(p => p[1])
+    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] as const
+  }
+  const pixel = (x: number, y: number): Pt => {
+    const [wx, wy] = world(c, x, y)
+    return [col(g, wx), row(g, wy)]
+  }
   const lumpy = (x: number, y: number, seed: number, k: number) =>
     (noise(x * 0.07, y * 0.07, seed) - 0.5) * k
 
+  // The fish in front of its paws, under the head that comes down to it, then its bones.
+  const dish =
+    c.meal ?? (c.bones > 0 ? { x: c.x - MEAL, y: ground(c.x - MEAL) + 2, left: 0 } : null)
+  if (dish) {
+    const rows = dish.left > 0 ? FISH[dish.left > 0.6 ? 0 : dish.left > 0.25 ? 1 : 2] : BONES
+    const tone = dish.left > 0 ? ink.fish : ink.stone.light
+    stamp(d, g, rows, col(g, dish.x) - 3, row(g, dish.y) - 3, s < 0, () => tone)
+  }
+
+  const stand = c.stand
   // Breathing lifts the back by a pixel, in stop-motion.
   const breath = Math.sin(clock * 1.3) > 0.2 ? g.px * 0.8 : 0
+  const cy = -30 - 22 * stand
+  const ry = 30 - 8 * stand
+  // The legs swing in eight steps to a stride.
+  const gait = Math.floor(c.gait * 8) / 8
+  const feet = LEGS.map(l => {
+    const a = 2 * Math.PI * (gait + l.off)
+    return {
+      top: [l.x, cy + ry * 0.4] as Pt,
+      foot: [l.x - 13 * Math.sin(a), -3 - 5 * Math.max(0, Math.cos(a))] as Pt,
+      r: l.r,
+    }
+  })
   const body = (x: number, y: number) => {
-    let f = ellipse(x, y + 30, 62, 30 + breath)
-    f = smin(f, Math.hypot(x - 36, y + 24) - 30 - breath * 0.5, 14)
-    // The base runs down into the slope, however it falls away under the haunch.
-    f = smin(f, rect(x, y, -54, -30, 60, 40), 10)
+    let f = ellipse(x, y - cy, 62, ry + breath)
+    f = smin(f, Math.hypot(x - 36, y - cy - 6) - 30 + 6 * stand - breath * 0.5, 14)
+    // Lying, the base runs down into the slope, however it falls away under the haunch.
+    if (stand < 0.5) f = smin(f, rect(x, y, -54, -30, 60, 40), 10)
+    else for (const l of feet) f = smin(f, segment(x, y, ...l.top, ...l.foot) - l.r, 6)
     return f + lumpy(x, y, 71, 5)
   }
-  paintBlob(d, g, local(body), box(-72, -70, 72, 44), ink.stone, keep)
+  paintBlob(d, g, local(body), box(-72, -96, 72, 44), ink.stone, keep)
   // A crack down the flank, from when it was rubble.
   const crack: Pt[] = [
     [22, -44],
@@ -166,20 +377,19 @@ export function paintCat(
     [22, -27],
     [28, -18],
   ]
-  for (let k = 1; k < crack.length; k++)
-    line(
-      d,
-      g,
-      col(g, ox + crack[k - 1][0]),
-      row(g, oy + crack[k - 1][1]),
-      col(g, ox + crack[k][0]),
-      row(g, oy + crack[k][1]),
-      ink.stone.ink,
-    )
+  for (let k = 1; k < crack.length; k++) {
+    const [i0, j0] = pixel(crack[k - 1][0], crack[k - 1][1] + cy + 30)
+    const [i1, j1] = pixel(crack[k][0], crack[k][1] + cy + 30)
+    line(d, g, i0, j0, i1, j1, ink.stone.ink)
+  }
 
   // The head tilts when it is curious; the ears prick when the portal opens, and the near one
-  // flattens for a beat at each impulse of the clock.
-  const tilt = c.alert === 1 ? 0.14 : 0
+  // flattens for a beat at each impulse of the clock. The head's shapes are drawn about HEAD and
+  // moved to wherever it is carried.
+  const [hx, hy] = headAt(c)
+  const mx = hx - HEAD[0]
+  const my = hy - HEAD[1] + (stand > 0.5 && Math.floor(c.gait * 8) % 2 ? g.px : 0)
+  const tilt = c.alert === 1 && stand === 0 ? 0.14 : 0
   const perk = c.puff * 5
   const flat = c.twitch > 0 ? 1 : 0
   const earA: [Pt, Pt, Pt] = [
@@ -201,7 +411,7 @@ export function paintCat(
     ]
   }
   const head = (x0: number, y0: number) => {
-    const [x, y] = turn(x0, y0)
+    const [x, y] = turn(x0 - mx, y0 - my)
     let f = Math.hypot(x - HEAD[0], y - HEAD[1]) - 24
     f = smin(f, Math.hypot(x + 75, y + 40) - 13, 8)
     f = smin(f, Math.hypot(x + 50, y + 38) - 13, 8)
@@ -211,17 +421,22 @@ export function paintCat(
     f = smin(f, Math.hypot(x + 48, y + 20) - 16, 10)
     return f + lumpy(x, y, 73, 3)
   }
-  const face = paintBlob(d, g, local(head), box(-100, -104, -24, 0), ink.stone, keep)
-  const hi = col(g, ox + HEAD[0])
-  const hj = row(g, oy + HEAD[1])
+  const face = paintBlob(
+    d,
+    g,
+    local(head),
+    box(-100 + mx, -104 + my, -24 + mx, my),
+    ink.stone,
+    keep,
+  )
+  // A local point on the tilted head, wherever it is carried, to its pixel.
   const pix = (x: number, y: number): Pt => {
-    // Local point on the tilted head to its pixel.
     const dx = x - HEAD[0]
     const dy = y - HEAD[1]
-    return [
-      col(g, ox + HEAD[0] + dx * Math.cos(tilt) - dy * Math.sin(tilt)),
-      row(g, oy + HEAD[1] + dx * Math.sin(tilt) + dy * Math.cos(tilt)),
-    ]
+    return pixel(
+      HEAD[0] + mx + dx * Math.cos(tilt) - dy * Math.sin(tilt),
+      HEAD[1] + my + dx * Math.sin(tilt) + dy * Math.cos(tilt),
+    )
   }
   if (face) {
     for (const ear of [earA, earB]) {
@@ -233,9 +448,19 @@ export function paintCat(
       dot(d, g, ei, ej - 1, ink.ear)
     }
     const k = ink.stone.ink
+    const [hi, hj] = pix(HEAD[0], HEAD[1])
     const ej = hj - 1
     const shut = c.shut > 0
+    // Eating, the eyes are shut tight and turned up at the ends.
+    const eating = c.dip > 0.5
+    const awake = stand > 0.3 ? 2 : c.alert
     const eye = (e: number, open: number) => {
+      if (eating) {
+        dot(d, g, e - 1, ej + 1, k)
+        dot(d, g, e, ej, k)
+        dot(d, g, e + 1, ej + 1, k)
+        return
+      }
       if (open === 0 || shut) {
         dot(d, g, e - 1, ej, k)
         dot(d, g, e, ej + 1, k)
@@ -256,32 +481,43 @@ export function paintCat(
         dot(d, g, q, ej - 1, k)
       }
     }
-    eye(hi - 4, c.alert)
-    eye(hi + 1, c.alert === 2 ? 2 : 0)
-    dot(d, g, hi - 2, hj + 2, ink.nose)
+    eye(hi - 4 * s, awake)
+    eye(hi + s, awake === 2 ? 2 : 0)
+    dot(d, g, hi - 2 * s, hj + 2, ink.nose)
+    // The mouth, working while it eats.
+    const chew = eating && Math.floor(clock * 4) % 2 ? 1 : 0
     for (const [di, dj] of [
       [-4, 3],
       [-3, 4],
-      [-2, 3],
+      [-2, 3 + chew],
       [-1, 4],
       [0, 3],
     ])
-      dot(d, g, hi + di, hj + dj, k)
+      dot(d, g, hi + di * s, hj + dj, k)
     // Whiskers past the cheek.
-    line(d, g, hi - 7, hj + 2, hi - 11, hj + 1, k)
-    line(d, g, hi - 7, hj + 3, hi - 11, hj + 5, k)
+    line(d, g, hi - 7 * s, hj + 2, hi - 11 * s, hj + 1, k)
+    line(d, g, hi - 7 * s, hj + 3, hi - 11 * s, hj + 5, k)
   }
 
-  // The tail wraps the front, its tip lifting when it flicks and fattening when it puffs.
+  // The tail: lying, it wraps the front, its tip lifting when it flicks and fattening when it puffs;
+  // on its feet, it is carried up over the back in a hook.
   const lift = c.flick > 0 ? Math.sin((c.flick / 0.6) * Math.PI) * 12 : 0
   const w = 6 + 2 * c.puff
-  const tail: Pt[] = [
+  const down: Pt[] = [
     [60, -14],
     [50, -4],
     [20, -2],
     [-12, -4],
     [-28, -10 - lift],
   ]
+  const raised: Pt[] = [
+    [56, -48],
+    [72, -60],
+    [82, -80],
+    [78, -100],
+    [66 - lift * 0.5, -104 - lift * 0.5],
+  ]
+  const tail = down.map((p, k) => lerp(p, raised[k], stand))
   const tailField = (x: number, y: number) => {
     let f = 1e9
     for (let k = 1; k < tail.length; k++) {
@@ -290,12 +526,15 @@ export function paintCat(
     }
     return f + lumpy(x, y, 79, 3)
   }
-  paintBlob(d, g, local(tailField), box(-48, -40, 74, 10), ink.stone, keep)
-  const paws = (x: number, y: number) =>
-    Math.min(ellipse(x + 64, y + 3, 11, 6), ellipse(x + 42, y + 1, 11, 6)) + lumpy(x, y, 83, 2)
-  paintBlob(d, g, local(paws), box(-80, -12, -28, 10), ink.stone, keep)
+  paintBlob(d, g, local(tailField), box(-48, -120, 98, 10), ink.stone, keep)
+  if (stand < 0.5) {
+    const paws = (x: number, y: number) =>
+      Math.min(ellipse(x + 64, y + 3, 11, 6), ellipse(x + 42, y + 1, 11, 6)) + lumpy(x, y, 83, 2)
+    paintBlob(d, g, local(paws), box(-80, -12, -28, 10), ink.stone, keep)
+  }
 
   // Moss on its back and behind its head, flowering.
+  const back = cy + 30
   const moss = (x: number, y: number) => {
     let f = 1e9
     for (const [bx, by, r] of [
@@ -305,10 +544,10 @@ export function paintCat(
       [38, -50, 6],
       [-36, -64, 6],
     ])
-      f = smin(f, Math.hypot(x - bx, y - by - breath) - r, 7)
+      f = smin(f, Math.hypot(x - bx, y - by - breath - back) - r, 7)
     return f + lumpy(x, y, 89, 5)
   }
-  const tuft = paintBlob(d, g, local(moss), box(-46, -78, 48, -40), ink.moss, keep)
+  const tuft = paintBlob(d, g, local(moss), box(-46, -78 + back, 48, -40 + back), ink.moss, keep)
   if (tuft)
     interior(tuft, (i, j) => {
       const h = hash(i, j, 89)

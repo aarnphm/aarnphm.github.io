@@ -13,7 +13,7 @@ import { type Grid, type Pt, type RGB, BAYER, col, dot, line, noise, row, stamp 
 
 const WHO = ['ladder', 'rope', 'fisher', 'kid', 'surveyor', 'writer', 'pointer', 'friend'] as const
 type Who = (typeof WHO)[number]
-export type Glyph = '!' | '?'
+export type Glyph = '!' | '?' | '#'
 type Bubble = { who: string; glyph: Glyph; age: number }
 // Who is talking, and the top-middle pixel of each figure that can talk, as last painted.
 export type Voices = { bubbles: Bubble[]; heads: Partial<Record<string, Pt>> }
@@ -33,6 +33,9 @@ export type Crew = {
   bubbles: Bubble[]
   chatter: number
   hot: boolean
+  // Where the cat's would-be friend stands, keeping a little way in front of it wherever it goes.
+  friend: number
+  stroll: boolean
   heads: Partial<Record<string, Pt>>
 }
 
@@ -69,7 +72,9 @@ const SURVEYOR = 610
 const TRIPOD = 634
 const WRITER = 912
 const POINTER = 704
-const FRIEND = 1136
+// The friend stands this far in front of the cat's chest, which is at 1250 while it lies at home.
+const FRIEND = 1120
+const OFFER = 1250 - FRIEND
 
 // Sprites face right; letters are hat, skin, coat, trousers, boots, paper (W), rose (R), fish (F).
 const STAND = ['.HH.', 'HHHH', '.SS.', 'BBBB', '.BB.', '.BB.', '.DD.', '.K.K']
@@ -85,6 +90,8 @@ const FISH = ['F..FF.', '.FFFFF', 'F..FF.']
 const GLYPHS: Record<Glyph, string[]> = {
   '!': ['.K.', '.K.', '.K.', '...', '.K.'],
   '?': ['KK.', '..K', '.K.', '...', '.K.'],
+  // Language.
+  '#': ['K.K', 'KKK', 'K.K', 'KKK', 'K.K'],
 }
 
 export function makeCrew(): Crew {
@@ -101,6 +108,8 @@ export function makeCrew(): Crew {
     bubbles: [],
     chatter: 2.5,
     hot: false,
+    friend: FRIEND,
+    stroll: false,
     heads: {},
   }
 }
@@ -159,6 +168,7 @@ export function stepCrew(
     inflow: number
     impulse: boolean
     turn: (r: number) => number
+    cat: number
   },
 ) {
   const hot = env.heat > 0.3
@@ -200,6 +210,11 @@ export function stepCrew(
     c.peer = !c.peer
     c.peerNext = 2.5 + Math.random() * 3
   }
+
+  // A walking pace, enough to keep ahead of the cat's.
+  const gap = env.cat - OFFER - c.friend
+  c.friend += Math.sign(gap) * Math.min(Math.abs(gap), 18 * dt)
+  c.stroll = Math.abs(gap) > 1
 
   ageBubbles(c, dt)
   if (hot && !c.hot) for (const who of ['rope', 'pointer', 'friend'] as const) say(c, who, '!')
@@ -411,12 +426,13 @@ export function paintCrew(
   )
 
   // Someone on the bank offering the cat a fish: held out while it peeks, dropped when it wakes.
-  const floor = ground(FRIEND) + 4
+  const floor = ground(c.friend) + 4
   const scared = alert === 2
-  const fx = FRIEND - (scared ? 8 : 0)
+  const fx = c.friend - (scared ? 8 : 0)
+  const stride = [...STAND.slice(0, -1), Math.floor(clock * 2.5) % 2 ? 'K..K' : '.KK.']
   const [ri, rj] = figure(
     'friend',
-    scared ? ALARM : alert === 1 ? REACH : STAND,
+    scared ? ALARM : c.stroll ? stride : alert === 1 ? REACH : STAND,
     fx,
     floor,
     false,
