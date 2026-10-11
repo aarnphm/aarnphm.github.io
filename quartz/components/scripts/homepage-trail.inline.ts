@@ -9,17 +9,24 @@ document.addEventListener('nav', () => {
 
   const controller = new AbortController()
   const { signal } = controller
-  let frame: HTMLIFrameElement | null = null
+  const frame = document.createElement('iframe')
+  frame.title = 'Trail connection'
+  frame.hidden = true
+  frame.tabIndex = -1
+  frame.setAttribute('aria-hidden', 'true')
+  frame.src = new URL('shared-trail.html', import.meta.url).href
   let layoutFrame = 0
-  // The frame owns the connection; its same-origin renderer shares the page's empty space.
+  // Prepare the local renderer; it connects only after the trail is shown.
   document.body.append(scene)
+  scene.append(frame)
   const align = () => {
+    if (scene.hidden) return
     const bottom = content.getBoundingClientRect().bottom + window.scrollY
     scene.style.height = `${Math.max(window.innerHeight, bottom + 300)}px`
     scene.dispatchEvent(new Event('trail:reflow'))
   }
   const scheduleAlign = () => {
-    if (layoutFrame) return
+    if (scene.hidden || layoutFrame) return
     layoutFrame = requestAnimationFrame(() => {
       layoutFrame = 0
       if (!signal.aborted) align()
@@ -51,20 +58,9 @@ document.addEventListener('nav', () => {
     toggle.title = label
     if (open) {
       align()
-      if (!frame) {
-        frame = document.createElement('iframe')
-        frame.title = 'Trail connection'
-        frame.hidden = true
-        frame.tabIndex = -1
-        frame.setAttribute('aria-hidden', 'true')
-        frame.src = new URL('shared-trail.html', import.meta.url).href
-        scene.append(frame)
-      }
+      scene.dispatchEvent(new Event('trail:show'))
     } else {
-      scene.dispatchEvent(new Event('trail:dispose'))
-      frame?.remove()
-      frame = null
-      scene.replaceChildren()
+      scene.dispatchEvent(new Event('trail:hide'))
     }
   }
   const close = () => {
@@ -76,7 +72,6 @@ document.addEventListener('nav', () => {
     'message',
     event => {
       if (
-        frame &&
         event.source === frame.contentWindow &&
         event.origin === location.origin &&
         event.data === 'garden:trail-close'
@@ -98,7 +93,7 @@ document.addEventListener('nav', () => {
     mutation.disconnect()
     cancelAnimationFrame(layoutFrame)
     scene.dispatchEvent(new Event('trail:dispose'))
-    frame?.remove()
+    frame.remove()
     scene.remove()
   })
 })
