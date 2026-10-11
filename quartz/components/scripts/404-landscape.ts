@@ -1316,7 +1316,10 @@ function courseInk(pal: Palette): CourseInk {
 // Its riders in the crew's colours under bright helmets, on frames of any of them; the gate's
 // beacon counts down in poppy and goes in sage. Its medics wear the ski patrol's flame, and their
 // hut is the figures' white with a poppy cross. The herd on its grass is white, black and the
-// autumn's deepest red, with the figures' skin for a muzzle; the ewes white with black faces.
+// autumn's deepest red, with the figures' skin for a muzzle; the ewes white with black faces. Their
+// barn is a brick red between the poppy and the red cow's coat, so she shows against it at the
+// doors, under the hut's steel, its doors painted the figures' white. The farmer wears the figures'
+// denim under a golden straw hat.
 function riderInk(pal: Palette): RiderInk {
   return {
     skin: pal.figure.S,
@@ -1341,6 +1344,14 @@ function riderInk(pal: Palette): RiderInk {
       leg: pal.bark[0],
       fleece: pal.figure.C,
       face: pal.figure.K,
+      boards: mix(pal.poppy, pal.autumn[0], 0.5),
+      roof: mix(pal.rock[0], INK, 0.4),
+      trim: pal.figure.C,
+      dark: pal.figure.K,
+      hat: GOLDEN,
+      skin: pal.figure.S,
+      bib: pal.figure.B,
+      trousers: pal.figure.D,
     },
   }
 }
