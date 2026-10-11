@@ -7,6 +7,25 @@ import {
 import { registerEscapeHandler } from './escape-handler'
 import { mountVisitorWeatherMap } from './visitor-weather-map'
 
+const compassPoints = [
+  'N',
+  'NNE',
+  'NE',
+  'ENE',
+  'E',
+  'ESE',
+  'SE',
+  'SSE',
+  'S',
+  'SSW',
+  'SW',
+  'WSW',
+  'W',
+  'WNW',
+  'NW',
+  'NNW',
+]
+
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.visitor-weather')
   const panel = root?.querySelector<HTMLElement>('#visitor-weather-panel')
@@ -86,7 +105,6 @@ document.addEventListener('nav', () => {
     { signal },
   )
   const mountScene = () => {
-    if (!panel.matches(':popover-open')) return
     const canvas = panel.querySelector<HTMLElement>('[data-weather-map]')
     if (canvas && forecast && forecast.lat !== null && forecast.lon !== null) {
       const location = `${forecast.lat},${forecast.lon}`
@@ -131,10 +149,15 @@ document.addEventListener('nav', () => {
     const day = next ? next.kind === 'sunset' : weather.day
     if (day !== null) root.dataset.weatherDay = String(day)
     const condition = visitorConditionsLabel(weather.code)
+    const temperature = `${Math.round((weather.temp * 9) / 5 + 32)}°F`
+    const direction =
+      weather.windDirection === null
+        ? ''
+        : compassPoints[Math.round(weather.windDirection / 22.5) % compassPoints.length]
     write('condition', condition)
-    write('temperature', `${Math.round(weather.temp)}°C`)
-    write('wind', `${Math.round(weather.wind)} km/h wind`)
-    toggle.title = `${condition}, ${Math.round(weather.temp)}°C`
+    write('temperature', temperature)
+    write('wind', `${Math.round(weather.wind / 1.609344)} mph${direction ? ` ${direction}` : ''}`)
+    toggle.title = `${condition}, ${temperature}`
 
     if (next) {
       const minutes = Math.ceil((next.at - now) / 60000)

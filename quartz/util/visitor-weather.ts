@@ -4,6 +4,7 @@ export type VisitorConditions = {
   code: number
   cloud: number
   wind: number
+  windDirection: number | null
   temp: number
   day: boolean | null
   // Snow that fell over the twelve hours to now, cm.
@@ -42,6 +43,10 @@ function readConditions(value: unknown): VisitorConditions | null {
     code: value.code,
     cloud: value.cloud,
     wind: value.wind,
+    windDirection:
+      finite(value.windDirection) && value.windDirection >= 0 && value.windDirection <= 360
+        ? value.windDirection
+        : null,
     temp: value.temp,
     day: typeof value.day === 'boolean' ? value.day : null,
     snow: finite(value.snow) && value.snow >= 0 ? value.snow : null,
@@ -96,6 +101,7 @@ export function readOpenMeteo(value: unknown): Pick<VisitorForecast, 'weather' |
     code: current.weather_code,
     cloud: finite(current.cloud_cover) ? current.cloud_cover / 100 : null,
     wind: current.wind_speed_10m,
+    windDirection: current.wind_direction_10m,
     temp: current.temperature_2m,
     day: current.is_day === 1 ? true : current.is_day === 0 ? false : null,
     snow: snowSince(value, current.time),
