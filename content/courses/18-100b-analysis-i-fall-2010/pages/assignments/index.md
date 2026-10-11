@@ -25,7 +25,8 @@ Collaboration on problem sets is highly encouraged, but
 - Write up each problem independently. Even if you have solved it in collaboration, you are expected to write the answer in your own words.
 - Write on your problem set whom you consulted and the sources you used. If you fail to do so, you may be charged with plagiarism and subject to serious penalties.
 - It is illegal to consult materials from previous semesters or any other sources of explicit solutions to homework problems.
-  Solutions to problems are not available to OCW users. However, sample problems with solutions from a previous term are available in the [[courses/18-100b-analysis-i-fall-2010/pages/study-materials/|study materials]] section.
+
+Solutions to problems are not available to OCW users. However, sample problems with solutions from a previous term are available in the [[courses/18-100b-analysis-i-fall-2010/pages/study-materials/|study materials]] section.
 
 | SES # | PROBLEMS                                                                        |
 | ----- | ------------------------------------------------------------------------------- |

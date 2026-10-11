@@ -170,14 +170,17 @@ function firstString(values: string[]): string {
 }
 
 function normalizeText(value: string): string {
-  return value
-    .replace(/\u00a0/g, ' ')
-    .replace(/[“”]/g, '"')
-    .replace(/[‘’]/g, "'")
-    .replace(/[–—]/g, '-')
-    .replace(/&amp;/g, '&')
-    .replace(/\s+\n/g, '\n')
-    .trim()
+  return (
+    value
+      .replace(/\u00a0/g, ' ')
+      .replace(/[“”]/g, '"')
+      .replace(/[‘’]/g, "'")
+      .replace(/[–—]/g, '-')
+      .replace(/&amp;/g, '&')
+      // trailing spaces only: `\s+\n` also ate the blank line between paragraphs
+      .replace(/[^\S\n]+\n/g, '\n')
+      .trim()
+  )
 }
 
 function titleWithoutExtension(value: string): string {
