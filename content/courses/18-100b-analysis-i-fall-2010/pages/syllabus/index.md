@@ -24,7 +24,7 @@ Lectures: 2 sessions / week, 1.5 hour / session
 
 ### prerequisites
 
-[_18.02 Multivariable Calculus_](/courses/18-02sc-multivariable-calculus-fall-2010); [_18.03 Differential Equations_](/courses/18-03sc-differential-equations-fall-2011) or [_18.034 Honors Differential Equations_](/courses/18-034-honors-differential-equations-spring-2004)
+[_18.02 Multivariable Calculus_](https://ocw.mit.edu/courses/18-02sc-multivariable-calculus-fall-2010); [_18.03 Differential Equations_](https://ocw.mit.edu/courses/18-03sc-differential-equations-fall-2011) or [_18.034 Honors Differential Equations_](https://ocw.mit.edu/courses/18-034-honors-differential-equations-spring-2004)
 
 ### text
 
