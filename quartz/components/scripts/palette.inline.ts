@@ -700,7 +700,20 @@ document.addEventListener('nav', () => {
     },
   ]
 
+  const pressKit = (tab: 'note' | 'quote' | 'links') => () =>
+    document.dispatchEvent(new CustomEvent('presskitopen', { detail: { tab } }))
   const COMMAND_ACTS: Action[] = [
+    {
+      name: 'press kit: note card',
+      auxInnerHtml: '<kbd>gs</kbd> image',
+      onClick: pressKit('note'),
+    },
+    {
+      name: 'press kit: quote card',
+      auxInnerHtml: '<kbd>↵</kbd> selection',
+      onClick: pressKit('quote'),
+    },
+    { name: 'press kit: links', auxInnerHtml: '<kbd>↵</kbd> share', onClick: pressKit('links') },
     {
       name: 'kernels: run all',
       auxInnerHtml: '<kbd>↵</kbd> current page',

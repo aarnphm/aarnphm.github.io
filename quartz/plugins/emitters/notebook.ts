@@ -527,6 +527,7 @@ export const NotebookViewer: QuartzEmitterPlugin<Options> = userOpts => {
   } = notebookPageLayout
   const Header = HeaderConstructor()
   const Headings = Component.HeadingsConstructor()
+  const PressKit = Component.PressKitConstructor()
 
   return {
     name: 'NotebookViewer',
@@ -535,6 +536,7 @@ export const NotebookViewer: QuartzEmitterPlugin<Options> = userOpts => {
         Head,
         Header,
         Headings,
+        PressKit,
         ...header,
         ...beforeBody,
         pageBody,

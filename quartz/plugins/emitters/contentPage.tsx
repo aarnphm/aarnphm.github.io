@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { Node } from 'unist'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
-import { HeadingsConstructor, Content } from '../../components'
+import { HeadingsConstructor, Content, PressKitConstructor } from '../../components'
 import HeaderConstructor from '../../components/Header'
 import {
   pageResources,
@@ -138,6 +138,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpt
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
   const Header = HeaderConstructor()
   const Headings = HeadingsConstructor()
+  const PressKit = PressKitConstructor()
 
   return {
     name: 'ContentPage',
@@ -149,6 +150,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpt
         CuriusContent,
         CuriusNavigation,
         Headings,
+        PressKit,
         ...header,
         ...beforeBody,
         pageBody,

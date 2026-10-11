@@ -91,6 +91,7 @@ import Keybind from './Keybind'
 import { byDateAndAlphabetical } from './PageList'
 import ContentConstructor from './pages/Content'
 import Palette from './Palette'
+import PressKitConstructor from './PressKit'
 //@ts-ignore
 import curiusFriendScript from './scripts/curius-friends.inline'
 //@ts-ignore
@@ -2754,6 +2755,7 @@ export function renderPage(
   } = components
   const Header = HeaderConstructor()
   const Headings = HeadingsConstructor()
+  const PressKit = PressKitConstructor()
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang =
@@ -2861,6 +2863,7 @@ export function renderPage(
                   </>
                 )}
                 <Headings {...componentData} />
+                <PressKit {...componentData} />
               </section>
               {!isFolderTag && !isCurius && !isPdfReader && (
                 <section class="page-footer popover-hint grid all-col">
