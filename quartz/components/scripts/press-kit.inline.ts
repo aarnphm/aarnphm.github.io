@@ -5,6 +5,7 @@ import {
   FORMATS,
   cardFaces,
   palettes,
+  prepareCard,
   renderCard,
   type CardModel,
   type FormatKey,
@@ -50,6 +51,7 @@ interface Subject {
 
 interface Quote {
   runs: Run[]
+  attribution?: string
   /** false while the quote is the page's own excerpt, before any selection or edit */
   chosen: boolean
   /** `text=` directive for a scroll-to-text link, when the passage is plain prose */
@@ -87,10 +89,14 @@ let anchorSelect: Select<string> | null = null
 let unmountAnchor: (() => void) | null = null
 let fonts: Fonts | null = null
 let avatar: HTMLImageElement | undefined
-let art: HTMLImageElement | undefined
+// The base card by daylight, and its night twin for the encre ground.
+const arts: { day?: HTMLImageElement; night?: HTMLImageElement } = {}
 let frame = 0
 let blob: Promise<Blob | null> | null = null
 let blobTimer = 0
+let rendering: Promise<void> | null = null
+let drawVersion = 0
+let renderFailed = false
 let pendingG = -Infinity
 let lastRange: { range: Range; at: number } | null = null
 // A selection survives this long after it collapses, so a button click elsewhere can still quote it.
@@ -162,17 +168,24 @@ function loadAvatar() {
   }
 }
 
-// The base social card; same-origin, so drawing it leaves the canvas exportable.
+// The base social card; same-origin, so drawing it leaves the canvas exportable. The night card
+// (quartz/scripts/brand-art.ts) is painted on the encre ground and only ever drawn into cards.
 const ART_SRC = '/static/og-image.webp'
+const ART_NIGHT_SRC = '/static/og-image-dark.webp'
 
 function loadArt() {
-  if (art) return
-  const img = new Image()
-  img.decoding = 'async'
-  img.src = ART_SRC
-  img.onload = () => {
-    art = img
-    if (show.art) schedule()
+  for (const [key, src] of [
+    ['day', ART_SRC],
+    ['night', ART_NIGHT_SRC],
+  ] as const) {
+    if (arts[key]) continue
+    const img = new Image()
+    img.decoding = 'async'
+    img.src = src
+    img.onload = () => {
+      arts[key] = img
+      if (show.art) schedule()
+    }
   }
 }
 
@@ -322,10 +335,15 @@ function model(): CardModel {
   const s = subject!
   const section = sectionForCard()
   const kind = tab === 'quote' ? 'quote' : s.kind === 'entry' ? 'entry' : 'note'
+  const attribution = kind === 'quote' ? quote.attribution?.trim() : undefined
   return {
     kind,
     crumbs: s.crumbs,
-    title: s.title.length > 0 ? s.title : [{ text: page!.site, style: 'roman' }],
+    title: attribution
+      ? [{ text: attribution, style: 'roman' }]
+      : s.title.length > 0
+        ? s.title
+        : [{ text: page!.site, style: 'roman' }],
     description: s.description,
     body: tab === 'quote' ? quote.runs : s.excerpt,
     date: s.date,
@@ -334,7 +352,9 @@ function model(): CardModel {
     section: section ? headingText(section) : undefined,
     author: kind === 'entry' ? page!.handle : page!.author,
     avatar,
-    art,
+    art: theme === 'encre' ? arts.night : arts.day,
+    // The night card's moon sits over the camp, so its crops centre higher.
+    artFocus: theme === 'encre' ? [640, 280] : undefined,
     show: { ...show, excerpt: kind === 'entry' || show.excerpt },
   }
 }
@@ -351,6 +371,11 @@ function caption() {
 
 function draw() {
   frame = 0
+  const version = ++drawVersion
+  rendering = null
+  window.clearTimeout(blobTimer)
+  blob = null
+  renderFailed = false
   if (!dialog?.open || !subject || !fonts || !page) return
   const canvas = $<HTMLCanvasElement>('.press-kit-canvas')
   const unfurl = $('.press-kit-unfurl')
@@ -366,25 +391,46 @@ function draw() {
   canvas.hidden = false
   unfurl.hidden = true
   const colors = page.colors as unknown as { light: SiteColors; dark: SiteColors }
-  renderCard(canvas, model(), format, palettes(colors.light, colors.dark)[theme], fonts)
+  const palette = palettes(colors.light, colors.dark)[theme]
+  const targetFormat = format
+  const targetFonts = fonts
+  const targetDialog = dialog
   canvas.setAttribute('aria-label', `aperçu de la carte, ${FORMATS[format].label}, ${theme}`)
-  window.clearTimeout(blobTimer)
-  blob = null
-  blobTimer = window.setTimeout(() => {
-    blob = new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
-  }, 160)
+  canvas.setAttribute('aria-busy', 'true')
+  rendering = prepareCard(model())
+    .then(prepared => {
+      if (version !== drawVersion || dialog !== targetDialog || !dialog.open) return
+      renderCard(canvas, prepared, targetFormat, palette, targetFonts)
+      blobTimer = window.setTimeout(() => {
+        blob = new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
+      }, 160)
+    })
+    .catch(() => {
+      if (version !== drawVersion) return
+      renderFailed = true
+      toast('impossible de rendre la formule, veuillez réessayer')
+    })
+    .finally(() => {
+      if (version !== drawVersion) return
+      canvas.setAttribute('aria-busy', 'false')
+      rendering = null
+    })
 }
 
 function schedule() {
   if (!frame) frame = requestAnimationFrame(draw)
 }
 
-function currentBlob(): Promise<Blob | null> {
+async function currentBlob(): Promise<Blob | null> {
   const canvas = $<HTMLCanvasElement>('.press-kit-canvas')
-  if (frame) {
-    cancelAnimationFrame(frame)
-    draw()
+  while (frame || rendering) {
+    if (frame) {
+      cancelAnimationFrame(frame)
+      draw()
+    }
+    if (rendering) await rendering
   }
+  if (renderFailed) return null
   if (!blob && canvas) {
     window.clearTimeout(blobTimer)
     blob = new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
@@ -642,6 +688,11 @@ function syncControls() {
   })
   const textarea = $<HTMLTextAreaElement>('#press-kit-quote')
   if (textarea && document.activeElement !== textarea) textarea.value = runsToText(quote.runs)
+  const attribution = $<HTMLInputElement>('#press-kit-attribution')
+  if (attribution) {
+    attribution.placeholder = titleText()
+    if (document.activeElement !== attribution) attribution.value = quote.attribution ?? ''
+  }
   anchorSelect?.setSelected(anchor)
   setHelp()
 }
@@ -877,6 +928,15 @@ function bindDialog(signal: AbortSignal) {
     },
     { signal },
   )
+  $<HTMLInputElement>('#press-kit-attribution')?.addEventListener(
+    'input',
+    event => {
+      if (!(event.target instanceof HTMLInputElement)) return
+      quote = { ...quote, attribution: event.target.value }
+      schedule()
+    },
+    { signal },
+  )
   $<HTMLTextAreaElement>('#press-kit-note')?.addEventListener(
     'input',
     () => {
@@ -911,6 +971,8 @@ document.addEventListener('nav', () => {
   const signal = currentNavSignal()
   if (activeSignal === signal) return
   activeSignal = signal
+  drawVersion++
+  rendering = null
 
   dialog = document.querySelector<HTMLDialogElement>('dialog.press-kit')
   const data = dialog?.querySelector('.press-kit-data')?.textContent

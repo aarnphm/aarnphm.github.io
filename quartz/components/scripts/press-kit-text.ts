@@ -1,9 +1,15 @@
-export type RunStyle = 'roman' | 'italic' | 'bold' | 'mono' | 'math'
+import type { Nodes } from 'mdast'
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { mathFromMarkdown } from 'mdast-util-math'
+import { math } from 'micromark-extension-math'
+
+export type RunStyle = 'roman' | 'italic' | 'bold' | 'bold-italic' | 'mono' | 'math'
 
 /** A styled stretch of text. A run whose text is `\n` is a paragraph break. */
 export interface Run {
   text: string
   style: RunStyle
+  display?: boolean
 }
 
 export const BREAK = '\n'
@@ -51,8 +57,10 @@ const BLOCK = new Set([
 function styleFor(tag: string, inherited: RunStyle): RunStyle {
   if (tag === 'CODE' || tag === 'KBD' || tag === 'SAMP') return 'mono'
   if (inherited === 'mono' || inherited === 'math') return inherited
-  if (tag === 'STRONG' || tag === 'B') return 'bold'
-  if ((tag === 'EM' || tag === 'I' || tag === 'CITE') && inherited !== 'bold') return 'italic'
+  if (tag === 'STRONG' || tag === 'B')
+    return inherited === 'italic' || inherited === 'bold-italic' ? 'bold-italic' : 'bold'
+  if (tag === 'EM' || tag === 'I' || tag === 'CITE')
+    return inherited === 'bold' || inherited === 'bold-italic' ? 'bold-italic' : 'italic'
   return inherited
 }
 
@@ -72,13 +80,18 @@ export function normalizeRuns(runs: Run[]): Run[] {
       }
       continue
     }
-    let text = run.text.replace(/\s+/g, ' ')
+    if (run.style === 'math') {
+      out.push({ ...run, text: run.text.trim() })
+      continue
+    }
+    let text =
+      run.style === 'mono' ? run.text.replace(/\r?\n/g, ' ') : run.text.replace(/\s+/g, ' ')
     const last = out.at(-1)
     if (!last || last.text === BREAK) text = text.trimStart()
     else if (last.text.endsWith(' ') && text.startsWith(' ')) text = text.slice(1)
     if (text.length === 0) continue
     if (last && last.text !== BREAK && last.style === run.style) last.text += text
-    else out.push({ text, style: run.style })
+    else out.push({ ...run, text })
   }
   while (out.at(-1)?.text === BREAK) out.pop()
   const tail = out.at(-1)
@@ -109,7 +122,7 @@ export function runsFromNode(root: Node, base: RunStyle = 'roman'): Run[] {
     }
     if (node.classList.contains('katex')) {
       const tex = texSource(node)
-      if (tex) out.push({ text: tex, style: 'math' })
+      if (tex) out.push({ text: tex, style: 'math', display: !!node.closest('.katex-display') })
       return
     }
     if (node.matches(SKIP)) return
@@ -140,27 +153,40 @@ export function runsFromRange(range: Range, stop: Element | null): Run[] {
       : widened.endContainer.parentElement
   const startMath = startEl?.closest('.katex')
   const endMath = endEl?.closest('.katex')
-  if (startMath) widened.setStartBefore(startMath)
-  if (endMath) widened.setEndAfter(endMath)
+  if (startMath) widened.setStartBefore(startMath.closest('.katex-display') ?? startMath)
+  if (endMath) widened.setEndAfter(endMath.closest('.katex-display') ?? endMath)
   return runsFromNode(
     widened.cloneContents(),
     inheritedStyle(widened.commonAncestorContainer, stop),
   )
 }
 
-const MARK: Record<RunStyle, string> = { roman: '', italic: '*', bold: '**', mono: '`', math: '$' }
+const MARK: Record<RunStyle, string> = {
+  roman: '',
+  italic: '*',
+  bold: '**',
+  'bold-italic': '***',
+  mono: '`',
+  math: '$',
+}
 
 /** Serialises runs to the small markup that `runsFromText` reads back. */
 export function runsToText(runs: Run[]): string {
   return runs
     .map(run => {
       if (run.text === BREAK) return '\n\n'
-      const mark = MARK[run.style]
+      if (run.style === 'math') return run.display ? `$$\n${run.text}\n$$` : `$${run.text}$`
+      const mark =
+        run.style === 'mono'
+          ? '`'.repeat(Math.max(0, ...Array.from(run.text.matchAll(/`+/g), m => m[0].length)) + 1)
+          : MARK[run.style]
       const inner = run.style === 'roman' ? run.text : run.text.trim()
-      if (!mark || inner.length === 0) return run.text
+      if (!mark || inner.length === 0) return run.text.replace(/([\\*_`$[\]])/g, '\\$1')
       const lead = run.text.match(/^\s*/)![0]
       const trail = run.text.match(/\s*$/)![0]
-      return `${lead}${mark}${inner}${mark}${trail}`
+      const content = run.style === 'mono' ? inner : inner.replace(/([\\*_`$[\]])/g, '\\$1')
+      const pad = run.style === 'mono' && inner.includes('`') ? ' ' : ''
+      return `${lead}${mark}${pad}${content}${pad}${mark}${trail}`
     })
     .join('')
     .trim()
@@ -174,28 +200,42 @@ export function runsToPlain(runs: Run[]): string {
     .trim()
 }
 
-// `_` needs word boundaries so snake_case survives.
-const INLINE = /(\*\*[^*\n]+\*\*|\*[^*\n]+\*|(?<!\w)_[^_\n]+_(?!\w)|`[^`\n]+`|\$[^$\n]+\$)/
-
-/** Reads `*em*`, `_em_`, `**strong**`, `` `code` `` and `$tex$`; blank lines break paragraphs. */
+/** Parse the editor with the same Markdown and math syntax used by authored notes. */
 export function runsFromText(text: string): Run[] {
   const runs: Run[] = []
-  text
-    .split(/\n\s*\n/)
-    .map(part => part.trim())
-    .filter(Boolean)
-    .forEach((part, index) => {
-      if (index > 0) runs.push({ text: BREAK, style: 'roman' })
-      for (const token of part.split(INLINE)) {
-        if (!token) continue
-        if (token.startsWith('**') && token.endsWith('**') && token.length > 4)
-          runs.push({ text: token.slice(2, -2), style: 'bold' })
-        else if (/^([*_]).+\1$/.test(token))
-          runs.push({ text: token.slice(1, -1), style: 'italic' })
-        else if (/^`.+`$/.test(token)) runs.push({ text: token.slice(1, -1), style: 'mono' })
-        else if (/^\$.+\$$/.test(token)) runs.push({ text: token.slice(1, -1), style: 'math' })
-        else runs.push({ text: token, style: 'roman' })
+  const tree = fromMarkdown(text, { extensions: [math()], mdastExtensions: [mathFromMarkdown()] })
+  const lineBreak = () => runs.push({ text: BREAK, style: 'roman' })
+  const walk = (node: Nodes, style: RunStyle = 'roman') => {
+    if (node.type === 'text' || node.type === 'inlineCode') {
+      runs.push({ text: node.value, style: node.type === 'inlineCode' ? 'mono' : style })
+    } else if (node.type === 'inlineMath' || node.type === 'math') {
+      const display = node.type === 'math'
+      if (display) lineBreak()
+      runs.push({ text: node.value, style: 'math', display })
+      if (display) lineBreak()
+    } else if (node.type === 'break') {
+      lineBreak()
+    } else if (node.type === 'code') {
+      lineBreak()
+      for (const line of node.value.split('\n')) {
+        runs.push({ text: line, style: 'mono' })
+        lineBreak()
       }
-    })
+    } else if (node.type === 'image' || node.type === 'imageReference') {
+      if (node.alt) runs.push({ text: node.alt, style })
+    } else if ('children' in node) {
+      const block = ['paragraph', 'heading', 'blockquote', 'listItem'].includes(node.type)
+      if (block) lineBreak()
+      const next =
+        node.type === 'strong' || node.type === 'heading'
+          ? styleFor('STRONG', style)
+          : node.type === 'emphasis'
+            ? styleFor('EM', style)
+            : style
+      for (const child of node.children) walk(child, next)
+      if (block) lineBreak()
+    }
+  }
+  walk(tree)
   return normalizeRuns(runs)
 }
