@@ -11,6 +11,13 @@
 // rest, each leg reaching from the hip to where its foot comes down on the ground.
 // Each part is its own blob, painted back to front, so the far legs, the head, the tail and the
 // paws are outlined where they lie against the body.
+// A hand on it strokes it, while it lies at home or stands at a stop. It likes its cheeks best, its
+// back less, and its haunch and the root of its tail least, and its fur stroked from head to tail
+// more than against. Content, it squints, leans its head into the hand, kneads, and purrs a heart.
+// Each stroke also uses some of its patience. When that is gone it flattens its ears and lashes
+// its tail. A hand that goes on after the warning gets a swat, and the cat walks off.
+// A keyboard hand strokes along one line on it, from the middle of its face over its shoulder and
+// down its back to the root of its tail.
 
 import {
   type Grid,
@@ -33,6 +40,33 @@ import {
 } from './404-pixel'
 
 type Doing = 'lie' | 'rise' | 'turn' | 'walk' | 'stand' | 'settle'
+type Part = 'head' | 'back' | 'haunch'
+
+type Petting = {
+  // Where the hand was on it last frame, seconds since it last moved there, and seconds of stroking
+  // that last move is good for, rough or against the fur or neither. Pointer events come in
+  // unevenly, so a stroke lasts from one move to the next.
+  hand: Pt | null
+  gap: number
+  stir: number
+  rough: boolean
+  against: boolean
+  // 1 purring; 1 or more, it has had enough and warns. It warns for `warn` seconds before it
+  // swats, and a swat lasts `swat` seconds and aims at `aim`.
+  joy: number
+  fed: number
+  warn: number
+  swat: number
+  aim: Pt
+  // Seconds since the last stroke and until it can purr another heart; how much it takes before
+  // it has had enough, as a share of the usual; its head leaning into the hand, -1 to 1; and the
+  // stop it walks off to after a swat.
+  since: number
+  hearts: number
+  patience: number
+  lean: number
+  flee: number
+}
 
 export type Cat = {
   x: number
@@ -67,6 +101,7 @@ export type Cat = {
   coming: boolean
   meal: { x: number; y: number; left: number } | null
   bones: number
+  petting: Petting
 }
 
 export type CatInk = {
@@ -104,6 +139,19 @@ const PACE = 12
 const STRIDE = 52
 // Where a thrown fish lands, in front of its paws.
 const MEAL = 104
+// Per second of stroking, each part gives this much joy and uses this much patience: half a
+// minute on the cheeks, which hold its scent glands, and seconds at the root of the tail, where
+// stroked cats most often object. A hand slower than STILL units a second rests on it; faster
+// than ROUGH is rough. A pat counts as PAT seconds of stroking.
+const LIKES: Record<Part, { joy: number; fed: number }> = {
+  head: { joy: 0.8, fed: 1 / 30 },
+  back: { joy: 0.5, fed: 1 / 12 },
+  haunch: { joy: 0.15, fed: 1 / 4 },
+}
+const STILL = 40
+const ROUGH = 2400
+const PAT = 0.5
+const SWAT = 0.6
 
 export function makeCat(x: number, ground: number): Cat {
   return {
@@ -133,6 +181,23 @@ export function makeCat(x: number, ground: number): Cat {
     coming: false,
     meal: null,
     bones: 0,
+    petting: {
+      hand: null,
+      gap: 0,
+      stir: 0,
+      rough: false,
+      against: false,
+      joy: 0,
+      fed: 0,
+      warn: 0,
+      swat: 0,
+      aim: [0, 0],
+      since: 1e3,
+      hearts: 0,
+      patience: 0.6 + Math.random() * 0.8,
+      lean: 0,
+      flee: 0,
+    },
   }
 }
 
@@ -142,6 +207,18 @@ function world(c: Cat, x: number, y: number): Pt {
   const u = x * Math.cos(c.pitch) - y * Math.sin(c.pitch)
   const v = x * Math.sin(c.pitch) + y * Math.cos(c.pitch)
   return [c.x + u * s, c.oy + v]
+}
+
+// Scene points to the cat's own frame, as it stands now.
+function toLocal(c: Cat) {
+  const s = -c.face
+  const cos = Math.cos(c.pitch)
+  const sin = Math.sin(c.pitch)
+  return (x: number, y: number): Pt => {
+    const u = (x - c.x) * s
+    const v = y - c.oy
+    return [u * cos + v * sin, -u * sin + v * cos]
+  }
 }
 
 // Where a foot comes down: its point along the body, on the ground under it, lifted mid-swing.
@@ -164,11 +241,18 @@ const headAt = (c: Cat): Pt => [
 ]
 
 // The head's shapes are drawn about HEAD and carried to headAt, then turned about the shoulders
-// against the back's pitch, so on a slope the head stays nearer level than the back.
+// against the back's pitch, so on a slope the head stays nearer level than the back. Stroked, it
+// pushes its head into the hand.
 function carry(c: Cat) {
   const [hx, hy] = headAt(c)
   const shoulder: Pt = [-40, trunk(c.stand).cy - 8]
-  return { mx: hx - HEAD[0], my: hy - HEAD[1], q: -NOD * c.pitch, shoulder }
+  const lean = c.petting.lean
+  return {
+    mx: hx - HEAD[0] + lean * 6,
+    my: hy - HEAD[1] + Math.abs(lean) * 2,
+    q: -NOD * c.pitch,
+    shoulder,
+  }
 }
 
 export const catHead = (c: Cat): Pt => {
@@ -181,6 +265,8 @@ export const catHead = (c: Cat): Pt => {
 export function mealFor(c: Cat, ground: (x: number) => number): Pt | null {
   if (c.doing !== 'lie' || c.stand > 0 || c.meal || c.coming || c.bones > 0 || c.puff > 0.2)
     return null
+  // Nor while it swats, or is about to walk off.
+  if (c.petting.swat > 0 || c.petting.flee) return null
   const x = c.x - MEAL
   return [x, ground(x) + 2]
 }
@@ -206,18 +292,153 @@ export function poseCat(c: Cat, pointer: { x: number; y: number }, open: boolean
   gaze(c, pointer, open)
 }
 
-export function stepCat(
+type Told = (what: 'purr' | 'warn' | 'swat') => void
+
+// It can be stroked lying at home or standing at a stop, and not while it eats, swats, or stares
+// at the open portal.
+const strokable = (c: Cat) =>
+  c.puff < 0.2 &&
+  !c.meal &&
+  c.dip === 0 &&
+  c.petting.swat === 0 &&
+  (c.doing === 'lie' ? c.stand === 0 : c.doing === 'stand')
+
+// The part of it under a scene point that a hand can stroke now, if any: its head, its back, or
+// its haunch and the root of its tail.
+export function partUnder(c: Cat, x: number, y: number): Part | null {
+  if (!strokable(c)) return null
+  const [hx, hy] = catHead(c)
+  if (Math.hypot(x - hx, y - hy) < 38) return 'head'
+  const [u, v] = toLocal(c)(x, y)
+  const { cy, ry } = trunk(c.stand)
+  if (ellipse(u, v - cy, 68 - 12 * c.stand, ry + 6) > 0) return null
+  return u > 20 ? 'haunch' : 'back'
+}
+
+// `secs` of stroking on a part. Gentle and with the fur, it purrs. Rough, or against the fur, the
+// purr fades and it uses twice the patience; both, four times.
+function stroke(
   c: Cat,
-  dt: number,
-  pointer: { x: number; y: number },
-  heat: number,
-  impulse: boolean,
-  ground: (x: number) => number,
+  on: Part,
+  secs: number,
+  rough: boolean,
+  against: boolean,
+  at: Pt,
+  told: Told,
 ) {
-  const hot = heat > 0.3
+  const p = c.petting
+  p.since = 0
+  // Warned and still stroked, it swats lying down, and standing it walks off.
+  if (p.warn > 0.8 || p.fed > 1.5) {
+    p.joy = 0
+    if (c.doing === 'lie') {
+      p.swat = SWAT
+      p.aim = at
+      told('swat')
+    } else c.until = 0
+    return
+  }
+  const worse = (rough ? 2 : 1) * (on !== 'head' && against ? 2 : 1)
+  p.joy = Math.max(0, Math.min(1, p.joy + (worse === 1 ? LIKES[on].joy : -0.3) * secs))
+  p.fed += (LIKES[on].fed * secs * worse) / p.patience
+  if (p.fed >= 1) {
+    if (p.warn === 0) told('warn')
+    p.warn = Math.max(p.warn, 1e-3)
+    p.joy = 0
+  } else if (worse === 1 && p.joy >= 0.6 && p.hearts <= 0) {
+    p.hearts = 3.5
+    told('purr')
+  }
+}
+
+// A point `along` the keyboard hand's line: 0 is the middle of its face, 0.3 its shoulder, and 1
+// the root of its tail. Every point on it is on the cat when it can be stroked.
+export function alongCat(c: Cat, along: number): Pt {
+  const { cy, ry } = trunk(c.stand)
+  const top = cy - ry / 2
+  if (along >= 0.3) return world(c, -30 + 76 * ((along - 0.3) / 0.7), top)
+  const [hx, hy] = catHead(c)
+  const [sx, sy] = world(c, -30, top)
+  const t = along / 0.3
+  return [hx + (sx - hx) * t, hy + (sy - hy) * t]
+}
+
+// A press on it is a pat.
+export function patCat(c: Cat, x: number, y: number, told: Told) {
+  const on = partUnder(c, x, y)
+  if (on) stroke(c, on, PAT, false, false, [x, y], told)
+  return !!on
+}
+
+function stepPetting(c: Cat, dt: number, hand: { x: number; y: number }, told: Told) {
+  const p = c.petting
+  p.since += dt
+  p.hearts -= dt
+  const on = hand.x > -1e3 ? partUnder(c, hand.x, hand.y) : null
+  if (on && p.hand) {
+    const dx = hand.x - p.hand[0]
+    const dy = hand.y - p.hand[1]
+    const moved = Math.hypot(dx, dy)
+    p.gap += dt
+    if (moved > 0.5) {
+      const speed = moved / p.gap
+      p.gap = 0
+      p.stir = speed > STILL ? 0.2 : 0
+      p.rough = speed > ROUGH
+      // Along its body toward the tail is with the fur.
+      p.against = -c.face * dx * Math.cos(c.pitch) + dy * Math.sin(c.pitch) < 0
+    }
+    if (p.stir > 0 && dt > 0) {
+      stroke(c, on, dt, p.rough, p.against, [hand.x, hand.y], told)
+      p.stir -= dt
+    }
+  } else {
+    p.gap = 0
+    p.stir = 0
+  }
+  p.hand = on ? [hand.x, hand.y] : null
+  // Stroked at a stop, it stays there.
+  if (on && c.doing === 'stand' && p.warn === 0) c.until = Math.max(c.until, c.t + 3)
+  // The purr dies away a few seconds after the last stroke; patience comes back over 20 s.
+  if (p.since > 1.5) p.joy = Math.max(0, p.joy - dt / 8)
+  if (p.since > 1) p.fed = Math.max(0, p.fed - dt * 0.05)
+  if (p.warn > 0) {
+    p.warn += dt
+    if (p.since > 1.2 && p.fed < 0.75) p.warn = 0
+  }
+  // Content, it pushes its cheek into a hand on its head.
+  const lean =
+    on === 'head' && p.joy > 0.2 && p.warn === 0
+      ? Math.max(-1, Math.min(1, (toLocal(c)(hand.x, hand.y)[0] - headAt(c)[0]) / 30))
+      : 0
+  p.lean += (lean - p.lean) * Math.min(1, dt * 4)
+  if (p.swat > 0) {
+    p.swat = Math.max(0, p.swat - dt)
+    // Then it gets up and goes to the stop away from the hand.
+    if (p.swat === 0) {
+      p.flee = p.aim[0] < c.x ? DOWNHILL : UPHILL
+      p.warn = 0
+    }
+  }
+}
+
+export type CatEnv = {
+  // What it watches, and the reader's hand, which can stroke it.
+  pointer: { x: number; y: number }
+  hand: { x: number; y: number }
+  heat: number
+  impulse: boolean
+  ground: (x: number) => number
+  // It purrs a heart, it warns, or it swats.
+  told: Told
+}
+
+export function stepCat(c: Cat, dt: number, env: CatEnv) {
+  const { pointer, impulse, ground } = env
+  const hot = env.heat > 0.3
   c.near = near(c, pointer) ? c.near + dt : 0
-  // Up and about, or with a fish coming, it is wide awake.
-  const busy = c.stand > 0.3 || c.coming || !!c.meal
+  // Up and about, with a fish coming, or out of patience, it is wide awake.
+  const busy = c.stand > 0.3 || c.coming || !!c.meal || c.petting.warn > 0 || c.petting.swat > 0
   const target = hot || busy ? 2 : c.near > 0.35 ? 1 : 0
   // Quick to wake, slow to settle.
   if (target > c.alert) {
@@ -258,6 +479,7 @@ export function stepCat(
     }
   } else c.dip = Math.max(0, c.dip - dt / 0.6)
 
+  stepPetting(c, dt, env.hand, env.told)
   stepWalk(c, dt, hot)
   // Once it is up, its frame stands on the ground under its feet, pitched with part of the slope.
   // Where a downhill foot cannot reach the ground, the body comes down until it can.
@@ -290,7 +512,14 @@ function stepWalk(c: Cat, dt: number, hot: boolean) {
   switch (c.doing) {
     case 'lie':
       c.stand = Math.max(0, c.stand - dt / 1.5)
-      if (hot || c.coming || c.meal || (c.roam -= dt) > 0) break
+      // After a swat it walks off; while it is being stroked it stays.
+      if (c.petting.flee && !hot) {
+        c.to = c.petting.flee
+        c.petting.flee = 0
+        go('rise')
+        break
+      }
+      if (hot || c.coming || c.meal || c.petting.since < 4 || (c.roam -= dt) > 0) break
       c.to = Math.random() < 0.5 ? UPHILL : DOWNHILL
       go('rise')
       break
@@ -366,14 +595,8 @@ export function paintCat(
 ) {
   const s = -c.face
   const keep = (x: number, y: number) => y <= ground(x) + 2
-  const cos = Math.cos(c.pitch)
-  const sin = Math.sin(c.pitch)
   // Everything below is in the cat's own frame: x to its tail, y down, the chest on the ground.
-  const inward = (x: number, y: number): Pt => {
-    const u = (x - c.x) * s
-    const v = y - c.oy
-    return [u * cos + v * sin, -u * sin + v * cos]
-  }
+  const inward = toLocal(c)
   const local = (f: (x: number, y: number) => number) => (x: number, y: number) =>
     f(...inward(x, y))
   const box = (x0: number, y0: number, x1: number, y1: number) => {
@@ -457,6 +680,42 @@ export function paintCat(
     return f + lumpy(x, y, 71, 5)
   }
   paintBlob(d, g, local(body), box(-72, -96, 72, 64), ink.stone, keep)
+  const p = c.petting
+  const warned = p.warn > 0 || p.swat > 0
+  // The swat, lying down, with the near forepaw: out fast, held a beat, and back. The head hides
+  // most of its front, so the paw goes where it shows against the sky: out past its cheek at the
+  // height of a hand in front of it, from under the head, or up over its back at a hand there.
+  let arm: { root: Pt; tip: Pt; u: Pt; out: number; front: boolean } | null = null
+  if (stand < 0.5 && p.swat > 0) {
+    const t = 1 - p.swat / SWAT
+    const out = t < 0.2 ? t / 0.2 : t < 0.55 ? 1 : 1 - (t - 0.55) / 0.45
+    const [ax, ay] = inward(...p.aim)
+    const front = ax < -40
+    const root: Pt = front ? [-40, -12] : [-30, cy - 20]
+    const to: Pt = front
+      ? [-122, Math.max(-80, Math.min(ay, -40))]
+      : [Math.max(-20, ax), Math.min(ay, cy - 64)]
+    const len = Math.hypot(to[0] - root[0], to[1] - root[1]) || 1
+    const u: Pt = [(to[0] - root[0]) / len, (to[1] - root[1]) / len]
+    const r = 14 + (Math.min(len, 86) - 14) * out
+    arm = { root, tip: [root[0] + u[0] * r, root[1] + u[1] * r], u, out, front }
+  }
+  const paintArm = () => {
+    if (!arm) return
+    const { root, tip, u, out } = arm
+    const field = (x: number, y: number) =>
+      smin(segment(x, y, ...root, ...tip) - 7, ellipse(x - tip[0], y - tip[1], 9, 7), 4) +
+      lumpy(x, y, 97, 2)
+    paintBlob(d, g, local(field), box(-140, -140, 60, 12), ink.stone, keep)
+    // Claws out at full stretch, hooked ink past the paw.
+    if (out > 0.6)
+      for (const k of [-1, 0, 1]) {
+        const [i0, j0] = pixel(tip[0] + u[0] * 8 - u[1] * k * 4, tip[1] + u[1] * 8 + u[0] * k * 4)
+        const [i1, j1] = pixel(tip[0] + u[0] * 13 - u[1] * k * 6, tip[1] + u[1] * 13 + u[0] * k * 6)
+        line(d, g, i0, j0, i1, j1, ink.stone.ink)
+      }
+  }
+  if (arm?.front) paintArm()
   // A crack down the flank, from when it was rubble.
   const crack: Pt[] = [
     [22, -44],
@@ -470,22 +729,24 @@ export function paintCat(
     line(d, g, i0, j0, i1, j1, ink.stone.ink)
   }
 
-  // The head tilts when it is curious; the ears prick when the portal opens, and the near one
-  // flattens for a beat at each impulse of the clock.
+  // The head tilts when it is curious, and into a hand on its cheek. The ears prick when the
+  // portal opens. Out of patience, both go flat out to the sides; otherwise the near one flattens
+  // for a beat at each impulse of the clock.
   const { mx, my: carried, q, shoulder } = carry(c)
   const my = carried + (stand > 0.5 && Math.floor(c.gait * 8) % 2 ? g.px : 0)
-  const tilt = c.alert === 1 && stand === 0 ? 0.14 : 0
+  const tilt = (c.alert === 1 && stand === 0 ? 0.14 : 0) + p.lean * 0.2
   const perk = c.puff * 4
-  const flat = c.twitch > 0 ? 1 : 0
+  const flatA = warned ? 1 : 0
+  const flat = warned ? 1 : c.twitch > 0 ? 0.5 : 0
   // Upright ears on the corners of the crown, set wide and rounded at the tips.
   const earA: [Pt, Pt, Pt] = [
     [-90, -60],
-    [-85, -83 - perk],
+    [-85 - flatA * 14, -83 - perk + flatA * 9],
     [-68, -69],
   ]
   const earB: [Pt, Pt, Pt] = [
     [-56, -69],
-    [-39 + flat * 6, -83 - perk + flat * 6],
+    [-39 + flat * 14, -83 - perk + flat * 9],
     [-34, -60],
   ]
   // A point drawn about HEAD to where the head is now, and back.
@@ -530,11 +791,12 @@ export function paintCat(
     const [hi, hj] = pix(HEAD[0], HEAD[1])
     const ej = hj - 1
     const shut = c.shut > 0
-    // Eating, the eyes are shut tight and turned up at the ends.
+    // Eating or content, the eyes are shut tight and turned up at the ends.
     const eating = c.dip > 0.5
+    const squint = eating || (p.joy > 0.35 && !warned)
     const awake = stand > 0.3 ? 2 : c.alert
     const eye = (e: number, open: number) => {
-      if (eating) {
+      if (squint) {
         dot(d, g, e - 1, ej + 1, k)
         dot(d, g, e, ej, k)
         dot(d, g, e + 1, ej + 1, k)
@@ -553,8 +815,8 @@ export function paintCat(
       const p = e + c.look
       dot(d, g, p, ej, k)
       if (open === 2) dot(d, g, p, ej - 1, k)
-      // Round pupils when the portal is open.
-      if (open === 2 && c.puff > 0.5) {
+      // Round pupils when the portal is open, or it has had enough.
+      if (open === 2 && (c.puff > 0.5 || warned)) {
         const q = p + (c.look > 0 ? -1 : 1)
         dot(d, g, q, ej, k)
         dot(d, g, q, ej - 1, k)
@@ -582,22 +844,37 @@ export function paintCat(
 
   // The tail: lying, it wraps the front, its tip lifting when it flicks and fattening when it puffs;
   // on its feet, it is carried upright with the tip turned over. It is thick at the root and stays
-  // thick to a round tip.
+  // thick to a round tip. Out of patience, lying, it comes out behind and thumps down the slope;
+  // standing, it swishes. Content on its feet, the raised tip quivers.
+  const lash = warned ? Math.sin(clock * 8) : 0
   const lift = c.flick > 0 ? Math.sin((c.flick / 0.6) * Math.PI) * 12 : 0
+  const swish = lash * 10 + (!warned && p.joy > 0.5 && Math.floor(clock * 14) % 2 ? g.px * 0.6 : 0)
   const w = 7 + 2 * c.puff
-  const down: Pt[] = [
-    [60, -14],
-    [50, -4],
-    [20, -2],
-    [-12, -4],
-    [-26, -10 - lift],
-  ]
+  // A point `rise` above the ground at x along the cat lying down.
+  const slope = (x: number, rise: number): Pt => [x, ground(c.x + x * s) - c.oy - 7 - rise]
+  const thump = Math.abs(lash)
+  const down: Pt[] =
+    warned && stand < 0.5
+      ? [
+          [60, -14],
+          slope(76, 0),
+          slope(90, thump * 6),
+          slope(102, thump * 16),
+          slope(110, thump * 28),
+        ]
+      : [
+          [60, -14],
+          [50, -4],
+          [20, -2],
+          [-12, -4],
+          [-26, -10 - lift],
+        ]
   const raised: Pt[] = [
     [48, -60],
     [58, -74],
     [62, -90],
-    [61, -106],
-    [55 - lift * 0.5, -116 - lift * 0.5],
+    [61 + swish * 0.5, -106],
+    [55 - lift * 0.5 + swish, -116 - lift * 0.5],
   ]
   const tail = down.map((p, k) => lerp(p, raised[k], stand))
   const tailField = (x: number, y: number) => {
@@ -608,15 +885,22 @@ export function paintCat(
     }
     return f + lumpy(x, y, 79, 3)
   }
-  paintBlob(d, g, local(tailField), box(-48, -132, 98, 10), ink.stone, keep)
+  paintBlob(d, g, local(tailField), box(-48, -132, 126, 80), ink.stone, keep)
   if (stand < 0.5) {
+    // Content, it kneads, one paw up and then the other. It swats with the near paw.
+    const knead = !warned && p.joy > 0.7 ? Math.floor(clock * 2.5) % 2 : -1
+    const up = (k: number) => (knead === k ? g.px * 1.5 : 0)
     const paws = (x: number, y: number) =>
-      Math.min(ellipse(x + 64, y + 3, 11, 6), ellipse(x + 42, y + 1, 11, 6)) + lumpy(x, y, 83, 2)
+      Math.min(
+        ellipse(x + 64, y + 3 + up(0), 11, 6),
+        p.swat > 0 ? 1e9 : ellipse(x + 42, y + 1 + up(1), 11, 6),
+      ) + lumpy(x, y, 83, 2)
     paintBlob(d, g, local(paws), box(-80, -12, -28, 10), ink.stone, keep)
   }
 
-  // Moss on its back and behind its head, flowering.
+  // Moss on its back and behind its head, flowering. Out of patience, the skin under it twitches.
   const back = cy + 30
+  const shiver = warned && Math.floor(clock * 12) % 2 ? g.px : 0
   const moss = (x: number, y: number) => {
     let f = 1e9
     for (const [bx, by, r] of [
@@ -626,7 +910,7 @@ export function paintCat(
       [38, -50, 6],
       [-36, -64, 6],
     ])
-      f = smin(f, Math.hypot(x - bx, y - by - breath - back) - r, 7)
+      f = smin(f, Math.hypot(x - bx - shiver, y - by - breath - back) - r, 7)
     return f + lumpy(x, y, 89, 5)
   }
   const tuft = paintBlob(d, g, local(moss), box(-46, -78 + back, 48, -40 + back), ink.moss, keep)
@@ -635,4 +919,5 @@ export function paintCat(
       const h = hash(i, j, 89)
       if (h < 0.08) put(d, (j * g.bw + i) * 4, ink.flowers[h < 0.04 ? 0 : 1])
     })
+  if (arm && !arm.front) paintArm()
 }

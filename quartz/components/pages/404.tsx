@@ -196,6 +196,20 @@ const NotFound: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
           <g class="nf-flies" />
         </svg>
         <canvas class="nf-layer nf-canopy" data-depth="1" aria-hidden="true" />
+        {/* The keyboard's hand on the cat. The script keeps the button over the spot it strokes. */}
+        <div class="nf-layer nf-paw" data-depth="0.42">
+          <button
+            type="button"
+            class="nf-pet"
+            aria-label="Caresser le chat"
+            aria-describedby="nf-pet-keys"
+          >
+            <span class="nf-pet-keys" id="nf-pet-keys">
+              Entrée : une caresse · ← → : le long du dos
+            </span>
+          </button>
+          <p class="nf-pet-says visually-hidden" role="status" />
+        </div>
       </div>
       <aside class="nf-board" aria-label="Tableau des départs">
         <details>
