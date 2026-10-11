@@ -22,7 +22,9 @@ export default (() => {
     const { fileData, tree } = props
     const content = htmlToJsx(fileData.filePath!, tree)
     const classes: string[] = fileData.frontmatter?.cssclasses ?? []
-    const isLecture = unitOf(fileData.slug ?? '')?.kind === 'lectures'
+    const unitKind = unitOf(fileData.slug ?? '')?.kind
+    // authored and converted lecture notes both open the workspace
+    const isLecture = unitKind === 'lectures' || unitKind === 'notes'
     const classString = [
       'popover-hint',
       'main-col',
