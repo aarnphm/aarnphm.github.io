@@ -4,6 +4,7 @@ import type { OuraDayDetail } from '../../../../plugins/stores/oura'
 import type { OuraRestorationBaseline } from '../../../../util/oura-health'
 import type { TriathlonContext } from '../../runtime/context'
 import type { TriathlonFormatter } from '../../runtime/formatter'
+import { petSvg } from '../../../../util/mascot'
 import { resolveSleepMetrics, type SleepMetrics } from '../../../../util/sleep-metrics'
 import { axisFrame, buildDaySleepAnalytics } from '../../../../util/triathlon-card'
 import { napSummaries, sleepSummary } from '../../../../util/triathlon-day-analytics'
@@ -178,24 +179,12 @@ export const wallClock = (min: number): string => {
     .padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`
 }
 
-const SLEEPLESS_ROCKY_FRAMES = [1, 2, 3, 0].map(
-  c => `/static/landing/rocky-monomyth/frames/rocky-monomyth-r5-c${c}.webp`,
-)
-
+// The garden's pet with its startled look: wide eyes and a wince, in turn, while it sweats.
 export const buildSleeplessRock = (caption: string): HTMLElement => {
   const wrap = el('div', 'tri-sleep-empty')
   const stage = el('div', 'tri-sleep-rocky', undefined, { 'aria-hidden': 'true' })
-  for (const src of SLEEPLESS_ROCKY_FRAMES)
-    stage.appendChild(
-      el('img', 'tri-rocky-frame', undefined, {
-        src,
-        alt: '',
-        width: '192',
-        height: '208',
-        decoding: 'async',
-        draggable: 'false',
-      }),
-    )
+  stage.innerHTML = petSvg()
+  stage.querySelector('svg')!.dataset.state = 'failed'
   wrap.append(stage, el('div', 'tri-ana-empty', caption))
   return wrap
 }

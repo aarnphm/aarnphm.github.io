@@ -32,7 +32,6 @@ document.addEventListener('nav', () => {
       img.dataset.noPopover === 'true' ||
       img.dataset.ignorePopup === '' ||
       img.dataset.ignorePopup === 'true' ||
-      img.closest('[data-pet-widget]') !== null ||
       img.closest('[data-remark-tikz]') !== null ||
       img.closest('#image-popup-modal') !== null
     )

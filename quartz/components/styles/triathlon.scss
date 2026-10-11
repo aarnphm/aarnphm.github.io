@@ -9171,52 +9171,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-sleep-rocky {
-  position: relative;
   width: 96px;
-  height: 104px;
-}
-
-.tri-rocky-frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  opacity: 0;
-  animation: tri-rocky-toss 2.4s step-end infinite;
-}
-
-.tri-rocky-frame:nth-child(2) {
-  animation-delay: -1.8s;
-}
-
-.tri-rocky-frame:nth-child(3) {
-  animation-delay: -1.2s;
-}
-
-.tri-rocky-frame:nth-child(4) {
-  animation-delay: -0.6s;
-}
-
-@keyframes tri-rocky-toss {
-  0%,
-  24.99% {
-    opacity: 1;
-  }
-  25%,
-  100% {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tri-rocky-frame {
-    animation: none;
-  }
-
-  .tri-rocky-frame:first-child {
-    opacity: 1;
-  }
 }
 
 .tri-hyp--deep {

@@ -2216,23 +2216,6 @@ const ElementComponent = ((enableRecents: boolean = false) => {
   return Element
 }) satisfies QuartzComponentConstructor
 
-function LandingPetSticker() {
-  return (
-    <figure
-      class="landing-pet-sticker"
-      data-pet-widget={true}
-      data-pet-home={true}
-      data-pet-src="/static/landing/rocky-monomyth/sticker.webp"
-      data-pet-width="168"
-      data-pet-height="178"
-      role="group"
-      aria-label="draggable rocky sticker"
-      tabIndex={0}
-      hidden
-    />
-  )
-}
-
 // Menu components
 
 function Functions({ displayClass }: QuartzComponentProps) {
@@ -2708,7 +2691,6 @@ export function renderPage(
         return (
           <div class={classNames(displayClass, 'landing')}>
             <HomepageIdentityHeading />
-            <LandingPetSticker />
             <Element {...props} />
           </div>
         )

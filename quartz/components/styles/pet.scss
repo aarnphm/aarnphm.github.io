@@ -1,0 +1,565 @@
+// The pen-drawn pet (quartz/util/mascot.ts). Every look is pre-drawn as a [data-part] group; the
+// SVG's data-state picks which parts show and how they move, and data-kind says how it holds its
+// edge (stand, sit with legs dangling, hang). Lengths inside the SVG are user units, where 1px is the
+// body's radius. Loops step at about 10 frames a second, which suits a pen line and keeps the SVG
+// from repainting every frame.
+
+$pet-looks: (
+  idle: (
+    eyes-dash,
+  ),
+  run: (
+    eyes-dash,
+    speed,
+  ),
+  fly: (
+    eyes-wide,
+    speed,
+  ),
+  land: (
+    eyes-dash,
+  ),
+  wave: (
+    eyes-dash,
+    mouth-smile,
+    arm-l,
+  ),
+  failed: (
+    eyes-wide,
+    eyes-wince,
+    mouth-o,
+    sweat,
+  ),
+  wait: (
+    eyes-dash,
+    dots,
+  ),
+  work: (
+    eyes-dash,
+    laptop,
+  ),
+  happy: (
+    eyes-happy,
+    mouth-smile,
+  ),
+  cheer: (
+    eyes-happy,
+    mouth-grin,
+    blush,
+    arm-l,
+    arm-r,
+  ),
+);
+
+.pet-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+
+  [data-part] {
+    display: none;
+  }
+
+  [data-part='legs'] {
+    display: inline;
+  }
+
+  .pet-hop,
+  .pet-lean,
+  .pet-body,
+  .pet-look,
+  .pet-eye,
+  .pet-leg,
+  .pet-arm,
+  .pet-dot,
+  .pet-key,
+  .pet-speed,
+  [data-part='eyes-wide'],
+  [data-part='eyes-wince'] {
+    transform-box: fill-box;
+  }
+
+  .pet-lean,
+  .pet-body {
+    transform-origin: 50% 100%;
+  }
+
+  .pet-look {
+    translate: calc(var(--pet-lx, 0) * 1px) calc(var(--pet-ly, 0) * 1px);
+  }
+
+  .pet-eye {
+    transform-origin: 50% 50%;
+    animation: pet-blink 4.2s infinite;
+  }
+
+  .pet-eye + .pet-eye {
+    animation-delay: 40ms;
+  }
+
+  .pet-leg {
+    transform-origin: 50% 0;
+  }
+
+  [data-part='arm-l'] {
+    transform-origin: 100% 100%;
+  }
+
+  [data-part='arm-r'] {
+    transform-origin: 0 100%;
+  }
+}
+
+@each $state, $parts in $pet-looks {
+  @each $part in $parts {
+    .pet-svg[data-state='#{$state}'] [data-part='#{$part}'] {
+      display: inline;
+    }
+  }
+}
+
+// Sitting on a ledge: the body rests on the edge and the legs hang over its face, swinging.
+.pet-svg[data-kind='sit'] .pet-leg {
+  animation: pet-dangle 1.4s steps(14) infinite alternate;
+}
+
+.pet-svg[data-kind='sit'] .pet-leg + .pet-leg {
+  animation-delay: -0.7s;
+}
+
+// Hanging from a ledge by both hands, swaying, feet kicking now and then. Arm-waving looks would
+// mean letting go, so the hands stay up whatever the face does.
+.pet-svg[data-kind='hang'] {
+  [data-part='arms-hang'] {
+    display: inline;
+  }
+
+  [data-part^='arm-'],
+  [data-part='laptop'],
+  [data-part='dots'] {
+    display: none;
+  }
+
+  .pet-lean {
+    transform-origin: 50% 0;
+    animation: pet-sway 2.6s steps(26) infinite alternate;
+  }
+
+  .pet-leg {
+    animation: pet-kick 3.2s steps(16) infinite;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-delay: -1.6s;
+  }
+}
+
+.pet-svg[data-state='run'] {
+  .pet-lean {
+    rotate: -9deg;
+    animation: none;
+  }
+
+  .pet-hop {
+    animation: pet-trot 0.32s steps(4) infinite;
+  }
+
+  .pet-leg {
+    animation: pet-stride 0.32s steps(4) infinite alternate;
+  }
+
+  .pet-leg + .pet-leg {
+    animation-direction: alternate-reverse;
+  }
+
+  .pet-speed {
+    animation: pet-whoosh 0.32s steps(4) infinite;
+  }
+}
+
+.pet-svg[data-state='fly'] {
+  .pet-lean {
+    rotate: -12deg;
+    animation: none;
+  }
+
+  .pet-leg {
+    scale: 1 0.6;
+    animation: none;
+  }
+}
+
+.pet-svg[data-state='land'] .pet-body {
+  animation: pet-squash 0.38s steps(5);
+}
+
+.pet-svg[data-state='wave'] [data-part='arm-l'] {
+  animation: pet-wave 0.9s steps(9) infinite alternate;
+}
+
+.pet-svg[data-state='failed'] {
+  .pet-hop {
+    animation: pet-shake 0.12s steps(2) 6;
+  }
+
+  [data-part='eyes-wide'] {
+    animation: pet-startle 1.6s step-end infinite;
+  }
+
+  [data-part='eyes-wince'] {
+    animation: pet-startle 1.6s step-end -0.8s infinite;
+  }
+}
+
+.pet-svg[data-state='wait'] {
+  .pet-look {
+    animation: pet-look-around 3.2s step-end infinite;
+  }
+
+  .pet-dot {
+    animation: pet-dot 1.5s steps(6) infinite;
+  }
+
+  .pet-dot:nth-child(2) {
+    animation-delay: 0.25s;
+  }
+
+  .pet-dot:nth-child(3) {
+    animation-delay: 0.5s;
+  }
+}
+
+.pet-svg[data-state='wait'][data-kind='stand'] .pet-leg:first-child {
+  animation: pet-tap 0.7s steps(4) infinite;
+}
+
+.pet-svg[data-state='work'] {
+  .pet-look {
+    translate: -0.04px 0.14px;
+  }
+
+  .pet-body {
+    animation: pet-type 0.36s steps(2) infinite;
+  }
+
+  .pet-key {
+    animation: pet-key 0.36s step-end infinite;
+  }
+
+  .pet-key + .pet-key {
+    animation-delay: -0.18s;
+  }
+}
+
+.pet-svg[data-state='happy'] .pet-hop {
+  animation: pet-bounce 0.9s steps(9) infinite;
+}
+
+.pet-svg[data-state='cheer'] {
+  .pet-hop {
+    animation: pet-jump 0.5s steps(6) infinite;
+  }
+
+  .pet-arm {
+    animation: pet-cheer 0.25s steps(3) infinite alternate;
+  }
+
+  [data-part='arm-r'] {
+    animation-direction: alternate-reverse;
+  }
+}
+
+.pet-svg[data-state='cheer'][data-kind='hang'] .pet-hop {
+  animation: none;
+}
+
+@keyframes pet-blink {
+  0%,
+  92%,
+  100% {
+    scale: 1 1;
+  }
+  95% {
+    scale: 1 0.1;
+  }
+}
+
+@keyframes pet-dangle {
+  from {
+    rotate: 22deg;
+  }
+  to {
+    rotate: -8deg;
+  }
+}
+
+@keyframes pet-sway {
+  from {
+    rotate: -4deg;
+  }
+  to {
+    rotate: 4deg;
+  }
+}
+
+@keyframes pet-kick {
+  0%,
+  70%,
+  100% {
+    rotate: 0deg;
+  }
+  80% {
+    rotate: 24deg;
+  }
+  90% {
+    rotate: -10deg;
+  }
+}
+
+@keyframes pet-trot {
+  50% {
+    translate: 0 -0.12px;
+  }
+}
+
+@keyframes pet-stride {
+  from {
+    rotate: 28deg;
+  }
+  to {
+    rotate: -28deg;
+  }
+}
+
+@keyframes pet-whoosh {
+  from {
+    translate: -0.1px 0;
+    opacity: 1;
+  }
+  to {
+    translate: 0.2px 0;
+    opacity: 0.3;
+  }
+}
+
+@keyframes pet-jump {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  45% {
+    translate: 0 -0.7px;
+  }
+}
+
+@keyframes pet-squash {
+  0%,
+  100% {
+    scale: 1 1;
+  }
+  25% {
+    scale: 1.14 0.84;
+  }
+  60% {
+    scale: 0.95 1.06;
+  }
+}
+
+@keyframes pet-wave {
+  from {
+    rotate: 18deg;
+  }
+  to {
+    rotate: -22deg;
+  }
+}
+
+@keyframes pet-shake {
+  25% {
+    translate: -0.05px 0;
+  }
+  75% {
+    translate: 0.05px 0;
+  }
+}
+
+@keyframes pet-startle {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-look-around {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  25% {
+    translate: -0.12px -0.04px;
+  }
+  60% {
+    translate: 0.14px -0.04px;
+  }
+}
+
+@keyframes pet-tap {
+  50% {
+    rotate: -18deg;
+  }
+}
+
+@keyframes pet-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    translate: 0 0;
+  }
+  30% {
+    opacity: 1;
+    translate: 0 -0.08px;
+  }
+}
+
+@keyframes pet-type {
+  50% {
+    translate: 0 0.03px;
+  }
+}
+
+@keyframes pet-key {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-bounce {
+  50% {
+    translate: 0 -0.1px;
+  }
+}
+
+@keyframes pet-cheer {
+  from {
+    rotate: -10deg;
+  }
+  to {
+    rotate: 10deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pet-svg,
+  .pet-svg * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .pet-svg[data-state='failed'] [data-part='eyes-wince'] {
+    display: none;
+  }
+}
+
+.garden-pet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: var(--z-popover);
+  width: 4.5rem;
+  pointer-events: none;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 180ms cubic-bezier(0.2, 0, 0, 1);
+
+  &.is-visible {
+    opacity: 1;
+  }
+
+  .pet-svg {
+    scale: var(--pet-face, 1) 1;
+    transition: scale 140ms cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+.garden-pet-button {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-none);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  user-select: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 0.1rem;
+  }
+}
+
+.garden-pet-bubble {
+  position: absolute;
+  bottom: calc(100% + 0.2rem);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: max-content;
+  max-width: min(15rem, calc(100vw - 2rem));
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--dark);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  font-size: 0.85rem;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(0.25rem);
+  transition:
+    opacity 160ms cubic-bezier(0.2, 0, 0, 1),
+    transform 160ms cubic-bezier(0.2, 0, 0, 1);
+  white-space: nowrap;
+
+  .garden-pet[data-bubble='below'] & {
+    top: calc(100% + 0.2rem);
+    bottom: auto;
+  }
+
+  .garden-pet.is-reminding & {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%);
+  }
+}
+
+.garden-pet-close {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  padding: 0;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lightgray);
+  }
+}
