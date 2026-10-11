@@ -10,7 +10,39 @@ tags:
   - 'math'
   - 'differential equations'
   - 'mathematical analysis'
-layout: 'A|L'
+resource:
+  {
+    kind: 'collection',
+    type: 'Lecture Videos',
+    items:
+      [
+        'mit18_156s25_lec01_1080p_mp4',
+        'mit18_156s25_lec02_1080p_mp4',
+        'mit18_156s25_lec03_1080p_mp4',
+        'mit18_156s25_lec04_1080p_mp4',
+        'mit18_156s25_lec05_1080p_mp4',
+        'mit18_156s25_lec06_1080p_mp4',
+        'mit18_156s25_lec07_1080p_mp4',
+        'mit18_156s25_lec08_1080p_mp4',
+        'mit18_156s25_lec09_1080p_mp4',
+        'mit18_156s25_lec10_1080p_mp4',
+        'mit18_156s25_lec11_1080p_mp4',
+        'mit18_156s25_lec12_1080p_mp4',
+        'mit18_156s25_lec13_1080p_mp4',
+        'mit18_156s25_lec14_1080p_mp4',
+        'mit18_156s25_lec15_1080p_mp4',
+        'mit18_156s25_lec16_1080p_mp4',
+        'mit18_156s25_lec17_1080p_mp4',
+        'mit18_156s25_lec18_1080p_mp4',
+        'mit18_156s25_lec19_1080p_mp4',
+        'mit18_156s25_lec20_1080p_mp4',
+        'mit18_156s25_lec21_1080p_mp4',
+        'mit18_156s25_lec22_1080p_mp4',
+        'mit18_156s25_lec23_1080p_mp4',
+        'mit18_156s25_lec24_1080p_mp4',
+      ],
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---

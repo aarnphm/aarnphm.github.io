@@ -1,6 +1,6 @@
 ---
-title: '18.156 (s25): full lecture notes: projection theory (la te x version)'
-description: 'mit 18.156 18.156 (s25): full lecture notes: projection theory (la te x version)'
+title: '18.156 (s25): full lecture notes: projection theory (latex version)'
+description: 'mit 18.156 18.156 (s25): full lecture notes: projection theory (latex version)'
 id: 'mit-18-156-spring-2025-resource-resources-mit18-156-s25-lec-full-tex'
 tags:
   - 'course'
@@ -12,14 +12,22 @@ tags:
   - 'mathematical analysis'
   - 'lecture notes'
   - 'editable files'
-layout: 'A|L'
+resource:
+  {
+    kind: 'tex',
+    file: 'static_resources/mit18_156_s25_lec_full.tex',
+    bytes: 307025,
+    full: true,
+    notes: 'courses/18-156-projection-theory-spring-2025/notes/',
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-156-projection-theory-spring-2025/|mit 18.156]]
 
-![[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156_s25_lec_full.tex]]
+rendered: [[courses/18-156-projection-theory-spring-2025/notes/|lecture notes, one page per lecture]]
 
 ## metadata
 

@@ -1,6 +1,6 @@
 ---
-title: '18.156 (s25): problem set 3 la te x template'
-description: 'mit 18.156 18.156 (s25): problem set 3 la te x template'
+title: '18.156 (s25): problem set 3 latex template'
+description: 'mit 18.156 18.156 (s25): problem set 3 latex template'
 id: 'mit-18-156-spring-2025-resource-resources-mit18-156-s25-pset3-tex'
 tags:
   - 'course'
@@ -12,14 +12,22 @@ tags:
   - 'mathematical analysis'
   - 'problem sets'
   - 'editable files'
-layout: 'A|L'
+resource:
+  {
+    kind: 'tex',
+    file: 'static_resources/mit18_156_s25_pset3.tex',
+    bytes: 7287,
+    n: 3,
+    notes: 'courses/18-156-projection-theory-spring-2025/notes/pset-03',
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-156-projection-theory-spring-2025/|mit 18.156]]
 
-![[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156_s25_pset3.tex]]
+rendered: [[courses/18-156-projection-theory-spring-2025/notes/pset-03|problem set 03]]
 
 ## metadata
 
