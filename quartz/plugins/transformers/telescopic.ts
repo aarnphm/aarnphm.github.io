@@ -3,7 +3,7 @@ import { Root, Element } from 'hast'
 import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { toHtml } from 'hast-util-to-html'
 import { toString } from 'hast-util-to-string'
-import { h, s } from 'hastscript'
+import { h } from 'hastscript'
 import isAbsoluteUrl from 'is-absolute-url'
 import { Root as MdastRoot, Code } from 'mdast'
 import path from 'path'
@@ -11,7 +11,6 @@ import { SKIP, visit } from 'unist-util-visit'
 // @ts-ignore
 import script from '../../components/scripts/telescopic.inline'
 import content from '../../components/styles/telescopic.inline.scss'
-import { svgOptions } from '../../components/svg'
 // A small subsets of https://github.com/jackyzha0/telescopic-text
 // turned into remark plugin for Quartz
 //
@@ -263,7 +262,6 @@ function contentToHast(content: Content, opts: Config) {
     }
 
     // Add remaining text
-    // and a smoll refresh button
     if (lastIndex < lineText.length) {
       nodes.push(...inlineFragmentToNodes(lineText.slice(lastIndex)))
     }
@@ -402,40 +400,6 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = userOpts
                 h(
                   'div.telescopic-container',
                   { id: code.properties.id },
-                  h(
-                    'span',
-                    { class: 'expand', type: 'button' },
-                    s(
-                      'svg',
-                      {
-                        ...svgOptions,
-                        height: 12,
-                        width: 12,
-                        strokewidth: 1,
-                        stroke: 'currentColor',
-                        fill: 'var(--lightgray)',
-                        title: 'expand all state',
-                        ariaLabel: 'expand all state',
-                      },
-                      s('use', { href: '#plus-icon' }),
-                    ),
-                  ),
-                  h(
-                    'span',
-                    { class: 'replay', type: 'button' },
-                    s(
-                      'svg',
-                      {
-                        ...svgOptions,
-                        height: 12,
-                        width: 12,
-                        fill: 'var(--lightgray)',
-                        title: 'refresh telescopic text state',
-                        ariaLabel: 'refresh telescopic text state',
-                      },
-                      s('use', { href: '#refetch-icon' }),
-                    ),
-                  ),
                   contentToHast(content, opts),
                 ),
               )
