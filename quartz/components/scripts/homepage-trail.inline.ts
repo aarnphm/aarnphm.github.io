@@ -22,7 +22,7 @@ document.addEventListener('nav', () => {
   const align = () => {
     if (scene.hidden) return
     const bottom = content.getBoundingClientRect().bottom + window.scrollY
-    scene.style.height = `${Math.max(window.innerHeight, bottom + 300)}px`
+    scene.style.height = `${Math.max(window.innerHeight, bottom + 380)}px`
     scene.dispatchEvent(new Event('trail:reflow'))
   }
   const scheduleAlign = () => {
@@ -57,8 +57,8 @@ document.addEventListener('nav', () => {
     const label = open ? 'Hide walking trail' : 'Show walking trail'
     toggle.title = label
     if (open) {
-      align()
       scene.dispatchEvent(new Event('trail:show'))
+      align()
     } else {
       scene.dispatchEvent(new Event('trail:hide'))
     }

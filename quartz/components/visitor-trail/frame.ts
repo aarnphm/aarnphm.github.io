@@ -1,12 +1,23 @@
 import { playhtml } from 'playhtml'
+import { trailBackpacker } from './backpacker'
 import { trailCampsite } from './campsite'
-import { clearSpace, trailLayout, type TrailId } from './layout'
-import { trailTrees } from './scenery'
+import { footprint, footprintTransform, type FootprintKind } from './footprints'
+import { forestControlsMarkup, mountForestControls } from './forest-controls'
+import { mountHikerJourney } from './hiker-journey'
+import { trailHinterland } from './hinterland'
+import { clearSpace, trailIds, trailLayout, type TrailId } from './layout'
+import { trailRandom } from './random'
+import { defaultForestSettings, trailTrees } from './scenery'
 
 type TrailData = { stones: Record<string, number>; routes?: Record<string, TrailId> }
 type TrailSample = { x: number; y: number; position: number }
-type TrailGeometry = { id: TrailId; length: number; samples: TrailSample[] }
-const trailIds: TrailId[] = ['main', 'pines', 'grove']
+type TrailGeometry = {
+  id: TrailId
+  length: number
+  samples: TrailSample[]
+  delay: number
+  duration: number
+}
 
 const document = parent.document
 const host = window.frameElement?.parentElement
@@ -25,8 +36,11 @@ scene.innerHTML = `
       </defs>
       ${trailIds.map(id => `<path class="trail-path" data-trail-route="${id}"/>`).join('')}
       <g clip-path="url(#${clip})">
+      <g class="trail-hinterland"></g>
       <g class="trail-steps"></g>
+      <g class="trail-hiker-tracks"></g>
       <g class="trail-landmarks"></g>
+      ${trailBackpacker()}
       <g data-trail-stones>${trailIds.map(id => `<g data-trail-stone-route="${id}" mask="url(#${clip}-${id})"></g>`).join('')}</g>
       </g>
     </svg>
@@ -63,7 +77,8 @@ scene.innerHTML = `
         </div>
         <span class="trail-status" data-trail-count role="status">connecting</span>
       </div>
-    </div>`
+    </div>
+    ${forestControlsMarkup(clip)}`
 host.append(scene)
 const svg = scene.querySelector<SVGSVGElement>('.trail-canvas')
 const stones = scene.querySelector<SVGGElement>('[data-trail-stones]')
@@ -78,11 +93,37 @@ if (!svg || !stones || !stone || !count || !retry || !campsite || !campToggle ||
 
 let campTimer = 0
 let campPinned = false
+let forest = { ...defaultForestSettings }
+let forestFrame = 0
+let forestLayout: { width: number; bottom: number; camp: { x: number; y: number } } | undefined
+const drawForest = () => {
+  if (host.hidden || !forestLayout || !scene.isConnected) return
+  const landmarks = scene.querySelector('.trail-landmarks')
+  const { width, bottom, camp } = forestLayout
+  if (landmarks) landmarks.innerHTML = trailTrees(width, bottom, camp, sceneSeed, forest)
+}
 const showTools = (open: boolean) => {
   parent.clearTimeout(campTimer)
   campTools.hidden = !open
   campToggle.setAttribute('aria-expanded', String(open))
 }
+const forestControls = mountForestControls(
+  scene,
+  signal,
+  settings => {
+    forest = settings
+    if (forestFrame) return
+    forestFrame = parent.requestAnimationFrame(() => {
+      forestFrame = 0
+      drawForest()
+    })
+  },
+  () => {
+    campPinned = false
+    showTools(false)
+  },
+)
+stone.addEventListener('focus', forestControls.close, { signal })
 const leaveCamp = () => {
   parent.clearTimeout(campTimer)
   campTimer = parent.setTimeout(() => {
@@ -93,16 +134,24 @@ const leaveCamp = () => {
 campsite.addEventListener(
   'pointerenter',
   event => {
-    if (event.pointerType !== 'touch') showTools(true)
+    if (event.pointerType !== 'touch' && !forestControls.isOpen()) showTools(true)
   },
   { signal },
 )
 campsite.addEventListener('pointerleave', leaveCamp, { signal })
-campsite.addEventListener('focusin', () => showTools(true), { signal })
+campsite.addEventListener(
+  'focusin',
+  event => {
+    if (!forestControls.isOpen() && (event.target === campToggle || event.target === retry))
+      showTools(true)
+  },
+  { signal },
+)
 campsite.addEventListener('focusout', leaveCamp, { signal })
 campToggle.addEventListener(
   'click',
   () => {
+    forestControls.close()
     campPinned = !campPinned
     showTools(campPinned)
   },
@@ -111,7 +160,15 @@ campToggle.addEventListener(
 campsite.addEventListener(
   'keydown',
   event => {
-    if (event.key !== 'Escape' || campTools.hidden) return
+    if (event.key !== 'Escape') return
+    if (forestControls.isOpen()) {
+      event.preventDefault()
+      event.stopPropagation()
+      forestControls.close()
+      forestControls.toggle.focus({ preventScroll: true })
+      return
+    }
+    if (campTools.hidden) return
     event.preventDefault()
     event.stopPropagation()
     campPinned = false
@@ -124,6 +181,18 @@ retry.addEventListener('click', () => location.reload(), { signal })
 
 let ownPosition = 0.1
 let ownRoute: TrailId = 'main'
+let sceneSeed = Math.floor(Math.random() * 4294967296)
+const openingOrder = (seed: number) => {
+  const random = trailRandom(seed ^ 0x68bc21eb)
+  const order: TrailId[] = trailIds.filter(id => id !== 'main')
+  for (let index = order.length - 1; index > 0; index--) {
+    const other = Math.floor(random() * (index + 1))
+    ;[order[index], order[other]] = [order[other], order[index]]
+  }
+  order.unshift('main')
+  return order
+}
+let revealOrder = openingOrder(sceneSeed)
 let geometries: TrailGeometry[] = []
 let redrawStones = () => {}
 let layoutSignature = ''
@@ -141,6 +210,7 @@ const point = (position: number, route: TrailId = ownRoute) => {
     a.position === b.position ? 0 : (position - a.position) / (b.position - a.position)
   return { x: a.x + (b.x - a.x) * fraction, y: a.y + (b.y - a.y) * fraction }
 }
+const journey = mountHikerJourney(scene, host, signal)
 const placeOwnStone = (position: number, route: TrailId = ownRoute) => {
   ownPosition = position
   ownRoute = route
@@ -148,7 +218,11 @@ const placeOwnStone = (position: number, route: TrailId = ownRoute) => {
   const p = point(position)
   stone.style.left = `${p.x}px`
   stone.style.top = `${p.y}px`
-  stone.style.setProperty('--trail-arrival', `${Math.round(position * 1700)}ms`)
+  const geometry = geometries.find(geometry => geometry.id === route)
+  stone.style.setProperty(
+    '--trail-arrival',
+    `${Math.round((geometry?.delay ?? 0) + position * (geometry?.duration ?? 0))}ms`,
+  )
   // A slider's generous hit area must leave the adjacent text selectable.
   const cuts = obstacles.filter(
     rect =>
@@ -176,7 +250,7 @@ const placeOwnStone = (position: number, route: TrailId = ownRoute) => {
 }
 const drawScene = () => {
   if (host.hidden || !scene.isConnected) return
-  const layout = trailLayout(scene)
+  const layout = trailLayout(scene, sceneSeed)
   if (!layout) return
   const signature = `${layout.width}|${layout.height}|${layout.bottom}|${JSON.stringify(layout.routes)}`
   if (signature === layoutSignature && layout.clear === clearSignature) return
@@ -194,30 +268,33 @@ const drawScene = () => {
     const path = svg.querySelector<SVGPathElement>(`[data-trail-route="${id}"]`)
     if (!path) return []
     path.setAttribute('d', layout.routes[id])
-    svg.querySelector(`[data-trail-reveal="${id}"]`)?.setAttribute('d', layout.routes[id])
     const length = path.getTotalLength()
+    const delay = revealOrder.indexOf(id) * 500
+    const duration = Math.round(Math.max(3000, Math.min(4200, length * 2.8)))
+    const reveal = svg.querySelector<SVGPathElement>(`[data-trail-reveal="${id}"]`)
+    reveal?.setAttribute('d', layout.routes[id])
+    reveal?.style.setProperty('--trail-delay', `${delay}ms`)
+    reveal?.style.setProperty('--trail-duration', `${duration}ms`)
     const samples = Array.from({ length: Math.ceil(length / 4) + 1 }, (_, index) => {
       const position = Math.min(1, (index * 4) / length)
       const p = path.getPointAtLength(position * length)
       return { position, x: p.x, y: p.y }
     })
-    return [{ id, length, samples }]
+    return [{ id, length, samples, delay, duration }]
   })
   const steps = scene.querySelector('.trail-steps')
   if (steps) {
+    const kinds: FootprintKind[] = ['boot', 'paw', 'hoof', 'blob']
+    const offset = Math.floor(trailRandom(sceneSeed ^ 0x2c681f4b)() * kinds.length)
     steps.innerHTML = geometries
-      .map(({ id, length }) => {
+      .map(({ id, length }, index) => {
+        const kind = kinds[(index + offset) % kinds.length]
         const marks = []
         for (let distance = 6, step = 0; distance < length - 6; distance += 12, step++) {
           const p = point(distance / length, id)
           const ahead = point(Math.min(1, (distance + 1) / length), id)
           const angle = Math.atan2(ahead.y - p.y, ahead.x - p.x)
-          const side = step % 2 ? 2 : -2
-          const x = p.x - Math.sin(angle) * side
-          const y = p.y + Math.cos(angle) * side
-          marks.push(
-            `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="2" ry="1.3" transform="rotate(${((angle * 180) / Math.PI).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`,
-          )
+          marks.push(footprint(kind, footprintTransform(p.x, p.y, angle, step % 2 ? 1 : -1)))
         }
         return `<g data-route="${id}" mask="url(#${clip}-${id})">${marks.join('')}</g>`
       })
@@ -225,10 +302,28 @@ const drawScene = () => {
   }
   campsite.style.left = `${layout.camp.x}px`
   campsite.style.top = `${layout.camp.y}px`
-  const landmarks = scene.querySelector('.trail-landmarks')
-  if (landmarks) landmarks.innerHTML = trailTrees(width, bottom, layout.camp.y)
+  forestControls.toggle.style.left = `${layout.camp.x - 92}px`
+  forestControls.toggle.style.top = `${layout.camp.y + 10}px`
+  scene.style.setProperty(
+    '--trail-camp-arrival',
+    `${Math.max(...geometries.map(({ delay, duration }) => delay + duration))}ms`,
+  )
+  const hinterland = scene.querySelector('.trail-hinterland')
+  if (hinterland) hinterland.innerHTML = trailHinterland(width, layout.camp, sceneSeed)
+  forestLayout = { width, bottom, camp: layout.camp }
+  drawForest()
   placeOwnStone(ownPosition)
   redrawStones()
+  journey.update(
+    geometries.map(({ id, length, delay, duration }) => ({
+      id,
+      length,
+      readyAfter: delay + duration,
+      point: distance => point(Math.max(0, Math.min(1, distance / length)), id),
+    })),
+    width,
+    sceneSeed,
+  )
 }
 host.addEventListener('trail:reflow', drawScene, { signal })
 drawScene()
@@ -246,6 +341,7 @@ const dispose = () => {
   controller.abort()
   parent.clearTimeout(campTimer)
   parent.clearTimeout(timeout)
+  if (forestFrame) parent.cancelAnimationFrame(forestFrame)
   disposeConnection()
   scene.remove()
 }
@@ -267,8 +363,7 @@ const connect = async () => {
   let frame = 0
   const readPosition = (value: unknown) =>
     typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : null
-  const readRoute = (value: unknown): TrailId =>
-    value === 'pines' || value === 'grove' ? value : 'main'
+  const readRoute = (value: unknown): TrailId => trailIds.find(id => id === value) ?? 'main'
 
   const render = (data: TrailData) => {
     if (
@@ -387,7 +482,7 @@ const connect = async () => {
       event.preventDefault()
       event.stopPropagation()
       const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : position + steps[event.key]
-      if (next < 0 && route === 'grove') {
+      if (next < 0 && (route === 'grove' || route === 'switchback')) {
         const stem = nearest(point(0, route), ['main'])
         const main = geometries.find(geometry => geometry.id === 'main')
         if (main) move(stem.position + (next * length) / main.length, 'main')
@@ -446,7 +541,9 @@ const startConnection = () => {
 host.addEventListener(
   'trail:show',
   () => {
-    redrawStones()
+    const nextSeed = Math.floor(Math.random() * 4294967296)
+    sceneSeed = nextSeed === sceneSeed ? (sceneSeed + 1) >>> 0 : nextSeed
+    revealOrder = openingOrder(sceneSeed)
     startConnection()
   },
   { signal },
@@ -454,8 +551,10 @@ host.addEventListener(
 host.addEventListener(
   'trail:hide',
   () => {
+    journey.pause()
     campPinned = false
     showTools(false)
+    forestControls.close()
   },
   { signal },
 )

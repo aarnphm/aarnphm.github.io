@@ -1,3 +1,5 @@
+@use '../../styles/mixin.scss' as *;
+
 .homepage-trail-scene {
   .trail-scene {
     position: absolute;
@@ -29,22 +31,138 @@
     fill: var(--gray);
     opacity: 0.55;
   }
-  .trail-steps [data-route='pines'],
-  .trail-steps [data-route='grove'] {
+  .trail-steps [data-route]:not([data-route='main']) {
     opacity: 0.7;
   }
-  .trail-tree {
-    opacity: 0.82;
+  .trail-hiker-tracks {
+    fill: var(--darkgray);
+    opacity: 0.38;
+  }
+  .trail-backpacker {
     shape-rendering: crispEdges;
   }
+  .trail-backpacker[data-phase='waiting'],
+  .trail-backpacker[data-phase='gone'] {
+    visibility: hidden;
+  }
+  .trail-hiker-shadow {
+    fill: var(--gray);
+    opacity: 0.25;
+  }
+  .trail-hiker-hat {
+    fill: color-mix(in srgb, var(--lightgray) 45%, #ae9066);
+  }
+  .trail-hiker-coat {
+    fill: color-mix(in srgb, var(--gray) 40%, #899275);
+  }
+  .trail-hiker-boot,
+  .trail-hiker-grip {
+    fill: var(--dark);
+  }
+  .trail-hiker-pole,
+  .trail-hiker-pack-cloth {
+    fill: color-mix(in srgb, var(--darkgray) 65%, #957352);
+  }
+  .trail-hiker-pack-strap {
+    fill: var(--darkgray);
+  }
+  .trail-hiker-bedroll {
+    fill: color-mix(in srgb, var(--lightgray) 45%, #b7ad8a);
+  }
+  [data-hiker-pose='bend'],
+  [data-hiker-pose='rest'],
+  .trail-hiker-parked-pole {
+    display: none;
+  }
+  .trail-backpacker[data-stride='0'] .trail-hiker-stride[data-stride='1'],
+  .trail-backpacker[data-stride='1'] .trail-hiker-stride[data-stride='0'] {
+    display: none;
+  }
+  .trail-backpacker:is([data-phase='unpacking'], [data-phase='packing']) {
+    [data-hiker-pose='walk'] {
+      display: none;
+    }
+    [data-hiker-pose='bend'],
+    .trail-hiker-parked-pole {
+      display: block;
+    }
+  }
+  .trail-backpacker[data-phase='resting'] {
+    [data-hiker-pose='walk'] {
+      display: none;
+    }
+    [data-hiker-pose='rest'],
+    .trail-hiker-parked-pole {
+      display: block;
+    }
+  }
+  .trail-upland {
+    shape-rendering: crispEdges;
+  }
+  .trail-upland-ground {
+    fill: color-mix(in srgb, var(--lightgray) 28%, var(--light));
+  }
+  .trail-upland-edge {
+    fill: color-mix(in srgb, var(--gray) 24%, var(--light));
+  }
+  .trail-upland-stone {
+    fill: var(--gray);
+  }
+  .trail-cow {
+    shape-rendering: crispEdges;
+  }
+  .trail-cow-coat,
+  .trail-cow-horn {
+    fill: var(--lightgray);
+  }
+  .trail-cow-patch,
+  .trail-cow-tail,
+  .trail-cow-leg {
+    fill: var(--darkgray);
+  }
+  .trail-cow-russet .trail-cow-patch {
+    fill: color-mix(in srgb, var(--darkgray) 55%, #a36a40);
+  }
+  .trail-cow-nose {
+    fill: color-mix(in srgb, var(--tertiary) 55%, var(--lightgray));
+  }
+  .trail-cow-eye,
+  .trail-cow-hoof {
+    fill: var(--dark);
+  }
+  .trail-cow-shadow {
+    fill: var(--gray);
+    opacity: 0.3;
+  }
+  .trail-tree {
+    --trail-tree-crown: color-mix(in srgb, var(--gray) 50%, #84916b);
+    --trail-tree-light: color-mix(in srgb, var(--lightgray) 60%, #b6b58a);
+    --trail-tree-dark: color-mix(in srgb, var(--darkgray) 35%, #65724f);
+    --trail-tree-gold: color-mix(in srgb, var(--lightgray) 45%, #b49a62);
+    opacity: var(--trail-tree-opacity, 0.9);
+    shape-rendering: crispEdges;
+  }
+  .trail-tree[data-tree-tone='lichen'] {
+    --trail-tree-crown: color-mix(in srgb, var(--gray) 55%, #91a18b);
+    --trail-tree-light: color-mix(in srgb, var(--lightgray) 55%, #c3c7a5);
+    --trail-tree-dark: color-mix(in srgb, var(--darkgray) 40%, #667d69);
+  }
+  .trail-tree[data-tree-tone='ochre'] {
+    --trail-tree-crown: color-mix(in srgb, var(--gray) 50%, #b7a270);
+    --trail-tree-light: color-mix(in srgb, var(--lightgray) 55%, #d3be8d);
+    --trail-tree-dark: color-mix(in srgb, var(--darkgray) 45%, #958257);
+  }
   .trail-tree-crown {
-    fill: color-mix(in srgb, var(--gray) 70%, #83906c);
+    fill: var(--trail-tree-crown);
   }
   .trail-tree-light {
-    fill: color-mix(in srgb, var(--lightgray) 70%, #a3ad89);
+    fill: var(--trail-tree-light);
   }
   .trail-tree-dark {
-    fill: color-mix(in srgb, var(--gray) 75%, #5d6b4c);
+    fill: var(--trail-tree-dark);
+  }
+  .trail-tree-gold {
+    fill: var(--trail-tree-gold);
   }
   .trail-tree-trunk {
     fill: color-mix(in srgb, var(--darkgray) 75%, #80624a);
@@ -214,6 +332,158 @@
     width: min(240px, calc(100vw - 32px));
     font-size: 10px;
   }
+  .trail-tree-toggle {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--darkgray);
+    cursor: pointer;
+    pointer-events: auto;
+    svg {
+      width: 17px;
+      height: 17px;
+      fill: currentColor;
+      shape-rendering: crispEdges;
+    }
+    &:focus-visible {
+      outline: 1px solid var(--darkgray);
+      outline-offset: -5px;
+    }
+  }
+  .trail-tree-panel {
+    position: fixed;
+    z-index: 2;
+    left: max(16px, env(safe-area-inset-left));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    box-sizing: border-box;
+    width: min(220px, calc(100vw - 32px));
+    border-radius: 0;
+    border: 1px solid var(--lightgray);
+    background: var(--light);
+    font-variant-numeric: tabular-nums;
+    pointer-events: auto;
+  }
+  .trail-tree-panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 3px 8px 3px 12px;
+    border-bottom: 1px solid var(--lightgray);
+    color: var(--gray);
+    font-size: 9px;
+    span:nth-child(2) {
+      margin-left: auto;
+    }
+  }
+  .trail-tree-close {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--darkgray);
+    cursor: pointer;
+    svg {
+      width: 12px;
+      height: 12px;
+      fill: none;
+      stroke: currentColor;
+    }
+    &:focus-visible {
+      outline: 1px solid var(--darkgray);
+      outline-offset: -2px;
+    }
+  }
+  .trail-tree-controls {
+    max-height: max(72px, min(400px, calc(100dvh - 100px)));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray) var(--light);
+    @supports selector(::-webkit-scrollbar) {
+      // Standard scrollbar properties override the custom thumb geometry.
+      scrollbar-width: auto;
+      scrollbar-color: auto;
+    }
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      border: 1px solid var(--light);
+      border-radius: 0;
+      background: var(--gray);
+    }
+    &::-webkit-scrollbar-track {
+      border-radius: 0;
+      background: var(--light);
+    }
+  }
+  .trail-tree-control {
+    padding: 8px 12px;
+    & + .trail-tree-control {
+      border-top: 1px solid var(--lightgray);
+    }
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    output {
+      min-width: 3ch;
+      padding: 0 3px;
+      border: 1px solid var(--lightgray);
+      text-align: right;
+      color: var(--darkgray);
+    }
+    input {
+      @include stableRangeControl(
+        $track-color: linear-gradient(
+            to right,
+            var(--gray) var(--trail-control-progress),
+            var(--lightgray) var(--trail-control-progress)
+          ),
+        $thumb-color: var(--light)
+      );
+      display: block;
+      width: 100%;
+      height: 28px;
+      padding: 0;
+      margin: 3px 0 0;
+      cursor: pointer;
+      &::-webkit-slider-runnable-track {
+        height: 4px;
+      }
+      &::-webkit-slider-thumb {
+        box-sizing: border-box;
+        width: 12px;
+        height: 12px;
+        margin-top: -4px;
+        border-color: var(--darkgray);
+      }
+      &::-moz-range-track,
+      &::-moz-range-progress {
+        height: 4px;
+      }
+      &::-moz-range-thumb {
+        box-sizing: border-box;
+        width: 12px;
+        height: 12px;
+        border-color: var(--darkgray);
+      }
+      &:focus-visible {
+        outline: 1px solid var(--darkgray);
+        outline-offset: 2px;
+      }
+    }
+  }
   .trail-hint-fumes {
     display: block;
     width: 100%;
@@ -271,7 +541,10 @@
   }
   @media (prefers-reduced-motion: no-preference) {
     .trail-reveal {
-      animation: trail-unfold 1700ms linear both;
+      animation: trail-unfold var(--trail-duration, 3600ms) linear var(--trail-delay, 0ms) both;
+    }
+    .trail-upland {
+      animation: trail-arrive 700ms ease-out var(--trail-camp-arrival, 6000ms) both;
     }
     .trail-landmarks {
       animation: trail-arrive 400ms ease-out 200ms both;
@@ -280,7 +553,19 @@
       animation: trail-arrive 160ms ease-out var(--trail-arrival, 0ms) both;
     }
     .trail-campsite {
-      animation: trail-arrive 240ms ease-out 1700ms both;
+      animation: trail-arrive 400ms ease-out var(--trail-camp-arrival, 6000ms) both;
+    }
+    .trail-tree-toggle {
+      animation: trail-arrive 400ms ease-out var(--trail-camp-arrival, 6000ms) both;
+    }
+    .trail-tree-toggle:focus-visible {
+      animation: none;
+    }
+    .trail-tree-panel {
+      animation: trail-panel-rise 160ms ease-out both;
+    }
+    .trail-cow-tail {
+      animation: trail-tail-flick 9s steps(1, end) var(--trail-cow-delay) infinite;
     }
     .trail-stone:focus-visible,
     .trail-campsite:focus-within {
@@ -330,6 +615,28 @@
     }
     to {
       stroke-dashoffset: 0;
+    }
+  }
+  @keyframes trail-panel-rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes trail-tail-flick {
+    0%,
+    78%,
+    90%,
+    100% {
+      transform: translateX(0);
+    }
+    82%,
+    86% {
+      transform: translateX(-2px);
     }
   }
   @keyframes trail-arrive {

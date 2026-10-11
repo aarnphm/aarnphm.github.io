@@ -1,6 +1,9 @@
+import { trailRandom } from './random'
+
 type Point = { x: number; y: number }
 type Rect = { left: number; top: number; right: number; bottom: number }
-export type TrailId = 'main' | 'pines' | 'grove'
+export type TrailId = 'main' | 'pines' | 'grove' | 'ridge' | 'meadow' | 'switchback'
+export const trailIds: TrailId[] = ['main', 'pines', 'grove', 'ridge', 'meadow', 'switchback']
 
 function curvedPath(points: Point[], width: number, height: number, lead?: Point) {
   const bounded = (point: Point) => ({
@@ -50,7 +53,7 @@ export function clearSpace(width: number, height: number, obstacles: Rect[]) {
   return path
 }
 
-export function trailLayout(scene: HTMLElement) {
+export function trailLayout(scene: HTMLElement, seed: number) {
   const document = scene.ownerDocument
   const view = document.defaultView
   const landing = document.querySelector<HTMLElement>('.landing')
@@ -58,6 +61,7 @@ export function trailLayout(scene: HTMLElement) {
   const bounds = scene.getBoundingClientRect()
   const width = scene.clientWidth
   const height = scene.clientHeight
+  const random = trailRandom(seed)
   const text: Rect[] = []
   const walker = document.createTreeWalker(landing, NodeFilter.SHOW_TEXT)
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -109,21 +113,28 @@ export function trailLayout(scene: HTMLElement) {
     const right = Math.max(width * 0.18, ...nearby.map(line => line.right + 32))
     return Math.min(width - (width < 700 ? 6 : 22), right)
   }
-  const start = { x: edge(64), y: 64 }
+  const start = { x: edge(64), y: 48 + random() * 24 }
   const points: Point[] = [start]
   for (let y = 72; y < bottom; y += 64) points.push({ x: edge(y), y })
   const branch = { x: edge(bottom), y: bottom + 24 }
   points.push(branch)
   const lead = points[points.length - 2]
-  const camp = { x: width * 0.72, y: Math.min(height - 80, Math.max(height - 112, bottom + 225)) }
+  const camp = {
+    x: Math.min(width - 72, width * (0.64 + random() * 0.12)),
+    y: Math.min(height - 80, Math.max(height - 112, bottom + 225)),
+  }
   const clearing = camp.y - bottom
-  const fork = { x: width * 0.4, y: bottom + clearing * 0.22 }
+  const wander = (x: number, y: number): Point => ({
+    x: Math.max(10, Math.min(width - 10, width * (x + (random() - 0.5) * 0.12))),
+    y: bottom + clearing * (y + (random() - 0.5) * 0.14),
+  })
+  const fork = wander(0.4, 0.22)
   const end = { x: camp.x - 24, y: camp.y + 4 }
   points.push(
     fork,
-    { x: width * 0.27, y: bottom + clearing * 0.45 },
-    { x: width * 0.44, y: bottom + clearing * 0.76 },
-    { x: width * 0.61, y: bottom + clearing * 0.64 },
+    wander(0.27, 0.45),
+    wander(0.44, 0.76),
+    wander(0.61, 0.64),
     { x: camp.x - 42, y: camp.y - 24 },
     end,
   )
@@ -132,25 +143,59 @@ export function trailLayout(scene: HTMLElement) {
     main: curvedPath(points, width, height),
     pines: curvedPath(
       [
-        { x: width * 0.18, y: 18 },
+        { x: width * (0.12 + random() * 0.15), y: 18 },
         { x: 10, y: 48 },
         { x: 10, y: bottom * 0.52 },
         { x: 10, y: bottom + 24 },
-        { x: width * 0.08, y: bottom + clearing * 0.44 },
-        { x: width * 0.28, y: bottom + clearing * 0.74 },
-        { x: width * 0.53, y: bottom + clearing * 0.96 },
+        wander(0.08, 0.44),
+        wander(0.28, 0.74),
+        wander(0.53, 0.96),
         end,
       ],
       width,
       height,
     ),
     grove: curvedPath(
+      [branch, wander(0.64, 0.26), wander(0.8, 0.44), wander(0.93, 0.72), wander(0.81, 0.96), end],
+      width,
+      height,
+      lead,
+    ),
+    ridge: curvedPath(
+      [
+        { x: width - 16, y: 76 + random() * 70 },
+        { x: width - 10, y: bottom * 0.74 },
+        wander(0.91, 0.1),
+        wander(0.79, 0.35),
+        wander(0.56, 0.23),
+        wander(0.48, 0.52),
+        wander(0.6, 0.8),
+        end,
+      ],
+      width,
+      height,
+    ),
+    meadow: curvedPath(
+      [
+        { x: 8, y: bottom * (0.5 + random() * 0.18) },
+        wander(0.15, 0.08),
+        wander(0.23, 0.26),
+        wander(0.12, 0.62),
+        wander(0.34, 0.9),
+        wander(0.56, 0.82),
+        end,
+      ],
+      width,
+      height,
+    ),
+    switchback: curvedPath(
       [
         branch,
-        { x: width * 0.64, y: bottom + clearing * 0.26 },
-        { x: width * 0.8, y: bottom + clearing * 0.44 },
-        { x: width * 0.93, y: bottom + clearing * 0.72 },
-        { x: width * 0.81, y: bottom + clearing * 0.96 },
+        wander(0.72, 0.13),
+        wander(0.57, 0.32),
+        wander(0.79, 0.47),
+        wander(0.61, 0.64),
+        wander(0.76, 0.8),
         end,
       ],
       width,
