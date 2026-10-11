@@ -56,6 +56,7 @@ import { parseWeatherCache, type WeatherCache } from '../plugins/stores/weather'
 import { matchAppleRun } from './apple-run-match'
 import { matchAppleSwims, matchAppleSwimTelemetry } from './apple-swim-match'
 import { applyHeartRatePhysiology } from './heart-rate-physiology'
+import { releasedOnReload } from './module-caches'
 import { parseMyWindsockGraphs, type MyWindsockArchiveReference } from './mywindsock-graphs'
 import { projectMyWindsockRoute, type MyWindsockRoute } from './mywindsock-route'
 import { joinSegments, QUARTZ } from './path'
@@ -193,10 +194,9 @@ const windArchiveStamp = (contentDirectory: string): string =>
     .map(file => file.key)
     .join('|')
 
-const routeMemo = new Map<
-  string,
-  { route: MyWindsockRoute | null; archive: MyWindsockArchiveReference | null }
->()
+const routeMemo = releasedOnReload(
+  new Map<string, { route: MyWindsockRoute | null; archive: MyWindsockArchiveReference | null }>(),
+)
 
 // Full schema validation runs in the ingest and validate scripts; this read checks the identity
 // fields and lets the projection reject non-numeric series.
@@ -955,7 +955,9 @@ export interface LoadedStravaData {
   generatedAt: number
 }
 
-const payloadMemo = new Map<string, { manualKey: string; data: LoadedStravaData }>()
+const payloadMemo = releasedOnReload(
+  new Map<string, { manualKey: string; data: LoadedStravaData }>(),
+)
 let payloadMemoStamps = ''
 
 export function loadStravaPayloadSync(

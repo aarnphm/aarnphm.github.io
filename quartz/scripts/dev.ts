@@ -135,7 +135,7 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     'quartz/bootstrap-cli.mjs',
     'build',
     '--concurrency',
-    '16',
+    '10',
     serve ? '--serve' : '--watch',
     '--port',
     String(effectivePort),

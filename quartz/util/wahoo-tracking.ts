@@ -12,12 +12,12 @@ import {
   type WahooData,
   type WahooLocalFitActivity,
 } from '../plugins/stores/wahoo'
+import { releasedOnReload } from './module-caches'
 import { decodeWahooFit, wahooFitSha256, type WahooFitData } from './wahoo-fit'
 
-const fitMemo = new Map<
-  string,
-  { stamp: string; data: WahooFitData; sha256: string; size: number }
->()
+const fitMemo = releasedOnReload(
+  new Map<string, { stamp: string; data: WahooFitData; sha256: string; size: number }>(),
+)
 
 export function trackedWahooChangeEvents(
   content: ProcessedContent[],

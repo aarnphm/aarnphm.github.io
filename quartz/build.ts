@@ -507,6 +507,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
 }
 
 export { sourceRebuildScope } from './plugins/emitters/component-resources/change-classifier'
+export { releaseModuleCaches } from './util/module-caches'
 
 /**
  * Rebuilds what a source edit outside the server render path invalidates, without cleaning `public`

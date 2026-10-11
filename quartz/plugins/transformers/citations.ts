@@ -11,6 +11,7 @@ import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
 import type { QuartzTransformerPlugin } from '../../types/plugin'
 import type { FrontmatterLink } from './frontmatter'
+import { releasedOnReload } from '../../util/module-caches'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { isRecord } from '../../util/type-guards'
 import { hostnameMatches, parseExternalUrl } from '../../util/url'
@@ -28,9 +29,9 @@ const MAX_CITATION_DATA_CACHE_ENTRIES = 8
 const MAX_CITATION_TREE_CACHE_ENTRIES = 256
 const CITATION_DATA_CACHE_DIR = path.join('.quartz-cache', 'citation-data')
 const CITATION_TREE_CACHE_DIR = path.join('.quartz-cache', 'citation-tree')
-const citationDataCache = new Map<string, unknown[]>()
-const citationTreeCache = new Map<string, HastRoot>()
-const citationInputPartKeys = new Map<string, string>()
+const citationDataCache = releasedOnReload(new Map<string, unknown[]>())
+const citationTreeCache = releasedOnReload(new Map<string, HastRoot>())
+const citationInputPartKeys = releasedOnReload(new Map<string, string>())
 const require = createRequire(import.meta.url)
 
 interface CachedCiteInstance {
@@ -259,7 +260,7 @@ function setCitationDataCache(key: string, data: unknown[]): void {
   if (first) citationDataCache.delete(first)
 }
 
-const hydratedCitationDataCacheKeys = new Set<string>()
+const hydratedCitationDataCacheKeys = releasedOnReload(new Set<string>())
 
 async function hydrateCitationDataCache(key: string): Promise<void> {
   if (citationDataCache.has(key) || hydratedCitationDataCacheKeys.has(key)) return
