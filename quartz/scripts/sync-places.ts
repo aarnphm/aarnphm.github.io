@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { isDeepStrictEqual } from 'node:util'
 
 interface Coordinates {
   lat: string
@@ -164,6 +165,7 @@ async function reverseGeocode(coords: Coordinates): Promise<string | undefined> 
   try {
     const response = await fetch(url, {
       headers: { 'User-Agent': NOMINATIM_USER_AGENT, Accept: 'application/json' },
+      signal: AbortSignal.timeout(15_000),
     })
 
     if (!response.ok) {
@@ -191,7 +193,13 @@ async function reverseGeocode(coords: Coordinates): Promise<string | undefined> 
   }
 }
 
-type ParsedMeta = { date?: string; tags?: string[]; coord?: Coordinates; title?: string }
+type ParsedMeta = {
+  date?: string
+  tags?: string[]
+  coord?: Coordinates
+  title?: string
+  address?: string
+}
 
 function parseMeta(lines: string[]): ParsedMeta {
   const meta: ParsedMeta = {}
@@ -210,6 +218,8 @@ function parseMeta(lines: string[]): ParsedMeta {
       meta.coord = parseCoordinate(value)
     } else if (key === 'title') {
       meta.title = value.trim()
+    } else if (key === 'address') {
+      meta.address = value
     }
   }
   return meta
@@ -276,6 +286,7 @@ function parsePlaces(markdown: string): PlaceEntry[] {
       tags: meta.tags ?? [],
       date: meta.date,
       coordinates: meta.coord,
+      address: meta.address,
     })
   }
   return entries
@@ -328,8 +339,9 @@ function buildFrontmatter(
   existing: Record<string, unknown>,
 ): Record<string, unknown> {
   const categories = new Set<string>()
-  if (Array.isArray(existing.categories)) {
-    for (const value of existing.categories) {
+  const existingCategories = existing.category ?? existing.categories
+  if (Array.isArray(existingCategories)) {
+    for (const value of existingCategories) {
       const stringified = String(value).trim()
       if (stringified) {
         categories.add(stringified)
@@ -344,7 +356,7 @@ function buildFrontmatter(
       ? existing.coordinates.map(coord => String(coord))
       : undefined
 
-  const data: Record<string, unknown> = {}
+  const data: Record<string, unknown> = { ...existing }
   if (entry.address && entry.address.trim().length > 0) {
     data.address = entry.address.trim()
   } else if (typeof existing.address === 'string' && existing.address.trim().length > 0) {
@@ -363,7 +375,6 @@ function buildFrontmatter(
     data.description = existing.description.trim()
   }
   data.id = entry.title
-  data.modified = formatModified(new Date())
   data.rating = typeof existing.rating === 'number' ? existing.rating : DEFAULT_RATING
   if (Array.isArray(existing.tags) && existing.tags.length > 0) {
     data.tags = existing.tags.map(tag => String(tag))
@@ -431,6 +442,7 @@ async function buildExistingPlaceIndex(): Promise<Map<string, string>> {
 
 function renderPlaceFile(entry: PlaceEntry, existing: ExistingNote): string {
   const frontmatter = buildFrontmatter(entry, existing.data)
+  frontmatter.modified = formatModified(new Date())
   const serializedBody = existing.body.length > 0 ? `${existing.body}\n` : ''
   return matter.stringify(serializedBody, frontmatter)
 }
@@ -479,8 +491,10 @@ async function writePlace(
   }
   const existingNote = parseExistingContent(existing)
   await ensureAddress(entry, existingNote.data)
-  const nextContent = renderPlaceFile(entry, existingNote)
-  if (existing && existing === nextContent) {
+  if (
+    existing &&
+    isDeepStrictEqual(existingNote.data, buildFrontmatter(entry, existingNote.data))
+  ) {
     return {
       path: filePath,
       changed: false,
@@ -488,6 +502,7 @@ async function writePlace(
       hasAddress: Boolean(entry.address && entry.address.length > 0),
     }
   }
+  const nextContent = renderPlaceFile(entry, existingNote)
   await fs.writeFile(filePath, nextContent, 'utf8')
   if (normalizedUrl) {
     existingIndex.set(normalizedUrl, filePath)
