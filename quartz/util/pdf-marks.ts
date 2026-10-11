@@ -175,8 +175,12 @@ export function normalizePdfSlug(value: string): string | null {
   return isPdfSlug(decoded) ? decoded : null
 }
 
-/** Lecture notes share the marks API: `src` is the unit slug, `doc` a fixed digest of it. */
-const UNIT_MARK_SRC = /^courses\/[a-z0-9][a-z0-9.-]*\/lectures\/\d{2,3}$/i
+/**
+ * Lecture notes share the marks API: `src` is the unit slug, `doc` a fixed digest of it. Authored
+ * notes (`lectures/<nn>`) and converted LaTeX notes (`notes/<nn>`) are separate sources, so each
+ * passage stays anchored to the text it quotes.
+ */
+const UNIT_MARK_SRC = /^courses\/[a-z0-9][a-z0-9.-]*\/(?:lectures|notes)\/\d{2,3}$/i
 
 export function isUnitMarkSrc(value: string): boolean {
   return value.length <= MAX_SRC_LENGTH && UNIT_MARK_SRC.test(value) && !value.includes('..')

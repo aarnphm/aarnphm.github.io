@@ -274,7 +274,7 @@ export const CourseUnitWorkspace = (() => {
   const Workspace: QuartzComponent = (props: QuartzComponentProps) => {
     const ctx = unitContext(props)
     const slug = props.fileData.slug
-    if (!ctx || ctx.kind !== 'lectures' || !slug) return null
+    if (!ctx || (ctx.kind !== 'lectures' && ctx.kind !== 'notes') || !slug) return null
     const { view, unit, n } = ctx
     const pdf = unit ? unitPdf(unit.record) : undefined
     const video = unit ? unitVideo(unit.record) : undefined

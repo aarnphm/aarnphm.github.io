@@ -29,6 +29,8 @@ type CourseContext = {
   tags: string[]
   aliases: string[]
   linkableDirs: Set<string>
+  // OCW site path -> content slug of every vendored course, for links between courses
+  vendoredCourses: Map<string, string>
 }
 
 type CoursePage = {
@@ -352,6 +354,8 @@ function normalizeMarkdown(context: CourseContext, value: string): string {
         if (fileName) {
           return `${prefix}[[${context.slug}/static_resources/${fileName}|${normalizeText(label).toLowerCase()}]]`
         }
+        const otherCourse = otherCourseLink(context, url, label)
+        if (otherCourse) return `${prefix}${otherCourse}`
         return match
       },
     )
@@ -415,6 +419,23 @@ function courseRelativeDir(context: CourseContext, value: string): string {
   if (context.linkableDirs.has(candidate)) return candidate
   if (/^(pages|resources)\//.test(candidate)) return candidate
   return ''
+}
+
+// A root-relative `/courses/…` link points at another OCW course: link the vendored copy when
+// there is one, else the OCW page, since the bare path 404s on this site.
+function otherCourseLink(context: CourseContext, value: string, label: string): string {
+  const stripped = strippedUrlPath(value)
+  let local = ''
+  if (stripped.startsWith('/')) local = stripped
+  else if (/^https?:\/\/ocw\.mit\.edu\//.test(stripped)) local = new URL(stripped).pathname
+  const site = local.match(/^\/(courses\/[^/]+)/)?.[1]
+  if (!site) return ''
+  const slug = context.vendoredCourses.get(site)
+  if (slug) {
+    const [, mark = '', inner = label] = label.match(/^([_*]?)(.+)\1$/) ?? []
+    return `${mark}[[${slug}/|${inner}]]${mark}`
+  }
+  return /^https?:/.test(value) ? '' : `[${label}](${new URL(value, mitBaseUrl).toString()})`
 }
 
 function staticResourceFile(context: CourseContext, value: string): string {
@@ -723,6 +744,7 @@ function courseContext(courseRoot: string, data: JsonRecord): CourseContext {
     tags,
     aliases,
     linkableDirs: new Set(),
+    vendoredCourses: new Map(),
   }
 }
 
@@ -781,8 +803,11 @@ function parseCalendarUnits(html: string, withKeyDates = true): CourseStudy | nu
       study.unitKind = unitKindFromHeader(first.lines.join(' '))
       continue
     }
-    if (first.tag === 'th' && /colspan/i.test(first.attrs)) {
-      const label = first.lines.join(' ').replace(/^[IVXLC]+\.\s*/i, '')
+    // OCW writes part rows as `<td colspan><strong>II. …</strong>`; a colspan row without a
+    // roman numeral (the oral exam) stays trailing.
+    const spanLabel = first.lines.join(' ')
+    if (/colspan/i.test(first.attrs) && (first.tag === 'th' || /^[IVXLC]+\.\s/.test(spanLabel))) {
+      const label = spanLabel.replace(/^[IVXLC]+\.\s*/i, '')
       if (label.length > 0) study.parts.push(label.toLowerCase())
       continue
     }
@@ -812,7 +837,9 @@ function parseCalendarUnits(html: string, withKeyDates = true): CourseStudy | nu
   return study
 }
 
-const lectureNumberRe = /\blec(?:ture)?[\s_#]*0*(\d+)\b/i
+// `_` is a word character, so `\b` misses `mit18_905f16_lec28`; the file name beats OCW titles
+// like "Lecture 27 Products in Cohomology" on lec28.
+const lectureNumberRe = /(?<![a-z])lec(?:ture)?[\s_#]*0*(\d+)\b/i
 const problemSetNumberRe = /\b(?:pset|problem set|ps)[\s_#]*0*(\d+)\b/i
 
 function lectureNumber(resource: CourseResource): number | null {
@@ -1552,9 +1579,21 @@ async function fetchCourse(input: string): Promise<string> {
   return courseRoot
 }
 
+async function vendoredCourses(): Promise<Map<string, string>> {
+  const files = await globby(['*/data.json'], { cwd: defaultCourseRoot, onlyFiles: true })
+  const courses = new Map<string, string>()
+  for (const file of files) {
+    const root = path.join(defaultCourseRoot, path.dirname(file))
+    const site = sourcePath(await readJson(path.join(defaultCourseRoot, file)))
+    if (site.length > 0) courses.set(site, contentSlug(root))
+  }
+  return courses
+}
+
 async function vendorCourse(courseRoot: string): Promise<void> {
   const rootData = await readJson(path.join(courseRoot, 'data.json'))
   const context = courseContext(courseRoot, rootData)
+  context.vendoredCourses = await vendoredCourses()
   const dataFiles = await globby(['**/data.json'], {
     cwd: context.root,
     ignore: ['data.json', 'static_resources/data.json'],

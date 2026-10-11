@@ -554,8 +554,8 @@ test('course PDF navigations and /read HTML go to the resource page; markdown st
 
 // Lecture-note passages share the marks API with `src` = the unit slug. Failure modes: a passage
 // on a PDF or a page target on a unit mixes the two stores; a forged `doc` splits one note's
-// marks; visitors read private passages; a near-miss slug (notes/, traversal) is accepted;
-// counts drop unit marks.
+// marks; visitors read private passages; a near-miss slug (pset notes, traversal) is accepted;
+// counts drop unit marks; converted notes (`notes/<nn>`) are refused or share the authored doc.
 const UNIT = 'courses/unit-course/lectures/03'
 
 function passage(overrides: Partial<PdfMarkInput> = {}): PdfMarkInput {
@@ -624,8 +624,11 @@ test('lecture passages: targets stay with their source kind; near-miss slugs are
     input({ target: { type: 'passage', page: 0, quote: null, heading: null } }),
   )
   assert.equal(passageOnPdf.status, 422)
+  const converted = await list(OWNER_ORIGIN, 'courses/unit-course/notes/03')
+  assert.equal(converted.response.status, 200)
+  assert.notEqual(converted.body.doc, doc)
   for (const src of [
-    'courses/unit-course/notes/03',
+    'courses/unit-course/notes/pset-03',
     'courses/../lectures/03',
     'courses/unit-course/lectures/3',
   ]) {
