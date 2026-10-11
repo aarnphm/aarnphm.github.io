@@ -2761,7 +2761,9 @@ export function renderPage(
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? 'default'
   const isSlides =
     (componentData.fileData.frontmatter?.slides ?? false) && /\/slides\/\d+$/.test(slug)
-  const isFlashcards = componentData.fileData.flashcards != null && slug.endsWith('/flashcards')
+  const isFlashcards =
+    (componentData.fileData.flashcards != null && slug.endsWith('/flashcards')) ||
+    pageLayout === 'flashcards'
   const isArena = slug === 'arena' || slug.startsWith('arena/')
   const isCurius = slug === 'curius'
   // The PDF reader shell renders once at `read` and the worker serves it for every `/read/...`

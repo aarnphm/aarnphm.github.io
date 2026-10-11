@@ -1,12 +1,12 @@
 @use '../../styles/variables.scss' as *;
 
-html:has(body[data-flashcards='true'][data-slug$='/flashcards']),
-body[data-flashcards='true'][data-slug$='/flashcards'] {
+html:has(body[data-flashcards='true']),
+body[data-flashcards='true'] {
   height: 100dvh;
   overflow: hidden;
 }
 
-body[data-flashcards='true'][data-slug$='/flashcards'] {
+body[data-flashcards='true'] {
   main#quartz-root {
     height: 100dvh;
     max-height: 100dvh;
@@ -57,11 +57,24 @@ body[data-flashcards='true'][data-slug$='/flashcards'] {
   height: min(100%, 36rem);
   min-height: 0;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   background: var(--light);
   border: 1px solid var(--fc-border);
   border-radius: var(--radius-none);
+
+  // the source note opens beside the card; below the mobile breakpoint it stacks under it
+  &[data-notes='open'] {
+    width: min(100%, 88rem);
+    height: min(100%, 48rem);
+    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+
+    @media all and ($mobile) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
 
   :where(button, a):focus-visible {
     outline: 2px solid var(--secondary);
@@ -70,6 +83,111 @@ body[data-flashcards='true'][data-slug$='/flashcards'] {
 
   @media (pointer: coarse) {
     --fc-control-height: 44px;
+  }
+}
+
+.flashcards-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+// the note rail: same head as the card, its own scroll
+.flashcards-notes {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-inline-start: 1px solid var(--fc-border);
+
+  &[hidden] {
+    display: none;
+  }
+
+  @media all and ($mobile) {
+    border-inline-start: 0;
+    border-top: 1px solid var(--fc-border);
+  }
+}
+
+.flashcards-notes-head {
+  flex: 0 0 auto;
+  padding: 0.65rem 1.25rem;
+  border-bottom: 1px solid var(--fc-border);
+  background: var(--fc-surface);
+  font-family: var(--codeFont);
+  font-size: 0.82rem;
+  line-height: 1.5;
+
+  .flashcards-notes-title {
+    color: var(--dark);
+    text-decoration: underline;
+    text-decoration-color: var(--gray);
+    text-underline-offset: 0.2em;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      background: transparent;
+      text-decoration-color: var(--dark);
+    }
+  }
+}
+
+.flashcards-notes-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0.75rem 1.25rem 1.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fc-border) transparent;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--darkgray);
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin-top: 1.4rem;
+    color: var(--dark);
+  }
+
+  h1 {
+    font-size: 1.15rem;
+  }
+
+  h2 {
+    font-size: 1.05rem;
+  }
+
+  h3,
+  h4 {
+    font-size: 0.95rem;
+  }
+
+  > article > :first-child,
+  > article > :first-child > :first-child {
+    margin-top: 0;
+  }
+
+  img,
+  video,
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .flashcards-notes-empty {
+    margin: 0;
+    font-family: var(--codeFont);
+    font-size: 0.78rem;
   }
 }
 
@@ -133,6 +251,17 @@ body[data-flashcards='true'][data-slug$='/flashcards'] {
       'lnum' 1;
     min-width: 3.2rem;
     text-align: right;
+  }
+
+  .fc-notes {
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 0.2rem 0.6rem;
+    line-height: 1.3;
+
+    &[aria-pressed='true'] {
+      background: color-mix(in srgb, var(--fc-front) 24%, var(--fc-surface));
+    }
   }
 
   .flashcards-sync {

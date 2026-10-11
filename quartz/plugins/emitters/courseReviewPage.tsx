@@ -28,7 +28,7 @@ async function emitReview(
     frontmatter: {
       title: 'review',
       tags: [],
-      pageLayout: 'default',
+      pageLayout: 'flashcards',
       description: 'due flashcards across every course',
     },
   })
