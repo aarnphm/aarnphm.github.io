@@ -150,6 +150,14 @@ $pet-looks: (
   }
 }
 
+// Out on the home page's trail: the bucket hat drops on as it sets off.
+.pet-svg[data-hat] [data-part='hat'] {
+  display: inline;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: pet-hat-on 0.36s steps(6) both;
+}
+
 // Standing on its own pen line where no box offers an edge.
 .pet-svg[data-kind='floor'] [data-part='ground'] {
   display: inline;
@@ -474,6 +482,23 @@ $pet-looks: (
 }
 
 // One of three drawings shows at a time, each for a third of the cycle.
+@keyframes pet-hat-on {
+  0% {
+    translate: 0 -0.7px;
+    scale: 1.15 0.85;
+  }
+
+  70% {
+    translate: 0 0.06px;
+    scale: 0.94 1.06;
+  }
+
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
 @keyframes pet-boil {
   0% {
     opacity: 1;

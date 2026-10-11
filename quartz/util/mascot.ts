@@ -152,6 +152,47 @@ const ring = (seed: number, x: number, y: number, r: number): Pt[] =>
 const part = (name: string, body: string, cls = '') =>
   `<g data-part="${name}"${cls ? ` class="${cls}"` : ''}>${body}</g>`
 
+// The mascot's bucket hat, in body radii: a crown in `fill`, a band, a brim. Pen widths scale with
+// `u`, one pixel on the brand cards, where the mascot's own line is 3.2u.
+export function bucketHat(u: number, fill: string, ink = INK, band = PINK) {
+  const crown = hand(
+    [
+      [-0.62, -0.78],
+      [-0.52, -1.32],
+      [-0.12, -1.52],
+      [0.3, -1.48],
+      [0.6, -1.24],
+      [0.66, -0.78],
+      [-0.62, -0.78],
+    ],
+    0.04,
+    0.015,
+    67,
+  )
+  const ribbon = hand(
+    [
+      [-0.58, -0.9],
+      [0.62, -0.9],
+    ],
+    0.04,
+    0.01,
+    69,
+  )
+  const brim = hand(
+    [
+      [-1.08, -0.7],
+      [-0.7, -0.8],
+      [0, -0.82],
+      [0.7, -0.8],
+      [1.08, -0.68],
+    ],
+    0.04,
+    0.015,
+    70,
+  )
+  return `<path d="${poly(crown)}" style="fill:${fill}"/>${stroke(crown, pressure(68, 2.6 * u, 0.35), ink)}${stroke(ribbon, () => 4 * u, band)}${stroke(brim, pressure(71, 3.4 * u, 0.4), ink)}`
+}
+
 // The pet: the mascot with every look the old rocky spritesheet had, each pre-drawn as a part. The
 // SVG's data-state picks which parts show and how they move (quartz/components/styles/pet.scss),
 // so changing a look is one attribute write. Colours are theme variables; the pet faces left as
@@ -460,6 +501,9 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK)
       .join('')
     return `<g class="pet-canopy-frame"><path d="${poly(canopy)}" style="fill:${paper}"/>${pen(canopy, pressure(seed + 9, L, 0.3))}${gores}<path d="${poly(patch)}" style="fill:${paper}"/>${pen(patch, even(L * 0.55))}${hatch}<path d="${poly(knob)}" style="fill:${paper}"/>${pen(knob, even(L * 0.6))}${lines}</g>`
   }
+  // Worn for walks on the home page's trail, as on the brand card; its pen widths match the pet's
+  // line, which is 3.2 hat units on the card.
+  const hat = part('hat', bucketHat(L / 3.2, paper, ink, pink), 'pet-hat')
   const chute = part('chute', `<g class="pet-canopy">${[0, 1, 2].map(chuteFrame).join('')}</g>`)
   const speed = part(
     'speed',
@@ -531,5 +575,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK)
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${body}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${body}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${hat}${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
 }
