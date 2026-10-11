@@ -271,9 +271,7 @@ export const defaultImage: SocialImageOptions['imageStructure'] = ({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-        {iconBase64 && (
-          <img src={iconBase64} width={56} height={56} style={{ borderRadius: '50%' }} />
-        )}
+        {iconBase64 && <img src={iconBase64} width={96} height={96} />}
         <div
           style={{
             display: 'flex',

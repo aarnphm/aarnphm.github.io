@@ -9,6 +9,7 @@ import { descriptionToPlainText } from '../util/description'
 import { unescapeHTML } from '../util/escape'
 import { FullSlug, getFileExtension, joinSegments, pathToRoot, simplifySlug } from '../util/path'
 import { CSSResourceToStyleElement, JSResourceToScriptElement } from '../util/resources'
+import { sectionIconFile } from '../util/section-icon'
 import { googleFontHref, googleFontSubsetHref } from '../util/theme'
 import { PersonStructuredData } from './AgentIdentity'
 
@@ -46,7 +47,7 @@ export default (() => {
     const url = new URL(`https://${cfg.baseUrl ?? 'example.com'}`)
     const path = url.pathname as FullSlug
     const baseDir = slug === '404' ? path : pathToRoot(slug)
-    const iconPath = joinSegments(baseDir, 'static/icon.png')
+    const iconPath = joinSegments(baseDir, sectionIconFile(slug))
 
     // Url of current page
     const socialUrl =

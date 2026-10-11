@@ -9,6 +9,8 @@ import path from 'node:path'
 import sharp from 'sharp'
 import { mulberry } from '../components/scripts/404-pixel'
 import {
+  bucketHat,
+  INK,
   densify,
   hand,
   loop,
@@ -30,12 +32,215 @@ const svg = (w: number, h: number, body: string) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${body}</svg>`,
   )
 
-const icon = () =>
+// The site icon: the mascot alone, with `behind` and `front` drawn either side of it in its units.
+// Section icons carry props past the body, so they draw it smaller to keep them on the canvas.
+const icon = (behind = '', front = '', scale = 410, x = 512) =>
   svg(
     1024,
     1024,
-    `<g transform="translate(512 512) scale(410)">${mascot({ line: 0.055, seed: 7 })}</g>`,
+    `<g transform="translate(${x} 512) scale(${scale})">${behind}${mascot({ line: 0.055, seed: 7 })}${front}</g>`,
   )
+
+// A closed band around a centre line, `half(t)` wide to each side, for a ribbon, a loaf or a quill.
+function ribbon(centre: readonly Pt[], half: (t: number) => number): Pt[] {
+  const n = centre.length - 1
+  const side = (sign: number) =>
+    centre.map(([x, y], i) => {
+      const [ax, ay] = centre[Math.max(0, i - 1)]
+      const [bx, by] = centre[Math.min(n, i + 1)]
+      const len = Math.hypot(bx - ax, by - ay) || 1
+      const h = sign * half(i / n)
+      return [x - ((by - ay) / len) * h, y + ((bx - ax) / len) * h] as const
+    })
+  const right = side(-1).reverse()
+  return [...side(1), ...right, side(1)[0]]
+}
+
+// A quadratic curve from `a` to `b` pulled toward `c`.
+const bend = (a: Pt, c: Pt, b: Pt, n = 24): Pt[] =>
+  Array.from({ length: n + 1 }, (_, i) => {
+    const t = i / n
+    const u = 1 - t
+    return [
+      u * u * a[0] + 2 * u * t * c[0] + t * t * b[0],
+      u * u * a[1] + 2 * u * t * c[1] + t * t * b[1],
+    ] as const
+  })
+
+const ICON_PEN = 0.042
+
+// Triathlon: a pink sweatband round the brow, tied at the back with its tails flying.
+function triathlonIcon() {
+  const brow = Array.from({ length: 25 }, (_, i) => {
+    const x = -0.8 + (1.7 * i) / 24
+    return [x, -0.6 + 0.13 * (1 - x * x) + 0.05 * x] as const
+  })
+  const band = hand(
+    ribbon(brow, () => 0.1),
+    0.04,
+    0.012,
+    201,
+  )
+  const tails = (
+    [
+      [
+        [0.9, -0.57],
+        [1.18, -0.86],
+        [1.44, -0.8],
+      ],
+      [
+        [0.9, -0.5],
+        [1.2, -0.44],
+        [1.4, -0.24],
+      ],
+    ] as const
+  )
+    .map(([a, c, b], i) =>
+      shape(
+        hand(
+          ribbon(bend(a, c, b), t => 0.075 * (1 - 0.55 * t)),
+          0.04,
+          0.02,
+          203 + i,
+        ),
+        PINK,
+        pressure(205 + i, ICON_PEN, 0.3),
+      ),
+    )
+    .join('')
+  const knot = shape(
+    hand(rounded(0.9, -0.54, 0.16, 0.2, 0.07), 0.03, 0.01, 207),
+    PINK,
+    pressure(208, ICON_PEN, 0.3),
+  )
+  return icon('', `${tails}${shape(band, PINK, pressure(202, ICON_PEN, 0.35))}${knot}`, 340)
+}
+
+// French: a black beret slumped to the back of the head, stalk and all, and two baguettes, one
+// held across the front and one behind.
+function frenchIcon() {
+  const beret: Pt[] = Array.from({ length: 49 }, (_, i) => {
+    const a = (i / 48) * 2 * Math.PI
+    const ry = Math.sin(a) < 0 ? 0.3 : 0.11
+    const c = Math.cos(0.24)
+    const s = Math.sin(0.24)
+    const x = 0.74 * Math.cos(a)
+    const y = ry * Math.sin(a)
+    return [0.12 + x * c - y * s, -0.86 + x * s + y * c] as const
+  })
+  const stalk = stroke(
+    hand(
+      [
+        [0.18, -1.14],
+        [0.13, -1.29],
+      ],
+      0.03,
+      0.008,
+      221,
+    ),
+    t => ICON_PEN * (1.6 - 0.6 * t),
+  )
+  const loaf = (a: Pt, b: Pt, seed: number) => {
+    const axis = densify([a, b], 0.04)
+    const outline = hand(
+      ribbon(axis, t => 0.15 * Math.sin(Math.PI * t) ** 0.45),
+      0.04,
+      0.012,
+      seed,
+    )
+    const dx = b[0] - a[0]
+    const dy = b[1] - a[1]
+    const len = Math.hypot(dx, dy)
+    const [ux, uy] = [dx / len, dy / len]
+    // Slashes across the crust, each skewed along the loaf.
+    const cuts = [0.24, 0.41, 0.58, 0.75]
+      .map(t => {
+        const [cx, cy] = [a[0] + dx * t, a[1] + dy * t]
+        const [sx, sy] = [0.09 * ux - 0.08 * uy, 0.09 * uy + 0.08 * ux]
+        return stroke(
+          densify(
+            [
+              [cx - sx, cy - sy],
+              [cx + sx, cy + sy],
+            ],
+            0.03,
+          ),
+          t => ICON_PEN * 0.7 * (0.6 + 0.6 * Math.sin(Math.PI * t)),
+        )
+      })
+      .join('')
+    return `${shape(outline, EMBER, pressure(seed + 1, ICON_PEN, 0.3))}${cuts}`
+  }
+  return icon(
+    loaf([0.3, 1.02], [1.46, -0.2], 223),
+    `${loaf([-0.62, 1.2], [1.4, 0.3], 227)}${shape(beret, INK, pressure(222, ICON_PEN, 0.3))}${stalk}`,
+    340,
+  )
+}
+
+// Posts: the writer. A pink quill in a stubby hand on its right, nib down at the end of a line of
+// loopy handwriting it is looking back along.
+function writerIcon() {
+  const nib: Pt = [0.98, 1.34]
+  const shaft = bend(nib, [1.24, 0.4], [1.56, -0.92], 32)
+  const vane = shaft.slice(10)
+  const grip = shaft[8]
+  const feather = hand(
+    ribbon(vane, t => 0.21 * Math.sin(Math.PI * Math.min(1, t * 1.12)) ** 0.6),
+    0.04,
+    0.014,
+    241,
+  )
+  const quill = `${shape(feather, PINK, pressure(242, ICON_PEN, 0.3))}${stroke(
+    hand(shaft, 0.04, 0.006, 243),
+    t => ICON_PEN * (1.3 - 0.7 * t),
+  )}`
+  const barbs = [0.42, 0.58, 0.74]
+    .map(t => {
+      const [x, y] = shaft[Math.round(t * 32)]
+      return stroke(
+        densify(
+          [
+            [x, y],
+            [x - 0.16, y - 0.1],
+          ],
+          0.03,
+        ),
+        () => ICON_PEN * 0.6,
+      )
+    })
+    .join('')
+  const arm = stroke(
+    hand([[0.84, 0.52], [(0.84 + grip[0]) / 2, grip[1] - 0.02], grip], 0.03, 0.01, 245),
+    pressure(246, ICON_PEN * 1.5, 0.2),
+  )
+  const paw = shape(
+    hand(rounded(grip[0] - 0.02, grip[1], 0.28, 0.23, 0.11), 0.03, 0.01, 247),
+    PAPER,
+    pressure(248, ICON_PEN, 0.2),
+  )
+  // Handwriting: a prolate cycloid, looping at the top like a run of cursive l's, broken into words.
+  const words = [
+    [-1.18, -0.6],
+    [-0.42, 0.22],
+    [0.4, 0.9],
+  ]
+    .map(([x0, x1], i) => {
+      const n = 60
+      const pts = Array.from({ length: n + 1 }, (_, k) => {
+        const t = (k / n) * ((x1 - x0) / 0.13) * 2 * Math.PI
+        return [
+          x0 + (0.13 * t) / (2 * Math.PI) + 0.04 * Math.sin(t),
+          1.38 - 0.11 * (1 - Math.cos(t)) - 0.02 * Math.sin(t / 3),
+        ] as const
+      })
+      return stroke(hand(pts, 0.02, 0.006, 250 + i), () => ICON_PEN * 0.62)
+    })
+    .join('')
+  return icon('', `${words}${quill}${barbs}${arm}${paw}`, 340, 470)
+}
+
+const SECTION_ICONS = { triathlon: triathlonIcon, fr: frenchIcon, posts: writerIcon } as const
 
 const W = 1200
 const H = 630
@@ -62,59 +267,6 @@ function ridgeAt(pts: readonly Pt[], x: number) {
     if (x >= ax && x <= bx) return ay + ((by - ay) * (x - ax)) / (bx - ax)
   }
   return H
-}
-
-// The mascot's bucket hat, in body radii (`u` is one pixel): a crown in `fill`, a pink band, a brim.
-function bucketHat(u: number, fill: string, ink?: string) {
-  const crown = shape(
-    hand(
-      [
-        [-0.62, -0.78],
-        [-0.52, -1.32],
-        [-0.12, -1.52],
-        [0.3, -1.48],
-        [0.6, -1.24],
-        [0.66, -0.78],
-        [-0.62, -0.78],
-      ],
-      0.04,
-      0.015,
-      67,
-    ),
-    fill,
-    pressure(68, 2.6 * u, 0.35),
-    ink,
-  )
-  const band = stroke(
-    hand(
-      [
-        [-0.58, -0.9],
-        [0.62, -0.9],
-      ],
-      0.04,
-      0.01,
-      69,
-    ),
-    () => 4 * u,
-    PINK,
-  )
-  const brim = stroke(
-    hand(
-      [
-        [-1.08, -0.7],
-        [-0.7, -0.8],
-        [0, -0.82],
-        [0.7, -0.8],
-        [1.08, -0.68],
-      ],
-      0.04,
-      0.015,
-      70,
-    ),
-    pressure(71, 3.4 * u, 0.4),
-    ink,
-  )
-  return `${crown}${band}${brim}`
 }
 
 // A closed shape in one colour inside a pen line.
@@ -611,6 +763,10 @@ async function main() {
     await ic.clone().png().toFile(path.join(preview, 'icon.png'))
     await og.clone().png().toFile(path.join(preview, 'og-image.png'))
     await dark.clone().png().toFile(path.join(preview, 'og-image-dark.png'))
+    for (const [name, draw] of Object.entries(SECTION_ICONS))
+      await sharp(draw())
+        .png()
+        .toFile(path.join(preview, `icon-${name}.png`))
     // The Favicon emitter's own resize on a grey tab bar, blown back up to be looked at.
     for (const s of [16, 32, 48]) {
       const small = await ic.clone().resize(s, s).png().toBuffer()
@@ -631,6 +787,10 @@ async function main() {
   await og.clone().jpeg({ quality: 92 }).toFile(stat('og-image.jpeg'))
   await dark.clone().png({ compressionLevel: 9 }).toFile(stat('og-image-dark.png'))
   await dark.clone().webp({ quality: 92 }).toFile(stat('og-image-dark.webp'))
+  for (const [name, draw] of Object.entries(SECTION_ICONS))
+    await sharp(draw())
+      .png({ compressionLevel: 9 })
+      .toFile(stat(`icon-${name}.png`))
   for (const [f, s] of [
     ['apple-touch-icon.png', 180],
     ['android-chrome-192x192.png', 192],
