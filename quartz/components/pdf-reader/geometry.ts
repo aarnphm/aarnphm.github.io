@@ -44,7 +44,7 @@ function quadBox(quad: PdfQuad, viewport: ViewportLike): PageBox {
 }
 
 export function targetBoxes(target: PdfMarkTarget, viewport: ViewportLike): PageBox[] {
-  if (target.type === 'page') return []
+  if (target.type === 'page' || target.type === 'passage') return []
   const quads = target.type === 'region' ? [rectQuad(target.rect)] : target.quads
   return quads.map(quad => quadBox(quad, viewport))
 }
