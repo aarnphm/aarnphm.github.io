@@ -551,3 +551,86 @@ test('course PDF navigations and /read HTML go to the resource page; markdown st
     `/comments/github/login?returnTo=${encodeURIComponent(READ_C)}`,
   )
 })
+
+// Lecture-note passages share the marks API with `src` = the unit slug. Failure modes: a passage
+// on a PDF or a page target on a unit mixes the two stores; a forged `doc` splits one note's
+// marks; visitors read private passages; a near-miss slug (notes/, traversal) is accepted;
+// counts drop unit marks.
+const UNIT = 'courses/unit-course/lectures/03'
+
+function passage(overrides: Partial<PdfMarkInput> = {}): PdfMarkInput {
+  return input({
+    src: UNIT,
+    doc: '0'.repeat(64),
+    kind: 'question',
+    target: {
+      type: 'passage',
+      page: 0,
+      quote: { exact: 'natural transformation', prefix: 'a ', suffix: ' is' },
+      heading: 'functors',
+      text: 'natural transformation',
+    },
+    body: 'why is this a set?',
+    ...overrides,
+  })
+}
+
+test('lecture passages: unit slug sources keep their own doc and visibility', async () => {
+  const opened = await list(OWNER_ORIGIN, UNIT)
+  assert.equal(opened.response.status, 200)
+  const doc = opened.body.doc as string
+  assert.match(doc, /^[0-9a-f]{64}$/)
+  assert.equal(opened.body.src, UNIT)
+  assert.match(String(opened.body.signInUrl), /returnTo=%2Fcourses%2Funit-course%2Flectures%2F03/)
+
+  const forged = await put('pppppppppp', passage())
+  assert.equal(forged.status, 409)
+  const saved = await put('pppppppppp', passage({ doc }))
+  assert.equal(saved.status, 200)
+  const hidden = await put('qqqqqqqqqq', passage({ doc, visibility: 'private', kind: 'mark' }))
+  assert.equal(hidden.status, 200)
+  const general = await put(
+    'rrrrrrrrrr',
+    passage({ doc, target: { type: 'passage', page: 0, quote: null, heading: null } }),
+  )
+  assert.equal(general.status, 200)
+
+  const owner = await list(OWNER_ORIGIN, UNIT)
+  const marks = owner.body.marks as PdfMark[]
+  assert.deepEqual(marks.map(mark => mark.id).sort(), ['pppppppppp', 'qqqqqqqqqq', 'rrrrrrrrrr'])
+  assert.equal(marks.find(mark => mark.id === 'pppppppppp')?.target.type, 'passage')
+  const visitor = await list(VISITOR_ORIGIN, UNIT)
+  assert.deepEqual((visitor.body.marks as PdfMark[]).map(mark => mark.id).sort(), [
+    'pppppppppp',
+    'rrrrrrrrrr',
+  ])
+
+  const counts = await call(
+    `${OWNER_ORIGIN}/api/pdf/marks/counts?prefix=${encodeURIComponent('courses/unit-course/')}`,
+  )
+  assert.deepEqual(await counts.json(), {
+    canWrite: true,
+    counts: { [UNIT]: { mark: 1, question: 2, contra: 0 } },
+  })
+})
+
+test('lecture passages: targets stay with their source kind; near-miss slugs are refused', async () => {
+  const before = await rowCount()
+  const doc = (await list(OWNER_ORIGIN, UNIT)).body.doc as string
+  const pageOnUnit = await put('ssssssssss', passage({ doc, target: { type: 'page', page: 1 } }))
+  assert.equal(pageOnUnit.status, 422)
+  const passageOnPdf = await put(
+    'ssssssssss',
+    input({ target: { type: 'passage', page: 0, quote: null, heading: null } }),
+  )
+  assert.equal(passageOnPdf.status, 422)
+  for (const src of [
+    'courses/unit-course/notes/03',
+    'courses/../lectures/03',
+    'courses/unit-course/lectures/3',
+  ]) {
+    const response = await list(OWNER_ORIGIN, src)
+    assert.equal(response.response.status, 404, src)
+  }
+  assert.equal(await rowCount(), before)
+})

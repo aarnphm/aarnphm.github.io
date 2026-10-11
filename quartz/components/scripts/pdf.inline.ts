@@ -1,7 +1,7 @@
 const PDFJS_SCRIPT_SRC = '/static/pdfjs/pdf.min.mjs'
 const PDFJS_WORKER_SRC = '/static/pdfjs/pdf.worker.min.mjs'
 const PDF_EMBED_SELECTOR = '.pdf-embed[data-pdf-src]:not([data-pdf-status])'
-const PDF_EMBED_CLEANUP_SELECTOR = '.pdf-embed[data-pdf-status]'
+const PDF_EMBED_CLEANUP_SELECTOR = '.pdf-embed[data-pdf-src], .pdf-embed[data-pdf-status]'
 const PDF_COMMENT_ROOM_ENABLED_KEY = 'garden:comments-room-enabled:v1'
 const PDF_COMMENT_ROOM_TOGGLE_EVENT = 'commentsroomtoggle'
 const DEFAULT_OVERSCAN = 1
@@ -158,6 +158,7 @@ interface PdfControls {
 }
 
 interface PdfState {
+  events: AbortController
   root: HTMLElement
   options: PdfOptions
   pdfjs: PdfJsRuntime
@@ -264,6 +265,7 @@ interface PdfSelection {
 }
 
 interface PdfCommentComposerOptions {
+  signal: AbortSignal
   className: string
   placeholder: string
   submitLabel: string
@@ -279,7 +281,7 @@ interface PdfCommentComposer {
 let pdfJsLoad: Promise<PdfJsRuntime> | undefined
 const pdfDocumentCache = new Map<string, PdfDocumentCacheEntry>()
 const pdfStates = new WeakMap<HTMLElement, PdfState>()
-const pendingPdfMounts = new WeakSet<HTMLElement>()
+const pendingPdfMounts = new WeakMap<HTMLElement, AbortController>()
 let selectedPdfState: PdfState | null = null
 let selectedPdfRoot: HTMLElement | null = null
 
@@ -1010,27 +1012,35 @@ function createPdfCommentComposer(options: PdfCommentComposerOptions): PdfCommen
       })
   }
 
-  element.addEventListener('click', event => event.stopPropagation())
-  input.addEventListener('input', sync)
-  input.addEventListener('keydown', event => {
-    if (event.key === 'Escape') {
-      event.preventDefault()
+  element.addEventListener('click', event => event.stopPropagation(), { signal: options.signal })
+  input.addEventListener('input', sync, { signal: options.signal })
+  input.addEventListener(
+    'keydown',
+    event => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        options.onCancel()
+        return
+      }
+      if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault()
+        event.stopPropagation()
+        save()
+        return
+      }
       event.stopPropagation()
-      options.onCancel()
-      return
-    }
-    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault()
+    },
+    { signal: options.signal },
+  )
+  submit.addEventListener(
+    'click',
+    event => {
       event.stopPropagation()
       save()
-      return
-    }
-    event.stopPropagation()
-  })
-  submit.addEventListener('click', event => {
-    event.stopPropagation()
-    save()
-  })
+    },
+    { signal: options.signal },
+  )
 
   inputContainer.append(input, placeholder)
   shell.append(inputContainer, submit)
@@ -1092,6 +1102,7 @@ function showPdfComposer(state: PdfState, selection: PdfSelection) {
   hidePdfComposer(state)
 
   const composer = createPdfCommentComposer({
+    signal: state.events.signal,
     className: 'pdf-comment-composer',
     placeholder: 'Commentaire (compatible markdown)',
     submitLabel: 'Submit comment',
@@ -1188,6 +1199,7 @@ function renderPdfReply(reply: PdfComment): HTMLDivElement {
 
 function renderPdfReplyComposer(state: PdfState, parent: PdfComment): HTMLDivElement {
   const composer = createPdfCommentComposer({
+    signal: state.events.signal,
     className: 'pdf-annotation-reply-composer',
     placeholder: 'Reply',
     submitLabel: 'Reply',
@@ -1236,26 +1248,38 @@ function renderPdfNoteCard(state: PdfState, comment: PdfComment): HTMLDivElement
   actions.className = 'pdf-annotation-actions'
 
   const reply = buildPdfNoteButton('Reply')
-  reply.addEventListener('click', event => {
-    event.stopPropagation()
-    state.annotations.activeCommentId = comment.id
-    renderPdfAnnotations(state)
-  })
+  reply.addEventListener(
+    'click',
+    event => {
+      event.stopPropagation()
+      state.annotations.activeCommentId = comment.id
+      renderPdfAnnotations(state)
+    },
+    { signal: state.events.signal },
+  )
   actions.appendChild(reply)
 
   const author = getPdfAuthor()
   const login = localStorage.getItem('comment-author-github-login')?.toLowerCase()
   if (comment.author === author || login === 'aarnphm') {
     const resolve = buildPdfNoteButton('Resolve')
-    resolve.addEventListener('click', event => {
-      event.stopPropagation()
-      submitPdfOperation(state, 'resolve', { ...comment, resolvedAt: Date.now() })
-    })
+    resolve.addEventListener(
+      'click',
+      event => {
+        event.stopPropagation()
+        submitPdfOperation(state, 'resolve', { ...comment, resolvedAt: Date.now() })
+      },
+      { signal: state.events.signal },
+    )
     const remove = buildPdfNoteButton('Delete')
-    remove.addEventListener('click', event => {
-      event.stopPropagation()
-      submitPdfOperation(state, 'delete', { ...comment, deletedAt: Date.now() })
-    })
+    remove.addEventListener(
+      'click',
+      event => {
+        event.stopPropagation()
+        submitPdfOperation(state, 'delete', { ...comment, deletedAt: Date.now() })
+      },
+      { signal: state.events.signal },
+    )
     actions.append(resolve, remove)
   }
 
@@ -1267,11 +1291,15 @@ function renderPdfNoteCard(state: PdfState, comment: PdfComment): HTMLDivElement
     card.appendChild(renderPdfReplyComposer(state, comment))
   }
 
-  card.addEventListener('click', () => {
-    state.annotations.activeCommentId = comment.id
-    scrollToPdfHighlight(state, comment)
-    renderPdfAnnotations(state)
-  })
+  card.addEventListener(
+    'click',
+    () => {
+      state.annotations.activeCommentId = comment.id
+      scrollToPdfHighlight(state, comment)
+      renderPdfAnnotations(state)
+    },
+    { signal: state.events.signal },
+  )
 
   return card
 }
@@ -1379,10 +1407,14 @@ function renderPdfAnnotations(state: PdfState) {
       span.style.top = `${rect.top * 100}%`
       span.style.width = `${rect.width * 100}%`
       span.style.height = `${rect.height * 100}%`
-      span.addEventListener('click', event => {
-        event.stopPropagation()
-        activatePdfComment(state, comment.id, true)
-      })
+      span.addEventListener(
+        'click',
+        event => {
+          event.stopPropagation()
+          activatePdfComment(state, comment.id, true)
+        },
+        { signal: state.events.signal },
+      )
       slot.highlightLayer.appendChild(span)
     }
 
@@ -2117,20 +2149,29 @@ function setupPdfEvents(state: PdfState) {
     renderPdfAnnotations(state)
   }
 
-  state.controls.prev.addEventListener('click', goPrev)
-  state.controls.next.addEventListener('click', goNext)
-  state.controls.pageInput.addEventListener('change', setPage)
-  state.root.querySelector('.pdf-embed-zoom-out')?.addEventListener('click', () => zoomBy(0.9))
-  state.root.querySelector('.pdf-embed-zoom-in')?.addEventListener('click', () => zoomBy(1.1))
-  state.controls.fit.addEventListener('change', setFit)
-  state.scroller.addEventListener('scroll', onScroll, { passive: true })
-  state.annotationRail.addEventListener('scroll', onAnnotationRailScroll, { passive: true })
-  state.root.addEventListener('pointerdown', onPointerDown)
-  document.addEventListener('keydown', onKeyDown, true)
-  state.scroller.addEventListener('mouseup', onMouseUp)
+  state.controls.prev.addEventListener('click', goPrev, { signal: state.events.signal })
+  state.controls.next.addEventListener('click', goNext, { signal: state.events.signal })
+  state.controls.pageInput.addEventListener('change', setPage, { signal: state.events.signal })
+  state.root
+    .querySelector('.pdf-embed-zoom-out')
+    ?.addEventListener('click', () => zoomBy(0.9), { signal: state.events.signal })
+  state.root
+    .querySelector('.pdf-embed-zoom-in')
+    ?.addEventListener('click', () => zoomBy(1.1), { signal: state.events.signal })
+  state.controls.fit.addEventListener('change', setFit, { signal: state.events.signal })
+  state.scroller.addEventListener('scroll', onScroll, {
+    passive: true,
+    signal: state.events.signal,
+  })
+  state.annotationRail.addEventListener('scroll', onAnnotationRailScroll, {
+    passive: true,
+    signal: state.events.signal,
+  })
+  state.root.addEventListener('pointerdown', onPointerDown, { signal: state.events.signal })
+  document.addEventListener('keydown', onKeyDown, { capture: true, signal: state.events.signal })
+  state.scroller.addEventListener('mouseup', onMouseUp, { signal: state.events.signal })
   document.addEventListener(PDF_COMMENT_ROOM_TOGGLE_EVENT, onCommentRoomToggle)
   state.cleanup.push(() => {
-    document.removeEventListener('keydown', onKeyDown, true)
     document.removeEventListener(PDF_COMMENT_ROOM_TOGGLE_EVENT, onCommentRoomToggle)
     if (state.scrollFrame) {
       window.cancelAnimationFrame(state.scrollFrame)
@@ -2154,7 +2195,7 @@ function renderPdfError(root: HTMLElement, options: PdfOptions) {
   root.appendChild(error)
 }
 
-async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
+async function mountPdfEmbed(root: HTMLElement, options: PdfOptions, events: AbortController) {
   root.dataset.pdfStatus = 'loading'
   root.replaceChildren()
   if (options.height) root.style.setProperty('--pdf-embed-height', `${options.height}px`)
@@ -2167,12 +2208,12 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
   let documentHandle: PdfDocumentHandle | undefined
   const pdfjs = await loadPdfJs()
   try {
-    if (!root.isConnected || root.dataset.pdfStatus !== 'loading') return
+    if (events.signal.aborted || !root.isConnected || root.dataset.pdfStatus !== 'loading') return
     documentHandle = await loadPdfDocument(pdfjs, options.src)
     const { loadingTask, document: pdfDocument } = documentHandle
-    if (!root.isConnected || root.dataset.pdfStatus !== 'loading') return
+    if (events.signal.aborted || !root.isConnected || root.dataset.pdfStatus !== 'loading') return
     const firstPage = await pdfDocument.getPage(1)
-    if (!root.isConnected || root.dataset.pdfStatus !== 'loading') return
+    if (events.signal.aborted || !root.isConnected || root.dataset.pdfStatus !== 'loading') return
     const firstViewport = firstPage.getViewport({ scale: 1 })
 
     const { toolbar, controls } = createControls(options)
@@ -2203,6 +2244,7 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
     const resizeObserver = new ResizeObserver(() => undefined)
 
     const state: PdfState = {
+      events,
       root,
       options,
       pdfjs,
@@ -2297,6 +2339,7 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
 }
 
 function cleanupPdfEmbed(root: HTMLElement) {
+  pendingPdfMounts.get(root)?.abort()
   pendingPdfMounts.delete(root)
   const state = pdfStates.get(root)
   if (!state) {
@@ -2304,6 +2347,7 @@ function cleanupPdfEmbed(root: HTMLElement) {
     return
   }
   state.destroyed = true
+  state.events.abort()
   if (selectedPdfState === state || selectedPdfRoot === state.root) {
     selectedPdfState = null
     selectedPdfRoot = null
@@ -2341,18 +2385,29 @@ function mountPdfEmbeds(root: ParentNode = document) {
   for (const root of roots) {
     if (pendingPdfMounts.has(root)) continue
     root.tabIndex = 0
-    pendingPdfMounts.add(root)
+    const events = new AbortController()
+    pendingPdfMounts.set(root, events)
     schedulePdfStartup(() => {
-      pendingPdfMounts.delete(root)
-      if (!root.isConnected || !root.matches(PDF_EMBED_SELECTOR)) return
+      if (events.signal.aborted) return
+      if (!root.isConnected || !root.matches(PDF_EMBED_SELECTOR)) {
+        pendingPdfMounts.delete(root)
+        return
+      }
       const options = readPdfOptions(root)
-      if (!options) return
-      void mountPdfEmbed(root, options).catch(error => {
-        if (!root.isConnected) return
-        console.error(error)
-        renderPdfError(root, options)
-        root.dataset.pdfStatus = 'error'
-      })
+      if (!options) {
+        pendingPdfMounts.delete(root)
+        return
+      }
+      void mountPdfEmbed(root, options, events)
+        .catch(error => {
+          if (events.signal.aborted || !root.isConnected) return
+          console.error(error)
+          renderPdfError(root, options)
+          root.dataset.pdfStatus = 'error'
+        })
+        .finally(() => {
+          if (pendingPdfMounts.get(root) === events) pendingPdfMounts.delete(root)
+        })
     })
   }
 }

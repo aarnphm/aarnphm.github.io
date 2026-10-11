@@ -10,7 +10,9 @@ import {
   pdfOpenPath,
   pdfReaderKey,
   pdfReaderPath,
+  isUnitMarkSrc,
   normalizePdfSlug,
+  unitMarkDoc,
   scriptJson,
   type PdfDocumentRecord,
   type PdfManifest,
@@ -71,7 +73,8 @@ function privateJson(value: unknown, status = 200): Response {
 }
 
 function signInUrl(slug: string, record?: PdfDocumentRecord): string {
-  const returnTo = encodeURIComponent(encodeURI(pdfOpenPath(slug, record)))
+  const path = isUnitMarkSrc(slug) ? `/${slug}` : pdfOpenPath(slug, record)
+  const returnTo = encodeURIComponent(encodeURI(path))
   return `/comments/github/login?returnTo=${returnTo}`
 }
 
@@ -125,7 +128,10 @@ async function countMarks(
   const counts: Record<string, PdfMarkCounts> = {}
   for (const row of rows) {
     // Marks on a previous version of the file are stale, not counted.
-    if (entry.manifest.documents[row.src]?.doc !== row.doc) continue
+    const doc = isUnitMarkSrc(row.src)
+      ? await unitMarkDoc(row.src)
+      : entry.manifest.documents[row.src]?.doc
+    if (doc !== row.doc) continue
     counts[row.src] ??= { mark: 0, question: 0, contra: 0 }
     counts[row.src][row.kind] += row.n
   }
@@ -324,6 +330,22 @@ function resolveDocument(entry: ManifestCacheEntry, raw: string | null) {
   return { slug, record }
 }
 
+/** A PDF from the manifest, or a lecture note's unit slug (its `doc` is a digest of the slug). */
+async function resolveSource(
+  entry: ManifestCacheEntry,
+  raw: string | null,
+): Promise<{ slug: string; doc: string; record?: PdfDocumentRecord }> {
+  let decoded = raw?.trim().replace(/^\/+/, '') ?? ''
+  try {
+    decoded = decodeURIComponent(decoded)
+  } catch {
+    decoded = ''
+  }
+  if (isUnitMarkSrc(decoded)) return { slug: decoded, doc: await unitMarkDoc(decoded) }
+  const { slug, record } = resolveDocument(entry, raw)
+  return { slug, doc: record.doc, record }
+}
+
 async function handleMarksApi(request: Request, env: PdfReaderEnv, url: URL): Promise<Response> {
   const parts = url.pathname.split('/').filter(Boolean)
   const entry = await loadManifest(env, url.origin)
@@ -332,15 +354,15 @@ async function handleMarksApi(request: Request, env: PdfReaderEnv, url: URL): Pr
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       throw new PdfRequestError(405, 'method-not-allowed', 'Use GET to list marks.')
     }
-    const { slug, record } = resolveDocument(entry, url.searchParams.get('src'))
+    const { slug, doc, record } = await resolveSource(entry, url.searchParams.get('src'))
     const owner = await getOwnerSessionLogin(request, env)
     const body: PdfMarksResponse = {
       src: slug,
-      doc: record.doc,
+      doc,
       canWrite: owner !== null,
       signInUrl: signInUrl(slug, record),
-      marks: await listMarks(env, record.doc, owner !== null),
-      stale: owner ? await listStaleMarks(env, owner, slug, record.doc) : [],
+      marks: await listMarks(env, doc, owner !== null),
+      stale: owner ? await listStaleMarks(env, owner, slug, doc) : [],
     }
     return privateJson(body)
   }
@@ -379,11 +401,11 @@ async function handleMarksApi(request: Request, env: PdfReaderEnv, url: URL): Pr
     if (request.method === 'PUT') {
       const input = parsePdfMarkInput(await readJsonBody(request))
       if (!input) throw new PdfRequestError(422, 'invalid-input', 'The mark is malformed.')
-      const { slug, record } = resolveDocument(entry, input.src)
+      const { slug, doc, record } = await resolveSource(entry, input.src)
       const owner = await requireOwner(request, env, slug, record)
-      if (record.doc !== input.doc) {
+      if (doc !== input.doc) {
         throw new PdfRequestError(409, 'stale-document', 'The PDF changed since you opened it.', {
-          doc: record.doc,
+          doc,
         })
       }
       return privateJson(await saveMark(env, owner, id, { ...input, src: slug }))

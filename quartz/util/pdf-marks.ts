@@ -8,8 +8,13 @@ const PDF_USER_SPACE_LIMIT = 14_400
 const MAX_QUADS = 64
 const MAX_PAGE = 100_000
 const MAX_QUOTE_LENGTH = 2048
+export const PDF_QUOTE_LIMIT = MAX_QUOTE_LENGTH
+const MAX_HEADING_LENGTH = 256
+const MAX_PASSAGE_TEXT_LENGTH = 8192
+export const PDF_PASSAGE_TEXT_LIMIT = MAX_PASSAGE_TEXT_LENGTH
 const MAX_CONTEXT_LENGTH = 64
 const MAX_BODY_LENGTH = 16_384
+export const PDF_BODY_LIMIT = MAX_BODY_LENGTH
 const MAX_SRC_LENGTH = 512
 
 /** Corners in PDF user space, ordered top-left, top-right, bottom-left, bottom-right (/QuadPoints order). */
@@ -22,10 +27,26 @@ export interface PdfQuote {
   suffix: string
 }
 
+/**
+ * A passage of an authored lecture note (`src` = the unit slug). Page 0 keeps the shared `page`
+ * column: the passage is anchored by quote and heading, never by a PDF page.
+ */
+export interface PdfPassageTarget {
+  type: 'passage'
+  page: 0
+  /** Null for a note about the whole lecture. */
+  quote: PdfQuote | null
+  /** Id of the closest heading, which narrows quote recovery. */
+  heading: string | null
+  /** The quotation as Markdown, with LaTeX in place of rendered math. */
+  text?: string
+}
+
 export type PdfMarkTarget =
   | { type: 'text'; page: number; quads: PdfQuad[]; quote: PdfQuote }
   | { type: 'region'; page: number; rect: PdfRect }
   | { type: 'page'; page: number }
+  | PdfPassageTarget
 
 export type PdfMarkKind = 'mark' | 'question' | 'contra'
 export type PdfMarkVisibility = 'public' | 'private'
@@ -154,6 +175,19 @@ export function normalizePdfSlug(value: string): string | null {
   return isPdfSlug(decoded) ? decoded : null
 }
 
+/** Lecture notes share the marks API: `src` is the unit slug, `doc` a fixed digest of it. */
+const UNIT_MARK_SRC = /^courses\/[a-z0-9][a-z0-9.-]*\/lectures\/\d{2,3}$/i
+
+export function isUnitMarkSrc(value: string): boolean {
+  return value.length <= MAX_SRC_LENGTH && UNIT_MARK_SRC.test(value) && !value.includes('..')
+}
+
+/** `sha256("unit:" + src)` in hex. Stable across note edits, so marks never go stale. */
+export async function unitMarkDoc(src: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`unit:${src}`))
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')
+}
+
 function isReadPath(value: unknown): value is string {
   return (
     typeof value === 'string' &&
@@ -196,7 +230,20 @@ function parseQuote(value: unknown): PdfQuote | null {
   return { exact, prefix, suffix }
 }
 
+function parsePassage(value: Record<string, unknown>): PdfPassageTarget | null {
+  if (value.page !== 0) return null
+  const quote = value.quote === null ? null : parseQuote(value.quote)
+  if (value.quote !== null && quote === null) return null
+  const heading = value.heading === null ? null : readString(value.heading, MAX_HEADING_LENGTH)
+  if (value.heading !== null && heading === null) return null
+  const text =
+    value.text === undefined ? undefined : readString(value.text, MAX_PASSAGE_TEXT_LENGTH)
+  if (text === null) return null
+  return { type: 'passage', page: 0, quote, heading, ...(text !== undefined ? { text } : {}) }
+}
+
 export function parsePdfMarkTarget(value: unknown): PdfMarkTarget | null {
+  if (isRecord(value) && value.type === 'passage') return parsePassage(value)
   if (!isRecord(value) || !isPage(value.page)) return null
   if (value.type === 'page') return { type: 'page', page: value.page }
   if (value.type === 'region') {
@@ -235,13 +282,20 @@ const inputKeys = new Set(['src', 'doc', 'revision', 'kind', 'target', 'body', '
 
 export function parsePdfMarkInput(value: unknown): PdfMarkInput | null {
   if (!isRecord(value) || Object.keys(value).some(key => !inputKeys.has(key))) return null
-  const src = typeof value.src === 'string' ? normalizePdfSlug(value.src) : null
+  const unit = typeof value.src === 'string' && isUnitMarkSrc(value.src)
+  const src = unit
+    ? (value.src as string)
+    : typeof value.src === 'string'
+      ? normalizePdfSlug(value.src)
+      : null
   const doc = typeof value.doc === 'string' && PDF_DOCUMENT_ID.test(value.doc) ? value.doc : null
   const revision = parseRevision(value.revision, 0)
   const kind = parseKind(value.kind)
   const target = parsePdfMarkTarget(value.target)
   const body = readString(value.body, MAX_BODY_LENGTH)
   const visibility = parseVisibility(value.visibility)
+  // passages belong to lecture notes, pages and quads to PDFs
+  if (target !== null && (target.type === 'passage') !== unit) return null
   if (
     src === null ||
     doc === null ||
@@ -260,7 +314,10 @@ export function parsePdfMark(value: unknown): PdfMark | null {
   if (!isRecord(value)) return null
   const id = typeof value.id === 'string' && PDF_MARK_ID.test(value.id) ? value.id : null
   const doc = typeof value.doc === 'string' && PDF_DOCUMENT_ID.test(value.doc) ? value.doc : null
-  const src = typeof value.src === 'string' && isPdfSlug(value.src) ? value.src : null
+  const src =
+    typeof value.src === 'string' && (isPdfSlug(value.src) || isUnitMarkSrc(value.src))
+      ? value.src
+      : null
   const kind = parseKind(value.kind)
   const target = parsePdfMarkTarget(value.target)
   const body = readString(value.body, MAX_BODY_LENGTH)
