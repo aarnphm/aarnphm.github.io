@@ -17,7 +17,7 @@ document.addEventListener('nav', () => {
   frame.src = new URL('shared-trail.html', import.meta.url).href
   let layoutFrame = 0
   // Prepare the local renderer; it connects only after the trail is shown.
-  document.body.append(scene)
+  document.body.append(root)
   scene.append(frame)
   const align = () => {
     if (scene.hidden) return
@@ -81,7 +81,7 @@ document.addEventListener('nav', () => {
     { signal },
   )
   const disposeEscape = registerEscapeHandler(
-    scene,
+    root,
     close,
     () =>
       !scene.hidden && !document.querySelector('#visitor-weather-panel')?.matches(':popover-open'),
@@ -94,6 +94,6 @@ document.addEventListener('nav', () => {
     cancelAnimationFrame(layoutFrame)
     scene.dispatchEvent(new Event('trail:dispose'))
     frame.remove()
-    scene.remove()
+    root.remove()
   })
 })
