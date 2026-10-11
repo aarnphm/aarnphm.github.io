@@ -13,6 +13,7 @@ import { loadEmoji } from '../../util/emoji-node'
 import { unescapeHTML } from '../../util/escape'
 import { ImageOptions, SocialImageOptions, defaultImage, getSatoriFonts } from '../../util/og'
 import { FilePath, FullSlug, QUARTZ, getFileExtension, joinSegments } from '../../util/path'
+import { SECTIONS, type Section, sectionOf } from '../../util/section-icon'
 import { QuartzPluginData } from '../vfile'
 
 const defaultOptions: SocialImageOptions = {
@@ -36,6 +37,24 @@ async function pathExists(fp: FilePath): Promise<boolean> {
   } catch {
     return false
   }
+}
+
+type SectionIcon = { dataUri: string; hash: string }
+
+// The section mascots (quartz/static/icon-<section>.png), shrunk for the card's header. A missing
+// file leaves that section's cards without an icon.
+async function loadSectionIcons(): Promise<Map<Section, SectionIcon>> {
+  const icons = new Map<Section, SectionIcon>()
+  for (const section of SECTIONS) {
+    const file = joinSegments(QUARTZ, 'static', `icon-${section}.png`)
+    if (!(await pathExists(file as FilePath))) continue
+    const png = await sharp(file).resize(192, 192).png().toBuffer()
+    icons.set(section, {
+      dataUri: `data:image/png;base64,${png.toString('base64')}`,
+      hash: createHash('sha256').update(png).digest('base64url'),
+    })
+  }
+  return icons
 }
 
 async function ensureCachedOgImage(cachePath: FilePath, content: Buffer): Promise<void> {
@@ -65,6 +84,7 @@ function ogImageSignature(
   description: string,
   fullOptions: SocialImageOptions,
   fontsSignature: string,
+  icon: SectionIcon | undefined,
 ): string {
   const cfg = ctx.cfg.configuration
   return createHash('sha256')
@@ -78,6 +98,7 @@ function ogImageSignature(
         font: fontsSignature,
         frontmatter: fileData.frontmatter,
         height: fullOptions.height,
+        icon: icon?.hash,
         imageStructure: fullOptions.imageStructure.toString(),
         locale: cfg.locale,
         pageTitleSuffix: cfg.pageTitleSuffix,
@@ -98,6 +119,7 @@ function ogImageSignature(
 async function generateSocialImage(
   { cfg, description, fonts, title, fileData }: ImageOptions,
   userOpts: SocialImageOptions,
+  iconBase64?: string,
 ): Promise<Buffer> {
   const { width, height } = userOpts
   const imageComponent = userOpts.imageStructure({
@@ -107,6 +129,7 @@ async function generateSocialImage(
     description,
     fonts,
     fileData,
+    iconBase64,
   })
   const svg = await satori(imageComponent, {
     width,
@@ -129,9 +152,12 @@ async function processOgImage(
   fonts: SatoriOptions['fonts'],
   fullOptions: SocialImageOptions,
   fontsSignature: string,
+  icons: Map<Section, SectionIcon>,
 ) {
   const cfg = ctx.cfg.configuration
   const slug = fileData.slug!
+  const section = sectionOf(slug)
+  const icon = section ? icons.get(section) : undefined
   const titleSuffix = cfg.pageTitleSuffix ?? ''
   const title =
     (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
@@ -143,13 +169,22 @@ async function processOgImage(
   const description = descriptionToPlainText(rawDescription, slug)
   const outputSlug = `${slug}-og-image` as FullSlug
   const dest = joinSegments(ctx.argv.output, `${outputSlug}.webp`) as FilePath
-  const signature = ogImageSignature(ctx, fileData, title, description, fullOptions, fontsSignature)
+  const signature = ogImageSignature(
+    ctx,
+    fileData,
+    title,
+    description,
+    fullOptions,
+    fontsSignature,
+    icon,
+  )
   const cachePath = path.join(cacheDir, `${signature}.webp`) as FilePath
 
   if (!(await pathExists(cachePath))) {
     const content = await generateSocialImage(
       { title, description, fonts, cfg, fileData },
       fullOptions,
+      icon?.dataUri,
     )
     await ensureCachedOgImage(cachePath, content)
   }
@@ -165,7 +200,8 @@ export async function createOgImageGenerator(
   const cfg = ctx.cfg.configuration
   const fonts = await getSatoriFonts(cfg, cfg.theme.typography.header, cfg.theme.typography.body)
   const fontsSignature = fontSignature(fonts)
-  return fileData => processOgImage(ctx, fileData, fonts, fullOptions, fontsSignature)
+  const icons = await loadSectionIcons()
+  return fileData => processOgImage(ctx, fileData, fonts, fullOptions, fontsSignature, icons)
 }
 
 export const CustomOgImagesEmitterName = 'CustomOgImages'
