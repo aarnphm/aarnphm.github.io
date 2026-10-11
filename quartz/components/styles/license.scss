@@ -13,8 +13,27 @@
   }
 
   a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
     color: inherit;
-    text-decoration: underline;
-    text-decoration-thickness: from-font;
+    text-decoration: none;
+
+    span {
+      text-decoration: underline;
+      text-decoration-thickness: from-font;
+    }
+
+    // base.scss fills every hovered <a> dark; the mark keeps its ink
+    &:hover {
+      background: transparent;
+      color: var(--dark);
+    }
+  }
+
+  .cc-icon {
+    inline-size: 1.3em;
+    block-size: 1.3em;
+    flex: none;
   }
 }
