@@ -113,7 +113,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
   let timer: number | null = null
   let previousTime: number | null = null
 
-  const safe = (point: Point, kind: TrailAnimalKind) => {
+  const inHabitat = (point: Point, kind: TrailAnimalKind) => {
     if (!landscape) return false
     if (kind === 'goose') return pondDistance(point, landscape.pond) < 0.86
     return (
@@ -122,10 +122,13 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       point.y >= landscape.meadowTop + 64 &&
       point.y <= landscape.height - 28 &&
       pondDistance(point, landscape.pond) > 1.6 &&
-      Math.hypot(point.x - landscape.camp.x, point.y - landscape.camp.y) > 90 &&
-      roots.every(root => Math.hypot(point.x - root.x, point.y - root.y) > habits[kind].clearance)
+      Math.hypot(point.x - landscape.camp.x, point.y - landscape.camp.y) > 90
     )
   }
+  const safe = (point: Point, kind: TrailAnimalKind) =>
+    inHabitat(point, kind) &&
+    (kind === 'goose' ||
+      roots.every(root => Math.hypot(point.x - root.x, point.y - root.y) > habits[kind].clearance))
   const safeSite = (
     point: Point,
     kind: TrailAnimalKind,
@@ -151,7 +154,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
           }
           if (fits(candidate)) return candidate
         }
-        return point
+        return null
       }
       const height = Math.max(1, landscape.height - landscape.meadowTop - 92)
       for (let index = 0; index < 128; index++) {
@@ -162,7 +165,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
         if (fits(candidate)) return candidate
       }
     }
-    return point
+    return null
   }
   const readRoots = () => {
     trunks = readTrunks(scene)
@@ -212,7 +215,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       if (
         points.every(
           (point, index) =>
-            safe(point, animal.kind) &&
+            inHabitat(point, animal.kind) &&
             (!index || canMove(points[index - 1], point, animal.collisionRadius, obstacles)),
         )
       )
@@ -336,7 +339,16 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       step(
         animal,
         animal.phase === 'wandering' ? Math.min(200, elapsed) : elapsed,
-        actors.filter(other => other.element !== animal.element),
+        actors
+          .filter(other => other.element !== animal.element)
+          .map(other => {
+            if (other.kind !== 'trunk') return other
+            const radius = Math.max(
+              other.radius,
+              habits[animal.kind].clearance - animal.collisionRadius - 2,
+            )
+            return radius === other.radius ? other : { ...other, radius }
+          }),
       )
       actors = actors.map(other =>
         other.element === animal.element
@@ -354,9 +366,11 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       if (!animal.element.isConnected) continue
       const clearTrunks = (point: Point) =>
         trunks.every(other => circleClearance(point, animal.collisionRadius, other) >= 0)
-      animal.home = safeSite(animal.home, animal.kind, clearTrunks)
-      animal.position = safeSite(animal.position, animal.kind)
-      if (animal.path?.points.some(point => !safe(point, animal.kind))) {
+      animal.home = safeSite(animal.home, animal.kind, clearTrunks) ?? animal.home
+      if (
+        !safe(animal.position, animal.kind) ||
+        animal.path?.points.some(point => !safe(point, animal.kind))
+      ) {
         animal.path = null
         animal.phase = 'resting'
         animal.remaining = 500 + animal.random() * 1000
@@ -401,6 +415,11 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       seed = nextSeed
       readRoots()
       const placed = [...readActors(scene).filter(other => other.kind === 'traveler'), ...trunks]
+      const holdForSpace = (element: SVGGElement) => {
+        element.style.visibility = 'hidden'
+        element.dataset.collisionActive = 'false'
+        element.dataset.motion = 'paused'
+      }
       wanderers = [...scene.querySelectorAll<SVGGElement>('[data-trail-wander]')].flatMap<Wanderer>(
         (element, index) => {
           const id = element.dataset.trailWander
@@ -420,13 +439,19 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
           element.dataset.collisionActive = 'true'
           element.dataset.collisionRadius = String(collisionRadius)
           const old = sameSeed ? previous.get(id) : undefined
-          const home = safeSite(
-            anchor,
-            kind,
-            candidate =>
-              Boolean(old) ||
-              placed.every(other => circleClearance(candidate, collisionRadius, other) >= 0),
-          )
+          const home =
+            safeSite(
+              anchor,
+              kind,
+              candidate =>
+                Boolean(old) ||
+                placed.every(other => circleClearance(candidate, collisionRadius, other) >= 0),
+            ) ?? old?.home
+          if (!home) {
+            holdForSpace(element)
+            return []
+          }
+          element.style.visibility = ''
           const remap = (point: Point) =>
             old
               ? {
@@ -437,7 +462,14 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
           if (old) {
             const path = old.path ? pathFrom(old.path.points.map(remap)) : null
             const allowed = path?.points.every(point => safe(point, kind))
-            const position = safeSite(remap(old.position), kind)
+            const mappedPosition = remap(old.position)
+            const position = inHabitat(mappedPosition, kind)
+              ? mappedPosition
+              : safeSite(mappedPosition, kind)
+            if (!position) {
+              holdForSpace(element)
+              return []
+            }
             placed.push({
               id: `animal-${id}`,
               kind: 'animal',
@@ -483,7 +515,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
               element,
               facing,
               home,
-              position: safeSite(home, kind),
+              position: home,
               path: null,
               progress: 0,
               travelled: 0,

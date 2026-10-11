@@ -183,6 +183,7 @@ export function trailMountainBackdrop(landscape: Landscape, seed: number, clipId
         <g class="trail-foothill-trees"></g>
         <g class="trail-alpine-tracks"></g>
         <g class="trail-alpine-travelers"></g>
+        <g class="trail-foothill-objects"></g>
       </g>
     </g>`
 }

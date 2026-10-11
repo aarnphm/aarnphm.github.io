@@ -115,15 +115,32 @@ export function spacedStep(
   const from = spacedPosition(base, spacing)
   const intended = spacedPosition(next, spacing)
   const distance = Math.hypot(next.x - base.x, next.y - base.y)
-  const outside = (point: Point) => bounds ? Math.hypot(
-    point.x - Math.max(bounds.left, Math.min(bounds.right, point.x)),
-    point.y - Math.max(bounds.top, Math.min(bounds.bottom, point.y)),
-  ) : 0
+  const outside = (point: Point) =>
+    bounds
+      ? Math.hypot(
+          point.x - Math.max(bounds.left, Math.min(bounds.right, point.x)),
+          point.y - Math.max(bounds.top, Math.min(bounds.bottom, point.y)),
+        )
+      : 0
   const clears = (point: Point) => {
     const remaining = outside(point)
-    return (remaining === 0 || remaining < outside(from) - 0.00001)
-      && Math.hypot(point.x - from.x, point.y - from.y) <= budget + 0.01
-      && canMove(from, point, radius, others)
+    return (
+      (remaining === 0 || remaining < outside(from) - 0.00001) &&
+      Math.hypot(point.x - from.x, point.y - from.y) <= budget + 0.01 &&
+      canMove(from, point, radius, others)
+    )
+  }
+  if (bounds && outside(from) > 0) {
+    const edge = {
+      x: Math.max(bounds.left, Math.min(bounds.right, from.x)),
+      y: Math.max(bounds.top, Math.min(bounds.bottom, from.y)),
+    }
+    const escape = towards(from, edge, budget)
+    if (clears(escape)) {
+      spacing.offset = { x: escape.x - base.x, y: escape.y - base.y }
+      spacing.status = 'escaping'
+      return false
+    }
   }
   const heading = distance
     ? { x: (next.x - base.x) / distance, y: (next.y - base.y) / distance }
