@@ -13,7 +13,7 @@ import { type Grid, type Pt, type RGB, BAYER, col, dot, line, noise, row, stamp 
 
 const WHO = ['ladder', 'rope', 'fisher', 'kid', 'surveyor', 'writer', 'pointer', 'friend'] as const
 type Who = (typeof WHO)[number]
-export type Glyph = '!' | '?' | '#'
+export type Glyph = '!' | '?' | '#' | '♥'
 type Bubble = { who: string; glyph: Glyph; age: number }
 // Who is talking, and the top-middle pixel of each figure that can talk, as last painted.
 export type Voices = { bubbles: Bubble[]; heads: Partial<Record<string, Pt>> }
@@ -92,6 +92,8 @@ const GLYPHS: Record<Glyph, string[]> = {
   '?': ['KK.', '..K', '.K.', '...', '.K.'],
   // Language.
   '#': ['K.K', 'KKK', 'K.K', 'KKK', 'K.K'],
+  // A purr.
+  '♥': ['K.K', 'KKK', 'KKK', '.K.', '...'],
 }
 
 export function makeCrew(): Crew {

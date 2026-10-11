@@ -440,6 +440,42 @@ document.addEventListener('nav', () => {
   }
   scene.addEventListener('click', onHail, true)
 
+  // A press on the cat pats it. A touch that starts on it strokes it, so it does not move the page.
+  const onPat = (e: PointerEvent) => {
+    if (e.button !== 0 || (e.target as Element).closest('.nf-board')) return
+    land?.pat(e.clientX, e.clientY)
+  }
+  const onTouch = (e: TouchEvent) => {
+    const t = e.touches[0]
+    if (e.touches.length === 1 && land?.onCat(t.clientX, t.clientY)) e.preventDefault()
+  }
+  scene.addEventListener('pointerdown', onPat)
+  scene.addEventListener('touchstart', onTouch, { passive: false })
+
+  // The button over the cat is the keyboard's hand: focus lays it on the cat's cheek, a held arrow
+  // strokes along its back, and Enter or Space pats. A pointer goes through the button to the cat.
+  const petter = scene.querySelector<HTMLButtonElement>('.nf-pet')
+  let pawDir = 0
+  const onPaw = (e: KeyboardEvent) => {
+    const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
+    if (!dir) return
+    e.preventDefault()
+    if (e.type === 'keydown') {
+      // Without motion each press moves the hand once.
+      if (e.repeat) return
+      pawDir = dir
+    } else if (pawDir === dir) pawDir = 0
+    land?.paw(true, pawDir)
+  }
+  const onPawFocus = () => land?.paw(true, (pawDir = 0))
+  const onPawBlur = () => land?.paw(false, (pawDir = 0))
+  const onPawPress = () => land?.patPaw()
+  petter?.addEventListener('keydown', onPaw)
+  petter?.addEventListener('keyup', onPaw)
+  petter?.addEventListener('focus', onPawFocus)
+  petter?.addEventListener('blur', onPawBlur)
+  petter?.addEventListener('click', onPawPress)
+
   let raf = 0
   let last = performance.now()
   let clock = 0
@@ -574,5 +610,12 @@ document.addEventListener('nav', () => {
     door.removeEventListener('blur', portalOff)
     door.removeEventListener('click', onDoor)
     scene.removeEventListener('click', onHail, true)
+    scene.removeEventListener('pointerdown', onPat)
+    scene.removeEventListener('touchstart', onTouch)
+    petter?.removeEventListener('keydown', onPaw)
+    petter?.removeEventListener('keyup', onPaw)
+    petter?.removeEventListener('focus', onPawFocus)
+    petter?.removeEventListener('blur', onPawBlur)
+    petter?.removeEventListener('click', onPawPress)
   })
 })

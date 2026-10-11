@@ -32,10 +32,13 @@ import {
 import {
   type Cat,
   type CatInk,
+  alongCat,
   catHead,
   makeCat,
   mealFor,
   paintCat,
+  partUnder,
+  patCat,
   poseCat,
   stepCat,
 } from './404-cat'
@@ -196,12 +199,32 @@ export type Landscape = {
   still(pointer: Pointer): void
   // Whoever is under the click (client pixels) asks "?"; true if someone was there.
   hail(x: number, y: number): boolean
+  // A press (client pixels) on the cat pats it; true if it was there to be patted.
+  pat(x: number, y: number): boolean
+  // Whether a hand at a client pixel is on the cat while it can be stroked.
+  onCat(x: number, y: number): boolean
+  // The keyboard's hand: on the cat while the button over it has focus, stroking it while an arrow
+  // is held (-1 left on screen, 1 right, 0 none).
+  paw(on: boolean, dir: number): void
+  // A press of that button pats the cat where the hand is; true if it was there to be patted.
+  patPaw(): boolean
   // Buffer pixel pitch and origin in scene units, for snapping vector sprites onto the grid.
   pixel(): { px: number; x0: number; y0: number } | null
   dispose(): void
 }
 
 const TICK = 1 / 10
+// The keyboard's hand takes STROKE seconds from the cat's face to its tail, and its ring is PAW scene
+// units wide. What the button's status line says the cat does.
+const STROKE = 1.25
+const PAW = 60
+const OFF: Pointer = { x: -1e4, y: -1e4 }
+const SAYS = {
+  purr: 'Le chat ronronne.',
+  warn: 'Le chat couche les oreilles.',
+  swat: "Le chat donne un coup de patte et s'en va.",
+  busy: "Le chat ne se laisse pas caresser pour l'instant.",
+}
 // Gold only where the tone is mid-range and the gradient is sharp: fringes, never interiors.
 const GOLD_START = 0.45
 const GOLD_END = 0.7
@@ -3269,6 +3292,75 @@ export function setupLandscape(
   let minute = NaN
   let rest: Pointer = { x: -1e4, y: -1e4 }
   let stance = ''
+  // The cat purrs a heart over its head. The friend who has been holding out a fish to it all along
+  // asks about the first one, and calls out at a swat. Over a cat that can be stroked, the cursor
+  // is a hand.
+  const purr: Voices = { bubbles: [], heads: {} }
+  let purred = false
+  let stroking = false
+  let purring = 0
+  // The keyboard's hand, from the button over the cat (404.tsx). While the button has focus the
+  // hand rests `along` the cat's line (alongCat), and a held arrow moves it toward the tail or the
+  // head. The button's focus ring follows it, and its status line says what the cat does.
+  const petter = scene.querySelector<HTMLButtonElement>('.nf-pet')
+  const says = scene.querySelector<HTMLElement>('.nf-pet-says')
+  const paw = { on: false, dir: 0, along: 0 }
+  let placed = ''
+  let said = ''
+  const tell = (text: string) => {
+    if (!says || !paw.on || text === said) return
+    says.textContent = said = text
+  }
+  // The button sits in its own layer at the near layer's depth, so it is placed in shares of the
+  // near layer's grid and parallax carries it with the cat.
+  const placePaw = () => {
+    if (!petter || !glint) return
+    const { g } = glint
+    const [x, y] = alongCat(cat, paw.along)
+    const share = (v: number, from: number, cells: number) =>
+      ((((v - from) / g.px + 0.5) / cells) * 100).toFixed(2)
+    const next = `left:${share(x, g.sx[0], g.bw)}%;top:${share(y, g.sy[0], g.bh)}%;width:${((PAW / g.px / g.bw) * 100).toFixed(2)}%`
+    if (next !== placed) petter.style.cssText = placed = next
+  }
+  // A pat at a scene point. Without motion nothing wears its patience or ages the heart: a pat
+  // shows it content with a heart over it, taken down on a timer.
+  const patAt = (spot: Pt) => {
+    if (!reduce) return patCat(cat, ...spot, told)
+    if (!partUnder(cat, ...spot)) return false
+    cat.petting.joy = 1
+    say(purr, 'cat', '♥')
+    tell(SAYS.purr)
+    paintShore()
+    window.clearTimeout(purring)
+    purring = window.setTimeout(() => {
+      cat.petting.joy = 0
+      purr.bubbles = []
+      paintShore()
+    }, 1800)
+    return true
+  }
+  const told = (what: 'purr' | 'warn' | 'swat') => {
+    tell(SAYS[what])
+    // The warning shows on its face.
+    if (what === 'warn') return
+    if (what === 'swat') return say(crew, 'friend', '!')
+    say(purr, 'cat', '♥')
+    if (!purred) say(crew, 'friend', '?')
+    purred = true
+  }
+  const handOver = (over: boolean) => {
+    if (over !== stroking) scene.classList.toggle('is-stroking', (stroking = over))
+  }
+  // Client pixels to the scene as the near layer shows it, which drifts under parallax.
+  const onNear = (x: number, y: number): Pt | null => {
+    if (!glint || !near) return null
+    const r = near.getBoundingClientRect()
+    const { g } = glint
+    return [
+      g.sx[0] + (((x - r.left) / r.width) * g.bw - 0.5) * g.px,
+      g.sy[0] + (((y - r.top) / r.height) * g.bh - 0.5) * g.px,
+    ]
+  }
   let lastImpulse = -Infinity
   let lastX = NaN
   let lastY = NaN
@@ -3336,6 +3428,8 @@ export function setupLandscape(
     const same = (l: Layer | null) => (l && l.g.bw === g.bw && l.g.bh === g.bh ? l.img.data : null)
     figures.fill(0)
     if (catInk) paintCat(figures, g, cat, catInk, clock, bank)
+    const [catX, catY] = catHead(cat)
+    purr.heads.cat = [col(g, catX), row(g, catY - 34)]
     crew.heads.pet = (petInk && pets() && paintPet(figures, g, pet, petInk, clock)) || undefined
     // The people are lit apart from the cat, which is stone and carries its own modelling.
     people.fill(0)
@@ -3366,6 +3460,7 @@ export function setupLandscape(
     ]
     crew.heads.athlete = headPixel(tri, g, strand) ?? undefined
     paintBubbles(d, g, crew, CREAM, INK)
+    paintBubbles(d, g, purr, CREAM, INK)
     flush(glint)
   }
   // Only the opening is ever painted, and the underpainting covers all of it each frame.
@@ -3781,14 +3876,33 @@ export function setupLandscape(
       const seen = sighting(tri, strand)
       const [hx, hy] = catHead(cat)
       const away = (p: Pointer) => Math.hypot(p.x - hx, p.y - hy)
-      stepCat(
-        cat,
-        dt,
-        seen && away(seen) < away(pointer) ? seen : pointer,
-        rift.heat,
+      // With the button focused, the keyboard's hand is the only one on the cat. It strokes while an
+      // arrow is held, and past either end of the line it lifts for a frame and comes down at the
+      // other end, so a held arrow gives one long stroke after another.
+      let hand = pointer
+      if (paw.on) {
+        hand = OFF
+        if (paw.dir) {
+          paw.along += (paw.dir * -cat.face * dt) / STROKE
+          const lifted = paw.along < 0 || paw.along > 1
+          paw.along -= Math.floor(paw.along)
+          if (!lifted) {
+            const [x, y] = alongCat(cat, paw.along)
+            hand = { x, y }
+          }
+        }
+      }
+      stepCat(cat, dt, {
+        pointer: seen && away(seen) < away(pointer) ? seen : pointer,
+        hand,
+        heat: rift.heat,
         impulse,
-        bank,
-      )
+        ground: bank,
+        told,
+      })
+      ageBubbles(purr, dt)
+      handOver(!paw.on && !!cat.petting.hand)
+      if (paw.on) placePaw()
       // The pet hops in once the scene shows, from wherever the site pet last stood on screen.
       if (pet.mode === 'away' && pets() && scene.classList.contains('is-ready'))
         arrive(pet, spotInScene())
@@ -3879,6 +3993,7 @@ export function setupLandscape(
     },
     still(pointer) {
       rest = pointer
+      handOver(!!partUnder(cat, pointer.x, pointer.y))
       poseCat(cat, pointer, drawn)
       const next = `${cat.alert}${cat.look}`
       if (next === stance) return
@@ -3932,12 +4047,41 @@ export function setupLandscape(
       }
       return true
     },
+    pat(x, y) {
+      const spot = onNear(x, y)
+      return !!spot && patAt(spot)
+    },
+    paw(on, dir) {
+      // Each new focus starts on its cheek with a fresh status line.
+      if (on && !paw.on) {
+        paw.along = 0
+        said = ''
+        if (says) says.textContent = ''
+      }
+      paw.on = on
+      paw.dir = on ? dir : 0
+      if (!on) return
+      // Without motion nothing strokes, and an arrow moves the hand to the next of its face, its
+      // back and its haunch.
+      if (reduce && dir) paw.along = Math.max(0, Math.min(1, paw.along + dir * -cat.face * 0.5))
+      placePaw()
+    },
+    patPaw() {
+      if (patAt(alongCat(cat, paw.along))) return true
+      tell(SAYS.busy)
+      return false
+    },
+    onCat(x, y) {
+      const spot = onNear(x, y)
+      return !!spot && !!partUnder(cat, ...spot)
+    },
     pixel() {
       const g = glint?.g
       return g ? { px: g.px, x0: g.sx[0] - g.px / 2, y0: g.sy[0] - g.px / 2 } : null
     },
     dispose() {
       window.clearTimeout(hush)
+      window.clearTimeout(purring)
       window.removeEventListener('resize', repaint)
       document.removeEventListener('themechange', repaint)
     },

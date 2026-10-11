@@ -82,6 +82,54 @@ body[data-slug='404'] {
   will-change: transform;
 }
 
+// A hand over the cat can stroke it.
+.nf-scene.is-stroking {
+  cursor: grab;
+}
+
+// The keyboard's hand: a ring on the cat while the button has focus, with its keys under it. The
+// script sets the ring's place and width in shares of the layer.
+.nf-pet {
+  position: absolute;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  appearance: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--nf-rose);
+    outline-offset: 2px;
+  }
+}
+
+.nf-pet-keys {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 50%;
+  translate: -50% 0;
+  display: none;
+  padding: 0.3rem 0.45rem;
+  border: 2px solid var(--dark);
+  background: var(--light);
+  color: var(--dark);
+  font: 400 11px/1 var(--nf-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  .nf-pet:focus-visible & {
+    display: block;
+  }
+}
+
 // Low-resolution buffers stretched to the layer box; the chunky pixels are the texture.
 .nf-sky,
 .nf-land,
