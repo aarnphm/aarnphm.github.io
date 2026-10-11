@@ -112,11 +112,12 @@ function stripLinks(
     if (unit.note) push('notes', internal(unit.slug, 'notes'))
     else {
       push('notes', <code>lectures/{pad(n)}.md</code>)
-      // the lecture pdf drafts the note from its marks (course.inline.ts builds the preview)
+      // the lecture pdf drafts the note from its marks (course.inline.ts builds the preview);
+      // ResourceHead sets it left of the table, not in a row
       const file = ref.record.file
       if (kind === 'notes' && file && /\.pdf$/i.test(file))
         push(
-          'notes',
+          'promote',
           <details
             class="course-promote"
             data-promote-dir={view.dir}
@@ -429,10 +430,11 @@ export function ResourceHead({
     ),
   })
   // prev/next open the table (aarnphm: "the next of 02 should also be an entry on the table")
+  const promote = links.find(link => link.key === 'promote')?.node
   const rows = [
     ...(prev ? [pagerLink(prev, 'prev')] : []),
     ...(next ? [pagerLink(next, 'next')] : []),
-    ...links,
+    ...links.filter(link => link.key !== 'promote'),
   ]
   const hasDeck = Boolean(unit?.deck)
   const meta = resourceMeta(ref)
@@ -472,6 +474,7 @@ export function ResourceHead({
             links
           </button>
           <div class="course-strip-links" id="course-strip-links" popover="auto">
+            {promote}
             <StripTable links={rows} unitKind={view?.record.unitKind ?? 'unit'} />
           </div>
         </>

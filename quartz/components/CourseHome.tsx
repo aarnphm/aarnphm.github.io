@@ -277,70 +277,93 @@ function unitRow(
   )
 }
 
+/**
+ * Problem sets in due order: those the calendar names at a unit, then the rest of the course's
+ * `pset` resources (18.156 and 18.100B list problem sets with no schedule), one per number.
+ */
+export function psetEntries(
+  view: CourseView,
+  resources: Map<string, CourseResourceRef>,
+): { id: string; label: string; due?: number }[] {
+  const entries: { id: string; label: string; due?: number }[] = []
+  const seen = new Set<string>()
+  for (const unit of view.units) {
+    unit.record.due.forEach((id, i) => {
+      if (seen.has(id)) return
+      seen.add(id)
+      entries.push({ id, label: unit.record.keyDates[i] ?? id, due: unit.record.n })
+    })
+  }
+  const numbers = new Set(entries.map(entry => psetNumber(entry.id)))
+  // the shortest id is the term's own set; `pset1-1` style ids are older terms
+  const undated = Array.from(resources.values())
+    .filter(ref => ref.record.kind === 'pset' && ref.record.n !== undefined)
+    .sort((a, b) => a.record.n! - b.record.n! || a.id.length - b.id.length)
+  for (const ref of undated) {
+    if (numbers.has(ref.record.n!)) continue
+    numbers.add(ref.record.n!)
+    entries.push({ id: ref.id, label: `problem set ${ref.record.n}` })
+  }
+  return entries
+}
+
 function psetRows(
   view: CourseView,
   from: FullSlug,
   slots: Set<Slot>,
   resources: Map<string, CourseResourceRef>,
 ) {
-  const seen = new Set<string>()
-  const rows: JSX.Element[] = []
-  for (const unit of view.units) {
-    unit.record.due.forEach((id, i) => {
-      if (seen.has(id)) return
-      seen.add(id)
-      const n = psetNumber(id)
-      const solution = n === undefined ? undefined : view.psets.get(n)
-      const text = n === undefined ? undefined : view.psetText.get(n)
-      const ref = resources.get(id)
-      const pdfSlug = resourceSlug(view.dir, id)
-      const marksSrc = ref?.record.file ? courseFileSlug(view.dir, ref.record.file) : undefined
-      const links: SlotLink[] = [
-        { slot: 'pdf', text: 'pdf', href: resolveRelative(from, pdfSlug), slug: pdfSlug },
-        {
-          slot: 'tex',
-          text: 'tex',
-          ...(text
-            ? {
-                href: resolveRelative(from, psetTextSlug(view.dir, n!)),
-                slug: psetTextSlug(view.dir, n!),
-              }
-            : {}),
-        },
-        { slot: 'video', text: 'video' },
-        { slot: 'txt', text: 'txt' },
-      ]
-      rows.push(
-        <tr class="course-unit-row" data-state={solution ? 'notes' : 'new'}>
-          <td class="course-num course-c-n">{n === undefined ? '–' : pad(n)}</td>
-          <td>
-            <a class="internal course-unit-title" href={resolveRelative(from, pdfSlug)}>
-              {unit.record.keyDates[i] ?? id}
+  return psetEntries(view, resources).map(({ id, label, due }) => {
+    const n = psetNumber(id)
+    const solution = n === undefined ? undefined : view.psets.get(n)
+    const text = n === undefined ? undefined : view.psetText.get(n)
+    const ref = resources.get(id)
+    const pdfSlug = resourceSlug(view.dir, id)
+    const marksSrc = ref?.record.file ? courseFileSlug(view.dir, ref.record.file) : undefined
+    const links: SlotLink[] = [
+      { slot: 'pdf', text: 'pdf', href: resolveRelative(from, pdfSlug), slug: pdfSlug },
+      {
+        slot: 'tex',
+        text: 'tex',
+        ...(text
+          ? {
+              href: resolveRelative(from, psetTextSlug(view.dir, n!)),
+              slug: psetTextSlug(view.dir, n!),
+            }
+          : {}),
+      },
+      { slot: 'video', text: 'video' },
+      { slot: 'txt', text: 'txt' },
+    ]
+    return (
+      <tr class="course-unit-row" data-state={solution ? 'notes' : 'new'}>
+        <td class="course-num course-c-n">{n === undefined ? '–' : pad(n)}</td>
+        <td>
+          <a class="internal course-unit-title" href={resolveRelative(from, pdfSlug)}>
+            {label}
+          </a>
+          <span class="course-unit-dates">
+            {due === undefined ? 'no due date' : `due at ${view.record.unitKind} ${pad(due)}`}
+          </span>
+          {slotCell(links, slots, 'course-unit-src')}
+        </td>
+        <td class="course-c-state" />
+        <td class="course-c-src">{slotCell(links, slots, 'course-slots')}</td>
+        <td class="course-num course-c-marks" data-marks-src={marksSrc}>
+          –
+        </td>
+        <td class="course-c-cards" colSpan={3}>
+          {solution ? (
+            <a class="internal" href={resolveRelative(from, solution.slug as FullSlug)}>
+              our solutions
             </a>
-            <span class="course-unit-dates">
-              due at {view.record.unitKind} {pad(unit.record.n)}
-            </span>
-            {slotCell(links, slots, 'course-unit-src')}
-          </td>
-          <td class="course-c-state" />
-          <td class="course-c-src">{slotCell(links, slots, 'course-slots')}</td>
-          <td class="course-num course-c-marks" data-marks-src={marksSrc}>
-            –
-          </td>
-          <td class="course-c-cards" colSpan={3}>
-            {solution ? (
-              <a class="internal" href={resolveRelative(from, solution.slug as FullSlug)}>
-                our solutions
-              </a>
-            ) : (
-              '–'
-            )}
-          </td>
-        </tr>,
-      )
-    })
-  }
-  return rows
+          ) : (
+            '–'
+          )}
+        </td>
+      </tr>
+    )
+  })
 }
 
 function railList(from: FullSlug, links: CourseLink[]) {
@@ -389,8 +412,7 @@ export default (() => {
       for (const link of unitSlots(view, unit, from, resources)) if (link.href) slots.add(link.slot)
     }
     if (view.psetText.size > 0) slots.add('tex')
-    const anyPset = view.units.some(unit => unit.record.due.length > 0)
-    if (anyPset) slots.add('pdf')
+    if (psetEntries(view, resources).length > 0) slots.add('pdf')
 
     const parts = new Map<number | undefined, CourseUnitView[]>()
     for (const unit of view.units) {

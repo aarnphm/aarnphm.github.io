@@ -52,7 +52,7 @@ $$
 f \bar * g(\xi) = \int f(\xi + \omega) g(\omega) d \omega \tag{3}
 $$
 
-The analogue of ([[courses/18-156-projection-theory-spring-2025/notes/00#eq-2|2]]) for difference convolution is
+The analogue of ([[courses/18-156-projection-theory-spring-2025/notes/pset-02#eq-2|2]]) for difference convolution is
 
 <a id="eq-4" class="latex-eq"></a>
 
@@ -159,7 +159,7 @@ Note that $E^*$ is centered at 0, regardless of where $E$ is centered. We will s
 
 ^proof-2
 
-Finally, if $T$ is a rectangular solid, then we let $E$ be an ellipsoid so that $c_d E \subset T \subset E$ and we set $\psi_T = \psi_E$ and $T^* = E^*$. Then Proposition [[courses/18-156-projection-theory-spring-2025/notes/00#^proposition-2|2]] applies to $\psi_T$ as well.
+Finally, if $T$ is a rectangular solid, then we let $E$ be an ellipsoid so that $c_d E \subset T \subset E$ and we set $\psi_T = \psi_E$ and $T^* = E^*$. Then Proposition [[courses/18-156-projection-theory-spring-2025/notes/pset-02#^proposition-2|2]] applies to $\psi_T$ as well.
 
 ## main lemmas in the fourier method
 

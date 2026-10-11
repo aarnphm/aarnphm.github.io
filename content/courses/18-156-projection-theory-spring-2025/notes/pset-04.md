@@ -32,7 +32,7 @@ We let $P_M:= \{ p \text{ prime } | p \sim M \}$.
 
 ^theorem-1
 
-**problem 1.** In order to digest the proof of Theorem [[courses/18-156-projection-theory-spring-2025/notes/00#^theorem-1|1]], sketch a proof for the following variation when $M > N^{1/2}$. This variation comes up in applications, like in the Bombieri-Vinogradov theorem.
+**problem 1.** In order to digest the proof of Theorem [[courses/18-156-projection-theory-spring-2025/notes/05#^theorem-5-1|1]], sketch a proof for the following variation when $M > N^{1/2}$. This variation comes up in applications, like in the Bombieri-Vinogradov theorem.
 
 ^problem-1
 
@@ -46,7 +46,7 @@ We let $P_M:= \{ p \text{ prime } | p \sim M \}$.
 
 ^theorem-2
 
-In your proof sketch, describe the Fourier analysis technical details in the level of detail that you find most helpful. Your proof sketch should illustrate why we have a factor $M$ on the right hand side in Theorem [[courses/18-156-projection-theory-spring-2025/notes/00#^theorem-2|2]] as opposed to a factor of $N/M$ in Theorem [[courses/18-156-projection-theory-spring-2025/notes/00#^theorem-1|1]].
+In your proof sketch, describe the Fourier analysis technical details in the level of detail that you find most helpful. Your proof sketch should illustrate why we have a factor $M$ on the right hand side in Theorem [[courses/18-156-projection-theory-spring-2025/notes/pset-04#^theorem-2|2]] as opposed to a factor of $N/M$ in Theorem [[courses/18-156-projection-theory-spring-2025/notes/05#^theorem-5-1|1]].
 
 Linnik developed the large sieve to prove an estimate related to the distribution of quadratic residues. Our second goal for the problem set is to prove Linnik's result.
 
@@ -84,7 +84,7 @@ $$
 
 Number theorists have a good sense of $|X_{N,L}|$. For instance, for any $\epsilon > 0$, as $N \rightarrow \infty$, $|X_{N, N^\epsilon}| \sim C(\epsilon) N$, for some $C(\epsilon) > 0$. So Linnik's theorem implies that $|P_{N^{1/2}, N^\epsilon}| \le C(\epsilon)$ uniformly in $N$.
 
-In the rest of the problem set, you will prove Theorem [[courses/18-156-projection-theory-spring-2025/notes/00#^theorem-3|3]].
+In the rest of the problem set, you will prove Theorem [[courses/18-156-projection-theory-spring-2025/notes/pset-04#^theorem-3|3]].
 
 **problem 2.** Prove that if $p \in P_{N^{1/2}, L}$, then $| \pi_p(X_{N,L})| \le \frac{p+1}{2}$.
 
@@ -98,7 +98,7 @@ $$
 \| ( \pi_p 1_X)_h \|_{L^2}^2 \ge c \frac{|X|^2}{p}.
 $$
 
-**problem 4.** Prove Theorem [[courses/18-156-projection-theory-spring-2025/notes/00#^theorem-3|3]] using the large sieve and problems 1,2.
+**problem 4.** Prove Theorem [[courses/18-156-projection-theory-spring-2025/notes/pset-04#^theorem-3|3]] using the large sieve and problems 1,2.
 
 ^problem-4
 
@@ -116,6 +116,6 @@ This theorem is essentially sharp when $X$ is the set of squares.
 
 We could explore what happens if we know $| \pi_p(X) \le (0.99) p$ for every $p \in P_{N^\alpha}$ for some other exponent $\alpha$, such as $\alpha = 1/4$.
 
-Applying the large sieve as in Theorem [[courses/18-156-projection-theory-spring-2025/notes/00#^theorem-4|4]] shows that, if $|\pi_p(X)| \le (0.99)p$ for every $p \in P_{N^{1/4}}$, then $|X| \lessapprox N^{3/4}$. I don't know any example where this is roughly sharp, and I suspect there is no such example. Examining the proof of the large sieve, we see that if the bound is almost tight, then $\int_0^1 | \hat 1_X(\xi)|^2 d \xi$ must be dominated by $\xi$ very close to fractions of the form $\frac{a}{p}$, $p \in P_{N^{1/4}}$, $a \not= 0$. The region close to these fractions has a very small measure, around $N^{-1/2}$, so it is striking for this region to contribute a large fraction of the integral.
+Applying the large sieve as in Theorem [[courses/18-156-projection-theory-spring-2025/notes/05#^corollary-5-3|4]] shows that, if $|\pi_p(X)| \le (0.99)p$ for every $p \in P_{N^{1/4}}$, then $|X| \lessapprox N^{3/4}$. I don't know any example where this is roughly sharp, and I suspect there is no such example. Examining the proof of the large sieve, we see that if the bound is almost tight, then $\int_0^1 | \hat 1_X(\xi)|^2 d \xi$ must be dominated by $\xi$ very close to fractions of the form $\frac{a}{p}$, $p \in P_{N^{1/4}}$, $a \not= 0$. The region close to these fractions has a very small measure, around $N^{-1/2}$, so it is striking for this region to contribute a large fraction of the integral.
 
 There is a vague principle in Fourier analysis called the Heisenberg uncertainty principle, which says that it is difficult for both $f$ and $\hat f$ to concentrate in a small region. (The uncertainty principle can be made precise in various ways.) Here, the set $X \subset [N]$ is a small fraction of $[N]$ (because we already know $|X| \lessapprox N^{3/4}$). And if the large sieve argument is near tight, then $\hat 1_X$ concentrates in a small region near to the fractions $a/p$, with $p \in P_{N^{1/4}}$. I suspect that there is no such set $X$, and one might be able to prove it using ideas related to the Heisenberg uncertainty principle or to restriction theory.

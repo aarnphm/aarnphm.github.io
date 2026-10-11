@@ -160,6 +160,7 @@ const config: QuartzConfig = {
         ],
       }),
       Plugin.Sidenotes(),
+      Plugin.CourseStatements(),
       Plugin.Speech(),
       Plugin.TableOfContents({ maxDepth: 5 }),
       Plugin.LLM(),

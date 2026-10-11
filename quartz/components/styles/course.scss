@@ -783,10 +783,12 @@
 
 .course-strip-links {
   grid-area: links;
-  display: block;
+  // `start notes` sits left of the table and opens to the table's height
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-4);
   justify-self: end;
   align-self: center;
-  max-width: 28rem;
   margin: 0;
   padding: 0;
 
@@ -805,7 +807,7 @@
 // labels left, values right, no rules.
 .course-strip-table {
   width: max-content;
-  max-width: 100%;
+  max-width: min(100%, 28rem);
   margin: 0;
   border: 0;
   border-collapse: collapse;
@@ -857,6 +859,9 @@
     position: fixed;
     inset: auto 0 0 0;
     width: auto; // the UA sheet gives [popover] fit-content
+    // the wide layout's end/center alignment would shrink the fixed sheet to its content
+    justify-self: normal;
+    align-self: normal;
     max-width: none;
     max-height: 70dvh;
     padding: var(--space-2) var(--space-4) max(var(--space-4), env(safe-area-inset-bottom));
@@ -867,11 +872,14 @@
     text-align: left;
 
     &:popover-open {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
     }
 
     .course-strip-table {
       width: 100%;
+      max-width: none;
 
       th,
       td {

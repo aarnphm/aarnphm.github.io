@@ -558,3 +558,17 @@ document.addEventListener('nav', () => {
     )
   }
 })
+
+// a note's statement link lands on its row; SPA navigation leaves `:target` unset, so mark it
+document.addEventListener('nav', () => {
+  const table = document.querySelector('.course-statements [data-course-rows]')
+  if (!table) return
+  const mark = () => {
+    table.querySelector('[data-arrived]')?.removeAttribute('data-arrived')
+    const id = decodeURIComponent(location.hash.slice(1))
+    if (id) table.querySelector(`tr[id="${CSS.escape(id)}"]`)?.setAttribute('data-arrived', '')
+  }
+  mark()
+  window.addEventListener('hashchange', mark)
+  window.addCleanup(() => window.removeEventListener('hashchange', mark))
+})
