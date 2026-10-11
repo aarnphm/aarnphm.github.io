@@ -6,21 +6,15 @@ type Rect = { left: number; top: number; right: number; bottom: number }
 export type TrailId = 'main' | 'pines' | 'grove' | 'ridge' | 'meadow' | 'switchback'
 export const trailIds: TrailId[] = ['main', 'pines', 'grove', 'ridge', 'meadow', 'switchback']
 
-function curvedPath(
-  input: Point[],
-  width: number,
-  height: number,
-  landscape: Landscape,
-  lead?: Point,
-) {
-  const points = followTerrain(input, landscape)
+function curvedPath(input: Point[], width: number, height: number, landscape?: Landscape) {
+  const points = landscape ? followTerrain(input, landscape) : input
   const bounded = (point: Point) => ({
     x: Math.max(6, Math.min(width - 6, point.x)),
     y: Math.max(8, Math.min(height - 16, point.y)),
   })
   let route = `M${points[0].x} ${points[0].y}`
   for (let index = 0; index < points.length - 1; index++) {
-    const before = index === 0 ? (lead ?? points[0]) : points[index - 1]
+    const before = points[Math.max(0, index - 1)]
     const start = points[index]
     const end = points[index + 1]
     const after = points[Math.min(points.length - 1, index + 2)]
@@ -116,17 +110,6 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     })
   }
   const bottom = Math.max(landing.getBoundingClientRect().bottom - bounds.top, 280)
-  const edge = (y: number) => {
-    const nearby = lines.filter(line => line.top - 84 <= y && line.bottom + 84 >= y)
-    const right = Math.max(width * 0.18, ...nearby.map(line => line.right + 32))
-    return Math.min(width - (width < 700 ? 6 : 22), right)
-  }
-  const start = { x: edge(64), y: 48 + random() * 24 }
-  const points: Point[] = [start]
-  for (let y = 72; y < bottom; y += 64) points.push({ x: edge(y), y })
-  const branch = { x: edge(bottom), y: bottom + 24 }
-  points.push(branch)
-  const lead = points[points.length - 2]
   const camp = {
     x: Math.min(width - 72, width * (0.64 + random() * 0.12)),
     y: Math.min(height - 80, Math.max(height - 112, bottom + 225)),
@@ -137,26 +120,31 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     x: Math.max(10, Math.min(width - 10, width * (x + (random() - 0.5) * 0.12))),
     y: landscape.meadowTop + clearing * Math.max(0.05, y + (random() - 0.5) * 0.14),
   })
-  const fork = wander(0.4, 0.22)
+  const start = (fraction: number): Point => ({
+    x: width * (fraction + (random() - 0.5) * 0.045),
+    y: landscape.alpine.base - 12,
+  })
   const end = { x: camp.x - 24, y: camp.y + 4 }
-  points.push(
-    fork,
-    wander(0.27, 0.45),
-    wander(0.44, 0.76),
-    wander(0.61, 0.64),
-    { x: camp.x - 42, y: camp.y - 24 },
-    end,
-  )
-  // Repeated forks share a stem and a destination; broad curves carry the turns.
   const routes: Record<TrailId, string> = {
-    main: curvedPath(points, width, height, landscape),
+    main: curvedPath(
+      [
+        start(0.41),
+        wander(0.4, 0.13),
+        wander(0.27, 0.36),
+        wander(0.44, 0.73),
+        wander(0.61, 0.62),
+        { x: camp.x - 42, y: camp.y - 24 },
+        end,
+      ],
+      width,
+      height,
+      landscape,
+    ),
     pines: curvedPath(
       [
-        { x: width * (0.12 + random() * 0.15), y: 18 },
-        { x: 10, y: 48 },
-        { x: 10, y: bottom * 0.52 },
-        { x: 10, y: bottom + 24 },
-        wander(0.08, 0.44),
+        start(0.12),
+        wander(0.07, 0.17),
+        wander(0.15, 0.5),
         wander(0.28, 0.74),
         wander(0.53, 0.96),
         end,
@@ -166,16 +154,21 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       landscape,
     ),
     grove: curvedPath(
-      [branch, wander(0.64, 0.26), wander(0.8, 0.44), wander(0.93, 0.72), wander(0.81, 0.96), end],
+      [
+        start(0.59),
+        wander(0.64, 0.16),
+        wander(0.8, 0.44),
+        wander(0.93, 0.72),
+        wander(0.81, 0.96),
+        end,
+      ],
       width,
       height,
       landscape,
-      lead,
     ),
     ridge: curvedPath(
       [
-        { x: width - 16, y: 76 + random() * 70 },
-        { x: width - 10, y: bottom * 0.74 },
+        start(0.9),
         wander(0.91, 0.1),
         wander(0.79, 0.35),
         wander(0.56, 0.23),
@@ -189,7 +182,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     ),
     meadow: curvedPath(
       [
-        { x: 8, y: bottom * (0.5 + random() * 0.18) },
+        start(0.26),
         wander(0.15, 0.08),
         wander(0.23, 0.26),
         wander(0.12, 0.62),
@@ -203,7 +196,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     ),
     switchback: curvedPath(
       [
-        branch,
+        start(0.75),
         wander(0.72, 0.13),
         wander(0.57, 0.32),
         wander(0.79, 0.47),
@@ -214,11 +207,29 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       width,
       height,
       landscape,
-      lead,
     ),
   }
   const clear = clearSpace(width, height, obstacles)
   const reading = landing.getBoundingClientRect()
+  const left = Math.max(12, reading.left - bounds.left - 54)
+  const right = Math.min(width - 12, reading.right - bounds.left + 54)
+  const readingRoute = curvedPath(
+    [
+      { x: left, y: 48 },
+      { x: left - 6, y: bottom * 0.32 },
+      { x: left + 6, y: bottom * 0.65 },
+      { x: left, y: bottom - 24 },
+      { x: left + 32, y: bottom + 72 },
+      { x: (left + right) / 2, y: bottom + 72 },
+      { x: right - 32, y: bottom + 72 },
+      { x: right, y: bottom - 24 },
+      { x: right + 6, y: bottom * 0.6 },
+      { x: right - 6, y: bottom * 0.3 },
+      { x: right, y: 48 },
+    ],
+    width,
+    height,
+  )
   const backdropClear = clearSpace(width, height, [
     ...obstacles,
     {
@@ -228,5 +239,16 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       bottom: reading.bottom - bounds.top + 24,
     },
   ])
-  return { width, height, bottom, camp, landscape, routes, clear, backdropClear, obstacles }
+  return {
+    width,
+    height,
+    bottom,
+    camp,
+    landscape,
+    routes,
+    readingRoute,
+    clear,
+    backdropClear,
+    obstacles,
+  }
 }

@@ -655,15 +655,11 @@
     .trail-upland {
       animation: trail-arrive 700ms ease-out var(--trail-camp-arrival, 6000ms) both;
     }
-    .trail-landmarks {
-      animation: trail-arrive 400ms ease-out 200ms both;
+    .trail-depth-objects {
+      animation: trail-arrive 600ms ease-out 600ms both;
     }
     .trail-ground {
       animation: trail-arrive 500ms ease-out 200ms both;
-    }
-    .trail-fauna,
-    .trail-wayfarers {
-      animation: trail-arrive 600ms ease-out 1200ms both;
     }
     .trail-stone {
       animation: trail-arrive 160ms ease-out var(--trail-arrival, 0ms) both;

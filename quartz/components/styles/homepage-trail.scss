@@ -6,7 +6,7 @@
   bottom: max(16px, env(safe-area-inset-bottom));
   z-index: var(--z-dropdown);
   padding: 0 2px;
-  background: var(--light);
+  background: transparent;
   color: var(--gray);
   font: 10px/1.6 var(--codeFont);
   font-variant-numeric: tabular-nums;

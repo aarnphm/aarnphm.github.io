@@ -1,11 +1,28 @@
 import type { Landscape, Point } from './landscape'
+import {
+  actorSpacing,
+  publishActor,
+  readActors,
+  readTrunks,
+  spacedPosition,
+  spacedStep,
+  type ActorSpacing,
+  type CollisionActor,
+} from './actor-spacing'
 import { bootImpression } from './footprints'
+import { buildMountainRanges, mountainGroundAt } from './mountain-profile'
 import { pixels } from './pixels'
 import { trailRandom } from './random'
 
 type MovingPhase = 'climbing' | 'descending'
 type Phase = MovingPhase | 'reading' | 'resting'
-type Impression = { progress: number; side: number; direction: number; element: SVGPathElement }
+type Impression = {
+  progress: number
+  side: number
+  direction: number
+  offset: Point
+  element: SVGPathElement
+}
 type Route = { length: number; point: (progress: number) => Point }
 type Traveler = {
   id: number
@@ -24,6 +41,7 @@ type Traveler = {
   duration: number
   random: () => number
   impressions: Impression[]
+  spacing: ActorSpacing
 }
 
 const perspective = (progress: number) => 0.65 - 0.47 * progress
@@ -87,25 +105,29 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
   const ascent = (id: number, nextSeed: number): Route => {
     if (!landscape) throw new Error('Alpine routes need their terrain')
     const random = trailRandom(nextSeed ^ (0x7431c59f + id * 0x27d4eb2d))
-    const { alpine, meadowTop } = landscape
-    const peaks = [
-      { x: 0.24, y: 0.45 },
-      { x: 0.46, y: 0.5 },
-      { x: 0.68, y: 0.55 },
-    ]
-    const peak = peaks[id % peaks.length]
+    const { alpine } = landscape
+    const ranges = buildMountainRanges(alpine, nextSeed)
+    const range = ranges[id % ranges.length]
+    const peak = [0.25, 0.46, 0.7][id % 3]
     const target = {
-      x: alpine.left + alpine.width * peak.x,
-      y: alpine.top + alpine.height * peak.y,
+      x: Math.max(
+        14,
+        Math.min(
+          landscape.width - 14,
+          range.left + range.width * (range.mirrored ? 1 - peak : peak),
+        ),
+      ),
+      y: 0,
     }
-    const desired = { x: target.x + (random() - 0.5) * alpine.width * 0.08, y: meadowTop + 80 }
+    target.y = mountainGroundAt(target.x, 0.35, ranges) ?? alpine.base - alpine.height * 0.25
+    const desired = { x: target.x + (random() - 0.5) * range.width * 0.08, y: alpine.base - 6 }
     let start = desired
     let score = Infinity
     for (const path of scene.querySelectorAll<SVGPathElement>('[data-trail-route]')) {
       const length = path.getTotalLength()
       for (let distance = 0; distance <= length; distance += 16) {
         const point = path.getPointAtLength(distance)
-        if (point.y < meadowTop + 32 || point.y > meadowTop + 140) continue
+        if (point.y < alpine.base - 18 || point.y > alpine.base + 8) continue
         const candidate = Math.abs(point.y - desired.y) * 2 + Math.abs(point.x - desired.x)
         if (candidate < score) {
           score = candidate
@@ -114,18 +136,28 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       }
     }
     const phase = random() * Math.PI * 2
-    const amplitude = alpine.width * (0.045 + random() * 0.018)
-    const point = (progress: number) => {
-      const fraction = Math.max(0, Math.min(1, progress))
+    const amplitude = range.width * (0.015 + random() * 0.012)
+    const samples = Array.from({ length: 129 }, (_, index) => {
+      const fraction = index / 128
       const blend = fraction * fraction * (3 - 2 * fraction)
       const switchback =
         Math.sin(phase + fraction * Math.PI * 6) *
         Math.sin(fraction * Math.PI) *
         Math.pow(1 - fraction, 1.2)
-      return {
-        x: start.x + (target.x - start.x) * blend + amplitude * switchback,
-        y: start.y + (target.y - start.y) * fraction,
-      }
+      const x = start.x + (target.x - start.x) * blend + amplitude * switchback
+      const linear = start.y + (target.y - start.y) * fraction
+      return { x, y: Math.max(linear, (mountainGroundAt(x, 0.22, ranges) ?? linear - 4) + 4) }
+    })
+    // A slope's height can vary under a switchback. Its upper envelope keeps the ascent grounded and monotone.
+    for (let index = samples.length - 2; index >= 0; index--)
+      samples[index].y = Math.max(samples[index].y, samples[index + 1].y + 0.02)
+    const point = (progress: number): Point => {
+      const position = Math.max(0, Math.min(1, progress)) * 128
+      const index = Math.min(127, Math.floor(position))
+      const fraction = position - index
+      const from = samples[index]
+      const to = samples[index + 1]
+      return { x: from.x + (to.x - from.x) * fraction, y: from.y + (to.y - from.y) * fraction }
     }
     let length = 0
     let before = point(0)
@@ -137,12 +169,13 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     return { length, point }
   }
   const placeImpression = (traveler: Traveler, impression: Impression) => {
-    const point = traveler.route.point(impression.progress)
+    const base = traveler.route.point(impression.progress)
+    const point = { x: base.x + impression.offset.x, y: base.y + impression.offset.y }
     const ahead = traveler.route.point(
       Math.max(0, Math.min(1, impression.progress + impression.direction * 0.001)),
     )
     const scale = perspective(impression.progress)
-    const angle = (Math.atan2(ahead.y - point.y, ahead.x - point.x) * 180) / Math.PI
+    const angle = (Math.atan2(ahead.y - base.y, ahead.x - base.x) * 180) / Math.PI
     impression.element.setAttribute(
       'transform',
       `translate(${point.x.toFixed(2)} ${point.y.toFixed(2)}) rotate(${angle.toFixed(2)}) scale(${scale.toFixed(4)}) translate(0 ${impression.side * 2}) scale(1 ${impression.side})`,
@@ -170,6 +203,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
         progress: traveler.stamped,
         side: traveler.step++ % 2 ? -1 : 1,
         direction,
+        offset: { ...traveler.spacing.offset },
         element: bootImpression(document),
       }
       placeImpression(traveler, impression)
@@ -192,19 +226,13 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       const progress = reducedMotion.matches
         ? Math.max(0, Math.min(1, stillProgress))
         : traveler.progress
-      const point = traveler.route.point(progress)
+      const point = spacedPosition(traveler.route.point(progress), traveler.spacing)
       const scale = perspective(progress)
       const direction = traveler.phase === 'descending' || traveler.next === 'descending' ? -1 : 1
       const ahead = traveler.route.point(Math.max(0, Math.min(1, progress + direction * 0.003)))
-      traveler.element.setAttribute(
-        'transform',
-        `translate(${point.x.toFixed(2)} ${point.y.toFixed(2)}) scale(${scale.toFixed(4)})`,
-      )
+      publishActor(traveler.element, `alpine-${traveler.id}`, point, scale, traveler.spacing)
       traveler.element.dataset.phase = reducedMotion.matches ? 'reading' : traveler.phase
       traveler.element.dataset.progress = progress.toFixed(6)
-      traveler.element.dataset.scale = scale.toFixed(4)
-      traveler.element.dataset.groundX = point.x.toFixed(2)
-      traveler.element.dataset.groundY = point.y.toFixed(2)
       traveler.element.dataset.motion = reducedMotion.matches
         ? 'still'
         : host.hidden || document.hidden
@@ -228,7 +256,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
   }
   const moving = (traveler: Traveler) =>
     traveler.phase === 'climbing' || traveler.phase === 'descending'
-  const step = (traveler: Traveler, elapsed: number) => {
+  const step = (traveler: Traveler, elapsed: number, obstacles: CollisionActor[]) => {
     if (!moving(traveler)) {
       traveler.remaining -= elapsed
       if (traveler.remaining <= 0) {
@@ -249,8 +277,32 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     const target = traveler.checkAt ?? (direction > 0 ? 1 : 0)
     const next = traveler.progress + (direction * elapsed) / traveler.duration
     const reached = direction > 0 ? next >= target : next <= target
-    traveler.progress = reached ? target : next
-    if (!reached) return
+    const progress = reached ? target : next
+    const base = traveler.route.point(traveler.progress)
+    const destination = traveler.route.point(progress)
+    const radius = 12 * Math.max(perspective(traveler.progress), perspective(progress))
+    const budget = Math.max(0.01, (traveler.route.length * elapsed) / traveler.duration)
+    const advances = spacedStep(
+      `alpine-${traveler.id}`,
+      base,
+      destination,
+      radius,
+      budget,
+      traveler.spacing,
+      obstacles,
+    )
+    if (advances) traveler.progress = progress
+    const point = spacedPosition(traveler.route.point(traveler.progress), traveler.spacing)
+    const circle = obstacles.find(other => other.id === `alpine-${traveler.id}`)
+    if (circle) Object.assign(circle, point, { radius: 12 * perspective(traveler.progress) })
+    else
+      obstacles.push({
+        ...point,
+        id: `alpine-${traveler.id}`,
+        kind: 'traveler',
+        radius: 12 * perspective(traveler.progress),
+      })
+    if (!reached || !advances) return
     traveler.next = traveler.phase === 'climbing' ? 'climbing' : 'descending'
     if (traveler.checkAt !== null) {
       traveler.phase = 'reading'
@@ -284,8 +336,10 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     frame = timer = null
     if (signal.aborted || host.hidden || document.hidden || reducedMotion.matches) return pause()
     const elapsed = previousTime === null ? 0 : Math.max(0, time - previousTime)
+    if (time - renderedAt < 1000 / 24 && travelers.some(moving)) return schedule()
+    const obstacles = [...readActors(scene), ...readTrunks(scene)]
     for (const traveler of travelers)
-      step(traveler, moving(traveler) ? Math.min(200, elapsed) : elapsed)
+      step(traveler, moving(traveler) ? Math.min(200, elapsed) : elapsed, obstacles)
     previousTime = time
     if (time - renderedAt >= 1000 / 24 || !travelers.some(moving)) {
       render()
@@ -368,6 +422,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
           duration: 55000 + random() * 35000,
           random,
           impressions: [],
+          spacing: actorSpacing(),
         })
       }
       group.replaceChildren(...travelers.map(traveler => traveler.element))

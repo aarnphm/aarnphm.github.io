@@ -192,8 +192,11 @@ function tree(
     gold: [],
   }
   let crownTop = 0
+  let trunkRadius = 1
   for (const { x, y, tone } of cells.values()) {
     crownTop = Math.min(crownTop, y)
+    if ((tone === 'trunk' || tone === 'bark') && y >= -pixel * 2)
+      trunkRadius = Math.max(trunkRadius, Math.abs(x), Math.abs(x + pixel))
     paths[tone].push(`M${x} ${y}h${pixel}v${pixel}h${-pixel}Z`)
   }
   const shadow = Math.round(8 + size * breadth * 4)
@@ -201,6 +204,7 @@ function tree(
     form,
     tone,
     extent: Math.max(1, -crownTop),
+    trunkRadius,
     markup:
       `<path class="trail-tree-shadow" d="M${-shadow} 0h${shadow * 2}v2h-3v2h${-shadow * 2 + 6}V2h-3Z"/>` +
       '<g class="trail-tree-motion">' +
@@ -306,7 +310,7 @@ export function trailTrees(
   })
     .sort((a, b) => a.y - b.y)
     .map(({ x, y, standalone, foothill, cluster, kind, treeSeed, height }) => {
-      const { markup, form, tone, extent } = tree(
+      const { markup, form, tone, extent, trunkRadius } = tree(
         kind,
         treeSeed,
         height,
@@ -321,7 +325,7 @@ export function trailTrees(
       const placement = standalone
         ? 'data-tree-placement="standalone"'
         : `data-tree-placement="grove" data-tree-cluster="${cluster}"`
-      return `<g class="trail-tree" data-tree="${kind}" ${placement} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-opacity: ${opacity.toFixed(2)}" transform="translate(${x} ${y})"><g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})">${markup}</g></g></g>`
+      return `<g class="trail-tree" data-tree="${kind}" ${placement} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-opacity: ${opacity.toFixed(2)}" transform="translate(${x} ${y})"><g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})">${markup}</g></g></g>`
     })
     .join('')
 }
