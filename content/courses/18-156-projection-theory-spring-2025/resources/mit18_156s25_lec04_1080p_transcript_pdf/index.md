@@ -10,15 +10,21 @@ tags:
   - 'math'
   - 'differential equations'
   - 'mathematical analysis'
-  - 'lecture notes'
-layout: 'A|L'
+noindex: true
+resource:
+  {
+    kind: 'transcript',
+    file: 'static_resources/mit18_156s25_lec04_1080p_transcript.pdf',
+    bytes: 77673,
+    of: 'mit18_156s25_lec04_1080p_mp4',
+    n: 4,
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-156-projection-theory-spring-2025/|mit 18.156]]
-
-![[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156s25_lec04_1080p_transcript.pdf]]
 
 ## metadata
 

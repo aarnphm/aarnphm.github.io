@@ -11,14 +11,13 @@ tags:
   - 'differential equations'
   - 'mathematical analysis'
   - 'problem sets'
-layout: 'A|L'
+resource: { kind: 'pset', file: 'static_resources/mit18_156_s25_pset3.pdf', bytes: 305631, n: 3 }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-156-projection-theory-spring-2025/|mit 18.156]]
-
-![[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156_s25_pset3.pdf]]
 
 ## metadata
 

@@ -14,7 +14,7 @@ aliases:
   - '18.156'
   - 'projection theory'
   - '18.156-spring-2025'
-layout: course
+layout: 'course'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 course:
@@ -33,17 +33,10 @@ course:
           [
             { id: 'mit18_156_s25_lec01_pdf', file: 'static_resources/mit18_156_s25_lec01.pdf' },
             {
-              id: 'mit18_156s25_lec01_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec01_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec01_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec01_1080p_360p_16_9.mp4',
               youtube: '1A1kWkxK3QY',
-            },
-            {
-              id: 'mit18_156s25_lec01_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec01_1080p_transcript.pdf',
+              duration: 4699,
+              cues: 1142,
             },
           ],
       }
@@ -54,17 +47,10 @@ course:
           [
             { id: 'mit18_156_s25_lec02_pdf', file: 'static_resources/mit18_156_s25_lec02.pdf' },
             {
-              id: 'mit18_156s25_lec02_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec02_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec02_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec02_1080p_360p_16_9.mp4',
               youtube: 'sEZHGMV2LiI',
-            },
-            {
-              id: 'mit18_156s25_lec02_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec02_1080p_transcript.pdf',
+              duration: 4789,
+              cues: 1114,
             },
           ],
       }
@@ -75,17 +61,10 @@ course:
           [
             { id: 'mit18_156_s25_lec03_pdf', file: 'static_resources/mit18_156_s25_lec03.pdf' },
             {
-              id: 'mit18_156s25_lec03_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec03_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec03_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec03_1080p_360p_16_9.mp4',
               youtube: 'OAI8C20E7R4',
-            },
-            {
-              id: 'mit18_156s25_lec03_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec03_1080p_transcript.pdf',
+              duration: 4791,
+              cues: 1170,
             },
           ],
       }
@@ -96,17 +75,10 @@ course:
           [
             { id: 'mit18_156_s25_lec04_pdf', file: 'static_resources/mit18_156_s25_lec04.pdf' },
             {
-              id: 'mit18_156s25_lec04_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec04_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec04_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec04_1080p_360p_16_9.mp4',
               youtube: 'X-4how4KkPQ',
-            },
-            {
-              id: 'mit18_156s25_lec04_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec04_1080p_transcript.pdf',
+              duration: 4784,
+              cues: 1134,
             },
           ],
       }
@@ -117,17 +89,10 @@ course:
           [
             { id: 'mit18_156_s25_lec05_pdf', file: 'static_resources/mit18_156_s25_lec05.pdf' },
             {
-              id: 'mit18_156s25_lec05_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec05_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec05_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec05_1080p_360p_16_9.mp4',
               youtube: 'i5lpHaGpeaI',
-            },
-            {
-              id: 'mit18_156s25_lec05_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec05_1080p_transcript.pdf',
+              duration: 4701,
+              cues: 1066,
             },
           ],
       }
@@ -138,17 +103,10 @@ course:
           [
             { id: 'mit18_156_s25_lec06_pdf', file: 'static_resources/mit18_156_s25_lec06.pdf' },
             {
-              id: 'mit18_156s25_lec06_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec06_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec06_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec06_1080p_360p_16_9.mp4',
               youtube: 'iUB_y1OXBo4',
-            },
-            {
-              id: 'mit18_156s25_lec06_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec06_1080p_transcript.pdf',
+              duration: 4648,
+              cues: 1229,
             },
           ],
       }
@@ -159,17 +117,10 @@ course:
           [
             { id: 'mit18_156_s25_lec07_pdf', file: 'static_resources/mit18_156_s25_lec07.pdf' },
             {
-              id: 'mit18_156s25_lec07_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec07_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec07_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec07_1080p_360p_16_9.mp4',
               youtube: '-UJgxLaFzfM',
-            },
-            {
-              id: 'mit18_156s25_lec07_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec07_1080p_transcript.pdf',
+              duration: 4796,
+              cues: 1098,
             },
           ],
       }
@@ -180,17 +131,10 @@ course:
           [
             { id: 'mit18_156_s25_lec08_pdf', file: 'static_resources/mit18_156_s25_lec08.pdf' },
             {
-              id: 'mit18_156s25_lec08_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec08_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec08_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec08_1080p_360p_16_9.mp4',
               youtube: '3h0jvsOnTIc',
-            },
-            {
-              id: 'mit18_156s25_lec08_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec08_1080p_transcript.pdf',
+              duration: 4812,
+              cues: 1219,
             },
           ],
       }
@@ -201,17 +145,10 @@ course:
           [
             { id: 'mit18_156_s25_lec09_pdf', file: 'static_resources/mit18_156_s25_lec09.pdf' },
             {
-              id: 'mit18_156s25_lec09_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec09_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec09_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec09_1080p_360p_16_9.mp4',
               youtube: 'lvdIUKULiak',
-            },
-            {
-              id: 'mit18_156s25_lec09_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec09_1080p_transcript.pdf',
+              duration: 4611,
+              cues: 1202,
             },
           ],
       }
@@ -222,17 +159,10 @@ course:
           [
             { id: 'mit18_156_s25_lec10_pdf', file: 'static_resources/mit18_156_s25_lec10.pdf' },
             {
-              id: 'mit18_156s25_lec10_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec10_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec10_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec10_1080p_360p_16_9.mp4',
               youtube: 'VCOrx2jEKXk',
-            },
-            {
-              id: 'mit18_156s25_lec10_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec10_1080p_transcript.pdf',
+              duration: 4625,
+              cues: 952,
             },
           ],
       }
@@ -243,17 +173,10 @@ course:
           [
             { id: 'mit18_156_s25_lec11_pdf', file: 'static_resources/mit18_156_s25_lec11.pdf' },
             {
-              id: 'mit18_156s25_lec11_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec11_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec11_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec11_1080p_360p_16_9.mp4',
               youtube: 'Uz7aJtbfqkU',
-            },
-            {
-              id: 'mit18_156s25_lec11_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec11_1080p_transcript.pdf',
+              duration: 4958,
+              cues: 999,
             },
           ],
       }
@@ -264,17 +187,10 @@ course:
           [
             { id: 'mit18_156_s25_lec12_pdf', file: 'static_resources/mit18_156_s25_lec12.pdf' },
             {
-              id: 'mit18_156s25_lec12_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec12_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec12_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec12_1080p_360p_16_9.mp4',
               youtube: 'aHQxdnufLbg',
-            },
-            {
-              id: 'mit18_156s25_lec12_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec12_1080p_transcript.pdf',
+              duration: 4662,
+              cues: 1035,
             },
           ],
       }
@@ -285,17 +201,10 @@ course:
           [
             { id: 'mit18_156_s25_lec13_pdf', file: 'static_resources/mit18_156_s25_lec13.pdf' },
             {
-              id: 'mit18_156s25_lec13_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec13_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec13_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec13_1080p_360p_16_9.mp4',
               youtube: 'DGBuM5pEdoo',
-            },
-            {
-              id: 'mit18_156s25_lec13_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec13_1080p_transcript.pdf',
+              duration: 4480,
+              cues: 986,
             },
           ],
       }
@@ -306,17 +215,10 @@ course:
           [
             { id: 'mit18_156_s25_lec14_pdf', file: 'static_resources/mit18_156_s25_lec14.pdf' },
             {
-              id: 'mit18_156s25_lec14_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec14_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec14_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec14_1080p_360p_16_9.mp4',
               youtube: '0UYCJ0cjG9k',
-            },
-            {
-              id: 'mit18_156s25_lec14_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec14_1080p_transcript.pdf',
+              duration: 4825,
+              cues: 1344,
             },
           ],
       }
@@ -327,17 +229,10 @@ course:
           [
             { id: 'mit18_156_s25_lec15_pdf', file: 'static_resources/mit18_156_s25_lec15.pdf' },
             {
-              id: 'mit18_156s25_lec15_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec15_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec15_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec15_1080p_360p_16_9.mp4',
               youtube: '1lql9PGvLG4',
-            },
-            {
-              id: 'mit18_156s25_lec15_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec15_1080p_transcript.pdf',
+              duration: 4640,
+              cues: 1099,
             },
           ],
       }
@@ -348,17 +243,10 @@ course:
           [
             { id: 'mit18_156_s25_lec16_pdf', file: 'static_resources/mit18_156_s25_lec16.pdf' },
             {
-              id: 'mit18_156s25_lec16_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec16_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec16_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec16_1080p_360p_16_9.mp4',
               youtube: '85YISwhp7MQ',
-            },
-            {
-              id: 'mit18_156s25_lec16_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec16_1080p_transcript.pdf',
+              duration: 4779,
+              cues: 1159,
             },
           ],
       }
@@ -369,17 +257,10 @@ course:
           [
             { id: 'mit18_156_s25_lec17_pdf', file: 'static_resources/mit18_156_s25_lec17.pdf' },
             {
-              id: 'mit18_156s25_lec17_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec17_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec17_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec17_1080p_360p_16_9.mp4',
               youtube: 'QVDLMx0Guiw',
-            },
-            {
-              id: 'mit18_156s25_lec17_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec17_1080p_transcript.pdf',
+              duration: 4674,
+              cues: 1164,
             },
           ],
       }
@@ -390,17 +271,10 @@ course:
           [
             { id: 'mit18_156_s25_lec18_pdf', file: 'static_resources/mit18_156_s25_lec18.pdf' },
             {
-              id: 'mit18_156s25_lec18_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec18_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec18_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec18_1080p_360p_16_9.mp4',
               youtube: '_jSFwF8rMdY',
-            },
-            {
-              id: 'mit18_156s25_lec18_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec18_1080p_transcript.pdf',
+              duration: 4607,
+              cues: 1088,
             },
           ],
       }
@@ -411,17 +285,10 @@ course:
           [
             { id: 'mit18_156_s25_lec19_pdf', file: 'static_resources/mit18_156_s25_lec19.pdf' },
             {
-              id: 'mit18_156s25_lec19_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec19_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec19_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec19_1080p_360p_16_9.mp4',
               youtube: 'bBzcaYNAfcI',
-            },
-            {
-              id: 'mit18_156s25_lec19_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec19_1080p_transcript.pdf',
+              duration: 4982,
+              cues: 1212,
             },
           ],
       }
@@ -432,17 +299,10 @@ course:
           [
             { id: 'mit18_156_s25_lec20_pdf', file: 'static_resources/mit18_156_s25_lec20.pdf' },
             {
-              id: 'mit18_156s25_lec20_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec20_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec20_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec20_1080p_360p_16_9.mp4',
               youtube: 'rChKr66KG-c',
-            },
-            {
-              id: 'mit18_156s25_lec20_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec20_1080p_transcript.pdf',
+              duration: 4833,
+              cues: 1133,
             },
           ],
       }
@@ -453,17 +313,10 @@ course:
           [
             { id: 'mit18_156_s25_lec21_pdf', file: 'static_resources/mit18_156_s25_lec21.pdf' },
             {
-              id: 'mit18_156s25_lec21_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec21_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec21_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec21_1080p_360p_16_9.mp4',
               youtube: '5QV8Gr1z16E',
-            },
-            {
-              id: 'mit18_156s25_lec21_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec21_1080p_transcript.pdf',
+              duration: 4760,
+              cues: 1117,
             },
           ],
       }
@@ -474,17 +327,10 @@ course:
           [
             { id: 'mit18_156_s25_lec22_pdf', file: 'static_resources/mit18_156_s25_lec22.pdf' },
             {
-              id: 'mit18_156s25_lec22_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec22_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec22_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec22_1080p_360p_16_9.mp4',
               youtube: 'hBG7nMXTOcw',
-            },
-            {
-              id: 'mit18_156s25_lec22_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec22_1080p_transcript.pdf',
+              duration: 4695,
+              cues: 1085,
             },
           ],
       }
@@ -495,17 +341,10 @@ course:
           [
             { id: 'mit18_156_s25_lec23_pdf', file: 'static_resources/mit18_156_s25_lec23.pdf' },
             {
-              id: 'mit18_156s25_lec23_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec23_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec23_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec23_1080p_360p_16_9.mp4',
               youtube: 'I6ZSrgxiofs',
-            },
-            {
-              id: 'mit18_156s25_lec23_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec23_1080p_transcript.pdf',
+              duration: 4880,
+              cues: 1245,
             },
           ],
       }
@@ -516,23 +355,16 @@ course:
           [
             { id: 'mit18_156_s25_lec24_pdf', file: 'static_resources/mit18_156_s25_lec24.pdf' },
             {
-              id: 'mit18_156s25_lec24_1080p_captions_vtt',
-              file: 'static_resources/mit18_156s25_lec24_1080p_captions.vtt',
-            },
-            {
               id: 'mit18_156s25_lec24_1080p_mp4',
-              file: 'static_resources/mit18_156s25_lec24_1080p_360p_16_9.mp4',
               youtube: 'h0Ln82BR4R0',
-            },
-            {
-              id: 'mit18_156s25_lec24_1080p_transcript_pdf',
-              file: 'static_resources/mit18_156s25_lec24_1080p_transcript.pdf',
+              duration: 4638,
+              cues: 1159,
             },
           ],
       }
 ---
 
-![[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156_s25_v2.webp]]
+![[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156_s25_v2.jpg]]
 
 The class studies projection theory, starting from the first questions and building up to recent developments. Projection theory studies how a set _X_ behaves under different orthogonal projections. Questions of this type aren't usually emphasized in the graduate analysis curriculum, but they come up in many areas of math, including harmonic analysis, analytic number theory, additive combinatorics, and homogeneous dynamics.
 We will survey several applications of projection theory. For each topic, we will introduce and motivate the topic and see how it connects with projection theory. We will prove something about each topic but not necessarily the strongest results.
