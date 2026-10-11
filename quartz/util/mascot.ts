@@ -353,6 +353,114 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK)
       )
       .join(''),
   )
+  // A thought: a paper cloud up to the right, reached by two bubbles, with the three dots inside.
+  const cloud = ring(57, 1.3, -2.2, 0.46).map(([x, y]) => [1.3 + (x - 1.3) * 1.5, y] as Pt)
+  const thought = part(
+    'thought',
+    `<path d="${poly(cloud)}" style="fill:${paper}"/>${pen(cloud, pressure(58, L * 0.9, 0.25))}` +
+      (
+        [
+          [0.66, -1.24, 0.07],
+          [0.88, -1.54, 0.11],
+        ] as const
+      )
+        .map(([x, y, r], i) => pen(ring(59 + i, x, y, r), even(L * 0.8)))
+        .join('') +
+      [0.95, 1.3, 1.65]
+        .map(x => `<circle class="pet-dot" cx="${x}" cy="-2.2" r="0.08" style="fill:${ink}"/>`)
+        .join(''),
+  )
+  // A parachute for coming down off the scroll rail, drawn as a kid would sew one: a paper canopy
+  // leaning off true over uneven scallops, a hatched patch, a knob on top, and four lines to the
+  // raised hands, the middle two crossed. It is drawn three times with different wobbles; pet.scss
+  // flicks between them so the line boils, and puffs the canopy as it fills.
+  const hem: Pt[] = (
+    [
+      [-1.78, -2.92],
+      [-0.66, -3.06],
+      [0.38, -2.98],
+      [1.6, -2.8],
+    ] as const
+  ).map(([x, y]) => [x, y])
+  const hands: Pt[] = [
+    [-0.56, -1.45],
+    [0.44, -1.45],
+  ]
+  const chuteFrame = (k: number) => {
+    const seed = 140 + k * 11
+    // The dome is two halves meeting at a crown off centre, so the crown is on the canopy line and
+    // the gores and knob can end on it. Each drawing nudges the crown so the silhouette boils too.
+    const crown: Pt = [0.12 + 0.05 * (k - 1), -4.6 + 0.04 * ((k * 2) % 3)]
+    const left = curve(hem[0], [-1.72, crown[1] - 0.02], crown, 11)
+    const right = curve(crown, [1.62, crown[1] + 0.08], hem[3], 11)
+    const dome = [...left, ...right.slice(1)]
+    const scallops = [3, 2, 1].flatMap(i =>
+      curve(
+        hem[i],
+        [(hem[i][0] + hem[i - 1][0]) / 2, Math.max(hem[i][1], hem[i - 1][1]) + 0.2 + 0.07 * i],
+        hem[i - 1],
+        7,
+      ).slice(1),
+    )
+    const canopy = hand([...dome, ...scallops], 0.08, 0.085, seed)
+    const gores = [left[8], right[3]]
+      .map((top, i) =>
+        pen(
+          hand(
+            curve(
+              hem[i + 1],
+              [hem[i + 1][0] * 0.82 + top[0] * 0.18 + (i ? 0.16 : -0.16), -3.8],
+              top,
+              9,
+            ),
+            0.08,
+            0.05,
+            seed + i,
+          ),
+          even(L * 0.65),
+        ),
+      )
+      .join('')
+    const patch = hand(rounded(-0.98, -3.72, 0.44, 0.36, 0.07), 0.04, 0.012, seed + 3)
+    const hatch = [-0.1, 0.04, 0.18]
+      .map(d =>
+        pen(
+          densify(
+            [
+              [-1.12 + d, -3.6],
+              [-0.98 + d, -3.84],
+            ],
+            0.05,
+          ),
+          even(L * 0.45),
+        ),
+      )
+      .join('')
+    const knob = ring(seed + 4, crown[0] + 0.02, crown[1] - 0.15, 0.13)
+    // Outer lines to their own hands; the middle two cross on the way down.
+    const lines = (
+      [
+        [hem[0], hands[0], -0.08],
+        [hem[1], hands[1], 0.06],
+        [hem[2], hands[0], -0.06],
+        [hem[3], hands[1], 0.1],
+      ] as const
+    )
+      .map(([a, b, bow], i) =>
+        pen(
+          hand(
+            curve(a, [(a[0] + b[0]) / 2 + bow, (a[1] + b[1]) / 2], b, 10),
+            0.08,
+            0.04,
+            seed + 5 + i,
+          ),
+          even(L * 0.55),
+        ),
+      )
+      .join('')
+    return `<g class="pet-canopy-frame"><path d="${poly(canopy)}" style="fill:${paper}"/>${pen(canopy, pressure(seed + 9, L, 0.3))}${gores}<path d="${poly(patch)}" style="fill:${paper}"/>${pen(patch, even(L * 0.55))}${hatch}<path d="${poly(knob)}" style="fill:${paper}"/>${pen(knob, even(L * 0.6))}${lines}</g>`
+  }
+  const chute = part('chute', `<g class="pet-canopy">${[0, 1, 2].map(chuteFrame).join('')}</g>`)
   const speed = part(
     'speed',
     (
@@ -423,5 +531,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK)
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${legs}${speed}<g class="pet-body">${body}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${arms}${grip}${pole}${laptop}</g>${sweat}${dots}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${body}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
 }

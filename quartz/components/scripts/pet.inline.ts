@@ -1,4 +1,5 @@
-import { petSvg } from '../../util/mascot'
+import { hand, petSvg, pressure, stroke } from '../../util/mascot'
+import { readPetSpot, writePetSpot } from '../../util/pet-spot'
 
 // The garden's pet: the pen-drawn mascot, living on the page's edges. It perches on the nearest box
 // it can find (stands or sits with legs dangling on a top edge, hangs from a bottom edge) and stays
@@ -21,16 +22,20 @@ type State =
   | 'cheer'
   | 'swim'
   | 'slide'
+  | 'walk'
+  | 'chute'
+  | 'think'
 type Kind = 'stand' | 'sit' | 'hang' | 'floor'
 type Point = { x: number; y: number }
 // An edge the pet holds: `t` is where its centre sits along the box's width, 0 to 1. The floor kind
 // has no box: the pet stands on its own pen line at the bottom of the viewport, the fallback when no
 // box nearby has an edge to hold.
-type Perch = { el: Element | null; kind: Kind; t: number }
+// `foot`, in document coordinates, pins a perch that is a point rather than a box edge: a spot on
+// the home page's walking trail.
+type Perch = { el: Element | null; kind: Kind; t: number; foot?: Point }
 type Edge = Perch & { at: Point; score: number }
 
 const petsEnabledKey = 'garden:pets-enabled:v1'
-const positionKey = 'garden:pet-position:v2'
 const hydrationReminderIntervalMs = 45 * 60 * 1000
 const hydrationReminderVisibleMs = 22 * 1000
 
@@ -70,6 +75,11 @@ let hop: Animation | null = null
 let pointer: Point | null = null
 let lastPointer: { x: number; y: number; t: number } | null = null
 let lastMove = 0
+// What to do once the next move lands, if anything; moveTo takes it for that move alone.
+let afterMove: (() => void) | null = null
+// When the pet last got up and wandered off on its own: it starts its quiet over from there, so a
+// stroll closes the laptop until it settles again.
+let settled = 0
 let face = 1
 let hovering = false
 let reminding = false
@@ -114,7 +124,7 @@ const state = (now: number): State => {
   if (hovering) return 'happy'
   if (reminding) return 'wave'
   if (perch?.kind === 'hang') return 'idle'
-  const quiet = now - lastMove
+  const quiet = now - Math.max(lastMove, settled)
   if (quiet > workAfterMs) return 'work'
   if (quiet > waitAfterMs) return 'wait'
   return 'idle'
@@ -140,7 +150,7 @@ const play = (next: State, ms: number) => {
 // Re-renders when the pointer has been quiet long enough for the pet to fidget, then to work.
 const armQuietTimer = () => {
   window.clearTimeout(stateTimer)
-  const quiet = performance.now() - lastMove
+  const quiet = performance.now() - Math.max(lastMove, settled)
   const due = quiet < waitAfterMs ? waitAfterMs : quiet < workAfterMs ? workAfterMs : null
   if (due === null) return
   stateTimer = window.setTimeout(
@@ -221,9 +231,20 @@ function edgesNear(anchor: Point, avoid: Element | null): Edge[] {
     const lo = clamp(rect.left + width * 0.3, minX, maxX)
     const hi = clamp(rect.right - width * 0.3, minX, maxX)
     if (hi < lo) continue
-    const x = clamp(anchor.x, lo, hi)
-    const t = (x - rect.left) / rect.width
+    // A sitter takes the corner nearer the anchor with its legs over the box's side, and a hanger
+    // hangs off the corner by one hand, so neither dangles over what the box holds.
+    const side = anchor.x > (rect.left + rect.right) / 2 ? 1 : -1
+    const corner = (off: number) => {
+      const out = side > 0 ? rect.right + off * unit : rect.left - off * unit
+      if (out >= minX && out <= maxX) return out
+      const other = side > 0 ? rect.left - off * unit : rect.right + off * unit
+      return other >= minX && other <= maxX ? other : null
+    }
     const push = (kind: Kind, y: number, weight: number) => {
+      const x =
+        kind === 'sit' ? corner(0.36) : kind === 'hang' ? corner(0.1) : clamp(anchor.x, lo, hi)
+      if (x === null) return
+      const t = (x - rect.left) / rect.width
       const y0 = y - (edgeY[kind] - viewTop) * unit
       if (y0 < margin || y0 + h > vh - margin) return
       const score =
@@ -241,20 +262,105 @@ function edgesNear(anchor: Point, avoid: Element | null): Edge[] {
   return edges.sort((a, b) => a.score - b.score)
 }
 
-// The first edge that is actually in view at the point the pet would hold and moves with the page.
-function pickEdge(anchor: Point, avoid: Element | null): Edge | null {
-  for (const edge of edgesNear(anchor, avoid).slice(0, 12)) {
-    const probe = edge.kind === 'hang' ? edge.at.y - 3 : edge.at.y + 3
-    const hit = document.elementsFromPoint(edge.at.x, probe).find(e => !root?.contains(e))
-    if (!hit || !(edge.el === hit || edge.el!.contains(hit))) continue
-    if (!inFlow(edge.el!)) continue
-    return edge
+// Keep the pet's whole SVG frame clear of text, including space for its tilt and idle poses.
+const coversText = (edge: Edge) => {
+  const left = edge.at.x - width / 2 - 2
+  const right = edge.at.x + width / 2 + 2
+  const top = edge.at.y - (edgeY[edge.kind] - viewTop) * unit - 2
+  const bottom = top + height() + 4
+  const intersects = (rect: DOMRect) =>
+    rect.left < right && rect.right > left && rect.top < bottom && rect.bottom > top
+  const nodes = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+    {
+      acceptNode: node => {
+        if (root?.contains(node)) return NodeFilter.FILTER_REJECT
+        if (node instanceof Element) {
+          if (node.matches('script, style')) return NodeFilter.FILTER_REJECT
+          const style = getComputedStyle(node)
+          if (style.display === 'none' || style.visibility === 'hidden')
+            return NodeFilter.FILTER_REJECT
+          const rect = node.getBoundingClientRect()
+          if (rect.width && rect.height && !intersects(rect)) return NodeFilter.FILTER_REJECT
+          return NodeFilter.FILTER_SKIP
+        }
+        return node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+      },
+    },
+  )
+  const range = document.createRange()
+  for (let node = nodes.nextNode(); node; node = nodes.nextNode()) {
+    range.selectNodeContents(node)
+    for (const rect of range.getClientRects()) if (intersects(rect)) return true
   }
-  return null
+  return false
+}
+
+// Probes run with the pet hidden, so its own drawing never counts as the page's.
+function unseen<T>(probe: () => T): T {
+  if (root) root.style.visibility = 'hidden'
+  try {
+    return probe()
+  } finally {
+    if (root) root.style.visibility = ''
+  }
+}
+
+// The floor, too, keeps off text: a client point where the pet could stand on its own line.
+const floorStep = 16
+const floorY = () => window.innerHeight - margin - (viewBottom - edgeY.floor) * unit
+const floorClear = (x: number, y = floorY()) =>
+  !coversText({ el: null, kind: 'floor', t: 0, at: { x, y }, score: 0 })
+
+// Scan out both ways, then move up when a line of text blocks the whole floor.
+const floorNear = (x: number): Perch | null =>
+  unseen<Perch | null>(() => {
+    const lo = margin + width / 2
+    const hi = window.innerWidth - margin - width / 2
+    const start = clamp(x, lo, hi)
+    const bottom = floorY()
+    const top = margin + (edgeY.floor - viewTop) * unit
+    for (let y = bottom; y >= top; y -= floorStep)
+      for (let k = 0; k * floorStep <= hi - lo; k++)
+        for (const c of k ? [start + k * floorStep, start - k * floorStep] : [start])
+          if (c >= lo && c <= hi && floorClear(c, y))
+            return {
+              el: null,
+              kind: 'floor',
+              t: c / window.innerWidth,
+              foot: y === bottom ? undefined : { x: c + window.scrollX, y: y + window.scrollY },
+            }
+    return null
+  })
+
+// How far along the floor from `from` toward `to` the pet can walk with text clear underfoot.
+const floorReach = (from: number, to: number) =>
+  unseen(() => {
+    const dir = Math.sign(to - from)
+    let x = from
+    while (Math.abs(to - x) > floorStep && floorClear(x + dir * floorStep)) x += dir * floorStep
+    return Math.abs(to - x) <= floorStep && floorClear(to) ? to : x
+  })
+
+// The first edge that is actually in view at the point the pet would hold, moves with the page,
+// and leaves the text around it clear.
+function pickEdge(anchor: Point, avoid: Element | null): Edge | null {
+  return unseen(() => {
+    for (const edge of edgesNear(anchor, avoid).slice(0, 20)) {
+      const probe = edge.kind === 'hang' ? edge.at.y - 3 : edge.at.y + 3
+      const hit = document.elementsFromPoint(edge.at.x, probe).find(e => !root?.contains(e))
+      if (edge.kind === 'stand' && (!hit || !(edge.el === hit || edge.el!.contains(hit)))) continue
+      if (!inFlow(edge.el!) || coversText(edge)) continue
+      return edge
+    }
+    return null
+  })
 }
 
 // The document position (top-left of the pet) that puts its held edge on `perch`.
 function placeOn(p: Perch): Point {
+  if (p.foot) return { x: p.foot.x - width / 2, y: p.foot.y - (edgeY[p.kind] - viewTop) * unit }
   let x: number
   let y: number
   if (p.el) {
@@ -272,10 +378,7 @@ function placeOn(p: Perch): Point {
   }
 }
 
-const savePosition = () => {
-  const c = center()
-  sessionStorage.setItem(positionKey, `${Math.round(c.x)},${Math.round(c.y)}`)
-}
+const savePosition = () => writePetSpot(center())
 
 const observePerch = () => {
   resizeObserver?.disconnect()
@@ -302,25 +405,270 @@ function reanchor() {
   render()
 }
 
+// Left alone, the pet gets up now and then, laptop or not: mostly a stroll along its own edge, a
+// sitter stands up first, and sometimes it hops off to another edge nearby.
+const wander = () => {
+  const now = performance.now()
+  const s = state(now)
+  const free = s === 'idle' || s === 'wait' || s === 'work'
+  if (!free || now - lastMove < 3000 || hop || carry || reducedMotion()) return
+  settled = now
+  armQuietTimer()
+  const note = Math.random() < 0.4 ? sidenoteInView() : null
+  if (note) return readSidenote(note)
+  if (Math.random() < 0.6 && walkTrail()) return
+  if (
+    !perch ||
+    perch.kind === 'hang' ||
+    (perch.kind === 'floor' && perch.foot) ||
+    Math.random() < 0.25
+  )
+    return relocate(center(), perch?.el ?? null)
+  if (perch.kind === 'sit') return moveTo({ ...perch, kind: 'stand' })
+  const span = perch.el ? boxOf(perch.el).width : window.innerWidth
+  let dir = Math.random() < 0.5 ? -1 : 1
+  const step = (70 + Math.random() * 170) / Math.max(span, 1)
+  if (perch.t + dir * step > 0.96 || perch.t + dir * step < 0.04) dir = -dir
+  let t = clamp(perch.t + dir * step, 0.04, 0.96)
+  // On the floor it stops short of the first stretch that would put it over text.
+  if (!perch.el) {
+    const here = center().x
+    if (!unseen(() => floorClear(here))) return relocate(center(), null)
+    t = floorReach(here, t * span) / span
+  }
+  if (Math.abs(t - perch.t) * span < 30) return
+  moveTo({ ...perch, t }, 'stroll')
+}
+
+// A sidenote out in the margin and well inside the view, for the pet to go and read.
+const sidenoteInView = () =>
+  Array.from(
+    document.querySelectorAll('.sidenote-content:is(.sidenote-left, .sidenote-right)'),
+  ).find(el => {
+    const r = el.getBoundingClientRect()
+    return r.width > 60 && r.top > 80 && r.top < window.innerHeight - 120 && inFlow(el)
+  }) ?? null
+
+// Climbs onto the sidenote, reads it with a thought going, then gets straight back to the laptop.
+const readSidenote = (note: Element) => {
+  afterMove = () => {
+    const readMs = 4200 + Math.random() * 2400
+    // Its quiet is set to have run out just as it finishes reading, so the laptop comes back out.
+    settled = performance.now() + readMs - workAfterMs - 200
+    play('think', readMs)
+    armQuietTimer()
+  }
+  moveTo({ el: note, kind: 'stand', t: 0.3 + Math.random() * 0.4 })
+}
+
+// The home page's walking trail, when it is showing: points every 10 user units along each
+// drawn route, kept until the route is redrawn.
+const trailPoints = new WeakMap<SVGPathElement, { d: string; pts: DOMPoint[] }>()
+const trailRoutes = () =>
+  Array.from(
+    document.querySelectorAll<SVGPathElement>('.homepage-trail-scene:not([hidden]) .trail-path'),
+  ).flatMap(path => {
+    const d = path.getAttribute('d')
+    if (!d) return []
+    let hit = trailPoints.get(path)
+    if (hit?.d !== d) {
+      const length = path.getTotalLength()
+      const pts = Array.from({ length: Math.floor(length / 10) + 1 }, (_, k) =>
+        path.getPointAtLength(k * 10),
+      )
+      hit = { d, pts }
+      trailPoints.set(path, hit)
+    }
+    const m = path.getScreenCTM()
+    if (!m) return []
+    // Feet in document coordinates.
+    const feet = hit.pts.map(p => {
+      const c = p.matrixTransform(m)
+      return { x: c.x + window.scrollX, y: c.y + window.scrollY }
+    })
+    return [{ path, feet }]
+  })
+
+// Takes a walk along the trail: onto the nearest point of a route in view, then 150–400 px along
+// it at a stroll, all in one animation of the points it passes.
+const walkTrail = () => {
+  const c = center()
+  const here = { x: c.x + window.scrollX, y: c.y + window.scrollY }
+  const inView = (p: Point) => {
+    const y = p.y - window.scrollY
+    return y > 60 && y < window.innerHeight - 40 && p.x > margin + width / 2
+  }
+  let best: { path: SVGPathElement; feet: Point[]; k: number; d: number } | null = null
+  for (const { path, feet } of trailRoutes())
+    feet.forEach((p, k) => {
+      const d = Math.hypot(p.x - here.x, p.y - here.y)
+      if (inView(p) && (!best || d < best.d)) best = { path, feet, k, d }
+    })
+  if (!best) return false
+  const { path, feet, k } = best as { path: SVGPathElement; feet: Point[]; k: number }
+  let dir = Math.random() < 0.5 ? -1 : 1
+  const steps = 15 + Math.floor(Math.random() * 25)
+  const run = (sign: number) => {
+    const out: Point[] = []
+    for (let j = k; j >= 0 && j < feet.length && out.length <= steps && inView(feet[j]); j += sign)
+      out.push(feet[j])
+    return out
+  }
+  let route = run(dir)
+  if (route.length < 6) route = run((dir = -dir))
+  if (route.length < 6) return false
+  const walk = () => follow(route, path)
+  const start = route[0]
+  if (perch?.foot && Math.hypot(perch.foot.x - start.x, perch.foot.y - start.y) < 12) walk()
+  else {
+    afterMove = walk
+    moveTo({ el: path, kind: 'stand', t: 0, foot: start })
+  }
+  return true
+}
+
+// Walks a run of trail points at a stroll, ending on the last of them.
+function follow(feet: Point[], el: Element) {
+  if (!root) return
+  hop?.cancel()
+  hop = null
+  const from = feet[0]
+  const to = feet[feet.length - 1]
+  perch = { el, kind: 'stand', t: 0, foot: to }
+  doc = placeOn(perch)
+  observePerch()
+  if (Math.abs(to.x - from.x) > 2) face = to.x > from.x ? -1 : 1
+  let length = 0
+  for (let k = 1; k < feet.length; k++)
+    length += Math.hypot(feet[k].x - feet[k - 1].x, feet[k].y - feet[k - 1].y)
+  override = { state: 'walk', until: Infinity }
+  render()
+  const anim = root.animate(
+    feet.map(foot => ({ transform: transformFor(placeOn({ el, kind: 'stand', t: 0, foot })) })),
+    { duration: (length / 55) * 1000, easing: 'linear' },
+  )
+  hop = anim
+  anim.onfinish = () => {
+    if (hop !== anim || !root || !doc) return
+    root.style.transform = transformFor(doc)
+    anim.cancel()
+    hop = null
+    override = null
+    settled = performance.now()
+    savePosition()
+    render()
+    armQuietTimer()
+    scheduleWander()
+  }
+}
+
 const scheduleWander = () => {
   window.clearTimeout(wanderTimer)
   wanderTimer = window.setTimeout(
     () => {
-      const now = performance.now()
-      const s = state(now)
-      if ((s === 'idle' || s === 'wait') && now - lastMove > 3000 && !hop && !carry)
-        relocate(center(), perch?.el ?? null)
+      wander()
       scheduleWander()
     },
-    30000 + Math.random() * 30000,
+    12000 + Math.random() * 20000,
   )
 }
 
-// Moves the pet onto `next`: a walk along the same edge, an arcing hop to a nearby one, a swim on a
-// gentle curve after scrolling, or a drop from above when the old spot is far away or out of view.
-// One Web Animation on the root each time.
-function moveTo(next: Perch, swim = false) {
+// Moves the pet onto `next`: a run or a stroll along the same edge, an arcing hop to a nearby one, a
+// swim on a gentle curve after scrolling, or a drop from above when the old spot is far away or out
+// of view. One Web Animation on the root each time.
+// Walking the floor, the pet inks its own ground as it goes: a pen line along its path, laid in
+// short pieces that appear as its feet reach them, hold while it passes, and fade out slowly behind
+// it. Pieces it never reached (the walk was cut short) are dropped.
+type Ground = { svg: SVGSVGElement; pieces: { anim: Animation; delay: number }[] }
+const grounds = new Set<Ground>()
+const groundPiece = 24
+const groundFadeMs = 2800
+
+function layGround(from: Point, to: Point, duration: number) {
   if (!root) return
+  // The pet's own ground line sits 1.44 units down; centres, not corners, walk the floor.
+  const y = to.y + (1.44 - viewTop) * unit
+  const x0 = from.x + width / 2
+  const x1 = to.x + width / 2
+  const span = Math.abs(x1 - x0)
+  if (span < groundPiece) return
+  const pad = 6
+  const left = Math.min(x0, x1) - pad
+  const ns = 'http://www.w3.org/2000/svg'
+  const el = document.createElementNS(ns, 'svg')
+  el.setAttribute('class', 'pet-ground')
+  el.setAttribute('aria-hidden', 'true')
+  el.setAttribute('viewBox', `${left} ${y - pad} ${span + 2 * pad} ${2 * pad}`)
+  Object.assign(el.style, {
+    position: 'absolute',
+    left: `${left}px`,
+    top: `${y - pad}px`,
+    width: `${span + 2 * pad}px`,
+    height: `${2 * pad}px`,
+    pointerEvents: 'none',
+    zIndex: 'var(--z-popover)',
+    overflow: 'visible',
+  })
+  // One hand-drawn line, cut into pieces in walking order; each piece keeps the whole line's pen
+  // pressure, so the joins don't bead.
+  const line = hand(
+    [
+      [x0, y],
+      [x1, y],
+    ],
+    4,
+    0.6,
+    Math.floor(Math.random() * 1e4),
+  )
+  const pen = pressure(Math.floor(Math.random() * 1e4), 0.064 * unit, 0.3)
+  const n = line.length - 1
+  const per = Math.max(2, Math.round((groundPiece / span) * n))
+  const speed = span / duration
+  // Held until the pet's own ground line (2.4 units wide) has passed it.
+  const hold = 500 + (2.4 * unit) / speed
+  const ground: Ground = { svg: el, pieces: [] }
+  for (let i = 0; i < n; i += per) {
+    const j = Math.min(n, i + per)
+    const g = document.createElementNS(ns, 'g')
+    g.setAttribute('style', 'opacity:0')
+    g.innerHTML = stroke(line.slice(i, j + 1), t => pen((i + t * (j - i)) / n), 'var(--dark)')
+    el.append(g)
+    const delay = (duration * i) / n
+    const total = hold + groundFadeMs
+    const anim = g.animate(
+      [
+        { opacity: 0 },
+        { opacity: 1, offset: 0.01 },
+        { opacity: 1, offset: hold / total },
+        { opacity: 0 },
+      ],
+      { duration: total, delay, fill: 'both', easing: 'linear' },
+    )
+    ground.pieces.push({ anim, delay })
+  }
+  root.before(el)
+  grounds.add(ground)
+  void Promise.all(ground.pieces.map(p => p.anim.finished))
+    .catch(() => {})
+    .finally(() => {
+      el.remove()
+      grounds.delete(ground)
+    })
+}
+
+// The walk was cut short: pieces the pet never reached never appear; the rest fade as planned.
+function stopGround() {
+  for (const ground of grounds)
+    for (const { anim, delay } of ground.pieces)
+      if ((Number(anim.currentTime) || 0) < delay) anim.cancel()
+}
+
+function moveTo(next: Perch, how: 'swim' | 'chute' | 'stroll' | null = null) {
+  const after = afterMove
+  afterMove = null
+  if (!root) return
+  root.hidden = false
+  stopGround()
   gaze = ''
   const target = placeOn(next)
   const from = doc
@@ -334,20 +682,41 @@ function moveTo(next: Perch, swim = false) {
   if (!from || reducedMotion()) {
     root.style.transform = end
     render()
+    after?.()
     return
   }
   const d = Math.hypot(target.x - from.x, target.y - from.y)
   if (d < 2) {
     root.style.transform = end
     render()
+    after?.()
     return
   }
+  // Coming off the rail, it floats down under a parachute to anything below it, and swims up to
+  // anything above.
+  const chute = how === 'chute' && target.y - from.y > 40
+  const swim = how === 'swim' || (how === 'chute' && !chute)
   const fromView = from.y - window.scrollY
   const offscreen = fromView + height() < 0 || fromView > window.innerHeight
   if (Math.abs(target.x - from.x) > 2) face = target.x > from.x ? -1 : 1
   let frames: Keyframe[]
   let duration: number
-  if (swim) {
+  if (chute) {
+    // Eased down and across, drifting side to side as it swings, the drift dying out as it lands.
+    const drift = Math.min(26, d * 0.08)
+    const ease = (u: number) => u * u * (3 - 2 * u)
+    frames = Array.from({ length: 25 }, (_, k) => {
+      const u = k / 24
+      const e = ease(u)
+      return {
+        transform: transformFor({
+          x: from.x + (target.x - from.x) * e + Math.sin(u * Math.PI * 2.5) * drift * (1 - u),
+          y: from.y + (target.y - from.y) * (0.15 * u + 0.85 * e),
+        }),
+      }
+    })
+    duration = clamp((d / 110) * 1000, 1400, 3400)
+  } else if (swim) {
     const bulge = Math.min(28, d * 0.12)
     const mid = {
       x: (from.x + target.x) / 2 - ((target.y - from.y) / d) * bulge,
@@ -367,7 +736,7 @@ function moveTo(next: Perch, swim = false) {
     duration = 420
   } else if (same && d < 360) {
     frames = [{ transform: transformFor(from) }, { transform: end }]
-    duration = clamp((d / 160) * 1000, 300, 2400)
+    duration = clamp((d / (how === 'stroll' ? 60 : 160)) * 1000, 300, 4800)
   } else {
     const peak = Math.min(180, 50 + d * 0.3)
     const mid = { x: (from.x + target.x) / 2, y: Math.min(from.y, target.y) - peak }
@@ -378,12 +747,14 @@ function moveTo(next: Perch, swim = false) {
     ]
     duration = clamp(320 + d * 0.45, 380, 900)
   }
-  const walking = !swim && frames.length === 2 && !offscreen && d <= 900
-  override = { state: swim ? 'swim' : walking ? 'run' : 'fly', until: Infinity }
+  const walking = !swim && !chute && frames.length === 2 && !offscreen && d <= 900
+  const pace = how === 'stroll' ? 'walk' : 'run'
+  if (walking && next.kind === 'floor') layGround(from, target, duration)
+  override = { state: chute ? 'chute' : swim ? 'swim' : walking ? pace : 'fly', until: Infinity }
   render()
   const anim = root.animate(frames, {
     duration,
-    easing: swim ? 'ease-in-out' : walking ? 'linear' : undefined,
+    easing: swim ? 'ease-in-out' : walking || chute ? 'linear' : undefined,
   })
   hop = anim
   anim.onfinish = () => {
@@ -396,13 +767,15 @@ function moveTo(next: Perch, swim = false) {
     if (walking) render()
     else play('land', 380)
     scheduleWander()
+    after?.()
   }
 }
 
-function relocate(anchor: Point, avoid: Element | null, swim = false) {
+function relocate(anchor: Point, avoid: Element | null, how: 'chute' | null = null) {
   if (!root) return
-  const edge = pickEdge(anchor, avoid)
-  moveTo(edge ?? { el: null, kind: 'floor', t: clamp(anchor.x / window.innerWidth, 0, 1) }, swim)
+  const next = pickEdge(anchor, avoid) ?? floorNear(anchor.x)
+  if (next) moveTo(next, how)
+  else root.hidden = true
 }
 
 // The rail mirrors a scroll thumb: the pole (x = 1.32 in pet units) sits on the viewport's right
@@ -429,6 +802,7 @@ function startCarry() {
   override = null
   perch = null
   resizeObserver?.disconnect()
+  stopGround()
   const rail = railFor()
   carry = rail
   root.style.setProperty('--pet-rail-from', `${rail.from.toFixed(1)}px`)
@@ -470,10 +844,12 @@ function endCarry() {
   root.classList.remove('is-carried')
   root.style.translate = ''
   root.style.transform = transformFor(doc)
-  relocate(center(), null, true)
+  relocate(center(), null, 'chute')
 }
 
-// Eyes drift toward the pointer, and the pet turns to face it once it is clearly to one side.
+// The eyes follow the pointer round, as lydia's bot does: they slide toward it along its direction,
+// easing back to centre as it comes close, and the body tips a few degrees its way. The pet turns
+// to face it once it is clearly to one side.
 const watch = () => {
   watchFrame = 0
   if (!root || !pointer || hop) return
@@ -481,15 +857,21 @@ const watch = () => {
   const dx = pointer.x - c.x
   const dy = pointer.y - c.y
   if (Math.abs(dx) > 40 && !carry) face = dx > 0 ? -1 : 1
-  const d = Math.max(Math.hypot(dx, dy), 80)
-  // Gaze snaps to a few positions, so most pointer moves change nothing and repaint nothing.
-  const look = `${face} ${(Math.round((face * 4 * dx) / d) * 0.03).toFixed(2)} ${(Math.round((3 * dy) / d) * 0.027).toFixed(3)}`
+  const r = Math.hypot(dx, dy)
+  const k = Math.min(1, r / (3 * unit)) / Math.max(r, 1)
+  // In the pet's own frame, which is mirrored when it faces right.
+  const ux = face * dx * k
+  const uy = dy * k
+  // Hundredths of a body radius (about a fifth of a pixel), so a still pointer repaints nothing.
+  // The eyes sit high and to one side, so they travel less upward, where the outline is nearest.
+  const look = `${face} ${(ux * 0.18).toFixed(2)} ${(uy * (uy < 0 ? 0.11 : 0.16)).toFixed(2)} ${carry ? 0 : (ux * 7).toFixed(1)}`
   if (look === gaze) return
   gaze = look
-  const [f, lx, ly] = look.split(' ')
+  const [f, lx, ly, tilt] = look.split(' ')
   root.style.setProperty('--pet-face', f)
   root.style.setProperty('--pet-lx', lx)
   root.style.setProperty('--pet-ly', ly)
+  root.style.setProperty('--pet-tilt', tilt)
 }
 
 const onDwell = () => {
@@ -546,8 +928,8 @@ const onPointerDown = (event: PointerEvent) => {
 // Once a resize (or, with reduced motion, a scroll) settles, an edge that left the view sends the
 // pet to one in view.
 const onSettle = () => {
-  if (!root || !doc || hop) return
-  const y = doc.y - window.scrollY
+  if (!root || hop) return
+  const y = doc ? doc.y - window.scrollY : Infinity
   if (y >= -margin && y + height() <= window.innerHeight + margin) {
     reanchor()
     return
@@ -617,6 +999,8 @@ const despawn = () => {
   reminderTimer = undefined
   resizeObserver?.disconnect()
   hideReminder()
+  for (const ground of grounds) ground.svg.remove()
+  grounds.clear()
   root?.remove()
   root = null
   svg = null
@@ -627,20 +1011,18 @@ const despawn = () => {
 const syncPets = () => {
   const enabled = readPetsEnabled()
   document.body.dataset.pets = enabled ? 'on' : 'off'
-  if (!enabled) {
+  // The 404 scene paints its own pet into the ruin, starting from where this one stood.
+  if (!enabled || document.querySelector('.nf-scene')) {
     despawn()
     return
   }
   // The SPA morphs <body> on navigation, which drops the pet and the box it held. It comes back
   // near where it was on screen and drops onto the nearest edge of the new page.
   if (!root || !root.isConnected) {
-    const [x, y] = (sessionStorage.getItem(positionKey) ?? '').split(',').map(Number)
-    const before =
-      (doc || carry) && !hop
-        ? center()
-        : Number.isFinite(x) && Number.isFinite(y) && sessionStorage.getItem(positionKey)
-          ? { x, y }
-          : { x: window.innerWidth * 0.8, y: window.innerHeight * 0.7 }
+    const before = ((doc || carry) && !hop ? center() : readPetSpot()) ?? {
+      x: window.innerWidth * 0.8,
+      y: window.innerHeight * 0.7,
+    }
     hop?.cancel()
     hop = null
     doc = null
