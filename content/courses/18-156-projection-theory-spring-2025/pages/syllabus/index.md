@@ -28,6 +28,7 @@ Lectures: 2 sessions/week, 1.5 hours/session
 ### description
 
 Projection theory studies how a set \\(X\\) behaves under different orthogonal projections. Questions of this type aren't usually emphasized in the graduate analysis curriculum, but they come up in many areas of math, including harmonic analysis, analytic number theory, additive combinatorics, and homogeneous dynamics. It is an especially good time to study projection theory, because there have been some striking recent applications, and because one of the central problems of the field was very recently solved. At the same time, there are many interesting open problems which I am excited to discuss and reflect on.
+
 The goals of the course are as follows:
 
 - Learn the classical techniques and results of projection theory (with full details).
