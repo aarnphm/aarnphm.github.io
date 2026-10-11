@@ -1,19 +1,35 @@
 ---
-date: '2026-06-05'
-description: mit 14.12 problem sets
-id: mit-14-12-fall-2025-collection-resources-problem-sets
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:35 GMT-04:00
+title: 'problem sets'
+description: 'Solutions are not available for these problem sets.'
+id: 'mit-14-12-fall-2025-collection-resources-problem-sets'
 tags:
-  - course
-  - mit
-  - ocw
-  - social science
-  - economics
-  - game-theory
-title: problem sets
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'social science'
+  - 'economics'
+  - 'game theory'
+resource:
+  {
+    kind: 'collection',
+    type: 'Problem Sets',
+    items:
+      [
+        'mit14_12_f25_problemset1_pdf',
+        'mit14_12_f25_problemset2_pdf',
+        'mit14_12_f25_problemset3_pdf',
+        'mit14_12_f25_problemset4_pdf',
+        'mit14_12_f25_problemset5_pdf',
+        'mit14_12_f25_problemset6_pdf',
+        'mit14_12_f25_problemset7_pdf',
+        'mit14_12_f25_problemset8_pdf',
+        'mit14_12_f25_problemset9_pdf',
+        'mit14_12_f25_problemset10_pdf',
+      ],
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/14-12-economic-applications-of-game-theory-fall-2025/|mit 14.12]]

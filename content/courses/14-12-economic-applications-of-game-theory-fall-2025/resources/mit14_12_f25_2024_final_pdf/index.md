@@ -1,25 +1,22 @@
 ---
-date: '2026-06-05'
-description: mit 14.12 2024 final exam
-id: mit-14-12-fall-2025-resource-resources-mit14-12-f25-2024-final-pdf
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:40 GMT-04:00
+title: '2024 final exam'
+description: 'mit 14.12 2024 final exam'
+id: 'mit-14-12-fall-2025-resource-resources-mit14-12-f25-2024-final-pdf'
 tags:
-  - course
-  - mit
-  - ocw
-  - social science
-  - economics
-  - game-theory
-  - exams
-title: 2024 final exam
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'social science'
+  - 'economics'
+  - 'game theory'
+  - 'exams'
+resource: { kind: 'exam', file: 'static_resources/mit14_12_f25_2024_final.pdf', bytes: 202507 }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/14-12-economic-applications-of-game-theory-fall-2025/|mit 14.12]]
-
-![[courses/14-12-economic-applications-of-game-theory-fall-2025/static_resources/mit14_12_f25_2024_final.pdf]]
 
 ## metadata
 

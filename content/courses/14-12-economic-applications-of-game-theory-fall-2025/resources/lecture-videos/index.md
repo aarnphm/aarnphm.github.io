@@ -1,19 +1,50 @@
 ---
-date: '2026-06-05'
-description: mit 14.12 lecture videos
-id: mit-14-12-fall-2025-collection-resources-lecture-videos
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:38 GMT-04:00
+title: 'lecture videos'
+description: 'mit 14.12 lecture videos'
+id: 'mit-14-12-fall-2025-collection-resources-lecture-videos'
 tags:
-  - course
-  - mit
-  - ocw
-  - social science
-  - economics
-  - game-theory
-title: lecture videos
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'social science'
+  - 'economics'
+  - 'game theory'
+resource:
+  {
+    kind: 'collection',
+    type: 'Lecture Videos',
+    items:
+      [
+        'mit14_12f25_lec01_1080p_mp4',
+        'mit14_12f25_lec02_1080p_mp4',
+        'mit14_12f25_lec03_1080p_mp4',
+        'mit14_12f25_lec04_1080p_mp4',
+        'mit14_12f25_lec05_1080p_mp4',
+        'mit14_12f25_lec06_1080p_mp4',
+        'mit14_12f25_lec07_1080p_mp4',
+        'mit14_12f25_lec08_1080p_mp4',
+        'mit14_12f25_lec09_1080p_mp4',
+        'mit14_12f25_lec10_1080p_mp4',
+        'mit14_12f25_lec11_1080p_mp4',
+        'mit14_12f25_lec12_1080p_mp4',
+        'mit14_12f25_lec13_1080p_mp4',
+        'mit14_12f25_lec14_1080p_mp4',
+        'mit14_12f25_lec15_1080p_mp4',
+        'mit14_12f25_lec16_1080p_mp4',
+        'mit14_12f25_lec17_1080p_mp4',
+        'mit14_12f25_lec18_1080p_mp4',
+        'mit14_12f25_lec19_1080p_mp4',
+        'mit14_12f25_lec20_1080p_mp4',
+        'mit14_12f25_lec21_1080p_mp4',
+        'mit14_12f25_lec22_1080p_mp4',
+        'mit14_12f25_lec23_1080p_mp4',
+        'mit14_12f25_lec24_1080p_mp4',
+        'mit14_12f25_lec25_1080p_mp4',
+      ],
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/14-12-economic-applications-of-game-theory-fall-2025/|mit 14.12]]
