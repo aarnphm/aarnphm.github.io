@@ -6,6 +6,9 @@ ul.section-ul {
   padding-left: 0;
   margin-block-start: 0;
   border: 1px solid var(--dark);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) fit-content(35%) max-content;
+  column-gap: 0.5rem;
 
   &:not(:has(> .section-li:not([hidden]))) {
     display: none;
@@ -13,9 +16,16 @@ ul.section-ul {
 }
 
 li.section-li {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   padding: 0;
   background: var(--light);
   transition: background-color 0.2s ease;
+
+  &[hidden] {
+    display: none;
+  }
 
   &:has(~ .section-li:not([hidden])) {
     border-bottom: 1px solid var(--dark);
@@ -33,12 +43,10 @@ li.section-li {
     );
   }
 
-  &[data-tags*='"folder"'] .meta {
-    visibility: hidden;
-  }
-
   .note-link {
-    display: block;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
     padding: 0.4rem 0.75rem;
     text-decoration: none;
     transition: color 0.2s ease;
@@ -56,19 +64,27 @@ li.section-li {
     }
 
     & > .note-grid {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
       align-items: baseline;
-      gap: 0.25rem 0.5rem;
+      row-gap: 0.25rem;
 
       .desc {
-        flex-basis: 100%;
+        grid-column: 1;
         min-width: 0;
         overflow-wrap: anywhere;
         text-wrap: pretty;
+
+        &:only-child {
+          grid-column: 1 / -1;
+        }
       }
 
       & > .tag-highlights {
+        grid-column: 2;
+        min-width: 0;
+        justify-self: end;
         display: flex;
         gap: 0.25rem;
         margin-block: 0;
@@ -95,6 +111,8 @@ li.section-li {
       }
 
       & > .meta {
+        grid-column: 3;
+        justify-self: end;
         color: var(--darkgray);
         font-family: var(--codeFont);
         font-variant-numeric: tabular-nums;
