@@ -15,7 +15,6 @@
 .course-study-toggle,
 .course-desk-toggle {
   min-height: var(--course-control-height, 1.75rem);
-  padding: 0 var(--space-2);
   font: inherit;
   font-family: var(--codeFont);
   font-size: var(--text-meta);
@@ -23,14 +22,8 @@
   text-transform: lowercase;
   color: var(--dark);
   background: transparent;
-  border: 1px solid var(--course-line, var(--gray));
   border-radius: 0;
   cursor: pointer;
-
-  &[aria-pressed='true'] {
-    background: var(--course-selected, var(--light));
-    border-color: var(--dark);
-  }
 
   &:focus-visible {
     outline: 2px solid var(--dark);
@@ -39,6 +32,34 @@
 
   &[aria-busy='true'] {
     cursor: progress;
+  }
+}
+
+.course-study-toggle {
+  padding: 0;
+  border: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--course-line, var(--gray));
+  text-underline-offset: 0.2em;
+
+  &[aria-pressed='true'] {
+    text-decoration-color: var(--dark);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration-color: var(--dark);
+    }
+  }
+}
+
+.course-desk-toggle {
+  padding: 0 var(--space-2);
+  border: 1px solid var(--course-line, var(--gray));
+
+  &[aria-pressed='true'] {
+    background: var(--course-selected, var(--light));
+    border-color: var(--dark);
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -164,7 +185,7 @@
 
   .course-desk-states {
     display: inline-flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--space-1);
   }
 

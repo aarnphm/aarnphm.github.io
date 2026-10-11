@@ -26,6 +26,7 @@ import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { concatenateResources } from '../util/resources'
 import { CoursesCrumb } from './CourseResource'
+import { courseStatements, statementsSlug } from './CourseStatements'
 import { StudySlots } from './CourseStudy'
 // @ts-ignore
 import script from './scripts/course.inline'
@@ -407,6 +408,20 @@ export default (() => {
       ...links.resources,
       { title: 'all resources', slug: `courses/${view.dir}/resources/index` as FullSlug },
     ]
+    // the authored study pages: the dated log and the statement index
+    const statementsPage = allFiles.find(file => file.slug === statementsSlug(view.dir))
+    const railStudy: CourseLink[] = [
+      ...(view.log ? [{ title: 'study log', slug: view.log.slug as FullSlug, count: read }] : []),
+      ...(statementsPage
+        ? [
+            {
+              title: 'statements',
+              slug: statementsPage.slug as FullSlug,
+              count: courseStatements(view).length,
+            },
+          ]
+        : []),
+    ]
     const frontmatter = fileData.frontmatter
     // OCW descriptions carry markdown emphasis; the masthead prints them as plain text
     const description = str(frontmatter?.description).replace(
@@ -455,6 +470,12 @@ export default (() => {
               <section>
                 <h2>pages</h2>
                 {railList(from, links.pages)}
+              </section>
+            ) : null}
+            {railStudy.length > 0 ? (
+              <section>
+                <h2>study</h2>
+                {railList(from, railStudy)}
               </section>
             ) : null}
             <section>

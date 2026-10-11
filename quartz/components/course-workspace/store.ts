@@ -1,4 +1,10 @@
-import type { PdfMarkKind, PdfQuote } from '../../util/pdf-marks'
+import {
+  PDF_PASSAGE_TEXT_LIMIT,
+  type PdfMark,
+  type PdfMarkInput,
+  type PdfMarkKind,
+  type PdfQuote,
+} from '../../util/pdf-marks'
 import { isRecord } from '../../util/type-guards'
 
 export interface Scratchpad {
@@ -129,6 +135,46 @@ export function saveNote(slug: string, draft: LectureNote): LectureNote {
   const saved = { ...draft, revision: draft.revision + 1 }
   localStorage.setItem(key, JSON.stringify(saved))
   return saved
+}
+
+export function removeNote(slug: string, id: string): void {
+  localStorage.removeItem(`${storagePrefix(slug)}note:${id}`)
+}
+
+/** A passage mark from the marks API as a workspace note; marks on PDF pages are skipped. */
+export function noteFromMark(mark: PdfMark): LectureNote | null {
+  if (mark.target.type !== 'passage') return null
+  return {
+    id: mark.id,
+    kind: mark.kind,
+    quote: mark.target.quote,
+    quoteText: mark.target.text ?? mark.target.quote?.exact,
+    heading: mark.target.heading,
+    body: mark.body,
+    revision: mark.revision,
+    createdAt: mark.createdAt,
+    deletedAt: null,
+  }
+}
+
+/** The PUT body for a note: `src` is the unit slug, notes stay private. */
+export function markInputOf(src: string, doc: string, note: LectureNote): PdfMarkInput {
+  const text = note.quoteText?.slice(0, PDF_PASSAGE_TEXT_LIMIT)
+  return {
+    src,
+    doc,
+    revision: note.revision,
+    kind: note.kind,
+    target: {
+      type: 'passage',
+      page: 0,
+      quote: note.quote,
+      heading: note.heading,
+      ...(note.quote && text ? { text } : {}),
+    },
+    body: note.body,
+    visibility: 'private',
+  }
 }
 
 export function markdownExport(

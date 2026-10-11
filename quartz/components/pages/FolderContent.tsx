@@ -27,9 +27,11 @@ import {
 import { pdfTitlesFor } from '../../util/pdf-titles'
 import { concatenateResources } from '../../util/resources'
 import { parseWikilink } from '../../util/wikilinks'
+import { CourseCalendar, courseCalendarScript } from '../CourseCalendar'
 import CourseHomeConstructor from '../CourseHome'
 import CourseResourceConstructor, { CoursePageHead, coursePageOf } from '../CourseResource'
 import CoursesIndexConstructor from '../CoursesIndex'
+import CourseStatementsConstructor from '../CourseStatements'
 import CourseStudyLogConstructor from '../CourseStudy'
 import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from '../Evergreen'
 import PageListConstructor, {
@@ -103,6 +105,7 @@ const Layout = {
   courses: 'COURSES',
   resource: 'RESOURCE',
   studyLog: 'STUDY-LOG',
+  statements: 'STATEMENTS',
 } as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
@@ -338,6 +341,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const CoursesIndex = CoursesIndexConstructor()
   const CourseResource = CourseResourceConstructor()
   const CourseStudyLog = CourseStudyLogConstructor()
+  const CourseStatements = CourseStatementsConstructor()
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
@@ -506,7 +510,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       return (
         <article class="folder-layout--article course-page popover-hint">
           <CoursePageHead {...props} />
-          {content}
+          <CourseCalendar props={props}>{content}</CourseCalendar>
         </article>
       )
     }
@@ -572,6 +576,10 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       case Layout.studyLog:
         return <CourseStudyLog {...props} />
 
+      // `statements/index.md`: theorems, lemmas and definitions of a course with their cards
+      case Layout.statements:
+        return <CourseStatements {...props} />
+
       case Layout.lovp:
         return (
           <div class="folder-layout folder-layout--l" data-pagelist>
@@ -609,6 +617,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     CourseHome.css,
     CourseResource.css,
     CourseStudyLog.css,
+    CourseStatements.css,
   )
   FolderContent.sourceNames = inheritComponentSourceNames('FolderContent', [
     Evergreen,
@@ -619,12 +628,14 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     CoursesIndex,
     CourseResource,
     CourseStudyLog,
+    CourseStatements,
   ])
   FolderContent.afterDOMLoaded = concatenateResources(
     Evergreen.afterDOMLoaded,
     PageListSearch.afterDOMLoaded,
     CourseHome.afterDOMLoaded,
     CourseResource.afterDOMLoaded,
+    courseCalendarScript,
   )
 
   return FolderContent
