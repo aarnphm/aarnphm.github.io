@@ -11,7 +11,20 @@ tags:
   - 'mathematical analysis'
   - 'differential equations'
   - 'calculus'
-layout: 'A|L'
+resource:
+  {
+    kind: 'collection',
+    type: 'Pages',
+    links:
+      [
+        'courses/18-100b-analysis-i-fall-2010/pages/assignments/',
+        'courses/18-100b-analysis-i-fall-2010/pages/exams/',
+        'courses/18-100b-analysis-i-fall-2010/pages/readings-notes/',
+        'courses/18-100b-analysis-i-fall-2010/pages/study-materials/',
+        'courses/18-100b-analysis-i-fall-2010/pages/syllabus/',
+      ],
+  }
+layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
