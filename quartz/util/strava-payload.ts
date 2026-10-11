@@ -955,10 +955,37 @@ export interface LoadedStravaData {
   generatedAt: number
 }
 
-const payloadMemo = releasedOnReload(
-  new Map<string, { manualKey: string; data: LoadedStravaData }>(),
-)
-let payloadMemoStamps = ''
+type PayloadMemo = {
+  sourceSalt: string
+  stamps: string
+  entries: Map<string, { manualKey: string; data: LoadedStravaData }>
+}
+
+declare global {
+  var __quartzStravaPayloadMemo: PayloadMemo | undefined
+  var __quartzStravaPayloadSourceInputs: string[] | undefined
+}
+
+// Watch mode reuses one payload across bundle generations. The CLI publishes this module's import
+// closure; an edit to any of those files changes the salt and drops the payload.
+const payloadMemo = (globalThis.__quartzStravaPayloadMemo ??= {
+  sourceSalt: '',
+  stamps: '',
+  entries: new Map(),
+})
+let payloadSourceSalt: string | undefined
+
+const payloadMemoSourceSalt = (): string =>
+  (payloadSourceSalt ??= (globalThis.__quartzStravaPayloadSourceInputs ?? [])
+    .map(fp => {
+      try {
+        const info = statSync(fp)
+        return `${fp}:${info.mtimeMs}:${info.size}`
+      } catch {
+        return `${fp}:missing`
+      }
+    })
+    .join('|'))
 
 export function loadStravaPayloadSync(
   since: string | undefined,
@@ -984,12 +1011,14 @@ export function loadStravaDataSync(
     analytics: analyticsInputs,
   })
   const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${wahooTrackingStamp(manualTracking?.activities ?? [], contentDirectory)}:${windArchiveStamp(contentDirectory)}`
-  if (payloadMemoStamps !== stamps) {
-    payloadMemo.clear()
-    payloadMemoStamps = stamps
+  const sourceSalt = payloadMemoSourceSalt()
+  if (payloadMemo.stamps !== stamps || payloadMemo.sourceSalt !== sourceSalt) {
+    payloadMemo.entries.clear()
+    payloadMemo.stamps = stamps
+    payloadMemo.sourceSalt = sourceSalt
   }
   const key = JSON.stringify([resolve(contentDirectory), since ?? ''])
-  const cached = payloadMemo.get(key)
+  const cached = payloadMemo.entries.get(key)
   if (cached?.manualKey === manualKey) return cached.data
   const strava = readStravaCacheFileSync(stravaCachePath)
   const oura = readJson<OuraCache>(ouraCachePath)
@@ -1005,7 +1034,7 @@ export function loadStravaDataSync(
     analyticsInputs,
     contentDirectory,
   )
-  payloadMemo.set(key, { manualKey, data: loaded })
+  payloadMemo.entries.set(key, { manualKey, data: loaded })
   return loaded
 }
 
