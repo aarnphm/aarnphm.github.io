@@ -3,9 +3,15 @@ import { fromHtml } from 'hast-util-from-html'
 import { toMdast } from 'hast-util-to-mdast'
 import { gfmToMarkdown } from 'mdast-util-gfm'
 import { toMarkdown } from 'mdast-util-to-markdown'
+import { execFile } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { promisify } from 'node:util'
 import { isRecord } from '../util/type-guards'
+import { parseVtt, transcriptMarkdown } from './ocw-vtt'
+import { convertLatexCourse, LatexGateError, type LatexResult } from './vendor-ocw-latex'
+
+const run = promisify(execFile)
 
 type JsonRecord = Record<string, unknown>
 
@@ -33,6 +39,26 @@ type CoursePage = {
   resourceTypes: string[]
 }
 
+// First match in `resourceKind` wins; the order is the one in docs/plans/course-resources.md §1.
+type ResourceKind =
+  | 'video'
+  | 'captions'
+  | 'transcript'
+  | 'exam-solution'
+  | 'exam'
+  | 'pset-solution'
+  | 'pset'
+  | 'tex'
+  | 'archive'
+  | 'image'
+  | 'notes'
+  | 'notes-full'
+  | 'chapter'
+  | 'reading'
+  | 'other'
+
+type Sidecar = { video: string; role: 'captions' | 'transcript' }
+
 type CourseResource = {
   relDir: string
   title: string
@@ -43,11 +69,23 @@ type CourseResource = {
   youtubeId: string
   localFile: string
   originalFile: string
+  fileType: string
+  bytes: number
+  captionsFile: string
+  transcriptFile: string
+  kind: ResourceKind
+  sidecar: Sidecar | null
+  n: number | null
+  due: number | null
+  duration: number
+  cues: number
+  transcript: string
 }
 
 type CourseCollection = {
   relDir: string
   title: string
+  type: string
   description: string
   resources: CourseResource[]
   extraLinks: string[]
@@ -61,8 +99,16 @@ type CourseUnit = {
   sessions: string
   part: number
   keyDates: string[]
-  resources: { id: string; file: string; youtube: string }[]
+  resources: CourseUnitResource[]
   due: string[]
+}
+
+type CourseUnitResource = {
+  id: string
+  file?: string
+  youtube?: string
+  duration?: number
+  cues?: number
 }
 
 type CourseStudy = {
@@ -133,11 +179,12 @@ function normalizeText(value: string): string {
 }
 
 function titleWithoutExtension(value: string): string {
-  return value.replace(/\.(pdf|jpg|jpeg|png|gif|mp3|mp4|zip|html?)$/i, '')
+  return value.replace(/\.(pdf|jpg|jpeg|png|gif|mp3|mp4|zip|tex|vtt|html?)$/i, '')
 }
 
 function normalizeTitle(value: string): string {
   const spaced = titleWithoutExtension(value)
+    .replace(/LaTeX/g, 'latex')
     .replace(/commentsonstyle/i, 'comments on style')
     .replace(/erratafortop/i, 'errata for topology')
     .replace(/problem[\s_-]*set/i, 'problem set')
@@ -196,6 +243,8 @@ function resourceInferenceSource(data: JsonRecord, relDir: string): string {
 function resourceTypes(data: JsonRecord, relDir: string): string[] {
   const explicit = stringList(data, 'learning_resource_types')
   if (explicit.length > 0) return explicit
+  // captions are never lecture notes, whatever their file name says
+  if (stringValue(data, 'file_type').toLowerCase() === 'text/vtt') return []
   const source = resourceInferenceSource(data, relDir)
   if (/\blec(?:ture)?\s*\d+\b/.test(source) || source.includes('lecture notes')) {
     return ['Lecture Notes']
@@ -220,11 +269,18 @@ function yamlList(key: string, values: string[]): string[] {
   return [key + ':', ...items.map(value => `  - ${yamlString(value)}`)]
 }
 
-function frontmatter(fields: Record<string, string | string[]>): string {
+// `{flow}` values are written as one YAML flow line (the `resource:` contract).
+type FrontmatterValue = string | string[] | boolean | { flow: unknown }
+
+function frontmatter(fields: Record<string, FrontmatterValue>): string {
   const lines: string[] = ['---']
   for (const [key, value] of Object.entries(fields)) {
     if (Array.isArray(value)) {
       lines.push(...yamlList(key, value))
+    } else if (typeof value === 'boolean') {
+      lines.push(`${key}: ${value}`)
+    } else if (typeof value === 'object') {
+      lines.push(`${key}: ${yamlFlow(value.flow)}`)
     } else if (value.length > 0) {
       lines.push(`${key}: ${yamlString(value)}`)
     }
@@ -235,7 +291,7 @@ function frontmatter(fields: Record<string, string | string[]>): string {
 
 function courseFrontmatter(
   context: CourseContext,
-  fields: Record<string, string | string[]>,
+  fields: Record<string, FrontmatterValue>,
   layout: string = ocwLayout,
 ): string {
   return frontmatter({
@@ -421,6 +477,7 @@ function parseResource(context: CourseContext, relDir: string, data: JsonRecord)
   const originalFile = stringValue(data, 'file')
   const localFile = path.posix.basename(originalFile)
   const description = stringValue(data, 'description')
+  const size = data.file_size
   return {
     relDir,
     title: resourceTitle(context, data, relDir),
@@ -433,6 +490,134 @@ function parseResource(context: CourseContext, relDir: string, data: JsonRecord)
     youtubeId: nestedString(data, 'video_metadata', 'youtube_id'),
     localFile,
     originalFile,
+    fileType: stringValue(data, 'file_type').toLowerCase(),
+    bytes: typeof size === 'number' && Number.isFinite(size) ? size : 0,
+    captionsFile: path.posix.basename(nestedString(data, 'video_files', 'video_captions_file')),
+    transcriptFile: path.posix.basename(nestedString(data, 'video_files', 'video_transcript_file')),
+    kind: 'other',
+    sidecar: null,
+    n: null,
+    due: null,
+    duration: 0,
+    cues: 0,
+    transcript: '',
+  }
+}
+
+function resourceId(resource: CourseResource): string {
+  return path.posix.basename(resource.relDir)
+}
+
+/** Captions and transcript files named by a video's `video_files` belong to that video. */
+function sidecarIndex(resources: CourseResource[]): Map<string, Sidecar> {
+  const sidecars = new Map<string, Sidecar>()
+  for (const resource of resources) {
+    if (resource.youtubeId.length === 0) continue
+    const video = resourceId(resource)
+    if (resource.captionsFile.length > 0) {
+      sidecars.set(resource.captionsFile, { video, role: 'captions' })
+    }
+    if (resource.transcriptFile.length > 0) {
+      sidecars.set(resource.transcriptFile, { video, role: 'transcript' })
+    }
+  }
+  return sidecars
+}
+
+const examIdRe = /exam|midterm|final|quiz/i
+const chapterNumberRe = /\bchapter[\s_-]*0*(\d+)\b/i
+
+function resourceKind(resource: CourseResource): ResourceKind {
+  const id = resourceId(resource)
+  const types = resource.resourceTypes
+  const file = resource.localFile
+  if (resource.youtubeId.length > 0) return 'video'
+  if (
+    resource.sidecar?.role === 'captions' ||
+    resource.fileType === 'text/vtt' ||
+    /\.vtt$/i.test(file)
+  )
+    return 'captions'
+  if (resource.sidecar?.role === 'transcript' || /transcript/i.test(id)) return 'transcript'
+  if (types.includes('Exam Solutions') || (examIdRe.test(id) && /sol(?:utions?)?$/i.test(id)))
+    return 'exam-solution'
+  if (types.includes('Exams') || examIdRe.test(id)) return 'exam'
+  if (types.includes('Problem Set Solutions') || /pset\d+_?sol/i.test(id)) return 'pset-solution'
+  if (/\.tex$/i.test(file)) return 'tex'
+  if (/\.(zip|tar|gz|tgz)$/i.test(file)) return 'archive'
+  if (resource.fileType.startsWith('image/') || /\.(jpe?g|png|gif|svg|webp)$/i.test(file))
+    return 'image'
+  if (
+    types.includes('Problem Sets') ||
+    types.includes('Assignments') ||
+    problemSetNumber(resource) !== null
+  )
+    return 'pset'
+  if (lectureNumber(resource) !== null) return 'notes'
+  if (types.includes('Lecture Notes') && /full|lecture_notes$/i.test(id)) return 'notes-full'
+  if (types.includes('Lecture Notes')) return 'chapter'
+  if (types.includes('Readings')) return 'reading'
+  return 'other'
+}
+
+function resourceNumber(resource: CourseResource): number | null {
+  switch (resource.kind) {
+    case 'video':
+    case 'transcript':
+    case 'notes':
+      return lectureNumber(resource)
+    case 'pset':
+    case 'pset-solution':
+    case 'tex':
+      return problemSetNumber(resource) ?? lectureNumber(resource)
+    case 'chapter': {
+      const match =
+        resourceId(resource).match(chapterNumberRe) ?? resource.title.match(chapterNumberRe)
+      return match ? Number(match[1]) : null
+    }
+    default:
+      return null
+  }
+}
+
+async function classifyResources(
+  context: CourseContext,
+  resources: CourseResource[],
+): Promise<void> {
+  const sidecars = sidecarIndex(resources)
+  for (const resource of resources) {
+    resource.sidecar = sidecars.get(resource.localFile) ?? null
+    if (resource.sidecar || resource.fileType === 'text/vtt') resource.resourceTypes = []
+    resource.kind = resourceKind(resource)
+    resource.n = resourceNumber(resource)
+  }
+  const summary = { written: 0, unreadable: 0, missing: 0 }
+  for (const resource of resources) {
+    if (resource.kind !== 'video') continue
+    const captionsPath = resource.captionsFile
+      ? path.join(context.root, 'static_resources', resource.captionsFile)
+      : ''
+    if (captionsPath.length === 0 || !(await pathExists(captionsPath))) {
+      summary.missing++
+      continue
+    }
+    const { cues, skipped } = parseVtt(await fs.readFile(captionsPath, 'utf8'))
+    if (cues.length === 0) {
+      console.warn(
+        `${context.slug}: captions ${resource.captionsFile} unreadable (${skipped} blocks skipped)`,
+      )
+      summary.unreadable++
+      continue
+    }
+    resource.cues = cues.length
+    resource.duration = Math.ceil(cues[cues.length - 1].end)
+    resource.transcript = transcriptMarkdown(cues, resource.youtubeId, resource.duration)
+    summary.written++
+  }
+  if (resources.some(resource => resource.kind === 'video')) {
+    console.log(
+      `${context.slug}: transcripts: ${summary.written} written, ${summary.unreadable} unreadable, ${summary.missing} missing`,
+    )
   }
 }
 
@@ -663,33 +848,34 @@ function attachUnitResources(study: CourseStudy, resources: CourseResource[]): v
   const units = new Map(study.units.map(unit => [unit.n, unit]))
   const psets = new Map<number, string>()
   for (const resource of resources) {
-    const id = path.posix.basename(resource.relDir)
-    const isNotes =
-      resource.resourceTypes.includes('Lecture Notes') ||
-      resource.resourceTypes.includes('Lecture Videos') ||
-      resource.youtubeId.length > 0
-    const lecture = isNotes ? lectureNumber(resource) : null
+    const id = resourceId(resource)
+    const lecture =
+      resource.kind === 'notes' || resource.kind === 'video' ? lectureNumber(resource) : null
     if (lecture !== null && units.has(lecture)) {
       const unit = units.get(lecture)!
       if (!unit.resources.some(entry => entry.id === id)) {
-        unit.resources.push({
-          id,
-          file: resource.localFile ? path.posix.join('static_resources', resource.localFile) : '',
-          youtube: resource.youtubeId,
-        })
+        unit.resources.push(
+          resource.kind === 'video'
+            ? { id, youtube: resource.youtubeId, duration: resource.duration, cues: resource.cues }
+            : { id, file: path.posix.join('static_resources', resource.localFile) },
+        )
       }
     }
-    const pset = problemSetNumber(resource)
-    if (pset !== null && !resource.resourceTypes.some(type => /solution/i.test(type))) {
-      if (!psets.has(pset)) psets.set(pset, id)
+    if (resource.kind === 'pset' && resource.n !== null && !psets.has(resource.n)) {
+      psets.set(resource.n, id)
     }
   }
+  const byId = new Map(resources.map(resource => [resourceId(resource), resource]))
   for (const unit of study.units) {
     for (const date of unit.keyDates) {
       const match = date.match(problemSetNumberRe)
       if (!match) continue
       const id = psets.get(Number(match[1]))
       if (id && !unit.due.includes(id)) unit.due.push(id)
+    }
+    for (const id of unit.due) {
+      const resource = byId.get(id)
+      if (resource && resource.due === null) resource.due = unit.n
     }
   }
 }
@@ -704,10 +890,12 @@ function courseStudy(pages: CoursePage[], resources: CourseResource[]): CourseSt
 
 function yamlFlow(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(yamlFlow).join(', ')}]`
-  if (typeof value === 'number') return String(value)
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
   if (value && typeof value === 'object') {
     const entries = Object.entries(value as Record<string, unknown>).filter(([, entry]) =>
-      Array.isArray(entry) ? entry.length > 0 : entry !== '' && entry !== null && entry !== 0,
+      Array.isArray(entry)
+        ? entry.length > 0
+        : entry !== '' && entry !== null && entry !== undefined && entry !== 0 && entry !== false,
     )
     return `{${entries.map(([key, entry]) => `${key}: ${yamlFlow(entry)}`).join(', ')}}`
   }
@@ -742,24 +930,55 @@ function courseStudyYaml(context: CourseContext, data: JsonRecord, study: Course
   return lines
 }
 
-function courseCollections(
+function compareResources(left: CourseResource, right: CourseResource): number {
+  const rank = (resource: CourseResource) =>
+    resource.kind === 'pset' || resource.kind === 'pset-solution' ? 1 : 0
+  if (left.n !== null && right.n !== null && rank(left) === rank(right) && left.n !== right.n)
+    return left.n - right.n
+  if (left.n !== null && right.n === null) return -1
+  if (left.n === null && right.n !== null) return 1
+  if (rank(left) !== rank(right)) return rank(left) - rank(right)
+  return compareTitle(left, right)
+}
+
+async function listDescription(context: CourseContext, resourceType: string): Promise<string> {
+  const file = path.join(context.root, 'lists', slugTitle(resourceType), 'data.json')
+  if (!(await pathExists(file))) return ''
+  return normalizeText(stringValue(await readJson(file), 'description'))
+}
+
+async function courseCollections(
   context: CourseContext,
   data: JsonRecord,
   pages: CoursePage[],
   resources: CourseResource[],
-): CourseCollection[] {
-  const collections: CourseCollection[] = resourceTypesInOrder(data, resources).map(
-    resourceType => {
-      const title = normalizeTitle(resourceType)
-      return {
-        relDir: resourceCollectionRelDir(resourceType),
-        title,
-        description: `${context.label} ${title}`,
-        resources: resources.filter(resource => resource.resourceTypes.includes(resourceType)),
-        extraLinks: [],
-      }
-    },
-  )
+  latex: LatexResult | null,
+): Promise<CourseCollection[]> {
+  const collections: CourseCollection[] = []
+  for (const resourceType of resourceTypesInOrder(data, resources)) {
+    const title = normalizeTitle(resourceType)
+    collections.push({
+      relDir: resourceCollectionRelDir(resourceType),
+      title,
+      type: resourceType,
+      description: (await listDescription(context, resourceType)) || `${context.label} ${title}`,
+      resources: resources
+        .filter(resource => resource.resourceTypes.includes(resourceType))
+        .sort(compareResources),
+      extraLinks: [],
+    })
+  }
+  if (latex) {
+    const editable = collections.find(
+      collection => collection.relDir === resourceCollectionRelDir('Editable Files'),
+    )
+    if (editable) {
+      editable.extraLinks = [
+        `- [[${context.slug}/notes/|rendered lecture notes]]`,
+        ...latex.psets.map(note => `- [[${note.slug}|rendered ${note.title}]]`),
+      ]
+    }
+  }
 
   const assignmentPage = pages.find(page => slugTitle(page.title) === 'assignments')
   if (assignmentPage) {
@@ -777,6 +996,7 @@ function courseCollections(
       collections.push({
         relDir,
         title: 'assignments',
+        type: 'Assignments',
         description: `${context.label} assignments`,
         resources: [],
         extraLinks: uniqueValues([pageLink, problemSetLink]),
@@ -884,59 +1104,247 @@ async function pageMarkdown(context: CourseContext, page: CoursePage): Promise<s
   ])
 }
 
-async function resourceMarkdown(context: CourseContext, resource: CourseResource): Promise<string> {
+function formatBytes(bytes: number): string {
+  if (bytes <= 0) return ''
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} kb`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} mb`
+}
+
+function fileLine(context: CourseContext, resource: CourseResource): string {
+  return `- file: [[${context.slug}/static_resources/${resource.localFile}|${resource.localFile}]]`
+}
+
+async function archiveFiles(context: CourseContext, resource: CourseResource): Promise<string[]> {
+  const file = path.join(context.root, 'static_resources', resource.localFile)
+  if (!/\.zip$/i.test(resource.localFile) || !(await pathExists(file))) return []
+  try {
+    const { stdout } = await run('unzip', ['-Z1', file], { maxBuffer: 8 * 1024 * 1024 })
+    return stdout
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0 && !line.startsWith('__MACOSX/') && !line.endsWith('/'))
+      .filter(line => !/(^|\/)\.DS_Store$/.test(line))
+      .sort()
+  } catch {
+    return []
+  }
+}
+
+function resourceFlow(
+  resource: CourseResource,
+  byId: Map<string, CourseResource>,
+  latex: LatexResult | null,
+): Record<string, unknown> {
+  const file = resource.localFile ? path.posix.join('static_resources', resource.localFile) : ''
+  const base = { kind: resource.kind, file, bytes: resource.bytes }
+  switch (resource.kind) {
+    case 'video': {
+      const captions = resource.captionsFile
+      const transcript = resource.transcriptFile
+      const captionsId = Array.from(byId.values()).find(
+        other => other.kind === 'captions' && other.localFile === captions,
+      )
+      const transcriptId = Array.from(byId.values()).find(
+        other => other.kind === 'transcript' && other.localFile === transcript,
+      )
+      return {
+        kind: 'video',
+        n: resource.n,
+        youtube: resource.youtubeId,
+        duration: resource.duration,
+        cues: resource.cues,
+        captions: captions ? path.posix.join('static_resources', captions) : '',
+        captionsId: captionsId ? resourceId(captionsId) : '',
+        transcript: transcript ? path.posix.join('static_resources', transcript) : '',
+        transcriptId: transcriptId ? resourceId(transcriptId) : '',
+      }
+    }
+    case 'captions':
+      return { ...base, of: resource.sidecar?.video ?? '' }
+    case 'transcript':
+      return { ...base, of: resource.sidecar?.video ?? '', n: resource.n }
+    case 'pset':
+      return { ...base, n: resource.n, due: resource.due }
+    case 'pset-solution':
+    case 'notes':
+    case 'chapter':
+      return { ...base, n: resource.n }
+    case 'tex': {
+      const notes = latex?.pointers.get(resource.relDir) ?? ''
+      const full =
+        resource.resourceTypes.includes('Lecture Notes') && problemSetNumber(resource) === null
+      return full
+        ? { ...base, full: true, notes }
+        : { ...base, n: problemSetNumber(resource), notes }
+    }
+    default:
+      return base
+  }
+}
+
+async function resourceMarkdown(
+  context: CourseContext,
+  resource: CourseResource,
+  byId: Map<string, CourseResource>,
+  latex: LatexResult | null,
+): Promise<string> {
   const content = await htmlToMarkdown(context, resource.content)
-  const video = resource.youtubeId.length > 0
-  const watchUrl = `https://www.youtube.com/watch?v=${resource.youtubeId}`
+  const video = resource.kind === 'video'
   const source = video
     ? new URL(`${resource.relDir}/`, context.sourceUrl).toString()
     : originalAssetUrl(context, resource.originalFile, resource.localFile)
-  const embed = video
-    ? `![${resource.title}](${watchUrl})`
-    : assetEmbed(context, resource.localFile)
-  const assetLine = video
-    ? `- youtube: [${resource.youtubeId}](${watchUrl})`
-    : `- file: [[${context.slug}/static_resources/${resource.localFile}|${resource.localFile}]]`
-  return markdownDocument([
-    courseFrontmatter(context, {
-      title: resource.title,
-      description: resource.description || `${context.label} ${resource.title}`,
-      id: metadataId(context, 'resource', resource.relDir),
-      tags: uniqueValues([...context.tags, ...learningTypesForFrontmatter(resource.resourceTypes)]),
-    }),
-    '',
-    `up: ${resourceLink(context, '', context.label)}`,
-    '',
-    embed,
-    '',
-    content || resource.description,
-    '',
+  const flow = resourceFlow(resource, byId, latex)
+  const description =
+    resource.description ||
+    (video ? content.split('\n\n')[0] : '') ||
+    `${context.label} ${resource.title}`
+  const fields: Record<string, FrontmatterValue> = {
+    title: resource.title,
+    description,
+    id: metadataId(context, 'resource', resource.relDir),
+    tags: uniqueValues([...context.tags, ...learningTypesForFrontmatter(resource.resourceTypes)]),
+  }
+  if (resource.kind === 'captions' || resource.kind === 'transcript') fields.noindex = true
+  if (video) fields.semantic = false
+  fields.resource = { flow }
+  const head = courseFrontmatter(context, fields, 'resource')
+  const up = `up: ${resourceLink(context, '', context.label)}`
+  const metadata = (lines: string[]) => [
     '## metadata',
     '',
     `- type: ${resource.resourceType || 'resource'}`,
-    assetLine,
+    ...lines,
     `- source: [mit opencourseware](${source})`,
+  ]
+
+  if (video) {
+    const transcript =
+      resource.transcript.length > 0
+        ? resource.transcript
+        : `_no transcript: captions for this lecture are not vendored._`
+    return markdownDocument([head, '', transcript])
+  }
+  if (resource.kind === 'captions') {
+    const of = resource.sidecar?.video ?? ''
+    const watch = of ? byId.get(of) : undefined
+    const label =
+      watch && watch.n !== null
+        ? `lecture ${String(watch.n).padStart(2, '0')}`
+        : 'the lecture video'
+    return markdownDocument([
+      head,
+      '',
+      up,
+      '',
+      of
+        ? `captions of [[${context.slug}/resources/${of}/#transcript|${label}]], ${formatBytes(resource.bytes) || 'webvtt'}.`
+        : `captions file, ${formatBytes(resource.bytes) || 'webvtt'}.`,
+      '',
+      ...metadata([fileLine(context, resource)]),
+    ])
+  }
+  if (resource.kind === 'tex') {
+    const notes = typeof flow.notes === 'string' ? flow.notes : ''
+    const rendered = notes
+      ? flow.full === true
+        ? `rendered: [[${notes}|lecture notes, one page per lecture]]`
+        : `rendered: [[${notes}|${latex?.psets.find(note => note.slug === notes)?.title ?? 'problem set'}]]`
+      : ''
+    return markdownDocument([
+      head,
+      '',
+      up,
+      '',
+      rendered,
+      '',
+      content || resource.description,
+      '',
+      ...metadata([fileLine(context, resource)]),
+    ])
+  }
+  if (resource.kind === 'archive') {
+    const files = await archiveFiles(context, resource)
+    return markdownDocument([
+      head,
+      '',
+      up,
+      '',
+      content || resource.description,
+      '',
+      ...(files.length > 0 ? ['## files', '', ...files.map(file => `- \`${file}\``), ''] : []),
+      ...metadata([
+        `- file: ${resource.localFile} (${formatBytes(resource.bytes) || 'zip'}, [download](${source}))`,
+      ]),
+    ])
+  }
+  return markdownDocument([
+    head,
+    '',
+    up,
+    '',
+    resource.kind === 'image' ? assetEmbed(context, resource.localFile) : '',
+    '',
+    content || resource.description,
+    '',
+    ...metadata([fileLine(context, resource)]),
   ])
 }
 
 function collectionMarkdown(context: CourseContext, collection: CourseCollection): string {
   const links = [
     ...collection.extraLinks,
-    ...collection.resources
-      .sort(compareTitle)
-      .map(resource => `- ${resourceLink(context, resource.relDir, resource.title)}`),
+    ...collection.resources.map(
+      resource => `- ${resourceLink(context, resource.relDir, resource.title)}`,
+    ),
   ]
+  const pageLinks = collection.extraLinks
+    .map(link => /\[\[([^\]|]+)\|/.exec(link)?.[1] ?? '')
+    .filter(target => target.length > 0)
   return markdownDocument([
-    courseFrontmatter(context, {
-      title: collection.title,
-      description: collection.description,
-      id: metadataId(context, 'collection', collection.relDir),
-      tags: context.tags,
-    }),
+    courseFrontmatter(
+      context,
+      {
+        title: collection.title,
+        description: collection.description,
+        id: metadataId(context, 'collection', collection.relDir),
+        tags: context.tags,
+        resource: {
+          flow: {
+            kind: 'collection',
+            type: collection.type,
+            items: collection.resources.map(resourceId),
+            links: pageLinks,
+          },
+        },
+      },
+      'resource',
+    ),
     '',
     `up: ${resourceLink(context, '', context.label)}`,
     '',
     ...links,
+  ])
+}
+
+function resourcesIndexMarkdown(context: CourseContext, collections: CourseCollection[]): string {
+  return markdownDocument([
+    courseFrontmatter(
+      context,
+      {
+        title: 'resources',
+        description: `${context.label} resources by type`,
+        id: metadataId(context, 'collection', 'resources'),
+        tags: context.tags,
+        resource: { flow: { kind: 'index' } },
+      },
+      'resource',
+    ),
+    '',
+    `up: ${resourceLink(context, '', context.label)}`,
+    '',
+    ...collections.map(
+      collection => `- ${resourceLink(context, collection.relDir, collection.title)}`,
+    ),
   ])
 }
 
@@ -950,7 +1358,7 @@ async function pathExists(filePath: string): Promise<boolean> {
 }
 
 async function removeGeneratedCollectionMarkdown(context: CourseContext): Promise<void> {
-  const files = await globby(['pages/index.md', 'resources/*/index.md'], {
+  const files = await globby(['pages/index.md', 'resources/index.md', 'resources/*/index.md'], {
     cwd: context.root,
     onlyFiles: true,
   })
@@ -1043,6 +1451,14 @@ async function downloadAsset(courseRoot: string, file: string): Promise<void> {
 
 async function downloadNodeAsset(courseRoot: string, data: JsonRecord): Promise<void> {
   const file = stringValue(data, 'file')
+  const captions = nestedString(data, 'video_files', 'video_captions_file')
+  if (captions.length > 0) {
+    if (/^https?:\/\//.test(captions) || /\.webvtt$/i.test(captions)) {
+      console.warn(`captions not vendored: ${captions}`)
+    } else {
+      await downloadAsset(courseRoot, captions)
+    }
+  }
   if (file.length === 0 || isVideoAsset(data, file)) return
   await downloadAsset(courseRoot, file)
 }
@@ -1144,20 +1560,28 @@ async function vendorCourse(courseRoot: string): Promise<void> {
     }
   }
 
-  const collections = courseCollections(context, rootData, pages, resources)
+  await classifyResources(context, resources)
+  const study = courseStudy(pages, resources)
+  const latex = await latexNotes(context, rootData, study, resources)
+  const collections = await courseCollections(context, rootData, pages, resources, latex)
   indexLinkableDirs(context, pages, resources, collections)
 
   await removeGeneratedCollectionMarkdown(context)
-  const study = courseStudy(pages, resources)
   await writeMarkdown(context, '', await courseHome(context, rootData, pages, collections, study))
 
   for (const page of pages) {
     await writeMarkdown(context, page.relDir, await pageMarkdown(context, page))
   }
 
+  const byId = new Map(resources.map(resource => [resourceId(resource), resource]))
   for (const resource of resources) {
-    await writeMarkdown(context, resource.relDir, await resourceMarkdown(context, resource))
+    await writeMarkdown(
+      context,
+      resource.relDir,
+      await resourceMarkdown(context, resource, byId, latex),
+    )
   }
+  await writeMarkdown(context, 'resources', resourcesIndexMarkdown(context, collections))
 
   await writeMarkdown(
     context,
@@ -1165,6 +1589,7 @@ async function vendorCourse(courseRoot: string): Promise<void> {
     collectionMarkdown(context, {
       relDir: 'pages',
       title: 'course pages',
+      type: 'Pages',
       description: `${context.label} course pages`,
       resources: [],
       extraLinks: pages
@@ -1178,6 +1603,48 @@ async function vendorCourse(courseRoot: string): Promise<void> {
   }
 
   await removeDeadOcwShell(context)
+}
+
+// LaTeX sources become `notes/`; the converter's gates fail the whole course rather than ship a wrong page.
+async function latexNotes(
+  context: CourseContext,
+  data: JsonRecord,
+  study: CourseStudy | null,
+  resources: CourseResource[],
+): Promise<LatexResult | null> {
+  if (!study || !resources.some(resource => resource.kind === 'tex')) return null
+  const instructors = recordList(data, 'instructors').map(instructor =>
+    stringValue(instructor, 'title'),
+  )
+  try {
+    const result = await convertLatexCourse({
+      root: context.root,
+      slug: context.slug,
+      number: context.number,
+      term: `${stringValue(data, 'term')} ${stringValue(data, 'year')}`.trim(),
+      instructors,
+      licenseName: context.licenseName,
+      licenseUrl: context.licenseUrl,
+      units: study.units.map(unit => ({ n: unit.n, title: unit.title })),
+      resources: resources.map(resource => ({
+        relDir: resource.relDir,
+        title: resource.title,
+        localFile: resource.localFile,
+        resourceTypes: resource.resourceTypes,
+      })),
+      contentRoot,
+    })
+    if (result) {
+      console.log(
+        `${context.slug}: latex: ${result.notes.length} lectures, ${result.psets.length} problem sets, ${result.figures} figures`,
+      )
+      for (const line of result.report) console.log(`  ${line}`)
+    }
+    return result
+  } catch (error) {
+    if (error instanceof LatexGateError) throw new Error(`${context.slug}: ${error.message}`)
+    throw error
+  }
 }
 
 async function courseRootsFromPath(inputPath: string): Promise<string[]> {
