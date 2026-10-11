@@ -3,7 +3,7 @@ import type { ContentDetails } from '../../plugins'
 import { escapeHTML } from '../../util/escape'
 import { fetchCanonical } from '../../util/fetch-canonical'
 import { FullSlug, getFullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
-import { encode, highlight, tokenizeTerm } from '../../util/search-text'
+import { encode, highlight, pathSearchText, tokenizeTerm } from '../../util/search-text'
 import { aggregateSemanticResults, fuseSearchRanks } from '../../util/semantic-search'
 import { registerEscapeHandler } from './escape-handler'
 import { SemanticClient } from './semantic.inline'
@@ -219,14 +219,23 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     if (!data) throw new Error('search data is not loaded')
     return data
   }
-  const ensureSearchData = async () => {
-    if (data) return data
-    data = await getSearchData()
-    idDataMap = Object.keys(data) as FullSlug[]
-    slugToIndex = new Map<string, number>()
-    idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
-    await fillDocument(data)
-    return data
+  // Publish `data` only after the index is filled: the opener and the first query both call this,
+  // and a query against a half-filled index returns whichever folders were added first.
+  let searchDataReady: Promise<ContentIndex> | null = null
+  const ensureSearchData = () => {
+    searchDataReady ??= (async () => {
+      const loaded = await getSearchData()
+      await fillDocument(loaded)
+      idDataMap = Object.keys(loaded) as FullSlug[]
+      slugToIndex = new Map<string, number>()
+      idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
+      data = loaded
+      return loaded
+    })().catch(err => {
+      searchDataReady = null
+      throw err
+    })
+    return searchDataReady
   }
   const el = searchSpace.querySelector('ul#helper')
   const modeToggle = searchSpace.querySelector('.search-mode-toggle') as HTMLDivElement | null
@@ -1041,9 +1050,16 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   })
 }
 
-let indexPopulated = false
-async function fillDocument(data: ContentIndex) {
-  if (indexPopulated) return
+let indexFilled: Promise<void> | null = null
+function fillDocument(data: ContentIndex): Promise<void> {
+  indexFilled ??= addDocuments(data).catch(err => {
+    indexFilled = null
+    throw err
+  })
+  return indexFilled
+}
+
+async function addDocuments(data: ContentIndex) {
   let id = 0
   const promises = []
   for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
@@ -1052,7 +1068,7 @@ async function fillDocument(data: ContentIndex) {
         id,
         slug: slug as FullSlug,
         title: fileData.title,
-        fileName: fileData.fileName,
+        fileName: pathSearchText(fileData.fileName),
         content: fileData.content ?? '',
         tags: fileData.tags,
         aliases: fileData.aliases,
@@ -1064,7 +1080,6 @@ async function fillDocument(data: ContentIndex) {
   }
 
   await Promise.all(promises)
-  indexPopulated = true
 }
 
 document.addEventListener('nav', async () => {
