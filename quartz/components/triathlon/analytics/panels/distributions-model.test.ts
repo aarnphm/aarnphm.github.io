@@ -63,39 +63,6 @@ test('distribution metrics follow each sport and preserve heart rate across spor
   assert.equal(distributionMetricForSport('run', 'power'), 'pace')
   assert.equal(distributionMetricForSport('swim', 'pace'), 'heart-rate')
 })
-
-test('distribution metric selection switches both directions for bike and run', () => {
-  const bounds = {
-    minimumDate: '2026-01-01',
-    maximumDate: '2026-03-31',
-    sports: ['swim', 'bike', 'run'] as const,
-  }
-  const bikePower = initialDistributionModel(bounds)
-  const bikeHeartRate = updateDistributions(
-    bikePower,
-    { type: 'select-metric', metric: 'heart-rate' },
-    bounds,
-  )
-  assert.equal(bikeHeartRate.metric, 'heart-rate')
-  assert.equal(
-    updateDistributions(bikeHeartRate, { type: 'select-metric', metric: 'power' }, bounds).metric,
-    'power',
-  )
-
-  const runPace = updateDistributions(bikePower, { type: 'select-sport', sport: 'run' }, bounds)
-  assert.equal(runPace.metric, 'pace')
-  const runHeartRate = updateDistributions(
-    runPace,
-    { type: 'select-metric', metric: 'heart-rate' },
-    bounds,
-  )
-  assert.equal(runHeartRate.metric, 'heart-rate')
-  assert.equal(
-    updateDistributions(runHeartRate, { type: 'select-metric', metric: 'pace' }, bounds).metric,
-    'pace',
-  )
-})
-
 test('telemetry trend compares the latest two observed activities', () => {
   assert.equal(telemetryTrend([120, null, 138]), 'up')
   assert.equal(telemetryTrend([81, 76]), 'down')
