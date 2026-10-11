@@ -129,7 +129,7 @@ export interface LatexRecord {
   dateSource?: string
 }
 
-const unitRe = /^courses\/([^/]+)\/(lectures|psets)\/(\d{2,3})$/
+const unitRe = /^courses\/([^/]+)\/(lectures|psets|notes)\/(\d{2,3})$/
 const coursePageRe = /^courses\/([^/]+)\/pages\/([^/]+)\/index$/
 const resourceRe = /^courses\/([^/]+)\/resources\/([^/]+)\/index$/
 const resourceKinds = new Set<string>([
@@ -303,12 +303,10 @@ export function courseDirOf(slug: string): string | null {
 export type CourseUnitPath = 'lectures' | 'psets' | 'notes'
 
 /** Unit coordinates derived from a slug such as `courses/18.905-fall-2016/lectures/07`. */
-export function unitOf(
-  slug: string,
-): { dir: string; kind: 'lectures' | 'psets'; n: number } | null {
+export function unitOf(slug: string): { dir: string; kind: CourseUnitPath; n: number } | null {
   const match = unitRe.exec(slug)
   if (!match) return null
-  return { dir: match[1], kind: match[2] as 'lectures' | 'psets', n: Number(match[3]) }
+  return { dir: match[1], kind: match[2] as CourseUnitPath, n: Number(match[3]) }
 }
 
 /** The course directory and name of a vendored `pages/<name>` page, else null. */

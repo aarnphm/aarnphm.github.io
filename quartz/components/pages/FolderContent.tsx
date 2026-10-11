@@ -25,8 +25,9 @@ import {
 } from '../../util/path'
 import { concatenateResources } from '../../util/resources'
 import { parseWikilink } from '../../util/wikilinks'
+import CourseHomeConstructor from '../CourseHome'
+import CourseResourceConstructor, { CoursePageHead, coursePageOf } from '../CourseResource'
 import CoursesIndexConstructor from '../CoursesIndex'
-import CourseSpineConstructor from '../CourseSpine'
 import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from '../Evergreen'
 import PageListConstructor, {
   byDateAndAlphabetical,
@@ -97,6 +98,7 @@ const Layout = {
   lovp: 'L',
   course: 'COURSE',
   courses: 'COURSES',
+  resource: 'RESOURCE',
 } as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
@@ -321,8 +323,9 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const PermanentNotes = EvergreenPermanentNotes({ lg, sm, tags })
   const PageListSearch = PageListSearchConstructor()
   const SeeAlso = SeeAlsoComponent()
-  const CourseSpine = CourseSpineConstructor()
+  const CourseHome = CourseHomeConstructor()
   const CoursesIndex = CoursesIndexConstructor()
+  const CourseResource = CourseResourceConstructor()
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
@@ -490,6 +493,16 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     const sort = sortMode ? sortForFolderMode(sortMode, cfg) : options.sort
     const listProps = { ...props, sort, content, allFiles: entries, vaults: allFiles }
 
+    // vendored OCW pages (syllabus, calendar, …) are articles under a course, never listings
+    if (coursePageOf(fileData.slug)) {
+      return (
+        <article class="folder-layout--article course-page popover-hint">
+          <CoursePageHead {...props} />
+          {content}
+        </article>
+      )
+    }
+
     switch (layout) {
       case Layout.etas:
         return (
@@ -533,21 +546,16 @@ export default ((opts?: Partial<FolderContentOptions>) => {
           </div>
         )
 
+      // the course home renders its metadata from frontmatter; the vendored body is not shown
       case Layout.course:
-        return (
-          <div class="folder-layout folder-layout--course">
-            <article class="folder-layout--article">{content}</article>
-            <CourseSpine {...props} />
-          </div>
-        )
+        return <CourseHome {...props} />
 
       case Layout.courses:
-        return (
-          <div class="folder-layout folder-layout--course">
-            <article class="folder-layout--article">{content}</article>
-            <CoursesIndex {...props} />
-          </div>
-        )
+        return <CoursesIndex {...props} />
+
+      // vendored OCW resource pages pick their view from `resource.kind`
+      case Layout.resource:
+        return <CourseResource {...props} />
 
       case Layout.lovp:
         return (
@@ -583,20 +591,23 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     Evergreen.css,
     PageListSearch.css,
     SeeAlso.css,
-    CourseSpine.css,
+    CourseHome.css,
+    CourseResource.css,
   )
   FolderContent.sourceNames = inheritComponentSourceNames('FolderContent', [
     Evergreen,
     PageList,
     PageListSearch,
     SeeAlso,
-    CourseSpine,
+    CourseHome,
     CoursesIndex,
+    CourseResource,
   ])
   FolderContent.afterDOMLoaded = concatenateResources(
     Evergreen.afterDOMLoaded,
     PageListSearch.afterDOMLoaded,
-    CourseSpine.afterDOMLoaded,
+    CourseHome.afterDOMLoaded,
+    CourseResource.afterDOMLoaded,
   )
 
   return FolderContent

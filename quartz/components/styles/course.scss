@@ -1,7 +1,6 @@
 @use '../../styles/variables.scss' as *;
 
-.course-index,
-.course-spine,
+.course-home,
 .course-unit-bar,
 .course-unit-foot {
   --course-line: color-mix(in srgb, var(--gray) 55%, transparent);
@@ -11,6 +10,12 @@
 
   min-width: 0;
   color: var(--darkgray);
+
+  // base.scss inverts every <a> on hover (dark fill, light text); course views underline instead
+  a:hover {
+    background: transparent;
+    color: inherit;
+  }
 
   @media (pointer: coarse) {
     --course-control-height: 44px;
@@ -41,23 +46,21 @@
   text-transform: lowercase;
 }
 
+// text action: the established underline, no box
 .course-action {
   display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  box-sizing: border-box;
+  align-items: baseline;
+  gap: var(--space-1);
   min-height: var(--course-control-height);
-  padding-inline: var(--space-3);
-  border: 1px solid var(--course-line);
-  border-radius: var(--radius-none);
   font-family: var(--codeFont);
   font-size: var(--text-meta);
-  line-height: 1;
+  line-height: var(--course-control-height);
   text-transform: lowercase;
-  text-decoration: none;
   color: var(--dark);
-  background: var(--light);
-  transition: background-color 120ms cubic-bezier(0.2, 0, 0, 1);
+  text-decoration: underline;
+  text-decoration-color: var(--gray);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color 120ms cubic-bezier(0.2, 0, 0, 1);
 
   &:focus-visible {
     outline: 2px solid var(--dark);
@@ -66,13 +69,13 @@
 
   &[aria-disabled='true'] {
     color: var(--darkgray);
+    text-decoration: none;
     cursor: default;
   }
 
   @media (hover: hover) and (pointer: fine) {
     &:not([aria-disabled='true']):hover {
-      background: var(--course-surface);
-      color: var(--dark);
+      text-decoration-color: var(--dark);
     }
   }
 
@@ -112,18 +115,25 @@
     margin: 0;
   }
 
+  .course-action {
+    margin-left: auto;
+  }
+
   @media all and ($mobile) {
     .course-action {
-      width: 100%;
-      justify-content: center;
+      margin-left: 0;
     }
   }
 }
 
-// courses index: bordered rows, the listPage idiom
-.course-index {
+// courses index: an intro, then bordered rows (the listPage idiom), as one grid item so the
+// page grid cannot stretch the intro to fill the viewport
+.course-home--index {
   grid-column: var(--layout-reading-column);
-  margin-top: var(--space-4);
+}
+
+.course-index {
+  min-width: 0;
 }
 
 .course-index-list {
@@ -180,8 +190,9 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--course-surface);
+    &:hover .course-row-title {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
     }
   }
 
@@ -196,17 +207,207 @@
   }
 }
 
-// course home: the spine
-.course-spine {
+// course home: masthead across the top, a rail of vendored pages, the schedule beside it.
+// The split is a container query: the full column is wide enough below the desktop
+// breakpoint, and the rail folds under the masthead when it is not.
+.course-home {
+  --course-rail-width: 11rem;
+
   grid-column: var(--layout-full-column);
   container-type: inline-size;
-  container-name: course-spine;
-  max-inline-size: 52rem;
-  margin-top: var(--space-6);
+  container-name: course-home;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
 
-  @media all and ($mobile), all and ($tablet) {
+  @media all and ($mobile) {
     grid-column: var(--layout-reading-column);
   }
+}
+
+.page:has(> .page-body-grid > .page-content > .course-home:not(.course-home--index)) {
+  > .header,
+  > .page-body-grid > .page-content {
+    --layout-full-column: 3 / -3;
+  }
+
+  > .header > .header-content,
+  > .page-body-grid > .page-content > .course-home {
+    grid-column: var(--layout-full-column);
+    inline-size: 100%;
+    max-inline-size: 66rem;
+    justify-self: center;
+  }
+}
+
+// rail + schedule. A container query matches descendants only, so the split lives on
+// this wrapper rather than on .course-home itself.
+.course-body {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6) var(--space-8);
+}
+
+@container course-home (min-width: 56rem) {
+  .course-body {
+    grid-template-columns: var(--course-rail-width) minmax(0, 1fr);
+  }
+
+  .course-rail {
+    position: sticky;
+    // the site header collapses on course pages (`body:has(.course-crumb)`)
+    top: var(--space-6);
+    align-self: start;
+  }
+}
+
+.course-masthead {
+  // base.scss lays every <header> out as a flex row
+  display: block;
+  min-width: 0;
+  padding: 0 0 var(--space-4);
+  border-bottom: 1px solid var(--dark);
+
+  .course-masthead-num {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    margin: 0;
+    font-size: var(--text-ui);
+    color: var(--darkgray);
+
+    .course-unit-sep {
+      color: var(--gray);
+    }
+
+    a {
+      color: var(--darkgray);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+    }
+  }
+
+  .course-masthead-title {
+    margin: var(--space-1) 0 var(--space-2);
+    font-size: 2rem;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .course-masthead-meta {
+    margin: 0;
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    text-transform: lowercase;
+    color: var(--darkgray);
+
+    .course-sep {
+      margin: 0 var(--space-2);
+      color: var(--gray);
+    }
+
+    a {
+      color: var(--dark);
+      text-decoration: underline;
+      text-decoration-color: var(--gray);
+      text-underline-offset: 0.2em;
+
+      &:hover {
+        text-decoration-color: var(--dark);
+      }
+    }
+  }
+
+  .course-masthead-desc {
+    max-width: 72ch;
+    margin: var(--space-4) 0 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--darkgray);
+    text-wrap: pretty;
+  }
+}
+
+.course-rail {
+  min-width: 0;
+  font-size: var(--text-ui);
+  line-height: 1.45;
+
+  section + section {
+    margin-top: var(--space-5);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-1);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-weight: 400;
+    text-transform: lowercase;
+    color: var(--darkgray);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  dl {
+    margin: 0;
+  }
+
+  dt {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    color: var(--darkgray);
+  }
+
+  dd {
+    margin: 0 0 var(--space-2);
+    overflow-wrap: anywhere;
+  }
+
+  a {
+    color: var(--dark);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+
+  @container course-home (max-width: 56rem) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-8);
+
+    section + section {
+      margin-top: 0;
+    }
+  }
+}
+
+.course-main {
+  min-width: 0;
+  container-type: inline-size;
+  container-name: course-spine;
 }
 
 .course-spine-table {
@@ -223,6 +424,7 @@
     text-align: left;
     vertical-align: baseline;
     border: 0;
+    overflow-wrap: anywhere;
   }
 
   thead th {
@@ -252,12 +454,6 @@
   .course-unit-row {
     & + .course-unit-row td {
       border-top: 1px solid var(--course-line);
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover td {
-        background: var(--course-surface);
-      }
     }
 
     &[data-frontier='true'] td {
@@ -291,6 +487,7 @@
   a {
     color: inherit;
     text-decoration: none;
+    overflow-wrap: anywhere;
 
     &:hover {
       text-decoration: underline;
@@ -361,16 +558,17 @@
   @media all and ($mobile) {
     .course-action {
       margin-left: 0;
-      width: 100%;
-      justify-content: center;
     }
   }
 }
 
 .course-unit-foot {
+  // footer.scss lays every <footer> out as a flex row; this one stacks
+  display: block;
   grid-column: var(--layout-wide-column);
   min-width: 0;
-  margin-top: var(--space-8);
+  margin-top: var(--space-0);
+  padding-top: var(--space-0);
 
   h2 {
     margin: var(--space-6) 0 var(--space-2);
@@ -419,7 +617,8 @@
 
   @media (hover: hover) and (pointer: fine) {
     a:hover {
-      background: var(--course-surface);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
     }
   }
 
@@ -446,12 +645,501 @@
   }
 }
 
-// the course and courses folder pages sit directly in the page grid, like the A|L layout
-.folder-layout--course {
-  display: contents;
+// resource strip: the row above the reader (and the head of every non-PDF resource view).
+// Crumb · title · meta on the left, the links table (prev/next rows first) on the right; the
+// table folds into a native popover bottom sheet below 50rem.
+.course-resource-strip {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding: 0 var(--pdf-gutter, 1rem);
+}
 
-  .folder-layout--article {
-    min-width: 0;
+.course-strip {
+  --course-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --course-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --course-control-height: 1.75rem;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: 'head links';
+  gap: var(--space-2) var(--space-4);
+  align-items: start;
+  min-width: 0;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--course-line);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  font-size: var(--text-meta);
+  text-transform: lowercase;
+
+  a {
+    color: var(--dark);
+    text-decoration: none;
+    background: transparent;
+
+    &:hover {
+      background: transparent;
+      color: var(--dark);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 2px;
+    }
+  }
+
+  code {
+    font-size: inherit;
+    padding: 0;
+    background: transparent;
+  }
+
+  @media (pointer: coarse) {
+    --course-control-height: 44px;
+  }
+}
+
+.course-strip-head {
+  grid-area: head;
+  min-width: 0;
+
+  .course-crumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    margin: 0;
+  }
+
+  .course-unit-sep {
+    color: var(--gray);
+  }
+
+  .course-card-title {
+    margin: var(--space-1) 0 0;
+    font-family: var(--headerFont);
+    font-size: var(--text-ui);
+    font-weight: 400;
+    line-height: 1.3;
+    text-transform: none;
+    color: var(--dark);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  .course-count {
+    margin: var(--space-1) 0 0;
+  }
+}
+
+.course-strip-toggle {
+  grid-area: links;
+  display: none;
+  align-self: center;
+  min-height: var(--course-control-height);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--course-line);
+  border-radius: var(--radius-none);
+  background: transparent;
+  color: var(--dark);
+  font: inherit;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
+.course-strip-links {
+  grid-area: links;
+  display: block;
+  justify-self: end;
+  align-self: center;
+  max-width: 28rem;
+  margin: 0;
+  padding: 0;
+
+  // the native popover display is overridden above the fold; below it the UA default applies
+  &[popover] {
+    position: static;
+    inset: auto;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    overflow: visible;
+  }
+}
+
+// Links as a key/value table in the triathlon cheat-sheet grammar (`.tri-cheat`): gray row
+// labels left, values right, no rules.
+.course-strip-table {
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  border: 0;
+  border-collapse: collapse;
+  background: none;
+  font: inherit;
+  text-transform: inherit;
+
+  tr {
+    border: 0;
+    background: none;
+  }
+
+  th,
+  td {
+    padding: 0.12rem 0 0.12rem 1.1rem;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-weight: inherit;
+    text-align: right;
+    vertical-align: baseline;
+    white-space: nowrap;
+  }
+
+  th {
+    padding-left: 0;
+    text-align: left;
+    color: var(--gray);
+  }
+
+  .course-sep {
+    margin: 0 0.45em;
+    color: var(--gray);
+  }
+}
+
+@media (max-width: 50rem) {
+  .course-strip {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .course-strip-toggle {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .course-strip-links[popover] {
+    display: none;
+    position: fixed;
+    inset: auto 0 0 0;
+    width: auto; // the UA sheet gives [popover] fit-content
+    max-width: none;
+    max-height: 70dvh;
+    padding: var(--space-2) var(--space-4) max(var(--space-4), env(safe-area-inset-bottom));
+    border: 1px solid var(--dark);
+    border-bottom: 0;
+    background: var(--light);
+    overflow: auto;
+    text-align: left;
+
+    &:popover-open {
+      display: block;
+    }
+
+    .course-strip-table {
+      width: 100%;
+
+      th,
+      td {
+        padding: var(--space-2) 0;
+        border-top: 1px solid var(--course-line);
+        text-align: left;
+        white-space: normal;
+        line-height: var(--course-control-height);
+      }
+
+      th {
+        width: 1%;
+        padding-right: var(--space-3);
+      }
+
+      tr:first-child th,
+      tr:first-child td {
+        border-top: 0;
+      }
+
+      a {
+        display: inline-block;
+      }
+    }
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--dark) 25%, transparent);
+    }
+  }
+}
+
+// --- home schedule: src slots, marks ---
+.course-spine-table {
+  .course-c-src,
+  .course-c-marks {
+    width: 1%;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .course-c-marks {
+    text-align: right;
+  }
+
+  .course-slots {
+    display: inline-grid;
+    grid-auto-flow: column;
+    // the 1% src column squeezes auto tracks down to the slot min-width; keep the duration whole
+    grid-auto-columns: max-content;
+    gap: var(--space-2);
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .course-slot {
+    min-width: 3ch;
+    text-align: center;
+    white-space: nowrap;
+    color: var(--dark);
+  }
+
+  .course-slot--empty {
+    color: var(--gray);
+  }
+
+  // below 24rem the slots move under the topic; otherwise the line stays out of the tree
+  .course-unit-src {
+    display: none;
+  }
+
+  @container course-spine (max-width: 36rem) {
+    .course-c-marks {
+      display: none;
+    }
+  }
+
+  @container course-spine (max-width: 24rem) {
+    .course-unit-src {
+      display: grid;
+      grid-auto-flow: column;
+      justify-content: start;
+      gap: var(--space-2);
+      margin-top: var(--space-1);
+      font-family: var(--codeFont);
+      font-size: var(--text-meta);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+body:has(.course-crumb) {
+  section[class~='header'],
+  .header-content {
+    display: contents;
+  }
+
+  .header-content > .breadcrumb-container,
+  .header-content > .darkmode,
+  .header-content > .search > .search-button {
+    display: none;
+  }
+
+  .course-watch-body {
+    top: 0;
+    height: 100dvh;
+  }
+
+  // stacked course pages (unit bar, title, byline, notes, resource body, the unit footer,
+  // license, backlinks) share the home's 66rem centred column; the pdf strip keeps its bleed
+  .page > .page-body-grid {
+    > .page-header > :not(.course-resource-strip),
+    > .page-content > .main-col,
+    > .page-content > .course-reading-split,
+    > .page-content > .course-resource,
+    > .page-footer > * {
+      inline-size: 100%;
+      max-inline-size: 66rem;
+      justify-self: center;
+    }
+  }
+}
+
+// --- unit bar extras: the crumb group, the fold button ---
+.course-unit-bar {
+  .course-crumb {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+
+  .course-unit-dates {
+    color: var(--darkgray);
+  }
+
+  button.course-fold {
+    appearance: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      text-decoration-color: var(--dark);
+      text-decoration-style: double;
+    }
+  }
+}
+
+// --- LaTeX notes: generated from the OCW source (docs/plans/course-resources.md §4) ---
+article.course-notes {
+  blockquote.callout[data-callout-metadata='latex'] {
+    --color: var(--dark);
+    --border: var(--dark);
+    --bg: transparent;
+
+    margin: 1rem 0;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--dark);
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: var(--dark);
+
+    &::before {
+      content: none;
+    }
+
+    & > .callout-title {
+      align-items: baseline;
+      padding: var(--space-3) 0 0;
+      color: var(--dark);
+    }
+
+    & > .callout-title:last-child,
+    &.is-collapsed > .callout-title {
+      padding-bottom: var(--space-3);
+    }
+  }
+
+  // the `p. k` pointer to the lecture PDF
+  blockquote.callout[data-callout-metadata='latex']
+    > .callout-content
+    > p:last-child
+    > a:only-child {
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    color: var(--darkgray);
+  }
+
+  a.latex-eq {
+    display: block;
+    position: relative;
+    top: -4rem;
+    visibility: hidden;
+  }
+
+  img[src*='/static_resources/latex/'] {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    margin: var(--space-4) auto;
+    border-radius: 0;
+  }
+
+  :root[saved-theme='dark'] & img[src*='/static_resources/latex/'] {
+    filter: invert(0.88) hue-rotate(180deg);
+  }
+}
+
+.course-latex {
+  margin-top: var(--space-6);
+  border: 1px solid var(--dark);
+  font-size: var(--text-ui);
+
+  summary {
+    padding: 0.4rem 0.75rem;
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+    text-transform: lowercase;
+    color: var(--dark);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
+    }
+  }
+
+  &[open] summary {
+    border-bottom: 1px solid var(--course-line);
+  }
+
+  .course-latex-tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0.75rem;
+    font-family: var(--codeFont);
+    font-size: var(--text-meta);
+
+    .course-count {
+      flex: 1 1 auto;
+      margin: 0;
+    }
+
+    button {
+      appearance: none;
+      min-height: var(--course-control-height);
+      padding: 0 var(--space-2);
+      border: 1px solid var(--course-line);
+      border-radius: var(--radius-none);
+      background: transparent;
+      color: var(--dark);
+      font: inherit;
+      text-transform: lowercase;
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid var(--dark);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .course-latex-pre {
+    max-height: 60vh;
+    margin: 0;
+    padding: var(--space-3) 0.75rem;
+    overflow: auto;
+    border: 0;
+    border-top: 1px solid var(--course-line);
+    border-radius: 0;
+    background: var(--course-surface);
+    font-size: var(--text-meta);
+    line-height: 1.5;
+    tab-size: 2;
+
+    code {
+      display: block;
+      padding: 0;
+      background: transparent;
+      white-space: pre;
+    }
+  }
+}
+
+// --- vendored pages/<name>: crumb and description above the article ---
+.course-page {
+  --course-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --course-control-height: 1.75rem;
+
+  .course-page-head {
+    margin: 0 0 var(--space-4);
+  }
+
+  .course-page-links {
     margin: 0;
   }
 }

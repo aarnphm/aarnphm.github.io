@@ -2,8 +2,15 @@
 @use '../../styles/mixin.scss' as *;
 
 .breadcrumb-container {
+  // the script keeps an empty nav on pages without crumbs so the SPA swap has a target
+  &:empty {
+    display: none;
+  }
+
   margin: 0;
   padding: 0;
+  // the header row must be able to shrink the trail below the 320px title cap on phones
+  min-width: 0;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -28,9 +35,11 @@
 
 .breadcrumb-element {
   display: flex;
+  min-width: 0;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  text-transform: lowercase;
 
   & > a {
     text-decoration: none;
@@ -51,7 +60,7 @@
 }
 
 a[data-breadcrumbs] {
-  max-width: 320px;
+  max-width: min(320px, 100%);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
