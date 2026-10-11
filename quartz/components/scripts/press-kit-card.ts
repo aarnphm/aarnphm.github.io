@@ -163,12 +163,13 @@ export interface CardModel {
   date?: string
   reading?: string
   tags: string[]
-  /** display form, without the scheme */
-  url: string
   section?: string
   author: string
   avatar?: CanvasImageSource
+  /** the site's base social card, `/static/og-image.webp` */
+  art?: HTMLImageElement
   show: {
+    art: boolean
     description: boolean
     excerpt: boolean
     meta: boolean
@@ -531,7 +532,7 @@ function drawCrumbs(
   })
 }
 
-/** Boxed `#tag` pills, as on the page. Returns the row height, or 0 when nothing fits. */
+/** One row of boxed `#tag` pills, as on the page. */
 function drawTags(
   ctx: CanvasRenderingContext2D,
   fonts: Fonts,
@@ -541,8 +542,8 @@ function drawTags(
   size: number,
   maxWidth: number,
   palette: Palette,
-): number {
-  if (tags.length === 0) return 0
+): void {
+  if (tags.length === 0) return
   const font = monoFont(fonts, size)
   const padX = size * 0.45
   const padY = size * 0.32
@@ -557,7 +558,7 @@ function drawTags(
     placed.push({ text, x: cx, w })
     cx += w + gap
   }
-  if (placed.length === 0) return 0
+  if (placed.length === 0) return
   const top = bottom - h
   ctx.lineWidth = Math.max(1.5, size / 14)
   ctx.strokeStyle = palette.muted
@@ -569,7 +570,6 @@ function drawTags(
     ctx.strokeRect(pill.x + inset, top + inset, pill.w - inset * 2, h - inset * 2)
     ctx.fillText(pill.text, pill.x + padX, top + padY + size * ASCENT)
   }
-  return h
 }
 
 function drawRule(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, color: string) {
@@ -590,7 +590,7 @@ interface Frame {
   bottom: number
 }
 
-/** Header row and footer (rule, tags, url) shared by every template; returns the free middle. */
+/** Header row and footer shared by every template; returns the free middle. */
 function chrome(
   ctx: CanvasRenderingContext2D,
   fonts: Fonts,
@@ -632,20 +632,76 @@ function chrome(
     top += meta * 1.3
   }
 
-  // The footer baseline leaves room for descenders above the bottom padding.
-  const baseline = spec.height - pb - meta * 0.22
+  const footerBottom = spec.height - pb
+  const tagSize = meta * 0.92
+  // Align reading time with the text inside the tag pills.
+  const baseline = footerBottom - tagSize * (1 - ASCENT + 0.32)
   const showReading = !!model.reading && model.show.meta && model.kind !== 'quote'
-  label(ctx, mono, model.url, x, baseline, showReading ? w * 0.7 : w, palette.ink)
+  const readingWidth = showReading ? measure(ctx, mono, model.reading!) + meta * 2 : 0
+  if (model.show.meta) {
+    drawTags(ctx, fonts, model.tags, x, footerBottom, tagSize, w - readingWidth, palette)
+  }
   if (showReading) label(ctx, mono, model.reading!, x, baseline, w, palette.muted, 'right')
 
-  let bottom = baseline - meta - meta * 0.75
+  const bottom = baseline - meta - meta * 0.75
   drawRule(ctx, x, bottom, w, palette.rule)
-  bottom -= meta * 0.9
-  if (model.show.meta && model.tags.length > 0) {
-    const tagH = drawTags(ctx, fonts, model.tags, x, bottom, meta * 0.92, w, palette)
-    if (tagH) bottom -= tagH + meta * 0.9
-  }
   return { x, w, top: top + spec.gap, bottom: bottom - spec.gap * 0.5 }
+}
+
+// The mascot on the ridge, in the base card's own pixels; crops keep it in view.
+const ART_FOCUS: [number, number] = [640, 360]
+
+/** Cover-crops `art` into the box around ART_FOCUS. */
+function drawCover(
+  ctx: CanvasRenderingContext2D,
+  art: HTMLImageElement,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+) {
+  const aw = art.naturalWidth
+  const ah = art.naturalHeight
+  const scale = Math.max(w / aw, h / ah)
+  const sw = w / scale
+  const sh = h / scale
+  const sx = Math.min(Math.max(ART_FOCUS[0] * (aw / 1200) - sw / 2, 0), aw - sw)
+  const sy = Math.min(Math.max(ART_FOCUS[1] * (ah / 630) - sh / 2, 0), ah - sh)
+  ctx.drawImage(art, sx, sy, sw, sh, x, y, w, h)
+}
+
+/**
+ * Lays the base card into the free middle and returns what is left for text. Paysage takes a
+ * right-hand column; the taller formats take a band above the text. On papier the card shares
+ * the art's paper, so the band runs edge to edge; other grounds get it as a ruled print.
+ */
+function drawArt(
+  ctx: CanvasRenderingContext2D,
+  model: CardModel,
+  spec: FormatSpec,
+  palette: Palette,
+  frame: Frame,
+): Frame {
+  const art = model.art
+  if (!model.show.art || !art?.naturalWidth) return frame
+  const avail = frame.bottom - frame.top
+  const bleed = palette.label === 'papier'
+  const print = (x: number, y: number, w: number, h: number) => {
+    drawCover(ctx, art, x, y, w, h)
+    if (bleed) return
+    ctx.strokeStyle = palette.rule
+    ctx.lineWidth = 2
+    ctx.strokeRect(x + 1, y + 1, w - 2, h - 2)
+  }
+  if (spec === FORMATS.landscape) {
+    const w = Math.round(frame.w * 0.4)
+    print(frame.x + frame.w - w, frame.top, w, avail)
+    return { ...frame, w: frame.w - w - spec.gap * 1.5 }
+  }
+  const h = Math.round(Math.min(frame.w / 2.2, avail * 0.4))
+  if (bleed) print(0, frame.top, spec.width, h)
+  else print(frame.x, frame.top, frame.w, h)
+  return { ...frame, top: frame.top + h + spec.gap }
 }
 
 function drawNote(
@@ -655,7 +711,13 @@ function drawNote(
   spec: FormatSpec,
   palette: Palette,
 ) {
-  const frame = chrome(ctx, fonts, model, spec, palette, 'crumbs')
+  const frame = drawArt(
+    ctx,
+    model,
+    spec,
+    palette,
+    chrome(ctx, fonts, model, spec, palette, 'crumbs'),
+  )
   const avail = frame.bottom - frame.top
   const gap = spec.gap * 0.7
   const hasDesc = model.show.description && model.description.length > 0
@@ -719,7 +781,13 @@ function drawQuote(
   spec: FormatSpec,
   palette: Palette,
 ) {
-  const frame = chrome(ctx, fonts, model, spec, palette, 'crumbs')
+  const frame = drawArt(
+    ctx,
+    model,
+    spec,
+    palette,
+    chrome(ctx, fonts, model, spec, palette, 'crumbs'),
+  )
   const avail = frame.bottom - frame.top
   const gap = spec.gap * 0.8
 
@@ -786,7 +854,13 @@ function drawEntry(
   spec: FormatSpec,
   palette: Palette,
 ) {
-  const frame = chrome(ctx, fonts, model, spec, palette, 'author')
+  const frame = drawArt(
+    ctx,
+    model,
+    spec,
+    palette,
+    chrome(ctx, fonts, model, spec, palette, 'author'),
+  )
   const avail = frame.bottom - frame.top
   const gap = spec.gap * 0.5
 
