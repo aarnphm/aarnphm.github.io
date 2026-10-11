@@ -326,6 +326,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.2rem;
   min-width: 0;
   min-height: var(--pk-control);
@@ -338,7 +340,8 @@
   font-size: 0.66rem;
   font-weight: 400;
   line-height: 1.2;
-  text-align: left;
+  text-align: center;
+  white-space: nowrap;
   cursor: pointer;
 
   input {
@@ -380,6 +383,7 @@
 .press-kit-swatch {
   i {
     display: block;
+    align-self: stretch;
     height: 0.85rem;
     outline: 1px solid var(--pk-line);
     outline-offset: -1px;
@@ -402,13 +406,19 @@
   }
 }
 
-.press-kit-includes {
+.press-kit-includes,
+.press-kit-actions {
   display: flex;
   flex-wrap: wrap;
 
   > .press-kit-segment {
     flex: 1 0 auto;
   }
+}
+
+.press-kit-actions > .press-kit-segment {
+  flex-basis: 0;
+  color: var(--dark);
 }
 
 .press-kit-textarea,
@@ -429,7 +439,9 @@
   font-family: var(--bodyFont);
   font-size: 0.8rem;
   line-height: 1.45;
-  resize: vertical;
+  field-sizing: content;
+  overflow: hidden;
+  resize: none;
 }
 
 .press-kit-input {
@@ -460,7 +472,6 @@
   }
 }
 
-.press-kit-actions,
 .press-kit-chips {
   display: flex;
   flex-wrap: wrap;
@@ -528,8 +539,8 @@
   }
 }
 
-.press-kit-action[data-action='download'] {
-  border-color: var(--dark);
+// Specific enough to beat the segment hover, which would otherwise wash out the ink fill.
+.press-kit-actions > .press-kit-segment[data-action='download'] {
   background: var(--dark);
   color: var(--light);
 

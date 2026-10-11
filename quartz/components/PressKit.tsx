@@ -222,7 +222,7 @@ export default ((userOpts?: Partial<Options>) => {
             <div class="press-kit-frame">
               <canvas class="press-kit-canvas" role="img" aria-label="aperçu de la carte" />
               <div class="press-kit-unfurl" hidden>
-                <img class="press-kit-unfurl-image" alt="" decoding="async" />
+                <img class="press-kit-unfurl-image" alt="" decoding="async" data-ignore-popup />
                 <div class="press-kit-unfurl-text">
                   <span class="press-kit-unfurl-site">{site}</span>
                   <span class="press-kit-unfurl-title" />
@@ -289,14 +289,14 @@ export default ((userOpts?: Partial<Options>) => {
                 </div>
               </fieldset>
 
-              <div class="press-kit-actions">
-                <button type="button" class="press-kit-action" data-action="download">
+              <div class="press-kit-segments press-kit-actions">
+                <button type="button" class="press-kit-segment" data-action="download">
                   télécharger
                 </button>
-                <button type="button" class="press-kit-action" data-action="copy-image">
+                <button type="button" class="press-kit-segment" data-action="copy-image">
                   copier l'image
                 </button>
-                <button type="button" class="press-kit-action" data-action="share-image" hidden>
+                <button type="button" class="press-kit-segment" data-action="share-image" hidden>
                   partager…
                 </button>
               </div>
