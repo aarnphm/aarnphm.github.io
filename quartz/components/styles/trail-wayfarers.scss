@@ -1,0 +1,45 @@
+.homepage-trail-scene {
+  .trail-map-reader-head {
+    animation: none;
+  }
+  .trail-map-reader[data-phase='waiting'] {
+    visibility: hidden;
+  }
+  [data-reader-pose='read'] {
+    display: none;
+  }
+  .trail-map-reader[data-phase='reading'] {
+    [data-reader-pose='walk'] {
+      display: none;
+    }
+    [data-reader-pose='read'] {
+      display: block;
+    }
+  }
+  .trail-map-reader[data-stride='0'] .trail-reader-stride[data-stride='1'],
+  .trail-map-reader[data-stride='1'] .trail-reader-stride[data-stride='0'] {
+    display: none;
+  }
+  .trail-reader-2 .trail-camper-coat {
+    fill: color-mix(in srgb, var(--gray) 45%, #788891);
+  }
+  .trail-reader-map {
+    transform-origin: 11px -12px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-map-reader[data-phase='reading'] .trail-reader-map {
+      animation: trail-map-unfold 220ms ease-out both;
+    }
+  }
+}
+
+@keyframes trail-map-unfold {
+  from {
+    opacity: 0;
+    scale: 0.4 1;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}

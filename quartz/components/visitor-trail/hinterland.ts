@@ -1,4 +1,3 @@
-import { trailCows } from './cows'
 import { pixels } from './pixels'
 import { trailRandom } from './random'
 
@@ -33,6 +32,5 @@ export function trailHinterland(width: number, camp: { x: number; y: number }, s
   return `<g class="trail-upland">
     <g transform="translate(${groundLeft} ${camp.y + 15})">${pixels(ground, { G: 'trail-upland-ground', E: 'trail-upland-edge' }, size)}</g>
     ${details}
-    ${trailCows(width, camp, seed)}
   </g>`
 }

@@ -1,0 +1,48 @@
+.homepage-trail-scene {
+  .trail-alpine-traveler,
+  .trail-alpine-tracks {
+    shape-rendering: crispEdges;
+    pointer-events: none;
+  }
+  .trail-alpine-tracks {
+    fill: var(--darkgray);
+    opacity: 0.3;
+  }
+  [data-alpine-pose='read'] {
+    display: none;
+  }
+  .trail-alpine-traveler:is([data-phase='reading'], [data-phase='resting']) {
+    [data-alpine-pose='walk'] {
+      display: none;
+    }
+    [data-alpine-pose='read'] {
+      display: block;
+    }
+  }
+  .trail-alpine-traveler[data-stride='0'] .trail-alpine-stride[data-stride='1'],
+  .trail-alpine-traveler[data-stride='1'] .trail-alpine-stride[data-stride='0'] {
+    display: none;
+  }
+  .trail-alpine-traveler[data-alpine-traveler='1'] .trail-hiker-coat {
+    fill: color-mix(in srgb, var(--gray) 55%, #a87564);
+  }
+  .trail-alpine-traveler[data-alpine-traveler='2'] .trail-hiker-coat {
+    fill: color-mix(in srgb, var(--gray) 45%, #788891);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-alpine-travelers,
+    .trail-alpine-tracks {
+      animation: trail-alpine-arrive 600ms ease-out 1200ms both;
+    }
+    .trail-alpine-travelers[data-motion='paused'],
+    .trail-alpine-tracks[data-motion='paused'] {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes trail-alpine-arrive {
+  from {
+    opacity: 0;
+  }
+}

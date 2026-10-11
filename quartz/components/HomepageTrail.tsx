@@ -8,6 +8,7 @@ export default (() => {
     if (fileData.slug !== 'index') return null
     return (
       <div class="homepage-trail">
+        <time class="trail-local-time" aria-label="Local time" aria-live="off" />
         <button
           class="homepage-trail-toggle"
           type="button"

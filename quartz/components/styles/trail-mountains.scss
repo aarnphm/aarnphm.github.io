@@ -1,0 +1,55 @@
+.homepage-trail-scene {
+  .trail-backdrop {
+    pointer-events: none;
+  }
+  [data-formation] {
+    shape-rendering: crispEdges;
+  }
+
+  .trail-mountain-rock {
+    fill: color-mix(in srgb, var(--gray) 24%, var(--light));
+  }
+  .trail-mountain-shade {
+    fill: color-mix(in srgb, var(--gray) 39%, var(--light));
+  }
+  .trail-mountain-light {
+    fill: color-mix(in srgb, var(--gray) 13%, var(--light));
+  }
+  .trail-mountain-snow {
+    fill: var(--light);
+  }
+  .trail-mountain-fracture {
+    fill: color-mix(in srgb, var(--darkgray) 22%, var(--light));
+  }
+  .trail-mountain-lichen {
+    fill: color-mix(in srgb, var(--gray) 25%, var(--lightgray));
+  }
+  .trail-foothill-far {
+    fill: color-mix(in srgb, var(--gray) 15%, var(--light));
+  }
+  .trail-foothill-mid {
+    fill: color-mix(in srgb, var(--gray) 25%, var(--light));
+  }
+  .trail-foothill-near {
+    fill: color-mix(in srgb, var(--lightgray) 65%, var(--light));
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-mountain-paint {
+      animation: trail-mountain-arrive 2600ms steps(10, end)
+        calc(var(--trail-mountain-delay, 0ms) + var(--trail-paint-step, 0) * 110ms) both;
+    }
+    .trail-scene[data-weather-motion='paused'] .trail-mountain-paint {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes trail-mountain-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

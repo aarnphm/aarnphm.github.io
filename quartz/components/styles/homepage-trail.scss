@@ -1,5 +1,18 @@
 @use './shared-trail-frame.scss';
 
+.trail-local-time {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: var(--z-dropdown);
+  padding: 0 2px;
+  background: var(--light);
+  color: var(--gray);
+  font: 10px/1.6 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
 .homepage-trail-toggle {
   display: grid;
   place-items: center;

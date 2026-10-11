@@ -1,3 +1,4 @@
+import { followTerrain, trailLandscape, type Landscape } from './landscape'
 import { trailRandom } from './random'
 
 type Point = { x: number; y: number }
@@ -5,7 +6,14 @@ type Rect = { left: number; top: number; right: number; bottom: number }
 export type TrailId = 'main' | 'pines' | 'grove' | 'ridge' | 'meadow' | 'switchback'
 export const trailIds: TrailId[] = ['main', 'pines', 'grove', 'ridge', 'meadow', 'switchback']
 
-function curvedPath(points: Point[], width: number, height: number, lead?: Point) {
+function curvedPath(
+  input: Point[],
+  width: number,
+  height: number,
+  landscape: Landscape,
+  lead?: Point,
+) {
+  const points = followTerrain(input, landscape)
   const bounded = (point: Point) => ({
     x: Math.max(6, Math.min(width - 6, point.x)),
     y: Math.max(8, Math.min(height - 16, point.y)),
@@ -123,10 +131,11 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     x: Math.min(width - 72, width * (0.64 + random() * 0.12)),
     y: Math.min(height - 80, Math.max(height - 112, bottom + 225)),
   }
-  const clearing = camp.y - bottom
+  const landscape = trailLandscape(width, height, bottom, camp, seed)
+  const clearing = camp.y - landscape.meadowTop
   const wander = (x: number, y: number): Point => ({
     x: Math.max(10, Math.min(width - 10, width * (x + (random() - 0.5) * 0.12))),
-    y: bottom + clearing * (y + (random() - 0.5) * 0.14),
+    y: landscape.meadowTop + clearing * Math.max(0.05, y + (random() - 0.5) * 0.14),
   })
   const fork = wander(0.4, 0.22)
   const end = { x: camp.x - 24, y: camp.y + 4 }
@@ -140,7 +149,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
   )
   // Repeated forks share a stem and a destination; broad curves carry the turns.
   const routes: Record<TrailId, string> = {
-    main: curvedPath(points, width, height),
+    main: curvedPath(points, width, height, landscape),
     pines: curvedPath(
       [
         { x: width * (0.12 + random() * 0.15), y: 18 },
@@ -154,11 +163,13 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       ],
       width,
       height,
+      landscape,
     ),
     grove: curvedPath(
       [branch, wander(0.64, 0.26), wander(0.8, 0.44), wander(0.93, 0.72), wander(0.81, 0.96), end],
       width,
       height,
+      landscape,
       lead,
     ),
     ridge: curvedPath(
@@ -174,6 +185,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       ],
       width,
       height,
+      landscape,
     ),
     meadow: curvedPath(
       [
@@ -187,6 +199,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       ],
       width,
       height,
+      landscape,
     ),
     switchback: curvedPath(
       [
@@ -200,9 +213,20 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       ],
       width,
       height,
+      landscape,
       lead,
     ),
   }
   const clear = clearSpace(width, height, obstacles)
-  return { width, height, bottom, camp, routes, clear, obstacles }
+  const reading = landing.getBoundingClientRect()
+  const backdropClear = clearSpace(width, height, [
+    ...obstacles,
+    {
+      left: reading.left - bounds.left - 24,
+      right: reading.right - bounds.left + 24,
+      top: reading.top - bounds.top - 24,
+      bottom: reading.bottom - bounds.top + 24,
+    },
+  ])
+  return { width, height, bottom, camp, landscape, routes, clear, backdropClear, obstacles }
 }
