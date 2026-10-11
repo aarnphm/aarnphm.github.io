@@ -19,5 +19,6 @@ license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 
 up: [[courses/18.905-fall-2016/|mit 18.905]]
 
+- [[courses/18.905-fall-2016/resources/problem-sets/|problem sets]]
 - [[courses/18.905-fall-2016/resources/lecture-notes/|lecture notes]]
 - [[courses/18.905-fall-2016/resources/assignments/|assignments]]

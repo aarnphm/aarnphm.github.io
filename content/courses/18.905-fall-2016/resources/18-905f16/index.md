@@ -11,7 +11,12 @@ tags:
   - 'topology and geometry'
   - 'topology'
   - 'geometry'
-resource: { kind: 'image', file: 'static_resources/5e0c719d764c68917a8e422c4fd7c449_18-905f16.gif' }
+resource:
+  {
+    kind: 'image',
+    file: 'static_resources/5e0c719d764c68917a8e422c4fd7c449_18-905f16.gif',
+    bytes: 23391,
+  }
 layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

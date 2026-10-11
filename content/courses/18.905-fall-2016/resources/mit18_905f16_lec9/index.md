@@ -1,6 +1,6 @@
 ---
-title: 'algebraic topology i: lecture 9'
-description: 'mit 18.905 algebraic topology i: lecture 9'
+title: 'algebraic topology i: lecture 9 the homology long exact sequence'
+description: 'mit 18.905 algebraic topology i: lecture 9 the homology long exact sequence'
 id: 'mit-18-905-fall-2016-resource-resources-mit18-905f16-lec9'
 tags:
   - 'course'
@@ -16,6 +16,7 @@ resource:
   {
     kind: 'notes',
     file: 'static_resources/59a5307eef174c76ba863984d5dc452b_MIT18_905F16_lec9.pdf',
+    bytes: 402784,
     n: 9,
   }
 layout: 'resource'

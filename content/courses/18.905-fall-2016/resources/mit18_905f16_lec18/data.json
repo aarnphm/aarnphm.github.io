@@ -1,8 +1,19 @@
 {
-  "title": "Algebraic Topology I: Lecture 18 Euler Characteristic and Homology Approximation",
+  "content": "",
+  "content_type": "resource",
   "description": "",
+  "draft": false,
   "file": "/courses/18-905-algebraic-topology-i-fall-2016/1df7278a926d432190b76eb78b5d417e_MIT18_905F16_lec18.pdf",
+  "file_size": 442084,
+  "file_type": "application/pdf",
+  "iscjklanguage": false,
   "learning_resource_types": ["Lecture Notes"],
-  "resource_type": "Document",
-  "file_type": "application/pdf"
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Lecture Notes",
+  "parent_type": "CourseSection",
+  "parent_uid": "bcf5ea44-8eaf-4061-1306-7783e9ccc369",
+  "resourcetype": "Document",
+  "title": "Algebraic Topology I: Lecture 18 Euler Characteristic and Homology Approximation",
+  "uid": "1df7278a-926d-4321-90b7-6eb78b5d417e"
 }

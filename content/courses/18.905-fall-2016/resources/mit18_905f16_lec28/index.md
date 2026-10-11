@@ -16,7 +16,8 @@ resource:
   {
     kind: 'notes',
     file: 'static_resources/b6e223ce8fd07c93e44c2345b8a76483_MIT18_905F16_lec28.pdf',
-    n: 27,
+    bytes: 349275,
+    n: 28,
   }
 layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'

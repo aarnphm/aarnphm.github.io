@@ -1,8 +1,19 @@
 {
-  "title": "Algebraic Topology I: Lecture 14 CW-Complexes",
+  "content": "",
+  "content_type": "resource",
   "description": "",
+  "draft": false,
   "file": "/courses/18-905-algebraic-topology-i-fall-2016/bd586cc1ab67e339ff3a6bc13609241f_MIT18_905F16_lec14.pdf",
+  "file_size": 420221,
+  "file_type": "application/pdf",
+  "iscjklanguage": false,
   "learning_resource_types": ["Lecture Notes"],
-  "resource_type": "Document",
-  "file_type": "application/pdf"
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Lecture Notes",
+  "parent_type": "CourseSection",
+  "parent_uid": "bcf5ea44-8eaf-4061-1306-7783e9ccc369",
+  "resourcetype": "Document",
+  "title": "Algebraic Topology I: Lecture 14 CW-Complexes",
+  "uid": "bd586cc1-ab67-e339-ff3a-6bc13609241f"
 }

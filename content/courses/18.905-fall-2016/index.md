@@ -14,7 +14,7 @@ tags:
 aliases:
   - '18.905'
   - 'algebraic topology i'
-  - '18.905-Fall-2016'
+  - '18.905-fall-2016'
 layout: 'course'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
@@ -327,7 +327,7 @@ course:
       }
     - {
         n: 25,
-        title: 'künneth and eilenberg zilber',
+        title: 'künneth and eilenberg zilber',
         part: 2,
         resources:
           [
@@ -359,10 +359,6 @@ course:
               id: 'mit18_905f16_lec27',
               file: 'static_resources/8665d7c97d9a83a78bbc576390b4a95e_MIT18_905F16_lec27.pdf',
             },
-            {
-              id: 'mit18_905f16_lec28',
-              file: 'static_resources/b6e223ce8fd07c93e44c2345b8a76483_MIT18_905F16_lec28.pdf',
-            },
           ],
       }
     - {
@@ -370,6 +366,13 @@ course:
         title: 'products in cohomology',
         part: 3,
         keyDates: ['problem set 5 due'],
+        resources:
+          [
+            {
+              id: 'mit18_905f16_lec28',
+              file: 'static_resources/b6e223ce8fd07c93e44c2345b8a76483_MIT18_905F16_lec28.pdf',
+            },
+          ],
         due: ['mit18_905f16_pset5'],
       }
     - {
@@ -434,7 +437,7 @@ course:
       }
     - {
         n: 34,
-        title: 'cap product and &ldquo;cech&rdquo; cohomology',
+        title: 'cap product and "cech" cohomology',
         part: 3,
         resources:
           [
@@ -519,5 +522,6 @@ This is a course on the singular homology of topological spaces. Topics include:
 
 ## resources
 
+- [[courses/18.905-fall-2016/resources/problem-sets/|problem sets]]
 - [[courses/18.905-fall-2016/resources/lecture-notes/|lecture notes]]
 - [[courses/18.905-fall-2016/resources/assignments/|assignments]]

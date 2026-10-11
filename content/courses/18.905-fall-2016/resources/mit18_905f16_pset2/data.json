@@ -1,8 +1,41 @@
 {
-  "title": "Algebraic Topology I, Problem Set 2",
+  "audience": [],
+  "content": "<p>This resource contains information regarding algebraic topology I, problem set 2.</p>\n",
+  "content_type": "resource",
   "description": "This resource contains information regarding algebraic topology I, problem set 2.",
+  "draft": false,
   "file": "/courses/18-905-algebraic-topology-i-fall-2016/9616efcfc0c22e3c0a1bc73a7ec91d3e_MIT18_905F16_pset2.pdf",
-  "learning_resource_types": ["Assignments"],
-  "resource_type": "Document",
-  "file_type": "application/pdf"
+  "file_size": 181799,
+  "file_type": "application/pdf",
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
+  "iscjklanguage": false,
+  "learning_resource_types": ["Problem Sets"],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Assignments",
+  "parent_type": "CourseSection",
+  "parent_uid": "570c9db3-8ca6-ca03-946d-117c7a1abdf8",
+  "resourcetype": "Document",
+  "title": "Algebraic Topology I, Problem Set 2",
+  "uid": "9616efcf-c0c2-2e3c-0a1b-c73a7ec91d3e",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_resources": {
+      "content": [],
+      "website": "18-905-algebraic-topology-i-fall-2016"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_resources": {
+      "content": [],
+      "website": "18-905-algebraic-topology-i-fall-2016"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
 }
