@@ -116,7 +116,7 @@ async function bundleInlineScript(scriptPath) {
   return transpiled.outputFiles[0].text
 }
 
-const createBuildConfig = () => ({
+export const createBuildConfig = () => ({
   entryPoints: [fp],
   outfile: cacheFile,
   bundle: true,
@@ -153,12 +153,9 @@ const parseSourceSeedPrefixes = [
   'quartz/components/mdx/',
 ]
 
-export const parseSourceInputs = metafile => {
+const sourceInputClosure = (metafile, isSeed, closure = new Set()) => {
   const inputs = metafile.inputs ?? {}
-  const closure = new Set(['quartz.config.ts'])
-  const queue = Object.keys(inputs).filter(fp =>
-    parseSourceSeedPrefixes.some(prefix => fp === prefix || fp.startsWith(prefix)),
-  )
+  const queue = Object.keys(inputs).filter(isSeed)
   while (queue.length > 0) {
     const fp = queue.pop()
     if (closure.has(fp)) continue
@@ -170,6 +167,16 @@ export const parseSourceInputs = metafile => {
   }
   return [...closure].sort()
 }
+
+export const parseSourceInputs = metafile =>
+  sourceInputClosure(
+    metafile,
+    fp => parseSourceSeedPrefixes.some(prefix => fp === prefix || fp.startsWith(prefix)),
+    new Set(['quartz.config.ts']),
+  )
+
+export const stravaPayloadSourceInputs = metafile =>
+  sourceInputClosure(metafile, fp => fp === 'quartz/util/strava-payload.ts')
 
 const bundleInfoOutputFile = () => cacheFile.replace(/^\.\//, '')
 
@@ -269,6 +276,7 @@ export async function handleBuild(argv) {
     try {
       const result = await ctx.rebuild()
       globalThis.__quartzParseSourceInputs = parseSourceInputs(result.metafile)
+      globalThis.__quartzStravaPayloadSourceInputs = stravaPayloadSourceInputs(result.metafile)
       previousServerSourceInputs = serverSourceInputs
       serverSourceInputs = new Set(Object.keys(result.metafile.inputs))
       if (argv.bundleInfo) {
