@@ -730,6 +730,8 @@ blockquote.callout:is(
     color: var(--dark);
     margin: 0;
     overflow: visible;
+    // visible children report max-content widths; cap the single column so wide display math scrolls
+    grid-template-columns: minmax(0, 1fr);
     padding: var(--space-2) 0 var(--space-3);
   }
 
@@ -740,6 +742,12 @@ blockquote.callout:is(
 
   & > .callout-content > * {
     overflow: visible;
+  }
+
+  // keep display math scrolling inside the callout instead of widening the page on phones
+  & > .callout-content > .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
   }
 
   & > .callout-content > :first-child {
