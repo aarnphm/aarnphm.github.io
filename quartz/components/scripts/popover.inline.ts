@@ -38,6 +38,7 @@ import {
   type WikipediaPreview,
   type WikipediaTarget,
 } from '../../util/wikipedia'
+import { coursePreviewTarget, renderCoursePreview } from './course-preview-card'
 import { renderDocumentPreview } from './document-preview-card'
 import { currentNavSignal } from './nav-lifecycle'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
@@ -1189,8 +1190,27 @@ function documentPreviewSource(link: HTMLAnchorElement): SummaryPreviewSource | 
   }
 }
 
-/** Links that open a summary card (title, metadata, extract, source) from a small JSON payload. */
+function coursePreviewSource(link: HTMLAnchorElement): SummaryPreviewSource | null {
+  const href = coursePreviewTarget(new URL(link.href), new URL(document.location.href))
+  if (!href) return null
+  return {
+    popoverId: `popover-course-${href.pathname.replace(/\/+$/, '')}`,
+    className: 'course-popover',
+    async load(signal) {
+      const response = await fetchCanonical(href, { signal })
+      if (!response.ok) return null
+      const html = p.parseFromString(await response.text(), 'text/html')
+      normalizeRelativeURLs(html, href)
+      if (!html.querySelector('.course-home, [data-course-card], h1')) return null
+      return popoverInner => renderCoursePreview(html, href, popoverInner)
+    },
+  }
+}
+
+/** Links that open a compact preview instead of the full page body. */
 function summaryPreviewSource(link: HTMLAnchorElement): SummaryPreviewSource | null {
+  const course = coursePreviewSource(link)
+  if (course) return course
   const page = documentPreviewSource(link)
   if (page) return page
   const wikipedia = wikipediaTargetFromLink(link)
@@ -1351,6 +1371,8 @@ function popoverForLink(link: HTMLAnchorElement): HTMLElement | null {
 
 function mouseLeaveHandler(this: HTMLAnchorElement, event: MouseEvent | FocusEvent) {
   if (containsRelatedTarget(this, event.relatedTarget)) return
+  const containingPopover = this.closest<HTMLElement>('.popover')
+  if (containingPopover && containsRelatedTarget(containingPopover, event.relatedTarget)) return
 
   const popover = popoverForLink(this)
   if (popover && containsRelatedTarget(popover, event.relatedTarget)) {
