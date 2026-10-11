@@ -227,14 +227,43 @@
   }
 }
 
-.page:has(> .page-body-grid > .page-content > .course-home:not(.course-home--index)) {
+.page:has(> .page-body-grid > .page-content > .course-home--index) {
+  > .header > .header-content {
+    grid-column: var(--layout-full-column);
+
+    @media all and ($mobile) {
+      grid-column: var(--layout-reading-column);
+    }
+  }
+}
+
+.folder-layout.course-home--folder {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+
+  > .folder-layout--article,
+  > .notes-list {
+    grid-column: 1;
+  }
+
+  > .notes-list {
+    margin-top: 0;
+  }
+}
+
+.page:has(
+  > .page-body-grid
+    > .page-content
+    > :is(.course-home:not(.course-home--index), .course-home--folder)
+) {
   > .header,
   > .page-body-grid > .page-content {
     --layout-full-column: 3 / -3;
   }
 
   > .header > .header-content,
-  > .page-body-grid > .page-content > .course-home {
+  > .page-body-grid > .page-content > :is(.course-home, .course-home--folder) {
     grid-column: var(--layout-full-column);
     inline-size: 100%;
     max-inline-size: 66rem;
@@ -940,7 +969,10 @@ body:has(.course-crumb) {
     display: contents;
   }
 
+  // the stacked-notes toggle and the keybind hint would otherwise stack 42px above the page
   .header-content > .breadcrumb-container,
+  .header-content > .stacked-buttons,
+  .header-content > .keybind,
   .header-content > .darkmode,
   .header-content > .search > .search-button {
     display: none;
@@ -990,6 +1022,19 @@ body:has(.course-crumb) {
       text-decoration-color: var(--dark);
       text-decoration-style: double;
     }
+  }
+}
+
+// byline cell under the tags: label and path at the byline's one size
+.byline .course-unit-notes {
+  p {
+    margin: 0;
+    font-family: var(--codeFont);
+    text-transform: lowercase;
+  }
+
+  a {
+    color: var(--dark);
   }
 }
 

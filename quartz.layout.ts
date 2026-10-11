@@ -43,7 +43,11 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Byline(
       Component.Flex({
         classNames: ['first'],
-        components: [{ Component: Component.TagList(), grow: true, align: 'start' }],
+        // OCW notes add a `your notes` cell under the tags
+        components: [
+          { Component: Component.TagList(), align: 'start' },
+          { Component: Component.CourseUnitNotes(), align: 'start' },
+        ],
         direction: 'column',
         gap: '0.5rem',
       }),
