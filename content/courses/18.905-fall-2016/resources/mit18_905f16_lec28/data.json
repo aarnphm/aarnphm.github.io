@@ -1,8 +1,19 @@
 {
-  "title": "Algebraic Topology I: Lecture 27 Products in Cohomology",
+  "content": "",
+  "content_type": "resource",
   "description": "",
+  "draft": false,
   "file": "/courses/18-905-algebraic-topology-i-fall-2016/b6e223ce8fd07c93e44c2345b8a76483_MIT18_905F16_lec28.pdf",
+  "file_size": 349275,
+  "file_type": "application/pdf",
+  "iscjklanguage": false,
   "learning_resource_types": ["Lecture Notes"],
-  "resource_type": "Document",
-  "file_type": "application/pdf"
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Lecture Notes",
+  "parent_type": "CourseSection",
+  "parent_uid": "bcf5ea44-8eaf-4061-1306-7783e9ccc369",
+  "resourcetype": "Document",
+  "title": "Algebraic Topology I: Lecture 27 Products in Cohomology",
+  "uid": "b6e223ce-8fd0-7c93-e44c-2345b8a76483"
 }

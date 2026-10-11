@@ -1,29 +1,10 @@
 {
-  "course_title": "Algebraic Topology I",
   "course_description": "This is a course on the singular homology of topological spaces. Topics include: Singular homology, CW complexes, Homological algebra, Cohomology, and Poincare duality.\n",
   "course_description_html": "This is a course on the singular homology of topological spaces. Topics include: Singular homology, CW complexes, Homological algebra, Cohomology, and Poincare duality.",
-  "site_uid": "a2209ff8-55fc-4a03-81e0-ceab4013598d",
-  "legacy_uid": "ef3a56c6-a6c4-855c-e13e-0c30b143ef9b",
-  "instructors": [
-    {
-      "first_name": "Haynes",
-      "last_name": "Miller",
-      "middle_initial": "",
-      "salutation": "Prof.",
-      "title": "Prof. Haynes Miller"
-    }
-  ],
-  "department_numbers": ["18"],
-  "learning_resource_types": ["Problem Sets", "Lecture Notes"],
-  "topics": [["Mathematics", "Topology and Geometry"]],
-  "mit_learn_topics": null,
-  "primary_course_number": "18.905",
-  "extra_course_numbers": "",
-  "term": "Fall",
-  "year": "2016",
-  "level": ["Graduate"],
-  "hide_download": null,
-  "image_src": "./static_resources/5e0c719d764c68917a8e422c4fd7c449_18-905f16.gif",
+  "course_image": {
+    "content": "5e0c719d-764c-6891-7a8e-422c4fd7c449",
+    "website": "18-905-algebraic-topology-i-fall-2016"
+  },
   "course_image_metadata": {
     "content_type": "resource",
     "description": "",
@@ -43,5 +24,36 @@
     "resourcetype": "Image",
     "title": "18-905f16.gif",
     "uid": "5e0c719d-764c-6891-7a8e-422c4fd7c449"
-  }
+  },
+  "course_image_thumbnail": {
+    "content": "c8f3830c-3973-3946-803f-0493b6bb1054",
+    "website": "18-905-algebraic-topology-i-fall-2016"
+  },
+  "course_title": "Algebraic Topology I",
+  "department_numbers": ["18"],
+  "extra_course_numbers": "",
+  "image_src": "/courses/18-905-algebraic-topology-i-fall-2016/5e0c719d764c68917a8e422c4fd7c449_18-905f16.gif",
+  "instructors": [
+    {
+      "first_name": "Haynes",
+      "last_name": "Miller",
+      "middle_initial": "",
+      "salutation": "Prof.",
+      "title": "Prof. Haynes Miller",
+      "uid": "7e99c171-2da4-1fdc-a984-68ab5291d71d",
+      "url": "/search/?q=Prof.+Haynes+Miller"
+    }
+  ],
+  "learning_resource_types": ["Problem Sets", "Lecture Notes"],
+  "legacy_uid": "ef3a56c6-a6c4-855c-e13e-0c30b143ef9b",
+  "level": ["Graduate"],
+  "mit_learn_topics": [["Science & Math", "Mathematics"]],
+  "primary_course_number": "18.905",
+  "site_short_id": "18.905-fall-2016",
+  "site_uid": "a2209ff8-55fc-4a03-81e0-ceab4013598d",
+  "site_url_path": "courses/18-905-algebraic-topology-i-fall-2016",
+  "term": "Fall",
+  "title": "Course Metadata",
+  "topics": [["Mathematics", "Topology and Geometry"]],
+  "year": "2016"
 }

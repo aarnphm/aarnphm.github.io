@@ -16,6 +16,7 @@ resource:
   {
     kind: 'notes-full',
     file: 'static_resources/2dad3dd8354992d877fbeca4049817ee_MIT18_905F16_lecture_notes.pdf',
+    bytes: 998294,
   }
 layout: 'resource'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'

@@ -11,11 +11,12 @@ tags:
   - 'topology and geometry'
   - 'topology'
   - 'geometry'
-  - 'assignments'
+  - 'problem sets'
 resource:
   {
     kind: 'pset',
     file: 'static_resources/a096cb3361923d1078b79d972e073a3a_MIT18_905F16_pset5.pdf',
+    bytes: 151787,
     n: 5,
     due: 28,
   }

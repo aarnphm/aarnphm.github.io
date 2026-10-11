@@ -1,8 +1,19 @@
 {
-  "title": "Algebraic Topology I: Lecture 33 A Plethora of Products",
+  "content": "",
+  "content_type": "resource",
   "description": "",
+  "draft": false,
   "file": "/courses/18-905-algebraic-topology-i-fall-2016/ead8820db5a8d9ea280c017f9d6599da_MIT18_905F16_lec33.pdf",
+  "file_size": 374192,
+  "file_type": "application/pdf",
+  "iscjklanguage": false,
   "learning_resource_types": ["Lecture Notes"],
-  "resource_type": "Document",
-  "file_type": "application/pdf"
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Lecture Notes",
+  "parent_type": "CourseSection",
+  "parent_uid": "bcf5ea44-8eaf-4061-1306-7783e9ccc369",
+  "resourcetype": "Document",
+  "title": "Algebraic Topology I: Lecture 33 A Plethora of Products",
+  "uid": "ead8820d-b5a8-d9ea-280c-017f9d6599da"
 }

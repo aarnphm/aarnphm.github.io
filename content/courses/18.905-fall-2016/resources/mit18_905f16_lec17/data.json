@@ -1,8 +1,19 @@
 {
-  "title": "Algebraic Topology I: Lecture 17 Real Projective Space",
+  "content": "",
+  "content_type": "resource",
   "description": "",
+  "draft": false,
   "file": "/courses/18-905-algebraic-topology-i-fall-2016/8bb5e1d093463942643d57a4207a1494_MIT18_905F16_lec17.pdf",
+  "file_size": 425663,
+  "file_type": "application/pdf",
+  "iscjklanguage": false,
   "learning_resource_types": ["Lecture Notes"],
-  "resource_type": "Document",
-  "file_type": "application/pdf"
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Lecture Notes",
+  "parent_type": "CourseSection",
+  "parent_uid": "bcf5ea44-8eaf-4061-1306-7783e9ccc369",
+  "resourcetype": "Document",
+  "title": "Algebraic Topology I: Lecture 17 Real Projective Space",
+  "uid": "8bb5e1d0-9346-3942-643d-57a4207a1494"
 }

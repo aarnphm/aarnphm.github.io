@@ -1,19 +1,31 @@
 ---
-date: '2026-06-05'
-description: mit 18.905 course pages
-id: mit-18-905-fall-2016-collection-pages
-layout: A|L
-license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:10 GMT-04:00
+title: 'course pages'
+description: 'mit 18.905 course pages'
+id: 'mit-18-905-fall-2016-collection-pages'
 tags:
-  - course
-  - mit
-  - ocw
-  - math
-  - math/topology
-  - geometry
-title: course pages
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'topology and geometry'
+  - 'topology'
+  - 'geometry'
+resource:
+  {
+    kind: 'collection',
+    type: 'Pages',
+    links:
+      [
+        'courses/18.905-fall-2016/pages/assignments/',
+        'courses/18.905-fall-2016/pages/calendar/',
+        'courses/18.905-fall-2016/pages/lecture-notes/',
+        'courses/18.905-fall-2016/pages/syllabus/',
+      ],
+  }
+layout: 'resource'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.905-fall-2016/|mit 18.905]]

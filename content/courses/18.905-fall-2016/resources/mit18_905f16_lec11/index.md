@@ -16,6 +16,7 @@ resource:
   {
     kind: 'notes',
     file: 'static_resources/64c56d8bcc2967c1d289a61c959f3095_MIT18_905F16_lec11.pdf',
+    bytes: 410636,
     n: 11,
   }
 layout: 'resource'

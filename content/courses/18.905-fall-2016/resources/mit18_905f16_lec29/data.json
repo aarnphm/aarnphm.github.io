@@ -1,8 +1,19 @@
 {
-  "title": "Algebraic Topology I: Lecture 29 Cup Product (cont.)",
+  "content": "",
+  "content_type": "resource",
   "description": "",
+  "draft": false,
   "file": "/courses/18-905-algebraic-topology-i-fall-2016/03255991e65719b1a785d86275fffd24_MIT18_905F16_lec29.pdf",
+  "file_size": 365237,
+  "file_type": "application/pdf",
+  "iscjklanguage": false,
   "learning_resource_types": ["Lecture Notes"],
-  "resource_type": "Document",
-  "file_type": "application/pdf"
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Lecture Notes",
+  "parent_type": "CourseSection",
+  "parent_uid": "bcf5ea44-8eaf-4061-1306-7783e9ccc369",
+  "resourcetype": "Document",
+  "title": "Algebraic Topology I: Lecture 29 Cup Product (cont.)",
+  "uid": "03255991-e657-19b1-a785-d86275fffd24"
 }
