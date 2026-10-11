@@ -4,6 +4,7 @@ const MAPBOX_TOKEN_ENDPOINT = '/api/secrets?key=MAPBOX_API_KEY'
 
 let mapboxTokenPromise: Promise<string | null> | null = null
 let mapboxReady: Promise<any | null> | null = null
+let mapboxStylesReady: Promise<boolean> | null = null
 
 type MonochromeMap = {
   getStyle: () => { layers?: { id: string; type: string }[] } | undefined
@@ -35,14 +36,34 @@ export async function loadMapbox() {
   const token = await getMapboxToken()
   if (!token) return null
 
-  let link = document.querySelector<HTMLLinkElement>(`link[href="${MAPBOX_STYLESHEET_HREF}"]`)
-  if (!link) {
-    link = document.createElement('link')
-    link.rel = 'stylesheet'
-    link.href = MAPBOX_STYLESHEET_HREF
-    document.head.appendChild(link)
-  }
-  link.dataset.persist = 'true'
+  mapboxStylesReady ??= new Promise<boolean>(resolve => {
+    let link = document.querySelector<HTMLLinkElement>(`link[href="${MAPBOX_STYLESHEET_HREF}"]`)
+    if (link?.sheet) {
+      resolve(true)
+      return
+    }
+    if (!link) {
+      link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = MAPBOX_STYLESHEET_HREF
+      document.head.appendChild(link)
+    }
+    const stylesheet = link
+    stylesheet.dataset.persist = 'true'
+    stylesheet.addEventListener('load', () => resolve(true), { once: true })
+    stylesheet.addEventListener(
+      'error',
+      () => {
+        stylesheet.remove()
+        resolve(false)
+      },
+      { once: true },
+    )
+  }).then(loaded => {
+    if (!loaded) mapboxStylesReady = null
+    return loaded
+  })
+  if (!(await mapboxStylesReady)) return null
 
   if (window.mapboxgl) {
     window.mapboxgl.accessToken = token
