@@ -31,10 +31,9 @@ export default (() => {
           aria-expanded="false"
           aria-controls="homepage-moon-panel"
           title="Moon calendar"
+          hidden
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14" />
-          </svg>
+          moon calendar
         </button>
         <div
           id="homepage-moon-panel"

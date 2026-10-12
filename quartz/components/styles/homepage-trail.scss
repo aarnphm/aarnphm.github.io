@@ -15,8 +15,7 @@
   pointer-events: none;
 }
 
-.homepage-trail-toggle,
-.homepage-moon-toggle {
+.homepage-trail-toggle {
   display: grid;
   place-items: center;
   position: fixed;
@@ -55,14 +54,11 @@
 .homepage-trail-toggle svg path:first-child {
   stroke-dasharray: 0.5 3;
 }
-.homepage-moon-toggle {
-  right: calc(1rem + 88px);
-}
 .trail-visitor-count {
   position: fixed;
   z-index: var(--z-dropdown);
   top: 1rem;
-  right: calc(1rem + 132px);
+  right: calc(1rem + 88px);
   height: 44px;
   display: flex;
   align-items: center;
@@ -95,11 +91,7 @@
     min-width: 28px;
   }
   .trail-visitor-count {
-    right: calc(1rem + 84px);
-  }
-  .homepage-moon-toggle {
     right: calc(1rem + 56px);
-    min-width: 28px;
   }
 }
 @media (max-width: 600px) {
@@ -108,10 +100,6 @@
     right: calc(0.5rem + 44px);
   }
   .trail-visitor-count {
-    top: 0.5rem;
-    right: calc(0.5rem + 132px);
-  }
-  .homepage-moon-toggle {
     top: 0.5rem;
     right: calc(0.5rem + 88px);
   }
