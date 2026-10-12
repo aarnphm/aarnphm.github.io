@@ -1,7 +1,9 @@
 import { useLayoutEffect, useRef, useState } from 'preact/hooks'
 
-const preferenceKey = 'course-workspace:split:v1'
-const defaultShare = 50
+// v2: the default moved from an even split to the page reading column, so v1 halves are dropped.
+const preferenceKey = 'course-workspace:split:v2'
+// The reading column spans 3 of the 7 tracks the split covers (see course-workspace.scss).
+const defaultShare = (3 / 7) * 100
 
 function savedShare(): number {
   try {
@@ -57,8 +59,8 @@ export function SplitDivider({ container, article, workspace, enabled }: SplitPr
       if (available <= 0) return
       const readingMin = Number.parseFloat(getComputedStyle(article).minWidth) || 0
       const workspaceMin = Number.parseFloat(getComputedStyle(workspace).minWidth) || 0
-      const min = Math.min(50, (readingMin / available) * 100)
-      const max = Math.max(50, (1 - workspaceMin / available) * 100)
+      const min = Math.min(defaultShare, (readingMin / available) * 100)
+      const max = Math.max(defaultShare, (1 - workspaceMin / available) * 100)
       geometry.current = { width: available, min, max }
       setLimits({ min, max })
       apply(preferred.current)

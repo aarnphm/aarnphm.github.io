@@ -26,6 +26,14 @@ import {
 } from './store'
 
 type Tab = 'source' | 'scratchpad' | 'notes'
+
+/** Tab-line shortcut letters; each also selects its tab from the keyboard. */
+const tabMeta: Record<Tab, { short: string }> = {
+  source: { short: 'S' },
+  scratchpad: { short: 'P' },
+  notes: { short: 'N' },
+}
+
 interface WorkspaceProps {
   slug: string
   title: string
@@ -470,48 +478,86 @@ function Workspace(props: WorkspaceProps) {
           close()
         }}
       >
-        <header class="course-workspace-header">
-          <h2 id="course-workspace-heading">lecture workspace</h2>
-          <button type="button" aria-label="Close lecture workspace" onClick={close}>
-            ×
-          </button>
-        </header>
-        <div
-          role="tablist"
-          aria-label="Lecture workspace"
-          class="course-workspace-tabs"
-          onKeyDown={event => {
-            const at = tabs.indexOf(tab)
-            const next =
-              event.key === 'ArrowRight'
-                ? tabs[(at + 1) % tabs.length]
-                : event.key === 'ArrowLeft'
-                  ? tabs[(at + tabs.length - 1) % tabs.length]
-                  : event.key === 'Home'
-                    ? tabs[0]
-                    : event.key === 'End'
-                      ? tabs[tabs.length - 1]
-                      : null
-            if (!next) return
-            event.preventDefault()
-            setTab(next)
-            focusTab(next)
-          }}
-        >
-          {tabs.map(value => (
+        <h2 id="course-workspace-heading" class="visually-hidden">
+          lecture workspace
+        </h2>
+        {/* A div: the site header rules (base.scss) push the second-to-last child right. */}
+        <div class="course-workspace-header">
+          <div
+            role="tablist"
+            aria-label="Lecture workspace"
+            class="tri-map-tablist course-workspace-tabs"
+            onKeyDown={event => {
+              if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return
+              const at = tabs.indexOf(tab)
+              const key = event.key.toLowerCase()
+              const next =
+                event.key === 'ArrowRight'
+                  ? tabs[(at + 1) % tabs.length]
+                  : event.key === 'ArrowLeft'
+                    ? tabs[(at + tabs.length - 1) % tabs.length]
+                    : event.key === 'Home'
+                      ? tabs[0]
+                      : event.key === 'End'
+                        ? tabs[tabs.length - 1]
+                        : tabs.find(value => tabMeta[value].short.toLowerCase() === key)
+              if (!next) return
+              event.preventDefault()
+              setTab(next)
+              focusTab(next)
+            }}
+          >
+            {tabs.map(value => {
+              const label = value === 'notes' ? `notes ${visible.length}` : value
+              const short =
+                value === 'notes' && visible.length > 0
+                  ? `${tabMeta[value].short} ${visible.length}`
+                  : tabMeta[value].short
+              return (
+                <button
+                  type="button"
+                  role="tab"
+                  class="tri-map-tab"
+                  id={`course-workspace-tab-${value}`}
+                  aria-selected={tab === value}
+                  aria-controls={`course-workspace-${value}`}
+                  aria-label={label}
+                  tabIndex={tab === value ? 0 : -1}
+                  title={`${value} (${tabMeta[value].short.toLowerCase()})`}
+                  style={{
+                    '--tri-map-tab-shortcut-width': `${short.length}ch`,
+                    '--tri-map-tab-label-width': `${label.length}ch`,
+                  }}
+                  onClick={() => setTab(value)}
+                >
+                  <span class="tri-map-tab-shortcut" aria-hidden="true">
+                    {short}
+                  </span>
+                  <span class="tri-map-tab-label" aria-hidden="true">
+                    {label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          <div class="course-workspace-actions">
+            {(scratchIssue || notesIssue) && (
+              <button type="button" onClick={loadSaved}>
+                load saved
+              </button>
+            )}
+            <button type="button" title="Export Markdown" onClick={exportDrafts}>
+              export .md
+            </button>
             <button
               type="button"
-              role="tab"
-              id={`course-workspace-tab-${value}`}
-              aria-selected={tab === value}
-              aria-controls={`course-workspace-${value}`}
-              tabIndex={tab === value ? 0 : -1}
-              onClick={() => setTab(value)}
+              class="course-workspace-close"
+              aria-label="Close lecture workspace"
+              onClick={close}
             >
-              {value}
-              {value === 'notes' ? ` ${visible.length}` : ''}
+              ×
             </button>
-          ))}
+          </div>
         </div>
         {props.reader && (
           <section
@@ -538,7 +584,7 @@ function Workspace(props: WorkspaceProps) {
                   video ↗
                 </a>
               )}
-              <span>mit ocw · cc by-nc-sa</span>
+              <span class="course-source-license">mit ocw · cc by-nc-sa</span>
             </div>
             {sourceFailed && (
               <p role="status">The source could not load. Open the reader to retry.</p>
@@ -561,7 +607,7 @@ function Workspace(props: WorkspaceProps) {
           hidden={tab !== 'scratchpad'}
         >
           <div class="course-draft-toolbar">
-            <span>private · this browser</span>
+            <span role="status">{scratchIssue || 'private · saved in this browser'}</span>
             <button
               type="button"
               aria-pressed={scratchPreview}
@@ -584,9 +630,6 @@ function Workspace(props: WorkspaceProps) {
               onExit={() => focusTab('scratchpad')}
             />
           )}
-          <p class="course-draft-status" role="status">
-            {scratchIssue || 'saved in this browser'}
-          </p>
         </section>
         <section
           role="tabpanel"
@@ -596,7 +639,14 @@ function Workspace(props: WorkspaceProps) {
           hidden={tab !== 'notes'}
         >
           <div class="course-draft-toolbar">
-            <span>private · {account ? 'your account' : 'this browser'}</span>
+            <span role="status">
+              {notesIssue ||
+                (account
+                  ? saving > 0
+                    ? 'private · saving to your account…'
+                    : 'private · saved to your account'
+                  : 'private · saved in this browser')}
+            </span>
             {!account && signInUrl && (
               <a href={signInUrl} data-router-ignore>
                 sign in to keep notes
@@ -767,25 +817,7 @@ function Workspace(props: WorkspaceProps) {
               )}
             </>
           )}
-          <p class="course-draft-status" role="status">
-            {notesIssue ||
-              (account
-                ? saving > 0
-                  ? 'saving to your account…'
-                  : 'saved to your account'
-                : 'saved in this browser')}
-          </p>
         </section>
-        <footer class="course-workspace-footer">
-          {(scratchIssue || notesIssue) && (
-            <button type="button" onClick={loadSaved}>
-              load saved version
-            </button>
-          )}
-          <button type="button" onClick={exportDrafts}>
-            export Markdown
-          </button>
-        </footer>
       </dialog>
       {selection && (
         <SelectionActions range={selection.range} onAction={action => addNote(action, selection)} />

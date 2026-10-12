@@ -271,11 +271,52 @@ button.g-datepicker-trigger {
   }
 }
 
+// Bordered action button; it shares the select trigger's surface. A toggle sets aria-pressed.
+
+button.g-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: var(--control-height, 1.625rem);
+  padding: 0.2rem 0.62rem;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  background: color-mix(in srgb, var(--light) 88%, transparent);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: var(--control-font-size, var(--text-meta, 0.75rem));
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &[aria-pressed='true'] {
+    background: color-mix(in srgb, var(--control-accent, var(--secondary)) 18%, var(--light));
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.99);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
 // Select
 
 :where(.g-select) {
   position: relative;
   z-index: 1;
+}
+
+// Each root is a stacking context, so an open menu rises above the selects stacked after it.
+:where(.g-select):has(> .g-select-trigger[aria-expanded='true']) {
+  z-index: 2;
 }
 
 button.g-select-trigger {
@@ -733,7 +774,8 @@ button.g-select-trigger {
     color: var(--dark);
   }
 
-  .g-select-trigger:hover {
+  .g-select-trigger:hover,
+  .g-button:hover:not(:disabled, [aria-pressed='true']) {
     background: color-mix(in srgb, var(--control-accent, var(--secondary)) 5%, var(--light));
   }
 
@@ -746,6 +788,7 @@ button.g-select-trigger {
 .g-datepicker-trigger,
 .g-icon-button,
 .g-text-button,
+.g-button,
 .g-select-trigger {
   &:focus-visible {
     outline: 2px solid var(--control-focus, var(--dark));
@@ -784,6 +827,7 @@ button.g-select-trigger {
   .g-datepicker-trigger,
   .g-icon-button,
   .g-text-button,
+  .g-button,
   .g-select-trigger,
   .g-cal-day,
   .g-select-option {
@@ -793,6 +837,7 @@ button.g-select-trigger {
   }
 
   .g-cal-day[aria-pressed='true'],
+  .g-button[aria-pressed='true'],
   .g-select-option:is([aria-selected='true'], [aria-checked='true']) {
     outline: 1px solid CanvasText;
   }
@@ -804,6 +849,7 @@ button.g-select-trigger {
   .g-cal-day,
   .g-icon-button,
   .g-text-button,
+  .g-button,
   .g-select-trigger,
   .g-select-chevron,
   .g-select-option {

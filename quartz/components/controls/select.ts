@@ -133,9 +133,11 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
     focusItem(items.findIndex(item => item.button.getAttribute('aria-selected') === 'true'))
   }
 
+  // Listeners read the root's document and skip realm-bound instanceof checks: the homepage trail
+  // builds this control inside its iframe and mounts it in the parent page.
   const onClick = (event: MouseEvent): void => {
-    const target = event.target
-    if (!(target instanceof Node)) return
+    const target = event.target as Node | null
+    if (!target) return
     if (trigger.contains(target)) {
       if (menu.hidden) open()
       else close()
@@ -162,7 +164,7 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
       return
     }
     if (menu.hidden) return
-    const index = items.findIndex(item => item.button === document.activeElement)
+    const index = items.findIndex(item => item.button === root.ownerDocument.activeElement)
     const next =
       event.key === 'Home'
         ? 0
@@ -198,7 +200,8 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
     focusItem(match)
   }
   const onFocusout = (event: FocusEvent): void => {
-    if (!(event.relatedTarget instanceof Node) || !root.contains(event.relatedTarget)) close()
+    const next = event.relatedTarget as Node | null
+    if (!next || !root.contains(next)) close()
   }
   const onPointerdown = (event: PointerEvent): void => {
     if (!menu.hidden && !event.composedPath().includes(root)) close()
@@ -209,15 +212,16 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
     trigger,
     setSelected,
     mount: () => {
+      const host = root.ownerDocument
       root.addEventListener('click', onClick)
       root.addEventListener('keydown', onKeydown)
       root.addEventListener('focusout', onFocusout)
-      document.addEventListener('pointerdown', onPointerdown)
+      host.addEventListener('pointerdown', onPointerdown)
       return () => {
         root.removeEventListener('click', onClick)
         root.removeEventListener('keydown', onKeydown)
         root.removeEventListener('focusout', onFocusout)
-        document.removeEventListener('pointerdown', onPointerdown)
+        host.removeEventListener('pointerdown', onPointerdown)
       }
     },
   }
