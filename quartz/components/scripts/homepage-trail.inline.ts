@@ -1,3 +1,5 @@
+import { subscribeVisitorHoliday, type TrailHoliday } from '../../util/visitor-holiday'
+import { holidayArt, holidaySprite, type HolidaySpriteName } from '../visitor-trail/holiday-sprites'
 import { mountTrailClock } from '../visitor-trail/local-clock'
 import { registerEscapeHandler } from './escape-handler'
 import { mountMoonCalendar } from './moon-calendar'
@@ -14,6 +16,31 @@ document.addEventListener('nav', () => {
 
   const controller = new AbortController()
   const { signal } = controller
+  const holidayMarker = toggle.querySelector<HTMLElement>('[data-holiday-marker]')
+  const holidayIcons: Record<TrailHoliday, HolidaySpriteName> = {
+    thanksgiving: 'turkey',
+    halloween: 'pumpkin',
+    christmas: 'star',
+    easter: 'rabbit',
+  }
+  let shownHoliday: TrailHoliday | null = null
+  const showHoliday = (holiday: TrailHoliday | null) => {
+    if (shownHoliday === holiday) return
+    shownHoliday = holiday
+    if (!holidayMarker) return
+    holidayMarker.hidden = !holiday
+    if (!holiday) {
+      delete toggle.dataset.holiday
+      holidayMarker.replaceChildren()
+      return
+    }
+    const name = holidayIcons[holiday]
+    const rows = holidayArt[name]
+    toggle.dataset.holiday = holiday
+    holidayMarker.innerHTML = `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" aria-hidden="true" focusable="false">${holidaySprite(name)}</svg>`
+  }
+  subscribeVisitorHoliday(document, showHoliday, signal)
+  scene.addEventListener('trail:holiday', event => showHoliday(event.detail), { signal })
   const frame = document.createElement('iframe')
   frame.title = 'Trail connection'
   frame.hidden = true
@@ -94,7 +121,8 @@ document.addEventListener('nav', () => {
     () =>
       !scene.hidden &&
       !document.querySelector('#visitor-weather-panel')?.matches(':popover-open') &&
-      !root.querySelector('#homepage-moon-panel')?.matches(':popover-open'),
+      !root.querySelector('#homepage-moon-panel')?.matches(':popover-open') &&
+      !root.querySelector('.trail-visitor-popover:popover-open'),
   )
   setOpen(sessionStorage.getItem(preferenceKey) === 'true')
   window.addCleanup(() => {

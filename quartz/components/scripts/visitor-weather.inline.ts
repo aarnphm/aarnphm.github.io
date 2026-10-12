@@ -1,3 +1,4 @@
+import { createVisitorHolidaySource } from '../../util/visitor-holiday'
 import { createVisitorTrailWeatherSource } from '../../util/visitor-trail-weather'
 import {
   nextSunEvent,
@@ -37,6 +38,7 @@ document.addEventListener('nav', () => {
   const controller = new AbortController()
   const { signal } = controller
   const trailWeather = createVisitorTrailWeatherSource(document, signal)
+  const holiday = createVisitorHolidaySource(document, signal)
   const moon = mountVisitorMoon(root, signal)
   let forecast: VisitorForecast | null = null
   let pending = false
@@ -149,6 +151,7 @@ document.addEventListener('nav', () => {
 
   const render = () => {
     trailWeather.publish(forecast)
+    holiday.publish(forecast?.country ?? null)
     const weather = forecast?.weather
     if (!map && (!forecast || forecast.lat === null || forecast.lon === null)) {
       const mapStatus = panel.querySelector<HTMLButtonElement>('[data-weather-map-status]')
