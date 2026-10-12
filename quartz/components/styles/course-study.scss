@@ -358,6 +358,11 @@
     .course-c-uses {
       display: none;
     }
+
+    // the toggles stack, so a phone keeps the title column wide enough for whole words
+    .course-desk-states {
+      flex-direction: column;
+    }
   }
 }
 
