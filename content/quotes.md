@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-10-02 22:45:26 GMT-04:00
+modified: 2026-10-11 22:08:33 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,12 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> She was December 31 and I was January 01. I had to take 364 steps to reach her, while she could have reached me in just one.
+> i once loved a flower so much that instead of picking it, i let it be. and since it was never meant to bloom beside me, l chose not to pull it from the ground.
+> Just as the Moon reflects from the Pond, all I can do is touch the water.
+>
+> internet
 
 > this girl on tiktok said that “discernment is an olympic sport” and I’ve decided this is pretty much the driving sentiment of my life. it is Not all the same. all relationships are not equal. you Are responsible for your choices. your passivity is just carelessness
 >
