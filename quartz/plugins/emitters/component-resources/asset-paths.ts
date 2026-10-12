@@ -26,8 +26,7 @@ export const notebookRuntimePyrightTypeshedDir =
 export const notebookRuntimePyrightPackageStubsDir = 'quartz/util/pyright-stubs/site-packages'
 export const notebookRuntimePyrightGenericStubPath = 'quartz/util/pyright-stubs/generic-module.pyi'
 export const notebookRuntimePyrightSitePackagesPath = '/site-packages'
-export const notebookRuntimePyrightPyodideLockUrl =
-  'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide-lock.json'
+export const notebookRuntimePyrightPyodideLockPath = 'quartz/runtime/lsp/pyodide-lock-v0.29.4.json'
 export const notebookNativeRuntimePacksDir = 'quartz/runtime/native/packs'
 export const notebookNativeRuntimeManifestSourcePath = `${notebookNativeRuntimePacksDir}/manifest.json`
 export const quartzBaseStylesheetEntry = 'quartz/styles/base.scss'
@@ -60,6 +59,7 @@ export const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeMlBridgeEntry,
   notebookRuntimePyrightWorkerEntry,
   notebookRuntimePyrightWorkerGlobalsEntry,
+  notebookRuntimePyrightPyodideLockPath,
   'quartz/runtime/lsp/pyright-assets.ts',
   'quartz/util/type-guards.ts',
   'quartz/runtime/notebook/assets.ts',
