@@ -113,6 +113,17 @@ function _getFolders(slug: string): SimpleSlug[] {
   return parentFolderNames
 }
 
+function sourceFolders(ctx: BuildCtx): Set<SimpleSlug> {
+  return new Set(
+    ctx.allFiles
+      .filter(isFolderPageSourcePath)
+      .map(folderPageSourceSlug)
+      .flatMap(slug =>
+        _getFolders(slug).filter(folderName => folderName !== '.' && folderName !== 'tags'),
+      ),
+  )
+}
+
 export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userOpts => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
@@ -137,14 +148,7 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
       const mdFiles = contentDataFor(content)
       const cfg = ctx.cfg.configuration
 
-      const folders: Set<SimpleSlug> = new Set(
-        ctx.allFiles
-          .filter(isFolderPageSourcePath)
-          .map(folderPageSourceSlug)
-          .flatMap(slug =>
-            _getFolders(slug).filter(folderName => folderName !== '.' && folderName !== 'tags'),
-          ),
-      )
+      const folders = sourceFolders(ctx)
 
       const folderInfo = computeFolderInfo(folders, content, cfg.locale)
       yield* processFolderInfo(ctx, folderInfo, mdFiles, opts, resources)
@@ -176,6 +180,12 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
           folderName => folderName !== '.' && folderName !== 'tags',
         )
         folders.forEach(folder => affectedFolders.add(folder))
+      }
+
+      // A delete names folders that may now hold nothing; emit only those the full build would.
+      const folders = sourceFolders(ctx)
+      for (const folder of affectedFolders) {
+        if (!folders.has(folder)) affectedFolders.delete(folder)
       }
 
       if (affectedFolders.size > 0) {

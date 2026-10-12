@@ -159,6 +159,7 @@ function isSharedStylePartialChange(changePath: string): boolean {
 export type SourceRebuildScope =
   | { kind: 'full' }
   | { kind: 'partial'; staticFiles: boolean; styles: boolean; scripts: boolean }
+  | { kind: 'courses' }
 
 const clientScriptRoots = [
   'quartz/components/',
@@ -182,15 +183,18 @@ function isClientScriptChange(changePath: string, serverInputs: ReadonlySet<stri
 /**
  * Decides how much of the site a source edit invalidates. `serverInputs` is the esbuild metafile
  * closure of the build bundle (before and after the edit). A module outside it cannot change rendered
- * HTML, so it only needs the client bundles (ComponentResources, LazyScripts). Anything unrecognised
- * is a full rebuild.
+ * HTML, so it only needs the client bundles (ComponentResources, LazyScripts). A server module in
+ * `courseInputs` renders only course pages, so it re-renders the courses. Anything unrecognised is
+ * a full rebuild.
  */
 export function sourceRebuildScope(
   changedPaths: readonly string[],
   serverInputs: ReadonlySet<string>,
+  courseInputs: ReadonlySet<string> = new Set(),
 ): SourceRebuildScope {
   if (changedPaths.length === 0) return { kind: 'full' }
   const scope = { kind: 'partial' as const, staticFiles: false, styles: false, scripts: false }
+  let courses = false
   for (const changePath of changedPaths) {
     if (changePath.startsWith('quartz/static/')) {
       scope.staticFiles = true
@@ -202,6 +206,8 @@ export function sourceRebuildScope(
       scope.styles = true
     } else if (isClientScriptChange(changePath, serverInputs)) {
       scope.scripts = true
+    } else if (courseInputs.has(changePath)) {
+      courses = true
     } else if (
       serverInputs.has(changePath) ||
       !(changePath.startsWith('quartz/scripts/') || changePath.endsWith('.py'))
@@ -210,6 +216,8 @@ export function sourceRebuildScope(
     }
     // Remaining paths are CLI scripts and Python helpers that no bundle imports.
   }
+  // The course rebuild regenerates the client bundles, but not the static files.
+  if (courses) return scope.staticFiles ? { kind: 'full' } : { kind: 'courses' }
   return scope
 }
 
