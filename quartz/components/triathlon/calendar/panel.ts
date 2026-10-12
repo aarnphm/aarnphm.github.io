@@ -1,5 +1,5 @@
 const calendarAnchor = (): boolean =>
-  /^#calendar(?:(?:-|#)(?:list|year|\d{4}(?:-year)?|race-[a-z0-9-]+|training(?:-\d{4}-\d{2}-\d{2})?(?:-(?:list|week|month))?))?$/.test(
+  /^#calendar(?:(?:-|#)(?:list|year|notation|\d{4}(?:-year|-notation)?|race-[a-z0-9-]+|training(?:-\d{4}-\d{2}-\d{2})?(?:-(?:list|week|month|notation))?))?$/.test(
     window.location.hash,
   )
 

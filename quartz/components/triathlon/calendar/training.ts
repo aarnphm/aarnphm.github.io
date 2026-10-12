@@ -151,7 +151,7 @@ export const mountTrainingCalendar = (
     if (!mounted) content.replaceChildren()
     render(view, content)
     mounted = true
-    if (authenticated) syncDatePicker()
+    if (authenticated && shownView !== 'notation') syncDatePicker()
     else removeDatePicker()
   }
   const clearPrivateData = (message = ''): void => {
@@ -413,7 +413,12 @@ export const mountTrainingCalendar = (
     }
     const viewSelect = event.target.closest<HTMLButtonElement>('[data-training-view-select]')
     const nextView = viewSelect?.dataset.trainingViewSelect
-    if (nextView === 'list' || nextView === 'week' || nextView === 'month') {
+    if (
+      nextView === 'list' ||
+      nextView === 'week' ||
+      nextView === 'month' ||
+      nextView === 'notation'
+    ) {
       selectView(nextView)
       return
     }

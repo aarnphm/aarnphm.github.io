@@ -14,6 +14,7 @@ import { triathlonActivityHref } from '../../../util/triathlon-date-route'
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../../util/triathlon-presentation'
 import { createTriathlonFormatter } from '../runtime/formatter'
 import { calendarDateLabel, calendarToday, calendarWeekdayLabel } from './display'
+import { Notation, NotationIcon } from './Notation'
 import {
   trainingAddDays,
   trainingAddMonths,
@@ -188,7 +189,7 @@ const ExecutionLegend = ({ formatter, id }: { formatter: TriathlonFormatter; id:
   )
 }
 
-export type TrainingView = 'list' | 'week' | 'month'
+export type TrainingView = 'list' | 'week' | 'month' | 'notation'
 
 export interface TrainingCalendarViewProps {
   calendar: TrainingPeaksCalendar | null
@@ -218,6 +219,7 @@ export const TrainingCalendarView = ({
   const formatter = createTriathlonFormatter(presentation)
   const { text, number } = formatter
   const today = calendarToday()
+  const notation = view === 'notation'
   const month = view === 'month'
   const start = month ? trainingMonthStart(date) : trainingWeekStart(date)
   const end = trainingAddDays(month ? trainingAddMonths(start, 1) : trainingAddDays(start, 7), -1)
@@ -294,7 +296,7 @@ export const TrainingCalendarView = ({
           </p>
         </div>
         <div class="tri-calendar-actions tri-training-header-controls">
-          <div class="tri-pred-controls tri-training-week-controls">
+          <div class="tri-pred-controls tri-training-week-controls" hidden={notation}>
             <button type="button" class="g-text-button" data-training-today>
               {text('today')}
             </button>
@@ -351,6 +353,16 @@ export const TrainingCalendarView = ({
               <button
                 type="button"
                 class="tri-calendar-icon"
+                data-training-view-select="notation"
+                aria-pressed={notation ? 'true' : 'false'}
+                aria-controls={`${id}-views`}
+                aria-label={text('workout notation')}
+              >
+                <NotationIcon />
+              </button>
+              <button
+                type="button"
+                class="tri-calendar-icon"
                 data-training-view-select="week"
                 aria-pressed={view === 'week' ? 'true' : 'false'}
                 aria-controls={`${id}-views`}
@@ -387,13 +399,13 @@ export const TrainingCalendarView = ({
           </button>
         </div>
       </header>
-      <p class="tri-training-week-label" aria-live="polite" aria-atomic="true">
+      <p class="tri-training-week-label" aria-live="polite" aria-atomic="true" hidden={notation}>
         {!month && <span>{text('week')} </span>}
         <time dateTime={start}>
           {month ? formatter.monthYear(start) : trainingWeekLabel(start, presentation.locale)}
         </time>
       </p>
-      <div class="tri-training-week-overview">
+      <div class="tri-training-week-overview" hidden={notation}>
         <table
           class="tri-training-table tri-training-week-table"
           title={text('Totals use reported TrainingPeaks values; missing values are left blank.')}
@@ -430,7 +442,7 @@ export const TrainingCalendarView = ({
         </table>
         <PeriodPeaks workouts={completed} formatter={formatter} month={month} />
       </div>
-      {message && (
+      {!notation && message && (
         <p class="tri-training-notice" role="status">
           {text(message)}
           {failed && (
@@ -446,7 +458,9 @@ export const TrainingCalendarView = ({
       >
         <div class="tri-calendar-body">
           <div class="tri-calendar-views" id={`${id}-views`}>
-            {month ? (
+            {notation ? (
+              <Notation id={`${id}-notation-guide`} locale={presentation.locale} />
+            ) : month ? (
               <TrainingMonth
                 key={start}
                 calendar={calendar}
@@ -537,7 +551,7 @@ export const TrainingCalendarView = ({
           </aside>
         </div>
       </TrainingStructureHover>
-      <ExecutionLegend formatter={formatter} id={id} />
+      {!notation && <ExecutionLegend formatter={formatter} id={id} />}
     </section>
   )
 }
