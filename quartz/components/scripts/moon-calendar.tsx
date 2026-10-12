@@ -1,6 +1,8 @@
 import { render, type KeyboardEventHandler } from 'preact'
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks'
 import { lunarDiscPath, lunarPhase, readLunarEvents, type LunarEvent } from '../../util/lunar-phase'
+import { subscribeVisitorMoon } from '../../util/visitor-lunar'
+import { subscribeVisitorTrailWeather } from '../../util/visitor-trail-weather'
 import { englishDateLabels } from '../controls/date-picker'
 import {
   addMonths,
@@ -30,8 +32,11 @@ function MoonCalendar({ open, signal }: { open: boolean; signal: AbortSignal }) 
   const today = isoDateFromLocal(new Date())
   const [month, setMonth] = useState(today.slice(0, 7))
   const [selected, setSelected] = useState(today)
-  const [events, setEvents] = useState<LunarEvent[]>([])
-  const [state, setState] = useState('loading')
+  const [ephemeris, setEphemeris] = useState<{
+    month: string
+    events: LunarEvent[]
+    state: 'loading' | 'ready' | 'unavailable'
+  }>({ month, events: [], state: 'loading' })
   const [retry, setRetry] = useState(0)
   const cache = useRef(new Map<string, LunarEvent[]>())
   const host = useRef<HTMLDivElement>(null)
@@ -39,19 +44,20 @@ function MoonCalendar({ open, signal }: { open: boolean; signal: AbortSignal }) 
   const view = parseIsoMonth(month)
   const all = view ? monthGridDates(view) : []
   const dates = all[35]?.startsWith(month) ? all : all.slice(0, 35)
+  const saved = cache.current.get(month)
+  const events = ephemeris.month === month ? ephemeris.events : (saved ?? [])
+  const state = ephemeris.month === month ? ephemeris.state : saved ? 'ready' : 'loading'
 
   useEffect(() => {
     if (!open || !dates.length) return
     const saved = cache.current.get(month)
     if (saved) {
-      setEvents(saved)
-      setState('ready')
+      setEphemeris({ month, events: saved, state: 'ready' })
       return
     }
     const controller = new AbortController()
     const requestSignal = AbortSignal.any([signal, controller.signal, AbortSignal.timeout(6000)])
-    setEvents([])
-    setState('loading')
+    setEphemeris({ month, events: [], state: 'loading' })
     const load = async () => {
       // Enclose the spillover days too, so every disc can interpolate between published quarters.
       const start = new Date(localNoon(dates[0]) - 12 * 86400000)
@@ -76,9 +82,8 @@ function MoonCalendar({ open, signal }: { open: boolean; signal: AbortSignal }) 
       ) {
         if (cache.current.size >= 4) cache.current.delete(cache.current.keys().next().value ?? '')
         cache.current.set(month, received)
-        setEvents(received)
-        setState('ready')
-      } else setState('unavailable')
+        setEphemeris({ month, events: received, state: 'ready' })
+      } else setEphemeris({ month, events: [], state: 'unavailable' })
     }
     void load()
     return () => controller.abort()
@@ -233,6 +238,56 @@ export function mountMoonCalendar(root: HTMLElement, signal: AbortSignal) {
   const panel = root.querySelector<HTMLElement>('#homepage-moon-panel')
   const toggle = root.querySelector<HTMLButtonElement>('.homepage-moon-toggle')
   if (!panel || !toggle) return () => {}
+  const document = root.ownerDocument
+  let daylight: boolean | null = null
+  const updateVisibility = () => {
+    const hour = new Date().getHours()
+    toggle.hidden = daylight ?? (hour >= 6 && hour < 18)
+    if (toggle.hidden && panel.matches(':popover-open')) panel.hidePopover()
+  }
+  const label = (name: string) => {
+    toggle.textContent = name
+    toggle.setAttribute('aria-label', `Moon calendar · ${name}`)
+  }
+  label(lunarPhase(Date.now()).name)
+  subscribeVisitorMoon(document, moon => label(moon.name), signal)
+  subscribeVisitorTrailWeather(
+    document,
+    weather => {
+      daylight = weather?.day ?? null
+      updateVisibility()
+    },
+    signal,
+  )
+  updateVisibility()
+  const timer = window.setInterval(updateVisibility, 60000)
+  document.addEventListener('visibilitychange', updateVisibility, { signal })
+
+  const settingsOpen = () =>
+    !root.querySelector<HTMLElement>('.homepage-trail-scene')?.hidden &&
+    Boolean(root.querySelector('.trail-tree-panel:not([hidden]), .trail-camp-tools:not([hidden])'))
+  const syncSettings = () => {
+    toggle.disabled = settingsOpen()
+    if (toggle.disabled && panel.matches(':popover-open')) panel.hidePopover()
+  }
+  const settings = new MutationObserver(records => {
+    if (
+      records.some(
+        record =>
+          record.target instanceof HTMLElement &&
+          record.target.matches('.trail-tree-panel, .trail-camp-tools, .homepage-trail-scene'),
+      )
+    )
+      syncSettings()
+  })
+  settings.observe(root, { subtree: true, attributes: true, attributeFilter: ['hidden'] })
+  panel.addEventListener(
+    'beforetoggle',
+    event => {
+      if ('newState' in event && event.newState === 'open' && settingsOpen()) event.preventDefault()
+    },
+    { signal },
+  )
   const update = () => {
     const open = panel.matches(':popover-open')
     toggle.setAttribute('aria-expanded', String(open))
@@ -253,6 +308,8 @@ export function mountMoonCalendar(root: HTMLElement, signal: AbortSignal) {
     () => panel.matches(':popover-open'),
   )
   return () => {
+    window.clearInterval(timer)
+    settings.disconnect()
     disposeEscape()
     render(null, panel)
   }

@@ -1,11 +1,57 @@
 @use '../../styles/variables.scss' as *;
 
+.homepage-trail {
+  --trail-footer-panel-bottom: max(3.5rem, calc(env(safe-area-inset-bottom) + 2.5rem));
+}
+
+.homepage-trail:has(.homepage-moon-toggle:not([hidden])) .trail-tree-panel {
+  bottom: var(--trail-footer-panel-bottom);
+
+  .trail-tree-controls {
+    max-height: max(72px, min(400px, calc(100dvh - var(--trail-footer-panel-bottom) - 3rem)));
+  }
+}
+
+button.homepage-moon-toggle {
+  position: fixed;
+  inset: auto auto max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  z-index: var(--z-dropdown);
+  display: inline-flex;
+  align-items: end;
+  min-height: 28px;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--darkgray);
+  font: 10px/1.6 var(--codeFont);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+
+  &[hidden] {
+    display: none !important;
+  }
+  &:hover,
+  &[aria-expanded='true'] {
+    color: var(--dark);
+  }
+  &:disabled {
+    color: var(--gray);
+    cursor: default;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+}
+
 .homepage-moon-panel {
   --control-font-size: 0.65rem;
   position: fixed;
-  inset: 4rem 1rem auto auto;
+  inset: auto auto var(--trail-footer-panel-bottom) max(16px, env(safe-area-inset-left));
   width: min(18rem, calc(100vw - 1rem));
-  max-height: calc(100dvh - 5rem);
+  max-height: calc(100dvh - var(--trail-footer-panel-bottom) - 1rem);
   box-sizing: border-box;
   overflow-y: auto;
   margin: 0;
@@ -16,7 +62,7 @@
   color: var(--darkgray);
   font: 0.65rem/1.4 var(--codeFont);
   font-variant-numeric: tabular-nums;
-  transform-origin: top right;
+  transform-origin: bottom left;
   transition:
     opacity 150ms ease-out,
     transform $panel-duration $panel-ease,
@@ -29,7 +75,7 @@
   @starting-style {
     &:popover-open {
       opacity: 0;
-      transform: translateY(-4px);
+      transform: translateY(4px);
     }
   }
 }
@@ -147,9 +193,14 @@
   min-height: 1.4rem;
   font-size: 0.55rem;
 }
-@media (max-width: 600px) {
-  .homepage-moon-panel {
-    inset: 3.5rem 0.5rem auto auto;
+@media (max-width: 600px), (pointer: coarse) {
+  .homepage-trail {
+    --trail-footer-panel-bottom: max(4rem, calc(env(safe-area-inset-bottom) + 3.5rem));
+  }
+}
+@media (pointer: coarse) {
+  button.homepage-moon-toggle {
+    min-height: 44px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
