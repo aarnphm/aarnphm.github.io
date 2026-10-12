@@ -24,6 +24,11 @@ body[data-slug='index'] {
     grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
     border: 1px solid var(--board-line);
     background: var(--light);
+
+    a:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: 3px;
+    }
   }
 
   .homepage-board-hangers {

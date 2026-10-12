@@ -22,13 +22,14 @@ export function readingRoutes(
     previous = Math.max(previous, line.bottom)
   }
   const available = gaps.sort((a, b) => b.room - a.room)
-  const firstLine = ordered[0]?.top ?? 64
+  const firstLine = surface?.top ?? ordered[0]?.top ?? 64
+  const lowerEdge = surface?.bottom ?? bottom
   const crossings: Crossing[] = [
-    { y: bottom + 76 + random() * 4, room: 3 },
+    { y: lowerEdge + 76 + random() * 4, room: 3 },
     { y: Math.max(14, firstLine - 28), room: Math.min(5, firstLine / 4) },
     ...(surface
       ? [
-          { y: bottom + 36 + random() * 4, room: 3 },
+          { y: lowerEdge + 36 + random() * 4, room: 3 },
           { y: Math.max(14, firstLine - 48), room: Math.min(3, firstLine / 4) },
         ]
       : available.slice(0, width < 700 ? 1 : 2)),
