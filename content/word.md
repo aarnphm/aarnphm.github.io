@@ -1,14 +1,24 @@
 ---
-cssclasses:
-  - nolist
-date: '2024-10-10'
-description: a bag of chips/words/vernacular
+date: '2026-10-11'
 id: word
-layout: technical
-modified: 2026-09-28 13:31:23 GMT-04:00
+modified: 2026-10-11 18:38:26 GMT-04:00
 tags:
-  - evergreen
-title: lists
+  - seed
+title: word
+---
+
+--- cssclasses:
+
+- nolist
+  date: '2024-10-10'
+  description: a bag of chips/words/vernacular
+  id: word
+  layout: technical
+  modified: 2026-09-28 13:31:23 GMT-04:00
+  tags:
+- evergreen
+  title: lists
+
 ---
 
 - {{sidenotes[transitions]: in CSS or terminology}}
@@ -362,3 +372,4 @@ title: lists
 - scholastic
 - stupefied
 - consternation
+- parsimonious

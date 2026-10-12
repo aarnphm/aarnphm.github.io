@@ -36,7 +36,7 @@ kierkegaard gives me a useful description of the feeling. in _The Sickness unto 
 
 the claim becomes concrete at a desk. i open one project, notice that another looks easier, ask an agent to finish a third, and end the day with several results that never required my full attention. switching is cheap enough that no task gets to make a claim on me. my list grows. my ability to care stays finite.
 
-every choice gives up alternatives for a while. that cost is part of what lets a choice shape a life. writing this note means leaving another file unopened. learning one system means accepting ignorance about ten others. staying with a person means letting some imagined futures remain imaginary.
+every choice gives up alternatives for a while. that cost is part of what lets a choice shape a life. writing this note means leaving another file unopened. staying with a person means letting some imagined futures remain imaginary.
 
 abundance cannot choose among those futures for me. better search and faster execution only expose more of them. the decision still has to come from a commitment that survives the next attractive option.
 
