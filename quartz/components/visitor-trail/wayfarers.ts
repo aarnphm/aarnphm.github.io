@@ -15,7 +15,6 @@ export function trailMapReader(index: number) {
     ['.D.D...', '..DD...', '..DD...', '..BBB..'],
   ]
   return `<g class="trail-map-reader trail-reader-${index}" data-reader="${index}" data-phase="waiting" data-stride="0">
-    <path class="trail-animal-shadow" d="M-8 1h22v2H-8Z"/>
     <g class="trail-reader-facing">
       <g class="trail-reader-pack" transform="translate(-12 -23)">
         ${pixels(['.PPPP', 'PPPPP', 'PLPPP', 'PPPPP', 'PPPPP', 'PLPPP'], { P: 'trail-hiker-pack-cloth', L: 'trail-hiker-pack-strap' }, 2)}

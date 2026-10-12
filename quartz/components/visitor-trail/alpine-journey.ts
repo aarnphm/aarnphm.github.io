@@ -11,12 +11,7 @@ import {
 } from './actor-spacing'
 import { bootImpression } from './footprints'
 import { trailGroundScale, type Landscape, type Point } from './landscape'
-import {
-  buildMountainRanges,
-  mountainCrestAt,
-  mountainGroundAt,
-  type MountainRange,
-} from './mountain-profile'
+import { buildMountainRanges, mountainCrestAt, type MountainRange } from './mountain-profile'
 import { pixels } from './pixels'
 import { trailRandom } from './random'
 
@@ -30,6 +25,8 @@ type Impression = {
   element: SVGPathElement
 }
 type Route = {
+  track: string
+  stillProgress: number
   length: number
   point: (progress: number) => Point
   scale: (progress: number) => number
@@ -66,8 +63,7 @@ function alpineBackpacker() {
     ['.D.D...', '.D.D...', 'D...D..', 'BB..BB.'],
     ['.D.D...', '..DD...', '..DD...', '..BBB..'],
   ]
-  return `<path class="trail-hiker-shadow" d="M-8 0h16v2H-8Z"/>
-    <g class="trail-alpine-facing">
+  return `<g class="trail-alpine-facing">
       <g transform="translate(-12 -22)">${pixels(['RRRRR', '.PPPP', '.PLPP', '.PPPP', '.PPPP', '.PLPP', '.PPPP'], { P: 'trail-hiker-pack-cloth', L: 'trail-hiker-pack-strap', R: 'trail-hiker-bedroll' }, 2)}</g>
       <g data-alpine-pose="walk">
         <g transform="translate(-4 -24)">${pixels(['.HHH...', '.HHHH..', '.HSS...', '.HSSS..', '.CCCC..', '.CCCCS.', '.CCC.S.', '.CCC...'], tones, 2)}</g>
@@ -111,72 +107,39 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       if (layer && layer.dataset.motion !== motion) layer.dataset.motion = motion
   }
 
-  const ascent = (id: number, nextSeed: number): Route => {
+  const ascent = (id: number): Route => {
     if (!landscape) throw new Error('Alpine routes need their terrain')
-    const random = trailRandom(nextSeed ^ (0x7431c59f + id * 0x27d4eb2d))
-    const { alpine } = landscape
-    const ranges = mountainRanges
-    const range = ranges[id % ranges.length]
-    const peak = [0.25, 0.46, 0.7][id % 3]
-    const target = {
-      x: Math.max(
-        14,
-        Math.min(
-          landscape.width - 14,
-          range.left + range.width * (range.mirrored ? 1 - peak : peak),
-        ),
-      ),
-      y: 0,
-    }
-    target.y = mountainGroundAt(target.x, 0.35, ranges) ?? alpine.base - alpine.height * 0.25
-    const desired = { x: target.x + (random() - 0.5) * range.width * 0.08, y: alpine.base - 6 }
-    let start = desired
-    let score = Infinity
-    for (const path of scene.querySelectorAll<SVGPathElement>('[data-trail-route]')) {
-      const length = path.getTotalLength()
-      for (let distance = 0; distance <= length; distance += 16) {
-        const point = path.getPointAtLength(distance)
-        if (point.y < alpine.base - 18 || point.y > alpine.base + 8) continue
-        const candidate = Math.abs(point.y - desired.y) * 2 + Math.abs(point.x - desired.x)
-        if (candidate < score) {
-          score = candidate
-          start = { x: point.x, y: point.y }
-        }
-      }
-    }
-    const phase = random() * Math.PI * 2
-    const amplitude = range.width * (0.015 + random() * 0.012)
-    const samples = Array.from({ length: 129 }, (_, index) => {
-      const fraction = index / 128
-      const blend = fraction * fraction * (3 - 2 * fraction)
-      const switchback =
-        Math.sin(phase + fraction * Math.PI * 6) *
-        Math.sin(fraction * Math.PI) *
-        Math.pow(1 - fraction, 1.2)
-      const x = start.x + (target.x - start.x) * blend + amplitude * switchback
-      const linear = start.y + (target.y - start.y) * fraction
-      return { x, y: Math.max(linear, (mountainGroundAt(x, 0.22, ranges) ?? linear - 4) + 4) }
-    })
-    // A slope's height can vary under a switchback. Its upper envelope keeps the ascent grounded and monotone.
-    for (let index = samples.length - 2; index >= 0; index--)
-      samples[index].y = Math.max(samples[index].y, samples[index + 1].y + 0.02)
+    const tracks = [...scene.querySelectorAll<SVGPathElement>('path[data-mountain-track]')]
+    const path = tracks[id % tracks.length]
+    if (!path) throw new Error('Alpine travelers need a mountain track')
+    const length = path.getTotalLength()
     const point = (progress: number): Point => {
-      const position = Math.max(0, Math.min(1, progress)) * 128
-      const index = Math.min(127, Math.floor(position))
-      const fraction = position - index
-      const from = samples[index]
-      const to = samples[index + 1]
-      return { x: from.x + (to.x - from.x) * fraction, y: from.y + (to.y - from.y) * fraction }
-    }
-    let length = 0
-    let before = point(0)
-    for (let step = 1; step <= 128; step++) {
-      const next = point(step / 128)
-      length += Math.hypot(next.x - before.x, next.y - before.y)
-      before = next
+      const position = path.getPointAtLength(Math.max(0, Math.min(1, progress)) * length)
+      return { x: position.x, y: position.y }
     }
     const entryScale = trailGroundScale(point(0).y, landscape)
+    const targetY = landscape.alpine.base - landscape.alpine.height * 0.1
+    let stillProgress = 0
+    let previous = point(0)
+    let closest = Math.abs(previous.y - targetY)
+    for (let sample = 1; sample <= 64; sample++) {
+      const progress = sample / 64
+      const current = point(progress)
+      if (previous.y >= targetY && current.y <= targetY && previous.y !== current.y) {
+        const fraction = (previous.y - targetY) / (previous.y - current.y)
+        stillProgress = (sample - 1 + fraction) / 64
+        break
+      }
+      const distance = Math.abs(current.y - targetY)
+      if (distance < closest) {
+        stillProgress = progress
+        closest = distance
+      }
+      previous = current
+    }
     return {
+      track: path.dataset.mountainTrack ?? String(id),
+      stillProgress,
       length,
       point,
       scale: (progress: number) =>
@@ -229,12 +192,27 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     }
   }
   const posedProgress = (traveler: Traveler) => {
-    if (!reducedMotion.matches || !landscape) return traveler.progress
-    const from = traveler.route.point(0)
-    const to = traveler.route.point(1)
-    const progress =
-      (from.y - (landscape.alpine.base - landscape.alpine.height * 0.1)) / (from.y - to.y)
-    return Math.max(0, Math.min(1, progress))
+    return reducedMotion.matches ? traveler.route.stillProgress : traveler.progress
+  }
+  const placeTravelers = () => {
+    if (!landscape) return
+    const ground = landscape
+    const obstacles = [...readActors(scene, true), ...readTrunks(scene)]
+    for (const traveler of travelers) {
+      const progress = posedProgress(traveler)
+      placeOnReflow(
+        traveler.element,
+        `alpine-${traveler.id}`,
+        traveler.route.point(progress),
+        () => 12 * traveler.route.scale(progress),
+        traveler.spacing,
+        obstacles,
+        { left: 12, right: ground.width - 12, top: ground.alpine.top, bottom: ground.meadowTop },
+        (point, radius) =>
+          point.y >=
+          (mountainCrestAt(point.x, mountainRanges) ?? ground.alpine.top) + radius * 2 + 3,
+      )
+    }
   }
   const render = () => {
     if (!landscape) return
@@ -266,7 +244,9 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
         ? 'still'
         : host.hidden || document.hidden
           ? 'paused'
-          : 'active'
+          : traveler.spacing.yieldingTo
+            ? 'yielding'
+            : 'active'
       if (Math.abs(ahead.x - point.x) > 0.01)
         traveler.facing.setAttribute('transform', `scale(${ahead.x < point.x ? -1 : 1} 1)`)
       const stride = Math.floor((progress * traveler.route.length) / (8 * scale)) % 2
@@ -412,6 +392,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
           traveler.impressions.length = 0
           traveler.stamped = traveler.progress
         }
+      placeTravelers()
       resume()
     },
     { signal },
@@ -421,7 +402,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
   return {
     pause,
     resume,
-    update(nextLandscape: Landscape, nextSeed: number) {
+    update(nextLandscape: Landscape, nextSeed: number, count: number) {
       pause()
       landscape = nextLandscape
       mountainRanges = buildMountainRanges(landscape.alpine, nextSeed)
@@ -435,7 +416,6 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
         travelers = []
         renderedAt = -Infinity
       }
-      const count = landscape.width < 700 ? 2 : 3
       if (travelers.length > count)
         for (const traveler of travelers.splice(count)) {
           traveler.element.remove()
@@ -460,7 +440,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
           facing,
           pole,
           tracks: marks,
-          route: ascent(id, nextSeed),
+          route: ascent(id),
           phase: 'climbing',
           next: 'climbing',
           progress,
@@ -476,29 +456,12 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       }
       group.replaceChildren(...travelers.map(traveler => traveler.element))
       tracks.replaceChildren(...travelers.map(traveler => traveler.tracks))
-      const obstacles = [...readActors(scene, true), ...readTrunks(scene)]
       for (const traveler of travelers) {
-        traveler.route = ascent(traveler.id, nextSeed)
-        const progress = posedProgress(traveler)
-        placeOnReflow(
-          traveler.element,
-          `alpine-${traveler.id}`,
-          traveler.route.point(progress),
-          () => 12 * traveler.route.scale(progress),
-          traveler.spacing,
-          obstacles,
-          {
-            left: 12,
-            right: nextLandscape.width - 12,
-            top: nextLandscape.alpine.top,
-            bottom: nextLandscape.meadowTop,
-          },
-          (point, radius) =>
-            point.y >=
-            (mountainCrestAt(point.x, mountainRanges) ?? nextLandscape.alpine.top) + radius * 2 + 3,
-        )
+        traveler.route = ascent(traveler.id)
+        traveler.element.dataset.alpineMountainTrack = traveler.route.track
         for (const impression of traveler.impressions) placeImpression(traveler, impression)
       }
+      placeTravelers()
       resume()
     },
   }

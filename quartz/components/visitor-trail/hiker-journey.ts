@@ -62,12 +62,13 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
   let nextStep = 10
   const impressions: Impression[] = []
   let spacing = actorSpacing()
+  let enabled = true
 
   const duration = () => {
     if (phase === 'waiting') return (incoming?.readyAfter ?? 0) + 250
     if (phase === 'arriving') return Math.max(20000, Math.min(50000, (incoming?.length ?? 0) * 28))
     if (phase === 'departing') return Math.max(22000, Math.min(52000, (outgoing?.length ?? 0) * 28))
-    if (phase === 'resting') return 9000
+    if (phase === 'resting') return 45 * 60 * 1000
     return 1400
   }
   const moving = () => phase === 'arriving' || phase === 'departing'
@@ -77,11 +78,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     const route = leg === 'arriving' ? incoming : outgoing
     if (!route) return { x: 0, y: 0 }
     const distance = Math.max(0, Math.min(1, progress)) * legLength(leg)
-    const remaining = leg === 'arriving' ? route.length - distance : distance
-    const point = route.point(leg === 'arriving' ? distance : route.length - distance)
-    const approach = Math.max(0, 1 - remaining / 110)
-    const blend = approach * approach * (3 - 2 * approach)
-    return { x: point.x - 48 * blend, y: point.y + 30 * blend }
+    return route.point(leg === 'arriving' ? distance : route.length - distance)
   }
   const placeHiker = () => {
     if (!landscape || !incoming) return
@@ -117,12 +114,20 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
   }
   const render = () => {
     if (!incoming) return
+    hiker.dataset.enabled = String(enabled)
+    if (!enabled) {
+      hiker.style.visibility = 'hidden'
+      hiker.dataset.collisionActive = 'false'
+      return
+    }
     hiker.dataset.phase = phase
     hiker.dataset.motion = reducedMotion.matches
       ? 'still'
       : host.hidden || document.hidden
         ? 'paused'
-        : 'walking'
+        : spacing.yieldingTo
+          ? 'yielding'
+          : 'walking'
     const progress = Math.min(1, elapsed / duration())
     hiker.dataset.progress = progress.toFixed(3)
     hiker.dataset.walkingDuration = moving() ? String(duration()) : ''
@@ -187,6 +192,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
       host.hidden ||
       document.hidden ||
       reducedMotion.matches ||
+      !enabled ||
       !incoming ||
       phase === 'gone'
     )
@@ -241,6 +247,9 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
             top: Math.max(landscape.treeline, landscape.alpine.base - 18),
             bottom: landscape.height - radius,
           },
+          true,
+          onLeg(leg, 1),
+          true,
         )
       )
         elapsed += increment
@@ -289,8 +298,19 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
 
   return {
     pause,
-    update(routes: JourneyRoute[], nextLandscape: Landscape, nextSeed: number) {
+    update(
+      routes: JourneyRoute[],
+      nextLandscape: Landscape,
+      nextSeed: number,
+      nextEnabled: boolean,
+    ) {
       pause()
+      if (enabled && !nextEnabled) {
+        tracks.replaceChildren()
+        impressions.length = 0
+      }
+      const resumed = !enabled && nextEnabled
+      enabled = nextEnabled
       const fraction = elapsed / duration()
       landscape = nextLandscape
       incoming = routes.find(route => route.id === 'main')
@@ -300,7 +320,6 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
       outgoing = departures[Math.floor(trailRandom(nextSeed ^ 0x78ae12d3)() * departures.length)]
       if (!incoming || !outgoing) return pause()
       if (nextSeed !== seed) {
-        pause()
         seed = nextSeed
         phase = 'waiting'
         elapsed = 0
@@ -317,6 +336,15 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
           stamp.element.setAttribute('transform', impressionTransform(stamp))
       }
       placeHiker()
+      if (resumed && moving())
+        nextStep =
+          (Math.floor(
+            (Math.min(1, elapsed / duration()) *
+              legLength(phase === 'arriving' ? 'arriving' : 'departing')) /
+              10,
+          ) +
+            1) *
+          10
       if (reducedMotion.matches) still()
       else {
         render()

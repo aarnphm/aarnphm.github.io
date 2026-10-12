@@ -33,13 +33,32 @@
   .trail-foothill-near {
     fill: color-mix(in srgb, var(--lightgray) 65%, var(--light));
   }
+  .trail-mountain-track {
+    fill: none;
+    stroke: color-mix(in srgb, var(--gray) 42%, var(--light));
+    stroke-width: 1.15px;
+    stroke-dasharray: 1.5 3.5;
+    stroke-linecap: butt;
+    stroke-linejoin: bevel;
+    vector-effect: non-scaling-stroke;
+    shape-rendering: crispEdges;
+  }
+  .trail-mountain-track[data-mountain-kind='shelf'] {
+    stroke-dasharray: 6 3;
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     .trail-mountain-paint {
       animation: trail-mountain-arrive 2600ms steps(10, end)
         calc(var(--trail-mountain-delay, 0ms) + var(--trail-paint-step, 0) * 110ms) both;
     }
+    .trail-mountain-roads {
+      animation: trail-mountain-arrive 2400ms steps(10, end) 1800ms both;
+    }
     .trail-scene[data-weather-motion='paused'] .trail-mountain-paint {
+      animation-play-state: paused;
+    }
+    .trail-scene[data-weather-motion='paused'] .trail-mountain-roads {
       animation-play-state: paused;
     }
   }

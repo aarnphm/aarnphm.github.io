@@ -13,7 +13,7 @@ export type ForestSettings = {
 }
 export const defaultForestSettings: ForestSettings = {
   density: 48,
-  depth: 3,
+  depth: 9,
   angle: 26,
   size: 150,
   curl: 4,
@@ -26,7 +26,7 @@ export const forestLimits: Record<
   { min: number; max: number; step: number }
 > = {
   density: { min: 8, max: 72, step: 1 },
-  depth: { min: 2, max: 5, step: 1 },
+  depth: { min: 2, max: 9, step: 1 },
   angle: { min: 15, max: 45, step: 1 },
   size: { min: 60, max: 240, step: 5 },
   curl: { min: 0, max: 40, step: 1 },
@@ -107,9 +107,7 @@ function tree(
   }
   let word = form === 'forked' ? 'FF[+FX][-FX]' : 'FX'
   for (let iteration = 0; iteration < depth; iteration++) {
-    word = Array.from(word, symbol =>
-      symbol === 'X' ? rule() : symbol === 'F' ? 'FF' : symbol,
-    ).join('')
+    word = word.replace(/[XF]/g, symbol => (symbol === 'X' ? rule() : 'FF'))
   }
   const spread = kind === 'cypress' ? 0.45 : kind === 'spruce' ? 0.7 : kind === 'pine' ? 0.85 : 1
   const angle = (bounded(settings.angle, 'angle') * spread * breadth * Math.PI) / 180
@@ -119,6 +117,7 @@ function tree(
   const stack: Turtle[] = []
   const branches: Branch[] = []
   const tips: Tip[] = []
+  let top = 0
   for (const symbol of word) {
     if (symbol === 'F') {
       const from = { x: turtle.x, y: turtle.y }
@@ -126,6 +125,7 @@ function tree(
       const length = 0.78 ** stack.length * (1 + (random() - 0.5) * variation * 0.35)
       turtle.x += Math.cos(turtle.heading) * length
       turtle.y += Math.sin(turtle.heading) * length
+      top = Math.min(top, turtle.y)
       branches.push({ from, to: { x: turtle.x, y: turtle.y }, level: stack.length })
     } else if (symbol === '+' || symbol === '-') {
       const turn = handedness * (symbol === '+' ? 1 : -1)
@@ -140,7 +140,6 @@ function tree(
       tips.push({ x: turtle.x, y: turtle.y, level: stack.length })
     }
   }
-  const top = Math.min(...branches.map(branch => branch.to.y))
   const size = (bounded(settings.size, 'size') / 100) * (1 + (random() - 0.5) * variation * 0.25)
   const scale = ((height - 8) * size) / Math.max(1, -top)
   const pixel = Math.max(minPixel, Math.ceil((height * size) / 54))
@@ -162,7 +161,12 @@ function tree(
         mark(x + offset, y, bark ? 'bark' : 'trunk')
     }
   })
+  const crowns = new Set<string>()
   tips.forEach(tip => {
+    // Buds within one raster cell at the same depth share a crown.
+    const crown = `${Math.round((tip.x * scale) / pixel)},${Math.round((tip.y * scale) / pixel)},${tip.level}`
+    if (crowns.has(crown)) return
+    crowns.add(crown)
     if (leaves() < (form === 'open' ? 0.3 : 0.06) * variation) return
     const radius = (evergreen ? 4 + leaves() * 2.5 : 5 + leaves() * 3.5) * size * 0.9 ** tip.level
     const fullness = breadth * (0.9 + leaves() * variation * 0.35)
@@ -215,18 +219,47 @@ function tree(
   }
 }
 
-export function trailTrees(
+export function createTreePainter(): typeof tree {
+  let signature = ''
+  const shapes = new Map<string, ReturnType<typeof tree>>()
+  return (kind, seed, height, settings, minPixel = 1) => {
+    const next = [
+      settings.depth,
+      settings.angle,
+      settings.size,
+      settings.curl,
+      settings.branching,
+      settings.variation,
+      settings.dapple,
+    ].join('|')
+    if (next !== signature) {
+      shapes.clear()
+      signature = next
+    }
+    const key = `${kind}|${seed}|${height}|${minPixel}`
+    let shape = shapes.get(key)
+    if (!shape) {
+      shape = tree(kind, seed, height, settings, minPixel)
+      shapes.set(key, shape)
+    }
+    return shape
+  }
+}
+
+export function* trailTreeSprites(
   landscape: Landscape,
   seed: number,
   settings: ForestSettings = defaultForestSettings,
   walks: Point[] = [],
+  clearings: (Point & { radius: number })[] = [],
+  paint: typeof tree = tree,
 ) {
   const { width, meadowTop, camp, groves, pond, alpine, treeline } = landscape
   const clearing = camp.y - meadowTop
   const random = trailRandom(seed ^ 0x7f4a7c15)
   const count = bounded(settings.density, 'density')
   const roots: Point[] = []
-  return Array.from({ length: count }, (_, index) => {
+  const placements = Array.from({ length: count }, (_, index) => {
     const standalone = index % 4 === 3 || index >= 32
     const foothill = standalone && index < 24
     const cluster = (index - Math.floor(index / 4)) % groves.length
@@ -241,19 +274,23 @@ export function trailTrees(
       }
     } else {
       let bestClearance = -Infinity
-      for (let attempt = 0; attempt < 120; attempt++) {
+      for (let attempt = 0; attempt < 140; attempt++) {
         const angle = Math.floor(index / groves.length) * 2.399963 + (random() - 0.5) * 1.8
-        const radius = Math.sqrt(random()) * (attempt < 70 ? 1 : 1.8)
-        const x = standalone
+        const radius = Math.sqrt(random()) * (standalone ? 1 : 0.65) * (attempt < 70 ? 1 : 1.8)
+        const spread = standalone || attempt >= 100
+        const x = spread
           ? 26 + random() * (width - 56)
           : grove.x + Math.cos(angle) * grove.rx * radius
-        const y = standalone
+        const y = spread
           ? meadowTop + 64 + random() * Math.max(1, clearing - 100)
           : grove.y + Math.sin(angle) * grove.ry * radius
         const candidate = onDryLand({ x, y: y + groundOffset(x, landscape) * 0.3 }, landscape, 1.9)
         if (
           pondDistance(candidate, pond) <= 1.85 ||
-          Math.hypot(candidate.x - camp.x, candidate.y - camp.y) <= 102
+          Math.hypot(candidate.x - camp.x, candidate.y - camp.y) <= 102 ||
+          clearings.some(
+            site => Math.hypot(candidate.x - site.x, candidate.y - site.y) < site.radius,
+          )
         )
           continue
         const rootDistance = nearestDistance(candidate, roots)
@@ -285,17 +322,19 @@ export function trailTrees(
       }
     }
     roots.push(root)
+    const identity = trailRandom(0x777034b3 ^ Math.imul(index + 1, 16807))
     const kind =
       kinds[
         foothill
-          ? Math.floor(random() * 2)
+          ? Math.floor(identity() * 2)
           : standalone
-            ? Math.floor(random() * kinds.length)
-            : (cluster + Math.floor(random() * 2)) % kinds.length
+            ? Math.floor(identity() * kinds.length)
+            : (cluster + Math.floor(identity() * 2)) % kinds.length
       ]
-    const treeSeed = Math.floor(random() * 4294967296)
-    const height = foothill ? 20 + random() * 10 : (width < 700 ? 24 : 30) + random() * 26
+    const treeSeed = Math.floor(identity() * 4294967296)
+    const height = foothill ? 20 + identity() * 10 : 30 + identity() * 26
     return {
+      id: `tree-${index + 1}`,
       x: Math.round(root.x),
       y: foothill
         ? Math.min(Math.floor(alpine.base), Math.max(Math.ceil(treeline), Math.round(root.y)))
@@ -307,25 +346,34 @@ export function trailTrees(
       treeSeed,
       height,
     }
-  })
-    .sort((a, b) => a.y - b.y)
-    .map(({ x, y, standalone, foothill, cluster, kind, treeSeed, height }) => {
-      const { markup, form, tone, extent, trunkRadius } = tree(
-        kind,
-        treeSeed,
-        height,
-        settings,
-        foothill ? 4 : 1,
-      )
-      const depth = Math.max(0, Math.min(1, (y - meadowTop) / clearing))
-      const foothillDepth = Math.max(0, Math.min(1, (y - treeline) / (alpine.base - treeline)))
-      const scale = foothill ? 0.2 + foothillDepth * 0.1 : 0.55 + depth * 0.6
-      const fit = foothill ? Math.min(1, (y - treeline - 1) / (extent * scale)) : 1
-      const opacity = foothill ? 0.56 + foothillDepth * 0.12 : 0.8 + depth * 0.15
-      const placement = standalone
-        ? 'data-tree-placement="standalone"'
-        : `data-tree-placement="grove" data-tree-cluster="${cluster}"`
-      return `<g class="trail-tree" data-tree="${kind}" ${placement} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-opacity: ${opacity.toFixed(2)}" transform="translate(${x} ${y})"><g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})">${markup}</g></g></g>`
-    })
-    .join('')
+  }).sort((a, b) => a.y - b.y)
+  for (const { id, x, y, standalone, foothill, cluster, kind, treeSeed, height } of placements) {
+    const { markup, form, tone, extent, trunkRadius } = paint(
+      kind,
+      treeSeed,
+      height,
+      settings,
+      foothill ? 4 : 1,
+    )
+    const depth = Math.max(0, Math.min(1, (y - meadowTop) / clearing))
+    const foothillDepth = Math.max(0, Math.min(1, (y - treeline) / (alpine.base - treeline)))
+    const scale = foothill ? 0.2 + foothillDepth * 0.1 : 0.55 + depth * 0.6
+    const fit = foothill ? Math.min(1, (y - treeline - 1) / (extent * scale)) : 1
+    const opacity = foothill ? 0.56 + foothillDepth * 0.12 : 0.8 + depth * 0.15
+    const placement = standalone
+      ? 'data-tree-placement="standalone"'
+      : `data-tree-placement="grove" data-tree-cluster="${cluster}"`
+    yield `<g class="trail-tree" data-tree-id="${id}" data-tree="${kind}" ${placement} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-opacity: ${opacity.toFixed(2)}" transform="translate(${x} ${y})"><g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
+  }
+}
+
+export function trailTrees(
+  landscape: Landscape,
+  seed: number,
+  settings: ForestSettings = defaultForestSettings,
+  walks: Point[] = [],
+  clearings: (Point & { radius: number })[] = [],
+  paint: typeof tree = tree,
+) {
+  return [...trailTreeSprites(landscape, seed, settings, walks, clearings, paint)].join('')
 }

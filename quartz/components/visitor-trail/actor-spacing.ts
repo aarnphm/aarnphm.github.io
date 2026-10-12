@@ -2,7 +2,7 @@ import type { Point } from './landscape'
 
 export type CollisionActor = Point & {
   id: string
-  kind: 'animal' | 'traveler' | 'trunk'
+  kind: 'animal' | 'traveler' | 'pet' | 'trunk'
   radius: number
   element?: SVGGElement
 }
@@ -11,11 +11,11 @@ export type ActorSpacing = {
   offset: Point
   lane: Point
   blocker: string | null
+  side: -1 | 1
   status: SpacingStatus
-  placement: {
-    bounds: SpacingBounds
-    grounded: (point: Point, radius: number) => boolean
-  } | null
+  yieldingTo: string | null
+  yieldEpisode: number
+  placement: { bounds: SpacingBounds; grounded: (point: Point, radius: number) => boolean } | null
 }
 export type SpacingBounds = { left: number; right: number; top: number; bottom: number }
 
@@ -23,6 +23,7 @@ export function readActors(scene: ParentNode, includeWaiting = false): Collision
   const actors: CollisionActor[] = []
   for (const element of scene.querySelectorAll<SVGGElement>('[data-trail-collision]')) {
     if (
+      element.dataset.enabled === 'false' ||
       (element.dataset.collisionActive === 'false' &&
         !(
           includeWaiting &&
@@ -34,7 +35,11 @@ export function readActors(scene: ParentNode, includeWaiting = false): Collision
       continue
     const kind = element.dataset.trailCollision
     const radius = Number(element.dataset.collisionRadius)
-    if ((kind !== 'animal' && kind !== 'traveler') || !Number.isFinite(radius) || radius <= 0)
+    if (
+      (kind !== 'animal' && kind !== 'traveler' && kind !== 'pet') ||
+      !Number.isFinite(radius) ||
+      radius <= 0
+    )
       continue
     const matrix = element.transform.baseVal.getItem(0).matrix
     const id =
@@ -49,14 +54,25 @@ export function readActors(scene: ParentNode, includeWaiting = false): Collision
 }
 
 export function readTrunks(scene: ParentNode): CollisionActor[] {
-  return Array.from(scene.querySelectorAll<SVGGElement>('.trail-tree')).flatMap(
-    (element, index) => {
+  const solids: CollisionActor[] = Array.from(
+    scene.querySelectorAll<SVGGElement>('[data-camp-solid]'),
+  ).map(element => ({
+    id: element.dataset.campSolid ?? '',
+    kind: 'trunk',
+    x: Number(element.dataset.groundX),
+    y: Number(element.dataset.groundY),
+    radius: Number(element.dataset.solidRadius),
+    element,
+  }))
+  return [
+    ...solids,
+    ...Array.from(scene.querySelectorAll<SVGGElement>('.trail-tree')).flatMap((element, index) => {
       if (!element.transform.baseVal.numberOfItems) return []
       const matrix = element.transform.baseVal.getItem(0).matrix
       const radius = Number(element.dataset.trunkRadius ?? 3 * Number(element.dataset.treeScale))
       if (!Number.isFinite(radius)) return []
       const trunk: CollisionActor = {
-        id: `trunk-${index}`,
+        id: `trunk-${element.dataset.treeId ?? index}`,
         kind: 'trunk',
         x: matrix.e,
         y: matrix.f,
@@ -64,8 +80,8 @@ export function readTrunks(scene: ParentNode): CollisionActor[] {
         element,
       }
       return [trunk]
-    },
-  )
+    }),
+  ]
 }
 
 export function circleClearance(point: Point, radius: number, other: CollisionActor) {
@@ -103,7 +119,10 @@ export function actorSpacing(): ActorSpacing {
     offset: { x: 0, y: 0 },
     lane: { x: 0, y: 0 },
     blocker: null,
+    side: 1,
     status: 'clear',
+    yieldingTo: null,
+    yieldEpisode: 0,
     placement: null,
   }
 }
@@ -168,7 +187,12 @@ export function placeOnReflow(
     spacing.status = Math.hypot(spacing.offset.x, spacing.offset.y) > 0.1 ? 'passing' : 'clear'
   }
   const reservation = obstacles.find(other => other.id === id)
-  const circle = { ...placed, id, kind: 'traveler', radius: radiusAt(placed) } satisfies CollisionActor
+  const circle = {
+    ...placed,
+    id,
+    kind: 'traveler',
+    radius: radiusAt(placed),
+  } satisfies CollisionActor
   if (reservation) Object.assign(reservation, circle)
   else obstacles.push(circle)
 }
@@ -177,6 +201,35 @@ function towards(from: Point, to: Point, distance: number): Point {
   const length = Math.hypot(to.x - from.x, to.y - from.y)
   const fraction = length ? Math.min(1, distance / length) : 1
   return { x: from.x + (to.x - from.x) * fraction, y: from.y + (to.y - from.y) * fraction }
+}
+
+export function animalInWay(
+  from: Point,
+  next: Point,
+  radius: number,
+  obstacles: readonly CollisionActor[],
+  waitingFor?: string | null,
+) {
+  const distance = Math.hypot(next.x - from.x, next.y - from.y)
+  return obstacles.find(other => {
+    if (other.kind !== 'animal' || circleClearance(from, radius, other) < -1) return false
+    if (
+      other.id === waitingFor &&
+      distance &&
+      (other.x - from.x) * (next.x - from.x) + (other.y - from.y) * (next.y - from.y) >= 0 &&
+      circleClearance(from, radius, other) < radius * 1.5 + 14
+    )
+      return true
+    const buffer = other.id === waitingFor ? 8 : 0
+    const ahead = radius * 1.5 + 6 + buffer
+    const probe = distance
+      ? {
+          x: next.x + ((next.x - from.x) * ahead) / distance,
+          y: next.y + ((next.y - from.y) * ahead) / distance,
+        }
+      : next
+    return !canMove(from, probe, radius + buffer / 2, [other])
+  })
 }
 
 export function spacedStep(
@@ -188,8 +241,13 @@ export function spacedStep(
   spacing: ActorSpacing,
   obstacles: readonly CollisionActor[],
   bounds?: SpacingBounds,
+  yieldToTravelers = true,
+  destination?: Point,
+  planned = false,
 ) {
   if (budget <= 0) return false
+  const waitingFor = spacing.yieldingTo
+  spacing.yieldingTo = null
   const others = obstacles.filter(other => other.id !== id)
   const from = spacedPosition(base, spacing)
   const intended = spacedPosition(next, spacing)
@@ -209,6 +267,14 @@ export function spacedStep(
       canMove(from, point, radius, others)
     )
   }
+  const animal = animalInWay(from, intended, radius, others, waitingFor)
+  if (animal) {
+    if (waitingFor !== animal.id) spacing.yieldEpisode++
+    spacing.blocker = animal.id
+    spacing.yieldingTo = animal.id
+    spacing.status = 'yielding'
+    return false
+  }
   if (bounds && outside(from) > 0) {
     const edge = {
       x: Math.max(bounds.left, Math.min(bounds.right, from.x)),
@@ -224,12 +290,16 @@ export function spacedStep(
   const heading = distance
     ? { x: (next.x - base.x) / distance, y: (next.y - base.y) / distance }
     : { x: 1, y: 0 }
-  const probe = {
-    x: intended.x + heading.x * (radius * 1.5 + 6),
-    y: intended.y + heading.y * (radius * 1.5 + 6),
-  }
+  const reach = destination
+    ? Math.min(radius * 1.5 + 6, Math.hypot(destination.x - next.x, destination.y - next.y))
+    : radius * 1.5 + 6
+  const probe = { x: intended.x + heading.x * reach, y: intended.y + heading.y * reach }
+  // Planned corners already clear static bodies; anticipation follows moving actors only.
   const blocker = others
-    .filter(other => !canMove(from, probe, radius, [other]))
+    .filter(
+      other =>
+        !canMove(from, planned && other.kind === 'trunk' ? intended : probe, radius, [other]),
+    )
     .sort(
       (left, right) => circleClearance(from, radius, left) - circleClearance(from, radius, right),
     )[0]
@@ -247,12 +317,29 @@ export function spacedStep(
       spacing.status = 'passing'
       return true
     }
+    const returnToPath = towards(from, base, budget)
+    if (
+      Math.hypot(returnToPath.x - from.x, returnToPath.y - from.y) > 0.00001 &&
+      clears(returnToPath)
+    ) {
+      spacing.offset = { x: returnToPath.x - base.x, y: returnToPath.y - base.y }
+      spacing.status = 'passing'
+      return false
+    }
     spacing.status = 'yielding'
     return false
   }
 
   const intrusion = circleClearance(from, radius, blocker) < 0
-  if (blocker.kind === 'traveler' && id < blocker.id && !intrusion) {
+  const walking = [
+    'walking',
+    'arriving',
+    'departing',
+    'climbing',
+    'descending',
+    'patrolling',
+  ].includes(blocker.element?.dataset.phase ?? '')
+  if (yieldToTravelers && walking && blocker.kind === 'traveler' && id < blocker.id && !intrusion) {
     spacing.status = 'yielding'
     return clears(intended)
   }
@@ -260,6 +347,7 @@ export function spacedStep(
     spacing.blocker = blocker.id
     const normal = { x: -heading.y, y: heading.x }
     const sign = normal.y < -0.01 ? -1 : normal.y > 0.01 ? 1 : id.length % 2 ? -1 : 1
+    spacing.side = sign
     const clearance = radius + blocker.radius + 5
     spacing.lane = {
       x: spacing.offset.x + normal.x * sign * clearance,
@@ -280,7 +368,7 @@ export function spacedStep(
       return true
     }
     const normal = { x: -heading.y, y: heading.x }
-    const sign = normal.y < -0.01 ? -1 : normal.y > 0.01 ? 1 : id.length % 2 ? -1 : 1
+    const sign = spacing.side
     spacing.lane = {
       x: spacing.offset.x + normal.x * sign * (radius + blocker.radius + 5),
       y: spacing.offset.y + normal.y * sign * (radius + blocker.radius + 5),
@@ -290,6 +378,19 @@ export function spacedStep(
   const sidestep = { x: base.x + offset.x, y: base.y + offset.y }
   if (clears(sidestep)) {
     spacing.offset = offset
+    spacing.status = intrusion ? 'escaping' : 'passing'
+    return false
+  }
+  const oppositeLane = {
+    x: 2 * spacing.offset.x - spacing.lane.x,
+    y: 2 * spacing.offset.y - spacing.lane.y,
+  }
+  const oppositeOffset = towards(spacing.offset, oppositeLane, budget)
+  const oppositeStep = { x: base.x + oppositeOffset.x, y: base.y + oppositeOffset.y }
+  if (clears(oppositeStep)) {
+    spacing.side = spacing.side === 1 ? -1 : 1
+    spacing.lane = oppositeLane
+    spacing.offset = oppositeOffset
     spacing.status = intrusion ? 'escaping' : 'passing'
     return false
   }
@@ -310,6 +411,24 @@ export function spacedStep(
     spacing.status = 'passing'
     return true
   }
+  const clearance = (point: Point) =>
+    Math.min(...others.map(other => circleClearance(point, radius, other)))
+  let escape: Point | null = null
+  let space = clearance(from)
+  for (let index = 0; index < 16; index++) {
+    const angle = (index * Math.PI) / 8
+    const candidate = { x: from.x + Math.cos(angle) * budget, y: from.y + Math.sin(angle) * budget }
+    const gap = clearance(candidate)
+    if (gap > space + 0.00001 && clears(candidate)) {
+      escape = candidate
+      space = gap
+    }
+  }
+  if (escape) {
+    spacing.offset = { x: escape.x - base.x, y: escape.y - base.y }
+    spacing.status = 'escaping'
+    return false
+  }
   spacing.status = 'yielding'
   return false
 }
@@ -322,6 +441,7 @@ export function publishActor(
   spacing: ActorSpacing,
   active = true,
   motionTime?: number,
+  radius = 12,
 ) {
   const x = Number(point.x.toFixed(2))
   const y = Number(point.y.toFixed(2))
@@ -335,10 +455,10 @@ export function publishActor(
       x <= bounds.right &&
       y >= bounds.top &&
       y <= bounds.bottom &&
-      grounded(circle, 12 * scale) &&
+      grounded(circle, radius * scale) &&
       [...readActors(scene), ...readTrunks(scene)]
         .filter(other => other.id !== id)
-        .every(other => circleClearance(circle, 12 * scale, other) >= 0)
+        .every(other => circleClearance(circle, radius * scale, other) >= 0)
     ) {
       spacing.placement = null
       element.dataset.placement = 'ready'
@@ -350,11 +470,13 @@ export function publishActor(
   element.dataset.trailCollision = 'traveler'
   element.dataset.collisionId = id
   element.dataset.collisionActive = String(active && placed)
-  element.dataset.collisionRadius = (12 * scale).toFixed(4)
+  element.dataset.collisionRadius = (radius * scale).toFixed(4)
   element.dataset.groundX = String(x)
-  element.dataset.groundY = String(y)
+  if (element.dataset.groundY !== String(y)) element.dataset.groundY = String(y)
   element.dataset.scale = scale.toFixed(4)
   element.dataset.spacing = spacing.status
+  element.dataset.yieldingTo = spacing.yieldingTo ?? ''
+  element.dataset.yieldEpisode = String(spacing.yieldEpisode)
   element.dataset.pathOffset = Math.hypot(spacing.offset.x, spacing.offset.y).toFixed(2)
   if (motionTime !== undefined) element.dataset.motionTime = String(motionTime)
 }

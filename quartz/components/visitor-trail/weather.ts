@@ -1,5 +1,8 @@
 import type { Landscape } from './landscape'
+import { lunarPhase } from '../../util/lunar-phase'
+import { subscribeVisitorMoon, type VisitorMoon } from '../../util/visitor-lunar'
 import { subscribeVisitorTrailWeather, type TrailWeather } from '../../util/visitor-trail-weather'
+import { paintLunarDisc, stopLunarTransition } from '../scripts/lunar-disc'
 import { trailRandom } from './random'
 
 const rainCodes = new Map([
@@ -53,11 +56,26 @@ function weatherMarks(landscape: Landscape, seed: number, weather: TrailWeather 
   const { width, height, bottom, groves } = landscape
   const { rain, snow, sun, wind, dx, dy } = decoration(weather)
   const marks: string[] = []
+  const skyX = Math.round(width * 0.9)
+  const skyY = bottom + 86
+  marks.push(`<g class="trail-weather-night">
+    <g class="trail-weather-moon" transform="translate(${skyX} ${skyY})">
+      <g class="trail-moon-motion">
+      <path class="trail-moon-shadow" d="M-4-10h8v2h4v4h2v8H8v4H4v2h-8V8h-4V4h-2v-8h2v-4h4Z"/>
+      <path class="trail-moon-lit" data-lunar-disc/>
+      <path class="trail-moon-crater" d="M3-5h2v2H3ZM4 3h3v2H4Z"/>
+      </g>
+    </g>
+    ${Array.from({ length: 6 }, () => {
+      const x = Math.round(20 + random() * (width - 40))
+      const y = Math.round(bottom + 22 + random() * 70)
+      return `<path class="trail-weather-star" d="M${x} ${y}h2v2h-2Z"/>`
+    }).join('')}
+  </g>`)
+  marks.push('<g class="trail-weather-daylight">')
   if (sun) {
-    const x = Math.round(width * 0.9)
-    const y = bottom + 54
     marks.push(
-      `<g class="trail-weather-sun" transform="translate(${x} ${y})"><path d="M-4-6h8v2h2v8h-2v2h-8V4h-2V-4h2ZM-1-12h2v3h-2ZM-1 9h2v3h-2ZM-12-1h3v2h-3ZM9-1h3v2H9Z"/></g>`,
+      `<g class="trail-weather-sun" transform="translate(${skyX} ${skyY})"><path d="M-4-6h8v2h2v8h-2v2h-8V4h-2V-4h2ZM-1-12h2v3h-2ZM-1 9h2v3h-2ZM-12-1h3v2h-3ZM9-1h3v2H9Z"/></g>`,
     )
     for (let index = 0; index < 20; index++) {
       const grove = groves[index % groves.length]
@@ -69,6 +87,7 @@ function weatherMarks(landscape: Landscape, seed: number, weather: TrailWeather 
       )
     }
   }
+  marks.push('</g>')
   if (wind > 0.025 && weather?.windFromDegrees !== null) {
     const count = width < 700 ? 6 : 10
     for (let index = 0; index < count; index++) {
@@ -105,11 +124,36 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   let landscape: Landscape | null = null
   let seed = 0
   let weather: TrailWeather | null = null
+  let moon: VisitorMoon = { ...lunarPhase(Date.now()), at: Date.now() }
   let paused = host.hidden
 
+  const paintMoon = (animate: boolean) => {
+    scene.dataset.moonPhase = String(moon.phase)
+    const path = layer?.querySelector<SVGPathElement>('[data-lunar-disc]')
+    if (path)
+      paintLunarDisc(
+        path,
+        moon.phase,
+        10,
+        2,
+        animate && !paused && !document.hidden && !motion?.matches,
+      )
+  }
+
+  const updateLighting = () => {
+    // Theme changes the illustration; the forecast fields retain their actual values.
+    scene.dataset.lighting =
+      document.documentElement.getAttribute('saved-theme') === 'dark' || weather?.day === false
+        ? 'moonlit'
+        : 'day'
+  }
   const updateMotion = () => {
     scene.dataset.weatherMotion =
       paused || host.hidden || document.hidden || motion?.matches ? 'paused' : 'running'
+    if (scene.dataset.weatherMotion === 'paused') {
+      const path = layer?.querySelector<SVGPathElement>('[data-lunar-disc]')
+      if (path) stopLunarTransition(path)
+    }
   }
   const refreshForest = () => {
     const random = trailRandom(seed ^ 0x385ab251)
@@ -139,10 +183,21 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
       layer.dataset.trailWeather = state.mode
       if (landscape) layer.innerHTML = weatherMarks(landscape, seed, weather)
     }
+    paintMoon(false)
+    updateLighting()
     updateMotion()
   }
+  document.addEventListener('themechange', updateLighting, { signal })
   document.addEventListener('visibilitychange', updateMotion, { signal })
   motion?.addEventListener('change', updateMotion, { signal })
+  subscribeVisitorMoon(
+    document,
+    current => {
+      moon = current
+      paintMoon(scene.dataset.lighting === 'moonlit')
+    },
+    signal,
+  )
   subscribeVisitorTrailWeather(
     document,
     conditions => {

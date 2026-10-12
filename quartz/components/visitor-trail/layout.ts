@@ -125,7 +125,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     x: width * (fraction + (random() - 0.5) * 0.045),
     y: landscape.alpine.base - 12,
   })
-  const end = { x: camp.x - 24, y: camp.y + 4 }
+  const end = { x: camp.x - 72, y: camp.y + 34 }
   const routes: Record<TrailId, string> = {
     main: curvedPath(
       [
@@ -134,7 +134,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
         wander(0.27, 0.36),
         wander(0.44, 0.73),
         wander(0.61, 0.62),
-        { x: camp.x - 42, y: camp.y - 24 },
+        { x: camp.x - 110, y: camp.y + 4 },
         end,
       ],
       width,

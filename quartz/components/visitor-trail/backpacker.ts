@@ -15,7 +15,6 @@ export function trailBackpacker() {
   ]
   return `
     <g class="trail-backpacker" data-phase="waiting" data-pack="shoulder" data-stride="0">
-      <path class="trail-hiker-shadow" d="M-8 0h16v2H-8Z"/>
       <g class="trail-hiker-facing">
         <g class="trail-hiker-pack" transform="translate(-12 -22)">
           ${pixels(
