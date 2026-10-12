@@ -135,6 +135,15 @@ document.addEventListener('nav', () => {
     }
   }
 
+  // Tells the page what the voice is doing; the pet (pet.inline.ts) says the phrase in its bubble.
+  const announce = (state: 'loading' | 'playing' | 'idle', phrase?: HTMLElement) => {
+    const detail = {
+      state,
+      text: phrase?.dataset.speechText?.trim() ?? '',
+      lang: phrase?.closest<HTMLElement>('[lang]')?.lang || controls.lang,
+    }
+    document.dispatchEvent(new CustomEvent('speech', { detail }))
+  }
   const setStatus = (text: string, error = false) => {
     status.textContent = text
     status.hidden = !text
@@ -163,6 +172,7 @@ document.addEventListener('nav', () => {
     resetActive()
     stopButton.hidden = true
     setStatus('')
+    announce('idle')
   }
   const speak = async (button: HTMLButtonElement, phrase: HTMLElement) => {
     if (button === active) {
@@ -181,6 +191,7 @@ document.addEventListener('nav', () => {
     button.setAttribute('aria-label', `Arrêter : ${text}`)
     stopButton.hidden = false
     setStatus('Préparation de la voix…')
+    announce('loading', phrase)
     try {
       const url = await runtime.prepare(text)
       if (disposed || currentRequest !== request) return
@@ -192,10 +203,12 @@ document.addEventListener('nav', () => {
       button.dataset.speechState = 'playing'
       button.title = 'Arrêter la lecture'
       setStatus(`Lecture : ${text}`)
+      announce('playing', phrase)
     } catch (error) {
       if (disposed || currentRequest !== request) return
       resetActive()
       stopButton.hidden = true
+      announce('idle')
       const message = error instanceof Error ? error.message : String(error)
       setStatus(`Lecture indisponible. ${message}`, true)
     }
@@ -241,6 +254,7 @@ document.addEventListener('nav', () => {
       resetActive()
       stopButton.hidden = true
       setStatus('')
+      announce('idle')
     },
     { signal: listeners.signal },
   )
@@ -250,6 +264,7 @@ document.addEventListener('nav', () => {
       if (!player.hasAttribute('src')) return
       resetActive()
       stopButton.hidden = true
+      announce('idle')
       setStatus('Lecture indisponible. Réessayez avec une autre phrase.', true)
     },
     { signal: listeners.signal },
