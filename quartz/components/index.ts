@@ -7,11 +7,12 @@ import Byline from './Byline'
 import CanvasContainer from './Canvas'
 import CodeCopy from './CodeCopy'
 import Comments from './Comments'
+import ConditionalRender from './ConditionalRender'
 import ContentMeta from './ContentMeta'
 import CourseHome from './CourseHome'
 import { CourseResourceStrip } from './CourseResource'
 import CoursesIndex from './CoursesIndex'
-import { CourseUnitBar, CourseUnitFoot, CourseUnitNotes } from './CourseUnit'
+import { CoursePsetDesk, CourseUnitBar, CourseUnitFoot, CourseUnitNotes } from './CourseUnit'
 import Cursor from './Cursor'
 import Darkmode from './Darkmode'
 import DesktopOnly from './DesktopOnly'
@@ -87,6 +88,7 @@ export {
   Backlinks,
   Search,
   Footer,
+  ConditionalRender,
   DesktopOnly,
   MobileOnly,
   NotebookRuntimeLoader,
@@ -107,6 +109,7 @@ export {
   CourseHome,
   CoursesIndex,
   CourseUnitBar,
+  CoursePsetDesk,
   CourseUnitFoot,
   CourseUnitNotes,
   CourseResourceStrip,

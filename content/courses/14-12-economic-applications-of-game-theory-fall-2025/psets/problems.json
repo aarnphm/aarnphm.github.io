@@ -1,0 +1,290 @@
+{
+  "source": "transcribed from the OCW problem set PDFs; psets/<nn>.md is seeded from this on first open",
+  "sets": [
+    {
+      "n": 1,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "A decision problem under uncertainty",
+          "statement": "**(A decision problem under uncertainty).** A student is taking a pass–fail class, and she is deciding whether to study for the exam. The student believes that she will pass with probability $p_S$ if she studies and she will pass with probability $p_N$ if she does not study, where $0 < p_N < p_S < 1$.\n\n(1) Formulate this problem in the abstract framework from class. That is, define the set $Z$ of consequences/outcomes and specify a von Neumann–Morgenstern (vNM) utility function $u \\colon Z \\to \\mathbf{R}$. Your utility function should capture the idea that the student likes passing and doesn't like studying (but there are many correct answers).\n\n(2) Which lottery is induced by studying? Which lottery is induced by not studying? Compute the expected utility from each choice.\n\n(3) For which values of $p_N$ and $p_S$ does each of the following hold:\n\n- (a) the student strictly prefers studying;\n- (b) the student strictly prefers not studying;\n- (c) the student is indifferent between studying and not studying.\n\nYour answer will depend on your specification of $u$ in part 1.\n\n(4) The student discusses this problem with a friend, and he reasons as follows. \"You don't know for sure whether you will pass. But you should formulate a belief about the probability that you will pass. Whatever that passing probability is, you would prefer to get that pass–fail lottery and not study than to get that lottery and study. So you shouldn't study.\" What is the error in this reasoning?"
+        },
+        {
+          "n": 2,
+          "title": "Affine transformations of vNM utility",
+          "statement": "**(von Neumann-Morgenstern (vNM) utility representation).** The vNM utility function is *cardinal*, so the exact values matter, not just their order. Nevertheless, there are generally multiple vNM representations of the same preferences. Let $Z$ be a finite set of consequences. Consider two vNM utility functions $u_1, u_2 \\colon Z \\to \\mathbf{R}$. Let $U_1, U_2 \\colon \\Delta(Z) \\to \\mathbf{R}$ be the associated expected utility functions. (Recall that $\\Delta(Z)$ denotes the set of lotteries over $Z$.) Suppose that $u_2 = \\alpha u_1 + \\beta$, for some constants $\\alpha > 0$ and $\\beta \\in \\mathbf{R}$. Show that $u_1$ and $u_2$ represent the same preferences over lotteries. That is, for all lotteries $p, q \\in \\Delta(Z)$, we have\n\n$$\nU_1(p) \\ge U_1(q) \\iff U_2(p) \\ge U_2(q).\n$$\n\n[The symbol $\\iff$ means *if and only if*, or equivalently, *implies and is implied by*.] Does this result hold if $\\alpha < 0$? What if $\\alpha = 0$?"
+        },
+        {
+          "n": 3,
+          "title": "Guessing someone else's coin",
+          "statement": "**(Guessing someone else's coin).** Alice and Bob are held in separate prison cells. The warden proposes the following game between Alice and Bob. First, the warden will go to Alice's cell and flip a fair coin so that Alice sees the result. Alice is then asked to guess the outcome of a coin flip that the warden is about to perform in Bob's cell. Next, the warden goes to Bob's cell and flips a fair coin so that Bob sees the result. Bob is then asked to guess the outcome of the coin flip that the warden performed in Alice's cell.\n\nBoth prisoners will be released if at least one correctly guesses the outcome of the coin flip performed in the other's cell. Otherwise, neither prisoner will be released. Each prisoner gets utility 1 from being released and utility 0 otherwise.\n\n(a) Write this as an extensive-form game.\n\n(b) Write this as a strategic-form game.\n\n(c) Which strategy profiles result in the highest probability of release? Which strategy profiles result in the lowest probability of release? Do you find this result surprising?"
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Dominance and best responses in a 2×2 game",
+          "statement": "**(Dominance and best responses).** Consider a two-player strategic-form game with strategy sets $S_1 = \\{T, B\\}$ and $S_2 = \\{L, R\\}$. For each of the four properties below, either fill in the payoffs so that the game satisfies the stated property, or show that it is impossible to do so.\n\n(i) For player 1, strategy $T$ weakly dominates $B$, but $B$ is a best response to some belief about player 2's strategy.\n\n(ii) For player 1, strategy $T$ weakly dominates $B$, but $B$ is a best response to some belief that puts strictly positive probability on each of player 2's strategies.\n\n(iii) For player 2, strategy $L$ is not strictly dominated by any pure strategy, but it is strictly dominated by a mixed strategy of player 2.\n\n(iv) For player 2, strategy $L$ does not weakly dominate strategy $R$, and strategy $R$ does not weakly dominate strategy $L$."
+        },
+        {
+          "n": 2,
+          "title": "CEO compensation (Exercise 3.7)",
+          "statement": "**(CEO compensation).** Exercise 3.7."
+        },
+        {
+          "n": 3,
+          "title": "Rationalizable play in a two-player beauty contest",
+          "statement": "**(Beauty contest).** Consider the beauty contest game from Section 4.2, in which each player $i$ chooses a real number $x_i$ from $[0, 100]$. Assume that there are only two players and that the payoff functions of the two players are given by\n\n$$\n\\begin{aligned}\nu_1(x_1, x_2) &= -\\frac{1}{2}(x_1 - \\theta_1)^2 - \\frac{1}{2}(x_1 - x_2)^2, \\\\\nu_2(x_1, x_2) &= -\\frac{1}{2}(x_2 - \\theta_2)^2 - \\frac{1}{2}(x_2 - x_1)^2,\n\\end{aligned}\n$$\n\nfor some known numbers $\\theta_1, \\theta_2 \\in [0, 100]$. Compute the set of rationalizable strategies for each player."
+        },
+        {
+          "n": 4,
+          "title": "Insider trading with a privately informed seller",
+          "statement": "**(Insider trading).** A leading chip-maker has a problem: it can only produce 7-nanometer chips while its competitors sell superior 4-nanometer chips. It is trying to develop 4-nanometer chip capability, but there is a 50% chance that the production of such chips will be delayed, in which case it will lose some of its market share.\n\nThere are two players, named Executive and Investor. Executive works at the chip-maker and knows whether the production will be delayed. She has one unit of stock in the chip-maker that she is considering selling at some fixed price $p$. Investor does not know whether the production will be delayed, but he knows that Executive knows it. He is considering buying the stock from Executive (at price $p$) if she sells it.\n\nThe timeline is as follows. First, Nature chooses between (production is) On Track and (production will be) Delayed, each with probability $1/2$. Then, observing Nature's move, Executive decides whether to Sell or Keep the stock. If Executive decides to Sell the stock, then Investor decides whether to Buy the stock or Pass. If Executive Sells and Investor Buys, then the stock will be traded; there will be no trade otherwise. The payoffs of Executive and Investor are as in the following table:\n\n|          | On Track      | Delayed              |\n| -------- | ------------- | -------------------- |\n| Trade    | $p, v_I - p$  | $p, \\delta v_I - p$  |\n| No Trade | $v_E, 0$      | $\\delta v_E, 0$      |\n\nwhere the first entry is the payoff of Executive; $\\delta \\in (0, 1)$; $v_I > v_E > 0$; and $\\min\\left\\{v_E, \\tfrac{1+\\delta}{2} v_I\\right\\} > p > \\delta v_I$.\n\n(a) Write this as an extensive-form game.\n\n(b) Write this as a normal-form game.\n\n(c) Check if any player has a dominant strategy.\n\n(d) Compute the set of rationalizable strategies for each player.\n\n(e) Compute the set of Nash equilibria (in pure strategies), and briefly discuss your finding.\n\n(f) Assuming $v_E > \\tfrac{1+\\delta}{2} v_I$, can you find a price $p^*$ for which there is a Nash equilibrium in which the players may trade? (The price $p^*$ need not satisfy the inequality imposed on $p$ in the problem statement.)"
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Nash equilibria in extensive-form games (Exercise 5.6)",
+          "statement": "**(Nash equilibria in extensive form games).** Exercise 5.6."
+        },
+        {
+          "n": 2,
+          "title": "Tariffs (Exercise 6.1)",
+          "statement": "**(Tariffs).** Exercise 6.1."
+        },
+        {
+          "n": 3,
+          "title": "Equilibrium strategies in zero-sum games are security strategies",
+          "statement": "**(Nash equilibria in zero-sum games).** In class, we showed that in a finite, two-player, zero-sum game, a mixed strategy profile is a Nash equilibrium if and only if each player's strategy in that profile is a security strategy. To prove the forward implication, it suffices to show that for any profile $(\\sigma_1, \\sigma_2)$, if either $\\sigma_1$ or $\\sigma_2$ is *not* a security strategy, then $(\\sigma_1, \\sigma_2)$ is not a Nash equilibrium.\n\nIn class, we showed that if $\\sigma_1$ is not a security strategy for Player 1, then $(\\sigma_1, \\sigma_2)$ is not a Nash equilibrium. Complete the symmetric argument for the case that $\\sigma_2$ is not a security strategy for Player 2. That is, show that for any mixed strategy profile $(\\sigma_1, \\sigma_2)$, if $\\sigma_2$ is *not* a security strategy for Player 2, then $(\\sigma_1, \\sigma_2)$ is *not* a Nash equilibrium."
+        },
+        {
+          "n": 4,
+          "title": "Von Neumann poker with uniform hands",
+          "statement": "**(von Neumann poker).** John von Neumann introduced the following stylized game of poker, with an *ante* of \\$1 and a fixed bet size of \\$$B$, where $B > 0$. There are two players. First, each player must put \\$1 into the pot. Then, the hands are dealt. Player 1 is privately dealt her \"hand\" $X \\in [0, 1]$. Player 2 is privately dealt his \"hand\" $Y \\in [0, 1]$. The hands are independent and uniformly distributed.[^ps3-p4-1]\n\nNext, Player 1 chooses whether to check or bet. If Player 1 checks, then the game proceeds to a showdown: the player with the higher hand wins the pot (so the winner gains \\$1 and the loser loses \\$1).[^ps3-p4-2] If Player 1 bets, then Player 2 chooses whether to fold or call. If Player 2 folds, then Player 1 wins the pot (so Player 1 gains \\$1 and Player 2 loses \\$1). If Player 2 calls, then he must also place \\$$B$ into the pot, and then the game proceeds to a showdown: the player with the higher hand wins the pot (so the winner gains \\$$(1 + B)$ and the loser loses \\$$(1 + B)$). Assume that each player's utility satisfies $u(\\$z) = z$ for all $z \\in \\mathbf{R}$.\n\nRepresented in strategic form, this is a zero-sum game. But even this simple variant of poker is very complicated, and each player has infinitely many strategies. The game has a Nash equilibrium of the following form. For some parameters $0 < a < c < b < 1$ (which you will solve for below), Player 1 bets if $X \\le a$ or $X \\ge b$, and otherwise, Player 1 checks. Player 2 calls if $Y \\ge c$ and folds otherwise. In this problem, you will analyze this equilibrium.\n\n(a) Suppose that Player 2 follows the conjectured strategy (parameterized by $c$). Compute Player 1's expected payoff from betting and from checking, for each hand $X$.\n\n(b) Suppose that Player 1 follows the conjectured strategy (parameterized by $a$ and $b$). Compute Player 2's expected payoff from calling and from folding, for each hand $Y$.\n\n(c) Using your calculations above, solve for $a$, $b$, and $c$ (in terms of $B$) such that this strategy profile is a Nash equilibrium. [The key step is setting up the right system of equations; you are welcome to use a computer to solve the system.]\n\n(d) By the result from class (extended to infinite games), each player's strategy in this Nash equilibrium is a security strategy. Discuss the qualitative features of these strategies.\n\n(e) Player 1's expected payoff in this Nash equilibrium equals the *value* of the game. Compute this value (which depends on $B$). Find the value of $B$ that maximizes the value. Interpret.\n\n[^ps3-p4-1]: So, the probability that $X$ or $Y$ lies in any interval in $[0, 1]$ is simply the *length* of that interval.\n\n[^ps3-p4-2]: In the case of a tie, the pot is split, but this occurs with probability zero."
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Chess, zero-sum games, and backward induction",
+          "statement": "**(Chess, zero-sum games, and backward induction).** Chess is a finite extensive-form game of perfect information.[^ps4-p1-1] Suppose that each player gets a payoff of 1 if she wins, 0 if she draws, and $-1$ if she loses. With these payoffs, chess (in strategic form) is a zero-sum game.\n\n(a) Appealing to backward induction and the minimax theorem, argue that the value of chess must be either 1, 0, or $-1$. (The value of chess is not currently known.)\n\n(b) This part illustrates why part (a) required an argument. Give an example of a zero-sum game in which player 1's payoffs (from pure strategy profiles) take values only in $\\{1, 0, -1\\}$,[^ps4-p1-2] but the value of the game is not 1, 0, or $-1$.\n\n(c) Now consider a variant of chess. Player 1 (white) can initially make a single move or two consecutive legal moves. Then Player 2 (black) moves once, Player 1 moves once, Player 2 moves once, and so on as in usual chess. Argue that the value of this chess variant must be either 1 or 0. *To answer this question, you only need to know (or look up) the basic moves that each piece can make.*\n\n[^ps4-p1-1]: Chess is finite due to the rule that the game is declared a draw if the same board position is reached three times.\n\n[^ps4-p1-2]: Player 1's payoffs need *not* take all three values 1, 0, and $-1$."
+        },
+        {
+          "n": 2,
+          "title": "BoS with observed moves and a switching cost",
+          "statement": "**(BoS with observed moves and a switching cost).** This problem considers a variant of the BoS game from class. Alice (player 1) and Bob (player 2) are each choosing between the Celtics game (C) and the Red Sox game (S). As in class, the payoff profile is $(2, 1)$ if both players go to the Celtics game; $(1, 2)$ if they both go to the Red Sox game; and $(0, 0)$ if they go to different games.\n\nThe timing is as follows. First Alice chooses which game to attend. Bob observes Alice's choice and then chooses which game to attend. Finally, Alice observes Bob's choice and then chooses either to stay where she is or \"switch\" by traveling to the other game. Suppose that Alice must pay a utility cost $c$ if she switches after seeing Bob's choice.\n\n(a) Apply backward induction to this game in each of the following cases: (i) $0 < c < 1$; (ii) $1 < c < 2$; (iii) $c > 2$.\n\n(b) Discuss how the cost $c$ affects the result of backward induction. Is Alice better off with a lower cost $c$? Interpret this finding."
+        },
+        {
+          "n": 3,
+          "title": "Inheritance with altruistic consumers",
+          "statement": "**(Inheritance).** Consider the following game, involving intergenerational conflicts in the presence of altruism. There are 3 players, labeled $1, 2, 3$.\n\n- Player 1 starts with wealth level $w_1 > 0$ and chooses a consumption amount $c_1 \\in [0, w_1]$ for herself, leaving $w_2 = w_1 - c_1$ to Player 2.\n- Then Player 2 observes the consumption choice $c_1$, chooses her consumption level $c_2 \\in [0, w_2]$ for herself, leaving $w_3 = w_2 - c_2$ for Player 3.\n- Finally, Player 3 observes the consumption history $(c_1, c_2)$ and then chooses consumption $c_3 \\in [0, w_3]$.\n\nThe utility of each player $i$ is\n\n$$\nu_i = \\sqrt{c_i} + \\beta \\sum_{j \\ne i} \\sqrt{c_j},\n$$\n\nfor some $\\beta \\in (0, 1)$.\n\n(a) Interpret the parameter $\\beta$.\n\n(b) Apply backward induction to this game. What is the resulting consumption level for each player?\n\n(c) Suppose that player 1 could unilaterally choose $c_1$, $c_2$, and $c_3$ subject to the constraint that $c_1 + c_2 + c_3 = w_1$. What would she choose? How do these consumption levels compare with those under the backward induction solution? Discuss."
+        },
+        {
+          "n": 4,
+          "title": "Pretrial negotiation with a single proposal",
+          "statement": "**(Pretrial negotiation).** Consider the following single-proposal protocol for pretrial negotiation between Plaintiff and Defendant. There are five commonly known parameters $J, \\hat c_P, \\hat c_D, c_P, c_D$, which are all strictly positive. The negotiation proceeds in three phases.\n\nI. *Invitation to pretrial negotiation.* The Plaintiff chooses whether to invite the Defendant to pretrial negotiation. If the Defendant is invited, he can accept or reject the invitation. If the invitation is made and accepted, play proceeds to stage II, which costs $c_P$ for the Plaintiff and $c_D$ for the Defendant. Otherwise, the game proceeds to stage III.\n\nII. *Pretrial negotiation.* The Proposer (to be specified below) chooses a settlement $s \\in \\mathbf{R}$ to offer to the Respondent (the other player). The Respondent chooses to accept or reject this proposed settlement. If the settlement $s$ is accepted, then the Defendant pays $s$ to the Plaintiff and the game ends. Otherwise, play proceeds to stage III.\n\nIII. *Trial.* The Plaintiff chooses whether to bring the suit to trial. If she does not bring the suit to trial, the game ends. If she brings the suit to trial, then the Plaintiff and the Defendant pay trial costs $\\hat c_P$ and $\\hat c_D$, respectively. At the end of the trial, the Defendant pays $J$ to the Plaintiff.\n\nAs in class, there is no discounting and both players are risk-neutral. For this protocol, answer the following questions.\n\n(a) Assuming $\\hat c_P > J$, apply backward induction to stage III. (That is, for this part only, you may assume that the game consists only of Stage III.)\n\nFor the remaining parts, assume $\\hat c_P < J$.\n\n(b) Suppose the Plaintiff is the Proposer. Write out the extensive-form game and apply backward induction.\n\n(c) Suppose the Defendant is the Proposer. Write out the extensive-form game and apply backward induction.\n\n(d) Now suppose that at the beginning of stage II, a fair coin is flipped to determine which party is the Proposer. Write out the extensive-form game. For which cost parameters is there a backward induction solution in which the case is settled out of court (with certainty)?\n\n(e) Finally, suppose the coin can be biased so that the Plaintiff is the Proposer with commonly known probability $\\alpha \\in (0, 1)$. We want to find a probability $\\alpha$ such that there is a backward induction solution in which the case is settled out of court (with certainty). For which cost parameters does such an $\\alpha$ exist? Interpret your condition on the cost parameters."
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Subgame perfection (Exercise 10.6)",
+          "statement": "**(Subgame perfection).** Exercise 10.6. (The four strategies in the bottom right corner of Figure 10.12 are missing labels; you can label them from left to right as $v$, $w$, $v$, $w$.)"
+        },
+        {
+          "n": 2,
+          "title": "Distributor pricing (Exercise 10.10)",
+          "statement": "**(Distributor pricing).** Exercise 10.10."
+        },
+        {
+          "n": 3,
+          "title": "Bargaining with different discount factors (Exercise 11.5)",
+          "statement": "**(Bargaining with different discount factors).** Exercise 11.5."
+        },
+        {
+          "n": 4,
+          "title": "Dissolving a partnership as a bargaining problem",
+          "statement": "**(Dissolving a partnership).** There are two players $A$ and $B$ who own a firm and are considering dissolving their partnership. Each owns half of the firm. The value of the whole firm is $v_A$ for player $A$ and $v_B$ for player $B$, where $v_A > v_B > 0$. The players are risk neutral.\n\nIn each round of negotiation, the Proposer makes an offer $(p, y) \\in \\mathbf{R}_+ \\times \\{B, S\\}$, where $p$ indicates the price and $y = B$ or $y = S$ specifies whether the offer is to buy the Respondent's half of the firm or sell the Proposer's half of the firm (to the Respondent). If an agreement is not reached, each partner retains her half share in the firm.\n\nThe two partners make alternating proposals over an infinite horizon, but you do not have to solve this game! Simply represent this setting as a general bargaining problem by finding the *disagreement vector* $x_d \\in \\mathbf{R}^2$ and the *feasible set* $X \\subseteq \\mathbf{R}^2$. (It is customary to include in the feasible set only outcomes that give each player at least her disagreement payoff.) Plot the set $X$ and the point $x_d$.\n\nNext, normalize the game so that the disagreement point is 0. In this normalized game, what is the new feasible set $X'$? (Hint: Vectors in $X'$ specify payoff differences relative to the disagreement point.)"
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Nash equilibria of a twice-repeated prisoner's dilemma",
+          "statement": "**(SPNE vs. NE).** In class, we showed that if a stage game $G$ has exactly one Nash equilibrium, then for any finite horizon $T$, the finitely repeated game $G(T)$ has exactly one *subgame perfect Nash equilibrium*.[^ps6-p1-1] This problem considers all Nash equilibria of $G(T)$.\n\n(a) Consider the standard prisoner's dilemma:\n\n|     | $C$       | $D$       |\n| --- | --------- | --------- |\n| $C$ | $2, 2$    | $-1, 3$   |\n| $D$ | $3, -1$   | $0, 0$    |\n\nSuppose that this stage game is played in periods $t = 0, 1$. Show that in every Nash equilibrium of this repeated game, the action profile $(D, D)$ is played in both periods.\n\n(b) Now consider the following variant of the prisoner's dilemma:\n\n|     | $C$       | $D$       |\n| --- | --------- | --------- |\n| $C$ | $2, 2$    | $-1, 3$   |\n| $D$ | $3, -1$   | $0, 0$    |\n| $E$ |           |           |\n\nSuppose that this stage game is played in periods $t = 0, 1$. Fill in the payoffs in the last row so that $(D, D)$ is still the only Nash equilibrium of the stage game but the repeated game has a Nash equilibrium in which the period-0 action profile is not $(D, D)$.\n\n[^ps6-p1-1]: Whenever we refer to a finitely repeated game, it is assumed that past actions are observed and that the payoffs in the repeated game equal the average payoffs over the periods."
+        },
+        {
+          "n": 2,
+          "title": "Counting SPNE in a twice-repeated stag hunt",
+          "statement": "**(Stag hunt).** Recall the stag hunt game from class in which each player chooses to hunt stag (S) or hare (H):\n\n|     | $S$     | $H$     |\n| --- | ------- | ------- |\n| $S$ | $2, 2$  | $0, 1$  |\n| $H$ | $1, 0$  | $1, 1$  |\n\nConsider the repeated stag-hunt game with periods $t = 0, 1$.\n\n(a) Count the number of pure subgame perfect Nash equilibria in which $(S, S)$ is played in period 0. Justify your answer.\n\n(b) Count the number of pure subgame perfect Nash equilibria in which $(S, H)$ is played in period 0. Justify your answer."
+        },
+        {
+          "n": 3,
+          "title": "Exercise 12.17",
+          "statement": "Exercise 12.17."
+        },
+        {
+          "n": 4,
+          "title": "Exercise 12.26",
+          "statement": "Exercise 12.26."
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "due": null,
+      "reading": null,
+      "intro": "Note: In the definition of Bayesian games from class, we assume that each player's payoff depends on the action profile and the state of nature, $\\theta$, but not directly on the type profile, $t = (t_1, \\ldots, t_n)$. In the notes, each player's payoff can also depend on the type profile. The definition in class is not more restrictive; it simply requires that the state $\\theta$ is defined so as to include all parameters that affect payoffs. In this problem set, you may use either convention.",
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Bayesian Nash equilibrium in drug development budgets",
+          "statement": "**(Competition in drug development).** There are two firms who compete to develop a new weight loss pill. Simultaneously, each firm $i$ chooses a budget $x_i \\in [0, 1]$ for developing the pill. Each firm $i$ succeeds in developing the pill with probability $\\theta_i \\sqrt{x_i}$, where success of one firm is stochastically independent from the success of the other firm and $\\theta_i \\in \\{1/2, 1\\}$ is the effectiveness of the mechanism that firm $i$ uses for its pill.\n\nFirm $i$ gets payoff $1 - x_i$ if it develops a pill and the other firm does not; otherwise, it gets payoff $-x_i$.[^ps7-p1-1] Assume that each firm $i$ privately knows $\\theta_i$. The two possible realizations of $\\theta_i$ are equally likely, independent of the realization of $\\theta_j$ (where $j \\ne i$). Compute a Bayesian Nash equilibrium of this game.\n\n[^ps7-p1-1]: Each firm can get revenue 1 as a monopolist, but gets zero revenue if (a) it faces competition from the other firm or (b) its pill fails."
+        },
+        {
+          "n": 2,
+          "title": "Group project with a noisy signal of the state",
+          "statement": "**(Group project).** We consider a variant of the group project game from class. There are two players, labeled $i = 1, 2$. Simultaneously, each player $i$ chooses effort $e_i \\in \\{0, 1\\}$. Exerting effort costs each player 1 unit (of utility). The project succeeds if and only if both players exert effort; the value of a project success depends on the state $\\theta$ of the project. Formally, player $i$'s utility is given by\n\n$$\nu_i(e_1, e_2, \\theta) = \\theta e_1 e_2 - e_i.\n$$\n\nThe state $\\theta$ of the project can be either $\\theta_B = 1/2$ or $\\theta_G = 3/2$. The state $\\theta$ equals $\\theta_G$ with probability $\\pi$, where $0 < \\pi < 1$. Player 1 observes the state of the project. Player 2 does not observe the state of the project, but she does observe a signal $t_2$ about the state $\\theta$ (player 1 does not observe this signal). The signal $t_2$ can take two values, denoted $b$ and $g$. The accuracy of the signal is $\\rho$, where $\\rho \\ge 1/2$. That is, if $\\theta = \\theta_B$, then $t_2 = b$ with probability $\\rho$ and $t_2 = g$ with probability $1 - \\rho$. If $\\theta = \\theta_G$, then $t_2 = g$ with probability $\\rho$ and $t_2 = b$ with probability $1 - \\rho$. The parameters $\\pi$ and $\\rho$, as well as the description above, is common knowledge.\n\n(a) How many pure strategies does each player have?\n\n(b) The set of Bayesian Nash equilibria of this game depends on the values of $\\pi$ and $\\rho$. Which pure strategy profiles $s = (s_1, s_2)$ are Bayesian Nash equilibria for *some* values of $\\pi$ and $\\rho$? Justify your answer.\n\n(c) For each strategy profile $s = (s_1, s_2)$ in your answer to part (b), characterize the values of $(\\pi, \\rho) \\in (0, 1) \\times [1/2, 1]$ for which $s$ is a Bayesian Nash equilibrium."
+        },
+        {
+          "n": 3,
+          "title": "Exercise 14.16",
+          "statement": "Exercise 14.16."
+        },
+        {
+          "n": 4,
+          "title": "Exercise 14.26",
+          "statement": "Exercise 14.26."
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "First-price auction with n uniform bidders",
+          "statement": "**(First-price auction with uniform distributions).** Suppose that there are $n \\ge 2$ bidders. The bidders' valuations are independently and uniformly drawn from $[0, 1]$. Consider a first-price auction. Compute a symmetric Bayesian Nash equilibrium in linear strategies. How does each bidder's equilibrium bidding function vary with the number $n$ of bidders? Interpret."
+        },
+        {
+          "n": 2,
+          "title": "First-price auction, non-uniform values (Exercise 20.7)",
+          "statement": "**(First-price auction with non-uniform distributions).** Exercise 20.7."
+        },
+        {
+          "n": 3,
+          "title": "Average-price auction (Exercise 20.10)",
+          "statement": "**(Average-price auction).** Exercise 20.10. (Hint: Look for a symmetric Bayesian Nash equilibrium with linear bidding strategies.)"
+        },
+        {
+          "n": 4,
+          "title": "First-price auction with a reserve price",
+          "statement": "**(Auctions with reserve prices).** Suppose that there are 2 bidders. Their valuations are independently and uniformly drawn from $[0, 1]$. In class, we solved for a Bayesian Nash equilibrium of the first-price auction and of the second-price auction. In both cases, we found that the auctioneer's expected revenue was $1/3$.\n\nNow suppose that the auctioneer uses a *first-price auction with reserve price* $r$, where $0 \\le r \\le 1$. In order to participate in the auction, a bidder must bid at least $r$. If neither bidder participates, then the good is not allocated and no one pays anything. If at least one bidder participates, then the auction proceeds as a usual first-price auction: the highest bidder wins the good and pays her own bid (with ties broken with a fair coin flip).\n\n(1) Compute a Nash equilibrium of this auction.\n\n(2) Compute the auctioneer's expected revenue. What is the auctioneer's expected revenue in the special cases $r = 0$ and $r = 1$? Discuss.\n\n(3) Find the reserve price $r$ that maximizes the auctioneer's expected revenue (from part 2). What is the associated maximal expected revenue? Discuss."
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "due": null,
+      "reading": null,
+      "intro": "Note: Problem 4 is about *ad auctions*, which will be covered in lecture on Tuesday, November 18.",
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "An asymmetric equilibrium of the second-price auction",
+          "statement": "**(Another equilibrium of the second-price auction).** Suppose that there are two bidders, whose valuations are independently and uniformly distributed over $[0, 1]$. In class, we showed that the second-price auction has a Bayesian Nash equilibrium in which each bidder bids his valuation.\n\n(a) Construct a different equilibrium of the second-price auction. (Hint: this equilibrium will be asymmetric; think about what happens if one bidder bids very low and the other bids very high.)\n\n(b) Compute the auctioneer's expected revenue under the original \"truthful\" equilibrium and under this new equilibrium. Does your finding contradict the revenue formula from class?"
+        },
+        {
+          "n": 2,
+          "title": "Revenue formula with a reserve price",
+          "statement": "**(Reserve prices).** Suppose that there are two bidders, whose valuations are distributed independently and uniformly over $[0, 1]$. Recall from the last problem set (PS 8, Problem 4) the first-price auction with reserve price $r$, where $0 < r < 1$.\n\n(a) Under the symmetric equilibrium you computed in that problem set, compute the expected payment $\\hat T_i(v_i)$ made by bidder $i$ when her valuation is $v_i$, and compute the probability $\\hat Q_i(v_i)$ that bidder $i$ wins the good when her valuation is $v_i$.\n\n(b) The transfer function $\\hat T_i$ is discontinuous at $v_i = r$, so we cannot directly apply the revenue formula from class.[^ps9-p2-1] Check that the following modification of the formula holds: for all $v_i \\ge r$,\n\n$$\n\\hat T_i(v_i) = \\hat T_i(r) + \\int_r^{v_i} x \\hat Q_i'(x) \\, \\mathrm{d}x.\n$$\n\n[^ps9-p2-1]: Our proof assumed that the function $\\hat T_i$ is differentiable. Using a different proof, it can be shown that a version of the revenue equivalence theorem holds without this assumption."
+        },
+        {
+          "n": 3,
+          "title": "Revenue equivalence fails with discrete valuations",
+          "statement": "**(Failure of revenue equivalence with discrete valuations).** This problem shows that revenue equivalence can fail if the bidders' valuations are not drawn from an interval.\n\nThere are two players, denoted $i = 1, 2$. Each player $i$'s valuation $v_i$ takes two possible values, $\\underline{v}$ and $\\bar v$, each with probability $1/2$ independently of the other player's valuation. Suppose $0 < \\underline{v} < \\bar v < 1$.\n\nThe auctioneer uses a *posted price mechanism* with a fixed price $p$ in $(\\underline{v}, \\bar v)$. Each player $i$ says whether she would like to buy at price $p$, denoted $Y$ for *yes* or $N$ for *no*. If no one chooses $Y$, then nothing happens. If one player chooses $Y$, then that player gets the good for price $p$. If both players choose $Y$, then the auctioneer flips a fair coin to determine whom to sell to (at price $p$).\n\nFind a Bayes–Nash equilibrium of this posted-price mechanism. Under this equilibrium, when bidder $i$ has valuation $v_i$, compute bidder $i$'s win probability $\\hat Q_i(v_i)$ and expected payment $\\hat T_i(v_i)$. Show that changing the value of $p$ can change the expected payment functions $\\hat T_i$, without changing $\\hat T_i(\\underline{v})$ or $\\hat Q_i$."
+        },
+        {
+          "n": 4,
+          "title": "Truthful bidding in a three-slot VCG ad auction",
+          "statement": "**(Ad auction).** Consider a special case of the ad auction setting from class. There are three ad slots, with click-through rates $\\alpha_1 > \\alpha_2 > \\alpha_3$. The auction slots are allocated using a VCG mechanism. This problem illustrates why bidding truthfully is optimal in such an auction. Suppose that you are one of three bidders in the auction. Suppose further that your value-per-click is $v$ and that your two opponents bid $b_1$ and $b_2$, where $b_1 > b_2$.[^ps9-p4-1] Compute your expected utility from bidding $b$, in each of the following three cases:\n\ni. $b > b_1 > b_2$;\n\nii. $b_1 > b > b_2$;\n\niii. $b_1 > b_2 > b$.\n\nDenote these three expected utilities by $U_1$, $U_2$, $U_3$, respectively. Show that $U_1$ is highest if $v > b_1$; $U_2$ is highest if $b_1 > v > b_2$; and $U_3$ is highest if $b_2 > v$.\n\n[^ps9-p4-1]: This is a thought experiment. In reality, you wouldn't know your opponents' bids."
+        }
+      ]
+    },
+    {
+      "n": 10,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "VCG mechanism for two goods and two bidders",
+          "statement": "**(VCG mechanism).** There are two goods, $\\alpha$ and $\\beta$, and two bidders, $i = 1, 2$. The goods will be auctioned to the bidders according to a VCG mechanism. There are four possible (pure) allocations of the goods: good $\\alpha$ can be allocated to player 1 or player 2; good $\\beta$ can be allocated to player 1 or player 2.[^ps10-p1-1] The principal can also allocate the goods randomly, e.g., by flipping a coin. Formally, a (random) *allocation* is a probability distribution over the four pure allocations of the two goods among the two players.\n\nEach bidder $i$ has one of three possible valuations, denoted $v^A$, $v^B$, $v^C$. Each player's utility depends on the set of goods allocated to him, as indicated in the table below:\n\n|                        | $v^A$ | $v^B$ | $v^C$ |\n| ---------------------- | ----- | ----- | ----- |\n| $\\varnothing$          | $0$   | $0$   | $0$   |\n| $\\{\\alpha\\}$           | $4$   | $2$   | $3$   |\n| $\\{\\beta\\}$            | $2$   | $4$   | $3$   |\n| $\\{\\alpha, \\beta\\}$    | $5$   | $5$   | $6.5$ |\n\nCompute the VCG mechanism,[^ps10-p1-2] breaking ties symmetrically between players $i = 1$ and $i = 2$. That is, for all $\\hat v_1, \\hat v_2 \\in \\{v^A, v^B, v^C\\}$ compute an efficient (random) allocation $x^*(\\hat v_1, \\hat v_2)$ and the associated VCG transfers $t_1(\\hat v_1, \\hat v_2)$ and $t_2(\\hat v_1, \\hat v_2)$.\n\n[^ps10-p1-1]: Here, we are prohibiting the auctioneer from keeping either good. Allowing that possibility would not change the VCG mechanism.\n\n[^ps10-p1-2]: Specifically, each player pays her \"externality.\""
+        },
+        {
+          "n": 2,
+          "title": "Perfect Bayesian equilibrium (Exercise 15.12)",
+          "statement": "**(Perfect Bayesian Equilibrium).** Exercise 15.12.\n\n*Hint for part b: If Nature's move is represented explicitly in the extensive form, then Bob will have one information set, which contains four nodes.*"
+        },
+        {
+          "n": 3,
+          "title": "Job-market signaling with three worker types",
+          "statement": "**(Job-market signaling).** In class, we analyzed a simple job-market signaling game in which the sender (worker) had two possible types (abilities), $\\ell$ and $h$. This problem considers a generalization of that setting.\n\nThe sender has three possible types $t \\in \\{\\ell, m, h\\}$, where $0 < \\ell < m < h$. The sender's type is drawn from a prior distribution that puts probabilities $\\pi_\\ell$, $\\pi_m$, and $\\pi_h$ on types $\\ell$, $m$, and $h$, respectively. The sender knows her type and chooses an education level $e \\in [0, 1]$. The receiver (firm) sees the sender's education level, but not the sender's type, and then chooses a wage $w \\ge 0$. The payoffs for the sender and receiver are\n\n$$\nu_S(e, w; t) = w - \\frac{1}{t} e^2, \\qquad u_R(e, w; t) = -(w - t)^2.\n$$\n\n(1) For which education levels $e^*$ does there exist a *pooling* PBE[^ps10-p3-1] in which every sender type chooses education $e^*$?\n\n(2) For which distinct education levels $\\underline{e}$ and $\\bar e$ does there exist a *semi-separating* PBE in which type $\\ell$ chooses $\\underline{e}$ and types $m$ and $h$ choose $\\bar e$?\n\n(3) For which distinct education levels $\\underline{e}'$ and $\\bar e'$ does there exist a *semi-separating* PBE in which types $\\ell$ and $m$ choose $\\underline{e}'$ and type $h$ chooses $\\bar e'$?\n\n(4) For which distinct education levels $e_\\ell$, $e_m$, and $e_h$ does there exist a *separating* equilibrium in which each type $t$ chooses $e_t$, for $t = \\ell, m, h$?\n\n[^ps10-p3-1]: Here and below, PBE means *perfect Bayesian equilibrium*."
+        },
+        {
+          "n": 4,
+          "title": "Price signaling by a seller of uncertain quality",
+          "statement": "**(Price signaling).** Consider the incomplete-information bargaining setting from class. There are two players: a seller and a buyer. The seller has a single good, which is either of high ($H$) or low ($L$) quality. The good is high quality with probability $\\pi$, where $0 < \\pi < 1$. If the quality of the good is $j \\in \\{L, H\\}$ and the good is exchanged at price $p$, utilities for the seller and the buyer are given by\n\n$$\nu_S = p - c_j, \\qquad u_B = v_j - p.\n$$\n\nIf there is no exchange, then both players get zero utility.\n\nWe study the signaling setting in which the seller, but not the buyer, observes the quality of the good. The seller chooses a price offer $p$ at which to sell the good. The buyer can either accept this offer or else reject the offer, in which case there is no exchange.\n\nAssume that $c_L < c_H$; $v_L < v_H$; $c_L < v_L$; and $c_H < v_H$. All these parameters are commonly known (but the buyer does not observe the realized quality of the good).\n\n(1) Give a necessary and sufficient condition on the parameters $\\pi, c_L, c_H, v_L, v_H$ for there to exist a pooling equilibrium in which the good is always exchanged.\n\n(2) Show that there is no separating equilibrium in which the good is always exchanged.\n\n(3) Find a separating equilibrium with prices $p_L < p_H$ in which the buyer buys with positive probability when facing price $p_H$.\n\n(4) Find a semi-separating equilibrium with prices $p_1 < p_2$ such that the seller offers prices $p_1$ and $p_2$ with positive probability when quality is low, and always offers price $p_2$ when quality is high."
+        }
+      ]
+    }
+  ]
+}

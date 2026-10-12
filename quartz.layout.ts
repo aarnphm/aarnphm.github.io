@@ -1,5 +1,6 @@
 import { PageLayout, SharedLayout } from './quartz/cfg'
 import * as Component from './quartz/components'
+import { unitOf } from './quartz/util/course'
 
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
@@ -40,19 +41,24 @@ export const defaultContentPageLayout: PageLayout = {
     // the course crumb is the trail on unit pages (the site breadcrumbs stay off them)
     Component.CourseUnitBar(),
     Component.ArticleTitle(),
-    Component.Byline(
-      Component.Flex({
-        classNames: ['first'],
-        // OCW notes add a `your notes` cell under the tags
-        components: [
-          { Component: Component.TagList(), align: 'start' },
-          { Component: Component.CourseUnitNotes(), align: 'start' },
-        ],
-        direction: 'column',
-        gap: '0.5rem',
-      }),
-      Component.ContentMeta(),
-    ),
+    // a problem set page is a course page: no note byline, the desk sits under the title
+    Component.ConditionalRender({
+      component: Component.Byline(
+        Component.Flex({
+          classNames: ['first'],
+          // OCW notes add a `your notes` cell under the tags
+          components: [
+            { Component: Component.TagList(), align: 'start' },
+            { Component: Component.CourseUnitNotes(), align: 'start' },
+          ],
+          direction: 'column',
+          gap: '0.5rem',
+        }),
+        Component.ContentMeta(),
+      ),
+      condition: ({ fileData }) => unitOf(fileData.slug ?? '')?.kind !== 'psets',
+    }),
+    Component.CoursePsetDesk(),
   ],
   sidebar: [Component.DesktopOnly(Component.TableOfContents()), Component.Reader()],
 }

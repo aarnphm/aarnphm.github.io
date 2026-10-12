@@ -22,9 +22,12 @@ import {
   unitPdf,
   unitSources,
 } from '../util/course'
+import { parseProblems } from '../util/course-study'
+import { descriptionToPlainText } from '../util/description'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { concatenateResources } from '../util/resources'
+import { psetProblems } from './CourseDesk'
 import { CoursesCrumb } from './CourseResource'
 import { courseStatements, statementsSlug } from './CourseStatements'
 import { StudySlots } from './CourseStudy'
@@ -307,6 +310,18 @@ export function psetEntries(
   return entries
 }
 
+/** Sets whose every desk problem is solved; a seeded `psets/<nn>.md` alone is a set started. */
+function solvedSets(view: CourseView): number {
+  let solved = 0
+  for (const [n, file] of view.psets) {
+    const problems = psetProblems(view.psetText.get(n) ?? file)
+    const log = parseProblems(file.frontmatter)
+    if (problems.length > 0 && problems.every(problem => log.get(problem.n)?.state === 'solved'))
+      solved++
+  }
+  return solved
+}
+
 function psetRows(
   view: CourseView,
   from: FullSlug,
@@ -446,10 +461,10 @@ export default (() => {
     ]
     const frontmatter = fileData.frontmatter
     // OCW descriptions carry markdown emphasis; the masthead prints them as plain text
-    const description = str(frontmatter?.description).replace(
-      /(\*{1,2}|_{1,2})(\S[^*_]*?)\1/g,
-      '$2',
-    )
+    const description = descriptionToPlainText(
+      str(frontmatter?.description),
+      fileData.slug,
+    ).replace(/(\*{1,2}|_{1,2})(\S[^*_]*?)\1/g, '$2')
     const license = str(frontmatter?.license).toLowerCase()
     const licenseUrl = str(frontmatter?.license_url)
     const topics = (frontmatter?.tags ?? []).filter(tag => !mirrorTags.has(tag))
@@ -610,7 +625,7 @@ export default (() => {
                     <th scope="rowgroup" colSpan={columns}>
                       problem sets
                       <span class="course-count">
-                        solved {view.psets.size}/{psets.length}
+                        solved {solvedSets(view)}/{psets.length}
                       </span>
                     </th>
                   </tr>

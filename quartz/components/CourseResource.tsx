@@ -25,6 +25,7 @@ import {
   resourceTitle,
   resourceView,
   unitDeckSlug,
+  unitSlug,
   unitSources,
 } from '../util/course'
 import { courseStudyEndpoint } from '../util/course-study'
@@ -127,6 +128,7 @@ function stripLinks(
             data-promote-resource={ref.slug.replace(/\/index$/, '')}
             data-promote-pdf={courseFileSlug(ref.dir, file)}
             data-promote-unit={unit.slug}
+            data-promote-text={unit.text?.slug}
             data-promote-endpoint={endpoint}
           >
             <summary>start notes</summary>
@@ -164,7 +166,9 @@ function stripLinks(
     }
     // the unit's own reading surfaces (pdf, chapter, video) carry the toggles; others show dates
     const owns = kind === 'notes' || kind === 'chapter' || kind === 'video'
-    const study = <StudyState view={view} unit={unit} endpoint={owns ? endpoint : undefined} />
+    const study = (
+      <StudyState view={view} unit={unit} from={from} endpoint={owns ? endpoint : undefined} />
+    )
     if (owns ? endpoint || unit.read || unit.problems : unit.read || unit.problems)
       push('read', study)
   }
@@ -187,15 +191,10 @@ function stripLinks(
     }
     if (n !== undefined && view) {
       const ours = view.psets.get(n)
-      if (ours) push('solutions', internal(ours.slug as FullSlug, 'our solutions'))
-      else if (kind === 'pset')
-        push(
-          'solutions',
-          <span>
-            solutions: <code class="course-path">psets/{pad(n)}.md</code>
-          </span>,
-        )
       const text = view.psetText.get(n)
+      // without a rendered set the desk is psets/<nn>.md itself, so one `desk` link covers both
+      if (ours && !(kind === 'pset' && !text))
+        push('solutions', internal(ours.slug as FullSlug, 'our solutions'))
       if (text && kind !== 'tex') push('rendered', internal(psetTextSlug(ref.dir, n), 'rendered'))
       // the desk sits on the rendered set, else on psets/<nn>.md; dev creates that file
       if (kind === 'pset' && text)
@@ -211,6 +210,8 @@ function stripLinks(
             data-desk-open={endpoint}
             data-desk-dir={view.dir}
             data-desk-n={String(n)}
+            data-desk-href={resolveRelative(from, unitSlug(view.dir, n, 'psets'))}
+            title={`create psets/${pad(n)}.md and open its desk`}
           >
             open desk
           </button>,
@@ -676,7 +677,9 @@ function CollectionView({ rv, props }: { rv: ResourceView; props: QuartzComponen
           <h2>{resourceTitle(rv.ref).toLowerCase()}</h2>
           <span class="course-count">{collectionSummary(rows)}</span>
         </div>
-        {description ? <p>{description}</p> : null}
+        {description ? (
+          <p dangerouslySetInnerHTML={{ __html: props.fileData.description ?? description }} />
+        ) : null}
         {links.length > 0 ? (
           <ul class="course-resource-links">
             {links.map(file => (
@@ -766,7 +769,9 @@ function FileView({ rv, props }: { rv: ResourceView; props: QuartzComponentProps
         {ref.record.kind === 'image' && href ? (
           <img class="course-file-image" src={href} alt={resourceTitle(ref)} />
         ) : null}
-        {description && description !== resourceTitle(ref) ? <p>{description}</p> : null}
+        {description && description !== resourceTitle(ref) ? (
+          <p dangerouslySetInnerHTML={{ __html: fileData.description ?? description }} />
+        ) : null}
         <dl class="course-file-meta">
           <dt>format</dt>
           <dd>{formatOf(ref)}</dd>
@@ -970,7 +975,12 @@ export function CoursePageHead(props: QuartzComponentProps): JSX.Element | null 
           <span class="course-unit-sep">/</span>
           <span class="course-num">{page.name.replace(/-/g, ' ')}</span>
         </p>
-        {description ? <p class="course-count">{description}</p> : null}
+        {description ? (
+          <p
+            class="course-count"
+            dangerouslySetInnerHTML={{ __html: fileData.description ?? description }}
+          />
+        ) : null}
       </div>
       <div class="course-strip-links course-page-links">
         <StripTable links={pageLinks} unitKind="unit" />

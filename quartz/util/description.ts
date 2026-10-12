@@ -1,5 +1,8 @@
 import type { KatexOptions } from 'katex'
+import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import { toText } from 'hast-util-to-text'
 import katex from 'katex'
+import { escapeHTML } from './escape'
 import { isFullSlug, type FullSlug } from './path'
 import { extractWikilinks, resolveWikilinkTarget, type WikilinkData } from './wikilinks'
 
@@ -87,39 +90,6 @@ function processWikilinksToText(text: string, currentSlug?: FullSlug | string): 
   return result
 }
 
-function stripHtml(text: string): string {
-  let output = ''
-  let inTag = false
-  let quote: string | undefined
-  for (const char of text) {
-    if (inTag) {
-      if (quote) {
-        if (char === quote) quote = undefined
-      } else if (char === '"' || char === "'") {
-        quote = char
-      } else if (char === '>') {
-        inTag = false
-      }
-      continue
-    }
-    if (char === '<') {
-      inTag = true
-      continue
-    }
-    output += char
-  }
-  return output
-}
-
-function htmlEntitiesToText(text: string): string {
-  return text
-    .replaceAll('&amp;', '&')
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
-    .replaceAll('&quot;', '"')
-    .replaceAll('&#39;', "'")
-}
-
 function latexCommandToText(command: string): string {
   return latexCommandText[command] ?? command
 }
@@ -149,10 +119,13 @@ export function descriptionToPlainText(
   currentSlug?: FullSlug | string,
 ) {
   if (!description) return ''
-  const text = htmlEntitiesToText(stripHtml(processWikilinksToText(description, currentSlug)))
-  return text
-    .replace(/\$\$([\s\S]*?)\$\$/g, (_match, math: string) => latexToText(math))
-    .replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (_match, math: string) => latexToText(math))
+  // Escape math before parsing HTML so comparisons remain text rather than becoming tags.
+  const text = processWikilinksToText(description, currentSlug)
+    .replace(/\$\$([\s\S]*?)\$\$/g, (_match, math: string) => escapeHTML(latexToText(math)))
+    .replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (_match, math: string) =>
+      escapeHTML(latexToText(math)),
+    )
+  return toText(fromHtmlIsomorphic(text, { fragment: true }))
     .replace(/\s+/g, ' ')
     .trim()
 }

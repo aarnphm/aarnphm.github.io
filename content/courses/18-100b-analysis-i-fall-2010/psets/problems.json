@@ -1,0 +1,408 @@
+{
+  "source": "transcribed from the OCW problem set PDFs; psets/<nn>.md is seeded from this on first open",
+  "sets": [
+    {
+      "n": 1,
+      "due": "Tuesday, September 14",
+      "reading": "Thu Sept.9: ordered sets and fields, Rudin 1.1-31.",
+      "intro": null,
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Strict order from a partial order",
+          "statement": "Suppose that $S$ is a set and $\\preceq$ is a relation on $S$ with the following properties:\n\n- For all $x \\in S$, $x \\preceq x$.\n- For all $x, y \\in S$, if $x \\preceq y$ and $y \\preceq x$ then $x = y$.\n- For all $x, y, z \\in S$, if $x \\preceq y$ and $y \\preceq z$, then $x \\preceq z$.\n\nDefine a new relation $\\prec$ on $S$ by $x \\prec y$ iff $x \\preceq y$ and $x \\ne y$. Does this define an order conforming to Definition 1.5 in Rudin? If so, prove it; if not, exhibit a counterexample."
+        },
+        {
+          "n": 2,
+          "title": "Rudin Exercise 6, p. 22",
+          "statement": "Exercise 6, p. 22 of Rudin. [Here $b > 1$ is an element of $\\mathbb{R}$ and you may use the 'definition' of $\\mathbb{R}$ as ordered field with least upper bound property. Then recall that $y = x^{\\frac{1}{n}}$ is defined as solution of $y^n = x$, $y \\ge 0$.]"
+        },
+        {
+          "n": 3,
+          "title": "Lexicographic order on $\\mathbb{C}$",
+          "statement": "(Exercise 9 p. 22 of Rudin – lexicographic order) For complex numbers $z = a + bi \\in \\mathbb{C}$ and $w = c + di \\in \\mathbb{C}$ define \"$z < w$\" if either $a < c$ or if ($a = c$ and $b < d$). Prove that this turns $\\mathbb{C}$ into an ordered set. Is this an ordered field? Does it have the least-upper-bound property?"
+        },
+        {
+          "n": 4,
+          "title": "Archimedean property of $\\mathbb{Q}$",
+          "statement": "(a) Prove that the field $\\mathbb{Q}$ of rational numbers has the Archimedean property.\n\n(b) Compare the least upper bound property with the Archimedean property – which one is 'stronger'? Why?"
+        },
+        {
+          "n": 5,
+          "title": "Proofs by induction",
+          "statement": "Review the logic of a proof by induction. (The – not always reliable – wikipedia gives a good explanation in this case.)\n\n(a) Prove that $(1 + 2 + \\cdots + n)^2 = 1^3 + 2^3 + \\cdots + n^3$ for each $n \\in \\mathbb{N}$.\n\n(b) Find a proof of the Bernoulli inequality:\n\n$$\n(1 + x)^n \\ge 1 + nx \\qquad \\text{for all } x \\in \\mathbb{R}, x \\ge -1 \\text{ and } n \\in \\mathbb{N}, n \\ge 2.\n$$\n\n(not for credit) Show that strict inequality $(1 + x)^n > 1 + nx$ holds unless $x = 0$."
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "due": "Tuesday, September 21",
+      "reading": "Tue Sept.14: countability, Euclidean spaces, Rudin 1.32-38, 2.1-17; Thu Sept.16: metric spaces, Rudin 2.15-28",
+      "intro": "Notes: We will call $N_r(p)$ in 2.18(a) an *open ball*, rather than a neighborhood (which has a different meaning in general topology). The notion of *perfect set* is not important for us.",
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Proof by contradiction; $\\mathbb{R}$ is uncountable",
+          "statement": "(a) Explain in your own words the logic of a proof by contradiction.\n\n(b) Show that the set $\\mathbb{R}$ of real numbers is uncountable. (You can use Theorem 2.14 for inspiration, but be aware that $0.\\overline{9} = 0.9999999999\\ldots = 1$.)"
+        },
+        {
+          "n": 2,
+          "title": "Rational intervals and the power set of $\\mathbb{N}$",
+          "statement": "(a) Let $I = \\{[p, q] \\,;\\, p \\le q,\\ p, q \\in \\mathbb{Q}\\}$ be the set of intervals in $\\mathbb{R}$ with rational endpoints. Show that $I$ is countable.\n\n(b) Let $P$ be the set of all subsets of $\\mathbb{N}$. Show that $P$ is uncountable. [*Hint*: for an alleged bijection $f : \\mathbb{N} \\to P$, consider the set $\\overline{D} = \\{n \\in \\mathbb{N} \\,;\\, n \\notin f(n)\\}$.]"
+        },
+        {
+          "n": 3,
+          "title": "Rudin Exercise 7, p. 43",
+          "statement": "Exercise 7, p. 43 of Rudin."
+        },
+        {
+          "n": 4,
+          "title": "Rudin Exercise 8, p. 43",
+          "statement": "Exercise 8, p. 43 of Rudin."
+        },
+        {
+          "n": 5,
+          "title": "Rudin Exercise 9, p. 43",
+          "statement": "Exercise 9, p. 43 of Rudin."
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "due": "Tuesday, September 28",
+      "reading": "Tue Sept.21: relative topology, compact sets, Rudin 2.28-35; Thu Sept.23: compact sets, Rudin 2.36-44",
+      "intro": null,
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Product of compact sets in $\\mathbb{R}^2$",
+          "statement": "Let $E$ and $F$ be two compact subsets of the real numbers $\\mathbb{R}$ with the standard (Euclidian) metric $d(x, y) = \\lvert x - y \\rvert$. Show that the Cartesian product\n\n$$\nE \\times F = \\{(x, y) \\mid x \\in E \\text{ and } y \\in F\\}\n$$\n\nis a compact subset of $\\mathbb{R}^2$ with the metric $d_2(\\vec{u}, \\vec{v}) = \\lVert \\vec{u} - \\vec{v} \\rVert_2$. (Recall that the norm $\\lVert \\cdot \\rVert_2$ is defined by $\\lVert (x, y) \\rVert_2 = (x^2 + y^2)^{1/2}$.)"
+        },
+        {
+          "n": 2,
+          "title": "Rudin Problem 12, p. 44",
+          "statement": "Problem # 12 page 44 in *Rudin*."
+        },
+        {
+          "n": 3,
+          "title": "Rudin Problem 14, p. 44",
+          "statement": "Problem # 14 page 44 in *Rudin*."
+        },
+        {
+          "n": 4,
+          "title": "Rudin Problem 16, p. 44",
+          "statement": "Problem # 16 page 44 in *Rudin*."
+        },
+        {
+          "n": 5,
+          "title": "Rudin Problem 30, p. 46",
+          "statement": "Problem # 30 page 46 in *Rudin*."
+        },
+        {
+          "n": 6,
+          "title": "The Cantor set: small covers and compactness",
+          "statement": "(a) Show that, for any $\\epsilon > 0$, there is a union of intervals with total length $< \\epsilon$ that contains the Cantor set $C = \\bigcap_{n \\in \\mathbb{N}} E_n$ (defined in Rudin 2.44). [*Hint*: $C \\subset E_n$, and each of the $2^n$ intervals in $E_n$ is contained in an open interval of length $(1 + \\epsilon)/3^n$].\n\n(b) Show that the Cantor set $C \\subset \\mathbb{R}$ is compact.\n\n(not for credit) Show that the Cantor set is uncountable – either by fixing the proof of Rudin 2.43, or by using another (e.g. diagonal) argument."
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "due": "Tuesday, October 5",
+      "reading": "Tue Sept.28: connected sets, convergence, Rudin 2.45-47, 3.1-7; Thu Sept.30: no reading assingment due to Quiz 1 (covering Rudin 1.1-38, 2.1-44)",
+      "intro": null,
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Lemma 3 of the sequential compactness notes",
+          "statement": "Consider the notes titled *Compactness vs. Sequentially Compactness* posted on the web page. Prove Lemma 3 stated on those notes."
+        },
+        {
+          "n": 2,
+          "title": "Clopen subsets of a connected space",
+          "statement": "Assume $(X, d)$ is a connected metric space. Prove that the only subsets that are both open and closed are $X$ and $\\varnothing$."
+        },
+        {
+          "n": 3,
+          "title": "Connectedness in the relative topology",
+          "statement": "If in a metric space $(X, d)$ we have $B \\subset A \\subset X$, then the set $B$ is a connected subset of $(A, d)$ (i.e. $A$ with the relative topology) if and only if $B$ is connected subset of $(X, d)$."
+        },
+        {
+          "n": 4,
+          "title": "Sequences with no convergent subsequence",
+          "statement": "Let $(a_n)_{n=1}^\\infty$ be a sequence in $\\mathbb{R}$ with the property that *no subsequence* converges. Prove that $\\lvert a_n \\rvert \\to \\infty$. Does the same property hold if the $a_n$ are in $\\mathbb{Q}$ and we consider $(a_n)_{n=1}^\\infty$ as a sequence *in the metric space* $\\mathbb{Q}$?"
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "due": "Tuesday, October 12",
+      "reading": "Tue Oct.5: completeness, Rudin 3.8-20; Thu Oct.7: construction of the real numbers, notes",
+      "intro": null,
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "The common-ancestor relation",
+          "statement": "Let $H$ be the set of all human beings (past and present). Let $R$ be the usual family relation on $H$; that is, for $h, k \\in H$ we have $(h, k) \\in R$ if and only if $h$ and $k$ have a common ancestor. Show that $R$ is reflexive and symmetric, but not transitive."
+        },
+        {
+          "n": 2,
+          "title": "Reciprocals of Cauchy sequences in $\\mathbb{Q}$",
+          "statement": "(a) Let $(a_n)$ be a Cauchy sequence in $\\mathbb{Q}$, such that $a_n$ does *not* converge to $0$. Show that there is an $\\omega > 0$ and an $N \\in \\mathbb{N}$ so that $\\lvert a_n \\rvert > \\omega$ for all $n \\ge N$. Moreover, show that the sign of $a_n$ is constant for large $n$.\n\n(b) Following part **(a)**, show that if $(a_n)$ is a Cauchy sequence in $\\mathbb{Q}$ that does not converge to $0$, then $(1/a_n)$ is a Cauchy sequence in $\\mathbb{Q}$. [*Remark*: it would be tempting to solve this problem by noting that, thinking of $(a_n)$ living in the bigger complete metric space $\\mathbb{R}$, we can replace the word \"Cauchy\" by \"convergent\", which makes for an easy proof. That is *not* the intention of the problem; you should work directly within $\\mathbb{Q}$.]"
+        },
+        {
+          "n": 3,
+          "title": "Rudin Problem 4, p. 78",
+          "statement": "Problem 4, p. 78 in Rudin. (Hint: consider the two subsequences given by the odd and even terms – you can find relations between the $\\limsup$ of these two.)"
+        },
+        {
+          "n": 4,
+          "title": "Lecture $\\liminf$ agrees with Rudin's $s_*$",
+          "statement": "Let $(s_n)_{n \\in \\mathbb{N}}$ be a sequence in $\\mathbb{R}$. Show that the definition of $\\liminf$ in the lecture coincides with the $s_*$ of Rudin 3.16. In the lecture, we defined\n\n$$\n\\liminf_{n \\to \\infty} s_n := \\begin{cases} \\lim_{n \\to \\infty} \\inf\\{s_k \\mid k \\ge n\\} & \\text{; if limit of infima exists,} \\\\ -\\infty & \\text{; if } (s_n) \\text{ is not bounded below;} \\\\ \\infty & \\text{; if } s_n \\to \\infty. \\end{cases}\n$$"
+        },
+        {
+          "n": 5,
+          "title": "Subsets of $\\mathbb{N}$ up to finite difference",
+          "statement": "Let $\\mathscr{P}(\\mathbb{N})$ denote the set of all subsets of $\\mathbb{N}$. Define a relation $\\mathscr{D}$ on $\\mathscr{P}(\\mathbb{N})$ as follows: $(A, B) \\in \\mathscr{D}$ if the symmetric difference\n\n$$\nA \\Delta B := (A \\cup B) \\setminus (A \\cap B)\n$$\n\nis finite. (That is: $A$ and $B$ only differ by finitely many numbers.)\n\n(a) Show that $\\mathscr{D}$ is an equivalence relation.\n\n(b) Show that all finite subsets of $\\mathbb{N}$ are in the same equivalence class of $\\mathscr{D}$.\n\n(c) Show that each equivalence class of $\\mathscr{D}$ is a *countable* family of subsets. [*Hint*: fix any subset $A_0 \\in \\mathscr{P}(\\mathbb{N})$, and for each $n \\in \\mathbb{N}$ consider the classes $A_0^{(n)} = \\{A \\subseteq \\mathbb{N} \\,;\\, A \\text{ differs from } A_0 \\text{ by } n \\text{ numbers}\\}$. Show that $A_0^{(n)}$ is countable, and that the equivalence class $[A_0]_{\\mathscr{D}}$ is the union of the countably-many $A_0^{(n)}$.]\n\n**not for credit:** Conclude that there are uncountably many equivalences classes of $\\mathscr{D}$."
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "due": "Tuesday, October 19",
+      "reading": "Tue Oct.12: series, Rudin 3.20-37; Thu Oct.14: series, Rudin 3.38-55.",
+      "intro": null,
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Rudin Problem 6(b), 6(c) and a telescoping sum",
+          "statement": "(a) Rudin 6 problem (b) on page 78\n\n(b) Rudin 6 problem (c) on page 78\n\n(c) Prove that $\\displaystyle\\sum_{n=1}^\\infty \\frac{1}{n(n + 1)} = 1$. (Hint: The partial sums can be written as telescoping sum $(a_1 - a_2) + (a_2 - a_3) + \\ldots + (a_{n-1} - a_n) = a_1 - a_n$.)"
+        },
+        {
+          "n": 2,
+          "title": "The limit comparison test",
+          "statement": "Assume that $a_n, b_n > 0$ for all $n \\ge n_0$ and $\\displaystyle\\lim_{n \\to \\infty} \\frac{a_n}{b_n} = L > 0$. Prove that $\\sum_{n=1}^\\infty a_n$ and $\\sum_{n=1}^\\infty b_n$ either both converge or both diverge. (This result is the \"limit comparison test\".)"
+        },
+        {
+          "n": 3,
+          "title": "Cauchy–Schwarz and the space $\\ell^2$",
+          "statement": "(a) Let $N \\ge 1$ and let $a_1, a_2, \\ldots, a_N$ and $b_1, b_2, \\ldots, b_N$ be real numbers. Verify that\n\n$$\n\\left( \\sum_{i=1}^N a_i b_i \\right)^2 + \\frac{1}{2} \\sum_{i=1}^N \\sum_{j=1}^N (a_i b_j - a_j b_i)^2 = \\left( \\sum_{i=1}^N a_i^2 \\right) \\left( \\sum_{j=1}^N b_j^2 \\right)\n$$\n\nand conclude the Cauchy-Schwarz inequality\n\n$$\n\\left\\lvert \\sum_{i=1}^N a_i b_i \\right\\rvert \\le \\left( \\sum_{i=1}^N a_i^2 \\right)^{1/2} \\left( \\sum_{j=1}^N b_j^2 \\right)^{1/2}.\n$$\n\nThen use the Cauchy-Schwarz inequality inequality to prove the triangle inequality\n\n$$\n\\left( \\sum_{i=1}^N (a_i + b_i)^2 \\right)^{1/2} \\le \\left( \\sum_{i=1}^N a_i^2 \\right)^{1/2} + \\left( \\sum_{j=1}^N b_j^2 \\right)^{1/2}.\n$$\n\n(Hint: square both sides.)\n\n(b) Let now\n\n$$\nX = \\left\\{ a : \\mathbb{N} \\to \\mathbb{R} \\;\\middle\\vert\\; \\textstyle\\sum_{n=1}^\\infty a(n)^2 \\text{ converges} \\right\\} = \\left\\{ (a_n)_{n \\in \\mathbb{N}} \\subset \\mathbb{R} \\;\\middle\\vert\\; \\textstyle\\sum_{n=1}^\\infty a_n^2 < \\infty \\right\\}\n$$\n\nand define a norm and induced metric\n\n$$\n\\lVert (a_n)_{n \\in \\mathbb{N}} \\rVert_2 = \\left( \\sum_{n=1}^\\infty a_n^2 \\right)^{1/2}, \\qquad d_2((a_n)_{n \\in \\mathbb{N}}, (b_n)_{n \\in \\mathbb{N}}) = \\lVert (a_n - b_n)_{n \\in \\mathbb{N}} \\rVert_2.\n$$\n\nUse part a) to show that $(X, d_2)$ is a metric space. (Hint: One way to solve this is to first prove that $(X, \\lVert \\cdot \\rVert_2)$ is a normed vector space.)"
+        },
+        {
+          "n": 4,
+          "title": "Rudin Problem 9(a), 9(c): radius of convergence",
+          "statement": "(a) Rudin problem 9(a) and (c) on page 79. (Hint: ratio test)\n\n(b) For both power series, also investigate the convergence on the border of the radius of convergence (for $\\lvert z \\rvert = R$)."
+        },
+        {
+          "n": 5,
+          "title": "Banach fixed-point theorem",
+          "statement": "**Banach fixed-point theorem:** Let $(X, d)$ be a complete metric space. Suppose $f : X \\to X$ has the property that, for some number $c \\in (0, 1)$,\n\n$$\nd(f(x), f(y)) \\le c \\cdot d(x, y) \\quad \\text{for all} \\quad x, y \\in X.\n$$\n\n(a) Suppose $y_n \\in X$ is any convergent sequence, with limit $y$. Prove that $f(y_n)$ is a convergent sequence, and $f(y_n) \\to f(y)$.\n\n(b) Fix any point $x_0 \\in X$, and iteratively define $x_{n+1} = f(x_n)$ for each $n \\in \\mathbb{N}$. Show that\n\n$$\n\\sum_{j=0}^\\infty d(x_{j+1}, x_j)\n$$\n\nis a convergent series. [*Hint*: it is bounded above by a geometric series.]\n\n(c) Show that the sequence $(x_n)$ of iterates of $f$ starting at $x_0$, as above, is a Cauchy sequence. Conclude that it converges to some point $x_\\infty \\in X$. [*Hint*: Let $m, n \\in \\mathbb{N}$, and suppose $m \\ge n$. Then $m = n + k$ for some $k \\in \\mathbb{N}$. Show that $d(x_m, x_n) \\le c^n \\cdot d(x_k, x_0)$, and $d(x_k, x_0) \\le d(x_k, x_{k-1}) + d(x_{k-1}, x_{k-2}) + \\cdots + d(x_1, x_0) \\le \\sum_{j=0}^\\infty d(x_{j+1}, x_j)$. Conclude that $d(x_m, x_n) \\to 0$ as $m, n \\to \\infty$.]\n\n(d) Show that, given any starting point $x_0$, the limit $x_\\infty$ of the sequence of iterates in **(c)** is a *fixed-point* of $f$: i.e. $f(x_\\infty) = x_\\infty$. [*Hint*: using part **(a)**, compare $d(f(x_\\infty), x_\\infty)$ to $d(f(x_n), x_n)$.]\n\n(e) Let $x_0, y_0$ be any two points in $X$. Let $x_{n+1} = f(x_n)$ and $y_{n+1} = f(y_n)$ be the sequences of iterates. Show that $d(x_n, y_n) \\to 0$ as $n \\to \\infty$. Conclude that $x_\\infty = y_\\infty$, and that $f$ has a *unique* fixed point."
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "due": "Tuesday, October 26",
+      "reading": "Tue Oct.19: continuity, Rudin 4.1-12; Thu Oct.21: Quiz 2 (covering Rudin sections 2.45-47 and 3), $\\ell^p$ spaces.",
+      "intro": null,
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Rudin Problems 1 and 3, p. 98",
+          "statement": "(a) Problem 1, page 98 in Rudin\n\n(b) Problem 3, page 98 in Rudin"
+        },
+        {
+          "n": 2,
+          "title": "Continuity of $x \\mapsto g(d(x, x_0))$",
+          "statement": "Let $(X, d)$ be a metric space. Fix $x_0 \\in X$ and a continuous function $g : \\mathbb{R} \\to \\mathbb{R}$. Show that the function $X \\to \\mathbb{R}$ defined by $x \\mapsto g(d(x, x_0))$ is continuous."
+        },
+        {
+          "n": 3,
+          "title": "Maps to and from a discrete metric space",
+          "statement": "Let $(S, d_S)$ be a set equipped with the discrete metric (i.e. $d_S(t, r) = 1$ for $t \\ne r$).\n\n(a) Show that any map $f : S \\to X$ into another metric space $X$ is continuous; using the definition of continuity by sequences.\n\n(b) Show that any map $f : S \\to X$ into another metric space $X$ is continuous; using the definition of continuity by $\\epsilon$- and $\\delta$-balls.\n\n(c) Which maps $f : \\mathbb{R} \\to S$ are continuous? (Give an easy characterization and prove it.)"
+        },
+        {
+          "n": 4,
+          "title": "A step function on $\\mathbb{Q}$ at $\\sqrt{2}$",
+          "statement": "Consider the function $h : \\mathbb{Q} \\to \\mathbb{R}$ given by\n\n$$\nh(x) = \\begin{cases} 0 & ; x^2 < 2, \\\\ 1 & ; x^2 > 2. \\end{cases}\n$$\n\n(a) Is $h$ continuous?\n\n(b) Can $h$ be continuously extended to $\\tilde{h} : \\mathbb{R} \\to \\mathbb{R}$? (I.e. such that $\\tilde{h}(x) = h(x)$ for all $x \\in \\mathbb{Q}$.)"
+        },
+        {
+          "n": 5,
+          "title": "Continuity of the complex exponential",
+          "statement": "Prove that the function $f : \\mathbb{C} \\to \\mathbb{C}$, $z \\mapsto e^z = \\sum_{n=0}^\\infty \\frac{1}{n!} z^n$ is continuous by following the steps below.\n\n(a) Fix $T > 0$ and $\\varepsilon > 0$. Show that there exists an $N \\in \\mathbb{N}$ such that\n\n$$\n\\sum_{n=N}^\\infty \\frac{t^n}{n!} < \\varepsilon \\qquad \\forall t \\in [0, T].\n$$\n\n[*Hint*: The series for $e^T$ converges.]\n\n(b) Show continuity at $z \\in \\mathbb{C}$ by splitting\n\n$$\ne^z - e^x = \\sum_{n=1}^{N-1} \\frac{1}{n!}(z^n - x^n) + \\sum_{n=N}^\\infty \\frac{1}{n!} z^n - \\sum_{n=N}^\\infty \\frac{1}{n!} x^n.\n$$\n\n[*Hint*: First use (a) with $T = \\lvert z \\rvert + 1$, then use the fact that polynomials are continuous.]"
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "due": "Tuesday, November 2",
+      "reading": "Tue Oct.26: continuity and compactness, connectedness, Rudin 4.13-24; Thu Oct.28: discontinuities, monotone functions, Rudin 4.25-34",
+      "intro": null,
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Rudin Problems 4, p. 98 and 14, p. 100",
+          "statement": "(a) Problem 4, page 98 in Rudin\n\n(b) Problem 14, page 100 in Rudin (Hint: Rephrase the problem as $g(x) = 0$ and use the fact that $[0, 1]$ is connected.)"
+        },
+        {
+          "n": 2,
+          "title": "One-sided limits in $\\epsilon$-$\\delta$ form",
+          "statement": "Let $f : \\mathbb{R} \\to Y$ be a map to a metric space $Y$. Show that, for $a \\in \\mathbb{R}$ and $y \\in Y$, the statement $f(a+) = y$ is equivalent to the following:\n\n$$\n\\forall \\epsilon > 0 \\ \\exists \\delta > 0 \\ \\forall x \\in (a, a + \\delta) : d(f(x), y) < \\epsilon.\n$$\n\nFormulate the analogous statement in the case of the left limit $f(a-) = y$."
+        },
+        {
+          "n": 3,
+          "title": "Uniform continuity and Cauchy sequences",
+          "statement": "(a) Let $f : X \\to Y$ be a uniformly continuous function between metric spaces. Show that if $(x_n)_{n=1}^\\infty$ is a Cauchy sequence in $X$, then $(f(x_n))_{n=1}^\\infty$ is a Cauchy sequence in $Y$. Show, therefore, that the function $f(x) = 1/x^2$ defined on $(0, \\infty)$ is not uniformly continuous.\n\n(b) Problem 6, page 99 in Rudin (You may assume that $f$ is a real valued function on $E \\subset \\mathbb{R}$. This result does hold in general also with the metric $d((x, y), (x', y')) = d_X(x, x') + d_Y(y, y')$ on the product $X \\times Y$ of two metric spaces $(X, d_X)$ and $(Y, d_Y)$. Hint: One direction is a little subtle. Try e.g. a proof by contradiction to the $\\epsilon, \\delta$-definition of continuity, and use sequential compactness.)"
+        },
+        {
+          "n": 4,
+          "title": "A metric on power series and evaluation maps",
+          "statement": "Let $P$ denote the space of power series with radius of convergence $R > 1$:\n\n$$\nP = \\left\\{ \\sum_{n=0}^\\infty a_n z^n \\,;\\, a_n \\in \\mathbb{C}, \\limsup_{n \\to \\infty} \\lvert a_n \\rvert^{1/n} < 1 \\right\\}.\n$$\n\n(a) Define $d : P \\times P \\to \\mathbb{R}$ as follows: If $p(z) = \\sum_n a_n z^n$ and $q(z) = \\sum_n b_n z^n$, then\n\n$$\nd(p, q) = \\sum_{n=0}^\\infty \\lvert a_n - b_n \\rvert.\n$$\n\nShow that $d$ is a metric on $P$. [*Hint*: You can use your knowledge of $\\ell^1$.]\n\n(b) Fix $z_0 \\in \\mathbb{C}$ with $\\lvert z_0 \\rvert \\le 1$. Show that the *evaluation map* $\\mathrm{ev}_{z_0}(p) = p(z_0)$ for $p \\in P$ is a *uniformly continuous* function $P \\to \\mathbb{C}$ (in terms of the metric $d$ from part **(a)** on $P$, and the usual Euclidean metric on $\\mathbb{C}$). [*Hint*: Try first with $z_0 = 1$.]"
+        },
+        {
+          "n": 5,
+          "title": "The modulus $\\delta_f(x, \\epsilon)$ and uniform continuity",
+          "statement": "Let $(X, d_X)$ and $(Y, d_Y)$ be metric spaces. For any continuous map $f : X \\to Y$ define a function $\\delta_f : X \\times (0, \\infty) \\to (0, \\infty) \\cup \\{\\infty\\}$ as follows:\n\n$$\n\\delta_f(x, \\epsilon) = \\sup\\{\\delta > 0 \\mid \\forall t \\in X \\ d_X(x, t) < \\delta \\Rightarrow d_Y(f(x), f(t)) < \\epsilon\\}.\n$$\n\nNote that this supremum may be $\\infty$ if the continuity condition holds for all $\\delta > 0$; e.g. for $f$ constant. In the following, we use the definition of order $<$ and infimum in the extended reals.\n\n(a) Show that the statement \"$f$ is continuous at $x$\" is equivalent to \"$\\delta_f(x, \\epsilon) > 0$ for each $\\epsilon > 0$\".\n\n(b) Show that $f$ is uniformly continuous on $X$ iff $\\inf_{x \\in X} \\delta_f(x, \\epsilon) > 0$.\n\n(c) Consider the function $f(x) = x^2$ defined on the metric space $X = [0, \\infty)$. Show that for each $x \\in X$\n\n$$\n\\sup_{t \\in X, d_X(x, t) < \\delta} \\lvert f(x) - f(t) \\rvert = 2x\\delta + \\delta^2.\n$$\n\n(d) Use part **(c)** to show that $\\delta_f(x, \\epsilon) = \\sqrt{x^2 + \\epsilon} - x$. Show that, for fixed $\\epsilon > 0$, $\\lim_{x \\to \\infty}[\\sqrt{x^2 + \\epsilon} - x] = 0$. Conclude that $f$ is *not* uniformly continuous on $X$. [*Hint*: you can use Calculus here, but you needn't. Set $\\varphi(x) = \\sqrt{x^2 + \\epsilon} - x$. Show that $\\varphi(x) \\ge 0$, and that $\\varphi(x)^2 + 2x\\,\\varphi(x) = \\epsilon$ for every $x$. Hence $0 \\le \\varphi(x) \\le \\epsilon/2x$.]"
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "due": "Tuesday, November 9",
+      "reading": "Tue Nov. 2: differentiability, mean value theorem, Rudin 5.1-11; Thu Nov.4: l'Hospital's rule, Taylor's theorem, Rudin 5.12-19",
+      "intro": null,
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Hölder condition with exponent $\\alpha$",
+          "statement": "Assume that $f : \\mathbb{R} \\longrightarrow \\mathbb{R}$ and that for some $C > 0$ and $\\alpha > 0$ we have for any $x, y \\in \\mathbb{R}$\n\n$$\n\\lvert f(x) - f(y) \\rvert \\le C \\lvert x - y \\rvert^\\alpha.\n$$\n\n(a) Prove that if $\\alpha > 1$ then $f$ is constant. [*Hint:* What is the derivative of a constant function?]\n\n(b) If $\\alpha \\le 1$, is $f$ necessarily differentiable?"
+        },
+        {
+          "n": 2,
+          "title": "Rudin Problem 2, p. 114",
+          "statement": "Problem # 2 page 114 in *Rudin*."
+        },
+        {
+          "n": 3,
+          "title": "Rudin Problem 7, p. 114 and growth rates",
+          "statement": "(a) Problem # 7 page 114 in *Rudin*.\n\n(b) Show that for any polynomial $P(x)$\n\n$$\n\\lim_{x \\to \\infty} \\frac{P(x)}{e^x} = 0 \\qquad \\text{and} \\qquad \\lim_{x \\to \\infty} \\frac{\\ln(x)}{P(x)} = 0.\n$$\n\nFor the second limit (of course) assume that $P(x)$ is not constant. You may also use your calculus knowledge of derivatives of polynomials, $e^x$, and $\\ln(x)$."
+        },
+        {
+          "n": 4,
+          "title": "Taylor bound for $\\sin x$ and Rudin 5.13",
+          "statement": "(a) Show that $\\sin(x) \\simeq x$ is a good approximation for small $x$ by using Taylor's theorem to obtain\n\n$$\n\\lvert \\sin(x) - x \\rvert \\le \\tfrac{1}{6} \\lvert x \\rvert^3 \\qquad \\forall x \\in \\mathbb{R}.\n$$\n\n(b) Use (a) to calculate the limit for different values of $a \\in \\mathbb{R}$ and $c > 0$ of the function $x^a \\sin(\\lvert x \\rvert^{-c})$ (from Rudin pg.115 #13) as $x \\to \\infty$."
+        },
+        {
+          "n": 5,
+          "title": "Bounded derivative and $f(1/n)$; Rudin Problem 26, p. 119",
+          "statement": "(a) Assume $f : (0, 1] \\longrightarrow \\mathbb{R}$ is differentiable and $\\lvert f'(x) \\rvert \\le M$ for all $x \\in (0, 1]$. Define the sequence $a_n = f(1/n)$ and prove that $a_n$ converges.\n\n(b) Problem # 26 page 119 in *Rudin*."
+        }
+      ]
+    },
+    {
+      "n": 10,
+      "due": "Tuesday, November 16",
+      "reading": "Tue Nov.9: Riemann integral, Rudin 6.1-12 with $\\alpha(x) = x$; Thu Nov.11: holiday",
+      "intro": null,
+      "solution": "2006",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Integrability of spikes at $1/n$",
+          "statement": "Consider the following two real-valued functions on $[0, 1]$.\n\n$$\nf(x) = \\begin{cases} 1, & x = \\frac{1}{n} \\text{ for some } n \\in \\mathbb{N} \\\\ 0, & \\text{otherwise} \\end{cases}, \\qquad g(x) = \\begin{cases} n, & x = \\frac{1}{n} \\text{ for some } n \\in \\mathbb{N} \\\\ 0, & \\text{otherwise} \\end{cases}.\n$$\n\nShow (from the definition) that $f \\in \\mathscr{R}$ (i.e. $f$ is Riemann-integrable), with $\\int_0^1 f(x)\\,dx = 0$, but $g \\notin \\mathscr{R}$."
+        },
+        {
+          "n": 2,
+          "title": "Rudin Problem 8, p. 138",
+          "statement": "Problem 8, page 138 in Rudin."
+        },
+        {
+          "n": 3,
+          "title": "Sets of measure zero",
+          "statement": "A subset $N \\subseteq \\mathbb{R}$ is said to have *measure* $0$ if, for each $\\epsilon > 0$, there is a sequence (finite or countable) of balls $(B_n)$ with radii $r_n$ so that $N \\subseteq \\bigcup_n B_n$ and $\\sum_n r_n < \\epsilon$.\n\n(a) Let $N$ be a set of measure $0$ in $\\mathbb{R}$. Prove that the complement $N^c$ is dense in $\\mathbb{R}$.\n\n(b) Show (from the definition) that the only open set that has measure $0$ is $\\varnothing$.\n\n(c) Can measure $0$ sets be closed? Non-compact? Dense?"
+        },
+        {
+          "n": 4,
+          "title": "The $L^1$ distance on $\\mathscr{R}^1[a, b]$",
+          "statement": "Let $\\mathscr{R}^1[a, b]$ denote the set of all functions $f : [a, b] \\to \\mathbb{R}$ with the property that $\\lvert f \\rvert$ is Riemann integrable. Define a function $d_1 : \\mathscr{R}^1[a, b] \\times \\mathscr{R}^1[a, b] \\to \\mathbb{R}_+$ by\n\n$$\nd_1(f, g) = \\int_a^b \\lvert f - g \\rvert.\n$$\n\n(a) Show that if $f$ is Riemann integrable on $[a, b]$, then $f \\in \\mathscr{R}^1[a, b]$.\n\n(b) Is the converse of (a) true? [*Hint*: think about the function $g$ that equals $1$ on $\\mathbb{Q}$ and $0$ on $\\mathbb{Q}^c$; find non-zero constants $a, b$ so that $\\lvert ag + b \\rvert$ is constant.]\n\n(c) Prove that $d_1$ satisfies all the axioms of a metric on $\\mathscr{R}^1[a, b]$ except that $d_1(f, g) = 0$ for some $f \\ne g$.\n\n(d) Assume that $f, g$ are continuous on $[a, b]$. Prove that $d_1(f, g) = 0$ iff $f = g$ on $[a, b]$. Conclude that the subset $\\mathscr{C}[a, b]$ of continuous functions in $\\mathscr{R}^1[a, b]$ is a metric space under the metric $d_1$."
+        },
+        {
+          "n": 5,
+          "title": "$(\\mathscr{C}[-1, 1], d_1)$ is not complete",
+          "statement": "Consider the metric space $(\\mathscr{C}[-1, 1], d_1)$ from **4(d)** (here $a = -1, b = 1$).\n\n(a) Let $f_n$ denote the function\n\n$$\nf_n(x) = \\begin{cases} 1, & x > \\frac{1}{n}, \\\\ nx, & 0 \\le x \\le \\frac{1}{n}, \\\\ 0, & x < 0 \\end{cases}.\n$$\n\nShow that $f_n \\in \\mathscr{C}[-1, 1]$, and calculate $\\int_0^1 f_n$.\n\n(b) Show that the sequence $(f_n)$ is a Cauchy sequence in terms of the metric $d_1$.\n\n(c) Does $f_n$ converge in $\\mathscr{C}[-1, 1]$? Is this metric space complete?"
+        }
+      ]
+    },
+    {
+      "n": 11,
+      "due": "Tuesday, November 23",
+      "reading": "Tue Nov.16: Quiz 3 (covering Rudin 4, 5); Riemann integrability and continuity almost everywhere; Thu Nov.18: Stieltjes integral, fundamental theorem of calculus, Rudin 6.13-22",
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Rudin Problem 3, p. 138",
+          "statement": "Problem 3, page 138 in *Rudin*."
+        },
+        {
+          "n": 2,
+          "title": "Rudin Problem 7, p. 138",
+          "statement": "Problem 7, page 138 in *Rudin*."
+        },
+        {
+          "n": 3,
+          "title": "Convergence of improper integrals",
+          "statement": "Use the definitions in Problems 7 and 8 of *Rudin* to answer the following questions:\n\n(a) For which $\\alpha \\in \\mathbb{R}$ does the integral\n\n$$\n\\int_0^1 \\frac{\\sin t}{t^\\alpha}\\,dt\n$$\n\nconverge (absolutely)? (*Hint*: First try to understand the convergence of the integral of $\\frac{1}{t^\\gamma}$ on the interval $[0, 1]$).\n\n(b) For which $\\beta \\in \\mathbb{R}$ does the integral\n\n$$\n\\int_1^\\infty \\frac{e^{-t}}{t^\\beta}\\,dt\n$$\n\nconverge (absolutely)? (*Hint*: First try to understand the convergence of the integral of $\\frac{1}{t^\\gamma}$ on the interval $[1, \\infty)$)."
+        },
+        {
+          "n": 4,
+          "title": "Rudin Problem 17, p. 141",
+          "statement": "Problem 17, page 141 in *Rudin*."
+        }
+      ]
+    },
+    {
+      "n": 12,
+      "due": "Tuesday, November 30",
+      "reading": "Tue Nov.23: sequences and series of functions, Rudin 7.1-17; Thu Nov.25: holiday",
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Rudin Problems 2 and 3, p. 165",
+          "statement": "(a) Problem 2, page 165 in *Rudin*.\n\n(b) Problem 3, page 165 in *Rudin*."
+        },
+        {
+          "n": 2,
+          "title": "Derivative of $e^x$ via Rudin 7.17",
+          "statement": "Consider the exponential function $g(x) = e^x = \\sum_{k=0}^\\infty \\frac{1}{k!} x^k$ on $\\mathbb{R}$. Use Rudin Theorem 7.17 to prove that $g' = g$. (Hint: Note that an unguarded lecturer essentially did this in class, so full and glorious details are expected.)"
+        },
+        {
+          "n": 3,
+          "title": "Rudin Problem 9, p. 166",
+          "statement": "Problem 9, page 166 in *Rudin*."
+        },
+        {
+          "n": 4,
+          "title": "Rudin Problem 10, p. 166",
+          "statement": "Problem 10, page 166 in *Rudin*. (Use some theorem from Rudin chapter 7 to prove Riemann-integrability.)"
+        },
+        {
+          "n": 5,
+          "title": "Uniform convergence of Taylor polynomials",
+          "statement": "Let $f : \\mathbb{R} \\to \\mathbb{R}$ be a smooth function (i.e. all derivatives exist) and fix $x_0 \\in \\mathbb{R}$. The Taylor series $T(x)$ of $f$ at $x_0$ is defined as the pointwise limit $T(x) = \\lim_{k \\to \\infty} P_k(x)$ of the Taylor polynomials\n\n$$\nP_k(x) = \\sum_{n=0}^k \\frac{f^{(n)}(x_0)}{n!} (x - x_0)^n.\n$$\n\n(a) For which $r > 0$ do the Taylor polynomials $P_k$ converge uniformly on $B_r(x_0)$ to $T$? (Hint: Write $T(x)$ as a series and compare $r$ with its radius of convergence. You can use e.g. Rudin Theorem 7.10.)\n\n(b) Recall Taylor's error formula for $\\lvert f(x) - P_k(x) \\rvert$. Deduce that $f = T$ on the ball $B_A(x_0)$ if $A > 0$ satisfies\n\n$$\nA < \\lim_{n \\to \\infty} \\left( \\frac{1}{n!} \\sup_{z \\in B_A(x_0)} \\lvert f^{(n)}(z) \\rvert \\right)^{-1/n}.\n$$"
+        }
+      ]
+    }
+  ]
+}
