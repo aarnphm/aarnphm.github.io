@@ -317,7 +317,7 @@ export function paintOvergrowth(
   }
 }
 
-// Vines lit by the rift, the same in either theme since the rift is always night.
+// Vines lit by the rift, the same by day and night since the rift is always night.
 export const VINE = {
   stem: hex('#4d6212'),
   leaf: ['#536b0e', '#879a39', '#b4bf6a'].map(hex),

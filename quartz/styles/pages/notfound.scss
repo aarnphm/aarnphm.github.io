@@ -28,10 +28,20 @@ body[data-slug='404'] {
   }
 }
 
+// The print has one palette. A dark page keeps the light theme's tokens (lightMode in
+// quartz.config.ts), so the scene, the board and the keylines look the same in either theme.
 :root[saved-theme='dark'] body[data-slug='404'] {
-  --nf-stone: color-mix(in oklab, #fcc192 18%, var(--light));
-  --nf-rose: color-mix(in oklab, #fdb2a2 78%, var(--light));
-  --nf-sage: color-mix(in oklab, #cdd597 72%, var(--light));
+  --light: rgb(255, 252, 240);
+  --lightgray: rgb(230, 228, 217);
+  --gray: rgb(183, 181, 172);
+  --darkgray: rgb(111, 110, 105);
+  --dark: rgb(16, 15, 15);
+  --secondary: rgb(205, 213, 151);
+  --tertiary: rgb(252, 193, 146);
+  --highlight: rgb(218, 216, 206);
+  --textHighlight: rgb(241, 214, 126);
+
+  color-scheme: light;
 }
 
 .nf-scene {
@@ -238,10 +248,6 @@ body[data-slug='404'] {
   text-transform: uppercase;
   color: var(--darkgray);
   animation: nf-rise 0.45s 0.3s steps(3) both;
-
-  :root[saved-theme='dark'] & {
-    --nf-rust: #d14d41;
-  }
 
   &::before,
   &::after {

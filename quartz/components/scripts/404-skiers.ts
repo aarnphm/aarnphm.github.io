@@ -1268,7 +1268,7 @@ export function warmHill(h: Hill) {
 // then, the patrol's toboggan on its way down; after hours the groomer halfway down with its lights
 // on, someone skinning up the edge and a splitboarder at the top.
 export function poseHill(h: Hill) {
-  // Each resize or change of theme poses it again, and the same people come back in the same kit.
+  // Each resize or change of light poses it again, and the same people come back in the same kit.
   h.rng = mulberry(h.seed)
   h.ids = 0
   h.parties = 0

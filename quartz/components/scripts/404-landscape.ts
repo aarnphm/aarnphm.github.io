@@ -5,7 +5,7 @@
 // same grid from the hidden SVG geometry: plates, one-pixel keylines, dial marks and chips, with
 // the moss grown over it as blobs (404-overgrowth). The cat, the survey party and a passing
 // triathlete (404-cat, 404-crew, 404-triathlete) stand in the same canvas as the water, which
-// reflects them along with the ruin, the hill and the ranges. The ranges and the ruin paint once per size or theme; sky, field, water,
+// reflects them along with the ruin, the hill and the ranges. The ranges and the ruin paint once per size or change of light; sky, field, water,
 // camp, canopy and portal repaint in stop-motion ticks.
 
 import { readPetSpot } from '../../util/pet-spot'
@@ -394,7 +394,7 @@ function season(al: Almanac, sky: Sky): Season {
 
 const tint = (a: RGB[], b: RGB[], t: number) => (t <= 0 ? a : a.map((c, k) => mix(c, b[k], t)))
 
-// One theme's palette, turned for the season and greyed by the weather.
+// The day or the night palette, turned for the season and greyed by the weather.
 function weathered(p: Palette, s: Season, sky: Sky): Palette {
   const over = smooth(0.55, 1, sky.cover) * 0.6 + (sky.fog ? 0.3 : 0)
   const overcast = [p.cloud[1], p.cloud[1], p.cloud[2], p.cloud[2], p.cloud[2]]
@@ -414,16 +414,16 @@ function weathered(p: Palette, s: Season, sky: Sky): Palette {
   }
 }
 
-// The palette for this moment: night and day blended by how much daylight there is (a dark page
-// only ever sees a dim day), then warmed through twilight.
-function lighting(al: Almanac, s: Season, sky: Sky, dim: boolean): [Palette, number] {
+// The palette for this moment: night and day blended by how much daylight there is, then warmed
+// through twilight.
+function lighting(al: Almanac, s: Season, sky: Sky): [Palette, number] {
   // A storm's anvil or a downpour takes a good part of the daylight with it.
   const gloom = sky.storm
     ? 0.45
     : sky.fall === 'rain' || sky.fall === 'drizzle'
       ? 0.12 + 0.25 * sky.heavy
       : 0.15 * smooth(0.8, 1, sky.cover)
-  const day = (dim ? al.day * 0.3 : al.day) * (1 - gloom)
+  const day = al.day * (1 - gloom)
   const night = weathered(DARK, s, sky)
   const pal = blend(night, weathered(LIGHT, s, sky), day)
   const glow = al.dusk * 0.75 * (1 - smooth(0.55, 1, sky.cover) * 0.6)
@@ -2381,7 +2381,6 @@ function rasterRuin(
   d: Uint8ClampedArray,
   g: Grid,
   svg: SVGSVGElement,
-  dark: boolean,
   ground: (x: number) => number,
   side: number,
   dim: number,
@@ -2396,7 +2395,7 @@ function rasterRuin(
   sheet.height = bh
   const scratch = sheet.getContext('2d', { willReadFrequently: true })!
   const stops: RGB[][] = MATERIALS.map(() => [])
-  const paper: RGB = dark ? [206, 205, 195] : [255, 252, 240]
+  const paper: RGB = [255, 252, 240]
   let ink: RGB | null = null
   const toBuffer = (el: SVGGraphicsElement) => {
     const ctm = el.getScreenCTM()
@@ -2405,9 +2404,7 @@ function rasterRuin(
   const tone = (el: Element, id: number) => {
     if (stops[id].length === 0) {
       const base = mul(probe(getComputedStyle(el).fill), dim)
-      stops[id] = dark
-        ? [mul(base, 0.55), mul(base, 0.75), base, mix(base, paper, 0.2)]
-        : [mul(base, 0.7), mul(base, 0.86), base, mix(base, paper, 0.55)]
+      stops[id] = [mul(base, 0.7), mul(base, 0.86), base, mix(base, paper, 0.55)]
     }
     return stops[id]
   }
@@ -2540,20 +2537,17 @@ const HUB = 15
 // Lume, in the sage of the site's palette: Super-LumiNova's C3 glows yellow-green, and it is what
 // the hands turn to once the daylight goes.
 const LUME = hex('#cdd597')
-const luma = (c: RGB) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
 
 // Station-clock hands on the pole star's arbor, laid into the rift pixel by pixel. The hour and
 // minute hands are bars lit on their sunward edge and keylined in the rift's deepest ink, which
 // holds them apart from the rose arms of the nebula; the red second hand is a pixel wide with its
-// disc; the hub is an open ring so the star shows through. The rift is night in either theme, so by
-// day the hands take the lighter of stone and ink, which one depending on the theme. After sunset
-// a light page's stone greys with the rest of the ruin, so `lume` (0 by day, 1 at night) carries
-// the hands over to lume instead.
+// disc; the hub is an open ring so the star shows through. The rift is always night, so by day the
+// hands take the stone's light face. After sunset the stone greys with the rest of the ruin, so
+// `lume` (0 by day, 1 at night) carries the hands over to lume instead.
 function paintHands(d: Uint8ClampedArray, g: Grid, dial: Dial, print: Print, lume: number) {
   const { bw, bh, sx, sy } = g
-  const stone = luma(print.stone[3]) >= luma(print.ink)
-  const face = mix(stone ? print.stone[3] : print.ink, mix(CREAM, LUME, 0.45), lume)
-  const shade = mix(stone ? print.stone[2] : mix(print.ink, RIFT[3], 0.4), LUME, lume)
+  const face = mix(print.stone[3], mix(CREAM, LUME, 0.45), lume)
+  const shade = mix(print.stone[2], LUME, lume)
   const key = RIFT[0]
   const red = print.rose[lume > 0.5 ? 3 : 2]
   const bars = [
@@ -2784,7 +2778,7 @@ function paintDapple(
   }
 }
 
-// The rift through the gate, always night whatever the page theme: a whirlpool of brush strokes
+// The rift through the gate, always night whatever the hour: a whirlpool of brush strokes
 // under a ringed pole star, which is also the arbor the clock hands turn on. Motes orbit with
 // differential rotation and lay their strokes back along their own paths; hovering opens an inflow,
 // so the strokes lengthen into spirals and echoes of the dial sink into the pole. Comets fall past
@@ -2803,7 +2797,6 @@ const STAR_COLORS = ['#fffcf0', '#fffcf0', '#f1d67e', '#fdb2a2', '#cdd597', '#92
 const CREAM = hex('#fffcf0')
 const INK = hex('#100f0f')
 const GOLDEN = hex('#f1d67e')
-const SLATE = hex('#8090a6')
 const ROSE = hex('#e3a19a')
 const FLAME = ['#fffcf0', '#f1d67e', '#da702c', '#af3029'].map(hex)
 const LEAK = 58
@@ -3524,16 +3517,13 @@ export function setupLandscape(
     ],
   })
 
-  const themed = () => document.documentElement.getAttribute('saved-theme') === 'dark'
   // Everything about the light that needs the layers repainted: the palette's step through the
   // day, the twilight glow, which side the light comes from, the snowline, and the frost's retreat.
   const keyFor = (a: Almanac) => {
-    const dim = themed()
     const source = a.day > 0.2 ? a.sun : a.moon
     const s = season(a, weather)
     return [
-      dim,
-      Math.round((dim ? a.day * 0.3 : a.day) * 16),
+      Math.round(a.day * 16),
       Math.round(a.dusk * 8),
       source.across >= 0,
       a.day > 0.2,
@@ -3565,7 +3555,6 @@ export function setupLandscape(
   }
 
   const repaint = () => {
-    const dim = themed()
     al = almanac(new Date(), site)
     weather = readSky(site.weather)
     times = season(al, weather)
@@ -3576,7 +3565,7 @@ export function setupLandscape(
       poseHill(slopes)
     }
     lightKey = keyFor(al)
-    const [lit, day] = lighting(al, times, weather, dim)
+    const [lit, day] = lighting(al, times, weather)
     pal = lit
     dark = day < 0.5
     lume = 1 - smooth(0.25, 0.6, day)
@@ -3601,9 +3590,9 @@ export function setupLandscape(
       landBase = ranges.img.data.slice()
     }
     ruin = layer(grain)
-    // A light page's stones stay paper-coloured by day and go grey under the moon.
-    const stone = dim ? 1 : 0.5 + 0.5 * day
-    masonry = ruin && rasterRuin(ruin.img.data, ruin.g, temple, dim, bank, side, stone)
+    // The stones stay paper-coloured by day and go grey under the moon.
+    const stone = 0.5 + 0.5 * day
+    masonry = ruin && rasterRuin(ruin.img.data, ruin.g, temple, bank, side, stone)
     if (ruin) ruinBase = ruin.img.data.slice()
     if (masonry) {
       const { print } = masonry
@@ -3622,11 +3611,9 @@ export function setupLandscape(
         flowers,
         hair: pal.bark[dark ? 2 : 0],
       }
-      // A British Blue with copper eyes. On a light page it is the ruin's stone with a slate cast,
-      // so it still greys with the ruin under the moon. A dark page's stone is near black, so
-      // there it is half slate.
-      const slate = ([r, g, b]: RGB): RGB =>
-        dim ? mix([r, g, b], SLATE, 0.55) : [r * 0.68, g * 0.765, b * 0.91]
+      // A British Blue with copper eyes: the ruin's stone with a slate cast, so it greys with the
+      // ruin under the moon.
+      const slate = ([r, g, b]: RGB): RGB => [r * 0.68, g * 0.765, b * 0.91]
       catInk = {
         stone: tones(print.stone.map(slate)),
         moss: tones(pal.moss),
@@ -3808,7 +3795,6 @@ export function setupLandscape(
     if (hangBody(false)) paintAir()
   }
   window.addEventListener('resize', repaint)
-  document.addEventListener('themechange', repaint)
 
   // At most one stop-motion layer repaints per animation frame, whichever is most overdue, so the
   // ticks interleave instead of landing on the same frame.
@@ -4083,7 +4069,6 @@ export function setupLandscape(
       window.clearTimeout(hush)
       window.clearTimeout(purring)
       window.removeEventListener('resize', repaint)
-      document.removeEventListener('themechange', repaint)
     },
   }
 }
