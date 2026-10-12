@@ -1,4 +1,8 @@
+import { buildSelect, type Select } from '../controls/select'
+import { defaultCampSettings, campLimits, type CampSettings } from './camp-settings'
+import { animalLimits, defaultAnimalSettings, type AnimalSettings } from './pasture'
 import { defaultForestSettings, forestLimits, type ForestSettings } from './scenery'
+import { defaultTravelerSettings, travelerLimits, type TravelerSettings } from './traveler-settings'
 
 const fields: { key: keyof ForestSettings; label: string; name: string; suffix: string }[] = [
   { key: 'density', label: 'trees', name: 'Tree count', suffix: '' },
@@ -11,9 +15,43 @@ const fields: { key: keyof ForestSettings; label: string; name: string; suffix: 
   { key: 'dapple', label: 'dapple', name: 'Canopy dapple', suffix: '%' },
 ]
 
-const rangeProgress = (key: keyof ForestSettings, value: number) => {
-  const { min, max } = forestLimits[key]
+const animalFields: { key: keyof AnimalSettings; label: string; name: string }[] = [
+  { key: 'cow', label: 'cows', name: 'Cow count' },
+  { key: 'dog', label: 'dogs', name: 'Dog count' },
+  { key: 'cat', label: 'cats', name: 'Cat count' },
+  { key: 'goose', label: 'geese', name: 'Goose count' },
+  { key: 'bear', label: 'bears', name: 'Bear count' },
+]
+const travelerFields: { key: keyof TravelerSettings; label: string; name: string }[] = [
+  { key: 'walkers', label: 'walkers', name: 'Walker count' },
+  { key: 'climbers', label: 'climbers', name: 'Climber count' },
+  { key: 'rangers', label: 'park patrol', name: 'Park ranger count' },
+]
+const campFields: { key: keyof typeof campLimits; label: string; name: string; suffix?: string }[] =
+  [
+    { key: 'sites', label: 'camps', name: 'Campsite count' },
+    { key: 'tents', label: 'tents / camp', name: 'Tents per campsite' },
+    { key: 'builders', label: 'builders / camp', name: 'Builders per campsite' },
+  ]
+
+type RangeLimit = { min: number; max: number; step: number }
+const rangeProgress = ({ min, max }: RangeLimit, value: number) => {
   return `${((value - min) / (max - min)) * 100}%`
+}
+
+function rangeMarkup(
+  id: string,
+  group: 'forest' | 'animal' | 'traveler' | 'camp',
+  field: { key: string; label: string; name: string; suffix?: string },
+  value: number,
+  limit: RangeLimit,
+) {
+  const { key, label, name, suffix = '' } = field
+  const inputId = `${id}-${key}`
+  return `<div class="trail-tree-control">
+    <label for="${inputId}">${label}<output for="${inputId}" data-${group}-output="${key}">${value}${suffix}</output></label>
+    <input type="range" id="${inputId}" aria-label="${name}" aria-valuetext="${value}${suffix}" min="${limit.min}" max="${limit.max}" step="${limit.step}" value="${value}" data-${group}-field="${key}" style="--trail-control-progress: ${rangeProgress(limit, value)}"/>
+  </div>`
 }
 
 export function forestControlsMarkup(id: string) {
@@ -22,18 +60,54 @@ export function forestControlsMarkup(id: string) {
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2h2v2h2v2h2v2h-2v2h3v2h2v2h-4v2h5v3H3v-3h5v-2H4v-2h2v-2h3V8H7V6h2V4h2ZM11 19h2v4h-2Z"/></svg>
       <span class="trail-tree-hint" aria-hidden="true">click me</span>
     </button>
-    <div class="trail-tree-panel" id="${id}-forest" role="group" aria-label="Tree generation" hidden>
-      <div class="trail-tree-panel-head"><span>grove</span><span>l-system</span><button class="trail-tree-close" type="button" aria-label="Close tree settings"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button></div>
+    <div class="trail-tree-panel" id="${id}-forest" role="group" aria-label="Grove settings" hidden>
+      <div class="trail-tree-panel-head"><span>grove</span><span>l-system</span><button class="trail-tree-close g-icon-button" type="button" aria-label="Close tree settings"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button></div>
       <div class="trail-tree-controls">
         ${fields
-          .map(({ key, label, name, suffix }) => {
-            const { min, max, step } = forestLimits[key]
-            return `<div class="trail-tree-control">
-            <label for="${id}-${key}">${label}<output for="${id}-${key}" data-forest-output="${key}">${defaultForestSettings[key]}${suffix}</output></label>
-            <input type="range" id="${id}-${key}" aria-label="${name}" aria-valuetext="${defaultForestSettings[key]}${suffix}" min="${min}" max="${max}" step="${step}" value="${defaultForestSettings[key]}" data-forest-field="${key}" style="--trail-control-progress: ${rangeProgress(key, defaultForestSettings[key])}"/>
-          </div>`
-          })
+          .map(field =>
+            rangeMarkup(
+              id,
+              'forest',
+              field,
+              defaultForestSettings[field.key],
+              forestLimits[field.key],
+            ),
+          )
           .join('')}
+        <fieldset class="trail-control-section"><legend>animals</legend>
+          ${animalFields
+            .map(field =>
+              rangeMarkup(
+                id,
+                'animal',
+                field,
+                defaultAnimalSettings[field.key],
+                animalLimits[field.key],
+              ),
+            )
+            .join('')}
+        </fieldset>
+        <fieldset class="trail-control-section"><legend>campsites</legend>
+          ${campFields.map(field => rangeMarkup(id, 'camp', field, defaultCampSettings[field.key], campLimits[field.key])).join('')}
+          <div class="trail-camp-select" data-camp-select="light">light</div>
+          <div class="trail-camp-select" data-camp-select="visit">visit</div>
+          <button type="button" class="trail-camp-join g-button" data-camp-pack>pack up camp</button>
+          <button type="button" class="trail-camp-join g-button" data-camp-join aria-pressed="false" disabled>join camp</button>
+          <span class="trail-camp-connection" data-camp-connection role="status">connecting</span>
+        </fieldset>
+        <fieldset class="trail-control-section"><legend>people</legend>
+          ${travelerFields
+            .map(field =>
+              rangeMarkup(
+                id,
+                'traveler',
+                field,
+                defaultTravelerSettings[field.key],
+                travelerLimits[field.key],
+              ),
+            )
+            .join('')}
+        </fieldset>
       </div>
     </div>`
 }
@@ -42,6 +116,9 @@ export function mountForestControls(
   root: HTMLElement,
   signal: AbortSignal,
   onChange: (settings: ForestSettings) => void,
+  onAnimalsChange: (settings: AnimalSettings) => void,
+  onTravelersChange: (settings: TravelerSettings) => void,
+  onCampsChange: (settings: CampSettings) => void,
   onOpen: () => void,
 ) {
   const toggle = root.querySelector<HTMLButtonElement>('.trail-tree-toggle')
@@ -49,6 +126,9 @@ export function mountForestControls(
   const dismiss = root.querySelector<HTMLButtonElement>('.trail-tree-close')
   if (!toggle || !panel || !dismiss) throw new Error('Tree controls are incomplete')
   const settings = { ...defaultForestSettings }
+  const animals = { ...defaultAnimalSettings }
+  const travelers = { ...defaultTravelerSettings }
+  const camps = { ...defaultCampSettings }
   const close = () => {
     panel.hidden = true
     toggle.setAttribute('aria-expanded', 'false')
@@ -68,6 +148,27 @@ export function mountForestControls(
     },
     { signal },
   )
+  // Sliders and selects keep their navigation keys from reaching the page.
+  panel.addEventListener(
+    'keydown',
+    event => {
+      if (
+        [
+          'ArrowLeft',
+          'ArrowRight',
+          'ArrowUp',
+          'ArrowDown',
+          'Home',
+          'End',
+          'PageUp',
+          'PageDown',
+        ].includes(event.key)
+      ) {
+        event.stopPropagation()
+      }
+    },
+    { signal },
+  )
   toggle.addEventListener(
     'click',
     () => {
@@ -81,42 +182,120 @@ export function mountForestControls(
     },
     { signal },
   )
-  for (const { key, suffix } of fields) {
-    const input = panel.querySelector<HTMLInputElement>(`[data-forest-field="${key}"]`)
-    const output = panel.querySelector<HTMLOutputElement>(`[data-forest-output="${key}"]`)
-    if (!input || !output) throw new Error('Tree slider is incomplete')
+  const mountRange = (
+    group: 'forest' | 'animal' | 'traveler' | 'camp',
+    key: string,
+    limit: RangeLimit,
+    suffix: string,
+    changed: (value: number) => void,
+  ) => {
+    const input = panel.querySelector<HTMLInputElement>(`[data-${group}-field="${key}"]`)
+    const output = panel.querySelector<HTMLOutputElement>(`[data-${group}-output="${key}"]`)
+    if (!input || !output) throw new Error('Grove slider is incomplete')
     input.addEventListener(
       'input',
       () => {
-        const { min, max } = forestLimits[key]
-        settings[key] = Math.max(min, Math.min(max, Math.round(input.valueAsNumber)))
-        output.value = `${settings[key]}${suffix}`
+        const value = Math.max(limit.min, Math.min(limit.max, Math.round(input.valueAsNumber)))
+        output.value = `${value}${suffix}`
         input.setAttribute('aria-valuetext', output.value)
-        input.style.setProperty('--trail-control-progress', rangeProgress(key, settings[key]))
-        onChange({ ...settings })
-      },
-      { signal },
-    )
-    input.addEventListener(
-      'keydown',
-      event => {
-        if (
-          [
-            'ArrowLeft',
-            'ArrowRight',
-            'ArrowUp',
-            'ArrowDown',
-            'Home',
-            'End',
-            'PageUp',
-            'PageDown',
-          ].includes(event.key)
-        ) {
-          event.stopPropagation()
-        }
+        input.style.setProperty('--trail-control-progress', rangeProgress(limit, value))
+        changed(value)
       },
       { signal },
     )
   }
-  return { toggle, close, isOpen: () => !panel.hidden }
+  const mountSelect = <T>(
+    name: string,
+    label: string,
+    options: { value: T; label: string }[],
+    selected: T,
+    onSelect: (value: T) => void,
+  ) => {
+    const host = panel.querySelector<HTMLElement>(`[data-camp-select="${name}"]`)
+    if (!host) throw new Error('Camp select is incomplete')
+    const select: Select<T> = buildSelect({
+      id: `${panel.id}-${name}`,
+      label,
+      groups: [{ options }],
+      selected,
+      onSelect,
+    })
+    host.querySelector('.g-select')?.remove()
+    host.append(select.element)
+    return select.mount()
+  }
+  const unmountLight = mountSelect<CampSettings['light']>(
+    'light',
+    'Camp light',
+    [
+      { value: 'weather', label: 'local weather' },
+      { value: 'day', label: 'day preview' },
+      { value: 'night', label: 'night preview' },
+    ],
+    camps.light,
+    value => {
+      camps.light = value
+      onCampsChange({ ...camps })
+    },
+  )
+  let destination = 0
+  const destinationListeners = new Set<() => void>()
+  const chooseDestination = (value: number) => {
+    if (value === destination) return
+    destination = value
+    for (const listener of destinationListeners) listener()
+  }
+  // The visit list follows the campsite count, so the campsite slider rebuilds it.
+  let unmountDestination = () => {}
+  const mountDestination = (sites: number) => {
+    unmountDestination()
+    const selected = Math.min(destination, sites - 1)
+    unmountDestination = mountSelect(
+      'visit',
+      'Visit campsite',
+      Array.from({ length: sites }, (_, index) => ({ value: index, label: `camp ${index + 1}` })),
+      selected,
+      chooseDestination,
+    )
+    chooseDestination(selected)
+  }
+  mountDestination(camps.sites)
+  signal.addEventListener(
+    'abort',
+    () => {
+      unmountLight()
+      unmountDestination()
+    },
+    { once: true },
+  )
+  for (const { key, suffix } of fields)
+    mountRange('forest', key, forestLimits[key], suffix, value => {
+      settings[key] = value
+      onChange({ ...settings })
+    })
+  for (const { key } of animalFields)
+    mountRange('animal', key, animalLimits[key], '', value => {
+      animals[key] = value
+      onAnimalsChange({ ...animals })
+    })
+  for (const { key } of travelerFields)
+    mountRange('traveler', key, travelerLimits[key], '', value => {
+      travelers[key] = value
+      onTravelersChange({ ...travelers })
+    })
+  for (const { key, suffix = '' } of campFields)
+    mountRange('camp', key, campLimits[key], suffix, value => {
+      camps[key] = value
+      if (key === 'sites') mountDestination(value)
+      onCampsChange({ ...camps })
+    })
+  return {
+    toggle,
+    close,
+    isOpen: () => !panel.hidden,
+    destination: {
+      value: () => destination,
+      onChange: (listener: () => void) => destinationListeners.add(listener),
+    },
+  }
 }
