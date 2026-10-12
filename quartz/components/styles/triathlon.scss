@@ -18074,6 +18074,129 @@ a.tri-pop-date:hover {
   min-height: 1.5em;
   margin-block-start: 0.25rem;
 }
+
+.tri-run-stride-cadence > .tri-cax-frame--dual {
+  grid-template-columns: 2.4rem minmax(0, 1fr) 3rem;
+}
+
+.tri-run-stride-pace {
+  stroke: var(--gray);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+  opacity: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-run-stride-shift {
+  fill: none;
+  stroke: var(--dark);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+// Zero-length round-cap paths keep markers round under preserveAspectRatio="none".
+.tri-run-stride-centroid {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 7;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-run-stride-centroid--early {
+  stroke: var(--gray);
+}
+
+.tri-run-stride-centroid--late {
+  stroke: var(--tri-run);
+}
+
+.tri-run-stride-foot {
+  display: grid;
+  row-gap: 0.2rem;
+  min-width: 0;
+}
+
+.tri-run-stride-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  color: var(--gray);
+}
+
+.tri-run-stride-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--gray);
+  }
+}
+
+.tri-run-stride-key--late::before {
+  background: var(--tri-run);
+}
+
+.tri-run-stride-key--pace::before {
+  width: 0.9rem;
+  height: 0;
+  border-radius: 0;
+  border-top: 1px dashed var(--gray);
+  background: none;
+}
+
+.tri-run-stride-delta {
+  color: var(--dark);
+}
+
+.tri-run-heart-cost {
+  .tri-cycling-power-line:not(.tri-cycling-power-line--cumulative),
+  .tri-cycling-power-key--trailing::before {
+    border-color: var(--tri-run);
+    stroke: var(--tri-run);
+  }
+
+  .tri-run-cost-key--backdrop::before {
+    border-top: 6px solid color-mix(in srgb, var(--gray) 42%, transparent);
+  }
+}
+
+// Five keys do not fit beside the title on a narrow card; they take their own row under it.
+@container tri-day-card (max-width: 40rem) {
+  .tri-run-heart-cost > .tri-elev-cap {
+    flex-wrap: wrap;
+  }
+
+  .tri-run-heart-cost .tri-cycling-power-legend {
+    order: 1;
+    flex-basis: 100%;
+  }
+
+  .tri-run-heart-cost .tri-cycling-power-key {
+    white-space: nowrap;
+  }
+}
+
+.tri-run-cost-plot:focus-visible {
+  outline-color: var(--tri-run);
+}
+
+@media (pointer: coarse) {
+  .tri-run-cost-window {
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
 .tri-critical-power-mechanics {
   grid-column: 1 / -1;
   white-space: normal;

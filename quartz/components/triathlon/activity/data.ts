@@ -10,6 +10,13 @@ import { CYCLING_POWER_MAX_POINTS } from '../../../util/cycling-power'
 import { GARDEN_CYCLING_STAMINA_METHOD } from '../../../util/cycling-stamina'
 import { HEART_RATE_PHYSIOLOGY_METHOD } from '../../../util/heart-rate-physiology'
 import { isMyWindsockArchiveReference } from '../../../util/mywindsock-graphs'
+import {
+  RUN_GAP_MAX_MPS,
+  RUN_HEART_COST_MAX_POINTS,
+  RUN_HEART_RATE_LAG_S,
+  RUN_HEART_RATE_MAX_BPM,
+  RUN_HEART_RATE_MIN_BPM,
+} from '../../../util/run-mechanics'
 import { STAMINA_LEDGER_METHOD, STAMINA_LEDGER_OFFSET_METHOD } from '../../../util/stamina-ledger'
 import {
   isStravaDetailShardPath,
@@ -409,6 +416,74 @@ const isCyclingPowerTrace = (value: unknown, elapsedTimeS: number): boolean => {
       !nullableBounded(point.power30sWatts, 0, Number.MAX_VALUE) ||
       !nullableBounded(point.power5mWatts, 0, Number.MAX_VALUE) ||
       !nullableBounded(point.cumulativePowerWatts, 0, Number.MAX_VALUE)
+    )
+      return false
+    previousElapsed = point.elapsedS
+    previousDistance = point.distanceKm
+    return true
+  })
+}
+
+const isRunStrideCentroid = (value: unknown): boolean =>
+  value === null ||
+  (isRecord(value) &&
+    bounded(value.cadenceSpm, 100, 260) &&
+    bounded(value.strideM, 0.2, 3) &&
+    finite(value.seconds) &&
+    value.seconds > 0)
+
+const isRunStrideCadenceTrace = (value: unknown, elapsedTimeS: number): boolean =>
+  value == null ||
+  (isRecord(value) &&
+    value.source === 'strava' &&
+    value.method === 'speed-cadence-v1' &&
+    bounded(value.seconds, 0, elapsedTimeS + 60) &&
+    Array.isArray(value.cells) &&
+    value.cells.length > 0 &&
+    value.cells.every(
+      (cell: unknown) =>
+        isRecord(cell) &&
+        bounded(cell.cadenceSpm, 100, 260) &&
+        bounded(cell.strideM, 0.2, 3) &&
+        finite(cell.seconds) &&
+        cell.seconds > 0,
+    ) &&
+    isRunStrideCentroid(value.early) &&
+    isRunStrideCentroid(value.late))
+
+const isRunHeartCostTrace = (value: unknown, elapsedTimeS: number): boolean => {
+  if (value == null) return true
+  if (
+    !isRecord(value) ||
+    value.source !== 'strava' ||
+    value.method !== 'gap-per-beat-v1' ||
+    value.heartRateLagS !== RUN_HEART_RATE_LAG_S ||
+    !Array.isArray(value.points) ||
+    value.points.length < 2 ||
+    value.points.length > RUN_HEART_COST_MAX_POINTS
+  )
+    return false
+  let previousElapsed = -1
+  let previousDistance = 0
+  return value.points.every((point: unknown) => {
+    if (
+      !isRecord(point) ||
+      !bounded(point.elapsedS, 0, elapsedTimeS) ||
+      point.elapsedS <= previousElapsed ||
+      !finite(point.distanceKm) ||
+      point.distanceKm < previousDistance ||
+      !nullableFinite(point.elevationM) ||
+      !nullableBounded(point.gapSpeed30sMps, 0, RUN_GAP_MAX_MPS) ||
+      !nullableBounded(point.heartRate30sBpm, RUN_HEART_RATE_MIN_BPM, RUN_HEART_RATE_MAX_BPM) ||
+      !nullableBounded(point.gapSpeed5mMps, 0, RUN_GAP_MAX_MPS) ||
+      !nullableBounded(point.heartRate5mBpm, RUN_HEART_RATE_MIN_BPM, RUN_HEART_RATE_MAX_BPM) ||
+      !nullableBounded(
+        point.cumulativeMetersPerBeat,
+        0,
+        (RUN_GAP_MAX_MPS * 60) / RUN_HEART_RATE_MIN_BPM,
+      ) ||
+      (point.gapSpeed30sMps == null) !== (point.heartRate30sBpm == null) ||
+      (point.gapSpeed5mMps == null) !== (point.heartRate5mBpm == null)
     )
       return false
     previousElapsed = point.elapsedS
@@ -904,6 +979,9 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
       (value.sport !== 'bike' ||
         (value.cyclingPowerTrace.source === 'wahoo' && value.wahoo === undefined) ||
         (value.cyclingPowerTrace.source === 'strava' && value.deviceWatts !== true))) ||
+    !isRunStrideCadenceTrace(value.runStrideCadence, value.elapsedTimeS) ||
+    !isRunHeartCostTrace(value.runHeartCost, value.elapsedTimeS) ||
+    ((value.runStrideCadence != null || value.runHeartCost != null) && value.sport !== 'run') ||
     !nullableBounded(value.deviceTemperatureC, -90, 100) ||
     !nullableBounded(value.ambientTemperatureC, -90, 70) ||
     !isRouteTrace(value.route) ||

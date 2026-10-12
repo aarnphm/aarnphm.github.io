@@ -10,6 +10,8 @@ import type { DetailPayload } from './data'
 import { preferredActivityWind } from '../../../util/activity-wind'
 import { activityCyclingTorquePoints, buildCrankTorqueChart } from '../../../util/triathlon-card'
 import { activityCyclingPowerPoints, buildCyclingPowerChart } from '../../../util/triathlon-card'
+import { activityRunHeartCostPoints, buildRunHeartCostChart } from '../../../util/triathlon-card'
+import { buildRunStrideCadenceChart } from '../../../util/triathlon-card'
 import { activityWalkPowerPoints } from '../../../util/triathlon-card'
 import { activityCadenceScale } from '../../../util/triathlon-card'
 import { activityCadenceUnit } from '../../../util/triathlon-card'
@@ -28,6 +30,7 @@ import { buildActivity as buildActivityNode } from '../../../util/triathlon-card
 import { buildSwimPowerCurve as buildSwimPowerCurveNode } from '../../../util/triathlon-card'
 import { buildWalkPowerTrace as buildWalkPowerTraceNode } from '../../../util/triathlon-card'
 import { buildActivityIcon } from '../../../util/triathlon-card'
+import { buildActivityShareButton } from '../../../util/triathlon-card'
 import { buildAnalysisBar } from '../../../util/triathlon-card'
 import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../../../util/triathlon-card'
 import { buildBestEfforts as buildBestEffortsNode } from '../../../util/triathlon-card'
@@ -144,6 +147,12 @@ import {
   statRow,
   zoneDuo,
 } from './primitives'
+import {
+  runHeartCostReadout,
+  runHeartCostWindow,
+  setRunHeartCostWindow,
+  setupRunHeartCostCharts,
+} from './run-heart-cost'
 import {
   cyclingChartMode,
   runMetricMode,
@@ -317,6 +326,43 @@ const cyclingPowerScrubSurface = (
       ),
   }
 }
+
+const runHeartCostScrubSurface = (
+  wrap: HTMLElement,
+  d: StravaActivityDetail,
+  presentation: TriathlonPresentation,
+  onHover?: MapDetailOpts['onHover'],
+): ScrubSurface => {
+  const points = activityRunHeartCostPoints(d)
+  const wind = preferredActivityWind(d).samples
+  return {
+    wrap,
+    samples: points,
+    onHover: index => {
+      const routeIndex = activityScrubElapsedIndexAt(d.route, points[index].elapsedS)
+      if (routeIndex >= 0) onHover?.(d.route[routeIndex], routeIndex)
+    },
+    fmt: index =>
+      runHeartCostReadout(presentation, d, points[index], runHeartCostWindow(wrap), wind),
+  }
+}
+
+const RUN_STRIDE_TRACE_SELECTOR =
+  '[data-tri-trace="stride-length"], [data-tri-trace="estimated-stride-length"]'
+
+const strideScrubSurface = (
+  wrap: HTMLElement,
+  d: StravaActivityDetail,
+  presentation: TriathlonPresentation,
+): ScrubSurface => ({
+  wrap,
+  samples: d.route,
+  fmt: i => {
+    const p = d.route[i]
+    const stride = runStrideLengthValue(d, p)
+    return `${scrubDist(presentation, p.d, d.sport)} · ${stride == null ? '—' : formatStrideLength(presentation, stride)}`
+  },
+})
 
 const walkPowerScrubSurface = (
   wrap: HTMLElement,
@@ -1081,6 +1127,12 @@ export const renderMapDetail = (
   const wrap = el('section', 'tri-act tri-act--expanded')
   const head = el('div', 'tri-act-head')
   head.appendChild(buildActivityIcon(domF, d))
+  const share = buildActivityShareButton(domF, d)
+  if (share) {
+    const actions = el('div', 'tri-act-head-actions')
+    actions.append(share)
+    head.append(actions)
+  }
   wrap.appendChild(head)
 
   const stats = el('table', 'tri-act-stats')
@@ -1161,6 +1213,7 @@ export const renderMapDetail = (
       mount: () => {
         const cleanupPowerTicks = setupPowerCurveTicks(wrap)
         const cleanupCyclingPower = setupCyclingPowerCharts(wrap, presentation, d)
+        const cleanupRunHeartCost = setupRunHeartCostCharts(wrap, presentation, d)
         const controller = linkScrub(
           presentation,
           wrap,
@@ -1188,6 +1241,7 @@ export const renderMapDetail = (
         return () => {
           cleanupPowerTicks()
           cleanupCyclingPower()
+          cleanupRunHeartCost()
           controller?.dispose()
         }
       },
@@ -1236,7 +1290,10 @@ export const renderMapDetail = (
     cleanupPowerTicks = null
     const existingCyclingChartMode = cyclingChartMode(wrap)
     const existingPowerWindow = cyclingPowerWindow(
-      zoneBox.querySelector<HTMLElement>('.tri-cycling-power'),
+      zoneBox.querySelector<HTMLElement>('.tri-cycling-power:not(.tri-run-heart-cost)'),
+    )
+    const existingRunCostWindow = runHeartCostWindow(
+      zoneBox.querySelector<HTMLElement>('.tri-run-heart-cost'),
     )
     const spec = specs[active]
     const profile = spec.profile(graphDomain)
@@ -1247,6 +1304,10 @@ export const renderMapDetail = (
     if (torque) zoneBox.appendChild(torque)
     const cyclingPower = buildCyclingPowerChart(domF, d, graphDomain)
     if (cyclingPower) zoneBox.appendChild(cyclingPower)
+    const strideChart = buildRunStrideCadenceChart(domF, d, null, graphDomain)
+    if (strideChart) zoneBox.appendChild(strideChart)
+    const runHeartCost = buildRunHeartCostChart(domF, d, graphDomain)
+    if (runHeartCost) zoneBox.appendChild(runHeartCost)
     const environment = buildEnvironmentAnalysisNode(domF, d)
     if (environment) zoneBox.appendChild(environment)
     const windGraphs = buildMyWindsockGraphs(domF, d)
@@ -1280,6 +1341,17 @@ export const renderMapDetail = (
     if (cyclingPower instanceof HTMLElement) {
       setCyclingPowerWindow(cyclingPower, existingPowerWindow, presentation)
       linkedSurfaces.push(cyclingPowerScrubSurface(cyclingPower, d, presentation, opts?.onHover))
+    }
+    const strideTrace =
+      strideChart instanceof HTMLElement
+        ? strideChart.matches(RUN_STRIDE_TRACE_SELECTOR)
+          ? strideChart
+          : strideChart.querySelector<HTMLElement>(RUN_STRIDE_TRACE_SELECTOR)
+        : null
+    if (strideTrace) linkedSurfaces.push(strideScrubSurface(strideTrace, d, presentation))
+    if (runHeartCost instanceof HTMLElement) {
+      setRunHeartCostWindow(runHeartCost, existingRunCostWindow, presentation)
+      linkedSurfaces.push(runHeartCostScrubSurface(runHeartCost, d, presentation, opts?.onHover))
     }
     if (mounted) mountProfile()
   }
@@ -1398,11 +1470,13 @@ export const renderMapDetail = (
       mounted = true
       mountProfile()
       const cleanupCyclingPower = setupCyclingPowerCharts(wrap, presentation, d)
+      const cleanupRunHeartCost = setupRunHeartCostCharts(wrap, presentation, d)
       tablist.addEventListener('click', onTabClick)
       tablist.addEventListener('keydown', onTabKeydown)
       return () => {
         mounted = false
         cleanupCyclingPower()
+        cleanupRunHeartCost()
         tablist.removeEventListener('click', onTabClick)
         tablist.removeEventListener('keydown', onTabKeydown)
         analysisController?.dispose()
@@ -1659,15 +1733,9 @@ export const renderDetail = (
       trace.dataset.triTrace === 'stride-length' ||
       trace.dataset.triTrace === 'estimated-stride-length'
     )
-      surfaces.push({
-        wrap: trace,
-        samples: routeSamples,
-        fmt: i => {
-          const p = d.route[i]
-          const stride = runStrideLengthValue(d, p)
-          return `${scrubDist(presentation, p.d, d.sport)} · ${stride == null ? '—' : formatStrideLength(presentation, stride)}`
-        },
-      })
+      surfaces.push(strideScrubSurface(trace, d, presentation))
+    else if (trace.dataset.triTrace === 'run-heart-cost')
+      surfaces.push(runHeartCostScrubSurface(trace, d, presentation))
     else if (trace.dataset.triTrace === 'ground-contact-time')
       surfaces.push({
         wrap: trace,
@@ -1801,10 +1869,12 @@ export const renderDetail = (
     mount: () => {
       if (!interactive) return () => {}
       const cleanupCyclingPower = setupCyclingPowerCharts(wrap, presentation, d)
+      const cleanupRunHeartCost = setupRunHeartCostCharts(wrap, presentation, d)
       const routeMarker = wrap.querySelector<SVGElement>('.tri-route-cursor')
       const controller = linkScrub(presentation, wrap, routeMarker, surfaces, d.route, d)
       return () => {
         cleanupCyclingPower()
+        cleanupRunHeartCost()
         controller?.dispose()
       }
     },

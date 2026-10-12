@@ -75,6 +75,12 @@ import {
 import { localDateTimeUtcMs, localIsoDay } from '../../util/local-date'
 import { latestProviderSync } from '../../util/provider-sync'
 import { runBestEfforts } from '../../util/run-best-efforts'
+import {
+  buildRunHeartCostTrace,
+  buildRunStrideCadenceTrace,
+  type RunHeartCostTrace,
+  type RunStrideCadenceTrace,
+} from '../../util/run-mechanics'
 import { DEFAULT_GEAR_CASSETTE } from '../../util/triathlon-gear-ratio'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
 import { buildWalkPowerEstimate, type WalkPowerEstimate } from '../../util/walk-power'
@@ -684,6 +690,8 @@ export interface StravaActivityDetail {
   cyclingTorque?: CyclingTorqueTrace | null
   cyclingIntensityTrace?: CyclingIntensityTrace | null
   cyclingPowerTrace?: CyclingPowerTrace | null
+  runStrideCadence?: RunStrideCadenceTrace | null
+  runHeartCost?: RunHeartCostTrace | null
   sport: ActivityKind
   name: string
   date: string
@@ -4933,6 +4941,11 @@ export function buildPayload(
       for (const effort of detail.bestEfforts?.power ?? [])
         if (effort.startElapsedS != null && effort.endElapsedS != null)
           effort.mechanics = cyclingMechanics(samples, effort.startElapsedS, effort.endElapsedS)
+    }
+    if (sport === 'run') {
+      const originalStreams = originalCache.streams?.[id]
+      detail.runStrideCadence = buildRunStrideCadenceTrace(originalStreams)
+      detail.runHeartCost = buildRunHeartCostTrace(originalStreams, detail.elapsedTimeS)
     }
     const computerOverride = trackingById.get(a.id)?.computer?.trim()
     if (sport === 'bike' && computerOverride) detail.computerOverride = computerOverride
