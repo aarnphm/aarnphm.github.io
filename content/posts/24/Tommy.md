@@ -3,7 +3,7 @@ date: '2024-12-27'
 description: and a year full of shenanigans and possibilities.
 id: Tommy
 layout: letter
-modified: 2026-06-05 15:08:08 GMT-04:00
+modified: 2026-10-11 21:19:11 GMT-04:00
 noindex: true
 signature: with love and appreciation - Aaron
 tags:
@@ -15,19 +15,16 @@ title: to tommy
 
 ![[posts/images/message-with-tommy.webp|from tommy]]
 
-I'm not sure what plans the universe has for either of us. All I know is we crossed paths this year, and it feels
-like that happened for a reason. I don't remember the first time I tweeted at you, or how exactly you became "Tommy from Twitter," but I do remember our first walk-and-talk,
+We crossed paths this year. I don't remember the first time I tweeted at you, or how exactly you became "Tommy from Twitter," but I do remember our first walk-and-talk,
 the simple clarity of it. We wandered around, seeing each other as we were, and then everything else just fell into place.
 
-Meeting you has been the highlight of my year. You made me feel at home here in Canada, at ease. I’m grateful for that. I’m grateful because you remind me that
-love—the real kind, the kind that’s full of intention—exists in the quiet, everyday moments. It’s a small miracle to keep choosing each other, over and over,
-just for the sake of seeing someone as they are. To me, that’s the purest form of love, even if we can’t fully explain it.
+Meeting you has been the highlight of my year. You made me feel at home here in Canada, at ease. I’m grateful for that. It’s a small miracle to keep choosing each other, over and over,
+just for the sake of seeing someone as they are.
 
-You laugh so freely, and that reminds me that laughter is a type of grace. It’s the brief permission we give ourselves not to cling so tightly, not to overthink every little stumble. It’s a way to say,
-"Yeah, life is big and strange and we’re all just figuring it out, but isn't that sort of funny?" I see you laugh at your own mistakes, at the unpredictable tangles life throws at you, and suddenly
-it’s easier for me to do the same. When we laugh together, we bridge the space between us. We say, without words, that we understand each other.
+You laugh so freely. I see you laugh at your own mistakes, at the unpredictable tangles life throws at you, and suddenly
+it’s easier for me to do the same.
 
-I want you to know how much that means to me. In these small acts—laughing at spills, cheering from the front row, sending DMs—you've given me a sense of belonging. It's love, I think, in its most natural form. And for that, I thank you.
+I want you to know how much that means to me. In these small acts (laughing at spills, cheering from the front row, sending DMs) you've given me a sense of belonging. It's love, I think, in its most natural form. And for that, I thank you.
 
 We don't know everything, but all we can ask of each other is to do our best and make life easier for the people around us. Everyone is your biggest fan. I'm one of them. If there are none, I'm still _your biggest fan_.
 

@@ -3,7 +3,7 @@ date: '2025-05-30'
 description: with love and prosperity - Aaron
 id: Brenda
 layout: letter
-modified: 2026-06-05 15:08:09 GMT-04:00
+modified: 2026-10-11 21:28:01 GMT-04:00
 noindex: true
 tags:
   - friend
@@ -15,11 +15,11 @@ title: to brenda
 
 Hamilton, May 30th
 
-The sidewalk exhales noon—heat‑plumes writhe
+The sidewalk exhales noon: heat‑plumes writhe
 like slow dragons under iron lids.
 Bricks sweat a milky glaze; chalk laughter
 ghosts across the wall, half‑smiled, half‑gone.
-A pin‑up ballerina—knee cocked—hovers,
+A pin‑up ballerina, knee cocked, hovers,
 permanently mid‑flight, never free.
 
 Outside, maples empty their pockets.
@@ -30,18 +30,13 @@ tumbles in slow-motion. Each spin
 a subtitle for change we can’t read.
 
 Inside: bar‑light, refrigerant cool.
-The counter—Carrara moonstone—veined
+The counter, Carrara moonstone, veined
 like late‑October river ice.
 
 You stand across from me. That smile
 arrives first. Between us:
 two espresso martinis, the quiet fact
 of your empty Monday mornings.
-
-Like this city’s noon—a kiln of gold
-that bakes the pavement, thick and old—
-so the world can scorch, a job dissolved
-to ash, where certainties devolved.
 
 They wanted you smaller.
   Spreadsheet-sized.
@@ -54,15 +49,6 @@ no hollow suit to be tried on,
 no doll sewn shut for want or need,
 no rubber heart for mouths to feed.
 
-I saw you first where glasses chimed—
-a laugh like rain through August’s grime.
-Your smile: a daisy in the blaze.
-
-They said show your hand, prove it’s filled!
-Yours was open, earthward spilled—
-not empty. A fallen leaf
-trusting decay breeds no grief.
-
 Let contracts burn. You wear no disguise.
 Naked as paper? Good. We trace
 the map your courage etches there.
@@ -70,11 +56,10 @@ the map your courage etches there.
 See how the maple sheds its crown?
 Red-gold surrender. Drifting down
 to nurse the soil. That’s how you fall:
-not failure. A sacred call
   to
     root again.
 
-I’ve been watching trees—how they know
+I’ve been watching trees, how they know
 to let go when holding on
 becomes the heavier burden. Just seasons
 doing what they do.
@@ -96,13 +81,12 @@ through the compartmentalized day.
 
 So let May’s fever fret.
 You’re spring’s own verb, releafing.
-You are the light you bring.
 
 When closing time fractures the candle,
 we shoulder jackets leaf-brown, step outside.
 Streetlight combs orange through the debris.
 Every fluttering scrap
-  feels like a letter to tomorrow—
+  feels like a letter to tomorrow,
   unsigned.
 We pocket it just the same.
 ```

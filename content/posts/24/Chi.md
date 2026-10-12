@@ -3,7 +3,7 @@ date: '2024-12-27'
 description: an unexpected turn of events.
 id: Chi
 layout: letter
-modified: 2026-06-05 15:08:08 GMT-04:00
+modified: 2026-10-11 21:17:08 GMT-04:00
 noindex: true
 signature: with love and prosperity - Aaron
 tags:
@@ -21,14 +21,12 @@ This year's been something else, hasn't it? You went through hell and back. I wa
 Funny how friendship works now. Two people watching tiny screens, separated by miles, but somehow getting closer.
 You told me once about feeling like everything was falling apart.
 I remember typing back "same." We never used to talk like this before. Now here we are, sharing
-every small disaster, every tiny victory. The kind of stuff that seems meaningless but isn't.
+every small disaster, every tiny victory.
 
-Maybe one day we'll be old, sitting on a ranch somewhere, telling our kids stories about this year. About how we found each other again through the dumbest things - Formula 1, social media, late-night texts.
-Simone Weil once wrote, "Attention is the rarest and purest form of generosity." That's what we did, I guess. Paid attention. :smile:
+Maybe one day we'll be old, sitting on a ranch somewhere, telling our kids stories about this year. About how we found each other again through the dumbest things: Formula 1, social media, late-night texts.
+Simone Weil once wrote, in a 1942 letter to Joë Bousquet, "Attention is the rarest and purest form of generosity." That's what we did, I guess. Paid attention. :smile:
 
-This was not the year either of us planned. We are still here. We are still watching those cars go in circles. We are still sending each other stupid memes. That is a friendship I recognize.
-
-Sometimes new friendship begins with one awkward hello at a bad party. We kept saying yes to those openings. We kept paying attention.
+This was not the year either of us planned. We are still watching those cars go in circles.
 
 I am glad we stayed close through a hard year.
 
