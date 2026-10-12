@@ -542,6 +542,8 @@ const drawScene = async () => {
   forestControls.toggle.style.left = `${layout.camp.x - 92}px`
   forestControls.toggle.style.top = `${layout.camp.y + 10}px`
   scene.style.setProperty('--trail-camp-arrival', '0ms')
+  // Paint the camp before backdrop, route sampling, and forest generation occupy the main thread.
+  if (!(await yieldRender(renderSignal, true))) return
   const backdrop = scene.querySelector('[data-trail-backdrop-container]')
   if (backdrop) {
     const entrances = trailIds.flatMap(id => {
@@ -558,8 +560,6 @@ const drawScene = async () => {
       entrances,
     )
   }
-  // Paint the camp before route sampling and forest generation occupy the main thread.
-  if (!(await yieldRender(renderSignal, true))) return
   const readingPaths = svg.querySelector('[data-pet-walk-paths]')
   if (readingPaths)
     readingPaths.innerHTML = layout.readingRoutes
