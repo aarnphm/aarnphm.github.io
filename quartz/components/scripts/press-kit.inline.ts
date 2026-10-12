@@ -114,22 +114,17 @@ function readPrefs() {
   try {
     const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? 'null') as {
       format?: FormatKey
-      theme?: ThemeKey
       art?: boolean
     } | null
     if (saved?.format && FORMAT_KEYS.includes(saved.format)) format = saved.format
     if (typeof saved?.art === 'boolean') show.art = saved.art
-    if (saved?.theme && THEME_KEYS.includes(saved.theme)) {
-      theme = saved.theme
-      return
-    }
   } catch {}
   theme = document.documentElement.getAttribute('saved-theme') === 'dark' ? 'encre' : 'papier'
 }
 
 function writePrefs() {
   try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify({ format, theme, art: show.art }))
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ format, art: show.art }))
   } catch {}
 }
 
