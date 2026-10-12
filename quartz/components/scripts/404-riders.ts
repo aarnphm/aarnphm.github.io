@@ -1064,7 +1064,7 @@ export function stepPark(p: Park, dt: number, voices: Voices) {
 // first-aid hut with an arm in a sling. After hours, locals up the lift track with their head
 // torches.
 export function posePark(p: Park) {
-  // Each resize or change of theme poses it again, and the same riders come back in the same kit.
+  // Each resize or change of light poses it again, and the same riders come back in the same kit.
   p.rng = mulberry(p.seed)
   p.ids = 0
   p.parties = 0
