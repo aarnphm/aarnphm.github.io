@@ -49,8 +49,6 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
     },
     async *partialEmit(_ctx, _content, _resources) {},
     async *emit(ctx, content, resources) {
-      if (ctx.argv.watch && !ctx.argv.force) return []
-
       const { cfg } = ctx
 
       const allFiles = contentDataFor(content)
