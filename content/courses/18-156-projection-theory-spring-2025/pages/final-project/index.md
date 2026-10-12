@@ -43,7 +43,7 @@ The final project will be a 5-10 page paper. There will be a first draft due in 
 
 - Optional question from problem set 4, related to the large sieve. To pursue this direction, it would be helpful to have a little background in restriction theory in Fourier analysis. In class, we used the large sieve to prove the following estimate.
 
-> **Theorem 1.** _If_ \\(X \subset \[N]\\) _and_ \\(| \pi_p(X) | \le (0.99) p\\) _for every_ \\(p \in P\_{N^{1/2}}\\)_, then_ \\(|X| \lessapprox N^{1/2}\\)
+> **Theorem 1.** _If_ \\(X \subset \[N]\\) _and_ \\(| \pi*p(X) | \le (0.99) p\\) \_for every* \\(p \in P\_{N^{1/2}}\\)_, then_ \\(|X| \lessapprox N^{1/2}\\)
 
 > This theorem is essentially sharp when \\(X\\) is the set of squares. We could explore what happens if we know \\(| \pi_p(X) \le (0.99) p\\) for every \\(p \in P\_{N^\alpha}\\) for some other exponent \\(\alpha\\), such as \\(\alpha = 1/4\\). Or we could explore what happens if we replace \\(| \pi_p(X)| \le (0.99) p\\) by a stronger bound like \\(|\pi_p(X)| \le N^{1/4}\\) for every \\(p \in P\_{N^{1/2}}\\).
 

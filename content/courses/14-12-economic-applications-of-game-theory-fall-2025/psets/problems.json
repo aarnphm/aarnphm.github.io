@@ -66,11 +66,7 @@
           "title": "Nash equilibria in extensive-form games (Exercise 5.6)",
           "statement": "**(Nash equilibria in extensive form games).** Exercise 5.6."
         },
-        {
-          "n": 2,
-          "title": "Tariffs (Exercise 6.1)",
-          "statement": "**(Tariffs).** Exercise 6.1."
-        },
+        { "n": 2, "title": "Tariffs (Exercise 6.1)", "statement": "**(Tariffs).** Exercise 6.1." },
         {
           "n": 3,
           "title": "Equilibrium strategies in zero-sum games are security strategies",
@@ -158,16 +154,8 @@
           "title": "Counting SPNE in a twice-repeated stag hunt",
           "statement": "**(Stag hunt).** Recall the stag hunt game from class in which each player chooses to hunt stag (S) or hare (H):\n\n|     | $S$     | $H$     |\n| --- | ------- | ------- |\n| $S$ | $2, 2$  | $0, 1$  |\n| $H$ | $1, 0$  | $1, 1$  |\n\nConsider the repeated stag-hunt game with periods $t = 0, 1$.\n\n(a) Count the number of pure subgame perfect Nash equilibria in which $(S, S)$ is played in period 0. Justify your answer.\n\n(b) Count the number of pure subgame perfect Nash equilibria in which $(S, H)$ is played in period 0. Justify your answer."
         },
-        {
-          "n": 3,
-          "title": "Exercise 12.17",
-          "statement": "Exercise 12.17."
-        },
-        {
-          "n": 4,
-          "title": "Exercise 12.26",
-          "statement": "Exercise 12.26."
-        }
+        { "n": 3, "title": "Exercise 12.17", "statement": "Exercise 12.17." },
+        { "n": 4, "title": "Exercise 12.26", "statement": "Exercise 12.26." }
       ]
     },
     {
@@ -187,16 +175,8 @@
           "title": "Group project with a noisy signal of the state",
           "statement": "**(Group project).** We consider a variant of the group project game from class. There are two players, labeled $i = 1, 2$. Simultaneously, each player $i$ chooses effort $e_i \\in \\{0, 1\\}$. Exerting effort costs each player 1 unit (of utility). The project succeeds if and only if both players exert effort; the value of a project success depends on the state $\\theta$ of the project. Formally, player $i$'s utility is given by\n\n$$\nu_i(e_1, e_2, \\theta) = \\theta e_1 e_2 - e_i.\n$$\n\nThe state $\\theta$ of the project can be either $\\theta_B = 1/2$ or $\\theta_G = 3/2$. The state $\\theta$ equals $\\theta_G$ with probability $\\pi$, where $0 < \\pi < 1$. Player 1 observes the state of the project. Player 2 does not observe the state of the project, but she does observe a signal $t_2$ about the state $\\theta$ (player 1 does not observe this signal). The signal $t_2$ can take two values, denoted $b$ and $g$. The accuracy of the signal is $\\rho$, where $\\rho \\ge 1/2$. That is, if $\\theta = \\theta_B$, then $t_2 = b$ with probability $\\rho$ and $t_2 = g$ with probability $1 - \\rho$. If $\\theta = \\theta_G$, then $t_2 = g$ with probability $\\rho$ and $t_2 = b$ with probability $1 - \\rho$. The parameters $\\pi$ and $\\rho$, as well as the description above, is common knowledge.\n\n(a) How many pure strategies does each player have?\n\n(b) The set of Bayesian Nash equilibria of this game depends on the values of $\\pi$ and $\\rho$. Which pure strategy profiles $s = (s_1, s_2)$ are Bayesian Nash equilibria for *some* values of $\\pi$ and $\\rho$? Justify your answer.\n\n(c) For each strategy profile $s = (s_1, s_2)$ in your answer to part (b), characterize the values of $(\\pi, \\rho) \\in (0, 1) \\times [1/2, 1]$ for which $s$ is a Bayesian Nash equilibrium."
         },
-        {
-          "n": 3,
-          "title": "Exercise 14.16",
-          "statement": "Exercise 14.16."
-        },
-        {
-          "n": 4,
-          "title": "Exercise 14.26",
-          "statement": "Exercise 14.26."
-        }
+        { "n": 3, "title": "Exercise 14.16", "statement": "Exercise 14.16." },
+        { "n": 4, "title": "Exercise 14.26", "statement": "Exercise 14.26." }
       ]
     },
     {
