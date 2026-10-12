@@ -3,7 +3,7 @@ date: '2024-12-27'
 description: and a year of reconnection.
 id: Simone
 layout: letter
-modified: 2026-06-05 15:08:08 GMT-04:00
+modified: 2026-10-11 21:19:02 GMT-04:00
 noindex: true
 signature: with warmth and friendship - Aaron.
 tags:
@@ -13,7 +13,7 @@ title: to simone
 
 ![[posts/images/5D8F9FB5-8F82-423F-BB67-7B5CFBD9F7F2.webp|eigenvalued by mr. oppenheimer]]
 
-I'm glad that we talked more this year. We were both busy and never quite found time to hang out together, so I am glad I got to know you more.
+I'm glad that we talked more this year. We were both busy and never quite found time to hang out together, but I got to know you more.
 
 I love that we got to see each other once in a blue moon, just to catch up.
 
@@ -28,7 +28,7 @@ I believe wholeheartedly that you can do it. I know family is hard. Sometimes it
 Here is some reading for the break that I think you might like:
 
 - [in a thousand year](https://substack.com/home/post/p-153398563)
-- Bill Watterson’s (author of Calvin & Hobbes) [commencement speech](https://web.mit.edu/jmorzins/www/C-H-speech.html?curius=1573) at Kenyon College
+- Bill Watterson’s (author of Calvin & Hobbes) [commencement speech](https://web.mit.edu/jmorzins/www/C-H-speech.html?curius=1573) at Kenyon College (1990)
 - Alain de Botton's [Essays in Love](https://www.alaindebotton.com/essays-in-love/)
 
 [^sign]

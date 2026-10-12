@@ -3,7 +3,7 @@ date: '2024-12-27'
 description: and an "uneventful" year.
 id: Jesse
 layout: letter
-modified: 2026-06-05 15:08:08 GMT-04:00
+modified: 2026-10-11 21:17:54 GMT-04:00
 noindex: true
 signature: from a brother - Aaron
 tags:
@@ -17,9 +17,13 @@ What an "uneventful" year it has been. Surely we haven't gone through any major 
 
 All jokes aside, I'm glad we connected and got closer this year. I feel like I know you better as a person and as a friend.
 
-I enjoyed our late-night chats, the endless riff on what it meant to be a "man" in this day and age. To quote Marcus Aurelius (your favorite author):
+I enjoyed our late-night chats, the endless riff on what it meant to be a "man" in this day and age.
 
-> Let men see, let them know, a real man, who lives as he was meant to live
+To quote Marcus Aurelius (your favorite author):
+
+> Let them see, let them know, a real man, who lives as he was meant to live
+>
+> _Meditations_ 10.15
 
 Hope you are enjoying your well-deserved breaks. See you folks in the new year!
 
