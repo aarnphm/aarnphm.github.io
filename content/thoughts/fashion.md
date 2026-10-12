@@ -2,7 +2,7 @@
 date: '2024-02-19'
 description: a hobby, and definition of personal taste.
 id: fashion
-modified: 2026-06-05 15:08:27 GMT-04:00
+modified: 2026-10-12 11:02:00 GMT-04:00
 tags:
   - seed
 title: fashion.
@@ -20,7 +20,7 @@ Keep it simple, and minimalistic. **Less is always more**.
 
 See also: [[thoughts/papers/Fashion and the Homospectatorial Look.pdf|Fashion and the Homospectatorial Look]] and [this video](https://www.youtube.com/watch?v=DA2PqBAyGqI&t=454s&ab_channel=oliSUNvia)
 
-Fuss's arguments suggest that contemporary fashion photography does not simply cater to a heterosexual male gaze but also tacitly produces a gaze that, while regulating homosexual desire, provides opportunities for its expression. She argues that fashion photography often presents women in a manner that is eroticized, which can be seen as catering to a male gaze. However, this same eroticization can also appeal to women, creating a homospectatorial look where women are viewing other women through a lens that is both homoerotic and commodified.
+Diana Fuss argues that women's fashion photography is addressed mostly to women, and that it invites them to look at other women's bodies with pleasure. The magazine frames that look as identification ("I want to look like her"), which keeps it from being read as desire ("I want her"). This framing lets homoerotic looking happen in public while keeping it unnamed, so the same images both open the look and regulate it. The eroticised poses do not need a male viewer to work.
 
 Plays well into spaces that open for more nuanced and subtle expression of [[thoughts/desire]] and [[thoughts/identity]].
 
@@ -28,7 +28,7 @@ Plays well into spaces that open for more nuanced and subtle expression of [[tho
 
 ## why fashion show matters, and why it doesn't.
 
-Similar to math, AI conference, it is a place for people to show off their work and get inspired. Legendary designers, with the likes of Ralph Lauren, Dean and Dan Caten, over the years has pretty much shaped and influenced how our jeans and causal style look like. Just look down to their pair of jeans, or slim-fit trousers you wear. Some of the crest or folded textures are inspired by probably one of these designers.
+Similar to math, AI conference, it is a place for people to show off their work and get inspired. Legendary designers, with the likes of Ralph Lauren, Dean and Dan Caten, over the years has pretty much shaped and influenced how our jeans and casual style look like. Just look down to their pair of jeans, or slim-fit trousers you wear. Some of the crest or folded textures are inspired by probably one of these designers.
 
 It matters in the sense it drives the industry, but also it doesn't matter because you can pretty much get the look or highlights of what is trendy from the internet, or social media, via "shortification" of videos and informations.
 
