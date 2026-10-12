@@ -612,12 +612,12 @@ body[data-pdf-embedded='course'] {
 .pdf-mark-card,
 .pdf-cite-card {
   display: grid;
-  gap: 0.4rem;
-  padding: 0.55rem 0.65rem;
+  gap: 0.6rem;
+  padding: 0.75rem 0.85rem;
   background: var(--light);
   border: 1px solid var(--pdf-line);
-  font-size: 0.82rem;
-  line-height: 1.45;
+  font-size: var(--text-ui);
+  line-height: 1.55;
 }
 
 .pdf-mark-card {
@@ -644,7 +644,7 @@ body[data-pdf-embedded='course'] {
   align-items: center;
   gap: 0.25rem 0.5rem;
   font-family: var(--codeFont);
-  font-size: 0.66rem;
+  font-size: var(--text-meta);
   color: var(--gray);
 
   a {
@@ -687,15 +687,18 @@ body[data-pdf-embedded='course'] {
 
 .pdf-mark-card-quote {
   margin: 0;
-  padding: 0;
+  padding: 0.45rem 0.6rem;
   border: 0;
+  background: var(--pdf-surface);
   color: var(--darkgray);
   font-family: var(--bodyFont);
-  font-style: italic;
+  font-size: var(--text-meta);
+  line-height: 1.55;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
   overflow: hidden;
+  overflow-wrap: anywhere;
 
   .pdf-mark-card[data-active='true'] & {
     display: block;
@@ -721,26 +724,40 @@ body[data-pdf-embedded='course'] {
   }
 }
 
+// Grows with its text (field-sizing, or the height MarkCard sets where that is unsupported); the
+// margin relayout follows through its ResizeObserver.
 .pdf-mark-card-input {
+  box-sizing: border-box;
+  display: block;
   width: 100%;
-  min-height: 5.5rem;
-  padding: 0.4rem 0.5rem;
-  resize: vertical;
+  min-height: calc(4lh + 1.2rem);
+  padding: 0.6rem 0.7rem;
+  resize: none;
+  overflow: hidden;
   border: 1px solid var(--pdf-line);
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--dark);
   font-family: var(--bodyFont);
-  font-size: 0.85rem;
-  line-height: 1.45;
+  font-size: var(--text-ui);
+  line-height: 1.55;
   field-sizing: content;
+
+  &::placeholder {
+    color: var(--gray);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: -1px;
+  }
 }
 
 .pdf-mark-card-error {
   margin: 0;
   color: $contra-ink;
   font-family: var(--codeFont);
-  font-size: 0.66rem;
+  font-size: var(--text-meta);
 }
 
 .pdf-mark-card-conflict {
@@ -756,15 +773,18 @@ body[data-pdf-embedded='course'] {
 
 .pdf-mark-card-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 0.15rem;
   min-width: 0;
   margin: 0;
-  padding: 0;
+  padding: 0.15rem;
   border: 1px solid var(--pdf-line);
 
   .pdf-reader-app & button {
     flex: none;
-    padding-inline: 0.125rem;
+    min-height: var(--pdf-control-height);
+    padding-inline: 0.4rem;
     border: 0;
     white-space: nowrap;
   }
