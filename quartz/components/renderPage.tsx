@@ -59,6 +59,7 @@ import {
   JSResourceToScriptElement,
   StaticResources,
 } from '../util/resources'
+import { isSlidePage } from '../util/section-icon'
 import { loadStravaPayloadSync } from '../util/strava-payload'
 import {
   findHeadingSectionBounds,
@@ -2747,8 +2748,7 @@ export function renderPage(
   const lang =
     (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split('-')[0] ?? 'en'
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? 'default'
-  const isSlides =
-    (componentData.fileData.frontmatter?.slides ?? false) && /\/slides\/\d+$/.test(slug)
+  const isSlides = isSlidePage(slug, componentData.fileData.frontmatter?.slides)
   const isFlashcards =
     (componentData.fileData.flashcards != null && slug.endsWith('/flashcards')) ||
     pageLayout === 'flashcards'

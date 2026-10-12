@@ -193,13 +193,475 @@ export function bucketHat(u: number, fill: string, ink = INK, band = PINK) {
   return `<path d="${poly(crown)}" style="fill:${fill}"/>${stroke(crown, pressure(68, 2.6 * u, 0.35), ink)}${stroke(ribbon, () => 4 * u, band)}${stroke(brim, pressure(71, 3.4 * u, 0.4), ink)}`
 }
 
+// A closed band around a centre line, `half(t)` wide to each side, for a ribbon, a loaf or a quill.
+export function ribbon(centre: readonly Pt[], half: (t: number) => number): Pt[] {
+  const n = centre.length - 1
+  const side = (sign: number) =>
+    centre.map(([x, y], i) => {
+      const [ax, ay] = centre[Math.max(0, i - 1)]
+      const [bx, by] = centre[Math.min(n, i + 1)]
+      const len = Math.hypot(bx - ax, by - ay) || 1
+      const h = sign * half(i / n)
+      return [x - ((by - ay) / len) * h, y + ((bx - ax) / len) * h] as const
+    })
+  return [...side(1), ...side(-1).reverse(), side(1)[0]]
+}
+
+// A closed shape in one colour inside a pen line.
+const filled = (pts: readonly Pt[], fill: string, width: (t: number) => number, ink: string) =>
+  `<path d="${poly(pts)}" style="fill:${fill}"/>${stroke(pts, width, ink)}`
+
+export const CRUST = '#fcc192'
+
+// Section outfits, in body radii like the mascot, drawn with a pen `w` wide (0.042 on the site
+// icons, where the body's own line is 0.055). The brand icons and the pet share them.
+
+// Triathlon: a sweatband round the brow, tied at the back with its tails flying.
+export function sweatband(w: number, ink = INK, band = PINK) {
+  const brow = Array.from({ length: 25 }, (_, i) => {
+    const x = -0.8 + (1.7 * i) / 24
+    return [x, -0.6 + 0.13 * (1 - x * x) + 0.05 * x] as const
+  })
+  const tails = (
+    [
+      [
+        [0.9, -0.57],
+        [1.18, -0.86],
+        [1.44, -0.8],
+      ],
+      [
+        [0.9, -0.5],
+        [1.2, -0.44],
+        [1.4, -0.24],
+      ],
+    ] as const
+  )
+    .map(([a, c, b], i) =>
+      filled(
+        hand(
+          ribbon(curve(a, c, b, 24), t => 0.075 * (1 - 0.55 * t)),
+          0.04,
+          0.02,
+          203 + i,
+        ),
+        band,
+        pressure(205 + i, w, 0.3),
+        ink,
+      ),
+    )
+    .join('')
+  const knot = filled(
+    hand(rounded(0.9, -0.54, 0.16, 0.2, 0.07), 0.03, 0.01, 207),
+    band,
+    pressure(208, w, 0.3),
+    ink,
+  )
+  const strip = hand(
+    ribbon(brow, () => 0.1),
+    0.04,
+    0.012,
+    201,
+  )
+  return `${tails}${filled(strip, band, pressure(202, w, 0.35), ink)}${knot}`
+}
+
+// French: a beret slumped to the back of the head, stalk and all.
+export function beret(w: number, fill = INK, ink = INK) {
+  const brim: Pt[] = Array.from({ length: 49 }, (_, i) => {
+    const a = (i / 48) * 2 * Math.PI
+    const ry = Math.sin(a) < 0 ? 0.3 : 0.11
+    const c = Math.cos(0.24)
+    const s = Math.sin(0.24)
+    const x = 0.74 * Math.cos(a)
+    const y = ry * Math.sin(a)
+    return [0.12 + x * c - y * s, -0.86 + x * s + y * c] as const
+  })
+  const stalk = stroke(
+    hand(
+      [
+        [0.18, -1.14],
+        [0.13, -1.29],
+      ],
+      0.03,
+      0.008,
+      221,
+    ),
+    t => w * (1.6 - 0.6 * t),
+    ink,
+  )
+  return `${filled(brim, fill, pressure(222, w, 0.3), ink)}${stalk}`
+}
+
+// A baguette from `a` to `b`, pointed at both ends, with slashes skewed along its crust.
+export function baguette(a: Pt, b: Pt, seed: number, w: number, ink = INK, crust = CRUST) {
+  const outline = hand(
+    ribbon(densify([a, b], 0.04), t => 0.15 * Math.sin(Math.PI * t) ** 0.45),
+    0.04,
+    0.012,
+    seed,
+  )
+  const dx = b[0] - a[0]
+  const dy = b[1] - a[1]
+  const len = Math.hypot(dx, dy)
+  const [ux, uy] = [dx / len, dy / len]
+  const cuts = [0.24, 0.41, 0.58, 0.75]
+    .map(t => {
+      const [cx, cy] = [a[0] + dx * t, a[1] + dy * t]
+      const [sx, sy] = [0.09 * ux - 0.08 * uy, 0.09 * uy + 0.08 * ux]
+      return stroke(
+        densify(
+          [
+            [cx - sx, cy - sy],
+            [cx + sx, cy + sy],
+          ],
+          0.03,
+        ),
+        t => w * 0.7 * (0.6 + 0.6 * Math.sin(Math.PI * t)),
+        ink,
+      )
+    })
+    .join('')
+  return `${filled(outline, crust, pressure(seed + 1, w, 0.3), ink)}${cuts}`
+}
+
+// Legal pages: the lawyer. A barrister's wig in `paper`, its crown in rows of curls with two rolls
+// over each ear, a tie under the chin and a briefcase at its back hand.
+export function lawyer(w: number, paper = PAPER, ink = INK, tie = PINK, leather = CRUST) {
+  const cap = hand(
+    [
+      ...curve([-0.92, -0.5], [-0.62, -1.38], [0.12, -1.3], 18),
+      ...curve([0.12, -1.3], [0.78, -1.26], [0.98, -0.5], 18).slice(1),
+      ...curve([0.98, -0.5], [0.1, -0.86], [-0.92, -0.5], 18).slice(1),
+    ],
+    0.03,
+    0.012,
+    271,
+  )
+  // Curls: a prolate cycloid along each row, looping at the bottom.
+  const curls = (
+    [
+      [-0.46, 0.54, -1.16],
+      [-0.68, 0.76, -1.0],
+      [-0.8, 0.86, -0.84],
+    ] as const
+  )
+    .map(([x0, x1, y0], i) => {
+      const turns = (x1 - x0) / 0.15
+      const pts = Array.from({ length: 80 }, (_, k) => {
+        const t = (k / 79) * turns * 2 * Math.PI
+        return [
+          x0 + (0.15 * t) / (2 * Math.PI) - 0.05 * Math.sin(t),
+          y0 + 0.06 * (1 - Math.cos(t)),
+        ] as const
+      })
+      return stroke(hand(pts, 0.02, 0.006, 272 + i), () => w * 0.62, ink)
+    })
+    .join('')
+  const rolls = (
+    [
+      [-1.02, -0.42],
+      [-1.06, -0.18],
+      [1.06, -0.4],
+      [1.1, -0.16],
+    ] as const
+  )
+    .map(([x, y], i) => {
+      const roll = hand(rounded(x, y, 0.34, 0.22, 0.1), 0.03, 0.01, 276 + i)
+      const turn = Array.from({ length: 25 }, (_, k) => {
+        const a = (k / 24) * 1.7 * Math.PI
+        const r = 0.075 * (1 - k / 32)
+        return [x + r * Math.cos(a) * 1.3, y + r * Math.sin(a)] as const
+      })
+      return `${filled(roll, paper, pressure(280 + i, w, 0.3), ink)}${stroke(turn, () => w * 0.6, ink)}`
+    })
+    .join('')
+  const wig = `${filled(cap, paper, pressure(270, w, 0.3), ink)}${curls}${rolls}`
+  const mx = (EYES[0] + EYES[1]) / 2
+  const knot = hand(
+    [
+      [mx - 0.09, 0.38],
+      [mx + 0.09, 0.38],
+      [mx + 0.06, 0.52],
+      [mx - 0.06, 0.52],
+      [mx - 0.09, 0.38],
+    ],
+    0.02,
+    0.006,
+    285,
+  )
+  const blade = hand(
+    [
+      [mx - 0.05, 0.52],
+      [mx + 0.05, 0.52],
+      [mx + 0.13, 0.88],
+      [mx, 1.0],
+      [mx - 0.13, 0.88],
+      [mx - 0.05, 0.52],
+    ],
+    0.02,
+    0.008,
+    286,
+  )
+  const neck = `${filled(densify(blade, 0.04), tie, pressure(287, w, 0.25), ink)}${filled(densify(knot, 0.03), tie, pressure(288, w, 0.25), ink)}`
+  const [bx, by, bw, bh] = [0.98, 0.98, 0.7, 0.5]
+  const caseBody = hand(rounded(bx, by, bw, bh, 0.07), 0.03, 0.01, 289)
+  const handle = hand(
+    curve([bx - 0.13, by - bh / 2], [bx, by - bh / 2 - 0.26], [bx + 0.13, by - bh / 2], 12),
+    0.02,
+    0.006,
+    290,
+  )
+  const seam = hand(
+    [
+      [bx - bw / 2 + 0.03, by - 0.06],
+      [bx + bw / 2 - 0.03, by - 0.06],
+    ],
+    0.02,
+    0.006,
+    291,
+  )
+  const clasp = hand(rounded(bx, by - 0.06, 0.1, 0.08, 0.02), 0.01, 0.004, 292)
+  const briefcase = `${stroke(handle, () => w * 1.3, ink)}${filled(caseBody, leather, pressure(293, w, 0.3), ink)}${stroke(seam, () => w * 0.6, ink)}${filled(clasp, ink, () => w * 0.5, ink)}`
+  return { wig, neck, briefcase }
+}
+
+// Quotes and images: the artist. A wooden palette in front with dabs of paint and a thumb hole, a
+// brush behind its shoulder, bristles dipped in `paint`, and a smudge of it on the brow.
+export function artist(w: number, paper = PAPER, ink = INK, paint = PINK, wood = CRUST) {
+  const board = hand(
+    Array.from({ length: 49 }, (_, i) => {
+      const a = (i / 48) * 2 * Math.PI
+      // A kidney: an ellipse pinched in on its upper right, where the thumb goes through.
+      const d = Math.atan2(Math.sin(a - 5.4), Math.cos(a - 5.4))
+      const pinch = 0.16 * Math.exp(-3 * d * d)
+      const r = 1 - pinch
+      return [-0.5 + 0.56 * r * Math.cos(a), 0.86 + 0.34 * r * Math.sin(a)] as const
+    }),
+    0.03,
+    0.012,
+    301,
+  )
+  const hole = ring(302, -0.18, 0.72, 0.07)
+  const dabs = (
+    [
+      [-0.82, 0.8, 0.09, paint],
+      [-0.6, 1.02, 0.08, SAGE],
+      [-0.32, 1.04, 0.075, ink],
+      [-0.66, 0.66, 0.065, paper],
+    ] as const
+  )
+    .map(([x, y, r, fill], i) => filled(ring(303 + i, x, y, r), fill, () => w * 0.55, ink))
+    .join('')
+  const palette = `${filled(board, wood, pressure(308, w, 0.3), ink)}${filled(hole, paper, () => w * 0.6, ink)}${dabs}`
+  const handle = curve([0.5, 0.62], [0.95, 0.1], [1.32, -0.62], 16)
+  const brush = `${stroke(hand(handle, 0.03, 0.006, 309), t => w * (1.5 - 0.5 * t), ink)}${filled(
+    hand(rounded(1.38, -0.74, 0.14, 0.2, 0.04), 0.02, 0.006, 310),
+    paper,
+    () => w * 0.6,
+    ink,
+  )}${filled(
+    hand(
+      ribbon(curve([1.42, -0.84], [1.5, -1.0], [1.58, -1.18], 10), t => 0.07 * (1 - t) ** 0.7),
+      0.02,
+      0.008,
+      311,
+    ),
+    paint,
+    () => w * 0.6,
+    ink,
+  )}`
+  const smudge = `<path d="${poly(hand(ring(312, -0.18, -0.66, 0.1), 0.02, 0.02, 313))}" style="fill:${paint}"/>`
+  return { palette, brush, smudge }
+}
+
+// Bases: the librarian. Round glasses round the eyes, a temple arm back over the ear, and a stack
+// of three books at its side in the site's colours.
+export function librarian(w: number, paper = PAPER, ink = INK, spines = [PINK, SAGE, CRUST]) {
+  const lenses = EYES.map((x, i) => ring(321 + i, x + 0.02, -0.2, 0.28))
+  const bridge = hand(
+    curve(
+      [EYES[0] + 0.3, -0.24],
+      [(EYES[0] + EYES[1]) / 2 + 0.01, -0.34],
+      [EYES[1] - 0.26, -0.24],
+      10,
+    ),
+    0.02,
+    0.006,
+    323,
+  )
+  const arm = hand(curve([EYES[1] + 0.3, -0.24], [0.68, -0.3], [0.94, -0.2], 10), 0.02, 0.006, 324)
+  const glasses = `${lenses.map((l, i) => stroke(l, pressure(325 + i, w * 0.9, 0.2), ink)).join('')}${stroke(bridge, () => w * 0.8, ink)}${stroke(arm, () => w * 0.8, ink)}`
+  const books = (
+    [
+      [1.02, 1.2, 0.78, 0.18, 0.04],
+      [0.98, 1.01, 0.66, 0.2, -0.05],
+      [1.05, 0.81, 0.72, 0.17, 0.06],
+    ] as const
+  )
+    .map(([x, y, bw, bh, tilt], i) => {
+      const c = Math.cos(tilt)
+      const sn = Math.sin(tilt)
+      const turn = (pts: Pt[]) =>
+        pts.map(
+          ([px, py]) =>
+            [x + (px - x) * c - (py - y) * sn, y + (px - x) * sn + (py - y) * c] as const,
+        )
+      const cover = hand(turn(rounded(x, y, bw, bh, 0.03)), 0.03, 0.008, 330 + i)
+      const pages = hand(
+        turn([
+          [x + bw / 2 - 0.1, y - bh / 2 + 0.04],
+          [x + bw / 2 - 0.1, y + bh / 2 - 0.04],
+        ]),
+        0.02,
+        0.004,
+        334 + i,
+      )
+      const band = hand(
+        turn([
+          [x - bw / 2 + 0.12, y - bh / 2 + 0.03],
+          [x - bw / 2 + 0.12, y + bh / 2 - 0.03],
+        ]),
+        0.02,
+        0.004,
+        338 + i,
+      )
+      return `${filled(cover, spines[i % spines.length], pressure(342 + i, w, 0.25), ink)}${stroke(pages, () => w * 0.5, ink)}${stroke(band, () => w * 0.7, paper)}`
+    })
+    .join('')
+  return { glasses, books }
+}
+
+// Slides: the presenter. A bow tie under the chin and a pointer held out toward the slide. The
+// site icon adds the slide itself, a small screen with a bar chart, for the pointer to touch.
+export function presenter(w: number, paper = PAPER, ink = INK, tie = PINK) {
+  const mx = (EYES[0] + EYES[1]) / 2
+  const wing = (side: number) =>
+    hand(
+      [
+        [mx, 0.44],
+        [mx + side * 0.22, 0.32],
+        [mx + side * 0.24, 0.58],
+        [mx, 0.46],
+      ],
+      0.02,
+      0.008,
+      351 + side,
+    )
+  const bow = `${[-1, 1].map(side => filled(densify(wing(side), 0.03), tie, pressure(353 + side, w, 0.25), ink)).join('')}${filled(hand(rounded(mx, 0.45, 0.09, 0.11, 0.03), 0.01, 0.004, 355), tie, () => w * 0.7, ink)}`
+  const stick = hand(
+    [
+      [-0.86, 0.42],
+      [-1.66, -0.74],
+    ],
+    0.04,
+    0.006,
+    356,
+  )
+  const pointer = `${stroke(stick, t => w * (1.5 - 0.8 * t), ink)}${filled(ring(357, -1.68, -0.77, 0.05), paper, () => w * 0.6, ink)}`
+  const frame = hand(rounded(-1.66, -1.02, 1.0, 0.72, 0.03), 0.03, 0.01, 358)
+  const bars = (
+    [
+      [-1.94, 0.22, SAGE],
+      [-1.72, 0.36, CRUST],
+      [-1.5, 0.5, tie],
+    ] as const
+  )
+    .map(([x, h, fill], i) =>
+      filled(
+        hand(rounded(x, -0.72 - h / 2, 0.14, h, 0.01), 0.02, 0.004, 360 + i),
+        fill,
+        () => w * 0.55,
+        ink,
+      ),
+    )
+    .join('')
+  const legs = (
+    [
+      [
+        [-1.94, -0.66],
+        [-2.08, -0.2],
+      ],
+      [
+        [-1.38, -0.66],
+        [-1.24, -0.2],
+      ],
+    ] as Pt[][]
+  )
+    .map((pts, i) => stroke(hand(pts, 0.03, 0.006, 364 + i), () => w * 0.9, ink))
+    .join('')
+  const screen = `${legs}${filled(frame, paper, pressure(366, w, 0.3), ink)}${bars}`
+  return { bow, pointer, screen }
+}
+
+// Posts: a quill from its nib up to its tip, bowed toward `c`, its vane in `fill` with three barbs.
+// Returns the drawing and the shaft, for whatever holds it.
+export function quill(nib: Pt, c: Pt, tip: Pt, w: number, ink = INK, fill = PINK) {
+  const shaft = curve(nib, c, tip, 32)
+  const feather = hand(
+    ribbon(shaft.slice(10), t => 0.21 * Math.sin(Math.PI * Math.min(1, t * 1.12)) ** 0.6),
+    0.04,
+    0.014,
+    241,
+  )
+  const barbs = [0.42, 0.58, 0.74]
+    .map(t => {
+      const [x, y] = shaft[Math.round(t * 32)]
+      return stroke(
+        densify(
+          [
+            [x, y],
+            [x - 0.16, y - 0.1],
+          ],
+          0.03,
+        ),
+        () => w * 0.6,
+        ink,
+      )
+    })
+    .join('')
+  const svg = `${filled(feather, fill, pressure(242, w, 0.3), ink)}${stroke(
+    hand(shaft, 0.04, 0.006, 243),
+    t => w * (1.3 - 0.7 * t),
+    ink,
+  )}${barbs}`
+  return { svg, shaft }
+}
+
+// The pet's friend on the friendship page: a sprout from the top of its head, a bent stem with a
+// leaf to each side, in body radii.
+export function sprout(w: number, ink = INK, leaf = SAGE) {
+  const stem = hand(curve([-0.12, -0.96], [-0.22, -1.3], [0.02, -1.5]), 0.03, 0.01, 371)
+  const blade = (base: Pt, tip: Pt, bend: number, seed: number) => {
+    const mid = [(base[0] + tip[0]) / 2, (base[1] + tip[1]) / 2]
+    const nx = base[1] - tip[1]
+    const ny = tip[0] - base[0]
+    const side = (k: number) =>
+      curve(base, [mid[0] + nx * bend * k, mid[1] + ny * bend * k], tip, 10)
+    const outline = [...side(1), ...side(-1).reverse()]
+    return filled(hand(outline, 0.02, 0.006, seed), leaf, pressure(seed + 1, w * 0.9, 0.25), ink)
+  }
+  return `${stroke(stem, pressure(372, w * 1.1, 0.2), ink)}${blade([0.0, -1.42], [0.34, -1.62], 0.32, 373)}${blade([-0.08, -1.28], [-0.4, -1.42], 0.32, 375)}`
+}
+
+// A heart in pen, about 1 across, centred on (0, 0): it rises between the two pets as they hug.
+export function heart(w: number, ink = INK, fill = PINK) {
+  const pts = Array.from({ length: 49 }, (_, i) => {
+    const t = (i / 48) * 2 * Math.PI
+    return [
+      (16 * Math.sin(t) ** 3) / 34,
+      -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 34,
+    ] as const
+  })
+  return filled(hand(pts, 0.03, 0.01, 381), fill, pressure(382, w, 0.3), ink)
+}
+
 // The pet: the mascot with every look the old rocky spritesheet had, each pre-drawn as a part. The
 // SVG's data-state picks which parts show and how they move (quartz/components/styles/pet.scss),
 // so changing a look is one attribute write. Colours are theme variables; the pet faces left as
-// drawn and is mirrored to face right.
-export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK): string {
+// drawn and is mirrored to face right. `seed` picks the outline's wobble, so a friend is its own circle.
+export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK, seed = 7): string {
   const L = 0.08
-  const outline = loop(7, 0.06, 0.03, 140)
+  const outline = loop(seed, 0.06, 0.03, 140)
   const pen = (pts: readonly Pt[], w: (t: number) => number, color = ink) => stroke(pts, w, color)
 
   const leg = (hip: Pt, foot: Pt, toe: number, seed: number) =>
@@ -504,7 +966,143 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK)
   // Worn for walks on the home page's trail, as on the brand card; its pen widths match the pet's
   // line, which is 3.2 hat units on the card.
   const hat = part('hat', bucketHat(L / 3.2, paper, ink, pink), 'pet-hat')
+  // Section outfits (quartz/util/section-icon.ts), as on the site icons: the sweatband on
+  // triathlon pages, the beret and baguettes on French ones, a quill tucked behind the head on
+  // posts, the wig, tie and briefcase on the terms and privacy pages, the palette and brush on
+  // quotes and images, glasses and books on bases, a bow tie and pointer on slides. `-back` parts sit behind the body.
+  const w = (L * 0.042) / 0.055
+  const outfit = {
+    front: [
+      part('outfit-triathlon', sweatband(w, ink, pink)),
+      part('outfit-fr', `${baguette([-0.62, 1.2], [1.4, 0.3], 227, w, ink)}${beret(w, ink, ink)}`),
+      part('outfit-legal', Object.values(lawyer(w, paper, ink, pink)).join('')),
+      part(
+        'outfit-art',
+        (({ palette, smudge }) => `${smudge}${palette}`)(artist(w, paper, ink, pink)),
+      ),
+      part('outfit-library', Object.values(librarian(w, paper, ink)).join('')),
+      part(
+        'outfit-slides',
+        Object.values(presenter(w, paper, ink, pink))
+          .filter((_, i) => i < 2)
+          .join(''),
+      ),
+    ].join(''),
+    back: [
+      part('outfit-fr-back', baguette([0.3, 1.02], [1.46, -0.2], 223, w, ink)),
+      part('outfit-posts-back', quill([0.42, 0.25], [0.95, -0.5], [1.32, -1.6], w, ink, pink).svg),
+      part('outfit-art-back', artist(w, paper, ink, pink).brush),
+    ].join(''),
+  }
+  // Reading glasses for reader mode, the librarian's pair.
+  const glasses = part('glasses', librarian(w, paper, ink).glasses)
   const chute = part('chute', `<g class="pet-canopy">${[0, 1, 2].map(chuteFrame).join('')}</g>`)
+  // A jetpack for flying up to the scroll rail: two fat tanks on its back (behind the body, on the
+  // right as drawn, since it faces left), a strap round the front so it reads as worn, and below
+  // each nozzle a flame of three tongues with exhaust puffs, drawn twice so they flicker.
+  const tanks = [
+    [1.0, -0.06, 0.4, 1.02, 251],
+    [1.38, 0.02, 0.34, 0.9, 253],
+  ] as const
+  const pack = tanks
+    .map(([x, y, tw, th, seed]) => {
+      const tank = hand(rounded(x, y, tw, th, tw / 2), 0.04, 0.01, seed)
+      const band = (k: number, s: number) =>
+        hand(
+          [
+            [x - tw / 2 + 0.03, y + th * k],
+            [x + tw / 2 - 0.03, y + th * k],
+          ],
+          0.03,
+          0.006,
+          s,
+        )
+      const bottom = y + th / 2
+      const nozzle: Pt[] = [
+        [x - 0.08, bottom - 0.02],
+        [x + 0.08, bottom - 0.02],
+        [x + 0.12, bottom + 0.11],
+        [x - 0.12, bottom + 0.11],
+        [x - 0.08, bottom - 0.02],
+      ]
+      return `${filled(tank, paper, pressure(seed + 2, L * 0.95, 0.25), ink)}${pen(band(-0.2, seed + 1), () => L * 1.7, pink)}${pen(band(0.16, seed + 3), even(L * 0.6))}${filled(densify(nozzle, 0.04), ink, () => L * 0.6, ink)}`
+    })
+    .join('')
+  const strap = part(
+    'jetpack',
+    pen(
+      hand(curve([0.9, -0.5], [0.52, 0.02], [0.84, 0.6]), 0.03, 0.01, 257),
+      pressure(258, L * 0.85, 0.3),
+    ),
+  )
+  const tongue = (x: number, top: number, len: number, lean: number, w: number, seed: number) =>
+    hand(
+      ribbon(
+        densify(
+          [
+            [x, top],
+            [x + lean, top + len],
+          ],
+          0.03,
+        ),
+        t => w * (1 - t) ** 0.9 * Math.min(1, 0.5 + t * 6),
+      ),
+      0.03,
+      0.012,
+      seed,
+    )
+  const flame = (x: number, top: number, len: number, k: number, seed: number) => {
+    const sides = [-1, 1]
+      .map(side =>
+        filled(
+          tongue(
+            x + side * 0.05,
+            top,
+            len * (0.5 + 0.12 * ((k + side + 2) % 2)),
+            side * 0.12,
+            0.07,
+            seed + side,
+          ),
+          pink,
+          () => L * 0.45,
+          ink,
+        ),
+      )
+      .join('')
+    const middle = tongue(x, top, len, k ? 0.04 : -0.04, 0.1, seed + 3)
+    const core = tongue(x, top, len * 0.5, 0, 0.05, seed + 4)
+    // Puffs drift off below the tip, at other spots in each drawing.
+    const puffs = [0, 1]
+      .map(j => {
+        const r = 0.07 + 0.04 * ((j + k) % 2)
+        const ring_ = ring(
+          seed + 6 + j,
+          x + (j ? 0.1 : -0.08) * (k ? -1 : 1),
+          top + len + 0.08 + j * 0.16,
+          r,
+        )
+        return filled(ring_, paper, () => L * 0.5, ink)
+      })
+      .join('')
+    return `${sides}${filled(middle, pink, () => L * 0.5, ink)}<path d="${poly(core)}" style="fill:${CRUST}"/>${puffs}`
+  }
+  const flames = [0, 1]
+    .map(
+      k =>
+        `<g class="pet-flame">${tanks
+          .map(([x, y, , th], i) =>
+            flame(
+              x,
+              y + th / 2 + 0.12,
+              k ? 0.42 + 0.06 * i : 0.56 - 0.08 * i,
+              k,
+              260 + k * 10 + i * 20,
+            ),
+          )
+          .join('')}</g>`,
+    )
+    .join('')
+  const jetpack = part('jetpack', `${flames}${pack}`)
   const speed = part(
     'speed',
     (
@@ -575,5 +1173,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK)
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${body}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${hat}${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${jetpack}${outfit.back}${body}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${outfit.front}${glasses}${hat}${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
 }

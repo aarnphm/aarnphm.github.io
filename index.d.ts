@@ -31,6 +31,7 @@ interface CustomEventMap {
   themechange: CustomEvent<{ theme: 'light' | 'dark' }>
   readermodechange: CustomEvent<{ mode: 'on' | 'off' }>
   petstoggle: CustomEvent<{ enabled?: boolean }>
+  speech: CustomEvent<{ state: 'loading' | 'playing' | 'idle'; text: string; lang: string }>
   commentsroomtoggle: CustomEvent<{ enabled?: boolean }>
   notebookkernelrequest: CustomEvent<
     import('./quartz/util/notebook-kernel-events').NotebookKernelRequestDetail

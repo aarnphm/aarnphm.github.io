@@ -27,16 +27,19 @@ import {
 } from '../../components/svg'
 import { parseLessWrongTarget } from '../../util/lesswrong'
 import {
+  FilePath,
   FullSlug,
   RelativeURL,
   SimpleSlug,
   TransformOptions,
   stripSlashes,
   simplifySlug,
+  slugifyFilePath,
   splitAnchor,
   transformLink,
 } from '../../util/path'
 import { transformResourceUrl } from '../../util/resource-url'
+import { sectionOfLink } from '../../util/section-icon'
 import { parseSepTarget } from '../../util/sep'
 import { hostnameMatches, parseExternalUrl } from '../../util/url'
 import { parseWikipediaTarget } from '../../util/wikipedia'
@@ -133,6 +136,19 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
     name: 'LinkProcessing',
     htmlPlugins(ctx) {
       const { cfg } = ctx
+      // Slugs of the Bases pages, for the library icon on links to them; rebuilt when the file
+      // list changes.
+      let baseSlugs = { files: null as FilePath[] | null, slugs: new Set<string>() }
+      const basePages = () => {
+        if (baseSlugs.files !== ctx.allFiles)
+          baseSlugs = {
+            files: ctx.allFiles,
+            slugs: new Set(
+              ctx.allFiles.filter(fp => fp.endsWith('.base')).map(fp => slugifyFilePath(fp)),
+            ),
+          }
+        return baseSlugs.slugs
+      }
       return [
         () => {
           return (tree, file) => {
@@ -409,7 +425,13 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                     createIconElement('/static/favicons/wikipedia.svg', 'Wikipedia'),
                   )
                 } else if (linkTypes.isApexDomain && file.data.slug! !== 'index') {
-                  ctx.node.children.push(createIconElement('/static/icon.webp', 'apex'))
+                  // The icon of the page's section, as its own tab shows (util/section-icon.ts).
+                  const section = sectionOfLink(externalUrl!, apexUrl!.hostname, basePages())
+                  ctx.node.children.push(
+                    section
+                      ? createIconElement(`/static/icon-${section}.png`, section)
+                      : createIconElement('/static/icon.webp', 'apex'),
+                  )
                 } else if (linkTypes.isArxiv) {
                   ctx.node.children.push(createIconElement('/static/favicons/arxiv.avif', 'arXiv'))
                 } else if (linkTypes.isLessWrong) {

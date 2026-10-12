@@ -13,7 +13,7 @@ import { loadEmoji } from '../../util/emoji-node'
 import { unescapeHTML } from '../../util/escape'
 import { ImageOptions, SocialImageOptions, defaultImage, getSatoriFonts } from '../../util/og'
 import { FilePath, FullSlug, QUARTZ, getFileExtension, joinSegments } from '../../util/path'
-import { SECTIONS, type Section, sectionOf } from '../../util/section-icon'
+import { SECTIONS, type Section, isSlidePage, sectionOf } from '../../util/section-icon'
 import { QuartzPluginData } from '../vfile'
 
 const defaultOptions: SocialImageOptions = {
@@ -156,7 +156,11 @@ async function processOgImage(
 ) {
   const cfg = ctx.cfg.configuration
   const slug = fileData.slug!
-  const section = sectionOf(slug)
+  const section = sectionOf({
+    slug,
+    base: fileData.bases === true,
+    slides: isSlidePage(slug, fileData.frontmatter?.slides),
+  })
   const icon = section ? icons.get(section) : undefined
   const titleSuffix = cfg.pageTitleSuffix ?? ''
   const title =
