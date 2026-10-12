@@ -5,6 +5,7 @@ import {
   placeOnReflow,
   publishActor,
   readActors,
+  readStationaryActors,
   readTrunks,
   spacedPosition,
   spacedStep,
@@ -24,7 +25,7 @@ type Ranger = {
   route: Point[]
   goal: Stop
   site: number
-  phase: 'waiting' | 'patrolling' | 'checking'
+  phase: 'waiting' | 'patrolling' | 'checking' | 'holding'
   remaining: number
   lastStep: Point
   stride: number
@@ -60,37 +61,35 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
     top: (landscape?.treeline ?? 0) + 8,
     bottom: (landscape?.height ?? 36) - 18,
   })
-  const inspectionStop = (site: number, index: number, id: string, position: Point): Stop => {
+  const inspectionStop = (site: number, index: number, id: string): Stop | null => {
     const camp = stops[site]
-    if (!camp || !landscape) return { ...position, id: camp?.id ?? '' }
+    if (!camp || !landscape) return null
     const obstacles = [...readActors(scene, true), ...readTrunks(scene)].filter(
       body => body.id !== id,
     )
     const limits = bounds()
     const reach = 118 + Math.floor(index / 2) * 42
     const preferred = index % 2 ? 0 : Math.PI
-    let fallback: Stop | null = null
-    for (const angle of [preferred, preferred + Math.PI, Math.PI / 2, -Math.PI / 2]) {
-      const point = {
-        x: camp.x + Math.cos(angle) * reach,
-        y: camp.y + 32 + Math.sin(angle) * reach * 0.45,
+    for (const distance of [reach, reach + 32])
+      for (let step = 0; step < 16; step++) {
+        const angle = preferred + (step * Math.PI) / 8
+        const point = {
+          x: camp.x + Math.cos(angle) * distance,
+          y: camp.y + 32 + Math.sin(angle) * distance * 0.65,
+        }
+        if (
+          point.x < limits.left ||
+          point.x > limits.right ||
+          point.y < limits.top ||
+          point.y > limits.bottom ||
+          pondDistance(point, landscape.pond) < 1.7
+        )
+          continue
+        const radius = 18 * trailGroundScale(point.y, landscape)
+        if (obstacles.every(body => circleClearance(point, radius, body) >= 4))
+          return { ...point, id: camp.id }
       }
-      if (
-        point.x < limits.left ||
-        point.x > limits.right ||
-        point.y < limits.top ||
-        point.y > limits.bottom ||
-        pondDistance(point, landscape.pond) < 1.7
-      )
-        continue
-      const radius = 18 * trailGroundScale(point.y, landscape)
-      if (obstacles.some(body => body.kind === 'trunk' && circleClearance(point, radius, body) < 4))
-        continue
-      fallback ??= { ...point, id: camp.id }
-      if (obstacles.every(body => circleClearance(point, radius, body) >= 4))
-        return { ...point, id: camp.id }
-    }
-    return fallback ?? { ...position, id: camp.id }
+    return null
   }
   const render = (ranger: Ranger) => {
     if (!landscape) return
@@ -124,20 +123,19 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
   }
   const visit = (ranger: Ranger) => {
     if (!landscape || !stops.length) return
+    const goal = inspectionStop(ranger.site, Number(ranger.element.dataset.parkRanger), ranger.id)
+    if (!goal) {
+      ranger.phase = 'holding'
+      ranger.remaining = 2000
+      ranger.route = []
+      return
+    }
     ranger.phase = 'patrolling'
-    ranger.goal = inspectionStop(
-      ranger.site,
-      Number(ranger.element.dataset.parkRanger),
-      ranger.id,
-      ranger.position,
-    )
-    ranger.route = campPatrolRoute(
-      ranger.position,
-      ranger.goal,
-      routes,
-      landscape,
-      readTrunks(scene),
-    )
+    ranger.goal = goal
+    ranger.route = campPatrolRoute(ranger.position, ranger.goal, routes, landscape, [
+      ...readTrunks(scene),
+      ...readStationaryActors(scene, ranger.id),
+    ])
   }
   const tick = (time: number) => {
     frame = 0
@@ -149,7 +147,11 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
       elapsed += delta
       const obstacles = [...readActors(scene), ...readTrunks(scene)]
       for (const ranger of rangers) {
-        if (ranger.phase === 'waiting' || ranger.phase === 'checking') {
+        if (
+          ranger.phase === 'waiting' ||
+          ranger.phase === 'checking' ||
+          ranger.phase === 'holding'
+        ) {
           ranger.remaining -= delta
           if (ranger.remaining <= 0) {
             if (ranger.phase === 'checking') ranger.site = (ranger.site + 1) % stops.length
@@ -288,6 +290,7 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
         const placed = spacedPosition(position, spacing)
         spacing.offset = { x: 0, y: 0 }
         spacing.lane = { x: 0, y: 0 }
+        const goal = inspectionStop(index % stops.length, index, id)
         const ranger: Ranger = {
           id,
           element,
@@ -295,14 +298,14 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
           position: placed,
           spacing,
           route: [],
-          goal: inspectionStop(index % stops.length, index, id, position),
+          goal: goal ?? { ...placed, id: stops[index % stops.length].id },
           site: index % stops.length,
-          phase: reduced.matches ? 'checking' : 'waiting',
+          phase: reduced.matches && goal ? 'checking' : 'waiting',
           remaining: reduced.matches ? Infinity : road.readyAfter + index * 1500,
           lastStep: placed,
           stride: 0,
         }
-        if (reduced.matches) {
+        if (reduced.matches && goal) {
           ranger.position = ranger.goal
           placeOnReflow(
             element,

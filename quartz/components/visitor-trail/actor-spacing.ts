@@ -14,6 +14,7 @@ export type ActorSpacing = {
   side: -1 | 1
   status: SpacingStatus
   yieldingTo: string | null
+  yieldingThrough: string | null
   yieldEpisode: number
   placement: { bounds: SpacingBounds; grounded: (point: Point, radius: number) => boolean } | null
 }
@@ -51,6 +52,18 @@ export function readActors(scene: ParentNode, includeWaiting = false): Collision
     actors.push({ id, kind, x: matrix.e, y: matrix.f, radius, element })
   }
   return actors
+}
+
+function walkingActor(actor: CollisionActor) {
+  return ['walking', 'arriving', 'departing', 'climbing', 'descending', 'patrolling'].includes(
+    actor.element?.dataset.phase ?? '',
+  )
+}
+
+export function readStationaryActors(scene: ParentNode, except: string): CollisionActor[] {
+  return readActors(scene).filter(
+    actor => actor.id !== except && actor.kind === 'traveler' && !walkingActor(actor),
+  )
 }
 
 export function readTrunks(scene: ParentNode): CollisionActor[] {
@@ -122,6 +135,7 @@ export function actorSpacing(): ActorSpacing {
     side: 1,
     status: 'clear',
     yieldingTo: null,
+    yieldingThrough: null,
     yieldEpisode: 0,
     placement: null,
   }
@@ -232,6 +246,26 @@ export function animalInWay(
   })
 }
 
+function queuedAnimal(id: string, blocker: CollisionActor, actors: readonly CollisionActor[]) {
+  const seen = new Set([id])
+  let lead: CollisionActor | undefined = blocker
+  while (lead) {
+    if (seen.has(lead.id)) return null
+    seen.add(lead.id)
+    const reason = lead.element?.dataset.yieldingTo
+    if (!reason) return null
+    const through: string | undefined = lead.element?.dataset.yieldingThrough
+    if (!through) {
+      const animal = actors.find(actor => actor.kind === 'animal' && actor.id === reason)
+      return animal && circleClearance(lead, lead.radius, animal) < lead.radius * 1.5 + 14
+        ? animal.id
+        : null
+    }
+    lead = actors.find(actor => actor.id === through && actor.kind === 'traveler')
+  }
+  return null
+}
+
 export function spacedStep(
   id: string,
   base: Point,
@@ -248,6 +282,7 @@ export function spacedStep(
   if (budget <= 0) return false
   const waitingFor = spacing.yieldingTo
   spacing.yieldingTo = null
+  spacing.yieldingThrough = null
   const others = obstacles.filter(other => other.id !== id)
   const from = spacedPosition(base, spacing)
   const intended = spacedPosition(next, spacing)
@@ -298,7 +333,14 @@ export function spacedStep(
   const blocker = others
     .filter(
       other =>
-        !canMove(from, planned && other.kind === 'trunk' ? intended : probe, radius, [other]),
+        !canMove(
+          from,
+          planned && (other.kind === 'trunk' || (other.kind === 'traveler' && !walkingActor(other)))
+            ? intended
+            : probe,
+          radius,
+          [other],
+        ),
     )
     .sort(
       (left, right) => circleClearance(from, radius, left) - circleClearance(from, radius, right),
@@ -331,14 +373,18 @@ export function spacedStep(
   }
 
   const intrusion = circleClearance(from, radius, blocker) < 0
-  const walking = [
-    'walking',
-    'arriving',
-    'departing',
-    'climbing',
-    'descending',
-    'patrolling',
-  ].includes(blocker.element?.dataset.phase ?? '')
+  const walking = walkingActor(blocker)
+  const queue = blocker.kind === 'traveler' ? queuedAnimal(id, blocker, others) : null
+  if (queue && !intrusion) {
+    if (clears(intended)) {
+      spacing.status = 'passing'
+      return true
+    }
+    spacing.yieldingTo = queue
+    spacing.yieldingThrough = blocker.id
+    spacing.status = 'yielding'
+    return false
+  }
   if (yieldToTravelers && walking && blocker.kind === 'traveler' && id < blocker.id && !intrusion) {
     spacing.status = 'yielding'
     return clears(intended)
@@ -476,6 +522,7 @@ export function publishActor(
   element.dataset.scale = scale.toFixed(4)
   element.dataset.spacing = spacing.status
   element.dataset.yieldingTo = spacing.yieldingTo ?? ''
+  element.dataset.yieldingThrough = spacing.yieldingThrough ?? ''
   element.dataset.yieldEpisode = String(spacing.yieldEpisode)
   element.dataset.pathOffset = Math.hypot(spacing.offset.x, spacing.offset.y).toFixed(2)
   if (motionTime !== undefined) element.dataset.motionTime = String(motionTime)

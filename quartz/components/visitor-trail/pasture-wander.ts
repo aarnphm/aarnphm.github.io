@@ -29,6 +29,7 @@ type Wanderer = {
   collisionRadius: number
   blockedFor: number
   yielding: boolean
+  clearing: boolean
   random: () => number
 }
 
@@ -197,8 +198,16 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     const waiting = obstacles.filter(
       other => other.element?.dataset.yieldingTo === `animal-${animal.id}`,
     )
+    const away = waiting.length
+      ? Math.atan2(
+          animal.position.y - waiting.reduce((sum, other) => sum + other.y, 0) / waiting.length,
+          animal.position.x - waiting.reduce((sum, other) => sum + other.x, 0) / waiting.length,
+        )
+      : 0
+    let best: WanderPath | null = null
+    let clearance = -Infinity
     for (let attempt = 0; attempt < 28; attempt++) {
-      const angle = animal.random() * Math.PI * 2
+      const angle = waiting.length && !attempt ? away : animal.random() * Math.PI * 2
       const reach = waiting.length ? 1.75 + Math.min(2, waiting.length - 1) * 0.5 : 1
       const radius = animal.radius * reach * (0.45 + animal.random() * 0.55)
       const target = {
@@ -246,10 +255,19 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
             inHabitat(point, animal.kind) &&
             (!index || canMove(points[index - 1], point, animal.collisionRadius, obstacles)),
         )
-      )
-        return pathFrom(points)
+      ) {
+        const path = pathFrom(points)
+        if (!waiting.length) return path
+        const gap = Math.min(
+          ...waiting.map(other => circleClearance(target, animal.collisionRadius, other)),
+        )
+        if (gap > clearance) {
+          best = path
+          clearance = gap
+        }
+      }
     }
-    return null
+    return best
   }
   const render = () => {
     for (const animal of wanderers) {
@@ -296,6 +314,18 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       animal.element.dataset.motion = reducedMotion.matches ? 'still' : 'paused'
   }
   const step = (animal: Wanderer, elapsed: number, obstacles: readonly CollisionActor[]) => {
+    const clearing = obstacles.some(
+      other => other.element?.dataset.yieldingTo === `animal-${animal.id}`,
+    )
+    if (clearing && !animal.clearing) {
+      const path = choosePath(animal, obstacles)
+      if (path) {
+        animal.path = path
+        animal.progress = 0
+        animal.phase = 'wandering'
+      }
+    }
+    animal.clearing = clearing
     if (animal.phase !== 'wandering') {
       animal.yielding = false
       if (
@@ -590,6 +620,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
             collisionRadius,
             blockedFor: 0,
             yielding: false,
+            clearing: false,
             random,
           } satisfies Wanderer,
         ]

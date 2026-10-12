@@ -133,7 +133,10 @@ export function detourTrail(
     if (canMove(from, goal, radius, obstacles)) points.push(goal)
     else {
       const detour = segmentDetour(from, goal, radius, obstacles, bounds)
-      if (!detour) return null
+      if (!detour) {
+        if (index === road.length - 1) return null
+        continue
+      }
       points.push(...detour)
       detours++
     }
