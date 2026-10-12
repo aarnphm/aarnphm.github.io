@@ -5,6 +5,7 @@ import {
   placeOnReflow,
   publishActor,
   readActors,
+  readStationaryActors,
   readTrunks,
   spacedPosition,
   spacedStep,
@@ -181,7 +182,8 @@ export function mountCampCommunity(
       person.element.dataset.scale === scale.toFixed(4) &&
       person.element.dataset.collisionActive === String(active) &&
       person.element.dataset.spacing === person.spacing.status &&
-      person.element.dataset.yieldingTo === (person.spacing.yieldingTo ?? '')
+      person.element.dataset.yieldingTo === (person.spacing.yieldingTo ?? '') &&
+      person.element.dataset.yieldingThrough === (person.spacing.yieldingThrough ?? '')
     )
       return
     person.element.dataset.phase = person.phase
@@ -265,7 +267,7 @@ export function mountCampCommunity(
     if (landscape) {
       const ownTent = tents[person.site][person.tent]?.element.dataset.campTent
       const exitTent = tents[person.site][person.exitTent]?.element.dataset.campTent
-      const solids = readTrunks(scene).filter(
+      const solids = [...readTrunks(scene), ...readStationaryActors(scene, person.id)].filter(
         solid => solid.id !== `tent-${ownTent}` && solid.id !== `tent-${exitTent}`,
       )
       const planned = detourTrail([person.position, ...person.route], 12, solids, bounds())
@@ -404,13 +406,15 @@ export function mountCampCommunity(
     phase(site, 'departing')
     fires[site].dataset.fireState = 'out'
     fires[site].style.setProperty('--trail-fire-strength', '0')
-    const solids = readTrunks(scene)
     for (const person of people.filter(person => person.site === site && person.phase !== 'gone')) {
       person.phase = 'departing'
       person.carrying = true
       person.departAt = elapsed + person.slot * 1500
       person.walked = 0
-      person.route = campDeparture(person.position, trailRoutes, landscape, solids)
+      person.route = campDeparture(person.position, trailRoutes, landscape, [
+        ...readTrunks(scene),
+        ...readStationaryActors(scene, person.id),
+      ])
       person.target = person.route[person.route.length - 1] ?? person.position
       person.departureLength = person.route.reduce((length, point, index) => {
         const previous = index ? person.route[index - 1] : person.position
@@ -888,11 +892,13 @@ export function mountCampCommunity(
     if (same) {
       settings = currentSettings
       if (rerouted) {
-        const solids = readTrunks(scene)
         for (const person of people) {
           if (person.phase === 'walking') travelTo(person, person.target)
           else if (person.phase === 'departing') {
-            person.route = campDeparture(person.position, routes, current, solids)
+            person.route = campDeparture(person.position, routes, current, [
+              ...readTrunks(scene),
+              ...readStationaryActors(scene, person.id),
+            ])
             person.target = person.route[person.route.length - 1] ?? person.position
             person.remaining = Infinity
           }

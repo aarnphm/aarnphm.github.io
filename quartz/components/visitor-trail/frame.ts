@@ -3,6 +3,7 @@ import { readTrunks, type CollisionActor } from './actor-spacing'
 import { mountAlpineJourneys } from './alpine-journey'
 import { trailBackpacker } from './backpacker'
 import { mountCampCommunity } from './camp-community'
+import { placeCampHints } from './camp-hints'
 import { campSites } from './camp-layout'
 import { connectCampPresence } from './camp-presence'
 import { defaultCampSettings } from './camp-settings'
@@ -121,6 +122,7 @@ if (!svg || !stones || !stone || !count || !retry || !campsite || !campToggle ||
   throw new Error('Shared trail markup is incomplete')
 
 let campTimer = 0
+let hintFrame = 0
 let campPinned = false
 campsite.dataset.revealed = String(parent.matchMedia('(prefers-reduced-motion: reduce)').matches)
 campsite.addEventListener(
@@ -193,6 +195,7 @@ const journeyRoutes = () => {
   for (const site of campSites(landscape, sceneSeed, camps)) {
     const hearth = {
       ...site,
+      y: site.y + 16,
       id: `hearth-${site.id}`,
       kind: 'trunk',
       radius: 16,
@@ -253,10 +256,22 @@ const drawTravelers = () => {
 }
 const showTools = (open: boolean) => {
   parent.clearTimeout(campTimer)
+  parent.cancelAnimationFrame(hintFrame)
+  hintFrame = 0
   campTools.hidden = !open
   campToggle.setAttribute('aria-expanded', String(open))
   scene.dataset.campTools = open ? 'open' : 'closed'
+  if (open) {
+    placeCampHints(scene)
+    hintFrame = parent.requestAnimationFrame(() => {
+      hintFrame = 0
+      if (!signal.aborted && scene.dataset.campTools === 'open') placeCampHints(scene)
+    })
+  }
 }
+void document.fonts.ready.then(() => {
+  if (!signal.aborted && scene.dataset.campTools === 'open') placeCampHints(scene)
+})
 const forestControls = mountForestControls(
   scene,
   signal,
@@ -580,28 +595,6 @@ const drawScene = async () => {
     geometries.push({ id, length, samples, delay, duration })
     if (!(await yieldRender(renderSignal))) return
   }
-  for (const hint of svg.querySelectorAll<SVGPathElement>('[data-camp-hint-route]')) {
-    const route = svg.querySelector<SVGPathElement>(
-      `[data-trail-route="${hint.dataset.campHintRoute}"]`,
-    )
-    if (!route) continue
-    const end = Math.max(0, route.getTotalLength() - 24)
-    const start = Math.max(0, end - 140)
-    const points = Array.from({ length: 41 }, (_, index) =>
-      route.getPointAtLength(start + ((end - start) * index) / 40),
-    )
-    const reverse = points[points.length - 1].x < points[0].x
-    if (reverse) points.reverse()
-    hint.setAttribute(
-      'd',
-      points
-        .map((point, index) => `${index ? 'L' : 'M'}${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
-        .join(''),
-    )
-    hint.dataset.start = String(start)
-    hint.dataset.end = String(end)
-    hint.dataset.reverse = String(reverse)
-  }
   const steps = scene.querySelector('.trail-steps')
   if (steps) {
     const kinds: FootprintKind[] = ['boot', 'paw', 'hoof', 'blob']
@@ -720,6 +713,7 @@ const drawScene = async () => {
   weather.update(layout.landscape, sceneSeed)
   groundDepth.refresh()
   scene.dataset.trailRendered = 'true'
+  placeCampHints(scene)
   rendering = null
   host.dispatchEvent(new Event('trail:ready'))
 }
@@ -763,6 +757,7 @@ const dispose = () => {
   if (signal.aborted) return
   controller.abort()
   parent.clearTimeout(campTimer)
+  parent.cancelAnimationFrame(hintFrame)
   parent.clearTimeout(timeout)
   if (forestFrame) parent.cancelAnimationFrame(forestFrame)
   if (animalFrame) parent.cancelAnimationFrame(animalFrame)

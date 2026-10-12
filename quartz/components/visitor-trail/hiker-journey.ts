@@ -55,6 +55,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
   let seed: number | undefined
   let phase: Phase = 'waiting'
   let elapsed = 0
+  let restingUntil = 0
   let previousTime: number | null = null
   let renderedAt = -Infinity
   let frame: number | null = null
@@ -131,6 +132,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     const progress = Math.min(1, elapsed / duration())
     hiker.dataset.progress = progress.toFixed(3)
     hiker.dataset.walkingDuration = moving() ? String(duration()) : ''
+    hiker.dataset.restUntil = phase === 'resting' ? String(restingUntil) : ''
     const leg: WalkingPhase | null = phase === 'arriving' || phase === 'departing' ? phase : null
     const base = leg ? onLeg(leg, progress) : onLeg('arriving', phase === 'waiting' ? 0 : 1)
     const position = spacedPosition(base, spacing)
@@ -202,7 +204,10 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     if (moving() || phase === 'unpacking' || phase === 'packing')
       frame = view.requestAnimationFrame(tick)
     else
-      timer = view.setTimeout(() => tick(view.performance.now()), Math.max(1, duration() - elapsed))
+      timer = view.setTimeout(
+        () => tick(view.performance.now()),
+        Math.max(1, phase === 'resting' ? restingUntil - Date.now() : duration() - elapsed),
+      )
   }
   const tick = (time: number) => {
     frame = timer = null
@@ -253,11 +258,13 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
         )
       )
         elapsed += increment
-    } else elapsed += delta
+    } else if (phase === 'resting') elapsed = duration() - Math.max(0, restingUntil - Date.now())
+    else elapsed += delta
     previousTime = time
     if (elapsed >= duration()) {
       elapsed = 0
       phase = phases[Math.min(phases.length - 1, phases.indexOf(phase) + 1)]
+      if (phase === 'resting') restingUntil = Date.now() + duration()
       if (phase === 'arriving') placeHiker()
       nextStep = 10
       renderedAt = -Infinity
@@ -273,6 +280,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     pause()
     phase = 'resting'
     elapsed = 0
+    restingUntil = Date.now() + duration()
     tracks.replaceChildren()
     impressions.length = 0
     render()
