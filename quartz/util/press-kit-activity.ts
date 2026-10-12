@@ -1,0 +1,196 @@
+import { isRecord } from './type-guards'
+
+export type OverlayKey = 'card' | 'grid' | 'stack' | 'receipt' | 'chips' | 'rail' | 'route'
+export const OVERLAY_OPTIONS: ReadonlyArray<readonly [OverlayKey, string]> = [
+  ['card', 'carte'],
+  ['grid', 'grille'],
+  ['stack', 'colonne'],
+  ['receipt', 'ticket'],
+  ['chips', 'pastilles'],
+  ['rail', 'bord vertical'],
+  ['route', 'parcours seul'],
+]
+export const isOverlayKey = (value: string): value is OverlayKey =>
+  OVERLAY_OPTIONS.some(([key]) => key === value)
+
+export const ACTIVITY_CARD_STATS = [
+  'distance',
+  'time',
+  'pace',
+  'elevation',
+  'heartRate',
+  'power',
+] as const
+export type ActivityCardStatKey = (typeof ACTIVITY_CARD_STATS)[number]
+
+export interface ActivityCardStat {
+  key: string
+  label: string
+  value: string
+  provenance?: string
+}
+
+export type ActivityCardChartKey = 'cyclingPower' | 'runPace' | 'runLaps'
+export interface ActivityCardChart {
+  key: ActivityCardChartKey
+  title: string
+  kind: 'line' | 'bars'
+  axis: string
+  note: string
+  points: { x: number; y: number | null; label: string; value: string; range?: string }[]
+}
+
+export interface ActivityCardPoint {
+  lat: number
+  lng: number
+}
+
+export interface ActivityCardData {
+  url: string
+  title: string
+  date: string
+  sport: string
+  stats: ActivityCardStat[]
+  route: ActivityCardPoint[][]
+  charts: ActivityCardChart[]
+}
+
+export const activityCardStatKey = (label: string): ActivityCardStatKey | null => {
+  switch (label) {
+    case 'distance':
+      return 'distance'
+    case 'time':
+    case 'duration':
+      return 'time'
+    case 'pace':
+    case 'speed':
+      return 'pace'
+    case 'elevation':
+    case 'elevation gain':
+      return 'elevation'
+    case 'avg hr':
+      return 'heartRate'
+    case 'avg power':
+    case 'est power':
+    case 'drag power index':
+    case 'walking power':
+      return 'power'
+    default:
+      return null
+  }
+}
+
+const isStatKey = (value: unknown): value is ActivityCardStatKey =>
+  typeof value === 'string' && ACTIVITY_CARD_STATS.some(key => key === value)
+
+const isStat = (value: unknown): value is ActivityCardStat =>
+  isRecord(value) &&
+  typeof value.key === 'string' &&
+  typeof value.label === 'string' &&
+  typeof value.value === 'string' &&
+  (value.provenance === undefined || typeof value.provenance === 'string')
+
+export const isActivityCardStatKey = isStatKey
+export const isActivityCardChartKey = (value: string): value is ActivityCardChartKey =>
+  value === 'cyclingPower' || value === 'runPace' || value === 'runLaps'
+
+const isChart = (value: unknown): value is ActivityCardChart =>
+  isRecord(value) &&
+  typeof value.key === 'string' &&
+  isActivityCardChartKey(value.key) &&
+  (value.kind === 'line' || value.kind === 'bars') &&
+  typeof value.title === 'string' &&
+  typeof value.axis === 'string' &&
+  typeof value.note === 'string' &&
+  Array.isArray(value.points) &&
+  value.points.every(
+    point =>
+      isRecord(point) &&
+      typeof point.x === 'number' &&
+      Number.isFinite(point.x) &&
+      (point.y === null || (typeof point.y === 'number' && Number.isFinite(point.y))) &&
+      typeof point.label === 'string' &&
+      typeof point.value === 'string' &&
+      (point.range === undefined || typeof point.range === 'string'),
+  )
+
+const isPoint = (value: unknown): value is ActivityCardPoint =>
+  isRecord(value) &&
+  typeof value.lat === 'number' &&
+  Number.isFinite(value.lat) &&
+  Math.abs(value.lat) <= 85.0511 &&
+  typeof value.lng === 'number' &&
+  Number.isFinite(value.lng) &&
+  Math.abs(value.lng) <= 180
+
+export function activityCardRoute(
+  segments: readonly (readonly ActivityCardPoint[])[],
+): ActivityCardPoint[][] {
+  const route: ActivityCardPoint[][] = []
+  for (const segment of segments) {
+    let current: ActivityCardPoint[] = []
+    const flush = () => {
+      if (current.length >= 2) route.push(current)
+      current = []
+    }
+    for (const point of segment) {
+      if (isPoint(point)) current.push({ lat: point.lat, lng: point.lng })
+      else flush()
+    }
+    flush()
+  }
+  return route
+}
+
+function activityCardData(value: unknown): ActivityCardData | null {
+  if (
+    !isRecord(value) ||
+    typeof value.url !== 'string' ||
+    typeof value.title !== 'string' ||
+    typeof value.date !== 'string' ||
+    typeof value.sport !== 'string' ||
+    !Array.isArray(value.stats) ||
+    !value.stats.every(isStat) ||
+    !Array.isArray(value.route) ||
+    !Array.isArray(value.charts) ||
+    !value.charts.every(isChart)
+  )
+    return null
+  const route: ActivityCardPoint[][] = []
+  for (const segment of value.route) {
+    if (!Array.isArray(segment) || !segment.every(isPoint)) return null
+    if (segment.length >= 2) route.push(segment)
+  }
+  return {
+    url: value.url,
+    title: value.title,
+    date: value.date,
+    sport: value.sport,
+    stats: value.stats,
+    route,
+    charts: value.charts,
+  }
+}
+
+function decodeData(raw: string | undefined): unknown {
+  if (!raw) return null
+  try {
+    return JSON.parse(decodeURIComponent(raw))
+  } catch {
+    return null
+  }
+}
+
+export function parseActivityCardData(raw: string | undefined): ActivityCardData | null {
+  return activityCardData(decodeData(raw))
+}
+
+export function parseActivityCardList(raw: string | undefined): ActivityCardData[] {
+  const value = decodeData(raw)
+  return Array.isArray(value)
+    ? value.flatMap(item => {
+        const data = activityCardData(item)
+        return data ? [data] : []
+      })
+    : []
+}

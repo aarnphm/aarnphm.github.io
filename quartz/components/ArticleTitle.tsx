@@ -7,6 +7,7 @@ import {
 import { toArenaHeadingJsx } from '../util/arena'
 import { classNames } from '../util/lang'
 import { resolveRelative, FullSlug } from '../util/path'
+import PressKitButtons from './PressKitButtons'
 import { StreamUnlockIcon } from './stream/UnlockIcon'
 
 export interface Options {
@@ -127,6 +128,9 @@ export default ((userOpts?: Options) => {
               >
                 {isStreamIndex ? 'stream' : 'list'}
               </a>
+              <span class="stream-share-actions" role="group" aria-label="partager le stream">
+                <PressKitButtons citation={false} />
+              </span>
             </nav>
           )}
         </hgroup>

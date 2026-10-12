@@ -200,6 +200,16 @@ export function runsToPlain(runs: Run[]): string {
     .trim()
 }
 
+/**
+ * A card's date, as formatDate (quartz/components/Date.tsx) prints a page's date in the site
+ * locale. The calendar day is read from the ISO string, so a visitor's time zone cannot move it.
+ */
+export const cardDate = (iso: string): string =>
+  new Date(`${iso.slice(0, 10)}T12:00:00`).toLocaleDateString(
+    document.documentElement.lang || 'en-US',
+    { year: 'numeric', month: 'short', day: '2-digit' },
+  )
+
 /** Parse the editor with the same Markdown and math syntax used by authored notes. */
 export function runsFromText(text: string): Run[] {
   const runs: Run[] = []

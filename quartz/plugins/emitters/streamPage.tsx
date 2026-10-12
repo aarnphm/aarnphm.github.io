@@ -9,6 +9,7 @@ import { isDraftEntry, isRestrictedEntry } from '../../components/stream/Entry'
 import StreamSearchComponent from '../../components/StreamSearch'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { componentSourceNames } from '../../util/component-source'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { pathToRoot } from '../../util/path'
 import { StaticResources } from '../../util/resources'
@@ -67,7 +68,7 @@ export const StreamPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
     return name !== 'Breadcrumbs' && name !== 'StackedNotes'
   })
   const filteredBefore = defaultContentPageLayout.beforeBody.filter(
-    c => c.displayName !== 'Byline' || c.name !== 'Byline',
+    component => !componentSourceNames(component).includes('Byline'),
   )
 
   const opts: FullPageLayout = {

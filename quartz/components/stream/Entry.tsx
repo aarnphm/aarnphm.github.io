@@ -17,6 +17,7 @@ import {
   truthyStreamFlag,
 } from '../../util/stream'
 import { getStreamEntrySearchText, getStreamEntryWordCount } from '../../util/stream-manifest'
+import PressKitButtons from '../PressKitButtons'
 import { StreamUnlockIcon } from './UnlockIcon'
 
 export interface StreamEntryRenderOptions {
@@ -257,16 +258,13 @@ export const renderStreamEntry = (
           </div>
         )}
         {!protectedEntry && !privateEntry && (
-          <button
-            type="button"
-            class="stream-entry-share"
-            data-press-kit="note"
-            data-press-kit-entry={entry.id}
-            data-press-kit-url={buildStreamEntryPathFromIso(resolvedIsoDate, entry.id) ?? undefined}
-            aria-label="partager cette entrée en image"
-          >
-            partager
-          </button>
+          <div class="stream-entry-share" role="group" aria-label="partager cette entrée">
+            <PressKitButtons
+              citation={false}
+              entryId={entry.id}
+              entryUrl={buildStreamEntryPathFromIso(resolvedIsoDate, entry.id) ?? undefined}
+            />
+          </div>
         )}
         {entry.importance !== undefined && (
           <div class="stream-entry-importance">
