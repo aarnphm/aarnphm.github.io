@@ -1,18 +1,12 @@
-import type { Alpine, Landscape } from './landscape'
+import type { Alpine, Landscape, Point } from './landscape'
 import {
   buildMountainRanges,
+  buildMountainTracks,
   contains,
-  farFoothill,
   heightAt,
-  mountainFloor,
-  mountainHeightScale,
   mountainProfileX,
   mountainRangesAt,
-  nearFoothill,
-  ridgeProfile,
-  rockRegions,
-  snowRegions,
-  strataRegions,
+  mountainTerrain,
   type MountainRange,
 } from './mountain-profile'
 import { trailRandom } from './random'
@@ -90,7 +84,12 @@ function pixelLayers<Tone extends string>(
     .join('')
 }
 
-export function trailMountainBackdrop(landscape: Landscape, seed: number, clipId: string): string {
+export function trailMountainBackdrop(
+  landscape: Landscape,
+  seed: number,
+  clipId: string,
+  entrances?: readonly Point[],
+): string {
   const { alpine } = landscape
   const ranges = buildMountainRanges(alpine, seed)
   const columns = new Map<number, MountainColumn[]>()
@@ -99,18 +98,16 @@ export function trailMountainBackdrop(landscape: Landscape, seed: number, clipId
     if (existing) return existing
     const visible = mountainRangesAt(x, ranges).map(range => {
       const profileX = mountainProfileX(x, range)
+      const terrain = mountainTerrain(range)
       return {
         range,
         x: profileX,
-        crest: heightAt(ridgeProfile, profileX),
-        floor: heightAt(mountainFloor, profileX),
-        far: heightAt(farFoothill, profileX),
-        near: heightAt(nearFoothill, profileX),
-        edge: Math.min(
-          348,
-          340 + Math.sin(profileX / 67 + range.phase) * 5 + Math.sin(profileX / 213) * 4,
-        ),
-        verticalScale: 350 / (range.height * mountainHeightScale(profileX, range)),
+        crest: heightAt(terrain.crest, profileX),
+        floor: heightAt(terrain.floor, profileX),
+        far: heightAt(terrain.far, profileX),
+        near: heightAt(terrain.near, profileX),
+        edge: 350,
+        verticalScale: 350 / range.height,
         grain: Math.sin(profileX / 39 + range.phase),
       }
     })
@@ -130,18 +127,19 @@ export function trailMountainBackdrop(landscape: Landscape, seed: number, clipId
     })
     if (!surface) return undefined
     const { range, x } = surface
+    const terrain = mountainTerrain(range)
     const y = 350 + (worldY - range.base) * surface.verticalScale
     const threshold = thresholdAt(column, row, range)
     const grain = surface.grain * Math.sin(y / 24 + x / 88)
-    if (snowRegions.some(field => contains(x, y, field))) {
+    if (terrain.snow.some(field => contains(x, y, field))) {
       if (y - surface.crest < 9) return 'light'
       return threshold < 0.0625 && grain > 0.2 ? 'light' : 'snow'
     }
-    if (strataRegions.some(shelf => contains(x, y, shelf))) {
+    if (terrain.strata.some(shelf => contains(x, y, shelf))) {
       return threshold < 0.75 ? (range.depth < 0.88 ? 'shade' : 'fracture') : 'shade'
     }
     if (y > 243 && threshold < 0.125 && grain > 0.35) return 'lichen'
-    const shaded = rockRegions.some(face => contains(x, y, face))
+    const shaded = terrain.shade.some(face => contains(x, y, face))
     if (y > 328) return threshold < 0.125 ? 'rock' : 'light'
     if (threshold < 0.125 && grain > -0.2) return shaded ? 'rock' : 'light'
     if (threshold > 0.8125 && grain < -0.35) return shaded ? 'fracture' : 'shade'
@@ -169,10 +167,27 @@ export function trailMountainBackdrop(landscape: Landscape, seed: number, clipId
     },
   )
   const placement = `translate(${coordinate(alpine.left)} ${coordinate(alpine.top)})`
+  const atlas = ranges.map(({ index, form, tier, left, width, height, base, depth }) => ({
+    index,
+    form,
+    tier,
+    left,
+    width,
+    height,
+    base,
+    depth,
+  }))
+  const tracks = buildMountainTracks(alpine, seed, entrances)
+    .map(track => {
+      const [first, ...rest] = track.points
+      const path = `M${coordinate(first.x)} ${coordinate(first.y)}${rest.map(point => `L${coordinate(point.x)} ${coordinate(point.y)}`).join('')}`
+      return `<path class="trail-mountain-track" data-mountain-track="${track.id}" data-mountain-range="${track.rangeIndex}" data-mountain-kind="${track.kind}" data-mountain-depth="${coordinate(track.depth)}" d="${path}"/>`
+    })
+    .join('')
 
   return `<g class="trail-backdrop" data-trail-backdrop="" data-backdrop-placement="below-text" clip-path="url(#${clipId})">
       <g data-trail-depth="alpine">
-        <g data-formation="bernese-alps" data-peaks="eiger monch jungfrau" data-mountain-ranges="${ranges.length}" transform="${placement}">
+        <g data-formation="bernese-alps" data-peaks="eiger monch jungfrau" data-mountain-ranges="${ranges.length}" data-mountain-atlas='${JSON.stringify(atlas)}' transform="${placement}">
           ${ridge}
         </g>
       </g>
@@ -180,6 +195,7 @@ export function trailMountainBackdrop(landscape: Landscape, seed: number, clipId
         <g data-formation="foothills" transform="${placement}" style="--trail-mountain-delay: 900ms">
           ${foothills}
         </g>
+        <g class="trail-mountain-roads">${tracks}</g>
         <g class="trail-foothill-trees"></g>
         <g class="trail-alpine-tracks"></g>
         <g class="trail-alpine-travelers"></g>

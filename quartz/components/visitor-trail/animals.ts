@@ -1,6 +1,6 @@
 import { pixels } from './pixels'
 
-export type TrailAnimalKind = 'cow' | 'dog' | 'cat' | 'goose'
+export type TrailAnimalKind = 'cow' | 'dog' | 'cat' | 'goose' | 'bear'
 
 const dog = [
   '.........DD....',
@@ -62,4 +62,17 @@ export function goosePixels(size: number) {
       },
       size,
     )}`
+}
+
+export function bearPixels(size: number) {
+  const tones = {
+    C: 'trail-bear-coat',
+    D: 'trail-bear-shade',
+    E: 'trail-animal-eye',
+    N: 'trail-bear-muzzle',
+    B: 'trail-bear-paw',
+  }
+  return `<path class="trail-animal-shadow" d="M${size} ${size * 8}h${size * 16}v2H${size}Z"/>
+    ${pixels(['...........CC..CC..', '...CCCCCC..CCCCCC..', '..CCCCCCCCCCCCCE...', '.CCCCCCCCCCCCCCNN..', '.CCCDDDCCCCCCC.....', '..CDDDDDDCCCC......', '..CDDDDDDCCC.......'], tones, size)}
+    <g transform="translate(0 ${size * 7})"><g class="trail-animal-leg-front">${pixels(['............C.C....', '............B.B....'], tones, size)}</g><g class="trail-animal-leg-back">${pixels(['...D..D............', '...B..B............'], tones, size)}</g></g>`
 }

@@ -169,7 +169,9 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
         ? 'still'
         : host.hidden || document.hidden
           ? 'paused'
-          : 'active'
+          : reader.spacing.yieldingTo
+            ? 'yielding'
+            : 'active'
       reader.element.dataset.route = route.id
       reader.element.dataset.progress = reader.progress.toFixed(6)
       reader.element.dataset.direction = String(reader.direction)
@@ -230,8 +232,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
         if (reader.phase === 'waiting') {
           placeReader(reader, obstacles)
           reader.phase = 'walking'
-        }
-        else resume(reader)
+        } else resume(reader)
       }
       return
     }
@@ -276,6 +277,9 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
         top: Math.max(landscape.treeline, landscape.alpine.base - 18),
         bottom: landscape.height - radius,
       },
+      true,
+      positionAt(reader, route, stop),
+      true,
     )
     if (advances) reader.progress = progress
     const point = spacedPosition(positionAt(reader, route, reader.progress), reader.spacing)
@@ -347,13 +351,11 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
 
   return {
     pause,
-    update(nextRoutes: JourneyRoute[], nextLandscape: Landscape, nextSeed: number) {
+    update(nextRoutes: JourneyRoute[], nextLandscape: Landscape, nextSeed: number, count: number) {
       pause()
       routes = nextRoutes
       landscape = nextLandscape
-      const count = landscape.width < 700 ? 2 : 3
       if (seed !== nextSeed) {
-        pause()
         seed = nextSeed
         readers = []
         group.replaceChildren()

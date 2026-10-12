@@ -1,11 +1,26 @@
-import { catPixels, dogPixels, goosePixels, type TrailAnimalKind } from './animals'
+import { bearPixels, catPixels, dogPixels, goosePixels, type TrailAnimalKind } from './animals'
 import { cowPixels } from './cows'
 import { onDryLand, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
 
 export type RouteSites = { id: string; samples: Point[] }
+export type AnimalSettings = Record<TrailAnimalKind, number>
 
-export function trailPasture(landscape: Landscape, routes: RouteSites[], seed: number) {
+export const defaultAnimalSettings: AnimalSettings = { cow: 3, dog: 1, cat: 1, goose: 3, bear: 2 }
+export const animalLimits = {
+  cow: { min: 0, max: 12, step: 1 },
+  dog: { min: 0, max: 6, step: 1 },
+  cat: { min: 0, max: 6, step: 1 },
+  goose: { min: 0, max: 8, step: 1 },
+  bear: { min: 0, max: 4, step: 1 },
+}
+
+export function trailPasture(
+  landscape: Landscape,
+  routes: RouteSites[],
+  seed: number,
+  settings: AnimalSettings = defaultAnimalSettings,
+) {
   const { width, meadowTop, camp, pond } = landscape
   const random = trailRandom(seed ^ 0x243f6a88)
   const narrow = width < 700
@@ -54,7 +69,7 @@ export function trailPasture(landscape: Landscape, routes: RouteSites[], seed: n
     return `<g class="trail-${kind}${tone}" data-trail-wander="${kind}-${index}" data-trail-animal="${kind}" data-animal-home-x="${x}" data-animal-home-y="${y}" data-animal-size="${size}" data-phase="waiting" data-motion="paused" data-stride="0" transform="translate(${x} ${y})" style="--trail-animal-step:${size}px;--trail-cow-delay:${index * -2700}ms;--trail-animal-delay:${index * -1700}ms"><g class="trail-animal-facing" transform="scale(${flip} 1)"><g transform="translate(${-size * anchor} ${-size * 8})">${sprite}</g></g></g>`
   }
   const animals: { y: number; markup: string }[] = []
-  for (let index = 0; index < (narrow ? 6 : 9); index++) {
+  for (let index = 0; index < settings.cow; index++) {
     const point = site()
     const size = index % 4 === 3 ? 1 : 2
     const flip = random() < 0.5 ? -1 : 1
@@ -73,7 +88,7 @@ export function trailPasture(landscape: Landscape, routes: RouteSites[], seed: n
     })
   }
   for (const kind of ['dog', 'cat'] satisfies TrailAnimalKind[]) {
-    for (let index = 0; index < (narrow ? 2 : 3); index++) {
+    for (let index = 0; index < settings[kind]; index++) {
       const point = site()
       const size = 2
       const flip = random() < 0.5 ? -1 : 1
@@ -92,13 +107,29 @@ export function trailPasture(landscape: Landscape, routes: RouteSites[], seed: n
       })
     }
   }
-  const geese = Array.from({ length: narrow ? 4 : 5 }, (_, index) => {
-    const x = pond.x + pond.rx * (-0.62 + index * (narrow ? 0.36 : 0.29))
-    const y = pond.y + (index % 2 ? -0.24 : 0.28) * pond.ry
-    const size = index === 4 ? 1 : narrow ? 1 : 2
+  const geese = Array.from({ length: settings.goose }, (_, index) => {
+    const angle = index * 2.399963
+    const radius = settings.goose === 1 ? 0 : 0.72 * Math.sqrt((index + 0.5) / settings.goose)
+    const x = pond.x + Math.cos(angle) * pond.rx * radius
+    const y = pond.y + Math.sin(angle) * pond.ry * radius
+    const size = narrow || settings.goose > 4 || index % 5 === 4 ? 1 : 2
     const flip = index % 2 ? -1 : 1
     return animal('goose', index, { x, y }, size, flip, goosePixels(size), 5)
   }).join('')
+  for (let index = 0; index < settings.bear; index++) {
+    const point =
+      index % 2
+        ? {
+            x: Math.max(30, Math.min(width - 30, width * (0.25 + random() * 0.5))),
+            y: landscape.alpine.base - 18 + random() * 8,
+          }
+        : site()
+    if (index % 2) occupied.push(point)
+    animals.push({
+      y: point.y,
+      markup: animal('bear', index, point, 2, random() < 0.5 ? -1 : 1, bearPixels(2), 9),
+    })
+  }
   return {
     markup: `<g class="trail-pasture">${animals
       .sort((a, b) => a.y - b.y)

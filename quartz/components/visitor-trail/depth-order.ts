@@ -23,6 +23,7 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
       let next = paint.firstElementChild
       for (const { element } of ordered) {
         if (element === next) next = next.nextElementSibling
+        else if (typeof paint.moveBefore === 'function') paint.moveBefore(element, next)
         else paint.insertBefore(element, next)
       }
     }
@@ -44,14 +45,17 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
     pause()
     // Generation holders retain ownership while the paint layer orders individual feet.
     for (const { element, owner } of objects)
-      if (element.isConnected && owner.isConnected) owner.append(element)
+      if (element.isConnected && owner.isConnected) {
+        if (typeof owner.moveBefore === 'function') owner.moveBefore(element, null)
+        else owner.append(element)
+      }
     objects = []
   }
   const refresh = () => {
     restore()
     const distant = scene.querySelector<SVGGElement>('.trail-foothill-objects')
     for (const element of scene.querySelectorAll<SVGGElement>(
-      '.trail-tree, [data-trail-wander], .trail-map-reader, .trail-backpacker, [data-alpine-traveler]',
+      '.trail-tree, [data-trail-wander], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger]',
     )) {
       const owner = element.parentElement
       const far =

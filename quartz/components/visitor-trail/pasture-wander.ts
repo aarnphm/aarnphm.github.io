@@ -6,7 +6,7 @@ import {
   readTrunks,
   type CollisionActor,
 } from './actor-spacing'
-import { pondDistance, type Landscape, type Point } from './landscape'
+import { pondDistance, trailGroundScale, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
 
 type Phase = 'waiting' | 'wandering' | 'resting'
@@ -73,10 +73,26 @@ const habits = {
     stride: 6,
     footprint: 7,
   },
+  bear: {
+    speed: 3,
+    variation: 1,
+    radius: 58,
+    rest: 4000,
+    pause: 4000,
+    clearance: 14,
+    stride: 5,
+    footprint: 9,
+  },
 }
 
 function animalKind(value: string | undefined): TrailAnimalKind | null {
-  return value === 'cow' || value === 'dog' || value === 'cat' || value === 'goose' ? value : null
+  return value === 'cow' ||
+    value === 'dog' ||
+    value === 'cat' ||
+    value === 'goose' ||
+    value === 'bear'
+    ? value
+    : null
 }
 
 function pathFrom(points: Point[]): WanderPath {
@@ -119,7 +135,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     return (
       point.x >= 22 &&
       point.x <= landscape.width - 26 &&
-      point.y >= landscape.meadowTop + 64 &&
+      point.y >= (kind === 'bear' ? landscape.alpine.base - 26 : landscape.meadowTop + 64) &&
       point.y <= landscape.height - 28 &&
       pondDistance(point, landscape.pond) > 1.6 &&
       Math.hypot(point.x - landscape.camp.x, point.y - landscape.camp.y) > 90
@@ -134,7 +150,10 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     kind: TrailAnimalKind,
     available: (candidate: Point) => boolean = () => true,
   ) => {
-    const fits = (candidate: Point) => safe(candidate, kind) && available(candidate)
+    const fits = (candidate: Point) => {
+      const drawn = { x: Math.round(candidate.x), y: Math.round(candidate.y) }
+      return safe(drawn, kind) && available(drawn)
+    }
     if (fits(point)) return point
     for (let index = 0; index < 96; index++) {
       const angle = index * 2.399963
@@ -175,9 +194,13 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     animal: Wanderer,
     obstacles: readonly CollisionActor[],
   ): WanderPath | null => {
+    const waiting = obstacles.filter(
+      other => other.element?.dataset.yieldingTo === `animal-${animal.id}`,
+    )
     for (let attempt = 0; attempt < 28; attempt++) {
       const angle = animal.random() * Math.PI * 2
-      const radius = animal.radius * (0.45 + animal.random() * 0.55)
+      const reach = waiting.length ? 1.75 + Math.min(2, waiting.length - 1) * 0.5 : 1
+      const radius = animal.radius * reach * (0.45 + animal.random() * 0.55)
       const target = {
         x: animal.home.x + Math.cos(angle) * radius,
         y: animal.home.y + Math.sin(angle) * radius * 0.6,
@@ -186,7 +209,12 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       const dx = target.x - from.x
       const dy = target.y - from.y
       const length = Math.hypot(dx, dy)
-      if (length < 12 || !safe(target, animal.kind)) continue
+      if (
+        length < 12 ||
+        !safe(target, animal.kind) ||
+        waiting.some(other => circleClearance(target, animal.collisionRadius, other) <= 8)
+      )
+        continue
       const bend = (animal.random() - 0.5) * Math.min(24, length * 0.65)
       const controlA = {
         x: from.x + dx / 3 - (dy / length) * bend,
@@ -247,7 +275,15 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       if (animal.element.dataset.stride !== stride) animal.element.dataset.stride = stride
       const yielding = String(animal.yielding)
       if (animal.element.dataset.yielding !== yielding) animal.element.dataset.yielding = yielding
-      const facing = `scale(${animal.direction} 1)`
+      const scale =
+        animal.kind === 'bear' && landscape ? trailGroundScale(animal.position.y, landscape) : 1
+      animal.element.dataset.scale = scale.toFixed(4)
+      if (animal.kind === 'bear') {
+        animal.collisionRadius =
+          habits.bear.footprint * Number(animal.element.dataset.animalSize) * scale
+        animal.element.dataset.collisionRadius = animal.collisionRadius.toFixed(4)
+      }
+      const facing = `scale(${animal.direction * scale} ${scale})`
       if (animal.facing.getAttribute('transform') !== facing)
         animal.facing.setAttribute('transform', facing)
     }
@@ -266,7 +302,11 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
         animal.phase === 'resting' &&
         obstacles.some(other => {
           const gap = circleClearance(animal.position, animal.collisionRadius, other)
-          return gap < 0 || (other.kind === 'traveler' && gap < 8)
+          return (
+            gap < 0 ||
+            ((other.kind === 'traveler' || other.kind === 'pet') &&
+              (gap < 8 || other.element?.dataset.yieldingTo === `animal-${animal.id}`))
+          )
         })
       )
         animal.remaining = Math.min(animal.remaining, 650)
@@ -282,7 +322,21 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     if (!animal.path) return
     const distance = Math.min((animal.speed * elapsed) / 1000, animal.path.length - animal.progress)
     const position = positionAlong(animal.path, animal.progress + distance)
-    if (!canMove(animal.position, position, animal.collisionRadius, obstacles)) {
+    const radius =
+      animal.kind === 'bear' && landscape
+        ? Math.max(
+            animal.collisionRadius,
+            habits.bear.footprint *
+              Number(animal.element.dataset.animalSize) *
+              trailGroundScale(position.y, landscape),
+          )
+        : animal.collisionRadius
+    const drawnFrom = { x: Math.round(animal.position.x), y: Math.round(animal.position.y) }
+    const drawnNext = { x: Math.round(position.x), y: Math.round(position.y) }
+    if (
+      !canMove(animal.position, position, radius, obstacles) ||
+      !canMove(drawnFrom, drawnNext, radius, obstacles)
+    ) {
       animal.yielding = true
       animal.blockedFor += elapsed
       if (animal.blockedFor >= 550) {
@@ -411,6 +465,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
         ? Math.max(0.5, Math.min(1.5, nextLandscape.width / landscape.width))
         : 1
       const sameSeed = seed === nextSeed
+      const sameLandscape = landscape === nextLandscape
       landscape = nextLandscape
       seed = nextSeed
       readRoots()
@@ -420,118 +475,125 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
         element.dataset.collisionActive = 'false'
         element.dataset.motion = 'paused'
       }
-      wanderers = [...scene.querySelectorAll<SVGGElement>('[data-trail-wander]')].flatMap<Wanderer>(
-        (element, index) => {
-          const id = element.dataset.trailWander
-          const kind = animalKind(element.dataset.trailAnimal)
-          const facing = element.querySelector<SVGGElement>('.trail-animal-facing')
-          const anchor = {
-            x: Number(element.dataset.animalHomeX),
-            y: Number(element.dataset.animalHomeY),
-          }
-          if (!id || !kind || !facing || !Number.isFinite(anchor.x) || !Number.isFinite(anchor.y))
-            return []
-          const size = Number(element.dataset.animalSize)
-          const collisionRadius =
-            habits[kind].footprint * (Number.isFinite(size) && size > 0 ? size : 2)
-          element.dataset.trailCollision = 'animal'
-          element.dataset.collisionId = `animal-${id}`
-          element.dataset.collisionActive = 'true'
-          element.dataset.collisionRadius = String(collisionRadius)
-          const old = sameSeed ? previous.get(id) : undefined
-          const home =
-            safeSite(
-              anchor,
-              kind,
-              candidate =>
-                Boolean(old) ||
-                placed.every(other => circleClearance(candidate, collisionRadius, other) >= 0),
-            ) ?? old?.home
-          if (!home) {
+      const elements = [...scene.querySelectorAll<SVGGElement>('[data-trail-wander]')]
+      if (sameSeed && sameLandscape)
+        elements.sort(
+          (left, right) =>
+            Number(previous.has(right.dataset.trailWander ?? '')) -
+            Number(previous.has(left.dataset.trailWander ?? '')),
+        )
+      wanderers = elements.flatMap<Wanderer>((element, index) => {
+        const id = element.dataset.trailWander
+        const kind = animalKind(element.dataset.trailAnimal)
+        const facing = element.querySelector<SVGGElement>('.trail-animal-facing')
+        const anchor = {
+          x: Number(element.dataset.animalHomeX),
+          y: Number(element.dataset.animalHomeY),
+        }
+        if (!id || !kind || !facing || !Number.isFinite(anchor.x) || !Number.isFinite(anchor.y))
+          return []
+        const size = Number(element.dataset.animalSize)
+        const radiusAt = (point: Point) =>
+          habits[kind].footprint *
+          (Number.isFinite(size) && size > 0 ? size : 2) *
+          (kind === 'bear' ? trailGroundScale(point.y, nextLandscape) : 1)
+        let collisionRadius = radiusAt(anchor)
+        element.dataset.trailCollision = 'animal'
+        element.dataset.collisionId = `animal-${id}`
+        element.dataset.collisionActive = 'true'
+        element.dataset.collisionRadius = String(collisionRadius)
+        const old = sameSeed ? previous.get(id) : undefined
+        const available = (candidate: Point) =>
+          placed.every(other => circleClearance(candidate, radiusAt(candidate), other) >= 0)
+        const home = old && sameLandscape ? old.home : safeSite(anchor, kind, available)
+        if (!home) {
+          holdForSpace(element)
+          return []
+        }
+        collisionRadius = radiusAt(home)
+        element.style.visibility = ''
+        const remap = (point: Point) =>
+          old
+            ? {
+                x: home.x + (point.x - old.home.x) * ratio,
+                y: home.y + (point.y - old.home.y) * ratio,
+              }
+            : home
+        if (old) {
+          const path = old.path ? pathFrom(old.path.points.map(remap)) : null
+          const mappedPosition = remap(old.position)
+          const position = safeSite(mappedPosition, kind, available)
+          if (!position) {
             holdForSpace(element)
             return []
           }
-          element.style.visibility = ''
-          const remap = (point: Point) =>
-            old
-              ? {
-                  x: home.x + (point.x - old.home.x) * ratio,
-                  y: home.y + (point.y - old.home.y) * ratio,
-                }
-              : home
-          if (old) {
-            const path = old.path ? pathFrom(old.path.points.map(remap)) : null
-            const allowed = path?.points.every(point => safe(point, kind))
-            const mappedPosition = remap(old.position)
-            const position = inHabitat(mappedPosition, kind)
-              ? mappedPosition
-              : safeSite(mappedPosition, kind)
-            if (!position) {
-              holdForSpace(element)
-              return []
-            }
-            placed.push({
-              id: `animal-${id}`,
-              kind: 'animal',
-              element,
-              x: Math.round(position.x),
-              y: Math.round(position.y),
-              radius: collisionRadius,
-            })
-            return [
-              {
-                ...old,
-                element,
-                facing,
-                home,
-                position,
-                path: allowed ? path : null,
-                progress:
-                  allowed && path && old.path ? (old.progress / old.path.length) * path.length : 0,
-                phase: old.phase === 'wandering' && !allowed ? 'resting' : old.phase,
-                remaining: old.phase === 'wandering' && !allowed ? 500 : old.remaining,
-                radius: habits[kind].radius * (nextLandscape.width < 700 ? 0.65 : 1),
-                collisionRadius,
-              },
-            ]
-          }
-          let hash = 0
-          for (const character of id) hash = Math.imul(hash, 31) + character.charCodeAt(0)
-          const random = trailRandom(nextSeed ^ hash ^ 0x58dfe793)
-          const direction = random() < 0.5 ? -1 : 1
-          const speed = habits[kind].speed + random() * habits[kind].variation
+          const relocated = position.x !== mappedPosition.x || position.y !== mappedPosition.y
+          const allowed = !relocated && path?.points.every(point => safe(point, kind))
+          const restarting = relocated || (old.phase === 'wandering' && !allowed)
+          collisionRadius = radiusAt(position)
           placed.push({
             id: `animal-${id}`,
             kind: 'animal',
             element,
-            x: Math.round(home.x),
-            y: Math.round(home.y),
+            x: Math.round(position.x),
+            y: Math.round(position.y),
             radius: collisionRadius,
           })
           return [
             {
-              id,
-              kind,
+              ...old,
               element,
               facing,
               home,
-              position: home,
-              path: null,
-              progress: 0,
-              travelled: 0,
-              direction,
-              phase: 'waiting',
-              remaining: 1400 + index * 35 + random() * 500,
-              speed,
+              position,
+              path: allowed ? path : null,
+              progress:
+                allowed && path && old.path ? (old.progress / old.path.length) * path.length : 0,
+              phase: restarting ? 'resting' : old.phase,
+              remaining: restarting ? 500 : old.remaining,
+              blockedFor: restarting ? 0 : old.blockedFor,
+              yielding: restarting ? false : old.yielding,
               radius: habits[kind].radius * (nextLandscape.width < 700 ? 0.65 : 1),
               collisionRadius,
-              blockedFor: 0,
-              yielding: false,
-              random,
-            } satisfies Wanderer,
+            },
           ]
-        },
-      )
+        }
+        let hash = 0
+        for (const character of id) hash = Math.imul(hash, 31) + character.charCodeAt(0)
+        const random = trailRandom(nextSeed ^ hash ^ 0x58dfe793)
+        const direction = random() < 0.5 ? -1 : 1
+        const speed = habits[kind].speed + random() * habits[kind].variation
+        placed.push({
+          id: `animal-${id}`,
+          kind: 'animal',
+          element,
+          x: Math.round(home.x),
+          y: Math.round(home.y),
+          radius: collisionRadius,
+        })
+        return [
+          {
+            id,
+            kind,
+            element,
+            facing,
+            home,
+            position: home,
+            path: null,
+            progress: 0,
+            travelled: 0,
+            direction,
+            phase: 'waiting',
+            remaining: 1400 + index * 35 + random() * 500,
+            speed,
+            radius: habits[kind].radius * (nextLandscape.width < 700 ? 0.65 : 1),
+            collisionRadius,
+            blockedFor: 0,
+            yielding: false,
+            random,
+          } satisfies Wanderer,
+        ]
+      })
       wanderers.sort((a, b) => a.id.localeCompare(b.id))
       render()
       schedule()

@@ -39,13 +39,31 @@ export function trailTerrain(landscape: Landscape, seed: number) {
     const length = 6 + Math.round(random() * 8)
     return `<path class="trail-pond-ripple" d="M${Math.round(x)} ${Math.round(y)}h${length}v2h-${length}Z"/>`
   }).join('')
-  const reeds = [-0.75, -0.25, 0.55, 0.85]
-    .map((fraction, index) => {
-      const x = Math.round(pond.x + pond.rx * fraction)
-      const y = Math.round(pond.y + pond.ry * Math.sqrt(1 - fraction ** 2) + 4)
-      return `<g transform="translate(${x} ${y})">${pixels(['..L...', '.LL.C.', '.LL.C.', 'L.L.C.', 'L.L.D.', '..L.D.'], { L: 'trail-meadow-reed', C: 'trail-reed-head', D: 'trail-tree-trunk' }, index % 2 ? 1 : 2)}</g>`
-    })
-    .join('')
+  const reeds = Array.from({ length: 10 }, (_, index) => {
+    const angle = index * 2.399963 + random() * 0.24
+    const x = Math.round(pond.x + Math.cos(angle) * pond.rx * 1.08)
+    const y = Math.round(pond.y + Math.sin(angle) * pond.ry * 1.08)
+    const size = index % 3 ? 1 : 2
+    return `<g class="trail-pond-reeds" data-pond-plant="reeds" data-ground-x="${x}" data-ground-y="${y}" transform="translate(${x - size * 3} ${y - size * 6})">${pixels(['..L...', '.LL.C.', '.LL.C.', 'L.L.C.', 'L.L.D.', '..L.D.'], { L: 'trail-meadow-reed', C: 'trail-reed-head', D: 'trail-tree-trunk' }, size)}</g>`
+  }).join('')
+  const bankPlants = Array.from({ length: 14 }, (_, index) => {
+    const angle = index * 2.399963 + 0.8
+    const radius = 1.2 + random() * 0.2
+    const x = Math.round(pond.x + Math.cos(angle) * pond.rx * radius)
+    const y = Math.round(pond.y + Math.sin(angle) * pond.ry * radius)
+    const rows =
+      index % 3
+        ? ['...L..', '.L.LL.', '..LLLL', '.LLL..']
+        : ['.C..C.', '.LL.L.', 'LLLLL.', '.LLL..']
+    return `<g class="trail-pond-bank-plant" data-pond-plant="bank" data-ground-x="${x}" data-ground-y="${y}" transform="translate(${x - 6} ${y - 8})">${pixels(rows, { L: 'trail-meadow-reed', C: 'trail-reed-head' }, 2)}</g>`
+  }).join('')
+  const lilyPads = Array.from({ length: 5 }, (_, index) => {
+    const angle = index * 2.399963 + 0.4
+    const radius = 0.72 + random() * 0.16
+    const x = Math.round(pond.x + Math.cos(angle) * pond.rx * radius)
+    const y = Math.round(pond.y + Math.sin(angle) * pond.ry * radius)
+    return `<g class="trail-pond-lily" data-pond-plant="lily" data-ground-x="${x}" data-ground-y="${y}" transform="translate(${x - 4} ${y - 2})">${pixels(['.LLL.', 'LLLL.', '.LL.L'], { L: 'trail-meadow-reed' }, 2)}</g>`
+  }).join('')
   const grid = width < 700 ? 3 : 4
   const bounds = {
     alpine: landscape.alpine,
@@ -56,6 +74,6 @@ export function trailTerrain(landscape: Landscape, seed: number) {
     <g class="trail-pond" data-trail-pond='${JSON.stringify(pond)}'>
       <g class="trail-pond-bank" transform="translate(${pond.x - pond.rx - 8} ${pond.y - pond.ry - 8})">${oval(pond, 8, grid)}</g>
       <g transform="translate(${pond.x - pond.rx} ${pond.y - pond.ry})">${oval(pond, 0, grid)}</g>
-      ${ripples}${reeds}
+      ${ripples}${lilyPads}${reeds}${bankPlants}
     </g>`
 }

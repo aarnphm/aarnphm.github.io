@@ -6,6 +6,16 @@
   .trail-goose {
     animation: none;
   }
+  .trail-bear-coat {
+    fill: color-mix(in srgb, var(--darkgray) 58%, #967953);
+  }
+  .trail-bear-shade,
+  .trail-bear-paw {
+    fill: color-mix(in srgb, var(--darkgray) 70%, #6c5c45);
+  }
+  .trail-bear-muzzle {
+    fill: color-mix(in srgb, var(--lightgray) 60%, #ba9e70);
+  }
 
   [data-phase='wandering'][data-stride='0'] {
     .trail-animal-leg-front {
