@@ -32,16 +32,8 @@
       "intro": null,
       "solution": "none",
       "problems": [
-        {
-          "n": 1,
-          "title": "Munkres §3.13",
-          "statement": "Munkres, §3, exercise 13."
-        },
-        {
-          "n": 2,
-          "title": "Munkres §9.8",
-          "statement": "Munkres, §9, exercise 8."
-        },
+        { "n": 1, "title": "Munkres §3.13", "statement": "Munkres, §3, exercise 13." },
+        { "n": 2, "title": "Munkres §9.8", "statement": "Munkres, §9, exercise 8." },
         {
           "n": 3,
           "title": "Munkres §13.7 and §17.16",
@@ -61,11 +53,7 @@
       "intro": null,
       "solution": "none",
       "problems": [
-        {
-          "n": 1,
-          "title": "Munkres §18.13",
-          "statement": "Munkres, §18, exercise 13."
-        },
+        { "n": 1, "title": "Munkres §18.13", "statement": "Munkres, §18, exercise 13." },
         {
           "n": 2,
           "title": "Munkres §20.6(a), (b)",
@@ -76,11 +64,7 @@
           "title": "Munkres §20.8(b), (c)",
           "statement": "Munkres, §20, exercises 8(b) and 8(c). Assume 8(a). Give answers only in 8(c)."
         },
-        {
-          "n": 4,
-          "title": "Munkres §24.4",
-          "statement": "Munkres, §24, exercise 4."
-        }
+        { "n": 4, "title": "Munkres §24.4", "statement": "Munkres, §24, exercise 4." }
       ]
     },
     {
@@ -90,26 +74,10 @@
       "intro": null,
       "solution": "none",
       "problems": [
-        {
-          "n": 1,
-          "title": "Munkres §26.9",
-          "statement": "Munkres, §26, exercise 9."
-        },
-        {
-          "n": 2,
-          "title": "Munkres §26.12",
-          "statement": "Munkres, §26, exercise 12."
-        },
-        {
-          "n": 3,
-          "title": "Munkres §28.4",
-          "statement": "Munkres, §28, exercise 4."
-        },
-        {
-          "n": 4,
-          "title": "Munkres §30.5",
-          "statement": "Munkres, §30, exercise 5."
-        }
+        { "n": 1, "title": "Munkres §26.9", "statement": "Munkres, §26, exercise 9." },
+        { "n": 2, "title": "Munkres §26.12", "statement": "Munkres, §26, exercise 12." },
+        { "n": 3, "title": "Munkres §28.4", "statement": "Munkres, §28, exercise 4." },
+        { "n": 4, "title": "Munkres §30.5", "statement": "Munkres, §30, exercise 5." }
       ]
     },
     {
@@ -124,21 +92,13 @@
           "title": "Munkres §31.7(a), (b), (d)",
           "statement": "Munkres, §31, exercises 7(a), 7(b) and 7(d)."
         },
-        {
-          "n": 2,
-          "title": "Munkres §33.4",
-          "statement": "Munkres, §33, exercise 4."
-        },
+        { "n": 2, "title": "Munkres §33.4", "statement": "Munkres, §33, exercise 4." },
         {
           "n": 3,
           "title": "Munkres §34.4 and §34.5",
           "statement": "Munkres, §34, exercises 4 and 5. Give proofs or counterexamples."
         },
-        {
-          "n": 4,
-          "title": "Munkres §38.9",
-          "statement": "Munkres, §38, exercise 9."
-        }
+        { "n": 4, "title": "Munkres §38.9", "statement": "Munkres, §38, exercise 9." }
       ]
     },
     {

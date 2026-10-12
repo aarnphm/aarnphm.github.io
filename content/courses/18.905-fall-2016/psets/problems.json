@@ -86,11 +86,7 @@
           "title": "Mayer-Vietoris for the projective plane, Klein bottle and torus",
           "statement": "Use the Mayer-Vietoris sequence to compute the homology groups of the projective plane $P$, the Klein bottle $K$, and the torus $T$. (The projective plane is obtained by sewing a disk onto a Möbius band along their boundaries. The Klein bottle is obtained either by sewing two Möbius bands together, or by sewing the two boundary components of a cylinder together in a funny way. A torus is obtained by sewing the boundary components of a cylinder together in a less funny way. In each case, it's a good idea to give yourself a hem: glue open \"collars\" together.)\n\n(b) Hopefully you computed that $H_2(T)$ is an infinite cyclic group. Say something sensible about whether the \"fundamental class\" you constructed in Problem **2** is indeed a generator of that abelian group."
         },
-        {
-          "n": 13,
-          "title": "(empty)",
-          "statement": "$\\varnothing$."
-        },
+        { "n": 13, "title": "(empty)", "statement": "$\\varnothing$." },
         {
           "n": 14,
           "title": "Connected sums and homology of closed surfaces",
@@ -168,11 +164,7 @@
       "intro": "Extra credit for calling attention to mistakes!",
       "solution": "none",
       "problems": [
-        {
-          "n": 25,
-          "title": "(empty)",
-          "statement": "$\\varnothing$."
-        },
+        { "n": 25, "title": "(empty)", "statement": "$\\varnothing$." },
         {
           "n": 26,
           "title": "Another $3 \\times 3$ puzzle: a four-term exact sequence",

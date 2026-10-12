@@ -52,21 +52,9 @@
           "title": "Rational intervals and the power set of $\\mathbb{N}$",
           "statement": "(a) Let $I = \\{[p, q] \\,;\\, p \\le q,\\ p, q \\in \\mathbb{Q}\\}$ be the set of intervals in $\\mathbb{R}$ with rational endpoints. Show that $I$ is countable.\n\n(b) Let $P$ be the set of all subsets of $\\mathbb{N}$. Show that $P$ is uncountable. [*Hint*: for an alleged bijection $f : \\mathbb{N} \\to P$, consider the set $\\overline{D} = \\{n \\in \\mathbb{N} \\,;\\, n \\notin f(n)\\}$.]"
         },
-        {
-          "n": 3,
-          "title": "Rudin Exercise 7, p. 43",
-          "statement": "Exercise 7, p. 43 of Rudin."
-        },
-        {
-          "n": 4,
-          "title": "Rudin Exercise 8, p. 43",
-          "statement": "Exercise 8, p. 43 of Rudin."
-        },
-        {
-          "n": 5,
-          "title": "Rudin Exercise 9, p. 43",
-          "statement": "Exercise 9, p. 43 of Rudin."
-        }
+        { "n": 3, "title": "Rudin Exercise 7, p. 43", "statement": "Exercise 7, p. 43 of Rudin." },
+        { "n": 4, "title": "Rudin Exercise 8, p. 43", "statement": "Exercise 8, p. 43 of Rudin." },
+        { "n": 5, "title": "Rudin Exercise 9, p. 43", "statement": "Exercise 9, p. 43 of Rudin." }
       ]
     },
     {
