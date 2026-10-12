@@ -706,20 +706,47 @@ async function t100Details(url: string): Promise<TriathlonCalendarDetails> {
   return details
 }
 
-async function hyroxDetails(url: string): Promise<TriathlonCalendarDetails> {
+async function hyroxDetails(url: string, year: number): Promise<TriathlonCalendarDetails> {
   const html = await fetchText(url)
-  const text = decodeEntities(
-    html.replace(/<(script|style)[\s\S]*?<\/\1>/g, '').replace(/<[^>]+>/g, '\n'),
-  )
+  const text = toText(fromHtml(html))
   const lines = text
     .split('\n')
     .map(line => line.trim())
     .filter(Boolean)
-  const at = lines.findIndex(line => /^Event Location:?$/i.test(line))
+  const at = lines.findIndex(line => /^Event Location:/i.test(line))
   const details = emptyDetails([url])
   // The address line precedes the venue name.
-  details.venue = at >= 0 ? (lines[at + 2] ?? lines[at + 1] ?? null) : null
-  details.schedulePending = /Race Schedule:\s*To Be Announced/i.test(text.replace(/\s+/g, ' '))
+  details.venue = at >= 0 ? (lines[at + (lines[at] === 'Event Location:' ? 2 : 1)] ?? null) : null
+  const scheduleAt = lines.findIndex(line => /^Race Schedule:/i.test(line))
+  const days: ParsedDay[] = []
+  let current: ParsedDay | null = null
+  for (const line of scheduleAt >= 0 ? lines.slice(scheduleAt + 1) : []) {
+    if (/^(Laps to run:|Relay Briefing:|Athlete Check-In)/i.test(line)) break
+    if (/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),/i.test(line)) {
+      const date = dayDate(line, year)
+      current = date ? { date, raceHeading: true, items: [] } : null
+      if (current) days.push(current)
+      continue
+    }
+    const wave = /^(HYROX [^:]+):\s*(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})$/i.exec(line)
+    if (!current || !wave) continue
+    const range = timeRange(wave[2], wave[3])
+    if (!range || !range[1] || range[1] < range[0]) continue
+    current.items.push({
+      start: range[0],
+      end: range[1],
+      activity: wave[1],
+      location: null,
+      race: false,
+    })
+  }
+  // A provisional timetable can follow the organiser's unchanged TBA heading.
+  details.schedule = buildSchedule(
+    days.filter(day => day.items.length > 0),
+    url,
+  )
+  details.schedulePending =
+    !details.schedule && /Race Schedule:\s*To Be Announced/i.test(text.replace(/\s+/g, ' '))
   return details
 }
 
@@ -732,7 +759,7 @@ async function eventDetails(url: string, year: number): Promise<TriathlonCalenda
     case 't100':
       return t100Details(url)
     case 'hyrox':
-      return hyroxDetails(url)
+      return hyroxDetails(url, year)
     default:
       return emptyDetails([url])
   }
