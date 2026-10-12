@@ -11,16 +11,17 @@ import { styleText } from 'util'
 import type { QuartzConfig } from './cfg'
 import { AGENT_SKILLS_SOURCE_DIRECTORY } from './plugins/emitters/agent-skills'
 import { contentAssetClaims } from './plugins/emitters/assets'
-import { resetWriteCache } from './plugins/emitters/helpers'
+import { removeWritten, resetWriteCache } from './plugins/emitters/helpers'
 import { resetStaticFileCache, staticAssetClaims } from './plugins/emitters/static'
 import { ProcessedContent } from './plugins/vfile'
 import { emitContent, emitPartialEmitter } from './processors/emit'
 import { filterContentResult } from './processors/filter'
 import { parseMarkdown } from './processors/parse'
 import { ChangeEvent } from './types/plugin'
+import { courseDirOf } from './util/course'
 import { Argv, BuildCtx } from './util/ctx'
 import { emitQuartzDevEvent } from './util/dev-events'
-import { isFlashcardPath } from './util/flashcards-path'
+import { flashcardsSlug, isFlashcardPath } from './util/flashcards-path'
 import { glob, toPosixPath } from './util/glob'
 import {
   cleanOutputExcept,
@@ -73,6 +74,8 @@ async function syncOutputAssetClaims(ctx: BuildCtx, refreshStaticFiles = false):
 }
 
 type BuildReason = 'initial' | 'source'
+/** `courses` keeps `public` and re-renders only the course pages, for a course source edit. */
+type BuildScope = 'site' | 'courses'
 type RebuildQueue = { running: boolean; requested: boolean }
 type PendingChanges = Map<FilePath, ChangeEvent['type']>
 type BuildData = {
@@ -123,6 +126,44 @@ function buildChangeEvents(
   return events
 }
 
+/**
+ * Output slugs a deleted course page leaves in `public`: its page (ContentPage, FolderPage or PdfReader
+ * writes it at the page slug), and the deck page of a `.fc`.
+ */
+function deletedCourseOutputSlugs(event: ChangeEvent): string[] | undefined {
+  const data = event.file?.data
+  if (!data?.slug || courseDirOf(data.slug) === null) return undefined
+  const sourceSlug = data.flashcards?.sourceSlug
+  return sourceSlug ? [data.slug, flashcardsSlug(sourceSlug)] : [data.slug]
+}
+
+/** Emitters that render course pages, and the client bundles their components feed. */
+const courseEmitters = [
+  'ContentPage',
+  'FolderPage',
+  'PdfReader',
+  'FlashcardsPage',
+  'CourseReviewPage',
+]
+
+async function emitCourses(ctx: BuildCtx, content: ProcessedContent[]): Promise<void> {
+  // An add has no previous file, so no emitter skips the page as unchanged.
+  const changeEvents: ChangeEvent[] = content.flatMap(([, file]) =>
+    file.data.slug && file.data.filePath && courseDirOf(file.data.slug) !== null
+      ? [
+          {
+            type: 'add' as const,
+            path: path.relative(ctx.argv.directory, file.data.filePath) as FilePath,
+            file,
+          },
+        ]
+      : [],
+  )
+  await emitPartialEmitter(ctx, content, undefined, 'ComponentResources')
+  await emitPartialEmitter(ctx, content, undefined, 'LazyScripts')
+  for (const name of courseEmitters) await emitPartialEmitter(ctx, content, changeEvents, name)
+}
+
 function describeBuildError(err: unknown): string {
   if (err instanceof Error) return err.message
   if (typeof err === 'string') return err
@@ -165,6 +206,7 @@ export async function buildQuartz(
   mut: Mutex,
   clientRefresh: () => void,
   reason: BuildReason = 'initial',
+  scope: BuildScope = 'site',
 ) {
   let gitCommitSha: string | undefined
 
@@ -218,15 +260,20 @@ export async function buildQuartz(
 
     const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
     syncCtxFiles(ctx, allFiles)
-    await cleanOutputForBuild(ctx, perf, true)
+    if (scope === 'site') await cleanOutputForBuild(ctx, perf, true)
 
     const parsedFiles = await parseMarkdown(ctx, filePaths)
     const filteredContent = filterContentResult(ctx, parsedFiles).published
     for (const [fp, content] of indexContent(filteredContent)) initialContent.set(fp, content)
 
-    await emitContent(ctx, filteredContent)
-    await writeCurrentOutputAssetManifest(ctx)
-    delete ctx.outputAssetPreserved
+    if (scope === 'courses') {
+      ctx.incremental = true
+      await emitCourses(ctx, filteredContent)
+    } else {
+      await emitContent(ctx, filteredContent)
+      await writeCurrentOutputAssetManifest(ctx)
+      delete ctx.outputAssetPreserved
+    }
     ctx.incremental = argv.watch
     console.log(
       styleText('green', `Done processing ${markdownPaths.length} files in ${perf.timeSince()}`),
@@ -475,9 +522,23 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
     const processedFiles = filterContentResult(ctx, parsedFiles).published
     const current = indexContent(processedFiles)
     const changeEvents = incremental ? buildChangeEvents(ctx, pending, contentMap, current) : []
-    const dropsContentPage = changeEvents.some(event => event.type === 'delete' && event.file)
+    // Partial emit does not remove every output a deleted page derived, so a delete cleans `public`
+    // and emits the site again. Course pages are leaves whose outputs sit at their own slug: remove
+    // those and keep the rebuild scoped to the course.
+    const droppedOutputs = changeEvents
+      .filter(event => event.type === 'delete' && event.file)
+      .map(deletedCourseOutputSlugs)
 
-    if (incremental && !dropsContentPage) {
+    if (incremental && droppedOutputs.every(slugs => slugs !== undefined)) {
+      await Promise.all(
+        droppedOutputs
+          .flat()
+          .flatMap(slug => [
+            removeWritten(ctx, slug, '.html'),
+            removeWritten(ctx, slug, '.md'),
+            removeWritten(ctx, `${slug}-og-image`, '.webp'),
+          ]),
+      )
       await emitContent(ctx, processedFiles, changeEvents)
     } else {
       await cleanOutputForBuild(ctx, perf, true)
@@ -574,10 +635,16 @@ export async function buildSourceResources(
   }
 }
 
-export default async (argv: Argv, mut: Mutex, clientRefresh: () => void, reason?: BuildReason) => {
+export default async (
+  argv: Argv,
+  mut: Mutex,
+  clientRefresh: () => void,
+  reason?: BuildReason,
+  scope?: BuildScope,
+) => {
   try {
     const { default: cfg } = await import('../quartz.config')
-    return await buildQuartz(cfg, argv, mut, clientRefresh, reason)
+    return await buildQuartz(cfg, argv, mut, clientRefresh, reason, scope)
   } catch (err) {
     trace('\nExiting Quartz due to a fatal error', err as Error)
   }

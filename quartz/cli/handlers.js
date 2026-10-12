@@ -178,6 +178,37 @@ export const parseSourceInputs = metafile =>
 export const stravaPayloadSourceInputs = metafile =>
   sourceInputClosure(metafile, fp => fp === 'quartz/util/strava-payload.ts')
 
+// Course page components: they render only pages under `content/courses/`.
+const courseSourceRoot = /^quartz\/components\/(?:Courses?[A-Z]\w*\.tsx$|course-[^/]+\/)/
+
+/**
+ * Server modules whose edits change only course pages: a course root, or a module that only course
+ * modules import.
+ */
+export const courseSourceInputs = metafile => {
+  const inputs = metafile.inputs ?? {}
+  const importers = new Map()
+  for (const [fp, input] of Object.entries(inputs)) {
+    for (const imported of input.imports ?? []) {
+      if (imported.external || !inputs[imported.path]) continue
+      if (!importers.has(imported.path)) importers.set(imported.path, new Set())
+      importers.get(imported.path).add(fp)
+    }
+  }
+  const scoped = new Map()
+  const isCourseInput = fp => {
+    if (courseSourceRoot.test(fp)) return true
+    // A cycle back to a module in progress proves nothing, so it counts against the scope.
+    if (scoped.has(fp)) return scoped.get(fp) === true
+    scoped.set(fp, 'pending')
+    const from = importers.get(fp)
+    const result = from !== undefined && [...from].every(isCourseInput)
+    scoped.set(fp, result)
+    return result
+  }
+  return new Set(Object.keys(inputs).filter(isCourseInput))
+}
+
 const bundleInfoOutputFile = () => cacheFile.replace(/^\.\//, '')
 
 export const bundleInfoSummary = metafile => {
@@ -265,6 +296,7 @@ export async function handleBuild(argv) {
   // drops a module from the closure still counts as a server change.
   let serverSourceInputs = new Set()
   let previousServerSourceInputs = new Set()
+  let courseInputs = new Set()
 
   const disposeActiveBuild = async () => {
     if (!activeBuild) return
@@ -279,6 +311,7 @@ export async function handleBuild(argv) {
       globalThis.__quartzStravaPayloadSourceInputs = stravaPayloadSourceInputs(result.metafile)
       previousServerSourceInputs = serverSourceInputs
       serverSourceInputs = new Set(Object.keys(result.metafile.inputs))
+      courseInputs = courseSourceInputs(result.metafile)
       if (argv.bundleInfo) {
         await printBundleInfo(result.metafile)
       }
@@ -306,6 +339,7 @@ export async function handleBuild(argv) {
       ? bundle.sourceRebuildScope(
           changedPaths,
           new Set([...previousServerSourceInputs, ...serverSourceInputs]),
+          courseInputs,
         )
       : { kind: 'full' }
     if (scope.kind === 'partial') {
@@ -320,15 +354,29 @@ export async function handleBuild(argv) {
       return
     }
 
+    const courses = scope.kind === 'courses'
     if (activeBuild) {
-      console.log(styleText('yellow', 'Detected a source code change, doing a hard rebuild...'))
+      console.log(
+        styleText(
+          'yellow',
+          courses
+            ? 'Detected a course source change, rebuilding the courses...'
+            : 'Detected a source code change, doing a hard rebuild...',
+        ),
+      )
       await disposeActiveBuild()
     }
     activeBundle?.releaseModuleCaches()
     activeBundle = bundle
     release()
 
-    activeBuild = await bundle.default(argv, buildMutex, clientRefresh, buildReason)
+    activeBuild = await bundle.default(
+      argv,
+      buildMutex,
+      clientRefresh,
+      buildReason,
+      courses ? 'courses' : 'site',
+    )
     clientRefresh()
   }
 
