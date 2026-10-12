@@ -4,6 +4,7 @@ export type VisitorConditions = {
   code: number
   cloud: number
   wind: number
+  gust: number | null
   windDirection: number | null
   temp: number
   day: boolean | null
@@ -43,6 +44,7 @@ function readConditions(value: unknown): VisitorConditions | null {
     code: value.code,
     cloud: value.cloud,
     wind: value.wind,
+    gust: finite(value.gust) && value.gust >= 0 ? value.gust : null,
     windDirection:
       finite(value.windDirection) && value.windDirection >= 0 && value.windDirection <= 360
         ? value.windDirection
@@ -101,6 +103,7 @@ export function readOpenMeteo(value: unknown): Pick<VisitorForecast, 'weather' |
     code: current.weather_code,
     cloud: finite(current.cloud_cover) ? current.cloud_cover / 100 : null,
     wind: current.wind_speed_10m,
+    gust: current.wind_gusts_10m,
     windDirection: current.wind_direction_10m,
     temp: current.temperature_2m,
     day: current.is_day === 1 ? true : current.is_day === 0 ? false : null,

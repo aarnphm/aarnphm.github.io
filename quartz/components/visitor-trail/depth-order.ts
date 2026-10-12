@@ -55,7 +55,7 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
     restore()
     const distant = scene.querySelector<SVGGElement>('.trail-foothill-objects')
     for (const element of scene.querySelectorAll<SVGGElement>(
-      '.trail-tree, [data-trail-wander], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger]',
+      '.trail-tree, [data-trail-wander], [data-holiday-decoration], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger], [data-trail-visitor]',
     )) {
       const owner = element.parentElement
       const far =

@@ -1,9 +1,11 @@
 import type { Point } from './landscape'
+import { parallaxDepth, parallaxMovement } from './perspective'
 
 export type CollisionActor = Point & {
   id: string
   kind: 'animal' | 'traveler' | 'pet' | 'trunk'
   radius: number
+  resting?: boolean
   element?: SVGGElement
 }
 type SpacingStatus = 'clear' | 'passing' | 'yielding' | 'escaping'
@@ -20,7 +22,27 @@ export type ActorSpacing = {
 }
 export type SpacingBounds = { left: number; right: number; top: number; bottom: number }
 
-export function readActors(scene: ParentNode, includeWaiting = false): CollisionActor[] {
+function cameraClearance(element: SVGGElement, relativeTo?: SVGGElement) {
+  const depth = (element?: SVGGElement) => {
+    const layer = element?.closest<SVGGElement>('[data-trail-depth]')
+    return layer
+      ? layer.dataset.trailDepth === 'alpine'
+        ? parallaxDepth.alpine
+        : parallaxDepth.foothill
+      : 0
+  }
+  // Reserve all camera positions so parallax cannot move a background body into a valley walker.
+  return (
+    Math.abs(depth(element) - depth(relativeTo)) *
+    Math.hypot(parallaxMovement.horizontal, parallaxMovement.vertical + parallaxMovement.scroll)
+  )
+}
+
+export function readActors(
+  scene: ParentNode,
+  includeWaiting = false,
+  relativeTo?: SVGGElement,
+): CollisionActor[] {
   const actors: CollisionActor[] = []
   for (const element of scene.querySelectorAll<SVGGElement>('[data-trail-collision]')) {
     if (
@@ -49,7 +71,15 @@ export function readActors(scene: ParentNode, includeWaiting = false): Collision
       element.dataset.reader ??
       element.dataset.alpineTraveler
     if (!id) continue
-    actors.push({ id, kind, x: matrix.e, y: matrix.f, radius, element })
+    actors.push({
+      id,
+      kind,
+      x: matrix.e,
+      y: matrix.f,
+      radius: radius + cameraClearance(element, relativeTo),
+      resting: kind === 'animal' && element.dataset.phase === 'resting',
+      element,
+    })
   }
   return actors
 }
@@ -66,7 +96,7 @@ export function readStationaryActors(scene: ParentNode, except: string): Collisi
   )
 }
 
-export function readTrunks(scene: ParentNode): CollisionActor[] {
+export function readTrunks(scene: ParentNode, relativeTo?: SVGGElement): CollisionActor[] {
   const solids: CollisionActor[] = Array.from(
     scene.querySelectorAll<SVGGElement>('[data-camp-solid]'),
   ).map(element => ({
@@ -74,26 +104,28 @@ export function readTrunks(scene: ParentNode): CollisionActor[] {
     kind: 'trunk',
     x: Number(element.dataset.groundX),
     y: Number(element.dataset.groundY),
-    radius: Number(element.dataset.solidRadius),
+    radius: Number(element.dataset.solidRadius) + cameraClearance(element, relativeTo),
     element,
   }))
   return [
     ...solids,
-    ...Array.from(scene.querySelectorAll<SVGGElement>('.trail-tree')).flatMap((element, index) => {
-      if (!element.transform.baseVal.numberOfItems) return []
-      const matrix = element.transform.baseVal.getItem(0).matrix
-      const radius = Number(element.dataset.trunkRadius ?? 3 * Number(element.dataset.treeScale))
-      if (!Number.isFinite(radius)) return []
-      const trunk: CollisionActor = {
-        id: `trunk-${element.dataset.treeId ?? index}`,
-        kind: 'trunk',
-        x: matrix.e,
-        y: matrix.f,
-        radius,
-        element,
-      }
-      return [trunk]
-    }),
+    ...Array.from(scene.querySelectorAll<SVGGElement>('.trail-tree, .trail-woodland-tree')).flatMap(
+      (element, index) => {
+        if (!element.transform.baseVal.numberOfItems) return []
+        const matrix = element.transform.baseVal.getItem(0).matrix
+        const radius = Number(element.dataset.trunkRadius ?? 3 * Number(element.dataset.treeScale))
+        if (!Number.isFinite(radius)) return []
+        const trunk: CollisionActor = {
+          id: `trunk-${element.dataset.treeId ?? element.dataset.woodlandId ?? index}`,
+          kind: 'trunk',
+          x: matrix.e,
+          y: matrix.f,
+          radius: radius + cameraClearance(element, relativeTo),
+          element,
+        }
+        return [trunk]
+      },
+    ),
   ]
 }
 
@@ -246,7 +278,11 @@ export function animalInWay(
   })
 }
 
-function queuedAnimal(id: string, blocker: CollisionActor, actors: readonly CollisionActor[]) {
+export function queuedAnimal(
+  id: string,
+  blocker: CollisionActor,
+  actors: readonly CollisionActor[],
+) {
   const seen = new Set([id])
   let lead: CollisionActor | undefined = blocker
   while (lead) {
@@ -285,8 +321,8 @@ export function spacedStep(
   spacing.yieldingThrough = null
   const others = obstacles.filter(other => other.id !== id)
   const from = spacedPosition(base, spacing)
-  const intended = spacedPosition(next, spacing)
   const distance = Math.hypot(next.x - base.x, next.y - base.y)
+  const intended = distance ? spacedPosition(next, spacing) : towards(from, next, budget)
   const outside = (point: Point) =>
     bounds
       ? Math.hypot(
@@ -298,7 +334,7 @@ export function spacedStep(
     const remaining = outside(point)
     return (
       (remaining === 0 || remaining < outside(from) - 0.00001) &&
-      Math.hypot(point.x - from.x, point.y - from.y) <= budget &&
+      Math.hypot(point.x - from.x, point.y - from.y) <= budget + 0.00001 &&
       canMove(from, point, radius, others)
     )
   }
@@ -322,8 +358,12 @@ export function spacedStep(
       return false
     }
   }
-  const heading = distance
-    ? { x: (next.x - base.x) / distance, y: (next.y - base.y) / distance }
+  const headingDelta = distance
+    ? { x: next.x - base.x, y: next.y - base.y }
+    : { x: intended.x - from.x, y: intended.y - from.y }
+  const headingLength = Math.hypot(headingDelta.x, headingDelta.y)
+  const heading = headingLength
+    ? { x: headingDelta.x / headingLength, y: headingDelta.y / headingLength }
     : { x: 1, y: 0 }
   const reach = destination
     ? Math.min(radius * 1.5 + 6, Math.hypot(destination.x - next.x, destination.y - next.y))
@@ -350,7 +390,7 @@ export function spacedStep(
     const recovered = towards(spacing.offset, { x: 0, y: 0 }, Math.max(0, budget - distance))
     const point = { x: next.x + recovered.x, y: next.y + recovered.y }
     const recovery = Math.hypot(recovered.x - spacing.offset.x, recovered.y - spacing.offset.y)
-    if (distance + recovery <= budget && clears(point)) {
+    if (distance + recovery <= budget + 0.00001 && clears(point)) {
       spacing.offset = recovered
       spacing.status = Math.hypot(recovered.x, recovered.y) > 0.1 ? 'passing' : 'clear'
       return true
@@ -502,7 +542,7 @@ export function publishActor(
       y >= bounds.top &&
       y <= bounds.bottom &&
       grounded(circle, radius * scale) &&
-      [...readActors(scene), ...readTrunks(scene)]
+      [...readActors(scene, false, element), ...readTrunks(scene, element)]
         .filter(other => other.id !== id)
         .every(other => circleClearance(circle, radius * scale, other) >= 0)
     ) {

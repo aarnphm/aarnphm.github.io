@@ -30,15 +30,14 @@ import {
   type Landscape,
   type Point,
 } from './landscape'
-import { detourTrail } from './obstacle-route'
+import { detourTrail, replanOccupiedWaypoints } from './obstacle-route'
 import { pixels } from './pixels'
 
-export type CampVisitor = { id: string; camp: number; own: boolean }
 type Person = {
   id: string
   site: number
   slot: number
-  role: 'camper' | 'builder' | 'visitor'
+  role: 'camper' | 'builder'
   element: SVGGElement
   position: Point
   spacing: ActorSpacing
@@ -115,7 +114,6 @@ export function mountCampCommunity(
   let tents: Tent[][] = []
   let routines: CampRoutine[] = []
   let trailRoutes: JourneyRoute[] = []
-  let visitors: CampVisitor[] = []
   let forecastDay: boolean | null = null
   let frame = 0
   let last = 0
@@ -189,7 +187,6 @@ export function mountCampCommunity(
     person.element.dataset.phase = person.phase
     person.element.dataset.campSite = String(person.site)
     person.element.dataset.stride = String(person.stride % 2)
-    person.element.dataset.visitor = String(person.role === 'visitor')
     person.element.dataset.moveSpeed = '27'
     person.element.dataset.motion = person.spacing.status === 'yielding' ? 'yielding' : person.phase
     publishActor(person.element, person.id, point, scale, person.spacing, active, elapsed)
@@ -537,19 +534,6 @@ export function mountCampCommunity(
         (person.phase === 'departing' && elapsed >= person.departAt)
       ) {
         const before = { ...person.position }
-        const destinationPoint = person.route[0] ?? person.target
-        const distance = Math.hypot(
-          destinationPoint.x - person.position.x,
-          destinationPoint.y - person.position.y,
-        )
-        const budget = (delta / 1000) * 18
-        person.stalled = distance < person.remaining - 0.15 ? 0 : person.stalled + delta
-        person.remaining = distance
-        const fraction = Math.min(1, budget / Math.max(1, distance))
-        const intended = {
-          x: person.position.x + (destinationPoint.x - person.position.x) * fraction,
-          y: person.position.y + (destinationPoint.y - person.position.y) * fraction,
-        }
         const ownTent = tents[person.site][person.tent]?.element.dataset.campTent
         const exit = tents[person.site][person.exitTent]
         if (
@@ -565,6 +549,34 @@ export function mountCampCommunity(
             obstacle.id !== `tent-${leavingTent}`,
         )
         const scale = trailGroundScale(person.position.y, landscape)
+        const replacement = replanOccupiedWaypoints(
+          person.id,
+          person.position,
+          person.route,
+          12 * scale,
+          nearby,
+          bounds(person.phase === 'departing'),
+          person.spacing.yieldingTo,
+        )
+        if (replacement?.length) {
+          person.route = replacement
+          person.target = replacement[replacement.length - 1]
+          person.remaining = Infinity
+          person.stalled = 0
+        }
+        const destinationPoint = person.route[0] ?? person.target
+        const distance = Math.hypot(
+          destinationPoint.x - person.position.x,
+          destinationPoint.y - person.position.y,
+        )
+        const budget = (delta / 1000) * 18
+        person.stalled = distance < person.remaining - 0.15 ? 0 : person.stalled + delta
+        person.remaining = distance
+        const fraction = Math.min(1, budget / Math.max(1, distance))
+        const intended = {
+          x: person.position.x + (destinationPoint.x - person.position.x) * fraction,
+          y: person.position.y + (destinationPoint.y - person.position.y) * fraction,
+        }
         if (
           spacedStep(
             person.id,
@@ -730,14 +742,13 @@ export function mountCampCommunity(
     scene.dataset.campMotion = 'running'
     frame = view.requestAnimationFrame(tick)
   }
-  const addPerson = (id: string, site: number, role: Person['role'], own = false) => {
+  const addPerson = (id: string, site: number, role: Person['role']) => {
     if (!landscape) return
     const element = document.createElementNS('http://www.w3.org/2000/svg', 'g')
     element.classList.add('trail-camp-person')
     element.dataset.campPerson = id
-    element.dataset.own = String(own)
     element.dataset.destination = role === 'builder' && tents[site].length ? 'build' : 'fire'
-    element.innerHTML = `<g class="trail-camp-person-art" transform="translate(-4 -12)"></g><text class="trail-camp-question" y="-25" text-anchor="middle" aria-hidden="true">?</text>${own ? '<text class="trail-camp-you" y="-24" text-anchor="middle">you</text>' : ''}`
+    element.innerHTML = `<g class="trail-camp-person-art" transform="translate(-4 -12)"></g><text class="trail-camp-question" y="-25" text-anchor="middle" aria-hidden="true">?</text>`
     layer.append(element)
     const person: Person = {
       id,
@@ -771,7 +782,7 @@ export function mountCampCommunity(
     if (role === 'camper') {
       person.position = seat(person)
       person.phase = 'attending'
-    } else if (role === 'builder') {
+    } else {
       person.tent = nextTent(person)
       if (person.tent >= 0) {
         const tent = tents[site][person.tent]
@@ -781,69 +792,14 @@ export function mountCampCommunity(
         person.target = seat(person)
         element.dataset.destination = 'fire'
       }
-    } else {
-      person.target = seat(person)
     }
     person.position = onDryLand(person.position, landscape, 1.8)
     placePerson(person, person.role === 'builder')
-    if (reduced.matches && role === 'visitor') {
-      person.position = seat(person)
-      person.spacing = actorSpacing()
-      person.phase = bedtime(site) && tents[site].length ? 'sleeping' : 'attending'
-      if (person.phase === 'sleeping') {
-        person.tent = person.slot % tents[site].length
-        tents[site][person.tent].element.dataset.occupied = 'true'
-      } else placePerson(person)
-    }
     setPose(person)
     person.position = spacedPosition(person.position, person.spacing)
     person.spacing.offset = { x: 0, y: 0 }
     travelTo(person, person.target)
     renderPerson(person, person.phase !== 'sleeping')
-  }
-  const syncVisitors = () => {
-    if (!sites.length) return
-    const shown = [
-      ...visitors.filter(visitor => visitor.own),
-      ...visitors.filter(visitor => !visitor.own),
-    ].slice(0, 12)
-    for (const person of people.filter(person => person.role === 'visitor')) {
-      const visitor = shown.find(visitor => `guest-${visitor.id}` === person.id)
-      if (visitor) {
-        const site = visitor.camp % sites.length
-        if (person.site !== site) {
-          if (!['staying', 'sleeping'].includes(routines[site].phase)) {
-            person.element.remove()
-            people = people.filter(other => other !== person)
-            continue
-          }
-          person.site = site
-          person.slot = 2
-          while (
-            people.some(
-              other => other !== person && other.site === site && other.slot === person.slot,
-            )
-          )
-            person.slot++
-          person.tent = -1
-          person.phase = 'walking'
-          person.element.dataset.destination = 'fire'
-          travelTo(person, seat(person))
-          setPose(person)
-          renderPerson(person)
-        }
-        continue
-      }
-      person.element.remove()
-      people = people.filter(other => other !== person)
-    }
-    for (const visitor of shown) {
-      if (
-        ['staying', 'sleeping'].includes(routines[visitor.camp % sites.length].phase) &&
-        !people.some(person => person.id === `guest-${visitor.id}`)
-      )
-        addPerson(`guest-${visitor.id}`, visitor.camp % sites.length, 'visitor', visitor.own)
-    }
   }
   const resetCamp = (site: number) => {
     for (const person of people.filter(person => person.site === site)) person.element.remove()
@@ -868,7 +824,6 @@ export function mountCampCommunity(
     for (let index = 0; index < 2; index++) addPerson(`camper-${site}-${index}`, site, 'camper')
     for (let index = 0; index < settings.builders; index++)
       addPerson(`builder-${site}-${index}`, site, 'builder')
-    syncVisitors()
     lighting()
     onStructure()
   }
@@ -966,7 +921,6 @@ export function mountCampCommunity(
       for (let index = 0; index < settings.builders; index++)
         addPerson(`builder-${site.id}-${index}`, site.id, 'builder')
     }
-    syncVisitors()
     lighting()
     if (!host.hidden) resume()
   }
@@ -993,16 +947,5 @@ export function mountCampCommunity(
   })
   reduced.addEventListener('change', resume, { signal })
   signal.addEventListener('abort', pause, { once: true })
-  return {
-    update,
-    pause,
-    resume,
-    packUp,
-    setVisitors(current: CampVisitor[]) {
-      visitors = current
-      syncVisitors()
-      if (reduced.matches && !host.hidden) resume()
-      onStructure()
-    },
-  }
+  return { update, pause, resume, packUp }
 }

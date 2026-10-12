@@ -197,7 +197,10 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
   const placeTravelers = () => {
     if (!landscape) return
     const ground = landscape
-    const obstacles = [...readActors(scene, true), ...readTrunks(scene)]
+    const obstacles = [
+      ...readActors(scene, true, travelerLayer ?? undefined),
+      ...readTrunks(scene, travelerLayer ?? undefined),
+    ]
     for (const traveler of travelers) {
       const progress = posedProgress(traveler)
       placeOnReflow(
@@ -365,7 +368,10 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     if (signal.aborted || host.hidden || document.hidden || reducedMotion.matches) return pause()
     const elapsed = previousTime === null ? 0 : Math.max(0, time - previousTime)
     if (time - renderedAt < 1000 / 24 && travelers.some(moving)) return schedule()
-    const obstacles = [...readActors(scene), ...readTrunks(scene)]
+    const obstacles = [
+      ...readActors(scene, false, travelerLayer ?? undefined),
+      ...readTrunks(scene, travelerLayer ?? undefined),
+    ]
     for (const traveler of travelers)
       step(traveler, moving(traveler) ? Math.min(200, elapsed) : elapsed, obstacles)
     previousTime = time

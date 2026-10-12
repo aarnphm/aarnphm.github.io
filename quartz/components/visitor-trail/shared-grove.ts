@@ -24,6 +24,7 @@ export function mountSharedGrove(
   const document = scene.ownerDocument
   const view = document.defaultView
   if (!view) throw new Error('The grove needs its homepage')
+  const total = document.querySelector<HTMLElement>('[data-grove-water-total]')
   const hits = document.createElement('div')
   hits.className = 'trail-tree-waterings'
   const status = document.createElement('div')
@@ -68,6 +69,19 @@ export function mountSharedGrove(
     }
   }
   const apply = () => {
+    if (signal.aborted) return
+    if (total && channel) {
+      const waters = Object.values(data).reduce(
+        (sum, value) => sum + (contribution(value)?.count ?? 0),
+        0,
+      )
+      const label = `${waters.toLocaleString()} ${waters === 1 ? 'watering' : 'waterings'}`
+      total.textContent = label
+      total.dataset.groveWaterTotal = String(waters)
+      total.setAttribute('aria-label', `Shared grove, ${label}`)
+      total.title = 'Shared grove · all visitors'
+      total.hidden = false
+    }
     if (host.hidden || signal.aborted) return
     let changed = false
     const targets: { tree: SVGGElement; button: HTMLButtonElement }[] = []

@@ -20,8 +20,8 @@
   .trail-water-feedback {
     position: fixed;
     z-index: 3;
-    left: max(16px, env(safe-area-inset-left));
-    bottom: max(16px, env(safe-area-inset-bottom));
+    right: max(16px, env(safe-area-inset-right));
+    bottom: calc(max(16px, env(safe-area-inset-bottom)) + 28px);
     max-width: min(270px, calc(100vw - 32px));
     padding: 6px 9px;
     background: var(--light);
@@ -37,9 +37,6 @@
       overflow: hidden;
       clip-path: inset(50%);
     }
-  }
-  .trail-tree-panel:not([hidden]) ~ .trail-water-feedback {
-    bottom: 44px;
   }
   .trail-camp-select {
     display: flex;
@@ -155,10 +152,6 @@
   }
   .trail-camp-person[data-phase='sleeping'] {
     visibility: hidden;
-  }
-  .trail-camp-you {
-    font: 8px var(--codeFont);
-    fill: var(--darkgray);
   }
   .trail-camp-question {
     visibility: hidden;

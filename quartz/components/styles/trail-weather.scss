@@ -19,7 +19,7 @@
     stroke-width: 1;
   }
   .trail-weather-gust {
-    opacity: calc(var(--trail-wind-strength, 0) * 0.25);
+    opacity: calc(var(--trail-gust-strength, 0) * 0.25);
   }
   .trail-weather-rain {
     opacity: calc(var(--trail-rain-strength, 0) * 0.42);
@@ -63,6 +63,7 @@
       .trail-weather-gust,
       .trail-weather-rain,
       .trail-weather-snow,
+      .trail-weather-leaf,
       .trail-weather-dapple {
         animation-play-state: paused;
       }
@@ -78,6 +79,9 @@
   45% {
     transform: rotate(calc(var(--trail-sway-high, 0deg) * var(--trail-tree-wind-scale, 1)));
   }
+  58% {
+    transform: rotate(calc(var(--trail-sway-gust, 0deg) * var(--trail-tree-wind-scale, 1)));
+  }
   72% {
     transform: rotate(calc(var(--trail-sway-low, 0deg) * var(--trail-tree-wind-scale, 1) * 0.4));
   }
@@ -90,7 +94,7 @@
     transform: translateX(-8px);
   }
   55% {
-    opacity: calc(var(--trail-wind-strength, 0) * 0.3);
+    opacity: calc(var(--trail-gust-strength, 0) * 0.3);
   }
   75% {
     opacity: 0;

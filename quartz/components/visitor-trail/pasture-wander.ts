@@ -1,4 +1,4 @@
-import type { TrailAnimalKind } from './animals'
+import type { WanderingAnimalKind } from './animals'
 import {
   canMove,
   circleClearance,
@@ -13,7 +13,7 @@ type Phase = 'waiting' | 'wandering' | 'resting'
 type WanderPath = { points: Point[]; distances: number[]; length: number }
 type Wanderer = {
   id: string
-  kind: TrailAnimalKind
+  kind: WanderingAnimalKind
   element: SVGGElement
   facing: SVGGElement
   home: Point
@@ -84,14 +84,36 @@ const habits = {
     stride: 5,
     footprint: 9,
   },
+  turkey: {
+    speed: 6.5,
+    variation: 2.5,
+    radius: 86,
+    rest: 1300,
+    pause: 2200,
+    clearance: 15,
+    stride: 5,
+    footprint: 10,
+  },
+  rabbit: {
+    speed: 8,
+    variation: 3,
+    radius: 72,
+    rest: 1600,
+    pause: 2400,
+    clearance: 12,
+    stride: 5,
+    footprint: 8,
+  },
 }
 
-function animalKind(value: string | undefined): TrailAnimalKind | null {
+function animalKind(value: string | undefined): WanderingAnimalKind | null {
   return value === 'cow' ||
     value === 'dog' ||
     value === 'cat' ||
     value === 'goose' ||
-    value === 'bear'
+    value === 'bear' ||
+    value === 'turkey' ||
+    value === 'rabbit'
     ? value
     : null
 }
@@ -130,7 +152,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
   let timer: number | null = null
   let previousTime: number | null = null
 
-  const inHabitat = (point: Point, kind: TrailAnimalKind) => {
+  const inHabitat = (point: Point, kind: WanderingAnimalKind) => {
     if (!landscape) return false
     if (kind === 'goose') return pondDistance(point, landscape.pond) < 0.86
     return (
@@ -142,13 +164,13 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       Math.hypot(point.x - landscape.camp.x, point.y - landscape.camp.y) > 90
     )
   }
-  const safe = (point: Point, kind: TrailAnimalKind) =>
+  const safe = (point: Point, kind: WanderingAnimalKind) =>
     inHabitat(point, kind) &&
     (kind === 'goose' ||
       roots.every(root => Math.hypot(point.x - root.x, point.y - root.y) > habits[kind].clearance))
   const safeSite = (
     point: Point,
-    kind: TrailAnimalKind,
+    kind: WanderingAnimalKind,
     available: (candidate: Point) => boolean = () => true,
   ) => {
     const fits = (candidate: Point) => {

@@ -1,0 +1,90 @@
+.trail-scene,
+.homepage-trail-toggle {
+  .trail-holiday-ink {
+    fill: color-mix(in srgb, var(--darkgray) 70%, #4c493f);
+  }
+  .trail-holiday-shade {
+    fill: color-mix(in srgb, var(--gray) 72%, #8d8875);
+  }
+  .trail-holiday-paper {
+    fill: color-mix(in srgb, var(--lightgray) 30%, #ece3ce);
+  }
+  .trail-holiday-brown {
+    fill: color-mix(in srgb, var(--darkgray) 32%, #85745c);
+  }
+  .trail-holiday-orange {
+    fill: color-mix(in srgb, var(--gray) 30%, #c18a53);
+  }
+  .trail-holiday-red {
+    fill: color-mix(in srgb, var(--gray) 25%, #af5e4c);
+  }
+  .trail-holiday-gold {
+    fill: color-mix(in srgb, var(--lightgray) 30%, #c6a66a);
+  }
+  .trail-holiday-green {
+    fill: color-mix(in srgb, var(--gray) 45%, #879773);
+  }
+}
+
+.homepage-trail-holiday {
+  line-height: 0;
+  svg {
+    width: 23px;
+    height: 23px;
+    shape-rendering: crispEdges;
+  }
+  svg path {
+    stroke: none;
+    stroke-dasharray: none;
+  }
+}
+
+.homepage-trail-toggle[data-holiday] > svg {
+  display: none;
+}
+
+.trail-scene {
+  [data-holiday-decoration],
+  [data-holiday-tree] {
+    shape-rendering: crispEdges;
+  }
+  .trail-holiday-ghost {
+    opacity: 0.85;
+  }
+  [data-holiday-animal][data-phase='wandering'][data-stride='1'] .trail-holiday-body {
+    transform: translateY(-1px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-holiday-float {
+      animation: trail-holiday-float 7s ease-in-out infinite;
+    }
+    .trail-holiday-lights {
+      animation: trail-holiday-lights 6s ease-in-out infinite;
+    }
+    &[data-weather-motion='paused'] {
+      .trail-holiday-float,
+      .trail-holiday-lights {
+        animation-play-state: paused;
+      }
+    }
+  }
+}
+
+@keyframes trail-holiday-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+@keyframes trail-holiday-lights {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}

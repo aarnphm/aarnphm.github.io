@@ -1,0 +1,90 @@
+.homepage-trail-scene {
+  .trail-visitor {
+    shape-rendering: crispEdges;
+  }
+  .trail-visitor-tracks {
+    fill: var(--darkgray);
+    opacity: 0.3;
+  }
+  .trail-visitor-labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .trail-visitor-label {
+    position: absolute;
+    width: 28px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    color: var(--darkgray);
+    cursor: pointer;
+    pointer-events: auto;
+    &:focus-visible {
+      outline: 1px dashed var(--darkgray);
+      outline-offset: 2px;
+    }
+  }
+  .trail-visitor-you {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font: 9px/1.4 var(--codeFont);
+  }
+  .trail-visitor-popover {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 5px 8px;
+    border: 1px solid var(--lightgray);
+    border-radius: 0;
+    background: var(--light);
+    color: var(--darkgray);
+    font: 10px/1.5 var(--codeFont);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .trail-shared-cursor {
+    position: fixed;
+    z-index: 8;
+    width: 18px;
+    height: 22px;
+    color: var(--darkgray);
+    pointer-events: none;
+    opacity: 0.75;
+    svg {
+      width: 18px;
+      height: 22px;
+      fill: currentColor;
+      stroke: var(--light);
+      stroke-width: 1.5;
+    }
+    span {
+      position: absolute;
+      top: 18px;
+      left: 16px;
+      padding: 1px 4px;
+      border: 1px solid var(--lightgray);
+      background: var(--light);
+      font: 9px/1.5 var(--codeFont);
+      white-space: nowrap;
+    }
+    &[data-flipped='true'] span {
+      left: auto;
+      right: 16px;
+    }
+    &[data-touch='true'] svg {
+      opacity: 0.5;
+    }
+  }
+  @media (pointer: coarse), (max-width: 700px) {
+    .trail-visitor-label {
+      width: 44px;
+      height: 44px;
+    }
+  }
+}

@@ -93,7 +93,18 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       line.bottom = Math.max(line.bottom, rect.bottom)
     } else lines.push({ ...rect })
   }
-  const obstacles = lines.map(line => ({
+  const board = landing.querySelector('.homepage-board')?.getBoundingClientRect()
+  const protectedLines = board
+    ? [
+        {
+          left: board.left - bounds.left,
+          right: board.right - bounds.left,
+          top: board.top - bounds.top,
+          bottom: board.bottom - bounds.top,
+        },
+      ]
+    : lines
+  const obstacles = protectedLines.map(line => ({
     left: Math.max(0, line.left - (width < 700 ? 4 : 10)),
     right: Math.min(width, line.right + (width < 700 ? 4 : 10)),
     top: Math.max(0, line.top - 6),
@@ -217,8 +228,9 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     bottom,
     reading.left - bounds.left,
     reading.right - bounds.left,
-    lines,
+    protectedLines,
     seed,
+    board ? protectedLines[0] : undefined,
   )
   const backdropClear = clearSpace(width, height, [
     ...obstacles,

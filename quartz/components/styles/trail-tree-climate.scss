@@ -1,0 +1,87 @@
+.homepage-trail-scene {
+  .trail-tree-canopy {
+    transform-box: fill-box;
+    transform-origin: 50% 85%;
+  }
+  .trail-tree-snow {
+    fill: color-mix(in srgb, var(--lightgray) 18%, #f1f5f0);
+    opacity: var(--trail-snow-cover, 0);
+    transition: opacity 1800ms ease-out;
+  }
+  .trail-scene .trail-tree-shadow {
+    fill: color-mix(in srgb, #e8ece5 var(--trail-snow-mix, 0%), var(--gray));
+  }
+  .trail-scene[data-season='autumn'] :is(.trail-tree, .trail-woodland-tree)[data-tree='oak'] {
+    --trail-tree-crown: color-mix(in srgb, var(--gray) 30%, #b94e3d);
+    --trail-tree-light: color-mix(in srgb, var(--lightgray) 45%, #d78b55);
+    --trail-tree-dark: color-mix(in srgb, var(--darkgray) 30%, #873c35);
+    --trail-tree-gold: color-mix(in srgb, var(--lightgray) 40%, #ca7852);
+  }
+  .trail-scene[data-season='autumn'] :is(.trail-tree, .trail-woodland-tree)[data-tree='birch'] {
+    --trail-tree-crown: color-mix(in srgb, var(--gray) 30%, #c29b4e);
+    --trail-tree-light: color-mix(in srgb, var(--lightgray) 35%, #d6b16a);
+    --trail-tree-dark: color-mix(in srgb, var(--darkgray) 30%, #9c693e);
+    --trail-tree-gold: color-mix(in srgb, var(--lightgray) 30%, #d1a352);
+  }
+  .trail-weather-leaf {
+    fill: color-mix(in srgb, var(--gray) 25%, #b66041);
+    opacity: 0.45;
+    shape-rendering: crispEdges;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-scene[data-weather-windy='true'] .trail-tree-canopy {
+      animation: trail-leaf-flutter var(--trail-wind-period, 9s) ease-in-out infinite;
+      animation-delay: var(--trail-weather-delay, 0s);
+    }
+    .trail-weather-leaf {
+      animation: trail-autumn-leaf var(--trail-wind-period, 9s) ease-out infinite;
+      animation-delay: var(--trail-weather-delay, 0s);
+    }
+    .trail-scene[data-weather-motion='paused'] .trail-tree-canopy {
+      animation-play-state: paused;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .trail-tree-snow {
+      transition: none;
+    }
+  }
+}
+
+@keyframes trail-leaf-flutter {
+  0%,
+  25%,
+  100% {
+    transform: rotate(calc(var(--trail-leaf-angle, 0deg) * -0.15));
+  }
+  42%,
+  58% {
+    transform: translate(
+        calc(var(--trail-leaf-x, 0px) * var(--trail-tree-wind-scale, 1)),
+        calc(var(--trail-leaf-y, 0px) * var(--trail-tree-wind-scale, 1))
+      )
+      rotate(calc(var(--trail-leaf-angle, 0deg) * var(--trail-tree-wind-scale, 1)));
+  }
+  49%,
+  68% {
+    transform: rotate(calc(var(--trail-leaf-angle, 0deg) * -0.3));
+  }
+}
+
+@keyframes trail-autumn-leaf {
+  0%,
+  20%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  38% {
+    opacity: 0.55;
+  }
+  88% {
+    opacity: 0;
+    transform: translate(var(--trail-leaf-travel-x, 0px), var(--trail-leaf-travel-y, 24px))
+      rotate(120deg);
+  }
+}

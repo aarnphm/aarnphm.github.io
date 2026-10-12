@@ -1,10 +1,13 @@
 @use '../../styles/mixin.scss' as *;
 @use './trail-wayfarers.scss';
 @use './trail-weather.scss';
+@use './trail-tree-climate.scss';
+@use './trail-holidays.scss';
 @use './trail-fauna.scss';
 @use './trail-mountains.scss';
 @use './trail-alpine-travelers.scss';
 @use './trail-community.scss';
+@use './trail-visitors.scss';
 
 .homepage-trail-scene {
   .trail-scene {
@@ -21,7 +24,7 @@
   .trail-scene[data-trail-rendered='false'] {
     .trail-canvas,
     .trail-tree-waterings,
-    .trail-stone,
+    .trail-visitor-labels,
     .trail-tree-toggle {
       visibility: hidden;
     }
@@ -241,7 +244,8 @@
     fill: var(--gray);
     opacity: 0.3;
   }
-  .trail-tree {
+  .trail-tree,
+  .trail-woodland-tree {
     --trail-tree-crown: color-mix(in srgb, var(--gray) 50%, #84916b);
     --trail-tree-light: color-mix(in srgb, var(--lightgray) 60%, #b6b58a);
     --trail-tree-dark: color-mix(in srgb, var(--darkgray) 35%, #65724f);
@@ -249,12 +253,12 @@
     opacity: var(--trail-tree-opacity, 0.9);
     shape-rendering: crispEdges;
   }
-  .trail-tree[data-tree-tone='lichen'] {
+  :is(.trail-tree, .trail-woodland-tree)[data-tree-tone='lichen'] {
     --trail-tree-crown: color-mix(in srgb, var(--gray) 55%, #91a18b);
     --trail-tree-light: color-mix(in srgb, var(--lightgray) 55%, #c3c7a5);
     --trail-tree-dark: color-mix(in srgb, var(--darkgray) 40%, #667d69);
   }
-  .trail-tree[data-tree-tone='ochre'] {
+  :is(.trail-tree, .trail-woodland-tree)[data-tree-tone='ochre'] {
     --trail-tree-crown: color-mix(in srgb, var(--gray) 50%, #b7a270);
     --trail-tree-light: color-mix(in srgb, var(--lightgray) 55%, #d3be8d);
     --trail-tree-dark: color-mix(in srgb, var(--darkgray) 45%, #958257);
@@ -331,9 +335,6 @@
     fill: #af3029;
   }
   .trail-rocks,
-  [data-trail-stones] {
-    fill: var(--darkgray);
-  }
   .trail-smoke {
     fill: var(--gray);
     opacity: 0.45;
@@ -343,58 +344,6 @@
     opacity: 0;
   }
 
-  .trail-stone {
-    position: absolute;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--dark);
-    transform: translate(-50%, -50%);
-    cursor: grab;
-    pointer-events: auto;
-    touch-action: none;
-  }
-  .trail-stone svg {
-    width: 16px;
-    height: 16px;
-    overflow: visible;
-  }
-  .trail-stone path {
-    fill: var(--darkgray);
-    stroke: var(--light);
-    stroke-width: 1;
-  }
-  .trail-stone-ring {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 0.75;
-    stroke-dasharray: 2 2;
-  }
-  .trail-stone-owner {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 8px;
-    line-height: 13px;
-  }
-  .trail-stone:focus-visible {
-    outline: 1px solid var(--darkgray);
-    outline-offset: -10px;
-    border-radius: 50%;
-  }
-  .trail-stone[data-dragging] {
-    cursor: grabbing;
-  }
-  .trail-stone[aria-disabled='true'] {
-    opacity: 0.35;
-    cursor: default;
-  }
   .trail-campsite {
     position: absolute;
     width: 128px;
@@ -664,9 +613,6 @@
     .trail-ground {
       animation: trail-arrive 500ms ease-out 200ms both;
     }
-    .trail-stone {
-      animation: trail-arrive 160ms ease-out var(--trail-arrival, 0ms) both;
-    }
     .trail-campsite {
       animation: trail-arrive 400ms ease-out var(--trail-camp-arrival, 6000ms) both;
     }
@@ -689,15 +635,8 @@
     .trail-cat-tail {
       animation: trail-tail-flick 11s steps(1, end) var(--trail-animal-delay) infinite;
     }
-    .trail-stone:focus-visible,
     .trail-campsite[data-revealed='true'] {
       animation: none;
-    }
-    .trail-stone:not([data-dragging]) svg {
-      transition: transform 120ms ease-out;
-    }
-    .trail-stone:hover svg {
-      transform: rotate(-12deg) scale(1.2);
     }
     .trail-flame-frame {
       animation: trail-fire 1050ms steps(1, end) var(--phase) infinite;

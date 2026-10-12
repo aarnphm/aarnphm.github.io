@@ -36,7 +36,7 @@ export async function handleWeather(
   if (lat === null || lon === null)
     return Response.json({ place, country, weather: null, solar: null }, { headers })
 
-  const key = new Request(`https://weather.cache/v4/${lat},${lon}`)
+  const key = new Request(`https://weather.cache/v5/${lat},${lon}`)
   const cache = await caches.open('weather')
   const cached = await cache.match(key)
   const stored = cached ? readVisitorForecast(await cached.json().catch(() => null)) : null
@@ -51,7 +51,7 @@ export async function handleWeather(
   target.searchParams.set('longitude', String(lon))
   target.searchParams.set(
     'current',
-    'weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,temperature_2m,is_day',
+    'weather_code,cloud_cover,wind_speed_10m,wind_gusts_10m,wind_direction_10m,temperature_2m,is_day',
   )
   target.searchParams.set('temperature_unit', 'celsius')
   target.searchParams.set('wind_speed_unit', 'kmh')

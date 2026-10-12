@@ -10,6 +10,7 @@ export function readingRoutes(
   right: number,
   lines: ReadingLine[],
   seed: number,
+  surface?: ReadingLine,
 ) {
   const random = trailRandom(seed ^ 0x72c641a9)
   const ordered = [...lines].sort((a, b) => a.top - b.top)
@@ -25,7 +26,12 @@ export function readingRoutes(
   const crossings: Crossing[] = [
     { y: bottom + 76 + random() * 4, room: 3 },
     { y: Math.max(14, firstLine - 28), room: Math.min(5, firstLine / 4) },
-    ...available.slice(0, width < 700 ? 1 : 2),
+    ...(surface
+      ? [
+          { y: bottom + 36 + random() * 4, room: 3 },
+          { y: Math.max(14, firstLine - 48), room: Math.min(3, firstLine / 4) },
+        ]
+      : available.slice(0, width < 700 ? 1 : 2)),
   ]
   const marginLeft = Math.max(5, Math.min(width * 0.45, left - 12))
   const marginRight = Math.max(5, width - Math.max(width * 0.55, right + 12))
@@ -35,8 +41,14 @@ export function readingRoutes(
     const span = guardRight - guardLeft
     const crossing = y + (random() - 0.5) * room
     const bow = (random() - 0.5) * room * 1.5
-    const entry = index === 0 ? 36 + random() * firstLine : random() * bottom * 0.8 + 16
-    const exit = Math.max(16, Math.min(bottom + 82, crossing + (random() - 0.5) * bottom * 0.35))
+    const entry = surface
+      ? crossing + (random() - 0.5) * room
+      : index === 0
+        ? 36 + random() * firstLine
+        : random() * bottom * 0.8 + 16
+    const exit = surface
+      ? crossing + (random() - 0.5) * room
+      : Math.max(16, Math.min(bottom + 82, crossing + (random() - 0.5) * bottom * 0.35))
     const bendLeft = guardLeft * (0.25 + random() * 0.45)
     const bendRight = width - (width - guardRight) * (0.25 + random() * 0.45)
     const approach = entry + (crossing - entry) * (0.35 + random() * 0.25)

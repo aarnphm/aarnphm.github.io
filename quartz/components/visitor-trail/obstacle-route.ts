@@ -1,6 +1,12 @@
 import type { JourneyRoute } from './hiker-journey'
 import type { Landscape, Point } from './landscape'
-import { canMove, circleClearance, type CollisionActor, type SpacingBounds } from './actor-spacing'
+import {
+  canMove,
+  circleClearance,
+  queuedAnimal,
+  type CollisionActor,
+  type SpacingBounds,
+} from './actor-spacing'
 
 type PlannedTrail = { points: Point[]; detours: number }
 export type NavigableTrail = JourneyRoute & { d: string; detours: number }
@@ -142,6 +148,49 @@ export function detourTrail(
     }
   }
   return { points, detours }
+}
+
+export function replanOccupiedWaypoints(
+  id: string,
+  from: Point,
+  waypoints: readonly Point[],
+  radius: number,
+  obstacles: readonly CollisionActor[],
+  bounds: SpacingBounds,
+  waitingForAnimal?: string | null,
+): Point[] | null {
+  const goal = waypoints[0]
+  if (!goal) return null
+  const others = obstacles.filter(other => other.id !== id)
+  const restingAnimal = others.find(
+    other => other.id === waitingForAnimal && other.kind === 'animal' && other.resting,
+  )
+  if (waitingForAnimal && !restingAnimal) return null
+  const blockers = others.filter(other => circleClearance(goal, radius, other) < 0)
+  if (
+    !restingAnimal &&
+    (!blockers.length ||
+      blockers.some(
+        other =>
+          other.kind === 'animal' || (other.kind === 'traveler' && queuedAnimal(id, other, others)),
+      ))
+  )
+    return null
+  const planned = detourTrail(
+    [from, ...waypoints],
+    radius,
+    restingAnimal
+      ? others.map(other =>
+          other === restingAnimal ? { ...other, radius: other.radius + radius * 1.5 + 14 } : other,
+        )
+      : others.filter(other => other.kind !== 'animal'),
+    bounds,
+  )
+  if (!planned) return null
+  const start = planned.points[0]
+  return Math.hypot(start.x - from.x, start.y - from.y) > 0.1
+    ? planned.points
+    : planned.points.slice(1)
 }
 
 export function navigableTrail(
