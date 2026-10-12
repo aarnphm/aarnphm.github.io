@@ -100,7 +100,7 @@ export const TRIATHLON_CALENDAR_CATALOG: Readonly<Record<number, TriathlonCalend
         format: 'HYROX',
         date: '2027-03-26',
         endDate: '2027-03-28',
-        note: 'Event weekend; division to be decided.',
+        note: 'Provisional start-wave windows, subject to change. Times are local to Miami Beach. Check-in opens 90 minutes before each division’s first wave; bring ID. Public sale: October 22, 2026 at 12:00 EDT (Toronto time). Division to be decided.',
       },
       'https://www.ironman.com/races/im-lanzarote/register': {
         name: 'IRONMAN Lanzarote',
