@@ -45,7 +45,7 @@ import {
   notebookRuntimeJavascriptWorkerPath,
   notebookRuntimePyrightGenericStubPath,
   notebookRuntimePyrightPackageStubsDir,
-  notebookRuntimePyrightPyodideLockUrl,
+  notebookRuntimePyrightPyodideLockPath,
   notebookRuntimePyrightSitePackagesPath,
   notebookRuntimePyrightTypeshedDir,
   notebookRuntimePyrightWorkerEntry,
@@ -235,12 +235,11 @@ async function notebookPyrightLocalPackageStubFiles(): Promise<Record<string, st
 }
 
 async function notebookPyrightPyodidePackageStubFiles(): Promise<Record<string, string>> {
-  const [response, genericStub] = await Promise.all([
-    fetch(notebookRuntimePyrightPyodideLockUrl),
+  const [lockSource, genericStub] = await Promise.all([
+    fs.readFile(notebookRuntimePyrightPyodideLockPath, 'utf8'),
     fs.readFile(notebookRuntimePyrightGenericStubPath, 'utf8'),
   ])
-  if (!response.ok) throw new Error(`pyodide package lock request failed with ${response.status}`)
-  const value: unknown = await response.json()
+  const value: unknown = JSON.parse(lockSource)
   if (!isJsonObject(value)) throw new Error('pyodide package lock is not a JSON object')
   return notebookPyrightPackageStubFiles(
     notebookRuntimePyrightSitePackagesPath,
