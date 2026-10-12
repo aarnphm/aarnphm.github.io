@@ -1113,77 +1113,70 @@ export function mountainTerrain(range: MountainRange): Terrain {
 }
 
 export function buildMountainRanges(alpine: Alpine, seed: number): MountainRange[] {
-  const random = trailRandom(seed ^ 0x13a5b79d)
+  const sharedRandom = trailRandom(seed ^ 0x13a5b79d)
+  const narrow = alpine.width < 700
   const paintWidth = alpine.width + 16
   const result: MountainRange[] = []
 
-  for (const tier of tiers) {
+  for (const [tierIndex, tier] of tiers.entries()) {
+    // Adding a background range must not reshape the existing tiers in front.
+    const random = narrow
+      ? sharedRandom
+      : trailRandom(seed ^ 0x13a5b79d ^ Math.imul(tierIndex + 1, 0x9e3779b9))
     const span = tier === 'middle' ? 1.12 : tier === 'background' ? 0.97 : 0.83
-    const count =
-      alpine.width < 700 ? 1 : Math.max(1, Math.ceil(paintWidth / (alpine.height * 3.45 * span)))
     const shuffled = [...forms]
     for (let index = shuffled.length - 1; index > 0; index--) {
       const other = Math.floor(random() * (index + 1))
       ;[shuffled[index], shuffled[other]] = [shuffled[other], shuffled[index]]
     }
-    const bag =
-      alpine.width < 700
-        ? shuffled.filter(
-            form =>
-              !result.some(range => range.form === form) &&
-              (tier !== 'background' || (form !== 'pasture-ridge' && form !== 'limestone-wall')),
-          )
-        : shuffled
+    const bag = narrow
+      ? shuffled.filter(
+          form =>
+            !result.some(range => range.form === form) &&
+            (tier !== 'background' || (form !== 'pasture-ridge' && form !== 'limestone-wall')),
+        )
+      : shuffled
     const overlap = 0.21 + random() * 0.07
-    const parts = Array.from({ length: count }, (_, index) => ({
-      weight: 0.78 + random() * 0.46,
-      baseOffset:
+    let left = alpine.left - 8
+    let index = 0
+
+    while (index === 0 || (!narrow && left < alpine.left + alpine.width + 8)) {
+      const weight = 0.78 + random() * 0.46
+      const baseOffset =
         tier === 'foreground'
           ? 0
-          : alpine.height * (tier === 'middle' ? 0.035 + random() * 0.045 : 0.1 + random() * 0.065),
-      elevation: tier === 'foreground' ? 0.82 + random() * 0.12 : 0.96 + random() * 0.1,
-      mirrored: random() > 0.5,
-      phase: random() * Math.PI * 2,
-      form: bag[index % bag.length],
-    }))
-    const total =
-      parts.reduce((sum, part) => sum + part.weight, 0) -
-      parts
-        .slice(1)
-        .reduce((sum, part, index) => sum + overlap * Math.min(part.weight, parts[index].weight), 0)
-    const unit = paintWidth / total
-    let left = alpine.left - 8
-
-    for (let index = 0; index < parts.length; index++) {
-      const part = parts[index]
-      const width = part.weight * unit
-      const base = alpine.base - part.baseOffset
-      const tierCap =
-        alpine.width < 700 ? (tier === 'foreground' ? 0.56 : tier === 'middle' ? 0.73 : 1) : 1
-      const height = Math.min(
-        (base - alpine.top) * tierCap,
-        (width / terrains[part.form].aspect) * part.elevation,
-      )
+          : alpine.height * (tier === 'middle' ? 0.035 + random() * 0.045 : 0.1 + random() * 0.065)
+      const elevation = tier === 'foreground' ? 0.82 + random() * 0.12 : 0.96 + random() * 0.1
+      const mirrored = random() > 0.5
+      const phase = random() * Math.PI * 2
+      const form = bag[index % bag.length]
+      const base = alpine.base - baseOffset
+      const tierCap = narrow ? (tier === 'foreground' ? 0.56 : tier === 'middle' ? 0.73 : 1) : 1
+      const availableHeight = (base - alpine.top) * tierCap
+      const height = narrow
+        ? Math.min(availableHeight, (paintWidth / terrains[form].aspect) * elevation)
+        : availableHeight * Math.min(1, span * 0.75 * weight)
+      const width = narrow ? paintWidth : (height * terrains[form].aspect) / elevation
       result.push({
         left,
         top: base - height,
         width,
         height,
         base,
-        mirrored: part.mirrored,
+        mirrored,
         depth:
           tier === 'foreground'
-            ? 0.9 + part.elevation * 0.08
+            ? 0.9 + elevation * 0.08
             : tier === 'middle'
-              ? 0.6 + part.elevation * 0.05
-              : 0.3 + part.elevation * 0.05,
-        phase: part.phase,
+              ? 0.6 + elevation * 0.05
+              : 0.3 + elevation * 0.05,
+        phase,
         index: result.length,
-        form: part.form,
+        form,
         tier,
       })
-      const next = parts[index + 1]
-      left += width - (next ? overlap * Math.min(width, next.weight * unit) : 0)
+      left += width * (1 - overlap)
+      index++
     }
   }
   return result
@@ -1235,6 +1228,10 @@ export function buildMountainTracks(
   entrances?: readonly Point[],
 ): MountainTrack[] {
   const ranges = buildMountainRanges(alpine, seed)
+  const onMountain = (x: number, depth: number): Point => {
+    const ground = mountainGroundAt(x, depth, ranges) ?? alpine.base - 12
+    return { x, y: Math.max(ground, (mountainCrestAt(x, ranges) ?? ground - 12) + 12) }
+  }
   const supplied = entrances?.slice(0, 6)
   const starts = supplied?.length
     ? supplied
@@ -1255,9 +1252,28 @@ export function buildMountainTracks(
           range.left + range.width * (range.mirrored ? 1 - fraction : fraction),
         ),
       )
-      const ground = mountainGroundAt(x, depth, ranges) ?? alpine.base - 12
-      return { x, y: Math.max(ground, (mountainCrestAt(x, ranges) ?? ground - 12) + 12) }
+      return onMountain(x, depth)
     })
+    const lastPoint = keys.at(-1)
+    const lastKey = authored.points.at(-1)
+    const summitLimit = entrance.y - Math.max(4, alpine.height * 0.06)
+    if (lastPoint && lastKey && lastPoint.y > summitLimit) {
+      // An overlapping ridge can cover an authored summit; finish on visible uphill terrain.
+      let closest = Infinity
+      for (let step = 0; step <= 64; step++) {
+        const x = Math.max(
+          alpine.left + 4,
+          Math.min(alpine.left + alpine.width - 4, range.left + (range.width * step) / 64),
+        )
+        if (mountainRangesAt(x, ranges)[0]?.index !== range.index) continue
+        const candidate = onMountain(x, lastKey[1])
+        const distance = Math.abs(candidate.x - lastPoint.x)
+        if (candidate.y <= summitLimit && distance < closest) {
+          closest = distance
+          keys[keys.length - 1] = candidate
+        }
+      }
+    }
     const points: Point[] = [{ ...entrance }]
     const anchors = [{ ...entrance }, ...keys]
     for (let segment = 1; segment < anchors.length; segment++) {

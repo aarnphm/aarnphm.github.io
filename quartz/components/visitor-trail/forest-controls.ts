@@ -1,3 +1,4 @@
+import { holidayLabels, type HolidaySelection } from '../../util/visitor-holiday'
 import { buildSelect, type Select } from '../controls/select'
 import { defaultCampSettings, campLimits, type CampSettings } from './camp-settings'
 import { animalLimits, defaultAnimalSettings, type AnimalSettings } from './pasture'
@@ -74,6 +75,10 @@ export function forestControlsMarkup(id: string) {
             ),
           )
           .join('')}
+        <fieldset class="trail-control-section"><legend>holidays</legend>
+          <div class="trail-camp-select" data-holiday-select="holiday">scene</div>
+          <span class="trail-camp-connection" data-holiday-status role="status">automatic</span>
+        </fieldset>
         <fieldset class="trail-control-section"><legend>animals</legend>
           ${animalFields
             .map(field =>
@@ -92,7 +97,6 @@ export function forestControlsMarkup(id: string) {
           <div class="trail-camp-select" data-camp-select="light">light</div>
           <div class="trail-camp-select" data-camp-select="visit">visit</div>
           <button type="button" class="trail-camp-join g-button" data-camp-pack>pack up camp</button>
-          <button type="button" class="trail-camp-join g-button" data-camp-join aria-pressed="false" disabled>join camp</button>
           <span class="trail-camp-connection" data-camp-connection role="status">connecting</span>
         </fieldset>
         <fieldset class="trail-control-section"><legend>people</legend>
@@ -119,6 +123,7 @@ export function mountForestControls(
   onAnimalsChange: (settings: AnimalSettings) => void,
   onTravelersChange: (settings: TravelerSettings) => void,
   onCampsChange: (settings: CampSettings) => void,
+  onHolidayChange: (selection: HolidaySelection) => void,
   onOpen: () => void,
 ) {
   const toggle = root.querySelector<HTMLButtonElement>('.trail-tree-toggle')
@@ -210,9 +215,10 @@ export function mountForestControls(
     options: { value: T; label: string }[],
     selected: T,
     onSelect: (value: T) => void,
+    group = 'camp-select',
   ) => {
-    const host = panel.querySelector<HTMLElement>(`[data-camp-select="${name}"]`)
-    if (!host) throw new Error('Camp select is incomplete')
+    const host = panel.querySelector<HTMLElement>(`[data-${group}="${name}"]`)
+    if (!host) throw new Error('Grove select is incomplete')
     const select: Select<T> = buildSelect({
       id: `${panel.id}-${name}`,
       label,
@@ -224,6 +230,22 @@ export function mountForestControls(
     host.append(select.element)
     return select.mount()
   }
+  const selections: HolidaySelection[] = [
+    'auto',
+    'none',
+    'thanksgiving',
+    'halloween',
+    'christmas',
+    'easter',
+  ]
+  const unmountHoliday = mountSelect<HolidaySelection>(
+    'holiday',
+    'Holiday scene',
+    selections.map(value => ({ value, label: holidayLabels[value] })),
+    'auto',
+    onHolidayChange,
+    'holiday-select',
+  )
   const unmountLight = mountSelect<CampSettings['light']>(
     'light',
     'Camp light',
@@ -265,6 +287,7 @@ export function mountForestControls(
     () => {
       unmountLight()
       unmountDestination()
+      unmountHoliday()
     },
     { once: true },
   )

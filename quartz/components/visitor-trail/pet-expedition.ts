@@ -43,35 +43,23 @@ export function petExpedition(scene: HTMLElement, landscape: Landscape) {
   })
   if (!valley) return null
   const upperLength = upper.getTotalLength()
-  let junctionDistance = 0
-  let score = Infinity
-  for (let distance = 0; distance <= upperLength; distance += 4) {
-    const point = upper.getPointAtLength(distance)
-    if (point.y < landscape.bottom + 60 || point.x < 40 || point.x > landscape.width - 40) continue
-    const candidate = Math.abs(point.x - summit.x)
-    if (candidate < score) {
-      score = candidate
-      junctionDistance = distance
-    }
+  const prefix = sample(upper, 0, upperLength)
+  const end = prefix[prefix.length - 1]
+  const before = prefix[Math.max(0, prefix.length - 2)]
+  const exit = {
+    x: landscape.width + 64,
+    y: end.y + ((end.y - before.y) * 64) / Math.max(1, end.x - before.x),
   }
-  if (!Number.isFinite(score)) return null
-  const prefix = sample(upper, 0, junctionDistance)
-  const junction = prefix[prefix.length - 1]
-  const fall = summit.y - junction.y
-  const connector = `M${junction.x} ${junction.y}C${junction.x} ${junction.y + fall * 0.35} ${summit.x} ${summit.y - fall * 0.3} ${summit.x} ${summit.y}`
-  const probe = upper.ownerDocument.createElementNS('http://www.w3.org/2000/svg', 'path')
-  probe.setAttribute('d', connector)
-  const connectorLength = probe.getTotalLength()
+  prefix.push(exit)
   const descent = sample(road, roadLength, 0)
   const valleyLength = valley.getTotalLength()
   const prefixLength = pathLength(prefix)
-  const passEnd = prefixLength + connectorLength
-  const descentEnd = passEnd + pathLength(descent)
+  const descentEnd = prefixLength + pathLength(descent)
   const total = descentEnd + valleyLength
   const scaleStops = [
     [0, 1],
     [prefixLength / total, 1],
-    [passEnd / total, 0.18],
+    [prefixLength / total, 0.18],
     [descentEnd / total, trailGroundScale(entrance.y, landscape)],
     ...Array.from({ length: 25 }, (_, index) => {
       const distance = (valleyLength * (index + 1)) / 25
@@ -82,10 +70,10 @@ export function petExpedition(scene: HTMLElement, landscape: Landscape) {
   return {
     d:
       `M${prefix[0].x} ${prefix[0].y}${line(prefix.slice(1))}` +
-      connector.replace(/^M[^C]+/, '') +
+      `M${summit.x} ${summit.y}` +
       line(descent.slice(1)) +
       (valley.getAttribute('d') ?? '').replace(/^M/, 'L'),
-    connector,
+    handoff: { at: prefixLength / total, exit: [exit.x, exit.y], entry: [summit.x, summit.y] },
     scaleStops,
     alpineSpan: [prefixLength / total, descentEnd / total],
     mountainTrack: road.dataset.mountainTrack,

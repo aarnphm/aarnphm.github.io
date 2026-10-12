@@ -1,6 +1,7 @@
 import { pixels } from './pixels'
 
 export type TrailAnimalKind = 'cow' | 'dog' | 'cat' | 'goose' | 'bear'
+export type WanderingAnimalKind = TrailAnimalKind | 'turkey' | 'rabbit'
 
 const dog = [
   '.........DD....',

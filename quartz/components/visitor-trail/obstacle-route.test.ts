@@ -122,3 +122,59 @@ test('retain animal right-of-way when an animal covers the next waypoint', () =>
     null,
   )
 })
+
+test('a waiting traveler gives a resting animal room on an alternative road', () => {
+  const animal: CollisionActor = {
+    id: 'animal-cow-0',
+    kind: 'animal',
+    x: 100,
+    y: 100,
+    radius: 18,
+    resting: true,
+  }
+  const from = { x: 50, y: 100 }
+  const points = replanOccupiedWaypoints(
+    'reader-3',
+    from,
+    [
+      { x: 100, y: 100 },
+      { x: 190, y: 100 },
+    ],
+    12,
+    [animal],
+    { left: 0, right: 220, top: 0, bottom: 220 },
+    animal.id,
+  )
+  assert.ok(points)
+  assert.deepEqual(points.at(-1), { x: 190, y: 100 })
+  assert.ok(points[0].x < from.x)
+  const road = [from, ...points]
+  for (let index = 1; index < road.length; index++)
+    assert.ok(sweptClearance(road[index - 1], road[index], animal, 12) >= 1.99)
+})
+
+test('a waiting traveler continues yielding while the animal is crossing', () => {
+  const animal: CollisionActor = {
+    id: 'animal-cow-0',
+    kind: 'animal',
+    x: 100,
+    y: 100,
+    radius: 18,
+    resting: false,
+  }
+  assert.equal(
+    replanOccupiedWaypoints(
+      'reader-3',
+      { x: 50, y: 100 },
+      [
+        { x: 100, y: 100 },
+        { x: 190, y: 100 },
+      ],
+      12,
+      [animal],
+      { left: 0, right: 220, top: 0, bottom: 220 },
+      animal.id,
+    ),
+    null,
+  )
+})

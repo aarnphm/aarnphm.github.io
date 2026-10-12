@@ -22,19 +22,22 @@ export default (() => {
             ·
           </span>
         </span>
-        <button
-          class="homepage-moon-toggle"
-          type="button"
-          popovertarget="homepage-moon-panel"
-          aria-label="Moon calendar"
-          aria-haspopup="dialog"
-          aria-expanded="false"
-          aria-controls="homepage-moon-panel"
-          title="Moon calendar"
-          hidden
-        >
-          moon calendar
-        </button>
+        <div class="trail-almanac">
+          <button
+            class="homepage-moon-toggle"
+            type="button"
+            popovertarget="homepage-moon-panel"
+            aria-label="Moon calendar"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="homepage-moon-panel"
+            title="Moon calendar"
+            hidden
+          >
+            moon calendar
+          </button>
+          <span class="trail-grove-total" data-grove-water-total aria-live="off" hidden />
+        </div>
         <div
           id="homepage-moon-panel"
           class="homepage-moon-panel"
@@ -54,6 +57,7 @@ export default (() => {
             <path d="M4 20c8 1 11-4 6-7S7 5 17 4" />
             <path d="m15 2 3 2-2 3" />
           </svg>
+          <span class="homepage-trail-holiday" data-holiday-marker aria-hidden="true" hidden />
         </button>
         <div
           id="homepage-trail-scene"

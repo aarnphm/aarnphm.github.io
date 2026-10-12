@@ -43,7 +43,7 @@ function pixelLayers<Tone extends string>(
   // Paint beyond the clip edge to cover the perspective controller's lateral movement.
   const bleed = 8
   const paintWidth = alpine.width + bleed * 2
-  const pixel = Math.max(alpine.width < 700 ? 2 : 4, Math.ceil(paintWidth / 640))
+  const pixel = alpine.width < 700 ? 2 : 4
   const columns = Math.ceil(paintWidth / pixel)
   const rows = Math.ceil(alpine.height / pixel)
   const marks = new Map<Tone, string[]>()

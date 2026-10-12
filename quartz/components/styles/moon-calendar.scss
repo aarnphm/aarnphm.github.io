@@ -12,10 +12,27 @@
   }
 }
 
-button.homepage-moon-toggle {
+.trail-almanac {
   position: fixed;
   inset: auto auto max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   z-index: var(--z-dropdown);
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  font: 10px/1.6 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.trail-grove-total {
+  color: var(--darkgray);
+  white-space: nowrap;
+}
+
+.homepage-trail:has(.homepage-trail-scene[hidden]) .trail-grove-total {
+  display: none;
+}
+
+button.homepage-moon-toggle {
   display: inline-flex;
   align-items: end;
   min-height: 28px;

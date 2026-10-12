@@ -1,3 +1,6 @@
+export const parallaxMovement = { horizontal: 8, vertical: 4, scroll: 12 }
+export const parallaxDepth = { alpine: 0.25, foothill: 0.6 }
+
 export function mountTrailPerspective(scene: HTMLElement, host: HTMLElement, signal: AbortSignal) {
   const document = scene.ownerDocument
   const view = document.defaultView
@@ -40,7 +43,12 @@ export function mountTrailPerspective(scene: HTMLElement, host: HTMLElement, sig
   }
   const schedule = () => {
     if (host.hidden || document.hidden || signal.aborted || reducedMotion.matches) return
-    target = { x: pointer.x * 8, y: pointer.y * 4 + Math.min(12, view.scrollY * 0.025) }
+    target = {
+      x: pointer.x * parallaxMovement.horizontal,
+      y:
+        pointer.y * parallaxMovement.vertical +
+        Math.min(parallaxMovement.scroll, view.scrollY * 0.025),
+    }
     if (frame === null && Math.hypot(target.x - current.x, target.y - current.y) >= 0.02) {
       scene.dataset.perspectiveMotion = 'active'
       frame = view.requestAnimationFrame(tick)
@@ -90,7 +98,12 @@ export function mountTrailPerspective(scene: HTMLElement, host: HTMLElement, sig
     update() {
       layers = [...scene.querySelectorAll<SVGGElement>('[data-trail-depth]')].map(element => ({
         element,
-        depth: element.dataset.trailDepth === 'alpine' ? 0.25 : 0.6,
+        depth:
+          element.dataset.trailDepth === 'alpine'
+            ? parallaxDepth.alpine
+            : element.dataset.trailDepth === 'foothill'
+              ? parallaxDepth.foothill
+              : Math.max(0, Math.min(1, Number(element.dataset.trailDepth) || 0)),
       }))
       render()
       schedule()

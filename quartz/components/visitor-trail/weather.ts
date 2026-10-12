@@ -28,12 +28,24 @@ const snowCodes = new Set([71, 73, 75, 77, 85, 86])
 function decoration(weather: TrailWeather | null) {
   const rain = weather ? (rainCodes.get(weather.code) ?? 0) : 0
   const snow = weather && snowCodes.has(weather.code) ? 1 : 0
+  const recentSnow = weather?.snowCm ?? 0
+  const snowCover = Math.max(
+    snow ? (weather?.code === 75 || weather?.code === 86 ? 0.95 : 0.65) : 0,
+    weather?.temperatureC !== null &&
+      weather?.temperatureC !== undefined &&
+      weather.temperatureC <= 2
+      ? Math.min(1, recentSnow / 2.5)
+      : 0,
+  )
   const sun =
     weather?.day && weather.code >= 0 && weather.code <= 2 && !rain && !snow
       ? Math.max(0, (0.85 - weather.cloud) / 0.85)
       : 0
   const angle = ((weather?.windFromDegrees ?? 0) * Math.PI) / 180
-  const wind = weather ? Math.min(1, weather.windKmh / 70) : 0
+  const wind = weather ? Math.min(1, weather.windKmh / 55) : 0
+  const gust = weather
+    ? Math.min(1, Math.max(weather.windKmh, weather.gustKmh ?? weather.windKmh) / 55)
+    : 0
   // Meteorological directions describe where the wind comes from; SVG y grows southward.
   const dx = weather?.windFromDegrees === null ? 0 : -Math.sin(angle)
   const dy = weather?.windFromDegrees === null ? 0 : Math.cos(angle)
@@ -48,13 +60,13 @@ function decoration(weather: TrailWeather | null) {
           : sun
             ? 'sun'
             : 'cloud'
-  return { rain, snow, sun, wind, dx, dy, mode }
+  return { rain, snow, snowCover, sun, wind, gust, dx, dy, mode }
 }
 
 function weatherMarks(landscape: Landscape, seed: number, weather: TrailWeather | null) {
   const random = trailRandom(seed ^ 0x34c4f69b)
   const { width, height, bottom, groves } = landscape
-  const { rain, snow, sun, wind, dx, dy } = decoration(weather)
+  const { rain, snow, sun, wind, gust, dx, dy } = decoration(weather)
   const marks: string[] = []
   const skyX = Math.round(width * 0.9)
   const skyY = bottom + 86
@@ -88,7 +100,7 @@ function weatherMarks(landscape: Landscape, seed: number, weather: TrailWeather 
     }
   }
   marks.push('</g>')
-  if (wind > 0.025 && weather?.windFromDegrees !== null) {
+  if (gust > 0.025 && weather?.windFromDegrees !== null) {
     const count = width < 700 ? 6 : 10
     for (let index = 0; index < count; index++) {
       const x = Math.round(24 + random() * Math.max(1, width - 70))
@@ -96,6 +108,17 @@ function weatherMarks(landscape: Landscape, seed: number, weather: TrailWeather 
       const rotation = (Math.atan2(dy, dx) * 180) / Math.PI
       marks.push(
         `<g transform="translate(${x} ${y}) rotate(${rotation.toFixed(1)})"><path class="trail-weather-gust" style="--trail-weather-delay: ${(-random() * 8).toFixed(2)}s" d="M0 0h12m4 0h8m-5-3h9"/></g>`,
+      )
+    }
+  }
+  if (weather?.season === 'autumn' && gust > 0.06 && !snow) {
+    const count = width < 700 ? 6 : 12
+    for (let index = 0; index < count; index++) {
+      const grove = groves[index % groves.length]
+      const x = Math.round(grove.x + (random() - 0.5) * grove.rx * 1.7)
+      const y = Math.round(grove.y - 20 - random() * 30)
+      marks.push(
+        `<g transform="translate(${x} ${y})"><path class="trail-weather-leaf" style="--trail-weather-delay: ${(-random() * 9).toFixed(2)}s" d="M0 0h3v2H2v1H0Z"/></g>`,
       )
     }
   }
@@ -157,9 +180,17 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   }
   const refreshForest = () => {
     const random = trailRandom(seed ^ 0x385ab251)
+    const state = decoration(weather)
+    const period = 9 - state.gust * 3
     scene.querySelectorAll<SVGGElement>('.trail-tree-motion').forEach(tree => {
+      const root = tree.closest<SVGGElement>('.trail-tree, .trail-woodland-tree')
+      const alongWind =
+        Number(root?.dataset.groundX ?? 0) * state.dx +
+        Number(root?.dataset.groundY ?? 0) * state.dy
+      const travel = alongWind / (55 + state.gust * 90) + random() * 0.8
+      const phase = ((travel % period) + period) % period
       tree.style.setProperty('--trail-tree-wind-scale', (0.55 + random() * 0.45).toFixed(2))
-      tree.style.setProperty('--trail-weather-delay', `${(-random() * 8).toFixed(2)}s`)
+      tree.style.setProperty('--trail-weather-delay', `${(phase - period).toFixed(2)}s`)
     })
   }
   const render = () => {
@@ -167,18 +198,46 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     scene.dataset.weatherMode = state.mode
     scene.dataset.weatherDay = weather?.day === null || !weather ? 'unknown' : String(weather.day)
     scene.dataset.weatherWind = String(weather?.windKmh ?? 0)
+    scene.dataset.weatherGust = String(weather?.gustKmh ?? 'unknown')
     scene.dataset.weatherDirection = String(weather?.windFromDegrees ?? 'unknown')
-    scene.dataset.weatherWindy = String(state.wind > 0.025)
+    scene.dataset.weatherWindy = String(state.gust > 0.025)
+    scene.dataset.season = weather?.season ?? 'unknown'
+    scene.dataset.snowCover = state.snowCover.toFixed(3)
     scene.style.setProperty('--trail-sunlight', state.sun.toFixed(3))
     scene.style.setProperty('--trail-rain-strength', state.rain.toFixed(3))
     scene.style.setProperty('--trail-wind-strength', state.wind.toFixed(3))
+    scene.style.setProperty('--trail-gust-strength', state.gust.toFixed(3))
+    scene.style.setProperty('--trail-snow-cover', state.snowCover.toFixed(3))
+    scene.style.setProperty('--trail-snow-mix', `${(state.snowCover * 75).toFixed(1)}%`)
     scene.style.setProperty('--trail-wind-x', `${(state.dx * state.wind * 18).toFixed(2)}px`)
     scene.style.setProperty('--trail-wind-y', `${(state.dy * state.wind * 18).toFixed(2)}px`)
     scene.style.setProperty('--trail-rain-x', `${(state.dx * state.wind * 12).toFixed(2)}px`)
-    scene.style.setProperty('--trail-wind-period', `${(8 - state.wind * 3).toFixed(2)}s`)
-    const lean = state.dx * state.wind * 1.5
+    scene.style.setProperty('--trail-wind-period', `${(9 - state.gust * 3).toFixed(2)}s`)
+    const lean = state.dx * state.wind * 2
     scene.style.setProperty('--trail-sway-low', `${(lean - state.wind * 0.6).toFixed(2)}deg`)
     scene.style.setProperty('--trail-sway-high', `${(lean + state.wind * 1.4).toFixed(2)}deg`)
+    scene.style.setProperty(
+      '--trail-sway-gust',
+      `${(lean + state.dx * state.gust * 2.2).toFixed(2)}deg`,
+    )
+    const flex = 1 - state.snowCover * 0.45
+    scene.style.setProperty(
+      '--trail-leaf-angle',
+      `${(state.dx * state.gust * 4 * flex).toFixed(2)}deg`,
+    )
+    scene.style.setProperty(
+      '--trail-leaf-x',
+      `${(state.dx * state.gust * 2.2 * flex).toFixed(2)}px`,
+    )
+    scene.style.setProperty(
+      '--trail-leaf-y',
+      `${(state.dy * state.gust * 1.4 * flex).toFixed(2)}px`,
+    )
+    scene.style.setProperty('--trail-leaf-travel-x', `${(state.dx * state.gust * 45).toFixed(2)}px`)
+    scene.style.setProperty(
+      '--trail-leaf-travel-y',
+      `${(24 + state.dy * state.gust * 14).toFixed(2)}px`,
+    )
     if (layer) {
       layer.dataset.trailWeather = state.mode
       if (landscape) layer.innerHTML = weatherMarks(landscape, seed, weather)
@@ -186,6 +245,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     paintMoon(false)
     updateLighting()
     updateMotion()
+    refreshForest()
   }
   document.addEventListener('themechange', updateLighting, { signal })
   document.addEventListener('visibilitychange', updateMotion, { signal })
@@ -220,7 +280,6 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
       landscape = current
       seed = currentSeed
       render()
-      refreshForest()
     },
     refreshForest,
     pause() {

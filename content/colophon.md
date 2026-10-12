@@ -77,7 +77,7 @@ The activity workspace links the route cursor to telemetry and charts. It can co
 
 The sun or moon on the [[/index|homepage]] opens weather for the visitor's approximate area, with a [Mapbox](https://www.mapbox.com/) map, [Open-Meteo](https://open-meteo.com/) conditions, wind, and the next sunrise or sunset. The Worker rounds the location supplied by Cloudflare before requesting the forecast.
 
-The trail button opens three paths around the homepage text, through trees to a campsite. [PlayHTML](https://playhtml.fun/) synchronizes a stone for each browser. You can drag yours or move it with the keyboard, and other visitors' stones remain after they leave. The shared state consists of path choices and positions. Weather and location stay separate from it. There is also a campfire and someone roasting a marshmallow.
+The trail button opens paths around the homepage text, through the mountain range into a valley with trees, animals, ponds, and campsites. [PlayHTML](https://playhtml.fun/) shares anonymous visitor presence and cursors. Each visitor gets a miniature who walks to camp, sits there, then walks back into the mountains when the visitor leaves. Hover, focus, or click a miniature to see its anonymous ID. The tree settings adjust the grove and its inhabitants; watering a tree contributes to its shared growth. Weather and location stay separate from the shared presence.
 
 ### mascot and 404 landscape
 
