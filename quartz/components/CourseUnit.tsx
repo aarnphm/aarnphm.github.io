@@ -15,6 +15,7 @@ import {
   formatDuration,
   latexOf,
   lecturerName,
+  psetRefs,
   psetTextSlug,
   resourceSlug,
   unitDeckSlug,
@@ -29,7 +30,7 @@ import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { pdfReaderPath } from '../util/pdf-marks'
 import { concatenateResources } from '../util/resources'
-import { CourseDesk } from './CourseDesk'
+import { CourseDesk, solutionTerm } from './CourseDesk'
 import { psetNumber } from './CourseHome'
 import { CoursesCrumb } from './CourseResource'
 import { StudyState } from './CourseStudy'
@@ -86,18 +87,6 @@ function unitContext({ ctx, fileData, allFiles }: QuartzComponentProps): UnitCon
 /** Where a problem set falls in the calendar: the unit that lists it as due. */
 function dueUnit(view: CourseView, n: number): CourseUnitView | undefined {
   return view.units.find(unit => unit.record.due.some(id => psetNumber(id) === n))
-}
-
-/** The problem-set resource (`kind: pset`) with this number, and the official solution. */
-function psetRefs(resources: Map<string, CourseResourceRef>, n: number) {
-  let pset: CourseResourceRef | undefined
-  let solution: CourseResourceRef | undefined
-  for (const ref of resources.values()) {
-    if (ref.record.n !== n) continue
-    if (ref.record.kind === 'pset' && !pset) pset = ref
-    if (ref.record.kind === 'pset-solution' && !solution) solution = ref
-  }
-  return { pset, solution }
 }
 
 /** The `.tex` resource page for a LaTeX note: the full notes source or the pset with the same n. */
@@ -163,92 +152,106 @@ export const CourseUnitBar = (() => {
     if (due) meta.push(`due at ${view.record.unitKind} ${pad(due.record.n)}`)
 
     const endpoint = courseStudyEndpoint(props.ctx.argv)
-    const desk =
-      kind === 'psets' || kind === 'pset-notes' ? (
-        <CourseDesk view={view} n={n} from={from} resources={ctx.resources} endpoint={endpoint} />
-      ) : null
 
     return (
-      <>
-        <nav
-          class={classNames(props.displayClass, 'course-unit-bar')}
-          aria-label="unit"
-          data-course-prefix={prefix}
-          data-course-card
-        >
-          <span class="course-crumb">
-            <CoursesCrumb from={from} />
-            <a class="internal" href={homeHref} data-slug={view.slug} data-no-popover>
-              {view.record.number}
-            </a>
-            {isNotes ? (
-              <>
-                <span class="course-unit-sep">/</span>
-                {notesCrumb(view, from)}
-              </>
-            ) : partName ? (
-              <>
-                <span class="course-unit-sep">/</span>
-                <span>
-                  {roman[part! - 1] ?? part}. {partName}
-                </span>
-              </>
-            ) : null}
-            <span class="course-unit-sep">/</span>
-            <span class="course-num" title={labelName}>
-              {label}
-            </span>
-          </span>
-          {meta.length > 0 ? (
-            <span class="course-count course-unit-dates">
-              {meta.map((item, i) => (
-                <>
-                  {i > 0 ? ' · ' : ''}
-                  {item}
-                </>
-              ))}
-            </span>
-          ) : null}
-          <span class="course-unit-actions">
-            {unit && (kind === 'lectures' || kind === 'notes') ? (
-              <StudyState view={view} unit={unit} endpoint={endpoint} />
-            ) : null}
-            {isNotes ? (
-              <button
-                type="button"
-                class="course-action course-fold"
-                data-course-fold-proofs
-                aria-pressed="false"
-              >
-                fold proofs
-              </button>
-            ) : unit?.deck ? (
-              <a
-                class="course-action internal"
-                href={resolveRelative(from, unitDeckSlug(view.dir, n))}
-                data-slug={unitDeckSlug(view.dir, n)}
-                data-no-popover
-                data-course-action="drill"
-                data-cards={unit.cardIds.join(' ')}
-                data-unit={String(n)}
-              >
-                due <span data-due="">–</span> of {unit.cardIds.length}
-              </a>
-            ) : (
-              <span class="course-action" aria-disabled="true">
-                no deck
+      <nav
+        class={classNames(props.displayClass, 'course-unit-bar')}
+        aria-label="unit"
+        data-course-prefix={prefix}
+        data-course-card
+      >
+        <span class="course-crumb">
+          <CoursesCrumb from={from} />
+          <a class="internal" href={homeHref} data-slug={view.slug} data-no-popover>
+            {view.record.number}
+          </a>
+          {isNotes ? (
+            <>
+              <span class="course-unit-sep">/</span>
+              {notesCrumb(view, from)}
+            </>
+          ) : partName ? (
+            <>
+              <span class="course-unit-sep">/</span>
+              <span>
+                {roman[part! - 1] ?? part}. {partName}
               </span>
-            )}
+            </>
+          ) : null}
+          <span class="course-unit-sep">/</span>
+          <span class="course-num" title={labelName}>
+            {label}
           </span>
-        </nav>
-        {desk}
-      </>
+        </span>
+        {meta.length > 0 ? (
+          <span class="course-count course-unit-dates">
+            {meta.map((item, i) => (
+              <>
+                {i > 0 ? ' · ' : ''}
+                {item}
+              </>
+            ))}
+          </span>
+        ) : null}
+        <span class="course-unit-actions">
+          {unit && (kind === 'lectures' || kind === 'notes') ? (
+            <StudyState view={view} unit={unit} from={from} endpoint={endpoint} />
+          ) : null}
+          {isNotes ? (
+            <button
+              type="button"
+              class="course-action course-fold"
+              data-course-fold-proofs
+              aria-pressed="false"
+            >
+              fold proofs
+            </button>
+          ) : unit?.deck ? (
+            <a
+              class="course-action internal"
+              href={resolveRelative(from, unitDeckSlug(view.dir, n))}
+              data-slug={unitDeckSlug(view.dir, n)}
+              data-no-popover
+              data-course-action="drill"
+              data-cards={unit.cardIds.join(' ')}
+              data-unit={String(n)}
+            >
+              due <span data-due="">–</span> of {unit.cardIds.length}
+            </a>
+          ) : (
+            <span class="course-action" aria-disabled="true">
+              no deck
+            </span>
+          )}
+        </span>
+      </nav>
     )
   }
   Bar.displayName = 'CourseUnitBar'
   Bar.css = concatenateResources(style, studyStyle)
   Bar.afterDOMLoaded = script
   return Bar
+}) satisfies QuartzComponentConstructor
+
+/** The desk of a problem set page, under its title. */
+export const CoursePsetDesk = (() => {
+  const Desk: QuartzComponent = (props: QuartzComponentProps) => {
+    const ctx = unitContext(props)
+    if (!ctx || (ctx.kind !== 'psets' && ctx.kind !== 'pset-notes')) return null
+    return (
+      <CourseDesk
+        view={ctx.view}
+        n={ctx.n}
+        from={props.fileData.slug!}
+        resources={ctx.resources}
+        endpoint={courseStudyEndpoint(props.ctx.argv)}
+      />
+    )
+  }
+  Desk.displayName = 'CoursePsetDesk'
+  Desk.css = concatenateResources(style, studyStyle)
+  Desk.afterDOMLoaded = script
+  return Desk
 }) satisfies QuartzComponentConstructor
 
 /** Byline cell on OCW notes: where the reader's own notes for the unit live, a link once they exist. */
@@ -289,14 +292,26 @@ export const CourseUnitWorkspace = (() => {
   const Workspace: QuartzComponent = (props: QuartzComponentProps) => {
     const ctx = unitContext(props)
     const slug = props.fileData.slug
-    if (!ctx || (ctx.kind !== 'lectures' && ctx.kind !== 'notes') || !slug) return null
+    if (!ctx || (ctx.kind !== 'lectures' && ctx.kind !== 'notes' && ctx.kind !== 'psets') || !slug)
+      return null
     const { view, unit, n } = ctx
-    const pdf = unit ? unitPdf(unit.record) : undefined
+    const isPset = ctx.kind === 'psets'
+    // a problem set reads its own pdf as the source
+    const pdf = isPset
+      ? psetRefs(ctx.resources, n).pset?.record
+      : unit
+        ? unitPdf(unit.record)
+        : undefined
     const video = unit ? unitVideo(unit.record) : undefined
     const pdfPath = pdf?.file ? `courses/${view.dir}/${pdf.file}` : undefined
-    const title = `${view.record.unitKind} ${pad(n)}: ${unit?.record.title ?? props.fileData.frontmatter?.title ?? ''}`
+    const title = isPset
+      ? `problem set ${pad(n)}`
+      : `${view.record.unitKind} ${pad(n)}: ${unit?.record.title ?? props.fileData.frontmatter?.title ?? ''}`
     return (
-      <aside class="course-workspace" aria-label="lecture workspace">
+      <aside
+        class="course-workspace"
+        aria-label={isPset ? 'problem set workspace' : 'lecture workspace'}
+      >
         <div
           data-course-workspace-mount
           data-course-workspace-slug={slug}
@@ -385,10 +400,24 @@ export const CourseUnitFoot = (() => {
         )
       }
     }
-    if (kind === 'pset-notes') {
-      const { pset, solution } = psetRefs(resources, n)
+    if (kind === 'pset-notes' || kind === 'psets') {
+      const { pset, solution, other } = psetRefs(resources, n, solutionTerm(view.psets.get(n)))
       if (pset) sources.push(<li>{link(pset.slug, 'problem set pdf')}</li>)
       if (solution) sources.push(<li>{link(solution.slug, 'official solutions')}</li>)
+      for (const older of other)
+        sources.push(
+          <li>
+            {link(older.solution.slug, `official solutions to the ${older.term} set`)}
+            {older.pset ? (
+              <>
+                {' · '}
+                {link(older.pset.slug, `${older.term} set`)}
+              </>
+            ) : null}
+          </li>,
+        )
+      if (kind === 'psets' && view.psetText.has(n))
+        sources.push(<li>{link(psetTextSlug(view.dir, n), 'problem set text')}</li>)
     }
     if (latex) {
       const tex = texRef(resources, latex)
@@ -449,10 +478,11 @@ export const CourseUnitFoot = (() => {
           <span class="course-num">{pad(m)}</span>
           <span>problem set</span>
         </a>
-      ) : (
-        <span aria-hidden="true" />
-      )
+      ) : undefined
     }
+    // an empty pager is a bordered box with nothing in it
+    const psetPrev = psetNeighbour(n - 1, 'prev')
+    const psetNext = psetNeighbour(n + 1, 'next')
 
     return (
       <footer class={classNames(props.displayClass, 'course-unit-foot')}>
@@ -494,10 +524,10 @@ export const CourseUnitFoot = (() => {
             {neighbour(view.units[index + 1], 'next')}
           </nav>
         ) : null}
-        {kind === 'psets' || kind === 'pset-notes' ? (
-          <nav class="course-unit-pager" aria-label="units">
-            {psetNeighbour(n - 1, 'prev')}
-            {psetNeighbour(n + 1, 'next')}
+        {(kind === 'psets' || kind === 'pset-notes') && (psetPrev || psetNext) ? (
+          <nav class="course-unit-pager" aria-label="problem sets">
+            {psetPrev ?? <span aria-hidden="true" />}
+            {psetNext ?? <span aria-hidden="true" />}
           </nav>
         ) : null}
       </footer>

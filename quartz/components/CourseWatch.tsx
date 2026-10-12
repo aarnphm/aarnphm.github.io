@@ -48,7 +48,12 @@ export function CourseWatch({
         {lecturer || description ? (
           <div class="course-watch-meta">
             {lecturer ? <p class="course-count">{lecturer}</p> : null}
-            {description ? <p class="course-watch-desc">{description}</p> : null}
+            {description ? (
+              <p
+                class="course-watch-desc"
+                dangerouslySetInnerHTML={{ __html: fileData.description ?? description }}
+              />
+            ) : null}
           </div>
         ) : null}
         <div class="course-watch-player">

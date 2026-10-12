@@ -1,6 +1,6 @@
 import { JSX } from 'preact'
 import { QuartzPluginData } from '../plugins/vfile'
-import { CourseResourceRef, CourseView } from '../util/course'
+import { CourseResourceRef, CourseView, psetRefs } from '../util/course'
 import { ProblemRecord, ProblemState, parseProblems } from '../util/course-study'
 import { MathText } from '../util/math-text'
 import { FullSlug, resolveRelative } from '../util/path'
@@ -19,6 +19,8 @@ export interface DeskProblem {
   n: number
   title: string
   uses: DeskUse[]
+  /** The `problem-<n>` block on the page the problems come from: the row links to its statement. */
+  statement?: { slug: FullSlug; anchor: string }
 }
 
 /** `theorem-3` → `theorem 3`, `proposition-2-1` → `proposition 2.1`. */
@@ -39,8 +41,8 @@ function leadTitle(text: string): string {
 }
 
 /**
- * Problems of one set from its generated `notes/pset-<nn>` page: `**problem N.**` leads, else
- * `## N` headings, else one row for the whole set. `uses` are the statement links inside each
+ * Problems of one set from its generated `notes/pset-<nn>` page (`**problem N.**` leads) or from
+ * the `## N. title` sections of `psets/<nn>.md`. `uses` are the statement links inside each
  * problem. The LaTeX converter points `\ref` at the pset's own statement, or at the notes statement
  * it restates; an anchor on the pset page links there, anything else keeps its label without a link.
  */
@@ -59,10 +61,11 @@ export function psetProblems(text: QuartzPluginData | undefined): DeskProblem[] 
       ? starts
       : Array.from(body.matchAll(/^##\s+(?:problem\s+)?(\d+)\b\.?\s*(.*)$/gim), match => ({
           n: Number(match[1]),
-          title: leadTitle(match[2]),
+          // a section heading is already a title; only a long one is cut to its lead
+          title: match[2].length <= 90 ? match[2].trim() : leadTitle(match[2]),
           at: match.index ?? 0,
         }))
-  if (heads.length === 0) return text ? [{ n: 1, title: 'the whole set', uses: [] }] : []
+  if (heads.length === 0) return []
   return heads.map((head, i) => {
     const span = body.slice(head.at, heads[i + 1]?.at ?? body.length)
     const uses = new Map<string, DeskUse>()
@@ -75,18 +78,20 @@ export function psetProblems(text: QuartzPluginData | undefined): DeskProblem[] 
         ...(own.has(anchor) && slug ? { slug } : {}),
       })
     }
-    return { n: head.n, title: head.title, uses: Array.from(uses.values()) }
+    const anchor = `problem-${head.n}`
+    return {
+      n: head.n,
+      title: head.title,
+      uses: Array.from(uses.values()),
+      ...(own.has(anchor) && slug ? { statement: { slug, anchor } } : {}),
+    }
   })
 }
 
-/** The official solution resource of set `n`, which `reveal` opens. */
-export function psetSolution(
-  resources: Map<string, CourseResourceRef>,
-  n: number,
-): CourseResourceRef | undefined {
-  for (const ref of resources.values())
-    if (ref.record.n === n && ref.record.kind === 'pset-solution') return ref
-  return undefined
+/** `solutionTerm:` in `psets/<nn>.md`: the term an untitled official solution belongs to. */
+export function solutionTerm(pset: QuartzPluginData | undefined): string | undefined {
+  const term = pset?.frontmatter?.solutionTerm
+  return typeof term === 'string' || typeof term === 'number' ? String(term) : undefined
 }
 
 function stateLog(record: ProblemRecord | undefined): string {
@@ -118,7 +123,17 @@ export function CourseDesk({
   const problems = psetProblems(view.psetText.get(n) ?? view.psets.get(n))
   if (problems.length === 0) return null
   const log = parseProblems(view.psets.get(n)?.frontmatter)
-  const solution = psetSolution(resources, n)
+  const refs = psetRefs(resources, n, solutionTerm(view.psets.get(n)))
+  const solution = refs.solution
+  const link = (ref: CourseResourceRef, text: string) => (
+    <a class="internal" href={resolveRelative(from, ref.slug)} data-slug={ref.slug}>
+      {text}
+    </a>
+  )
+  const sources: JSX.Element[] = []
+  if (refs.pset) sources.push(link(refs.pset, 'set pdf'))
+  if (solution) sources.push(link(solution, 'solutions'))
+  for (const other of refs.other) sources.push(link(other.solution, `${other.term} solutions`))
   const solved = problems.filter(problem => log.get(problem.n)?.state === 'solved').length
   const revealed = problems.filter(problem => log.get(problem.n)?.reveal).length
   const file = `psets/${pad(n)}.md`
@@ -136,6 +151,16 @@ export function CourseDesk({
           solved {solved}/{problems.length} · revealed {revealed} · states in{' '}
           <code class="course-path">{file}</code>
         </span>
+        {sources.length > 0 ? (
+          <span class="course-desk-sources">
+            {sources.map((source, i) => (
+              <>
+                {i > 0 ? ' · ' : ''}
+                {source}
+              </>
+            ))}
+          </span>
+        ) : null}
         <span class="course-study-status" role="status" aria-live="polite" />
       </div>
       <table class="course-spine-table">
@@ -165,9 +190,19 @@ export function CourseDesk({
               <tr class="course-unit-row" data-desk-problem={String(problem.n)}>
                 <td class="course-num course-c-n">{pad(problem.n)}</td>
                 <td>
-                  <span class="course-unit-title">
-                    <MathText text={problem.title} />
-                  </span>
+                  {problem.statement ? (
+                    <a
+                      class="internal course-unit-title"
+                      href={`${resolveRelative(from, problem.statement.slug)}#${problem.statement.anchor}`}
+                      data-slug={problem.statement.slug}
+                    >
+                      <MathText text={problem.title} />
+                    </a>
+                  ) : (
+                    <span class="course-unit-title">
+                      <MathText text={problem.title} />
+                    </span>
+                  )}
                 </td>
                 <td class="course-c-uses">
                   {problem.uses.length === 0

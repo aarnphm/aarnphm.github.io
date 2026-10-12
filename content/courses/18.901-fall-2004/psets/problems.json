@@ -1,0 +1,159 @@
+{
+  "source": "transcribed from the OCW problem set PDFs; psets/<nn>.md is seeded from this on first open",
+  "sets": [
+    {
+      "n": 0,
+      "due": null,
+      "reading": null,
+      "intro": "Problem set 0 is a \"diagnostic\" problem set. It is designed to determine whether you are comfortable enough with the language of set theory to begin the study of topology. We will grade it in class at the second session. If you miss more than 8 answers, you should probably take another proof-based course before trying this one. The grade on this problem set is intended for advising purposes only.",
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Munkres §1.2",
+          "statement": "Munkres, §1, exercise 2. Give answers only. Your answers to (j), (k), and (l) should be \"yes\" or \"no.\" Your answers to the others should be one of the following: $\\Rightarrow$, $\\Leftarrow$, $\\Leftrightarrow$, $\\subset$, $\\supset$, $=$."
+        },
+        {
+          "n": 2,
+          "title": "Munkres §1.5",
+          "statement": "Munkres, §1, exercise 5. Give answers only."
+        },
+        {
+          "n": 3,
+          "title": "Munkres §2.4(c), (e)",
+          "statement": "Munkres, §2, exercises 4(c) and 4(e). Give answers only."
+        }
+      ]
+    },
+    {
+      "n": 1,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Munkres §3.13",
+          "statement": "Munkres, §3, exercise 13."
+        },
+        {
+          "n": 2,
+          "title": "Munkres §9.8",
+          "statement": "Munkres, §9, exercise 8."
+        },
+        {
+          "n": 3,
+          "title": "Munkres §13.7 and §17.16",
+          "statement": "Munkres, §13, exercise 7 and §17, exercise 16. Give answers only."
+        },
+        {
+          "n": 4,
+          "title": "Munkres §17.18",
+          "statement": "Munkres, §17, exercise 18. Give answers only."
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Munkres §18.13",
+          "statement": "Munkres, §18, exercise 13."
+        },
+        {
+          "n": 2,
+          "title": "Munkres §20.6(a), (b)",
+          "statement": "Munkres, §20, exercises 6(a) and 6(b)."
+        },
+        {
+          "n": 3,
+          "title": "Munkres §20.8(b), (c)",
+          "statement": "Munkres, §20, exercises 8(b) and 8(c). Assume 8(a). Give answers only in 8(c)."
+        },
+        {
+          "n": 4,
+          "title": "Munkres §24.4",
+          "statement": "Munkres, §24, exercise 4."
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Munkres §26.9",
+          "statement": "Munkres, §26, exercise 9."
+        },
+        {
+          "n": 2,
+          "title": "Munkres §26.12",
+          "statement": "Munkres, §26, exercise 12."
+        },
+        {
+          "n": 3,
+          "title": "Munkres §28.4",
+          "statement": "Munkres, §28, exercise 4."
+        },
+        {
+          "n": 4,
+          "title": "Munkres §30.5",
+          "statement": "Munkres, §30, exercise 5."
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "due": null,
+      "reading": null,
+      "intro": null,
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Munkres §31.7(a), (b), (d)",
+          "statement": "Munkres, §31, exercises 7(a), 7(b) and 7(d)."
+        },
+        {
+          "n": 2,
+          "title": "Munkres §33.4",
+          "statement": "Munkres, §33, exercise 4."
+        },
+        {
+          "n": 3,
+          "title": "Munkres §34.4 and §34.5",
+          "statement": "Munkres, §34, exercises 4 and 5. Give proofs or counterexamples."
+        },
+        {
+          "n": 4,
+          "title": "Munkres §38.9",
+          "statement": "Munkres, §38, exercise 9."
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "due": null,
+      "reading": null,
+      "intro": "Problem set 5 (optional). The purpose of this problem set is to help you make up for any one of the required problem sets that you \"bombed\" (i.e., that you received a grade lower than 70 on). Here's the procedure:",
+      "solution": "none",
+      "problems": [
+        {
+          "n": 1,
+          "title": "Properties of spaces and operations: fill in the table",
+          "statement": "Select one or more rows of the following diagram. Fill in each square of that row with $+$ (for \"yes\") or $-$ (for \"no\"). For each row filled in correctly, I will add 6 points to the score of whichever of your problem sets has the lowest score (up to a maximum of 70 points for that problem set). The same rules as usual -- no collaboration, please. Entries may be submitted before or at the final exam. Decisions of the judges will be final. No box tops needed to enter!\n\nFor the first six rows of the diagram, the question is this: \"Is the given property satisfied by the given space?\" For the last three rows, it is: \"Is the given property preserved by the given operation?\"\n\n| | connected | path connected | compact | locally compact Hausdorff | Hausdorff | Regular | Normal | First-countable | Second-countable | Lindelöf | Has countable dense subset | Locally metrizable | Metrizable | Completely regular |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| $S_\\Omega$ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |\n| The ordered square |  |  |  |  |  |  |  |  |  |  |  |  |  |  |\n| $\\mathbb{R}_\\ell \\times \\mathbb{R}_\\ell$ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |\n| $\\mathbb{R}^\\omega$ in uniform topology |  |  |  |  |  |  |  |  |  |  |  |  |  |  |\n| $\\mathbb{R}^I$ in product topology |  |  |  |  |  |  |  |  |  |  |  |  |  |  |\n| An arbitrary metric space |  |  |  |  |  |  |  |  |  |  |  |  |  |  |\n| Taking countable products |  |  |  |  |  |  |  |  |  |  |  |  |  |  |\n| Taking a closed subspace |  |  |  |  |  |  |  |  |  |  |  |  |  |  |\n| Taking an open subspace |  |  |  |  |  |  |  |  |  |  |  |  |  |  |"
+        }
+      ]
+    }
+  ]
+}

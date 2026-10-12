@@ -5,7 +5,8 @@ import yaml from 'js-yaml'
  *
  * - `POST /study`    `lectures/index.md` `study.read` / `study.problems` dates
  * - `POST /promote`  a new `lectures/<nn>.md` + `lectures/<nn>.fc` (never overwrites)
- * - `POST /pset`     `psets/<nn>.md`, created when missing, and its `problems:` states
+ * - `POST /pset`     `psets/<nn>.md`, seeded with the set's problems when missing or a bare stub, and
+ *                    its `problems:` states
  *
  * It listens on 127.0.0.1 only and answers localhost origins only. The deployed site never sees
  * it: production builds render no endpoint (`courseStudyEndpoint`).
@@ -88,6 +89,94 @@ function problemsBlock(map: Map<number, ProblemRecord>): string {
 
 function assemble(head: string, body: string): string {
   return `---\n${head.replace(/\n+$/, '')}\n---\n${body}`
+}
+
+/** One set in `psets/problems.json`, the course's transcription of the OCW problem set PDFs. */
+interface SetText {
+  n: number
+  due?: string | null
+  reading?: string | null
+  intro?: string | null
+  /** Term of the official solution OCW ships, when it is another term's set. */
+  solution?: string | null
+  problems: { n: number; title: string; statement: string }[]
+}
+
+const quoted = (text: string) =>
+  text
+    .trim()
+    .split('\n')
+    .map(line => (line ? `> ${line}` : '>'))
+    .join('\n')
+
+/** One `## N. title` section per problem: the statement, its `^problem-N` block id, an attempt. */
+function problemSection(n: number, title: string, statement: string): string {
+  return [
+    `## ${n}. ${title}`,
+    '',
+    `> [!question] problem ${n}`,
+    quoted(statement),
+    '',
+    `^problem-${n}`,
+    '',
+    '### attempt',
+  ].join('\n')
+}
+
+/**
+ * The body a new `psets/<nn>.md` starts with: the transcribed set when the course has one, else
+ * the problems of the generated `notes/pset-<nn>` page, else the set's resource link alone.
+ */
+async function psetSeed(
+  dir: string,
+  name: string,
+  n: number,
+  resource: string | undefined,
+): Promise<{ body: string; solutionTerm?: string }> {
+  const sets = await readFile(path.join(dir, 'psets', 'problems.json'), 'utf8')
+    .then(text => (JSON.parse(text) as { sets?: SetText[] }).sets ?? [])
+    .catch(() => [] as SetText[])
+  const set = sets.find(entry => entry.n === n)
+  if (set && set.problems.length > 0) {
+    const lead = [
+      set.due ? `Due ${set.due.replace(/\.$/, '')}.` : '',
+      set.reading ? `Reading: ${set.reading.replace(/\.$/, '')}.` : '',
+    ].filter(Boolean)
+    const parts = [
+      ...(lead.length > 0 ? [lead.join(' ')] : []),
+      ...(set.intro ? [set.intro.trim()] : []),
+      ...set.problems.map(problem => problemSection(problem.n, problem.title, problem.statement)),
+    ]
+    return {
+      body: `\n${parts.join('\n\n').replace(/\n+$/, '')}\n`,
+      ...(set.solution && set.solution !== 'none' ? { solutionTerm: set.solution } : {}),
+    }
+  }
+  // a LaTeX course: the generated page interleaves problems with background, so the section quotes
+  // each lead (up to its `^problem-N` block id) and links the page for the rest
+  const text = await readFile(path.join(dir, 'notes', `pset-${pad(n)}.md`), 'utf8').catch(() => '')
+  const leads = Array.from(
+    text.matchAll(/^\*\*problem (\d+)\.\*\*[ \t]*([\s\S]*?)^\^problem-\1[ \t]*$/gim),
+  )
+  if (leads.length > 0) {
+    const page = `courses/${name}/notes/pset-${pad(n)}`
+    const sections = leads.map(([, m, lead]) => {
+      const first = lead.trim().split('\n')[0]
+      let title =
+        /^\(([^)]{2,80})\)/.exec(first)?.[1] ??
+        /^(.{1,70}?[.?!:])(\s|$)/.exec(first)?.[1] ??
+        `problem ${m}`
+      title = title.replace(/[.:]$/, '')
+      const statement = `${lead.trim()}\n\n[[${page}#^problem-${m}|the full statement]]`
+      return problemSection(Number(m), title, statement)
+    })
+    return { body: `\n${sections.join('\n\n')}\n` }
+  }
+  return {
+    body: resource
+      ? `\nThe set: [[courses/${name}/resources/${resource}|problem set ${n}]]. Add one \`## <n>. title\` section per problem as you work it.\n`
+      : `\nAdd one \`## <n>. title\` section per problem as you work it.\n`,
+  }
 }
 
 async function exists(file: string): Promise<boolean> {
@@ -223,26 +312,32 @@ export function startCourseStudyServer(options: {
     const n = unitNumber(input.n)
     const file = path.join(dir, 'psets', `${pad(n)}.md`)
     const created = !(await exists(file))
-    if (created) {
+    // a stub from before seeding (no problem sections, no states) is seeded in place
+    const stub = created ? undefined : splitFrontmatter(await readFile(file, 'utf8'))
+    const bare =
+      stub !== undefined && !/^## /m.test(stub.body) && parseProblems(stub.data).size === 0
+    if (created || bare) {
       // the problem set's resource page, from the vendored calendar's `due` ids
       const units = Array.isArray(record.units) ? (record.units as Record<string, unknown>[]) : []
       const id = units
         .flatMap(unit => (Array.isArray(unit.due) ? (unit.due as unknown[]) : []))
         .find((due): due is string => typeof due === 'string' && psetNumber(due) === n)
+      const seed = await psetSeed(dir, name, n, id)
       const number = String(record.number ?? name)
-      const head = [
-        `title: ${quote(`${number} problem set ${pad(n)}`)}`,
-        `description: ${quote(`attempts and solutions for ${number} problem set ${pad(n)}`)}`,
-        'tags:',
-        '  - course',
-        'problems: {}',
-      ].join('\n')
-      const source = id
-        ? `\nThe set: [[courses/${name}/resources/${id}|problem set ${n}]]. Add one \`## <n>\` section per problem as you work it.\n`
-        : `\nAdd one \`## <n>\` section per problem as you work it.\n`
+      let head =
+        stub?.head ??
+        [
+          `title: ${quote(`${number} problem set ${pad(n)}`)}`,
+          `description: ${quote(`attempts and solutions for ${number} problem set ${pad(n)}`)}`,
+          'tags:',
+          '  - course',
+          'problems: {}',
+        ].join('\n')
+      if (seed.solutionTerm)
+        head = setTopLevel(head, 'solutionTerm', `solutionTerm: ${quote(seed.solutionTerm)}`)
       await mkdir(path.dirname(file), { recursive: true })
-      await writeFile(file, assemble(head, source), { flag: 'wx' })
-      options.log(`pset: created ${relative(file)}`)
+      await writeFile(file, assemble(head, seed.body), created ? { flag: 'wx' } : undefined)
+      options.log(`pset: ${created ? 'created' : 'seeded'} ${relative(file)}`)
     }
     if (input.problem === undefined) return { path: relative(file), created }
     const problem = unitNumber(input.problem)

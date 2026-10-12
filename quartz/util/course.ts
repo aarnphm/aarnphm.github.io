@@ -347,6 +347,45 @@ export const psetNumber = (id: string): number | undefined => {
   return match ? Number(match[1]) : undefined
 }
 
+export interface PsetRefs {
+  /** The term's own set: the shortest id (`pset1`, not the older-term `pset1-1`). */
+  pset?: CourseResourceRef
+  /** The official solution of that set. */
+  solution?: CourseResourceRef
+  /** Solutions OCW ships for another term's version of the set, with that set when vendored. */
+  other: { term: string; pset?: CourseResourceRef; solution: CourseResourceRef }[]
+}
+
+const termOf = (ref: CourseResourceRef) => /\((\d{4})\)/.exec(resourceTitle(ref))?.[1]
+
+/**
+ * Problem set `n` and its solutions. A solution pairs with the set of the same term: 18.100B ships
+ * the 2010 sets but only the 2006 solutions, and those must not open as answers to the 2010 set.
+ * OCW titles most older-term files `(2006)`; `untagged` names the term of a solution whose title
+ * does not (`solutionTerm:` in `psets/<nn>.md`).
+ */
+export function psetRefs(
+  resources: Map<string, CourseResourceRef>,
+  n: number,
+  untagged?: string,
+): PsetRefs {
+  const numbered = (kind: CourseResourceKind) =>
+    Array.from(resources.values())
+      .filter(ref => ref.record.kind === kind && (ref.record.n ?? psetNumber(ref.id)) === n)
+      .sort((a, b) => a.id.length - b.id.length || a.id.localeCompare(b.id))
+  const sets = numbered('pset')
+  const pset = sets[0]
+  const term = pset ? termOf(pset) : undefined
+  let solution: CourseResourceRef | undefined
+  const other: PsetRefs['other'] = []
+  for (const ref of numbered('pset-solution')) {
+    const at = termOf(ref) ?? untagged
+    if (at === term) solution ??= ref
+    else if (at) other.push({ term: at, pset: sets.find(set => termOf(set) === at), solution: ref })
+  }
+  return { ...(pset ? { pset } : {}), ...(solution ? { solution } : {}), other }
+}
+
 export function psetTextSlug(dir: string, n: number): FullSlug {
   return `courses/${dir}/notes/pset-${String(n).padStart(2, '0')}` as FullSlug
 }
