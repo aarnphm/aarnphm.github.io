@@ -39,7 +39,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
             </svg>
           </button>
         )}
-        <search class="search-container">
+        <search class="search-container" popover="manual">
           <form class="search-space">
             <div class="input-container">
               <input

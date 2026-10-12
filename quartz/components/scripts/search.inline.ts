@@ -168,7 +168,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
   configuredSearchElements.add(searchElement)
 
-  const container = searchElement.querySelector<HTMLDivElement>('.search-container')
+  const container = searchElement.querySelector<HTMLElement>('.search-container')
   if (!container) return
 
   const searchButton = searchElement.querySelector<HTMLButtonElement>('.search-button')
@@ -442,6 +442,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   let currentHover: HTMLInputElement | null = null
+  let previousFocus: HTMLElement | null = null
 
   function hideSearch(focusButton = true) {
     searchSeq += 1
@@ -450,6 +451,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       runSearchTimer = null
     }
     container!.classList.remove('active')
+    if (container!.matches(':popover-open')) container!.hidePopover()
     searchBar!.value = ''
     rawSearchTerm = ''
     currentSearchTerm = ''
@@ -459,7 +461,11 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       preview.replaceChildren()
     }
     searchLayout!.classList.remove('display-results')
-    if (focusButton) searchButton!.focus()
+    if (focusButton) {
+      const target = previousFocus?.isConnected ? previousFocus : searchButton
+      target?.focus({ preventScroll: true })
+    }
+    previousFocus = null
     resetProgressBar()
   }
 
@@ -471,6 +477,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   function showSearch(type: SearchType) {
+    if (!container!.matches(':popover-open')) {
+      previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+      container!.showPopover()
+    }
     container!.classList.add('active')
     void ensureSearchData()
     if (type === 'tags') {

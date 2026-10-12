@@ -77,6 +77,14 @@
 
   & > .search-container {
     @include containerPopover;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
 
     & > .search-space {
       width: 75%;
@@ -421,6 +429,37 @@
       height: var(--search-icon-size);
       color: var(--search-icon-color);
       flex-shrink: 0;
+    }
+  }
+}
+
+body[data-slug='index']:has(.homepage-trail-toggle[aria-expanded='true'])
+  .search
+  > .search-container {
+  --search-top: max(1rem, env(safe-area-inset-top));
+  --search-right: max(1rem, env(safe-area-inset-right));
+  --search-left: max(1rem, env(safe-area-inset-left));
+  --search-bottom: max(1rem, env(safe-area-inset-bottom));
+  --search-height: calc(100dvh - var(--search-top) - var(--search-bottom));
+
+  & > .search-space {
+    align-self: flex-start;
+    width: min(44rem, calc(100% - var(--search-left) - var(--search-right)));
+    max-width: none;
+    max-height: var(--search-height);
+    margin: var(--search-top) var(--search-right) 0 auto;
+
+    &:has(> .search-layout.display-results) {
+      height: min(36rem, var(--search-height));
+    }
+
+    @media (min-width: 801px) {
+      & > .search-layout[data-preview] > .results-container {
+        flex-basis: 38%;
+      }
+      & > .search-layout > .preview-container {
+        padding-inline: 1rem;
+      }
     }
   }
 }
