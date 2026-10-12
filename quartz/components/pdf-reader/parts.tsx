@@ -107,6 +107,14 @@ export function MarkCard(props: MarkCardProps) {
     if (active && props.autoFocus) textarea.current?.focus({ preventScroll: true })
   }, [active, props.autoFocus])
 
+  // Safari and Firefox lack `field-sizing`; size the note to its text so it never scrolls inside.
+  useLayoutEffect(() => {
+    const element = textarea.current
+    if (!element || CSS.supports('field-sizing', 'content')) return
+    element.style.height = 'auto'
+    element.style.height = `${element.scrollHeight + element.offsetHeight - element.clientHeight}px`
+  }, [active, mark.body])
+
   return (
     <article
       class="pdf-mark-card"
