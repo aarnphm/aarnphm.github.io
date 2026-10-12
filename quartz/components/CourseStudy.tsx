@@ -10,6 +10,7 @@ import {
   StudyKey,
   courseOf,
   courseDirOf,
+  studyLogSlug,
   unitLabel,
 } from '../util/course'
 import { courseStudyEndpoint } from '../util/course-study'
@@ -27,18 +28,30 @@ const keys: StudyKey[] = ['read', 'problems']
 
 /**
  * Read and problems dates for one unit. In dev the two are toggles that post to the study
- * endpoint; elsewhere a set date is plain text and an unset one is omitted.
+ * endpoint, followed by a `log` link; elsewhere a set date links to the study log and an unset one
+ * is omitted. The row never grows with save feedback: the toggle label carries the date.
  */
 export function StudyState({
   view,
   unit,
+  from,
   endpoint,
 }: {
   view: CourseView
   unit: CourseUnitView
+  from: FullSlug
   endpoint?: string
 }): JSX.Element | null {
   const n = unit.record.n
+  const log = view.log ? studyLogSlug(view.dir) : undefined
+  const logLink = (label: string) =>
+    log ? (
+      <a class="internal" href={resolveRelative(from, log)} data-slug={log} data-no-popover>
+        {label}
+      </a>
+    ) : (
+      <span>{label}</span>
+    )
   if (!endpoint) {
     const set = keys.filter(key => unit[key])
     if (set.length === 0) return null
@@ -47,9 +60,7 @@ export function StudyState({
         {set.map((key, i) => (
           <>
             {i > 0 ? <span class="course-sep">·</span> : null}
-            <span>
-              {key} {unit[key]}
-            </span>
+            {logLink(`${key} ${unit[key]}`)}
           </>
         ))}
       </span>
@@ -73,10 +84,11 @@ export function StudyState({
             data-study-date={date}
             title={date ? `${key} ${date} · click to clear` : `mark ${key} today`}
           >
-            {date ? `${key} ${date.slice(5)}` : key}
+            {key}
           </button>
         )
       })}
+      {log ? logLink('log') : null}
       <span class="course-study-status" role="status" aria-live="polite" />
     </span>
   )

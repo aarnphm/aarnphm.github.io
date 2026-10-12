@@ -35,15 +35,20 @@
   }
 }
 
+// the label never changes (the row keeps its width); pressed is dark with a solid rule, the date
+// sits in the title
 .course-study-toggle {
   padding: 0;
   border: 0;
+  color: var(--darkgray);
   text-decoration: underline;
   text-decoration-color: var(--course-line, var(--gray));
   text-underline-offset: 0.2em;
 
   &[aria-pressed='true'] {
+    color: var(--dark);
     text-decoration-color: var(--dark);
+    text-decoration-thickness: 2px;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -69,8 +74,12 @@
   }
 }
 
-.course-study-status:empty {
-  display: none;
+.course-study-status {
+  white-space: nowrap;
+
+  &:empty {
+    display: none;
+  }
 }
 
 .course-spine-table {
@@ -107,12 +116,14 @@
   }
 }
 
-// promotion preview: left of the strip table; open, the body fills the table's height
+// promotion preview: left of the strip table. The summary keeps its place at the top right; open,
+// the panel drops below it as an overlay and the reader stays where it is.
 .course-promote {
   position: relative;
   flex: none;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   min-width: 0;
   text-align: start;
 
@@ -120,13 +131,34 @@
     width: min(32rem, 45vw);
   }
 
+  // the site's fold chevron (callouts.scss) in place of the UA triangle
   > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
     width: fit-content;
+    list-style: none;
     cursor: pointer;
     color: var(--dark);
     text-decoration: underline;
     text-decoration-color: var(--gray);
     text-underline-offset: 0.2em;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      content: '';
+      flex: none;
+      width: 1em;
+      height: 1em;
+      background-color: var(--darkgray);
+      mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="6 9 12 15 18 9"/%3E%3C/svg%3E')
+        center / contain no-repeat;
+      transform: rotate(-90deg);
+      transition: transform var(--transition-fast, 0.15s) ease;
+    }
 
     &:focus-visible {
       outline: 2px solid var(--dark);
@@ -134,32 +166,116 @@
     }
   }
 
-  // out of flow so the preview never grows the strip past the table
+  &[open] > summary::after {
+    transform: none;
+  }
+
   .course-promote-body {
     position: absolute;
-    inset: calc(1lh + var(--space-1)) 0 0 0;
+    inset: calc(1lh + var(--space-1)) 0 auto 0;
+    z-index: var(--z-popover);
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
+    max-height: min(36rem, 70dvh);
+    padding: var(--space-4) var(--space-4) var(--space-3);
     min-width: 0;
     border: 1px solid var(--dark);
     background: var(--light);
     overflow: auto;
+    overscroll-behavior: contain;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .course-promote-lede {
+    margin: 0;
+    color: var(--dark);
+    font-family: var(--bodyFont);
+    font-size: var(--text-ui);
+
+    code {
+      font-size: inherit;
+    }
+  }
+
+  .course-promote-hint {
+    max-width: 34ch;
+    margin: 0;
+    color: var(--darkgray);
+    font-family: var(--bodyFont);
+    font-size: var(--text-meta);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  // counts as the strip table's key/value rows
+  .course-promote-counts {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: 0.12rem var(--space-4);
+    margin: var(--space-1) 0 0;
+
+    dt {
+      color: var(--gray);
+      text-align: start;
+    }
+
+    dd {
+      margin: 0;
+      color: var(--dark);
+      text-align: end;
+      font-variant-numeric: tabular-nums;
+    }
   }
 
   .course-promote-actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    justify-content: center;
     gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+
+  .course-promote-status {
+    min-height: 1lh;
+    margin: 0;
+    color: var(--darkgray);
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .course-promote-preview {
+    align-self: stretch;
+    margin-top: var(--space-1);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--course-line);
+    text-align: start;
+
+    > summary {
+      width: fit-content;
+      margin-inline: auto;
+      color: var(--darkgray);
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid var(--dark);
+        outline-offset: 2px;
+      }
+    }
+
+    & + .course-promote-preview {
+      margin-top: 0;
+    }
   }
 
   // custom.scss keeps `pre` unwrapped, so long lines scroll inside the box
   pre {
-    flex: none;
     min-width: 0;
-    margin: 0;
+    margin: var(--space-2) 0 0;
     padding: var(--space-2);
     overflow: auto;
     font-size: var(--text-meta);
@@ -170,6 +286,8 @@
 
   // the bottom sheet stacks it above the table in normal flow
   @media (max-width: 50rem) {
+    align-items: stretch;
+
     &[open] {
       width: auto;
     }
@@ -180,7 +298,7 @@
 
     .course-promote-body {
       position: static;
-      max-height: 40dvh;
+      max-height: 60dvh;
       margin-top: var(--space-1);
     }
   }

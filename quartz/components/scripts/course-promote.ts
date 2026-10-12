@@ -12,6 +12,8 @@ export interface PromoteSource {
   pdf: string
   /** `courses/<dir>/lectures/<nn>`: marks on the unit's passages. */
   unit: string
+  /** `courses/<dir>/notes/<nn>`, the rendered OCW notes: the workspace marks its passages. */
+  text?: string
   date: string
 }
 
@@ -20,6 +22,10 @@ export interface PromoteDrafts {
   fc: string
   marks: number
   questions: number
+  /** Marks on the pdf (text, region and page marks). */
+  pdf: number
+  /** Marks on passages of the unit or the notes page, saved or browser drafts. */
+  passages: number
 }
 
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -48,8 +54,12 @@ function quoteOf(target: PdfMarkTarget): string | null {
 }
 
 function citation(source: PromoteSource, mark: PdfMark): string | null {
-  const page = mark.target.page
-  return page > 0 ? `[[${source.pdf}#page=${page}|p. ${page}]]` : null
+  const target = mark.target
+  if (target.type !== 'passage')
+    return target.page > 0 ? `[[${source.pdf}#page=${target.page}|p. ${target.page}]]` : null
+  // a passage of the note being written needs no link to itself
+  if (!mark.src || mark.src === source.unit) return null
+  return `[[${mark.src}${target.heading ? `#${target.heading}` : ''}|notes]]`
 }
 
 function entry(source: PromoteSource, mark: PdfMark): string {
@@ -68,6 +78,9 @@ function entry(source: PromoteSource, mark: PdfMark): string {
 const byPosition = (a: PdfMark, b: PdfMark) =>
   a.target.page - b.target.page || a.createdAt - b.createdAt || a.id.localeCompare(b.id)
 
+/** One copy per id: a mark can come back from more than one source. */
+const unique = (marks: PdfMark[]) => [...new Map(marks.map(mark => [mark.id, mark])).values()]
+
 /**
  * A `lectures/<nn>.md` skeleton with the marks in page order, and a `.fc` draft with one `Q:`
  * per question mark. Answers stay empty: the deck reports them until they are written.
@@ -75,10 +88,10 @@ const byPosition = (a: PdfMark, b: PdfMark) =>
 export async function promoteDrafts(
   source: PromoteSource,
   pdfMarks: PdfMark[],
-  unitMarks: PdfMark[],
+  passageMarks: PdfMark[],
 ): Promise<PromoteDrafts> {
-  const pdf = [...pdfMarks].sort(byPosition)
-  const passages = [...unitMarks].sort(byPosition)
+  const pdf = unique(pdfMarks).sort(byPosition)
+  const passages = unique(passageMarks).sort(byPosition)
   const md = [
     '---',
     `title: ${yamlString(`${source.unitKind} ${pad(source.n)}: ${source.title.toLowerCase()}`)}`,
@@ -122,5 +135,7 @@ export async function promoteDrafts(
     fc: cards.length > 0 ? `${cards.join('\n---\n')}\n` : '',
     marks: pdf.length + passages.length,
     questions: cards.length,
+    pdf: pdf.length,
+    passages: passages.length,
   }
 }

@@ -9,101 +9,37 @@
   }
 }
 
-@media all and (min-width: 1401px) {
-  // The reading track defaults to the page reading column (3 of the 7 shared tracks), so the lecture
-  // text keeps the header's measure; the workspace takes the rest up to the wide edge.
-  .course-reading-split:has(> .course-workspace) {
-    grid-column: 5 / -3;
-    display: grid;
-    grid-template-columns:
-      minmax(22rem, var(--course-reading-track, 3fr))
-      minmax(20rem, var(--course-workspace-track, 4fr));
-    column-gap: 0;
-    align-items: start;
-
-    > article.course-lecture {
-      grid-column: 1;
-      grid-row: 1;
-      min-width: 22rem;
-    }
-
-    > .course-workspace {
-      grid-column: 2;
-      grid-row: 1;
-      min-width: 20rem;
-      padding-inline-start: var(--space-4);
-      // Start level with the first paragraph's box, below its 1rem top margin.
-      margin-block-start: 1rem;
-    }
-
-    // Closed, the text keeps the reading column and the launcher waits at the workspace edge.
-    &:has(.course-workspace-app[data-open='false']) {
-      grid-template-columns: minmax(0, 3fr) minmax(0, 4fr);
-
-      > .course-workspace {
-        min-width: 0;
-      }
-    }
-
-    &[data-resizing='true'] {
-      cursor: col-resize;
-      user-select: none;
-
-      iframe {
-        pointer-events: none;
-      }
-    }
-  }
-}
-
 .course-workspace {
   --course-workspace-top: 5rem;
+  --course-workspace-edge: calc(var(--kern) * 1.5);
   --course-workspace-line: color-mix(in srgb, var(--gray) 45%, transparent);
-  grid-column: 9 / -3;
-  grid-row: 1;
-  align-self: start;
-  position: sticky;
-  top: var(--course-workspace-top);
   min-width: 0;
   font: var(--text-ui) / 1.5 var(--bodyFont);
   color: var(--darkgray);
 }
 
-.course-workspace-app {
-  position: relative;
+// Wide screens: the lecture text keeps the page column, and the workspace docks in the free space
+// to its right, from the top of the screen to the bottom. The left edge is the reading column's
+// end in the desktop grid (base.scss): a 1fr outer track, a 3-kern gutter and 5 of the 9 tracks.
+@media all and (min-width: 1401px) {
+  .course-workspace {
+    position: fixed;
+    top: max(var(--course-workspace-top), var(--course-workspace-edge));
+    bottom: var(--course-workspace-edge);
+    left: calc(var(--kern) * 4.5 + var(--grid-col-width) * 5 + var(--space-4));
+    right: var(--course-workspace-edge);
+    z-index: 1;
+  }
+
+  [data-course-workspace-mount],
+  .course-workspace-app,
+  .course-workspace-dialog[open] {
+    height: 100%;
+  }
 }
 
-.course-workspace-divider {
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: calc(-1 * var(--space-4));
-  width: var(--space-4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: col-resize;
-  touch-action: none;
-  user-select: none;
-
-  > span {
-    width: 2px;
-    height: 2rem;
-    background: var(--gray);
-  }
-
-  &:hover,
-  &:focus-visible {
-    background: var(--highlight);
-
-    > span {
-      background: var(--dark);
-    }
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--dark);
-    outline-offset: -2px;
-  }
+.course-workspace-app {
+  position: relative;
 }
 
 .course-workspace-app,

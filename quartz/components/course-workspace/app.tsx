@@ -7,7 +7,6 @@ import { kindMeta } from '../pdf-reader/parts'
 import { lectureSelection, noteRange, showNoteRange, type LectureSelection } from './anchors'
 import { DraftEditor } from './editor'
 import { noteKinds, SelectionActions, type SelectionAction } from './selection'
-import { SplitDivider } from './split-divider'
 import {
   DraftConflict,
   loadNotes,
@@ -41,8 +40,6 @@ interface WorkspaceProps {
   reader?: string
   video?: string
   article: HTMLElement
-  container: HTMLElement
-  workspace: HTMLElement
   root: HTMLElement
   signal: AbortSignal
 }
@@ -448,12 +445,6 @@ function Workspace(props: WorkspaceProps) {
 
   return (
     <div class="course-workspace-app" data-open={open} data-compact={compact}>
-      <SplitDivider
-        container={props.container}
-        article={props.article}
-        workspace={props.workspace}
-        enabled={!compact && open}
-      />
       <button
         ref={launcher}
         type="button"
@@ -829,9 +820,8 @@ function Workspace(props: WorkspaceProps) {
 export function mountCourseWorkspace(root: HTMLElement, signal: AbortSignal): () => void {
   const slug = root.dataset.courseWorkspaceSlug
   const container = root.closest<HTMLElement>('.course-reading-split')
-  const workspace = root.closest<HTMLElement>('.course-workspace')
   const article = container?.querySelector<HTMLElement>(':scope > article.course-lecture')
-  if (!slug || !article || !container || !workspace) return () => undefined
+  if (!slug || !article) return () => undefined
   root.replaceChildren()
   render(
     <Workspace
@@ -841,8 +831,6 @@ export function mountCourseWorkspace(root: HTMLElement, signal: AbortSignal): ()
       reader={root.dataset.courseWorkspaceReader}
       video={root.dataset.courseWorkspaceVideo}
       article={article}
-      container={container}
-      workspace={workspace}
       root={root}
       signal={signal}
     />,
