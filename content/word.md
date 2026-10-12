@@ -1,24 +1,14 @@
 ---
-date: '2026-10-11'
+cssclasses:
+  - nolist
+date: '2024-10-10'
+description: a bag of chips/words/vernacular
 id: word
-modified: 2026-10-11 18:38:26 GMT-04:00
+layout: technical
+modified: 2026-10-12 09:14:55 GMT-04:00
 tags:
-  - seed
-title: word
----
-
---- cssclasses:
-
-- nolist
-  date: '2024-10-10'
-  description: a bag of chips/words/vernacular
-  id: word
-  layout: technical
-  modified: 2026-09-28 13:31:23 GMT-04:00
-  tags:
-- evergreen
-  title: lists
-
+  - evergreen
+title: lists
 ---
 
 - {{sidenotes[transitions]: in CSS or terminology}}
