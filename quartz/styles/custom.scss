@@ -172,7 +172,7 @@ a {
   }
 }
 
-blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote)) {
+blockquote:not(:where(.arena-reader blockquote, .twitter-post blockquote, .pdf-mark-card-quote)) {
   border-left: none;
   padding-left: 0;
   margin: 1.5rem 0 1.5rem 2.5rem;
