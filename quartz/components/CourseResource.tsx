@@ -29,6 +29,7 @@ import {
   unitSources,
 } from '../util/course'
 import { courseStudyEndpoint } from '../util/course-study'
+import { processWikilinksToHtml, renderLatexInString } from '../util/description'
 import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
@@ -678,7 +679,11 @@ function CollectionView({ rv, props }: { rv: ResourceView; props: QuartzComponen
           <span class="course-count">{collectionSummary(rows)}</span>
         </div>
         {description ? (
-          <p dangerouslySetInnerHTML={{ __html: props.fileData.description ?? description }} />
+          <p
+            dangerouslySetInnerHTML={{
+              __html: renderLatexInString(processWikilinksToHtml(description, from)),
+            }}
+          />
         ) : null}
         {links.length > 0 ? (
           <ul class="course-resource-links">
@@ -770,7 +775,11 @@ function FileView({ rv, props }: { rv: ResourceView; props: QuartzComponentProps
           <img class="course-file-image" src={href} alt={resourceTitle(ref)} />
         ) : null}
         {description && description !== resourceTitle(ref) ? (
-          <p dangerouslySetInnerHTML={{ __html: fileData.description ?? description }} />
+          <p
+            dangerouslySetInnerHTML={{
+              __html: renderLatexInString(processWikilinksToHtml(description, from)),
+            }}
+          />
         ) : null}
         <dl class="course-file-meta">
           <dt>format</dt>
@@ -978,7 +987,9 @@ export function CoursePageHead(props: QuartzComponentProps): JSX.Element | null 
         {description ? (
           <p
             class="course-count"
-            dangerouslySetInnerHTML={{ __html: fileData.description ?? description }}
+            dangerouslySetInnerHTML={{
+              __html: renderLatexInString(processWikilinksToHtml(description, from)),
+            }}
           />
         ) : null}
       </div>
