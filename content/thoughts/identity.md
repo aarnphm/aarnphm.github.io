@@ -1,8 +1,8 @@
 ---
 date: '2024-02-19'
-description: on personal identity
+description: personal identity read through Merleau-Ponty, Sartre, Freud, Jung, Ricoeur and structural mathematics, with Paul Graham's case for keeping it small.
 id: identity
-modified: 2026-06-05 15:08:28 GMT-04:00
+modified: 2026-10-12 10:58:00 GMT-04:00
 seealso:
   - '[[thoughts/hermeneutics]]'
   - '[[thoughts/love]]'
@@ -15,260 +15,163 @@ socials:
 tags:
   - philosophy
   - pattern
-title: type-identity theory
+title: identity
 ---
 
-Personal identity is a structure you enact.
+Two questions get mixed together under "identity". One asks what makes me the same person as the kid in my old photos. The other asks who I take myself to be: the roles, loyalties and stories I would defend in an argument. The traditions below mostly answer the second question, and most of them deny that the answer is a fixed inner essence. They disagree about what takes its place: the body, a free project, a negotiation among drives, or a story.
 
-> The question "who am I?" is not answered by finding an essence but by understanding processes: embodiment, recognition, interpretation, integration.
-
-Identity emerges through relations—with your body, with others, with your past, with possibilities.
-
-Identity is fundamentally relational (not substantial), processual (not static), and constituted through practices of self-relation and other-relation. Whether phenomenological, existentialist, psychoanalytic, or formal-mathematical, ==you are not a thing but a way of being-in-relation.==
+The note uses "identity" in this personal sense. Type-identity theory, the claim that mental state types are brain state types, is a separate topic in philosophy of mind; see [[thoughts/functionalism]].
 
 ## phenomenology
 
 cf [[library/Phenomenology of Perception|Phenomenology of Perception]]
 
-### the body-subject
+### the lived body
 
-Merleau-Ponty's 1945 _Phenomenology of Perception_ [@merleauponty1945phenomenology] establishes that the body is not merely an object (_Körper_) but a "body-subject" (_Leib_)—simultaneously the seat of perception and the perceived. This dual nature dissolves the traditional subject-object dichotomy. You don't _have_ a body; you _are_ your body. Identity emerges through embodied practice, not abstract cognition.
+In _Phenomenology of Perception_ [@merleauponty1945phenomenology], Merleau-Ponty describes one's own body (_le corps propre_) as the point from which a world is perceived. It is never only an object in front of me. I can walk around a table, but I cannot walk around my own body to see it from outside. He builds on Husserl's distinction between the body as a physical thing (_Körper_) and the lived body (_Leib_).
 
-In habits, the body adapts to intended meanings, creating embodied consciousness. Mind is an accomplishment of structural integration conditioned by the matter and life in which it is embodied. When you learn to type, the keyboard becomes an extension of your body-schema. When you drive, the car's dimensions become yours. Identity is not what you think about yourself but how you inhabit the world pre-reflectively.
+His examples are habits. A typist does not locate each key with an explicit thought; the keyboard is organised in the hands. A driver can feel whether the car fits through a gap without measuring. Merleau-Ponty describes this as the body-schema extending into the tool. A large part of what I am, then, is a set of practised ways of reaching into a world, and these work before I reflect on them.
 
 ### flesh, chiasm, and reversibility
 
-In his unfinished _The Visible and the Invisible_ [@merleauponty1964visible], Merleau-Ponty introduces "flesh" (_la chair_)—not a substance but "the concrete emblem of a general manner of being." Flesh is the primordial element underlying both subject and object, encompassing intercorporeality and the anonymous sensibility shared among distinct bodies.
+In the unfinished _The Visible and the Invisible_ [@merleauponty1964visible], he names the shared fabric of perceiver and perceived "flesh" (_la chair_). He says it is neither matter nor mind, and calls it "the concrete emblem of a general manner of being."
 
-The "chiasm" (χιασμός) describes a crisscrossing structure: touching/touched, seeing/seen, self/other exist in reversible relation. When you touch your left hand with your right, you are simultaneously touching and touched. The sentient and sensible never coincide but are separated by a gap (_écart_) that defers unity while maintaining connection. Self and other are obverse and reverse of the same flesh.
+The model case is one hand touching the other. The right hand touches, the left is touched, and the roles can swap. They never coincide: when I try to feel the touched hand as touching, the experience slips. Merleau-Ponty calls this reversibility "always imminent and never realized in fact." The gap (_écart_) keeps the two sides distinct while they stay joined. A chiasm is this crossing. Seeing and being seen have the same structure, which is why he can extend it to other people.
 
 ### intercorporeality
 
-Identity formation occurs through intercorporeality (_intercorporéité_)—the pre-personal, embodied relation with others. Before intersubjectivity (which assumes distinct subjects), there is intercorporeal entwinement. You gesture and connect through an expressive, ambiguous space where meanings are directly shared without mental representation.
-
-Personal identity is constituted through bodily engagement with the world at a pre-reflective level. We are our projects, our motor intentionality, our practical mastery before we are subjects of representation. You are what you do, how you move, who you touch, how you inhabit shared space.
+In a later essay he uses "intercorporeality" for the bodily relation with others that comes before any judgement that they are minds. His example in _Phenomenology of Perception_ is a fifteen-month-old who opens its mouth when he playfully takes its finger between his teeth. The baby has barely seen its own face, yet it grasps his biting intention as something its own body could do. On this account I learn who I am partly by moving with other bodies and reading their gestures, before I hold any explicit self-image.
 
 ## existentialism
 
-_satre_
+See also [[thoughts/Existentialism]].
 
-### being-in-itself vs. being-for-itself
+### being-in-itself and being-for-itself
 
-Sartre's _Being and Nothingness_ [@sartre1943being] distinguishes:
+_Being and Nothingness_ [@sartre1943being] contrasts two kinds of being:
 
-- **Being-in-itself** (_être-en-soi_): Fixed, complete, self-contained existence of objects—fully realized being that simply "is"
-- **Being-for-itself** (_être-pour-soi_): Human consciousness characterized by freedom, lack, negativity (_néant_)—existence aware of itself and thus never self-identical
+- **Being-in-itself** (_être-en-soi_) is the being of things. A rock is what it is, completely.
+- **Being-for-itself** (_être-pour-soi_) is consciousness. It is always aware of itself at a slight distance, and it is aimed at possibilities it has not yet realised. Sartre's formula is that it "is what it is not and is not what it is."
 
-Consciousness exists as for-itself with intrinsic lack of self-identity. This gap between what we are and our awareness of it creates anxiety but also freedom. You are not a static essence; you are perpetual becoming, perpetual self-transcendence.
+The distance is the source of freedom. Because I am never fully identical with my current state, I can always take it up differently.
 
 ### existence precedes essence
 
-Identity is not given but constructed. We are not born with a nature; we create ourselves through choices. The unity of self is a task, not a given. "Existence precedes essence" means you first exist, then define yourself through projects. You are your future-oriented commitments more than your past or objective attributes.
+The slogan comes from Sartre's 1946 lecture _Existentialism Is a Humanism_. A paper knife is designed for a purpose before it exists. Sartre denies that any designer fixed human nature in advance. A person first exists, and then becomes something through choices and projects. Identity is therefore a task, renewed by what I keep doing.
 
 ### bad faith
 
-Bad faith (_mauvaise foi_) is self-deception that uses freedom to deny freedom. Two forms:
+Bad faith (_mauvaise foi_) is lying to oneself about this situation. Sartre names two sides of a person: _facticity_, the facts I did not choose (my body, my past, my position), and _transcendence_, my ability to go beyond them through choice. Bad faith denies one side:
 
-1. Denying what one is (refusing facticity)
-2. Identifying completely with a role or essence (denying transcendence)
+1. treating myself as pure facticity ("this is just who I am"), or
+2. treating myself as pure transcendence, as if my past and body do not bind me.
 
-The famous waiter example: A waiter in bad faith reduces himself to being-in-itself ("I am a waiter") rather than acknowledging he freely plays that role. Any exclusive affirmation of transcendence OR facticity—or motivated oscillation between them—constitutes bad faith.
+His waiter in a café moves with slightly exaggerated precision, playing at being a waiter as if that role were his nature. Sartre's point is that he is a waiter only in the mode of playing it; he remains free to stop.
 
 ### being-for-others
 
-The Other's gaze objectifies, transforming being-for-itself into being-for-others (_être-pour-autrui_). Identity becomes partially constituted by how others see us—a theft of freedom. Sartre describes this as fundamental conflict: to see the Other as subject threatens my subjectivity; to objectify them denies their freedom.
+When someone looks at me, I become an object in their world. Sartre's example is a man peeping through a keyhole who hears footsteps and is suddenly flooded with shame. He now exists as something seen and judged, and he cannot control what he is for the other person. This being-for-others is part of who I am, and I can never fully take it back.
 
-You need the Other's recognition to achieve objective existence, but you resent this dependency. Your identity is perpetually negotiated in the tension between your own self-conception and how you appear to others.
+Sartre therefore describes relations between people as basically conflictual. In his analysis of love, the lover wants to be the whole world for the beloved, and wants the beloved to choose this freely. That demand is contradictory: it requires possessing a freedom as a freedom. Sartre concludes that love in this form must fail.
 
 ## psychoanalysis
 
 ### [[thoughts/Freud]]
 
-#### structural model: id, ego, superego
+#### the structural model
 
-Freud's 1923 _The Ego and the Id_ [@freud1923ego] divides the psyche:
+_The Ego and the Id_ [@freud1923ego] divides the psyche into three agencies:
 
-- **Id**: Unconscious reservoir of instincts and desires seeking immediate gratification (pleasure principle). Contains libido and destructive impulses.
-- **Ego**: Mediator between id, superego, and reality. Modified portion of id influenced by perception. Employs rational thought and reality testing (reality principle).
-- **Superego**: Moral conscience and ego-ideal. Internalized parental/societal prohibitions and ideals.
+- **Id**: the drives. It follows the pleasure principle and is entirely unconscious.
+- **Ego**: the part of the id modified by contact with the outside world. It tests reality and mediates between the drives, the world and conscience.
+- **Superego**: internalised prohibitions and ideals, formed largely from identification with the parents.
 
-The id is entirely unconscious; ego and superego contain both conscious and unconscious elements. Healthy identity requires a balanced ego capable of managing id impulses and superego demands. You are the perpetual negotiation between desire, reality, and moral constraint.
+Ego and superego are each partly unconscious. On this picture the self I report is the ego's account, which leaves out much of what drives it.
 
-#### narcissism and object-relations
+#### narcissism
 
-Freud's 1914 _On Narcissism_ [@freud1914narcissism] establishes narcissism as "the libidinal complement to the egoism of the instinct of self-preservation."
+_On Narcissism_ [@freud1914narcissism] calls narcissism "the libidinal complement to the egoism of the instinct of self-preservation." _Primary narcissism_ is the infant's original libidinal investment in itself. _Secondary narcissism_ is libido withdrawn from external objects and turned back onto the ego, as Freud thought happened in schizophrenia.
 
-- **Primary narcissism**: Necessary early self-love during infancy when ego-instincts and sex-instincts are inseparable
-- **Secondary narcissism**: Pathological return of object-libido to ego when external love is unreciprocated or traumatic
+Freud also notes an asymmetry: loving, which involves longing and lack, lowers self-regard, and being loved raises it. He separates two types of object choice. In _anaclitic_ choice a person loves someone modelled on the parent who fed or protected them. In _narcissistic_ choice a person loves what they are, were, or would like to be.
 
-To love another is converting ego-libido to object-libido—giving self-love to another. But returned affection restores libido and self-worth. Love serves self-preservation even as it transcends pure egoism.
-
-The ego-ideal (later superego) is the "substitute for the lost narcissism of childhood." You seek to recover infantile narcissistic perfection through ego-ideal formation. Identity develops through identification—setting lost objects inside the ego. Object-cathexis replaced by identification shapes character.
+The ego ideal is what remains of that infant self-love. Freud writes that what a person "projects before him as his ideal is the substitute for the lost narcissism of his childhood." Character forms partly through identification: the ego takes into itself traits of people it once loved and lost.
 
 ### Jung
 
-#### the self vs. the ego
+#### ego and Self
 
-Jung distinguishes [@jung1951aion]:
-
-- **Ego**: Center of consciousness acquired during lifetime. Personal identity and continuity of experience.
-- **Self**: Central archetype of total personality including consciousness, unconscious, and ego. Superior to ego in rank. Organizing principle oriented toward unifying conscious and unconscious realms.
-
-The Self transcends ego—it is the totality, the archetype of wholeness. Ego is partial; Self is complete. Identity formation is the process of ego gradually relating to Self.
+Jung distinguishes the ego, the centre of consciousness, from the Self, the archetype of the whole psyche, conscious and unconscious together [@jung1951aion]. The ego is a part that tends to mistake itself for the whole.
 
 #### individuation
 
-Individuation is becoming a "single, homogeneous being"—self-realization embracing "innermost, last, and incomparable uniqueness." The process involves:
+In _Two Essays on Analytical Psychology_, Jung defines individuation as "becoming a single, homogeneous being," and, since individuality includes our "innermost, last, and incomparable uniqueness," as becoming one's own self. In practice it means bringing unconscious material into a working relation with the ego:
 
-1. **Shadow integration**: Recognizing and integrating the personal unconscious (rejected, disowned, unrecognized traits)
-2. **Persona dissolution**: Dismantling social masks to access authentic self
-3. **Anima/animus integration**: Confronting contrasexual archetypes
-4. **Ego-Self axis**: Developing stronger connection between conscious ego and unconscious Self
+- **Persona**: the mask a person presents to fit social roles. It is necessary; the problem begins when someone takes it for their whole identity.
+- **Shadow**: the traits a person refuses to see in themselves. They often show up as strong reactions to the same traits in other people.
+- **Anima and animus**: the contrasexual images in the unconscious (a feminine image in men, a masculine image in women, in Jung's terms). Jung treats them as more autonomous than the shadow, and as what gets projected when someone falls in love at first sight.
 
-Goal: harmony between conscious identity and deeper unconscious self. You individuate by owning what you've rejected, by recognizing your masks as masks, by integrating opposite qualities.
-
-#### shadow, persona, anima/animus
-
-- **Persona**: The "conformity archetype"—masks adapted for social convenience. Outward face shown to world. Must be recognized as mask, not confused with Self.
-- **Shadow**: Hidden, suppressed side of persona containing traits consciously opposed. Embodies compensating values. Shadow integration is central to individuation.
-- **Anima/Animus**: Unconscious feminine qualities in men (anima) / masculine qualities in women (animus). More archetypal than shadow. Appear in dreams and influence attitudes toward opposite sex.
-
-These archetypes structure how identity forms and deforms. You are shaped by what you project onto others, what you refuse to acknowledge in yourself, what roles you identify with.
+Individuation does not remove these figures. It changes the ego's relation to them, so that a projection can be recognised as a projection.
 
 ## hermeneutics and narrative identity
 
-For the hermeneutic framework of identity as interpretive achievement
+See [[thoughts/hermeneutics]]. Self-understanding is circular: I interpret myself from within my present self-conception, and the interpretation revises that self-conception. I have no standpoint outside the circle.
 
-> self-understanding is circular. You interpret yourself from within existing self-conception, which is revised through interpretation. No external standpoint exists.
+Ricoeur [@ricoeur1992oneself] separates two meanings of "same":
 
-Ricoeur's narrative identity [@ricoeur1992oneself] proposes that personal identity is constituted by narratives. Self-understanding requires grasping one's story—not just facts, but how one makes sense of facts, trajectory, possibilities.
+- **Idem** (sameness): numerical identity and permanence over time. The same fingerprint, the same character traits.
+- **Ipse** (selfhood): being the one who answers for my actions. Its model is keeping a promise. When I keep my word after I have changed, my traits have not stayed the same; I have held myself to something.
 
-**Idem vs. ipse**:
+Narrative identity sits between them. A story connects events that were contingent into one plot, and that plot lets a person who changes still recognise the life as theirs. The story is provisional and can be retold.
 
-- **Idem-identity** (sameness): What remains identical over time. Unbroken continuity, rigid immutability.
-- **Ipse-identity** (selfhood): Sameness across and through change. Develops with temporal becoming.
-
-Narrative identity occupies middle ground: stable yet open to change and reinterpretation. Emplotment organizes contingencies into coherent whole, mediating permanence and change.
-
-Identity is not static essence but ongoing interpretive achievement. Your self-narrative is provisional, always open to revision. Gadamer's fusion of horizons [@gadamer1960truth]: you understand yourself by fusing your current horizon with your past horizons, others' perspectives, cultural horizons. The self is this ongoing fusion.
+Gadamer [@gadamer1960truth] describes understanding a text or tradition as a fusion of horizons: my present assumptions meet those of the text, and both are revised. He adds that such understanding is in the end self-understanding. Reading someone else carefully changes what I can see about myself.
 
 ## mathematics
 
-### category theory and structural identity
+The traditions above say identity comes from relations. Mathematics has precise versions of that claim, with limits that matter.
 
-Category theory refines "sameness" by distinguishing isomorphism from equality.
+### category theory
 
-> implies that identity is relational, not substantial.
+See [[thoughts/category theory]]. Every object $A$ in a category has an identity morphism $\mathrm{id}_A : A \to A$, and for all $f : A \to B$ and $g : C \to A$,
 
-**Identity morphisms**: Objects acquire identity formally through existence of identity morphisms. For any object $A$, there exists $\text{id}_A: A \to A$ satisfying:
+$$
+f \circ \mathrm{id}_A = f, \qquad \mathrm{id}_A \circ g = g.
+$$
 
-- For any $f: A \to B$, $f \circ \text{id}_A = f$
-- For any $g: C \to A$, $\text{id}_A \circ g = g$
+Two objects are isomorphic when there are maps $f : A \to B$ and $g : B \to A$ with $g \circ f = \mathrm{id}_A$ and $f \circ g = \mathrm{id}_B$. Isomorphic objects can differ as sets while being indistinguishable by anything the category can express. There can also be many different isomorphisms between the same two objects, so "the same" can hold in several ways.
 
-**Isomorphism vs. equality**: Two objects can be "the same in a way" while different—isomorphic but not equal. Objects can be same in multiple ways (different isomorphisms). This matches phenomenological insight: identity admits degrees and multiplicities.
+The Yoneda lemma makes "defined by relations" exact [@awodey2010category]. An object is determined, up to isomorphism, by the maps into it from every other object:
 
-**Objects up to isomorphism**: Category theory characterizes objects up to isomorphism (ideally unique isomorphism). This embodies mathematical structuralism—structures characterized by their relationships, not intrinsic properties.
+$$
+\mathrm{Hom}(-,A) \cong \mathrm{Hom}(-,B) \ \text{naturally} \iff A \cong B.
+$$
 
-What matters is not "what something is" internally but "how it relates" to everything else. Identity is relational, not substantial. This aligns with Merleau-Ponty (identity through embodied relations) and Sartre (identity through projects and being-for-others).
+The lemma determines an object only up to isomorphism, and only inside one fixed category. Change the category and the relevant relations change with it.
 
-### homotopy type theory and univalence
+### univalence
 
-In homotopy type theory (HoTT), identity types behave like path spaces—identity is a path between points in type space.
+In homotopy type theory, a proof that $a = b$ behaves like a path from $a$ to $b$ in a space. The univalence axiom, proposed by Voevodsky around 2009, says that for types $A$ and $B$ in a universe, the canonical map
 
-The univalence axiom (Voevodsky, 2009): "Identity is equivalent to equivalence." Two types are identical iff they are equivalent (isomorphic in appropriate sense).
+$$
+(A = B) \to (A \simeq B)
+$$
 
-Philosophical implications:
+is itself an equivalence. Identity of types is therefore equivalent to equivalence of types. This formalises the working mathematician's habit of treating isomorphic structures as the same, and Awodey argues that it captures mathematical structuralism. See [the HoTT book](https://homotopytypetheory.org/book/).
 
-- Isomorphic structures can be identified (mathematicians' working principle now formalized)
-- Reasoning invariant under isomorphism
-- Identity refined from equality to equivalence
+### composition
 
-Awodey: "Univalence embodies mathematical structuralism" and "expands notion of identity to that of equivalence." [@awodey2010category]
+The tensor product $V \otimes W$ of two vector spaces contains elements of the form $v \otimes w$, but most of its elements are sums such as $v_1 \otimes w_1 + v_2 \otimes w_2$ that cannot be written as one product. Such an element describes a composite whose parts have no separate state of their own. In quantum mechanics this is entanglement. In the distributional compositional model of Coecke, Sadrzadeh and Clark, a transitive verb is a tensor in $N \otimes S \otimes N$, and sentence meaning comes from contracting it with the subject and object vectors.
 
-### tensor products and compositional identity
-
-Tensor products model compositional structure. For vector spaces $V$, $W$, the tensor product $V \otimes W$ represents compositional combinations.
-
-Applied to distributional compositional semantics:
-
-- Words as vectors in semantic space
-- Phrases/sentences as tensors
-- Composition via tensor product
-- Identity of meaning as proximity in tensor space
-
-Tensor algebra provides formal framework for how complex identities compose from parts. Your identity as tensor: multiple roles, relationships, commitments combined non-linearly.
-
-**Functorial preservation**: Functors preserve structure: $F(\text{id}_A) = \text{id}_{F(A)}$. Identity transforms functorially—preserved under structural mappings. How your identity persists across contexts (work, family, solitude) can be modeled as functorial transformation.
-
-### connections to personal identity
-
-These mathematical structures provide formal models for:
-
-1. **Relational identity**: Category theory's structure-preserving morphisms
-2. **Identity transformation**: Functorial mappings preserving identity across contexts
-3. **Compositional identity**: Tensor products modeling how complex identities compose from parts
-4. **Multiple identity criteria**: Different notions of sameness (equality, isomorphism, equivalence, homotopy)
-
-The shift from "what is identity?" to "what structure does identity have?" parallels phenomenology's shift from essence to structure.
+The analogy for persons is limited. It suggests why "who I am at work" and "who I am with family" may fail to factor into independent pieces. The mathematics does not show that people behave this way.
 
 ## [[/tags/love]] as selfish act
 
-All the frameworks above reveal something uncomfortable: love serves self-formation. Narcissistic foundation (Freud), projection (Jung), recognition (Sartre), intercorporeal completion (Merleau-Ponty), interpretive horizon expansion (Gadamer). Love is how you become yourself through another. Not sacrifice but constitution.
+Put the frameworks together and love starts to look self-serving. Freud says being loved raises self-regard, and that object choice often repeats a parent or the self. Jung says the person I fall for first carries my projection. Sartre says I want the beloved's freedom to choose me, so that my existence is justified. Merleau-Ponty says I cannot be a body-subject alone. Gadamer says understanding another person changes my own self-understanding.
 
-### the narcissistic foundation
+On every account, I need the other to become myself. That sounds cynical only if a finished self exists before the relationship and then uses it. Every view above denies that such a self exists. If the self is made in relations, "selfish" and "selfless" stop being clean opposites, because the self I serve already depends on the person I love.
 
-Freud: to love is converting ego-libido to object-libido—giving away self-love. But this serves self-preservation. Returned affection restores libido and self-worth. Even "altruistic" love serves ego needs. The anaclitic type seeks parental care from lovers; the narcissistic type seeks self-reflection. Love helps recover lost infantile narcissistic perfection through the beloved.
+This does not make all love fine. Freud's narcissistic choice and Jung's unexamined projection are cases where I love an image and miss the person. Sartre's analysis says the demand to possess another's freedom defeats itself. What remains is to withdraw projections, let the other surprise my interpretation, and accept that their freedom is not mine to secure. That work serves me too, and it only works if they flourish as someone other than my image of them.
 
-You cannot give what you don't have. Primary narcissism—early self-investment—is necessary for development. If you don't love yourself first, you have no love to give. The instruction to "love your neighbor as yourself" assumes self-love as foundation, not opposition.
-
-### projection as self-discovery
-
-Jung: "love at first sight" is projecting your unconscious onto another. You fall in love with your own projected qualities. The beloved is screen for self-discovery. You don't see them clearly; you see anima/animus—what you lack, what completes you.
-
-But here's the uncomfortable part: even mature love, where you withdraw projections and see them clearly, still serves individuation. You integrate shadow and anima/animus by encountering them in others. Love serves self-realization. The Other is instrument (however sacred) of becoming whole.
-
-Withdrawing projections doesn't make love selfless. It makes selfishness conscious. You move from unconscious self-completion to conscious self-development through relationship. Still fundamentally self-oriented, now transparent about it.
-
-### the recognition struggle
-
-Sartre: love is "bad faith attempt to capture the Other's freedom to secure for oneself a fixed nature." You need the Other's gaze to exist objectively. You love to achieve recognition, to confirm your freedom, to construct identity through sustained engagement with another consciousness.
-
-Being-for-others: the Other gives you objective existence. You need this but resent the theft of freedom. Love is how you negotiate this dependency. Even "authentic love" (if possible) serves your existential project. You choose to make someone central because the choice affirms freedom. You sustain attention because it develops authentic selfhood. You refuse to instrumentalize them because instrumentality would corrupt your self-conception.
-
-The commitment serves the project of being an authentic self. Fundamentally self-oriented.
-
-### intercorporeal necessity
-
-Merleau-Ponty's account seems gentler but reveals the same structure: you literally form yourself through bodily engagement with others. The flesh is shared—self and other are chiasmic reversals. You need the Other to complete the reversibility structure—to be touched, to be seen, to exist as body-subject.
-
-Love is how you inhabit shared flesh. Identity emerges through expressive space between bodies. You create this space, but for your own becoming. The Other is not external to self-formation but constitutive of it.
-
-The generosity is real. The care is genuine. But it serves the self's need to exist as embodied, relational being. You cannot be a body-subject alone. The structure requires another.
-
-### hermeneutic self-expansion
-
-Understanding others is mode of self-understanding. Fusion of horizons expands your horizon—you understand yourself better through understanding them. Love as interpretive practice serves self-knowledge:
-
-- Staying in hermeneutic circle with Other reveals your projections
-- Checking interpretive frameworks shows your assumptions
-- Generous interpretation develops your interpretive capacities
-- Narrative identity constructed partly through their story
-
-The Other is irreplaceable for your self-understanding. But this irreplaceability serves your interpretive project. You need them to know yourself.
-
-### what this means
-
-Here's what makes this more than cynicism: the self is not pre-given atom using others. Self emerges through relations. "Selfish" loses meaning when there's no self independent of these relations.
-
-Love transforms the self it serves. Not instrumental (using fixed self to get goals) but constitutive (becoming different self through loving). Your flourishing and theirs are intertwined. Not zero-sum. Serving your self-realization requires their flourishing.
-
-The philosophical depth: love is selfish not as vice but as ontological necessity. You are a being who becomes yourself through others. Love is how you do this consciously, generously, authentically—making your constitutional need for the Other into ethical practice.
-
-You choose to attend to this particular person not despite self-interest but because of it—rightly understood. They shape who you become. Their flourishing enables yours. The intertwining is so complete that "selfish" and "selfless" cease to be opposites. They become two names for the same commitment: to become yourself through another, to let another become themselves through you.
-
-This is why love requires practice, not just feeling. Why it demands attention, not just attraction. Why it involves staying in the hermeneutic circle when understanding breaks down. Why it means checking your projections, integrating your shadow, withdrawing your anima/animus to see them clearly. All of this serves you—but only by serving them. The structure is chiasmic: touching and touched, seeing and seen, self and other as reversible aspects of shared flesh.
-
-The most selfish thing you can do is love well. The self you serve is not separate from the other you love. Recognizing this doesn't diminish love. It reveals love's true structure: mutual constitution, reciprocal becoming, the only kind of selfishness that works.
+The most selfish thing you can do is love well.
 
 ## keep your identity small
 
@@ -280,8 +183,8 @@ The similarity between religion and politics is that you only need a strong conv
 
 > I think what religion and politics have in common is that they become part of people's identity, and people can never have a fruitful argument about something that's part of their identity. By definition they're partisan.
 
-Which topics engage people's identity depends on the people, not the topic. Because the point at which this happens depends on the people rather than the topic, it's a mistake to conclude that because a question tends to provoke religious wars, it must have no answer[^example].
+Graham adds that which topics engage identity depends on the people. So a question that provokes religious wars may still have an answer[^example].
 
-[^example]: For example, the question of the relative merits of programming languages often degenerates into a religious war, because so many programmers identify as X programmers or Y programmers. This sometimes leads people to conclude the question must be unanswerable—that all languages are equally good. Obviously that's false: anything else people make can be well or badly designed; why should this be uniquely impossible for programming languages? And indeed, you can have a fruitful discussion about the relative merits of programming languages, so long as you exclude people who respond from identity.
+[^example]: His example is programming languages. Many programmers identify as users of one language, so comparisons turn into religious wars, and some people conclude that all languages are equally good. Graham rejects this: languages can be well or badly designed, and the comparison is productive among people who do not argue from identity.
 
 > More generally, you can have a fruitful discussion about a topic only if it doesn't engage the identities of any of the participants.

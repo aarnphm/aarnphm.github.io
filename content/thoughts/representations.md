@@ -2,7 +2,7 @@
 date: '2024-02-25'
 description: and the state of being.
 id: representations
-modified: 2026-06-05 15:08:30 GMT-04:00
+modified: 2026-10-12 09:16:29 GMT-04:00
 tags:
   - seed
   - philosophy
@@ -13,7 +13,7 @@ resources: Edward Tufte's [The Visual Display of Quantitative Information - ISBN
 
 > [!question]
 >
-> How do we represent [[thoughts/data|information flow]] when we interact with different mediums, esp. text?
+> How do we represent information flow when we interact with different media, especially text?
 
 Maps shape _==how we see and understand the world==_, which in turn shapes how we act within it.
 
@@ -21,11 +21,11 @@ Maps shape _==how we see and understand the world==_, which in turn shapes how w
 
 [Linus' talk on Representation](https://www.youtube.com/watch?v=Tt_hDVN5TZE&list=PL_Kh09CR3iHa1ZPi4EsHeqX-1IB3CRLbA&index=2&ab_channel=CharStiles)
 
-how it shape our _agency_
+how maps shape our _agency_
 
 ## as technology
 
-[@viégas2023modelusermodelexploring]
+Viégas and Wattenberg propose a dashboard beside an AI conversation, exposing selected parts of the system's model of itself and of the person using it. Their proposal assumes those internal models can be identified and interpreted. They describe the design as speculative and report no user studies; which features would help someone use the system remains open. [@viégas2023modelusermodelexploring]
 
 How can we manipulate new ideas and abstractions to create new ==notations==?
 
@@ -39,7 +39,7 @@ Tenet:
 
 ## internals grokking
 
-In the realm of AI, how we [[thoughts/mechanistic interpretability|grok]] these systems to understand its internal representations would help us understand how we think.
+What could [[thoughts/mechanistic interpretability|understanding an AI system’s internal representations]] tell us about how we think? Establishing a connection would require evidence about human cognition too.
 
 ==Seeing clearly== to exercise _[[thoughts/Agency|agency]]_
 
@@ -51,8 +51,8 @@ Instrumental use:
 
 Engaged use:
 
-- see clearly from right perspectives. Express intent naturally and precisely.
-- Explore the possible spaces only through engaging with the information
+- See the information relevant to a decision. Express intent naturally and precisely.
+- Explore possibilities by interacting with the information.
 
 > [!question] Why don't we do this more?
 >
