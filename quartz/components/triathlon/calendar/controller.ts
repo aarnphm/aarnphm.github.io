@@ -13,6 +13,14 @@ import { mountRaceProjections } from './race-projections'
 import { mountTrainingCalendar } from './training'
 
 const configuredCalendars = new WeakMap<HTMLElement, AbortSignal>()
+type RaceView = 'list' | 'year' | 'notation'
+const raceView = (value: string | undefined): RaceView =>
+  value === 'year' || value === 'notation' ? value : 'list'
+const raceHash = (calendar: HTMLElement): string => {
+  const view = raceView(calendar.dataset.calendarView)
+  return `${calendar.dataset.calendarYear}${view === 'list' ? '' : `-${view}`}`
+}
+
 const DAY_MS = 86_400_000
 
 const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() => void) => {
@@ -39,6 +47,15 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
   if (inSidepanel) {
     for (const node of [calendar, ...calendar.querySelectorAll<HTMLElement>('[id]')])
       if (!node.id.startsWith('sidepanel-')) node.id = `sidepanel-${node.id}`
+  }
+  for (const guide of calendar.querySelectorAll<HTMLElement>('.tri-notation')) {
+    const heading = guide.querySelector('h2')
+    if (heading) guide.setAttribute('aria-labelledby', heading.id)
+    for (const input of guide.querySelectorAll<HTMLInputElement>('input[type="radio"]')) {
+      input.name = `${calendar.id}-notation-sport`
+      const panel = guide.querySelector<HTMLElement>(`[data-notation-sport="${input.value}"]`)
+      if (panel) input.setAttribute('aria-controls', panel.id)
+    }
   }
   const title = calendar.querySelector<HTMLElement>('.tri-calendar-title-group :is(h1, h2)[id]')
   if (title) calendar.setAttribute('aria-labelledby', title.id)
@@ -96,7 +113,7 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
     url.hash = inPanel ? `calendar${hash ? `-${hash}` : ''}` : hash
     window.history.replaceState(window.history.state, '', url)
   }
-  const viewHash = (): string => `${year}${calendar.dataset.calendarView === 'year' ? '-year' : ''}`
+  const viewHash = (): string => raceHash(calendar)
 
   const focusable = (node: HTMLElement | null | undefined): node is HTMLElement =>
     Boolean(
@@ -149,9 +166,9 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
     target?.focus()
     restoringFocus = false
   }
-  const select = (view: 'list' | 'year'): void => {
+  const select = (view: RaceView): void => {
     hideCard()
-    if (detailCoversViews()) closeDetail()
+    if (view === 'notation' || detailCoversViews()) closeDetail()
     calendar.dataset.calendarView = view
     for (const button of buttons)
       button.setAttribute('aria-pressed', String(button.dataset.calendarSelect === view))
@@ -283,7 +300,7 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
     }
     const button = event.target.closest<HTMLButtonElement>('[data-calendar-select]')
     const selected = button?.dataset.calendarSelect
-    if (selected === 'list' || selected === 'year') {
+    if (selected === 'list' || selected === 'year' || selected === 'notation') {
       select(selected)
       updateHash(shown ? (rowFor(shown)?.dataset.calendarEvent ?? '') : viewHash())
       return
@@ -318,7 +335,13 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
       : window.location.hash.slice(1)
     if (hash.startsWith('race-') && showEvent(hash, undefined, false)) return
     closeDetail()
-    select(hash === 'year' || hash === `${year}-year` ? 'year' : 'list')
+    select(
+      hash === 'notation' || hash === `${year}-notation`
+        ? 'notation'
+        : hash === 'year' || hash === `${year}-year`
+          ? 'year'
+          : 'list',
+    )
   }
   const localizeIn = (root: HTMLElement): void => {
     const locale = context.presentation.locale
@@ -532,7 +555,7 @@ const mountCalendar = (calendar: HTMLElement, context: TriathlonContext): (() =>
   window.addEventListener('tri:locale', localize)
   fillCountdown(calendar)
   localize()
-  select(calendar.dataset.calendarView === 'year' ? 'year' : 'list')
+  select(raceView(calendar.dataset.calendarView))
   onHashChange()
   return () => {
     raceProjections.dispose()
@@ -611,10 +634,7 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
       if (navigate && training) updateHash(training.location())
     } else if (active) {
       training?.deactivate()
-      if (navigate)
-        updateHash(
-          `${active.dataset.calendarYear}${active.dataset.calendarView === 'year' ? '-year' : ''}`,
-        )
+      if (navigate) updateHash(raceHash(active))
       dispose ??= mountCalendar(active, context)
     }
   }
@@ -669,7 +689,7 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
           ?.focus({ preventScroll: true })
       return
     }
-    const view = active?.dataset.calendarView === 'year' ? 'year' : 'list'
+    const view = raceView(active?.dataset.calendarView)
     dispose?.()
     for (const calendar of calendars) {
       calendar.hidden = calendar !== next
@@ -678,7 +698,7 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
     next.dataset.calendarView = view
     if (fromSelect && !localHash) {
       const url = new URL(window.location.href)
-      url.hash = `${inPanel ? 'calendar-' : ''}${year}${view === 'year' ? '-year' : ''}`
+      url.hash = `${inPanel ? 'calendar-' : ''}${raceHash(next)}`
       window.history.replaceState(window.history.state, '', url)
     }
     active = next
@@ -693,20 +713,26 @@ const mountCalendarSet = (root: HTMLElement, context: TriathlonContext): (() => 
     const hash = inPanel
       ? window.location.hash.replace(/^#calendar(?:-|#)?/, '')
       : window.location.hash.slice(1)
-    const trainingHash = /^training(?:-(\d{4}-\d{2}-\d{2}))?(?:-(list|week|month))?$/.exec(hash)
+    const trainingHash = /^training(?:-(\d{4}-\d{2}-\d{2}))?(?:-(list|week|month|notation))?$/.exec(
+      hash,
+    )
     if (trainingHash) {
       selectSource(
         'training',
         false,
         trainingHash[1],
-        trainingHash[2] === 'list' || trainingHash[2] === 'week' || trainingHash[2] === 'month'
+        trainingHash[2] === 'list' ||
+          trainingHash[2] === 'week' ||
+          trainingHash[2] === 'month' ||
+          trainingHash[2] === 'notation'
           ? trainingHash[2]
           : undefined,
       )
       return
     }
     selectSource('races')
-    const year = /^(\d{4})(?:-year)?$/.exec(hash)?.[1] ?? /(?:^race-.+)-(\d{4})$/.exec(hash)?.[1]
+    const year =
+      /^(\d{4})(?:-year|-notation)?$/.exec(hash)?.[1] ?? /(?:^race-.+)-(\d{4})$/.exec(hash)?.[1]
     activate(year ?? root.dataset.calendarDefaultYear ?? '')
   }
   const onYearClick = (event: MouseEvent): void => {

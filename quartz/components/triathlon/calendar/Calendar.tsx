@@ -28,6 +28,7 @@ import {
   calendarToday,
   calendarWeekdayLabel,
 } from './display'
+import { Notation, NotationIcon } from './Notation'
 import { RaceProjection } from './RaceProjection'
 import { TrainingCalendar } from './TrainingCalendar'
 
@@ -882,6 +883,17 @@ const CalendarSeason = ({
               <button
                 type="button"
                 class="tri-calendar-icon"
+                data-calendar-select="notation"
+                aria-pressed="false"
+                aria-controls={`${id}-notation`}
+                aria-label="workout notation"
+                data-i18n-aria-label="workout notation"
+              >
+                <NotationIcon />
+              </button>
+              <button
+                type="button"
+                class="tri-calendar-icon"
                 data-calendar-select="year"
                 aria-pressed={view === 'year' ? 'true' : 'false'}
                 aria-controls={`${id}-year`}
@@ -998,6 +1010,9 @@ const CalendarSeason = ({
                 ))}
               </div>
             )}
+          </div>
+          <div id={`${id}-notation`} class="tri-calendar-view" data-calendar-panel="notation" inert>
+            <Notation id={`${id}-notation-guide`} />
           </div>
           <div class="tri-calendar-projection" data-race-projection-slot hidden />
         </div>

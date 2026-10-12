@@ -107,6 +107,7 @@ const en: TriDict = {
   ui: {
     analyze: 'analyze',
     commute: 'commute',
+    share: 'share',
     'activity analysis': 'activity analysis',
     'analysis layout': 'analysis layout',
     'graph axis': 'graph axis',
@@ -560,6 +561,22 @@ const en: TriDict = {
     '− tailwind': '− tailwind',
     'crank torque': 'crank torque',
     'whole ride': 'whole ride',
+    'stride view': 'stride view',
+    'stride by cadence': 'stride by cadence',
+    'stride by cadence definition':
+      'Stride (distance per step) = speed × 60 / cadence, from 1 Hz Strava distance and cadence smoothed over 10 s. Walking and stopped samples (under 130 spm or 1.6 m/s) are excluded. Axes are logarithmic, so each diagonal is one pace. The markers are the geometric means of the first and last thirds of running time; their stride and cadence changes add up to the speed change.',
+    'time in cadence and stride bins': 'time in cadence and stride bins',
+    'whole run': 'whole run',
+    'first third': 'first third',
+    'last third': 'last third',
+    stride: 'stride',
+    'iso-pace': 'iso-pace',
+    'heart rate cost over terrain': 'heart rate cost over terrain',
+    'heart rate cost definition':
+      'Metres of grade-adjusted distance per heartbeat: GAP speed × 60 / heart rate, from 1 Hz Strava streams with Minetti grade cost over a trailing 30 m. Each speed window pairs with the heart-rate window that ends 30 s later, because heart rate lags a pace change. Stopped seconds are excluded and windows need 80% coverage. A falling line at steady effort is cardiac drift.',
+    'heart rate cost averaging window': 'heart rate cost averaging window',
+    'run average': 'run average',
+    'core temperature': 'core temperature',
     'crank torque view': 'crank torque view',
     'crank torque by cadence': 'crank torque by cadence',
     'time in cadence and torque bins': 'time in cadence and torque bins',
@@ -1614,8 +1631,88 @@ const en: TriDict = {
 
 const fr: TriDict = {
   ui: {
+    'workout notation': 'notation des séances',
+    'Read the set, then the effort and recovery. Examples explain the notation; follow the targets and units in your plan.':
+      'Lisez la série, puis l’effort et la récupération. Les exemples expliquent la notation; suivez les cibles et les unités de votre plan.',
+    'Four 100 m repeats, starting every 1 min 45 s. Swimming and rest share that interval.':
+      'Quatre répétitions de 100 m, avec un départ toutes les 1 min 45 s. Cet intervalle comprend la nage et le repos.',
+    'Finish in 1:30 → rest 15 s → start the next 100.':
+      'Finir en 1:30 → repos de 15 s → départ du prochain 100 m.',
+    'Rest interval: take 20 seconds after each repeat, whatever your swim time.':
+      'Intervalle de repos : prenez 20 secondes après chaque répétition, peu importe le temps de nage.',
+    '4 × 100 m, RI :20 → 400 m of swimming, with 20 s rests.':
+      '4 × 100 m, RI :20 → 400 m de nage, avec des repos de 20 s.',
+    'Freestyle (usually front crawl), backstroke, breaststroke, butterfly.':
+      'Nage libre (habituellement le crawl), dos, brasse, papillon.',
+    '4 × 50 m FR → four 50 m freestyle repeats.':
+      '4 × 50 m FR → quatre répétitions de 50 m en nage libre.',
+    'Individual medley: butterfly, backstroke, breaststroke, freestyle. IMO follows that order across repeats.':
+      'Quatre nages individuel : papillon, dos, brasse, nage libre. IMO suit cet ordre d’une répétition à l’autre.',
+    '100 m IM → 25 m of each stroke. 4 × 100 m IMO → one stroke per 100.':
+      '100 m IM → 25 m de chaque nage. 4 × 100 m IMO → une nage par 100 m.',
+    'Descend: each repeat gets faster. Build: increase speed within one repeat.':
+      'Descend : chaque répétition est plus rapide. Build : augmentez la vitesse au cours d’une même répétition.',
+    '4 × 100 desc 1–4 → four successively faster 100s.':
+      '4 × 100 desc 1–4 → quatre 100 m de plus en plus rapides.',
+    'Pull focuses on the arms; kick focuses on the legs; a drill isolates a skill. Use the equipment named by the coach.':
+      'Pull cible les bras; kick cible les jambes; drill désigne un exercice technique. Utilisez le matériel indiqué par votre entraineur.',
+    '4 × 50 m (25 drill / 25 swim) → each 50 combines both.':
+      '4 × 50 m (25 drill / 25 swim) → chaque 50 m combine les deux.',
+    'Repeat the whole bracket twice. Keep the specified rest between repeats and between rounds.':
+      'Répétez tout le contenu des parenthèses deux fois. Respectez le repos indiqué entre les répétitions et les séries.',
+    '2 × 4 × 50 m = 400 m. The brackets alone do not specify rest.':
+      '2 × 4 × 50 m = 400 m. Les parenthèses seules ne précisent pas le repos.',
+    'Read the distance unit and pool length. Swim pace is often time per 100 metres or 100 yards.':
+      'Vérifiez l’unité de distance et la longueur de la piscine. L’allure de nage s’exprime souvent par 100 mètres ou 100 verges.',
+    '1:45/100 m → 105 seconds per 100 metres.': '1:45/100 m → 105 secondes par 100 mètres.',
+    'Repeat eight minutes at the stated power, then four minutes easy, three times.':
+      'Répétez trois fois huit minutes à la puissance indiquée, puis quatre minutes faciles.',
+    '3 × (8 + 4) = 36 min, including the final easy block.':
+      '3 × (8 + 4) = 36 min, y compris le dernier bloc facile.',
+    'Watts measure power. Functional threshold power is the reference for percentage-based targets.':
+      'Les watts mesurent la puissance. La puissance au seuil fonctionnel (FTP) sert de référence aux cibles en pourcentage.',
+    '90% of a 250 W FTP = 225 W. Use your current cycling FTP.':
+      '90 % d’une FTP de 250 W = 225 W. Utilisez votre FTP actuelle à vélo.',
+    'Cadence in pedal revolutions per minute, separate from the power target.':
+      'Cadence en tours de pédalier par minute, distincte de la cible de puissance.',
+    '90 rpm → 90 complete pedal revolutions in one minute.':
+      '90 rpm → 90 tours complets de pédalier en une minute.',
+    'Training zones depend on the sport, metric, and zone system in the plan.':
+      'Les zones d’entrainement dépendent du sport, de la mesure et du système utilisé dans le plan.',
+    'Z2 power and Z2 heart rate have different units and boundaries.':
+      'La Z2 de puissance et la Z2 de fréquence cardiaque ont des unités et des limites différentes.',
+    'Warm-up, main set, cool-down, easy. Recovery between efforts may be easy pedalling.':
+      'Échauffement, série principale, retour au calme, facile. La récupération entre les efforts peut se faire en pédalant doucement.',
+    '10 min WU + 30 min MS + 5 min CD = 45 min.': '10 min WU + 30 min MS + 5 min CD = 45 min.',
+    'Heart rate in beats per minute; rating of perceived exertion describes effort on the scale named by the plan.':
+      'Fréquence cardiaque en battements par minute; la perception de l’effort (RPE) utilise l’échelle indiquée dans le plan.',
+    'RPE 6/10 uses a different scale from RPE 6–20.':
+      'La cote RPE 6/10 utilise une autre échelle que celle de 6 à 20.',
+    'Run 400 metres at the prescribed effort, then jog 200 metres; repeat six times.':
+      'Courez 400 mètres à l’effort prescrit, puis trottinez 200 mètres; répétez six fois.',
+    '2.4 km of work + 1.2 km of recovery = 3.6 km.':
+      '2,4 km d’effort + 1,2 km de récupération = 3,6 km.',
+    'Pace is the time to cover one kilometre or mile. Keep the written unit when reading the target.':
+      'L’allure est le temps pour parcourir un kilomètre ou un mille. Conservez l’unité écrite en lisant la cible.',
+    '5:00/km → five minutes per kilometre.': '5:00/km → cinq minutes par kilomètre.',
+    'A single prime denotes minutes; a double prime denotes seconds. Here each effort has a timed jogging recovery.':
+      'Un prime indique les minutes; un double prime indique les secondes. Ici, chaque effort est suivi d’une récupération chronométrée en jogging.',
+    '4 × (3 min + 90 s) = 18 min.': '4 × (3 min + 90 s) = 18 min.',
+    'Short, controlled accelerations with recovery between efforts. Follow the duration and recovery in the plan.':
+      'Courtes accélérations contrôlées avec récupération entre les efforts. Suivez la durée et la récupération du plan.',
+    '6 × (20 s strides / 60 s easy) → six accelerations.':
+      '6 × (20 s strides / 60 s easy) → six accélérations.',
+    'These labels depend on the coach’s system. Use the prescribed pace, heart rate, or effort for this run.':
+      'Ces termes dépendent du système de votre entraineur. Utilisez l’allure, la fréquence cardiaque ou l’effort prescrit pour cette course.',
+    '20 min tempo → check the target in the workout details.':
+      '20 min tempo → vérifiez la cible dans les détails de la séance.',
+    'Warm-up, cool-down, recovery, easy. Recovery can be a jog, walk, or rest as specified.':
+      'Échauffement, retour au calme, récupération, facile. La récupération se fait en jogging, en marchant ou au repos, selon les consignes.',
+    '5 × 1 km, 2 min jog rec → jog for two minutes between efforts.':
+      '5 × 1 km, 2 min jog rec → trottinez deux minutes entre les efforts.',
     analyze: 'analyser',
     commute: 'trajet domicile-travail',
+    share: 'partager',
     'activity analysis': 'analyse de l’activité',
     'analysis layout': 'disposition de l’analyse',
     'graph axis': 'axe du graphique',
@@ -2176,6 +2273,22 @@ const fr: TriDict = {
     '− tailwind': '− vent arrière',
     'crank torque': 'couple au pédalier',
     'whole ride': 'sortie entière',
+    'stride view': 'vue de la foulée',
+    'stride by cadence': 'foulée selon la cadence',
+    'stride by cadence definition':
+      'Foulée (distance par pas) = vitesse × 60 / cadence, à partir de la distance et de la cadence Strava à 1 Hz lissées sur 10 s. La marche et les arrêts (moins de 130 pas/min ou 1,6 m/s) sont exclus. Les axes sont logarithmiques : chaque diagonale correspond à une allure. Les repères sont les moyennes géométriques du premier et du dernier tiers du temps de course; leurs variations de foulée et de cadence s’additionnent pour donner la variation de vitesse.',
+    'time in cadence and stride bins': 'temps par intervalle de cadence et de foulée',
+    'whole run': 'course entière',
+    'first third': 'premier tiers',
+    'last third': 'dernier tiers',
+    stride: 'foulée',
+    'iso-pace': 'iso-allure',
+    'heart rate cost over terrain': 'coût cardiaque et relief',
+    'heart rate cost definition':
+      'Mètres de distance ajustée à la pente par battement : vitesse ajustée × 60 / fréquence cardiaque, à partir des flux Strava à 1 Hz avec le coût de pente de Minetti sur les 30 m précédents. Chaque fenêtre de vitesse est appariée à la fenêtre cardiaque qui se termine 30 s plus tard, car la fréquence cardiaque suit l’allure avec un retard. Les secondes à l’arrêt sont exclues et chaque fenêtre exige 80 % de couverture. Une courbe qui baisse à effort constant indique une dérive cardiaque.',
+    'heart rate cost averaging window': 'fenêtre de moyenne du coût cardiaque',
+    'run average': 'moyenne de la course',
+    'core temperature': 'température centrale',
     'crank torque view': 'vue du couple au pédalier',
     'crank torque by cadence': 'couple selon la cadence',
     'time in cadence and torque bins': 'temps par intervalle de cadence et de couple',
