@@ -184,6 +184,7 @@ const drawAnimals = () => {
 let navigationGeometry: TrailGeometry[] | null = null
 let navigationSignature = ''
 let navigationRoutes: NavigableTrail[] = []
+let navigationBodies: CollisionActor[] = []
 const journeyRoutes = () => {
   if (!forestLayout) return []
   const landscape = forestLayout
@@ -217,6 +218,7 @@ const journeyRoutes = () => {
     return navigationRoutes
   navigationGeometry = geometries
   navigationSignature = signature
+  navigationBodies = bodies
   navigationRoutes = geometries.flatMap(({ id, length, delay, duration }) => {
     const route = navigableTrail(
       {
@@ -249,7 +251,13 @@ const drawTravelers = () => {
   groundDepth.restore()
   const routes = journeyRoutes()
   journey.update(routes, forestLayout, sceneSeed, travelers.walkers > 0)
-  readerJourneys.update(routes, forestLayout, sceneSeed, Math.max(0, travelers.walkers - 1))
+  readerJourneys.update(
+    routes,
+    forestLayout,
+    sceneSeed,
+    Math.max(0, travelers.walkers - 1),
+    navigationBodies,
+  )
   alpineJourneys.update(forestLayout, sceneSeed, travelers.climbers)
   parkPatrol.update(forestLayout, sceneSeed, routes, travelers.rangers)
   groundDepth.refresh()
@@ -706,7 +714,13 @@ const drawScene = async () => {
   community.update(layout.landscape, sceneSeed, camps, routes)
   parkPatrol.update(layout.landscape, sceneSeed, routes, travelers.rangers)
   journey.update(routes, layout.landscape, sceneSeed, travelers.walkers > 0)
-  readerJourneys.update(routes, layout.landscape, sceneSeed, Math.max(0, travelers.walkers - 1))
+  readerJourneys.update(
+    routes,
+    layout.landscape,
+    sceneSeed,
+    Math.max(0, travelers.walkers - 1),
+    navigationBodies,
+  )
   pastureJourneys.update(layout.landscape, sceneSeed)
   alpineJourneys.update(layout.landscape, sceneSeed, travelers.climbers)
   perspective.update()

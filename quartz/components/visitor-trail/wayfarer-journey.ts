@@ -5,6 +5,7 @@ import {
   placeOnReflow,
   publishActor,
   readActors,
+  readStationaryActors,
   readTrunks,
   spacedPosition,
   spacedStep,
@@ -13,6 +14,7 @@ import {
 } from './actor-spacing'
 import { bootImpression } from './footprints'
 import { trailGroundScale, type Landscape, type Point } from './landscape'
+import { navigableTrail } from './obstacle-route'
 import { trailRandom } from './random'
 import { trailMapReader } from './wayfarers'
 
@@ -36,6 +38,7 @@ type Reader = {
   stampedProgress: number
   step: number
   route: TrailId
+  routes: JourneyRoute[]
   phase: Phase
   stop: Stop
   progress: number
@@ -58,6 +61,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
   const reducedMotion = view.matchMedia('(prefers-reduced-motion: reduce)')
   let readers: Reader[] = []
   let routes: JourneyRoute[] = []
+  let solids: readonly CollisionActor[] = []
   let landscape: Landscape | undefined
   let seed: number | undefined
   let frame: number | null = null
@@ -65,13 +69,31 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
   let previousTime: number | null = null
   let renderedAt = -Infinity
 
-  const routeFor = (reader: Reader) => routes.find(route => route.id === reader.route)
-  const positionAt = (reader: Reader, route: JourneyRoute, progress: number) => {
-    const point = route.point(progress * route.length)
-    const approach = Math.max(0, 1 - ((1 - progress) * route.length) / 110)
-    const blend = approach * approach * (3 - 2 * approach)
-    const index = Number(reader.element.dataset.reader)
-    return { x: point.x + (-14 + index * 34) * blend, y: point.y + (38 + (index % 2) * 6) * blend }
+  const routeFor = (reader: Reader) => reader.routes.find(route => route.id === reader.route)
+  const positionAt = (route: JourneyRoute, progress: number) => route.point(progress * route.length)
+  const pathsFor = (index: number, id: string) => {
+    if (!landscape) return []
+    const terrain = landscape
+    const bodies = [...solids, ...readStationaryActors(scene, id)]
+    return routes.flatMap(route => {
+      const planned = navigableTrail(
+        {
+          ...route,
+          point: distance => {
+            const point = route.point(distance)
+            const approach = Math.max(0, 1 - (route.length - distance) / 110)
+            const blend = approach * approach * (3 - 2 * approach)
+            return {
+              x: point.x + (-14 + index * 34) * blend,
+              y: point.y + (38 + (index % 2) * 6) * blend,
+            }
+          },
+        },
+        terrain,
+        bodies,
+      )
+      return planned ? [planned] : []
+    })
   }
   const placeReader = (reader: Reader, obstacles: CollisionActor[]) => {
     const route = routeFor(reader)
@@ -80,7 +102,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     placeOnReflow(
       reader.element,
       reader.id,
-      positionAt(reader, route, reader.progress),
+      positionAt(route, reader.progress),
       point => 12 * trailGroundScale(point.y, terrain),
       reader.spacing,
       obstacles,
@@ -93,12 +115,11 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     )
   }
   const placeImpression = (reader: Reader, stamp: Impression) => {
-    const route = routes.find(route => route.id === stamp.route)
+    const route = reader.routes.find(route => route.id === stamp.route)
     if (!route || !landscape) return
-    const base = positionAt(reader, route, stamp.progress)
+    const base = positionAt(route, stamp.progress)
     const point = { x: base.x + stamp.offset.x, y: base.y + stamp.offset.y }
     const ahead = positionAt(
-      reader,
       route,
       Math.max(0, Math.min(1, stamp.progress + stamp.direction / route.length)),
     )
@@ -151,7 +172,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     for (const reader of readers) {
       const route = routeFor(reader)
       if (!route) continue
-      const position = positionAt(reader, route, reader.progress)
+      const position = positionAt(route, reader.progress)
       const location = spacedPosition(position, reader.spacing)
       const scale = trailGroundScale(location.y, landscape)
       reader.element.dataset.moveSpeed = (reader.speed * scale).toFixed(4)
@@ -176,8 +197,13 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
       reader.element.dataset.progress = reader.progress.toFixed(6)
       reader.element.dataset.direction = String(reader.direction)
       reader.element.dataset.lap = String(reader.lap)
+      const target = positionAt(
+        route,
+        reader.phase === 'reading' ? reader.progress : (reader.checkAt ?? reader.target),
+      )
+      reader.element.dataset.targetX = target.x.toFixed(2)
+      reader.element.dataset.targetY = target.y.toFixed(2)
       const ahead = positionAt(
-        reader,
         route,
         Math.max(0, Math.min(1, reader.progress + (reader.direction * 3) / route.length)),
       )
@@ -207,7 +233,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     const current = routeFor(reader)
     if (!current) return
     if (reader.stop === 'camp') {
-      const choices = routes.filter(route => route.id !== reader.route)
+      const choices = reader.routes.filter(route => route.id !== reader.route)
       const next = choices[Math.floor(reader.random() * choices.length)]
       if (!next) return
       // Every route shares this endpoint, so changing paths keeps position continuous.
@@ -238,7 +264,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     }
     const route = routeFor(reader)
     if (!route?.length || !landscape) return
-    const base = positionAt(reader, route, reader.progress)
+    const base = positionAt(route, reader.progress)
     const scale = trailGroundScale(spacedPosition(base, reader.spacing).y, landscape)
     const budget = (reader.speed * elapsed * scale) / 1000
     const advance =
@@ -247,12 +273,12 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     const stop = reader.checkAt ?? reader.target
     const reached = reader.direction > 0 ? next >= stop : next <= stop
     let progress = reached ? stop : Math.max(0, Math.min(1, next))
-    let destination = positionAt(reader, route, progress)
+    let destination = positionAt(route, progress)
     for (let iteration = 0; iteration < 2; iteration++) {
       const distance = Math.hypot(destination.x - base.x, destination.y - base.y)
       if (distance <= advance || !distance) break
       progress = reader.progress + (((progress - reader.progress) * advance) / distance) * 0.999
-      destination = positionAt(reader, route, progress)
+      destination = positionAt(route, progress)
     }
     const radius =
       12 *
@@ -278,15 +304,19 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
         bottom: landscape.height - radius,
       },
       true,
-      positionAt(reader, route, stop),
+      positionAt(route, stop),
       true,
     )
     if (advances) reader.progress = progress
-    const point = spacedPosition(positionAt(reader, route, reader.progress), reader.spacing)
+    const point = spacedPosition(positionAt(route, reader.progress), reader.spacing)
     const circle = obstacles.find(other => other.id === reader.id)
     if (circle) Object.assign(circle, point, { radius: 12 * trailGroundScale(point.y, landscape) })
     else obstacles.push({ ...point, id: reader.id, kind: 'traveler', radius: 12 * scale })
-    if (progress === stop && advances) {
+    const goal = positionAt(route, stop)
+    if (
+      reader.progress === stop &&
+      Math.hypot(point.x - goal.x, point.y - goal.y) <= radius * 0.25
+    ) {
       const middle = reader.checkAt !== null
       reader.checkAt = null
       checkMap(reader, middle ? 'middle' : reader.direction > 0 ? 'camp' : 'turn')
@@ -351,10 +381,17 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
 
   return {
     pause,
-    update(nextRoutes: JourneyRoute[], nextLandscape: Landscape, nextSeed: number, count: number) {
+    update(
+      nextRoutes: JourneyRoute[],
+      nextLandscape: Landscape,
+      nextSeed: number,
+      count: number,
+      nextSolids: readonly CollisionActor[],
+    ) {
       pause()
       routes = nextRoutes
       landscape = nextLandscape
+      solids = nextSolids
       if (seed !== nextSeed) {
         seed = nextSeed
         readers = []
@@ -368,11 +405,16 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
           reader.tracks.remove()
         }
       }
+      const plannedRoutes = Array.from({ length: count }, (_, index) =>
+        pathsFor(index, `reader-${index}`),
+      )
       while (readers.length < count) {
         const index = readers.length
         const random = trailRandom(nextSeed ^ (0x381c72ad + index * 0x27d4eb2d))
+        const readerRoutes = plannedRoutes[index]
         const route =
-          routes.find(route => route.id === ['grove', 'ridge', 'meadow'][index]) ?? routes[index]
+          readerRoutes.find(route => route.id === ['grove', 'ridge', 'meadow'][index]) ??
+          readerRoutes[index]
         if (!route) break
         group.insertAdjacentHTML('beforeend', trailMapReader(index))
         const element = group.querySelector<SVGGElement>(`[data-reader="${index}"]`)
@@ -394,6 +436,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
           stampedProgress: progress,
           step: 0,
           route: route.id,
+          routes: readerRoutes,
           phase: 'waiting',
           stop: 'middle',
           progress,
@@ -408,7 +451,8 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
         })
       }
       const obstacles = [...readActors(scene, true), ...readTrunks(scene)]
-      for (const reader of readers) {
+      for (const [index, reader] of readers.entries()) {
+        reader.routes = plannedRoutes[index]
         placeReader(reader, obstacles)
         for (const stamp of reader.impressions) placeImpression(reader, stamp)
       }
