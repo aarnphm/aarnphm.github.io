@@ -593,6 +593,101 @@ export function presenter(w: number, paper = PAPER, ink = INK, tie = PINK) {
   return { bow, pointer, screen }
 }
 
+// Stream: the reader. The librarian's glasses on, and a sheet held up in front at a tilt, a stubby
+// hand at each side, its top corner dog-eared, four lines of text on it, one marked in `mark`.
+export function reader(w: number, paper = PAPER, ink = INK, mark = PINK) {
+  const [cx, cy, sw, sh, tilt] = [-0.42, 0.74, 1.02, 0.72, -0.12]
+  const c = Math.cos(tilt)
+  const sn = Math.sin(tilt)
+  const turn = (pts: readonly Pt[]): Pt[] =>
+    pts.map(([x, y]) => [cx + (x - cx) * c - (y - cy) * sn, cy + (x - cx) * sn + (y - cy) * c])
+  const [l, r, t, b] = [cx - sw / 2, cx + sw / 2, cy - sh / 2, cy + sh / 2]
+  const ear = 0.15
+  const outline = hand(
+    turn([
+      [l, t],
+      [r - ear, t],
+      [r, t + ear],
+      [r, b],
+      [l, b],
+      [l, t],
+    ]),
+    0.03,
+    0.01,
+    391,
+  )
+  const fold = hand(
+    turn([
+      [r - ear, t],
+      [r - ear + 0.02, t + ear - 0.02],
+      [r, t + ear],
+    ]),
+    0.02,
+    0.004,
+    392,
+  )
+  const rows = [0.74, 0.62, 0.8, 0.46].map((len, i) => {
+    const y = t + 0.16 + i * 0.13
+    return hand(
+      turn([
+        [l + 0.11, y],
+        [l + 0.11 + (sw - 0.22) * len, y],
+      ]),
+      0.03,
+      0.008,
+      393 + i,
+    )
+  })
+  const text = rows
+    .map(
+      (row, i) =>
+        `${i === 1 ? stroke(row, () => w * 2.6, mark) : ''}${stroke(row, () => w * 0.55, ink)}`,
+    )
+    .join('')
+  const paws = [l + 0.02, r - 0.02]
+    .map((x, i) =>
+      filled(
+        hand(turn(rounded(x, cy + 0.08, 0.2, 0.17, 0.08)), 0.02, 0.006, 398 + i),
+        paper,
+        pressure(400 + i, w, 0.2),
+        ink,
+      ),
+    )
+    .join('')
+  const sheet = `${filled(outline, paper, pressure(402, w, 0.3), ink)}${stroke(fold, () => w * 0.7, ink)}${text}${paws}`
+  return { glasses: librarian(w, paper, ink).glasses, sheet }
+}
+
+// Philosophy: hair gone wild after a long night with the questions. Two dozen strands spring off
+// the crown, most of them up, the rest out over the ears, each a tapered line that kinks back and
+// forth as it goes. `k` picks one of its drawings, so the hair can frizz between them.
+export function wildHair(w: number, ink = INK, k = 0) {
+  const n = 26
+  const noise = (i: number) => {
+    const v = Math.sin((i + 1) * 91.7 + k * 13.1) * 43758.5453
+    return v - Math.floor(v)
+  }
+  return Array.from({ length: n }, (_, i) => {
+    // Roots from just above one ear over the crown to the other, a little denser on top.
+    const u = i / (n - 1)
+    const a =
+      -Math.PI * (0.04 + 0.92 * (u + 0.08 * Math.sin(2 * Math.PI * u))) + (noise(i) - 0.5) * 0.08
+    const root: Pt = [0.9 * Math.cos(a), 0.9 * Math.sin(a)]
+    // Longest on top, short over the ears.
+    const len = (0.3 + 0.32 * Math.sin(Math.PI * u)) * (0.75 + 0.5 * noise(i + 40))
+    const dir = a + (noise(i + 80) - 0.5) * 0.7
+    const [tx, ty] = [Math.cos(dir), Math.sin(dir)]
+    const waves = 1.5 + 1.5 * noise(i + 120)
+    const phase = noise(i + 160) * 2 * Math.PI
+    const pts = Array.from({ length: 17 }, (_, j) => {
+      const t = j / 16
+      const off = 0.07 * t * Math.sin(2 * Math.PI * waves * t + phase)
+      return [root[0] + tx * len * t - ty * off, root[1] + ty * len * t + tx * off] as const
+    })
+    return stroke(hand(pts, 0.03, 0.006, 410 + i + k * 40), t => w * (1.3 - 0.8 * t), ink)
+  }).join('')
+}
+
 // Posts: a quill from its nib up to its tip, bowed toward `c`, its vane in `fill` with three barbs.
 // Returns the drawing and the shaft, for whatever holds it.
 export function quill(nib: Pt, c: Pt, tip: Pt, w: number, ink = INK, fill = PINK) {
@@ -969,7 +1064,8 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
   // Section outfits (quartz/util/section-icon.ts), as on the site icons: the sweatband on
   // triathlon pages, the beret and baguettes on French ones, a quill tucked behind the head on
   // posts, the wig, tie and briefcase on the terms and privacy pages, the palette and brush on
-  // quotes and images, glasses and books on bases, a bow tie and pointer on slides. `-back` parts sit behind the body.
+  // quotes and images, glasses and books on bases, a bow tie and pointer on slides, a sheet to read
+  // on the stream. `-back` parts sit behind the body.
   const w = (L * 0.042) / 0.055
   const outfit = {
     front: [
@@ -987,6 +1083,8 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
           .filter((_, i) => i < 2)
           .join(''),
       ),
+      // The glasses are the shared `glasses` part below.
+      part('outfit-stream', reader(w, paper, ink, pink).sheet),
     ].join(''),
     back: [
       part('outfit-fr-back', baguette([0.3, 1.02], [1.46, -0.2], 223, w, ink)),
@@ -994,8 +1092,13 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
       part('outfit-art-back', artist(w, paper, ink, pink).brush),
     ].join(''),
   }
-  // Reading glasses for reader mode, the librarian's pair.
+  // Reading glasses for reader mode, the stream and technical pages: the librarian's pair.
   const glasses = part('glasses', librarian(w, paper, ink).glasses)
+  // Wild hair on philosophy pages, drawn twice to frizz; behind the body, so the roots tuck in.
+  const hair = part(
+    'hair',
+    [0, 1].map(k => `<g class="pet-hair-frame">${wildHair(w * 1.1, ink, k)}</g>`).join(''),
+  )
   const chute = part('chute', `<g class="pet-canopy">${[0, 1, 2].map(chuteFrame).join('')}</g>`)
   // A jetpack for flying up to the scroll rail: two fat tanks on its back (behind the body, on the
   // right as drawn, since it faces left), a strap round the front so it reads as worn, and below
@@ -1173,5 +1276,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${jetpack}${outfit.back}${body}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${outfit.front}${glasses}${hat}${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${outfit.front}${glasses}${hat}${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
 }
