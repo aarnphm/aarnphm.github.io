@@ -1,5 +1,8 @@
 import { mountTrailClock } from '../visitor-trail/local-clock'
 import { registerEscapeHandler } from './escape-handler'
+import { mountMoonCalendar } from './moon-calendar'
+
+const preferenceKey = 'garden:trail-open'
 
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.homepage-trail')
@@ -18,8 +21,9 @@ document.addEventListener('nav', () => {
   frame.setAttribute('aria-hidden', 'true')
   frame.src = new URL('shared-trail.html', import.meta.url).href
   let layoutFrame = 0
-  // Prepare the local renderer; it connects only after the trail is shown.
+  // Presence connects ahead of the scene so the visitor count is ready beside the toggle.
   document.body.append(root)
+  const disposeMoon = mountMoonCalendar(root, signal)
   mountTrailClock(clock, signal)
   scene.append(frame)
   const align = () => {
@@ -55,6 +59,7 @@ document.addEventListener('nav', () => {
     if (!signal.aborted) scheduleAlign()
   })
   const setOpen = (open: boolean) => {
+    sessionStorage.setItem(preferenceKey, String(open))
     scene.hidden = !open
     toggle.setAttribute('aria-expanded', String(open))
     const label = open ? 'Hide walking trail' : 'Show walking trail'
@@ -87,10 +92,14 @@ document.addEventListener('nav', () => {
     root,
     close,
     () =>
-      !scene.hidden && !document.querySelector('#visitor-weather-panel')?.matches(':popover-open'),
+      !scene.hidden &&
+      !document.querySelector('#visitor-weather-panel')?.matches(':popover-open') &&
+      !root.querySelector('#homepage-moon-panel')?.matches(':popover-open'),
   )
+  setOpen(sessionStorage.getItem(preferenceKey) === 'true')
   window.addCleanup(() => {
     controller.abort()
+    disposeMoon()
     disposeEscape()
     resize.disconnect()
     mutation.disconnect()
