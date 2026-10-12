@@ -1037,11 +1037,41 @@ body:has(.course-crumb) {
       max-inline-size: 66rem;
       justify-self: center;
     }
+
+    // the notes + workspace split spans 5 / -3, wider than 66rem on a wide screen, where
+    // centring would push the notes off the title's edge; it starts at that edge instead.
+    // At 1400px and below it spans 3 / -3, where `start` pulls the notes left of the title.
+    @media (min-width: 1401px) {
+      > .page-content > .course-reading-split {
+        justify-self: start;
+      }
+    }
   }
 }
 
 // --- unit bar extras: the crumb group, the fold button ---
 .course-unit-bar {
+  // the bar's runs differ in box height (the toggles keep the 1.75rem control height), so
+  // they share the text baseline rather than the box centre
+  align-items: baseline;
+
+  // read/problems and the page action stay together at the end of the bar
+  .course-unit-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    margin-left: auto;
+
+    > .course-action {
+      margin-left: 0;
+    }
+
+    @media all and ($mobile) {
+      margin-left: 0;
+    }
+  }
+
   .course-crumb {
     display: inline-flex;
     flex-wrap: wrap;

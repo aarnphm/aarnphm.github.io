@@ -10,13 +10,15 @@
 }
 
 @media all and (min-width: 1401px) {
+  // The reading track defaults to the page reading column (3 of the 7 shared tracks), so the lecture
+  // text keeps the header's measure; the workspace takes the rest up to the wide edge.
   .course-reading-split:has(> .course-workspace) {
     grid-column: 5 / -3;
     display: grid;
     grid-template-columns:
-      minmax(22rem, var(--course-reading-track, 1fr))
-      minmax(20rem, var(--course-workspace-track, 1fr));
-    column-gap: var(--space-4);
+      minmax(22rem, var(--course-reading-track, 3fr))
+      minmax(20rem, var(--course-workspace-track, 4fr));
+    column-gap: 0;
     align-items: start;
 
     > article.course-lecture {
@@ -29,10 +31,14 @@
       grid-column: 2;
       grid-row: 1;
       min-width: 20rem;
+      padding-inline-start: var(--space-4);
+      // Start level with the first paragraph's box, below its 1rem top margin.
+      margin-block-start: 1rem;
     }
 
+    // Closed, the text keeps the reading column and the launcher waits at the workspace edge.
     &:has(.course-workspace-app[data-open='false']) {
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 4fr);
 
       > .course-workspace {
         min-width: 0;
@@ -110,7 +116,7 @@
     box-sizing: border-box;
   }
 
-  button {
+  button:not(.tri-map-tab) {
     appearance: none;
     border: 1px solid var(--course-workspace-line, var(--lightgray));
     border-radius: var(--radius-none);
@@ -177,8 +183,7 @@
 }
 
 .course-workspace-header,
-.course-workspace-tabs,
-.course-workspace-footer,
+.course-workspace-actions,
 .course-draft-toolbar,
 .course-note-actions,
 .course-note-meta {
@@ -189,35 +194,33 @@
 }
 
 .course-workspace-header {
+  flex-wrap: nowrap;
   justify-content: space-between;
   padding: var(--space-2) var(--space-3);
-
-  h2 {
-    margin: 0;
-    font: var(--text-meta) / 1.4 var(--codeFont);
-    color: var(--darkgray);
-  }
-
-  button {
-    border-color: transparent;
-    width: 2rem;
-  }
+  border-bottom: 1px solid var(--course-workspace-line);
 }
 
+// The triathlon tab line; its selected tab takes the reading ink here.
 .course-workspace-tabs {
+  --tri-accent: var(--dark);
+  min-width: 0;
+}
+
+.course-workspace-actions {
+  flex: none;
   flex-wrap: nowrap;
-  padding-inline: var(--space-3);
-  gap: var(--space-3);
-  border-bottom: 1px solid var(--course-workspace-line);
+  gap: var(--space-1);
 
-  button {
-    border: 0;
-    border-bottom: 2px solid transparent;
-    padding: var(--space-2) 0;
+  // Same box as a tab-line tab, so the bar reads as one row.
+  .course-workspace-app & button {
+    min-height: 0;
+    padding: 0.18rem 0.4rem;
+    font-size: 0.62rem;
+    line-height: normal;
+  }
 
-    &[aria-selected='true'] {
-      border-bottom-color: var(--dark);
-    }
+  .course-workspace-app & .course-workspace-close {
+    border-color: transparent;
   }
 }
 
@@ -240,14 +243,16 @@
 .course-source-links {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-3);
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
   padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--course-workspace-line);
   font: var(--text-meta) / 1.5 var(--codeFont);
+}
 
-  span {
-    flex-basis: 100%;
-    color: var(--darkgray);
-  }
+.course-source-license {
+  margin-inline-start: auto;
+  color: var(--gray);
 }
 
 .course-source-frame {
@@ -303,7 +308,6 @@
   }
 }
 
-.course-draft-status,
 .course-notes-empty {
   margin: var(--space-3) 0;
   color: var(--darkgray);
@@ -360,12 +364,6 @@
   }
 }
 
-.course-workspace-footer {
-  justify-content: flex-end;
-  padding: var(--space-2) var(--space-3);
-  border-top: 1px solid var(--course-workspace-line);
-}
-
 .course-selection-actions {
   position: fixed;
   // Measure at the viewport origin, not at the launcher's corner, so flip sees the real size.
@@ -420,8 +418,22 @@
     background: var(--light) !important;
   }
 
-  .course-workspace-app button,
   .course-selection-actions button {
     min-height: 2.75rem;
+  }
+}
+
+@media (pointer: coarse) {
+  .course-workspace-app button:not(.tri-map-tab),
+  .course-workspace-app .course-workspace-actions button,
+  .course-workspace-tabs .tri-map-tab {
+    min-height: 2.75rem;
+  }
+
+  // Keep the label centred in the taller touch target.
+  .course-workspace-dialog button:not(.tri-map-tab) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }

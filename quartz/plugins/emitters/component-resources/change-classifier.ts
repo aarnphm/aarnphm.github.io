@@ -15,6 +15,7 @@ import {
 const indexStylesheetComponentStyles = new Set([
   'quartz/components/styles/audio.scss',
   'quartz/components/styles/clipboard.scss',
+  'quartz/components/styles/controls.scss',
   'quartz/components/styles/popover.scss',
   'quartz/components/styles/pseudocode.scss',
   'quartz/components/styles/twitter.scss',

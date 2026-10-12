@@ -70,8 +70,18 @@ body[data-pdf-embedded='course'] {
     display: none;
   }
 
-  .pdf-reader-crumb {
+  // Title, page count and download repeat the workspace links and the page field.
+  .pdf-reader-title,
+  .pdf-reader-meta {
     display: none;
+  }
+
+  .pdf-reader-app {
+    --pdf-gutter: var(--space-3);
+  }
+
+  .pdf-reader-controls {
+    margin-inline-start: 0;
   }
 }
 

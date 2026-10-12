@@ -112,12 +112,19 @@ function texRef(
   return undefined
 }
 
+// the bar keeps one row beside the title, so its crumb is short: the lecturer and the unit's
+// full count move to titles
 function notesCrumb(view: CourseView, from: FullSlug) {
   const notesSlug = `courses/${view.dir}/notes/index` as FullSlug
   const who = lecturerName(view.record)
   return (
-    <a class="internal" href={resolveRelative(from, notesSlug)} data-slug={notesSlug}>
-      {who ? `${who}'s notes` : 'notes'}
+    <a
+      class="internal"
+      href={resolveRelative(from, notesSlug)}
+      data-slug={notesSlug}
+      title={who ? `${who}'s notes` : undefined}
+    >
+      notes
     </a>
   )
 }
@@ -134,6 +141,10 @@ export const CourseUnitBar = (() => {
     const label =
       kind === 'psets' || kind === 'pset-notes'
         ? `problem set ${pad(n)}`
+        : `${pad(n)}/${view.units.length}`
+    const labelName =
+      kind === 'psets' || kind === 'pset-notes'
+        ? label
         : `${view.record.unitKind} ${pad(n)} of ${view.units.length}`
     const due = kind === 'psets' || kind === 'pset-notes' ? dueUnit(view, n) : undefined
     const prefix =
@@ -184,7 +195,9 @@ export const CourseUnitBar = (() => {
               </>
             ) : null}
             <span class="course-unit-sep">/</span>
-            <span class="course-num">{label}</span>
+            <span class="course-num" title={labelName}>
+              {label}
+            </span>
           </span>
           {meta.length > 0 ? (
             <span class="course-count course-unit-dates">
@@ -196,35 +209,37 @@ export const CourseUnitBar = (() => {
               ))}
             </span>
           ) : null}
-          {unit && (kind === 'lectures' || kind === 'notes') ? (
-            <StudyState view={view} unit={unit} endpoint={endpoint} />
-          ) : null}
-          {isNotes ? (
-            <button
-              type="button"
-              class="course-action course-fold"
-              data-course-fold-proofs
-              aria-pressed="false"
-            >
-              fold proofs
-            </button>
-          ) : unit?.deck ? (
-            <a
-              class="course-action internal"
-              href={resolveRelative(from, unitDeckSlug(view.dir, n))}
-              data-slug={unitDeckSlug(view.dir, n)}
-              data-no-popover
-              data-course-action="drill"
-              data-cards={unit.cardIds.join(' ')}
-              data-unit={String(n)}
-            >
-              due <span data-due="">–</span> of {unit.cardIds.length}
-            </a>
-          ) : (
-            <span class="course-action" aria-disabled="true">
-              no deck
-            </span>
-          )}
+          <span class="course-unit-actions">
+            {unit && (kind === 'lectures' || kind === 'notes') ? (
+              <StudyState view={view} unit={unit} endpoint={endpoint} />
+            ) : null}
+            {isNotes ? (
+              <button
+                type="button"
+                class="course-action course-fold"
+                data-course-fold-proofs
+                aria-pressed="false"
+              >
+                fold proofs
+              </button>
+            ) : unit?.deck ? (
+              <a
+                class="course-action internal"
+                href={resolveRelative(from, unitDeckSlug(view.dir, n))}
+                data-slug={unitDeckSlug(view.dir, n)}
+                data-no-popover
+                data-course-action="drill"
+                data-cards={unit.cardIds.join(' ')}
+                data-unit={String(n)}
+              >
+                due <span data-due="">–</span> of {unit.cardIds.length}
+              </a>
+            ) : (
+              <span class="course-action" aria-disabled="true">
+                no deck
+              </span>
+            )}
+          </span>
         </nav>
         {desk}
       </>
