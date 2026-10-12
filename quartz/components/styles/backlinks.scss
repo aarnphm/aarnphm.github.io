@@ -12,23 +12,42 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    a[data-backlink] {
+    .backlink-card {
+      position: relative;
       border: 1px solid var(--gray);
       padding: 0.75rem;
       border-radius: var(--radius-none);
       line-height: 1.3;
-      text-decoration: none;
 
-      &:hover {
-        background: initial;
-      }
-
-      & > .description,
-      & > .small {
+      & > a[data-backlink] {
+        display: block;
         line-height: 1.3;
+        text-decoration: none;
+
+        &:hover {
+          background: initial;
+        }
+
+        // Extend the title's hit area across the card, below the description links.
+        &::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+        }
+
+        &:focus-visible {
+          outline: none;
+
+          &::after {
+            outline: 2px solid var(--secondary);
+            outline-offset: 2px;
+          }
+        }
       }
 
       & > .description {
+        pointer-events: none;
+        line-height: 1.3;
         font-weight: normal;
 
         overflow: hidden;
@@ -44,6 +63,12 @@
 
         color: var(--gray);
         margin-top: 0.2rem;
+
+        a {
+          position: relative;
+          z-index: 1;
+          pointer-events: auto;
+        }
       }
     }
   }
