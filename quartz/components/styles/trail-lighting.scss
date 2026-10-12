@@ -1,0 +1,189 @@
+$paper-palette: (
+  paper: #fffcf0,
+  seam: #e6e4d9,
+  muted: #b7b5ac,
+  ink: #6f6e69,
+  strong: #100f0f,
+);
+
+@each $role, $initial in $paper-palette {
+  @property --trail-#{$role} {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: $initial;
+  }
+}
+
+// Resolve the source palette at the root before the homepage aliases inherit it.
+:root {
+  --trail-paper: var(--light);
+  --trail-seam: var(--lightgray);
+  --trail-muted: var(--gray);
+  --trail-ink: var(--darkgray);
+  --trail-strong: var(--dark);
+}
+
+body:has(.homepage-trail) {
+  --trail-paper: inherit;
+  --trail-seam: inherit;
+  --trail-muted: inherit;
+  --trail-ink: inherit;
+  --trail-strong: inherit;
+  --light: var(--trail-paper);
+  --lightgray: var(--trail-seam);
+  --gray: var(--trail-muted);
+  --darkgray: var(--trail-ink);
+  --dark: var(--trail-strong);
+
+  .visitor-weather-sun,
+  .visitor-weather-moon {
+    display: block;
+    transform-origin: 12px 12px;
+    opacity: 1;
+    transform: none;
+  }
+  .visitor-weather-moon {
+    opacity: 0;
+    transform: translateY(3px) rotate(-15deg);
+  }
+}
+
+:root[saved-theme='dark'] body:has(.homepage-trail) {
+  .visitor-weather-sun {
+    opacity: 0;
+    transform: translateY(3px) rotate(15deg);
+  }
+  .visitor-weather-moon {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.homepage-trail-scene {
+  .trail-weather-night {
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    shape-rendering: crispEdges;
+  }
+  .trail-weather-daylight {
+    opacity: 1;
+  }
+  .trail-moon-shadow {
+    fill: #c9c8b9;
+    opacity: 0.12;
+  }
+  .trail-moon-lit {
+    fill: color-mix(in srgb, var(--dark) 70%, #d8d2b4);
+    opacity: 0.65;
+  }
+  .trail-moon-crater {
+    fill: var(--light);
+    opacity: 0.25;
+  }
+  .trail-weather-star {
+    fill: var(--dark);
+    opacity: 0.2;
+  }
+  .trail-firelight {
+    opacity: 0;
+    pointer-events: none;
+    shape-rendering: auto;
+  }
+  .trail-scene[data-lighting='moonlit'] {
+    .trail-weather-night {
+      opacity: 1;
+      transform: none;
+    }
+    .trail-weather-daylight {
+      opacity: 0;
+    }
+    .trail-firelight {
+      opacity: var(--trail-fire-strength, 1);
+    }
+    [data-night='true'] .trail-firelight {
+      opacity: calc(var(--trail-fire-strength, 1) * 0.4);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body:has(.homepage-trail) {
+    transition:
+      --trail-paper 1200ms ease-in-out,
+      --trail-seam 1200ms ease-in-out,
+      --trail-muted 1200ms ease-in-out,
+      --trail-ink 1200ms ease-in-out,
+      --trail-strong 1200ms ease-in-out;
+    .visitor-weather-sun,
+    .visitor-weather-moon {
+      transition:
+        opacity 600ms ease-in-out,
+        transform 600ms ease-in-out;
+    }
+  }
+  .homepage-trail-scene {
+    .trail-weather-night {
+      transition:
+        opacity 1200ms ease-in-out,
+        transform 1200ms ease-in-out;
+    }
+    .trail-weather-daylight,
+    .trail-firelight {
+      transition: opacity 1200ms ease-in-out;
+    }
+    .trail-scene[data-lighting='moonlit'] {
+      .trail-moon-motion {
+        animation: trail-moon-drift 10s ease-in-out infinite;
+      }
+      .trail-weather-star {
+        animation: trail-star-fade 7s ease-in-out infinite alternate;
+      }
+      .trail-weather-star:nth-child(even) {
+        animation-delay: -3s;
+      }
+      &[data-weather-motion='paused'] .trail-moon-motion,
+      &[data-weather-motion='paused'] .trail-weather-star {
+        animation-play-state: paused;
+      }
+      .trail-firelight-pool {
+        animation: trail-firelight-breathe 4200ms ease-in-out infinite;
+      }
+      &[data-camp-motion='paused'] .trail-firelight-pool,
+      [data-night='true'] .trail-firelight-pool {
+        animation-play-state: paused;
+      }
+    }
+  }
+}
+
+@keyframes trail-moon-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+@keyframes trail-star-fade {
+  from {
+    opacity: 0.12;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
+@keyframes trail-firelight-breathe {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  45% {
+    opacity: 0.9;
+  }
+  72% {
+    opacity: 0.72;
+  }
+}

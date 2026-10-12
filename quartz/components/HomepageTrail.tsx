@@ -9,6 +9,40 @@ export default (() => {
     return (
       <div class="homepage-trail">
         <time class="trail-local-time" aria-label="Local time" aria-live="off" />
+        <span class="trail-visitor-count" title="Connected visitors · PlayHTML">
+          <svg viewBox="0 0 12 14" aria-hidden="true">
+            <path d="m1 1 9 6-4 1-2 4Z" />
+          </svg>
+          <span
+            data-trail-visitors
+            data-state="connecting"
+            aria-live="off"
+            aria-label="Connecting visitors"
+          >
+            ·
+          </span>
+        </span>
+        <button
+          class="homepage-moon-toggle"
+          type="button"
+          popovertarget="homepage-moon-panel"
+          aria-label="Moon calendar"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="homepage-moon-panel"
+          title="Moon calendar"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Zm0 0v14" />
+          </svg>
+        </button>
+        <div
+          id="homepage-moon-panel"
+          class="homepage-moon-panel"
+          popover="auto"
+          role="dialog"
+          aria-label="Moon calendar"
+        />
         <button
           class="homepage-trail-toggle"
           type="button"

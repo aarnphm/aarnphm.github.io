@@ -40,6 +40,10 @@
   position: fixed;
   inset: 4rem 4.25rem auto auto;
   width: min(13.5rem, calc(100vw - 5rem));
+  max-height: calc(100dvh - 5rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray) transparent;
   box-sizing: border-box;
   margin: 0;
   padding: 0.35rem 0.5rem;
@@ -87,9 +91,24 @@
 
 .visitor-weather-heading {
   margin-bottom: 0.25rem;
+  gap: 0.35rem;
+  white-space: nowrap;
   [data-weather-temperature] {
     text-transform: none;
   }
+}
+
+.visitor-weather-summary {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.visitor-weather-place {
+  display: inline-flex;
+  align-items: baseline;
+  flex-shrink: 0;
+  gap: 0.25rem;
 }
 
 .visitor-weather-country {
@@ -154,6 +173,17 @@
   stroke-linecap: round;
 }
 
+.visitor-weather .lunar-disc-outline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.75;
+  opacity: 0.4;
+}
+.visitor-weather .lunar-disc-lit {
+  fill: currentColor;
+  stroke: none;
+}
+
 .visitor-weather-moon,
 :root[saved-theme='dark'] .visitor-weather-sun {
   display: none;
@@ -191,12 +221,31 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .visitor-weather-icon {
+  .visitor-weather-sun {
     animation: visitor-weather-sun-float 6s ease-in-out infinite alternate;
+  }
+  :root[saved-theme='dark'] .visitor-weather-moon-motion {
+    transform-origin: 0 0;
+    animation: visitor-weather-moon-drift 9s ease-in-out infinite;
+  }
+  .visitor-weather[data-moon-motion='paused'] .visitor-weather-moon-motion,
+  .visitor-weather[data-moon-motion='paused'] .visitor-weather-sun,
+  .visitor-weather[data-moon-motion='paused'] .visitor-weather-rays {
+    animation-play-state: paused;
   }
   .visitor-weather-rays {
     transform-origin: 12px 12px;
     animation: visitor-weather-sun-turn 36s linear infinite;
+  }
+}
+
+@keyframes visitor-weather-moon-drift {
+  0%,
+  100% {
+    transform: translateY(0.5px) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-0.75px) rotate(3deg);
   }
 }
 
@@ -212,6 +261,12 @@
 @keyframes visitor-weather-sun-turn {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 601px) and (hover: hover) and (pointer: fine) {
+  .visitor-weather-toggle {
+    width: 28px;
   }
 }
 

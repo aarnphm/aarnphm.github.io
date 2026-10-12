@@ -6,6 +6,7 @@ import {
   type VisitorForecast,
 } from '../../util/visitor-weather'
 import { registerEscapeHandler } from './escape-handler'
+import { mountVisitorMoon } from './visitor-moon'
 import { mountVisitorWeatherMap } from './visitor-weather-map'
 
 const compassPoints = [
@@ -36,6 +37,7 @@ document.addEventListener('nav', () => {
   const controller = new AbortController()
   const { signal } = controller
   const trailWeather = createVisitorTrailWeatherSource(document, signal)
+  const moon = mountVisitorMoon(root, signal)
   let forecast: VisitorForecast | null = null
   let pending = false
   let fetchedAt = 0
@@ -229,6 +231,7 @@ document.addEventListener('nav', () => {
     ?.addEventListener('click', () => void refresh(), { signal })
   const tick = () => {
     if (document.hidden) return
+    moon.refresh()
     render()
     if (fetchedAt && Date.now() - fetchedAt >= 900000) void refresh()
   }

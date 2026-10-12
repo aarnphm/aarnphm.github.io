@@ -30,10 +30,14 @@ export default (() => {
                 d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"
               />
             </g>
-            <path
-              class="visitor-weather-moon"
-              d="M18.7 15.8A8 8 0 0 1 8.2 5.3a8 8 0 1 0 10.5 10.5Z"
-            />
+            <g class="visitor-weather-moon">
+              <g transform="translate(12 12)">
+                <g class="visitor-weather-moon-motion">
+                  <circle class="lunar-disc-outline" r="7" />
+                  <path class="lunar-disc-lit" data-lunar-disc="" />
+                </g>
+              </g>
+            </g>
           </svg>
         </button>
         <div
@@ -44,10 +48,12 @@ export default (() => {
           aria-label="Weather near you"
         >
           <div class="visitor-weather-heading" role="status">
-            <span>
+            <span class="visitor-weather-summary">
               <span data-weather-temperature /> <span data-weather-condition>loading weather</span>
             </span>
-            <span class="visitor-weather-country" data-weather-country />
+            <span class="visitor-weather-place">
+              <span class="visitor-weather-country" data-weather-country />
+            </span>
           </div>
           <div
             class="visitor-weather-map"

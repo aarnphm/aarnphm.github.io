@@ -1,0 +1,159 @@
+@use '../../styles/variables.scss' as *;
+
+.homepage-moon-panel {
+  --control-font-size: 0.65rem;
+  position: fixed;
+  inset: 4rem 1rem auto auto;
+  width: min(18rem, calc(100vw - 1rem));
+  max-height: calc(100dvh - 5rem);
+  box-sizing: border-box;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--darkgray);
+  font: 0.65rem/1.4 var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  transform-origin: top right;
+  transition:
+    opacity 150ms ease-out,
+    transform $panel-duration $panel-ease,
+    display $panel-duration allow-discrete,
+    overlay $panel-duration allow-discrete;
+
+  &::backdrop {
+    background: transparent;
+  }
+  @starting-style {
+    &:popover-open {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+}
+
+.moon-calendar {
+  .g-cal-head {
+    margin-bottom: 0.35rem;
+  }
+  .g-cal-title {
+    font-size: 1.1em;
+    font-weight: 400;
+  }
+  .g-icon {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .g-calendar-weekdays > span {
+    padding: 0.2rem 0;
+    text-align: center;
+    font-size: 0.6rem;
+  }
+  .g-calendar-grid {
+    border-color: var(--lightgray);
+  }
+  .g-calendar-day {
+    position: relative;
+    align-items: center;
+    gap: 0;
+    padding: 0.2rem 0;
+    border-color: var(--lightgray);
+    color: var(--darkgray);
+    &[data-outside] {
+      opacity: 0.5;
+      background-image: none;
+    }
+    &[data-selected] {
+      background-image: linear-gradient(var(--dark), var(--dark));
+      color: var(--light);
+      opacity: 1;
+      .g-calendar-day-header h3,
+      .g-calendar-day-header time {
+        color: inherit;
+      }
+    }
+    .g-calendar-day-header h3 {
+      font-size: 0.6rem;
+    }
+  }
+
+  button.moon-calendar-day {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    padding: 0 0 0.3rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+    &:hover {
+      background: color-mix(in srgb, currentColor 8%, transparent);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: -2px;
+    }
+  }
+}
+
+.moon-calendar-outline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.6;
+}
+.moon-calendar-lit {
+  fill: currentColor;
+  stroke: none;
+}
+
+.moon-calendar-readout {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+  > svg {
+    width: 22px;
+    height: 22px;
+    flex: none;
+  }
+  > div {
+    display: grid;
+    gap: 0.1rem;
+  }
+  time {
+    font-size: 0.6rem;
+  }
+  > button {
+    margin-left: auto;
+  }
+}
+.moon-calendar-source {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 1.4rem;
+  font-size: 0.55rem;
+}
+@media (max-width: 600px) {
+  .homepage-moon-panel {
+    inset: 3.5rem 0.5rem auto auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .homepage-moon-panel {
+    transition: none;
+  }
+}

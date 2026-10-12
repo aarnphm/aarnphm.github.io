@@ -4,6 +4,8 @@
 // the page guesses 45° of latitude on whichever side of the equator the time zone lies, and a
 // longitude from the clock's offset from UTC.
 
+import { lunarPhase } from '../../util/lunar-phase'
+
 // Open-Meteo's current conditions, as the worker passes them on.
 export type Weather = {
   // WMO 4677 present-weather code.
@@ -55,9 +57,6 @@ const RAD = Math.PI / 180
 // The view looks this many degrees east of the equator, so the noon sun stands right of the gate
 // and the sunset keeps to the right edge.
 const VIEW = 35
-const SYNODIC = 29.530588853
-// A new moon, 2000-01-06 18:14 UTC, as days since the Unix epoch.
-const NEW_MOON = 10962.7597
 
 const smooth = (a: number, b: number, v: number) => {
   const t = Math.max(0, Math.min(1, (v - a) / (b - a)))
@@ -67,7 +66,7 @@ const wrap = (deg: number) => ((((deg + 180) % 360) + 360) % 360) - 180
 
 // Low-precision ephemeris (the Astronomical Almanac's solar formula, good to about a hundredth of a
 // degree). The moon is placed on the ecliptic at its elongation from the sun, which ignores its
-// five-degree tilt: close enough to say where it hangs, and exact about its phase.
+// five-degree tilt. This scene uses a mean-cycle estimate for the lunar phase.
 function place(days: number, lat: number, lon: number, elongation: number): Body {
   const n = days - 10957.5
   const g = (357.528 + 0.9856003 * n) * RAD
@@ -90,7 +89,7 @@ function place(days: number, lat: number, lon: number, elongation: number): Body
 
 export function almanac(now: Date, site: Site): Almanac {
   const days = now.getTime() / 864e5
-  const phase = ((((days - NEW_MOON) / SYNODIC) % 1) + 1) % 1
+  const phase = lunarPhase(now.getTime()).phase
   const sun = place(days, site.lat, site.lon, 0)
   const moon = { ...place(days, site.lat, site.lon, phase * 360), phase }
   const south = site.lat < 0
