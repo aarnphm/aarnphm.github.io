@@ -27,6 +27,7 @@ export const TRIATHLON_TRACE_DISPLAY_SETTINGS = Object.freeze({
     'core-temperature': false,
     'skin-temperature': false,
     'stride-length': false,
+    'run-heart-cost': false,
     'performance-condition': false,
     'intensity-factor': false,
     'ground-contact-time': false,

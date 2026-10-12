@@ -1,5 +1,6 @@
 import type { DayCardExtras } from '../../../util/triathlon-card'
 import type { SwimTrendMode } from '../../../util/triathlon-card'
+import type { RunHeartCostWindow } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import type { TriathlonContext } from '../runtime/context'
 import type { DetailPayload } from './data'
@@ -24,6 +25,7 @@ import { detailContextFromPayload } from './data'
 import { mountDaySleepCharts } from './day-sleep'
 import { dayExtrasFromDataset } from './embed-settings'
 import { renderDetail } from './render'
+import { runHeartCostWindow, setRunHeartCostWindow } from './run-heart-cost'
 import {
   cyclingChartMode,
   runMetricMode,
@@ -295,6 +297,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     } | null = null
     let pendingRunMetricMode: { activityId: string; group: string; mode: RunMetricMode } | null =
       null
+    let pendingRunCostWindow: { activityId: string; window: RunHeartCostWindow } | null = null
     let pendingAnalysisRange: {
       activityId: string
       kind: string
@@ -348,16 +351,30 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       if (!activityId || !group || !mode) return
       pendingRunMetricMode = { activityId, group, mode }
     }
+    const setPendingRunCostWindow = (target: EventTarget | null): void => {
+      if (!(target instanceof Element)) return
+      const button = target.closest<HTMLButtonElement>('.tri-run-cost-window')
+      const activityId = button
+        ?.closest('.tri-run-heart-cost')
+        ?.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset.activityId
+      if (!button || !activityId) return
+      pendingRunCostWindow = {
+        activityId,
+        window: button.dataset.runCostWindow === '30' ? '30' : '300',
+      }
+    }
     const onModePointerDown = (event: PointerEvent): void => {
       setPendingSwimMode(event.target)
       setPendingCyclingChartMode(event.target)
       setPendingRunMetricMode(event.target)
+      setPendingRunCostWindow(event.target)
     }
     const onModeKeyDown = (event: KeyboardEvent): void => {
       if (event.key !== 'Enter' && event.key !== ' ') return
       setPendingSwimMode(event.target)
       setPendingCyclingChartMode(event.target)
       setPendingRunMetricMode(event.target)
+      setPendingRunCostWindow(event.target)
     }
     const setPendingAnalysisRange = (target: EventTarget | null, restoreFocus = false): boolean => {
       if (payload) return false
@@ -419,6 +436,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       pendingSwimMode = null
       pendingCyclingChartMode = null
       pendingRunMetricMode = null
+      pendingRunCostWindow = null
     }
     embed.addEventListener('pointerdown', onModePointerDown, { passive: true })
     embed.addEventListener('keydown', onModeKeyDown)
@@ -528,6 +546,20 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
         if (state) state.mode = pendingRunMetricMode.mode
       }
       pendingRunMetricMode = null
+      const runCostStates = Array.from(
+        embed.querySelectorAll<HTMLElement>('.tri-run-heart-cost'),
+      ).flatMap(chart => {
+        const activityId = chart.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+          .activityId
+        return activityId ? [{ activityId, window: runHeartCostWindow(chart) }] : []
+      })
+      if (pendingRunCostWindow) {
+        const state = runCostStates.find(
+          candidate => candidate.activityId === pendingRunCostWindow?.activityId,
+        )
+        if (state) state.window = pendingRunCostWindow.window
+      }
+      pendingRunCostWindow = null
       const analysisStates = Array.from(
         embed.querySelectorAll<HTMLElement>('.tri-act[data-activity-id]'),
         activity => {
@@ -641,6 +673,12 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
           )
           if (state) setRunMetricMode(chart, state.mode)
         })
+      fresh.element.querySelectorAll<HTMLElement>('.tri-run-heart-cost').forEach(chart => {
+        const activityId = chart.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+          .activityId
+        const state = runCostStates.find(candidate => candidate.activityId === activityId)
+        if (state) setRunHeartCostWindow(chart, state.window, context.presentation)
+      })
       fresh.element.querySelectorAll<HTMLElement>('.tri-swim-trends').forEach((section, index) => {
         const state = swimStates[index]
         if (!state) return
@@ -695,11 +733,26 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     const ssr = embed.querySelector<HTMLElement>(':scope > .tri-pop-card')
     if (ssr) {
       ssr.addEventListener('click', onCardToggle)
+      // A cold load can take the click before the detail payload arrives; the SSR chart then holds
+      // the chosen window and the upgrade reads it back.
+      const onRunCostWindow = (event: MouseEvent): void => {
+        if (!(event.target instanceof Element)) return
+        const button = event.target.closest<HTMLButtonElement>('.tri-run-cost-window')
+        const chart = button?.closest<HTMLElement>('.tri-run-heart-cost')
+        if (!button || !chart) return
+        setRunHeartCostWindow(
+          chart,
+          button.dataset.runCostWindow === '30' ? '30' : '300',
+          context.presentation,
+        )
+      }
+      ssr.addEventListener('click', onRunCostWindow)
       const cleanupAlignment = mountActivitySectionAlignment(ssr)
       const cleanupPowerTicks = setupPowerCurveTicks(ssr)
       const cleanupDaySleepCharts = mountDaySleepCharts(ssr, () => context.presentation.locale)
       cardCleanup = () => {
         ssr.removeEventListener('click', onCardToggle)
+        ssr.removeEventListener('click', onRunCostWindow)
         cleanupAlignment()
         cleanupPowerTicks()
         cleanupDaySleepCharts()

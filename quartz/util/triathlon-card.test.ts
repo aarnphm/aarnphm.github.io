@@ -6104,7 +6104,14 @@ test('projects each sub-marathon run to the next standard race distance', () => 
 test('renders the run trend between pace and heart rate in server activity markup', () => {
   const rendered = buildActivity(
     factory,
-    detail({ sport: 'run', distanceKm: 11.1, movingTimeS: 4_320, maxSpeedKph: null }),
+    detail({
+      sport: 'run',
+      distanceKm: 11.1,
+      movingTimeS: 4_320,
+      maxSpeedKph: null,
+      calculatedIntensityFactor: { value: 0.8, source: 'pace' },
+      garmin: garminVerification({ normalizedPower: 332, avgPower: 325 }),
+    }),
   )
   const stats = byClass(rendered, 'tri-act-stats')[0]
   assert.ok(stats)
@@ -6114,9 +6121,12 @@ test('renders the run trend between pace and heart rate in server activity marku
     ['pace', '6:29 /km'],
     ['half trend', "2h22'"],
     ['avg hr', '148 bpm'],
+    ['intensity factor', '0.800'],
     ['training effect', 'base'],
-    ['NP', '205 W'],
-    ['avg power', '188 W'],
+    ['variability index', '1.022'],
+    ['NP', '332 W'],
+    ['TSS', '76.8'],
+    ['avg power', '325 W'],
     ['max power', '565 W'],
     ['energy', '900 kJ'],
     ['calories', '960 kcal'],
@@ -6124,6 +6134,7 @@ test('renders the run trend between pace and heart rate in server activity marku
     ['max hr', '171 bpm'],
     ['device temp', '24°C'],
     ['ambient temp', '22°C'],
+    ['source', 'Garmin'],
   ])
 })
 
