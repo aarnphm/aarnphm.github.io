@@ -17,7 +17,7 @@ love can split across future, desire, daily life, and interpretation. two people
 
 i used to divide love into two kinds. one came from shared goals. the other came from a conviction about a particular person. the split explained why compatibility could exist without attachment, and why attachment could survive incompatible plans. it also hid the work happening inside a relationship.
 
-people change while you are learning them. the person who told you what they wanted last year may now want something else. shared plans, desire, daily life, and attachment can move at different speeds. the task is to notice those changes without treating every change as betrayal.
+people change while you are learning them. the person who told you what they wanted last year may now want something else. the task is to notice those changes without treating every change as betrayal.
 
 ## the interpretive work
 
@@ -61,5 +61,3 @@ the same error can happen after years together. familiarity starts to feel like 
 bell hooks treats love as action.[@hooks2000love] that claim keeps attention tied to conduct. i ask what they meant. i let the answer change my belief. i respect the stated boundary. i make room for a future different from the one i had assigned to us.
 
 love requires an ongoing attempt to understand someone, with no promise of complete understanding. the gap is practical. another person has experiences i cannot access directly, and they continue changing after every account i form.
-
-the work remains plain: ask again, listen again, and let the answer change what you believe about them.

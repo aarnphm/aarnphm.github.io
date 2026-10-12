@@ -2,7 +2,7 @@
 date: '2026-08-21'
 description: how to contact Aaron about the garden, its code, privacy, security, and collaboration
 id: contact
-modified: 2026-08-21 20:03:41 GMT-04:00
+modified: 2026-10-11 19:55:08 GMT-04:00
 noindex: true
 tags:
   - evergreen
@@ -28,4 +28,4 @@ Privacy requests should identify the relevant comment, GitHub login, email, or o
 
 Security vulnerabilities should go to `security@aarnphm.xyz` with the subject `SECURITY`. Include reproduction steps, the affected URL or component, likely impact, and any known mitigation. Do not place an undisclosed vulnerability in a public issue. The [[security policy|security policy]] defines scope, response targets, safe harbor, and coordinated disclosure.
 
-Automated agents can use this page for attribution or clarification. Use the [MCP API guide](/api/docs) before emailing about routine access.
+Automated agents can use this page for attribution or clarification. Use the [MCP API guide](/api/docs) before emailing about routine access. Please also mentioned that the agent identity during your communcation request, otherwise I will just straightup ignore it.

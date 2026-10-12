@@ -4,6 +4,10 @@ description: not transient notes.
 title: evergreen
 ---
 
-> Evergreen notes are written and organized to evolve, contribute, and accumulate over time, across projects.
+```quotes
+Evergreen notes are written and organized to evolve, contribute, and accumulate over time, across projects.
 
-[Andy Matuschak](https://notes.andymatuschak.org/z5E5QawiXCMbtNtupvxeoEX) uses the term for notes written and organized to change over time. He contrasts them with transient notes. In this garden, `git` records each revision.
+[Andy Matuschak](https://notes.andymatuschak.org/z5E5QawiXCMbtNtupvxeoEX)
+```
+
+Andy uses the term for notes written and organized to change over time. He contrasts them with transient notes. In this garden, `git` records each revision.

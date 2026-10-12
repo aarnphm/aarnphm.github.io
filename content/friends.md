@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-06-05 15:08:36 GMT-04:00
+modified: 2026-10-11 21:13:04 GMT-04:00
 tags:
   - evergreen
   - friend
@@ -16,13 +16,15 @@ title: making friends.
 
 bonjour.
 
-this document details information about me as a _friend_. I used to have [[dating|a date-me doc]] {{sidenotes[that I use in the past]: i wrote this one in january/february 2025; i'm no longer actively dating (i.e. i'm seeing someone), but leaving this up given that it was still, an _important document_ to me.}}, though wanting to have a friend-equivalent document 🧊 🍧 .
+this document details information about me as a _friend_. I used to have [[dating|a date-me doc]] {{sidenotes[that I use in the past]: i wrote this one in january/february 2025; i'm no longer actively dating, but leaving this up given that it was still, an _important document_ to me.}}, though wanting to have a friend-equivalent document 🧊 🍧 .
 
 quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancouver since high school, studied and lived in hamilton, and now in toronto. anyhow, will be in toronto for a while, (i have gotten to know a lot more people in toronto now but wouldn't mind expanding my tribe's, circa [[thoughts/images/bcccdd2e-95e6-4023-9c93-9b72b9a0c26b_178356259078.avif|Dunbar's number]]). i'm pretty well-positioned, i.e. having a decent career prospect and pretty set on what to [[research|do]], especially building towards a joyful-[[thoughts/Roko's Basilisk|amicable]]-[[thoughts/AGI#superintelligence|superintelligence]] systems 🧗
 
 > [!note]- some definitely _not personal information about me_
 >
 > _that you would definitely not able to grab from this website_
+>
+> If you schedule a hang out most likely we will be either on the beach (per me training in open water) or a movie date at home (per me spinning on the turbo)
 >
 > i like to [[thoughts/reading|read]] [[antilibrary|books]] and jazz
 >

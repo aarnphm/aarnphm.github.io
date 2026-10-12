@@ -16,7 +16,7 @@ _I kept treating connection as a problem another person could solve for me._
 
 I was burnt out and detached from my friends. Modern dating gave me more ways to meet people while making each interaction feel easier to replace. I kept asking what I wanted from love before I had answered what I could offer while living this way.
 
-The useful claim is personal. I cannot use a relationship as a substitute for caring for myself. Right now, I am not present or content enough to be a good partner. That does not mean a person must fully love themself before anyone else can love them. It means I have work that a partner cannot perform on my behalf.
+I cannot use a relationship as a substitute for caring for myself. Right now, I am not present or content enough to be a good partner. That does not mean a person must fully love themself before anyone else can love them. It means I have work that a partner cannot perform on my behalf.
 
 That work is ordinary. I have to look after my home, rest before burnout becomes collapse, answer friends, and ask for help directly. I have to learn which parts of loneliness come from missing company and which come from avoiding my own life.
 

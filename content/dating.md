@@ -7,7 +7,7 @@ aliases:
 date: '2025-08-09'
 description: just another fish in the sea.
 id: dating
-modified: 2026-06-06 00:10:07 GMT-04:00
+modified: 2026-10-11 21:00:23 GMT-04:00
 slides: true
 tags:
   - evergreen
@@ -18,7 +18,9 @@ title: dating me.
 
 > [!important] before you read this file!
 >
-> i'm no longer actively dating (i.e. i'm actively committed to someone), but I still want to keep this up given that it's still, an _important document_ to me. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] docs.
+> i'm no longer actively dating (quite busy nowadays), but I still want to keep this up given that it's still, an _important document_ to me. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] docs.
+>
+> i'm open to explore but will have to evaluate accordingly.
 
 This document doesn't represent the whole me, but it should give you a sense of the "non-tech" version of who I am and what I do in {{sidenotes[my downtime]: I'm not actively dating anymore, but this document is still an important part of my life, but you might be interested in [[friends|this docs]] instead.}}.
 
@@ -40,23 +42,23 @@ Here's 30 second about me. By all means explore the rest of the documents.
 
 According to ["what vegetable are you?"](https://sophie006liu.github.io/vegetal/), I'm an [[thoughts/images/onion.webp|onion.]] [^onion]
 
-I work on [[thoughts/LLMs|large language models]], and I like to cook: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, climb V5s, and read math textbooks.
+I work on [[thoughts/LLMs|large language models]], and I like to cook: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, [[triathlon|training for a nearby IRONMAN]], and read math textbooks.
 
 [^onion]: This is somewhat hilarious given that I actually love [[thoughts/images/onionnnnnnnnnn.webp|onion]]!
 
-I'm a bit obsessive with my [[thoughts/craft|craft]], especially when thinking about [[thoughts/Machine learning|stochastic]] model. It is all I do these days, other than caring for my friends and people in my life (obv)
+I'm a bit obsessive with what [[thoughts/craft|I do]], especially when thinking about [[thoughts/Machine learning|stochastic]] model. It is all I do these days, other than caring for my friends and people in my life (obv)
 
-I'm the 3am call who shows up. I'm poly, but open to monogamy. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D).
+I'm the 3am call who shows up. I used to be poly, then found that I'm more suited for monogamy from previous relationship. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D).
 
 My Myers-Briggs is ENTJ-A, though it swings to INTJ-T a lot of times. You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
 
 I moved continents at a young age, and learnt very early on that _solitude makes presence precious_.
 
-I like the em-dash (—) (contrary to recent popular beliefs), and parentheticals and non-sequiturs.
+I like the em-dash (—) (contrary to _many, many recent_ beliefs), parentheticals and non-sequiturs.
 
-I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span> and garage/drill, and often find myself rabbit-holing on random #math topics.
+I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span>, Schubert, and garage/drill, and often find myself rabbit-holing on random #math topics.
 
-five years plan: No kids, for now. I value my relationship with my female friends. I'm based in Toronto, but US-bound eventually.
+epistemic status: I don't really care what you do, as long as you think hard about the world and your value and have a clear Bayesian reasoning for it. I value my relationship with my female friends. I'm based in Toronto for the time being, but _I travel around with my bike a lot_.
 
 </div>
 
@@ -111,7 +113,7 @@ Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (o
 
 </figure>
 
-I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/), which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]], based in Toronto, Canada.
+I was an early [[thoughts/Transformers#inference.|inference]] optimization {{sidenotes[engineer]: which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]]}}. at [BentoML](https://bentoml.com/) before [Modular](https://www.modular.com/) acquired us. Then early May 2026 Qualcomm then [acquired](https://www.qualcomm.com/news/releases/2026/06/qualcomm-to-acquire-modular) Modular. I'm now at NVIDIA working on [[thoughts/vllm|vLLM]] and supporting pretraining Nemotron.
 
 I take my [[thoughts/craft|work]] seriously. I interned at the business analytics division of a bank back in 2018, doing behavioral analysis on customer usage patterns.
 This was my first real exposure to [supervised learning](https://en.wikipedia.org/wiki/Supervised_learning) and I was immediately hooked.
@@ -119,7 +121,7 @@ This was my first real exposure to [supervised learning](https://en.wikipedia.or
 I pretty much didn't know a thing back then, but that didn't bother me much: I found the problem fascinating and knew I would _try_ to solve it, because I wanted to. I definitely still have a ton to learn, but over time you tend to pick up skills along the way.
 
 Early on, I noticed that most of [[thoughts/Machine learning|ML]]'s [technical debt](https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf) comes down to scaling, which inherently is an _engineering_ problem.
-This led me to join my current startup, as a software engineer. The mission statement has shifted quite a bit since then, but the core remains the same: optimizing [[thoughts/LLMs|statistical models]] to be as fast and accessible as possible.
+This led me to join BentoML, as a software engineer. The mission statement and positions has shifted quite a bit since then, but the core remains the same: optimizing [[thoughts/LLMs|statistical models]] to be as fast and accessible as possible.
 
 My approach to problems has stayed consistent since I learned arithmetic: ==don't quit, managed obsession [^obsession], and get your hands dirty== [^work].
 
@@ -171,9 +173,18 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 
 <section data-activities>
 
+triathlon
+
+- I'm training for IRONMAN Lanzarote 2027. Feel free to check out progress in [daily stream](https://stream.aarnphm.xyz) or the [feed](https://t.aarnphm.xyz/feed)/[calendar](https://t.aarnphm.xyz/calendar)
+
+</section>
+
+<section data-activities>
+
 bouldering
 
-- I climb V3-V5 most days. I still have a lot to improve, technique and strength-wise. My goal is to comfortably climb {{sidenotes[V7-V8.]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)}}
+- I used to climb alot V3-V5 most days. I still have a lot to improve, technique and strength-wise. My goal is to comfortably climb {{sidenotes[V7-V8.]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)}}
+- This is currently on-pause circa IRONMAN training.
 
 </section>
 
@@ -213,7 +224,6 @@ cooking
 [[mixed#vinyl|vinyl]]/[[cinematheque.base|movies]]
 
 - I collect vinyl and produced throwaway tunes in my free time.
-  ![[posts/images/2023-flac-1.mp3|ID 1 (2023)]]
 - Music is a huge part of my life—I honestly wouldn't be able to function without it.
 - I prefer classical orchestra, a mix of blues and jazz, 80s rock, and I have a deep appreciation for house and garage culture.
   - Rach 3, Rhapsody on Paganini
