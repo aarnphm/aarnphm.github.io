@@ -52,11 +52,6 @@ a[data-list] {
       text-decoration: underline;
     }
 
-    & > .description {
-      font-size: var(--text-meta);
-      line-height: 1.4;
-    }
-
     &[data-tag] {
       & > .title {
         @include tagLabel;
@@ -94,6 +89,46 @@ a[data-list] {
 
   & > .title {
     font-size: var(--text-ui);
+  }
+
+  & > .perma-link {
+    display: block;
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+
+    &:hover {
+      background: inherit;
+      color: var(--foam);
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: none;
+
+      &::after {
+        outline: 2px solid var(--dark);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  & > .description {
+    font-size: var(--text-meta);
+    line-height: 1.4;
+    pointer-events: none;
+
+    a {
+      position: relative;
+      z-index: 1;
+      pointer-events: auto;
+    }
   }
 }
 

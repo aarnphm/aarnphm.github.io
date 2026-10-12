@@ -1,6 +1,7 @@
 import type { Root as HastRoot } from 'hast'
 import { toString as hastToString } from 'hast-util-to-string'
 import type { StreamEntry } from '../plugins/transformers/stream'
+import { descriptionToPlainText } from './description'
 import {
   buildStreamDayPathFromIso,
   formatStreamDate,
@@ -40,7 +41,7 @@ export const getStreamEntrySearchText = (entry: StreamEntry): string => {
   const root: HastRoot = { type: 'root', children: entry.content }
   const contentText = hastToString(root)
   const titleText = entry.title ? String(entry.title) : ''
-  const descriptionText = entry.description ? String(entry.description) : ''
+  const descriptionText = descriptionToPlainText(entry.description, 'stream')
   return [titleText, descriptionText, contentText]
     .filter(part => part.length > 0)
     .join(' ')
@@ -87,7 +88,7 @@ export const buildStreamManifestGroup = (
       return {
         id: entry.id,
         title: entry.title ?? null,
-        description: entry.description ?? null,
+        description: descriptionToPlainText(entry.description, 'stream') || null,
         content: rendered.content,
         metadata: entry.metadata,
         isoDate: entry.date ?? group.isoDate ?? null,

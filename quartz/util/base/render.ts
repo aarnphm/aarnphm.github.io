@@ -12,6 +12,7 @@ import {
   isAbsoluteURL,
 } from '../../util/path'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
+import { descriptionToPlainText } from '../description'
 import {
   BaseExpressionDiagnostic,
   ProgramIR,
@@ -1150,7 +1151,7 @@ function buildMap(
       color: color ? String(color) : undefined,
       description:
         typeof file.frontmatter?.description === 'string'
-          ? file.frontmatter.description
+          ? descriptionToPlainText(file.frontmatter.description, slug)
           : undefined,
       address: typeof file.frontmatter?.address === 'string' ? file.frontmatter.address : undefined,
       categories: Array.isArray(file.frontmatter?.type)

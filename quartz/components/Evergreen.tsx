@@ -76,14 +76,21 @@ export const EvergreenPermanentNotes = ((userOpts?: EvergreenNotes) =>
           'div',
           { class: 'large grid-line' },
           largeFiles.map(f =>
-            h(
-              'a',
-              { href: resolveRelative(fileData.slug!, f.slug!), 'data-list': true, class: 'perma' },
-              [
-                h('div', { class: 'title' }, [f.frontmatter?.title]),
-                h('div', { class: 'description' }, [f.description!]),
-              ],
-            ),
+            h('div', { class: 'perma' }, [
+              h(
+                'a',
+                {
+                  href: resolveRelative(fileData.slug!, f.slug!),
+                  'data-list': true,
+                  class: 'perma-link',
+                },
+                [h('div', { class: 'title' }, [f.frontmatter?.title])],
+              ),
+              h('div', {
+                class: 'description',
+                dangerouslySetInnerHTML: { __html: f.description ?? '' },
+              }),
+            ]),
           ),
         ),
         h(
