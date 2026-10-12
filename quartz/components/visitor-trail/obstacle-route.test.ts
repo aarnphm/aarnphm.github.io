@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { CollisionActor } from './actor-spacing'
 import type { Point } from './landscape'
-import { detourTrail } from './obstacle-route'
+import { detourTrail, replanOccupiedWaypoints } from './obstacle-route'
 
 function sweptClearance(from: Point, to: Point, obstacle: CollisionActor, radius: number) {
   const dx = to.x - from.x
@@ -83,4 +83,42 @@ test('bypass an enclosed intermediate road point and continue to the destination
   for (let index = 1; index < route.points.length; index++)
     for (const obstacle of obstacles)
       assert.ok(sweptClearance(route.points[index - 1], route.points[index], obstacle, 18) >= 1.99)
+})
+
+test('walk around a pet covering the next waypoint without entering its body', () => {
+  const from = { x: 1078.39, y: 1080.99 }
+  const waypoints = [
+    { x: 1067.34, y: 1067.48 },
+    { x: 1045.3, y: 980 },
+  ]
+  const pet: CollisionActor = { id: 'pet-blob', kind: 'pet', x: 1045.3, y: 1053.06, radius: 25.2 }
+  const points = replanOccupiedWaypoints('builder-0-0', from, waypoints, 12, [pet], {
+    left: 18,
+    right: 1421,
+    top: 765,
+    bottom: 1479,
+  })
+  assert.ok(points)
+  assert.deepEqual(points.at(-1), waypoints.at(-1))
+  const road = [from, ...points]
+  for (let index = 1; index < road.length; index++)
+    assert.ok(sweptClearance(road[index - 1], road[index], pet, 12) >= 1.99)
+})
+
+test('retain animal right-of-way when an animal covers the next waypoint', () => {
+  const animal: CollisionActor = { id: 'animal-cow-0', kind: 'animal', x: 100, y: 100, radius: 18 }
+  assert.equal(
+    replanOccupiedWaypoints(
+      'builder-0-0',
+      { x: 50, y: 100 },
+      [
+        { x: 100, y: 100 },
+        { x: 150, y: 100 },
+      ],
+      12,
+      [animal],
+      { left: 0, right: 200, top: 0, bottom: 200 },
+    ),
+    null,
+  )
 })
