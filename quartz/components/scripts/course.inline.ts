@@ -1,4 +1,5 @@
 import { parsePdfMark, type PdfMark } from '../../util/pdf-marks'
+import { loadNotes, type LectureNote } from '../course-workspace/store'
 import { promoteDrafts, type PromoteSource } from './course-promote'
 import { currentNavSignal } from './nav-lifecycle'
 
@@ -297,8 +298,11 @@ document.addEventListener('nav', () => {
   const signal = currentNavSignal()
   for (const root of document.querySelectorAll<HTMLElement>('.course-study[data-study-endpoint]')) {
     const status = root.querySelector<HTMLElement>('.course-study-status')
-    const say = (message: string) => {
-      if (status) status.textContent = message
+    // success is announced only; the toggle label already shows the date
+    const say = (message: string, visible = false) => {
+      if (!status) return
+      status.textContent = message
+      status.classList.toggle('visually-hidden', !visible)
     }
     for (const button of root.querySelectorAll<HTMLButtonElement>('[data-study-key]')) {
       button.addEventListener(
@@ -320,17 +324,17 @@ document.addEventListener('nav', () => {
               }),
               signal,
             })
-            const body = (await res.json().catch(() => ({}))) as { error?: string; path?: string }
+            const body = (await res.json().catch(() => ({}))) as { error?: string }
             if (!res.ok) throw new Error(body.error ?? `study ${res.status}`)
             button.setAttribute('aria-pressed', date ? 'true' : 'false')
             if (date) button.dataset.studyDate = date
             else delete button.dataset.studyDate
-            button.textContent = date ? `${key} ${date.slice(5)}` : (key ?? '')
             button.title = date ? `${key} ${date} · click to clear` : `mark ${key} today`
-            say(`${body.path ?? 'lectures/index.md'} (uncommitted)`)
+            say(date ? `${key} marked` : `${key} cleared`)
           } catch (error) {
             if (signal.aborted) return
-            say(`not saved: ${error instanceof Error ? error.message : 'error'}`)
+            button.title = `not saved: ${error instanceof Error ? error.message : 'error'}`
+            say('not saved', true)
           } finally {
             button.removeAttribute('aria-busy')
           }
@@ -353,9 +357,42 @@ async function marksFor(src: string, signal: AbortSignal): Promise<PdfMark[] | n
   return body.marks.map(parsePdfMark).filter((mark): mark is PdfMark => mark !== null)
 }
 
-// `start notes` on the pdf strip of a unit without notes: the pdf's marks (and any passage
-// marks on the unit slug) become a `lectures/<nn>.md` skeleton and a `.fc` draft. Dev writes
-// both through the study endpoint; the built site copies them.
+/** Notes the signed-out workspace keeps in this browser, as passage marks. */
+function browserMarks(slug: string): PdfMark[] {
+  let notes: LectureNote[]
+  try {
+    notes = loadNotes(slug)
+  } catch {
+    return []
+  }
+  return notes
+    .filter(note => note.deletedAt === null)
+    .map(note => ({
+      id: note.id,
+      doc: '',
+      src: slug,
+      kind: note.kind,
+      target: {
+        type: 'passage',
+        page: 0,
+        quote: note.quote,
+        heading: note.heading,
+        ...(note.quoteText ? { text: note.quoteText } : {}),
+      },
+      body: note.body,
+      visibility: 'private',
+      revision: note.revision,
+      createdAt: note.createdAt,
+      updatedAt: note.createdAt,
+    }))
+}
+
+const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
+
+// `start notes` on the pdf strip of a unit without notes: the pdf's marks, the passage marks on
+// the unit and on the rendered notes page, and this browser's workspace drafts become a
+// `lectures/<nn>.md` skeleton and a `.fc` draft. Dev writes both through the study endpoint;
+// the built site copies them.
 document.addEventListener('nav', () => {
   const signal = currentNavSignal()
   for (const details of document.querySelectorAll<HTMLDetailsElement>('details.course-promote')) {
@@ -380,20 +417,56 @@ document.addEventListener('nav', () => {
           resource: data.promoteResource ?? '',
           pdf: data.promotePdf ?? '',
           unit: data.promoteUnit ?? '',
+          ...(data.promoteText ? { text: data.promoteText } : {}),
           date: today(),
         }
-        const [pdfMarks, unitMarks] = await Promise.all([
+        const pages = [source.unit, ...(source.text ? [source.text] : [])]
+        const [pdfMarks, ...pageMarks] = await Promise.all([
           marksFor(source.pdf, signal),
-          marksFor(source.unit, signal),
+          ...pages.map(slug => marksFor(slug, signal)),
         ])
         if (signal.aborted) return
-        const drafts = await promoteDrafts(source, pdfMarks ?? [], unitMarks ?? [])
+        const drafts = pages.flatMap(browserMarks)
+        const result = await promoteDrafts(source, pdfMarks ?? [], [
+          ...pageMarks.flatMap(marks => marks ?? []),
+          ...drafts,
+        ])
         const file = `lectures/${String(source.n).padStart(2, '0')}`
-        say(
+        status?.remove()
+
+        const lede = document.createElement('p')
+        lede.className = 'course-promote-lede'
+        const path = document.createElement('code')
+        path.textContent = `${file}.md`
+        lede.append(path, ' does not exist yet.')
+        const hint = document.createElement('p')
+        hint.className = 'course-promote-hint'
+        hint.textContent =
           pdfMarks === null
-            ? `marks unavailable here; ${file}.md is an empty skeleton`
-            : `${drafts.marks} marks · ${drafts.questions} questions → ${file}.md${drafts.fc ? ` + ${file}.fc` : ''}`,
-        )
+            ? 'Sign in to read your marks. The note starts as an empty skeleton.'
+            : result.marks === 0
+              ? 'No marks yet. Marks on the pdf and the notes page fill it in page order; you can also start from the empty skeleton.'
+              : `Your marks become the first draft, in page order${result.fc ? '; questions become cards' : ''}.`
+        body.append(lede, hint)
+
+        if (result.marks > 0) {
+          const counts = document.createElement('dl')
+          counts.className = 'course-promote-counts'
+          const row = (label: string, value: string) => {
+            const term = document.createElement('dt')
+            term.textContent = label
+            const detail = document.createElement('dd')
+            detail.textContent = value
+            counts.append(term, detail)
+          }
+          const saved = Math.max(0, result.passages - drafts.length)
+          row('pdf', plural(result.pdf, 'mark'))
+          if (saved > 0) row('passages', plural(saved, 'mark'))
+          if (drafts.length > 0) row('this browser', plural(drafts.length, 'draft'))
+          if (result.questions > 0) row('cards', plural(result.questions, 'question'))
+          body.append(counts)
+        }
+
         const actions = document.createElement('div')
         actions.className = 'course-promote-actions'
         const button = (label: string, run: () => Promise<string>) => {
@@ -421,37 +494,46 @@ document.addEventListener('nav', () => {
         }
         const endpoint = data.promoteEndpoint
         if (endpoint)
-          button(`write ${file}.md${drafts.fc ? ' + .fc' : ''}`, async () => {
+          button(`write ${file}.md${result.fc ? ' + .fc' : ''}`, async () => {
             const res = await fetch(`${endpoint}/promote`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ dir: source.dir, n: source.n, md: drafts.md, fc: drafts.fc }),
+              body: JSON.stringify({ dir: source.dir, n: source.n, md: result.md, fc: result.fc }),
               signal,
             })
-            const result = (await res.json().catch(() => ({}))) as {
+            const written = (await res.json().catch(() => ({}))) as {
               error?: string
               written?: string[]
             }
-            if (!res.ok) throw new Error(result.error ?? `promote ${res.status}`)
-            return `wrote ${(result.written ?? []).join(', ')} (uncommitted)`
+            if (!res.ok) throw new Error(written.error ?? `promote ${res.status}`)
+            return `wrote ${(written.written ?? []).join(', ')} (uncommitted)`
           })
-        button('copy note', async () => {
-          await copyText(drafts.md)
+        button(result.marks === 0 ? 'copy skeleton' : 'copy note', async () => {
+          await copyText(result.md)
           return `copied ${file}.md`
         })
-        if (drafts.fc)
+        if (result.fc)
           button('copy cards', async () => {
-            await copyText(drafts.fc)
+            await copyText(result.fc)
             return `copied ${file}.fc`
           })
+        const announce = document.createElement('p')
+        announce.className = 'course-promote-status'
+        announce.setAttribute('role', 'status')
+        announce.setAttribute('aria-live', 'polite')
         const preview = (label: string, text: string) => {
+          const fold = document.createElement('details')
+          fold.className = 'course-promote-preview'
+          const summary = document.createElement('summary')
+          summary.textContent = `preview ${label}`
           const pre = document.createElement('pre')
           pre.setAttribute('aria-label', label)
           pre.textContent = text
-          return pre
+          fold.append(summary, pre)
+          return fold
         }
-        body.append(actions, preview(`${file}.md`, drafts.md))
-        if (drafts.fc) body.append(preview(`${file}.fc`, drafts.fc))
+        body.append(actions, announce, preview(`${file}.md`, result.md))
+        if (result.fc) body.append(preview(`${file}.fc`, result.fc))
       },
       { signal },
     )
@@ -507,7 +589,7 @@ document.addEventListener('nav', () => {
         try {
           const body = await postPset(endpoint, { ...base, problem, ...input }, signal)
           show(body.record ?? null)
-          say(`${body.path ?? 'psets'} (uncommitted)`)
+          say('saved')
           return true
         } catch (error) {
           if (!signal.aborted) say(`not saved: ${error instanceof Error ? error.message : 'error'}`)
@@ -540,16 +622,26 @@ document.addEventListener('nav', () => {
         if (button.getAttribute('aria-busy') === 'true') return
         button.setAttribute('aria-busy', 'true')
         try {
-          const body = await postPset(
+          await postPset(
             button.dataset.deskOpen!,
             { dir: button.dataset.deskDir, n: Number(button.dataset.deskN) },
             signal,
           )
-          button.textContent = `${body.path ?? 'psets'} (uncommitted)`
-          button.disabled = true
+          // the watcher rebuilds before the new page exists; wait for it, then open the desk
+          button.textContent = 'opening…'
+          const href = new URL(button.dataset.deskHref!, location.href)
+          for (let tries = 0; tries < 120; tries++) {
+            const res = await fetch(href, { method: 'HEAD', cache: 'no-store', signal })
+            if (res.ok) break
+            await new Promise(resolve => setTimeout(resolve, 500))
+          }
+          if (signal.aborted) return
+          if (window.spaNavigate) window.spaNavigate(href)
+          else location.assign(href)
         } catch (error) {
-          if (!signal.aborted)
-            button.textContent = `not created: ${error instanceof Error ? error.message : 'error'}`
+          if (signal.aborted) return
+          button.textContent = 'open desk'
+          button.title = `not created: ${error instanceof Error ? error.message : 'error'}`
         } finally {
           button.removeAttribute('aria-busy')
         }
