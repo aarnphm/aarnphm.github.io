@@ -6,6 +6,7 @@ import {
 } from '../types/component'
 import { classNames } from '../util/lang'
 import { simplifySlug } from '../util/path'
+import { OVERLAY_OPTIONS } from '../util/press-kit-activity'
 import { formatDate, getDate } from './Date'
 // @ts-ignore
 import script from './scripts/press-kit.inline'
@@ -115,26 +116,32 @@ const CloseIcon = () => (
 const Include = ({
   name,
   label,
+  shortLabel,
   pressed = false,
   tab,
   pageOnly,
+  data,
 }: {
   name: keyof CardModel['show']
   label: string
+  shortLabel?: string
   pressed?: boolean
   tab?: 'note' | 'quote'
   pageOnly?: boolean
+  data?: boolean
 }) => (
   <button
     type="button"
-    class="press-kit-segment"
+    class={data ? 'press-kit-data-toggle' : 'press-kit-segment'}
     name={name}
     data-include={name}
     data-for={tab}
     data-page-only={pageOnly ? '' : undefined}
     aria-pressed={pressed}
+    aria-label={shortLabel ? label : undefined}
+    title={shortLabel ? label : undefined}
   >
-    {label}
+    {data ? <span class="press-kit-data-label">{shortLabel ?? label}</span> : label}
   </button>
 )
 
@@ -293,7 +300,7 @@ export default ((userOpts?: Partial<Options>) => {
                 </p>
               </div>
 
-              <fieldset class="press-kit-field">
+              <fieldset class="press-kit-field" data-note-only>
                 <legend>inclure</legend>
                 <div class="press-kit-segments press-kit-includes">
                   <Include name="description" label="description" tab="note" pageOnly pressed />
@@ -304,6 +311,72 @@ export default ((userOpts?: Partial<Options>) => {
                   <Include name="section" label="section" tab="quote" pressed />
                 </div>
               </fieldset>
+
+              <fieldset class="press-kit-field" data-activity-only data-for="note">
+                <legend>inclure</legend>
+                <div class="press-kit-data-grid press-kit-data-grid--compact">
+                  <Include name="title" label="titre" pressed data />
+                  <Include name="date" label="date" pressed data />
+                  <Include name="map" label="carte du parcours" shortLabel="carte" pressed data />
+                  <Include name="distance" label="distance" pressed data />
+                  <Include name="time" label="durée" pressed data />
+                  <Include
+                    name="pace"
+                    label="allure / vitesse"
+                    shortLabel="allure / vit."
+                    pressed
+                    data
+                  />
+                  <Include name="elevation" label="dénivelé" shortLabel="D+" pressed data />
+                  <Include
+                    name="heartRate"
+                    label="fréquence cardiaque"
+                    shortLabel="FC"
+                    pressed
+                    data
+                  />
+                  <Include name="power" label="puissance" shortLabel="puiss." pressed data />
+                </div>
+              </fieldset>
+
+              <fieldset class="press-kit-field" data-day-only data-for="note">
+                <legend>blocs de la journée</legend>
+                <div class="press-kit-data-grid press-kit-block-list">
+                  <Include name="entry" label="entrée" data />
+                </div>
+                <div class="press-kit-data-grid press-kit-block-list press-kit-day-blocks" />
+              </fieldset>
+
+              <fieldset class="press-kit-field" data-training-options>
+                <legend>superposition</legend>
+                <div class="press-kit-data-grid">
+                  {OVERLAY_OPTIONS.map(([value, label]) => (
+                    <label class="press-kit-data-toggle">
+                      <input type="radio" name="press-kit-overlay" value={value} />
+                      <span class="press-kit-data-label">{label}</span>
+                    </label>
+                  ))}
+                </div>
+                <div class="press-kit-data-grid press-kit-overlay-background">
+                  <Include name="transparent" label="fond transparent" data />
+                </div>
+              </fieldset>
+
+              <fieldset class="press-kit-field" data-training-options>
+                <legend>graphiques</legend>
+                <div class="press-kit-data-grid press-kit-data-grid--compact">
+                  <Include
+                    name="cyclingPower"
+                    label="puissance vélo"
+                    shortLabel="puiss. vélo"
+                    data
+                  />
+                  <Include name="runPace" label="d d’allure" data />
+                  <Include name="runLaps" label="analyse des tours" shortLabel="tours" data />
+                </div>
+              </fieldset>
+
+              <div class="press-kit-metrics" data-training-options />
 
               <div class="press-kit-segments press-kit-actions">
                 <button type="button" class="press-kit-segment" data-action="download">
@@ -347,10 +420,20 @@ export default ((userOpts?: Partial<Options>) => {
                   <button type="button" class="press-kit-chip" data-copy="wikilink">
                     wikilink
                   </button>
-                  <button type="button" class="press-kit-chip" data-copy="bibtex">
+                  <button
+                    type="button"
+                    class="press-kit-chip"
+                    data-copy="bibtex"
+                    data-citation-only
+                  >
                     bibtex
                   </button>
-                  <button type="button" class="press-kit-chip" data-copy="citation">
+                  <button
+                    type="button"
+                    class="press-kit-chip"
+                    data-copy="citation"
+                    data-citation-only
+                  >
                     citation
                   </button>
                 </div>

@@ -8,6 +8,7 @@
 
 .stream-title-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
   margin-top: 0.35rem;
@@ -32,15 +33,29 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.2rem;
-    height: 1.2rem;
     padding: 0;
     border: 0;
+    font: inherit;
     cursor: pointer;
 
     &:focus-visible {
       outline: 1px solid var(--secondary);
       outline-offset: 3px;
+    }
+  }
+
+  .stream-title-unlock {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .stream-share-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    button {
+      text-decoration: underline;
     }
   }
 
@@ -332,23 +347,33 @@
   }
 
   .stream-entry-share {
-    display: inline;
-    width: fit-content;
-    padding: 0;
-    color: var(--gray);
-    font: inherit;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     font-size: 0.85rem;
-    text-decoration: underline;
 
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        color: var(--dark);
+    button {
+      appearance: none;
+      display: inline;
+      width: fit-content;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--gray);
+      font: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          color: var(--dark);
+        }
       }
-    }
 
-    &:focus-visible {
-      outline: 2px solid var(--secondary);
-      outline-offset: 2px;
+      &:focus-visible {
+        outline: 2px solid var(--secondary);
+        outline-offset: 2px;
+      }
     }
   }
 

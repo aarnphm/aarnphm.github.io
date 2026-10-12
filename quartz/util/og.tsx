@@ -389,10 +389,10 @@ export const defaultImage: SocialImageOptions['imageStructure'] = ({
             <div
               style={{
                 display: 'flex',
-                padding: '0.5rem 1rem',
-                backgroundColor: cfg.theme.colors[colorScheme].highlight,
-                color: cfg.theme.colors[colorScheme].dark,
-                borderRadius: '10px',
+                padding: '0.25rem 0.5rem',
+                // matches the site's square hairline .tag-link (--telescope-border)
+                border: '1px solid #888',
+                color: cfg.theme.colors[colorScheme].darkgray,
                 fontSize: 24,
               }}
             >

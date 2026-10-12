@@ -9,6 +9,7 @@ import { deckPathsForSource, flashcardsSlug } from '../util/flashcards-path'
 import { classNames } from '../util/lang'
 import { FilePath, FullSlug, joinSegments, resolveRelative } from '../util/path'
 import { Date as DateComponent, getDate } from './Date'
+import PressKitButtons from './PressKitButtons'
 //@ts-ignore
 import script from './scripts/content-meta.inline'
 import style from './styles/contentMeta.scss'
@@ -183,16 +184,15 @@ export default (() => {
         fileData.slug!,
         ((fileData.slug === 'arena' ? 'are.na' : fileData.slug!) + '.md') as FullSlug,
       )
-      const shareButton = (tab: string, label: string) =>
-        h('button', { type: 'button', class: 'content-meta-link', 'data-press-kit': tab }, [label])
       meta.push({
         title: 'partager',
         classes: ['press-kit-links'],
-        item: [
-          shareButton('note', 'carte'),
-          shareButton('quote', 'citation'),
-          shareButton('links', 'liens'),
-        ],
+        item: (
+          <PressKitButtons
+            className="content-meta-link"
+            citation={fileData.slug !== 'triathlon' && !fileData.slug?.startsWith('triathlon/')}
+          />
+        ),
       })
       meta.push({
         title: 'source',

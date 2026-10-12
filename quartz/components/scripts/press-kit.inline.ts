@@ -1,4 +1,12 @@
 import type { PressKitPage } from '../PressKit'
+import {
+  ACTIVITY_CARD_STATS,
+  isActivityCardStatKey,
+  isActivityCardChartKey,
+  isOverlayKey,
+  type ActivityCardData,
+  type OverlayKey,
+} from '../../util/press-kit-activity'
 import { buildSelect, type Select } from '../controls/select'
 import { currentNavSignal } from './nav-lifecycle'
 import {
@@ -7,13 +15,17 @@ import {
   palettes,
   prepareCard,
   renderCard,
+  metricShown,
   type CardModel,
   type FormatKey,
   type Fonts,
   type SiteColors,
   type ThemeKey,
 } from './press-kit-card'
+import { dayCardData, type DayCardData } from './press-kit-day'
+import { activityCardFromElement, activityMetricColor } from './press-kit-metrics'
 import {
+  cardDate,
   runsFromNode,
   runsFromRange,
   runsFromText,
@@ -35,7 +47,7 @@ const X_LINK_LENGTH = 23
 const SOURCES = 'article.popover-hint, .stream-entry-body'
 
 interface Subject {
-  kind: 'page' | 'entry'
+  kind: 'page' | 'entry' | 'activity' | 'day'
   url: string
   title: Run[]
   description: Run[]
@@ -47,6 +59,8 @@ interface Subject {
   crumbs: string[]
   /** headings that a link can point into */
   headings: HTMLElement[]
+  activity?: ActivityCardData
+  day?: DayCardData
 }
 
 interface Quote {
@@ -64,6 +78,7 @@ interface OpenRequest {
   entry?: HTMLElement
   entryUrl?: string
   range?: Range
+  activity?: ActivityCardData
 }
 
 let dialog: HTMLDialogElement | null = null
@@ -76,6 +91,8 @@ let quote: Quote = { runs: [], chosen: false }
 let anchor = 'page'
 let format: FormatKey = 'portrait'
 let theme: ThemeKey = 'papier'
+let overlay: OverlayKey = 'card'
+const selectedMetrics = new Map<string, Set<string>>()
 const show = {
   art: false,
   description: true,
@@ -83,12 +100,25 @@ const show = {
   meta: true,
   highlight: false,
   section: true,
+  title: true,
+  date: true,
+  map: true,
+  distance: true,
+  time: true,
+  pace: true,
+  elevation: true,
+  heartRate: true,
+  power: true,
+  entry: false,
+  transparent: false,
+  cyclingPower: false,
+  runPace: false,
+  runLaps: false,
 }
 let noteEdited = false
 let anchorSelect: Select<string> | null = null
 let unmountAnchor: (() => void) | null = null
 let fonts: Fonts | null = null
-let avatar: HTMLImageElement | undefined
 // The base card by daylight, and its night twin for the encre ground.
 const arts: { day?: HTMLImageElement; night?: HTMLImageElement } = {}
 let frame = 0
@@ -97,6 +127,7 @@ let blobTimer = 0
 let rendering: Promise<void> | null = null
 let drawVersion = 0
 let renderFailed = false
+const selectedBlocks = new Set<string>()
 let pendingG = -Infinity
 let lastRange: { range: Range; at: number } | null = null
 // A selection survives this long after it collapses, so a button click elsewhere can still quote it.
@@ -134,9 +165,27 @@ function resolveFonts(): Fonts {
     root.getPropertyValue(name).trim() || fallback
   const heading = document.querySelector('h1.article-title')
   const weight = heading ? Number.parseInt(getComputedStyle(heading).fontWeight, 10) : 700
+  const header = variable('--headerFont', 'system-ui, sans-serif')
+  const headerFamily = header
+    .split(',')[0]
+    .trim()
+    .replace(/^["']|["']$/g, '')
+  const availableWeights = Array.from(document.fonts)
+    .filter(
+      face => face.family.replace(/^["']|["']$/g, '') === headerFamily && face.style === 'normal',
+    )
+    .map(face => Number(face.weight))
+    .filter(Number.isFinite)
+  // The page disables synthetic font weights; detached text canvases need the
+  // recorded face's weight to render the same heading instead of synthesizing bold.
+  const headerWeight = availableWeights.reduce(
+    (closest, candidate) =>
+      Math.abs(candidate - weight) < Math.abs(closest - weight) ? candidate : closest,
+    availableWeights[0] ?? weight,
+  )
   return {
-    header: variable('--headerFont', 'system-ui, sans-serif'),
-    headerWeight: Number.isFinite(weight) ? weight : 700,
+    header,
+    headerWeight: Number.isFinite(headerWeight) ? headerWeight : 700,
     body: variable('--bodyFont', 'system-ui, sans-serif'),
     serif: '"Parclo Serif", Cambria, Georgia, serif',
     mono: variable('--codeFont', 'ui-monospace, monospace'),
@@ -148,19 +197,11 @@ function loadFonts(target: Fonts) {
   const loads = cardFaces(target).map(face => document.fonts.load(face, 'Aa“…').catch(() => []))
   const timeout = new Promise(resolve => setTimeout(resolve, 3000))
   void Promise.race([Promise.all(loads), timeout]).then(() => {
-    if (fonts === target) schedule()
+    if (fonts === target) {
+      layoutMetricControls()
+      schedule()
+    }
   })
-}
-
-function loadAvatar() {
-  if (avatar) return
-  const img = new Image()
-  img.decoding = 'async'
-  img.src = '/static/icon.webp'
-  img.onload = () => {
-    avatar = img
-    if (subject?.kind === 'entry') schedule()
-  }
 }
 
 // The base social card; same-origin, so drawing it leaves the canvas exportable. The night card
@@ -188,7 +229,8 @@ function absolute(href: string): string {
   try {
     const url = new URL(href, page!.url)
     // A local preview still shares the canonical address.
-    if (url.origin === location.origin) return `https://${page!.site}${url.pathname}${url.hash}`
+    if (url.origin === location.origin)
+      return `https://${page!.site}${url.pathname}${url.search}${url.hash}`
     return url.href
   } catch {
     return href
@@ -234,31 +276,125 @@ function pageSubject(): Subject {
   }
 }
 
+// reading-time's default rate, which the build uses for a page's minutes.
+const readingTime = (text: string): string | undefined => {
+  const words = text.split(/\s+/).filter(Boolean).length
+  return words > 0 ? `${Math.ceil(words / 200)} min` : undefined
+}
+
+// A subject's breadcrumb is its address, as a page lists its slug; a query or hash is not a segment.
+const crumbsOf = (url: string): string[] => [
+  page!.site,
+  ...new URL(url).pathname
+    .split('/')
+    .filter(Boolean)
+    .map(part => part.toLowerCase()),
+]
+
 function entrySubject(entry: HTMLElement, href: string | undefined): Subject {
   const title = entry.querySelector('.stream-entry-title')
   const body = entry.querySelector('.stream-entry-body')
   const content = document.createDocumentFragment()
+  const collected = dayCardData(entry)
+  // A day card's entry block keeps the description in its text; a plain entry sets it apart, as a
+  // note sets its description under the title.
+  const descriptionNode = collected
+    ? null
+    : body?.querySelector(':scope > .stream-entry-description')
   body
-    ?.querySelectorAll(':scope > .stream-entry-description, :scope > .stream-entry-content')
+    ?.querySelectorAll(
+      collected
+        ? ':scope > .stream-entry-description, :scope > .stream-entry-content'
+        : ':scope > .stream-entry-content',
+    )
     .forEach(node => content.append(node.cloneNode(true)))
+  const day = collected
+    ? {
+        blocks: collected.blocks.map(block => ({
+          ...block,
+          url: absolute(block.url),
+          activities: block.activities.map(activity => ({
+            ...activity,
+            url: absolute(activity.url),
+          })),
+        })),
+      }
+    : undefined
+  if (day)
+    content
+      .querySelectorAll(
+        '.tri-day-embed, .tri-compare-embed, .tri-calc-embed, figure.audio-player, .transclude-src',
+      )
+      .forEach(node => node.remove())
   const time = entry.querySelector<HTMLTimeElement>(
     '.stream-entry-date time, time.stream-entry-date',
   )
   const url = absolute(href ?? `${location.pathname}#${entry.id}`)
+  const excerpt = runsFromNode(content)
+  const description = descriptionNode ? runsFromNode(descriptionNode) : []
+  const activities =
+    day?.blocks.filter(block => block.kind === 'activity').flatMap(block => block.activities) ?? []
   return {
-    kind: 'entry',
+    kind: day ? 'day' : 'entry',
     url,
-    title: title ? runsFromNode(title) : [],
-    description: [],
-    excerpt: runsFromNode(content),
-    date: time?.textContent?.trim() || undefined,
+    title: activities.length
+      ? runsFromText(activities.map(activity => activity.title).join(' + '))
+      : title
+        ? runsFromNode(title)
+        : [],
+    description,
+    excerpt,
+    date: (() => {
+      // A training day carries the day it trained, which can precede the entry's own day.
+      const iso = day
+        ? (entry.querySelector<HTMLElement>('.tri-day-embed')?.dataset.triathlonDate ??
+          day.blocks.flatMap(block => block.activities)[0]?.date ??
+          time?.dateTime)
+        : time?.dateTime
+      return iso ? cardDate(iso) : time?.textContent?.trim() || undefined
+    })(),
     iso: time?.dateTime || undefined,
+    reading: day ? undefined : readingTime(`${runsToPlain(description)} ${runsToPlain(excerpt)}`),
     tags: Array.from(entry.querySelectorAll('.stream-entry-tag'), tag => tag.textContent!.trim())
       .filter(Boolean)
       .slice(0, 4),
-    crumbs: [page!.site, ...new URL(url).pathname.split('/').filter(Boolean).slice(0, -1)],
+    crumbs: crumbsOf(url),
     headings: [],
+    day,
   }
+}
+
+function activitySubject(activity: ActivityCardData): Subject {
+  const url = absolute(activity.url)
+  return {
+    kind: 'activity',
+    url,
+    title: runsFromText(activity.title),
+    description: [],
+    excerpt: runsFromText(activity.stats.map(stat => `${stat.label}: ${stat.value}`).join('\n')),
+    date: cardDate(activity.date),
+    iso: activity.date,
+    tags: [activity.sport],
+    crumbs: crumbsOf(url),
+    headings: [],
+    activity: { ...activity, url: absolute(activity.url) },
+  }
+}
+
+function citationAllowed(): boolean {
+  const slug = page?.slug ?? ''
+  return (
+    subject?.kind !== 'activity' &&
+    subject?.kind !== 'day' &&
+    slug !== 'stream' &&
+    !slug.startsWith('stream/on') &&
+    slug !== 'triathlon' &&
+    !slug.startsWith('triathlon/')
+  )
+}
+
+function availableTabs(): PressKitTab[] {
+  return citationAllowed() ? TABS : ['note', 'links']
 }
 
 function sourceOf(node: Node): Element | null {
@@ -317,6 +453,10 @@ function sectionForCard(): HTMLElement | undefined {
 
 function shareUrl(): string {
   if (!subject) return page?.url ?? location.href
+  if (anchor.startsWith('block:')) {
+    const block = subject.day?.blocks.find(block => `block:${block.id}` === anchor)
+    if (block) return absolute(block.url)
+  }
   const base = subject.url.split('#')[0]
   if (anchor === 'passage' && quote.fragment) {
     const section = quote.section ? `#${quote.section.id}` : '#'
@@ -329,8 +469,22 @@ function shareUrl(): string {
 function model(): CardModel {
   const s = subject!
   const section = sectionForCard()
-  const kind = tab === 'quote' ? 'quote' : s.kind === 'entry' ? 'entry' : 'note'
+  const kind = tab === 'quote' ? 'quote' : s.kind === 'page' ? 'note' : s.kind
   const attribution = kind === 'quote' ? quote.attribution?.trim() : undefined
+  const day = s.day
+    ? { blocks: s.day.blocks.filter(block => selectedBlocks.has(block.id)) }
+    : undefined
+  const entry = runsToPlain(s.excerpt).trim()
+  if (day && show.entry && entry)
+    day.blocks.unshift({
+      id: 'entry',
+      kind: 'entry',
+      title: 'entrée',
+      url: s.url,
+      activities: [],
+      rows: [],
+      text: entry,
+    })
   return {
     kind,
     crumbs: s.crumbs,
@@ -345,12 +499,18 @@ function model(): CardModel {
     reading: s.reading,
     tags: s.tags,
     section: section ? headingText(section) : undefined,
-    author: kind === 'entry' ? page!.handle : page!.author,
-    avatar,
     art: theme === 'encre' ? arts.night : arts.day,
     // The night card's moon sits over the camp, so its crops centre higher.
     artFocus: theme === 'encre' ? [640, 280] : undefined,
-    show: { ...show, excerpt: kind === 'entry' || show.excerpt },
+    activity: s.activity,
+    day,
+    overlay,
+    metricKeys: Object.fromEntries(Array.from(selectedMetrics, ([url, keys]) => [url, [...keys]])),
+    show: {
+      ...show,
+      meta: kind === 'activity' || kind === 'day' || show.meta,
+      excerpt: kind === 'entry' || show.excerpt,
+    },
   }
 }
 
@@ -392,7 +552,7 @@ function draw() {
   const targetDialog = dialog
   canvas.setAttribute('aria-label', `aperçu de la carte, ${FORMATS[format].label}, ${theme}`)
   canvas.setAttribute('aria-busy', 'true')
-  rendering = prepareCard(model())
+  rendering = prepareCard(model(), palette, targetFormat, targetFonts)
     .then(prepared => {
       if (version !== drawVersion || dialog !== targetDialog || !dialog.open) return
       renderCard(canvas, prepared, targetFormat, palette, targetFonts)
@@ -403,7 +563,7 @@ function draw() {
     .catch(() => {
       if (version !== drawVersion) return
       renderFailed = true
-      toast('impossible de rendre la formule, veuillez réessayer')
+      toast('impossible de rendre la carte, veuillez réessayer')
     })
     .finally(() => {
       if (version !== drawVersion) return
@@ -489,10 +649,28 @@ async function shareImage() {
   }
 }
 
-const titleText = () => runsToPlain(subject?.title ?? []) || page?.site || ''
+const titleText = () =>
+  subject?.day?.blocks.find(block => `block:${block.id}` === anchor)?.title ??
+  (runsToPlain(subject?.title ?? []) || page?.site || '')
 
 function defaultNote(): string {
   if (!subject) return ''
+  if (subject.day) {
+    const blocks = subject.day.blocks.filter(block =>
+      anchor.startsWith('block:') ? `block:${block.id}` === anchor : selectedBlocks.has(block.id),
+    )
+    return [
+      titleText(),
+      ...blocks.map(block =>
+        block.kind === 'activity'
+          ? `${block.title} · ${block.activities[0].stats
+              .filter(stat => metricShown(model(), block.activities[0], stat))
+              .map(stat => stat.value)
+              .join(' · ')}`
+          : block.title,
+      ),
+    ].join('\n')
+  }
   const title = titleText()
   const passage = anchor === 'passage' || tab === 'quote' ? runsToPlain(quote.runs) : ''
   if (passage && quote.chosen) {
@@ -582,13 +760,31 @@ async function copy(kind: string, label: string) {
 }
 
 function anchorGroups() {
-  const options: { value: string; label: string }[] = [{ value: 'page', label: 'page entière' }]
+  const options: { value: string; label: string }[] = [
+    {
+      value: 'page',
+      label:
+        subject?.kind === 'activity'
+          ? 'activité entière'
+          : subject?.kind === 'day'
+            ? 'journée entière'
+            : subject?.kind === 'entry'
+              ? 'entrée entière'
+              : 'page entière',
+    },
+  ]
   if (quote.fragment) options.push({ value: 'passage', label: 'passage sélectionné' })
   const headings = (subject?.headings ?? []).map(heading => ({
     value: `#${heading.id}`,
     label: `${'  '.repeat(Math.max(0, Number(heading.tagName[1]) - 2))}${headingText(heading)}`,
   }))
-  return [{ options }, ...(headings.length > 0 ? [{ label: 'sections', options: headings }] : [])]
+  const blocks =
+    subject?.day?.blocks.map(block => ({ value: `block:${block.id}`, label: block.title })) ?? []
+  return [
+    { options },
+    ...(blocks.length ? [{ label: 'blocs', options: blocks }] : []),
+    ...(headings.length > 0 ? [{ label: 'sections', options: headings }] : []),
+  ]
 }
 
 function mountAnchor(signal: AbortSignal) {
@@ -630,17 +826,61 @@ function renderLinks() {
     count.textContent = `${used} / ${X_LIMIT} sur x`
     count.toggleAttribute('data-over', used > X_LIMIT)
   }
-  const image = $<HTMLImageElement>('.press-kit-unfurl-image')
-  if (image && image.getAttribute('src') !== ART_SRC) {
-    // A missing card image collapses the preview to its text rather than a broken frame.
-    image.hidden = false
-    image.onerror = () => (image.hidden = true)
-    image.src = ART_SRC
-  }
-  const title = $('.press-kit-unfurl-title')
-  if (title) title.textContent = titleText()
   const site = $('.press-kit-unfurl-site')
   if (site) site.textContent = display(url).split('/')[0]
+  const path = new URL(url).pathname
+  void linkCard(path).then(card => {
+    if (tab !== 'links' || new URL(shareUrl()).pathname !== path) return
+    const image = $<HTMLImageElement>('.press-kit-unfurl-image')
+    if (image && image.getAttribute('src') !== card.image) {
+      // A missing card image collapses the preview to its text rather than a broken frame.
+      image.hidden = !card.image
+      image.onerror = () => (image.hidden = true)
+      if (card.image) image.src = card.image
+      else image.removeAttribute('src')
+    }
+    const title = $('.press-kit-unfurl-title')
+    if (title) title.textContent = card.title || titleText()
+  })
+}
+
+interface LinkCard {
+  image?: string
+  title?: string
+}
+
+const linkCards = new Map<string, Promise<LinkCard>>()
+
+const linkCardOf = (head: ParentNode): LinkCard => ({
+  image: head.querySelector<HTMLMetaElement>('meta[property="og:image"]')?.content,
+  title: head.querySelector<HTMLMetaElement>('meta[property="og:title"]')?.content,
+})
+
+/**
+ * The card a social site unfurls is the target page's own og:image and og:title, so the preview
+ * reads them from that page. A training day page runs to megabytes; the read stops at `</head>`.
+ */
+function linkCard(path: string): Promise<LinkCard> {
+  if (path === location.pathname) return Promise.resolve(linkCardOf(document.head))
+  let card = linkCards.get(path)
+  if (!card) {
+    card = (async () => {
+      const response = await fetch(path, { headers: { Accept: 'text/html' } })
+      if (!response.ok || !response.body) return {}
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let html = ''
+      while (!html.includes('</head>')) {
+        const { done, value } = await reader.read()
+        if (done) break
+        html += decoder.decode(value, { stream: true })
+      }
+      void reader.cancel()
+      return linkCardOf(new DOMParser().parseFromString(html, 'text/html'))
+    })().catch(() => ({}))
+    linkCards.set(path, card)
+  }
+  return card
 }
 
 const HELP: Record<'image' | 'links', string> = {
@@ -651,7 +891,10 @@ const HELP: Record<'image' | 'links', string> = {
 function setHelp() {
   const status = $('.press-kit-help')
   if (!status) return
-  const template = HELP[tab === 'links' ? 'links' : 'image']
+  const template = HELP[tab === 'links' ? 'links' : 'image'].replace(
+    '{3}',
+    citationAllowed() ? '{3}' : '',
+  )
   status.replaceChildren(
     ...template.split(/\{([^}]+)\}/).map((part, index) => {
       if (index % 2 === 0) return part
@@ -666,6 +909,9 @@ function syncControls() {
   if (!dialog) return
   dialog.dataset.tab = tab
   dialog.dataset.subject = subject?.kind ?? 'page'
+  dialog.dataset.training = String(subject?.kind === 'activity' || subject?.kind === 'day')
+  dialog.dataset.transparent = String(show.transparent)
+  dialog.dataset.citation = String(citationAllowed())
   dialog.querySelectorAll<HTMLButtonElement>('.press-kit-tab').forEach(button => {
     const selected = button.dataset.tab === tab
     button.setAttribute('aria-selected', String(selected))
@@ -678,9 +924,39 @@ function syncControls() {
   dialog
     .querySelectorAll<HTMLInputElement>('input[name="press-kit-theme"]')
     .forEach(input => (input.checked = input.value === theme))
+  dialog
+    .querySelectorAll<HTMLInputElement>('input[name="press-kit-overlay"]')
+    .forEach(input => (input.checked = input.value === overlay))
+  const activities = activeActivities()
   dialog.querySelectorAll<HTMLButtonElement>('[data-include]').forEach(button => {
     if (isIncludeKey(button.name)) button.setAttribute('aria-pressed', String(show[button.name]))
+    if (button.closest('[data-activity-only]')) {
+      button.disabled =
+        button.name === 'map'
+          ? !activities.some(activity => activity.route.length > 0)
+          : ACTIVITY_CARD_STATS.some(key => key === button.name) &&
+            !activities.some(activity => activity.stats.some(stat => stat.key === button.name))
+    }
+    if (isActivityCardChartKey(button.name))
+      button.disabled = !activities.some(activity =>
+        activity.charts.some(chart => chart.key === button.name),
+      )
+    if (button.name === 'entry') button.disabled = !runsToPlain(subject?.excerpt ?? []).trim()
   })
+  dialog.querySelectorAll<HTMLButtonElement>('[data-activity-metric]').forEach(button => {
+    const url = button.dataset.metricActivity
+    const key = button.dataset.activityMetric
+    button.setAttribute(
+      'aria-pressed',
+      String(Boolean(url && key && selectedMetrics.get(url)?.has(key))),
+    )
+  })
+  dialog
+    .querySelectorAll<HTMLElement>('[data-metric-group]')
+    .forEach(
+      group =>
+        (group.hidden = !activities.some(activity => activity.url === group.dataset.metricGroup)),
+    )
   const textarea = $<HTMLTextAreaElement>('#press-kit-quote')
   if (textarea && document.activeElement !== textarea) textarea.value = runsToText(quote.runs)
   const attribution = $<HTMLInputElement>('#press-kit-attribution')
@@ -692,10 +968,184 @@ function syncControls() {
   setHelp()
 }
 
+function subjectActivities(): ActivityCardData[] {
+  const activities =
+    subject?.day?.blocks.flatMap(block => block.activities) ??
+    (subject?.activity ? [subject.activity] : [])
+  const unique = new Map<string, ActivityCardData>()
+  for (const activity of activities) {
+    const previous = unique.get(activity.url)
+    if (!previous || previous.stats.length < activity.stats.length)
+      unique.set(activity.url, activity)
+  }
+  return [...unique.values()]
+}
+
+function activeActivities(): ActivityCardData[] {
+  return (
+    subject?.day?.blocks
+      .filter(block => selectedBlocks.has(block.id))
+      .flatMap(block => block.activities) ?? (subject?.activity ? [subject.activity] : [])
+  )
+}
+
+function syncMetricIncludes() {
+  for (const key of ACTIVITY_CARD_STATS)
+    show[key] = subjectActivities().some(activity => selectedMetrics.get(activity.url)?.has(key))
+}
+
+function layoutMetricControls() {
+  if (!dialog?.open) return
+  const context = document.createElement('canvas').getContext('2d')
+  if (!context) return
+  const textWidth = (element: HTMLElement): number => {
+    const style = getComputedStyle(element)
+    context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+    return context.measureText(element.textContent ?? '').width
+  }
+  for (const metrics of dialog.querySelectorAll<HTMLElement>(
+    '.press-kit-metric-group[open] .press-kit-data-grid',
+  )) {
+    if (!metrics.clientWidth) continue
+    const columnWidth = (metrics.clientWidth - parseFloat(getComputedStyle(metrics).columnGap)) / 2
+    const items = Array.from(metrics.querySelectorAll<HTMLButtonElement>('[data-activity-metric]'))
+      .map(button => {
+        const label = button.querySelector<HTMLElement>('.press-kit-metric-label')
+        const value = button.querySelector<HTMLElement>('small')
+        const dot = button.querySelector<HTMLElement>('.press-kit-data-label')
+        if (!label || !value || !dot) return null
+        const style = getComputedStyle(button)
+        const inset =
+          parseFloat(style.paddingInlineStart) +
+          parseFloat(style.paddingInlineEnd) +
+          parseFloat(style.borderInlineStartWidth) +
+          parseFloat(style.borderInlineEndWidth) +
+          parseFloat(getComputedStyle(dot, '::before').width) +
+          parseFloat(getComputedStyle(dot).columnGap)
+        const available = columnWidth - inset
+        const wide = textWidth(label) > available || textWidth(value) > available
+        button.classList.toggle('press-kit-data-toggle--wide', wide)
+        return { button, wide, index: Number(button.dataset.metricOrder ?? 0) }
+      })
+      .filter(item => item !== null)
+      .sort((a, b) => Number(a.wide) - Number(b.wide) || a.index - b.index)
+    if (items.some((item, index) => metrics.children[index] !== item.button)) {
+      const focus = document.activeElement
+      metrics.append(...items.map(item => item.button))
+      if (focus instanceof HTMLElement && metrics.contains(focus))
+        focus.focus({ preventScroll: true })
+    }
+  }
+}
+
+function mountMetricControls() {
+  for (const button of dialog?.querySelectorAll<HTMLElement>(
+    '.press-kit-data-toggle[data-include]',
+  ) ?? [])
+    button.style.setProperty('--trace-color', activityMetricColor(button.dataset.include ?? ''))
+  for (const input of dialog?.querySelectorAll<HTMLInputElement>(
+    'input[name="press-kit-overlay"]',
+  ) ?? [])
+    input
+      .closest<HTMLElement>('.press-kit-data-toggle')
+      ?.style.setProperty('--trace-color', activityMetricColor(`overlay:${input.value}`))
+  const host = $('.press-kit-metrics')
+  if (!host) return
+  host.replaceChildren()
+  for (const activity of subjectActivities()) {
+    const previous = selectedMetrics.get(activity.url)
+    selectedMetrics.set(
+      activity.url,
+      new Set(
+        activity.stats
+          .filter(stat =>
+            previous ? previous.has(stat.key) : isActivityCardStatKey(stat.key) && show[stat.key],
+          )
+          .map(stat => stat.key),
+      ),
+    )
+    const group = document.createElement('details')
+    group.className = 'press-kit-metric-group'
+    group.dataset.metricGroup = activity.url
+    const summary = document.createElement('summary')
+    summary.textContent = `mesures · ${activity.title}`
+    group.append(summary)
+    const actions = document.createElement('div')
+    actions.className = 'press-kit-segments press-kit-includes'
+    for (const [action, label] of [
+      ['all', 'tout'],
+      ['none', 'aucune'],
+    ]) {
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'press-kit-segment'
+      button.dataset.metricAction = action
+      button.dataset.metricActivity = activity.url
+      button.textContent = label
+      actions.append(button)
+    }
+    group.append(actions)
+    const metrics = document.createElement('div')
+    metrics.className = 'press-kit-data-grid'
+    for (const [index, stat] of activity.stats.entries()) {
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'press-kit-data-toggle'
+      button.dataset.activityMetric = stat.key
+      button.dataset.metricActivity = activity.url
+      button.dataset.metricOrder = String(index)
+      button.title = [stat.label, stat.value, stat.provenance].filter(Boolean).join(' · ')
+      button.setAttribute('aria-label', `${activity.title} · ${stat.label}`)
+      button.setAttribute('aria-pressed', String(selectedMetrics.get(activity.url)?.has(stat.key)))
+      button.style.setProperty('--trace-color', activityMetricColor(stat.key))
+      const label = document.createElement('span')
+      label.className = 'press-kit-data-label'
+      const labelText = document.createElement('span')
+      labelText.className = 'press-kit-metric-label'
+      labelText.textContent = stat.label
+      label.append(labelText)
+      button.append(label)
+      const value = document.createElement('small')
+      value.textContent = stat.value
+      button.append(value)
+      metrics.append(button)
+    }
+    group.append(metrics)
+    host.append(group)
+  }
+  if (subjectActivities().length) syncMetricIncludes()
+}
+
+function mountDayControls() {
+  const host = $('.press-kit-day-blocks')
+  if (!host) return
+  host.replaceChildren()
+  selectedBlocks.clear()
+  for (const block of subject?.day?.blocks ?? []) {
+    const selected = block.kind !== 'memo'
+    if (selected) selectedBlocks.add(block.id)
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'press-kit-data-toggle'
+    button.dataset.dayBlock = block.id
+    button.setAttribute('aria-pressed', String(selected))
+    button.style.setProperty(
+      '--trace-color',
+      activityMetricColor(block.activities[0]?.sport ?? block.kind),
+    )
+    const label = document.createElement('span')
+    label.className = 'press-kit-data-label'
+    label.textContent = block.title
+    button.append(label)
+    host.append(button)
+  }
+}
+
 function setTab(next: PressKitTab, focus = false) {
-  tab = next
+  tab = availableTabs().includes(next) ? next : 'note'
   syncControls()
-  if (focus) $<HTMLButtonElement>(`#press-kit-tab-${next}`)?.focus()
+  layoutMetricControls()
+  if (focus) $<HTMLButtonElement>(`#press-kit-tab-${tab}`)?.focus()
   schedule()
 }
 
@@ -708,15 +1158,31 @@ function open(request: OpenRequest = {}) {
   readPrefs()
   fonts = resolveFonts()
   loadFonts(fonts)
-  loadAvatar()
   loadArt()
 
-  subject = request.entry ? entrySubject(request.entry, request.entryUrl) : pageSubject()
+  subject = request.activity
+    ? activitySubject(request.activity)
+    : request.entry
+      ? entrySubject(request.entry, request.entryUrl)
+      : pageSubject()
+  mountDayControls()
+  mountMetricControls()
+  const title = $('#press-kit-title')
+  if (title)
+    title.textContent =
+      subject.kind === 'activity'
+        ? 'kit de presse · activité'
+        : subject.kind === 'day'
+          ? 'kit de presse · journée'
+          : subject.kind === 'entry'
+            ? 'kit de presse · entrée'
+            : 'kit de presse'
   const recent =
     lastRange && performance.now() - lastRange.at < RANGE_TTL_MS ? lastRange.range : null
   const candidate = request.range ?? selectedRange() ?? recent
   // An entry card only quotes text from inside that entry.
   const usable =
+    citationAllowed() &&
     candidate &&
     sourceOf(candidate.commonAncestorContainer) &&
     (!request.entry || request.entry.contains(candidate.commonAncestorContainer))
@@ -728,6 +1194,7 @@ function open(request: OpenRequest = {}) {
   const note = $<HTMLTextAreaElement>('#press-kit-note')
   if (note) note.value = ''
   tab = request.tab ?? (usable ? 'quote' : 'note')
+  if (!availableTabs().includes(tab)) tab = 'note'
 
   mountAnchor(currentNavSignal())
   const shareImageButton = $<HTMLButtonElement>('[data-action="share-image"]')
@@ -738,6 +1205,7 @@ function open(request: OpenRequest = {}) {
   hidePill()
   syncControls()
   dialog.showModal()
+  layoutMetricControls()
   $<HTMLButtonElement>(`#press-kit-tab-${tab}`)?.focus()
   draw()
 }
@@ -760,12 +1228,12 @@ function onDialogKeyDown(event: KeyboardEvent) {
   const { key } = event
   if (event.target instanceof Element && event.target.matches('.press-kit-tab')) {
     if (key === 'ArrowRight' || key === 'ArrowLeft') {
-      setTab(cycle(TABS, tab, key === 'ArrowRight' ? 1 : -1), true)
+      setTab(cycle(availableTabs(), tab, key === 'ArrowRight' ? 1 : -1), true)
       event.preventDefault()
       return
     }
     if (key === 'Home' || key === 'End') {
-      setTab(key === 'Home' ? TABS[0] : TABS.at(-1)!, true)
+      setTab(key === 'Home' ? availableTabs()[0] : availableTabs().at(-1)!, true)
       event.preventDefault()
       return
     }
@@ -773,7 +1241,9 @@ function onDialogKeyDown(event: KeyboardEvent) {
   if (isEditable(event.target)) return
   const imageTab = tab !== 'links'
   if (key === '1' || key === '2' || key === '3') {
-    setTab(TABS[Number(key) - 1], true)
+    const next = availableTabs()[Number(key) - 1]
+    if (!next) return
+    setTab(next, true)
   } else if (imageTab && (key === 'f' || key === 'F')) {
     format = cycle(FORMAT_KEYS, format, key === 'F' ? -1 : 1)
     writePrefs()
@@ -841,7 +1311,7 @@ function showPill(range: Range) {
 }
 
 function onSelectionSettled() {
-  if (dialog?.open) return
+  if (dialog?.open || !citationAllowed()) return
   const range = selectedRange()
   if (!range) {
     hidePill()
@@ -893,7 +1363,14 @@ function bindDialog(signal: AbortSignal) {
       () => {
         if (!isIncludeKey(button.name)) return
         show[button.name] = !show[button.name]
+        if (isActivityCardStatKey(button.name)) {
+          for (const keys of selectedMetrics.values()) {
+            if (show[button.name]) keys.add(button.name)
+            else keys.delete(button.name)
+          }
+        }
         button.setAttribute('aria-pressed', String(show[button.name]))
+        syncControls()
         writePrefs()
         schedule()
       },
@@ -907,6 +1384,8 @@ function bindDialog(signal: AbortSignal) {
       if (!(input instanceof HTMLInputElement)) return
       if (input.name === 'press-kit-format') format = input.value as FormatKey
       else if (input.name === 'press-kit-theme') theme = input.value as ThemeKey
+      else if (input.name === 'press-kit-overlay' && isOverlayKey(input.value))
+        overlay = input.value
       else return
       writePrefs()
       schedule()
@@ -944,6 +1423,38 @@ function bindDialog(signal: AbortSignal) {
     'click',
     event => {
       const target = event.target instanceof Element ? event.target : null
+      const metricButton = target?.closest<HTMLButtonElement>(
+        '[data-activity-metric], [data-metric-action]',
+      )
+      const metricUrl = metricButton?.dataset.metricActivity
+      if (metricButton && metricUrl) {
+        const activity = subjectActivities().find(activity => activity.url === metricUrl)
+        const keys = selectedMetrics.get(metricUrl)
+        if (!activity || !keys) return
+        const key = metricButton.dataset.activityMetric
+        if (key) {
+          if (keys.has(key)) keys.delete(key)
+          else keys.add(key)
+        } else {
+          keys.clear()
+          if (metricButton.dataset.metricAction === 'all')
+            for (const stat of activity.stats) keys.add(stat.key)
+        }
+        syncMetricIncludes()
+        syncControls()
+        schedule()
+        return
+      }
+      const blockButton = target?.closest<HTMLButtonElement>('[data-day-block]')
+      const blockId = blockButton?.dataset.dayBlock
+      if (blockButton && blockId) {
+        if (selectedBlocks.has(blockId)) selectedBlocks.delete(blockId)
+        else selectedBlocks.add(blockId)
+        blockButton.setAttribute('aria-pressed', String(selectedBlocks.has(blockId)))
+        syncControls()
+        schedule()
+        return
+      }
       const action = target?.closest<HTMLElement>('[data-action]')?.dataset.action
       const copyKind = target?.closest<HTMLElement>('[data-copy]')
       if (action === 'download') void download()
@@ -973,6 +1484,15 @@ document.addEventListener('nav', () => {
   const data = dialog?.querySelector('.press-kit-data')?.textContent
   page = data ? (JSON.parse(data) as PressKitPage) : null
   subject = null
+  selectedBlocks.clear()
+  selectedMetrics.clear()
+  linkCards.clear()
+  overlay = 'card'
+  show.transparent = false
+  show.entry = false
+  show.cyclingPower = false
+  show.runPace = false
+  show.runLaps = false
   anchorSelect = null
   unmountAnchor = null
   lastRange = null
@@ -982,6 +1502,19 @@ document.addEventListener('nav', () => {
   if (!dialog || !page) return
 
   bindDialog(signal)
+  dialog.addEventListener('toggle', layoutMetricControls, { capture: true, signal })
+  const controls = $('.press-kit-controls')
+  if (controls) {
+    let width = 0
+    const observer = new ResizeObserver(entries => {
+      const next = entries[0]?.contentRect.width ?? 0
+      if (next === width) return
+      width = next
+      layoutMetricControls()
+    })
+    observer.observe(controls)
+    window.addCleanup(() => observer.disconnect())
+  }
   document.addEventListener('keydown', onDocumentKeyDown, { signal })
   document.addEventListener(
     'presskitopen',
@@ -998,11 +1531,19 @@ document.addEventListener('nav', () => {
       if (!trigger || trigger.closest('.press-kit')) return
       event.preventDefault()
       const entryId = trigger.dataset.pressKitEntry
-      const entry = entryId ? (document.getElementById(entryId) ?? undefined) : undefined
+      const entry = entryId
+        ? (trigger.closest<HTMLElement>('.stream-entry') ??
+          document.getElementById(entryId) ??
+          undefined)
+        : undefined
+      const activityData = trigger.dataset.pressKitActivity
+      const activity = activityCardFromElement(trigger)
+      if (activityData && !activity) return
       open({
         tab: (trigger.dataset.pressKit || undefined) as PressKitTab | undefined,
         entry,
         entryUrl: trigger.dataset.pressKitUrl,
+        activity: activity ?? undefined,
       })
     },
     { signal },

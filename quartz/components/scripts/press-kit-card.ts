@@ -1,11 +1,19 @@
+import type { DayCardData } from './press-kit-day'
+import {
+  isActivityCardStatKey,
+  type ActivityCardData,
+  type ActivityCardStat,
+  type OverlayKey,
+} from '../../util/press-kit-activity'
 import { drawMath, mathKey, prepareMath, type MathImage } from './press-kit-math'
 import { BREAK, type Run, type RunStyle } from './press-kit-text'
+import { trainingCardImage, trainingCardSvg } from './press-kit-training-card'
 
 type CardRun = Run & { math?: MathImage }
 
 export type FormatKey = 'story' | 'portrait' | 'square' | 'landscape'
 export type ThemeKey = 'papier' | 'encre' | 'rose' | 'sauge'
-export type CardKind = 'note' | 'quote' | 'entry'
+export type CardKind = 'note' | 'quote' | 'entry' | 'activity' | 'day'
 type Anchor = 'start' | 'center' | 'end'
 
 interface FormatSpec {
@@ -167,12 +175,15 @@ export interface CardModel {
   reading?: string
   tags: string[]
   section?: string
-  author: string
-  avatar?: CanvasImageSource
   /** the site's base social card, or its night twin on encre (`/static/og-image{,-dark}.webp`) */
   art?: HTMLImageElement
   /** the point crops keep in view, in the 1200×630 card's pixels */
   artFocus?: [number, number]
+  activity?: ActivityCardData
+  day?: DayCardData
+  training?: HTMLImageElement
+  overlay?: OverlayKey
+  metricKeys?: Record<string, string[]>
   show: {
     art: boolean
     description: boolean
@@ -180,7 +191,30 @@ export interface CardModel {
     meta: boolean
     highlight: boolean
     section: boolean
+    title: boolean
+    date: boolean
+    map: boolean
+    distance: boolean
+    time: boolean
+    pace: boolean
+    elevation: boolean
+    heartRate: boolean
+    power: boolean
+    entry: boolean
+    transparent: boolean
+    cyclingPower: boolean
+    runPace: boolean
+    runLaps: boolean
   }
+}
+
+export function metricShown(
+  model: CardModel,
+  activity: ActivityCardData,
+  stat: ActivityCardStat,
+): boolean {
+  const keys = model.metricKeys?.[activity.url]
+  return keys ? keys.includes(stat.key) : isActivityCardStatKey(stat.key) && model.show[stat.key]
 }
 
 // Text sits on an alphabetic baseline this far below the top of its em box.
@@ -622,7 +656,7 @@ function place(anchor: Anchor, top: number, bottom: number, height: number): num
   return Math.max(top, top + (bottom - top - height) / 2)
 }
 
-interface Frame {
+export interface Frame {
   x: number
   w: number
   top: number
@@ -636,7 +670,6 @@ function chrome(
   model: CardModel,
   spec: FormatSpec,
   palette: Palette,
-  header: 'crumbs' | 'author',
 ): Frame {
   const [pt, pr, pb, pl] = spec.pad
   const x = pl
@@ -645,31 +678,14 @@ function chrome(
   const mono = monoFont(fonts, meta)
   let top = pt
 
-  if (header === 'author') {
-    const avatar = Math.round(meta * 2.6)
-    if (model.avatar) {
-      ctx.save()
-      ctx.beginPath()
-      ctx.arc(x + avatar / 2, top + avatar / 2, avatar / 2, 0, Math.PI * 2)
-      ctx.clip()
-      ctx.drawImage(model.avatar, x, top, avatar, avatar)
-      ctx.restore()
-    }
-    const textX = model.avatar ? x + avatar + meta * 0.8 : x
-    const nameFont = `500 ${Math.round(meta * 1.25)}px ${fonts.body}`
-    label(ctx, nameFont, model.author, textX, top + avatar / 2 - meta * 0.18, w, palette.ink)
-    if (model.date) {
-      label(ctx, mono, model.date, textX, top + avatar / 2 + meta * 1.08, w, palette.muted)
-    }
-    top += avatar
-  } else {
-    const baseline = top + meta * ASCENT
-    const dateWidth = model.date && model.show.meta ? measure(ctx, mono, model.date) : 0
-    const crumbWidth = dateWidth ? w - dateWidth - meta * 2 : w
-    drawCrumbs(ctx, mono, meta, model.crumbs, x, baseline, crumbWidth, palette)
-    if (dateWidth) label(ctx, mono, model.date!, x, baseline, w, palette.muted, 'right')
-    top += meta * 1.3
-  }
+  const headerBaseline = top + meta * ASCENT
+  const showDate =
+    model.kind === 'day' || model.kind === 'activity' ? model.show.date : model.show.meta
+  const dateWidth = model.date && showDate ? measure(ctx, mono, model.date) : 0
+  const crumbWidth = dateWidth ? w - dateWidth - meta * 2 : w
+  drawCrumbs(ctx, mono, meta, model.crumbs, x, headerBaseline, crumbWidth, palette)
+  if (dateWidth) label(ctx, mono, model.date!, x, headerBaseline, w, palette.muted, 'right')
+  top += meta * 1.3
 
   const footerBottom = spec.height - pb
   const tagSize = meta * 0.92
@@ -768,13 +784,7 @@ function drawNote(
   spec: FormatSpec,
   palette: Palette,
 ) {
-  const frame = drawArt(
-    ctx,
-    model,
-    spec,
-    palette,
-    chrome(ctx, fonts, model, spec, palette, 'crumbs'),
-  )
+  const frame = drawArt(ctx, model, spec, palette, chrome(ctx, fonts, model, spec, palette))
   const avail = frame.bottom - frame.top
   const gap = spec.gap * 0.7
   const hasDesc = model.show.description && model.description.length > 0
@@ -839,13 +849,7 @@ function drawQuote(
   spec: FormatSpec,
   palette: Palette,
 ) {
-  const frame = drawArt(
-    ctx,
-    model,
-    spec,
-    palette,
-    chrome(ctx, fonts, model, spec, palette, 'crumbs'),
-  )
+  const frame = drawArt(ctx, model, spec, palette, chrome(ctx, fonts, model, spec, palette))
   const avail = frame.bottom - frame.top
   const gap = spec.gap * 0.8
 
@@ -913,42 +917,52 @@ function drawEntry(
   spec: FormatSpec,
   palette: Palette,
 ) {
-  const frame = drawArt(
-    ctx,
-    model,
-    spec,
-    palette,
-    chrome(ctx, fonts, model, spec, palette, 'author'),
-  )
+  const frame = drawArt(ctx, model, spec, palette, chrome(ctx, fonts, model, spec, palette))
   const avail = frame.bottom - frame.top
-  const gap = spec.gap * 0.5
+  const gap = spec.gap * 0.7
 
-  const titleBlock: Block = { voice: 'body', leading: 1.18, weight: 600 }
+  // An entry sets its title and text as a note does; the body stays in ink, since it is the post.
+  const titleBlock: Block = { voice: 'header', leading: 1.04 }
+  const hasText = model.body.length > 0 || model.description.length > 0
   const title = fit(
     ctx,
     fonts,
     model.title,
     titleBlock,
     frame.w,
-    avail * 0.3,
-    [spec.prose[0] * 1.1, spec.prose[1] * 1.3],
-    3,
+    avail * (hasText ? 0.4 : 1),
+    spec.title,
+    Math.min(spec.titleLines, 3),
   )
+  let rest = avail - title.height - (title.lines.length ? gap : 0)
+  // An entry has no description toggle, so its description always shows.
+  const descBlock: Block = { voice: 'body', leading: 1.3, italic: true, weight: 400 }
+  const desc =
+    model.description.length > 0
+      ? fit(
+          ctx,
+          fonts,
+          model.description,
+          descBlock,
+          frame.w * 0.94,
+          rest * (model.body.length > 0 ? 0.35 : 1),
+          spec.prose,
+          3,
+        )
+      : undefined
+  if (desc && desc.lines.length > 0) rest -= desc.height + gap
   const bodyBlock: Block = { voice: 'body', leading: 1.42, weight: 400 }
-  const body = fit(
-    ctx,
-    fonts,
-    model.body,
-    bodyBlock,
-    frame.w,
-    avail - title.height - (title.lines.length ? gap : 0),
-    [spec.prose[0] * 0.9, spec.prose[1] * 1.1],
+  const body = fit(ctx, fonts, model.body, bodyBlock, frame.w * 0.94, rest, [
+    spec.prose[0] * 0.9,
+    spec.prose[1] * 1.1,
+  ])
+  const parts = [title, desc, body].filter(
+    (part): part is Fitted => !!part && part.lines.length > 0,
   )
-  const total = title.height + (title.lines.length ? gap : 0) + body.height
-  const anchor: Anchor = spec === FORMATS.story ? 'center' : 'start'
+  const total = parts.reduce((h, part) => h + part.height, 0) + gap * (parts.length - 1)
+  const anchor: Anchor = spec === FORMATS.landscape ? 'center' : 'end'
   let y = place(anchor, frame.top, frame.bottom, total)
-  if (title.lines.length) y += draw(ctx, title, frame.x, y, palette.ink) + gap
-  draw(ctx, body, frame.x, y, palette.ink)
+  for (const part of parts) y += draw(ctx, part, frame.x, y, palette.ink) + gap
 }
 
 /** Every face the card can draw with, so callers can wait on `document.fonts` before drawing. */
@@ -970,7 +984,19 @@ export function cardFaces(fonts: Fonts, size = 48): string[] {
   return [...out]
 }
 
-export async function prepareCard(model: CardModel): Promise<CardModel> {
+export async function prepareCard(
+  model: CardModel,
+  palette: Palette,
+  format: FormatKey,
+  fonts: Fonts,
+): Promise<CardModel> {
+  if (model.kind === 'activity' || model.kind === 'day') {
+    const context = document.createElement('canvas').getContext('2d')
+    if (!context) throw new Error('Canvas is unavailable')
+    const frame = chrome(context, fonts, model, FORMATS[format], palette)
+    const svg = trainingCardSvg(model, format, palette, fonts, frame)
+    return { ...model, training: await trainingCardImage(svg) }
+  }
   const images = await prepareMath([...model.title, ...model.description, ...model.body])
   const prepare = (runs: Run[]): CardRun[] =>
     runs.map(run => (run.style === 'math' ? { ...run, math: images.get(mathKey(run)) } : run))
@@ -994,9 +1020,15 @@ export function renderCard(
   if (canvas.height !== spec.height) canvas.height = spec.height
   const ctx = canvas.getContext('2d')
   if (!ctx) return
-  ctx.fillStyle = palette.bg
-  ctx.fillRect(0, 0, spec.width, spec.height)
+  ctx.clearRect(0, 0, spec.width, spec.height)
+  if (!model.training || !model.show.transparent) {
+    ctx.fillStyle = palette.bg
+    ctx.fillRect(0, 0, spec.width, spec.height)
+  }
   if (model.kind === 'quote') drawQuote(ctx, fonts, model, spec, palette)
-  else if (model.kind === 'entry') drawEntry(ctx, fonts, model, spec, palette)
+  else if (model.training) {
+    ctx.drawImage(model.training, 0, 0, spec.width, spec.height)
+    if (!model.overlay || model.overlay === 'card') chrome(ctx, fonts, model, spec, palette)
+  } else if (model.kind === 'entry') drawEntry(ctx, fonts, model, spec, palette)
   else drawNote(ctx, fonts, model, spec, palette)
 }
