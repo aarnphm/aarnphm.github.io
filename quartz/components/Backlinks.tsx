@@ -50,8 +50,8 @@ export default (() => {
           </a>
         </h2>
         <div class="overflow">
-          {backlinkFiles.length > 0 ? (
-            backlinkFiles.map(f => (
+          {backlinkFiles.map(f => (
+            <div class="backlink-card">
               <a
                 href={resolveRelative(fileData.slug!, f.slug!)}
                 data-backlink={f.slug!}
@@ -59,13 +59,11 @@ export default (() => {
                 data-no-popover
                 class="internal"
               >
-                <div class="small">{f.frontmatter?.title}</div>
-                <div class="description">{f.description}</div>
+                <span class="small">{f.frontmatter?.title}</span>
               </a>
-            ))
-          ) : (
-            <div>{i18n(cfg.locale).components.backlinks.noBacklinksFound}</div>
-          )}
+              <div class="description" dangerouslySetInnerHTML={{ __html: f.description ?? '' }} />
+            </div>
+          ))}
         </div>
       </section>
     )
