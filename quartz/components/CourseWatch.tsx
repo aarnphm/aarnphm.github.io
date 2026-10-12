@@ -3,6 +3,7 @@ import { JSX } from 'preact'
 import { QuartzComponentProps } from '../types/component'
 import { ResourceView, courseFileSlug, lecturerName } from '../util/course'
 import { courseStudyEndpoint } from '../util/course-study'
+import { processWikilinksToHtml, renderLatexInString } from '../util/description'
 import { htmlToJsx } from '../util/jsx'
 import { ResourceHead, ocwLink } from './CourseResource'
 
@@ -51,7 +52,9 @@ export function CourseWatch({
             {description ? (
               <p
                 class="course-watch-desc"
-                dangerouslySetInnerHTML={{ __html: fileData.description ?? description }}
+                dangerouslySetInnerHTML={{
+                  __html: renderLatexInString(processWikilinksToHtml(description, from)),
+                }}
               />
             ) : null}
           </div>
