@@ -4,6 +4,7 @@ import { visit } from 'unist-util-visit'
 import type { QuartzPluginData } from '../../plugins/vfile'
 import type { FullSlug } from '../path'
 import type { RenderedBaseView } from './render'
+import { descriptionToPlainText } from '../description'
 import {
   DOCUMENT_PREVIEW_KIND,
   previewLabel,
@@ -123,10 +124,11 @@ export function buildBasePreview(
     typeof frontmatterTitle === 'string' && frontmatterTitle.length > 0
       ? frontmatterTitle
       : (baseSlug.split('/').pop() ?? baseSlug)
-  const description =
-    typeof baseData.description === 'string' && baseData.description.trim().length > 0
-      ? previewLabel(baseData.description, 160)
-      : null
+  const descriptionText = descriptionToPlainText(
+    baseData.rawDescription ?? baseData.frontmatter?.description ?? baseData.description,
+    baseSlug,
+  )
+  const description = descriptionText ? previewLabel(descriptionText, 160) : null
 
   let sample: BasePreview['sample'] = null
   for (const rendered of views) {

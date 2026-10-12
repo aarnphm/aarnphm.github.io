@@ -93,9 +93,11 @@ export default ((opts?: Partial<TagContentOptions>) => {
     const tag = simplifySlug(slug.slice('tags/'.length) as FullSlug)
 
     const content =
-      (tree as Root).children.length === 0
-        ? fileData.description
-        : htmlToJsx(fileData.filePath!, tree)
+      (tree as Root).children.length === 0 ? (
+        <p dangerouslySetInnerHTML={{ __html: fileData.description ?? '' }} />
+      ) : (
+        htmlToJsx(fileData.filePath!, tree)
+      )
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
     const classes = ['popover-hint', 'full-col', ...cssClasses].join(' ')
     if (tag === '/') {
@@ -104,9 +106,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
       const tags = [...tagItemMap.keys()].sort((a, b) => a.localeCompare(b))
       return (
         <div class={classes}>
-          <article>
-            <p>{content}</p>
-          </article>
+          <article>{content}</article>
           <SeeAlso {...props} />
           <p class="listing-count">
             {i18n(cfg.locale).pages.tagContent.totalTags({ count: tags.length })}
@@ -122,7 +122,9 @@ export default ((opts?: Partial<TagContentOptions>) => {
               const root = contentPage?.htmlAst
               const content =
                 !root || root?.children.length === 0
-                  ? contentPage?.description
+                  ? contentPage?.description && (
+                      <p dangerouslySetInnerHTML={{ __html: contentPage.description }} />
+                    )
                   : htmlToJsx(contentPage.filePath!, root)
 
               return (
@@ -132,7 +134,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
                       {tag}
                     </a>
                   </h2>
-                  {content && <p>{content}</p>}
+                  {content}
                   <div class="page-listing">
                     <p class="listing-count">
                       {i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}

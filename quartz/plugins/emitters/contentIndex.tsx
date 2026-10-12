@@ -14,6 +14,7 @@ import { i18n } from '../../i18n'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { resolveAsset, resolveExtractedStaticResource } from '../../util/asset-manifest'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
+import { descriptionToPlainText } from '../../util/description'
 import { escapeHTML } from '../../util/escape'
 import {
   pageListingChanged,
@@ -710,8 +711,10 @@ function addProcessedContentToIndex(
         words: searchableContent.split(/\s+/).filter(w => w.length > 0).length,
       },
       layout: file.data.frontmatter?.pageLayout ?? 'default',
-      description:
+      description: descriptionToPlainText(
         file.data.frontmatter?.description ?? `Canvas with ${jcast.data.nodeMap.size} nodes`,
+        renderedSlug,
+      ),
       fileData: file.data,
     })
     return
@@ -748,7 +751,7 @@ function addProcessedContentToIndex(
     readingTime,
     fileData: file.data,
     layout: file.data.frontmatter!.pageLayout,
-    description: file.data.rawDescription ?? file.data.description,
+    description: descriptionToPlainText(file.data.rawDescription ?? file.data.description, slug),
     protected: isProtected,
   })
 

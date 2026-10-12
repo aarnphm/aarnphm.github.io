@@ -4,6 +4,7 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
+import { descriptionToPlainText } from '../../util/description'
 import {
   buildStreamDayPathFromIso,
   buildStreamEntryPathFromIso,
@@ -115,7 +116,7 @@ const entryTitle = (entry: StreamEntry): string => {
   const title = entry.title?.trim()
   if (title) return title
 
-  const description = entry.description?.trim()
+  const description = descriptionToPlainText(entry.description, 'stream')
   if (description) return description
 
   return 'entry'

@@ -749,20 +749,22 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       metaContainer.style.color = 'var(--gray)'
       metaContainer.style.fontSize = '0.9rem'
 
-      const filePath = document.createElement('p')
-      filePath.innerHTML = `<strong>File:</strong> ${fileData?.fileName || slug}`
-      metaContainer.appendChild(filePath)
+      const metadata = (label: string, value: string) => {
+        const row = document.createElement('p')
+        const heading = document.createElement('strong')
+        heading.textContent = `${label}:`
+        row.append(heading, ` ${value}`)
+        metaContainer.appendChild(row)
+      }
+
+      metadata('File', fileData?.fileName || slug)
 
       if (fileData?.description) {
-        const desc = document.createElement('p')
-        desc.innerHTML = `<strong>Description:</strong> ${fileData.description}`
-        metaContainer.appendChild(desc)
+        metadata('Description', fileData.description)
       }
 
       if (fileData?.tags && fileData.tags.length > 0) {
-        const tags = document.createElement('p')
-        tags.innerHTML = `<strong>Tags:</strong> ${fileData.tags.join(', ')}`
-        metaContainer.appendChild(tags)
+        metadata('Tags', fileData.tags.join(', '))
       }
 
       previewInner.appendChild(metaContainer)
