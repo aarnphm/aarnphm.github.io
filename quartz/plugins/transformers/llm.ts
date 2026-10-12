@@ -194,7 +194,7 @@ export const LLM: QuartzTransformerPlugin = () => {
         () => {
           return (tree: MdRoot, file) => {
             const fileData = file.data as QuartzPluginData
-            if (!fileData.slug) return
+            if (!fileData.slug || fileData.slug === 'stream') return
             if (watch && !isWatchMarkdownSlug(fileData.slug)) return
 
             const cloned = clone(tree) as MdRoot

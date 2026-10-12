@@ -5,12 +5,14 @@ import { BuildCtx } from '../../util/ctx'
 import { isWatchMarkdownSlug } from '../../util/llm'
 import { FullSlug } from '../../util/path'
 import { QuartzPluginData } from '../vfile'
-import { write } from './helpers'
+import { removeWritten, write } from './helpers'
 
 const name = 'LLMText'
 
 function canEmitMarkdown(fileData: QuartzPluginData): boolean {
-  return !fileData.flashcards && fileData.frontmatter?.protected !== true
+  return (
+    fileData.slug !== 'stream' && !fileData.flashcards && fileData.frontmatter?.protected !== true
+  )
 }
 
 export function llmsIndex(baseUrl: string, content: string = ''): string {
@@ -112,6 +114,7 @@ export const LLMText: QuartzEmitterPlugin = () => {
   return {
     name,
     async *emit(ctx, content, _resources) {
+      await removeWritten(ctx, 'stream', '.md')
       const baseUrl = ctx.cfg.configuration.baseUrl ?? 'https://example.com'
       const watch = ctx.argv.watch && !ctx.argv.force
       if (watch) {
@@ -142,6 +145,7 @@ ${reconstructed.join('\n')}`,
       })
     },
     async *partialEmit(ctx, content, _resources, changeEvents) {
+      await removeWritten(ctx, 'stream', '.md')
       const watch = ctx.argv.watch && !ctx.argv.force
 
       // find all slugs that changed or were added
