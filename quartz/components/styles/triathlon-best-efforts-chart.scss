@@ -20,6 +20,10 @@
   }
 }
 
+.tri-best-efforts[data-be-sport='bike'] .tri-be-chart {
+  --tri-accent: var(--tri-be-category-color);
+}
+
 // Muted marks on the near-black theme need the brighter grey to stay legible.
 :root[saved-theme='dark'] .tri-be-chart {
   --tri-be-chart-dot-color: color-mix(in srgb, var(--darkgray) 62%, transparent);
