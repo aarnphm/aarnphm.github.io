@@ -116,6 +116,27 @@
   }
 }
 
+// the site's fold chevron (callouts.scss) in place of the UA triangle; it points down when open
+@mixin fold-chevron {
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::after {
+    content: '';
+    flex: none;
+    width: 1em;
+    height: 1em;
+    background-color: var(--darkgray);
+    mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="6 9 12 15 18 9"/%3E%3C/svg%3E')
+      center / contain no-repeat;
+    transform: rotate(-90deg);
+    transition: transform var(--transition-fast, 0.15s) ease;
+  }
+}
+
 // promotion preview: left of the strip table. The summary keeps its place at the top right; open,
 // the panel drops below it as an overlay and the reader stays where it is.
 .course-promote {
@@ -131,34 +152,17 @@
     width: min(32rem, 45vw);
   }
 
-  // the site's fold chevron (callouts.scss) in place of the UA triangle
   > summary {
+    @include fold-chevron;
     display: inline-flex;
     align-items: center;
     gap: 0.35em;
     width: fit-content;
-    list-style: none;
     cursor: pointer;
     color: var(--dark);
     text-decoration: underline;
     text-decoration-color: var(--gray);
     text-underline-offset: 0.2em;
-
-    &::-webkit-details-marker {
-      display: none;
-    }
-
-    &::after {
-      content: '';
-      flex: none;
-      width: 1em;
-      height: 1em;
-      background-color: var(--darkgray);
-      mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="6 9 12 15 18 9"/%3E%3C/svg%3E')
-        center / contain no-repeat;
-      transform: rotate(-90deg);
-      transition: transform var(--transition-fast, 0.15s) ease;
-    }
 
     &:focus-visible {
       outline: 2px solid var(--dark);
@@ -166,7 +170,8 @@
     }
   }
 
-  &[open] > summary::after {
+  &[open] > summary::after,
+  .course-promote-preview[open] > summary::after {
     transform: none;
   }
 
@@ -236,6 +241,13 @@
     justify-content: center;
     gap: var(--space-2);
     margin-top: var(--space-2);
+
+    // touch targets grow taller; keep the label centred in them
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .course-promote-status {
@@ -256,6 +268,10 @@
     text-align: start;
 
     > summary {
+      @include fold-chevron;
+      display: flex;
+      align-items: center;
+      gap: 0.35em;
       width: fit-content;
       margin-inline: auto;
       color: var(--darkgray);

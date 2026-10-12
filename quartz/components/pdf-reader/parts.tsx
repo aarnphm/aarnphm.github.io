@@ -127,7 +127,8 @@ export function MarkCard(props: MarkCardProps) {
           props.onActivate()
       }}
     >
-      <header class="pdf-mark-card-meta">
+      {/* A div: the site header rules (base.scss) push the second-to-last child right. */}
+      <div class="pdf-mark-card-meta">
         <button
           type="button"
           class="pdf-mark-card-jump"
@@ -145,7 +146,7 @@ export function MarkCard(props: MarkCardProps) {
             {saveStatusLabel[status]}
           </span>
         )}
-      </header>
+      </div>
       {quote && <blockquote class="pdf-mark-card-quote">{quote}</blockquote>}
       {active && canWrite && status !== 'conflict' ? (
         <textarea
@@ -268,7 +269,7 @@ export function CitationCard({
 }) {
   return (
     <article class="pdf-cite-card">
-      <header class="pdf-mark-card-meta">
+      <div class="pdf-mark-card-meta">
         <a href={notePath(citation.from)} class="internal" data-slug={citation.from}>
           ← {citation.title}
         </a>
@@ -277,7 +278,7 @@ export function CitationCard({
             p. {pageLabel}
           </button>
         )}
-      </header>
+      </div>
       {citation.excerpt && <p class="pdf-cite-card-excerpt">{citation.excerpt}</p>}
     </article>
   )
@@ -523,10 +524,10 @@ export function IndexPanel(props: {
             {props.orphans.map(mark => (
               <li>
                 <article class="pdf-mark-card" data-kind={mark.kind}>
-                  <header class="pdf-mark-card-meta">
+                  <div class="pdf-mark-card-meta">
                     <KindGlyph kind={mark.kind} />
                     <span class="pdf-mark-card-page">was p. {mark.target.page}</span>
-                  </header>
+                  </div>
                   {mark.target.type === 'text' && (
                     <blockquote class="pdf-mark-card-quote">{mark.target.quote.exact}</blockquote>
                   )}
