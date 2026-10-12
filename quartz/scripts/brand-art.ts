@@ -18,6 +18,7 @@ import {
   artist,
   librarian,
   presenter,
+  reader,
   loop,
   mascot,
   PAPER,
@@ -115,6 +116,12 @@ function librarianIcon() {
   return icon('', `${glasses}${books}`, 340, 470)
 }
 
+// Stream: the reader, glasses on, a dog-eared sheet held up in front with one line marked.
+function readerIcon() {
+  const { glasses, sheet } = reader(ICON_PEN)
+  return icon('', `${glasses}${sheet}`, 340, 540)
+}
+
 // Slides: the presenter, bow tie on, pointing at a bar chart on a small screen.
 function presenterIcon() {
   const { bow, pointer, screen } = presenter(ICON_PEN)
@@ -129,6 +136,7 @@ const SECTION_ICONS = {
   art: artistIcon,
   library: librarianIcon,
   slides: presenterIcon,
+  stream: readerIcon,
 } as const
 
 const W = 1200

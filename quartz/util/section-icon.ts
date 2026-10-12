@@ -3,7 +3,16 @@ import { TRIATHLON_HOSTNAME } from './triathlon-host'
 // Sections whose pages carry their own mascot icon (drawn by quartz/scripts/brand-art.ts into
 // quartz/static/icon-<section>.png): the favicon in Head, the icon on generated social cards and
 // the outfit the site pet wears there.
-export const SECTIONS = ['triathlon', 'fr', 'posts', 'legal', 'art', 'library', 'slides'] as const
+export const SECTIONS = [
+  'triathlon',
+  'fr',
+  'posts',
+  'legal',
+  'art',
+  'library',
+  'slides',
+  'stream',
+] as const
 
 export type Section = (typeof SECTIONS)[number]
 
@@ -11,7 +20,7 @@ export type Section = (typeof SECTIONS)[number]
 // data-slug, data-is-base and data-slides.
 export type SectionPage = { slug: string; base?: boolean; slides?: boolean }
 
-const FOLDERS: readonly Section[] = ['triathlon', 'fr', 'posts']
+const FOLDERS: readonly Section[] = ['triathlon', 'fr', 'posts', 'stream']
 
 // Single pages that wear a section's icon.
 const PAGES: Record<string, Section> = {

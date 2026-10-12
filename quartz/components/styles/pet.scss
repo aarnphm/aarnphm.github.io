@@ -52,11 +52,6 @@ $pet-looks: (
     arm-l,
     arm-r,
   ),
-  swim: (
-    eyes-dash,
-    arm-l,
-    arm-r,
-  ),
   slide: (
     eyes-dash,
     arms-pole,
@@ -165,7 +160,7 @@ $pet-looks: (
 }
 
 // Dressed for the page's section, as its site icon is (quartz/util/section-icon.ts).
-@each $section in (triathlon, fr, posts, legal, art, library, slides) {
+@each $section in (triathlon, fr, posts, legal, art, library, slides, stream) {
   .pet-svg[data-outfit='#{$section}'] [data-part^='outfit-#{$section}'] {
     display: inline;
   }
@@ -198,6 +193,26 @@ $pet-looks: (
 
 .pet-svg[data-outfit='library'] [data-part='glasses'] {
   display: none;
+}
+
+// The stream's reader and pages tagged technical wear the same pair all the time, so the reader
+// mode toggle leaves them be.
+.pet-svg:is([data-outfit='stream'], [data-traits~='technical']) [data-part='glasses'] {
+  display: inline;
+  animation: none;
+}
+
+// Pages tagged philosophy: the hair has gone wild, and frizzes between its two drawings.
+.pet-svg[data-traits~='philosophy'] [data-part='hair'] {
+  display: inline;
+
+  .pet-hair-frame {
+    animation: pet-swap 1.4s step-end infinite;
+  }
+
+  .pet-hair-frame + .pet-hair-frame {
+    animation-delay: -0.7s;
+  }
 }
 
 // The friend on the friendship page (pet.inline.ts): the same pen blob a size smaller, filled
@@ -527,44 +542,6 @@ $pet-looks: (
   }
 }
 
-// Swimming back from the rail to an edge: leaning forward, arms paddling in turn, feet fluttering.
-.pet-svg[data-state='swim'] {
-  [data-part='arms-hang'],
-  [data-part='ground'] {
-    display: none;
-  }
-
-  [data-part^='arm-'] {
-    display: inline;
-  }
-
-  .pet-lean {
-    transform-origin: 50% 100%;
-    rotate: -14deg;
-    animation: none;
-  }
-
-  .pet-hop {
-    animation: pet-bob 0.8s steps(8) infinite alternate;
-  }
-
-  .pet-arm {
-    animation: pet-paddle 0.6s steps(6) infinite alternate;
-  }
-
-  [data-part='arm-r'] {
-    animation-direction: alternate-reverse;
-  }
-
-  .pet-leg {
-    animation: pet-flutter 0.24s steps(3) infinite alternate;
-  }
-
-  .pet-leg + .pet-leg {
-    animation-direction: alternate-reverse;
-  }
-}
-
 @keyframes pet-blink {
   0%,
   92%,
@@ -877,33 +854,6 @@ $pet-looks: (
   }
   to {
     translate: 0 var(--pet-rail-to, 0);
-  }
-}
-
-@keyframes pet-bob {
-  from {
-    translate: 0 -0.06px;
-  }
-  to {
-    translate: 0 0.06px;
-  }
-}
-
-@keyframes pet-paddle {
-  from {
-    rotate: -34deg;
-  }
-  to {
-    rotate: 26deg;
-  }
-}
-
-@keyframes pet-flutter {
-  from {
-    rotate: 18deg;
-  }
-  to {
-    rotate: -18deg;
   }
 }
 
