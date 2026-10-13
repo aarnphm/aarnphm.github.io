@@ -1,30 +1,31 @@
 ---
 date: '2024-02-09'
-description: ted nelson's concept of non-sequential text with free user movement, envisioning xanadu as global hypertext system with transclusion and fair compensation.
+description: text with several reading paths, and Ted Nelson's distinction between links, transclusion, and the Xanadu publishing system.
 id: Hypertext
-modified: 2026-06-05 15:08:29 GMT-04:00
+modified: 2026-10-13 09:07:53 GMT-04:00
 tags:
   - seed
 title: Hypertext
 ---
 
-Coined by Ted Nelson around 1965, non-sequential text with free user movement, called **hypertext** in "Literary Machine"
+**Hypertext** lets a reader follow connections between passages and choose a reading order. A definition can link to an example, which can link to an objection. Each passage still has an internal sequence; the document supplies several paths through them.
 
-> It is _non-sequential_ writing -- text that branches and enable choices to readers, without the need to follow a predetermined path.
+Ted Nelson first published the term in 1965. His book _Literary Machines_ followed in 1981. Nelson [corrects this chronology himself](https://hyperland.com/TBLpage), along with several common descriptions of his work.
 
-Hypertext can also be interpreted as a [[thoughts/Database|database]] format in which information related to that on a display can be accessed directly from the display
+A [[thoughts/Database|database]] can store the passages and their connections. Hypertext describes how the material is connected and read, without prescribing a particular storage format.
 
 ![[thoughts/images/hypertext.webp]]
 
-He also brought up the concept of transclusion, which include parts of documents within other documents by reference.
+Nelson distinguishes a link, which connects different passages, from **transclusion**, which preserves the identity of material shared between documents.[^1] If two documents include the same source paragraph by transclusion, the reader can trace either occurrence to its original context. Copying the words alone loses that connection. His [account of transclusion](https://xanadu.com/transclusion/) makes this retained context the requirement.
 
-He envisioned an utopia, a global hypertext system (Xanadu) where all data was stored once, no deletions, and every information can be accessed through a links [^1],
-and everyone would be paid fairly for their work.
+Xanadu is his proposed publishing system built around these relationships. Its design includes links that can be followed in several directions and reused passages that retain their origins. An ordinary web link does not establish the identity of text copied between pages.
+
+The payment proposal specifies rightsholders, who would be paid when their material was first purchased. That could mean a publisher who acquired the rights from an author. Nelson wanted free and paid material to coexist; payment to a rightsholder and compensation to an author remain separate questions. See his [corrections to Tim Berners-Lee's summary](https://hyperland.com/TBLpage).
 
 [^1]: [Interview with Ted Nelson](https://ics.uci.edu/~ejw/csr/nelson_pg.html)
 
 ## fiction
 
-See also: [url](http://fictionaut.com/blog/2010/02/12/checking-in-with-hypertext-fiction/)
+Hypertext fiction uses these choices in reading order as part of the narrative. In Michael Joyce's _afternoon, a story_, a reader can return to a passage after learning more about its characters. [Eastgate's account of this recurrence](https://www.eastgate.com/tails/Recurrent_dreams.html) shows how the intervening reading changes the meaning of words that remain unchanged.
 
-non-linear space that use hypertext to explore narrative possibilities
+See also: [Checking in with hypertext fiction](http://fictionaut.com/blog/2010/02/12/checking-in-with-hypertext-fiction/).
