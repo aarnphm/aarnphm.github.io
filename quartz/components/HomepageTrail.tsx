@@ -2,6 +2,7 @@ import { type QuartzComponent, type QuartzComponentConstructor } from '../types/
 // @ts-expect-error Quartz's resource loader imports inline modules as script text.
 import script from './scripts/homepage-trail.inline'
 import style from './styles/homepage-trail.scss'
+import performanceStyle from './styles/performance-debug.scss'
 
 export default (() => {
   const HomepageTrail: QuartzComponent = ({ fileData }) => {
@@ -9,11 +10,20 @@ export default (() => {
     return (
       <div class="homepage-trail">
         <time class="trail-local-time" aria-label="Local time" aria-live="off" />
-        <span class="trail-visitor-count" title="Connected visitors · PlayHTML">
-          <svg viewBox="0 0 12 14" aria-hidden="true">
-            <path d="m1 1 9 6-4 1-2 4Z" />
-          </svg>
+        <button
+          class="trail-visitor-count"
+          type="button"
+          aria-label="Visitors"
+          aria-describedby="homepage-visitor-count"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="homepage-visitor-panel"
+          popovertarget="homepage-visitor-panel"
+          title="Visitors · arrivals and departures"
+        >
+          <span class="trail-visitor-marker" aria-hidden="true" />
           <span
+            id="homepage-visitor-count"
             data-trail-visitors
             data-state="connecting"
             aria-live="off"
@@ -21,7 +31,39 @@ export default (() => {
           >
             ·
           </span>
-        </span>
+        </button>
+        <div
+          id="homepage-visitor-panel"
+          class="homepage-visitor-panel"
+          popover="auto"
+          role="dialog"
+          aria-label="Visitor register"
+        >
+          <div class="visitor-register-head">
+            <span>trail register</span>
+            <button
+              class="g-icon-button"
+              type="button"
+              data-visitor-register-close
+              aria-label="Close visitor register"
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="m4 4 8 8M12 4l-8 8" />
+              </svg>
+            </button>
+          </div>
+          <div class="visitor-register-columns" aria-hidden="true">
+            <span>visitor</span>
+            <span>arrived</span>
+            <span>left</span>
+          </div>
+          <ol class="visitor-register-list" data-visitor-register />
+          <p data-visitor-register-empty>waiting for visitors</p>
+          <div class="visitor-register-total" data-visitor-register-total>
+            connecting · local time
+          </div>
+        </div>
+        <div class="trail-shared-cursors" aria-hidden="true" />
         <div class="trail-almanac">
           <button
             class="homepage-moon-toggle"
@@ -69,7 +111,7 @@ export default (() => {
       </div>
     )
   }
-  HomepageTrail.css = style
+  HomepageTrail.css = [style, performanceStyle]
   HomepageTrail.afterDOMLoaded = script
   return HomepageTrail
 }) satisfies QuartzComponentConstructor

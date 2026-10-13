@@ -28,57 +28,25 @@
       outline-offset: 2px;
     }
   }
-  .trail-visitor-you {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    font: 9px/1.4 var(--codeFont);
-  }
   .trail-visitor-popover {
     position: fixed;
     inset: auto;
     margin: 0;
+    box-sizing: border-box;
+    max-width: min(280px, calc(100vw - 16px));
     padding: 5px 8px;
     border: 1px solid var(--lightgray);
     border-radius: 0;
     background: var(--light);
     color: var(--darkgray);
     font: 10px/1.5 var(--codeFont);
-    white-space: nowrap;
+    overflow-wrap: anywhere;
     pointer-events: none;
-  }
-  .trail-shared-cursor {
-    position: fixed;
-    z-index: 8;
-    width: 18px;
-    height: 22px;
-    color: var(--darkgray);
-    pointer-events: none;
-    opacity: 0.75;
-    svg {
-      width: 18px;
-      height: 22px;
-      fill: currentColor;
-      stroke: var(--light);
-      stroke-width: 1.5;
-    }
     span {
-      position: absolute;
-      top: 18px;
-      left: 16px;
-      padding: 1px 4px;
-      border: 1px solid var(--lightgray);
-      background: var(--light);
-      font: 9px/1.5 var(--codeFont);
-      white-space: nowrap;
+      display: block;
     }
-    &[data-flipped='true'] span {
-      left: auto;
-      right: 16px;
-    }
-    &[data-touch='true'] svg {
-      opacity: 0.5;
+    .trail-visitor-id {
+      font-size: 9px;
     }
   }
   @media (pointer: coarse), (max-width: 700px) {

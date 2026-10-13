@@ -1,0 +1,104 @@
+// Grass and wildflower drifts on the open meadow. Blade tips lean as each gust front reaches the
+// drift: the delay comes from the drift's position along the wind, as for the tree crowns.
+.homepage-trail-scene {
+  .trail-meadow {
+    shape-rendering: crispEdges;
+    pointer-events: none;
+  }
+  .trail-meadow-blade {
+    fill: color-mix(in srgb, #a2a875 62%, var(--light));
+  }
+  .trail-meadow-blade-dark {
+    fill: color-mix(in srgb, #76814f 72%, var(--light));
+  }
+  .trail-meadow-ground {
+    fill: color-mix(in srgb, var(--gray) 30%, var(--light));
+  }
+  .trail-meadow-seed {
+    fill: color-mix(in srgb, #9a7650 80%, var(--light));
+  }
+  .trail-meadow-bloom-a {
+    fill: #d0a215;
+  }
+  .trail-meadow-bloom-b {
+    fill: #8b7ec8;
+  }
+  .trail-meadow-bloom-c {
+    fill: #fdb2a2;
+  }
+  .trail-scene[data-season='spring'] {
+    .trail-meadow-blade {
+      fill: color-mix(in srgb, #9fb06f 66%, var(--light));
+    }
+    .trail-meadow-bloom-a {
+      fill: #f3ead3;
+    }
+    .trail-meadow-bloom-b {
+      fill: #cdd597;
+    }
+  }
+  // Autumn grass turns russet; goldenrod and asters bloom late.
+  .trail-scene[data-season='autumn'] {
+    .trail-meadow-blade {
+      fill: color-mix(in srgb, #c09a5f 52%, var(--light));
+    }
+    .trail-meadow-blade-dark {
+      fill: color-mix(in srgb, #8e6a3f 60%, var(--light));
+    }
+    .trail-meadow-bloom-c {
+      fill: #da702c;
+    }
+  }
+  .trail-scene[data-season='winter'] {
+    .trail-meadow-blade {
+      fill: color-mix(in srgb, #d6cfb6 70%, var(--light));
+    }
+    .trail-meadow-blade-dark {
+      fill: color-mix(in srgb, #a59d84 72%, var(--light));
+    }
+    :is(.trail-meadow-bloom-a, .trail-meadow-bloom-b, .trail-meadow-bloom-c) {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-meadow-tips {
+      animation: trail-meadow-lean var(--trail-wind-period, 8s) steps(1, end) infinite;
+      animation-delay: calc(
+        var(--mx, 0) * var(--trail-leaf-lag-x, 0s) + var(--my, 0) * var(--trail-leaf-lag-y, 0s)
+      );
+    }
+    .trail-scene[data-weather-motion='paused'] .trail-meadow-tips {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes trail-meadow-lean {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  8% {
+    transform: translateX(round(calc(var(--trail-leaf-push-x, 1) * 1px), 1px));
+  }
+  14% {
+    transform: translateX(round(calc(var(--trail-leaf-push-x, 1) * 2px), 1px));
+  }
+  26% {
+    transform: translateX(round(calc(var(--trail-leaf-push-x, 1) * 1px), 1px));
+  }
+  36% {
+    transform: translateX(0);
+  }
+}
+
+// Leaves falling from the broadleaf crowns, drawn over the scene.
+.homepage-trail-scene .trail-leaf-fall {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  image-rendering: pixelated;
+}

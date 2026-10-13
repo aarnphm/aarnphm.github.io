@@ -1,0 +1,310 @@
+@use 'sass:list';
+
+// Rolling ground, the creek's cut and the stream off the ridge. Relief follows the paper; rock and
+// water keep fixed hues lightly mixed with it, so light and shade read the same in both themes.
+.homepage-trail-scene {
+  .trail-relief,
+  .trail-ravine,
+  .trail-ravine-stream {
+    shape-rendering: crispEdges;
+  }
+  .trail-ravine-body {
+    fill: color-mix(in srgb, var(--gray) 17%, var(--light));
+  }
+  .trail-ravine-butte {
+    fill: color-mix(in srgb, #d9b99a 36%, var(--light));
+  }
+  .trail-ravine-strata {
+    fill: color-mix(in srgb, #a8744f 50%, var(--light));
+  }
+  .trail-ravine-rock {
+    fill: color-mix(in srgb, #8c887f 68%, var(--light));
+  }
+  .trail-ravine-rock-lit {
+    fill: color-mix(in srgb, #cfcabd 66%, var(--light));
+  }
+  // Isometric planes: top lightest, the face toward the light mid tone, the face away darkest.
+  .trail-ravine-top {
+    fill: color-mix(in srgb, var(--lightgray) 22%, var(--light));
+  }
+  .trail-ravine-face-lit {
+    fill: color-mix(in srgb, var(--gray) 26%, var(--light));
+  }
+  .trail-ravine-face {
+    fill: color-mix(in srgb, var(--gray) 36%, var(--light));
+  }
+  .trail-ravine-face-dark {
+    fill: color-mix(in srgb, var(--darkgray) 28%, var(--light));
+  }
+  .trail-ravine-outline {
+    fill: color-mix(in srgb, var(--darkgray) 38%, var(--light));
+  }
+  .trail-ravine-crest {
+    fill: color-mix(in srgb, #fffdf6 34%, var(--light));
+  }
+  .trail-ravine-lip {
+    fill: color-mix(in srgb, var(--darkgray) 45%, var(--light));
+  }
+  .trail-ravine-shadow {
+    fill: color-mix(in srgb, var(--darkgray) 38%, var(--light));
+  }
+  .trail-ravine-hollow {
+    fill: color-mix(in srgb, var(--gray) 48%, var(--light));
+  }
+  .trail-ravine-knoll {
+    fill: color-mix(in srgb, #b9b98a 30%, var(--light));
+  }
+  .trail-ravine-rim {
+    fill: color-mix(in srgb, #4f4a40 40%, var(--light));
+  }
+  .trail-ravine-lit {
+    fill: color-mix(in srgb, #a2a875 44%, var(--light));
+  }
+  .trail-ravine-shade {
+    fill: color-mix(in srgb, #6d6250 30%, var(--light));
+  }
+  .trail-ravine-sand {
+    fill: color-mix(in srgb, #aaa08c 38%, var(--light));
+  }
+  .trail-ravine-shoulder {
+    fill: color-mix(in srgb, #9da582 18%, var(--light));
+  }
+  .trail-ravine-grass {
+    fill: color-mix(in srgb, #8e9773 65%, var(--light));
+  }
+  .trail-ravine-grass-dark {
+    fill: color-mix(in srgb, #6c7657 55%, var(--light));
+  }
+  .trail-ravine-water {
+    fill: color-mix(in srgb, #6f97a6 72%, var(--light));
+  }
+  .trail-ravine-foam,
+  .trail-ravine-mist {
+    fill: color-mix(in srgb, #eef4f3 88%, var(--light));
+  }
+  .trail-ravine-mist {
+    opacity: 0.8;
+  }
+  .trail-ravine-stone-lit {
+    fill: color-mix(in srgb, #cfcabd 80%, var(--light));
+  }
+  .trail-ravine-gully {
+    fill: color-mix(in srgb, #2b2824 55%, var(--light));
+  }
+  .trail-ravine-stone {
+    fill: color-mix(in srgb, #8c887f 72%, var(--light));
+  }
+  .trail-beaver-dam,
+  .trail-beaver-lodge,
+  .trail-beaver {
+    shape-rendering: crispEdges;
+  }
+  .trail-beaver-coat {
+    fill: color-mix(in srgb, #6e4a2f 85%, var(--light));
+  }
+  .trail-beaver-eye {
+    fill: #1c1b1a;
+  }
+  .trail-beaver-mud {
+    fill: color-mix(in srgb, #5b4a3a 85%, var(--light));
+  }
+  // Trailwork. Wood and stone keep fixed hues; blazes take Flexoki accents, one per route.
+  .trail-wayside {
+    shape-rendering: crispEdges;
+    transition: opacity 1.6s ease 0.8s;
+  }
+  .trail-scene[data-trail-opening='pending'] .trail-wayside {
+    opacity: 0;
+    transition: none;
+  }
+  .trail-wayside-tread,
+  .trail-wayside-stone-lit {
+    fill: color-mix(in srgb, #d8d2c2 82%, var(--light));
+  }
+  .trail-wayside-riser,
+  .trail-wayside-stone {
+    fill: color-mix(in srgb, #7d786e 80%, var(--light));
+  }
+  .trail-wayside-log,
+  .trail-wayside-bench,
+  .trail-wayside-sign {
+    fill: color-mix(in srgb, #9a7650 86%, var(--light));
+  }
+  .trail-wayside-log-end,
+  .trail-wayside-bench-back {
+    fill: color-mix(in srgb, #c49a6c 86%, var(--light));
+  }
+  .trail-wayside-post,
+  .trail-wayside-bench-leg,
+  .trail-wayside-plank-gap {
+    fill: color-mix(in srgb, #4a3b2c 86%, var(--light));
+  }
+  .trail-wayside-plank {
+    fill: color-mix(in srgb, #b89a74 86%, var(--light));
+  }
+  .trail-wayside-puddle {
+    fill: color-mix(in srgb, #7f9fab 70%, var(--light));
+  }
+  .trail-wayside-glint {
+    fill: color-mix(in srgb, #eef4f3 88%, var(--light));
+  }
+  $blazes: (#d14d41, #879a39, #da702c, #4385be, #d0a215, #8b7ec8);
+  // While one trail is lit, the others fade back.
+  .trail-scene[data-trail-lit] .trail-steps {
+    opacity: 1;
+    [data-route] {
+      opacity: 0.3;
+    }
+  }
+  .trail-scene[data-trail-lit-blaze] [class^='trail-wayside-blaze-'] {
+    opacity: 0.45;
+  }
+  $routes: (main, pines, grove, ridge, meadow, switchback);
+  @for $route from 1 through list.length($blazes) {
+    $blaze: list.nth($blazes, $route);
+    $id: list.nth($routes, $route);
+    .trail-wayside-blaze-#{$route - 1} {
+      fill: $blaze;
+    }
+    // A board link points at this trail: its blazes blink and its footprints walk out from the
+    // trailhead in the blaze colour.
+    .trail-scene[data-trail-lit-blaze='#{$route - 1}'] .trail-wayside-blaze-#{$route - 1} {
+      opacity: 1;
+      animation: trail-blaze-blink 0.6s steps(1, end) infinite;
+    }
+    .trail-scene[data-trail-lit='#{$id}'] .trail-steps [data-route='#{$id}'] {
+      fill: $blaze;
+      opacity: 1;
+      // Far footprints are a pixel or two across; a screen-width stroke keeps them legible.
+      stroke: $blaze;
+      stroke-width: 1.5px;
+      vector-effect: non-scaling-stroke;
+      & > * {
+        vector-effect: non-scaling-stroke;
+        animation: trail-blaze-walk 0.2s steps(1, end) both;
+        animation-delay: calc(var(--step, 0) * 22ms);
+      }
+    }
+  }
+  .trail-wayside-leaf-red {
+    fill: #c03e35;
+  }
+  .trail-wayside-leaf-orange {
+    fill: #da702c;
+  }
+  .trail-wayside-leaf-yellow {
+    fill: #d0a215;
+  }
+  .trail-wayside-leaf-brown {
+    fill: #8e5b2f;
+  }
+  .trail-scene:not([data-season='autumn'])
+    :is(
+      .trail-wayside-leaf-red,
+      .trail-wayside-leaf-orange,
+      .trail-wayside-leaf-yellow,
+      .trail-wayside-leaf-brown
+    ) {
+    display: none;
+  }
+  .trail-scene[data-season='winter'] .trail-wayside-puddle {
+    fill: color-mix(in srgb, var(--light) 70%, #b9cdd2);
+  }
+  // Water slides down the stream as a broken streak.
+  .trail-ravine-flow {
+    fill: none;
+    stroke: color-mix(in srgb, #9fbcc2 84%, var(--light));
+    stroke-width: 2;
+    stroke-dasharray: 3 5;
+  }
+  .trail-scene[data-season='winter'] {
+    .trail-ravine-water {
+      fill: color-mix(in srgb, var(--light) 75%, #b9cdd2);
+    }
+    .trail-ravine-flow {
+      stroke-dasharray: none;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-scene:not([data-season='winter']) .trail-ravine-flow {
+      animation: trail-ravine-flow 0.9s steps(4, end) infinite;
+    }
+    // The beaver swims a stick out to the dam, turns, swims home and dives at the lodge.
+    .trail-beaver-swim {
+      animation: trail-beaver-ferry 36s linear infinite;
+    }
+    .trail-beaver-stick {
+      animation: trail-beaver-stick 36s steps(1, end) infinite;
+    }
+    .trail-scene[data-weather-motion='paused']
+      :is(.trail-ravine-flow, .trail-beaver-swim, .trail-beaver-stick) {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes trail-ravine-flow {
+  to {
+    stroke-dashoffset: -8;
+  }
+}
+
+@keyframes trail-beaver-ferry {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(var(--beaver-face, 1), 1);
+  }
+  40%,
+  43% {
+    transform: translate(var(--beaver-dx, 0), var(--beaver-dy, 0)) scale(var(--beaver-face, 1), 1);
+  }
+  44% {
+    transform: translate(var(--beaver-dx, 0), var(--beaver-dy, 0))
+      scale(calc(var(--beaver-face, 1) * -1), 1);
+  }
+  84% {
+    opacity: 1;
+    transform: translate(0, 0) scale(calc(var(--beaver-face, 1) * -1), 1);
+  }
+  88%,
+  96% {
+    opacity: 0;
+    transform: translate(0, 0) scale(var(--beaver-face, 1), 1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(var(--beaver-face, 1), 1);
+  }
+}
+@keyframes trail-beaver-stick {
+  0% {
+    opacity: 1;
+  }
+  42% {
+    opacity: 0;
+  }
+  97% {
+    opacity: 1;
+  }
+}
+
+@keyframes trail-blaze-blink {
+  50% {
+    fill: color-mix(in srgb, #fffcf0 70%, var(--light));
+  }
+}
+
+@keyframes trail-blaze-walk {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage-trail-scene .trail-scene[data-trail-lit] {
+    .trail-steps *,
+    [class^='trail-wayside-blaze-'] {
+      animation: none;
+    }
+  }
+}

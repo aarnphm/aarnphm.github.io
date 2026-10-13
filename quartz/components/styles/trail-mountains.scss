@@ -10,13 +10,40 @@
     fill: color-mix(in srgb, var(--gray) 24%, var(--light));
   }
   .trail-mountain-shade {
-    fill: color-mix(in srgb, var(--gray) 39%, var(--light));
+    fill: color-mix(in srgb, var(--gray) 46%, var(--light));
+  }
+  // Icelandic scree and badlands strata, muted into the paper like the alpine rock.
+  .trail-mountain-basalt {
+    fill: color-mix(in srgb, color-mix(in srgb, var(--darkgray) 70%, #4b5a63) 42%, var(--light));
+  }
+  .trail-mountain-moss {
+    fill: color-mix(in srgb, #7f9550 42%, var(--light));
+  }
+  .trail-mountain-ochre {
+    fill: color-mix(in srgb, #c9a26b 52%, var(--light));
+  }
+  .trail-mountain-rust {
+    fill: color-mix(in srgb, #b5673e 44%, var(--light));
+  }
+  .trail-mountain-ash {
+    fill: color-mix(in srgb, #8b8780 40%, var(--light));
   }
   .trail-mountain-light {
     fill: color-mix(in srgb, var(--gray) 13%, var(--light));
   }
   .trail-mountain-snow {
-    fill: var(--light);
+    fill: color-mix(in srgb, #edf2eb var(--trail-snow-mix, 0%), var(--light));
+  }
+  .trail-scene[data-holiday='christmas'] [data-formation='bernese-alps'] {
+    .trail-mountain-rock {
+      fill: color-mix(in srgb, #e5eae4 55%, color-mix(in srgb, var(--gray) 24%, var(--light)));
+    }
+    .trail-mountain-light {
+      fill: color-mix(in srgb, #eef2eb 70%, var(--light));
+    }
+    .trail-mountain-shade {
+      fill: color-mix(in srgb, #b6c2c0 28%, color-mix(in srgb, var(--gray) 46%, var(--light)));
+    }
   }
   .trail-mountain-fracture {
     fill: color-mix(in srgb, var(--darkgray) 22%, var(--light));
@@ -43,32 +70,34 @@
     vector-effect: non-scaling-stroke;
     shape-rendering: crispEdges;
   }
-  .trail-mountain-track[data-mountain-kind='shelf'] {
-    stroke-dasharray: 6 3;
+  // Alpine routes are benches cut into the slope: a shaded cutbank over a packed tread, spoil
+  // shed below, stone steps and walled landings. The route path itself only carries geometry.
+  .trail-mountain-route {
+    fill: none;
+    stroke: none;
   }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .trail-mountain-paint {
-      animation: trail-mountain-arrive 2600ms steps(10, end)
-        calc(var(--trail-mountain-delay, 0ms) + var(--trail-paint-step, 0) * 110ms) both;
-    }
-    .trail-mountain-roads {
-      animation: trail-mountain-arrive 2400ms steps(10, end) 1800ms both;
-    }
-    .trail-scene[data-weather-motion='paused'] .trail-mountain-paint {
-      animation-play-state: paused;
-    }
-    .trail-scene[data-weather-motion='paused'] .trail-mountain-roads {
-      animation-play-state: paused;
-    }
+  .trail-mountain-cut {
+    shape-rendering: crispEdges;
   }
-}
-
-@keyframes trail-mountain-arrive {
-  from {
-    opacity: 0;
+  .trail-mountain-cut-contour {
+    fill: color-mix(in srgb, var(--darkgray) 20%, var(--light));
   }
-  to {
-    opacity: 1;
+  .trail-mountain-cut-spoil {
+    fill: color-mix(in srgb, var(--gray) 28%, var(--light));
+  }
+  .trail-mountain-cut-bank {
+    fill: color-mix(in srgb, var(--darkgray) 32%, var(--light));
+  }
+  .trail-mountain-cut-wear {
+    fill: color-mix(in srgb, #c9a26b 20%, color-mix(in srgb, var(--gray) 14%, var(--light)));
+  }
+  .trail-mountain-cut-tread {
+    fill: color-mix(in srgb, #c9a26b 10%, var(--light));
+  }
+  .trail-mountain-cut-stone {
+    fill: color-mix(in srgb, var(--gray) 38%, var(--light));
+  }
+  .trail-mountain-cut-riser {
+    fill: color-mix(in srgb, var(--darkgray) 42%, var(--light));
   }
 }

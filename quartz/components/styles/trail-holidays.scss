@@ -44,6 +44,24 @@
 }
 
 .trail-scene {
+  .trail-halloween-costume {
+    display: none;
+    pointer-events: none;
+  }
+  &[data-holiday='halloween'] .trail-halloween-costume {
+    display: block;
+  }
+  &[data-holiday='christmas'][data-festive-snow='true']
+    :is(.trail-tree, .trail-woodland-tree)[data-tree] {
+    --trail-tree-light: color-mix(in srgb, var(--lightgray) 22%, #edf2eb);
+    --trail-tree-crown: color-mix(in srgb, var(--gray) 28%, #d6dfd8);
+    --trail-tree-dark: color-mix(in srgb, var(--darkgray) 36%, #acbcb2);
+    --trail-tree-gold: color-mix(in srgb, var(--lightgray) 30%, #e4ebe2);
+  }
+  .trail-holiday-web {
+    opacity: 0.8;
+    pointer-events: none;
+  }
   [data-holiday-decoration],
   [data-holiday-tree] {
     shape-rendering: crispEdges;

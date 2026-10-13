@@ -1,0 +1,50 @@
+.homepage-precipitation {
+  position: fixed;
+  inset: 0;
+  z-index: 11;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+
+  &[hidden],
+  &[data-motion='still'] {
+    display: none;
+  }
+  span {
+    position: absolute;
+    top: -12px;
+    width: 1px;
+    height: var(--homepage-weather-size, 6px);
+    background: currentColor;
+    opacity: 0.18;
+    animation: homepage-weather-fall var(--homepage-weather-duration, 6s) linear infinite;
+    animation-delay: var(--homepage-weather-delay, 0s);
+  }
+  &[data-precipitation='rain'] {
+    color: color-mix(in srgb, var(--gray) 65%, #82918c);
+  }
+  &[data-precipitation='snow'] span {
+    box-sizing: border-box;
+    width: var(--homepage-weather-size, 2px);
+    height: var(--homepage-weather-size, 2px);
+    color: color-mix(in srgb, var(--light) 20%, #e2e7de);
+    border: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
+    opacity: 0.38;
+  }
+  &[data-motion='paused'] span {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}
+
+@keyframes homepage-weather-fall {
+  from {
+    transform: translate3d(0, -12px, 0) rotate(var(--homepage-rain-tilt, 0deg));
+  }
+  to {
+    transform: translate3d(var(--homepage-weather-drift, 0px), calc(100dvh + 24px), 0)
+      rotate(var(--homepage-rain-tilt, 0deg));
+  }
+}
