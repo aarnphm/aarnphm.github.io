@@ -6,8 +6,8 @@ export interface PromoteSource {
   n: number
   unitKind: string
   title: string
-  /** Resource page slug without `/index`: the note's `Source:` link. */
-  resource: string
+  /** Resource page slug without `/index`: the note's `Source:` link. A unit without one has none. */
+  resource?: string
   /** The lecture pdf: marks `src` and the page links. */
   pdf: string
   /** `courses/<dir>/lectures/<nn>`: marks on the unit's passages. */
@@ -102,9 +102,8 @@ export async function promoteDrafts(
     '  - mit',
     '---',
     '',
-    `Source: [[${source.resource}|${source.unitKind} ${source.n}]].`,
-    '',
   ]
+  if (source.resource) md.push(`Source: [[${source.resource}|${source.unitKind} ${source.n}]].`, '')
   let page = -1
   for (const mark of pdf) {
     if (mark.target.page !== page) {

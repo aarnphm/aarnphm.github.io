@@ -74,7 +74,7 @@ function Workspace(props: WorkspaceProps) {
   const compactQuery = useRef(window.matchMedia('(max-width: 1400px)'))
   const [compact, setCompact] = useState(compactQuery.current.matches)
   const [open, setOpen] = useState(!compactQuery.current.matches)
-  const [tab, setTab] = useState<Tab>(props.reader ? 'source' : 'scratchpad')
+  const [tab, setTab] = useState<Tab>(props.reader || props.video ? 'source' : 'scratchpad')
   const [sourceVisited, setSourceVisited] = useState(false)
   const [scratchPreview, setScratchPreview] = useState(false)
   const [notePreview, setNotePreview] = useState(false)
@@ -415,7 +415,8 @@ function Workspace(props: WorkspaceProps) {
   const active = notes.find(note => note.id === activeId && note.deletedAt === null)
   const visible = notes.filter(note => note.deletedAt === null)
   const deleted = notes.filter(note => note.deletedAt !== null)
-  const tabs: Tab[] = props.reader ? ['source', 'scratchpad', 'notes'] : ['scratchpad', 'notes']
+  const tabs: Tab[] =
+    props.reader || props.video ? ['source', 'scratchpad', 'notes'] : ['scratchpad', 'notes']
   const exportDrafts = () => {
     const markdown = markdownExport(
       props.title,
@@ -550,7 +551,7 @@ function Workspace(props: WorkspaceProps) {
             </button>
           </div>
         </div>
-        {props.reader && (
+        {(props.reader || props.video) && (
           <section
             role="tabpanel"
             id="course-workspace-source"
@@ -559,35 +560,56 @@ function Workspace(props: WorkspaceProps) {
             hidden={tab !== 'source'}
           >
             <div class="course-source-links">
-              <a
-                href={`${props.reader}?view=reader`}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-router-ignore
-              >
-                open reader ↗
-              </a>
-              <a href={`/${props.pdf}?raw=1`} target="_blank" rel="noopener noreferrer">
-                pdf ↗
-              </a>
+              {props.reader && (
+                <>
+                  <a
+                    href={`${props.reader}?view=reader`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-router-ignore
+                  >
+                    open reader ↗
+                  </a>
+                  <a href={`/${props.pdf}?raw=1`} target="_blank" rel="noopener noreferrer">
+                    pdf ↗
+                  </a>
+                </>
+              )}
               {props.video && (
-                <a href={props.video} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={`https://www.youtube.com/watch?v=${encodeURIComponent(props.video)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   video ↗
                 </a>
               )}
               <span class="course-source-license">mit ocw · cc by-nc-sa</span>
             </div>
             {sourceFailed && (
-              <p role="status">The source could not load. Open the reader to retry.</p>
+              <p role="status">
+                The source could not load. Open the {props.reader ? 'reader' : 'video'} to retry.
+              </p>
             )}
-            {sourceVisited && (
-              <iframe
-                src={`${props.reader}?embed=course`}
-                title={`PDF source: ${props.title}`}
-                class="course-source-frame"
-                onError={() => setSourceFailed(true)}
-              />
-            )}
+            {sourceVisited &&
+              (props.reader ? (
+                <iframe
+                  src={`${props.reader}?embed=course`}
+                  title={`PDF source: ${props.title}`}
+                  class="course-source-frame"
+                  onError={() => setSourceFailed(true)}
+                />
+              ) : (
+                // a unit without a pdf plays its lecture video
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(props.video!)}?rel=0`}
+                  title={`Video source: ${props.title}`}
+                  class="course-source-frame course-source-video"
+                  allow="encrypted-media; picture-in-picture; fullscreen"
+                  allowFullScreen
+                  onError={() => setSourceFailed(true)}
+                />
+              ))}
           </section>
         )}
         <section
