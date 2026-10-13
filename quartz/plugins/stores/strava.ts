@@ -794,13 +794,17 @@ export interface WahooVerification {
   streamFallback: 'strava' | 'garmin' | null
 }
 
-const WAHOO_SUMMARY_FIELDS = [
-  ['averageHeartrate', 'avgHeartRate', 'avgHr'],
-  ['maxHeartrate', 'maxHeartRate', 'maxHr'],
+const POWER_SUMMARY_FIELDS = [
   ['averageWatts', 'avgPower', 'avgWatts'],
   ['weightedAverageWatts', 'normalizedPower', 'npWatts'],
   ['maxWatts', 'maxPower', 'maxWatts'],
   ['kilojoules', 'totalWorkKJ', 'kilojoules'],
+] as const
+
+const WAHOO_SUMMARY_FIELDS = [
+  ['averageHeartrate', 'avgHeartRate', 'avgHr'],
+  ['maxHeartrate', 'maxHeartRate', 'maxHr'],
+  ...POWER_SUMMARY_FIELDS,
   ['averageCadence', 'avgCadence', 'avgCadence'],
   ['calories', 'totalCalories', 'calories'],
   ['averageTemp', 'avgTemperatureC', 'deviceTemperatureC'],
@@ -809,20 +813,36 @@ const WAHOO_SUMMARY_FIELDS = [
 type WahooSummaryDetailField = (typeof WAHOO_SUMMARY_FIELDS)[number][2]
 const WAHOO_TELEMETRY_MAX_DISTANCE_S = 2.5
 
+function isWahooPowerSummary(field: (typeof WAHOO_SUMMARY_FIELDS)[number][0]): boolean {
+  return (
+    field === 'averageWatts' ||
+    field === 'weightedAverageWatts' ||
+    field === 'maxWatts' ||
+    field === 'kilojoules'
+  )
+}
+
 function withWahooSummary(
   activity: RawStravaActivity,
   detail: RawStravaActivityDetail | undefined,
   match: WahooActivityMatch,
+  power?: ActivityTrackingEntry['power'],
 ): RawStravaActivity {
   const projected = { ...activity }
   for (const [field, metric] of WAHOO_SUMMARY_FIELDS) {
+    if (isWahooPowerSummary(field) && (power === 'strava' || power === 'garmin')) continue
     if (field === 'calories') projected.calories ??= detail?.calories ?? undefined
     const value = match.activity.metrics[metric]
-    if (projected[field] == null && value != null && Number.isFinite(value))
+    if (
+      (projected[field] == null || (power === 'wahoo' && isWahooPowerSummary(field))) &&
+      value != null &&
+      Number.isFinite(value)
+    )
       projected[field] = value
   }
   if (
-    (activity.averageWatts == null || activity.deviceWatts == null) &&
+    (power == null || power === 'wahoo') &&
+    (power === 'wahoo' || activity.averageWatts == null || activity.deviceWatts == null) &&
     match.activity.metrics.avgPower != null
   )
     projected.deviceWatts = true
@@ -834,6 +854,7 @@ function mergeWahooTelemetry(
   original: StravaStreams | GarminStreams | undefined,
   match: WahooActivityMatch,
   wahoo: WahooData,
+  power?: ActivityTrackingEntry['power'],
 ): StravaStreams | undefined {
   const time = original?.time
   const stream = wahoo.streams[match.activity.id]
@@ -841,6 +862,7 @@ function mergeWahooTelemetry(
   const offsetS = (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1_000
   const merged: StravaStreams = { ...original }
   for (const key of ['watts', 'heartrate', 'cadence'] as const) {
+    if (key === 'watts' && (power === 'strava' || power === 'garmin')) continue
     const values = stream[key]
     if (values.length !== stream.time.length) continue
     const samples = stream.time.map((elapsedS, index) => ({
@@ -1516,6 +1538,16 @@ function streamQuality(streams: StravaStreams | GarminStreams | undefined): numb
   )
 }
 
+function hasCompleteTimedRoute(streams: StravaStreams | undefined): boolean {
+  const length = streams?.time?.length ?? 0
+  return (
+    length >= 2 &&
+    streams?.latlng.length === length &&
+    streams.distance.length === length &&
+    streams.altitude.length === length
+  )
+}
+
 function selectStreams(
   strava: StravaStreams | undefined,
   match: GarminActivityMatch | null,
@@ -1524,6 +1556,7 @@ function selectStreams(
 ): StravaStreams | GarminStreams | undefined {
   const fromGarmin = match ? garmin?.streams?.[match.activity.id] : undefined
   if (activity && match && fromGarmin && activity.sportType.startsWith('Virtual')) {
+    if (hasCompleteTimedRoute(strava)) return strava
     const alignment = timedStreamAlignment(fromGarmin)
     if (!alignment || fromGarmin.latlng.length !== alignment.time.length) return strava
     const offsetS = (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1_000
@@ -1650,7 +1683,13 @@ export function applyActivityTracking(
     const original = cache.streams?.[id]
     const fromGarmin = match ? garmin?.streams?.[match.activity.id] : undefined
     const alignment = timedStreamAlignment(fromGarmin)
-    if (entry.virtual && match && original?.time?.length && alignment) {
+    if (
+      entry.virtual &&
+      !hasCompleteTimedRoute(original) &&
+      match &&
+      original?.time?.length &&
+      alignment
+    ) {
       const offsetS =
         (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1_000
       const samples = alignment.time.map((time, index) => ({
@@ -1674,11 +1713,47 @@ export function applyActivityTracking(
     const wahooMatch =
       sport === 'bike' ? matchWahooActivity(activity, sport, wahoo, entry.wahooFitPath) : null
     if (wahooMatch && wahoo) {
-      activities[id] = withWahooSummary(activities[id], cache.activityDetails?.[id], wahooMatch)
+      activities[id] = withWahooSummary(
+        activities[id],
+        cache.activityDetails?.[id],
+        wahooMatch,
+        entry.power,
+      )
       const base =
         streams[id] ?? (match ? selectStreams(undefined, match, garmin, activities[id]) : undefined)
-      const merged = mergeWahooTelemetry(activity, base, wahooMatch, wahoo)
+      const merged = mergeWahooTelemetry(activity, base, wahooMatch, wahoo, entry.power)
       if (merged) streams[id] = merged
+    }
+    if (entry.power === 'garmin' && match) {
+      const projected = { ...activities[id] }
+      for (const [field, metric] of POWER_SUMMARY_FIELDS) {
+        const value = match.activity.metrics[metric]
+        if (value != null && Number.isFinite(value)) projected[field] = value
+      }
+      if (match.activity.metrics.avgPower != null) projected.deviceWatts = true
+      activities[id] = projected
+      const base = streams[id] ?? selectStreams(undefined, match, garmin, projected)
+      if (
+        base?.time?.length &&
+        fromGarmin?.time?.length &&
+        fromGarmin.watts?.length === fromGarmin.time.length
+      ) {
+        const offsetS =
+          (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1_000
+        const samples = fromGarmin.time.map((time, index) => ({
+          elapsedS: time + offsetS,
+          value: fromGarmin.watts?.[index] ?? null,
+        }))
+        streams[id] = {
+          ...base,
+          watts: base.time.map(
+            (time, index) =>
+              timedNullableMetricAt(samples, time, WAHOO_TELEMETRY_MAX_DISTANCE_S) ??
+              base.watts?.[index] ??
+              0,
+          ),
+        }
+      }
     }
     if (!entry.virtual && sport === 'bike') {
       const selected = selectStreams(streams[id], match, garmin, activities[id])
@@ -4604,7 +4679,13 @@ export function buildPayload(
     )
     const primary =
       wahooMatch && wahoo
-        ? mergeWahooTelemetry(a, cache.streams?.[id], wahooMatch, wahoo)
+        ? mergeWahooTelemetry(
+            a,
+            cache.streams?.[id],
+            wahooMatch,
+            wahoo,
+            trackingById.get(a.id)?.power,
+          )
         : cache.streams?.[id]
     const streams = selectStreams(primary, match, garmin, a)
     garminMatches.set(id, match)
@@ -4860,7 +4941,14 @@ export function buildPayload(
       : (exactWeather ??
         (weather && usesRouteLessWeather ? nearestSameDayWeather(weather, a) : undefined))
     details[String(a.id)] = projectDetail(
-      wahooMatch ? withWahooSummary(a, cache.activityDetails?.[id], wahooMatch) : a,
+      wahooMatch
+        ? withWahooSummary(
+            a,
+            cache.activityDetails?.[id],
+            wahooMatch,
+            trackingById.get(a.id)?.power,
+          )
+        : a,
       sport,
       selectedStream,
       selectEffortStreams(cache.streams?.[id], selectedStream),
@@ -4960,9 +5048,11 @@ export function buildPayload(
     applyHeartRatePhysiology(detail, inputMaxHeartRate ?? hrmax)
     if (!detail.virtual && trackingById.get(a.id)?.garminActivityId != null)
       detail.distanceSource = 'strava'
-    const stravaWatts = originalCache.streams?.[id]?.watts
-    if (detail.powerWithoutZeros && stravaWatts?.some(value => value > 0))
-      detail.powerWithoutZeros.avgWatts = avgPos(stravaWatts)
+    const powerWatts = trackingById.get(a.id)?.power
+      ? cache.streams?.[id]?.watts
+      : originalCache.streams?.[id]?.watts
+    if (detail.powerWithoutZeros && powerWatts?.some(value => value > 0))
+      detail.powerWithoutZeros.avgWatts = avgPos(powerWatts)
     const fileName = (path: string | null): string | null => path?.split(/[\\/]/).at(-1) || null
     detail.sources = [{ provider: 'strava', activityId: id, name: original.name, fileName: null }]
     if (garminMatch)
@@ -5006,9 +5096,14 @@ export function buildPayload(
         metrics: { ...source.metrics },
         summarySources: Object.fromEntries(
           WAHOO_SUMMARY_FIELDS.flatMap(([rawField, metric, field]) =>
-            original[rawField] != null ||
-            (rawField === 'calories' && originalCache.activityDetails?.[id]?.calories != null) ||
-            source.metrics[metric] == null
+            source.metrics[metric] == null ||
+            !Number.isFinite(source.metrics[metric]) ||
+            (isWahooPowerSummary(rawField) &&
+              (trackingById.get(a.id)?.power === 'strava' ||
+                trackingById.get(a.id)?.power === 'garmin')) ||
+            (!(trackingById.get(a.id)?.power === 'wahoo' && isWahooPowerSummary(rawField)) &&
+              (original[rawField] != null ||
+                (rawField === 'calories' && originalCache.activityDetails?.[id]?.calories != null)))
               ? []
               : [[field, 'wahoo']],
           ),
@@ -5019,7 +5114,10 @@ export function buildPayload(
             ? 'garmin'
             : null,
       }
-      if (detail.sport === 'bike')
+      if (
+        detail.sport === 'bike' &&
+        (trackingById.get(a.id)?.power == null || trackingById.get(a.id)?.power === 'wahoo')
+      )
         detail.cyclingIntensityTrace = buildCyclingIntensityTrace({
           streams: wahoo?.streams[source.id],
           metrics: source.metrics,

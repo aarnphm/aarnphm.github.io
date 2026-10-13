@@ -296,7 +296,7 @@ export const TrainingCalendarView = ({
           </p>
         </div>
         <div class="tri-calendar-actions tri-training-header-controls">
-          <div class="tri-pred-controls tri-training-week-controls" hidden={notation}>
+          <div class="tri-pred-controls tri-training-week-controls" inert={notation}>
             <button type="button" class="g-text-button" data-training-today>
               {text('today')}
             </button>
