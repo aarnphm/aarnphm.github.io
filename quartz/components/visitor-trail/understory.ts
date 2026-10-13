@@ -199,6 +199,10 @@ function plant(
   return `<g class="trail-understory" data-plant="${kind}" data-understory-id="understory-${index}" ${solid} data-ground-x="${point.x}" data-ground-y="${point.y}" transform="translate(${point.x} ${point.y})"><g transform="scale(${(mirrored * scale).toFixed(3)} ${scale.toFixed(3)}) translate(${-wide / 2} ${-tall})">${sway}<g transform="translate(0 ${split * cell})">${base}</g>${fungi}</g></g>`
 }
 
+export function trailBoulder(point: Point, seed: number, index: number) {
+  return plant('boulder', point, 1, 1, trailRandom(seed), index)
+}
+
 export function* trailUnderstory(
   landscape: Landscape,
   seed: number,

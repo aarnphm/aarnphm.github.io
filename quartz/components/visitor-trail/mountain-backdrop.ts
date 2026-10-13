@@ -124,12 +124,16 @@ function pixelLayers<Tone extends string>(
   tones: readonly Tone[],
   classPrefix: string,
   sample: (x: number, y: number, column: number, row: number) => Tone | undefined,
+  region?: { left: number; right: number },
 ) {
   // Paint beyond the clip edge to cover the perspective controller's lateral movement.
   const bleed = 8
   const paintWidth = alpine.width + bleed * 2
   const pixel = alpine.width < 700 ? 2 : 4
-  const columns = Math.ceil(paintWidth / pixel)
+  const first = region ? Math.ceil((region.left - alpine.left + bleed) / pixel) : 0
+  const columns = region
+    ? Math.ceil((region.right - alpine.left + bleed) / pixel)
+    : Math.ceil(paintWidth / pixel)
   const rows = Math.ceil(alpine.height / pixel)
   const marks = new Map<Tone, string[]>()
   for (const tone of tones) marks.set(tone, [])
@@ -138,8 +142,8 @@ function pixelLayers<Tone extends string>(
     const top = row * pixel
     const height = Math.min(pixel, alpine.height - top)
     let runTone: Tone | undefined
-    let start = -bleed
-    for (let column = 0; column <= columns; column++) {
+    let start = first * pixel - bleed
+    for (let column = first; column <= columns; column++) {
       const left = column * pixel - bleed
       const width = Math.min(pixel, alpine.width + bleed - left)
       const tone =
@@ -174,6 +178,7 @@ export function trailMountainBackdrop(
   seed: number,
   clipId: string,
   entrances?: readonly Point[],
+  region?: { left: number; right: number },
 ): string {
   const { alpine } = landscape
   const ranges = buildMountainRanges(alpine, seed)
@@ -265,6 +270,24 @@ export function trailMountainBackdrop(
       if (threshold > 0.8125 && grain < -0.35) return shaded ? 'fracture' : 'shade'
       return shaded ? (range.depth < 0.88 ? 'rock' : 'shade') : 'rock'
     },
+    region,
+  )
+  const snowcaps = pixelLayers(
+    alpine,
+    ['cap', 'shade'],
+    'trail-summit-snow',
+    (worldX, worldY, column, row) => {
+      const surface = surfaceAt(worldX, worldY, column, true)
+      if (!surface) return undefined
+      const { range, x, crest, floor } = surface
+      const terrain = mountainTerrain(range)
+      const y = 350 + (worldY - range.base) * surface.verticalScale
+      const depth = (y - crest) / Math.max(1, floor - crest)
+      const line = 0.46 + Math.sin(x / 47 + range.phase) * 0.09 + Math.sin(x / 19) * 0.035
+      if (depth > line || thresholdAt(column, row, range) > (line - depth) * 10) return undefined
+      return terrain.shade.some(face => contains(x, y, face)) ? 'shade' : 'cap'
+    },
+    region,
   )
 
   const lowlands = pixelLayers(
@@ -289,6 +312,7 @@ export function trailMountainBackdrop(
           : scatterAt(column + 3, row + 1, surface.range),
       )
     },
+    region,
   )
 
   const foothills = pixelLayers(
@@ -319,6 +343,7 @@ export function trailMountainBackdrop(
       if (y > far + 6 && mound > 0.6 && threshold < 0.5) return 'mid'
       return threshold < 0.125 && y > far + 14 ? 'mid' : 'far'
     },
+    region,
   )
   const placement = `translate(${coordinate(alpine.left)} ${coordinate(alpine.top)})`
   const atlas = ranges.map(({ index, form, tier, left, width, height, base, depth }) => ({
@@ -332,7 +357,7 @@ export function trailMountainBackdrop(
     base,
     depth,
   }))
-  const tracks = buildMountainTracks(alpine, seed, entrances)
+  const tracks = region ? [] : buildMountainTracks(alpine, seed, entrances)
   // The route paths carry the walking geometry; the carved bench underneath is what shows.
   const routes = tracks
     .map(track => {
@@ -346,6 +371,7 @@ export function trailMountainBackdrop(
       <g data-trail-depth="alpine">
         <g data-formation="bernese-alps" data-peaks="eiger monch jungfrau" data-mountain-ranges="${ranges.length}" data-mountain-atlas='${JSON.stringify(atlas)}' transform="${placement}">
           ${ridge}
+          <g class="trail-summit-snow">${snowcaps}</g>
         </g>
         <g class="trail-alpine-climbers" aria-hidden="true"></g>
       </g>

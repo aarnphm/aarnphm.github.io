@@ -725,6 +725,120 @@ export function createTreePainter(): typeof tree {
   }
 }
 
+type TreePlacement = {
+  id: string
+  x: number
+  y: number
+  standalone: boolean
+  foothill: boolean
+  cluster: number
+  kind: TreeKind
+  treeSeed: number
+  height: number
+}
+
+function treeSprite(
+  landscape: Landscape,
+  placement: TreePlacement,
+  settings: ForestSettings,
+  paint: typeof tree,
+  patch = '',
+) {
+  const { meadowTop, camp, treeline, alpine } = landscape
+  const { id, x, y, standalone, foothill, cluster, kind, treeSeed, height } = placement
+  const { markup, form, tone, extent, trunkRadius } = paint(kind, treeSeed, height, settings)
+  const depth = Math.max(0, Math.min(1, (y - meadowTop) / (camp.y - meadowTop)))
+  const foothillDepth = Math.max(0, Math.min(1, (y - treeline) / (alpine.base - treeline)))
+  const scale = foothill ? 0.2 + foothillDepth * 0.1 : 0.55 + depth * 0.6
+  const fit = foothill ? Math.min(1, (y - alpine.top - 4) / (extent * scale)) : 1
+  const haze = foothill ? 44 - foothillDepth * 12 : 20 - depth * 15
+  const grouping = standalone
+    ? 'data-tree-placement="standalone"'
+    : `data-tree-placement="grove" data-tree-cluster="${cluster}"`
+  return `<g class="trail-tree" ${patch ? `data-trail-chunk="${patch}"` : ''} data-tree-id="${id}" data-tree="${kind}" ${grouping} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-haze: ${haze.toFixed(0)}%" transform="translate(${x} ${y})"><g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
+}
+
+export function* trailPatchTrees(
+  landscape: Landscape,
+  seed: number,
+  region: { left: number; top: number; right: number; bottom: number; id: string },
+  settings: ForestSettings,
+  neighbours: Point[],
+  walks: Point[],
+  paint: typeof tree,
+) {
+  const random = trailRandom(seed)
+  const top = Math.max(region.top, landscape.meadowTop + 64)
+  const span = Math.max(0, region.bottom - top - 30)
+  const count = Math.min(
+    24,
+    Math.round(
+      (settings.density * (region.right - region.left) * span) /
+        (1280 * Math.max(1, landscape.height - landscape.meadowTop)),
+    ),
+  )
+  const roots = [...neighbours]
+  const center = {
+    x: region.left + 50 + random() * (region.right - region.left - 100),
+    y: top + span * (0.25 + random() * 0.5),
+  }
+  for (let index = 0; index < count + 3; index++) {
+    const foothill = index >= count && region.top <= landscape.treeline
+    if (index >= count && !foothill) continue
+    const standalone = index % 4 === 3 || foothill
+    let root: Point | undefined
+    for (let attempt = 0; attempt < 48; attempt++) {
+      const angle = random() * Math.PI * 2
+      const spread = Math.sqrt(random())
+      const x =
+        standalone || attempt > 24
+          ? region.left + 16 + random() * (region.right - region.left - 32)
+          : center.x + Math.cos(angle) * 60 * spread
+      const y = foothill
+        ? landscape.treeline + (landscape.alpine.base - landscape.treeline) * (0.4 + random() * 0.5)
+        : standalone || attempt > 24
+          ? top + random() * span
+          : center.y + Math.sin(angle) * 50 * spread
+      const candidate = { x: Math.round(x), y: Math.round(y) }
+      if (
+        x < region.left + 12 ||
+        x > region.right - 12 ||
+        (!foothill && (y < top || y > region.bottom - 28))
+      )
+        continue
+      if (
+        pondDistance(candidate, landscape.pond) < 1.9 ||
+        creekDistance(candidate, landscape) < 18 ||
+        Math.hypot(x - landscape.camp.x, y - landscape.camp.y) < 110 ||
+        nearestDistance(candidate, roots) < (standalone ? 26 : 16) ||
+        nearestDistance(candidate, walks) < 20
+      )
+        continue
+      root = candidate
+      break
+    }
+    if (!root) continue
+    roots.push(root)
+    const choices = foothill ? foothillKinds : stands[Math.floor(random() * stands.length)]
+    yield treeSprite(
+      landscape,
+      {
+        ...root,
+        id: `tree-patch-${region.id}-${index}`,
+        standalone,
+        foothill,
+        cluster: seed,
+        kind: choices[Math.floor(random() * choices.length)],
+        treeSeed: Math.floor(random() * 4294967296),
+        height: foothill ? 24 + random() * 10 : 32 + random() * 22,
+      },
+      settings,
+      paint,
+      region.id,
+    )
+  }
+}
+
 export function* trailTreeSprites(
   landscape: Landscape,
   seed: number,
@@ -876,20 +990,7 @@ export function* trailTreeSprites(
       }
     }
   placements.sort((a, b) => a.y - b.y)
-  for (const { id, x, y, standalone, foothill, cluster, kind, treeSeed, height } of placements) {
-    const { markup, form, tone, extent, trunkRadius } = paint(kind, treeSeed, height, settings)
-    const depth = Math.max(0, Math.min(1, (y - meadowTop) / clearing))
-    const foothillDepth = Math.max(0, Math.min(1, (y - treeline) / (alpine.base - treeline)))
-    const scale = foothill ? 0.2 + foothillDepth * 0.1 : 0.55 + depth * 0.6
-    const fit = foothill ? Math.min(1, (y - alpine.top - 4) / (extent * scale)) : 1
-    // Depth reads as haze toward the paper, mixed into the tree's tones. Alpha did the same job
-    // but let a tree behind show through the crown in front.
-    const haze = foothill ? 44 - foothillDepth * 12 : 20 - depth * 15
-    const placement = standalone
-      ? 'data-tree-placement="standalone"'
-      : `data-tree-placement="grove" data-tree-cluster="${cluster}"`
-    yield `<g class="trail-tree" data-tree-id="${id}" data-tree="${kind}" ${placement} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-haze: ${haze.toFixed(0)}%" transform="translate(${x} ${y})"><g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
-  }
+  for (const placement of placements) yield treeSprite(landscape, placement, settings, paint)
   yield* trailUnderstory(landscape, seed, placements, walks, clearings)
 }
 

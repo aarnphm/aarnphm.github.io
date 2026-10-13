@@ -72,7 +72,18 @@ export default (() => {
           </div>
           <div class="visitor-weather-readout">
             <span data-weather-countdown>local daylight</span>
-            <span data-weather-wind />
+            <span class="visitor-weather-wind">
+              <svg
+                data-weather-wind-arrow
+                viewBox="0 0 12 12"
+                aria-hidden="true"
+                focusable="false"
+                style={{ display: 'none' }}
+              >
+                <path d="M6 1v10M2.5 7.5 6 11l3.5-3.5" />
+              </svg>
+              <span data-weather-wind />
+            </span>
           </div>
           <button class="visitor-weather-retry" type="button" data-weather-retry hidden>
             try again

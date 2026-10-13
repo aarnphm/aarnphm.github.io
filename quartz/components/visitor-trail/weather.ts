@@ -9,20 +9,13 @@ import { creekDistance, groundOffset, pondDistance, type Landscape } from './lan
 import { buildMountainRanges, mountainCrestAt, type MountainRange } from './mountain-profile'
 import { trailRandom } from './random'
 import { skyBand } from './sky-band'
+import { trailWinter } from './winter'
 
 function decoration(weather: TrailWeather | null) {
   const precipitation = visitorPrecipitation(weather?.code)
   const rain = precipitation.kind === 'rain' ? precipitation.strength : 0
   const snow = precipitation.kind === 'snow' ? 1 : 0
-  const recentSnow = weather?.snowCm ?? 0
-  const snowCover = Math.max(
-    snow ? (weather?.code === 75 || weather?.code === 86 ? 0.95 : 0.65) : 0,
-    weather?.temperatureC !== null &&
-      weather?.temperatureC !== undefined &&
-      weather.temperatureC <= 2
-      ? Math.min(1, recentSnow / 2.5)
-      : 0,
-  )
+  const snowCover = trailWinter(weather).cover
   const sun =
     weather?.day && weather.code >= 0 && weather.code <= 2 && !rain && !snow
       ? Math.max(0, (0.85 - weather.cloud) / 0.85)
@@ -375,11 +368,13 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   }
   const render = () => {
     const state = decoration(weather)
-    const cover = Math.max(state.snowCover, festiveSnow ? 0.9 : 0)
+    const { cover, forecastCover, frozen, source } = trailWinter(weather, festiveSnow)
+    const changedIce = scene.dataset.waterFrozen !== String(frozen)
+    scene.dataset.waterFrozen = String(frozen)
     scene.dataset.weatherMode = state.mode
-    scene.dataset.snowSource = festiveSnow ? 'holiday' : 'forecast'
+    scene.dataset.snowSource = source
     scene.dataset.festiveSnow = String(festiveSnow)
-    scene.dataset.forecastSnowCover = state.snowCover.toFixed(3)
+    scene.dataset.forecastSnowCover = forecastCover.toFixed(3)
     scene.dataset.weatherDay = weather?.day === null || !weather ? 'unknown' : String(weather.day)
     scene.dataset.weatherWind = String(weather?.windKmh ?? 0)
     scene.dataset.weatherGust = String(weather?.gustKmh ?? 'unknown')
@@ -427,6 +422,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     updateLighting()
     updateMotion()
     refreshForest()
+    if (changedIce) host.dispatchEvent(new CustomEvent('trail:climate'))
   }
   document.addEventListener('themechange', updateLighting, { signal })
   host.addEventListener(
@@ -468,6 +464,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
       delete scene.dataset.snowSource
       delete scene.dataset.festiveSnow
       delete scene.dataset.forecastSnowCover
+      delete scene.dataset.waterFrozen
       view?.clearTimeout(skyTimer)
       layer?.replaceChildren()
       skyLayer?.replaceChildren()

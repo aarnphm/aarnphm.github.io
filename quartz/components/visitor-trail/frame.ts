@@ -29,7 +29,7 @@ import { mountTrailPerspective } from './perspective'
 import { petExpedition } from './pet-expedition'
 import { trailRandom } from './random'
 import { mountSceneCompositor } from './scene-compositor'
-import { mountSceneReveal, trailOpeningTiming } from './scene-reveal'
+import { mountSceneReveal, trailOpeningDuration } from './scene-reveal'
 import { mountSceneSurface } from './scene-surface'
 import {
   createTreePainter,
@@ -43,15 +43,10 @@ import { defaultTravelerSettings } from './traveler-settings'
 import { mountVisitorJourneys } from './visitor-journey'
 import { mountMapReaderJourneys } from './wayfarer-journey'
 import { mountTrailWeather } from './weather'
+import { mountWorldPatches } from './world-patches'
 
 type TrailSample = { x: number; y: number; position: number }
-type TrailGeometry = {
-  id: TrailId
-  length: number
-  samples: TrailSample[]
-  delay: number
-  duration: number
-}
+type TrailGeometry = { id: TrailId; length: number; samples: TrailSample[] }
 
 const document = parent.document
 const host = window.frameElement?.parentElement
@@ -68,21 +63,24 @@ const clip = `trail-clear-${crypto.randomUUID()}`
 scene.innerHTML = `
     <svg class="trail-canvas" aria-hidden="true">
       <defs>
+        <mask id="${clip}-clock" maskUnits="userSpaceOnUse">
+          <rect data-trail-clock-field fill="white"/>
+          <rect data-trail-clock-clear fill="black"/>
+        </mask>
         <clipPath id="${clip}"><path data-trail-clear clip-rule="evenodd"/></clipPath>
         <clipPath id="${clip}-backdrop"><path data-trail-backdrop-clear clip-rule="evenodd"/></clipPath>
         <path id="${clip}-hint-visitors" data-camp-hint-route="grove"/>
         <g data-trail-navigation></g>
-        <g data-pet-walk-masks></g>
-        ${trailIds.map(id => `<mask id="${clip}-${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><path class="trail-reveal" data-trail-reveal="${id}" pathLength="1"/></mask>`).join('')}
       </defs>
       ${trailIds.map(id => `<path class="trail-path" data-trail-route="${id}"/>`).join('')}
       <g data-pet-walk-paths></g>
       <path class="trail-path" data-pet-expedition/>
+      <g class="trail-clock-source" data-trail-display-mask mask="url(#${clip}-clock)">
       <g clip-path="url(#${clip})">
       <g class="trail-sky" aria-hidden="true"></g>
       <g data-trail-backdrop-container></g>
       <g class="trail-woodland" data-trail-depth="0.8"></g>
-      <g class="trail-ground"></g>
+      <g class="trail-ground" data-trail-layer></g>
       <g class="trail-hinterland"></g>
       <g class="trail-weather" aria-hidden="true"></g>
       <g class="trail-steps"></g>
@@ -93,6 +91,7 @@ scene.innerHTML = `
       <g class="trail-ranger-tracks"></g>
       <g class="trail-park-patrol"></g>
       <g class="trail-landmarks"></g>
+      <g class="trail-extension-forest"></g>
       <g class="trail-fauna"></g>
       <g class="trail-holidays" aria-hidden="true"></g>
       <g class="trail-wayfarers"></g>
@@ -103,6 +102,7 @@ scene.innerHTML = `
       </g>
       <g class="trail-hint-fumes" clip-path="url(#${clip})">
         <text dy="-9"><textPath href="#${clip}-hint-visitors" startOffset="50%" text-anchor="middle">meet at the fire</textPath></text>
+      </g>
       </g>
     </svg>
     <div class="trail-visitor-labels"></div>
@@ -128,7 +128,7 @@ const campToggle = scene.querySelector<HTMLButtonElement>('.trail-camp-toggle')
 const campTools = scene.querySelector<HTMLElement>('.trail-camp-tools')
 if (!svg || !count || !retry || !campsite || !campToggle || !campTools)
   throw new Error('Shared trail markup is incomplete')
-const opening = mountSceneReveal(scene, signal)
+const opening = mountSceneReveal(scene, host, signal)
 
 let campTimer = 0
 let hintFrame = 0
@@ -192,12 +192,12 @@ const placeForest = (markup: string, sort = true) => {
   grove.refresh()
   pastureJourneys.refreshForest()
   if (sort) groundDepth.refresh()
-  if (sort && forestLayout) opening.update(geometries, forestLayout.pond)
 }
 const drawForest = (sort = true) => {
   if (host.hidden || !forestLayout || !scene.isConnected) return
   groundDepth.restore()
   placeForest([...forestSprites(forestLayout)].join(''), sort)
+  worldPatches.refreshForest()
 }
 const drawAnimals = () => {
   if (host.hidden || !forestLayout || !scene.isConnected) return
@@ -206,7 +206,6 @@ const drawAnimals = () => {
   if (fauna) fauna.innerHTML = trailPasture(forestLayout, geometries, sceneSeed, animals).markup
   pastureJourneys.update(forestLayout, sceneSeed)
   groundDepth.refresh()
-  opening.update(geometries, forestLayout.pond)
 }
 const holidays = mountTrailHolidays(scene, signal, () => {
   if (!forestLayout || host.hidden || scene.dataset.trailRendered !== 'true') return
@@ -253,12 +252,12 @@ const journeyRoutes = () => {
   navigationGeometry = geometries
   navigationSignature = signature
   navigationBodies = bodies
-  navigationRoutes = geometries.flatMap(({ id, length, delay, duration }) => {
+  navigationRoutes = geometries.flatMap(({ id, length }) => {
     const route = navigableTrail(
       {
         id,
         length,
-        readyAfter: delay + duration,
+        readyAfter: trailOpeningDuration,
         point: (distance: number) => point(Math.max(0, Math.min(1, distance / length)), id),
       },
       landscape,
@@ -435,17 +434,6 @@ campsite.addEventListener(
 retry.addEventListener('click', () => location.reload(), { signal })
 
 let sceneSeed = Math.floor(Math.random() * 4294967296)
-const openingOrder = (seed: number) => {
-  const random = trailRandom(seed ^ 0x68bc21eb)
-  const order: TrailId[] = trailIds.filter(id => id !== 'main')
-  for (let index = order.length - 1; index > 0; index--) {
-    const other = Math.floor(random() * (index + 1))
-    ;[order[index], order[other]] = [order[other], order[index]]
-  }
-  order.unshift('main')
-  return order
-}
-let revealOrder = openingOrder(sceneSeed)
 let geometries: TrailGeometry[] = []
 let layoutSignature = ''
 let clearSignature = ''
@@ -468,7 +456,7 @@ const alpineJourneys = mountAlpineJourneys(scene, host, signal)
 const perspective = mountTrailPerspective(scene, host, signal)
 const weather = mountTrailWeather(scene, host, signal)
 const crowns = mountCrownWind(scene, signal)
-mountSceneCompositor(scene, host, signal)
+if (!mountSceneCompositor(scene, host, signal, opening)) opening.useFallback()
 mountTrailBlazes(scene, signal)
 mountLeafFall(scene, signal)
 const groundDepth = mountGroundDepth(scene, host, signal)
@@ -477,12 +465,28 @@ const refreshStructures = () => {
   // Keep generation holders intact until every owner has replaced its previous sprites.
   if (scene.dataset.trailRendered === 'true' && forestLayout) {
     groundDepth.refresh()
-    opening.update(geometries, forestLayout.pond)
   }
 }
 const community = mountCampCommunity(scene, host, signal, refreshStructures)
 const parkPatrol = mountParkPatrol(scene, host, signal)
 const visitorJourneys = mountVisitorJourneys(scene, host, signal, refreshStructures)
+const worldPatches = mountWorldPatches(
+  scene,
+  host,
+  signal,
+  () => forest,
+  () => forestObstacles,
+  () => {
+    weather.refreshForest()
+    crowns.refresh()
+    holidays.refreshTrees()
+    grove.refresh()
+    pastureJourneys.refreshForest()
+    groundDepth.refresh()
+  },
+)
+let retainedLayout: ReturnType<typeof trailLayout> = null
+let retainedSeed = 0
 scene.querySelector('[data-camp-pack]')?.addEventListener(
   'click',
   () => {
@@ -526,13 +530,30 @@ const yieldRender = (signal: AbortSignal, paint = false) =>
 const drawScene = async () => {
   await styleReady
   if (host.hidden || !scene.isConnected) return
-  const layout = trailLayout(scene, sceneSeed)
+  const mode = scene.clientWidth < 700 ? 'narrow' : 'wide'
+  const world =
+    retainedSeed === sceneSeed && host.dataset.trailWorld === mode
+      ? (retainedLayout ?? undefined)
+      : undefined
+  const layout = trailLayout(scene, sceneSeed, world)
   if (!layout) return
   const signature = `${sceneSeed}|${layout.width}|${layout.height}|${layout.bottom}|${JSON.stringify(layout.readingRoutes)}|${JSON.stringify(layout.routes)}`
-  const clearance = `${layout.clear}|${layout.backdropClear}`
+  const clearance = `${layout.clear}|${layout.backdropClear}|${JSON.stringify(layout.clockExclusion)}`
   if (signature === layoutSignature && clearance === clearSignature) return
   const { width, height } = layout
+  // Keep source coordinates at one CSS pixel while the host changes around the old scene.
+  svg.style.width = `${width}px`
+  svg.style.height = `${height}px`
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
+  const clockField = svg.querySelector('[data-trail-clock-field]')
+  clockField?.setAttribute('width', String(width))
+  clockField?.setAttribute('height', String(height))
+  const clockClear = svg.querySelector('[data-trail-clock-clear]')
+  const exclusion = layout.clockExclusion
+  clockClear?.setAttribute('x', String(exclusion?.left ?? 0))
+  clockClear?.setAttribute('y', String(exclusion?.top ?? 0))
+  clockClear?.setAttribute('width', String(exclusion ? exclusion.right - exclusion.left : 0))
+  clockClear?.setAttribute('height', String(exclusion ? exclusion.bottom - exclusion.top : 0))
   svg.querySelector('[data-trail-clear]')?.setAttribute('d', layout.clear)
   svg.querySelector('[data-trail-backdrop-clear]')?.setAttribute('d', layout.backdropClear)
   const clockGround = document.querySelector<HTMLElement>('.trail-clock-ground')
@@ -567,6 +588,52 @@ const drawScene = async () => {
   }
   clearSignature = clearance
   if (signature === layoutSignature) return
+  if (world) {
+    layoutSignature = signature
+    const readingPaths = svg.querySelector('[data-pet-walk-paths]')
+    if (
+      readingPaths &&
+      JSON.stringify(layout.readingRoutes) !== JSON.stringify(world.readingRoutes)
+    ) {
+      readingPaths.innerHTML = layout.readingRoutes
+        .map(
+          (route, index) => `<path class="trail-path" data-pet-walk-path="${index}" d="${route}"/>`,
+        )
+        .join('')
+      retainedLayout = layout
+      const steps = scene.querySelector('.trail-steps')
+      for (const old of steps?.querySelectorAll('[data-route="reading"]') ?? []) old.remove()
+      for (const path of svg.querySelectorAll<SVGPathElement>('[data-pet-walk-path]')) {
+        const geometry = svgPathGeometry(path)
+        const marks: string[] = []
+        for (let distance = 6; distance < geometry.getTotalLength() - 6; distance += 12) {
+          const p = geometry.getPointAtLength(distance)
+          if (p.y < layout.landscape.alpine.top) continue
+          const next = geometry.getPointAtLength(distance + 1)
+          marks.push(
+            footprint(
+              'blob',
+              footprintTransform(p.x, p.y, Math.atan2(next.y - p.y, next.x - p.x), 1),
+            ),
+          )
+        }
+        steps?.insertAdjacentHTML('beforeend', `<g data-route="reading">${marks.join('')}</g>`)
+      }
+    }
+    worldPatches.update(width, height)
+    host.dataset.trailWorldHeight = String(
+      Math.max(Number(host.dataset.trailWorldHeight) || 0, height),
+    )
+    const rocksX = Math.max(8, Math.min(layout.camp.x - 142, width - 64))
+    forestControls.toggle.style.left = `${rocksX}px`
+    const rocks = forestControls.toggle.querySelector<SVGGElement>(
+      '[data-camp-solid="trunk-settings-rocks"]',
+    )
+    if (rocks) rocks.dataset.groundX = String(rocksX + 22)
+    placeCampHints(scene)
+    host.dispatchEvent(new Event('trail:ready'))
+    return
+  }
   cancelRendering()
   rendering = new AbortController()
   const renderSignal = rendering.signal
@@ -579,6 +646,10 @@ const drawScene = async () => {
   visitorJourneys.pause()
   parkPatrol.pause()
   groundDepth.restore()
+  retainedLayout = null
+  delete host.dataset.trailWorld
+  delete host.dataset.trailWorldHeight
+  worldPatches.reset(layout.landscape, sceneSeed, `${clip}-backdrop`)
   layoutSignature = signature
   campsite.style.left = `${layout.camp.x}px`
   campsite.style.top = `${layout.camp.y}px`
@@ -594,7 +665,7 @@ const drawScene = async () => {
   }
   scene.style.setProperty('--trail-camp-arrival', '0ms')
   scene.dataset.campPositioned = 'true'
-  opening.start()
+  opening.update(layout.camp)
   // Paint the camp before backdrop, route sampling, and forest generation occupy the main thread.
   if (!(await yieldRender(renderSignal, true))) return
   const backdrop = scene.querySelector('[data-trail-backdrop-container]')
@@ -612,7 +683,6 @@ const drawScene = async () => {
       `${clip}-backdrop`,
       entrances,
     )
-    opening.update(geometries, layout.landscape.pond)
   }
   const readingPaths = svg.querySelector('[data-pet-walk-paths]')
   if (readingPaths)
@@ -621,15 +691,6 @@ const drawScene = async () => {
         (route, index) => `<path class="trail-path" data-pet-walk-path="${index}" d="${route}"/>`,
       )
       .join('')
-  const readingMasks = svg.querySelector('[data-pet-walk-masks]')
-  if (readingMasks)
-    readingMasks.innerHTML = layout.readingRoutes
-      .map(
-        (route, index) =>
-          `<mask id="${clip}-reading-${index}" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%"><path class="trail-reveal" data-pet-walk-reveal="${index}" pathLength="1" d="${route}"/></mask>`,
-      )
-      .join('')
-  opening.update(geometries, layout.landscape.pond)
   geometries = []
   for (const id of trailIds) {
     const path = svg.querySelector<SVGPathElement>(`[data-trail-route="${id}"]`)
@@ -637,23 +698,13 @@ const drawScene = async () => {
     path.setAttribute('d', layout.routes[id])
     const geometry = svgPathGeometry(path)
     const length = geometry.getTotalLength()
-    const { delay, duration } = trailOpeningTiming(revealOrder.indexOf(id))
-    const reveal = svg.querySelector<SVGPathElement>(`[data-trail-reveal="${id}"]`)
-    reveal?.setAttribute('d', layout.routes[id])
     const samples = Array.from({ length: Math.ceil(length / 4) + 1 }, (_, index) => {
       const position = Math.min(1, (index * 4) / length)
       const p = geometry.getPointAtLength(position * length)
       return { position, x: p.x, y: p.y }
     })
-    geometries.push({ id, length, samples, delay, duration })
+    geometries.push({ id, length, samples })
     if (!(await yieldRender(renderSignal))) return
-  }
-  // The ranges show once the opening has timed their fade, and the meadow fills in below them as
-  // it generates, rather than the whole scene waiting on the forest.
-  if (scene.dataset.trailVisible !== 'true') {
-    opening.update(geometries, layout.landscape.pond)
-    scene.dataset.trailVisible = 'true'
-    if (!(await yieldRender(renderSignal, true))) return
   }
   const steps = scene.querySelector('.trail-steps')
   if (steps) {
@@ -677,7 +728,7 @@ const drawScene = async () => {
             ),
           )
         }
-        return `<g data-route="${id}" mask="url(#${clip}-${id})">${marks.join('')}</g>`
+        return `<g data-route="${id}">${marks.join('')}</g>`
       })
       .join('')
     for (const readingPath of svg.querySelectorAll<SVGPathElement>('[data-pet-walk-path]')) {
@@ -695,10 +746,7 @@ const drawScene = async () => {
           ),
         )
       }
-      steps.insertAdjacentHTML(
-        'beforeend',
-        `<g data-route="reading" mask="url(#${clip}-reading-${readingPath.dataset.petWalkPath})">${marks.join('')}</g>`,
-      )
+      steps.insertAdjacentHTML('beforeend', `<g data-route="reading">${marks.join('')}</g>`)
       if (!(await yieldRender(renderSignal))) return
     }
   }
@@ -708,7 +756,6 @@ const drawScene = async () => {
   const ground = scene.querySelector('.trail-ground')
   if (ground)
     ground.innerHTML = trailTerrain(layout.landscape, sceneSeed, Object.values(layout.routes))
-  opening.update(geometries, layout.landscape.pond)
   if (!(await yieldRender(renderSignal))) return
   const expedition = petExpedition(scene, layout.landscape)
   const petPath = svg.querySelector<SVGPathElement>('[data-pet-expedition]')
@@ -726,7 +773,6 @@ const drawScene = async () => {
   const pasture = trailPasture(layout.landscape, geometries, sceneSeed, animals)
   const fauna = scene.querySelector('.trail-fauna')
   if (fauna) fauna.innerHTML = pasture.markup
-  opening.update(geometries, layout.landscape.pond)
   forestLayout = layout.landscape
   forestObstacles = [
     ...geometries.flatMap(route => route.samples.filter((_, index) => index % 4 === 0)),
@@ -742,7 +788,6 @@ const drawScene = async () => {
     }
   }
   placeForest(sprites.join(''), false)
-  opening.update(geometries, layout.landscape.pond)
   if (!(await yieldRender(renderSignal))) return
   const routes = journeyRoutes()
   community.update(layout.landscape, sceneSeed, camps, routes)
@@ -769,11 +814,14 @@ const drawScene = async () => {
   perspective.update()
   weather.update(layout.landscape, sceneSeed)
   groundDepth.refresh()
-  opening.update(geometries, layout.landscape.pond)
   scene.dataset.trailRendered = 'true'
   scene.dataset.trailVisible = 'true'
   placeCampHints(scene)
   rendering = null
+  retainedLayout = layout
+  retainedSeed = sceneSeed
+  host.dataset.trailWorld = mode
+  host.dataset.trailWorldHeight = String(height)
   host.dispatchEvent(new Event('trail:ready'))
 }
 host.addEventListener(
@@ -861,7 +909,6 @@ host.addEventListener(
     )
     const nextSeed = Math.floor(Math.random() * 4294967296)
     sceneSeed = nextSeed === sceneSeed ? (sceneSeed + 1) >>> 0 : nextSeed
-    revealOrder = openingOrder(sceneSeed)
     weather.resume()
     perspective.resume()
     startConnection()

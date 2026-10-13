@@ -204,6 +204,23 @@
   }
 }
 
+.visitor-weather-wind {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+
+  [data-weather-wind-arrow] {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
 .visitor-weather-retry {
   margin-top: 0.25rem;
   color: var(--darkgray);

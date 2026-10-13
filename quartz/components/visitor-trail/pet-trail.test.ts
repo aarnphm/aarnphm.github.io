@@ -118,3 +118,26 @@ test('the blob arrives beside an occupied camp destination on a continuous road'
   assert.ok(Math.hypot(arrival.x - hearth.x, arrival.y - hearth.y) < 80)
   clearSegments(feet, [hearth])
 })
+
+test('an inaccessible intermediate clearing is bypassed on the way to camp', () => {
+  const trees = Array.from(
+    { length: 8 },
+    (_, index): CollisionActor => ({
+      id: `tree-${index}`,
+      kind: 'trunk',
+      x: 100 + Math.cos((index * Math.PI) / 4) * 40,
+      y: 130 + Math.sin((index * Math.PI) / 4) * 40,
+      radius: 15,
+    }),
+  )
+  const road: PetTrailFoot[] = [
+    { x: 20, y: 130, scale: 0.5, progress: 0.4 },
+    { x: 100, y: 130, scale: 0.5, progress: 0.6 },
+    { x: 280, y: 130, scale: 0.5, progress: 1 },
+  ]
+  const feet = detourPetTrail(road, body, trees, bounds)
+  assert.ok(feet)
+  assert.deepEqual(feet.at(-1), road.at(-1))
+  assert.ok(feet.some(foot => Math.abs(foot.y - 130) > 60))
+  clearSegments(feet, trees)
+})

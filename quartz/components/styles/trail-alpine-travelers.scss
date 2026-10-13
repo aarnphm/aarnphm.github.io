@@ -15,6 +15,15 @@
   .trail-climber-harness {
     fill: #b68b48;
   }
+  .trail-climber-tool-metal {
+    fill: color-mix(in srgb, var(--darkgray) 45%, #9cb5bd);
+  }
+  .trail-climber-tool-shaft {
+    fill: #b68b48;
+  }
+  .trail-climber-crampon {
+    fill: color-mix(in srgb, var(--darkgray) 68%, #9cb5bd);
+  }
   .trail-climber-anchor {
     fill: var(--darkgray);
     opacity: 0.65;
@@ -24,14 +33,20 @@
     stroke: color-mix(in srgb, var(--darkgray) 65%, #b68b48);
     stroke-width: 0.6;
     stroke-linecap: round;
-    opacity: 0.6;
+    opacity: 0.38;
     shape-rendering: geometricPrecision;
   }
   [data-climbing-pose] {
     display: none;
   }
-  .trail-alpine-climber[data-pose='reachLeft'] [data-climbing-pose='reachLeft'],
-  .trail-alpine-climber[data-pose='reachRight'] [data-climbing-pose='reachRight'],
+  .trail-alpine-climber[data-pose='liftLeft'] [data-climbing-pose='liftLeft'],
+  .trail-alpine-climber[data-pose='plantLeft'] [data-climbing-pose='plantLeft'],
+  .trail-alpine-climber[data-pose='stepLeft'] [data-climbing-pose='stepLeft'],
+  .trail-alpine-climber[data-pose='pullLeft'] [data-climbing-pose='pullLeft'],
+  .trail-alpine-climber[data-pose='liftRight'] [data-climbing-pose='liftRight'],
+  .trail-alpine-climber[data-pose='plantRight'] [data-climbing-pose='plantRight'],
+  .trail-alpine-climber[data-pose='stepRight'] [data-climbing-pose='stepRight'],
+  .trail-alpine-climber[data-pose='pullRight'] [data-climbing-pose='pullRight'],
   .trail-alpine-climber[data-pose='resting'] [data-climbing-pose='resting'] {
     display: block;
   }
