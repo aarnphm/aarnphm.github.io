@@ -1,34 +1,32 @@
-import { z } from 'zod'
+// zod/mini keeps the client chunk small: the full zod build ships about 440 KB of minified code.
+import * as z from 'zod/mini'
 
-const publicUrl = z
-  .string()
-  .max(8192)
-  .refine(value => {
+const publicUrl = z.string().check(
+  z.maxLength(8192),
+  z.refine(value => {
     const url = URL.parse(value)
     return Boolean(
       url && ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password,
     )
-  })
+  }),
+)
 
 const preview = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('ready'),
-    linkId: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
-    title: z.string().max(4096),
+    linkId: z.int().check(z.positive(), z.maximum(Number.MAX_SAFE_INTEGER)),
+    title: z.string().check(z.maxLength(4096)),
     sourceUrl: publicUrl,
     finalUrl: publicUrl,
-    readerHtml: z
-      .string()
-      .min(1)
-      .max(2 * 1024 * 1024),
-    fetchedAt: z.number().int().nonnegative(),
+    readerHtml: z.string().check(z.minLength(1), z.maxLength(2 * 1024 * 1024)),
+    fetchedAt: z.int().check(z.nonnegative()),
     cached: z.boolean(),
   }),
   z.object({
     status: z.literal('unavailable'),
-    reason: z.string().min(1).max(128),
-    message: z.string().min(1).max(4096),
-    sourceUrl: publicUrl.optional(),
+    reason: z.string().check(z.minLength(1), z.maxLength(128)),
+    message: z.string().check(z.minLength(1), z.maxLength(4096)),
+    sourceUrl: z.optional(publicUrl),
   }),
 ])
 

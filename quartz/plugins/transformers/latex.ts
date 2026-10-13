@@ -54,7 +54,7 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = opts => {
       switch (engine) {
         case 'katex':
           return {
-            css: [{ content: `${katexDist}/katex.min.css` }],
+            css: [{ content: `${katexDist}/katex.min.css`, classPrefixes: ['katex'] }],
             additionalHead: katexPreloadFonts.map(
               name => (fileData: QuartzPluginData) =>
                 h(
@@ -77,6 +77,8 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = opts => {
                 src: `${katexDist}/contrib/copy-tex.min.js`,
                 loadTime: 'afterDOMReady',
                 contentType: 'external',
+                // It only adds a copy listener; a parser-blocking CDN request delayed first paint.
+                async: true,
               },
             ],
           }

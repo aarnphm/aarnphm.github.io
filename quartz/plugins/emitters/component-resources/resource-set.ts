@@ -19,6 +19,7 @@ const clipboardInlineEntry = 'quartz/components/scripts/clipboard.inline.ts'
 const collaborativeCommentsInlineEntry =
   'quartz/components/scripts/collaborative-comments.inline.ts'
 const markerInlineEntry = 'quartz/components/scripts/marker.inline.ts'
+const pageStylesInlineEntry = 'quartz/components/scripts/page-styles.inline.ts'
 const petInlineEntry = 'quartz/components/scripts/pet.inline.ts'
 const popoverInlineEntry = 'quartz/components/scripts/popover.inline.ts'
 const protectedInlineEntry = 'quartz/components/scripts/protected.inline.ts'
@@ -94,6 +95,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
     clipboardScript,
     collaborativeCommentsScript,
     markerScript,
+    pageStylesScript,
     petScript,
     protectedScript,
     webMcpScript,
@@ -106,6 +108,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
     bundleInlineScript(clipboardInlineEntry),
     bundleInlineScript(collaborativeCommentsInlineEntry),
     bundleInlineScript(markerInlineEntry),
+    bundleInlineScript(pageStylesInlineEntry),
     bundleInlineScript(petInlineEntry),
     bundleInlineScript(protectedInlineEntry),
     bundleInlineScript(webMcpInlineEntry),
@@ -121,6 +124,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
   componentResources.beforeDOMLoaded.push(markerScript)
   componentResources.css.push(clipboardStyle, pseudoStyle, audioStyle, petStyle)
   componentResources.afterDOMLoaded.push(
+    pageStylesScript,
     clipboardScript,
     pseudoScript,
     protectedScript,

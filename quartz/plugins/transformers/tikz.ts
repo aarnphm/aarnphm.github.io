@@ -438,7 +438,12 @@ export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
     },
     externalResources() {
       return {
-        css: [{ content: 'https://cdn.jsdelivr.net/npm/node-tikzjax@latest/css/fonts.css' }],
+        css: [
+          {
+            content: 'https://cdn.jsdelivr.net/npm/node-tikzjax@latest/css/fonts.css',
+            classPrefixes: ['tikz'],
+          },
+        ],
       }
     },
   }

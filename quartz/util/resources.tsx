@@ -10,7 +10,13 @@ export type JSResource = {
   crossOrigin?: 'anonymous' | 'use-credentials'
 } & ({ src: string; contentType: 'external' } | { script: string; contentType: 'inline' })
 
-export type CSSResource = { content: string; inline?: boolean; spaPreserve?: boolean }
+export type CSSResource = {
+  content: string
+  inline?: boolean
+  spaPreserve?: boolean
+  /** Links the sheet only on pages that use these class prefixes; see util/page-styles.ts. */
+  classPrefixes?: string[]
+}
 
 export function JSResourceToScriptElement(resource: JSResource, preserve?: boolean): JSX.Element {
   const scriptType = resource.moduleType ?? 'application/javascript'

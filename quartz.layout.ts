@@ -30,7 +30,7 @@ export const sharedPageComponents: SharedLayout = {
       'CC BY-NC-SA': 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en',
       github: 'https://github.com/aarnphm',
       privacy: '/privacy',
-      'term of service': '/term-of-service',
+      'terms of service': '/terms-of-service',
     },
   }),
 }
