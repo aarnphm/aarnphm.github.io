@@ -7,7 +7,7 @@ import {
 } from '../types/component'
 import { descriptionToPlainText } from '../util/description'
 import { unescapeHTML } from '../util/escape'
-import { FullSlug, getFileExtension, joinSegments, pathToRoot, simplifySlug } from '../util/path'
+import { FullSlug, getFileExtension, joinSegments, simplifySlug } from '../util/path'
 import { CSSResourceToStyleElement, JSResourceToScriptElement } from '../util/resources'
 import { isSlidePage, sectionIconFile } from '../util/section-icon'
 import { googleFontHref, googleFontSubsetHref } from '../util/theme'
@@ -45,10 +45,8 @@ export default (() => {
     const { css, js, additionalHead } = externalResources
 
     const url = new URL(`https://${cfg.baseUrl ?? 'example.com'}`)
-    const path = url.pathname as FullSlug
-    const baseDir = slug === '404' ? path : pathToRoot(slug)
     const iconPath = joinSegments(
-      baseDir,
+      url.pathname,
       sectionIconFile({
         slug,
         base: fileData.bases === true,

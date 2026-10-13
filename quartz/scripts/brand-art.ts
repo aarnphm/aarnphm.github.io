@@ -19,6 +19,8 @@ import {
   librarian,
   presenter,
   reader,
+  student,
+  engineer,
   loop,
   mascot,
   PAPER,
@@ -122,6 +124,18 @@ function readerIcon() {
   return icon('', `${glasses}${sheet}`, 340, 540)
 }
 
+// Courses: the student, mortarboard on, writing in a spiral notepad.
+function studentIcon() {
+  const { cap, pad, pencil } = student(ICON_PEN)
+  return icon('', `${cap}${pad}${pencil}`, 330, 530)
+}
+
+// University notes: the engineer, hard hat on, an Erlenmeyer flask held up with bubbles rising.
+function engineerIcon() {
+  const { hardhat, flask, bubbles } = engineer(ICON_PEN)
+  return icon('', `${hardhat}${flask}${bubbles}`, 340, 540)
+}
+
 // Slides: the presenter, bow tie on, pointing at a bar chart on a small screen.
 function presenterIcon() {
   const { bow, pointer, screen } = presenter(ICON_PEN)
@@ -137,6 +151,8 @@ const SECTION_ICONS = {
   library: librarianIcon,
   slides: presenterIcon,
   stream: readerIcon,
+  courses: studentIcon,
+  engineering: engineerIcon,
 } as const
 
 const W = 1200

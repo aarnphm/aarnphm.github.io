@@ -12,6 +12,8 @@ export const SECTIONS = [
   'library',
   'slides',
   'stream',
+  'courses',
+  'engineering',
 ] as const
 
 export type Section = (typeof SECTIONS)[number]
@@ -20,7 +22,7 @@ export type Section = (typeof SECTIONS)[number]
 // data-slug, data-is-base and data-slides.
 export type SectionPage = { slug: string; base?: boolean; slides?: boolean }
 
-const FOLDERS: readonly Section[] = ['triathlon', 'fr', 'posts', 'stream']
+const FOLDERS: readonly Section[] = ['triathlon', 'fr', 'posts', 'stream', 'courses']
 
 // Single pages that wear a section's icon.
 const PAGES: Record<string, Section> = {
@@ -30,6 +32,9 @@ const PAGES: Record<string, Section> = {
   vibes: 'art',
 }
 
+// Folders below the top level that wear a section's icon, with everything under them.
+const SUBFOLDERS: Record<string, Section> = { 'thoughts/university': 'engineering' }
+
 // A slide page (`<note>/slides/<n>`) of a note with `slides: true`.
 export const isSlidePage = (slug: string, slides: unknown) =>
   slides === true && /\/slides\/\d+$/.test(slug)
@@ -38,7 +43,8 @@ export function sectionOf({ slug, base, slides }: SectionPage): Section | null {
   if (slides) return 'slides'
   if (base) return 'library'
   const head = slug.split('/')[0]
-  return PAGES[slug] ?? FOLDERS.find(s => s === head) ?? null
+  const sub = Object.keys(SUBFOLDERS).find(f => slug === f || slug.startsWith(`${f}/`))
+  return PAGES[slug] ?? (sub ? SUBFOLDERS[sub] : FOLDERS.find(s => s === head)) ?? null
 }
 
 export const sectionIconFile = (page: SectionPage) => {
