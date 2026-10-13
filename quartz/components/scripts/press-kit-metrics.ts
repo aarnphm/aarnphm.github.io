@@ -7,14 +7,13 @@ import {
 import { activityMetricLabel, cardLocale, localizeActivity } from './press-kit-i18n'
 
 // The shifting caption keeps both the teeth pairing and the gear-number pairing in the DOM
-// (CSS shows one), so textContent would read "54×172×7". The card wants the ratio only.
+// (CSS shows one), so textContent would read "54×172×7". The card wants the teeth ratio only;
+// a longer value pushes the label onto two lines in the 290px data grid.
 function dominantGearValue(range: Element | null): string | undefined {
   const teeth = range?.querySelector('[data-shift-label="teeth"]')?.textContent?.trim()
-  const match = teeth?.match(/^(\d+)×(\d+)$/)
-  if (!match) return undefined
-  const ratio = (Number(match[1]) / Number(match[2])).toFixed(2)
+  if (!teeth || !/^\d+×\d+$/.test(teeth)) return undefined
   const clock = range?.lastElementChild?.textContent?.trim() ?? ''
-  return `${teeth} · ${ratio} ${clock}`
+  return `${teeth} ${clock}`
 }
 
 function textOf(node: Element | null): string {

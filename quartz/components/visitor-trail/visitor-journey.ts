@@ -287,11 +287,8 @@ export function mountVisitorJourneys(
     popover.popover = 'auto'
     popover.id = `trail-visitor-${crypto.randomUUID()}`
     const name = document.createElement('span')
-    name.textContent = `${anonymousVisitor(peer.id)}${peer.own ? ' · you' : ''}`
-    const identity = document.createElement('span')
-    identity.className = 'trail-visitor-id'
-    identity.textContent = `playhtml · ${peer.id}`
-    popover.append(name, identity)
+    name.textContent = anonymousVisitor(peer.id)
+    popover.append(name)
     popover.setAttribute('role', 'tooltip')
     button.setAttribute('aria-describedby', popover.id)
     button.setAttribute('aria-expanded', 'false')
