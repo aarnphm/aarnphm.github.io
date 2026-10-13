@@ -1,19 +1,25 @@
+import type { Locale } from '../../util/triathlon-presentation'
 import type { PressKitPage } from '../PressKit'
 import {
   ACTIVITY_CARD_STATS,
   isActivityCardStatKey,
   isActivityCardChartKey,
-  isOverlayKey,
+  OVERLAY_OPTIONS,
   type ActivityCardData,
   type OverlayKey,
 } from '../../util/press-kit-activity'
+import { triLabel, triText } from '../../util/triathlon-i18n'
 import { buildSelect, type Select } from '../controls/select'
+import { PressKitEditor } from '../PressKitEditor'
+import { TRI_LOCALE_KEY } from '../triathlon/runtime/preferences'
 import { currentNavSignal } from './nav-lifecycle'
 import {
   FORMATS,
   cardFaces,
+  cardResolution,
   palettes,
   prepareCard,
+  prepareCardScene,
   renderCard,
   metricShown,
   type CardModel,
@@ -22,8 +28,16 @@ import {
   type SiteColors,
   type ThemeKey,
 } from './press-kit-card'
-import { dayCardData, type DayCardData } from './press-kit-day'
-import { activityCardFromElement, activityMetricColor } from './press-kit-metrics'
+import {
+  dayCardData,
+  blockDisplayKeys,
+  isBlockDisplayKey,
+  type BlockDisplay,
+  type DayCardData,
+  type TrainingCardBlock,
+} from './press-kit-day'
+import { cardLocale, localizeActivity, shortMetricLabel } from './press-kit-i18n'
+import { activityCardFromElement } from './press-kit-metrics'
 import {
   cardDate,
   runsFromNode,
@@ -61,6 +75,8 @@ interface Subject {
   headings: HTMLElement[]
   activity?: ActivityCardData
   day?: DayCardData
+  entryTitle?: string
+  entryDate?: string
 }
 
 interface Quote {
@@ -92,6 +108,7 @@ let anchor = 'page'
 let format: FormatKey = 'portrait'
 let theme: ThemeKey = 'papier'
 let overlay: OverlayKey = 'card'
+let language: Locale | null = null
 const selectedMetrics = new Map<string, Set<string>>()
 const show = {
   art: false,
@@ -102,6 +119,7 @@ const show = {
   section: true,
   title: true,
   date: true,
+  metrics: true,
   map: true,
   distance: true,
   time: true,
@@ -118,6 +136,7 @@ const show = {
 let noteEdited = false
 let anchorSelect: Select<string> | null = null
 let unmountAnchor: (() => void) | null = null
+let overlaySelect: Select<OverlayKey> | null = null
 let fonts: Fonts | null = null
 // The base card by daylight, and its night twin for the encre ground.
 const arts: { day?: HTMLImageElement; night?: HTMLImageElement } = {}
@@ -127,7 +146,10 @@ let blobTimer = 0
 let rendering: Promise<void> | null = null
 let drawVersion = 0
 let renderFailed = false
+let editor: PressKitEditor | null = null
 const selectedBlocks = new Set<string>()
+const selectedActivities = new Set<string>()
+const blockDisplays = new Map<string, BlockDisplay>()
 let pendingG = -Infinity
 let lastRange: { range: Range; at: number } | null = null
 // A selection survives this long after it collapses, so a button click elsewhere can still quote it.
@@ -136,6 +158,8 @@ let pill: HTMLButtonElement | null = null
 
 const $ = <T extends Element = HTMLElement>(selector: string) =>
   dialog?.querySelector<T>(selector) ?? null
+
+const shareLocale = (): Locale => language ?? cardLocale()
 
 function toast(message: string) {
   document.dispatchEvent(new CustomEvent('toast', { detail: { message } }))
@@ -336,6 +360,8 @@ function entrySubject(entry: HTMLElement, href: string | undefined): Subject {
     day?.blocks.filter(block => block.kind === 'activity').flatMap(block => block.activities) ?? []
   return {
     kind: day ? 'day' : 'entry',
+    entryTitle: title?.textContent?.trim(),
+    entryDate: time?.dateTime ? cardDate(time.dateTime, shareLocale()) : undefined,
     url,
     title: activities.length
       ? runsFromText(activities.map(activity => activity.title).join(' + '))
@@ -351,7 +377,7 @@ function entrySubject(entry: HTMLElement, href: string | undefined): Subject {
           day.blocks.flatMap(block => block.activities)[0]?.date ??
           time?.dateTime)
         : time?.dateTime
-      return iso ? cardDate(iso) : time?.textContent?.trim() || undefined
+      return iso ? cardDate(iso, shareLocale()) : time?.textContent?.trim() || undefined
     })(),
     iso: time?.dateTime || undefined,
     reading: day ? undefined : readingTime(`${runsToPlain(description)} ${runsToPlain(excerpt)}`),
@@ -372,7 +398,7 @@ function activitySubject(activity: ActivityCardData): Subject {
     title: runsFromText(activity.title),
     description: [],
     excerpt: runsFromText(activity.stats.map(stat => `${stat.label}: ${stat.value}`).join('\n')),
-    date: cardDate(activity.date),
+    date: cardDate(activity.date, shareLocale()),
     iso: activity.date,
     tags: [activity.sport],
     crumbs: crumbsOf(url),
@@ -468,25 +494,45 @@ function shareUrl(): string {
 
 function model(): CardModel {
   const s = subject!
+  const locale = shareLocale()
   const section = sectionForCard()
   const kind = tab === 'quote' ? 'quote' : s.kind === 'page' ? 'note' : s.kind
   const attribution = kind === 'quote' ? quote.attribution?.trim() : undefined
   const day = s.day
-    ? { blocks: s.day.blocks.filter(block => selectedBlocks.has(block.id)) }
+    ? {
+        blocks: activeDayBlocks().map(block => ({
+          ...block,
+          title:
+            block.kind === 'memo'
+              ? locale === 'fr'
+                ? 'mémo audio'
+                : 'audio memo'
+              : block.kind === 'comparison'
+                ? `${triText(locale, 'comparison')} · ${[...new Set(block.activities.map(activity => activity.date))].join(' / ')}`
+                : block.title,
+          rows: block.rows.map(row => ({ ...row, label: triLabel(locale, row.label) })),
+          activities: block.activities.map(activity => localizeActivity(activity, locale)),
+          display: blockDisplays.get(block.id),
+        })),
+      }
     : undefined
   const entry = runsToPlain(s.excerpt).trim()
   if (day && show.entry && entry)
     day.blocks.unshift({
       id: 'entry',
       kind: 'entry',
-      title: 'entrée',
+      title: s.entryTitle ?? 'entrée',
       url: s.url,
       activities: [],
       rows: [],
       text: entry,
+      date: s.entryDate,
+      reading: readingTime(entry),
+      display: blockDisplays.get('entry'),
     })
   return {
     kind,
+    locale,
     crumbs: s.crumbs,
     title: attribution
       ? [{ text: attribution, style: 'roman' }]
@@ -502,9 +548,10 @@ function model(): CardModel {
     art: theme === 'encre' ? arts.night : arts.day,
     // The night card's moon sits over the camp, so its crops centre higher.
     artFocus: theme === 'encre' ? [640, 280] : undefined,
-    activity: s.activity,
+    activity: s.activity ? localizeActivity(s.activity, locale) : undefined,
     day,
     overlay,
+    metricGap: editor?.metricGap ?? 0,
     metricKeys: Object.fromEntries(Array.from(selectedMetrics, ([url, keys]) => [url, [...keys]])),
     show: {
       ...show,
@@ -516,12 +563,13 @@ function model(): CardModel {
 
 function caption() {
   const spec = FORMATS[format]
+  const resolution = cardResolution(format)
   const el = $('.press-kit-caption')
   if (!el) return
   el.textContent =
     tab === 'links'
       ? 'aperçu du lien partagé'
-      : `${spec.width} × ${spec.height} · png · ${spec.label}`
+      : `${resolution.width} × ${resolution.height} · png · ${spec.label}`
 }
 
 function draw() {
@@ -537,6 +585,7 @@ function draw() {
   if (!canvas || !unfurl) return
   dialog.dataset.format = format
   caption()
+  editor?.context(`${subject.url}:${tab}`, `${format}:${overlay}`, tab !== 'links')
   if (tab === 'links') {
     canvas.hidden = true
     unfurl.hidden = false
@@ -552,10 +601,21 @@ function draw() {
   const targetDialog = dialog
   canvas.setAttribute('aria-label', `aperçu de la carte, ${FORMATS[format].label}, ${theme}`)
   canvas.setAttribute('aria-busy', 'true')
-  rendering = prepareCard(model(), palette, targetFormat, targetFonts)
-    .then(prepared => {
+  const targetEditor = editor
+  rendering = prepareCard(model(), palette, targetFormat, targetFonts, targetEditor?.active)
+    .then(async prepared => {
       if (version !== drawVersion || dialog !== targetDialog || !dialog.open) return
-      renderCard(canvas, prepared, targetFormat, palette, targetFonts)
+      if (targetEditor?.active) {
+        const scene = await prepareCardScene(
+          prepared,
+          targetFormat,
+          palette,
+          targetFonts,
+          activeSignal ?? undefined,
+        )
+        if (version !== drawVersion || dialog !== targetDialog || !dialog.open) return
+        targetEditor.setScene(scene)
+      } else renderCard(canvas, prepared, targetFormat, palette, targetFonts)
       blobTimer = window.setTimeout(() => {
         blob = new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
       }, 160)
@@ -578,19 +638,24 @@ function schedule() {
 
 async function currentBlob(): Promise<Blob | null> {
   const canvas = $<HTMLCanvasElement>('.press-kit-canvas')
-  while (frame || rendering) {
+  const targetDialog = dialog
+  const targetEditor = editor
+  do {
     if (frame) {
       cancelAnimationFrame(frame)
       draw()
     }
     if (rendering) await rendering
-  }
+    if ((await targetEditor?.flush()) === false) return null
+    if (!canvas?.isConnected || dialog !== targetDialog || !dialog?.open || editor !== targetEditor)
+      return null
+  } while (frame || rendering)
   if (renderFailed) return null
-  if (!blob && canvas) {
+  if (!blob) {
     window.clearTimeout(blobTimer)
     blob = new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
   }
-  return blob ?? Promise.resolve(null)
+  return blob
 }
 
 function fileName(): string {
@@ -656,8 +721,8 @@ const titleText = () =>
 function defaultNote(): string {
   if (!subject) return ''
   if (subject.day) {
-    const blocks = subject.day.blocks.filter(block =>
-      anchor.startsWith('block:') ? `block:${block.id}` === anchor : selectedBlocks.has(block.id),
+    const blocks = activeDayBlocks().filter(block =>
+      anchor.startsWith('block:') ? `block:${block.id}` === anchor : true,
     )
     return [
       titleText(),
@@ -810,6 +875,24 @@ function mountAnchor(signal: AbortSignal) {
   signal.addEventListener('abort', unmount, { once: true })
 }
 
+function mountOverlay(signal: AbortSignal) {
+  const host = $('.press-kit-overlay')
+  if (!host) return
+  overlaySelect = buildSelect<OverlayKey>({
+    id: 'press-kit-overlay-menu',
+    label: 'superposition',
+    groups: [{ options: OVERLAY_OPTIONS.map(([value, label]) => ({ value, label })) }],
+    selected: overlay,
+    className: 'press-kit-select',
+    onSelect: value => {
+      overlay = value
+      schedule()
+    },
+  })
+  host.replaceChildren(overlaySelect.element)
+  signal.addEventListener('abort', overlaySelect.mount(), { once: true })
+}
+
 function renderLinks() {
   const url = shareUrl()
   const input = $<HTMLInputElement>('#press-kit-url')
@@ -924,12 +1007,31 @@ function syncControls() {
   dialog
     .querySelectorAll<HTMLInputElement>('input[name="press-kit-theme"]')
     .forEach(input => (input.checked = input.value === theme))
+  overlaySelect?.setSelected(overlay)
   dialog
-    .querySelectorAll<HTMLInputElement>('input[name="press-kit-overlay"]')
-    .forEach(input => (input.checked = input.value === overlay))
+    .querySelectorAll<HTMLInputElement>('input[name="press-kit-language"]')
+    .forEach(input => (input.checked = input.value === shareLocale()))
   const activities = activeActivities()
+  const blocks = activeDayBlocks()
   dialog.querySelectorAll<HTMLButtonElement>('[data-include]').forEach(button => {
-    if (isIncludeKey(button.name)) button.setAttribute('aria-pressed', String(show[button.name]))
+    if (isIncludeKey(button.name)) {
+      const key = button.name
+      const values = isBlockDisplayKey(key)
+        ? Array.from(blockDisplays.entries())
+            .filter(([id]) =>
+              id === 'entry'
+                ? show.entry
+                : blocks.some(block => block.id === id && blockDisplayKeys(block).includes(key)),
+            )
+            .map(([, display]) => display[key])
+        : []
+      button.setAttribute(
+        'aria-pressed',
+        values.length && values.some(Boolean) && values.some(value => !value)
+          ? 'mixed'
+          : String(values.length ? values.every(Boolean) : show[key]),
+      )
+    }
     if (button.closest('[data-activity-only]')) {
       button.disabled =
         button.name === 'map'
@@ -937,12 +1039,38 @@ function syncControls() {
           : ACTIVITY_CARD_STATS.some(key => key === button.name) &&
             !activities.some(activity => activity.stats.some(stat => stat.key === button.name))
     }
-    if (isActivityCardChartKey(button.name))
-      button.disabled = !activities.some(activity =>
+    if (isActivityCardChartKey(button.name)) {
+      const available = activities.some(activity =>
         activity.charts.some(chart => chart.key === button.name),
       )
+      button.disabled = !available
+      button.hidden = !available
+    }
     if (button.name === 'entry') button.disabled = !runsToPlain(subject?.excerpt ?? []).trim()
   })
+  dialog.querySelectorAll<HTMLButtonElement>('[data-block-display]').forEach(button => {
+    const key = button.dataset.blockDisplay
+    const id = button.dataset.displayBlock
+    if (!key || !id || !isBlockDisplayKey(key)) return
+    const display = blockDisplays.get(id)
+    button.setAttribute('aria-pressed', String(display?.[key] ?? show[key]))
+    button.disabled = id === 'entry' ? !show.entry : !blocks.some(block => block.id === id)
+  })
+  const charts = $<HTMLButtonElement>('[data-include="cyclingPower"]')?.closest('fieldset')
+  if (charts) charts.hidden = !activities.some(activity => activity.charts.length > 0)
+  dialog.querySelectorAll<HTMLButtonElement>('[data-day-activity]').forEach(button => {
+    const selected = selectedActivities.has(button.dataset.dayActivity ?? '')
+    button.setAttribute('aria-pressed', String(selected))
+    button.title = selected ? 'masquer cette activité' : 'inclure cette activité'
+  })
+  dialog.querySelectorAll<HTMLButtonElement>('[data-day-block]').forEach(button => {
+    const block = subject?.day?.blocks.find(block => block.id === button.dataset.dayBlock)
+    button.disabled =
+      block?.kind === 'comparison' &&
+      block.activities.filter(activity => selectedActivities.has(activity.url)).length < 2
+  })
+  const entryDisplay = $('.press-kit-entry-display')
+  if (entryDisplay) entryDisplay.hidden = !show.entry
   dialog.querySelectorAll<HTMLButtonElement>('[data-activity-metric]').forEach(button => {
     const url = button.dataset.metricActivity
     const key = button.dataset.activityMetric
@@ -981,12 +1109,24 @@ function subjectActivities(): ActivityCardData[] {
   return [...unique.values()]
 }
 
+function activeDayBlocks(): TrainingCardBlock[] {
+  return (subject?.day?.blocks ?? [])
+    .filter(block => selectedBlocks.has(block.id))
+    .flatMap(block => {
+      if (!block.activities.length) return [block]
+      const activities = block.activities.filter(activity => selectedActivities.has(activity.url))
+      if (!activities.length || (block.kind === 'comparison' && activities.length < 2)) return []
+      if (activities.length === block.activities.length) return [block]
+      return [{ ...block, activities, graphic: undefined, rows: [] }]
+    })
+}
+
 function activeActivities(): ActivityCardData[] {
-  return (
-    subject?.day?.blocks
-      .filter(block => selectedBlocks.has(block.id))
-      .flatMap(block => block.activities) ?? (subject?.activity ? [subject.activity] : [])
-  )
+  return subject?.day
+    ? activeDayBlocks().flatMap(block => block.activities)
+    : subject?.activity
+      ? [subject.activity]
+      : []
 }
 
 function syncMetricIncludes() {
@@ -1007,21 +1147,19 @@ function layoutMetricControls() {
     '.press-kit-metric-group[open] .press-kit-data-grid',
   )) {
     if (!metrics.clientWidth) continue
+    metrics.querySelector('.press-kit-data-filler')?.remove()
     const columnWidth = (metrics.clientWidth - parseFloat(getComputedStyle(metrics).columnGap)) / 2
     const items = Array.from(metrics.querySelectorAll<HTMLButtonElement>('[data-activity-metric]'))
       .map(button => {
         const label = button.querySelector<HTMLElement>('.press-kit-metric-label')
         const value = button.querySelector<HTMLElement>('small')
-        const dot = button.querySelector<HTMLElement>('.press-kit-data-label')
-        if (!label || !value || !dot) return null
+        if (!label || !value) return null
         const style = getComputedStyle(button)
         const inset =
           parseFloat(style.paddingInlineStart) +
           parseFloat(style.paddingInlineEnd) +
           parseFloat(style.borderInlineStartWidth) +
-          parseFloat(style.borderInlineEndWidth) +
-          parseFloat(getComputedStyle(dot, '::before').width) +
-          parseFloat(getComputedStyle(dot).columnGap)
+          parseFloat(style.borderInlineEndWidth)
         const available = columnWidth - inset
         const wide = textWidth(label) > available || textWidth(value) > available
         button.classList.toggle('press-kit-data-toggle--wide', wide)
@@ -1035,24 +1173,54 @@ function layoutMetricControls() {
       if (focus instanceof HTMLElement && metrics.contains(focus))
         focus.focus({ preventScroll: true })
     }
+    // An odd count of half-width toggles leaves a hole before the full-width rows; an empty
+    // cell closes the table there.
+    const narrow = items.filter(item => !item.wide)
+    if (narrow.length % 2) {
+      const filler = document.createElement('span')
+      filler.className = 'press-kit-data-filler'
+      filler.setAttribute('aria-hidden', 'true')
+      narrow[narrow.length - 1].button.after(filler)
+    }
   }
 }
 
+function refreshLocale() {
+  if (!subject) return
+  const locale = shareLocale()
+  if (subject.activity) subject.activity = localizeActivity(subject.activity, locale)
+  if (subject.day)
+    subject.day.blocks = subject.day.blocks.map(block => ({
+      ...block,
+      rows: block.rows.map(row => ({ ...row, label: triLabel(locale, row.label) })),
+      activities: block.activities.map(activity => localizeActivity(activity, locale)),
+    }))
+  if (subject.iso) subject.entryDate = cardDate(subject.iso, locale)
+  if (subject.kind === 'entry' && subject.iso) subject.date = cardDate(subject.iso, locale)
+  if (subject.kind === 'activity' && subject.activity)
+    subject.date = cardDate(subject.activity.date, locale)
+  if (subject.kind === 'day') {
+    const date = subject.day?.blocks.flatMap(block => block.activities)[0]?.date ?? subject.iso
+    if (date) subject.date = cardDate(date, locale)
+  }
+  mountMetricControls()
+  syncControls()
+  layoutMetricControls()
+  if (dialog?.open) schedule()
+}
+
 function mountMetricControls() {
-  for (const button of dialog?.querySelectorAll<HTMLElement>(
-    '.press-kit-data-toggle[data-include]',
-  ) ?? [])
-    button.style.setProperty('--trace-color', activityMetricColor(button.dataset.include ?? ''))
-  for (const input of dialog?.querySelectorAll<HTMLInputElement>(
-    'input[name="press-kit-overlay"]',
-  ) ?? [])
-    input
-      .closest<HTMLElement>('.press-kit-data-toggle')
-      ?.style.setProperty('--trace-color', activityMetricColor(`overlay:${input.value}`))
   const host = $('.press-kit-metrics')
   if (!host) return
+  const expanded = new Set(
+    Array.from(
+      host.querySelectorAll<HTMLElement>('[data-metric-group][open]'),
+      group => group.dataset.metricGroup,
+    ),
+  )
   host.replaceChildren()
-  for (const activity of subjectActivities()) {
+  for (const source of subjectActivities()) {
+    const activity = localizeActivity(source, shareLocale())
     const previous = selectedMetrics.get(activity.url)
     selectedMetrics.set(
       activity.url,
@@ -1067,18 +1235,19 @@ function mountMetricControls() {
     const group = document.createElement('details')
     group.className = 'press-kit-metric-group'
     group.dataset.metricGroup = activity.url
+    group.open = expanded.has(activity.url)
     const summary = document.createElement('summary')
     summary.textContent = `mesures · ${activity.title}`
     group.append(summary)
     const actions = document.createElement('div')
-    actions.className = 'press-kit-segments press-kit-includes'
+    actions.className = 'press-kit-metric-actions'
     for (const [action, label] of [
       ['all', 'tout'],
       ['none', 'aucune'],
     ]) {
       const button = document.createElement('button')
       button.type = 'button'
-      button.className = 'press-kit-segment'
+      button.className = 'g-button'
       button.dataset.metricAction = action
       button.dataset.metricActivity = activity.url
       button.textContent = label
@@ -1097,12 +1266,11 @@ function mountMetricControls() {
       button.title = [stat.label, stat.value, stat.provenance].filter(Boolean).join(' · ')
       button.setAttribute('aria-label', `${activity.title} · ${stat.label}`)
       button.setAttribute('aria-pressed', String(selectedMetrics.get(activity.url)?.has(stat.key)))
-      button.style.setProperty('--trace-color', activityMetricColor(stat.key))
       const label = document.createElement('span')
       label.className = 'press-kit-data-label'
       const labelText = document.createElement('span')
       labelText.className = 'press-kit-metric-label'
-      labelText.textContent = stat.label
+      labelText.textContent = shortMetricLabel(stat.label)
       label.append(labelText)
       button.append(label)
       const value = document.createElement('small')
@@ -1116,28 +1284,106 @@ function mountMetricControls() {
   if (subjectActivities().length) syncMetricIncludes()
 }
 
+function displayControls(block: TrainingCardBlock): HTMLDetailsElement {
+  const group = document.createElement('details')
+  group.className = 'press-kit-block-display'
+  group.dataset.blockOptions = block.id
+  const summary = document.createElement('summary')
+  summary.textContent = `affichage · ${block.kind === 'entry' ? 'entrée' : block.title}`
+  group.append(summary)
+  const options = document.createElement('div')
+  options.className = 'press-kit-data-grid press-kit-data-grid--compact'
+  blockDisplays.set(block.id, { title: show.title, date: show.date, metrics: show.metrics })
+  for (const key of blockDisplayKeys(block)) {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'press-kit-data-toggle'
+    button.dataset.blockDisplay = key
+    button.dataset.displayBlock = block.id
+    const label = key === 'title' ? 'titre' : key === 'date' ? 'date' : 'mesures'
+    button.setAttribute(
+      'aria-label',
+      `${block.kind === 'entry' ? 'entrée' : block.title} · ${label}`,
+    )
+    const text = document.createElement('span')
+    text.className = 'press-kit-data-label'
+    text.textContent = label
+    button.append(text)
+    options.append(button)
+  }
+  group.append(options)
+  return group
+}
+
 function mountDayControls() {
   const host = $('.press-kit-day-blocks')
   if (!host) return
   host.replaceChildren()
   selectedBlocks.clear()
-  for (const block of subject?.day?.blocks ?? []) {
+  selectedActivities.clear()
+  blockDisplays.clear()
+  const entryDisplay = $('.press-kit-entry-display')
+  entryDisplay?.replaceChildren()
+  if (subject?.day && entryDisplay) {
+    const prose = runsToPlain(subject.excerpt).trim()
+    entryDisplay.append(
+      displayControls({
+        id: 'entry',
+        kind: 'entry',
+        title: subject.entryTitle ?? 'entrée',
+        url: subject.url,
+        text: prose,
+        date: subject.entryDate,
+        reading: readingTime(prose),
+        activities: [],
+        rows: [],
+      }),
+    )
+  }
+  const blocks = subject?.day?.blocks ?? []
+  const activities = subject?.day ? subjectActivities() : []
+  if (activities.length) {
+    const field = document.createElement('fieldset')
+    field.className = 'press-kit-field'
+    const legend = document.createElement('legend')
+    legend.textContent = 'activités'
+    const list = document.createElement('div')
+    list.className = 'press-kit-data-grid press-kit-block-list'
+    field.append(legend, list)
+    host.append(field)
+    for (const activity of activities) {
+      selectedActivities.add(activity.url)
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'press-kit-data-toggle'
+      button.dataset.dayActivity = activity.url
+      button.setAttribute('aria-pressed', 'true')
+      const label = document.createElement('span')
+      label.className = 'press-kit-data-label'
+      label.textContent = activity.title
+      button.append(label)
+      list.append(button)
+      const block = blocks.find(
+        block => block.kind === 'activity' && block.activities[0]?.url === activity.url,
+      )
+      if (block) list.append(displayControls(block))
+    }
+  }
+  for (const block of blocks) {
     const selected = block.kind !== 'memo'
     if (selected) selectedBlocks.add(block.id)
+    if (block.kind === 'activity') continue
     const button = document.createElement('button')
     button.type = 'button'
     button.className = 'press-kit-data-toggle'
     button.dataset.dayBlock = block.id
     button.setAttribute('aria-pressed', String(selected))
-    button.style.setProperty(
-      '--trace-color',
-      activityMetricColor(block.activities[0]?.sport ?? block.kind),
-    )
     const label = document.createElement('span')
     label.className = 'press-kit-data-label'
     label.textContent = block.title
     button.append(label)
     host.append(button)
+    host.append(displayControls(block))
   }
 }
 
@@ -1337,7 +1583,11 @@ function bindDialog(signal: AbortSignal) {
     },
     { signal },
   )
-  $('.press-kit-close')?.addEventListener('click', () => modal.close(), { signal })
+  const close = $('.press-kit-close')
+  if (close) {
+    close.dataset.siteCursorClose = ''
+    close.addEventListener('click', () => modal.close(), { signal })
+  }
   modal.addEventListener(
     'click',
     event => {
@@ -1362,7 +1612,12 @@ function bindDialog(signal: AbortSignal) {
       'click',
       () => {
         if (!isIncludeKey(button.name)) return
-        show[button.name] = !show[button.name]
+        show[button.name] = isBlockDisplayKey(button.name)
+          ? button.getAttribute('aria-pressed') !== 'true'
+          : !show[button.name]
+        const displayKey = button.name
+        if (isBlockDisplayKey(displayKey))
+          for (const display of blockDisplays.values()) display[displayKey] = show[displayKey]
         if (isActivityCardStatKey(button.name)) {
           for (const keys of selectedMetrics.values()) {
             if (show[button.name]) keys.add(button.name)
@@ -1382,10 +1637,13 @@ function bindDialog(signal: AbortSignal) {
     event => {
       const input = event.target
       if (!(input instanceof HTMLInputElement)) return
+      if (input.name === 'press-kit-language' && (input.value === 'en' || input.value === 'fr')) {
+        language = input.value
+        refreshLocale()
+        return
+      }
       if (input.name === 'press-kit-format') format = input.value as FormatKey
       else if (input.name === 'press-kit-theme') theme = input.value as ThemeKey
-      else if (input.name === 'press-kit-overlay' && isOverlayKey(input.value))
-        overlay = input.value
       else return
       writePrefs()
       schedule()
@@ -1423,6 +1681,17 @@ function bindDialog(signal: AbortSignal) {
     'click',
     event => {
       const target = event.target instanceof Element ? event.target : null
+      const displayButton = target?.closest<HTMLButtonElement>('[data-block-display]')
+      const displayKey = displayButton?.dataset.blockDisplay
+      const displayBlock = displayButton?.dataset.displayBlock
+      if (displayButton && displayKey && displayBlock && isBlockDisplayKey(displayKey)) {
+        const display = blockDisplays.get(displayBlock)
+        if (!display) return
+        display[displayKey] = !display[displayKey]
+        syncControls()
+        schedule()
+        return
+      }
       const metricButton = target?.closest<HTMLButtonElement>(
         '[data-activity-metric], [data-metric-action]',
       )
@@ -1441,6 +1710,20 @@ function bindDialog(signal: AbortSignal) {
             for (const stat of activity.stats) keys.add(stat.key)
         }
         syncMetricIncludes()
+        syncControls()
+        schedule()
+        return
+      }
+      const activityButton = target?.closest<HTMLButtonElement>('[data-day-activity]')
+      const activityUrl = activityButton?.dataset.dayActivity
+      if (activityButton && activityUrl) {
+        if (selectedActivities.has(activityUrl)) selectedActivities.delete(activityUrl)
+        else selectedActivities.add(activityUrl)
+        if (
+          anchor.startsWith('block:') &&
+          !activeDayBlocks().some(block => `block:${block.id}` === anchor)
+        )
+          anchor = 'page'
         syncControls()
         schedule()
         return
@@ -1477,6 +1760,7 @@ document.addEventListener('nav', () => {
   const signal = currentNavSignal()
   if (activeSignal === signal) return
   activeSignal = signal
+  editor = null
   drawVersion++
   rendering = null
 
@@ -1485,9 +1769,12 @@ document.addEventListener('nav', () => {
   page = data ? (JSON.parse(data) as PressKitPage) : null
   subject = null
   selectedBlocks.clear()
+  selectedActivities.clear()
+  blockDisplays.clear()
   selectedMetrics.clear()
   linkCards.clear()
   overlay = 'card'
+  language = null
   show.transparent = false
   show.entry = false
   show.cyclingPower = false
@@ -1495,6 +1782,7 @@ document.addEventListener('nav', () => {
   show.runLaps = false
   anchorSelect = null
   unmountAnchor = null
+  overlaySelect = null
   lastRange = null
   pendingG = -Infinity
   hidePill()
@@ -1502,8 +1790,21 @@ document.addEventListener('nav', () => {
   if (!dialog || !page) return
 
   bindDialog(signal)
+  mountOverlay(signal)
   dialog.addEventListener('toggle', layoutMetricControls, { capture: true, signal })
   const controls = $('.press-kit-controls')
+  const canvas = $<HTMLCanvasElement>('.press-kit-canvas')
+  if (controls && canvas)
+    editor = new PressKitEditor(
+      canvas,
+      controls,
+      signal,
+      () => {
+        window.clearTimeout(blobTimer)
+        blob = null
+      },
+      schedule,
+    )
   if (controls) {
     let width = 0
     const observer = new ResizeObserver(entries => {
@@ -1516,6 +1817,14 @@ document.addEventListener('nav', () => {
     window.addCleanup(() => observer.disconnect())
   }
   document.addEventListener('keydown', onDocumentKeyDown, { signal })
+  window.addEventListener('tri:locale', refreshLocale, { signal })
+  window.addEventListener(
+    'storage',
+    event => {
+      if (event.key === TRI_LOCALE_KEY) refreshLocale()
+    },
+    { signal },
+  )
   document.addEventListener(
     'presskitopen',
     event => open({ tab: (event as CustomEventMap['presskitopen']).detail?.tab }),

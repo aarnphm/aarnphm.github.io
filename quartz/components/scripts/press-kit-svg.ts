@@ -9,7 +9,23 @@ export function node(tag: string, attributes: Record<string, string | number> = 
   return element
 }
 
-export function createSvgText(fonts: Fonts) {
+export function svgImage(svg: string): Promise<HTMLImageElement> {
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }))
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => {
+      URL.revokeObjectURL(url)
+      resolve(image)
+    }
+    image.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('Unable to render card image'))
+    }
+    image.src = url
+  })
+}
+
+export function createSvgText(fonts: Fonts, scale: number) {
   function measure(value: string, size: number, weight = 400, family = fonts.body) {
     const context = document.createElement('canvas').getContext('2d')
     if (!context) return null
@@ -36,21 +52,24 @@ export function createSvgText(fonts: Fonts) {
     const pad = 2
     const left = Math.ceil(Math.max(0, metrics.actualBoundingBoxLeft)) + pad
     const top = Math.ceil(metrics.actualBoundingBoxAscent) + pad
-    canvas.width = Math.ceil(Math.max(metrics.width, metrics.actualBoundingBoxRight)) + left + pad
-    canvas.height = top + Math.ceil(metrics.actualBoundingBoxDescent) + pad
+    const width = Math.ceil(Math.max(metrics.width, metrics.actualBoundingBoxRight)) + left + pad
+    const height = top + Math.ceil(metrics.actualBoundingBoxDescent) + pad
+    canvas.width = Math.ceil(width * scale)
+    canvas.height = Math.ceil(height * scale)
+    context.scale(scale, scale)
     context.font = font
     context.fillStyle = color
     context.fillText(value, left, top)
     const anchor = parent.getAttribute('text-anchor')
     const offset = anchor === 'middle' ? metrics.width / 2 : anchor === 'end' ? metrics.width : 0
     // SVG images cannot use the document's webfonts. Paint text with the same loaded
-    // canvas faces as ordinary press cards before composing the final PNG.
+    // canvas faces at export density before composing the final PNG.
     parent.append(
       node('image', {
         x: x - left - offset,
         y: y - top,
-        width: canvas.width,
-        height: canvas.height,
+        width: canvas.width / scale,
+        height: canvas.height / scale,
         href: canvas.toDataURL('image/png'),
       }),
     )
@@ -110,6 +129,29 @@ export function createSvgText(fonts: Fonts) {
     fitText(parent, value, x, y, width, size, color, 400, fonts.mono)
   }
 
+  function metricRow(
+    parent: SVGElement,
+    label: string,
+    value: string,
+    x: number,
+    baseline: number,
+    width: number,
+    size: number,
+    color: string,
+  ): void {
+    parent.append(
+      node('path', {
+        d: `M${x} ${baseline + size * 0.45}H${x + width}`,
+        stroke: color,
+        opacity: 0.12,
+      }),
+    )
+    fitText(parent, label, x, baseline, width * 0.42, size, color)
+    const values = node('g', { 'text-anchor': 'end' })
+    fitValue(values, value, x + width, baseline, width * 0.54, size, color)
+    parent.append(values)
+  }
+
   function titleRow(
     parent: SVGElement,
     value: string,
@@ -119,12 +161,13 @@ export function createSvgText(fonts: Fonts) {
     width: number,
     size: number,
     color: string,
+    align: 'left' | 'center' = 'left',
   ): number {
     const iconSize = size * 0.95
     const icon = sport ? sportIcon(sport, 0, 0, iconSize, color) : undefined
     const offset = icon ? iconSize + size * 0.3 : 0
-    const titleLines = lines(value, width - offset, size, fonts.headerWeight, fonts.header)
-    const metrics = titleLines.map(line => measure(line, size, fonts.headerWeight, fonts.header))
+    const titleLines = lines(value, width - offset, size, 500)
+    const metrics = titleLines.map(line => measure(line, size, 500))
     const titleWidth = Math.min(
       width - offset,
       Math.max(0, ...metrics.map(item => item?.width ?? 0)),
@@ -133,8 +176,9 @@ export function createSvgText(fonts: Fonts) {
     const descent = Math.max(0, ...metrics.map(item => item?.actualBoundingBoxDescent ?? 0))
     const textHeight = ascent + descent + Math.max(0, titleLines.length - 1) * size * 1.2
     const height = Math.max(icon ? iconSize : 0, textHeight)
+    const left = x + (align === 'center' ? Math.max(0, (width - titleWidth - offset) / 2) : 0)
     if (icon) {
-      icon.setAttribute('x', String(x))
+      icon.setAttribute('x', String(left))
       icon.setAttribute('y', String(y + (height - iconSize) / 2))
       parent.append(icon)
     }
@@ -142,18 +186,17 @@ export function createSvgText(fonts: Fonts) {
       fitText(
         parent,
         line,
-        x + offset,
+        left + offset,
         y + (height - textHeight) / 2 + ascent + index * size * 1.2,
         titleWidth,
         size,
         color,
-        fonts.headerWeight,
-        fonts.header,
+        500,
       ),
     )
     return height
   }
-  return { text, lines, fitText, fitValue, titleRow }
+  return { text, lines, fitText, fitValue, metricRow, titleRow, measure }
 }
 
 export function graphic(

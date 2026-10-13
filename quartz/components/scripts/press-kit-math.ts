@@ -3,7 +3,6 @@ import type { Run } from './press-kit-text'
 import { customMacros } from '../../cfg'
 
 const EM = 100
-const SCALE = 2
 
 export interface MathImage {
   image: HTMLImageElement
@@ -60,7 +59,7 @@ function embeddedFont(url: string): Promise<string> {
   return pending
 }
 
-async function mathImage(run: Run): Promise<MathImage> {
+async function mathImage(run: Run, pixelsPerEm: number): Promise<MathImage> {
   const { css, url } = await katexStyles()
   const host = document.createElement('div')
   host.setAttribute('aria-hidden', 'true')
@@ -120,8 +119,8 @@ async function mathImage(run: Run): Promise<MathImage> {
     const width = Math.ceil(rect.width) + 4
     const height = Math.ceil(rect.height) + 4
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttribute('width', String(width * SCALE))
-    svg.setAttribute('height', String(height * SCALE))
+    svg.setAttribute('width', String(Math.ceil((width * pixelsPerEm) / EM)))
+    svg.setAttribute('height', String(Math.ceil((height * pixelsPerEm) / EM)))
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
     const foreign = document.createElementNS(svg.namespaceURI, 'foreignObject')
     foreign.setAttribute('width', String(width))
@@ -149,7 +148,7 @@ async function mathImage(run: Run): Promise<MathImage> {
   }
 }
 
-export async function prepareMath(runs: Run[]): Promise<MathImages> {
+export async function prepareMath(runs: Run[], pixelsPerEm: number): Promise<MathImages> {
   const keys = new Set<string>()
   const ready: MathImages = new Map()
   const pendingImages: Promise<void>[] = []
@@ -158,14 +157,15 @@ export async function prepareMath(runs: Run[]): Promise<MathImages> {
     const key = mathKey(run)
     if (keys.has(key)) continue
     keys.add(key)
-    let pending = images.get(key)
+    const cacheKey = `${pixelsPerEm}:${key}`
+    let pending = images.get(cacheKey)
     if (!pending) {
       if (images.size >= 64) images.clear()
-      pending = mathImage(run).catch(error => {
-        images.delete(key)
+      pending = mathImage(run, pixelsPerEm).catch(error => {
+        images.delete(cacheKey)
         throw error
       })
-      images.set(key, pending)
+      images.set(cacheKey, pending)
     }
     pendingImages.push(
       pending.then(image => {

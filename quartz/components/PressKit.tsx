@@ -6,7 +6,6 @@ import {
 } from '../types/component'
 import { classNames } from '../util/lang'
 import { simplifySlug } from '../util/path'
-import { OVERLAY_OPTIONS } from '../util/press-kit-activity'
 import { formatDate, getDate } from './Date'
 // @ts-ignore
 import script from './scripts/press-kit.inline'
@@ -214,7 +213,7 @@ export default ((userOpts?: Partial<Options>) => {
               </button>
             ))}
           </div>
-          <button type="button" class="press-kit-close" aria-label="fermer">
+          <button type="button" class="press-kit-close g-icon-button" aria-label="fermer">
             <CloseIcon />
           </button>
         </header>
@@ -261,6 +260,21 @@ export default ((userOpts?: Partial<Options>) => {
                     <label class="press-kit-segment press-kit-swatch" data-theme={value}>
                       <input type="radio" name="press-kit-theme" value={value} />
                       <i aria-hidden="true" />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              <fieldset class="press-kit-field" data-activity-only data-for="note">
+                <legend>langue</legend>
+                <div class="press-kit-segments press-kit-includes press-kit-language">
+                  {[
+                    ['en', 'English'],
+                    ['fr', 'Français'],
+                  ].map(([value, label]) => (
+                    <label class="press-kit-segment">
+                      <input type="radio" name="press-kit-language" value={value} />
                       <span>{label}</span>
                     </label>
                   ))}
@@ -317,25 +331,28 @@ export default ((userOpts?: Partial<Options>) => {
                 <div class="press-kit-data-grid press-kit-data-grid--compact">
                   <Include name="title" label="titre" pressed data />
                   <Include name="date" label="date" pressed data />
-                  <Include name="map" label="carte du parcours" shortLabel="carte" pressed data />
-                  <Include name="distance" label="distance" pressed data />
-                  <Include name="time" label="durée" pressed data />
-                  <Include
-                    name="pace"
-                    label="allure / vitesse"
-                    shortLabel="allure / vit."
-                    pressed
-                    data
-                  />
-                  <Include name="elevation" label="dénivelé" shortLabel="D+" pressed data />
-                  <Include
-                    name="heartRate"
-                    label="fréquence cardiaque"
-                    shortLabel="FC"
-                    pressed
-                    data
-                  />
-                  <Include name="power" label="puissance" shortLabel="puiss." pressed data />
+                  <Include name="metrics" label="mesures" pressed data />
+                  <div class="press-kit-data-fields" data-training-options>
+                    <Include name="map" label="carte du parcours" shortLabel="carte" pressed data />
+                    <Include name="distance" label="distance" pressed data />
+                    <Include name="time" label="durée" pressed data />
+                    <Include
+                      name="pace"
+                      label="allure / vitesse"
+                      shortLabel="allure / vit."
+                      pressed
+                      data
+                    />
+                    <Include name="elevation" label="dénivelé" shortLabel="D+" pressed data />
+                    <Include
+                      name="heartRate"
+                      label="fréquence cardiaque"
+                      shortLabel="FC"
+                      pressed
+                      data
+                    />
+                    <Include name="power" label="puissance" shortLabel="puiss." pressed data />
+                  </div>
                 </div>
               </fieldset>
 
@@ -343,20 +360,14 @@ export default ((userOpts?: Partial<Options>) => {
                 <legend>blocs de la journée</legend>
                 <div class="press-kit-data-grid press-kit-block-list">
                   <Include name="entry" label="entrée" data />
+                  <div class="press-kit-entry-display" />
                 </div>
                 <div class="press-kit-data-grid press-kit-block-list press-kit-day-blocks" />
               </fieldset>
 
               <fieldset class="press-kit-field" data-training-options>
                 <legend>superposition</legend>
-                <div class="press-kit-data-grid">
-                  {OVERLAY_OPTIONS.map(([value, label]) => (
-                    <label class="press-kit-data-toggle">
-                      <input type="radio" name="press-kit-overlay" value={value} />
-                      <span class="press-kit-data-label">{label}</span>
-                    </label>
-                  ))}
-                </div>
+                <div class="press-kit-overlay" />
                 <div class="press-kit-data-grid press-kit-overlay-background">
                   <Include name="transparent" label="fond transparent" data />
                 </div>
@@ -378,14 +389,14 @@ export default ((userOpts?: Partial<Options>) => {
 
               <div class="press-kit-metrics" data-training-options />
 
-              <div class="press-kit-segments press-kit-actions">
-                <button type="button" class="press-kit-segment" data-action="download">
+              <div class="press-kit-actions">
+                <button type="button" class="g-button" data-action="download">
                   télécharger
                 </button>
-                <button type="button" class="press-kit-segment" data-action="copy-image">
+                <button type="button" class="g-button" data-action="copy-image">
                   copier l'image
                 </button>
-                <button type="button" class="press-kit-segment" data-action="share-image" hidden>
+                <button type="button" class="g-button" data-action="share-image" hidden>
                   partager…
                 </button>
               </div>
@@ -405,7 +416,7 @@ export default ((userOpts?: Partial<Options>) => {
                 </label>
                 <div class="press-kit-url-row">
                   <input id="press-kit-url" class="press-kit-input" type="url" readonly />
-                  <button type="button" class="press-kit-action" data-copy="url">
+                  <button type="button" class="g-button" data-copy="url">
                     copier
                   </button>
                 </div>
@@ -414,26 +425,16 @@ export default ((userOpts?: Partial<Options>) => {
               <div class="press-kit-field">
                 <span class="press-kit-legend">copier comme</span>
                 <div class="press-kit-chips">
-                  <button type="button" class="press-kit-chip" data-copy="markdown">
+                  <button type="button" class="g-button" data-copy="markdown">
                     markdown
                   </button>
-                  <button type="button" class="press-kit-chip" data-copy="wikilink">
+                  <button type="button" class="g-button" data-copy="wikilink">
                     wikilink
                   </button>
-                  <button
-                    type="button"
-                    class="press-kit-chip"
-                    data-copy="bibtex"
-                    data-citation-only
-                  >
+                  <button type="button" class="g-button" data-copy="bibtex" data-citation-only>
                     bibtex
                   </button>
-                  <button
-                    type="button"
-                    class="press-kit-chip"
-                    data-copy="citation"
-                    data-citation-only
-                  >
+                  <button type="button" class="g-button" data-copy="citation" data-citation-only>
                     citation
                   </button>
                 </div>
@@ -481,7 +482,7 @@ export default ((userOpts?: Partial<Options>) => {
                   </a>
                   <button
                     type="button"
-                    class="press-kit-chip press-kit-intent"
+                    class="g-button press-kit-intent"
                     data-action="share-link"
                     aria-label="partager…"
                     title="partager…"

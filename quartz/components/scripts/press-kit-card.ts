@@ -1,3 +1,4 @@
+import type { Locale } from '../../util/triathlon-presentation'
 import type { DayCardData } from './press-kit-day'
 import {
   isActivityCardStatKey,
@@ -5,9 +6,17 @@ import {
   type ActivityCardStat,
   type OverlayKey,
 } from '../../util/press-kit-activity'
+import {
+  captureLayer,
+  svgLayers,
+  type CardLayer,
+  type CardScene,
+  type LayerRenderer,
+} from './press-kit-layers'
 import { drawMath, mathKey, prepareMath, type MathImage } from './press-kit-math'
+import { svgImage } from './press-kit-svg'
 import { BREAK, type Run, type RunStyle } from './press-kit-text'
-import { trainingCardImage, trainingCardSvg } from './press-kit-training-card'
+import { trainingCardSvg } from './press-kit-training-card'
 
 type CardRun = Run & { math?: MathImage }
 
@@ -79,6 +88,12 @@ export const FORMATS: Record<FormatKey, FormatSpec> = {
     quote: [28, 52],
     gap: 22,
   },
+}
+
+export function cardResolution(format: FormatKey) {
+  const spec = FORMATS[format]
+  const scale = 3840 / Math.max(spec.width, spec.height)
+  return { width: Math.round(spec.width * scale), height: Math.round(spec.height * scale), scale }
 }
 
 export interface SiteColors {
@@ -182,8 +197,12 @@ export interface CardModel {
   activity?: ActivityCardData
   day?: DayCardData
   training?: HTMLImageElement
+  trainingSvg?: string
+  trainingLayers?: Map<string, LayerRenderer>
   overlay?: OverlayKey
+  metricGap?: number
   metricKeys?: Record<string, string[]>
+  locale?: Locale
   show: {
     art: boolean
     description: boolean
@@ -193,6 +212,7 @@ export interface CardModel {
     section: boolean
     title: boolean
     date: boolean
+    metrics?: boolean
     map: boolean
     distance: boolean
     time: boolean
@@ -486,7 +506,25 @@ function draw(
   highlight?: { bg: string; ink: string },
   align: 'left' | 'right' = 'left',
   maxWidth = 0,
+  layers?: CardLayer[],
+  id = 'text',
 ): number {
+  if (layers && fitted.lines.length) {
+    const inset = highlight ? fitted.size * 0.12 : 0
+    return captureLayer(
+      ctx,
+      layers,
+      id,
+      id,
+      {
+        x: x - inset,
+        y,
+        width: Math.max(maxWidth, ...fitted.lines.map(line => line.width)) + inset * 2,
+        height: fitted.height,
+      },
+      context => draw(context, fitted, x, y, color, highlight, align, maxWidth),
+    )
+  }
   const { size, lines, block } = fitted
   const lh = size * block.leading
   let top = y
@@ -670,6 +708,7 @@ function chrome(
   model: CardModel,
   spec: FormatSpec,
   palette: Palette,
+  layers?: CardLayer[],
 ): Frame {
   const [pt, pr, pb, pl] = spec.pad
   const x = pl
@@ -679,27 +718,66 @@ function chrome(
   let top = pt
 
   const headerBaseline = top + meta * ASCENT
-  const showDate =
-    model.kind === 'day' || model.kind === 'activity' ? model.show.date : model.show.meta
+  const training = model.kind === 'day' || model.kind === 'activity'
+  const showDate = !training && (model.kind === 'entry' ? model.show.date : model.show.meta)
   const dateWidth = model.date && showDate ? measure(ctx, mono, model.date) : 0
   const crumbWidth = dateWidth ? w - dateWidth - meta * 2 : w
-  drawCrumbs(ctx, mono, meta, model.crumbs, x, headerBaseline, crumbWidth, palette)
-  if (dateWidth) label(ctx, mono, model.date!, x, headerBaseline, w, palette.muted, 'right')
-  top += meta * 1.3
+  if (!training && model.kind !== 'entry')
+    captureLayer(
+      ctx,
+      layers,
+      'breadcrumbs',
+      'chemin',
+      { x, y: pt - meta * 0.2, width: crumbWidth, height: meta * 1.5 },
+      context =>
+        drawCrumbs(context, mono, meta, model.crumbs, x, headerBaseline, crumbWidth, palette),
+    )
+  if (dateWidth)
+    captureLayer(
+      ctx,
+      layers,
+      'date',
+      'date',
+      { x: x + w - dateWidth, y: pt, width: dateWidth, height: meta * 1.3 },
+      context => label(context, mono, model.date!, x, headerBaseline, w, palette.muted, 'right'),
+    )
+  if (dateWidth || (!training && model.kind !== 'entry')) top += meta * 1.3
 
   const footerBottom = spec.height - pb
   const tagSize = meta * 0.92
   // Align reading time with the text inside the tag pills.
   const baseline = footerBottom - tagSize * (1 - ASCENT + 0.32)
-  const showReading = !!model.reading && model.show.meta && model.kind !== 'quote'
+  const showReading =
+    !!model.reading &&
+    (model.kind === 'entry' ? model.show.metrics !== false : model.show.meta) &&
+    model.kind !== 'quote'
   const readingWidth = showReading ? measure(ctx, mono, model.reading!) + meta * 2 : 0
   if (model.show.meta) {
-    drawTags(ctx, fonts, model.tags, x, footerBottom, tagSize, w - readingWidth, palette)
+    if (model.tags.length)
+      captureLayer(
+        ctx,
+        layers,
+        'tags',
+        'étiquettes',
+        { x, y: footerBottom - tagSize * 1.7, width: w - readingWidth, height: tagSize * 1.7 },
+        context =>
+          drawTags(context, fonts, model.tags, x, footerBottom, tagSize, w - readingWidth, palette),
+      )
   }
-  if (showReading) label(ctx, mono, model.reading!, x, baseline, w, palette.muted, 'right')
+  if (showReading)
+    captureLayer(
+      ctx,
+      layers,
+      'reading',
+      'temps de lecture',
+      { x: x + w - readingWidth, y: baseline - meta, width: readingWidth, height: meta * 1.3 },
+      context => label(context, mono, model.reading!, x, baseline, w, palette.muted, 'right'),
+    )
 
   const bottom = baseline - meta - meta * 0.75
-  drawRule(ctx, x, bottom, w, palette.rule)
+  captureLayer(ctx, layers, 'rule', 'séparateur', { x, y: bottom, width: w, height: 2 }, context =>
+    drawRule(context, x, bottom, w, palette.rule),
+  )
   return { x, w, top: top + spec.gap, bottom: bottom - spec.gap * 0.5 }
 }
 
@@ -738,13 +816,21 @@ function drawArt(
   spec: FormatSpec,
   palette: Palette,
   frame: Frame,
+  layers?: CardLayer[],
 ): Frame {
   const art = model.art
   if (!model.show.art || !art?.naturalWidth) return frame
   const avail = frame.bottom - frame.top
   const bleed = palette.label === 'papier' || palette.label === 'encre'
   // Without a frame the crop would cut the ridges in straight lines, so cut edges fade to paper.
-  const fade = (x: number, y: number, w: number, h: number, edge: 'left' | 'bottom') => {
+  const fade = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    edge: 'left' | 'bottom',
+  ) => {
     const gradient =
       edge === 'left'
         ? ctx.createLinearGradient(x, 0, x + w, 0)
@@ -754,18 +840,19 @@ function drawArt(
     ctx.fillStyle = gradient
     ctx.fillRect(x, y, w, h)
   }
-  const print = (x: number, y: number, w: number, h: number, cut: ('left' | 'bottom')[]) => {
-    drawCover(ctx, art, model.artFocus ?? ART_FOCUS, x, y, w, h)
-    if (bleed) {
-      const band = Math.round(h * 0.28)
-      if (cut.includes('bottom')) fade(x, y + h - band, w, band, 'bottom')
-      if (cut.includes('left')) fade(x, y, band, h, 'left')
-      return
-    }
-    ctx.strokeStyle = palette.rule
-    ctx.lineWidth = 2
-    ctx.strokeRect(x + 1, y + 1, w - 2, h - 2)
-  }
+  const print = (x: number, y: number, w: number, h: number, cut: ('left' | 'bottom')[]) =>
+    captureLayer(ctx, layers, 'art', 'illustration', { x, y, width: w, height: h }, ctx => {
+      drawCover(ctx, art, model.artFocus ?? ART_FOCUS, x, y, w, h)
+      if (bleed) {
+        const band = Math.round(h * 0.28)
+        if (cut.includes('bottom')) fade(ctx, x, y + h - band, w, band, 'bottom')
+        if (cut.includes('left')) fade(ctx, x, y, band, h, 'left')
+        return
+      }
+      ctx.strokeStyle = palette.rule
+      ctx.lineWidth = 2
+      ctx.strokeRect(x + 1, y + 1, w - 2, h - 2)
+    })
   if (spec === FORMATS.landscape) {
     const w = Math.round(frame.w * 0.4)
     print(frame.x + frame.w - w, frame.top, w, avail, ['left', 'bottom'])
@@ -783,8 +870,16 @@ function drawNote(
   model: CardModel,
   spec: FormatSpec,
   palette: Palette,
+  layers?: CardLayer[],
 ) {
-  const frame = drawArt(ctx, model, spec, palette, chrome(ctx, fonts, model, spec, palette))
+  const frame = drawArt(
+    ctx,
+    model,
+    spec,
+    palette,
+    chrome(ctx, fonts, model, spec, palette, layers),
+    layers,
+  )
   const avail = frame.bottom - frame.top
   const gap = spec.gap * 0.7
   const hasDesc = model.show.description && model.description.length > 0
@@ -837,9 +932,10 @@ function drawNote(
   const anchor: Anchor = spec === FORMATS.landscape ? 'center' : 'end'
   let y = place(anchor, frame.top, frame.bottom, total)
 
-  y += draw(ctx, title, frame.x, y, palette.ink) + gap
-  if (desc && desc.lines.length > 0) y += draw(ctx, desc, frame.x, y, palette.ink) + gap
-  if (body) draw(ctx, body, frame.x, y, palette.muted)
+  y += draw(ctx, title, frame.x, y, palette.ink, undefined, 'left', 0, layers, 'titre') + gap
+  if (desc && desc.lines.length > 0)
+    y += draw(ctx, desc, frame.x, y, palette.ink, undefined, 'left', 0, layers, 'description') + gap
+  if (body) draw(ctx, body, frame.x, y, palette.muted, undefined, 'left', 0, layers, 'texte')
 }
 
 function drawQuote(
@@ -848,8 +944,16 @@ function drawQuote(
   model: CardModel,
   spec: FormatSpec,
   palette: Palette,
+  layers?: CardLayer[],
 ) {
-  const frame = drawArt(ctx, model, spec, palette, chrome(ctx, fonts, model, spec, palette))
+  const frame = drawArt(
+    ctx,
+    model,
+    spec,
+    palette,
+    chrome(ctx, fonts, model, spec, palette, layers),
+    layers,
+  )
   const avail = frame.bottom - frame.top
   const gap = spec.gap * 0.8
 
@@ -888,10 +992,19 @@ function drawQuote(
   const total = markH + quote.height + gap + attrH + gap * 0.4
   let y = place('center', frame.top, frame.bottom, total)
 
-  ctx.font = `400 ${Math.round(markSize)}px ${fonts.serif}`
-  ctx.fillStyle = palette.mark
-  ctx.textBaseline = 'alphabetic'
-  ctx.fillText('“', frame.x - markSize * 0.04, y + markSize * 0.74)
+  captureLayer(
+    ctx,
+    layers,
+    'quote-mark',
+    'guillemet',
+    { x: frame.x - markSize * 0.04, y, width: markSize, height: markSize },
+    context => {
+      context.font = `400 ${Math.round(markSize)}px ${fonts.serif}`
+      context.fillStyle = palette.mark
+      context.textBaseline = 'alphabetic'
+      context.fillText('“', frame.x - markSize * 0.04, y + markSize * 0.74)
+    },
+  )
   y += markH + gap * 0.4
 
   const inset = model.show.highlight ? quote.size * 0.12 : 0
@@ -905,9 +1018,23 @@ function drawQuote(
       model.show.highlight ? { bg: palette.hl, ink: palette.hlInk } : undefined,
       'left',
       frame.w - inset * 2,
+      layers,
+      'citation',
     ) + gap
-  y += draw(ctx, attribution, frame.x, y, palette.ink)
-  if (section) draw(ctx, section, frame.x, y + spec.meta * 0.3, palette.muted)
+  y += draw(ctx, attribution, frame.x, y, palette.ink, undefined, 'left', 0, layers, 'attribution')
+  if (section)
+    draw(
+      ctx,
+      section,
+      frame.x,
+      y + spec.meta * 0.3,
+      palette.muted,
+      undefined,
+      'left',
+      0,
+      layers,
+      'section',
+    )
 }
 
 function drawEntry(
@@ -916,18 +1043,26 @@ function drawEntry(
   model: CardModel,
   spec: FormatSpec,
   palette: Palette,
+  layers?: CardLayer[],
 ) {
-  const frame = drawArt(ctx, model, spec, palette, chrome(ctx, fonts, model, spec, palette))
+  const frame = drawArt(
+    ctx,
+    model,
+    spec,
+    palette,
+    chrome(ctx, fonts, model, spec, palette, layers),
+    layers,
+  )
   const avail = frame.bottom - frame.top
   const gap = spec.gap * 0.7
 
   // An entry sets its title and text as a note does; the body stays in ink, since it is the post.
-  const titleBlock: Block = { voice: 'header', leading: 1.04 }
+  const titleBlock: Block = { voice: 'body', weight: 500, leading: 1.04 }
   const hasText = model.body.length > 0 || model.description.length > 0
   const title = fit(
     ctx,
     fonts,
-    model.title,
+    model.show.title ? model.title : [],
     titleBlock,
     frame.w,
     avail * (hasText ? 0.4 : 1),
@@ -962,7 +1097,20 @@ function drawEntry(
   const total = parts.reduce((h, part) => h + part.height, 0) + gap * (parts.length - 1)
   const anchor: Anchor = spec === FORMATS.landscape ? 'center' : 'end'
   let y = place(anchor, frame.top, frame.bottom, total)
-  for (const part of parts) y += draw(ctx, part, frame.x, y, palette.ink) + gap
+  for (const part of parts)
+    y +=
+      draw(
+        ctx,
+        part,
+        frame.x,
+        y,
+        palette.ink,
+        undefined,
+        'left',
+        0,
+        layers,
+        part === title ? 'titre' : part === desc ? 'description' : 'texte',
+      ) + gap
 }
 
 /** Every face the card can draw with, so callers can wait on `document.fonts` before drawing. */
@@ -989,15 +1137,26 @@ export async function prepareCard(
   palette: Palette,
   format: FormatKey,
   fonts: Fonts,
+  editable = false,
 ): Promise<CardModel> {
   if (model.kind === 'activity' || model.kind === 'day') {
     const context = document.createElement('canvas').getContext('2d')
     if (!context) throw new Error('Canvas is unavailable')
     const frame = chrome(context, fonts, model, FORMATS[format], palette)
-    const svg = trainingCardSvg(model, format, palette, fonts, frame)
-    return { ...model, training: await trainingCardImage(svg) }
+    const renderers = editable ? new Map<string, LayerRenderer>() : undefined
+    const svg = trainingCardSvg(model, format, palette, fonts, frame, renderers)
+    return editable
+      ? { ...model, trainingSvg: svg, trainingLayers: renderers }
+      : { ...model, training: await svgImage(svg) }
   }
-  const images = await prepareMath([...model.title, ...model.description, ...model.body])
+  const spec = FORMATS[format]
+  const pixelsPerEm = Math.ceil(
+    Math.max(...spec.title, ...spec.prose, ...spec.quote) * cardResolution(format).scale,
+  )
+  const images = await prepareMath(
+    [...model.title, ...model.description, ...model.body],
+    pixelsPerEm,
+  )
   const prepare = (runs: Run[]): CardRun[] =>
     runs.map(run => (run.style === 'math' ? { ...run, math: images.get(mathKey(run)) } : run))
   return {
@@ -1014,21 +1173,60 @@ export function renderCard(
   format: FormatKey,
   palette: Palette,
   fonts: Fonts,
+  layers?: CardLayer[],
 ) {
   const spec = FORMATS[format]
-  if (canvas.width !== spec.width) canvas.width = spec.width
-  if (canvas.height !== spec.height) canvas.height = spec.height
+  const resolution = cardResolution(format)
+  if (canvas.width !== resolution.width) canvas.width = resolution.width
+  if (canvas.height !== resolution.height) canvas.height = resolution.height
   const ctx = canvas.getContext('2d')
   if (!ctx) return
+  ctx.setTransform(resolution.scale, 0, 0, resolution.scale, 0, 0)
   ctx.clearRect(0, 0, spec.width, spec.height)
-  if (!model.training || !model.show.transparent) {
+  const training = model.kind === 'activity' || model.kind === 'day'
+  if (!training || !model.show.transparent) {
     ctx.fillStyle = palette.bg
     ctx.fillRect(0, 0, spec.width, spec.height)
   }
-  if (model.kind === 'quote') drawQuote(ctx, fonts, model, spec, palette)
-  else if (model.training) {
-    ctx.drawImage(model.training, 0, 0, spec.width, spec.height)
-    if (!model.overlay || model.overlay === 'card') chrome(ctx, fonts, model, spec, palette)
-  } else if (model.kind === 'entry') drawEntry(ctx, fonts, model, spec, palette)
-  else drawNote(ctx, fonts, model, spec, palette)
+  if (model.kind === 'quote') drawQuote(ctx, fonts, model, spec, palette, layers)
+  else if (training) {
+    if (model.training) ctx.drawImage(model.training, 0, 0, spec.width, spec.height)
+    if (!model.overlay || model.overlay === 'card') chrome(ctx, fonts, model, spec, palette, layers)
+  } else if (model.kind === 'entry') drawEntry(ctx, fonts, model, spec, palette, layers)
+  else drawNote(ctx, fonts, model, spec, palette, layers)
+}
+
+export async function prepareCardScene(
+  model: CardModel,
+  format: FormatKey,
+  palette: Palette,
+  fonts: Fonts,
+  signal?: AbortSignal,
+): Promise<CardScene> {
+  const { width, height } = FORMATS[format]
+  const { scale } = cardResolution(format)
+  const layers = model.trainingSvg
+    ? await svgLayers(
+        model.trainingSvg,
+        width,
+        height,
+        scale,
+        svgImage,
+        signal,
+        model.trainingLayers,
+      )
+    : []
+  const canvas = document.createElement('canvas')
+  renderCard(canvas, model, format, palette, fonts, layers)
+  canvas.width = canvas.height = 1
+  return {
+    width,
+    height,
+    scale,
+    background:
+      (model.kind === 'activity' || model.kind === 'day') && model.show.transparent
+        ? null
+        : palette.bg,
+    layers,
+  }
 }
