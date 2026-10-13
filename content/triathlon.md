@@ -1948,6 +1948,21 @@ strava: 20519634483
 garmin: 24667016038
 ```
 
+```tracking
+date: 2026-10-12
+activity: 20562430914
+exercise: Hip Circles | 30s
+exercise: Glute Bridge | 30s
+exercise: Walking Knee Hugs | 30s
+exercise: Ankle Bounces | 30s
+exercise: Single-Leg Glute Bridge | 40s | 40s | 40s | 40s
+exercise: Reverse Lunge to Knee Drive | 40s | 40s | 40s | 40s
+exercise: Side Plank with Hip Dip | 40s | 40s | 40s | 40s
+exercise: Bodyweight Squat with 2s Pause | 40s | 40s | 40s | 40s
+exercise: Bird Dog | 40s | 40s | 40s | 40s
+exercise: Hip Flexor, Calf, and Standing Quad Stretch Flow | 2m
+```
+
 <!-- training plan start
 meta: IRONMAN Lanzarote
 date: 2026-09-01
