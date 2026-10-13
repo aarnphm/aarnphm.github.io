@@ -1,6 +1,7 @@
 import { decodeCalcShare } from '../../../util/triathlon-calculator'
 import { decodeActivityComparisonAnchor } from '../../../util/triathlon-comparison'
 import { TRI_TIRE_PRESSURE_OPEN_EVENT } from '../../../util/triathlon-tire-pressure'
+import { setupPerformanceDebug } from '../../scripts/performance-debug'
 import { setupActivityComparisonEmbeds } from '../activity/embeds'
 import { setupDayEmbeds } from '../activity/embeds'
 import { setupEnvironmentTabs } from '../activity/environment-tabs'
@@ -19,7 +20,6 @@ import { setupCommandPalette } from '../shell/command-palette'
 import { setupDropdown } from '../shell/dropdown'
 import { setupFeed } from '../shell/feed'
 import { setupGloss } from '../shell/glossary'
-import { setupPerformanceDebug } from '../shell/performance-debug'
 import { setupDistanceUnits, setupI18n, setupPaceUnit } from '../shell/presentation'
 import { setupShortcuts } from '../shell/shortcuts'
 import { setup } from '../shell/timeline'
@@ -66,7 +66,14 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
     addCleanup(setupTirePressure(root))
     addCleanup(setupCommandPalette(root, context))
     addCleanup(setup(root, context))
-    addCleanup(setupPerformanceDebug(root))
+    addCleanup(
+      setupPerformanceDebug({
+        label: 'triathlon performance debug',
+        query: 'tri-debug',
+        sources: ['cursor', 'timeline', 'popover'],
+        state: () => root.className.match(/tri-(analytics|calc|map|training)-open/)?.[1],
+      }),
+    )
     addCleanup(setupCalc(root, context))
     addCleanup(setupCalculatorTabs(root))
     addCleanup(setupToolsTabs(root))

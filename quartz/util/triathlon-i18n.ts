@@ -2811,6 +2811,9 @@ const fr: TriDict = {
     'course reference': 'parcours de référence',
     'mapped distance': 'distance cartographiée',
     lap: 'tour',
+    'lap splits': 'tours',
+    'pace distribution': 'd d’allure',
+    'marathon trend': 'projection marathon',
     laps: 'tours',
     'aid stations per lap': 'ravitaillements par tour',
     'aid station per lap': 'ravitaillement par tour',
@@ -3404,6 +3407,23 @@ const fr: TriDict = {
 const TRI_I18N: Record<Locale, TriDict> = { en, fr }
 
 export const triText = (target: Locale, key: string): string => TRI_I18N[target].ui[key] ?? key
+
+const triLabelKeys = new Map<string, string>()
+for (const dictionary of Object.values(TRI_I18N))
+  for (const [key, label] of Object.entries(dictionary.ui)) {
+    triLabelKeys.set(key, key)
+    triLabelKeys.set(label, key)
+  }
+
+/** A share label can come from either the serialized payload or an already-localized table. */
+export const triLabel = (target: Locale, label: string): string => {
+  const lap = /^(?:lap|tour) (\d+)$/.exec(label)
+  if (lap) return `${triText(target, 'lap')} ${lap[1]}`
+  return label
+    .split(' · ')
+    .map(part => triText(target, triLabelKeys.get(part) ?? part))
+    .join(' · ')
+}
 
 type Vo2SourceMethod = 'garmin' | 'apple' | 'bike' | 'run' | 'hrratio' | 'lab' | 'none'
 

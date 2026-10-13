@@ -23,6 +23,25 @@ export const cardioSeriesOf = (
   return cardio.decouplingSeries.map(point => ({ date: point.date, value: point.pct }))
 }
 
+const BASELINE_DAYS = 7
+const BASELINE_MIN_POINTS = 4
+const DAY_MS = 86_400_000
+
+// Window by calendar days, so session-logged series (efficiency, decoupling) average the same
+// week of time as the daily ones (resting HR, HRV).
+const trailingBaseline = (points: readonly CardioSeriesPoint[]): CardioSeriesPoint[] => {
+  const out: CardioSeriesPoint[] = []
+  let start = 0
+  let sum = 0
+  for (let i = 0; i < points.length; i++) {
+    sum += points[i].value
+    const floorMs = Date.parse(`${points[i].date}T00:00:00Z`) - BASELINE_DAYS * DAY_MS
+    while (Date.parse(`${points[start].date}T00:00:00Z`) <= floorMs) sum -= points[start++].value
+    out.push({ date: points[i].date, value: sum / (i - start + 1) })
+  }
+  return out
+}
+
 export const cardioValueText = (value: number, unit: string): string => {
   const decimals = unit === 'bpm' || unit === 'ms' ? 0 : unit === '%' ? 1 : 2
   const text = value.toFixed(decimals)
@@ -154,16 +173,24 @@ export const buildCardio = (data: Analytics, context: TriathlonContext): HTMLEle
           'aria-hidden': 'true',
         }),
       )
-      const pathPoints: [number, number][] = points.map(point => [
-        xAt(point.date),
-        yAt(point.value),
-      ])
+      const lineClass = `tri-elev-line ${m.key === 'hrv' ? 'tri-line-bike' : m.key === 'ef' ? 'tri-line-swim' : m.key === 'rhr' ? 'tri-line-run' : ''}`
+      const toPath = (series: readonly CardioSeriesPoint[]): string =>
+        polyD(series.map(point => [xAt(point.date), yAt(point.value)]))
+      const withBaseline = points.length >= BASELINE_MIN_POINTS
       s.appendChild(
         svg('path', {
-          d: polyD(pathPoints),
-          class: `tri-elev-line ${m.key === 'hrv' ? 'tri-line-bike' : m.key === 'ef' ? 'tri-line-swim' : m.key === 'rhr' ? 'tri-line-run' : ''}`,
+          d: toPath(points),
+          class: withBaseline ? `${lineClass} tri-engine-raw` : lineClass,
         }),
       )
+      if (withBaseline)
+        s.appendChild(
+          svg('path', {
+            d: toPath(trailingBaseline(points)),
+            class: `${lineClass} tri-engine-baseline`,
+            'aria-hidden': 'true',
+          }),
+        )
       s.appendChild(
         svg('line', { x1: 0, y1: chartTop, x2: 0, y2: chartBottom, class: 'tri-ana-cursor' }),
       )

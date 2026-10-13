@@ -2,7 +2,7 @@ import {
   SITE_PERFORMANCE_SAMPLE_EVENT,
   type SitePerformanceSample,
   type SitePerformanceSource,
-} from '../../scripts/performance-sample'
+} from './performance-sample'
 
 const FRAME_BUDGET_MS = 1000 / 60
 const REFRESH_PERIODS = [1000 / 120, 1000 / 90, 1000 / 60, 1000 / 30]
@@ -17,8 +17,30 @@ const CHART_CEIL_MS = 250
 const IDLE_GAP_MS = 1000
 const SMOOTHING_PASSES = 2
 const EVENT_THRESHOLD_MS = 16
-const DEBUG_QUERY = 'tri-debug'
+// Refresh intervals jitter around the budget; a frame counts as dropped only past one and a half.
+const DROPPED_FACTOR = 1.5
 const DEBUG_VALUE = 'performance'
+
+export interface PerformanceDebugReading {
+  label: string
+  value: string
+}
+
+export interface PerformanceDebugProbe {
+  read(): readonly PerformanceDebugReading[]
+  stop(): void
+}
+
+export interface PerformanceDebugProfile {
+  label: string
+  /** `?<query>=performance` opens the panel on load. */
+  query: string
+  sources: readonly SitePerformanceSource[]
+  /** Text beside the frame rate; the cursor mode shows when this returns nothing. */
+  state?: () => string | null | undefined
+  /** Surface readings, created when the panel opens and stopped when it closes. */
+  probe?: () => PerformanceDebugProbe
+}
 
 interface RingBuffer {
   count: number
@@ -33,6 +55,7 @@ interface BucketSeries {
   max: Float32Array
   mean: Float32Array
   min: Float32Array
+  work: Float32Array
 }
 
 interface OpenBucket {
@@ -42,6 +65,15 @@ interface OpenBucket {
   min: number
   start: number
   sum: number
+  workCount: number
+  workSum: number
+}
+
+interface FrameWork {
+  own: number
+  script: number
+  start: number
+  time: number
 }
 
 export interface FrameSummary {
@@ -55,6 +87,7 @@ export interface ChartSeries {
   max: readonly number[]
   mean: readonly number[]
   min: readonly number[]
+  work: readonly number[]
 }
 
 interface ChartGeometry {
@@ -62,6 +95,7 @@ interface ChartGeometry {
   font: string
   gray: string
   height: number
+  sage: string
   salmon: string
   surface: string
   text: string
@@ -71,6 +105,7 @@ interface ChartGeometry {
 interface LongAnimationFrameScript {
   duration: number
   invoker: string
+  invokerType: string
   sourceFunctionName: string
   sourceURL: string
 }
@@ -91,6 +126,18 @@ interface HeapMemory {
 
 interface EventObserverInit extends PerformanceObserverInit {
   durationThreshold: number
+}
+
+interface Metric {
+  element: HTMLElement
+  name: HTMLElement
+  value: HTMLElement
+}
+
+const SOURCE_LABELS: Record<SitePerformanceSource, string> = {
+  cursor: 'cursor p95',
+  popover: 'popover p95',
+  timeline: 'timeline p95',
 }
 
 const createRing = (capacity: number): RingBuffer => ({
@@ -126,6 +173,7 @@ const createSeries = (capacity: number): BucketSeries => ({
   max: new Float32Array(capacity),
   mean: new Float32Array(capacity),
   min: new Float32Array(capacity),
+  work: new Float32Array(capacity),
 })
 
 const pushSeries = (series: BucketSeries, bucket: OpenBucket): void => {
@@ -133,6 +181,7 @@ const pushSeries = (series: BucketSeries, bucket: OpenBucket): void => {
   series.mean[slot] = bucket.sum / bucket.count
   series.min[slot] = bucket.min
   series.max[slot] = bucket.max
+  series.work[slot] = bucket.workCount > 0 ? bucket.workSum / bucket.workCount : 0
   series.jank[slot] = bucket.jank ? 1 : 0
   series.cursor = (series.cursor + 1) % series.mean.length
   series.count = Math.min(series.count + 1, series.mean.length)
@@ -145,6 +194,7 @@ const clearSeries = (series: BucketSeries): void => {
   series.max.fill(0)
   series.mean.fill(0)
   series.min.fill(0)
+  series.work.fill(0)
 }
 
 const seriesWindow = (series: BucketSeries): ChartSeries => {
@@ -154,14 +204,16 @@ const seriesWindow = (series: BucketSeries): ChartSeries => {
   const max: number[] = []
   const mean: number[] = []
   const min: number[] = []
+  const work: number[] = []
   for (let index = 0; index < series.count; index += 1) {
     const slot = (start + index) % capacity
     jank.push(series.jank[slot] === 1)
     max.push(series.max[slot])
     mean.push(series.mean[slot])
     min.push(series.min[slot])
+    work.push(series.work[slot])
   }
-  return { jank, max, mean, min }
+  return { jank, max, mean, min, work }
 }
 
 export const summarizeFrameDurations = (
@@ -266,12 +318,10 @@ const createElement = <Tag extends keyof HTMLElementTagNameMap>(
   return element
 }
 
-const createMetric = (
-  label: string,
-): { element: HTMLElement; name: HTMLElement; value: HTMLElement } => {
-  const element = createElement('div', 'tri-perf-metric')
-  const name = createElement('span', 'tri-perf-metric-label')
-  const value = createElement('span', 'tri-perf-metric-value')
+const createMetric = (label: string): Metric => {
+  const element = createElement('div', 'site-perf-metric')
+  const name = createElement('span', 'site-perf-metric-label')
+  const value = createElement('span', 'site-perf-metric-value')
   name.textContent = label
   value.textContent = '—'
   element.append(name, value)
@@ -307,7 +357,7 @@ const drawChart = (
   budget: number,
 ): void => {
   const context = canvas.getContext('2d')
-  const { accent, font, gray, height, salmon, surface, text, width } = geometry
+  const { accent, font, gray, height, sage, salmon, surface, text, width } = geometry
   if (!context || width <= 0 || height <= 0) return
   const pixelRatio = Math.min(window.devicePixelRatio, 2)
   const targetWidth = Math.round(width * pixelRatio)
@@ -318,14 +368,56 @@ const drawChart = (
   }
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
   context.clearRect(0, 0, width, height)
-  const guideY = (duration: number): number =>
-    Math.round(height - frameChartRatio(duration) * height) + 0.5
+  const toY = (duration: number): number => height - frameChartRatio(duration) * height
+  if (series.mean.length >= 2) {
+    const step = width / (BUCKET_CAPACITY - 1)
+    const offset = width - (series.mean.length - 1) * step
+    const xs = series.mean.map((_, index) => offset + index * step)
+    // Main-thread work fills from the floor; where it meets the interval line, frames drop.
+    const workY = smoothWindow(series.work).map(toY)
+    context.globalAlpha = 0.72
+    context.fillStyle = sage
+    context.beginPath()
+    context.moveTo(xs[0], height)
+    traceCurve(context, xs, workY, true)
+    context.lineTo(xs[xs.length - 1], height)
+    context.closePath()
+    context.fill()
+    const upperY = smoothWindow(series.max).map(toY)
+    const lowerY = smoothWindow(series.min).map(toY)
+    const meanY = smoothWindow(series.mean).map(toY)
+    context.globalAlpha = 0.18
+    context.fillStyle = accent
+    context.beginPath()
+    traceCurve(context, xs, upperY, false)
+    traceCurve(context, [...xs].reverse(), [...lowerY].reverse(), true)
+    context.closePath()
+    context.fill()
+    context.globalAlpha = 1
+    context.strokeStyle = accent
+    context.lineWidth = 1.25
+    context.lineJoin = 'round'
+    context.lineCap = 'round'
+    context.beginPath()
+    traceCurve(context, xs, meanY, false)
+    context.stroke()
+    context.fillStyle = accent
+    context.beginPath()
+    context.arc(xs[xs.length - 1], meanY[meanY.length - 1], 1.6, 0, Math.PI * 2)
+    context.fill()
+    const rug = Math.max(3, height * 0.16)
+    context.fillStyle = salmon
+    for (let index = 0; index < series.jank.length; index += 1) {
+      if (!series.jank[index]) continue
+      context.fillRect(xs[index] - 0.75, height - rug, 1.5, rug)
+    }
+  }
   context.font = font
   context.textAlign = 'left'
   context.textBaseline = 'alphabetic'
   for (const multiple of [1, 2, 4]) {
     const duration = budget * multiple
-    const y = guideY(duration)
+    const y = Math.round(toY(duration)) + 0.5
     context.globalAlpha = 0.45
     context.strokeStyle = gray
     context.lineWidth = 1
@@ -345,64 +437,26 @@ const drawChart = (
     context.fillText(label, 3, baseline)
     context.globalAlpha = 1
   }
-  if (series.mean.length < 2) return
-  const mean = smoothWindow(series.mean)
-  const upper = smoothWindow(series.max)
-  const lower = smoothWindow(series.min)
-  const step = width / (BUCKET_CAPACITY - 1)
-  const offset = width - (mean.length - 1) * step
-  const xs = mean.map((_, index) => offset + index * step)
-  const toY = (duration: number): number => height - frameChartRatio(duration) * height
-  const upperY = upper.map(toY)
-  const lowerY = lower.map(toY)
-  const meanY = mean.map(toY)
-  const reversedXs = [...xs].reverse()
-  context.globalAlpha = 0.18
-  context.fillStyle = accent
-  context.beginPath()
-  traceCurve(context, xs, upperY, false)
-  traceCurve(context, reversedXs, [...lowerY].reverse(), true)
-  context.closePath()
-  context.fill()
-  context.globalAlpha = 1
-  context.strokeStyle = accent
-  context.lineWidth = 1.25
-  context.lineJoin = 'round'
-  context.lineCap = 'round'
-  context.beginPath()
-  traceCurve(context, xs, meanY, false)
-  context.stroke()
-  context.fillStyle = accent
-  context.beginPath()
-  context.arc(xs[xs.length - 1], meanY[meanY.length - 1], 1.6, 0, Math.PI * 2)
-  context.fill()
-  const rug = Math.max(3, height * 0.16)
-  context.fillStyle = salmon
-  for (let index = 0; index < series.jank.length; index += 1) {
-    if (!series.jank[index]) continue
-    context.fillRect(xs[index] - 0.75, height - rug, 1.5, rug)
-  }
 }
 
-const debugEnabledByQuery = (): boolean =>
-  new URLSearchParams(window.location.search).get(DEBUG_QUERY) === DEBUG_VALUE
-
 const scriptLabel = (script: LongAnimationFrameScript): string => {
-  const name = script.sourceFunctionName || script.invoker || 'anonymous'
+  // A script block names its own URL as the invoker; the file already says that.
+  const invoker = URL.canParse(script.invoker) ? script.invokerType : script.invoker
+  const name = script.sourceFunctionName || invoker || 'anonymous'
   const file = script.sourceURL.split('?')[0].split('/').pop()
   return file ? `${name} · ${file}` : name
 }
 
-export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
-  const panel = createElement('aside', 'tri-perf-debug')
+export const setupPerformanceDebug = (profile: PerformanceDebugProfile): (() => void) => {
+  const panel = createElement('aside', 'site-perf-debug')
   panel.hidden = true
-  panel.setAttribute('aria-label', 'triathlon performance debug')
-  const header = createElement('div', 'tri-perf-head')
-  const title = createElement('span', 'tri-perf-title')
+  panel.setAttribute('aria-label', profile.label)
+  const header = createElement('div', 'site-perf-head')
+  const title = createElement('span', 'site-perf-title')
   title.textContent = 'performance'
-  const shortcut = createElement('kbd', 'tri-perf-shortcut')
+  const shortcut = createElement('kbd', 'site-perf-shortcut')
   shortcut.textContent = '⌥⇧D'
-  const close = createElement('button', 'tri-perf-close')
+  const close = createElement('button', 'site-perf-close')
   close.type = 'button'
   close.setAttribute('aria-label', 'close performance debug')
   close.dataset.siteCursorClose = ''
@@ -410,63 +464,103 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
     '<svg data-site-cursor-icon viewBox="0 0 12 12" aria-hidden="true"><path d="M2.25 2.25 9.75 9.75M9.75 2.25 2.25 9.75"/></svg>'
   header.append(title, shortcut, close)
 
-  const primary = createElement('div', 'tri-perf-primary')
-  const fps = createElement('strong', 'tri-perf-fps')
+  const primary = createElement('div', 'site-perf-primary')
+  const fps = createElement('strong', 'site-perf-fps')
   fps.textContent = '— fps'
-  const state = createElement('span', 'tri-perf-state')
+  const state = createElement('span', 'site-perf-state')
   state.textContent = 'idle'
   primary.append(fps, state)
 
-  const canvas = createElement('canvas', 'tri-perf-chart')
-  canvas.setAttribute('aria-label', 'frame duration over the last six seconds')
+  const canvas = createElement('canvas', 'site-perf-chart')
+  canvas.setAttribute(
+    'aria-label',
+    'frame interval and main-thread work per frame over the last six seconds',
+  )
   canvas.setAttribute('role', 'img')
+  const legend = createElement('div', 'site-perf-legend')
+  legend.setAttribute('aria-hidden', 'true')
+  for (const [key, text] of [
+    ['interval', 'interval'],
+    ['work', 'work'],
+    ['jank', 'long frame'],
+  ]) {
+    const item = createElement('span', 'site-perf-legend-item')
+    item.dataset.series = key
+    item.textContent = text
+    legend.append(item)
+  }
 
-  const metrics = createElement('div', 'tri-perf-metrics')
+  const metrics = createElement('div', 'site-perf-metrics')
   const frameMetric = createMetric('frame p95')
-  const slowMetric = createMetric('over budget')
+  const droppedMetric = createMetric('dropped')
+  const workMetric = createMetric('work p95')
+  const scriptMetric = createMetric('raf p95')
+  const renderMetric = createMetric('render p95')
   const longFrameMetric = createMetric('long frames')
   const worstMetric = createMetric('worst frame')
   const blockedMetric = createMetric('blocked')
   const shiftMetric = createMetric('shift')
-  const cursorMetric = createMetric('cursor p95')
-  const timelineMetric = createMetric('timeline p95')
-  const popoverMetric = createMetric('popover p95')
   const scrollMetric = createMetric('scroll')
+  const sourceMetrics = profile.sources.map(
+    source => [source, createMetric(SOURCE_LABELS[source])] as const,
+  )
   const heapMetric = createMetric('heap')
   const nodeMetric = createMetric('dom nodes')
   metrics.append(
     frameMetric.element,
-    slowMetric.element,
+    droppedMetric.element,
+    workMetric.element,
+    scriptMetric.element,
+    renderMetric.element,
     longFrameMetric.element,
     worstMetric.element,
     blockedMetric.element,
     shiftMetric.element,
-    cursorMetric.element,
-    timelineMetric.element,
-    popoverMetric.element,
     scrollMetric.element,
+    ...sourceMetrics.map(([, metric]) => metric.element),
     heapMetric.element,
     nodeMetric.element,
   )
 
-  const attribution = createElement('div', 'tri-perf-attribution')
+  const readings = createElement('div', 'site-perf-metrics site-perf-readings')
+  readings.hidden = true
+  const readingMetrics: Metric[] = []
+
+  const attribution = createElement('div', 'site-perf-attribution')
   const scriptRow = createMetric('worst script')
-  scriptRow.element.className = 'tri-perf-attribution-row'
+  scriptRow.element.className = 'site-perf-attribution-row'
   const eventRow = createMetric('worst event')
-  eventRow.element.className = 'tri-perf-attribution-row'
+  eventRow.element.className = 'site-perf-attribution-row'
   attribution.append(scriptRow.element, eventRow.element)
 
-  panel.append(header, primary, canvas, metrics, attribution)
+  panel.append(header, primary, canvas, legend, metrics, readings, attribution)
   document.body.appendChild(panel)
 
   const frames = createRing(FRAME_CAPACITY)
+  const work = createRing(FRAME_CAPACITY)
+  const script = createRing(FRAME_CAPACITY)
+  const render = createRing(FRAME_CAPACITY)
   const series = createSeries(BUCKET_CAPACITY)
-  const bucket: OpenBucket = { count: 0, jank: false, max: 0, min: 0, start: 0, sum: 0 }
+  const bucket: OpenBucket = {
+    count: 0,
+    jank: false,
+    max: 0,
+    min: 0,
+    start: 0,
+    sum: 0,
+    workCount: 0,
+    workSum: 0,
+  }
   const samples: Record<SitePerformanceSource, RingBuffer> = {
     cursor: createRing(SAMPLE_CAPACITY),
     popover: createRing(SAMPLE_CAPACITY),
     timeline: createRing(SAMPLE_CAPACITY),
   }
+  const frameWork: FrameWork = { own: 0, script: 0, start: 0, time: -1 }
+  let probe: PerformanceDebugProbe | null = null
+  let rendered: MessageChannel | null = null
+  let nativeRequestFrame: Window['requestAnimationFrame'] | null = null
+  let timedRequestFrame: Window['requestAnimationFrame'] | null = null
   let animationFrame = 0
   let active = false
   let lastFrame = 0
@@ -492,6 +586,7 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
     font: '8px monospace',
     gray: '#8b8b8b',
     height: 0,
+    sage: '#cdd597',
     salmon: '#fdb2a2',
     surface: '#fffcf0',
     text: '#100f0f',
@@ -501,10 +596,11 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
   const updateChartGeometry = (): void => {
     const style = getComputedStyle(canvas)
     chartGeometry = {
-      accent: style.getPropertyValue('--tri-accent').trim() || '#fc4c02',
+      accent: style.getPropertyValue('--perf-accent').trim() || '#fc4c02',
       font: `8px ${style.fontFamily}`,
       gray: style.getPropertyValue('--gray').trim() || '#8b8b8b',
       height: canvas.clientHeight,
+      sage: style.getPropertyValue('--fig-sage').trim() || '#cdd597',
       salmon: style.getPropertyValue('--fig-salmon').trim() || '#fdb2a2',
       surface: style.backgroundColor,
       text: style.color,
@@ -514,6 +610,11 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
   const onThemeChange = (): void => {
     updateChartGeometry()
     if (active) drawChart(canvas, seriesWindow(series), chartGeometry, frameBudget)
+  }
+  // A page may ease its palette after a theme change (the home trail fades body tokens over
+  // 1.2 s), so the colours read on themechange can be mid-fade. Read them again when it ends.
+  const onTransitionEnd = (event: TransitionEvent): void => {
+    if (event.target instanceof Element && event.target.contains(panel)) onThemeChange()
   }
   const chartResize = new ResizeObserver(updateChartGeometry)
   chartResize.observe(canvas)
@@ -525,6 +626,8 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
     bucket.min = 0
     bucket.start = start
     bucket.sum = 0
+    bucket.workCount = 0
+    bucket.workSum = 0
   }
 
   const advanceBuckets = (timestamp: number, duration: number): void => {
@@ -557,27 +660,89 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
     advanceBuckets(timestamp, duration)
   }
 
+  // Every callback of one frame receives the same timestamp, so it names the frame.
+  const noteFrameWork = (time: number, began: number, ended: number, own: boolean): void => {
+    if (frameWork.time !== time) {
+      frameWork.time = time
+      frameWork.start = began
+      frameWork.script = 0
+      frameWork.own = 0
+    }
+    frameWork.start = Math.min(frameWork.start, began)
+    if (own) frameWork.own += ended - began
+    else frameWork.script += ended - began
+  }
+
+  // A message posted during the frame's callbacks runs after its style, layout, and paint.
+  const onRendered = (event: MessageEvent<number>): void => {
+    if (!active || frameWork.time !== event.data) return
+    const total = Math.max(0, performance.now() - frameWork.start - frameWork.own)
+    pushRing(work, total)
+    pushRing(script, frameWork.script)
+    pushRing(render, Math.max(0, total - frameWork.script))
+    bucket.workSum += total
+    bucket.workCount += 1
+  }
+
+  const timeFrameCallbacks = (): void => {
+    const native = window.requestAnimationFrame
+    nativeRequestFrame = native
+    timedRequestFrame = callback =>
+      native.call(window, time => {
+        const began = performance.now()
+        try {
+          callback(time)
+        } finally {
+          noteFrameWork(time, began, performance.now(), false)
+        }
+      })
+    window.requestAnimationFrame = timedRequestFrame
+  }
+
+  const restoreFrameCallbacks = (): void => {
+    if (nativeRequestFrame && window.requestAnimationFrame === timedRequestFrame)
+      window.requestAnimationFrame = nativeRequestFrame
+    nativeRequestFrame = null
+    timedRequestFrame = null
+  }
+
+  const updateReadings = (): void => {
+    const values = probe?.read() ?? []
+    readings.hidden = values.length === 0
+    values.forEach((reading, index) => {
+      let metric = readingMetrics[index]
+      if (!metric) {
+        metric = createMetric(reading.label)
+        readingMetrics.push(metric)
+        readings.append(metric.element)
+      }
+      metric.name.textContent = reading.label
+      metric.value.textContent = reading.value
+    })
+    for (const metric of readingMetrics.splice(values.length)) metric.element.remove()
+  }
+
   const updateState = (): void => {
     const cursor = document.querySelector<HTMLElement>('.site-cursor')
-    const openPanel = root.className.match(/tri-(analytics|calc|map|training)-open/)?.[1]
-    state.textContent = openPanel ?? cursor?.dataset.mode ?? 'idle'
+    state.textContent = profile.state?.() || cursor?.dataset.mode || 'idle'
   }
 
   const updateMetrics = (timestamp: number): void => {
     const frameValues = ringValues(frames)
     frameBudget = estimateFrameBudget(frameValues)
-    const summary = summarizeFrameDurations(frameValues, frameBudget)
+    const summary = summarizeFrameDurations(frameValues, frameBudget * DROPPED_FACTOR)
     fps.textContent = `${Math.round(summary.fps)} fps`
-    slowMetric.name.textContent = `over ${frameBudget.toFixed(1)} ms`
     frameMetric.value.textContent = formatDuration(summary.p95)
-    slowMetric.value.textContent = `${Math.round(summary.slowRatio * 100)}%`
+    droppedMetric.value.textContent = `${Math.round(summary.slowRatio * 100)}%`
+    workMetric.value.textContent = formatDuration(percentile95(work))
+    scriptMetric.value.textContent = formatDuration(percentile95(script))
+    renderMetric.value.textContent = formatDuration(percentile95(render))
     longFrameMetric.value.textContent = String(longFrames)
     worstMetric.value.textContent = formatDuration(worstFrame)
     blockedMetric.value.textContent = formatDuration(blockedTotal)
     shiftMetric.value.textContent = layoutShift.toFixed(3)
-    cursorMetric.value.textContent = formatDuration(percentile95(samples.cursor))
-    timelineMetric.value.textContent = formatDuration(percentile95(samples.timeline))
-    popoverMetric.value.textContent = formatDuration(percentile95(samples.popover))
+    for (const [source, metric] of sourceMetrics)
+      metric.value.textContent = formatDuration(percentile95(samples[source]))
     const elapsed = Math.max(1, timestamp - previousScrollPaint)
     const scrollRate = ((scrollEvents - previousScrollEvents) * 1000) / elapsed
     scrollMetric.value.textContent = `${scrollEvents} · ${scrollRate.toFixed(0)} /s`
@@ -592,11 +757,13 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
     eventRow.value.textContent = worstInteractionName
       ? `${worstInteractionName} · ${formatDuration(worstInteraction)}`
       : '—'
+    updateReadings()
     updateState()
   }
 
   const tick = (timestamp: number): void => {
     if (!active) return
+    const began = performance.now()
     if (lastFrame > 0) {
       const duration = timestamp - lastFrame
       if (duration <= IDLE_GAP_MS) record(timestamp, duration)
@@ -611,7 +778,9 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
       lastMetrics = timestamp
       updateMetrics(timestamp)
     }
-    animationFrame = window.requestAnimationFrame(tick)
+    rendered?.port2.postMessage(timestamp)
+    animationFrame = (nativeRequestFrame ?? window.requestAnimationFrame).call(window, tick)
+    noteFrameWork(timestamp, began, performance.now(), true)
   }
 
   const start = (): void => {
@@ -620,11 +789,15 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
     panel.hidden = false
     document.documentElement.dataset.sitePerformanceDebug = 'true'
     clearRing(frames)
+    clearRing(work)
+    clearRing(script)
+    clearRing(render)
     clearRing(samples.cursor)
     clearRing(samples.timeline)
     clearRing(samples.popover)
     clearSeries(series)
     resetBucket(performance.now())
+    frameWork.time = -1
     scrollEvents = 0
     previousScrollEvents = 0
     longFrames = 0
@@ -641,7 +814,11 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
     lastChart = 0
     lastMetrics = 0
     previousScrollPaint = performance.now()
-    animationFrame = window.requestAnimationFrame(tick)
+    probe = profile.probe?.() ?? null
+    rendered = new MessageChannel()
+    rendered.port1.onmessage = onRendered
+    timeFrameCallbacks()
+    animationFrame = nativeRequestFrame!.call(window, tick)
     if (PerformanceObserver.supportedEntryTypes.includes('long-animation-frame')) {
       frameObserver = new PerformanceObserver(entries => {
         for (const entry of entries.getEntries() as LongAnimationFrameEntry[]) {
@@ -684,6 +861,12 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
     panel.hidden = true
     window.cancelAnimationFrame(animationFrame)
     animationFrame = 0
+    restoreFrameCallbacks()
+    rendered?.port1.close()
+    rendered?.port2.close()
+    rendered = null
+    probe?.stop()
+    probe = null
     frameObserver?.disconnect()
     frameObserver = null
     eventObserver?.disconnect()
@@ -718,16 +901,18 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
   close.addEventListener('click', stop)
   document.addEventListener('keydown', onKey)
   document.addEventListener('themechange', onThemeChange)
+  document.addEventListener('transitionend', onTransitionEnd)
   document.addEventListener('visibilitychange', onVisibility)
   window.addEventListener(SITE_PERFORMANCE_SAMPLE_EVENT, onSample)
   window.addEventListener('scroll', onScroll, { capture: true, passive: true })
-  if (debugEnabledByQuery()) start()
+  if (new URLSearchParams(window.location.search).get(profile.query) === DEBUG_VALUE) start()
 
   return () => {
     stop()
     close.removeEventListener('click', stop)
     document.removeEventListener('keydown', onKey)
     document.removeEventListener('themechange', onThemeChange)
+    document.removeEventListener('transitionend', onTransitionEnd)
     document.removeEventListener('visibilitychange', onVisibility)
     window.removeEventListener(SITE_PERFORMANCE_SAMPLE_EVENT, onSample)
     window.removeEventListener('scroll', onScroll, true)

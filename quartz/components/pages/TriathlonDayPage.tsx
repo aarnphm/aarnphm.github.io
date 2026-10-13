@@ -11,6 +11,7 @@ import { joinSegments, pathToRoot } from '../../util/path'
 import { triathlonDateFromSlug, triathlonMonthSlug } from '../../util/triathlon-date-route'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
+import performanceStyle from '../styles/performance-debug.scss'
 import style from '../styles/triathlon.scss'
 import { triathlonDayCard, triathlonDayExtras, triathlonDayProps } from '../triathlon-day-card'
 import { TriathlonSubnav } from './triathlon-panels'
@@ -68,7 +69,7 @@ export default (() => {
     )
   }
 
-  TriathlonDayPage.css = style
+  TriathlonDayPage.css = [style, performanceStyle]
   TriathlonDayPage.afterDOMLoaded = script
 
   return TriathlonDayPage

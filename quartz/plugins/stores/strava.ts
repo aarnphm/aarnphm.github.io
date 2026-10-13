@@ -2,6 +2,7 @@ import type { RunPaceZoneDistribution } from '../../util/run-pace-zones'
 import type { STAMINA_LEDGER_OFFSET_METHOD, StaminaLedgerStart } from '../../util/stamina-ledger'
 import type { SwimPhysiology } from '../../util/swim-physiology'
 import type { SwimPowerEstimate } from '../../util/swim-power'
+import type { SwimProvenance } from '../../util/swim-provenance'
 import type { SwimLocation, SwimStroke } from './apple'
 import type {
   GarminActivity,
@@ -767,6 +768,7 @@ export interface StravaActivityDetail {
   swimPaceSource: SwimPaceSource | null
   swimDurationS: number | null
   swimIntervals: SwimActivityInterval[]
+  swimProvenance?: SwimProvenance
   swimPower?: SwimPowerEstimate | null
   swimLocation: SwimLocation | null
   waterTemperatureC: number | null
