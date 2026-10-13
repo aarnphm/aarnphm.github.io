@@ -287,7 +287,7 @@
 
   .course-rail {
     position: sticky;
-    // the site header collapses on course pages (`body:has(.course-crumb)`)
+    // the site header collapses on course pages (`#quartz-root:has(.course-crumb)`)
     top: var(--space-6);
     align-self: start;
   }
@@ -1005,8 +1005,10 @@
   }
 }
 
-body:has(.course-crumb) {
-  section[class~='header'],
+// Anchored on the page root: a `body:has()` anchor re-matches whenever the homepage trail or pet
+// changes the body's DOM, and its descendant rules then restyle the whole document.
+#quartz-root:has(.course-crumb) {
+  > section.header,
   .header-content {
     display: contents;
   }
@@ -1027,7 +1029,7 @@ body:has(.course-crumb) {
 
   // stacked course pages (unit bar, title, byline, notes, resource body, the unit footer,
   // license, backlinks) share the home's 66rem centred column; the pdf strip keeps its bleed
-  .page > .page-body-grid {
+  > .page-body-grid {
     > .page-header > :not(.course-resource-strip),
     > .page-content > .main-col,
     > .page-content > .course-reading-split,

@@ -114,6 +114,6 @@
   }
 }
 
-body:has(#mermaid-container.active) section[class~='header'] {
+#quartz-root:has(#mermaid-container.active) section.header {
   z-index: 10;
 }
