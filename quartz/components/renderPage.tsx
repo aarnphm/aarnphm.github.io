@@ -2171,32 +2171,32 @@ const ElementComponent = ((enableRecents: boolean = false) => {
     const Hyperlink = HyperlinksComponent({
       children: [
         <section class="homepage-board-garden">
-          <em>jardin</em>
-          <address class="clickable-container">
-            <AliasLink newTab classes={['external']} name="notes" url="https://notes.aarnphm.xyz" />
+          <div class="clickable-container">
             <AliasLink isInternal enablePopover={false} name="stream" url="/stream" />
             <AliasLink isInternal enablePopover={false} name="are.na" url="/arena" />
-            <AliasLink isInternal enablePopover={false} name="scratchpad" url="/thoughts/" />
+            <AliasLink isInternal enablePopover={false} name="notes" url="/thoughts/" />
             <AliasLink isInternal enablePopover={false} name="writings" url="/posts/" />
-          </address>
+          </div>
         </section>,
         <section class="boring-legal">
-          <address class="clickable-container">
+          <div class="clickable-container">
+            <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
+            <AliasLink isInternal enablePopover={false} name="privacy" url="/privacy" />
+            <AliasLink
+              isInternal
+              enablePopover={false}
+              name="terms of service"
+              url="/terms-of-service"
+            />
+          </div>
+          <em class="homepage-board-license">
             <AliasLink
               newTab
               classes={['external']}
               name="CC BY-NC-SA"
               url="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
             />
-            <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
-            <AliasLink isInternal enablePopover={false} name="privacy" url="/privacy" />
-            <AliasLink
-              isInternal
-              enablePopover={false}
-              name="term of service"
-              url="/terms-of-service"
-            />
-          </address>
+          </em>
         </section>,
       ],
     })
