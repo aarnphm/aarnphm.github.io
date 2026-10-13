@@ -201,6 +201,13 @@
   border: 0;
 }
 
+// a lecture video keeps its frame ratio at the top of the pane
+.course-source-video {
+  flex: 0 0 auto;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
 // The scratchpad and the open note's editor take the rest of the pane height.
 .course-workspace-draft,
 .course-workspace-notes {

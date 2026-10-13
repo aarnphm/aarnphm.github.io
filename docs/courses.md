@@ -62,11 +62,12 @@ The vendor script builds `units` from the OCW calendar table. Without a calendar
    - `lectures/index.md` with `layout: study-log` and `study: { read: {}, problems: {} }`
    - `statements/index.md` with `layout: statements`
    - `pages/calendar/index.md` when OCW ships no calendar (see `18-156-projection-theory-spring-2025`)
+   - `lectures/<nn>.md` for each unit: `pnpm exec tsx quartz/scripts/course-lecture-skeletons.ts content/courses/<dir>` writes the empty `start notes` page for every unit that has none. The page links the unit's PDF, else its video.
 4. Run `python3 -I docs/verification/course-parity/audit.py content/courses` and compare the new course with the others.
 
 ## studying a unit
 
-- **Notes.** On a unit with no `lectures/<nn>.md`, the PDF strip offers `start notes`. It builds the note and a `.fc` deck from your PDF marks. In dev it writes both files; on the built site it copies them. Or write `lectures/<nn>.md` by hand.
+- **Notes.** Every unit has a `lectures/<nn>.md` skeleton. On a unit with no `lectures/<nn>.md`, the PDF strip offers `start notes`. It builds the note and a `.fc` deck from your PDF marks. In dev it writes both files; on the built site it copies them. Or write `lectures/<nn>.md` by hand.
 - **Workspace.** Lecture pages (`lectures/<nn>`, `notes/<nn>`) open the workspace: source, scratchpad, notes. Signed-in notes are private marks on the page slug, so notes on `notes/03` and on `lectures/03` stay apart (`docs/course-workspace.md`).
 - **Cards.** Write `lectures/<nn>.fc`. Add `ID:` pins to keep a card's review history when you reword it. In cloze lines write `\lbrack \rbrack` and `\lvert \rvert`.
 - **Study log.** The `read` and `problems` dates in `lectures/index.md` place units on the calendar and set the frontier. In dev the buttons post them to the study endpoint (`quartz/scripts/course-study-server.ts`).
