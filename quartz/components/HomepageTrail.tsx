@@ -39,19 +39,6 @@ export default (() => {
           role="dialog"
           aria-label="Visitor register"
         >
-          <div class="visitor-register-head">
-            <span>trail register</span>
-            <button
-              class="g-icon-button"
-              type="button"
-              data-visitor-register-close
-              aria-label="Close visitor register"
-            >
-              <svg viewBox="0 0 16 16" aria-hidden="true">
-                <path d="m4 4 8 8M12 4l-8 8" />
-              </svg>
-            </button>
-          </div>
           <div class="visitor-register-columns" aria-hidden="true">
             <span>visitor</span>
             <span>arrived</span>

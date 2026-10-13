@@ -1,6 +1,7 @@
 @use '../../styles/variables.scss' as *;
 
-.homepage-trail {
+.homepage-trail,
+.homepage-trail-scene {
   // Panels open 1rem above the almanac line: its inset plus the 28px moon toggle.
   --trail-footer-panel-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 28px + 1rem);
 }
@@ -230,12 +231,14 @@ button.homepage-moon-toggle {
   font-size: 0.55rem;
 }
 @media (max-width: 600px), (pointer: coarse) {
-  .homepage-trail {
+  .homepage-trail,
+  .homepage-trail-scene {
     --trail-footer-panel-bottom: max(4rem, calc(env(safe-area-inset-bottom) + 3.5rem));
   }
 }
 @media (pointer: coarse) {
-  .homepage-trail {
+  .homepage-trail,
+  .homepage-trail-scene {
     --trail-footer-panel-bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4rem));
   }
 
