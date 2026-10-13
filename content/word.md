@@ -3,9 +3,11 @@ cssclasses:
   - nolist
 date: '2024-10-10'
 description: a bag of chips/words/vernacular
+flashcards:
+  default: true
 id: word
 layout: technical
-modified: 2026-10-12 15:03:30 GMT-04:00
+modified: 2026-10-13 13:38:45 GMT-04:00
 tags:
   - evergreen
 title: lists

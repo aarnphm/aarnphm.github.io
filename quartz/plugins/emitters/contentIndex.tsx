@@ -688,7 +688,7 @@ function addProcessedContentToIndex(
     slug = 'arena' as FullSlug
   }
 
-  if (file.data.flashcards) return
+  if (file.data.flashcards && !file.data.flashcardRoute?.default) return
 
   if (file.data.canvas) {
     const jcast = file.data.canvas

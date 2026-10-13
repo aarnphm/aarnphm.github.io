@@ -1,9 +1,11 @@
 import { styleText } from 'node:util'
 import type { ChangeEvent, QuartzEmitterPluginInstance } from '../types/plugin'
 import type { FilePath } from '../util/path'
+import { removeWritten } from '../plugins/emitters/helpers'
 import { ProcessedContent } from '../plugins/vfile'
 import { defaultEmitterConcurrency, mapConcurrent } from '../util/async-pool'
 import { BuildCtx, deckDataFor } from '../util/ctx'
+import { flashcardPages, flashcardPageChanges } from '../util/flashcards-routing'
 import { QuartzLogger } from '../util/log'
 import { logBuildSpan, PerfTimer } from '../util/perf'
 import { getStaticResourcesFromPlugins } from '../util/static-resources'
@@ -89,6 +91,13 @@ export async function emitPartialEmitter(
   const emitter = ctx.cfg.plugins.emitters.find(candidate => candidate.name === emitterName)
   if (!emitter) throw new Error(`missing emitter: ${emitterName}`)
 
+  if (changeEvents) {
+    const projected = flashcardPageChanges(content, changeEvents, ctx.cfg.configuration.baseUrl)
+    content = projected.content
+    changeEvents = projected.changes
+  } else {
+    content = flashcardPages(content, ctx.cfg.configuration.baseUrl)
+  }
   const perf = new PerfTimer()
   const log = new QuartzLogger(ctx.argv.verbose)
   const staticResources = getStaticResourcesFromPlugins(ctx)
@@ -106,16 +115,28 @@ export async function emitContent(
   inputChangeEvents?: ChangeEvent[],
 ) {
   const { argv, cfg } = ctx
-  const changeEvents =
+  let changeEvents =
     inputChangeEvents &&
     transclusionChangeEvents(
       content,
       trackedWahooChangeEvents(content, inputChangeEvents, argv.directory),
       argv.directory,
     )
+  if (changeEvents) {
+    const projected = flashcardPageChanges(content, changeEvents, cfg.configuration.baseUrl)
+    content = projected.content
+    changeEvents = projected.changes
+    for (const slug of projected.removed) {
+      await removeWritten(ctx, slug, '.html')
+      await removeWritten(ctx, slug, '.md')
+      await removeWritten(ctx, `${slug}-og-image`, '.webp')
+    }
+  } else {
+    content = flashcardPages(content, cfg.configuration.baseUrl)
+  }
   const perf = new PerfTimer()
   const log = new QuartzLogger(ctx.argv.verbose)
-  const usePartialEmit = ctx.incremental && changeEvents !== undefined
+  const partialChanges = ctx.incremental ? changeEvents : undefined
 
   log.start(``)
 
@@ -125,14 +146,14 @@ export async function emitContent(
     emitter => emitter.name === 'ComponentResources',
   )
   if (componentResources) {
-    emittedFiles += usePartialEmit
+    emittedFiles += partialChanges
       ? await runPartialEmitter(
           componentResources,
           ctx,
           content,
           staticResources,
           log,
-          changeEvents,
+          partialChanges,
         )
       : await runEmitter(componentResources, ctx, content, staticResources, log)
   }
@@ -141,8 +162,8 @@ export async function emitContent(
     emitter => emitter.name !== 'ComponentResources',
   )
   const counts = await mapConcurrent(otherEmitters, defaultEmitterConcurrency, emitter => {
-    return usePartialEmit
-      ? runPartialEmitter(emitter, ctx, content, staticResources, log, changeEvents)
+    return partialChanges
+      ? runPartialEmitter(emitter, ctx, content, staticResources, log, partialChanges)
       : runEmitter(emitter, ctx, content, staticResources, log)
   })
   emittedFiles += counts.reduce((sum, count) => sum + count, 0)

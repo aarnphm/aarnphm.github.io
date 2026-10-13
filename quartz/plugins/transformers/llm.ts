@@ -1,6 +1,15 @@
 import { fromHtml } from 'hast-util-from-html'
 import { toMdast } from 'hast-util-to-mdast'
-import { Root as MdRoot, Link, Html, PhrasingContent, BlockContent, Paragraph, Text } from 'mdast'
+import {
+  Root as MdRoot,
+  RootContent,
+  Link,
+  Html,
+  PhrasingContent,
+  BlockContent,
+  Paragraph,
+  Text,
+} from 'mdast'
 import { gfmToMarkdown } from 'mdast-util-gfm'
 import { mathToMarkdown } from 'mdast-util-math'
 import { toMarkdown } from 'mdast-util-to-markdown'
@@ -10,7 +19,9 @@ import { sidenoteToMarkdown } from '../../extensions/micromark-extension-ofm-sid
 import { wikilinkToMarkdown } from '../../extensions/micromark-extension-ofm-wikilinks'
 import { speechToMarkdown } from '../../extensions/micromark-extension-speech'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import { isDevelopmentBuild } from '../../util/build-mode'
 import { clone } from '../../util/clone'
+import { deckPathsForSource } from '../../util/flashcards-path'
 import { isWatchMarkdownSlug } from '../../util/llm'
 import { FullSlug, isAbsoluteURL } from '../../util/path'
 import { QuartzPluginData } from '../vfile'
@@ -96,7 +107,10 @@ const convertTranscludesToRefs = (tree: MdRoot, slug: FullSlug) => {
     const base = normalizeSlug(slug, dataSlug ?? dataUrl ?? '')
     if (!base) return
 
-    parent.children.splice(index, 1, { type: 'html', value: `<ref slug="${base}${dataBlock}">` })
+    parent.children.splice(index, 1, {
+      type: 'html',
+      value: `<ref slug="${base}${dataBlock}" transclude>`,
+    })
   })
 }
 
@@ -187,22 +201,45 @@ const convertCalloutsToMarkdown = (tree: MdRoot) => {
 export const LLM: QuartzTransformerPlugin = () => {
   return {
     name: 'LLM',
-    markdownPlugins({ argv }) {
-      const watch = argv.watch && !argv.force
+    markdownPlugins({ argv, allFiles = [] }) {
+      const watch = isDevelopmentBuild(argv)
 
       return [
         () => {
           return (tree: MdRoot, file) => {
             const fileData = file.data as QuartzPluginData
             if (!fileData.slug || fileData.slug === 'stream') return
-            if (watch && !isWatchMarkdownSlug(fileData.slug)) return
+            if (
+              watch &&
+              !fileData.flashcards &&
+              fileData.frontmatter?.flashcards?.default !== true &&
+              !deckPathsForSource(fileData.relativePath ?? '').some(deckPath =>
+                allFiles.some(path => path === deckPath),
+              ) &&
+              !isWatchMarkdownSlug(fileData.slug)
+            )
+              return
 
             const cloned = clone(tree) as MdRoot
             const slug = fileData.slug as FullSlug
 
-            cloned.children = cloned.children.filter(child => child.type !== 'yaml')
+            cloned.children = cloned.children.flatMap((child): RootContent[] => {
+              if (child.type === 'yaml') return []
+              const shell = child.data?.flashcardShell
+              if (!shell) return [child]
+              return shell.cardId
+                ? [{ type: 'heading', depth: 2, children: [{ type: 'text', value: shell.cardId }] }]
+                : []
+            })
 
             convertCalloutsToMarkdown(cloned)
+            if (fileData.flashcards || fileData.frontmatter?.flashcards?.default === true) {
+              visit(cloned, 'image', image => {
+                if (isAbsoluteURL(image.url) || image.url.startsWith('/')) return
+                const url = new URL(image.url, `https://local/${slug}`)
+                image.url = `${url.pathname}${url.search}${url.hash}`
+              })
+            }
             convertLinksToRefs(cloned, slug)
             convertTranscludesToRefs(cloned, slug)
 

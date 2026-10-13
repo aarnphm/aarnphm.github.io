@@ -10,6 +10,11 @@ import { flashcardsSlug, isFlashcardPath, sourceSlugForDeck } from '../../util/f
 import { FullSlug } from '../../util/path'
 
 const html = (value: string): RootContent => ({ type: 'html', value })
+const shell = (value: string, cardId?: string): RootContent => ({
+  type: 'html',
+  value,
+  data: { flashcardShell: { cardId } },
+})
 
 export const Flashcards: QuartzTransformerPlugin = () => ({
   name: 'Flashcards',
@@ -51,19 +56,20 @@ export const Flashcards: QuartzTransformerPlugin = () => ({
         for (const card of deck.cards) {
           const group = card.groupId ? ` data-group="${card.groupId}"` : ''
           children.push(
-            html(
+            shell(
               `<section class="flashcard" data-card-id="${card.id}" data-kind="${card.kind}" data-deck="${deckSlug}"${group}>`,
+              card.id,
             ),
-            html(`<div class="flashcard-face flashcard-front" data-face="front">`),
+            shell(`<div class="flashcard-face flashcard-front" data-face="front">`),
             ...parseFace(card.front),
-            html(`</div>`),
-            html(`<div class="flashcard-face flashcard-back" data-face="back" hidden>`),
+            shell(`</div>`),
+            shell(`<div class="flashcard-face flashcard-back" data-face="back" hidden>`),
             ...parseFace(card.back),
             ...(card.note
-              ? [html(`<div class="flashcard-note">`), ...parseFace(card.note), html(`</div>`)]
+              ? [shell(`<div class="flashcard-note">`), ...parseFace(card.note), shell(`</div>`)]
               : []),
-            html(`</div>`),
-            html(`</section>`),
+            shell(`</div>`),
+            shell(`</section>`),
           )
         }
         tree.children = children
@@ -75,5 +81,11 @@ export const Flashcards: QuartzTransformerPlugin = () => ({
 declare module 'vfile' {
   interface DataMap {
     flashcards: { sourceSlug: FullSlug; cards: { id: string; kind: CardKind; groupId?: string }[] }
+  }
+}
+
+declare module 'mdast' {
+  interface Data {
+    flashcardShell?: { cardId?: string }
   }
 }

@@ -8,7 +8,14 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
   return {
     name: 'ObsidianBases',
     externalResources() {
-      return { css: [{ content: 'https://unpkg.com/lucide-static@latest/font/lucide.css' }] }
+      return {
+        css: [
+          {
+            content: 'https://unpkg.com/lucide-static@latest/font/lucide.css',
+            classPrefixes: ['icon-', 'base-view'],
+          },
+        ],
+      }
     },
     markdownPlugins() {
       return [

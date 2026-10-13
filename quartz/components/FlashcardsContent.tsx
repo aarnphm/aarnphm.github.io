@@ -1,25 +1,12 @@
-import { ElementContent, Root, Element } from 'hast'
-import { h } from 'hastscript'
-import { visit } from 'unist-util-visit'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
-import { clone } from '../util/clone'
 import { courseViews, unitManifest } from '../util/course'
 import { flashcardsSlug } from '../util/flashcards-path'
 import { htmlToJsx } from '../util/jsx'
-import {
-  FilePath,
-  FullSlug,
-  joinSegments,
-  pathToRoot,
-  stripSlashes,
-  isAbsoluteURL,
-  resolveRelative,
-} from '../util/path'
-import { transcludeFinal } from './renderPage'
+import { FullSlug, resolveRelative } from '../util/path'
 // @ts-ignore
 import drillScript from './scripts/flashcards.inline'
 import style from './styles/flashcards.scss'
@@ -31,11 +18,10 @@ interface Options {
 
 interface Shell {
   deckSlug: FullSlug
-  cards: ElementContent[]
+  cards: ReturnType<typeof htmlToJsx>
   count: number
   deckTitle: string
   sourceHref: string
-  filePath: FilePath
   data: Record<string, string>
 }
 
@@ -50,66 +36,30 @@ function mergedShell(
     .filter(deck => deck.deck.startsWith(merge.prefix))
   return {
     deckSlug: slug,
-    cards: [],
+    cards: undefined,
     count: 0,
     deckTitle: 'review',
     sourceHref: resolveRelative(slug, merge.exit),
-    filePath: (fileData.filePath ?? `${slug}.md`) as FilePath,
     data: { 'data-prefix': merge.prefix, 'data-decks': JSON.stringify(decks) },
   }
 }
 
 function deckShell(componentData: QuartzComponentProps): Shell {
   const { fileData } = componentData
-  const { htmlAst, filePath } = fileData
-  const ast = clone(htmlAst) as Root
-  const visited = new Set<FullSlug>([fileData.slug!])
-  const processed = transcludeFinal(ast, componentData, { visited }, { dynalist: false })
-
-  const origSlug = fileData.slug as FullSlug
-  const sourceSlug = fileData.flashcards!.sourceSlug
-  const deckSlug = flashcardsSlug(sourceSlug)
-  const baseForUrl = `https://local/${stripSlashes(origSlug)}.html`
-  const allowedAbsoluteProtocols = new Set(['http:', 'https:', 'mailto:', 'tel:', 'data:'])
-  const isAllowedAbsoluteAttr = (value: string): boolean => {
-    try {
-      return allowedAbsoluteProtocols.has(new URL(value).protocol.toLowerCase())
-    } catch {
-      return false
-    }
-  }
-
-  const rebaseAttr = (val: string): string => {
-    if (!val) return val
-    if (val.startsWith('#')) return val
-    if (val.startsWith('/static')) return val
-    if (isAbsoluteURL(val)) return isAllowedAbsoluteAttr(val) ? val : ''
-
-    try {
-      const u = new URL(val, baseForUrl)
-      const absolutePath = u.pathname + (u.hash ?? '')
-      return joinSegments(pathToRoot(deckSlug), stripSlashes(absolutePath))
-    } catch {
-      return val
-    }
-  }
-
-  visit(processed, 'element', (node: Element) => {
-    const props = node.properties ?? {}
-    if (props.href) props.href = rebaseAttr(String(props.href))
-    if (props.src) props.src = rebaseAttr(String(props.src))
-  })
-
-  const cards = (processed.children as ElementContent[]) || []
+  const { filePath } = fileData
+  const sourceSlug = fileData.flashcardRoute?.sourceSlug ?? fileData.flashcards!.sourceSlug
+  const deckSlug = flashcardsSlug(fileData.flashcards!.sourceSlug)
+  const pageSlug = fileData.flashcardRoute ? fileData.slug! : deckSlug
+  const cards = htmlToJsx(filePath!, componentData.tree)
   const count = fileData.flashcards!.cards.length
   const deckTitle = fileData.frontmatter?.title ?? 'flashcards'
-  const sourceHref = resolveRelative(deckSlug, sourceSlug)
-  return { deckSlug, cards, count, deckTitle, sourceHref, filePath: filePath!, data: {} }
+  const sourceHref = resolveRelative(pageSlug, sourceSlug)
+  return { deckSlug, cards, count, deckTitle, sourceHref, data: { 'data-source': sourceSlug } }
 }
 
 export default ((opts?: Options) => {
   const FlashcardsContent: QuartzComponent = (componentData: QuartzComponentProps) => {
-    const { deckSlug, cards, count, deckTitle, sourceHref, filePath, data } = opts?.merge
+    const { deckSlug, cards, count, deckTitle, sourceHref, data } = opts?.merge
       ? mergedShell(componentData, opts.merge)
       : deckShell(componentData)
 
@@ -159,7 +109,9 @@ export default ((opts?: Options) => {
                 <h1>{deckTitle}</h1>
               </div>
               <div class="flashcards-card-body">
-                {htmlToJsx(filePath, h('div', { class: 'flashcards-deck', role: 'list' }, cards))}
+                <div class="flashcards-deck" role="list">
+                  {cards}
+                </div>
               </div>
             </article>
           </div>
