@@ -2,7 +2,7 @@
 date: '2026-10-04'
 description: vocabulaire de l'anglais vers le français, classé par thème, avec les variantes du Québec
 id: mots
-modified: 2026-10-05 00:10:44 GMT-04:00
+modified: 2026-10-12 19:29:44 GMT-04:00
 permalinks:
   - /mots
 socials:
@@ -304,6 +304,37 @@ a `fleuve` flows into the sea (`le fleuve Saint-Laurent`); a `rivière` flows in
 | to skate                          | {{patiner}}              | Québec: `faire du patin`                           |
 | a skating rink                    | {{une patinoire}}        |                                                    |
 | a toboggan (Québec)               | {{une traine sauvage}}   | traditional spelling: `traîne`                     |
+
+## l'éclairage et la biodiversité
+
+pour discuter de « Faut-il éteindre les villes la nuit ? ». les tournures sont dans [[fr/phrases#discuter d'une décision|phrases]] et les conjugaisons dans [[fr/verbs#les verbes du débat|verbs]].
+
+| English                          | Français                             | note                                                              |
+| -------------------------------- | ------------------------------------ | ----------------------------------------------------------------- |
+| street lighting, public lighting | {{l'éclairage public}} (m.)          | `réduire l'éclairage public`                                      |
+| a streetlight                    | {{un lampadaire}}                    | `éteindre les lampadaires`                                        |
+| switching off the lighting       | {{l'extinction de l'éclairage}} (f.) | `une extinction à minuit`; here, `extinction` means switching off |
+| light pollution                  | {{la pollution lumineuse}}           | `lumineux`, `lumineuse`                                           |
+| darkness                         | {{l'obscurité}} (f.)                 | `laisser une prairie dans l'obscurité`                            |
+| a meadow                         | {{une prairie}}                      |                                                                   |
+| a bat                            | {{une chauve-souris}}                | plural: `des chauves-souris`                                      |
+| a pollinator                     | {{un pollinisateur}}                 | `les pollinisateurs nocturnes`                                    |
+| pollination                      | {{la pollinisation}}                 | `les visites de pollinisateurs`                                   |
+| biodiversity                     | {{la biodiversité}}                  |                                                                   |
+| a harmful disturbance            | {{une nuisance}}                     | `une nuisance lumineuse`                                          |
+| a compromise                     | {{un compromis}}                     | `chercher un compromis`; same spelling in the plural              |
+| a pedestrian crossing            | {{un passage pour piétons}}          | `garder l'éclairage près du passage`                              |
+| a sense of safety                | {{un sentiment de sécurité}}         | `se sentir en sécurité` = to feel safe                            |
+| an area used by few people       | {{une zone peu fréquentée}}          | `fréquentée` agrees with `zone`                                   |
+| travel, journeys                 | {{les déplacements}} (m.)            | `les déplacements à pied et à vélo`                               |
+| a control site                   | {{un site témoin}}                   | plural: `des sites témoins`; the comparison site in a study       |
+| reliable data                    | {{des données fiables}} (f.)         | `les données suggèrent que…`                                      |
+| a hypothesis                     | {{une hypothèse}}                    | `tester une hypothèse`                                            |
+| uncertainty                      | {{l'incertitude}} (f.)               | `une marge d'incertitude`                                         |
+| monitoring, follow-up            | {{un suivi}}                         | `un essai avec un suivi` = a trial with monitoring                |
+| to switch off                    | {{éteindre}}                         | `j'éteins`, `nous éteignons`; past participle: `éteint`           |
+| to dim the lighting              | {{atténuer l'éclairage}}             | `j'atténue`, `nous atténuons`                                     |
+| to reduce                        | {{réduire}}                          | `je réduis`, `nous réduisons`; past participle: `réduit`          |
 
 ## le logement
 
