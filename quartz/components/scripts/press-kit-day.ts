@@ -3,7 +3,17 @@ import {
   type ActivityCardData,
   type ActivityCardStatKey,
 } from '../../util/press-kit-activity'
+import { localizeActivity } from './press-kit-i18n'
 import { activityCardFromElement } from './press-kit-metrics'
+
+export interface BlockDisplay {
+  title: boolean
+  date: boolean
+  metrics: boolean
+}
+
+export const isBlockDisplayKey = (key: string): key is keyof BlockDisplay =>
+  key === 'title' || key === 'date' || key === 'metrics'
 
 export interface TrainingCardRow {
   key?: ActivityCardStatKey
@@ -24,10 +34,32 @@ export interface TrainingCardBlock {
   rows: TrainingCardRow[]
   graphic?: TrainingCardGraphic
   text?: string
+  date?: string
+  reading?: string
+  display?: BlockDisplay
 }
 
 export interface DayCardData {
   blocks: TrainingCardBlock[]
+}
+
+export function cardBlockDisplay(
+  block: TrainingCardBlock,
+  show: { title: boolean; date: boolean; metrics?: boolean },
+): BlockDisplay {
+  return block.display ?? { title: show.title, date: show.date, metrics: show.metrics !== false }
+}
+
+export function blockDisplayKeys(block: TrainingCardBlock): (keyof BlockDisplay)[] {
+  const keys: (keyof BlockDisplay)[] = ['title']
+  if (block.date || block.activities.some(activity => activity.date)) keys.push('date')
+  if (
+    block.reading ||
+    block.rows.length ||
+    block.activities.some(activity => activity.stats.length)
+  )
+    keys.push('metrics')
+  return keys
 }
 
 const activityId = (activity: ActivityCardData): string =>
@@ -108,7 +140,9 @@ export function dayCardData(entry: HTMLElement): DayCardData | undefined {
       }
     } else if (embed.matches('.tri-compare-embed')) {
       const comparison = embed.querySelector<HTMLElement>('[data-press-kit-activities]')
-      const all = parseActivityCardList(comparison?.dataset.pressKitActivities)
+      const all = parseActivityCardList(comparison?.dataset.pressKitActivities).map(activity =>
+        localizeActivity(activity),
+      )
       const activities = all.filter(activity => !excluded.has(activityId(activity)))
       if (activities.length < 2) continue
       const keys: Record<string, ActivityCardStatKey> = {

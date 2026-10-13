@@ -3,12 +3,18 @@
 // Same line and surface mix as the headings modal and the arena reader.
 .press-kit {
   --pk-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --pk-cell-line: color-mix(in srgb, var(--gray) 55%, var(--light));
   --pk-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   --pk-selected: color-mix(in srgb, var(--secondary) 26%, var(--light));
   --pk-control: 1.75rem;
   // One inline inset for header, controls and help line, so their edges line up.
   --pk-pad: 0.85rem;
   --pk-offset: 0, 0.75rem;
+  // Skin for the shared controls (styles/controls.scss) inside the editor.
+  --control-height: var(--pk-control);
+  --control-font-size: 0.68rem;
+  --control-surface: var(--pk-surface);
+  --control-focus: var(--dark);
   position: fixed;
   inset: 0;
   width: min(64rem, calc(100vw - 2rem));
@@ -65,8 +71,8 @@
     --pk-offset: 0, 0;
   }
 
-  :is(button, a, input, textarea):focus-visible {
-    outline: 2px solid var(--secondary);
+  :is(button, a, input, textarea, select, summary):focus-visible {
+    outline: 2px solid var(--control-focus);
     outline-offset: -2px;
   }
 
@@ -86,7 +92,7 @@
   &:not([data-tab='quote']) [data-for='quote'],
   &:not([data-tab='note']) [data-for='note'],
   &:not([data-subject='page']) [data-page-only],
-  &:not([data-training='true']) [data-activity-only],
+  &:not([data-training='true']):not([data-subject='entry']) [data-activity-only],
   &:not([data-training='true']) [data-training-options],
   &:not([data-subject='day']) [data-day-only],
   &[data-training='true'] [data-note-only],
@@ -96,36 +102,97 @@
 
   // Global display rules (base.scss `button { display: flex }`) would otherwise beat `hidden`.
   [hidden] {
-    display: none;
+    display: none !important;
   }
 }
 
 .press-kit-metric-group {
   border: 1px solid var(--pk-line);
   padding: 0.45rem;
-  margin-block: 0.4rem;
-  font: 0.7rem var(--codeFont);
+  margin-block: 0;
+  font: 0.7rem var(--bodyFont);
 
   summary {
     cursor: pointer;
     padding-block: 0.35rem;
   }
 
-  .press-kit-segments {
-    margin-top: 0.4rem;
-  }
-
   .press-kit-data-grid {
-    align-items: start;
-    margin-top: 0.5rem;
+    align-items: stretch;
+    margin-top: 0;
   }
 }
 
 .press-kit-data-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.4rem 0.5rem;
+  gap: 0;
   min-width: 0;
+
+  // Shared outlines fill the 1px dividers without overlapping hit areas or filling empty cells.
+  &:not(.press-kit-block-list, .press-kit-overlay-background) {
+    gap: 1px;
+    padding: 1px;
+
+    .press-kit-data-toggle {
+      border: 0;
+      outline: 1px solid var(--pk-cell-line);
+      outline-offset: 0;
+
+      &:focus-visible,
+      &:has(input:focus-visible) {
+        outline: 2px solid var(--control-focus);
+        outline-offset: -2px;
+      }
+    }
+  }
+}
+
+// Tout and aucune act on the table below; they are buttons, apart from it and from each other.
+.press-kit-metric-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+
+  > .g-button {
+    flex: 1 0 0;
+  }
+}
+
+.press-kit-data-filler {
+  outline: 1px solid var(--pk-cell-line);
+  background: var(--light);
+}
+
+.press-kit-data-fields {
+  display: contents;
+}
+
+.press-kit[data-subject='entry'] [data-activity-only] .press-kit-data-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.press-kit-block-display {
+  min-width: 0;
+
+  summary {
+    padding-block: 0.35rem;
+    color: var(--darkgray);
+    font: 0.66rem var(--bodyFont);
+    cursor: pointer;
+  }
+
+  .press-kit-data-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-block: 0.3rem 0.5rem;
+  }
+
+  @media (pointer: coarse) {
+    summary {
+      min-height: 44px;
+      line-height: calc(44px - 0.7rem);
+    }
+  }
 }
 
 .press-kit-data-grid--compact .press-kit-data-label {
@@ -139,12 +206,10 @@
 
 .press-kit-overlay-background {
   grid-template-columns: minmax(0, 1fr);
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--pk-line);
+  margin-top: 0.4rem;
 }
 
 .press-kit .press-kit-data-toggle {
-  --trace-color: var(--darkgray);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -155,17 +220,18 @@
   max-width: 100%;
   min-height: 1.5rem;
   padding: 0.15rem 0.4rem;
-  border: 1px solid color-mix(in srgb, var(--darkgray) 30%, var(--light));
+  border: 1px solid var(--pk-line);
   border-radius: var(--radius-none);
   background: var(--light);
-  font: 0.6875rem var(--codeFont);
+  color: var(--darkgray);
+  font: 0.66rem/1.2 var(--bodyFont);
   text-align: start;
   cursor: pointer;
 
   &[aria-pressed='true'],
   &:has(input:checked) {
-    background: color-mix(in srgb, var(--trace-color) 10%, var(--light));
-    border-color: var(--trace-color);
+    color: var(--dark);
+    background: var(--pk-selected);
 
     .press-kit-data-label {
       text-decoration: underline;
@@ -184,63 +250,54 @@
   }
 
   &:has(input:focus-visible) {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--control-focus);
     outline-offset: -2px;
   }
 
   small {
-    padding-inline-start: 0.75rem;
     color: var(--darkgray);
-    font-size: 0.6rem;
+    font-size: 0.56rem;
+    font-family: var(--codeFont);
     overflow-wrap: anywhere;
   }
 
   @media (pointer: coarse) {
     min-height: 44px;
   }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:not([aria-pressed='true'], :has(input:checked)):hover {
+      background: var(--pk-surface);
+    }
+  }
 }
 
 .press-kit-data-label {
-  display: flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  color: color-mix(in srgb, var(--trace-color) 65%, var(--dark));
   overflow-wrap: anywhere;
+}
 
-  &::before {
-    flex: none;
-    align-self: center;
-    width: 0.4rem;
-    height: 0.4rem;
-    content: '';
-    background: var(--trace-color);
-    border-radius: 50%;
-  }
+// One line per metric; labels are shortened in the script and ellipsis is the fallback.
+.press-kit-metric-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .press-kit .press-kit-data-toggle--wide {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 36%);
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.5rem;
 
   small {
     padding-inline-start: 0;
     text-align: end;
+    white-space: nowrap;
   }
 
   .press-kit-data-label {
     min-width: 0;
-  }
-
-  .press-kit-metric-label,
-  small {
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-height: 1.2;
   }
 }
 
@@ -274,26 +331,14 @@
 
   > .press-kit-close {
     flex: none;
-    align-items: center;
-    justify-content: center;
     width: var(--pk-control);
     height: var(--pk-control);
     // Pull the hit area outward so the 1rem glyph, not the button box, meets the inset.
     margin-inline-end: calc((1rem - var(--pk-control)) / 2);
-    padding: 0;
-    color: var(--darkgray);
-    background: transparent;
 
     svg {
       width: 1rem;
       height: 1rem;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        color: var(--dark);
-        background: var(--pk-surface);
-      }
     }
   }
 }
@@ -315,6 +360,8 @@
   &[aria-selected='true'] {
     color: var(--dark);
     background: var(--pk-selected);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -358,6 +405,7 @@
 }
 
 .press-kit-frame {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -404,7 +452,7 @@
 }
 
 .press-kit-unfurl-site {
-  color: var(--gray);
+  color: var(--darkgray);
   font-family: var(--codeFont);
   font-size: 0.6rem;
 }
@@ -416,7 +464,7 @@
 }
 
 .press-kit-caption {
-  color: var(--gray);
+  color: var(--darkgray);
   font-family: var(--codeFont);
   font-size: 0.6rem;
   font-variant-numeric: tabular-nums;
@@ -457,7 +505,7 @@
 .press-kit-legend {
   margin: 0 0 0.4rem;
   padding: 0;
-  color: var(--gray);
+  color: var(--darkgray);
   font-family: var(--codeFont);
   font-size: 0.58rem;
   letter-spacing: 0.04em;
@@ -479,6 +527,8 @@
 
 .press-kit-segment {
   position: relative;
+  // Radio segments are labels; without this their padding adds to the min-height.
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -510,7 +560,7 @@
   }
 
   small {
-    color: var(--gray);
+    color: var(--darkgray);
     font-size: 0.56rem;
   }
 
@@ -520,9 +570,16 @@
     background: var(--pk-selected);
   }
 
+  // The underline keeps the choice visible without the fill colour.
+  &:has(input:checked) > span,
+  &[aria-pressed='true'] {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
   &:has(input:focus-visible),
   &:focus-visible {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--control-focus);
     outline-offset: -2px;
   }
 
@@ -561,8 +618,11 @@
   }
 }
 
-.press-kit-includes,
-.press-kit-actions {
+.press-kit-language > .press-kit-segment {
+  font-size: 0.6rem;
+}
+
+.press-kit-includes {
   display: flex;
   flex-wrap: wrap;
 
@@ -571,9 +631,15 @@
   }
 }
 
-.press-kit-actions > .press-kit-segment {
-  flex-basis: 0;
-  color: var(--dark);
+.press-kit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+
+  > .g-button {
+    flex: 1 0 0;
+    white-space: nowrap;
+  }
 }
 
 .press-kit-textarea,
@@ -608,7 +674,7 @@
 
 .press-kit-hint {
   margin: 0;
-  color: var(--gray);
+  color: var(--darkgray);
   font-family: var(--codeFont);
   font-size: 0.58rem;
   line-height: 1.6;
@@ -642,35 +708,30 @@
   }
 }
 
-.press-kit-action,
-.press-kit-chip {
+// The publish links mirror button.g-button, which styles buttons only.
+a.press-kit-chip {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: var(--pk-control);
-  padding: 0 0.65rem;
-  border: 1px solid var(--pk-line);
+  min-height: var(--control-height);
+  border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
-  background: transparent;
+  background: color-mix(in srgb, var(--light) 88%, transparent);
   color: var(--dark);
-  font-family: var(--codeFont);
-  font-size: 0.68rem;
-  font-weight: $normalWeight;
   text-decoration: none;
-  white-space: nowrap;
   transition:
     background-color 0.15s ease,
     transform 0.12s $panel-ease;
 
   &:active {
-    transform: scale(0.97);
+    transform: scale(0.99);
   }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
+      background: color-mix(in srgb, var(--control-accent, var(--secondary)) 5%, var(--light));
       color: var(--dark);
-      background: var(--pk-surface);
     }
   }
 
@@ -683,8 +744,10 @@
   }
 }
 
-.press-kit-intent {
+// Outranks button.g-button and a.press-kit-chip, so the icon gets the whole square.
+.press-kit-chips > .press-kit-intent {
   width: var(--pk-control);
+  min-width: var(--pk-control);
   padding: 0;
   color: var(--darkgray);
 
@@ -694,8 +757,8 @@
   }
 }
 
-// Specific enough to beat the segment hover, which would otherwise wash out the ink fill.
-.press-kit-actions > .press-kit-segment[data-action='download'] {
+// The primary action keeps an ink fill; specific enough to beat the g-button hover.
+.press-kit-actions > .g-button[data-action='download'] {
   background: var(--dark);
   color: var(--light);
 
@@ -707,9 +770,7 @@
   }
 }
 
-.press-kit-anchor .press-kit-select {
-  --control-height: var(--pk-control);
-  --control-font-size: 0.68rem;
+:is(.press-kit-anchor, .press-kit-overlay) .press-kit-select {
   width: 100%;
 
   .g-select-trigger {
@@ -761,7 +822,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--secondary);
+    outline: 2px solid var(--control-focus, var(--dark));
     outline-offset: 2px;
   }
 
@@ -775,4 +836,247 @@
     opacity: 0;
     transform: translateY(-0.25rem);
   }
+}
+
+.press-kit-editor {
+  margin-top: 0.8rem;
+  border-top: 1px solid var(--pk-line);
+  padding-block: 0.5rem;
+  font: 0.75rem var(--bodyFont);
+
+  summary {
+    position: relative;
+    padding-block: 0.5rem;
+    cursor: pointer;
+
+    &:not([data-help-dismissed]):is(
+        :focus-visible,
+        :has(.press-kit-editor-label:hover),
+        :has(.press-kit-editor-help:hover)
+      )
+      .press-kit-editor-help {
+      visibility: visible;
+    }
+  }
+  p {
+    font-size: inherit;
+    line-height: 1.5;
+    margin-block: 0.5rem;
+  }
+  label {
+    display: grid;
+    gap: 0.3rem;
+    min-width: 0;
+    margin-block: 0.4rem;
+  }
+  // Number fields share the press kit's text input; buttons and selects are the shared controls.
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: var(--pk-control);
+    padding: 0.4rem;
+    border: 1px solid var(--pk-line);
+    border-radius: var(--radius-none);
+    background: var(--pk-surface);
+    color: var(--dark);
+    font: inherit;
+  }
+  fieldset {
+    min-width: 0;
+    border: 1px solid var(--pk-line);
+    padding: 0.5rem;
+    margin: 0.7rem 0;
+  }
+  legend {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    padding-inline: 0.25rem;
+  }
+  @media (pointer: coarse) {
+    summary {
+      min-height: 44px;
+    }
+  }
+}
+
+.press-kit-editor-help {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid var(--pk-line);
+  background: var(--light);
+  color: var(--darkgray);
+  font: 0.75rem/1.5 var(--bodyFont);
+  cursor: default;
+  visibility: hidden;
+}
+
+.press-kit-editor-toolbar {
+  grid-template-columns: 1fr 1fr 1.45fr 0.8fr;
+
+  > .press-kit-segment:disabled {
+    background: var(--light);
+    color: var(--gray);
+    cursor: default;
+  }
+}
+
+.press-kit-editor-field {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  margin-block: 0.4rem;
+
+  .g-select,
+  .g-select-trigger {
+    width: 100%;
+  }
+}
+
+.press-kit-editor-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+.press-kit-editor-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+.press-kit-editor-overlay {
+  --pk-editor-cursor: crosshair;
+  position: absolute;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: crosshair;
+  &:focus-visible {
+    outline: 2px solid var(--control-focus);
+    outline-offset: 3px;
+  }
+}
+.press-kit-editor-layer {
+  position: absolute;
+  pointer-events: none;
+}
+.press-kit .press-kit-editor-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 8px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-none);
+  background: transparent;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+  &:hover {
+    border-color: var(--secondary);
+  }
+}
+.press-kit .is-selected > .press-kit-editor-select {
+  border-color: var(--secondary);
+  outline: 1px solid var(--light);
+}
+.press-kit .press-kit-editor-select:active {
+  cursor: grabbing;
+}
+.press-kit-editor-selection,
+.press-kit-editor-marquee {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid var(--secondary);
+  pointer-events: none;
+}
+.press-kit-editor-selection {
+  outline: 1px solid var(--light);
+}
+.press-kit-editor-marquee {
+  background: color-mix(in srgb, var(--secondary) 12%, transparent);
+}
+.press-kit .press-kit-editor-group-move {
+  position: absolute;
+  left: -1px;
+  bottom: calc(100% + 1px);
+  width: max-content;
+  max-width: max(100%, 7rem);
+  min-height: 24px;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid var(--secondary);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+  font: 0.65rem var(--codeFont);
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+  @media (pointer: coarse) {
+    min-height: 44px;
+  }
+}
+.press-kit .press-kit-editor-resize {
+  --pk-handle-size: 24px;
+  --pk-editor-cursor: nwse-resize;
+  position: absolute;
+  right: calc(var(--pk-handle-size) / -2);
+  bottom: calc(var(--pk-handle-size) / -2);
+  width: var(--pk-handle-size);
+  height: var(--pk-handle-size);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: var(--pk-editor-cursor);
+  &::after {
+    content: '';
+    position: absolute;
+    inset: calc((var(--pk-handle-size) - 10px) / 2);
+    background: var(--light);
+    border: 1px solid var(--secondary);
+  }
+  @media (pointer: coarse) {
+    --pk-handle-size: 44px;
+  }
+  &[data-editor-resize='x'] {
+    top: calc(50% - var(--pk-handle-size) / 2);
+    bottom: auto;
+    --pk-editor-cursor: ew-resize;
+  }
+  &[data-editor-resize='y'] {
+    left: calc(50% - var(--pk-handle-size) / 2);
+    right: auto;
+    --pk-editor-cursor: ns-resize;
+  }
+}
+:is(.press-kit-editor-layer, .press-kit-editor-selection)[data-compact-x] [data-editor-resize='x'],
+:is(.press-kit-editor-layer, .press-kit-editor-selection)[data-compact-y] [data-editor-resize='y'] {
+  display: none;
+}
+html.site-cursor-ready body :is(.press-kit-editor-select, .press-kit-editor-group-move) {
+  cursor: grab !important;
+}
+html.site-cursor-ready body :is(.press-kit-editor-select, .press-kit-editor-group-move):active {
+  cursor: grabbing !important;
+}
+.press-kit-editor-overlay[data-gesture='move'] {
+  --pk-editor-cursor: grabbing;
+}
+.press-kit-editor-overlay[data-gesture='resize-x'] {
+  --pk-editor-cursor: ew-resize;
+}
+.press-kit-editor-overlay[data-gesture='resize-y'] {
+  --pk-editor-cursor: ns-resize;
+}
+.press-kit-editor-overlay[data-gesture='resize-xy'] {
+  --pk-editor-cursor: nwse-resize;
+}
+html.site-cursor-ready body :is(.press-kit-editor-resize, .press-kit-editor-overlay) {
+  cursor: var(--pk-editor-cursor) !important;
 }
