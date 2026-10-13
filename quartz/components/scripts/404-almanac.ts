@@ -38,7 +38,8 @@ export type Sky = {
 
 // A body in the sky: degrees above the horizon, and how far across the view it stands, from -1 at
 // the left edge to 1 at the right (the view faces the equator, so the sun rises on the left).
-export type Body = { alt: number; across: number }
+// Bearing is its azimuth in degrees from the equator-facing direction, positive toward the west.
+export type Body = { alt: number; across: number; bearing: number }
 export type Almanac = {
   sun: Body
   // Phase runs 0 new, 0.25 first quarter, 0.5 full, 0.75 last quarter.
@@ -83,8 +84,9 @@ function place(days: number, lat: number, lon: number, elongation: number): Body
   // Azimuth from the south, positive toward the west.
   const az =
     Math.atan2(Math.sin(ha), Math.cos(ha) * Math.sin(phi) - Math.tan(dec) * Math.cos(phi)) / RAD
-  const across = ((lat >= 0 ? az : wrap(az + 180)) + VIEW) / 90
-  return { alt: alt / RAD, across: Math.max(-1.25, Math.min(1.25, across)) }
+  const bearing = lat >= 0 ? az : wrap(az + 180)
+  const across = (bearing + VIEW) / 90
+  return { alt: alt / RAD, across: Math.max(-1.25, Math.min(1.25, across)), bearing }
 }
 
 export function almanac(now: Date, site: Site): Almanac {
