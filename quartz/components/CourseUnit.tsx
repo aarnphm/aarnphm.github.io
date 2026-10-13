@@ -30,6 +30,8 @@ import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import { pdfReaderPath } from '../util/pdf-marks'
 import { concatenateResources } from '../util/resources'
+import { WorkspaceHeader, workspaceTabs } from './course-workspace/Header'
+import { WorkspaceSourceLinks } from './course-workspace/SourceLinks'
 import { CourseDesk, solutionTerm } from './CourseDesk'
 import { psetNumber } from './CourseHome'
 import { CoursesCrumb } from './CourseResource'
@@ -304,6 +306,9 @@ export const CourseUnitWorkspace = (() => {
         : undefined
     const video = unit ? unitVideo(unit.record) : undefined
     const pdfPath = pdf?.file ? `courses/${view.dir}/${pdf.file}` : undefined
+    const readerPath = pdfPath ? pdfReaderPath(pdfPath) : undefined
+    const hasSource = Boolean(pdfPath || video?.youtube)
+    const initialTab = hasSource ? 'source' : 'scratchpad'
     const title = isPset
       ? `problem set ${pad(n)}`
       : `${view.record.unitKind} ${pad(n)}: ${unit?.record.title ?? props.fileData.frontmatter?.title ?? ''}`
@@ -317,19 +322,44 @@ export const CourseUnitWorkspace = (() => {
           data-course-workspace-slug={slug}
           data-course-workspace-title={title}
           data-course-workspace-pdf={pdfPath}
-          data-course-workspace-reader={pdfPath ? pdfReaderPath(pdfPath) : undefined}
+          data-course-workspace-reader={readerPath}
           data-course-workspace-video={video?.youtube}
         >
           <div class="course-workspace-app">
             <div class="course-workspace-panel">
-              <div class="course-workspace-loading">
-                <p role="status">Loading lecture workspace…</p>
-                {pdfPath && (
-                  <a href={`${pdfReaderPath(pdfPath)}?view=reader`} data-router-ignore>
-                    open source in reader
-                  </a>
-                )}
-              </div>
+              <WorkspaceHeader hasSource={hasSource} tab={initialTab} />
+              {workspaceTabs(hasSource).map(tab => (
+                <section
+                  role="tabpanel"
+                  id={`course-workspace-${tab}`}
+                  aria-labelledby={`course-workspace-tab-${tab}`}
+                  class={classNames(
+                    undefined,
+                    'course-workspace-pane',
+                    tab === 'source' ? 'course-workspace-source' : '',
+                  )}
+                  hidden={tab !== initialTab}
+                >
+                  {tab === 'source' && (
+                    <WorkspaceSourceLinks
+                      pdf={pdfPath}
+                      reader={readerPath}
+                      video={video?.youtube}
+                    />
+                  )}
+                  {tab === initialTab && (
+                    <div class="course-workspace-loading">
+                      <p role="status">
+                        {pdfPath
+                          ? 'Loading the reader…'
+                          : hasSource
+                            ? 'Loading the source…'
+                            : 'Loading lecture workspace…'}
+                      </p>
+                    </div>
+                  )}
+                </section>
+              ))}
             </div>
           </div>
         </div>

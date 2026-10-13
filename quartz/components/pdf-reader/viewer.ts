@@ -274,6 +274,13 @@ export class PdfViewer {
     this.zoom = this.fitZoom()
     this.layoutPages()
 
+    // Embedded loading keeps the page area hidden until the first canvas is ready.
+    const firstPage = this.pages[0]
+    while (!this.destroyed && firstPage.renderedZoom !== this.zoom) {
+      await this.renderPage(firstPage)
+    }
+    if (this.destroyed) return
+
     this.renderObserver = new IntersectionObserver(entries => this.onRenderIntersect(entries), {
       root: this.scroller,
       rootMargin: '1200px 0px',
@@ -541,7 +548,7 @@ export class PdfViewer {
     canvas.width = Math.floor(viewport.width * ratio)
     canvas.height = Math.floor(viewport.height * ratio)
     const context = canvas.getContext('2d')
-    if (!context) return
+    if (!context) throw new Error('The browser could not create a canvas for this PDF.')
     const task = proxy.render({
       canvasContext: context,
       viewport,
