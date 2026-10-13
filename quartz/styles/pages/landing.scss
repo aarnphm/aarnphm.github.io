@@ -21,7 +21,7 @@ body[data-slug='index'] {
     --board-line: color-mix(in srgb, var(--gray) 70%, var(--light));
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+    grid-template-columns: minmax(16rem, 1fr) minmax(0, 3fr);
     border: 1px solid var(--board-line);
     background: var(--light);
 
@@ -67,9 +67,13 @@ body[data-slug='index'] {
     opacity: 1;
   }
 
+  &:has(.homepage-trail-toggle[aria-expanded='true']) #quartz-root > section[class~='header'] {
+    background: transparent;
+  }
+
   .homepage-board-links {
     min-inline-size: 0;
-    padding: 1.25rem;
+    padding: 1.25rem 0;
     border-inline-end: 1px solid var(--board-line);
     font-size: var(--text-ui);
 
@@ -81,31 +85,55 @@ body[data-slug='index'] {
       block-size: 100%;
       margin: 0;
       border: 0;
+
+      & > * {
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+      }
     }
 
     em {
-      display: block;
-      margin-block-end: 0.5rem;
+      margin: 0;
       color: var(--darkgray);
     }
 
     .clickable-container {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: baseline;
+      gap: 0 0.5rem;
       margin: 0;
+    }
+
+    .homepage-board-garden {
+      display: grid;
+      align-content: start;
+      align-items: baseline;
+      padding-block-end: 0.75rem;
+      border-block-end: 1px solid var(--board-line);
     }
 
     a {
       display: block;
       min-block-size: 24px;
+      padding: 0;
       overflow-wrap: anywhere;
+
+      &:hover {
+        background: transparent;
+        color: var(--dark);
+      }
     }
 
     .boring-legal {
+      display: grid;
+      gap: 0.25rem;
       margin: 0;
-      padding-block-start: 1rem;
-      border-color: var(--board-line);
+      padding: 0;
+      border: 0;
+    }
+    .homepage-board-license a {
+      font-style: italic;
     }
   }
 
@@ -126,7 +154,7 @@ body[data-slug='index'] {
     }
   }
 
-  @container (max-width: 600px) {
+  @container (max-width: 700px) {
     .homepage-board {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -138,13 +166,8 @@ body[data-slug='index'] {
 
       .hyperlinks {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 1rem;
-      }
-
-      .boring-legal {
-        padding: 0;
-        border: 0;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
       }
     }
 
