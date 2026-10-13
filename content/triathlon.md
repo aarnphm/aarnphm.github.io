@@ -1963,6 +1963,14 @@ exercise: Bird Dog | 40s | 40s | 40s | 40s
 exercise: Hip Flexor, Calf, and Standing Quad Stretch Flow | 2m
 ```
 
+```tracking
+activity: 20572499821
+garmin: 24713425665
+wahoo: [[triathlon/wahoo/26-10-13-FTP.fit]]
+power: wahoo
+virtual: true
+```
+
 <!-- training plan start
 meta: IRONMAN Lanzarote
 date: 2026-09-01
