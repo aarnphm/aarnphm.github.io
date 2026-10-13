@@ -43,7 +43,7 @@ const age = (ms: number): string => {
 
 let activeSignal: AbortSignal | undefined
 
-document.addEventListener('nav', () => {
+const mountFlashcards = () => {
   const signal = currentNavSignal()
   if (activeSignal === signal) return
 
@@ -173,8 +173,7 @@ document.addEventListener('nav', () => {
     if (persistError) summaryEl.append(document.createTextNode(' reviews did not save.'))
   }
 
-  // The note rail shows the page the active card came from: the deck slug minus
-  // `/flashcards`. Pages are fetched once per note and kept for the session.
+  // Each card carries its source route when the note uses a default drill.
   interface Note {
     title: string
     body: DocumentFragment
@@ -182,7 +181,8 @@ document.addEventListener('nav', () => {
   const noteCache = new Map<string, Promise<Note | null>>()
   let notesOpen = false
   let currentNote = ''
-  const noteOf = (el: HTMLElement) => deckOf(el).replace(/\/flashcards$/, '')
+  const noteOf = (el: HTMLElement) =>
+    el.dataset.source ?? root.dataset.source ?? deckOf(el).replace(/\/flashcards$/, '')
 
   const loadNote = (slug: string): Promise<Note | null> => {
     let pending = noteCache.get(slug)
@@ -191,7 +191,7 @@ document.addEventListener('nav', () => {
         .then(async res => {
           if (!res.ok) return null
           const doc = new DOMParser().parseFromString(await res.text(), 'text/html')
-          normalizeRelativeURLs(doc, new URL(`/${slug}`, window.location.origin))
+          normalizeRelativeURLs(doc, new URL(res.url))
           const article = doc.querySelector('.page-content article')
           if (!article) return null
           for (const el of article.querySelectorAll('script')) el.remove()
@@ -495,7 +495,7 @@ document.addEventListener('nav', () => {
           const res = await fetch(`/${deck}`, { headers: { Accept: 'text/html' }, signal })
           if (!res.ok) throw new Error(`deck ${res.status}`)
           const doc = new DOMParser().parseFromString(await res.text(), 'text/html')
-          normalizeRelativeURLs(doc, new URL(`/${deck}`, window.location.origin))
+          normalizeRelativeURLs(doc, new URL(res.url))
           const byId = new Map<string, HTMLElement>()
           for (const el of doc.querySelectorAll<HTMLElement>('.flashcard[data-card-id]')) {
             byId.set(el.dataset.cardId ?? '', el)
@@ -584,4 +584,9 @@ document.addEventListener('nav', () => {
     show()
   }
   void start()
+}
+
+document.addEventListener('nav', () => {
+  mountFlashcards()
+  document.addEventListener('contentdecrypted', mountFlashcards, { signal: currentNavSignal() })
 })

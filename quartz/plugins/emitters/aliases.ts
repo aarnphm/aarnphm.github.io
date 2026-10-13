@@ -96,16 +96,20 @@ function writeRedirectRules(ctx: BuildCtx, content: ProcessedContent[]): Promise
   return write({ ctx, content: aliasRedirectRules(content), slug: '_redirects', ext: '' })
 }
 
-async function deleteAliases(ctx: BuildCtx, file: VFile): Promise<void> {
+async function deleteAliases(
+  ctx: BuildCtx,
+  file: VFile,
+  canonicalSlugs: ReadonlySet<FullSlug>,
+): Promise<void> {
   for (const aliasTarget of file.data.aliases ?? []) {
     const aliasSlug = aliasTargetSlug(file, aliasTarget)
-    if (!aliasSlug) continue
+    if (!aliasSlug || canonicalSlugs.has(aliasSlug)) continue
     await removeWritten(ctx, aliasSlug, '.html')
   }
 }
 
 function aliasesChanged(file: VFile, previousFile: VFile | undefined): boolean {
-  if (!previousFile) return true
+  if (!previousFile || file.data.slug !== previousFile.data.slug) return true
   return JSON.stringify(file.data.aliases ?? []) !== JSON.stringify(previousFile.data.aliases ?? [])
 }
 
@@ -121,30 +125,23 @@ export const AliasRedirects: QuartzEmitterPlugin = () => ({
     yield writeRedirectRules(ctx, content)
   },
   async *partialEmit(ctx, content, _resources, changeEvents) {
-    let redirectsChanged = false
-    for (const changeEvent of changeEvents) {
-      if (!changeEvent.file) continue
-      if (changeEvent.type === 'delete') {
-        await deleteAliases(ctx, changeEvent.file)
-        redirectsChanged ||= (changeEvent.file.data.aliases?.length ?? 0) > 0
-        continue
-      }
-      if (
-        changeEvent.type === 'change' &&
-        !aliasesChanged(changeEvent.file, changeEvent.previousFile)
-      ) {
-        continue
-      }
-      if (changeEvent.type === 'change' && changeEvent.previousFile) {
-        await deleteAliases(ctx, changeEvent.previousFile)
-      }
-      if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-        yield* await processFile(ctx, changeEvent.file)
-        redirectsChanged ||=
-          (changeEvent.file.data.aliases?.length ?? 0) > 0 ||
-          (changeEvent.previousFile?.data.aliases?.length ?? 0) > 0
-      }
+    const changed = changeEvents.filter(
+      event =>
+        event.file && (event.type !== 'change' || aliasesChanged(event.file, event.previousFile)),
+    )
+    if (changed.length === 0) return
+    const canonicalSlugs = new Set(
+      content.flatMap(([, file]) => (file.data.slug ? [file.data.slug] : [])),
+    )
+    // An alias can become a real page when a drill moves, and aliases can move between owners.
+    // Finish removals before writing replacements; never delete a current canonical output.
+    for (const event of changed) {
+      const previous = event.type === 'delete' ? event.file : event.previousFile
+      if (previous) await deleteAliases(ctx, previous, canonicalSlugs)
     }
-    if (redirectsChanged) yield writeRedirectRules(ctx, content)
+    for (const event of changed) {
+      if (event.type !== 'delete' && event.file) yield* await processFile(ctx, event.file)
+    }
+    yield writeRedirectRules(ctx, content)
   },
 })

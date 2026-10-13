@@ -1,9 +1,10 @@
 import yaml from 'js-yaml'
 import { version } from '../../../package.json'
-import { QuartzEmitterPlugin } from '../../types/plugin'
+import { QuartzEmitterPlugin, QuartzEmitterPluginInstance } from '../../types/plugin'
+import { isDevelopmentBuild } from '../../util/build-mode'
 import { BuildCtx } from '../../util/ctx'
 import { isWatchMarkdownSlug } from '../../util/llm'
-import { FullSlug } from '../../util/path'
+import { FilePath, FullSlug } from '../../util/path'
 import { QuartzPluginData } from '../vfile'
 import { removeWritten, write } from './helpers'
 
@@ -11,7 +12,9 @@ const name = 'LLMText'
 
 function canEmitMarkdown(fileData: QuartzPluginData): boolean {
   return (
-    fileData.slug !== 'stream' && !fileData.flashcards && fileData.frontmatter?.protected !== true
+    fileData.slug !== 'stream' &&
+    (!fileData.flashcards || fileData.flashcardRoute !== undefined) &&
+    fileData.frontmatter?.protected !== true
   )
 }
 
@@ -30,6 +33,8 @@ Use this site when a task needs Aaron's published notes, an exact Markdown page,
 - [Search and retrieve garden notes](${origin}/api/docs): Use the read-only MCP tools when a task needs relevant notes or full Markdown without knowing a page URL.
 - [Read the homepage as Markdown](${origin}/llms.txt): Send \`Accept: text/markdown\` to a canonical page URL when a task already knows which page it needs.
 - [Enumerate public pages](${origin}/sitemap.xml): Use the XML sitemap when a task needs crawlable canonical URLs and last-modified dates.
+
+When a note opens as a flashcard drill, its source note is at \`<page>/source\`. Append \`.md\` to either URL for the corresponding Markdown: cards at \`<page>.md\`, source at \`<page>/source.md\`.
 
 ## Agent interfaces
 
@@ -56,7 +61,10 @@ export async function llmText(
 ) {
   const slug = fileData.slug!
   const baseUrl = ctx.cfg.configuration.baseUrl ?? 'https://example.com'
-  const contentBase = fileData.llmsText as string | undefined
+  const contentBase =
+    typeof fileData.llmsText === 'string'
+      ? fileData.llmsText.replace(/(<ref slug="[^">]+") transclude>/g, '$1>')
+      : undefined
 
   const refs = slug !== 'index' ? `${slug}.md` : 'llms.txt'
 
@@ -111,12 +119,12 @@ ${contentBase}
 }
 
 export const LLMText: QuartzEmitterPlugin = () => {
-  return {
+  const plugin = {
     name,
     async *emit(ctx, content, _resources) {
       await removeWritten(ctx, 'stream', '.md')
       const baseUrl = ctx.cfg.configuration.baseUrl ?? 'https://example.com'
-      const watch = ctx.argv.watch && !ctx.argv.force
+      const watch = isDevelopmentBuild(ctx.argv)
       if (watch) {
         yield write({ ctx, content: llmsIndex(baseUrl), slug: 'llms' as FullSlug, ext: '.txt' })
       }
@@ -124,7 +132,13 @@ export const LLMText: QuartzEmitterPlugin = () => {
       const reconstructed: string[] = []
       for (const [, file] of content) {
         if (!canEmitMarkdown(file.data)) continue
-        if (watch && !isWatchMarkdownSlug(file.data.slug)) continue
+        if (
+          watch &&
+          !file.data.flashcardRoute &&
+          file.data.frontmatter?.flashcards?.default !== true &&
+          !isWatchMarkdownSlug(file.data.slug)
+        )
+          continue
         yield llmText(ctx, file.data, reconstructed)
       }
 
@@ -144,9 +158,18 @@ ${reconstructed.join('\n')}`,
         ext: '.txt',
       })
     },
-    async *partialEmit(ctx, content, _resources, changeEvents) {
+    async *partialEmit(ctx, content, _resources, changeEvents): AsyncGenerator<FilePath> {
       await removeWritten(ctx, 'stream', '.md')
-      const watch = ctx.argv.watch && !ctx.argv.force
+      const watch = isDevelopmentBuild(ctx.argv)
+      if (
+        !watch &&
+        changeEvents.some(
+          event => event.file?.data.flashcardRoute || event.previousFile?.data.flashcardRoute,
+        )
+      ) {
+        yield* plugin.emit(ctx, content, _resources)
+        return
+      }
 
       // find all slugs that changed or were added
       const changedSlugs = new Set<string>()
@@ -174,10 +197,17 @@ ${reconstructed.join('\n')}`,
         const slug = file.data.slug!
         if (!changedSlugs.has(slug)) continue
         if (!canEmitMarkdown(file.data)) continue
-        if (watch && !isWatchMarkdownSlug(file.data.slug)) continue
+        if (
+          watch &&
+          !file.data.flashcardRoute &&
+          file.data.frontmatter?.flashcards?.default !== true &&
+          !isWatchMarkdownSlug(file.data.slug)
+        )
+          continue
 
         yield llmText(ctx, file.data, [])
       }
     },
-  }
+  } satisfies QuartzEmitterPluginInstance
+  return plugin
 }

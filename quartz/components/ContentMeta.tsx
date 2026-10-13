@@ -159,7 +159,9 @@ export default (() => {
         ctx.allFiles.includes(deckPath as FilePath),
       )
     ) {
-      const deckSlug = flashcardsSlug(fileData.slug)
+      const deckSlug = fileData.flashcardRoute?.default
+        ? fileData.flashcardRoute.noteSlug
+        : flashcardsSlug(fileData.slug)
       const deckHref = resolveRelative(fileData.slug, deckSlug)
       const deckLink = (href: string, label: string) =>
         h(

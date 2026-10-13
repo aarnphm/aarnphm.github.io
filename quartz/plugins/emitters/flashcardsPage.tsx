@@ -23,7 +23,9 @@ async function processFlashcards(
   opts: FullPageLayout,
   resources: StaticResources,
 ) {
-  const slug = flashcardsSlug(fileData.flashcards!.sourceSlug)
+  const slug = fileData.flashcardRoute
+    ? fileData.slug!
+    : flashcardsSlug(fileData.flashcards!.sourceSlug)
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
   const componentData: QuartzComponentProps = {

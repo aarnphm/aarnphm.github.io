@@ -446,7 +446,11 @@ export function courseView(
   const record = parseCourseRecord(home.frontmatter)
   const dir = courseDirOf(home.slug ?? '')
   if (!record || !dir) return null
-  const bySlug = new Map(allFiles.map(file => [file.slug as string, file]))
+  const bySlug = new Map(
+    allFiles
+      .filter(file => !file.flashcards)
+      .map(file => [file.flashcardRoute?.noteSlug ?? (file.slug as string), file]),
+  )
   const decks = new Map(
     deckFiles
       .filter(file => file.flashcards)

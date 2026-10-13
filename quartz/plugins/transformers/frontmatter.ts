@@ -267,6 +267,7 @@ declare module 'vfile' {
       title: string
       pageLayout: ContentLayout
     } & Partial<{
+        flashcards: { default?: boolean }
         masonry: string[]
         priority: number | undefined
         permalinks: string[]
