@@ -10,7 +10,7 @@
 }
 
 .course-workspace {
-  --course-workspace-top: 5rem;
+  --course-workspace-top: 0px;
   --course-workspace-edge: calc(var(--kern) * 1.5);
   --course-workspace-line: color-mix(in srgb, var(--gray) 45%, transparent);
   min-width: 0;
@@ -33,7 +33,7 @@
 
   [data-course-workspace-mount],
   .course-workspace-app,
-  .course-workspace-dialog[open] {
+  .course-workspace-panel {
     height: 100%;
   }
 }
@@ -95,16 +95,12 @@
   }
 }
 
-// Outranks the workspace button rule, which sets display.
-.course-workspace-app[data-open='true'] .course-workspace-open {
-  display: none;
-}
-
-.course-workspace-dialog {
-  position: static;
+.course-workspace-panel {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: none;
-  height: min(48rem, calc(100dvh - var(--course-workspace-top) - var(--space-6)));
+  height: 100%;
   max-height: none;
   margin: 0;
   padding: 0;
@@ -113,10 +109,18 @@
   background: var(--light);
   color: inherit;
   overflow: hidden;
+}
 
-  &[open] {
-    display: flex;
-    flex-direction: column;
+.course-workspace-loading {
+  display: grid;
+  place-content: center;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-3);
+  text-align: center;
+
+  p {
+    margin: 0;
   }
 }
 
@@ -155,10 +159,6 @@
     padding: 0.18rem 0.4rem;
     font-size: 0.62rem;
     line-height: normal;
-  }
-
-  .course-workspace-app & .course-workspace-close {
-    border-color: transparent;
   }
 }
 
@@ -366,27 +366,11 @@
 
 @media all and (max-width: 1400px) {
   .course-workspace {
-    position: fixed;
-    inset: auto max(var(--space-3), env(safe-area-inset-right))
-      max(var(--space-3), env(safe-area-inset-bottom)) auto;
-    z-index: var(--z-popover);
+    margin-block-start: var(--space-6);
   }
 
-  .course-workspace-dialog {
-    position: fixed;
-    inset: var(--space-3);
-    margin: auto;
-    width: calc(100vw - var(--space-6));
-    height: calc(100dvh - var(--space-6));
-    max-width: 40rem;
-
-    &::backdrop {
-      background: color-mix(in srgb, var(--dark) 30%, transparent);
-    }
-  }
-
-  .course-workspace-open {
-    background: var(--light) !important;
+  .course-workspace-panel {
+    height: min(48rem, calc(100dvh - var(--space-6)));
   }
 
   .course-selection-actions button {
