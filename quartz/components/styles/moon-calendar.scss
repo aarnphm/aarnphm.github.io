@@ -1,13 +1,28 @@
 @use '../../styles/variables.scss' as *;
 
 .homepage-trail {
-  --trail-footer-panel-bottom: max(3.5rem, calc(env(safe-area-inset-bottom) + 2.5rem));
+  // Panels open 1rem above the almanac line: its inset plus the 28px moon toggle.
+  --trail-footer-panel-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 28px + 1rem);
 }
 
-.homepage-trail:has(.homepage-moon-toggle:not([hidden])) .trail-tree-panel {
+// The scene renders in a shadow root, so this selector cannot start at .homepage-trail; the
+// variable still inherits through the host.
+.homepage-trail-scene .trail-tree-panel {
   bottom: var(--trail-footer-panel-bottom);
+  max-height: calc(100dvh - var(--trail-footer-panel-bottom) - 1rem);
+
+  &:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .trail-tree-panel-head {
+    flex: 0 0 auto;
+  }
 
   .trail-tree-controls {
+    flex: 1 1 auto;
+    min-height: 0;
     max-height: max(72px, min(400px, calc(100dvh - var(--trail-footer-panel-bottom) - 3rem)));
   }
 }
@@ -19,6 +34,8 @@
   display: flex;
   align-items: end;
   gap: 8px;
+  padding-inline: 2px;
+  background: transparent;
   font: 10px/1.6 var(--codeFont);
   font-variant-numeric: tabular-nums;
 }
@@ -42,8 +59,7 @@ button.homepage-moon-toggle {
   background: transparent;
   color: var(--darkgray);
   font: 10px/1.6 var(--codeFont);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
   cursor: pointer;
 
   &[hidden] {
@@ -131,6 +147,9 @@ button.homepage-moon-toggle {
       opacity: 0.5;
       background-image: none;
     }
+    &[data-today] .g-calendar-day-header time {
+      text-decoration: none;
+    }
     &[data-selected] {
       background-image: linear-gradient(var(--dark), var(--dark));
       color: var(--light);
@@ -216,6 +235,10 @@ button.homepage-moon-toggle {
   }
 }
 @media (pointer: coarse) {
+  .homepage-trail {
+    --trail-footer-panel-bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4rem));
+  }
+
   button.homepage-moon-toggle {
     min-height: 44px;
   }

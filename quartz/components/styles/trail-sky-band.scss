@@ -1,0 +1,175 @@
+// The open sky above the ranges. What shows follows the visitor's sky (see sky-band.ts), and the
+// tones mix with the paper so they read in both themes.
+.homepage-trail-scene {
+  .trail-sky-band {
+    pointer-events: none;
+    shape-rendering: crispEdges;
+  }
+  .trail-sky-star {
+    fill: var(--dark);
+    opacity: 0.22;
+    &[data-star='1'] {
+      opacity: 0.14;
+    }
+    &[data-star='2'] {
+      opacity: 0.32;
+    }
+  }
+  // Meteors streak under moonlit lighting: a real night, or the dark theme over any sky.
+  .trail-sky-meteors {
+    display: none;
+  }
+  .trail-scene[data-lighting='moonlit'] .trail-sky-meteors {
+    display: inline;
+  }
+  .trail-sky-meteor {
+    opacity: 0;
+  }
+  .trail-sky-meteor-head {
+    fill: color-mix(in srgb, var(--dark) 70%, #fdb2a2);
+  }
+  .trail-sky-meteor-tail {
+    fill: color-mix(in srgb, var(--dark) 55%, #fdb2a2);
+    opacity: 0.6;
+  }
+  .trail-sky-meteor-trace {
+    fill: var(--dark);
+    opacity: 0.25;
+  }
+  .trail-sky-cloud {
+    transform: translateX(var(--trail-cloud-x, 0px));
+  }
+  .trail-sky-cloud-lit {
+    fill: color-mix(in srgb, var(--lightgray) 30%, var(--light));
+  }
+  .trail-sky-cloud-shade {
+    fill: color-mix(in srgb, var(--lightgray) 70%, var(--light));
+  }
+  // Under rain or snow the deck lowers its tone.
+  .trail-sky-clouds[data-overcast='true'] {
+    .trail-sky-cloud-lit {
+      fill: color-mix(in srgb, var(--gray) 30%, var(--light));
+    }
+    .trail-sky-cloud-shade {
+      fill: color-mix(in srgb, var(--gray) 50%, var(--light));
+    }
+  }
+  .trail-sky-bird-body {
+    fill: color-mix(in srgb, var(--darkgray) 80%, var(--light));
+  }
+  .trail-sky-bird-down {
+    opacity: 0;
+  }
+  // Without motion the flock is not shown, since it only means something crossing.
+  .trail-sky-flock {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-sky-cloud {
+      animation: trail-sky-cloud var(--trail-cloud-period, 300s) steps(600, end) infinite;
+      animation-delay: var(--trail-cloud-delay, 0s);
+    }
+    .trail-sky-meteor {
+      animation: trail-sky-meteor var(--trail-meteor-period, 20s) steps(1, end) infinite;
+      animation-delay: var(--trail-meteor-delay, 0s);
+    }
+    .trail-sky-flock {
+      animation: trail-sky-flock var(--trail-flock-period, 46s) linear infinite;
+      animation-delay: var(--trail-flock-delay, 0s);
+    }
+    .trail-sky-bird-up,
+    .trail-sky-bird-down {
+      animation: trail-sky-flap 0.5s steps(1, end) infinite;
+      animation-delay: var(--trail-bird-delay, 0s);
+    }
+    .trail-sky-bird-down {
+      animation-name: trail-sky-flap-down;
+    }
+    .trail-scene[data-weather-motion='paused'] {
+      :is(
+        .trail-sky-cloud,
+        .trail-sky-meteor,
+        .trail-sky-flock,
+        .trail-sky-bird-up,
+        .trail-sky-bird-down
+      ) {
+        animation-play-state: paused;
+      }
+    }
+  }
+}
+
+@keyframes trail-sky-cloud {
+  from {
+    transform: translateX(var(--trail-cloud-from));
+  }
+  to {
+    transform: translateX(var(--trail-cloud-to));
+  }
+}
+
+// A streak lasts about half a second of its loop, in whole-cell steps along its line.
+@keyframes trail-sky-meteor {
+  0%,
+  96% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  96.5% {
+    opacity: 1;
+    transform: translate(calc(var(--trail-meteor-x) * 0.2), calc(var(--trail-meteor-y) * 0.2));
+  }
+  97% {
+    opacity: 1;
+    transform: translate(calc(var(--trail-meteor-x) * 0.45), calc(var(--trail-meteor-y) * 0.45));
+  }
+  97.5% {
+    opacity: 0.8;
+    transform: translate(calc(var(--trail-meteor-x) * 0.7), calc(var(--trail-meteor-y) * 0.7));
+  }
+  98% {
+    opacity: 0.4;
+    transform: translate(var(--trail-meteor-x), var(--trail-meteor-y));
+  }
+  98.5%,
+  100% {
+    opacity: 0;
+    transform: translate(var(--trail-meteor-x), var(--trail-meteor-y));
+  }
+}
+
+// The flock crosses in the first half of its loop and is gone for the rest.
+@keyframes trail-sky-flock {
+  0% {
+    opacity: 1;
+    transform: translate(var(--trail-flock-from), 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(var(--trail-flock-to), -24px);
+  }
+  50.1%,
+  100% {
+    opacity: 0;
+    transform: translate(var(--trail-flock-to), -24px);
+  }
+}
+
+@keyframes trail-sky-flap {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes trail-sky-flap-down {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}

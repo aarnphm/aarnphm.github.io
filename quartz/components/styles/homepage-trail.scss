@@ -1,6 +1,7 @@
 @use './shared-trail-frame.scss';
 @use './trail-lighting.scss';
 @use './moon-calendar.scss';
+@use './visitor-register.scss';
 
 .trail-local-time {
   position: fixed;
@@ -60,16 +61,31 @@
   top: 1rem;
   right: calc(1rem + 88px);
   height: 44px;
+  min-width: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   gap: 4px;
-  color: var(--gray);
+  color: var(--darkgray);
   font: 10px/1 var(--codeFont);
   font-variant-numeric: tabular-nums;
-  svg {
-    width: 9px;
-    height: 11px;
-    fill: currentColor;
+  cursor: pointer;
+  &:hover,
+  &[aria-expanded='true'] {
+    color: var(--dark);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+  .trail-visitor-marker {
+    box-sizing: border-box;
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--light);
+    background: currentColor;
   }
 }
 .homepage-trail-scene {
@@ -92,6 +108,7 @@
   }
   .trail-visitor-count {
     right: calc(1rem + 56px);
+    min-width: 28px;
   }
 }
 @media (max-width: 600px) {
@@ -103,4 +120,9 @@
     top: 0.5rem;
     right: calc(0.5rem + 88px);
   }
+}
+// A board link that lights a trail underlines in that trail's blaze colour.
+.landing a[data-trail-blaze] {
+  text-decoration-color: var(--trail-blaze);
+  text-decoration-thickness: 2px;
 }

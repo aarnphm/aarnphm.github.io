@@ -1,4 +1,40 @@
 .homepage-trail-scene {
+  .trail-alpine-climbers {
+    pointer-events: none;
+    shape-rendering: crispEdges;
+  }
+  .trail-climber-coat {
+    fill: color-mix(in srgb, var(--lightgray) 20%, #a65e49);
+  }
+  .trail-climber-helmet {
+    fill: color-mix(in srgb, var(--light) 25%, #d8ccb0);
+  }
+  .trail-climber-pack {
+    fill: color-mix(in srgb, var(--darkgray) 30%, #7c8b66);
+  }
+  .trail-climber-harness {
+    fill: #b68b48;
+  }
+  .trail-climber-anchor {
+    fill: var(--darkgray);
+    opacity: 0.65;
+  }
+  .trail-climber-rope {
+    fill: none;
+    stroke: color-mix(in srgb, var(--darkgray) 65%, #b68b48);
+    stroke-width: 0.6;
+    stroke-linecap: round;
+    opacity: 0.6;
+    shape-rendering: geometricPrecision;
+  }
+  [data-climbing-pose] {
+    display: none;
+  }
+  .trail-alpine-climber[data-pose='reachLeft'] [data-climbing-pose='reachLeft'],
+  .trail-alpine-climber[data-pose='reachRight'] [data-climbing-pose='reachRight'],
+  .trail-alpine-climber[data-pose='resting'] [data-climbing-pose='resting'] {
+    display: block;
+  }
   .trail-alpine-traveler,
   .trail-alpine-tracks {
     shape-rendering: crispEdges;
@@ -28,21 +64,5 @@
   }
   .trail-alpine-traveler[data-alpine-traveler='2'] .trail-hiker-coat {
     fill: color-mix(in srgb, var(--gray) 45%, #788891);
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .trail-alpine-travelers,
-    .trail-alpine-tracks {
-      animation: trail-alpine-arrive 600ms ease-out 1200ms both;
-    }
-    .trail-alpine-travelers[data-motion='paused'],
-    .trail-alpine-tracks[data-motion='paused'] {
-      animation-play-state: paused;
-    }
-  }
-}
-
-@keyframes trail-alpine-arrive {
-  from {
-    opacity: 0;
   }
 }

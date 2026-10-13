@@ -7,6 +7,7 @@ import {
   type VisitorForecast,
 } from '../../util/visitor-weather'
 import { registerEscapeHandler } from './escape-handler'
+import { mountHomepagePrecipitation } from './homepage-precipitation'
 import { mountVisitorMoon } from './visitor-moon'
 import { mountVisitorWeatherMap } from './visitor-weather-map'
 
@@ -38,6 +39,7 @@ document.addEventListener('nav', () => {
   const controller = new AbortController()
   const { signal } = controller
   const trailWeather = createVisitorTrailWeatherSource(document, signal)
+  mountHomepagePrecipitation(document, signal)
   const holiday = createVisitorHolidaySource(document, signal)
   const moon = mountVisitorMoon(root, signal)
   let forecast: VisitorForecast | null = null

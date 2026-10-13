@@ -2,7 +2,9 @@ import { hand, heart, petSvg, pressure, sprout, stroke } from '../../util/mascot
 import { getFullSlug } from '../../util/path'
 import { readPetSpot, writePetSpot } from '../../util/pet-spot'
 import { sectionOf } from '../../util/section-icon'
+import { createSvgSpace, svgPathGeometry } from '../../util/svg-geometry'
 import { easeTrailDepth } from '../../util/trail-depth'
+import { trailHost, trailScene } from '../../util/trail-scene'
 import {
   animalInWay,
   canMove,
@@ -87,6 +89,18 @@ const perchTags =
   '#quartz-root :is(h1, h2, h3, h4, hr, pre, figure, img, video, table, blockquote, .callout), [data-pet-perch]'
 
 let root: HTMLElement | null = null
+let trailSpaceSignal: AbortSignal | undefined
+let trailSpaces = new WeakMap<SVGSVGElement, ReturnType<typeof createSvgSpace>>()
+const trailScreenMatrix = (element: SVGGraphicsElement) => {
+  const canvas = element instanceof SVGSVGElement ? element : element.ownerSVGElement
+  if (!canvas || !trailSpaceSignal || trailSpaceSignal.aborted) return element.getScreenCTM()
+  let space = trailSpaces.get(canvas)
+  if (!space) {
+    space = createSvgSpace(canvas, trailSpaceSignal)
+    trailSpaces.set(canvas, space)
+  }
+  return space.matrix(element)
+}
 let svg: SVGSVGElement | null = null
 let markup = ''
 let width = 72
@@ -352,10 +366,10 @@ function edgesNear(anchor: Point, avoid: Element | null): Edge[] {
 
 const campSolids = (): CollisionActor[] => {
   const obstacles: CollisionActor[] = []
-  for (const element of document.querySelectorAll<SVGGElement>(
-    '.homepage-trail-scene:not([hidden]) [data-camp-solid]',
-  )) {
-    const matrix = element.getScreenCTM()
+  const scene = trailScene(document)
+  if (!scene || trailHost(scene)?.hidden) return obstacles
+  for (const element of scene.querySelectorAll<SVGGElement>('[data-camp-solid]')) {
+    const matrix = trailScreenMatrix(element)
     const radius = Number(element.dataset.solidRadius)
     const id = element.dataset.campSolid
     if (!matrix || !id || !Number.isFinite(radius) || radius <= 0) continue
@@ -381,7 +395,10 @@ const coversText = (edge: Edge) => {
   const bottom = top + height(scale) + 4
   const intersects = (rect: DOMRect) =>
     rect.left < right && rect.right > left && rect.top < bottom && rect.bottom > top
-  for (const panel of document.querySelectorAll<HTMLElement>(trailSurfaces))
+  for (const panel of [
+    ...document.querySelectorAll<HTMLElement>(trailSurfaces),
+    ...(trailScene(document)?.querySelectorAll<HTMLElement>(trailSurfaces) ?? []),
+  ])
     if (intersects(panel.getBoundingClientRect())) return true
   const foot = { x: edge.at.x + window.scrollX, y: edge.at.y + window.scrollY }
   if (campSolids().some(other => circleClearance(foot, width * 0.35 * scale, other) < 0))
@@ -708,28 +725,33 @@ const trailPoints = new WeakMap<
   SVGPathElement,
   { d: string; step: number; handoff: string | undefined; pts: TrailSample[] }
 >()
-const trailRoutes = () =>
-  Array.from(
-    document.querySelectorAll<SVGPathElement>(
-      '.homepage-trail-scene:not([hidden]) .trail-scene[data-trail-rendered="true"] :is([data-pet-walk-path], [data-pet-expedition])',
-    ),
+const trailRoutes = () => {
+  const scene = trailScene(document)
+  const host = scene && trailHost(scene)
+  if (
+    !scene ||
+    scene.dataset.trailRendered !== 'true' ||
+    host?.hidden !== false ||
+    host.dataset.trailResizing === 'true'
+  )
+    return []
+  return Array.from(
+    scene.querySelectorAll<SVGPathElement>('[data-pet-walk-path], [data-pet-expedition]'),
   ).flatMap(path => {
     const d = path.getAttribute('d')
-    const m = path.getScreenCTM()
+    const m = trailScreenMatrix(path)
     if (!d || !m) return []
     const step = 4 / Math.max(Math.hypot(m.a, m.b), Math.hypot(m.c, m.d), 0.001)
     const handoff = petHandoff(path)
     let hit = trailPoints.get(path)
     if (hit?.d !== d || hit.step !== step || hit.handoff !== path.dataset.petHandoff) {
-      const length = path.getTotalLength()
+      const geometry = svgPathGeometry(path)
+      const length = geometry.getTotalLength()
       const segments = Math.max(1, Math.ceil(length / step))
-      let pts = Array.from(
-        { length: segments + 1 },
-        (_, k): TrailSample => ({
-          point: path.getPointAtLength((k * length) / segments),
-          progress: k / segments,
-        }),
-      )
+      let pts = Array.from({ length: segments + 1 }, (_, k): TrailSample => {
+        const point = geometry.getPointAtLength((k * length) / segments)
+        return { point: new DOMPoint(point.x, point.y), progress: k / segments }
+      })
       if (handoff) {
         pts = [
           ...pts.filter(sample => sample.progress < handoff.at),
@@ -746,10 +768,11 @@ const trailRoutes = () =>
     const stops = expedition ? trailScaleStops(path) : []
     const terrain = expedition ? petTerrain(path) : null
     const span = trailData(path.dataset.petAlpineSpan)
-    const base = path.ownerSVGElement?.getScreenCTM()
-    const depth = path.ownerSVGElement
-      ?.querySelector<SVGGElement>('[data-trail-depth="foothill"]')
-      ?.getScreenCTM()
+    const base = path.ownerSVGElement ? trailScreenMatrix(path.ownerSVGElement) : null
+    const foothill = path.ownerSVGElement?.querySelector<SVGGElement>(
+      '[data-trail-depth="foothill"]',
+    )
+    const depth = foothill ? trailScreenMatrix(foothill) : null
     const dx = base && depth ? depth.e - base.e : 0
     const dy = base && depth ? depth.f - base.f : 0
     // Capture parallax once for a compositor walk, blending beyond the mountain's boundaries.
@@ -783,9 +806,10 @@ const trailRoutes = () =>
     })
     return [{ path, feet, expedition, key: trailKey(path) }]
   })
+}
 
 const trailGeometry = (path: SVGPathElement) => {
-  const m = path.getScreenCTM()
+  const m = trailScreenMatrix(path)
   if (!m) return ''
   return `${path.getAttribute('d')}|${path.dataset.petScaleStops ?? ''}|${path.dataset.petAlpineSpan ?? ''}|${path.dataset.petHandoff ?? ''}|${m.a},${m.b},${m.c},${m.d},${m.e + window.scrollX},${m.f + window.scrollY}|${window.innerWidth},${window.innerHeight}`
 }
@@ -820,9 +844,9 @@ const trailActors = (scene: SVGSVGElement | null): CollisionActor[] => {
       (kind !== 'animal' && kind !== 'traveler')
     )
       continue
-    const matrix = element.getScreenCTM()
+    const matrix = trailScreenMatrix(element)
     const parent = element.parentElement
-    const ground = parent instanceof SVGGraphicsElement ? parent.getScreenCTM() : null
+    const ground = parent instanceof SVGGraphicsElement ? trailScreenMatrix(parent) : null
     const radius = Number(element.dataset.collisionRadius)
     if (!matrix || !ground || !Number.isFinite(radius)) continue
     actors.push({
@@ -919,7 +943,7 @@ const clearTrailActor = () => {
 }
 const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
   const scene = path.ownerSVGElement
-  const matrix = scene?.getScreenCTM()
+  const matrix = scene ? trailScreenMatrix(scene) : null
   if (!scene || !matrix) return
   if (trailActor?.ownerSVGElement !== scene) {
     trailActor?.remove()
@@ -951,7 +975,7 @@ const guardTrail = (animation: Animation, path: SVGPathElement) => {
       document.hidden ||
       reducedMotion() ||
       path.closest<HTMLElement>('.trail-scene')?.dataset.trailRendered !== 'true' ||
-      path.closest<HTMLElement>('.homepage-trail-scene')?.hidden !== false
+      trailHost(path)?.hidden !== false
     )
       return pauseTrail()
     const time = Number(animation.currentTime)
@@ -1097,7 +1121,7 @@ const walkTrail = () => {
     if (
       !path.isConnected ||
       path.closest<HTMLElement>('.trail-scene')?.dataset.trailRendered !== 'true' ||
-      path.closest<HTMLElement>('.homepage-trail-scene')?.hidden !== false ||
+      trailHost(path)?.hidden !== false ||
       trailWalk?.geometry !== trailGeometry(path) ||
       reducedMotion() ||
       document.hidden
@@ -2302,25 +2326,27 @@ document.addEventListener('petstoggle', event => {
 })
 
 document.addEventListener('nav', () => {
-  syncPets()
-
   const controller = new AbortController()
   const { signal } = controller
+  trailSpaceSignal = signal
+  trailSpaces = new WeakMap()
+  syncPets()
   const scene = document.querySelector<HTMLElement>('.homepage-trail-scene')
   let trailFrame = 0
   let trailWanted = false
   let waiting: Animation | null = null
   const refreshTrail = () => {
     trailFrame = 0
-    if (
-      signal.aborted ||
-      !scene ||
-      scene.hidden ||
-      document.hidden ||
-      reducedMotion() ||
-      scene.querySelector<HTMLElement>('.trail-scene')?.dataset.trailRendered !== 'true'
-    )
+    if (signal.aborted || !scene || scene.hidden || document.hidden || reducedMotion()) return
+    if (scene.dataset.trailResizing === 'true') {
+      trailWanted ||= !!trailWalk
+      if (trailWalk?.duration) pauseTrail()
       return
+    }
+    // The frame replaces its routes over several frames of a redraw and reports rendered only at
+    // the end. A walk whose route has moved or gone stops at once, before the rendered check, so
+    // the pet does not keep hopping along a path that is no longer there; it resumes on the new
+    // route once the scene is ready.
     const currentTrail = trailWalk
     if (
       currentTrail &&
@@ -2330,6 +2356,7 @@ document.addEventListener('nav', () => {
       pauseTrail()
       trailWanted = true
     }
+    if (trailScene(document)?.dataset.trailRendered !== 'true') return
     if (!trailWanted || carry) return
     const current = hop
     if (current) {
@@ -2386,6 +2413,23 @@ document.addEventListener('nav', () => {
     scene.addEventListener('trail:reflow', queueTrail, { signal })
     scene.addEventListener('trail:ready', openTrail, { signal })
     scene.addEventListener('load', openTrail, { capture: true, signal })
+    // The host's events bracket a redraw; the route paths change in between, so they are watched.
+    let paths: MutationObserver | null = null
+    const watchPaths = () => {
+      paths?.disconnect()
+      const trail = trailScene(document)
+      if (!trail) return
+      paths = new MutationObserver(queueTrail)
+      paths.observe(trail, { attributes: true, attributeFilter: ['data-trail-rendered'] })
+      const walks = trail.querySelector('[data-pet-walk-paths]')
+      if (walks) paths.observe(walks, { childList: true })
+      const expedition = trail.querySelector('[data-pet-expedition]')
+      if (expedition)
+        paths.observe(expedition, { attributes: true, attributeFilter: ['d', 'data-pet-handoff'] })
+    }
+    scene.addEventListener('trail:mounted', watchPaths, { signal })
+    watchPaths()
+    signal.addEventListener('abort', () => paths?.disconnect(), { once: true })
     const controlsChanged = () => {
       if (root && !carry) {
         const pet = root.getBoundingClientRect()
@@ -2418,6 +2462,17 @@ document.addEventListener('nav', () => {
       attributes: true,
       attributeFilter: ['hidden'],
     })
+    const observeControls = () => {
+      const drawing = trailScene(document)
+      if (drawing)
+        controlsObserver.observe(drawing, {
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['hidden'],
+        })
+    }
+    observeControls()
+    scene.addEventListener('trail:mounted', observeControls, { signal })
     signal.addEventListener('abort', () => controlsObserver.disconnect(), { once: true })
     window.addEventListener('resize', queueTrail, { passive: true, signal })
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -2606,6 +2661,10 @@ document.addEventListener('nav', () => {
   window.addCleanup(() => {
     closeTrail()
     controller.abort()
+    if (trailSpaceSignal === signal) {
+      trailSpaceSignal = undefined
+      trailSpaces = new WeakMap()
+    }
     document.removeEventListener('speech', onSpeech)
     document.removeEventListener('readermodechange', onReaderMode)
     clearTimeout(readingTimer)

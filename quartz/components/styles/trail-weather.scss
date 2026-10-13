@@ -2,51 +2,101 @@
   .trail-weather {
     pointer-events: none;
   }
-  .trail-weather-sun {
-    fill: color-mix(in srgb, var(--lightgray) 55%, #bd9f67);
-    opacity: calc(var(--trail-sunlight, 0) * 0.55);
+  .trail-sky {
+    pointer-events: none;
     shape-rendering: crispEdges;
+  }
+  // The sun reddens as it nears the horizon, and dims behind cloud.
+  .trail-sky-sun {
+    fill: color-mix(
+      in srgb,
+      #ec8b49 calc(var(--trail-sun-low, 0) * 85%),
+      color-mix(in srgb, var(--lightgray) 55%, #bd9f67)
+    );
+    opacity: calc(0.25 + var(--trail-sun-clear, 0) * 0.45);
+  }
+  .trail-sky-glow-outer {
+    fill: #fdb2a2;
+    opacity: 0.32;
+  }
+  .trail-sky-glow-inner {
+    fill: #ec8b49;
+    opacity: 0.3;
+  }
+  // A daytime moon is pale; the night layer brings it to full strength.
+  .trail-sky-moon {
+    opacity: 0.5;
+  }
+  .trail-scene[data-lighting='moonlit'] {
+    .trail-sky-moon {
+      opacity: 1;
+    }
+    .trail-sky-glow {
+      opacity: 0.18;
+    }
   }
   .trail-weather-dapple {
     fill: color-mix(in srgb, var(--lightgray) 72%, #c3ad7c);
     opacity: calc(var(--trail-sunlight, 0) * 0.45);
     shape-rendering: crispEdges;
   }
-  .trail-weather-gust,
-  .trail-weather-rain {
+  .trail-weather-gust {
     fill: none;
     stroke: color-mix(in srgb, var(--gray) 65%, #82918c);
     stroke-width: 1;
   }
   .trail-weather-gust {
-    opacity: calc(var(--trail-gust-strength, 0) * 0.25);
+    stroke-linecap: square;
+    stroke-dasharray: 34 200;
+    stroke-dashoffset: 34;
+    opacity: 0;
+    // Without motion, the whole streamline stays drawn to show the wind's direction.
+    @media (prefers-reduced-motion: reduce) {
+      stroke-dasharray: none;
+      opacity: calc(0.15 + var(--trail-gust-strength, 0) * 0.25);
+    }
   }
-  .trail-weather-rain {
-    opacity: calc(var(--trail-rain-strength, 0) * 0.42);
+  // Grass laid flat by a gust, and cat's paws on the pond.
+  .trail-weather-sweep {
+    fill: color-mix(in srgb, var(--gray) 55%, #84916b);
+    opacity: 0;
+    shape-rendering: crispEdges;
+    @media (prefers-reduced-motion: reduce) {
+      opacity: calc(0.15 + var(--trail-gust-strength, 0) * 0.2);
+    }
+  }
+  .trail-weather-paw {
+    fill: color-mix(in srgb, var(--light) 45%, #6f878c);
+    opacity: 0;
+    shape-rendering: crispEdges;
   }
   .trail-weather-snow {
     fill: var(--darkgray);
     opacity: 0.2;
     shape-rendering: crispEdges;
   }
-  .trail-tree-motion {
-    transform-box: view-box;
-    transform-origin: 0 0;
+  .trail-weather-snow-ground {
+    fill: color-mix(in srgb, var(--lightgray) 25%, #e9eee8);
+    opacity: calc(var(--trail-snow-cover, 0) * 0.55);
+    shape-rendering: crispEdges;
   }
   .trail-tree-gold {
     opacity: calc(0.15 + var(--trail-sunlight, 0) * 0.85);
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .trail-scene[data-weather-windy='true'] .trail-tree-motion {
-      animation: trail-tree-breeze var(--trail-wind-period, 8s) ease-in-out infinite;
-      animation-delay: var(--trail-weather-delay, 0s);
-    }
     .trail-weather-gust {
-      animation: trail-weather-gust var(--trail-wind-period, 8s) ease-out infinite;
+      animation: trail-weather-gust var(--trail-wind-period, 8s) linear infinite;
       animation-delay: var(--trail-weather-delay, 0s);
     }
-    .trail-weather-rain,
+    .trail-weather-sweep {
+      animation: trail-weather-sweep var(--trail-wind-period, 8s) steps(40, end) infinite;
+      animation-delay: var(--trail-weather-delay, 0s);
+    }
+    .trail-weather-paw {
+      animation: trail-weather-paw var(--trail-wind-period, 8s) linear infinite;
+      animation-delay: var(--trail-weather-delay, 0s);
+    }
     .trail-weather-snow {
       animation: trail-weather-fall 2.8s steps(8, end) infinite;
       animation-delay: var(--trail-weather-delay, 0s);
@@ -59,9 +109,9 @@
       animation-delay: var(--trail-weather-delay, 0s);
     }
     .trail-scene[data-weather-motion='paused'] {
-      .trail-tree-motion,
       .trail-weather-gust,
-      .trail-weather-rain,
+      .trail-weather-sweep,
+      .trail-weather-paw,
       .trail-weather-snow,
       .trail-weather-leaf,
       .trail-weather-dapple {
@@ -71,34 +121,63 @@
   }
 }
 
-@keyframes trail-tree-breeze {
-  0%,
-  100% {
-    transform: rotate(calc(var(--trail-sway-low, 0deg) * var(--trail-tree-wind-scale, 1)));
-  }
-  45% {
-    transform: rotate(calc(var(--trail-sway-high, 0deg) * var(--trail-tree-wind-scale, 1)));
-  }
-  58% {
-    transform: rotate(calc(var(--trail-sway-gust, 0deg) * var(--trail-tree-wind-scale, 1)));
-  }
-  72% {
-    transform: rotate(calc(var(--trail-sway-low, 0deg) * var(--trail-tree-wind-scale, 1) * 0.4));
-  }
-}
+// A streak runs the length of its streamline as the gust front passes, in step with the leaf
+// clusters below it (their peak is at 34% of the same period and delay).
 @keyframes trail-weather-gust {
   0%,
-  30%,
+  20% {
+    stroke-dashoffset: 34;
+    opacity: 0;
+  }
+  26% {
+    opacity: calc(0.35 + var(--trail-gust-strength, 0) * 0.45);
+  }
+  42% {
+    opacity: calc(0.3 + var(--trail-gust-strength, 0) * 0.4);
+  }
+  48%,
+  100% {
+    stroke-dashoffset: -100;
+    opacity: 0;
+  }
+}
+// The grass lies down as the front arrives (the leaves peak at 34%), runs downwind, and stands up.
+@keyframes trail-weather-sweep {
+  0%,
+  22% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  30% {
+    opacity: calc(0.4 + var(--trail-gust-strength, 0) * 0.5);
+  }
+  44% {
+    opacity: calc(0.3 + var(--trail-gust-strength, 0) * 0.4);
+    transform: translate(var(--trail-sweep-x, 0), var(--trail-sweep-y, 0));
+  }
+  52%,
   100% {
     opacity: 0;
-    transform: translateX(-8px);
+    transform: translate(
+      calc(var(--trail-sweep-x, 0px) * 1.4),
+      calc(var(--trail-sweep-y, 0px) * 1.4)
+    );
   }
-  55% {
-    opacity: calc(var(--trail-gust-strength, 0) * 0.3);
-  }
-  75% {
+}
+@keyframes trail-weather-paw {
+  0%,
+  24% {
     opacity: 0;
-    transform: translateX(12px);
+  }
+  32% {
+    opacity: calc(0.45 + var(--trail-gust-strength, 0) * 0.45);
+  }
+  40% {
+    opacity: calc(0.3 + var(--trail-gust-strength, 0) * 0.3);
+  }
+  50%,
+  100% {
+    opacity: 0;
   }
 }
 @keyframes trail-weather-fall {

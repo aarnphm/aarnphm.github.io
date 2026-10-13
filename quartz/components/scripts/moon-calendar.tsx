@@ -1,6 +1,7 @@
 import { render, type KeyboardEventHandler } from 'preact'
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks'
 import { lunarDiscPath, lunarPhase, readLunarEvents, type LunarEvent } from '../../util/lunar-phase'
+import { trailScene } from '../../util/trail-scene'
 import { subscribeVisitorMoon } from '../../util/visitor-lunar'
 import { subscribeVisitorTrailWeather } from '../../util/visitor-trail-weather'
 import { englishDateLabels } from '../controls/date-picker'
@@ -263,9 +264,15 @@ export function mountMoonCalendar(root: HTMLElement, signal: AbortSignal) {
   const timer = window.setInterval(updateVisibility, 60000)
   document.addEventListener('visibilitychange', updateVisibility, { signal })
 
+  // The scene host stands beside body, outside the trail root.
+  const host = document.querySelector<HTMLElement>('.homepage-trail-scene')
   const settingsOpen = () =>
-    !root.querySelector<HTMLElement>('.homepage-trail-scene')?.hidden &&
-    Boolean(root.querySelector('.trail-tree-panel:not([hidden]), .trail-camp-tools:not([hidden])'))
+    !host?.hidden &&
+    Boolean(
+      trailScene(document)?.querySelector(
+        '.trail-tree-panel:not([hidden]), .trail-camp-tools:not([hidden])',
+      ),
+    )
   const syncSettings = () => {
     toggle.disabled = settingsOpen()
     if (toggle.disabled && panel.matches(':popover-open')) panel.hidePopover()
@@ -280,7 +287,14 @@ export function mountMoonCalendar(root: HTMLElement, signal: AbortSignal) {
     )
       syncSettings()
   })
-  settings.observe(root, { subtree: true, attributes: true, attributeFilter: ['hidden'] })
+  if (host) settings.observe(host, { attributes: true, attributeFilter: ['hidden'] })
+  const observeSettings = () => {
+    const scene = trailScene(document)
+    if (scene)
+      settings.observe(scene, { subtree: true, attributes: true, attributeFilter: ['hidden'] })
+  }
+  observeSettings()
+  host?.addEventListener('trail:mounted', observeSettings, { signal })
   panel.addEventListener(
     'beforetoggle',
     event => {
