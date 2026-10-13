@@ -1,0 +1,3 @@
+[lfs]
+	fetchexclude = *
+	url = https://lfs.aarnphm.xyz/acd6a4566c237b469bd330e38c51aa1c.r2.cloudflarestorage.com/sites
