@@ -30,14 +30,31 @@ export interface ActivityCardStat {
   provenance?: string
 }
 
-export type ActivityCardChartKey = 'cyclingPower' | 'runPace' | 'runLaps'
+export type ActivityCardChartKey =
+  | 'cyclingPower'
+  | 'powerCurve'
+  | 'cyclingLaps'
+  | 'runPace'
+  | 'runLaps'
+export type PowerWindow = 30 | 300
+export interface ActivityCardChartPoint {
+  x: number
+  y: number | null
+  label: string
+  value: string
+  range?: string
+  end?: number
+  detail?: string
+}
 export interface ActivityCardChart {
   key: ActivityCardChartKey
   title: string
-  kind: 'line' | 'bars'
+  kind: 'line' | 'bars' | 'intervals'
   axis: string
   note: string
-  points: { x: number; y: number | null; label: string; value: string; range?: string }[]
+  points: ActivityCardChartPoint[]
+  series?: { seconds: PowerWindow; points: ActivityCardChartPoint[] }[]
+  window?: PowerWindow
 }
 
 export interface ActivityCardPoint {
@@ -92,27 +109,45 @@ const isStat = (value: unknown): value is ActivityCardStat =>
 
 export const isActivityCardStatKey = isStatKey
 export const isActivityCardChartKey = (value: string): value is ActivityCardChartKey =>
-  value === 'cyclingPower' || value === 'runPace' || value === 'runLaps'
+  value === 'cyclingPower' ||
+  value === 'powerCurve' ||
+  value === 'cyclingLaps' ||
+  value === 'runPace' ||
+  value === 'runLaps'
+
+const isPowerWindow = (value: unknown): value is PowerWindow => value === 30 || value === 300
+const isChartPoint = (point: unknown): point is ActivityCardChartPoint =>
+  isRecord(point) &&
+  typeof point.x === 'number' &&
+  Number.isFinite(point.x) &&
+  (point.y === null || (typeof point.y === 'number' && Number.isFinite(point.y))) &&
+  typeof point.label === 'string' &&
+  typeof point.value === 'string' &&
+  (point.range === undefined || typeof point.range === 'string') &&
+  (point.detail === undefined || typeof point.detail === 'string') &&
+  (point.end === undefined ||
+    (typeof point.end === 'number' && Number.isFinite(point.end) && point.end > point.x))
 
 const isChart = (value: unknown): value is ActivityCardChart =>
   isRecord(value) &&
   typeof value.key === 'string' &&
   isActivityCardChartKey(value.key) &&
-  (value.kind === 'line' || value.kind === 'bars') &&
+  (value.kind === 'line' || value.kind === 'bars' || value.kind === 'intervals') &&
   typeof value.title === 'string' &&
   typeof value.axis === 'string' &&
   typeof value.note === 'string' &&
   Array.isArray(value.points) &&
-  value.points.every(
-    point =>
-      isRecord(point) &&
-      typeof point.x === 'number' &&
-      Number.isFinite(point.x) &&
-      (point.y === null || (typeof point.y === 'number' && Number.isFinite(point.y))) &&
-      typeof point.label === 'string' &&
-      typeof point.value === 'string' &&
-      (point.range === undefined || typeof point.range === 'string'),
-  )
+  value.points.every(isChartPoint) &&
+  (value.window === undefined || isPowerWindow(value.window)) &&
+  (value.series === undefined ||
+    (Array.isArray(value.series) &&
+      value.series.every(
+        series =>
+          isRecord(series) &&
+          isPowerWindow(series.seconds) &&
+          Array.isArray(series.points) &&
+          series.points.every(isChartPoint),
+      )))
 
 const isPoint = (value: unknown): value is ActivityCardPoint =>
   isRecord(value) &&

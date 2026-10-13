@@ -382,8 +382,60 @@ export default ((userOpts?: Partial<Options>) => {
                     shortLabel="puiss. vélo"
                     data
                   />
+                  <Include
+                    name="powerCurve"
+                    label="courbe de puissance"
+                    shortLabel="courbe puiss."
+                    data
+                  />
+                  <Include
+                    name="cyclingLaps"
+                    label="analyse des tours vélo"
+                    shortLabel="tours vélo"
+                    data
+                  />
                   <Include name="runPace" label="d d’allure" data />
                   <Include name="runLaps" label="analyse des tours" shortLabel="tours" data />
+                </div>
+                <div class="press-kit-chart-setting press-kit-power-window" hidden>
+                  <span class="press-kit-legend" id="press-kit-power-window-label">
+                    moyenne de puissance
+                  </span>
+                  <div
+                    class="press-kit-segments"
+                    role="radiogroup"
+                    aria-labelledby="press-kit-power-window-label"
+                  >
+                    {[
+                      ['30', '30 s'],
+                      ['300', '5 min'],
+                    ].map(([value, label]) => (
+                      <label class="press-kit-segment">
+                        <input type="radio" name="press-kit-power-window" value={value} />
+                        <span>{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div class="press-kit-chart-setting press-kit-power-scale" hidden>
+                  <span class="press-kit-legend" id="press-kit-power-scale-label">
+                    échelle de la courbe
+                  </span>
+                  <div
+                    class="press-kit-segments"
+                    role="radiogroup"
+                    aria-labelledby="press-kit-power-scale-label"
+                  >
+                    {[
+                      ['linear', 'linéaire'],
+                      ['log', 'logarithmique'],
+                    ].map(([value, label]) => (
+                      <label class="press-kit-segment">
+                        <input type="radio" name="press-kit-power-scale" value={value} />
+                        <span>{label}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </fieldset>
 

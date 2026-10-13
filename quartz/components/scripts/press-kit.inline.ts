@@ -7,6 +7,7 @@ import {
   OVERLAY_OPTIONS,
   type ActivityCardData,
   type OverlayKey,
+  type PowerWindow,
 } from '../../util/press-kit-activity'
 import { triLabel, triText } from '../../util/triathlon-i18n'
 import { buildSelect, type Select } from '../controls/select'
@@ -109,6 +110,8 @@ let format: FormatKey = 'portrait'
 let theme: ThemeKey = 'papier'
 let overlay: OverlayKey = 'card'
 let language: Locale | null = null
+let powerWindow: PowerWindow = 30
+let powerCurveScale: 'linear' | 'log' = 'log'
 const selectedMetrics = new Map<string, Set<string>>()
 const show = {
   art: false,
@@ -130,6 +133,8 @@ const show = {
   entry: false,
   transparent: false,
   cyclingPower: false,
+  powerCurve: false,
+  cyclingLaps: false,
   runPace: false,
   runLaps: false,
 }
@@ -552,6 +557,8 @@ function model(): CardModel {
     day,
     overlay,
     metricGap: editor?.metricGap ?? 0,
+    powerWindow,
+    powerCurveScale,
     metricKeys: Object.fromEntries(Array.from(selectedMetrics, ([url, keys]) => [url, [...keys]])),
     show: {
       ...show,
@@ -1058,6 +1065,33 @@ function syncControls() {
   })
   const charts = $<HTMLButtonElement>('[data-include="cyclingPower"]')?.closest('fieldset')
   if (charts) charts.hidden = !activities.some(activity => activity.charts.length > 0)
+  const powerCharts = activities.flatMap(activity =>
+    activity.charts.filter(chart => chart.key === 'cyclingPower'),
+  )
+  const availableWindow = (seconds: number) =>
+    powerCharts.length > 0 &&
+    powerCharts.every(
+      chart => chart.series?.some(series => series.seconds === seconds) ?? seconds === 30,
+    )
+  if (!availableWindow(powerWindow)) powerWindow = 30
+  const powerControls = $('.press-kit-power-window')
+  if (powerControls) powerControls.hidden = !show.cyclingPower || !powerCharts.length
+  const powerScale = $('.press-kit-power-scale')
+  if (powerScale)
+    powerScale.hidden =
+      !show.powerCurve ||
+      !activities.some(activity => activity.charts.some(chart => chart.key === 'powerCurve'))
+  dialog
+    .querySelectorAll<HTMLInputElement>('input[name="press-kit-power-scale"]')
+    .forEach(input => {
+      input.checked = input.value === powerCurveScale
+    })
+  dialog
+    .querySelectorAll<HTMLInputElement>('input[name="press-kit-power-window"]')
+    .forEach(input => {
+      input.checked = Number(input.value) === powerWindow
+      input.disabled = !availableWindow(Number(input.value))
+    })
   dialog.querySelectorAll<HTMLButtonElement>('[data-day-activity]').forEach(button => {
     const selected = selectedActivities.has(button.dataset.dayActivity ?? '')
     button.setAttribute('aria-pressed', String(selected))
@@ -1643,7 +1677,21 @@ function bindDialog(signal: AbortSignal) {
         return
       }
       if (input.name === 'press-kit-format') format = input.value as FormatKey
-      else if (input.name === 'press-kit-theme') theme = input.value as ThemeKey
+      else if (
+        input.name === 'press-kit-power-window' &&
+        (input.value === '30' || input.value === '300')
+      ) {
+        powerWindow = input.value === '30' ? 30 : 300
+        schedule()
+        return
+      } else if (
+        input.name === 'press-kit-power-scale' &&
+        (input.value === 'linear' || input.value === 'log')
+      ) {
+        powerCurveScale = input.value
+        schedule()
+        return
+      } else if (input.name === 'press-kit-theme') theme = input.value as ThemeKey
       else return
       writePrefs()
       schedule()
@@ -1778,6 +1826,10 @@ document.addEventListener('nav', () => {
   show.transparent = false
   show.entry = false
   show.cyclingPower = false
+  show.powerCurve = false
+  show.cyclingLaps = false
+  powerWindow = 30
+  powerCurveScale = 'log'
   show.runPace = false
   show.runLaps = false
   anchorSelect = null

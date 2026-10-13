@@ -618,6 +618,29 @@
   }
 }
 
+.press-kit-chart-setting {
+  margin-block-start: var(--space-3);
+
+  > .press-kit-legend {
+    display: block;
+    margin-block-end: var(--space-1);
+  }
+
+  > .press-kit-segments {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .press-kit-segment:has(input:disabled) {
+    color: var(--gray);
+    background: var(--light);
+    cursor: default;
+
+    input {
+      cursor: default;
+    }
+  }
+}
+
 .press-kit-language > .press-kit-segment {
   font-size: 0.6rem;
 }
@@ -880,7 +903,8 @@ a.press-kit-chip {
     border-radius: var(--radius-none);
     background: var(--pk-surface);
     color: var(--dark);
-    font: inherit;
+    font: var(--control-font-size) / 1.3 var(--codeFont);
+    font-variant-numeric: tabular-nums;
   }
   fieldset {
     min-width: 0;
@@ -896,6 +920,10 @@ a.press-kit-chip {
   @media (pointer: coarse) {
     summary {
       min-height: 44px;
+    }
+
+    input[type='number'] {
+      font-size: 1rem;
     }
   }
 }

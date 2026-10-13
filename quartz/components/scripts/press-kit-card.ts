@@ -4,6 +4,7 @@ import {
   isActivityCardStatKey,
   type ActivityCardData,
   type ActivityCardStat,
+  type PowerWindow,
   type OverlayKey,
 } from '../../util/press-kit-activity'
 import {
@@ -201,6 +202,8 @@ export interface CardModel {
   trainingLayers?: Map<string, LayerRenderer>
   overlay?: OverlayKey
   metricGap?: number
+  powerWindow?: PowerWindow
+  powerCurveScale?: 'linear' | 'log'
   metricKeys?: Record<string, string[]>
   locale?: Locale
   show: {
@@ -223,6 +226,8 @@ export interface CardModel {
     entry: boolean
     transparent: boolean
     cyclingPower: boolean
+    powerCurve: boolean
+    cyclingLaps: boolean
     runPace: boolean
     runLaps: boolean
   }
