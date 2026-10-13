@@ -8,6 +8,7 @@ import { render } from 'preact-render-to-string'
 import { EXIT, visit } from 'unist-util-visit'
 import type { TranscludeOptions } from '../plugins/transformers/frontmatter'
 import { i18n } from '../i18n'
+import { pageScopedComponentStyles } from '../plugins/emitters/component-resources/page-scoped-styles'
 import { ATHLETE } from '../plugins/stores/analytics'
 import { checkBib, checkBibSection } from '../plugins/transformers/citations'
 import { checkFootnoteRef, checkFootnoteSection } from '../plugins/transformers/gfm'
@@ -33,6 +34,7 @@ import {
   notebookCellRuntimeNodes,
   resolveNotebookCell,
 } from '../util/notebook/transclude'
+import { classPrefixPattern, type PageStyle } from '../util/page-styles'
 import {
   FullSlug,
   FilePath,
@@ -51,6 +53,7 @@ import {
   splitCssBundles,
   splitJsBundles,
   componentCssResourceKeyPrefix,
+  componentCssScopeKey,
   staticCssBundleKey,
   staticJsBundleKey,
 } from '../util/resource-bundles'
@@ -942,7 +945,12 @@ export const pageResources = (
     ...(ctx.extractedStaticResources ?? new Map<string, string>()).entries(),
   ]
     .filter(([key]) => key.startsWith(componentCssResourceKeyPrefix))
-    .map(([, content]) => ({ content: joinSegments(baseDir, content) }))
+    .map(([key, content]) => ({
+      content: joinSegments(baseDir, content),
+      classPrefixes: pageScopedComponentStyles.find(
+        style => componentCssScopeKey(style.name) === key,
+      )?.classPrefixes,
+    }))
   const css: CSSResource[] = [
     { content: asset('index.css') },
     ...componentCss,
@@ -952,6 +960,9 @@ export const pageResources = (
         : part.resource,
     ),
   ]
+  const pageStyles: PageStyle[] = css.flatMap(({ content, classPrefixes }) =>
+    classPrefixes ? [{ href: content, classPrefixes }] : [],
+  )
   const staticJs: JSResource[] = []
   for (const part of [
     ...splitJsBundles(
@@ -998,6 +1009,13 @@ export const pageResources = (
         contentType: 'inline',
         spaPreserve: true,
         script: `const semanticCfg = ${JSON.stringify(ctx.cfg?.configuration?.semanticSearch ?? {})}`,
+      },
+      {
+        loadTime: 'beforeDOMReady',
+        contentType: 'inline',
+        spaPreserve: true,
+        // Absolute hrefs: SPA navigation changes the base that relative hrefs resolve against.
+        script: `const pageStyles = ${JSON.stringify(pageStyles)}.map(style => ({ ...style, href: new URL(style.href, document.baseURI).href }))`,
       },
       ...staticJs,
       {
@@ -2180,7 +2198,6 @@ const ElementComponent = ((enableRecents: boolean = false) => {
         </section>,
         <section class="boring-legal">
           <div class="clickable-container">
-            <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
             <em class="homepage-board-license">
               <AliasLink
                 newTab
@@ -2189,6 +2206,8 @@ const ElementComponent = ((enableRecents: boolean = false) => {
                 url="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
               />
             </em>
+            <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
+            <AliasLink isInternal enablePopover={false} name="friends" url="/friends" />
           </div>
         </section>,
       ],
@@ -2520,7 +2539,12 @@ export function renderPage(
   const visited = new Set<FullSlug>([slug])
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
 
-  let tree = transcludeFinal(root, componentData, { visited })
+  let tree = transcludeFinal(
+    root,
+    componentData,
+    { visited },
+    componentData.fileData.flashcards ? { dynalist: false } : undefined,
+  )
   logBuildSpan(ctx.argv, 'render:transclude', slug, renderPerf.elapsedMs())
   renderBaseEmbeds(tree, componentData)
 
@@ -2748,9 +2772,7 @@ export function renderPage(
     (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split('-')[0] ?? 'en'
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? 'default'
   const isSlides = isSlidePage(slug, componentData.fileData.frontmatter?.slides)
-  const isFlashcards =
-    (componentData.fileData.flashcards != null && slug.endsWith('/flashcards')) ||
-    pageLayout === 'flashcards'
+  const isFlashcards = componentData.fileData.flashcards != null || pageLayout === 'flashcards'
   const isArena = slug === 'arena' || slug.startsWith('arena/')
   const isCurius = slug === 'curius'
   // The PDF reader shell renders once at `read` and the worker serves it for every `/read/...`
@@ -2764,125 +2786,133 @@ export function renderPage(
   const contentAttrs = { 'data-plain': !isBoxy }
   renderPerf.addEvent('preact')
 
-  const html =
-    `<!DOCTYPE html>` +
-    render(
-      <html lang={lang}>
-        <Head {...componentData} pageSlug={slug} />
-        <body
-          data-slug={slug}
-          data-language={lang}
-          data-menu={isMenu}
-          data-slides={isSlides}
-          data-flashcards={isFlashcards}
-          data-layout={pageLayout}
-          data-pdf-reader={isPdfReader}
-          data-is-folder-tag={isFolderTag}
-          data-is-base={isBase}
-          data-is-canvas={isCanvas}
-          data-tags={(componentData.fileData.frontmatter?.tags ?? []).join(' ')}
-          data-arena-subpage={isArenaSubpage}
-          data-protected={componentData.fileData.frontmatter?.protected ?? false}
+  const body = render(
+    <>
+      <body
+        data-slug={slug}
+        data-language={lang}
+        data-menu={isMenu}
+        data-slides={isSlides}
+        data-flashcards={isFlashcards}
+        data-layout={pageLayout}
+        data-pdf-reader={isPdfReader}
+        data-is-folder-tag={isFolderTag}
+        data-is-base={isBase}
+        data-is-canvas={isCanvas}
+        data-tags={(componentData.fileData.frontmatter?.tags ?? []).join(' ')}
+        data-arena-subpage={isArenaSubpage}
+        data-protected={componentData.fileData.frontmatter?.protected ?? false}
+      >
+        <main
+          id="quartz-root"
+          class={classNames(undefined, 'page', slug === 'index' ? 'grid' : '')}
+          style={
+            slug === 'index'
+              ? undefined
+              : isSlides || isFlashcards
+                ? { display: 'flex', flexDirection: 'column' }
+                : isPdfReader
+                  ? { display: 'flex', flexDirection: 'column', height: '100dvh' }
+                  : { display: 'flex', flexDirection: 'column', minHeight: '100vh' }
+          }
         >
-          <main
-            id="quartz-root"
-            class={classNames(undefined, 'page', slug === 'index' ? 'grid' : '')}
-            style={
-              slug === 'index'
-                ? undefined
-                : isSlides || isFlashcards
-                  ? { display: 'flex', flexDirection: 'column' }
-                  : isPdfReader
-                    ? { display: 'flex', flexDirection: 'column', height: '100dvh' }
-                    : { display: 'flex', flexDirection: 'column', minHeight: '100vh' }
-            }
+          <Header {...componentData}>
+            {header.map(HeaderComponent => (
+              <HeaderComponent {...componentData} />
+            ))}
+          </Header>
+          <section id="stacked-notes-container" class="all-col">
+            <div id="stacked-notes-main">
+              <div class="stacked-notes-column" />
+            </div>
+          </section>
+          <div
+            class={classNames(undefined, 'all-col', 'grid', 'page-body-grid')}
+            style={{ flex: '1 1 auto' }}
           >
-            <Header {...componentData}>
-              {header.map(HeaderComponent => (
-                <HeaderComponent {...componentData} />
-              ))}
-            </Header>
-            <section id="stacked-notes-container" class="all-col">
-              <div id="stacked-notes-main">
-                <div class="stacked-notes-column" />
-              </div>
-            </section>
-            <div
-              class={classNames(undefined, 'all-col', 'grid', 'page-body-grid')}
-              style={{ flex: '1 1 auto' }}
-            >
-              {beforeBody.length > 0 && (
-                <section
-                  class={classNames(
-                    undefined,
-                    'page-header',
-                    'popover-hint',
-                    isFullBleed ? 'all-col' : 'all-col grid',
-                  )}
-                >
-                  {beforeBody.map(BodyComponent => (
-                    <BodyComponent {...componentData} />
-                  ))}
-                </section>
-              )}
+            {beforeBody.length > 0 && (
               <section
                 class={classNames(
                   undefined,
-                  'page-content',
-                  slug === 'index' ? 'side-col' : isFullBleed ? 'all-col' : 'grid all-col',
+                  'page-header',
+                  'popover-hint',
+                  isFullBleed ? 'all-col' : 'all-col grid',
                 )}
-                {...contentAttrs}
               >
-                {sidebar.length > 0 && (
-                  <aside class="aside-container left-col">
-                    {sidebar.map(BodyComponent => (
-                      <BodyComponent {...componentData} />
-                    ))}
-                  </aside>
-                )}
-                <Content {...componentData} />
-                {!isSlides && !isFlashcards && !isFullBleed && !isCurius && (
-                  <>
-                    <div id="wc-modal" class="wc-modal">
-                      <div class="wc-inner" />
-                    </div>
-                  </>
-                )}
-                <Headings {...componentData} />
-                <PressKit {...componentData} />
+                {beforeBody.map(BodyComponent => (
+                  <BodyComponent {...componentData} />
+                ))}
               </section>
-              {!isFolderTag && !isCurius && !isPdfReader && (
-                <section class="page-footer popover-hint grid all-col">
-                  {retrievalNodes.length > 0 &&
-                    htmlToJsx(componentData.fileData.filePath!, {
-                      type: 'root',
-                      children: retrievalNodes,
-                    } as Node)}
-                  {afterBody.length > 0 &&
-                    afterBody.map(BodyComponent => <BodyComponent {...componentData} />)}
-                  {slug !== 'index' && <Footer {...componentData} />}
-                </section>
+            )}
+            <section
+              class={classNames(
+                undefined,
+                'page-content',
+                slug === 'index' ? 'side-col' : isFullBleed ? 'all-col' : 'grid all-col',
               )}
-            </div>
-            <QuartzIcon filePath={componentData.fileData.filePath!} />
-          </main>
-        </body>
-        {pageResources.js
-          .filter(resource => resource.loadTime === 'afterDOMReady')
-          .map(res => JSResourceToScriptElement(res, true))}
-        {/* Cloudflare Web Analytics */}
-        {!ctx.argv.serve && !ctx.argv.watch && (
-          <script
-            defer
-            src={'https://static.cloudflareinsights.com/beacon.min.js'}
-            data-cf-beacon='{"token": "3b6a9ecda4294f8bb5770c2bfb44078c"}'
-            crossOrigin={'anonymous'}
-            data-persist={true}
-          />
-        )}
-        {/* End Cloudflare Web Analytics */}
-      </html>,
-    )
+              {...contentAttrs}
+            >
+              {sidebar.length > 0 && (
+                <aside class="aside-container left-col">
+                  {sidebar.map(BodyComponent => (
+                    <BodyComponent {...componentData} />
+                  ))}
+                </aside>
+              )}
+              <Content {...componentData} />
+              {!isSlides && !isFlashcards && !isFullBleed && !isCurius && (
+                <>
+                  <div id="wc-modal" class="wc-modal">
+                    <div class="wc-inner" />
+                  </div>
+                </>
+              )}
+              <Headings {...componentData} />
+              <PressKit {...componentData} />
+            </section>
+            {!isFolderTag && !isCurius && !isPdfReader && (
+              <section class="page-footer popover-hint grid all-col">
+                {retrievalNodes.length > 0 &&
+                  htmlToJsx(componentData.fileData.filePath!, {
+                    type: 'root',
+                    children: retrievalNodes,
+                  } as Node)}
+                {afterBody.length > 0 &&
+                  afterBody.map(BodyComponent => <BodyComponent {...componentData} />)}
+                {slug !== 'index' && <Footer {...componentData} />}
+              </section>
+            )}
+          </div>
+          <QuartzIcon filePath={componentData.fileData.filePath!} />
+        </main>
+      </body>
+      {pageResources.js
+        .filter(resource => resource.loadTime === 'afterDOMReady')
+        .map(res => JSResourceToScriptElement(res, true))}
+      {/* Cloudflare Web Analytics */}
+      {!ctx.argv.serve && !ctx.argv.watch && (
+        <script
+          defer
+          src={'https://static.cloudflareinsights.com/beacon.min.js'}
+          data-cf-beacon='{"token": "3b6a9ecda4294f8bb5770c2bfb44078c"}'
+          crossOrigin={'anonymous'}
+          data-persist={true}
+        />
+      )}
+      {/* End Cloudflare Web Analytics */}
+    </>,
+  )
+  // The body renders first so the head links only the page-scoped sheets its markup uses.
+  const { externalResources } = componentData
+  const css = externalResources.css.filter(
+    ({ classPrefixes }) => !classPrefixes || classPrefixPattern(classPrefixes).test(body),
+  )
+  const head = render(
+    <html lang={lang}>
+      <Head {...componentData} externalResources={{ ...externalResources, css }} pageSlug={slug} />
+    </html>,
+  )
+  const html = `<!DOCTYPE html>${head.slice(0, -'</html>'.length)}${body}</html>`
 
   logBuildSpan(ctx.argv, 'render:preact', slug, renderPerf.elapsedMs('preact'))
   logBuildSpan(ctx.argv, 'render:total', slug, renderPerf.elapsedMs())

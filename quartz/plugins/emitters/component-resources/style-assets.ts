@@ -17,6 +17,7 @@ import { joinSegments } from '../../../util/path'
 import {
   componentCssBundleKey,
   componentCssResourceKeyPrefix,
+  componentCssScopeKey,
   splitCssBundles,
   staticCssBundleKey,
   staticCssBundleSlug,
@@ -25,6 +26,7 @@ import { googleFontHref, joinStyles, processGoogleFonts } from '../../../util/th
 import { write } from '../helpers'
 import { quartzBaseStylesheetEntry, quartzCustomStylesheetEntry } from './asset-paths'
 import { assetSlugForContent } from './asset-writer'
+import { pageScopedComponentStyles } from './page-scoped-styles'
 
 export type FontAssetResult = { googleFontsStyleSheet: string; files: FilePath[] }
 
@@ -129,11 +131,29 @@ export async function* writeComponentStyles(
     return
   }
 
-  const stylesheet = resources.componentCss.join('\n')
-  const content = minifyStylesheet('component.css', `@layer quartz-base {\n${stylesheet}\n}`)
-  const slug = assetSlugForContent(ctx, componentCssBundleSlug, '.css', content)
-  registerExtractedStaticResource(ctx, componentCssBundleKey, assetPath(slug, '.css'))
-  yield write({ ctx, slug, ext: '.css', content })
+  const scoped = new Set(pageScopedComponentStyles.map(style => style.css))
+  const sheets = [
+    {
+      key: componentCssBundleKey,
+      slug: componentCssBundleSlug,
+      css: resources.componentCss.filter(css => !scoped.has(css)),
+    },
+    ...pageScopedComponentStyles.map(style => ({
+      key: componentCssScopeKey(style.name),
+      slug: `${componentCssBundleSlug}-${style.name}`,
+      css: resources.componentCss.filter(css => css === style.css),
+    })),
+  ]
+  for (const sheet of sheets) {
+    if (sheet.css.length === 0) continue
+    const content = minifyStylesheet(
+      `${path.basename(sheet.slug)}.css`,
+      `@layer quartz-base {\n${sheet.css.join('\n')}\n}`,
+    )
+    const slug = assetSlugForContent(ctx, sheet.slug, '.css', content)
+    registerExtractedStaticResource(ctx, sheet.key, assetPath(slug, '.css'))
+    yield write({ ctx, slug, ext: '.css', content })
+  }
 }
 
 async function indexStylesheetContent(

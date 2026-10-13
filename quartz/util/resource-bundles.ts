@@ -12,6 +12,9 @@ export const componentCssResourceKeyPrefix = 'component-css:'
 
 export const componentCssBundleKey = `${componentCssResourceKeyPrefix}bundle`
 
+export const componentCssScopeKey = (name: string) =>
+  `${componentCssResourceKeyPrefix}scope:${name}`
+
 export const staticCssBundleSlug = 'static/resource-style'
 
 export const staticCssBundleKey = (content: string) => `resource-css:${content}`

@@ -38,6 +38,7 @@ import {
   triathlonHostLinkUrl,
   TRIATHLON_HOSTNAME,
 } from '../../util/triathlon-host'
+import { loadPageStyles } from './page-styles'
 import { cleanupHydratedRoot } from './root-lifecycle'
 import { Toast } from './toast'
 
@@ -1136,6 +1137,13 @@ async function navigate(url: URL, isBack: boolean = false) {
 
   if (!contents) return
 
+  const html = p.parseFromString(contents, 'text/html')
+  normalizeRelativeURLs(html, url)
+  transformHostInternalLinks(html)
+  // Link the page-scoped sheets the new body uses while the old page still shows; a stalled
+  // sheet only delays navigation.
+  await Promise.race([loadPageStyles(html.body), new Promise(resolve => setTimeout(resolve, 2000))])
+
   // notify about to nav
   const event: CustomEventMap['prenav'] = new CustomEvent('prenav', { detail: {} })
   document.dispatchEvent(event)
@@ -1143,10 +1151,6 @@ async function navigate(url: URL, isBack: boolean = false) {
   // cleanup old
   cleanupFns.forEach(fn => fn())
   cleanupFns.clear()
-
-  const html = p.parseFromString(contents, 'text/html')
-  normalizeRelativeURLs(html, url)
-  transformHostInternalLinks(html)
 
   let title = html.querySelector('title')?.textContent
   if (title) {

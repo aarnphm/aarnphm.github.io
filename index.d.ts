@@ -61,6 +61,7 @@ type ContentIndex = Record<FullSlug, ContentDetails>
 declare const fetchData: Promise<ContentIndex>
 declare const fetchSearchData: Promise<ContentIndex>
 declare const semanticCfg: import('./quartz/cfg').GlobalConfiguration['semanticSearch']
+declare const pageStyles: import('./quartz/util/page-styles').PageStyle[]
 
 // base view metadata for dropdown navigation
 interface BaseViewMetadata {
