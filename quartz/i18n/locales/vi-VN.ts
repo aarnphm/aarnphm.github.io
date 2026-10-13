@@ -3,6 +3,12 @@ import { Translation } from './definition'
 export default {
   propertyDefaults: { title: 'Không có tiêu đề', description: 'Không có mô tả được cung cấp' },
   components: {
+    disabledPlugin: {
+      message: 'Plugin này bị tắt trong quá trình phát triển.',
+      enablePlugin: 'Đặt dev: true cho plugin này trong quartz.config.ts để bật.',
+      enableSetting: ({ setting }) => `Đặt ${setting} thành true trong quartz.config.ts để bật.`,
+      returnHome: 'Về trang chủ',
+    },
     callout: {
       note: 'Ghi Chú',
       abstract: 'Tóm Tắt',

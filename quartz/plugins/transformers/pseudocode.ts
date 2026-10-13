@@ -1,15 +1,22 @@
-import { Element } from 'hast'
+import { Element, Root as HastRoot } from 'hast'
 import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { toHtml } from 'hast-util-to-html'
+import { toString } from 'hast-util-to-string'
 import { s, h } from 'hastscript'
 import { Root as MdRoot } from 'mdast'
+import { createElement } from 'preact'
+import render from 'preact-render-to-string'
 // @ts-ignore
 import Lexer from 'pseudocode/src/Lexer.js'
 // @ts-ignore
 import Parser from 'pseudocode/src/Parser.js'
 // @ts-ignore
 import Renderer from 'pseudocode/src/Renderer.js'
-import { visit } from 'unist-util-visit'
+import { SKIP, visit } from 'unist-util-visit'
+import {
+  DisabledPluginNotice,
+  disabledPluginNoticeStyle,
+} from '../../components/DisabledPluginNotice'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { extractInlineMacros } from '../../util/latex'
 
@@ -78,6 +85,46 @@ const defaultOptions: Options = {
   },
 }
 
+export const PseudocodeFallback: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
+  const opts = { ...defaultOptions, ...userOpts }
+  return {
+    name: 'PseudocodeFallback',
+    htmlPlugins(ctx) {
+      return [
+        () => (tree: HastRoot) => {
+          visit(tree, 'element', (node, index, parent) => {
+            if (node.tagName !== 'pre' || index === undefined || !parent) return
+            const code = node.children.find(
+              child => child.type === 'element' && child.tagName === 'code',
+            )
+            if (!code || code.type !== 'element') return
+            const classes = code.properties.className
+            const language = `language-${opts.code}`
+            if (!(Array.isArray(classes) ? classes.includes(language) : classes === language))
+              return
+            const notice = fromHtmlIsomorphic(
+              render(
+                createElement(DisabledPluginNotice, {
+                  label: 'Pseudocode',
+                  locale: ctx.cfg.configuration.locale,
+                  source: toString(code).replace(/\n$/, ''),
+                }),
+              ),
+              { fragment: true },
+            ).children[0]
+            if (!notice || notice.type !== 'element') return
+            parent.children[index] = notice
+            return SKIP
+          })
+        },
+      ]
+    },
+    externalResources() {
+      return { css: [{ content: disabledPluginNoticeStyle, inline: true }] }
+    },
+  }
+}
+
 function renderToString(input: string, options?: RendererOptions) {
   if (input === null || input === undefined) throw new ReferenceError('Input cannot be empty')
 
@@ -118,9 +165,7 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
 
   return {
     name: 'Pseudocode',
-    markdownPlugins({ argv }) {
-      if (argv.watch && !argv.force) return []
-
+    markdownPlugins() {
       return [
         () => (tree: MdRoot, _file) => {
           visit(tree, 'code', node => {

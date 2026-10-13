@@ -19,6 +19,12 @@ export interface CalloutTranslation {
 export interface Translation {
   propertyDefaults: { title: string; description: string }
   components: {
+    disabledPlugin: {
+      message: string
+      enablePlugin: string
+      enableSetting: (variables: { setting: string }) => string
+      returnHome: string
+    }
     callout: CalloutTranslation
     backlinks: { title: string; noBacklinksFound: string }
     themeToggle: { lightMode: string; darkMode: string }

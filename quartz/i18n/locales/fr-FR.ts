@@ -3,6 +3,13 @@ import { Translation } from './definition'
 export default {
   propertyDefaults: { title: 'sans titre', description: 'aucune description fournie' },
   components: {
+    disabledPlugin: {
+      message: 'Ce plugin est désactivé en développement.',
+      enablePlugin: 'Réglez dev: true pour ce plugin dans quartz.config.ts pour l’activer.',
+      enableSetting: ({ setting }) =>
+        `Réglez ${setting} sur true dans quartz.config.ts pour l’activer.`,
+      returnHome: 'Retour à l’accueil',
+    },
     callout: {
       note: 'note',
       abstract: 'résumé',

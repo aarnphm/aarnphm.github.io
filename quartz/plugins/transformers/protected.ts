@@ -1,6 +1,7 @@
 import type { QuartzPluginData } from '../vfile'
 import content from '../../components/styles/protected.scss'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import { isDevelopmentBuild } from '../../util/build-mode'
 import { resolveProtectedPassword } from '../../util/protected'
 
 export const Protected: QuartzTransformerPlugin = () => {
@@ -9,7 +10,7 @@ export const Protected: QuartzTransformerPlugin = () => {
     htmlPlugins: ctx => [
       () => {
         return async (_tree, file) => {
-          if (ctx.argv.watch && !ctx.argv.force) return
+          if (isDevelopmentBuild(ctx.argv)) return
 
           const frontmatter = file.data.frontmatter
           if (!frontmatter?.protected) return

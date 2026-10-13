@@ -638,7 +638,6 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
   return {
     name,
     async *emit(ctx, content, resources) {
-      if (ctx.argv.watch && !ctx.argv.force) return []
       if (process.env.EMAIL_EMITTER_ENABLED !== '1') return []
 
       const secret = process.env.EMAIL_EMITTER_SECRET
