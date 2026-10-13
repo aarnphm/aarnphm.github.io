@@ -50,23 +50,21 @@ function readableText(text: SVGTextElement) {
 }
 
 export function placeCampHints(scene: HTMLElement) {
+  if (scene.dataset.campTools !== 'open') return
   const canvas = scene.querySelector<SVGSVGElement>('.trail-canvas')
   if (!canvas) return
-  const open = scene.dataset.campTools === 'open'
   const bounds = canvas.getBoundingClientRect()
-  const obstacles: Bounds[] = open
-    ? Array.from(
-        scene.querySelectorAll(
-          '.trail-camp-toggle, .trail-tree-toggle, .trail-tree-hint, [data-camp-solid], [data-trail-collision]',
-        ),
-      )
-        .filter(
-          element =>
-            scene.ownerDocument.defaultView?.getComputedStyle(element).visibility === 'visible',
-        )
-        .map(element => element.getBoundingClientRect())
-        .filter(rect => rect.width > 0 && rect.height > 0)
-    : []
+  const obstacles: Bounds[] = Array.from(
+    scene.querySelectorAll(
+      '.trail-camp-toggle, .trail-tree-toggle, .trail-tree-hint, [data-camp-solid], [data-trail-collision]',
+    ),
+  )
+    .filter(
+      element =>
+        scene.ownerDocument.defaultView?.getComputedStyle(element).visibility === 'visible',
+    )
+    .map(element => element.getBoundingClientRect())
+    .filter(rect => rect.width > 0 && rect.height > 0)
   const landing = scene.ownerDocument.querySelector('.landing')
   if (landing) obstacles.push(landing.getBoundingClientRect())
 
@@ -106,7 +104,6 @@ export function placeCampHints(scene: HTMLElement) {
     for (const { end, offset } of candidates) {
       text.setAttribute('transform', `translate(0 ${offset})`)
       placePath(hint, samples, end)
-      if (!open) break
       const rect = text.getBoundingClientRect()
       const fits =
         rect.width > 0 &&
@@ -127,7 +124,6 @@ export function placeCampHints(scene: HTMLElement) {
       }
       if (bestScore === 0) break
     }
-    if (!open) continue
     text.setAttribute('transform', `translate(0 ${bestOffset})`)
     placePath(hint, samples, bestEnd)
     obstacles.push(text.getBoundingClientRect())
