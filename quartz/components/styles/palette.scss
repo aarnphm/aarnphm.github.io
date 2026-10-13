@@ -261,6 +261,14 @@ ul#helper {
 
   & > #palette-container {
     @include containerPopover;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
 
     & > #space {
       width: 30%;
@@ -411,6 +419,22 @@ ul#helper {
         }
       }
     }
+  }
+}
+
+body[data-slug='index']:has(.homepage-trail-toggle[aria-expanded='true'])
+  .palette
+  > #palette-container
+  > #space {
+  @include trailPanel;
+
+  & > .input-container,
+  & > #helper {
+    flex-shrink: 0;
+  }
+
+  & > output {
+    min-height: 0;
   }
 }
 

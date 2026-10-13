@@ -49,6 +49,7 @@ const POINTER_CURSOR_SELECTOR = [
   'a[href]',
   'button:not(:disabled)',
   'label[for]',
+  "label:has(input:is([type='radio'], [type='checkbox']):not(:disabled))",
   'summary',
   "[role='button']:not([aria-disabled='true'])",
   "[role='link']:not([aria-disabled='true'])",
@@ -119,8 +120,14 @@ document.addEventListener('nav', () => {
   for (const candidate of brackets) {
     if (candidate !== bracket) candidate.remove()
   }
-  document.body.appendChild(cursor)
-  document.body.appendChild(bracket)
+  // Native dialogs and popovers paint above every body stacking context.
+  const layer = document.createElement('div')
+  layer.className = 'site-cursor-layer'
+  layer.popover = 'manual'
+  layer.setAttribute('aria-hidden', 'true')
+  layer.append(cursor, bracket)
+  document.body.appendChild(layer)
+  layer.showPopover()
   const line = cursor.querySelector<HTMLElement>('.site-cursor-line')
   if (!line) return
   const chartLine = cursorPart('site-cursor-chart-line')
@@ -297,6 +304,11 @@ document.addEventListener('nav', () => {
         visible = pointerTarget != null
       }
     }
+    if (pointerTarget?.closest('[data-site-cursor-native]')) {
+      visible = false
+      setBracketTarget(null)
+      setChartTarget(null)
+    }
     cursor.style.transform = `translate3d(${renderX - 12}px, ${renderY - 12}px, 0)`
     line.style.transform =
       lineScale === null
@@ -367,7 +379,18 @@ document.addEventListener('nav', () => {
     scrollIdleTimer = window.setTimeout(invalidateGeometry, SCROLL_RECONCILE_DELAY_MS)
   }
 
+  const onLayerToggle = (event: Event): void => {
+    const target = event.target
+    if (!(target instanceof HTMLElement) || target === layer) return
+    if (target.matches(':modal, :popover-open')) {
+      layer.hidePopover()
+      layer.showPopover()
+    }
+    invalidateGeometry()
+  }
+
   document.documentElement.classList.add('site-cursor-ready')
+  document.addEventListener('toggle', onLayerToggle, { capture: true, signal })
   document.addEventListener('pointermove', onMove, { signal })
   document.addEventListener('click', onClick, { signal })
   document.addEventListener('pointerleave', hide, { signal })
@@ -381,6 +404,9 @@ document.addEventListener('nav', () => {
     window.clearTimeout(magneticTimer)
     window.clearTimeout(scrollIdleTimer)
     bracket.dataset.visible = 'false'
+    cursor.dataset.visible = 'false'
+    document.body.append(cursor, bracket)
+    layer.remove()
     magneticTarget?.removeAttribute('data-site-cursor-active')
     frame = 0
     delete cursor.dataset.magnetic

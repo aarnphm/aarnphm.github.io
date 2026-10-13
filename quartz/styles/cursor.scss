@@ -2,6 +2,7 @@
   scroll-margin-block-start: 20px;
 }
 
+.site-cursor-layer,
 .site-cursor,
 .site-cursor-bracket,
 .site-cursor-chart-line {
@@ -9,6 +10,24 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  html.site-cursor-ready .site-cursor-layer:popover-open {
+    position: fixed;
+    inset: 0 auto auto 0;
+    display: block;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: visible;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .site-cursor-layer::backdrop {
+    display: none;
+  }
+
   html.site-cursor-ready,
   html.site-cursor-ready body,
   html.site-cursor-ready body * {

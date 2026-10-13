@@ -436,21 +436,11 @@
 body[data-slug='index']:has(.homepage-trail-toggle[aria-expanded='true'])
   .search
   > .search-container {
-  --search-top: max(1rem, env(safe-area-inset-top));
-  --search-right: max(1rem, env(safe-area-inset-right));
-  --search-left: max(1rem, env(safe-area-inset-left));
-  --search-bottom: max(1rem, env(safe-area-inset-bottom));
-  --search-height: calc(100dvh - var(--search-top) - var(--search-bottom));
-
   & > .search-space {
-    align-self: flex-start;
-    width: min(44rem, calc(100% - var(--search-left) - var(--search-right)));
-    max-width: none;
-    max-height: var(--search-height);
-    margin: var(--search-top) var(--search-right) 0 auto;
+    @include trailPanel;
 
     &:has(> .search-layout.display-results) {
-      height: min(36rem, var(--search-height));
+      height: min(36rem, var(--trail-panel-height));
     }
 
     @media (min-width: 801px) {

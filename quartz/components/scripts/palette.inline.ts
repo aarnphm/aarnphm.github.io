@@ -416,6 +416,7 @@ document.addEventListener('nav', () => {
   const output = container.getElementsByTagName('output')[0]
   const helper = container.querySelector('ul#helper') as HTMLUListElement
   let currentHover: HTMLDivElement | null = null
+  let previousFocus: HTMLElement | null = null
   let data: ContentIndex | null = null
   let idDataMap: FullSlug[] = []
   let idBySlug = new Map<FullSlug, number>()
@@ -495,6 +496,7 @@ document.addEventListener('nav', () => {
   function hidePalette() {
     queryGeneration += 1
     container?.classList.remove('active')
+    if (container?.matches(':popover-open')) container.hidePopover()
     if (bar) {
       bar.value = '' // clear the input when we dismiss the search
     }
@@ -507,6 +509,8 @@ document.addEventListener('nav', () => {
     commandHistoryIndex = -1
     syncPaletteHelper()
     recentItems = []
+    if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
+    previousFocus = null
   }
 
   function commandInputValue(query = '') {
@@ -531,6 +535,10 @@ document.addEventListener('nav', () => {
     actionType = actionTypeNew
     fallbackActionType =
       actionTypeNew === 'command' ? (fallbackActionTypeNew ?? fallbackActionType) : actionTypeNew
+    if (container && !container.matches(':popover-open')) {
+      previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+      container.showPopover()
+    }
     container?.classList.add('active')
     if (actionType === 'command') {
       showCommandItems()
@@ -768,6 +776,7 @@ document.addEventListener('nav', () => {
   }: Action) => {
     const item = document.createElement('div')
     item.classList.add('suggestion-item')
+    item.tabIndex = -1
 
     const content = document.createElement('div')
     content.classList.add('suggestion-content')
@@ -1238,6 +1247,7 @@ document.addEventListener('nav', () => {
 
     const noMatchEl = document.createElement('div')
     noMatchEl.classList.add('suggestion-item', 'no-match')
+    noMatchEl.tabIndex = -1
     const noMatchContent = document.createElement('div')
     noMatchContent.className = 'suggestion-content'
     const noMatchTitle = document.createElement('div')
@@ -1284,6 +1294,7 @@ document.addEventListener('nav', () => {
   function toHtml({ name, slug, target, title: noteTitle, aliases }: Item) {
     const item = document.createElement('div')
     item.classList.add('suggestion-item')
+    item.tabIndex = -1
     item.dataset.slug = slug
 
     const content = document.createElement('div')
