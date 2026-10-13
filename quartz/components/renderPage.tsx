@@ -2181,22 +2181,15 @@ const ElementComponent = ((enableRecents: boolean = false) => {
         <section class="boring-legal">
           <div class="clickable-container">
             <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
-            <AliasLink isInternal enablePopover={false} name="privacy" url="/privacy" />
-            <AliasLink
-              isInternal
-              enablePopover={false}
-              name="terms of service"
-              url="/terms-of-service"
-            />
+            <em class="homepage-board-license">
+              <AliasLink
+                newTab
+                classes={['external']}
+                name="CC BY-NC-SA"
+                url="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
+              />
+            </em>
           </div>
-          <em class="homepage-board-license">
-            <AliasLink
-              newTab
-              classes={['external']}
-              name="CC BY-NC-SA"
-              url="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
-            />
-          </em>
         </section>,
       ],
     })

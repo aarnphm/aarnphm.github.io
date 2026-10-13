@@ -101,3 +101,20 @@ test('a closed corridor pauses without cutting through the rock', () => {
   )
   assert.equal(feet, null)
 })
+
+test('the blob arrives beside an occupied camp destination on a continuous road', () => {
+  const road: PetTrailFoot[] = [
+    { x: 30, y: 130, scale: 0.8, progress: 0.5 },
+    { x: 150, y: 130, scale: 1, progress: 1 },
+  ]
+  const hearth: CollisionActor = { id: 'hearth', kind: 'trunk', x: 150, y: 130, radius: 15 }
+  const feet = detourPetTrail(road, body, [hearth], bounds)
+  assert.ok(feet)
+  assert.deepEqual(feet[0], road[0])
+  const arrival = feet.at(-1)
+  assert.ok(arrival)
+  assert.equal(arrival.progress, 1)
+  assert.equal(arrival.scale, 1)
+  assert.ok(Math.hypot(arrival.x - hearth.x, arrival.y - hearth.y) < 80)
+  clearSegments(feet, [hearth])
+})

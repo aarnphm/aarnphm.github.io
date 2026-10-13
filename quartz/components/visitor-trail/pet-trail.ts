@@ -33,9 +33,11 @@ export function detourPetTrail(
     }
     const planned = detourTrail([from, goal], radius, obstacles, bounds)
     if (!planned || !canMove(from, planned.points[0], radius, obstacles)) return null
-    // An occupied final destination cannot become a perch somewhere else.
     const last = planned.points.at(-1)
-    if (!last || Math.hypot(last.x - goal.x, last.y - goal.y) > 0.1) return null
+    if (!last) return null
+    // Camp roads end at the hearth. The shared planner chooses a reachable arrival outside
+    // that body, reached by the same walk, with the destination's perspective and progress.
+    const arrival: PetTrailFoot = { ...goal, ...last }
     const points = [from, ...planned.points]
     let length = 0
     const distances = points.map((point, step) => {
@@ -51,7 +53,7 @@ export function detourPetTrail(
         const fraction = (distances[step - 1] + distance * along) / Math.max(0.01, length)
         feet.push(
           step === points.length - 1 && sample === samples
-            ? goal
+            ? arrival
             : {
                 x: points[step - 1].x + (points[step].x - points[step - 1].x) * along,
                 y: points[step - 1].y + (points[step].y - points[step - 1].y) * along,
