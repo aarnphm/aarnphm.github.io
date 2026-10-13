@@ -13,6 +13,7 @@ type Layer = {
   base: Matrix
   scale: number
   palette: number
+  revision: number
   dirty: boolean
   // When it first needed a repaint; the oldest repaint goes first, so a busy texture cannot starve the rest.
   waiting: number
@@ -398,6 +399,7 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     base: identity,
     scale: 0,
     palette: -1,
+    revision: -1,
     dirty: true,
     waiting: 0,
   })
@@ -894,6 +896,7 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     target.dirty = false
     target.waiting = 0
     target.palette = palette
+    target.revision = revision
     const spaceMatrix = ctm(space)
     const box = bounds(nodes, spaceMatrix, self)
     const scale = Math.min(4, Math.max(0.25, scaleOf(spaceMatrix) * resolution))
@@ -934,6 +937,7 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     mask.dirty = false
     mask.waiting = 0
     mask.palette = palette
+    mask.revision = revision
     const spaceMatrix = ctm(owner.element)
     const scale = Math.min(4, Math.max(0.25, scaleOf(spaceMatrix) * resolution))
     mask.scale = scaleOf(spaceMatrix) * resolution
@@ -986,8 +990,7 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
   let themePending = false
   let palette = 0
   // A theme change keeps a copy of the last frame over the scene while the new palette rasterizes
-  // underneath, then fades the copy out with the body transition. Without a transition, the
-  // scene repaints in one frame instead.
+  // underneath, then fades the copy out with the body transition.
   let fade: {
     transition: CSSTransition
     texture: WebGLTexture | null
@@ -998,13 +1001,14 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     from: number
   } | null = null
   let snapshotNow = false
-  // Time and rasters spent on the first fill, for its pace.
-  const filled = { ms: 0, count: 0 }
-  // A whole-scene change repaints in one frame, as the SVG would, rather than mixing old and new.
+  const size = { width: canvas.width, height: canvas.height }
+  // Hold the complete canvas while a whole-scene change fills within the normal raster budget.
   let flush = false
+  let revision = 0
   const repaint = () => {
     dirtyGroup(root)
     flush = true
+    revision += 1
   }
   // The current frame's time; one frame counts once however many records it brings.
   let clock = 0
@@ -1146,6 +1150,9 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     new Float32Array([matrix[0], matrix[1], 0, matrix[2], matrix[3], 0, matrix[4], matrix[5], 1])
   const none = new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0])
   const composite = () => {
+    // Resizing clears the drawing buffer. Keep the previous image until its replacement is ready.
+    if (canvas.width !== size.width) canvas.width = size.width
+    if (canvas.height !== size.height) canvas.height = size.height
     gl.viewport(0, 0, canvas.width, canvas.height)
     gl.clearColor(0, 0, 0, 0)
     gl.clear(gl.COLOR_BUFFER_BIT)
@@ -1300,9 +1307,9 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
   const resize = () => {
     const width = Math.max(1, Math.round(svg.clientWidth * resolution))
     const height = Math.max(1, Math.round(svg.clientHeight * resolution))
-    if (canvas.width === width && canvas.height === height) return
-    canvas.width = width
-    canvas.height = height
+    if (size.width === width && size.height === height) return
+    size.width = width
+    size.height = height
     clipVersion += 1
     endFade()
     repaint()
@@ -1330,46 +1337,33 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     split()
     pending.length = 0
     prepare(root, false)
-    // Large repaints spread over frames. The first fill does too: until every layer has its
-    // texture, the canvas composites nothing and the SVG stays on screen. Once ready, a
-    // whole-scene change repaints in one frame.
-    const budget = ready && flush ? Infinity : fade ? 14 : 10
-    flush = false
+    // Missing textures and whole-scene repaints use the same budget as ordinary updates.
+    const budget = fade ? 14 : 10
     // The frame of a theme change composites the old rasters once more, to copy them.
     if (snapshotNow) pending.length = 0
     let deferred = 0
     let holes = 0
+    let replacements = 0
     const unpainted = (target: Run | Group) =>
       !(target.kind === 'group' ? target.mask?.texture : target.texture)
-    // The longest waiting first. Before the canvas shows, layers without a texture go ahead of
-    // stale ones: the opening's fades keep dirtying the large layers it has already rastered.
-    const filling = (target: Run | Group) => !ready && unpainted(target)
+    // Fill holes before stale textures, then serve the longest waiting repaint first.
     pending.sort(
       (a, b) =>
-        Number(filling(b)) - Number(filling(a)) ||
+        Number(unpainted(b)) - Number(unpainted(a)) ||
         (a.kind === 'group' ? (a.mask?.waiting ?? 0) : a.waiting) -
           (b.kind === 'group' ? (b.mask?.waiting ?? 0) : b.waiting),
     )
-    // The opening keeps splitting layers as its fades start and end, so the first fill rarely
-    // reaches zero holes by itself. It finishes in one frame once the holes left would take
-    // less than a long task at the pace it has rastered so far.
-    const finish =
-      !ready &&
-      filled.count > 0 &&
-      pending.filter(unpainted).length * (filled.ms / filled.count) < 40
     const painting = view.performance.now()
-    let rastered = 0
     for (const target of pending) {
-      // Over budget, a stale texture can wait a frame; a layer that has never painted would be a
-      // hole, so it waits only while the canvas is not yet shown.
       const painted = !unpainted(target)
-      if ((painted || (!ready && !finish)) && view.performance.now() - painting > budget) {
+      if (view.performance.now() - painting > budget) {
+        if ((target.kind === 'group' ? target.mask?.revision : target.revision) !== revision)
+          replacements += 1
         if (!painted) holes += 1
         else if ((target.kind === 'group' ? target.mask?.palette : target.palette) !== palette)
           deferred += 1
         continue
       }
-      rastered += 1
       if (target.kind === 'group') rasterizeMask(target)
       else
         rasterize(
@@ -1379,11 +1373,9 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
           target.nodes[0] === target.owner.element,
         )
     }
-    if (!ready) {
-      filled.ms += view.performance.now() - painting
-      filled.count += rastered
-    }
-    if (holes) return
+    // Ongoing motion can dirty a replacement again; it must not hold the completed scene forever.
+    if (holes || (ready && flush && replacements)) return
+    flush = false
     composite()
     overlay(deferred)
     if (!ready) {

@@ -1,5 +1,5 @@
-import { canMove, circleClearance, type CollisionActor, type SpacingBounds } from './actor-spacing'
 import type { Point } from './landscape'
+import { canMove, circleClearance, type CollisionActor, type SpacingBounds } from './actor-spacing'
 import { detourTrail } from './obstacle-route'
 
 export type PetTrailFoot = Point & { scale: number; progress: number }

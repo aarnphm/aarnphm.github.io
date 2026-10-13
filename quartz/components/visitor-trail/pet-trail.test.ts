@@ -16,7 +16,10 @@ function clearSegments(feet: readonly PetTrailFoot[], obstacles: readonly Collis
       const dy = to.y - from.y
       const fraction = Math.max(
         0,
-        Math.min(1, ((obstacle.x - from.x) * dx + (obstacle.y - from.y) * dy) / (dx * dx + dy * dy || 1)),
+        Math.min(
+          1,
+          ((obstacle.x - from.x) * dx + (obstacle.y - from.y) * dy) / (dx * dx + dy * dy || 1),
+        ),
       )
       const point = { x: from.x + dx * fraction, y: from.y + dy * fraction }
       assert.ok(circleClearance(point, radius, obstacle) >= -0.01)
@@ -26,12 +29,15 @@ function clearSegments(feet: readonly PetTrailFoot[], obstacles: readonly Collis
 }
 
 test('a growing blob bypasses dense camp and tree waypoints and reaches the same destination', () => {
-  const road = Array.from({ length: 66 }, (_, index): PetTrailFoot => ({
-    x: 20 + index * 4,
-    y: 130,
-    scale: 0.18 + index / 65,
-    progress: index / 65,
-  }))
+  const road = Array.from(
+    { length: 66 },
+    (_, index): PetTrailFoot => ({
+      x: 20 + index * 4,
+      y: 130,
+      scale: 0.18 + index / 65,
+      progress: index / 65,
+    }),
+  )
   const obstacles = [
     { id: 'hearth', kind: 'trunk', x: 100, y: 130, radius: 16 },
     { id: 'tent', kind: 'trunk', x: 127, y: 106, radius: 16 },
