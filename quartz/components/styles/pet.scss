@@ -160,7 +160,8 @@ $pet-looks: (
 }
 
 // Dressed for the page's section, as its site icon is (quartz/util/section-icon.ts).
-@each $section in (triathlon, fr, posts, legal, art, library, slides, stream) {
+@each $section in (triathlon, fr, posts, legal, art, library, slides, stream, courses, engineering)
+{
   .pet-svg[data-outfit='#{$section}'] [data-part^='outfit-#{$section}'] {
     display: inline;
   }
@@ -200,6 +201,43 @@ $pet-looks: (
 .pet-svg:is([data-outfit='stream'], [data-traits~='technical']) [data-part='glasses'] {
   display: inline;
   animation: none;
+}
+
+// The student writes: the pencil's point jitters along the line.
+.pet-svg[data-outfit='courses'] .pet-pencil {
+  transform-box: fill-box;
+  animation: pet-scribble 0.9s steps(6) infinite alternate;
+}
+
+// The engineer's flask fizzes: each bubble rises off the neck and fades, one after another.
+.pet-svg[data-outfit='engineering'] .pet-bubble {
+  animation: pet-fizz 2.4s steps(8) infinite;
+
+  // The hat and the flask come first in the part, so count bubbles only.
+  &:nth-child(2 of .pet-bubble) {
+    animation-delay: -0.8s;
+  }
+
+  &:nth-child(3 of .pet-bubble) {
+    animation-delay: -1.6s;
+  }
+}
+
+@keyframes pet-fizz {
+  from {
+    translate: 0.04px 0.3px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  to {
+    translate: -0.04px -0.3px;
+    opacity: 0;
+  }
 }
 
 // Pages tagged philosophy: the hair has gone wild, and frizzes between its two drawings.
@@ -665,6 +703,16 @@ $pet-looks: (
 
   100% {
     rotate: 3deg;
+  }
+}
+
+@keyframes pet-scribble {
+  from {
+    translate: -0.03px 0.01px;
+  }
+
+  to {
+    translate: 0.04px -0.02px;
   }
 }
 
