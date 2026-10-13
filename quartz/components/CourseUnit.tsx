@@ -320,12 +320,18 @@ export const CourseUnitWorkspace = (() => {
           data-course-workspace-reader={pdfPath ? pdfReaderPath(pdfPath) : undefined}
           data-course-workspace-video={video?.youtube}
         >
-          <p role="status">Loading lecture workspace…</p>
-          {pdfPath && (
-            <a href={`${pdfReaderPath(pdfPath)}?view=reader`} data-router-ignore>
-              open source in reader
-            </a>
-          )}
+          <div class="course-workspace-app">
+            <div class="course-workspace-panel">
+              <div class="course-workspace-loading">
+                <p role="status">Loading lecture workspace…</p>
+                {pdfPath && (
+                  <a href={`${pdfReaderPath(pdfPath)}?view=reader`} data-router-ignore>
+                    open source in reader
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
     )

@@ -71,11 +71,7 @@ function storageMessage(error: unknown): string {
 }
 
 function Workspace(props: WorkspaceProps) {
-  const compactQuery = useRef(window.matchMedia('(max-width: 1400px)'))
-  const [compact, setCompact] = useState(compactQuery.current.matches)
-  const [open, setOpen] = useState(!compactQuery.current.matches)
   const [tab, setTab] = useState<Tab>(props.reader || props.video ? 'source' : 'scratchpad')
-  const [sourceVisited, setSourceVisited] = useState(false)
   const [scratchPreview, setScratchPreview] = useState(false)
   const [notePreview, setNotePreview] = useState(false)
   const [scratchIssue, setScratchIssue] = useState('')
@@ -85,9 +81,6 @@ function Workspace(props: WorkspaceProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [selection, setSelection] = useState<LectureSelection | null>(null)
   const [sourceFailed, setSourceFailed] = useState(false)
-  const dialog = useRef<HTMLDialogElement>(null)
-  const launcher = useRef<HTMLButtonElement>(null)
-  const wasOpen = useRef(open)
   const scratchRef = useRef(scratch)
   const notesRef = useRef(notes)
   const activeRef = useRef(activeId)
@@ -164,13 +157,6 @@ function Workspace(props: WorkspaceProps) {
   }, [props.slug, props.signal])
 
   useLayoutEffect(() => {
-    const query = compactQuery.current
-    const change = () => {
-      dialog.current?.close()
-      setCompact(query.matches)
-      setOpen(!query.matches)
-    }
-    query.addEventListener('change', change, { signal: props.signal })
     const header = document.querySelector<HTMLElement>('#quartz-root > .header')
     const owner = props.root.closest<HTMLElement>('.course-workspace')
     const offset = () =>
@@ -179,22 +165,9 @@ function Workspace(props: WorkspaceProps) {
     const observer = new ResizeObserver(offset)
     if (header) observer.observe(header)
     return () => {
-      query.removeEventListener('change', change)
       observer.disconnect()
     }
-  }, [props.signal, props.root])
-
-  useLayoutEffect(() => {
-    const panel = dialog.current
-    if (!panel) return
-    if (open && !panel.open) {
-      if (compact) panel.showModal()
-      else panel.show()
-    } else if (!open && panel.open) panel.close()
-    if (open && tab === 'source') setSourceVisited(true)
-    if (wasOpen.current && !open) launcher.current?.focus({ preventScroll: true })
-    wasOpen.current = open
-  }, [open, compact, tab])
+  }, [props.root])
 
   useEffect(() => {
     let frame = 0
@@ -404,13 +377,9 @@ function Workspace(props: WorkspaceProps) {
     }
     setSelection(null)
     window.getSelection()?.removeAllRanges()
-    setOpen(true)
+    props.root.scrollIntoView({ block: 'nearest' })
   }
 
-  const close = () => {
-    setOpen(false)
-    launcher.current?.focus({ preventScroll: true })
-  }
   const focusTab = (value: Tab) => document.getElementById(`course-workspace-tab-${value}`)?.focus()
   const active = notes.find(note => note.id === activeId && note.deletedAt === null)
   const visible = notes.filter(note => note.deletedAt === null)
@@ -445,31 +414,8 @@ function Workspace(props: WorkspaceProps) {
   }
 
   return (
-    <div class="course-workspace-app" data-open={open} data-compact={compact}>
-      <button
-        ref={launcher}
-        type="button"
-        class="course-workspace-open"
-        aria-haspopup={compact ? 'dialog' : undefined}
-        aria-expanded={open}
-        aria-controls="course-workspace-dialog"
-        onClick={() => setOpen(true)}
-      >
-        source · scratchpad · notes
-      </button>
-      <dialog
-        ref={dialog}
-        id="course-workspace-dialog"
-        class="course-workspace-dialog"
-        aria-labelledby="course-workspace-heading"
-        onCancel={close}
-        onKeyDown={event => {
-          if (event.key !== 'Escape' || event.defaultPrevented) return
-          event.preventDefault()
-          event.stopPropagation()
-          close()
-        }}
-      >
+    <div class="course-workspace-app">
+      <div class="course-workspace-panel">
         <h2 id="course-workspace-heading" class="visually-hidden">
           lecture workspace
         </h2>
@@ -541,14 +487,6 @@ function Workspace(props: WorkspaceProps) {
             <button type="button" title="Export Markdown" onClick={exportDrafts}>
               export .md
             </button>
-            <button
-              type="button"
-              class="course-workspace-close"
-              aria-label="Close lecture workspace"
-              onClick={close}
-            >
-              ×
-            </button>
           </div>
         </div>
         {(props.reader || props.video) && (
@@ -591,25 +529,24 @@ function Workspace(props: WorkspaceProps) {
                 The source could not load. Open the {props.reader ? 'reader' : 'video'} to retry.
               </p>
             )}
-            {sourceVisited &&
-              (props.reader ? (
-                <iframe
-                  src={`${props.reader}?embed=course`}
-                  title={`PDF source: ${props.title}`}
-                  class="course-source-frame"
-                  onError={() => setSourceFailed(true)}
-                />
-              ) : (
-                // a unit without a pdf plays its lecture video
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(props.video!)}?rel=0`}
-                  title={`Video source: ${props.title}`}
-                  class="course-source-frame course-source-video"
-                  allow="encrypted-media; picture-in-picture; fullscreen"
-                  allowFullScreen
-                  onError={() => setSourceFailed(true)}
-                />
-              ))}
+            {props.reader ? (
+              <iframe
+                src={`${props.reader}?embed=course`}
+                title={`PDF source: ${props.title}`}
+                class="course-source-frame"
+                onError={() => setSourceFailed(true)}
+              />
+            ) : (
+              // a unit without a pdf plays its lecture video
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(props.video!)}?rel=0`}
+                title={`Video source: ${props.title}`}
+                class="course-source-frame course-source-video"
+                allow="encrypted-media; picture-in-picture; fullscreen"
+                allowFullScreen
+                onError={() => setSourceFailed(true)}
+              />
+            )}
           </section>
         )}
         <section
@@ -773,7 +710,6 @@ function Workspace(props: WorkspaceProps) {
                             disabled={!range}
                             onClick={() => {
                               if (!range) return
-                              if (compact) close()
                               showNoteRange(props.article, range)
                             }}
                           >
@@ -831,7 +767,7 @@ function Workspace(props: WorkspaceProps) {
             </>
           )}
         </section>
-      </dialog>
+      </div>
       {selection && (
         <SelectionActions range={selection.range} onAction={action => addNote(action, selection)} />
       )}
