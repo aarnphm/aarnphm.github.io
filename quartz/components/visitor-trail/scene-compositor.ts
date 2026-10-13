@@ -170,20 +170,12 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
   if (!gl) return
   svg.after(canvas)
   const scratch = document.createElement('canvas')
-  // A theme change rasters over a thousand layers, most of them under 10k texels. A GPU-backed
-  // canvas held the GPU process busy with its uploads; a CPU canvas uploads with one plain copy.
+  // The scratch canvas is resized for every raster. A GPU-backed canvas reallocates a shared
+  // image in the GPU process each time, and a theme change rasters hundreds of layers: that
+  // churn held the GPU process busy for most of the transition. A CPU canvas resizes in memory
+  // and uploads with one plain copy.
   const paint = scratch.getContext('2d', { willReadFrequently: true })
   if (!paint) return
-  // Resizing a canvas resets it, at about 0.3 ms whatever its size, so the scratch canvas only
-  // grows: each raster draws in its top-left corner and uploads that corner. The saved default
-  // state stands in for the reset of the context.
-  const reserve = (width: number, height: number) => {
-    if (scratch.width < width) scratch.width = width
-    if (scratch.height < height) scratch.height = height
-    paint.restore()
-    paint.save()
-    paint.clearRect(0, 0, width, height)
-  }
 
   // The trail frame builds nodes in the page document, and some of them carry the frame's classes,
   // so a type test checks both realms.
@@ -286,28 +278,12 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
   }
-  const upload = (texture: WebGLTexture | null, source: TexImageSource) => {
+  const upload = (texture: WebGLTexture | null, source: TexImageSource, single = false) => {
     const target = texture ?? gl.createTexture()
     textures.add(target)
     gl.bindTexture(gl.TEXTURE_2D, target)
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source)
-    filter()
-    return target
-  }
-  // Uploads the top-left width by height corner of the scratch canvas.
-  const uploadScratch = (
-    texture: WebGLTexture | null,
-    width: number,
-    height: number,
-    single = false,
-  ) => {
-    const target = texture ?? gl.createTexture()
-    textures.add(target)
-    gl.bindTexture(gl.TEXTURE_2D, target)
-    if (single)
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, width, height, 0, gl.RED, gl.UNSIGNED_BYTE, scratch)
-    else
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, scratch)
+    if (single) gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, gl.RED, gl.UNSIGNED_BYTE, source)
+    else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source)
     filter()
     return target
   }
@@ -933,11 +909,14 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     const width = Math.min(maxTexture, Math.ceil((box.right - box.left + margin * 2) * scale))
     const height = Math.min(maxTexture, Math.ceil((box.bottom - box.top + margin * 2) * scale))
     if (width <= 0 || height <= 0) return
-    reserve(width, height)
+    scratch.width = width
+    scratch.height = height
     target.base = multiply(scaling(scale), translation(-left, -top))
     if ('placed' in target) target.placed = null
     target.width = width
     target.height = height
+    paint.setTransform(1, 0, 0, 1, 0, 0)
+    paint.clearRect(0, 0, width, height)
     const toTexels = multiply(target.base, invert(spaceMatrix))
     let painted = false
     for (const node of nodes) painted = render(node, target.base, 1, toTexels, self) || painted
@@ -946,7 +925,7 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
       target.texture = null
       return
     }
-    target.texture = uploadScratch(target.texture, width, height)
+    target.texture = upload(target.texture, scratch)
   }
   const rasterizeMask = (owner: Group) => {
     const mask = owner.mask
@@ -961,17 +940,20 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     const margin = padding + 2 / scale
     const width = Math.min(maxTexture, Math.max(1, Math.ceil((box.width + margin * 2) * scale)))
     const height = Math.min(maxTexture, Math.max(1, Math.ceil((box.height + margin * 2) * scale)))
-    reserve(width, height)
+    scratch.width = width
+    scratch.height = height
     mask.base = multiply(scaling(scale), translation(margin - box.x, margin - box.y))
     mask.placed = null
     mask.width = width
     mask.height = height
+    paint.setTransform(1, 0, 0, 1, 0, 0)
+    paint.clearRect(0, 0, width, height)
     const toTexels = multiply(mask.base, invert(spaceMatrix))
     // Grayscale keeps luminance in the red channel, so the mask fits one byte per texel.
     paint.filter = 'grayscale(1)'
     for (const child of mask.source.children) render(child, mask.base, 1, toTexels, false)
     paint.filter = 'none'
-    mask.texture = uploadScratch(mask.texture, width, height, true)
+    mask.texture = upload(mask.texture, scratch, true)
   }
 
   const clipFor = (clips: Clip[]) => {
@@ -979,7 +961,10 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     const key = `${clipVersion}:${clips.map(clip => clip.owner.matrix.map(value => value.toFixed(2))).join('|')}`
     const known = clipTextures.get(chain)
     if (known?.key === key && known.texture) return known.texture
-    reserve(canvas.width, canvas.height)
+    scratch.width = canvas.width
+    scratch.height = canvas.height
+    paint.setTransform(1, 0, 0, 1, 0, 0)
+    paint.clearRect(0, 0, scratch.width, scratch.height)
     paint.save()
     for (const clip of clips) {
       const { shape, rule } = clipPathOf(clip.source, clip.owner.screen)
@@ -987,9 +972,9 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     }
     paint.globalAlpha = 1
     paint.fillStyle = '#fff'
-    paint.fillRect(0, 0, canvas.width, canvas.height)
+    paint.fillRect(0, 0, scratch.width, scratch.height)
     paint.restore()
-    const texture = uploadScratch(known?.texture ?? null, canvas.width, canvas.height, true)
+    const texture = upload(known?.texture ?? null, scratch, true)
     clipTextures.set(chain, { texture, key })
     return texture
   }
@@ -1013,6 +998,8 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     from: number
   } | null = null
   let snapshotNow = false
+  // Time and rasters spent on the first fill, for its pace.
+  const filled = { ms: 0, count: 0 }
   // A whole-scene change repaints in one frame, as the SVG would, rather than mixing old and new.
   let flush = false
   const repaint = () => {
@@ -1352,22 +1339,37 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
     if (snapshotNow) pending.length = 0
     let deferred = 0
     let holes = 0
+    const unpainted = (target: Run | Group) =>
+      !(target.kind === 'group' ? target.mask?.texture : target.texture)
+    // The longest waiting first. Before the canvas shows, layers without a texture go ahead of
+    // stale ones: the opening's fades keep dirtying the large layers it has already rastered.
+    const filling = (target: Run | Group) => !ready && unpainted(target)
     pending.sort(
       (a, b) =>
+        Number(filling(b)) - Number(filling(a)) ||
         (a.kind === 'group' ? (a.mask?.waiting ?? 0) : a.waiting) -
-        (b.kind === 'group' ? (b.mask?.waiting ?? 0) : b.waiting),
+          (b.kind === 'group' ? (b.mask?.waiting ?? 0) : b.waiting),
     )
+    // The opening keeps splitting layers as its fades start and end, so the first fill rarely
+    // reaches zero holes by itself. It finishes in one frame once the holes left would take
+    // less than a long task at the pace it has rastered so far.
+    const finish =
+      !ready &&
+      filled.count > 0 &&
+      pending.filter(unpainted).length * (filled.ms / filled.count) < 40
     const painting = view.performance.now()
+    let rastered = 0
     for (const target of pending) {
       // Over budget, a stale texture can wait a frame; a layer that has never painted would be a
       // hole, so it waits only while the canvas is not yet shown.
-      const painted = target.kind === 'group' ? target.mask?.texture : target.texture
-      if ((painted || !ready) && view.performance.now() - painting > budget) {
+      const painted = !unpainted(target)
+      if ((painted || (!ready && !finish)) && view.performance.now() - painting > budget) {
         if (!painted) holes += 1
         else if ((target.kind === 'group' ? target.mask?.palette : target.palette) !== palette)
           deferred += 1
         continue
       }
+      rastered += 1
       if (target.kind === 'group') rasterizeMask(target)
       else
         rasterize(
@@ -1376,6 +1378,10 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
           target.nodes,
           target.nodes[0] === target.owner.element,
         )
+    }
+    if (!ready) {
+      filled.ms += view.performance.now() - painting
+      filled.count += rastered
     }
     if (holes) return
     composite()

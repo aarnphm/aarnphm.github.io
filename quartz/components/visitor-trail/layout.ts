@@ -122,6 +122,14 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       bottom: rect.bottom - bounds.top,
     })
   }
+  const clock = document.querySelector('.trail-local-time')?.getBoundingClientRect()
+  if (clock && clock.width > 0 && clock.height > 0)
+    obstacles.push({
+      left: clock.left - bounds.left - 12,
+      right: width,
+      top: clock.top - bounds.top - 12,
+      bottom: view.innerHeight - bounds.top,
+    })
   const bottom = Math.max(landing.getBoundingClientRect().bottom - bounds.top, 280)
   const camp = {
     x: Math.min(width - 72, width * (0.64 + random() * 0.12)),

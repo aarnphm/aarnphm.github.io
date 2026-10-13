@@ -280,16 +280,12 @@ function skyMarks(
   const sun = hang(sky.sun, sunRadius, landscape, ranges)
   const moon = hang(sky.moon, moonRadius, landscape, ranges)
   const marks = [
-    skyBand(landscape, seed, {
-      now,
-      clear,
-      cloud: weather?.cloud ?? 0.3,
-      rain,
-      snow,
-      wind,
-      dx,
-      sunAltitude: sky.sun.alt,
-    }),
+    skyBand(
+      landscape,
+      seed,
+      { now, clear, cloud: weather?.cloud ?? 0.3, rain, snow, wind, dx, sunAltitude: sky.sun.alt },
+      x => mountainCrestAt(x, ranges) ?? landscape.alpine.base,
+    ),
     duskGlow(landscape, sun.x, sky.dusk * (0.35 + clear * 0.65)),
   ]
   if (sun.visible && clear > 0.15) {

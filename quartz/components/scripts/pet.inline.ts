@@ -718,6 +718,8 @@ const trailKey = (path: SVGPathElement) => {
 const petTrail = (element: Element | null): element is SVGPathElement =>
   element instanceof SVGPathElement &&
   element.matches('[data-pet-walk-path], [data-pet-expedition]')
+const currentTrailPath = (path: SVGPathElement) =>
+  path.isConnected && !!path.getAttribute('d') && trailScene(document)?.contains(path) === true
 
 // The expedition's separate subpaths meet through a hidden screen-edge transfer.
 type TrailSample = { point: DOMPoint; progress: number; transfer?: 'exit' | 'enter' | 'resume' }
@@ -809,6 +811,7 @@ const trailRoutes = () => {
 }
 
 const trailGeometry = (path: SVGPathElement) => {
+  if (!currentTrailPath(path)) return ''
   const m = trailScreenMatrix(path)
   if (!m) return ''
   return `${path.getAttribute('d')}|${path.dataset.petScaleStops ?? ''}|${path.dataset.petAlpineSpan ?? ''}|${path.dataset.petHandoff ?? ''}|${m.a},${m.b},${m.c},${m.d},${m.e + window.scrollX},${m.f + window.scrollY}|${window.innerWidth},${window.innerHeight}`
@@ -942,6 +945,7 @@ const clearTrailActor = () => {
   trailActor = null
 }
 const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
+  if (!currentTrailPath(path)) return clearTrailActor()
   const scene = path.ownerSVGElement
   const matrix = scene ? trailScreenMatrix(scene) : null
   if (!scene || !matrix) return
@@ -970,8 +974,10 @@ const guardTrail = (animation: Animation, path: SVGPathElement) => {
   stopTrailGuard()
   const check = () => {
     trailGuardTimer = 0
-    if (!root || hop !== animation || !trailWalk || !path.isConnected) return stopTrailGuard()
+    if (!root || hop !== animation || !trailWalk) return stopTrailGuard()
     if (
+      !currentTrailPath(path) ||
+      trailWalk.geometry !== trailGeometry(path) ||
       document.hidden ||
       reducedMotion() ||
       path.closest<HTMLElement>('.trail-scene')?.dataset.trailRendered !== 'true' ||
@@ -1119,7 +1125,7 @@ const walkTrail = () => {
   trailWalk = { path, geometry: trailGeometry(path), feet: route, duration: 0, offsets: [] }
   const walk = () => {
     if (
-      !path.isConnected ||
+      !currentTrailPath(path) ||
       path.closest<HTMLElement>('.trail-scene')?.dataset.trailRendered !== 'true' ||
       trailHost(path)?.hidden !== false ||
       trailWalk?.geometry !== trailGeometry(path) ||
@@ -2350,7 +2356,8 @@ document.addEventListener('nav', () => {
     const currentTrail = trailWalk
     if (
       currentTrail &&
-      (currentTrail.geometry !== trailGeometry(currentTrail.path) ||
+      (!currentTrailPath(currentTrail.path) ||
+        currentTrail.geometry !== trailGeometry(currentTrail.path) ||
         currentTrail.feet.some(foot => !trailPointClear(foot, currentTrail.path)))
     ) {
       pauseTrail()
@@ -2375,7 +2382,10 @@ document.addEventListener('nav', () => {
       return
     }
     const resting = trailWalk
-    if (resting && !trailPointClear(resting.feet[0], resting.path)) {
+    if (
+      resting &&
+      (!currentTrailPath(resting.path) || !trailPointClear(resting.feet[0], resting.path))
+    ) {
       const anchor = center()
       const next = pickEdge(anchor, resting.path) ?? floorNear(anchor.x)
       if (next) moveTo(next, 'fade')
@@ -2419,15 +2429,43 @@ document.addEventListener('nav', () => {
       paths?.disconnect()
       const trail = trailScene(document)
       if (!trail) return
-      paths = new MutationObserver(queueTrail)
+      const canvas = trail.querySelector('svg.trail-canvas')
+      paths = new MutationObserver(records => {
+        if (
+          records.some(
+            record =>
+              record.target !== canvas ||
+              [...record.addedNodes, ...record.removedNodes].some(
+                node => node instanceof Element && petTrail(node),
+              ),
+          )
+        )
+          queueTrail()
+      })
       paths.observe(trail, { attributes: true, attributeFilter: ['data-trail-rendered'] })
+      if (canvas) paths.observe(canvas, { childList: true })
       const walks = trail.querySelector('[data-pet-walk-paths]')
-      if (walks) paths.observe(walks, { childList: true })
+      if (walks)
+        paths.observe(walks, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['d'],
+        })
       const expedition = trail.querySelector('[data-pet-expedition]')
       if (expedition)
-        paths.observe(expedition, { attributes: true, attributeFilter: ['d', 'data-pet-handoff'] })
+        paths.observe(expedition, {
+          attributes: true,
+          attributeFilter: [
+            'd',
+            'data-pet-handoff',
+            'data-pet-scale-stops',
+            'data-pet-alpine-span',
+          ],
+        })
     }
     scene.addEventListener('trail:mounted', watchPaths, { signal })
+    scene.addEventListener('trail:ready', watchPaths, { signal })
     watchPaths()
     signal.addEventListener('abort', () => paths?.disconnect(), { once: true })
     const controlsChanged = () => {

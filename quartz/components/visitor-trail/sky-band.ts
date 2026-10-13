@@ -31,8 +31,14 @@ const since = (now: number, period: number, offset: number) =>
 // stars whenever the lighting is moonlit, clouds that drift downwind as thick as the forecast
 // cover, and a flock that crosses on fair mornings. Forecast rain and snow fall through it from the
 // homepage layer.
-export function skyBand(landscape: Landscape, seed: number, state: SkyBandState) {
-  const { width, bottom, alpine } = landscape
+export function skyBand(
+  landscape: Landscape,
+  seed: number,
+  state: SkyBandState,
+  // The ridge line under a column, in scene space; the sky reaches down to it.
+  crestAt: (x: number) => number = () => landscape.alpine.top,
+) {
+  const { width, alpine } = landscape
   const { now, clear, cloud, rain, snow, wind, dx, sunAltitude } = state
   // A new pattern each day, the same one through the day.
   const random = trailRandom(seed ^ Math.floor(now / 86_400_000) ^ 0x1d872b41)
@@ -41,25 +47,35 @@ export function skyBand(landscape: Landscape, seed: number, state: SkyBandState)
   const marks: string[] = []
 
   // The band follows the visitor's sky, whatever the site theme: stars once the sun is well down.
+  // They fill the sky down to the ridges, so no empty strip parts the sky from the ranges; the
+  // count keeps the density of the open band above them.
   const night = sunAltitude < -6
   const stars: string[] = []
-  const count = night ? Math.round((width / 26) * clear) : 0
+  const horizon = (x: number) => Math.min(alpine.base, crestAt(x)) - 2
+  const columns = 32
+  const reach =
+    Array.from(
+      { length: columns },
+      (_, column) => horizon(((column + 0.5) / columns) * width) - top,
+    ).reduce((sum, span) => sum + span, 0) / columns
+  const count = night ? Math.round((width / 26) * clear * Math.max(1, reach / (floor - top))) : 0
   for (let index = 0; index < count; index++) {
     const x = Math.round((8 + random() * (width - 16)) / 2) * 2
-    const y = Math.round((top + random() * (floor - top)) / 2) * 2
+    const y = Math.round((top + random() * Math.max(1, horizon(x) - top)) / 2) * 2
     const size = random() < 0.12 ? 4 : 2
     stars.push(
       `<path class="trail-sky-star" data-star="${index % 3}" d="M${x} ${y}h${size}v${size}h${-size}Z"/>`,
     )
   }
   // Meteors are drawn for any sky that is not overcast; the stylesheet shows the group under
-  // moonlit lighting, which is a real night or the dark theme. One streaks every few seconds.
+  // moonlit lighting, which is a real night or the dark theme. One streaks every few seconds,
+  // anywhere from the top of the sky to just over the ranges.
   const meteors: string[] = []
   if (clear > 0.4)
     for (let index = 0; index < 5; index++) {
       const period = 11 + random() * 17
       const x = Math.round(width * (0.1 + random() * 0.8))
-      const y = Math.round(top + random() * Math.max(1, bottom - top))
+      const y = Math.round(top + random() * Math.max(1, alpine.top - 48 - top))
       const side = random() < 0.5 ? -1 : 1
       // A head and a tail fading back along its line, two cells a step.
       const tail = Array.from(
