@@ -1,6 +1,37 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { actorSpacing, spacedPosition, spacedStep, type CollisionActor } from './actor-spacing'
+import {
+  actorSpacing,
+  canMove,
+  spacedPosition,
+  spacedStep,
+  type CollisionActor,
+} from './actor-spacing'
+
+test('check the full swept segment, including tangency and diagonal crossings', () => {
+  const obstacles = [
+    { id: 'distant-tree', kind: 'trunk', x: 900, y: 900, radius: 3 },
+    { id: 'tree', kind: 'trunk', x: 0, y: 0, radius: 3 },
+  ] satisfies CollisionActor[]
+  assert.equal(canMove({ x: -20, y: 6.98 }, { x: 20, y: 6.98 }, 2, obstacles), false)
+  assert.equal(canMove({ x: -20, y: 7 }, { x: 20, y: 7 }, 2, obstacles), true)
+  assert.equal(canMove({ x: -20, y: -20 }, { x: 20, y: 20 }, 2, obstacles), false)
+  assert.equal(canMove({ x: 20, y: 20 }, { x: -20, y: -20 }, 2, obstacles), false)
+  assert.equal(canMove({ x: 20, y: -20 }, { x: 20, y: 20 }, 2, obstacles), true)
+})
+
+test('allow an overlapping actor to escape only while separation increases', () => {
+  const obstacles = [
+    { id: 'tree', kind: 'trunk', x: 0, y: 0, radius: 3 },
+  ] satisfies CollisionActor[]
+  const from = { x: 3, y: 0 }
+  assert.equal(canMove(from, { x: 4, y: 0 }, 2, obstacles), true)
+  assert.equal(canMove(from, { x: 3, y: 1 }, 2, obstacles), true)
+  assert.equal(canMove(from, { x: 2, y: 0 }, 2, obstacles), false)
+  assert.equal(canMove(from, { x: -10, y: 0 }, 2, obstacles), false)
+  assert.equal(canMove(from, from, 2, obstacles), false)
+  assert.equal(canMove({ x: 8, y: 0 }, { x: 8, y: 0 }, 2, obstacles), true)
+})
 
 test('recover a displaced reader to its endpoint with bounded camp clearance', () => {
   const goal = { x: 865.2657702326774, y: 1135 }

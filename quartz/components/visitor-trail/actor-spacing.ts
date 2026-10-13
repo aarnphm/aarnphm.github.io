@@ -139,11 +139,22 @@ export function canMove(
   const dx = to.x - from.x
   const dy = to.y - from.y
   const squared = dx * dx + dy * dy
+  const left = Math.min(from.x, to.x)
+  const right = Math.max(from.x, to.x)
+  const top = Math.min(from.y, to.y)
+  const bottom = Math.max(from.y, to.y)
   for (const other of obstacles) {
+    const limit = radius + other.radius + 2
+    if (
+      other.x < left - limit ||
+      other.x > right + limit ||
+      other.y < top - limit ||
+      other.y > bottom + limit
+    )
+      continue
     const x = from.x - other.x
     const y = from.y - other.y
     const initial = Math.hypot(x, y)
-    const limit = radius + other.radius + 2
     if (initial < limit - 0.01) {
       // A resize can tighten spacing. Escape must increase separation from its first step.
       if (x * dx + y * dy < -0.00001) return false
