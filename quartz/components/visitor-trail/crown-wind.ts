@@ -89,7 +89,12 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
     scene.dataset.weatherWindy === 'true' &&
     scene.dataset.trailVisible === 'true' &&
     !motion.matches
-  const running = () => windy() && scene.dataset.weatherMotion !== 'paused' && !document.hidden
+  const running = () =>
+    windy() &&
+    scene.dataset.weatherMotion !== 'paused' &&
+    !document.hidden &&
+    scene.dataset.trailRendered === 'true' &&
+    (scene.dataset.trailRenderer === 'webgl' || !scene.querySelector('.trail-compositor'))
 
   const step = (time: number) => {
     frame = 0
@@ -147,7 +152,13 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
   const watch = new MutationObserver(wake)
   watch.observe(scene, {
     attributes: true,
-    attributeFilter: ['data-weather-windy', 'data-weather-motion', 'data-trail-visible'],
+    attributeFilter: [
+      'data-weather-windy',
+      'data-weather-motion',
+      'data-trail-visible',
+      'data-trail-rendered',
+      'data-trail-renderer',
+    ],
   })
   document.addEventListener('visibilitychange', wake, { signal })
   motion.addEventListener('change', wake, { signal })
