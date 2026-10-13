@@ -3,6 +3,7 @@ import { buildSelect, type Select } from '../controls/select'
 import { defaultCampSettings, campLimits, type CampSettings } from './camp-settings'
 import { animalLimits, defaultAnimalSettings, type AnimalSettings } from './pasture'
 import { defaultForestSettings, forestLimits, type ForestSettings } from './scenery'
+import { trailSettingsRocks } from './settings-rocks'
 import { defaultTravelerSettings, travelerLimits, type TravelerSettings } from './traveler-settings'
 
 const fields: { key: keyof ForestSettings; label: string; name: string; suffix: string }[] = [
@@ -26,6 +27,7 @@ const animalFields: { key: keyof AnimalSettings; label: string; name: string }[]
 const travelerFields: { key: keyof TravelerSettings; label: string; name: string }[] = [
   { key: 'walkers', label: 'walkers', name: 'Walker count' },
   { key: 'climbers', label: 'climbers', name: 'Climber count' },
+  { key: 'alpinists', label: 'alpinists', name: 'Alpinist count' },
   { key: 'rangers', label: 'park patrol', name: 'Park ranger count' },
 ]
 const campFields: { key: keyof typeof campLimits; label: string; name: string; suffix?: string }[] =
@@ -57,13 +59,14 @@ function rangeMarkup(
 
 export function forestControlsMarkup(id: string) {
   return `
-    <button class="trail-tree-toggle" type="button" aria-label="Tree settings" aria-expanded="false" aria-controls="${id}-forest">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2h2v2h2v2h2v2h-2v2h3v2h2v2h-4v2h5v3H3v-3h5v-2H4v-2h2v-2h3V8H7V6h2V4h2ZM11 19h2v4h-2Z"/></svg>
-      <span class="trail-tree-hint" aria-hidden="true">click me</span>
+    <button class="trail-tree-toggle" type="button" aria-label="Trail settings" aria-expanded="false" aria-controls="${id}-forest">
+      ${trailSettingsRocks()}
+      <span class="trail-tree-hint" aria-hidden="true">settings</span>
     </button>
-    <div class="trail-tree-panel" id="${id}-forest" role="group" aria-label="Grove settings" hidden>
-      <div class="trail-tree-panel-head"><span>grove</span><span>l-system</span><button class="trail-tree-close g-icon-button" type="button" aria-label="Close tree settings"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button></div>
+    <div class="trail-tree-panel" id="${id}-forest" role="group" aria-label="Trail settings" hidden>
+      <div class="trail-tree-panel-head"><span>settings</span><span>grove</span><button class="trail-tree-close g-icon-button" type="button" aria-label="Close trail settings"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button></div>
       <div class="trail-tree-controls">
+        <fieldset class="trail-control-section"><legend>forest / l-system</legend>
         ${fields
           .map(field =>
             rangeMarkup(
@@ -75,9 +78,9 @@ export function forestControlsMarkup(id: string) {
             ),
           )
           .join('')}
+        </fieldset>
         <fieldset class="trail-control-section"><legend>holidays</legend>
-          <div class="trail-camp-select" data-holiday-select="holiday">scene</div>
-          <span class="trail-camp-connection" data-holiday-status role="status">automatic</span>
+          <div class="trail-tree-control trail-camp-select" data-holiday-select="holiday">scene</div>
         </fieldset>
         <fieldset class="trail-control-section"><legend>animals</legend>
           ${animalFields
@@ -94,10 +97,10 @@ export function forestControlsMarkup(id: string) {
         </fieldset>
         <fieldset class="trail-control-section"><legend>campsites</legend>
           ${campFields.map(field => rangeMarkup(id, 'camp', field, defaultCampSettings[field.key], campLimits[field.key])).join('')}
-          <div class="trail-camp-select" data-camp-select="light">light</div>
-          <div class="trail-camp-select" data-camp-select="visit">visit</div>
-          <button type="button" class="trail-camp-join g-button" data-camp-pack>pack up camp</button>
-          <span class="trail-camp-connection" data-camp-connection role="status">connecting</span>
+          <div class="trail-tree-control trail-camp-select" data-camp-select="light">light</div>
+          <div class="trail-tree-control trail-camp-select" data-camp-select="visit">visit</div>
+          <div class="trail-tree-control trail-camp-select">pack up<button type="button" class="trail-camp-join" data-camp-pack aria-label="Pack up the visited camp">pack</button></div>
+          <span class="trail-status" data-camp-connection role="status">connecting</span>
         </fieldset>
         <fieldset class="trail-control-section"><legend>people</legend>
           ${travelerFields
@@ -129,7 +132,7 @@ export function mountForestControls(
   const toggle = root.querySelector<HTMLButtonElement>('.trail-tree-toggle')
   const panel = root.querySelector<HTMLElement>('.trail-tree-panel')
   const dismiss = root.querySelector<HTMLButtonElement>('.trail-tree-close')
-  if (!toggle || !panel || !dismiss) throw new Error('Tree controls are incomplete')
+  if (!toggle || !panel || !dismiss) throw new Error('Trail settings are incomplete')
   const settings = { ...defaultForestSettings }
   const animals = { ...defaultAnimalSettings }
   const travelers = { ...defaultTravelerSettings }
@@ -184,6 +187,7 @@ export function mountForestControls(
       panel.hidden = false
       toggle.setAttribute('aria-expanded', 'true')
       onOpen()
+      dismiss.focus({ preventScroll: true })
     },
     { signal },
   )
@@ -234,6 +238,7 @@ export function mountForestControls(
     'auto',
     'none',
     'thanksgiving',
+    'columbus-day',
     'halloween',
     'christmas',
     'easter',

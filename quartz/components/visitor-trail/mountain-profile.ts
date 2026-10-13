@@ -1098,14 +1098,8 @@ export type MountainTrack = {
   depth: number
 }
 
-const forms: readonly MountainForm[] = [
-  'bernese',
-  'horn',
-  'glacial-bowl',
-  'serrated',
-  'limestone-wall',
-  'pasture-ridge',
-]
+const alpineForms: readonly MountainForm[] = ['bernese', 'horn', 'glacial-bowl', 'serrated']
+const foothillForms: readonly MountainForm[] = ['limestone-wall', 'pasture-ridge']
 const tiers: readonly MountainTier[] = ['background', 'middle', 'foreground']
 
 export function mountainTerrain(range: MountainRange): Terrain {
@@ -1123,25 +1117,20 @@ export function buildMountainRanges(alpine: Alpine, seed: number): MountainRange
     const random = narrow
       ? sharedRandom
       : trailRandom(seed ^ 0x13a5b79d ^ Math.imul(tierIndex + 1, 0x9e3779b9))
-    const span = tier === 'middle' ? 1.12 : tier === 'background' ? 0.97 : 0.83
-    const shuffled = [...forms]
+    const shuffled = [...(tier === 'foreground' ? foothillForms : alpineForms)]
     for (let index = shuffled.length - 1; index > 0; index--) {
       const other = Math.floor(random() * (index + 1))
       ;[shuffled[index], shuffled[other]] = [shuffled[other], shuffled[index]]
     }
     const bag = narrow
-      ? shuffled.filter(
-          form =>
-            !result.some(range => range.form === form) &&
-            (tier !== 'background' || (form !== 'pasture-ridge' && form !== 'limestone-wall')),
-        )
+      ? shuffled.filter(form => !result.some(range => range.form === form))
       : shuffled
     const overlap = 0.21 + random() * 0.07
     let left = alpine.left - 8
     let index = 0
 
     while (index === 0 || (!narrow && left < alpine.left + alpine.width + 8)) {
-      const weight = 0.78 + random() * 0.46
+      const weight = 0.82 + random() * 0.14
       const baseOffset =
         tier === 'foreground'
           ? 0
@@ -1151,11 +1140,11 @@ export function buildMountainRanges(alpine: Alpine, seed: number): MountainRange
       const phase = random() * Math.PI * 2
       const form = bag[index % bag.length]
       const base = alpine.base - baseOffset
-      const tierCap = narrow ? (tier === 'foreground' ? 0.56 : tier === 'middle' ? 0.73 : 1) : 1
+      const tierCap = tier === 'foreground' ? 0.44 : tier === 'middle' ? 0.72 : 1
       const availableHeight = (base - alpine.top) * tierCap
       const height = narrow
         ? Math.min(availableHeight, (paintWidth / terrains[form].aspect) * elevation)
-        : availableHeight * Math.min(1, span * 0.75 * weight)
+        : availableHeight * weight
       const width = narrow ? paintWidth : (height * terrains[form].aspect) / elevation
       result.push({
         left,
@@ -1210,15 +1199,16 @@ export function mountainCrestAt(
   return Math.min(...visible.map(range => rangeCrestAt(worldX, range)))
 }
 
-// Foreground ranges retain the common valley base for near-to-far ground queries.
+// Routes climb the visible skyline through the lower formations to the common valley base.
 export function mountainGroundAt(
   worldX: number,
   depth: number,
   ranges: readonly MountainRange[],
 ): number | undefined {
-  const foreground = mountainRangesAt(worldX, ranges)[0]
+  const visible = mountainRangesAt(worldX, ranges)
+  const foreground = visible[0]
   if (!foreground) return undefined
-  const crest = rangeCrestAt(worldX, foreground)
+  const crest = Math.min(...visible.map(range => rangeCrestAt(worldX, range)))
   return crest + (foreground.base - crest) * Math.max(0, Math.min(1, depth))
 }
 

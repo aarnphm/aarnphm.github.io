@@ -1,3 +1,6 @@
+export const groundObjectSelector =
+  '.trail-tree, .trail-understory, [data-trail-wander], [data-holiday-decoration], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger], [data-trail-visitor]'
+
 type GroundObject = { element: SVGGElement; owner: Element; layer: SVGGElement; index: number }
 
 export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: AbortSignal) {
@@ -54,9 +57,7 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
   const refresh = () => {
     restore()
     const distant = scene.querySelector<SVGGElement>('.trail-foothill-objects')
-    for (const element of scene.querySelectorAll<SVGGElement>(
-      '.trail-tree, [data-trail-wander], [data-holiday-decoration], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger], [data-trail-visitor]',
-    )) {
+    for (const element of scene.querySelectorAll<SVGGElement>(groundObjectSelector)) {
       const owner = element.parentElement
       const far =
         element.dataset.treeDepth === 'foothill' || element.hasAttribute('data-alpine-traveler')

@@ -1,7 +1,9 @@
+import { holidayDetails } from './holiday-details'
 import { pixels } from './pixels'
 
 // Opus pixel grids are palette indices, not executable SVG or external assets.
 export const holidayArt = {
+  ...holidayDetails,
   turkey: [
     '...iiiiii.............',
     '.iobobobobi...........',
@@ -159,8 +161,30 @@ const tones = {
   v: 'trail-holiday-green',
 }
 
+// Each tone also carries its colour as a presentation attribute, which any stylesheet rule
+// overrides. Sprites in the page header paint before, or without, the trail stylesheet, and an
+// unstyled path fills black.
+const fallback: Record<string, string> = {
+  'trail-holiday-ink': '#5e5a50',
+  'trail-holiday-shade': '#a8a596',
+  'trail-holiday-paper': '#ebe3cf',
+  'trail-holiday-brown': '#7e725f',
+  'trail-holiday-orange': '#be9770',
+  'trail-holiday-red': '#b17464',
+  'trail-holiday-gold': '#d0b98c',
+  'trail-holiday-green': '#9ca58d',
+}
+const painted = (rows: readonly string[], size: number) =>
+  pixels(rows, tones, size).replace(/class="(trail-holiday-[a-z]+)"/g, (match, tone: string) =>
+    fallback[tone] ? `${match} fill="${fallback[tone]}"` : match,
+  )
+
 export function holidaySprite(name: HolidaySpriteName, size = 1) {
-  return pixels(holidayArt[name], tones, size)
+  return painted(holidayArt[name], size)
+}
+
+export function halloweenCostume(headX: number, headY: number) {
+  return `<g class="trail-halloween-costume" aria-hidden="true"><g transform="translate(${headX - 2} ${headY - 4})">${holidaySprite('costumeHat')}</g><g transform="translate(${headX} ${headY})">${holidaySprite('costumeMask')}</g><g transform="translate(${headX - 2} ${headY + 4})">${holidaySprite('costumeCoat', 2)}</g></g>`
 }
 
 export function holidayAnimalSprite(name: 'turkey' | 'rabbit', size: number) {
@@ -171,14 +195,14 @@ export function holidayAnimalSprite(name: 'turkey' | 'rabbit', size: number) {
     feet.map(row => [...row].map((pixel, x) => (x >= width / 2 === front ? pixel : '.')).join(''))
   return (
     '<g class="trail-holiday-body">' +
-    pixels(rows.slice(0, -2), tones, size) +
+    painted(rows.slice(0, -2), size) +
     '</g>' +
     '<g transform="translate(0 ' +
     (rows.length - 2) * size +
     ')"><g class="trail-animal-leg-front">' +
-    pixels(leg(true), tones, size) +
+    painted(leg(true), size) +
     '</g><g class="trail-animal-leg-back">' +
-    pixels(leg(false), tones, size) +
+    painted(leg(false), size) +
     '</g></g>'
   )
 }

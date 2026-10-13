@@ -1,4 +1,5 @@
-export const parallaxMovement = { horizontal: 8, vertical: 4, scroll: 12 }
+// Only scrolling moves the camera; the cursor leaves the scene still.
+export const parallaxMovement = { scroll: 12 }
 export const parallaxDepth = { alpine: 0.25, foothill: 0.6 }
 
 export function mountTrailPerspective(scene: HTMLElement, host: HTMLElement, signal: AbortSignal) {
@@ -9,7 +10,6 @@ export function mountTrailPerspective(scene: HTMLElement, host: HTMLElement, sig
   let layers: { element: SVGGElement; depth: number }[] = []
   let frame: number | null = null
   let previous: number | null = null
-  let pointer = { x: 0, y: 0 }
   let current = { x: 0, y: 0 }
   let target = { x: 0, y: 0 }
 
@@ -43,37 +43,12 @@ export function mountTrailPerspective(scene: HTMLElement, host: HTMLElement, sig
   }
   const schedule = () => {
     if (host.hidden || document.hidden || signal.aborted || reducedMotion.matches) return
-    target = {
-      x: pointer.x * parallaxMovement.horizontal,
-      y:
-        pointer.y * parallaxMovement.vertical +
-        Math.min(parallaxMovement.scroll, view.scrollY * 0.025),
-    }
+    target = { x: 0, y: Math.min(parallaxMovement.scroll, view.scrollY * 0.025) }
     if (frame === null && Math.hypot(target.x - current.x, target.y - current.y) >= 0.02) {
       scene.dataset.perspectiveMotion = 'active'
       frame = view.requestAnimationFrame(tick)
     }
   }
-  document.addEventListener(
-    'pointermove',
-    event => {
-      if (event.pointerType !== 'mouse' || host.hidden || reducedMotion.matches) return
-      pointer = {
-        x: Math.max(-1, Math.min(1, (event.clientX / view.innerWidth - 0.5) * 2)),
-        y: Math.max(-1, Math.min(1, (event.clientY / view.innerHeight - 0.5) * 2)),
-      }
-      schedule()
-    },
-    { signal, passive: true },
-  )
-  document.addEventListener(
-    'pointerleave',
-    () => {
-      pointer = { x: 0, y: 0 }
-      schedule()
-    },
-    { signal },
-  )
   view.addEventListener('scroll', schedule, { signal, passive: true })
   document.addEventListener('visibilitychange', () => (document.hidden ? pause() : schedule()), {
     signal,

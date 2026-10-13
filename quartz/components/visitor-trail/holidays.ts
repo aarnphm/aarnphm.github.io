@@ -1,7 +1,7 @@
 import type { CampSettings } from './camp-settings'
 import type { RouteSites } from './pasture'
+import { trailHost } from '../../util/trail-scene'
 import {
-  holidayLabels,
   subscribeVisitorHoliday,
   type HolidaySelection,
   type TrailHoliday,
@@ -25,14 +25,7 @@ export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, chan
     const holiday = current()
     scene.dataset.holiday = holiday ?? 'none'
     scene.dataset.holidaySelection = selection
-    scene.parentElement?.dispatchEvent(new CustomEvent('trail:holiday', { detail: holiday }))
-    const status = scene.querySelector<HTMLElement>('[data-holiday-status]')
-    if (status)
-      status.textContent = holiday
-        ? `${holidayLabels[holiday]} · ${selection === 'auto' ? 'calendar' : 'preview'}`
-        : selection === 'none'
-          ? 'off'
-          : 'outside the holiday dates'
+    trailHost(scene)?.dispatchEvent(new CustomEvent('trail:holiday', { detail: holiday }))
   }
   subscribeVisitorHoliday(
     scene.ownerDocument,
@@ -48,28 +41,45 @@ export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, chan
 
   const refreshTrees = () => {
     scene.querySelectorAll('[data-holiday-tree]').forEach(element => element.remove())
-    if (current() !== 'christmas') return
+    if (trailHost(scene)?.hidden || !scene.isConnected) return
+    const holiday = current()
+    if (holiday !== 'christmas' && holiday !== 'halloween') return
     const trees = [...scene.querySelectorAll<SVGGElement>('.trail-tree[data-tree-depth="meadow"]')]
-      .filter(tree => ['pine', 'spruce', 'cypress'].includes(tree.dataset.tree ?? ''))
+      .filter(
+        tree =>
+          holiday === 'halloween' ||
+          ['pine', 'spruce', 'fir', 'hemlock', 'cypress'].includes(tree.dataset.tree ?? ''),
+      )
       .sort((a, b) => Number(b.dataset.treeScale) - Number(a.dataset.treeScale))
-      .slice(0, 3)
-    for (const tree of trees) {
+      .slice(0, holiday === 'halloween' ? 6 : 3)
+    for (const [index, tree] of trees.entries()) {
       const canopy = tree.querySelector<SVGGElement>('.trail-tree-canopy')
       if (!canopy) continue
       const box = canopy.getBBox()
+      if (!box.width || !box.height) continue
       const centre = box.x + box.width / 2
+      const ornament = scene.ownerDocument.createElementNS('http://www.w3.org/2000/svg', 'g')
+      ornament.dataset.holidayTree = holiday
+      if (holiday === 'halloween') {
+        const size = Math.max(0.5, Math.min(1.1, box.width / 60))
+        const x = box.x + box.width * (index % 2 ? 0.62 : 0.26)
+        const y = box.y + box.height * (0.28 + (index % 3) * 0.12)
+        const threadX = Math.round(holidayArt.web[0].length * size * 0.42)
+        const bottom = Math.round(holidayArt.web.length * size)
+        ornament.innerHTML = `<g class="trail-holiday-web" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})${index % 2 ? ' scale(-1 1)' : ''}">${holidaySprite('web', size)}<path class="trail-holiday-paper" d="M${threadX} ${bottom - 2}h${size}v6h-${size}Z"/><g transform="translate(${threadX - 4 * size} ${bottom + 4})">${holidaySprite('spider', size)}</g></g>`
+        canopy.after(ornament)
+        continue
+      }
       const star = holidayArt.star
       const wreath = holidayArt.wreath
       const size = Math.max(0.65, Math.min(1, box.width / 28))
-      const ornament = scene.ownerDocument.createElementNS('http://www.w3.org/2000/svg', 'g')
-      ornament.dataset.holidayTree = 'christmas'
       const lights = Array.from({ length: 5 }, (_, index) => {
         const x = centre + (index % 2 ? -1 : 1) * box.width * (0.09 + index * 0.025)
         const y = box.y + box.height * (0.35 + index * 0.11)
         return `M${x.toFixed(1)} ${y.toFixed(1)}h1.5v1.5h-1.5Z`
       })
       ornament.innerHTML = `<g transform="translate(${centre - (star[0].length * size) / 2} ${box.y - star.length * size * 0.6})">${holidaySprite('star', size)}</g><g transform="translate(${centre - (wreath[0].length * size) / 2} ${box.y + box.height * 0.8})">${holidaySprite('wreath', size)}</g><g class="trail-holiday-lights"><path class="trail-holiday-gold" d="${lights.filter((_, index) => index % 2).join('')}"/><path class="trail-holiday-red" d="${lights.filter((_, index) => !(index % 2)).join('')}"/></g>`
-      canopy.append(ornament)
+      canopy.after(ornament)
     }
   }
 
@@ -125,6 +135,7 @@ export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, chan
     }
     for (const site of sites) {
       if (holiday === 'thanksgiving') prop('gourd', { x: site.x + 58, y: site.y + 18 }, 1)
+      if (holiday === 'columbus-day') prop('trailMap', { x: site.x + 58, y: site.y + 18 }, 1)
       if (holiday === 'halloween') {
         prop('pumpkin', { x: site.x + 56, y: site.y + 18 }, 1)
         prop('ghost', { x: site.x - 66, y: site.y - 18 }, 1)
@@ -166,6 +177,19 @@ export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, chan
     }
     layer.innerHTML = `<g class="trail-holiday-props">${props.join('')}</g><g class="trail-holiday-animals">${animals.join('')}</g>`
   }
+
+  signal.addEventListener(
+    'abort',
+    () => {
+      scene
+        .querySelectorAll('[data-holiday-tree], [data-holiday-decoration], [data-holiday-animal]')
+        .forEach(element => element.remove())
+      scene.querySelector('.trail-holidays')?.replaceChildren()
+      scene.dataset.holiday = 'none'
+      delete scene.dataset.holidaySelection
+    },
+    { once: true },
+  )
 
   return {
     draw,

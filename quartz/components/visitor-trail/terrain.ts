@@ -1,6 +1,9 @@
-import type { Landscape, Pond } from './landscape'
+import { grassGrows, type Landscape, type Pond } from './landscape'
+import { trailMeadow } from './meadow'
 import { pixels } from './pixels'
 import { trailRandom } from './random'
+import { trailBeavers, trailFords, trailRavine } from './ravine'
+import { trailWayside } from './wayside'
 
 function oval(pond: Pond, margin: number, grid: number) {
   const rows: string[] = []
@@ -12,7 +15,7 @@ function oval(pond: Pond, margin: number, grid: number) {
   return pixels(rows, { W: 'trail-water' }, grid)
 }
 
-export function trailTerrain(landscape: Landscape, seed: number) {
+export function trailTerrain(landscape: Landscape, seed: number, routes: readonly string[] = []) {
   const { width, height, contours, pond } = landscape
   const random = trailRandom(seed ^ 0x94d049bb)
   const terraces = contours
@@ -29,6 +32,7 @@ export function trailTerrain(landscape: Landscape, seed: number) {
         .map(point => {
           const x = Math.round(point.x + random() * 12)
           const y = point.y + 10 + Math.round(random() * 12)
+          if (!grassGrows(y, landscape, random())) return ''
           return `<path class="trail-meadow-tuft" d="M${x} ${y}h2v-4h-2ZM${x + 4} ${y + 2}h2v-6h-2Z"/>`
         }),
     )
@@ -70,10 +74,11 @@ export function trailTerrain(landscape: Landscape, seed: number) {
     treeline: landscape.treeline,
     meadowTop: landscape.meadowTop,
   }
-  return `<g class="trail-terrain" data-trail-terrain='${JSON.stringify(bounds)}'>${terraces}${grass}</g>
+  return `<g class="trail-terrain" data-trail-terrain='${JSON.stringify(bounds)}'>${terraces}${trailRavine(landscape, seed, routes)}${trailFords(landscape, routes)}${grass}${trailMeadow(landscape, seed, routes)}${trailWayside(landscape, routes, seed)}</g>
     <g class="trail-pond" data-trail-pond='${JSON.stringify(pond)}'>
       <g class="trail-pond-bank" transform="translate(${pond.x - pond.rx - 8} ${pond.y - pond.ry - 8})">${oval(pond, 8, grid)}</g>
       <g transform="translate(${pond.x - pond.rx} ${pond.y - pond.ry})">${oval(pond, 0, grid)}</g>
       ${ripples}${lilyPads}${reeds}${bankPlants}
+      ${trailBeavers(landscape, seed)}
     </g>`
 }

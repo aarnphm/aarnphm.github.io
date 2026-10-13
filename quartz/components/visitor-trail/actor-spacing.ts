@@ -32,10 +32,7 @@ function cameraClearance(element: SVGGElement, relativeTo?: SVGGElement) {
       : 0
   }
   // Reserve all camera positions so parallax cannot move a background body into a valley walker.
-  return (
-    Math.abs(depth(element) - depth(relativeTo)) *
-    Math.hypot(parallaxMovement.horizontal, parallaxMovement.vertical + parallaxMovement.scroll)
-  )
+  return Math.abs(depth(element) - depth(relativeTo)) * parallaxMovement.scroll
 }
 
 export function readActors(
@@ -551,19 +548,25 @@ export function publishActor(
     }
   }
   const placed = !spacing.placement
-  element.setAttribute('transform', `translate(${x} ${y}) scale(${scale.toFixed(4)})`)
-  element.style.visibility = placed ? '' : 'hidden'
-  element.dataset.trailCollision = 'traveler'
-  element.dataset.collisionId = id
-  element.dataset.collisionActive = String(active && placed)
-  element.dataset.collisionRadius = (radius * scale).toFixed(4)
-  element.dataset.groundX = String(x)
-  if (element.dataset.groundY !== String(y)) element.dataset.groundY = String(y)
-  element.dataset.scale = scale.toFixed(4)
-  element.dataset.spacing = spacing.status
-  element.dataset.yieldingTo = spacing.yieldingTo ?? ''
-  element.dataset.yieldingThrough = spacing.yieldingThrough ?? ''
-  element.dataset.yieldEpisode = String(spacing.yieldEpisode)
-  element.dataset.pathOffset = Math.hypot(spacing.offset.x, spacing.offset.y).toFixed(2)
-  if (motionTime !== undefined) element.dataset.motionTime = String(motionTime)
+  const transform = `translate(${x} ${y}) scale(${scale.toFixed(4)})`
+  if (element.getAttribute('transform') !== transform) element.setAttribute('transform', transform)
+  const visibility = placed ? '' : 'hidden'
+  if (element.style.visibility !== visibility) element.style.visibility = visibility
+  const metadata = {
+    trailCollision: 'traveler',
+    collisionId: id,
+    collisionActive: String(active && placed),
+    collisionRadius: (radius * scale).toFixed(4),
+    groundX: String(x),
+    groundY: String(y),
+    scale: scale.toFixed(4),
+    spacing: spacing.status,
+    yieldingTo: spacing.yieldingTo ?? '',
+    yieldingThrough: spacing.yieldingThrough ?? '',
+    yieldEpisode: String(spacing.yieldEpisode),
+    pathOffset: Math.hypot(spacing.offset.x, spacing.offset.y).toFixed(2),
+    ...(motionTime === undefined ? {} : { motionTime: String(motionTime) }),
+  }
+  for (const [key, value] of Object.entries(metadata))
+    if (element.dataset[key] !== value) element.dataset[key] = value
 }

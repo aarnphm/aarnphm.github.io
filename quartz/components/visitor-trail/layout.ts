@@ -64,6 +64,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
   const bounds = scene.getBoundingClientRect()
   const width = scene.clientWidth
   const height = scene.clientHeight
+  if (width < 1 || height < 1) return null
   const random = trailRandom(seed)
   const text: Rect[] = []
   const walker = document.createTreeWalker(landing, NodeFilter.SHOW_TEXT)

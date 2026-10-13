@@ -15,15 +15,35 @@ test('Canadian Thanksgiving follows the second Monday and its local holiday week
   assert.equal(visitorHoliday(local(2027, 10, 13), 'CA'), null)
 })
 
-test('US Thanksgiving follows the fourth Thursday and unknown countries use the site calendar', () => {
-  assert.equal(visitorHoliday(local(2026, 10, 12), 'US'), null)
+test('US Thanksgiving follows the fourth Thursday without taking the Canadian date', () => {
+  assert.equal(visitorHoliday(local(2026, 10, 12), 'US'), 'columbus-day')
   assert.equal(visitorHoliday(local(2026, 11, 22), 'US'), null)
   assert.equal(visitorHoliday(local(2026, 11, 26), 'US'), 'thanksgiving')
   assert.equal(visitorHoliday(local(2026, 11, 27, 23), 'US'), 'thanksgiving')
   assert.equal(visitorHoliday(local(2026, 11, 28), 'US'), null)
   assert.equal(visitorHoliday(local(2027, 11, 25), 'US'), 'thanksgiving')
-  assert.equal(visitorHoliday(local(2026, 10, 12), null), 'thanksgiving')
-  assert.equal(visitorHoliday(local(2026, 10, 12), 'GB'), 'thanksgiving')
+  assert.equal(visitorHoliday(local(2026, 11, 26), 'CA'), null)
+})
+
+test('Columbus Day follows the second Monday in October for US visitors', () => {
+  assert.equal(visitorHoliday(local(2026, 10, 8), 'US'), null)
+  assert.equal(visitorHoliday(local(2026, 10, 9, 0), 'US'), 'columbus-day')
+  assert.equal(visitorHoliday(local(2026, 10, 12), 'US'), 'columbus-day')
+  assert.equal(visitorHoliday(local(2026, 10, 13, 23), 'US'), 'columbus-day')
+  assert.equal(visitorHoliday(local(2026, 10, 14), 'US'), null)
+  assert.equal(visitorHoliday(local(2027, 10, 11), 'US'), 'columbus-day')
+  assert.equal(visitorHoliday(local(2027, 10, 13), 'US'), null)
+  assert.equal(visitorHoliday(local(2026, 10, 12), ' us '), 'columbus-day')
+  assert.equal(visitorHoliday(local(2026, 10, 12), 'ca'), 'thanksgiving')
+})
+
+test('unknown regions wait for country data instead of adopting Canadian Thanksgiving', () => {
+  for (const country of [null, '', 'GB', 'FR', 'AU']) {
+    assert.equal(visitorHoliday(local(2026, 10, 12), country), null)
+    assert.equal(visitorHoliday(local(2026, 11, 26), country), null)
+    assert.equal(visitorHoliday(local(2026, 10, 31), country), 'halloween')
+    assert.equal(visitorHoliday(local(2026, 12, 25), country), 'christmas')
+  }
 })
 
 test('Halloween crosses the month boundary without extending beyond its window', () => {
