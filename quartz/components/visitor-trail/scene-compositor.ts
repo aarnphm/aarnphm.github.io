@@ -1457,13 +1457,16 @@ export function mountSceneCompositor(scene: HTMLElement, host: HTMLElement, sign
           continue
         }
         const known = groups.get(target)
-        if (known && name === 'transform') {
-          known.moved = true
-          continue
-        }
-        if (known && name === 'style' && motionOnly(entry.oldValue, target.getAttribute('style'))) {
-          known.moved = true
-          known.fresh = false
+        if (
+          name === 'transform' ||
+          (name === 'style' && motionOnly(entry.oldValue, target.getAttribute('style')))
+        ) {
+          // Scripted motion has the same texture boundary as CSS motion. Waiting for repeated
+          // repaints makes the first gust split and reraster each crown several times.
+          if (known) {
+            known.moved = true
+            if (name === 'style') known.fresh = false
+          } else promote(target, 'hot')
           continue
         }
         if (known && (name === 'mask' || name === 'clip-path' || name === 'class'))

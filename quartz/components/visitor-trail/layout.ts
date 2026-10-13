@@ -123,12 +123,21 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     })
   }
   const clock = document.querySelector('.trail-local-time')?.getBoundingClientRect()
-  if (clock && clock.width > 0 && clock.height > 0)
+  const clockRegion =
+    clock && clock.width > 0 && clock.height > 0
+      ? {
+          left: clock.left - 12,
+          right: view.innerWidth,
+          top: clock.top - 12,
+          bottom: view.innerHeight,
+        }
+      : null
+  if (clockRegion)
     obstacles.push({
-      left: clock.left - bounds.left - 12,
-      right: width,
-      top: clock.top - bounds.top - 12,
-      bottom: view.innerHeight - bounds.top,
+      left: clockRegion.left - bounds.left,
+      right: clockRegion.right - bounds.left,
+      top: clockRegion.top - bounds.top,
+      bottom: clockRegion.bottom - bounds.top,
     })
   const bottom = Math.max(landing.getBoundingClientRect().bottom - bounds.top, 280)
   const camp = {
@@ -258,6 +267,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     landscape,
     routes,
     readingRoutes: upperRoutes,
+    clockRegion,
     clear,
     backdropClear,
     obstacles,

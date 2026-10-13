@@ -3,6 +3,27 @@
 @use './moon-calendar.scss';
 @use './visitor-register.scss';
 
+.homepage-trail,
+.homepage-trail-scene {
+  --trail-field-0: color-mix(in srgb, var(--lightgray) 18%, var(--light));
+  --trail-field-1: color-mix(in srgb, var(--lightgray) 24%, var(--light));
+  --trail-field-2: color-mix(in srgb, var(--gray) 9%, var(--light));
+  --trail-field-3: color-mix(in srgb, var(--gray) 14%, var(--light));
+}
+
+.trail-clock-ground {
+  display: none;
+  position: fixed;
+  width: 0;
+  height: 0;
+  z-index: calc(var(--z-dropdown) - 1);
+  pointer-events: none;
+}
+
+.homepage-trail-toggle[aria-expanded='true'] ~ .trail-clock-ground {
+  display: block;
+}
+
 .trail-local-time {
   position: fixed;
   right: max(16px, env(safe-area-inset-right));

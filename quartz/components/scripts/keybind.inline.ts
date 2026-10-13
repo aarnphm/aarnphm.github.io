@@ -4,6 +4,8 @@ import {
   notebookCellFrames,
   selectNotebookCellFrame,
 } from '../../util/notebook-active-cell'
+import { STREAM_HOSTNAME } from '../../util/stream-host'
+import { TRIATHLON_HOSTNAME } from '../../util/triathlon-host'
 import { registerEscapeHandler } from './escape-handler'
 import { currentNavSignal } from './nav-lifecycle'
 
@@ -799,8 +801,13 @@ document.addEventListener('nav', () => {
         action()
       } else if (typeof action === 'string') {
         container?.classList.toggle('active', false)
-        if (window.location.pathname === action) return
-        window.spaNavigate(new URL(action, window.location.toString()))
+        const origin =
+          action === '/' && [TRIATHLON_HOSTNAME, STREAM_HOSTNAME].includes(window.location.hostname)
+            ? 'https://aarnphm.xyz'
+            : window.location.origin
+        const destination = new URL(action, origin)
+        if (window.location.href === destination.href) return
+        window.spaNavigate(destination)
       }
     }
   }

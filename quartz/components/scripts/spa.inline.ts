@@ -3,6 +3,7 @@ import { fetchCanonical } from '../../util/fetch-canonical'
 import {
   FullSlug,
   RelativeURL,
+  getFileExtension,
   getFullSlug,
   isFullSlug,
   normalizeRelativeURLs,
@@ -27,6 +28,7 @@ import {
 } from '../../util/stacked-notes'
 import {
   isStreamRoutePathname,
+  streamDocumentRedirectUrl,
   streamHostPathname,
   STREAM_HOSTNAME,
   streamHostUrl,
@@ -1091,6 +1093,14 @@ const stacked = new StackedNoteManager()
 window.stacked = stacked
 
 async function navigate(url: URL, isBack: boolean = false) {
+  if (
+    window.location.hostname === STREAM_HOSTNAME &&
+    isLocalHttpUrl(url) &&
+    (!getFileExtension(url.pathname) || /\.html?$/i.test(url.pathname))
+  ) {
+    const redirect = streamDocumentRedirectUrl(APEX_ORIGIN, url)
+    if (redirect) url = new URL(redirect)
+  }
   const apexTriathlonRedirect = triathlonApexRedirectUrl(url)
   if (apexTriathlonRedirect) {
     window.location.assign(apexTriathlonRedirect)
@@ -1098,10 +1108,10 @@ async function navigate(url: URL, isBack: boolean = false) {
   }
   if (window.location.hostname === TRIATHLON_HOSTNAME) {
     url = new URL(triathlonHostLinkUrl(url.toString(), window.location.href))
-    if (url.origin !== window.location.origin) {
-      window.location.assign(url)
-      return
-    }
+  }
+  if (url.origin !== window.location.origin) {
+    window.location.assign(url)
+    return
   }
   const stackedContainer = document.getElementById('stacked-notes-container')
   if (stackedContainer?.classList.contains('active')) {
@@ -1188,6 +1198,11 @@ window.notifyNav = notifyNav
 
 document.addEventListener('nav', () => {
   transformHostInternalLinks(document)
+  const onContentMounted = (event: CustomEventMap['contentdecrypted']) => {
+    transformHostInternalLinks(event.detail.content)
+  }
+  document.addEventListener('contentdecrypted', onContentMounted)
+  window.addCleanup(() => document.removeEventListener('contentdecrypted', onContentMounted))
 })
 
 function createRouter() {

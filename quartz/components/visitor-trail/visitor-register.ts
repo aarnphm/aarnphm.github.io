@@ -75,7 +75,9 @@ export function mountVisitorRegister(root: HTMLElement, signal: AbortSignal) {
     const anchor = toggle.getBoundingClientRect()
     const bounds = panel.getBoundingClientRect()
     panel.style.left = `${Math.max(8, Math.min(view.innerWidth - bounds.width - 8, anchor.right - bounds.width))}px`
-    panel.style.top = `${Math.max(8, Math.min(view.innerHeight - bounds.height - 8, anchor.bottom + 6))}px`
+    // Hangs 4px under the 16px glyph centred in the toggle, as the weather panel does.
+    const below = anchor.top + anchor.height / 2 + 12
+    panel.style.top = `${Math.max(8, Math.min(view.innerHeight - bounds.height - 8, below))}px`
   }
   const show = () => {
     cancelClose()
