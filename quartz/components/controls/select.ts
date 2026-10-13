@@ -164,7 +164,7 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
       return
     }
     if (menu.hidden) return
-    const index = items.findIndex(item => item.button === root.ownerDocument.activeElement)
+    const index = items.findIndex(item => item.button === event.target)
     const next =
       event.key === 'Home'
         ? 0

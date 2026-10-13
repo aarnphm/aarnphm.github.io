@@ -12,7 +12,7 @@ export default (() => {
   const placeholder = 'sélectionnez une option...'
   const Palette: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (
     <div class={classNames(displayClass, 'palette')}>
-      <search id="palette-container">
+      <search id="palette-container" popover="manual">
         <div id="space">
           <div class="input-container">
             <input
