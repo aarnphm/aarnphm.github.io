@@ -161,16 +161,16 @@
     shape-rendering: crispEdges;
   }
   .trail-terrace {
-    fill: color-mix(in srgb, var(--lightgray) 18%, var(--light));
+    fill: var(--trail-field-0);
   }
   .trail-terrace-1 {
-    fill: color-mix(in srgb, var(--lightgray) 24%, var(--light));
+    fill: var(--trail-field-1);
   }
   .trail-terrace-2 {
-    fill: color-mix(in srgb, var(--gray) 9%, var(--light));
+    fill: var(--trail-field-2);
   }
   .trail-terrace-3 {
-    fill: color-mix(in srgb, var(--gray) 14%, var(--light));
+    fill: var(--trail-field-3);
   }
   .trail-meadow-tuft {
     fill: color-mix(in srgb, var(--gray) 36%, var(--light));

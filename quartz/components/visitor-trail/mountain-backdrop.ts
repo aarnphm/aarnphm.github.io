@@ -218,6 +218,25 @@ export function trailMountainBackdrop(
         y <= candidate.floor
       )
     })
+  const bleedDepth = Math.min(100, Math.max(48, (landscape.camp.y - alpine.base) * 0.24))
+  const lowlandBounds = { ...alpine, height: alpine.height + bleedDepth }
+  const scatterAt = (column: number, row: number, range: MountainRange) =>
+    trailRandom(
+      seed ^ Math.imul(column + 1, 374761393) ^ Math.imul(row + range.index * 31, 668265263),
+    )()
+  const apronAt = (worldX: number, worldY: number, column: number, row: number) =>
+    rangesInColumn(worldX, column).find(surface => {
+      if (surface.geology === 'alpine') return false
+      const foot = surface.range.base + (surface.floor - 350) / surface.verticalScale
+      const reach =
+        bleedDepth *
+        (0.6 + Math.sin(worldX / 73 + surface.range.phase) * 0.2 + Math.sin(worldX / 29) * 0.12)
+      const distance = worldY - foot
+      if (distance < 0 || distance >= reach) return false
+      // Rock fans thin into scattered stones and moss instead of ending at a level paint edge.
+      const cover = (1 - distance / reach) ** 1.5
+      return scatterAt(column, row, surface.range) < cover
+    })
   const ridge = pixelLayers(
     alpine,
     alpineTones,
@@ -249,11 +268,12 @@ export function trailMountainBackdrop(
   )
 
   const lowlands = pixelLayers(
-    alpine,
+    lowlandBounds,
     lowlandTones,
     'trail-mountain',
     (worldX, worldY, column, row) => {
-      const surface = surfaceAt(worldX, worldY, column, false)
+      const face = surfaceAt(worldX, worldY, column, false)
+      const surface = face ?? apronAt(worldX, worldY, column, row)
       if (!surface) return undefined
       const y = 350 + (worldY - surface.range.base) * surface.verticalScale
       const crestY = surface.range.base + (surface.crest - 350) / surface.verticalScale
@@ -263,14 +283,16 @@ export function trailMountainBackdrop(
         worldX,
         worldY,
         crestY,
-        t,
-        thresholdAt(column, row, surface.range),
+        face ? t : Math.min(0.9, t),
+        face
+          ? thresholdAt(column, row, surface.range)
+          : scatterAt(column + 3, row + 1, surface.range),
       )
     },
   )
 
   const foothills = pixelLayers(
-    alpine,
+    lowlandBounds,
     foothillTones,
     'trail-foothill',
     (worldX, worldY, column, row) => {
@@ -278,7 +300,12 @@ export function trailMountainBackdrop(
         const y = 350 + (worldY - candidate.range.base) * candidate.verticalScale
         return candidate.range.tier === 'foreground' && y >= candidate.far && y <= candidate.edge
       })
-      if (!surface) return undefined
+      if (!surface) {
+        const apron = apronAt(worldX, worldY, column, row)
+        if (!apron) return undefined
+        const threshold = scatterAt(column + 2, row + 1, apron.range)
+        return threshold < 0.1875 ? 'mid' : undefined
+      }
       const { range, far, near, edge } = surface
       const y = 350 + (worldY - range.base) * surface.verticalScale
       const threshold = thresholdAt(column + 2, row + 1, range)
@@ -323,7 +350,7 @@ export function trailMountainBackdrop(
         <g class="trail-alpine-climbers" aria-hidden="true"></g>
       </g>
       <g data-trail-depth="foothill">
-        <g data-formation="foothills" transform="${placement}">
+        <g data-formation="foothills" data-badlands-bleed="${coordinate(bleedDepth)}" transform="${placement}">
           ${lowlands}
           ${foothills}
         </g>

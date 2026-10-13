@@ -11,6 +11,7 @@ import {
   circleClearance,
   type CollisionActor,
 } from '../visitor-trail/actor-spacing'
+import { visibleTextBoxes } from './pet-text-boxes'
 
 // The garden's pet: the pen-drawn mascot, living on the page's edges. It perches on the nearest box
 // it can find (stands or sits with legs dangling on a top edge, hangs from a bottom edge) and stays
@@ -40,6 +41,7 @@ type State =
   | 'notice'
 type Kind = 'stand' | 'sit' | 'hang' | 'floor'
 type Point = { x: number; y: number }
+type HopPoint = Point & { scale: number }
 // An edge the pet holds: `t` is where its centre sits along the box's width, 0 to 1. The floor kind
 // has no box: the pet stands on its own pen line at the bottom of the viewport, the fallback when no
 // box nearby has an edge to hold.
@@ -56,7 +58,7 @@ type Perch = {
   drop?: number
 }
 type Edge = Perch & { at: Point; score: number }
-type TrailFoot = Point & { scale: number; progress: number; hidden?: boolean; handoff?: boolean }
+type TrailFoot = Point & { scale: number; progress: number }
 type TrailWalk = {
   path: SVGPathElement
   geometry: string
@@ -386,69 +388,55 @@ const campSolids = (): CollisionActor[] => {
 const trailSurfaces =
   '.homepage-board, .trail-tree-panel:not([hidden]), .trail-camp-tools:not([hidden])'
 
-// Keep the pet's whole SVG frame clear of text, including space for its tilt and idle poses.
-const coversText = (edge: Edge) => {
+const petObstacles = () => ({
+  text: visibleTextBoxes(document, root),
+  panels: [
+    ...document.querySelectorAll<HTMLElement>(trailSurfaces),
+    ...(trailScene(document)?.querySelectorAll<HTMLElement>(trailSurfaces) ?? []),
+  ].map(panel => panel.getBoundingClientRect()),
+  camps: campSolids(),
+})
+type PetObstacles = ReturnType<typeof petObstacles>
+
+// A snapshot lasts only for the synchronous search, so scrolling and DOM changes get fresh boxes.
+const coversText = (edge: Edge, obstacles = petObstacles()) => {
   const scale = edge.scale ?? 1
   const left = edge.at.x - (width * scale) / 2 - 2
   const right = edge.at.x + (width * scale) / 2 + 2
   const top = edge.at.y - (edgeY[edge.kind] - viewTop) * unit * scale - 2
   const bottom = top + height(scale) + 4
-  const intersects = (rect: DOMRect) =>
+  const intersects = (rect: { left: number; right: number; top: number; bottom: number }) =>
     rect.left < right && rect.right > left && rect.top < bottom && rect.bottom > top
-  for (const panel of [
-    ...document.querySelectorAll<HTMLElement>(trailSurfaces),
-    ...(trailScene(document)?.querySelectorAll<HTMLElement>(trailSurfaces) ?? []),
-  ])
-    if (intersects(panel.getBoundingClientRect())) return true
   const foot = { x: edge.at.x + window.scrollX, y: edge.at.y + window.scrollY }
-  if (campSolids().some(other => circleClearance(foot, width * 0.35 * scale, other) < 0))
-    return true
-  const nodes = document.createTreeWalker(
-    document.body,
-    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-    {
-      acceptNode: node => {
-        if (root?.contains(node)) return NodeFilter.FILTER_REJECT
-        if (node instanceof Element) {
-          if (node.matches('script, style, .trail-canvas')) return NodeFilter.FILTER_REJECT
-          const style = getComputedStyle(node)
-          if (style.display === 'none' || style.visibility === 'hidden')
-            return NodeFilter.FILTER_REJECT
-          const rect = node.getBoundingClientRect()
-          if (rect.width && rect.height && !intersects(rect)) return NodeFilter.FILTER_REJECT
-          return NodeFilter.FILTER_SKIP
-        }
-        return node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
-      },
-    },
+  return (
+    obstacles.panels.some(intersects) ||
+    obstacles.camps.some(other => circleClearance(foot, width * 0.35 * scale, other) < 0) ||
+    obstacles.text.some(intersects)
   )
-  const range = document.createRange()
-  for (let node = nodes.nextNode(); node; node = nodes.nextNode()) {
-    range.selectNodeContents(node)
-    for (const rect of range.getClientRects()) if (intersects(rect)) return true
-  }
-  return false
 }
 
 // Probes run with the pet hidden, so its own drawing never counts as the page's.
 function unseen<T>(probe: () => T): T {
+  // Probes nest (a landing asks where the friend would go), so each restores what it found.
+  const before = root?.style.visibility ?? ''
   if (root) root.style.visibility = 'hidden'
   try {
     return probe()
   } finally {
-    if (root) root.style.visibility = ''
+    if (root) root.style.visibility = before
   }
 }
 
 // The floor, too, keeps off text: a client point where the pet could stand on its own line.
 const floorStep = 16
 const floorY = () => window.innerHeight - margin - (viewBottom - edgeY.floor) * unit
-const floorClear = (x: number, y = floorY()) =>
-  !coversText({ el: null, kind: 'floor', t: 0, at: { x, y }, score: 0 })
+const floorClear = (x: number, y = floorY(), obstacles = petObstacles()) =>
+  !coversText({ el: null, kind: 'floor', t: 0, at: { x, y }, score: 0 }, obstacles)
 
 // Scan out both ways, then move up when a line of text blocks the whole floor.
-const floorNear = (x: number): Perch | null =>
+const floorNear = (x: number, fits?: (p: Perch) => boolean): Perch | null =>
   unseen<Perch | null>(() => {
+    const obstacles = petObstacles()
     const lo = margin + width / 2
     const hi = window.innerWidth - margin - width / 2
     const start = clamp(x, lo, hi)
@@ -456,35 +444,41 @@ const floorNear = (x: number): Perch | null =>
     const top = margin + (edgeY.floor - viewTop) * unit
     for (let y = bottom; y >= top; y -= floorStep)
       for (let k = 0; k * floorStep <= hi - lo; k++)
-        for (const c of k ? [start + k * floorStep, start - k * floorStep] : [start])
-          if (c >= lo && c <= hi && floorClear(c, y))
-            return {
-              el: null,
-              kind: 'floor',
-              t: c / window.innerWidth,
-              foot: y === bottom ? undefined : { x: c + window.scrollX, y: y + window.scrollY },
-            }
+        for (const c of k ? [start + k * floorStep, start - k * floorStep] : [start]) {
+          if (c < lo || c > hi || !floorClear(c, y, obstacles)) continue
+          const p: Perch = {
+            el: null,
+            kind: 'floor',
+            t: c / window.innerWidth,
+            foot: y === bottom ? undefined : { x: c + window.scrollX, y: y + window.scrollY },
+          }
+          if (!fits || fits(p)) return p
+        }
     return null
   })
 
 // How far along the floor from `from` toward `to` the pet can walk with text clear underfoot.
 const floorReach = (from: number, to: number) =>
   unseen(() => {
+    const obstacles = petObstacles()
     const dir = Math.sign(to - from)
     let x = from
-    while (Math.abs(to - x) > floorStep && floorClear(x + dir * floorStep)) x += dir * floorStep
-    return Math.abs(to - x) <= floorStep && floorClear(to) ? to : x
+    while (Math.abs(to - x) > floorStep && floorClear(x + dir * floorStep, floorY(), obstacles))
+      x += dir * floorStep
+    return Math.abs(to - x) <= floorStep && floorClear(to, floorY(), obstacles) ? to : x
   })
 
 // The first edge that is actually in view at the point the pet would hold, moves with the page,
 // and leaves the text around it clear.
-function pickEdge(anchor: Point, avoid: Element | null): Edge | null {
+function pickEdge(anchor: Point, avoid: Element | null, fits?: (p: Perch) => boolean): Edge | null {
   return unseen(() => {
+    const obstacles = petObstacles()
     for (const edge of edgesNear(anchor, avoid).slice(0, 20)) {
       const probe = edge.kind === 'hang' ? edge.at.y - 3 : edge.at.y + 3
       const hit = document.elementsFromPoint(edge.at.x, probe).find(e => !root?.contains(e))
       if (edge.kind === 'stand' && (!hit || !(edge.el === hit || edge.el!.contains(hit)))) continue
-      if (!inFlow(edge.el!) || coversText(edge)) continue
+      if (!inFlow(edge.el!) || coversText(edge, obstacles)) continue
+      if (fits && !fits(edge)) continue
       return edge
     }
     return null
@@ -556,7 +550,7 @@ const wander = () => {
   if (document.body.dataset.slides === 'true') return
   settled = now
   armQuietTimer()
-  if (trailWalk?.path.hasAttribute('data-pet-expedition')) {
+  if (trailWalk) {
     walkTrail()
     return
   }
@@ -622,23 +616,6 @@ const finite = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value)
 const pair = (value: unknown): value is ScaleStop =>
   Array.isArray(value) && value.length === 2 && finite(value[0]) && finite(value[1])
-const petHandoff = (path: SVGPathElement) => {
-  const value = trailData(path.dataset.petHandoff)
-  if (
-    !value ||
-    typeof value !== 'object' ||
-    !('at' in value) ||
-    !finite(value.at) ||
-    value.at <= 0 ||
-    value.at >= 1 ||
-    !('exit' in value) ||
-    !pair(value.exit) ||
-    !('entry' in value) ||
-    !pair(value.entry)
-  )
-    return null
-  return { at: value.at, exit: value.exit, entry: value.entry }
-}
 const petTerrain = (path: SVGPathElement): PetTerrain | null => {
   const raw =
     path.ownerSVGElement?.querySelector<SVGElement>('[data-trail-terrain]')?.dataset.trailTerrain
@@ -693,7 +670,7 @@ const trailScale = (
       const to = stops[index]
       if (position <= to[0]) {
         const fraction = clamp((position - from[0]) / Math.max(0.000001, to[0] - from[0]), 0, 1)
-        return from[1] + (to[1] - from[1]) * (index === 2 ? easeTrailDepth(fraction) : fraction)
+        return from[1] + (to[1] - from[1]) * fraction
       }
     }
     return stops[stops.length - 1][1]
@@ -707,26 +684,14 @@ const trailScale = (
     (point.y - terrain.treeline) / Math.max(1, terrain.meadowTop + 160 - terrain.treeline)
   return 0.35 + 0.65 * clamp(depth, 0, 1)
 }
-const trailKey = (path: SVGPathElement) => {
-  const opening =
-    path.ownerSVGElement?.querySelector<SVGPathElement>('[data-pet-expedition]')?.dataset
-      .petExpedition
-  return path.hasAttribute('data-pet-expedition')
-    ? `expedition:${path.dataset.petExpedition ?? ''}`
-    : `upper:${opening ?? ''}:${path.dataset.petWalkPath ?? ''}`
-}
+const trailKey = (path: SVGPathElement) => `expedition:${path.dataset.petExpedition ?? ''}`
 const petTrail = (element: Element | null): element is SVGPathElement =>
-  element instanceof SVGPathElement &&
-  element.matches('[data-pet-walk-path], [data-pet-expedition]')
+  element instanceof SVGPathElement && element.hasAttribute('data-pet-expedition')
 const currentTrailPath = (path: SVGPathElement) =>
   path.isConnected && !!path.getAttribute('d') && trailScene(document)?.contains(path) === true
 
-// The expedition's separate subpaths meet through a hidden screen-edge transfer.
-type TrailSample = { point: DOMPoint; progress: number; transfer?: 'exit' | 'enter' | 'resume' }
-const trailPoints = new WeakMap<
-  SVGPathElement,
-  { d: string; step: number; handoff: string | undefined; pts: TrailSample[] }
->()
+type TrailSample = { point: DOMPoint; progress: number }
+const trailPoints = new WeakMap<SVGPathElement, { d: string; step: number; pts: TrailSample[] }>()
 const trailRoutes = () => {
   const scene = trailScene(document)
   const host = scene && trailHost(scene)
@@ -737,100 +702,72 @@ const trailRoutes = () => {
     host.dataset.trailResizing === 'true'
   )
     return []
-  return Array.from(
-    scene.querySelectorAll<SVGPathElement>('[data-pet-walk-path], [data-pet-expedition]'),
-  ).flatMap(path => {
-    const d = path.getAttribute('d')
-    const m = trailScreenMatrix(path)
-    if (!d || !m) return []
-    const step = 4 / Math.max(Math.hypot(m.a, m.b), Math.hypot(m.c, m.d), 0.001)
-    const handoff = petHandoff(path)
-    let hit = trailPoints.get(path)
-    if (hit?.d !== d || hit.step !== step || hit.handoff !== path.dataset.petHandoff) {
-      const geometry = svgPathGeometry(path)
-      const length = geometry.getTotalLength()
-      const segments = Math.max(1, Math.ceil(length / step))
-      let pts = Array.from({ length: segments + 1 }, (_, k): TrailSample => {
-        const point = geometry.getPointAtLength((k * length) / segments)
-        return { point: new DOMPoint(point.x, point.y), progress: k / segments }
+  return Array.from(scene.querySelectorAll<SVGPathElement>('[data-pet-expedition]')).flatMap(
+    path => {
+      const d = path.getAttribute('d')
+      const m = trailScreenMatrix(path)
+      if (!d || !m) return []
+      const step = 4 / Math.max(Math.hypot(m.a, m.b), Math.hypot(m.c, m.d), 0.001)
+      let hit = trailPoints.get(path)
+      if (hit?.d !== d || hit.step !== step) {
+        const geometry = svgPathGeometry(path)
+        const length = geometry.getTotalLength()
+        const segments = Math.max(1, Math.ceil(length / step))
+        const pts = Array.from({ length: segments + 1 }, (_, k): TrailSample => {
+          const point = geometry.getPointAtLength((k * length) / segments)
+          return { point: new DOMPoint(point.x, point.y), progress: k / segments }
+        })
+        hit = { d, step, pts }
+        trailPoints.set(path, hit)
+      }
+      const stops = trailScaleStops(path)
+      const terrain = petTerrain(path)
+      const span = trailData(path.dataset.petAlpineSpan)
+      const base = path.ownerSVGElement ? trailScreenMatrix(path.ownerSVGElement) : null
+      const foothill = path.ownerSVGElement?.querySelector<SVGGElement>(
+        '[data-trail-depth="foothill"]',
+      )
+      const depth = foothill ? trailScreenMatrix(foothill) : null
+      const dx = base && depth ? depth.e - base.e : 0
+      const dy = base && depth ? depth.f - base.f : 0
+      // Capture parallax once for a compositor walk, blending beyond the mountain's boundaries.
+      const points = hit.pts
+      const feet = points.map(({ point: p, progress }): TrailFoot => {
+        const c = p.matrixTransform(m)
+        let blend = 0
+        if (pair(span) && span[1] > span[0] && progress >= span[0]) {
+          const edge = Math.min(0.015, (span[1] - span[0]) / 4)
+          blend = easeTrailDepth((span[1] + edge - progress) / edge)
+        }
+        return {
+          x: c.x + window.scrollX + dx * blend,
+          y: c.y + window.scrollY + dy * blend,
+          progress,
+          scale: trailScale(progress, p, stops, terrain),
+        }
       })
-      if (handoff) {
-        pts = [
-          ...pts.filter(sample => sample.progress < handoff.at),
-          { point: new DOMPoint(...handoff.exit), progress: handoff.at, transfer: 'exit' },
-          { point: new DOMPoint(...handoff.entry), progress: handoff.at, transfer: 'enter' },
-          { point: new DOMPoint(...handoff.entry), progress: handoff.at, transfer: 'resume' },
-          ...pts.filter(sample => sample.progress > handoff.at),
-        ]
-      }
-      hit = { d, step, handoff: path.dataset.petHandoff, pts }
-      trailPoints.set(path, hit)
-    }
-    const expedition = path.hasAttribute('data-pet-expedition')
-    const stops = expedition ? trailScaleStops(path) : []
-    const terrain = expedition ? petTerrain(path) : null
-    const span = trailData(path.dataset.petAlpineSpan)
-    const base = path.ownerSVGElement ? trailScreenMatrix(path.ownerSVGElement) : null
-    const foothill = path.ownerSVGElement?.querySelector<SVGGElement>(
-      '[data-trail-depth="foothill"]',
-    )
-    const depth = foothill ? trailScreenMatrix(foothill) : null
-    const dx = base && depth ? depth.e - base.e : 0
-    const dy = base && depth ? depth.f - base.f : 0
-    // Capture parallax once for a compositor walk, blending beyond the mountain's boundaries.
-    const points = hit.pts
-    const feet = points.map(({ point: p, progress, transfer }): TrailFoot => {
-      const c = p.matrixTransform(m)
-      let blend = 0
-      if (
-        expedition &&
-        pair(span) &&
-        span[1] > span[0] &&
-        progress >= span[0] &&
-        transfer !== 'exit'
-      ) {
-        const edge = Math.min(0.015, (span[1] - span[0]) / 4)
-        blend = easeTrailDepth((span[1] + edge - progress) / edge)
-      }
-      return {
-        x: c.x + window.scrollX + dx * blend,
-        y: c.y + window.scrollY + dy * blend,
-        progress,
-        scale:
-          transfer === 'enter' || transfer === 'resume'
-            ? 0.18
-            : expedition
-              ? trailScale(progress, p, stops, terrain)
-              : 1,
-        hidden: transfer === 'exit' || transfer === 'enter',
-        handoff: transfer === 'enter',
-      }
-    })
-    return [{ path, feet, expedition, key: trailKey(path) }]
-  })
+      return [{ path, feet, key: trailKey(path) }]
+    },
+  )
 }
 
 const trailGeometry = (path: SVGPathElement) => {
   if (!currentTrailPath(path)) return ''
   const m = trailScreenMatrix(path)
   if (!m) return ''
-  return `${path.getAttribute('d')}|${path.dataset.petScaleStops ?? ''}|${path.dataset.petAlpineSpan ?? ''}|${path.dataset.petHandoff ?? ''}|${m.a},${m.b},${m.c},${m.d},${m.e + window.scrollX},${m.f + window.scrollY}|${window.innerWidth},${window.innerHeight}`
+  return `${path.getAttribute('d')}|${path.dataset.petScaleStops ?? ''}|${path.dataset.petAlpineSpan ?? ''}|${m.a},${m.b},${m.c},${m.d},${m.e + window.scrollX},${m.f + window.scrollY}|${window.innerWidth},${window.innerHeight}`
 }
 
-const trailPointClear = (p: TrailFoot, path: SVGPathElement) => {
+const trailPointClear = (p: TrailFoot, path: SVGPathElement, obstacles: PetObstacles) => {
   const at = { x: p.x - window.scrollX, y: p.y - window.scrollY }
   const top = at.y - (edgeY.stand - viewTop) * unit * p.scale
-  const departure = petHandoff(path)
-  const right =
-    departure && p.progress <= departure.at
-      ? window.innerWidth + width
-      : window.innerWidth - margin - (width * p.scale) / 2
+  const right = window.innerWidth - margin - (width * p.scale) / 2
   return (
     at.x >= margin + (width * p.scale) / 2 &&
     at.x <= right &&
     top >= margin &&
     top + height(p.scale) <= window.innerHeight - margin &&
-    !coversText({ el: path, kind: 'stand', t: 0, at, score: 0, scale: p.scale })
+    !coversText({ el: path, kind: 'stand', t: 0, at, score: 0, scale: p.scale }, obstacles)
   )
 }
 
@@ -862,12 +799,8 @@ const trailActors = (scene: SVGSVGElement | null): CollisionActor[] => {
   }
   return actors
 }
-const visibleTrailRun = (): TrailRun | null => {
-  let best: TrailRun | null = null
-  const routes = trailRoutes().sort(
-    (left, right) => Number(right.expedition) - Number(left.expedition),
-  )
-  for (const { path, feet, expedition, key } of routes) {
+const visibleTrailRun = (obstacles: PetObstacles): TrailRun | null => {
+  for (const { path, feet, key } of trailRoutes()) {
     const actors = trailActors(path.ownerSVGElement)
     const cursor = trailJourney?.key === key ? trailJourney.progress : 0
     const runs: TrailRun[] = []
@@ -880,8 +813,8 @@ const visibleTrailRun = (): TrailRun | null => {
     }
     for (const foot of feet) {
       if (
-        (expedition && foot.progress < cursor) ||
-        !trailPointClear(foot, path) ||
+        foot.progress < cursor ||
+        !trailPointClear(foot, path, obstacles) ||
         (!run.length &&
           actors.some(other => circleClearance(foot, width * 0.35 * foot.scale, other) < 0))
       ) {
@@ -889,15 +822,13 @@ const visibleTrailRun = (): TrailRun | null => {
         continue
       }
       const previous = run[run.length - 1]
-      if (previous && !foot.handoff) length += Math.hypot(foot.x - previous.x, foot.y - previous.y)
+      if (previous) length += Math.hypot(foot.x - previous.x, foot.y - previous.y)
       run.push(foot)
     }
     finish()
-    if (expedition && runs.length) return runs[0]
-    if (expedition && trailJourney?.key === key && cursor > 0) return null
-    for (const candidate of runs) if (!best || candidate.length > best.length) best = candidate
+    if (runs.length) return runs[0]
   }
-  return best
+  return null
 }
 
 const currentTrailProgress = () => {
@@ -912,7 +843,6 @@ const trailFootAt = (current: TrailWalk, time: number): TrailFoot => {
   if (index <= 0) return current.feet[index === 0 ? 0 : current.feet.length - 1]
   const from = current.feet[index - 1]
   const to = current.feet[index]
-  if (to.handoff) return from
   const fraction =
     (elapsed - current.offsets[index - 1]) /
     Math.max(0.000001, current.offsets[index] - current.offsets[index - 1])
@@ -921,7 +851,6 @@ const trailFootAt = (current: TrailWalk, time: number): TrailFoot => {
     y: from.y + (to.y - from.y) * fraction,
     scale: from.scale + (to.scale - from.scale) * fraction,
     progress: from.progress + (to.progress - from.progress) * fraction,
-    hidden: from.hidden || to.hidden,
   }
 }
 let trailGuardTimer = 0
@@ -987,19 +916,6 @@ const guardTrail = (animation: Animation, path: SVGPathElement) => {
     const time = Number(animation.currentTime)
     const foot = trailFootAt(trailWalk, time)
     const next = trailFootAt(trailWalk, time + 150)
-    if (foot.hidden || next.hidden) {
-      reserveTrailFoot(path, foot)
-      if (trailActor) trailActor.dataset.collisionActive = 'false'
-      root.dataset.trailGuard = 'transfer'
-      root.dataset.yieldingTo = ''
-      if (animation.playState === 'paused') {
-        override = { state: 'walk', until: Infinity }
-        animation.play()
-        render()
-      }
-      trailGuardTimer = window.setTimeout(check, 50)
-      return
-    }
     const actors = trailActors(path.ownerSVGElement)
     const animal = animalInWay(
       foot,
@@ -1109,18 +1025,58 @@ const leaveTrail = () => {
   render()
 }
 
-// Resume the connected expedition ahead of its cursor, or use a clear upper loop.
-const walkTrail = () => {
+function hopArc(
+  from: Point,
+  to: Point,
+  fromScale: number,
+  toScale: number,
+): [HopPoint, HopPoint, HopPoint] {
+  const distance = Math.hypot(to.x - from.x, to.y - from.y)
+  const peak = Math.min(
+    180,
+    50 + distance * 0.3,
+    Math.max(0, Math.min(from.y, to.y) - window.scrollY),
+  )
+  return [
+    { ...from, scale: fromScale },
+    { x: (from.x + to.x) / 2, y: Math.min(from.y, to.y) - peak, scale: (fromScale + toScale) / 2 },
+    { ...to, scale: toScale },
+  ]
+}
+
+function trailHopClear(next: Perch, obstacles: PetObstacles) {
+  if (!doc || doc.y < window.scrollY || doc.y > window.scrollY + window.innerHeight) return false
+  const target = placeOn(next)
+  if (Math.hypot(target.x - doc.x, target.y - doc.y) > 900) return false
+  const arc = hopArc(doc, target, perch?.scale ?? 1, next.scale ?? 1)
+  for (let segment = 1; segment < arc.length; segment++) {
+    const from = arc[segment - 1]
+    const to = arc[segment]
+    const count = Math.max(1, Math.ceil(Math.hypot(to.x - from.x, to.y - from.y) / 6))
+    for (let index = 0; index <= count; index++) {
+      const fraction = index / count
+      const scale = from.scale + (to.scale - from.scale) * fraction
+      const at = {
+        x: from.x + (to.x - from.x) * fraction + (width * scale) / 2 - window.scrollX,
+        y:
+          from.y +
+          (to.y - from.y) * fraction +
+          (edgeY.stand - viewTop) * unit * scale -
+          window.scrollY,
+      }
+      if (coversText({ ...next, kind: 'stand', scale, at, score: 0 }, obstacles)) return false
+    }
+  }
+  return true
+}
+
+// Resume the current alpine descent ahead of its cursor.
+const walkTrail = (obstacles = petObstacles()) => {
   if (!root || hop || carry || reducedMotion() || document.hidden) return false
-  const best = visibleTrailRun()
+  const best = visibleTrailRun(obstacles)
   if (!best) return false
   const { path, feet } = best
-  let route = feet
-  if (!path.hasAttribute('data-pet-expedition') && perch?.el === path && perch.foot) {
-    const foot = perch.foot
-    const k = feet.findIndex(p => Math.hypot(p.x - foot.x, p.y - foot.y) < 8)
-    if (k >= 0) route = feet.slice(k)
-  }
+  const route = feet
   if (route.length < 11) return false
   trailWalk = { path, geometry: trailGeometry(path), feet: route, duration: 0, offsets: [] }
   const walk = () => {
@@ -1141,11 +1097,15 @@ const walkTrail = () => {
   if (perch?.foot && Math.hypot(perch.foot.x - start.x, perch.foot.y - start.y) < 12) walk()
   else {
     afterMove = walk
-    // An entry hop could cross prose. Fade onto the checked start before the walking animation.
-    moveTo(
-      { el: path, kind: 'stand', t: 0, foot: start, scale: start.scale, progress: start.progress },
-      'fade',
-    )
+    const next: Perch = {
+      el: path,
+      kind: 'stand',
+      t: 0,
+      foot: start,
+      scale: start.scale,
+      progress: start.progress,
+    }
+    moveTo(next, trailHopClear(next, obstacles) ? null : 'fade')
   }
   return true
 }
@@ -1168,11 +1128,7 @@ function follow(feet: TrailFoot[], el: SVGPathElement) {
     const previous = feet[k - 1]
     const point = feet[k]
     const scale = (point.scale + previous.scale) / 2
-    duration += point.handoff
-      ? 450
-      : previous.hidden && !point.hidden
-        ? 180
-        : (Math.hypot(point.x - previous.x, point.y - previous.y) / (55 * scale)) * 1000
+    duration += (Math.hypot(point.x - previous.x, point.y - previous.y) / (55 * scale)) * 1000
     times.push(duration)
   }
   const offsets = times.map(time => time / Math.max(1, duration))
@@ -1185,8 +1141,6 @@ function follow(feet: TrailFoot[], el: SVGPathElement) {
         placeOn({ el, kind: 'stand', t: 0, foot, scale: foot.scale }),
         foot.scale,
       ),
-      opacity: foot.hidden ? 0 : 1,
-      easing: feet[index + 1]?.handoff ? 'steps(1, end)' : 'linear',
       offset: offsets[index],
     })),
     { duration, easing: 'linear' },
@@ -1322,6 +1276,7 @@ function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | null = null) {
   gaze = ''
   const target = placeOn(next)
   const from = doc
+  const fromScale = perch?.scale ?? 1
   const same = !!from && perch?.el === next.el && perch?.kind === next.kind && next.kind !== 'hang'
   perch = next
   doc = target
@@ -1396,18 +1351,11 @@ function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | null = null) {
     frames = [{ transform: transformFor(from) }, { transform: end }]
     duration = clamp((d / (how === 'stroll' ? 60 : 160)) * 1000, 300, 4800)
   } else {
-    // The arc stays in view, so a hop up to an edge near the top does not leave the screen.
-    const peak = Math.min(
-      180,
-      50 + d * 0.3,
-      Math.max(0, Math.min(from.y, target.y) - window.scrollY),
-    )
-    const mid = { x: (from.x + target.x) / 2, y: Math.min(from.y, target.y) - peak }
-    frames = [
-      { transform: transformFor(from), easing: 'cubic-bezier(0.3, 0.6, 0.5, 1)' },
-      { transform: transformFor(mid), offset: 0.5, easing: 'cubic-bezier(0.5, 0, 0.7, 0.4)' },
-      { transform: end },
-    ]
+    frames = hopArc(from, target, fromScale, next.scale ?? 1).map((point, index) => ({
+      transform: transformFor(point, point.scale),
+      offset: index / 2,
+      easing: index === 0 ? 'cubic-bezier(0.3, 0.6, 0.5, 1)' : 'cubic-bezier(0.5, 0, 0.7, 0.4)',
+    }))
     duration = clamp(320 + d * 0.45, 380, 900)
   }
   const walking = how !== 'fade' && !jet && !chute && frames.length === 2 && !offscreen && d <= 900
@@ -1471,11 +1419,33 @@ const slidesPerch = (): Perch | 'covered' | null => {
   return unseen(() => coversText({ ...p, at, score: 0 })) ? 'covered' : p
 }
 
+// The page changed under a perched pet: if its edge went away or text now sits under it, it finds
+// another edge.
+function recheckPerch() {
+  if (!root || !perch || !doc || hop || carry || petTrail(perch.el)) return
+  const scale = perch.scale ?? 1
+  const at = {
+    x: doc.x - window.scrollX + (width * scale) / 2,
+    y: doc.y - window.scrollY + (edgeY[perch.kind] - viewTop) * unit * scale,
+  }
+  const gone = !!perch.el && !perch.el.getClientRects().length
+  if (gone || unseen(() => coversText({ ...perch!, at, score: 0 })))
+    relocate(center(), gone ? null : perch.el)
+}
+
 function relocate(anchor: Point, avoid: Element | null, how: 'chute' | null = null) {
   if (!root) return
   const slides = slidesPerch()
+  // On the friendship page it lands where the friend fits too, beside it, on its head or along its
+  // edge; only when no perch near has that room does it take one the friend has to sit out.
+  const fits = friend && friendPage() ? (p: Perch) => !!friendSpot(p, placeOn(p), false) : undefined
   const next =
-    slides === 'covered' ? null : (slides ?? pickEdge(anchor, avoid) ?? floorNear(anchor.x))
+    slides === 'covered'
+      ? null
+      : (slides ??
+        (fits && (pickEdge(anchor, avoid, fits) ?? floorNear(anchor.x, fits))) ??
+        pickEdge(anchor, avoid) ??
+        floorNear(anchor.x))
   if (next) moveTo(next, how)
   else {
     root.hidden = true
@@ -1871,14 +1841,21 @@ function friendWatch() {
 }
 
 // Where the friend goes when the pet holds `p` from `m` (its top-left in document coordinates):
-// the same edge, shoulder to shoulder, on its usual side if that side has room and no text.
-function friendSpot(p: Perch, m: Point): { perch: Perch; doc: Point } | null {
+// the same edge, shoulder to shoulder, on its usual side if that side has room and no text. With
+// `far` off it stays on the pet's own edge or head, which is what a landing asks for.
+function friendSpot(p: Perch, m: Point, far = true): { perch: Perch; doc: Point } | null {
+  let obstacles: PetObstacles | undefined
+  const covered = (edge: Edge) => coversText(edge, (obstacles ??= petObstacles()))
   const s = p.scale ?? 1
   const fs = s * friendSize
   const mainX = m.x - window.scrollX + (width * s) / 2
   const gap = 0.38 * width * (s + fs)
   const beside = (side: number, off: number) => {
     const x = mainX + side * (gap + off)
+    // placeOn holds a box or floor spot inside the view but takes a foot as given, so a foot past
+    // the view's side is caught here.
+    const half = (width * fs) / 2
+    if (x < margin + half - 2 || x > window.innerWidth - margin - half + 2) return null
     let perch: Perch
     if (p.foot) perch = { ...p, foot: { x: p.foot.x + side * (gap + off), y: p.foot.y }, scale: fs }
     else if (p.el) {
@@ -1892,7 +1869,7 @@ function friendSpot(p: Perch, m: Point): { perch: Perch; doc: Point } | null {
     // Held back into the view, it would crowd the pet.
     if (Math.abs(cx - x) > 2) return null
     const foot = at.y - window.scrollY + (edgeY[perch.kind] - viewTop) * unit * fs
-    if (coversText({ ...perch, at: { x: cx, y: foot }, score: 0 })) return null
+    if (covered({ ...perch, at: { x: cx, y: foot }, score: 0 })) return null
     friendSide = side
     return { perch, doc: at }
   }
@@ -1907,7 +1884,7 @@ function friendSpot(p: Perch, m: Point): { perch: Perch; doc: Point } | null {
       scale: fs,
     }
     const top = head.y - (edgeY.stand - viewTop) * unit * fs
-    if (top < margin || coversText({ ...perch, at: head, score: 0 })) return null
+    if (top < margin || covered({ ...perch, at: head, score: 0 })) return null
     return { perch, doc: placeOn(perch) }
   }
   // Boxed in by text, it takes the nearest clear edge a short way off, out of the pet's way.
@@ -1944,7 +1921,7 @@ function friendSpot(p: Perch, m: Point): { perch: Perch; doc: Point } | null {
             t: (x - rect.left) / rect.width,
             scale: fs,
           }
-          if (coversText({ ...perch, at: { x, y: edge.at.y }, score: 0 })) continue
+          if (covered({ ...perch, at: { x, y: edge.at.y }, score: 0 })) continue
           return { perch, doc: placeOn(perch) }
         }
     }
@@ -1963,7 +1940,7 @@ function friendSpot(p: Perch, m: Point): { perch: Perch; doc: Point } | null {
         const spot = beside(side, off)
         if (spot) return spot
       }
-    return nearby()
+    return far ? nearby() : null
   }
   if (friend) friend.style.visibility = 'hidden'
   try {
@@ -2353,12 +2330,13 @@ document.addEventListener('nav', () => {
     // the end. A walk whose route has moved or gone stops at once, before the rendered check, so
     // the pet does not keep hopping along a path that is no longer there; it resumes on the new
     // route once the scene is ready.
+    const obstacles = petObstacles()
     const currentTrail = trailWalk
     if (
       currentTrail &&
       (!currentTrailPath(currentTrail.path) ||
         currentTrail.geometry !== trailGeometry(currentTrail.path) ||
-        currentTrail.feet.some(foot => !trailPointClear(foot, currentTrail.path)))
+        currentTrail.feet.some(foot => !trailPointClear(foot, currentTrail.path, obstacles)))
     ) {
       pauseTrail()
       trailWanted = true
@@ -2377,14 +2355,15 @@ document.addEventListener('nav', () => {
       void current.finished.then(ready, ready)
       return
     }
-    if (walkTrail()) {
+    if (walkTrail(obstacles)) {
       trailWanted = false
       return
     }
     const resting = trailWalk
     if (
       resting &&
-      (!currentTrailPath(resting.path) || !trailPointClear(resting.feet[0], resting.path))
+      (!currentTrailPath(resting.path) ||
+        !trailPointClear(resting.feet[0], resting.path, obstacles))
     ) {
       const anchor = center()
       const next = pickEdge(anchor, resting.path) ?? floorNear(anchor.x)
@@ -2444,24 +2423,11 @@ document.addEventListener('nav', () => {
       })
       paths.observe(trail, { attributes: true, attributeFilter: ['data-trail-rendered'] })
       if (canvas) paths.observe(canvas, { childList: true })
-      const walks = trail.querySelector('[data-pet-walk-paths]')
-      if (walks)
-        paths.observe(walks, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ['d'],
-        })
       const expedition = trail.querySelector('[data-pet-expedition]')
       if (expedition)
         paths.observe(expedition, {
           attributes: true,
-          attributeFilter: [
-            'd',
-            'data-pet-handoff',
-            'data-pet-scale-stops',
-            'data-pet-alpine-span',
-          ],
+          attributeFilter: ['d', 'data-pet-scale-stops', 'data-pet-alpine-span'],
         })
     }
     scene.addEventListener('trail:mounted', watchPaths, { signal })
@@ -2587,11 +2553,7 @@ document.addEventListener('nav', () => {
         scrollTimer = window.setTimeout(onSettle, 220)
         return
       }
-      if (
-        trailWalk?.path.hasAttribute('data-pet-expedition') ||
-        trailJourney?.key.startsWith('expedition:')
-      )
-        trailWanted = true
+      if (trailWalk || trailJourney) trailWanted = true
       landAfterJet = false
       if (!carry) startCarry()
       else if (root && !scrollTimeline) root.style.translate = `0 ${railY(carry).toFixed(1)}px`
@@ -2670,19 +2632,28 @@ document.addEventListener('nav', () => {
     render()
     // The text reflows into the freed width, under the pet as often as not; once it has settled,
     // a pet whose edge went away or now covers text finds another.
-    reflowTimer = window.setTimeout(() => {
-      if (!root || !perch || !doc || hop || carry || petTrail(perch.el)) return
-      const scale = perch.scale ?? 1
-      const at = {
-        x: doc.x - window.scrollX + (width * scale) / 2,
-        y: doc.y - window.scrollY + (edgeY[perch.kind] - viewTop) * unit * scale,
-      }
-      const gone = !!perch.el && !perch.el.getClientRects().length
-      if (gone || unseen(() => coversText({ ...perch!, at, score: 0 })))
-        relocate(center(), gone ? null : perch.el)
-    }, 300)
+    reflowTimer = window.setTimeout(recheckPerch, 300)
   }
   document.addEventListener('readermodechange', onReaderMode)
+  // Content that lands after the pet has perched (a course page's hydrated rows, the lecture
+  // workspace bar) or text that reflows once the web fonts load can end up under it. For the page's
+  // first seconds, the perch is re-checked once the page goes quiet; the pet's own nodes don't count.
+  let lateTimer: number | undefined
+  // A pet still hopping onto its first edge is checked once it lands.
+  const recheckSoon = (ms = 400) => {
+    clearTimeout(lateTimer)
+    lateTimer = window.setTimeout(() => (hop ? recheckSoon(200) : recheckPerch()), ms)
+  }
+  const late = new MutationObserver(records => {
+    const outside = records.some(r => {
+      const el = r.target instanceof Element ? r.target : r.target.parentElement
+      return !el?.closest('.garden-pet, .pet-ground, .garden-pet-heart')
+    })
+    if (outside) recheckSoon()
+  })
+  late.observe(document.body, { childList: true, subtree: true })
+  const lateStop = window.setTimeout(() => late.disconnect(), 5000)
+  void document.fonts?.ready.then(() => recheckSoon())
   // Each slide brings its own text, which may now sit under the presenting pet (or clear it).
   let slideTimer: number | undefined
   const onSlide = () => {
@@ -2707,6 +2678,9 @@ document.addEventListener('nav', () => {
     document.removeEventListener('readermodechange', onReaderMode)
     clearTimeout(readingTimer)
     clearTimeout(reflowTimer)
+    late.disconnect()
+    clearTimeout(lateStop)
+    clearTimeout(lateTimer)
     document.removeEventListener('slidechange', onSlide)
     document.removeEventListener('contentdecrypted', onSlide)
     clearTimeout(slideTimer)

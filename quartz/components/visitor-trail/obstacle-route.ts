@@ -166,7 +166,9 @@ export function replanOccupiedWaypoints(
     other => other.id === waitingForAnimal && other.kind === 'animal' && other.resting,
   )
   if (waitingForAnimal && !restingAnimal) return null
-  const blockers = others.filter(other => circleClearance(goal, radius, other) < 0)
+  const blockers = others.filter(
+    other => circleClearance(goal, radius, other) < 0 || !canMove(from, goal, radius, [other]),
+  )
   if (
     !restingAnimal &&
     (!blockers.length ||

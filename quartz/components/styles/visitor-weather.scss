@@ -2,9 +2,10 @@
 @use './homepage-precipitation.scss';
 
 .visitor-weather {
+  --weather-edge: 1rem;
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  top: var(--weather-edge);
+  right: var(--weather-edge);
   z-index: var(--z-dropdown);
 }
 
@@ -39,7 +40,8 @@
   // Keep the closed map measurable so its tiles render before the first hover.
   display: block;
   position: fixed;
-  inset: 4rem 4.25rem auto auto;
+  // Hangs 4px under the 16px glyph centred in the 44px toggle, flush with the toggle's right edge.
+  inset: calc(var(--weather-edge) + 34px) var(--weather-edge) auto auto;
   width: min(13.5rem, calc(100vw - 5rem));
   max-height: calc(100dvh - 5rem);
   overflow-y: auto;
@@ -273,10 +275,6 @@
 
 @media (max-width: 600px) {
   .visitor-weather {
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-  .visitor-weather-panel {
-    inset: 3.5rem 3.75rem auto auto;
+    --weather-edge: 0.5rem;
   }
 }

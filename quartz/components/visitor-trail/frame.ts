@@ -535,6 +535,36 @@ const drawScene = async () => {
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
   svg.querySelector('[data-trail-clear]')?.setAttribute('d', layout.clear)
   svg.querySelector('[data-trail-backdrop-clear]')?.setAttribute('d', layout.backdropClear)
+  const clockGround = document.querySelector<HTMLElement>('.trail-clock-ground')
+  if (clockGround && layout.clockRegion) {
+    const region = layout.clockRegion
+    const bounds = scene.getBoundingClientRect()
+    const x = (region.left + region.right) / 2 - bounds.left
+    const stops = ['var(--light) 0px']
+    let color = 'var(--light)'
+    for (const [index, contour] of layout.landscape.contours.entries()) {
+      let ground = contour[0].y
+      for (const point of contour) {
+        if (point.x > x) break
+        ground = point.y
+      }
+      const offset = Math.max(
+        0,
+        Math.min(region.bottom - region.top, ground + bounds.top - region.top),
+      )
+      stops.push(`${color} ${offset}px`)
+      color = `var(--trail-field-${index})`
+      stops.push(`${color} ${offset}px`)
+    }
+    stops.push(`${color} 100%`)
+    Object.assign(clockGround.style, {
+      left: `${region.left}px`,
+      top: `${region.top}px`,
+      width: `${region.right - region.left}px`,
+      height: `${region.bottom - region.top}px`,
+      backgroundImage: `linear-gradient(to bottom, ${stops.join(',')})`,
+    })
+  }
   clearSignature = clearance
   if (signature === layoutSignature) return
   cancelRendering()
@@ -687,7 +717,6 @@ const drawScene = async () => {
     petPath.dataset.petExpedition = String(sceneSeed)
     petPath.dataset.petScaleStops = JSON.stringify(expedition.scaleStops)
     petPath.dataset.petAlpineSpan = JSON.stringify(expedition.alpineSpan)
-    petPath.dataset.petHandoff = JSON.stringify(expedition.handoff)
     petPath.dataset.petMountainTrack = expedition.mountainTrack
     petPath.dataset.petValleyRoute = expedition.valleyRoute
   } else {
@@ -717,9 +746,13 @@ const drawScene = async () => {
   if (!(await yieldRender(renderSignal))) return
   const routes = journeyRoutes()
   community.update(layout.landscape, sceneSeed, camps, routes)
+  if (!(await yieldRender(renderSignal))) return
   visitorJourneys.update(routes, layout.landscape, sceneSeed, camps)
+  if (!(await yieldRender(renderSignal))) return
   parkPatrol.update(layout.landscape, sceneSeed, routes, travelers.rangers)
+  if (!(await yieldRender(renderSignal))) return
   journey.update(routes, layout.landscape, sceneSeed, travelers.walkers > 0)
+  if (!(await yieldRender(renderSignal))) return
   readerJourneys.update(
     routes,
     layout.landscape,
@@ -727,9 +760,12 @@ const drawScene = async () => {
     Math.max(0, travelers.walkers - 1),
     navigationBodies,
   )
+  if (!(await yieldRender(renderSignal))) return
   holidays.draw(layout.landscape, geometries, sceneSeed, camps)
   pastureJourneys.update(layout.landscape, sceneSeed)
+  if (!(await yieldRender(renderSignal))) return
   alpineJourneys.update(layout.landscape, sceneSeed, travelers.climbers, travelers.alpinists)
+  if (!(await yieldRender(renderSignal))) return
   perspective.update()
   weather.update(layout.landscape, sceneSeed)
   groundDepth.refresh()

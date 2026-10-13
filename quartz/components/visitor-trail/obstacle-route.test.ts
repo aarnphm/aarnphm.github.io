@@ -105,6 +105,44 @@ test('walk around a pet covering the next waypoint without entering its body', (
     assert.ok(sweptClearance(road[index - 1], road[index], pet, 12) >= 1.99)
 })
 
+test('replan a blocked camp passage when the next waypoint is clear', () => {
+  const from = { x: 10, y: 95 }
+  const waypoints = [
+    { x: 190, y: 95 },
+    { x: 190, y: 150 },
+  ]
+  const obstacles = [
+    { id: 'hearth', kind: 'trunk', x: 95, y: 95, radius: 16 },
+    { id: 'tent', kind: 'trunk', x: 118, y: 78, radius: 16 },
+  ] satisfies CollisionActor[]
+  const bounds = { left: 0, right: 220, top: 0, bottom: 200 }
+  const points = replanOccupiedWaypoints('park-ranger-0', from, waypoints, 18, obstacles, bounds)
+  assert.ok(points)
+  assert.deepEqual(points.at(-1), waypoints.at(-1))
+  assert.ok(points.some(point => Math.abs(point.y - from.y) > 25))
+  const road = [from, ...points]
+  for (let index = 1; index < road.length; index++)
+    for (const obstacle of obstacles)
+      assert.ok(sweptClearance(road[index - 1], road[index], obstacle, 18) >= 1.99)
+})
+
+test('walk around a stationary traveler between clear waypoints', () => {
+  const from = { x: 20, y: 100 }
+  const goal = { x: 180, y: 100 }
+  const reader: CollisionActor = { id: 'reader-0', kind: 'traveler', x: 100, y: 100, radius: 12 }
+  const points = replanOccupiedWaypoints('park-ranger-0', from, [goal], 18, [reader], {
+    left: 0,
+    right: 200,
+    top: 0,
+    bottom: 200,
+  })
+  assert.ok(points)
+  assert.deepEqual(points.at(-1), goal)
+  const road = [from, ...points]
+  for (let index = 1; index < road.length; index++)
+    assert.ok(sweptClearance(road[index - 1], road[index], reader, 18) >= 1.99)
+})
+
 test('retain animal right-of-way when an animal covers the next waypoint', () => {
   const animal: CollisionActor = { id: 'animal-cow-0', kind: 'animal', x: 100, y: 100, radius: 18 }
   assert.equal(
@@ -116,6 +154,17 @@ test('retain animal right-of-way when an animal covers the next waypoint', () =>
         { x: 150, y: 100 },
       ],
       12,
+      [animal],
+      { left: 0, right: 200, top: 0, bottom: 200 },
+    ),
+    null,
+  )
+  assert.equal(
+    replanOccupiedWaypoints(
+      'park-ranger-0',
+      { x: 20, y: 100 },
+      [{ x: 180, y: 100 }],
+      18,
       [animal],
       { left: 0, right: 200, top: 0, bottom: 200 },
     ),
