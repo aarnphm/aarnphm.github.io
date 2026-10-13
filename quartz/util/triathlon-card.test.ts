@@ -2,6 +2,7 @@ import type { Element, ElementContent } from 'hast'
 import { toHtml } from 'hast-util-to-html'
 import { h, s } from 'hastscript'
 import assert from 'node:assert/strict'
+import { mkdir, writeFile } from 'node:fs/promises'
 import test from 'node:test'
 import type { CriticalPowerEstimate } from '../plugins/stores/critical-power'
 import type { GarminRunWalkSegment, GarminSleepSummary } from '../plugins/stores/garmin'
@@ -2420,10 +2421,7 @@ test('renders one metric per row and lists contributing recordings in the source
   assert.deepEqual(renderedRows, rows)
   const computerIndex = rows.findIndex(([label]) => label === 'computer')
   assert.ok(computerIndex >= 0)
-  assert.deepEqual(rows.slice(computerIndex + 1, computerIndex + 3), [
-    ['source', 'Garmin'],
-    ['activity', 'virtual'],
-  ])
+  assert.deepEqual(rows.slice(computerIndex + 1), [['source', 'Garmin']])
   assert.equal(rows.filter(([label]) => label === 'distance').length, 1)
   assert.equal(rows.filter(([label]) => label === 'NP').length, 1)
   assert.equal(rows.filter(([label]) => label === 'TSS').length, 1)
@@ -8522,6 +8520,44 @@ test('bridges zero-power pedal balance ranges with dotted left and right traces'
   )
   assert.equal(byClass(chart, 'tri-power-balance-line--left').length, 2)
   assert.equal(byClass(chart, 'tri-power-balance-line--right').length, 2)
+})
+test('renders cycling dynamics with an empty route and a finite activity distance domain', async () => {
+  const artifacts = 'docs/verification/plugin-fallbacks/artifacts/browser/cycling-dynamics'
+  await mkdir(artifacts, { recursive: true })
+  for (const distanceKm of [30, 0]) {
+    const ride = { ...cyclingDynamicsDetail(), route: [], mapRoute: [], distanceKm }
+    await writeFile(`${artifacts}/input-${distanceKm}.json`, JSON.stringify(ride, null, 2))
+    const rendered = buildActivity(factory, ride, true)
+    for (const metric of [
+      'torque-effectiveness',
+      'pedal-smoothness',
+      'power-phase',
+      'rider-position',
+    ]) {
+      const chart = byClass(rendered, `tri-${metric}-chart`)[0]
+      assert.ok(chart, `${metric} remains available without a route`)
+      const svg = byClass(chart, `tri-${metric}-svg`)[0]
+      assert.ok(svg)
+      const viewBox = String(svg.properties.viewBox).split(' ').map(Number)
+      assert.equal(viewBox.length, 4)
+      assert.ok(viewBox.every(Number.isFinite))
+      assert.ok(viewBox[2] > 0)
+      assert.equal(svg.properties.dataDomainStartDistanceKm, 0)
+      if (distanceKm > 0) assert.equal(svg.properties.dataDomainEndDistanceKm, distanceKm)
+      assert.doesNotMatch(toHtml(chart), /NaN|Infinity/)
+    }
+    await writeFile(`${artifacts}/activity-${distanceKm}.html`, toHtml(rendered))
+  }
+
+  const ride = { ...cyclingDynamicsDetail(), route: [], mapRoute: [] }
+  const domain = { startDistanceKm: 10, endDistanceKm: 20 }
+  const chart = buildTorqueEffectivenessChart(factory, ride, null, false, domain)
+  assert.ok(chart)
+  const svg = byClass(chart, 'tri-torque-effectiveness-svg')[0]
+  assert.equal(svg.properties.dataDomainStartDistanceKm, domain.startDistanceKm)
+  assert.equal(svg.properties.dataDomainEndDistanceKm, domain.endDistanceKm)
+  assert.doesNotMatch(toHtml(chart), /NaN|Infinity/)
+  await writeFile(`${artifacts}/selected.html`, toHtml(chart))
 })
 test('renders cycling dynamics and rider position immediately below pedal balance', () => {
   const ride = cyclingDynamicsDetail()

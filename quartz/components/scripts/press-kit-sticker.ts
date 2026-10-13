@@ -1,10 +1,5 @@
-import type {
-  ActivityCardChart,
-  ActivityCardData,
-  ActivityCardStat,
-} from '../../util/press-kit-activity'
-import type { Locale } from '../../util/triathlon-presentation'
-import { triLabel, triText } from '../../util/triathlon-i18n'
+import type { ActivityCardData, ActivityCardStat } from '../../util/press-kit-activity'
+import { triLabel } from '../../util/triathlon-i18n'
 import {
   FORMATS,
   cardResolution,
@@ -14,336 +9,15 @@ import {
   type Palette,
   type Fonts,
 } from './press-kit-card'
+import { paintTrainingChart, trainingCharts, trainingChartWeight } from './press-kit-chart'
 import { cardBlockDisplay, type BlockDisplay, type TrainingCardBlock } from './press-kit-day'
 import { cardLocale } from './press-kit-i18n'
 import { svgLayer, type LayerRenderer } from './press-kit-layers'
 import { cardRoute, routeSvg } from './press-kit-route'
-import { node, createSvgText, graphic, sportIcon, svgImage } from './press-kit-svg'
+import { node, createSvgText, graphic, sportIcon } from './press-kit-svg'
 import { cardDate, runsToPlain } from './press-kit-text'
 
 const ORANGE = '#fc4c02'
-
-interface ChartTypography {
-  width: number
-  columnWidth: number
-  columns: number
-  size: number
-  labelSize: number
-}
-
-interface ChartRenderOptions {
-  renderers?: Map<string, LayerRenderer>
-  typography?: ChartTypography
-  color?: string
-}
-
-export function paintTrainingChart(
-  parent: SVGElement,
-  chart: ActivityCardChart,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  ink: string,
-  fonts: Fonts,
-  scale: number,
-  locale: Locale = cardLocale(),
-  options?: ChartRenderOptions,
-): void {
-  const svgText = createSvgText(fonts, scale)
-  const { text, measure } = svgText
-  const points = chart.points.filter(point => point.y != null)
-  if (!points.length) return
-  const zones = chart.key === 'runPace'
-  const columns =
-    chart.key === 'runLaps'
-      ? 1
-      : (options?.typography?.columns ??
-        (chart.kind === 'bars' && !zones && points.length > 8 && width / height > 3 ? 2 : 1))
-  const rows = Math.ceil(points.length / columns)
-  const size = options?.typography?.size ?? Math.min(width / 30, height / 10)
-  const gap = size * 1.5
-  const columnWidth = (width - (columns - 1) * gap) / columns
-  const rowHeight = (height - size * 3) / rows
-  const labelSize =
-    options?.typography?.labelSize ?? Math.min(size * 0.8, rowHeight * (columns > 1 ? 0.65 : 0.55))
-  const textWidthRatio = (options?.typography?.columnWidth ?? columnWidth) / columnWidth
-  // Fit against the original text slots while the chart's geometric slots change size.
-  const fitText: typeof svgText.fitText = (...args) => {
-    args[4] *= textWidthRatio
-    svgText.fitText(...args)
-  }
-  const fitValue: typeof svgText.fitValue = (...args) => {
-    args[4] *= textWidthRatio
-    svgText.fitValue(...args)
-  }
-  const heading = `${triLabel(locale, chart.title)}${chart.key === 'cyclingPower' ? ' · 30 s' : ''}`
-  fitText(parent, heading, x, y + size, columnWidth * 0.72, size, ink, 500)
-  const max = Math.max(...points.map(point => point.y ?? 0), 1)
-  const appearance =
-    document.querySelector('.tri-training-zone-grid--pace, .tri-day-embed, .triathlon') ??
-    document.documentElement
-  const color =
-    chart.key === 'runLaps'
-      ? ORANGE
-      : (options?.color ??
-        (getComputedStyle(appearance)
-          .getPropertyValue(chart.key === 'cyclingPower' ? '--tri-zone-power' : '--tri-zone-pace')
-          .trim() ||
-          ink))
-  if (chart.kind === 'bars') {
-    const grid = node('g', { 'data-chart': chart.key })
-    parent.append(grid)
-    const total = points.reduce((sum, point) => sum + (point.y ?? 0), 0)
-    const top = y + size * 2
-    const trackWidth = columnWidth * (zones ? 0.43 : 0.61)
-    const headings = node('g', { 'text-anchor': 'end' })
-    grid.append(headings)
-    if (zones)
-      fitText(
-        headings,
-        locale === 'fr' ? 'part' : 'share',
-        x + width * 0.69,
-        y + size,
-        width * 0.12,
-        size * 0.65,
-        ink,
-      )
-    for (let column = 0; column < columns; column++) {
-      const cx = x + column * (columnWidth + gap)
-      const left = cx + columnWidth * (zones ? 0.1 : 0.14)
-      fitText(
-        headings,
-        triText(locale, 'pace'),
-        cx + columnWidth,
-        y + size,
-        columnWidth * 0.25,
-        size * 0.65,
-        ink,
-      )
-      for (let tick = 0; tick <= 4; tick++)
-        grid.append(
-          node('path', {
-            d: `M${left + (trackWidth * tick) / 4} ${top}V${top + rowHeight * rows}`,
-            stroke: ink,
-            opacity: 0.08,
-          }),
-        )
-      grid.append(
-        node('path', {
-          d: `M${cx} ${top + rowHeight * rows}H${cx + columnWidth}`,
-          stroke: ink,
-          opacity: 0.12,
-        }),
-      )
-    }
-    points.forEach((point, index) => {
-      const column = Math.floor(index / rows)
-      const cx = x + column * (columnWidth + gap)
-      const left = cx + columnWidth * (zones ? 0.1 : 0.14)
-      const rowTop = top + rowHeight * (index % rows)
-      const baseline = rowTop + rowHeight / 2 + labelSize * 0.35
-      const barHeight = Math.min(rowHeight * 0.4, labelSize * 0.7)
-      const barTop = rowTop + (rowHeight - barHeight) / 2
-      const share = total > 0 ? ((point.y ?? 0) / total) * 100 : 0
-      const row = node('g', {
-        'aria-label': zones
-          ? `${point.label}, ${point.range ?? '—'}, ${point.value}, ${share.toFixed(1)}%`
-          : `${point.label}, ${point.value}`,
-      })
-      grid.append(row)
-      row.append(
-        node('path', { d: `M${cx} ${rowTop}H${cx + columnWidth}`, stroke: ink, opacity: 0.12 }),
-      )
-      fitText(
-        row,
-        triLabel(locale, point.label),
-        cx,
-        baseline,
-        columnWidth * (zones ? 0.08 : 0.12),
-        labelSize,
-        ink,
-      )
-      row.append(
-        node('rect', {
-          x: left,
-          y: barTop,
-          width: trackWidth,
-          height: barHeight,
-          fill: ink,
-          opacity: 0.08,
-        }),
-        node('rect', {
-          x: left,
-          y: barTop,
-          width: (trackWidth * (point.y ?? 0)) / max,
-          height: barHeight,
-          fill: color,
-          opacity:
-            chart.key === 'runLaps' ? 1 : zones ? (index === 5 ? 0.91 : 0.42 + index * 0.1) : 0.7,
-        }),
-      )
-      const values = node('g', { 'text-anchor': 'end' })
-      row.append(values)
-      if (zones)
-        fitValue(
-          values,
-          `${share.toFixed(1)}%`,
-          x + width * 0.69,
-          baseline,
-          width * 0.12,
-          labelSize,
-          ink,
-        )
-      fitValue(
-        values,
-        zones ? (point.range ?? '—') : point.value,
-        cx + columnWidth,
-        baseline,
-        columnWidth * (zones ? 0.28 : 0.22),
-        labelSize,
-        ink,
-      )
-    })
-  } else {
-    const top = y + size * 2
-    const bottom = y + height - size
-    const minX = chart.points[0].x
-    const spanX = Math.max(1, chart.points.at(-1)!.x - minX)
-    parent.append(node('path', { d: `M${x} ${bottom}H${x + width}`, stroke: ink, opacity: 0.25 }))
-    let path = ''
-    let connected = false
-    for (const point of chart.points) {
-      if (point.y == null) {
-        connected = false
-        continue
-      }
-      path += `${connected ? 'L' : 'M'}${x + ((point.x - minX) / spanX) * width} ${bottom - (point.y / max) * (bottom - top)} `
-      connected = true
-    }
-    parent.append(
-      node('path', {
-        d: path,
-        fill: 'none',
-        stroke: color,
-        'stroke-width': 2,
-        'stroke-linejoin': 'round',
-      }),
-    )
-    text(parent, `${Math.round(max)} ${chart.axis}`, x, top, size * 0.75, ink, 400, fonts.mono)
-    text(parent, chart.points[0].label, x, bottom + size, size * 0.75, ink, 400, fonts.mono)
-    fitValue(
-      parent,
-      chart.points.at(-1)!.label,
-      x + width * 0.85,
-      bottom + size,
-      width * 0.15,
-      size * 0.75,
-      ink,
-    )
-  }
-  if (chart.note && chart.key !== 'cyclingPower')
-    svgText.fitValue(
-      parent,
-      chart.note,
-      x,
-      y + height,
-      options?.typography?.width ?? width,
-      size * 0.7,
-      ink,
-    )
-
-  const id = parent.getAttribute('data-card-layer')
-  if (id && options?.renderers) {
-    const fittedWidth = (
-      value: string,
-      slot: number,
-      fontSize: number,
-      weight = 400,
-      family = fonts.body,
-    ) => {
-      const measured = measure(value, fontSize, weight, family)?.width ?? 0
-      const fitted = measured > slot ? (fontSize * slot) / measured : fontSize
-      return (measure(value, fitted, weight, family)?.width ?? 0) + 4
-    }
-    const columnMinimum = Math.max(
-      size * 6,
-      fittedWidth(heading, columnWidth * 0.72, size, 500) / 0.72,
-      ...(chart.kind === 'bars'
-        ? [
-            fittedWidth(triText(locale, 'pace'), columnWidth * 0.25, size * 0.65) / 0.25,
-            ...points.map(point =>
-              Math.max(
-                fittedWidth(
-                  triLabel(locale, point.label),
-                  columnWidth * (zones ? 0.08 : 0.12),
-                  labelSize,
-                ) / (zones ? 0.08 : 0.12),
-                fittedWidth(
-                  zones ? (point.range ?? '—') : point.value,
-                  columnWidth * (zones ? 0.28 : 0.22),
-                  labelSize,
-                  400,
-                  fonts.mono,
-                ) / (zones ? 0.28 : 0.22),
-              ),
-            ),
-            ...(zones
-              ? [fittedWidth('100.0%', width * 0.12, labelSize, 400, fonts.mono) / 0.12]
-              : []),
-          ]
-        : [
-            fittedWidth(chart.points.at(-1)!.label, width * 0.15, size * 0.75, 400, fonts.mono) /
-              0.15,
-          ]),
-    )
-    const minWidth = Math.min(
-      width,
-      Math.max(
-        columnMinimum * columns + gap * (columns - 1),
-        chart.note && chart.key !== 'cyclingPower'
-          ? fittedWidth(chart.note, width, size * 0.7, 400, fonts.mono)
-          : 0,
-      ),
-    )
-    const minHeight = Math.min(
-      height,
-      chart.kind === 'bars' ? size * 3 + rows * labelSize * 1.5 : size * 4,
-    )
-    const typography = { width, columnWidth, columns, size, labelSize }
-    options.renderers.set(id, {
-      x,
-      y,
-      width,
-      height,
-      minWidth: minWidth + 6,
-      minHeight: minHeight + 6,
-      render: (targetWidth, targetHeight) => {
-        const density = Math.min(scale, 3840 / Math.max(targetWidth, targetHeight))
-        const svg = node('svg', {
-          xmlns: 'http://www.w3.org/2000/svg',
-          width: Math.ceil(targetWidth * density),
-          height: Math.ceil(targetHeight * density),
-          viewBox: `0 0 ${targetWidth} ${targetHeight}`,
-        })
-        paintTrainingChart(
-          svg,
-          chart,
-          3,
-          3,
-          targetWidth - 6,
-          targetHeight - 6,
-          ink,
-          fonts,
-          density,
-          locale,
-          { typography, color },
-        )
-        return svgImage(svg.outerHTML)
-      },
-    })
-  }
-}
 
 function metricGrid(
   parent: SVGElement,
@@ -413,9 +87,10 @@ function paintOverlay(
     ? activity.stats.filter(stat => metricShown(model, activity, stat))
     : []
   const route = model.show.map ? cardRoute(activity.route) : undefined
-  const charts = activity.charts.filter(chart => model.show[chart.key])
-  const chartHeight = charts.length ? (height * 0.28) / charts.length : 0
-  const contentHeight = height - chartHeight * charts.length
+  const charts = trainingCharts(activity, model)
+  const chartWeight = charts.reduce((total, chart) => total + trainingChartWeight(chart), 0)
+  const chartsHeight = height * Math.min(0.72, 0.28 * chartWeight)
+  const contentHeight = height - chartsHeight
   const ink = palette.ink
   const headingSize = width * 0.04
   const centered = model.overlay === 'stack'
@@ -580,21 +255,24 @@ function paintOverlay(
       parent.append(group)
     })
   }
-  charts.forEach((chart, index) =>
+  let chartTop = y + contentHeight
+  charts.forEach(chart => {
+    const chartHeight = (chartsHeight * trainingChartWeight(chart)) / chartWeight
     paintTrainingChart(
       svgLayer(parent, `chart/${chart.key}`, chart.title),
       chart,
       x,
-      y + contentHeight + index * chartHeight,
+      chartTop,
       width,
       chartHeight,
       ink,
       fonts,
       scale,
       model.locale ?? cardLocale(),
-      { renderers },
-    ),
-  )
+      { renderers, logScale: model.powerCurveScale !== 'linear' },
+    )
+    chartTop += chartHeight
+  })
 }
 
 export function stickerCardSvg(

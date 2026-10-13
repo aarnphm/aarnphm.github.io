@@ -48,6 +48,7 @@ import {
   type ActivityCardData,
   type ActivityCardChart,
   type ActivityCardStat,
+  type PowerWindow,
 } from './press-kit-activity'
 import {
   RUN_STRIDE_BIN_M,
@@ -493,7 +494,6 @@ export const moreStatRows = (
                 ? 'Wahoo'
                 : 'Strava',
     ])
-  if (d.virtual) rows.push(['activity', triText(presentation.locale, 'virtual')])
   return rows
 }
 
@@ -3335,7 +3335,7 @@ const buildCyclingDynamicsPercentChart = <N>(
     label: `${value}%`,
     vbY: py(value),
   }))
-  const view = graphView(d, graphDomain)
+  const view = graphViewForDistance(maxDistanceKm, graphDomain)
   const title: CyclingModeTitle =
     metric === 'pedalSmoothness' ? 'pedal smoothness' : 'torque effectiveness'
   const className = metric === 'pedalSmoothness' ? 'pedal-smoothness' : 'torque-effectiveness'
@@ -3494,7 +3494,7 @@ export const buildPowerPhaseChart = <N>(
   const maxDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
   const py = (value: number): number => height - (Math.min(360, Math.max(0, value)) / 360) * height
   const yTicks = [0, 90, 180, 270, 360].map(value => ({ label: `${value}°`, vbY: py(value) }))
-  const view = graphView(d, graphDomain)
+  const view = graphViewForDistance(maxDistanceKm, graphDomain)
   const svgEl = f.svg('svg', {
     class: 'tri-elev tri-cycling-dynamics-svg tri-power-phase-svg',
     viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
@@ -3579,7 +3579,7 @@ export const buildRiderPositionChart = <N>(
     .filter(change => change.distanceKm >= 0 && change.distanceKm <= maxDistanceKm)
     .sort((left, right) => left.distanceKm - right.distanceKm)
   if (changes.length === 0) return null
-  const view = graphView(d, graphDomain)
+  const view = graphViewForDistance(maxDistanceKm, graphDomain)
   const svgEl = f.svg('svg', {
     class: 'tri-elev tri-cycling-dynamics-svg tri-rider-position-svg',
     viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
@@ -11166,20 +11166,68 @@ export const activityShareData = (
   }
   const charts: ActivityCardChart[] = []
   const power = d.cyclingPowerTrace
-  if (d.sport === 'bike' && power && power.points.some(point => point.power30sWatts != null))
+  if (d.sport === 'bike' && power && power.points.some(point => point.power30sWatts != null)) {
+    const series = ([30, 300] satisfies PowerWindow[])
+      .map(seconds => ({
+        seconds,
+        points: power.points.map(point => {
+          const watts = seconds === 30 ? point.power30sWatts : point.power5mWatts
+          return {
+            x: point.elapsedS,
+            y: watts,
+            label: zoneClock(point.elapsedS),
+            value: watts == null ? '—' : `${Math.round(watts)} W`,
+          }
+        }),
+      }))
+      .filter(series => series.points.some(point => point.y != null))
     charts.push({
       key: 'cyclingPower',
       kind: 'line',
       title: triText(presentation.locale, 'power'),
       axis: 'W',
-      note: `${power.source} · 30 s`,
-      points: power.points.map(point => ({
-        x: point.elapsedS / 60,
-        y: point.power30sWatts,
-        label: zoneClock(point.elapsedS),
-        value: point.power30sWatts == null ? '—' : `${Math.round(point.power30sWatts)} W`,
+      note: power.source,
+      window: 30,
+      points: series[0].points,
+      series,
+    })
+  }
+  const curve = normalizePowerCurvePoints(d.powerCurve)
+  if (curve.length > 1)
+    charts.push({
+      key: 'powerCurve',
+      kind: 'line',
+      title: triText(presentation.locale, 'power curve'),
+      axis: 'W',
+      note: '',
+      points: powerCurvePathPoints(curve).map(point => ({
+        x: point.s,
+        y: point.w,
+        label: zoneClock(point.s),
+        value: `${Math.round(point.w)} W`,
       })),
     })
+  if (d.sport === 'bike') {
+    const laps = cyclingWorkoutLaps(d)
+    if (laps.some(lap => lap.powerWatts != null)) {
+      const timeline = workoutLapTimeline(laps)
+      charts.push({
+        key: 'cyclingLaps',
+        kind: 'intervals',
+        title: triText(presentation.locale, 'lap splits'),
+        axis: 'W',
+        note: '',
+        points: laps.map((lap, index) => ({
+          x: timeline.spans[index].startS,
+          end: timeline.spans[index].endS,
+          y: lap.powerWatts,
+          label: String(lap.index),
+          value: lap.powerWatts == null ? '—' : `${Math.round(lap.powerWatts)} W`,
+          detail: `${lap.range.label} · ${analysisRangeMetrics(presentation, d, lap.range).join(' · ')}`,
+        })),
+      })
+    }
+  }
   const pace = d.runPaceZones
   if (d.sport === 'run' && pace && pace.zoneSeconds.some(seconds => seconds > 0))
     charts.push({
@@ -11207,7 +11255,7 @@ export const activityShareData = (
         note: '',
         points: laps.map(lap => ({
           x: lap.index,
-          y: lap.speedKph,
+          y: lap.paceS,
           label: `lap ${lap.index}`,
           value: `${clock(lap.paceS)} ${isImperial(presentation) ? '/mi' : '/km'}`,
         })),
@@ -11235,6 +11283,7 @@ export const buildActivityShareButton = <N>(
     type: 'button',
     'data-press-kit': 'note',
     'data-press-kit-activity': encodeURIComponent(JSON.stringify(data)),
+    'data-site-cursor-action': '',
     'aria-label': `${triText(f.presentation.locale, 'share')} ${d.name || d.sport}`,
     'aria-haspopup': 'dialog',
     title: triText(f.presentation.locale, 'share'),
@@ -11293,6 +11342,14 @@ export const buildActivity = <N>(
       f.el('span', 'tri-activity-tag', triText(f.presentation.locale, 'commute'), {
         title: triText(f.presentation.locale, 'commute'),
         'data-activity-tag': 'commute',
+      }),
+    )
+  if (d.virtual === true)
+    f.add(
+      headActions,
+      f.el('span', 'tri-activity-tag', triText(f.presentation.locale, 'virtual'), {
+        title: triText(f.presentation.locale, 'virtual'),
+        'data-activity-tag': 'virtual',
       }),
     )
   f.add(headActions, buildActivityAnalyzeButton(f, d))

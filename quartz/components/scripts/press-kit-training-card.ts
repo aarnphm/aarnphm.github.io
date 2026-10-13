@@ -9,11 +9,12 @@ import {
   type Fonts,
   type Frame,
 } from './press-kit-card'
+import { paintTrainingChart, trainingCharts, trainingChartWeight } from './press-kit-chart'
 import { cardBlockDisplay, type TrainingCardBlock } from './press-kit-day'
 import { cardLocale } from './press-kit-i18n'
 import { svgLayer, type LayerRenderer } from './press-kit-layers'
 import { cardRoute, routeSvg } from './press-kit-route'
-import { stickerCardSvg, paintTrainingChart } from './press-kit-sticker'
+import { stickerCardSvg } from './press-kit-sticker'
 import { node, createSvgText, graphic, sportIcon } from './press-kit-svg'
 import { cardDate, runsToPlain } from './press-kit-text'
 function activityBlock(model: CardModel): TrainingCardBlock[] {
@@ -214,10 +215,7 @@ export function trainingCardSvg(
     const stats = display.metrics
       ? (activity?.stats.filter(stat => metricShown(model, activity, stat)) ?? [])
       : []
-    const charts =
-      block.kind === 'activity'
-        ? (activity?.charts.filter(chart => model.show[chart.key]) ?? [])
-        : []
+    const charts = block.kind === 'activity' ? trainingCharts(activity, model) : []
     const comparisonRows = !display.metrics
       ? []
       : block.rows.length
@@ -257,49 +255,79 @@ export function trainingCardSvg(
       ? cardRoute(block.activities.flatMap(item => item.route))
       : undefined
     const available = y + cellHeight - cursor - statsHeight - size
-    const visualHeight = Math.max(0, Math.min((cellWidth * 9) / 16, available))
-    const visuals = (route ? 1 : 0) + (block.graphic ? 1 : 0) + charts.length
-    const visualPart = visuals ? visualHeight / visuals : 0
+    const chartWeight = charts.reduce((total, chart) => total + trainingChartWeight(chart), 0)
+    const visualHeight = Math.max(
+      0,
+      Math.min(((cellWidth * 9) / 16) * Math.max(1, chartWeight), available),
+    )
+    const visualWeights = [
+      ...(route ? [1] : []),
+      ...(block.graphic ? [1] : []),
+      ...charts.map(trainingChartWeight),
+    ]
+    const visualColumns = format === 'landscape' && visualWeights.length > 1 ? 2 : 1
+    const rowWeights = Array.from(
+      { length: Math.ceil(visualWeights.length / visualColumns) },
+      (_, row) => Math.max(...visualWeights.slice(row * visualColumns, (row + 1) * visualColumns)),
+    )
+    const totalWeight = rowWeights.reduce((total, weight) => total + weight, 0)
+    const visualWidth = (cellWidth - gap * (visualColumns - 1)) / visualColumns
+    const visualPart = totalWeight ? visualHeight / totalWeight : 0
+    let visualIndex = 0
+    const nextVisual = () => {
+      const position = {
+        x: x + (visualIndex % visualColumns) * (visualWidth + gap),
+        y:
+          cursor +
+          rowWeights
+            .slice(0, Math.floor(visualIndex / visualColumns))
+            .reduce((total, weight) => total + weight, 0) *
+            visualPart,
+        height: rowWeights[Math.floor(visualIndex / visualColumns)] * visualPart,
+      }
+      visualIndex++
+      return position
+    }
     if (route && visualPart > size * 2) {
+      const position = nextVisual()
       graphic(
         svgLayer(group, 'route', 'tracé'),
         routeSvg(route, palette.ink, palette.bg),
-        x,
-        cursor,
-        cellWidth,
-        visualPart,
+        position.x,
+        position.y,
+        visualWidth,
+        position.height,
       )
-      cursor += visualPart
     }
     if (block.graphic && visualPart > size * 2) {
+      const position = nextVisual()
       graphic(
         svgLayer(group, 'graphic', 'graphique'),
         block.graphic.svg,
-        x,
-        cursor,
-        cellWidth,
-        visualPart,
+        position.x,
+        position.y,
+        visualWidth,
+        position.height,
       )
-      cursor += visualPart
     }
     for (const chart of charts) {
       if (visualPart <= size * 2) continue
+      const position = nextVisual()
       paintTrainingChart(
         svgLayer(group, `chart/${chart.key}`, triLabel(locale, chart.title)),
         chart,
-        x,
-        cursor,
-        cellWidth,
-        visualPart,
+        position.x,
+        position.y,
+        visualWidth,
+        position.height,
         palette.ink,
         fonts,
         resolution.scale,
         locale,
-        { renderers },
+        { renderers, logScale: model.powerCurveScale !== 'linear' },
       )
-      cursor += visualPart
     }
-    if (visualPart > size * 2) cursor += size * 0.6
+    if (visualPart > size * 2) cursor += visualHeight + size * 0.6
     if (!model.show.map)
       centered.push({ group, row: Math.floor(index / columns), height: cursor - y + statsHeight })
     if (block.kind === 'comparison') {
