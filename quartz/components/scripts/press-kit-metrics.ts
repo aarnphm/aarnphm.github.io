@@ -66,9 +66,7 @@ export function activityCardFromElement(button: HTMLElement): ActivityCardData |
     const label = cap.querySelector('.tri-elev-d')?.textContent?.trim()
     const range = cap.querySelector('.tri-elev-range:not(.tri-trace-reference-k)')
     const value =
-      trace === 'electronic-shifting'
-        ? dominantGearValue(range)
-        : range?.textContent?.trim()
+      trace === 'electronic-shifting' ? dominantGearValue(range) : range?.textContent?.trim()
     if (trace && label && value)
       add(
         `trace:${trace}`,
