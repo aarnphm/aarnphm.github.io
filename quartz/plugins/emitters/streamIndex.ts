@@ -14,6 +14,7 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { renderProtectedEntryBody } from '../../components/stream/Entry'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
+import { isDevelopmentBuild } from '../../util/build-mode'
 import { componentSourceNames } from '../../util/component-source'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { descriptionToPlainText } from '../../util/description'
@@ -240,7 +241,7 @@ async function* processStreamIndex(
     try {
       streamPassword = resolveProtectedPassword(fileData)
     } catch (error) {
-      if (!ctx.argv.watch || ctx.argv.force) {
+      if (!isDevelopmentBuild(ctx.argv)) {
         throw error
       }
     }
@@ -341,7 +342,7 @@ async function* processStreamIndex(
 
   // CustomOgImages sees only stream.md, while every archive route's head names its own
   // `<slug>-og-image.webp`. The watcher skips social images, as CustomOgImages does.
-  if (!ctx.argv.watch || ctx.argv.force) {
+  if (!isDevelopmentBuild(ctx.argv)) {
     const generateOgImage = await createOgImageGenerator(ctx)
     for (const page of socialPages) yield await generateOgImage(page)
   }

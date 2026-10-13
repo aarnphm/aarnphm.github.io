@@ -218,8 +218,6 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       return []
     },
     async *emit(ctx, content, _resources) {
-      if (ctx.argv.watch && !ctx.argv.force) return []
-
       const generateOgImage = await createOgImageGenerator(ctx, fullOptions)
       for (const [_tree, vfile] of content) {
         if (vfile.data.frontmatter?.socialImage !== undefined) continue
@@ -227,8 +225,6 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
-      if (ctx.argv.watch && !ctx.argv.force) return []
-
       const generateOgImage = await createOgImageGenerator(ctx, fullOptions)
 
       // find all slugs that changed or were added

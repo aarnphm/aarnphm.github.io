@@ -1,5 +1,5 @@
 export { Aarnphm } from './aarnphm'
-export { Pseudocode } from './pseudocode'
+export { Pseudocode, PseudocodeFallback } from './pseudocode'
 export { TikzJax } from './tikz'
 export { TelescopicText } from './telescopic'
 export { Sidenotes } from './sidenotes'

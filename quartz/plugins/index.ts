@@ -3,6 +3,7 @@ import { FilePath, FullSlug } from '../util/path'
 export * from './transformers'
 export * from './filters'
 export * from './emitters'
+export { Conditional, ConditionalTransform } from './conditional'
 export { getStaticResourcesFromPlugins } from '../util/static-resources'
 
 declare module 'vfile' {

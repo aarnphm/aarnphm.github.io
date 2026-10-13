@@ -17,6 +17,7 @@ import {
   defaultIoConcurrency,
   mapConcurrent,
 } from '../../util/async-pool'
+import { isDevelopmentBuild } from '../../util/build-mode'
 import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
@@ -123,8 +124,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     resources: StaticResources,
   ): AsyncGenerator<FilePath> {
     const nextTemporalSlugs = new Set<FullSlug>()
-    const generateOgImage =
-      ctx.argv.watch && !ctx.argv.force ? null : await createOgImageGenerator(ctx)
+    const generateOgImage = isDevelopmentBuild(ctx.argv) ? null : await createOgImageGenerator(ctx)
     let ogImageQueue = Promise.resolve()
     const queueOgImage = generateOgImage
       ? (data: QuartzPluginData) => {
