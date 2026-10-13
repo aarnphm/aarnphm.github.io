@@ -51,22 +51,38 @@ export function mountSharedGrove(
       status.dataset.visible = 'false'
     }, 4000)
   }
+  // Watering rustles the leaf clusters in whole cells, outward from the middle of the crown; the
+  // trunk does not move.
   const gust = (tree: SVGGElement) => {
-    const touch = tree.querySelector<SVGGElement>('.trail-tree-touch')
-    if (!touch || motion.matches) return
+    const clusters = [...tree.querySelectorAll<SVGGElement>('.trail-tree-leaves')]
+    if (!clusters.length || motion.matches) return
     const direction = Number.parseFloat(scene.style.getPropertyValue('--trail-wind-x')) < 0 ? -1 : 1
-    const animation = touch.animate(
-      [0, 3.5, -1.8, 0.9, -0.35, 0].map(angle => ({
-        transform: `rotate(${angle * direction}deg)`,
-      })),
-      { duration: 1700, easing: 'ease-out' },
-    )
-    gusts.add(animation)
     tree.dataset.gust = 'active'
-    animation.onfinish = () => {
-      gusts.delete(animation)
-      tree.dataset.gust = 'idle'
-    }
+    const running = clusters.map(cluster => {
+      const cell = Number.parseFloat(cluster.style.getPropertyValue('--leaf-cell')) || 1
+      const lift = Number(cluster.style.getPropertyValue('--leaf-lift')) || 0
+      const reach = lift > 0.3 ? cell : 0
+      const animation = cluster.animate(
+        [0, 1, -1, 1, 0, 0].map(step => ({
+          transform: `translate(${step * reach * direction}px, ${step === 1 ? -reach : 0}px)`,
+          easing: 'steps(1, end)',
+        })),
+        {
+          duration: 1100,
+          delay: Math.abs(Number(cluster.style.getPropertyValue('--leaf-x')) || 0) * 6,
+        },
+      )
+      gusts.add(animation)
+      return animation
+    })
+    void Promise.all(running.map(animation => animation.finished))
+      .then(() => {
+        tree.dataset.gust = 'idle'
+      })
+      .catch(() => {})
+      .finally(() => {
+        for (const animation of running) gusts.delete(animation)
+      })
   }
   const apply = () => {
     if (signal.aborted) return

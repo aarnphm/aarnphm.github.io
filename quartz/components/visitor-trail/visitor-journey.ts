@@ -1,5 +1,6 @@
 import type { CampSettings } from './camp-settings'
 import type { JourneyRoute } from './hiker-journey'
+import { svgPathGeometry } from '../../util/svg-geometry'
 import {
   actorSpacing,
   circleClearance,
@@ -13,12 +14,12 @@ import {
   type ActorSpacing,
 } from './actor-spacing'
 import { campSites, type CampSite } from './camp-layout'
-import { anonymousVisitor } from './camp-presence'
 import { campDeparture, campPatrolRoute } from './camp-routine'
 import { campFigure } from './campsite'
 import { bootImpression, footprintTransform } from './footprints'
 import { onDryLand, trailGroundScale, type Landscape, type Point } from './landscape'
 import { detourTrail, replanOccupiedWaypoints } from './obstacle-route'
+import { anonymousVisitor, visitorHash } from './visitor-name'
 
 export type TrailVisitor = { id: string; camp: number; own: boolean }
 type Phase = 'waiting' | 'arriving' | 'attending' | 'departing'
@@ -39,10 +40,6 @@ type Visitor = TrailVisitor & {
   lastStep: Point
   step: number
   route: JourneyRoute
-}
-
-function visitorHash(id: string) {
-  return [...id].reduce((total, letter) => (Math.imul(total, 31) + letter.charCodeAt(0)) >>> 0, 0)
 }
 
 export function mountVisitorJourneys(
@@ -98,7 +95,7 @@ export function mountVisitorJourneys(
     let path: SVGPathElement | undefined
     let gap = Infinity
     for (const candidate of scene.querySelectorAll<SVGPathElement>('[data-mountain-track]')) {
-      const point = candidate.getPointAtLength(0)
+      const point = svgPathGeometry(candidate).getPointAtLength(0)
       const distance = Math.hypot(point.x - from.x, point.y - from.y)
       if (distance < gap) {
         gap = distance
@@ -106,10 +103,11 @@ export function mountVisitorJourneys(
       }
     }
     if (!path) return [from]
-    const length = path.getTotalLength() * 0.6
+    const geometry = svgPathGeometry(path)
+    const length = geometry.getTotalLength() * 0.6
     const steps = Math.max(1, Math.ceil(length / 12))
     return Array.from({ length: steps + 1 }, (_, index) => {
-      const point = path.getPointAtLength((length * index) / steps)
+      const point = geometry.getPointAtLength((length * index) / steps)
       return { x: point.x, y: point.y }
     })
   }
@@ -284,17 +282,16 @@ export function mountVisitorJourneys(
     button.type = 'button'
     button.className = 'trail-visitor-label'
     button.dataset.visitorLabel = peer.id
-    if (peer.own) {
-      const own = document.createElement('span')
-      own.className = 'trail-visitor-you'
-      own.textContent = 'you'
-      button.append(own)
-    }
     const popover = document.createElement('div')
     popover.className = 'trail-visitor-popover'
     popover.popover = 'auto'
     popover.id = `trail-visitor-${crypto.randomUUID()}`
-    popover.textContent = `${anonymousVisitor(peer.id)}${peer.own ? ' · you' : ''}`
+    const name = document.createElement('span')
+    name.textContent = `${anonymousVisitor(peer.id)}${peer.own ? ' · you' : ''}`
+    const identity = document.createElement('span')
+    identity.className = 'trail-visitor-id'
+    identity.textContent = `playhtml · ${peer.id}`
+    popover.append(name, identity)
     popover.setAttribute('role', 'tooltip')
     button.setAttribute('aria-describedby', popover.id)
     button.setAttribute('aria-expanded', 'false')
@@ -326,12 +323,18 @@ export function mountVisitorJourneys(
       positionPopover(visitor)
     }
     const conceal = () => {
-      if (document.activeElement === button) return
+      if (button.matches(':focus-visible')) return
       popover.hidePopover()
       button.setAttribute('aria-expanded', 'false')
     }
     button.addEventListener('pointerenter', reveal, { signal })
-    button.addEventListener('pointerleave', conceal, { signal })
+    button.addEventListener(
+      'pointerleave',
+      event => {
+        if (event.pointerType !== 'touch') conceal()
+      },
+      { signal },
+    )
     button.addEventListener('focus', reveal, { signal })
     button.addEventListener('blur', conceal, { signal })
     button.addEventListener('click', reveal, { signal })

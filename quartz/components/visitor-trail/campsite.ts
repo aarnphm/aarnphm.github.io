@@ -1,3 +1,4 @@
+import { halloweenCostume } from './holiday-sprites'
 import { pixels } from './pixels'
 
 // The seated posture is shared with the 404 scene, with the second camper facing the fire.
@@ -29,6 +30,7 @@ export function campFigure(pose: 'walk' | 'build' | 'sit', packed = false) {
         : ['.HH.', '.HS.', 'CCC.', 'CCCS', '.DD.', 'D.D.']
   return (
     pixels(rows, figure, 2) +
+    halloweenCostume(pose === 'build' ? 4 : 2, 0) +
     (packed
       ? `<g class="trail-camp-pack" transform="translate(-5 1)">${pixels(['RRRR', 'PPPP', 'PLPP', 'PPPP', 'PLPP'], { R: 'trail-hiker-bedroll', P: 'trail-hiker-pack-cloth', L: 'trail-hiker-pack-strap' }, 2)}</g><path class="trail-hiker-pole" d="M11 5h1v10h-1Z"/>`
       : '')

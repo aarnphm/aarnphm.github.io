@@ -1,9 +1,11 @@
+import { svgPathGeometry } from '../../util/svg-geometry'
 import { trailGroundScale, type Landscape, type Point } from './landscape'
 
 function sample(path: SVGPathElement, from: number, to: number) {
+  const geometry = svgPathGeometry(path)
   const segments = Math.max(1, Math.ceil(Math.abs(to - from) / 4))
   return Array.from({ length: segments + 1 }, (_, index): Point => {
-    const point = path.getPointAtLength(from + ((to - from) * index) / segments)
+    const point = geometry.getPointAtLength(from + ((to - from) * index) / segments)
     return { x: point.x, y: point.y }
   })
 }
@@ -24,25 +26,27 @@ export function petExpedition(scene: HTMLElement, landscape: Landscape) {
   const roads = [...scene.querySelectorAll<SVGPathElement>('path[data-mountain-track]')]
   const road = roads
     .filter(path => {
-      const point = path.getPointAtLength(path.getTotalLength())
+      const geometry = svgPathGeometry(path)
+      const point = geometry.getPointAtLength(geometry.getTotalLength())
       return point.x >= 40 && point.x <= landscape.width - 40
     })
     .sort((left, right) => {
       return (
-        left.getPointAtLength(left.getTotalLength()).y -
-        right.getPointAtLength(right.getTotalLength()).y
+        svgPathGeometry(left).getPointAtLength(svgPathGeometry(left).getTotalLength()).y -
+        svgPathGeometry(right).getPointAtLength(svgPathGeometry(right).getTotalLength()).y
       )
     })[0]
   if (!upper || !road) return null
-  const roadLength = road.getTotalLength()
-  const summit = road.getPointAtLength(roadLength)
-  const entrance = road.getPointAtLength(0)
+  const roadGeometry = svgPathGeometry(road)
+  const roadLength = roadGeometry.getTotalLength()
+  const summit = roadGeometry.getPointAtLength(roadLength)
+  const entrance = roadGeometry.getPointAtLength(0)
   const valley = [...scene.querySelectorAll<SVGPathElement>('[data-trail-route]')].find(path => {
-    const point = path.getPointAtLength(0)
+    const point = svgPathGeometry(path).getPointAtLength(0)
     return Math.hypot(point.x - entrance.x, point.y - entrance.y) < 1
   })
   if (!valley) return null
-  const upperLength = upper.getTotalLength()
+  const upperLength = svgPathGeometry(upper).getTotalLength()
   const prefix = sample(upper, 0, upperLength)
   const end = prefix[prefix.length - 1]
   const before = prefix[Math.max(0, prefix.length - 2)]
@@ -52,7 +56,8 @@ export function petExpedition(scene: HTMLElement, landscape: Landscape) {
   }
   prefix.push(exit)
   const descent = sample(road, roadLength, 0)
-  const valleyLength = valley.getTotalLength()
+  const valleyGeometry = svgPathGeometry(valley)
+  const valleyLength = valleyGeometry.getTotalLength()
   const prefixLength = pathLength(prefix)
   const descentEnd = prefixLength + pathLength(descent)
   const total = descentEnd + valleyLength
@@ -63,7 +68,7 @@ export function petExpedition(scene: HTMLElement, landscape: Landscape) {
     [descentEnd / total, trailGroundScale(entrance.y, landscape)],
     ...Array.from({ length: 25 }, (_, index) => {
       const distance = (valleyLength * (index + 1)) / 25
-      const point = valley.getPointAtLength(distance)
+      const point = valleyGeometry.getPointAtLength(distance)
       return [(descentEnd + distance) / total, trailGroundScale(point.y, landscape)]
     }),
   ]

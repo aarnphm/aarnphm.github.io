@@ -1,11 +1,9 @@
 import { playhtml } from 'playhtml'
 import type { TrailVisitor } from './visitor-journey'
+import { anonymousVisitor } from './visitor-name'
+import { renderVisitorRegister, type VisitorVisit } from './visitor-register'
 
 export type CampDestination = { value: () => number; onChange: (listener: () => void) => void }
-
-export function anonymousVisitor(id: string) {
-  return `visitor ${id.slice(0, 8)}`
-}
 
 export function connectCampPresence(
   scene: HTMLElement,
@@ -16,21 +14,28 @@ export function connectCampPresence(
 ) {
   const document = scene.ownerDocument
   const view = document.defaultView
-  const count = document.querySelector<HTMLElement>('[data-trail-visitors]')
+  const root = document.querySelector<HTMLElement>('.homepage-trail')
+  const count = root?.querySelector<HTMLElement>('[data-trail-visitors]')
   const connection = scene.querySelector<HTMLElement>('[data-camp-connection]')
-  const cursors = scene.querySelector<HTMLElement>('.trail-shared-cursors')
-  if (!view || !count || !connection || !cursors)
+  const cursors = root?.querySelector<HTMLElement>('.trail-shared-cursors')
+  if (!view || !root || !count || !connection || !cursors)
     throw new Error('Camp presence needs its controls')
   const room = playhtml.createPresenceRoom('camp-visitors-v1')
   const pointers = new Map<string, HTMLElement>()
+  const activeVisitors = new Map<string, TrailVisitor>()
+  const visits: VisitorVisit[] = []
+  const arrived = Date.now()
   let pointer: { x: number; y: number; touch: boolean } | null = null
   let pointerTimer = 0
   let sentAt = -Infinity
 
   const renderVisitors = () => {
     const visitors: TrailVisitor[] = []
+    const now = Date.now()
     for (const [id, peer] of room.presence.getPresences()) {
-      if (peer.visiting !== true) continue
+      const previous = activeVisitors.get(id)
+      // PlayHTML expires stamped fields in background tabs before their socket identity leaves.
+      if (peer.visiting !== true && !(peer.visiting === undefined && previous)) continue
       const campsite = peer.campsite
       const camp =
         campsite &&
@@ -39,9 +44,38 @@ export function connectCampPresence(
         typeof campsite.camp === 'number' &&
         Number.isFinite(campsite.camp)
           ? Math.max(0, Math.min(2, Math.floor(campsite.camp)))
-          : 0
+          : (previous?.camp ?? 0)
       visitors.push({ id, own: peer.isMe, camp })
+      const joined =
+        typeof peer.trailArrival === 'number' &&
+        Number.isFinite(peer.trailArrival) &&
+        peer.trailArrival >= 0 &&
+        peer.trailArrival <= now + 300000
+          ? peer.trailArrival
+          : null
+      const visit = visits.find(visit => visit.id === id && visit.left === null)
+      if (!visit)
+        visits.push({
+          id,
+          own: peer.isMe,
+          arrived: joined ?? now,
+          observed: joined === null,
+          left: null,
+        })
+      else if (joined !== null) {
+        visit.arrived = visit.observed ? joined : Math.min(visit.arrived, joined)
+        visit.observed = false
+      }
     }
+    const present = new Set(visitors.map(visitor => visitor.id))
+    activeVisitors.clear()
+    for (const visitor of visitors) activeVisitors.set(visitor.id, visitor)
+    for (const visit of visits) if (visit.left === null && !present.has(visit.id)) visit.left = now
+    const departed = visits
+      .filter(visit => visit.left !== null)
+      .sort((a, b) => (b.left ?? 0) - (a.left ?? 0))
+    for (const visit of departed.slice(16)) visits.splice(visits.indexOf(visit), 1)
+    renderVisitorRegister(root, visits)
     count.textContent = String(visitors.length)
     count.dataset.state = 'ready'
     count.setAttribute(
@@ -52,12 +86,12 @@ export function connectCampPresence(
   }
   const renderPointers = () => {
     const shown = new Set<string>()
-    if (!host.hidden)
+    if (!document.hidden)
       for (const [id, peer] of room.presence.getPresences()) {
         const pointer = peer.trailPointer
         if (
           peer.isMe ||
-          peer.visiting !== true ||
+          !activeVisitors.has(id) ||
           !pointer ||
           typeof pointer !== 'object' ||
           !('x' in pointer) ||
@@ -74,16 +108,16 @@ export function connectCampPresence(
           cursor = document.createElement('div')
           cursor.className = 'trail-shared-cursor'
           cursor.dataset.visitorCursor = id
-          cursor.innerHTML =
-            '<svg viewBox="0 0 18 22"><path d="M2 2v15l4-4 4 7 3-2-4-7h6Z"/></svg><span></span>'
-          const label = cursor.querySelector('span')
-          if (label) label.textContent = anonymousVisitor(id)
+          const label = document.createElement('span')
+          label.textContent = anonymousVisitor(id)
+          cursor.append(label)
           pointers.set(id, cursor)
           cursors.append(cursor)
         }
         cursor.style.left = `${Math.max(0, Math.min(1, pointer.x)) * view.innerWidth}px`
         cursor.style.top = `${Math.max(0, Math.min(1, pointer.y)) * view.innerHeight}px`
         cursor.dataset.flipped = String(pointer.x > 0.8)
+        cursor.dataset.raised = String(pointer.y > 0.85)
         cursor.dataset.touch = String('touch' in pointer && pointer.touch === true)
       }
     for (const [id, cursor] of pointers)
@@ -101,7 +135,7 @@ export function connectCampPresence(
   document.addEventListener(
     'pointermove',
     event => {
-      if (document.hidden) return
+      if (document.hidden || !view.innerWidth || !view.innerHeight) return
       pointer = {
         x: event.clientX / view.innerWidth,
         y: event.clientY / view.innerHeight,
@@ -121,6 +155,7 @@ export function connectCampPresence(
   }
   document.addEventListener('pointerleave', clearPointer, { signal })
   const publish = () => {
+    room.presence.setMyPresence('trailArrival', arrived)
     room.presence.setMyPresence('campsite', { camp: destination.value(), joined: true })
     room.presence.setMyPresence('visiting', true)
   }
@@ -135,11 +170,30 @@ export function connectCampPresence(
   })
   const unsubscribeCamp = room.presence.onPresenceChange('campsite', renderVisitors)
   const unsubscribePointer = room.presence.onPresenceChange('trailPointer', renderPointers)
+  const unsubscribeArrival = room.presence.onPresenceChange('trailArrival', renderVisitors)
+  // A disconnected identity may have no live fields left to trigger a channel subscription.
+  const membershipTimer = view.setInterval(() => {
+    const peers = room.presence.getPresences()
+    if ([...activeVisitors.keys()].some(id => !peers.has(id))) {
+      renderVisitors()
+      renderPointers()
+    }
+  }, 1000)
   destination.onChange(() => {
     if (!signal.aborted) publish()
   })
   host.addEventListener('trail:show', publish, { signal })
-  host.addEventListener('trail:hide', clearPointer, { signal })
+  document.addEventListener(
+    'visibilitychange',
+    () => {
+      if (document.hidden) clearPointer()
+      else {
+        renderVisitors()
+        renderPointers()
+      }
+    },
+    { signal },
+  )
   view.addEventListener('resize', renderPointers, { signal })
   view.addEventListener('pagehide', clear, { signal })
   view.addEventListener('pageshow', publish, { signal })
@@ -147,9 +201,11 @@ export function connectCampPresence(
     'abort',
     () => {
       clear()
+      view.clearInterval(membershipTimer)
       unsubscribeVisitors()
       unsubscribeCamp()
       unsubscribePointer()
+      unsubscribeArrival()
       room.destroy()
       cursors.replaceChildren()
     },

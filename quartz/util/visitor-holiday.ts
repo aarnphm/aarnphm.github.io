@@ -1,10 +1,11 @@
-export type TrailHoliday = 'thanksgiving' | 'halloween' | 'christmas' | 'easter'
+export type TrailHoliday = 'thanksgiving' | 'columbus-day' | 'halloween' | 'christmas' | 'easter'
 export type HolidaySelection = TrailHoliday | 'auto' | 'none'
 
 export const holidayLabels: Record<HolidaySelection, string> = {
   auto: 'automatic',
   none: 'off',
   thanksgiving: 'Thanksgiving',
+  'columbus-day': 'Columbus Day',
   halloween: 'Halloween',
   christmas: 'Christmas',
   easter: 'Easter',
@@ -43,9 +44,12 @@ export function visitorHoliday(date: Date, country: string | null): TrailHoliday
     const offset = today - ordinal(year, month, day)
     return offset >= -before && offset <= after
   }
-  const us = country === 'US'
-  if (during(us ? 10 : 9, nthWeekday(year, us ? 10 : 9, us ? 4 : 1, us ? 4 : 2), 3, 1))
-    return 'thanksgiving'
+  const region = country?.trim().toUpperCase()
+  if (region === 'CA' && during(9, nthWeekday(year, 9, 1, 2), 3, 1)) return 'thanksgiving'
+  if (region === 'US') {
+    if (during(10, nthWeekday(year, 10, 4, 4), 3, 1)) return 'thanksgiving'
+    if (during(9, nthWeekday(year, 9, 1, 2), 3, 1)) return 'columbus-day'
+  }
   if (during(9, 31, 3, 1)) return 'halloween'
   if (during(11, 25, 5, 1)) return 'christmas'
   const spring = easter(year)
@@ -68,6 +72,7 @@ declare global {
 
 function readHoliday(value: unknown): TrailHoliday | null {
   return value === 'thanksgiving' ||
+    value === 'columbus-day' ||
     value === 'halloween' ||
     value === 'christmas' ||
     value === 'easter'

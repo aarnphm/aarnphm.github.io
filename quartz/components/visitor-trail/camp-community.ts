@@ -1,4 +1,5 @@
 import type { JourneyRoute } from './hiker-journey'
+import { createSvgSpace } from '../../util/svg-geometry'
 import { subscribeVisitorTrailWeather } from '../../util/visitor-trail-weather'
 import {
   actorSpacing,
@@ -105,6 +106,8 @@ export function mountCampCommunity(
   const primary = scene.querySelector<SVGGElement>('.trail-campsite .trail-camp')
   if (!view || !layer || !tracks || !primary) throw new Error('Camps need their scene layers')
   const reduced = view.matchMedia('(prefers-reduced-motion: reduce)')
+  const canvas = scene.querySelector<SVGSVGElement>('.trail-canvas')
+  const space = canvas ? createSvgSpace(canvas, signal) : null
   let landscape: Landscape | null = null
   let settings = { ...defaultCampSettings }
   let seed = 0
@@ -119,18 +122,7 @@ export function mountCampCommunity(
   let last = 0
   let elapsed = 0
   let paused = true
-  scene.addEventListener(
-    'animationend',
-    event => {
-      if (
-        event.animationName === 'trail-arrive' &&
-        event.target instanceof view.SVGElement &&
-        event.target.matches('.trail-extra-camp, .trail-tent')
-      )
-        event.target.dataset.arrived = 'true'
-    },
-    { signal },
-  )
+  let petSample: { at: number; point: Point | null } = { at: -Infinity, point: null }
   const night = () =>
     settings.light === 'night' ||
     (settings.light === 'weather' &&
@@ -204,9 +196,15 @@ export function mountCampCommunity(
     }
   }
   const approachingPet = (): Point | null => {
+    const actor = scene.querySelector<SVGGElement>(
+      '[data-collision-id="pet-blob"][data-collision-active="true"]',
+    )
+    if (actor) return { x: Number(actor.dataset.groundX), y: Number(actor.dataset.groundY) }
+    const now = view.performance.now()
+    if (now - petSample.at < 150) return petSample.point
+    petSample = { at: now, point: null }
     const pet = document.querySelector<HTMLElement>('.garden-pet:not([hidden])')
-    const canvas = scene.querySelector<SVGSVGElement>('.trail-canvas')
-    const matrix = canvas?.getScreenCTM()
+    const matrix = space?.matrix()
     if (!pet || !matrix) return null
     const style = view.getComputedStyle(pet)
     if (style.visibility === 'hidden' || Number(style.opacity) === 0) return null
@@ -217,12 +215,21 @@ export function mountCampCommunity(
       rect.left + rect.width / 2,
       rect.top + rect.height * 0.9,
     ).matrixTransform(matrix.inverse())
-    return { x: point.x, y: point.y }
+    petSample.point = { x: point.x, y: point.y }
+    return petSample.point
   }
-  const noticePet = (person: Person, pet: Point | null) => {
+  // The pet's box is a forced layout read after this frame's writes. Campers glance at it only
+  // while attending, and at most every 400ms, since the pet strolls far less than 140 units in that time.
+  let petGlance = { at: -Infinity, point: null as Point | null }
+  const glancePet = () => {
+    if (elapsed - petGlance.at >= 400) petGlance = { at: elapsed, point: approachingPet() }
+    return petGlance.point
+  }
+  const noticePet = (person: Person, readPet: () => Point | null) => {
+    const pet = person.phase === 'attending' ? readPet() : null
     const site = sites[person.site]
     const distance = pet ? Math.hypot(pet.x - site.x, pet.y - site.y) : Infinity
-    const near = person.phase === 'attending' && distance < 140
+    const near = distance < 140
     if (near && !person.look) person.surpriseUntil = elapsed + 1800
     person.look = near ? pet : null
     person.element.dataset.petDistance = Number.isFinite(distance) ? distance.toFixed(1) : ''
@@ -453,7 +460,6 @@ export function mountCampCommunity(
   }
   const updatePeople = (delta: number) => {
     if (!landscape) return
-    const pet = approachingPet()
     const obstacles = [...readActors(scene), ...readTrunks(scene)]
     for (const person of people) {
       const routine = routines[person.site]
@@ -664,7 +670,7 @@ export function mountCampCommunity(
           ).toFixed(4)
         }
       }
-      noticePet(person, pet)
+      noticePet(person, glancePet)
       setPose(person)
       renderPerson(person, person.phase !== 'sleeping' && person.phase !== 'gone')
       const reservation = obstacles.find(obstacle => obstacle.id === person.id)
@@ -706,7 +712,7 @@ export function mountCampCommunity(
     updateRoutines()
     lighting()
     if (reduced.matches) {
-      const pet = approachingPet()
+      petGlance.at = -Infinity
       for (let site = 0; site < routines.length; site++) {
         if (['packing', 'extinguishing', 'departing'].includes(routines[site].phase))
           finishCamp(site)
@@ -730,7 +736,7 @@ export function mountCampCommunity(
           person.target = { ...tents[person.site][person.tent].position }
           tents[person.site][person.tent].element.dataset.occupied = 'true'
         } else placePerson(person)
-        noticePet(person, pet)
+        noticePet(person, glancePet)
         setPose(person)
         renderPerson(person, person.phase !== 'sleeping')
       }
@@ -863,7 +869,6 @@ export function mountCampCommunity(
       resume()
       return
     }
-    scene.dataset.campSetup = landscape && seed === currentSeed ? 'editing' : 'opening'
     pause()
     landscape = current
     seed = currentSeed

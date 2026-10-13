@@ -1,3 +1,4 @@
+import { svgPathGeometry } from '../../util/svg-geometry'
 import {
   actorSpacing,
   placeOnReflow,
@@ -9,6 +10,7 @@ import {
   type ActorSpacing,
   type CollisionActor,
 } from './actor-spacing'
+import { createAlpineClimbers } from './alpine-climbers'
 import { bootImpression } from './footprints'
 import { trailGroundScale, type Landscape, type Point } from './landscape'
 import { buildMountainRanges, mountainCrestAt, type MountainRange } from './mountain-profile'
@@ -91,6 +93,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
   const view = document.defaultView
   if (!view) throw new Error('Alpine travelers need a visible document')
   const reducedMotion = view.matchMedia('(prefers-reduced-motion: reduce)')
+  const faceClimbers = createAlpineClimbers(scene, signal)
   let landscape: Landscape | undefined
   let mountainRanges: MountainRange[] = []
   let travelerLayer: SVGGElement | null = null
@@ -112,9 +115,10 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     const tracks = [...scene.querySelectorAll<SVGPathElement>('path[data-mountain-track]')]
     const path = tracks[id % tracks.length]
     if (!path) throw new Error('Alpine travelers need a mountain track')
-    const length = path.getTotalLength()
+    const geometry = svgPathGeometry(path)
+    const length = geometry.getTotalLength()
     const point = (progress: number): Point => {
-      const position = path.getPointAtLength(Math.max(0, Math.min(1, progress)) * length)
+      const position = geometry.getPointAtLength(Math.max(0, Math.min(1, progress)) * length)
       return { x: position.x, y: position.y }
     }
     const entryScale = trailGroundScale(point(0).y, landscape)
@@ -222,6 +226,9 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     layerMotion(
       reducedMotion.matches ? 'still' : host.hidden || document.hidden ? 'paused' : 'active',
     )
+    faceClimbers.render(
+      reducedMotion.matches ? 'still' : host.hidden || document.hidden ? 'paused' : 'active',
+    )
     for (const traveler of travelers) {
       const progress = posedProgress(traveler)
       const point = spacedPosition(traveler.route.point(progress), traveler.spacing)
@@ -263,6 +270,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     if (timer !== null) view.clearTimeout(timer)
     frame = timer = previousTime = null
     layerMotion(reducedMotion.matches ? 'still' : 'paused')
+    faceClimbers.pause(reducedMotion.matches)
     for (const traveler of travelers)
       traveler.element.dataset.motion = reducedMotion.matches ? 'still' : 'paused'
   }
@@ -351,7 +359,7 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
       host.hidden ||
       document.hidden ||
       reducedMotion.matches ||
-      !travelers.length
+      (!travelers.length && !faceClimbers.present())
     )
       return
     if (frame !== null || timer !== null) return
@@ -360,22 +368,27 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
     else
       timer = view.setTimeout(
         () => tick(view.performance.now()),
-        Math.max(1, Math.min(...travelers.map(traveler => traveler.remaining))),
+        Math.max(
+          1,
+          Math.min(faceClimbers.wait(), ...travelers.map(traveler => traveler.remaining)),
+        ),
       )
   }
   const tick = (time: number) => {
     frame = timer = null
     if (signal.aborted || host.hidden || document.hidden || reducedMotion.matches) return pause()
     const elapsed = previousTime === null ? 0 : Math.max(0, time - previousTime)
-    if (time - renderedAt < 1000 / 24 && travelers.some(moving)) return schedule()
+    if (time - renderedAt < 1000 / 24 && (travelers.some(moving) || faceClimbers.moving()))
+      return schedule()
     const obstacles = [
       ...readActors(scene, false, travelerLayer ?? undefined),
       ...readTrunks(scene, travelerLayer ?? undefined),
     ]
     for (const traveler of travelers)
       step(traveler, moving(traveler) ? Math.min(200, elapsed) : elapsed, obstacles)
+    faceClimbers.step(elapsed)
     previousTime = time
-    if (time - renderedAt >= 1000 / 24 || !travelers.some(moving)) {
+    if (time - renderedAt >= 1000 / 24 || (!travelers.some(moving) && !faceClimbers.moving())) {
       render()
       renderedAt = time
     }
@@ -408,13 +421,14 @@ export function mountAlpineJourneys(scene: HTMLElement, host: HTMLElement, signa
   return {
     pause,
     resume,
-    update(nextLandscape: Landscape, nextSeed: number, count: number) {
+    update(nextLandscape: Landscape, nextSeed: number, count: number, alpinists: number) {
       pause()
       landscape = nextLandscape
       mountainRanges = buildMountainRanges(landscape.alpine, nextSeed)
       const group = scene.querySelector<SVGGElement>('.trail-alpine-travelers')
       const tracks = scene.querySelector<SVGGElement>('.trail-alpine-tracks')
       if (!group || !tracks || signal.aborted) return
+      faceClimbers.update(landscape.alpine, nextSeed, alpinists, mountainRanges)
       travelerLayer = group
       trackLayer = tracks
       if (seed !== nextSeed) {

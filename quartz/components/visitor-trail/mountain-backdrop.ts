@@ -1,4 +1,5 @@
 import type { Alpine, Landscape, Point } from './landscape'
+import { carvedTrails } from './carved-trail'
 import {
   buildMountainRanges,
   buildMountainTracks,
@@ -11,8 +12,21 @@ import {
 } from './mountain-profile'
 import { trailRandom } from './random'
 
-type RockTone = 'rock' | 'shade' | 'light' | 'snow' | 'fracture' | 'lichen'
+type RockTone =
+  | 'rock'
+  | 'shade'
+  | 'light'
+  | 'snow'
+  | 'fracture'
+  | 'lichen'
+  | 'basalt'
+  | 'moss'
+  | 'ochre'
+  | 'rust'
+  | 'ash'
 type FoothillTone = 'far' | 'mid' | 'near'
+// Snowy Alpine ranges sit behind the lower basalt gullies and sedimentary shelves.
+type Geology = 'alpine' | 'fluted' | 'banded'
 type MountainColumn = {
   range: MountainRange
   x: number
@@ -23,10 +37,81 @@ type MountainColumn = {
   edge: number
   verticalScale: number
   grain: number
+  // How the crest runs over this column in screen space: negative rises to the right, so the face
+  // below it turns toward the light from the upper left.
+  slope: number
+  geology: Geology
 }
 
 const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
-const rockTones: readonly RockTone[] = ['rock', 'shade', 'light', 'snow', 'fracture', 'lichen']
+const alpineTones: readonly RockTone[] = ['rock', 'shade', 'light', 'snow', 'fracture', 'lichen']
+const lowlandTones: readonly RockTone[] = [
+  'rock',
+  'shade',
+  'light',
+  'fracture',
+  'basalt',
+  'moss',
+  'ochre',
+  'rust',
+  'ash',
+]
+const strata: readonly RockTone[] = [
+  'ochre',
+  'rust',
+  'ash',
+  'light',
+  'rust',
+  'ochre',
+  'ash',
+  'rust',
+]
+
+function geologyOf(range: MountainRange): Geology {
+  if (range.tier !== 'foreground') return 'alpine'
+  return range.form === 'limestone-wall' ? 'banded' : 'fluted'
+}
+
+// Rock below the crest, read as a slope face: t runs 0 at the crest to 1 at the range floor, and
+// `crestY` is the crest in screen space. Light comes from the upper left.
+function sedimentary(
+  surface: MountainColumn,
+  worldX: number,
+  worldY: number,
+  crestY: number,
+  t: number,
+  threshold: number,
+): RockTone | undefined {
+  const { geology, slope, range } = surface
+  const depth = worldY - crestY
+  const lit = slope < -0.12 ? 1 : slope > 0.12 ? -1 : 0
+  if (geology === 'fluted') {
+    // Gullies run straight downhill and widen into talus toward the foot.
+    const lean = Math.max(-0.7, Math.min(0.7, -slope * 0.8))
+    const u = worldX + depth * lean
+    const phase = u / (14 + t * 14) + Math.sin(u / 53 + range.phase) * 0.8
+    const rib = Math.sin(phase * Math.PI * 2)
+    const facing = Math.cos(phase * Math.PI * 2)
+    if (depth < 3) return 'light'
+    if (rib < -0.8) return t < 0.4 ? 'light' : 'fracture'
+    if (t > 0.62 && threshold < (t - 0.62) * 2.4) return 'moss'
+    if (facing > 0.35 + lit * 0.2) return threshold < 0.5 ? 'rock' : 'shade'
+    if (facing < -0.35 + lit * 0.2) return 'basalt'
+    return lit > 0 ? 'rock' : 'shade'
+  }
+  if (geology === 'banded') {
+    if (depth < 5) return threshold < 0.25 ? 'shade' : 'ash'
+    const layer = worldY + Math.sin(worldX / 41 + range.phase) * 3 + Math.sin(worldX / 13) * 1.2
+    const band = strata[((Math.floor(layer / 9) % strata.length) + strata.length) % strata.length]
+    // Rills cut the soft layers into vertical flutes; a rill's shaded wall faces right.
+    const rill = Math.sin(worldX / 4.5 + Math.sin(worldY / 17) * 2)
+    if (rill > 0.82 - t * 0.2) return lit < 0 ? 'basalt' : 'shade'
+    if (lit < 0 && threshold < 0.375) return 'shade'
+    return band
+  }
+  return undefined
+}
+
 const foothillTones: readonly FoothillTone[] = ['far', 'mid', 'near']
 
 function coordinate(value: number) {
@@ -109,6 +194,10 @@ export function trailMountainBackdrop(
         edge: 350,
         verticalScale: 350 / range.height,
         grain: Math.sin(profileX / 39 + range.phase),
+        slope:
+          ((heightAt(terrain.crest, profileX + 10) - heightAt(terrain.crest, profileX - 10)) / 20) *
+          (range.mirrored ? -1 : 1),
+        geology: geologyOf(range),
       }
     })
     columns.set(column, visible)
@@ -120,31 +209,65 @@ export function trailMountainBackdrop(
   const thresholdAt = (column: number, row: number, range: MountainRange) =>
     bayer[((row + phaseY + range.index) % 4) * 4 + ((column + phaseX + range.index * 3) % 4)] / 16
 
-  const ridge = pixelLayers(alpine, rockTones, 'trail-mountain', (worldX, worldY, column, row) => {
-    const surface = rangesInColumn(worldX, column).find(candidate => {
+  const surfaceAt = (worldX: number, worldY: number, column: number, alpineFace: boolean) =>
+    rangesInColumn(worldX, column).find(candidate => {
       const y = 350 + (worldY - candidate.range.base) * candidate.verticalScale
-      return y >= candidate.crest && y <= candidate.floor
+      return (
+        (candidate.geology === 'alpine') === alpineFace &&
+        y >= candidate.crest &&
+        y <= candidate.floor
+      )
     })
-    if (!surface) return undefined
-    const { range, x } = surface
-    const terrain = mountainTerrain(range)
-    const y = 350 + (worldY - range.base) * surface.verticalScale
-    const threshold = thresholdAt(column, row, range)
-    const grain = surface.grain * Math.sin(y / 24 + x / 88)
-    if (terrain.snow.some(field => contains(x, y, field))) {
-      if (y - surface.crest < 9) return 'light'
-      return threshold < 0.0625 && grain > 0.2 ? 'light' : 'snow'
-    }
-    if (terrain.strata.some(shelf => contains(x, y, shelf))) {
-      return threshold < 0.75 ? (range.depth < 0.88 ? 'shade' : 'fracture') : 'shade'
-    }
-    if (y > 243 && threshold < 0.125 && grain > 0.35) return 'lichen'
-    const shaded = terrain.shade.some(face => contains(x, y, face))
-    if (y > 328) return threshold < 0.125 ? 'rock' : 'light'
-    if (threshold < 0.125 && grain > -0.2) return shaded ? 'rock' : 'light'
-    if (threshold > 0.8125 && grain < -0.35) return shaded ? 'fracture' : 'shade'
-    return shaded ? (range.depth < 0.88 ? 'rock' : 'shade') : 'rock'
-  })
+  const ridge = pixelLayers(
+    alpine,
+    alpineTones,
+    'trail-mountain',
+    (worldX, worldY, column, row) => {
+      const surface = surfaceAt(worldX, worldY, column, true)
+      if (!surface) return undefined
+      const { range, x } = surface
+      const terrain = mountainTerrain(range)
+      const y = 350 + (worldY - range.base) * surface.verticalScale
+      const threshold = thresholdAt(column, row, range)
+      const grain = surface.grain * Math.sin(y / 24 + x / 88)
+      // Alpine faces catch a rim of light along the crest on the sunward side.
+      if (y - surface.crest < 4 && surface.slope < -0.1) return 'light'
+      if (terrain.snow.some(field => contains(x, y, field))) {
+        if (y - surface.crest < 9) return 'light'
+        return threshold < 0.0625 && grain > 0.2 ? 'light' : 'snow'
+      }
+      if (terrain.strata.some(shelf => contains(x, y, shelf))) {
+        return threshold < 0.75 ? (range.depth < 0.88 ? 'shade' : 'fracture') : 'shade'
+      }
+      if (y > 243 && threshold < 0.125 && grain > 0.35) return 'lichen'
+      const shaded = terrain.shade.some(face => contains(x, y, face))
+      if (y > 328) return threshold < 0.125 ? 'rock' : 'light'
+      if (threshold < 0.125 && grain > -0.2) return shaded ? 'rock' : 'light'
+      if (threshold > 0.8125 && grain < -0.35) return shaded ? 'fracture' : 'shade'
+      return shaded ? (range.depth < 0.88 ? 'rock' : 'shade') : 'rock'
+    },
+  )
+
+  const lowlands = pixelLayers(
+    alpine,
+    lowlandTones,
+    'trail-mountain',
+    (worldX, worldY, column, row) => {
+      const surface = surfaceAt(worldX, worldY, column, false)
+      if (!surface) return undefined
+      const y = 350 + (worldY - surface.range.base) * surface.verticalScale
+      const crestY = surface.range.base + (surface.crest - 350) / surface.verticalScale
+      const t = (y - surface.crest) / Math.max(1, surface.floor - surface.crest)
+      return sedimentary(
+        surface,
+        worldX,
+        worldY,
+        crestY,
+        t,
+        thresholdAt(column, row, surface.range),
+      )
+    },
+  )
 
   const foothills = pixelLayers(
     alpine,
@@ -153,16 +276,20 @@ export function trailMountainBackdrop(
     (worldX, worldY, column, row) => {
       const surface = rangesInColumn(worldX, column).find(candidate => {
         const y = 350 + (worldY - candidate.range.base) * candidate.verticalScale
-        return y >= candidate.far && y <= candidate.edge
+        return candidate.range.tier === 'foreground' && y >= candidate.far && y <= candidate.edge
       })
       if (!surface) return undefined
       const { range, far, near, edge } = surface
       const y = 350 + (worldY - range.base) * surface.verticalScale
       const threshold = thresholdAt(column + 2, row + 1, range)
+      // Moss hummocks, like an Icelandic lava field: each mound is shaded on its lower right.
+      const mound =
+        Math.sin(worldX / 9 + Math.sin(worldY / 7) * 1.6) * Math.sin(worldY / 4.5 + worldX / 31)
       if (y >= near) {
         if (y > edge - 8 && threshold < 0.25) return undefined
-        return threshold < 0.125 ? 'mid' : 'near'
+        return threshold < 0.125 || (mound > 0.55 && threshold < 0.6) ? 'mid' : 'near'
       }
+      if (y > far + 6 && mound > 0.6 && threshold < 0.5) return 'mid'
       return threshold < 0.125 && y > far + 14 ? 'mid' : 'far'
     },
   )
@@ -171,6 +298,7 @@ export function trailMountainBackdrop(
     index,
     form,
     tier,
+    geology: geologyOf(ranges[index]),
     left,
     width,
     height,
@@ -178,10 +306,12 @@ export function trailMountainBackdrop(
     depth,
   }))
   const tracks = buildMountainTracks(alpine, seed, entrances)
+  // The route paths carry the walking geometry; the carved bench underneath is what shows.
+  const routes = tracks
     .map(track => {
       const [first, ...rest] = track.points
       const path = `M${coordinate(first.x)} ${coordinate(first.y)}${rest.map(point => `L${coordinate(point.x)} ${coordinate(point.y)}`).join('')}`
-      return `<path class="trail-mountain-track" data-mountain-track="${track.id}" data-mountain-range="${track.rangeIndex}" data-mountain-kind="${track.kind}" data-mountain-depth="${coordinate(track.depth)}" d="${path}"/>`
+      return `<path class="trail-mountain-route" data-mountain-track="${track.id}" data-mountain-range="${track.rangeIndex}" data-mountain-kind="${track.kind}" data-mountain-depth="${coordinate(track.depth)}" d="${path}"/>`
     })
     .join('')
 
@@ -190,12 +320,14 @@ export function trailMountainBackdrop(
         <g data-formation="bernese-alps" data-peaks="eiger monch jungfrau" data-mountain-ranges="${ranges.length}" data-mountain-atlas='${JSON.stringify(atlas)}' transform="${placement}">
           ${ridge}
         </g>
+        <g class="trail-alpine-climbers" aria-hidden="true"></g>
       </g>
       <g data-trail-depth="foothill">
-        <g data-formation="foothills" transform="${placement}" style="--trail-mountain-delay: 900ms">
+        <g data-formation="foothills" transform="${placement}">
+          ${lowlands}
           ${foothills}
         </g>
-        <g class="trail-mountain-roads">${tracks}</g>
+        <g class="trail-mountain-roads">${carvedTrails(alpine, ranges, tracks)}${routes}</g>
         <g class="trail-foothill-trees"></g>
         <g class="trail-alpine-tracks"></g>
         <g class="trail-alpine-travelers"></g>

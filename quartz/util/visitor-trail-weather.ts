@@ -13,6 +13,9 @@ export type TrailWeather = {
   snowCm: number | null
   season: TrailSeason | null
   day: boolean | null
+  // The visitor's forecast cell, which places the sun and moon over the trail.
+  lat: number | null
+  lon: number | null
 }
 
 type TrailWeatherEvents = {
@@ -67,6 +70,8 @@ function readTrailWeather(value: unknown): TrailWeather | null {
         ? value.season
         : null,
     day: typeof value.day === 'boolean' ? value.day : null,
+    lat: finite(value.lat) && Math.abs(value.lat) <= 90 ? value.lat : null,
+    lon: finite(value.lon) && Math.abs(value.lon) <= 180 ? value.lon : null,
   }
 }
 
@@ -99,6 +104,8 @@ export function createVisitorTrailWeatherSource(target: Document, signal: AbortS
             snowCm: weather.snow,
             season: calendarSeason(forecast?.lat ?? null, now),
             day: next ? next.kind === 'sunset' : weather.day,
+            lat: forecast?.lat ?? null,
+            lon: forecast?.lon ?? null,
           }
         : null
       const value = JSON.stringify(current)

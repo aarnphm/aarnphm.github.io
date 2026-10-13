@@ -1,3 +1,5 @@
+import { svgPathGeometry } from '../../util/svg-geometry'
+
 type Bounds = Pick<DOMRect, 'left' | 'right' | 'top' | 'bottom'>
 type RouteSample = { distance: number; x: number; y: number }
 
@@ -76,12 +78,13 @@ export function placeCampHints(scene: HTMLElement) {
       .querySelector<SVGTextPathElement>(`textPath[href="#${hint.id}"]`)
       ?.closest<SVGTextElement>('text')
     if (!route?.hasAttribute('d') || !text) continue
-    const nearestEnd = Math.max(0, route.getTotalLength() - 24)
+    const geometry = svgPathGeometry(route)
+    const nearestEnd = Math.max(0, geometry.getTotalLength() - 24)
     const earliestStart = Math.max(0, nearestEnd - 460)
     const steps = Math.max(1, Math.ceil(nearestEnd - earliestStart))
     const samples = Array.from({ length: steps + 1 }, (_, index) => {
       const distance = earliestStart + ((nearestEnd - earliestStart) * index) / steps
-      const point = route.getPointAtLength(distance)
+      const point = geometry.getPointAtLength(distance)
       return { distance, x: point.x, y: point.y }
     })
     let bestEnd = nearestEnd
@@ -112,7 +115,7 @@ export function placeCampHints(scene: HTMLElement) {
         rect.right <= bounds.right - gap &&
         rect.top >= bounds.top + gap &&
         rect.bottom <= bounds.bottom - gap &&
-        text.getComputedTextLength() + gap * 2 <= hint.getTotalLength() &&
+        text.getComputedTextLength() + gap * 2 <= svgPathGeometry(hint).getTotalLength() &&
         readableText(text)
       const score = fits
         ? obstacles.reduce((sum, other) => sum + overlap(rect, other), 0)

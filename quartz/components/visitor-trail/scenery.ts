@@ -1,5 +1,6 @@
-import { groundOffset, onDryLand, pondDistance, type Landscape } from './landscape'
+import { creekDistance, groundOffset, onDryLand, pondDistance, type Landscape } from './landscape'
 import { trailRandom } from './random'
+import { trailUnderstory } from './understory'
 
 export type ForestSettings = {
   density: number
@@ -12,10 +13,10 @@ export type ForestSettings = {
   dapple: number
 }
 export const defaultForestSettings: ForestSettings = {
-  density: 48,
+  density: 64,
   depth: 9,
   angle: 26,
-  size: 150,
+  size: 240,
   curl: 4,
   branching: 85,
   variation: 70,
@@ -25,7 +26,7 @@ export const forestLimits: Record<
   keyof ForestSettings,
   { min: number; max: number; step: number }
 > = {
-  density: { min: 8, max: 72, step: 1 },
+  density: { min: 8, max: 96, step: 1 },
   depth: { min: 2, max: 9, step: 1 },
   angle: { min: 15, max: 45, step: 1 },
   size: { min: 60, max: 240, step: 5 },
@@ -35,15 +36,214 @@ export const forestLimits: Record<
   dapple: { min: 0, max: 100, step: 5 },
 }
 
-type TreeKind = 'pine' | 'spruce' | 'cypress' | 'birch' | 'oak'
+type TreeKind =
+  | 'pine'
+  | 'spruce'
+  | 'fir'
+  | 'hemlock'
+  | 'cypress'
+  | 'larch'
+  | 'birch'
+  | 'aspen'
+  | 'oak'
+  | 'maple'
+  | 'willow'
+  | 'sequoia'
+  | 'snag'
+type Crown = 'round' | 'cone' | 'spire' | 'column' | 'tuft' | 'tier' | 'droop'
+type Species = {
+  // A single leader with whorled side branches, or a crown that keeps forking as it grows.
+  leader: boolean
+  // Needles neither flutter nor show pale undersides in a gust.
+  needles: boolean
+  crown: Crown
+  spread: number
+  radius: number
+  limb: number
+  // Papery white bark with dark bands every few rows (birch, aspen).
+  bands: number
+  // Share of crown cells left open.
+  sparse: number
+  // Share of the height, from the ground, that carries no foliage.
+  clear: number
+}
 type TreeForm = 'upright' | 'leaning' | 'forked' | 'open' | 'broad'
 type TreeTone = 'sage' | 'lichen' | 'ochre'
 type Point = { x: number; y: number }
 type Tip = Point & { level: number }
 type Turtle = Point & { heading: number; bend: number }
-type Branch = { from: Point; to: Point; level: number }
 type Tone = 'trunk' | 'bark' | 'light' | 'crown' | 'dark' | 'gold'
-const kinds: TreeKind[] = ['pine', 'spruce', 'cypress', 'birch', 'oak']
+// Eastern white pine holds its needles in flat tufts; hemlock in drooping tiers; tamarack is a
+// thin conifer that turns gold; aspen is a narrow crown on pale bark; willow hangs in curtains.
+const species: Record<TreeKind, Species> = {
+  pine: {
+    leader: true,
+    needles: true,
+    crown: 'tuft',
+    spread: 1.15,
+    radius: 4,
+    limb: 1.3,
+    bands: 0,
+    sparse: 0.1,
+    clear: 0,
+  },
+  spruce: {
+    leader: true,
+    needles: true,
+    crown: 'cone',
+    spread: 0.7,
+    radius: 4,
+    limb: 1,
+    bands: 0,
+    sparse: 0,
+    clear: 0,
+  },
+  fir: {
+    leader: true,
+    needles: true,
+    crown: 'spire',
+    spread: 0.5,
+    radius: 3.5,
+    limb: 0.9,
+    bands: 0,
+    sparse: 0,
+    clear: 0,
+  },
+  hemlock: {
+    leader: true,
+    needles: true,
+    crown: 'tier',
+    spread: 0.95,
+    radius: 4.5,
+    limb: 1,
+    bands: 0,
+    sparse: 0.04,
+    clear: 0,
+  },
+  cypress: {
+    leader: true,
+    needles: true,
+    crown: 'column',
+    spread: 0.45,
+    radius: 4,
+    limb: 0.9,
+    bands: 0,
+    sparse: 0,
+    clear: 0,
+  },
+  larch: {
+    leader: true,
+    needles: true,
+    crown: 'cone',
+    spread: 0.8,
+    radius: 3.5,
+    limb: 0.85,
+    bands: 0,
+    sparse: 0.32,
+    clear: 0,
+  },
+  birch: {
+    leader: false,
+    needles: false,
+    crown: 'round',
+    spread: 1,
+    radius: 5,
+    limb: 0.85,
+    bands: 5,
+    sparse: 0.04,
+    clear: 0,
+  },
+  aspen: {
+    leader: false,
+    needles: false,
+    crown: 'column',
+    spread: 0.6,
+    radius: 4.5,
+    limb: 0.8,
+    bands: 7,
+    sparse: 0.06,
+    clear: 0,
+  },
+  oak: {
+    leader: false,
+    needles: false,
+    crown: 'round',
+    spread: 1.2,
+    radius: 5.5,
+    limb: 1.5,
+    bands: 0,
+    sparse: 0.02,
+    clear: 0,
+  },
+  maple: {
+    leader: false,
+    needles: false,
+    crown: 'round',
+    spread: 1.05,
+    radius: 6,
+    limb: 1.3,
+    bands: 0,
+    sparse: 0,
+    clear: 0,
+  },
+  willow: {
+    leader: false,
+    needles: false,
+    crown: 'droop',
+    spread: 1.3,
+    radius: 5,
+    limb: 1.35,
+    bands: 0,
+    sparse: 0,
+    clear: 0,
+  },
+  // Giant sequoia: a cinnamon column bare for half its height under a few rounded crowns. A snag is a
+  // standing dead conifer, silver, with no foliage at all.
+  sequoia: {
+    leader: true,
+    needles: true,
+    crown: 'round',
+    spread: 0.55,
+    radius: 3.2,
+    limb: 2.1,
+    bands: 0,
+    sparse: 0.04,
+    clear: 0.5,
+  },
+  snag: {
+    leader: true,
+    needles: true,
+    crown: 'cone',
+    spread: 0.75,
+    radius: 1,
+    limb: 1,
+    bands: 0,
+    sparse: 1,
+    clear: 1,
+  },
+}
+const kinds = Object.keys(species) as TreeKind[]
+// Trees that grow together, one stand per grove: boreal, pine–hemlock, sugar-maple hardwood, and
+// Sierra mixed conifer (sequoia with ponderosa, incense cedar and black oak).
+const stands: readonly TreeKind[][] = [
+  ['spruce', 'fir', 'birch', 'larch'],
+  ['pine', 'hemlock', 'birch', 'aspen'],
+  ['maple', 'oak', 'aspen', 'maple'],
+  ['sequoia', 'pine', 'cypress', 'sequoia'],
+]
+const foothillKinds: readonly TreeKind[] = ['pine', 'spruce', 'fir', 'larch']
+// Broadleaves and the larch drop their leaves for the winter.
+const bareInWinter = new Set<TreeKind>(['maple', 'oak', 'aspen', 'birch', 'larch', 'willow'])
+const woodlandKinds: readonly TreeKind[] = [
+  'spruce',
+  'fir',
+  'pine',
+  'larch',
+  'birch',
+  'hemlock',
+  'maple',
+  'aspen',
+]
 const forms: TreeForm[] = ['upright', 'leaning', 'forked', 'open', 'broad']
 const tones: TreeTone[] = ['sage', 'lichen', 'ochre']
 const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
@@ -62,6 +262,59 @@ function canopyTone(x: number, y: number, radius: number, pixel: number, dapple:
   return index === 0 ? 'dark' : index === 1 ? 'crown' : 'light'
 }
 
+// The rows of a crown around one bud: where it starts and ends, how wide each row is, how far the
+// whole crown sits above the bud, and how much its edges sag.
+function crownRows(crown: Crown, r: number) {
+  const ellipse = (y: number, ry: number, rx: number) =>
+    rx * Math.sqrt(Math.max(0, 1 - (y / ry) ** 2))
+  switch (crown) {
+    case 'cone':
+      return { top: -r, bottom: r, lift: -r, sag: 0, span: (y: number) => (y + r) * 0.65 }
+    case 'spire':
+      return {
+        top: -1.6 * r,
+        bottom: r,
+        lift: -r,
+        sag: 0,
+        span: (y: number) => (y + 1.6 * r) * 0.36,
+      }
+    case 'column':
+      return {
+        top: -1.5 * r,
+        bottom: 1.5 * r,
+        lift: -0.4 * r,
+        sag: 0,
+        span: (y: number) => ellipse(y, 1.5 * r, 0.55 * r),
+      }
+    case 'tuft':
+      return {
+        top: -0.6 * r,
+        bottom: 0.4 * r,
+        lift: -0.2 * r,
+        sag: 0.15,
+        span: (y: number) => ellipse(y + 0.1 * r, 0.6 * r, 1.4 * r),
+      }
+    case 'tier':
+      return {
+        top: -0.35 * r,
+        bottom: 0.3 * r,
+        lift: 0,
+        sag: 0.35,
+        span: (y: number) => ellipse(y, 0.4 * r, 1.3 * r),
+      }
+    case 'droop':
+      return {
+        top: -0.7 * r,
+        bottom: 0,
+        lift: 0,
+        sag: 0,
+        span: (y: number) => ellipse(y, 0.7 * r, 1.1 * r),
+      }
+    default:
+      return { top: -r, bottom: r, lift: 0, sag: 0, span: (y: number) => ellipse(y, r, r) }
+  }
+}
+
 function bounded(value: number, field: keyof ForestSettings) {
   const { min, max } = forestLimits[field]
   return Math.max(min, Math.min(max, Math.round(value)))
@@ -76,6 +329,9 @@ function nearestDistance(point: Point, points: Point[]) {
   return Math.sqrt(distance)
 }
 
+// Raster cells are keyed by one number; a tree spans far fewer than 4,096 cells either way.
+const cellKey = (x: number, y: number) => (x + 4096) * 8192 + y + 4096
+
 function tree(
   kind: TreeKind,
   seed: number,
@@ -86,7 +342,11 @@ function tree(
   const random = trailRandom(seed)
   const growth = trailRandom(seed ^ 0x9e3779b9)
   const leaves = trailRandom(seed ^ 0xa46f315b)
-  const evergreen = kind !== 'birch' && kind !== 'oak'
+  const habit = species[kind]
+  // Some pines and cedars keep the narrow cone the forest grew before species had their own crowns.
+  const classic = (kind === 'pine' || kind === 'cypress') && trailRandom(seed ^ 0x5bd1e995)() < 0.45
+  const crownShape: Crown = classic ? 'cone' : habit.crown
+  const spread = classic && kind === 'pine' ? 0.85 : habit.spread
   const depth = bounded(settings.depth, 'depth')
   const probability = bounded(settings.branching, 'branching') / 100
   const variation = bounded(settings.variation, 'variation') / 100
@@ -103,30 +363,32 @@ function tree(
     const bias = branchBias * probability * (1 - probability)
     const left = growth() < probability + bias ? '[+X]' : ''
     const right = growth() < probability - bias ? '[-X]' : ''
-    return evergreen ? `F${left}${right}FX` : `F${left}F${right}+X`
+    return habit.leader ? `F${left}${right}FX` : `F${left}F${right}+X`
   }
   let word = form === 'forked' ? 'FF[+FX][-FX]' : 'FX'
   for (let iteration = 0; iteration < depth; iteration++) {
     word = word.replace(/[XF]/g, symbol => (symbol === 'X' ? rule() : 'FF'))
   }
-  const spread = kind === 'cypress' ? 0.45 : kind === 'spruce' ? 0.7 : kind === 'pine' ? 0.85 : 1
   const angle = (bounded(settings.angle, 'angle') * spread * breadth * Math.PI) / 180
   // Segment counts grow with depth; keep curvature per branch at the same scale.
   const curl = (bounded(settings.curl, 'curl') * Math.PI) / (180 * 2 ** depth)
   let turtle: Turtle = { x: 0, y: 0, heading: -Math.PI / 2 + lean, bend: handedness * 0.4 }
   const stack: Turtle[] = []
-  const branches: Branch[] = []
+  // Each segment as five numbers: from x, from y, to x, to y, and its depth in the branching.
+  const branches: number[] = []
   const tips: Tip[] = []
   let top = 0
-  for (const symbol of word) {
+  for (let index = 0; index < word.length; index++) {
+    const symbol = word[index]
     if (symbol === 'F') {
-      const from = { x: turtle.x, y: turtle.y }
+      const fromX = turtle.x
+      const fromY = turtle.y
       turtle.heading = Math.max(-Math.PI + 0.1, Math.min(-0.1, turtle.heading + turtle.bend * curl))
       const length = 0.78 ** stack.length * (1 + (random() - 0.5) * variation * 0.35)
       turtle.x += Math.cos(turtle.heading) * length
       turtle.y += Math.sin(turtle.heading) * length
       top = Math.min(top, turtle.y)
-      branches.push({ from, to: { x: turtle.x, y: turtle.y }, level: stack.length })
+      branches.push(fromX, fromY, turtle.x, turtle.y, stack.length)
     } else if (symbol === '+' || symbol === '-') {
       const turn = handedness * (symbol === '+' ? 1 : -1)
       turtle.heading += angle * turn * (1 + (random() - 0.5) * variation * 0.65)
@@ -143,90 +405,295 @@ function tree(
   const size = (bounded(settings.size, 'size') / 100) * (1 + (random() - 0.5) * variation * 0.25)
   const scale = ((height - 8) * size) / Math.max(1, -top)
   const pixel = Math.max(minPixel, Math.ceil((height * size) / 54))
-  const cells = new Map<string, { x: number; y: number; tone: Tone }>()
+  const cells = new Map<number, { x: number; y: number; tone: Tone }>()
   const mark = (x: number, y: number, tone: Tone) => {
     const cellX = Math.round(x / pixel)
     const cellY = Math.round(y / pixel)
-    cells.set(`${cellX},${cellY}`, { x: cellX * pixel, y: cellY * pixel, tone })
+    const key = cellKey(cellX, cellY)
+    const cell = cells.get(key)
+    if (cell) cell.tone = tone
+    else cells.set(key, { x: cellX * pixel, y: cellY * pixel, tone })
   }
-  branches.forEach(({ from, to, level }) => {
-    const steps = Math.max(1, Math.ceil((Math.hypot(to.x - from.x, to.y - from.y) * scale) / pixel))
-    const thickness = Math.max(pixel, 2.6 * size * 0.62 ** level)
+  // A broadleaf loses its crown in winter. Its bare frame is kept apart: the trunk, and limbs
+  // grown from it to fill the crown's extent (the L-system's own limbs are short under a full crown,
+  // and at full depth they fill its outline).
+  const deciduous = bareInWinter.has(kind)
+  const limbs = new Map<number, { x: number; y: number; tone: Tone }>()
+  const buds = new Set<number>()
+  const limb = (x: number, y: number, tone: Tone) => {
+    mark(x, y, tone)
+    if (!deciduous) return
+    const cellX = Math.round(x / pixel)
+    const cellY = Math.round(y / pixel)
+    limbs.set(cellKey(cellX, cellY), { x: cellX * pixel, y: cellY * pixel, tone })
+  }
+  for (let index = 0; index < branches.length; index += 5) {
+    const fromX = branches[index]
+    const fromY = branches[index + 1]
+    const toX = branches[index + 2]
+    const toY = branches[index + 3]
+    const level = branches[index + 4]
+    const steps = Math.max(1, Math.ceil((Math.hypot(toX - fromX, toY - fromY) * scale) / pixel))
+    const girth = Math.max(pixel, 3.4 * size * habit.limb * 0.66 ** level)
     for (let step = 0; step <= steps; step++) {
       const fraction = step / steps
-      const x = (from.x + (to.x - from.x) * fraction) * scale
-      const y = (from.y + (to.y - from.y) * fraction) * scale
-      const bark = kind === 'birch' && Math.floor(-y / pixel) % 5 !== 0
+      const x = (fromX + (toX - fromX) * fraction) * scale
+      const y = (fromY + (toY - fromY) * fraction) * scale
+      // The trunk flares where its roots meet the ground.
+      const flare = level === 0 && y > -height * size * 0.08 ? 1.6 : 1
+      const thickness = girth * flare
+      const bark = habit.bands > 0 && Math.floor(-y / pixel) % habit.bands !== 0
       for (let offset = -thickness / 2; offset <= thickness / 2; offset += pixel)
-        mark(x + offset, y, bark ? 'bark' : 'trunk')
+        (level === 0 ? limb : mark)(x + offset, y, bark ? 'bark' : 'trunk')
     }
-  })
-  const crowns = new Set<string>()
+  }
+  const crowns = new Set<number>()
   tips.forEach(tip => {
     // Buds within one raster cell at the same depth share a crown.
-    const crown = `${Math.round((tip.x * scale) / pixel)},${Math.round((tip.y * scale) / pixel)},${tip.level}`
+    const crown =
+      cellKey(Math.round((tip.x * scale) / pixel), Math.round((tip.y * scale) / pixel)) * 16 +
+      tip.level
     if (crowns.has(crown)) return
     crowns.add(crown)
+    if (tip.y >= top * habit.clear) return
     if (leaves() < (form === 'open' ? 0.3 : 0.06) * variation) return
-    const radius = (evergreen ? 4 + leaves() * 2.5 : 5 + leaves() * 3.5) * size * 0.9 ** tip.level
+    const radius = (habit.radius + leaves() * habit.radius * 0.6) * size * 0.9 ** tip.level
     const fullness = breadth * (0.9 + leaves() * variation * 0.35)
-    for (let y = -radius; y <= radius; y += pixel) {
-      const edge = 1 + Math.sin(y * 0.8 + tip.x) * variation * 0.12
-      const span =
-        (evergreen ? (y + radius) * 0.65 : Math.sqrt(Math.max(0, radius * radius - y * y))) *
-        fullness *
-        edge
-      for (let x = -span; x <= span; x += pixel) {
-        const rim = Math.abs(x) > span * 0.82
-        if (leaves() < variation * (rim ? 0.16 : form === 'open' ? 0.08 : 0.015)) continue
-        mark(
-          tip.x * scale + x,
-          tip.y * scale + y - (evergreen ? radius : 0),
-          canopyTone(x, y, radius, pixel, dapple),
-        )
-      }
+    const rows = crownRows(crownShape, radius)
+    const leaf = (x: number, y: number, rim: boolean) => {
+      if (leaves() < habit.sparse + variation * (rim ? 0.16 : form === 'open' ? 0.08 : 0.015))
+        return
+      mark(
+        tip.x * scale + x,
+        tip.y * scale + y + rows.lift,
+        canopyTone(x, y, radius, pixel, dapple),
+      )
     }
+    for (let y = rows.top; y <= rows.bottom; y += pixel) {
+      const edge = 1 + Math.sin(y * 0.8 + tip.x) * variation * 0.12
+      const span = rows.span(y) * fullness * edge
+      for (let x = -span; x <= span; x += pixel)
+        leaf(x, y + rows.sag * radius * (x / Math.max(pixel, span)) ** 2, Math.abs(x) > span * 0.82)
+    }
+    // Willow strands hang from the dome in curtains, a gap every few columns.
+    if (habit.crown === 'droop')
+      for (let x = -radius * 1.1; x <= radius * 1.1; x += pixel) {
+        const strand = Math.imul(Math.round(x / pixel) + tip.level * 7, 2654435761) >>> 0
+        if (strand % 4 === 0) continue
+        const length = radius * (1.3 + ((strand >>> 4) % 5) * 0.22)
+        for (let y = 0; y <= length; y += pixel) leaf(x, y, y > length - pixel * 2)
+      }
   })
-  const paths: Record<Tone, string[]> = {
-    trunk: [],
-    bark: [],
-    light: [],
-    crown: [],
-    dark: [],
-    gold: [],
-  }
+  const paths: Record<'trunk' | 'bark', string[]> = { trunk: [], bark: [] }
   let crownTop = 0
   let trunkRadius = 1
-  const snow: string[] = []
+  const woodySnow: string[] = []
+  const foliage = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity }
   for (const { x, y, tone } of cells.values()) {
     crownTop = Math.min(crownTop, y)
     if ((tone === 'trunk' || tone === 'bark') && y >= -pixel * 2)
       trunkRadius = Math.max(trunkRadius, Math.abs(x), Math.abs(x + pixel))
-    paths[tone].push(`M${x} ${y}h${pixel}v${pixel}h${-pixel}Z`)
-    const woody = tone === 'trunk' || tone === 'bark'
-    if ((!woody || y < -height * size * 0.3) && !cells.has(`${x / pixel},${y / pixel - 1}`))
-      snow.push(`M${x} ${y}h${pixel}v${Math.max(1, Math.floor(pixel / 2))}h${-pixel}Z`)
+    if (tone === 'trunk' || tone === 'bark') {
+      paths[tone].push(`M${x} ${y}h${pixel}v${pixel}h${-pixel}Z`)
+      if (y < -height * size * 0.3 && !cells.has(cellKey(x / pixel, y / pixel - 1)))
+        woodySnow.push(`M${x} ${y}h${pixel}v${Math.max(1, Math.floor(pixel / 2))}h${-pixel}Z`)
+      continue
+    }
+    foliage.left = Math.min(foliage.left, x)
+    foliage.right = Math.max(foliage.right, x + pixel)
+    foliage.top = Math.min(foliage.top, y)
+    foliage.bottom = Math.max(foliage.bottom, y + pixel)
   }
+  if (deciduous && foliage.top < foliage.bottom) {
+    const bare = trailRandom(seed ^ 0x6c8e9cf5)
+    // Birch and aspen keep their limbs close and upright, larch holds them out level in tiers,
+    // willow hangs its twigs, and oak forks wide and crooked.
+    const fan =
+      habit.crown === 'column' ? 0.34 : habit.crown === 'cone' ? 0.95 : kind === 'oak' ? 0.8 : 0.6
+    const crook = kind === 'oak' ? 0.5 : 0.22
+    const stem = Math.max(pixel, 3.4 * size * habit.limb * 0.7)
+    const inside = (x: number, y: number) =>
+      x >= foliage.left - pixel &&
+      x <= foliage.right + pixel &&
+      y >= foliage.top - pixel &&
+      y <= foliage.bottom
+    const put = (x: number, y: number) => {
+      const cellX = Math.round(x / pixel)
+      const cellY = Math.round(y / pixel)
+      const key = cellKey(cellX, cellY)
+      if (!limbs.has(key)) limbs.set(key, { x: cellX * pixel, y: cellY * pixel, tone: 'trunk' })
+      return key
+    }
+    const twigs = (x: number, y: number, heading: number) => {
+      const hang = habit.crown === 'droop'
+      const count = (hang ? 1 : 2) + Math.floor(bare() * 2)
+      for (let index = 0; index < count; index++) {
+        const turn = hang
+          ? Math.PI / 2 + (bare() - 0.5) * 0.5
+          : heading + (index - (count - 1) / 2) * 0.7 + (bare() - 0.5) * 0.4
+        const length = (hang ? 4 + bare() * 6 : 2 + bare() * 3) * pixel
+        let end: number | null = null
+        for (let along = pixel; along <= length; along += pixel)
+          end = put(x + Math.cos(turn) * along, y + Math.sin(turn) * along)
+        // One twig end in three opens a flower or catkin in early spring.
+        if (end !== null && bare() < 0.34) buds.add(end)
+      }
+    }
+    const grow = (x: number, y: number, heading: number, length: number, order: number) => {
+      const girth = Math.max(pixel, stem * 0.55 ** order)
+      let endX = x
+      let endY = y
+      for (let along = 0; along <= length; along += pixel) {
+        const px = x + Math.cos(heading) * along
+        const py = y + Math.sin(heading) * along
+        if (!inside(px, py)) break
+        for (let offset = -girth / 2; offset < girth / 2 || offset === -girth / 2; offset += pixel)
+          put(px + offset, py)
+        endX = px
+        endY = py
+      }
+      if (order >= 3) return twigs(endX, endY, heading)
+      const count = 2 + (bare() < 0.35 ? 1 : 0)
+      for (let index = 0; index < count; index++) {
+        const turn = heading + (index - (count - 1) / 2) * fan + (bare() - 0.5) * crook
+        grow(
+          endX,
+          endY,
+          Math.max(-Math.PI + 0.12, Math.min(-0.12, turn)),
+          length * (0.55 + bare() * 0.2),
+          order + 1,
+        )
+      }
+    }
+    // Limbs leave the trunk where it enters the crown, alternating sides up to the leader's top,
+    // which carries on toward the crown top.
+    const leader: Point[] = []
+    for (let index = 0; index < branches.length; index += 5)
+      if (branches[index + 4] === 0 && branches[index + 3] * scale < foliage.bottom)
+        leader.push({ x: branches[index + 2] * scale, y: branches[index + 3] * scale })
+    const height = foliage.bottom - foliage.top
+    const forks = 2 + Math.floor(bare() * 3)
+    for (let index = 0; index < forks && leader.length; index++) {
+      const at = leader[Math.floor(((index + 0.5) / forks) * leader.length)]
+      const side = index % 2 ? 1 : -1
+      const turn = -Math.PI / 2 + side * (fan * 1.1 + bare() * 0.3)
+      grow(at.x, at.y, turn, height * (0.45 - (index / forks) * 0.15), 1)
+    }
+    const crest = leader.at(-1) ?? { x: 0, y: foliage.bottom }
+    grow(crest.x, crest.y, -Math.PI / 2 + (bare() - 0.5) * 0.3, height * 0.4, 1)
+  }
+  // Wind moves leaves and twigs; the trunk and limbs stay put. The canopy splits into a 3 × 3 grid
+  // of clusters, each shifting by whole cells, so a gust can cross the crown one cluster at a time.
+  type Cluster = {
+    marks: Record<Exclude<Tone, 'trunk' | 'bark'>, string[]>
+    snow: string[]
+    flip: string[]
+    sprout: string[]
+  }
+  const clusters = new Map<number, Cluster>()
+  // A still copy of the crown in its shade tone sits under the clusters, so a cluster that shifts
+  // uncovers shaded leaves rather than the paper, at the seams and along the silhouette alike. The
+  // gaps in a sparse crown are not on it and stay open.
+  const hollow: string[] = []
+  const binWidth = Math.max(pixel, (foliage.right - foliage.left) / 3)
+  const binHeight = Math.max(pixel, (foliage.bottom - foliage.top) / 3)
+  for (const { x, y, tone } of cells.values()) {
+    if (tone === 'trunk' || tone === 'bark') continue
+    const column = Math.min(2, Math.floor((x - foliage.left) / binWidth))
+    const row = Math.min(2, Math.floor((y - foliage.top) / binHeight))
+    const key = row * 3 + column
+    let cluster = clusters.get(key)
+    if (!cluster) {
+      cluster = {
+        marks: { light: [], crown: [], dark: [], gold: [] },
+        snow: [],
+        flip: [],
+        sprout: [],
+      }
+      clusters.set(key, cluster)
+    }
+    const cell = `M${x} ${y}h${pixel}v${pixel}h${-pixel}Z`
+    cluster.marks[tone].push(cell)
+    hollow.push(cell)
+    const exposed = !cells.has(cellKey(x / pixel, y / pixel - 1))
+    if (exposed)
+      cluster.snow.push(`M${x} ${y}h${pixel}v${Math.max(1, Math.floor(pixel / 2))}h${-pixel}Z`)
+    // Broadleaves show their paler undersides when a gust turns them; needles do not.
+    let hash = Math.imul(x / pixel, 374761393) + Math.imul(y / pixel, 668265263)
+    hash = Math.imul(hash ^ (hash >>> 13), 1274126177)
+    hash = (hash ^ (hash >>> 16)) >>> 0
+    if (!habit.needles && tone !== 'light' && hash % (kind === 'aspen' ? 4 : 7) === 0)
+      cluster.flip.push(cell)
+    // The first leaves of spring, and the last of autumn, are a third of a broadleaf crown. A
+    // conifer's new growth comes at the tips of its shoots, on top of the old needles.
+    if (habit.needles ? exposed && (hash >>> 3) % 2 === 0 : (hash >>> 3) % 3 === 0)
+      cluster.sprout.push(cell)
+  }
+  const extent = Math.max(1, -crownTop)
+  const canopy = [...clusters.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([key, cluster]) => {
+      const centreX = foliage.left + ((key % 3) + 0.5) * binWidth
+      const centreY = foliage.top + (Math.floor(key / 3) + 0.5) * binHeight
+      // Displacement grows toward the crown top, like a cantilever loaded along its length.
+      const lift = Math.max(0.15, Math.min(1, -centreY / extent)) ** 1.5
+      return (
+        `<g class="trail-tree-leaves" style="--leaf-x:${centreX.toFixed(1)};--leaf-y:${centreY.toFixed(1)};--leaf-lift:${lift.toFixed(2)};--leaf-cell:${pixel}px">` +
+        (['light', 'crown', 'dark', 'gold'] as const)
+          .filter(tone => cluster.marks[tone].length)
+          .map(tone => `<path class="trail-tree-${tone}" d="${cluster.marks[tone].join('')}"/>`)
+          .join('') +
+        (cluster.flip.length
+          ? `<path class="trail-tree-flip" d="${cluster.flip.join('')}"/>`
+          : '') +
+        (cluster.sprout.length
+          ? `<path class="trail-tree-sprout" d="${cluster.sprout.join('')}"/>`
+          : '') +
+        `<path class="trail-tree-snow" d="${cluster.snow.join('')}"/>` +
+        '</g>'
+      )
+    })
+    .join('')
+  // Bare limbs: the trunk the crown hid and the frame grown into it, with snow along their tops.
+  const bare: Record<'trunk' | 'bark', string[]> = { trunk: [], bark: [] }
+  const bareSnow: string[] = []
+  for (const [key, { x, y, tone }] of limbs) {
+    const shown = cells.get(key)
+    if (shown && (shown.tone === 'trunk' || shown.tone === 'bark')) continue
+    bare[tone === 'bark' ? 'bark' : 'trunk'].push(`M${x} ${y}h${pixel}v${pixel}h${-pixel}Z`)
+    if (!limbs.has(cellKey(x / pixel, y / pixel - 1)))
+      bareSnow.push(`M${x} ${y}h${pixel}v${Math.max(1, Math.floor(pixel / 2))}h${-pixel}Z`)
+  }
+  // Early spring opens flowers and catkins at the twig ends, before the leaves.
+  const bloom = [...buds]
+    .map(key => {
+      const { x, y } = limbs.get(key)!
+      return `M${x} ${y}h${pixel}v${pixel}h${-pixel}Z`
+    })
+    .join('')
+  const limbMarkup = deciduous
+    ? `<g class="trail-tree-limbs">${(['trunk', 'bark'] as const)
+        .filter(tone => bare[tone].length)
+        .map(tone => `<path class="trail-tree-${tone}" d="${bare[tone].join('')}"/>`)
+        .join(
+          '',
+        )}<path class="trail-tree-snow" d="${bareSnow.join('')}"/><path class="trail-tree-bud" d="${bloom}"/></g>`
+    : ''
   const shadow = Math.round(8 + size * breadth * 4)
   return {
     form,
     tone,
-    extent: Math.max(1, -crownTop),
+    extent,
     trunkRadius,
     markup:
       `<path class="trail-tree-shadow" d="M${-shadow} 0h${shadow * 2}v2h-3v2h${-shadow * 2 + 6}V2h-3Z"/>` +
       '<g class="trail-tree-motion">' +
-      Object.entries(paths)
-        .filter(([tone]) => tone === 'trunk' || tone === 'bark')
-        .map(([tone, marks]) => `<path class="trail-tree-${tone}" d="${marks.join('')}"/>`)
+      (['trunk', 'bark'] as const)
+        .map(tone => `<path class="trail-tree-${tone}" d="${paths[tone].join('')}"/>`)
         .join('') +
-      '<g class="trail-tree-canopy">' +
-      Object.entries(paths)
-        .filter(([tone]) => tone !== 'trunk' && tone !== 'bark')
-        .map(([tone, marks]) => `<path class="trail-tree-${tone}" d="${marks.join('')}"/>`)
-        .join('') +
-      `<path class="trail-tree-snow" d="${snow.join('')}"/>` +
-      '</g>' +
+      `<path class="trail-tree-snow" d="${woodySnow.join('')}"/>` +
+      limbMarkup +
+      `<g class="trail-tree-canopy"><path class="trail-tree-hollow" d="${hollow.join('')}"/>${canopy}</g>` +
       '</g>',
   }
 }
@@ -269,10 +736,15 @@ export function* trailTreeSprites(
   const { width, meadowTop, camp, groves, pond, alpine, treeline } = landscape
   const clearing = camp.y - meadowTop
   const random = trailRandom(seed ^ 0x7f4a7c15)
-  const count = bounded(settings.density, 'density')
+  // The groves keep their size on a wide meadow, so a wide screen takes up to half again as many
+  // trees to keep the stands as thick.
+  const count = Math.round(
+    bounded(settings.density, 'density') * Math.min(1.5, Math.max(1, width / 1280)),
+  )
   const roots: Point[] = []
   const placements = Array.from({ length: count }, (_, index) => {
-    const standalone = index % 4 === 3 || index >= 32
+    // One tree in four stands alone; the rest fill the groves, so more trees thicken the stands.
+    const standalone = index % 4 === 3
     const foothill = standalone && index < 24
     const cluster = (index - Math.floor(index / 4)) % groves.length
     const grove = groves[cluster]
@@ -296,9 +768,10 @@ export function* trailTreeSprites(
         const y = spread
           ? meadowTop + 64 + random() * Math.max(1, clearing - 100)
           : grove.y + Math.sin(angle) * grove.ry * radius
-        const candidate = onDryLand({ x, y: y + groundOffset(x, landscape) * 0.3 }, landscape, 1.9)
+        const candidate = onDryLand({ x, y: y + groundOffset(x, landscape, y) }, landscape, 1.9)
         if (
           pondDistance(candidate, pond) <= 1.85 ||
+          creekDistance(candidate, landscape) <= 16 ||
           Math.hypot(candidate.x - camp.x, candidate.y - camp.y) <= 102 ||
           clearings.some(
             site => Math.hypot(candidate.x - site.x, candidate.y - site.y) < site.radius,
@@ -335,14 +808,19 @@ export function* trailTreeSprites(
     }
     roots.push(root)
     const identity = trailRandom(0x777034b3 ^ Math.imul(index + 1, 16807))
-    const kind =
-      kinds[
-        foothill
-          ? Math.floor(identity() * 2)
-          : standalone
-            ? Math.floor(identity() * kinds.length)
-            : (cluster + Math.floor(identity() * 2)) % kinds.length
-      ]
+    const pick = identity()
+    // Willows take the pond shore; groves keep to their stand; the foothills are montane conifer.
+    // One lone tree in eight is a snag left standing after a burn.
+    const upland = kinds.filter(kind => kind !== 'willow' && kind !== 'snag')
+    const kind: TreeKind = foothill
+      ? foothillKinds[Math.floor(pick * foothillKinds.length)]
+      : pondDistance(root, pond) < 2.8 && pick < 0.7
+        ? 'willow'
+        : standalone
+          ? pick < 0.125
+            ? 'snag'
+            : upland[Math.floor(((pick - 0.125) / 0.875) * upland.length)]
+          : stands[cluster % stands.length][Math.floor(pick * 4)]
     const treeSeed = Math.floor(identity() * 4294967296)
     const height = foothill ? 20 + identity() * 10 : 30 + identity() * 26
     return {
@@ -358,25 +836,61 @@ export function* trailTreeSprites(
       treeSeed,
       height,
     }
-  }).sort((a, b) => a.y - b.y)
+  })
+  // Conifers stand at both ends of the meadow, where the groves leave open ground, thickest on the
+  // far half below the range.
+  const edge = trailRandom(seed ^ 0x2f6b1c3d)
+  const perSide = 3 + Math.round(width / 500)
+  for (const side of [0, 1])
+    for (let index = 0; index < perSide; index++) {
+      for (let attempt = 0; attempt < 40; attempt++) {
+        const reach = 16 + edge() * width * 0.12
+        const x = side ? width - reach : reach
+        const y = meadowTop + 64 + edge() ** 1.4 * clearing * 0.6
+        const candidate = onDryLand({ x, y: y + groundOffset(x, landscape, y) }, landscape, 1.9)
+        if (
+          pondDistance(candidate, pond) <= 1.85 ||
+          creekDistance(candidate, landscape) <= 16 ||
+          Math.hypot(candidate.x - camp.x, candidate.y - camp.y) <= 102 ||
+          clearings.some(
+            site => Math.hypot(candidate.x - site.x, candidate.y - site.y) < site.radius,
+          ) ||
+          nearestDistance(candidate, roots) <= 14 ||
+          nearestDistance(candidate, walks) <= 15
+        )
+          continue
+        roots.push(candidate)
+        const pick = edge()
+        placements.push({
+          id: `tree-edge-${side}-${index + 1}`,
+          x: Math.round(candidate.x),
+          y: Math.max(Math.ceil(meadowTop + 64), Math.round(candidate.y)),
+          standalone: true,
+          foothill: false,
+          cluster: 0,
+          kind: pick < 0.5 ? 'pine' : pick < 0.75 ? 'spruce' : 'fir',
+          treeSeed: Math.floor(edge() * 4294967296),
+          height: 30 + edge() * 26,
+        })
+        break
+      }
+    }
+  placements.sort((a, b) => a.y - b.y)
   for (const { id, x, y, standalone, foothill, cluster, kind, treeSeed, height } of placements) {
-    const { markup, form, tone, extent, trunkRadius } = paint(
-      kind,
-      treeSeed,
-      height,
-      settings,
-      foothill ? 4 : 1,
-    )
+    const { markup, form, tone, extent, trunkRadius } = paint(kind, treeSeed, height, settings)
     const depth = Math.max(0, Math.min(1, (y - meadowTop) / clearing))
     const foothillDepth = Math.max(0, Math.min(1, (y - treeline) / (alpine.base - treeline)))
     const scale = foothill ? 0.2 + foothillDepth * 0.1 : 0.55 + depth * 0.6
-    const fit = foothill ? Math.min(1, (y - treeline - 1) / (extent * scale)) : 1
-    const opacity = foothill ? 0.56 + foothillDepth * 0.12 : 0.8 + depth * 0.15
+    const fit = foothill ? Math.min(1, (y - alpine.top - 4) / (extent * scale)) : 1
+    // Depth reads as haze toward the paper, mixed into the tree's tones. Alpha did the same job
+    // but let a tree behind show through the crown in front.
+    const haze = foothill ? 44 - foothillDepth * 12 : 20 - depth * 15
     const placement = standalone
       ? 'data-tree-placement="standalone"'
       : `data-tree-placement="grove" data-tree-cluster="${cluster}"`
-    yield `<g class="trail-tree" data-tree-id="${id}" data-tree="${kind}" ${placement} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-opacity: ${opacity.toFixed(2)}" transform="translate(${x} ${y})"><g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
+    yield `<g class="trail-tree" data-tree-id="${id}" data-tree="${kind}" ${placement} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-haze: ${haze.toFixed(0)}%" transform="translate(${x} ${y})"><g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
   }
+  yield* trailUnderstory(landscape, seed, placements, walks, clearings)
 }
 
 export function trailTrees(
@@ -449,13 +963,12 @@ export function trailFoothillWoodland(
     for (let attempt = 0; attempt < 32; attempt++) {
       const angle = woodland() * Math.PI * 2
       const spread = Math.sqrt(woodland())
-      const candidate = {
-        x:
-          cluster === 'standalone'
-            ? 12 + woodland() * (width - 24)
-            : center.x + Math.cos(angle) * rx * spread,
-        y: center.y + Math.sin(angle) * ry * spread,
-      }
+      const x =
+        cluster === 'standalone'
+          ? 12 + woodland() * (width - 24)
+          : center.x + Math.cos(angle) * rx * spread
+      const y = center.y + Math.sin(angle) * ry * spread
+      const candidate = { x, y: y + groundOffset(x, landscape, y) * 0.3 }
       if (
         candidate.x < 12 ||
         candidate.x > width - 12 ||
@@ -478,7 +991,7 @@ export function trailFoothillWoodland(
     }
     if (!root) return
     const variant = Math.floor(woodland() * 8)
-    const kind = kinds[variant % kinds.length]
+    const kind = woodlandKinds[variant % woodlandKinds.length]
     const shape = paint(
       kind,
       0x24c039af ^ Math.imul(variant + 1, 16807),
@@ -493,7 +1006,7 @@ export function trailFoothillWoodland(
     trees.push({
       x: root.x,
       y: root.y,
-      markup: `<g class="trail-woodland-tree" data-woodland-tree="" data-woodland-id="woodland-${trees.length}" data-woodland-cluster="${cluster}" data-tree="${kind}" data-tree-tone="${shape.tone}" data-tree-scale="${scale.toFixed(3)}" data-tree-depth-scale="${depthScale.toFixed(3)}" data-tree-size="${size.toFixed(3)}" data-trunk-radius="${(shape.trunkRadius * scale).toFixed(3)}" data-ground-x="${root.x.toFixed(2)}" data-ground-y="${root.y.toFixed(2)}" style="--trail-tree-opacity:${(0.56 + depth * 0.28).toFixed(2)}" transform="translate(${root.x.toFixed(2)} ${root.y.toFixed(2)}) scale(${scale.toFixed(3)})">${shape.markup}</g>`,
+      markup: `<g class="trail-woodland-tree" data-woodland-tree="" data-woodland-id="woodland-${trees.length}" data-woodland-cluster="${cluster}" data-tree="${kind}" data-tree-tone="${shape.tone}" data-tree-scale="${scale.toFixed(3)}" data-tree-depth-scale="${depthScale.toFixed(3)}" data-tree-size="${size.toFixed(3)}" data-trunk-radius="${(shape.trunkRadius * scale).toFixed(3)}" data-ground-x="${root.x.toFixed(2)}" data-ground-y="${root.y.toFixed(2)}" style="--trail-tree-haze:${(44 - depth * 28).toFixed(0)}%" transform="translate(${root.x.toFixed(2)} ${root.y.toFixed(2)}) scale(${scale.toFixed(3)})">${shape.markup}</g>`,
     })
   }
   let x = 32 + woodland() * 76
@@ -506,9 +1019,10 @@ export function trailFoothillWoodland(
     const center = { x, y: floor + depth * (front - floor) }
     const rx = 22 + woodland() * 44
     const ry = 12 + woodland() * 24
-    const count = Math.max(2, perCluster - 2 + Math.floor(woodland() * 5))
+    const count = Math.max(3, perCluster + Math.floor(woodland() * 5))
     for (let index = 0; index < count; index++) plant(center, rx, ry, String(cluster))
-    x += woodland() < 0.35 ? 235 + woodland() * 160 : 105 + woodland() * 110
+    // Stands follow each other closely along the foot of the range, with the odd wide clearing.
+    x += woodland() < 0.2 ? 180 + woodland() * 120 : 60 + woodland() * 80
     cluster++
   }
   const singles = Math.max(1, Math.round(width / 430))
