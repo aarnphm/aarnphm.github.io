@@ -1,4 +1,5 @@
 @use '../../styles/variables.scss' as *;
+@use './reader-loading';
 
 // Flexoki: marks take #cdd597, disagreements #fdb2a2. Pages stay white in both themes, so the
 // mark fills multiply over the raster and keep glyphs black.
@@ -78,10 +79,28 @@ body[data-pdf-embedded='course'] {
 
   .pdf-reader-app {
     --pdf-gutter: var(--space-3);
+    position: relative;
+
+    &[data-phase='loading'] {
+      > .pdf-reader-bar,
+      > .pdf-reader-body {
+        visibility: hidden;
+      }
+    }
   }
 
   .pdf-reader-controls {
     margin-inline-start: 0;
+  }
+
+  .pdf-reader-mount > .pdf-reader-status,
+  .pdf-reader-loading {
+    @include reader-loading.message;
+  }
+
+  .pdf-reader-loading {
+    position: absolute;
+    inset: 0;
   }
 }
 

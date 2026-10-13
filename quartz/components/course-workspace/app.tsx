@@ -6,7 +6,9 @@ import { conflictMark, deleteMark, fetchMarks, MarkApiError, putMark } from '../
 import { kindMeta } from '../pdf-reader/parts'
 import { lectureSelection, noteRange, showNoteRange, type LectureSelection } from './anchors'
 import { DraftEditor } from './editor'
+import { WorkspaceHeader, type WorkspaceTab } from './Header'
 import { noteKinds, SelectionActions, type SelectionAction } from './selection'
+import { WorkspaceSourceLinks } from './SourceLinks'
 import {
   DraftConflict,
   loadNotes,
@@ -23,15 +25,6 @@ import {
   type LectureNote,
   type Scratchpad,
 } from './store'
-
-type Tab = 'source' | 'scratchpad' | 'notes'
-
-/** Tab-line shortcut letters; each also selects its tab from the keyboard. */
-const tabMeta: Record<Tab, { short: string }> = {
-  source: { short: 'S' },
-  scratchpad: { short: 'P' },
-  notes: { short: 'N' },
-}
 
 interface WorkspaceProps {
   slug: string
@@ -71,7 +64,9 @@ function storageMessage(error: unknown): string {
 }
 
 function Workspace(props: WorkspaceProps) {
-  const [tab, setTab] = useState<Tab>(props.reader || props.video ? 'source' : 'scratchpad')
+  const [tab, setTab] = useState<WorkspaceTab>(
+    props.reader || props.video ? 'source' : 'scratchpad',
+  )
   const [scratchPreview, setScratchPreview] = useState(false)
   const [notePreview, setNotePreview] = useState(false)
   const [scratchIssue, setScratchIssue] = useState('')
@@ -380,12 +375,11 @@ function Workspace(props: WorkspaceProps) {
     props.root.scrollIntoView({ block: 'nearest' })
   }
 
-  const focusTab = (value: Tab) => document.getElementById(`course-workspace-tab-${value}`)?.focus()
+  const focusTab = (value: WorkspaceTab) =>
+    document.getElementById(`course-workspace-tab-${value}`)?.focus()
   const active = notes.find(note => note.id === activeId && note.deletedAt === null)
   const visible = notes.filter(note => note.deletedAt === null)
   const deleted = notes.filter(note => note.deletedAt !== null)
-  const tabs: Tab[] =
-    props.reader || props.video ? ['source', 'scratchpad', 'notes'] : ['scratchpad', 'notes']
   const exportDrafts = () => {
     const markdown = markdownExport(
       props.title,
@@ -416,79 +410,14 @@ function Workspace(props: WorkspaceProps) {
   return (
     <div class="course-workspace-app">
       <div class="course-workspace-panel">
-        <h2 id="course-workspace-heading" class="visually-hidden">
-          lecture workspace
-        </h2>
-        {/* A div: the site header rules (base.scss) push the second-to-last child right. */}
-        <div class="course-workspace-header">
-          <div
-            role="tablist"
-            aria-label="Lecture workspace"
-            class="tri-map-tablist course-workspace-tabs"
-            onKeyDown={event => {
-              if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return
-              const at = tabs.indexOf(tab)
-              const key = event.key.toLowerCase()
-              const next =
-                event.key === 'ArrowRight'
-                  ? tabs[(at + 1) % tabs.length]
-                  : event.key === 'ArrowLeft'
-                    ? tabs[(at + tabs.length - 1) % tabs.length]
-                    : event.key === 'Home'
-                      ? tabs[0]
-                      : event.key === 'End'
-                        ? tabs[tabs.length - 1]
-                        : tabs.find(value => tabMeta[value].short.toLowerCase() === key)
-              if (!next) return
-              event.preventDefault()
-              setTab(next)
-              focusTab(next)
-            }}
-          >
-            {tabs.map(value => {
-              const label = value === 'notes' ? `notes ${visible.length}` : value
-              const short =
-                value === 'notes' && visible.length > 0
-                  ? `${tabMeta[value].short} ${visible.length}`
-                  : tabMeta[value].short
-              return (
-                <button
-                  type="button"
-                  role="tab"
-                  class="tri-map-tab"
-                  id={`course-workspace-tab-${value}`}
-                  aria-selected={tab === value}
-                  aria-controls={`course-workspace-${value}`}
-                  aria-label={label}
-                  tabIndex={tab === value ? 0 : -1}
-                  title={`${value} (${tabMeta[value].short.toLowerCase()})`}
-                  style={{
-                    '--tri-map-tab-shortcut-width': `${short.length}ch`,
-                    '--tri-map-tab-label-width': `${label.length}ch`,
-                  }}
-                  onClick={() => setTab(value)}
-                >
-                  <span class="tri-map-tab-shortcut" aria-hidden="true">
-                    {short}
-                  </span>
-                  <span class="tri-map-tab-label" aria-hidden="true">
-                    {label}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-          <div class="course-workspace-actions">
-            {(scratchIssue || notesIssue) && (
-              <button type="button" onClick={loadSaved}>
-                load saved
-              </button>
-            )}
-            <button type="button" title="Export Markdown" onClick={exportDrafts}>
-              export .md
-            </button>
-          </div>
-        </div>
+        <WorkspaceHeader
+          hasSource={Boolean(props.reader || props.video)}
+          tab={tab}
+          noteCount={visible.length}
+          onSelect={setTab}
+          onExport={exportDrafts}
+          onLoadSaved={scratchIssue || notesIssue ? loadSaved : undefined}
+        />
         {(props.reader || props.video) && (
           <section
             role="tabpanel"
@@ -497,33 +426,7 @@ function Workspace(props: WorkspaceProps) {
             class="course-workspace-pane course-workspace-source"
             hidden={tab !== 'source'}
           >
-            <div class="course-source-links">
-              {props.reader && (
-                <>
-                  <a
-                    href={`${props.reader}?view=reader`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-router-ignore
-                  >
-                    open reader ↗
-                  </a>
-                  <a href={`/${props.pdf}?raw=1`} target="_blank" rel="noopener noreferrer">
-                    pdf ↗
-                  </a>
-                </>
-              )}
-              {props.video && (
-                <a
-                  href={`https://www.youtube.com/watch?v=${encodeURIComponent(props.video)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  video ↗
-                </a>
-              )}
-              <span class="course-source-license">mit ocw · cc by-nc-sa</span>
-            </div>
+            <WorkspaceSourceLinks pdf={props.pdf} reader={props.reader} video={props.video} />
             {sourceFailed && (
               <p role="status">
                 The source could not load. Open the {props.reader ? 'reader' : 'video'} to retry.

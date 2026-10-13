@@ -493,7 +493,10 @@ async function readerShell(
   const html = (await response.text())
     .replaceAll(TITLE_SLOT, escapeHtml(title))
     .replace(DATA_SLOT, DATA_SLOT.replace('>null<', `>${scriptJson(data)}<`))
-    .replace('data-slug="read"', `data-slug="${escapeHtml(path.slice(1))}"`)
+    .replace(
+      'data-slug="read"',
+      `data-slug="${escapeHtml(path.slice(1))}"${url.searchParams.get('embed') === 'course' ? ' data-pdf-embedded="course"' : ''}`,
+    )
     .replace(
       /(["'])(https?:\/\/[^"'/]+)\/read\1/g,
       (_, quote, origin) => `${quote}${origin}${escapeHtml(encodeURI(path))}${quote}`,

@@ -1109,7 +1109,7 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
         >
           <div class="pdf-reader-spread">
             <div ref={columnRef} class="pdf-reader-column">
-              {phase === 'loading' && (
+              {phase === 'loading' && !embedded && (
                 <p class="pdf-reader-status" role="status">
                   Loading {record.title}…
                 </p>
@@ -1153,6 +1153,12 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
           />
         )}
       </div>
+
+      {embedded && phase === 'loading' && (
+        <p class="pdf-reader-status pdf-reader-loading" role="status">
+          Loading the reader…
+        </p>
+      )}
 
       {selection && tool === 'select' && (
         <SelectionBubble range={selection.range} canWrite={book.canWrite} onAction={onBubble} />
