@@ -12,6 +12,7 @@
 @use './trail-alpine-travelers.scss';
 @use './trail-community.scss';
 @use './trail-visitors.scss';
+@use './trail-winter.scss';
 
 // A tree tone mixed toward the paper by the tree's haze share.
 @function hazed($tone) {
@@ -47,6 +48,17 @@
   .trail-scene[data-trail-renderer='webgl'] .trail-canvas {
     clip-path: inset(50%);
   }
+  .trail-scene[data-trail-opening='pending'] {
+    .trail-canvas {
+      clip-path: inset(50%);
+    }
+    .trail-compositor {
+      visibility: hidden;
+    }
+  }
+  .trail-scene:not([data-trail-opening='complete']) .trail-visitor-labels {
+    visibility: hidden;
+  }
   .trail-scene[data-trail-rendered='false']:not([data-trail-visible='true']) {
     .trail-canvas,
     .trail-compositor,
@@ -71,13 +83,6 @@
   .trail-path {
     fill: none;
     stroke: none;
-  }
-  .trail-reveal {
-    fill: none;
-    stroke: white;
-    stroke-width: 14;
-    stroke-linecap: round;
-    stroke-dasharray: 1;
   }
   .trail-steps {
     fill: var(--gray);

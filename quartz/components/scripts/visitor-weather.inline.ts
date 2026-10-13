@@ -34,6 +34,7 @@ document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.visitor-weather')
   const panel = root?.querySelector<HTMLElement>('#visitor-weather-panel')
   const toggle = root?.querySelector<HTMLButtonElement>('.visitor-weather-toggle')
+  const windArrow = root?.querySelector<SVGSVGElement>('[data-weather-wind-arrow]')
   if (!root || !panel || !toggle) return
 
   const controller = new AbortController()
@@ -155,6 +156,12 @@ document.addEventListener('nav', () => {
     trailWeather.publish(forecast)
     holiday.publish(forecast?.country ?? null)
     const weather = forecast?.weather
+    if (windArrow) {
+      const bearing = weather && weather.wind > 0 ? weather.windDirection : null
+      windArrow.style.display = bearing === null ? 'none' : ''
+      // The glyph points south at 0°: bearings name the wind's source, arrows show its flow.
+      windArrow.style.transform = bearing === null ? '' : `rotate(${bearing}deg)`
+    }
     if (!map && (!forecast || forecast.lat === null || forecast.lon === null)) {
       const mapStatus = panel.querySelector<HTMLButtonElement>('[data-weather-map-status]')
       if (mapStatus) mapStatus.textContent = pending ? 'loading location' : 'location unavailable'

@@ -17,7 +17,7 @@ export function detourPetTrail(
   for (let index = 1; index < road.length; index++) {
     const from = feet[feet.length - 1]
     let goal = road[index]
-    let radius = body * Math.max(from.scale, goal.scale) + 2
+    let radius = body * Math.max(from.scale, goal.scale)
     if (canMove(from, goal, radius, obstacles)) {
       feet.push(goal)
       continue
@@ -29,10 +29,15 @@ export function detourPetTrail(
       obstacles.some(other => circleClearance(goal, radius, other) < 0.1)
     ) {
       goal = road[++index]
-      radius = Math.max(radius, body * goal.scale + 2)
+      radius = Math.max(radius, body * goal.scale)
     }
-    const planned = detourTrail([from, goal], radius, obstacles, bounds)
-    if (!planned || !canMove(from, planned.points[0], radius, obstacles)) return null
+    let planned = detourTrail([from, goal], radius, obstacles, bounds, index === road.length - 1)
+    while (!planned || !canMove(from, planned.points[0], radius, obstacles)) {
+      if (index === road.length - 1) return null
+      goal = road[++index]
+      radius = Math.max(radius, body * goal.scale)
+      planned = detourTrail([from, goal], radius, obstacles, bounds, index === road.length - 1)
+    }
     const last = planned.points.at(-1)
     if (!last) return null
     // Camp roads end at the hearth. The shared planner chooses a reachable arrival outside

@@ -56,7 +56,11 @@ export function clearSpace(width: number, height: number, obstacles: Rect[]) {
   return path
 }
 
-export function trailLayout(scene: HTMLElement, seed: number) {
+export function trailLayout(
+  scene: HTMLElement,
+  seed: number,
+  world?: { camp: Point; landscape: Landscape; routes: Record<TrailId, string> },
+) {
   const document = scene.ownerDocument
   const view = document.defaultView
   const landing = document.querySelector<HTMLElement>('.landing')
@@ -132,19 +136,22 @@ export function trailLayout(scene: HTMLElement, seed: number) {
           bottom: view.innerHeight,
         }
       : null
-  if (clockRegion)
-    obstacles.push({
-      left: clockRegion.left - bounds.left,
-      right: clockRegion.right - bounds.left,
-      top: clockRegion.top - bounds.top,
-      bottom: clockRegion.bottom - bounds.top,
-    })
+  const clockExclusion = clockRegion
+    ? {
+        left: clockRegion.left - bounds.left,
+        right: clockRegion.right - bounds.left,
+        top: clockRegion.top - bounds.top,
+        bottom: clockRegion.bottom - bounds.top,
+      }
+    : null
+  const paintObstacles = [...obstacles]
+  if (clockExclusion) obstacles.push(clockExclusion)
   const bottom = Math.max(landing.getBoundingClientRect().bottom - bounds.top, 280)
-  const camp = {
+  const camp = world?.camp ?? {
     x: Math.min(width - 72, width * (0.64 + random() * 0.12)),
     y: Math.min(height - 80, Math.max(height - 112, bottom + 225)),
   }
-  const landscape = trailLandscape(width, height, bottom, camp, seed)
+  const landscape = world?.landscape ?? trailLandscape(width, height, bottom, camp, seed)
   const clearing = camp.y - landscape.meadowTop
   const wander = (x: number, y: number): Point => ({
     x: Math.max(10, Math.min(width - 10, width * (x + (random() - 0.5) * 0.12))),
@@ -155,7 +162,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     y: landscape.alpine.base - 12,
   })
   const end = { x: camp.x - 72, y: camp.y + 34 }
-  const routes: Record<TrailId, string> = {
+  const routes: Record<TrailId, string> = world?.routes ?? {
     main: curvedPath(
       [
         start(0.41),
@@ -239,7 +246,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
       landscape,
     ),
   }
-  const clear = clearSpace(width, height, obstacles)
+  const clear = clearSpace(width, height, paintObstacles)
   const reading = landing.getBoundingClientRect()
   const upperRoutes = readingRoutes(
     width,
@@ -251,7 +258,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     board ? protectedLines[0] : undefined,
   )
   const backdropClear = clearSpace(width, height, [
-    ...obstacles,
+    ...paintObstacles,
     {
       left: reading.left - bounds.left - 24,
       right: reading.right - bounds.left + 24,
@@ -268,6 +275,7 @@ export function trailLayout(scene: HTMLElement, seed: number) {
     routes,
     readingRoutes: upperRoutes,
     clockRegion,
+    clockExclusion,
     clear,
     backdropClear,
     obstacles,

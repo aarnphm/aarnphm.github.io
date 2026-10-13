@@ -43,6 +43,50 @@ test('walk around overlapping camp bodies and reconnect on the far side', () => 
   }
 })
 
+test('include a neighbouring obstruction beyond the direct road when planning a detour', () => {
+  const obstacles = [50, 130, 210, 290].map(
+    (y, index): CollisionActor => ({ id: `tree-${index}`, kind: 'trunk', x: 100, y, radius: 30 }),
+  )
+  const from = { x: 10, y: 130 }
+  const to = { x: 200, y: 130 }
+  const route = detourTrail([from, to], 25, obstacles, { left: 0, right: 240, top: 0, bottom: 400 })
+  assert.ok(route)
+  assert.deepEqual(route.points[0], from)
+  assert.deepEqual(route.points.at(-1), to)
+  assert.ok(route.points.some(point => point.y > 340))
+  for (let index = 1; index < route.points.length; index++)
+    for (const obstacle of obstacles)
+      assert.ok(sweptClearance(route.points[index - 1], route.points[index], obstacle, 25) >= 1.99)
+})
+
+test('arrive at a reachable edge when the destination clearing is enclosed', () => {
+  const obstacles = Array.from(
+    { length: 8 },
+    (_, index): CollisionActor => ({
+      id: `tree-${index}`,
+      kind: 'trunk',
+      x: 100 + Math.cos((index * Math.PI) / 4) * 40,
+      y: 130 + Math.sin((index * Math.PI) / 4) * 40,
+      radius: 15,
+    }),
+  )
+  const goal = { x: 100, y: 130 }
+  const route = detourTrail([{ x: 10, y: 130 }, goal], 12, obstacles, {
+    left: 0,
+    right: 240,
+    top: 0,
+    bottom: 260,
+  })
+  assert.ok(route)
+  const arrival = route.points.at(-1)
+  assert.ok(arrival)
+  assert.ok(Math.hypot(arrival.x - goal.x, arrival.y - goal.y) <= 96)
+  assert.ok(Math.hypot(arrival.x - goal.x, arrival.y - goal.y) > 60)
+  for (let index = 1; index < route.points.length; index++)
+    for (const obstacle of obstacles)
+      assert.ok(sweptClearance(route.points[index - 1], route.points[index], obstacle, 12) >= 1.99)
+})
+
 test('report a closed corridor instead of cutting through a camp body', () => {
   const obstacles = [
     { id: 'tent', kind: 'trunk', x: 100, y: 50, radius: 28 },

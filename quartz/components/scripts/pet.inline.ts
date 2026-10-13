@@ -375,16 +375,18 @@ const campSolids = (): CollisionActor[] => {
   const scene = trailScene(document)
   if (!scene || trailHost(scene)?.hidden) return obstacles
   for (const element of scene.querySelectorAll<SVGGElement>('[data-camp-solid]')) {
-    const matrix = trailScreenMatrix(element)
+    const matrix = element.getScreenCTM()
+    const parent = element.parentElement
+    const ground = parent instanceof SVGGraphicsElement ? parent.getScreenCTM() : null
     const radius = Number(element.dataset.solidRadius)
     const id = element.dataset.campSolid
-    if (!matrix || !id || !Number.isFinite(radius) || radius <= 0) continue
+    if (!matrix || !ground || !id || !Number.isFinite(radius) || radius <= 0) continue
     obstacles.push({
       id,
       kind: 'trunk',
       x: matrix.e + window.scrollX,
       y: matrix.f + window.scrollY,
-      radius: radius * Math.hypot(matrix.a, matrix.b),
+      radius: radius * Math.hypot(ground.a, ground.b),
     })
   }
   return obstacles
@@ -778,11 +780,20 @@ const trailPointClear = (p: TrailFoot, path: SVGPathElement, obstacles: PetObsta
 type TrailRun = { path: SVGPathElement; feet: TrailFoot[]; length: number }
 const trailActors = (scene: SVGSVGElement | null): CollisionActor[] => {
   const actors: CollisionActor[] = []
-  for (const other of scene ? readTrunks(scene) : []) {
+  const drawing = scene?.closest<HTMLElement>('.trail-scene') ?? scene
+  // These bodies use the current screen matrix; the guard checks the live camera, so their
+  // radii need no reservation for future camera positions in the scene's coordinate space.
+  for (const other of drawing ? readTrunks(drawing, undefined, false) : []) {
     const element = other.element
-    const matrix = element && trailScreenMatrix(element)
     const parent = element?.parentElement
-    const ground = parent instanceof SVGGraphicsElement ? trailScreenMatrix(parent) : null
+    const cached = element?.ownerSVGElement === scene
+    const matrix = element && (cached ? trailScreenMatrix(element) : element.getScreenCTM())
+    const ground =
+      parent instanceof SVGGraphicsElement
+        ? cached
+          ? trailScreenMatrix(parent)
+          : parent.getScreenCTM()
+        : null
     if (!matrix || !ground) continue
     actors.push({
       ...other,

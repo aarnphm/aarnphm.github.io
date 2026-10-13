@@ -93,7 +93,13 @@ export function readStationaryActors(scene: ParentNode, except: string): Collisi
   )
 }
 
-export function readTrunks(scene: ParentNode, relativeTo?: SVGGElement): CollisionActor[] {
+export function readTrunks(
+  scene: ParentNode,
+  relativeTo?: SVGGElement,
+  reserveCamera = true,
+): CollisionActor[] {
+  const clearance = (element: SVGGElement) =>
+    reserveCamera ? cameraClearance(element, relativeTo) : 0
   const solids: CollisionActor[] = Array.from(
     scene.querySelectorAll<SVGGElement>('[data-camp-solid]'),
   ).map(element => ({
@@ -101,7 +107,7 @@ export function readTrunks(scene: ParentNode, relativeTo?: SVGGElement): Collisi
     kind: 'trunk',
     x: Number(element.dataset.groundX),
     y: Number(element.dataset.groundY),
-    radius: Number(element.dataset.solidRadius) + cameraClearance(element, relativeTo),
+    radius: Number(element.dataset.solidRadius) + clearance(element),
     element,
   }))
   return [
@@ -117,7 +123,7 @@ export function readTrunks(scene: ParentNode, relativeTo?: SVGGElement): Collisi
           kind: 'trunk',
           x: matrix.e,
           y: matrix.f,
-          radius: radius + cameraClearance(element, relativeTo),
+          radius: radius + clearance(element),
           element,
         }
         return [trunk]

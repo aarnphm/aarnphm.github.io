@@ -59,7 +59,16 @@ document.addEventListener('nav', () => {
   frame.src = new URL('shared-trail.html', import.meta.url).href
   let layoutFrame = 0
   let resizeTimer = 0
-  // Presence connects ahead of the scene so the visitor count is ready beside the toggle.
+  // The frame bundle (presence and scene) is the largest homepage transfer. A closed trail
+  // connects presence once the page is idle, so the visitor count still fills in beside the
+  // toggle without competing with first paint.
+  const attachFrame = () => {
+    if (!frame.isConnected && !signal.aborted) scene.append(frame)
+  }
+  const attachWhenIdle = () => {
+    if (window.requestIdleCallback) window.requestIdleCallback(attachFrame, { timeout: 4000 })
+    else window.setTimeout(attachFrame, 1000)
+  }
   document.body.append(root)
   // The scene stands beside body, not inside it. A theme change eases the palette tokens on
   // body, and an eased inherited token restyles every descendant each frame: twelve thousand
@@ -70,11 +79,15 @@ document.addEventListener('nav', () => {
   mountVisitorRegister(root, signal)
   mountTrailClock(clock, signal)
   const disposePerformance = setupPerformanceDebug(trailPerformanceProfile(scene))
-  scene.append(frame)
+  if (document.readyState === 'complete') attachWhenIdle()
+  else window.addEventListener('load', attachWhenIdle, { signal, once: true })
+  root
+    .querySelector('#homepage-visitor-panel')
+    ?.addEventListener('beforetoggle', attachFrame, { signal, once: true })
   const align = () => {
     if (scene.hidden) return
     const bottom = content.getBoundingClientRect().bottom + window.scrollY
-    const height = `${Math.max(window.innerHeight, bottom + 720)}px`
+    const height = `${Math.max(window.innerHeight, bottom + 720, Number(scene.dataset.trailWorldHeight) || 0)}px`
     if (scene.style.height !== height) scene.style.height = height
     scene.dispatchEvent(new Event('trail:reflow'))
   }
@@ -92,10 +105,16 @@ document.addEventListener('nav', () => {
   }
   const scheduleResize = () => {
     if (scene.hidden) return
+    if (scene.dataset.trailWorld === (window.innerWidth < 700 ? 'narrow' : 'wide')) {
+      cancelResize()
+      scheduleAlign()
+      return
+    }
     window.clearTimeout(resizeTimer)
     cancelAnimationFrame(layoutFrame)
     layoutFrame = 0
-    // Stretch the last complete canvas while dragging; generate only the settled viewport.
+    // Preserve the completed scene at native pixel size; generate only the settled viewport.
+    scene.dispatchEvent(new Event('trail:resize-start'))
     scene.dataset.trailResizing = 'true'
     resizeTimer = window.setTimeout(() => {
       if (!signal.aborted) align()
@@ -129,6 +148,7 @@ document.addEventListener('nav', () => {
     const label = open ? 'Hide walking trail' : 'Show walking trail'
     toggle.title = `${label}${shownHoliday ? ` · ${holidayLabels[shownHoliday]}` : ''}`
     if (open) {
+      attachFrame()
       scene.dispatchEvent(new Event('trail:show'))
       align()
     } else {

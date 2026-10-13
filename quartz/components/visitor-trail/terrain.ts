@@ -4,6 +4,7 @@ import { pixels } from './pixels'
 import { trailRandom } from './random'
 import { trailBeavers, trailFords, trailRavine } from './ravine'
 import { trailWayside } from './wayside'
+import { trailGroundSnow } from './winter'
 
 function oval(pond: Pond, margin: number, grid: number) {
   const rows: string[] = []
@@ -68,16 +69,23 @@ export function trailTerrain(landscape: Landscape, seed: number, routes: readonl
     const y = Math.round(pond.y + Math.sin(angle) * pond.ry * radius)
     return `<g class="trail-pond-lily" data-pond-plant="lily" data-ground-x="${x}" data-ground-y="${y}" transform="translate(${x - 4} ${y - 2})">${pixels(['.LLL.', 'LLLL.', '.LL.L'], { L: 'trail-meadow-reed' }, 2)}</g>`
   }).join('')
+  const ice = Array.from({ length: 7 }, (_, index) => {
+    const angle = index * 2.399963
+    const x = Math.round(pond.x + Math.cos(angle) * pond.rx * 0.58)
+    const y = Math.round(pond.y + Math.sin(angle) * pond.ry * 0.58)
+    return `M${x} ${y}h8l4 -2h6m-10 2l4 4h5`
+  }).join('')
   const grid = width < 700 ? 3 : 4
   const bounds = {
     alpine: landscape.alpine,
     treeline: landscape.treeline,
     meadowTop: landscape.meadowTop,
   }
-  return `<g class="trail-terrain" data-trail-terrain='${JSON.stringify(bounds)}'>${terraces}${trailRavine(landscape, seed, routes)}${trailFords(landscape, routes)}${grass}${trailMeadow(landscape, seed, routes)}${trailWayside(landscape, routes, seed)}</g>
+  return `<g class="trail-terrain" data-trail-terrain='${JSON.stringify(bounds)}'>${terraces}${trailGroundSnow(landscape, seed)}${trailRavine(landscape, seed, routes)}${trailFords(landscape, routes)}${grass}${trailMeadow(landscape, seed, routes)}${trailWayside(landscape, routes, seed)}</g>
     <g class="trail-pond" data-trail-pond='${JSON.stringify(pond)}'>
       <g class="trail-pond-bank" transform="translate(${pond.x - pond.rx - 8} ${pond.y - pond.ry - 8})">${oval(pond, 8, grid)}</g>
       <g transform="translate(${pond.x - pond.rx} ${pond.y - pond.ry})">${oval(pond, 0, grid)}</g>
+      <path class="trail-pond-ice" d="${ice}"/>
       ${ripples}${lilyPads}${reeds}${bankPlants}
       ${trailBeavers(landscape, seed)}
     </g>`

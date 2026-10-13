@@ -421,6 +421,11 @@ function bankDetails(landscape: Landscape, random: () => number, routes: readonl
   return details.join('')
 }
 
+export function trailCreek(landscape: Landscape, seed: number) {
+  const random = trailRandom(seed ^ 0x1b873593)
+  return `<g class="trail-ravine" aria-hidden="true">${creekBed(landscape, random)}${bankDetails(landscape, random, [])}</g>`
+}
+
 export function trailRavine(landscape: Landscape, seed: number, routes: readonly string[] = []) {
   const random = trailRandom(seed ^ 0x1b873593)
   return (

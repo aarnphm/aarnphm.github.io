@@ -31,6 +31,9 @@ const tones = {
   d: 'trail-camper-trousers',
   b: 'trail-hiker-boot',
   a: 'trail-climber-harness',
+  m: 'trail-climber-tool-metal',
+  t: 'trail-climber-tool-shaft',
+  k: 'trail-climber-crampon',
 }
 const artwork = Object.entries(climberSprites)
   .map(
@@ -38,6 +41,38 @@ const artwork = Object.entries(climberSprites)
       `<g data-climbing-pose="${pose}" transform="translate(-10.5 -30)">${pixels(rows, tones, 1.5)}</g>`,
   )
   .join('')
+
+const climbingCycle = [
+  'liftLeft',
+  'plantLeft',
+  'stepLeft',
+  'pullLeft',
+  'liftRight',
+  'plantRight',
+  'stepRight',
+  'pullRight',
+]
+
+function plantedProgress(route: ClimbingRoute, progress: number) {
+  const rise = Math.abs(route.points[0].y - route.points[route.points.length - 1].y)
+  // A pull raises the torso one cell while the planted pick drops one cell in the sprite.
+  const pitches = Math.max(1, Math.round(rise / (3 * route.scale)))
+  const stride = progress * pitches
+  const fraction = stride % 1
+  const pull = (value: number) => value * value * (3 - 2 * value)
+  const advance =
+    fraction < 0.375
+      ? 0
+      : fraction < 0.5
+        ? pull((fraction - 0.375) / 0.125) / 2
+        : fraction < 0.875
+          ? 0.5
+          : 0.5 + pull((fraction - 0.875) / 0.125) / 2
+  return {
+    position: Math.min(1, (Math.floor(stride) + advance) / pitches),
+    pose: climbingCycle[Math.floor(fraction * climbingCycle.length)],
+  }
+}
 
 // The alpine journey owns the animation clock and pauses; face climbers share its ticks.
 export function createAlpineClimbers(scene: HTMLElement, signal: AbortSignal) {
@@ -168,18 +203,10 @@ export function createAlpineClimbers(scene: HTMLElement, signal: AbortSignal) {
     render(motion: 'active' | 'paused' | 'still') {
       for (const climber of climbers) {
         const { route, progress } = climber
-        const exact = climbingPoint(route, progress)
+        const planted = plantedProgress(route, progress)
+        const exact = climbingPoint(route, planted.position)
         const point = { x: Math.round(exact.x * 5) / 5, y: Math.round(exact.y * 5) / 5 }
-        const pose =
-          motion === 'still' || climber.phase === 'resting'
-            ? 'resting'
-            : Math.floor(
-                  (progress *
-                    Math.abs(route.points[0].y - route.points[route.points.length - 1].y)) /
-                    (1.5 * route.scale),
-                ) % 2
-              ? 'reachRight'
-              : 'reachLeft'
+        const pose = motion === 'still' || climber.phase === 'resting' ? 'resting' : planted.pose
         const signature = `${point.x}|${point.y}|${pose}|${climber.phase}|${motion}`
         if (signature === climber.painted) continue
         climber.painted = signature
@@ -188,7 +215,7 @@ export function createAlpineClimbers(scene: HTMLElement, signal: AbortSignal) {
           'transform',
           `translate(${point.x.toFixed(3)} ${point.y.toFixed(3)}) scale(${route.scale})`,
         )
-        const bow = motion === 'still' || climber.phase === 'resting' ? 1.6 : 0.6
+        const bow = motion === 'still' || climber.phase === 'resting' ? 2.4 : 1.8
         climber.rope.setAttribute(
           'd',
           `M${route.anchor.x} ${route.anchor.y}Q${((route.anchor.x + harness.x) / 2 + bow).toFixed(3)} ${((route.anchor.y + harness.y) / 2).toFixed(3)} ${harness.x.toFixed(3)} ${harness.y.toFixed(3)}`,
@@ -197,7 +224,7 @@ export function createAlpineClimbers(scene: HTMLElement, signal: AbortSignal) {
         if (data.phase !== climber.phase) data.phase = climber.phase
         if (data.motion !== motion) data.motion = motion
         if (data.pose !== pose) data.pose = pose
-        data.progress = progress.toFixed(6)
+        data.progress = planted.position.toFixed(6)
         data.faceX = point.x.toFixed(3)
         data.faceY = point.y.toFixed(3)
       }

@@ -65,14 +65,19 @@ function segmentDetour(
   radius: number,
   obstacles: readonly CollisionActor[],
   bounds: SpacingBounds,
+  detail: 'coarse' | 'fine',
+  nearbyGoal: Point | null = null,
 ): Point[] | null {
   const nodes = [from, to]
+  const neighbourhood = detail === 'coarse' ? 80 : 160
+  const sides = detail === 'coarse' ? 16 : 32
+  const padding = detail === 'coarse' ? 6 : 2.25
   for (const obstacle of obstacles) {
-    if (segmentDistance(obstacle, from, to) > radius + obstacle.radius + 80) continue
+    if (segmentDistance(obstacle, from, to) > radius + obstacle.radius + neighbourhood) continue
     // The polygon's chords stay outside the expanded collision circle.
-    const reach = (radius + obstacle.radius + 6) / Math.cos(Math.PI / 16)
-    for (let index = 0; index < 16; index++) {
-      const angle = (index * Math.PI) / 8
+    const reach = (radius + obstacle.radius + padding) / Math.cos(Math.PI / sides)
+    for (let index = 0; index < sides; index++) {
+      const angle = (index * Math.PI * 2) / sides
       const candidate = {
         x: obstacle.x + Math.cos(angle) * reach,
         y: obstacle.y + Math.sin(angle) * reach,
@@ -84,6 +89,13 @@ function segmentDetour(
   const previous = new Int32Array(nodes.length).fill(-1)
   const visited = new Uint8Array(nodes.length)
   cost[0] = 0
+  let arrival = -1
+  let nearest = 96
+  const trace = (end: number) => {
+    const result: Point[] = []
+    for (let index = end; index > 0; index = previous[index]) result.unshift(nodes[index])
+    return result
+  }
   for (let iteration = 0; iteration < nodes.length; iteration++) {
     let best = Infinity
     let current = -1
@@ -94,11 +106,14 @@ function segmentDetour(
         current = index
       }
     }
-    if (current < 0) return null
-    if (current === 1) {
-      const result: Point[] = []
-      for (let index = 1; index > 0; index = previous[index]) result.unshift(nodes[index])
-      return result
+    if (current < 0) break
+    if (current === 1) return trace(1)
+    if (nearbyGoal && current > 1) {
+      const distance = Math.hypot(nodes[current].x - nearbyGoal.x, nodes[current].y - nearbyGoal.y)
+      if (distance < nearest) {
+        nearest = distance
+        arrival = current
+      }
     }
     visited[current] = 1
     for (let index = 0; index < nodes.length; index++) {
@@ -116,7 +131,7 @@ function segmentDetour(
       }
     }
   }
-  return null
+  return arrival >= 0 ? trace(arrival) : null
 }
 
 export function detourTrail(
@@ -124,6 +139,7 @@ export function detourTrail(
   radius: number,
   obstacles: readonly CollisionActor[],
   bounds: SpacingBounds,
+  allowNearbyArrival = true,
 ): PlannedTrail | null {
   if (!road.length) return null
   const first = freeEndpoint(road[0], radius, obstacles, bounds)
@@ -138,7 +154,19 @@ export function detourTrail(
     if (Math.hypot(goal.x - from.x, goal.y - from.y) < 0.01) continue
     if (canMove(from, goal, radius, obstacles)) points.push(goal)
     else {
-      const detour = segmentDetour(from, goal, radius, obstacles, bounds)
+      // The finer search includes neighbouring bodies and the narrow gaps a coarse polygon
+      // can close. An enclosed camp ends at its nearest reachable edge within the arrival radius.
+      const detour =
+        segmentDetour(from, goal, radius, obstacles, bounds, 'coarse') ??
+        segmentDetour(
+          from,
+          goal,
+          radius,
+          obstacles,
+          bounds,
+          'fine',
+          allowNearbyArrival && index === road.length - 1 ? road[index] : null,
+        )
       if (!detour) {
         if (index === road.length - 1) return null
         continue

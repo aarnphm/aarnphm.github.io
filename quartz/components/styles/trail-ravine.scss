@@ -207,9 +207,6 @@
     ) {
     display: none;
   }
-  .trail-scene[data-season='winter'] .trail-wayside-puddle {
-    fill: color-mix(in srgb, var(--light) 70%, #b9cdd2);
-  }
   // Water slides down the stream as a broken streak.
   .trail-ravine-flow {
     fill: none;
@@ -217,16 +214,8 @@
     stroke-width: 2;
     stroke-dasharray: 3 5;
   }
-  .trail-scene[data-season='winter'] {
-    .trail-ravine-water {
-      fill: color-mix(in srgb, var(--light) 75%, #b9cdd2);
-    }
-    .trail-ravine-flow {
-      stroke-dasharray: none;
-    }
-  }
   @media (prefers-reduced-motion: no-preference) {
-    .trail-scene:not([data-season='winter']) .trail-ravine-flow {
+    .trail-scene:not([data-water-frozen='true']) .trail-ravine-flow {
       animation: trail-ravine-flow 0.9s steps(4, end) infinite;
     }
     // The beaver swims a stick out to the dam, turns, swims home and dives at the lodge.
