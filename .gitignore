@@ -238,7 +238,6 @@ go.sum
 quartz/styles/themes
 are.na-meta.json
 .dev.*
-.lfsconfig
 *.txt
 settings.local.json
 content/hinterland/research
