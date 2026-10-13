@@ -40,20 +40,20 @@ export function visitorHoliday(date: Date, country: string | null): TrailHoliday
   const year = date.getFullYear()
   if (!Number.isFinite(date.getTime()) || year < 1583) return null
   const today = ordinal(year, date.getMonth(), date.getDate())
-  const during = (month: number, day: number, before: number, after: number) => {
+  const during = (month: number, day: number, before: number) => {
     const offset = today - ordinal(year, month, day)
-    return offset >= -before && offset <= after
+    return offset >= -before && offset <= 0
   }
   const region = country?.trim().toUpperCase()
-  if (region === 'CA' && during(9, nthWeekday(year, 9, 1, 2), 3, 1)) return 'thanksgiving'
+  if (region === 'CA' && during(9, nthWeekday(year, 9, 1, 2), 3)) return 'thanksgiving'
   if (region === 'US') {
-    if (during(10, nthWeekday(year, 10, 4, 4), 3, 1)) return 'thanksgiving'
-    if (during(9, nthWeekday(year, 9, 1, 2), 3, 1)) return 'columbus-day'
+    if (during(10, nthWeekday(year, 10, 4, 4), 3)) return 'thanksgiving'
+    if (during(9, nthWeekday(year, 9, 1, 2), 3)) return 'columbus-day'
   }
-  if (during(9, 31, 3, 1)) return 'halloween'
-  if (during(11, 25, 5, 1)) return 'christmas'
+  if (during(9, 31, 3)) return 'halloween'
+  if (during(11, 25, 5)) return 'christmas'
   const spring = easter(year)
-  return during(spring.month, spring.day, 2, 1) ? 'easter' : null
+  return during(spring.month, spring.day, 2) ? 'easter' : null
 }
 
 type HolidayEvents = {
