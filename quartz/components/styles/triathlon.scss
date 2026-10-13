@@ -9010,18 +9010,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   color: var(--gray);
 }
 
-.tri-sleep-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 1rem 0 0.6rem;
-}
-
-.tri-sleep-rocky {
-  width: 96px;
-}
-
 .tri-hyp--deep {
   fill: color-mix(in srgb, var(--dark) 85%, transparent);
 }

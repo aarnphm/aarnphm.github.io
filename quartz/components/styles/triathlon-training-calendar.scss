@@ -140,6 +140,12 @@
   --control-height: calc(var(--calendar-control-size) - 2px);
   flex: none;
 
+  // The notation guide has no week to move through. The controls keep their space so the
+  // view buttons beside them stay put.
+  &[inert] {
+    visibility: hidden;
+  }
+
   .g-icon-button,
   .g-text-button {
     display: inline-flex;

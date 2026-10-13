@@ -29,7 +29,7 @@ const START = new Date('2026-09-06T16:00:00Z')
 const FIT_PATH = 'triathlon/wahoo/ride.fit'
 const entry = parseTrackingBlock(
   null,
-  `activity: 101\ngarmin: 55\nvirtual: true\nwahoo: [[${FIT_PATH}]]`,
+  `activity: 101\ngarmin: 55\nvirtual: true\npower: wahoo\nwahoo: [[${FIT_PATH}]]`,
 )!.activity!
 function fit(power = 200, sport: 'cycling' | 'running' = 'cycling'): Uint8Array {
   const encoder = new Encoder()
@@ -206,6 +206,9 @@ test('loads an uncached linked FIT and merges telemetry onto the virtual course 
   const projected = applyActivityTracking(strava, garmin, [entry], wahoo)!
   assert.equal(projected.activities['101'].distance, 10000)
   assert.equal(projected.activities['101'].elapsedTime, 10)
+  assert.deepEqual(projected.streams!['101'].latlng, strava.streams!['101'].latlng)
+  assert.deepEqual(projected.streams!['101'].distance, strava.streams!['101'].distance)
+  assert.deepEqual(projected.streams!['101'].altitude, strava.streams!['101'].altitude)
   assert.equal(projected.streams!['101'].watts![0], 0)
   assert.equal(projected.streams!['101'].cadence![0], 0)
   assert.equal(projected.streams!['101'].watts![1], 101)
@@ -230,17 +233,22 @@ test('loads an uncached linked FIT and merges telemetry onto the virtual course 
   assert.equal(detail.distanceKm, 10)
   assert.equal(detail.distanceSource, 'strava')
   assert.equal(detail.elevationM, 100)
-  assert.equal(detail.avgWatts, 150)
-  assert.equal(detail.npWatts, 170)
+  assert.equal(detail.avgWatts, 200)
+  assert.equal(detail.npWatts, 220)
   assert.equal(detail.avgHr, 120)
   assert.equal(detail.avgCadence, 60)
   assert.equal(detail.maxSpeedKph, 45)
   assert.equal(detail.maxWatts, 400)
-  assert.equal(detail.powerWithoutZeros?.avgWatts, 105)
+  const positivePower = projected.streams!['101'].watts!.filter(value => value > 0)
+  assert.equal(
+    detail.powerWithoutZeros?.avgWatts,
+    Math.round(positivePower.reduce((sum, value) => sum + value, 0) / positivePower.length),
+  )
   assert.equal(detail.calories, 10)
   assert.equal(detail.wahoo?.startOffsetS, -1)
   assert.equal(detail.wahoo?.metrics.trainingStressScore, 0)
-  assert.equal(detail.wahoo?.summarySources.npWatts, undefined)
+  assert.equal(detail.wahoo?.summarySources.avgWatts, 'wahoo')
+  assert.equal(detail.wahoo?.summarySources.npWatts, 'wahoo')
   assert.equal(detail.wahoo?.summarySources.maxWatts, 'wahoo')
   assert.deepEqual(
     detail.sources?.map(source => [source.provider, source.fileName]),
@@ -254,12 +262,12 @@ test('loads an uncached linked FIT and merges telemetry onto the virtual course 
   assert.equal(detail.garmin?.aerobicTrainingEffect, 2.8)
   assert.equal(detail.garmin?.exerciseLoad, 70.2)
   assert.equal(detail.gearShifts[0].elapsedS, 5)
-  assert.equal(detail.gearShifts[0].distanceKm, 5.5)
-  assert.ok(detail.cyclingDynamics?.distanceKm.every(value => value <= 11))
+  assert.equal(detail.gearShifts[0].distanceKm, 5)
+  assert.ok(detail.cyclingDynamics?.distanceKm.every(value => value <= 10))
   assert.ok(detail.cyclingDynamics?.leftTorqueEffectiveness.some(value => value === 80))
   assert.ok(detail.cyclingDynamics?.leftPowerPhaseStart.some(value => value === 350))
   assert.equal(detail.route[0].tempC, 19)
-  assert.equal(detail.analysisRanges[0].distanceKm, 11)
+  assert.equal(detail.analysisRanges[0].distanceKm, 10)
   assert.equal(detail.analysisRanges[0].averageWatts, 168.5)
   assert.ok(detail.route.some(point => point.w === 0))
   assert.equal(isActivityDetail(JSON.parse(JSON.stringify(detail))), true)
@@ -328,7 +336,7 @@ test('uses Garmin summaries when Strava omits power and no linked FIT supplies i
   assert.equal(JSON.stringify(detail.sources).includes('/private/'), false)
 })
 
-test('preserves Strava zero summaries and detail calories, then falls back to linked FIT values', t => {
+test('preserves non-power Strava zeros while selecting explicitly linked FIT power', t => {
   const dir = temporary(t)
   const { strava, garmin } = sources()
   const activity = strava.activities['101']
@@ -346,28 +354,97 @@ test('preserves Strava zero summaries and detail calories, then falls back to li
   }
   const wahoo = loadTrackedWahooFits(null, strava, [entry], dir)!
   const tracked = applyActivityTracking(strava, garmin, [entry], wahoo)!
-  for (const field of [
-    'distance',
-    'averageWatts',
-    'weightedAverageWatts',
-    'maxWatts',
-    'averageCadence',
-    'kilojoules',
-    'averageTemp',
-    'calories',
-  ] as const)
+  for (const field of ['distance', 'averageCadence', 'averageTemp', 'calories'] as const)
     assert.equal(tracked.activities['101'][field], 0, field)
 
-  delete activity.averageWatts
-  delete activity.weightedAverageWatts
-  delete activity.maxWatts
   delete activity.averageCadence
   const fallback = applyActivityTracking(strava, garmin, [entry], wahoo)!
   assert.equal(fallback.activities['101'].averageWatts, 200)
   assert.equal(fallback.activities['101'].weightedAverageWatts, 220)
   assert.equal(fallback.activities['101'].maxWatts, 400)
+  assert.equal(fallback.activities['101'].kilojoules, 2)
   assert.equal(fallback.activities['101'].averageCadence, 80)
   assert.equal(fallback.activities['101'].calories, 0)
+})
+
+test('automatic Wahoo matches preserve existing Strava power summaries', t => {
+  const dir = temporary(t)
+  const { strava, garmin } = sources()
+  strava.activities['101'].distance = 12000
+  strava.activities['101'].averageWatts = 0
+  const wahoo = loadTrackedWahooFits(null, strava, [entry], dir)!
+  const automaticEntry = { ...entry, wahooFitPath: undefined, power: undefined }
+  const projected = applyActivityTracking(strava, garmin, [automaticEntry], wahoo)!
+  assert.equal(projected.activities['101'].averageWatts, 0)
+  assert.equal(projected.activities['101'].weightedAverageWatts, 170)
+  assert.equal(projected.activities['101'].maxWatts, 400)
+})
+
+test('retains valid zero power from an explicitly linked FIT', t => {
+  const dir = temporary(t)
+  writeFileSync(join(dir, FIT_PATH), fit(0))
+  const { strava, garmin } = sources()
+  const wahoo = loadTrackedWahooFits(null, strava, [entry], dir)!
+  const projected = applyActivityTracking(strava, garmin, [entry], wahoo)!
+  assert.equal(projected.activities['101'].averageWatts, 0)
+  assert.equal(projected.activities['101'].weightedAverageWatts, 20)
+})
+
+test('selects provider power independently of the linked FIT and virtual route', t => {
+  const dir = temporary(t)
+  for (const power of ['strava', 'garmin', undefined] as const) {
+    const { strava, garmin } = sources()
+    Object.assign(garmin.activities['connect:55'].metrics, {
+      avgPower: 250,
+      maxPower: 300,
+      totalWorkKJ: 3,
+    })
+    const selectedEntry = { ...entry, power }
+    const wahoo = loadTrackedWahooFits(null, strava, [selectedEntry], dir)!
+    const tracked = applyActivityTracking(strava, garmin, [selectedEntry], wahoo)!
+    assert.deepEqual(tracked.streams!['101'].latlng, strava.streams!['101'].latlng)
+    assert.deepEqual(tracked.streams!['101'].distance, strava.streams!['101'].distance)
+    if (power)
+      assert.deepEqual(
+        tracked.streams!['101'].watts,
+        power === 'strava' ? strava.streams!['101'].watts : garmin.streams!['connect:55'].watts,
+      )
+    const detail = buildPayload(
+      strava,
+      null,
+      garmin,
+      undefined,
+      null,
+      287,
+      undefined,
+      undefined,
+      wahoo,
+      190,
+      166,
+      undefined,
+      [selectedEntry],
+    ).details['101']
+    assert.equal(detail.avgWatts, power === 'garmin' ? 250 : 150)
+    assert.equal(detail.npWatts, power === 'garmin' ? 180 : 170)
+    assert.equal(detail.wahoo?.summarySources.avgWatts, undefined)
+    if (power) {
+      assert.equal(detail.powerWithoutZeros?.avgWatts, power === 'garmin' ? 250 : 105)
+      assert.equal(detail.route[0].w, power === 'garmin' ? 250 : 100)
+      assert.ok(detail.powerCurve?.every(point => point.w <= (power === 'garmin' ? 250 : 110)))
+      assert.equal(detail.cyclingIntensityTrace, undefined)
+    }
+  }
+})
+
+test('aligns selected Garmin power by recording time and preserves valid zero samples', () => {
+  const { strava, garmin } = sources()
+  garmin.activities['connect:55'].startDate = START.toISOString()
+  garmin.activities['connect:55'].metrics.avgPower = 0
+  garmin.streams!['connect:55'].watts = Array.from({ length: 11 }, (_, i) => i * 10)
+  const tracked = applyActivityTracking(strava, garmin, [{ ...entry, power: 'garmin' }])!
+  assert.equal(tracked.activities['101'].averageWatts, 0)
+  assert.equal(tracked.streams!['101'].watts![0], 10)
+  assert.deepEqual(tracked.streams!['101'].time, strava.streams!['101'].time)
 })
 
 test('uses Strava course without Garmin and Garmin UTC timeline without Strava streams', t => {

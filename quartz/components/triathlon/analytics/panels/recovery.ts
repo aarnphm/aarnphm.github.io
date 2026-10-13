@@ -4,7 +4,6 @@ import type { OuraDayDetail } from '../../../../plugins/stores/oura'
 import type { OuraRestorationBaseline } from '../../../../util/oura-health'
 import type { TriathlonContext } from '../../runtime/context'
 import type { TriathlonFormatter } from '../../runtime/formatter'
-import { petSvg } from '../../../../util/mascot'
 import { resolveSleepMetrics, type SleepMetrics } from '../../../../util/sleep-metrics'
 import { axisFrame, buildDaySleepAnalytics } from '../../../../util/triathlon-card'
 import { napSummaries, sleepSummary } from '../../../../util/triathlon-day-analytics'
@@ -179,16 +178,6 @@ export const wallClock = (min: number): string => {
     .padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`
 }
 
-// The garden's pet with its startled look: wide eyes and a wince, in turn, while it sweats.
-export const buildSleeplessRock = (caption: string): HTMLElement => {
-  const wrap = el('div', 'tri-sleep-empty')
-  const stage = el('div', 'tri-sleep-rocky', undefined, { 'aria-hidden': 'true' })
-  stage.innerHTML = petSvg()
-  stage.querySelector('svg')!.dataset.state = 'failed'
-  wrap.append(stage, el('div', 'tri-ana-empty', caption))
-  return wrap
-}
-
 export const buildSleepDayDetail = (
   formatter: TriathlonFormatter,
   date: string,
@@ -222,7 +211,7 @@ export const buildSleepDayDetail = (
     training: null,
     heat: null,
   })
-  if (charts) wrap.appendChild(charts)
+  wrap.appendChild(charts ?? el('div', 'tri-ana-empty', formatter.text('no detail for this night')))
   return wrap
 }
 

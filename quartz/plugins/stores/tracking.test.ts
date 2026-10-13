@@ -2,6 +2,16 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { parseTrackingBlock } from './tracking'
 
+test('parses an explicit power provider and rejects unsupported selectors', () => {
+  for (const power of ['wahoo', 'strava', 'garmin'])
+    assert.equal(
+      parseTrackingBlock(null, `activity: 101\nvirtual: true\npower: ${power}`)?.activity?.power,
+      power,
+    )
+  for (const power of ['', 'rouvy', 'wahoo|strava|garmin'])
+    assert.equal(parseTrackingBlock(null, `activity: 101\nvirtual: true\npower: ${power}`), null)
+})
+
 test('parses authored computer text with or without a provider attachment', () => {
   for (const attachment of ['', '\ngarmin: 24401552199']) {
     assert.deepEqual(

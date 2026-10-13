@@ -3,7 +3,7 @@ import type { OuraDayDetail } from '../../../plugins/stores/oura'
 import type { TriathlonContext } from '../runtime/context'
 import { ouraRestorationBaseline } from '../../../util/oura-health'
 import { daySleepBarIndex, mountDaySleepCharts, setSleepView } from '../activity/day-sleep'
-import { buildSleepDayDetail, buildSleeplessRock } from './panels/recovery'
+import { buildSleepDayDetail } from './panels/recovery'
 import { clampN } from './shared'
 
 export const mountSleepPanel = (
@@ -52,13 +52,6 @@ export const mountSleepPanel = (
     const detail = details?.[date]
     const supplemental = supplementalByDate.get(date) ?? null
     const health = healthByDate.get(date) ?? null
-    if (!detail && !supplemental && !health) {
-      dayInner.replaceChildren(
-        buildSleeplessRock(context.formatter.text('no detail for this night')),
-      )
-      reveal()
-      return
-    }
     dayInner.replaceChildren(
       buildSleepDayDetail(
         context.formatter,
