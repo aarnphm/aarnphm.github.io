@@ -13,12 +13,17 @@
 .tri-notation {
   min-width: 0;
 
+  // base.scss lays every <header> out as a row; the title sits above its note, as the
+  // calendar title does.
   .tri-notation-header {
+    display: block;
     margin-bottom: 1rem;
+    padding: 0;
 
     h2 {
-      margin: 0 0 0.4rem;
-      font-size: 1.1rem;
+      margin: 0 0 0.2rem;
+      font-size: 1.15rem;
+      line-height: 1.3;
       font-weight: 500;
     }
 
@@ -32,11 +37,11 @@
 }
 
 .tri-notation-categories {
-  display: flex;
-  gap: 0.25rem;
+  display: inline-flex;
+  min-inline-size: 0;
   margin: 0 0 1rem;
   padding: 0;
-  border: 0;
+  border: 1px solid var(--calendar-line);
 
   legend {
     position: absolute;
@@ -46,29 +51,46 @@
     clip-path: inset(50%);
   }
 
+  // A segmented choice, like the calendar's view controls: shared edges, a fill and an
+  // underline on the chosen sport.
   label {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 2.75rem;
-    padding-inline: 1rem;
+    min-height: var(--calendar-control-size);
+    padding-inline: 0.85rem;
     box-sizing: border-box;
-    font-family: var(--codeFont);
-    font-size: 0.8rem;
-    border: 1px solid transparent;
     color: var(--darkgray);
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
     cursor: pointer;
+
+    & + label {
+      border-inline-start: 1px solid var(--calendar-line);
+    }
 
     &:has(:checked) {
       color: var(--dark);
-      border-color: var(--calendar-line);
       background: var(--calendar-surface);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
     }
 
     &:has(:focus-visible) {
-      outline: 2px solid var(--secondary);
-      outline-offset: 2px;
+      outline: 2px solid var(--control-focus, var(--dark));
+      outline-offset: -2px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:not(:has(:checked)):hover {
+        color: var(--dark);
+        background: var(--calendar-surface);
+      }
+    }
+
+    @media (pointer: coarse) {
+      min-height: 44px;
     }
   }
 
@@ -90,11 +112,14 @@
   }
 }
 
+// One frame with shared edges. Cards draw their end and bottom edges 1px past their track,
+// and the frame clips the outer ones, so a short last row still closes its empty cell.
 .tri-notation-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   margin: 0;
+  border: 1px solid var(--calendar-line);
+  overflow: clip;
 }
 
 .tri-notation-card {
@@ -102,8 +127,10 @@
   flex-direction: column;
   gap: 0.6rem;
   min-width: 0;
-  padding: 1rem;
-  border: 1px solid var(--calendar-line);
+  margin: 0 -1px -1px 0;
+  padding: 0.85rem 1rem;
+  border: solid var(--calendar-line);
+  border-width: 0 1px 1px 0;
   font-size: 0.85rem;
   line-height: 1.55;
   overflow-wrap: anywhere;
@@ -125,18 +152,25 @@
     margin: 0;
   }
 
+  // Worked examples use the calendar's meta line: mono, small, below the meaning.
   .tri-notation-example {
     margin-top: auto;
     padding-top: 0.5rem;
     color: var(--darkgray);
-    font-size: 0.8rem;
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    line-height: 1.5;
   }
 }
 
 .tri-notation-sources {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.25rem;
-  margin-top: 1rem;
-  font-size: 0.75rem;
+  justify-content: flex-start;
+  gap: 0.4rem 1.25rem;
+  // Global <footer> rules add 2rem of padding and margin and spread the links apart.
+  margin: 0.75rem 0 0;
+  padding: 0;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
 }

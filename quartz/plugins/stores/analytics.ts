@@ -1188,6 +1188,7 @@ interface RunningDynamicsMetrics {
 const swimMetricsByActivityId = (
   acts: readonly Act[],
   apple: AppleCache | null | undefined,
+  details: AnalyticsInputs['activityDetails'],
 ): Map<number, SwimActivityMetrics> => {
   const swimActs = acts.filter(act => act.sport === 'swim')
   const matches = matchAppleSwims(
@@ -1202,12 +1203,17 @@ const swimMetricsByActivityId = (
 
   const out = new Map<number, SwimActivityMetrics>()
   for (const act of swimActs) {
+    const detail = details?.[String(act.a.id)]
     const swim = matches.get(act.a.id)
     const applePace = swim ? swimPaceSeconds(swim.totalM, swim.activeTimeS ?? 0) : null
     out.set(act.a.id, {
-      paceSPer100m: applePace ?? swimPaceSeconds(act.a.distance, act.a.movingTime),
-      strokeRateSpm: swim ? swimStrokeRate(swim.strokeCount ?? 0, swim.strokeTimeS ?? 0) : null,
-      strokes: swim && Object.keys(swim.strokes).length > 0 ? swim.strokes : null,
+      paceSPer100m:
+        detail?.swimPaceSPer100m ?? applePace ?? swimPaceSeconds(act.a.distance, act.a.movingTime),
+      strokeRateSpm:
+        detail?.strokeRateSpm ??
+        (swim ? swimStrokeRate(swim.strokeCount ?? 0, swim.strokeTimeS ?? 0) : null),
+      strokes:
+        detail?.strokes ?? (swim && Object.keys(swim.strokes).length > 0 ? swim.strokes : null),
     })
   }
   return out
@@ -1526,8 +1532,21 @@ function estimateThreshold(
   }
 }
 
-function activityLoad(act: Act, vThr: number): number {
-  return calculateExerciseLoad(act.vGap / vThr, act.a.movingTime) ?? 0
+// A metered ride takes power TSS (NP / FTP). Bike speed grows with about the cube root of power,
+// so a speed ratio overstates intensity: speed IF ran about 2x power TSS on the same rides.
+function activityLoad(
+  act: Act,
+  vThr: number,
+  ftp: number | null,
+  detail: StravaActivityDetail | undefined,
+): number {
+  const metered = detail?.deviceWatts === true || (detail == null && act.a.deviceWatts === true)
+  const np = detail?.npWatts ?? act.a.weightedAverageWatts ?? null
+  const intensity =
+    act.sport === 'bike' && metered && np != null && np > 0 && ftp != null && ftp > 0
+      ? np / ftp
+      : act.vGap / vThr
+  return calculateExerciseLoad(intensity, act.a.movingTime) ?? 0
 }
 
 function buildDaily(
@@ -5856,7 +5875,8 @@ function buildEngine(
       hrvSeries: daily
         .filter(d => d.hrv != null)
         .map(d => ({ date: d.date, hrv: d.hrv as number })),
-      efSeries: efActs.map(e => ({ date: e.x.day, ef: e.ef, sport: e.x.sport })),
+      // Watts and m/min per beat do not share a scale, so the series carries the headline's pool.
+      efSeries: efPool.map(e => ({ date: e.x.day, ef: e.ef, sport: e.x.sport })),
       decouplingSeries: decActs.map(e => ({ date: e.x.day, pct: e.d })),
     },
     ftpHypothesis,
@@ -5975,11 +5995,11 @@ export function buildAnalytics(
     a,
     sport,
     day: a.startDateLocal.slice(0, 10),
-    distanceKm: round(a.distance / 1000, 1),
+    distanceKm: round(a.distance / 1000, sport === 'swim' ? 3 : 1),
     vGap: gradeAdjSpeed(a, sport, cache.streams?.[String(a.id)]),
   }))
   const trainingActs = acts.filter(act => act.a.commute !== true)
-  const swimMetrics = swimMetricsByActivityId(acts, inputs.apple)
+  const swimMetrics = swimMetricsByActivityId(acts, inputs.apple, inputs.activityDetails)
   const runningDynamics = runningDynamicsByActivityId(acts, inputs.apple)
   const distributions = buildDistributions(
     trainingActs,
@@ -6008,7 +6028,10 @@ export function buildAnalytics(
       continue
     }
     const vThr = thresholds.get(act.sport)!.vThr
-    loadById.set(act.a.id, activityLoad(act, vThr))
+    loadById.set(
+      act.a.id,
+      activityLoad(act, vThr, inputs.ftp ?? null, inputs.activityDetails?.[String(act.a.id)]),
+    )
     if (act.sport !== 'bike') paceIntensityFactorById.set(act.a.id, round(act.vGap / vThr, 3))
   }
   const supplementalLoadActivities = sourceActivities.flatMap(a => {
@@ -6973,7 +6996,7 @@ export function buildDataFeed(
           date: s.date,
           sport: s.sport,
           name: s.name,
-          distanceKm: round(raw.distance / 1000, 2),
+          distanceKm: round(raw.distance / 1000, s.sport === 'swim' ? 3 : 2),
           movingTimeS: raw.movingTime,
           elapsedTimeS: raw.elapsedTime,
           elevationM: round(raw.totalElevationGain, 0),

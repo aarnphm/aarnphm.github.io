@@ -139,7 +139,9 @@ const isSwimPower = (value: unknown, elapsedTimeS: number): boolean => {
     !(
       (value.speedBasis === 'pool-length' &&
         value.method === 'freestyle-drag-index-v1' &&
-        (value.inputSource === 'garmin' || value.inputSource === 'apple')) ||
+        (value.inputSource === 'garmin' ||
+          value.inputSource === 'apple' ||
+          value.inputSource === 'reconstructed')) ||
       (value.speedBasis === 'ground-speed' &&
         value.method === 'open-water-drag-index-v1' &&
         value.inputSource === 'route')
@@ -961,6 +963,14 @@ export const isActivityDetail = (value: unknown): value is StravaActivityDetail 
       ((value.performanceConditionTrace.source === 'garden-estimate' && value.sport !== 'bike') ||
         (value.sport !== 'bike' && value.sport !== 'run'))) ||
     !finite(value.elapsedTimeS) ||
+    !(
+      value.swimProvenance === undefined ||
+      (value.sport === 'swim' &&
+        isRecord(value.swimProvenance) &&
+        value.swimProvenance.source === 'athlete-estimate' &&
+        typeof value.swimProvenance.note === 'string' &&
+        Number.isSafeInteger(value.swimProvenance.trainingPeaksWorkoutId))
+    ) ||
     !isSwimPhysiology(value.swimPhysiology, value.elapsedTimeS) ||
     !isSwimPower(value.swimPower, value.elapsedTimeS) ||
     ((value.swimPhysiology != null || value.swimPower != null) && value.sport !== 'swim') ||

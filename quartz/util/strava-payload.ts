@@ -66,6 +66,7 @@ import { readStravaCacheFileSync } from './strava-cache-file'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
 import { applySwimPhysiology } from './swim-physiology'
 import { buildSwimPowerEstimate, openWaterPowerIntervals } from './swim-power'
+import { readSwimProvenance, swimProvenanceStamp } from './swim-provenance'
 import {
   buildTriathlonDailyAnalytics,
   type TriathlonDailyAnalytics,
@@ -548,7 +549,7 @@ export function enrichSwimMetrics(
     detail.swimDurationS = garminSwim?.elapsedTimeS ?? activity?.durationS ?? null
     detail.swimIntervals = intervals
     detail.swimPower = buildSwimPowerEstimate(
-      garminIntervals.length > 0 ? 'garmin' : 'apple',
+      detail.swimProvenance ? 'reconstructed' : garminIntervals.length > 0 ? 'garmin' : 'apple',
       intervals,
     )
     if (garminAnalysisRanges.length > 0)
@@ -1010,7 +1011,7 @@ export function loadStravaDataSync(
     sauna: manualTracking?.sauna ?? [],
     analytics: analyticsInputs,
   })
-  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${wahooTrackingStamp(manualTracking?.activities ?? [], contentDirectory)}:${windArchiveStamp(contentDirectory)}`
+  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(wahooCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}:${wahooTrackingStamp(manualTracking?.activities ?? [], contentDirectory)}:${windArchiveStamp(contentDirectory)}:${swimProvenanceStamp(contentDirectory)}`
   const sourceSalt = payloadMemoSourceSalt()
   if (payloadMemo.stamps !== stamps || payloadMemo.sourceSalt !== sourceSalt) {
     payloadMemo.entries.clear()
@@ -1045,7 +1046,8 @@ export function buildStravaData(
   analyticsInputs: StravaPayloadAnalyticsInputs = {},
   contentDirectory = 'content',
 ): LoadedStravaData {
-  const { strava, oura, garmin, apple, core, weather } = sources
+  const { strava, garmin, oura, apple, core, weather } = sources
+  const swimProvenance = readSwimProvenance(contentDirectory)
   const wahoo = loadTrackedWahooFits(
     sources.wahoo,
     strava,
@@ -1083,6 +1085,20 @@ export function buildStravaData(
   }
   enrichActivityDevices(payload, apple)
   enrichRouteLessHeartRate(payload, apple)
+  for (const provenance of swimProvenance) {
+    const detail = payload.details[String(provenance.activityId)]
+    if (
+      detail?.sport !== 'swim' ||
+      detail.garmin?.activityId !== provenance.garminActivityId ||
+      Math.abs(Date.parse(detail.start) - Date.parse(provenance.startDate)) > 1000
+    )
+      continue
+    detail.swimProvenance = {
+      source: provenance.source,
+      note: provenance.note,
+      trainingPeaksWorkoutId: provenance.trainingPeaksWorkoutId,
+    }
+  }
   enrichSwimMetrics(payload, apple, garmin)
   enrichRunDynamics(payload, apple)
   enrichCoreBodyTemperature(payload, core)

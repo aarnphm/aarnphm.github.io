@@ -26,7 +26,7 @@ export interface SwimPowerCurvePoint {
 
 export interface SwimPowerEstimate {
   source: 'garden-estimate'
-  inputSource: 'garmin' | 'apple' | 'route'
+  inputSource: 'garmin' | 'apple' | 'route' | 'reconstructed'
   method: 'freestyle-drag-index-v1' | 'open-water-drag-index-v1'
   speedBasis: 'pool-length' | 'ground-speed'
   referencePaceSPer100m: number

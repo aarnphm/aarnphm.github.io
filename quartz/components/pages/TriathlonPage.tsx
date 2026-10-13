@@ -12,6 +12,7 @@ import { triathlonDaySlug } from '../../util/triathlon-date-route'
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
+import performanceStyle from '../styles/performance-debug.scss'
 import style from '../styles/triathlon.scss'
 import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
 import { SeasonSummary } from '../triathlon/SeasonSummary'
@@ -32,6 +33,7 @@ const BIKE_PX_PER_MIN = 1.2
 const RUN_PX_PER_MIN = 2
 const SAUNA_PX_PER_MIN = 1.2
 const MAX_BAR = 300
+const KNEE_BAR = 200
 const MIN_SEG = 3
 const REST_SEG = 7
 const GAP_PX = 2
@@ -45,6 +47,29 @@ const timelinePxPerMin = (sport: ActivityKind): number => {
   if (sport === 'run') return RUN_PX_PER_MIN
   if (sport === 'sauna') return SAUNA_PX_PER_MIN
   return PX_PER_MIN
+}
+
+const isRestKind = (sport: string): boolean => sport === 'treatment' || sport === 'yoga'
+
+// A hard clamp at MAX_BAR flattens every build-block day into one height. Above KNEE_BAR the
+// day total follows KNEE + c·ln(1 + (h − KNEE)/c), with c solved so the longest day lands on
+// MAX_BAR: slope 1 at the knee, so short days keep their linear px/min and long days keep order.
+const timelineCompress = (longest: number): ((height: number) => number) => {
+  if (longest <= MAX_BAR) return height => height
+  const room = MAX_BAR - KNEE_BAR
+  const over = longest - KNEE_BAR
+  const reach = (c: number): number => c * Math.log1p(over / c)
+  let lo = 0
+  let hi = room
+  while (reach(hi) < room) hi *= 2
+  for (let i = 0; i < 48; i++) {
+    const mid = (lo + hi) / 2
+    if (reach(mid) < room) lo = mid
+    else hi = mid
+  }
+  const c = (lo + hi) / 2
+  return height =>
+    height <= KNEE_BAR ? height : KNEE_BAR + c * Math.log1p((height - KNEE_BAR) / c)
 }
 
 export default (() => {
@@ -69,6 +94,20 @@ export default (() => {
         lastYear = y
       }
     })
+
+    const dayBars = payload.days.map(d => {
+      const segRaw = d.items.map(it =>
+        isRestKind(it.sport)
+          ? REST_SEG
+          : Math.max(MIN_SEG, (it.durationS / 60) * timelinePxPerMin(it.sport)),
+      )
+      const scalable = d.items.reduce((a, it, i) => (isRestKind(it.sport) ? a : a + segRaw[i]), 0)
+      const gaps = Math.max(0, d.items.length - 1) * GAP_PX
+      return { segRaw, scalable, gaps }
+    })
+    const compress = timelineCompress(
+      dayBars.reduce((longest, bar) => Math.max(longest, bar.scalable + bar.gaps), 0),
+    )
 
     return (
       <article
@@ -123,24 +162,14 @@ export default (() => {
                 <div class="tri-track">
                   <nav
                     class="tri-bars"
-                    aria-label={`${payload.totalCount} sessions, bar height by duration with cycling, running, and sauna normalized`}
+                    aria-label={`${payload.totalCount} sessions, bar height by duration with cycling, running, and sauna normalized, long days compressed`}
                   >
-                    {payload.days.map(d => {
+                    {payload.days.map((d, dayIndex) => {
                       const rest = d.items.length === 0
                       const track = trackByDate.get(d.date)
                       const daySlug = triathlonDaySlug(d.date)
-                      const restKind = (s: string): boolean => s === 'treatment' || s === 'yoga'
-                      const segRaw = d.items.map(it =>
-                        restKind(it.sport)
-                          ? REST_SEG
-                          : Math.max(MIN_SEG, (it.durationS / 60) * timelinePxPerMin(it.sport)),
-                      )
-                      const scalable = d.items.reduce(
-                        (a, it, i) => (restKind(it.sport) ? a : a + segRaw[i]),
-                        0,
-                      )
-                      const gaps = Math.max(0, d.items.length - 1) * GAP_PX
-                      const scale = scalable + gaps > MAX_BAR ? (MAX_BAR - gaps) / scalable : 1
+                      const { segRaw, scalable, gaps } = dayBars[dayIndex]
+                      const scale = scalable > 0 ? (compress(scalable + gaps) - gaps) / scalable : 1
                       return (
                         <a
                           class={`tri-bar${rest ? '' : ' tri-bar--day'}${raceDates.has(d.date) ? ' tri-bar--race' : ''}`}
@@ -156,8 +185,8 @@ export default (() => {
                           ) : (
                             d.items.map((it, i) => (
                               <span
-                                class={`tri-seg${restKind(it.sport) ? ' tri-seg--treatment' : ''}`}
-                                style={`height:${(restKind(it.sport) ? segRaw[i] : segRaw[i] * scale).toFixed(1)}px`}
+                                class={`tri-seg${isRestKind(it.sport) ? ' tri-seg--treatment' : ''}`}
+                                style={`height:${(isRestKind(it.sport) ? segRaw[i] : segRaw[i] * scale).toFixed(1)}px`}
                               />
                             ))
                           )}
@@ -295,7 +324,7 @@ export default (() => {
     )
   }
 
-  TriathlonPage.css = style
+  TriathlonPage.css = [style, performanceStyle]
   TriathlonPage.beforeDOMLoaded = TRI_ANALYTICS_BOOT_SCRIPT
   TriathlonPage.afterDOMLoaded = script
 

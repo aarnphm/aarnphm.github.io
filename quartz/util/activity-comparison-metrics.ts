@@ -540,12 +540,18 @@ const wholeActivityStats = (
   else set('exercise-load', activity.calculatedExerciseLoad?.value, 'garden', true)
   set('relative-effort', activity.sufferScore, 'strava')
 
-  set('moving-time', positive(activity.movingTimeS) ? activity.movingTimeS : null, 'strava')
+  set(
+    'moving-time',
+    positive(activity.movingTimeS) ? activity.movingTimeS : null,
+    'strava',
+    !!activity.swimProvenance,
+  )
   set('elapsed-time', positive(activity.elapsedTimeS) ? activity.elapsedTimeS : null, 'strava')
   set(
     'distance',
     positive(activity.distanceKm) ? activity.distanceKm : null,
     activity.distanceSource ?? 'strava',
+    !!activity.swimProvenance,
   )
   if (activity.sport !== 'swim') set('elevation-gain', activity.elevationM, 'strava')
   if (powered)
@@ -626,7 +632,7 @@ const wholeActivityStats = (
       : positive(activity.distanceKm) && positive(activity.movingTimeS)
         ? activity.distanceKm / (activity.movingTimeS / 3_600)
         : null
-  set('speed', speedKph, 'strava')
+  set('speed', speedKph, activity.swimProvenance ? 'garmin' : 'strava', !!activity.swimProvenance)
   if (activity.sport === 'bike')
     set('max-speed', positive(activity.maxSpeedKph) ? activity.maxSpeedKph : null, 'strava')
 
@@ -644,12 +650,18 @@ const wholeActivityStats = (
     )
 
   if (activity.sport === 'swim') {
-    set('stroke-rate', positive(activity.strokeRateSpm) ? activity.strokeRateSpm : null, 'apple')
+    set(
+      'stroke-rate',
+      positive(activity.strokeRateSpm) ? activity.strokeRateSpm : null,
+      activity.swimProvenance ? 'garmin' : 'apple',
+      !!activity.swimProvenance,
+    )
     if (activity.swimLocation === 'pool')
       set(
         'strokes-per-length',
         swimLengthAverages(activity.swimIntervals)?.strokesPerLength,
-        'apple',
+        activity.swimProvenance ? 'garmin' : 'apple',
+        !!activity.swimProvenance,
       )
   } else
     set(

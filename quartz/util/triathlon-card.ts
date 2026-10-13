@@ -481,15 +481,17 @@ export const moreStatRows = (
   if (d.sources?.length || d.garmin || d.wahoo)
     rows.push([
       'source',
-      d.wahoo
-        ? 'Wahoo'
-        : d.distanceSource === 'strava'
-          ? 'Strava'
-          : d.garmin
-            ? 'Garmin'
-            : d.computer === 'wahoo'
-              ? 'Wahoo'
-              : 'Strava',
+      d.swimProvenance
+        ? 'Garmin + athlete reconstruction'
+        : d.wahoo
+          ? 'Wahoo'
+          : d.distanceSource === 'strava'
+            ? 'Strava'
+            : d.garmin
+              ? 'Garmin'
+              : d.computer === 'wahoo'
+                ? 'Wahoo'
+                : 'Strava',
     ])
   if (d.virtual) rows.push(['activity', triText(presentation.locale, 'virtual')])
   return rows
@@ -11206,7 +11208,7 @@ export const activityShareData = (
         points: laps.map(lap => ({
           x: lap.index,
           y: lap.speedKph,
-          label: `${lap.index} · ${dist(presentation, lap.range.distanceKm, d.sport)}`,
+          label: `lap ${lap.index}`,
           value: `${clock(lap.paceS)} ${isImperial(presentation) ? '/mi' : '/km'}`,
         })),
       })
@@ -11297,6 +11299,13 @@ export const buildActivity = <N>(
   if (share) f.add(headActions, share)
   f.add(head, headActions)
   f.add(wrap, head)
+  if (d.swimProvenance)
+    f.add(
+      wrap,
+      f.el('p', 'tri-note', d.swimProvenance.note, {
+        'data-swim-provenance': d.swimProvenance.source,
+      }),
+    )
   f.add(
     wrap,
     statsTable(f, activityTableRows(f.presentation, d, fillMissingRunPower), (label, index) => {
