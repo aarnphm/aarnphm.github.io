@@ -530,7 +530,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
 
   return {
     name: 'ArenaPage',
-    getQuartzComponents(ctx) {
+    getQuartzComponents() {
       return [
         Head,
         Header,
