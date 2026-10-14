@@ -10,7 +10,6 @@ import style from '../styles/masonry.scss'
 
 export default (() => {
   const MasonryPage: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
-    // get JSON path from emitter
     const jsonPath = fileData.masonryJsonPath
     const images = fileData.masonryImages || []
 
@@ -24,7 +23,6 @@ export default (() => {
             ...classes,
             'masonry-container',
             'all-col',
-            'grid',
             'popover-hint',
           )}
         >
@@ -35,16 +33,21 @@ export default (() => {
 
     return (
       <article
-        class={classNames(
-          displayClass,
-          ...classes,
-          'masonry-container',
-          'all-col',
-          'popover-hint',
-          'grid',
-        )}
+        class={classNames(displayClass, ...classes, 'masonry-container', 'all-col', 'popover-hint')}
       >
-        <div class="masonry-grid all-col" id="masonry-grid" data-json-path={jsonPath}></div>
+        <div class="masonry-grid" id="masonry-grid" data-json-path={jsonPath}>
+          {images.map(image => (
+            <img
+              class="masonry-image"
+              src={image.src}
+              alt={image.alt}
+              width={image.width}
+              height={image.height}
+              loading="lazy"
+              decoding="async"
+            />
+          ))}
+        </div>
         <div class="masonry-caption-modal" id="masonry-caption-modal"></div>
       </article>
     )

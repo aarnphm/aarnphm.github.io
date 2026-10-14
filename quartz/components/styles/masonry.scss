@@ -14,8 +14,10 @@
 }
 
 .masonry-container {
+  box-sizing: border-box;
   width: 100%;
-  padding: 0;
+  min-width: 0;
+  padding: var(--space-1);
   min-height: 50vh;
 
   &.all-col {
@@ -24,25 +26,18 @@
 }
 
 .masonry-grid {
-  position: relative;
   width: 100%;
-  min-height: 1000px;
-  margin: 0 auto;
+  column-width: clamp(8.5rem, 18vw, 16rem);
+  column-gap: var(--space-1);
 }
 
 .masonry-image {
-  position: absolute;
-  opacity: 0;
-  object-fit: cover;
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 var(--space-1);
+  break-inside: avoid;
   cursor: pointer;
-
-  &.positioned {
-    opacity: 1;
-  }
-
-  &:hover {
-    z-index: 10;
-  }
 }
 
 .masonry-caption-modal {
@@ -79,17 +74,7 @@
   color: var(--gray);
 }
 
-@media all and ($tablet) {
-  .masonry-container {
-    padding: 1.5rem 0.75rem;
-  }
-}
-
 @media all and ($mobile) {
-  .masonry-container {
-    padding: 1rem 0.5rem;
-  }
-
   .masonry-caption-modal {
     max-width: 200px;
     font-size: 0.8rem;
