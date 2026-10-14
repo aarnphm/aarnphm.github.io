@@ -75,17 +75,9 @@ export interface ActivityTrackingEntry {
 export type SaunaCooldown = 'natural' | 'cold plunge'
 export type SaunaPhase = 'hot sauna' | 'cold plunge' | 'break'
 
-export interface SaunaLocation {
-  name: string
-  latitude: number | null
-  longitude: number | null
-}
+import { SAUNA_LOCATIONS, type SaunaLocation } from '../../util/sauna-locations'
 
-// Coordinates from the map embeds on https://www.othership.us/adelaide and /yorkville.
-export const SAUNA_LOCATIONS: readonly SaunaLocation[] = [
-  { name: 'Othership Adelaide', latitude: 43.6460984, longitude: -79.3977406 },
-  { name: 'Othership Yorkville', latitude: 43.6694504, longitude: -79.3922208 },
-]
+export { SAUNA_LOCATIONS, type SaunaLocation }
 
 const parseSaunaLocation = (value: string | undefined): SaunaLocation | null => {
   const name = value?.trim().replace(/\s+/g, ' ')

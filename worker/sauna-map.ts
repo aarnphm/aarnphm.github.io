@@ -1,5 +1,5 @@
-import { SAUNA_LOCATIONS } from '../quartz/plugins/stores/tracking'
 import { mapboxStyleUrl } from '../quartz/util/mapbox-style'
+import { SAUNA_LOCATIONS } from '../quartz/util/sauna-locations'
 
 export const saunaMapTarget = (params: URLSearchParams): URL | null => {
   const location = SAUNA_LOCATIONS.find(candidate => candidate.name === params.get('location'))
