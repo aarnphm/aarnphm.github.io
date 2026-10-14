@@ -22,25 +22,24 @@ export const LazyScripts: QuartzEmitterPlugin<Options> = opts => {
   const scripts = opts?.scripts ?? []
   return {
     name: 'LazyScripts',
-    async emit(ctx) {
-      return Promise.all(
-        scripts.map(async ({ name, entry }) => {
-          const result = await build({
-            entryPoints: [joinSegments(QUARTZ, entry)],
-            bundle: true,
-            minify: true,
-            platform: 'browser',
-            format: 'esm',
-            write: false,
-          })
-          return write({
-            ctx,
-            slug: joinSegments(staticScriptsDir, name) as FullSlug,
-            ext: '.js',
-            content: result.outputFiles[0].text,
-          })
-        }),
-      )
+    async *emit(ctx) {
+      for (const { name, entry } of scripts) {
+        const result = await build({
+          entryPoints: [joinSegments(QUARTZ, entry)],
+          bundle: true,
+          minify: true,
+          platform: 'browser',
+          format: 'esm',
+          write: false,
+        })
+
+        yield write({
+          ctx,
+          slug: joinSegments(staticScriptsDir, name) as FullSlug,
+          ext: '.js',
+          content: result.outputFiles[0].text,
+        })
+      }
     },
     async *partialEmit() {},
   }

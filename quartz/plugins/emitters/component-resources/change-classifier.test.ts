@@ -155,11 +155,33 @@ test('scopes source rebuilds by the server bundle closure', () => {
   )
   assert.deepEqual(
     sourceRebuildScope(
-      ['quartz/scripts/verify-semantic-index.ts', 'quartz/embed_build.py'],
+      [
+        'quartz/scripts/verify-semantic-index.ts',
+        'quartz/embed_build.py',
+        'quartz/util/garmin-connect.ts',
+        'quartz/util/wahoo-cloud.ts',
+        'quartz/util/lesswrong-preview.ts',
+      ],
       server,
     ),
     partial({}),
   )
+})
+
+test('rebuilds semantic and pace workers when their quartz/util dependencies change', () => {
+  const semanticUtilChanges = classifyResourceChanges([change('quartz/util/semantic-search.ts')])
+  assert.equal(semanticUtilChanges.semanticWorker, true)
+  assert.equal(semanticUtilChanges.semanticWorkerDeleted, false)
+
+  const paceUtilChanges = classifyResourceChanges([change('quartz/util/pace-model.ts')])
+  assert.deepEqual(
+    paceUtilChanges.genericWorkerChanges.map(changeEvent => [changeEvent.type, changeEvent.path]),
+    [['change', 'quartz/workers/pace.worker.ts']],
+  )
+
+  const cliOnlyUtilChanges = classifyResourceChanges([change('quartz/util/garmin-connect.ts')])
+  assert.equal(cliOnlyUtilChanges.pageScripts, false)
+  assert.equal(hasComponentResourceChanges(cliOnlyUtilChanges), false)
 })
 
 test('recompiles component styles when a shared partial changes', () => {
