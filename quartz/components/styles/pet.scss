@@ -253,6 +253,114 @@ $pet-looks: (
   }
 }
 
+// Cold where the visitor is (pet.inline.ts reads the wind chill): at 10 °C and under it wears its
+// scarf; at 0 °C and under a toque too, unless the page's outfit or the trail's hat has the head,
+// and at rest its breath shows and every few seconds it hunches up and shivers.
+.pet-svg:is([data-cold='cool'], [data-cold='cold']) [data-part='scarf'] {
+  display: inline;
+}
+
+.pet-svg[data-cold='cold']:not(
+    [data-hat],
+    [data-outfit='triathlon'],
+    [data-outfit='fr'],
+    [data-outfit='legal'],
+    [data-outfit='courses'],
+    [data-outfit='engineering']
+  )
+  [data-part='toque'] {
+  display: inline;
+}
+
+.pet-svg[data-cold='cold']:is([data-state='idle'], [data-state='wait']) {
+  [data-part='breath'] {
+    display: inline;
+  }
+
+  .pet-puff {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: 100% 50%;
+    animation: pet-breath 3.4s steps(10) infinite;
+  }
+
+  .pet-puff:nth-child(2) {
+    animation-delay: 0.25s;
+  }
+
+  .pet-puff:nth-child(3) {
+    animation-delay: 0.5s;
+  }
+
+  &:not([data-kind='hang']) .pet-lean {
+    animation: pet-shiver 4.6s linear infinite;
+  }
+}
+
+@keyframes pet-breath {
+  0%,
+  8% {
+    opacity: 0;
+    scale: 0.6;
+  }
+  16% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0;
+    scale: 1.2;
+    translate: -0.06px -0.08px;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+// Rest, then shoulders up (it hunches into the scarf), a few quick shakes, and it settles.
+@keyframes pet-shiver {
+  0%,
+  70%,
+  100% {
+    translate: 0 0;
+    scale: 1 1;
+  }
+  73% {
+    scale: 1.04 0.93;
+  }
+  75% {
+    translate: -0.06px 0;
+    scale: 1.04 0.93;
+  }
+  77% {
+    translate: 0.06px 0;
+  }
+  79% {
+    translate: -0.06px 0;
+  }
+  81% {
+    translate: 0.05px 0;
+  }
+  83% {
+    translate: -0.05px 0;
+  }
+  85% {
+    translate: 0.04px 0;
+    scale: 1.04 0.93;
+  }
+  87% {
+    translate: -0.03px 0;
+  }
+  90% {
+    translate: 0 0;
+    scale: 1 1;
+  }
+}
+
+// The friend keeps its sprout, so it goes without the toque.
+.garden-pet-friend .pet-svg[data-cold] [data-part='toque'] {
+  display: none;
+}
+
 // The friend on the friendship page (pet.inline.ts): the same pen blob a size smaller, filled
 // sage, a sprout on its head swaying.
 .garden-pet-friend {
