@@ -1,38 +1,25 @@
-import type { DragBehavior } from 'd3-drag'
-import type { Simulation } from 'd3-force'
 import type { ZoomBehavior } from 'd3-zoom'
-import {
-  forceSimulation,
-  forceManyBody,
-  forceCenter,
-  forceLink,
-  forceCollide,
-  select,
-  drag as d3Drag,
-  zoom as d3Zoom,
-  zoomIdentity,
-} from 'd3'
+import { select, zoom as d3Zoom, zoomIdentity, dragEnable, drag as d3Drag } from 'd3'
 import { Marked } from 'marked'
 import { canvasEdgeGeometry, canvasEdgeMidpoint, canvasEdgePath } from '../../util/canvas-edge'
 import { fetchCanonical } from '../../util/fetch-canonical'
 import { normalizeRelativeURLs } from '../../util/path'
+import { mountHtmlCanvasPreview, type HtmlCanvasPreview } from './html-canvas-preview'
+import { loadPageStyles } from './page-styles'
+import { cleanupHydratedRoot } from './root-lifecycle'
 
 // page chunks share one `marked` module, so canvas options stay off its global instance
 const marked = new Marked({ breaks: true, gfm: true })
 
 const EDGE_LABEL_LINE_HEIGHT = 1.2
-const syntheticMouseleaveEvents = new WeakSet<Event>()
 
 function renderTextNodeContent(node: NodeData): string {
-  const html = marked.parse(node.resolvedText ?? node.text ?? '', { async: false }) as string
-
-  if (!node.wikilinks || node.wikilinks.length === 0) {
-    return `<div class="node-text">${html}</div>`
-  }
+  const html = marked.parse(node.resolvedText ?? node.text ?? '', { async: false })
 
   const doc = htmlParser.parseFromString(html, 'text/html')
   const anchors = Array.from(doc.body.querySelectorAll('a'))
-  const remaining = [...node.wikilinks]
+  const remaining = [...(node.wikilinks ?? [])]
+  const isLabel = doc.body.children.length === 1 && doc.body.firstElementChild?.tagName === 'P'
 
   anchors.forEach(anchor => {
     const href = anchor.getAttribute('href') ?? ''
@@ -60,7 +47,7 @@ function renderTextNodeContent(node: NodeData): string {
 
   normalizeRelativeURLs(doc, window.location.href)
 
-  return `<div class="node-text">${doc.body.innerHTML}</div>`
+  return `<div class="node-text${isLabel ? ' node-text-label' : ''}">${doc.body.innerHTML}</div>`
 }
 
 interface CanvasResolvedWikilink {
@@ -121,20 +108,12 @@ interface CanvasData {
 }
 
 interface CanvasConfig {
-  drag: boolean
   zoom: boolean
-  forceStrength: number
-  linkDistance: number
-  collisionRadius: number
-  useManualPositions: boolean
-  showInlineContent: boolean
-  showPreviewOnHover: boolean
-  previewMaxLength: number
 }
 
 type CanvasBounds = { minX: number; minY: number; maxX: number; maxY: number }
 
-type NodeData = CanvasNode & { fx?: number; fy?: number }
+type NodeData = CanvasNode
 
 type LinkData = CanvasEdge & { source: NodeData; target: NodeData }
 
@@ -235,7 +214,6 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
 
     const cfg: CanvasConfig = cfgAttr ? JSON.parse(cfgAttr) : {}
     if (isEmbed) {
-      cfg.drag = false
       cfg.zoom = false
     }
 
@@ -246,55 +224,61 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
 
     container.replaceChildren()
 
-    const width = container.clientWidth || 800
-    const height = container.clientHeight || 600
+    let width = container.clientWidth || 800
+    let height = container.clientHeight || 600
 
     let toolbar: HTMLElement | null = null
-    let helpModal: HTMLElement | null = null
+    let helpModal: HTMLDialogElement | null = null
 
     if (!isEmbed) {
       toolbar = document.createElement('div')
       toolbar.className = 'canvas-controls'
       toolbar.innerHTML = `
         <div class="canvas-control-group">
-          <button class="canvas-control-item" data-action="zoom-in" aria-label="Zoom in" title="Zoom in">
+          <button type="button" class="canvas-control-item" data-action="zoom-in" aria-label="Zoom in" title="Zoom in">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
           </button>
-          <button class="canvas-control-item" data-action="zoom-reset" aria-label="Reset zoom" title="Reset zoom">
+          <button type="button" class="canvas-control-item" data-action="zoom-reset" aria-label="Reset zoom" title="Reset zoom">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
           </button>
-          <button class="canvas-control-item" data-action="zoom-fit" aria-label="Zoom to fit" title="Zoom to fit">
+          <button type="button" class="canvas-control-item" data-action="zoom-fit" aria-label="Zoom to fit" title="Zoom to fit">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
           </button>
-          <button class="canvas-control-item" data-action="zoom-out" aria-label="Zoom out" title="Zoom out">
+          <button type="button" class="canvas-control-item" data-action="zoom-out" aria-label="Zoom out" title="Zoom out">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg>
           </button>
         </div>
         <div class="canvas-control-group">
-          <button class="canvas-control-item" data-action="help" aria-label="Canvas help" title="Canvas help">
+          <button type="button" class="canvas-control-item" data-action="help" aria-label="Canvas help" title="Canvas help">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
           </button>
         </div>
       `
       container.appendChild(toolbar)
 
-      helpModal = document.createElement('div')
+      helpModal = document.createElement('dialog')
       helpModal.className = 'canvas-help-modal'
+      helpModal.setAttribute('aria-label', 'Canvas help')
       helpModal.innerHTML = `
         <div class="canvas-help-backdrop"></div>
         <div class="canvas-help-content">
           <div class="canvas-help-header">
             <h2>Canvas help</h2>
-            <button class="canvas-help-close" aria-label="Close">
+            <button type="button" class="canvas-help-close" aria-label="Close">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
             </button>
           </div>
           <div class="canvas-help-body">
+            <p>Drag cards to arrange this view. Reload restores the saved layout.</p>
             <div class="canvas-help-section">
               <h3>pan</h3>
               <div class="canvas-help-row">
-                <span>Pan vertically</span>
-                <span class="canvas-help-keys"><kbd>Scroll</kbd></span>
+                <span>Pan in either direction</span>
+                <span class="canvas-help-keys"><kbd>Scroll</kbd> or drag background</span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Pan over a card</span>
+                <span class="canvas-help-keys"><kbd>Space</kbd> + drag, or middle drag</span>
               </div>
               <div class="canvas-help-row">
                 <span>Pan horizontally</span>
@@ -309,18 +293,18 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
               </div>
               <div class="canvas-help-row">
                 <span>Zoom to fit</span>
-                <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>1</kbd></span>
+                <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>1</kbd> or <kbd>0</kbd></span>
               </div>
             </div>
             <div class="canvas-help-section">
               <h3>navigation</h3>
               <div class="canvas-help-row">
-                <span>Focus node</span>
-                <span class="canvas-help-keys"><kbd>Click</kbd> on content</span>
+                <span>Read card</span>
+                <span class="canvas-help-keys"><kbd>Click</kbd> or <kbd>Enter</kbd></span>
               </div>
               <div class="canvas-help-row">
-                <span>Open node</span>
-                <span class="canvas-help-keys"><kbd>Click</kbd> outside content</span>
+                <span>Open note</span>
+                <span class="canvas-help-keys"><kbd>Click</kbd> card title</span>
               </div>
               <div class="canvas-help-row">
                 <span>Open from content</span>
@@ -350,6 +334,14 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('width', width)
       .attr('height', height)
       .attr('viewBox', [0, 0, width, height])
+      .attr('tabindex', isEmbed ? null : 0)
+      .attr('role', 'group')
+      .attr(
+        'aria-label',
+        isEmbed
+          ? 'Canvas preview'
+          : 'Canvas viewer. Arrow keys pan, plus and minus zoom, 0 fits all cards.',
+      )
 
     const defs = svg.append('defs')
     const pattern = defs
@@ -372,8 +364,9 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('width', '100%')
       .attr('height', '100%')
       .attr('fill', `url(#${pattern.attr('id')})`)
+      .attr('class', 'canvas-background')
 
-    const g = svg.append('g')
+    const g = svg.append('g').attr('class', 'canvas-scene')
     const groupNodeGroup = g.append('g').attr('class', 'group-nodes')
     const edgeGroup = g.append('g').attr('class', 'edges')
     const edgeLabelGroup = g.append('g').attr('class', 'edge-labels')
@@ -388,61 +381,107 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     let focusedNode: SVGGElement | null = null
     let isHelpOpen = false
     let bounds: CanvasBounds | null = null
-    let tooltipElement: HTMLElement | null = null
-    const activePopovers = new Set<HTMLElement>()
+    let zoomBehavior: ZoomBehavior<SVGSVGElement, unknown> | null = null
+    let currentScale = 1
+    let currentTransform = zoomIdentity
+    let renderFrame = 0
+    let spacePressed = false
+    let isFitted = true
+    let mousePanning = false
+    let nodeDragging = false
+    let lastCameraInput = 0
+    let previewTimer = 0
+    let previewIdle = 0
+    const previewJobs: { run: (active: boolean) => void; isActive: () => boolean }[] = []
+    const movedNodes = new Set<NodeData>()
+    let renderedTransform = ''
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-    const hidePreviews = () => {
-      if (tooltipElement) tooltipElement.style.visibility = 'hidden'
-      activePopovers.forEach(popover => popover.remove())
-      activePopovers.clear()
+    function queueRender() {
+      if (renderFrame) return
+      renderFrame = requestAnimationFrame(() => {
+        renderFrame = 0
+        if (!isCanvasActive(container, lifecycle)) return
+        if (movedNodes.size > 0) {
+          updatePositions(movedNodes)
+          movedNodes.clear()
+        }
+        const transform = `translate(${currentTransform.x}px, ${currentTransform.y}px) scale(${currentScale})`
+        if (renderedTransform !== transform) {
+          g.style('transform', transform)
+          // Grid spacing stays legible while its origin follows the world coordinates.
+          const gridStep = 20 * Math.pow(2, Math.ceil(Math.log2(1 / currentScale)))
+          const gridSize = gridStep * currentScale
+          const offset = (value: number) => ((value % gridSize) + gridSize) % gridSize
+          pattern
+            .attr('width', gridSize)
+            .attr('height', gridSize)
+            .attr('x', offset(currentTransform.x))
+            .attr('y', offset(currentTransform.y))
+          const skeleton = currentScale < 0.5
+          if (container.classList.contains('canvas-skeleton-view') !== skeleton) {
+            container.classList.toggle('canvas-skeleton-view', skeleton)
+            measureEdgeLabels()
+          }
+          renderedTransform = transform
+        }
+        updatePreviewVisibility()
+      })
     }
 
     addCanvasCleanup(lifecycle, () => {
-      hidePreviews()
-      tooltipElement?.remove()
-      tooltipElement = null
+      cancelAnimationFrame(renderFrame)
+      window.clearTimeout(previewTimer)
+      window.cancelIdleCallback(previewIdle)
+      for (const job of previewJobs.splice(0)) job.run(false)
+      helpModal?.close()
+      if (mousePanning || nodeDragging) {
+        select(window).on('.zoom', null).on('.drag', null)
+        dragEnable(window)
+      }
     })
 
-    let zoomBehavior: ZoomBehavior<SVGSVGElement, unknown> | null = null
-    let currentScale = 1
-    let initialTransform = zoomIdentity
     if (cfg.zoom) {
       const zoom = d3Zoom<SVGSVGElement, unknown>()
-        .scaleExtent([0.1, 4])
+        .scaleExtent([0.02, 4])
+        .clickDistance(4)
+        .extent((): [[number, number], [number, number]] => [
+          [0, 0],
+          [width, height],
+        ])
         .filter(event => {
-          if (isHelpOpen) return false
-
-          if (event.type === 'wheel') {
-            if (event.metaKey || event.ctrlKey) {
-              return true
-            }
-            if (event.shiftKey) {
-              return false
-            }
-            return false
+          if (isHelpOpen || event.type === 'wheel' || event.type === 'dblclick') return false
+          if (spacePressed || event.button === 1) return true
+          const target = event.target
+          if (event.type === 'touchstart') {
+            if (event.touches.length > 1) return true
+            return !(target instanceof Element && focusedNode?.contains(target))
           }
-          return !event.button
+          return !event.button && !(target instanceof Element && target.closest('.node'))
+        })
+        .on('start', event => {
+          mousePanning = event.sourceEvent?.type === 'mousedown'
+        })
+        .on('end', () => {
+          mousePanning = false
         })
         .on('zoom', event => {
-          g.attr('transform', event.transform)
-          currentScale = event.transform.k
-
-          if (currentScale < 0.5) {
-            container.classList.add('canvas-skeleton-view')
-          } else {
-            container.classList.remove('canvas-skeleton-view')
-          }
+          currentTransform = event.transform
+          currentScale = currentTransform.k
+          lastCameraInput = performance.now()
+          if (event.sourceEvent) isFitted = false
+          queueRender()
         })
       zoomBehavior = zoom
-      svg.call(zoom)
+      svg.call(zoom).on('dblclick.zoom', null)
     }
 
     const getBoundsTransform = (b: CanvasBounds) => {
       const contentW = Math.max(1, b.maxX - b.minX)
       const contentH = Math.max(1, b.maxY - b.minY)
-      const padding = 40
+      const padding = 64
       const kRaw = Math.min((width - padding) / contentW, (height - padding) / contentH)
-      const k = Math.max(0.1, Math.min(4, kRaw))
+      const k = Math.max(0.02, Math.min(4, kRaw))
       const cx = (b.minX + b.maxX) / 2
       const cy = (b.minY + b.maxY) / 2
       const tx = width / 2 - k * cx
@@ -454,10 +493,12 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       const { k, tx, ty } = getBoundsTransform(b)
       const transform = zoomIdentity.translate(tx, ty).scale(k)
       if (zoomBehavior) {
-        const selection = animate ? svg.transition().duration(300) : svg
+        const selection = animate ? svg.transition().duration(reducedMotion.matches ? 0 : 180) : svg
         selection.call(zoomBehavior.transform, transform)
       } else {
-        g.attr('transform', `translate(${tx},${ty}) scale(${k})`)
+        currentTransform = transform
+        currentScale = k
+        queueRender()
       }
       return transform
     }
@@ -466,48 +507,61 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       container.addEventListener(
         'wheel',
         event => {
-          if (isHelpOpen) return
-
+          if (isHelpOpen || !zoomBehavior) return
           const target = event.target
-          if (focusedNode && target instanceof Element && target.closest('.node-content')) {
+          if (
+            !event.metaKey &&
+            !event.ctrlKey &&
+            focusedNode &&
+            target instanceof Element &&
+            focusedNode.contains(target) &&
+            target.closest('.canvas-card-preview')
+          ) {
+            // Native HTML-in-Canvas can retarget wheel events to the bitmap surface.
+            // Its HTML scroller still owns the card's reading position.
+            if (target.closest('.canvas-html-surface') && !target.closest('.node-content')) {
+              const content = focusedNode.querySelector<HTMLElement>(
+                '.node-file-content, .node-text',
+              )
+              if (content) {
+                const unit =
+                  event.deltaMode === WheelEvent.DOM_DELTA_LINE
+                    ? 16
+                    : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+                      ? content.clientHeight
+                      : 1
+                event.preventDefault()
+                event.stopPropagation()
+                content.scrollBy(event.deltaX * unit, event.deltaY * unit)
+              }
+            }
             return
           }
 
-          if (!event.metaKey && !event.ctrlKey) {
-            event.preventDefault()
-            event.stopPropagation()
-
-            const currentTransform = zoomBehavior
-              ? ((svg.node() as SVGSVGElement & { __zoom?: typeof zoomIdentity }).__zoom ??
-                zoomIdentity)
-              : zoomIdentity
-
-            const deltaX = event.deltaX
-            const deltaY = event.deltaY
-            const panSpeed = 1
-
-            if (event.shiftKey) {
-              const scrollDelta = deltaX !== 0 ? deltaX : deltaY
-              const newTransform = currentTransform.translate(-scrollDelta * panSpeed, 0)
-              if (zoomBehavior) {
-                svg.call(zoomBehavior.transform, newTransform)
-              } else {
-                g.attr(
-                  'transform',
-                  `translate(${newTransform.x},${newTransform.y}) scale(${newTransform.k})`,
-                )
-              }
-            } else {
-              const newTransform = currentTransform.translate(0, -deltaY * panSpeed)
-              if (zoomBehavior) {
-                svg.call(zoomBehavior.transform, newTransform)
-              } else {
-                g.attr(
-                  'transform',
-                  `translate(${newTransform.x},${newTransform.y}) scale(${newTransform.k})`,
-                )
-              }
-            }
+          event.preventDefault()
+          event.stopPropagation()
+          svg.interrupt()
+          isFitted = false
+          const unit =
+            event.deltaMode === WheelEvent.DOM_DELTA_LINE
+              ? 16
+              : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+                ? height
+                : 1
+          const dx = event.deltaX * unit
+          const dy = event.deltaY * unit
+          if (event.metaKey || event.ctrlKey) {
+            const rect = container.getBoundingClientRect()
+            const scale = currentScale * Math.pow(2, -dy * 0.002 * (event.ctrlKey ? 10 : 1))
+            svg.call(zoomBehavior.scaleTo, scale, [
+              event.clientX - rect.left - container.clientLeft,
+              event.clientY - rect.top - container.clientTop,
+            ])
+          } else {
+            const panX = event.shiftKey ? dx || dy : dx
+            const panY = event.shiftKey ? 0 : dy
+            // D3 translations use world units; wheel deltas use screen pixels.
+            svg.call(zoomBehavior.translateBy, -panX / currentScale, -panY / currentScale)
           }
         },
         { passive: false, signal },
@@ -517,6 +571,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     const showHelp = () => {
       if (helpModal) {
         helpModal.classList.add('is-visible')
+        helpModal.showModal()
         isHelpOpen = true
       }
     }
@@ -524,11 +579,20 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     const hideHelp = () => {
       if (helpModal) {
         helpModal.classList.remove('is-visible')
+        helpModal.close()
         isHelpOpen = false
       }
     }
 
     if (helpModal) {
+      helpModal.addEventListener(
+        'cancel',
+        event => {
+          event.preventDefault()
+          hideHelp()
+        },
+        { signal },
+      )
       const helpBackdrop = helpModal.querySelector<HTMLElement>('.canvas-help-backdrop')
       const helpClose = helpModal.querySelector<HTMLButtonElement>('.canvas-help-close')
 
@@ -544,20 +608,12 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     if (isEmbed) {
       const navigateTo = container.getAttribute('data-navigate-to')
       if (navigateTo) {
-        const overlay = document.createElement('div')
+        const overlay = document.createElement('a')
         overlay.className = 'canvas-embed-overlay'
         overlay.style.cssText =
           'position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; cursor: pointer;'
         overlay.setAttribute('aria-label', `view full canvas: ${navigateTo}`)
-        overlay.setAttribute('role', 'link')
-        overlay.addEventListener(
-          'click',
-          () => {
-            const path = navigateTo.startsWith('/') ? navigateTo : `/${navigateTo}`
-            window.spaNavigate(new URL(path, window.location.origin))
-          },
-          { signal },
-        )
+        overlay.href = navigateTo.startsWith('/') ? navigateTo : `/${navigateTo}`
         container.appendChild(overlay)
       }
     }
@@ -576,16 +632,24 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
             }
 
             if (!zoomBehavior) return
+            svg.interrupt()
+            isFitted = action === 'zoom-reset' || action === 'zoom-fit'
 
             switch (action) {
               case 'zoom-in':
-                svg.transition().duration(300).call(zoomBehavior.scaleBy, 1.3)
+                svg
+                  .transition()
+                  .duration(reducedMotion.matches ? 0 : 180)
+                  .call(zoomBehavior.scaleBy, 1.3)
                 break
               case 'zoom-out':
-                svg.transition().duration(300).call(zoomBehavior.scaleBy, 0.7)
+                svg
+                  .transition()
+                  .duration(reducedMotion.matches ? 0 : 180)
+                  .call(zoomBehavior.scaleBy, 0.7)
                 break
               case 'zoom-reset':
-                svg.transition().duration(300).call(zoomBehavior.transform, initialTransform)
+                if (bounds) applyBoundsTransform(bounds, true)
                 break
               case 'zoom-fit':
                 if (bounds) {
@@ -600,23 +664,74 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     }
 
     const handleKeydown = (event: KeyboardEvent) => {
+      const target = event.target
+      if (
+        target instanceof Element &&
+        target.closest('input, textarea, select, [contenteditable="true"]')
+      )
+        return
       if (event.key === 'Escape') {
         hideHelp()
-        hidePreviews()
         if (focusedNode) {
           focusedNode.classList.remove('is-focused')
           focusedNode = null
         }
+        return
       }
-      if (event.shiftKey && event.key === '1') {
+      if (isEmbed || isHelpOpen || !zoomBehavior) return
+      if (target instanceof Element && !container.contains(target) && target !== document.body)
+        return
+      if (event.key === ' ') {
+        if (target instanceof Element && target.closest('button, a')) return
         event.preventDefault()
-        if (bounds && zoomBehavior) {
-          applyBoundsTransform(bounds, true)
-        }
+        spacePressed = true
+        return
+      }
+      if (event.key === '0' || (event.shiftKey && event.code === 'Digit1')) {
+        event.preventDefault()
+        svg.interrupt()
+        isFitted = true
+        if (bounds) applyBoundsTransform(bounds, true)
+        return
+      }
+      if (event.metaKey || event.ctrlKey || event.altKey) return
+      if (target instanceof Element && target.closest('.node-content')) return
+      const step = event.shiftKey ? 160 : 40
+      const pan: Record<string, [number, number]> = {
+        ArrowLeft: [step, 0],
+        ArrowRight: [-step, 0],
+        ArrowUp: [0, step],
+        ArrowDown: [0, -step],
+      }
+      const delta = pan[event.key]
+      if (delta) {
+        event.preventDefault()
+        svg.interrupt()
+        isFitted = false
+        svg.call(zoomBehavior.translateBy, delta[0] / currentScale, delta[1] / currentScale)
+      } else if (event.key === '+' || event.key === '=' || event.key === '-') {
+        event.preventDefault()
+        svg.interrupt()
+        isFitted = false
+        svg.call(zoomBehavior.scaleBy, event.key === '-' ? 1 / 1.3 : 1.3)
       }
     }
 
     document.addEventListener('keydown', handleKeydown, { signal })
+    document.addEventListener(
+      'keyup',
+      event => {
+        if (event.key === ' ') spacePressed = false
+      },
+      { signal },
+    )
+    window.addEventListener(
+      'blur',
+      () => {
+        spacePressed = false
+      },
+      { signal },
+    )
 
     const nodes: NodeData[] = canvasData.nodes.map(n => {
       const meta: CanvasMeta = metaMap[n.id] ?? {}
@@ -629,8 +744,6 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         content: meta.content ?? n.content,
         resolvedText: meta.resolvedText ?? n.resolvedText,
         wikilinks: meta.wikilinks ?? n.wikilinks,
-        fx: cfg.useManualPositions ? n.x : undefined,
-        fy: cfg.useManualPositions ? n.y : undefined,
       }
     })
 
@@ -648,24 +761,6 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         return { ...e, source, target }
       })
       .filter((l): l is LinkData => l !== null)
-
-    let simulation: Simulation<NodeData, LinkData> | null = null
-    if (!cfg.useManualPositions) {
-      simulation = forceSimulation(regularNodes)
-        .force(
-          'link',
-          forceLink<NodeData, LinkData>(links)
-            .id(d => d.id)
-            .distance(cfg.linkDistance || 150),
-        )
-        .force('charge', forceManyBody().strength(-cfg.forceStrength * 1000 || -300))
-        .force('center', forceCenter(width / 2, height / 2))
-        .force('collision', forceCollide().radius(cfg.collisionRadius || 50))
-
-      addCanvasCleanup(lifecycle, () => {
-        simulation?.on('tick', null).stop()
-      })
-    }
 
     const groupNode = groupNodeGroup
       .selectAll('g.node')
@@ -710,6 +805,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         }
       })
 
+    const arrowId = `arrow-${pattern.attr('id')}`
     const edge = edgeGroup
       .selectAll<SVGGElement, LinkData>('g.edge')
       .data(links, d => d.id)
@@ -721,7 +817,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
             .attr('stroke', d => d.color || 'var(--gray)')
             .attr('stroke-width', 2)
             .attr('fill', 'none')
-            .attr('marker-end', 'url(#arrowhead)')
+            .attr('marker-end', `url(#${arrowId})`)
           return edgeEnter
         },
         update => update,
@@ -733,7 +829,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('stroke', d => d.color || 'var(--gray)')
       .attr('stroke-width', 2)
       .attr('fill', 'none')
-      .attr('marker-end', 'url(#arrowhead)')
+      .attr('marker-end', `url(#${arrowId})`)
 
     const labeledLinks = links.filter(
       (d): d is LinkData & { label: string } =>
@@ -799,7 +895,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     svg
       .append('defs')
       .append('marker')
-      .attr('id', 'arrowhead')
+      .attr('id', arrowId)
       .attr('viewBox', '0 -5 10 10')
       .attr('refX', 8)
       .attr('refY', 0)
@@ -817,6 +913,9 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('class', d => `node node-${d.type}`)
       .attr('data-node-id', d => d.id)
       .attr('data-color', d => d.color || '')
+      .attr('tabindex', isEmbed ? null : 0)
+      .attr('role', 'group')
+      .attr('aria-label', d => d.displayName || d.file || d.url || 'Text card')
 
     node
       .append('rect')
@@ -829,23 +928,18 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     const fileNodes = node.filter(d => d.type === 'file')
 
     fileNodes
-      .append('text')
-      .attr('class', 'node-title-text node-title-top')
+      .append('foreignObject')
+      .attr('class', 'canvas-card-title')
       .attr('x', 12)
-      .attr('y', -8)
-      .attr('font-size', '12px')
+      .attr('y', -28)
+      .attr('width', d => Math.max(1, d.width - 24))
+      .attr('height', 24)
+      .append('xhtml:a')
+      .attr('class', 'canvas-node-link internal')
+      .attr('data-no-popover', 'true')
+      .attr('href', d => resolveFileNodeUrl(d)?.toString() ?? null)
+      .attr('aria-label', d => `Open ${d.displayName || d.file || 'note'}`)
       .text(d => d.displayName || d.file || '')
-      .each(function (d: NodeData) {
-        const maxWidth = d.width - 32
-        const textEl = this as SVGTextElement
-        let text = d.displayName || d.file || ''
-        textEl.textContent = text
-
-        while (textEl.getComputedTextLength() > maxWidth && text.length > 0) {
-          text = text.slice(0, -1)
-          textEl.textContent = text + '...'
-        }
-      })
 
     fileNodes
       .append('text')
@@ -908,10 +1002,13 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
 
     node
       .append('foreignObject')
+      .attr('class', 'canvas-card-preview')
       .attr('width', d => d.width)
       .attr('height', d => d.height)
       .append('xhtml:div')
       .attr('class', 'node-content')
+      .style('width', d => `${d.width}px`)
+      .style('height', d => `${d.height}px`)
       .html(d => {
         if (d.type === 'text') {
           return renderTextNodeContent(d)
@@ -947,6 +1044,8 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         link.href = href
         link.dataset.slug = d.resolvedSlug ? `/${d.resolvedSlug}` : href
         link.setAttribute('aria-hidden', 'true')
+        link.tabIndex = -1
+        link.dataset.noPopover = 'true'
         link.style.position = 'absolute'
         link.style.left = '0'
         link.style.top = '0'
@@ -957,14 +1056,124 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         container.appendChild(link)
       })
 
-    node
-      .filter(d => d.type === 'file')
-      .each(function (d: NodeData) {
-        const host = this as SVGGElement
-        const content = host.querySelector('.node-file-content') as HTMLElement | null
-        if (!content) return
-        hydrateFileNodeContent(content, d)
+    const previews: {
+      node: NodeData
+      element: SVGForeignObjectElement
+      content: HTMLElement | null
+      visible: boolean | null
+      scrollTop: number
+      generation: number
+      renderer: HtmlCanvasPreview | null
+    }[] = []
+
+    function schedulePreviewWork() {
+      if (previewTimer || previewIdle || previewJobs.length === 0 || signal.aborted) return
+      previewTimer = window.setTimeout(
+        () => {
+          previewTimer = 0
+          previewIdle = window.requestIdleCallback(() => {
+            previewIdle = 0
+            if (mousePanning || nodeDragging || performance.now() - lastCameraInput < 120) {
+              schedulePreviewWork()
+              return
+            }
+            let job = previewJobs.shift()
+            while (job && !job.isActive()) {
+              job.run(false)
+              job = previewJobs.shift()
+            }
+            job?.run(true)
+            schedulePreviewWork()
+          })
+        },
+        Math.max(0, 120 - (performance.now() - lastCameraInput)),
+      )
+    }
+
+    function waitForPreviewWork(isActive: () => boolean): Promise<boolean> {
+      if (signal.aborted) return Promise.resolve(false)
+      return new Promise(resolve => {
+        previewJobs.push({ run: resolve, isActive })
+        schedulePreviewWork()
       })
+    }
+    node.each(function (d) {
+      const element = this.querySelector<SVGForeignObjectElement>('.canvas-card-preview')
+      if (!element) return
+      const content = element.querySelector<HTMLElement>('.node-content')
+      const renderer = content ? mountHtmlCanvasPreview(content, d.width, d.height, signal) : null
+      if (renderer) addCanvasCleanup(lifecycle, renderer.dispose)
+      previews.push({
+        node: d,
+        element,
+        content: this.querySelector<HTMLElement>('.node-file-content'),
+        visible: null,
+        scrollTop: 0,
+        generation: 0,
+        renderer,
+      })
+    })
+
+    function updatePreviewVisibility() {
+      const transform = currentTransform
+      const margin = 160
+      for (const preview of previews) {
+        const d = preview.node
+        const left = transform.x + d.x * transform.k
+        const top = transform.y + d.y * transform.k
+        const visible =
+          transform.k >= 0.5 &&
+          left < width + margin &&
+          top < height + margin &&
+          left + d.width * transform.k > -margin &&
+          top + d.height * transform.k > -margin
+        preview.renderer?.update(transform.k, visible)
+        if (preview.visible === visible) continue
+        const wasVisible = preview.visible
+        preview.visible = visible
+        const generation = ++preview.generation
+        const content = preview.content
+        if (!content) {
+          preview.element.style.visibility = visible ? '' : 'hidden'
+          continue
+        }
+        // SVG already clips offscreen cards. Inherited visibility would restyle every child
+        // while panning; retire the HTML during idle work instead.
+        if (visible) {
+          if (content.children.length > 0 && content.dataset.loading === 'false') continue
+          void hydrateFileNodeContent(
+            content,
+            d,
+            () =>
+              isCanvasActive(container, lifecycle) &&
+              preview.visible === true &&
+              preview.generation === generation,
+            waitForPreviewWork,
+          ).then(() => {
+            if (preview.visible && preview.generation === generation)
+              content.scrollTop = preview.scrollTop
+          })
+        } else if (wasVisible) {
+          preview.scrollTop = content.scrollTop
+          const isActive = () =>
+            isCanvasActive(container, lifecycle) &&
+            preview.visible === false &&
+            preview.generation === generation
+          void waitForPreviewWork(isActive).then(active => {
+            if (!active || !isActive()) return
+            cleanupHydratedRoot(content)
+            content.textContent = d.description ?? 'Loading preview...'
+            content.dataset.loading = 'true'
+          })
+        }
+      }
+    }
+
+    addCanvasCleanup(lifecycle, () => {
+      for (const preview of previews) {
+        if (preview.content) cleanupHydratedRoot(preview.content)
+      }
+    })
 
     node
       .append('rect')
@@ -976,23 +1185,113 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('fill', 'none')
       .attr('pointer-events', 'none')
 
+    function focusCard(host: SVGGElement, d: NodeData, zoomToCard: boolean) {
+      if (focusedNode && focusedNode !== host) focusedNode.classList.remove('is-focused')
+      focusedNode = host
+      host.classList.add('is-focused')
+      if (zoomToCard && zoomBehavior) {
+        svg.interrupt()
+        isFitted = false
+        const fit = getBoundsTransform({
+          minX: d.x,
+          minY: d.y,
+          maxX: d.x + d.width,
+          maxY: d.y + d.height,
+        })
+        const scale = Math.max(0.65, Math.min(1, fit.k))
+        const transform = zoomIdentity
+          .translate(
+            width / 2 - scale * (d.x + d.width / 2),
+            height / 2 - scale * (d.y + d.height / 2),
+          )
+          .scale(scale)
+        svg
+          .transition()
+          .duration(reducedMotion.matches ? 0 : 180)
+          .call(zoomBehavior.transform, transform)
+      }
+    }
+
+    node.on('focusin', function (event: FocusEvent, d) {
+      if (event.target !== this) {
+        if (event.target instanceof Element && event.target.closest('.node-content'))
+          focusCard(this, d, false)
+        return
+      }
+      const left = currentTransform.x + d.x * currentScale
+      const top = currentTransform.y + d.y * currentScale
+      if (
+        left + d.width * currentScale < 0 ||
+        top + d.height * currentScale < 0 ||
+        left > width ||
+        top > height
+      ) {
+        focusCard(this, d, true)
+      }
+    })
+
+    node.on(
+      'pointerdown',
+      function (event: PointerEvent, d) {
+        if (
+          event.button === 0 &&
+          event.target instanceof Element &&
+          event.target.closest('a, button, [role="button"], input, textarea, select, summary') &&
+          event.target.closest('.node-content')
+        )
+          focusCard(this, d, false)
+      },
+      true,
+    )
+
+    node.on('keydown', function (event: KeyboardEvent, d) {
+      if (event.target !== this) return
+      if (event.altKey && event.key.startsWith('Arrow') && !isEmbed) {
+        event.preventDefault()
+        event.stopPropagation()
+        const step = event.shiftKey ? 16 : 1
+        const dx = event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0
+        const dy = event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0
+        moveCard(d, dx, dy, membersOf(d))
+        refreshBounds()
+      } else if (event.key === 'Enter') {
+        event.preventDefault()
+        focusCard(this, d, true)
+      }
+    })
+
+    node.on('dblclick', function (event: MouseEvent, d) {
+      if (event.target instanceof Element && event.target.closest('a')) return
+      event.preventDefault()
+      focusCard(this, d, true)
+    })
+
     node.on('click', (evt, d) => {
       const clickEvent = evt as MouseEvent
-      clickEvent.stopPropagation()
-      const target = clickEvent.target as HTMLElement
+      const target = clickEvent.target
+      if (!(target instanceof Element)) return
       const currentNode = evt.currentTarget as SVGGElement
 
-      if (target.closest('a:not(.canvas-popover-link)')) {
+      if (target.closest('.canvas-node-link')) {
+        if (
+          clickEvent.detail > 0 &&
+          !clickEvent.metaKey &&
+          !clickEvent.ctrlKey &&
+          !clickEvent.altKey &&
+          !clickEvent.shiftKey &&
+          focusedNode !== currentNode
+        ) {
+          clickEvent.preventDefault()
+          clickEvent.stopPropagation()
+          focusCard(currentNode, d, currentScale < 0.5)
+        }
         return
       }
 
-      if (focusedNode && focusedNode !== currentNode) {
-        focusedNode.classList.remove('is-focused')
-      }
+      if (target.closest('a:not(.canvas-popover-link)')) return
+      clickEvent.stopPropagation()
 
       if (d.type === 'file') {
-        const clickedOnContent = target.closest('.node-content')
-
         if (clickEvent.altKey) {
           const link = currentNode.querySelector(
             '.node-content a.canvas-popover-link',
@@ -1005,32 +1304,13 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
           }
         }
 
-        if (clickedOnContent) {
-          currentNode.classList.add('is-focused')
-          focusedNode = currentNode
-
-          if (clickEvent.metaKey || clickEvent.ctrlKey) {
-            const resolvedHref = d.resolvedHref
-            const resolvedSlug = d.resolvedSlug
-            const navPath = resolvedHref || resolvedSlug || d.file?.replace(/\.md$/, '')
-            if (navPath) {
-              const fullPath = navPath.startsWith('/') ? navPath : `/${navPath}`
-              window.spaNavigate(new URL(fullPath, window.location.origin))
-            }
-          }
-          return
-        }
-
-        const resolvedHref = d.resolvedHref
-        const resolvedSlug = d.resolvedSlug
-        const navPath = resolvedHref || resolvedSlug || d.file?.replace(/\.md$/, '')
-        if (navPath) {
-          const fullPath = navPath.startsWith('/') ? navPath : `/${navPath}`
-          window.spaNavigate(new URL(fullPath, window.location.origin))
+        focusCard(currentNode, d, currentScale < 0.5)
+        if (clickEvent.metaKey || clickEvent.ctrlKey) {
+          const url = resolveFileNodeUrl(d)
+          if (url) window.spaNavigate(url)
         }
       } else if (d.type === 'text') {
-        currentNode.classList.add('is-focused')
-        focusedNode = currentNode
+        focusCard(currentNode, d, currentScale < 0.5)
       } else if (d.type === 'link' && d.url) {
         window.open(d.url, '_blank', 'noopener,noreferrer')
       }
@@ -1050,62 +1330,115 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       }
     })
 
-    if (cfg.drag) {
-      const drag: DragBehavior<SVGGElement, NodeData, unknown> = d3Drag<SVGGElement, NodeData>()
-        .on('start', (event, d) => {
-          if (!event.active && simulation) simulation.alphaTarget(0.3).restart()
-          d.fx = d.x
-          d.fy = d.y
-        })
-        .on('drag', (event, d) => {
-          d.fx = event.x
-          d.fy = event.y
-        })
-        .on('end', (event, d) => {
-          if (!event.active && simulation) simulation.alphaTarget(0)
-          if (!cfg.useManualPositions) {
-            d.fx = undefined
-            d.fy = undefined
-          }
-        })
-
-      node.call(drag)
-    }
-
     addCanvasCleanup(lifecycle, () => {
       node.on('click', null)
-      node.on('.drag', null)
-      node.on('mouseenter', null)
-      node.on('mousemove', null)
-      node.on('mouseleave', null)
+      node.on('keydown', null)
+      node.on('focusin', null)
+      node.on('pointerdown', null)
+      node.on('dblclick', null)
     })
 
-    function updatePositions() {
-      if (cfg.useManualPositions) {
-        node.attr('transform', d => `translate(${d.x},${d.y})`)
-      } else {
-        node.attr('transform', d => `translate(${d.x - d.width / 2},${d.y - d.height / 2})`)
-      }
+    function membersOf(group: NodeData): NodeData[] {
+      if (group.type !== 'group') return []
+      return nodes.filter(
+        d =>
+          d !== group &&
+          d.x >= group.x &&
+          d.y >= group.y &&
+          d.x + d.width <= group.x + group.width &&
+          d.y + d.height <= group.y + group.height,
+      )
+    }
 
-      groupNode.attr('transform', d => `translate(${d.x},${d.y})`)
+    function moveCard(d: NodeData, dx: number, dy: number, members: NodeData[]) {
+      isFitted = false
+      lastCameraInput = performance.now()
+      for (const moved of [d, ...members]) {
+        moved.x += dx
+        moved.y += dy
+        movedNodes.add(moved)
+      }
+      queueRender()
+    }
+
+    function refreshBounds() {
+      bounds = {
+        minX: Math.min(...nodes.map(d => d.x)),
+        minY: Math.min(...nodes.map(d => d.y)),
+        maxX: Math.max(...nodes.map(d => d.x + d.width)),
+        maxY: Math.max(...nodes.map(d => d.y + d.height)),
+      }
+    }
+
+    if (!isEmbed) {
+      let members: NodeData[] = []
+      const scene = g.node()
+      if (!scene) return
+      const draggable = g.selectAll<SVGGElement, NodeData>(
+        ':scope > .nodes > .node, :scope > .group-nodes > .node',
+      )
+      const drag = d3Drag<SVGGElement, NodeData>()
+        .container(() => scene)
+        .touchable(() => false)
+        .clickDistance(4)
+        .filter(event => {
+          if (isHelpOpen || spacePressed || event.button) return false
+          const target = event.target
+          if (!(target instanceof Element)) return false
+          if (
+            target.closest(
+              'a, button, [role="button"], input, textarea, select, summary, [contenteditable="true"]',
+            )
+          )
+            return false
+          return !(focusedNode?.contains(target) && target.closest('.canvas-card-preview'))
+        })
+        .on('start', function (_event, d) {
+          nodeDragging = true
+          members = membersOf(d)
+          this.classList.add('is-dragging')
+        })
+        .on('drag', (event, d) => moveCard(d, event.x - d.x, event.y - d.y, members))
+        .on('end', function () {
+          nodeDragging = false
+          this.classList.remove('is-dragging')
+          members = []
+          refreshBounds()
+        })
+      draggable.call(drag)
+      addCanvasCleanup(lifecycle, () => draggable.on('.drag', null))
+    }
+
+    function updatePositions(moved?: Set<NodeData>) {
+      node.filter(d => !moved || moved.has(d)).attr('transform', d => `translate(${d.x},${d.y})`)
+
+      groupNode
+        .filter(d => !moved || moved.has(d))
+        .attr('transform', d => `translate(${d.x},${d.y})`)
 
       edge
+        .filter(d => !moved || moved.has(d.source) || moved.has(d.target))
         .select('path')
         .attr('d', d =>
           canvasEdgePath(canvasEdgeGeometry(d.source, d.target, d.fromSide, d.toSide)),
         )
 
-      edgeLabels.attr('transform', d => {
-        const { x, y } = canvasEdgeMidpoint(
-          canvasEdgeGeometry(d.source, d.target, d.fromSide, d.toSide),
-        )
-        return `translate(${x},${y})`
-      })
+      edgeLabels
+        .filter(d => !moved || moved.has(d.source) || moved.has(d.target))
+        .attr('transform', d => {
+          const { x, y } = canvasEdgeMidpoint(
+            canvasEdgeGeometry(d.source, d.target, d.fromSide, d.toSide),
+          )
+          return `translate(${x},${y})`
+        })
+    }
 
+    updatePositions()
+
+    function measureEdgeLabels() {
       edgeLabels.each(function () {
-        const group = this as SVGGElement
-        const text = group.querySelector('text') as SVGTextElement
-        const bg = group.querySelector('rect') as SVGRectElement
+        const text = this.querySelector('text')
+        const bg = this.querySelector('rect')
         if (text && bg) {
           const bbox = text.getBBox()
           const padding = 4
@@ -1116,29 +1449,10 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         }
       })
     }
-
-    if (simulation) {
-      simulation.on('tick', updatePositions)
-    } else {
-      updatePositions()
-    }
-
-    const edgeLabelTimer = window.setTimeout(() => {
-      edgeLabels.each(function () {
-        const group = this as SVGGElement
-        const text = group.querySelector('text') as SVGTextElement
-        const bg = group.querySelector('rect') as SVGRectElement
-        if (text && bg) {
-          const bbox = text.getBBox()
-          const padding = 4
-          bg.setAttribute('x', String(bbox.x - padding))
-          bg.setAttribute('y', String(bbox.y - padding))
-          bg.setAttribute('width', String(bbox.width + padding * 2))
-          bg.setAttribute('height', String(bbox.height + padding * 2))
-        }
-      })
-    }, 100)
-    addCanvasCleanup(lifecycle, () => window.clearTimeout(edgeLabelTimer))
+    measureEdgeLabels()
+    void document.fonts.ready.then(() => {
+      if (isCanvasActive(container, lifecycle)) measureEdgeLabels()
+    })
 
     const boundsAttr = container.getAttribute('data-canvas-bounds')
     if (boundsAttr) {
@@ -1166,134 +1480,33 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       }
     }
 
-    if (bounds) {
-      initialTransform = applyBoundsTransform(bounds, false)
-    }
+    if (bounds) applyBoundsTransform(bounds, false)
 
-    if (cfg.showPreviewOnHover) {
-      const tooltip = select('body')
-        .append('div')
-        .attr('class', 'canvas-tooltip')
-        .style('position', 'absolute')
-        .style('visibility', 'hidden')
-        .style('background', 'var(--light)')
-        .style('border', '1px solid var(--border)')
-        .style('border-radius', 'var(--radius-none)')
-        .style('padding', '8px')
-        .style('max-width', '300px')
-        .style('z-index', '1000')
-        .style('font-size', '0.9em')
-
-      const tooltipNode = tooltip.node()
-      if (tooltipNode instanceof HTMLElement) tooltipElement = tooltipNode
-
-      node
-        .filter(d => d.type === 'file')
-        .on('mouseenter', async (event, d) => {
-          if (d.description) {
-            tooltip.html(wrapTextHtml(d.description)).style('visibility', 'visible')
-          } else {
-            if (!(event instanceof MouseEvent)) return
-
-            const current = event.currentTarget
-            if (!(current instanceof SVGGElement)) return
-
-            const href = d.resolvedHref
-              ? `/${d.resolvedHref}`
-              : d.resolvedSlug
-                ? `/${d.resolvedSlug}`
-                : (d.file || '').replace(/\.md$/, '')
-
-            const pop = document.createElement('div')
-            pop.classList.add('popover', 'canvas-popover')
-            const inner = document.createElement('div')
-            inner.classList.add('popover-inner')
-            pop.appendChild(inner)
-            document.body.appendChild(pop)
-            activePopovers.add(pop)
-
-            pop.style.position = 'fixed'
-            pop.style.left = `${event.clientX + 12}px`
-            pop.style.top = `${event.clientY + 12}px`
-
-            const removePopover = () => {
-              pop.remove()
-              activePopovers.delete(pop)
-            }
-            current.addEventListener('mouseleave', removePopover, { once: true, signal })
-
-            try {
-              const url = new URL(href, window.location.toString())
-              const targetUrl = new URL(url.toString())
-              const hash = decodeURIComponent(targetUrl.hash)
-              targetUrl.hash = ''
-              targetUrl.search = ''
-              const response = await fetchCanonical(targetUrl)
-              const markup = await response.text()
-              if (signal.aborted || !pop.isConnected) return
-
-              const html = htmlParser.parseFromString(markup, 'text/html')
-              html.querySelectorAll('[href], [src]').forEach(el => {
-                const attr = el.hasAttribute('href')
-                  ? 'href'
-                  : el.hasAttribute('src')
-                    ? 'src'
-                    : null
-                if (!attr) return
-                const val = el.getAttribute(attr)
-                if (!val) return
-                const rebased = new URL(val, targetUrl)
-                el.setAttribute(attr, rebased.pathname + rebased.hash)
-              })
-              html.querySelectorAll('[id]').forEach(el => {
-                const targetID = `popover-${el.id}`
-                el.id = targetID
-              })
-              const elts = Array.from(html.getElementsByClassName('popover-hint')).filter(
-                (element): element is HTMLDivElement => element instanceof HTMLDivElement,
-              )
-              if (elts.length > 0) {
-                inner.append(...elts)
-                if (hash) {
-                  const targetAnchor = hash.startsWith('#popover')
-                    ? hash
-                    : `#popover-${hash.slice(1)}`
-                  const heading = inner.querySelector<HTMLElement>(targetAnchor)
-                  if (heading) {
-                    inner.scroll({ top: heading.offsetTop - 12 })
-                  }
-                }
-                inner.classList.add('grid')
-              }
-            } catch (error) {
-              if (!signal.aborted) console.error('canvas popover failed: ', error)
-            }
-          }
-        })
-        .on('mousemove', (event, d) => {
-          if (event instanceof MouseEvent && d.type === 'file' && d.description) {
-            tooltip.style('top', `${event.pageY + 10}px`).style('left', `${event.pageX + 10}px`)
-          }
-        })
-        .on('mouseleave', (event, d) => {
-          tooltip.style('visibility', 'hidden')
-          if (d.type === 'file') {
-            const current = event.currentTarget
-            if (!(current instanceof SVGGElement)) return
-
-            const link = current.querySelector<HTMLAnchorElement>(
-              '.node-content a.canvas-popover-link',
+    const resizeObserver = new ResizeObserver(() => {
+      const nextWidth = container.clientWidth
+      const nextHeight = container.clientHeight
+      if (!nextWidth || !nextHeight || (nextWidth === width && nextHeight === height)) return
+      const previousWidth = width
+      const previousHeight = height
+      width = nextWidth
+      height = nextHeight
+      svg.attr('width', width).attr('height', height).attr('viewBox', [0, 0, width, height])
+      svg.interrupt()
+      if (isFitted && bounds) applyBoundsTransform(bounds, false)
+      else if (zoomBehavior) {
+        svg.call(
+          zoomBehavior.transform,
+          zoomIdentity
+            .translate(
+              currentTransform.x + (width - previousWidth) / 2,
+              currentTransform.y + (height - previousHeight) / 2,
             )
-            if (link) {
-              if (syntheticMouseleaveEvents.has(event)) return
-
-              const synthetic = new MouseEvent('mouseleave', { bubbles: true })
-              syntheticMouseleaveEvents.add(synthetic)
-              link.dispatchEvent(synthetic)
-            }
-          }
-        })
-    }
+            .scale(currentScale),
+        )
+      } else queueRender()
+    })
+    resizeObserver.observe(container)
+    addCanvasCleanup(lifecycle, () => resizeObserver.disconnect())
   } catch (error) {
     if (isCanvasActive(container, lifecycle)) {
       disposeCanvas(container, lifecycle)
@@ -1304,33 +1517,57 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
   }
 }
 
-async function hydrateFileNodeContent(container: HTMLElement, node: NodeData): Promise<void> {
+async function hydrateFileNodeContent(
+  container: HTMLElement,
+  node: NodeData,
+  isActive: () => boolean,
+  waitForWork: (isActive: () => boolean) => Promise<boolean>,
+): Promise<void> {
   container.dataset.loading = 'true'
 
   try {
-    const preview = await getFileNodePreview(node)
+    const preview = await getFileNodeMarkup(node)
     if (!preview) {
-      if (container.dataset.placeholder === 'true' && container.isConnected) {
+      if (container.dataset.placeholder === 'true' && isActive()) {
         container.textContent = 'Preview unavailable'
         container.removeAttribute('data-placeholder')
       }
       return
     }
 
-    if (!container.isConnected) return
-
-    container.innerHTML = preview
+    if (!(await waitForWork(isActive)) || !isActive()) return
+    const doc = htmlParser.parseFromString(preview, 'text/html')
+    const article = doc.querySelector('article')
+    if (!article) return
+    const noteUrl = resolveFileNodeUrl(node)
+    normalizeRelativeURLs(article, noteUrl ?? window.location.href)
+    if (noteUrl) {
+      article.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        if (!(anchor instanceof HTMLAnchorElement)) return
+        const href = anchor.getAttribute('href')
+        if (href) anchor.href = new URL(href, noteUrl).toString()
+      })
+    }
+    await loadPageStyles(article)
+    if (!(await waitForWork(isActive)) || !isActive()) return
+    cleanupHydratedRoot(container)
+    container.replaceChildren(...article.childNodes)
     container.removeAttribute('data-placeholder')
+    const event: CustomEventMap['contentdecrypted'] = new CustomEvent('contentdecrypted', {
+      detail: { article: container, content: container, slug: node.resolvedSlug },
+    })
+    document.dispatchEvent(event)
   } finally {
-    if (container.isConnected) {
+    if (isActive()) {
       container.dataset.loading = 'false'
     }
   }
 }
 
-async function getFileNodePreview(node: NodeData): Promise<string | null> {
+async function getFileNodeMarkup(node: NodeData): Promise<string | null> {
   const targetUrl = resolveFileNodeUrl(node)
   if (!targetUrl) return null
+  targetUrl.hash = ''
 
   const cacheKey = targetUrl.toString()
 
@@ -1350,37 +1587,7 @@ async function getFileNodePreview(node: NodeData): Promise<string | null> {
             return null
           }
 
-          const markup = await response.text()
-          const doc = htmlParser.parseFromString(markup, 'text/html')
-          normalizeRelativeURLs(doc, targetUrl)
-
-          doc
-            .querySelectorAll('section[class~="page-footer"],section[class~="page-header"]')
-            .forEach(el => el.remove())
-
-          doc.querySelectorAll('[id]').forEach(el => {
-            const targetID = `canvas-${el.id}`
-            el.id = targetID
-          })
-
-          const hints = Array.from(
-            doc.getElementsByClassName('popover-hint') as HTMLCollectionOf<HTMLElement>,
-          )
-
-          if (hints.length > 0) {
-            return hints
-              .map(hint => cleanCanvasPreviewElement(hint.cloneNode(true) as HTMLElement).outerHTML)
-              .join('')
-          }
-
-          const article = doc.querySelector('article')
-          if (!article) {
-            return null
-          }
-
-          const clone = article.cloneNode(true) as HTMLElement
-          cleanCanvasPreviewElement(clone)
-          return clone.innerHTML
+          return await response.text()
         } catch (error) {
           filePreviewCache.delete(cacheKey)
           console.error('Canvas preview failed:', error)
@@ -1407,23 +1614,11 @@ function resolveFileNodeUrl(node: NodeData): URL | null {
 
   if (!base) return null
 
-  const [rawPath] = base.split('#')
-  const trimmed = rawPath.trim()
+  const trimmed = base.trim()
   if (trimmed.length === 0) return null
 
   const normalizedPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
   return new URL(normalizedPath, window.location.origin)
-}
-
-function cleanCanvasPreviewElement<T extends HTMLElement>(element: T): T {
-  const removable = element.querySelectorAll<HTMLElement>(
-    'section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container',
-  )
-  removable.forEach(node => node.remove())
-
-  const iconSelector = 'svg[data-icon="github"], svg[data-icon="twitter"]'
-  element.querySelectorAll<SVGElement>(iconSelector).forEach(node => node.remove())
-  return element
 }
 
 function wrapTextHtml(text: string): string {
@@ -1432,15 +1627,8 @@ function wrapTextHtml(text: string): string {
   return div.innerHTML
 }
 
-document.addEventListener('nav', () => {
-  window.addCleanup(cleanupCanvases)
-  activeCanvasContainers.forEach(container => {
-    if (container.isConnected) return
-    const lifecycle = canvasLifecycles.get(container)
-    if (lifecycle) disposeCanvas(container, lifecycle)
-  })
-
-  document
+function initializeCanvases(root: ParentNode) {
+  root
     .querySelectorAll<HTMLElement>(['.canvas-container', '.canvas-embed-container'].join(','))
     .forEach(container => {
       if (canvasLifecycles.has(container)) return
@@ -1450,4 +1638,19 @@ document.addEventListener('nav', () => {
       activeCanvasContainers.add(container)
       void renderCanvas(container, lifecycle)
     })
+}
+
+document.addEventListener('nav', () => {
+  window.addCleanup(cleanupCanvases)
+  activeCanvasContainers.forEach(container => {
+    if (container.isConnected) return
+    const lifecycle = canvasLifecycles.get(container)
+    if (lifecycle) disposeCanvas(container, lifecycle)
+  })
+  initializeCanvases(document)
+  const onContentMounted = (event: CustomEventMap['contentdecrypted']) => {
+    initializeCanvases(event.detail.content)
+  }
+  document.addEventListener('contentdecrypted', onContentMounted)
+  window.addCleanup(() => document.removeEventListener('contentdecrypted', onContentMounted))
 })

@@ -206,12 +206,14 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
           </div>
         </dl>
         <p class="oht-note">
-          Each head runs its own softmax, so <MathLabel tex="P^{(+1)}" /> and{' '}
-          <MathLabel tex="P^{(-1)}" /> are two independent distributions that{' '}
-          <MathLabel tex="W_O^{(1)}, W_O^{(2)}" /> map and sum.
+          Each head runs its own softmax. The distributions <MathLabel tex="P^{(+1)}" /> and{' '}
+          <MathLabel tex="P^{(-1)}" /> weight the values separately;{' '}
+          <MathLabel tex="W_O^{(1)}, W_O^{(2)}" /> project those mixtures before their contributions
+          are summed.
           <br />
-          The surrogate adds the scores first, leaving one softmax over both offsets, so no{' '}
-          <MathLabel tex="\tilde W_O" /> would be able to recover the pair.
+          The surrogate adds the scores first, leaving one softmax over both offsets. Forced mode
+          fits <MathLabel tex="\tilde W_O" /> by ridge regression on this sampled value matrix; the
+          displayed gap measures that fit and does not prove failure for every projection or input.
         </p>
       </div>
 
