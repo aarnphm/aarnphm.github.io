@@ -1,6 +1,6 @@
 ---
 date: '2024-02-07'
-description: a [[/thoughts/reductionism|reductionist]] way to transfer data.
+description: lossless and lossy encodings that exploit redundancy, from entropy coders to dictionary and grammar methods.
 id: Compression
 modified: 2026-06-05 15:08:05 GMT-04:00
 tags:
@@ -10,228 +10,102 @@ tags:
 title: Compression
 ---
 
-a form of [[thoughts/reductionism|reductionism]]--finding compact representations by identifying redundancy and pattern.
+a form of [[thoughts/reductionism|reductionism]]: describe the data with fewer bits by finding the redundancy in it, then store the description instead of the data.
 
-the high-level goal is to find an algebraic structure to permit a more economical encoding.
+a lossless compressor is an injective map $C$ from strings to bit strings, with a decompressor $D$ such that $D(C(x))=x$. injectivity already limits what any compressor can do. there are $2^n$ binary strings of length $n$, and only $2^n-1$ binary strings shorter than $n$. so no lossless compressor shortens every input. it can only shorten the inputs it expects, and it must lengthen some others. every compressor is therefore a bet on which data is likely.
 
-[[thoughts/Information Theory|Shannon's]] source coding theorem establishes that the [[thoughts/Entropy|entropy]] $H(X)$ of a source $X$ is the fundamental limit for lossless compression [^compression]
+## the entropy limit
 
-[^compression]: the entropy $H(X)$ represents the average number of bits needed per symbol to encode messages from source $X$. no lossless compression scheme can achieve an average code length below this bound.
+[[thoughts/Information Theory|Shannon's]] source coding theorem says how good that bet can be. for a source that emits independent symbols with distribution $p$, the [[thoughts/Entropy|entropy]]
 
 $$
 H(X) = -\sum_{x \in \mathcal{X}} p(x) \log_2 p(x)
 $$
 
-this bound is _asymptotic_:
+is the minimum average number of bits per symbol. no uniquely decodable code can average fewer than $H(X)$ bits per symbol, and long enough blocks of $n$ symbols can be coded in $nH(X)+o(n)$ bits. a symbol with probability $p(x)$ ideally costs $-\log_2 p(x)$ bits: likely symbols get short codes, unlikely symbols get long ones.
 
-- for sequences of length $n$, we can compress to $nH(X) + o(n)$ bits.
-  - but what about individual strings?
-    - [[thoughts/Kolmogorov-Arnold representation theorem|kolmogorov complexity]] $K(x)$ of a string $x$ is the length of the shortest program that outputs $x$.
-    - this is incomputable in general
+the theorem is about a source, which is a probability model. a single file has no entropy by itself. for an individual string $x$, the matching idea is the kolmogorov complexity $K(x)$: the length of the shortest program that prints $x$. $K$ is incomputable. any real compressor still gives an upper bound: $K(x)\leq\lvert C(x)\rvert+c_D$, where $c_D$ is the length of the decompressor program. the bound can be very loose. the digits of $\pi$ have a short program, and a general-purpose compressor will not find it.
 
-> compression algorithms are heuristic approximations to kolmogorov complexity.
+## entropy coders
 
-## algebraic perspective
+an entropy coder turns a probability model into bits. three designs matter in practice.
 
-view data as elements of the **free monoid** $\Sigma^*$ over alphabet $\Sigma$, equipped with concatenation. a string $s \in \Sigma^*$ can be written as $s = s_1 s_2 \cdots s_n$ where $s_i \in \Sigma$.
+**huffman coding** gives each symbol a prefix-free code word from a binary tree, built by repeatedly merging the two least likely symbols. it is the best code that assigns a whole number of bits to each symbol, and its average length $\bar\ell$ satisfies $H(X)\leq\bar\ell<H(X)+1$. the $+1$ hurts when one symbol dominates. with $p=(0.9,0.1)$, $H\approx0.469$ bits, but huffman still spends $1$ bit per symbol.
 
-compression seeks a compact **generating set** for representing strings.
+**arithmetic coding** removes the whole-bit restriction. it narrows an interval inside $[0,1)$ by the probability of each symbol in turn, and outputs enough bits to name a point in the final interval. a message $x$ costs at most $-\log_2 p(x)+2$ bits in total, so the overhead is shared across the message. the cost is speed: every symbol needs a multiplication and careful handling of finite precision.
 
-- dictionary-based methods find frequently occurring substrings (monoid elements) and use them as generators.
-- grammar-based methods discover a **free algebra** structure, expressing strings through production rules.
+**asymmetric numeral systems** (ans) [@duda2013ans] keep the state in one integer. the frequencies are quantized to integers $f_s$ that sum to $M$, and $B_s=\sum_{t<s}f_t$ is the start of the range $[B_s,B_s+f_s)$ for symbol $s$. the range variant (rans) encodes symbol $s$ into state $x$ as
 
-> [!definition] syntactic monoid
+$$
+x' = M\left\lfloor \frac{x}{f_s} \right\rfloor + B_s + (x \bmod f_s).
+$$
+
+the state grows by a factor of about $M/f_s$, so $\log_2 x$ grows by about $-\log_2(f_s/M)$ bits, which is the ideal cost of $s$. to decode, the slot $x' \bmod M$ identifies $s$, and $x = f_s\lfloor x'/M\rfloor + (x' \bmod M) - B_s$ restores the old state.
+
+a small example with $f_a=3$, $f_b=1$, $M=4$, $B_a=0$, $B_b=3$. start at $x=10$:
+
+- encode $b$: $x'=4\cdot10+3+0=43$. the state grew by a factor of $4$, which is $2$ bits.
+- encode $a$: $x'=4\cdot14+0+1=57$. the state grew by about $4/3$, which is $0.415$ bits.
+- decode: $57 \bmod 4=1$ lies in $[0,3)$, so the symbol is $a$, and $x=3\cdot14+1-0=43$. then $43 \bmod 4=3$ gives $b$, and $x=1\cdot10+3-3=10$.
+
+decoding returns symbols in reverse order, so encoders process the input backward. a real coder also renormalizes: when the state leaves an interval $[L,bL)$, it writes or reads its low bits so the integer stays in a fixed machine width.
+
+tabled ans (tans) precomputes these transitions for every state in $[L,2L)$, so encoding and decoding become table lookups. this gives arithmetic-coding compression rates at speeds near huffman coding.
+
+> [!important] how close tans gets [@kosolobov2022ansefficiency]
 >
-> for a language $L \subseteq \Sigma^*$, the **syntactic congruence** $\equiv_L$ is defined by:
+> take a string of length $n=2^r$ in which symbol $a$ occurs $f_a$ times, from an alphabet of $\sigma$ symbols. tans with duda's "precise initialization" encodes it in
 >
 > $$
-> x \equiv_L y \iff \forall u,v \in \Sigma^* : uxv \in L \leftrightarrow uyv \in L
+> \sum_{a} f_a \log_2 \frac{n}{f_a} + O(\sigma + r)
 > $$
 >
-> the quotient $\Sigma^* / \equiv_L$ is the **syntactic monoid** of $L$.
+> bits, not counting the frequency table. the first term is the empirical entropy. kosolobov gives strings that need the $\Omega(\sigma+r)$ excess. this refutes duda's conjecture of $O(\sigma/n^2)$ redundancy per symbol: outside the $r$-bit term, the excess per symbol is of order $\sigma/n$.
 
-dictionary compression implicitly discovers elements of syntactic monoids--substrings that behave equivalently in context.
+## dictionary methods
 
-## dictionary-based compression
+_a la lz77 and zstd_
 
-_a la zstd and lz77_
+entropy coders treat symbols one at a time. text and code repeat whole substrings, which a symbol model cannot see. lz77 [(ziv and lempel, 1977)](https://doi.org/10.1109/TIT.1977.1055714) replaces a repeat with a pointer to an earlier copy: a pair $(\text{offset},\text{length})$ that says "go back this far and copy this many symbols". the copy may overlap the text it produces. `abababab` becomes the literals `a`, `b`, then $(2,6)$: go back two symbols and copy six, one symbol at a time.
 
-**zstandard** (zstd) exemplifies modern dictionary compression, combining lz77-style dictionary coding with finite state entropy (fse) for the entropy coding stage.
+let $z$ be the number of phrases in the greedy lz77 parse. for stationary ergodic sources, the lz77 output per symbol approaches the entropy rate, without knowing the source in advance. for individual strings, $z$ never exceeds the size of the smallest grammar that generates the string ([rytter, 2003](<https://doi.org/10.1016/S0304-3975(02)00777-6>)), so lz77 finds at least as much repetition as any grammar does.
 
-### lz77
-
-_and syntactic structure_
-
-represents strings as sequences of $\text{(offset, length, literal)}$ triples, encoding matches to earlier occurrences. formally, if string $s = s_1 \cdots s_n$, a dictionary $D$ of previously seen substrings allows factorization:
-
-$$s = w_1 w_2 \cdots w_k \quad \text{where each } w_i \in D \cup \Sigma$$
-
-this is finding a **basis** in the monoid $\Sigma^*$.
-
-the lempel-ziv {{sidenotes[complexity]: the lz77 complexity counts the number of distinct factors in the greedy parsing. this connects to [[thoughts/Kolmogorov-Arnold representation theorem|kolmogorov complexity]], where LZ complexity is within logarithmic factors of $K(s)$.}} measures how many distinct factors appear, related to the combinatorial structure of $s$.
-
-### finite state entropy
-
-_or asymmetric numeral systems, by jarek duda_
-
-after dictionary encoding, zstd uses **asymmetric numeral systems** (ans) [@duda2013ans] for entropy coding.
-
-provides compression rates approaching arithmetic coding with speed rivaling huffman coding.
-
-ans views encoding as a state machine:
-
-- for alphabet $\Sigma$ with symbol frequencies $(f_s)_{s \in \Sigma}$, the encoder maintains states [^state] $x \in [L, 2L)$ for some precision $L$. encoding symbol $s$ updates state:
-  $$
-  x' = C(s, x \bmod f_s) + \lfloor x / f_s \rfloor \cdot L
-  $$
-- where $C(s, \cdot)$ is a bijection $\{0, \ldots, f_s-1\} \to$ the positions allocated to symbol $s$ in the state space.
-
-[^state]: : the state transitions define a **finite automaton**. algebraically, this is an action of the free monoid $\Sigma^*$ on the state space $[L, 2L) \cap \mathbb{Z}$. the bijection $C$ ensures bijectivity, making decoding possible.
-
-> [!important] ans redundancy [@kosolobov2022ansefficiency]
->
-> for tabled ans (tans) with duda's "precise initialization",
-> given string $a_1 \ldots a_n$ where symbol $a$ appears $f_a$ times and $n = 2^r$:
-> $$\text{encoded length} = \sum_{a \in \Sigma} f_a \log \frac{n}{f_a} + O(\sigma + r)$$
->
-> this refutes duda's conjecture of $O(\sigma/n^2)$ redundancy--the actual redundancy is $O(\sigma/n)$ per symbol.
-
-the $O(\sigma + r)$ term arises from:
-
-- $\sigma$ terms for alphabet encoding
-- $r$ bits from the power-of-2 block structure
-
-zstd's fse uses modular arithmetic: state updates involve division and modular operations, connecting to number theory and cyclic groups $\mathbb{Z}/L\mathbb{Z}$.
+**zstandard** (zstd) parses with an lz77-style matcher, then entropy-codes the results. [RFC 8878](https://www.rfc-editor.org/rfc/rfc8878) specifies huffman coding for literal bytes and fse, a tans implementation, for the literal lengths, match lengths and offsets.
 
 ## grammar-based compression
 
-grammar-based methods infer a [[thoughts/Context-Free Grammar|context-free grammar]] $G = (V, \Sigma, R, S)$ where:
+a grammar compressor stores a context-free grammar that generates exactly one string: the input. such a grammar is also called a straight-line program. each rule has one right-hand side, and expanding the start symbol reproduces the string. the size of the grammar is the total length of its right-hand sides.
 
-- $V$ is non-terminal symbols
-- $\Sigma$ is terminal alphabet
-- $R \subseteq V \times (V \cup \Sigma)^*$ are production rules
-- $S \in V$ is start symbol
+**sequitur** [@nevillmanning1997sequitur] builds the grammar {{sidenotes[online]: for string $abcab$, sequitur produces: $S \to AcA, A \to ab$. the digram $ab$ is factored into non-terminal $A$.}} in one left-to-right pass, in linear time. it maintains two invariants:
 
-the string is compressed by storing $G$ plus derivation information.
+1. **digram uniqueness**: no pair of adjacent symbols occurs more than once in the grammar.
+2. **rule utility**: every rule is used at least twice.
 
-### sequitur algorithm
+when a digram $ab$ appears a second time, sequitur creates $A \to ab$ and replaces both occurrences. when a rule drops to one use, sequitur inlines it.
 
-**sequitur** [@nevillmanning1997sequitur] constructs grammars {{sidenotes[online]: for string $abcab$, sequitur produces: $S \to AcA, A \to ab$. the digram $ab$ is factored into non-terminal $A$.}} in linear time, maintaining two invariants:
+**re-pair** [@larsson1999repair] works offline. it replaces the most frequent pair in the whole string with a new symbol, recounts, and repeats until no pair occurs twice. it also runs in linear time, but needs the whole input and more memory. because each step takes the globally most frequent pair, it usually produces smaller grammars than sequitur.
 
-1. **digram uniqueness**: no pair of adjacent symbols occurs more than once
-2. **rule utility**: every rule is used at least twice
+finding the smallest grammar is np-hard, and the best known polynomial-time algorithms are within a factor $O(\log(N/g))$ of optimal, where $N$ is the length of the string and $g$ the size of the smallest grammar ([charikar et al., 2005](https://doi.org/10.1109/TIT.2005.850116); rytter, 2003). @jez2013recompression reaches the same factor in linear time with **recompression**. it alternates two phases on the current string:
 
-when a repeated digram $ab$ appears, create rule $A \to ab$ and substitute both occurrences. this enforces digram uniqueness. rule utility is maintained by inlining single-use rules.
+1. **block compression**: replace each maximal run $a^k$ with a fresh symbol.
+2. **pair compression**: split the alphabet into a left part and a right part, then replace every pair $ab$ with $a$ on the left and $b$ on the right by a fresh symbol. the split guarantees that these pairs do not overlap.
 
-algebraically, sequitur discovers a **rewriting system**. each production rule $A \to \alpha$ is a rewrite. the grammar defines a quotient structure on $\Sigma^*$ where strings deriving the same parse tree are identified.
+each fresh symbol is a grammar rule, and the string shrinks by a constant factor in each round.
 
-### re-pair algorithm
-
-**re-pair** [@larsson1999repair] is an offline algorithm that recursively replaces the most frequent digram until no pair occurs twice. unlike sequitur, it doesn't maintain invariants during construction, potentially achieving better compression at higher computational cost.
-
-both algorithms connect to **free algebras**: they find algebraic presentations $\langle \Sigma \mid R \rangle$ where $R$ are the grammar rules, expressing strings in terms of generators (non-terminals).
-
-### recompression and approximation
-
-@jez2013recompression introduced the **recompression technique**: given string of size $N$ and optimal grammar size $g$, construct a grammar of size $O(g \log(N/g))$ in linear time.
-
-> [!abstract] grammar compression approximation
->
-> there exists a linear-time algorithm producing a context-free grammar of size $O(g \log(N/g))$ for input string of size $N$, where $g$ is the size of the smallest grammar for the string.
->
-> [@jez2013recompression]
-
-recompression works by iteratively:
-
-1. identifying pairs of symbols (blocks)
-2. replacing occurrences with fresh symbols
-3. reducing alphabet size through compression
-
-this logarithmic approximation is the best known for grammar-based compression.
-
-## formal language theory connections
-
-compression algorithms operate on formal languages. the [[thoughts/DFA|deterministic finite automaton]] (dfa) recognizing a language $L$ has an associated syntactic monoid. for regular languages (recognized by dfas), the syntactic monoid is finite.
-
-**algebraic automata theory** studies the connection between automata and monoids:
-
-> [!definition] automaton as monoid action
-> a dfa $(Q, \Sigma, \delta, q_0, F)$ induces an action of the free monoid $\Sigma^*$ on state set $Q$:
-> $$\delta^* : Q \times \Sigma^* \to Q$$
-> where $\delta^*(q, \epsilon) = q$ and $\delta^*(q, wa) = \delta(\delta^*(q, w), a)$.
-
-this action factors through the syntactic monoid: $\Sigma^* \to M_L \to Q$ where $M_L$ is the syntactic monoid.
-
-for compression, we care about languages with structure:
-
-- **regular languages**: finite syntactic monoids, simple compression
-- **context-free languages**: infinite monoids, grammar-based compression effective
-- **context-sensitive and beyond**: more complex algebraic structures
-
-## entropy coding as automaton
-
-huffman, arithmetic, and ans are entropy coders. viewing them through automata:
-
-**huffman coding** assigns variable-length binary codes based on symbol frequencies. algebraically, it constructs a binary tree (free monoid on $\{0,1\}$) where symbols are leaves.
-
-**arithmetic coding** represents the entire message as a subinterval of $[0,1)$, using rational arithmetic. the precision required grows with message length.
-
-**ans** uses integer states and modular arithmetic, bridging huffman's simplicity and arithmetic's efficiency. the state machine perspective makes ans particularly elegant:
-
-$$\text{encode}(x, s) = \text{bijection}(s, x \bmod f_s) + \lfloor x / f_s \rfloor \cdot L$$
-
-decoding reverses this: given state $x$, determine symbol $s$ by finding which frequency interval $x$ falls into, then invert the bijection.
-
-the bijection $C(s, \cdot)$ can be seen as a **permutation group** acting on symbol positions, though in practice it's typically the identity or a simple spreading function.
-
-## connections to other fields
-
-permeates through all aspects of computer science.
+## connections
 
 ### kv compression
 
-modern [[thoughts/Transformers|transformers]] use [[thoughts/KV compression|kv compression]] to reduce memory in attention mechanisms. techniques like h2o, snapkv identify important key-value pairs based on attention scores--a form of lossy compression exploiting statistical structure.
+[[thoughts/Transformers|transformers]] keep a key and value vector for every past token. [[thoughts/KV compression|kv compression]] methods such as h2o and snapkv drop the entries that receive little attention. this is lossy: the bet is that a dropped token will not matter for later queries.
 
-### measure theory and probability
+### [[thoughts/Kolmogorov-Arnold representation theorem|kolmogorov-arnold]]
 
-entropy coding relies on [[thoughts/Lebesgue measure|measure theory]]. symbol frequencies define a probability measure $\mu$ on $\Sigma$, and entropy is the expected information:
-
-$$
-H(\mu) = -\int_{\Sigma} \log_2(\mu(\{s\})) \, d\mu(s) = -\sum_{s \in \Sigma} \mu(\{s\}) \log_2 \mu(\{s\})
-$$
-
-arithmetic coding directly implements this: interval sizes are proportional to probabilities, and the coding theorem guarantees near-optimal compression.
-
-### [[thoughts/category theory|category theory]]
-
-compression can be viewed categorically:
-
-- objects: strings in $\Sigma^*$
-- morphisms: compression algorithms as functors $F : \Sigma^* \to \mathcal{C}$ to some compressed representation category
-- natural transformations: conversions between compression schemes
-
-a lossless compressor is an injection $\Sigma^* \to \mathcal{C}$ with left inverse (decompressor). the size function defines a "norm" on objects, and compression seeks minimal representatives in equivalence classes.
-
-## open questions and research directions
-
-1. **optimal grammar inference**: finding the smallest grammar is np-hard. what algebraic properties of strings permit polynomial-time optimal compression?
-
-2. **algebraic invariants**: are there algebraic invariants (homology groups, cohomology) that characterize compressibility?
-
-3. **quantum compression**: how do quantum states compress? connections to [[thoughts/Entropy|entropy]] and entanglement measures?
-
-4. **neural compression**: learned compression via autoencoders discovers latent algebraic structure. what is the relationship between neural network architectures and algebraic compression?
-
-5. **streaming and online algorithms**: sequitur works online. can we develop online algorithms for other algebraic compression schemes with provable approximation guarantees?
-
-6. **category-theoretic formalization**: develop a complete categorical framework for compression, characterizing lossless vs lossy, universal vs adaptive schemes.
+this theorem shares a name with kolmogorov complexity and nothing else. it writes a continuous function of several variables with sums and compositions of one-variable functions. it is a representation result. it says nothing about the length of a description.
 
 ## see also
 
-- [[thoughts/Entropy|entropy]] - the fundamental limit
-- [[thoughts/Information Theory|information theory]] - theoretical foundations
-- [[thoughts/Context-Free Grammar|context-free grammars]] - grammar-based compression
-- [[thoughts/DFA|deterministic finite automata]] - automata and monoids
-- [[thoughts/KV compression|kv compression]] - applications in ml
-- [[thoughts/reductionism|reductionism]] - philosophical connections
-- [[thoughts/Kolmogorov-Arnold representation theorem|kolmogorov complexity]] - theoretical limit
+- [[thoughts/Entropy|entropy]]: the lower bound for lossless codes
+- [[thoughts/Information Theory|information theory]]
+- [[thoughts/Context-Free Grammar|context-free grammars]]: the rules that grammar compressors store
+- [[thoughts/KV compression|kv compression]]
+- [[thoughts/reductionism|reductionism]]
