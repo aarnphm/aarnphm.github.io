@@ -14,9 +14,7 @@ tags:
 title: Behavirourism
 ---
 
-Positive reinforcement (praise, rewards) strengthens the behaviour and increases the likelihood of it being repeated, where as negative reinforcement ensures such behaviour are not being repeated.
-
-Observable behavior is all that matters. Mind is a black box; if you can't measure it, don't theorize about it. Positive reinforcement (praise, rewards) strengthens the behaviour and increases the likelihood of it being repeated. Negative reinforcement ensures such behaviour are not repeated. Stimulus → response. Environment shapes everything.
+Observable behavior is all that matters. Mind is a black box; if you can't measure it, don't theorize about it. Positive reinforcement (praise, rewards) adds something after a behaviour and makes it more likely to be repeated. Negative reinforcement removes something aversive (the alarm stops when you get up) and also makes the behaviour more likely. Punishment is what makes a behaviour less likely. [@skinner1953sciencehumanbehavior] Stimulus $\to$ response. Environment shapes everything.
 
 This works for training pigeons. For understanding persons? Catastrophically incomplete.
 
@@ -30,12 +28,12 @@ Behaviorism treats organisms as input-output systems. Internal states—beliefs,
 
 ### attention is not a behavior
 
-> Simone Weil: attention is the rarest and purest form of generosity. [@weil1952gravity]
+> Simone Weil: attention is the rarest and purest form of generosity. (letter to Joë Bousquet, 1942)
 
 Behaviorism can't touch this. [[thoughts/Attention]] is not an observable response; it's the _quality_ of your engagement, the structure of what you're oriented toward.
 You can behaviorally comply (make eye contact, nod, repeat back) while completely absent. Attention resists third-person measurement.
 
-> Iris Murdoch: moral life happens in ongoing attention—how you _think_ about someone, what you notice, what possibilities you hold open for them. [@murdoch1970sovereignty]
+> Iris Murdoch (paraphrased): moral life happens in ongoing attention—how you _think_ about someone, what you notice, what possibilities you hold open for them. [@murdoch1970sovereignty]
 
 None of this shows up in behavior until much later, if at all. The decision is already made before you act, made through accumulated patterns of attention.
 
@@ -45,7 +43,7 @@ Behaviorism collapses attention into behavioral output. But attention _precedes_
 
 If behaviorism is right, [[/tags/love]] is just positive reinforcement. You "love" someone because they've consistently rewarded you: dopamine, validation, security. Withdraw the reinforcement, love extinguishes. Add punishment, love turns to avoidance.
 
-This predicts abusive relationships should end quickly (high punishment). They don't. It predicts secure relationships are just well-tuned reinforcement schedules. They're not—people stay through illness, depression, long separation, all conditions that break behavioral contingencies.
+Behaviorism has an answer for why abusive relationships persist: intermittent reinforcement, rare and unpredictable reward between punishments, is the schedule most resistant to extinction. It predicts secure relationships are just well-tuned reinforcement schedules. They're not—people stay through illness, depression, long separation, all conditions that break behavioral contingencies.
 
 > [!note] [[thoughts/Existentialism|existentialist]] choice
 >
@@ -63,7 +61,7 @@ bell hooks: love is action. [@hooks2000love] When you understand love as action,
 
 Behaviorism tries to compress persons to stimulus-response mappings. Collect enough data, predict their behavior. This is the [[thoughts/Compression|compression]] problem: lossy compression discards what doesn't predict.
 
-What gets discarded: first-person experience, attention, intention, the _reasons_ they act. You model the function (input → output) but miss the process (how they make sense of the input, what it means to them, what they're trying to do).
+What gets discarded: first-person experience, attention, intention, the _reasons_ they act. You model the function (input $\to$ output) but miss the process (how they make sense of the input, what it means to them, what they're trying to do).
 
 This works when you don't care about the person—only their behavior. Advertising, management, behavioral modification. It breaks when you need to _understand_ them. Understanding requires entering their horizon (see [[thoughts/hermeneutics]]), not compressing them to a model.
 
@@ -104,7 +102,7 @@ Behaviorism treats people as input-output devices. This eliminates attention (qu
 ### critique
 
 - one-dimensional to understand human-behaviour, as it focuses only on observable behaviours and neglects internal mental processes
-- deterministic, as it assumes that behaviour is determined by the environment and not by the individual, which induces [[thoughts/confirmation bias]]
+- deterministic, as it assumes that behaviour is determined by the environment and not by the individual
 - [[thoughts/Compression]] problems: reduces persons to predictive models, discarding first-person experience and irreducible particularity
 - cannot account for voluntary commitment (love, duty, choice) that persists through extinction conditions
 - mistakes methodological restriction (study observables) for ontological claim (only observables exist)
