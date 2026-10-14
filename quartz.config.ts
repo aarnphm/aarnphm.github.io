@@ -3,6 +3,7 @@ import * as Component from './quartz/components'
 import * as Plugin from './quartz/plugins'
 
 const arena = false
+const slides = false
 
 const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",
@@ -84,7 +85,6 @@ const configuration: GlobalConfiguration = {
     dtype: 'fp32',
     queryDtype: 'q4',
     shardSizeRows: 1024,
-    hnsw: { M: 16, efConstruction: 200 },
     chunking: { chunkSize: 512, chunkOverlap: 128 },
     vllm: { concurrency: 16, batchSize: 128 },
   },
@@ -138,7 +138,7 @@ const config: QuartzConfig = {
         Plugin.Twitter(),
         Plugin.SyntaxHighlighting({ keepBackground: true }),
         Plugin.Citations({ bibliography: './content/References.bib' }),
-        Plugin.ObsidianBases(),
+        { plugin: Plugin.ObsidianBases(), dev: true },
         Plugin.JsonCanvas(),
         Plugin.Tracking(),
         Plugin.ObsidianFlavoredMarkdown(),
@@ -273,22 +273,41 @@ const config: QuartzConfig = {
         Plugin.AgentSkills(),
         Plugin.Favicon(),
         Plugin.NotFoundPage(),
-        { plugin: Plugin.CustomOgImages(), dev: false },
-        { plugin: Plugin.SlidesPage(), dev: true },
+        { plugin: Plugin.CustomOgImages(), dev: false, fallback: Plugin.CustomOgImagesFallback() },
+        {
+          plugin: Plugin.SlidesPage(),
+          dev: slides,
+          fallback: Plugin.DisabledPage({
+            label: 'slides',
+            source: file =>
+              Boolean(file.frontmatter?.slides) &&
+              file.slug !== undefined &&
+              !file.slug.endsWith('/index') &&
+              !file.slug.startsWith('tags/'),
+            routes: file => [
+              `${file.slug}/slides`,
+              ...Array.from(
+                { length: Math.max(1, file.slidesIndex?.length ?? 0) },
+                (_, index) => `${file.slug}/slides/${index + 1}`,
+              ),
+            ],
+            setting: 'slides',
+          }),
+        },
         Plugin.FlashcardsPage(),
         Plugin.CourseReviewPage(),
         {
           plugin: Plugin.ArenaPage(),
           dev: arena,
           fallback: Plugin.DisabledPage({
-            label: 'Arena',
+            label: 'Are.na',
             source: 'are.na',
             routes: ['arena', 'arena/feed'],
             setting: 'arena',
           }),
         },
         Plugin.PdfReader(),
-        Plugin.BasePage(),
+        { plugin: Plugin.BasePage(), dev: true },
         Plugin.StreamPage(),
         Plugin.StreamIndex(),
         Plugin.Masonry(),

@@ -13,6 +13,7 @@ import { loadEmoji } from '../../util/emoji-node'
 import { unescapeHTML } from '../../util/escape'
 import { ImageOptions, SocialImageOptions, defaultImage, getSatoriFonts } from '../../util/og'
 import { FilePath, FullSlug, QUARTZ, getFileExtension, joinSegments } from '../../util/path'
+import { StaticResources } from '../../util/resources'
 import { SECTIONS, type Section, isSlidePage, sectionOf } from '../../util/section-icon'
 import { QuartzPluginData } from '../vfile'
 
@@ -209,6 +210,54 @@ export async function createOgImageGenerator(
 }
 
 export const CustomOgImagesEmitterName = 'CustomOgImages'
+
+function socialImageResources(
+  ctx: BuildCtx,
+  fullOptions: SocialImageOptions,
+  generated: boolean,
+): Partial<StaticResources> {
+  const baseUrl = ctx.cfg.configuration.baseUrl
+  if (generated && !baseUrl) return {}
+  const base = baseUrl ? `https://${baseUrl}` : ''
+  return {
+    additionalHead: [
+      pageData => {
+        const hasGeneratedOgImage =
+          generated &&
+          (pageData.filePath !== undefined || pageData.frontmatter?.generatedSocialImage === true)
+        const userDefinedOgImagePath = pageData.frontmatter?.socialImage
+        const generatedOgImagePath = hasGeneratedOgImage
+          ? `${base}/${pageData.slug!}-og-image.webp`
+          : undefined
+        const defaultOgImagePath = `${base}/static/og-image.webp`
+        const ogImagePath = userDefinedOgImagePath ?? generatedOgImagePath ?? defaultOgImagePath
+        const ogImageMimeType = `image/${getFileExtension(ogImagePath)?.slice(1) ?? 'png'}`
+        return (
+          <>
+            {generated && !userDefinedOgImagePath && (
+              <>
+                <meta property="og:image:width" content={fullOptions.width.toString()} />
+                <meta property="og:image:height" content={fullOptions.height.toString()} />
+              </>
+            )}
+            <meta property="og:image" content={ogImagePath} />
+            <meta property="og:image:url" content={ogImagePath} />
+            <meta name="twitter:image" content={ogImagePath} />
+            <meta property="og:image:type" content={ogImageMimeType} />
+          </>
+        )
+      },
+    ],
+  }
+}
+
+export const CustomOgImagesFallback: QuartzEmitterPlugin = () => ({
+  name: 'CustomOgImagesFallback',
+  getQuartzComponents: () => [],
+  emit: async () => [],
+  externalResources: ctx => socialImageResources(ctx, defaultOptions, false),
+})
+
 export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = userOpts => {
   const fullOptions = { ...defaultOptions, ...userOpts }
 
@@ -236,44 +285,6 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
         }
       }
     },
-    externalResources: ctx => {
-      if (!ctx.cfg.configuration.baseUrl) {
-        return {}
-      }
-
-      const baseUrl = ctx.cfg.configuration.baseUrl
-      return {
-        additionalHead: [
-          pageData => {
-            const isRealFile = pageData.filePath !== undefined
-            const hasGeneratedOgImage =
-              isRealFile || pageData.frontmatter?.generatedSocialImage === true
-            const userDefinedOgImagePath = pageData.frontmatter?.socialImage
-            const generatedOgImagePath = hasGeneratedOgImage
-              ? `https://${baseUrl}/${pageData.slug!}-og-image.webp`
-              : undefined
-            const defaultOgImagePath = `https://${baseUrl}/static/og-image.webp`
-            const ogImagePath = userDefinedOgImagePath ?? generatedOgImagePath ?? defaultOgImagePath
-
-            const ogImageMimeType = `image/${getFileExtension(ogImagePath)!.slice(1) ?? 'png'}`
-            return (
-              <>
-                {!userDefinedOgImagePath && (
-                  <>
-                    <meta property="og:image:width" content={fullOptions.width.toString()} />
-                    <meta property="og:image:height" content={fullOptions.height.toString()} />
-                  </>
-                )}
-
-                <meta property="og:image" content={ogImagePath} />
-                <meta property="og:image:url" content={ogImagePath} />
-                <meta name="twitter:image" content={ogImagePath} />
-                <meta property="og:image:type" content={ogImageMimeType} />
-              </>
-            )
-          },
-        ],
-      }
-    },
+    externalResources: ctx => socialImageResources(ctx, fullOptions, true),
   }
 }
