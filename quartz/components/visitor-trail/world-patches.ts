@@ -1,13 +1,19 @@
+import { createForestSprites } from './forest-sprites'
 import { creekDistance, groundOffset, type Landscape, type Point } from './landscape'
 import { trailMountainBackdrop } from './mountain-backdrop'
 import { trailRandom } from './random'
 import { trailCreek } from './ravine'
 import { createTreePainter, trailPatchTrees, type ForestSettings } from './scenery'
 import { trailBoulder } from './understory'
-import { trailGroundSnow } from './winter'
+import { trailSnowBase } from './winter'
 
 type Region = { id: string; left: number; top: number; right: number; bottom: number }
-type Patch = { region: Region; trees: SVGGElement }
+type Patch = {
+  region: Region
+  trees: SVGGElement
+  neighbours: Point[]
+  sprites: ReturnType<typeof createForestSprites>
+}
 
 function patchLandscape(base: Landscape, region: Region) {
   const outlet = base.creek[0].at(-1)
@@ -86,7 +92,7 @@ function terrainPatch(landscape: Landscape, seed: number, region: Region, water:
     region.right > landscape.pond.x
       ? trailCreek({ ...water, creek: [course], stream: [] }, seed)
       : ''
-  return paths + trailGroundSnow(landscape, seed, region) + runoff + tracks + marks.join('')
+  return { base: paths, detail: runoff + tracks + marks.join('') }
 }
 
 export function mountWorldPatches(
@@ -150,33 +156,47 @@ export function mountWorldPatches(
           `<g ${bounds}>${trailMountainBackdrop(extended, narrow ? patchSeed : seed, clip, undefined, region)}</g>`,
         )
       }
-      if (!known)
-        append('.trail-ground', `<g ${bounds}>${terrainPatch(base, patchSeed, region, land)}</g>`)
+      if (!known) {
+        const terrain = terrainPatch(base, patchSeed, region, land)
+        append(
+          '.trail-ground-base',
+          `<g ${bounds}>${terrain.base}${trailSnowBase(base, seed, region)}</g>`,
+        )
+        append('.trail-ground', `<g ${bounds}>${terrain.detail}</g>`)
+      }
       const trees = known?.trees ?? document.createElementNS('http://www.w3.org/2000/svg', 'g')
       if (!known) {
         trees.dataset.worldPatchForest = region.id
         scene.querySelector('.trail-extension-forest')?.append(trees)
       }
-      trees.replaceChildren()
-      patches.set(region.id, { region, trees })
+      const patch = known ?? {
+        region,
+        trees,
+        neighbours: neighboursAtStart,
+        sprites: createForestSprites(document),
+      }
+      patches.set(region.id, patch)
+      const wanted = new Set<string>()
       let batch = view.performance.now()
       for (const sprite of trailPatchTrees(
         land,
         patchSeed,
         region,
         settings(),
-        neighboursAtStart,
+        patch.neighbours,
         walks(),
         paint,
       )) {
         if (generation !== epoch || signal.aborted) break
-        trees.insertAdjacentHTML('beforeend', sprite)
+        wanted.add(sprite.id)
+        patch.sprites.update(sprite, trees)
         if (view.performance.now() - batch >= 6) {
           await new Promise<void>(resolve => view.setTimeout(resolve, 0))
           batch = view.performance.now()
         }
       }
       if (generation !== epoch || signal.aborted) break
+      patch.sprites.retain(wanted)
       refresh()
       await new Promise<void>(resolve => view.setTimeout(resolve, 0))
     }
@@ -228,7 +248,6 @@ export function mountWorldPatches(
     refreshForest() {
       if (!landscape) return
       epoch++
-      for (const tree of scene.querySelectorAll('[data-tree-id^="tree-patch-"]')) tree.remove()
       const requests = new Map([...patches.values()].map(patch => [patch.region.id, patch.region]))
       for (const region of pending) requests.set(region.id, region)
       pending.splice(0, pending.length, ...requests.values())

@@ -78,6 +78,30 @@
   .trail-ravine-water {
     fill: color-mix(in srgb, #6f97a6 72%, var(--light));
   }
+  .trail-ravine-deep {
+    fill: color-mix(in srgb, #557986 74%, var(--light));
+  }
+  .trail-river-fish-silver {
+    fill: color-mix(in srgb, #cbd6cb 84%, var(--light));
+  }
+  .trail-river-fish-flank {
+    fill: color-mix(in srgb, #c18a79 80%, var(--light));
+  }
+  .trail-river-fish-fin {
+    fill: color-mix(in srgb, #617b7d 82%, var(--light));
+  }
+  :is(.trail-river-current, .trail-river-fish, .trail-river-bear) {
+    shape-rendering: crispEdges;
+    pointer-events: none;
+  }
+  .trail-river-jump,
+  .trail-river-splash {
+    opacity: 0;
+  }
+  .trail-river-glint {
+    opacity: 0.45;
+    transform: translate(var(--current-x0), var(--current-y0)) rotate(var(--current-angle0));
+  }
   .trail-ravine-foam,
   .trail-ravine-mist {
     fill: color-mix(in srgb, #eef4f3 88%, var(--light));
@@ -115,6 +139,11 @@
   }
   .trail-scene[data-trail-opening='pending'] .trail-wayside {
     opacity: 0;
+    transition: none;
+  }
+  // The compositor's opening front uncovers trailwork with the ground around it. The delayed
+  // fade is for the SVG renderer, where nothing else reveals it.
+  .trail-scene[data-trail-renderer='webgl'] .trail-wayside {
     transition: none;
   }
   .trail-wayside-tread,
@@ -198,7 +227,7 @@
   .trail-wayside-leaf-brown {
     fill: #8e5b2f;
   }
-  .trail-scene:not([data-season='autumn'])
+  .trail-scene:not([data-foliage-season='autumn'])
     :is(
       .trail-wayside-leaf-red,
       .trail-wayside-leaf-orange,
@@ -207,16 +236,20 @@
     ) {
     display: none;
   }
-  // Water slides down the stream as a broken streak.
-  .trail-ravine-flow {
-    fill: none;
-    stroke: color-mix(in srgb, #9fbcc2 84%, var(--light));
-    stroke-width: 2;
-    stroke-dasharray: 3 5;
-  }
   @media (prefers-reduced-motion: no-preference) {
-    .trail-scene:not([data-water-frozen='true']) .trail-ravine-flow {
-      animation: trail-ravine-flow 0.9s steps(4, end) infinite;
+    .trail-scene:not([data-water-frozen='true']) {
+      .trail-river-glint {
+        animation: trail-river-current var(--current-duration) linear var(--current-delay) infinite;
+      }
+      .trail-river-jump {
+        animation: trail-river-jump var(--river-cycle) linear var(--river-delay) infinite;
+      }
+      .trail-river-splash {
+        animation: trail-river-splash var(--river-cycle) steps(1, end) var(--river-delay) infinite;
+      }
+      .trail-river-paw {
+        animation: trail-river-paw var(--river-cycle) linear var(--river-delay) infinite;
+      }
     }
     // The beaver swims a stick out to the dam, turns, swims home and dives at the lodge.
     .trail-beaver-swim {
@@ -226,15 +259,96 @@
       animation: trail-beaver-stick 36s steps(1, end) infinite;
     }
     .trail-scene[data-weather-motion='paused']
-      :is(.trail-ravine-flow, .trail-beaver-swim, .trail-beaver-stick) {
+      :is(
+        .trail-river-glint,
+        .trail-river-jump,
+        .trail-river-splash,
+        .trail-river-paw,
+        .trail-beaver-swim,
+        .trail-beaver-stick
+      ) {
       animation-play-state: paused;
     }
   }
 }
 
-@keyframes trail-ravine-flow {
+@keyframes trail-river-current {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  12%,
+  82% {
+    opacity: 0.85;
+  }
+  from {
+    transform: translate(var(--current-x0), var(--current-y0)) rotate(var(--current-angle0));
+  }
+  25% {
+    transform: translate(var(--current-x1), var(--current-y1)) rotate(var(--current-angle1));
+  }
+  50% {
+    transform: translate(var(--current-x2), var(--current-y2)) rotate(var(--current-angle2));
+  }
+  75% {
+    transform: translate(var(--current-x3), var(--current-y3)) rotate(var(--current-angle3));
+  }
   to {
-    stroke-dashoffset: -8;
+    transform: translate(var(--current-x4), var(--current-y4)) rotate(var(--current-angle4));
+  }
+}
+
+@keyframes trail-river-jump {
+  0%,
+  69.9%,
+  76%,
+  100% {
+    opacity: 0;
+    transform: translate(-2px, 0) rotate(-24deg);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-2px, -1px) rotate(-24deg);
+  }
+  72% {
+    opacity: 1;
+    transform: translate(0, -9px) rotate(-8deg);
+  }
+  73% {
+    opacity: 1;
+    transform: translate(1px, -10px) rotate(12deg);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(0, 1px) rotate(34deg);
+  }
+}
+
+@keyframes trail-river-splash {
+  0%,
+  69%,
+  72%,
+  74%,
+  78%,
+  100% {
+    opacity: 0;
+  }
+  70%,
+  75% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes trail-river-paw {
+  0%,
+  73%,
+  78%,
+  100% {
+    transform: translate(0, 0);
+  }
+  74%,
+  75% {
+    transform: translate(3px, 5px);
   }
 }
 

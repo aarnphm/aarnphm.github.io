@@ -1,5 +1,5 @@
 export const groundObjectSelector =
-  '.trail-tree, .trail-understory, [data-trail-wander], [data-holiday-decoration], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger], [data-trail-visitor]'
+  '.trail-tree, .trail-understory, [data-trail-wander], [data-wetland-animal], .trail-river-bear, .trail-river-fish, [data-holiday-decoration], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger], [data-trail-visitor]'
 
 type GroundObject = { element: SVGGElement; owner: Element; layer: SVGGElement; index: number }
 
@@ -44,20 +44,25 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
     frame = null
     scene.dataset.depthOrderMotion = 'paused'
   }
-  const restore = () => {
+  const restore = (selector?: string) => {
     pause()
     // Generation holders retain ownership while the paint layer orders individual feet.
     for (const { element, owner } of objects)
-      if (element.isConnected && owner.isConnected) {
+      if (element.isConnected && owner.isConnected && (!selector || element.matches(selector))) {
         if (typeof owner.moveBefore === 'function') owner.moveBefore(element, null)
         else owner.append(element)
       }
-    objects = []
+    objects = selector
+      ? objects.filter(({ element }) => element.isConnected && !element.matches(selector))
+      : []
   }
   const refresh = () => {
-    restore()
+    pause()
+    objects = objects.filter(({ element, owner }) => element.isConnected && owner.isConnected)
+    const retained = new Set(objects.map(({ element }) => element))
     const distant = scene.querySelector<SVGGElement>('.trail-foothill-objects')
     for (const element of scene.querySelectorAll<SVGGElement>(groundObjectSelector)) {
+      if (retained.has(element)) continue
       const owner = element.parentElement
       const far =
         element.dataset.treeDepth === 'foothill' || element.hasAttribute('data-alpine-traveler')

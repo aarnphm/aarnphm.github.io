@@ -88,7 +88,6 @@ export default (() => {
           </svg>
           <span class="homepage-trail-holiday" data-holiday-marker aria-hidden="true" hidden />
         </button>
-        <div class="trail-clock-ground" aria-hidden="true" />
         <div
           id="homepage-trail-scene"
           class="homepage-trail-scene"

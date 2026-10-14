@@ -2,6 +2,8 @@ import { bearPixels, catPixels, dogPixels, goosePixels, type TrailAnimalKind } f
 import { cowPixels } from './cows'
 import { onDryLand, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
+import { riverBear, riverClearing, riverFish, riverFishingSites } from './river-life'
+import { trailBankWildlife } from './wetlands'
 
 export type RouteSites = { id: string; samples: Point[] }
 export type AnimalSettings = Record<TrailAnimalKind, number>
@@ -33,6 +35,13 @@ export function trailPasture(
     ),
   )
   const occupied: Point[] = []
+  const fishing = riverFishingSites(
+    landscape,
+    routes.flatMap(route => route.samples),
+    seed,
+  )
+  const fishingBear = settings.bear > 0 ? fishing[0] : undefined
+  if (fishingBear) occupied.push(...riverClearing(fishingBear))
   const site = () => {
     let point: Point = { x: width * 0.5, y: meadowTop + 64 }
     for (let attempt = 0; attempt < 100; attempt++) {
@@ -69,6 +78,8 @@ export function trailPasture(
     return `<g class="trail-${kind}${tone}" data-trail-wander="${kind}-${index}" data-trail-animal="${kind}" data-animal-home-x="${x}" data-animal-home-y="${y}" data-animal-size="${size}" data-phase="waiting" data-motion="paused" data-stride="0" transform="translate(${x} ${y})" style="--trail-animal-step:${size}px;--trail-cow-delay:${index * -2700}ms;--trail-animal-delay:${index * -1700}ms"><g class="trail-animal-facing" transform="scale(${flip} 1)"><g transform="translate(${-size * anchor} ${-size * 8})">${sprite}</g></g></g>`
   }
   const animals: { y: number; markup: string }[] = []
+  for (const site of fishing) animals.push({ y: site.fish.y, markup: riverFish(site) })
+  if (fishingBear) animals.push({ y: fishingBear.bank.y, markup: riverBear(fishingBear) })
   for (let index = 0; index < settings.cow; index++) {
     const point = site()
     const size = index % 4 === 3 ? 1 : 2
@@ -116,7 +127,7 @@ export function trailPasture(
     const flip = index % 2 ? -1 : 1
     return animal('goose', index, { x, y }, size, flip, goosePixels(size), 5)
   }).join('')
-  for (let index = 0; index < settings.bear; index++) {
+  for (let index = fishingBear ? 1 : 0; index < settings.bear; index++) {
     const point =
       index % 2
         ? {
@@ -130,11 +141,17 @@ export function trailPasture(
       markup: animal('bear', index, point, 2, random() < 0.5 ? -1 : 1, bearPixels(2), 9),
     })
   }
+  const bank = trailBankWildlife(
+    landscape,
+    routes.flatMap(route => route.samples),
+    seed,
+    occupied,
+  )
   return {
     markup: `<g class="trail-pasture">${animals
       .sort((a, b) => a.y - b.y)
       .map(animal => animal.markup)
-      .join('')}${geese}</g>`,
-    sites: occupied,
+      .join('')}${geese}${bank.markup}</g>`,
+    sites: [...occupied, ...bank.sites],
   }
 }

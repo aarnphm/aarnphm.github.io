@@ -37,7 +37,7 @@
   }
   .trail-weather-dapple {
     fill: color-mix(in srgb, var(--lightgray) 72%, #c3ad7c);
-    opacity: calc(var(--trail-sunlight, 0) * 0.45);
+    opacity: 0.45;
     shape-rendering: crispEdges;
   }
   .trail-weather-gust {
@@ -81,7 +81,7 @@
     shape-rendering: crispEdges;
   }
   .trail-tree-gold {
-    opacity: calc(0.15 + var(--trail-sunlight, 0) * 0.85);
+    opacity: 0.75;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -197,11 +197,11 @@
 @keyframes trail-weather-dapple {
   0%,
   100% {
-    opacity: calc(var(--trail-sunlight, 0) * 0.3);
+    opacity: 0.3;
     transform: translate(0, 0);
   }
   50% {
-    opacity: calc(var(--trail-sunlight, 0) * 0.5);
+    opacity: 0.5;
     transform: translate(var(--trail-wind-x, 0px), var(--trail-wind-y, 0px));
   }
 }

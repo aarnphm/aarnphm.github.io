@@ -100,4 +100,36 @@
   .trail-mountain-cut-riser {
     fill: color-mix(in srgb, var(--darkgray) 42%, var(--light));
   }
+  // Snow fills the cut as it covers the slope: the bank keeps a blue shadow, the tread a packed
+  // groove, and only the wall stones show through.
+  .trail-scene:not([data-snow-cover='0.000']) {
+    :is(.trail-mountain-cut-contour, .trail-mountain-cut-spoil, .trail-mountain-cut-wear) {
+      fill: color-mix(
+        in srgb,
+        var(--trail-snow-lit) var(--trail-snow-mix, 0%),
+        color-mix(in srgb, var(--gray) 24%, var(--light))
+      );
+    }
+    .trail-mountain-cut-tread {
+      fill: color-mix(
+        in srgb,
+        var(--trail-snow-ground) var(--trail-snow-mix, 0%),
+        color-mix(in srgb, #c9a26b 10%, var(--light))
+      );
+    }
+    .trail-mountain-cut-bank {
+      fill: color-mix(
+        in srgb,
+        var(--trail-snow-shade) var(--trail-snow-mix, 0%),
+        color-mix(in srgb, var(--darkgray) 32%, var(--light))
+      );
+    }
+    :is(.trail-mountain-cut-stone, .trail-mountain-cut-riser) {
+      fill: color-mix(
+        in srgb,
+        var(--trail-snow-shade) var(--trail-snow-mix, 0%),
+        color-mix(in srgb, var(--darkgray) 38%, var(--light))
+      );
+    }
+  }
 }

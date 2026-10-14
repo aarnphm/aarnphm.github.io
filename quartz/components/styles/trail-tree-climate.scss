@@ -28,39 +28,42 @@ $bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tre
     display: none;
   }
   .trail-scene:is(
-      [data-season='winter'],
-      [data-season='spring'][data-season-phase='early'],
-      [data-season='spring'][data-season-phase='mid'],
-      [data-season='autumn'][data-season-phase='late']
+      [data-foliage-season='winter'],
+      [data-foliage-season='spring'][data-season-phase='early'],
+      [data-foliage-season='spring'][data-season-phase='mid'],
+      [data-foliage-season='autumn'][data-season-phase='late']
     )
     #{$bare} {
     .trail-tree-limbs {
       display: inline;
     }
   }
-  .trail-scene:is([data-season='winter'], [data-season='spring'][data-season-phase='early'])
+  .trail-scene:is(
+      [data-foliage-season='winter'],
+      [data-foliage-season='spring'][data-season-phase='early']
+    )
     #{$bare}
     .trail-tree-canopy {
     display: none;
   }
-  .trail-scene[data-season='spring'][data-season-phase='early'] #{$bare} .trail-tree-bud {
+  .trail-scene[data-foliage-season='spring'][data-season-phase='early'] #{$bare} .trail-tree-bud {
     display: inline;
     fill: color-mix(in srgb, var(--lightgray) 30%, #c8cf86);
   }
-  .trail-scene[data-season='spring'][data-season-phase='early']
+  .trail-scene[data-foliage-season='spring'][data-season-phase='early']
     :is(.trail-tree, .trail-woodland-tree):is([data-tree='maple'], [data-tree='larch'])
     .trail-tree-bud {
     fill: color-mix(in srgb, var(--gray) 20%, #fdb2a2);
   }
-  .trail-scene[data-season='spring'][data-season-phase='early']
+  .trail-scene[data-foliage-season='spring'][data-season-phase='early']
     :is(.trail-tree, .trail-woodland-tree):is([data-tree='aspen'], [data-tree='birch'])
     .trail-tree-bud {
     fill: color-mix(in srgb, var(--gray) 35%, #b8a98a);
   }
   // A partial crown: only the sprout cells, over the limbs.
   .trail-scene:is(
-      [data-season='spring'][data-season-phase='mid'],
-      [data-season='autumn'][data-season-phase='late']
+      [data-foliage-season='spring'][data-season-phase='mid'],
+      [data-foliage-season='autumn'][data-season-phase='late']
     )
     #{$bare}
     .trail-tree-canopy {
@@ -79,16 +82,19 @@ $bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tre
       fill: var(--trail-tree-crown);
     }
   }
-  .trail-scene[data-season='spring'][data-season-phase='mid'] #{$bare} .trail-tree-sprout {
+  .trail-scene[data-foliage-season='spring'][data-season-phase='mid'] #{$bare} .trail-tree-sprout {
     fill: color-mix(in srgb, var(--lightgray) 35%, #b4c77a);
   }
-  .trail-scene[data-season='spring'][data-season-phase='late'] #{$bare} {
+  .trail-scene[data-foliage-season='spring'][data-season-phase='late'] #{$bare} {
     --trail-tree-crown: color-mix(in srgb, var(--trail-leaf-mid) 40%, #94ab62);
     --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 45%, #c4d28c);
     --trail-tree-dark: color-mix(in srgb, var(--trail-leaf-shade) 30%, #6f8a4a);
   }
   // Conifers put out pale new shoots at their tips from mid-spring.
-  .trail-scene[data-season='spring']:is([data-season-phase='mid'], [data-season-phase='late'])
+  .trail-scene[data-foliage-season='spring']:is(
+      [data-season-phase='mid'],
+      [data-season-phase='late']
+    )
     :is(.trail-tree, .trail-woodland-tree):is(
       [data-tree='pine'],
       [data-tree='spruce'],
@@ -102,12 +108,16 @@ $bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tre
     fill: color-mix(in srgb, var(--lightgray) 40%, #b9c98a);
   }
   .trail-tree-snow {
-    fill: color-mix(in srgb, var(--lightgray) 18%, #f1f5f0);
+    fill: color-mix(
+      in srgb,
+      var(--trail-snow-lit) calc(100% - var(--trail-tree-haze, 0%)),
+      var(--trail-snow-shade)
+    );
     opacity: var(--trail-snow-cover, 0);
     transition: opacity 1800ms ease-out;
   }
   .trail-scene .trail-tree-shadow {
-    fill: color-mix(in srgb, #e8ece5 var(--trail-snow-mix, 0%), var(--gray));
+    fill: color-mix(in srgb, var(--trail-snow-shade) var(--trail-snow-mix, 0%), var(--gray));
   }
   // Fir and hemlock hold darker, bluer needles; willow is yellow-green through the summer.
   .trail-scene :is(.trail-tree, .trail-woodland-tree):is([data-tree='fir'], [data-tree='hemlock']) {
@@ -120,30 +130,34 @@ $bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tre
     --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 45%, #c8cf86);
     --trail-tree-dark: color-mix(in srgb, var(--trail-leaf-shade) 35%, #6f7c43);
   }
-  .trail-scene[data-season='autumn'] :is(.trail-tree, .trail-woodland-tree)[data-tree='maple'] {
+  .trail-scene[data-foliage-season='autumn']
+    :is(.trail-tree, .trail-woodland-tree)[data-tree='maple'] {
     --trail-tree-crown: color-mix(in srgb, var(--trail-leaf-mid) 25%, #c4402f);
     --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 35%, #e0703f);
     --trail-tree-dark: color-mix(in srgb, var(--trail-leaf-shade) 30%, #8e2d2a);
     --trail-tree-gold: color-mix(in srgb, var(--trail-leaf-lit) 35%, #e39a4c);
   }
-  .trail-scene[data-season='autumn']
+  .trail-scene[data-foliage-season='autumn']
     :is(.trail-tree, .trail-woodland-tree):is([data-tree='aspen'], [data-tree='larch']) {
     --trail-tree-crown: color-mix(in srgb, var(--trail-leaf-mid) 25%, #c99a3a);
     --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 35%, #e2bf5e);
     --trail-tree-dark: color-mix(in srgb, var(--trail-leaf-shade) 30%, #9a7130);
     --trail-tree-gold: color-mix(in srgb, var(--trail-leaf-lit) 30%, #e8c86a);
   }
-  .trail-scene[data-season='autumn'] :is(.trail-tree, .trail-woodland-tree)[data-tree='willow'] {
+  .trail-scene[data-foliage-season='autumn']
+    :is(.trail-tree, .trail-woodland-tree)[data-tree='willow'] {
     --trail-tree-crown: color-mix(in srgb, var(--trail-leaf-mid) 30%, #b5aa52);
     --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 40%, #d6cb78);
   }
-  .trail-scene[data-season='autumn'] :is(.trail-tree, .trail-woodland-tree)[data-tree='oak'] {
+  .trail-scene[data-foliage-season='autumn']
+    :is(.trail-tree, .trail-woodland-tree)[data-tree='oak'] {
     --trail-tree-crown: color-mix(in srgb, var(--trail-leaf-mid) 30%, #b94e3d);
     --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 45%, #d78b55);
     --trail-tree-dark: color-mix(in srgb, var(--trail-leaf-shade) 30%, #873c35);
     --trail-tree-gold: color-mix(in srgb, var(--trail-leaf-lit) 40%, #ca7852);
   }
-  .trail-scene[data-season='autumn'] :is(.trail-tree, .trail-woodland-tree)[data-tree='birch'] {
+  .trail-scene[data-foliage-season='autumn']
+    :is(.trail-tree, .trail-woodland-tree)[data-tree='birch'] {
     --trail-tree-crown: color-mix(in srgb, var(--trail-leaf-mid) 30%, #c29b4e);
     --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 35%, #d6b16a);
     --trail-tree-dark: color-mix(in srgb, var(--trail-leaf-shade) 30%, #9c693e);
@@ -201,10 +215,10 @@ $bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tre
   .trail-under-grass {
     fill: color-mix(in srgb, var(--lightgray) 35%, #c9a85a);
   }
-  .trail-scene[data-season='spring'] .trail-under-grass {
+  .trail-scene[data-foliage-season='spring'] .trail-under-grass {
     fill: color-mix(in srgb, var(--lightgray) 40%, #9fb36a);
   }
-  .trail-scene[data-season='winter'] .trail-under-grass {
+  .trail-scene[data-foliage-season='winter'] .trail-under-grass {
     fill: color-mix(in srgb, var(--lightgray) 55%, #b8a888);
   }
   .trail-understory[data-plant='manzanita'] .trail-under-light {
@@ -241,7 +255,7 @@ $bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tre
       var(--light)
     );
   }
-  .trail-scene[data-season='autumn']
+  .trail-scene[data-foliage-season='autumn']
     .trail-understory:is([data-plant='fern'], [data-plant='sedge']) {
     .trail-under-light {
       fill: color-mix(in srgb, var(--lightgray) 40%, #c99a5b);
@@ -250,15 +264,15 @@ $bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tre
       fill: color-mix(in srgb, var(--darkgray) 30%, #8a5a33);
     }
   }
-  .trail-scene[data-season='winter']
+  .trail-scene[data-foliage-season='winter']
     .trail-understory:is([data-plant='fern'], [data-plant='flowers']),
-  .trail-scene:is([data-season='autumn'], [data-season='winter'])
+  .trail-scene:is([data-foliage-season='autumn'], [data-foliage-season='winter'])
     .trail-understory:is([data-plant='lupine'], [data-plant='poppy']),
-  .trail-scene:is([data-season='autumn'], [data-season='winter'])
+  .trail-scene:is([data-foliage-season='autumn'], [data-foliage-season='winter'])
     .trail-understory[data-plant='flowers'],
-  .trail-scene:is([data-season='winter'], [data-season='spring'])
+  .trail-scene:is([data-foliage-season='winter'], [data-foliage-season='spring'])
     :is(.trail-under-berry, .trail-under-fungi),
-  .trail-scene[data-season='summer'] .trail-under-fungi {
+  .trail-scene[data-foliage-season='summer'] .trail-under-fungi {
     display: none;
   }
   .trail-weather-leaf {

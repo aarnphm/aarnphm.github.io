@@ -1,6 +1,29 @@
 .homepage-trail-scene .trail-scene {
-  --trail-snow-lit: color-mix(in srgb, #f0f5f3 76%, var(--light));
-  --trail-snow-shade: color-mix(in srgb, #a8bdc5 58%, var(--light));
+  --trail-snow-lit: #f2f5f1;
+  --trail-snow-ground: #e1e9eb;
+  --trail-snow-shade: #adbfcb;
+  --trail-winter-wood: #6a5349;
+  --trail-winter-bark: #c3b6a0;
+  --trail-winter-coat: #476e65;
+  --trail-winter-coat-red: #a34f42;
+  --trail-winter-coat-blue: #4a677f;
+  --trail-winter-ink: #3d3d45;
+  --trail-winter-skin: #cda17b;
+  --trail-winter-hearth: #8f7b6a;
+
+  &[data-lighting='moonlit'] {
+    --trail-snow-lit: #b6c9d8;
+    --trail-snow-ground: #637b94;
+    --trail-snow-shade: #455d76;
+    --trail-winter-wood: #514a4d;
+    --trail-winter-bark: #9babb8;
+    --trail-winter-coat: #a3bda6;
+    --trail-winter-coat-red: #d59479;
+    --trail-winter-coat-blue: #abc4d8;
+    --trail-winter-ink: #303946;
+    --trail-winter-skin: #e2b68e;
+    --trail-winter-hearth: #665953;
+  }
 
   :is(.trail-ground-snow, .trail-summit-snow) {
     opacity: var(--trail-snow-cover, 0);
@@ -8,12 +31,49 @@
     pointer-events: none;
   }
   .trail-snow-blanket {
-    fill: var(--trail-snow-lit);
-    opacity: 0.62;
+    fill: var(--trail-snow-ground);
+    opacity: 1;
   }
-  .trail-snow-drift {
+  .trail-snow-dune {
+    fill: color-mix(in srgb, var(--trail-snow-lit) 22%, var(--trail-snow-ground));
+  }
+  .trail-snow-lee {
     fill: var(--trail-snow-shade);
-    opacity: 0.35;
+    opacity: 0.2;
+  }
+  .trail-snow-crest {
+    fill: color-mix(in srgb, var(--trail-snow-lit) 54%, var(--trail-snow-ground));
+    opacity: 0.45;
+  }
+  :is(.trail-winter-clothes, .trail-winter-kit) {
+    display: none;
+  }
+  .trail-winter-hat {
+    fill: var(--trail-winter-coat-red);
+  }
+  .trail-winter-scarf {
+    fill: #dbad67;
+  }
+  .trail-winter-cuff {
+    fill: var(--trail-snow-lit);
+  }
+  .trail-winter-mitten {
+    fill: var(--trail-winter-coat-red);
+  }
+  .trail-winter-boot {
+    fill: var(--trail-winter-ink);
+  }
+  .trail-winter-blanket {
+    fill: var(--trail-winter-coat-blue);
+  }
+  .trail-camp-snow {
+    fill: var(--trail-snow-lit);
+  }
+  .trail-camp-snow-shade {
+    fill: var(--trail-snow-shade);
+  }
+  .trail-kettle {
+    fill: var(--trail-winter-ink);
   }
   .trail-summit-snow-cap {
     fill: var(--trail-snow-lit);
@@ -23,10 +83,10 @@
   }
   &:not([data-snow-cover='0.000']) {
     :is(.trail-meadow-tuft, .trail-meadow-ground, .trail-meadow-blade, .trail-meadow-reed) {
-      fill: color-mix(in srgb, #ecf2ed var(--trail-snow-mix, 0%), #889372);
+      fill: color-mix(in srgb, var(--trail-snow-lit) var(--trail-snow-mix, 0%), #889372);
     }
     .trail-meadow-blade-dark {
-      fill: color-mix(in srgb, #b8c9cb var(--trail-snow-mix, 0%), #788059);
+      fill: color-mix(in srgb, var(--trail-snow-shade) var(--trail-snow-mix, 0%), #788059);
     }
     .trail-meadow-tips {
       opacity: calc(1 - var(--trail-snow-cover, 0) * 0.78);
@@ -37,6 +97,32 @@
     :is(.trail-foothill-mid, .trail-foothill-near, .trail-mountain-moss) {
       fill: color-mix(in srgb, var(--trail-snow-shade) var(--trail-snow-mix, 0%), var(--lightgray));
     }
+    :is(.trail-ravine-top, .trail-ravine-lit, .trail-ravine-shoulder, .trail-ravine-crest) {
+      fill: color-mix(in srgb, var(--trail-snow-lit) var(--trail-snow-mix, 0%), var(--light));
+    }
+    :is(
+      .trail-ravine-body,
+      .trail-ravine-face-lit,
+      .trail-ravine-knoll,
+      .trail-ravine-sand,
+      .trail-upland-ground
+    ) {
+      fill: color-mix(in srgb, var(--trail-snow-ground) var(--trail-snow-mix, 0%), var(--light));
+    }
+    :is(.trail-ravine-face-dark, .trail-ravine-shade, .trail-ravine-hollow, .trail-upland-edge) {
+      fill: color-mix(in srgb, var(--trail-snow-shade) var(--trail-snow-mix, 0%), var(--light));
+    }
+    .trail-ravine-face {
+      fill: color-mix(
+        in srgb,
+        color-mix(in srgb, var(--trail-snow-ground) 70%, var(--trail-snow-shade))
+          var(--trail-snow-mix, 0%),
+        var(--light)
+      );
+    }
+    .trail-ravine-strata {
+      opacity: calc(1 - var(--trail-snow-cover, 0) * 0.75);
+    }
   }
   .trail-pond-ice {
     fill: none;
@@ -45,9 +131,92 @@
     opacity: 0;
     shape-rendering: crispEdges;
   }
+  .trail-fire-thaw {
+    fill: color-mix(in srgb, var(--trail-snow-shade) 65%, var(--trail-winter-hearth));
+    opacity: var(--trail-snow-cover, 0);
+  }
+
+  &[data-foliage-season='winter'] {
+    :is(.trail-winter-clothes, .trail-winter-kit) {
+      display: inline;
+    }
+    .trail-fair-weather-clothes {
+      display: none;
+    }
+
+    :is(.trail-tree, .trail-woodland-tree) .trail-tree-trunk {
+      fill: color-mix(
+        in srgb,
+        var(--trail-winter-wood) calc(100% - var(--trail-tree-haze, 0%)),
+        var(--trail-snow-shade)
+      );
+    }
+    .trail-tree-bark {
+      fill: color-mix(
+        in srgb,
+        var(--trail-winter-bark) calc(100% - var(--trail-tree-haze, 0%)),
+        var(--trail-snow-shade)
+      );
+    }
+    :is(.trail-tree, .trail-woodland-tree)[data-tree='sequoia'] {
+      --trail-winter-wood: color-mix(in srgb, #a46549 72%, var(--trail-snow-shade));
+    }
+    :is(.trail-tree, .trail-woodland-tree)[data-tree='snag'] {
+      --trail-winter-wood: var(--trail-winter-bark);
+    }
+    :is(.trail-camper-coat, .trail-hiker-coat) {
+      fill: var(--trail-winter-coat);
+    }
+    :is(.trail-camper-right, .trail-reader-1) .trail-camper-coat,
+    .trail-alpine-traveler[data-alpine-traveler='1'] .trail-hiker-coat,
+    .trail-climber-coat {
+      fill: var(--trail-winter-coat-red);
+    }
+    .trail-reader-2 .trail-camper-coat,
+    .trail-alpine-traveler[data-alpine-traveler='2'] .trail-hiker-coat {
+      fill: var(--trail-winter-coat-blue);
+    }
+    :is(.trail-camper-hair, .trail-camper-trousers, .trail-hiker-boot, .trail-hiker-grip) {
+      fill: var(--trail-winter-ink);
+    }
+    .trail-camper-skin {
+      fill: var(--trail-winter-skin);
+    }
+    :is(.trail-hiker-hat, .trail-hiker-bedroll, .trail-climber-helmet) {
+      fill: color-mix(in srgb, #ddbb83 75%, var(--trail-snow-lit));
+    }
+    :is(.trail-hiker-pack-cloth, .trail-hiker-pole, .trail-log) {
+      fill: var(--trail-winter-wood);
+    }
+    .trail-hearth {
+      fill: var(--trail-winter-hearth);
+    }
+    .trail-firelight-gradient stop:first-child {
+      stop-color: #ffcf86;
+      stop-opacity: 0.65;
+    }
+    .trail-firelight-gradient stop:nth-child(2) {
+      stop-color: #ef9d53;
+      stop-opacity: 0.3;
+    }
+    .trail-rocks {
+      fill: var(--trail-snow-lit);
+      opacity: 0.8;
+    }
+    .trail-smoke {
+      fill: var(--trail-snow-lit);
+      opacity: 0.3;
+    }
+    :is(.trail-camp-shadow, .trail-tent-ground) {
+      fill: var(--trail-snow-shade);
+    }
+    :is(.trail-hiker-tracks, .trail-reader-tracks, .trail-camp-tracks, .trail-visitor-tracks) {
+      fill: var(--trail-winter-ink);
+    }
+  }
 
   &[data-water-frozen='true'] {
-    :is(.trail-water, .trail-ravine-water, .trail-wayside-puddle) {
+    :is(.trail-water, .trail-ravine-water, .trail-ravine-deep, .trail-wayside-puddle) {
       fill: color-mix(in srgb, #b8cfd7 80%, var(--light));
     }
     .trail-pond-bank .trail-water {
@@ -59,7 +228,8 @@
     :is(
       .trail-pond-ripple,
       .trail-pond-lily,
-      .trail-ravine-flow,
+      .trail-river-current,
+      .trail-river-fish,
       .trail-ravine-mist,
       .trail-weather-paw,
       .trail-beaver
@@ -68,9 +238,6 @@
     }
     :is(.trail-beaver-swim, .trail-beaver-stick, .trail-meadow-tips) {
       animation: none;
-    }
-    :is(.trail-ravine-top, .trail-ravine-lit, .trail-ravine-shoulder, .trail-ravine-crest) {
-      fill: color-mix(in srgb, var(--trail-snow-lit) 70%, var(--light));
     }
   }
   :is([data-phase='departing'], [data-phase='returning']) {

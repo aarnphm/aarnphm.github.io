@@ -84,13 +84,15 @@ export function creekSection(point: Point, landscape: Landscape, tributary = fal
     ),
   )
   const depth = 0.24 + Math.sqrt(distance) * 0.76
-  const swell = 0.85 + Math.sin(point.x / 73 + point.y / 47) * 0.15
+  const pool = (1 + Math.sin(point.x / 91 + point.y / 63 + landscape.relief.phase)) / 2
+  const swell = 0.85 + pool * 0.9 + Math.sin(point.x / 29 - point.y / 41) * 0.08
+  const cut = 0.7 + (1 - pool) * 0.35 + Math.sin(point.x / 137 + point.y / 83) * 0.18
   const scale = tributary ? 0.62 : 1
   return {
-    waterHalf: (0.65 + depth * 1.8) * swell * scale,
-    farBank: (1.2 + depth * 2.4) * scale,
-    nearBank: (2 + depth * 4.2) * scale,
-    shoulder: (2 + depth * 5) * scale,
+    waterHalf: (0.9 + depth * 3) * swell * scale,
+    farBank: (1.2 + depth * 2.4) * cut * scale,
+    nearBank: (2 + depth * 4.2) * cut * scale,
+    shoulder: (2 + depth * 5) * (0.8 + pool * 0.15) * scale,
     depth,
   }
 }
@@ -185,12 +187,19 @@ export function trailLandscape(
   const toward = Math.sign(aim - peak.x) || 1
   const source = peak.x + toward * 8
   const run = Math.abs(aim - source)
-  const bend = flow() * Math.PI * 2
+  const bend = Math.min(32, run * (0.24 + flow() * 0.08))
   const stream: Point[] = []
   const headwater = Math.min(alpine.base - 4, ridgeAt(source) + alpine.height * 0.18)
-  for (let step = 0, steps = Math.max(8, Math.ceil(run / 2)); step <= steps; step++) {
+  for (
+    let step = 0, steps = Math.max(8, Math.ceil((run + alpine.base - headwater) / 2));
+    step <= steps;
+    step++
+  ) {
     const t = step / steps
-    const x = source + (aim - source) * t + Math.sin(t * Math.PI * 3 + bend) * 3 * t * (1 - t)
+    const x =
+      source +
+      (aim - source) * t +
+      toward * Math.sin(t * Math.PI * 2) * Math.sin(t * Math.PI) * bend
     const ridge = Math.min(ridgeAt(x), alpine.base)
     // Keep runoff below the visible ridge and carry it downhill into the same valley channel.
     const y = Math.min(

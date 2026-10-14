@@ -11,30 +11,29 @@
   --trail-field-3: color-mix(in srgb, var(--gray) 14%, var(--light));
 }
 
-.trail-clock-ground {
-  display: none;
-  position: fixed;
-  width: 0;
-  height: 0;
-  z-index: calc(var(--z-dropdown) - 1);
-  pointer-events: none;
-}
-
-.homepage-trail-toggle[aria-expanded='true'] ~ .trail-clock-ground {
-  display: block;
-}
-
 .trail-local-time {
+  --trail-clock-ink: #26333e;
+  --trail-clock-halo: #f4f7f4;
   position: fixed;
   right: max(16px, env(safe-area-inset-right));
   bottom: max(16px, env(safe-area-inset-bottom));
   z-index: var(--z-dropdown);
   padding: 0 2px;
   background: transparent;
-  color: var(--gray);
-  font: 10px/1.6 var(--codeFont);
+  color: var(--trail-clock-ink);
+  font: 400 11px/1.6 var(--codeFont);
+  text-shadow:
+    -1px 0 var(--trail-clock-halo),
+    1px 0 var(--trail-clock-halo),
+    0 -1px var(--trail-clock-halo),
+    0 1px var(--trail-clock-halo);
   font-variant-numeric: tabular-nums;
   pointer-events: none;
+}
+
+:root[saved-theme='dark'] .trail-local-time {
+  --trail-clock-ink: #f1f5f7;
+  --trail-clock-halo: #26333e;
 }
 
 .homepage-trail-toggle {

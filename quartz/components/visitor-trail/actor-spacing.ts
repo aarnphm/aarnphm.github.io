@@ -1,10 +1,12 @@
 import type { Point } from './landscape'
+import { readClockObstacles } from './clock-clearance'
 import { parallaxDepth, parallaxMovement } from './perspective'
 
 export type CollisionActor = Point & {
   id: string
   kind: 'animal' | 'traveler' | 'pet' | 'trunk'
   radius: number
+  bounds?: SpacingBounds
   resting?: boolean
   element?: SVGGElement
 }
@@ -111,6 +113,7 @@ export function readTrunks(
     element,
   }))
   return [
+    ...readClockObstacles(scene, relativeTo),
     ...solids,
     ...Array.from(scene.querySelectorAll<SVGGElement>('.trail-tree, .trail-woodland-tree')).flatMap(
       (element, index) => {
@@ -133,6 +136,17 @@ export function readTrunks(
 }
 
 export function circleClearance(point: Point, radius: number, other: CollisionActor) {
+  if (other.bounds)
+    return (
+      Math.max(
+        other.bounds.left - point.x,
+        point.x - other.bounds.right,
+        other.bounds.top - point.y,
+        point.y - other.bounds.bottom,
+      ) -
+      radius -
+      2
+    )
   return Math.hypot(point.x - other.x, point.y - other.y) - radius - other.radius - 2
 }
 
@@ -150,6 +164,38 @@ export function canMove(
   const top = Math.min(from.y, to.y)
   const bottom = Math.max(from.y, to.y)
   for (const other of obstacles) {
+    if (other.bounds) {
+      const initial = circleClearance(from, radius, other)
+      if (initial < -0.01) {
+        const fraction = Math.min(1, 1 / (Math.hypot(dx, dy) || 1))
+        const probe = { x: from.x + dx * fraction, y: from.y + dy * fraction }
+        if (
+          !squared ||
+          circleClearance(probe, radius, other) < initial - 0.00001 ||
+          circleClearance(to, radius, other) < initial - 0.00001
+        )
+          return false
+        continue
+      }
+      let enter = 0
+      let exit = 1
+      const padding = radius + 2 - 0.01
+      for (const [position, delta, low, high] of [
+        [from.x, dx, other.bounds.left - padding, other.bounds.right + padding],
+        [from.y, dy, other.bounds.top - padding, other.bounds.bottom + padding],
+      ]) {
+        if (!delta) {
+          if (position < low || position > high) exit = -1
+          continue
+        }
+        const first = (low - position) / delta
+        const last = (high - position) / delta
+        enter = Math.max(enter, Math.min(first, last))
+        exit = Math.min(exit, Math.max(first, last))
+      }
+      if (enter <= exit) return false
+      continue
+    }
     const limit = radius + other.radius + 2
     if (
       other.x < left - limit ||

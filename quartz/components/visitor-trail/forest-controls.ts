@@ -1,3 +1,4 @@
+import { debounce } from '../../util/debounce'
 import { holidayLabels, type HolidaySelection } from '../../util/visitor-holiday'
 import { buildSelect, type Select } from '../controls/select'
 import { defaultCampSettings, campLimits, type CampSettings } from './camp-settings'
@@ -132,11 +133,51 @@ export function mountForestControls(
   const toggle = root.querySelector<HTMLButtonElement>('.trail-tree-toggle')
   const panel = root.querySelector<HTMLElement>('.trail-tree-panel')
   const dismiss = root.querySelector<HTMLButtonElement>('.trail-tree-close')
-  if (!toggle || !panel || !dismiss) throw new Error('Trail settings are incomplete')
+  const view = root.ownerDocument.defaultView
+  if (!toggle || !panel || !dismiss || !view) throw new Error('Trail settings are incomplete')
   const settings = { ...defaultForestSettings }
   const animals = { ...defaultAnimalSettings }
   const travelers = { ...defaultTravelerSettings }
   const camps = { ...defaultCampSettings }
+  const pending = new Map<string, () => void>()
+  const pointers = new Set<number>()
+  // Keep native input and its readout synchronous. Scene work follows the last edit,
+  // and waits for the opening so a slider cannot restart an in-flight generation.
+  const applyPending = debounce(() => {
+    if (signal.aborted) return
+    if (pointers.size || root.dataset.trailOpening !== 'complete') return
+    const changes = [...pending.values()]
+    pending.clear()
+    for (const apply of changes) apply()
+  }, 180)
+  const defer = (group: string, apply: () => void) => {
+    pending.set(group, apply)
+    applyPending()
+  }
+  panel.addEventListener(
+    'pointerdown',
+    event => {
+      if (event.target instanceof view.HTMLInputElement) pointers.add(event.pointerId)
+    },
+    { signal },
+  )
+  const release = (event: PointerEvent) => {
+    if (pointers.delete(event.pointerId) && pending.size) applyPending()
+  }
+  root.ownerDocument.addEventListener('pointerup', release, { signal })
+  root.ownerDocument.addEventListener('pointercancel', release, { signal })
+  view.addEventListener(
+    'blur',
+    () => {
+      pointers.clear()
+      if (pending.size) applyPending()
+    },
+    { signal },
+  )
+  const opening = new MutationObserver(() => {
+    if (root.dataset.trailOpening === 'complete' && pending.size) applyPending()
+  })
+  opening.observe(root, { attributes: true, attributeFilter: ['data-trail-opening'] })
   const close = () => {
     panel.hidden = true
     toggle.setAttribute('aria-expanded', 'false')
@@ -248,7 +289,10 @@ export function mountForestControls(
     'Holiday scene',
     selections.map(value => ({ value, label: holidayLabels[value] })),
     'auto',
-    onHolidayChange,
+    value => {
+      if (root.dataset.trailOpening === 'complete') onHolidayChange(value)
+      else defer('holiday', () => onHolidayChange(value))
+    },
     'holiday-select',
   )
   const unmountLight = mountSelect<CampSettings['light']>(
@@ -262,7 +306,7 @@ export function mountForestControls(
     camps.light,
     value => {
       camps.light = value
-      onCampsChange({ ...camps })
+      defer('camp', applyCamps)
     },
   )
   let destination = 0
@@ -287,9 +331,21 @@ export function mountForestControls(
     chooseDestination(selected)
   }
   mountDestination(camps.sites)
+  let destinationSites = camps.sites
+  const applyCamps = () => {
+    if (destinationSites !== camps.sites) {
+      destinationSites = camps.sites
+      mountDestination(camps.sites)
+    }
+    onCampsChange({ ...camps })
+  }
   signal.addEventListener(
     'abort',
     () => {
+      applyPending.cancel()
+      opening.disconnect()
+      pending.clear()
+      pointers.clear()
       unmountLight()
       unmountDestination()
       unmountHoliday()
@@ -299,23 +355,22 @@ export function mountForestControls(
   for (const { key, suffix } of fields)
     mountRange('forest', key, forestLimits[key], suffix, value => {
       settings[key] = value
-      onChange({ ...settings })
+      defer('forest', () => onChange({ ...settings }))
     })
   for (const { key } of animalFields)
     mountRange('animal', key, animalLimits[key], '', value => {
       animals[key] = value
-      onAnimalsChange({ ...animals })
+      defer('animals', () => onAnimalsChange({ ...animals }))
     })
   for (const { key } of travelerFields)
     mountRange('traveler', key, travelerLimits[key], '', value => {
       travelers[key] = value
-      onTravelersChange({ ...travelers })
+      defer('travelers', () => onTravelersChange({ ...travelers }))
     })
   for (const { key, suffix = '' } of campFields)
     mountRange('camp', key, campLimits[key], suffix, value => {
       camps[key] = value
-      if (key === 'sites') mountDestination(value)
-      onCampsChange({ ...camps })
+      defer('camp', applyCamps)
     })
   return {
     toggle,

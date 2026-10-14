@@ -24,6 +24,23 @@
   .trail-holiday-green {
     fill: color-mix(in srgb, var(--gray) 45%, #879773);
   }
+  .trail-holiday-yellow {
+    fill: color-mix(in srgb, var(--gray) 25%, #c9b062);
+  }
+  // A carved face shows the pumpkin's dark hollow by day.
+  .trail-holiday-lantern {
+    fill: color-mix(in srgb, var(--darkgray) 30%, #57402a);
+  }
+  // Mourning black and wrought iron stay dark in both themes; ink turns pale at night.
+  .trail-holiday-hollow {
+    fill: #2b2622;
+  }
+  .trail-holiday-blood {
+    fill: #8c2f27;
+  }
+  .trail-holiday-iron {
+    fill: #3b3733;
+  }
 }
 
 .homepage-trail-holiday {
@@ -51,23 +68,87 @@
   &[data-holiday='halloween'] .trail-halloween-costume {
     display: block;
   }
-  &[data-holiday='christmas'][data-festive-snow='true']
-    :is(.trail-tree, .trail-woodland-tree)[data-tree] {
-    --trail-tree-light: color-mix(in srgb, var(--lightgray) 22%, #edf2eb);
-    --trail-tree-crown: color-mix(in srgb, var(--gray) 28%, #d6dfd8);
-    --trail-tree-dark: color-mix(in srgb, var(--darkgray) 36%, #acbcb2);
-    --trail-tree-gold: color-mix(in srgb, var(--lightgray) 30%, #e4ebe2);
-  }
-  .trail-holiday-web {
-    opacity: 0.8;
+  .trail-holiday-thread {
+    fill: none;
+    stroke: color-mix(in srgb, var(--lightgray) 30%, #ece3ce);
+    stroke-width: 0.6px;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.7;
     pointer-events: none;
   }
   [data-holiday-decoration],
-  [data-holiday-tree] {
+  [data-holiday-tree],
+  .trail-holiday-bat {
     shape-rendering: crispEdges;
   }
-  .trail-holiday-ghost {
+  .trail-holiday-ghost .trail-holiday-float {
     opacity: 0.85;
+  }
+  .trail-holiday-shadow {
+    fill: var(--gray);
+    opacity: 0.3;
+  }
+  :is(.trail-holiday-glow, .trail-holiday-glow-core) {
+    display: none;
+    fill: #f0a94e;
+  }
+  &[data-lighting='moonlit'] {
+    .trail-holiday-lantern {
+      fill: #f6c868;
+    }
+    .trail-holiday-hollow {
+      fill: #1c1917;
+    }
+    .trail-holiday-blood {
+      fill: #a1362b;
+    }
+    .trail-holiday-iron {
+      fill: #6e685d;
+    }
+    .trail-holiday-glow {
+      display: inline;
+      opacity: 0.12;
+    }
+    .trail-holiday-glow-core {
+      display: inline;
+      opacity: 0.18;
+    }
+  }
+  .trail-holiday-egg-0 {
+    .trail-holiday-paper {
+      fill: color-mix(in srgb, var(--gray) 20%, #d99a8b);
+    }
+    .trail-holiday-green {
+      fill: color-mix(in srgb, var(--lightgray) 30%, #f1e4cc);
+    }
+  }
+  .trail-holiday-egg-1 {
+    .trail-holiday-paper {
+      fill: color-mix(in srgb, var(--gray) 20%, #95b4ca);
+    }
+    .trail-holiday-green {
+      fill: color-mix(in srgb, var(--gray) 20%, #dcc77e);
+    }
+  }
+  .trail-holiday-egg-2 {
+    .trail-holiday-paper {
+      fill: color-mix(in srgb, var(--gray) 20%, #d8c477);
+    }
+    .trail-holiday-green {
+      fill: color-mix(in srgb, var(--gray) 20%, #a58fb6);
+    }
+  }
+  .trail-holiday-garland {
+    fill: color-mix(in srgb, var(--gray) 20%, #c9ad6c);
+  }
+  .trail-holiday-bulb-gold {
+    fill: #edbb59;
+  }
+  .trail-holiday-bulb-red {
+    fill: #cf654f;
+  }
+  .trail-holiday-bulb-white {
+    fill: #fff0c5;
   }
   [data-holiday-animal][data-phase='wandering'][data-stride='1'] .trail-holiday-body {
     transform: translateY(-1px);
@@ -100,7 +181,7 @@
 @keyframes trail-holiday-lights {
   0%,
   100% {
-    opacity: 0.55;
+    opacity: 0.78;
   }
   50% {
     opacity: 1;

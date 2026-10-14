@@ -1,4 +1,4 @@
-// One leaf cluster of a crown, with what its motion needs read once from the markup.
+// A moving crown or leaf cluster, with its motion read once from the markup.
 type Cluster = {
   leaves: SVGGElement
   flip: SVGPathElement | null
@@ -33,15 +33,15 @@ const needled = new Set(['pine', 'spruce', 'fir', 'hemlock', 'cypress', 'larch']
 const interval = 50
 const reread = 3000
 
-// Crown clusters shift by whole cells as the gust front crosses the scene. A CSS animation per
-// cluster made the browser restyle a thousand clusters on every frame; this clock writes a
-// cluster's transform only when its cell offset changes, and only for trees in view.
+// Gusts shift cached WebGL canopies by whole cells. SVG fallback keeps the individual clusters.
+// The clock writes only changed offsets for trees in view, after the opening has finished.
 export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
   const document = scene.ownerDocument
   const view = document.defaultView
   if (!view) return { refresh() {} }
   const motion = view.matchMedia('(prefers-reduced-motion: reduce)')
-  const live = scene.getElementsByClassName('trail-tree-leaves')
+  const leaves = scene.getElementsByClassName('trail-tree-leaves')
+  const canopies = scene.getElementsByClassName('trail-tree-canopy')
   let clusters: Cluster[] = []
   let read = -Infinity
   let frame = 0
@@ -53,27 +53,35 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
   const collect = (time: number) => {
     read = time
     clusters = []
-    for (const leaves of scene.querySelectorAll<SVGGElement>('.trail-tree-leaves')) {
-      const tree = leaves.closest<SVGGElement>('.trail-tree-motion')
-      const root = leaves.closest<SVGGElement>(
+    const cached = scene.dataset.trailRenderer === 'webgl'
+    for (const crown of scene.querySelectorAll<SVGGElement>(
+      cached ? '.trail-tree-canopy' : '.trail-tree-leaves',
+    )) {
+      const sample = cached
+        ? (crown.querySelector<SVGGElement>('.trail-tree-leaves') ?? crown)
+        : crown
+      const tree = crown.closest<SVGGElement>('.trail-tree-motion')
+      const root = crown.closest<SVGGElement>(
         '.trail-tree, .trail-woodland-tree, .trail-understory',
       )
       const scale = tree
         ? Number.parseFloat(tree.style.getPropertyValue('--trail-tree-wind-scale'))
         : 1
-      const lift = number(leaves.style, '--leaf-lift')
+      const lift = number(sample.style, '--leaf-lift')
       const give = needled.has(root?.dataset.tree ?? '') ? 0.55 : 1
+      const flip = cached ? null : crown.querySelector<SVGPathElement>('.trail-tree-flip')
       clusters.push({
-        leaves,
-        flip: leaves.querySelector<SVGPathElement>('.trail-tree-flip'),
+        leaves: crown,
+        flip,
         ground: Number(root?.dataset.groundY ?? 0),
         reach: lift * (Number.isFinite(scale) ? scale : 1) * give,
-        cell: number(leaves.style, '--leaf-cell') || 1,
-        x: number(leaves.style, '--leaf-x'),
-        y: number(leaves.style, '--leaf-y'),
+        cell: number(sample.style, '--leaf-cell') || 1,
+        x: number(sample.style, '--leaf-x'),
+        y: number(sample.style, '--leaf-y'),
         delay: tree ? number(tree.style, '--trail-weather-delay') : 0,
-        offset: leaves.getAttribute('transform') ?? '',
-        flipped: false,
+        offset: crown.getAttribute('transform') ?? '',
+        // A reread can land during a peak; retain its painted state so the next step releases it.
+        flipped: flip !== null && flip.style.opacity !== '',
       })
     }
   }
@@ -94,7 +102,9 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
     scene.dataset.weatherMotion !== 'paused' &&
     !document.hidden &&
     scene.dataset.trailRendered === 'true' &&
-    (scene.dataset.trailRenderer === 'webgl' || !scene.querySelector('.trail-compositor'))
+    (scene.dataset.trailRenderer === 'webgl'
+      ? scene.dataset.trailAmbientReady === 'true'
+      : !scene.querySelector('.trail-compositor'))
 
   const step = (time: number) => {
     frame = 0
@@ -102,6 +112,7 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
     frame = view.requestAnimationFrame(step)
     if (time - last < interval) return
     last = time
+    const live = scene.dataset.trailRenderer === 'webgl' ? canopies : leaves
     if (time - read > reread || live.length !== clusters.length) collect(time)
     const style = scene.style
     const pushX = number(style, '--trail-leaf-push-x')
@@ -158,6 +169,7 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
       'data-trail-visible',
       'data-trail-rendered',
       'data-trail-renderer',
+      'data-trail-ambient-ready',
     ],
   })
   document.addEventListener('visibilitychange', wake, { signal })

@@ -114,12 +114,15 @@ export function mountSharedGrove(
       changed ||=
         tree.dataset.communityGrowth !== undefined &&
         tree.dataset.communityGrowth !== growth.toFixed(4)
-      tree.dataset.water = String(waters)
-      tree.dataset.communityGrowth = growth.toFixed(4)
-      tree.dataset.trunkRadius = (Number(tree.dataset.baseTrunkRadius) * growth).toFixed(4)
-      tree
-        .querySelector('.trail-tree-community')
-        ?.setAttribute('transform', `scale(${growth.toFixed(4)})`)
+      const radius = (Number(tree.dataset.baseTrunkRadius) * growth).toFixed(4)
+      if (tree.dataset.water !== String(waters)) tree.dataset.water = String(waters)
+      if (tree.dataset.communityGrowth !== growth.toFixed(4))
+        tree.dataset.communityGrowth = growth.toFixed(4)
+      if (tree.dataset.trunkRadius !== radius) tree.dataset.trunkRadius = radius
+      const community = tree.querySelector('.trail-tree-community')
+      const transform = `scale(${growth.toFixed(4)})`
+      if (community?.getAttribute('transform') !== transform)
+        community?.setAttribute('transform', transform)
       const button = hits.querySelector<HTMLButtonElement>(`[data-water-tree="${id}"]`)
       if (button) {
         button.setAttribute(
@@ -141,17 +144,24 @@ export function mountSharedGrove(
     if (changed) onGrowth()
   }
   const refresh = () => {
-    hits.replaceChildren()
+    const retained = new Map(
+      [...hits.querySelectorAll<HTMLButtonElement>('[data-water-tree]')].map(button => [
+        button.dataset.waterTree,
+        button,
+      ]),
+    )
     for (const tree of scene.querySelectorAll<SVGGElement>('.trail-tree')) {
       if (tree.dataset.treeDepth === 'foothill') continue
       const id = tree.dataset.treeId
       if (!id) continue
+      if (retained.delete(id)) continue
       const button = document.createElement('button')
       button.type = 'button'
       button.className = 'trail-tree-water'
       button.dataset.waterTree = id
       hits.append(button)
     }
+    for (const button of retained.values()) button.remove()
     apply()
   }
   hits.addEventListener(

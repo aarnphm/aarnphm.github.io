@@ -1,0 +1,30 @@
+// Original river wildlife grids drawn with Claude Opus 5.5.
+export const riverArt = {
+  fish: ['....DD...', 'D..SSSSS.', 'DDSFFFSES', 'D..SFFSS.', '....D....'],
+  bear: [
+    '...CCCCCC...........',
+    '..CCCCCCCCCC........',
+    '.CCCCCCCCCCCCC.CC...',
+    '.CCCCCCCCCCCCCCCCC..',
+    'CCCCCCCCCCCCCCCCEC..',
+    'CCDDCCCCCCCCCCCCCCN.',
+    'CDDDDDCCCCCCCC..CNN.',
+    '.DDDDDDCCCCCCC......',
+    '.DDD......CCC.......',
+    '.DDD......CCC.......',
+    '.BBBB.....BBBB......',
+  ],
+  paw: [
+    '....................',
+    '....................',
+    '....................',
+    '....................',
+    '....................',
+    '....................',
+    '....................',
+    '.............CCC....',
+    '..............CCC...',
+    '...............BBB..',
+    '....................',
+  ],
+}

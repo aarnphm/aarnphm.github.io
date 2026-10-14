@@ -369,18 +369,18 @@ export function trailMountainBackdrop(
 
   return `<g class="trail-backdrop" data-trail-backdrop="" data-backdrop-placement="below-text" clip-path="url(#${clipId})">
       <g data-trail-depth="alpine">
-        <g data-formation="bernese-alps" data-peaks="eiger monch jungfrau" data-mountain-ranges="${ranges.length}" data-mountain-atlas='${JSON.stringify(atlas)}' transform="${placement}">
+        <g data-trail-layer="alpine-rock" data-formation="bernese-alps" data-peaks="eiger monch jungfrau" data-mountain-ranges="${ranges.length}" data-mountain-atlas='${JSON.stringify(atlas)}' transform="${placement}">
           ${ridge}
           <g class="trail-summit-snow">${snowcaps}</g>
         </g>
         <g class="trail-alpine-climbers" aria-hidden="true"></g>
       </g>
       <g data-trail-depth="foothill">
-        <g data-formation="foothills" data-badlands-bleed="${coordinate(bleedDepth)}" transform="${placement}">
+        <g data-trail-layer="foothill-rock" data-formation="foothills" data-badlands-bleed="${coordinate(bleedDepth)}" transform="${placement}">
           ${lowlands}
           ${foothills}
         </g>
-        <g class="trail-mountain-roads">${carvedTrails(alpine, ranges, tracks)}${routes}</g>
+        <g class="trail-mountain-roads" data-trail-layer="mountain-roads">${carvedTrails(alpine, ranges, tracks)}${routes}</g>
         <g class="trail-foothill-trees"></g>
         <g class="trail-alpine-tracks"></g>
         <g class="trail-alpine-travelers"></g>

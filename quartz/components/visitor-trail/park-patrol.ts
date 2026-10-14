@@ -30,6 +30,9 @@ type Ranger = {
   remaining: number
   lastStep: Point
   stride: number
+  failedPlan: string | null
+  replans: number
+  blocked: boolean
 }
 type Stop = Point & { id: string }
 
@@ -137,11 +140,15 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
     ranger.element.dataset.targetX = next?.x.toFixed(2) ?? ''
     ranger.element.dataset.targetY = next?.y.toFixed(2) ?? ''
     ranger.element.dataset.waypointsRemaining = String(ranger.route.length)
+    const replans = String(ranger.replans)
+    if (ranger.element.dataset.routePlans !== replans) ranger.element.dataset.routePlans = replans
     ranger.facing.setAttribute('transform', `scale(${next && next.x < point.x ? -1 : 1} 1)`)
     if (ranger.phase === 'waiting') ranger.element.style.visibility = 'hidden'
   }
   const visit = (ranger: Ranger) => {
     if (!landscape || !stops.length) return
+    ranger.failedPlan = null
+    ranger.blocked = false
     const goal = inspectionStop(ranger.site, Number(ranger.element.dataset.parkRanger), ranger.id)
     if (!goal) {
       ranger.phase = 'holding'
@@ -183,15 +190,43 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
         }
         if (ranger.phase === 'patrolling') {
           const scale = trailGroundScale(ranger.position.y, landscape)
-          const replacement = replanOccupiedWaypoints(
-            ranger.id,
-            ranger.position,
-            ranger.route,
-            18 * scale,
-            obstacles,
-            bounds(),
-            ranger.spacing.yieldingTo,
-          )
+          let replacement: Point[] | null = null
+          // The patrol route is already planned. Search again after stepping cannot advance;
+          // unchanged failed geometry can wait while collision stepping continues below.
+          if (ranger.blocked) {
+            const planningInput = JSON.stringify([
+              ranger.position,
+              ranger.route,
+              18 * scale,
+              bounds(),
+              ranger.spacing.yieldingTo,
+              obstacles
+                .filter(body => body.id !== ranger.id)
+                .map(body => [
+                  body.id,
+                  body.kind,
+                  body.x,
+                  body.y,
+                  body.radius,
+                  body.resting,
+                  body.element?.dataset.yieldingTo,
+                  body.element?.dataset.yieldingThrough,
+                ]),
+            ])
+            if (planningInput !== ranger.failedPlan) {
+              ranger.replans++
+              replacement = replanOccupiedWaypoints(
+                ranger.id,
+                ranger.position,
+                ranger.route,
+                18 * scale,
+                obstacles,
+                bounds(),
+                ranger.spacing.yieldingTo,
+              )
+              ranger.failedPlan = replacement?.length ? null : planningInput
+            }
+          }
           if (replacement?.length) {
             const endpoint = replacement[replacement.length - 1]
             const camp = stops[ranger.site]
@@ -213,22 +248,21 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
             x: ranger.position.x + (target.x - ranger.position.x) * ratio,
             y: ranger.position.y + (target.y - ranger.position.y) * ratio,
           }
-          if (
-            spacedStep(
-              ranger.id,
-              ranger.position,
-              next,
-              18 * scale,
-              budget * 1.5,
-              ranger.spacing,
-              obstacles,
-              bounds(),
-              true,
-              target,
-              true,
-            )
+          const advanced = spacedStep(
+            ranger.id,
+            ranger.position,
+            next,
+            18 * scale,
+            budget * 1.5,
+            ranger.spacing,
+            obstacles,
+            bounds(),
+            true,
+            target,
+            true,
           )
-            ranger.position = next
+          ranger.blocked = !advanced
+          if (advanced) ranger.position = next
           ranger.position = spacedPosition(ranger.position, ranger.spacing)
           ranger.spacing.lane.x -= ranger.spacing.offset.x
           ranger.spacing.lane.y -= ranger.spacing.offset.y
@@ -337,6 +371,9 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
           remaining: reduced.matches ? Infinity : road.readyAfter + index * 1500,
           lastStep: placed,
           stride: 0,
+          failedPlan: null,
+          replans: 0,
+          blocked: false,
         }
         if (reduced.matches && goal) {
           ranger.position = place(element, id, ranger.goal, spacing)
