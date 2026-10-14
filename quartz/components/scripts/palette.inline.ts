@@ -1,3 +1,4 @@
+import type { SemanticDocument } from '../../util/semantic-search'
 import { cellSourceLegacyPrefix, cellSourceStoragePrefix } from '../../runtime/notebook/persistence'
 import {
   commentRoomToggleEvent,
@@ -26,7 +27,7 @@ import { tokenizeTerm } from '../../util/search-text'
 import { registerEscapeHandler } from './escape-handler'
 import { currentNavSignal } from './nav-lifecycle'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
-import { siteSemantic } from './site-semantic'
+import { siteSemantic, type SiteSemantic } from './site-semantic'
 
 interface Item {
   slug: FullSlug
@@ -376,6 +377,7 @@ document.addEventListener('nav', () => {
 
   let contentDataReady: Promise<ContentIndex> | null = null
   let quickOpenReady: ReturnType<typeof siteSemantic> | null = null
+  let quickOpenSemantic: SiteSemantic | null = null
   let quickOpenLoaded = false
   let quickOpenUnavailable = false
   let quickOpenTimer = 0
@@ -404,6 +406,7 @@ document.addEventListener('nav', () => {
   function ensureQuickOpen() {
     quickOpenReady ??= Promise.all([ensureContentData(), siteSemantic()]).then(
       ([, service]) => {
+        quickOpenSemantic = service
         quickOpenLoaded = true
         return service
       },
@@ -417,6 +420,10 @@ document.addEventListener('nav', () => {
 
   function quickOpenStatus(message: string) {
     currentHover = null
+    if (!message) {
+      output.replaceChildren()
+      return
+    }
     const status = document.createElement('p')
     status.setAttribute('role', 'status')
     status.textContent = message
@@ -454,6 +461,9 @@ document.addEventListener('nav', () => {
   }
 
   function syncPaletteHelper() {
+    bar.placeholder =
+      actionType === 'quick_open' ? 'recherche sémantique...' : 'sélectionnez une option...'
+    bar.setAttribute('aria-label', bar.placeholder)
     helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
       el.style.display = actionType === 'quick_open' ? '' : 'none'
     })
@@ -483,7 +493,7 @@ document.addEventListener('nav', () => {
       bar.value = ''
       currentSearchTerm = ''
       syncPaletteHelper()
-      quickOpenStatus('Type a topic to search notes.')
+      quickOpenStatus('')
       if (!quickOpenLoaded && !quickOpenUnavailable) quickOpenProgress(true)
       void ensureQuickOpen().then(
         () => {
@@ -909,6 +919,22 @@ document.addEventListener('nav', () => {
     return activeElement instanceof Element && activeElement.closest('.cm-editor') !== null
   }
 
+  function moveSelection(direction: -1 | 1) {
+    const items = [...output.querySelectorAll<HTMLDivElement>('.suggestion-item')]
+    if (!items.length) return
+    const currentIndex = currentHover ? items.indexOf(currentHover) : -1
+    currentHover?.classList.remove('focus')
+    const nextIndex =
+      currentIndex === -1
+        ? direction === 1
+          ? 0
+          : items.length - 1
+        : (currentIndex + direction + items.length) % items.length
+    currentHover = items[nextIndex]
+    currentHover.classList.add('focus')
+    currentHover.focus()
+  }
+
   async function shortcutHandler(e: HTMLElementEventMap['keydown']) {
     if (e.defaultPrevented) return
     if (eventTargetsCodeEditor(e)) return
@@ -921,6 +947,17 @@ document.addEventListener('nav', () => {
       return
 
     const key = e.key.toLowerCase()
+    if (
+      container.classList.contains('active') &&
+      (e.ctrlKey || e.metaKey) &&
+      !e.altKey &&
+      !e.shiftKey &&
+      (key === 'n' || key === 'p')
+    ) {
+      e.preventDefault()
+      moveSelection(key === 'n' ? 1 : -1)
+      return
+    }
     if (key === 'o' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       const barOpen = container?.classList.contains('active')
@@ -959,7 +996,6 @@ document.addEventListener('nav', () => {
       return
     }
 
-    if (currentHover) currentHover.classList.remove('focus')
     if (!container?.classList.contains('active')) return
 
     if (e.metaKey && e.altKey && e.key === 'Enter') {
@@ -993,30 +1029,9 @@ document.addEventListener('nav', () => {
       }
     } else if (actionType === 'command' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
       if (navigateCommandHistory(e.key === 'ArrowLeft' ? -1 : 1)) e.preventDefault()
-    } else if (e.key === 'ArrowUp' || (e.ctrlKey && e.key === 'p')) {
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      const items = output.querySelectorAll<HTMLDivElement>('.suggestion-item')
-      if (items.length === 0) return
-
-      const focusedElement = currentHover
-        ? currentHover
-        : output.querySelector<HTMLDivElement>('.suggestion-item.focus')
-
-      // Remove focus from current element
-      if (focusedElement) {
-        focusedElement.classList.remove('focus')
-        // Get the previous element or cycle to the last
-        const currentIndex = Array.from(items).indexOf(focusedElement)
-        const prevIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1
-        currentHover = items[prevIndex]
-        items[prevIndex].classList.add('focus')
-        items[prevIndex].focus()
-      } else {
-        // If no element is focused, start from the last one
-        const lastIndex = items.length - 1
-        items[lastIndex].classList.add('focus')
-        items[lastIndex].focus()
-      }
+      moveSelection(-1)
     } else if (e.key === 'Tab') {
       e.preventDefault()
       const focusedElement = currentHover
@@ -1028,29 +1043,9 @@ document.addEventListener('nav', () => {
         actionType === 'command' ? commandInputValue(currentSearchTerm) : currentSearchTerm
       queryGeneration += 1
       return await querySearch(currentSearchTerm, queryGeneration)
-    } else if (e.key === 'ArrowDown' || (e.ctrlKey && e.key === 'n')) {
+    } else if (e.key === 'ArrowDown') {
       e.preventDefault()
-      const items = output.querySelectorAll<HTMLDivElement>('.suggestion-item')
-      if (items.length === 0) return
-
-      const focusedElement = currentHover
-        ? currentHover
-        : output.querySelector<HTMLDivElement>('.suggestion-item.focus')
-
-      // Remove focus from current element
-      if (focusedElement) {
-        focusedElement.classList.remove('focus')
-        // Get the next element or cycle to the first
-        const currentIndex = Array.from(items).indexOf(focusedElement)
-        const nextIndex = currentIndex >= items.length - 1 ? 0 : currentIndex + 1
-        currentHover = items[nextIndex]
-        items[nextIndex].classList.add('focus')
-        items[nextIndex].focus()
-      } else {
-        // If no element is focused, start from the first one
-        items[0].classList.add('focus')
-        items[0].focus()
-      }
+      moveSelection(1)
     }
   }
 
@@ -1064,7 +1059,7 @@ document.addEventListener('nav', () => {
         quickOpenStatus(
           quickOpenUnavailable
             ? 'Semantic search is unavailable. Use Ctrl+K for full-text search.'
-            : 'Type a topic to search notes.',
+            : '',
         )
         return
       }
@@ -1075,17 +1070,7 @@ document.addEventListener('nav', () => {
         if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
         const documents = await service.search(query, numSearchResults * 8)
         if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
-        const items: Item[] = []
-        for (const document of documents) {
-          if (!isFullSlug(document.slug)) continue
-          const fileData = data?.[document.slug]
-          if (!fileData) continue
-          items.push({ slug: document.slug, name: fileData.title || fileData.fileName })
-          if (items.length === numSearchResults) break
-        }
-        output.removeAttribute('aria-busy')
-        quickOpenProgress(false)
-        displayResults(items, query)
+        displayQuickOpenResults(documents, query)
       } catch (error) {
         if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
         console.warn('[QuickOpen] semantic search failed:', error)
@@ -1107,6 +1092,20 @@ document.addEventListener('nav', () => {
 
       getCommandItems(matchedActions)
     }
+  }
+
+  function displayQuickOpenResults(documents: SemanticDocument[], query: string) {
+    const items: Item[] = []
+    for (const document of documents) {
+      if (!isFullSlug(document.slug)) continue
+      const fileData = data?.[document.slug]
+      if (!fileData) continue
+      items.push({ slug: document.slug, name: fileData.title || fileData.fileName })
+      if (items.length === numSearchResults) break
+    }
+    output.removeAttribute('aria-busy')
+    quickOpenProgress(false)
+    displayResults(items, query)
   }
 
   async function onType(e: HTMLElementEventMap['input']) {
@@ -1132,9 +1131,14 @@ document.addEventListener('nav', () => {
     if (actionType === 'quick_open' && currentSearchTerm.trim()) {
       const query = currentSearchTerm
       const generation = queryGeneration
+      const cached = quickOpenSemantic?.cached(query, numSearchResults * 8)
+      if (cached !== undefined) {
+        displayQuickOpenResults(cached, query.trim())
+        return
+      }
       quickOpenTimer = window.setTimeout(() => {
         void querySearch(query, generation)
-      }, 150)
+      }, 60)
     } else {
       if (actionType !== 'quick_open') {
         quickOpenProgress(false)

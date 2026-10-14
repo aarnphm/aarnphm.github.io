@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-10-11 21:13:04 GMT-04:00
+modified: 2026-10-14 15:12:37 GMT-04:00
 tags:
   - evergreen
   - friend
@@ -16,21 +16,23 @@ title: making friends.
 
 bonjour.
 
-this document details information about me as a _friend_. I used to have [[dating|a date-me doc]] {{sidenotes[that I use in the past]: i wrote this one in january/february 2025; i'm no longer actively dating, but leaving this up given that it was still, an _important document_ to me.}}, though wanting to have a friend-equivalent document 🧊 🍧 .
+this document details information about me as a _friend_. I used to have [[dating|a date-me]] {{sidenotes[doc]: i wrote this one in january/february 2025; i'm not actively dating, but decide to leave this up as it was still, an _important document_ to me.}}, though I wanted to have a friend-equivalent document 🧊 🍧 .
 
-quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancouver since high school, studied and lived in hamilton, and now in toronto. anyhow, will be in toronto for a while, (i have gotten to know a lot more people in toronto now but wouldn't mind expanding my tribe's, circa [[thoughts/images/bcccdd2e-95e6-4023-9c93-9b72b9a0c26b_178356259078.avif|Dunbar's number]]). i'm pretty well-positioned, i.e. having a decent career prospect and pretty set on what to [[research|do]], especially building towards a joyful-[[thoughts/Roko's Basilisk|amicable]]-[[thoughts/AGI#superintelligence|superintelligence]] systems 🧗
+quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancouver since high school, studied and lived in hamilton, and now in toronto. anyhow, will be in toronto for a while, (i have gotten to know a lot more people in toronto now but wouldn't mind expanding my tribe's, circa [[thoughts/images/bcccdd2e-95e6-4023-9c93-9b72b9a0c26b_178356259078.avif|Dunbar's number]]). i'm pretty well-positioned, i.e. having a decent career prospect and determined on what [[triathlon|to]] [[research|do]]. i want to build towards a joyful-[[thoughts/Roko's Basilisk|amicable]]-[[thoughts/AGI#superintelligence|superintelligence]] systems 🧗 and have a _decent life_ (we only get one chance, might as well make the most out of it.)
 
 > [!note]- some definitely _not personal information about me_
 >
 > _that you would definitely not able to grab from this website_
 >
-> If you schedule a hang out most likely we will be either on the beach (per me training in open water) or a movie date at home (per me spinning on the turbo)
+> scheduling [[triathlon|hangouts]] nowadays look very much like we will be either on the beach (per me swimming in open water) or a movie date at home (per me spinning on the turbo)
 >
-> i like to [[thoughts/reading|read]] [[antilibrary|books]] and jazz
+> i enjoy [[thoughts/reading|reading]] [[antilibrary|books]] and listening to jazz.
 >
-> i like the [[thoughts/Scents|smell]] of lavender, and like tiny-neat-thingy
+> i prefer the [[thoughts/Scents|smell]] of lavender, and make tiny-neat-thingy (i.e _this website you are on atm_)
 >
-> i like [[watch|watches]] as well!
+> i collect [[watch|watches]] as well!
+>
+> i also don't drink anymore 😸
 
 ```quotes
 friends are still our first and sometimes best model of someone who chooses to be always on your side.
