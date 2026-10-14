@@ -66,7 +66,7 @@ declare const pageStyles: import('./quartz/util/page-styles').PageStyle[]
 // base view metadata for dropdown navigation
 interface BaseViewMetadata {
   name: string
-  type: 'table' | 'list' | 'gallery' | 'board' | 'calendar' | 'card' | 'cards' | 'map'
+  type: import('./quartz/util/base/types').BaseView['type']
   slug: FullSlug
 }
 

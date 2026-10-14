@@ -8,19 +8,30 @@ type ReadyMessage = { type: 'ready' }
 
 type ResultMessage = { type: 'search-result'; seq: number; semantic: SemanticResult[] }
 
+type LoadedMessage = { type: 'loaded'; seq: number; rows: number }
+
 type ErrorMessage = { type: 'error'; seq?: number; message: string }
 
 type SearchPayload = { semantic: SemanticResult[] }
 
 type PendingResolver = { resolve: (payload: SearchPayload) => void; reject: (err: Error) => void }
 
-type SemanticConfig = { enable?: boolean; model?: string; queryDtype?: SemanticQueryDType }
+type PendingLoad = { resolve: (rows: number) => void; reject: (err: Error) => void }
+
+type SemanticConfig = {
+  enable?: boolean
+  model?: string
+  queryDtype?: SemanticQueryDType
+  /** Overrides the site index manifest (/embeddings/manifest.json), e.g. for one base. */
+  manifestUrl?: string
+}
 
 export class SemanticClient {
   private ready: Promise<void>
   private resolveReady!: () => void
   private worker: Worker | null = null
   private pending = new Map<number, PendingResolver>()
+  private pendingLoads = new Map<number, PendingLoad>()
   private seq = 0
   private disposed = false
   private readySettled = false
@@ -59,7 +70,9 @@ export class SemanticClient {
   private setupWorker() {
     if (!this.worker) return
     this.worker.onmessage = (
-      event: MessageEvent<ProgressMessage | ReadyMessage | ResultMessage | ErrorMessage>,
+      event: MessageEvent<
+        ProgressMessage | ReadyMessage | ResultMessage | LoadedMessage | ErrorMessage
+      >,
     ) => {
       const msg = event.data
       if (msg.type === 'progress') {
@@ -79,12 +92,25 @@ export class SemanticClient {
         }
         return
       }
+      if (msg.type === 'loaded') {
+        const pending = this.pendingLoads.get(msg.seq)
+        if (pending) {
+          this.pendingLoads.delete(msg.seq)
+          pending.resolve(msg.rows)
+        }
+        return
+      }
       if (msg.type === 'error') {
         if (typeof msg.seq === 'number') {
           const pending = this.pending.get(msg.seq)
           if (pending) {
             this.pending.delete(msg.seq)
             pending.reject(new Error(msg.message))
+          }
+          const load = this.pendingLoads.get(msg.seq)
+          if (load) {
+            this.pendingLoads.delete(msg.seq)
+            load.reject(new Error(msg.message))
           }
         } else {
           this.handleFatal(msg.message)
@@ -97,6 +123,10 @@ export class SemanticClient {
     for (const [id, pending] of this.pending.entries()) {
       pending.reject(err)
       this.pending.delete(id)
+    }
+    for (const [id, pending] of this.pendingLoads.entries()) {
+      pending.reject(err)
+      this.pendingLoads.delete(id)
     }
     if (fatal) {
       this.lastError = err
@@ -136,6 +166,22 @@ export class SemanticClient {
       const seq = ++this.seq
       this.pending.set(seq, { resolve, reject })
       this.worker?.postMessage({ type: 'search', text, k, seq })
+    })
+  }
+
+  /** Swaps the vector set for another same-model index; the encoder stays loaded. */
+  async load(manifestUrl: string): Promise<number> {
+    if (this.disposed) {
+      throw new Error('semantic client has been disposed')
+    }
+    await this.ensureReady()
+    if (!this.worker || !this.configured) {
+      throw this.lastError ?? new Error('worker unavailable')
+    }
+    return new Promise<number>((resolve, reject) => {
+      const seq = ++this.seq
+      this.pendingLoads.set(seq, { resolve, reject })
+      this.worker?.postMessage({ type: 'load', manifestUrl, seq })
     })
   }
 

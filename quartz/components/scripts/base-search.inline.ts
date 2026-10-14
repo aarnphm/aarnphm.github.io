@@ -1,40 +1,303 @@
-function setupBaseSearch() {
-  const searchInput = document.getElementById('base-search-input') as HTMLInputElement | null
-  if (!searchInput) {
-    return
+import { SemanticClient } from './semantic.inline'
+
+type SearchMode = 'lexical' | 'semantic'
+type SemanticState = 'idle' | 'loading' | 'ready' | 'unavailable'
+
+const SEMANTIC_K = 24
+// Scores far under the best match are noise for a short query; the ranking keeps its head only.
+const SEMANTIC_TAIL = 0.12
+const DEBOUNCE_MS = 180
+const MODE_KEY = 'base-search-mode'
+
+type SharedSemantic = { manifest: string; client: SemanticClient; ids: Promise<string[]> }
+// The query encoder is ~200 MB, so one worker survives SPA navigations; moving to another base
+// only swaps its vector set.
+let shared: SharedSemantic | null = null
+
+async function manifestIds(manifest: string): Promise<string[]> {
+  const res = await fetch(manifest)
+  if (!res.ok) throw new Error(`failed to load ${manifest}: ${res.status}`)
+  return ((await res.json()) as { ids: string[] }).ids
+}
+
+function sharedSemantic(manifest: string): SharedSemantic {
+  if (shared?.manifest === manifest) return shared
+  const previous = shared
+  const client = previous?.client ?? new SemanticClient({ ...semanticCfg, manifestUrl: manifest })
+  const swap = previous ? previous.ids.then(() => client.load(manifest)) : client.ensureReady()
+  const ids = swap.then(() => manifestIds(manifest))
+  const next: SharedSemantic = { manifest, client, ids }
+  ids.catch(() => {
+    client.dispose()
+    if (shared === next) shared = null
+  })
+  shared = next
+  return next
+}
+
+function loadStoredMode(): SearchMode {
+  try {
+    return localStorage.getItem(MODE_KEY) === 'semantic' ? 'semantic' : 'lexical'
+  } catch {
+    return 'lexical'
   }
+}
+
+function storeMode(mode: SearchMode) {
+  try {
+    localStorage.setItem(MODE_KEY, mode)
+  } catch {}
+}
+
+function setupBaseSearch() {
+  const searchInput = document.querySelector<HTMLInputElement>('#base-search-input')
+  const bar = document.querySelector<HTMLElement>('#base-search-bar')
+  if (!searchInput || !bar) return
 
   const items: HTMLElement[] = []
+  for (const row of document.querySelectorAll<HTMLTableRowElement>('table.base-table tbody tr')) {
+    if (!row.classList.contains('base-group-header')) items.push(row)
+  }
+  for (const li of document.querySelectorAll<HTMLLIElement>('.base-list > li')) items.push(li)
+  for (const card of document.querySelectorAll<HTMLElement>('.base-card')) items.push(card)
 
-  const tableRows = document.querySelectorAll<HTMLTableRowElement>('table.base-table tbody tr')
-  tableRows.forEach(row => items.push(row))
-
-  const listItems = document.querySelectorAll<HTMLLIElement>('.base-list > li')
-  listItems.forEach(li => items.push(li))
   const listGroups = document.querySelectorAll<HTMLElement>('.base-list-group')
+  const cardGroups = document.querySelectorAll<HTMLElement>('.base-card-group')
+  const tableGroupHeaders = document.querySelectorAll<HTMLTableRowElement>('tr.base-group-header')
+  const kanbanColumns = document.querySelectorAll<HTMLElement>('.base-kanban-column')
 
-  const cardItems = document.querySelectorAll<HTMLDivElement>('.base-card')
-  cardItems.forEach(card => items.push(card))
+  const slugOf = (item: HTMLElement) =>
+    item.querySelector<HTMLElement>('a[data-slug]')?.dataset.slug
+  const isShown = (item: HTMLElement) => item.style.display !== 'none'
+  // Only sibling lists without header rows can be reordered; grouped tables keep their rows in place.
+  const reorderable = (item: HTMLElement) => !(item instanceof HTMLTableRowElement)
+  const originalIndex = new Map<HTMLElement, number>()
+  items.forEach((item, index) => originalIndex.set(item, index))
+  // Grouped views (by year, by category) keep their groups; semantic mode lifts the group that
+  // holds the best hit, otherwise the top result can sit several headers down the page.
+  const groups: HTMLElement[] = [...listGroups, ...cardGroups]
+  groups.forEach((group, index) => originalIndex.set(group, index))
 
-  const filterItems = () => {
+  const collapseGroups = () => {
+    for (const group of listGroups) {
+      group.hidden = !Array.from(group.querySelectorAll<HTMLElement>('.base-list > li')).some(
+        isShown,
+      )
+    }
+    for (const group of cardGroups) {
+      group.hidden = !Array.from(group.querySelectorAll<HTMLElement>('.base-card')).some(isShown)
+    }
+    for (const header of tableGroupHeaders) {
+      let visible = false
+      for (
+        let row = header.nextElementSibling;
+        row instanceof HTMLTableRowElement && !row.classList.contains('base-group-header');
+        row = row.nextElementSibling
+      ) {
+        if (isShown(row)) {
+          visible = true
+          break
+        }
+      }
+      header.style.display = visible ? '' : 'none'
+    }
+    for (const column of kanbanColumns) {
+      const count = Array.from(column.querySelectorAll<HTMLElement>('.base-card')).filter(
+        isShown,
+      ).length
+      const label = column.querySelector<HTMLElement>('.base-kanban-count')
+      if (label) {
+        label.textContent = String(count)
+        label.setAttribute('aria-label', `${count} results`)
+      }
+      const empty = column.querySelector<HTMLElement>('.base-kanban-column-empty')
+      if (empty) empty.hidden = count > 0
+    }
+  }
+
+  const bySibling = (nodes: Iterable<HTMLElement>) => {
+    const byParent = new Map<HTMLElement, HTMLElement[]>()
+    for (const node of nodes) {
+      if (!node.parentElement) continue
+      const siblings = byParent.get(node.parentElement) ?? []
+      siblings.push(node)
+      byParent.set(node.parentElement, siblings)
+    }
+    return byParent
+  }
+
+  const restoreOrder = () => {
+    for (const [parent, siblings] of bySibling([...items.filter(reorderable), ...groups])) {
+      siblings.sort((a, b) => originalIndex.get(a)! - originalIndex.get(b)!)
+      parent.append(...siblings)
+    }
+  }
+
+  const showAll = () => {
+    for (const item of items) {
+      item.style.display = ''
+      delete item.dataset.semanticScore
+    }
+    restoreOrder()
+    collapseGroups()
+  }
+
+  const filterLexical = () => {
     const query = searchInput.value.toLowerCase().trim()
-    items.forEach(item => {
+    if (query.length === 0) {
+      showAll()
+      return
+    }
+    for (const item of items) {
       const text = item.textContent?.toLowerCase() || ''
-      item.style.display = query.length === 0 || text.includes(query) ? '' : 'none'
-    })
+      item.style.display = text.includes(query) ? '' : 'none'
+    }
+    restoreOrder()
+    collapseGroups()
+  }
 
-    listGroups.forEach(group => {
-      const entries = group.querySelectorAll<HTMLLIElement>('.base-list > li')
-      group.hidden = !Array.from(entries).some(item => item.style.display !== 'none')
-    })
+  const applySemantic = (scores: Map<string, number>) => {
+    const ranked: HTMLElement[] = []
+    const groupBest = new Map<HTMLElement, number>()
+    for (const item of items) {
+      const slug = slugOf(item)
+      const score = slug ? scores.get(slug) : undefined
+      item.style.display = score === undefined ? 'none' : ''
+      if (score === undefined) {
+        delete item.dataset.semanticScore
+        continue
+      }
+      item.dataset.semanticScore = score.toFixed(3)
+      if (reorderable(item)) ranked.push(item)
+      const group = item.closest<HTMLElement>('.base-card-group, .base-list-group')
+      if (group) groupBest.set(group, Math.max(groupBest.get(group) ?? -Infinity, score))
+    }
+    const scoreOf = (item: HTMLElement) => scores.get(slugOf(item)!)!
+    for (const [parent, siblings] of bySibling(ranked)) {
+      siblings.sort((a, b) => scoreOf(b) - scoreOf(a))
+      parent.prepend(...siblings)
+    }
+    for (const [parent, siblings] of bySibling(groupBest.keys())) {
+      siblings.sort((a, b) => groupBest.get(b)! - groupBest.get(a)!)
+      parent.prepend(...siblings)
+    }
+    collapseGroups()
+  }
+
+  // Semantic mode exists only when the build found a vector index for this base.
+  const manifest = bar.dataset.semanticManifest
+  const modeButtons = Array.from(bar.querySelectorAll<HTMLButtonElement>('.mode-option'))
+  const status = bar.querySelector<HTMLElement>('.semantic-status')
+  let mode: SearchMode = 'lexical'
+  let semanticState: SemanticState = 'idle'
+  let searchSeq = 0
+  let debounce: ReturnType<typeof setTimeout> | undefined
+
+  const setSemanticState = (state: SemanticState) => {
+    semanticState = state
+    if (status) {
+      status.dataset.state = state
+      status.textContent =
+        state === 'loading'
+          ? 'loading the semantic model'
+          : state === 'unavailable'
+            ? 'semantic search unavailable'
+            : ''
+    }
+    const semanticButton = modeButtons.find(button => button.dataset.mode === 'semantic')
+    if (semanticButton) {
+      semanticButton.disabled = state === 'unavailable'
+      // The icon spins while the encoder loads; the bar has no room for a text label.
+      semanticButton.classList.toggle('is-loading', state === 'loading')
+      semanticButton.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false')
+    }
+  }
+
+  const updateModeUI = () => {
+    for (const button of modeButtons) {
+      const active = button.dataset.mode === mode
+      button.classList.toggle('active', active)
+      button.setAttribute('aria-pressed', active ? 'true' : 'false')
+    }
+    bar.dataset.mode = mode
+  }
+
+  const ensureSemantic = async (): Promise<string[] | null> => {
+    if (!manifest) return null
+    const semantic = sharedSemantic(manifest)
+    if (semanticState !== 'ready') setSemanticState('loading')
+    try {
+      const ids = await semantic.ids
+      setSemanticState('ready')
+      return ids
+    } catch (err) {
+      console.warn('[BaseSearch] semantic index unavailable:', err)
+      setSemanticState('unavailable')
+      return null
+    }
+  }
+
+  const runSemantic = async () => {
+    const query = searchInput.value.trim()
+    const seq = ++searchSeq
+    if (query.length === 0) {
+      showAll()
+      return
+    }
+    const ids = await ensureSemantic()
+    if (seq !== searchSeq) return
+    if (!ids) {
+      mode = 'lexical'
+      updateModeUI()
+      filterLexical()
+      return
+    }
+    try {
+      const { semantic } = await sharedSemantic(manifest!).client.search(query, SEMANTIC_K)
+      if (seq !== searchSeq) return
+      const scores = new Map<string, number>()
+      const floor = (semantic[0]?.score ?? 0) - SEMANTIC_TAIL
+      for (const hit of semantic) {
+        const slug = ids[hit.id]
+        if (slug && hit.score >= floor && !scores.has(slug)) scores.set(slug, hit.score)
+      }
+      applySemantic(scores)
+    } catch (err) {
+      if (seq !== searchSeq) return
+      console.warn('[BaseSearch] semantic query failed:', err)
+      filterLexical()
+    }
+  }
+
+  const search = () => {
+    if (mode === 'semantic') {
+      void runSemantic()
+    } else {
+      searchSeq++
+      filterLexical()
+    }
+  }
+
+  const setMode = (next: SearchMode) => {
+    if (next === mode) return
+    mode = next
+    storeMode(next)
+    updateModeUI()
+    if (next === 'semantic') void ensureSemantic()
+    search()
   }
 
   const handleInput = () => {
-    filterItems()
+    clearTimeout(debounce)
+    if (mode === 'semantic' && searchInput.value.trim().length > 0) {
+      debounce = setTimeout(search, DEBOUNCE_MS)
+    } else {
+      search()
+    }
   }
 
   const handleKeydown = (e: KeyboardEvent) => {
-    const activeElement = document.activeElement as HTMLElement | null
+    const activeElement = document.activeElement
     const isTypingInInput =
       activeElement instanceof HTMLInputElement ||
       activeElement instanceof HTMLTextAreaElement ||
@@ -59,15 +322,34 @@ function setupBaseSearch() {
     }
   }
 
+  const handleModeClick = (event: MouseEvent) => {
+    const button = (event.target as Element | null)?.closest<HTMLButtonElement>('.mode-option')
+    if (!button || button.disabled) return
+    setMode(button.dataset.mode === 'semantic' ? 'semantic' : 'lexical')
+    searchInput.focus()
+  }
+
   searchInput.addEventListener('input', handleInput)
   document.addEventListener('keydown', handleKeydown)
+  bar.addEventListener('click', handleModeClick)
 
-  if (window.addCleanup) {
-    window.addCleanup(() => {
-      searchInput.removeEventListener('input', handleInput)
-      document.removeEventListener('keydown', handleKeydown)
-    })
+  if (manifest) {
+    if (shared?.manifest === manifest) setSemanticState('ready')
+    if (loadStoredMode() === 'semantic') {
+      mode = 'semantic'
+      void ensureSemantic()
+    }
   }
+  updateModeUI()
+  search()
+
+  window.addCleanup?.(() => {
+    clearTimeout(debounce)
+    searchSeq++
+    searchInput.removeEventListener('input', handleInput)
+    document.removeEventListener('keydown', handleKeydown)
+    bar.removeEventListener('click', handleModeClick)
+  })
 }
 
 document.addEventListener('nav', () => {

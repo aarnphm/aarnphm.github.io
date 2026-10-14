@@ -248,6 +248,10 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
       }
     }
 
+    if (view.type === 'kanban' && (!Array.isArray(view.order) || view.order.length === 0)) {
+      addPropertyExpression('file.name', `${viewContext}.order`)
+    }
+
     if (view.type === 'card' || view.type === 'cards') {
       const imageProp = typeof view.image === 'string' ? view.image : 'image'
       addPropertyExpression(imageProp, `${viewContext}.image`)

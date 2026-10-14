@@ -46,13 +46,6 @@ type SemanticIndexOptions = {
   /** Number of vectors per shard file (default: 1024, higher = fewer files but larger downloads) */
   shardSizeRows: number
   /**
-   * HNSW (Hierarchical Navigable Small World) graph parameters
-   * - M: max connections per node (default: 16, higher = better recall but larger graph)
-   * - efConstruction: candidate pool size during build (default: 200, higher = better quality but slower build)
-   * - efSearch: search breadth (runtime only, not stored in manifest)
-   */
-  hnsw: { M?: number; efConstruction?: number; efSearch?: number }
-  /**
    * Document chunking parameters (for long documents)
    * - chunkSize: max tokens per chunk (default: 512)
    * - chunkOverlap: overlap tokens between chunks (default: 128)

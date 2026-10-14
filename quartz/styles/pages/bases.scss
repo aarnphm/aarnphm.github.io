@@ -419,12 +419,7 @@
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
   overflow: hidden;
-  transition: transform 0.2s ease;
   height: 100%;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
 
   .base-card-image-link {
     display: block;
@@ -438,31 +433,10 @@
     img.base-card-image {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      transition: transform 0.2s ease;
+      object-fit: var(--base-card-image-fit, cover);
       margin: 0 !important;
       border-bottom-right-radius: 0px !important;
       border-bottom-left-radius: 0px !important;
-    }
-
-    &:hover img.base-card-image {
-      transform: scale(1.05);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-
-    &:hover {
-      transform: none;
-    }
-
-    .base-card-image-link img.base-card-image {
-      transition: none;
-    }
-
-    .base-card-image-link:hover img.base-card-image {
-      transform: none;
     }
   }
 
@@ -537,6 +511,222 @@
   }
 }
 
+.base-kanban {
+  --base-kanban-line: color-mix(in srgb, var(--gray) 55%, transparent);
+  --base-kanban-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --base-card-aspect: 16 / 9;
+
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min(var(--base-kanban-width, 280px), 85vw);
+  align-items: stretch;
+  gap: 0;
+  max-inline-size: 100%;
+  max-block-size: 72dvh;
+  overflow: auto;
+  overscroll-behavior-inline: contain;
+  margin-block: var(--space-6);
+  padding: 0;
+  border: 1px solid var(--base-kanban-line);
+  background: var(--light);
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray) var(--light);
+
+  .base-card {
+    height: auto;
+    flex-shrink: 0;
+    border: 0;
+    border-block-end: 1px solid var(--base-kanban-line);
+
+    &:hover,
+    &:focus-within {
+      background: var(--base-kanban-surface);
+    }
+
+    .base-card-image-link {
+      flex-shrink: 0;
+    }
+
+    .base-card-image-link img {
+      display: block;
+      border-radius: var(--radius-none) !important;
+    }
+
+    .base-card-content {
+      padding: 0.4rem 0.75rem;
+      gap: var(--space-2);
+    }
+
+    .base-card-title-link {
+      color: var(--dark);
+
+      .base-card-title {
+        font-family: var(--bodyFont);
+        font-size: 0.85rem;
+        font-weight: 400;
+        line-height: 1.45;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      &:hover .base-card-title {
+        color: var(--dark);
+        text-decoration: underline;
+      }
+    }
+
+    .base-card-meta {
+      font-size: var(--text-meta);
+
+      .base-card-meta-item {
+        flex-wrap: wrap;
+        gap: var(--space-1) var(--space-2);
+
+        .base-card-meta-label {
+          color: var(--darkgray);
+          min-width: 0;
+        }
+
+        .base-card-meta-value {
+          overflow: visible;
+          overflow-wrap: anywhere;
+        }
+      }
+    }
+  }
+}
+
+.base-kanban-column {
+  min-inline-size: 0;
+  border-inline-end: 1px solid var(--base-kanban-line);
+  background: var(--light);
+
+  &:last-child {
+    border-inline-end: 0;
+  }
+}
+
+.base-kanban-column-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: 0.4rem 0.75rem;
+  border-block-end: 1px solid var(--base-kanban-line);
+  background: var(--base-kanban-surface);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.base-kanban-column-title {
+  flex: 1;
+  min-inline-size: 0;
+  margin: 0;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  text-transform: lowercase;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.base-kanban-title-text {
+  display: inline;
+}
+
+.base-kanban [data-kanban-scrolling='true'] {
+  text-overflow: clip;
+
+  > .base-kanban-title-text {
+    display: inline-block;
+    width: max-content;
+  }
+}
+
+.base-kanban-count {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.base-kanban-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.base-kanban-column-empty,
+.base-kanban-empty {
+  padding: var(--space-3);
+  margin: 0;
+  color: var(--darkgray);
+  font-size: var(--text-meta);
+}
+
+.base-kanban-column-empty[hidden] {
+  display: none;
+}
+
+.base-kanban:focus-visible {
+  outline: none;
+
+  .base-kanban-column-title {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.base-kanban-column-title:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.base-kanban a:focus-visible {
+  outline: 2px solid var(--dark);
+  outline-offset: -2px;
+}
+
+body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban']) {
+  #quartz-root {
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .page-content {
+    margin-block-end: 0;
+
+    > .main-col {
+      min-height: 0;
+    }
+  }
+
+  .main-col > .base-view[data-base-view-type='kanban'] {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+
+    > .base-kanban {
+      flex: 1;
+      min-height: 0;
+      max-block-size: none;
+      margin-block-end: 0;
+    }
+  }
+}
+
 @media all and ($mobile) {
   .base-table {
     thead th,
@@ -552,6 +742,11 @@
 
   .base-card .base-card-content {
     padding: 0.875rem;
+  }
+
+  .base-kanban .base-card .base-card-content,
+  .base-kanban-column-header {
+    padding: 0.5rem 0.75rem;
   }
 }
 
@@ -1081,11 +1276,6 @@
   .base-card {
     border: 0;
     overflow: visible;
-
-    &:hover {
-      box-shadow: none;
-      transform: none;
-    }
   }
 
   .base-card-content {

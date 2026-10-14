@@ -1,3 +1,4 @@
+import { access } from 'node:fs/promises'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
 import { Content, BaseSearchBar, BaseViewSelector } from '../../components'
@@ -7,6 +8,12 @@ import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BaseExpressionDiagnostic, BasesExpressions } from '../../util/base/compiler'
 import {
+  baseEmbeddingRecord,
+  baseEmbeddingsDir,
+  baseEmbeddingsManifestPath,
+  baseEmbeddingsTextSlug,
+} from '../../util/base/embeddings'
+import {
   BaseRenderPlan,
   BaseViewPartialState,
   planBaseViewPartialEmit,
@@ -15,7 +22,7 @@ import { buildBasePreview } from '../../util/base/preview'
 import { BaseMetadata } from '../../util/base/render'
 import { BuildCtx } from '../../util/ctx'
 import { documentPreviewSlug } from '../../util/document-preview'
-import { FilePath, pathToRoot, FullSlug } from '../../util/path'
+import { FilePath, pathToRoot, FullSlug, joinSegments, simplifySlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
@@ -30,12 +37,14 @@ async function emitBaseView(
   resources: StaticResources,
   layout: FullPageLayout,
   renderedView: BaseViewRender,
+  semanticManifest: string | undefined,
 ): Promise<FilePath> {
   const { baseData, rendered } = plan
   const slug = renderedView.slug
   const fileData: QuartzPluginData = { ...baseData }
   fileData.slug = slug
   fileData.htmlAst = renderedView.tree
+  if (semanticManifest) fileData.basesSemantic = { manifest: semanticManifest }
   const frontmatter = fileData.frontmatter
   const title =
     typeof frontmatter?.title === 'string' && frontmatter.title.length > 0
@@ -68,6 +77,39 @@ async function emitBaseView(
   return write({ ctx, content, slug, ext: '.html' })
 }
 
+// The vectors are built offline from the JSONL (see docs/semantic-search.md); the page only gets
+// the toggle when that build has landed in the content tree.
+async function baseSemanticManifest(
+  ctx: BuildCtx,
+  baseSlug: FullSlug,
+): Promise<string | undefined> {
+  const manifest = joinSegments(ctx.argv.directory, baseEmbeddingsDir, baseSlug, 'manifest.json')
+  return access(manifest).then(
+    () => baseEmbeddingsManifestPath(baseSlug),
+    () => undefined,
+  )
+}
+
+function emitBaseEmbeddingText(
+  ctx: BuildCtx,
+  baseSlug: FullSlug,
+  memberSlugs: ReadonlySet<string>,
+  allFiles: QuartzPluginData[],
+): Promise<FilePath> {
+  const lines: string[] = []
+  for (const file of allFiles) {
+    if (!file.slug || !memberSlugs.has(simplifySlug(file.slug))) continue
+    const record = baseEmbeddingRecord(file)
+    if (record) lines.push(JSON.stringify(record))
+  }
+  return write({
+    ctx,
+    slug: baseEmbeddingsTextSlug(baseSlug),
+    ext: '.jsonl',
+    content: lines.join('\n'),
+  })
+}
+
 async function emitBaseViewsForPlan(
   ctx: BuildCtx,
   baseSlug: FullSlug,
@@ -76,9 +118,19 @@ async function emitBaseViewsForPlan(
   resources: StaticResources,
   layout: FullPageLayout,
 ): Promise<FilePath[]> {
-  const [views, preview] = await Promise.all([
+  const semanticManifest = await baseSemanticManifest(ctx, baseSlug)
+  const [views, preview, embeddingText] = await Promise.all([
     mapConcurrent(plan.rendered.views, defaultIoConcurrency, renderedView =>
-      emitBaseView(ctx, baseSlug, plan, allFiles, resources, layout, renderedView),
+      emitBaseView(
+        ctx,
+        baseSlug,
+        plan,
+        allFiles,
+        resources,
+        layout,
+        renderedView,
+        semanticManifest,
+      ),
     ),
     write({
       ctx,
@@ -86,8 +138,9 @@ async function emitBaseViewsForPlan(
       slug: documentPreviewSlug(baseSlug),
       ext: '.json',
     }),
+    emitBaseEmbeddingText(ctx, baseSlug, plan.memberSlugs, allFiles),
   ])
-  return [...views, preview]
+  return [...views, preview, embeddingText]
 }
 
 export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
@@ -112,15 +165,38 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
     async *partialEmit(ctx, content, resources, changeEvents) {
       const plan = planBaseViewPartialEmit(content, changeEvents, partialState)
       partialState = plan.nextState
-      if (plan.slugsToRebuild.size === 0) return
+      const embeddingExports = new Map<FullSlug, ReadonlySet<string>>()
+      // The view planner can skip body-only edits. Compare the exported row so those edits
+      // refresh JSONL without rerendering unchanged HTML or changes beyond the excerpt.
+      for (const change of changeEvents) {
+        const current = change.file?.data
+        const previous = change.previousFile?.data
+        const slug = current?.slug ?? previous?.slug
+        if (!slug) continue
+        const currentRow = current ? baseEmbeddingRecord(current) : null
+        const previousRow = previous ? baseEmbeddingRecord(previous) : null
+        if (JSON.stringify(currentRow) === JSON.stringify(previousRow)) continue
+        for (const [baseSlug, members] of plan.nextState.baseMemberSlugs) {
+          if (!plan.slugsToRebuild.has(baseSlug) && members.has(simplifySlug(slug)))
+            embeddingExports.set(baseSlug, members)
+        }
+      }
+      if (plan.slugsToRebuild.size === 0 && embeddingExports.size === 0) return
 
-      const files = await mapConcurrent(
-        [...plan.basePlans].filter(([slug]) => plan.slugsToRebuild.has(slug)),
-        defaultIoConcurrency,
-        ([slug, basePlan]) =>
-          emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts),
-      )
+      const allFiles = embeddingExports.size > 0 ? content.map(([, file]) => file.data) : []
+      const [files, embeddingFiles] = await Promise.all([
+        mapConcurrent(
+          [...plan.basePlans].filter(([slug]) => plan.slugsToRebuild.has(slug)),
+          defaultIoConcurrency,
+          ([slug, basePlan]) =>
+            emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts),
+        ),
+        mapConcurrent([...embeddingExports], defaultIoConcurrency, ([slug, members]) =>
+          emitBaseEmbeddingText(ctx, slug, members, allFiles),
+        ),
+      ])
       yield* files.flat()
+      yield* embeddingFiles
     },
     async *emit(ctx, content, resources) {
       const plan = planBaseViewPartialEmit(content, [], undefined)
@@ -140,6 +216,8 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
 declare module 'vfile' {
   interface DataMap {
     basesMetadata: BaseMetadata
+    /** Set when an offline vector index exists for this base; the search bar shows the semantic toggle. */
+    basesSemantic?: { manifest: string }
     basesDiagnostics?: BaseExpressionDiagnostic[]
     basesExpressions?: BasesExpressions
   }

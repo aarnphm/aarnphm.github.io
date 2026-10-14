@@ -1,7 +1,7 @@
 # bases compiler + runtime (quartz implementation)
 
 status: active
-last updated: 2026-01-28
+last updated: 2026-10-14
 
 this directory contains the obsidian bases compiler, interpreter, and runtime helpers used by quartz to render `.base` files. it is designed to match obsidian bases syntax and semantics with deterministic evaluation and consistent diagnostics.
 
@@ -20,7 +20,7 @@ jq '.expressions[] | {context, kind, ir}' /tmp/antilibrary-ast-ir.json
 - compile expressions to bytecode ir
 - interpret bytecode with a deterministic stack vm
 - resolve file, note, formula, and property values
-- render views (table, list, cards/gallery, board, calendar, map)
+- render views (table, list, cards/gallery, kanban, board, calendar, map)
 - surface parse and runtime diagnostics in base output
 
 ## architecture (pipeline)
@@ -87,6 +87,46 @@ coercions are permissive to match obsidian behavior. comparisons prefer type-awa
 
 ## view rendering
 
-- table, list, cards/gallery, board, calendar, map
+- table, list, cards/gallery, kanban, board, calendar, map
 - map rendering expects coordinates `[lat, lon]` and map config fields
 - view filters combine with base filters via logical and
+
+### Kanban
+
+Native Obsidian 1.14 [Kanban views](https://obsidian.md/help/bases/views/kanban) use `type: kanban` and require `groupBy`. Quartz renders the same notes as columns within a focusable scroll region. Card titles and images link to the note. The published view supports browsing and search; property edits and note creation remain in Obsidian.
+
+```yaml
+views:
+  - type: kanban
+    name: by status
+    groupBy:
+      property: note.status
+      direction: ASC
+    groupOrder:
+      - to watch
+      - finished
+      - null
+    order:
+      - note.title
+      - note.year
+    sort:
+      - property: note.title
+        direction: ASC
+    columnWidth: 280
+    image: note.posters
+    imageFit: cover
+    imageAspectRatio: 1.7777777778
+```
+
+- `groupOrder` defines group order and visibility for grouped tables, lists, galleries, and Kanban views. Only listed values appear, including explicitly listed empty columns. `null` includes notes with missing or empty values. `[]` hides all groups. Omit the key for automatic group order. This follows the [Bases syntax](https://obsidian.md/help/bases/syntax).
+- Visibility applies before sorting and the view limit, so hidden groups do not consume the limit. Counts include the visible notes; empty columns contribute zero.
+- List-valued grouping properties place a note in each distinct member's group. Empty lists join the missing-value group. A note is visible when any membership matches `groupOrder`; overall counts and limits count unique notes, while group counts include their own members.
+- The first property in `order` becomes the Kanban card title. Without `order`, the title uses `file.name`. Remaining properties retain their display names, formulas, links, and value rendering.
+- `columnWidth` is a positive width in pixels (default `280`). Phone columns fit within `85vw`. `imageFit` accepts `cover` or `contain`; `imageAspectRatio` is width divided by height. Kanban defaults to `16 / 9`. Images accept a URL, a local path, a wikilink, or the first image in a list.
+- Galleries also accept `imageFit` and `imageAspectRatio`. Existing `cardSize`, `cardAspect`, `groupSizes`, and `groupAspects` continue to work.
+- Search retains columns, updates their visible counts, and displays an empty message when a column has no matching cards. Note links retain keyboard navigation and visible focus.
+- Full-page Kanban fills the remaining viewport beneath the toolbar. Embedded boards keep a bounded height. Sticky headings cover the scrollport's top edge; the scroll region has no outer outline.
+- Columns meet at single dividers, and film rows use the Bases table's surfaces, separators, and padding. Studio headings use the table's compact monospace typography and remain static during hover, focus, and vertical scrolling.
+- Column headings and card titles use one line with an ellipsis and a full-title tooltip. Overflowing card titles reveal their end on hover or keyboard focus, then restore the ellipsis when the interaction ends. Reduced motion keeps text static. The title script scopes listeners, resize observation, and animation cancellation to the navigation root.
+
+Verification commands and repeatable artifacts: [Bases Kanban checks](../../../docs/verification/bases-kanban/README.md).

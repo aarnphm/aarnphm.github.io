@@ -12,7 +12,7 @@
 
 from __future__ import annotations
 
-import os, json, argparse, hashlib, math, random, logging, re, html, fnmatch, subprocess
+import os, json, argparse, hashlib, logging, re, html, fnmatch, subprocess
 
 from pathlib import Path
 from functools import lru_cache
@@ -622,54 +622,6 @@ def write_shards(
   return shards_meta
 
 
-def write_hnsw_graph(
-  levels: list[list[list[int]]], rows: int, out_path: Path
-) -> tuple[list[dict], str]:
-  out_path.parent.mkdir(parents=True, exist_ok=True)
-  offset = 0
-  meta: list[dict] = []
-  digest = hashlib.sha256()
-  with open(out_path, 'wb') as f:
-    for lvl in tqdm(levels, desc='Writing HNSW graph', unit='level'):
-      indptr = np.zeros(rows + 1, dtype=np.uint32)
-      edge_accum: list[int] = []
-      for idx in range(rows):
-        neighbors = lvl[idx] if idx < len(lvl) else []
-        indptr[idx + 1] = indptr[idx] + len(neighbors)
-        edge_accum.extend(neighbors)
-      indptr_bytes = indptr.tobytes(order='C')
-      indptr_offset = offset
-      f.write(indptr_bytes)
-      digest.update(indptr_bytes)
-      offset += len(indptr_bytes)
-
-      if edge_accum:
-        indices = np.asarray(edge_accum, dtype=np.uint32)
-        indices_bytes = indices.tobytes(order='C')
-      else:
-        indices = np.zeros(0, dtype=np.uint32)
-        indices_bytes = indices.tobytes(order='C')
-      indices_offset = offset
-      f.write(indices_bytes)
-      digest.update(indices_bytes)
-      offset += len(indices_bytes)
-
-      meta.append({
-        'level': len(meta),
-        'indptr': {
-          'offset': indptr_offset,
-          'elements': int(indptr.shape[0]),
-          'byteLength': len(indptr_bytes),
-        },
-        'indices': {
-          'offset': indices_offset,
-          'elements': int(indices.shape[0]),
-          'byteLength': len(indices_bytes),
-        },
-      })
-  return meta, digest.hexdigest()
-
-
 def format_document_texts(
   texts: list[str], model_id: str, titles: list[str] | None = None
 ) -> list[str]:
@@ -978,99 +930,6 @@ def main():
   out_dir = Path(args.out)
   shards = write_shards(vecs, args.shard_size, args.dtype, out_dir)
 
-  def hnsw_build(
-    data: np.ndarray, M: int = 16, efC: int = 200, seed: int = 0
-  ) -> dict:
-    rng = random.Random(seed)
-    N, _D = data.shape
-
-    node_levels = []
-    for _ in range(N):
-      lvl = 0
-      while rng.random() < 1 / math.e:
-        lvl += 1
-      node_levels.append(lvl)
-    max_level = max(node_levels) if N > 0 else 0
-    levels: list[list[list[int]]] = [
-      [[] for _ in range(N)] for _ in range(max_level + 1)
-    ]
-
-    def sim(i: int, j: int) -> float:
-      return float((data[i] * data[j]).sum())
-
-    entry = 0 if N > 0 else -1
-    entry_level = node_levels[entry] if entry >= 0 else -1
-
-    def search_layer(q: int, ep: int, ef: int, L: int) -> list[int]:
-      if ep < 0:
-        return []
-      visited = set()
-      cand: list[tuple[float, int]] = []
-      top: list[tuple[float, int]] = []
-
-      def push(node: int):
-        if node in visited:
-          return
-        visited.add(node)
-        cand.append((sim(q, node), node))
-
-      push(ep)
-      while cand:
-        cand.sort(reverse=True)
-        s, v = cand.pop(0)
-        if len(top) >= ef and s <= top[-1][0]:
-          break
-        top.append((s, v))
-        for u in levels[L][v]:
-          push(u)
-      top.sort(reverse=True)
-      return [n for _, n in top]
-
-    for i in tqdm(range(N), desc='Building HNSW graph', unit='vector'):
-      if i == 0:
-        continue
-      lvl = node_levels[i]
-      ep = entry
-      for L in range(max_level, lvl, -1):
-        c = search_layer(i, ep, 1, L)
-        if c:
-          ep = c[0]
-      for L in range(min(max_level, lvl), -1, -1):
-        W = search_layer(i, ep, efC, L)
-        neigh = sorted(((sim(i, j), j) for j in W if j != i), reverse=True)[:M]
-        for _, e in neigh:
-          if e not in levels[L][i]:
-            levels[L][i].append(e)
-          if i not in levels[L][e]:
-            levels[L][e].append(i)
-      if lvl > entry_level:
-        entry = i
-        entry_level = lvl
-
-    for L in tqdm(range(len(levels)), desc='Pruning HNSW graph', unit='level'):
-      for i in range(N):
-        if len(levels[L][i]) > M:
-          nb = levels[L][i]
-          nb = sorted(nb, key=lambda j: sim(i, j), reverse=True)[:M]
-          levels[L][i] = nb
-        else:
-          unique = list(dict.fromkeys(levels[L][i]))
-          unique.sort(key=lambda j: sim(i, j), reverse=True)
-          levels[L][i] = unique[:M]
-
-    return {
-      'M': M,
-      'efConstruction': efC,
-      'entryPoint': entry,
-      'maxLevel': max_level,
-      'levels': levels,
-    }
-
-  hnsw = hnsw_build(vecs, M=16, efC=200)
-  hnsw_meta, hnsw_sha = write_hnsw_graph(
-    hnsw['levels'], int(vecs.shape[0]), out_dir / 'hnsw.bin'
-  )
-
   manifest = {
     'version': 2,
     'model': args.model,
@@ -1088,24 +947,11 @@ def main():
     'ids': ids,
     'titles': titles,
     'chunkMetadata': chunk_metadata,
-    'hnsw': {
-      'M': hnsw['M'],
-      'efConstruction': hnsw['efConstruction'],
-      'entryPoint': hnsw['entryPoint'],
-      'maxLevel': hnsw['maxLevel'],
-      'graph': {
-        'path': '/embeddings/hnsw.bin',
-        'sha256': hnsw_sha,
-        'levels': hnsw_meta,
-      },
-    },
   }
   (out_dir / 'manifest.json').write_text(
     json.dumps(manifest, ensure_ascii=False), encoding='utf-8'
   )
-  print(
-    f'Wrote {len(shards)} vector shard(s), HNSW graph, and manifest to {out_dir}'
-  )
+  print(f'Wrote {len(shards)} vector shard(s) and manifest to {out_dir}')
 
 
 if __name__ == '__main__':

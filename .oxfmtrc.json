@@ -49,6 +49,7 @@
     "content/stream.md",
     "content/are.na.md",
     "content/hinterland/healthexporter/**/*.json",
+    "content/embeddings/**/*.json",
     "migrations/",
     "quartz/static/pdfjs/",
     "content/triathlon/wind/",
