@@ -743,7 +743,7 @@ export type TreePlacement = {
   height: number
 }
 
-function treeSprite(
+export function treeSprite(
   landscape: Landscape,
   placement: TreePlacement,
   settings: ForestSettings,

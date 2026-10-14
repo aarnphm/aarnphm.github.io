@@ -236,6 +236,7 @@ export function mountSceneCompositor(
   })
   if (!gl) return false
   svg.after(canvas)
+  scene.dataset.trailOpeningLive = 'true'
   const scratch = document.createElement('canvas')
   // The scratch canvas is resized for every raster. A GPU-backed canvas reallocates a shared
   // image in the GPU process each time, and a theme change rasters hundreds of layers: that
@@ -280,6 +281,8 @@ export function mountSceneCompositor(
     found.delete('data-trail-opening')
     found.delete('data-trail-rendered')
     found.delete('data-trail-visible')
+    found.delete('data-trail-theme-live')
+    found.delete('data-trail-opening-live')
     attributeSelectors = found
   }
   const inert = (name: string) =>
@@ -1384,6 +1387,23 @@ export function mountSceneCompositor(
   const paints = new WeakMap<Animation, boolean>()
   const timing = new Set(['offset', 'computedOffset', 'easing', 'composite'])
   const scan = () => {
+    if (palettePending || paletteTransition) {
+      const fullPalette = palettePending
+      palettePending = false
+      // Palette changes during a resize join its replacement instead of stacking two reveals.
+      if (resizeFrame?.started !== null && resizeFrame) holdResize()
+      if (fullPalette) palette += 1
+      if (paletteTransition && !resizeFrame) capturePalette()
+      paletteTransition = false
+      // Theme colors do not move the scene. Preserve matrices and surface uploads;
+      // the palette version already invalidates the rasters that need new colors.
+      if (fullPalette) {
+        flush = true
+        for (const owner of groups.values()) owner.fresh = false
+      }
+      revision += 1
+    }
+    if (scene.dataset.trailThemeLive === 'true' && fade) return
     for (const animation of svg.getAnimations({ subtree: true })) {
       const effect = animation.effect
       if (!is(effect, 'KeyframeEffect') || !effect.target) continue
@@ -1414,22 +1434,6 @@ export function mountSceneCompositor(
     if (clock - settled > 1000) {
       settled = clock
       settle()
-    }
-    if (palettePending || paletteTransition) {
-      const fullPalette = palettePending
-      palettePending = false
-      // Palette changes during a resize join its replacement instead of stacking two reveals.
-      if (resizeFrame?.started !== null && resizeFrame) holdResize()
-      if (fullPalette) palette += 1
-      if (paletteTransition && !resizeFrame) capturePalette()
-      paletteTransition = false
-      // Theme colors do not move the scene. Preserve matrices and surface uploads;
-      // the palette version already invalidates the rasters that need new colors.
-      if (fullPalette) {
-        flush = true
-        for (const owner of groups.values()) owner.fresh = false
-      }
-      revision += 1
     }
   }
   const place = (matrix: Matrix) =>
@@ -1495,7 +1499,7 @@ export function mountSceneCompositor(
     )
     gl.uniform3f(
       uniforms.opening,
-      terrainOnly
+      terrainOnly || scene.dataset.trailOpeningLive === 'true'
         ? opening.value()
         : opening.progress(
             clock,
@@ -1547,7 +1551,12 @@ export function mountSceneCompositor(
         if (!born) {
           if (!coverage.active && !complete(owner)) return
           // Initial chunks join the scene mask; their later resize entries keep the local fade.
-          born = { start: scene.dataset.trailOpening === 'complete' && !fade ? clock : clock - 360 }
+          const entering =
+            scene.dataset.trailOpening === 'complete' &&
+            !fade &&
+            scene.dataset.trailOpeningLive !== 'true' &&
+            scene.dataset.trailThemeLive !== 'true'
+          born = { start: entering ? clock : clock - 360 }
           entries.set(owner.element, born)
         }
         entry = reducedMotion.matches ? 1 : Math.min(entry, (clock - born.start) / 360)
@@ -1695,6 +1704,14 @@ export function mountSceneCompositor(
   const themeProgress = () => fade?.progress ?? 0
   const capturePalette = () => {
     scene.dataset.trailAmbientReady = 'false'
+    // The page snapshot reveals the live SVG while canvas textures catch up. Native SVG
+    // already has the new palette, so uploads need not hold the page's shared deadline.
+    if (
+      ready &&
+      scene.dataset.trailOpening === 'complete' &&
+      (document.documentElement.dataset.homeThemeReveal || reducedMotion.matches)
+    )
+      scene.dataset.trailThemeLive = 'true'
     if (!ready || reducedMotion.matches || scene.dataset.trailOpening !== 'complete') {
       endFade()
       return
@@ -1720,6 +1737,26 @@ export function mountSceneCompositor(
     }
     scene.dataset.trailThemePhase = 'revealing'
     scene.dataset.trailThemeProgress = '0'
+  }
+  const advanceFade = () => {
+    if (!fade) return
+    const duration = trailThemeDuration
+    const elapsed = Math.min(1, Math.max(0, (clock - fade.started) / duration))
+    // Preparation and reveal share one deadline. Recover time spent behind an upload
+    // without jumping the frontier across the scene after a delayed frame.
+    const advance = Math.min(32, Math.max(0, clock - fade.updated)) / (duration / 2)
+    const progress = Math.max(
+      fade.progress,
+      Math.min(
+        elapsed,
+        scene.dataset.trailThemeLive === 'true' ? 1 : coverageCeiling(fade.origin),
+        fade.progress + advance,
+      ),
+    )
+    fade.updated = clock
+    fade.progress = progress
+    scene.dataset.trailThemeProgress = progress.toFixed(3)
+    if (progress >= 1 && (!coverage.active || scene.dataset.trailThemeLive === 'true')) endFade()
   }
   const overlay = () => {
     // The homepage snapshot masks the UI and scene together using this fade's progress.
@@ -1817,24 +1854,36 @@ export function mountSceneCompositor(
       return
     }
     if (!attributeSelectors) readSelectors()
+    if (scene.dataset.trailOpeningLive === 'true' && scene.dataset.trailOpening !== 'complete')
+      return
     resize()
-    scan()
+    if (scene.dataset.trailThemeLive !== 'true' || !fade || palettePending || paletteTransition)
+      scan()
+    if (scene.dataset.trailThemeLive === 'true' && fade) {
+      advanceFade()
+      return
+    }
     split()
     pending.length = 0
     prepare(root, false)
     // Spend the saved layout work on bounded palette uploads during the shared sweep.
-    const budget = fade ? 10 : 6
+    const budget = fade || scene.dataset.trailOpening !== 'complete' ? 10 : 6
     const unfinished: (Run | Group)[] = []
     let deferred = 0
     let holes = 0
     let replacements = 0
     const unpainted = (target: Run | Group) =>
       (target.kind === 'group' ? (target.mask?.palette ?? -1) : target.palette) < 0
+    const outdated = (target: Run | Group) => {
+      const layer = target.kind === 'group' ? target.mask : target
+      return layer?.palette !== palette || layer.revision !== revision
+    }
     // A scene switch already holds a complete frame. Keep its camp-first order even when
     // winter clothing or crowns introduce new textures higher up the valley.
     const priorities = new Map(pending.map(target => [target, paintPriority(target)]))
     pending.sort(
       (a, b) =>
+        Number(outdated(b)) - Number(outdated(a)) ||
         (fade ? 0 : Number(unpainted(b)) - Number(unpainted(a))) ||
         (priorities.get(a) ?? 0) - (priorities.get(b) ?? 0) ||
         (a.kind === 'group' ? (a.mask?.waiting ?? 0) : a.waiting) -
@@ -1843,6 +1892,7 @@ export function mountSceneCompositor(
     const painting = view.performance.now()
     for (const target of pending) {
       const owner = target.kind === 'group' ? target : target.owner
+      const layer = target.kind === 'group' ? target.mask : target
       // These layers stay hidden until the landscape is revealed. Their full-scene bounds
       // must not hold the camp's first pixels behind the last snowflake or footprint upload.
       if (
@@ -1852,7 +1902,6 @@ export function mountSceneCompositor(
         continue
       const painted = !unpainted(target)
       if (view.performance.now() - painting > budget) {
-        const layer = target.kind === 'group' ? target.mask : target
         const ambient = owner.element.closest(`${ambientLayers}, [data-trail-collision]`)
         if (scene.dataset.trailOpening !== 'complete' && ambient) continue
         if (layer && (layer.palette !== palette || layer.revision !== revision))
@@ -1887,21 +1936,7 @@ export function mountSceneCompositor(
       scene.dataset.trailLoadProgress = painted === 'true' ? '1.000' : '0.000'
     }
     flush = false
-    if (fade) {
-      const duration = trailThemeDuration
-      const elapsed = Math.min(1, Math.max(0, (clock - fade.started) / duration))
-      // Preparation and reveal share one deadline. Recover time spent behind an upload
-      // without jumping the frontier across the scene after a delayed frame.
-      const advance = Math.min(32, Math.max(0, clock - fade.updated)) / (duration / 2)
-      const progress = Math.max(
-        fade.progress,
-        Math.min(elapsed, coverageCeiling(fade.origin), fade.progress + advance),
-      )
-      fade.updated = clock
-      fade.progress = progress
-      scene.dataset.trailThemeProgress = progress.toFixed(3)
-      if (progress >= 1 && !coverage.active) endFade()
-    }
+    advanceFade()
     if (resizeFrame) {
       if (reducedMotion.matches || resizeProgress() >= 1) endResize()
       else if (resizeFrame.started === null) {
@@ -1909,16 +1944,21 @@ export function mountSceneCompositor(
         scene.dataset.trailResizePhase = 'revealing'
       }
     }
-    composite()
-    overlay()
-    overlayResize()
     const ambient = String(
       scene.dataset.trailOpening === 'complete' &&
         scene.dataset.trailRendered === 'true' &&
         !fade &&
-        !resizeFrame,
+        !resizeFrame &&
+        (painted === 'true' ||
+          (scene.dataset.trailOpeningLive !== 'true' && scene.dataset.trailThemeLive !== 'true')),
     )
     if (scene.dataset.trailAmbientReady !== ambient) scene.dataset.trailAmbientReady = ambient
+    composite()
+    overlay()
+    overlayResize()
+    if (!fade && painted === 'true') delete scene.dataset.trailThemeLive
+    if (painted === 'true' && scene.dataset.trailOpening === 'complete')
+      delete scene.dataset.trailOpeningLive
     if (!ready) {
       ready = true
       scene.dataset.trailRenderer = 'webgl'
@@ -2007,6 +2047,9 @@ export function mountSceneCompositor(
           schedule()
         else if (!svg.contains(target) && !restyle(name)) repaint()
         if (!svg.contains(target)) continue
+        // The native opening changes only its mask here; ResizeObserver owns SVG size changes.
+        if (target === svg && name === 'style' && scene.dataset.trailOpeningLive === 'true')
+          continue
         if (target === svg && (name === 'viewBox' || name === 'style')) {
           root.moved = true
           continue
@@ -2121,6 +2164,7 @@ export function mountSceneCompositor(
     () => {
       sizeDirty = true
       scene.dataset.trailAmbientReady = 'false'
+      scene.dataset.trailOpeningLive = 'true'
       ready = false
       gl.disable(gl.SCISSOR_TEST)
       gl.clearColor(0, 0, 0, 0)
@@ -2133,6 +2177,7 @@ export function mountSceneCompositor(
     () => {
       endFade()
       endResize()
+      delete scene.dataset.trailThemeLive
     },
     { signal },
   )
@@ -2178,6 +2223,7 @@ export function mountSceneCompositor(
     { signal },
   )
   setup()
+  opening.useFallback()
   schedule()
   signal.addEventListener(
     'abort',
