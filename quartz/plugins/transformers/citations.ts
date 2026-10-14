@@ -2,350 +2,32 @@ import type { Element, ElementContent, Root as HastRoot, Text as HastText } from
 import type { Link, Parent, Root, Text } from 'mdast'
 import type { VFile } from 'vfile'
 import { h } from 'hastscript'
-import fs from 'node:fs'
-import fsp from 'node:fs/promises'
-import { createRequire } from 'node:module'
-import path from 'node:path'
-import { Cite, rehypeCitationGenerator } from 'rehype-citation'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
 import type { QuartzTransformerPlugin } from '../../types/plugin'
 import type { FrontmatterLink } from './frontmatter'
-import { releasedOnReload } from '../../util/module-caches'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { isRecord } from '../../util/type-guards'
 import { hostnameMatches, parseExternalUrl } from '../../util/url'
+import {
+  cachedRehypeCitation,
+  citationBibliography,
+  hydrateCitationDataCache,
+  persistCitationDataCache,
+  readCitationTreeCache,
+  resolveCitationLocale,
+  setCitationTreeCache,
+  stringFingerprint,
+} from '../stores/citation-cache'
 import {
   cacheState,
   ensurePendingPaper,
   extractArxivId,
   normalizeArxivId,
 } from '../stores/citations'
-import '@citation-js/plugin-bibtex'
-import '@citation-js/plugin-doi'
+export { resolveCitationLocale } from '../stores/citation-cache'
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
-const MAX_CITATION_DATA_CACHE_ENTRIES = 8
-const MAX_CITATION_TREE_CACHE_ENTRIES = 256
-const CITATION_DATA_CACHE_DIR = path.join('.quartz-cache', 'citation-data')
-const CITATION_TREE_CACHE_DIR = path.join('.quartz-cache', 'citation-tree')
-const citationDataCache = releasedOnReload(new Map<string, unknown[]>())
-const citationTreeCache = releasedOnReload(new Map<string, HastRoot>())
-const citationInputPartKeys = releasedOnReload(new Map<string, string>())
-const require = createRequire(import.meta.url)
-
-interface CachedCiteInstance {
-  _options?: unknown
-  log?: unknown
-  data: unknown[]
-}
-
-interface CitationLocaleRegister {
-  has(locale: string): boolean
-  add(locale: string, localeXml: string): unknown
-}
-
-interface CitationPluginConfig {
-  get(name: string): unknown
-}
-
-function isCitationLocaleRegister(value: unknown): value is CitationLocaleRegister {
-  return isRecord(value) && typeof value.has === 'function' && typeof value.add === 'function'
-}
-
-function citationPluginConfig(): CitationPluginConfig | undefined {
-  const plugins: unknown = Reflect.get(Cite, 'plugins')
-  if (!isRecord(plugins) || !isRecord(plugins.config)) return undefined
-
-  const config = plugins.config
-  const get = config.get
-  if (typeof get !== 'function') return undefined
-
-  return {
-    get(name) {
-      return get.call(config, name)
-    },
-  }
-}
-
-function citationLocaleRegister(): CitationLocaleRegister | undefined {
-  const config = citationPluginConfig()?.get('@csl')
-  if (!isRecord(config) || !isCitationLocaleRegister(config.locales)) return undefined
-  return config.locales
-}
-
-function bundledLocale(locale: string): string | undefined {
-  try {
-    const rehypeCitationPath = require.resolve('rehype-citation')
-    const localesPath = require.resolve('@citation-js/plugin-csl/lib/locales.json', {
-      paths: [path.dirname(rehypeCitationPath)],
-    })
-    const parsed: unknown = JSON.parse(fs.readFileSync(localesPath, 'utf8'))
-    if (!isRecord(parsed)) return undefined
-    const value = parsed[locale]
-    return typeof value === 'string' ? value : undefined
-  } catch {
-    return undefined
-  }
-}
-
-export function resolveCitationLocale(locale: string): string {
-  const register = citationLocaleRegister()
-  if (!register || register.has(locale)) return locale
-
-  const localeXml = bundledLocale(locale)
-  if (localeXml) {
-    register.add(locale, localeXml)
-    return locale
-  }
-
-  return `https://raw.githubusercontent.com/citation-style-language/locales/master/locales-${locale}.xml`
-}
-
-function citationInputPartKey(part: string): string {
-  const cached = citationInputPartKeys.get(part)
-  if (cached) return cached
-  try {
-    const stat = fs.statSync(part)
-    if (stat.isFile()) {
-      const key = `${part}:${stringFingerprint(fs.readFileSync(part, 'utf8'))}`
-      citationInputPartKeys.set(part, key)
-      return key
-    }
-  } catch {
-    return part
-  }
-  return part
-}
-
-async function citationInputPartKeyAsync(part: string): Promise<string> {
-  const cached = citationInputPartKeys.get(part)
-  if (cached) return cached
-  try {
-    const stat = await fsp.stat(part)
-    if (stat.isFile()) {
-      const key = `${part}:${stringFingerprint(await fsp.readFile(part, 'utf8'))}`
-      citationInputPartKeys.set(part, key)
-      return key
-    }
-  } catch {
-    return part
-  }
-  return part
-}
-
-function citationInputParts(data: unknown): string[] | undefined {
-  if (!Array.isArray(data)) return undefined
-  const parts: string[] = []
-  for (const item of data) {
-    if (typeof item !== 'string') return undefined
-    parts.push(citationInputPartKey(item))
-  }
-  return parts
-}
-
-async function citationInputPartsAsync(data: unknown): Promise<string[] | undefined> {
-  if (!Array.isArray(data)) return undefined
-  const parts: string[] = []
-  for (const item of data) {
-    if (typeof item !== 'string') return undefined
-    parts.push(await citationInputPartKeyAsync(item))
-  }
-  return parts
-}
-
-function citationDataCacheKey(data: unknown): string | undefined {
-  const parts = citationInputParts(data)
-  if (!parts) return undefined
-  return citationDataCacheKeyFromParts(parts)
-}
-
-async function citationDataCacheKeyAsync(data: unknown): Promise<string | undefined> {
-  const parts = await citationInputPartsAsync(data)
-  if (!parts) return undefined
-  return citationDataCacheKeyFromParts(parts)
-}
-
-function citationDataCacheKeyFromParts(parts: string[]): string {
-  let hash = 2166136261
-  let length = 0
-  for (const part of parts) {
-    length += part.length
-    for (let index = 0; index < part.length; index += 1) {
-      hash ^= part.charCodeAt(index)
-      hash = Math.imul(hash, 16777619)
-    }
-  }
-  return `${parts.length}:${length}:${hash >>> 0}`
-}
-
-function stringFingerprint(value: string): string {
-  let hash = 2166136261
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index)
-    hash = Math.imul(hash, 16777619)
-  }
-  return `${value.length}:${hash >>> 0}`
-}
-
-function cloneCitationData(data: unknown[]): unknown[] | undefined {
-  try {
-    return structuredClone(data)
-  } catch {
-    return undefined
-  }
-}
-
-function cloneCitationTree(tree: HastRoot): HastRoot | undefined {
-  try {
-    return structuredClone(tree)
-  } catch {
-    return undefined
-  }
-}
-
-function isHastRoot(node: unknown): node is HastRoot {
-  return isRecord(node) && node.type === 'root' && Array.isArray(node.children)
-}
-
-function persistentCitationDataCachePath(key: string): string {
-  return path.join(CITATION_DATA_CACHE_DIR, `${key.replace(/[^A-Za-z0-9_.-]/g, '_')}.json`)
-}
-
-function persistentCitationTreeCachePath(key: string): string {
-  return path.join(CITATION_TREE_CACHE_DIR, `${key.replace(/[^A-Za-z0-9_.-]/g, '_')}.json`)
-}
-
-async function readPersistentCitationDataCache(key: string): Promise<unknown[] | undefined> {
-  try {
-    const parsed = JSON.parse(await fsp.readFile(persistentCitationDataCachePath(key), 'utf8'))
-    return Array.isArray(parsed) ? parsed : undefined
-  } catch {
-    return undefined
-  }
-}
-
-async function readPersistentCitationTreeCache(key: string): Promise<HastRoot | undefined> {
-  try {
-    const parsed = JSON.parse(await fsp.readFile(persistentCitationTreeCachePath(key), 'utf8'))
-    return isHastRoot(parsed) ? parsed : undefined
-  } catch {
-    return undefined
-  }
-}
-
-async function writePersistentCitationDataCache(key: string, data: unknown[]): Promise<void> {
-  try {
-    await fsp.mkdir(CITATION_DATA_CACHE_DIR, { recursive: true })
-    await fsp.writeFile(persistentCitationDataCachePath(key), JSON.stringify(data))
-  } catch {
-    return
-  }
-}
-
-async function writePersistentCitationTreeCache(key: string, tree: HastRoot): Promise<void> {
-  try {
-    await fsp.mkdir(CITATION_TREE_CACHE_DIR, { recursive: true })
-    await fsp.writeFile(persistentCitationTreeCachePath(key), JSON.stringify(tree))
-  } catch {
-    return
-  }
-}
-
-function setCitationDataCache(key: string, data: unknown[]): void {
-  citationDataCache.set(key, data)
-  void writePersistentCitationDataCache(key, data)
-  if (citationDataCache.size <= MAX_CITATION_DATA_CACHE_ENTRIES) return
-  const first = citationDataCache.keys().next().value
-  if (first) citationDataCache.delete(first)
-}
-
-const hydratedCitationDataCacheKeys = releasedOnReload(new Set<string>())
-const prunedBibliographyKeys = releasedOnReload(new Set<string>())
-
-async function hydrateCitationDataCache(key: string): Promise<void> {
-  if (citationDataCache.has(key) || hydratedCitationDataCacheKeys.has(key)) return
-  hydratedCitationDataCacheKeys.add(key)
-  const persisted = await readPersistentCitationDataCache(key)
-  if (persisted) {
-    citationDataCache.set(key, persisted)
-  }
-}
-
-async function pruneStaleCitationCaches(
-  bibliographyKey: string,
-  citationDataKey: string | undefined,
-): Promise<void> {
-  if (prunedBibliographyKeys.has(bibliographyKey)) return
-  prunedBibliographyKeys.add(bibliographyKey)
-  const activeBibToken = `_${bibliographyKey.replace(/[^A-Za-z0-9_.-]/g, '_')}_`
-  const activeDataFile = citationDataKey
-    ? `${citationDataKey.replace(/[^A-Za-z0-9_.-]/g, '_')}.json`
-    : undefined
-
-  try {
-    const treeEntries = await fsp.readdir(CITATION_TREE_CACHE_DIR)
-    await Promise.all(
-      treeEntries.map(async entry => {
-        if (!entry.endsWith('.json') || entry.includes(activeBibToken)) return
-        await fsp.unlink(path.join(CITATION_TREE_CACHE_DIR, entry)).catch(() => undefined)
-      }),
-    )
-  } catch {
-    // directory may not exist yet
-  }
-
-  if (activeDataFile) {
-    try {
-      const dataEntries = await fsp.readdir(CITATION_DATA_CACHE_DIR)
-      await Promise.all(
-        dataEntries.map(async entry => {
-          if (!entry.endsWith('.json') || entry === activeDataFile) return
-          await fsp.unlink(path.join(CITATION_DATA_CACHE_DIR, entry)).catch(() => undefined)
-        }),
-      )
-    } catch {
-      // directory may not exist yet
-    }
-  }
-}
-
-async function setCitationTreeCache(key: string, tree: HastRoot): Promise<void> {
-  const cloned = cloneCitationTree(tree)
-  if (!cloned) return
-  citationTreeCache.set(key, cloned)
-  await writePersistentCitationTreeCache(key, cloned)
-  if (citationTreeCache.size <= MAX_CITATION_TREE_CACHE_ENTRIES) return
-  const first = citationTreeCache.keys().next().value
-  if (first) citationTreeCache.delete(first)
-}
-
-function CachedCite(this: CachedCiteInstance, data: unknown, opts: unknown): void {
-  const key = citationDataCacheKey(data)
-  if (key) {
-    const cached = citationDataCache.get(key)
-    if (cached) {
-      this._options = {}
-      this.log = []
-      this.data = cloneCitationData(cached) ?? cached
-      return
-    }
-  }
-
-  const citation = new Cite(data, opts)
-  this._options = citation._options
-  this.log = citation.log
-  this.data = citation.data
-
-  const cloned = cloneCitationData(citation.data)
-  if (key && cloned) {
-    setCitationDataCache(key, cloned)
-  }
-}
-
-const cachedCite = Object.assign(CachedCite, { plugins: Cite.plugins })
-const cachedRehypeCitation = rehypeCitationGenerator(cachedCite)
-
 interface LinkType {
   type: string
   pattern: (url: URL, rawUrl: string) => boolean | string | null
@@ -489,16 +171,6 @@ export function citationTreeCacheKey(
   ].join(':')
 }
 
-async function readCitationTreeCache(key: string): Promise<HastRoot | undefined> {
-  const cached = citationTreeCache.get(key)
-  if (cached) return cloneCitationTree(cached)
-
-  const persisted = await readPersistentCitationTreeCache(key)
-  if (!persisted) return undefined
-  citationTreeCache.set(key, persisted)
-  return cloneCitationTree(persisted)
-}
-
 function getLinkType(url: string): LinkType | undefined {
   const parsed = parseExternalUrl(url)
   if (!parsed) return undefined
@@ -607,6 +279,8 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
   const bibliography = opts?.bibliography ?? 'content/References.bib'
   return {
     name: 'Citations',
+    fileDependencies: (_ctx, file) =>
+      !file || (file.data.hasCitationSyntax && !file.data.citationsDisabled) ? [bibliography] : [],
     markdownPlugins: () => [
       () => (tree: Root, file: VFile) => {
         const frontmatter = file.data.frontmatter
@@ -668,11 +342,9 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         }
       },
     ],
-    htmlPlugins: ({ argv, cfg }) => [
+    htmlPlugins: ctx => [
       () => {
-        const locale = resolveCitationLocale(cfg.configuration.locale)
-        const bibliographyKey = citationInputPartKeyAsync(bibliography)
-        const citationDataKey = citationDataCacheKeyAsync([bibliography])
+        const locale = resolveCitationLocale(ctx.cfg.configuration.locale)
         const renderCitations = unified().use(cachedRehypeCitation, {
           bibliography,
           suppressBibliography: false,
@@ -682,15 +354,10 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         })
         return async (tree: HastRoot, file: VFile) => {
           if (file.data.citationsDisabled || !file.data.hasCitationSyntax) return
-          const [resolvedBibliographyKey, resolvedCitationDataKey] = await Promise.all([
-            bibliographyKey,
-            citationDataKey,
-          ])
-          await pruneStaleCitationCaches(resolvedBibliographyKey, resolvedCitationDataKey)
-          if (resolvedCitationDataKey) {
-            await hydrateCitationDataCache(resolvedCitationDataKey)
-          }
-          const cacheKey = citationTreeCacheKey(file, resolvedBibliographyKey, locale, tree)
+          const keys = await citationBibliography(ctx, bibliography)
+          file.data.citationCache = keys
+          await hydrateCitationDataCache(keys.data)
+          const cacheKey = citationTreeCacheKey(file, keys.bibliography, locale, tree)
           const cached = cacheKey ? await readCitationTreeCache(cacheKey) : undefined
           if (cached) {
             tree.children = cached.children
@@ -698,9 +365,10 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           }
           const perf = new PerfTimer()
           await renderCitations.run(tree, file)
+          await persistCitationDataCache(keys.data)
           if (cacheKey) await setCitationTreeCache(cacheKey, tree)
           const slug = typeof file.data.slug === 'string' ? file.data.slug : file.path
-          logBuildSpan(argv, 'html:Citations', slug, perf.elapsedMs())
+          logBuildSpan(ctx.argv, 'html:Citations', slug, perf.elapsedMs())
         }
       },
       () => (tree: HastRoot, file: VFile) => {

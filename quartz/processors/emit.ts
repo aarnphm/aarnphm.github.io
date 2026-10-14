@@ -2,6 +2,7 @@ import { styleText } from 'node:util'
 import type { ChangeEvent, QuartzEmitterPluginInstance } from '../types/plugin'
 import type { FilePath } from '../util/path'
 import { removeWritten } from '../plugins/emitters/helpers'
+import { pruneCitationCaches } from '../plugins/stores/citation-cache'
 import { ProcessedContent } from '../plugins/vfile'
 import { defaultEmitterConcurrency, mapConcurrent } from '../util/async-pool'
 import { BuildCtx, deckDataFor } from '../util/ctx'
@@ -115,6 +116,7 @@ export async function emitContent(
   inputChangeEvents?: ChangeEvent[],
 ) {
   const { argv, cfg } = ctx
+  await pruneCitationCaches(content)
   let changeEvents =
     inputChangeEvents &&
     transclusionChangeEvents(

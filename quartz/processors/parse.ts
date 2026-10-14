@@ -5,6 +5,7 @@ import esbuild from 'esbuild'
 import matter from 'gray-matter'
 import yaml from 'js-yaml'
 import { toHast } from 'mdast-util-to-hast'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'path'
 import remarkParse from 'remark-parse'
@@ -287,6 +288,7 @@ type ProcessorCache = { cfg: BuildCtx['cfg']; md: QuartzMdProcessor; html: Quart
 type ProcessedContentCacheEntry = {
   signature: string
   dependencySignature?: string
+  fileDependencySignature?: string
   content: ProcessedContent
 }
 type ProcessedContentCacheState = {
@@ -551,9 +553,17 @@ function hasDirtyCodeDependency(
 async function cachedProcessedContent(
   ctx: BuildCtx,
   fp: FilePath,
+  fileDependencies: Map<string, Promise<string>>,
   dirtyPaths?: ReadonlySet<FilePath>,
 ): Promise<{ fp: FilePath; signature: string; content?: ProcessedContent }> {
   const cached = processedContentCache.content.get(fp)
+  if (
+    cached &&
+    (cached.fileDependencySignature ?? '') !==
+      (await fileDependencySignature(ctx, cached.content, fileDependencies))
+  ) {
+    return { fp, signature: await fileStatSignature(fp) }
+  }
   if (
     cached &&
     dirtyPaths !== undefined &&
@@ -570,6 +580,31 @@ async function cachedProcessedContent(
     return { fp, signature, content: cached.content }
   }
   return { fp, signature }
+}
+
+async function fileDependencySignature(
+  ctx: BuildCtx,
+  content: ProcessedContent,
+  fingerprints: Map<string, Promise<string>>,
+): Promise<string> {
+  const dependencies = ctx.cfg.plugins.transformers.flatMap(
+    plugin => plugin.fileDependencies?.(ctx, content[1]) ?? [],
+  )
+  const signatures = await Promise.all(
+    dependencies.map(filename => {
+      const resolved = path.resolve(filename)
+      let fingerprint = fingerprints.get(resolved)
+      if (!fingerprint) {
+        fingerprint = fs.readFile(resolved).then(
+          bytes => createHash('sha256').update(bytes).digest('hex'),
+          () => 'missing',
+        )
+        fingerprints.set(resolved, fingerprint)
+      }
+      return fingerprint.then(value => `${resolved}:${value}`)
+    }),
+  )
+  return signatures.join('|')
 }
 
 async function codeDependencySignature(ctx: BuildCtx, content: ProcessedContent): Promise<string> {
@@ -723,8 +758,11 @@ export async function parseMarkdown(
   const log = new QuartzLogger(argv.verbose)
   const useCache = argv.watch
   await syncProcessedContentCacheSource(ctx, dirtyPaths)
+  const fileDependencies = new Map<string, Promise<string>>()
   const cached = useCache
-    ? await Promise.all(fps.map(fp => cachedProcessedContent(ctx, fp, dirtyPaths)))
+    ? await Promise.all(
+        fps.map(fp => cachedProcessedContent(ctx, fp, fileDependencies, dirtyPaths)),
+      )
     : []
   const cacheHits = cached.filter(entry => entry.content !== undefined).length
   const missSignatures = new Map<FilePath, string>()
@@ -811,7 +849,12 @@ export async function parseMarkdown(
       const signature = missSignatures.get(fp)
       if (!signature) continue
       const dependencySignature = await codeDependencySignature(ctx, content)
-      processedContentCache.content.set(fp, { signature, dependencySignature, content })
+      processedContentCache.content.set(fp, {
+        signature,
+        dependencySignature,
+        fileDependencySignature: await fileDependencySignature(ctx, content, fileDependencies),
+        content,
+      })
       cachedContent.set(fp, content)
     }
     res = fps.flatMap(fp => {

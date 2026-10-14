@@ -19,6 +19,8 @@ export type QuartzTransformerPlugin<Options extends OptionType = undefined> = (
 ) => QuartzTransformerPluginInstance
 export type QuartzTransformerPluginInstance = {
   name: string
+  /** File inputs relative to cwd; omit file to enumerate the watch inputs. */
+  fileDependencies?: (ctx: BuildCtx, file?: VFile) => string[]
   textTransform?: (ctx: BuildCtx, src: string) => string
   markdownPlugins?: (ctx: BuildCtx) => PluggableList
   htmlPlugins?: (ctx: BuildCtx) => PluggableList
