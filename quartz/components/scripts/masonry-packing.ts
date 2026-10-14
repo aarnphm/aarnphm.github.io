@@ -90,11 +90,13 @@ export function createMasonryPacking(
     const sourceHeight = Number.isFinite(image.height) && image.height > 0 ? image.height : 600
     const ratio = Math.max(sourceWidth / sourceHeight, sourceHeight / sourceWidth)
     const area = Math.min(ratio > 8 ? 40000 : ratio > 4 ? 60000 : 150000, (width * width) / 5)
-    const scale = Math.min(
-      Math.sqrt((area * (0.65 + Math.random() * 0.75)) / (sourceWidth * sourceHeight)),
-      width / sourceWidth,
-      Math.max(320, viewportHeight * 0.85) / sourceHeight,
-    )
+    const scale =
+      0.75 *
+      Math.min(
+        Math.sqrt((area * (0.65 + Math.random() * 0.75)) / (sourceWidth * sourceHeight)),
+        width / sourceWidth,
+        Math.max(320, viewportHeight * 0.85) / sourceHeight,
+      )
     return {
       index,
       width: sourceWidth * scale,
