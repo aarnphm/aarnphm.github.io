@@ -1,5 +1,5 @@
 /* Shared plugin surfaces follow the Garden Arena controls and inherit the active Obsidian theme. */
-body {
+.garden-plugin-ui {
   --garden-plugin-line: color-mix(in srgb, var(--text-faint) 55%, transparent);
   --garden-plugin-surface: color-mix(
     in srgb,
@@ -14,19 +14,18 @@ body {
   --garden-plugin-control-height: 1.5rem;
 }
 
-body :is(.modal, .menu, .suggestion-container, .notice) {
+.garden-plugin-ui:is(.modal, .menu, .suggestion-container, .notice) {
   border: 1px solid var(--garden-plugin-line);
   border-radius: 0;
   box-shadow: none;
 }
 
-:is(.modal, .menu, .suggestion-container, .notice, .vertical-tab-content)
-  :is(button, select, input:not([type='checkbox']):not([type='range']), textarea) {
+.garden-plugin-ui :is(button, select, input:not([type='checkbox']):not([type='range']), textarea) {
   border-radius: 0;
   box-shadow: none;
 }
 
-:is(.modal, .vertical-tab-content) :is(button:not(.clickable-icon), select) {
+.garden-plugin-ui :is(button:not(.clickable-icon), select) {
   min-height: var(--garden-plugin-control-height);
   height: auto;
   padding: 0.25rem 0.7rem;
@@ -40,24 +39,22 @@ body :is(.modal, .menu, .suggestion-container, .notice) {
   touch-action: manipulation;
 }
 
-:is(.modal, .vertical-tab-content)
-  button:is(.mod-cta, [aria-pressed='true'], [aria-expanded='true']) {
+.garden-plugin-ui button:is(.mod-cta, [aria-pressed='true'], [aria-expanded='true']) {
   background: var(--garden-plugin-selected);
   color: var(--text-normal);
 }
 
-:is(.modal, .menu, .suggestion-container, .vertical-tab-content)
-  :is(button, a, input, select, textarea):focus-visible {
+.garden-plugin-ui :is(button, a, input, select, textarea):focus-visible {
   outline: 2px solid var(--interactive-accent);
   outline-offset: 2px;
 }
 
-:is(.menu-item, .suggestion-item).is-selected {
+.garden-plugin-ui :is(.menu-item, .suggestion-item).is-selected {
   background: var(--garden-plugin-selected);
   border-radius: 0;
 }
 
-body .vertical-tab-content .setting-item {
+.garden-plugin-ui .setting-item:not(.setting-item-heading) {
   border: 1px solid var(--garden-plugin-line);
   border-radius: 0;
   background: transparent;
@@ -65,7 +62,7 @@ body .vertical-tab-content .setting-item {
 }
 
 @media (pointer: coarse) {
-  body {
+  .garden-plugin-ui {
     --garden-plugin-control-height: 44px;
   }
 }
