@@ -95,10 +95,6 @@ migrations_dir = "migrations/arena-reader"
 binding = "BROWSER"
 remote = true
 
-[ai]
-binding = "AI"
-remote = true
-
 [[routes]]
 pattern = "aarnphm.xyz"
 custom_domain = true
