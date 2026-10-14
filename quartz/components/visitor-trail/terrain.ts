@@ -4,7 +4,8 @@ import { pixels } from './pixels'
 import { trailRandom } from './random'
 import { trailBeavers, trailFords, trailRavine } from './ravine'
 import { trailWayside } from './wayside'
-import { trailGroundSnow } from './winter'
+import { trailPuddles } from './wetlands'
+import { trailSnowBase } from './winter'
 
 function oval(pond: Pond, margin: number, grid: number) {
   const rows: string[] = []
@@ -16,9 +17,8 @@ function oval(pond: Pond, margin: number, grid: number) {
   return pixels(rows, { W: 'trail-water' }, grid)
 }
 
-export function trailTerrain(landscape: Landscape, seed: number, routes: readonly string[] = []) {
-  const { width, height, contours, pond } = landscape
-  const random = trailRandom(seed ^ 0x94d049bb)
+export function trailTerraces(landscape: Landscape, seed: number) {
+  const { height, contours } = landscape
   const terraces = contours
     .map((points, index) => {
       const [first, ...rest] = points
@@ -26,6 +26,12 @@ export function trailTerrain(landscape: Landscape, seed: number, routes: readonl
       return `<path class="trail-terrace trail-terrace-${index}" d="${path}"/>`
     })
     .join('')
+  return terraces + trailSnowBase(landscape, seed)
+}
+
+export function trailTerrain(landscape: Landscape, seed: number, routes: readonly string[] = []) {
+  const { width, contours, pond } = landscape
+  const random = trailRandom(seed ^ 0x94d049bb)
   const grass = contours
     .flatMap(points =>
       points
@@ -81,7 +87,7 @@ export function trailTerrain(landscape: Landscape, seed: number, routes: readonl
     treeline: landscape.treeline,
     meadowTop: landscape.meadowTop,
   }
-  return `<g class="trail-terrain" data-trail-terrain='${JSON.stringify(bounds)}'>${terraces}${trailGroundSnow(landscape, seed)}${trailRavine(landscape, seed, routes)}${trailFords(landscape, routes)}${grass}${trailMeadow(landscape, seed, routes)}${trailWayside(landscape, routes, seed)}</g>
+  return `<g class="trail-terrain" data-trail-terrain='${JSON.stringify(bounds)}'>${trailRavine(landscape, seed, routes)}${trailPuddles(landscape, seed, routes)}${trailFords(landscape, routes)}${grass}${trailMeadow(landscape, seed, routes)}${trailWayside(landscape, routes, seed)}</g>
     <g class="trail-pond" data-trail-pond='${JSON.stringify(pond)}'>
       <g class="trail-pond-bank" transform="translate(${pond.x - pond.rx - 8} ${pond.y - pond.ry - 8})">${oval(pond, 8, grid)}</g>
       <g transform="translate(${pond.x - pond.rx} ${pond.y - pond.ry})">${oval(pond, 0, grid)}</g>

@@ -6,6 +6,7 @@ import {
   readTrunks,
   type CollisionActor,
 } from './actor-spacing'
+import { readClockObstacles } from './clock-clearance'
 import { pondDistance, trailGroundScale, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
 
@@ -149,6 +150,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
   let seed: number | undefined
   let roots: Point[] = []
   let trunks: CollisionActor[] = []
+  let clock: CollisionActor[] = []
   let wanderers: Wanderer[] = []
   let frame: number | null = null
   let timer: number | null = null
@@ -206,19 +208,21 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
   }
   const safe = (point: Point, kind: WanderingAnimalKind) =>
     inHabitat(point, kind) &&
+    clock.every(other => circleClearance(point, habits[kind].footprint, other) >= 0) &&
     (kind === 'goose' ||
       roots.every(root => Math.hypot(point.x - root.x, point.y - root.y) > habits[kind].clearance))
   const safeSite = (
     point: Point,
     kind: WanderingAnimalKind,
     available: (candidate: Point) => boolean = () => true,
+    attempts = 96,
   ) => {
     const fits = (candidate: Point) => {
       const drawn = { x: Math.round(candidate.x), y: Math.round(candidate.y) }
       return safe(drawn, kind) && available(drawn)
     }
     if (fits(point)) return point
-    for (let index = 0; index < 96; index++) {
+    for (let index = 0; index < attempts; index++) {
       const angle = index * 2.399963
       const radius = 5 + Math.floor(index / 12) * 7
       const candidate = {
@@ -250,7 +254,8 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     return null
   }
   const readRoots = () => {
-    trunks = readTrunks(scene)
+    clock = readClockObstacles(scene)
+    trunks = readTrunks(scene).filter(other => !other.id.startsWith('clock-'))
     roots = trunks
   }
   const choosePath = (
@@ -417,6 +422,31 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       }
       return
     }
+    if (clock.some(other => circleClearance(animal.position, animal.collisionRadius, other) < 0)) {
+      const destination = animal.path?.points.at(-1)
+      const escaping =
+        animal.phase === 'wandering' &&
+        destination &&
+        clock.every(other => circleClearance(destination, animal.collisionRadius, other) >= 0)
+      if (!escaping) {
+        const exit = safeSite(
+          animal.position,
+          animal.kind,
+          candidate =>
+            obstacles.every(
+              other => circleClearance(candidate, animal.collisionRadius, other) >= 0,
+            ) && canMove(animal.position, candidate, animal.collisionRadius, obstacles),
+          192,
+        )
+        if (exit) {
+          animal.home = exit
+          animal.path = pathFrom([animal.position, exit])
+          animal.progress = 0
+          animal.phase = 'wandering'
+          animal.blockedFor = 0
+        }
+      }
+    }
     const clearing = obstacles.some(
       other => other.element?.dataset.yieldingTo === `animal-${animal.id}`,
     )
@@ -466,9 +496,10 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
         : animal.collisionRadius
     const drawnFrom = { x: Math.round(animal.position.x), y: Math.round(animal.position.y) }
     const drawnNext = { x: Math.round(position.x), y: Math.round(position.y) }
+    const movedPixel = drawnFrom.x !== drawnNext.x || drawnFrom.y !== drawnNext.y
     if (
       !canMove(animal.position, position, radius, obstacles) ||
-      !canMove(drawnFrom, drawnNext, radius, obstacles)
+      (movedPixel && !canMove(drawnFrom, drawnNext, radius, obstacles))
     ) {
       animal.yielding = true
       animal.blockedFor += elapsed
@@ -522,7 +553,8 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     frame = null
     if (signal.aborted || host.hidden || document.hidden || reducedMotion.matches) return pause()
     const elapsed = previousTime === null ? 0 : Math.max(0, time - previousTime)
-    let actors = [...readActors(scene), ...trunks]
+    clock = readClockObstacles(scene)
+    let actors = [...readActors(scene), ...trunks, ...clock]
     for (const animal of wanderers) {
       if (animal.phase === 'away') continue
       step(
@@ -568,6 +600,41 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     }
     render()
   }
+  const clearStillClock = () => {
+    if (!reducedMotion.matches || host.hidden || signal.aborted) return
+    clock = readClockObstacles(scene)
+    let actors = [...readActors(scene), ...trunks, ...clock]
+    for (const animal of wanderers) {
+      if (
+        animal.phase === 'away' ||
+        flying(animal) ||
+        clock.every(other => circleClearance(animal.position, animal.collisionRadius, other) >= 0)
+      )
+        continue
+      const exit = safeSite(
+        animal.position,
+        animal.kind,
+        candidate =>
+          actors.every(
+            other =>
+              other.element === animal.element ||
+              circleClearance(candidate, animal.collisionRadius, other) >= 0,
+          ),
+        192,
+      )
+      if (!exit) continue
+      animal.home = animal.position = exit
+      animal.path = null
+      animal.phase = 'resting'
+      animal.yielding = false
+      actors = actors.map(other =>
+        other.element === animal.element ? { ...other, ...exit } : other,
+      )
+    }
+    render()
+  }
+  view.addEventListener('scroll', clearStillClock, { passive: true, signal })
+  view.addEventListener('resize', clearStillClock, { signal })
   document.addEventListener(
     'visibilitychange',
     () => {
@@ -589,6 +656,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
             migrate(animal, scene.dataset.waterFrozen === 'true', 0)
       updateClimate()
       render()
+      clearStillClock()
       schedule()
     },
     { signal },
@@ -619,7 +687,11 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
       landscape = nextLandscape
       seed = nextSeed
       readRoots()
-      const placed = [...readActors(scene).filter(other => other.kind === 'traveler'), ...trunks]
+      const placed = [
+        ...readActors(scene).filter(other => other.kind === 'traveler'),
+        ...trunks,
+        ...clock,
+      ]
       const holdForSpace = (element: SVGGElement) => {
         element.style.visibility = 'hidden'
         element.dataset.collisionActive = 'false'

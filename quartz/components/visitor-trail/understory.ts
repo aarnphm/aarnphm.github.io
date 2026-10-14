@@ -244,7 +244,11 @@ export function* trailUnderstory(
       )
         continue
       placed.push(point)
-      yield plant(kind, point, depth, scale, random, index++)
+      yield {
+        id: `understory-${index}`,
+        bottom: point.y + 12,
+        markup: plant(kind, point, depth, scale, random, index++),
+      }
     }
   }
   // The open meadow between groves: bunchgrass in patches, lupine and poppy in drifts, manzanita
@@ -303,6 +307,10 @@ export function* trailUnderstory(
     placed.push(point)
     const depth = Math.max(0, Math.min(1, (point.y - meadowTop) / clearing))
     const scale = (0.55 + depth * 0.6) * (kind === 'boulder' ? 1.2 + meadow() * 0.8 : 1)
-    yield plant(kind, point, depth, scale, meadow, index++)
+    yield {
+      id: `understory-${index}`,
+      bottom: point.y + 12,
+      markup: plant(kind, point, depth, scale, meadow, index++),
+    }
   }
 }

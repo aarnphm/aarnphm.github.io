@@ -33,6 +33,7 @@ import {
 } from './landscape'
 import { detourTrail, replanOccupiedWaypoints } from './obstacle-route'
 import { pixels } from './pixels'
+import { trailSnowBank } from './winter'
 
 type Person = {
   id: string
@@ -72,7 +73,8 @@ type Person = {
 type Tent = { element: SVGGElement; position: Point; progress: number }
 
 function tentArt() {
-  return `<path class="trail-tent-ground" d="M-25 0h50v3h-50Z"/>
+  return `<g class="trail-tent-drift" transform="translate(-16 -2)">${trailSnowBank(0x632b87, 86, 23)}</g>
+    <path class="trail-tent-ground" d="M-25 0h50v3h-50Z"/>
     <g class="trail-tent-canvas" transform="translate(-23.75 -22.5)">${pixels(
       [
         '.........R.........',
@@ -87,7 +89,22 @@ function tentArt() {
       ],
       { R: 'trail-tent-roof', L: 'trail-tent-light', D: 'trail-tent-door' },
       2.5,
-    )}</g>
+    )}<g class="trail-winter-kit">${pixels(
+      [
+        '........SSS........',
+        '.......SSSSS.......',
+        '......SSS..SS......',
+        '.....SSS....SS.....',
+        '....SSS......SS....',
+        '...SSS........SS...',
+        '..SSS..........SS..',
+        '.SSS............SS.',
+        'SSS..............SS',
+        'DDDD............DDD',
+      ],
+      { S: 'trail-camp-snow', D: 'trail-camp-snow-shade' },
+      2.5,
+    )}</g></g>
     <path class="trail-tent-poles" d="M-22 1 0-25 22 1M-28 3-21-2M21-2l7 5"/>
     <path class="trail-tent-sleeper" d="M-4-3h8v2h-8Z"/>
     <g class="trail-tent-lantern"><path class="trail-tent-lamp-pool" d="M12 1h16v2h4v2H8V3h4Z"/><path class="trail-tent-window" d="M2-13h3v3H2ZM5-10h3v3H5ZM8-7h3v3H8Z"/><g transform="translate(17 -12)">${pixels(['.HH.', 'H..H', 'HLLH', 'HLLH', '.HH.'], { H: 'trail-tent-lamp-frame', L: 'trail-tent-lamp' }, 1.5)}</g></g>`

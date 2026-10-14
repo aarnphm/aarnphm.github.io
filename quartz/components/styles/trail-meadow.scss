@@ -26,7 +26,7 @@
   .trail-meadow-bloom-c {
     fill: #fdb2a2;
   }
-  .trail-scene[data-season='spring'] {
+  .trail-scene[data-foliage-season='spring'] {
     .trail-meadow-blade {
       fill: color-mix(in srgb, #9fb06f 66%, var(--light));
     }
@@ -38,7 +38,7 @@
     }
   }
   // Autumn grass turns russet; goldenrod and asters bloom late.
-  .trail-scene[data-season='autumn'] {
+  .trail-scene[data-foliage-season='autumn'] {
     .trail-meadow-blade {
       fill: color-mix(in srgb, #c09a5f 52%, var(--light));
     }
@@ -49,7 +49,7 @@
       fill: #da702c;
     }
   }
-  .trail-scene[data-season='winter'] {
+  .trail-scene[data-foliage-season='winter'] {
     .trail-meadow-blade {
       fill: color-mix(in srgb, #d6cfb6 70%, var(--light));
     }

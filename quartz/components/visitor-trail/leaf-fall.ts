@@ -66,6 +66,7 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
   if (!view || view.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   const canvas = document.createElement('canvas')
   canvas.className = 'trail-leaf-fall'
+  canvas.hidden = true
   canvas.setAttribute('aria-hidden', 'true')
   scene.append(canvas)
   const context = canvas.getContext('2d')
@@ -82,7 +83,7 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
   // Trees move when the forest is redrawn, so the crowns are read again every few seconds.
   const measure = (time: number) => {
     measured = time
-    const ratio = view.devicePixelRatio || 1
+    const ratio = 1
     const width = Math.round(scene.clientWidth * ratio)
     const height = Math.round(scene.clientHeight * ratio)
     if (canvas.width !== width || canvas.height !== height) {
@@ -136,9 +137,14 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
     const dt = Math.min(0.05, last ? (time - last) / 1000 : 0)
     last = time
     const visible =
-      scene.dataset.trailVisible === 'true' && scene.dataset.weatherMotion !== 'paused'
-    if (scene.dataset.trailVisible !== 'true') leaves.length = 0
-    const season = scene.dataset.season
+      scene.dataset.trailVisible === 'true' &&
+      scene.dataset.trailOpening === 'complete' &&
+      (scene.dataset.trailRenderer !== 'webgl' || scene.dataset.trailAmbientReady === 'true') &&
+      scene.dataset.foliageSeason === 'autumn' &&
+      scene.dataset.weatherMotion !== 'paused'
+    canvas.hidden = !visible
+    if (!visible) leaves.length = 0
+    const season = scene.dataset.foliageSeason
     const rate = visible ? leafRate(season, new Date()) : 0
     if (rate > 0 && time - measured > 5000) measure(time)
     const air = wind()
@@ -241,7 +247,13 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
   const watch = new MutationObserver(wake)
   watch.observe(scene, {
     attributes: true,
-    attributeFilter: ['data-season', 'data-trail-visible', 'data-weather-motion'],
+    attributeFilter: [
+      'data-foliage-season',
+      'data-trail-visible',
+      'data-weather-motion',
+      'data-trail-opening',
+      'data-trail-ambient-ready',
+    ],
   })
   view.addEventListener(
     'resize',

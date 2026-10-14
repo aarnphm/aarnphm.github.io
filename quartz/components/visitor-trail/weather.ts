@@ -1,4 +1,9 @@
 import { lunarPhase } from '../../util/lunar-phase'
+import {
+  sampleVisitorDaylight,
+  subscribeVisitorDaylight,
+  type VisitorDaylight,
+} from '../../util/visitor-daylight'
 import { subscribeVisitorMoon, type VisitorMoon } from '../../util/visitor-lunar'
 import { visitorPrecipitation } from '../../util/visitor-precipitation'
 import { subscribeVisitorTrailWeather, type TrailWeather } from '../../util/visitor-trail-weather'
@@ -53,7 +58,7 @@ function weatherMarks(
 ) {
   const random = trailRandom(seed ^ 0x34c4f69b)
   const { width, height, bottom, groves } = landscape
-  const { rain, snow, snowCover, sun, gust, dx, dy } = decoration(weather)
+  const { rain, snow, snowCover, gust, dx, dy } = decoration(weather)
   const marks: string[] = []
   if (snowCover || festiveSnow) {
     const patches: string[] = []
@@ -88,16 +93,14 @@ function weatherMarks(
     }).join('')}
   </g>`)
   marks.push('<g class="trail-weather-daylight">')
-  if (sun) {
-    for (let index = 0; index < 20; index++) {
-      const grove = groves[index % groves.length]
-      const x = Math.round((grove.x + (random() - 0.5) * grove.rx * 2.5) / 4) * 4
-      const y = Math.round((grove.y + (random() - 0.5) * grove.ry * 2) / 4) * 4
-      const span = 16 + Math.floor(random() * 8) * 4
-      marks.push(
-        `<path class="trail-weather-dapple" style="--trail-weather-delay: ${(-random() * 10).toFixed(2)}s" d="M${x} ${y}h${span}v4h-8v4h-${span}v-4h8Z"/>`,
-      )
-    }
+  for (let index = 0; groves.length && index < 20; index++) {
+    const grove = groves[index % groves.length]
+    const x = Math.round((grove.x + (random() - 0.5) * grove.rx * 2.5) / 4) * 4
+    const y = Math.round((grove.y + (random() - 0.5) * grove.ry * 2) / 4) * 4
+    const span = 16 + Math.floor(random() * 8) * 4
+    marks.push(
+      `<path class="trail-weather-dapple" style="--trail-weather-delay: ${(-random() * 10).toFixed(2)}s" d="M${x} ${y}h${span}v4h-8v4h-${span}v-4h8Z"/>`,
+    )
   }
   marks.push('</g>')
   if (gust > 0.025) {
@@ -178,7 +181,7 @@ function weatherMarks(
       )
     }
   }
-  if (weather?.season === 'autumn' && gust > 0.06 && !snow) {
+  if (weather?.season === 'autumn' && gust > 0.06 && !snow && !festiveSnow) {
     const count = width < 700 ? 6 : 12
     for (let index = 0; index < count; index++) {
       const grove = groves[index % groves.length]
@@ -314,6 +317,14 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   let paused = host.hidden
   let ranges: MountainRange[] = []
   let skyTimer = 0
+  let skyAt = -Infinity
+  let wetUntil = 0
+  let daylight: VisitorDaylight = sampleVisitorDaylight(null)
+  const shadowWidths = new WeakMap<SVGPathElement, number>()
+  const updateDamp = () => {
+    const damp = String(Date.now() < wetUntil)
+    if (scene.dataset.groundDamp !== damp) scene.dataset.groundDamp = damp
+  }
 
   const paintMoon = (animate: boolean) => {
     scene.dataset.moonPhase = String(moon.phase)
@@ -329,11 +340,42 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   }
 
   const updateLighting = () => {
-    // Theme changes the illustration; the forecast fields retain their actual values.
-    scene.dataset.lighting =
-      document.documentElement.getAttribute('saved-theme') === 'dark' || weather?.day === false
-        ? 'moonlit'
-        : 'day'
+    const moonlit = document.documentElement.getAttribute('saved-theme') === 'dark'
+    const automatic = document.documentElement.getAttribute('data-theme-mode') === 'daylight'
+    const state = decoration(weather)
+    const clear = (1 - (weather?.cloud ?? 0.3)) * (1 - state.rain * 0.85 - state.snow * 0.85)
+    const sun = automatic
+      ? daylight.sunlight * Math.max(0, Math.min(1, daylight.altitude / 6))
+      : moonlit
+        ? 0
+        : clear
+    const glow = automatic ? 1 - daylight.daylight : moonlit ? 1 : 0
+    const lighting = moonlit ? 'moonlit' : 'day'
+    if (scene.dataset.lighting !== lighting) scene.dataset.lighting = lighting
+    const dayLayer = layer?.querySelector<SVGGElement>('.trail-weather-daylight')
+    if (dayLayer) dayLayer.style.opacity = sun.toFixed(3)
+    for (const fire of scene.querySelectorAll<SVGGElement>('.trail-firelight'))
+      fire.style.opacity = `calc(${glow.toFixed(3)} * var(--trail-fire-strength, 1) * var(--trail-fire-night-dim, 1))`
+
+    // The sun clock moves existing foot shadows, leaving crowns and their raster textures intact.
+    const angle = ((automatic ? daylight.bearing : -25) * Math.PI) / 180
+    const dx = -Math.sin(angle)
+    const dy = Math.cos(angle) * 0.35
+    const low = automatic ? Math.max(0, Math.min(1, 1 - daylight.altitude / 55)) : 0.15
+    const scale = 0.75 + low * 1.85 * Math.abs(dx)
+    const shadowSun = sun * (automatic ? Math.max(0, Math.min(1, daylight.altitude / 5)) : 1)
+    for (const shadow of scene.querySelectorAll<SVGPathElement>('.trail-tree-shadow')) {
+      let radius = shadowWidths.get(shadow)
+      if (radius === undefined) {
+        radius = shadow.getBBox().width / 2
+        if (radius > 0) shadowWidths.set(shadow, radius)
+      }
+      const reach = Math.min(36, radius * low * 1.65)
+      const skew = dy * low * 0.4
+      const shift = dx * reach
+      shadow.style.transform = `matrix(${scale.toFixed(3)}, ${skew.toFixed(3)}, 0, 1, ${shift.toFixed(2)}, ${((skew * shift) / scale).toFixed(2)})`
+      shadow.style.opacity = (shadowSun * (0.28 + low * 0.24)).toFixed(3)
+    }
   }
   const updateMotion = () => {
     scene.dataset.weatherMotion =
@@ -344,33 +386,51 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     }
   }
   const refreshForest = () => {
-    const random = trailRandom(seed ^ 0x385ab251)
     const state = decoration(weather)
     const period = 9 - state.gust * 3
     scene.querySelectorAll<SVGGElement>('.trail-tree-motion').forEach(tree => {
       const root = tree.closest<SVGGElement>('.trail-tree, .trail-woodland-tree, .trail-understory')
+      const random = trailRandom(
+        seed ^
+          Math.imul(Number(root?.dataset.groundX ?? 0), 16807) ^
+          Math.imul(Number(root?.dataset.groundY ?? 0), 48271),
+      )
       const alongWind =
         Number(root?.dataset.groundX ?? 0) * state.dx +
         Number(root?.dataset.groundY ?? 0) * state.dy
       const travel = alongWind / (55 + state.gust * 90) + random() * 0.8
       const phase = ((travel % period) + period) % period
-      tree.style.setProperty('--trail-tree-wind-scale', (0.55 + random() * 0.45).toFixed(2))
-      tree.style.setProperty('--trail-weather-delay', `${(phase - period).toFixed(2)}s`)
+      const strength = (0.55 + random() * 0.45).toFixed(2)
+      const delay = `${(phase - period).toFixed(2)}s`
+      if (tree.style.getPropertyValue('--trail-tree-wind-scale') !== strength)
+        tree.style.setProperty('--trail-tree-wind-scale', strength)
+      if (tree.style.getPropertyValue('--trail-weather-delay') !== delay)
+        tree.style.setProperty('--trail-weather-delay', delay)
     })
+    updateLighting()
   }
   // The sun and moon move about a pixel a minute on a wide screen.
-  const renderSky = () => {
+  const renderSky = (now = Date.now()) => {
     view?.clearTimeout(skyTimer)
+    updateDamp()
     if (!skyLayer || !landscape || signal.aborted) return
-    skyLayer.innerHTML = skyMarks(landscape, ranges, weather, Date.now(), seed)
+    skyAt = now
+    skyLayer.innerHTML = skyMarks(landscape, ranges, weather, now, seed)
     paintMoon(false)
-    if (view) skyTimer = view.setTimeout(renderSky, 60_000)
+    if (view) skyTimer = view.setTimeout(() => renderSky(), 60_000)
   }
   const render = () => {
     const state = decoration(weather)
-    const { cover, forecastCover, frozen, source } = trailWinter(weather, festiveSnow)
+    if (state.rain > 0) wetUntil = Date.now() + 2 * 60 * 60 * 1000
+    const { cover, forecastCover, frozen, forecastFrozen, source } = trailWinter(
+      weather,
+      festiveSnow,
+    )
     const changedIce = scene.dataset.waterFrozen !== String(frozen)
     scene.dataset.waterFrozen = String(frozen)
+    scene.dataset.forecastWaterFrozen = String(forecastFrozen)
+    for (const frog of scene.querySelectorAll<SVGGElement>('[data-wetland-animal="frog"]'))
+      frog.dataset.collisionActive = String(!frozen)
     scene.dataset.weatherMode = state.mode
     scene.dataset.snowSource = source
     scene.dataset.festiveSnow = String(festiveSnow)
@@ -381,12 +441,13 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     scene.dataset.weatherDirection = String(weather?.windFromDegrees ?? 'unknown')
     scene.dataset.weatherWindy = String(state.gust > 0.025)
     scene.dataset.season = weather?.season ?? 'unknown'
+    // The winter illustration keeps its snow and ice separate from the local forecast.
+    scene.dataset.foliageSeason = festiveSnow ? 'winter' : scene.dataset.season
     // Early, mid or late in the season, by the month of the three it is in: leaves come out over
     // the spring and fall over the autumn.
     const month = new Date().getMonth() + 1 + ((weather?.lat ?? 0) < 0 ? 6 : 0)
     scene.dataset.seasonPhase = ['early', 'mid', 'late'][(month % 12) % 3]
     scene.dataset.snowCover = cover.toFixed(3)
-    scene.style.setProperty('--trail-sunlight', state.sun.toFixed(3))
     scene.style.setProperty('--trail-rain-strength', state.rain.toFixed(3))
     scene.style.setProperty('--trail-wind-strength', state.wind.toFixed(3))
     scene.style.setProperty('--trail-gust-strength', state.gust.toFixed(3))
@@ -398,7 +459,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     scene.style.setProperty('--trail-wind-period', `${(9 - state.gust * 3).toFixed(2)}s`)
     // Leaf clusters move in tree cells: a gust peak, a steady lean, and how fast the gust front
     // crosses a crown (seconds per tree unit, matching the per-tree delays in refreshForest).
-    const flex = 1 - state.snowCover * 0.45
+    const flex = 1 - cover * 0.45
     const push = state.gust > 0.025 ? Math.min(2.2, 0.6 + state.gust * 1.8) * flex : 0
     const rest = state.wind * 1.1 * flex
     const front = 55 + state.gust * 90
@@ -435,8 +496,25 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     },
     { signal },
   )
-  document.addEventListener('visibilitychange', updateMotion, { signal })
+  document.addEventListener(
+    'visibilitychange',
+    () => {
+      if (!document.hidden && !paused && !host.hidden) renderSky()
+      updateMotion()
+    },
+    { signal },
+  )
   motion?.addEventListener('change', updateMotion, { signal })
+  subscribeVisitorDaylight(
+    document,
+    current => {
+      if (!current) return
+      daylight = current
+      if (Math.floor(current.at / 60_000) !== Math.floor(skyAt / 60_000)) renderSky(current.at)
+      updateLighting()
+    },
+    signal,
+  )
   subscribeVisitorMoon(
     document,
     current => {
@@ -464,7 +542,9 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
       delete scene.dataset.snowSource
       delete scene.dataset.festiveSnow
       delete scene.dataset.forecastSnowCover
+      delete scene.dataset.forecastWaterFrozen
       delete scene.dataset.waterFrozen
+      delete scene.dataset.groundDamp
       view?.clearTimeout(skyTimer)
       layer?.replaceChildren()
       skyLayer?.replaceChildren()
@@ -485,6 +565,8 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     },
     resume() {
       paused = false
+      renderSky()
+      updateLighting()
       updateMotion()
     },
   }

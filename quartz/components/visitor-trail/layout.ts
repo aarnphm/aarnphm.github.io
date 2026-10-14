@@ -1,3 +1,4 @@
+import { trailClockRegion } from './clock-clearance'
 import { followTerrain, trailLandscape, type Landscape } from './landscape'
 import { trailRandom } from './random'
 import { readingRoutes } from './reading-routes'
@@ -126,16 +127,7 @@ export function trailLayout(
       bottom: rect.bottom - bounds.top,
     })
   }
-  const clock = document.querySelector('.trail-local-time')?.getBoundingClientRect()
-  const clockRegion =
-    clock && clock.width > 0 && clock.height > 0
-      ? {
-          left: clock.left - 12,
-          right: view.innerWidth,
-          top: clock.top - 12,
-          bottom: view.innerHeight,
-        }
-      : null
+  const clockRegion = trailClockRegion(document)
   const clockExclusion = clockRegion
     ? {
         left: clockRegion.left - bounds.left,
@@ -145,6 +137,17 @@ export function trailLayout(
       }
     : null
   const paintObstacles = [...obstacles]
+  const hangers = landing.querySelector('.homepage-board-hangers')?.getBoundingClientRect()
+  if (board && hangers) {
+    for (const x of [hangers.left, hangers.right - 1]) {
+      paintObstacles.push({
+        left: x - bounds.left - 1,
+        right: x - bounds.left + 2,
+        top: 0,
+        bottom: board.top - bounds.top,
+      })
+    }
+  }
   if (clockExclusion) obstacles.push(clockExclusion)
   const bottom = Math.max(landing.getBoundingClientRect().bottom - bounds.top, 280)
   const camp = world?.camp ?? {
@@ -274,8 +277,8 @@ export function trailLayout(
     landscape,
     routes,
     readingRoutes: upperRoutes,
-    clockRegion,
     clockExclusion,
+    clockClear: clearSpace(width, height, clockExclusion ? [clockExclusion] : []),
     clear,
     backdropClear,
     obstacles,

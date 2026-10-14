@@ -66,3 +66,31 @@ test('recover a displaced reader to its endpoint with bounded camp clearance', (
   const location = spacedPosition(goal, spacing)
   assert.ok(Math.hypot(location.x - goal.x, location.y - goal.y) <= 3)
 })
+
+test('a fixed rectangular corner keeps the walking lane above it open', () => {
+  const corner = {
+    id: 'clock-corner',
+    kind: 'trunk',
+    x: 915,
+    y: 698,
+    radius: Math.hypot(130, 44) / 2,
+    bounds: { left: 850, right: 980, top: 676, bottom: 720 },
+  } satisfies CollisionActor
+  assert.equal(canMove({ x: 820, y: 655 }, { x: 1000, y: 655 }, 18, [corner]), true)
+  assert.equal(canMove({ x: 820, y: 698 }, { x: 1000, y: 698 }, 18, [corner]), false)
+})
+
+test('an actor swept into a fixed corner can leave without stepping deeper inside', () => {
+  const corner = {
+    id: 'clock-corner',
+    kind: 'trunk',
+    x: 915,
+    y: 698,
+    radius: Math.hypot(130, 44) / 2,
+    bounds: { left: 850, right: 980, top: 676, bottom: 720 },
+  } satisfies CollisionActor
+  assert.equal(canMove({ x: 928, y: 670 }, { x: 928, y: 660 }, 18, [corner]), true)
+  assert.equal(canMove({ x: 928, y: 670 }, { x: 928, y: 672 }, 18, [corner]), false)
+  assert.equal(canMove({ x: 928, y: 670 }, { x: 900, y: 670 }, 18, [corner]), true)
+  assert.equal(canMove({ x: 928, y: 698 }, { x: 928, y: 760 }, 18, [corner]), true)
+})

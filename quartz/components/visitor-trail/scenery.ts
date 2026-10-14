@@ -1,6 +1,8 @@
+import type { ForestSprite } from './forest-sprites'
 import { creekDistance, groundOffset, onDryLand, pondDistance, type Landscape } from './landscape'
 import { trailRandom } from './random'
 import { trailUnderstory } from './understory'
+import { trailSnowBank } from './winter'
 
 export type ForestSettings = {
   density: number
@@ -698,19 +700,23 @@ function tree(
   }
 }
 
+export function forestShape(settings: ForestSettings) {
+  return [
+    settings.depth,
+    settings.angle,
+    settings.size,
+    settings.curl,
+    settings.branching,
+    settings.variation,
+    settings.dapple,
+  ].join('|')
+}
+
 export function createTreePainter(): typeof tree {
   let signature = ''
   const shapes = new Map<string, ReturnType<typeof tree>>()
   return (kind, seed, height, settings, minPixel = 1) => {
-    const next = [
-      settings.depth,
-      settings.angle,
-      settings.size,
-      settings.curl,
-      settings.branching,
-      settings.variation,
-      settings.dapple,
-    ].join('|')
+    const next = forestShape(settings)
     if (next !== signature) {
       shapes.clear()
       signature = next
@@ -725,7 +731,7 @@ export function createTreePainter(): typeof tree {
   }
 }
 
-type TreePlacement = {
+export type TreePlacement = {
   id: string
   x: number
   y: number
@@ -755,7 +761,11 @@ function treeSprite(
   const grouping = standalone
     ? 'data-tree-placement="standalone"'
     : `data-tree-placement="grove" data-tree-cluster="${cluster}"`
-  return `<g class="trail-tree" ${patch ? `data-trail-chunk="${patch}"` : ''} data-tree-id="${id}" data-tree="${kind}" ${grouping} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-haze: ${haze.toFixed(0)}%" transform="translate(${x} ${y})"><g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
+  const snow =
+    !foothill && trailRandom(treeSeed ^ 0x16c73)() < 0.45
+      ? trailSnowBank(treeSeed, (standalone ? 112 : 70) * scale, (18 + depth * 10) * scale)
+      : ''
+  return `<g class="trail-tree" ${patch ? `data-trail-chunk="${patch}"` : ''} data-tree-id="${id}" data-tree="${kind}" ${grouping} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-haze: ${haze.toFixed(0)}%" transform="translate(${x} ${y})">${snow}<g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
 }
 
 export function* trailPatchTrees(
@@ -770,21 +780,24 @@ export function* trailPatchTrees(
   const random = trailRandom(seed)
   const top = Math.max(region.top, landscape.meadowTop + 64)
   const span = Math.max(0, region.bottom - top - 30)
-  const count = Math.min(
-    24,
-    Math.round(
-      (settings.density * (region.right - region.left) * span) /
-        (1280 * Math.max(1, landscape.height - landscape.meadowTop)),
-    ),
-  )
+  const population = (density: number) =>
+    Math.min(
+      24,
+      Math.round(
+        (density * (region.right - region.left) * span) /
+          (1280 * Math.max(1, landscape.height - landscape.meadowTop)),
+      ),
+    )
+  const count = population(settings.density)
+  const capacity = population(forestLimits.density.max)
   const roots = [...neighbours]
   const center = {
     x: region.left + 50 + random() * (region.right - region.left - 100),
     y: top + span * (0.25 + random() * 0.5),
   }
-  for (let index = 0; index < count + 3; index++) {
-    const foothill = index >= count && region.top <= landscape.treeline
-    if (index >= count && !foothill) continue
+  for (let index = 0; index < capacity + 3; index++) {
+    const foothill = index >= capacity && region.top <= landscape.treeline
+    if (index >= capacity && !foothill) continue
     const standalone = index % 4 === 3 || foothill
     let root: Point | undefined
     for (let attempt = 0; attempt < 48; attempt++) {
@@ -820,41 +833,39 @@ export function* trailPatchTrees(
     if (!root) continue
     roots.push(root)
     const choices = foothill ? foothillKinds : stands[Math.floor(random() * stands.length)]
-    yield treeSprite(
-      landscape,
-      {
-        ...root,
-        id: `tree-patch-${region.id}-${index}`,
-        standalone,
-        foothill,
-        cluster: seed,
-        kind: choices[Math.floor(random() * choices.length)],
-        treeSeed: Math.floor(random() * 4294967296),
-        height: foothill ? 24 + random() * 10 : 32 + random() * 22,
-      },
-      settings,
-      paint,
-      region.id,
-    )
+    const placement: TreePlacement = {
+      ...root,
+      id: `tree-patch-${region.id}-${index}`,
+      standalone,
+      foothill,
+      cluster: seed,
+      kind: choices[Math.floor(random() * choices.length)],
+      treeSeed: Math.floor(random() * 4294967296),
+      height: foothill ? 24 + random() * 10 : 32 + random() * 22,
+    }
+    if (index < count || foothill)
+      yield {
+        id: placement.id,
+        bottom: placement.y + 12,
+        shape: forestShape(settings),
+        render: () => treeSprite(landscape, placement, settings, paint, region.id),
+      }
   }
 }
 
-export function* trailTreeSprites(
+export function planTrailTrees(
   landscape: Landscape,
   seed: number,
-  settings: ForestSettings = defaultForestSettings,
   walks: Point[] = [],
   clearings: (Point & { radius: number })[] = [],
-  paint: typeof tree = tree,
 ) {
   const { width, meadowTop, camp, groves, pond, alpine, treeline } = landscape
   const clearing = camp.y - meadowTop
   const random = trailRandom(seed ^ 0x7f4a7c15)
   // The groves keep their size on a wide meadow, so a wide screen takes up to half again as many
-  // trees to keep the stands as thick.
-  const count = Math.round(
-    bounded(settings.density, 'density') * Math.min(1.5, Math.max(1, width / 1280)),
-  )
+  // trees to keep the stands as thick. Plan the maximum population once so density
+  // changes select stable positions without rerolling edge trees or the ground cover.
+  const count = Math.round(forestLimits.density.max * Math.min(1.5, Math.max(1, width / 1280)))
   const roots: Point[] = []
   const placements = Array.from({ length: count }, (_, index) => {
     // One tree in four stands alone; the rest fill the groves, so more trees thicken the stands.
@@ -989,9 +1000,42 @@ export function* trailTreeSprites(
         break
       }
     }
-  placements.sort((a, b) => a.y - b.y)
-  for (const placement of placements) yield treeSprite(landscape, placement, settings, paint)
-  yield* trailUnderstory(landscape, seed, placements, walks, clearings)
+  return placements
+}
+
+export function* trailTreeSprites(
+  landscape: Landscape,
+  seed: number,
+  settings: ForestSettings = defaultForestSettings,
+  walks: Point[] = [],
+  clearings: (Point & { radius: number })[] = [],
+  paint: typeof tree = tree,
+  nearFirst = false,
+  placements = planTrailTrees(landscape, seed, walks, clearings),
+): Generator<ForestSprite> {
+  const count = Math.round(
+    bounded(settings.density, 'density') * Math.min(1.5, Math.max(1, landscape.width / 1280)),
+  )
+  const shape = forestShape(settings)
+  const sprites: ForestSprite[] = placements
+    .filter(
+      placement => placement.id.startsWith('tree-edge-') || Number(placement.id.slice(5)) <= count,
+    )
+    .map(placement => ({
+      id: placement.id,
+      bottom: placement.y + 12,
+      shape: `${shape}|${placement.x}|${placement.y}`,
+      render: () => treeSprite(landscape, placement, settings, paint),
+    }))
+  for (const sprite of trailUnderstory(landscape, seed, placements, walks, clearings))
+    sprites.push({
+      id: sprite.id,
+      bottom: sprite.bottom,
+      shape: sprite.markup,
+      render: () => sprite.markup,
+    })
+  sprites.sort((a, b) => (nearFirst ? b.bottom - a.bottom : a.bottom - b.bottom))
+  yield* sprites
 }
 
 export function trailTrees(
@@ -1002,7 +1046,9 @@ export function trailTrees(
   clearings: (Point & { radius: number })[] = [],
   paint: typeof tree = tree,
 ) {
-  return [...trailTreeSprites(landscape, seed, settings, walks, clearings, paint)].join('')
+  return Array.from(trailTreeSprites(landscape, seed, settings, walks, clearings, paint), sprite =>
+    sprite.render(),
+  ).join('')
 }
 
 export function trailFoothillWoodland(
@@ -1019,47 +1065,50 @@ export function trailFoothillWoodland(
   const random = trailRandom(seed ^ 0x5a83c917)
   const near = walks.filter(point => point.y >= alpine.base - 14 && point.y < meadowTop + 64)
   const trackPoints: Point[] = []
-  const tracks = [18, 50]
-    .map((offset, row) => {
-      const anchors = Array.from({ length: Math.max(3, Math.ceil(width / 280)) }, (_, index) => {
-        const target = {
-          x: (width * (index + 0.5)) / Math.max(3, Math.ceil(width / 280)),
-          y: alpine.base + offset,
-        }
-        return near.reduce(
-          (best, point) =>
-            Math.hypot(point.x - target.x, point.y - target.y) <
-            Math.hypot(best.x - target.x, best.y - target.y)
-              ? point
-              : best,
-          near[0] ?? target,
-        )
-      }).sort((left, right) => left.x - right.x)
-      let d = `M${anchors[0].x} ${anchors[0].y}`
-      for (let index = 1; index < anchors.length; index++) {
-        const from = anchors[index - 1]
-        const to = anchors[index]
-        const bend = { x: (from.x + to.x) / 2, y: alpine.base + offset + (random() - 0.5) * 12 }
-        d += `Q${bend.x} ${bend.y} ${to.x} ${to.y}`
-        const segments = Math.max(1, Math.ceil(Math.hypot(to.x - from.x, to.y - from.y) / 6))
-        for (let step = 0; step <= segments; step++) {
-          const t = step / segments
-          trackPoints.push({
-            x: (1 - t) ** 2 * from.x + 2 * t * (1 - t) * bend.x + t * t * to.x,
-            y: (1 - t) ** 2 * from.y + 2 * t * (1 - t) * bend.y + t * t * to.y,
-          })
-        }
+  const tracks = [18, 50].map((offset, row) => {
+    const anchors = Array.from({ length: Math.max(3, Math.ceil(width / 280)) }, (_, index) => {
+      const target = {
+        x: (width * (index + 0.5)) / Math.max(3, Math.ceil(width / 280)),
+        y: alpine.base + offset,
       }
-      return `<path class="trail-mountain-track" data-woodland-track="${row}" d="${d}"/>`
-    })
-    .join('')
-  const trees: { x: number; y: number; markup: string }[] = []
+      return near.reduce(
+        (best, point) =>
+          Math.hypot(point.x - target.x, point.y - target.y) <
+          Math.hypot(best.x - target.x, best.y - target.y)
+            ? point
+            : best,
+        near[0] ?? target,
+      )
+    }).sort((left, right) => left.x - right.x)
+    let d = `M${anchors[0].x} ${anchors[0].y}`
+    for (let index = 1; index < anchors.length; index++) {
+      const from = anchors[index - 1]
+      const to = anchors[index]
+      const bend = { x: (from.x + to.x) / 2, y: alpine.base + offset + (random() - 0.5) * 12 }
+      d += `Q${bend.x} ${bend.y} ${to.x} ${to.y}`
+      const segments = Math.max(1, Math.ceil(Math.hypot(to.x - from.x, to.y - from.y) / 6))
+      for (let step = 0; step <= segments; step++) {
+        const t = step / segments
+        trackPoints.push({
+          x: (1 - t) ** 2 * from.x + 2 * t * (1 - t) * bend.x + t * t * to.x,
+          y: (1 - t) ** 2 * from.y + 2 * t * (1 - t) * bend.y + t * t * to.y,
+        })
+      }
+    }
+    return {
+      id: `woodland-track-${row}`,
+      bottom: alpine.base + offset,
+      shape: d,
+      render: () => `<path class="trail-mountain-track" data-woodland-track="${row}" d="${d}"/>`,
+    }
+  })
+  const trees: { x: number; y: number; sprite: ForestSprite; active: boolean }[] = []
   const woodland = trailRandom(seed ^ 0x492671b3)
   const band = Math.min(148, Math.max(60, (camp.y - alpine.base) * 0.3))
   const floor = alpine.base + 6
   const front = alpine.base + band
   const perCluster = Math.max(2, Math.round(settings.density / 12))
-  const plant = (center: Point, rx: number, ry: number, cluster: string) => {
+  const plant = (center: Point, rx: number, ry: number, cluster: string, active = true) => {
     let root: Point | undefined
     for (let attempt = 0; attempt < 32; attempt++) {
       const angle = woodland() * Math.PI * 2
@@ -1093,21 +1142,31 @@ export function trailFoothillWoodland(
     if (!root) return
     const variant = Math.floor(woodland() * 8)
     const kind = woodlandKinds[variant % woodlandKinds.length]
-    const shape = paint(
-      kind,
-      0x24c039af ^ Math.imul(variant + 1, 16807),
-      20 + (variant % 3) * 5,
-      distant,
-      2,
-    )
     const depth = (root.y - floor) / (front - floor)
     const depthScale = 0.28 + depth * 0.37
     const size = 0.7 + woodland() * 0.6
     const scale = depthScale * size
+    const point = root
+    const id = `woodland-${trees.length}`
     trees.push({
       x: root.x,
       y: root.y,
-      markup: `<g class="trail-woodland-tree" data-woodland-tree="" data-woodland-id="woodland-${trees.length}" data-woodland-cluster="${cluster}" data-tree="${kind}" data-tree-tone="${shape.tone}" data-tree-scale="${scale.toFixed(3)}" data-tree-depth-scale="${depthScale.toFixed(3)}" data-tree-size="${size.toFixed(3)}" data-trunk-radius="${(shape.trunkRadius * scale).toFixed(3)}" data-ground-x="${root.x.toFixed(2)}" data-ground-y="${root.y.toFixed(2)}" style="--trail-tree-haze:${(44 - depth * 28).toFixed(0)}%" transform="translate(${root.x.toFixed(2)} ${root.y.toFixed(2)}) scale(${scale.toFixed(3)})">${shape.markup}</g>`,
+      active,
+      sprite: {
+        id,
+        bottom: root.y + 12,
+        shape: `${forestShape(distant)}|${point.x}|${point.y}|${scale}`,
+        render: () => {
+          const shape = paint(
+            kind,
+            0x24c039af ^ Math.imul(variant + 1, 16807),
+            20 + (variant % 3) * 5,
+            distant,
+            2,
+          )
+          return `<g class="trail-woodland-tree" data-trail-layer="${id}" data-woodland-tree="" data-woodland-id="${id}" data-woodland-cluster="${cluster}" data-tree="${kind}" data-tree-tone="${shape.tone}" data-tree-scale="${scale.toFixed(3)}" data-tree-depth-scale="${depthScale.toFixed(3)}" data-tree-size="${size.toFixed(3)}" data-trunk-radius="${(shape.trunkRadius * scale).toFixed(3)}" data-ground-x="${point.x.toFixed(2)}" data-ground-y="${point.y.toFixed(2)}" style="--trail-tree-haze:${(44 - depth * 28).toFixed(0)}%" transform="translate(${point.x.toFixed(2)} ${point.y.toFixed(2)}) scale(${scale.toFixed(3)})">${shape.markup}</g>`
+        },
+      },
     })
   }
   let x = 32 + woodland() * 76
@@ -1120,8 +1179,11 @@ export function trailFoothillWoodland(
     const center = { x, y: floor + depth * (front - floor) }
     const rx = 22 + woodland() * 44
     const ry = 12 + woodland() * 24
-    const count = Math.max(3, perCluster + Math.floor(woodland() * 5))
-    for (let index = 0; index < count; index++) plant(center, rx, ry, String(cluster))
+    const extra = Math.floor(woodland() * 5)
+    const count = Math.max(3, perCluster + extra)
+    const capacity = Math.max(3, Math.round(forestLimits.density.max / 12) + extra)
+    for (let index = 0; index < capacity; index++)
+      plant(center, rx, ry, String(cluster), index < count)
     // Stands follow each other closely along the foot of the range, with the odd wide clearing.
     x += woodland() < 0.2 ? 180 + woodland() * 120 : 60 + woodland() * 80
     cluster++
@@ -1137,11 +1199,11 @@ export function trailFoothillWoodland(
       16,
       'standalone',
     )
-  return (
-    tracks +
-    trees
+  return [
+    ...tracks,
+    ...trees
+      .filter(tree => tree.active)
       .sort((left, right) => left.y - right.y)
-      .map(tree => tree.markup)
-      .join('')
-  )
+      .map(tree => tree.sprite),
+  ]
 }

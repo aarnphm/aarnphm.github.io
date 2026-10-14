@@ -70,10 +70,7 @@ document.addEventListener('nav', () => {
     else window.setTimeout(attachFrame, 1000)
   }
   document.body.append(root)
-  // The scene stands beside body, not inside it. A theme change eases the palette tokens on
-  // body, and an eased inherited token restyles every descendant each frame: twelve thousand
-  // nodes in the scene. Beside body the scene reads the root tokens and switches in one step,
-  // and the compositor crossfades its rasters in step with the page.
+  // Keep the scene outside body so page selectors do not restyle its thousands of nodes.
   document.documentElement.append(scene)
   const disposeMoon = mountMoonCalendar(root, signal)
   mountVisitorRegister(root, signal)

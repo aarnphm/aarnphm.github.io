@@ -1,44 +1,4 @@
-$paper-palette: (
-  paper: #fffcf0,
-  seam: #e6e4d9,
-  muted: #b7b5ac,
-  ink: #6f6e69,
-  strong: #100f0f,
-);
-
-@each $role, $initial in $paper-palette {
-  @property --trail-#{$role} {
-    syntax: '<color>';
-    inherits: true;
-    initial-value: $initial;
-  }
-}
-
-// Resolve the source palette at the root before the homepage aliases inherit it.
-:root {
-  --trail-paper: var(--light);
-  --trail-seam: var(--lightgray);
-  --trail-muted: var(--gray);
-  --trail-ink: var(--darkgray);
-  --trail-strong: var(--dark);
-}
-
-// The trail renders only on the index page. A `body:has()` anchor would re-match on every trail
-// frame and restyle the whole document. The trail scene itself stands beside body (see
-// homepage-trail.inline.ts), so the eased tokens below never reach its nodes: it switches in one
-// step and the scene compositor crossfades its rasters over the same 1200 ms.
 body[data-slug='index'] {
-  --trail-paper: inherit;
-  --trail-seam: inherit;
-  --trail-muted: inherit;
-  --trail-ink: inherit;
-  --trail-strong: inherit;
-  --light: var(--trail-paper);
-  --lightgray: var(--trail-seam);
-  --gray: var(--trail-muted);
-  --darkgray: var(--trail-ink);
-  --dark: var(--trail-strong);
-
   .visitor-weather-sun,
   .visitor-weather-moon {
     display: block;
@@ -49,6 +9,36 @@ body[data-slug='index'] {
   .visitor-weather-moon {
     opacity: 0;
     transform: translateY(3px) rotate(-15deg);
+  }
+}
+
+:root[data-home-theme-reveal] {
+  body,
+  body *,
+  body *::before,
+  body *::after {
+    transition: none !important;
+  }
+
+  &::view-transition-group(root),
+  &::view-transition-new(root),
+  &::view-transition-old(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  &::view-transition-old(root) {
+    z-index: 1;
+    mask-repeat: no-repeat;
+    image-rendering: pixelated;
+    animation: homepage-theme-hold 1s linear paused both;
+  }
+}
+
+@keyframes homepage-theme-hold {
+  from,
+  to {
+    opacity: 1;
   }
 }
 
@@ -94,6 +84,13 @@ body[data-slug='index'] {
     pointer-events: none;
     shape-rendering: auto;
   }
+  [data-night='true'] {
+    --trail-fire-night-dim: 0.4;
+  }
+  .trail-tree-shadow {
+    transform-origin: 0 0;
+    transform-box: view-box;
+  }
   .trail-scene[data-lighting='moonlit'] {
     .trail-weather-night {
       opacity: 1;
@@ -112,20 +109,6 @@ body[data-slug='index'] {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  body[data-slug='index'] {
-    transition:
-      --trail-paper 1200ms ease-in-out,
-      --trail-seam 1200ms ease-in-out,
-      --trail-muted 1200ms ease-in-out,
-      --trail-ink 1200ms ease-in-out,
-      --trail-strong 1200ms ease-in-out;
-    .visitor-weather-sun,
-    .visitor-weather-moon {
-      transition:
-        opacity 600ms ease-in-out,
-        transform 600ms ease-in-out;
-    }
-  }
   .homepage-trail-scene {
     .trail-weather-night {
       transition:
@@ -135,6 +118,11 @@ body[data-slug='index'] {
     .trail-weather-daylight,
     .trail-firelight {
       transition: opacity 1200ms ease-in-out;
+    }
+    .trail-tree-shadow {
+      transition:
+        opacity 1200ms ease-in-out,
+        transform 1200ms ease-in-out;
     }
     .trail-scene[data-lighting='moonlit'] {
       .trail-moon-motion {

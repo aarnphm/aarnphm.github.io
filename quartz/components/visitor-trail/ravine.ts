@@ -62,7 +62,7 @@ function creekBed(landscape: Landscape, random: () => number) {
           let tone: string
           let rank: number
           if (inland <= 0) {
-            tone = 'water'
+            tone = Math.abs(side) < section.waterHalf * 0.4 && texture < 0.55 ? 'deep' : 'water'
             rank = 4
           } else if (inland <= bank) {
             // Gravel sits beside the water; the upper slope mixes into the grass.
@@ -90,6 +90,88 @@ function creekBed(landscape: Landscape, random: () => number) {
   return paths(runs)
 }
 
+// Sample by travelled distance rather than mesh segments: alpine segments are only two pixels
+// long. A glint follows several of them at a visible speed while the bed keeps its texture.
+function current(line: readonly Point[], landscape: Landscape, spacing: number, tributary = false) {
+  const distances = [0]
+  for (let index = 1; index < line.length; index++)
+    distances.push(
+      distances[index - 1] +
+        Math.hypot(line[index].x - line[index - 1].x, line[index].y - line[index - 1].y),
+    )
+  const total = distances.at(-1) ?? 0
+  const interval = Math.max(spacing, total / 18)
+  const pointAt = (distance: number) => {
+    let index = 1
+    while (index < line.length - 1 && distances[index] < distance) index++
+    const a = line[index - 1]
+    const b = line[index]
+    const share = (distance - distances[index - 1]) / (distances[index] - distances[index - 1] || 1)
+    return { x: a.x + (b.x - a.x) * share, y: a.y + (b.y - a.y) * share }
+  }
+  const glints: string[] = []
+  for (
+    let distance = interval * 0.2;
+    distance < total - 8 && glints.length < 18;
+    distance += interval
+  ) {
+    const reach = Math.min(total - distance, spacing * 0.8, 42)
+    const points = Array.from({ length: 5 }, (_, index) => pointAt(distance + (reach * index) / 4))
+    const a = points[0]
+    if (points[4].x > landscape.width - 8) continue
+    if (tributary && pondDistance(a, landscape.pond) < 1.05) continue
+    const depth = trailGroundScale(a.y, landscape)
+    const duration = reach / (12 + depth * 10)
+    const motion = points
+      .map((point, index) => {
+        const from = points[Math.max(0, index - 1)]
+        const to = points[Math.min(4, index + 1)]
+        const angle = (Math.atan2(to.y - from.y, to.x - from.x) * 180) / Math.PI
+        return `--current-x${index}:${(point.x - a.x).toFixed(2)}px;--current-y${index}:${(point.y - a.y).toFixed(2)}px;--current-angle${index}:${angle.toFixed(1)}deg`
+      })
+      .join(';')
+    const span = 2 + depth * 3
+    glints.push(
+      `<g class="trail-river-current" transform="translate(${a.x.toFixed(1)} ${a.y.toFixed(1)})" style="${motion};--current-duration:${duration.toFixed(2)}s;--current-delay:-${((glints.length * 0.73) % duration).toFixed(2)}s"><g class="trail-river-glint"><path class="trail-ravine-foam" d="M0 -0.75h${span.toFixed(1)}v1.5H0Z"/></g></g>`,
+    )
+  }
+  return glints.join('')
+}
+
+function creekCurrent(landscape: Landscape) {
+  return landscape.creek
+    .map((line, index) => current(line, landscape, index ? 68 : 62, index > 0))
+    .join('')
+}
+
+function creekRocks(landscape: Landscape, routes: readonly string[]) {
+  const walks = routes.flatMap(routePoints)
+  const rocks: string[] = []
+  let travelled = 0
+  const line = landscape.creek[0] ?? []
+  for (let index = 1; index < line.length && rocks.length < 10; index++) {
+    const a = line[index - 1]
+    const b = line[index]
+    const length = Math.hypot(b.x - a.x, b.y - a.y)
+    travelled += length
+    if (travelled < 130 || length < 1 || b.x > landscape.width - 12) continue
+    const section = creekSection(b, landscape)
+    if (
+      section.waterHalf < 1.8 ||
+      walks.some(point => Math.hypot(point.x - b.x, point.y - b.y) < 24)
+    )
+      continue
+    travelled = 0
+    const size = 0.65 + section.depth * 0.45
+    const x = b.x - ((b.y - a.y) / length) * section.waterHalf * 0.7
+    const y = b.y + ((b.x - a.x) / length) * section.waterHalf * 0.4
+    rocks.push(
+      `<g class="trail-river-rock" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${size.toFixed(3)})"><path class="trail-ravine-stone" d="M-3 -3h5v1h2v2h-7Z"/><path class="trail-ravine-stone-lit" d="M-2 -4h3v2h-3Z"/><path class="trail-ravine-foam" d="M-4 1h3v1h-3ZM2 1h3v1H2Z"/></g>`,
+    )
+  }
+  return rocks.join('')
+}
+
 // The stream down the face: it runs along the flank and foams where it tumbles, with a dithered
 // cut below it in the rock. Its narrow runoff meets the meadow without a broad spray apron.
 function mountainStream(landscape: Landscape) {
@@ -97,7 +179,6 @@ function mountainStream(landscape: Landscape) {
   if (line.length < 2) return ''
   const runs: Runs = new Map()
   const seen = new Set<string>()
-  const centre: Point[] = []
   const length = line.length - 1
   for (let index = 1; index <= length; index++) {
     const a = line[index - 1]
@@ -110,23 +191,19 @@ function mountainStream(landscape: Landscape) {
       if (seen.has(`${x},${y}`)) continue
       seen.add(`${x},${y}`)
       const t = index / length
-      const width = 2
+      const width = t < 0.55 ? 2 : 4
+      const left = x - width / 2
       if (steep) {
-        for (const side of [x - 2, x + width])
+        for (const side of [left - 2, left + width])
           if (threshold(side / 2, y / 2) < 0.45) run(runs, 'gully', side, y, 2)
-        if (threshold(x / 2 + 1, y / 2) < t * 0.12) run(runs, 'mist', x + width, y, 2)
-      } else if (threshold(x / 2, y / 2 + 1) < 0.7) run(runs, 'gully', x, y + 2, width)
-      run(runs, 'water', x, y, width)
+        if (threshold(x / 2 + 1, y / 2) < t * 0.12) run(runs, 'mist', left + width, y, 2)
+      } else if (threshold(x / 2, y / 2 + 1) < 0.7) run(runs, 'gully', left, y + 2, width)
+      run(runs, 'water', left, y, width)
       if (steep && threshold(x / 2, y / 2) < 0.4) run(runs, 'foam', x, y, 2)
-      centre.push({ x: x + width / 2, y })
     }
   }
   const foot = line[length]
-  const d = centre
-    .filter((_, index) => index % 2 === 0)
-    .map((point, index) => `${index ? 'L' : 'M'}${point.x} ${point.y}`)
-    .join('')
-  return `<g class="trail-ravine-stream" data-ground-y="${foot.y}">${paths(runs)}<path class="trail-ravine-flow" d="${d}"/></g>`
+  return `<g class="trail-ravine-stream" data-ground-y="${foot.y}">${paths(runs)}${current(line, landscape, 30)}</g>`
 }
 
 // Samples a route's `M x y C …` path into a polyline.
@@ -410,9 +487,9 @@ function bankDetails(landscape: Landscape, random: () => number, routes: readonl
         walks.some(point => Math.hypot(point.x - x, point.y - y) < 20)
       )
         continue
-      const size = 0.6 + section.depth * 0.7
+      const size = (0.6 + section.depth * 0.7) * (0.8 + random() * 0.5)
       const rows =
-        random() < 0.3 ? ravineArt.stone : random() < 0.5 ? ravineArt.fern : ravineArt.sedge
+        random() < 0.4 ? ravineArt.stone : random() < 0.5 ? ravineArt.fern : ravineArt.sedge
       details.push(
         `<g data-ravine-bank="${lineIndex}" transform="translate(${(x - (rows[0].length * size) / 2).toFixed(1)} ${(y - rows.length * size).toFixed(1)})">${pixels(rows, tones, size)}</g>`,
       )
@@ -423,14 +500,14 @@ function bankDetails(landscape: Landscape, random: () => number, routes: readonl
 
 export function trailCreek(landscape: Landscape, seed: number) {
   const random = trailRandom(seed ^ 0x1b873593)
-  return `<g class="trail-ravine" aria-hidden="true">${creekBed(landscape, random)}${bankDetails(landscape, random, [])}</g>`
+  return `<g class="trail-ravine" aria-hidden="true">${creekBed(landscape, random)}${bankDetails(landscape, random, [])}${creekCurrent(landscape)}${creekRocks(landscape, [])}</g>`
 }
 
 export function trailRavine(landscape: Landscape, seed: number, routes: readonly string[] = []) {
   const random = trailRandom(seed ^ 0x1b873593)
   return (
     `<g class="trail-relief" aria-hidden="true">${relief(landscape, random)}</g>` +
-    `<g class="trail-ravine" aria-hidden="true">${creekBed(landscape, random)}${bankDetails(landscape, random, routes)}</g>` +
+    `<g class="trail-ravine" aria-hidden="true">${creekBed(landscape, random)}${bankDetails(landscape, random, routes)}${creekCurrent(landscape)}${creekRocks(landscape, routes)}</g>` +
     mountainStream(landscape)
   )
 }

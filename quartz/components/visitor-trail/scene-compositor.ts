@@ -1,5 +1,8 @@
+import { subscribeVisitorDaylight, type VisitorDaylight } from '../../util/visitor-daylight'
+import { trailClockRegion } from './clock-clearance'
+import { daylightTint, type DaylightTint } from './daylight-palette'
 import { groundObjectSelector } from './depth-order'
-import { trailOpeningCell, type SceneReveal } from './scene-reveal'
+import { trailOpeningCell, trailThemeDuration, type SceneReveal } from './scene-reveal'
 
 // The SVG stays the scene model: journeys, depth order, the pet and camp hints still read and
 // write it. This module rasterizes that model into textures and composites them with WebGL2, so
@@ -83,7 +86,23 @@ const translation = (x: number, y: number): Matrix => [1, 0, 0, 1, x, y]
 
 // Strokes and glyphs reach this far past the geometry box, in user units.
 const padding = 3
+const ambientLayers =
+  '.trail-weather, .trail-hiker-tracks, .trail-reader-tracks, .trail-camp-tracks, .trail-visitor-tracks, .trail-ranger-tracks'
 const motionProperties = new Set(['opacity', 'transform', 'translate', 'rotate', 'scale'])
+const motionVariables = new Set([
+  '--trail-tree-wind-scale',
+  '--trail-weather-delay',
+  '--trail-wind-period',
+  '--trail-leaf-push-x',
+  '--trail-leaf-push-y',
+  '--trail-leaf-rest-x',
+  '--trail-leaf-rest-y',
+  '--trail-leaf-flip',
+  '--trail-leaf-lag-x',
+  '--trail-leaf-lag-y',
+  '--trail-leaf-travel-x',
+  '--trail-leaf-travel-y',
+])
 const unpainted = new Set([
   'defs',
   'mask',
@@ -126,21 +145,39 @@ uniform float alpha;
 uniform vec2 viewport;
 uniform vec3 reveal;
 uniform vec3 opening;
+uniform vec4 themeReveal;
+uniform sampler2D loadCoverage;
+uniform float loadActive;
 uniform float entry;
+uniform vec3 solarTint;
 in vec2 uv;
 in vec2 maskUv;
 in vec2 clipUv;
 out vec4 color;
+float trailThreshold(float origin, float cellSize) {
+  vec2 cell = floor(clipUv * viewport / cellSize);
+  float noise = fract(dot(cell, vec2(0.754877666, 0.569840296)));
+  float distance = max(0.0, (origin - clipUv.y * viewport.y) / max(origin, 1.0));
+  return 0.82 * distance + 0.18 * noise;
+}
 void main() {
   // Masks hold premultiplied luminance, so this is luminance times alpha, as in SVG.
   float mask = texture(maskImage, maskUv).r;
   color = texture(image, uv) * alpha * mask * texture(clipImage, clipUv).r;
-  if (opening.x < 1.0) {
-    vec2 cell = floor(clipUv * viewport / opening.z);
-    float noise = fract(dot(cell, vec2(0.754877666, 0.569840296)));
-    float distance = max(0.0, (opening.y - clipUv.y * viewport.y) / opening.y);
-    color *= step(0.82 * distance + 0.18 * noise, opening.x);
+  // Textures and the blend target hold premultiplied RGB.
+  color.rgb = min(color.rgb * solarTint, vec3(color.a));
+  float ready = 1.0;
+  if (loadActive > 0.0 && themeReveal.x >= 0.0) {
+    vec2 cell = floor(clipUv * viewport / themeReveal.w);
+    ready = texture(loadCoverage, (cell + 0.5) / vec2(textureSize(loadCoverage, 0))).r;
   }
+  if (opening.x < 1.0) {
+    color *= step(trailThreshold(opening.y, opening.z), opening.x);
+  }
+  if (themeReveal.x > 0.0) {
+    float next = step(trailThreshold(themeReveal.z, themeReveal.w), themeReveal.y) * ready;
+    color *= themeReveal.x < 1.5 ? next : 1.0 - next;
+  } else color *= ready;
   if (entry < 1.0) {
     vec2 cell = floor(clipUv * viewport / reveal.z);
     float threshold = fract(dot(cell, vec2(0.754877666, 0.569840296)));
@@ -183,15 +220,16 @@ export function mountSceneCompositor(
   const view = document.defaultView
   const svg = scene.querySelector<SVGSVGElement>('svg.trail-canvas')
   if (!view || !svg) throw new Error('The scene compositor needs the trail canvas')
-  // Texels per CSS pixel. At one texel per CSS pixel, sprites at fractional positions lose their
-  // finest pixels, so textures follow the display density, up to 2.
-  const resolution = Math.min(2, Math.max(1, Math.round(view.devicePixelRatio)))
+  // The scene uses CSS-pixel artwork. A Retina buffer quadruples raster/upload work.
+  const resolution = 1
   const canvas = document.createElement('canvas')
   canvas.className = 'trail-compositor'
   canvas.setAttribute('aria-hidden', 'true')
   const gl = canvas.getContext('webgl2', {
     alpha: true,
     premultipliedAlpha: true,
+    // Deferred uploads keep the last complete frame through browser presentation.
+    preserveDrawingBuffer: true,
     antialias: false,
     depth: false,
     stencil: false,
@@ -208,43 +246,6 @@ export function mountSceneCompositor(
     canvas.remove()
     return false
   }
-  const clockElement = document.querySelector('.trail-local-time')
-  let clockBox: Box | null = null
-  let clockClip = ''
-  const clipClock = () => {
-    let clip = 'none'
-    if (clockBox) {
-      const width = canvas.width / resolution
-      const height = canvas.height / resolution
-      const left = Math.max(0, clockBox.left)
-      const top = Math.max(0, clockBox.top)
-      const right = Math.min(width, clockBox.right)
-      const bottom = Math.min(height, clockBox.bottom)
-      if (right > left && bottom > top)
-        clip = `path(evenodd, "M0 0H${width}V${height}H0Z M${left} ${top}H${right}V${bottom}H${left}Z")`
-    }
-    if (clockClip !== clip) {
-      clockClip = clip
-      canvas.style.clipPath = clip
-    }
-  }
-  const updateClock = () => {
-    const rect = clockElement?.getBoundingClientRect()
-    const bounds = host.getBoundingClientRect()
-    clockBox =
-      rect && rect.width > 0 && rect.height > 0
-        ? {
-            left: rect.left - 12 - bounds.left,
-            top: rect.top - 12 - bounds.top,
-            right: view.innerWidth - bounds.left,
-            bottom: view.innerHeight - bounds.top,
-          }
-        : null
-    clipClock()
-  }
-  updateClock()
-  view.addEventListener('scroll', updateClock, { signal, passive: true })
-  view.addEventListener('resize', updateClock, { signal })
 
   // The trail frame builds nodes in the page document, and some of them carry the frame's classes,
   // so a type test checks both realms.
@@ -277,6 +278,8 @@ export function mountSceneCompositor(
     }
     found.delete('data-trail-renderer')
     found.delete('data-trail-opening')
+    found.delete('data-trail-rendered')
+    found.delete('data-trail-visible')
     attributeSelectors = found
   }
   const inert = (name: string) =>
@@ -290,6 +293,10 @@ export function mountSceneCompositor(
   let clipVersion = 0
   const clipTextures = new Map<string, { texture: WebGLTexture | null; key: string }>()
   const textures = new Set<WebGLTexture>()
+  const allocations = new WeakMap<
+    WebGLTexture,
+    { width: number; height: number; single: boolean }
+  >()
   const setup = () => {
     const compile = (type: number, source: string) => {
       const shader = gl.createShader(type)
@@ -320,12 +327,18 @@ export function mountSceneCompositor(
         'clipImage',
         'reveal',
         'opening',
+        'themeReveal',
+        'loadCoverage',
+        'loadActive',
         'entry',
+        'solarTint',
       ].map(name => [name, gl.getUniformLocation(program, name)]),
     )
     gl.uniform1i(uniforms.image, 0)
     gl.uniform1i(uniforms.maskImage, 1)
     gl.uniform1i(uniforms.clipImage, 2)
+    gl.uniform1i(uniforms.loadCoverage, 3)
+    gl.uniform3f(uniforms.solarTint, 1, 1, 1)
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW)
     gl.enableVertexAttribArray(0)
@@ -333,6 +346,7 @@ export function mountSceneCompositor(
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true)
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
     blank = gl.createTexture()
     gl.bindTexture(gl.TEXTURE_2D, blank)
     gl.texImage2D(
@@ -356,19 +370,27 @@ export function mountSceneCompositor(
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
   }
-  const upload = (texture: WebGLTexture | null, source: TexImageSource, single = false) => {
+  const upload = (texture: WebGLTexture | null, source: HTMLCanvasElement, single = false) => {
     const target = texture ?? gl.createTexture()
+    if (!target) return null
     textures.add(target)
     gl.bindTexture(gl.TEXTURE_2D, target)
-    if (single) gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, gl.RED, gl.UNSIGNED_BYTE, source)
-    else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source)
-    filter()
+    const known = allocations.get(target)
+    const format = single ? gl.RED : gl.RGBA
+    if (known?.width === source.width && known.height === source.height && known.single === single)
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, format, gl.UNSIGNED_BYTE, source)
+    else {
+      gl.texImage2D(gl.TEXTURE_2D, 0, single ? gl.R8 : gl.RGBA, format, gl.UNSIGNED_BYTE, source)
+      allocations.set(target, { width: source.width, height: source.height, single })
+      filter()
+    }
     return target
   }
   const release = (texture: WebGLTexture | null) => {
     if (!texture) return
     gl.deleteTexture(texture)
     textures.delete(texture)
+    allocations.delete(texture)
   }
 
   const ctm = (element: SVGGraphicsElement): Matrix => {
@@ -409,9 +431,17 @@ export function mountSceneCompositor(
   }
   const discover = (root: Element) => {
     // Depth sorting moves known objects every frame; only new markup needs a search.
-    if (!is(root, 'SVGElement') || promoted.has(root)) return
+    if (!is(root, 'SVGElement')) return
+    if (promoted.has(root)) {
+      carry(root)
+      let owner = root.parentElement
+      while (owner && !groups.has(owner)) owner = owner.parentElement
+      const group = owner && groups.get(owner)
+      if (group) group.structure = true
+      return
+    }
     if (
-      root.matches(groundObjectSelector) ||
+      root.matches(`${groundObjectSelector}, .trail-tree-canopy`) ||
       root.hasAttribute('data-trail-depth') ||
       root.hasAttribute('data-trail-chunk') ||
       root.hasAttribute('data-trail-layer')
@@ -419,7 +449,7 @@ export function mountSceneCompositor(
       promote(root)
     if (root.hasAttribute('mask') || is(root, 'SVGForeignObjectElement')) promote(root)
     for (const element of root.querySelectorAll(
-      `${groundObjectSelector}, [data-trail-depth], [data-trail-chunk], [data-trail-layer], [mask], foreignObject`,
+      `${groundObjectSelector}, .trail-tree-canopy, [data-trail-depth], [data-trail-chunk], [data-trail-layer], [mask], foreignObject`,
     ))
       promote(element)
   }
@@ -488,6 +518,15 @@ export function mountSceneCompositor(
   })
   const drop = (item: Run | Surface | Group) => {
     if (item.kind === 'group') {
+      // A retired container can still reference descendants moved into another layer.
+      if (
+        svg.contains(item.element) &&
+        (promoted.has(item.element) || carriers.has(item.element))
+      ) {
+        item.moved = true
+        item.fresh = false
+        return
+      }
       for (const child of item.items) drop(child)
       release(item.mask?.texture ?? null)
       groups.delete(item.element)
@@ -529,7 +568,11 @@ export function mountSceneCompositor(
     const children = leaf ? [element] : [...element.children]
     const space = leaf ? identity : invert(ctm(element))
     for (const child of children) {
-      if (child !== element && unpainted.has(child.localName)) continue
+      if (
+        child !== element &&
+        (unpainted.has(child.localName) || child.hasAttribute('data-trail-model'))
+      )
+        continue
       if (child !== element && is(child, 'SVGForeignObjectElement')) {
         flush()
         const surface = child.querySelector('canvas')
@@ -584,18 +627,18 @@ export function mountSceneCompositor(
       pending.push(child)
     }
     flush()
-    for (const item of previous) if (!kept.has(item)) drop(item)
+    for (const item of previous) {
+      if (kept.has(item)) continue
+      drop(item)
+    }
     owner.items = items
     const clipId = element === svg ? undefined : reference(owner.style.clipPath)
     const clip = clipId ? tree().getElementById(clipId) : null
     owner.clip = is(clip, 'SVGClipPathElement') ? clip : null
     owner.moved = true
     owner.fresh = false
-    // Display masks must not enter the held GPU image.
     const maskId =
-      element === svg || element.hasAttribute('data-trail-display-mask')
-        ? undefined
-        : reference(owner.style.mask === 'none' ? null : owner.style.mask)
+      element === svg ? undefined : reference(owner.style.mask === 'none' ? null : owner.style.mask)
     const source = maskId ? tree().getElementById(maskId) : null
     if (is(source, 'SVGMaskElement')) {
       if (owner.mask?.source !== source) {
@@ -928,7 +971,12 @@ export function mountSceneCompositor(
     toTexels: Matrix,
     self: boolean,
   ): boolean => {
-    if (!is(element, 'SVGGraphicsElement') || unpainted.has(element.localName)) return false
+    if (
+      !is(element, 'SVGGraphicsElement') ||
+      unpainted.has(element.localName) ||
+      element.hasAttribute('data-trail-model')
+    )
+      return false
     if (is(element, 'SVGForeignObjectElement')) return false
     const style = view.getComputedStyle(element)
     if (style.display === 'none') return false
@@ -979,31 +1027,33 @@ export function mountSceneCompositor(
     return total
   }
   const rasterize = (target: Layer, space: SVGGraphicsElement, nodes: Element[], self: boolean) => {
+    const spaceMatrix = ctm(space)
+    const sceneScale = scaleOf(spaceMatrix) * resolution
+    // A palette change keeps the geometry and texel allocation from the previous paint.
+    const recolor = !target.dirty && target.width > 0 && target.scale === sceneScale
+    const box = recolor ? null : bounds(nodes, spaceMatrix, self)
     target.dirty = false
     target.waiting = 0
     target.palette = palette
     target.revision = revision
-    const spaceMatrix = ctm(space)
-    const box = bounds(nodes, spaceMatrix, self)
-    const scale = Math.min(4, Math.max(0.25, scaleOf(spaceMatrix) * resolution))
-    target.scale = scaleOf(spaceMatrix) * resolution
-    if (!box) {
+    const scale = Math.min(4, Math.max(0.25, sceneScale))
+    target.scale = sceneScale
+    if (!recolor && !box) {
       release(target.texture)
       target.texture = null
       return
     }
-    const margin = padding + 2 / scale
-    const left = box.left - margin
-    const top = box.top - margin
-    const width = Math.min(maxTexture, Math.ceil((box.right - box.left + margin * 2) * scale))
-    const height = Math.min(maxTexture, Math.ceil((box.bottom - box.top + margin * 2) * scale))
+    if (box) {
+      const margin = padding + 2 / scale
+      target.width = Math.min(maxTexture, Math.ceil((box.right - box.left + margin * 2) * scale))
+      target.height = Math.min(maxTexture, Math.ceil((box.bottom - box.top + margin * 2) * scale))
+      target.base = multiply(scaling(scale), translation(margin - box.left, margin - box.top))
+      if ('placed' in target) target.placed = null
+    }
+    const { width, height } = target
     if (width <= 0 || height <= 0) return
     scratch.width = width
     scratch.height = height
-    target.base = multiply(scaling(scale), translation(-left, -top))
-    if ('placed' in target) target.placed = null
-    target.width = width
-    target.height = height
     paint.setTransform(1, 0, 0, 1, 0, 0)
     paint.clearRect(0, 0, width, height)
     const toTexels = multiply(target.base, invert(spaceMatrix))
@@ -1073,20 +1123,21 @@ export function mountSceneCompositor(
   let frame = 0
   let timer = 0
   let ready = false
-  let themePending = false
+  let palettePending = false
+  let paletteTransition = false
   let palette = 0
-  // A theme change keeps a copy of the last frame over the scene while the new palette rasterizes
-  // underneath, then fades the copy out with the body transition.
+  const pageThemeReveal = () => document.documentElement.dataset.homeThemeReveal === 'revealing'
+  // Each cell switches between complete palettes after uploads finish. The scene owns its
+  // timing, so a completed body transition cannot cut a late palette reveal short.
   let fade: {
-    transition: CSSTransition
-    texture: WebGLTexture | null
-    alpha: number
-    // The copy stays opaque until every raster is done, then fades from that point of the
-    // transition, so a half-painted scene never shows through.
-    hold: boolean
-    from: number
+    texture: WebGLTexture
+    started: number
+    updated: number
+    progress: number
+    origin: number
+    scrollX: number
+    scrollY: number
   } | null = null
-  let snapshotNow = false
   const reducedMotion = view.matchMedia('(prefers-reduced-motion: reduce)')
   let resizeFrame: {
     texture: WebGLTexture
@@ -1099,6 +1150,7 @@ export function mountSceneCompositor(
       ? 0
       : Math.min(1, Math.max(0, (clock - resizeFrame.started) / 420))
   const size = { width: canvas.width, height: canvas.height }
+  let sizeDirty = true
   // Hold the complete canvas while a whole-scene change fills within the normal raster budget.
   let flush = false
   let revision = 0
@@ -1109,9 +1161,153 @@ export function mountSceneCompositor(
   }
   // The current frame's time; one frame counts once however many records it brings.
   let clock = 0
+  let solar: VisitorDaylight | null = null
+  let tintFrom: DaylightTint = [1, 1, 1]
+  let tintTo: DaylightTint = [1, 1, 1]
+  let tintStarted = 0
+  const tintAt = (now: number): DaylightTint => {
+    const progress = reducedMotion.matches
+      ? 1
+      : Math.min(1, Math.max(0, (now - tintStarted) / 1200))
+    const share = progress * progress * (3 - 2 * progress)
+    return [
+      tintFrom[0] + (tintTo[0] - tintFrom[0]) * share,
+      tintFrom[1] + (tintTo[1] - tintFrom[1]) * share,
+      tintFrom[2] + (tintTo[2] - tintFrom[2]) * share,
+    ]
+  }
+  const updateTint = () => {
+    const next = daylightTint(solar, document.documentElement.dataset.themeMode === 'daylight')
+    if (next.every((value, index) => value === tintTo[index])) return
+    const now = view.performance.now()
+    tintFrom = tintAt(now)
+    tintTo = next
+    tintStarted = now
+    scene.dataset.solarTint = next.map(value => value.toFixed(4)).join(' ')
+  }
   let settled = 0
   // Groups stand for their mask here.
   const pending: (Run | Group)[] = []
+  const coverageBounds = new WeakMap<Run | Group, { revision: number; box: Box | null }>()
+  let coverage: {
+    texture: WebGLTexture | null
+    cells: Uint8Array
+    width: number
+    height: number
+    active: boolean
+  } = { texture: null, cells: new Uint8Array(), width: 0, height: 0, active: false }
+  const paintBounds = (target: Run | Group): Box | null => {
+    const owner = target.kind === 'group' ? target : target.owner
+    const layer = target.kind === 'group' ? target.mask : target
+    if (!layer) return null
+    let matrix = owner.screen
+    let box: Box
+    if (layer.width && layer.height) {
+      matrix = multiply(owner.screen, invert(layer.base))
+      box = { left: 0, top: 0, right: layer.width, bottom: layer.height }
+    } else {
+      const known = coverageBounds.get(target)
+      let next = known?.revision === revision ? known.box : undefined
+      if (next === undefined) {
+        // Empty runs can share an owner with the whole valley. Measure their own nodes,
+        // otherwise an invisible container reserves that owner's entire reveal area.
+        next = bounds(
+          target.kind === 'run' ? target.nodes : [owner.element],
+          owner.matrix,
+          target.kind === 'group' || target.nodes[0] === owner.element,
+        )
+        coverageBounds.set(target, { revision, box: next })
+      }
+      if (!next) return null
+      box = next
+    }
+    const x = (box.left + box.right) / 2
+    const y = (box.top + box.bottom) / 2
+    const cx = matrix[0] * x + matrix[2] * y + matrix[4]
+    const cy = matrix[1] * x + matrix[3] * y + matrix[5]
+    const halfWidth = (box.right - box.left) / 2
+    const halfHeight = (box.bottom - box.top) / 2
+    const reachX = Math.abs(matrix[0]) * halfWidth + Math.abs(matrix[2]) * halfHeight
+    const reachY = Math.abs(matrix[1]) * halfWidth + Math.abs(matrix[3]) * halfHeight
+    return { left: cx - reachX, right: cx + reachX, top: cy - reachY, bottom: cy + reachY }
+  }
+  const paintCoverage = (unfinished: (Run | Group)[]) => {
+    if (!unfinished.length && !coverage.active) return
+    const cell = trailOpeningCell * resolution
+    const width = Math.ceil(size.width / cell)
+    const height = Math.ceil(size.height / cell)
+    if (coverage.width !== width || coverage.height !== height) {
+      coverage.width = width
+      coverage.height = height
+      coverage.cells = new Uint8Array(width * height)
+    }
+    coverage.cells.fill(255)
+    for (const target of unfinished) {
+      const box = paintBounds(target)
+      if (!box) continue
+      const left = Math.max(0, Math.floor(box.left / cell))
+      const right = Math.min(width, Math.ceil(box.right / cell))
+      const top = Math.max(0, Math.floor(box.top / cell))
+      const bottom = Math.min(height, Math.ceil(box.bottom / cell))
+      if (right <= left || bottom <= top) continue
+      for (let y = top; y < bottom; y++) coverage.cells.fill(0, y * width + left, y * width + right)
+    }
+    coverage.active = false
+    let available = 0
+    for (let index = 0; index < coverage.cells.length; index++) {
+      if (!coverage.cells[index]) coverage.active = true
+      else available++
+    }
+    scene.dataset.trailLoadProgress = (available / coverage.cells.length).toFixed(3)
+    if (!coverage.active) return
+    coverage.texture ??= gl.createTexture()
+    if (!coverage.texture) return
+    textures.add(coverage.texture)
+    gl.activeTexture(gl.TEXTURE3)
+    gl.bindTexture(gl.TEXTURE_2D, coverage.texture)
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.R8,
+      width,
+      height,
+      0,
+      gl.RED,
+      gl.UNSIGNED_BYTE,
+      coverage.cells,
+    )
+    filter()
+  }
+  const paintPriority = (target: Run | Group) => {
+    const owner = target.kind === 'group' ? target : target.owner
+    if (target.kind === 'group' || owner.element.closest('.trail-paper, .trail-ground-base'))
+      return -Infinity
+    if (owner.element.closest('.trail-camp, .trail-fire, .trail-camp-approach')) return -1e9
+    // Full-width ground and route rasters cover the lowest reveal cells. Fill them before
+    // individual crowns, otherwise those cells hold the whole opening behind the forest.
+    if (owner.element.closest('.trail-ground, .trail-steps, .trail-hinterland')) return -1e8
+    if (owner.element.closest('.trail-weather')) return Infinity
+    const ground = owner.element.closest<SVGElement>('[data-ground-y]')
+    // Untranslated paths can still reach the camp. Use their painted extent rather than
+    // the owner's transform origin, so bottom-row work cannot sit behind the mountains.
+    return -(ground
+      ? Number(ground.dataset.groundY) * resolution
+      : (paintBounds(target)?.bottom ?? -Infinity))
+  }
+  const coverageCeiling = (origin: number) => {
+    if (!coverage.active) return 1
+    let ceiling = 1
+    const cell = trailOpeningCell * resolution
+    for (let index = 0; index < coverage.cells.length; index++) {
+      if (coverage.cells[index]) continue
+      const x = index % coverage.width
+      const y = Math.floor(index / coverage.width)
+      const noise = (x * 0.754877666 + y * 0.569840296) % 1
+      const distance = Math.max(0, (origin - (y + 1) * cell) / Math.max(origin, 1))
+      ceiling = Math.min(ceiling, 0.82 * distance + 0.18 * noise)
+    }
+    return Math.max(0, ceiling - 0.000001)
+  }
   const stale = (layer: Layer, scale: number) => {
     const due =
       layer.dirty ||
@@ -1147,12 +1343,10 @@ export function mountSceneCompositor(
       else if (item.kind === 'surface') {
         if (!item.dirty && item.texture) continue
         item.dirty = false
-        if (item.canvas.width && item.canvas.height)
+        if (item.canvas.width && item.canvas.height) {
           item.texture = upload(item.texture, item.canvas)
-      } else if (stale(item, scale)) {
-        item.dirty = true
-        pending.push(item)
-      }
+        }
+      } else if (stale(item, scale)) pending.push(item)
     }
   }
 
@@ -1221,36 +1415,27 @@ export function mountSceneCompositor(
       settled = clock
       settle()
     }
-    if (themePending) {
-      themePending = false
-      // A theme change during a resize joins its replacement instead of stacking two reveals.
+    if (palettePending || paletteTransition) {
+      const fullPalette = palettePending
+      palettePending = false
+      // Palette changes during a resize join its replacement instead of stacking two reveals.
       if (resizeFrame?.started !== null && resizeFrame) holdResize()
-      palette += 1
-      // The body eases its palette tokens; the canvas pins them, so its styles already hold the
-      // new theme. The last frame covers the rasters until they are ready, then fades with the body.
-      const transition = document.body
-        .getAnimations()
-        .find(
-          (animation): animation is CSSTransition =>
-            is(animation, 'CSSTransition') && animation.transitionProperty.startsWith('--trail-'),
-        )
-      if (resizeFrame) repaint()
-      else if (transition && ready) {
-        snapshotNow = true
-        fade = {
-          transition,
-          texture: fade?.texture ?? null,
-          alpha: fade?.alpha ?? 0,
-          hold: true,
-          from: 0,
-        }
-      } else repaint()
+      if (fullPalette) palette += 1
+      if (paletteTransition && !resizeFrame) capturePalette()
+      paletteTransition = false
+      // Theme colors do not move the scene. Preserve matrices and surface uploads;
+      // the palette version already invalidates the rasters that need new colors.
+      if (fullPalette) {
+        flush = true
+        for (const owner of groups.values()) owner.fresh = false
+      }
+      revision += 1
     }
   }
   const place = (matrix: Matrix) =>
     new Float32Array([matrix[0], matrix[1], 0, matrix[2], matrix[3], 0, matrix[4], matrix[5], 1])
   const none = new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0])
-  const entries = new WeakMap<Element, { start: number; palette: number }>()
+  const entries = new WeakMap<Element, { start: number }>()
   const chunkVisible = (owner: Group) => {
     const element = owner.element
     if (!element.hasAttribute('data-trail-chunk')) return true
@@ -1279,13 +1464,13 @@ export function mountSceneCompositor(
         : (!!item.texture && (item.kind === 'surface' || item.palette === palette)) || !item.dirty,
     )
   const surface = (width: number, height: number) => {
+    if (canvas.width !== width || canvas.height !== height) clipVersion += 1
     if (canvas.width !== width) canvas.width = width
     if (canvas.height !== height) canvas.height = height
     const cssWidth = `${width / resolution}px`
     const cssHeight = `${height / resolution}px`
     if (canvas.style.width !== cssWidth) canvas.style.width = cssWidth
     if (canvas.style.height !== cssHeight) canvas.style.height = cssHeight
-    clipClock()
     gl.viewport(0, 0, canvas.width, canvas.height)
     gl.clearColor(0, 0, 0, 0)
     gl.clear(gl.COLOR_BUFFER_BIT)
@@ -1293,9 +1478,30 @@ export function mountSceneCompositor(
   }
   const composite = (width = size.width, height = size.height) => {
     surface(width, height)
+    paintScene()
+  }
+  const paintScene = (terrainOnly = false) => {
+    const ground = terrainOnly ? [...svg.querySelectorAll('.trail-paper, .trail-ground-base')] : []
+    gl.uniform3fv(uniforms.solarTint, tintAt(clock))
+    gl.activeTexture(gl.TEXTURE3)
+    gl.bindTexture(gl.TEXTURE_2D, coverage.texture ?? blank)
+    gl.uniform1f(uniforms.loadActive, terrainOnly ? 0 : Number(!!fade && coverage.active))
+    gl.uniform4f(
+      uniforms.themeReveal,
+      fade && !pageThemeReveal() ? 1 : 0,
+      themeProgress(),
+      fade?.origin ?? 1,
+      trailOpeningCell * resolution,
+    )
     gl.uniform3f(
       uniforms.opening,
-      opening.progress(clock),
+      terrainOnly
+        ? opening.value()
+        : opening.progress(
+            clock,
+            coverageCeiling(Math.min(opening.origin() * resolution, canvas.height)),
+            scene.dataset.trailRendered === 'true' && scene.dataset.trailPaintReady === 'true',
+          ),
       Math.min(opening.origin() * resolution, canvas.height),
       trailOpeningCell * resolution,
     )
@@ -1310,7 +1516,7 @@ export function mountSceneCompositor(
       alpha: -1,
       mask: null as Float32Array | null,
       unit: -1,
-      bound: [null, null, null] as (WebGLTexture | null)[],
+      bound: [null, null, null, null] as (WebGLTexture | null)[],
       entry: -1,
     }
     const bind = (unit: number, texture: WebGLTexture | null) => {
@@ -1327,15 +1533,21 @@ export function mountSceneCompositor(
       clipTexture: WebGLTexture | null,
       entry = 1,
     ) => {
+      if (
+        terrainOnly &&
+        !ground.some(layer => owner.element.contains(layer) || layer.contains(owner.element))
+      )
+        return
+      if (scene.dataset.trailAmbientReady !== 'true' && owner.element.matches(ambientLayers)) return
       if (!chunkVisible(owner)) return
       alpha *= owner.opacity
       if (!owner.shown || alpha <= 0) return
       if (owner.element.hasAttribute('data-trail-chunk')) {
         let born = entries.get(owner.element)
-        if (!born || born.palette !== palette) {
-          if (!complete(owner)) return
+        if (!born) {
+          if (!coverage.active && !complete(owner)) return
           // Initial chunks join the scene mask; their later resize entries keep the local fade.
-          born = { start: scene.dataset.trailOpening === 'complete' ? clock : clock - 360, palette }
+          born = { start: scene.dataset.trailOpening === 'complete' && !fade ? clock : clock - 360 }
           entries.set(owner.element, born)
         }
         entry = reducedMotion.matches ? 1 : Math.min(entry, (clock - born.start) / 360)
@@ -1364,7 +1576,10 @@ export function mountSceneCompositor(
           visit(item, alpha, mask, maskTexture, clipped, clipTexture, entry)
           continue
         }
+        if (terrainOnly && !ground.some(layer => layer.contains(owner.element))) continue
         if (!item.texture) continue
+        if (!terrainOnly && coverage.active && item.kind === 'run' && item.palette !== palette)
+          continue
         if (state.entry !== entry) gl.uniform1f(uniforms.entry, (state.entry = entry))
         if (item.kind === 'run')
           item.placed ??= place(
@@ -1379,6 +1594,7 @@ export function mountSceneCompositor(
             ),
           )
         }
+        bind(3, coverage.texture ?? blank)
         bind(1, maskTexture ?? blank)
         bind(2, clipTexture ?? blank)
         bind(0, item.texture)
@@ -1392,6 +1608,33 @@ export function mountSceneCompositor(
     }
     visit(root, 1, none, null, [], null)
   }
+  const present = () => {
+    if (!ready || scene.dataset.trailOpening === 'pending') return
+    const region = trailClockRegion(document)
+    if (region && ready) {
+      const bounds = canvas.getBoundingClientRect()
+      const left = Math.max(0, Math.floor((region.left - bounds.left) * resolution))
+      const top = Math.max(0, Math.floor((region.top - bounds.top) * resolution))
+      const right = Math.min(canvas.width, Math.ceil((region.right - bounds.left) * resolution))
+      const bottom = Math.min(canvas.height, Math.ceil((region.bottom - bounds.top) * resolution))
+      if (right > left && bottom > top) {
+        gl.enable(gl.SCISSOR_TEST)
+        gl.scissor(left, canvas.height - bottom, right - left, bottom - top)
+        gl.clear(gl.COLOR_BUFFER_BIT)
+        // The clock gets the scene's own plain terrain. This also clears old actors out of a
+        // held resize frame while the viewport moves, without drawing a clock background.
+        paintScene(true)
+        if (
+          fade?.texture &&
+          !pageThemeReveal() &&
+          fade.scrollX === view.scrollX &&
+          fade.scrollY === view.scrollY
+        )
+          drawCopy(fade.texture, 1, { theme: true })
+        gl.disable(gl.SCISSOR_TEST)
+      }
+    }
+  }
   const drawCopy = (
     texture: WebGLTexture,
     alpha: number,
@@ -1401,18 +1644,38 @@ export function mountSceneCompositor(
       left = 0,
       mirror = false,
       reveal = false,
-    }: { width?: number; height?: number; left?: number; mirror?: boolean; reveal?: boolean } = {},
+      theme = false,
+    }: {
+      width?: number
+      height?: number
+      left?: number
+      mirror?: boolean
+      reveal?: boolean
+      theme?: boolean
+    } = {},
   ) => {
     gl.activeTexture(gl.TEXTURE1)
     gl.bindTexture(gl.TEXTURE_2D, blank)
     gl.activeTexture(gl.TEXTURE2)
     gl.bindTexture(gl.TEXTURE_2D, blank)
+    gl.activeTexture(gl.TEXTURE3)
+    gl.bindTexture(gl.TEXTURE_2D, coverage.texture ?? blank)
+    gl.uniform1f(uniforms.loadActive, Number(theme && coverage.active))
     gl.activeTexture(gl.TEXTURE0)
     gl.bindTexture(gl.TEXTURE_2D, texture)
     gl.uniform1f(uniforms.alpha, alpha)
     gl.uniform3f(uniforms.reveal, reveal ? 2 : 0, resizeProgress(), 6 * resolution)
     gl.uniform3f(uniforms.opening, 1, 1, 1)
+    gl.uniform4f(
+      uniforms.themeReveal,
+      theme ? 2 : -1,
+      themeProgress(),
+      fade?.origin ?? 1,
+      trailOpeningCell * resolution,
+    )
     gl.uniform1f(uniforms.entry, 1)
+    // Theme and resize copies already contain the lighting of their captured frame.
+    gl.uniform3f(uniforms.solarTint, 1, 1, 1)
     gl.uniformMatrix3fv(uniforms.maskPlace, false, none)
     // The copy holds the drawing buffer bottom row first, so the quad is flipped to match.
     gl.uniformMatrix3fv(
@@ -1426,58 +1689,41 @@ export function mountSceneCompositor(
     if (!fade) return
     release(fade.texture)
     fade = null
-    snapshotNow = false
+    scene.dataset.trailThemePhase = 'complete'
+    scene.dataset.trailThemeProgress = '1'
   }
-  // Runs after the composite. On the frame of a theme change it copies what is on screen, with
-  // any earlier fade still over it, and dirties the scene; afterwards it draws the copy over the
-  // new rasters at the body transition's remaining share.
-  const overlay = (deferred: number) => {
-    if (!fade) return
-    if (snapshotNow) {
-      snapshotNow = false
-      if (fade.texture && fade.alpha > 0) drawCopy(fade.texture, fade.alpha)
-      const texture = fade.texture ?? gl.createTexture()
-      gl.activeTexture(gl.TEXTURE0)
-      gl.bindTexture(gl.TEXTURE_2D, texture)
-      gl.copyTexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 0, 0, canvas.width, canvas.height, 0)
-      filter()
-      textures.add(texture)
-      fade.texture = texture
-      fade.alpha = 1
-      dirtyGroup(root)
-      return
-    }
-    const state = fade.transition.playState
-    if (!fade.texture) {
+  const themeProgress = () => fade?.progress ?? 0
+  const capturePalette = () => {
+    scene.dataset.trailAmbientReady = 'false'
+    if (!ready || reducedMotion.matches || scene.dataset.trailOpening !== 'complete') {
       endFade()
       return
     }
-    // Wind can keep already-current textures dirty. Only unfinished palette uploads hold the
-    // snapshot, including when the body's transition has finished before those uploads.
-    if (fade.hold && deferred) {
-      drawCopy(fade.texture, 1)
-      return
+    const texture = gl.createTexture()
+    if (!texture) return
+    // The retained buffer includes any interrupted pixel reveal. Copy it before replacing
+    // textures or releasing that reveal, so a reversal starts at the actual visible frame.
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.copyTexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 0, 0, canvas.width, canvas.height, 0)
+    filter()
+    textures.add(texture)
+    endFade()
+    fade = {
+      texture,
+      started: Number(scene.dataset.trailThemeStarted) || clock,
+      updated: clock,
+      progress: 0,
+      origin: Math.min(opening.origin() * resolution, canvas.height),
+      scrollX: view.scrollX,
+      scrollY: view.scrollY,
     }
-    if (state === 'finished' || state === 'idle') {
-      endFade()
-      return
-    }
-    const progress = Math.min(
-      1,
-      Math.max(0, fade.transition.effect?.getComputedTiming().progress ?? 0),
-    )
-    if (fade.hold) {
-      fade.hold = false
-      fade.from = progress
-    }
-    const share = fade.from < 1 ? (progress - fade.from) / (1 - fade.from) : 1
-    // The body eases in and out; a smoothstep follows it closely enough to keep the scene in step.
-    fade.alpha = 1 - share * share * (3 - 2 * share)
-    if (fade.alpha <= 0.002) {
-      endFade()
-      return
-    }
-    drawCopy(fade.texture, fade.alpha)
+    scene.dataset.trailThemePhase = 'revealing'
+    scene.dataset.trailThemeProgress = '0'
+  }
+  const overlay = () => {
+    // The homepage snapshot masks the UI and scene together using this fade's progress.
+    if (fade && !pageThemeReveal()) drawCopy(fade.texture, 1, { theme: true })
   }
   const endResize = () => {
     if (resizeFrame) release(resizeFrame.texture)
@@ -1499,7 +1745,6 @@ export function mountSceneCompositor(
   }
   const presentResize = () => {
     if (!resizeFrame || resizeFrame.started !== null) return
-    updateClock()
     // Grow in buckets and clip on compression, avoiding a drawing-buffer allocation on each
     // pixel of a drag. The committed frame returns to the exact settled dimensions.
     const width =
@@ -1509,8 +1754,10 @@ export function mountSceneCompositor(
     const height = Math.max(canvas.height, Math.round(host.clientHeight * resolution))
     surface(width, height)
     overlayResize()
+    present()
   }
   const holdResize = () => {
+    scene.dataset.trailAmbientReady = 'false'
     if (!ready || !active()) return
     if (resizeFrame?.started === null) {
       presentResize()
@@ -1518,10 +1765,9 @@ export function mountSceneCompositor(
     }
     if (canvas.width > maxTexture || canvas.height > maxTexture) return
     clock = view.performance.now()
-    // Recompose the cached frame before geometry changes. WebGL's default drawing buffer can
-    // be discarded after presentation, so copying it later would sometimes capture emptiness.
+    // Recompose the cached frame before geometry changes, including active theme overlays.
     composite(canvas.width, canvas.height)
-    overlay(1)
+    overlay()
     overlayResize()
     const texture = resizeFrame?.texture ?? gl.createTexture()
     if (!texture) return
@@ -1536,6 +1782,8 @@ export function mountSceneCompositor(
     presentResize()
   }
   const resize = () => {
+    if (!sizeDirty) return
+    sizeDirty = false
     const width = Math.max(1, Math.round(svg.clientWidth * resolution))
     const height = Math.max(1, Math.round(svg.clientHeight * resolution))
     if (size.width === width && size.height === height) return
@@ -1559,35 +1807,56 @@ export function mountSceneCompositor(
     }, 0)
     clock = view.performance.now()
     record(observer.takeRecords())
-    // Keep the last complete canvas through a resize and staged generation. Rasterizing each
-    // intermediate scene discards textures that the next generation step immediately replaces.
-    if (host.dataset.trailResizing === 'true' || scene.dataset.trailRendered !== 'true') return
+    // Resizes retain their frame. A newly opened scene starts painting as soon as the camp is placed.
+    if (
+      host.dataset.trailResizing === 'true' ||
+      scene.dataset.campPositioned !== 'true' ||
+      (scene.dataset.trailRendered !== 'true' && scene.dataset.trailOpening === 'complete')
+    ) {
+      present()
+      return
+    }
     if (!attributeSelectors) readSelectors()
     resize()
     scan()
     split()
     pending.length = 0
     prepare(root, false)
-    // Missing textures and whole-scene repaints use the same budget as ordinary updates.
-    const budget = fade ? 14 : 10
-    // The frame of a theme change composites the old rasters once more, to copy them.
-    if (snapshotNow) pending.length = 0
+    // Spend the saved layout work on bounded palette uploads during the shared sweep.
+    const budget = fade ? 10 : 6
+    const unfinished: (Run | Group)[] = []
     let deferred = 0
     let holes = 0
     let replacements = 0
     const unpainted = (target: Run | Group) =>
-      !(target.kind === 'group' ? target.mask?.texture : target.texture)
-    // Fill holes before stale textures, then serve the longest waiting repaint first.
+      (target.kind === 'group' ? (target.mask?.palette ?? -1) : target.palette) < 0
+    // A scene switch already holds a complete frame. Keep its camp-first order even when
+    // winter clothing or crowns introduce new textures higher up the valley.
+    const priorities = new Map(pending.map(target => [target, paintPriority(target)]))
     pending.sort(
       (a, b) =>
-        Number(unpainted(b)) - Number(unpainted(a)) ||
+        (fade ? 0 : Number(unpainted(b)) - Number(unpainted(a))) ||
+        (priorities.get(a) ?? 0) - (priorities.get(b) ?? 0) ||
         (a.kind === 'group' ? (a.mask?.waiting ?? 0) : a.waiting) -
           (b.kind === 'group' ? (b.mask?.waiting ?? 0) : b.waiting),
     )
     const painting = view.performance.now()
     for (const target of pending) {
+      const owner = target.kind === 'group' ? target : target.owner
+      // These layers stay hidden until the landscape is revealed. Their full-scene bounds
+      // must not hold the camp's first pixels behind the last snowflake or footprint upload.
+      if (
+        (fade || scene.dataset.trailOpening !== 'complete') &&
+        owner.element.closest(ambientLayers)
+      )
+        continue
       const painted = !unpainted(target)
       if (view.performance.now() - painting > budget) {
+        const layer = target.kind === 'group' ? target.mask : target
+        const ambient = owner.element.closest(`${ambientLayers}, [data-trail-collision]`)
+        if (scene.dataset.trailOpening !== 'complete' && ambient) continue
+        if (layer && (layer.palette !== palette || layer.revision !== revision))
+          unfinished.push(target)
         if ((target.kind === 'group' ? target.mask?.revision : target.revision) !== revision)
           replacements += 1
         if (!painted) holes += 1
@@ -1605,10 +1874,34 @@ export function mountSceneCompositor(
         )
     }
     // Ongoing motion can dirty a replacement again; it must not hold the completed scene forever.
-    const painted = holes || deferred || replacements ? 'false' : 'true'
+    const painted =
+      holes || deferred || replacements || scene.dataset.trailRendered !== 'true' ? 'false' : 'true'
     if (scene.dataset.trailPaintReady !== painted) scene.dataset.trailPaintReady = painted
-    if ((holes && (!ready || !host.dataset.trailWorld)) || (ready && flush && replacements)) return
+    if (resizeFrame && (holes || (ready && flush && replacements))) {
+      present()
+      return
+    }
+    if (fade || scene.dataset.trailOpening !== 'complete') paintCoverage(unfinished)
+    else {
+      coverage.active = false
+      scene.dataset.trailLoadProgress = painted === 'true' ? '1.000' : '0.000'
+    }
     flush = false
+    if (fade) {
+      const duration = trailThemeDuration
+      const elapsed = Math.min(1, Math.max(0, (clock - fade.started) / duration))
+      // Preparation and reveal share one deadline. Recover time spent behind an upload
+      // without jumping the frontier across the scene after a delayed frame.
+      const advance = Math.min(32, Math.max(0, clock - fade.updated)) / (duration / 2)
+      const progress = Math.max(
+        fade.progress,
+        Math.min(elapsed, coverageCeiling(fade.origin), fade.progress + advance),
+      )
+      fade.updated = clock
+      fade.progress = progress
+      scene.dataset.trailThemeProgress = progress.toFixed(3)
+      if (progress >= 1 && !coverage.active) endFade()
+    }
     if (resizeFrame) {
       if (reducedMotion.matches || resizeProgress() >= 1) endResize()
       else if (resizeFrame.started === null) {
@@ -1617,13 +1910,21 @@ export function mountSceneCompositor(
       }
     }
     composite()
-    overlay(deferred)
+    overlay()
     overlayResize()
+    const ambient = String(
+      scene.dataset.trailOpening === 'complete' &&
+        scene.dataset.trailRendered === 'true' &&
+        !fade &&
+        !resizeFrame,
+    )
+    if (scene.dataset.trailAmbientReady !== ambient) scene.dataset.trailAmbientReady = ambient
     if (!ready) {
       ready = true
       scene.dataset.trailRenderer = 'webgl'
       for (const owner of groups.values()) owner.fresh = false
     }
+    present()
   }
   const schedule = () => {
     if (!frame && active()) frame = view.requestAnimationFrame(tick)
@@ -1635,7 +1936,7 @@ export function mountSceneCompositor(
       scratchStyle.cssText = value ?? ''
       return new Map(
         [...scratchStyle]
-          .filter(name => !motionProperties.has(name))
+          .filter(name => !motionProperties.has(name) && !motionVariables.has(name))
           .map(name => [name, scratchStyle.getPropertyValue(name)]),
       )
     }
@@ -1677,13 +1978,33 @@ export function mountSceneCompositor(
       if (!target) continue
       if (entry.type === 'attributes') {
         const name = entry.attributeName ?? ''
-        if (inert(name) || target.getAttribute(name) === entry.oldValue) continue
-        if (target === document.documentElement) themePending = true
-        else if (
+        const paletteChange = target === document.documentElement
+        const holidayChange = target === scene && name === 'data-holiday'
+        if (
+          target.getAttribute(name) === entry.oldValue ||
+          (!paletteChange && !holidayChange && inert(name))
+        )
+          continue
+        if (paletteChange) {
+          palettePending = true
+          paletteTransition = true
+        } else if (holidayChange) {
+          paletteTransition ||= scene.dataset.trailOpening === 'complete'
+          if (!restyle(name)) repaint()
+        } else if (
+          !svg.contains(target) &&
+          name === 'style' &&
+          motionOnly(entry.oldValue, target.getAttribute('style'))
+        ) {
+          for (const owner of groups.values()) {
+            owner.moved = true
+            owner.fresh = false
+          }
+        } else if (
           target === scene &&
           (name === 'data-trail-rendered' || name === 'data-trail-visible')
         )
-          repaint()
+          schedule()
         else if (!svg.contains(target) && !restyle(name)) repaint()
         if (!svg.contains(target)) continue
         if (target === svg && (name === 'viewBox' || name === 'style')) {
@@ -1765,12 +2086,58 @@ export function mountSceneCompositor(
     { signal },
   )
   document.addEventListener('visibilitychange', schedule, { signal })
-  document.addEventListener('themechange', () => (themePending = true), { signal })
+  reducedMotion.addEventListener(
+    'change',
+    () => {
+      if (reducedMotion.matches) {
+        endFade()
+        tintFrom = [...tintTo]
+        tintStarted = view.performance.now() - 1200
+      }
+      schedule()
+    },
+    { signal },
+  )
+  document.addEventListener(
+    'themechange',
+    () => {
+      updateTint()
+      schedule()
+    },
+    { signal },
+  )
+  subscribeVisitorDaylight(
+    document,
+    current => {
+      solar = current
+      updateTint()
+      schedule()
+    },
+    signal,
+  )
   host.addEventListener('trail:resize-start', holdResize, { signal })
-  host.addEventListener('trail:hide', endResize, { signal })
-  host.addEventListener('trail:show', updateClock, { signal })
+  host.addEventListener(
+    'trail:show',
+    () => {
+      sizeDirty = true
+      scene.dataset.trailAmbientReady = 'false'
+      ready = false
+      gl.disable(gl.SCISSOR_TEST)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+    },
+    { signal },
+  )
+  host.addEventListener(
+    'trail:hide',
+    () => {
+      endFade()
+      endResize()
+    },
+    { signal },
+  )
   const resizeObserver = new ResizeObserver(() => {
-    updateClock()
+    sizeDirty = true
     presentResize()
     root.moved = true
     schedule()
@@ -1786,7 +2153,6 @@ export function mountSceneCompositor(
       ready = false
       endResize()
       fade = null
-      snapshotNow = false
     },
     { signal },
   )
@@ -1794,15 +2160,16 @@ export function mountSceneCompositor(
     'webglcontextrestored',
     () => {
       textures.clear()
+      coverage.texture = null
+      coverage.active = false
       endResize()
       fade = null
-      snapshotNow = false
       setup()
       const reset = (owner: Group) => {
-        if (owner.mask) Object.assign(owner.mask, { texture: null, dirty: true })
+        if (owner.mask) Object.assign(owner.mask, { texture: null, dirty: true, palette: -1 })
         for (const item of owner.items) {
           if (item.kind === 'group') reset(item)
-          else Object.assign(item, { texture: null, dirty: true })
+          else Object.assign(item, { texture: null, dirty: true, palette: -1 })
         }
       }
       reset(root)

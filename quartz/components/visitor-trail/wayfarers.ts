@@ -1,5 +1,6 @@
 import { halloweenCostume } from './holiday-sprites'
 import { pixels } from './pixels'
+import { winterAccessories } from './winter-clothes'
 
 const tones = {
   H: 'trail-hiker-hat',
@@ -24,12 +25,14 @@ export function trailMapReader(index: number) {
         <g transform="translate(-4 -26)">
           <g class="trail-map-reader-head">${pixels(['.HHHH..', '.HHHHH.', '.HSS...', '.SSSS..'], tones, 2)}</g>
           <g transform="translate(0 8)">${pixels(['.CCCC..', '.CCCCS.', '.CCC.S.', '.CCC...'], tones, 2)}</g>
+          ${winterAccessories({ x: 2, y: 0 }, { x: 2, y: 8 }, [{ x: 10, y: 12 }])}
           ${halloweenCostume(4, 4)}
         </g>
         ${strides.map((rows, stride) => `<g class="trail-reader-stride" data-stride="${stride}" transform="translate(-4 -10)">${pixels(rows, tones, 2)}</g>`).join('')}
         <g class="trail-reader-pole">
           <path class="trail-hiker-pole" d="M10-19h1V1h-1Z"/>
           <path class="trail-camper-skin" d="M6-14h4v2H6Z"/>
+          <path class="trail-winter-clothes trail-winter-mitten" d="M6-15h4v4H6Z"/>
           <path class="trail-hiker-grip" d="M9-17h3v3H9Z"/>
         </g>
         <path class="trail-reader-folded-map trail-map-paper" d="M0-13h4v6H0Z"/>
@@ -39,6 +42,7 @@ export function trailMapReader(index: number) {
         <g transform="translate(-5 -28)">
           <g class="trail-map-reader-head">${pixels(['.HHHH.', '.HHHHH', '.HSS..', '..SSS.'], tones, 2)}</g>
           <g transform="translate(0 8)">${pixels(['.CCCC...', '.CCCC.S.', '.CCCSSS.', '.CCC....', '.DDD....', '.D.D....', '.D..D...', 'BB..BB..'], tones, 2)}</g>
+          ${winterAccessories({ x: 2, y: 0 }, { x: 2, y: 8 }, [{ x: 12, y: 10 }])}
           ${halloweenCostume(4, 4)}
         </g>
         <path class="trail-hiker-pole" d="M-10-22h1V0h-1Z"/>
