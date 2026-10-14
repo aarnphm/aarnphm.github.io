@@ -9,6 +9,7 @@ import { SemanticClient } from './semantic.inline'
 export interface SiteSemantic {
   client: SemanticClient
   index: SemanticIndex
+  cached(query: string, limit: number): SemanticDocument[] | undefined
   search(query: string, limit: number): Promise<SemanticDocument[]>
 }
 
@@ -40,28 +41,40 @@ export function siteSemantic(): Promise<SiteSemantic> {
   const ready = Promise.all([client.ensureReady(), readIndex()])
     .then(async ([, index]) => {
       await client.search('search', 1)
-      const cache = new Map<string, Promise<SemanticDocument[]>>()
+      const cache = new Map<
+        string,
+        { promise: Promise<SemanticDocument[]>; documents?: SemanticDocument[] }
+      >()
+      const cacheKey = (query: string, limit: number) => `${limit}\u0000${query.trim()}`
       let queue: Promise<unknown> = Promise.resolve()
       return {
         client,
         index,
+        cached(query: string, limit: number) {
+          return cache.get(cacheKey(query, limit))?.documents
+        },
         search(query: string, limit: number) {
           const text = query.trim()
-          const key = `${limit}\u0000${text}`
+          const key = cacheKey(text, limit)
           const previous = cache.get(key)
-          if (previous) return previous
+          if (previous) return previous.promise
           const result = queue.then(async () => {
             const { semantic } = await client.search(text, limit)
-            return aggregateSemanticResults(semantic, index)
+            const documents = aggregateSemanticResults(semantic, index)
+            entry.documents = documents
+            return documents
           })
-          cache.set(key, result)
+          const entry: { promise: Promise<SemanticDocument[]>; documents?: SemanticDocument[] } = {
+            promise: result,
+          }
+          cache.set(key, entry)
           if (cache.size > 32) {
             const first = cache.keys().next().value
             if (first !== undefined) cache.delete(first)
           }
           queue = result.catch(() => {})
           void result.catch(() => {
-            if (cache.get(key) === result) cache.delete(key)
+            if (cache.get(key) === entry) cache.delete(key)
           })
           return result
         },

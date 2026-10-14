@@ -370,34 +370,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
   let searchSeq = 0
   let runSearchTimer: number | null = null
-  let lastInputAt = 0
   searchLayout.dataset.mode = searchMode
-
-  const computeDebounceDelay = (term: string): number => {
-    const trimmed = term.trim()
-    const lastTerm = currentSearchTerm
-    const isExtension =
-      lastTerm.length > 0 && trimmed.length > lastTerm.length && trimmed.startsWith(lastTerm)
-    const isRetraction = lastTerm.length > trimmed.length
-    const isReplacement =
-      lastTerm.length > 0 && !trimmed.startsWith(lastTerm) && !lastTerm.startsWith(trimmed)
-    const baseFullQueryDelay = 200
-    const semanticPenalty = searchMode === 'semantic' ? 30 : 0
-
-    if (isExtension && trimmed.length > 2) {
-      return baseFullQueryDelay + semanticPenalty
-    }
-
-    if (isReplacement && trimmed.length > 3) {
-      return Math.max(90, baseFullQueryDelay - 80)
-    }
-
-    if (isRetraction) {
-      return 90
-    }
-
-    return baseFullQueryDelay + (searchMode === 'semantic' ? 40 : 0)
-  }
 
   const triggerSearchWithMode = (mode: SearchMode) => {
     if (mode === 'semantic' && !semanticReady) {
@@ -1107,20 +1080,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       window.clearTimeout(runSearchTimer)
       runSearchTimer = null
     }
-    if (!hasQuery) {
-      void runSearch('', token)
+    if (!hasQuery || searchMode === 'lexical') {
+      void runSearch(term, token)
       return
     }
-    lastInputAt = performance.now()
-    const delay = computeDebounceDelay(term)
-    const scheduledAt = lastInputAt
     runSearchTimer = window.setTimeout(() => {
-      if (scheduledAt !== lastInputAt) {
-        return
-      }
       runSearchTimer = null
       void runSearch(term, token)
-    }, delay)
+    }, 60)
   }
 
   document.addEventListener('keydown', shortcutHandler)
