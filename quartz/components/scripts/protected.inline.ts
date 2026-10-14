@@ -209,6 +209,7 @@ function reLockContent(article: Element, slug: string): void {
 
   const promptOverlay = article.querySelector<HTMLElement>('.password-prompt-overlay')
   if (promptOverlay) {
+    promptOverlay.classList.remove('is-hidden')
     promptOverlay.style.display = 'flex'
   }
 
@@ -254,7 +255,10 @@ async function unlockArticle(
   signal.throwIfAborted()
 
   const promptOverlay = article.querySelector<HTMLElement>('.password-prompt-overlay')
-  if (promptOverlay) promptOverlay.style.display = 'none'
+  if (promptOverlay) {
+    promptOverlay.classList.add('is-hidden')
+    promptOverlay.style.display = 'none'
+  }
 
   article.querySelectorAll<HTMLElement>('[data-protected-unlock-trigger]').forEach(trigger => {
     trigger.hidden = true

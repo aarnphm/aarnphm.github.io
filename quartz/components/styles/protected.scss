@@ -1,9 +1,9 @@
 @use '../../styles/variables.scss' as *;
 
 // A cached popover holding a locked page stays in the body; it must not lock page scroll.
+// Matching inline styles here would invalidate the entire page during canvas camera updates.
 body:has(
-  .protected-content-wrapper:not(.inline, .popover *)
-    .password-prompt-overlay[style*='display: flex']
+  .protected-content-wrapper:not(.inline, .popover *) .password-prompt-overlay:not(.is-hidden)
 ) {
   overflow: hidden;
 }
