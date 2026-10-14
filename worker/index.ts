@@ -4,6 +4,7 @@ import { readGreaterWrongPreviewHtml } from '../quartz/util/lesswrong-preview'
 import { missingSlugMarkdown } from '../quartz/util/not-found'
 import { sepEntryUrl, sepTargetFromSearchParams } from '../quartz/util/sep'
 import { readSepPreviewHtml } from '../quartz/util/sep-preview'
+import { NOTES_HOSTNAME } from '../quartz/util/stacked-notes'
 import {
   streamAssetPathname,
   streamDocumentRedirectUrl,
@@ -702,11 +703,6 @@ export default {
       })
     }
 
-    if (url.searchParams.has('stackedNotes')) {
-      const stacked = await handleStackedNotesRequest(request, env)
-      if (stacked) return stacked
-    }
-
     if (request.method === 'POST' && url.pathname === '/comments/author/rename') {
       let payload: { oldAuthor?: unknown; newAuthor?: unknown; githubLogin?: unknown } | null = null
       try {
@@ -1322,6 +1318,14 @@ export default {
     if (arenaJsonMatch) {
       const originResp = await env.ASSETS.fetch(request)
       return withHeaders(originResp, { 'Content-Type': 'application/json', ...apiHeaders })
+    }
+
+    if (
+      shouldTreatAsDocument(url.pathname) &&
+      (url.hostname === NOTES_HOSTNAME || url.searchParams.has('stackedNotes'))
+    ) {
+      const stacked = await handleStackedNotesRequest(request, env)
+      if (stacked) return stacked
     }
 
     const shouldBypassDocumentCache = localRequest && shouldTreatAsDocument(url.pathname)

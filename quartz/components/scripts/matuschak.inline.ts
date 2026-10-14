@@ -1,6 +1,8 @@
+import { NOTES_HOSTNAME } from '../../util/stacked-notes'
+
 let toggleAbort: AbortController | null = null
 
-document.addEventListener('nav', ev => {
+document.addEventListener('nav', () => {
   toggleAbort?.abort()
   toggleAbort = null
 
@@ -9,7 +11,7 @@ document.addEventListener('nav', ev => {
   const header = document.querySelector<HTMLElement>('.header')
 
   if (!button || !container || !header) return
-  if (window.location.hostname.startsWith('notes.aarnphm.xyz')) return
+  if (window.location.hostname === NOTES_HOSTNAME) return
 
   let pendingToggle = false
   const controller = new AbortController()
@@ -20,22 +22,10 @@ document.addEventListener('nav', ev => {
     pendingToggle = true
     try {
       const isChecked = button.getAttribute('aria-checked') === 'true'
-      const body = document.body
-      const currentUrl = window.location.href
-
       if (!isChecked) {
-        button.setAttribute('aria-checked', 'true')
-        container.classList.add('active')
-        body.classList.add('stack-mode')
-        header.classList.add('grid', 'all-col')
-
-        if (window.location.hash) {
-          window.history.pushState('', document.title, currentUrl.split('#')[0])
-        }
-        await window.stacked.navigate(new URL(`/${ev.detail.url}`, window.location.toString()))
+        await window.stacked.open()
       } else {
         window.stacked.destroy()
-        window.location.reload()
       }
     } finally {
       pendingToggle = false
