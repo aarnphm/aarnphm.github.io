@@ -14,8 +14,8 @@ posters: '[[movies/posters/neagley.jpg]]'
 rating: 7.9
 status: recurring
 studio:
-  - amazon mgm studios
   - paramount television studios
+  - amazon mgm studios
 tags:
   - shows
   - action
