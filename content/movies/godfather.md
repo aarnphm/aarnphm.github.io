@@ -8,7 +8,7 @@ modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/godfather.jpg]]'
 rating: 9.2
 status: recurring
-studio: paramount
+studio: paramount pictures
 tags:
   - o/vintage
 title: The Godfather

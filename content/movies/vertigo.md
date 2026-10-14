@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/vertigo.jpg]]'
 rating: 8.2
 status: to watch
-studio: paramount
+studio: paramount pictures
 tags:
   - o/vintage
   - thriller

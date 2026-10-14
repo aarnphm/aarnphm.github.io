@@ -8,7 +8,7 @@ modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/jojo-rabbit.jpg]]'
 rating: 7.9
 status: recurring
-studio: searchlight
+studio: searchlight pictures
 tags:
   - comedy
 title: Jojo Rabbit

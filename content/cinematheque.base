@@ -244,3 +244,93 @@ views:
       file.name: 253
       note.director: 200
       note.tags: 155
+  - type: kanban
+    name: analysis
+    order:
+      - title
+    sort:
+      - property: title
+        direction: ASC
+    columnWidth: 280
+    imageFit: cover
+    imageAspectRatio: 1.7777777778
+    filters:
+      or:
+        - studio == "a24"
+        - year > 2000
+    groupBy:
+      property: studio
+      direction: ASC
+    groupOrder:
+      - a24
+      - 20th century fox
+      - alcon entertainment
+      - amazon mgm studios
+      - mrc
+      - paramount television studios
+      - skydance television
+      - apple studios
+      - ascendant films
+      - bbc
+      - cinemax
+      - columbia pictures
+      - dc
+      - dream well studio
+      - dreamworks pictures
+      - dreamworks animation
+      - element pictures
+      - eon productions
+      - focus features
+      - gaumont
+      - gdh 559
+      - hbo
+      - icon productions
+      - ifc films
+      - janus films
+      - le pacte
+      - les films alain sarde
+      - asymmetrical productions
+      - babbo inc.
+      - le studio canal+
+      - the picture factory
+      - les films du losange
+      - lionsgate
+      - maximum effort
+      - skydance media
+      - miramax
+      - mk2 films
+      - bibi film
+      - france 3 cinema
+      - wega film
+      - arte france cinema
+      - modern man films
+      - mubi
+      - neon
+      - netflix
+      - neue road movies
+      - open road films
+      - oscilloscope laboratories
+      - paramount pictures
+      - paramount vantage
+      - picturehouse entertainment
+      - pure light films
+      - maneki films
+      - memoria films
+      - ratpac entertainment
+      - sandrew metronome
+      - searchlight pictures
+      - see-saw films
+      - sony pictures classics
+      - tristar pictures
+      - sony pictures television
+      - studio ghibli
+      - summit entertainment
+      - syncopy
+      - touchstone pictures
+      - tribeca
+      - universal pictures
+      - warner bros
+      - the weinstein company
+      - why not productions
+      - wild bunch
+    image: note.posters

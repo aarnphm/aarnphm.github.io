@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:13 GMT-04:00
 posters: '[[movies/posters/blue-jasmine.jpg]]'
 rating: 7.3
 status: to watch
-studio: sony
+studio: sony pictures classics
 tags:
   - r/psychology
   - r/politics

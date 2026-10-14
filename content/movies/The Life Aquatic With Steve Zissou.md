@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/the-life-aquatic-with-steve-zissou.jpg]]'
 rating: 7.2
 status: recurring
-studio: touchstone
+studio: touchstone pictures
 tags:
   - comedy
   - o/life

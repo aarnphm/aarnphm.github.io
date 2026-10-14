@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/forrest-gump.jpg]]'
 rating: 8.8
 status: recurring
-studio: paramount
+studio: paramount pictures
 tags:
   - o/vintage
 title: Forrest Gump

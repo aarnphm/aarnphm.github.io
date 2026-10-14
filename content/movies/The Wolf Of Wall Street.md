@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/the-wolf-of-wall-street.jpg]]'
 rating: 8.2
 status: recurring
-studio: paramount
+studio: paramount pictures
 tags:
   - finance
   - r/psychology

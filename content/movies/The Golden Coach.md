@@ -12,7 +12,10 @@ modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/the-golden-coach.jpg]]'
 rating: 7.3
 status: to watch
-studio: Panaria Film / Delphinus / Hoche Productions
+studio:
+  - panaria film
+  - delphinus
+  - hoche productions
 tags:
   - vintage
 title: The Golden Coach

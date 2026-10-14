@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/call-me-by-your-name.jpg]]'
 rating: 7.9
 status: finished
-studio: sony
+studio: sony pictures classics
 tags:
   - love
   - o/relationship

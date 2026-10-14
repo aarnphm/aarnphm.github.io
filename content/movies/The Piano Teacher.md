@@ -10,7 +10,11 @@ modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/the-piano-teacher.jpg]]'
 rating: 7.5
 status: to watch
-studio: MK2 / Les Films Alain Sarde / Wega Film / Arte France Cinema
+studio:
+  - mk2 films
+  - les films alain sarde
+  - wega film
+  - arte france cinema
 tags:
   - r/psychology
 title: The Piano Teacher

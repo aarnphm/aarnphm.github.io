@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/challengers.jpg]]'
 rating: 7.2
 status: finished
-studio: amazon mgm
+studio: amazon mgm studios
 tags:
   - love
   - o/relationship

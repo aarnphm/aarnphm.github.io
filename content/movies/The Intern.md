@@ -8,7 +8,7 @@ modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/the-intern.jpg]]'
 rating: 7.1
 status: recurring
-studio: ratpac
+studio: ratpac entertainment
 tags:
   - comedy
 title: The Intern

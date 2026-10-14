@@ -10,7 +10,7 @@ modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/the-breakfast-club.jpg]]'
 rating: 7.8
 status: recurring
-studio: universal
+studio: universal pictures
 tags:
   - comedy
   - drama

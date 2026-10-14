@@ -8,7 +8,7 @@ modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/chinatown.jpg]]'
 rating: 8.1
 status: recurring
-studio: paramount
+studio: paramount pictures
 tags:
   - o/vintage
 title: Chinatown

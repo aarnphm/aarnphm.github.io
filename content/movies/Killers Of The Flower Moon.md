@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/killers-of-the-flower-moon.jpg]]'
 rating: 7.5
 status: recurring
-studio: apple tv
+studio: apple studios
 tags:
   - thriller
 title: Killers of the Flower Moon

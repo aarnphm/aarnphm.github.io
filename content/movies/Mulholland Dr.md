@@ -12,7 +12,12 @@ modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/mulholland-drive.jpg]]'
 rating: 7.9
 status: to watch
-studio: Les Films Alain Sarde / Asymmetrical Productions / Babbo Inc. / Le Studio Canal+ / The Picture Factory
+studio:
+  - les films alain sarde
+  - asymmetrical productions
+  - babbo inc.
+  - le studio canal+
+  - the picture factory
 tags:
   - r/psychology
   - thriller

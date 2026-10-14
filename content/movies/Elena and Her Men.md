@@ -13,7 +13,10 @@ modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/elena-and-her-men.jpg]]'
 rating: 7
 status: to watch
-studio: Franco London Films / Les Films Gibe / Electra Compagnia Cinematografica
+studio:
+  - franco london film
+  - les films gibe
+  - electra compagnia cinematografica
 tags:
   - vintage
   - love

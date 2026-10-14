@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/the-french-dispatch.jpg]]'
 rating: 7.1
 status: recurring
-studio: searchlight
+studio: searchlight pictures
 tags:
   - o/life
 title: The French Dispatch
