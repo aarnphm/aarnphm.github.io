@@ -3,7 +3,7 @@ date: '2024-12-10'
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2026-10-11 03:03:56 GMT-04:00
+modified: 2026-10-14 00:08:53 GMT-04:00
 socials:
   twitter: https://x.com/aarnphm/status/1861550609834402129
 tags:
@@ -12,7 +12,7 @@ tags:
 title: colophon
 ---
 
-**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiv file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[/singularity|JSON Canvas support]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, comment room support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], [[queries|Jupyter]] [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|Notebooks]] support for client-side interaction, [[thoughts/Sets.fc|flashcards]], [[triathlon|a bunch of triathlon/tracking/analytics/health stuff]], {{sidenotes[tufte]: This is a tiny sidenote, supporting dynamic view size. Very much along the lines of [Tufte CSS](https://edwardtufte.github.io/tufte-css/)}} sidenotes, sidepanels [^sidepanel], modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
+**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiv file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], [[/|custom homepage]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[/singularity|JSON Canvas support]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, comment room support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], [[queries|Jupyter]] [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|Notebooks]] support for client-side interaction, [[thoughts/Sets.fc|flashcards]], [[triathlon|a bunch of triathlon/tracking/analytics/health stuff]], {{sidenotes[tufte]: This is a tiny sidenote, supporting dynamic view size. Very much along the lines of [Tufte CSS](https://edwardtufte.github.io/tufte-css/)}} sidenotes, sidepanels [^sidepanel], custom popover, modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
 
 There are also [[courses/index|course workspaces]], a PDF reader with marks and notes, a saved-link reading queue, browser semantic search, pronunciation tools, and a little mascot wandering around the page edges. The [[/index|homepage]] has local weather and a shared walking trail. The [404 page](/404.html) has acquired a whole landscape. More on those below.
 
@@ -20,7 +20,7 @@ There are also [[courses/index|course workspaces]], a PDF reader with marks and 
 
 **typography** -- [PP Neue Montreal](https://pangrampangram.com/products/neue-montreal), [<span style="font-family: 'Space Grotesk'">Space Grotesk</span>](https://fonts.google.com/specimen/Space+Grotesk?preview.script=Latn), [<span style="font-family: 'Parclo Serif'">Parclo Serif</span>](https://lettermatic.com/fonts/parclo-serif?plan=student), [<span style="font-family: 'ITCGaramondStdLtCond'">ITC Garamond</span>](https://www.typewolf.com/itc-garamond) and [`berkeley mono{:text}`](https://usgraphics.com/products/berkeley-mono)
 
-**accessibility** -- native buttons, dialogs and popovers, keyboard navigation, visible focus, and ARIA labels for the controls that need them. The mascot and 404 landscape respect the reduced-motion preference. Press <span style="text-transform: uppercase"><kbd>D</kbd></span> outside text fields to cycle through light, dark, and system themes. <kbd>Cmd/Ctrl+'</kbd> opens the shortcuts helper.
+**accessibility** -- native buttons, dialogs and popovers, keyboard navigation, visible focus, and ARIA labels for the controls that need them. The mascot and 404 landscape respect the reduced-motion preference. Press <span style="text-transform: uppercase"><kbd>D</kbd></span> outside text fields to cycle through daylight, system, dark, and light themes. <kbd>Cmd/Ctrl+'</kbd> opens the shortcuts helper.
 
 **components** -- I added support for rendering [[thoughts/Vector calculus#gradient|tikz graph]], [[thoughts/Transformers#Feynman-Kac|pseudocode]] support, [dynalist](https://dynalist.io)-inspired [[thoughts/mechanistic interpretability#inference|collapsible header]], a few customised [[posts/new#^ending|signature]], tiny [transformers plugins](https://github.com/aarnphm/aarnphm.github.io/blob/main/quartz/plugins/transformers/aarnphm.ts), micromarks extensions for [wikilinks](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-wikilinks), [sidenotes](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-sidenotes), [[posts/25/n-bday|protected notes]], [distributed comments](https://github.com/aarnphm/aarnphm.github.io/blob/main/quartz/components/scripts/collaborative-comments.inline.ts), and additional supports of [`renderPage.tsx`](https://github.com/aarnphm/aarnphm.github.io/blob/main/quartz/components/renderPage.tsx#L1487)
 
@@ -51,53 +51,41 @@ For a more compact highlights, see [[thoughts/craft#^quartz|this list]]
 
 ### courses and lecture workspaces
 
-The [[courses/index|course library]] brings together MIT OpenCourseWare materials, my lecture notes, problem sets, and decks. Course pages have resource lists, study progress, and previous/next navigation. Video lecture pages pair the player with captions you can use to jump to a passage. Imported LaTeX sources become linked study notes while keeping their source attribution.
+I want to explore a [spaced repetition](https://notes.andymatuschak.org/zRBUabiBg7c2o9i2vqamMFW) interface for some of the [[courses/index|OCW course]]. This include the lecture notes, alongside problem sets, and decks.
 
-On an authored lecture such as [[courses/18.905-fall-2016/lectures/01|singular simplices and chains]], a workspace sits beside the reading column on wide screens and opens in a dialog on smaller ones. It has the source PDF, a Markdown scratchpad, and notes on selected passages. You can mark, question, disagree, or write a note, then export the scratchpad and notes as Markdown with source citations. These lecture drafts live in the browser. Deleted notes can be restored after a reload.
+There are some {{sidenotes[video lectures]: Video lecture pages also pair with captions for better accessibility. For folks that enjoy latex, those are also imported to the linked study notes.}} that paired with backlinks that allows better graph navigation. I explicitly did not enable graph given that it creates too much cognitive overload (or at least for me whenever I look at a graph).
 
 ### PDF reader
 
 PDFs in the garden open in a reader with a document library, outline, page navigation, zoom, text selection, marks, and Markdown notes with math. It remembers reading position and can link directly to a page or mark. Course resource pages use the same reader, so their marks stay attached when opening the source beside a lecture. The original file remains available through the raw-file link.
 
-### saved-link reader
+### feed
 
-The [reading queue](/arena/feed) combines links from [[are.na|my Arena]] and [[curius|Curius]], merges duplicate URLs, and puts unread Later links first. I can mark an article read, skip to the next one, or save a note on a quoted passage. Article copies and the versions cited by notes live in R2; read marks and saved notes belong to my signed-in account. arXiv links open the PDF reader, and GitHub source files retain their code formatting. The original source stays one click away.
+A [reading queue](/arena/feed) combines links from [[are.na|are.na]] and [[curius|curius]], allowing me to go through all of the links backlog I have. There are also some custom parsing courtesy of [defuddle](https://defuddle.md/)
 
 ### search
 
-Search has lexical and semantic modes. Lexical search includes titles, text, tags, and path segments. Semantic search uses EmbeddingGemma through [Transformers.js](https://github.com/huggingface/transformers.js) to encode the query in a browser worker and compare it with the garden's precomputed passage vectors. Selecting that mode downloads the model and index, then the browser caches the model. It needs WebGPU; lexical search remains available on other browsers.
+Search expands based on Quartz' default lexical search, with semantic enabled. I used [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2) through [Transformers.js](https://github.com/huggingface/transformers.js) and precompute the whole garden's embeddings. Feel free to take a look at the RAG pipeline, pretty standard nowadays.
 
-### training and activity analysis
+### training
 
-[[triathlon|The training workspace]] brings together Strava, Garmin, Wahoo, Oura, Apple Health, and CORE records with my training logs. There are activity and race calendars, route maps, lap and interval views, best efforts, power curves, recovery and sleep views, gear mileage, maintenance records, and equipment notes. A password-protected TrainingPeaks calendar keeps planned and completed workouts together and links matched sessions to their activity pages.
+I use both [Strava](https://www.strava.com/athletes/123158310) and TrainingPeaks, but [[triathlon|triathlon page]] brings together Strava, Garmin, Wahoo, Oura, Apple Health, and CORE records with logs. Of course it has to have our own styling and preferences. There are a bunch of stuff to explore in terms of data analytics and exploration, with also activities that contains wind data, cycling CdA.
 
-The activity workspace links the route cursor to telemetry and charts. It can compare recorded courses, show shifts and cycling dynamics, and plot wind, weather, and modelled Lake Ontario surface currents. Archived [myWindsock](https://mywindsock.com/) reports add native wind, resistance, Feels Like elevation, and cycling CdA graphs, including test averages and ranges when captured. Empty or invalid graphs stay out of the viewer. Provider values retain their source labels; locally computed physiology, stamina, power, and pace forecasts are labelled as estimates. Commutes remain in the activity log and are excluded from the garden's derived pace and load analytics.
+There are also a bunch of maths and sports physiology in there for maximize human-performance 😸 (i'm just a sucker for data, but it is all fun and game)
 
-### homepage weather and shared trail
+### mascots
 
-The sun or moon on the [[/index|homepage]] opens weather for the visitor's approximate area, with a [Mapbox](https://www.mapbox.com/) map, [Open-Meteo](https://open-meteo.com/) conditions, wind, and the next sunrise or sunset. The Worker rounds the location supplied by Cloudflare before requesting the forecast.
-
-The trail button opens paths around the homepage text, through the mountain range into a valley with trees, animals, ponds, and campsites. [PlayHTML](https://playhtml.fun/) shares anonymous visitor presence and cursors. Each visitor gets a miniature who walks to camp, sits there, then walks back into the mountains when the visitor leaves. Hover, focus, or click a miniature to see its anonymous ID. The tree settings adjust the grove and its inhabitants; watering a tree contributes to its shared growth. Weather and location stay separate from the shared presence.
-
-### mascot and 404 landscape
-
-The hand-drawn mascot appears in the favicon, social cards, and page artwork. Its animated version perches on headings, code blocks, figures, and other page edges, then rides the scroll rail while the page moves. The command palette can turn pets off.
-
-The [404 page](/404.html) has a pixel landscape with mountains, water, a clock gate, a cat, a herd returning to its barn, riders, skiers, an angler, and passing planes. Its light, foliage, snow, and weather follow the visitor's local time, season, and available conditions.
+Very rudimentary hand-drawn mascot appears in the favicon, social cards, and page artwork. Its animated version perches on headings, code blocks, figures, and other page edges, then rides the scroll rail while the page moves. If you wish to turn the pets off, then press <kbd>Ctrl+p</kbd> (but Blob wouldn't like that)
 
 ### kit de presse
 
-Press <kbd>gs</kbd> to open the share-card editor. It makes note cards, quotation cards, and links to the page or a heading. Select a passage to use it as a quotation. Cards have story, portrait, square, and landscape formats, four themes, and optional artwork and metadata. You can download a PNG, copy the image, or use native sharing where the browser supports it. Math in selected passages keeps its LaTeX source for rendering on the card.
+Press <kbd>gs</kbd> to open the share-card editor. Think Strava sharing but customization per notes socials. Mostly for me lool but feel free to use it.
 
 ### pronunciation and source text
 
-French notes and decks have pronunciation controls with playback-speed settings. <kbd>gv</kbd> opens those settings. Audio uses cached clips when available and an optional browser speech model for synthesis. Text stays on the device during synthesis; the model details identify the voice and download size.
+French notes and decks have pronunciation controls with playback-speed settings. <kbd>gv</kbd> opens those settings. Audio uses cached clips when available and an optional browser speech model for synthesis. We use a speech models to support French and English.
 
 The metadata row can copy a note's Markdown source to the clipboard and reports whether the copy succeeded. Appending `.md` to a note URL also serves the source. Notebook cells, mathematical diagrams, and slide views have their own interactive rendering, including numbered slide pages and an overview grid.
-
-### authoring and machine access
-
-The vault has local Obsidian plugins for sidenotes, marked annotations, heading navigation, metadata, and running Quartz. The published page also exposes WebMCP tools to search the garden, read a page, and follow a result through the site router. The Cloudflare Worker serves an MCP endpoint for connected clients, alongside the Markdown sources and generated LLM text feeds.
 
 ### vim bindings
 
@@ -114,6 +102,8 @@ some remark parsers for wikilinks, callouts, that supports general OFM compatibi
 see [ofm-wikilinks](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-wikilinks/) and [ofm-sidenotes](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-sidenotes) for more information.
 
 Supports [[cinematheque|Bases]] [API](https://help.obsidian.md/bases) and [[singularity.canvas|JSON]] [Canvas](https://help.obsidian.md/plugins/canvas)
+
+Bases render tables, lists, image galleries, maps, and [Kanban columns](https://obsidian.md/help/bases/views/kanban). The [[cinematheque/analysis|film analysis view]] groups cards by studio, keeps the saved column order, and links each card to its note. Search filters cards and updates column counts. The `.base` file controls filters, sorting, visible properties, image fit, and column width; note creation and property edits happen in Obsidian.
 
 ### [telescopic-text](https://github.com/jackyzha0/telescopic-text)
 
