@@ -23,4 +23,6 @@ bilan de printemps : [[fr/episode-12|épisode 12]], corrigé des activités, éc
 
 début de l'été : [[fr/episode-13|épisode 13, petit bobo]], parties du corps, problèmes de santé, souhaits et enveloppes.
 
+météo et projets : [[fr/episode-14|épisode 14, beau et chaud]], températures, futur proche et vêtements selon le temps.
+
 vue d'ensemble : [[fr/parcours.canvas|carte des notes]].
