@@ -1,10 +1,12 @@
 import FlexSearch, { DefaultDocumentSearchResults, DocumentData, Id } from 'flexsearch'
 import type { ContentDetails } from '../../plugins'
+import { documentPreviewUrl, readDocumentPreview } from '../../util/document-preview'
 import { escapeHTML } from '../../util/escape'
 import { fetchCanonical } from '../../util/fetch-canonical'
 import { FullSlug, getFullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
 import { encode, highlight, pathSearchText, tokenizeTerm } from '../../util/search-text'
 import { aggregateSemanticResults, fuseSearchRanks } from '../../util/semantic-search'
+import { renderDocumentPreview } from './document-preview-card'
 import { registerEscapeHandler } from './escape-handler'
 import { SemanticClient } from './semantic.inline'
 
@@ -96,7 +98,7 @@ function fileExtension(fileName: string): string | null {
 
 function isDirectContentFile(fileName: string): boolean {
   const ext = fileExtension(fileName)
-  return ext !== null && ext !== '.canvas' && ext !== '.bases'
+  return ext !== null && ext !== '.canvas' && ext !== '.base' && ext !== '.bases'
 }
 
 async function loadSearchData(): Promise<ContentIndex> {
@@ -168,8 +170,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
   configuredSearchElements.add(searchElement)
 
-  const container = searchElement.querySelector<HTMLElement>('.search-container')
-  if (!container) return
+  const containerElement = searchElement.querySelector<HTMLElement>('.search-container')
+  if (!containerElement) return
+  const container = containerElement
 
   const searchButton = searchElement.querySelector<HTMLButtonElement>('.search-button')
   if (!searchButton) return
@@ -177,35 +180,58 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   const searchBar = searchElement.querySelector<HTMLInputElement>('.search-bar')
   if (!searchBar) return
 
-  const searchLayout = searchElement.querySelector<HTMLOutputElement>('.search-layout')
-  if (!searchLayout) return
+  const searchLayoutElement = searchElement.querySelector<HTMLOutputElement>('.search-layout')
+  if (!searchLayoutElement) return
+  const searchLayout = searchLayoutElement
 
   const searchSpace = searchElement.querySelector<HTMLFormElement>('.search-space')
   if (!searchSpace) return
 
   const progressBar = document.createElement('div')
   progressBar.className = 'semantic-search-progress'
+  progressBar.setAttribute('role', 'progressbar')
+  progressBar.setAttribute('aria-label', 'Loading search')
+  progressBar.setAttribute('aria-hidden', 'true')
   searchBar.parentElement?.appendChild(progressBar)
+  let progressResetTimer = 0
+  const progressReasons = new Set<'search' | 'preview'>()
 
-  const startSemanticProgress = () => {
+  const startSearchProgress = (reason: 'search' | 'preview' = 'search') => {
+    progressReasons.add(reason)
+    progressBar.setAttribute(
+      'aria-label',
+      progressReasons.has('search') ? 'Loading search' : 'Loading preview',
+    )
+    window.clearTimeout(progressResetTimer)
+    progressBar.setAttribute('aria-hidden', 'false')
     progressBar.style.opacity = '1'
-    progressBar.style.width = '0'
-    setTimeout(() => {
-      progressBar.style.width = '100%'
-      progressBar.style.animation = 'semantic-progress-sweep 2.5s linear infinite'
-    }, 10)
+    progressBar.style.width = '100%'
+    progressBar.style.animation = 'semantic-progress-sweep 2.5s linear infinite'
   }
 
-  const completeSemanticProgress = () => {
+  const completeSearchProgress = (reason: 'search' | 'preview' = 'search') => {
+    progressReasons.delete(reason)
+    if (progressReasons.size > 0) {
+      progressBar.setAttribute(
+        'aria-label',
+        progressReasons.has('search') ? 'Loading search' : 'Loading preview',
+      )
+      return
+    }
+    window.clearTimeout(progressResetTimer)
+    progressBar.setAttribute('aria-hidden', 'true')
     progressBar.style.animation = 'none'
     progressBar.style.opacity = '0'
-    setTimeout(() => {
+    progressResetTimer = window.setTimeout(() => {
       progressBar.style.width = '0'
       progressBar.style.backgroundPosition = '-100% 0'
     }, 300)
   }
 
   const resetProgressBar = () => {
+    progressReasons.clear()
+    window.clearTimeout(progressResetTimer)
+    progressBar.setAttribute('aria-hidden', 'true')
     progressBar.style.animation = 'none'
     progressBar.style.opacity = '0'
     progressBar.style.width = '0'
@@ -420,6 +446,13 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   })
   let preview: HTMLDivElement | undefined = undefined
   let previewInner: HTMLDivElement | undefined = undefined
+  let previewRequest: AbortController | undefined
+
+  function clearPreview() {
+    previewRequest?.abort()
+    previewRequest = undefined
+    preview?.replaceChildren()
+  }
 
   let results = searchLayout.querySelector('.results-container') as HTMLDivElement
   if (!results) {
@@ -453,10 +486,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     currentSearchTerm = ''
     currentHover = null
     results.replaceChildren()
-    if (preview) {
-      preview.replaceChildren()
-    }
+    clearPreview()
     searchLayout!.classList.remove('display-results')
+    searchLayout.removeAttribute('aria-busy')
     if (focusButton) {
       const target = previousFocus?.isConnected ? previousFocus : searchButton
       target?.focus({ preventScroll: true })
@@ -478,7 +510,18 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       container!.showPopover()
     }
     container!.classList.add('active')
-    void ensureSearchData()
+    if (!data) {
+      startSearchProgress()
+      void ensureSearchData().then(
+        () => {
+          if (container.classList.contains('active')) completeSearchProgress()
+        },
+        error => {
+          resetProgressBar()
+          console.warn('[Search] initialization failed:', error)
+        },
+      )
+    }
     if (type === 'tags') {
       searchBar!.value = '#'
       rawSearchTerm = '#'
@@ -641,8 +684,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
 
     const fileData = requireData()[slug]
     const resolvedFileName = (fileData?.fileName || fileName || slug || '').toLowerCase()
-    const isCanvas = resolvedFileName.includes('.canvas')
-    const isBases = resolvedFileName.includes('.bases')
+    const extension = fileExtension(resolvedFileName)
+    const isCanvas = extension === '.canvas'
+    const isBases = extension === '.base' || extension === '.bases'
     const isDirectFile = isDirectContentFile(resolvedFileName)
     if (isCanvas) itemTile.dataset.canvas = 'true'
     if (isBases) itemTile.dataset.bases = 'true'
@@ -708,7 +752,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
 
     if (finalResults.length === 0 && preview) {
-      preview.replaceChildren()
+      clearPreview()
     } else {
       const firstChild = results.firstElementChild as HTMLElement
       firstChild.classList.add('focus')
@@ -740,88 +784,140 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
 
   async function displayPreview(el: HTMLElement | null) {
     if (!enablePreview || !el || !preview) return
-    const slug = el.id as FullSlug
-    if (
-      el.dataset.canvas === 'true' ||
-      el.dataset.bases === 'true' ||
-      el.dataset.directFile === 'true'
-    ) {
-      const fileData = requireData()[slug]
+    clearPreview()
+    const request = new AbortController()
+    previewRequest = request
+    startSearchProgress('preview')
+    request.signal.addEventListener('abort', () => completeSearchProgress('preview'), {
+      once: true,
+    })
+    try {
+      const slug = el.id as FullSlug
+      const isProtected = el.dataset.protected === 'true' || requireData()[slug]?.protected === true
+      if (isProtected) {
+        previewInner = document.createElement('div')
+        previewInner.classList.add('preview-inner', 'preview-redacted')
+
+        const blurLayer = document.createElement('div')
+        blurLayer.className = 'preview-redacted-blur'
+        const label = document.createElement('span')
+        label.className = 'preview-redacted-label'
+        label.textContent = 'redacted'
+
+        previewInner.append(blurLayer, label)
+        preview.replaceChildren(previewInner)
+        return
+      }
+
+      const documentType =
+        el.dataset.canvas === 'true' ? 'canvas' : el.dataset.bases === 'true' ? 'base' : null
+      if (documentType) {
+        const loading = document.createElement('p')
+        loading.setAttribute('role', 'status')
+        loading.textContent = 'Loading preview…'
+        preview.appendChild(loading)
+        try {
+          const response = await fetch(documentPreviewUrl(slug, resolveUrl(slug).toString()), {
+            signal: request.signal,
+          })
+          const summary = response.ok
+            ? readDocumentPreview(await response.json(), documentType, slug)
+            : null
+          if (request.signal.aborted) return
+          if (summary) {
+            const inner = document.createElement('div')
+            inner.classList.add('preview-inner', 'document-popover', 'search-document-preview')
+            renderDocumentPreview(summary, resolveUrl(slug).toString(), inner)
+            preview.replaceChildren(inner)
+            preview.scrollTop = 0
+            return
+          }
+        } catch (error) {
+          if (request.signal.aborted) return
+          console.warn('[Search] document preview unavailable:', error)
+        }
+      }
+
+      if (documentType || el.dataset.directFile === 'true') {
+        const fileData = requireData()[slug]
+        previewInner = document.createElement('div')
+        previewInner.classList.add('preview-inner')
+
+        const metaContainer = document.createElement('div')
+        metaContainer.style.padding = '1rem'
+        metaContainer.style.color = 'var(--gray)'
+        metaContainer.style.fontSize = '0.9rem'
+
+        const metadata = (label: string, value: string) => {
+          const row = document.createElement('p')
+          const heading = document.createElement('strong')
+          heading.textContent = `${label}:`
+          row.append(heading, ` ${value}`)
+          metaContainer.appendChild(row)
+        }
+
+        metadata('File', fileData?.fileName || slug)
+
+        if (fileData?.description) {
+          metadata('Description', fileData.description)
+        }
+
+        if (fileData?.tags && fileData.tags.length > 0) {
+          metadata('Tags', fileData.tags.join(', '))
+        }
+
+        previewInner.appendChild(metaContainer)
+        preview.replaceChildren(previewInner)
+        return
+      }
+
+      const innerDiv = await fetchContent(slug).then(contents =>
+        contents.flatMap(el => [...highlightHTML(currentSearchTerm, el as HTMLElement).children]),
+      )
+      if (request.signal.aborted) return
       previewInner = document.createElement('div')
       previewInner.classList.add('preview-inner')
-
-      const metaContainer = document.createElement('div')
-      metaContainer.style.padding = '1rem'
-      metaContainer.style.color = 'var(--gray)'
-      metaContainer.style.fontSize = '0.9rem'
-
-      const metadata = (label: string, value: string) => {
-        const row = document.createElement('p')
-        const heading = document.createElement('strong')
-        heading.textContent = `${label}:`
-        row.append(heading, ` ${value}`)
-        metaContainer.appendChild(row)
-      }
-
-      metadata('File', fileData?.fileName || slug)
-
-      if (fileData?.description) {
-        metadata('Description', fileData.description)
-      }
-
-      if (fileData?.tags && fileData.tags.length > 0) {
-        metadata('Tags', fileData.tags.join(', '))
-      }
-
-      previewInner.appendChild(metaContainer)
+      previewInner.append(...innerDiv)
       preview.replaceChildren(previewInner)
-      return
-    }
 
-    const isProtected = el.dataset.protected === 'true' || requireData()[slug]?.protected === true
-    if (isProtected) {
-      previewInner = document.createElement('div')
-      previewInner.classList.add('preview-inner', 'preview-redacted')
-
-      const blurLayer = document.createElement('div')
-      blurLayer.className = 'preview-redacted-blur'
-      const label = document.createElement('span')
-      label.className = 'preview-redacted-label'
-      label.textContent = 'redacted'
-
-      previewInner.append(blurLayer, label)
-      preview.replaceChildren(previewInner)
-      return
-    }
-
-    const innerDiv = await fetchContent(slug).then(contents =>
-      contents.flatMap(el => [...highlightHTML(currentSearchTerm, el as HTMLElement).children]),
-    )
-    previewInner = document.createElement('div')
-    previewInner.classList.add('preview-inner')
-    previewInner.append(...innerDiv)
-    preview.replaceChildren(previewInner)
-
-    const highlights = [...preview.getElementsByClassName('highlight')].sort(
-      (a, b) => b.innerHTML.length - a.innerHTML.length,
-    )
-    if (highlights.length > 0) {
-      const highlight = highlights[0]
-      const containerRect = preview.getBoundingClientRect()
-      const highlightRect = highlight.getBoundingClientRect()
-      const relativeTop = highlightRect.top - containerRect.top + preview.scrollTop - 20
-      preview.scrollTo({ top: relativeTop, behavior: 'smooth' })
+      const highlights = [...preview.getElementsByClassName('highlight')].sort(
+        (a, b) => b.innerHTML.length - a.innerHTML.length,
+      )
+      if (highlights.length > 0) {
+        const highlight = highlights[0]
+        const containerRect = preview.getBoundingClientRect()
+        const highlightRect = highlight.getBoundingClientRect()
+        const relativeTop = highlightRect.top - containerRect.top + preview.scrollTop - 20
+        preview.scrollTo({ top: relativeTop, behavior: 'smooth' })
+      }
+    } finally {
+      if (previewRequest === request) completeSearchProgress('preview')
     }
   }
 
   async function runSearch(rawTerm: string, token: number) {
+    try {
+      await querySearch(rawTerm, token)
+    } catch (error) {
+      if (token !== searchSeq) return
+      console.warn('[Search] query failed:', error)
+      resetProgressBar()
+      searchLayout.removeAttribute('aria-busy')
+      clearPreview()
+      const message = document.createElement('p')
+      message.setAttribute('role', 'status')
+      message.textContent = 'Search could not load. Reload the page to retry.'
+      results.replaceChildren(message)
+    }
+  }
+
+  async function querySearch(rawTerm: string, token: number) {
     await ensureSearchData()
+    if (token !== searchSeq) return
     const trimmed = rawTerm.trim()
     if (trimmed === '') {
       results.replaceChildren()
-      if (preview) {
-        preview.replaceChildren()
-      }
+      clearPreview()
       currentHover = null
       searchLayout!.classList.remove('display-results')
       resetProgressBar()
@@ -953,6 +1049,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         displayEntries.push({ item: entry.item, similarity: entry.similarity })
       }
 
+      searchLayout.removeAttribute('aria-busy')
       await displayResults(displayEntries)
     }
 
@@ -964,7 +1061,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
 
     const showProgress = modeForRanking === 'semantic'
     if (showProgress) {
-      startSemanticProgress()
+      startSearchProgress()
     }
 
     try {
@@ -973,7 +1070,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         getNumSearchResults(modeForRanking) * 8,
       )
       if (token !== searchSeq) {
-        if (showProgress) completeSemanticProgress()
         return
       }
 
@@ -991,10 +1087,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       semanticIds.forEach(docId => {
         ensureItem(docId)
       })
-      if (showProgress) completeSemanticProgress()
+      if (showProgress) completeSearchProgress()
     } catch (err) {
       console.warn('[SemanticClient] search failed:', err)
-      if (showProgress) completeSemanticProgress()
+      if (showProgress) completeSearchProgress()
       orchestrator.dispose()
       semantic = null
       semanticReady = false
@@ -1016,11 +1112,13 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   function onType(e: HTMLElementEventMap['input']) {
+    previewRequest?.abort()
     rawSearchTerm = (e.target as HTMLInputElement).value
     const hasQuery = rawSearchTerm.trim() !== ''
     searchLayout!.classList.toggle('display-results', hasQuery)
     const term = rawSearchTerm
     const token = ++searchSeq
+    searchLayout.setAttribute('aria-busy', String(hasQuery))
     if (runSearchTimer !== null) {
       window.clearTimeout(runSearchTimer)
       runSearchTimer = null
@@ -1069,25 +1167,21 @@ function fillDocument(data: ContentIndex): Promise<void> {
 
 async function addDocuments(data: ContentIndex) {
   let id = 0
-  const promises = []
   for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
-    promises.push(
-      index.addAsync({
-        id,
-        slug: slug as FullSlug,
-        title: fileData.title,
-        fileName: pathSearchText(fileData.fileName),
-        content: fileData.content ?? '',
-        tags: fileData.tags,
-        aliases: fileData.aliases,
-        target: '',
-        protected: fileData.protected,
-      }),
-    )
+    // Await each insertion so FlexSearch can yield without queuing a timer for every document.
+    await index.addAsync({
+      id,
+      slug: slug as FullSlug,
+      title: fileData.title,
+      fileName: pathSearchText(fileData.fileName),
+      content: fileData.content ?? '',
+      tags: fileData.tags,
+      aliases: fileData.aliases,
+      target: '',
+      protected: fileData.protected,
+    })
     id++
   }
-
-  await Promise.all(promises)
 }
 
 document.addEventListener('nav', async () => {

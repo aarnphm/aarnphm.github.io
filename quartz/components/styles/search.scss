@@ -49,6 +49,12 @@
     opacity 0.3s ease;
   opacity: 0;
   z-index: var(--z-tooltip);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+    transition: none;
+    background: var(--secondary);
+  }
 }
 
 .search {
@@ -285,6 +291,25 @@
             max-height: 100%;
             overflow: hidden auto;
             white-space: normal;
+
+            &.search-document-preview {
+              padding-top: 1rem;
+              box-sizing: border-box;
+
+              .document-popover-card {
+                padding: 0;
+              }
+
+              .document-popover-label {
+                font-size: 0.65rem;
+              }
+
+              .document-popover-table,
+              .document-popover-list,
+              .document-popover-cards span {
+                font-size: 0.75rem;
+              }
+            }
 
             &.preview-redacted {
               display: flex;

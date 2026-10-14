@@ -762,16 +762,24 @@
 }
 
 .document-popover-frame {
-  position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  border: 1px solid var(--lightgray);
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--lightgray);
   background: var(--light);
 
   &.is-empty {
     background: color-mix(in srgb, var(--lightgray) 35%, var(--light));
   }
+}
+
+.document-popover-surface {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.document-popover-card[data-type='canvas'] .document-popover-surface {
+  aspect-ratio: 16 / 10;
 }
 
 .document-popover-badge {
@@ -928,8 +936,7 @@
 }
 
 .document-popover .document-popover-cards {
-  position: absolute;
-  inset: 0;
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-content: start;
@@ -965,9 +972,7 @@
 }
 
 .document-popover .document-popover-table {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
   margin: 0;
   border-collapse: collapse;
@@ -1001,8 +1006,7 @@
 }
 
 .document-popover .document-popover-list {
-  position: absolute;
-  inset: 0;
+  position: relative;
   margin: 0;
   padding: 0.6rem 0.75rem 0.6rem 1.5rem;
   font-size: 0.62rem;
