@@ -131,17 +131,7 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
                 const resourceBase = linkHref.startsWith('/') ? linkHref : `/${linkHref}`
 
                 // embed configuration: static preview, no interaction
-                const embedConfig = {
-                  drag: false,
-                  zoom: false,
-                  forceStrength: 0,
-                  linkDistance: 150,
-                  collisionRadius: 50,
-                  useManualPositions: true,
-                  showInlineContent: false,
-                  showPreviewOnHover: false,
-                  previewMaxLength: 0,
-                }
+                const embedConfig = { zoom: false, showPreviewOnHover: false }
 
                 // transform into full canvas embed container
                 node.tagName = 'div'
