@@ -141,6 +141,23 @@ const icons = {
       <rect width="7" height="7" x="3" y="14" rx="1" />
     </svg>
   ),
+  kanban: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M8 7v10M12 7v6M16 7v8" />
+    </svg>
+  ),
 }
 
 const viewTypeIcons: Partial<Record<BaseViewMetadata['type'], ComponentChild>> = {
@@ -151,6 +168,8 @@ const viewTypeIcons: Partial<Record<BaseViewMetadata['type'], ComponentChild>> =
   calendar: icons.table,
   map: icons.map,
   card: icons.card,
+  cards: icons.card,
+  kanban: icons.kanban,
 }
 
 const iconForView = (type: BaseViewMetadata['type']): ComponentChild =>

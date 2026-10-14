@@ -14,7 +14,6 @@ const defaults: GlobalConfiguration['semanticSearch'] = {
   dims: 1024,
   dtype: 'fp32',
   shardSizeRows: 1024,
-  hnsw: { M: 16, efConstruction: 200 },
   chunking: { chunkSize: 512, chunkOverlap: 128, noChunking: false },
   vllm: {
     useVllm: false,
@@ -103,11 +102,6 @@ export const SemanticIndex: QuartzEmitterPlugin<
     dims: merged.dims!,
     dtype: merged.dtype!,
     shardSizeRows: merged.shardSizeRows!,
-    hnsw: {
-      M: merged.hnsw?.M ?? defaults.hnsw!.M!,
-      efConstruction: merged.hnsw?.efConstruction ?? defaults.hnsw!.efConstruction!,
-      efSearch: merged.hnsw?.efSearch,
-    },
     chunking: {
       chunkSize: merged.chunking?.chunkSize ?? defaults.chunking!.chunkSize!,
       chunkOverlap: merged.chunking?.chunkOverlap ?? defaults.chunking!.chunkOverlap!,

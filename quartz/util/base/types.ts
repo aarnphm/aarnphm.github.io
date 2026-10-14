@@ -22,6 +22,7 @@ const BASE_VIEW_TYPES = [
   'card',
   'cards',
   'map',
+  'kanban',
 ] as const
 
 type BaseViewType = (typeof BASE_VIEW_TYPES)[number]
@@ -50,12 +51,16 @@ export interface BaseView {
   sort?: BaseSortConfig[]
   columnSize?: Record<string, number>
   groupBy?: string | BaseGroupBy
+  groupOrder?: BaseGroupValue[]
   limit?: number
   filters?: BaseFileFilter
   summaries?: Record<string, string> | ViewSummaryConfig
   image?: string
   cardSize?: number
   cardAspect?: number
+  columnWidth?: number
+  imageFit?: 'cover' | 'contain'
+  imageAspectRatio?: number
   nestedProperties?: boolean
   indentProperties?: boolean
   separator?: string
@@ -82,6 +87,14 @@ export interface BaseGroupBy {
   direction: 'ASC' | 'DESC'
 }
 
+export type BaseGroupValue = string | number | boolean | null
+
+const isBaseGroupValue = (value: unknown): value is BaseGroupValue =>
+  value === null ||
+  typeof value === 'string' ||
+  typeof value === 'boolean' ||
+  (typeof value === 'number' && Number.isFinite(value))
+
 export function parseViews(raw: unknown[]): BaseView[] {
   return raw.map((entry, index) => {
     if (!isRecord(entry)) throw new Error(`View at index ${index} must be an object`)
@@ -92,7 +105,30 @@ export function parseViews(raw: unknown[]): BaseView[] {
     if (!isBaseViewType(type)) {
       throw new Error(`View at index ${index} has unsupported type '${type}'`)
     }
-    return { ...entry, type, name }
+    const groupOrder = entry.groupOrder
+    if (
+      groupOrder !== undefined &&
+      (!Array.isArray(groupOrder) || !groupOrder.every(isBaseGroupValue))
+    ) {
+      throw new Error(`View at index ${index} must have scalar values in 'groupOrder'`)
+    }
+    for (const option of ['columnWidth', 'imageAspectRatio']) {
+      const value = entry[option]
+      if (
+        value !== undefined &&
+        (typeof value !== 'number' || !Number.isFinite(value) || value <= 0)
+      ) {
+        throw new Error(`View at index ${index} must have a positive number for '${option}'`)
+      }
+    }
+    if (
+      entry.imageFit !== undefined &&
+      entry.imageFit !== 'cover' &&
+      entry.imageFit !== 'contain'
+    ) {
+      throw new Error(`View at index ${index} must have 'cover' or 'contain' for 'imageFit'`)
+    }
+    return { ...entry, type, name, groupOrder }
   })
 }
 

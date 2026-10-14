@@ -30,9 +30,14 @@ type InitMessage = { type: 'init'; cfg?: SemanticWorkerConfig }
 
 type SearchMessage = { type: 'search'; text: string; k: number; seq: number }
 
-type WorkerMessage = InitMessage | SearchMessage
+/** Swaps the vector set (another base's index) and keeps the loaded encoder. */
+type LoadMessage = { type: 'load'; manifestUrl: string; seq: number }
+
+type WorkerMessage = InitMessage | SearchMessage | LoadMessage
 
 type ReadyMessage = { type: 'ready' }
+
+type LoadedMessage = { type: 'loaded'; seq: number; rows: number }
 
 type ProgressMessage = { type: 'progress'; loadedRows: number; totalRows: number }
 
@@ -44,7 +49,12 @@ type ErrorMessage = { type: 'error'; seq?: number; message: string }
 
 type WorkerState = 'idle' | 'loading' | 'ready' | 'error'
 
-type SemanticWorkerConfig = { model?: string; queryDtype?: SemanticQueryDType }
+type SemanticWorkerConfig = {
+  model?: string
+  queryDtype?: SemanticQueryDType
+  /** Same-origin manifest path; a base index lives under /embeddings/bases/<slug>/. */
+  manifestUrl?: string
+}
 
 const MANIFEST_URL = '/embeddings/manifest.json'
 
@@ -242,6 +252,24 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
   return vec
 }
 
+async function fetchManifest(path: string): Promise<Manifest> {
+  const manifestUrl = toAssetUrl(path)
+  const response = await fetch(manifestUrl, { signal: abortController?.signal ?? undefined })
+  if (!response.ok) {
+    throw new Error(
+      `failed to fetch manifest ${manifestUrl}: ${response.status} ${response.statusText}`,
+    )
+  }
+  const data = (await response.json()) as Manifest
+  if (data.vectors.dtype !== 'fp32') {
+    throw new Error(`unsupported embedding dtype '${data.vectors.dtype}', regenerate with fp32`)
+  }
+  if (manifest && data.model !== manifest.model) {
+    throw new Error(`index model ${data.model} differs from the loaded encoder ${manifest.model}`)
+  }
+  return data
+}
+
 async function handleInit(msg: InitMessage) {
   if (state === 'loading' || state === 'ready') {
     throw new Error('worker already initialized or loading')
@@ -254,20 +282,7 @@ async function handleInit(msg: InitMessage) {
   try {
     cfg = msg.cfg ?? {}
 
-    const response = await fetch(MANIFEST_URL, { signal: abortController.signal })
-    if (!response.ok) {
-      throw new Error(
-        `failed to fetch manifest ${MANIFEST_URL}: ${response.status} ${response.statusText}`,
-      )
-    }
-    manifest = (await response.json()) as Manifest
-
-    if (manifest.vectors.dtype !== 'fp32') {
-      throw new Error(
-        `unsupported embedding dtype '${manifest.vectors.dtype}', regenerate with fp32`,
-      )
-    }
-
+    manifest = await fetchManifest(cfg.manifestUrl ?? MANIFEST_URL)
     dims = manifest.dims
 
     // The encoder loads beside the vectors, so "ready" means a query can run and a missing
@@ -280,6 +295,27 @@ async function handleInit(msg: InitMessage) {
     self.postMessage(ready)
   } catch (err) {
     state = 'error'
+    throw err
+  }
+}
+
+async function handleLoad(msg: LoadMessage) {
+  if (state !== 'ready') {
+    throw new Error('worker not ready to load another index')
+  }
+  state = 'loading'
+  try {
+    const next = await fetchManifest(msg.manifestUrl)
+    const loaded = await loadVectors(next)
+    manifest = next
+    dims = next.dims
+    vectors = loaded
+    state = 'ready'
+    const message: LoadedMessage = { type: 'loaded', seq: msg.seq, rows: next.rows }
+    self.postMessage(message)
+  } catch (err) {
+    // The previous index stays usable; only the swap failed.
+    state = vectors ? 'ready' : 'error'
     throw err
   }
 }
@@ -311,6 +347,18 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
     void handleInit(data).catch((err: unknown) => {
       const message: ErrorMessage = {
         type: 'error',
+        message: err instanceof Error ? err.message : String(err),
+      }
+      self.postMessage(message)
+    })
+    return
+  }
+
+  if (data.type === 'load') {
+    void handleLoad(data).catch((err: unknown) => {
+      const message: ErrorMessage = {
+        type: 'error',
+        seq: data.seq,
         message: err instanceof Error ? err.message : String(err),
       }
       self.postMessage(message)

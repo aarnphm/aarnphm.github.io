@@ -27,6 +27,7 @@ import { computeViewSummaries } from './query'
 import {
   BaseView,
   BaseGroupBy,
+  BaseGroupValue,
   BaseFile,
   BaseSortConfig,
   PropertyConfig,
@@ -517,38 +518,61 @@ function applySorting(
   })
 }
 
+function groupValue(value: unknown): BaseGroupValue {
+  if (value === undefined || value === null || value === '') return null
+  if (Array.isArray(value)) return value.length > 0 ? String(value) : null
+  if (isIconToken(value)) return value.value
+  if (value instanceof Date) return value.toISOString().split('T')[0]
+  if (typeof value === 'number' || typeof value === 'boolean') return value
+  return String(value)
+}
+
+const groupLabel = (value: BaseGroupValue): string => (value === null ? '(empty)' : String(value))
+
+function fileGroupValues(
+  file: QuartzPluginData,
+  groupBy: string | BaseGroupBy,
+  getContext: EvalContextFactory,
+  getPropertyExpr: PropertyExprGetter,
+): BaseGroupValue[] {
+  const property = typeof groupBy === 'string' ? groupBy : groupBy.property
+  const value = resolveValueWithFormulas(file, property, getContext, getPropertyExpr)
+  if (Array.isArray(value)) {
+    return value.length > 0 ? [...new Set(value.map(groupValue))] : [null]
+  }
+  return [groupValue(value)]
+}
+
 function groupFiles(
   files: QuartzPluginData[],
   groupBy: string | BaseGroupBy,
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
-): Map<string, QuartzPluginData[]> {
-  const groups = new Map<string, QuartzPluginData[]>()
+  groupOrder?: BaseGroupValue[],
+): Map<BaseGroupValue, QuartzPluginData[]> {
+  const groups = new Map<BaseGroupValue, QuartzPluginData[]>()
 
-  const property = typeof groupBy === 'string' ? groupBy : groupBy.property
   const direction = typeof groupBy === 'string' ? 'ASC' : groupBy.direction
 
   for (const file of files) {
-    const value = resolveValueWithFormulas(file, property, getContext, getPropertyExpr)
-    const key = isIconToken(value)
-      ? value.value
-      : value === undefined || value === null
-        ? '(empty)'
-        : String(value)
-
-    if (!groups.has(key)) {
-      groups.set(key, [])
+    for (const key of fileGroupValues(file, groupBy, getContext, getPropertyExpr)) {
+      const members = groups.get(key) ?? []
+      members.push(file)
+      groups.set(key, members)
     }
-    groups.get(key)!.push(file)
+  }
+
+  if (groupOrder !== undefined) {
+    return new Map(groupOrder.map(value => [value, groups.get(value) ?? []]))
   }
 
   const sortedGroups = new Map(
     [...groups.entries()].sort(([a], [b]) => {
-      if (direction === 'ASC') {
-        return a.localeCompare(b)
-      } else {
-        return b.localeCompare(a)
-      }
+      if (a === null) return b === null ? 0 : 1
+      if (b === null) return -1
+      const comparison =
+        typeof a === 'number' && typeof b === 'number' ? a - b : String(a).localeCompare(String(b))
+      return direction === 'ASC' ? comparison : -comparison
     }),
   )
 
@@ -616,7 +640,7 @@ function buildTable(
   const summaryConfig = parseViewSummaries(view.summaries, topLevelSummaries)
 
   if (view.groupBy) {
-    const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr)
+    const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr, view.groupOrder)
     const allRows: RenderElement[] = []
     const groupByKey = typeof view.groupBy === 'string' ? view.groupBy : view.groupBy.property
     const groupByLabel = getPropertyDisplayName(groupByKey, properties)
@@ -626,7 +650,7 @@ function buildTable(
         h('td', { colspan: columns.length }, [
           h('span.base-group-header-label', groupByLabel.toLowerCase()),
           ' ',
-          groupName,
+          groupLabel(groupName),
         ]),
       ])
       allRows.push(groupHeader)
@@ -830,14 +854,14 @@ function buildList(
   )
 
   if (view.groupBy) {
-    const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr)
+    const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr, view.groupOrder)
     const groupElements: RenderElement[] = []
 
     for (const [groupName, groupedFiles] of groups) {
       const items = groupedFiles.map(file => renderListItem(file))
       groupElements.push(
         h('div.base-list-group', [
-          h('h3.base-list-group-header', groupName),
+          h('h3.base-list-group-header', groupLabel(groupName)),
           h('ul.base-list', items),
         ]),
       )
@@ -963,24 +987,33 @@ function buildCards(
   getPropertyExpr: PropertyExprGetter,
   properties?: Record<string, PropertyConfig>,
 ): RenderElement {
-  const imageField = view.image || 'image'
+  const isKanban = view.type === 'kanban'
+  if (isKanban && !view.groupBy) {
+    return h('p.base-kanban-empty', 'Choose a groupBy property to organize this view into columns.')
+  }
+  const imageField = view.image || (isKanban ? undefined : 'image')
+  const order = view.order ?? []
+  const titleField = isKanban ? (order[0] ?? 'file.name') : undefined
 
   const renderCard = (file: QuartzPluginData): RenderElement => {
     const slug = (file.slug || '') as FullSlug
-    const title = getFileDisplayName(file) ?? fallbackNameFromSlug(slug)
+    const titleValue = titleField
+      ? resolveValueWithFormulas(file, titleField, getContext, getPropertyExpr)
+      : undefined
+    const title =
+      listValueToPlainText(titleValue) ?? getFileDisplayName(file) ?? fallbackNameFromSlug(slug)
     const href = resolveRelative(currentSlug, slug)
 
-    const imageValue = resolveValueWithFormulas(file, imageField, getContext, getPropertyExpr)
+    const imageValue = imageField
+      ? resolveValueWithFormulas(file, imageField, getContext, getPropertyExpr)
+      : undefined
     const imageUrl = resolveCardImageUrl(imageValue, currentSlug)
 
     const metadataItems: RenderElement[] = []
-    const order = Array.isArray(view.order) ? view.order : []
-    const metadataFields = order.filter(
+    const metadataFields = (isKanban ? order.slice(1) : order).filter(
       (field): field is string =>
         typeof field === 'string' &&
-        field !== 'title' &&
-        field !== 'file.title' &&
-        field !== 'note.title' &&
+        (isKanban || (field !== 'title' && field !== 'file.title' && field !== 'note.title')) &&
         field !== imageField,
     )
 
@@ -1001,20 +1034,9 @@ function buildCards(
     const cardChildren: RenderElement[] = []
     if (imageUrl) {
       cardChildren.push(
-        h(
-          'a.base-card-image-link',
-          {
-            href,
-            'data-slug': slug,
-            style: {
-              'background-image': `url(${imageUrl})`,
-              'background-size': 'cover',
-              top: '0px',
-              'inset-inline': '0px',
-            },
-          },
-          [],
-        ),
+        h('a.base-card-image-link', { href, 'data-slug': slug, 'aria-label': title }, [
+          h('img.base-card-image', { src: imageUrl, alt: '', loading: 'lazy', decoding: 'async' }),
+        ]),
       )
     }
 
@@ -1027,20 +1049,23 @@ function buildCards(
 
     cardChildren.push(h('div.base-card-content', contentChildren))
 
-    return h('div.base-card', cardChildren)
+    return h(isKanban ? 'li.base-card' : 'div.base-card', cardChildren)
   }
 
   const styleParts: string[] = []
   if (typeof view.cardSize === 'number' && view.cardSize > 0) {
     styleParts.push(`--base-card-min: ${view.cardSize}px;`)
   }
-  if (typeof view.cardAspect === 'number' && view.cardAspect > 0) {
-    styleParts.push(`--base-card-aspect: ${view.cardAspect};`)
+  const aspect = view.imageAspectRatio ?? view.cardAspect
+  if (typeof aspect === 'number' && aspect > 0) {
+    styleParts.push(`--base-card-aspect: ${aspect};`)
   }
+  if (view.imageFit) styleParts.push(`--base-card-image-fit: ${view.imageFit};`)
+  if (isKanban) styleParts.push(`--base-kanban-width: ${view.columnWidth ?? 280}px;`)
   const varStyle = styleParts.length > 0 ? styleParts.join(' ') : undefined
 
   if (view.groupBy) {
-    const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr)
+    const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr, view.groupOrder)
     const groupElements: RenderElement[] = []
 
     const groupSizes = view.groupSizes
@@ -1048,12 +1073,30 @@ function buildCards(
 
     for (const [groupName, groupFiles] of groups) {
       const cards = groupFiles.map(file => renderCard(file))
+      const label = groupLabel(groupName)
+      if (isKanban) {
+        groupElements.push(
+          h('section.base-kanban-column', { 'aria-label': groupName === null ? 'None' : label }, [
+            h('div.base-kanban-column-header', [
+              h('h3.base-kanban-column-title', groupName === null ? 'None' : label),
+              h(
+                'span.base-kanban-count',
+                { 'aria-label': `${cards.length} results` },
+                String(cards.length),
+              ),
+            ]),
+            h('ul.base-kanban-cards', cards),
+            h('p.base-kanban-column-empty', { hidden: cards.length > 0 }, 'No results'),
+          ]),
+        )
+        continue
+      }
       const parts: string[] = []
-      const size = groupSizes?.[groupName]
+      const size = groupSizes?.[label]
       if (typeof size === 'number' && size > 0) {
         parts.push(`--base-card-min: ${size}px;`)
       }
-      const aspect = groupAspects?.[groupName]
+      const aspect = groupAspects?.[label]
       if (typeof aspect === 'number' && aspect > 0) {
         parts.push(`--base-card-aspect: ${aspect};`)
       }
@@ -1061,10 +1104,20 @@ function buildCards(
 
       groupElements.push(
         h('div.base-card-group', [
-          h('h3.base-card-group-header', groupName),
+          h('h3.base-card-group-header', label),
           h('div.base-card-grid', gridStyle ? { style: gridStyle } : {}, cards),
         ]),
       )
+    }
+
+    if (isKanban) {
+      return groupElements.length > 0
+        ? h(
+            'div.base-kanban',
+            { style: varStyle, tabindex: 0, role: 'region', 'aria-label': `${view.name} board` },
+            groupElements,
+          )
+        : h('p.base-kanban-empty', 'No results in the visible groups.')
     }
 
     return h('div.base-card-container', varStyle ? { style: varStyle } : {}, groupElements)
@@ -1347,9 +1400,21 @@ export function renderBaseViewsForFile(
       })
     }
 
-    const sortedFiles = applySorting(matchedFiles, view.sort, getEvalContext, getPropertyExpr)
-    const limitedFiles = view.limit ? sortedFiles.slice(0, view.limit) : sortedFiles
-    const totalCount = matchedFiles.length
+    const groupBy = view.groupBy
+    const visibleGroups = view.groupOrder !== undefined ? new Set(view.groupOrder) : undefined
+    const visibleFiles =
+      groupBy && visibleGroups
+        ? matchedFiles.filter(file =>
+            fileGroupValues(file, groupBy, getEvalContext, getPropertyExpr).some(value =>
+              visibleGroups.has(value),
+            ),
+          )
+        : view.type === 'kanban' && !groupBy
+          ? []
+          : matchedFiles
+    const sortedFiles = applySorting(visibleFiles, view.sort, getEvalContext, getPropertyExpr)
+    const limitedFiles = view.limit !== undefined ? sortedFiles.slice(0, view.limit) : sortedFiles
+    const totalCount = visibleFiles.length
     const resultCount = limitedFiles.length
 
     const diagnostics = [...(baseFileData.basesDiagnostics ?? []), ...runtimeDiagnostics]
@@ -1392,6 +1457,7 @@ export function renderBaseViewsForFile(
       case 'cards':
       case 'gallery':
       case 'board':
+      case 'kanban':
         viewNode = buildCards(
           limitedFiles,
           view,

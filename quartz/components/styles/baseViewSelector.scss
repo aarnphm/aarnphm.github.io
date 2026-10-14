@@ -11,10 +11,10 @@ $base-control-height: 2.125rem;
     height: $base-control-height;
     border-color: var(--lightgray);
 
+    // the border is the focus ring: one rectangle, no outline drawn around it
     &:focus-within {
       border-color: var(--secondary);
-      outline: 2px solid var(--secondary);
-      outline-offset: 2px;
+      outline: none;
     }
   }
 }
@@ -55,11 +55,6 @@ $base-control-height: 2.125rem;
         font-weight: 500;
         line-height: inherit;
         cursor: pointer;
-        transition:
-          background-color 150ms ease,
-          border-color 150ms ease,
-          color 150ms ease,
-          transform 120ms ease-out;
         user-select: none;
 
         @media (hover: hover) and (pointer: fine) {
@@ -72,10 +67,6 @@ $base-control-height: 2.125rem;
         &:focus-visible {
           outline: 2px solid var(--secondary);
           outline-offset: 2px;
-        }
-
-        &:active {
-          transform: scale(0.97);
         }
 
         &.has-active-menu {
@@ -143,15 +134,17 @@ $base-control-height: 2.125rem;
         width: 100%;
         padding: 0.375rem 2rem 0.375rem 0.75rem;
         background: var(--light);
-        border: 1px solid var(--secondary);
+        border: 1px solid var(--lightgray);
         border-radius: var(--radius-none);
         font-size: 0.875rem;
         color: var(--dark);
         font-family: var(--bodyFont);
 
+        // the script focuses this field as the menu opens, so the focus ring is
+        // the border itself: one line, no second rectangle around it
         &:focus-visible {
-          outline: 2px solid var(--secondary);
-          outline-offset: 1px;
+          border-color: var(--secondary);
+          outline: none;
         }
 
         &::placeholder {
@@ -180,10 +173,6 @@ $base-control-height: 2.125rem;
         border: 0;
         cursor: pointer;
         opacity: 0.5;
-        transition:
-          color 150ms ease,
-          opacity 150ms ease,
-          transform 120ms ease-out;
         color: var(--gray);
 
         @media (hover: hover) and (pointer: fine) {
@@ -197,10 +186,6 @@ $base-control-height: 2.125rem;
           outline: 2px solid var(--secondary);
           outline-offset: -3px;
           opacity: 1;
-        }
-
-        &:active {
-          transform: translateY(-50%) scale(0.94);
         }
 
         &[hidden] {
@@ -348,19 +333,9 @@ $base-control-height: 2.125rem;
 
 @media (prefers-reduced-motion: reduce) {
   .bases-toolbar {
-    .text-icon-button,
-    .search-input-clear-button,
     .bases-toolbar-menu-item,
     .clickable-icon.bases-toolbar-menu-item-icon {
       transition: none;
-    }
-
-    .text-icon-button:active {
-      transform: none;
-    }
-
-    .search-input-clear-button:active {
-      transform: translateY(-50%);
     }
   }
 }

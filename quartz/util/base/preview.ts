@@ -60,7 +60,8 @@ function sampleView(rendered: RenderedBaseView): BasePreviewSample | null {
     case 'card':
     case 'cards':
     case 'gallery':
-    case 'board': {
+    case 'board':
+    case 'kanban': {
       const cards = findAll(tree, node => hasClass(node, 'base-card'), CARD_SAMPLE)
       return cards.length > 0
         ? {

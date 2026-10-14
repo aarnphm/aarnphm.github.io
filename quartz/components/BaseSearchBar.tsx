@@ -8,9 +8,10 @@ function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
   if (!fileData.bases) {
     return null
   }
+  const semanticManifest = fileData.basesSemantic?.manifest
   return (
     <div class={classNames(displayClass, 'search', 'bases-search')}>
-      <div id="base-search-bar">
+      <div id="base-search-bar" data-semantic-manifest={semanticManifest}>
         <input
           type="text"
           id="base-search-input"
@@ -18,21 +19,44 @@ function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
           aria-label="Search this base"
           autocomplete="off"
         />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="search-icon"
-        >
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
+        {semanticManifest && (
+          <>
+            <span class="semantic-status sr-only" data-state="idle" aria-live="polite"></span>
+            <div class="search-mode-toggle" role="radiogroup" aria-label="Search mode">
+              <button
+                type="button"
+                class="mode-option active"
+                data-mode="lexical"
+                aria-pressed="true"
+                aria-label="Full-text search"
+              >
+                <svg viewBox="0 0 20 20" role="img" aria-hidden="true">
+                  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                    <path d="M4 6h12M4 10h8M4 14h6" />
+                  </g>
+                </svg>
+                <span class="sr-only">Full-text</span>
+              </button>
+              <button
+                type="button"
+                class="mode-option"
+                data-mode="semantic"
+                aria-pressed="false"
+                aria-label="Semantic search"
+              >
+                <svg viewBox="0 0 20 20" role="img" aria-hidden="true">
+                  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                    <circle cx="5.2" cy="10" r="2.4" />
+                    <circle cx="14.8" cy="4.8" r="2.1" />
+                    <circle cx="14.8" cy="15.2" r="2.1" />
+                    <path d="M7.1 8.7l5.2-2.4M7.1 11.3l5.2 2.4M14.8 6.9v6.2" />
+                  </g>
+                </svg>
+                <span class="sr-only">Semantic</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
