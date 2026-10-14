@@ -1,12 +1,16 @@
 import type { ChangeEvent } from '../../../types/plugin'
+import type { FilePath } from '../../../util/path'
 import { isWorkerEntryPath } from '../../../util/workers'
 import {
   collaborativeCommentsAssetEntries,
   collaborativeCommentsAssetPrefixes,
   emojiAssetSourceDir,
+  nonClientUtilEntries,
   notebookRuntimeAssetEntries,
   notebookRuntimeAssetPrefixes,
   notebookRuntimeInlineEntry,
+  paceWorkerAssetEntries,
+  paceWorkerEntry,
   semanticWorkerAssetEntries,
   semanticWorkerEntry,
   xsltPolyfillAssetEntries,
@@ -63,7 +67,7 @@ export function isNotebookRuntimePageScriptChange(changePath: string): boolean {
 }
 
 export function isPageScriptChange(changePath: string): boolean {
-  if (isStaticScriptChange(changePath)) return false
+  if (isStaticScriptChange(changePath) || nonClientUtilEntries.has(changePath)) return false
   if (changePath.startsWith('quartz/components/scripts/')) return true
   if (changePath.startsWith('quartz/components/') && /\.(tsx|ts|jsx|js)$/.test(changePath)) {
     return true
@@ -120,6 +124,16 @@ export function classifyResourceChanges(
     notebookRuntimePageScript ||
     changeEvents.some(changeEvent => isPageScriptChange(changeEvent.path))
 
+  const genericWorkerChanges = changeEvents.filter(
+    changeEvent => isWorkerEntryPath(changeEvent.path) && changeEvent.path !== semanticWorkerEntry,
+  )
+  if (
+    changeEvents.some(changeEvent => paceWorkerAssetEntries.has(changeEvent.path)) &&
+    !genericWorkerChanges.some(changeEvent => changeEvent.path === paceWorkerEntry)
+  ) {
+    genericWorkerChanges.push({ path: paceWorkerEntry as FilePath, type: 'change' })
+  }
+
   return {
     componentStyles: changeEvents.some(
       changeEvent =>
@@ -143,10 +157,7 @@ export function classifyResourceChanges(
     ),
     emoji: changeEvents.some(changeEvent => isEmojiAssetChange(changeEvent.path)),
     xsltPolyfill: changeEvents.some(changeEvent => xsltPolyfillAssetEntries.has(changeEvent.path)),
-    genericWorkerChanges: changeEvents.filter(
-      changeEvent =>
-        isWorkerEntryPath(changeEvent.path) && changeEvent.path !== semanticWorkerEntry,
-    ),
+    genericWorkerChanges,
   }
 }
 
@@ -172,6 +183,7 @@ const inlineScriptPattern = /\.inline\.[jt]s$/
 const scriptPattern = /\.[jt]sx?$/
 
 function isClientScriptChange(changePath: string, serverInputs: ReadonlySet<string>): boolean {
+  if (nonClientUtilEntries.has(changePath)) return false
   // The build bundle loads an inline script as text, so its edits only change page chunks.
   if (inlineScriptPattern.test(changePath)) return true
   return (
@@ -211,11 +223,15 @@ export function sourceRebuildScope(
       courses = true
     } else if (
       serverInputs.has(changePath) ||
-      !(changePath.startsWith('quartz/scripts/') || changePath.endsWith('.py'))
+      !(
+        changePath.startsWith('quartz/scripts/') ||
+        changePath.endsWith('.py') ||
+        nonClientUtilEntries.has(changePath)
+      )
     ) {
       return { kind: 'full' }
     }
-    // Remaining paths are CLI scripts and Python helpers that no bundle imports.
+    // Remaining paths are CLI scripts, Worker-only utilities, and Python helpers that no bundle imports.
   }
   // The course rebuild regenerates the client bundles, but not the static files.
   if (courses) return scope.staticFiles ? { kind: 'full' } : { kind: 'courses' }

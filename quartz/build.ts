@@ -518,7 +518,12 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
 
     syncCtxFiles(ctx, allFiles)
 
-    const parsedFiles = await parseMarkdown(ctx, filePaths)
+    const dirtyPaths = incremental
+      ? new Set(
+          [...pending.keys()].map(relPath => joinSegments(argv.directory, relPath) as FilePath),
+        )
+      : undefined
+    const parsedFiles = await parseMarkdown(ctx, filePaths, dirtyPaths)
     const processedFiles = filterContentResult(ctx, parsedFiles).published
     const current = indexContent(processedFiles)
     const changeEvents = incremental ? buildChangeEvents(ctx, pending, contentMap, current) : []
@@ -607,14 +612,11 @@ export async function buildSourceResources(
       })),
     )
     if (scope.staticFiles) await emitPartialEmitter(ctx, [], changeEvents, 'Static')
-    if (scope.scripts) {
-      // A script edit can reach any client bundle: ComponentResources owns the page chunks, workers,
-      // notebook runtime and the asset manifest, LazyScripts owns triathlon.js and the pdf reader.
-      // Both regenerate everything they own; LazyScripts has no partial emit.
-      await emitPartialEmitter(ctx, [], undefined, 'ComponentResources')
-      await emitPartialEmitter(ctx, [], undefined, 'LazyScripts')
-    } else if (scope.styles) {
+    if (scope.scripts || scope.styles) {
       await emitPartialEmitter(ctx, [], changeEvents, 'ComponentResources')
+    }
+    if (scope.scripts) {
+      await emitPartialEmitter(ctx, [], undefined, 'LazyScripts')
     }
     console.log(styleText('green', `Rebuilt source resources in ${perf.timeSince()}`))
     emitQuartzDevEvent({

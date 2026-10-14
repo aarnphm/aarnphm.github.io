@@ -403,15 +403,25 @@ export function titleOnlyFrontmatterChange(
   return currentTitleString
 }
 
+function htmlReuseBodySignature(source: unknown): string {
+  const body = markdownBody(source)
+  let hash = 2166136261
+  for (let index = 0; index < body.length; index += 1) {
+    hash ^= body.charCodeAt(index)
+    hash = Math.imul(hash, 16777619)
+  }
+  return `${body.length}:${hash >>> 0}`
+}
+
 function recordHtmlReuseSignature(file: VFile): void {
-  file.data.htmlReuseBody = markdownBody(file.value)
+  file.data.htmlReuseBody = htmlReuseBodySignature(file.value)
   file.data.htmlReuseFrontmatter = htmlReuseFrontmatterSignature(file.data.frontmatter)
 }
 
 export function canReuseProcessedHtml(file: VFile, previous: ProcessedContent): boolean {
   const previousFile = previous[1]
-  const body = file.data.htmlReuseBody ?? markdownBody(file.value)
-  const previousBody = previousFile.data.htmlReuseBody ?? markdownBody(previousFile.value)
+  const body = file.data.htmlReuseBody ?? htmlReuseBodySignature(file.value)
+  const previousBody = previousFile.data.htmlReuseBody ?? htmlReuseBodySignature(previousFile.value)
   const frontmatter =
     file.data.htmlReuseFrontmatter ?? htmlReuseFrontmatterSignature(file.data.frontmatter)
   const previousFrontmatter =
@@ -472,7 +482,7 @@ export function reuseProcessedTitleOnlyChange(
   return reuseProcessedHtml(markdown[1], previous)
 }
 
-function cachedProcessors(ctx: BuildCtx): ProcessorCache {
+export function cachedProcessors(ctx: BuildCtx): ProcessorCache {
   const cached = processorCache.get(ctx)
   if (cached?.cfg === ctx.cfg) {
     return cached
@@ -514,19 +524,45 @@ async function processedContentCacheSourceSalt(): Promise<string> {
   return signatures.join('|')
 }
 
-async function syncProcessedContentCacheSource(ctx: BuildCtx): Promise<void> {
+async function syncProcessedContentCacheSource(
+  ctx: BuildCtx,
+  dirtyPaths?: ReadonlySet<FilePath>,
+): Promise<void> {
+  if (dirtyPaths !== undefined && processedContentCache.sourceSalt !== undefined) return
   const sourceSalt = ctx.argv.watch ? await processedContentCacheSourceSalt() : undefined
   if (processedContentCache.sourceSalt === sourceSalt) return
   processedContentCache.sourceSalt = sourceSalt
   processedContentCache.content.clear()
 }
 
+function hasDirtyCodeDependency(
+  ctx: BuildCtx,
+  content: ProcessedContent,
+  dirtyPaths: ReadonlySet<FilePath>,
+): boolean {
+  const dependencies = content[1].data.codeDependencies ?? []
+  for (const dependency of dependencies) {
+    const resolved = path.posix.join(ctx.argv.directory, dependency) as FilePath
+    if (dirtyPaths.has(resolved)) return true
+  }
+  return false
+}
+
 async function cachedProcessedContent(
   ctx: BuildCtx,
   fp: FilePath,
+  dirtyPaths?: ReadonlySet<FilePath>,
 ): Promise<{ fp: FilePath; signature: string; content?: ProcessedContent }> {
-  const signature = await fileStatSignature(fp)
   const cached = processedContentCache.content.get(fp)
+  if (
+    cached &&
+    dirtyPaths !== undefined &&
+    !dirtyPaths.has(fp) &&
+    !hasDirtyCodeDependency(ctx, cached.content, dirtyPaths)
+  ) {
+    return { fp, signature: cached.signature, content: cached.content }
+  }
+  const signature = await fileStatSignature(fp)
   if (
     cached?.signature === signature &&
     (cached.dependencySignature ?? '') === (await codeDependencySignature(ctx, cached.content))
@@ -675,15 +711,21 @@ export function createMarkdownParser(ctx: BuildCtx, mdContent: MarkdownContent[]
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(Math.round(num), min), max)
 
-export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<ProcessedContent[]> {
+export async function parseMarkdown(
+  ctx: BuildCtx,
+  fps: FilePath[],
+  dirtyPaths?: ReadonlySet<FilePath>,
+): Promise<ProcessedContent[]> {
   const { argv } = ctx
   if (fps.length === 0) return []
 
   const perf = new PerfTimer()
   const log = new QuartzLogger(argv.verbose)
   const useCache = argv.watch
-  await syncProcessedContentCacheSource(ctx)
-  const cached = useCache ? await Promise.all(fps.map(fp => cachedProcessedContent(ctx, fp))) : []
+  await syncProcessedContentCacheSource(ctx, dirtyPaths)
+  const cached = useCache
+    ? await Promise.all(fps.map(fp => cachedProcessedContent(ctx, fp, dirtyPaths)))
+    : []
   const cacheHits = cached.filter(entry => entry.content !== undefined).length
   const missSignatures = new Map<FilePath, string>()
   const cachedContent = new Map<FilePath, ProcessedContent>()
@@ -741,30 +783,14 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
       incremental: ctx.incremental,
     }
 
-    const textToMarkdownPromises: WorkerPromise<MarkdownContent[]>[] = []
+    const parsePromises: WorkerPromise<ProcessedContent[]>[] = []
     let processedFiles = 0
-    for (const chunk of chunks(fpsToParse, TEXT_PARSE_CHUNK_SIZE)) {
-      textToMarkdownPromises.push(pool.exec('parseMarkdown', [serializableCtx, chunk]))
+    for (const chunk of chunks(fpsToParse, HTML_PARSE_CHUNK_SIZE)) {
+      parsePromises.push(pool.exec('parseFiles', [serializableCtx, chunk]))
     }
 
-    const mdResults: Array<MarkdownContent[]> = await Promise.all(
-      textToMarkdownPromises.map(async promise => {
-        const result = await promise
-        processedFiles += result.length
-        log.updateText(
-          `text->markdown ${styleText('gray', `${processedFiles}/${fpsToParse.length}`)}`,
-        )
-        return result
-      }),
-    ).catch(errorHandler)
-
-    const markdownToHtmlPromises: WorkerPromise<ProcessedContent[]>[] = []
-    processedFiles = 0
-    for (const mdChunk of chunks(mdResults.flat(), HTML_PARSE_CHUNK_SIZE)) {
-      markdownToHtmlPromises.push(pool.exec('processHtml', [serializableCtx, mdChunk]))
-    }
     const results: ProcessedContent[][] = await Promise.all(
-      markdownToHtmlPromises.map(async promise => {
+      parsePromises.map(async promise => {
         const result = await promise
         processedFiles += result.length
         log.updateText(

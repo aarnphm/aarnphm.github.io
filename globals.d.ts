@@ -21,10 +21,12 @@ export declare global {
     addEventListener<K extends keyof CustomEventMap>(
       type: K,
       listener: (this: Document, ev: CustomEventMap[K]) => void,
+      options?: boolean | AddEventListenerOptions,
     ): void
     removeEventListener<K extends keyof CustomEventMap>(
       type: K,
       listener: (this: Document, ev: CustomEventMap[K]) => void,
+      options?: boolean | EventListenerOptions,
     ): void
     dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K] | UIEvent): boolean
   }

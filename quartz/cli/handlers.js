@@ -444,37 +444,23 @@ export async function handleBuild(argv) {
       req.url = req.url?.slice(argv.baseDir.length)
 
       const serve = async () => {
-        const release = await buildMutex.acquire()
-        let released = false
-        const releaseBuild = () => {
-          if (released) return
-          released = true
-          release()
-        }
-        res.once('finish', releaseBuild)
-        res.once('close', releaseBuild)
-        try {
-          await serveHandler(req, res, {
-            public: argv.output,
-            directoryListing: false,
-            headers: [
-              { source: '**/*.*', headers: [{ key: 'Content-Disposition', value: 'inline' }] },
-              { source: '**/*.webp', headers: [{ key: 'Content-Type', value: 'image/webp' }] },
-              // fixes bug where avif images are displayed as text instead of images (future proof)
-              { source: '**/*.avif', headers: [{ key: 'Content-Type', value: 'image/avif' }] },
-            ],
-          })
-          const status = res.statusCode
-          const statusString =
-            status >= 200 && status < 300
-              ? styleText('green', `[${status}]`)
-              : styleText('red', `[${status}]`)
-          console.log(statusString + styleText('gray', ` ${argv.baseDir}${req.url}`))
-        } finally {
-          res.off('finish', releaseBuild)
-          res.off('close', releaseBuild)
-          releaseBuild()
-        }
+        await buildMutex.waitForUnlock()
+        await serveHandler(req, res, {
+          public: argv.output,
+          directoryListing: false,
+          headers: [
+            { source: '**/*.*', headers: [{ key: 'Content-Disposition', value: 'inline' }] },
+            { source: '**/*.webp', headers: [{ key: 'Content-Type', value: 'image/webp' }] },
+            // fixes bug where avif images are displayed as text instead of images (future proof)
+            { source: '**/*.avif', headers: [{ key: 'Content-Type', value: 'image/avif' }] },
+          ],
+        })
+        const status = res.statusCode
+        const statusString =
+          status >= 200 && status < 300
+            ? styleText('green', `[${status}]`)
+            : styleText('red', `[${status}]`)
+        console.log(statusString + styleText('gray', ` ${argv.baseDir}${req.url}`))
       }
 
       const redirect = newFp => {
@@ -515,6 +501,7 @@ export async function handleBuild(argv) {
         }
       }
 
+      await buildMutex.waitForUnlock()
       let fp = normalizeRequestPath(req.url)
 
       // handle redirects
