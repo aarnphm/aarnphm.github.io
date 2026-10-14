@@ -1,19 +1,33 @@
+import { sampleVisitorDaylight, subscribeVisitorDaylight } from '../../util/visitor-daylight'
+import { subscribeVisitorTrailWeather } from '../../util/visitor-trail-weather'
+import { mountHomepageTheme } from './homepage-theme'
 import { currentNavSignal } from './nav-lifecycle'
 
 type Theme = 'light' | 'dark'
-type ThemePreference = Theme | 'system'
+type ThemePreference = Theme | 'system' | 'daylight'
 
 const PREFERENCE_STORAGE_KEY = 'theme-preference'
 const LEGACY_STORAGE_KEY = 'theme'
-const preferenceOrder: ThemePreference[] = ['system', 'dark', 'light']
+const preferenceOrder: ThemePreference[] = ['daylight', 'system', 'dark', 'light']
 
 const prefersDarkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
 const isTheme = (value: string | null): value is Theme => value === 'light' || value === 'dark'
 const isPreference = (value: string | null): value is ThemePreference =>
-  value === 'system' || isTheme(value)
+  value === 'system' || value === 'daylight' || isTheme(value)
 
 const getSystemTheme = (): Theme => (prefersDarkMediaQuery.matches ? 'dark' : 'light')
+// Keep the rounded cell across SPA navigation, without retaining weather that can age on a note.
+let knownCell: { lat: number; lon: number; weather: null } | null = null
+let daylight = sampleVisitorDaylight(null)
+const resolveTheme = (preference: ThemePreference): Theme =>
+  preference === 'daylight'
+    ? daylight.dark
+      ? 'dark'
+      : 'light'
+    : preference === 'system'
+      ? getSystemTheme()
+      : preference
 
 const nextPreference = (preference: ThemePreference): ThemePreference => {
   const index = preferenceOrder.indexOf(preference)
@@ -22,6 +36,8 @@ const nextPreference = (preference: ThemePreference): ThemePreference => {
 
 const describePreference = (preference: ThemePreference, resolved: Theme) => {
   switch (preference) {
+    case 'daylight':
+      return `Theme preference: realtime (${resolved})`
     case 'system':
       return `Theme preference: system (${resolved})`
     case 'dark':
@@ -35,6 +51,8 @@ const describePreference = (preference: ThemePreference, resolved: Theme) => {
 const describeNextAction = (preference: ThemePreference) => {
   const upcoming = nextPreference(preference)
   switch (upcoming) {
+    case 'daylight':
+      return 'Follow realtime'
     case 'system':
       return 'Switch to system theme'
     case 'dark':
@@ -61,13 +79,14 @@ const readStoredPreference = (): ThemePreference => {
     return legacyTheme
   }
 
-  return 'system'
+  return 'daylight'
 }
 
 let activePreference: ThemePreference = readStoredPreference()
 
 let toggleElement: HTMLElement | null = null
 let activeSignal: AbortSignal | undefined
+let changeTheme = (update: () => void, _theme: Theme) => update()
 
 const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
   const event: CustomEventMap['toast'] = new CustomEvent('toast', {
@@ -79,9 +98,8 @@ const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
 const updateTogglePresentation = (resolvedTheme: Theme, preference: ThemePreference) => {
   const weatherButton = document.querySelector<HTMLButtonElement>('.visitor-weather-toggle')
   if (weatherButton) {
-    const action = `Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} theme`
-    weatherButton.setAttribute('aria-label', action)
-    weatherButton.title = action
+    weatherButton.setAttribute('aria-label', describePreference(preference, resolvedTheme))
+    weatherButton.title = describeNextAction(preference)
   }
 
   if (!toggleElement) return
@@ -89,7 +107,7 @@ const updateTogglePresentation = (resolvedTheme: Theme, preference: ThemePrefere
   toggleElement.setAttribute('aria-label', describePreference(preference, resolvedTheme))
   toggleElement.setAttribute('title', describeNextAction(preference))
 
-  if (preference === 'system') {
+  if (preference === 'system' || preference === 'daylight') {
     toggleElement.setAttribute('aria-pressed', 'mixed')
   } else if (preference === 'dark') {
     toggleElement.setAttribute('aria-pressed', 'true')
@@ -106,21 +124,26 @@ const applyPreference = (
   options: { persist?: boolean; emit?: boolean } = {},
 ) => {
   activePreference = preference
-  const resolvedTheme: Theme = preference === 'system' ? getSystemTheme() : preference
+  const resolvedTheme = resolveTheme(preference)
+  const themeChanged = document.documentElement.getAttribute('saved-theme') !== resolvedTheme
+  const changed =
+    themeChanged || document.documentElement.getAttribute('data-theme-mode') !== preference
 
-  document.documentElement.setAttribute('saved-theme', resolvedTheme)
-  document.documentElement.setAttribute('data-theme-mode', preference)
-
-  localStorage.setItem(LEGACY_STORAGE_KEY, resolvedTheme)
+  if (localStorage.getItem(LEGACY_STORAGE_KEY) !== resolvedTheme)
+    localStorage.setItem(LEGACY_STORAGE_KEY, resolvedTheme)
   if (options.persist !== false) {
     localStorage.setItem(PREFERENCE_STORAGE_KEY, preference)
   }
 
-  updateTogglePresentation(resolvedTheme, preference)
-
-  if (options.emit !== false) {
-    emitThemeChangeEvent(resolvedTheme)
+  const update = () => {
+    if (document.documentElement.getAttribute('saved-theme') !== resolvedTheme)
+      document.documentElement.setAttribute('saved-theme', resolvedTheme)
+    if (document.documentElement.getAttribute('data-theme-mode') !== preference)
+      document.documentElement.setAttribute('data-theme-mode', preference)
+    updateTogglePresentation(resolvedTheme, preference)
+    if (changed && options.emit !== false) emitThemeChangeEvent(resolvedTheme)
   }
+  changeTheme(update, resolvedTheme)
 
   return resolvedTheme
 }
@@ -131,6 +154,7 @@ document.addEventListener('nav', () => {
   const signal = currentNavSignal()
   if (activeSignal === signal) return
   activeSignal = signal
+  changeTheme = mountHomepageTheme(signal)
 
   signal.addEventListener(
     'abort',
@@ -138,6 +162,7 @@ document.addEventListener('nav', () => {
       if (activeSignal !== signal) return
       activeSignal = undefined
       toggleElement = null
+      changeTheme = update => update()
     },
     { once: true },
   )
@@ -145,10 +170,6 @@ document.addEventListener('nav', () => {
   const themeButton = document.querySelector<HTMLElement>('#light-toggle')
   if (themeButton) {
     toggleElement = themeButton
-    updateTogglePresentation(
-      activePreference === 'system' ? getSystemTheme() : activePreference,
-      activePreference,
-    )
 
     const activateButton = (ev: Event) => {
       ev.preventDefault()
@@ -173,12 +194,48 @@ document.addEventListener('nav', () => {
     themeButton.addEventListener('keydown', keyActivate, { signal })
   }
 
+  subscribeVisitorTrailWeather(
+    document,
+    weather => {
+      if (!weather || weather.lat === null || weather.lon === null) return
+      knownCell = { lat: weather.lat, lon: weather.lon, weather: null }
+    },
+    signal,
+  )
+  const followDaylight = (current = sampleVisitorDaylight(knownCell)) => {
+    daylight =
+      current.source === 'clock-estimate' && knownCell
+        ? sampleVisitorDaylight(knownCell, current.at)
+        : current
+    if (activePreference === 'daylight') applyPreference(activePreference, { persist: false })
+    else updateTogglePresentation(resolveTheme(activePreference), activePreference)
+  }
+  subscribeVisitorDaylight(
+    document,
+    current => {
+      if (current) followDaylight(current)
+    },
+    signal,
+  )
+  const hasWeather = Boolean(document.querySelector('.visitor-weather'))
+  if (!hasWeather) {
+    const tick = () => {
+      if (!document.hidden) followDaylight()
+    }
+    tick()
+    document.addEventListener('visibilitychange', tick, { signal })
+    const timer = window.setInterval(tick, 60_000)
+    signal.addEventListener('abort', () => window.clearInterval(timer), { once: true })
+  }
+  updateTogglePresentation(resolveTheme(activePreference), activePreference)
+
   const weatherButton = document.querySelector<HTMLButtonElement>('.visitor-weather-toggle')
   weatherButton?.addEventListener(
     'click',
     () => {
-      const resolved = activePreference === 'system' ? getSystemTheme() : activePreference
-      applyPreference(resolved === 'dark' ? 'light' : 'dark')
+      const next = nextPreference(activePreference)
+      const resolved = applyPreference(next)
+      showThemeToast(next, resolved)
     },
     { signal },
   )
@@ -216,16 +273,12 @@ document.addEventListener('nav', () => {
 
   document.addEventListener('keydown', keyToggle, { signal })
 
-  const themeChange = (e: MediaQueryListEvent) => {
+  const themeChange = () => {
     if (activePreference !== 'system') {
       return
     }
 
-    const newTheme = e.matches ? 'dark' : 'light'
-    document.documentElement.setAttribute('saved-theme', newTheme)
-    localStorage.setItem(LEGACY_STORAGE_KEY, newTheme)
-    updateTogglePresentation(newTheme, activePreference)
-    emitThemeChangeEvent(newTheme)
+    applyPreference(activePreference, { persist: false })
   }
 
   prefersDarkMediaQuery.addEventListener('change', themeChange, { signal })
