@@ -141,3 +141,15 @@ test('parse source closure treats the config as a leaf', () => {
   assert.equal(closure.includes('quartz.config.ts'), true)
   assert.equal(closure.includes('quartz/plugins/emitters/assets.ts'), false)
 })
+
+test('source watcher includes browser JavaScript and runtime data dependencies', () => {
+  for (const filename of [
+    'quartz/runtime/javascript/browser-worker.js',
+    'quartz/runtime/python/ml-bridge.js',
+    'quartz/runtime/lsp/pyodide-lock-v0.29.4.json',
+    'quartz/util/pyright-browser-worker.mjs',
+    'quartz/components/styles/custom.css',
+    'pnpm-lock.yaml',
+  ])
+    assert.equal(isSourceWatchPath(filename), true, filename)
+})
