@@ -6,6 +6,12 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
+import {
+  BASE_QUERY_DATA_SLUG,
+  createBaseQueryData,
+  createBaseQueryDocument,
+  type BaseQueryDocument,
+} from '../../util/base/browser-data'
 import { BaseExpressionDiagnostic, BasesExpressions } from '../../util/base/compiler'
 import {
   baseEmbeddingRecord,
@@ -42,6 +48,7 @@ async function emitBaseView(
   const { baseData, rendered } = plan
   const slug = renderedView.slug
   const fileData: QuartzPluginData = { ...baseData }
+  fileData.basesQueryDocument = createBaseQueryDocument(baseData)
   fileData.slug = slug
   fileData.htmlAst = renderedView.tree
   if (semanticManifest) fileData.basesSemantic = { manifest: semanticManifest }
@@ -163,6 +170,12 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
       return [Head, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
+      yield await write({
+        ctx,
+        slug: BASE_QUERY_DATA_SLUG,
+        ext: '.json',
+        content: JSON.stringify(createBaseQueryData(content.map(([, file]) => file.data))),
+      })
       const plan = planBaseViewPartialEmit(content, changeEvents, partialState)
       partialState = plan.nextState
       const embeddingExports = new Map<FullSlug, ReadonlySet<string>>()
@@ -199,6 +212,12 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
       yield* embeddingFiles
     },
     async *emit(ctx, content, resources) {
+      yield await write({
+        ctx,
+        slug: BASE_QUERY_DATA_SLUG,
+        ext: '.json',
+        content: JSON.stringify(createBaseQueryData(content.map(([, file]) => file.data))),
+      })
       const plan = planBaseViewPartialEmit(content, [], undefined)
       partialState = plan.nextState
 
@@ -220,5 +239,6 @@ declare module 'vfile' {
     basesSemantic?: { manifest: string }
     basesDiagnostics?: BaseExpressionDiagnostic[]
     basesExpressions?: BasesExpressions
+    basesQueryDocument?: BaseQueryDocument
   }
 }

@@ -1,5 +1,28 @@
 @use '../variables.scss' as *;
 
+.base-semantic-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.65rem;
+  min-width: 0;
+
+  > a {
+    min-width: 0;
+  }
+}
+
+.base-semantic-score {
+  flex-shrink: 0;
+  color: var(--darkgray);
+  font-family: var(--bodyFont);
+  font-size: 0.7rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
 .base-table-wrapper {
   --base-table-line: color-mix(in srgb, var(--gray) 55%, transparent);
   --base-table-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
@@ -781,29 +804,35 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 
 .base-map-tools {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 0.75rem;
+  left: 0.75rem;
   z-index: 2;
   display: flex;
-  background: var(--light);
-  border: 1px solid var(--gray);
+  flex-direction: column;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  border: 1px solid var(--lightgray);
 
   button {
-    width: 36px;
-    height: 36px;
-    display: grid;
-    place-items: center;
-    padding: 8px;
+    width: 1.7rem;
+    height: 1.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: var(--darkgray);
+    border-radius: var(--radius-none);
+    background: none;
+    color: var(--gray);
     cursor: pointer;
 
     &[aria-pressed='true'],
     &:hover {
-      color: var(--light);
-      background: var(--darkgray);
+      color: var(--dark);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dark);
+      outline-offset: -2px;
     }
 
     &:disabled {
@@ -812,8 +841,8 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
     }
 
     svg {
-      width: 18px;
-      height: 18px;
+      width: 1rem;
+      height: 1rem;
       fill: none;
       stroke: currentColor;
       stroke-width: 1.5;
@@ -1174,12 +1203,94 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 }
 
 .base-map-spot-popup {
+  --map-popup-border: 1px;
+  --map-popup-tip-size: 10px;
+  --map-popup-tip-overlap: calc(var(--map-popup-border) / 0.7071);
+  --map-popup-tip-corner-inset: 0px;
+
   .mapboxgl-popup-content {
     box-shadow: none;
+    border-width: var(--map-popup-border);
   }
 
   .mapboxgl-popup-close-button {
     display: block;
+  }
+
+  .mapboxgl-popup-tip {
+    position: relative;
+    border-color: transparent;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: inherit;
+      border-color: transparent;
+      left: calc(-1 * var(--map-popup-tip-size));
+      top: calc(-1 * var(--map-popup-tip-size));
+    }
+  }
+
+  &[class*='mapboxgl-popup-anchor-top'] .mapboxgl-popup-tip {
+    border-bottom-color: var(--lightgray);
+
+    &::after {
+      top: calc(var(--map-popup-tip-overlap) + var(--map-popup-tip-corner-inset));
+      border-bottom-color: var(--light);
+    }
+  }
+
+  &[class*='mapboxgl-popup-anchor-bottom'] .mapboxgl-popup-tip {
+    border-top-color: var(--lightgray);
+
+    &::after {
+      top: calc(
+        -1 *
+          (
+            var(--map-popup-tip-size) + var(--map-popup-tip-overlap) +
+              var(--map-popup-tip-corner-inset)
+          )
+      );
+      border-top-color: var(--light);
+    }
+  }
+
+  &.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+    border-right-color: var(--lightgray);
+
+    &::after {
+      left: var(--map-popup-tip-overlap);
+      border-right-color: var(--light);
+    }
+  }
+
+  &.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+    border-left-color: var(--lightgray);
+
+    &::after {
+      left: calc(-1 * (var(--map-popup-tip-size) + var(--map-popup-tip-overlap)));
+      border-left-color: var(--light);
+    }
+  }
+
+  &.mapboxgl-popup-anchor-top-left,
+  &.mapboxgl-popup-anchor-bottom-left {
+    --map-popup-tip-corner-inset: var(--map-popup-border);
+
+    .mapboxgl-popup-tip::after {
+      left: var(--map-popup-border);
+    }
+  }
+
+  &.mapboxgl-popup-anchor-top-right,
+  &.mapboxgl-popup-anchor-bottom-right {
+    --map-popup-tip-corner-inset: var(--map-popup-border);
+
+    .mapboxgl-popup-tip::after {
+      left: calc(-1 * (var(--map-popup-tip-size) + var(--map-popup-border)));
+    }
   }
 }
 
