@@ -837,7 +837,7 @@ const drawScene = async () => {
   const visibleTrees = new Set(sprites.map(sprite => sprite.id))
   const painting = prepareTreeSprites(
     layout.landscape,
-    treePlan.filter(placement => visibleTrees.has(placement.id)),
+    treePlan.filter(placement => visibleTrees.has(placement.id)).sort((a, b) => b.y - a.y),
     forest,
     renderSignal,
   )
@@ -849,13 +849,12 @@ const drawScene = async () => {
   const landmarks = scene.querySelector('.trail-landmarks')
   landmarks?.replaceChildren()
   const forestDraft = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-  const prepared = await painting
-  if (renderSignal.aborted) return
   let batch = performance.now()
   for (const sprite of sprites) {
-    const markup = prepared?.get(sprite.id)
+    const markup = await painting.get(sprite.id)
+    if (renderSignal.aborted) return
     forestNodes.update(markup ? { ...sprite, render: () => markup } : sprite, forestDraft)
-    if (performance.now() - batch >= 16) {
+    if (performance.now() - batch >= 8) {
       landmarks?.prepend(...forestDraft.childNodes)
       opening.generatedThrough(Math.max(sprite.bottom, layout.landscape.alpine.base + 168))
       if (!(await yieldRender(renderSignal))) return

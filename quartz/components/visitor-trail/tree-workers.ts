@@ -9,51 +9,53 @@ export function prepareTreeSprites(
   trees: TreePlacement[],
   settings: ForestSettings,
   signal: AbortSignal,
-): Promise<Map<string, string> | null> {
-  if (signal.aborted) return Promise.resolve(null)
-  if (!trees.length) return Promise.resolve(new Map())
+): Map<string, Promise<string | null>> {
+  const sprites = new Map<string, Promise<string | null>>()
+  if (signal.aborted || !trees.length) return sprites
+  const pending = new Map<string, (markup: string | null) => void>()
+  for (const { id } of trees) sprites.set(id, new Promise(resolve => pending.set(id, resolve)))
   const count = Math.min(4, Math.max(1, navigator.hardwareConcurrency - 1), trees.length)
   const source = URL.createObjectURL(
     new Blob([TRAIL_TREE_WORKER_SOURCE], { type: 'text/javascript' }),
   )
-  return new Promise(resolve => {
-    const workers: Worker[] = []
-    const sprites = new Map<string, string>()
-    let remaining = count
-    let finished = false
-    const finish = (result: Map<string, string> | null) => {
-      if (finished) return
-      finished = true
-      for (const worker of workers) worker.terminate()
-      URL.revokeObjectURL(source)
-      signal.removeEventListener('abort', cancel)
-      resolve(result)
-    }
-    const cancel = () => finish(null)
-    signal.addEventListener('abort', cancel, { once: true })
-    try {
-      for (let index = 0; index < count; index++) {
-        const worker = new Worker(source, { name: `trail-trees-${index}` })
-        workers.push(worker)
-        worker.addEventListener('message', (event: MessageEvent<TreeWorkerResponse>) => {
-          for (const { id, markup } of event.data) sprites.set(id, markup)
-          if (--remaining === 0) finish(sprites)
-        })
-        worker.addEventListener('error', event => {
-          event.preventDefault()
-          finish(null)
-        })
-        worker.addEventListener('messageerror', cancel)
-        const request: TreeWorkerRequest = {
-          landscape,
-          settings,
-          trees: trees.filter((_, tree) => tree % count === index),
+  const workers: Worker[] = []
+  let finished = false
+  const finish = () => {
+    if (finished) return
+    finished = true
+    for (const worker of workers) worker.terminate()
+    URL.revokeObjectURL(source)
+    signal.removeEventListener('abort', finish)
+    for (const resolve of pending.values()) resolve(null)
+    pending.clear()
+  }
+  signal.addEventListener('abort', finish, { once: true })
+  try {
+    for (let index = 0; index < count; index++) {
+      const worker = new Worker(source, { name: `trail-trees-${index}` })
+      workers.push(worker)
+      worker.addEventListener('message', (event: MessageEvent<TreeWorkerResponse>) => {
+        for (const { id, markup } of event.data) {
+          pending.get(id)?.(markup)
+          pending.delete(id)
         }
-        worker.postMessage(request)
+        if (!pending.size) finish()
+      })
+      worker.addEventListener('error', event => {
+        event.preventDefault()
+        finish()
+      })
+      worker.addEventListener('messageerror', finish)
+      const request: TreeWorkerRequest = {
+        landscape,
+        settings,
+        trees: trees.filter((_, tree) => tree % count === index),
       }
-    } catch {
-      // A blocked worker keeps the synchronous painter available for this opening.
-      finish(null)
+      worker.postMessage(request)
     }
-  })
+  } catch {
+    // A blocked worker keeps the synchronous painter available for this opening.
+    finish()
+  }
+  return sprites
 }

@@ -1151,6 +1151,25 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   })
 
   registerEscapeHandler(container, hideSearch)
+  if (currentSlug === 'index') {
+    let idle = 0
+    let timer = 0
+    const preload = () => {
+      if (!searchElement.isConnected) return
+      void ensureSearchData().catch(error => console.warn('[Search] preload failed:', error))
+    }
+    const schedulePreload = () => {
+      if (window.requestIdleCallback) idle = window.requestIdleCallback(preload, { timeout: 2000 })
+      else timer = window.setTimeout(preload, 1000)
+    }
+    if (document.readyState === 'complete') schedulePreload()
+    else window.addEventListener('load', schedulePreload, { once: true })
+    window.addCleanup(() => {
+      window.removeEventListener('load', schedulePreload)
+      if (idle) window.cancelIdleCallback(idle)
+      window.clearTimeout(timer)
+    })
+  }
   window.addCleanup(() => {
     configuredSearchElements.delete(searchElement)
   })
