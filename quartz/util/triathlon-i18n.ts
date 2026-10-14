@@ -1017,6 +1017,7 @@ const en: TriDict = {
     year: 'year',
     'calendar view': 'calendar view',
     'download calendar': 'download calendar',
+    'share race list': 'share race list',
     'next up': 'next up',
     'race projection': 'race projection',
     'race preview': 'race preview',
@@ -2736,6 +2737,7 @@ const fr: TriDict = {
     year: 'année',
     'calendar view': 'vue du calendrier',
     'download calendar': 'télécharger le calendrier',
+    'share race list': 'partager la liste des courses',
     'next up': 'à venir',
     'race projection': 'projection de course',
     'Optimistic case: scenario time −10%. Uncertainty widens the slower case.':
