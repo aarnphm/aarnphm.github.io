@@ -64,7 +64,20 @@ export function trainingCardSvg(
   svg.append(title)
   if (!model.show.transparent)
     svg.append(node('rect', { width: spec.width, height: spec.height, fill: palette.bg }))
-  const top = frame.top
+  let top = frame.top
+  if (model.day && model.customTitle && model.show.title)
+    top +=
+      titleRow(
+        svgLayer(svg, 'title', model.customTitle),
+        model.customTitle,
+        undefined,
+        pl,
+        top,
+        width,
+        spec.meta * 1.6,
+        palette.ink,
+      ) +
+      spec.gap * 0.5
   const bottom = frame.bottom
   if (!blocks.length) {
     text(

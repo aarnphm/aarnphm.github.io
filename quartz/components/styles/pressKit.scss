@@ -96,6 +96,7 @@
   &:not([data-training='true']) [data-training-options],
   &:not([data-subject='day']) [data-day-only],
   &[data-training='true'] [data-note-only],
+  &[data-subject='calendar'] [data-note-only],
   &[data-citation='false'] :is([data-tab='quote'], [data-citation-only]) {
     display: none;
   }
@@ -320,7 +321,11 @@
   font-size: 0.7rem;
 
   > #press-kit-title {
-    flex: none;
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     color: var(--dark);
   }
 
@@ -906,6 +911,9 @@ a.press-kit-chip {
     font: var(--control-font-size) / 1.3 var(--codeFont);
     font-variant-numeric: tabular-nums;
   }
+  input[type='text'] {
+    font-family: var(--bodyFont);
+  }
   fieldset {
     min-width: 0;
     border: 1px solid var(--pk-line);
@@ -913,8 +921,11 @@ a.press-kit-chip {
     margin: 0.7rem 0;
   }
   legend {
+    box-sizing: border-box;
     max-width: 100%;
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     padding-inline: 0.25rem;
   }
   @media (pointer: coarse) {
@@ -922,7 +933,7 @@ a.press-kit-chip {
       min-height: 44px;
     }
 
-    input[type='number'] {
+    input {
       font-size: 1rem;
     }
   }
@@ -956,6 +967,7 @@ a.press-kit-chip {
 
 .press-kit-editor-field {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.3rem;
   min-width: 0;
   margin-block: 0.4rem;
@@ -963,6 +975,7 @@ a.press-kit-chip {
   .g-select,
   .g-select-trigger {
     width: 100%;
+    min-width: 0;
   }
 }
 
@@ -970,6 +983,56 @@ a.press-kit-chip {
   display: flex;
   gap: 0.35rem;
   flex-wrap: wrap;
+}
+.press-kit-editor-view {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-block: 0.5rem;
+
+  output {
+    color: var(--darkgray);
+    font: var(--control-font-size) var(--codeFont);
+    font-variant-numeric: tabular-nums;
+  }
+}
+.press-kit-frame[data-editor-rulers] {
+  box-sizing: border-box;
+  padding-top: 24px;
+  padding-left: 24px;
+}
+.press-kit-editor-rulers {
+  position: absolute;
+  pointer-events: none;
+  color: var(--darkgray);
+
+  svg {
+    display: block;
+    overflow: hidden;
+    font: 9px var(--codeFont);
+  }
+  text {
+    fill: currentColor;
+  }
+  path {
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1;
+  }
+  .press-kit-ruler-surface {
+    fill: var(--pk-surface);
+  }
+  .press-kit-ruler-selection {
+    fill: var(--secondary);
+    color: var(--secondary);
+
+    path {
+      stroke-dasharray: 3 3;
+    }
+  }
+  .press-kit-ruler-pointer {
+    color: var(--dark);
+  }
 }
 .press-kit-editor-fields {
   display: grid;

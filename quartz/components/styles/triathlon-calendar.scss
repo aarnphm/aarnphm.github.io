@@ -190,11 +190,15 @@
 }
 
 .tri-calendar-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 100%;
   gap: 0.45rem;
 }
 
 .tri-calendar-view-controls,
-.tri-calendar-download {
+.tri-calendar-download,
+.tri-calendar-share {
   box-sizing: border-box;
   height: var(--calendar-control-size);
   border: 1px solid var(--calendar-line);
@@ -295,15 +299,34 @@
   stroke: none;
 }
 
-.tri-calendar-download::after {
+.tri-calendar-download::after,
+.tri-calendar-share::after {
   right: -1px;
   left: auto;
   transform: translateY(-0.2rem);
 }
 
 .tri-calendar-download:hover::after,
-.tri-calendar-download:focus-visible::after {
+.tri-calendar-download:focus-visible::after,
+.tri-calendar-share:hover::after,
+.tri-calendar-share:focus-visible::after {
   transform: none;
+}
+
+.tri-calendar-share {
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 3px;
+  }
+}
+
+@media (pointer: coarse) {
+  .tri-calendar-share {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

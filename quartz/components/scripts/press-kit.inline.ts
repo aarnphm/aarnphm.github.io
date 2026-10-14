@@ -14,6 +14,7 @@ import { buildSelect, type Select } from '../controls/select'
 import { PressKitEditor } from '../PressKitEditor'
 import { TRI_LOCALE_KEY } from '../triathlon/runtime/preferences'
 import { currentNavSignal } from './nav-lifecycle'
+import { calendarCardData, type CalendarCardData } from './press-kit-calendar'
 import {
   FORMATS,
   cardFaces,
@@ -62,7 +63,7 @@ const X_LINK_LENGTH = 23
 const SOURCES = 'article.popover-hint, .stream-entry-body'
 
 interface Subject {
-  kind: 'page' | 'entry' | 'activity' | 'day'
+  kind: 'page' | 'entry' | 'activity' | 'day' | 'calendar'
   url: string
   title: Run[]
   description: Run[]
@@ -76,6 +77,7 @@ interface Subject {
   headings: HTMLElement[]
   activity?: ActivityCardData
   day?: DayCardData
+  calendar?: CalendarCardData
   entryTitle?: string
   entryDate?: string
 }
@@ -96,6 +98,7 @@ interface OpenRequest {
   entryUrl?: string
   range?: Range
   activity?: ActivityCardData
+  calendar?: CalendarCardData
 }
 
 let dialog: HTMLDialogElement | null = null
@@ -417,6 +420,7 @@ function citationAllowed(): boolean {
   return (
     subject?.kind !== 'activity' &&
     subject?.kind !== 'day' &&
+    subject?.kind !== 'calendar' &&
     slug !== 'stream' &&
     !slug.startsWith('stream/on') &&
     slug !== 'triathlon' &&
@@ -502,6 +506,7 @@ function model(): CardModel {
   const locale = shareLocale()
   const section = sectionForCard()
   const kind = tab === 'quote' ? 'quote' : s.kind === 'page' ? 'note' : s.kind
+  const customTitle = editor?.title
   const attribution = kind === 'quote' ? quote.attribution?.trim() : undefined
   const day = s.day
     ? {
@@ -539,11 +544,14 @@ function model(): CardModel {
     kind,
     locale,
     crumbs: s.crumbs,
-    title: attribution
-      ? [{ text: attribution, style: 'roman' }]
-      : s.title.length > 0
-        ? s.title
-        : [{ text: page!.site, style: 'roman' }],
+    customTitle,
+    title: customTitle
+      ? [{ text: customTitle, style: 'roman' }]
+      : attribution
+        ? [{ text: attribution, style: 'roman' }]
+        : s.title.length > 0
+          ? s.title
+          : [{ text: page!.site, style: 'roman' }],
     description: s.description,
     body: tab === 'quote' ? quote.runs : s.excerpt,
     date: s.date,
@@ -553,8 +561,11 @@ function model(): CardModel {
     art: theme === 'encre' ? arts.night : arts.day,
     // The night card's moon sits over the camp, so its crops centre higher.
     artFocus: theme === 'encre' ? [640, 280] : undefined,
-    activity: s.activity ? localizeActivity(s.activity, locale) : undefined,
+    activity: s.activity
+      ? { ...localizeActivity(s.activity, locale), title: customTitle ?? s.activity.title }
+      : undefined,
     day,
+    calendar: s.calendar,
     overlay,
     metricGap: editor?.metricGap ?? 0,
     powerWindow,
@@ -666,6 +677,16 @@ async function currentBlob(): Promise<Blob | null> {
 }
 
 function fileName(): string {
+  if (editor?.title) {
+    const title = Array.from(editor.title.normalize('NFKC'))
+      .slice(0, 50)
+      .join('')
+      .replace(/[<>:"/\\|?*\p{Cc}]/gu, '-')
+      .replace(/\s+/g, ' ')
+      .replace(/^[. ]+|[. ]+$/g, '')
+    if (title) return `${title}-${format}.png`
+  }
+  if (subject?.calendar) return `races-${subject.calendar.period}-list-${format}.png`
   const tail = subject?.url.split('#')[0].split('/').filter(Boolean).at(-1) ?? page!.handle
   const name = tail.includes('.') && subject?.kind === 'page' ? page!.handle : tail
   return `${page!.handle}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${tab}-${format}.png`
@@ -715,7 +736,7 @@ async function shareImage() {
   if (!data) return
   const file = new File([data], fileName(), { type: 'image/png' })
   try {
-    await navigator.share({ files: [file], title: titleText(), url: shareUrl() })
+    await navigator.share({ files: [file], title: editor?.title ?? titleText(), url: shareUrl() })
   } catch (error) {
     if ((error as DOMException)?.name !== 'AbortError') toast('partage impossible')
   }
@@ -1440,23 +1461,38 @@ function open(request: OpenRequest = {}) {
   loadFonts(fonts)
   loadArt()
 
-  subject = request.activity
-    ? activitySubject(request.activity)
-    : request.entry
-      ? entrySubject(request.entry, request.entryUrl)
-      : pageSubject()
+  subject = request.calendar
+    ? {
+        kind: 'calendar',
+        calendar: { ...request.calendar, url: absolute(request.calendar.url) },
+        url: absolute(request.calendar.url),
+        title: runsFromText(request.calendar.title),
+        description: [],
+        excerpt: [],
+        tags: [],
+        crumbs: [],
+        headings: [],
+      }
+    : request.activity
+      ? activitySubject(request.activity)
+      : request.entry
+        ? entrySubject(request.entry, request.entryUrl)
+        : pageSubject()
+  if (request.calendar) format = 'portrait'
   mountDayControls()
   mountMetricControls()
   const title = $('#press-kit-title')
   if (title)
     title.textContent =
-      subject.kind === 'activity'
-        ? 'kit de presse · activité'
-        : subject.kind === 'day'
-          ? 'kit de presse · journée'
-          : subject.kind === 'entry'
-            ? 'kit de presse · entrée'
-            : 'kit de presse'
+      subject.kind === 'calendar'
+        ? 'kit de presse · calendrier'
+        : subject.kind === 'activity'
+          ? 'kit de presse · activité'
+          : subject.kind === 'day'
+            ? 'kit de presse · journée'
+            : subject.kind === 'entry'
+              ? 'kit de presse · entrée'
+              : 'kit de presse'
   const recent =
     lastRange && performance.now() - lastRange.at < RANGE_TTL_MS ? lastRange.range : null
   const candidate = request.range ?? selectedRange() ?? recent
@@ -1490,6 +1526,15 @@ function open(request: OpenRequest = {}) {
   draw()
 }
 
+function openCalendar(trigger: HTMLElement) {
+  const calendar = trigger.closest<HTMLElement>('.tri-calendar[data-calendar-year]')
+  if (!calendar || dialog?.open) return
+  const data = calendarCardData(calendar)
+  if (!data) return
+  trigger.focus({ preventScroll: true })
+  open({ calendar: data, tab: 'note' })
+}
+
 function cycle<T>(list: T[], value: T, delta: number): T {
   return list[(list.indexOf(value) + delta + list.length) % list.length]
 }
@@ -1506,6 +1551,10 @@ function isEditable(target: EventTarget | null): boolean {
 function onDialogKeyDown(event: KeyboardEvent) {
   if (event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return
   const { key } = event
+  if (key === 'Escape') {
+    event.stopPropagation()
+    return
+  }
   if (event.target instanceof Element && event.target.matches('.press-kit-tab')) {
     if (key === 'ArrowRight' || key === 'ArrowLeft') {
       setTab(cycle(availableTabs(), tab, key === 'ArrowRight' ? 1 : -1), true)
@@ -1856,6 +1905,7 @@ document.addEventListener('nav', () => {
         blob = null
       },
       schedule,
+      titleText,
     )
   if (controls) {
     let width = 0
@@ -1887,10 +1937,14 @@ document.addEventListener('nav', () => {
     event => {
       const trigger =
         event.target instanceof Element
-          ? event.target.closest<HTMLElement>('[data-press-kit]')
+          ? event.target.closest<HTMLElement>('[data-press-kit], [data-press-kit-calendar]')
           : null
       if (!trigger || trigger.closest('.press-kit')) return
       event.preventDefault()
+      if (trigger.hasAttribute('data-press-kit-calendar')) {
+        openCalendar(trigger)
+        return
+      }
       const entryId = trigger.dataset.pressKitEntry
       const entry = entryId
         ? (trigger.closest<HTMLElement>('.stream-entry') ??

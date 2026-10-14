@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'preact/hooks'
 import type { CardLayer, CardScene, LayerBounds } from './scripts/press-kit-layers'
 import { buildSelect, type Select, type SelectOption } from './controls/select'
 import { readCardBackground } from './scripts/press-kit-background'
+import { paintRulers, type RulerPoint } from './scripts/press-kit-rulers'
 
 interface Placement {
   x: number
@@ -33,6 +34,7 @@ interface Composition {
 interface Layout {
   formats: Record<string, Composition>
   metricGap: number
+  title?: string
   background?: Background
 }
 interface Draft {
@@ -59,6 +61,10 @@ type Gesture = PointerGesture &
         bounds: LayerBounds
         before: Layout
         resize: ResizeAxis | null
+        point: RulerPoint
+        moveAxis?: 'x' | 'y'
+        moved: boolean
+        toggleOnClick?: string
       }
   )
 interface LayerRaster {
@@ -71,6 +77,7 @@ interface LayerRaster {
 const empty = (): Layout => ({ formats: {}, metricGap: 0 })
 const copy = (layout: Layout): Layout => ({
   metricGap: layout.metricGap,
+  title: layout.title,
   formats: Object.fromEntries(
     Object.entries(layout.formats).map(([key, composition]) => [
       key,
@@ -130,6 +137,9 @@ export class PressKitEditor {
   private details = document.createElement('details')
   private controls = document.createElement('div')
   private overlay = document.createElement('div')
+  private rulers = document.createElement('div')
+  private showRulers = false
+  private pointer?: RulerPoint
   private file = document.createElement('input')
   private drafts = new Map<string, Draft>()
   private draft: Draft = { value: empty(), past: [], future: [] }
@@ -154,6 +164,7 @@ export class PressKitEditor {
     private signal: AbortSignal,
     private changed: () => void,
     private requestScene: () => void,
+    private defaultTitle: () => string,
   ) {
     this.details.className = 'press-kit-editor'
     this.details.dataset.for = 'image'
@@ -166,7 +177,7 @@ export class PressKitEditor {
     help.className = 'press-kit-editor-help'
     help.setAttribute('role', 'tooltip')
     help.textContent =
-      'Glisser dans un espace vide pour sélectionner plusieurs éléments. Maj + clic ajoute ou retire un élément ; Maj + glisser ajoute une zone. Glisser un élément sélectionné déplace la sélection. Les poignées règlent sa largeur et sa hauteur ; Maj + glisser un coin conserve les proportions. Flèches : 1 px, Maj : 10 px. Ctrl/Cmd + A : tout sélectionner. Échap annule le geste ou vide la sélection. Modifications conservées sur cette page. Image traitée dans ce navigateur, sans envoi.'
+      'Glisser dans un espace vide pour sélectionner plusieurs éléments. Maj + clic ajoute ou retire un élément ; Maj + glisser dans le vide ajoute une zone. Glisser un élément sélectionné déplace la sélection ; maintenir Maj verrouille le déplacement horizontal ou vertical. Les poignées règlent sa largeur et sa hauteur ; Maj + glisser un coin conserve les proportions. Flèches : 1 px, Maj : 10 px. Ctrl/Cmd + A : tout sélectionner. Échap annule le geste ou vide la sélection. Modifications conservées sur cette page. Image traitée dans ce navigateur, sans envoi.'
     summary.setAttribute('aria-label', label.textContent)
     summary.setAttribute('aria-describedby', help.id)
     summary.append(label, help)
@@ -203,6 +214,10 @@ export class PressKitEditor {
     this.overlay.dataset.siteCursorNative = ''
     this.overlay.hidden = true
     canvas.parentElement?.append(this.overlay)
+    this.rulers.className = 'press-kit-editor-rulers'
+    this.rulers.hidden = true
+    this.rulers.setAttribute('aria-hidden', 'true')
+    canvas.parentElement?.append(this.rulers)
     this.details.addEventListener(
       'toggle',
       () => {
@@ -216,9 +231,25 @@ export class PressKitEditor {
       { signal },
     )
     this.overlay.addEventListener('keydown', event => this.keydown(event), { signal })
+    this.overlay.addEventListener(
+      'keyup',
+      event => {
+        if (event.key === 'Shift' && this.gesture?.kind === 'transform')
+          this.transformGesture(this.gesture, false)
+      },
+      { signal },
+    )
     this.details.addEventListener('keydown', event => this.keydown(event), { signal })
     this.overlay.addEventListener('pointerdown', event => this.pointerdown(event), { signal })
     this.overlay.addEventListener('pointermove', event => this.pointermove(event), { signal })
+    this.overlay.addEventListener(
+      'pointerleave',
+      () => {
+        this.pointer = undefined
+        this.positionOverlay()
+      },
+      { signal },
+    )
     this.overlay.addEventListener('pointerup', event => this.finishGesture(event), { signal })
     const cancelPointer = (event: PointerEvent) => {
       if (this.gesture?.pointer === event.pointerId) this.cancelGesture()
@@ -236,8 +267,11 @@ export class PressKitEditor {
         this.observer.disconnect()
         render(null, this.controls)
         render(null, this.overlay)
+        render(null, this.rulers)
         this.details.remove()
         this.overlay.remove()
+        this.rulers.remove()
+        canvas.parentElement?.removeAttribute('data-editor-rulers')
         this.scene = undefined
         this.rasters.clear()
         this.drafts.clear()
@@ -250,6 +284,10 @@ export class PressKitEditor {
 
   get active() {
     return this.enabled
+  }
+
+  get title() {
+    return this.draft.value.title
   }
 
   get metricGap() {
@@ -276,6 +314,8 @@ export class PressKitEditor {
       this.scene = undefined
     }
     this.overlay.hidden = true
+    this.rulers.hidden = true
+    if (!available) this.canvas.parentElement?.removeAttribute('data-editor-rulers')
   }
 
   setScene(scene: CardScene) {
@@ -424,7 +464,7 @@ export class PressKitEditor {
     const before = copy(this.draft.value)
     mutate(this.composition, this.draft.value)
     this.remember(before)
-    if (before.metricGap !== this.metricGap) this.requestScene()
+    if (before.metricGap !== this.metricGap || before.title !== this.title) this.requestScene()
     else this.queue()
     this.update()
   }
@@ -438,7 +478,7 @@ export class PressKitEditor {
     const before = copy(this.draft.value)
     to.push(before)
     this.draft.value = value
-    if (before.metricGap !== this.metricGap) this.requestScene()
+    if (before.metricGap !== this.metricGap || before.title !== this.title) this.requestScene()
     else this.queue()
     this.update()
   }
@@ -618,6 +658,25 @@ export class PressKitEditor {
     if (group && bounds) position(group, bounds)
     const marquee = this.overlay.querySelector<HTMLElement>('.press-kit-editor-marquee')
     if (marquee && this.gesture?.kind === 'marquee') position(marquee, this.gesture.bounds)
+    if (!this.rulers.hidden) {
+      this.rulers.style.cssText = `left:${rect.left - host.left - 24}px;top:${rect.top - host.top - 24}px`
+      paintRulers(
+        this.rulers,
+        rect.width,
+        rect.height,
+        scene.width,
+        scene.height,
+        bounds,
+        this.pointer,
+      )
+      const coordinates = this.controls.querySelector('output')
+      if (coordinates)
+        coordinates.textContent = bounds
+          ? `x ${Math.round(bounds.x)} · y ${Math.round(bounds.y)} px`
+          : this.pointer
+            ? `x ${Math.round(this.pointer.x)} · y ${Math.round(this.pointer.y)} px`
+            : `${scene.width} × ${scene.height} px`
+    }
   }
 
   private pointerPosition(event: PointerEvent) {
@@ -658,7 +717,16 @@ export class PressKitEditor {
     }
     const axis = event.target.closest<HTMLElement>('[data-editor-resize]')?.dataset.editorResize
     const resize = axis === 'x' || axis === 'y' || axis === 'xy' ? axis : null
-    if (layer && !resize) this.selectLayer(layer.id, additive)
+    const toggleOnClick =
+      layer &&
+      !resize &&
+      event.shiftKey &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      this.selected.has(layer.id)
+        ? layer.id
+        : undefined
+    if (layer && !resize && !toggleOnClick) this.selectLayer(layer.id, additive)
     if (layer && !this.selected.has(layer.id)) {
       this.update()
       this.overlay
@@ -680,6 +748,9 @@ export class PressKitEditor {
       bounds,
       before: copy(this.draft.value),
       resize,
+      point,
+      moved: false,
+      toggleOnClick,
     }
     this.overlay.dataset.gesture = resize ? `resize-${resize}` : 'move'
     this.overlay.setPointerCapture(event.pointerId)
@@ -698,7 +769,12 @@ export class PressKitEditor {
     const gesture = this.gesture,
       scene = this.scene,
       point = this.pointerPosition(event)
-    if (!gesture || event.pointerId !== gesture.pointer || !scene || !point) return
+    this.pointer = point
+    if (!gesture) {
+      if (this.showRulers) this.positionOverlay()
+      return
+    }
+    if (event.pointerId !== gesture.pointer || !scene || !point) return
     const dx = point.x - gesture.x,
       dy = point.y - gesture.y
     if (gesture.kind === 'marquee') {
@@ -734,8 +810,25 @@ export class PressKitEditor {
       } else this.positionOverlay()
       return
     }
+    gesture.point = point
+    const rect = this.canvas.getBoundingClientRect()
+    if (Math.hypot((dx * rect.width) / scene.width, (dy * rect.height) / scene.height) >= 3)
+      gesture.moved = true
+    this.transformGesture(gesture, event.shiftKey)
+  }
+
+  private transformGesture(gesture: Extract<Gesture, { kind: 'transform' }>, shift: boolean) {
+    let dx = gesture.point.x - gesture.x,
+      dy = gesture.point.y - gesture.y
+    if (!gesture.resize) {
+      if (!shift) gesture.moveAxis = undefined
+      else if (gesture.moved) gesture.moveAxis ??= Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y'
+      if (gesture.moveAxis === 'x') dy = 0
+      if (gesture.moveAxis === 'y') dx = 0
+      if (!gesture.moved) return
+    }
     const after = gesture.resize
-      ? this.resizedBounds(gesture.initial, gesture.bounds, dx, dy, gesture.resize, event.shiftKey)
+      ? this.resizedBounds(gesture.initial, gesture.bounds, dx, dy, gesture.resize, shift)
       : { ...gesture.bounds, x: gesture.bounds.x + dx, y: gesture.bounds.y + dy }
     this.placeSelection(this.composition, gesture.initial, gesture.bounds, after)
     this.queue()
@@ -748,6 +841,7 @@ export class PressKitEditor {
     this.gesture = undefined
     delete this.overlay.dataset.gesture
     if (gesture.kind === 'transform') {
+      if (gesture.toggleOnClick && !gesture.moved) this.selected.delete(gesture.toggleOnClick)
       const changed = gesture.initial.some(({ layer, placement }) => {
         const current = this.placement(layer)
         return (
@@ -798,6 +892,10 @@ export class PressKitEditor {
       return
     }
     event.stopPropagation()
+    if (event.key === 'Shift' && this.gesture?.kind === 'transform') {
+      this.transformGesture(this.gesture, true)
+      return
+    }
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'a') {
       event.preventDefault()
       this.selected = new Set(
@@ -882,6 +980,8 @@ export class PressKitEditor {
   private update() {
     if (this.signal.aborted) return
     this.overlay.hidden = !this.details.open || !this.available || !this.scene
+    this.rulers.hidden = this.overlay.hidden || !this.showRulers
+    this.canvas.parentElement?.toggleAttribute('data-editor-rulers', !this.rulers.hidden)
     const layers = this.layers()
     const selected = this.selection()
     const bounds = this.bounds(selected)
@@ -952,6 +1052,7 @@ export class PressKitEditor {
                 layout.order = []
                 document.background = undefined
                 document.metricGap = 0
+                document.title = undefined
               })
             }
           >
@@ -968,6 +1069,36 @@ export class PressKitEditor {
             fond…
           </button>
         </div>
+        <div class="press-kit-editor-view">
+          <button
+            type="button"
+            class="g-button"
+            aria-pressed={this.showRulers}
+            onClick={() => {
+              this.showRulers = !this.showRulers
+              this.update()
+            }}
+          >
+            règles
+          </button>
+          {this.showRulers && <output aria-label="position sur la carte" />}
+        </div>
+        <label class="press-kit-editor-field">
+          titre de l’image
+          <input
+            type="text"
+            value={this.title ?? ''}
+            placeholder={this.defaultTitle()}
+            maxLength={240}
+            onChange={event => {
+              const title = event.currentTarget.value.trim() || undefined
+              if (title !== this.title)
+                this.edit((_, document) => {
+                  document.title = title
+                })
+            }}
+          />
+        </label>
         {this.loading && <p role="status">chargement de l’image…</p>}
         {this.error && <p role="alert">{this.error}</p>}
         {this.redrawFailed && <p role="alert">impossible de redimensionner le graphique</p>}

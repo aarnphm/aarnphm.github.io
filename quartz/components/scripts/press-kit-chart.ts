@@ -20,7 +20,7 @@ export function trainingCharts(
 }
 
 export function trainingChartWeight(chart: ActivityCardChart): number {
-  return chart.kind === 'intervals' ? 1.3 : 1
+  return chart.kind === 'intervals' || chart.key === 'runLaps' ? 1.3 : 1
 }
 
 interface ChartTypography {
@@ -62,6 +62,7 @@ export function paintTrainingChart(
   const { text, fitText, fitValue, measure } = createSvgText(fonts, scale)
   const bars = chart.kind === 'bars'
   const zones = chart.key === 'runPace'
+  const runLaps = chart.key === 'runLaps'
   const laps = chart.kind === 'intervals'
   const curve = chart.key === 'powerCurve'
   const logarithmic = curve && options?.logScale !== false
@@ -70,12 +71,13 @@ export function paintTrainingChart(
     options?.typography?.labelSize ??
     (bars ? Math.min(size * 0.75, (height / (valid.length + 5)) * 0.5) : size * 0.7)
   const referenceWidth = options?.typography?.width ?? width
+  const valueSize = runLaps ? labelSize * 1.4 : labelSize
   const appearance =
     document.querySelector('.tri-training-zone-grid--pace, .tri-day-embed, .triathlon') ??
     document.documentElement
   const color =
     options?.color ??
-    (chart.key === 'runLaps' || laps
+    (runLaps || laps
       ? '#fc4c02'
       : getComputedStyle(appearance)
           .getPropertyValue(zones ? '--tri-zone-pace' : '--tri-zone-power')
@@ -116,9 +118,7 @@ export function paintTrainingChart(
   const top = y + size * 2
   const bottom = y + height - size * ((bars ? 2.9 : 1.7) + (chart.note ? 1 : 0))
   const tickText = (value: number) =>
-    chart.key === 'runLaps'
-      ? clock(value)
-      : value.toLocaleString(locale, { maximumFractionDigits: 1 })
+    runLaps ? clock(value) : value.toLocaleString(locale, { maximumFractionDigits: 1 })
 
   // Keep endpoint labels and omit intermediate labels that no longer fit after resizing.
   const spacedTicks = (
@@ -206,9 +206,9 @@ export function paintTrainingChart(
         value,
         zones ? (point.range ?? '—') : point.value,
         x + width,
-        middle + labelSize * 0.35,
+        middle + valueSize * 0.35,
         referenceWidth * 0.25,
-        labelSize,
+        valueSize,
         ink,
       )
     })
@@ -312,7 +312,7 @@ export function paintTrainingChart(
       width,
       height,
       minWidth: Math.min(width, size * (bars ? 24 : 18)) + 6,
-      minHeight: Math.min(height, bars ? size * 5 + valid.length * labelSize * 1.8 : size * 8) + 6,
+      minHeight: Math.min(height, bars ? size * 5 + valid.length * valueSize * 1.8 : size * 8) + 6,
       render: (targetWidth, targetHeight) => {
         const density = Math.min(scale, 3840 / Math.max(targetWidth, targetHeight))
         const svg = node('svg', {

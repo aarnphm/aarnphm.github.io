@@ -309,18 +309,33 @@ export function stickerCardSvg(
         },
       ]
     : (model.day?.blocks ?? [])
+  let contentTop = pt
+  if (model.day && model.customTitle && model.show.title) {
+    const size = spec.meta * 1.6
+    fitText(
+      svgLayer(svg, 'title', model.customTitle),
+      model.customTitle,
+      pl,
+      contentTop + size,
+      spec.width - pl - pr,
+      size,
+      palette.ink,
+      500,
+    )
+    contentTop += size * 1.4 + spec.gap * 0.5
+  }
   const columns = blocks.length > 1 ? 2 : 1
   const rows = Math.max(1, Math.ceil(blocks.length / columns))
   const gap = spec.gap * 0.5
   const width = (spec.width - pl - pr - gap * (columns - 1)) / columns
-  const height = (spec.height - pt - pb - gap * (rows - 1)) / rows
+  const height = (spec.height - contentTop - pb - gap * (rows - 1)) / rows
   blocks.forEach((block, index) => {
     const group = node('g', { 'data-block': block.id })
     svg.append(group)
     const display = cardBlockDisplay(block, model.show)
     const locale = model.locale ?? cardLocale()
     const x = pl + (index % columns) * (width + gap)
-    const y = pt + Math.floor(index / columns) * (height + gap)
+    const y = contentTop + Math.floor(index / columns) * (height + gap)
     if (block.kind === 'activity')
       paintOverlay(
         group,

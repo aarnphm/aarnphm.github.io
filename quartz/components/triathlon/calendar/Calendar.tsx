@@ -919,6 +919,18 @@ const CalendarSeason = ({
               <path d="M8 2v8m-3-3 3 3 3-3M3 10v3h10v-3" />
             </svg>
           </a>
+          <button
+            type="button"
+            class="tri-calendar-icon tri-calendar-share"
+            data-press-kit-calendar
+            aria-haspopup="dialog"
+            aria-label="share race list"
+            data-i18n-aria-label="share race list"
+          >
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 10V2m-3 3 3-3 3 3M3 7v6h10V7" />
+            </svg>
+          </button>
         </div>
       </header>
       <nav class="tri-calendar-strip" aria-label={String(calendar.year)}>
