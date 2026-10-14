@@ -774,6 +774,8 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 }
 
 .base-map {
+  --base-map-meta-color: color-mix(in srgb, var(--darkgray) 90%, var(--dark));
+
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
   height: var(--base-map-height, calc(100vh - 150px));
@@ -990,7 +992,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 .base-map-spot-meta {
   display: block;
   margin-top: 4px;
-  color: var(--gray);
+  color: var(--base-map-meta-color);
   font-family: var(--codeFont);
   font-size: 0.63rem;
 }
@@ -1016,7 +1018,12 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
   }
 
   .base-map-popup {
-    padding: 1rem;
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .base-map-popup-eyebrow {
+    min-height: 28px;
+    padding-inline-end: 2rem;
   }
 }
 
@@ -1028,19 +1035,27 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
 
 .base-map-selection-close {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  inset-block-start: 1.5rem;
+  inset-inline-end: 0.75rem;
+  display: grid;
+  place-items: center;
   width: 28px;
   height: 28px;
+  padding: 0;
   border: 0;
   background: transparent;
   color: var(--gray);
   font-size: 1.25rem;
+  line-height: 1;
   cursor: pointer;
 }
 
 .base-map-nearby {
   padding: 0 1rem 1rem;
+
+  > .base-map-kicker {
+    color: var(--base-map-meta-color);
+  }
 
   button {
     width: 100%;
@@ -1060,7 +1075,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
     span:last-child {
       white-space: nowrap;
       font-family: var(--codeFont);
-      color: var(--gray);
+      color: var(--base-map-meta-color);
     }
 
     &:hover {
@@ -1170,7 +1185,7 @@ body[data-is-base='true']:has(.main-col > .base-view[data-base-view-type='kanban
   padding-right: 1rem;
   font-family: var(--codeFont);
   font-size: 0.65rem;
-  color: var(--gray);
+  color: var(--base-map-meta-color);
 }
 
 .base-map-popup-rating {
