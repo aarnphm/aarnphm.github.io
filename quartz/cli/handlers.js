@@ -18,20 +18,13 @@ const inlineScriptFilter = /\.inline\.(ts|js)$/
 const testSourcePattern =
   /(?:^|\/)(?:__(?:tests|specs)__|tests?|specs?)(?:\/|$)|(?:^|\/)(?:tests?|specs?|(?:test|spec)_[^/]+|[^/]+_(?:test|spec)|[^/]+\.(?:test|spec))\.[^/]+$/i
 const sourceWatchWriteStabilityMs = 250
-export const sourceWatchRoots = ['quartz.config.ts', 'quartz.layout.ts', 'quartz', 'package.json']
-export const sourceWatchPatterns = [
+export const sourceWatchRoots = [
   'quartz.config.ts',
   'quartz.layout.ts',
-  'quartz/**/*.ts',
-  'quartz/**/*.tsx',
-  'quartz/**/*.scss',
-  'quartz/**/*.py',
-  'quartz/cli/*.js',
-  'quartz/static/**/*',
-  'quartz/extensions/**/*',
+  'quartz',
   'package.json',
+  'pnpm-lock.yaml',
 ]
-
 const normalizeWatchedPath = fp => {
   const rawPath = fp.toString()
   const relativePath = path.isAbsolute(rawPath) ? path.relative(process.cwd(), rawPath) : rawPath
@@ -45,19 +38,14 @@ export const isSourceWatchPath = fp => {
   if (
     normalized === 'quartz.config.ts' ||
     normalized === 'quartz.layout.ts' ||
-    normalized === 'package.json'
+    normalized === 'package.json' ||
+    normalized === 'pnpm-lock.yaml'
   ) {
     return true
   }
   if (!normalized.startsWith('quartz/')) return false
   if (normalized.startsWith('quartz/.quartz-cache/')) return false
-  if (normalized.startsWith('quartz/static/') || normalized.startsWith('quartz/extensions/')) {
-    return true
-  }
-
-  const ext = path.extname(normalized)
-  if (ext === '.ts' || ext === '.tsx' || ext === '.scss' || ext === '.py') return true
-  return normalized.startsWith('quartz/cli/') && ext === '.js'
+  return true
 }
 
 const isIgnoredSourceWatchPath = (fp, stats) => {
@@ -261,6 +249,18 @@ const printBundleInfoHeader = () => {
   console.log('\n' + styleText(['bgGreen', 'black'], `Quartz v${version}`) + '\n')
 }
 
+export function createSourceWatcher(onChange) {
+  return chokidar
+    .watch(sourceWatchRoots, {
+      awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
+      ignoreInitial: true,
+      ignored: isIgnoredSourceWatchPath,
+    })
+    .on('add', fp => onChange('add', fp))
+    .on('change', fp => onChange('change', fp))
+    .on('unlink', fp => onChange('delete', fp))
+}
+
 export function createReloadServer(port) {
   const server = new WebSocketServer({ port })
   server.on('connection', socket => {
@@ -274,6 +274,130 @@ export function createReloadServer(port) {
       }
     },
   }
+}
+
+export function createPreviewServer(argv, buildMutex) {
+  return http.createServer(async (req, res) => {
+    if (argv.baseDir && !req.url?.startsWith(argv.baseDir)) {
+      console.log(
+        styleText(
+          'red',
+          `[404] ${req.url} (warning: link outside of site, this is likely a Quartz bug)`,
+        ),
+      )
+      res.writeHead(404)
+      res.end()
+      return
+    }
+
+    const release = await buildMutex.acquire()
+    if (res.destroyed) {
+      release()
+      return
+    }
+    res.once('finish', release)
+    res.once('close', release)
+
+    // strip baseDir prefix
+    req.url = req.url?.slice(argv.baseDir.length)
+
+    const serve = async () => {
+      await serveHandler(req, res, {
+        public: argv.output,
+        directoryListing: false,
+        headers: [
+          { source: '**/*.*', headers: [{ key: 'Content-Disposition', value: 'inline' }] },
+          { source: '**/*.webp', headers: [{ key: 'Content-Type', value: 'image/webp' }] },
+          // fixes bug where avif images are displayed as text instead of images (future proof)
+          { source: '**/*.avif', headers: [{ key: 'Content-Type', value: 'image/avif' }] },
+        ],
+      })
+      const status = res.statusCode
+      const statusString =
+        status >= 200 && status < 300
+          ? styleText('green', `[${status}]`)
+          : styleText('red', `[${status}]`)
+      console.log(statusString + styleText('gray', ` ${argv.baseDir}${req.url}`))
+    }
+
+    const redirect = newFp => {
+      newFp = argv.baseDir + newFp
+      res.writeHead(302, { Location: newFp })
+      console.log(
+        styleText('yellow', '[302]') + styleText('gray', ` ${argv.baseDir}${req.url} -> ${newFp}`),
+      )
+      res.end()
+    }
+
+    const outputRoot = path.resolve(argv.output)
+    const normalizeRequestPath = value => {
+      try {
+        const parsed = new URL(value ?? '/', 'http://quartz.local')
+        const decoded = decodeURIComponent(parsed.pathname)
+        if (decoded.includes('\0')) return '/'
+        return path.posix.normalize(`/${decoded}`)
+      } catch {
+        return '/'
+      }
+    }
+    const resolveOutputPath = publicPath => {
+      const resolved = path.resolve(outputRoot, `.${publicPath}`)
+      if (resolved === outputRoot || resolved.startsWith(`${outputRoot}${path.sep}`)) {
+        return resolved
+      }
+    }
+    const existsInOutput = async publicPath => {
+      const resolved = resolveOutputPath(publicPath)
+      if (resolved === undefined) return false
+      try {
+        await promises.access(resolved)
+        return true
+      } catch {
+        return false
+      }
+    }
+
+    let fp = normalizeRequestPath(req.url)
+
+    // handle redirects
+    if (fp.endsWith('/')) {
+      // /trailing/
+      // does /trailing/index.html exist? if so, serve it
+      const indexFp = path.posix.join(fp, 'index.html')
+      if (await existsInOutput(indexFp)) {
+        req.url = fp
+        return serve()
+      }
+
+      // does /trailing.html exist? if so, redirect to /trailing
+      let base = fp.slice(0, -1)
+      if (path.extname(base) === '') {
+        base += '.html'
+      }
+      if (await existsInOutput(base)) {
+        return redirect(fp.slice(0, -1))
+      }
+    } else {
+      // /regular
+      // does /regular.html exist? if so, serve it
+      let base = fp
+      if (path.extname(base) === '') {
+        base += '.html'
+      }
+      if (await existsInOutput(base)) {
+        req.url = fp
+        return serve()
+      }
+
+      // does /regular/index.html exist? if so, redirect to /regular/
+      let indexFp = path.posix.join(fp, 'index.html')
+      if (await existsInOutput(indexFp)) {
+        return redirect(fp + '/')
+      }
+    }
+
+    return serve()
+  })
 }
 
 /**
@@ -335,19 +459,26 @@ export async function handleBuild(argv) {
       return
     }
 
-    const scope = activeBuild
-      ? bundle.sourceRebuildScope(
-          changedPaths,
-          new Set([...previousServerSourceInputs, ...serverSourceInputs]),
-          courseInputs,
-        )
-      : { kind: 'full' }
+    const deletedSource = (
+      await Promise.all(
+        changedPaths.map(filename =>
+          promises.access(filename).then(
+            () => false,
+            () => true,
+          ),
+        ),
+      )
+    ).some(Boolean)
+    const scope =
+      activeBuild && !deletedSource
+        ? bundle.sourceRebuildScope(
+            changedPaths,
+            new Set([...previousServerSourceInputs, ...serverSourceInputs]),
+            courseInputs,
+          )
+        : { kind: 'full' }
     if (scope.kind === 'partial') {
       release()
-      if (!scope.staticFiles && !scope.styles && !scope.scripts) {
-        console.log(styleText('gray', 'Source change is outside every bundle, skipping rebuild'))
-        return
-      }
       await bundle.buildSourceResources(argv, buildMutex, changedPaths, scope)
       bundle.releaseModuleCaches()
       clientRefresh()
@@ -407,15 +538,7 @@ export async function handleBuild(argv) {
       sourceRebuildQueue.pending.add(normalized)
       void requestSourceRebuild()
     }
-    const sourceWatcher = chokidar
-      .watch(sourceWatchRoots, {
-        awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
-        ignoreInitial: true,
-        ignored: isIgnoredSourceWatchPath,
-      })
-      .on('add', fp => sourceChanged('add', fp))
-      .on('change', fp => sourceChanged('change', fp))
-      .on('unlink', fp => sourceChanged('unlink', fp))
+    const sourceWatcher = createSourceWatcher(sourceChanged)
     await once(sourceWatcher, 'ready')
     sourceRebuildQueue.running = false
     initialBuild = requestSourceRebuild
@@ -427,122 +550,7 @@ export async function handleBuild(argv) {
       argv.baseDir = '/' + argv.baseDir
     }
 
-    const server = http.createServer(async (req, res) => {
-      if (argv.baseDir && !req.url?.startsWith(argv.baseDir)) {
-        console.log(
-          styleText(
-            'red',
-            `[404] ${req.url} (warning: link outside of site, this is likely a Quartz bug)`,
-          ),
-        )
-        res.writeHead(404)
-        res.end()
-        return
-      }
-
-      // strip baseDir prefix
-      req.url = req.url?.slice(argv.baseDir.length)
-
-      const serve = async () => {
-        await buildMutex.waitForUnlock()
-        await serveHandler(req, res, {
-          public: argv.output,
-          directoryListing: false,
-          headers: [
-            { source: '**/*.*', headers: [{ key: 'Content-Disposition', value: 'inline' }] },
-            { source: '**/*.webp', headers: [{ key: 'Content-Type', value: 'image/webp' }] },
-            // fixes bug where avif images are displayed as text instead of images (future proof)
-            { source: '**/*.avif', headers: [{ key: 'Content-Type', value: 'image/avif' }] },
-          ],
-        })
-        const status = res.statusCode
-        const statusString =
-          status >= 200 && status < 300
-            ? styleText('green', `[${status}]`)
-            : styleText('red', `[${status}]`)
-        console.log(statusString + styleText('gray', ` ${argv.baseDir}${req.url}`))
-      }
-
-      const redirect = newFp => {
-        newFp = argv.baseDir + newFp
-        res.writeHead(302, { Location: newFp })
-        console.log(
-          styleText('yellow', '[302]') +
-            styleText('gray', ` ${argv.baseDir}${req.url} -> ${newFp}`),
-        )
-        res.end()
-      }
-
-      const outputRoot = path.resolve(argv.output)
-      const normalizeRequestPath = value => {
-        try {
-          const parsed = new URL(value ?? '/', 'http://quartz.local')
-          const decoded = decodeURIComponent(parsed.pathname)
-          if (decoded.includes('\0')) return '/'
-          return path.posix.normalize(`/${decoded}`)
-        } catch {
-          return '/'
-        }
-      }
-      const resolveOutputPath = publicPath => {
-        const resolved = path.resolve(outputRoot, `.${publicPath}`)
-        if (resolved === outputRoot || resolved.startsWith(`${outputRoot}${path.sep}`)) {
-          return resolved
-        }
-      }
-      const existsInOutput = async publicPath => {
-        const resolved = resolveOutputPath(publicPath)
-        if (resolved === undefined) return false
-        try {
-          await promises.access(resolved)
-          return true
-        } catch {
-          return false
-        }
-      }
-
-      await buildMutex.waitForUnlock()
-      let fp = normalizeRequestPath(req.url)
-
-      // handle redirects
-      if (fp.endsWith('/')) {
-        // /trailing/
-        // does /trailing/index.html exist? if so, serve it
-        const indexFp = path.posix.join(fp, 'index.html')
-        if (await existsInOutput(indexFp)) {
-          req.url = fp
-          return serve()
-        }
-
-        // does /trailing.html exist? if so, redirect to /trailing
-        let base = fp.slice(0, -1)
-        if (path.extname(base) === '') {
-          base += '.html'
-        }
-        if (await existsInOutput(base)) {
-          return redirect(fp.slice(0, -1))
-        }
-      } else {
-        // /regular
-        // does /regular.html exist? if so, serve it
-        let base = fp
-        if (path.extname(base) === '') {
-          base += '.html'
-        }
-        if (await existsInOutput(base)) {
-          req.url = fp
-          return serve()
-        }
-
-        // does /regular/index.html exist? if so, redirect to /regular/
-        let indexFp = path.posix.join(fp, 'index.html')
-        if (await existsInOutput(indexFp)) {
-          return redirect(fp + '/')
-        }
-      }
-
-      return serve()
-    })
+    const server = createPreviewServer(argv, buildMutex)
 
     server.listen(argv.port)
     console.log(

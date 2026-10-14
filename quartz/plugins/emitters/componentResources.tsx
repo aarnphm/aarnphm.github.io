@@ -1,10 +1,6 @@
 import type { QuartzEmitterPlugin } from '../../types/plugin'
 import type { FilePath } from '../../util/path'
 import { writeAssetManifest } from './component-resources/asset-writer'
-import {
-  classifyResourceChanges,
-  hasComponentResourceChanges,
-} from './component-resources/change-classifier'
 import { writeEmojiAssets } from './component-resources/emoji-assets'
 import { writeNotebookRuntimeAssets } from './component-resources/notebook-assets'
 import { currentComponentResources } from './component-resources/resource-set'
@@ -22,9 +18,6 @@ import {
   writeStaticCssResourceBundles,
 } from './component-resources/style-assets'
 import {
-  handleGenericWorkerChange,
-  isSpeechRuntimeChange,
-  removeSemanticWorkerAsset,
   writeCollaborativeCommentsAssets,
   writeGenericWorkerAssets,
   writeSemanticWorkerAssets,
@@ -82,73 +75,9 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       yield sharedTrailFile
       yield writeAssetManifest(ctx)
     },
-    async *partialEmit(ctx, _content, resources, changeEvents) {
-      const changes = classifyResourceChanges(changeEvents)
-      if (!hasComponentResourceChanges(changes)) {
-        return
-      }
-
-      const needsComponentResources =
-        changes.componentStyles || changes.indexStylesheet || changes.pageScripts
-      const componentResources = needsComponentResources
-        ? await currentComponentResources(ctx)
-        : undefined
-
-      if (changes.componentStyles && componentResources) {
-        yield* writeComponentStyles(ctx, componentResources)
-      }
-
-      if (changes.staticStyles) {
-        yield* writeStaticCssResourceBundles(ctx, resources)
-      }
-
-      if (changes.staticScripts) {
-        yield* writeStaticJsResourceBundles(ctx, resources)
-      }
-
-      if (changes.indexStylesheet && componentResources) {
-        yield await writeIndexStylesheet(ctx, componentResources)
-      }
-
-      if (changes.notebookRuntime) {
-        yield* yieldFiles(await writeNotebookRuntimeAssets(ctx))
-      }
-
-      if (changes.pageScripts) yield await writeSharedTrailAsset(ctx)
-
-      if (changes.pageScripts && componentResources) {
-        resolveComponentResourceAssets(ctx, componentResources)
-        yield* yieldFiles(await writePageScripts(ctx, componentResources))
-      }
-
-      if (changes.collaborativeComments) {
-        yield* yieldFiles(await writeCollaborativeCommentsAssets(ctx))
-      }
-
-      if (changes.semanticWorkerDeleted) {
-        await removeSemanticWorkerAsset(ctx)
-      } else if (changes.semanticWorker) {
-        yield* yieldFiles(await writeSemanticWorkerAssets(ctx))
-      }
-
-      if (changeEvents.some(isSpeechRuntimeChange)) {
-        yield* yieldFiles(await writeSpeechRuntimeAssets(ctx))
-      }
-
-      if (changes.emoji) {
-        yield* yieldFiles(await writeEmojiAssets(ctx))
-      }
-
-      if (changes.xsltPolyfill) {
-        yield await writeXsltPolyfillAsset(ctx)
-      }
-
-      for (const changeEvent of changes.genericWorkerChanges) {
-        const file = await handleGenericWorkerChange(ctx, changeEvent)
-        if (file) yield file
-      }
-
-      yield writeAssetManifest(ctx)
+    // Source edits regenerate resources through buildSourceResources; content edits reuse them.
+    async partialEmit() {
+      return []
     },
     externalResources,
   }

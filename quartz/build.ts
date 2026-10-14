@@ -123,6 +123,17 @@ function buildChangeEvents(
       events.push({ type: fsType, path: relPath })
     }
   }
+  for (const [fullPath, content] of current) {
+    const relPath = path.relative(ctx.argv.directory, fullPath) as FilePath
+    if (pending.has(relPath) || previous.get(fullPath) === content) continue
+    const prev = previous.get(fullPath)
+    events.push({
+      type: prev ? 'change' : 'add',
+      path: relPath,
+      file: content[1],
+      previousFile: prev?.[1],
+    })
+  }
   return events
 }
 
@@ -317,7 +328,10 @@ async function startWatching(
     disposed: false,
   }
 
-  const watcher = chokidar.watch('.', {
+  const dependencies = ctx.cfg.plugins.transformers.flatMap(
+    plugin => plugin.fileDependencies?.(ctx) ?? [],
+  )
+  const watcher = chokidar.watch(['.', ...dependencies.map(filename => path.resolve(filename))], {
     awaitWriteFinish: { stabilityThreshold: 250 },
     persistent: true,
     cwd: argv.directory,
@@ -613,7 +627,7 @@ export async function buildSourceResources(
     )
     if (scope.staticFiles) await emitPartialEmitter(ctx, [], changeEvents, 'Static')
     if (scope.scripts || scope.styles) {
-      await emitPartialEmitter(ctx, [], changeEvents, 'ComponentResources')
+      await emitPartialEmitter(ctx, [], undefined, 'ComponentResources')
     }
     if (scope.scripts) {
       await emitPartialEmitter(ctx, [], undefined, 'LazyScripts')
