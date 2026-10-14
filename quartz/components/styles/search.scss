@@ -522,9 +522,7 @@
   }
 }
 
-body[data-slug='index']:has(.homepage-trail-toggle[aria-expanded='true'])
-  .search
-  > .search-container {
+body[data-slug='index'] .search > .search-container {
   & > .search-space {
     @include trailPanel;
 

@@ -422,10 +422,7 @@ ul#helper {
   }
 }
 
-body[data-slug='index']:has(.homepage-trail-toggle[aria-expanded='true'])
-  .palette
-  > #palette-container
-  > #space {
+body[data-slug='index'] .palette > #palette-container > #space {
   @include trailPanel;
 
   & > .input-container,

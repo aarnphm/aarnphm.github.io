@@ -1,8 +1,14 @@
 .disabled-plugin-page {
   display: grid;
+  grid-column: 3 / -3;
   place-items: center;
+  min-width: 0;
   min-height: 50vh;
   padding-block: 2rem;
+
+  & > .disabled-plugin-notice {
+    text-align: center;
+  }
 }
 
 .disabled-plugin-notice {

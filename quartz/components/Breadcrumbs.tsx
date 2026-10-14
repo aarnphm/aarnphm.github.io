@@ -90,7 +90,9 @@ function buildFallbackDescriptors(
 
     const slug = joinSegments(...traversed) as FullSlug
     const isLast = idx === slugParts.length - 1
-    descriptors.push({ displayName: isLast ? (fileTitle ?? segment) : segment, slug })
+    // Generated numbered pages keep their position instead of the shared page title.
+    const displayName = isLast && !/^\d+$/.test(segment) ? (fileTitle ?? segment) : segment
+    descriptors.push({ displayName, slug })
     current = undefined
   })
 

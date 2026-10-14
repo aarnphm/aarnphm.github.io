@@ -43,6 +43,7 @@ export default (() => {
               alt={image.alt}
               width={image.width}
               height={image.height}
+              style={{ aspectRatio: `${image.width} / ${image.height}` }}
               loading="lazy"
               decoding="async"
             />

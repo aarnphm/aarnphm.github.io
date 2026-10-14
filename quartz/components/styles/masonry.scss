@@ -14,10 +14,11 @@
 }
 
 .masonry-container {
+  --masonry-gap: 5px;
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  padding: var(--space-1);
+  padding: 0;
   min-height: 50vh;
 
   &.all-col {
@@ -28,15 +29,17 @@
 .masonry-grid {
   width: 100%;
   column-width: clamp(8.5rem, 18vw, 16rem);
-  column-gap: var(--space-1);
+  column-gap: var(--masonry-gap);
 }
 
 .masonry-image {
   display: block;
   width: 100%;
   height: auto;
-  margin: 0 0 var(--space-1);
+  margin: 0 0 var(--masonry-gap);
   break-inside: avoid;
+  object-fit: contain;
+  overflow: clip;
   cursor: pointer;
 }
 
