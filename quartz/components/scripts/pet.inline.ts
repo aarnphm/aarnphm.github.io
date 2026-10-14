@@ -5,6 +5,7 @@ import { sectionOf } from '../../util/section-icon'
 import { createSvgSpace, svgPathGeometry } from '../../util/svg-geometry'
 import { easeTrailDepth } from '../../util/trail-depth'
 import { trailHost, trailScene } from '../../util/trail-scene'
+import { readVisitorForecast } from '../../util/visitor-weather'
 import {
   animalInWay,
   canMove,
@@ -14,6 +15,7 @@ import {
   type CollisionActor,
   type SpacingBounds,
 } from '../visitor-trail/actor-spacing'
+import { clockObstacles, trailClockRegion } from '../visitor-trail/clock-clearance'
 import { detourPetTrail, type PetTrailFoot } from '../visitor-trail/pet-trail'
 import { visibleTextBoxes } from './pet-text-boxes'
 
@@ -192,6 +194,27 @@ const state = (now: number): State => {
   return 'idle'
 }
 
+// How cold it is where the visitor is, from the worker's /api/weather (cached there and in the
+// browser for 15 minutes): the wind chill, as Environment Canada works it out for 10 °C and under
+// with 5 km/h of wind or more. 10 °C and under is 'cool', 0 °C and under 'cold' (pet.scss).
+let chill: '' | 'cool' | 'cold' = ''
+let chillLoad: Promise<void> | null = null
+const loadChill = () =>
+  (chillLoad ??= fetch('/api/weather')
+    .then(res => (res.ok ? res.json() : null))
+    .then(body => {
+      const w = readVisitorForecast(body)?.weather
+      if (!w) return
+      const v = w.wind ** 0.16
+      const feels =
+        w.temp <= 10 && w.wind >= 4.8
+          ? 13.12 + 0.6215 * w.temp - 11.37 * v + 0.3965 * w.temp * v
+          : w.temp
+      chill = feels <= 0 ? 'cold' : feels <= 10 ? 'cool' : ''
+      render()
+    })
+    .catch(() => {}))
+
 const render = () => {
   if (!root || !svg || (!doc && !carry)) return
   const next = state(performance.now())
@@ -211,6 +234,7 @@ const render = () => {
   const tags = new Set((document.body.dataset.tags ?? '').split(' '))
   const traits = outfit ? '' : ['technical', 'philosophy'].filter(t => tags.has(t)).join(' ')
   if (svg.dataset.traits !== traits) svg.dataset.traits = traits
+  if (svg.dataset.cold !== chill) svg.dataset.cold = chill
   svg.toggleAttribute('data-reading', document.documentElement.getAttribute('reader-mode') === 'on')
   // On the rail it faces the page, its back to the pole.
   root.style.setProperty('--pet-face', String(carry ? 1 : face))
@@ -397,9 +421,12 @@ const trailSurfaces =
 const petObstacles = () => ({
   text: visibleTextBoxes(document, root),
   panels: [
-    ...document.querySelectorAll<HTMLElement>(trailSurfaces),
-    ...(trailScene(document)?.querySelectorAll<HTMLElement>(trailSurfaces) ?? []),
-  ].map(panel => panel.getBoundingClientRect()),
+    ...[
+      ...document.querySelectorAll<HTMLElement>(trailSurfaces),
+      ...(trailScene(document)?.querySelectorAll<HTMLElement>(trailSurfaces) ?? []),
+    ].map(panel => panel.getBoundingClientRect()),
+    ...[trailClockRegion(document)].flatMap(region => (region ? [region] : [])),
+  ],
   camps: campSolids(),
 })
 type PetObstacles = ReturnType<typeof petObstacles>
@@ -779,7 +806,10 @@ const trailPointClear = (p: TrailFoot, path: SVGPathElement, obstacles: PetObsta
 
 type TrailRun = { path: SVGPathElement; feet: TrailFoot[]; length: number }
 const trailActors = (scene: SVGSVGElement | null): CollisionActor[] => {
-  const actors: CollisionActor[] = []
+  const actors: CollisionActor[] = clockObstacles(document, {
+    x: window.scrollX,
+    y: window.scrollY,
+  })
   const drawing = scene?.closest<HTMLElement>('.trail-scene') ?? scene
   // These bodies use the current screen matrix; the guard checks the live camera, so their
   // radii need no reservation for future camera positions in the scene's coordinate space.
@@ -1520,13 +1550,14 @@ function relocate(anchor: Point, avoid: Element | null, how: 'chute' | null = nu
 // edge, and the hands (y = -0.8) follow where the thumb's middle would be, kept on screen.
 const railFor = (): Rail => {
   const view = window.innerHeight
+  const bottom = trailClockRegion(document)?.top ?? view
   const span = Math.max(document.documentElement.scrollHeight - view, 1)
   const thumb = Math.max((view * view) / (span + view), 32)
   const hands = 1.2 * unit
   return {
     x: window.innerWidth - 6 - 3.12 * unit,
     from: Math.max(thumb / 2 - hands, margin),
-    to: Math.min(view - thumb / 2 - hands, view - height() - margin),
+    to: Math.min(view - thumb / 2 - hands, bottom - height() - margin),
     span,
   }
 }
@@ -1868,6 +1899,7 @@ function renderFriend() {
           : 'idle'
   if (friendSvg.dataset.state !== next) friendSvg.dataset.state = next
   friendSvg.dataset.kind = friendPerch?.kind ?? 'stand'
+  if (friendSvg.dataset.cold !== chill) friendSvg.dataset.cold = chill
   friendSvg.toggleAttribute(
     'data-reading',
     document.documentElement.getAttribute('reader-mode') === 'on',
@@ -2382,6 +2414,7 @@ document.addEventListener('nav', () => {
   trailSpaceSignal = signal
   trailSpaces = new WeakMap()
   syncPets()
+  void loadChill()
   const scene = document.querySelector<HTMLElement>('.homepage-trail-scene')
   let trailFrame = 0
   let trailWanted = false
@@ -2459,6 +2492,31 @@ document.addEventListener('nav', () => {
     leaveTrail()
     trailJourney = null
   }
+  const clearClock = () => {
+    const region = trailClockRegion(document)
+    if (!root || !region) return
+    if (carry) {
+      hop?.cancel()
+      hop = null
+      override = null
+      landAfterJet = false
+      carry = railFor()
+      root.style.setProperty('--pet-rail-from', `${carry.from.toFixed(1)}px`)
+      root.style.setProperty('--pet-rail-to', `${carry.to.toFixed(1)}px`)
+      root.style.transform = `translate3d(${carry.x.toFixed(1)}px, 0, 0)`
+      root.style.translate = `0 ${railY(carry).toFixed(1)}px`
+      render()
+      return
+    }
+    const box = root.getBoundingClientRect()
+    if (box.right <= region.left || box.bottom <= region.top || box.top >= region.bottom) return
+    trailWanted ||= !!trailWalk
+    rememberTrail()
+    const next = floorNear(region.left - width) ?? pickEdge(center(), null)
+    if (next) moveTo(next, 'fade')
+    else root.hidden = true
+  }
+  clearClock()
   if (scene) {
     const openTrail = () => {
       if (scene.hidden) return
@@ -2619,6 +2677,7 @@ document.addEventListener('nav', () => {
     () => {
       window.clearTimeout(scrollTimer)
       if (reducedMotion()) {
+        clearClock()
         scrollTimer = window.setTimeout(onSettle, 220)
         return
       }
@@ -2636,6 +2695,7 @@ document.addEventListener('nav', () => {
   window.addEventListener(
     'resize',
     () => {
+      clearClock()
       window.clearTimeout(scrollTimer)
       scrollTimer = window.setTimeout(() => {
         if (carry) endCarry()

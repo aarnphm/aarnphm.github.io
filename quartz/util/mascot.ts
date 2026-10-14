@@ -944,6 +944,147 @@ export function engineer(
   return { hardhat, flask: `${flask}${grip}`, bubbles }
 }
 
+// Cold weather: a knit toque pulled down to the brow, ribbed cuff and pom-pom, and a striped scarf
+// wound under the chin with one end hanging. `puffs` are three breaths, drawn apart so the pet can
+// let them out one at a time.
+export function winter(w: number, paper = PAPER, ink = INK, knit = SAGE, stripe = PINK) {
+  // The crown's line, x across the brow at height y of the cuff top.
+  const crown: Pt[] = Array.from({ length: 31 }, (_, i) => {
+    const a = Math.PI + (i / 30) * Math.PI
+    return [0.02 + 0.9 * Math.cos(a), -0.66 + 0.58 * Math.sin(a)] as const
+  })
+  const dome = hand([...crown, [-0.88, -0.66]], 0.03, 0.01, 601)
+  const ribs = [-0.42, 0.04, 0.48]
+    .map((x, i) =>
+      stroke(
+        hand(
+          curve([x, -0.68], [x * 0.8 + 0.01, -0.98], [x * 0.35 + 0.02, -1.2], 10),
+          0.03,
+          0.006,
+          602 + i,
+        ),
+        () => w * 0.5,
+        ink,
+      ),
+    )
+    .join('')
+  const sag = (x: number) => 0.05 * (1 - x * x)
+  const cuffEdge = (y: number, from: number, to: number) =>
+    Array.from({ length: 21 }, (_, i) => {
+      const x = from + ((to - from) * i) / 20
+      return [x, y + sag(x)] as const
+    })
+  const cuff = hand(
+    [...cuffEdge(-0.74, -0.96, 0.98), ...cuffEdge(-0.5, 0.98, -0.96), [-0.96, -0.74]],
+    0.03,
+    0.008,
+    606,
+  )
+  const cuffRibs = Array.from({ length: 13 }, (_, i) => -0.84 + i * 0.14)
+    .map((x, i) =>
+      stroke(
+        hand(
+          [
+            [x, -0.7 + sag(x)],
+            [x + 0.01, -0.54 + sag(x)],
+          ],
+          0.02,
+          0.004,
+          610 + i,
+        ),
+        () => w * 0.4,
+        ink,
+      ),
+    )
+    .join('')
+  // The pom-pom: a tuft, its edge spiky with loose yarn.
+  const tuft: Pt[] = Array.from({ length: 37 }, (_, i) => {
+    const a = (i / 36) * 2 * Math.PI
+    const r = 0.17 * (1 + (i % 2 ? 0.16 : -0.06))
+    return [0.06 + r * Math.cos(a), -1.3 + r * Math.sin(a)] as const
+  })
+  const pom = filled(hand(tuft, 0.02, 0.008, 630), stripe, pressure(631, w * 0.8, 0.3), ink)
+  const toque = `${filled(dome, knit, pressure(632, w, 0.3), ink)}${ribs}${filled(cuff, knit, pressure(633, w, 0.3), ink)}${cuffRibs}${pom}`
+
+  // The wrap, below the mouth: it dips at the middle, as cloth over a round chin does.
+  const top = (x: number) => 0.36 + 0.06 * (1 - x * x)
+  const bottom = (x: number) => 0.64 + 0.08 * (1 - x * x)
+  const along = (f: (x: number) => number, from: number, to: number) =>
+    Array.from({ length: 21 }, (_, i) => {
+      const x = from + ((to - from) * i) / 20
+      return [x, f(x)] as const
+    })
+  const wrap = hand(
+    [...along(top, -0.96, 0.96), ...along(bottom, 0.9, -0.9), [-0.96, top(-0.96)]],
+    0.03,
+    0.01,
+    640,
+  )
+  const band = (x0: number, x1: number, seed: number) =>
+    `<path d="${poly(hand([...along(top, x0, x1), ...along(bottom, x1, x0)], 0.03, 0.006, seed))}" style="fill:${stripe}"/>`
+  // The end hangs from a knot at the back of the neck, stripes and fringe and all.
+  const end = curve([0.56, 0.6], [0.78, 0.88], [0.7, 1.18], 16)
+  const tail = hand(
+    ribbon(end, t => 0.13 - 0.02 * t),
+    0.03,
+    0.008,
+    645,
+  )
+  const tailBand = (t0: number, t1: number, seed: number) => {
+    const piece = end.slice(Math.round(t0 * 16), Math.round(t1 * 16) + 1)
+    return `<path d="${poly(
+      hand(
+        ribbon(piece, () => 0.12),
+        0.03,
+        0.006,
+        seed,
+      ),
+    )}" style="fill:${stripe}"/>`
+  }
+  const fringe = [-0.09, -0.03, 0.03, 0.09]
+    .map((dx, i) =>
+      stroke(
+        hand(
+          [
+            [0.7 + dx, 1.18],
+            [0.69 + dx * 1.2, 1.3],
+          ],
+          0.02,
+          0.006,
+          650 + i,
+        ),
+        () => w * 0.5,
+        ink,
+      ),
+    )
+    .join('')
+  const knot = filled(
+    hand(rounded(0.6, 0.52, 0.26, 0.26, 0.1), 0.02, 0.008, 655),
+    knit,
+    pressure(656, w, 0.3),
+    ink,
+  )
+  const outline = (pts: Pt[], seed: number) => stroke(pts, pressure(seed, w, 0.3), ink)
+  const scarf =
+    `<path d="${poly(wrap)}" style="fill:${knit}"/>${band(-0.5, -0.36, 641)}${band(0.2, 0.34, 642)}${outline(wrap, 643)}` +
+    `<path d="${poly(tail)}" style="fill:${knit}"/>${tailBand(0.45, 0.62, 646)}${tailBand(0.78, 0.92, 647)}${outline(tail, 648)}${fringe}${knot}`
+
+  // Breath in the cold, out of the mouth and off to the side it faces.
+  const puffs = (
+    [
+      [-0.98, 0.16, 0.09],
+      [-1.22, 0.04, 0.12],
+      [-1.5, -0.1, 0.1],
+    ] as const
+  )
+    .map(([x, y, r], i) => {
+      const cloud = hand(rounded(x, y, r * 2.2, r * 1.6, r * 0.7), 0.02, 0.008, 660 + i)
+      return `<g class="pet-puff">${filled(cloud, paper, () => w * 0.45, ink)}</g>`
+    })
+    .join('')
+  return { toque, scarf, puffs }
+}
+
 // Philosophy: hair gone wild after a long night with the questions. Two dozen strands spring off
 // the crown, most of them up, the rest out over the ears, each a tapered line that kinks back and
 // forth as it goes. `k` picks one of its drawings, so the hair can frizz between them.
@@ -1397,6 +1538,11 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     'hair',
     [0, 1].map(k => `<g class="pet-hair-frame">${wildHair(w * 1.1, ink, k)}</g>`).join(''),
   )
+  // Wrapped up against the visitor's cold (pet.inline.ts): the scarf, a toque and breath that shows.
+  const cold = winter(w, paper, ink, SAGE, pink)
+  const scarf = part('scarf', cold.scarf)
+  const toque = part('toque', cold.toque)
+  const breath = part('breath', cold.puffs)
   const chute = part('chute', `<g class="pet-canopy">${[0, 1, 2].map(chuteFrame).join('')}</g>`)
   // A jetpack for flying up to the scroll rail: two fat tanks on its back (behind the body, on the
   // right as drawn, since it faces left), a strap round the front so it reads as worn, and below
@@ -1574,5 +1720,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${outfit.front}${glasses}${hat}${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${scarf}${outfit.front}${glasses}${toque}${hat}${breath}${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
 }
