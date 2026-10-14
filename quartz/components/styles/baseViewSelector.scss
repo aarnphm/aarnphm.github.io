@@ -87,10 +87,6 @@ $base-control-height: 2.125rem;
             width: 16px;
             height: 16px;
           }
-
-          &.mod-aux {
-            opacity: 0.7;
-          }
         }
 
         .text-button-label {
@@ -298,33 +294,6 @@ $base-control-height: 2.125rem;
               color: var(--dark);
             }
           }
-
-          .clickable-icon.bases-toolbar-menu-item-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 16px;
-            height: 16px;
-            opacity: 0;
-            transition: opacity 0.15s ease;
-            color: var(--gray);
-            flex-shrink: 0;
-
-            svg {
-              width: 16px;
-              height: 16px;
-            }
-          }
-
-          &:focus-visible .clickable-icon.bases-toolbar-menu-item-icon {
-            opacity: 0.5;
-          }
-
-          @media (hover: hover) and (pointer: fine) {
-            &:hover .clickable-icon.bases-toolbar-menu-item-icon {
-              opacity: 0.5;
-            }
-          }
         }
       }
     }
@@ -333,8 +302,7 @@ $base-control-height: 2.125rem;
 
 @media (prefers-reduced-motion: reduce) {
   .bases-toolbar {
-    .bases-toolbar-menu-item,
-    .clickable-icon.bases-toolbar-menu-item-icon {
+    .bases-toolbar-menu-item {
       transition: none;
     }
   }

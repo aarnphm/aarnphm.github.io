@@ -1,6 +1,6 @@
 import { rootNavSignal } from './root-lifecycle'
 
-document.addEventListener('nav', () => {
+function initializeBaseKanban(): void {
   for (const board of document.querySelectorAll<HTMLElement>('.base-kanban')) {
     if (board.dataset.kanbanInitialized !== undefined) continue
     board.dataset.kanbanInitialized = ''
@@ -104,8 +104,15 @@ document.addEventListener('nav', () => {
       delete board.dataset.kanbanInitialized
     }
     signal.addEventListener('abort', cleanup, { once: true })
-    window.addCleanup(cleanup)
   }
+}
+
+document.addEventListener('nav', () => {
+  initializeBaseKanban()
+  document.addEventListener('base-content-changed', initializeBaseKanban)
+  window.addCleanup(() => {
+    document.removeEventListener('base-content-changed', initializeBaseKanban)
+  })
 })
 
 export default ''
