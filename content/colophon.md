@@ -103,7 +103,7 @@ see [ofm-wikilinks](https://github.com/aarnphm/aarnphm.github.io/tree/main/quart
 
 Supports [[cinematheque|Bases]] [API](https://help.obsidian.md/bases) and [[singularity.canvas|JSON]] [Canvas](https://help.obsidian.md/plugins/canvas)
 
-Bases render tables, lists, image galleries, maps, and [Kanban columns](https://obsidian.md/help/bases/views/kanban). The [[cinematheque/analysis|film analysis view]] groups cards by studio, keeps the saved column order, and links each card to its note. Search filters cards and updates column counts. The `.base` file controls filters, sorting, visible properties, image fit, and column width; note creation and property edits happen in Obsidian.
+Bases render tables, lists, image galleries, maps, and [Kanban columns](https://obsidian.md/help/bases/views/kanban). The [[cinematheque/analysis|film analysis view]] uses the first `studio` entry as the main production company and places each film in one column. This convention is saved as a Bases formula; notes keep their full list of production companies. Obsidian can show those lists as combined group labels. Search filters cards and updates column counts. The `.base` file controls filters, sorting, visible properties, image fit, and column width; note creation and property edits happen in Obsidian.
 
 ### [telescopic-text](https://github.com/jackyzha0/telescopic-text)
 

@@ -6,7 +6,7 @@ description: a Chinese girl grows up between three families from age six to eigh
 director:
   - Zou Jing
 id: A Girl Unknown
-modified: 2026-09-20 16:37:04 GMT-04:00
+modified: 2026-10-14 13:23:53 GMT-04:00
 posters: '[[movies/posters/a-girl-unknown.jpg]]'
 rating: 8.2
 runtime: 128
@@ -18,5 +18,6 @@ studio:
 tags:
   - drama
 title: A Girl Unknown
+watched: '2026-09-16'
 year: 2026
 ---

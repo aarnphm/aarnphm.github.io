@@ -15,9 +15,9 @@ rating: 7.6
 runtime: 110
 status: finished
 studio:
+  - apple studios
   - maximum effort
   - skydance media
-  - apple studios
 tags:
   - action
   - comedy
