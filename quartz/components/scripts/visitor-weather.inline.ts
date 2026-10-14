@@ -1,3 +1,4 @@
+import { createVisitorDaylightSource } from '../../util/visitor-daylight'
 import { createVisitorHolidaySource } from '../../util/visitor-holiday'
 import { createVisitorTrailWeatherSource } from '../../util/visitor-trail-weather'
 import {
@@ -40,6 +41,7 @@ document.addEventListener('nav', () => {
   const controller = new AbortController()
   const { signal } = controller
   const trailWeather = createVisitorTrailWeatherSource(document, signal)
+  const daylight = createVisitorDaylightSource(document, signal)
   mountHomepagePrecipitation(document, signal)
   const holiday = createVisitorHolidaySource(document, signal)
   const moon = mountVisitorMoon(root, signal)
@@ -153,6 +155,7 @@ document.addEventListener('nav', () => {
   )
 
   const render = () => {
+    daylight.publish(forecast)
     trailWeather.publish(forecast)
     holiday.publish(forecast?.country ?? null)
     const weather = forecast?.weather

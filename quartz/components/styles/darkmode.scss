@@ -68,6 +68,7 @@
 }
 
 :root:not([data-theme-mode]) #light-toggle-system,
+:root[data-theme-mode='daylight'] #light-toggle-system,
 :root[data-theme-mode='system'] #light-toggle-system,
 :root[data-theme-mode='dark'] #light-toggle-dark,
 :root[data-theme-mode='light'] #light-toggle-light {
