@@ -1,5 +1,5 @@
 export const groundObjectSelector =
-  '.trail-tree, .trail-understory, [data-trail-wander], [data-wetland-animal], .trail-river-bear, .trail-river-fish, [data-holiday-decoration], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger], [data-trail-visitor]'
+  '.trail-tree, .trail-understory, [data-trail-wander], [data-wetland-animal], .trail-river-bear, .trail-river-fish, [data-holiday-decoration], .trail-map-reader, .trail-backpacker, [data-alpine-traveler], [data-camp-person], [data-camp-tent], .trail-extra-camp, [data-park-ranger], [data-trail-visitor], [data-trail-pet]'
 
 type GroundObject = { element: SVGGElement; owner: Element; layer: SVGGElement; index: number }
 
@@ -61,18 +61,18 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
     objects = objects.filter(({ element, owner }) => element.isConnected && owner.isConnected)
     const retained = new Set(objects.map(({ element }) => element))
     const distant = scene.querySelector<SVGGElement>('.trail-foothill-objects')
+    const paintLayer = (element: SVGGElement) =>
+      distant &&
+      (element.dataset.treeDepth === 'foothill' ||
+        element.hasAttribute('data-alpine-traveler') ||
+        element.dataset.petAlpine === 'true')
+        ? distant
+        : layer
+    for (const object of objects) object.layer = paintLayer(object.element)
     for (const element of scene.querySelectorAll<SVGGElement>(groundObjectSelector)) {
       if (retained.has(element)) continue
       const owner = element.parentElement
-      const far =
-        element.dataset.treeDepth === 'foothill' || element.hasAttribute('data-alpine-traveler')
-      if (owner && (!far || distant))
-        objects.push({
-          element,
-          owner,
-          layer: far && distant ? distant : layer,
-          index: objects.length,
-        })
+      if (owner) objects.push({ element, owner, layer: paintLayer(element), index: objects.length })
     }
     sort()
     if (!host.hidden && !document.hidden && !signal.aborted)
@@ -85,6 +85,7 @@ export function mountGroundDepth(scene: HTMLElement, host: HTMLElement, signal: 
   document.addEventListener('visibilitychange', () => (document.hidden ? pause() : refresh()), {
     signal,
   })
+  scene.addEventListener('trail:depth-change', refresh, { signal })
   signal.addEventListener('abort', pause, { once: true })
   return { refresh, restore, pause, resume: refresh }
 }

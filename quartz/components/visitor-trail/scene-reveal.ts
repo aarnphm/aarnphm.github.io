@@ -3,6 +3,93 @@ import type { Point } from './landscape'
 export const trailOpeningDuration = 600
 export const trailThemeDuration = 600
 export const trailOpeningCell = 6
+export const trailRevealSoftness = 1.5
+const maskPixel = 1
+
+export function trailRevealThreshold(
+  x: number,
+  y: number,
+  origin: number,
+  cell = trailOpeningCell,
+) {
+  const height = Math.max(1, origin)
+  const radius = cell / 2
+  const q = (x / Math.sqrt(3) - y / 3) / radius
+  const r = ((2 / 3) * y) / radius
+  const s = -q - r
+  let rq = Math.floor(q + 0.5)
+  let rr = Math.floor(r + 0.5)
+  const rs = Math.floor(s + 0.5)
+  const dq = Math.abs(rq - q)
+  const dr = Math.abs(rr - r)
+  const ds = Math.abs(rs - s)
+  if (dq > dr && dq > ds) rq = -rr - rs
+  else if (dr > ds) rr = -rq - rs
+  const column = Math.floor(rq + rr / 2) * 0.754877666
+  const offset = (column - Math.floor(column)) * radius * 0.5
+  const distance = Math.max(0, height - rr * radius * 1.5)
+  return (distance + offset) / (height + cell)
+}
+
+export function trailRevealLimit(bottom: number, origin: number, cell = trailOpeningCell) {
+  return Math.max(0, (origin - bottom - cell * 2) / (Math.max(1, origin) + cell))
+}
+
+export function createTrailRevealMask(
+  document: Document,
+  width: number,
+  height: number,
+  origin: number,
+  offset: Point = { x: 0, y: 0 },
+) {
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(1, Math.ceil(width / maskPixel))
+  const band = trailOpeningCell * 2
+  canvas.height = Math.ceil((band * 2) / maskPixel)
+  const paint = canvas.getContext('2d', { willReadFrequently: true })
+  if (!paint) return null
+  const pixels = paint.createImageData(canvas.width, canvas.height)
+  pixels.data.fill(255)
+  const softness = trailRevealSoftness / (Math.max(1, origin) + trailOpeningCell)
+  return {
+    width,
+    height,
+    origin,
+    draw(progress: number, inverse = false) {
+      if (progress <= 0 || progress >= 1) {
+        const color = progress >= 1 !== inverse ? '#000' : 'transparent'
+        return { image: `linear-gradient(${color}, ${color})`, size: '100% 100%', position: '0 0' }
+      }
+      const front = origin - progress * (Math.max(1, origin) + trailOpeningCell)
+      const top = Math.floor((front - band - offset.y) / maskPixel) * maskPixel
+      // Only the moving edge needs a bitmap; a solid gradient fills the completed scenery.
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+          const threshold = trailRevealThreshold(
+            (x + 0.5) * maskPixel + offset.x,
+            top + (y + 0.5) * maskPixel + offset.y,
+            origin,
+          )
+          const blend = Math.min(1, Math.max(0, (progress - threshold) / (softness * 2) + 0.5))
+          const alpha = blend * blend * (3 - 2 * blend)
+          pixels.data[(y * canvas.width + x) * 4 + 3] = Math.round(
+            (inverse ? 1 - alpha : alpha) * 255,
+          )
+        }
+      }
+      paint.putImageData(pixels, 0, 0)
+      const bottom = top + canvas.height * maskPixel
+      const fill = inverse
+        ? `linear-gradient(to bottom, #000 ${top}px, transparent ${top}px)`
+        : `linear-gradient(to bottom, transparent ${bottom}px, #000 ${bottom}px)`
+      return {
+        image: `url("${canvas.toDataURL()}"), ${fill}`,
+        size: `${canvas.width * maskPixel}px ${canvas.height * maskPixel}px, 100% 100%`,
+        position: `0 ${top}px, 0 0`,
+      }
+    },
+  }
+}
 
 export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: AbortSignal) {
   const document = scene.ownerDocument
@@ -19,16 +106,13 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
   let unbuiltBottom: number | null = Infinity
   let frame = 0
   let fallbackEnabled = false
-  let mask: {
-    canvas: HTMLCanvasElement
-    paint: CanvasRenderingContext2D
-    pixels: ImageData
-  } | null = null
+  let mask: ReturnType<typeof createTrailRevealMask> | null = null
   let painted = -1
   const clearMask = () => {
     svg.style.removeProperty('mask-image')
     svg.style.removeProperty('mask-size')
     svg.style.removeProperty('mask-repeat')
+    svg.style.removeProperty('mask-position')
     painted = -1
   }
   const complete = () => {
@@ -51,7 +135,7 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
     // Texture coverage cannot see the next detached forest batch before it is published.
     if (unbuiltBottom !== null) {
       const origin = Math.min(camp, height)
-      ceiling = Math.min(ceiling, 0.82 * Math.max(0, (origin - unbuiltBottom) / origin))
+      ceiling = Math.min(ceiling, trailRevealLimit(unbuiltBottom, origin))
     }
     const advance = Math.min(32, Math.max(0, time - updated)) / (trailOpeningDuration / 2)
     const value = reduced.matches
@@ -77,34 +161,18 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
     if (value >= 1) return
     if (scene.dataset.campPositioned === 'true') {
       const step = Math.floor(value * 120)
-      const columns = Math.max(1, Math.ceil(width / trailOpeningCell))
-      const rows = Math.max(1, Math.ceil(height / trailOpeningCell))
-      if (!mask || mask.canvas.width !== columns || mask.canvas.height !== rows) {
-        const canvas = document.createElement('canvas')
-        canvas.width = columns
-        canvas.height = rows
-        const paint = canvas.getContext('2d', { willReadFrequently: true })
-        if (!paint) throw new Error('The trail opening needs its pixel mask')
-        mask = { canvas, paint, pixels: paint.createImageData(columns, rows) }
+      const origin = Math.min(camp, height)
+      if (!mask || mask.width !== width || mask.height !== height || mask.origin !== origin) {
+        mask = createTrailRevealMask(document, width, height, origin)
+        if (!mask) throw new Error('The trail opening needs its mask surface')
         painted = -1
       }
       if (painted !== step) {
         painted = step
-        const origin = Math.min(camp, height)
-        for (let y = 0; y < rows; y++) {
-          const distance = Math.max(0, (origin - y * trailOpeningCell) / origin)
-          for (let x = 0; x < columns; x++) {
-            const noise = (x * 0.754877666 + y * 0.569840296) % 1
-            const offset = (y * columns + x) * 4
-            mask.pixels.data[offset] = 255
-            mask.pixels.data[offset + 1] = 255
-            mask.pixels.data[offset + 2] = 255
-            mask.pixels.data[offset + 3] = 0.82 * distance + 0.18 * noise <= value ? 255 : 0
-          }
-        }
-        mask.paint.putImageData(mask.pixels, 0, 0)
-        svg.style.maskImage = `url("${mask.canvas.toDataURL()}")`
-        svg.style.maskSize = '100% 100%'
+        const drawn = mask.draw(value)
+        svg.style.maskImage = drawn.image
+        svg.style.maskSize = drawn.size
+        svg.style.maskPosition = drawn.position
         svg.style.maskRepeat = 'no-repeat'
       }
     }

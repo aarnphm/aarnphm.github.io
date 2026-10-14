@@ -1048,6 +1048,10 @@ $pet-looks: (
     opacity: 1;
   }
 
+  &[data-trail-paint='scene'] .garden-pet-button > .pet-svg {
+    visibility: hidden;
+  }
+
   // On the scroll rail: pinned to the viewport, its height tied to the page's scroll position by a
   // scroll timeline, so it tracks the scroll on the compositor. pet.inline.ts sets the run and moves
   // it by hand where scroll timelines are missing.

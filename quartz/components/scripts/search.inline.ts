@@ -5,10 +5,10 @@ import { escapeHTML } from '../../util/escape'
 import { fetchCanonical } from '../../util/fetch-canonical'
 import { FullSlug, getFullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
 import { encode, highlight, pathSearchText, tokenizeTerm } from '../../util/search-text'
-import { aggregateSemanticResults, fuseSearchRanks } from '../../util/semantic-search'
+import { fuseSearchRanks } from '../../util/semantic-search'
 import { renderDocumentPreview } from './document-preview-card'
 import { registerEscapeHandler } from './escape-handler'
-import { SemanticClient } from './semantic.inline'
+import { resetSiteSemantic, siteSemantic, type SiteSemantic } from './site-semantic'
 
 interface Item extends DocumentData {
   id: number
@@ -56,14 +56,12 @@ const persistSearchMode = (mode: SearchMode) => {
 let searchMode: SearchMode = 'lexical'
 let currentSearchTerm: string = ''
 let rawSearchTerm: string = ''
-let semantic: SemanticClient | null = null
+let semantic: SiteSemantic | null = null
 let semanticReady = false
 let semanticInitFailed = false
 let searchDataPromise: Promise<ContentIndex> | null = null
 const configuredSearchElements = new WeakSet<HTMLDivElement>()
 type SimilarityResult = { item: Item; similarity: number }
-let chunkMetadata: Record<string, { parentSlug: string; chunkId: number }> = {}
-let manifestIds: string[] = []
 
 const index = new FlexSearch.Document<Item>({
   tokenize: 'forward',
@@ -327,25 +325,15 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   const enablePreview = searchLayout.dataset.preview === 'true'
   const storedMode = loadStoredSearchMode()
   let semanticBooting: Promise<boolean> | null = null
-  const bootSemantic = async (client: SemanticClient): Promise<boolean> => {
+  const bootSemantic = async (): Promise<boolean> => {
     setSemanticState('loading')
     try {
-      await client.ensureReady()
-      const res = await fetch('/embeddings/manifest.json')
-      if (!res.ok) throw new Error(`failed to load semantic metadata: ${res.status}`)
-      const manifest = (await res.json()) as {
-        chunkMetadata?: Record<string, { parentSlug: string; chunkId: number }>
-        ids: string[]
-      }
-      chunkMetadata = manifest.chunkMetadata ?? {}
-      manifestIds = manifest.ids
-      semantic = client
+      semantic = await siteSemantic()
       semanticReady = true
       setSemanticState('ready')
       return true
     } catch (err) {
       console.warn('[SemanticClient] initialization failed:', err)
-      client.dispose()
       semantic = null
       semanticReady = false
       semanticInitFailed = true
@@ -357,10 +345,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   const ensureSemantic = async (): Promise<boolean> => {
     if (semanticReady) return true
     if (semanticInitFailed) return false
-    if (!semantic) {
-      semantic = new SemanticClient(semanticCfg)
-    }
-    semanticBooting ??= bootSemantic(semantic).finally(() => {
+    semanticBooting ??= bootSemantic().finally(() => {
       semanticBooting = null
     })
     return semanticBooting
@@ -1065,7 +1050,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
 
     try {
-      const { semantic: semRes } = await orchestrator.search(
+      const documents = await orchestrator.search(
         highlightTerm,
         getNumSearchResults(modeForRanking) * 8,
       )
@@ -1073,7 +1058,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         return
       }
 
-      const documents = aggregateSemanticResults(semRes, { ids: manifestIds, chunkMetadata })
       semanticIds = []
       semanticSimilarity.clear()
       for (const { slug, score } of documents) {
@@ -1091,7 +1075,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     } catch (err) {
       console.warn('[SemanticClient] search failed:', err)
       if (showProgress) completeSearchProgress()
-      orchestrator.dispose()
+      resetSiteSemantic(orchestrator.client)
       semantic = null
       semanticReady = false
       semanticInitFailed = true

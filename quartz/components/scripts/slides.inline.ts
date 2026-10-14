@@ -16,6 +16,9 @@ document.addEventListener('nav', () => {
   const prev = document.querySelector<HTMLAnchorElement>('.slides-controls .prev')
   const next = document.querySelector<HTMLAnchorElement>('.slides-controls .next')
   const status = document.querySelector<HTMLSpanElement>('.slides-controls .status')
+  const breadcrumb = document.querySelector<HTMLAnchorElement>(
+    '.breadcrumb-container a[aria-current="page"]',
+  )
   const timerEl = document.querySelector<HTMLSpanElement>('.slides-controls .slides-timer')
   const overviewBtn = document.querySelector<HTMLButtonElement>('.slides-controls .overview')
   const presentBtn = document.querySelector<HTMLButtonElement>('.slides-controls .present')
@@ -281,6 +284,10 @@ document.addEventListener('nav', () => {
     }
     const url = slideUrl(idx)
     if (url !== window.location.href) history.replaceState(null, '', url)
+    if (breadcrumb) {
+      breadcrumb.textContent = String(idx + 1)
+      breadcrumb.href = url
+    }
     requestAnimationFrame(() => {
       deck.classList.toggle('gradient-active', deck.scrollHeight > deck.clientHeight)
       updateTocOverflow()

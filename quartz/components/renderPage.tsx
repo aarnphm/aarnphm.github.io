@@ -2533,6 +2533,7 @@ export function renderPage(
   userOptions?: RenderPageOptions,
 ): string {
   const renderPerf = new PerfTimer()
+  componentData = { ...componentData, pageSlug: slug }
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
   const root = clone(componentData.tree) as Root
@@ -2909,7 +2910,7 @@ export function renderPage(
   )
   const head = render(
     <html lang={lang}>
-      <Head {...componentData} externalResources={{ ...externalResources, css }} pageSlug={slug} />
+      <Head {...componentData} externalResources={{ ...externalResources, css }} />
     </html>,
   )
   const html = `<!DOCTYPE html>${head.slice(0, -'</html>'.length)}${body}</html>`
