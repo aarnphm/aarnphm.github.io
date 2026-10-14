@@ -417,6 +417,7 @@ function initBaseMaps(): void {
   }
 }
 document.addEventListener('nav', () => {
+  document.addEventListener('base-content-changed', initBaseMaps)
   if (initializationTimer === undefined)
     initializationTimer = window.setTimeout(() => {
       initializationTimer = undefined
@@ -428,6 +429,7 @@ document.addEventListener('nav', () => {
   })
   observer.observe(document.documentElement, { childList: true, subtree: true })
   window.addCleanup(() => {
+    document.removeEventListener('base-content-changed', initBaseMaps)
     observer.disconnect()
     if (initializationTimer !== undefined) {
       window.clearTimeout(initializationTimer)

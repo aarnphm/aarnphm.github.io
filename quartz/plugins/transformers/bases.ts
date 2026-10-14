@@ -31,10 +31,12 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
 
             file.data.bases = true
 
-            const compiled = compileBaseConfig(String(file.value), file.path)
+            const source = String(file.value)
+            const compiled = compileBaseConfig(source, file.path)
             const config: BaseFile = compiled.config
 
             file.data.basesConfig = config
+            file.data.basesSource = source
             file.data.basesDiagnostics = compiled.diagnostics
             file.data.basesExpressions = compiled.expressions
 
@@ -57,6 +59,7 @@ declare module 'vfile' {
   interface DataMap {
     bases?: boolean
     basesConfig?: BaseFile
+    basesSource?: string
     basesDiagnostics?: BaseExpressionDiagnostic[]
     basesExpressions?: BasesExpressions
   }

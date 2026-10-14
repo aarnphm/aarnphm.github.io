@@ -13,6 +13,7 @@ import {
 } from '../../util/path'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
 import { descriptionToPlainText } from '../description'
+import { isPublicBaseFile } from './browser-data'
 import {
   BaseExpressionDiagnostic,
   ProgramIR,
@@ -659,7 +660,7 @@ function buildTable(
         const cells = columns.map(col =>
           buildTableCell(file, col, currentSlug, allFiles, getContext, getPropertyExpr),
         )
-        allRows.push(h('tr', cells))
+        allRows.push(h('tr', { 'data-base-slug': file.slug }, cells))
       }
     }
 
@@ -673,7 +674,7 @@ function buildTable(
     const cells = columns.map(col =>
       buildTableCell(f, col, currentSlug, allFiles, getContext, getPropertyExpr),
     )
-    return h('tr', cells)
+    return h('tr', { 'data-base-slug': f.slug }, cells)
   })
 
   const tbody = h('tbody', rows)
@@ -809,7 +810,7 @@ function createListItemRenderer(
         seen.add(propertyKey)
       }
 
-      return inlineNodes.length > 0 ? h('li', [anchor, ...inlineNodes]) : h('li', [anchor])
+      return h('li', { 'data-base-slug': slug }, [anchor, ...inlineNodes])
     }
 
     const metadataItems: RenderElement[] = []
@@ -828,10 +829,10 @@ function createListItemRenderer(
     }
 
     if (metadataItems.length === 0) {
-      return h('li', [anchor])
+      return h('li', { 'data-base-slug': slug }, [anchor])
     }
 
-    return h('li', [anchor, h('ul.base-list-nested', metadataItems)])
+    return h('li', { 'data-base-slug': slug }, [anchor, h('ul.base-list-nested', metadataItems)])
   }
 }
 
@@ -1049,16 +1050,18 @@ function buildCards(
 
     cardChildren.push(h('div.base-card-content', contentChildren))
 
-    return h(isKanban ? 'li.base-card' : 'div.base-card', cardChildren)
+    return h(isKanban ? 'li.base-card' : 'div.base-card', { 'data-base-slug': slug }, cardChildren)
   }
 
   const styleParts: string[] = []
   if (typeof view.cardSize === 'number' && view.cardSize > 0) {
     styleParts.push(`--base-card-min: ${view.cardSize}px;`)
   }
-  const aspect = view.imageAspectRatio ?? view.cardAspect
-  if (typeof aspect === 'number' && aspect > 0) {
-    styleParts.push(`--base-card-aspect: ${aspect};`)
+  // Obsidian stores height / width; CSS aspect-ratio uses width / height.
+  if (view.imageAspectRatio !== undefined) {
+    styleParts.push(`--base-card-aspect: 1 / ${view.imageAspectRatio};`)
+  } else if (typeof view.cardAspect === 'number' && view.cardAspect > 0) {
+    styleParts.push(`--base-card-aspect: ${view.cardAspect};`)
   }
   if (view.imageFit) styleParts.push(`--base-card-image-fit: ${view.imageFit};`)
   if (isKanban) styleParts.push(`--base-kanban-width: ${view.columnWidth ?? 280}px;`)
@@ -1280,6 +1283,7 @@ export type RenderedBaseView = {
   resultCount: number
   totalCount: number
   matchedSlugs: string[]
+  diagnostics: BaseExpressionDiagnostic[]
 }
 
 export type BaseMetadata = { baseSlug: FullSlug; currentView: string; allViews: BaseViewMeta[] }
@@ -1293,6 +1297,7 @@ export function renderBaseViewsForFile(
   if (!config || !baseFileData.slug) {
     return { views: [], allViews: [] }
   }
+  allFiles = allFiles.filter(isPublicBaseFile)
 
   const baseSlug = baseFileData.slug as FullSlug
   const expressions = baseFileData.basesExpressions
@@ -1417,11 +1422,6 @@ export function renderBaseViewsForFile(
     const totalCount = visibleFiles.length
     const resultCount = limitedFiles.length
 
-    const diagnostics = [...(baseFileData.basesDiagnostics ?? []), ...runtimeDiagnostics]
-    const diagnosticsNode = renderDiagnostics(
-      diagnostics.length > 0 ? diagnostics : undefined,
-      slug,
-    )
     const wrapView = (node: RenderElement) =>
       h('div.base-view', { 'data-base-view-type': view.type, 'data-base-view-name': view.name }, [
         node,
@@ -1495,6 +1495,11 @@ export function renderBaseViewsForFile(
 
     if (!viewNode) continue
 
+    const diagnostics = [...(baseFileData.basesDiagnostics ?? []), ...runtimeDiagnostics]
+    const diagnosticsNode = renderDiagnostics(
+      diagnostics.length > 0 ? diagnostics : undefined,
+      slug,
+    )
     const wrapped = wrapView(viewNode)
     const tree: Root = {
       type: 'root',
@@ -1505,7 +1510,7 @@ export function renderBaseViewsForFile(
       file.slug ? [simplifySlug(file.slug as FullSlug)] : [],
     )
 
-    views.push({ view, slug, tree, resultCount, totalCount, matchedSlugs })
+    views.push({ view, slug, tree, resultCount, totalCount, matchedSlugs, diagnostics })
   }
 
   return { views, allViews }

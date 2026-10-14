@@ -124,7 +124,7 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
   }
 
   const buildLogical = (operator: '&&' | '||', expressionsList: Expr[]): Expr | null => {
-    if (expressionsList.length === 0) return null
+    if (expressionsList.length === 0) return parseExpression(operator === '&&' ? 'true' : 'false')
     let current: Expr | null = null
     for (const next of expressionsList) {
       if (!current) {
@@ -215,6 +215,11 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
 
     if (typeof view.image === 'string') {
       addPropertyExpression(view.image, `${viewContext}.image`)
+    }
+
+    if (view.type === 'calendar') {
+      const date = view.date ?? view.dateField ?? view.dateProperty ?? 'date'
+      if (typeof date === 'string') addPropertyExpression(date, `${viewContext}.date`)
     }
 
     if (typeof view.coordinates === 'string') {

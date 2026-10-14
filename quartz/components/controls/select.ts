@@ -1,3 +1,5 @@
+import { autoUpdate, computePosition, flip, offset, shift, size } from '@floating-ui/dom'
+
 export interface SelectOption<T> {
   value: T
   label: string
@@ -18,6 +20,8 @@ export interface SelectOptions<T> {
   onSelect: (value: T) => void
   /** Extra classes on the root, for a host's layout rules. */
   className?: string
+  /** Use the top layer when an ancestor clips overflowing menus. */
+  floating?: boolean
 }
 
 export interface Select<T> {
@@ -74,6 +78,7 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
   menu.setAttribute('role', 'listbox')
   menu.setAttribute('aria-label', options.label)
   menu.hidden = true
+  if (options.floating) menu.setAttribute('popover', 'manual')
 
   const items: { button: HTMLButtonElement; option: SelectOption<T> }[] = []
   const addOption = (parent: HTMLElement, option: SelectOption<T>): void => {
@@ -115,7 +120,11 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
   }
   setSelected(options.selected)
 
+  let stopPositioning: (() => void) | undefined
   const close = (restoreFocus = false): void => {
+    stopPositioning?.()
+    stopPositioning = undefined
+    if (menu.matches(':popover-open')) menu.hidePopover()
     menu.hidden = true
     trigger.setAttribute('aria-expanded', 'false')
     if (restoreFocus) trigger.focus({ preventScroll: true })
@@ -130,6 +139,30 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
   const open = (): void => {
     menu.hidden = false
     trigger.setAttribute('aria-expanded', 'true')
+    if (options.floating && !menu.matches(':popover-open')) {
+      menu.showPopover()
+      stopPositioning = autoUpdate(trigger, menu, async () => {
+        const { x, y } = await computePosition(trigger, menu, {
+          strategy: 'fixed',
+          placement: 'bottom-start',
+          middleware: [
+            offset(3),
+            flip({ padding: 8 }),
+            shift({ padding: 8 }),
+            size({
+              padding: 8,
+              apply: ({ availableHeight, rects }) => {
+                menu.style.width = `${rects.reference.width}px`
+                menu.style.maxHeight = `min(22rem, ${Math.max(0, availableHeight)}px)`
+              },
+            }),
+          ],
+        })
+        if (menu.hidden) return
+        menu.style.left = `${x}px`
+        menu.style.top = `${y}px`
+      })
+    }
     focusItem(items.findIndex(item => item.button.getAttribute('aria-selected') === 'true'))
   }
 
@@ -218,6 +251,7 @@ export const buildSelect = <T>(options: SelectOptions<T>): Select<T> => {
       root.addEventListener('focusout', onFocusout)
       host.addEventListener('pointerdown', onPointerdown)
       return () => {
+        close()
         root.removeEventListener('click', onClick)
         root.removeEventListener('keydown', onKeydown)
         root.removeEventListener('focusout', onFocusout)

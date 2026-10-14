@@ -1,4 +1,5 @@
 import { escapeHTML } from '../../util/escape'
+import { MOUNTAIN_OUTLINE_PATH } from '../../util/mountain-icon'
 import { createPopupContent, markerColor, type BaseMapData, type MarkerData } from './base-map-data'
 
 type MapControl = 'satellite' | 'elevation' | '3d'
@@ -12,7 +13,7 @@ interface MapViewActions {
 
 const icons = {
   satellite: ['m12 3 10 5-10 5L2 8Z', 'm2 12 10 5 10-5', 'm2 16 10 5 10-5'],
-  elevation: ['m3 20 7-16 7 16H3Z', 'm7.5 9.7 2.5 2.8 2.5-2.8M14 13l3-6 5 13h-5'],
+  elevation: [MOUNTAIN_OUTLINE_PATH],
   '3d': ['M12 3 20 7.5 12 12 4 7.5 12 3Z', 'M4 7.5v9L12 21v-9', 'M20 7.5v9L12 21'],
   fit: ['M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5', 'M12 8v8M8 12h8'],
   list: ['M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1'],
@@ -141,8 +142,7 @@ export function mountBaseMapView(
     if (count) count.textContent = `${filtered.length} of ${data.markers.length} saved spots`
     if (list)
       list.innerHTML = filtered.length
-        ? [...filtered]
-            .sort((a, b) => a.title.localeCompare(b.title))
+        ? filtered
             .map(
               marker =>
                 `<button type="button" class="base-map-spot" data-spot="${escapeHTML(marker.slug)}" aria-pressed="${marker.slug === selected?.slug}"><span class="base-map-swatch" style="background:${markerColor(marker)}"></span><span><strong>${escapeHTML(marker.title)}</strong><span class="base-map-spot-meta">${escapeHTML((marker.categories ?? []).join(' · '))}${marker.rating !== undefined ? ` · ☆ ${escapeHTML(String(marker.rating))}` : ''}</span>${marker.description ? `<span class="base-map-spot-description">${escapeHTML(marker.description)}</span>` : ''}</span></button>`,
@@ -150,6 +150,13 @@ export function mountBaseMapView(
             .join('')
         : `<p class="base-map-no-results">No spots match. Try another search or category.</p>`
     actions.filter(filtered)
+    if (!container.closest('.base-embed')) {
+      document.dispatchEvent(
+        new CustomEvent('base-search-results', {
+          detail: { visible: filtered.length, total: data.markers.length },
+        }),
+      )
+    }
   }
 
   container.addEventListener(

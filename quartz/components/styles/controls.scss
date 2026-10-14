@@ -388,6 +388,11 @@ button.g-select-trigger {
   &:not([hidden]) {
     display: grid;
   }
+
+  &[popover] {
+    position: fixed;
+    inset: auto;
+  }
 }
 
 .g-select-group {

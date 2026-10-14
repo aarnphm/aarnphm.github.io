@@ -184,6 +184,7 @@ const config: QuartzConfig = {
             { name: 'pdf-reader', entry: 'components/pdf-reader/app.tsx' },
             { name: 'course-workspace', entry: 'components/course-workspace/app.tsx' },
             { name: 'course-calendar', entry: 'components/course-calendar/app.tsx' },
+            { name: 'base-query', entry: 'components/scripts/base-query.ts' },
           ],
         }),
         Plugin.Bibliography({ bibliography: './content/References.bib' }),
