@@ -43,6 +43,7 @@ import {
 import { mountSharedGrove } from './shared-grove'
 import { trailTerrain, trailTerraces } from './terrain'
 import { defaultTravelerSettings } from './traveler-settings'
+import { prepareTreeSprites } from './tree-workers'
 import { mountVisitorJourneys } from './visitor-journey'
 import { mountMapReaderJourneys } from './wayfarer-journey'
 import { mountTrailWeather } from './weather'
@@ -550,27 +551,33 @@ const cancelRendering = () => {
   rendering = null
 }
 signal.addEventListener('abort', cancelRendering, { once: true })
-const yieldRender = (signal: AbortSignal, paint = false) =>
-  new Promise<boolean>(resolve => {
+let generationSlice = 0
+const yieldRender = (signal: AbortSignal, paint = false) => {
+  if (!paint && performance.now() - generationSlice < 8) return Promise.resolve(!signal.aborted)
+  return new Promise<boolean>(resolve => {
     if (signal.aborted) return resolve(false)
     let frame = 0
-    let task = 0
+    const task = new MessageChannel()
     const finish = () => {
+      task.port1.close()
+      task.port2.close()
       signal.removeEventListener('abort', cancel)
+      generationSlice = performance.now()
       resolve(!signal.aborted)
     }
     const cancel = () => {
       parent.cancelAnimationFrame(frame)
-      parent.clearTimeout(task)
       finish()
     }
     signal.addEventListener('abort', cancel, { once: true })
+    task.port1.onmessage = finish
     if (paint)
       frame = parent.requestAnimationFrame(() => {
-        task = parent.setTimeout(finish, 0)
+        task.port2.postMessage(null)
       })
-    else task = parent.setTimeout(finish, 0)
+    else task.port2.postMessage(null)
   })
+}
 const drawScene = async () => {
   await styleReady
   if (host.hidden || !scene.isConnected) return
@@ -680,7 +687,7 @@ const drawScene = async () => {
   scene.dataset.campPositioned = 'true'
   scene.dataset.trailVisible = 'true'
   scene.dataset.trailAmbientReady = 'false'
-  opening.update(layout.camp)
+  opening.update(layout.camp, layout)
   const kinds: FootprintKind[] = ['boot', 'paw', 'hoof', 'blob']
   const offset = Math.floor(trailRandom(sceneSeed ^ 0x2c681f4b)() * kinds.length)
   const main = svg.querySelector<SVGPathElement>('[data-trail-route="main"]')
@@ -820,23 +827,43 @@ const drawScene = async () => {
     ...geometries.flatMap(route => route.samples.filter((_, index) => index % 4 === 0)),
     ...pasture.sites,
   ]
+  treePlan = planTrailTrees(
+    layout.landscape,
+    sceneSeed,
+    forestObstacles,
+    forestClearings(layout.landscape),
+  )
+  const sprites = [...forestSprites(layout.landscape, true)]
+  const visibleTrees = new Set(sprites.map(sprite => sprite.id))
+  const painting = prepareTreeSprites(
+    layout.landscape,
+    treePlan.filter(placement => visibleTrees.has(placement.id)),
+    forest,
+    renderSignal,
+  )
   community.update(layout.landscape, sceneSeed, camps, [])
   holidays.draw(layout.landscape, geometries, sceneSeed, camps)
   if (!(await yieldRender(renderSignal))) return
-  treePlan = null
   forestNodes.clear()
   woodlandNodes.clear()
   const landmarks = scene.querySelector('.trail-landmarks')
   landmarks?.replaceChildren()
+  const forestDraft = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+  const prepared = await painting
+  if (renderSignal.aborted) return
   let batch = performance.now()
-  for (const sprite of forestSprites(layout.landscape, true)) {
-    if (landmarks) forestNodes.update(sprite, landmarks)
-    if (performance.now() - batch >= 4) {
+  for (const sprite of sprites) {
+    const markup = prepared?.get(sprite.id)
+    forestNodes.update(markup ? { ...sprite, render: () => markup } : sprite, forestDraft)
+    if (performance.now() - batch >= 16) {
+      landmarks?.prepend(...forestDraft.childNodes)
       opening.generatedThrough(Math.max(sprite.bottom, layout.landscape.alpine.base + 168))
-      if (!(await yieldRender(renderSignal, true))) return
+      if (!(await yieldRender(renderSignal))) return
       batch = performance.now()
     }
   }
+  // Publish complete batches from camp to ridge, with farther trees behind earlier ones.
+  landmarks?.prepend(...forestDraft.childNodes)
   finishForest(false)
   opening.generatedThrough(null)
   if (!(await yieldRender(renderSignal))) return

@@ -56,7 +56,11 @@ export function mountHomepageTheme(signal: AbortSignal) {
       return
     }
     const followsScene = Boolean(
-      host && !host.hidden && surface && scene?.dataset.trailRenderer === 'webgl',
+      host &&
+      !host.hidden &&
+      surface &&
+      (scene?.dataset.trailRenderer === 'webgl' ||
+        (scene?.dataset.trailOpeningLive === 'true' && scene.dataset.trailOpening !== 'complete')),
     )
     const started = performance.now()
     const opening = followsScene && scene?.dataset.trailOpening !== 'complete'

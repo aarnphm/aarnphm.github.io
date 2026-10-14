@@ -1,5 +1,6 @@
 import type { CollisionActor } from './actor-spacing'
 import type { Point } from './landscape'
+import { svgLocalMatrix } from '../../util/svg-geometry'
 
 type ClockRegion = { left: number; right: number; top: number; bottom: number }
 type FrameGeometry = {
@@ -9,6 +10,7 @@ type FrameGeometry = {
   clock: Element | null
   region?: ClockRegion | null
   layers: WeakMap<Element, { transform: string; matrix: DOMMatrix | null }>
+  screens: WeakMap<SVGSVGElement, DOMMatrix | null>
 }
 const frames = new WeakMap<Document, FrameGeometry>()
 
@@ -26,6 +28,7 @@ function frameGeometry(document: Document) {
     height: view.innerHeight,
     clock: document.querySelector('.trail-local-time'),
     layers: new WeakMap(),
+    screens: new WeakMap(),
   }
   frames.set(document, next)
   return next
@@ -77,7 +80,18 @@ export function readClockObstacles(scene: ParentNode, relativeTo?: SVGGElement) 
   const frame = frameGeometry(svg.ownerDocument)
   const transform = `${layer.getAttribute('transform')}:${layer.getAttribute('style')}:${svg.getAttribute('viewBox')}`
   const known = frame?.layers.get(layer)
-  const matrix = known?.transform === transform ? known.matrix : layer.getScreenCTM()
+  let screen = frame?.screens.get(svg)
+  if (screen === undefined) {
+    const native = svg.getScreenCTM()
+    screen = native
+      ? new DOMMatrix([native.a, native.b, native.c, native.d, native.e, native.f])
+      : null
+    frame?.screens.set(svg, screen)
+  }
+  const matrix =
+    known?.transform === transform
+      ? known.matrix
+      : (screen?.multiply(svgLocalMatrix(layer, svg)) ?? null)
   if (frame && known?.transform !== transform) frame.layers.set(layer, { transform, matrix })
   if (!matrix) return []
   const inverse = matrix.inverse()

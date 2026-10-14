@@ -49,6 +49,15 @@
   .trail-scene[data-trail-renderer='webgl'] .trail-canvas {
     clip-path: inset(50%);
   }
+  .trail-scene[data-trail-theme-live='true'],
+  .trail-scene[data-trail-opening-live='true'] {
+    .trail-canvas {
+      clip-path: none;
+    }
+    .trail-compositor {
+      visibility: hidden;
+    }
+  }
   .trail-scene[data-trail-opening='pending'] {
     .trail-canvas {
       clip-path: inset(50%);

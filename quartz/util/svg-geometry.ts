@@ -16,6 +16,11 @@ function matrix2d(matrix: DOMMatrix) {
   return new DOMMatrix([matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f])
 }
 
+function isSvgGraphics(element: Element): element is SVGGraphicsElement {
+  // Scene nodes can come from an iframe realm while belonging to the page document.
+  return element.namespaceURI === 'http://www.w3.org/2000/svg' && 'transform' in element
+}
+
 export function svgLocalMatrix(element: SVGGraphicsElement, root: SVGSVGElement) {
   const view = root.ownerDocument.defaultView
   let matrix = new DOMMatrix()
@@ -25,7 +30,7 @@ export function svgLocalMatrix(element: SVGGraphicsElement, root: SVGSVGElement)
     current && current !== root;
     current = current.parentElement
   ) {
-    if (!(current instanceof view.SVGGraphicsElement)) continue
+    if (!isSvgGraphics(current)) continue
     let local = new DOMMatrix()
     for (let index = 0; index < current.transform.baseVal.numberOfItems; index++)
       local = local.multiply(matrix2d(current.transform.baseVal.getItem(index).matrix))

@@ -1,6 +1,6 @@
 import type { Point } from './landscape'
 
-export const trailOpeningDuration = 1200
+export const trailOpeningDuration = 600
 export const trailThemeDuration = 600
 export const trailOpeningCell = 6
 
@@ -11,8 +11,11 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
   if (!view || !svg) throw new Error('The trail opening needs its surface')
   const reduced = view.matchMedia('(prefers-reduced-motion: reduce)')
   let epoch: number | null = null
+  let updated = 0
   let revealed = 0
   let camp = 1
+  let width = 1
+  let height = 1
   let unbuiltBottom: number | null = Infinity
   let frame = 0
   let fallbackEnabled = false
@@ -38,31 +41,35 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
   const progress = (time: number, ceiling = 1, ready = true) => {
     if (scene.dataset.trailOpening === 'complete') return 1
     if (host.hidden || scene.dataset.campPositioned !== 'true') return 0
-    // One sweep from the camp to the ridge: the front starts once the scene is generated and
-    // its textures are painted, so no unfinished region holds it part way up.
+    // Generation and reveal share the camp's deadline. Coverage holds unfinished rows;
+    // bounded catch-up keeps a late upload from turning the remaining sweep into a flash.
     if (epoch === null) {
-      if (!ready) return 0
       epoch = time
-      scene.dataset.trailOpening = 'revealing'
+      updated = time
     }
     const elapsed = Math.max(0, (time - epoch) / trailOpeningDuration)
-    // Texture coverage cannot see geometry that the generator has not emitted yet.
-    // Reserve those rows before letting the same reveal front reach them.
+    // Texture coverage cannot see the next detached forest batch before it is published.
     if (unbuiltBottom !== null) {
-      const origin = Math.min(camp, svg.clientHeight)
+      const origin = Math.min(camp, height)
       ceiling = Math.min(ceiling, 0.82 * Math.max(0, (origin - unbuiltBottom) / origin))
     }
-    const value = reduced.matches ? 1 : Math.max(revealed, Math.min(ceiling, elapsed))
-    if (elapsed > value) epoch = time - value * trailOpeningDuration
+    const advance = Math.min(32, Math.max(0, time - updated)) / (trailOpeningDuration / 2)
+    const value = reduced.matches
+      ? ready
+        ? 1
+        : 0
+      : Math.max(revealed, Math.min(ceiling, elapsed, revealed + advance))
+    updated = time
     revealed = value
     if (value === 1 && ready) return complete()
+    if (value > 0) scene.dataset.trailOpening = 'revealing'
     scene.dataset.trailOpeningProgress = value.toFixed(3)
     return value
   }
   const fallback = () => {
     frame = 0
     if (signal.aborted || host.hidden || document.hidden) return
-    if (scene.dataset.trailRenderer === 'webgl') {
+    if (scene.dataset.trailRenderer === 'webgl' && scene.dataset.trailOpeningLive !== 'true') {
       clearMask()
       return
     }
@@ -70,25 +77,25 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
     if (value >= 1) return
     if (scene.dataset.campPositioned === 'true') {
       const step = Math.floor(value * 120)
-      const width = Math.max(1, Math.ceil(svg.clientWidth / trailOpeningCell))
-      const height = Math.max(1, Math.ceil(svg.clientHeight / trailOpeningCell))
-      if (!mask || mask.canvas.width !== width || mask.canvas.height !== height) {
+      const columns = Math.max(1, Math.ceil(width / trailOpeningCell))
+      const rows = Math.max(1, Math.ceil(height / trailOpeningCell))
+      if (!mask || mask.canvas.width !== columns || mask.canvas.height !== rows) {
         const canvas = document.createElement('canvas')
-        canvas.width = width
-        canvas.height = height
+        canvas.width = columns
+        canvas.height = rows
         const paint = canvas.getContext('2d', { willReadFrequently: true })
         if (!paint) throw new Error('The trail opening needs its pixel mask')
-        mask = { canvas, paint, pixels: paint.createImageData(width, height) }
+        mask = { canvas, paint, pixels: paint.createImageData(columns, rows) }
         painted = -1
       }
       if (painted !== step) {
         painted = step
-        const origin = Math.min(camp, svg.clientHeight)
-        for (let y = 0; y < height; y++) {
+        const origin = Math.min(camp, height)
+        for (let y = 0; y < rows; y++) {
           const distance = Math.max(0, (origin - y * trailOpeningCell) / origin)
-          for (let x = 0; x < width; x++) {
+          for (let x = 0; x < columns; x++) {
             const noise = (x * 0.754877666 + y * 0.569840296) % 1
-            const offset = (y * width + x) * 4
+            const offset = (y * columns + x) * 4
             mask.pixels.data[offset] = 255
             mask.pixels.data[offset + 1] = 255
             mask.pixels.data[offset + 2] = 255
@@ -120,7 +127,7 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
   reduced.addEventListener(
     'change',
     () => {
-      if (reduced.matches && epoch !== null) complete()
+      if (reduced.matches && epoch !== null && scene.dataset.trailRendered === 'true') complete()
     },
     { signal },
   )
@@ -136,8 +143,10 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
       unbuiltBottom = bottom
     },
     origin: () => camp,
-    update(point: Point) {
+    update(point: Point, size: { width: number; height: number }) {
       camp = Math.max(1, point.y)
+      width = size.width
+      height = size.height
       scene.dataset.trailOpeningOrigin = String(camp)
       if (scene.dataset.trailOpening === 'pending') progress(view.performance.now(), 1, false)
       schedule()
