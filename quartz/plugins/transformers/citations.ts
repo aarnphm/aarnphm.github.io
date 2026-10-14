@@ -108,7 +108,7 @@ function citationInputPartKey(part: string): string {
   try {
     const stat = fs.statSync(part)
     if (stat.isFile()) {
-      const key = `${part}:${stat.size}:${Math.trunc(stat.mtimeMs)}`
+      const key = `${part}:${stringFingerprint(fs.readFileSync(part, 'utf8'))}`
       citationInputPartKeys.set(part, key)
       return key
     }
@@ -124,7 +124,7 @@ async function citationInputPartKeyAsync(part: string): Promise<string> {
   try {
     const stat = await fsp.stat(part)
     if (stat.isFile()) {
-      const key = `${part}:${stat.size}:${Math.trunc(stat.mtimeMs)}`
+      const key = `${part}:${stringFingerprint(await fsp.readFile(part, 'utf8'))}`
       citationInputPartKeys.set(part, key)
       return key
     }
@@ -261,6 +261,7 @@ function setCitationDataCache(key: string, data: unknown[]): void {
 }
 
 const hydratedCitationDataCacheKeys = releasedOnReload(new Set<string>())
+const prunedBibliographyKeys = releasedOnReload(new Set<string>())
 
 async function hydrateCitationDataCache(key: string): Promise<void> {
   if (citationDataCache.has(key) || hydratedCitationDataCacheKeys.has(key)) return
@@ -268,6 +269,44 @@ async function hydrateCitationDataCache(key: string): Promise<void> {
   const persisted = await readPersistentCitationDataCache(key)
   if (persisted) {
     citationDataCache.set(key, persisted)
+  }
+}
+
+async function pruneStaleCitationCaches(
+  bibliographyKey: string,
+  citationDataKey: string | undefined,
+): Promise<void> {
+  if (prunedBibliographyKeys.has(bibliographyKey)) return
+  prunedBibliographyKeys.add(bibliographyKey)
+  const activeBibToken = `_${bibliographyKey.replace(/[^A-Za-z0-9_.-]/g, '_')}_`
+  const activeDataFile = citationDataKey
+    ? `${citationDataKey.replace(/[^A-Za-z0-9_.-]/g, '_')}.json`
+    : undefined
+
+  try {
+    const treeEntries = await fsp.readdir(CITATION_TREE_CACHE_DIR)
+    await Promise.all(
+      treeEntries.map(async entry => {
+        if (!entry.endsWith('.json') || entry.includes(activeBibToken)) return
+        await fsp.unlink(path.join(CITATION_TREE_CACHE_DIR, entry)).catch(() => undefined)
+      }),
+    )
+  } catch {
+    // directory may not exist yet
+  }
+
+  if (activeDataFile) {
+    try {
+      const dataEntries = await fsp.readdir(CITATION_DATA_CACHE_DIR)
+      await Promise.all(
+        dataEntries.map(async entry => {
+          if (!entry.endsWith('.json') || entry === activeDataFile) return
+          await fsp.unlink(path.join(CITATION_DATA_CACHE_DIR, entry)).catch(() => undefined)
+        }),
+      )
+    } catch {
+      // directory may not exist yet
+    }
   }
 }
 
@@ -588,25 +627,20 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         let hasCitationSyntax = hasFrontmatterValue(frontmatter, 'noCite')
         const arxivNodes: { node: Link; index: number; parent: Parent; id: string }[] = []
 
-        visit(
-          tree,
-          (node): node is Text => node.type === 'text',
-          node => {
-            if (hasCitationSyntax) return
-            hasCitationSyntax = node.value.includes('@')
-          },
-        )
-
-        visit(
-          tree,
-          (node): node is Link => node.type === 'link',
-          (node, index, parent) => {
+        visit(tree, (node, index, parent) => {
+          if (node.type === 'text') {
+            if (!hasCitationSyntax && node.value.includes('@')) {
+              hasCitationSyntax = true
+            }
+            return
+          }
+          if (node.type === 'link') {
             if (typeof index !== 'number' || !isMdastParent(parent)) return
             const arxivId = extractArxivId(node.url)
             if (!arxivId) return
             arxivNodes.push({ node, index, parent, id: normalizeArxivId(arxivId) })
-          },
-        )
+          }
+        })
 
         const docIds = Array.from(new Set(arxivNodes.map(entry => entry.id))).sort()
         if (docIds.length > 0) {
@@ -652,6 +686,7 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
             bibliographyKey,
             citationDataKey,
           ])
+          await pruneStaleCitationCaches(resolvedBibliographyKey, resolvedCitationDataKey)
           if (resolvedCitationDataKey) {
             await hydrateCitationDataCache(resolvedCitationDataKey)
           }
@@ -669,7 +704,7 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         }
       },
       () => (tree: HastRoot, file: VFile) => {
-        if (file.data.citationsDisabled) return
+        if (file.data.citationsDisabled || !file.data.hasCitationSyntax) return
         visit(tree, (node, _index, parent) => {
           if (!isElement(node) || !checkBib(node) || !isElement(parent)) return
           node.properties['data-bib'] = true
@@ -677,7 +712,7 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         })
       },
       () => (tree: HastRoot, file: VFile) => {
-        if (file.data.citationsDisabled) return
+        if (file.data.citationsDisabled || !file.data.hasCitationSyntax) return
         normalizeCitationBibliography(tree)
       },
     ],
