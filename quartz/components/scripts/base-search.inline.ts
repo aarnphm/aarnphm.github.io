@@ -1,3 +1,4 @@
+import { isRecord } from '../../util/type-guards'
 import { SemanticClient } from './semantic.inline'
 
 type SearchMode = 'lexical' | 'semantic'
@@ -17,7 +18,10 @@ let shared: SharedSemantic | null = null
 async function manifestIds(manifest: string): Promise<string[]> {
   const res = await fetch(manifest)
   if (!res.ok) throw new Error(`failed to load ${manifest}: ${res.status}`)
-  return ((await res.json()) as { ids: string[] }).ids
+  const data: unknown = await res.json()
+  if (!isRecord(data) || !Array.isArray(data.ids) || !data.ids.every(id => typeof id === 'string'))
+    throw new Error('The semantic index has no valid note inventory.')
+  return data.ids
 }
 
 function sharedSemantic(manifest: string): SharedSemantic {
@@ -49,30 +53,64 @@ function storeMode(mode: SearchMode) {
   } catch {}
 }
 
-function setupBaseSearch() {
+function setupBaseSearch(): (() => void) | undefined {
   const searchInput = document.querySelector<HTMLInputElement>('#base-search-input')
   const bar = document.querySelector<HTMLElement>('#base-search-bar')
-  if (!searchInput || !bar) return
+  const root = document.querySelector<HTMLElement>('.main-col > .base-view')
+  if (!searchInput || !bar || !root) return
+  let active = true
+  let semanticNotice = ''
 
   const items: HTMLElement[] = []
-  for (const row of document.querySelectorAll<HTMLTableRowElement>('table.base-table tbody tr')) {
+  for (const row of root.querySelectorAll<HTMLTableRowElement>('table.base-table tbody tr')) {
     if (!row.classList.contains('base-group-header')) items.push(row)
   }
-  for (const li of document.querySelectorAll<HTMLLIElement>('.base-list > li')) items.push(li)
-  for (const card of document.querySelectorAll<HTMLElement>('.base-card')) items.push(card)
+  for (const li of root.querySelectorAll<HTMLLIElement>('.base-list > li')) items.push(li)
+  for (const card of root.querySelectorAll<HTMLElement>('.base-card')) items.push(card)
 
-  const listGroups = document.querySelectorAll<HTMLElement>('.base-list-group')
-  const cardGroups = document.querySelectorAll<HTMLElement>('.base-card-group')
-  const tableGroupHeaders = document.querySelectorAll<HTMLTableRowElement>('tr.base-group-header')
-  const kanbanColumns = document.querySelectorAll<HTMLElement>('.base-kanban-column')
+  const listGroups = root.querySelectorAll<HTMLElement>('.base-list-group, .base-calendar-group')
+  const cardGroups = root.querySelectorAll<HTMLElement>('.base-card-group')
+  const tableGroupHeaders = root.querySelectorAll<HTMLTableRowElement>('tr.base-group-header')
+  const kanbanColumns = root.querySelectorAll<HTMLElement>('.base-kanban-column')
 
   const slugOf = (item: HTMLElement) =>
-    item.querySelector<HTMLElement>('a[data-slug]')?.dataset.slug
+    item.dataset.baseSlug ?? item.querySelector<HTMLElement>('a[data-slug]')?.dataset.slug
   const isShown = (item: HTMLElement) => item.style.display !== 'none'
   // Only sibling lists without header rows can be reordered; grouped tables keep their rows in place.
   const reorderable = (item: HTMLElement) => !(item instanceof HTMLTableRowElement)
   const originalIndex = new Map<HTMLElement, number>()
   items.forEach((item, index) => originalIndex.set(item, index))
+  const scoreLabels = new Map<HTMLElement, { label: HTMLElement; title: HTMLElement }>()
+
+  const clearScore = (item: HTMLElement) => {
+    delete item.dataset.semanticScore
+    const score = scoreLabels.get(item)
+    if (!score) return
+    score.label.remove()
+    score.title.replaceWith(...score.title.childNodes)
+    scoreLabels.delete(item)
+  }
+
+  const showScore = (item: HTMLElement, score: number) => {
+    const link =
+      item.querySelector<HTMLElement>('.base-card-title-link') ??
+      item.querySelector<HTMLElement>('a[data-slug]')
+    if (!link) return
+    let elements = scoreLabels.get(item)
+    if (!elements) {
+      const title = document.createElement('div')
+      title.className = 'base-semantic-title'
+      const label = document.createElement('span')
+      label.className = 'base-semantic-score'
+      link.before(title)
+      title.append(link, label)
+      elements = { label, title }
+      scoreLabels.set(item, elements)
+    }
+    const percentage = Math.round(Math.max(-1, Math.min(1, score)) * 100)
+    elements.label.textContent = `${percentage}% similarity`
+    elements.label.title = `Cosine similarity to your query: ${score.toFixed(3)}`
+  }
   // Grouped views (by year, by category) keep their groups; semantic mode lifts the group that
   // holds the best hit, otherwise the top result can sit several headers down the page.
   const groups: HTMLElement[] = [...listGroups, ...cardGroups]
@@ -113,6 +151,19 @@ function setupBaseSearch() {
       const empty = column.querySelector<HTMLElement>('.base-kanban-column-empty')
       if (empty) empty.hidden = count > 0
     }
+    if (root.dataset.baseViewType !== 'map') {
+      const uniqueSlugs = (nodes: HTMLElement[]) =>
+        new Set(nodes.map(item => slugOf(item) ?? item)).size
+      document.dispatchEvent(
+        new CustomEvent('base-search-results', {
+          detail: {
+            visible: uniqueSlugs(items.filter(isShown)),
+            total: uniqueSlugs(items),
+            notice: semanticNotice,
+          },
+        }),
+      )
+    }
   }
 
   const bySibling = (nodes: Iterable<HTMLElement>) => {
@@ -136,7 +187,7 @@ function setupBaseSearch() {
   const showAll = () => {
     for (const item of items) {
       item.style.display = ''
-      delete item.dataset.semanticScore
+      clearScore(item)
     }
     restoreOrder()
     collapseGroups()
@@ -149,6 +200,7 @@ function setupBaseSearch() {
       return
     }
     for (const item of items) {
+      clearScore(item)
       const text = item.textContent?.toLowerCase() || ''
       item.style.display = text.includes(query) ? '' : 'none'
     }
@@ -164,10 +216,11 @@ function setupBaseSearch() {
       const score = slug ? scores.get(slug) : undefined
       item.style.display = score === undefined ? 'none' : ''
       if (score === undefined) {
-        delete item.dataset.semanticScore
+        clearScore(item)
         continue
       }
       item.dataset.semanticScore = score.toFixed(3)
+      showScore(item, score)
       if (reorderable(item)) ranked.push(item)
       const group = item.closest<HTMLElement>('.base-card-group, .base-list-group')
       if (group) groupBest.set(group, Math.max(groupBest.get(group) ?? -Infinity, score))
@@ -192,8 +245,10 @@ function setupBaseSearch() {
   let semanticState: SemanticState = 'idle'
   let searchSeq = 0
   let debounce: ReturnType<typeof setTimeout> | undefined
+  let coverage: Promise<boolean> | undefined
 
   const setSemanticState = (state: SemanticState) => {
+    if (!active) return
     semanticState = state
     if (status) {
       status.dataset.state = state
@@ -201,12 +256,13 @@ function setupBaseSearch() {
         state === 'loading'
           ? 'loading the semantic model'
           : state === 'unavailable'
-            ? 'semantic search unavailable'
+            ? semanticNotice || 'semantic search unavailable'
             : ''
     }
     const semanticButton = modeButtons.find(button => button.dataset.mode === 'semantic')
     if (semanticButton) {
       semanticButton.disabled = state === 'unavailable'
+      semanticButton.title = semanticNotice
       // The icon spins while the encoder loads; the bar has no room for a text label.
       semanticButton.classList.toggle('is-loading', state === 'loading')
       semanticButton.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false')
@@ -223,11 +279,32 @@ function setupBaseSearch() {
   }
 
   const ensureSemantic = async (): Promise<string[] | null> => {
-    if (!manifest) return null
-    const semantic = sharedSemantic(manifest)
+    if (!manifest || semanticState === 'unavailable') return null
     if (semanticState !== 'ready') setSemanticState('loading')
     try {
+      if (bar.closest<HTMLElement>('[data-base-query]')?.dataset.baseQueryModified === 'true') {
+        coverage ??= manifestIds(manifest).then(ids => {
+          const indexed = new Set(ids)
+          return items.every(item => {
+            const slug = slugOf(item)
+            return slug !== undefined && indexed.has(slug)
+          })
+        })
+        const covered = await coverage
+        if (!active) return null
+        if (!covered) {
+          semanticNotice =
+            'Using full-text search because this query includes notes outside the semantic index.'
+          setSemanticState('unavailable')
+          mode = 'lexical'
+          updateModeUI()
+          filterLexical()
+          return null
+        }
+      }
+      const semantic = sharedSemantic(manifest)
       const ids = await semantic.ids
+      if (!active) return null
       setSemanticState('ready')
       return ids
     } catch (err) {
@@ -259,7 +336,9 @@ function setupBaseSearch() {
       const floor = (semantic[0]?.score ?? 0) - SEMANTIC_TAIL
       for (const hit of semantic) {
         const slug = ids[hit.id]
-        if (slug && hit.score >= floor && !scores.has(slug)) scores.set(slug, hit.score)
+        if (slug && Number.isFinite(hit.score) && hit.score >= floor && !scores.has(slug)) {
+          scores.set(slug, hit.score)
+        }
       }
       applySemantic(scores)
     } catch (err) {
@@ -289,6 +368,8 @@ function setupBaseSearch() {
 
   const handleInput = () => {
     clearTimeout(debounce)
+    searchSeq++
+    for (const item of items) clearScore(item)
     if (mode === 'semantic' && searchInput.value.trim().length > 0) {
       debounce = setTimeout(search, DEBOUNCE_MS)
     } else {
@@ -333,6 +414,7 @@ function setupBaseSearch() {
   document.addEventListener('keydown', handleKeydown)
   bar.addEventListener('click', handleModeClick)
 
+  setSemanticState('idle')
   if (manifest) {
     if (shared?.manifest === manifest) setSemanticState('ready')
     if (loadStoredMode() === 'semantic') {
@@ -343,15 +425,26 @@ function setupBaseSearch() {
   updateModeUI()
   search()
 
-  window.addCleanup?.(() => {
+  return () => {
+    active = false
     clearTimeout(debounce)
     searchSeq++
+    for (const item of items) clearScore(item)
     searchInput.removeEventListener('input', handleInput)
     document.removeEventListener('keydown', handleKeydown)
     bar.removeEventListener('click', handleModeClick)
-  })
+  }
 }
 
 document.addEventListener('nav', () => {
-  setupBaseSearch()
+  let cleanup = setupBaseSearch()
+  const refresh = () => {
+    cleanup?.()
+    cleanup = setupBaseSearch()
+  }
+  document.addEventListener('base-content-changed', refresh)
+  window.addCleanup(() => {
+    document.removeEventListener('base-content-changed', refresh)
+    cleanup?.()
+  })
 })

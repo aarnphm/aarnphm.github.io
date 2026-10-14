@@ -217,14 +217,16 @@ export function renderDocumentPreview(
   link.href = href
   const frame = el('div', 'document-popover-frame')
   frame.ariaHidden = 'true'
+  const surface = el('div', 'document-popover-surface')
   const miniature =
     preview.type === 'canvas'
       ? canvasMiniature(preview)
       : preview.sample
         ? baseMiniature(preview.sample)
         : null
-  if (miniature) frame.appendChild(miniature)
+  if (miniature) surface.appendChild(miniature)
   else frame.classList.add('is-empty')
+  frame.appendChild(surface)
 
   const badge = el('span', 'document-popover-badge')
   badge.appendChild(
