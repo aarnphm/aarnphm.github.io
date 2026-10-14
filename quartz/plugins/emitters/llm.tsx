@@ -26,7 +26,7 @@ export function llmsIndex(baseUrl: string, content: string = ''): string {
 
 ${content ? `${content}\n` : ''}---
 
-Use this site when a task needs Aaron's published notes, an exact Markdown page, or source-backed search across the garden. Use the MCP server for semantic search and retrieval. Use the Markdown alternate for one known page. Cite the canonical HTML URL when presenting material to a reader.
+Use this site when a task needs Aaron's published notes, an exact Markdown page, or source-backed search across the garden. Use the MCP server for lexical search and retrieval. Use the Markdown alternate for one known page. Cite the canonical HTML URL when presenting material to a reader.
 
 ## When to use this site
 

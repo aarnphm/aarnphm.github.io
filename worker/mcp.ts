@@ -2,7 +2,6 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { McpAgent } from 'agents/mcp'
 import { z } from 'zod'
 import { MCP_SERVER_INFO } from './mcp-server-card'
-import { semanticSearch } from './semantic'
 import { isRecord } from './type-guards'
 
 type ContentIndexEntry = {
@@ -17,16 +16,20 @@ type ContentIndexEntry = {
   fileName: string
   date?: string
   description?: string
+  protected?: boolean
 }
 
 type SimplifiedIndex = Record<string, ContentIndexEntry>
 type SearchIndexManifest = { kind: 'quartz-search-index-v1'; chunks: string[] }
+type AssetFetcher = { fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> }
 
 const INDEX_PATH = '/static/searchIndex.json'
 
-async function fetchAssetText(path: string): Promise<string> {
+async function fetchAssetText(path: string, assets?: AssetFetcher): Promise<string> {
   const u = new URL(path.startsWith('/') ? path : `/${path}`, 'https://aarnphm.xyz')
-  const res = await fetch(u.toString(), { method: 'GET' })
+  const res = assets?.fetch
+    ? await assets.fetch(new Request(u.toString(), { method: 'GET' }))
+    : await fetch(u.toString(), { method: 'GET' })
   if (!res.ok) throw new Error(`asset ${u.pathname} ${res.status}`)
   return await res.text()
 }
@@ -46,16 +49,16 @@ function isSearchIndexManifest(value: unknown): value is SearchIndexManifest {
   )
 }
 
-async function loadIndex(): Promise<SimplifiedIndex> {
+async function loadIndex(assets?: AssetFetcher): Promise<SimplifiedIndex> {
   if (cachedIndex && Date.now() - cachedIndex.ts < 60_000) return cachedIndex.data
-  const txt = await fetchAssetText(INDEX_PATH)
+  const txt = await fetchAssetText(INDEX_PATH, assets)
   const parsed = JSON.parse(txt) as unknown
   const data = isSearchIndexManifest(parsed)
     ? Object.assign(
         {},
         ...(await Promise.all(
           parsed.chunks.map(async chunk => {
-            const chunkText = await fetchAssetText(`/static/${chunk.replace(/^\/+/, '')}`)
+            const chunkText = await fetchAssetText(`/static/${chunk.replace(/^\/+/, '')}`, assets)
             return JSON.parse(chunkText) as SimplifiedIndex
           }),
         )),
@@ -66,6 +69,7 @@ async function loadIndex(): Promise<SimplifiedIndex> {
 }
 
 function ensureMdPath(p: string): string {
+  if (p === '/index') return '/llms.txt'
   if (p.endsWith('.md') || p.endsWith('.mdx') || p.endsWith('.txt')) return p
   return `${p}.md`
 }
@@ -215,54 +219,38 @@ export class Garden extends McpAgent<Env, Record<string, never>, Props> {
   async init() {
     this.server.tool(
       'search',
-      `semantic search over aaron's notes. returns ranked results by embedding similarity. use retrieve to read full content of hits.`,
+      `lexical search over aaron's notes. ranks text matches in titles, aliases, tags, descriptions, and content. use retrieve to read full content of hits.`,
       {
-        query: z.string().describe('Search query to find relevant content'),
-        limit: z.number().optional().describe('Maximum number of results to return (default: 8)'),
+        query: z.string().check(z.describe('Search query to find relevant content')),
+        limit: z
+          .optional(z.int().check(z.gte(1), z.lte(100)))
+          .check(z.describe('Maximum number of results to return (default: 8)')),
       },
       async (args: { query: string; limit?: number }) => {
-        const { query, limit = 8 } = args as { query: string; limit?: number }
+        const { query, limit = 8 } = args
         const base = getBaseUrl()
 
-        try {
-          const semanticResults = await semanticSearch(this.env, query, limit)
-
-          const idx = await loadIndex()
-          const results = semanticResults.map(({ slug, score }) => {
-            const entry = idx[slug]
-            const mdPath = ensureMdPath(`/${slug}`)
+        const idx = await loadIndex(this.env.ASSETS)
+        const results = Object.values(idx)
+          .filter(
+            e => e.slug !== 'stream' && !e.protected && /\.(md|base|canvas)$/.test(e.filePath),
+          )
+          .map(e => ({ e, score: scoreEntry(e, query) }))
+          .filter(({ score }) => score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, limit)
+          .map(({ e, score }) => {
+            const mdPath = ensureMdPath(`/${e.slug}`)
             return {
-              slug,
+              slug: e.slug,
               path: mdPath.replace(/^\//, ''),
               url: `${base}${mdPath}`,
-              title: entry?.title || slug,
+              title: e.title,
               score,
             }
           })
 
-          return { content: [{ type: 'text', text: JSON.stringify({ results }) }] }
-        } catch {
-          const idx = await loadIndex()
-          const ranked = Object.values(idx)
-            .map(e => ({ e, score: scoreEntry(e, query) }))
-            .filter(({ score }) => score > 0)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, limit)
-            .map(({ e, score }) => {
-              const mdPath = ensureMdPath(`/${e.slug}`)
-              return {
-                slug: e.slug,
-                path: mdPath.replace(/^\//, ''),
-                url: `${base}${mdPath}`,
-                title: e.title,
-                score,
-              }
-            })
-
-          return {
-            content: [{ type: 'text', text: JSON.stringify({ results: ranked, fallback: true }) }],
-          }
-        }
+        return { content: [{ type: 'text', text: JSON.stringify({ results, mode: 'lexical' }) }] }
       },
     )
 
@@ -272,14 +260,14 @@ export class Garden extends McpAgent<Env, Record<string, never>, Props> {
       {
         slug: z
           .string()
-          .describe("The slug of the content to retrieve (e.g., 'thoughts/attention')"),
+          .check(z.describe("The slug of the content to retrieve (e.g., 'thoughts/attention')")),
       },
       async (args: { slug: string }) => {
         const { slug } = args as { slug: string }
-        const mdPath = `/${slug}.md`
+        const mdPath = ensureMdPath(`/${slug}`)
         let text: string
         try {
-          text = await fetchAssetText(mdPath)
+          text = await fetchAssetText(mdPath, this.env.ASSETS)
         } catch {
           throw new Error(`not found: ${slug}`)
         }

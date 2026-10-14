@@ -335,7 +335,7 @@ export function apiDocumentation(baseUrl: string): string {
 <p>Request the <code>mcp</code> OAuth scope. Send JSON-RPC messages with <code>POST /mcp</code>, <code>Content-Type: application/json</code>, and <code>Accept: application/json, text/event-stream</code>. Initialization returns an <code>Mcp-Session-Id</code> header for later POST, GET, and DELETE requests.</p>
 <h2>Tools</h2>
 <ul>
-<li><code>search</code> finds notes by semantic and lexical relevance.</li>
+<li><code>search</code> finds notes by lexical relevance across titles, aliases, tags, descriptions, and content.</li>
 <li><code>retrieve</code> returns the full Markdown for a note slug.</li>
 </ul>
 <h2>Errors</h2>
