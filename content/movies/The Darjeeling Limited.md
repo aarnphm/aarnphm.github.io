@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/the-darjeeling-limited.jpg]]'
 rating: 7.2
 status: recurring
-studio: searchlight
+studio: searchlight pictures
 tags:
   - family
   - o/relationship

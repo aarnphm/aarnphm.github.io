@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/reality-bites.jpg]]'
 rating: 6.6
 status: recurring
-studio: universal
+studio: universal pictures
 tags:
   - o/life
   - o/relationship

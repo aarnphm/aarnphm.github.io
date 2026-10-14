@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/schindlers-list.jpg]]'
 rating: 9
 status: recurring
-studio: universal
+studio: universal pictures
 tags:
   - o/vintage
 title: Schindler's List

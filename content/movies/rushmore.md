@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/rushmore.jpg]]'
 rating: 7.6
 status: recurring
-studio: touchstone
+studio: touchstone pictures
 tags:
   - comedy
   - o/life

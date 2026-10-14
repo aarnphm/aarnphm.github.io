@@ -10,7 +10,7 @@ modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/the-day-of-the-jackal.jpg]]'
 rating: 7.8
 status: finished
-studio: universal
+studio: universal pictures
 tags:
   - seed
 title: The Day of the Jackal

@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/manchester-by-the-sea.jpg]]'
 rating: 8.6
 status: finished
-studio: amazon studios
+studio: amazon mgm studios
 tags:
   - family
   - r/psychology

@@ -12,7 +12,7 @@ modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/the-sting.jpg]]'
 rating: 8.2
 status: to watch
-studio: universal
+studio: universal pictures
 tags:
   - o/vintage
   - thriller

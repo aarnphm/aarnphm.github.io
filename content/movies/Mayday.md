@@ -14,7 +14,10 @@ posters: '[[movies/posters/mayday.jpg]]'
 rating: 7.6
 runtime: 110
 status: finished
-studio: maximum effort / skydance media / apple studios
+studio:
+  - maximum effort
+  - skydance media
+  - apple studios
 tags:
   - action
   - comedy

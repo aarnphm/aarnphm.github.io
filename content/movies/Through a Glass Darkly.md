@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:13 GMT-04:00
 posters: '[[movies/posters/through-a-glass-darkly.jpg]]'
 rating: 7.9
 status: to watch
-studio: Svensk Filmindustri
+studio: svensk filmindustri
 tags:
   - vintage
 title: Through a Glass Darkly

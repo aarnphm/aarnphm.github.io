@@ -18,7 +18,7 @@ modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/modern-love-2019-2021.jpg]]'
 rating: 7.9
 status: recurring
-studio: amazon studios
+studio: amazon mgm studios
 tags:
   - love
 title: Modern Love

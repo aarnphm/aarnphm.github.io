@@ -9,7 +9,7 @@ modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/the-master.jpg]]'
 rating: 7.1
 status: to watch
-studio: weinstein company
+studio: the weinstein company
 tags:
   - seed
 title: The Master

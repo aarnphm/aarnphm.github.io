@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/mirror.jpg]]'
 rating: 8
 status: to watch
-studio: Mosfilm
+studio: mosfilm
 tags:
   - vintage
   - o/life

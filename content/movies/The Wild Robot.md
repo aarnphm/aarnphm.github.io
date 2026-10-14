@@ -10,7 +10,7 @@ modified: 2026-06-05 15:08:13 GMT-04:00
 posters: '[[movies/posters/the-wild-robot.jpg]]'
 rating: 8.3
 status: finished
-studio: dreamworks
+studio: dreamworks animation
 tags:
   - animation
   - family

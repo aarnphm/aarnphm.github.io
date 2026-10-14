@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/zodiac.jpg]]'
 rating: 7.7
 status: to watch
-studio: paramount
+studio: paramount pictures
 tags:
   - thriller
   - r/psychology

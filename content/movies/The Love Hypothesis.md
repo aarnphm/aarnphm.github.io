@@ -12,7 +12,9 @@ posters: '[[movies/posters/the-love-hypothesis.jpg]]'
 rating: 5.8
 runtime: 112
 status: finished
-studio: amazon mgm studios / mrc
+studio:
+  - amazon mgm studios
+  - mrc
 tags:
   - romance
   - comedy

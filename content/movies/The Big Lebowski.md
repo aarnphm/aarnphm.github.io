@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/the-big-lebowski.jpg]]'
 rating: 8.1
 status: to watch
-studio: universal
+studio: universal pictures
 tags:
   - comedy
   - absurdism

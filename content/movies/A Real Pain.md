@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/a-real-pain.jpg]]'
 rating: 8
 status: finished
-studio: searchlight
+studio: searchlight pictures
 tags:
   - history
   - r/psychology

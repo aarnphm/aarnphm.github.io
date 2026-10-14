@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:20 GMT-04:00
 posters: '[[movies/posters/28-years-later.jpg]]'
 rating: 6.6
 status: finished
-studio: sony
+studio: columbia pictures
 tags:
   - p/scifi
   - thriller

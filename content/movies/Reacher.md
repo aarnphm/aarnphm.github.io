@@ -12,7 +12,10 @@ modified: 2026-09-18
 posters: '[[movies/posters/reacher.jpg]]'
 rating: 7.9
 status: recurring
-studio: amazon mgm studios / skydance television / paramount television studios
+studio:
+  - amazon mgm studios
+  - skydance television
+  - paramount television studios
 tags:
   - shows
   - action

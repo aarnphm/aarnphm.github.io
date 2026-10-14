@@ -10,7 +10,7 @@ modified: 2026-06-05 15:08:13 GMT-04:00
 posters: '[[movies/posters/la-la-land.jpg]]'
 rating: 8
 status: recurring
-studio: summit
+studio: summit entertainment
 tags:
   - love
 title: La La Land

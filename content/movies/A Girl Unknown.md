@@ -11,7 +11,10 @@ posters: '[[movies/posters/a-girl-unknown.jpg]]'
 rating: 8.2
 runtime: 128
 status: finished
-studio: pure light films / maneki films / memoria films
+studio:
+  - pure light films
+  - maneki films
+  - memoria films
 tags:
   - drama
 title: A Girl Unknown

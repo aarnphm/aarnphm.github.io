@@ -8,7 +8,7 @@ modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/here.jpg]]'
 rating: 6.9
 status: finished
-studio: sony
+studio: tristar pictures
 tags:
   - time
   - meta
