@@ -2,7 +2,13 @@ import { subscribeVisitorDaylight, type VisitorDaylight } from '../../util/visit
 import { trailClockRegion } from './clock-clearance'
 import { daylightTint, type DaylightTint } from './daylight-palette'
 import { groundObjectSelector } from './depth-order'
-import { trailOpeningCell, trailThemeDuration, type SceneReveal } from './scene-reveal'
+import {
+  trailOpeningCell,
+  trailRevealLimit,
+  trailRevealSoftness,
+  trailThemeDuration,
+  type SceneReveal,
+} from './scene-reveal'
 
 // The SVG stays the scene model: journeys, depth order, the pet and camp hints still read and
 // write it. This module rasterizes that model into textures and composites them with WebGL2, so
@@ -155,10 +161,26 @@ in vec2 maskUv;
 in vec2 clipUv;
 out vec4 color;
 float trailThreshold(float origin, float cellSize) {
-  vec2 cell = floor(clipUv * viewport / cellSize);
-  float noise = fract(dot(cell, vec2(0.754877666, 0.569840296)));
-  float distance = max(0.0, (origin - clipUv.y * viewport.y) / max(origin, 1.0));
-  return 0.82 * distance + 0.18 * noise;
+  vec2 point = clipUv * viewport;
+  float radius = cellSize * 0.5;
+  vec2 axial = vec2(point.x / sqrt(3.0) - point.y / 3.0, point.y * 2.0 / 3.0) / radius;
+  vec3 cube = vec3(axial, -axial.x - axial.y);
+  vec3 rounded = floor(cube + 0.5);
+  vec3 delta = abs(rounded - cube);
+  if (delta.x > delta.y && delta.x > delta.z) rounded.x = -rounded.y - rounded.z;
+  else if (delta.y > delta.z) rounded.y = -rounded.x - rounded.z;
+  float height = max(origin, 1.0);
+  float column = floor(rounded.x + rounded.y * 0.5);
+  float offset = fract(column * 0.754877666) * radius * 0.5;
+  float distance = max(0.0, height - rounded.y * radius * 1.5);
+  return (distance + offset) / (height + cellSize);
+}
+float trailAlpha(float progress, float origin, float cellSize) {
+  if (progress <= 0.0) return 0.0;
+  if (progress >= 1.0) return 1.0;
+  float threshold = trailThreshold(origin, cellSize);
+  float softness = float(${trailRevealSoftness}) / (max(origin, 1.0) + cellSize);
+  return smoothstep(threshold - softness, threshold + softness, progress);
 }
 void main() {
   // Masks hold premultiplied luminance, so this is luminance times alpha, as in SVG.
@@ -172,10 +194,10 @@ void main() {
     ready = texture(loadCoverage, (cell + 0.5) / vec2(textureSize(loadCoverage, 0))).r;
   }
   if (opening.x < 1.0) {
-    color *= step(trailThreshold(opening.y, opening.z), opening.x);
+    color *= trailAlpha(opening.x, opening.y, opening.z);
   }
   if (themeReveal.x > 0.0) {
-    float next = step(trailThreshold(themeReveal.z, themeReveal.w), themeReveal.y) * ready;
+    float next = trailAlpha(themeReveal.y, themeReveal.z, themeReveal.w) * ready;
     color *= themeReveal.x < 1.5 ? next : 1.0 - next;
   } else color *= ready;
   if (entry < 1.0) {
@@ -367,9 +389,10 @@ export function mountSceneCompositor(
     maxTexture = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number
     clipTextures.clear()
   }
-  const filter = () => {
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  const filter = (single = false) => {
+    const sampling = single ? gl.NEAREST : gl.LINEAR
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, sampling)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, sampling)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
   }
@@ -385,7 +408,7 @@ export function mountSceneCompositor(
     else {
       gl.texImage2D(gl.TEXTURE_2D, 0, single ? gl.R8 : gl.RGBA, format, gl.UNSIGNED_BYTE, source)
       allocations.set(target, { width: source.width, height: source.height, single })
-      filter()
+      filter(single)
     }
     return target
   }
@@ -1279,7 +1302,7 @@ export function mountSceneCompositor(
       gl.UNSIGNED_BYTE,
       coverage.cells,
     )
-    filter()
+    filter(true)
   }
   const paintPriority = (target: Run | Group) => {
     const owner = target.kind === 'group' ? target : target.owner
@@ -1303,11 +1326,8 @@ export function mountSceneCompositor(
     const cell = trailOpeningCell * resolution
     for (let index = 0; index < coverage.cells.length; index++) {
       if (coverage.cells[index]) continue
-      const x = index % coverage.width
       const y = Math.floor(index / coverage.width)
-      const noise = (x * 0.754877666 + y * 0.569840296) % 1
-      const distance = Math.max(0, (origin - (y + 1) * cell) / Math.max(origin, 1))
-      ceiling = Math.min(ceiling, 0.82 * distance + 0.18 * noise)
+      ceiling = Math.min(ceiling, trailRevealLimit((y + 1) * cell, origin, cell))
     }
     return Math.max(0, ceiling - 0.000001)
   }

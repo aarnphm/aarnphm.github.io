@@ -1,5 +1,6 @@
 import { Node } from 'hast'
 import { ComponentType, JSX } from 'preact'
+import type { FullSlug } from '../util/path'
 import { GlobalConfiguration } from '../cfg'
 import { QuartzPluginData } from '../plugins/vfile'
 import { BuildCtx } from '../util/ctx'
@@ -9,6 +10,7 @@ export type QuartzComponentProps = {
   ctx: BuildCtx
   externalResources: StaticResources
   fileData: QuartzPluginData
+  pageSlug?: FullSlug
   cfg: GlobalConfiguration
   children: (QuartzComponent | JSX.Element)[]
   tree: Node

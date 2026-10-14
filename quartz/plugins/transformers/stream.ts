@@ -5,7 +5,11 @@ import yaml from 'js-yaml'
 import type { FullSlug } from '../../util/path'
 import type { EncryptedPayload } from '../../util/protected'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-import { processWikilinksToHtml, renderLatexInString } from '../../util/description'
+import {
+  processWikilinksToHtml,
+  renderDescriptionHtml,
+  renderLatexInString,
+} from '../../util/description'
 
 export type StreamMetadata = Record<string, unknown>
 
@@ -438,7 +442,7 @@ export const Stream: QuartzTransformerPlugin = () => {
               }
               const fallbackDescriptionHtml =
                 description && !entry.descriptionHtml
-                  ? renderLatexInString(processWikilinksToHtml(description, currentSlug))
+                  ? renderDescriptionHtml(description, currentSlug)
                   : undefined
 
               delete cleanMetadata.date

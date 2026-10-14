@@ -3,15 +3,11 @@ import { toString } from 'hast-util-to-string'
 import readingTime, { ReadTimeResults } from 'reading-time'
 import { i18n } from '../../i18n'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-import { processWikilinksToHtml, renderLatexInString } from '../../util/description'
+import { renderDescriptionHtml } from '../../util/description'
 import { escapeHTML } from '../../util/escape'
 import { releasedOnReload } from '../../util/module-caches'
 import { simplifySlug, type FullSlug, type SimpleSlug } from '../../util/path'
-import {
-  stripWikilinkFormatting,
-  extractWikilinks,
-  resolveWikilinkTarget,
-} from '../../util/wikilinks'
+import { extractWikilinks, resolveWikilinkTarget } from '../../util/wikilinks'
 
 export interface Options {
   descriptionLength: number
@@ -77,7 +73,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
               typeof file.data.frontmatter?.description === 'string'
                 ? file.data.frontmatter.description
                 : undefined
-            let frontMatterDescription = rawFrontMatterDescription
+            const frontMatterDescription = rawFrontMatterDescription
 
             // Extract and track wikilinks from frontmatter description
             if (typeof frontMatterDescription === 'string') {
@@ -88,13 +84,6 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
                   descriptionLinks.add(simplifySlug(resolved.slug))
                 }
               }
-            }
-
-            if (opts.replaceExternalLinks) {
-              frontMatterDescription = frontMatterDescription?.replace(
-                urlRegex,
-                '$<domain>' + '$<path>',
-              )
             }
 
             const processDescription = (desc: string): string => {
@@ -124,9 +113,8 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
                 : finalDesc
             }
 
-            // Process frontmatter description with wikilinks converted to HTML and LaTeX rendered
-            let processedFrontMatterDesc = frontMatterDescription
-              ? renderLatexInString(processWikilinksToHtml(frontMatterDescription, currentSlug))
+            const processedFrontMatterDesc = frontMatterDescription
+              ? renderDescriptionHtml(frontMatterDescription, currentSlug)
               : undefined
 
             const cacheKey = textCacheKey(file.value, currentSlug)
@@ -144,21 +132,8 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
               }
             }
 
-            // For length calculation and truncation, use plain text
-            const plainTextForProcessing = frontMatterDescription
-              ? stripWikilinkFormatting(frontMatterDescription)
-              : text
-
-            const processedPlainDesc = processDescription(plainTextForProcessing)
-
-            // If we had a frontmatter description, truncate the HTML version to match processed length
-            if (
-              processedFrontMatterDesc &&
-              processedPlainDesc.length < plainTextForProcessing.length
-            ) {
-              // Description was truncated, apply same truncation to HTML version
-              processedFrontMatterDesc = processDescription(processedFrontMatterDesc)
-            }
+            // Authored descriptions stay intact; length limits apply to generated body excerpts.
+            const processedPlainDesc = processDescription(text)
 
             file.data.description =
               processedFrontMatterDesc ||
@@ -180,8 +155,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
                   descriptionLinks.add(simplifySlug(resolved.slug))
                 }
               }
-              // Convert wikilinks to HTML and render LaTeX in abstract
-              abstractText = renderLatexInString(processWikilinksToHtml(abstractText, currentSlug))
+              abstractText = renderDescriptionHtml(abstractText, currentSlug)
             }
 
             file.data.abstract = abstractText ?? processDescription(text)

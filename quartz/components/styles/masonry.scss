@@ -11,6 +11,10 @@
   .page-footer {
     display: none;
   }
+
+  .page-content {
+    margin-bottom: 0;
+  }
 }
 
 .masonry-container {
@@ -30,6 +34,23 @@
   width: 100%;
   column-width: clamp(8.5rem, 18vw, 16rem);
   column-gap: var(--masonry-gap);
+
+  &[data-masonry-mode='chaos'] {
+    position: relative;
+    column-width: auto;
+    column-count: auto;
+    min-height: 100vh;
+
+    > .masonry-image {
+      display: none;
+      position: absolute;
+      margin: 0;
+
+      &[data-positioned] {
+        display: block;
+      }
+    }
+  }
 }
 
 .masonry-image {
@@ -40,7 +61,68 @@
   break-inside: avoid;
   object-fit: contain;
   overflow: clip;
+  cursor: default;
+}
+
+.masonry-mode-toggle {
+  position: fixed;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: var(--z-sticky);
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
   cursor: pointer;
+  touch-action: manipulation;
+
+  &[hidden] {
+    display: none;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+
+  .masonry-chaos-dots {
+    display: none;
+  }
+
+  &[aria-pressed='true'] {
+    .masonry-tidy-dots {
+      display: none;
+    }
+
+    .masonry-chaos-dots {
+      display: initial;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dark);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--dark);
+    }
+  }
+
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+    }
+  }
 }
 
 .masonry-caption-modal {

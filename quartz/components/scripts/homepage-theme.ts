@@ -1,4 +1,4 @@
-import { trailOpeningCell, trailThemeDuration } from '../visitor-trail/scene-reveal'
+import { createTrailRevealMask, trailThemeDuration } from '../visitor-trail/scene-reveal'
 
 // The old page is a snapshot; the new page, including the trail canvas, stays live.
 // Its mask follows the compositor's existing reveal instead of starting another clock.
@@ -68,30 +68,13 @@ export function mountHomepageTheme(signal: AbortSignal) {
     const origin = rect
       ? Math.min(Number(scene?.dataset.trailOpeningOrigin) || rect.height, rect.height)
       : window.innerHeight
-    const cell = trailOpeningCell
-    const offsetX = ((((rect?.left ?? 0) % cell) + cell) % cell) - cell
-    const offsetY = ((((rect?.top ?? 0) % cell) + cell) % cell) - cell
-    const mask = document.createElement('canvas')
-    mask.width = Math.ceil((window.innerWidth - offsetX) / cell)
-    mask.height = Math.ceil((window.innerHeight - offsetY) / cell)
-    // This small bitmap is encoded each frame, so keep its pixels ready for readback.
-    const paint = mask.getContext('2d', { willReadFrequently: true })
-    if (!paint) {
+    const mask = createTrailRevealMask(document, window.innerWidth, window.innerHeight, origin, {
+      x: -(rect?.left ?? 0),
+      y: -(rect?.top ?? 0),
+    })
+    if (!mask) {
       update()
       return
-    }
-    const pixels = paint.createImageData(mask.width, mask.height)
-    const thresholds = new Float32Array(mask.width * mask.height)
-    for (let y = 0; y < mask.height; y++) {
-      const localY = y * cell + offsetY - (rect?.top ?? 0)
-      const distance = Math.max(0, (origin - localY) / Math.max(1, origin))
-      for (let x = 0; x < mask.width; x++) {
-        const localX = x * cell + offsetX - (rect?.left ?? 0)
-        const value =
-          Math.floor(localX / cell) * 0.754877666 + Math.floor(localY / cell) * 0.569840296
-        const noise = value - Math.floor(value)
-        thresholds[y * mask.width + x] = 0.82 * distance + 0.18 * noise
-      }
     }
 
     const style = document.createElement('style')
@@ -103,18 +86,16 @@ export function mountHomepageTheme(signal: AbortSignal) {
       update()
       return
     }
-    rule.style.maskSize = `${mask.width * cell}px ${mask.height * cell}px`
-    rule.style.maskPosition = `${offsetX}px ${offsetY}px`
+    rule.style.maskRepeat = 'no-repeat'
     let painted = -1
     const draw = (progress: number) => {
       const step = Math.floor(progress * 240)
       if (painted === step) return
       painted = step
-      for (let i = 0; i < thresholds.length; i++) {
-        pixels.data[i * 4 + 3] = thresholds[i] <= progress ? 0 : 255
-      }
-      paint.putImageData(pixels, 0, 0)
-      rule.style.maskImage = `url("${mask.toDataURL()}")`
+      const drawn = mask.draw(progress, true)
+      rule.style.maskImage = drawn.image
+      rule.style.maskSize = drawn.size
+      rule.style.maskPosition = drawn.position
     }
     draw(0)
     if (followsScene && scene && !opening) scene.dataset.trailThemeStarted = String(started)

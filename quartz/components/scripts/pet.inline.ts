@@ -238,6 +238,7 @@ const render = () => {
   svg.toggleAttribute('data-reading', document.documentElement.getAttribute('reader-mode') === 'on')
   // On the rail it faces the page, its back to the pole.
   root.style.setProperty('--pet-face', String(carry ? 1 : face))
+  syncTrailArt()
   root.dataset.bubble = center().y - height(perch?.scale) / 2 < 64 ? 'below' : 'above'
   placeBubble()
   renderFriend()
@@ -933,11 +934,31 @@ const trailFootAt = (current: TrailWalk, time: number): TrailFoot => {
   }
 }
 let trailGuardTimer = 0
+let trailPaintFrame = 0
 let trailActor: SVGGElement | null = null
+let trailArt: SVGGElement | null = null
 let trailYieldEpisode = 0
+const syncTrailArt = () => {
+  if (!trailArt || !svg) return
+  for (const name of trailArt.getAttributeNames())
+    if (name.startsWith('data-') && !svg.hasAttribute(name)) trailArt.removeAttribute(name)
+  for (const attribute of svg.attributes)
+    if (
+      attribute.name.startsWith('data-') &&
+      trailArt.getAttribute(attribute.name) !== attribute.value
+    )
+      trailArt.setAttribute(attribute.name, attribute.value)
+  for (const property of ['--pet-lx', '--pet-ly', '--pet-tilt']) {
+    const value = root?.style.getPropertyValue(property) ?? ''
+    if (trailArt.style.getPropertyValue(property) !== value)
+      trailArt.style.setProperty(property, value)
+  }
+}
 const stopTrailGuard = () => {
   window.clearTimeout(trailGuardTimer)
   trailGuardTimer = 0
+  cancelAnimationFrame(trailPaintFrame)
+  trailPaintFrame = 0
   if (root) {
     root.dataset.trailGuard = 'paused'
     root.dataset.yieldingTo = ''
@@ -951,32 +972,75 @@ const clearTrailActor = () => {
   stopTrailGuard()
   trailActor?.remove()
   trailActor = null
+  trailArt = null
+  root?.removeAttribute('data-trail-paint')
 }
 const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
   if (!currentTrailPath(path)) return clearTrailActor()
   const scene = path.ownerSVGElement
   const matrix = scene ? trailScreenMatrix(scene) : null
-  if (!scene || !matrix) return
-  if (trailActor?.ownerSVGElement !== scene) {
+  if (!scene || !matrix || !svg || !root) return
+  const drawing = scene.closest<HTMLElement>('.trail-scene')
+  const span = trailData(path.dataset.petAlpineSpan)
+  const alpine = pair(span) && foot.progress <= span[1]
+  let changed = false
+  if (trailActor?.ownerSVGElement !== scene || !trailActor.isConnected) {
     trailActor?.remove()
     trailActor = document.createElementNS('http://www.w3.org/2000/svg', 'g')
     trailActor.dataset.trailCollision = 'pet'
     trailActor.dataset.collisionId = 'pet-blob'
+    trailActor.dataset.trailPet = ''
     trailActor.setAttribute('aria-hidden', 'true')
+    trailArt = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+    trailArt.setAttribute('class', 'pet-svg')
+    trailArt.innerHTML = svg.innerHTML
+    trailActor.append(trailArt)
     scene.append(trailActor)
+    root.dataset.trailPaint = 'scene'
+    syncTrailArt()
+    changed = true
   }
+  if (trailActor.dataset.petAlpine !== String(alpine)) {
+    trailActor.dataset.petAlpine = String(alpine)
+    changed = true
+  }
+  if (changed) drawing?.dispatchEvent(new Event('trail:depth-change'))
+  const parent = trailActor.parentElement
+  const ground = parent instanceof SVGGraphicsElement ? trailScreenMatrix(parent) : matrix
+  if (!ground) return
   const point = new DOMPoint(foot.x - window.scrollX, foot.y - window.scrollY).matrixTransform(
-    matrix.inverse(),
+    ground.inverse(),
   )
-  trailActor.setAttribute('transform', `translate(${point.x.toFixed(2)} ${point.y.toFixed(2)})`)
-  trailActor.dataset.collisionRadius = String(
-    (width * 0.35 * foot.scale) / Math.hypot(matrix.a, matrix.b),
-  )
+  const scale = foot.scale / Math.hypot(ground.a, ground.b)
+  const transform = `translate(${point.x.toFixed(2)} ${point.y.toFixed(2)})`
+  if (trailActor.getAttribute('transform') !== transform)
+    trailActor.setAttribute('transform', transform)
+  const pose = `translate(0 ${-edgeY.stand * unit * scale}) scale(${unit * scale * face} ${unit * scale})`
+  if (trailArt?.getAttribute('transform') !== pose) trailArt?.setAttribute('transform', pose)
+  trailActor.dataset.collisionRadius = String(width * 0.35 * scale)
   trailActor.dataset.collisionActive = 'true'
   trailActor.dataset.groundX = String(point.x)
   trailActor.dataset.groundY = String(point.y)
   trailActor.dataset.progress = foot.progress.toFixed(6)
   trailActor.dataset.scale = String(foot.scale)
+}
+const paintTrail = (animation: Animation, path: SVGPathElement) => {
+  const paint = () => {
+    trailPaintFrame = 0
+    if (hop !== animation || !trailWalk || !root || document.hidden) return
+    if (!currentTrailPath(path) || trailHost(path)?.hidden !== false) return pauseTrail()
+    const time = Number(animation.currentTime)
+    const foot = trailFootAt(trailWalk, time)
+    const ahead = trailFootAt(trailWalk, time + 120)
+    const dx = ahead.x - foot.x
+    if (Math.abs(dx) > 0.25 * foot.scale) {
+      face = dx > 0 ? -1 : 1
+      root.style.setProperty('--pet-face', String(face))
+    }
+    reserveTrailFoot(path, foot)
+    trailPaintFrame = requestAnimationFrame(paint)
+  }
+  paint()
 }
 const guardTrail = (animation: Animation, path: SVGPathElement) => {
   stopTrailGuard()
@@ -1207,12 +1271,10 @@ function follow(feet: TrailFoot[], el: SVGPathElement) {
   stopTrailGuard()
   hop?.cancel()
   hop = null
-  const from = feet[0]
   const to = feet[feet.length - 1]
   perch = { el, kind: 'stand', t: 0, foot: to, scale: to.scale, progress: to.progress }
   doc = placeOn(perch)
   observePerch()
-  if (Math.abs(to.x - from.x) > 2) face = to.x > from.x ? -1 : 1
   let duration = 0
   const times = [0]
   for (let k = 1; k < feet.length; k++) {
@@ -1238,6 +1300,7 @@ function follow(feet: TrailFoot[], el: SVGPathElement) {
   )
   hop = anim
   guardTrail(anim, el)
+  if (hop === anim) paintTrail(anim, el)
   anim.onfinish = () => {
     if (hop !== anim || !root || !doc) return
     stopTrailGuard()
@@ -1362,6 +1425,7 @@ function moveTo(next: Perch, how: 'chute' | 'stroll' | 'fade' | null = null) {
   afterMove = null
   if (!root) return
   if (!petTrail(next.el)) leaveTrail()
+  else clearTrailActor()
   root.hidden = false
   stopGround()
   gaze = ''
@@ -1566,6 +1630,7 @@ const railFor = (): Rail => {
 function startCarry() {
   if (!root || !doc) return
   rememberTrail()
+  clearTrailActor()
   const rect = root.getBoundingClientRect()
   hop?.cancel()
   hop = null
@@ -1690,6 +1755,13 @@ const watch = () => {
   root.style.setProperty('--pet-lx', lx)
   root.style.setProperty('--pet-ly', ly)
   root.style.setProperty('--pet-tilt', tilt)
+  syncTrailArt()
+  if (trailWalk && perch?.foot && !hop)
+    reserveTrailFoot(trailWalk.path, {
+      ...perch.foot,
+      scale: perch.scale ?? 1,
+      progress: perch.progress ?? 0,
+    })
 }
 
 // Triathlon panels open as windows over the page, unless set to full screen. The pet looks up at

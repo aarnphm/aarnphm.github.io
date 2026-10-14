@@ -22,36 +22,18 @@ import {
   normalizeRelativeURLs,
   resolveRelative,
 } from '../../util/path'
-import {
-  queryRecentNotes,
-  readRecentNotes,
-  recentNoteFromContent,
-  recentNotesStorageKey,
-  upsertRecentNote,
-  writeRecentNotes,
-  type RecentNote,
-} from '../../util/recent-notes'
 import { tokenizeTerm } from '../../util/search-text'
 import { registerEscapeHandler } from './escape-handler'
 import { currentNavSignal } from './nav-lifecycle'
-import { populateSearchIndex, querySearchIndex } from './search-index'
 import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
+import { siteSemantic } from './site-semantic'
 
 interface Item {
-  id: number
   slug: FullSlug
   name: string
-  title: string
-  content: string
-  aliases: string[]
-  target: string
 }
 
 const numSearchResults = 10
-
-const localStorageKey = recentNotesStorageKey
-let recentNotesCache: RecentNote[] | null = null
-let recentNotesWritePending = false
 
 function appendHighlightedText(parent: HTMLElement, searchTerm: string, text: string) {
   const terms = tokenizeTerm(searchTerm)
@@ -127,42 +109,6 @@ function appendTrustedSvg(parent: HTMLElement, svgMarkup: string) {
   template.innerHTML = svgMarkup
   const svg = template.content.firstElementChild
   if (svg) parent.append(svg)
-}
-
-function getRecents(): RecentNote[] {
-  recentNotesCache ??= readRecentNotes(localStorage, localStorageKey)
-  return recentNotesCache
-}
-
-function flushRecents() {
-  recentNotesWritePending = false
-  if (!recentNotesCache) return
-  writeRecentNotes(localStorage, recentNotesCache, localStorageKey)
-}
-
-function scheduleRecentsWrite() {
-  if (recentNotesWritePending) return
-  recentNotesWritePending = true
-  if (typeof window.requestIdleCallback === 'function') {
-    window.requestIdleCallback(flushRecents, { timeout: 1000 })
-  } else {
-    window.setTimeout(flushRecents, 0)
-  }
-}
-
-function setRecents(notes: RecentNote[]) {
-  recentNotesCache = notes
-  scheduleRecentsWrite()
-}
-
-function addToRecents(note: RecentNote) {
-  setRecents(upsertRecentNote(getRecents(), note))
-}
-
-function recentNoteFromCurrentPage(slug: FullSlug): RecentNote {
-  const heading = document.querySelector<HTMLElement>('article h1, h1')
-  const title = heading?.textContent?.trim() || document.title.trim()
-  return { slug, name: title || slug, title, aliases: [] }
 }
 
 const commentAuthorKey = 'comment-author'
@@ -409,8 +355,9 @@ document.addEventListener('nav', () => {
   )
 
   const currentSlug = getFullSlug(window)
-  const container = document.getElementById('palette-container')
-  if (!container) return
+  const containerElement = document.getElementById('palette-container')
+  if (!containerElement) return
+  const container = containerElement
 
   const bar = container.querySelector('#bar') as HTMLInputElement
   const output = container.getElementsByTagName('output')[0]
@@ -418,83 +365,69 @@ document.addEventListener('nav', () => {
   let currentHover: HTMLDivElement | null = null
   let previousFocus: HTMLElement | null = null
   let data: ContentIndex | null = null
-  let idDataMap: FullSlug[] = []
-  let idBySlug = new Map<FullSlug, number>()
   let isActive = true
   let queryGeneration = 0
   let commandHistory: CommandLocation[] = []
   let commandHistoryIndex = -1
-
-  addToRecents(recentNoteFromCurrentPage(currentSlug))
 
   window.addCleanup(() => {
     isActive = false
   })
 
   let contentDataReady: Promise<ContentIndex> | null = null
-  let searchDataReady: Promise<ContentIndex> | null = null
-
-  function hydrateRecentNotes(resolved: ContentIndex) {
-    const notes = getRecents()
-    let changed = false
-    const hydrated = notes.map(note => {
-      const fileData = resolved[note.slug]
-      if (!fileData) return note
-
-      const next = recentNoteFromContent(note.slug, fileData)
-      if (
-        next.name !== note.name ||
-        next.title !== note.title ||
-        next.aliases.join('\u0000') !== note.aliases.join('\u0000')
-      ) {
-        changed = true
-      }
-      return next
-    })
-    if (changed) setRecents(hydrated)
+  let quickOpenReady: ReturnType<typeof siteSemantic> | null = null
+  let quickOpenLoaded = false
+  let quickOpenUnavailable = false
+  let quickOpenTimer = 0
+  const progress = document.createElement('div')
+  progress.className = 'semantic-search-progress'
+  progress.setAttribute('role', 'progressbar')
+  progress.setAttribute('aria-label', 'Loading search')
+  bar.parentElement?.append(progress)
+  window.addCleanup(() => progress.remove())
+  function quickOpenProgress(loading: boolean) {
+    progress.setAttribute('aria-hidden', String(!loading))
+    progress.style.opacity = loading ? '1' : '0'
+    progress.style.width = loading ? '100%' : '0'
+    progress.style.animation = loading ? 'semantic-progress-sweep 2.5s linear infinite' : 'none'
   }
+  quickOpenProgress(false)
 
   function ensureContentData() {
     contentDataReady ??= fetchData.then(resolved => {
-      if (!isActive) return resolved
-      data = resolved
-      idDataMap = Object.keys(resolved).filter(isFullSlug)
-      idBySlug = new Map(idDataMap.map((slug, id) => [slug, id]))
-      hydrateRecentNotes(resolved)
-      if (!isActive) return resolved
-      if (
-        actionType === 'quick_open' &&
-        currentSearchTerm === '' &&
-        container?.classList.contains('active')
-      ) {
-        getRecentItems()
-      }
+      if (isActive) data = resolved
       return resolved
     })
     return contentDataReady
   }
 
-  function ensureSearchData() {
-    if (searchDataReady) return searchDataReady
-
-    const contentData = ensureContentData()
-    const searchData =
-      typeof fetchSearchData === 'undefined'
-        ? contentData
-        : fetchSearchData.catch(() => contentData)
-
-    searchDataReady = Promise.all([contentData, searchData]).then(
-      async ([resolved, searchData]) => {
-        if (!isActive) return resolved
-        await fillDocument(searchData)
-        return resolved
+  function ensureQuickOpen() {
+    quickOpenReady ??= Promise.all([ensureContentData(), siteSemantic()]).then(
+      ([, service]) => {
+        quickOpenLoaded = true
+        return service
+      },
+      error => {
+        quickOpenUnavailable = true
+        throw error
       },
     )
-    return searchDataReady
+    return quickOpenReady
+  }
+
+  function quickOpenStatus(message: string) {
+    currentHover = null
+    const status = document.createElement('p')
+    status.setAttribute('role', 'status')
+    status.textContent = message
+    output.replaceChildren(status)
   }
 
   function hidePalette() {
     queryGeneration += 1
+    window.clearTimeout(quickOpenTimer)
+    output.removeAttribute('aria-busy')
+    quickOpenProgress(false)
     container?.classList.remove('active')
     if (container?.matches(':popover-open')) container.hidePopover()
     if (bar) {
@@ -508,7 +441,6 @@ document.addEventListener('nav', () => {
     commandHistory = []
     commandHistoryIndex = -1
     syncPaletteHelper()
-    recentItems = []
     if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true })
     previousFocus = null
   }
@@ -551,8 +483,19 @@ document.addEventListener('nav', () => {
       bar.value = ''
       currentSearchTerm = ''
       syncPaletteHelper()
-      getRecentItems()
-      void ensureSearchData()
+      quickOpenStatus('Type a topic to search notes.')
+      if (!quickOpenLoaded && !quickOpenUnavailable) quickOpenProgress(true)
+      void ensureQuickOpen().then(
+        () => {
+          if (isActive && actionType === 'quick_open' && !currentSearchTerm)
+            quickOpenProgress(false)
+        },
+        () => {
+          if (isActive && container.classList.contains('active') && actionType === 'quick_open')
+            quickOpenStatus('Semantic search is unavailable. Use Ctrl+K for full-text search.')
+          quickOpenProgress(false)
+        },
+      )
     }
 
     bar?.focus()
@@ -764,16 +707,20 @@ document.addEventListener('nav', () => {
     return status
   }
 
-  const createActComponent = ({
-    name,
-    auxInnerHtml,
-    onClick,
-    keepOpen,
-    detail,
-    titlePrefixInnerHtml,
-    statusLabel,
-    statusTone,
-  }: Action) => {
+  const actionCache = new WeakMap<Action, HTMLDivElement>()
+  const createActComponent = (
+    {
+      name,
+      auxInnerHtml,
+      onClick,
+      keepOpen,
+      detail,
+      titlePrefixInnerHtml,
+      statusLabel,
+      statusTone,
+    }: Action,
+    query = currentSearchTerm,
+  ) => {
     const item = document.createElement('div')
     item.classList.add('suggestion-item')
     item.tabIndex = -1
@@ -788,7 +735,7 @@ document.addEventListener('nav', () => {
       appendTrustedSvg(prefix, titlePrefixInnerHtml)
       title.append(prefix)
     }
-    appendHighlightedText(title, currentSearchTerm, name)
+    appendHighlightedText(title, query, name)
     content.appendChild(title)
     if (detail) {
       const subscript = document.createElement('span')
@@ -813,6 +760,17 @@ document.addEventListener('nav', () => {
     return item
   }
 
+  function actionComponent(action: Action) {
+    if (currentSearchTerm) return createActComponent(action)
+    let item = actionCache.get(action)
+    if (!item) {
+      item = createActComponent(action, '')
+      actionCache.set(action, item)
+    }
+    item.classList.remove('focus')
+    return item
+  }
+
   function transitionCommandItems() {
     output.removeAttribute('data-palette-transition')
     void output.offsetHeight
@@ -830,14 +788,14 @@ document.addEventListener('nav', () => {
     if (acts.length === 0) {
       if (bar.matches(':focus') && currentSearchTerm === '') {
         output.append(
-          ...(actionType === 'command' ? COMMAND_ACTS : CONNECTOR_ACTS).map(createActComponent),
+          ...(actionType === 'command' ? COMMAND_ACTS : CONNECTOR_ACTS).map(actionComponent),
         )
       } else {
         const fallbackAction = actionType === 'command' ? COMMAND_ACTS[0] : CONNECTOR_ACTS[0]
-        if (fallbackAction) output.append(createActComponent(fallbackAction))
+        if (fallbackAction) output.append(actionComponent(fallbackAction))
       }
     } else {
-      output.append(...acts.map(createActComponent))
+      output.append(...acts.map(actionComponent))
     }
     setFocusFirstChild()
     if (transition) transitionCommandItems()
@@ -944,71 +902,6 @@ document.addEventListener('nav', () => {
     return true
   }
 
-  let recentItems: Item[] = []
-  function itemFromRecentNote(note: RecentNote, id: number): Item {
-    return {
-      id,
-      slug: note.slug,
-      name: note.name,
-      title: note.title,
-      content: '',
-      aliases: note.aliases,
-      target: '',
-    }
-  }
-
-  function itemFromContent(slug: FullSlug, fileData: ContentIndex[FullSlug], id: number): Item {
-    return {
-      id,
-      slug,
-      name: fileData.fileName,
-      title: fileData.title ?? '',
-      content: fileData.content ?? '',
-      aliases: fileData.aliases,
-      target: '',
-    }
-  }
-
-  function recentNoteItems(query: string) {
-    return queryRecentNotes(getRecents(), query, numSearchResults).map((note, index) => {
-      const fileData = data?.[note.slug]
-      const id = idBySlug.get(note.slug)
-      return fileData && id !== undefined
-        ? itemFromContent(note.slug, fileData, id)
-        : itemFromRecentNote(note, -index - 1)
-    })
-  }
-
-  function getRecentItems() {
-    if (data) hydrateRecentNotes(data)
-
-    if (output) {
-      output.replaceChildren()
-    }
-    currentHover = null
-
-    recentItems = recentNoteItems('')
-    if (data && recentItems.length < numSearchResults) {
-      const existingSlugs = new Set(recentItems.map(item => item.slug))
-      const availableSlugs = idDataMap.filter(slug => !existingSlugs.has(slug))
-      const needed = numSearchResults - recentItems.length
-
-      for (let i = 0; i < needed && availableSlugs.length > 0; i++) {
-        const randomIndex = Math.floor(Math.random() * availableSlugs.length)
-        const slug = availableSlugs[randomIndex]
-        const id = idBySlug.get(slug)
-        const fileData = data[slug]
-        if (id !== undefined && fileData) {
-          recentItems.push(itemFromContent(slug, fileData, id))
-        }
-        availableSlugs.splice(randomIndex, 1)
-      }
-    }
-
-    output.append(...recentItems.map(toHtml))
-    setFocusFirstChild()
-  }
-
   function eventTargetsCodeEditor(e: KeyboardEvent) {
     const target = e.target
     if (target instanceof Element && target.closest('.cm-editor')) return true
@@ -1095,9 +988,8 @@ document.addEventListener('nav', () => {
         e.preventDefault()
         currentHover!.click()
       } else {
-        const anchor = output.getElementsByClassName('suggestion-item')[0] as HTMLDivElement
         e.preventDefault()
-        anchor.click()
+        output.querySelector<HTMLDivElement>('.suggestion-item')?.click()
       }
     } else if (actionType === 'command' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
       if (navigateCommandHistory(e.key === 'ArrowLeft' ? -1 : 1)) e.preventDefault()
@@ -1165,41 +1057,42 @@ document.addEventListener('nav', () => {
   async function querySearch(currentSearchTerm: string, generation = queryGeneration) {
     const queryActionType = actionType
     if (actionType === 'quick_open') {
-      if (currentSearchTerm.trim() === '') {
-        getRecentItems()
-        await ensureContentData()
-        if (generation !== queryGeneration || queryActionType !== actionType) return
-        getRecentItems()
+      const query = currentSearchTerm.trim()
+      if (!query) {
+        output.removeAttribute('aria-busy')
+        quickOpenProgress(!quickOpenLoaded && !quickOpenUnavailable)
+        quickOpenStatus(
+          quickOpenUnavailable
+            ? 'Semantic search is unavailable. Use Ctrl+K for full-text search.'
+            : 'Type a topic to search notes.',
+        )
         return
       }
-
-      const cachedResults = recentNoteItems(currentSearchTerm)
-      if (cachedResults.length > 0) {
-        displayResults(cachedResults, currentSearchTerm)
+      output.setAttribute('aria-busy', 'true')
+      quickOpenProgress(true)
+      try {
+        const service = await ensureQuickOpen()
+        if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
+        const documents = await service.search(query, numSearchResults * 8)
+        if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
+        const items: Item[] = []
+        for (const document of documents) {
+          if (!isFullSlug(document.slug)) continue
+          const fileData = data?.[document.slug]
+          if (!fileData) continue
+          items.push({ slug: document.slug, name: fileData.title || fileData.fileName })
+          if (items.length === numSearchResults) break
+        }
+        output.removeAttribute('aria-busy')
+        quickOpenProgress(false)
+        displayResults(items, query)
+      } catch (error) {
+        if (generation !== queryGeneration || queryActionType !== actionType || !isActive) return
+        console.warn('[QuickOpen] semantic search failed:', error)
+        output.removeAttribute('aria-busy')
+        quickOpenProgress(false)
+        quickOpenStatus('Semantic search is unavailable. Use Ctrl+K for full-text search.')
       }
-
-      await ensureSearchData()
-      if (generation !== queryGeneration || queryActionType !== actionType) return
-      const searchResults = await querySearchIndex(currentSearchTerm, numSearchResults)
-      if (generation !== queryGeneration || queryActionType !== actionType) return
-
-      displayResults(
-        searchResults
-          .map(item => {
-            const target =
-              item.aliases.find(alias =>
-                alias.toLowerCase().includes(currentSearchTerm.toLowerCase()),
-              ) || ''
-            return { ...item, target }
-          })
-          .sort((a, b) => {
-            if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0
-            if (a?.target && !b?.target) return -1
-            if (!a?.target && b?.target) return 1
-            return 0
-          }),
-        currentSearchTerm,
-      )
     } else {
       const query = currentSearchTerm.toLowerCase().trim()
       const actions = actionType === 'command' ? COMMAND_ACTS : CONNECTOR_ACTS
@@ -1235,7 +1128,20 @@ document.addEventListener('nav', () => {
       syncPaletteHelper()
     }
     currentSearchTerm = actionType === 'command' ? commandSearchTerm(value) : value
-    await querySearch(currentSearchTerm, queryGeneration)
+    window.clearTimeout(quickOpenTimer)
+    if (actionType === 'quick_open' && currentSearchTerm.trim()) {
+      const query = currentSearchTerm
+      const generation = queryGeneration
+      quickOpenTimer = window.setTimeout(() => {
+        void querySearch(query, generation)
+      }, 150)
+    } else {
+      if (actionType !== 'quick_open') {
+        quickOpenProgress(false)
+        output.removeAttribute('aria-busy')
+      }
+      await querySearch(currentSearchTerm, queryGeneration)
+    }
   }
 
   function displayResults(finalResults: Item[], currentSearchTerm: string) {
@@ -1270,11 +1176,7 @@ document.addEventListener('nav', () => {
     noMatchEl.addEventListener('click', onNoMatchClick)
     window.addCleanup(() => noMatchEl.removeEventListener('click', onNoMatchClick))
     if (finalResults.length === 0) {
-      if (bar.matches(':focus') && currentSearchTerm === '') {
-        output.append(...recentItems.map(toHtml))
-      } else {
-        output.appendChild(noMatchEl)
-      }
+      output.appendChild(noMatchEl)
     } else {
       output.append(...finalResults.map(toHtml))
     }
@@ -1291,7 +1193,7 @@ document.addEventListener('nav', () => {
     currentHover = firstChild
   }
 
-  function toHtml({ name, slug, target, title: noteTitle, aliases }: Item) {
+  function toHtml({ name, slug }: Item) {
     const item = document.createElement('div')
     item.classList.add('suggestion-item')
     item.tabIndex = -1
@@ -1301,14 +1203,7 @@ document.addEventListener('nav', () => {
     content.classList.add('suggestion-content')
     const title = document.createElement('div')
     title.classList.add('suggestion-title')
-    appendHighlightedText(title, currentSearchTerm, target || name)
-    if (target) {
-      title.appendChild(document.createElement('br'))
-      const subscript = document.createElement('span')
-      subscript.className = 'subscript'
-      subscript.textContent = slug
-      title.appendChild(subscript)
-    }
+    appendHighlightedText(title, currentSearchTerm, name)
     content.appendChild(title)
 
     const aux = document.createElement('div')
@@ -1317,7 +1212,6 @@ document.addEventListener('nav', () => {
     item.append(content, aux)
 
     const onClick = () => {
-      addToRecents({ slug, name, title: noteTitle, aliases })
       window.spaNavigate(new URL(resolveRelative(currentSlug, slug), location.toString()))
       hidePalette()
     }
@@ -1347,11 +1241,30 @@ document.addEventListener('nav', () => {
   window.addCleanup(() => {
     document.removeEventListener('keydown', shortcutHandler)
     bar.removeEventListener('input', onType)
+    window.clearTimeout(quickOpenTimer)
   })
 
   registerEscapeHandler(container, hidePalette)
+  if (currentSlug === 'index') {
+    let idle = 0
+    let timer = 0
+    const preload = () => {
+      if (!isActive) return
+      for (const action of [...CONNECTOR_ACTS, ...COMMAND_ACTS]) {
+        if (!actionCache.has(action)) actionCache.set(action, createActComponent(action, ''))
+      }
+      void ensureQuickOpen().catch(error => console.warn('[QuickOpen] preload failed:', error))
+    }
+    const schedule = () => {
+      if (window.requestIdleCallback) idle = window.requestIdleCallback(preload, { timeout: 2000 })
+      else timer = window.setTimeout(preload, 1000)
+    }
+    if (document.readyState === 'complete') schedule()
+    else window.addEventListener('load', schedule, { once: true, signal })
+    window.addCleanup(() => {
+      window.removeEventListener('load', schedule)
+      if (idle) window.cancelIdleCallback(idle)
+      window.clearTimeout(timer)
+    })
+  }
 })
-
-async function fillDocument(data: ContentIndex) {
-  await populateSearchIndex(data)
-}

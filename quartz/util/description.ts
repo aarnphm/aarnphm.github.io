@@ -1,7 +1,14 @@
 import type { KatexOptions } from 'katex'
 import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import { toHtml } from 'hast-util-to-html'
 import { toText } from 'hast-util-to-text'
+import isAbsoluteUrl from 'is-absolute-url'
 import katex from 'katex'
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { mathFromMarkdown } from 'mdast-util-math'
+import { toHast } from 'mdast-util-to-hast'
+import { math } from 'micromark-extension-math'
+import { visit } from 'unist-util-visit'
 import { escapeHTML } from './escape'
 import { isFullSlug, type FullSlug } from './path'
 import { extractWikilinks, resolveWikilinkTarget, type WikilinkData } from './wikilinks'
@@ -75,6 +82,39 @@ export function processWikilinksToHtml(text: string, currentSlug: FullSlug): str
   return result
 }
 
+function processMarkdownLinksToHtml(text: string): string {
+  if (!text.includes('[') && !/<(?:https?:|mailto:)/i.test(text)) return text
+  const tree = fromMarkdown(text, { extensions: [math()], mdastExtensions: [mathFromMarkdown()] })
+  const html = toHast(tree, {
+    allowDangerousHtml: true,
+    handlers: {
+      // The description math pass needs the source before HTML entity encoding.
+      inlineMath: (_state, node) => ({ type: 'raw', value: `$${node.value}$` }),
+      math: (_state, node) => ({ type: 'raw', value: `$$${node.value}$$` }),
+    },
+  })
+  const replacements: { start: number; end: number; html: string }[] = []
+  visit(html, 'element', node => {
+    if (node.tagName !== 'a') return
+    const start = node.position?.start.offset
+    const end = node.position?.end.offset
+    const href = node.properties.href
+    if (start === undefined || end === undefined || typeof href !== 'string') return
+    node.properties.className = [isAbsoluteUrl(href, { httpOnly: false }) ? 'external' : 'internal']
+    replacements.push({ start, end, html: toHtml(node, { allowDangerousHtml: true }) })
+  })
+  // Replace source ranges from the end, preserving authored HTML, math, and surrounding text.
+  let result = text
+  for (const replacement of replacements.sort((a, b) => b.start - a.start)) {
+    result = result.slice(0, replacement.start) + replacement.html + result.slice(replacement.end)
+  }
+  return result
+}
+
+export function renderDescriptionHtml(text: string, currentSlug: FullSlug): string {
+  return renderLatexInString(processWikilinksToHtml(processMarkdownLinksToHtml(text), currentSlug))
+}
+
 function processWikilinksToText(text: string, currentSlug?: FullSlug | string): string {
   const wikilinks = extractWikilinks(text)
   let result = text
@@ -120,7 +160,7 @@ export function descriptionToPlainText(
 ) {
   if (!description) return ''
   // Escape math before parsing HTML so comparisons remain text rather than becoming tags.
-  const text = processWikilinksToText(description, currentSlug)
+  const text = processWikilinksToText(processMarkdownLinksToHtml(description), currentSlug)
     .replace(/\$\$([\s\S]*?)\$\$/g, (_match, math: string) => escapeHTML(latexToText(math)))
     .replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (_match, math: string) =>
       escapeHTML(latexToText(math)),

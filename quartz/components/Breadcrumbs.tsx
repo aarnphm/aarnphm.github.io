@@ -103,14 +103,16 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
   const options: BreadcrumbOptions = { ...defaultOptions, ...opts }
   const Breadcrumbs: QuartzComponent = ({
     fileData,
+    pageSlug,
     allFiles,
     displayClass,
     ctx,
   }: QuartzComponentProps) => {
     // course pages draw their own crumb (masthead, strip, unit bar, page head)
     if (hasCourseCrumb(fileData)) return null
+    const slug = pageSlug ?? fileData.slug!
     const trie = (ctx.trie ??= trieFromAllFiles(allFiles))
-    const slugParts = fileData.slug!.split('/').filter(part => part.length > 0)
+    const slugParts = slug.split('/').filter(part => part.length > 0)
     const pathNodes = trie.ancestryChain(slugParts)
     let nodeDescriptors: BreadcrumbNodeDescriptor[]
     if (pathNodes) {
@@ -124,7 +126,7 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
     }
 
     const crumbs: CrumbData[] = nodeDescriptors.map((node, idx) => {
-      const crumb = formatCrumb(node.displayName, fileData.slug!, simplifySlug(node.slug))
+      const crumb = formatCrumb(node.displayName, slug, simplifySlug(node.slug))
       if (idx === 0) {
         crumb.displayName = options.rootName
       }
@@ -179,7 +181,11 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
 
             return (
               <div class="breadcrumb-element" key={key}>
-                <a href={crumb.path} data-breadcrumbs>
+                <a
+                  href={crumb.path}
+                  data-breadcrumbs
+                  aria-current={crumb.path === '' ? 'page' : undefined}
+                >
                   {crumb.displayName}
                 </a>
                 {showSpacer && <p>{` ${options.spacerSymbol} `}</p>}
