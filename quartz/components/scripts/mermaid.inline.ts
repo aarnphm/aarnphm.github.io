@@ -1,4 +1,5 @@
 import type { Mermaid } from 'mermaid'
+import { rootNavSignal } from './root-lifecycle'
 
 interface Position {
   x: number
@@ -180,29 +181,36 @@ let mermaidImport = undefined
 let isSetup = false
 let textMapping: WeakMap<HTMLElement, string> = new WeakMap()
 let panZoomInstances: WeakMap<HTMLElement, DiagramPanZoom> = new WeakMap()
-let popupObserver: MutationObserver | null = null
+const popupObservers = new WeakMap<Element, MutationObserver>()
 let setupDiagrams: WeakSet<HTMLElement> = new WeakSet()
-let observedPopupContainers: WeakSet<Element> = new WeakSet()
 
-function mermaidBlocks(root: Document | HTMLElement = document): HTMLDivElement[] {
+function mermaidBlocks(root: Document | HTMLElement = document): HTMLPreElement[] {
+  if (root instanceof HTMLPreElement && root.matches('pre:has(code.mermaid)')) return [root]
   const isSlides = document.documentElement.getAttribute('data-slides') === 'true'
   if (root === document && isSlides) {
     const activeSlide = document.querySelector('.slide.active')
     if (!activeSlide) return []
-    return Array.from(activeSlide.querySelectorAll<HTMLDivElement>('pre:has(code.mermaid)'))
+    return Array.from(activeSlide.querySelectorAll<HTMLPreElement>('pre:has(code.mermaid)'))
   }
 
-  return Array.from(root.querySelectorAll<HTMLDivElement>('pre:has(code.mermaid)'))
+  return Array.from(root.querySelectorAll<HTMLPreElement>('pre:has(code.mermaid)'))
 }
 
 async function renderMermaidDiagrams(root: Document | HTMLElement = document) {
-  const nodes = mermaidBlocks(root)
+  const signal = root instanceof HTMLElement ? rootNavSignal(root) : null
+  const nodes = mermaidBlocks(root).filter(
+    node =>
+      root !== document ||
+      !node.closest('.node-file-content') ||
+      node.querySelector('code.mermaid')?.getAttribute('data-processed') === 'true',
+  )
   if (nodes.length === 0) return
 
   mermaidImport ||= await import(
     // @ts-ignore
     'https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.12.0/mermaid.esm.min.mjs'
   )
+  if (signal?.aborted || (root instanceof HTMLElement && !root.isConnected)) return
   const mermaid: Mermaid = mermaidImport.default
 
   // de-init any other diagrams
@@ -247,6 +255,7 @@ async function renderMermaidDiagrams(root: Document | HTMLElement = document) {
 }
 
 async function setupMermaid(root: Document | HTMLElement = document) {
+  const rootSignal = rootNavSignal(root)
   const stackedContainer = document.getElementById('stacked-notes-container')
   if (root === document && stackedContainer?.classList.contains('active')) return
 
@@ -261,6 +270,7 @@ async function setupMermaid(root: Document | HTMLElement = document) {
   }
 
   await renderMermaidDiagrams(root)
+  if (rootSignal.aborted || (root instanceof HTMLElement && !root.isConnected)) return
 
   if (!isSetup) {
     const rerenderMermaid = () => {
@@ -269,9 +279,6 @@ async function setupMermaid(root: Document | HTMLElement = document) {
     document.addEventListener('themechange', rerenderMermaid)
     window.addCleanup(() => {
       document.removeEventListener('themechange', rerenderMermaid)
-      popupObserver?.disconnect()
-      popupObserver = null
-      observedPopupContainers = new WeakSet()
       isSetup = false
     })
     isSetup = true
@@ -342,23 +349,20 @@ async function setupMermaid(root: Document | HTMLElement = document) {
       hideMermaid()
     }
 
-    expandBtn.addEventListener('click', showMermaid)
-    popupContainer.addEventListener('click', onOutsideClick)
-    document.addEventListener('keydown', onEscape)
+    const signal = rootNavSignal(pre)
+    expandBtn.addEventListener('click', showMermaid, { signal })
+    popupContainer.addEventListener('click', onOutsideClick, { signal })
+    document.addEventListener('keydown', onEscape, { signal })
+    signal.addEventListener('abort', hideMermaid, { once: true })
 
-    window.addCleanup(() => {
-      const panZoom = panZoomInstances.get(popupContainer!)
-      panZoom?.cleanup()
-      expandBtn.removeEventListener('click', showMermaid)
-      popupContainer.removeEventListener('click', onOutsideClick)
-      document.removeEventListener('keydown', onEscape)
-    })
+    signal.addEventListener('abort', () => setupDiagrams.delete(pre), { once: true })
 
     setupDiagrams.add(pre)
   }
 
-  if (!popupObserver) {
-    popupObserver = new MutationObserver(mutations => {
+  root.querySelectorAll('#mermaid-container').forEach(container => {
+    if (popupObservers.has(container)) return
+    const observer = new MutationObserver(mutations => {
       for (const mutation of mutations) {
         if (
           mutation.type === 'attributes' &&
@@ -374,19 +378,43 @@ async function setupMermaid(root: Document | HTMLElement = document) {
         }
       }
     })
-  }
-
-  root.querySelectorAll('#mermaid-container').forEach(container => {
-    if (observedPopupContainers.has(container)) return
-    popupObserver!.observe(container, { attributes: true, attributeFilter: ['class'] })
-    observedPopupContainers.add(container)
+    observer.observe(container, { attributes: true, attributeFilter: ['class'] })
+    popupObservers.set(container, observer)
+    rootNavSignal(container).addEventListener(
+      'abort',
+      () => {
+        observer.disconnect()
+        popupObservers.delete(container)
+      },
+      { once: true },
+    )
   })
 }
 document.addEventListener('nav', () => {
   void setupMermaid()
 })
 document.addEventListener('contentdecrypted', event => {
-  void setupMermaid(event.detail.content)
+  const root = event.detail.content
+  const card = root.closest<HTMLElement>('.node-file-content')
+  if (!card) {
+    void setupMermaid(root)
+    return
+  }
+  const blocks = mermaidBlocks(root)
+  if (blocks.length === 0) return
+  const signal = rootNavSignal(root)
+  const observer = new IntersectionObserver(
+    entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting || !(entry.target instanceof HTMLPreElement)) continue
+        observer.unobserve(entry.target)
+        if (!signal.aborted && entry.target.isConnected) void setupMermaid(entry.target)
+      }
+    },
+    { root: card, rootMargin: '160px' },
+  )
+  for (const block of blocks) observer.observe(block)
+  signal.addEventListener('abort', () => observer.disconnect(), { once: true })
 })
 document.addEventListener('slidechange', () => {
   void setupMermaid()
