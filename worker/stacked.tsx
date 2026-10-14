@@ -1,9 +1,11 @@
 import {
   STACKED_NOTE_METADATA_CLASSES,
-  decodeStackedNoteHash,
+  NOTES_HOSTNAME,
   hashStackedNoteSlug,
   normalizeStackedNoteSlug,
   stackedNoteMetadataHtml,
+  stackedNoteSlugs,
+  stackedNotesUrl,
   withStackedNoteMetadata,
 } from '../quartz/util/stacked-notes'
 
@@ -238,19 +240,8 @@ export function buildStackedNoteHtml(
   <div class="stacked-content">
     ${content}
   </div>
-  <div class="stacked-title">${escapedTitle}</div>
+  <button type="button" class="stacked-title" tabindex="-1" aria-label="Afficher ${escapedTitle}">${escapedTitle}</button>
 </div>`
-}
-
-export function dedupeSlugs(slugs: string[]): string[] {
-  const seen = new Set<string>()
-  const result: string[] = []
-  for (const slug of slugs) {
-    if (seen.has(slug)) continue
-    seen.add(slug)
-    result.push(slug)
-  }
-  return result
 }
 
 async function timed<T>(name: string, timings: string[], fn: () => Promise<T>): Promise<T> {
@@ -297,10 +288,9 @@ export async function handleStackedNotesRequest(
     const stackedParams = url.searchParams.getAll('stackedNotes')
     const timings: string[] = []
 
-    if (stackedParams.length === 0) return null
+    if (stackedParams.length === 0 && url.hostname !== NOTES_HOSTNAME) return null
 
-    const slugs = stackedParams.map(decodeStackedNoteHash)
-    const validSlugs = dedupeSlugs(slugs.filter(Boolean) as string[])
+    const validSlugs = stackedNoteSlugs(url)
 
     if (validSlugs.length === 0) return null
 
@@ -316,8 +306,25 @@ export async function handleStackedNotesRequest(
     )
 
     if (!baseResp.ok) return null
+    if (!baseResp.headers.get('Content-Type')?.startsWith('text/html')) return null
 
-    const baseHtml = await timed('baseText', timings, () => baseResp.text())
+    const canonical = stackedNotesUrl(url, validSlugs)
+    if (canonical.href !== url.href) {
+      return Response.redirect(canonical.href, 302)
+    }
+
+    // Rebase before extraction: HTMLRewriter does not revisit appended note markup.
+    const rebased = new HTMLRewriter().on('[href], [src], [poster], [data-href]', {
+      element(el) {
+        for (const attribute of ['href', 'src', 'poster', 'data-href']) {
+          const value = el.getAttribute(attribute)
+          if (!value || !/^\.{1,2}\//.test(value)) continue
+          const resolved = new URL(value, baseUrl)
+          el.setAttribute(attribute, resolved.pathname + resolved.search + resolved.hash)
+        }
+      },
+    })
+    const baseHtml = await timed('baseText', timings, () => rebased.transform(baseResp).text())
 
     const firstNoteData = await timed('firstNote', timings, () =>
       noteDataFromHtml(firstSlug, baseHtml),
@@ -365,7 +372,7 @@ export async function handleStackedNotesRequest(
 
     const finalHtml = await rewriter.transform(new Response(baseHtml)).text()
 
-    return new Response(finalHtml, {
+    return new Response(request.method === 'HEAD' ? null : finalHtml, {
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
         'Content-Security-Policy': "frame-ancestors 'self' *",

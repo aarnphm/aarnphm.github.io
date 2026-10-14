@@ -145,8 +145,6 @@ a {
     & > .stacked-notes-column {
       display: flex;
       flex-grow: 1;
-      -webkit-transition: width 100ms cubic-bezier(0.19, 1, 0.22, 1);
-      transition: width 100ms cubic-bezier(0.19, 1, 0.22, 1);
       height: 100%;
 
       .stacked-popover {
@@ -184,7 +182,6 @@ a {
         background: var(--light);
         border-left: 1px solid var(--lightgray);
         transition:
-          box-shadow 100ms linear,
           opacity 75ms linear,
           transform 200ms cubic-bezier(0.19, 1, 0.22, 1);
 
@@ -196,10 +193,6 @@ a {
           .page-footer {
             display: none;
           }
-        }
-
-        &.overlay {
-          box-shadow: var(--shadow-modal);
         }
 
         &.highlights {
@@ -369,6 +362,11 @@ a {
         }
 
         .stacked-title {
+          border: 0;
+          border-radius: 0;
+          padding: 0;
+          text-align: start;
+          font-family: inherit;
           writing-mode: vertical-rl;
           background: var(--light);
           margin: 36px 0 0 0;
@@ -376,13 +374,19 @@ a {
           line-height: 40px;
           font-size: 17px;
           font-weight: 500;
-          color: initial;
+          color: var(--dark);
           inset: 0;
           position: absolute;
           bottom: 0;
           width: var(--note-title-width);
           opacity: 0;
           cursor: pointer;
+          visibility: hidden;
+
+          &:focus-visible {
+            outline: 2px solid var(--tertiary);
+            outline-offset: -2px;
+          }
 
           &.dag {
             @include dagHighlights;
@@ -395,6 +399,7 @@ a {
           }
           .stacked-title {
             opacity: 1;
+            visibility: visible;
           }
         }
       }
@@ -428,8 +433,6 @@ a {
 
             .stacked-content {
               padding: 1rem;
-              height: 100vh;
-              overflow-y: auto;
             }
           }
 

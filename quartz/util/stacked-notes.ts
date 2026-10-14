@@ -1,6 +1,7 @@
 import { isRecord, readString } from './type-guards'
 
 const DOT_ESCAPE = '___DOT___'
+export const NOTES_HOSTNAME = 'notes.aarnphm.xyz'
 export const STACKED_NOTE_METADATA_CLASSES = ['modified-time', 'published-time', 'reading-time']
 
 function bytesToBase64(bytes: Uint8Array): string {
@@ -60,6 +61,32 @@ export function decodeStackedNoteHash(hash: string): string | null {
   }
 
   return normalizeStackedNoteSlug(decoded.replace(/___DOT___/g, '.'))
+}
+
+export function stackedNoteRootSlug(url: URL): string | null {
+  if (url.hostname === NOTES_HOSTNAME && url.pathname === '/') return 'notes'
+  const slug = normalizeStackedNoteSlug(url.pathname.replace(/\.html?$/, ''))
+  if (!slug || url.hostname !== NOTES_HOSTNAME) return slug
+  const decoded = decodeStackedNoteHash(slug)
+  return decoded && hashStackedNoteSlug(decoded) === slug ? decoded : slug
+}
+
+export function stackedNoteSlugs(url: URL): string[] {
+  const root = stackedNoteRootSlug(url)
+  const slugs = [root, ...url.searchParams.getAll('stackedNotes').map(decodeStackedNoteHash)]
+  return [...new Set(slugs.filter((slug): slug is string => slug !== null))]
+}
+
+export function stackedNotesUrl(base: URL, slugs: string[]): URL {
+  const url = new URL(base)
+  if (url.hostname === NOTES_HOSTNAME && slugs[0]) {
+    url.pathname = `/${hashStackedNoteSlug(slugs[0])}`
+  }
+  url.searchParams.delete('stackedNotes')
+  for (const slug of [...new Set(slugs)].slice(1)) {
+    url.searchParams.append('stackedNotes', hashStackedNoteSlug(slug))
+  }
+  return url
 }
 
 function fragmentHasClass(fragment: string, className: string): boolean {

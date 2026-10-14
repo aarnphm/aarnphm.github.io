@@ -11,6 +11,8 @@ import {
   hashStackedNoteSlug,
   readStackedNotePayload,
   stackedNoteMetadataHtml,
+  stackedNoteSlugs,
+  stackedNotesUrl,
   withStackedNoteMetadata,
 } from './stacked-notes'
 
@@ -102,4 +104,52 @@ test('stacked note payload parsing accepts only complete known states', () => {
     }),
     null,
   )
+})
+
+test('stack URLs use the path as root and query only for additional notes', () => {
+  const root = new URL('https://notes.aarnphm.xyz/personal-canon?lang=fr#books')
+  assert.deepEqual(stackedNoteSlugs(root), ['personal-canon'])
+  assert.equal(stackedNotesUrl(root, ['personal-canon']).search, root.search)
+  const next = stackedNotesUrl(root, ['personal-canon', 'thoughts/antinomy-öⁿ'])
+  assert.equal(next.pathname, `/${hashStackedNoteSlug('personal-canon')}`)
+  assert.deepEqual(next.searchParams.getAll('stackedNotes'), [
+    hashStackedNoteSlug('thoughts/antinomy-öⁿ'),
+  ])
+  assert.equal(next.searchParams.get('lang'), 'fr')
+  assert.equal(next.hash, '#books')
+  assert.deepEqual(stackedNoteSlugs(next), ['personal-canon', 'thoughts/antinomy-öⁿ'])
+})
+
+test('stack URLs accept legacy roots and ignore malformed or duplicate entries', () => {
+  const url = new URL('https://notes.aarnphm.xyz/personal-canon')
+  for (const hash of [
+    hashStackedNoteSlug('personal-canon'),
+    '!',
+    hashStackedNoteSlug('notes'),
+    hashStackedNoteSlug('notes'),
+  ]) {
+    url.searchParams.append('stackedNotes', hash)
+  }
+  assert.deepEqual(stackedNoteSlugs(url), ['personal-canon', 'notes'])
+  assert.deepEqual(
+    stackedNotesUrl(url, stackedNoteSlugs(url)).searchParams.getAll('stackedNotes'),
+    [hashStackedNoteSlug('notes')],
+  )
+  assert.deepEqual(stackedNoteSlugs(new URL('https://notes.aarnphm.xyz/')), ['notes'])
+  assert.deepEqual(stackedNoteSlugs(new URL('https://aarnphm.xyz/')), ['index'])
+})
+
+test('notes host accepts readable and encoded paths and writes encoded roots', () => {
+  for (const slug of ['personal-canon', 'thoughts/kant', 'thoughts/antinomy-öⁿ']) {
+    const readable = new URL(`https://notes.aarnphm.xyz/${slug}?lang=fr#section`)
+    const encoded = new URL(
+      `https://notes.aarnphm.xyz/${hashStackedNoteSlug(slug)}?lang=fr#section`,
+    )
+    assert.deepEqual(stackedNoteSlugs(readable), [slug])
+    assert.deepEqual(stackedNoteSlugs(encoded), [slug])
+    assert.equal(stackedNotesUrl(readable, [slug]).href, encoded.href)
+    assert.deepEqual(stackedNoteSlugs(stackedNotesUrl(encoded, [slug, 'notes'])), [slug, 'notes'])
+  }
+  const apex = new URL('https://aarnphm.xyz/personal-canon')
+  assert.equal(stackedNotesUrl(apex, ['personal-canon']).href, apex.href)
 })
