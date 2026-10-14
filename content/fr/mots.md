@@ -21,7 +21,7 @@ Le paquet de cartes donne le mot anglais et demande le mot français.
 
 ## parcours A1 → C1
 
-- **A1** : [[#le cours|le cours]], [[#le corps|le corps]], [[#la météo|la météo]], [[#la cuisine|la cuisine]], [[#les adjectifs|les adjectifs]], [[#les petits mots|les petits mots]], [[#le Québec et la France|le Québec et la France]]
+- **A1** : [[#le cours|le cours]], [[#le corps|le corps]], [[#la météo|la météo]], [[#les vêtements|les vêtements]], [[#la cuisine|la cuisine]], [[#les adjectifs|les adjectifs]], [[#les petits mots|les petits mots]], [[#le Québec et la France|le Québec et la France]]
 - **A2** : [[#le sport et l'entrainement|le sport]], [[#la santé|la santé]], [[#le logement|le logement]], [[#le travail et l'informatique|le travail]], [[#les sentiments et le caractère|les sentiments]], [[#la nature et le plein air|la nature]], [[#les faux amis|les faux amis]], [[#les mots de liaison|les mots de liaison]]
 - **B1** : [[#l'école et l'université|l'école et l'université]], [[#en cuisine|en cuisine]], [[#la langue et la grammaire|la grammaire]], [[#les verbes à construction|les verbes à construction]], [[#les genres piégés|les genres piégés]], [[#les expressions|les expressions]], [[#Le Petit Prince|Le Petit Prince]]
 - **B2** : [[#les connecteurs|les connecteurs]], [[#les mathématiques et l'IA|les mathématiques et l'IA]], [[#le passé simple|le passé simple]], [[#la langue littéraire|la langue littéraire]], [[#les verbes de parole et de regard|les verbes de parole et de regard]]
@@ -121,6 +121,19 @@ the words a teacher uses to talk about French. French spells the noun `prononcia
 | to pronounce                   | {{prononcer}}                    | `la prononciation`, with `-non-`                         |
 | a tongue twister               | {{un virelangue}}                | `Les chaussettes de l'archiduchesse sont-elles sèches ?` |
 | How do you spell it?           | {{Comment ça s'écrit ?}}         |                                                          |
+
+### le futur proche et les questions
+
+Les modèles de questions et de réponses sont dans [[fr/episode-14#demander-la-météo-de-demain|l'épisode 14]] et [[fr/lessons/261013#réponses-aux-questions-de-discussion|la leçon du 13 octobre]].
+
+| English                       | Français                 | note                                                                         |
+| ----------------------------- | ------------------------ | ---------------------------------------------------------------------------- |
+| the near future (going to do) | {{le futur proche}}      | `aller` au présent + infinitif : `Il va faire beau.`                         |
+| the infinitive                | {{l'infinitif}} (m.)     | `faire`, `pleuvoir`, `porter`                                                |
+| inversion (in a question)     | {{l'inversion}} (f.)     | `Quel temps va-t-il faire demain ?`                                          |
+| a pronunciation-linking t     | {{un t euphonique}}      | `va-t-il` : un `t` entre deux traits d'union pour faciliter la prononciation |
+| a closed question (yes or no) | {{une question fermée}}  | `Est-ce qu'il va pleuvoir demain ?`                                          |
+| an open question              | {{une question ouverte}} | `Quel temps va-t-il faire demain ?`                                          |
 
 ## le sport et l'entrainement
 
@@ -272,6 +285,160 @@ weather takes the impersonal `il`: {{`Il fait froid.`}}, {{`Il pleut.`}}, {{`Il 
 | slush (Québec, fam.)     | {{la sloche}}            | France: `la gadoue`       |
 | boots                    | {{des bottes}} (f.)      |                           |
 | a coat                   | {{un manteau}}           | plural: `des manteaux`    |
+
+### le bulletin et les phénomènes
+
+Vocabulaire de [[fr/episode-14|l'épisode 14]]. La météo décrit le temps à un moment donné ; le climat décrit les conditions habituelles sur une longue période. {{`Il fait chaud.`}} décrit le temps ; {{`J'ai chaud.`}} décrit ce que ressent une personne. **La chaleur**, déjà dans [[#les genres piégés|les genres piégés]], est le nom ; **chaud** est l'adjectif.
+
+| English                  | Français                                | note                                              |
+| ------------------------ | --------------------------------------- | ------------------------------------------------- |
+| a weather report         | {{un bulletin météo}}                   | `Je consulte les bulletins météo sur Internet.`   |
+| weather forecasts        | {{les prévisions météorologiques}} (f.) | aussi `les prévisions météo`                      |
+| a heatwave               | {{une canicule}}                        | une période de très forte chaleur                 |
+| a cold spell             | {{une vague de froid}}                  |                                                   |
+| the climate              | {{le climat}}                           |                                                   |
+| the temperature          | {{la température}}                      | `Il va faire vingt-cinq degrés.`                  |
+| a temperature difference | {{un écart de température}}             | entre `30 °C` et `−30 °C`, l'écart est de `60 °C` |
+| a degree Celsius         | {{un degré Celsius}}                    | plural: `des degrés Celsius`                      |
+| cold (the noun)          | {{le froid}}                            | `Je préfère le froid.`                            |
+| a thunderstorm           | {{un orage}}                            | `On annonce un orage.`                            |
+| a lightning flash        | {{un éclair}}                           | le phénomène lumineux                             |
+| thunder                  | {{le tonnerre}}                         | le bruit d'un orage                               |
+| a rainbow                | {{un arc-en-ciel}}                      | plural: `des arcs-en-ciel`                        |
+| a snowflake              | {{un flocon de neige}}                  |                                                   |
+| an alternation           | {{une alternance}}                      | `une alternance de soleil et de nuages`           |
+| a risk, a possibility    | {{un risque}}                           | `un risque d'orage`                               |
+| sunny                    | {{ensoleillé}}, {{ensoleillée}}         | `C'est ensoleillé.`                               |
+| rainy                    | {{pluvieux}}, {{pluvieuse}}             | `C'est pluvieux.`                                 |
+| windy                    | {{venteux}}, {{venteuse}}               | `C'est venteux.`                                  |
+| cool (temperature)       | {{frais}}, {{fraiche}}                  | `Il fait frais.` ; `une journée fraiche`          |
+| air-conditioned          | {{climatisé}}, {{climatisée}}           | `un bureau climatisé`                             |
+| a fan                    | {{un ventilateur}}                      |                                                   |
+| tomorrow                 | {{demain}}                              | `Demain, il va pleuvoir.`                         |
+
+### les moyennes et les variations de température
+
+Vocabulaire des [[fr/lessons/261013#décrire-et-comparer-les-températures|notes sur les températures]]. Les exemples de comparaison utilisent les moyennes maximales imprimées dans le tableau du manuel p. 103.
+
+| English                         | Français                            | note                                                                               |
+| ------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------- |
+| an average                      | {{une moyenne}}                     | `la moyenne des maxima quotidiens`                                                 |
+| the average maximum temperature | {{la température moyenne maximale}} | `En janvier, la température moyenne maximale est de moins cinq degrés à Montréal.` |
+| daily                           | {{quotidien}}, {{quotidienne}}      | `les maxima quotidiens` ; `une température quotidienne`                            |
+| a value                         | {{une valeur}}                      | `les valeurs imprimées dans le tableau`                                            |
+| an absolute value               | {{une valeur absolue}}              | la valeur absolue de `−2` est `2`                                                  |
+| high (a temperature)            | {{élevé}}, {{élevée}}               | `une température élevée`                                                           |
+| low (a temperature)             | {{bas}}, {{basse}}                  | `une température basse`                                                            |
+| a negative temperature          | {{une température négative}}        | `−9 °C` se lit `moins neuf degrés Celsius`                                         |
+| below zero                      | {{sous zéro}}                       | `Les températures vont rester sous zéro.`                                          |
+| to compare                      | {{comparer}}                        | `comparer les températures de deux villes`                                         |
+| to increase                     | {{augmenter}}                       | `Les températures vont augmenter.`                                                 |
+| to remain (in a state)          | {{rester}}                          | `Les températures restent sous zéro.`                                              |
+
+### les expressions de comparaison
+
+**Plus / moins / aussi + adjectif + que** : **plus chaud que**, **moins froid que**, **aussi chaud que**. Devant **à**, **que** devient **qu'** : **qu'à Vancouver**. **Élevée** et **basse** s'accordent avec **la température**.
+
+| English                                  | Français                                      | note                                                                                              |
+| ---------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| warmer than                              | {{plus chaud que}}                            | `En juillet, il fait plus chaud à Toronto qu'à Vancouver.`                                        |
+| colder than                              | {{plus froid que}}                            | `En janvier, il fait plus froid à Regina qu'à Montréal.`                                          |
+| less cold than                           | {{moins froid que}}                           | `En janvier, il fait moins froid à Toronto qu'à Montréal.`                                        |
+| as warm as                               | {{aussi chaud que}}                           | `En octobre, il fait aussi chaud à Toronto qu'à Vancouver.`                                       |
+| the same temperature as                  | {{la même température que}}                   | `En juillet, Montréal a la même température moyenne maximale que Regina.`                         |
+| the highest temperature                  | {{la température la plus élevée}}             | `En juillet, la température moyenne maximale la plus élevée est de vingt-sept degrés, à Toronto.` |
+| the lowest temperature                   | {{la température la plus basse}}              | `En janvier, la température moyenne maximale la plus basse est de moins neuf degrés, à Regina.`   |
+| sixteen degrees more (temperature)       | {{seize degrés de plus}}                      | `En janvier, il fait seize degrés de plus à Vancouver qu'à Regina.` ; $7 - (-9) = 16$             |
+| according to this table                  | {{selon ce tableau}}                          | `Selon ce tableau, en juillet, il fait plus chaud à Toronto qu'à Vancouver.`                      |
+| versus (comparing numbers)               | {{contre}}                                    | `vingt-sept degrés contre vingt-deux degrés`                                                      |
+| It's zero degrees.                       | {{Il fait zéro degré.}}                       | `degré` au singulier après zéro                                                                   |
+| It's minus one degree.                   | {{Il fait moins un degré.}}                   | `degré` au singulier après moins un ; `moins deux degrés` au pluriel                              |
+| The temperature is twenty-three degrees. | {{La température est de vingt-trois degrés.}} | `la température est de` + nombre + `degrés`                                                       |
+
+### le vocabulaire de la carte météo
+
+Voir [[fr/lessons/261013#la-météo-dans-les-régions-du-québec|la carte du Québec, piste 28]]. **Un flocon de neige**, **une alternance** et **un risque** sont déjà dans [[#le bulletin et les phénomènes|le bulletin et les phénomènes]].
+
+| English               | Français                        | note                                                      |
+| --------------------- | ------------------------------- | --------------------------------------------------------- |
+| a region              | {{une région}}                  | `les régions touristiques du Québec`                      |
+| a map legend          | {{une légende}}                 | la clé qui explique les symboles de la carte              |
+| a pictogram           | {{un pictogramme}}              | les pictogrammes météo sont repérés par les lettres a à f |
+| a weather phenomenon  | {{un phénomène météorologique}} | le soleil, la pluie, la neige, le vent ou un orage        |
+| a state, a condition  | {{un état}}                     | dans une alternance, deux états se succèdent              |
+| a particle            | {{une particule}}               | un flocon de neige est une petite particule de neige      |
+| a few                 | {{quelques}}                    | `quelques flocons de neige` ; suivi d'un nom au pluriel   |
+| to follow one another | {{se succéder}}                 | `Deux états se succèdent.`                                |
+| to identify           | {{identifier}}                  | `Les numéros identifient les régions.`                    |
+| to express            | {{exprimer}}                    | `Un risque d'orage exprime une possibilité.`              |
+
+### situer les prévisions par région
+
+Ces prépositions reprennent les lieux de la piste 28. **Saguenay** désigne ici la région du tableau, **Saguenay-Lac-Saint-Jean** ; **Québec** désigne la ville.
+
+| English                     | Français                      | note                                                          |
+| --------------------------- | ----------------------------- | ------------------------------------------------------------- |
+| in Québec City              | {{à Québec}}                  | `À Québec, on annonce de la pluie.`                           |
+| in the Laurentides          | {{dans les Laurentides}}      | `Dans les Laurentides, on annonce de la pluie.`               |
+| in Outaouais                | {{en Outaouais}}              | `En Outaouais, on annonce de la pluie.`                       |
+| in Gaspésie                 | {{en Gaspésie}}               | `En Gaspésie, on prévoit quelques flocons de neige.`          |
+| in Nunavik                  | {{au Nunavik}}                | `Au Nunavik, on prévoit quelques flocons de neige.`           |
+| in the Saguenay region      | {{au Saguenay}}               | `Au Saguenay, on annonce de la pluie.`                        |
+| in the Cantons-de-l'Est     | {{dans les Cantons-de-l'Est}} | `Dans les Cantons-de-l'Est, il y a un risque d'orage.`        |
+| in Baie-James               | {{à la Baie-James}}           | `À la Baie-James, on prévoit du soleil.`                      |
+| in the Îles-de-la-Madeleine | {{aux Îles-de-la-Madeleine}}  | `Aux Îles-de-la-Madeleine, on annonce du vent et des nuages.` |
+
+### les verbes de la météo et des projets
+
+Les verbes restent à l'infinitif après **aller conjugué** : {{`Il va pleuvoir.`}}, {{`Je vais choisir un chandail.`}} Les conjugaisons déjà étudiées sont dans [[fr/verbs|verbs]].
+
+| English                            | Français        | note                                                                |
+| ---------------------------------- | --------------- | ------------------------------------------------------------------- |
+| to announce                        | {{annoncer}}    | `On annonce du soleil.` ; `nous annonçons`                          |
+| to forecast, to foresee            | {{prévoir}}     | `On prévoit de la neige.` ; `je prévois`, `nous prévoyons`          |
+| to consult, to check (information) | {{consulter}}   | `Je vais consulter les bulletins météo.`                            |
+| to prefer                          | {{préférer}}    | `je préfère`, `nous préférons` ; `Je préfère le froid.`             |
+| to know, to be familiar with       | {{connaitre}}   | `je connais`, `nous connaissons` ; `Je connais ce mot.`             |
+| to choose                          | {{choisir}}     | `je choisis`, `nous choisissons`                                    |
+| to get dressed                     | {{s'habiller}}  | `je m'habille` ; `Demain, je vais m'habiller.`                      |
+| to wear (clothes)                  | {{porter}}      | `je porte` ; `Demain, je vais porter un chandail.`                  |
+| to prioritize, to favour           | {{privilégier}} | `Je privilégie la mode.`                                            |
+| to face, to confront               | {{affronter}}   | aussi `faire face à` ; `affronter le froid` / `faire face au froid` |
+| to spend, to expend                | {{dépenser}}    | `dépenser de l'argent` ; `dépenser de l'énergie`                    |
+| to rain                            | {{pleuvoir}}    | `il pleut` → `il va pleuvoir`                                       |
+| to snow                            | {{neiger}}      | `il neige` → `il va neiger`                                         |
+| to be windy (Québec weather usage) | {{venter}}      | `il vente` → `il va venter`                                         |
+| to relax (Québec)                  | {{relaxer}}     | `Je vais relaxer.` ; aussi `se détendre`                            |
+
+## les vêtements
+
+Les mots québécois reprennent [[fr/episode-14#parler-des-vêtements|la liste de l'épisode 14]]. **Des bottes** et **un manteau** sont déjà dans [[#la météo|la météo]] ; **des espadrilles** et **un costume de bain / un maillot de bain** sont dans [[#le sport et l'entrainement|le sport]]. **Un parapluie** est dans [[#les genres piégés|les genres piégés]] et **un chapeau** dans [[#Le Petit Prince|Le Petit Prince]].
+
+| English                         | Français                        | note                                                    |
+| ------------------------------- | ------------------------------- | ------------------------------------------------------- |
+| clothes                         | {{les vêtements}} (m.)          | `choisir ses vêtements selon le temps qu'il fait`       |
+| fashion                         | {{la mode}}                     | `Pas vraiment, je privilégie la mode.`                  |
+| flip-flops (Québec, fam.)       | {{des gougounes}} (f.)          | France: `des tongs`                                     |
+| shoes (Québec)                  | {{des souliers}} (m.)           | aussi `des chaussures`                                  |
+| shorts                          | {{des shorts}} (m.)             |                                                         |
+| a dress                         | {{une robe}}                    |                                                         |
+| a tank top (Québec)             | {{une camisole}}                | France: `un débardeur`                                  |
+| a T-shirt                       | {{un t-shirt}}                  |                                                         |
+| a shirt                         | {{une chemise}}                 |                                                         |
+| jeans                           | {{des jeans}} (m.)              |                                                         |
+| sunglasses                      | {{des lunettes de soleil}} (f.) |                                                         |
+| a skirt                         | {{une jupe}}                    |                                                         |
+| winter boots                    | {{des bottes d'hiver}} (f.)     |                                                         |
+| a raincoat                      | {{un imperméable}}              |                                                         |
+| a knit winter hat (Québec)      | {{une tuque}}                   | France: `un bonnet`                                     |
+| gloves                          | {{des gants}} (m.)              | les doigts sont séparés                                 |
+| rain boots                      | {{des bottes de pluie}} (f.)    |                                                         |
+| a scarf (Québec winter usage)   | {{un foulard}}                  | France: `une écharpe`                                   |
+| a sweater (Québec)              | {{un chandail}}                 | France: `un pull`                                       |
+| a jacket                        | {{une veste}}                   |                                                         |
+| mittens (Québec)                | {{des mitaines}} (f.)           | France: `des moufles` ; un compartiment pour les doigts |
+| a winter coat                   | {{un manteau d'hiver}}          |                                                         |
+| pants, trousers (Québec plural) | {{des pantalons}} (m.)          | aussi `un pantalon`                                     |
 
 ## la nature et le plein air
 
