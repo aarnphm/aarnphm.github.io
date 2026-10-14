@@ -280,14 +280,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   const setSemanticState = (state: 'idle' | 'loading' | 'ready' | 'unavailable') => {
     if (semanticStatus) {
       semanticStatus.dataset.state = state
-      semanticStatus.textContent =
-        state === 'ready'
-          ? ''
-          : state === 'loading'
-            ? 'semantic (loading)'
-            : state === 'unavailable'
-              ? 'semantic (unavailable)'
-              : ''
+      semanticStatus.textContent = state === 'unavailable' ? 'semantic (unavailable)' : ''
     }
     modeButtons.forEach(button => {
       const btnMode = (button.dataset.mode as SearchMode) ?? 'lexical'
@@ -295,6 +288,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       const disabled = state === 'loading' || state === 'unavailable'
       button.disabled = disabled
       button.setAttribute('aria-disabled', String(disabled))
+      // The icon spins instead of a "loading" label beside the input.
+      button.classList.toggle('is-loading', state === 'loading')
+      button.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false')
     })
     if (state !== 'ready' && searchMode === 'semantic') {
       searchMode = 'lexical'

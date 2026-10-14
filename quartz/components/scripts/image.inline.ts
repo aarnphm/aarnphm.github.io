@@ -4,6 +4,24 @@ import { rootNavSignal } from './root-lifecycle'
 
 const configuredDialogs = new WeakMap<HTMLDialogElement, AbortSignal>()
 
+function shouldSkipImage(img: HTMLImageElement) {
+  return (
+    img.dataset.noPopover === '' ||
+    img.dataset.noPopover === 'true' ||
+    img.dataset.ignorePopup === '' ||
+    img.dataset.ignorePopup === 'true' ||
+    img.closest('[data-remark-tikz]') !== null ||
+    img.closest('#image-popup-modal') !== null
+  )
+}
+
+function markPopupImages(root: ParentNode = document) {
+  for (const img of root.querySelectorAll('img')) {
+    if (shouldSkipImage(img)) continue
+    img.style.cursor = 'pointer'
+  }
+}
+
 document.addEventListener('nav', () => {
   if (getFullSlug(window) === 'lyd') return
 
@@ -24,23 +42,12 @@ document.addEventListener('nav', () => {
     imageElement.src = imgSrc
     imageElement.alt = imgAlt
     if (!imageDialog.open) imageDialog.showModal()
+    closeButton.focus({ preventScroll: true })
   }
 
-  function shouldSkipImage(img: HTMLImageElement) {
-    return (
-      img.dataset.noPopover === '' ||
-      img.dataset.noPopover === 'true' ||
-      img.dataset.ignorePopup === '' ||
-      img.dataset.ignorePopup === 'true' ||
-      img.closest('[data-remark-tikz]') !== null ||
-      img.closest('#image-popup-modal') !== null
-    )
-  }
-
-  for (const img of document.querySelectorAll('img')) {
-    if (shouldSkipImage(img)) continue
-    img.style.cursor = 'pointer'
-  }
+  closeModal()
+  markPopupImages(document)
+  registerEscapeHandler(imageDialog, closeModal, () => imageDialog.open)
 
   const dialogSignal = rootNavSignal(imageDialog)
   if (configuredDialogs.get(imageDialog) === dialogSignal) return
@@ -60,11 +67,18 @@ document.addEventListener('nav', () => {
     },
     { signal: dialogSignal },
   )
+  document.addEventListener(
+    'contentdecrypted',
+    (event: CustomEventMap['contentdecrypted']) => {
+      markPopupImages(event.detail.content)
+    },
+    { signal: dialogSignal },
+  )
   closeButton.addEventListener('click', closeModal, { signal: dialogSignal })
-  registerEscapeHandler(imageDialog, closeModal, () => imageDialog.open)
   dialogSignal.addEventListener(
     'abort',
     () => {
+      closeModal()
       if (configuredDialogs.get(imageDialog) === dialogSignal) {
         configuredDialogs.delete(imageDialog)
       }

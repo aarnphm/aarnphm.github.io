@@ -286,10 +286,14 @@ function setupAllTagsSearch(container: HTMLElement) {
   )
   signal.addEventListener('abort', debouncedFilter.cancel, { once: true })
 
-  registerEscapeHandler(container, () => {
-    input.value = ''
-    filterSections(state, '')
-  })
+  registerEscapeHandler(
+    container,
+    () => {
+      input.value = ''
+      filterSections(state, '')
+    },
+    () => input.value.length > 0 || document.activeElement === input,
+  )
 }
 
 function setupPageListSearch(container: HTMLElement) {
@@ -378,10 +382,14 @@ function setupPageListSearch(container: HTMLElement) {
   )
   signal.addEventListener('abort', debouncedFilter.cancel, { once: true })
 
-  registerEscapeHandler(container, () => {
-    input.value = ''
-    filterItems(state, '')
-  })
+  registerEscapeHandler(
+    container,
+    () => {
+      input.value = ''
+      filterItems(state, '')
+    },
+    () => input.value.length > 0 || document.activeElement === input,
+  )
 }
 
 document.addEventListener('nav', () => {

@@ -47,7 +47,12 @@ function ensureEscapeDispatcher(navSignal: AbortSignal): void {
           continue
         }
         if (!registration.isActive()) continue
-        const priority = active instanceof Node && registration.root.contains(active) ? 2 : 1
+        const priority =
+          registration.root instanceof HTMLDialogElement && registration.root.open
+            ? 3
+            : active instanceof Node && registration.root.contains(active)
+              ? 2
+              : 1
         if (priority >= selectedPriority) {
           selected = registration
           selectedPriority = priority

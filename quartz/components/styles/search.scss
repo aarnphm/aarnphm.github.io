@@ -2,6 +2,24 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
 
+@keyframes semantic-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Shared by the global search and the base search bar: the semantic icon turns while the
+// encoder loads, and holds still for people who asked for reduced motion.
+.search-mode-toggle .mode-option[data-mode='semantic'].is-loading svg {
+  animation: semantic-spin 1.2s linear infinite;
+  transform-origin: center;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
 @keyframes semantic-progress-sweep {
   0% {
     background-position: -100% 0;
@@ -424,11 +442,57 @@
       }
     }
 
-    .search-icon {
-      width: var(--search-icon-size);
-      height: var(--search-icon-size);
-      color: var(--search-icon-color);
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    // Two bare icons; the active one takes the accent colour instead of a filled pill.
+    .search-mode-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
       flex-shrink: 0;
+
+      .mode-option {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: var(--gray);
+        cursor: pointer;
+        position: relative;
+
+        &:focus-visible {
+          outline: 2px solid var(--tertiary);
+          outline-offset: 2px;
+        }
+
+        &.active {
+          color: var(--secondary);
+        }
+
+        &[disabled] {
+          opacity: 0.35;
+          cursor: not-allowed;
+        }
+
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
     }
   }
 }
