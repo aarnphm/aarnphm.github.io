@@ -91,7 +91,7 @@ maintenance:
     - - type: FSA, T47 BBright for 24mm spindle
       - distance: null
       - range:
-          - end: null
+          - end: '2026-10-08'
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed
     - - type: CeramicSpeed T47 BBright for Shimano
@@ -201,9 +201,21 @@ maintenance:
         - - type: Pirelli P Zero Race TLR SL-R 700x28c
           - distance: null
           - range:
-              - end: null
+              - end: '2026-10-06'
                 reason: null
                 start: '2026-09-11'
+        - - type: Pirelli P Zero Race TLR RS 700x28c
+          - distance: null
+          - range:
+              - end: '2026-10-10'
+                reason: punctures!!
+                start: '2026-10-05'
+        - - type: Pirelli P Zero Race TLR RS 700x28c
+          - distance: null
+          - range:
+              - end: null
+                reason: punctures!!
+                start: '2026-10-15'
       tube:
         - - type: Pirelli P Zero TPU
           - distance: 619.84
@@ -243,9 +255,15 @@ maintenance:
         - - type: Pirelli P Zero Race TLR RS 700x28c
           - distance: null
           - range:
+              - end: '2026-10-05'
+                reason: upgrade to HUNT wheelset
+                start: '2026-09-07'
+        - - type: Pirelli P Zero Race TLR RS 700x28c
+          - distance: null
+          - range:
               - end: null
                 reason: null
-                start: '2026-09-07'
+                start: '2026-10-05'
       tube:
         - - type: Pirelli P Zero TPU
           - distance: 878.49
@@ -276,7 +294,7 @@ maintenance:
           - end: null
             start: '2026-10-05'
       - reason: null
-modified: 2026-10-10 19:03:27 GMT-04:00
+modified: 2026-10-14 00:34:03 GMT-04:00
 race: Lanzarote
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
