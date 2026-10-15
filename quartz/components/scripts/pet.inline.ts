@@ -18,6 +18,7 @@ import {
   type SpacingBounds,
 } from '../visitor-trail/actor-spacing'
 import { clockObstacles, trailClockRegion } from '../visitor-trail/clock-clearance'
+import { pondDistance, type Pond } from '../visitor-trail/landscape'
 import {
   detourPetTrailSteps,
   type PetTrailFoot,
@@ -701,7 +702,13 @@ const readSidenote = (note: Element) => {
 }
 
 type ScaleStop = readonly [number, number]
-type PetTerrain = { top: number; base: number; treeline: number; meadowTop: number }
+type PetTerrain = {
+  top: number
+  base: number
+  treeline: number
+  meadowTop: number
+  pond: Pond | null
+}
 const trailData = (value: string | undefined): unknown => {
   if (!value) return null
   try {
@@ -738,11 +745,25 @@ const petTerrain = (path: SVGPathElement): PetTerrain | null => {
     !finite(alpine.base)
   )
     return null
+  const pond = 'pond' in value ? value.pond : null
   return {
     top: alpine.top,
     base: alpine.base,
     treeline: value.treeline,
     meadowTop: value.meadowTop,
+    pond:
+      pond &&
+      typeof pond === 'object' &&
+      'x' in pond &&
+      'y' in pond &&
+      'rx' in pond &&
+      'ry' in pond &&
+      finite(pond.x) &&
+      finite(pond.y) &&
+      finite(pond.rx) &&
+      finite(pond.ry)
+        ? { x: pond.x, y: pond.y, rx: pond.rx, ry: pond.ry }
+        : null,
   }
 }
 const trailScaleStops = (path: SVGPathElement) => {
@@ -1401,8 +1422,10 @@ const walkTrail = (obstacles = petObstacles()) => {
   return true
 }
 
-// Walks a run of trail points at a stroll, ending on the last of them.
-function follow(feet: TrailFoot[], el: SVGPathElement) {
+// Walks a run of trail points at a stroll, ending on the last of them. A driven step (the arrow
+// keys) goes at its own pace and hands back to the driver instead of the wander timer.
+type Drive = { speed: number; done: () => void }
+function follow(feet: TrailFoot[], el: SVGPathElement, drive?: Drive) {
   if (!root) return
   stopTrailGuard()
   hop?.cancel()
@@ -1417,7 +1440,9 @@ function follow(feet: TrailFoot[], el: SVGPathElement) {
     const previous = feet[k - 1]
     const point = feet[k]
     const scale = (point.scale + previous.scale) / 2
-    duration += (Math.hypot(point.x - previous.x, point.y - previous.y) / (55 * scale)) * 1000
+    duration +=
+      (Math.hypot(point.x - previous.x, point.y - previous.y) / ((drive?.speed ?? 55) * scale)) *
+      1000
     times.push(duration)
   }
   const offsets = times.map(time => time / Math.max(1, duration))
@@ -1451,8 +1476,179 @@ function follow(feet: TrailFoot[], el: SVGPathElement) {
     savePosition()
     render()
     armQuietTimer()
-    scheduleWander()
+    if (drive) drive.done()
+    else scheduleWander()
   }
+}
+
+// Arrow keys walk the pet about the trail: a press hops it onto the walking path if it is not on
+// it, then each step goes a short way in the keys' direction, at the folk's ground scale for that
+// depth, round trunks, tents, animals and the pond, and stops short of the page's text. The keys
+// are taken while the trail is open and nothing else holds the focus, so the page does not scroll.
+const driveKeys = new Set<string>()
+const arrowKeys: Record<string, Point> = {
+  ArrowLeft: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+  ArrowUp: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+}
+const driveStride = 18
+const driveSpeed = 150
+const expeditionPath = () => {
+  const scene = trailScene(document)
+  if (!scene || trailHost(scene)?.hidden !== false || scene.dataset.trailRendered !== 'true')
+    return null
+  const path = scene.querySelector<SVGPathElement>('[data-pet-expedition]')
+  return path && petTrail(path) && currentTrailPath(path) ? path : null
+}
+const driveTakesKeys = (event: KeyboardEvent) => {
+  if (!(event.key in arrowKeys) || event.altKey || event.ctrlKey || event.metaKey) return false
+  if (!root || carry || reducedMotion() || !expeditionPath()) return false
+  const active = document.activeElement
+  return (
+    !active ||
+    active === document.body ||
+    !!active.closest('.garden-pet, .homepage-trail-toggle, .homepage-trail-scene')
+  )
+}
+// The walking path's progress nearest a spot, so the wander resumes the expedition from there.
+const nearestTrailProgress = (path: SVGPathElement, point: Point) => {
+  let best = perch?.progress ?? 0
+  let near = Infinity
+  for (const route of trailRoutes()) {
+    if (route.path !== path) continue
+    for (const foot of route.feet) {
+      const d = Math.hypot(foot.x - point.x, foot.y - point.y)
+      if (d < near) {
+        near = d
+        best = foot.progress
+      }
+    }
+  }
+  return best
+}
+// Hops onto the nearest clear spot of the walking path in view, down in the valley.
+const boardTrail = (path: SVGPathElement) => {
+  if (!root || hop) return
+  const obstacles = petObstacles()
+  const text = { ...obstacles, camps: [] }
+  const actors = [...trailActors(path.ownerSVGElement), ...campSolids()]
+  const here = center()
+  const from = { x: here.x + window.scrollX, y: here.y + window.scrollY }
+  let start: TrailFoot | null = null
+  let near = Infinity
+  for (const route of trailRoutes()) {
+    if (route.path !== path) continue
+    for (const foot of route.feet) {
+      if (foot.scale < 0.35 || !trailPointClear(foot, path, text)) continue
+      const radius = TRAIL_PET_RADIUS * trailPx(path) * foot.scale
+      if (actors.some(other => circleClearance(foot, radius, other) < 0)) continue
+      const d = Math.hypot(foot.x - from.x, foot.y - from.y)
+      if (d < near) {
+        near = d
+        start = foot
+      }
+    }
+  }
+  if (!start) return
+  const foot = start
+  afterMove = () => {
+    trailWalk = { path, geometry: trailGeometry(path), feet: [foot], duration: 0, offsets: [0] }
+    trailJourney = { key: trailKey(path), progress: foot.progress }
+    reserveTrailFoot(path, foot)
+    render()
+    driveStep()
+  }
+  const next: Perch = {
+    el: path,
+    kind: 'stand',
+    t: 0,
+    foot,
+    scale: foot.scale,
+    progress: foot.progress,
+  }
+  moveTo(next, trailHopClear(next, obstacles) ? null : 'fade')
+}
+const driveStep = () => {
+  if (!root || carry || reducedMotion() || document.hidden) return
+  const path = expeditionPath()
+  if (!path) return
+  if (!driveKeys.size) {
+    if (trailWalk) {
+      settled = performance.now()
+      armQuietTimer()
+      scheduleWander()
+      savePosition()
+    }
+    return
+  }
+  // A key mid-stroll takes the walk over from where the pet stands.
+  if (hop && trailWalk?.duration) pauseTrail()
+  if (hop) return
+  if (!trailWalk || !perch?.foot) return boardTrail(path)
+  const svg = path.ownerSVGElement
+  const matrix = svg && trailScreenMatrix(svg)
+  const terrain = petTerrain(path)
+  if (!svg || !matrix || !terrain) return
+  const px = Math.hypot(matrix.a, matrix.b)
+  const from: TrailFoot = { ...perch.foot, scale: perch.scale ?? 1, progress: perch.progress ?? 0 }
+  let dx = 0
+  let dy = 0
+  for (const key of driveKeys) {
+    dx += arrowKeys[key].x
+    dy += arrowKeys[key].y
+  }
+  if (!dx && !dy) return
+  const length = Math.hypot(dx, dy)
+  const text = { ...petObstacles(), camps: [] }
+  const actors = [...trailActors(svg), ...campSolids()]
+  const width = svg.viewBox.baseVal.width || svg.clientWidth
+  const height = svg.viewBox.baseVal.height || svg.clientHeight
+  const inverse = matrix.inverse()
+  // The full direction first, then along one axis only, so it slides along what blocks it.
+  const tries = [
+    { x: dx / length, y: dy / length },
+    ...(dx && dy
+      ? [
+          { x: Math.sign(dx), y: 0 },
+          { x: 0, y: Math.sign(dy) },
+        ]
+      : []),
+  ]
+  for (const dir of tries) {
+    const stride = driveStride * from.scale * px
+    const to = { x: from.x + dir.x * stride, y: from.y + dir.y * stride }
+    const ground = new DOMPoint(to.x - window.scrollX, to.y - window.scrollY).matrixTransform(
+      inverse,
+    )
+    if (ground.x < 14 || ground.x > width - 14) continue
+    if (ground.y < terrain.treeline + 6 || ground.y > height - 12) continue
+    if (terrain.pond && pondDistance(ground, terrain.pond) < 1.15) continue
+    const scale = trailScale(0, ground, [], terrain)
+    const foot: TrailFoot = { ...to, scale, progress: nearestTrailProgress(path, to) }
+    if (!trailPointClear(foot, path, text)) continue
+    const radius = TRAIL_PET_RADIUS * px * Math.max(from.scale, scale)
+    if (!canMove(from, foot, radius, actors)) continue
+    lastMove = performance.now()
+    follow([from, foot], path, { speed: driveSpeed, done: driveStep })
+    return
+  }
+  // Blocked all round: it still turns to face the way it was asked.
+  if (dx) {
+    face = dx > 0 ? -1 : 1
+    root.style.setProperty('--pet-face', String(face))
+    syncTrailArt()
+  }
+}
+const onDriveKey = (event: KeyboardEvent) => {
+  if (!driveTakesKeys(event)) return
+  event.preventDefault()
+  driveKeys.add(event.key)
+  driveStep()
+}
+const onDriveKeyUp = (event: KeyboardEvent) => {
+  if (!driveKeys.delete(event.key)) return
+  if (!driveKeys.size && !hop) driveStep()
 }
 
 const scheduleWander = () => {
@@ -2629,6 +2825,9 @@ document.addEventListener('nav', () => {
   trailSpaceSignal = signal
   trailSpaces = new WeakMap()
   syncPets()
+  document.addEventListener('keydown', onDriveKey, { signal })
+  document.addEventListener('keyup', onDriveKeyUp, { signal })
+  window.addEventListener('blur', () => driveKeys.clear(), { signal })
   void loadWeather()
   const scene = document.querySelector<HTMLElement>('.homepage-trail-scene')
   let trailFrame = 0
