@@ -968,7 +968,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('data-color', d => d.color || '')
       .attr('tabindex', isEmbed ? null : 0)
       .attr('role', 'group')
-      .attr('aria-label', d => d.displayName || d.file || d.url || 'Text card')
+      .attr('aria-label', d => cardName(d) || d.url || 'Text card')
 
     node
       .append('rect')
@@ -991,8 +991,8 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('class', 'canvas-node-link internal')
       .attr('data-no-popover', 'true')
       .attr('href', d => resolveFileNodeUrl(d)?.toString() ?? null)
-      .attr('aria-label', d => `Open ${d.displayName || d.file || 'note'}`)
-      .text(d => d.displayName || d.file || '')
+      .attr('aria-label', d => `Open ${cardName(d) || 'note'}`)
+      .text(d => cardName(d))
 
     fileNodes
       .append('text')
@@ -1003,7 +1003,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('dominant-baseline', 'middle')
       .attr('font-size', '16px')
       .attr('font-weight', '600')
-      .text(d => d.displayName || d.file || '')
+      .text(d => cardName(d))
 
     // Centered titles are hidden until the skeleton view, so they can only be measured there.
     let centerTitlesFitted = false
@@ -1011,7 +1011,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       if (centerTitlesFitted) return
       centerTitlesFitted = true
       fileNodes.select<SVGTextElement>('.node-title-center').each(function (d) {
-        const text = d.displayName || d.file || ''
+        const text = cardName(d)
         this.textContent = fitSvgText(text, measureSvgText(this, text), d.width - 32)
       })
     }
@@ -1722,6 +1722,11 @@ function fitSvgText(text: string, metrics: SvgTextMetrics, maxWidth: number): st
   // keep surrogate pairs whole
   if (end > 0 && /[\uDC00-\uDFFF]/.test(text[end])) end--
   return `${text.slice(0, end).trimEnd()}…`
+}
+
+// Cards show the note name, matching the emitter's displayName, never the vault path.
+function cardName(node: NodeData): string {
+  return node.displayName || node.file?.split('/').pop()?.replace(/\.md$/, '') || ''
 }
 
 function wrapTextHtml(text: string): string {
