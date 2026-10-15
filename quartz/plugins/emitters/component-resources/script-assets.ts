@@ -43,12 +43,10 @@ import {
   staticScriptAssetReference,
   writeAssetBundleOutput,
 } from './asset-writer'
-import { sharedTrailPath } from './shared-trail-assets'
 
 export type ScriptAssetReplacement = { placeholder: string; logicalPath: string }
 
 export const componentScriptAssetReplacements: ScriptAssetReplacement[] = [
-  { placeholder: 'shared-trail.html', logicalPath: sharedTrailPath },
   { placeholder: notebookRuntimeClientAsset, logicalPath: notebookRuntimeClientPath },
   { placeholder: notebookRuntimeWorkerAsset, logicalPath: notebookRuntimeWorkerPath },
   {
