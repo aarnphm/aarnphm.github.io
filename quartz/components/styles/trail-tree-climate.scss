@@ -1,5 +1,5 @@
 // The kinds that drop their leaves for the winter (`bareInWinter` in scenery.ts).
-$bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tree="oak"], [data-tree="aspen"], [data-tree="birch"], [data-tree="larch"], [data-tree="willow"])';
+$bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tree="oak"], [data-tree="aspen"], [data-tree="birch"], [data-tree="larch"], [data-tree="willow"], [data-tree="beech"])';
 
 .homepage-trail-scene {
   // Undersides are the crown's own light tone, a little paler; the paper never shows through.
@@ -129,6 +129,26 @@ $bare: ':is(.trail-tree, .trail-woodland-tree):is([data-tree="maple"], [data-tre
     --trail-tree-crown: color-mix(in srgb, var(--trail-leaf-mid) 40%, #9aa860);
     --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 45%, #c8cf86);
     --trail-tree-dark: color-mix(in srgb, var(--trail-leaf-shade) 35%, #6f7c43);
+  }
+  // The repoussoir beeches keep the 404's leaf greens and bark, and turn copper in autumn.
+  .trail-scene :is(.trail-tree, .trail-woodland-tree)[data-tree='beech'] {
+    --trail-tree-crown: color-mix(in srgb, var(--trail-leaf-mid) 30%, #7d902a);
+    --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 35%, #b4bf6a);
+    --trail-tree-dark: color-mix(in srgb, var(--trail-leaf-shade) 30%, #4d6212);
+    --trail-tree-gold: color-mix(in srgb, var(--trail-leaf-lit) 25%, #e0b43c);
+    .trail-tree-trunk {
+      fill: color-mix(in srgb, var(--trail-leaf-shade) 30%, #3e3128);
+    }
+    .trail-tree-trunk-lit {
+      fill: color-mix(in srgb, var(--trail-leaf-mid) 30%, #7e6a55);
+    }
+  }
+  .trail-scene[data-foliage-season='autumn']
+    :is(.trail-tree, .trail-woodland-tree)[data-tree='beech'] {
+    --trail-tree-crown: color-mix(in srgb, var(--trail-leaf-mid) 22%, #bc5215);
+    --trail-tree-light: color-mix(in srgb, var(--trail-leaf-lit) 30%, #da702c);
+    --trail-tree-dark: color-mix(in srgb, var(--trail-leaf-shade) 28%, #6b2c0b);
+    --trail-tree-gold: color-mix(in srgb, var(--trail-leaf-lit) 25%, #d0a215);
   }
   .trail-scene[data-foliage-season='autumn']
     :is(.trail-tree, .trail-woodland-tree)[data-tree='maple'] {

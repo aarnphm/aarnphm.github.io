@@ -45,6 +45,7 @@ const kinds: Record<string, string[]> = {
   birch: ['#d0a215', '#e5b72a', '#a0af54'],
   larch: ['#d0a215', '#bc8a2c'],
   willow: ['#a0af54', '#d0a215'],
+  beech: ['#bc5215', '#da702c', '#d0a215'],
 }
 const restLife = 24_000
 

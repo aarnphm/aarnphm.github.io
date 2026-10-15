@@ -28,6 +28,7 @@ import { mountPastureWanderers } from './pasture-wander'
 import { mountTrailPerspective } from './perspective'
 import { petExpedition } from './pet-expedition'
 import { trailRandom } from './random'
+import { repoussoirSprites } from './repoussoir'
 import { mountSceneCompositor } from './scene-compositor'
 import { mountSceneLighting } from './scene-lighting'
 import { mountSceneReveal } from './scene-reveal'
@@ -478,7 +479,10 @@ const drawScene = async () => {
     forestObstacles,
     forestClearings(layout.landscape),
   )
-  const sprites = [...forestSprites(layout.landscape)]
+  const sprites = [
+    ...repoussoirSprites(layout.landscape, sceneSeed, forestClearings(layout.landscape)),
+    ...forestSprites(layout.landscape),
+  ]
   const visibleTrees = new Set(sprites.map(sprite => sprite.id))
   const painting = prepareTreeSprites(
     layout.landscape,

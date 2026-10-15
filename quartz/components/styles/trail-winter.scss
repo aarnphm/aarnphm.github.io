@@ -140,7 +140,7 @@
     :is(.trail-winter-clothes, .trail-winter-kit) {
       display: inline;
     }
-    .trail-fair-weather-clothes {
+    :is(.trail-fair-weather-clothes, .trail-fair-weather-kit) {
       display: none;
     }
 
@@ -182,7 +182,7 @@
     .trail-camper-skin {
       fill: var(--trail-winter-skin);
     }
-    :is(.trail-hiker-hat, .trail-hiker-bedroll, .trail-climber-helmet) {
+    :is(.trail-hiker-hat, .trail-hiker-bedroll) {
       fill: color-mix(in srgb, #ddbb83 75%, var(--trail-snow-lit));
     }
     :is(.trail-hiker-pack-cloth, .trail-hiker-pole, .trail-log) {

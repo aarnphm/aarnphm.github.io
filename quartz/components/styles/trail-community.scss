@@ -94,6 +94,56 @@
     fill: #d6ae6c;
     opacity: 0.2;
   }
+  // Tent styles share the canvas tones and vary the fly colour.
+  .trail-tent[data-tent-style='dome'] {
+    .trail-tent-roof {
+      fill: color-mix(in srgb, var(--gray) 45%, #6f8160);
+    }
+    .trail-tent-light {
+      fill: color-mix(in srgb, var(--lightgray) 50%, #a4b089);
+    }
+    .trail-tent-door {
+      fill: color-mix(in srgb, var(--darkgray) 55%, #4e5a44);
+    }
+  }
+  .trail-tent[data-tent-style='tunnel'] {
+    .trail-tent-roof {
+      fill: color-mix(in srgb, var(--gray) 45%, #9b6a4c);
+    }
+    .trail-tent-light {
+      fill: color-mix(in srgb, var(--lightgray) 50%, #c79b6c);
+    }
+    .trail-tent-door {
+      fill: color-mix(in srgb, var(--darkgray) 55%, #6b4a38);
+    }
+  }
+  // Kit comes out as the tent goes up and goes back in the pack with it.
+  .trail-tent-gear {
+    opacity: var(--tent-progress, 1);
+  }
+  .trail-tent[data-phase='packed'] .trail-tent-gear {
+    visibility: hidden;
+  }
+  .trail-gear-tyre,
+  .trail-gear-dark {
+    fill: var(--darkgray);
+  }
+  .trail-gear-frame {
+    fill: color-mix(in srgb, var(--gray) 25%, #b9573f);
+  }
+  .trail-gear-seat {
+    fill: color-mix(in srgb, var(--gray) 40%, #4f7a8a);
+  }
+  .trail-gear-pad,
+  .trail-gear-lid {
+    fill: color-mix(in srgb, var(--lightgray) 50%, #a7adae);
+  }
+  .trail-gear-pad-band {
+    fill: color-mix(in srgb, var(--gray) 60%, #6e7476);
+  }
+  .trail-gear-cooler {
+    fill: color-mix(in srgb, var(--gray) 40%, #5d7f99);
+  }
   .trail-tent[data-carried='true'] {
     visibility: hidden;
   }

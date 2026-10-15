@@ -81,6 +81,11 @@ export function trailCampsite(seated = true) {
     <path class="trail-hearth" d="M-26-1h52v3h6v3h-6v3h-52v-3h-6v-3h6Z"/>
     <path class="trail-camp-shadow" d="M-42 3h19v3h-19ZM23 3h19v3H23Z"/>
     <path class="trail-log" d="M-39 2h9v4h-9ZM30 2h9v4h-9Z"/>
+    <g class="trail-fair-weather-kit">
+      <g transform="translate(-56 1)">${pixels(['...MT...', '...MT...', '..MMT...', '....T...', '.WWWWWW.', 'WRRRRRRW', 'WWWWWWWW'], { M: 'trail-gear-pad', T: 'trail-hiker-pole', W: 'trail-log', R: 'trail-log-lit' }, 2)}</g>
+      <g transform="translate(14 -9)">${pixels(['.K.', 'PPP', 'PPPH', 'PPPH', 'PPP.'], { K: 'trail-gear-dark', P: 'trail-gear-pad', H: 'trail-gear-dark' }, 2)}</g>
+      <g transform="translate(38 5)">${pixels(['..HHHH..', 'LLLLLLLL', 'BBBBBBBB', 'BBWWBBBB', 'BBBBBBBB'], { H: 'trail-gear-dark', L: 'trail-gear-lid', B: 'trail-gear-cooler', W: 'trail-gear-lid' }, 2)}</g>
+    </g>
     <g class="trail-winter-kit">
       <path class="trail-camp-snow" d="M-44 0h12v2h-14v-1h2ZM33 0h10v1h3v2H33Z"/>
       <g transform="translate(-57 7)">${pixels(['.SSSSSS.', 'SSSSSSSS', '.LLLLLL.', 'LLLLLLLL', '.LLLLLL.'], { S: 'trail-camp-snow', L: 'trail-log' }, 2)}</g>

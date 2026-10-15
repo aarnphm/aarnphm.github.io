@@ -72,42 +72,176 @@ type Person = {
 }
 type Tent = { element: SVGGElement; position: Point; progress: number }
 
-function tentArt() {
+type TentStyle = 'ridge' | 'dome' | 'tunnel'
+const tentStyles: readonly TentStyle[] = ['ridge', 'dome', 'tunnel']
+
+const canvasTones = { R: 'trail-tent-roof', L: 'trail-tent-light', D: 'trail-tent-door' }
+const snowTones = { S: 'trail-camp-snow', D: 'trail-camp-snow-shade' }
+const gearTones = {
+  W: 'trail-gear-tyre',
+  F: 'trail-gear-frame',
+  S: 'trail-gear-dark',
+  H: 'trail-gear-dark',
+  C: 'trail-gear-seat',
+  R: 'trail-hiker-bedroll',
+  P: 'trail-hiker-pack-cloth',
+  L: 'trail-hiker-pack-strap',
+  B: 'trail-hiker-boot',
+  M: 'trail-gear-pad',
+  N: 'trail-gear-pad-band',
+}
+const gear = {
+  bike: pixels(
+    [
+      '...SS......HH...',
+      '....FFFFFFFFH...',
+      '....FF....FF....',
+      '...F.F...F.F....',
+      '.WWF..F..F.WFW..',
+      'W.F.W.F.F.W.F.W.',
+      'W.FFFFFF..W.F.W.',
+      'W...W.....W...W.',
+      '.WWW.......WWW..',
+    ],
+    gearTones,
+    1.5,
+  ),
+  chair: pixels(
+    ['.CCCC.', '.CCCC.', '.CCCC.', 'FCCCCF', 'FSSSSF', '.F..F.', 'F....F'],
+    gearTones,
+    2,
+  ),
+  pack: pixels(['.RRR.', 'PPPPP', 'PLPPP', 'PPPPP', 'PLPPP', 'PPPPP'], gearTones, 2),
+  boots: pixels(['BB.BB.', 'BBBBBB'], gearTones, 2),
+  pad: pixels(['.MMMM.', 'MMNMMM', '.MMMM.'], gearTones, 2),
+}
+
+function domeCanvas() {
+  return `<g class="trail-tent-canvas" transform="translate(-23.75 -20)">${pixels(
+    [
+      '......RRRRRRR......',
+      '....RRLLLLLLLRR....',
+      '...RLLLLLLLLLLLR...',
+      '..RLLLLLDDDLLLLLR..',
+      '.RLLLLLDDDDDLLLLLR.',
+      '.RLLLLDDDDDDDLLLLR.',
+      'RLLLLLDDDDDDDLLLLLR',
+      'RRRRRRDDDDDDDRRRRRR',
+    ],
+    canvasTones,
+    2.5,
+  )}<g class="trail-winter-kit">${pixels(
+    [
+      '......SSSSSSS......',
+      '....SSSSSSSSSSS....',
+      '...SSS.......SSS...',
+      '..SS...........SS..',
+      '.S...............S.',
+    ],
+    snowTones,
+    2.5,
+  )}</g></g>`
+}
+
+function tunnelCanvas() {
+  return `<g class="trail-tent-canvas" transform="translate(-23 -10)">${pixels(
+    [
+      '......RRR......RRR.....',
+      '....RRLLLRRRRRRLLLRR...',
+      '..RRLLLLLLLLLLLLLLLLRR.',
+      '.RDDDLLLLLLLLLLLLLLLLLR',
+      'RDDDDDLLLLLLLLLLLLLLLLR',
+    ],
+    canvasTones,
+    2,
+  )}<g class="trail-winter-kit">${pixels(
+    ['......SSS......SSS.....', '....SSSSSSSSSSSSSSSS...', '..SS................SS.'],
+    snowTones,
+    2,
+  )}</g></g>`
+}
+
+// Each style keeps the shared tent parts (ground, canvas, sleeper, lantern) and brings its own kit.
+const tentShapes: Record<
+  TentStyle,
+  {
+    canvas: () => string
+    poles: string
+    sleeper: string
+    window: string
+    lamp: string
+    pool: number
+    gear: string
+  }
+> = {
+  ridge: {
+    canvas: () =>
+      `<g class="trail-tent-canvas" transform="translate(-23.75 -22.5)">${pixels(
+        [
+          '.........R.........',
+          '........RRR........',
+          '.......RRRRR.......',
+          '......RRRLLRR......',
+          '.....RRRLLLDRR.....',
+          '....RRRLLLLDDRR....',
+          '...RRRLLLLLDDDRR...',
+          '..RRRLLLLLLDDDDRR..',
+          '.RRRLLLLLLLDDDDDRR.',
+        ],
+        { R: 'trail-tent-roof', L: 'trail-tent-light', D: 'trail-tent-door' },
+        2.5,
+      )}<g class="trail-winter-kit">${pixels(
+        [
+          '........SSS........',
+          '.......SSSSS.......',
+          '......SSS..SS......',
+          '.....SSS....SS.....',
+          '....SSS......SS....',
+          '...SSS........SS...',
+          '..SSS..........SS..',
+          '.SSS............SS.',
+          'SSS..............SS',
+          'DDDD............DDD',
+        ],
+        { S: 'trail-camp-snow', D: 'trail-camp-snow-shade' },
+        2.5,
+      )}</g></g>`,
+    poles: 'M-22 1 0-25 22 1M-28 3-21-2M21-2l7 5',
+    sleeper: 'M-4-3h8v2h-8Z',
+    window: 'M2-13h3v3H2ZM5-10h3v3H5ZM8-7h3v3H8Z',
+    lamp: 'translate(17 -12)',
+    pool: 0,
+    gear: `<g transform="translate(9 -4)">${gear.boots}</g><g transform="translate(-33 -6)">${gear.pad}</g>`,
+  },
+  dome: {
+    canvas: domeCanvas,
+    poles: 'M-28 3-22-4M22-4l6 7',
+    sleeper: 'M-4-3h8v2h-8Z',
+    window: 'M-3-11h6v3h-6Z',
+    lamp: 'translate(-3 -21)',
+    pool: -20,
+    gear: `<g transform="translate(25 -14)">${gear.chair}</g><g transform="translate(-35 -12)">${gear.pack}</g>`,
+  },
+  tunnel: {
+    canvas: tunnelCanvas,
+    poles: 'M-27 1-23-4M23-2l4 3',
+    sleeper: 'M-20-3h6v2h-6Z',
+    window: 'M-6-6h3v2h-3ZM5-6h3v2H5Z',
+    lamp: 'translate(-33 -8)',
+    pool: -50,
+    gear: `<g transform="translate(24 -13.5)">${gear.bike}</g>`,
+  },
+}
+
+function tentArt(style: TentStyle) {
+  const shape = tentShapes[style]
   return `<g class="trail-tent-drift" transform="translate(-16 -2)">${trailSnowBank(0x632b87, 86, 23)}</g>
     <path class="trail-tent-ground" d="M-25 0h50v3h-50Z"/>
-    <g class="trail-tent-canvas" transform="translate(-23.75 -22.5)">${pixels(
-      [
-        '.........R.........',
-        '........RRR........',
-        '.......RRRRR.......',
-        '......RRRLLRR......',
-        '.....RRRLLLDRR.....',
-        '....RRRLLLLDDRR....',
-        '...RRRLLLLLDDDRR...',
-        '..RRRLLLLLLDDDDRR..',
-        '.RRRLLLLLLLDDDDDRR.',
-      ],
-      { R: 'trail-tent-roof', L: 'trail-tent-light', D: 'trail-tent-door' },
-      2.5,
-    )}<g class="trail-winter-kit">${pixels(
-      [
-        '........SSS........',
-        '.......SSSSS.......',
-        '......SSS..SS......',
-        '.....SSS....SS.....',
-        '....SSS......SS....',
-        '...SSS........SS...',
-        '..SSS..........SS..',
-        '.SSS............SS.',
-        'SSS..............SS',
-        'DDDD............DDD',
-      ],
-      { S: 'trail-camp-snow', D: 'trail-camp-snow-shade' },
-      2.5,
-    )}</g></g>
-    <path class="trail-tent-poles" d="M-22 1 0-25 22 1M-28 3-21-2M21-2l7 5"/>
-    <path class="trail-tent-sleeper" d="M-4-3h8v2h-8Z"/>
-    <g class="trail-tent-lantern"><path class="trail-tent-lamp-pool" d="M12 1h16v2h4v2H8V3h4Z"/><path class="trail-tent-window" d="M2-13h3v3H2ZM5-10h3v3H5ZM8-7h3v3H8Z"/><g transform="translate(17 -12)">${pixels(['.HH.', 'H..H', 'HLLH', 'HLLH', '.HH.'], { H: 'trail-tent-lamp-frame', L: 'trail-tent-lamp' }, 1.5)}</g></g>`
+    ${shape.canvas()}
+    <path class="trail-tent-poles" d="${shape.poles}"/>
+    <g class="trail-tent-gear">${shape.gear}</g>
+    <path class="trail-tent-sleeper" d="${shape.sleeper}"/>
+    <g class="trail-tent-lantern"><path class="trail-tent-lamp-pool" transform="translate(${shape.pool} 0)" d="M12 1h16v2h4v2H8V3h4Z"/><path class="trail-tent-window" d="${shape.window}"/><g transform="${shape.lamp}">${pixels(['.HH.', 'H..H', 'HLLH', 'HLLH', '.HH.'], { H: 'trail-tent-lamp-frame', L: 'trail-tent-lamp' }, 1.5)}</g></g>`
 }
 
 export function mountCampCommunity(
@@ -932,7 +1066,10 @@ export function mountCampCommunity(
         tent.dataset.campPhase = 'staying'
         tent.setAttribute('transform', `translate(${point.x} ${point.y})`)
         tent.style.setProperty('--tent-progress', settings.builders ? '0.15' : '1')
-        tent.innerHTML = tentArt()
+        // Neighbouring pitches differ, and the seed reshuffles them between visits.
+        const style = tentStyles[((seed >>> 0) + site.id * 2 + index) % tentStyles.length]
+        tent.dataset.tentStyle = style
+        tent.innerHTML = tentArt(style)
         layer.append(tent)
         return { element: tent, position: point, progress: settings.builders ? 0 : 1 }
       })

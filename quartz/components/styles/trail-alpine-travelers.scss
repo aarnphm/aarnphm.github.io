@@ -6,35 +6,28 @@
   .trail-climber-coat {
     fill: color-mix(in srgb, var(--lightgray) 20%, #a65e49);
   }
-  .trail-climber-helmet {
-    fill: color-mix(in srgb, var(--light) 25%, #d8ccb0);
+  .trail-climber-chalk {
+    fill: color-mix(in srgb, var(--light) 30%, #e4dccb);
   }
-  .trail-climber-pack {
-    fill: color-mix(in srgb, var(--darkgray) 30%, #7c8b66);
+  .trail-climber-shoe {
+    fill: color-mix(in srgb, var(--darkgray) 40%, #8a6b4a);
   }
-  .trail-climber-harness {
-    fill: #b68b48;
+  // Chalk from earlier ascents marks the holds, so the route shows on the face without a rope.
+  .trail-climber-holds {
+    fill: color-mix(in srgb, var(--light) 40%, #e9e2d2);
+    opacity: 0.55;
   }
-  .trail-climber-tool-metal {
-    fill: color-mix(in srgb, var(--darkgray) 45%, #9cb5bd);
+  .trail-climber-chalk-puff {
+    fill: color-mix(in srgb, var(--light) 40%, #efe9dc);
+    opacity: 0;
   }
-  .trail-climber-tool-shaft {
-    fill: #b68b48;
+  .trail-alpine-climber[data-pose='resting'][data-motion='active'] .trail-climber-chalk-puff {
+    animation: trail-climber-chalk 2.4s steps(4, end) infinite;
   }
-  .trail-climber-crampon {
-    fill: color-mix(in srgb, var(--darkgray) 68%, #9cb5bd);
-  }
-  .trail-climber-anchor {
-    fill: var(--darkgray);
-    opacity: 0.65;
-  }
-  .trail-climber-rope {
-    fill: none;
-    stroke: color-mix(in srgb, var(--darkgray) 65%, #b68b48);
-    stroke-width: 0.6;
-    stroke-linecap: round;
-    opacity: 0.38;
-    shape-rendering: geometricPrecision;
+  @media (prefers-reduced-motion: reduce) {
+    .trail-alpine-climber .trail-climber-chalk-puff {
+      animation: none;
+    }
   }
   [data-climbing-pose] {
     display: none;
@@ -79,5 +72,20 @@
   }
   .trail-alpine-traveler[data-alpine-traveler='2'] .trail-hiker-coat {
     fill: color-mix(in srgb, var(--gray) 45%, #788891);
+  }
+}
+
+@keyframes trail-climber-chalk {
+  0%,
+  45% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  60% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-3px);
   }
 }
