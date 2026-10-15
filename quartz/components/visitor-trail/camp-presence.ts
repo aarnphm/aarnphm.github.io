@@ -1,25 +1,22 @@
 import { playhtml } from 'playhtml'
 import type { TrailVisitor } from './visitor-journey'
+import { sceneSettings } from './scene-settings'
 import { anonymousVisitor } from './visitor-name'
 import { renderVisitorRegister, type VisitorVisit } from './visitor-register'
-
-export type CampDestination = { value: () => number; onChange: (listener: () => void) => void }
 
 export function connectCampPresence(
   scene: HTMLElement,
   host: HTMLElement,
   signal: AbortSignal,
-  destination: CampDestination,
+  destination: number,
   onVisitors: (visitors: TrailVisitor[]) => void,
 ) {
   const document = scene.ownerDocument
   const view = document.defaultView
   const root = document.querySelector<HTMLElement>('.homepage-trail')
   const count = root?.querySelector<HTMLElement>('[data-trail-visitors]')
-  const connection = scene.querySelector<HTMLElement>('[data-camp-connection]')
   const cursors = root?.querySelector<HTMLElement>('.trail-shared-cursors')
-  if (!view || !root || !count || !connection || !cursors)
-    throw new Error('Camp presence needs its controls')
+  if (!view || !root || !count || !cursors) throw new Error('Camp presence needs its controls')
   const room = playhtml.createPresenceRoom('camp-visitors-v1')
   const pointers = new Map<string, HTMLElement>()
   const activeVisitors = new Map<string, TrailVisitor>()
@@ -43,7 +40,7 @@ export function connectCampPresence(
         'camp' in campsite &&
         typeof campsite.camp === 'number' &&
         Number.isFinite(campsite.camp)
-          ? Math.max(0, Math.min(2, Math.floor(campsite.camp)))
+          ? Math.max(0, Math.min(sceneSettings.camps.sites - 1, Math.floor(campsite.camp)))
           : (previous?.camp ?? 0)
       visitors.push({ id, own: peer.isMe, camp })
       const joined =
@@ -156,7 +153,7 @@ export function connectCampPresence(
   document.addEventListener('pointerleave', clearPointer, { signal })
   const publish = () => {
     room.presence.setMyPresence('trailArrival', arrived)
-    room.presence.setMyPresence('campsite', { camp: destination.value(), joined: true })
+    room.presence.setMyPresence('campsite', { camp: destination, joined: true })
     room.presence.setMyPresence('visiting', true)
   }
   const clear = () => {
@@ -179,9 +176,6 @@ export function connectCampPresence(
       renderPointers()
     }
   }, 1000)
-  destination.onChange(() => {
-    if (!signal.aborted) publish()
-  })
   host.addEventListener('trail:show', publish, { signal })
   document.addEventListener(
     'visibilitychange',
@@ -211,6 +205,5 @@ export function connectCampPresence(
     },
     { once: true },
   )
-  connection.textContent = 'visitors automatically walk to camp'
   publish()
 }

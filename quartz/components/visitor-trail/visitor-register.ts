@@ -65,7 +65,10 @@ export function mountVisitorRegister(root: HTMLElement, signal: AbortSignal) {
   const view = root.ownerDocument.defaultView
   const toggle = root.querySelector<HTMLButtonElement>('.trail-visitor-count')
   const panel = root.querySelector<HTMLElement>('#homepage-visitor-panel')
-  if (!view || !toggle || !panel) throw new Error('Visitor register controls are incomplete')
+  const retry = panel?.querySelector<HTMLButtonElement>('[data-trail-retry]')
+  if (!view || !toggle || !panel || !retry)
+    throw new Error('Visitor register controls are incomplete')
+  retry.addEventListener('click', () => view.location.reload(), { signal })
   const hover = view.matchMedia('(hover: hover) and (pointer: fine)')
   let pinned = false
   let closeTimer = 0

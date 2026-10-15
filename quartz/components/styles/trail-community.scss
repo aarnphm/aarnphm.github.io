@@ -38,50 +38,6 @@
       clip-path: inset(50%);
     }
   }
-  // A select or action row reads like a slider row: the label on the left and the control in
-  // the value cell that sliders give to their `output`.
-  .trail-camp-select {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    .g-select {
-      inline-size: 11em;
-    }
-    button.g-select-trigger,
-    .trail-camp-join {
-      box-sizing: border-box;
-      min-width: 3ch;
-      min-height: 0;
-      padding: 0 3px;
-      border: 1px solid var(--lightgray);
-      border-radius: 0;
-      background: none;
-      color: var(--darkgray);
-      font: inherit;
-      line-height: inherit;
-    }
-    button.g-select-trigger {
-      inline-size: 100%;
-      gap: 4px;
-    }
-    // The value cell is narrow; the menu grows leftward to fit its longest option.
-    .g-select-menu {
-      inline-size: max-content;
-      min-inline-size: 100%;
-    }
-    .trail-camp-join {
-      cursor: pointer;
-      &:hover {
-        color: var(--dark);
-        border-color: var(--gray);
-      }
-      &:focus-visible {
-        outline: 1px solid var(--darkgray);
-        outline-offset: 2px;
-      }
-    }
-  }
   .trail-tent,
   .trail-camp-person {
     shape-rendering: crispEdges;
