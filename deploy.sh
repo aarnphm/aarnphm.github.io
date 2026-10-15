@@ -2,31 +2,6 @@
 
 set -euo pipefail
 
-readonly HEALTH_STATE="$(git rev-parse --git-path deploy-health-ready)"
-
-health() {
-  rm -f "$HEALTH_STATE"
-  pnpm wahoo:auth
-  pnpm health:all
-  git rev-parse HEAD > "$HEALTH_STATE"
-}
-
-require_health() {
-  if [[ ! -f "$HEALTH_STATE" ]]; then
-    echo "deploy blocked: run '$0 health' first" >&2
-    exit 1
-  fi
-
-  local health_revision
-  local current_revision
-  health_revision="$(<"$HEALTH_STATE")"
-  current_revision="$(git rev-parse HEAD)"
-  if [[ "$health_revision" != "$current_revision" ]]; then
-    echo "deploy blocked: repository changed since health ran; run '$0 health' again" >&2
-    exit 1
-  fi
-}
-
 load_env() {
   if [[ ! -f .env ]]; then
     echo "deploy blocked: .env is missing" >&2
@@ -39,10 +14,8 @@ load_env() {
 }
 
 deploy() {
-  require_health
   load_env
   GIT_LFS_SKIP_SMUDGE=1 git pull
-  require_health
   git lfs install --local
   git lfs pull
   git lfs pull --include="quartz/runtime/native/packs/**,content/triathlon/wind/**/*.json" --exclude=""
@@ -60,14 +33,12 @@ deploy() {
   pnpm model:retrain || echo "pace model refresh failed; deploying site without model update"
 
   pnpm wrangler deploy --minify
-  rm -f "$HEALTH_STATE"
 }
 
 case "${1:-}" in
-  health) health ;;
   "" | deploy) deploy ;;
   *)
-    echo "usage: $0 [health|deploy]" >&2
+    echo "usage: $0 [deploy]" >&2
     exit 2
     ;;
 esac
