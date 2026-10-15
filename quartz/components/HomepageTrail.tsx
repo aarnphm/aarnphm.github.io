@@ -1,6 +1,6 @@
 import { type QuartzComponent, type QuartzComponentConstructor } from '../types/component'
 import { resolveAsset } from '../util/asset-manifest'
-import { joinSegments, pathToRoot } from '../util/path'
+import { joinSegments } from '../util/path'
 // @ts-expect-error Quartz's resource loader imports inline modules as script text.
 import script from './scripts/homepage-trail.inline'
 import style from './styles/homepage-trail.scss'
@@ -9,10 +9,7 @@ import performanceStyle from './styles/performance-debug.scss'
 export default (() => {
   const HomepageTrail: QuartzComponent = ({ fileData, ctx }) => {
     if (fileData.slug !== 'index') return null
-    const source = joinSegments(
-      pathToRoot(fileData.slug),
-      resolveAsset(ctx, 'static/scripts/shared-trail.js'),
-    )
+    const source = joinSegments('/', resolveAsset(ctx, 'static/scripts/shared-trail.js'))
     return (
       <div class="homepage-trail">
         <time class="trail-local-time" aria-label="Local time" aria-live="off" />
@@ -111,6 +108,7 @@ export default (() => {
         >
           <iframe
             data-trail-frame
+            data-trail-src={source}
             srcDoc={`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="style-src 'self' 'unsafe-inline'"><title>Shared trail</title></head><body><script src="${source}"></script></body></html>`}
             title="Trail connection"
             hidden

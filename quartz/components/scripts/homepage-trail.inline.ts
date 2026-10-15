@@ -1,3 +1,4 @@
+import { readTrailPreference, writeTrailPreference } from '../../util/trail-preference'
 import { trailScene, trailSceneHeight } from '../../util/trail-scene'
 import {
   holidayLabels,
@@ -14,7 +15,6 @@ import { setupPerformanceDebug } from './performance-debug'
 import { mountTrailGateNavigation } from './trail-gate-navigation'
 
 const CHORD_WINDOW_MS = 1000
-const TRAIL_PREFERENCE_KEY = 'garden:trail-open'
 
 function shouldIgnoreTrailShortcut(event: KeyboardEvent): boolean {
   if (
@@ -194,13 +194,7 @@ document.addEventListener('nav', () => {
       if (document.activeElement === toggle) toggle.blur()
     }
     isOpen = open
-    if (remember) {
-      try {
-        localStorage.setItem(TRAIL_PREFERENCE_KEY, String(open))
-      } catch {
-        // Storage restrictions must not disable the trail control.
-      }
-    }
+    if (remember) writeTrailPreference(open)
     cancelResize()
     window.cancelAnimationFrame(openFrame)
     window.clearTimeout(openTimer)
@@ -286,13 +280,7 @@ document.addEventListener('nav', () => {
     { signal },
   )
   const disposeEscape = registerEscapeHandler(root, close, canClose)
-  let initiallyOpen = true
-  try {
-    initiallyOpen = localStorage.getItem(TRAIL_PREFERENCE_KEY) !== 'false'
-  } catch {
-    // Use the default when the browser blocks saved preferences.
-  }
-  setOpen(initiallyOpen, false)
+  setOpen(readTrailPreference(), false)
   window.addCleanup(() => {
     controller.abort()
     disposeMoon()
