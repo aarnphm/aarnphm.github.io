@@ -31,11 +31,13 @@ import {
   STREAM_HOSTNAME,
   streamHostUrl,
 } from '../../util/stream-host'
+import { readTrailPreference } from '../../util/trail-preference'
 import {
   triathlonApexRedirectUrl,
   triathlonHostLinkUrl,
   TRIATHLON_HOSTNAME,
 } from '../../util/triathlon-host'
+import { preloadHomepageTrail } from './homepage-trail-preload'
 import { loadPageStyles } from './page-styles'
 import { cleanupHydratedRoot } from './root-lifecycle'
 import { Toast } from './toast'
@@ -1078,6 +1080,7 @@ async function navigate(
   const html = p.parseFromString(contents, 'text/html')
   normalizeRelativeURLs(html, url)
   transformHostInternalLinks(html)
+  preloadHomepageTrail(html, url)
   // Link the page-scoped sheets the new body uses while the old page still shows; a stalled
   // sheet only delays navigation.
   await Promise.race([loadPageStyles(html.body), new Promise(resolve => setTimeout(resolve, 2000))])
@@ -1143,6 +1146,28 @@ window.notifyNav = notifyNav
 
 document.addEventListener('nav', () => {
   transformHostInternalLinks(document)
+  const controller = new AbortController()
+  let warmingHome = false
+  const warmHome = (event: Event) => {
+    if (warmingHome || getFullSlug(window) === 'index' || !readTrailPreference()) return
+    const options = getOpts(event)
+    if (!options || !['/', '/index', '/index.html'].includes(options.url.pathname)) return
+    warmingHome = true
+    const url = options.url
+    void fetchCanonical(url, { signal: controller.signal })
+      .then(response => response.text())
+      .then(contents => {
+        if (controller.signal.aborted) return
+        p = p || new DOMParser()
+        preloadHomepageTrail(p.parseFromString(contents, 'text/html'), url)
+      })
+      .catch(() => {
+        warmingHome = false
+      })
+  }
+  document.addEventListener('pointerover', warmHome, { signal: controller.signal })
+  document.addEventListener('focusin', warmHome, { signal: controller.signal })
+  window.addCleanup(() => controller.abort())
   window.addCleanup(() => stacked.release())
   queueMicrotask(() => stacked.restore(new URL(window.location.href)))
   const onContentMounted = (event: CustomEventMap['contentdecrypted']) => {
