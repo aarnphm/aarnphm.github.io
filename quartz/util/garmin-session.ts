@@ -127,9 +127,13 @@ export async function fetchGarminJson(
     throw new Error(
       `Garmin Connect request failed: ${res.status} ${garminResponseSummary(res, text)}`,
     )
+  // Garmin uses 204 without a content type when a metric has no data for the requested day.
+  if (res.status === 204) return null
   const type = res.headers.get('content-type') ?? ''
   if (!type.includes('application/json'))
-    throw new Error(`Garmin Connect returned non-JSON: ${garminResponseSummary(res, text)}`)
+    throw new Error(
+      `Garmin Connect returned non-JSON: ${res.status} ${garminResponseSummary(res, text)}`,
+    )
   const value: unknown = JSON.parse(text)
   return value
 }

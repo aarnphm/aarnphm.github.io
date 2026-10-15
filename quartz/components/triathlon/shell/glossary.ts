@@ -32,7 +32,7 @@ export const setupGloss = (root: HTMLElement, locale: () => Locale): (() => void
     const key = term.dataset.gloss ?? ''
     const definition = term.dataset.glossDef
     const g = definition
-      ? { term: term.textContent?.trim() ?? '', def: definition }
+      ? { term: term.dataset.glossTerm ?? term.textContent?.trim() ?? '', def: definition }
       : glossFor(locale(), key)
     if (!g) return
     current = term

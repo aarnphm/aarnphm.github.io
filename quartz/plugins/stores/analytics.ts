@@ -804,6 +804,7 @@ export interface LactateThresholdSportEstimate {
 
 export interface LactateThresholdBlock {
   heartRate: LactateThresholdHeartRate | null
+  heartRateSeries: GarminLactateThresholdValue[]
   sports: LactateThresholdSportEstimate[]
 }
 
@@ -3422,6 +3423,12 @@ const buildLactateThreshold = (
   garmin: GarminCache | null | undefined,
   powerCurve: PowerCurveBlock | null,
 ): LactateThresholdBlock => {
+  const native = garmin?.runningLactateThreshold
+  const heartRateSeries = lactateThresholdHistory(
+    native?.heartRateBpm,
+    native?.history?.heartRateBpm ?? [],
+    today,
+  )
   const swim = thresholds.get('swim')
   const sports = [
     swim
@@ -3442,6 +3449,7 @@ const buildLactateThreshold = (
   ]
   return {
     heartRate: resolveLactateThresholdHeartRate(garmin, today),
+    heartRateSeries,
     sports: sports.filter((sport): sport is LactateThresholdSportEstimate => sport != null),
   }
 }
@@ -4978,7 +4986,11 @@ function emptyEngine(): EngineBlock {
       },
       bikeSource: null,
     },
-    lactateThreshold: { heartRate: declaredLactateThresholdHeartRate(), sports: [] },
+    lactateThreshold: {
+      heartRate: declaredLactateThresholdHeartRate(),
+      heartRateSeries: [],
+      sports: [],
+    },
     abilities: { sports: [] },
     cardio: { metrics: [], rhrSeries: [], hrvSeries: [], efSeries: [], decouplingSeries: [] },
     ftpHypothesis: null,
