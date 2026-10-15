@@ -7481,10 +7481,7 @@ test('timeline day cards keep activity measurements and the date inert', () => {
     distanceKm: 0,
     movingTimeS: 2_700,
   })
-  const card = buildTimelineDayCard(factory, '2026-07-09', {
-    details: { 1: ride, 2: strength },
-    health: {},
-  })
+  const card = buildTimelineDayCard(factory, '2026-07-09', [strength, ride])
 
   const entries = byClass(card, 'tri-timeline-activity')
   assert.equal(byClass(card, 'tri-act').length, 0)
@@ -7502,7 +7499,7 @@ test('timeline day cards keep activity measurements and the date inert', () => {
   assert.equal(byClass(card, 'tri-pop-date')[0].tagName, 'span')
   assert.equal(byClass(card, 'tri-pop-date')[0].properties.href, undefined)
 
-  const rest = buildTimelineDayCard(factory, '2026-07-10', { details: {}, health: {} })
+  const rest = buildTimelineDayCard(factory, '2026-07-10', [])
   assert.equal(byClass(rest, 'tri-pop-date').length, 1)
   assert.equal(byClass(rest, 'tri-timeline-activity').length, 0)
   assert.equal(byClass(rest, 'tri-timeline-row').length, 1)
@@ -7510,10 +7507,6 @@ test('timeline day cards keep activity measurements and the date inert', () => {
   assert.equal(byClass(rest, 'tri-pop-rest').length, 0)
   assert.equal(byClass(rest, 'tri-battery').length, 1)
   assert.equal(text(byClass(rest, 'tri-timeline-value')[0]), 'rest')
-
-  const loading = buildTimelineDayCard(factory, '2026-07-10', null)
-  assert.equal(byClass(loading, 'tri-battery').length, 0)
-  assert.equal(text(byClass(loading, 'tri-pop-rest')[0]), '·')
 })
 test('expanded day-card extras render every activity pre-expanded', () => {
   const first = detail({ id: 1, date: '2026-07-09' })

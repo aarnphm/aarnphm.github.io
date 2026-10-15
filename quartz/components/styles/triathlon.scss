@@ -15618,8 +15618,14 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-day-sleep-line-svg {
-  height: 84px;
+  height: 7rem;
   cursor: crosshair;
+}
+
+@media (max-width: 38rem) {
+  .tri-day-sleep-line-svg {
+    height: 6.25rem;
+  }
 }
 
 .tri-day-sleep-stage-svg:focus,
@@ -15656,6 +15662,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 @container tri-day-card (max-width: 36rem) {
+  .tri-day-sleep-line-svg {
+    height: 6.25rem;
+  }
+
   .tri-day-analytics-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
