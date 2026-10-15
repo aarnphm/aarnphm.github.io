@@ -406,6 +406,12 @@ export function queuedAnimal(
 export const yieldPatience = 5000
 const clock = () => (typeof performance === 'undefined' ? Date.now() : performance.now())
 
+// The animal this walker's patience has run out on. The walker passes it like a trunk, and
+// its planner may route around animals as fixed bodies instead of refusing the detour.
+export function passedAnimal(spacing: ActorSpacing, now = clock()) {
+  return spacing.waited && now - spacing.waited.since > yieldPatience ? spacing.waited.id : null
+}
+
 export function spacedStep(
   id: string,
   base: Point,
@@ -447,10 +453,12 @@ export function spacedStep(
     )
   }
   const now = clock()
-  let animal = animalInWay(from, intended, radius, others, waitingFor)
+  // The animal being passed keeps its wider forward zone, so the window does not restart each
+  // time a sidestep clears the strict look ahead and the offset recovery closes it again.
+  const passed = passedAnimal(spacing, now)
+  let animal = animalInWay(from, intended, radius, others, waitingFor ?? spacing.waited?.id)
   if (!animal) spacing.waited = null
-  else if (spacing.waited?.id === animal.id && now - spacing.waited.since > yieldPatience)
-    animal = undefined
+  else if (animal.id === passed) animal = undefined
   if (animal) {
     if (waitingFor !== animal.id) spacing.yieldEpisode++
     if (spacing.waited?.id !== animal.id) spacing.waited = { id: animal.id, since: now }

@@ -3,6 +3,7 @@ import {
   actorSpacing,
   canMove,
   circleClearance,
+  passedAnimal,
   placeOnReflow,
   publishActor,
   readActors,
@@ -180,12 +181,16 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
     frame = 0
     if (host.hidden || document.hidden || signal.aborted || reduced.matches || !landscape) return
     // All pending patrol searches share a frame budget. The collision step keeps ownership of
-    // movement while a search is suspended, and any movement invalidates its starting point.
+    // movement while a search is suspended. A sidestep moves the ranger a few pixels each tick,
+    // and a search discarded on any movement could never finish while the ranger is sidestepping
+    // around geometry the sidestep cannot solve. The step checks the route's first leg from
+    // wherever the ranger stands, so only a move beyond two body radii stales the search.
     const deadline = performance.now() + 3
     for (const ranger of rangers) {
       const plan = ranger.plan
       if (!plan) continue
-      if (Math.hypot(ranger.position.x - plan.from.x, ranger.position.y - plan.from.y) > 0.1) {
+      const stale = 36 * trailGroundScale(ranger.position.y, landscape)
+      if (Math.hypot(ranger.position.x - plan.from.x, ranger.position.y - plan.from.y) > stale) {
         ranger.plan = null
         ranger.element.dataset.routePlanning = 'idle'
         continue
@@ -242,13 +247,20 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
           // unchanged failed geometry can wait while collision stepping continues below.
           if (ranger.blocked && !ranger.plan) {
             const goal = ranger.route[0] ?? ranger.goal
+            // Past its patience the ranger walks around the animals where they are, so the
+            // planner sees them as fixed bodies instead of right-of-way it cannot plan around.
+            const bodies = passedAnimal(ranger.spacing)
+              ? obstacles.map(body =>
+                  body.kind === 'animal' ? { ...body, kind: 'trunk' as const } : body,
+                )
+              : obstacles
             const planningInput = JSON.stringify([
               ranger.position,
               ranger.route,
               18 * scale,
               bounds(),
               ranger.spacing.yieldingTo,
-              obstacles
+              bodies
                 .filter(
                   body =>
                     body.id !== ranger.id &&
@@ -277,7 +289,7 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
                   from,
                   ranger.route.slice(),
                   18 * scale,
-                  obstacles,
+                  bodies,
                   bounds(),
                   ranger.spacing.yieldingTo,
                 ),

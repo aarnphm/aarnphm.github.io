@@ -1219,8 +1219,8 @@ export function mountSceneCompositor(
   let frame = 0
   let timer = 0
   let ready = false
-  let parked: { texture: WebGLTexture; width: number; height: number } | null = null
-  let parkTimer = 0
+  let surfaceExposed = false
+  let surfaceTimer = 0
   let generationPending = true
   let palettePending = false
   let paletteTransition = false
@@ -1574,10 +1574,7 @@ export function mountSceneCompositor(
   }
   let groundLayers: Element[] | null = null
   const surface = (width: number, height: number) => {
-    const previous = parked ?? canvas
-    if (previous.width !== width || previous.height !== height) clipVersion += 1
-    release(parked?.texture ?? null)
-    parked = null
+    if (canvas.width !== width || canvas.height !== height) clipVersion += 1
     if (canvas.width !== width) canvas.width = width
     if (canvas.height !== height) canvas.height = height
     const cssWidth = `${width / resolution}px`
@@ -1706,7 +1703,7 @@ export function mountSceneCompositor(
     visit(root, 1, none, null, [], null)
   }
   const present = () => {
-    if (!ready || parked || scene.dataset.trailOpening === 'pending') return
+    if (!ready || scene.dataset.trailOpening === 'pending') return
     const region = trailClockRegion(document)
     if (region && ready) {
       const bounds = canvas.getBoundingClientRect()
@@ -1780,10 +1777,10 @@ export function mountSceneCompositor(
     )
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
   }
-  const park = () => {
-    parkTimer = 0
+  const trimSurface = () => {
+    surfaceTimer = 0
     if (
-      parked ||
+      !surfaceExposed ||
       !host.hidden ||
       !ready ||
       !active() ||
@@ -1802,34 +1799,30 @@ export function mountSceneCompositor(
       return
     }
     textures.add(texture)
-    parked = { texture, width: canvas.width, height: canvas.height }
+    const { width, height } = canvas
+    // Release pooled browser buffers, then restore while hidden so reopening needs no copy.
     canvas.width = 1
     canvas.height = 1
-  }
-  const cancelPark = () => {
-    view.clearTimeout(parkTimer)
-    parkTimer = 0
-  }
-  const schedulePark = () => {
-    if (!host.hidden || parked) return
-    cancelPark()
-    // Finish pending hidden paints before releasing the browser's drawing-buffer pool.
-    parkTimer = view.setTimeout(park, 250)
-  }
-  const restore = () => {
-    cancelPark()
-    if (!parked || !active()) return
-    const retained = parked
-    parked = null
     // Restoring the same pixels does not invalidate full-resolution clip textures.
-    canvas.width = retained.width
-    canvas.height = retained.height
+    canvas.width = width
+    canvas.height = height
     gl.viewport(0, 0, canvas.width, canvas.height)
     gl.uniform2f(uniforms.viewport, canvas.width, canvas.height)
     gl.clearColor(0, 0, 0, 0)
     gl.clear(gl.COLOR_BUFFER_BIT)
-    drawCopy(retained.texture, 1)
-    release(retained.texture)
+    drawCopy(texture, 1)
+    release(texture)
+    surfaceExposed = false
+  }
+  const cancelSurfaceTrim = () => {
+    view.clearTimeout(surfaceTimer)
+    surfaceTimer = 0
+  }
+  const scheduleSurfaceTrim = () => {
+    if (!host.hidden || !surfaceExposed) return
+    cancelSurfaceTrim()
+    // Finish pending hidden paints before releasing the browser's drawing-buffer pool.
+    surfaceTimer = view.setTimeout(trimSurface, 250)
   }
   const endFade = () => {
     if (!fade) return
@@ -2109,6 +2102,7 @@ export function mountSceneCompositor(
     composite()
     overlay()
     overlayResize()
+    if (!host.hidden) surfaceExposed = true
     if (painted === 'true' && !fade && !resizeFrame)
       scene.dataset.trailPaintTheme =
         document.documentElement.getAttribute('saved-theme') ?? 'light'
@@ -2122,7 +2116,7 @@ export function mountSceneCompositor(
     opening.present()
     if (presenting && !host.hidden && scene.dataset.trailReveal !== 'revealing') resumeAnimations()
     trimRaster(host.hidden && painted === 'true')
-    schedulePark()
+    scheduleSurfaceTrim()
     if (painted !== 'true') schedule()
   }
   const schedule = () => {
@@ -2346,8 +2340,14 @@ export function mountSceneCompositor(
     signal,
   )
   host.addEventListener('trail:resize-start', holdResize, { signal })
-  // The reveal's target listener must see restored pixels, including reduced-motion opens.
-  host.addEventListener('trail:open', restore, { signal, capture: true })
+  host.addEventListener(
+    'trail:open',
+    () => {
+      cancelSurfaceTrim()
+      surfaceExposed = true
+    },
+    { signal },
+  )
   host.addEventListener('trail:reveal-end', schedule, { signal })
   host.addEventListener(
     'trail:show',
@@ -2360,7 +2360,7 @@ export function mountSceneCompositor(
   host.addEventListener(
     'trail:hide',
     () => {
-      schedulePark()
+      scheduleSurfaceTrim()
       trimRaster(true)
       endFade()
       endResize()
@@ -2383,11 +2383,11 @@ export function mountSceneCompositor(
     'webglcontextlost',
     event => {
       event.preventDefault()
-      cancelPark()
+      cancelSurfaceTrim()
       delete scene.dataset.trailRenderer
       opening.useFallback()
       ready = false
-      parked = null
+      surfaceExposed = false
       endResize()
       fade = null
     },
@@ -2397,7 +2397,6 @@ export function mountSceneCompositor(
     'webglcontextrestored',
     () => {
       textures.clear()
-      parked = null
       coverage.texture = null
       coverage.active = false
       endResize()
@@ -2426,13 +2425,12 @@ export function mountSceneCompositor(
     () => {
       view.cancelAnimationFrame(frame)
       view.clearTimeout(timer)
-      cancelPark()
+      cancelSurfaceTrim()
       observer.disconnect()
       resizeObserver.disconnect()
       endResize()
       for (const texture of textures) gl.deleteTexture(texture)
       textures.clear()
-      parked = null
       groups.clear()
       promoted.clear()
       clipTextures.clear()
