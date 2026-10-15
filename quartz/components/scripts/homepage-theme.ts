@@ -1,7 +1,11 @@
-import { createTrailRevealMask, trailThemeDuration } from '../visitor-trail/scene-reveal'
+import {
+  createTrailRevealClip,
+  trailRevealOrigin,
+  trailRevealProgress,
+  trailThemeDuration,
+} from '../visitor-trail/scene-reveal'
 
-// The old page is a snapshot; the new page, including the trail canvas, stays live.
-// Its mask follows the compositor's existing reveal instead of starting another clock.
+// The old page is a snapshot; its clip follows the live trail's reveal clock.
 export function mountHomepageTheme(signal: AbortSignal) {
   const root = document.documentElement
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -50,32 +54,26 @@ export function mountHomepageTheme(signal: AbortSignal) {
 
     const host = document.querySelector<HTMLElement>('.homepage-trail-scene')
     const scene = host?.shadowRoot?.querySelector<HTMLElement>('.trail-scene')
-    const surface = scene?.querySelector<HTMLCanvasElement>('.trail-compositor')
-    if (scene?.dataset.trailResizePhase) {
-      update()
-      return
-    }
-    const followsScene = Boolean(
-      host &&
-      !host.hidden &&
-      surface &&
-      (scene?.dataset.trailRenderer === 'webgl' ||
-        (scene?.dataset.trailOpeningLive === 'true' && scene.dataset.trailOpening !== 'complete')),
-    )
-    const started = performance.now()
+    const surface = scene?.querySelector<SVGSVGElement>('.trail-canvas')
+    const followsScene = Boolean(host && !host.hidden && surface)
     const opening = followsScene && scene?.dataset.trailOpening !== 'complete'
+    const gpu = followsScene && scene?.dataset.trailRenderer === 'webgl'
     const rect = followsScene ? surface?.getBoundingClientRect() : undefined
-    const origin = rect
-      ? Math.min(Number(scene?.dataset.trailOpeningOrigin) || rect.height, rect.height)
-      : window.innerHeight
-    const mask = createTrailRevealMask(document, window.innerWidth, window.innerHeight, origin, {
-      x: -(rect?.left ?? 0),
-      y: -(rect?.top ?? 0),
-    })
-    if (!mask) {
-      update()
-      return
-    }
+    const clock = trailRevealOrigin(document)
+    const radius = Number(scene?.dataset.trailOpeningRadius)
+    const origin =
+      (opening || gpu) && rect && scene && radius > 0
+        ? {
+            x: Number(scene.dataset.trailOpeningOriginX) + rect.left,
+            y: Number(scene.dataset.trailOpeningOriginY) + rect.top,
+          }
+        : clock
+    const clip = createTrailRevealClip(
+      window.innerWidth,
+      window.innerHeight,
+      origin,
+      (opening || gpu) && radius > 0 ? radius : undefined,
+    )
 
     const style = document.createElement('style')
     style.textContent = ':root[data-home-theme-reveal]::view-transition-old(root) {}'
@@ -86,42 +84,34 @@ export function mountHomepageTheme(signal: AbortSignal) {
       update()
       return
     }
-    rule.style.maskRepeat = 'no-repeat'
-    let painted = -1
     const draw = (progress: number) => {
-      const step = Math.floor(progress * 240)
-      if (painted === step) return
-      painted = step
-      const drawn = mask.draw(progress, true)
-      rule.style.maskImage = drawn.image
-      rule.style.maskSize = drawn.size
-      rule.style.maskPosition = drawn.position
+      rule.style.clipPath = clip(progress, true)
     }
     draw(0)
-    if (followsScene && scene && !opening) scene.dataset.trailThemeStarted = String(started)
+    if (gpu && scene && !opening) scene.dataset.trailThemeStarted = String(performance.now())
     root.dataset.homeThemeReveal = 'pending'
     let frame = 0
     let finished = false
     let seenScene = false
     const observer = new MutationObserver(records => {
       if (
-        records.some(record => record.oldValue !== 'revealing') &&
-        scene?.dataset.trailThemePhase === 'revealing'
+        scene?.dataset.trailThemePhase === 'revealing' ||
+        records.some(record => record.oldValue === 'revealing')
       )
         seenScene = true
     })
+    if (gpu && scene && !opening)
+      observer.observe(scene, {
+        attributes: true,
+        attributeOldValue: true,
+        attributeFilter: ['data-trail-theme-phase'],
+      })
     const request = { theme, update }
     pending = request
     const transition = document.startViewTransition(() => {
       if (current === generation && !signal.aborted) {
         pending = null
         request.update()
-        if (followsScene && scene && !opening)
-          observer.observe(scene, {
-            attributes: true,
-            attributeOldValue: true,
-            attributeFilter: ['data-trail-theme-phase'],
-          })
       }
     })
     const cleanup = () => {
@@ -144,27 +134,17 @@ export function mountHomepageTheme(signal: AbortSignal) {
     void transition.ready.then(() => {
       if (finished) return
       root.dataset.homeThemeReveal = 'revealing'
-      let revealed = 0
-      let previous = started
+      const started = performance.now()
       const tick = (now: number) => {
         if (finished) return
-        let progress = Math.min(
-          1,
-          (now - started) / trailThemeDuration,
-          revealed + Math.min(32, now - previous) / (trailThemeDuration / 2),
-        )
-        if (followsScene && scene) {
-          const phase = opening ? scene.dataset.trailOpening : scene.dataset.trailThemePhase
-          progress =
-            seenScene || opening
-              ? Number(
-                  opening ? scene.dataset.trailOpeningProgress : scene.dataset.trailThemeProgress,
-                ) || 0
-              : 0
-          if (phase === 'complete' && (seenScene || opening)) progress = 1
+        let progress = trailRevealProgress((now - started) / trailThemeDuration)
+        if (opening && scene) {
+          progress = Number(scene.dataset.trailOpeningProgress) || 0
+          if (scene.dataset.trailOpening === 'complete') progress = 1
+        } else if (gpu && scene) {
+          progress = seenScene ? Number(scene.dataset.trailThemeProgress) || 0 : 0
+          if (seenScene && scene.dataset.trailThemePhase === 'complete') progress = 1
         }
-        revealed = progress
-        previous = now
         draw(progress)
         if (progress >= 1) cleanup()
         else frame = window.requestAnimationFrame(tick)

@@ -82,15 +82,15 @@ function appendHighlightedText(parent: HTMLElement, searchTerm: string, text: st
 function appendActionAux(parent: HTMLElement, auxInnerHtml: string) {
   const action = document.createElement('span')
   action.className = 'suggestion-action'
-  const kbdPrefix = '<kbd>↵</kbd>'
+  const kbdMatch = auxInnerHtml.match(/^<kbd>([^<]+)<\/kbd>(.*)$/)
   const svgMatch = auxInnerHtml.match(
     /^<svg width="1em" height="1em"><use href="([^"]+)" \/><\/svg>$/,
   )
-  if (auxInnerHtml.startsWith(kbdPrefix)) {
+  if (kbdMatch) {
     const key = document.createElement('kbd')
-    key.textContent = '↵'
+    key.textContent = kbdMatch[1]
     action.appendChild(key)
-    action.append(document.createTextNode(auxInnerHtml.slice(kbdPrefix.length)))
+    action.append(document.createTextNode(kbdMatch[2]))
   } else if (svgMatch) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     svg.setAttribute('width', '1em')

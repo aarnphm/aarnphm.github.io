@@ -14,3 +14,10 @@ export function trailHost(element: Element) {
     return root.host
   return element.closest<HTMLElement>('.homepage-trail-scene')
 }
+
+export function trailSceneHeight(host: HTMLElement, content: HTMLElement) {
+  const view = host.ownerDocument.defaultView
+  if (!view) return 0
+  const bottom = content.getBoundingClientRect().bottom + view.scrollY
+  return Math.max(view.innerHeight, bottom + 720, Number(host.dataset.trailWorldHeight) || 0)
+}
