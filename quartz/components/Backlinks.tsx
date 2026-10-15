@@ -50,20 +50,37 @@ export default (() => {
           </a>
         </h2>
         <div class="overflow">
-          {backlinkFiles.map(f => (
-            <div class="backlink-card">
-              <a
-                href={resolveRelative(fileData.slug!, f.slug!)}
-                data-backlink={f.slug!}
-                data-slug={f.slug!}
-                data-no-popover
-                class="internal"
-              >
-                <span class="small">{f.frontmatter?.title}</span>
-              </a>
-              <div class="description" dangerouslySetInnerHTML={{ __html: f.description ?? '' }} />
-            </div>
-          ))}
+          <table class="backlinks-table" aria-label={i18n(cfg.locale).components.backlinks.title}>
+            <thead>
+              <tr>
+                <th scope="col">note</th>
+                <th scope="col">description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {backlinkFiles.map(f => (
+                <tr class="backlink-card">
+                  <th scope="row">
+                    <a
+                      href={resolveRelative(fileData.slug!, f.slug!)}
+                      data-backlink={f.slug!}
+                      data-slug={f.slug!}
+                      data-no-popover
+                      class="internal"
+                    >
+                      <span class="small">{f.frontmatter?.title}</span>
+                    </a>
+                  </th>
+                  <td>
+                    <div
+                      class="description"
+                      dangerouslySetInnerHTML={{ __html: f.description ?? '' }}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
     )
