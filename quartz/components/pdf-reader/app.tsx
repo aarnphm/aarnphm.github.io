@@ -1110,9 +1110,13 @@ function DocumentReader({ data, signal }: { data: DocumentData; signal: AbortSig
           <div class="pdf-reader-spread">
             <div ref={columnRef} class="pdf-reader-column">
               {phase === 'loading' && !embedded && (
-                <p class="pdf-reader-status" role="status">
-                  Loading {record.title}…
-                </p>
+                <>
+                  <p class="pdf-reader-status" role="status">
+                    Loading {record.title}…
+                  </p>
+                  <div class="pdf-reader-skeleton" aria-hidden="true" />
+                  <div class="pdf-reader-skeleton" aria-hidden="true" />
+                </>
               )}
               {phase === 'error' && (
                 <div class="pdf-reader-status" role="alert">
