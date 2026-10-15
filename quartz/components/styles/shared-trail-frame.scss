@@ -104,6 +104,51 @@
   .trail-backpacker[data-phase='gone'] {
     visibility: hidden;
   }
+  // The pet on the trail (visitor-trail/trail-pet.ts), a cream body in an ink keyline in either
+  // theme, as the 404 prints it. pet.inline.ts copies the site pet's data-state onto it: walking, its
+  // legs step between two frames; its eyes blink every few seconds.
+  .trail-pet-art {
+    shape-rendering: crispEdges;
+  }
+  .trail-pet-ink {
+    fill: #1c1b1a;
+  }
+  .trail-pet-body {
+    fill: #f4ecd6;
+  }
+  .trail-pet-hat {
+    fill: #d8c08e;
+  }
+  .trail-pet-band {
+    fill: #e9a090;
+  }
+  .trail-pet-legs:not([data-legs='0']) {
+    display: none;
+  }
+  .trail-pet-art:is([data-state='walk'], [data-state='run']) {
+    .trail-pet-legs[data-legs='0'] {
+      display: none;
+    }
+    .trail-pet-legs:not([data-legs='0']) {
+      display: inline;
+      animation: trail-pet-step 0.32s step-end infinite;
+    }
+    .trail-pet-legs[data-legs='2'] {
+      animation-delay: -0.16s;
+    }
+  }
+  .trail-pet-eyes {
+    animation: trail-pet-blink 4.2s step-end infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .trail-pet-eyes,
+    .trail-pet-legs {
+      animation: none;
+    }
+    .trail-pet-legs[data-legs='2'] {
+      display: none;
+    }
+  }
   .trail-hiker-hat {
     fill: color-mix(in srgb, var(--lightgray) 45%, #ae9066);
   }
@@ -492,5 +537,23 @@
       );
       opacity: 0;
     }
+  }
+}
+
+@keyframes trail-pet-step {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes trail-pet-blink {
+  0% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0;
   }
 }

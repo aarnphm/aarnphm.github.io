@@ -13,6 +13,7 @@ import {
   circleClearance,
   queuedAnimal,
   readTrunks,
+  yieldPatience,
   type CollisionActor,
   type SpacingBounds,
 } from '../visitor-trail/actor-spacing'
@@ -22,6 +23,7 @@ import {
   type PetTrailFoot,
   type PetTrailSearch,
 } from '../visitor-trail/pet-trail'
+import { TRAIL_PET_RADIUS, trailPetSprite } from '../visitor-trail/trail-pet'
 import { visibleTextBoxes } from './pet-text-boxes'
 
 // The garden's pet: the pen-drawn mascot, living on the page's edges. It perches on the nearest box
@@ -940,7 +942,10 @@ const visibleTrailRun = (obstacles: PetObstacles): TrailRun | null => {
         foot.progress < cursor ||
         !trailPointClear(foot, path, text) ||
         (!run.length &&
-          actors.some(other => circleClearance(foot, width * 0.35 * foot.scale, other) < 0))
+          actors.some(
+            other =>
+              circleClearance(foot, TRAIL_PET_RADIUS * trailPx(path) * foot.scale, other) < 0,
+          ))
       ) {
         finish()
         continue
@@ -980,7 +985,7 @@ function* planTrailWalkSteps(
     bottom:
       window.scrollY + window.innerHeight - margin - (viewBottom - edgeY.stand) * unit * scale,
   }
-  const planned = yield* detourPetTrailSteps(feet, width * 0.35, bodies, bounds)
+  const planned = yield* detourPetTrailSteps(feet, TRAIL_PET_RADIUS * trailPx(path), bodies, bounds)
   if (!planned) return null
   for (const foot of planned) {
     yield
@@ -1017,6 +1022,13 @@ let trailPlanFrame = 0
 let trailActor: SVGGElement | null = null
 let trailArt: SVGGElement | null = null
 let trailYieldEpisode = 0
+// Screen pixels per scene unit of a trail's drawing: the trail pet is sized in scene units like the
+// folk there, and the walk planner works in screen pixels.
+const trailPx = (path: SVGPathElement) => {
+  const scene = path.ownerSVGElement
+  const m = scene ? trailScreenMatrix(scene) : null
+  return m ? Math.hypot(m.a, m.b) : 1
+}
 const syncTrailArt = () => {
   if (!trailArt || !svg) return
   for (const name of trailArt.getAttributeNames())
@@ -1073,8 +1085,8 @@ const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
     trailActor.dataset.trailPet = ''
     trailActor.setAttribute('aria-hidden', 'true')
     trailArt = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-    trailArt.setAttribute('class', 'pet-svg')
-    trailArt.innerHTML = svg.innerHTML
+    trailArt.setAttribute('class', 'trail-pet-art')
+    trailArt.innerHTML = trailPetSprite()
     trailActor.append(trailArt)
     scene.append(trailActor)
     root.dataset.trailPaint = 'scene'
@@ -1092,13 +1104,15 @@ const reserveTrailFoot = (path: SVGPathElement, foot: TrailFoot) => {
   const point = new DOMPoint(foot.x - window.scrollX, foot.y - window.scrollY).matrixTransform(
     ground.inverse(),
   )
-  const scale = foot.scale / Math.hypot(ground.a, ground.b)
+  // Scene units at the ground scale, as the folk on the trail are drawn, carried into the parent
+  // the depth order put it in.
+  const scale = (foot.scale * Math.hypot(matrix.a, matrix.b)) / Math.hypot(ground.a, ground.b)
   const transform = `translate(${point.x.toFixed(2)} ${point.y.toFixed(2)})`
   if (trailActor.getAttribute('transform') !== transform)
     trailActor.setAttribute('transform', transform)
-  const pose = `translate(0 ${-edgeY.stand * unit * scale}) scale(${unit * scale * face} ${unit * scale})`
+  const pose = `scale(${(scale * face).toFixed(4)} ${scale.toFixed(4)})`
   if (trailArt?.getAttribute('transform') !== pose) trailArt?.setAttribute('transform', pose)
-  trailActor.dataset.collisionRadius = String(width * 0.35 * scale)
+  trailActor.dataset.collisionRadius = String(TRAIL_PET_RADIUS * scale)
   trailActor.dataset.collisionActive = 'true'
   trailActor.dataset.groundX = String(point.x)
   trailActor.dataset.groundY = String(point.y)
@@ -1127,6 +1141,8 @@ const guardTrail = (animation: Animation, path: SVGPathElement) => {
   stopTrailGuard()
   let blockedSince = 0
   let lastPlan = -Infinity
+  let waited: { id: string; since: number } | null = null
+  let passing: string | null = null
   const check = () => {
     trailGuardTimer = 0
     if (!root || hop !== animation || !trailWalk) return stopTrailGuard()
@@ -1144,30 +1160,50 @@ const guardTrail = (animation: Animation, path: SVGPathElement) => {
     const foot = trailFootAt(current, time)
     const next = trailFootAt(current, time + 150)
     const actors = trailActors(path.ownerSVGElement)
-    let animal = animalInWay(foot, next, width * 0.35 * foot.scale, actors, root.dataset.yieldingTo)
-    const radius = width * 0.35 * Math.max(foot.scale, next.scale)
+    const body = TRAIL_PET_RADIUS * trailPx(path)
+    const radius = body * Math.max(foot.scale, next.scale)
+    const now = performance.now()
+    // As with the trail's walkers, an animal that holds the way past yieldPatience is passed
+    // like a trunk. A grazing animal would otherwise keep the pet waiting indefinitely.
+    if (
+      passing &&
+      !actors.some(
+        other => other.id === passing && animalInWay(foot, next, radius, [other], passing),
+      )
+    )
+      passing = null
+    if (!passing && waited && now - waited.since > yieldPatience) passing = waited.id
+    let animal = animalInWay(
+      foot,
+      next,
+      body * foot.scale,
+      actors.filter(other => other.id !== passing),
+      root.dataset.yieldingTo,
+    )
     const blocker = actors.find(
-      other => other.kind !== 'animal' && !canMove(foot, next, radius, [other]),
+      other =>
+        (other.kind !== 'animal' || other.id === passing) && !canMove(foot, next, radius, [other]),
     )
     if (!animal && blocker?.kind === 'traveler') {
       const waitingFor = queuedAnimal('pet-blob', blocker, actors)
-      animal = actors.find(other => other.id === waitingFor)
+      animal = actors.find(other => other.id === waitingFor && other.id !== passing)
     }
+    if (!animal) waited = null
+    else if (waited?.id !== animal.id) waited = { id: animal.id, since: now }
     if (animal && root.dataset.yieldingTo !== animal.id) trailYieldEpisode++
     const blocked = !!animal || !!blocker
-    const now = performance.now()
     if (blocked) blockedSince ||= now
     else blockedSince = 0
     reserveTrailFoot(path, foot)
     // Keep the current foot when replacing the remaining native animation. Fixed obstructions
     // replan at once; a passing person gets time to clear before choosing another road.
-    const resting = animal?.resting && now - blockedSince >= 5000
+    const fixed = blocker?.kind === 'trunk' || (!!passing && blocker?.id === passing)
     if (
       blocked &&
       !trailPlanFrame &&
-      (!animal || resting) &&
+      !animal &&
       now - lastPlan >= 750 &&
-      (resting || blocker?.kind === 'trunk' || now - blockedSince >= 500)
+      (fixed || now - blockedSince >= 500)
     ) {
       lastPlan = now
       const remaining = current.feet.filter(
@@ -1176,7 +1212,7 @@ const guardTrail = (animation: Animation, path: SVGPathElement) => {
       const bodies = actors.flatMap(other =>
         other.kind !== 'animal'
           ? [other]
-          : resting && other === animal
+          : other.id === passing
             ? [{ ...other, radius: other.radius + radius * 1.5 + 14 }]
             : [],
       )
