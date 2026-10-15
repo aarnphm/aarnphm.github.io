@@ -246,7 +246,11 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   // Publish `data` only after the index is filled: the opener and the first query both call this,
   // and a query against a half-filled index returns whichever folders were added first.
   let searchDataReady: Promise<ContentIndex> | null = null
-  const ensureSearchData = () => {
+  const ensureSearchData = (priority: IndexPriority = 'user-visible') => {
+    if (priority === 'user-visible') {
+      requestedIndexPriority = priority
+      indexTaskController?.setPriority(priority)
+    }
     searchDataReady ??= (async () => {
       const loaded = await getSearchData()
       await fillDocument(loaded)
@@ -1092,23 +1096,36 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
 
   document.addEventListener('keydown', shortcutHandler)
   window.addCleanup(() => document.removeEventListener('keydown', shortcutHandler))
+  const warmSearch = () => {
+    if (data) return
+    void ensureSearchData().catch(error => console.warn('[Search] warm failed:', error))
+  }
   const openHandler = () => showSearch('basic')
+  searchButton.addEventListener('pointerenter', warmSearch)
+  searchButton.addEventListener('focusin', warmSearch)
   searchButton.addEventListener('click', openHandler)
-  window.addCleanup(() => searchButton.removeEventListener('click', openHandler))
+  window.addCleanup(() => {
+    searchButton.removeEventListener('pointerenter', warmSearch)
+    searchButton.removeEventListener('focusin', warmSearch)
+    searchButton.removeEventListener('click', openHandler)
+  })
   searchBar.addEventListener('input', onType)
   window.addCleanup(() => searchBar.removeEventListener('input', onType))
   window.addCleanup(() => {
     hideSearch(false)
   })
 
-  registerEscapeHandler(container, hideSearch)
+  // The lexical mode button inside carries `.active` while search is closed.
+  registerEscapeHandler(container, hideSearch, () => container.classList.contains('active'))
   if (currentSlug === 'index') {
     let idle = 0
     let timer = 0
     const trail = document.querySelector('.homepage-trail-scene')
     const preload = () => {
       if (!searchElement.isConnected) return
-      void ensureSearchData().catch(error => console.warn('[Search] preload failed:', error))
+      void ensureSearchData('background').catch(error =>
+        console.warn('[Search] preload failed:', error),
+      )
     }
     const schedulePreload = () => {
       // Trail textures and search indexing share the main thread on a fresh homepage.
@@ -1124,10 +1141,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       if (window.requestIdleCallback) idle = window.requestIdleCallback(preload, { timeout: 2000 })
       else timer = window.setTimeout(preload, 1000)
     }
-    if (document.readyState === 'complete') schedulePreload()
-    else window.addEventListener('load', schedulePreload, { once: true })
+    const prefetch = () => {
+      void getSearchData().catch(error => console.warn('[Search] prefetch failed:', error))
+      schedulePreload()
+    }
+    if (document.readyState === 'complete') prefetch()
+    else window.addEventListener('load', prefetch, { once: true })
     window.addCleanup(() => {
-      window.removeEventListener('load', schedulePreload)
+      window.removeEventListener('load', prefetch)
       trail?.removeEventListener('trail:prepared', schedulePreload)
       trail?.removeEventListener('trail:reveal-end', schedulePreload)
       if (idle) window.cancelIdleCallback(idle)
@@ -1139,6 +1160,10 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   })
 }
 
+type IndexPriority = 'background' | 'user-visible'
+let requestedIndexPriority: IndexPriority = 'background'
+let indexTaskController: TaskController | null = null
+
 let indexFilled: Promise<void> | null = null
 function fillDocument(data: ContentIndex): Promise<void> {
   indexFilled ??= addDocuments(data).catch(err => {
@@ -1149,21 +1174,41 @@ function fillDocument(data: ContentIndex): Promise<void> {
 }
 
 async function addDocuments(data: ContentIndex) {
-  let id = 0
-  for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
-    // Await each insertion so FlexSearch can yield without queuing a timer for every document.
-    await index.addAsync({
-      id,
-      slug: slug as FullSlug,
-      title: fileData.title,
-      fileName: pathSearchText(fileData.fileName),
-      content: fileData.content ?? '',
-      tags: fileData.tags,
-      aliases: fileData.aliases,
-      target: '',
-      protected: fileData.protected,
-    })
-    id++
+  const scheduling =
+    typeof TaskController === 'function' && typeof window.scheduler?.postTask === 'function'
+      ? window.scheduler
+      : null
+  const controller = scheduling ? new TaskController({ priority: requestedIndexPriority }) : null
+  indexTaskController = controller
+  try {
+    if (scheduling && controller) await scheduling.postTask(() => {}, { signal: controller.signal })
+    let slice = performance.now()
+    let id = 0
+    for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
+      const item = {
+        id,
+        slug: slug as FullSlug,
+        title: fileData.title,
+        fileName: pathSearchText(fileData.fileName),
+        content: fileData.content ?? '',
+        tags: fileData.tags,
+        aliases: fileData.aliases,
+        target: '',
+        protected: fileData.protected,
+      }
+      if (scheduling && controller) {
+        index.add(item)
+        if (performance.now() - slice >= 8) {
+          await scheduling.postTask(() => {}, { signal: controller.signal })
+          slice = performance.now()
+        }
+      } else {
+        await index.addAsync(item)
+      }
+      id++
+    }
+  } finally {
+    if (indexTaskController === controller) indexTaskController = null
   }
 }
 

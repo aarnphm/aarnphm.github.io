@@ -37,16 +37,13 @@
     padding: 0;
     list-style: none;
     scrollbar-width: thin;
-    scrollbar-color: var(--darkgray) var(--lightgray);
+    scrollbar-color: var(--darkgray) transparent;
     &::-webkit-scrollbar {
       width: 4px;
     }
     &::-webkit-scrollbar-thumb {
       background: var(--darkgray);
       border-radius: 0;
-    }
-    li {
-      border-top: 1px solid var(--lightgray);
     }
     li[data-visit-state='left'] {
       color: var(--gray);
@@ -71,7 +68,6 @@
   }
   .visitor-register-total {
     padding: 5px 12px;
-    border-top: 1px solid var(--lightgray);
   }
   .visitor-register-connection {
     display: flex;
@@ -80,7 +76,6 @@
     gap: 8px;
     min-height: 28px;
     padding: 0 12px;
-    border-top: 1px solid var(--lightgray);
     [data-trail-retry] {
       min-height: 28px;
       padding: 0 4px;
@@ -114,7 +109,6 @@
   box-sizing: border-box;
   width: 6px;
   height: 6px;
-  border: 1px solid var(--light);
   background: currentColor;
   color: var(--darkgray);
   pointer-events: none;
@@ -125,8 +119,7 @@
     top: 8px;
     left: 8px;
     padding: 1px 4px;
-    border: 1px solid var(--lightgray);
-    background: var(--light);
+    background: transparent;
     font: 9px/1.5 var(--codeFont);
     white-space: nowrap;
   }

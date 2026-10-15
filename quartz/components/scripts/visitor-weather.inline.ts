@@ -1,4 +1,13 @@
-import { createVisitorDaylightSource } from '../../util/visitor-daylight'
+import {
+  nextScenePreview,
+  sceneClockStepEvent,
+  sceneNow,
+  scenePreview,
+  setScenePreview,
+  subscribeSceneClock,
+  type ScenePreview,
+} from '../../util/scene-clock'
+import { createVisitorDaylightSource, readVisitorDaylightCell } from '../../util/visitor-daylight'
 import { createVisitorHolidaySource } from '../../util/visitor-holiday'
 import { createVisitorTrailWeatherSource } from '../../util/visitor-trail-weather'
 import {
@@ -7,6 +16,7 @@ import {
   visitorConditionsLabel,
   type VisitorForecast,
 } from '../../util/visitor-weather'
+import { guessSite } from './404-almanac'
 import { registerEscapeHandler } from './escape-handler'
 import { mountHomepagePrecipitation } from './homepage-precipitation'
 import { mountVisitorMoon } from './visitor-moon'
@@ -121,16 +131,52 @@ document.addEventListener('nav', () => {
     },
     { signal },
   )
+  // The homepage follows the visitor's sky, so the toggle previews that sky at another time of
+  // today. Each press steps sunrise, midday, sunset, evening, then back to now.
+  const clock = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' })
+  const describe = (preview: ScenePreview | null) =>
+    preview ? `${preview.phase} · ${clock.format(Date.now() + preview.offset)}` : 'now'
+  const label = () => {
+    const preview = scenePreview(document)
+    toggle.setAttribute('aria-label', `Sky: ${describe(preview)}${preview ? ' (preview)' : ''}`)
+    toggle.title = preview
+      ? 'Preview the next sky (Escape returns to now)'
+      : 'Preview the sky at sunrise'
+    toggle.dataset.scenePreview = preview?.phase ?? ''
+  }
+  const step = () => {
+    const cell =
+      forecast && forecast.lat !== null && forecast.lon !== null
+        ? { lat: forecast.lat, lon: forecast.lon }
+        : readVisitorDaylightCell(document)
+    const site = cell ? { ...cell, place: null, weather: null } : guessSite()
+    const next = nextScenePreview(document, site)
+    setScenePreview(document, next)
+    document.dispatchEvent(
+      new CustomEvent('toast', { detail: { message: `sky: ${describe(next)}` } }),
+    )
+  }
+  subscribeSceneClock(
+    document,
+    () => {
+      label()
+      render()
+    },
+    signal,
+  )
+  document.addEventListener(sceneClockStepEvent, step, { signal })
   toggle.addEventListener(
     'click',
     event => {
       event.preventDefault()
       dismissed = false
       open()
+      step()
     },
     { signal },
   )
   const mountScene = () => {
+    if (!panel.matches(':popover-open')) return
     const canvas = panel.querySelector<HTMLElement>('[data-weather-map]')
     if (canvas && forecast && forecast.lat !== null && forecast.lon !== null) {
       const location = `${forecast.lat},${forecast.lon}`
@@ -156,7 +202,7 @@ document.addEventListener('nav', () => {
   )
 
   const render = () => {
-    daylight.publish(forecast)
+    daylight.publish(forecast, sceneNow(document))
     trailWeather.publish(forecast)
     holiday.publish(forecast?.country ?? null)
     const weather = forecast?.weather
@@ -253,24 +299,28 @@ document.addEventListener('nav', () => {
   }
   document.addEventListener('visibilitychange', tick, { signal })
   const timer = window.setInterval(tick, 60000)
+  // Escape closes the panel first, then returns a previewed sky to now.
   const disposeEscape = registerEscapeHandler(
     root,
     () => {
+      if (!panel.matches(':popover-open')) return setScenePreview(document, null)
       dismissed = true
       cancelClose()
       panel.hidePopover()
       toggle.focus({ preventScroll: true })
     },
-    () => panel.matches(':popover-open'),
+    () => panel.matches(':popover-open') || scenePreview(document) !== null,
   )
   window.addCleanup(() => {
     disposeEscape()
     controller.abort()
+    setScenePreview(document, null)
     map?.dispose()
     window.clearInterval(timer)
     cancelClose()
     if (panel.matches(':popover-open')) panel.hidePopover()
     root.remove()
   })
+  label()
   void refresh()
 })

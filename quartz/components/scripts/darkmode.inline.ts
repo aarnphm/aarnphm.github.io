@@ -1,3 +1,4 @@
+import { sceneClockStepEvent } from '../../util/scene-clock'
 import {
   readVisitorDaylightCell,
   sampleVisitorDaylight,
@@ -108,7 +109,7 @@ const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
     detail: {
       message:
         preference !== 'daylight' && onHomepage()
-          ? `current theme: ${preference} (the homepage follows your sky)`
+          ? `following your sky (pref: ${preference}) `
           : `current theme: ${preference}`,
     },
   })
@@ -116,12 +117,6 @@ const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
 }
 
 const updateTogglePresentation = (resolvedTheme: Theme, preference: ThemePreference) => {
-  const weatherButton = document.querySelector<HTMLButtonElement>('.visitor-weather-toggle')
-  if (weatherButton) {
-    weatherButton.setAttribute('aria-label', describePreference(preference, resolvedTheme))
-    weatherButton.title = describeNextAction(preference)
-  }
-
   if (!toggleElement) return
 
   toggleElement.setAttribute('aria-label', describePreference(preference, resolvedTheme))
@@ -230,8 +225,9 @@ document.addEventListener('nav', () => {
       current.source === 'clock-estimate' && knownCell
         ? sampleVisitorDaylight(knownCell, current.at)
         : current
+    // A previewed sky can cross dusk in one step, so the homepage reveals that change.
     if (effectivePreference(activePreference) === 'daylight')
-      applyPreference(activePreference, { persist: false })
+      applyPreference(activePreference, { persist: false, animate: onHomepage() })
     else
       updateTogglePresentation(
         resolveTheme(effectivePreference(activePreference)),
@@ -256,17 +252,6 @@ document.addEventListener('nav', () => {
     signal.addEventListener('abort', () => window.clearInterval(timer), { once: true })
   }
   updateTogglePresentation(resolveTheme(effectivePreference(activePreference)), activePreference)
-
-  const weatherButton = document.querySelector<HTMLButtonElement>('.visitor-weather-toggle')
-  weatherButton?.addEventListener(
-    'click',
-    () => {
-      const next = nextPreference(activePreference)
-      const resolved = applyPreference(next, { animate: true })
-      showThemeToast(next, resolved)
-    },
-    { signal },
-  )
 
   const shouldIgnoreTarget = (el: EventTarget | null) => {
     if (!el || !(el instanceof Element)) return false
@@ -294,9 +279,12 @@ document.addEventListener('nav', () => {
   const keyToggle = (e: KeyboardEvent) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return
     if (shouldIgnoreTarget(e.target)) return
-    if (e.key === 'D') {
-      cyclePreference(e)
-    }
+    if (e.key !== 'D') return
+    // The homepage follows the sky, so D steps its sky preview as the weather toggle does.
+    if (onHomepage() && document.querySelector('.visitor-weather')) {
+      e.preventDefault()
+      document.dispatchEvent(new CustomEvent<void>(sceneClockStepEvent))
+    } else cyclePreference(e)
   }
 
   document.addEventListener('keydown', keyToggle, { signal })

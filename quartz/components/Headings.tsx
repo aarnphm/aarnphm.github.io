@@ -9,7 +9,8 @@ import script from './scripts/headings-modal.inline'
 import style from './styles/headings.scss'
 
 export default (() => {
-  const Headings: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
+  const Headings: QuartzComponent = ({ displayClass, fileData }: QuartzComponentProps) => {
+    if (fileData.slug === 'index') return null
     return (
       <dialog
         class={classNames(displayClass, 'headings-modal')}

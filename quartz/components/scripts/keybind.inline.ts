@@ -322,7 +322,7 @@ document.addEventListener('nav', () => {
 
   const suppressPaletteBindings = (e: KeyboardEvent) => {
     if (!isPaletteActive()) return
-    if (e.key !== 'g' && e.key !== 'h') return
+    if (e.key !== 'g' && e.key !== 'h' && e.key !== 't') return
     clearGPrefix()
     e.stopImmediatePropagation()
   }

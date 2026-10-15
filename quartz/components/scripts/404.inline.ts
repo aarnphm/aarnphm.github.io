@@ -202,7 +202,7 @@ document.addEventListener('nav', () => {
   // worker's answer, with their weather, as soon as it comes.
   const font = document.fonts.load("11px 'Departure Mono'").catch(() => undefined)
   const locating = new AbortController()
-  const located = fetchSite(locating.signal).then(async site => {
+  void fetchSite(locating.signal).then(async site => {
     if (!site || !active) return
     land?.place(site)
     const placeRow = scene.querySelector<HTMLElement>('[data-nf-place-row]')
@@ -376,14 +376,9 @@ document.addEventListener('nav', () => {
   window.addEventListener('pointermove', onMove, { passive: true })
   document.documentElement.addEventListener('pointerleave', onLeave)
 
-  // The SVG ruin arrives with the HTML but the pixel layers paint from here, so the scene stays hidden
-  // until they have. The canvases paint synchronously below; the reveal waits for the next frame and
-  // for the board's font, and is queued first so a failed paint still shows the page.
-  // The weather joins the wait, so a quick answer is in the first frame seen.
-  void Promise.race([
-    Promise.all([font, located]),
-    new Promise(resolve => setTimeout(resolve, 400)),
-  ]).then(() => requestAnimationFrame(() => active && scene.classList.add('is-ready')))
+  // Reveal the synchronously painted landscape on the next frame. Weather and the board's
+  // font update independently, so their network requests do not hold the route handoff.
+  requestAnimationFrame(() => active && scene.classList.add('is-ready'))
 
   const land: Landscape | null = setupLandscape(scene, reduce, water, hands, guessSite())
   // The gate's hands read the same time as the board. Without motion they only move once a second.

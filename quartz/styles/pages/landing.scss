@@ -82,6 +82,11 @@ body[data-slug='index'] {
     background: transparent;
   }
 
+  &:has(.homepage-trail-toggle[aria-expanded='true']) a:hover {
+    background: transparent;
+    color: var(--dark);
+  }
+
   .homepage-board-links {
     min-inline-size: 0;
     padding: 1.25rem 0;

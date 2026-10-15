@@ -36,7 +36,11 @@ export declare global {
   }
 
   interface Window {
-    spaNavigate(url: URL, isBack?: boolean): Promise<boolean | void>
+    spaNavigate(
+      url: URL,
+      isBack?: boolean,
+      options?: { transition?: boolean; signal?: AbortSignal },
+    ): Promise<boolean | void>
     notifyNav(url: FullSlug)
     addCleanup(fn: () => void)
     quartzNavLifecycle?: { listening: boolean; controller?: AbortController }
