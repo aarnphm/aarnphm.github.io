@@ -1389,6 +1389,84 @@ export function umbrella(w: number, paper = PAPER, ink = INK, cloth = PINK, pane
   return { held, rain }
 }
 
+// Fog, dusk and night: a little hurricane lantern hanging from the paw it holds out in front (on
+// its left, the way it faces, or with `side` 1 on its right). A cap and base, a glass lit warm with wire guards, and a flame
+// drawn twice to flicker between; `glow` is three faint rings round the flame, under everything.
+export function lantern(
+  w: number,
+  paper = PAPER,
+  ink = INK,
+  glass = CRUST,
+  fire = PINK,
+  side: 1 | -1 = -1,
+) {
+  const x = 1.22 * side
+  const [top, bottom] = [0.42, 0.8]
+  const glow = [0.86, 0.62, 0.4]
+    .map(
+      (r, i) =>
+        `<circle cx="${x}" cy="0.6" r="${r}" style="fill:${glass};opacity:${[0.14, 0.18, 0.26][i]}"/>`,
+    )
+    .join('')
+  const line = (pts: readonly Pt[], seed: number, k = 1, color = ink) =>
+    stroke(hand(pts, 0.02, 0.004, seed), pressure(seed + 1, w * k, 0.2), color)
+  const bail = line(curve([x - 0.13, top - 0.04], [x, -0.04], [x + 0.13, top - 0.04], 14), 830, 0.7)
+  const cap = filled(
+    hand(
+      [
+        [x - 0.07, 0.3],
+        [x + 0.07, 0.3],
+        [x + 0.18, top],
+        [x - 0.18, top],
+        [x - 0.07, 0.3],
+      ],
+      0.02,
+      0.004,
+      832,
+    ),
+    paper,
+    pressure(833, w, 0.2),
+    ink,
+  )
+  const ring = stroke(
+    loop(834, 0.1, 0.05, 24).map(([a, b]) => [x + 0.045 * a, 0.25 + 0.045 * b] as const),
+    () => w * 0.6,
+    ink,
+  )
+  const globe = hand(rounded(x, (top + bottom) / 2, 0.3, bottom - top, 0.12), 0.02, 0.004, 835)
+  const flames = [0, 1].map(k => {
+    const h = k ? 0.17 : 0.21
+    const lean = k ? 0.025 : -0.015
+    const drop = curve([x, 0.7], [x - 0.12, 0.66], [x + lean, 0.7 - h], 10).concat(
+      curve([x + lean, 0.7 - h], [x + 0.12, 0.66], [x, 0.7], 10).slice(1),
+    )
+    return filled(drop, fire, () => w * 0.45, INK)
+  })
+  const guards = [x - 0.08, x + 0.08]
+    .map((gx, i) =>
+      line(
+        [
+          [gx, top + 0.01],
+          [gx + (i ? 0.03 : -0.03), (top + bottom) / 2],
+          [gx, bottom - 0.01],
+        ],
+        836 + 2 * i,
+        0.45,
+        INK,
+      ),
+    )
+    .join('')
+  const base = filled(
+    hand(rounded(x, bottom + 0.03, 0.36, 0.08, 0.03), 0.02, 0.004, 840),
+    paper,
+    pressure(841, w, 0.2),
+    ink,
+  )
+  const body = `<path d="${poly(globe)}" style="fill:${glass}"/>`
+  const glassLine = stroke(globe, pressure(842, w * 0.8, 0.2), ink)
+  return { glow, bail, body, flames, front: `${guards}${glassLine}${cap}${ring}${base}` }
+}
+
 // Snow: a pink knit mitten with a sage ribbed cuff over the wrist, on an arm that reaches from
 // `from` to `tip`; `side` puts the thumb on one side of it or the other.
 export function mitten(
@@ -1985,6 +2063,32 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
       )
       .join(''),
   )
+  // In fog, at dusk and at night it holds out its little lantern on the side it faces, the flame
+  // flickering between two drawings and its light falling faintly on the body. Outfits with a prop
+  // in that paw (pet.scss) hold it out behind instead.
+  const lamp = (side: 1 | -1, name: string, seed: number) => {
+    const l = lantern(w, paper, ink, CRUST, pink, side)
+    const reach: Pt[] = [
+      [0.9 * side, -0.02],
+      [1.08 * side, 0.02],
+      [1.22 * side, 0.1],
+    ]
+    return part(
+      name,
+      `<g class="pet-glow">${l.glow}</g>${l.bail}${l.body}` +
+        l.flames.map(f => `<g class="pet-flame-frame">${f}</g>`).join('') +
+        l.front +
+        pen(densify(reach, 0.05), pressure(seed, L * 1.1, 0.2)) +
+        filled(
+          hand(rounded(1.22 * side, 0.1, 0.2, 0.17, 0.08), 0.02, 0.006, seed + 1),
+          paper,
+          pressure(seed + 2, w, 0.2),
+          ink,
+        ) +
+        mitt(reach, side === -1 ? 1 : -1, 990 + seed),
+    )
+  }
+  const lit = lamp(-1, 'lantern', 65) + lamp(1, 'lantern-back', 68)
   // In the rain it holds up its little umbrella, the rain falling past in two drawings.
   const brolly = umbrella(w, paper, ink, pink, SAGE)
   const shelter = part(
@@ -2172,5 +2276,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${scarf}${outfit.front}${glasses}${toque}${hat}${shelter}${breath}${arms}${caught}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${scarf}${outfit.front}${glasses}${toque}${hat}${shelter}${breath}${arms}${caught}${lit}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
 }

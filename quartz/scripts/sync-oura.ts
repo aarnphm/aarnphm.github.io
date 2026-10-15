@@ -123,6 +123,30 @@ async function fetchRange(
   return rows
 }
 
+export const OURA_HEARTRATE_WINDOW_MS = 14 * 86_400_000
+
+export function ouraDateTimeWindows(
+  startMs: number,
+  endMs: number,
+  windowMs = OURA_HEARTRATE_WINDOW_MS,
+): { start: string; end: string }[] {
+  if (
+    !Number.isFinite(startMs) ||
+    !Number.isFinite(endMs) ||
+    endMs < startMs ||
+    !Number.isInteger(windowMs) ||
+    windowMs < 1
+  )
+    return []
+  const windows: { start: string; end: string }[] = []
+  for (let cursor = startMs; cursor <= endMs; cursor += windowMs) {
+    const chunkEnd = Math.min(endMs, cursor + windowMs)
+    windows.push({ start: new Date(cursor).toISOString(), end: new Date(chunkEnd).toISOString() })
+    if (chunkEnd >= endMs) break
+  }
+  return windows
+}
+
 async function fetchDateTimeRange(
   token: string,
   endpoint: string,
@@ -131,20 +155,19 @@ async function fetchDateTimeRange(
 ): Promise<Row[]> {
   const headers = { Authorization: `Bearer ${token}` }
   const rows: Row[] = []
-  let nextToken = ''
-  for (;;) {
-    const q = new URLSearchParams({
-      start_datetime: new Date(startMs).toISOString(),
-      end_datetime: new Date(endMs).toISOString(),
-    })
-    if (nextToken) q.set('next_token', nextToken)
-    const res = await fetchWithRetry(`${API}/${endpoint}?${q}`, { headers }, limiter)
-    if (!res) throw new Error(`oura ${endpoint} fetch failed`)
-    const json: unknown = await res.json()
-    if (!isRecord(json)) throw new Error(`oura ${endpoint} returned an invalid response`)
-    if (Array.isArray(json.data)) rows.push(...json.data.filter(isRecord))
-    if (typeof json.next_token !== 'string' || !json.next_token) break
-    nextToken = json.next_token
+  for (const window of ouraDateTimeWindows(startMs, endMs)) {
+    let nextToken = ''
+    for (;;) {
+      const q = new URLSearchParams({ start_datetime: window.start, end_datetime: window.end })
+      if (nextToken) q.set('next_token', nextToken)
+      const res = await fetchWithRetry(`${API}/${endpoint}?${q}`, { headers }, limiter)
+      if (!res) throw new Error(`oura ${endpoint} fetch failed (${window.start} -> ${window.end})`)
+      const json: unknown = await res.json()
+      if (!isRecord(json)) throw new Error(`oura ${endpoint} returned an invalid response`)
+      if (Array.isArray(json.data)) rows.push(...json.data.filter(isRecord))
+      if (typeof json.next_token !== 'string' || !json.next_token) break
+      nextToken = json.next_token
+    }
   }
   return rows
 }
@@ -398,7 +421,6 @@ export function ouraRefreshRange(
       const hrOverlapStart = shiftIsoDay(localIsoDayOffset(0, anchorMs), -refreshWindowDays)
       if (hrOverlapStart < heartRateStart) heartRateStart = hrOverlapStart
     }
-    if (start < heartRateStart) heartRateStart = start
     if (heartRateStart < lookbackStart) heartRateStart = lookbackStart
     if (heartRateStart > end) heartRateStart = end
   }
@@ -478,20 +500,26 @@ async function main(): Promise<void> {
   const activity = await fetchRange(access, 'daily_activity', start, endExclusive)
   const heartRateStartMs = localDayStartUtcMs(heartRateStart)
   const heartRateEndMs = now
-  const refreshedHeartRate = (
-    await fetchDateTimeRange(access, 'heartrate', heartRateStartMs, heartRateEndMs)
-  )
-    .map(heartRateSample)
-    .filter((sample): sample is OuraHeartRateSample => sample != null)
-  const heartRateByTimestamp = new Map(
-    heartRate
-      .filter(sample => Date.parse(sample.timestamp) < heartRateStartMs)
-      .map(sample => [sample.timestamp, sample]),
-  )
-  for (const sample of refreshedHeartRate) heartRateByTimestamp.set(sample.timestamp, sample)
-  heartRate = [...heartRateByTimestamp.values()].sort((left, right) =>
-    left.timestamp.localeCompare(right.timestamp),
-  )
+  try {
+    const refreshedHeartRate = (
+      await fetchDateTimeRange(access, 'heartrate', heartRateStartMs, heartRateEndMs)
+    )
+      .map(heartRateSample)
+      .filter((sample): sample is OuraHeartRateSample => sample != null)
+    const heartRateByTimestamp = new Map(
+      heartRate
+        .filter(sample => Date.parse(sample.timestamp) < heartRateStartMs)
+        .map(sample => [sample.timestamp, sample]),
+    )
+    for (const sample of refreshedHeartRate) heartRateByTimestamp.set(sample.timestamp, sample)
+    heartRate = [...heartRateByTimestamp.values()].sort((left, right) =>
+      left.timestamp.localeCompare(right.timestamp),
+    )
+  } catch (error) {
+    console.warn(
+      `[oura] heartrate: ${error instanceof Error ? error.message : 'refresh failed'}; keeping cached samples`,
+    )
+  }
 
   for (const r of readiness) {
     const day = str(r.day)

@@ -3,7 +3,7 @@ import test from 'node:test'
 import type { OuraDaily, OuraDayDetail } from '../plugins/stores/oura'
 import { emptyOuraDaily } from '../plugins/stores/oura'
 import { emptyOuraHealth } from '../util/oura-health'
-import { applyOuraSleepRows, ouraRefreshRange } from './sync-oura'
+import { applyOuraSleepRows, ouraDateTimeWindows, ouraRefreshRange } from './sync-oura'
 
 const NOW = Date.parse('2026-09-01T16:00:00Z')
 
@@ -25,7 +25,7 @@ test('Oura schema refresh keeps the full daily backfill and bounded heart rate',
   })
 })
 
-test('Oura routine refresh bridges multi-day sync gaps and heals interior holes or failed health days', () => {
+test('Oura routine refresh bridges multi-day sync gaps and heals interior holes without blowing out heartRateStart', () => {
   const oct9 = Date.parse('2026-10-09T16:00:00Z')
   const laggedCache = {
     lastSync: Date.parse('2026-10-02T12:00:00Z'),
@@ -64,8 +64,20 @@ test('Oura routine refresh bridges multi-day sync gaps and heals interior holes 
     start: '2026-10-03',
     end: '2026-10-14',
     endExclusive: '2026-10-15',
-    heartRateStart: '2026-10-03',
+    heartRateStart: '2026-10-12',
   })
+})
+
+test('ouraDateTimeWindows splits 30+ day heart-rate ranges into chunks within Oura API limits', () => {
+  const startMs = Date.parse('2026-09-15T04:00:00.000Z')
+  const endMs = Date.parse('2026-10-15T11:39:00.000Z')
+  const windows = ouraDateTimeWindows(startMs, endMs)
+  assert.equal(windows.length, 3)
+  assert.equal(windows[0].start, '2026-09-15T04:00:00.000Z')
+  assert.equal(windows.at(-1)?.end, '2026-10-15T11:39:00.000Z')
+  for (const window of windows) {
+    assert.ok(Date.parse(window.end) - Date.parse(window.start) <= 14 * 86_400_000)
+  }
 })
 
 const sleepRow = (id: string, type: string, start: string, seconds: number) => ({

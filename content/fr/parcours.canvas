@@ -5,87 +5,19 @@
       "type": "group",
       "label": "repères",
       "x": 0,
-      "y": 300,
-      "width": 440,
-      "height": 1240,
+      "y": 480,
+      "width": 640,
+      "height": 3300,
       "color": "4"
-    },
-    {
-      "id": "7fe8ae065f19e174",
-      "type": "group",
-      "label": "automne · épisodes 1–4",
-      "x": 520,
-      "y": 300,
-      "width": 440,
-      "height": 1240,
-      "color": "2"
-    },
-    {
-      "id": "750c7173092cf915",
-      "type": "group",
-      "label": "hiver · épisodes 5–8",
-      "x": 1040,
-      "y": 300,
-      "width": 440,
-      "height": 1240,
-      "color": "5"
-    },
-    {
-      "id": "0083d967459fbf97",
-      "type": "group",
-      "label": "printemps · épisodes 9–11",
-      "x": 1560,
-      "y": 300,
-      "width": 440,
-      "height": 1240,
-      "color": "4"
-    },
-    {
-      "id": "37f49b5db412cdfa",
-      "type": "group",
-      "label": "cours · juin–août 2026",
-      "x": 2080,
-      "y": 300,
-      "width": 960,
-      "height": 1240,
-      "color": "6"
-    },
-    {
-      "id": "386f8dd68b2c1bdc",
-      "type": "text",
-      "text": "# français québécois\n\nÉpisodes de Par ici, repères de langue et notes de cours. Chaque carte ouvre sa note.",
-      "x": 0,
-      "y": 0,
-      "width": 960,
-      "height": 220
-    },
-    {
-      "id": "97563f00c5816008",
-      "type": "file",
-      "file": "fr/index.md",
-      "x": 1320,
-      "y": 0,
-      "width": 360,
-      "height": 220,
-      "color": "3"
-    },
-    {
-      "id": "3ddcd95d2bff8e97",
-      "type": "text",
-      "text": "## parcours\n\nLes épisodes et les notes de cours suivent leur ordre de lecture. Les flèches « reprend » relient les cours aux épisodes cités.\n\nLes cartes d’un même groupe partagent leur couleur.",
-      "x": 2080,
-      "y": 0,
-      "width": 960,
-      "height": 220
     },
     {
       "id": "6ca7659c729f6285",
       "type": "file",
       "file": "fr/phrases.md",
       "x": 40,
-      "y": 360,
-      "width": 360,
-      "height": 220,
+      "y": 560,
+      "width": 560,
+      "height": 380,
       "color": "4"
     },
     {
@@ -93,9 +25,9 @@
       "type": "file",
       "file": "fr/les-nombres.md",
       "x": 40,
-      "y": 660,
-      "width": 360,
-      "height": 220,
+      "y": 1020,
+      "width": 560,
+      "height": 380,
       "color": "4"
     },
     {
@@ -103,228 +35,521 @@
       "type": "file",
       "file": "fr/orthography-phonetics.md",
       "x": 40,
-      "y": 960,
-      "width": 360,
-      "height": 220,
+      "y": 1480,
+      "width": 560,
+      "height": 380,
       "color": "4"
+    },
+    {
+      "id": "afd7295b41e8b6e4",
+      "type": "file",
+      "file": "fr/words.md",
+      "x": 40,
+      "y": 1940,
+      "width": 560,
+      "height": 380,
+      "color": "4"
+    },
+    {
+      "id": "9893192525a7ac96",
+      "type": "file",
+      "file": "fr/verbs.md",
+      "x": 40,
+      "y": 2400,
+      "width": 560,
+      "height": 380,
+      "color": "4"
+    },
+    {
+      "id": "e4427dc3ae5d7278",
+      "type": "file",
+      "file": "fr/mots.md",
+      "x": 40,
+      "y": 2860,
+      "width": 560,
+      "height": 380,
+      "color": "4"
+    },
+    {
+      "id": "817611ed3ece56b7",
+      "type": "file",
+      "file": "fr/books/index.md",
+      "x": 40,
+      "y": 3320,
+      "width": 560,
+      "height": 380,
+      "color": "4"
+    },
+    {
+      "id": "7fe8ae065f19e174",
+      "type": "group",
+      "label": "automne · épisodes 1–4",
+      "x": 720,
+      "y": 480,
+      "width": 640,
+      "height": 1920,
+      "color": "2"
     },
     {
       "id": "ddafc8572b51d1ef",
       "type": "file",
       "file": "fr/episode-1.md",
-      "x": 560,
-      "y": 360,
-      "width": 360,
-      "height": 220,
+      "x": 760,
+      "y": 560,
+      "width": 560,
+      "height": 380,
       "color": "2"
     },
     {
       "id": "826ee21b849d44e1",
       "type": "file",
       "file": "fr/episode-2.md",
-      "x": 560,
-      "y": 660,
-      "width": 360,
-      "height": 220,
+      "x": 760,
+      "y": 1020,
+      "width": 560,
+      "height": 380,
       "color": "2"
     },
     {
       "id": "79504b26d2339158",
       "type": "file",
       "file": "fr/episode-3.md",
-      "x": 560,
-      "y": 960,
-      "width": 360,
-      "height": 220,
+      "x": 760,
+      "y": 1480,
+      "width": 560,
+      "height": 380,
       "color": "2"
     },
     {
       "id": "8e57de8ee00c745f",
       "type": "file",
       "file": "fr/episode-4.md",
-      "x": 560,
-      "y": 1260,
-      "width": 360,
-      "height": 220,
+      "x": 760,
+      "y": 1940,
+      "width": 560,
+      "height": 380,
       "color": "2"
+    },
+    {
+      "id": "750c7173092cf915",
+      "type": "group",
+      "label": "hiver · épisodes 5–8",
+      "x": 1440,
+      "y": 480,
+      "width": 640,
+      "height": 1920,
+      "color": "5"
     },
     {
       "id": "0ee03bfb558d0654",
       "type": "file",
       "file": "fr/episode-5.md",
-      "x": 1080,
-      "y": 360,
-      "width": 360,
-      "height": 220,
+      "x": 1480,
+      "y": 560,
+      "width": 560,
+      "height": 380,
       "color": "5"
     },
     {
       "id": "6020bb978a77e6a9",
       "type": "file",
       "file": "fr/episode-6.md",
-      "x": 1080,
-      "y": 660,
-      "width": 360,
-      "height": 220,
+      "x": 1480,
+      "y": 1020,
+      "width": 560,
+      "height": 380,
       "color": "5"
     },
     {
       "id": "d5a39d9d3db4773e",
       "type": "file",
       "file": "fr/episode-7.md",
-      "x": 1080,
-      "y": 960,
-      "width": 360,
-      "height": 220,
+      "x": 1480,
+      "y": 1480,
+      "width": 560,
+      "height": 380,
       "color": "5"
     },
     {
       "id": "f7de50714c6dde75",
       "type": "file",
       "file": "fr/episode-8.md",
-      "x": 1080,
-      "y": 1260,
-      "width": 360,
-      "height": 220,
+      "x": 1480,
+      "y": 1940,
+      "width": 560,
+      "height": 380,
       "color": "5"
+    },
+    {
+      "id": "0083d967459fbf97",
+      "type": "group",
+      "label": "printemps · épisodes 9–12",
+      "x": 2160,
+      "y": 480,
+      "width": 640,
+      "height": 1920,
+      "color": "4"
     },
     {
       "id": "c4637546e835eb55",
       "type": "file",
       "file": "fr/episode-9.md",
-      "x": 1600,
-      "y": 360,
-      "width": 360,
-      "height": 220,
+      "x": 2200,
+      "y": 560,
+      "width": 560,
+      "height": 380,
       "color": "4"
     },
     {
       "id": "6c7cd97832eca94a",
       "type": "file",
       "file": "fr/episode-10.md",
-      "x": 1600,
-      "y": 660,
-      "width": 360,
-      "height": 220,
+      "x": 2200,
+      "y": 1020,
+      "width": 560,
+      "height": 380,
       "color": "4"
     },
     {
       "id": "9b81bb1eb77cfb2c",
       "type": "file",
       "file": "fr/episode-11.md",
-      "x": 1600,
-      "y": 960,
-      "width": 360,
-      "height": 220,
+      "x": 2200,
+      "y": 1480,
+      "width": 560,
+      "height": 380,
       "color": "4"
+    },
+    {
+      "id": "5616e3b7d2799dc8",
+      "type": "file",
+      "file": "fr/episode-12.md",
+      "x": 2200,
+      "y": 1940,
+      "width": 560,
+      "height": 380,
+      "color": "4"
+    },
+    {
+      "id": "6f22d47be6826275",
+      "type": "group",
+      "label": "été · épisodes 13–14",
+      "x": 2880,
+      "y": 480,
+      "width": 640,
+      "height": 1000,
+      "color": "1"
+    },
+    {
+      "id": "3792fcb2078e5b58",
+      "type": "file",
+      "file": "fr/episode-13.md",
+      "x": 2920,
+      "y": 560,
+      "width": 560,
+      "height": 380,
+      "color": "1"
+    },
+    {
+      "id": "a2f86a9ac048c23f",
+      "type": "file",
+      "file": "fr/episode-14.md",
+      "x": 2920,
+      "y": 1020,
+      "width": 560,
+      "height": 380,
+      "color": "1"
+    },
+    {
+      "id": "fd6fee990e7888a1",
+      "type": "group",
+      "label": "pratique · octobre 2026",
+      "x": 2880,
+      "y": 1600,
+      "width": 640,
+      "height": 1460,
+      "color": "3"
+    },
+    {
+      "id": "3dafcd4a76a50d2c",
+      "type": "file",
+      "file": "fr/practices/261004.md",
+      "x": 2920,
+      "y": 1680,
+      "width": 560,
+      "height": 380,
+      "color": "3"
+    },
+    {
+      "id": "df125632031d28a1",
+      "type": "file",
+      "file": "fr/practices/261009.md",
+      "x": 2920,
+      "y": 2140,
+      "width": 560,
+      "height": 380,
+      "color": "3"
+    },
+    {
+      "id": "c76c6f788bf6b2fa",
+      "type": "file",
+      "file": "fr/practices/261012.md",
+      "x": 2920,
+      "y": 2600,
+      "width": 560,
+      "height": 380,
+      "color": "3"
+    },
+    {
+      "id": "37f49b5db412cdfa",
+      "type": "group",
+      "label": "cours · juin–octobre 2026",
+      "x": 3600,
+      "y": 480,
+      "width": 1360,
+      "height": 3300,
+      "color": "6"
     },
     {
       "id": "20c2994b265041f2",
       "type": "file",
       "file": "fr/lessons/260610.md",
-      "x": 2120,
-      "y": 360,
-      "width": 360,
-      "height": 220,
+      "x": 3640,
+      "y": 560,
+      "width": 560,
+      "height": 380,
       "color": "6"
     },
     {
       "id": "62c4d4d16bc86061",
       "type": "file",
       "file": "fr/lessons/260714.md",
-      "x": 2120,
-      "y": 660,
-      "width": 360,
-      "height": 220,
+      "x": 4360,
+      "y": 560,
+      "width": 560,
+      "height": 380,
       "color": "6"
+    },
+    {
+      "id": "d0e1796e691e0425",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-4|4]].",
+      "x": 4360,
+      "y": 952,
+      "width": 560,
+      "height": 66
     },
     {
       "id": "5e443968c30c9fe2",
       "type": "file",
       "file": "fr/lessons/260727.md",
-      "x": 2120,
-      "y": 960,
-      "width": 360,
-      "height": 220,
+      "x": 3640,
+      "y": 1100,
+      "width": 560,
+      "height": 380,
       "color": "6"
+    },
+    {
+      "id": "efe950fb98acdd58",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-5|5]], [[fr/episode-8|8]].",
+      "x": 3640,
+      "y": 1492,
+      "width": 560,
+      "height": 66
     },
     {
       "id": "0f5297063854cbb8",
       "type": "file",
       "file": "fr/lessons/260803.md",
-      "x": 2120,
-      "y": 1260,
-      "width": 360,
-      "height": 220,
+      "x": 4360,
+      "y": 1100,
+      "width": 560,
+      "height": 380,
       "color": "6"
     },
     {
       "id": "303f979ed2649480",
       "type": "file",
       "file": "fr/lessons/260810.md",
-      "x": 2640,
-      "y": 360,
-      "width": 360,
-      "height": 220,
+      "x": 3640,
+      "y": 1640,
+      "width": 560,
+      "height": 380,
       "color": "6"
+    },
+    {
+      "id": "ba485e98bbe91793",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-7|7]].",
+      "x": 3640,
+      "y": 2032,
+      "width": 560,
+      "height": 66
     },
     {
       "id": "fd45ddafef9e1f96",
       "type": "file",
       "file": "fr/lessons/260817.md",
-      "x": 2640,
-      "y": 660,
-      "width": 360,
-      "height": 220,
+      "x": 4360,
+      "y": 1640,
+      "width": 560,
+      "height": 380,
       "color": "6"
+    },
+    {
+      "id": "1772b2ee4d90ac7f",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-8|8]].",
+      "x": 4360,
+      "y": 2032,
+      "width": 560,
+      "height": 66
     },
     {
       "id": "561e1e8f18cfc0ef",
       "type": "file",
       "file": "fr/lessons/260831.md",
-      "x": 2640,
-      "y": 960,
-      "width": 360,
-      "height": 220,
+      "x": 3640,
+      "y": 2180,
+      "width": 560,
+      "height": 380,
       "color": "6"
+    },
+    {
+      "id": "952fab420acf1962",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-8|8]], [[fr/episode-9|9]].",
+      "x": 3640,
+      "y": 2572,
+      "width": 560,
+      "height": 66
+    },
+    {
+      "id": "a78ecbd7f789ca79",
+      "type": "file",
+      "file": "fr/lessons/260916.md",
+      "x": 4360,
+      "y": 2180,
+      "width": 560,
+      "height": 380,
+      "color": "6"
+    },
+    {
+      "id": "20acf4862438537b",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-3|3]], [[fr/episode-6|6]], [[fr/episode-9|9]], [[fr/episode-10|10]].",
+      "x": 4360,
+      "y": 2572,
+      "width": 560,
+      "height": 66
+    },
+    {
+      "id": "a1580e88fa42444b",
+      "type": "file",
+      "file": "fr/lessons/260921.md",
+      "x": 3640,
+      "y": 2720,
+      "width": 560,
+      "height": 380,
+      "color": "6"
+    },
+    {
+      "id": "0e95dda06d520af8",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-9|9]], [[fr/episode-10|10]].",
+      "x": 3640,
+      "y": 3112,
+      "width": 560,
+      "height": 66
+    },
+    {
+      "id": "33cc3f9cc97d6069",
+      "type": "file",
+      "file": "fr/lessons/260929.md",
+      "x": 4360,
+      "y": 2720,
+      "width": 560,
+      "height": 380,
+      "color": "6"
+    },
+    {
+      "id": "8f00188237d520a5",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-1|1]], [[fr/episode-5|5]], [[fr/episode-10|10]], [[fr/episode-11|11]].",
+      "x": 4360,
+      "y": 3112,
+      "width": 560,
+      "height": 66
+    },
+    {
+      "id": "01aac69b1fa5ecbb",
+      "type": "file",
+      "file": "fr/lessons/261006.md",
+      "x": 3640,
+      "y": 3260,
+      "width": 560,
+      "height": 380,
+      "color": "6"
+    },
+    {
+      "id": "fe9a3971446f2f62",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-11|11]], [[fr/episode-12|12]], [[fr/episode-13|13]].",
+      "x": 3640,
+      "y": 3652,
+      "width": 560,
+      "height": 66
+    },
+    {
+      "id": "db61dec76d23727a",
+      "type": "file",
+      "file": "fr/lessons/261013.md",
+      "x": 4360,
+      "y": 3260,
+      "width": 560,
+      "height": 380,
+      "color": "6"
+    },
+    {
+      "id": "f9b4365bc579b772",
+      "type": "text",
+      "text": "Reprend : [[fr/episode-13|13]], [[fr/episode-14|14]].",
+      "x": 4360,
+      "y": 3652,
+      "width": 560,
+      "height": 66
+    },
+    {
+      "id": "386f8dd68b2c1bdc",
+      "type": "text",
+      "text": "# français québécois\n\nÉpisodes de Par ici, repères de langue, notes de cours, exercices et lectures. Chaque carte ouvre sa note.",
+      "x": 0,
+      "y": 0,
+      "width": 1360,
+      "height": 380
+    },
+    {
+      "id": "3ddcd95d2bff8e97",
+      "type": "text",
+      "text": "## parcours\n\nLes épisodes se lisent de haut en bas, puis de gauche à droite. Les cours suivent les dates, de gauche à droite dans chaque rangée.\n\nSous chaque cours, « Reprend » ouvre les épisodes cités dans la note. Les flèches restent dans leur saison.\n\nZoomez sur une section pour lire les cartes. Les repères et les exercices ont leur propre groupe.",
+      "x": 2880,
+      "y": 0,
+      "width": 2080,
+      "height": 380
+    },
+    {
+      "id": "97563f00c5816008",
+      "type": "file",
+      "file": "fr/index.md",
+      "x": 1800,
+      "y": 0,
+      "width": 560,
+      "height": 380,
+      "color": "3"
     }
   ],
   "edges": [
-    {
-      "id": "96000bd1e694d0ae",
-      "fromNode": "97563f00c5816008",
-      "fromSide": "bottom",
-      "toNode": "7d3f5c5602fa06cb",
-      "toSide": "top"
-    },
-    {
-      "id": "57a5b4dce6c4beda",
-      "fromNode": "97563f00c5816008",
-      "fromSide": "bottom",
-      "toNode": "7fe8ae065f19e174",
-      "toSide": "top"
-    },
-    {
-      "id": "3e7668a604225a4a",
-      "fromNode": "97563f00c5816008",
-      "fromSide": "bottom",
-      "toNode": "750c7173092cf915",
-      "toSide": "top"
-    },
-    {
-      "id": "26e3593ba1b9964c",
-      "fromNode": "97563f00c5816008",
-      "fromSide": "bottom",
-      "toNode": "0083d967459fbf97",
-      "toSide": "top"
-    },
-    {
-      "id": "98ef86c0c949f349",
-      "fromNode": "97563f00c5816008",
-      "fromSide": "bottom",
-      "toNode": "37f49b5db412cdfa",
-      "toSide": "top"
-    },
     {
       "id": "c07a292ddcd6bbb3",
       "fromNode": "ddafc8572b51d1ef",
@@ -345,13 +570,6 @@
       "fromSide": "bottom",
       "toNode": "8e57de8ee00c745f",
       "toSide": "top"
-    },
-    {
-      "id": "26f8ac8abb86cb1b",
-      "fromNode": "8e57de8ee00c745f",
-      "fromSide": "right",
-      "toNode": "0ee03bfb558d0654",
-      "toSide": "left"
     },
     {
       "id": "99e8d01a12cbea5c",
@@ -375,13 +593,6 @@
       "toSide": "top"
     },
     {
-      "id": "5947f3aaaf7445a0",
-      "fromNode": "f7de50714c6dde75",
-      "fromSide": "right",
-      "toNode": "c4637546e835eb55",
-      "toSide": "left"
-    },
-    {
       "id": "1fade5d650621d74",
       "fromNode": "c4637546e835eb55",
       "fromSide": "bottom",
@@ -396,109 +607,18 @@
       "toSide": "top"
     },
     {
-      "id": "08217c4d353dad8d",
-      "fromNode": "20c2994b265041f2",
+      "id": "316478118c50b7e4",
+      "fromNode": "9b81bb1eb77cfb2c",
+      "toNode": "5616e3b7d2799dc8",
       "fromSide": "bottom",
-      "toNode": "62c4d4d16bc86061",
       "toSide": "top"
     },
     {
-      "id": "e0997b1c5890e619",
-      "fromNode": "62c4d4d16bc86061",
+      "id": "ddcaf741e34eb978",
+      "fromNode": "3792fcb2078e5b58",
+      "toNode": "a2f86a9ac048c23f",
       "fromSide": "bottom",
-      "toNode": "5e443968c30c9fe2",
       "toSide": "top"
-    },
-    {
-      "id": "64f96ee00be42a85",
-      "fromNode": "5e443968c30c9fe2",
-      "fromSide": "bottom",
-      "toNode": "0f5297063854cbb8",
-      "toSide": "top"
-    },
-    {
-      "id": "94a8d3cc854f5849",
-      "fromNode": "0f5297063854cbb8",
-      "fromSide": "right",
-      "toNode": "303f979ed2649480",
-      "toSide": "left"
-    },
-    {
-      "id": "cbf4bf13b81616a3",
-      "fromNode": "303f979ed2649480",
-      "fromSide": "bottom",
-      "toNode": "fd45ddafef9e1f96",
-      "toSide": "top"
-    },
-    {
-      "id": "4325c38f1e2b486e",
-      "fromNode": "fd45ddafef9e1f96",
-      "fromSide": "bottom",
-      "toNode": "561e1e8f18cfc0ef",
-      "toSide": "top"
-    },
-    {
-      "id": "7dddd1a4dab3c22c",
-      "fromNode": "62c4d4d16bc86061",
-      "fromSide": "left",
-      "toNode": "8e57de8ee00c745f",
-      "toSide": "right",
-      "color": "5",
-      "label": "reprend"
-    },
-    {
-      "id": "709648a834f7a1b2",
-      "fromNode": "5e443968c30c9fe2",
-      "fromSide": "left",
-      "toNode": "0ee03bfb558d0654",
-      "toSide": "right",
-      "color": "5",
-      "label": "reprend"
-    },
-    {
-      "id": "4192037db6cbfcbb",
-      "fromNode": "5e443968c30c9fe2",
-      "fromSide": "left",
-      "toNode": "f7de50714c6dde75",
-      "toSide": "right",
-      "color": "5",
-      "label": "reprend"
-    },
-    {
-      "id": "fe344d6768a3088a",
-      "fromNode": "303f979ed2649480",
-      "fromSide": "left",
-      "toNode": "d5a39d9d3db4773e",
-      "toSide": "right",
-      "color": "5",
-      "label": "reprend"
-    },
-    {
-      "id": "4637294f0159a7a8",
-      "fromNode": "fd45ddafef9e1f96",
-      "fromSide": "left",
-      "toNode": "f7de50714c6dde75",
-      "toSide": "right",
-      "color": "5",
-      "label": "reprend"
-    },
-    {
-      "id": "a3fa2d567c959fa9",
-      "fromNode": "561e1e8f18cfc0ef",
-      "fromSide": "left",
-      "toNode": "f7de50714c6dde75",
-      "toSide": "right",
-      "color": "5",
-      "label": "reprend"
-    },
-    {
-      "id": "cd8010fc810df5ea",
-      "fromNode": "561e1e8f18cfc0ef",
-      "fromSide": "left",
-      "toNode": "c4637546e835eb55",
-      "toSide": "right",
-      "color": "5",
-      "label": "reprend"
     }
   ]
 }
