@@ -428,6 +428,112 @@ $pet-looks: (
   }
 }
 
+// Snow where the visitor is: a mitten on every hand it shows. At rest the flakes fall round it, and
+// with its hands free (no prop from the page's outfit) it holds both mittens up to catch them: one
+// comes down into the front mitten, which dips as it lands, and melts there.
+.pet-mitten {
+  display: none;
+}
+
+.pet-svg[data-snow] {
+  .pet-mitten {
+    display: inline;
+  }
+
+  &:is([data-state='idle'], [data-state='wait']):not([data-kind='hang']) {
+    [data-part='snowfall'] {
+      display: inline;
+    }
+
+    &:is(:not([data-outfit]), [data-outfit=''], [data-outfit='triathlon'], [data-outfit='posts'])
+      [data-part='catch'] {
+      display: inline;
+    }
+  }
+
+  .pet-flake {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: pet-snowfall 4.2s steps(21) infinite;
+  }
+
+  .pet-catch {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: pet-catch 5s steps(25) infinite;
+  }
+
+  .pet-catch-arm:first-child {
+    animation: pet-catch-dip 5s steps(25) infinite;
+  }
+}
+
+@keyframes pet-snowfall {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  12%,
+  80% {
+    opacity: 1;
+  }
+  50% {
+    translate: var(--sway) calc(var(--fall) * 0.5);
+  }
+  100% {
+    opacity: 0;
+    translate: calc(var(--sway) * -0.5) var(--fall);
+    rotate: 90deg;
+  }
+}
+
+// Down from above the front mitten with a drift, in by 52%, then it melts away.
+@keyframes pet-catch {
+  0% {
+    opacity: 0;
+    translate: 0.3px -1.1px;
+    rotate: 0deg;
+  }
+  8% {
+    opacity: 1;
+  }
+  28% {
+    translate: 0.06px -0.6px;
+  }
+  52% {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 120deg;
+    scale: 1;
+  }
+  72% {
+    opacity: 1;
+    scale: 0.85;
+  }
+  84%,
+  100% {
+    opacity: 0;
+    translate: 0 0.04px;
+    rotate: 120deg;
+    scale: 0.2;
+  }
+}
+
+@keyframes pet-catch-dip {
+  0%,
+  52%,
+  64%,
+  100% {
+    translate: 0 0;
+  }
+  56% {
+    translate: 0 0.05px;
+  }
+}
+
 // The friend keeps its sprout, so it goes without the toque.
 .garden-pet-friend .pet-svg[data-cold] [data-part='toque'] {
   display: none;

@@ -1389,6 +1389,79 @@ export function umbrella(w: number, paper = PAPER, ink = INK, cloth = PINK, pane
   return { held, rain }
 }
 
+// Snow: a pink knit mitten with a sage ribbed cuff over the wrist, on an arm that reaches from
+// `from` to `tip`; `side` puts the thumb on one side of it or the other.
+export function mitten(
+  from: Pt,
+  tip: Pt,
+  side: 1 | -1,
+  w: number,
+  ink = INK,
+  wool = PINK,
+  cuff = SAGE,
+  seed = 900,
+) {
+  const a = Math.atan2(tip[0] - from[0], from[1] - tip[1])
+  const [c, s] = [Math.cos(a), Math.sin(a)]
+  // Drawn pointing up (-y), then turned to lie along the arm.
+  const place = (pts: readonly Pt[]) =>
+    pts.map(([x, y]) => [tip[0] + x * c - y * s, tip[1] + x * s + y * c] as const)
+  const shape = (pts: Pt[], fill: string, k: number) =>
+    filled(place(hand(pts, 0.02, 0.005, seed + k)), fill, pressure(seed + 5 + k, w, 0.2), ink)
+  const ribs = [-0.07, -0.024, 0.024, 0.07]
+    .map(x =>
+      stroke(
+        place([
+          [x, -0.04],
+          [x, 0.03],
+        ]),
+        () => w * 0.4,
+        INK,
+      ),
+    )
+    .join('')
+  return (
+    shape(rounded(side * 0.12, -0.12, 0.1, 0.14, 0.05), wool, 0) +
+    shape(rounded(0, -0.19, 0.22, 0.28, 0.1), wool, 1) +
+    shape(rounded(0, -0.005, 0.25, 0.09, 0.03), cuff, 2) +
+    ribs
+  )
+}
+
+// A snowflake: three strokes crossed at its centre, with a fork at each tip.
+export function flake(x: number, y: number, r: number, w: number, ink = INK) {
+  return [0, 1, 2]
+    .map(k => {
+      const a = (k * Math.PI) / 3 + 0.3
+      const [dx, dy] = [Math.cos(a) * r, Math.sin(a) * r]
+      const arm = stroke(
+        [
+          [x - dx, y - dy],
+          [x + dx, y + dy],
+        ],
+        () => w,
+        ink,
+      )
+      const forks = [1, -1]
+        .flatMap(e => [0.5, -0.5].map(t => [e, t] as const))
+        .map(([e, t]) => {
+          const [bx, by] = [x + e * dx * 0.6, y + e * dy * 0.6]
+          const b = a + (e > 0 ? 0 : Math.PI) + t * 1.6
+          return stroke(
+            [
+              [bx, by],
+              [bx + Math.cos(b) * r * 0.35, by + Math.sin(b) * r * 0.35],
+            ],
+            () => w * 0.7,
+            ink,
+          )
+        })
+        .join('')
+      return arm + forks
+    })
+    .join('')
+}
+
 // Philosophy: hair gone wild after a long night with the questions. Two dozen strands spring off
 // the crown, most of them up, the rest out over the ears, each a tapered line that kinks back and
 // forth as it goes. `k` picks one of its drawings, so the hair can frizz between them.
@@ -1498,8 +1571,16 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     'pet-legs',
   )
 
+  // In the snow every hand it shows wears a mitten (pet.scss shows them with data-snow).
+  const mitt = (pts: readonly Pt[], side: 1 | -1, seed: number) =>
+    `<g class="pet-mitten">${mitten(pts[pts.length - 2], pts[pts.length - 1], side, L * 0.76, ink, pink, SAGE, seed)}</g>`
   const arm = (side: 'l' | 'r', pts: Pt[], seed: number) =>
-    part(`arm-${side}`, pen(densify(pts, 0.05), pressure(seed, L * 1.1, 0.2)), 'pet-arm')
+    part(
+      `arm-${side}`,
+      pen(densify(pts, 0.05), pressure(seed, L * 1.1, 0.2)) +
+        mitt(pts, side === 'l' ? 1 : -1, 900 + seed),
+      'pet-arm',
+    )
   const arms =
     arm(
       'l',
@@ -1536,7 +1617,11 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
         ],
       ] as Pt[][]
     )
-      .map((pts, i) => pen(densify(pts, 0.05), pressure(48 + i, L * 1.1, 0.2)))
+      .map(
+        (pts, i) =>
+          pen(densify(pts, 0.05), pressure(48 + i, L * 1.1, 0.2)) +
+          mitt(pts, i ? -1 : 1, 960 + 10 * i),
+      )
       .join(''),
   )
 
@@ -1570,7 +1655,10 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
           ],
         ] as Pt[][]
       )
-        .map((pts, i) => pen(densify(pts, 0.05), pressure(54 + i, L * 1.1, 0.2)))
+        .map(
+          (pts, i) =>
+            pen(densify(pts, 0.05), pressure(54 + i, L * 1.1, 0.2)) + mitt(pts, 1, 980 + 10 * i),
+        )
         .join(''),
   )
 
@@ -1855,6 +1943,48 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
   const breath = part('breath', cold.puffs)
   // On triathlon pages it goes out in its wind vest instead, the back panel flapping.
   const gilet = windVest(outline, w, ink, SAGE, pink)
+  // In the snow, at rest, it holds both mittens up to catch the flakes falling round it; one comes
+  // down into the front mitten and melts there.
+  const reach: Pt[][] = [
+    [
+      [-0.9, -0.08],
+      [-1.22, -0.3],
+      [-1.36, -0.62],
+    ],
+    [
+      [0.92, -0.08],
+      [1.24, -0.32],
+      [1.36, -0.64],
+    ],
+  ]
+  const caught = part(
+    'catch',
+    reach
+      .map(
+        (pts, i) =>
+          `<g class="pet-catch-arm">${pen(densify(pts, 0.05), pressure(61 + i, L * 1.1, 0.2))}<g class="pet-catch-mitt">${mitten(pts[1], pts[2], i ? -1 : 1, L * 0.76, ink, pink, SAGE, 940 + 10 * i)}</g></g>`,
+      )
+      .join('') + `<g class="pet-catch">${flake(-1.5, -0.98, 0.09, L * 0.45, ink)}</g>`,
+  )
+  // Falling where it stands: each flake drifts down its own distance with a sway.
+  const snowfall = part(
+    'snowfall',
+    (
+      [
+        [-1.62, -1.9, 1.5, 0.12],
+        [-1.0, -2.15, 1.0, -0.1],
+        [-0.25, -2.25, 0.7, 0.08],
+        [0.55, -2.1, 0.6, -0.08],
+        [1.12, -1.95, 0.9, 0.1],
+        [1.66, -1.7, 1.6, -0.12],
+      ] as const
+    )
+      .map(
+        ([x, y, fall, sway], i) =>
+          `<g class="pet-flake" style="--fall:${fall}px;--sway:${sway}px;animation-delay:${(-0.7 * i).toFixed(1)}s">${flake(x, y, 0.07 + 0.015 * (i % 2), L * 0.4, ink)}</g>`,
+      )
+      .join(''),
+  )
   // In the rain it holds up its little umbrella, the rain falling past in two drawings.
   const brolly = umbrella(w, paper, ink, pink, SAGE)
   const shelter = part(
@@ -2042,5 +2172,5 @@ export function petSvg(paper = 'var(--light)', ink = 'var(--dark)', pink = PINK,
     ),
   )
 
-  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${scarf}${outfit.front}${glasses}${toque}${hat}${shelter}${breath}${arms}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
+  return `<svg class="pet-svg" viewBox="-1.8 -2 3.6 3.8" aria-hidden="true" focusable="false" data-state="idle"><g class="pet-flip">${ground}${snowfall}<g class="pet-hop"><g class="pet-lean">${chute}${legs}${speed}<g class="pet-body">${jetpack}${hair}${outfit.back}${body}${vest}${strap}<g class="pet-look">${dash}${happy}${wide}${wince}${mouthO}${smile}${grin}${blush}</g>${scarf}${outfit.front}${glasses}${toque}${hat}${shelter}${breath}${arms}${caught}${grip}${pole}${laptop}</g>${sweat}${dots}${thought}</g></g></g></svg>`
 }
