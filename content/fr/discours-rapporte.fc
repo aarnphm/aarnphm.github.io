@@ -1,0 +1,87 @@
+---
+title: discours-rapporte
+tags:
+  - fr
+  - language
+  - learning
+---
+
+C: Il a dit qu'il [était] fatigué. (Il dit : « Je suis fatigué. »)
+N: présent → imparfait in reported speech (past reporting verb).
+
+---
+
+C: Elle a dit qu'elle [avait fini]. (Elle dit : « J'ai fini. »)
+N: passé composé → plus-que-parfait.
+
+---
+
+C: Il a dit qu'il [viendrait]. (Il dit : « Je viendrai. »)
+N: futur → conditionnel présent.
+
+---
+
+C: Elle demande [si] je viens. (Elle demande : « Est-ce que tu viens ? »)
+N: Yes/no question → {{`si`}} (no inversion, no {{`est-ce que`}}).
+
+---
+
+C: Il demande [où] est la gare. (Il demande : « Où est la gare ? »)
+N: WH-questions keep their question word, no inversion.
+
+---
+
+C: Il lui a dit [de faire] ses devoirs. (« Fais tes devoirs ! »)
+N: Imperative → {{`de`}} + infinitive (with subject change).
+
+---
+
+Q: Full concordance des temps table (reporting verb in the past)?
+A: présent → imparfait · passé composé → plus-que-parfait · futur → conditionnel · futur antérieur → conditionnel passé · impératif → {{`de`}} + inf. · subjonctif présent → subjonctif imparfait (rare, literary).
+
+---
+
+C: Il m'a dit qu'il [le ferait] [le lendemain]. (« Je le ferai demain. »)
+N: Time words shift: {{`demain`}} → {{`le lendemain`}}, {{`hier`}} → {{`la veille`}}, {{`aujourd'hui`}} → {{`ce jour-là`}}.
+
+---
+
+C: Elle m'a demandé [pourquoi] je [pleurais]. (« Pourquoi pleures-tu ? »)
+N: WH-word kept, verb → imparfait (past reporting), no inversion.
+
+---
+
+C: Il m'a demandé [ce que] je [faisais]. (« Qu'est-ce que tu fais ? »)
+N: {{`qu'est-ce que`}} → {{`ce que`}} in reported speech.
+
+---
+
+C: Il a dit qu'il [ne pouvait pas] venir. (Il dit : « Je ne peux pas venir. »)
+N: {{`pouvoir`}} présent → imparfait: {{`pouvait`}}.
+
+---
+
+C: Elle lui a dit [de partir]. (Elle dit : « Pars ! »)
+N: Imperative → {{`de`}} + infinitive.
+
+---
+
+C: Il a dit qu'il [avait plu] [la veille]. (Il dit : « Il a plu hier. »)
+N: Passé composé → plus-que-parfait; {{`hier`}} → {{`la veille`}}.
+
+---
+
+C: Elle a dit qu'elle [préparerait] le repas [ce jour-là]. (Elle dit : « Je préparerai le repas aujourd'hui. »)
+N: Futur → conditionnel; {{`aujourd'hui`}} → {{`ce jour-là`}}.
+
+---
+
+Q: Translate: "She asked me what I was doing."
+A: {{`Elle m'a demandé ce que je faisais.`}}
+N: {{`qu'est-ce que`}} → {{`ce que`}}; présent → imparfait.
+
+---
+
+Q: « Je viendrai demain. » → reported?
+A: {{`Il a dit qu'il viendrait le lendemain.`}}
+N: Futur → conditionnel; {{`demain`}} → {{`le lendemain`}}.
