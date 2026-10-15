@@ -21,6 +21,7 @@ import {
   reader,
   student,
   engineer,
+  cinephile,
   loop,
   mascot,
   PAPER,
@@ -136,6 +137,12 @@ function engineerIcon() {
   return icon('', `${hardhat}${flask}${bubbles}`, 340, 540)
 }
 
+// Cinema: the film nerd, thick square specs on, a striped bucket of popcorn held up.
+function cinephileIcon() {
+  const { specs, popcorn } = cinephile(ICON_PEN)
+  return icon('', `${specs}${popcorn}`, 340, 540)
+}
+
 // Slides: the presenter, bow tie on, pointing at a bar chart on a small screen.
 function presenterIcon() {
   const { bow, pointer, screen } = presenter(ICON_PEN)
@@ -153,6 +160,7 @@ const SECTION_ICONS = {
   stream: readerIcon,
   courses: studentIcon,
   engineering: engineerIcon,
+  cinema: cinephileIcon,
 } as const
 
 const W = 1200

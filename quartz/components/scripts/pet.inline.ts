@@ -16,7 +16,11 @@ import {
   type SpacingBounds,
 } from '../visitor-trail/actor-spacing'
 import { clockObstacles, trailClockRegion } from '../visitor-trail/clock-clearance'
-import { detourPetTrail, type PetTrailFoot } from '../visitor-trail/pet-trail'
+import {
+  detourPetTrailSteps,
+  type PetTrailFoot,
+  type PetTrailSearch,
+} from '../visitor-trail/pet-trail'
 import { visibleTextBoxes } from './pet-text-boxes'
 
 // The garden's pet: the pen-drawn mascot, living on the page's edges. It perches on the nearest box
@@ -416,16 +420,12 @@ const campSolids = (): CollisionActor[] => {
   }
   return obstacles
 }
-const trailSurfaces =
-  '.homepage-board, .trail-tree-panel:not([hidden]), .trail-camp-tools:not([hidden])'
-
 const petObstacles = () => ({
   text: visibleTextBoxes(document, root),
   panels: [
-    ...[
-      ...document.querySelectorAll<HTMLElement>(trailSurfaces),
-      ...(trailScene(document)?.querySelectorAll<HTMLElement>(trailSurfaces) ?? []),
-    ].map(panel => panel.getBoundingClientRect()),
+    ...Array.from(document.querySelectorAll<HTMLElement>('.homepage-board'), panel =>
+      panel.getBoundingClientRect(),
+    ),
     ...[trailClockRegion(document)].flatMap(region => (region ? [region] : [])),
   ],
   camps: campSolids(),
@@ -899,6 +899,17 @@ const planTrailWalk = (
   bodies: readonly CollisionActor[],
   obstacles: PetObstacles,
 ) => {
+  const search = planTrailWalkSteps(feet, path, bodies, obstacles)
+  let step = search.next()
+  while (!step.done) step = search.next()
+  return step.value
+}
+function* planTrailWalkSteps(
+  feet: TrailFoot[],
+  path: SVGPathElement,
+  bodies: readonly CollisionActor[],
+  obstacles: PetObstacles,
+): PetTrailSearch {
   const scale = Math.max(...feet.map(foot => foot.scale))
   const bounds: SpacingBounds = {
     left: window.scrollX + margin + (width * scale) / 2,
@@ -907,8 +918,13 @@ const planTrailWalk = (
     bottom:
       window.scrollY + window.innerHeight - margin - (viewBottom - edgeY.stand) * unit * scale,
   }
-  const planned = detourPetTrail(feet, width * 0.35, bodies, bounds)
-  return planned?.every(foot => trailPointClear(foot, path, obstacles)) ? planned : null
+  const planned = yield* detourPetTrailSteps(feet, width * 0.35, bodies, bounds)
+  if (!planned) return null
+  for (const foot of planned) {
+    yield
+    if (!trailPointClear(foot, path, obstacles)) return null
+  }
+  return planned
 }
 
 const currentTrailProgress = () => {
@@ -935,6 +951,7 @@ const trailFootAt = (current: TrailWalk, time: number): TrailFoot => {
 }
 let trailGuardTimer = 0
 let trailPaintFrame = 0
+let trailPlanFrame = 0
 let trailActor: SVGGElement | null = null
 let trailArt: SVGGElement | null = null
 let trailYieldEpisode = 0
@@ -959,6 +976,8 @@ const stopTrailGuard = () => {
   trailGuardTimer = 0
   cancelAnimationFrame(trailPaintFrame)
   trailPaintFrame = 0
+  cancelAnimationFrame(trailPlanFrame)
+  trailPlanFrame = 0
   if (root) {
     root.dataset.trailGuard = 'paused'
     root.dataset.yieldingTo = ''
@@ -1083,6 +1102,7 @@ const guardTrail = (animation: Animation, path: SVGPathElement) => {
     const resting = animal?.resting && now - blockedSince >= 5000
     if (
       blocked &&
+      !trailPlanFrame &&
       (!animal || resting) &&
       now - lastPlan >= 750 &&
       (resting || blocker?.kind === 'trunk' || now - blockedSince >= 500)
@@ -1098,12 +1118,30 @@ const guardTrail = (animation: Animation, path: SVGPathElement) => {
             ? [{ ...other, radius: other.radius + radius * 1.5 + 14 }]
             : [],
       )
-      const planned = planTrailWalk([foot, ...remaining], path, bodies, petObstacles())
-      if (planned && planned.length > 1) {
-        root.dataset.trailDetours = String(Number(root.dataset.trailDetours ?? 0) + 1)
-        follow(planned, path)
-        return
+      const search = planTrailWalkSteps([foot, ...remaining], path, bodies, petObstacles())
+      const advance = () => {
+        trailPlanFrame = 0
+        if (
+          !root ||
+          hop !== animation ||
+          animation.playState !== 'paused' ||
+          Math.abs(Number(animation.currentTime) - time) > 1
+        )
+          return
+        const deadline = performance.now() + 3
+        let result = search.next()
+        while (!result.done && performance.now() < deadline) result = search.next()
+        if (!result.done) {
+          trailPlanFrame = requestAnimationFrame(advance)
+          return
+        }
+        const planned = result.value
+        if (planned && planned.length > 1) {
+          root.dataset.trailDetours = String(Number(root.dataset.trailDetours ?? 0) + 1)
+          follow(planned, path)
+        }
       }
+      trailPlanFrame = requestAnimationFrame(advance)
     }
     root.dataset.trailGuard = 'active'
     root.dataset.yieldingTo = animal?.id ?? ''
@@ -2494,6 +2532,9 @@ document.addEventListener('nav', () => {
   const refreshTrail = () => {
     trailFrame = 0
     if (signal.aborted || !scene || scene.hidden || document.hidden || reducedMotion()) return
+    const drawing = trailScene(document)
+    if (drawing?.dataset.trailOpening !== 'complete' || drawing.dataset.trailReveal === 'revealing')
+      return
     if (scene.dataset.trailResizing === 'true') {
       trailWanted ||= !!trailWalk
       if (trailWalk?.duration) pauseTrail()
@@ -2600,6 +2641,7 @@ document.addEventListener('nav', () => {
     scene.addEventListener('trail:dispose', closeTrail, { signal })
     scene.addEventListener('trail:reflow', queueTrail, { signal })
     scene.addEventListener('trail:ready', openTrail, { signal })
+    scene.addEventListener('trail:revealed', openTrail, { signal })
     scene.addEventListener('load', openTrail, { capture: true, signal })
     // The host's events bracket a redraw; the route paths change in between, so they are watched.
     let paths: MutationObserver | null = null
@@ -2636,15 +2678,17 @@ document.addEventListener('nav', () => {
     const controlsChanged = () => {
       if (root && !carry) {
         const pet = root.getBoundingClientRect()
-        const covered = [...document.querySelectorAll<HTMLElement>(trailSurfaces)].some(panel => {
-          const box = panel.getBoundingClientRect()
-          return (
-            box.left < pet.right &&
-            box.right > pet.left &&
-            box.top < pet.bottom &&
-            box.bottom > pet.top
-          )
-        })
+        const covered = [...document.querySelectorAll<HTMLElement>('.homepage-board')].some(
+          panel => {
+            const box = panel.getBoundingClientRect()
+            return (
+              box.left < pet.right &&
+              box.right > pet.left &&
+              box.top < pet.bottom &&
+              box.bottom > pet.top
+            )
+          },
+        )
         if (covered) {
           pauseTrail()
           const anchor = center()

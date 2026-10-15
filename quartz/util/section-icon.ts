@@ -14,6 +14,7 @@ export const SECTIONS = [
   'stream',
   'courses',
   'engineering',
+  'cinema',
 ] as const
 
 export type Section = (typeof SECTIONS)[number]
@@ -32,8 +33,13 @@ const PAGES: Record<string, Section> = {
   vibes: 'art',
 }
 
-// Folders below the top level that wear a section's icon, with everything under them.
-const SUBFOLDERS: Record<string, Section> = { 'thoughts/university': 'engineering' }
+// Paths that wear a section's icon with everything under them: folders below the top level, a
+// folder whose name is not its section's, and a base with its views.
+const PREFIXES: Record<string, Section> = {
+  'thoughts/university': 'engineering',
+  movies: 'cinema',
+  cinematheque: 'cinema',
+}
 
 // A slide page (`<note>/slides/<n>`) of a note with `slides: true`.
 export const isSlidePage = (slug: string, slides: unknown) =>
@@ -41,10 +47,13 @@ export const isSlidePage = (slug: string, slides: unknown) =>
 
 export function sectionOf({ slug, base, slides }: SectionPage): Section | null {
   if (slides) return 'slides'
+  // A named page or path beats the base rule: the cinematheque is a base, and wears the cinema.
+  const prefix = Object.keys(PREFIXES).find(f => slug === f || slug.startsWith(`${f}/`))
+  const named = PAGES[slug] ?? (prefix ? PREFIXES[prefix] : undefined)
+  if (named) return named
   if (base) return 'library'
   const head = slug.split('/')[0]
-  const sub = Object.keys(SUBFOLDERS).find(f => slug === f || slug.startsWith(`${f}/`))
-  return PAGES[slug] ?? (sub ? SUBFOLDERS[sub] : FOLDERS.find(s => s === head)) ?? null
+  return FOLDERS.find(s => s === head) ?? null
 }
 
 export const sectionIconFile = (page: SectionPage) => {
