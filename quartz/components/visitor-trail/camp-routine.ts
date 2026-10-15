@@ -1,7 +1,7 @@
 import type { JourneyRoute } from './hiker-journey'
 import { circleClearance, type CollisionActor } from './actor-spacing'
 import { followTerrain, trailGroundScale, type Landscape, type Point } from './landscape'
-import { detourTrail } from './obstacle-route'
+import { detourTrail, detourTrailSteps, type TrailSearch } from './obstacle-route'
 import { trailRandom } from './random'
 
 export type CampPhase = 'staying' | 'sleeping' | 'packing' | 'extinguishing' | 'departing' | 'empty'
@@ -115,10 +115,24 @@ export function campPatrolRoute(
   landscape: Landscape,
   solids: readonly CollisionActor[],
 ): Point[] {
+  const search = campPatrolRouteSteps(from, to, routes, landscape, solids)
+  let step = search.next()
+  while (!step.done) step = search.next()
+  return step.value ?? []
+}
+
+export function* campPatrolRouteSteps(
+  from: Point,
+  to: Point,
+  routes: JourneyRoute[],
+  landscape: Landscape,
+  solids: readonly CollisionActor[],
+): TrailSearch {
   const clear = (point: Point) => clearTrailPoint(point, landscape, solids, 18)
   let best: { route: JourneyRoute; start: number; end: number } | null = null
   let cost = Infinity
   for (const route of routes) {
+    yield
     let start = 0
     let end = 0
     let fromGap = Infinity
@@ -144,22 +158,24 @@ export function campPatrolRoute(
       best = { route, start, end }
     }
   }
-  if (!best)
-    return clearTrailSegments(
-      from,
-      followTerrain([from, to], landscape).slice(1).filter(clear),
-      landscape,
-      solids,
-      18,
-    )
-  const steps = Math.max(1, Math.ceil(Math.abs(best.end - best.start) / 16))
   const road = best
-  const points = [
-    ...followTerrain([from, road.route.point(road.start)], landscape).slice(1),
-    ...Array.from({ length: steps }, (_, index) =>
-      road.route.point(road.start + ((road.end - road.start) * (index + 1)) / steps),
-    ),
-    ...followTerrain([road.route.point(road.end), to], landscape).slice(1),
-  ].filter(clear)
-  return clearTrailSegments(from, points, landscape, solids, 18)
+  const steps = road ? Math.max(1, Math.ceil(Math.abs(road.end - road.start) / 16)) : 0
+  const points = (
+    road
+      ? [
+          ...followTerrain([from, road.route.point(road.start)], landscape).slice(1),
+          ...Array.from({ length: steps }, (_, index) =>
+            road.route.point(road.start + ((road.end - road.start) * (index + 1)) / steps),
+          ),
+          ...followTerrain([road.route.point(road.end), to], landscape).slice(1),
+        ]
+      : followTerrain([from, to], landscape).slice(1)
+  ).filter(clear)
+  const planned = yield* detourTrailSteps([from, ...points], 18, solids, {
+    left: 18,
+    right: landscape.width - 18,
+    top: landscape.treeline + 8,
+    bottom: landscape.height - 18,
+  })
+  return planned?.points.slice(1) ?? points
 }

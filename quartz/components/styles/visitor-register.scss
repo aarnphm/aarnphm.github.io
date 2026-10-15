@@ -73,11 +73,35 @@
     padding: 5px 12px;
     border-top: 1px solid var(--lightgray);
   }
+  .visitor-register-connection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 28px;
+    padding: 0 12px;
+    border-top: 1px solid var(--lightgray);
+    [data-trail-retry] {
+      min-height: 28px;
+      padding: 0 4px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+      &:focus-visible {
+        outline: 1px solid var(--darkgray);
+        outline-offset: 2px;
+      }
+    }
+  }
   [hidden] {
     display: none;
   }
   @media (pointer: coarse) {
-    .visitor-register-head button {
+    [data-trail-retry] {
       min-width: 44px;
       min-height: 44px;
     }

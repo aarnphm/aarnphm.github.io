@@ -6,28 +6,6 @@
   --trail-footer-panel-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 28px + 1rem);
 }
 
-// The scene renders in a shadow root, so this selector cannot start at .homepage-trail; the
-// variable still inherits through the host.
-.homepage-trail-scene .trail-tree-panel {
-  bottom: var(--trail-footer-panel-bottom);
-  max-height: calc(100dvh - var(--trail-footer-panel-bottom) - 1rem);
-
-  &:not([hidden]) {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .trail-tree-panel-head {
-    flex: 0 0 auto;
-  }
-
-  .trail-tree-controls {
-    flex: 1 1 auto;
-    min-height: 0;
-    max-height: max(72px, min(400px, calc(100dvh - var(--trail-footer-panel-bottom) - 3rem)));
-  }
-}
-
 .trail-almanac {
   position: fixed;
   inset: auto auto max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));

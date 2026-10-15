@@ -1,4 +1,4 @@
-import type { CampSettings } from './camp-settings'
+import type { CampSettings } from './scene-settings'
 import { onDryLand, pondDistance, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
 
