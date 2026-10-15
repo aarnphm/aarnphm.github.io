@@ -1641,6 +1641,9 @@ export function mountSceneCompositor(
   // The scene state the retained canvas shows, so a frame can redraw only what changed.
   let shown = new Map<Run | Surface, { rect: Rect; below: Run | Surface | null }>()
   let shownScene = ''
+  // The canvas size the segment textures were built for. They hold untinted pixels, so a
+  // daylight tint change keeps them.
+  let segmentScene = ''
   let rectBuffer: WebGLBuffer | null = null
   let rectVertices = new Float32Array(4096)
   const segmentHold = 500
@@ -1812,6 +1815,8 @@ export function mountSceneCompositor(
       if (state.unit !== unit) gl.activeTexture(gl.TEXTURE0 + (state.unit = unit))
       gl.bindTexture(gl.TEXTURE_2D, (state.bound[unit] = texture))
     }
+    // Segment textures hold untinted pixels; the tint applies when they reach the canvas.
+    let building = false
     const shade = (plain: boolean) => {
       if (state.plain === plain) return
       state.plain = plain
@@ -1819,7 +1824,7 @@ export function mountSceneCompositor(
     }
     // Draws a unit quad, or only its share of `first..first + count` rect vertices.
     const paint = (draw: Draw, first = -1, count = 0) => {
-      shade(false)
+      shade(building)
       bind(3, coverage.texture ?? blank)
       bind(1, draw.maskTexture ?? blank)
       bind(2, draw.clipTexture ?? blank)
@@ -1832,7 +1837,7 @@ export function mountSceneCompositor(
       else gl.drawArrays(gl.TRIANGLES, first, count)
     }
     const paintSegment = (segment: Segment, first = -1, count = 0) => {
-      shade(true)
+      shade(false)
       bind(3, coverage.texture ?? blank)
       bind(1, blank)
       bind(2, blank)
@@ -1843,28 +1848,26 @@ export function mountSceneCompositor(
       if (first < 0) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
       else gl.drawArrays(gl.TRIANGLES, first, count)
     }
-    // Retained pixels and cached segments are final colors, so every per-draw effect must be neutral.
-    const key = `${canvas.width}x${canvas.height}@${resolution}|${tint.join()}`
+    // Retained pixels and cached segments hold finished draws, so the theme and resize overlays
+    // and the load coverage must be inactive.
+    const surfaceKey = `${canvas.width}x${canvas.height}@${resolution}`
+    const key = `${surfaceKey}|${tint.join()}`
     const cacheable = !fade && !resizeFrame && !coverage.active
-    if (!cacheable || key !== shownScene) {
-      shownScene = ''
+    if (!cacheable || surfaceKey !== segmentScene) {
       dropSegments()
-      gl.clear(gl.COLOR_BUFFER_BIT)
+      segmentScene = cacheable ? surfaceKey : ''
+    }
+    if (!cacheable) {
+      shownScene = ''
       shown = new Map()
-      // A changing tint or overlay repaints everything each frame. Retain this frame only
-      // when the next one can build on it.
-      if (cacheable) {
-        shownScene = key
-        for (const [index, draw] of draws.entries()) {
-          trace(draw)
-          shown.set(draw.item, {
-            rect: extent(draw.placed),
-            below: index ? draws[index - 1].item : null,
-          })
-        }
-      }
+      gl.clear(gl.COLOR_BUFFER_BIT)
       for (const draw of draws) paint(draw)
       return
+    }
+    // A new tint changes every pixel: repaint the whole canvas from the segments that remain.
+    if (key !== shownScene) {
+      shownScene = key
+      shown = new Map()
     }
     // What changed since the retained frame: moved or repainted draws at both positions,
     // removed draws, and draws whose neighbour below changed through depth sorting.
@@ -1996,7 +1999,9 @@ export function mountSceneCompositor(
       gl.viewport(0, 0, width, height)
       gl.uniform4f(uniforms.target, rect[0], rect[1], width, height)
       gl.clear(gl.COLOR_BUFFER_BIT)
+      building = true
       for (let index = from; index < to; index++) paint(draws[index])
+      building = false
       gl.bindFramebuffer(gl.FRAMEBUFFER, null)
       gl.viewport(0, 0, canvas.width, canvas.height)
       gl.uniform4f(uniforms.target, 0, 0, canvas.width, canvas.height)
@@ -2770,6 +2775,7 @@ export function mountSceneCompositor(
       // The lost context already freed these; deleting them here would raise errors.
       segments.clear()
       shownScene = ''
+      segmentScene = ''
       rectBuffer = null
       coverage.texture = null
       coverage.active = false
