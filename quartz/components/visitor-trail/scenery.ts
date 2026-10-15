@@ -1,5 +1,6 @@
 import type { ForestSprite } from './forest-sprites'
 import { bayerThreshold } from '../../util/bayer'
+import { forestYear, groveStorms, shadeTolerance, slotOccupant } from './forest-succession'
 import {
   creekDistance,
   creekSection,
@@ -10,10 +11,10 @@ import {
 } from './landscape'
 import { trailRandom } from './random'
 import { forestLimits, sceneSettings, type ForestSettings } from './scene-settings'
-import { trailUnderstory } from './understory'
+import { trailDeadfall, trailUnderstory } from './understory'
 import { trailSnowBank } from './winter'
 
-type TreeKind =
+export type TreeKind =
   | 'pine'
   | 'spruce'
   | 'fir'
@@ -314,6 +315,8 @@ function tree(
   height: number,
   settings: ForestSettings,
   minPixel = 1,
+  // A young tree has run fewer rewrites of the same word, so it is the old tree's early form.
+  grown = forestLimits.depth.max,
 ) {
   const random = trailRandom(seed)
   const growth = trailRandom(seed ^ 0x9e3779b9)
@@ -323,7 +326,7 @@ function tree(
   const classic = (kind === 'pine' || kind === 'cypress') && trailRandom(seed ^ 0x5bd1e995)() < 0.45
   const crownShape: Crown = classic ? 'cone' : habit.crown
   const spread = classic && kind === 'pine' ? 0.85 : habit.spread
-  const depth = bounded(settings.depth, 'depth')
+  const depth = Math.min(bounded(settings.depth, 'depth'), Math.max(forestLimits.depth.min, grown))
   const probability = bounded(settings.branching, 'branching') / 100
   const variation = bounded(settings.variation, 'variation') / 100
   const dapple = bounded(settings.dapple, 'dapple') / 100
@@ -712,16 +715,16 @@ export function forestShape(settings: ForestSettings) {
 export function createTreePainter(): typeof tree {
   let signature = ''
   const shapes = new Map<string, ReturnType<typeof tree>>()
-  return (kind, seed, height, settings, minPixel = 1) => {
+  return (kind, seed, height, settings, minPixel = 1, grown = forestLimits.depth.max) => {
     const next = forestShape(settings)
     if (next !== signature) {
       shapes.clear()
       signature = next
     }
-    const key = `${kind}|${seed}|${height}|${minPixel}`
+    const key = `${kind}|${seed}|${height}|${minPixel}|${grown}`
     let shape = shapes.get(key)
     if (!shape) {
-      shape = tree(kind, seed, height, settings, minPixel)
+      shape = tree(kind, seed, height, settings, minPixel, grown)
       shapes.set(key, shape)
     }
     return shape
@@ -738,6 +741,10 @@ export type TreePlacement = {
   kind: TreeKind
   treeSeed: number
   height: number
+  // Share of full height reached, the forest year's age of the tree, and the fallen trunk under it.
+  growth: number
+  generation: number
+  log: number | null
 }
 
 export function treeSprite(
@@ -749,7 +756,18 @@ export function treeSprite(
 ) {
   const { meadowTop, camp, treeline, alpine } = landscape
   const { id, x, y, standalone, foothill, cluster, kind, treeSeed, height } = placement
-  const { markup, form, tone, extent, trunkRadius } = paint(kind, treeSeed, height, settings)
+  const { growth, generation } = placement
+  const grown = Math.round(
+    forestLimits.depth.min + (forestLimits.depth.max - forestLimits.depth.min) * growth ** 0.6,
+  )
+  const { markup, form, tone, extent, trunkRadius } = paint(
+    kind,
+    treeSeed,
+    height,
+    settings,
+    foothill ? 1 : 2,
+    grown,
+  )
   const depth = Math.max(0, Math.min(1, (y - meadowTop) / (camp.y - meadowTop)))
   const foothillDepth = Math.max(0, Math.min(1, (y - treeline) / (alpine.base - treeline)))
   const scale = foothill ? 0.2 + foothillDepth * 0.1 : 0.55 + depth * 0.6
@@ -762,7 +780,7 @@ export function treeSprite(
     !foothill && trailRandom(treeSeed ^ 0x16c73)() < 0.45
       ? trailSnowBank(treeSeed, (standalone ? 112 : 70) * scale, (18 + depth * 10) * scale)
       : ''
-  return `<g class="trail-tree" ${patch ? `data-trail-chunk="${patch}"` : ''} data-tree-id="${id}" data-tree="${kind}" ${grouping} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" style="--trail-tree-haze: ${haze.toFixed(0)}%" transform="translate(${x} ${y})">${snow}<g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
+  return `<g class="trail-tree" ${patch ? `data-trail-chunk="${patch}"` : ''} data-tree-id="${id}" data-tree="${kind}" ${grouping} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" data-tree-growth="${growth.toFixed(2)}" data-tree-generation="${generation}" style="--trail-tree-haze: ${haze.toFixed(0)}%" transform="translate(${x} ${y})">${snow}<g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
 }
 
 export function* trailPatchTrees(
@@ -840,6 +858,9 @@ export function* trailPatchTrees(
       kind: choices[Math.floor(random() * choices.length)],
       treeSeed: Math.floor(random() * 4294967296),
       height: foothill ? 24 + random() * 10 : 32 + random() * 22,
+      growth: 1,
+      generation: 0,
+      log: null,
     }
     if (index < count || foothill)
       yield {
@@ -856,7 +877,8 @@ export function planTrailTrees(
   seed: number,
   walks: Point[] = [],
   clearings: (Point & { radius: number })[] = [],
-) {
+  now = Date.now(),
+): TreePlacement[] {
   const { width, meadowTop, camp, groves, pond, alpine, treeline } = landscape
   const clearing = camp.y - meadowTop
   const random = trailRandom(seed ^ 0x7f4a7c15)
@@ -948,6 +970,13 @@ export function planTrailTrees(
     const treeSeed = Math.floor(identity() * 4294967296)
     const height = foothill ? 20 + identity() * 10 : 30 + identity() * 26
     return {
+      pool: foothill
+        ? null
+        : kind === 'willow'
+          ? waterside
+          : standalone || kind === 'snag'
+            ? upland
+            : stands[cluster % stands.length],
       id: `tree-${index + 1}`,
       x: Math.round(root.x),
       y: foothill
@@ -959,6 +988,9 @@ export function planTrailTrees(
       kind,
       treeSeed,
       height,
+      growth: 1,
+      generation: 0,
+      log: null,
     }
   })
   // Conifers stand at both ends of the meadow, where the groves leave open ground, thickest on the
@@ -996,10 +1028,55 @@ export function planTrailTrees(
           kind: pick < 0.5 ? 'pine' : pick < 0.75 ? 'spruce' : 'fir',
           treeSeed: Math.floor(edge() * 4294967296),
           height: 30 + edge() * 26,
+          growth: 1,
+          generation: 0,
+          log: null,
+          pool: edgeKinds,
         })
         break
       }
     }
+  return grow(placements, landscape, forestYear(now))
+}
+
+const waterside: readonly TreeKind[] = ['willow', 'willow', 'birch', 'aspen']
+const edgeKinds: readonly TreeKind[] = ['pine', 'pine', 'spruce', 'fir']
+
+// Age every slot to the forest year, then let the canopy shade its understory: a sapling under a
+// taller crown grows slowly, the more so the less shade it tolerates.
+function grow(
+  planned: (TreePlacement & { pool: readonly TreeKind[] | null })[],
+  landscape: Landscape,
+  year: number,
+) {
+  const storms = landscape.groves.map((_, grove) => groveStorms(grove, Math.floor(year)))
+  const placements = planned.map(({ pool, ...placement }, slot) => {
+    if (!pool || year < 0) return placement
+    const edge = placement.id.startsWith('tree-edge-')
+    const occupant = slotOccupant(
+      placement,
+      slot,
+      pool,
+      placement.standalone || edge ? [] : storms[placement.cluster],
+      year,
+      placement.standalone && !edge,
+    )
+    return { ...placement, ...occupant }
+  })
+  for (const sapling of placements) {
+    if (sapling.foothill || sapling.growth >= 0.8) continue
+    let shade = 0
+    for (const canopy of placements) {
+      if (canopy === sapling || canopy.foothill || canopy.growth <= sapling.growth + 0.2) continue
+      const reach = canopy.height * 0.7
+      if (Math.abs(canopy.x - sapling.x) < reach && Math.abs(canopy.y - sapling.y) < reach * 0.45)
+        shade++
+    }
+    if (!shade) continue
+    const slowed = 1 - Math.min(0.6, 0.3 * shade) * (1 - shadeTolerance(sapling.kind))
+    sapling.growth *= slowed
+    sapling.height = 16 + (sapling.height - 16) * slowed
+  }
   return placements
 }
 
@@ -1017,16 +1094,26 @@ export function* trailTreeSprites(
     bounded(settings.density, 'density') * Math.min(1.5, Math.max(1, landscape.width / 1280)),
   )
   const shape = forestShape(settings)
+  const wanted = (placement: TreePlacement) =>
+    placement.id.startsWith('tree-edge-') || Number(placement.id.slice(5)) <= count
   const sprites: ForestSprite[] = placements
-    .filter(
-      placement => placement.id.startsWith('tree-edge-') || Number(placement.id.slice(5)) <= count,
-    )
+    .filter(wanted)
     .map(placement => ({
       id: placement.id,
       bottom: placement.y + 12,
-      shape: `${shape}|${placement.x}|${placement.y}`,
+      shape: `${shape}|${placement.x}|${placement.y}|${placement.kind}|${placement.treeSeed}|${placement.height.toFixed(1)}`,
       render: () => treeSprite(landscape, placement, settings, paint),
     }))
+  for (const placement of placements)
+    if (placement.log !== null && !placement.foothill && wanted(placement)) {
+      const sprite = trailDeadfall(landscape, placement, placement.log)
+      sprites.push({
+        id: sprite.id,
+        bottom: sprite.bottom,
+        shape: sprite.markup,
+        render: () => sprite.markup,
+      })
+    }
   for (const sprite of trailUnderstory(landscape, seed, placements, walks, clearings))
     sprites.push({
       id: sprite.id,

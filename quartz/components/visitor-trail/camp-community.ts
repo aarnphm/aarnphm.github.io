@@ -1,5 +1,7 @@
 import type { JourneyRoute } from './hiker-journey'
+import { scenePreview } from '../../util/scene-clock'
 import { createSvgSpace } from '../../util/svg-geometry'
+import { subscribeVisitorDaylight } from '../../util/visitor-daylight'
 import { subscribeVisitorTrailWeather } from '../../util/visitor-trail-weather'
 import {
   actorSpacing,
@@ -269,6 +271,8 @@ export function mountCampCommunity(
   let routines: CampRoutine[] = []
   let trailRoutes: JourneyRoute[] = []
   let forecastDay: boolean | null = null
+  // A previewed sky lights the fires and tents; bedtimes and departures keep the real night.
+  let previewDark: boolean | null = null
   let frame = 0
   let last = 0
   let elapsed = 0
@@ -337,7 +341,9 @@ export function mountCampCommunity(
       person.phase === 'sleeping' || person.phase === 'gone' ? 'hidden' : ''
   }
   const lighting = () => {
-    const dark = String(night())
+    const dark = String(
+      settings.light === 'weather' && previewDark !== null ? previewDark : night(),
+    )
     scene.dataset.campNight = dark
     for (const fire of fires) fire.dataset.night = dark
     for (let site = 0; site < tents.length; site++) {
@@ -1087,6 +1093,16 @@ export function mountCampCommunity(
     document,
     weather => {
       forecastDay = weather?.day ?? null
+      lighting()
+    },
+    signal,
+  )
+  subscribeVisitorDaylight(
+    document,
+    daylight => {
+      const next = daylight && scenePreview(document) ? daylight.dark : null
+      if (next === previewDark) return
+      previewDark = next
       lighting()
     },
     signal,

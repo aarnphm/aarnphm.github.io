@@ -301,7 +301,6 @@ export function trailLayout(
     routes,
     readingRoutes: upperRoutes,
     clockExclusion,
-    clockClear: clearSpace(width, height, clockExclusion ? [clockExclusion] : []),
     clear,
     backdropClear,
     obstacles,

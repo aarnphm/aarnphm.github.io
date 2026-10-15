@@ -1,5 +1,4 @@
 import { subscribeVisitorDaylight, type VisitorDaylight } from '../../util/visitor-daylight'
-import { trailClockRegion } from './clock-clearance'
 import { daylightTint, type DaylightTint } from './daylight-palette'
 import { groundObjectSelector } from './depth-order'
 import { trailOpeningCell, trailThemeDuration, type SceneReveal } from './scene-reveal'
@@ -1572,7 +1571,6 @@ export function mountSceneCompositor(
       Number(element.getAttribute('data-patch-bottom')) > -8
     )
   }
-  let groundLayers: Element[] | null = null
   const surface = (width: number, height: number) => {
     if (canvas.width !== width || canvas.height !== height) clipVersion += 1
     if (canvas.width !== width) canvas.width = width
@@ -1590,14 +1588,11 @@ export function mountSceneCompositor(
     surface(width, height)
     paintScene()
   }
-  const paintScene = (terrainOnly = false) => {
-    const ground = terrainOnly
-      ? (groundLayers ??= [...svg.querySelectorAll('.trail-paper, .trail-ground-base')])
-      : []
+  const paintScene = () => {
     gl.uniform3fv(uniforms.solarTint, tintAt(clock))
     gl.activeTexture(gl.TEXTURE3)
     gl.bindTexture(gl.TEXTURE_2D, coverage.texture ?? blank)
-    gl.uniform1f(uniforms.loadActive, terrainOnly ? 0 : Number(!!fade && coverage.active))
+    gl.uniform1f(uniforms.loadActive, Number(!!fade && coverage.active))
     gl.uniform4f(
       uniforms.themeReveal,
       fade && !pageThemeReveal() ? 1 : 0,
@@ -1638,11 +1633,6 @@ export function mountSceneCompositor(
       clipped: Clip[],
       clipTexture: WebGLTexture | null,
     ) => {
-      if (
-        terrainOnly &&
-        !ground.some(layer => owner.element.contains(layer) || layer.contains(owner.element))
-      )
-        return
       if (scene.dataset.trailAmbientReady !== 'true' && owner.element.matches(ambientLayers)) return
       if (!chunkVisible(owner)) return
       alpha *= owner.opacity
@@ -1671,10 +1661,8 @@ export function mountSceneCompositor(
           visit(item, alpha, mask, maskTexture, clipped, clipTexture)
           continue
         }
-        if (terrainOnly && !ground.some(layer => layer.contains(owner.element))) continue
         if (!item.texture) continue
-        if (!terrainOnly && coverage.active && item.kind === 'run' && item.palette !== palette)
-          continue
+        if (coverage.active && item.kind === 'run' && item.palette !== palette) continue
         if (item.kind === 'run')
           item.placed ??= place(
             multiply(multiply(owner.screen, invert(item.base)), scaling(item.width, item.height)),
@@ -1701,33 +1689,6 @@ export function mountSceneCompositor(
       }
     }
     visit(root, 1, none, null, [], null)
-  }
-  const present = () => {
-    if (!ready || scene.dataset.trailOpening === 'pending') return
-    const region = trailClockRegion(document)
-    if (region && ready) {
-      const bounds = canvas.getBoundingClientRect()
-      const left = Math.max(0, Math.floor((region.left - bounds.left) * resolution))
-      const top = Math.max(0, Math.floor((region.top - bounds.top) * resolution))
-      const right = Math.min(canvas.width, Math.ceil((region.right - bounds.left) * resolution))
-      const bottom = Math.min(canvas.height, Math.ceil((region.bottom - bounds.top) * resolution))
-      if (right > left && bottom > top) {
-        gl.enable(gl.SCISSOR_TEST)
-        gl.scissor(left, canvas.height - bottom, right - left, bottom - top)
-        gl.clear(gl.COLOR_BUFFER_BIT)
-        // The clock gets the scene's own plain terrain. This also clears old actors out of a
-        // held resize frame while the viewport moves, without drawing a clock background.
-        paintScene(true)
-        if (
-          fade?.texture &&
-          !pageThemeReveal() &&
-          fade.scrollX === view.scrollX &&
-          fade.scrollY === view.scrollY
-        )
-          drawCopy(fade.texture, 1, { theme: true })
-        gl.disable(gl.SCISSOR_TEST)
-      }
-    }
   }
   const drawCopy = (
     texture: WebGLTexture,
@@ -1914,7 +1875,6 @@ export function mountSceneCompositor(
     const height = Math.max(canvas.height, Math.round(host.clientHeight * resolution))
     surface(width, height)
     overlayResize()
-    present()
   }
   const holdResize = () => {
     scene.dataset.trailAmbientReady = 'false'
@@ -1999,7 +1959,6 @@ export function mountSceneCompositor(
       scene.dataset.campPositioned !== 'true' ||
       (scene.dataset.trailRendered !== 'true' && scene.dataset.trailOpening === 'complete')
     ) {
-      present()
       return
     }
     if (!attributeSelectors) readSelectors()
@@ -2066,7 +2025,6 @@ export function mountSceneCompositor(
     // Starting motion can split a retained layer into new textures. Keep the last complete
     // canvas until those textures exist, so budgeted uploads cannot flash empty patches.
     if ((ready && holes && !fade) || (resizeFrame && (holes || (ready && flush && replacements)))) {
-      present()
       return
     }
     if (fade) paintCoverage(unfinished)
@@ -2111,7 +2069,6 @@ export function mountSceneCompositor(
       scene.dataset.trailRenderer = 'webgl'
       for (const owner of groups.values()) owner.fresh = false
     }
-    present()
     const presenting = scene.dataset.trailOpening !== 'complete'
     opening.present()
     if (presenting && !host.hidden && scene.dataset.trailReveal !== 'revealing') resumeAnimations()
@@ -2173,7 +2130,6 @@ export function mountSceneCompositor(
     if (generationPending) {
       generationPending = false
       bboxes = new WeakMap()
-      groundLayers = null
       discover(svg)
       for (const owner of groups.values()) {
         owner.structure = true
@@ -2189,7 +2145,9 @@ export function mountSceneCompositor(
       if (entry.type === 'attributes') {
         const name = entry.attributeName ?? ''
         const paletteChange = target === document.documentElement
-        const holidayChange = target === scene && name === 'data-holiday'
+        // A holiday or a chosen season restyles the whole scene: crossfade once it is painted.
+        const holidayChange =
+          target === scene && (name === 'data-holiday' || name === 'data-foliage-season')
         if (
           target.getAttribute(name) === entry.oldValue ||
           (!paletteChange && !holidayChange && inert(name))
@@ -2254,7 +2212,6 @@ export function mountSceneCompositor(
         continue
       }
       if (entry.type === 'childList') {
-        groundLayers = null
         invalidateBox(target)
         for (const node of entry.addedNodes) {
           if (!is(node, 'Element')) continue

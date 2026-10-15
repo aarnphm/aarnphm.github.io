@@ -24,8 +24,8 @@
     bottom: calc(max(16px, env(safe-area-inset-bottom)) + 28px);
     max-width: min(270px, calc(100vw - 32px));
     padding: 6px 9px;
-    background: var(--light);
-    border: 1px solid var(--lightgray);
+    background: transparent;
+    border: 0;
     color: var(--darkgray);
     font: 10px/1.6 var(--codeFont);
     pointer-events: none;
