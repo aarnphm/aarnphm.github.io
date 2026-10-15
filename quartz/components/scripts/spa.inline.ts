@@ -730,7 +730,7 @@ class StackedNoteManager {
         this.mountBody(node)
       }
       // Keep hydrated contents until the note leaves the chain, so unfolding is immediate.
-      node.mounted.bodyHost.inert = !shouldMount
+      node.mounted.bodyHost.inert = folded || !visible
     })
     this.loadVisiblePendingBodies(nodes, range)
   }
