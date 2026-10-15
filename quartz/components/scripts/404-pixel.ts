@@ -2,6 +2,8 @@
 // 1600×1000 scene with the same slice fit as the SVG layers, ordered dither, value noise, and the
 // painters the ruin's inhabitants are drawn with.
 
+import { BAYER } from '../../util/bayer'
+
 export type RGB = [number, number, number]
 export type Pt = [number, number]
 
@@ -9,7 +11,7 @@ export const W = 1600
 export const H = 1000
 // Every layer overhangs the viewport by this many CSS pixels, so parallax never shows an edge.
 const INSET = 48
-export const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + 0.5) / 16)
+export { BAYER }
 
 export const hex = (h: string): RGB => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)) as RGB
 

@@ -1,4 +1,5 @@
 import type { ForestSprite } from './forest-sprites'
+import { bayerThreshold } from '../../util/bayer'
 import {
   creekDistance,
   creekSection,
@@ -222,13 +223,12 @@ const woodlandKinds: readonly TreeKind[] = [
 ]
 const forms: TreeForm[] = ['upright', 'leaning', 'forked', 'open', 'broad']
 const tones: TreeTone[] = ['sage', 'lichen', 'ochre']
-const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
 
 function canopyTone(x: number, y: number, radius: number, pixel: number, dapple: number): Tone {
   const brightness = Math.max(0, Math.min(1, 0.52 - (x / radius) * 0.23 - (y / radius) * 0.16))
   const column = ((Math.round(x / pixel) % 4) + 4) % 4
   const row = ((Math.round(y / pixel) % 4) + 4) % 4
-  const threshold = (bayer[row * 4 + column] + 0.5) / 16
+  const threshold = bayerThreshold(column, row)
   const rim = Math.hypot(x, y) / radius
   if (rim > 0.72 && x - y < 0 && brightness > 0.5 && threshold < dapple * 0.32) return 'gold'
   const level = brightness * 2
