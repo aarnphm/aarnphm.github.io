@@ -3,6 +3,7 @@ import type { EnvironmentChartSample, GardenUvScore } from './activity-environme
 import type { MyWindsockRouteSample } from './mywindsock-route'
 import type { TriathlonDailyAnalytics, TriathlonDayAnalytics } from './triathlon-day-analytics'
 import type { Locale, TriathlonPresentation } from './triathlon-presentation'
+import type { TimelineActivity } from './triathlon-timeline'
 import { STROKE_LABEL, SWIM_STROKES, type SwimStroke } from '../plugins/stores/apple'
 import { criticalPowerCurve, type CriticalPowerEstimate } from '../plugins/stores/critical-power'
 import {
@@ -14112,7 +14113,7 @@ export const recentLocation = (payload: DayCardPayload): string | undefined =>
 
 const timelineActivityValue = (
   presentation: TriathlonPresentation,
-  activity: StravaActivityDetail,
+  activity: TimelineActivity,
 ): string =>
   activity.distanceKm > 0
     ? dist(presentation, activity.distanceKm, activity.sport)
@@ -14121,15 +14122,11 @@ const timelineActivityValue = (
 export const buildTimelineDayCard = <N>(
   f: TriNodeFactory<N>,
   dateIso: string,
-  payload: DayCardPayload | null,
+  activities: readonly TimelineActivity[],
 ): N => {
   const card = f.el('div', 'tri-timeline-card')
   f.add(card, f.el('span', 'tri-pop-date', prettyDate(dateIso)))
-  if (!payload) {
-    f.add(card, f.el('div', 'tri-pop-rest', '·'))
-    return card
-  }
-  const day = dayDetails(payload, dateIso)
+  const day = activities.toSorted((a, b) => b.distanceKm - a.distanceKm)
   if (day.length === 0) {
     const label = triText(f.presentation.locale, 'rest')
     const rest = f.el('span', 'tri-timeline-row tri-timeline-rest', undefined, {
@@ -14924,8 +14921,35 @@ const dayAnalyticsSleepSeries = <N>(
     'aria-valuetext': initialReadout,
     'aria-describedby': readoutId,
   })
+  const ticks: AxisXTick[] = []
+  if (offsetsS)
+    for (
+      let minute = (Math.floor(startMinute / 120) + 1) * 120;
+      minute <= startMinute + elapsedS / 60;
+      minute += 120
+    )
+      ticks.push({
+        label: dayAnalyticsWallClock(minute),
+        pct: ((minute - startMinute) * 60 * 100) / elapsedS,
+      })
+  const xTicks =
+    'offsetsS' in series
+      ? ticks
+      : dayAnalyticsHourTicks(
+          series.startTs,
+          series.intervalS,
+          series.items.length,
+          series.items.length - 1,
+        )
   f.add(
     svg,
+    buildPowerCurveGrid(f, 'power', [y(high), y(low)], DAY_ANALYTICS_SLEEP_HEIGHT),
+    buildPowerCurveGrid(
+      f,
+      'duration',
+      xTicks.map(tick => tick.pct),
+      DAY_ANALYTICS_SLEEP_HEIGHT,
+    ),
     f.svg('line', {
       x1: 0,
       y1: y(average),
@@ -14956,17 +14980,6 @@ const dayAnalyticsSleepSeries = <N>(
           }),
         )
     }
-  const ticks: AxisXTick[] = []
-  if (offsetsS)
-    for (
-      let minute = (Math.floor(startMinute / 120) + 1) * 120;
-      minute <= startMinute + elapsedS / 60;
-      minute += 120
-    )
-      ticks.push({
-        label: dayAnalyticsWallClock(minute),
-        pct: ((minute - startMinute) * 60 * 100) / elapsedS,
-      })
   f.add(
     svg,
     f.svg('line', {
@@ -14987,14 +15000,7 @@ const dayAnalyticsSleepSeries = <N>(
         { label: dayAnalyticsNumber(f.presentation, low), vbY: y(low) },
       ],
       DAY_ANALYTICS_SLEEP_HEIGHT,
-      'offsetsS' in series
-        ? ticks
-        : dayAnalyticsHourTicks(
-            series.startTs,
-            series.intervalS,
-            series.items.length,
-            series.items.length - 1,
-          ),
+      xTicks,
     ),
     f.el('div', 'tri-chart-readout', initialReadout, { id: readoutId }),
   )

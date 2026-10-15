@@ -3,6 +3,7 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
+import type { TimelineActivity } from '../../util/triathlon-timeline'
 import { emptyPayload, type ActivityKind } from '../../plugins/stores/strava'
 import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot, resolveRelative } from '../../util/path'
@@ -178,6 +179,19 @@ export default (() => {
                           data-no-popover
                           data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
                           data-date-iso={d.date}
+                          data-timeline-activities={JSON.stringify(
+                            d.items.flatMap(item => {
+                              const activity = payload.details[item.id]
+                              if (!activity) return []
+                              const summary: TimelineActivity = {
+                                sport: activity.sport,
+                                name: activity.name,
+                                distanceKm: activity.distanceKm,
+                                movingTimeS: activity.movingTimeS,
+                              }
+                              return [summary]
+                            }),
+                          )}
                           data-event={track?.event ?? (track?.race ? 'race' : undefined)}
                         >
                           {rest ? (

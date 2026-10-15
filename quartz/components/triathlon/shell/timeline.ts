@@ -1,7 +1,7 @@
-import type { DetailPayload } from '../activity/data'
 import type { TriathlonContext } from '../runtime/context'
 import type { TriathlonFormatter } from '../runtime/formatter'
 import { buildTimelineDayCard } from '../../../util/triathlon-card'
+import { readTimelineActivities } from '../../../util/triathlon-timeline'
 import {
   beginSitePerformanceSample,
   endSitePerformanceSample,
@@ -24,7 +24,9 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   if (!barsEl || !pop || bars.length === 0) return null
 
   let active: HTMLElement | null = null
-  let payload: DetailPayload | null = null
+  const activities = new Map(
+    bars.map(bar => [bar, readTimelineActivities(bar.dataset.timelineActivities)]),
+  )
   let timelineFrame = 0
   let hoverFrame = 0
   let pendingClientX: number | null = null
@@ -139,7 +141,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
 
   const domF = createDomFactory(context.presentation)
   const buildCard = (bar: HTMLElement) =>
-    buildTimelineDayCard(domF, bar.dataset.dateIso ?? '', payload)
+    buildTimelineDayCard(domF, bar.dataset.dateIso ?? '', activities.get(bar) ?? [])
   const replaceCard = (bar: HTMLElement): void => {
     scroller.replaceChildren(buildCard(bar))
   }
@@ -266,18 +268,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     event.preventDefault()
     bar.click()
   }
-  const path = root.dataset.detailPath
-  let live = true
-  if (path)
-    void context.resources.detail.load(path).then(result => {
-      if (!live || result.status !== 'ready') return
-      payload = result.value
-      if (active) {
-        replaceCard(active)
-        place(active)
-      }
-    })
-
   const onFocusDay = (event: Event) => {
     if (panelOpen()) return
     const date = (event as CustomEvent<{ date?: string }>).detail?.date
@@ -312,7 +302,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   window.addEventListener('scroll', onViewportScroll, { passive: true })
 
   return () => {
-    live = false
     window.cancelAnimationFrame(timelineFrame)
     window.cancelAnimationFrame(hoverFrame)
     timeline?.removeEventListener('scroll', scheduleTimelineUpdate)
