@@ -82,6 +82,9 @@ export function slotOccupant(
   year: number,
   // A lone tree stands in full sun, so its gap is always open ground.
   open = false,
+  // Shared waterings of this slot. A visitor's record keeps only their last watering, so their
+  // whole count goes to the tree that stood then.
+  water: readonly { count: number; at: number }[] = [],
 ): Occupant & { stage: 'living' | 'snag' } {
   let { kind, treeSeed, height } = founder
   const draw = trailRandom(treeSeed ^ 0x51ed2705)
@@ -92,7 +95,16 @@ export function slotOccupant(
   for (let generation = 0; generation < 64; generation++) {
     const random = trailRandom(treeSeed ^ Math.imul(generation + 1, 0x85ebca6b))
     const habit = habits[previous]
-    const natural = kind === 'snag' ? born : born + habit.span * (0.75 + random() * 0.5)
+    const span = kind === 'snag' ? 0 : habit.span * (0.75 + random() * 0.5)
+    let received = 0
+    for (const { count, at } of water) {
+      const given = forestYear(at)
+      if (given >= born && given < born + span) received += count
+    }
+    // Water is worth up to two fifths of the years to maturity, and three tenths more life.
+    const care = 1 - Math.exp(-received / 8)
+    const natural = born + span * (1 + 0.3 * care)
+    const boost = 0.4 * habit.mature * care
     // A storm takes most standing trees of its grove; seedlings bend and survive.
     const storm = storms.find(
       at =>
@@ -104,13 +116,15 @@ export function slotOccupant(
     const broadleaf = !needled.has(previous)
     const fall = storm !== undefined ? death : death + (broadleaf ? 5 : 12) + random() * 18
     const rot = (broadleaf ? 12 : 22) + random() * 20
-    const growth = (age: number) => 1 - Math.exp((-2.3 * Math.max(0, age)) / habit.mature)
+    const growth = (age: number) => 1 - Math.exp((-2.3 * Math.max(0, age + boost)) / habit.mature)
+    // Heights are whole pixels, so water repaints a tree only when it changes the raster.
+    const tall = (age: number) => Math.round(16 + (height - 16) * growth(age))
     const current = log !== null && year < fallen ? log : null
     if (year < death)
       return {
         kind,
         treeSeed,
-        height: 16 + (height - 16) * growth(year - born),
+        height: tall(year - born),
         growth: growth(year - born),
         age: year - born,
         generation,
@@ -121,7 +135,7 @@ export function slotOccupant(
       return {
         kind: 'snag',
         treeSeed,
-        height: 16 + (height - 16) * growth(death - born),
+        height: tall(death - born),
         growth: 1,
         age: year - born,
         generation,

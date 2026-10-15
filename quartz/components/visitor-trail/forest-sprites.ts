@@ -38,6 +38,10 @@ export function createForestSprites(document: Document) {
       entries.set(sprite.id, { element, shape: sprite.shape, bottom: sprite.bottom })
       return true
     },
+    remove(id: string) {
+      entries.get(id)?.element.remove()
+      entries.delete(id)
+    },
     retain(ids: Set<string>) {
       for (const [id, entry] of entries)
         if (!ids.has(id)) {

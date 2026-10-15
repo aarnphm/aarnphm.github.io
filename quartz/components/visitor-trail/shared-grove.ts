@@ -20,6 +20,8 @@ export function mountSharedGrove(
   host: HTMLElement,
   signal: AbortSignal,
   onGrowth: () => void,
+  // Each tree's waterings, for the forest to age with: water lengthens a tree's life.
+  onWater: (water: Map<string, Watering[]>) => void,
 ) {
   const document = scene.ownerDocument
   const view = document.defaultView
@@ -129,7 +131,7 @@ export function mountSharedGrove(
           'aria-label',
           `Water ${tree.dataset.tree} ${id.slice(5)}, ${waters} waterings`,
         )
-        button.title = `${waters} waterings · click to water`
+        button.title = `${waters} waterings${tree.dataset.treeAge ? ` · ${tree.dataset.treeAge} years old` : ''} · click to water`
         targets.push({ tree, button })
       }
     }
@@ -231,6 +233,14 @@ export function mountSharedGrove(
       visitor = id
       const render = (next: GroveData) => {
         data = next
+        const water = new Map<string, Watering[]>()
+        for (const [key, value] of Object.entries(next)) {
+          const watering = contribution(value)
+          const id = key.slice(0, key.indexOf('|'))
+          if (!watering || !id) continue
+          water.set(id, [...(water.get(id) ?? []), watering])
+        }
+        onWater(water)
         apply()
       }
       unsubscribe = current.onUpdate(render)

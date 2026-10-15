@@ -82,10 +82,12 @@ export function trailTerrain(landscape: Landscape, seed: number, routes: readonl
     return `M${x} ${y}h8l4 -2h6m-10 2l4 4h5`
   }).join('')
   const grid = width < 700 ? 3 : 4
+  // The pet's keyboard walk keeps to this ground and off the pond.
   const bounds = {
     alpine: landscape.alpine,
     treeline: landscape.treeline,
     meadowTop: landscape.meadowTop,
+    pond,
   }
   return `<g class="trail-terrain" data-trail-terrain='${JSON.stringify(bounds)}'>${trailRavine(landscape, seed, routes)}${trailPuddles(landscape, seed, routes)}${trailFords(landscape, routes)}${grass}${trailMeadow(landscape, seed, routes)}${trailWayside(landscape, routes, seed)}</g>
     <g class="trail-pond" data-trail-pond='${JSON.stringify(pond)}'>

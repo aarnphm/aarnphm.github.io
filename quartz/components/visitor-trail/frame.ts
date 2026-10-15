@@ -42,7 +42,7 @@ import {
   trailTreeSprites,
 } from './scenery'
 import { mountSeasonToggle } from './season-toggle'
-import { mountSharedGrove } from './shared-grove'
+import { mountSharedGrove, type Watering } from './shared-grove'
 import { trailTerrain, trailTerraces } from './terrain'
 import { prepareTreeSprites } from './tree-workers'
 import { mountVisitorJourneys } from './visitor-journey'
@@ -131,6 +131,11 @@ const paintWoodland = createTreePainter()
 const forestNodes = createForestSprites(document)
 const woodlandNodes = createForestSprites(document)
 let treePlan: TreePlacement[] | null = null
+// The forest is aged to one instant per layout, so re-planning for new water changes only the
+// slots the water reached.
+let forestNow = Date.now()
+let groveWater = new Map<string, Watering[]>()
+let plannedWater = groveWater
 const forestClearings = (landscape: Landscape) =>
   campSites(landscape, sceneSeed, camps).flatMap(site => [
     { ...site, radius: 102 },
@@ -144,7 +149,14 @@ const beechClearings = (landscape: Landscape) =>
   ])
 const forestSprites = (landscape: Landscape) => {
   const clearings = forestClearings(landscape)
-  treePlan ??= planTrailTrees(landscape, sceneSeed, forestObstacles, clearings)
+  treePlan ??= planTrailTrees(
+    landscape,
+    sceneSeed,
+    forestObstacles,
+    clearings,
+    forestNow,
+    (plannedWater = groveWater),
+  )
   return trailTreeSprites(
     landscape,
     sceneSeed,
@@ -287,7 +299,64 @@ mountSceneLighting(scene, signal)
 mountTrailBlazes(scene, signal)
 mountLeafFall(scene, signal)
 const groundDepth = mountGroundDepth(scene, host, signal)
-const grove = mountSharedGrove(scene, host, signal, () => pastureJourneys.refreshForest())
+const grove = mountSharedGrove(
+  scene,
+  host,
+  signal,
+  () => pastureJourneys.refreshForest(),
+  water => {
+    groveWater = water
+    void regrowForest()
+  },
+)
+// Water lengthens a tree's life and speeds its growth. Workers repaint only the slots whose tree
+// changed; a newer watering supersedes a repaint still in flight.
+let regrowing: AbortController | null = null
+const regrowForest = async () => {
+  const landmarks = scene.querySelector('.trail-landmarks')
+  if (!forestLayout || !treePlan || !landmarks || scene.dataset.trailRendered !== 'true') return
+  if (plannedWater === groveWater) return
+  regrowing?.abort()
+  const controller = new AbortController()
+  regrowing = controller
+  const layout = forestLayout
+  const base = treePlan
+  const previous = new Map(base.map(placement => [placement.id, placement]))
+  const next = planTrailTrees(
+    layout,
+    sceneSeed,
+    forestObstacles,
+    forestClearings(layout),
+    forestNow,
+    (plannedWater = groveWater),
+  )
+  const changed = next.filter(placement => {
+    const before = previous.get(placement.id)
+    return (
+      !before ||
+      before.kind !== placement.kind ||
+      before.treeSeed !== placement.treeSeed ||
+      before.height !== placement.height ||
+      before.log !== placement.log
+    )
+  })
+  if (!changed.length) return
+  const painting = prepareTreeSprites(layout, changed, forest, controller.signal)
+  const markups = new Map<string, string | null>()
+  for (const [id, markup] of painting) markups.set(id, await markup)
+  // A new layout repaints the whole forest with this water already.
+  if (controller.signal.aborted || signal.aborted || treePlan !== base) return
+  treePlan = next
+  for (const placement of changed)
+    if (placement.log === null) forestNodes.remove(`deadfall-${placement.id}`)
+  for (const sprite of forestSprites(layout)) {
+    const markup = markups.get(sprite.id)
+    forestNodes.update(markup ? { ...sprite, render: () => markup } : sprite, landmarks)
+  }
+  groundDepth.refresh()
+  grove.refresh()
+  refreshForest()
+}
 const refreshStructures = () => {
   // Keep generation holders intact until every owner has replaced its previous sprites.
   if (scene.dataset.trailRendered === 'true' && forestLayout) {
@@ -372,7 +441,7 @@ const yieldRender = (signal: AbortSignal, paint = false) => {
 }
 const drawScene = async () => {
   await styleReady
-  if (document.hidden || !scene.isConnected) return
+  if (document.hidden || host.hidden || !scene.isConnected) return
   const mode = scene.clientWidth < 700 ? 'narrow' : 'wide'
   const world =
     retainedSeed === sceneSeed && host.dataset.trailWorld === mode
@@ -499,11 +568,14 @@ const drawScene = async () => {
     ...geometries.flatMap(route => route.samples.filter((_, index) => index % 4 === 0)),
     ...pasture.sites,
   ]
+  forestNow = Date.now()
   treePlan = planTrailTrees(
     layout.landscape,
     sceneSeed,
     forestObstacles,
     forestClearings(layout.landscape),
+    forestNow,
+    (plannedWater = groveWater),
   )
   const sprites = [
     ...repoussoirSprites(layout.landscape, sceneSeed, beechClearings(layout.landscape)),
@@ -690,6 +762,8 @@ const drawScene = async () => {
   perspective.update()
   groundDepth.refresh()
   scene.dataset.trailRendered = 'true'
+  // Water that arrived while the forest was painting.
+  void regrowForest()
   scene.dataset.trailVisible = String(!host.hidden)
   rendering = null
   retainedLayout = layout
@@ -698,6 +772,13 @@ const drawScene = async () => {
   host.dataset.trailWorldHeight = String(height)
   host.dispatchEvent(new Event('trail:ready'))
 }
+host.addEventListener(
+  'trail:open',
+  () => {
+    void drawScene()
+  },
+  { signal },
+)
 host.addEventListener(
   'trail:reflow',
   () => {

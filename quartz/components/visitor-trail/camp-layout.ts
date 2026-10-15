@@ -14,9 +14,17 @@ export function campSites(landscape: Landscape, seed: number, settings: CampSett
       for (let attempt = 0; attempt < 80; attempt++) {
         point = onDryLand(
           {
-            x: width * (id === 1 ? 0.18 : 0.78) + (random() - 0.5) * Math.min(90, width * 0.15),
+            x: width * (id === 1 ? 0.3 : 0.78) + (random() - 0.5) * Math.min(90, width * 0.15),
+            // A camp at the pond's latitude lands inside its dry-land margin and is pushed out to
+            // the rim, at the scene's edge; the extra camps keep above that margin.
             y:
-              Math.max(meadowTop + 92, camp.y - (width < 700 ? 130 * id : 90 + id * 50)) +
+              Math.max(
+                meadowTop + 92,
+                Math.min(
+                  camp.y - (width < 700 ? 130 * id : 90 + id * 50),
+                  pond.y - pond.ry * 2.6 - 20,
+                ),
+              ) +
               (random() - 0.5) * 20,
           },
           landscape,

@@ -744,6 +744,8 @@ export type TreePlacement = {
   // Share of full height reached, the forest year's age of the tree, and the fallen trunk under it.
   growth: number
   generation: number
+  // Forest years since the tree rooted, when succession placed it.
+  age?: number
   log: number | null
 }
 
@@ -780,7 +782,7 @@ export function treeSprite(
     !foothill && trailRandom(treeSeed ^ 0x16c73)() < 0.45
       ? trailSnowBank(treeSeed, (standalone ? 112 : 70) * scale, (18 + depth * 10) * scale)
       : ''
-  return `<g class="trail-tree" ${patch ? `data-trail-chunk="${patch}"` : ''} data-tree-id="${id}" data-tree="${kind}" ${grouping} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" data-tree-growth="${growth.toFixed(2)}" data-tree-generation="${generation}" style="--trail-tree-haze: ${haze.toFixed(0)}%" transform="translate(${x} ${y})">${snow}<g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
+  return `<g class="trail-tree" ${patch ? `data-trail-chunk="${patch}"` : ''} data-tree-id="${id}" data-tree="${kind}" ${grouping} data-tree-depth="${foothill ? 'foothill' : 'meadow'}" data-tree-scale="${scale.toFixed(3)}" data-base-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-trunk-radius="${(trunkRadius * scale * fit).toFixed(3)}" data-growth-limit="${foothill ? Math.max(1, Math.min(1.3, (y - treeline - 1) / (extent * scale * fit))).toFixed(4) : '1.3'}" data-ground-x="${x}" data-ground-y="${y}" data-tree-form="${form}" data-tree-tone="${tone}" data-tree-growth="${growth.toFixed(2)}" data-tree-generation="${generation}" ${placement.age === undefined ? '' : `data-tree-age="${Math.floor(placement.age)}"`} style="--trail-tree-haze: ${haze.toFixed(0)}%" transform="translate(${x} ${y})">${snow}<g class="trail-tree-perspective" transform="scale(${scale.toFixed(3)})"><g class="trail-tree-growth" transform="scale(${fit.toFixed(4)})"><g class="trail-tree-community"><g class="trail-tree-touch">${markup}</g></g></g></g></g>`
 }
 
 export function* trailPatchTrees(
@@ -878,6 +880,7 @@ export function planTrailTrees(
   walks: Point[] = [],
   clearings: (Point & { radius: number })[] = [],
   now = Date.now(),
+  water: ReadonlyMap<string, readonly { count: number; at: number }[]> = new Map(),
 ): TreePlacement[] {
   const { width, meadowTop, camp, groves, pond, alpine, treeline } = landscape
   const clearing = camp.y - meadowTop
@@ -1036,7 +1039,7 @@ export function planTrailTrees(
         break
       }
     }
-  return grow(placements, landscape, forestYear(now))
+  return grow(placements, landscape, forestYear(now), water)
 }
 
 const waterside: readonly TreeKind[] = ['willow', 'willow', 'birch', 'aspen']
@@ -1048,6 +1051,7 @@ function grow(
   planned: (TreePlacement & { pool: readonly TreeKind[] | null })[],
   landscape: Landscape,
   year: number,
+  water: ReadonlyMap<string, readonly { count: number; at: number }[]>,
 ) {
   const storms = landscape.groves.map((_, grove) => groveStorms(grove, Math.floor(year)))
   const placements = planned.map(({ pool, ...placement }, slot) => {
@@ -1060,6 +1064,7 @@ function grow(
       placement.standalone || edge ? [] : storms[placement.cluster],
       year,
       placement.standalone && !edge,
+      water.get(placement.id),
     )
     return { ...placement, ...occupant }
   })
@@ -1075,7 +1080,7 @@ function grow(
     if (!shade) continue
     const slowed = 1 - Math.min(0.6, 0.3 * shade) * (1 - shadeTolerance(sapling.kind))
     sapling.growth *= slowed
-    sapling.height = 16 + (sapling.height - 16) * slowed
+    sapling.height = Math.round(16 + (sapling.height - 16) * slowed)
   }
   return placements
 }
