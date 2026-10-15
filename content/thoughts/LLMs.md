@@ -37,11 +37,11 @@ Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] me
 I did a [[thoughts/images/htn-openllm.pdf|talk at HackTheNorth 2023]] on this topic and rationale behind building [[thoughts/craft#open source|OpenLLM]]
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
-- [[thoughts/Continuous batching]]: Implementing [[thoughts/paged attention|Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation
+- [[thoughts/Continuous batching]]: update the batch after each decoding step so finished requests leave and waiting requests can join. [Orca](https://www.usenix.org/conference/osdi22/presentation/yu) introduced iteration-level scheduling. [[thoughts/paged attention|PagedAttention]] manages KV-cache memory in blocks; it can support this scheduling by reducing wasted memory.
 - Different [[thoughts/Attention|Attention]] variants, for better kernels and hardware optimisation (Think of [[thoughts/flash attention|Flash Attention 3]], [[thoughts/radix attention|Radix Attention]], [[thoughts/tree attention|TreeAttention]], etc.)
-- [[thoughts/Transformers#Byte-Latent Transformer]]: idea to use entropy-based sampling to choose next tokens instead of token-level decoding. [^blt]
+- [[thoughts/Transformers#Byte-Latent Transformer]]: group bytes into variable-length patches using next-byte prediction entropy. The large transformer processes patches, while a smaller decoder generates bytes autoregressively. [^blt]
 
-[^blt]: Think of decoding each text into dynamic patches, and thus actually improving inference efficiency. See also [link](https://ai.meta.com/research/publications/byte-latent-transformer-patches-scale-better-than-tokens/)
+[^blt]: A small byte-level model estimates how uncertain the next byte is. High uncertainty starts a new patch; predictable byte sequences can share longer patches, reducing the number of steps run by the large transformer. Entropy determines patch boundaries. Byte generation still uses the decoder's next-byte predictions. See [BLT, sections 2.3 and 3](https://arxiv.org/html/2412.09871v1).
 
 ### on how we are being [[thoughts/education#teaching|taught]].
 

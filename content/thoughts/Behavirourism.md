@@ -1,6 +1,6 @@
 ---
 date: '2024-02-07'
-description: an ideology that somewhat contributes to an illogical world we live in.
+description: how behaviourism explains learning, and why prediction leaves questions about attention, love, and responsibility open.
 id: Behavirourism
 modified: 2026-06-05 15:08:27 GMT-04:00
 seealso:
@@ -14,96 +14,60 @@ tags:
 title: Behavirourism
 ---
 
-Observable behavior is all that matters. Mind is a black box; if you can't measure it, don't theorize about it. Positive reinforcement (praise, rewards) adds something after a behaviour and makes it more likely to be repeated. Negative reinforcement removes something aversive (the alarm stops when you get up) and also makes the behaviour more likely. Punishment is what makes a behaviour less likely. [@skinner1953sciencehumanbehavior] Stimulus $\to$ response. Environment shapes everything.
-
-This works for training pigeons. For understanding persons? Catastrophically incomplete.
+Behaviourism asks what makes an organism act as it does, and how we could test the explanation. My objection begins when an account of behaviour is treated as a complete account of a person. That objection needs a better target than the claim that behaviourists think nobody has feelings.
 
 ## framework
 
-Behaviorism treats organisms as input-output systems. Internal states—beliefs, desires, attention, understanding—are either eliminable or reducible to behavioral dispositions. If you want to explain why someone does X, point to reinforcement history, not mental states. [@skinner1953sciencehumanbehavior]
+There are several claims under the name:
 
-> stay with observables, avoid introspection, build prediction models from stimulus-response patterns, i.e: _functionalist appeal without [[thoughts/functionalism|functionalist]] commitments_. (functionalism _posits_ internal states defined by causal role; behaviorism _eliminates_ them.)
+- **Methodological behaviourism** restricts scientific inquiry to publicly observable evidence. Watson's [1913 manifesto](https://psychclassics.yorku.ca/Watson/views.htm) rejects introspection as psychology's essential method and makes prediction and control its goals. A restriction on evidence does not, by itself, establish that private experience is unreal.
+- **Logical behaviourism** concerns the meaning of psychological statements. Hempel's [early account](https://doi.org/10.1017/CBO9780511815157.015) seeks to translate them into physical descriptions, including behavioural responses. This is a stronger claim than requiring an experiment to have observable results.
+- **Skinner's radical behaviourism** includes private events. His [1945 paper](https://betshy.com/wp-content/uploads/2021/09/c238a-the-operational-analysis-of-psychological-terms-b.f.-skinner.pdf) asks how someone learns to report a toothache when other people cannot feel it. He treats private stimuli as part of nature and examines how a community teaches words for them. Denying a separate mental substance leaves room for thinking and feeling.
 
-## what it misses
+This also separates behaviourism from [[thoughts/functionalism]]. Functionalism characterizes mental states through their causal relations to inputs, other states, and actions. A description of what someone tends to do leaves those internal relations unspecified.
 
-### attention is not a behavior
+## reinforcement
 
-> Simone Weil: attention is the rarest and purest form of generosity. (letter to Joë Bousquet, 1942)
+Positive reinforcement (praise, rewards) adds something after a behaviour and makes it more likely to be repeated. Negative reinforcement removes something aversive (the alarm stops when you get up) and also makes the behaviour more likely. Punishment is what makes a behaviour less likely. [@skinner1953sciencehumanbehavior]
 
-Behaviorism can't touch this. [[thoughts/Attention]] is not an observable response; it's the _quality_ of your engagement, the structure of what you're oriented toward.
-You can behaviorally comply (make eye contact, nod, repeat back) while completely absent. Attention resists third-person measurement.
+Praise counts as reinforcement only if it has that effect. The label describes a relation between a consequence and subsequent behaviour; the speaker's intention to reward someone does not settle it. In operant conditioning, consequences change the probability of behaviour. A simple stimulus $\to$ response formula leaves that learning history out. See [Skinner, chapter V](https://www.bfskinner.org/wp-content/uploads/2014/02/ScienceHumanBehavior.pdf#page=64).
 
-> Iris Murdoch (paraphrased): moral life happens in ongoing attention—how you _think_ about someone, what you notice, what possibilities you hold open for them. [@murdoch1970sovereignty]
+## attention
 
-None of this shows up in behavior until much later, if at all. The decision is already made before you act, made through accumulated patterns of attention.
+You can make eye contact, nod, and repeat someone's words while missing what they are trying to tell you. Those observations give evidence about [[thoughts/Attention|attention]]. Any one of them can also mislead.
 
-Behaviorism collapses attention into behavioral output. But attention _precedes_ behavior. You can't reinforce attention; you can only reinforce behavioral proxies. The gap is everything.
+Murdoch makes the issue precise through [a mother, M, who dislikes her daughter-in-law, D](https://www.womeninparenthesis.co.uk/wp-content/uploads/2017/07/moral-vision.pdf#page=3). M behaves courteously throughout, then questions her own jealousy and snobbery and tries to see D more fairly. Murdoch constructs the case so this change can occur without a change in M's outward treatment of D. The moral activity lies in revising an unjust picture of another person. [@murdoch1970sovereignty]
 
-### love is not conditioned response
+A radical behaviourist can investigate M's private activity. Murdoch's example therefore does not show that Skinner has no place for it. It presses a further question: what makes M's new way of seeing D more just? Counting courteous acts cannot answer that question when the acts remain unchanged. We need to examine what M has come to understand about D.
 
-If behaviorism is right, [[/tags/love]] is just positive reinforcement. You "love" someone because they've consistently rewarded you: dopamine, validation, security. Withdraw the reinforcement, love extinguishes. Add punishment, love turns to avoidance.
+## love and commitment
 
-Behaviorism has an answer for why abusive relationships persist: intermittent reinforcement, rare and unpredictable reward between punishments, is the schedule most resistant to extinction. It predicts secure relationships are just well-tuned reinforcement schedules. They're not—people stay through illness, depression, long separation, all conditions that break behavioral contingencies.
+Staying with someone through illness does not refute reinforcement theory. A period without an immediate reward does not establish that every influence supporting an action has disappeared. Calling an abusive relationship an intermittent reinforcement schedule also leaves the explanation unproved. Such an account needs to identify the actions, consequences, and conditions it claims to explain.
 
-> [!note] [[thoughts/Existentialism|existentialist]] choice
+My concern with [[/posts/love|love]] is what happens when this causal vocabulary becomes the whole description of a relationship. A promise gives someone a reason to rely on you. An account of how you acquired the habit of keeping promises still leaves the promise's claim on you to be examined.
+
+> [!note] commitment
 >
-> love is _choice_. You commit to someone not because they reinforce you but because you _decide_ to make them central. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]
+> Love involves choices about how to attend, understand, and care for someone. Treating those choices seriously means giving reasons for them and accepting responsibility for their effects. Their having causes does not make that discussion disappear.
 
-Kierkegaard: love is duty. Not duty imposed from outside, but duty you _give yourself_. "You shall love" makes love free--it's independent of the object's behavior. They can change, fail, disappoint; you chose this, you remain. [@kierkegaard1847worksoflove]
+Kierkegaard grounds the duty to love one's neighbour in the Christian commandment. Describing it as a duty we simply invent for ourselves drops that foundation. [@kierkegaard1847worksoflove] His argument concerns love's obligation beyond changing preference. Whether the obligation is justified is a different question from how a person learns to act on it.
 
-Fromm: love is art, requiring discipline and practice. [@fromm1956art] Not a feeling that happens to you (behaviorist model: stimulus triggers affective response) but an activity you perform. The activity is voluntary. You choose to attend, to understand, to care—regardless of whether it's immediately reinforcing.
+## prediction and understanding
 
-bell hooks: love is action. [@hooks2000love] When you understand love as action, you assume accountability. You can't say "I couldn't help it" (behaviorist excuse: the environment controlled me). You chose. You're responsible.
+The [[thoughts/Compression|compression]] problem is clearest when the task is specified. A model trained to predict whether someone will answer a message can succeed while telling us little about what the message means to them. Its success is measured against that prediction. Understanding their grief, resentment, or commitment requires further evidence and a different question.
 
-[[thoughts/Camus]]: The misery and greatness of this world: it offers no truths, but only objects for love. Absurdity is king, but love saves us from it.
+This is a limit on what follows from predictive success. It gives no proof that persons are impossible to model. A richer model might include their reasons, their history, and their own account of the situation. I want those accounts to remain open to correction, including correction by the person being described. See [[thoughts/hermeneutics]].
 
-### the [[thoughts/Compression|compression]] problem
+## determinism and responsibility
 
-Behaviorism tries to compress persons to stimulus-response mappings. Collect enough data, predict their behavior. This is the [[thoughts/Compression|compression]] problem: lossy compression discards what doesn't predict.
+Skinner seeks causes for choosing and self-control too. In [chapters XV and XVI of _Science and Human Behavior_](https://www.bfskinner.org/wp-content/uploads/2014/02/ScienceHumanBehavior.pdf#page=232), a person changes conditions that affect their later actions, and that activity itself calls for explanation. This differs from saying people passively receive stimuli or never deliberate.
 
-What gets discarded: first-person experience, attention, intention, the _reasons_ they act. You model the function (input $\to$ output) but miss the process (how they make sense of the input, what it means to them, what they're trying to do).
+Invoking choice does not disprove causal determination. Saying that people with different histories respond differently to the same situation does not disprove it either. The histories are already different.
 
-This works when you don't care about the person—only their behavior. Advertising, management, behavioral modification. It breaks when you need to _understand_ them. Understanding requires entering their horizon (see [[thoughts/hermeneutics]]), not compressing them to a model.
+My objection is to using a causal account to dismiss responsibility without further argument. Explaining how someone came to harm another person leaves questions about justification, repair, and what they should do next. Those questions need answers even when we know more about the causes.
 
-> [!important]
->
-> You can't love someone you've [[thoughts/reductionism|reduced]] to a function. [[/posts/love|Love]] requires attending to what resists compression: their irreducibility, their first-person givenness, their capacity to surprise you.
+## public criteria
 
-## determinism and freedom
+See [[thoughts/love#public criteria]] for the related [[thoughts/Wittgenstein|Wittgensteinian]] discussion. How someone listens, what they remember, and how they respond to a boundary can count as reasons to believe they care. Their conduct matters. Interpreting that conduct requires context, and the interpretation can fail.
 
-Behaviorism is deterministic: behavior is fully determined by reinforcement history plus current stimulus. No internal freedom, no voluntary choice, no "self" that could decide otherwise.
-
-Existentialist response: even if causally influenced, you're _responsible_. You can't hide behind your conditioning. Sartre: you're "condemned to be free"—even when you claim "I had no choice," you chose to see it that way. [@sartre1943being]
-
-This isn't libertarian free will (uncaused choice from nowhere). It's _situated_ freedom: you're shaped by history, but you still decide how to respond. The same reinforcement schedule produces different people because people aren't passive recipients—they interpret, resist, reframe.
-
-Choosing to love someone is choosing _despite_ the absence of guarantees. No reinforcement schedule can make you do that. You do it because you decided it matters.
-
-## what i think behaviorism gets right
-
-Behaviorism is correct that: environment shapes us, reinforcement patterns matter, much behavior is unconscious/automatic, introspection is unreliable, observable criteria beat subjective reports.
-
-It's correct as _constraint_ on theorizing: if your model of mind doesn't predict behavior, it's incomplete. Functionalism absorbs this (see [[thoughts/functionalism]]—causal role must match behavioral profile). But functionalism adds: internal states matter _when they make causal difference_. Attention, intention, understanding—these aren't epiphenomenal. They're part of the functional story.
-
-Behaviorism's mistake is that it treats methodological restriction (study observables) as metaphysical claim (only observables exist). You can be methodologically behavioral without being ontologically behaviorist.
-
-## [[thoughts/Wittgenstein|wittgensteinian]] intervention
-
-See [[thoughts/love#criteria]] for the full discussion of how criteria work in recognizing love.
-
-The point for behaviorism: you can tell someone loves another through observable patterns—how they talk about them, what they notice, whether they stay when it's hard. These criteria are public, behavioral. But they're not reductive. Behavior shows love without being identical to it.
-
-Wittgenstein lets you accept that criteria must be observable while rejecting behaviorist eliminativism. The patterns make sense only within a practice, a form of life. You learn love by participating, not by mapping stimulus-response functions. Criteria reveal what's happening without exhausting what's happening. This is the gap behaviorism can't close.
-
-## tl;dr
-
-Behaviorism treats people as input-output devices. This eliminates attention (quality of engagement), love (voluntary commitment), understanding (first-person sense-making). You can condition behavior; you can't condition choice. Love resists reinforcement theory—it's choosing to stay in relationship regardless of behavioral contingencies. Compression problem: models predict behavior but miss what makes someone a person. Use behaviorism for training, not understanding. For love, see [[thoughts/hermeneutics]].
-
-### critique
-
-- one-dimensional to understand human-behaviour, as it focuses only on observable behaviours and neglects internal mental processes
-- deterministic, as it assumes that behaviour is determined by the environment and not by the individual
-- [[thoughts/Compression]] problems: reduces persons to predictive models, discarding first-person experience and irreducible particularity
-- cannot account for voluntary commitment (love, duty, choice) that persists through extinction conditions
-- mistakes methodological restriction (study observables) for ontological claim (only observables exist)
-- eliminates attention as constitutive of moral life and understanding
+Behavioural inquiry earns its place by identifying conditions that change what people do. My resistance is to treating that achievement as permission to stop asking what they mean, what they owe one another, or whether the account describes them fairly.
