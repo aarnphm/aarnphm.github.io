@@ -10,7 +10,9 @@ import {
   readGarminConnectSession,
   type GarminConnectSession,
 } from '../util/garmin-session'
+import { shiftIsoDay } from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
+import { calendarRefreshStart, syncRefreshDays } from '../util/sync-refresh-window'
 import { isRecord, readNumber, readString, type UnknownRecord } from '../util/type-guards'
 
 export type SleepLevel = 'unmeasurable' | 'awake' | 'light' | 'deep' | 'rem'
@@ -60,14 +62,14 @@ const PHASE_SECONDS = 300
 const DEFAULT_SYNC_DELAY_MS = 1200
 const ouraCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
 
-interface Args {
+export interface Args {
   days: string[]
-  count: number
+  count: number | null
   since: string | null
   write: boolean
 }
 
-interface Night {
+export interface Night {
   day: string
   sleepStart: Date
   sleepEnd: Date
@@ -100,8 +102,8 @@ function cleanDay(value: string): string {
   return value
 }
 
-function parseArgs(argv: string[]): Args {
-  const args: Args = { days: [], count: 1, since: null, write: false }
+export function parseArgs(argv: string[]): Args {
+  const args: Args = { days: [], count: null, since: null, write: false }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (arg === '--write') args.write = true
@@ -227,7 +229,12 @@ function toNight(detail: OuraDayDetail): Night | null {
   }
 }
 
-function selectNights(cache: OuraCache, args: Args): Night[] {
+export function selectNights(
+  cache: OuraCache,
+  args: Args,
+  refreshWindowDays = syncRefreshDays(),
+  now = Date.now(),
+): Night[] {
   const nights: Night[] = []
   const details = cache.details ?? {}
   for (const day of Object.keys(details).sort()) {
@@ -237,7 +244,13 @@ function selectNights(cache: OuraCache, args: Args): Night[] {
     if (night) nights.push(night)
   }
   if (args.days.length || args.since) return nights
-  return nights.slice(-args.count)
+  if (args.count != null) return nights.slice(-args.count)
+  const latestDay = nights.at(-1)?.day
+  if (!latestDay) return []
+  const windowStart = calendarRefreshStart(refreshWindowDays, now)
+  const overlapStart = shiftIsoDay(latestDay, -refreshWindowDays)
+  const defaultSince = overlapStart < windowStart ? overlapStart : windowStart
+  return nights.filter(night => night.day >= defaultSince)
 }
 
 function isOuraCache(value: unknown): value is OuraCache {

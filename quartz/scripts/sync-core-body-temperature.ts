@@ -14,13 +14,13 @@ import {
   type CoreBodyTemperatureSample,
 } from '../plugins/stores/core-body-temperature'
 import { joinSegments, QUARTZ } from '../util/path'
+import { syncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, stringValue } from '../util/type-guards'
 
 const CACHE_VERSION = 1
 const DAY_MS = 86_400_000
 const CLOUD_WINDOW_DAYS = 31
-const CLOUD_OVERLAP_DAYS = 35
 const CORE_API_BASE = 'https://core-api.corebodytemp.com/api/v1'
 const FIREBASE_AUTH_URL = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword'
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
@@ -231,15 +231,24 @@ async function coreSensorIds(auth: CoreCloudAuth): Promise<string[]> {
   return [...new Set([...deviceIds(owned), ...deviceIds(shared)])]
 }
 
+export function coreCloudRefreshStart(
+  previous: CoreBodyTemperatureCache | null,
+  configuredStart: string | null,
+  refreshWindowDays = syncRefreshDays(),
+  now = Date.now(),
+): string {
+  const latest = previous?.samples.at(-1)?.time
+  if (latest && Number.isFinite(Date.parse(latest)))
+    return new Date(Date.parse(latest) - refreshWindowDays * DAY_MS).toISOString()
+  return configuredStart
+    ? `${configuredStart}T00:00:00.000Z`
+    : new Date(now - 365 * DAY_MS).toISOString()
+}
+
 async function cloudStart(previous: CoreBodyTemperatureCache | null): Promise<string> {
   const explicit = cleanDay(process.env.CORE_BODY_TEMP_SINCE)
   if (explicit) return `${explicit}T00:00:00.000Z`
-  const latest = previous?.samples.at(-1)?.time
-  if (latest) return new Date(Date.parse(latest) - CLOUD_OVERLAP_DAYS * DAY_MS).toISOString()
-  const configuredStart = await triathlonStart()
-  return configuredStart
-    ? `${configuredStart}T00:00:00.000Z`
-    : new Date(Date.now() - 365 * DAY_MS).toISOString()
+  return coreCloudRefreshStart(previous, await triathlonStart(), syncRefreshDays())
 }
 
 async function readCoreCloud(

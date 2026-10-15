@@ -12,7 +12,10 @@ import {
 } from '../plugins/stores/garmin'
 import {
   fetchGarminSleepRange,
+  garminHealthRefreshStart,
+  garminLactateThresholdRefreshStart,
   garminRefreshStart,
+  garminSleepRefreshStart,
   mergeGarminFitTrainingEffect,
   mergeGarminLactateThresholdHistory,
   mergeGarminVo2Range,
@@ -228,6 +231,100 @@ test('Garmin routine refresh overlaps the latest activity and schema refresh kee
   assert.equal(garminRefreshStart(cache, '2026-05-15', 3), '2026-08-28')
   assert.equal(garminRefreshStart({ ...cache, version: 13 }, '2026-05-15', 3), '2023-09-27')
   assert.equal(garminRefreshStart(null, '2026-05-15', 3), '2026-05-15')
+})
+
+test('Garmin health, sleep, and lactate threshold refresh starts bridge sync gaps and heal interior holes', () => {
+  const okReading = { status: 'unavailable' as const, attemptedAt: 1, fetchedAt: 1, value: null }
+  const errReading = { status: 'error' as const, attemptedAt: 1, fetchedAt: null, value: null }
+  const healthDay = (date: string, errored = false) => ({
+    date,
+    source: 'garmin' as const,
+    bodyBattery: errored ? errReading : okReading,
+    trainingReadiness: okReading,
+    trainingStatus: okReading,
+    enduranceScore: okReading,
+    hillScore: okReading,
+  })
+  const sleepDay = (date: string): GarminSleepSummary => ({
+    source: 'garmin',
+    date,
+    startTime: null,
+    endTime: null,
+    averageBreathsPerMinute: 14,
+    lowestBreathsPerMinute: null,
+    highestBreathsPerMinute: null,
+    averageSpO2: null,
+    lowestSpO2: null,
+    bodyBatteryStart: null,
+    bodyBatteryEnd: null,
+    bodyBatteryChange: null,
+    averageStress: null,
+    restlessMoments: null,
+  })
+
+  const lagged = {
+    version: 14,
+    lastSync: 1,
+    activities: {},
+    health: { '2026-10-01': healthDay('2026-10-01'), '2026-10-02': healthDay('2026-10-02') },
+    sleep: { '2026-10-01': sleepDay('2026-10-01'), '2026-10-02': sleepDay('2026-10-02') },
+  }
+  assert.equal(garminHealthRefreshStart(lagged, '2026-05-15', '2026-10-09', 2), '2026-09-30')
+  assert.equal(garminSleepRefreshStart(lagged, '2026-05-15', '2026-10-09', 2), '2026-09-30')
+
+  const hole = {
+    version: 14,
+    lastSync: 1,
+    activities: {},
+    health: {
+      '2026-10-02': healthDay('2026-10-02'),
+      '2026-10-07': healthDay('2026-10-07'),
+      '2026-10-08': healthDay('2026-10-08'),
+      '2026-10-09': healthDay('2026-10-09'),
+    },
+    sleep: {
+      '2026-10-02': sleepDay('2026-10-02'),
+      '2026-10-07': sleepDay('2026-10-07'),
+      '2026-10-08': sleepDay('2026-10-08'),
+      '2026-10-09': sleepDay('2026-10-09'),
+    },
+  }
+  assert.equal(garminHealthRefreshStart(hole, '2026-05-15', '2026-10-09', 2), '2026-10-03')
+  assert.equal(garminSleepRefreshStart(hole, '2026-05-15', '2026-10-09', 2), '2026-10-03')
+
+  const errored = {
+    version: 14,
+    lastSync: 1,
+    activities: {},
+    health: {
+      '2026-10-06': healthDay('2026-10-06', true),
+      '2026-10-07': healthDay('2026-10-07'),
+      '2026-10-08': healthDay('2026-10-08'),
+      '2026-10-09': healthDay('2026-10-09'),
+    },
+  }
+  assert.equal(garminHealthRefreshStart(errored, '2026-05-15', '2026-10-09', 2), '2026-10-06')
+
+  assert.equal(
+    garminLactateThresholdRefreshStart(
+      {
+        speedMps: { date: '2026-10-02', value: 3.8 },
+        heartRateBpm: { date: '2026-10-02', value: 174 },
+        history: {
+          speedMps: [{ date: '2026-10-02', value: 3.8 }],
+          heartRateBpm: [{ date: '2026-10-02', value: 174 }],
+        },
+      },
+      '2026-05-15',
+      '2026-10-09',
+      2,
+    ),
+    '2026-09-30',
+  )
+  assert.equal(
+    garminLactateThresholdRefreshStart(null, '2026-05-15', '2026-10-09', 2),
+    '2026-05-15',
+  )
 })
 
 test('Garmin refresh reconciliation prunes the fetched range and preserves older history', () => {

@@ -14,6 +14,7 @@ import {
   type SurfaceCurrentField,
   type SurfaceCurrentMesh,
 } from '../util/surface-current'
+import { weatherSyncRefreshDays } from '../util/sync-refresh-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord } from '../util/type-guards'
 import { routeWeatherFingerprint } from '../util/weather-route-hours'
@@ -215,7 +216,21 @@ async function main(): Promise<void> {
   const weather = await readWeather()
   if (!isRecord(weather.activities)) throw new Error('No weather activities')
   const weatherActivities = weather.activities
-  const cutoff = Date.now() - 14 * 86_400_000
+  const refreshDays = weatherSyncRefreshDays()
+  const latestSurfaceCurrentMs = Object.values(weatherActivities).reduce<number | null>(
+    (latest, entry) => {
+      if (!isRecord(entry) || !parseSurfaceCurrentEstimate(entry.surfaceCurrent)) return latest
+      const startMs = typeof entry.start === 'string' ? Date.parse(entry.start) : NaN
+      if (!Number.isFinite(startMs)) return latest
+      return latest === null || startMs > latest ? startMs : latest
+    },
+    null,
+  )
+  const windowCutoff = Date.now() - refreshDays * 86_400_000
+  const cutoff =
+    latestSurfaceCurrentMs === null
+      ? windowCutoff
+      : Math.min(windowCutoff, latestSurfaceCurrentMs - refreshDays * 86_400_000)
   const candidates = Object.values(strava.activities).filter(activity =>
     args.id === null
       ? Date.parse(activity.startDate) >= cutoff &&
