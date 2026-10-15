@@ -5,6 +5,8 @@
 //   presented  frames the display compositor drew (Display::DrawAndSwap); needs a display (xvfb-run)
 //   verify     E2E scenario on a --verify build; every region-painted frame must match a full repaint
 // CHROMIUM=<path> selects the browser; SOFTWARE_GL=1 forces SwiftShader for GPU-less machines.
+// The homepage opens the trail unless a visitor closed it. Runs start with it closed, so the
+// click opens the prepared scene; --initially-open keeps a first visit's open-on-load path.
 import { mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -21,6 +23,7 @@ const dpr = Number(option('dpr', 1))
 const url = `http://localhost:${option('port', 7373)}/index.html`
 const out = path.resolve(option('out', path.join(here, 'artifacts')))
 const label = option('label', 'run')
+const initiallyOpen = rest.includes('--initially-open')
 const flags = [
   ...(process.env.SOFTWARE_GL
     ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']
@@ -48,6 +51,8 @@ async function open() {
   const page = await context.newPage()
   // The shared room is a live service; the harness measures the scene without it.
   await page.route(/playhtml\.fun/, route => route.abort())
+  if (!initiallyOpen)
+    await page.addInitScript(() => localStorage.setItem('garden:trail-open', 'false'))
   return { context, page }
 }
 const ready = page =>
@@ -82,12 +87,16 @@ async function frames() {
     )
   })
   await page.goto(url)
-  await ready(page)
-  const clicked = await page.evaluate(() => {
-    window.__trailFrames.length = 0
-    return performance.now()
-  })
-  await toggle(page)
+  // An open-on-load visit counts from navigation start; otherwise from the click.
+  let clicked = 0
+  if (!initiallyOpen) {
+    await ready(page)
+    clicked = await page.evaluate(() => {
+      window.__trailFrames.length = 0
+      return performance.now()
+    })
+    await toggle(page)
+  }
   await page.waitForFunction(() => window.__trailRevealEnd, null, { timeout: 60000 })
   await page.waitForTimeout(6000)
   const { record, end } = await page.evaluate(() => ({
@@ -139,7 +148,7 @@ async function gl() {
   })
   await page.goto(url)
   await ready(page)
-  await toggle(page)
+  if (!initiallyOpen) await toggle(page)
   await page.waitForTimeout(2500)
   await page.evaluate(() => (window.__trailGl.on = true))
   await page.waitForTimeout(3000)
@@ -204,6 +213,7 @@ async function verify() {
         frames: frames.length,
         mismatched: frames.filter(frame => frame.differing).length,
         worst: Math.max(0, ...frames.map(frame => frame.worst)),
+        pixels: Math.max(0, ...frames.map(frame => frame.differing)),
       }
     })
   await page.goto(url)
@@ -219,7 +229,7 @@ async function verify() {
       document.dispatchEvent(new CustomEvent('themechange', { detail: { theme: value } }))
     }, value)
   const steps = [
-    ['open', () => toggle(page), 3500],
+    ['open', () => (initiallyOpen ? null : toggle(page)), 3500],
     ['scroll', () => page.mouse.wheel(0, 180), 2000],
     ['scroll back', () => page.mouse.wheel(0, -180), 2000],
     ['dark theme', () => theme('dark'), 3500],
