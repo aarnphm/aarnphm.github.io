@@ -1,7 +1,7 @@
 // Injects a pixel verifier at the end of the compositor's region path. After each region-painted
 // frame it reads the retained canvas, repaints every draw of the same frame into a fresh
-// framebuffer, and records how many pixels differ by more than 3/255 (outside the clock corner,
-// which holds plain terrain). Results accumulate in the trail frame's `__trailVerified`.
+// framebuffer, and records how many pixels differ by more than 3/255. Results accumulate in the
+// trail frame's `__trailVerified`.
 const anchor = `    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
   }`
@@ -32,13 +32,10 @@ const verifier = `    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
     gl.deleteFramebuffer(framebuffer)
     gl.deleteTexture(texture)
-    const [left, top, right, bottom] = clockRect ?? [0, 0, 0, 0]
     let differing = 0
     let worst = 0
     for (let row = 0; row < height; row++)
       for (let x = 0; x < width; x++) {
-        const y = height - 1 - row
-        if (x >= left - 2 && x < right + 2 && y >= top - 2 && y < bottom + 2) continue
         const index = (row * width + x) * 4
         let difference = 0
         for (let channel = 0; channel < 4; channel++)
