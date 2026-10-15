@@ -32,6 +32,19 @@ const finite = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value)
 const fraction = (value: unknown): value is number => finite(value) && value >= 0 && value <= 1
 
+export function readVisitorDaylightCell(
+  target: Document,
+): { lat: number; lon: number; weather: null } | null {
+  const latValue = target.documentElement.getAttribute('data-visitor-lat')
+  const lonValue = target.documentElement.getAttribute('data-visitor-lon')
+  if (!latValue?.trim() || !lonValue?.trim()) return null
+  const lat = Number(latValue)
+  const lon = Number(lonValue)
+  return finite(lat) && Math.abs(lat) <= 90 && finite(lon) && Math.abs(lon) <= 180
+    ? { lat, lon, weather: null }
+    : null
+}
+
 export function sampleVisitorDaylight(
   forecast: DaylightForecast | null,
   now = Date.now(),
@@ -91,7 +104,8 @@ export function readVisitorDaylight(value: unknown): VisitorDaylight | null {
 }
 
 export function createVisitorDaylightSource(target: Document, signal: AbortSignal) {
-  let latest: VisitorDaylight | null = sampleVisitorDaylight(null)
+  const initialCell = readVisitorDaylightCell(target)
+  let latest: VisitorDaylight | null = sampleVisitorDaylight(initialCell)
   let signature = JSON.stringify(latest)
   const dispatch = () => target.dispatchEvent(new CustomEvent(changeEvent, { detail: latest }))
   target.addEventListener(requestEvent, dispatch, { signal })
@@ -106,7 +120,8 @@ export function createVisitorDaylightSource(target: Document, signal: AbortSigna
   return {
     publish(forecast: DaylightForecast | null, now = Date.now()) {
       if (signal.aborted) return
-      const current = sampleVisitorDaylight(forecast, now)
+      const located = forecast?.lat != null && forecast.lon != null
+      const current = sampleVisitorDaylight(located ? forecast : initialCell, now)
       const value = JSON.stringify(current)
       if (value === signature) return
       latest = current

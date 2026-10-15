@@ -38,6 +38,7 @@ document.addEventListener('nav', () => {
   const windArrow = root?.querySelector<SVGSVGElement>('[data-weather-wind-arrow]')
   if (!root || !panel || !toggle) return
 
+  document.body.append(root)
   const controller = new AbortController()
   const { signal } = controller
   const trailWeather = createVisitorTrailWeatherSource(document, signal)
@@ -269,6 +270,7 @@ document.addEventListener('nav', () => {
     window.clearInterval(timer)
     cancelClose()
     if (panel.matches(':popover-open')) panel.hidePopover()
+    root.remove()
   })
   void refresh()
 })

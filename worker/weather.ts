@@ -18,6 +18,33 @@ const coordinate = (value: unknown, limit: number): number | null => {
   return Number.isFinite(number) && Math.abs(number) <= limit ? cell(number) : null
 }
 
+function visitorWeatherCell(request: Request): { lat: number; lon: number } | null {
+  const geo = 'cf' in request && isRecord(request.cf) ? request.cf : null
+  const lat = coordinate(geo?.latitude, 90)
+  const lon = coordinate(geo?.longitude, 180)
+  return lat === null || lon === null ? null : { lat, lon }
+}
+
+export function withVisitorDaylightCell(request: Request, response: Response): Response {
+  if (!response.body || !response.headers.get('Content-Type')?.startsWith('text/html'))
+    return response
+  const location = visitorWeatherCell(request)
+  if (!location) return response
+  const personalized = new Response(response.body, response)
+  personalized.headers.set('Cache-Control', 'private, no-store')
+  personalized.headers.delete('ETag')
+  personalized.headers.delete('Last-Modified')
+  return new HTMLRewriter()
+    .on('html', {
+      element(element) {
+        // Resolve realtime theme before first paint using the weather endpoint's coarse cell.
+        element.setAttribute('data-visitor-lat', String(location.lat))
+        element.setAttribute('data-visitor-lon', String(location.lon))
+      },
+    })
+    .transform(personalized)
+}
+
 export async function handleWeather(
   request: Request,
   ctx: { waitUntil(promise: Promise<unknown>): void },
@@ -30,11 +57,10 @@ export async function handleWeather(
       .map(value => (typeof value === 'string' ? value.trim() : ''))
       .find(Boolean) ?? null
   const country = typeof geo?.country === 'string' ? geo.country : null
-  const lat = coordinate(geo?.latitude, 90)
-  const lon = coordinate(geo?.longitude, 180)
+  const location = visitorWeatherCell(request)
   const headers = { 'Cache-Control': `private, max-age=${FRESH}` }
-  if (lat === null || lon === null)
-    return Response.json({ place, country, weather: null, solar: null }, { headers })
+  if (!location) return Response.json({ place, country, weather: null, solar: null }, { headers })
+  const { lat, lon } = location
 
   const key = new Request(`https://weather.cache/v5/${lat},${lon}`)
   const cache = await caches.open('weather')
