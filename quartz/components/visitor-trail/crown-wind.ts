@@ -47,11 +47,15 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
   let frame = 0
   let last = -Infinity
   let moving = false
+  // The scene's document offset, read with the clusters. Each step derives its viewport
+  // position from the scroll offset, so a step never forces layout after other writes.
+  let sceneTop = 0
 
   const number = (style: CSSStyleDeclaration, name: string) =>
     Number.parseFloat(style.getPropertyValue(name)) || 0
   const collect = (time: number) => {
     read = time
+    sceneTop = scene.getBoundingClientRect().top + view.scrollY
     clusters = []
     const cached = scene.dataset.trailRenderer === 'webgl'
     for (const crown of scene.querySelectorAll<SVGGElement>(
@@ -120,7 +124,7 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
     const lagX = number(style, '--trail-leaf-lag-x')
     const lagY = number(style, '--trail-leaf-lag-y')
     const flip = number(style, '--trail-leaf-flip')
-    const top = -scene.getBoundingClientRect().top - 40
+    const top = view.scrollY - sceneTop - 40
     const bottom = top + view.innerHeight + 200
     const now = time / 1000
     moving = true

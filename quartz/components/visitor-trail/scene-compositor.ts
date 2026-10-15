@@ -129,18 +129,15 @@ const reference = (value: string | null) => value?.match(/url\(["']?#([^"')]+)["
 
 const vertexShader = `#version 300 es
 in vec2 corner;
-uniform vec2 viewport;
+// The drawing target in canvas pixels: the canvas itself, or a cached segment within it.
+uniform vec4 target;
 uniform mat3 place;
-uniform mat3 maskPlace;
-out vec2 uv;
-out vec2 maskUv;
-out vec2 clipUv;
+flat out mat3 unplace;
 void main() {
   vec2 point = (place * vec3(corner, 1.0)).xy;
-  uv = corner;
-  maskUv = (maskPlace * vec3(point, 1.0)).xy;
-  clipUv = point / viewport;
-  gl_Position = vec4(point.x / viewport.x * 2.0 - 1.0, 1.0 - point.y / viewport.y * 2.0, 0.0, 1.0);
+  unplace = inverse(place);
+  vec2 local = (point - target.xy) / target.zw;
+  gl_Position = vec4(local.x * 2.0 - 1.0, 1.0 - local.y * 2.0, 0.0, 1.0);
 }`
 const fragmentShader = `#version 300 es
 precision highp float;
@@ -155,10 +152,11 @@ uniform vec4 themeReveal;
 uniform sampler2D loadCoverage;
 uniform float loadActive;
 uniform vec3 solarTint;
-in vec2 uv;
-in vec2 maskUv;
-in vec2 clipUv;
+uniform vec4 target;
+uniform mat3 maskPlace;
+flat in mat3 unplace;
 out vec4 color;
+vec2 clipUv;
 float trailAlpha(float progress, float cellSize) {
   if (progress <= 0.0) return 0.0;
   if (progress >= 1.0) return 1.0;
@@ -166,6 +164,14 @@ float trailAlpha(float progress, float cellSize) {
   return step(distance(point, sweep.xy), progress * (sweep.z + cellSize));
 }
 void main() {
+  // Sample from the pixel position, not interpolated coordinates, so a quad and a region
+  // drawn over it pick the same nearest texels.
+  vec2 point = vec2(target.x + gl_FragCoord.x, target.y + target.w - gl_FragCoord.y);
+  vec2 uv = (unplace * vec3(point, 1.0)).xy;
+  // Region draws cover a rect around the quad; only the quad itself paints.
+  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) discard;
+  vec2 maskUv = (maskPlace * vec3(point, 1.0)).xy;
+  clipUv = point / viewport;
   // Masks hold premultiplied luminance, so this is luminance times alpha, as in SVG.
   float mask = texture(maskImage, maskUv).r;
   color = texture(image, uv) * alpha * mask * texture(clipImage, clipUv).r;
@@ -315,6 +321,7 @@ export function mountSceneCompositor(
   let clipVersion = 0
   const clipTextures = new Map<string, { texture: WebGLTexture | null; key: string }>()
   const textures = new Set<WebGLTexture>()
+  const contents = new WeakMap<WebGLTexture, number>()
   const allocations = new WeakMap<
     WebGLTexture,
     { width: number; height: number; single: boolean }
@@ -345,6 +352,7 @@ export function mountSceneCompositor(
     uniforms = Object.fromEntries(
       [
         'viewport',
+        'target',
         'place',
         'maskPlace',
         'alpha',
@@ -427,6 +435,8 @@ export function mountSceneCompositor(
       allocations.set(target, { width, height, single })
       filter()
     }
+    // A cached segment holding this texture's previous pixels must be rebuilt.
+    contents.set(target, (contents.get(target) ?? 0) + 1)
     return target
   }
   const release = (texture: WebGLTexture | null) => {
@@ -1571,7 +1581,7 @@ export function mountSceneCompositor(
       Number(element.getAttribute('data-patch-bottom')) > -8
     )
   }
-  const surface = (width: number, height: number) => {
+  const surface = (width: number, height: number, clear = true) => {
     if (canvas.width !== width || canvas.height !== height) clipVersion += 1
     if (canvas.width !== width) canvas.width = width
     if (canvas.height !== height) canvas.height = height
@@ -1581,15 +1591,130 @@ export function mountSceneCompositor(
     if (canvas.style.height !== cssHeight) canvas.style.height = cssHeight
     gl.viewport(0, 0, canvas.width, canvas.height)
     gl.clearColor(0, 0, 0, 0)
-    gl.clear(gl.COLOR_BUFFER_BIT)
+    if (clear) gl.clear(gl.COLOR_BUFFER_BIT)
     gl.uniform2f(uniforms.viewport, canvas.width, canvas.height)
+    gl.uniform4f(uniforms.target, 0, 0, canvas.width, canvas.height)
   }
   const composite = (width = size.width, height = size.height) => {
-    surface(width, height)
+    // The scene clears what it repaints; the retained canvas keeps the rest.
+    surface(width, height, false)
     paintScene()
   }
+  type Draw = {
+    item: Run | Surface
+    texture: WebGLTexture
+    placed: Float32Array
+    alpha: number
+    mask: Float32Array
+    maskTexture: WebGLTexture | null
+    clipTexture: WebGLTexture | null
+  }
+  // What a draw last showed, and when that changed.
+  type Trace = {
+    texture: WebGLTexture
+    content: number
+    placed: Float32Array
+    alpha: number
+    mask: Float32Array
+    maskTexture: WebGLTexture | null
+    maskContent: number
+    clipTexture: WebGLTexture | null
+    clipContent: number
+    changed: number
+    // How long the draw must stay unchanged before it joins a cached segment.
+    hold: number
+  }
+  // Canvas pixels: left, top, right, bottom.
+  type Rect = [number, number, number, number]
+  // A run of unchanged draws composited once into a texture covering their canvas extent.
+  type Segment = {
+    items: (Run | Surface)[]
+    rect: Rect
+    texture: WebGLTexture | null
+    framebuffer: WebGLFramebuffer | null
+    placed: Float32Array
+    built: number
+  }
+  type Unit = { draw: Draw; rect: Rect } | { segment: Segment; rect: Rect }
+  const traces = new WeakMap<Run | Surface, Trace>()
+  const segments = new Map<Run | Surface, Segment>()
+  // The scene state the retained canvas shows, so a frame can redraw only what changed.
+  let shown = new Map<Run | Surface, { rect: Rect; below: Run | Surface | null }>()
+  let shownScene = ''
+  let rectBuffer: WebGLBuffer | null = null
+  let rectVertices = new Float32Array(4096)
+  const segmentHold = 500
+  const segmentMinimum = 4
+  const same = (a: Float32Array, b: Float32Array) => {
+    if (a === b) return true
+    for (let index = 0; index < 9; index++) if (a[index] !== b[index]) return false
+    return true
+  }
+  const trace = (draw: Draw) => {
+    const content = contents.get(draw.texture) ?? 0
+    const maskContent = draw.maskTexture ? (contents.get(draw.maskTexture) ?? 0) : 0
+    const clipContent = draw.clipTexture ? (contents.get(draw.clipTexture) ?? 0) : 0
+    const known = traces.get(draw.item)
+    if (
+      known &&
+      known.texture === draw.texture &&
+      known.content === content &&
+      known.alpha === draw.alpha &&
+      known.maskTexture === draw.maskTexture &&
+      known.maskContent === maskContent &&
+      known.clipTexture === draw.clipTexture &&
+      known.clipContent === clipContent &&
+      same(known.placed, draw.placed) &&
+      same(known.mask, draw.mask)
+    )
+      return known
+    // A draw that moves again after joining a segment waits longer next time, so
+    // intermittent motion cannot rebuild its segment every few frames.
+    const hold = !known
+      ? segmentHold
+      : clock - known.changed >= known.hold
+        ? Math.min(8000, known.hold * 2)
+        : known.hold
+    const next: Trace = {
+      texture: draw.texture,
+      content,
+      placed: draw.placed,
+      alpha: draw.alpha,
+      mask: draw.mask,
+      maskTexture: draw.maskTexture,
+      maskContent,
+      clipTexture: draw.clipTexture,
+      clipContent,
+      changed: clock,
+      hold,
+    }
+    traces.set(draw.item, next)
+    return next
+  }
+  // The canvas pixels a placed unit quad can touch.
+  const extent = (p: Float32Array): Rect => {
+    const x = p[6] + Math.min(0, p[0]) + Math.min(0, p[3])
+    const y = p[7] + Math.min(0, p[1]) + Math.min(0, p[4])
+    return [
+      Math.floor(x) - 1,
+      Math.floor(y) - 1,
+      Math.ceil(x + Math.abs(p[0]) + Math.abs(p[3])) + 1,
+      Math.ceil(y + Math.abs(p[1]) + Math.abs(p[4])) + 1,
+    ]
+  }
+  const meets = (a: Rect, b: Rect, gap = 0) =>
+    a[0] < b[2] + gap && b[0] < a[2] + gap && a[1] < b[3] + gap && b[1] < a[3] + gap
+  const dropSegment = (segment: Segment) => {
+    gl.deleteFramebuffer(segment.framebuffer)
+    release(segment.texture)
+  }
+  const dropSegments = () => {
+    for (const segment of segments.values()) dropSegment(segment)
+    segments.clear()
+  }
   const paintScene = () => {
-    gl.uniform3fv(uniforms.solarTint, tintAt(clock))
+    const tint = tintAt(clock)
+    gl.uniform3fv(uniforms.solarTint, tint)
     gl.activeTexture(gl.TEXTURE3)
     gl.bindTexture(gl.TEXTURE_2D, coverage.texture ?? blank)
     gl.uniform1f(uniforms.loadActive, Number(!!fade && coverage.active))
@@ -1613,18 +1738,7 @@ export function mountSceneCompositor(
       resizeProgress(),
       6 * resolution,
     )
-    // WebGL validates every call; skip the ones that would not change state.
-    const state = {
-      alpha: -1,
-      mask: null as Float32Array | null,
-      unit: -1,
-      bound: [null, null, null, null] as (WebGLTexture | null)[],
-    }
-    const bind = (unit: number, texture: WebGLTexture | null) => {
-      if (state.bound[unit] === texture) return
-      if (state.unit !== unit) gl.activeTexture(gl.TEXTURE0 + (state.unit = unit))
-      gl.bindTexture(gl.TEXTURE_2D, (state.bound[unit] = texture))
-    }
+    const draws: Draw[] = []
     const visit = (
       owner: Group,
       alpha: number,
@@ -1640,9 +1754,6 @@ export function mountSceneCompositor(
       if (owner.clip) {
         clipped = [...clipped, { owner, source: owner.clip }]
         clipTexture = clipFor(clipped)
-        // A clip upload rebinds whichever unit was active.
-        state.unit = -1
-        state.bound.fill(null)
       }
       // A mask still waiting for its texture would show everything it hides.
       if (owner.mask && !owner.mask.texture) return
@@ -1676,19 +1787,313 @@ export function mountSceneCompositor(
             ),
           )
         }
-        bind(3, coverage.texture ?? blank)
-        bind(1, maskTexture ?? blank)
-        bind(2, clipTexture ?? blank)
-        bind(0, item.texture)
-        if (alpha !== state.alpha) gl.uniform1f(uniforms.alpha, (state.alpha = alpha))
-        const maskPlace = maskTexture ? mask : none
-        if (maskPlace !== state.mask)
-          gl.uniformMatrix3fv(uniforms.maskPlace, false, (state.mask = maskPlace))
-        gl.uniformMatrix3fv(uniforms.place, false, item.placed)
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+        draws.push({
+          item,
+          texture: item.texture,
+          placed: item.placed,
+          alpha,
+          mask: maskTexture ? mask : none,
+          maskTexture,
+          clipTexture,
+        })
       }
     }
     visit(root, 1, none, null, [], null)
+    // WebGL validates every call; skip the ones that would not change state.
+    const state = {
+      alpha: -1,
+      mask: null as Float32Array | null,
+      unit: -1,
+      plain: false,
+      bound: [null, null, null, null] as (WebGLTexture | null)[],
+    }
+    const bind = (unit: number, texture: WebGLTexture | null) => {
+      if (state.bound[unit] === texture) return
+      if (state.unit !== unit) gl.activeTexture(gl.TEXTURE0 + (state.unit = unit))
+      gl.bindTexture(gl.TEXTURE_2D, (state.bound[unit] = texture))
+    }
+    const shade = (plain: boolean) => {
+      if (state.plain === plain) return
+      state.plain = plain
+      gl.uniform3fv(uniforms.solarTint, plain ? [1, 1, 1] : tint)
+    }
+    // Draws a unit quad, or only its share of `first..first + count` rect vertices.
+    const paint = (draw: Draw, first = -1, count = 0) => {
+      shade(false)
+      bind(3, coverage.texture ?? blank)
+      bind(1, draw.maskTexture ?? blank)
+      bind(2, draw.clipTexture ?? blank)
+      bind(0, draw.texture)
+      if (draw.alpha !== state.alpha) gl.uniform1f(uniforms.alpha, (state.alpha = draw.alpha))
+      if (draw.mask !== state.mask)
+        gl.uniformMatrix3fv(uniforms.maskPlace, false, (state.mask = draw.mask))
+      gl.uniformMatrix3fv(uniforms.place, false, draw.placed)
+      if (first < 0) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+      else gl.drawArrays(gl.TRIANGLES, first, count)
+    }
+    const paintSegment = (segment: Segment, first = -1, count = 0) => {
+      shade(true)
+      bind(3, coverage.texture ?? blank)
+      bind(1, blank)
+      bind(2, blank)
+      bind(0, segment.texture)
+      if (state.alpha !== 1) gl.uniform1f(uniforms.alpha, (state.alpha = 1))
+      if (state.mask !== none) gl.uniformMatrix3fv(uniforms.maskPlace, false, (state.mask = none))
+      gl.uniformMatrix3fv(uniforms.place, false, segment.placed)
+      if (first < 0) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+      else gl.drawArrays(gl.TRIANGLES, first, count)
+    }
+    // Retained pixels and cached segments are final colors, so every per-draw effect must be neutral.
+    const key = `${canvas.width}x${canvas.height}@${resolution}|${tint.join()}`
+    const cacheable = !fade && !resizeFrame && !coverage.active
+    if (!cacheable || key !== shownScene) {
+      shownScene = ''
+      dropSegments()
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      shown = new Map()
+      // A changing tint or overlay repaints everything each frame. Retain this frame only
+      // when the next one can build on it.
+      if (cacheable) {
+        shownScene = key
+        for (const [index, draw] of draws.entries()) {
+          trace(draw)
+          shown.set(draw.item, {
+            rect: extent(draw.placed),
+            below: index ? draws[index - 1].item : null,
+          })
+        }
+      }
+      for (const draw of draws) paint(draw)
+      return
+    }
+    // What changed since the retained frame: moved or repainted draws at both positions,
+    // removed draws, and draws whose neighbour below changed through depth sorting.
+    const rects = draws.map(draw => extent(draw.placed))
+    const next = new Map<Run | Surface, { rect: Rect; below: Run | Surface | null }>()
+    let dirty: Rect[] = []
+    const idle = draws.map((draw, index) => {
+      const known = trace(draw)
+      const rect = rects[index]
+      const below = index ? draws[index - 1].item : null
+      const before = shown.get(draw.item)
+      next.set(draw.item, { rect, below })
+      if (!before) dirty.push(rect)
+      else if (known.changed === clock || before.below !== below) dirty.push(rect, before.rect)
+      return clock - known.changed >= known.hold
+    })
+    for (const [item, before] of shown) if (!next.has(item)) dirty.push(before.rect)
+    shown = next
+    // Merge nearby regions: one rect costs a draw per layer it crosses.
+    const gap = 8 * resolution
+    const regions: Rect[] = []
+    for (const [left, top, right, bottom] of dirty) {
+      const rect: Rect = [
+        Math.max(0, left),
+        Math.max(0, top),
+        Math.min(canvas.width, right),
+        Math.min(canvas.height, bottom),
+      ]
+      if (rect[2] <= rect[0] || rect[3] <= rect[1]) continue
+      // A grown rect can reach regions already passed, so the search restarts after a merge.
+      for (let index = 0; index < regions.length; ) {
+        const other = regions[index]
+        if (!meets(other, rect, gap)) {
+          index++
+          continue
+        }
+        rect[0] = Math.min(rect[0], other[0])
+        rect[1] = Math.min(rect[1], other[1])
+        rect[2] = Math.max(rect[2], other[2])
+        rect[3] = Math.max(rect[3], other[3])
+        regions.splice(index, 1)
+        index = 0
+      }
+      regions.push(rect)
+    }
+    dirty = regions
+    const covered = dirty.reduce((sum, rect) => sum + (rect[2] - rect[0]) * (rect[3] - rect[1]), 0)
+    const whole = covered > 0.5 * canvas.width * canvas.height
+    if (!dirty.length) return
+    // Premultiplied source-over is associative, so a run of draws composited into a
+    // transparent texture, then drawn once, matches drawing each of them in turn.
+    // A built segment stays while its draws are unchanged; draws that settle beside it
+    // form new segments instead of rebuilding it. Area budgets bound texture memory and
+    // the offscreen work one frame may add.
+    const area = canvas.width * canvas.height
+    let memory = 0
+    for (const segment of segments.values())
+      memory += (segment.rect[2] - segment.rect[0]) * (segment.rect[3] - segment.rect[1])
+    let rebuilt = 0
+    const units: Unit[] = []
+    const used = new Set<Segment>()
+    const build = (from: number, to: number) => {
+      const rect: Rect = [canvas.width, canvas.height, 0, 0]
+      for (let index = from; index < to; index++) {
+        rect[0] = Math.min(rect[0], Math.max(0, rects[index][0]))
+        rect[1] = Math.min(rect[1], Math.max(0, rects[index][1]))
+        rect[2] = Math.max(rect[2], Math.min(canvas.width, rects[index][2]))
+        rect[3] = Math.max(rect[3], Math.min(canvas.height, rects[index][3]))
+      }
+      const width = rect[2] - rect[0]
+      const height = rect[3] - rect[1]
+      const items = draws.slice(from, to).map(draw => draw.item)
+      const known = segments.get(items[0])
+      const reuse =
+        known &&
+        !used.has(known) &&
+        known.rect[2] - known.rect[0] === width &&
+        known.rect[3] - known.rect[1] === height
+      const added = reuse ? 0 : width * height
+      if (
+        to - from < segmentMinimum ||
+        width <= 0 ||
+        height <= 0 ||
+        width > maxTexture ||
+        height > maxTexture ||
+        memory + added > 3 * area ||
+        rebuilt + width * height > area
+      ) {
+        for (let index = from; index < to; index++)
+          units.push({ draw: draws[index], rect: rects[index] })
+        return
+      }
+      let segment = reuse ? known : undefined
+      if (segment) gl.bindFramebuffer(gl.FRAMEBUFFER, segment.framebuffer)
+      else {
+        if (known && !used.has(known)) {
+          memory -= (known.rect[2] - known.rect[0]) * (known.rect[3] - known.rect[1])
+          dropSegment(known)
+          segments.delete(items[0])
+        }
+        const texture = gl.createTexture()
+        const framebuffer = gl.createFramebuffer()
+        if (!texture || !framebuffer) {
+          gl.deleteTexture(texture)
+          gl.deleteFramebuffer(framebuffer)
+          for (let index = from; index < to; index++)
+            units.push({ draw: draws[index], rect: rects[index] })
+          return
+        }
+        textures.add(texture)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+        filter()
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+        segment = { items, rect, texture, framebuffer, placed: none, built: clock }
+        memory += added
+      }
+      rebuilt += width * height
+      segment.items = items
+      segment.rect = rect
+      // The texture holds the target's bottom row first, so the quad is flipped to match.
+      segment.placed = place([width, 0, 0, -height, rect[0], rect[3]])
+      segment.built = clock
+      segments.set(items[0], segment)
+      state.unit = -1
+      state.bound.fill(null)
+      gl.viewport(0, 0, width, height)
+      gl.uniform4f(uniforms.target, rect[0], rect[1], width, height)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      for (let index = from; index < to; index++) paint(draws[index])
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.uniform4f(uniforms.target, 0, 0, canvas.width, canvas.height)
+      units.push({ segment, rect })
+      used.add(segment)
+    }
+    let pending = -1
+    for (let index = 0; index < draws.length; ) {
+      const segment = segments.get(draws[index].item)
+      const kept =
+        segment &&
+        !used.has(segment) &&
+        index + segment.items.length <= draws.length &&
+        segment.items.every(
+          (item, offset) =>
+            draws[index + offset].item === item &&
+            (traces.get(item)?.changed ?? Infinity) < segment.built,
+        )
+      if (segment && kept) {
+        if (pending >= 0) build(pending, index)
+        pending = -1
+        units.push({ segment, rect: segment.rect })
+        used.add(segment)
+        index += segment.items.length
+        continue
+      }
+      if (idle[index]) {
+        if (pending < 0) pending = index
+      } else {
+        if (pending >= 0) build(pending, index)
+        pending = -1
+        units.push({ draw: draws[index], rect: rects[index] })
+      }
+      index++
+    }
+    if (pending >= 0) build(pending, draws.length)
+    for (const [first, segment] of segments) {
+      if (used.has(segment)) continue
+      dropSegment(segment)
+      segments.delete(first)
+    }
+    if (whole) {
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      for (const unit of units)
+        if ('segment' in unit) paintSegment(unit.segment)
+        else paint(unit.draw)
+      return
+    }
+    // Clear the changed regions, then draw each unit once over just the regions it crosses.
+    // Its vertices carry their own quad coordinates, so the shaders sample as for a whole quad.
+    gl.enable(gl.SCISSOR_TEST)
+    for (const [left, top, right, bottom] of dirty) {
+      gl.scissor(left, canvas.height - bottom, right - left, bottom - top)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+    }
+    gl.disable(gl.SCISSOR_TEST)
+    const spans: { unit: Unit; first: number; count: number }[] = []
+    let length = 0
+    for (const unit of units) {
+      const p = 'segment' in unit ? unit.segment.placed : unit.draw.placed
+      const det = p[0] * p[4] - p[1] * p[3]
+      if (!det) continue
+      const first = length / 2
+      for (const rect of dirty) {
+        if (!meets(rect, unit.rect)) continue
+        const left = Math.max(rect[0], unit.rect[0])
+        const top = Math.max(rect[1], unit.rect[1])
+        const right = Math.min(rect[2], unit.rect[2])
+        const bottom = Math.min(rect[3], unit.rect[3])
+        if (rectVertices.length < length + 12) {
+          const grown = new Float32Array(rectVertices.length * 2)
+          grown.set(rectVertices)
+          rectVertices = grown
+        }
+        for (const [x, y] of [
+          [left, top],
+          [right, top],
+          [left, bottom],
+          [left, bottom],
+          [right, top],
+          [right, bottom],
+        ]) {
+          rectVertices[length++] = (p[4] * (x - p[6]) - p[3] * (y - p[7])) / det
+          rectVertices[length++] = (p[0] * (y - p[7]) - p[1] * (x - p[6])) / det
+        }
+      }
+      if (length / 2 > first) spans.push({ unit, first, count: length / 2 - first })
+    }
+    rectBuffer ??= gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, rectBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, rectVertices.subarray(0, length), gl.STREAM_DRAW)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+    for (const { unit, first, count } of spans)
+      if ('segment' in unit) paintSegment(unit.segment, first, count)
+      else paint(unit.draw, first, count)
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
   }
   const drawCopy = (
     texture: WebGLTexture,
@@ -1749,6 +2154,8 @@ export function mountSceneCompositor(
       canvas.height > maxTexture
     )
       return
+    // The retained pixels come back unchanged below, so only the segment textures are released.
+    dropSegments()
     const texture = gl.createTexture()
     if (!texture) return
     gl.activeTexture(gl.TEXTURE0)
@@ -1769,6 +2176,7 @@ export function mountSceneCompositor(
     canvas.height = height
     gl.viewport(0, 0, canvas.width, canvas.height)
     gl.uniform2f(uniforms.viewport, canvas.width, canvas.height)
+    gl.uniform4f(uniforms.target, 0, 0, canvas.width, canvas.height)
     gl.clearColor(0, 0, 0, 0)
     gl.clear(gl.COLOR_BUFFER_BIT)
     drawCopy(texture, 1)
@@ -2359,6 +2767,10 @@ export function mountSceneCompositor(
     'webglcontextrestored',
     () => {
       textures.clear()
+      // The lost context already freed these; deleting them here would raise errors.
+      segments.clear()
+      shownScene = ''
+      rectBuffer = null
       coverage.texture = null
       coverage.active = false
       endResize()
@@ -2399,6 +2811,7 @@ export function mountSceneCompositor(
       trimRaster(true)
       gl.deleteTexture(blank)
       gl.deleteBuffer(vertexBuffer)
+      gl.deleteBuffer(rectBuffer)
       gl.deleteProgram(program)
       canvas.width = 1
       canvas.height = 1
