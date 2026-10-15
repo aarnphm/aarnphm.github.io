@@ -160,7 +160,8 @@ $pet-looks: (
 }
 
 // Dressed for the page's section, as its site icon is (quartz/util/section-icon.ts).
-@each $section in (triathlon, fr, posts, legal, art, library, slides, stream, courses, engineering)
+@each $section
+  in (triathlon, fr, posts, legal, art, library, slides, stream, courses, engineering, cinema)
 {
   .pet-svg[data-outfit='#{$section}'] [data-part^='outfit-#{$section}'] {
     display: inline;
@@ -192,7 +193,7 @@ $pet-looks: (
   animation: pet-glasses-off 0.42s steps(7) both;
 }
 
-.pet-svg[data-outfit='library'] [data-part='glasses'] {
+.pet-svg:is([data-outfit='library'], [data-outfit='cinema']) [data-part='glasses'] {
   display: none;
 }
 
@@ -207,6 +208,36 @@ $pet-looks: (
 .pet-svg[data-outfit='courses'] .pet-pencil {
   transform-box: fill-box;
   animation: pet-scribble 0.9s steps(6) infinite alternate;
+}
+
+// The film nerd snacks: every few seconds a kernel pops off the heap, arcs up and into its mouth.
+.pet-svg[data-outfit='cinema'] .pet-kernel {
+  opacity: 0;
+  animation: pet-snack 3.8s steps(14) infinite;
+}
+
+@keyframes pet-snack {
+  0%,
+  52% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  56% {
+    opacity: 1;
+    translate: 0.1px -0.3px;
+  }
+  64% {
+    translate: 0.36px -0.46px;
+  }
+  72% {
+    opacity: 1;
+    translate: 0.58px 0.1px;
+  }
+  76%,
+  100% {
+    opacity: 0;
+    translate: 0.6px 0.16px;
+  }
 }
 
 // The engineer's flask fizzes: each bubble rises off the neck and fades, one after another.
@@ -258,6 +289,25 @@ $pet-looks: (
 // and at rest its breath shows and every few seconds it hunches up and shivers.
 .pet-svg:is([data-cold='cool'], [data-cold='cold']) [data-part='scarf'] {
   display: inline;
+}
+
+// On triathlon pages it trains in its wind vest instead of the scarf, the back panel flapping.
+.pet-svg[data-outfit='triathlon']:is([data-cold='cool'], [data-cold='cold']) {
+  [data-part='scarf'] {
+    display: none;
+  }
+
+  [data-part='vest'] {
+    display: inline;
+  }
+
+  .pet-flap-frame {
+    animation: pet-swap 0.5s step-end infinite;
+  }
+
+  .pet-flap-frame + .pet-flap-frame {
+    animation-delay: -0.25s;
+  }
 }
 
 .pet-svg[data-cold='cold']:not(
@@ -1030,6 +1080,10 @@ $pet-looks: (
   }
 
   .pet-svg[data-state='failed'] [data-part='eyes-wince'] {
+    display: none;
+  }
+
+  .pet-flap-frame + .pet-flap-frame {
     display: none;
   }
 }
