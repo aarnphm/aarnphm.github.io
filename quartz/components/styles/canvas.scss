@@ -439,13 +439,20 @@ body[data-is-canvas='true'] {
   fill: var(--darkgray);
   font-weight: normal;
   transition: fill 0.2s ease;
-  cursor: default;
-  pointer-events: none;
+  cursor: grab;
   user-select: none;
 
   &:hover {
     fill: var(--secondary);
   }
+
+  .node-group.is-dragging & {
+    cursor: grabbing;
+  }
+}
+
+.canvas-embed-container .node-group-label {
+  pointer-events: none;
 }
 
 // Edges
