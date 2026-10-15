@@ -5,7 +5,7 @@ import { sectionOf } from '../../util/section-icon'
 import { createSvgSpace, svgPathGeometry } from '../../util/svg-geometry'
 import { easeTrailDepth } from '../../util/trail-depth'
 import { trailHost, trailScene } from '../../util/trail-scene'
-import { visitorPrecipitation, wetFall } from '../../util/visitor-precipitation'
+import { STORM_PERIOD, visitorPrecipitation, wetFall } from '../../util/visitor-precipitation'
 import { nextSunEvent, readVisitorForecast } from '../../util/visitor-weather'
 import {
   animalInWay,
@@ -202,12 +202,14 @@ const state = (now: number): State => {
 // The weather where the visitor is, from the worker's /api/weather (cached there and in the browser
 // for 15 minutes). How cold: the wind chill, as Environment Canada works it out for 10 °C and under
 // with 5 km/h of wind or more; 10 °C and under is 'cool', 0 °C and under 'cold'. Rain: drizzle, rain
-// or a thunderstorm by its weather code, and snow. A lantern in fog, at dusk and at night; sunglasses in the heat (pet.scss).
+// or a thunderstorm by its weather code, and snow. A lantern in fog, at dusk and at night; sunglasses in the heat; a hand on its hat in the wind; the umbrella blown inside out in a storm (pet.scss).
 let chill: '' | 'cool' | 'cold' = ''
 let rain = false
 let snow = false
 let lantern = false
 let heat = false
+let windy = false
+let storm = false
 let beach = false
 // How tanned it is, 0 to 1: it deepens while it lies on its lounger, full after tanMs of sun, and
 // lasts as long as the page is open.
@@ -228,7 +230,7 @@ const loadWeather = () =>
           ? 13.12 + 0.6215 * w.temp - 11.37 * v + 0.3965 * w.temp * v
           : w.temp
       chill = feels <= 0 ? 'cold' : feels <= 10 ? 'cool' : ''
-      const { fall, fog } = visitorPrecipitation(w.code)
+      const { fall, fog, storm: thunder } = visitorPrecipitation(w.code)
       rain = wetFall(fall)
       snow = fall === 'snow'
       // Dusk is the 45 minutes before sunset; after it, night until sunrise.
@@ -238,10 +240,26 @@ const loadWeather = () =>
       lantern = fog || dark
       // 27 °C and over is heat; a clear or partly cloudy one by day is a day for the beach.
       heat = w.temp >= 27
+      // Wind that takes hats: a fresh breeze (30 km/h) or gusts of 50.
+      windy = w.wind >= 30 || (w.gust ?? 0) >= 50
+      // A storm: a thunderstorm, or rain in that wind.
+      storm = rain && (thunder || windy)
       beach = heat && !lantern && fall === 'none' && w.code <= 2
       render()
     })
     .catch(() => {}))
+
+// The storm's gust flips the umbrella on the wall clock the lightning uses, so on the home page the
+// flash and the flip land together. A CSS animation restarts each time its part shows again, so the
+// clock is set on every animation, not once as a delay.
+const syncStorm = (el: SVGSVGElement) => {
+  const at = Date.now() % (STORM_PERIOD * 1000)
+  for (const a of el.getAnimations({ subtree: true }))
+    if (a instanceof CSSAnimation && a.animationName.startsWith('pet-storm')) {
+      const t = Number(a.currentTime ?? 0) % (STORM_PERIOD * 1000)
+      if (Math.abs(t - at) > 120) a.currentTime = at
+    }
+}
 
 const render = () => {
   if (!root || !svg || (!doc && !carry)) return
@@ -277,6 +295,9 @@ const render = () => {
   svg.toggleAttribute('data-snow', snow)
   svg.toggleAttribute('data-lantern', lantern)
   svg.toggleAttribute('data-heat', heat)
+  svg.toggleAttribute('data-windy', windy)
+  svg.toggleAttribute('data-storm', storm)
+  if (storm) syncStorm(svg)
   svg.toggleAttribute('data-beach', beach)
   svg.toggleAttribute('data-reading', document.documentElement.getAttribute('reader-mode') === 'on')
   // On the rail it faces the page, its back to the pole.
@@ -2055,6 +2076,8 @@ function renderFriend() {
   friendSvg.toggleAttribute('data-snow', snow)
   friendSvg.toggleAttribute('data-lantern', lantern)
   friendSvg.toggleAttribute('data-heat', heat)
+  friendSvg.toggleAttribute('data-storm', storm)
+  if (storm) syncStorm(friendSvg)
   friendSvg.toggleAttribute('data-beach', beach)
   friendSvg.toggleAttribute(
     'data-reading',

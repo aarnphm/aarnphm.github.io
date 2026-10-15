@@ -428,6 +428,170 @@ $pet-looks: (
   }
 }
 
+// A storm (pet.inline.ts): once a lightning period (11 s, on the wall clock the home page's flash
+// uses), a gust yanks the umbrella over and blows it inside out. The cloth flaps while it stares, it
+// pumps the umbrella twice and the canopy pops back. pet.inline.ts sets every pet-storm animation's
+// clock, so these share one duration and no delay.
+.pet-brolly-out {
+  display: none;
+}
+
+.pet-svg[data-storm] {
+  [data-part='gust'] {
+    display: inline;
+  }
+
+  .pet-gust-frame {
+    animation: pet-swap 0.4s step-end infinite;
+  }
+
+  .pet-gust-frame + .pet-gust-frame {
+    animation-delay: -0.2s;
+  }
+
+  .pet-brolly {
+    transform-box: view-box;
+    transform-origin: 0.84px 0.2px;
+    animation: pet-storm-yank 11s steps(3) infinite;
+  }
+
+  .pet-brolly-open {
+    animation: pet-storm-open 11s step-end infinite;
+  }
+
+  .pet-brolly-out {
+    display: inline;
+    opacity: 0;
+    animation: pet-storm-out 11s step-end infinite;
+  }
+
+  .pet-out-frame {
+    animation: pet-swap 0.3s step-end infinite;
+  }
+
+  .pet-out-frame + .pet-out-frame {
+    animation-delay: -0.15s;
+  }
+
+  // Its eyes go wide as the umbrella turns, where it would otherwise look on calmly.
+  &:is(
+      [data-state='idle'],
+      [data-state='wait'],
+      [data-state='work'],
+      [data-state='walk'],
+      [data-state='run'],
+      [data-state='land'],
+      [data-state='talk'],
+      [data-state='think'],
+      [data-state='wave']
+    ):not([data-kind='hang']) {
+    [data-part='eyes-dash'] {
+      animation: pet-storm-open-eyes 11s step-end infinite;
+    }
+
+    [data-part='eyes-wide'] {
+      display: inline;
+      opacity: 0;
+      animation: pet-storm-out-eyes 11s step-end infinite;
+    }
+  }
+}
+
+// The lightning lifts the page at 1% of the period; the gust lands just after it.
+@keyframes pet-storm-out {
+  0% {
+    opacity: 0;
+  }
+  1.6% {
+    opacity: 1;
+  }
+  36% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-storm-open {
+  0% {
+    opacity: 1;
+  }
+  1.6% {
+    opacity: 0;
+  }
+  36% {
+    opacity: 1;
+  }
+}
+
+@keyframes pet-storm-out-eyes {
+  0% {
+    opacity: 0;
+  }
+  1.6% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-storm-open-eyes {
+  0% {
+    opacity: 1;
+  }
+  1.6% {
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+}
+
+// Yanked over by the gust, tugged about while inside out, two pumps and back upright.
+@keyframes pet-storm-yank {
+  0%,
+  1.4%,
+  36%,
+  100% {
+    rotate: 0deg;
+  }
+  1.8% {
+    rotate: 16deg;
+  }
+  3% {
+    rotate: 10deg;
+  }
+  5% {
+    rotate: 14deg;
+  }
+  8% {
+    rotate: 9deg;
+  }
+  12% {
+    rotate: 13deg;
+  }
+  17% {
+    rotate: 8deg;
+  }
+  23% {
+    rotate: 12deg;
+  }
+  29% {
+    rotate: 10deg;
+  }
+  31% {
+    rotate: -2deg;
+  }
+  32.5% {
+    rotate: 9deg;
+  }
+  34% {
+    rotate: -2deg;
+  }
+  35.5% {
+    rotate: 5deg;
+  }
+}
+
 // Snow where the visitor is: a mitten on every hand it shows. At rest the flakes fall round it, and
 // with its hands free (no prop from the page's outfit) it holds both mittens up to catch them: one
 // comes down into the front mitten, which dips as it lands, and melts there.
@@ -657,6 +821,90 @@ $pet-looks: (
 @keyframes pet-tan {
   to {
     opacity: 0.5;
+  }
+}
+
+// Wind where the visitor is (pet.inline.ts): gusts stream past, and it holds its hat on with the
+// hand on its right, reaching up over its head to wherever the hat sits. The hat is the page's own
+// (hard hat high, wig and mortarboard lower, beret lowest), the toque in the cold, or else its
+// walking hat put on for the wind. Not in the rain (that hand holds the umbrella), not with the
+// triathlon sweatband (tied on), and not while its hands are busy.
+$pet-head-outfits: "[data-outfit='fr'], [data-outfit='legal'], [data-outfit='courses'], [data-outfit='engineering']";
+
+.pet-svg[data-windy] {
+  [data-part='gust'] {
+    display: inline;
+  }
+
+  .pet-gust-frame {
+    animation: pet-swap 0.4s step-end infinite;
+  }
+
+  .pet-gust-frame + .pet-gust-frame {
+    animation-delay: -0.2s;
+  }
+}
+
+.pet-svg[data-windy]:not(
+    [data-rain],
+    [data-outfit='triathlon'],
+    [data-kind='hang'],
+    [data-state='slide'],
+    [data-state='chute'],
+    [data-state='jet'],
+    [data-state='fly'],
+    [data-state='cheer']
+  ) {
+  &:not(#{$pet-head-outfits}):is([data-hat], :not([data-cold='cold'])) {
+    [data-part='hat'],
+    [data-part='hold-high'] {
+      display: inline;
+    }
+  }
+
+  &[data-outfit='engineering'] [data-part='hold-high'],
+  &:is([data-outfit='legal'], [data-outfit='courses']) [data-part='hold-mid'],
+  &[data-cold='cold']:not(#{$pet-head-outfits}, [data-hat]) [data-part='hold-mid'],
+  &[data-outfit='fr'] [data-part='hold-low'] {
+    display: inline;
+  }
+
+  // At the laptop it types with the other hand only.
+  &[data-state='work'] .pet-key + .pet-key {
+    display: none;
+  }
+
+  // The wind tugs at the brim under its hand: it lifts at the front and drops back.
+  :is([data-part='hat'], [data-part='toque']) {
+    transform-box: view-box;
+    transform-origin: 0.46px -1.3px;
+    animation: pet-hat-tug 2.2s steps(22) infinite;
+  }
+}
+
+@keyframes pet-hat-tug {
+  0%,
+  40%,
+  100% {
+    rotate: 0deg;
+  }
+  8% {
+    rotate: 5deg;
+  }
+  12% {
+    rotate: 2deg;
+  }
+  20% {
+    rotate: 7deg;
+  }
+  26% {
+    rotate: 1deg;
+  }
+  62% {
+    rotate: 3deg;
+  }
+  70% {
+    rotate: 0deg;
   }
 }
 
@@ -1337,9 +1585,20 @@ $pet-looks: (
     display: none;
   }
 
-  :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame)
-    + :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame) {
+  :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame, .pet-gust-frame, .pet-out-frame)
+    + :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame, .pet-gust-frame, .pet-out-frame) {
     display: none;
+  }
+
+  // Without the motion a storm leaves the umbrella inside out.
+  .pet-svg[data-storm] {
+    .pet-brolly-open {
+      opacity: 0;
+    }
+
+    .pet-brolly-out {
+      opacity: 1;
+    }
   }
 }
 
