@@ -1105,11 +1105,22 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   if (currentSlug === 'index') {
     let idle = 0
     let timer = 0
+    const trail = document.querySelector('.homepage-trail-scene')
     const preload = () => {
       if (!searchElement.isConnected) return
       void ensureSearchData().catch(error => console.warn('[Search] preload failed:', error))
     }
     const schedulePreload = () => {
+      // Trail textures and search indexing share the main thread on a fresh homepage.
+      const scene = trail?.shadowRoot?.querySelector<HTMLElement>('.trail-scene')
+      if (trail && scene?.dataset.trailOpening !== 'complete') {
+        trail.addEventListener('trail:prepared', schedulePreload, { once: true })
+        return
+      }
+      if (scene?.dataset.trailReveal === 'revealing') {
+        trail?.addEventListener('trail:reveal-end', schedulePreload, { once: true })
+        return
+      }
       if (window.requestIdleCallback) idle = window.requestIdleCallback(preload, { timeout: 2000 })
       else timer = window.setTimeout(preload, 1000)
     }
@@ -1117,6 +1128,8 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     else window.addEventListener('load', schedulePreload, { once: true })
     window.addCleanup(() => {
       window.removeEventListener('load', schedulePreload)
+      trail?.removeEventListener('trail:prepared', schedulePreload)
+      trail?.removeEventListener('trail:reveal-end', schedulePreload)
       if (idle) window.cancelIdleCallback(idle)
       window.clearTimeout(timer)
     })

@@ -12,28 +12,16 @@
 }
 
 .trail-local-time {
-  --trail-clock-ink: #26333e;
-  --trail-clock-halo: #f4f7f4;
   position: fixed;
   right: max(16px, env(safe-area-inset-right));
   bottom: max(16px, env(safe-area-inset-bottom));
   z-index: var(--z-dropdown);
   padding: 0 2px;
   background: transparent;
-  color: var(--trail-clock-ink);
-  font: 400 11px/1.6 var(--codeFont);
-  text-shadow:
-    -1px 0 var(--trail-clock-halo),
-    1px 0 var(--trail-clock-halo),
-    0 -1px var(--trail-clock-halo),
-    0 1px var(--trail-clock-halo);
+  color: var(--darkgray);
+  font: 10px/1 var(--codeFont);
   font-variant-numeric: tabular-nums;
   pointer-events: none;
-}
-
-:root[saved-theme='dark'] .trail-local-time {
-  --trail-clock-ink: #f1f5f7;
-  --trail-clock-halo: #26333e;
 }
 
 .homepage-trail-toggle {
@@ -63,8 +51,7 @@
     stroke-linejoin: round;
   }
 
-  &:hover,
-  &[aria-expanded='true'] {
+  &:hover {
     color: var(--dark);
   }
   &:focus-visible {
@@ -117,8 +104,10 @@
   background: transparent;
   pointer-events: none;
   overflow: clip;
+  contain: layout style paint;
   &[hidden] {
-    display: none !important;
+    display: block !important;
+    opacity: 0;
   }
 }
 @media (min-width: 601px) and (hover: hover) and (pointer: fine) {

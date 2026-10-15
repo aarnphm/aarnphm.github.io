@@ -1,4 +1,8 @@
-import { sampleVisitorDaylight, subscribeVisitorDaylight } from '../../util/visitor-daylight'
+import {
+  readVisitorDaylightCell,
+  sampleVisitorDaylight,
+  subscribeVisitorDaylight,
+} from '../../util/visitor-daylight'
 import { subscribeVisitorTrailWeather } from '../../util/visitor-trail-weather'
 import { mountHomepageTheme } from './homepage-theme'
 import { currentNavSignal } from './nav-lifecycle'
@@ -18,8 +22,8 @@ const isPreference = (value: string | null): value is ThemePreference =>
 
 const getSystemTheme = (): Theme => (prefersDarkMediaQuery.matches ? 'dark' : 'light')
 // Keep the rounded cell across SPA navigation, without retaining weather that can age on a note.
-let knownCell: { lat: number; lon: number; weather: null } | null = null
-let daylight = sampleVisitorDaylight(null)
+let knownCell = readVisitorDaylightCell(document)
+let daylight = sampleVisitorDaylight(knownCell)
 const resolveTheme = (preference: ThemePreference): Theme =>
   preference === 'daylight'
     ? daylight.dark
@@ -121,7 +125,7 @@ const updateTogglePresentation = (resolvedTheme: Theme, preference: ThemePrefere
 
 const applyPreference = (
   preference: ThemePreference,
-  options: { persist?: boolean; emit?: boolean } = {},
+  options: { persist?: boolean; emit?: boolean; animate?: boolean } = {},
 ) => {
   activePreference = preference
   const resolvedTheme = resolveTheme(preference)
@@ -143,7 +147,8 @@ const applyPreference = (
     updateTogglePresentation(resolvedTheme, preference)
     if (changed && options.emit !== false) emitThemeChangeEvent(resolvedTheme)
   }
-  changeTheme(update, resolvedTheme)
+  if (options.animate) changeTheme(update, resolvedTheme)
+  else update()
 
   return resolvedTheme
 }
@@ -174,7 +179,7 @@ document.addEventListener('nav', () => {
     const activateButton = (ev: Event) => {
       ev.preventDefault()
       const next = nextPreference(activePreference)
-      const resolved = applyPreference(next)
+      const resolved = applyPreference(next, { animate: true })
       const triggeredViaKeyboard = ev instanceof KeyboardEvent
       if (triggeredViaKeyboard) {
         showThemeToast(next, resolved)
@@ -234,7 +239,7 @@ document.addEventListener('nav', () => {
     'click',
     () => {
       const next = nextPreference(activePreference)
-      const resolved = applyPreference(next)
+      const resolved = applyPreference(next, { animate: true })
       showThemeToast(next, resolved)
     },
     { signal },
@@ -258,7 +263,7 @@ document.addEventListener('nav', () => {
 
   const cyclePreference = (ev: Event) => {
     const next = nextPreference(activePreference)
-    const resolved = applyPreference(next)
+    const resolved = applyPreference(next, { animate: true })
     showThemeToast(next, resolved)
     ev.preventDefault()
   }

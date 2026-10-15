@@ -1,4 +1,4 @@
-import { trailScene } from '../../util/trail-scene'
+import { trailScene, trailSceneHeight } from '../../util/trail-scene'
 import {
   holidayLabels,
   subscribeVisitorHoliday,
@@ -12,15 +12,14 @@ import { registerEscapeHandler } from './escape-handler'
 import { mountMoonCalendar } from './moon-calendar'
 import { setupPerformanceDebug } from './performance-debug'
 
-const preferenceKey = 'garden:trail-open'
-
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.homepage-trail')
   const toggle = root?.querySelector<HTMLButtonElement>('.homepage-trail-toggle')
-  const scene = root?.querySelector<HTMLElement>('.homepage-trail-scene')
+  const scene = document.querySelector<HTMLElement>('.homepage-trail-scene')
+  const frame = scene?.querySelector<HTMLIFrameElement>('iframe[data-trail-frame]')
   const clock = root?.querySelector<HTMLTimeElement>('.trail-local-time')
   const content = document.querySelector<HTMLElement>('#quartz-root > .page-body-grid')
-  if (!root || !toggle || !scene || !clock || !content) return
+  if (!root || !toggle || !scene || !frame || !clock || !content) return
 
   const controller = new AbortController()
   const { signal } = controller
@@ -51,45 +50,34 @@ document.addEventListener('nav', () => {
   }
   subscribeVisitorHoliday(document, showHoliday, signal)
   scene.addEventListener('trail:holiday', event => showHoliday(event.detail), { signal })
-  const frame = document.createElement('iframe')
-  frame.title = 'Trail connection'
-  frame.hidden = true
-  frame.tabIndex = -1
-  frame.setAttribute('aria-hidden', 'true')
-  frame.src = new URL('shared-trail.html', import.meta.url).href
   let layoutFrame = 0
   let resizeTimer = 0
-  // The frame bundle (presence and scene) is the largest homepage transfer. A closed trail
-  // connects presence once the page is idle, so the visitor count still fills in beside the
-  // toggle without competing with first paint.
-  const attachFrame = () => {
-    if (!frame.isConnected && !signal.aborted) scene.append(frame)
-  }
-  const attachWhenIdle = () => {
-    if (window.requestIdleCallback) window.requestIdleCallback(attachFrame, { timeout: 4000 })
-    else window.setTimeout(attachFrame, 1000)
+  let openFrame = 0
+  let openTimer = 0
+  let motionStarted = false
+  let layoutSignature = ''
+  // Keep the scene outside body so page selectors do not restyle its thousands of nodes.
+  if (scene.parentElement !== document.documentElement) {
+    if (typeof document.documentElement.moveBefore === 'function')
+      document.documentElement.moveBefore(scene, null)
+    else document.documentElement.append(scene)
   }
   document.body.append(root)
-  // Keep the scene outside body so page selectors do not restyle its thousands of nodes.
-  document.documentElement.append(scene)
   const disposeMoon = mountMoonCalendar(root, signal)
   mountVisitorRegister(root, signal)
   mountTrailClock(clock, signal)
   const disposePerformance = setupPerformanceDebug(trailPerformanceProfile(scene))
-  if (document.readyState === 'complete') attachWhenIdle()
-  else window.addEventListener('load', attachWhenIdle, { signal, once: true })
-  root
-    .querySelector('#homepage-visitor-panel')
-    ?.addEventListener('beforetoggle', attachFrame, { signal, once: true })
   const align = () => {
-    if (scene.hidden) return
     const bottom = content.getBoundingClientRect().bottom + window.scrollY
-    const height = `${Math.max(window.innerHeight, bottom + 720, Number(scene.dataset.trailWorldHeight) || 0)}px`
+    const height = `${trailSceneHeight(scene, content)}px`
+    const signature = `${window.innerWidth}|${height}|${bottom}|${window.scrollY}`
+    if (signature === layoutSignature) return
+    layoutSignature = signature
     if (scene.style.height !== height) scene.style.height = height
     scene.dispatchEvent(new Event('trail:reflow'))
   }
   const scheduleAlign = () => {
-    if (scene.hidden || layoutFrame || resizeTimer) return
+    if (layoutFrame || resizeTimer) return
     layoutFrame = requestAnimationFrame(() => {
       layoutFrame = 0
       if (!signal.aborted) align()
@@ -101,7 +89,6 @@ document.addEventListener('nav', () => {
     delete scene.dataset.trailResizing
   }
   const scheduleResize = () => {
-    if (scene.hidden) return
     if (scene.dataset.trailWorld === (window.innerWidth < 700 ? 'narrow' : 'wide')) {
       cancelResize()
       scheduleAlign()
@@ -110,8 +97,6 @@ document.addEventListener('nav', () => {
     window.clearTimeout(resizeTimer)
     cancelAnimationFrame(layoutFrame)
     layoutFrame = 0
-    // Preserve the completed scene at native pixel size; generate only the settled viewport.
-    scene.dispatchEvent(new Event('trail:resize-start'))
     scene.dataset.trailResizing = 'true'
     resizeTimer = window.setTimeout(() => {
       if (!signal.aborted) align()
@@ -137,17 +122,50 @@ document.addEventListener('nav', () => {
   void document.fonts.ready.then(() => {
     if (!signal.aborted) scheduleAlign()
   })
+  scheduleAlign()
+  const resumeScene = () => {
+    const drawing = scene.shadowRoot?.querySelector<HTMLElement>('.trail-scene')
+    if (
+      signal.aborted ||
+      scene.hidden ||
+      motionStarted ||
+      openFrame ||
+      openTimer ||
+      drawing?.dataset.trailOpening !== 'complete' ||
+      drawing.dataset.trailReveal === 'revealing'
+    )
+      return
+    // Give the complete reveal one paint before walkers read their routes and start moving.
+    openFrame = window.requestAnimationFrame(() => {
+      openFrame = 0
+      openTimer = window.setTimeout(() => {
+        openTimer = 0
+        if (!signal.aborted && !scene.hidden) {
+          motionStarted = true
+          scene.dispatchEvent(new Event('trail:show'))
+        }
+      }, 0)
+    })
+  }
+  scene.addEventListener('trail:prepared', resumeScene, { signal })
+  scene.addEventListener('trail:reveal-end', resumeScene, { signal })
   const setOpen = (open: boolean) => {
     cancelResize()
-    sessionStorage.setItem(preferenceKey, String(open))
+    window.cancelAnimationFrame(openFrame)
+    window.clearTimeout(openTimer)
+    openFrame = openTimer = 0
+    motionStarted = false
+    if (open) align()
     scene.hidden = !open
+    for (const control of scene.shadowRoot?.querySelector('.trail-scene')?.children ?? [])
+      if (control instanceof HTMLElement) control.inert = !open
+    scene.setAttribute('aria-hidden', String(!open))
     toggle.setAttribute('aria-expanded', String(open))
     const label = open ? 'Hide walking trail' : 'Show walking trail'
     toggle.title = `${label}${shownHoliday ? ` · ${holidayLabels[shownHoliday]}` : ''}`
     if (open) {
-      attachFrame()
-      scene.dispatchEvent(new Event('trail:show'))
-      align()
+      scene.dispatchEvent(new Event('trail:open'))
+      resumeScene()
     } else {
       scene.dispatchEvent(new Event('trail:hide'))
     }
@@ -179,7 +197,7 @@ document.addEventListener('nav', () => {
       !root.querySelector('#homepage-visitor-panel')?.matches(':popover-open') &&
       !trailScene(document)?.querySelector('.trail-visitor-popover:popover-open'),
   )
-  setOpen(sessionStorage.getItem(preferenceKey) === 'true')
+  setOpen(false)
   window.addCleanup(() => {
     controller.abort()
     disposeMoon()
@@ -188,6 +206,8 @@ document.addEventListener('nav', () => {
     resize.disconnect()
     mutation.disconnect()
     cancelAnimationFrame(layoutFrame)
+    cancelAnimationFrame(openFrame)
+    window.clearTimeout(openTimer)
     cancelResize()
     scene.dispatchEvent(new Event('trail:dispose'))
     frame.remove()

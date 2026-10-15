@@ -3,8 +3,19 @@
 body[data-slug='index'] {
   overflow-x: hidden;
 
+  #quartz-root {
+    position: relative;
+    z-index: 11;
+    pointer-events: none;
+  }
+
+  #quartz-root > section[class~='header'] {
+    pointer-events: auto;
+  }
+
   .landing {
     position: relative;
+    pointer-events: auto;
     container-type: inline-size;
     margin-block: 1.5rem 2rem;
   }
@@ -23,7 +34,7 @@ body[data-slug='index'] {
     display: grid;
     grid-template-columns: minmax(16rem, 1fr) minmax(0, 3fr);
     border: 1px solid var(--board-line);
-    background: var(--light);
+    background: transparent;
 
     a:focus-visible {
       outline: 2px solid var(--dark);
