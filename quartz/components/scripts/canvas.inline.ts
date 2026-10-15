@@ -12,6 +12,7 @@ import { cleanupHydratedRoot } from './root-lifecycle'
 const marked = new Marked({ breaks: true, gfm: true })
 
 const EDGE_LABEL_LINE_HEIGHT = 1.2
+const GROUP_LABEL_MIN_SCREEN_PX = 18
 
 function renderTextNodeContent(node: NodeData): string {
   const html = marked.parse(node.resolvedText ?? node.text ?? '', { async: false })
@@ -238,7 +239,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
           <button type="button" class="canvas-control-item" data-action="zoom-in" aria-label="Zoom in" title="Zoom in">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
           </button>
-          <button type="button" class="canvas-control-item" data-action="zoom-reset" aria-label="Reset zoom" title="Reset zoom">
+          <button type="button" class="canvas-control-item" data-action="zoom-reset" aria-label="Reset zoom to 100%" title="Reset zoom to 100%">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
           </button>
           <button type="button" class="canvas-control-item" data-action="zoom-fit" aria-label="Zoom to fit" title="Zoom to fit">
@@ -277,6 +278,10 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
                 <span class="canvas-help-keys"><kbd>Scroll</kbd> or drag background</span>
               </div>
               <div class="canvas-help-row">
+                <span>Move a group</span>
+                <span class="canvas-help-keys">Drag group title</span>
+              </div>
+              <div class="canvas-help-row">
                 <span>Pan over a card</span>
                 <span class="canvas-help-keys"><kbd>Space</kbd> + drag, or middle drag</span>
               </div>
@@ -294,6 +299,14 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
               <div class="canvas-help-row">
                 <span>Zoom to fit</span>
                 <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>1</kbd> or <kbd>0</kbd></span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Reset zoom to 100%</span>
+                <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>0</kbd></span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Zoom to group</span>
+                <span class="canvas-help-keys"><kbd>Double-click</kbd> group</span>
               </div>
             </div>
             <div class="canvas-help-section">
@@ -395,6 +408,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     const previewJobs: { run: (active: boolean) => void; isActive: () => boolean }[] = []
     const movedNodes = new Set<NodeData>()
     let renderedTransform = ''
+    let labelledScale = 0
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
     function queueRender() {
@@ -418,9 +432,14 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
             .attr('height', gridSize)
             .attr('x', offset(currentTransform.x))
             .attr('y', offset(currentTransform.y))
+          if (labelledScale !== currentScale) {
+            updateGroupLabels(currentScale)
+            labelledScale = currentScale
+          }
           const skeleton = currentScale < 0.5
           if (container.classList.contains('canvas-skeleton-view') !== skeleton) {
             container.classList.toggle('canvas-skeleton-view', skeleton)
+            if (skeleton) fitCenterTitles()
             measureEdgeLabels()
           }
           renderedTransform = transform
@@ -633,7 +652,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
 
             if (!zoomBehavior) return
             svg.interrupt()
-            isFitted = action === 'zoom-reset' || action === 'zoom-fit'
+            isFitted = action === 'zoom-fit'
 
             switch (action) {
               case 'zoom-in':
@@ -649,7 +668,10 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
                   .call(zoomBehavior.scaleBy, 0.7)
                 break
               case 'zoom-reset':
-                if (bounds) applyBoundsTransform(bounds, true)
+                svg
+                  .transition()
+                  .duration(reducedMotion.matches ? 0 : 180)
+                  .call(zoomBehavior.scaleTo, 1)
                 break
               case 'zoom-fit':
                 if (bounds) {
@@ -692,6 +714,17 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
         svg.interrupt()
         isFitted = true
         if (bounds) applyBoundsTransform(bounds, true)
+        return
+      }
+      // On AZERTY, Shift+0 types "0" and fits above; layouts with a distinct Shift+0 reset to 100%.
+      if (event.shiftKey && event.code === 'Digit0' && !event.metaKey && !event.ctrlKey) {
+        event.preventDefault()
+        svg.interrupt()
+        isFitted = false
+        svg
+          .transition()
+          .duration(reducedMotion.matches ? 0 : 180)
+          .call(zoomBehavior.scaleTo, 1)
         return
       }
       if (event.metaKey || event.ctrlKey || event.altKey) return
@@ -786,24 +819,44 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('fill', 'none')
       .attr('pointer-events', 'none')
 
+    // Group titles sit flush with the group's left border and keep a readable screen size
+    // when zoomed out, so the overview stays navigable by section.
+    const groupLabels: {
+      element: SVGTextElement
+      group: NodeData
+      text: string
+      metrics: SvgTextMetrics | null
+      fontSize: number
+    }[] = []
+
     groupNode
       .append('text')
       .attr('class', 'node-group-label')
-      .attr('x', 12)
+      .attr('x', 0)
       .attr('y', -8)
       .attr('font-size', '2rem')
-      .text(d => d.label || 'Group')
       .each(function (d: NodeData) {
-        const maxWidth = d.width - 24
-        const textEl = this as SVGTextElement
-        let text = d.label || 'Group'
-        textEl.textContent = text
-
-        while (textEl.getComputedTextLength() > maxWidth && text.length > 0) {
-          text = text.slice(0, -1)
-          textEl.textContent = text + '...'
-        }
+        const text = d.label || 'Group'
+        this.textContent = text
+        groupLabels.push({ element: this, group: d, text, metrics: null, fontSize: 32 })
       })
+
+    function measureGroupLabels() {
+      for (const label of groupLabels) {
+        label.metrics = measureSvgText(label.element, label.text)
+        label.fontSize = parseFloat(getComputedStyle(label.element).fontSize) || 32
+      }
+    }
+
+    function updateGroupLabels(scale: number) {
+      for (const label of groupLabels) {
+        if (!label.metrics) continue
+        const labelScale = Math.max(1, GROUP_LABEL_MIN_SCREEN_PX / (label.fontSize * scale))
+        label.element.setAttribute('transform', labelScale === 1 ? '' : `scale(${labelScale})`)
+        const shown = fitSvgText(label.text, label.metrics, label.group.width / labelScale)
+        if (label.element.textContent !== shown) label.element.textContent = shown
+      }
+    }
 
     const arrowId = `arrow-${pattern.attr('id')}`
     const edge = edgeGroup
@@ -930,9 +983,9 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
     fileNodes
       .append('foreignObject')
       .attr('class', 'canvas-card-title')
-      .attr('x', 12)
+      .attr('x', 0)
       .attr('y', -28)
-      .attr('width', d => Math.max(1, d.width - 24))
+      .attr('width', d => d.width)
       .attr('height', 24)
       .append('xhtml:a')
       .attr('class', 'canvas-node-link internal')
@@ -951,17 +1004,17 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       .attr('font-size', '16px')
       .attr('font-weight', '600')
       .text(d => d.displayName || d.file || '')
-      .each(function (d: NodeData) {
-        const maxWidth = d.width - 32
-        const textEl = this as SVGTextElement
-        let text = d.displayName || d.file || ''
-        textEl.textContent = text
 
-        while (textEl.getComputedTextLength() > maxWidth && text.length > 0) {
-          text = text.slice(0, -1)
-          textEl.textContent = text + '...'
-        }
+    // Centered titles are hidden until the skeleton view, so they can only be measured there.
+    let centerTitlesFitted = false
+    function fitCenterTitles() {
+      if (centerTitlesFitted) return
+      centerTitlesFitted = true
+      fileNodes.select<SVGTextElement>('.node-title-center').each(function (d) {
+        const text = d.displayName || d.file || ''
+        this.textContent = fitSvgText(text, measureSvgText(this, text), d.width - 32)
       })
+    }
 
     const textNodes = node.filter(d => d.type === 'text')
 
@@ -1260,6 +1313,23 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       }
     })
 
+    groupNode.on('dblclick', (event: MouseEvent, d) => {
+      if (!zoomBehavior) return
+      event.preventDefault()
+      svg.interrupt()
+      isFitted = false
+      const label = groupLabels.find(label => label.group === d)
+      applyBoundsTransform(
+        {
+          minX: d.x,
+          minY: d.y - (label?.fontSize ?? 32),
+          maxX: d.x + d.width,
+          maxY: d.y + d.height,
+        },
+        true,
+      )
+    })
+
     node.on('dblclick', function (event: MouseEvent, d) {
       if (event.target instanceof Element && event.target.closest('a')) return
       event.preventDefault()
@@ -1336,6 +1406,7 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       node.on('focusin', null)
       node.on('pointerdown', null)
       node.on('dblclick', null)
+      groupNode.on('dblclick', null)
     })
 
     function membersOf(group: NodeData): NodeData[] {
@@ -1450,8 +1521,17 @@ async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) 
       })
     }
     measureEdgeLabels()
+    measureGroupLabels()
     void document.fonts.ready.then(() => {
-      if (isCanvasActive(container, lifecycle)) measureEdgeLabels()
+      if (!isCanvasActive(container, lifecycle)) return
+      measureEdgeLabels()
+      measureGroupLabels()
+      updateGroupLabels(currentScale)
+      labelledScale = currentScale
+      if (centerTitlesFitted) {
+        centerTitlesFitted = false
+        if (container.classList.contains('canvas-skeleton-view')) fitCenterTitles()
+      }
     })
 
     const boundsAttr = container.getAttribute('data-canvas-bounds')
@@ -1619,6 +1699,29 @@ function resolveFileNodeUrl(node: NodeData): URL | null {
 
   const normalizedPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
   return new URL(normalizedPath, window.location.origin)
+}
+
+type SvgTextMetrics = { prefixWidths: number[]; ellipsisWidth: number }
+
+// Prefix widths are measured once, so refitting at another width needs no text layout.
+function measureSvgText(element: SVGTextElement, text: string): SvgTextMetrics {
+  element.textContent = '…'
+  const ellipsisWidth = element.getComputedTextLength()
+  element.textContent = text
+  const prefixWidths = Array.from({ length: text.length + 1 }, (_, i) =>
+    i === 0 ? 0 : element.getSubStringLength(0, i),
+  )
+  return { prefixWidths, ellipsisWidth }
+}
+
+function fitSvgText(text: string, metrics: SvgTextMetrics, maxWidth: number): string {
+  const { prefixWidths, ellipsisWidth } = metrics
+  if (prefixWidths[text.length] <= maxWidth) return text
+  let end = text.length - 1
+  while (end > 0 && prefixWidths[end] + ellipsisWidth > maxWidth) end--
+  // keep surrogate pairs whole
+  if (end > 0 && /[\uDC00-\uDFFF]/.test(text[end])) end--
+  return `${text.slice(0, end).trimEnd()}…`
 }
 
 function wrapTextHtml(text: string): string {
