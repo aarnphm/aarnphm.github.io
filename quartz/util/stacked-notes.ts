@@ -2,7 +2,6 @@ import { isRecord, readString } from './type-guards'
 
 const DOT_ESCAPE = '___DOT___'
 export const NOTES_HOSTNAME = 'notes.aarnphm.xyz'
-export const STACKED_NOTE_METADATA_CLASSES = ['modified-time', 'published-time', 'reading-time']
 
 function bytesToBase64(bytes: Uint8Array): string {
   let binary = ''
@@ -89,69 +88,12 @@ export function stackedNotesUrl(base: URL, slugs: string[]): URL {
   return url
 }
 
-function fragmentHasClass(fragment: string, className: string): boolean {
-  return (
-    fragment.includes(`"${className}`) ||
-    fragment.includes(` ${className}`) ||
-    fragment.includes(`${className}"`)
-  )
-}
-
-export function stackedNoteMetadataHtml(items: string[]): string {
-  const ordered: string[] = []
-  for (const className of STACKED_NOTE_METADATA_CLASSES) {
-    for (const item of items) {
-      if (!fragmentHasClass(item, className) || ordered.includes(item)) continue
-      ordered.push(item)
-    }
-  }
-
-  if (ordered.length === 0) return ''
-
-  return `<footer class="stacked-note-footer" aria-label="note metadata">
-  <ul class="content-meta stacked-note-content-meta">
-${ordered.map(item => `    ${item}`).join('\n')}
-  </ul>
-</footer>`
-}
-
-function tagHasClass(tag: string, className: string): boolean {
-  const classMatch = tag.match(/\sclass=(["'])(.*?)\1/i)
-  if (!classMatch) return false
-  return classMatch[2].split(/\s+/).includes(className)
-}
-
-function findPageFooterIndex(html: string): number {
-  let offset = 0
-  while (offset < html.length) {
-    const start = html.indexOf('<', offset)
-    if (start === -1) return -1
-    const end = html.indexOf('>', start + 1)
-    if (end === -1) return -1
-    const tag = html.slice(start, end + 1)
-    if (!tag.startsWith('</') && tagHasClass(tag, 'page-footer')) return start
-    offset = end + 1
-  }
-  return -1
-}
-
-export function withStackedNoteMetadata(content: string, metadata: string | undefined): string {
-  const footer = metadata?.trim()
-  if (!footer) return content
-
-  const pageFooterIndex = findPageFooterIndex(content)
-  if (pageFooterIndex === -1) return `${content}\n${footer}`
-
-  return `${content.slice(0, pageFooterIndex)}${footer}\n${content.slice(pageFooterIndex)}`
-}
-
 export type StackedNoteState = 'pending' | 'ready' | 'protected' | 'failed'
 
 export interface StackedNotePayload {
   slug: string
   title: string
   content: string
-  metadata?: string
   state: StackedNoteState
 }
 
@@ -160,7 +102,6 @@ export interface NoteDocument {
   title: string
   hash?: string
   bodyHtml: string
-  metadataHtml?: string
   state: StackedNoteState
 }
 
@@ -169,6 +110,7 @@ export interface MountedNote {
   bodyHost: HTMLElement
   titleRail: HTMLElement
   mounted: boolean
+  scrollTop: number
 }
 
 export interface VirtualRange {
@@ -256,8 +198,7 @@ export function readStackedNotePayload(value: unknown): StackedNotePayload | nul
   const slug = readString(value, 'slug')
   const title = readString(value, 'title')
   const content = readString(value, 'content')
-  const metadata = readString(value, 'metadata')
   const state = readString(value, 'state')
   if (!slug || !title || !content || !isStackedNoteState(state)) return null
-  return { slug, title, content, metadata, state }
+  return { slug, title, content, state }
 }

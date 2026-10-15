@@ -189,10 +189,8 @@ a {
           border-left: none;
         }
 
-        &[data-slug='notes'] {
-          .page-footer {
-            display: none;
-          }
+        &.overlay {
+          box-shadow: -6px 0 14px -8px color-mix(in srgb, var(--dark) 22%, transparent);
         }
 
         &.highlights {
@@ -216,11 +214,10 @@ a {
           transform: translateX(16px);
         }
 
-        &:last-child {
+        &:nth-last-child(1 of .stacked-note) {
           border-right: 1px solid var(--lightgray);
         }
 
-        .stacked-content,
         .stacked-title {
           transition: opacity 150ms linear;
         }
@@ -320,44 +317,100 @@ a {
           }
         }
 
-        .stacked-note-footer {
-          border-top: 1px solid var(--lightgray);
-          color: var(--gray);
-          font-size: 0.72rem;
-          font-weight: 300;
-          line-height: 1.45;
-          margin-top: 2.25rem;
-          padding-top: 0.85rem;
+        .backlinks {
+          --base-table-line: color-mix(in srgb, var(--gray) 55%, transparent);
+          --base-table-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
 
-          .stacked-note-content-meta {
-            cursor: default;
-            display: flex;
-            flex-flow: row wrap;
-            gap: 0.35rem 0.8rem;
-            margin: 0;
-            padding: 0;
-          }
+          margin: 1.5rem 0 2rem;
 
-          li {
-            align-items: baseline;
-            display: inline-flex;
-            gap: 0.28rem;
-            min-width: 0;
-          }
-
-          h2 {
+          & > h2 {
             color: var(--gray);
-            font: inherit;
-            margin: 0;
-            opacity: 0.72;
-            text-transform: lowercase;
+            font-size: 0.85rem;
+            font-weight: 400;
+            margin: 0 0 0.5rem;
           }
 
-          .container {
-            align-items: baseline;
-            display: inline-flex;
-            gap: 0.25rem;
-            min-width: 0;
+          & > .overflow {
+            border: 1px solid var(--base-table-line);
+            border-radius: var(--radius-none);
+
+            .backlinks-table {
+              display: table;
+              border-collapse: collapse;
+              table-layout: fixed;
+              font-family: var(--bodyFont);
+              font-size: 0.85rem;
+              line-height: 1.45;
+              color: var(--darkgray);
+
+              thead {
+                display: table-header-group;
+                background: var(--base-table-surface);
+                font-family: var(--codeFont);
+                font-size: 0.66rem;
+                line-height: 1.5;
+              }
+
+              tbody {
+                display: table-row-group;
+              }
+
+              tr {
+                display: table-row;
+                border: 0;
+                border-bottom: 1px solid var(--base-table-line);
+              }
+
+              tbody tr:last-child {
+                border-bottom: 0;
+              }
+
+              th,
+              td {
+                display: table-cell;
+                padding: 0.4rem 0.75rem;
+                vertical-align: top;
+                font-weight: 400;
+                overflow-wrap: anywhere;
+              }
+
+              th:first-child {
+                width: 35%;
+                border-right: 1px solid var(--base-table-line);
+              }
+            }
+
+            .backlink-card {
+              padding: 0;
+
+              &:hover,
+              &:focus-within {
+                background: var(--base-table-surface);
+              }
+
+              a[data-backlink] {
+                line-height: 1.45;
+                color: var(--dark);
+              }
+
+              a[data-backlink]:hover {
+                text-decoration: underline;
+              }
+
+              a[data-backlink] > .small {
+                font-size: inherit;
+              }
+
+              .description {
+                display: block;
+                margin: 0;
+                color: var(--darkgray);
+                font-size: inherit;
+                line-height: inherit;
+                letter-spacing: normal;
+                word-spacing: normal;
+              }
+            }
           }
         }
 
@@ -382,6 +435,11 @@ a {
           opacity: 0;
           cursor: pointer;
           visibility: hidden;
+
+          &:hover,
+          &:focus-visible {
+            background: color-mix(in srgb, var(--light) 72%, var(--lightgray));
+          }
 
           &:focus-visible {
             outline: 2px solid var(--tertiary);
@@ -424,7 +482,7 @@ a {
           left: 0 !important;
           right: 0 !important;
 
-          &:last-child {
+          &:nth-last-child(1 of .stacked-note) {
             display: block;
 
             .stacked-title {

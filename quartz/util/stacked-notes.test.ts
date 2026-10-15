@@ -10,10 +10,8 @@ import {
   decodeStackedNoteHash,
   hashStackedNoteSlug,
   readStackedNotePayload,
-  stackedNoteMetadataHtml,
   stackedNoteSlugs,
   stackedNotesUrl,
-  withStackedNoteMetadata,
 } from './stacked-notes'
 
 test('buildStackedNoteHtml renders a visible failed note state', () => {
@@ -28,28 +26,6 @@ test('buildStackedNoteHtml renders a visible failed note state', () => {
   assert.ok(html.includes('data-stacked-retry'))
   assert.ok(html.includes('<svg'))
   assert.equal(html.includes('>retry<'), false)
-})
-
-test('stacked note metadata footer prioritizes modified date', () => {
-  const footer = stackedNoteMetadataHtml([
-    '<li class="published-time"><h2>publié à</h2><div class="container">30 oct. 2024</div></li>',
-    '<li class="reading-time"><h2>durée</h2><div class="container">1 min</div></li>',
-    '<li class="modified-time"><h2>modifié à</h2><div class="container">26 mai 2026</div></li>',
-  ])
-
-  assert.equal(footer.startsWith('<footer class="stacked-note-footer"'), true)
-  assert.ok(footer.indexOf('modified-time') < footer.indexOf('published-time'))
-  assert.ok(footer.indexOf('published-time') < footer.indexOf('reading-time'))
-})
-
-test('stacked note metadata renders before page footer', () => {
-  const metadata = '<footer class="stacked-note-footer">modifié à 26 mai 2026</footer>'
-  const html = withStackedNoteMetadata(
-    '<article>body</article><section class="page-footer popover-hint">backlinks</section>',
-    metadata,
-  )
-
-  assert.ok(html.indexOf('stacked-note-footer') < html.indexOf('page-footer'))
 })
 
 test('normalizeStackedNoteSlug accepts only route-like slugs', () => {
@@ -80,16 +56,9 @@ test('stacked note payload parsing accepts only complete known states', () => {
       slug: 'thoughts/kant',
       title: 'Kant',
       content: '<article>Kant</article>',
-      metadata: '<footer>metadata</footer>',
       state: 'ready',
     }),
-    {
-      slug: 'thoughts/kant',
-      title: 'Kant',
-      content: '<article>Kant</article>',
-      metadata: '<footer>metadata</footer>',
-      state: 'ready',
-    },
+    { slug: 'thoughts/kant', title: 'Kant', content: '<article>Kant</article>', state: 'ready' },
   )
   assert.equal(
     readStackedNotePayload({ slug: 'thoughts/kant', title: 'Kant', content: '', state: 'ready' }),

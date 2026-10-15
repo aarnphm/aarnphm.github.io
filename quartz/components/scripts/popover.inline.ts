@@ -23,6 +23,7 @@ import {
   getCachedStackedNotePayload,
   readStackedNotePayload,
   stackedNotePayloadUrl,
+  stackedNoteRootSlug,
   type StackedNotePayload,
 } from '../../util/stacked-notes'
 import {
@@ -501,6 +502,8 @@ function textClientRects(element: HTMLElement): DOMRect[] {
 }
 
 function popoverReference(link: HTMLElement, point: Point): ReferenceElement {
+  if (link.dataset.backlink !== undefined)
+    return link.closest<HTMLElement>('.backlink-card') ?? link
   const textRect = closestRectToPoint(textClientRects(link), point)
   if (!textRect) return link
 
@@ -603,11 +606,6 @@ async function populatePopoverContent(
   await handler(response, targetUrl, popoverInner, hash)
 }
 
-function stackedNoteSlugFromUrl(targetUrl: URL): string {
-  const slug = targetUrl.pathname.replace(/^\/+|\/+$/g, '')
-  return slug === '' ? 'index' : slug
-}
-
 function isNoteDocumentUrl(targetUrl: URL): boolean {
   const leaf = targetUrl.pathname.split('/').pop() ?? ''
   return leaf === '' || !leaf.includes('.') || leaf.endsWith('.html') || leaf.endsWith('.htm')
@@ -617,7 +615,8 @@ async function fetchStackedNotePayload(
   targetUrl: URL,
   signal: AbortSignal,
 ): Promise<StackedNotePayload | null> {
-  const slug = stackedNoteSlugFromUrl(targetUrl)
+  const slug = stackedNoteRootSlug(targetUrl)
+  if (!slug) return null
   const cached = getCachedStackedNotePayload(slug)
   if (cached) return cached
 
@@ -647,7 +646,8 @@ function populateStackedPayloadContent(
 ) {
   popoverInner.classList.add('grid')
   const html = p.parseFromString(payload.content, 'text/html')
-  normalizeRelativeURLs(html, targetUrl)
+  normalizeRelativeURLs(html, new URL(`/${payload.slug}`, targetUrl))
+  html.querySelectorAll('.byline, .page-footer').forEach(element => element.remove())
   prefixPopoverIds(html)
   const elements = Array.from(html.body.children).flatMap(el =>
     el instanceof HTMLElement ? [cleanAbsoluteElement(el)] : [],
@@ -746,6 +746,15 @@ function clearActivePopover(except?: HTMLElement) {
   })
 }
 
+function dismissPopover() {
+  activePopoverReq?.abort()
+  activePopoverReq = null
+  document
+    .querySelectorAll<HTMLElement>('.popover.active-popover, .popover:hover')
+    .forEach(removePopoverElement)
+  clearActivePopover()
+}
+
 function notifyProtectedContentLoaded(container: ParentNode) {
   document.dispatchEvent(new CustomEvent('protectedcontentloaded', { detail: { container } }))
 }
@@ -764,18 +773,23 @@ function compareUrls(a: URL, b: URL): boolean {
   return u1.toString() === u2.toString()
 }
 
+function referenceEntry(link: HTMLAnchorElement): { entry: HTMLElement; key: string } | null {
+  const hash = new URL(link.href).hash
+  const note = link.closest<HTMLElement>('.stacked-note')
+  const entry = findHashTarget(note ?? document, decodeURIComponent(hash))
+  if (!entry) return null
+  return { entry, key: `${note?.dataset.slug ?? getFullSlug(window)}-${entry.id}` }
+}
+
 async function handleBibliography(
   link: HTMLAnchorElement,
   pointer: { clientX: number; clientY: number },
 ) {
-  const href = link.getAttribute('href')
-  if (!href) return
+  const reference = referenceEntry(link)
+  if (!reference) return
+  const { entry: bibEntry, key } = reference
 
-  const entryId = href.replace('#', '')
-  const bibEntry = document.getElementById(entryId) as HTMLLIElement | null
-  if (!bibEntry) return
-
-  const popoverId = link.dataset.popoverId ?? `popover-bib-${entryId}`
+  const popoverId = `popover-bib-${key}`
   let popoverElement = document.getElementById(popoverId) as HTMLElement | null
   let popoverInner: HTMLDivElement | null = null
 
@@ -800,14 +814,11 @@ async function handleFootnote(
   link: HTMLAnchorElement,
   pointer: { clientX: number; clientY: number },
 ) {
-  const href = link.getAttribute('href')
-  if (!href) return
+  const reference = referenceEntry(link)
+  if (!reference) return
+  const { entry: footnoteEntry, key } = reference
 
-  const entryId = href.replace('#', '')
-  const footnoteEntry = document.getElementById(entryId) as HTMLLIElement | null
-  if (!footnoteEntry) return
-
-  const popoverId = link.dataset.popoverId ?? `popover-footnote-${entryId}`
+  const popoverId = `popover-footnote-${key}`
   let popoverElement = document.getElementById(popoverId) as HTMLElement | null
   let popoverInner: HTMLDivElement | null = null
 
@@ -1248,7 +1259,8 @@ async function handleSummaryPreview(
     return null
   })
   if (activePopoverReq?.link === link) activePopoverReq = null
-  if (!render || activeAnchor !== link || document.getElementById(popoverId)) return
+  if (!render || !link.isConnected || activeAnchor !== link || document.getElementById(popoverId))
+    return
 
   const { popoverElement, popoverInner } = createPopoverElement(source.className)
   popoverElement.id = popoverId
@@ -1288,11 +1300,13 @@ async function handleStackedNotes(
   activePopoverReq = { abort: () => controller.abort(), link }
 
   const { popoverElement, popoverInner } = createPopoverElement('stacked-popover')
+  popoverElement.id = 'stacked-note-preview'
+  link.dataset.popoverId = popoverElement.id
   if (isNoteDocumentUrl(targetUrl)) {
     const payload = await fetchStackedNotePayload(targetUrl, controller.signal)
-    if (!payload || activeAnchor !== link) {
+    if (!payload || controller.signal.aborted || !link.isConnected || activeAnchor !== link) {
       removePopoverElement(popoverElement)
-      activePopoverReq = null
+      if (activePopoverReq?.link === link) activePopoverReq = null
       return
     }
     populateStackedPayloadContent(payload, targetUrl, popoverInner)
@@ -1304,29 +1318,33 @@ async function handleStackedNotes(
       return null
     })
 
-    if (!response || activeAnchor !== link) {
+    if (!response || controller.signal.aborted || !link.isConnected || activeAnchor !== link) {
       removePopoverElement(popoverElement)
-      activePopoverReq = null
+      if (activePopoverReq?.link === link) activePopoverReq = null
       return
     }
     await populatePopoverContent(response, targetUrl, popoverInner)
   }
 
-  if (popoverInner.childElementCount === 0) {
+  if (
+    popoverInner.childElementCount === 0 ||
+    controller.signal.aborted ||
+    !link.isConnected ||
+    activeAnchor !== link
+  ) {
     removePopoverElement(popoverElement)
-    activePopoverReq = null
+    if (activePopoverReq?.link === link) activePopoverReq = null
     return
   }
 
   column.appendChild(popoverElement)
-  hideStackedPopoversOnLeave(stacked, link, popoverElement)
   mountPdfPreviews(popoverInner)
   notifyProtectedContentLoaded(popoverInner)
   await setPosition(link, popoverElement, {
     clientX: pointer.clientX,
     clientY: pointer.clientY,
     placement: 'right',
-    strategy: 'absolute',
+    strategy: 'fixed',
   })
 
   if (hash !== '') {
@@ -1334,10 +1352,10 @@ async function handleStackedNotes(
   }
 
   requestAnimationFrame(() => {
-    if (activeAnchor === link) popoverElement.classList.add('active-popover')
+    if (link.isConnected && activeAnchor === link) popoverElement.classList.add('active-popover')
   })
 
-  activePopoverReq = null
+  if (activePopoverReq?.link === link) activePopoverReq = null
 }
 
 function closestStackedPopoverLink(
@@ -1395,39 +1413,8 @@ function mouseLeaveHandler(this: HTMLAnchorElement, event: MouseEvent | FocusEve
   clearActivePopover()
 }
 
-function allowsStackedPopover(link: HTMLAnchorElement): boolean {
-  if (summaryPreviewSource(link)) return false
-  if (link.dataset.noPopover === '' || link.dataset.noPopover === 'true') {
-    return link.dataset.backlink !== undefined
-  }
-  return true
-}
-
 function opensSidePanel(event: MouseEvent): boolean {
   return event.altKey || event.metaKey || event.ctrlKey
-}
-
-function hideStackedPopovers(stacked: HTMLElement) {
-  stacked.querySelectorAll<HTMLElement>('.stacked-popover').forEach(popoverElement => {
-    popoverElement.classList.remove('active-popover')
-    window.setTimeout(() => {
-      if (!popoverElement.classList.contains('active-popover')) {
-        removePopoverElement(popoverElement)
-      }
-    }, 180)
-  })
-}
-
-function hideStackedPopoversOnLeave(
-  stacked: HTMLElement,
-  link: HTMLAnchorElement,
-  popoverElement: HTMLElement,
-) {
-  popoverElement.addEventListener('mouseleave', event => {
-    if (containsRelatedTarget(link, event.relatedTarget)) return
-    if (activeAnchor === link) activeAnchor = null
-    hideStackedPopovers(stacked)
-  })
 }
 
 function setupStackedPopoverLinks() {
@@ -1439,6 +1426,11 @@ function setupStackedPopoverLinks() {
 
   const events = new AbortController()
   stackedPopoverEvents = events
+  // Let the router read preview links before removing their DOM.
+  stacked.addEventListener('click', () => queueMicrotask(dismissPopover), {
+    capture: true,
+    signal: events.signal,
+  })
 
   stacked.addEventListener(
     'mouseover',
@@ -1446,9 +1438,7 @@ function setupStackedPopoverLinks() {
       const link = closestStackedPopoverLink(event.target, stacked)
       if (!link || containsRelatedTarget(link, event.relatedTarget)) return
       if (activeAnchor === link && stackedPopoverForTarget(event.relatedTarget)) return
-      if (!allowsStackedPopover(link)) return
-      activeAnchor = link
-      void handleStackedNotes(stacked, link, { clientX: event.clientX, clientY: event.clientY })
+      void mouseEnterHandler.call(link, event)
     },
     { signal: events.signal },
   )
@@ -1458,13 +1448,29 @@ function setupStackedPopoverLinks() {
     event => {
       const link = closestStackedPopoverLink(event.target, stacked)
       if (!link || containsRelatedTarget(link, event.relatedTarget)) return
-      if (stackedPopoverForTarget(event.relatedTarget)) return
-      if (activeAnchor === link) activeAnchor = null
-      if (activePopoverReq?.link === link) {
-        activePopoverReq.abort()
-        activePopoverReq = null
-      }
-      hideStackedPopovers(stacked)
+      mouseLeaveHandler.call(link, event)
+    },
+    { signal: events.signal },
+  )
+
+  stacked.addEventListener(
+    'focusin',
+    event => {
+      const link = closestStackedPopoverLink(event.target, stacked)
+      if (!link?.matches(':focus-visible')) return
+      const rect = link.getBoundingClientRect()
+      void mouseEnterHandler.call(link, {
+        clientX: rect.left + rect.width / 2,
+        clientY: rect.top + rect.height / 2,
+      })
+    },
+    { signal: events.signal },
+  )
+  stacked.addEventListener(
+    'focusout',
+    event => {
+      const link = closestStackedPopoverLink(event.target, stacked)
+      if (link) mouseLeaveHandler.call(link, event)
     },
     { signal: events.signal },
   )
@@ -1478,19 +1484,20 @@ async function mouseEnterHandler(
   activeAnchor = this
   const link = activeAnchor
 
-  if (link.dataset.bib === '') {
+  if (link.dataset.bib !== undefined) {
     await handleBibliography(link, { clientX, clientY })
     return
   }
 
-  if (link.dataset.footnoteRef === '') {
+  if (link.dataset.footnoteRef !== undefined) {
     await handleFootnote(link, { clientX, clientY })
     return
   }
 
   const container = document.getElementById('stacked-notes-container')
 
-  if (link.dataset.noPopover === '' || link.dataset.noPopover === 'true') {
+  const stackedBacklink = link.dataset.backlink !== undefined && container?.contains(link)
+  if ((link.dataset.noPopover === '' || link.dataset.noPopover === 'true') && !stackedBacklink) {
     return
   }
 
@@ -1831,9 +1838,7 @@ function setupPopoverDelegation(): void {
     'keydown',
     event => {
       if (event.key !== 'Escape') return
-      activePopoverReq?.abort()
-      activePopoverReq = null
-      clearActivePopover()
+      dismissPopover()
     },
     { signal },
   )

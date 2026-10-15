@@ -1,19 +1,15 @@
 import {
-  STACKED_NOTE_METADATA_CLASSES,
   NOTES_HOSTNAME,
   hashStackedNoteSlug,
   normalizeStackedNoteSlug,
-  stackedNoteMetadataHtml,
   stackedNoteSlugs,
   stackedNotesUrl,
-  withStackedNoteMetadata,
 } from '../quartz/util/stacked-notes'
 
 export interface StackedNoteData {
   slug: string
   title: string
   content: string
-  metadata?: string
   state: 'pending' | 'ready' | 'protected' | 'failed'
 }
 
@@ -45,9 +41,6 @@ const NOTE_TITLE_WIDTH = 40
 const SERVER_BODY_HEAD_COUNT = 1
 const STACKED_NOTE_START = '<!--__STACKED_NOTE_START__-->'
 const STACKED_NOTE_END = '<!--__STACKED_NOTE_END__-->'
-const STACKED_NOTE_METADATA_SELECTORS = STACKED_NOTE_METADATA_CLASSES.map(
-  className => `main .page-header .content-meta > li.${className}`,
-)
 const STACKED_NOTE_RETRY_BUTTON_HTML = `<button type="button" data-stacked-retry aria-label="Réessayer">
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path d="M20 6v5h-5" />
@@ -136,16 +129,11 @@ async function extractPopoverHintContent(html: string): Promise<string> {
     .join('\n')
 }
 
-async function extractStackedNoteMetadata(html: string): Promise<string> {
-  return stackedNoteMetadataHtml(await extractHtmlFragments(html, STACKED_NOTE_METADATA_SELECTORS))
-}
-
 export function failedNoteData(slug: string, title: string = slug): StackedNoteData {
   return {
     slug,
     title,
     content: `<div class="stacked-note-status stacked-note-status-failed"><p>Impossible de charger cette note.</p>${STACKED_NOTE_RETRY_BUTTON_HTML}</div>`,
-    metadata: '',
     state: 'failed',
   }
 }
@@ -162,7 +150,6 @@ function protectedNoteData(slug: string, title: string): StackedNoteData {
     </div>
   </div>
 </div>`,
-    metadata: '',
     state: 'protected',
   }
 }
@@ -172,7 +159,6 @@ export function pendingNoteData(slug: string): StackedNoteData {
     slug,
     title: slug,
     content: '<div class="stacked-note-status" role="status">chargement...</div>',
-    metadata: '',
     state: 'pending',
   }
 }
@@ -187,14 +173,11 @@ async function noteDataFromHtml(slug: string, html: string): Promise<StackedNote
     return protectedNoteData(slug, title)
   }
 
-  const [content, metadata] = await Promise.all([
-    extractPopoverHintContent(html),
-    extractStackedNoteMetadata(html),
-  ])
+  const content = await extractPopoverHintContent(html)
 
   if (!content) return failedNoteData(slug, title)
 
-  return { slug, title, content, metadata, state: 'ready' }
+  return { slug, title, content, state: 'ready' }
 }
 
 async function fetchNoteData(
@@ -234,11 +217,9 @@ export function buildStackedNoteHtml(
   const right =
     -(NOTE_CONTENT_WIDTH - NOTE_TITLE_WIDTH) + (totalCount - index - 1) * NOTE_TITLE_WIDTH
 
-  const content = withStackedNoteMetadata(note.content, note.metadata)
-
   return `<div class="stacked-note ${note.state}" id="${hashSlug(note.slug)}" data-slug="${escapedSlug}" data-state="${note.state}" style="left: ${left}px; right: ${right}px;">
   <div class="stacked-content">
-    ${content}
+    ${note.content}
   </div>
   <button type="button" class="stacked-title" tabindex="-1" aria-label="Afficher ${escapedTitle}">${escapedTitle}</button>
 </div>`
