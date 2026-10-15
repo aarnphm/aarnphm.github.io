@@ -445,7 +445,12 @@ $pet-looks: (
       display: inline;
     }
 
-    &:is(:not([data-outfit]), [data-outfit=''], [data-outfit='triathlon'], [data-outfit='posts'])
+    &:is(
+        :not([data-outfit]),
+        [data-outfit=''],
+        [data-outfit='triathlon'],
+        [data-outfit='posts']
+      ):not([data-lantern])
       [data-part='catch'] {
       display: inline;
     }
@@ -531,6 +536,75 @@ $pet-looks: (
   }
   56% {
     translate: 0 0.05px;
+  }
+}
+
+// Fog, dusk or night where the visitor is: it holds out a little lantern on the side it faces,
+// unless its hands are busy. Outfits with a prop in that paw hold it out behind instead, unless the
+// umbrella has that paw. The flame flickers between two drawings and the glow wavers.
+.pet-svg[data-lantern]:not(
+    [data-kind='hang'],
+    [data-state='slide'],
+    [data-state='chute'],
+    [data-state='jet'],
+    [data-state='fly'],
+    [data-state='cheer'],
+    [data-state='wave']
+  ) {
+  &:not(
+      [data-outfit='art'],
+      [data-outfit='stream'],
+      [data-outfit='courses'],
+      [data-outfit='cinema'],
+      [data-outfit='engineering']
+    )
+    [data-part='lantern'] {
+    display: inline;
+  }
+
+  &:is(
+      [data-outfit='art'],
+      [data-outfit='stream'],
+      [data-outfit='courses'],
+      [data-outfit='cinema'],
+      [data-outfit='engineering']
+    ):not([data-rain])
+    [data-part='lantern-back'] {
+    display: inline;
+  }
+
+  .pet-flame-frame {
+    animation: pet-swap 0.32s step-end infinite;
+  }
+
+  .pet-flame-frame + .pet-flame-frame {
+    animation-delay: -0.16s;
+  }
+
+  .pet-glow {
+    animation: pet-glow 2.6s steps(13) infinite;
+  }
+}
+
+@keyframes pet-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  18% {
+    opacity: 0.78;
+  }
+  31% {
+    opacity: 0.95;
+  }
+  54% {
+    opacity: 0.7;
+  }
+  62% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.86;
   }
 }
 
@@ -1211,7 +1285,8 @@ $pet-looks: (
     display: none;
   }
 
-  :is(.pet-flap-frame, .pet-rain-frame) + :is(.pet-flap-frame, .pet-rain-frame) {
+  :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame)
+    + :is(.pet-flap-frame, .pet-rain-frame, .pet-flame-frame) {
     display: none;
   }
 }
