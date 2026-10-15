@@ -13,9 +13,12 @@ import { mathK } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
 import { ANA_W } from '../shared'
 import { anaTitle } from '../shared'
+import { buildHorizontalGrid } from '../shared'
 import { buildIconLeg } from '../shared'
+import { buildVerticalGrid } from '../shared'
 import { bySport } from '../shared'
 import { clampN } from '../shared'
+import { dateGridPositions } from '../shared'
 import { hms } from '../shared'
 import { K42 } from '../shared'
 import { K7 } from '../shared'
@@ -181,7 +184,15 @@ export const buildPmc = (
     viewBox: `0 0 ${ANA_W} ${PMC_H}`,
     preserveAspectRatio: 'none',
   })
-  s.appendChild(
+  s.append(
+    buildVerticalGrid(
+      dateGridPositions(
+        daily.map(d => d.date),
+        x,
+      ),
+      0,
+      PMC_BAR_BOT,
+    ),
     svg('line', { x1: 0, y1: yFit(maxFit), x2: ANA_W, y2: yFit(maxFit), class: 'tri-pmc-grid' }),
   )
   const areaInner = ctlPts.map(([px, py]) => `L ${px.toFixed(2)} ${py.toFixed(2)}`).join(' ')
@@ -621,6 +632,17 @@ export const buildWeekTrend = (
     viewBox: `0 0 ${ANA_W} ${WKT_H}`,
     preserveAspectRatio: 'none',
   })
+  s.append(
+    buildHorizontalGrid([yMax, yMax / 2, 0].map(y), 0, ANA_W),
+    buildVerticalGrid(
+      dateGridPositions(
+        rows.map(row => row.week.weekStart),
+        x,
+      ),
+      WKT_TOP,
+      WKT_BOT,
+    ),
+  )
   let run: number[] = []
   const flushBand = (): void => {
     if (run.length >= 2) {

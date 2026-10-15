@@ -5,6 +5,7 @@ import type { TriathlonContext } from '../../runtime/context'
 import {
   axisFrame,
   axisNumber,
+  buildPowerCurveGrid,
   dlabel,
   niceStep,
   powerCurveDurationTicks,
@@ -99,6 +100,11 @@ export const buildSwimPowerCurve = (
     label: axisNumber(i * step, step),
     vbY: Y(i * step),
   }))
+  const durationTicks = powerCurveDurationTicks(
+    minSeconds,
+    maxSeconds,
+    [60, 300, 600, 1200, 1800, 2700, 3600, 5400, 7200],
+  )
   for (const tick of yTicks)
     graph.appendChild(
       svg('line', {
@@ -110,6 +116,14 @@ export const buildSwimPowerCurve = (
         'aria-hidden': 'true',
       }),
     )
+  graph.appendChild(
+    buildPowerCurveGrid(
+      createDomFactory(context.presentation),
+      'duration',
+      durationTicks.map(X),
+      H,
+    ),
+  )
   graph.appendChild(
     svg('line', {
       class: 'tri-best-power-ftp',

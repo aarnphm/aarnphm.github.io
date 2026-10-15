@@ -5339,12 +5339,39 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-ana-block {
   flex: 0 0 auto;
+  min-width: 0;
   content-visibility: auto;
   contain-intrinsic-size: auto 640px;
 }
 
 .tri-ana-block:empty {
   display: none;
+}
+
+@media (min-width: 52rem) {
+  .tri-analytics:not(.tri-analytics--compare):not(.tri-analytics--comparison):not(
+      .tri-analytics--detail
+    )
+    .tri-ana-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-auto-rows: max-content;
+    align-content: start;
+    align-items: stretch;
+    column-gap: 1.8rem;
+    row-gap: 1.5rem;
+
+    > * {
+      grid-column: 1 / -1;
+    }
+
+    > .tri-ana-block[data-chart='vo2max']:not(:empty),
+    > .tri-ana-block[data-chart='lactate']:not(:empty) {
+      grid-column: auto;
+      content-visibility: visible;
+      contain-intrinsic-size: none;
+    }
+  }
 }
 
 .tri-ana-block-title {
@@ -8305,6 +8332,12 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   cursor: pointer;
 }
 
+.tri-engine-vo2-spark {
+  aspect-ratio: 100 / 24;
+  min-height: 96px;
+  max-height: 112px;
+}
+
 .tri-wkt-svg {
   aspect-ratio: 100 / 34;
   min-height: 0;
@@ -9050,7 +9083,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-engine-vo2-num {
-  font-size: 1.6rem;
+  font-size: 1.35rem;
   font-variant-numeric: tabular-nums;
   color: var(--dark);
 }
@@ -9067,7 +9100,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-engine-agebar {
   position: relative;
   height: 6px;
-  margin: 0.55rem 0 0.35rem;
+  margin: 0.35rem 0 0.25rem;
   background: color-mix(in srgb, var(--gray) 18%, transparent);
 }
 
@@ -11015,10 +11048,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-ana-lactate {
-  --tri-lt-head-width: 10rem;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.35rem;
+  height: 100%;
 }
 
 .tri-trend-panel {
@@ -11032,33 +11065,76 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   opacity: 0.5;
 }
 
-.tri-lt-row {
-  display: grid;
-  grid-template-columns: var(--tri-lt-head-width) minmax(0, 1fr);
-  align-items: center;
-  gap: 0.65rem;
-  min-width: 0;
+.tri-lt-table {
+  align-self: stretch;
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.58rem;
+  line-height: 1.45;
+
+  th,
+  td {
+    padding: 0.5rem 0;
+    border: 0;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  th {
+    padding-right: 0.7rem;
+    color: var(--darkgray);
+    font-weight: 400;
+    text-align: left;
+  }
+
+  td {
+    color: var(--dark);
+    font-size: 0.64rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  td + td {
+    padding-left: 0.7rem;
+    color: var(--darkgray);
+    font-size: 0.58rem;
+  }
+
+  tr {
+    border-bottom: 1px solid color-mix(in srgb, var(--gray) 22%, transparent);
+
+    &:last-child {
+      border: 0;
+    }
+  }
 }
 
-.tri-lt-row > .tri-trend-head {
-  min-width: 0;
-  white-space: nowrap;
+.tri-lt-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tri-lt-val-inner {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
 }
 
 .tri-lt-trend {
-  position: relative;
   display: block;
-  min-width: 0;
 }
 
 .tri-lt-spark {
   display: block;
-  width: 100%;
-  height: 1.35rem;
-  overflow: visible;
+  width: 6.8rem;
+  height: 2.35rem;
 
-  .tri-trend-level {
+  polyline {
     fill: none;
+    stroke-width: 1.5;
     vector-effect: non-scaling-stroke;
   }
 }

@@ -8,7 +8,9 @@ import { mathK } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
 import { ANA_W } from '../shared'
 import { anaTitle } from '../shared'
+import { buildVerticalGrid } from '../shared'
 import { clampN } from '../shared'
+import { dateGridPositions } from '../shared'
 import { markGloss } from '../shared'
 import { monthTicks } from '../shared'
 import { pctFmt } from '../shared'
@@ -112,6 +114,19 @@ export const buildBody = (data: Analytics, context: TriathlonContext): HTMLEleme
     })
     for (const gy of [0, 50])
       s.appendChild(svg('line', { x1: 0, y1: gy, x2: 100, y2: gy, class: 'tri-bodywt-grid' }))
+    for (const gx of dateGridPositions(
+      days.map(d => d.date),
+      i => xPct(days[i].ts),
+    ))
+      s.appendChild(
+        svg('line', {
+          x1: gx.toFixed(2),
+          y1: 0,
+          x2: gx.toFixed(2),
+          y2: 100,
+          class: 'tri-bodywt-grid',
+        }),
+      )
     s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: 100, class: 'tri-bodywt-axis' }))
     s.appendChild(svg('line', { x1: 0, y1: 100, x2: 100, y2: 100, class: 'tri-bodywt-axis' }))
     if (bmr.length >= 2)
@@ -560,6 +575,16 @@ export const buildHeatAcclimatisation = (
           : 'ambient workout temperature and heat acclimatisation proxy over time',
     ),
   })
+  s.appendChild(
+    buildVerticalGrid(
+      dateGridPositions(
+        rows.map(day => day.date),
+        x,
+      ),
+      0,
+      H,
+    ),
+  )
   if (!usesSauna)
     s.appendChild(
       svg('rect', {

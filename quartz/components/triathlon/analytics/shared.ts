@@ -329,6 +329,70 @@ export const monthTicks = (
   return out
 }
 
+export const dateGridPositions = (
+  dates: readonly string[],
+  xOf: (index: number) => number,
+): number[] => {
+  const n = dates.length
+  if (n === 0) return []
+  if (n === 1) return [xOf(0)]
+  const monthIndices: number[] = []
+  let lastMonth = ''
+  for (let i = 0; i < n; i++) {
+    const mo = dates[i].slice(0, 7)
+    if (mo !== lastMonth) {
+      monthIndices.push(i)
+      lastMonth = mo
+    }
+  }
+  if (monthIndices.length >= 3) return monthIndices.map(xOf)
+  const segments = Math.min(4, n - 1)
+  const out: number[] = []
+  const seen = new Set<number>()
+  for (let s = 0; s <= segments; s++) {
+    const idx = Math.round((s / segments) * (n - 1))
+    if (!seen.has(idx)) {
+      seen.add(idx)
+      out.push(xOf(idx))
+    }
+  }
+  return out
+}
+
+export const buildVerticalGrid = (
+  positions: readonly number[],
+  yTop: number,
+  yBottom: number,
+  className = 'tri-power-curve-grid tri-power-curve-grid--duration',
+): SVGElement => {
+  const grid = svg('g', { class: className, 'aria-hidden': 'true' })
+  const top = yTop.toFixed(2)
+  const bottom = yBottom.toFixed(2)
+  for (const position of positions) {
+    const value = position.toFixed(2)
+    grid.appendChild(
+      svg('line', { x1: value, x2: value, y1: top, y2: bottom, 'data-curve-grid-pct': value }),
+    )
+  }
+  return grid
+}
+
+export const buildHorizontalGrid = (
+  positions: readonly number[],
+  xLeft: number,
+  xRight: number,
+  className = 'tri-power-curve-grid tri-power-curve-grid--power',
+): SVGElement => {
+  const grid = svg('g', { class: className, 'aria-hidden': 'true' })
+  const left = xLeft.toFixed(2)
+  const right = xRight.toFixed(2)
+  for (const position of positions) {
+    const value = position.toFixed(2)
+    grid.appendChild(svg('line', { x1: left, x2: right, y1: value, y2: value }))
+  }
+  return grid
+}
+
 export const PMC_PROJ_DAYS = 14
 
 export const K42 = 1 - Math.exp(-1 / 42)

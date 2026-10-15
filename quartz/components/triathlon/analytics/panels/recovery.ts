@@ -14,7 +14,9 @@ import { svg } from '../../runtime/dom'
 import { ANA_H } from '../shared'
 import { ANA_W } from '../shared'
 import { anaTitle } from '../shared'
+import { buildVerticalGrid } from '../shared'
 import { clampN } from '../shared'
+import { dateGridPositions } from '../shared'
 import { hms } from '../shared'
 import { markGloss } from '../shared'
 import { monthTicks } from '../shared'
@@ -63,6 +65,16 @@ export const buildRecoveryChart = (data: Analytics, context: TriathlonContext): 
     })
     s.appendChild(
       svg('rect', { x: 0, y: yZ(1), width: ANA_W, height: yZ(-1) - yZ(1), class: 'tri-rec-band' }),
+    )
+    s.appendChild(
+      buildVerticalGrid(
+        dateGridPositions(
+          rec.series.map(d => d.date),
+          x,
+        ),
+        0,
+        ANA_H,
+      ),
     )
     s.appendChild(svg('line', { x1: 0, y1: yZ(0), x2: ANA_W, y2: yZ(0), class: 'tri-ana-zero' }))
     s.appendChild(svg('line', { x1: 0, y1: yZ(-1), x2: ANA_W, y2: yZ(-1), class: 'tri-rec-zline' }))
@@ -240,6 +252,16 @@ const buildSleepTrend = (data: Analytics, context: TriathlonContext): HTMLElemen
     viewBox: `0 0 ${n} ${H}`,
     preserveAspectRatio: 'none',
   })
+  s.appendChild(
+    buildVerticalGrid(
+      dateGridPositions(
+        view.map(d => d.date),
+        i => i + 0.5,
+      ),
+      0,
+      bot,
+    ),
+  )
   s.appendChild(
     svg('line', {
       x1: 0,
