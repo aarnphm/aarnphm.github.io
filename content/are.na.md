@@ -4730,6 +4730,27 @@ title: are.na
 
 ## places
 
+- https://www.wearecono.com/ -- Cono
+  - [meta]:
+    - date: 10/15/2026
+    - tags: [deserts]
+    - coord: [43.6538016, -79.4260017]
+    - address: 932 College St, Toronto, ON M6H 1A4, Canada
+    - later: true
+- https://gateaughost.com/ -- Gateau Ghost
+  - [meta]:
+    - date: 10/15/2026
+    - tags: [coffee shop, restaurant]
+    - coord: [43.6535085, -79.4277414]
+    - address: 974 College St, Toronto, ON M6H 1A5, Canada
+    - later: true
+- https://maps.app.goo.gl/GbUJVTufh3W5ATAy9 -- Misc Coffee Dovercourt
+  - [meta]:
+    - date: 10/15/2026
+    - tags: [coffee shop]
+    - coord: [43.6454764, -79.4229187]
+    - address: 155 Dovercourt Rd, Toronto, ON M6J 3C6, Canada
+    - later: true
 - https://bkindustrial.art -- Brooklyn Industrial Arts
   - [meta]:
     - date: 10/11/2026
