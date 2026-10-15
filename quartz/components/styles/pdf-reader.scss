@@ -401,6 +401,15 @@ body[data-pdf-embedded='course'] {
   .pdf-reader-app[data-compact='true'] & {
     grid-template-columns: max-content;
   }
+
+  // Before pages exist the column takes the fit-width share, so the side keeps its loaded place.
+  .pdf-reader-app:not([data-phase='ready']) & {
+    grid-template-columns: minmax(0, 1fr) var(--pdf-side-width);
+  }
+
+  .pdf-reader-app[data-compact='true']:not([data-phase='ready']) & {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .pdf-reader-column {
@@ -414,6 +423,39 @@ body[data-pdf-embedded='course'] {
   > .pdf-reader-status {
     min-width: min(30rem, 80vw);
     padding-block: 2rem;
+  }
+
+  &:has(> .pdf-reader-skeleton) > .pdf-reader-status {
+    align-self: stretch;
+    min-width: 0;
+    padding-block: 0;
+  }
+}
+
+// Fit width is the default zoom, so a full-width letter page matches the first rendered page.
+.pdf-reader-skeleton {
+  flex: none;
+  width: 100%;
+  aspect-ratio: 8.5 / 11;
+  background:
+    repeating-linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--gray) 22%, transparent) 0 0.4rem,
+        transparent 0.4rem 1.5rem
+      )
+      center 12% / 76% 72% no-repeat,
+    var(--pdf-surface);
+  outline: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+  opacity: 0.5;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: pdf-reader-skeleton 1.6s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes pdf-reader-skeleton {
+  to {
+    opacity: 0.25;
   }
 }
 
@@ -905,6 +947,15 @@ body[data-pdf-embedded='course'] {
   input[type='search'] {
     flex: 1 1 auto;
     min-width: 0;
+  }
+
+  // The kind filter spans the search field's width.
+  .pdf-reader-segmented {
+    display: flex;
+
+    > button {
+      flex: 1 1 auto;
+    }
   }
 }
 
