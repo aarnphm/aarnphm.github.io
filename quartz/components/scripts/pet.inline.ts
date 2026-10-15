@@ -5,7 +5,7 @@ import { sectionOf } from '../../util/section-icon'
 import { createSvgSpace, svgPathGeometry } from '../../util/svg-geometry'
 import { easeTrailDepth } from '../../util/trail-depth'
 import { trailHost, trailScene } from '../../util/trail-scene'
-import { readVisitorForecast } from '../../util/visitor-weather'
+import { readVisitorForecast, visitorConditionsLabel } from '../../util/visitor-weather'
 import {
   animalInWay,
   canMove,
@@ -198,13 +198,15 @@ const state = (now: number): State => {
   return 'idle'
 }
 
-// How cold it is where the visitor is, from the worker's /api/weather (cached there and in the
-// browser for 15 minutes): the wind chill, as Environment Canada works it out for 10 °C and under
-// with 5 km/h of wind or more. 10 °C and under is 'cool', 0 °C and under 'cold' (pet.scss).
+// The weather where the visitor is, from the worker's /api/weather (cached there and in the browser
+// for 15 minutes). How cold: the wind chill, as Environment Canada works it out for 10 °C and under
+// with 5 km/h of wind or more; 10 °C and under is 'cool', 0 °C and under 'cold'. Rain: drizzle, rain
+// or a thunderstorm by its weather code (pet.scss).
 let chill: '' | 'cool' | 'cold' = ''
-let chillLoad: Promise<void> | null = null
-const loadChill = () =>
-  (chillLoad ??= fetch('/api/weather')
+let rain = false
+let weatherLoad: Promise<void> | null = null
+const loadWeather = () =>
+  (weatherLoad ??= fetch('/api/weather')
     .then(res => (res.ok ? res.json() : null))
     .then(body => {
       const w = readVisitorForecast(body)?.weather
@@ -215,6 +217,7 @@ const loadChill = () =>
           ? 13.12 + 0.6215 * w.temp - 11.37 * v + 0.3965 * w.temp * v
           : w.temp
       chill = feels <= 0 ? 'cold' : feels <= 10 ? 'cool' : ''
+      rain = ['drizzle', 'rain', 'thunderstorm'].includes(visitorConditionsLabel(w.code))
       render()
     })
     .catch(() => {}))
@@ -239,6 +242,7 @@ const render = () => {
   const traits = outfit ? '' : ['technical', 'philosophy'].filter(t => tags.has(t)).join(' ')
   if (svg.dataset.traits !== traits) svg.dataset.traits = traits
   if (svg.dataset.cold !== chill) svg.dataset.cold = chill
+  svg.toggleAttribute('data-rain', rain)
   svg.toggleAttribute('data-reading', document.documentElement.getAttribute('reader-mode') === 'on')
   // On the rail it faces the page, its back to the pole.
   root.style.setProperty('--pet-face', String(carry ? 1 : face))
@@ -2010,6 +2014,7 @@ function renderFriend() {
   if (friendSvg.dataset.state !== next) friendSvg.dataset.state = next
   friendSvg.dataset.kind = friendPerch?.kind ?? 'stand'
   if (friendSvg.dataset.cold !== chill) friendSvg.dataset.cold = chill
+  friendSvg.toggleAttribute('data-rain', rain)
   friendSvg.toggleAttribute(
     'data-reading',
     document.documentElement.getAttribute('reader-mode') === 'on',
@@ -2524,7 +2529,7 @@ document.addEventListener('nav', () => {
   trailSpaceSignal = signal
   trailSpaces = new WeakMap()
   syncPets()
-  void loadChill()
+  void loadWeather()
   const scene = document.querySelector<HTMLElement>('.homepage-trail-scene')
   let trailFrame = 0
   let trailWanted = false

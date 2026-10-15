@@ -406,6 +406,28 @@ $pet-looks: (
   }
 }
 
+// Rain where the visitor is: it holds up its little umbrella, the rain falling past in two
+// drawings. Not while its hands are busy hanging, sliding, flying or cheering.
+.pet-svg[data-rain]:not(
+    [data-kind='hang'],
+    [data-state='slide'],
+    [data-state='chute'],
+    [data-state='jet'],
+    [data-state='fly'],
+    [data-state='cheer']
+  )
+  [data-part='umbrella'] {
+  display: inline;
+
+  .pet-rain-frame {
+    animation: pet-swap 0.36s step-end infinite;
+  }
+
+  .pet-rain-frame + .pet-rain-frame {
+    animation-delay: -0.18s;
+  }
+}
+
 // The friend keeps its sprout, so it goes without the toque.
 .garden-pet-friend .pet-svg[data-cold] [data-part='toque'] {
   display: none;
@@ -1083,7 +1105,7 @@ $pet-looks: (
     display: none;
   }
 
-  .pet-flap-frame + .pet-flap-frame {
+  :is(.pet-flap-frame, .pet-rain-frame) + :is(.pet-flap-frame, .pet-rain-frame) {
     display: none;
   }
 }
