@@ -1,0 +1,43 @@
+---
+date: '2026-10-15'
+id: relatifs
+modified: 2026-10-15 09:00:00 GMT-04:00
+tags:
+  - fr
+  - language
+  - learning
+title: relatifs
+---
+
+Relier les idées sans répéter — B2.
+
+## Les relatifs simples
+
+| Relatif | Rôle | Exemple |
+|---|---|---|
+| {{`qui`}} | sujet | {{`L'homme qui parle est mon voisin.`}} |
+| {{`que`}} | objet direct | {{`Le film que j'ai vu était long.`}} |
+| {{`dont`}} | {{`de`}} + chose | {{`la décision dont il se plaint`}} (se plaindre *de*) |
+| {{`où`}} | lieu / temps | {{`la ville où je suis né`}} |
+| {{`ce qui`}} / {{`ce que`}} / {{`ce dont`}} | ce + relatif | {{`Ce qui me surprend, c'est son calme.`}} (sujet / objet / objet en *de*) |
+
+## Les formes composées
+
+{{`lequel`}} / {{`laquelle`}} / {{`lesquels`}} / {{`lesquelles`}} ; avec {{`à`}} → {{`auquel`}}, {{`auxquels`}}, {{`auxquelles`}} ; avec {{`de`}} → {{`duquel`}}, {{`desquels`}}, {{`desquelles`}}.
+
+- {{`penser à`}} + chose → {{`le film auquel je pense`}} (personne → {{`à qui`}})
+- **{{`dont`}} vs {{`duquel`}}** : {{`dont`}} suffit seul ({{`la décision dont il se plaint`}}) mais ne suit jamais une autre préposition — {{`la question à propos de laquelle…`}} exige {{`de laquelle`}}. Avec une personne, {{`de qui`}} marche aussi.
+
+## L'ordre des doubles pronoms
+
+{{`me`}} / {{`te`}} / {{`se`}} / {{`nous`}} / {{`vous`}} → {{`le`}} / {{`la`}} / {{`les`}} → {{`lui`}} / {{`leur`}} → {{`y`}} → {{`en`}}.
+
+{{`Je le lui donne.`}} · {{`Je te le prête.`}} À l'impératif affirmatif, après le verbe avec traits d'union ({{`me`}}→{{`moi`}}, {{`te`}}→{{`toi`}}) : {{`Donne-le-moi !`}} ; au négatif, ordre normal avant le verbe : {{`Ne me le donne pas.`}}
+
+## Les compagnons : COD, COI, y, en
+
+Placés **avant** le verbe : {{`Je la vois.`}} (COD : {{`me, te, le/la, nous, vous, les`}}) · {{`Je lui parle.`}} (COI en {{`à`}} + personne : {{`lui, leur`}}).
+
+- {{`y`}} remplace {{`à`}} + lieu ou chose : {{`J'y vais.`}} · {{`J'y pense.`}} (penser *à* quelque chose ; à quelqu'un → {{`lui`}}/{{`leur`}})
+- {{`en`}} remplace {{`de`}} + nom : {{`J'en ai besoin.`}} · {{`Ils en achètent.`}} (des pommes)
+- {{`y`}} + {{`en`}} coexistent, dans cet ordre : {{`Il y en a beaucoup.`}}
