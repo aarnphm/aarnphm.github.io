@@ -265,6 +265,7 @@ export const buildBestEffortsChart = ({
           label: bestEffortAxisLabel(category, value, formatter),
           vbY: y(value),
         }))
+  const xTicks = timeTicks(formatter, firstDay, lastDay, x)
   for (const tick of yTicks)
     plot.appendChild(
       svg('line', {
@@ -273,6 +274,16 @@ export const buildBestEffortsChart = ({
         x2: W,
         y1: tick.vbY.toFixed(2),
         y2: tick.vbY.toFixed(2),
+      }),
+    )
+  for (const tick of xTicks)
+    plot.appendChild(
+      svg('line', {
+        class: 'tri-be-chart-grid',
+        x1: tick.pct.toFixed(2),
+        x2: tick.pct.toFixed(2),
+        y1: 0,
+        y2: H,
       }),
     )
 
@@ -342,7 +353,7 @@ export const buildBestEffortsChart = ({
     plot,
     yTicks,
     H,
-    timeTicks(formatter, firstDay, lastDay, x),
+    xTicks,
     true,
     { top: Y_BEST, bottom: H },
     [pointsLayer, ranksLayer],

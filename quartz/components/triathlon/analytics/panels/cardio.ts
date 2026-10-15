@@ -8,6 +8,7 @@ import { svg } from '../../runtime/dom'
 import { anaTitle } from '../shared'
 import { buildTrendGlyph } from '../shared'
 import { clampN } from '../shared'
+import { dateGridPositions } from '../shared'
 import { markGloss } from '../shared'
 import { polyD } from '../shared'
 
@@ -152,6 +153,17 @@ export const buildCardio = (data: Analytics, context: TriathlonContext): HTMLEle
             y1: yAt(tick),
             x2: 100,
             y2: yAt(tick),
+            'aria-hidden': 'true',
+          }),
+        )
+      for (const gx of dateGridPositions(dates, i => xAt(dates[i])))
+        s.appendChild(
+          svg('line', {
+            class: 'tri-engine-grid',
+            x1: gx.toFixed(2),
+            y1: chartTop,
+            x2: gx.toFixed(2),
+            y2: chartBottom,
             'aria-hidden': 'true',
           }),
         )

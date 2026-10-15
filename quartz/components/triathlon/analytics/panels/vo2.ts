@@ -7,14 +7,16 @@ import type { Vo2LabTargetStep } from '../../../../plugins/stores/analytics'
 import type { TriathlonContext } from '../../runtime/context'
 import type { TriathlonFormatter } from '../../runtime/formatter'
 import { axisFrame } from '../../../../util/triathlon-card'
-import { vo2SourceText } from '../../../../util/triathlon-i18n'
 import { createDomFactory } from '../../runtime/dom'
 import { el } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
 import { ANA_H } from '../shared'
 import { ANA_W } from '../shared'
 import { anaTitle } from '../shared'
+import { buildHorizontalGrid } from '../shared'
+import { buildVerticalGrid } from '../shared'
 import { clampN } from '../shared'
+import { dateGridPositions } from '../shared'
 import { fmtSpeedKmh } from '../shared'
 import { markGloss } from '../shared'
 import { polyD } from '../shared'
@@ -75,11 +77,27 @@ export const buildVo2max = (data: Analytics, context: TriathlonContext): HTMLEle
     }
     const x = (i: number): number => (i / (n - 1)) * ANA_W
     const y = (val: number): number => 27 - ((val - lo) / (hi - lo)) * 24
+    const yTicks = [hi, (hi + lo) / 2, lo].map(val => ({ label: val.toFixed(1), vbY: y(val) }))
     const s = svg('svg', {
       class: 'tri-ana-svg tri-engine-vo2-spark',
       viewBox: `0 0 ${ANA_W} ${ANA_H}`,
       preserveAspectRatio: 'none',
     })
+    s.append(
+      buildHorizontalGrid(
+        yTicks.map(tick => tick.vbY),
+        0,
+        ANA_W,
+      ),
+      buildVerticalGrid(
+        dateGridPositions(
+          v.trend.map(p => p.weekStart),
+          x,
+        ),
+        0,
+        ANA_H,
+      ),
+    )
     const pts = v.trend.map((p, i) => [x(i), y(p.vo2max)] as [number, number])
     const proj = (i: number): boolean =>
       v.trend[i - 1].method === 'bike' || v.trend[i].method === 'bike'
@@ -96,33 +114,24 @@ export const buildVo2max = (data: Analytics, context: TriathlonContext): HTMLEle
       }
     }
     s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
-    const frame = axisFrame(
-      createDomFactory(context.presentation),
-      s,
-      [hi, (hi + lo) / 2, lo].map(val => ({ label: val.toFixed(1), vbY: y(val) })),
-      ANA_H,
-      [
-        {
-          label: context.formatter.shortDate(v.trend[0].weekStart),
-          pct: 0,
-          cls: 'tri-cax-xt--first',
-        },
-        {
-          label: context.formatter.shortDate(v.trend[v.trend.length - 1].weekStart),
-          pct: 100,
-          cls: 'tri-cax-xt--last',
-        },
-      ],
-    )
+    const frame = axisFrame(createDomFactory(context.presentation), s, yTicks, ANA_H, [
+      {
+        label: context.formatter.shortDate(v.trend[0].weekStart),
+        pct: 0,
+        cls: 'tri-cax-xt--first',
+      },
+      {
+        label: context.formatter.shortDate(v.trend[v.trend.length - 1].weekStart),
+        pct: 100,
+        cls: 'tri-cax-xt--last',
+      },
+    ])
     frame.classList.add('tri-engine-vo2-axis')
     block.appendChild(frame)
     block.appendChild(el('div', 'tri-chart-readout'))
   }
   const cap = el('div', 'tri-elev-cap')
-  cap.append(
-    el('span', 'tri-ana-k', v.method),
-    markGloss(el('span', `tri-ana-k tri-conf-${v.conf}`, v.conf), 'conf'),
-  )
+  cap.append(markGloss(el('span', `tri-ana-k tri-conf-${v.conf}`, v.conf), 'conf'))
   if (v.trendSummary.change28d != null) {
     const direction = v.trendSummary.direction
     cap.append(
@@ -143,19 +152,12 @@ export const buildVo2max = (data: Analytics, context: TriathlonContext): HTMLEle
   }
   if (v.percentileForAge != null)
     cap.appendChild(el('span', 'tri-ana-k', `p${v.percentileForAge} for age ${v.chronoAge}`))
-  cap.appendChild(
-    el('span', 'tri-ana-k', vo2SourceText(context.presentation.locale, v.method, v.bikeSource)),
-  )
-  cap.appendChild(el('span', 'tri-ana-k', `hrmax ${v.hrMax} (${v.hrMaxSource})`))
-  if (v.trend.some(p => p.method === 'bike'))
-    cap.appendChild(
-      el('span', 'tri-ana-k tri-vo2-proj-note', text('dashed line is projected from bike power')),
-    )
   block.appendChild(cap)
   const lab = data.tests.vo2max[data.tests.vo2max.length - 1]
-  if (lab) {
+  const hasProjNote = v.trend.some(p => p.method === 'bike')
+  if ((lab && (lab.vt1Hr != null || lab.maxKmh != null)) || hasProjNote) {
     const labCap = el('div', 'tri-elev-cap tri-vo2-lab')
-    if (lab.vt1Hr != null)
+    if (lab?.vt1Hr != null)
       labCap.appendChild(
         el(
           'span',
@@ -163,14 +165,14 @@ export const buildVo2max = (data: Analytics, context: TriathlonContext): HTMLEle
           `vt1 ${lab.vt1Hr}bpm${lab.vt1Kmh != null ? ` · ${fmtSpeedKmh(context.formatter, lab.vt1Kmh, 1, '')}` : ''}`,
         ),
       )
-    if (lab.maxKmh != null)
+    if (lab?.maxKmh != null)
       labCap.appendChild(
         el('span', 'tri-ana-k', `vmax ${fmtSpeedKmh(context.formatter, lab.maxKmh, 1, '')}`),
       )
-    if (lab.ve != null) labCap.appendChild(el('span', 'tri-ana-k', `ve ${lab.ve}l/min`))
-    labCap.appendChild(
-      el('span', 'tri-ana-k', `${text('lab')} ${context.formatter.longDate(lab.date)}`),
-    )
+    if (hasProjNote)
+      labCap.appendChild(
+        el('span', 'tri-ana-k tri-vo2-proj-note', text('dashed line is projected from bike power')),
+      )
     block.appendChild(labCap)
   }
   return block
@@ -465,6 +467,8 @@ export const vo2ProfileBaseSvg = (
   for (let t = 0; t <= 720; t += 30) {
     const x = vo2ProfileX(profile, t)
     const major = t % 120 === 0
+    if (major)
+      s.appendChild(svg('line', { x1: x, y1: VO2P_T, x2: x, y2: VO2P_B, class: 'tri-vo2p-grid' }))
     s.appendChild(
       svg('line', {
         x1: x,

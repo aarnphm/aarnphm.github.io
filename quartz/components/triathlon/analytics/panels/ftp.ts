@@ -81,6 +81,8 @@ export function buildVo2TestRecord(formatter: TriathlonFormatter, r?: Vo2LabReco
 
   for (const gy of [0, 50, 100])
     s.appendChild(svg('line', { x1: 0, y1: gy, x2: 100, y2: gy, class: 'tri-vo2t-grid' }))
+  for (const gx of [25, 50, 75])
+    s.appendChild(svg('line', { x1: gx, y1: 0, x2: gx, y2: 100, class: 'tri-vo2t-grid' }))
   if (r.vt1Kmh != null)
     s.appendChild(
       svg('line', { x1: xP(r.vt1Kmh), y1: 0, x2: xP(r.vt1Kmh), y2: 100, class: 'tri-vo2t-vt' }),

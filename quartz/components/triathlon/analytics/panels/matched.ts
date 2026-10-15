@@ -16,6 +16,7 @@ import { el } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
 import { createTriathlonFormatter } from '../../runtime/formatter'
 import { anaTitle } from '../shared'
+import { buildVerticalGrid } from '../shared'
 import { hms } from '../shared'
 import { markGlossDefinition } from '../shared'
 
@@ -203,6 +204,11 @@ export const buildMatchedRunGroup = (
       vbY: displayY(value),
     })
   graph.append(
+    buildVerticalGrid(
+      efforts.map((_, index) => X(index)),
+      0,
+      H,
+    ),
     svg('line', {
       class: 'tri-matched-boundary',
       x1: 0,
@@ -487,6 +493,11 @@ export const buildMatchedRideGroup = (
   )
     yTicks.push({ label: `${Math.round(value)}W`, vbY: Y(value) })
   graph.append(
+    buildVerticalGrid(
+      efforts.map((_, index) => X(index)),
+      0,
+      H,
+    ),
     svg('line', {
       class: 'tri-matched-boundary',
       x1: 0,

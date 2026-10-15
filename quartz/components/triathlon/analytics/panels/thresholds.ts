@@ -13,7 +13,6 @@ import type { RaceLegSplit } from '../shared'
 import { clock } from '../../../../util/triathlon-card'
 import { KM_TO_MI } from '../../../../util/triathlon-card'
 import { el, svg } from '../../runtime/dom'
-import { ANA_W } from '../shared'
 import { anaTitle } from '../shared'
 import { buildIconLeg } from '../shared'
 import { bySport } from '../shared'
@@ -22,7 +21,6 @@ import { fmtSpeedKmh } from '../shared'
 import { hms } from '../shared'
 import { markGloss } from '../shared'
 import { markGlossDefinition } from '../shared'
-import { polyD } from '../shared'
 import { RACE_LABEL } from '../shared'
 import { raceLegTip } from '../shared'
 import { signedFixed } from '../shared'
@@ -189,50 +187,9 @@ export const lactateSourceText = (
   }
 }
 
-const LT_SPARK_H = 18
-const LT_DAY_MS = 86_400_000
-const ltDayOf = (iso: string): number => Date.parse(`${iso}T00:00:00Z`) / LT_DAY_MS
+const LT_TREND_POINTS = 8
 
-type LactateSparkFrame = { today: string; before: number; after: number }
-
-const buildLactateSparkFrame = (data: Analytics): LactateSparkFrame => {
-  const live = data.trends.filter(tr => tr.history.length > 0)
-  const today = live[0]?.history[live[0].history.length - 1]?.date ?? data.meta.today
-  const todayDay = ltDayOf(today)
-  const hrSeries = data.engine.lactateThreshold.heartRateSeries ?? []
-  const historySpans = [
-    ...live.map(tr => Math.max(0, todayDay - ltDayOf(tr.history[0].date))),
-    ...(hrSeries.length ? [Math.max(0, todayDay - ltDayOf(hrSeries[0].date))] : []),
-  ]
-  const before = Math.max(1, ...historySpans)
-  const after = Math.max(0, ...live.map(tr => tr.forecast.length))
-  return { today, before, after }
-}
-
-const ltNowX = (frame: LactateSparkFrame): number =>
-  (frame.before / (frame.before + frame.after)) * ANA_W
-
-const ltHistoryXAt = (frame: LactateSparkFrame, startIso: string, iso: string): number => {
-  const xNow = ltNowX(frame)
-  const span = Math.max(1, ltDayOf(frame.today) - ltDayOf(startIso))
-  return clampN(((ltDayOf(iso) - ltDayOf(startIso)) / span) * xNow, 0, xNow)
-}
-
-const ltForecastXAt = (frame: LactateSparkFrame, iso: string): number => {
-  const xNow = ltNowX(frame)
-  if (frame.after <= 0) return xNow
-  return clampN(
-    xNow + ((ltDayOf(iso) - ltDayOf(frame.today)) / frame.after) * (ANA_W - xNow),
-    xNow,
-    ANA_W,
-  )
-}
-
-const ltDot = (x: number, y: number, cls: string, width: number): SVGElement => {
-  const path = svg('path', { d: `M ${x.toFixed(2)} ${y.toFixed(2)} l 0.01 0`, class: cls })
-  path.style.setProperty('--tri-dot-w', `${width.toFixed(1)}px`)
-  return path
-}
+type DatedValue = { date: string; value: number }
 
 const buildPulseIcon = (): HTMLElement => {
   const wrap = el('span', 'tri-ana-ico tri-leg-run')
@@ -240,6 +197,136 @@ const buildPulseIcon = (): HTMLElement => {
   icon.appendChild(svg('path', { d: 'M3 12h4l2.5-6 4.5 12 2.5-6H21' }))
   wrap.appendChild(icon)
   return wrap
+}
+
+const sampleTrendCheckpoints = (
+  points: readonly DatedValue[],
+  count = LT_TREND_POINTS,
+): DatedValue[] => {
+  if (points.length <= 2) return [...points]
+  const startMs = Date.parse(`${points[0].date}T00:00:00Z`)
+  const endMs = Date.parse(`${points[points.length - 1].date}T00:00:00Z`)
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) {
+    return [points[0], points[points.length - 1]]
+  }
+  const sampled: DatedValue[] = []
+  for (let i = 0; i < count; i++) {
+    const targetMs = startMs + ((endMs - startMs) * i) / (count - 1)
+    let chosen = points[0]
+    for (const point of points) {
+      if (Date.parse(`${point.date}T00:00:00Z`) <= targetMs + 1) chosen = point
+      else break
+    }
+    sampled.push(chosen)
+  }
+  return sampled
+}
+
+const buildTrendPolylineSvg = (
+  points: readonly DatedValue[],
+  fallbackValue: number,
+  lineClass: string,
+  ariaLabel: string,
+): SVGElement => {
+  const sampled =
+    points.length >= 2
+      ? sampleTrendCheckpoints(points)
+      : [
+          { date: '', value: fallbackValue },
+          { date: '', value: fallbackValue },
+        ]
+  const values = sampled.map(point => point.value)
+  const low = Math.min(...values)
+  const rawSpan = Math.max(...values) - low
+  const span = Math.max(1e-6, rawSpan)
+  const coordinates = values.map((value, index) => {
+    const x = 6 + (index / (values.length - 1)) * 128
+    const y = rawSpan < 1e-6 ? 24 : 42 - ((value - low) / span) * 36
+    return `${x.toFixed(1)},${y.toFixed(1)}`
+  })
+  const chart = svg('svg', {
+    class: 'tri-lt-spark',
+    viewBox: '0 0 140 48',
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': ariaLabel,
+  })
+  chart.append(
+    svg('polyline', {
+      class: `tri-trend-level ${lineClass}`,
+      points: coordinates.join(' '),
+      fill: 'none',
+    }),
+  )
+  return chart
+}
+
+const fmtPaceDeltaSec = (deltaSec: number): string => {
+  const rounded = Math.round(deltaSec)
+  const sign = rounded > 0 ? '+' : rounded < 0 ? '−' : ''
+  const abs = Math.abs(rounded)
+  return abs < 60 ? `${sign}${abs}s` : `${sign}${clock(abs)}`
+}
+
+const fmtHeartRateDelta = (
+  heartRate: LactateThresholdHeartRate,
+  points: readonly DatedValue[],
+): string => {
+  if (points.length < 2) return `0 ${heartRate.unit}`
+  const delta = Math.round(points[points.length - 1].value - points[0].value)
+  const sign = delta > 0 ? '+' : delta < 0 ? '−' : ''
+  return `${sign}${Math.abs(delta)} ${heartRate.unit}`
+}
+
+const fmtSportDelta = (
+  formatter: TriathlonFormatter,
+  estimate: LactateThresholdEstimate,
+  points: readonly DatedValue[],
+): string => {
+  if (points.length < 2) return estimate.sport === 'bike' ? '0 W' : '0s'
+  const first = points[0].value
+  const last = points[points.length - 1].value
+  if (estimate.sport === 'bike') {
+    const delta = Math.round(last - first)
+    const sign = delta > 0 ? '+' : delta < 0 ? '−' : ''
+    return `${sign}${Math.abs(delta)} W`
+  }
+  const scale =
+    estimate.sport === 'run' && formatter.presentation.distance === 'imperial' ? 1 / KM_TO_MI : 1
+  return fmtPaceDeltaSec((last - first) * scale)
+}
+
+const fmtSeriesDateRange = (
+  formatter: TriathlonFormatter,
+  points: readonly DatedValue[],
+  fallbackDate?: string | null,
+): string => {
+  if (points.length >= 2) {
+    return `${formatter.shortDate(points[0].date)} → ${formatter.shortDate(points[points.length - 1].date)}`
+  }
+  if (points.length === 1 && points[0].date) return formatter.shortDate(points[0].date)
+  return fallbackDate ? formatter.shortDate(fallbackDate) : '—'
+}
+
+const lactateHeartRatePoints = (
+  heartRate: LactateThresholdHeartRate,
+  series: readonly GarminLactateThresholdValue[],
+): DatedValue[] => {
+  if (series.length >= 2) return [...series]
+  if ('date' in heartRate && heartRate.date) return [{ date: heartRate.date, value: heartRate.value }]
+  return []
+}
+
+const lactateSportPoints = (
+  estimate: LactateThresholdEstimate,
+  trend: SportTrend | undefined,
+): DatedValue[] => {
+  if (!trend || trend.history.length < 2 || trend.level == null || !(trend.level > 0)) return []
+  const scale = estimate.value / trend.level
+  return trend.history.map((point: SportTrendForecastPoint) => ({
+    date: point.date,
+    value: point.value * scale,
+  }))
 }
 
 const lactateHeartRateHoverText = (
@@ -285,262 +372,135 @@ const lactateSportHoverText = (
   return parts.join(' · ')
 }
 
+const attachGlossHover = <T extends HTMLElement>(
+  node: T,
+  termLabel: string,
+  hoverText: string,
+): T => {
+  markGlossDefinition(node, hoverText)
+  node.dataset.glossTerm = termLabel
+  return node
+}
+
 const buildLactateSparkContainer = (
   termLabel: string,
   hoverText: string,
   sparkSvg: SVGElement,
 ): HTMLElement => {
-  const wrap = markGlossDefinition(el('div', 'tri-lt-trend'), hoverText)
-  wrap.dataset.glossTerm = termLabel
+  const wrap = attachGlossHover(el('div', 'tri-lt-trend'), termLabel, hoverText)
   wrap.appendChild(sparkSvg)
   return wrap
-}
-
-const buildHeartRateSparkSvg = (
-  heartRate: LactateThresholdHeartRate,
-  series: readonly GarminLactateThresholdValue[],
-  frame: LactateSparkFrame,
-  ariaLabel: string,
-): SVGElement => {
-  const xNow = ltNowX(frame)
-  const s = svg('svg', {
-    class: 'tri-lt-spark',
-    viewBox: `0 0 ${ANA_W} ${LT_SPARK_H}`,
-    preserveAspectRatio: 'none',
-    role: 'img',
-    'aria-label': ariaLabel,
-  })
-  if (frame.after > 0) {
-    s.appendChild(
-      svg('rect', {
-        x: xNow,
-        y: 0,
-        width: ANA_W - xNow,
-        height: LT_SPARK_H,
-        class: 'tri-trend-future',
-      }),
-    )
-  }
-  s.appendChild(
-    svg('line', { x1: 0, y1: LT_SPARK_H, x2: ANA_W, y2: LT_SPARK_H, class: 'tri-trend-axis' }),
-  )
-  const points =
-    series.length >= 2
-      ? series[series.length - 1].date < frame.today
-        ? [...series, { date: frame.today, value: heartRate.value }]
-        : [...series]
-      : [
-          { date: frame.today, value: heartRate.value },
-          { date: frame.today, value: heartRate.value },
-        ]
-  const values = points.map(p => p.value)
-  let low = Math.min(...values)
-  let high = Math.max(...values)
-  const minSpan = Math.max(4, Math.abs(heartRate.value) * 0.04)
-  if (high - low < minSpan) {
-    const mid = (high + low) / 2
-    low = mid - minSpan / 2
-    high = mid + minSpan / 2
-  }
-  const pad = (high - low) * 0.1
-  low -= pad
-  high += pad
-  const span = Math.max(1e-6, high - low)
-  const yAt = (value: number): number =>
-    clampN((1 - (value - low) / span) * (LT_SPARK_H - 3) + 1.5, 1.2, LT_SPARK_H - 1.2)
-  const startIso = points[0].date
-  const coords: [number, number][] =
-    series.length >= 2
-      ? points.map(p => [ltHistoryXAt(frame, startIso, p.date), yAt(p.value)])
-      : [
-          [0, yAt(heartRate.value)],
-          [xNow, yAt(heartRate.value)],
-        ]
-  s.appendChild(svg('path', { d: polyD(coords), class: 'tri-trend-level tri-line-run' }))
-  s.appendChild(svg('line', { x1: xNow, y1: 0, x2: xNow, y2: LT_SPARK_H, class: 'tri-trend-now' }))
-  const mark = svg('g', { class: 'tri-trend-mark' })
-  const yNow = yAt(heartRate.value)
-  mark.append(ltDot(xNow, yNow, 'tri-trend-mark-o', 5), ltDot(xNow, yNow, 'tri-trend-mark-i', 2.2))
-  s.appendChild(mark)
-  return s
-}
-
-const buildSportSparkSvg = (
-  estimate: LactateThresholdEstimate,
-  trend: SportTrend | undefined,
-  frame: LactateSparkFrame,
-  ariaLabel: string,
-): SVGElement => {
-  const { sport } = estimate
-  const invert = sport !== 'bike'
-  const xNow = ltNowX(frame)
-  const s = svg('svg', {
-    class: 'tri-lt-spark',
-    viewBox: `0 0 ${ANA_W} ${LT_SPARK_H}`,
-    preserveAspectRatio: 'none',
-    role: 'img',
-    'aria-label': ariaLabel,
-  })
-  if (frame.after > 0) {
-    s.appendChild(
-      svg('rect', {
-        x: xNow,
-        y: 0,
-        width: ANA_W - xNow,
-        height: LT_SPARK_H,
-        class: 'tri-trend-future',
-      }),
-    )
-  }
-  s.appendChild(
-    svg('line', { x1: 0, y1: LT_SPARK_H, x2: ANA_W, y2: LT_SPARK_H, class: 'tri-trend-axis' }),
-  )
-  if (!trend || trend.history.length < 2 || trend.level == null || !(trend.level > 0)) {
-    const midY = LT_SPARK_H / 2
-    s.appendChild(
-      svg('path', {
-        d: polyD([
-          [0, midY],
-          [xNow, midY],
-        ]),
-        class: `tri-trend-level tri-line-${sport}`,
-      }),
-    )
-    s.appendChild(
-      svg('line', { x1: xNow, y1: 0, x2: xNow, y2: LT_SPARK_H, class: 'tri-trend-now' }),
-    )
-    const mark = svg('g', { class: 'tri-trend-mark' })
-    mark.append(
-      ltDot(xNow, midY, 'tri-trend-mark-o', 5),
-      ltDot(xNow, midY, 'tri-trend-mark-i', 2.2),
-    )
-    s.appendChild(mark)
-    return s
-  }
-  const scale = estimate.value / trend.level
-  const scalePoint = (p: SportTrendForecastPoint): SportTrendForecastPoint => ({
-    date: p.date,
-    value: p.value * scale,
-    lo: p.lo * scale,
-    hi: p.hi * scale,
-  })
-  const history = trend.history.map(scalePoint)
-  const forecast = trend.forecast.map(scalePoint)
-  const startIso = history[0].date
-  const xFor = (iso: string): number =>
-    iso <= frame.today ? ltHistoryXAt(frame, startIso, iso) : ltForecastXAt(frame, iso)
-  const allPoints = [...history, ...forecast]
-  const values = allPoints.flatMap(p => [p.lo, p.hi])
-  let low = Math.min(...values)
-  let high = Math.max(...values)
-  const minSpan = Math.abs(estimate.value) * 0.04
-  if (high - low < minSpan) {
-    const mid = (high + low) / 2
-    low = mid - minSpan / 2
-    high = mid + minSpan / 2
-  }
-  const pad = (high - low) * 0.08
-  low -= pad
-  high += pad
-  const span = Math.max(1e-6, high - low)
-  const yAt = (value: number): number => {
-    const t = (value - low) / span
-    return clampN((invert ? t : 1 - t) * (LT_SPARK_H - 2.4) + 1.2, 0.8, LT_SPARK_H - 0.8)
-  }
-  const bandHi = allPoints.map(p => [xFor(p.date), yAt(p.hi)] as [number, number])
-  const bandLo = allPoints.map(p => [xFor(p.date), yAt(p.lo)] as [number, number])
-  s.appendChild(
-    svg('path', {
-      d: `${polyD([...bandHi, ...bandLo.reverse()])} Z`,
-      class: `tri-trend-band tri-fill-${sport}`,
-    }),
-  )
-  s.appendChild(
-    svg('path', {
-      d: polyD(history.map(p => [xFor(p.date), yAt(p.value)])),
-      class: `tri-trend-level tri-line-${sport}`,
-    }),
-  )
-  const now = history[history.length - 1]
-  if (forecast.length > 0) {
-    s.appendChild(
-      svg('path', {
-        d: polyD([now, ...forecast].map(p => [xFor(p.date), yAt(p.value)])),
-        class: `tri-trend-proj tri-line-${sport}`,
-      }),
-    )
-  }
-  s.appendChild(svg('line', { x1: xNow, y1: 0, x2: xNow, y2: LT_SPARK_H, class: 'tri-trend-now' }))
-  const mark = svg('g', { class: 'tri-trend-mark' })
-  const yNow = yAt(now.value)
-  mark.append(ltDot(xNow, yNow, 'tri-trend-mark-o', 5), ltDot(xNow, yNow, 'tri-trend-mark-i', 2.2))
-  s.appendChild(mark)
-  return s
 }
 
 const buildLactateHeartRateRow = (
   heartRate: LactateThresholdHeartRate,
   series: readonly GarminLactateThresholdValue[],
-  frame: LactateSparkFrame,
   context: TriathlonContext,
-): HTMLElement => {
+): HTMLTableRowElement => {
   const { formatter } = context
-  const row = el('div', 'tri-lt-row')
+  const row = document.createElement('tr')
+  row.className = 'tri-lt-row'
   row.dataset.sport = 'lthr'
   row.dataset.source = heartRate.source
-  const label = `LTHR ${heartRate.value} ${heartRate.unit}`
+  const valueText = `${heartRate.value} ${heartRate.unit}`
+  const label = `LTHR ${valueText}`
   const hoverText = lactateHeartRateHoverText(formatter, heartRate, series)
-  const head = el('div', 'tri-trend-head')
-  head.append(buildPulseIcon(), markGlossDefinition(el('span', 'tri-trend-unit', label), hoverText))
-  const spark = buildHeartRateSparkSvg(heartRate, series, frame, `${label} · ${hoverText}`)
-  row.append(head, buildLactateSparkContainer(label, hoverText, spark))
+  const points = lactateHeartRatePoints(heartRate, series)
+
+  const th = el('th', undefined, undefined, { scope: 'row' })
+  const head = attachGlossHover(el('span', 'tri-lt-head'), label, hoverText)
+  head.append(buildPulseIcon(), el('span', 'tri-lt-name', 'LTHR'))
+  th.appendChild(head)
+
+  const valTd = el('td', 'tri-lt-val')
+  const valWrap = el('span', 'tri-lt-val-inner')
+  valWrap.appendChild(attachGlossHover(el('span', 'tri-trend-unit', valueText), label, hoverText))
+  valTd.appendChild(valWrap)
+
+  const deltaTd = el('td', 'tri-lt-delta', fmtHeartRateDelta(heartRate, points))
+  const heartRateDate = 'date' in heartRate ? heartRate.date : undefined
+  const datesTd = el('td', 'tri-lt-dates', fmtSeriesDateRange(formatter, points, heartRateDate))
+  const chartTd = el('td', 'tri-lt-chart')
+  const spark = buildTrendPolylineSvg(
+    points,
+    heartRate.value,
+    'tri-line-run',
+    `${label} · ${hoverText}`,
+  )
+  chartTd.appendChild(buildLactateSparkContainer(label, hoverText, spark))
+
+  row.append(th, valTd, deltaTd, datesTd, chartTd)
   return row
 }
 
 const buildLactateThresholdRow = (
   estimate: LactateThresholdEstimate,
   trend: SportTrend | undefined,
-  frame: LactateSparkFrame,
   context: TriathlonContext,
-): HTMLElement => {
+): HTMLTableRowElement => {
   const { formatter } = context
-  const row = el('div', 'tri-lt-row')
+  const row = document.createElement('tr')
+  row.className = 'tri-lt-row'
   row.dataset.sport = estimate.sport
   row.dataset.source = estimate.source
-  const label = `LT2 ${fmtLactateValue(formatter, estimate)}`
+  const valueText = fmtLactateValue(formatter, estimate)
+  const label = `LT2 ${valueText}`
   const hoverText = lactateSportHoverText(formatter, estimate, trend)
-  const head = el('div', 'tri-trend-head')
-  head.append(
-    buildIconLeg(formatter, estimate.sport),
-    markGlossDefinition(el('span', 'tri-trend-unit', label), hoverText),
-  )
-  if (estimate.conf)
-    head.appendChild(
+  const points = lactateSportPoints(estimate, trend)
+
+  const th = el('th', undefined, undefined, { scope: 'row' })
+  const head = attachGlossHover(el('span', 'tri-lt-head'), label, hoverText)
+  head.append(buildIconLeg(formatter, estimate.sport), el('span', 'tri-lt-name', 'LT2'))
+  th.appendChild(head)
+
+  const valTd = el('td', 'tri-lt-val')
+  const valWrap = el('span', 'tri-lt-val-inner')
+  valWrap.appendChild(attachGlossHover(el('span', 'tri-trend-unit', valueText), label, hoverText))
+  if (estimate.conf) {
+    valWrap.appendChild(
       markGloss(el('span', `tri-ana-conf tri-conf-${estimate.conf}`, estimate.conf), 'conf'),
     )
-  const spark = buildSportSparkSvg(estimate, trend, frame, `${label} · ${hoverText}`)
-  row.append(head, buildLactateSparkContainer(label, hoverText, spark))
+  }
+  valTd.appendChild(valWrap)
+
+  const deltaTd = el('td', 'tri-lt-delta', fmtSportDelta(formatter, estimate, points))
+  const datesTd = el('td', 'tri-lt-dates', fmtSeriesDateRange(formatter, points, estimate.date))
+  const chartTd = el('td', 'tri-lt-chart')
+  const spark = buildTrendPolylineSvg(
+    points,
+    estimate.value,
+    `tri-line-${estimate.sport}`,
+    `${label} · ${hoverText}`,
+  )
+  chartTd.appendChild(buildLactateSparkContainer(label, hoverText, spark))
+
+  row.append(th, valTd, deltaTd, datesTd, chartTd)
   return row
 }
 
 export const buildLactateThreshold = (data: Analytics, context: TriathlonContext): HTMLElement => {
   const block = el('div', 'tri-ana-lactate')
   block.appendChild(anaTitle(context.formatter, 'lactate threshold', 'lactate'))
-  const frame = buildLactateSparkFrame(data)
   const heartRate = data.engine.lactateThreshold.heartRate
   const heartRateSeries = data.engine.lactateThreshold.heartRateSeries ?? []
-  if (heartRate) {
-    block.appendChild(buildLactateHeartRateRow(heartRate, heartRateSeries, frame, context))
-  }
   const sports = data.engine.lactateThreshold.sports
-  if (!sports.length) block.appendChild(el('div', 'tri-ana-empty', '—'))
+  if (!heartRate && !sports.length) {
+    block.appendChild(el('div', 'tri-ana-empty', '—'))
+    return block
+  }
+  const table = el('table', 'tri-lt-table')
+  const body = el('tbody')
+  if (heartRate) {
+    body.appendChild(buildLactateHeartRateRow(heartRate, heartRateSeries, context))
+  }
   for (const sport of ['swim', 'bike', 'run'] as Sport[]) {
     const estimate = bySport(sports, sport)
-    if (estimate)
-      block.appendChild(
-        buildLactateThresholdRow(estimate, bySport(data.trends, sport), frame, context),
-      )
+    if (estimate) {
+      body.appendChild(buildLactateThresholdRow(estimate, bySport(data.trends, sport), context))
+    }
   }
+  table.appendChild(body)
+  block.appendChild(table)
   return block
 }
 

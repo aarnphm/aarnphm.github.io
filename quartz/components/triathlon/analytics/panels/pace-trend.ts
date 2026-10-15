@@ -148,6 +148,16 @@ export const appendTrendChart = (
     const x = xOf(frame, offset)
     s.appendChild(svg('line', { x1: x, y1: 0, x2: x, y2: ANA_H, class: 'tri-trend-tick' }))
   }
+  for (const gy of [y(high), (y(high) + y(low)) / 2, y(low)])
+    s.appendChild(
+      svg('line', {
+        x1: 0,
+        y1: gy.toFixed(2),
+        x2: ANA_W,
+        y2: gy.toFixed(2),
+        class: 'tri-trend-tick',
+      }),
+    )
   s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-trend-axis' }))
   s.appendChild(svg('line', { x1: 0, y1: ANA_H, x2: ANA_W, y2: ANA_H, class: 'tri-trend-axis' }))
   s.appendChild(

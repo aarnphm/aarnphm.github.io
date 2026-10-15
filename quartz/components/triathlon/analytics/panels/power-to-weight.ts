@@ -11,7 +11,14 @@ import { POWER_TO_WEIGHT_DURATIONS } from '../../../../plugins/stores/analytics'
 import { axisFrame, axisNumber, niceStep, type AxisXTick } from '../../../../util/triathlon-card'
 import { syncPowerCurveActivityLink } from '../../activity/power-links'
 import { createDomFactory, el, svg } from '../../runtime/dom'
-import { anaTitle, clampN, markGlossDefinition, monthTicks } from '../shared'
+import {
+  anaTitle,
+  buildVerticalGrid,
+  clampN,
+  dateGridPositions,
+  markGlossDefinition,
+  monthTicks,
+} from '../shared'
 
 const W = 100
 const H = 34
@@ -222,6 +229,10 @@ export const buildPowerToWeightTrend = (
     'aria-valuenow': initialIndex,
     'data-power-weight-index': initialIndex,
   })
+  const dates = trend.points.map(point => point.date)
+  const ticks = deconflictPowerToWeightMonthTicks(
+    monthTicks(context.formatter, dates, index => (index / Math.max(1, dates.length - 1)) * W),
+  )
   const grids = svg('g', { class: 'tri-power-weight-grids', 'aria-hidden': 'true' })
   for (const value of scale.values)
     grids.appendChild(
@@ -233,7 +244,16 @@ export const buildPowerToWeightTrend = (
         y2: y(value).toFixed(2),
       }),
     )
-  graph.appendChild(grids)
+  graph.append(
+    grids,
+    buildVerticalGrid(
+      ticks.length >= 3
+        ? ticks.map(tick => tick.pct)
+        : dateGridPositions(dates, index => (index / Math.max(1, dates.length - 1)) * W),
+      1,
+      H,
+    ),
+  )
   const referenceLines = svg('g', {
     class: 'tri-power-weight-reference-lines',
     'aria-hidden': 'true',
@@ -274,10 +294,6 @@ export const buildPowerToWeightTrend = (
       'aria-hidden': 'true',
       'data-power-weight-duration': String(durationS),
     }),
-  )
-  const dates = trend.points.map(point => point.date)
-  const ticks = deconflictPowerToWeightMonthTicks(
-    monthTicks(context.formatter, dates, index => (index / Math.max(1, dates.length - 1)) * W),
   )
   const initialYTicks = scale.values.map(value => ({
     label: axisNumber(value, scale.step),

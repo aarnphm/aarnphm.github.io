@@ -15,6 +15,7 @@ import { nextMapMetricShortcutIndex } from '../../shell/command-palette'
 import { anaTitle } from '../shared'
 import { buildTrendGlyph } from '../shared'
 import { clampN } from '../shared'
+import { dateGridPositions } from '../shared'
 import { polyD } from '../shared'
 import { missingBridges } from './body'
 import { segRuns } from './body'
@@ -554,6 +555,18 @@ export const buildDistributions = (
         svg('line', { class: 'tri-dist-grid', x1: 0, y1: 4, x2: 100, y2: 4 }),
         svg('line', { class: 'tri-dist-grid', x1: 0, y1: 17, x2: 100, y2: 17 }),
         svg('line', { class: 'tri-dist-grid', x1: 0, y1: 30, x2: 100, y2: 30 }),
+        ...dateGridPositions(
+          points.map(point => point.startedAt.slice(0, 10)),
+          index => pointX(points[index]),
+        ).map(gx =>
+          svg('line', {
+            class: 'tri-dist-grid',
+            x1: gx.toFixed(2),
+            y1: 4,
+            x2: gx.toFixed(2),
+            y2: 30,
+          }),
+        ),
         svg('line', { class: 'tri-dist-axis', x1: 0, y1: 4, x2: 0, y2: 30 }),
         svg('line', { class: 'tri-dist-axis', x1: 0, y1: 30, x2: 100, y2: 30 }),
       )
