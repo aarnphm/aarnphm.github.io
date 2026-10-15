@@ -35,7 +35,7 @@ function creekBed(landscape: Landscape, random: () => number) {
     const key = `${Math.round(x / 2) * 2},${Math.round(y / 2) * 2}`
     if ((cells.get(key)?.rank ?? -1) < rank) cells.set(key, { tone, rank })
   }
-  landscape.creek.forEach((line, lineIndex) => {
+  landscape.creek.forEach(line => {
     for (let index = 1; index < line.length; index++) {
       const a = line[index - 1]
       const b = line[index]
@@ -51,8 +51,7 @@ function creekBed(landscape: Landscape, random: () => number) {
         const x = a.x + ((b.x - a.x) * k) / length
         const y = a.y + ((b.y - a.y) * k) / length
         if (y > landscape.height + 8 || x > landscape.width + 8) continue
-        if (lineIndex && pondDistance({ x, y }, landscape.pond) < 1) continue
-        const section = creekSection({ x, y }, landscape, lineIndex > 0)
+        const section = creekSection({ x, y }, landscape)
         const far = section.waterHalf + section.farBank
         const near = section.waterHalf + section.nearBank
         for (let side = -near - section.shoulder; side <= far + section.shoulder; side += 1) {
@@ -92,7 +91,7 @@ function creekBed(landscape: Landscape, random: () => number) {
 
 // Sample by travelled distance rather than mesh segments: alpine segments are only two pixels
 // long. A glint follows several of them at a visible speed while the bed keeps its texture.
-function current(line: readonly Point[], landscape: Landscape, spacing: number, tributary = false) {
+function current(line: readonly Point[], landscape: Landscape, spacing: number) {
   const distances = [0]
   for (let index = 1; index < line.length; index++)
     distances.push(
@@ -119,7 +118,6 @@ function current(line: readonly Point[], landscape: Landscape, spacing: number, 
     const points = Array.from({ length: 5 }, (_, index) => pointAt(distance + (reach * index) / 4))
     const a = points[0]
     if (points[4].x > landscape.width - 8) continue
-    if (tributary && pondDistance(a, landscape.pond) < 1.05) continue
     const depth = trailGroundScale(a.y, landscape)
     const duration = reach / (12 + depth * 10)
     const motion = points
@@ -139,9 +137,7 @@ function current(line: readonly Point[], landscape: Landscape, spacing: number, 
 }
 
 function creekCurrent(landscape: Landscape) {
-  return landscape.creek
-    .map((line, index) => current(line, landscape, index ? 68 : 62, index > 0))
-    .join('')
+  return landscape.creek.map(line => current(line, landscape, 62)).join('')
 }
 
 function creekRocks(landscape: Landscape, routes: readonly string[]) {
@@ -270,7 +266,7 @@ export function trailFords(landscape: Landscape, routes: readonly string[]) {
           // The bed's cross-sections are squashed by 0.6 up the screen, so a sideways run is a
           // thin band. Its half-width across the flow, measured along the trail, sets the run.
           const depth = trailGroundScale(point.y, landscape)
-          const section = creekSection(point, landscape, creek !== landscape.creek[0])
+          const section = creekSection(point, landscape)
           const half =
             (section.waterHalf + Math.max(section.nearBank, section.farBank)) *
             (cy * cy + 0.6 * cx * cx)
@@ -309,26 +305,16 @@ const beaverTones = {
   E: 'trail-beaver-eye',
   S: 'trail-under-wood',
   K: 'trail-under-knot',
-  M: 'trail-beaver-mud',
   W: 'trail-pond-ripple',
 }
 
-// Beavers have dammed the outlet: a lip of sticks and mud across the channel where it leaves the
-// pond, a lodge out in the water, and one beaver ferrying sticks from the lodge to the dam.
+// The lodge and swimming route belong to the pond, independently of the river.
 export function trailBeavers(landscape: Landscape, seed: number) {
   const random = trailRandom(seed ^ 0x68e31da4)
   const { pond } = landscape
-  const line = landscape.creek[1]
-  if (!line) return ''
-  const outlet = line.find(point => pondDistance(point, pond) > 1.12)
-  if (!outlet) return ''
-  const depth = trailGroundScale(outlet.y, landscape)
   const cell = 2
-  const dam = ['.SKS..SKS.KS.', 'SSKSSKSSSKSSK', 'KSSSKSSSKSSSS', 'MMMMMMMMMMMMM']
-  const damWidth = dam[0].length * cell
-  const damMarkup = `<g class="trail-beaver-dam" data-ground-y="${Math.round(outlet.y)}" transform="translate(${Math.round(outlet.x)} ${Math.round(outlet.y)}) scale(${(0.7 + depth * 0.4).toFixed(2)}) translate(${-damWidth / 2} -6)">${pixels(dam, beaverTones, cell)}</g>`
-  // The lodge sits off the far shore from the outlet.
-  const away = Math.atan2((outlet.y - pond.y) / pond.ry, (outlet.x - pond.x) / pond.rx) + Math.PI
+  const toward = Math.PI * 0.16 + (random() - 0.5) * 0.4
+  const away = toward + Math.PI
   const spread = (random() - 0.5) * 0.8
   const lodge = {
     x: Math.round(pond.x + Math.cos(away + spread) * pond.rx * 0.55),
@@ -336,7 +322,6 @@ export function trailBeavers(landscape: Landscape, seed: number) {
   }
   const lodgeRows = ['....SKSS....', '..SSKSSKSS..', '.SKSSSSKSSS.', 'SSSKSSSSKSSS', 'WWW.WWWW.WWW']
   const lodgeMarkup = `<g class="trail-beaver-lodge" transform="translate(${lodge.x - 12} ${lodge.y - 8})">${pixels(lodgeRows, beaverTones, cell)}</g>`
-  const toward = Math.atan2((outlet.y - pond.y) / pond.ry, (outlet.x - pond.x) / pond.rx)
   const end = {
     x: pond.x + Math.cos(toward) * pond.rx * 0.78,
     y: pond.y + Math.sin(toward) * pond.ry * 0.7,
@@ -345,7 +330,7 @@ export function trailBeavers(landscape: Landscape, seed: number) {
   const face = end.x >= start.x ? 1 : -1
   const swimmer = ['..SSSS..', '.BBBE...', 'BBBBBB..', 'W.WW.W..']
   const beaver = `<g class="trail-beaver" transform="translate(${Math.round(start.x)} ${Math.round(start.y)})" style="--beaver-dx: ${(end.x - start.x).toFixed(1)}px; --beaver-dy: ${(end.y - start.y).toFixed(1)}px; --beaver-face: ${face}"><g class="trail-beaver-swim"><g transform="translate(-8 -6)">${pixels(swimmer.slice(1), beaverTones, cell)}<g class="trail-beaver-stick" transform="translate(0 -${cell})">${pixels([swimmer[0]], beaverTones, cell)}</g></g></g></g>`
-  return lodgeMarkup + damMarkup + beaver
+  return lodgeMarkup + beaver
 }
 
 export type Face = { x: number; y: number; span: number; tall: number; turn: number }
@@ -473,7 +458,7 @@ function bankDetails(landscape: Landscape, random: () => number, routes: readonl
       spacing += length
       if (spacing < 36 + random() * 30 || length < 0.1) continue
       spacing = 0
-      const section = creekSection(b, landscape, lineIndex > 0)
+      const section = creekSection(b, landscape)
       const side = random() < 0.6 ? -1 : 1
       const bank = side < 0 ? section.nearBank : section.farBank
       const offset = side * (section.waterHalf + bank + section.shoulder * 0.5)

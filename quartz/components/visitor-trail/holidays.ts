@@ -1,11 +1,6 @@
-import type { CampSettings } from './camp-settings'
 import type { RouteSites } from './pasture'
 import { trailHost } from '../../util/trail-scene'
-import {
-  subscribeVisitorHoliday,
-  type HolidaySelection,
-  type TrailHoliday,
-} from '../../util/visitor-holiday'
+import { subscribeVisitorHoliday, type TrailHoliday } from '../../util/visitor-holiday'
 import { circleClearance, readActors, readTrunks } from './actor-spacing'
 import { campSites } from './camp-layout'
 import {
@@ -16,6 +11,7 @@ import {
 } from './holiday-sprites'
 import { onDryLand, pondDistance, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
+import { sceneSettings, type CampSettings } from './scene-settings'
 
 type Cell = { x: number; y: number; size: number }
 
@@ -157,7 +153,7 @@ function lanternGlow(width: number, depth: number) {
 
 export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, changed: () => void) {
   let automatic: TrailHoliday | null = null
-  let selection: HolidaySelection = 'auto'
+  const selection = sceneSettings.holiday
   let decorated: SVGGElement[] = []
   const current = () => (selection === 'auto' ? automatic : selection === 'none' ? null : selection)
   const state = () => {
@@ -421,14 +417,5 @@ export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, chan
     { once: true },
   )
 
-  return {
-    draw,
-    refreshTrees,
-    select(value: HolidaySelection) {
-      if (value === selection) return
-      selection = value
-      state()
-      changed()
-    },
-  }
+  return { draw, refreshTrees }
 }

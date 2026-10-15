@@ -118,7 +118,6 @@
   .trail-ravine-stone {
     fill: color-mix(in srgb, #8c887f 72%, var(--light));
   }
-  .trail-beaver-dam,
   .trail-beaver-lodge,
   .trail-beaver {
     shape-rendering: crispEdges;
@@ -129,22 +128,9 @@
   .trail-beaver-eye {
     fill: #1c1b1a;
   }
-  .trail-beaver-mud {
-    fill: color-mix(in srgb, #5b4a3a 85%, var(--light));
-  }
   // Trailwork. Wood and stone keep fixed hues; blazes take Flexoki accents, one per route.
   .trail-wayside {
     shape-rendering: crispEdges;
-    transition: opacity 1.6s ease 0.8s;
-  }
-  .trail-scene[data-trail-opening='pending'] .trail-wayside {
-    opacity: 0;
-    transition: none;
-  }
-  // The compositor's opening front uncovers trailwork with the ground around it. The delayed
-  // fade is for the SVG renderer, where nothing else reveals it.
-  .trail-scene[data-trail-renderer='webgl'] .trail-wayside {
-    transition: none;
   }
   .trail-wayside-tread,
   .trail-wayside-stone-lit {
@@ -405,7 +391,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .homepage-trail-scene .trail-scene[data-trail-lit] {
-    .trail-steps *,
+    .trail-steps [data-route] > *,
     [class^='trail-wayside-blaze-'] {
       animation: none;
     }

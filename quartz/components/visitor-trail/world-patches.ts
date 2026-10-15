@@ -1,9 +1,10 @@
+import type { ForestSettings } from './scene-settings'
 import { createForestSprites } from './forest-sprites'
 import { creekDistance, groundOffset, type Landscape, type Point } from './landscape'
 import { trailMountainBackdrop } from './mountain-backdrop'
 import { trailRandom } from './random'
 import { trailCreek } from './ravine'
-import { createTreePainter, trailPatchTrees, type ForestSettings } from './scenery'
+import { createTreePainter, trailPatchTrees } from './scenery'
 import { trailBoulder } from './understory'
 import { trailSnowBase } from './winter'
 
@@ -124,13 +125,13 @@ export function mountWorldPatches(
   const append = (selector: string, markup: string) =>
     scene.querySelector(selector)?.insertAdjacentHTML('beforeend', markup)
   const generate = async () => {
-    if (running || !landscape || signal.aborted || host.hidden) return
+    if (running || !landscape || !pending.length || signal.aborted || document.hidden) return
     running = true
     scene.dataset.trailPatches = 'generating'
     const generation = epoch
     const base = landscape
     const neighboursAtStart = neighbours()
-    while (pending.length && generation === epoch && !signal.aborted && !host.hidden) {
+    while (pending.length && generation === epoch && !signal.aborted && !document.hidden) {
       const region = pending.shift()
       if (!region) break
       const patchSeed =
@@ -211,6 +212,7 @@ export function mountWorldPatches(
     },
     { signal },
   )
+  document.addEventListener('visibilitychange', () => void generate(), { signal })
   return {
     reset(base: Landscape, nextSeed: number, clipId: string) {
       epoch++

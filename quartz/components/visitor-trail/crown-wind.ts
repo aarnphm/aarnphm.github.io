@@ -34,7 +34,7 @@ const interval = 50
 const reread = 3000
 
 // Gusts shift cached WebGL canopies by whole cells. SVG fallback keeps the individual clusters.
-// The clock writes only changed offsets for trees in view, after the opening has finished.
+// The clock writes only changed offsets for trees already uncovered during the opening.
 export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
   const document = scene.ownerDocument
   const view = document.defaultView
@@ -101,10 +101,7 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
     windy() &&
     scene.dataset.weatherMotion !== 'paused' &&
     !document.hidden &&
-    scene.dataset.trailRendered === 'true' &&
-    (scene.dataset.trailRenderer === 'webgl'
-      ? scene.dataset.trailAmbientReady === 'true'
-      : !scene.querySelector('.trail-compositor'))
+    scene.dataset.trailOpening !== 'pending'
 
   const step = (time: number) => {
     frame = 0
@@ -169,7 +166,7 @@ export function mountCrownWind(scene: HTMLElement, signal: AbortSignal) {
       'data-trail-visible',
       'data-trail-rendered',
       'data-trail-renderer',
-      'data-trail-ambient-ready',
+      'data-trail-opening',
     ],
   })
   document.addEventListener('visibilitychange', wake, { signal })

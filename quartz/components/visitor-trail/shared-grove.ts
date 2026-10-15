@@ -27,6 +27,7 @@ export function mountSharedGrove(
   const total = document.querySelector<HTMLElement>('[data-grove-water-total]')
   const hits = document.createElement('div')
   hits.className = 'trail-tree-waterings'
+  hits.inert = Boolean(host.hidden)
   const status = document.createElement('div')
   status.className = 'trail-water-feedback'
   status.dataset.treeWaterStatus = ''
@@ -98,7 +99,6 @@ export function mountSharedGrove(
       total.title = 'Shared grove · all visitors'
       total.hidden = false
     }
-    if (host.hidden || signal.aborted) return
     let changed = false
     const targets: { tree: SVGGElement; button: HTMLButtonElement }[] = []
     for (const tree of scene.querySelectorAll<SVGGElement>('.trail-tree')) {

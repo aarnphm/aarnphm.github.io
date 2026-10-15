@@ -1,42 +1,16 @@
 import type { ForestSprite } from './forest-sprites'
-import { creekDistance, groundOffset, onDryLand, pondDistance, type Landscape } from './landscape'
+import {
+  creekDistance,
+  creekSection,
+  groundOffset,
+  onDryLand,
+  pondDistance,
+  type Landscape,
+} from './landscape'
 import { trailRandom } from './random'
+import { forestLimits, sceneSettings, type ForestSettings } from './scene-settings'
 import { trailUnderstory } from './understory'
 import { trailSnowBank } from './winter'
-
-export type ForestSettings = {
-  density: number
-  depth: number
-  angle: number
-  size: number
-  curl: number
-  branching: number
-  variation: number
-  dapple: number
-}
-export const defaultForestSettings: ForestSettings = {
-  density: 64,
-  depth: 9,
-  angle: 26,
-  size: 240,
-  curl: 4,
-  branching: 85,
-  variation: 70,
-  dapple: 65,
-}
-export const forestLimits: Record<
-  keyof ForestSettings,
-  { min: number; max: number; step: number }
-> = {
-  density: { min: 8, max: 96, step: 1 },
-  depth: { min: 2, max: 9, step: 1 },
-  angle: { min: 15, max: 45, step: 1 },
-  size: { min: 60, max: 240, step: 5 },
-  curl: { min: 0, max: 40, step: 1 },
-  branching: { min: 0, max: 100, step: 5 },
-  variation: { min: 0, max: 100, step: 5 },
-  dapple: { min: 0, max: 100, step: 5 },
-}
 
 type TreeKind =
   | 'pine'
@@ -361,15 +335,33 @@ function tree(
     handedness * variation * (form === 'leaning' ? 0.15 + random() * 0.2 : random() * 0.08)
   const breadth = 1 + variation * (form === 'broad' ? 0.45 : random() * 0.2 - 0.1)
   const branchBias = (random() - 0.5) * variation * 0.3
-  const rule = () => {
-    const bias = branchBias * probability * (1 - probability)
-    const left = growth() < probability + bias ? '[+X]' : ''
-    const right = growth() < probability - bias ? '[-X]' : ''
-    return habit.leader ? `F${left}${right}FX` : `F${left}F${right}+X`
-  }
-  let word = form === 'forked' ? 'FF[+FX][-FX]' : 'FX'
+  type Growth = number | 'X' | '[' | ']' | '+' | '-'
+  let word: Growth[] =
+    form === 'forked' ? [2, '[', '+', 1, 'X', ']', '[', '-', 1, 'X', ']'] : [1, 'X']
+  // Count consecutive forward steps while expanding. Growth visits X in the same order,
+  // so both random streams and every final branch coordinate stay unchanged.
   for (let iteration = 0; iteration < depth; iteration++) {
-    word = word.replace(/[XF]/g, symbol => (symbol === 'X' ? rule() : 'FF'))
+    const next: Growth[] = []
+    for (const symbol of word) {
+      if (typeof symbol === 'number') next.push(symbol * 2)
+      else if (symbol !== 'X') next.push(symbol)
+      else {
+        const bias = branchBias * probability * (1 - probability)
+        const left = growth() < probability + bias
+        const right = growth() < probability - bias
+        next.push(1)
+        if (left) next.push('[', '+', 'X', ']')
+        if (habit.leader) {
+          if (right) next.push('[', '-', 'X', ']')
+          next.push(1, 'X')
+        } else {
+          next.push(1)
+          if (right) next.push('[', '-', 'X', ']')
+          next.push('+', 'X')
+        }
+      }
+    }
+    word = next
   }
   const angle = (bounded(settings.angle, 'angle') * spread * breadth * Math.PI) / 180
   // Segment counts grow with depth; keep curvature per branch at the same scale.
@@ -382,15 +374,20 @@ function tree(
   let top = 0
   for (let index = 0; index < word.length; index++) {
     const symbol = word[index]
-    if (symbol === 'F') {
-      const fromX = turtle.x
-      const fromY = turtle.y
-      turtle.heading = Math.max(-Math.PI + 0.1, Math.min(-0.1, turtle.heading + turtle.bend * curl))
-      const length = 0.78 ** stack.length * (1 + (random() - 0.5) * variation * 0.35)
-      turtle.x += Math.cos(turtle.heading) * length
-      turtle.y += Math.sin(turtle.heading) * length
-      top = Math.min(top, turtle.y)
-      branches.push(fromX, fromY, turtle.x, turtle.y, stack.length)
+    if (typeof symbol === 'number') {
+      for (let step = 0; step < symbol; step++) {
+        const fromX = turtle.x
+        const fromY = turtle.y
+        turtle.heading = Math.max(
+          -Math.PI + 0.1,
+          Math.min(-0.1, turtle.heading + turtle.bend * curl),
+        )
+        const length = 0.78 ** stack.length * (1 + (random() - 0.5) * variation * 0.35)
+        turtle.x += Math.cos(turtle.heading) * length
+        turtle.y += Math.sin(turtle.heading) * length
+        top = Math.min(top, turtle.y)
+        branches.push(fromX, fromY, turtle.x, turtle.y, stack.length)
+      }
     } else if (symbol === '+' || symbol === '-') {
       const turn = handedness * (symbol === '+' ? 1 : -1)
       turtle.heading += angle * turn * (1 + (random() - 0.5) * variation * 0.65)
@@ -821,7 +818,8 @@ export function* trailPatchTrees(
         continue
       if (
         pondDistance(candidate, landscape.pond) < 1.9 ||
-        creekDistance(candidate, landscape) < 18 ||
+        creekDistance(candidate, landscape) <
+          Math.max(18, creekSection(candidate, landscape).waterHalf + 12) ||
         Math.hypot(x - landscape.camp.x, y - landscape.camp.y) < 110 ||
         nearestDistance(candidate, roots) < (standalone ? 26 : 16) ||
         nearestDistance(candidate, walks) < 20
@@ -896,7 +894,8 @@ export function planTrailTrees(
         const candidate = onDryLand({ x, y: y + groundOffset(x, landscape, y) }, landscape, 1.9)
         if (
           pondDistance(candidate, pond) <= 1.85 ||
-          creekDistance(candidate, landscape) <= 16 ||
+          creekDistance(candidate, landscape) <=
+            Math.max(16, creekSection(candidate, landscape).waterHalf + 12) ||
           Math.hypot(candidate.x - camp.x, candidate.y - camp.y) <= 102 ||
           clearings.some(
             site => Math.hypot(candidate.x - site.x, candidate.y - site.y) < site.radius,
@@ -975,7 +974,8 @@ export function planTrailTrees(
         const candidate = onDryLand({ x, y: y + groundOffset(x, landscape, y) }, landscape, 1.9)
         if (
           pondDistance(candidate, pond) <= 1.85 ||
-          creekDistance(candidate, landscape) <= 16 ||
+          creekDistance(candidate, landscape) <=
+            Math.max(16, creekSection(candidate, landscape).waterHalf + 12) ||
           Math.hypot(candidate.x - camp.x, candidate.y - camp.y) <= 102 ||
           clearings.some(
             site => Math.hypot(candidate.x - site.x, candidate.y - site.y) < site.radius,
@@ -1006,7 +1006,7 @@ export function planTrailTrees(
 export function* trailTreeSprites(
   landscape: Landscape,
   seed: number,
-  settings: ForestSettings = defaultForestSettings,
+  settings: ForestSettings = sceneSettings.forest,
   walks: Point[] = [],
   clearings: (Point & { radius: number })[] = [],
   paint: typeof tree = tree,
@@ -1041,7 +1041,7 @@ export function* trailTreeSprites(
 export function trailTrees(
   landscape: Landscape,
   seed: number,
-  settings: ForestSettings = defaultForestSettings,
+  settings: ForestSettings = sceneSettings.forest,
   walks: Point[] = [],
   clearings: (Point & { radius: number })[] = [],
   paint: typeof tree = tree,
@@ -1129,6 +1129,7 @@ export function trailFoothillWoodland(
       const depth = (candidate.y - floor) / (front - floor)
       if (
         pondDistance(candidate, pond) > 1.9 &&
+        creekDistance(candidate, landscape) > creekSection(candidate, landscape).waterHalf + 12 &&
         Math.hypot(candidate.x - camp.x, candidate.y - camp.y) > 102 &&
         nearestDistance(candidate, walks) > 24 + depth * 8 &&
         nearestDistance(candidate, trackPoints) > 10 &&
