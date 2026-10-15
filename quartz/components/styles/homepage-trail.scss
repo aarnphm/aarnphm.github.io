@@ -91,19 +91,17 @@
     box-sizing: border-box;
     width: 6px;
     height: 6px;
-    border: 1px solid var(--light);
     background: currentColor;
   }
 }
-// The page steps back while the trail zooms into the far gate (see trail-weather.scss).
-html[data-trail-gate='entering'] {
-  #quartz-root,
-  .homepage-trail-toggle,
-  .trail-visitor-count,
-  .trail-local-time {
-    opacity: 0;
-    transition: opacity 320ms ease-out;
-  }
+.trail-gate-transition {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: var(--z-overlay);
+  pointer-events: none;
+  image-rendering: pixelated;
 }
 .homepage-trail-scene {
   position: absolute;
@@ -118,6 +116,31 @@ html[data-trail-gate='entering'] {
   &[hidden] {
     display: block !important;
     opacity: 0;
+  }
+}
+
+body[data-slug='index']:has(.homepage-trail-toggle[aria-expanded='true']) {
+  .garden-pet-bubble {
+    border: 0;
+    background: transparent;
+  }
+
+  .site-perf-debug,
+  .site-perf-chart {
+    border: 0;
+    background: var(--light);
+  }
+
+  .garden-pet-close {
+    &:hover,
+    &:focus-visible {
+      background: transparent;
+      color: var(--secondary);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: 2px;
+    }
   }
 }
 @media (min-width: 601px) and (hover: hover) and (pointer: fine) {

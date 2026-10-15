@@ -35,7 +35,12 @@ export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
   const defaultKey = opts.default![0]
 
-  const Keybind: QuartzComponent = ({ cfg, displayClass }: QuartzComponentProps) => {
+  const Keybind: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
+    const shortcuts = Object.entries(cfg.keybinds ?? {}).map(([key, value]) =>
+      fileData.slug === 'index' && key === 'gh'
+        ? (['gt', 'sentier'] as const)
+        : ([key, value] as const),
+    )
     return (
       <div class={classNames(displayClass, 'keybind')} lang={'fr'}>
         <kbd id="shortcut-key" data-mapping={JSON.stringify(opts.default?.map(revert))}>
@@ -45,7 +50,7 @@ export default ((userOpts?: Partial<Options>) => {
           <div id="shortcut-space">
             <div id="title">raccourcis clavier</div>
             <ul id="shortcut-list">
-              {Object.entries(cfg.keybinds ?? {}).map(([key, value]) => (
+              {shortcuts.map(([key, value]) => (
                 <li>
                   <div
                     id="shortcuts"

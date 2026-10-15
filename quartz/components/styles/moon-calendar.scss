@@ -68,7 +68,7 @@ button.homepage-moon-toggle {
   overflow-y: auto;
   margin: 0;
   padding: 0.65rem;
-  border: 1px solid var(--lightgray);
+  border: 0;
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--darkgray);
@@ -113,14 +113,15 @@ button.homepage-moon-toggle {
     font-size: 0.6rem;
   }
   .g-calendar-grid {
-    border-color: var(--lightgray);
+    border: 0;
+    background: transparent;
   }
   .g-calendar-day {
     position: relative;
     align-items: center;
     gap: 0;
     padding: 0.2rem 0;
-    border-color: var(--lightgray);
+    border: 0;
     color: var(--darkgray);
     &[data-outside] {
       opacity: 0.5;
@@ -130,12 +131,14 @@ button.homepage-moon-toggle {
       text-decoration: none;
     }
     &[data-selected] {
-      background-image: linear-gradient(var(--dark), var(--dark));
-      color: var(--light);
+      color: var(--dark);
       opacity: 1;
       .g-calendar-day-header h3,
       .g-calendar-day-header time {
         color: inherit;
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
       }
     }
     .g-calendar-day-header h3 {
@@ -161,12 +164,17 @@ button.homepage-moon-toggle {
       height: 15px;
     }
     &:hover {
-      background: color-mix(in srgb, currentColor 8%, transparent);
+      color: var(--dark);
     }
     &:focus-visible {
       outline: 2px solid var(--secondary);
       outline-offset: -2px;
     }
+  }
+
+  .g-icon-button:hover:not(:disabled) {
+    background: transparent;
+    color: var(--dark);
   }
 }
 

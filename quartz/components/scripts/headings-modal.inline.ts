@@ -318,7 +318,7 @@ function onDialogKeyDown(event: KeyboardEvent) {
 }
 
 function onDocumentKeyDown(event: KeyboardEvent) {
-  if (dialog?.open) return
+  if (!dialog || dialog.open || document.body.dataset.slug === 'index') return
   if (event.ctrlKey || event.metaKey || event.altKey || shouldIgnoreShortcutTarget(event.target)) {
     pendingG = -Infinity
     return
@@ -348,8 +348,8 @@ document.addEventListener('nav', () => {
   help = ''
   pendingG = -Infinity
 
+  if (!dialog || document.body.dataset.slug === 'index') return
   document.addEventListener('keydown', onDocumentKeyDown, { signal })
-  if (!dialog) return
   const modal = dialog
 
   modal.addEventListener('keydown', onDialogKeyDown, { signal })

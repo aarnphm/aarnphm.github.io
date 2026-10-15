@@ -1027,7 +1027,12 @@ function transformHostInternalLinks(root: Document | Element) {
 const stacked = new StackedNoteManager()
 window.stacked = stacked
 
-async function navigate(url: URL, isBack: boolean = false) {
+async function navigate(
+  url: URL,
+  isBack: boolean = false,
+  options: { transition?: boolean; signal?: AbortSignal } = {},
+) {
+  if (options.signal?.aborted) return
   if (
     window.location.hostname === STREAM_HOSTNAME &&
     isLocalHttpUrl(url) &&
@@ -1055,20 +1060,20 @@ async function navigate(url: URL, isBack: boolean = false) {
   startLoading()
 
   p = p || new DOMParser()
-  const contents = await fetchCanonical(new URL(`${url}`))
+  const contents = await fetchCanonical(new URL(`${url}`), { signal: options.signal })
     .then(res => {
       const contentType = res.headers.get('content-type')
       if (contentType?.startsWith('text/html')) {
         return res.text()
       } else {
-        window.location.assign(url)
+        if (!options.signal?.aborted) window.location.assign(url)
       }
     })
     .catch(() => {
-      window.location.assign(url)
+      if (!options.signal?.aborted) window.location.assign(url)
     })
 
-  if (!contents) return
+  if (!contents || options.signal?.aborted) return
 
   const html = p.parseFromString(contents, 'text/html')
   normalizeRelativeURLs(html, url)
@@ -1076,6 +1081,7 @@ async function navigate(url: URL, isBack: boolean = false) {
   // Link the page-scoped sheets the new body uses while the old page still shows; a stalled
   // sheet only delays navigation.
   await Promise.race([loadPageStyles(html.body), new Promise(resolve => setTimeout(resolve, 2000))])
+  if (options.signal?.aborted) return
 
   // notify about to nav
   const event: CustomEventMap['prenav'] = new CustomEvent('prenav', { detail: {} })
@@ -1099,7 +1105,7 @@ async function navigate(url: URL, isBack: boolean = false) {
   html.body.appendChild(announcer)
 
   // morph body
-  startViewTransition(() => {
+  const update = () => {
     micromorph(document.body, html.body)
     transformHostInternalLinks(document)
 
@@ -1126,7 +1132,9 @@ async function navigate(url: URL, isBack: boolean = false) {
     }
     notifyNav(getFullSlug(window))
     delete announcer.dataset.persist
-  })
+  }
+  if (options.transition === false) update()
+  else startViewTransition(update)
   stopLoading()
 }
 

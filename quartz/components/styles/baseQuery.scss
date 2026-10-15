@@ -145,7 +145,8 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
       }
     }
 
-    button[aria-selected='true'] {
+    // The tab pattern always marks one tab selected, so only the open panel's tab is highlighted.
+    button[aria-expanded='true'] {
       color: var(--dark);
       background: var(--base-query-selected);
     }
@@ -318,13 +319,19 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
       background: var(--light);
     }
 
+    // Fill the cell inside its collapsed borders; a fixed 2rem button spilled its hover over them.
     td > button:not([data-base-query-add-sort]) {
-      width: var(--base-query-action-size);
-      min-height: var(--base-query-action-size);
-      height: var(--base-query-action-size);
+      display: flex;
+      width: 100%;
+      min-height: 0;
+      height: calc(var(--base-query-action-size) - 1px);
       padding: 0;
       border: 0;
       background: transparent;
+
+      &:focus-visible {
+        outline-offset: -2px;
+      }
     }
   }
 

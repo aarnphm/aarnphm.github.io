@@ -116,8 +116,6 @@
 .visitor-weather-country {
   color: var(--darkgray);
   text-transform: uppercase;
-  border: 1px solid var(--gray);
-  border-radius: 0.45rem;
   padding: 0 0.2rem;
   line-height: 1.2;
 }
@@ -126,7 +124,7 @@
   position: relative;
   height: 90px;
   margin-bottom: 0.25rem;
-  background: var(--light);
+  background: transparent;
   overflow: hidden;
 
   [data-weather-map] {
@@ -156,7 +154,7 @@
   width: 100%;
   border: 0;
   padding: 0.5rem;
-  background: var(--light);
+  background: transparent;
   color: var(--darkgray);
   font: inherit;
   cursor: pointer;

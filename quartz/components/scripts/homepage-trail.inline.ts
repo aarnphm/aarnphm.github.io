@@ -11,6 +11,34 @@ import { mountVisitorRegister } from '../visitor-trail/visitor-register'
 import { registerEscapeHandler } from './escape-handler'
 import { mountMoonCalendar } from './moon-calendar'
 import { setupPerformanceDebug } from './performance-debug'
+import { mountTrailGateNavigation } from './trail-gate-navigation'
+
+const CHORD_WINDOW_MS = 1000
+const TRAIL_PREFERENCE_KEY = 'garden:trail-open'
+
+function shouldIgnoreTrailShortcut(event: KeyboardEvent): boolean {
+  if (
+    document.querySelector(
+      'dialog[open], #palette-container.active, #shortcut-container.active, .search-container.active, .link-hint-marker',
+    )
+  )
+    return true
+  const origin = event.composedPath()[0] ?? event.target
+  const el =
+    origin instanceof Element
+      ? origin
+      : document.activeElement instanceof Element
+        ? document.activeElement
+        : null
+  if (!el) return false
+  return (
+    el.matches('input, textarea, select') ||
+    (el as HTMLElement).isContentEditable ||
+    el.closest(
+      '.search .search-container, .stream-search-container, [role="listbox"], .cm-editor',
+    ) !== null
+  )
+}
 
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.homepage-trail')
@@ -23,6 +51,7 @@ document.addEventListener('nav', () => {
 
   const controller = new AbortController()
   const { signal } = controller
+  mountTrailGateNavigation(scene, signal)
   let isOpen = false
   const holidayMarker = toggle.querySelector<HTMLElement>('[data-holiday-marker]')
   const holidayIcons: Record<TrailHoliday, HolidaySpriteName> = {
@@ -157,9 +186,21 @@ document.addEventListener('nav', () => {
     scene.dispatchEvent(new Event('trail:hide'))
   }
   scene.addEventListener('trail:closed', finishClose, { signal })
-  const setOpen = (open: boolean) => {
-    if (!open && scene.shadowRoot?.activeElement) toggle.focus({ preventScroll: true })
+  const setOpen = (open: boolean, remember = true) => {
+    if (!open) {
+      const shadowActive = scene.shadowRoot?.activeElement
+      if (shadowActive instanceof HTMLElement || shadowActive instanceof SVGElement)
+        shadowActive.blur()
+      if (document.activeElement === toggle) toggle.blur()
+    }
     isOpen = open
+    if (remember) {
+      try {
+        localStorage.setItem(TRAIL_PREFERENCE_KEY, String(open))
+      } catch {
+        // Storage restrictions must not disable the trail control.
+      }
+    }
     cancelResize()
     window.cancelAnimationFrame(openFrame)
     window.clearTimeout(openTimer)
@@ -181,11 +222,41 @@ document.addEventListener('nav', () => {
       if (scene.dispatchEvent(new Event('trail:close', { cancelable: true }))) finishClose()
     }
   }
-  const close = () => {
-    toggle.focus({ preventScroll: true })
-    setOpen(false)
-  }
-  toggle.addEventListener('click', () => setOpen(!isOpen), { signal })
+  const close = () => setOpen(false)
+  toggle.addEventListener(
+    'click',
+    event => {
+      if (event.detail > 0) toggle.blur()
+      setOpen(!isOpen)
+    },
+    { signal },
+  )
+  let pendingG = -Infinity
+  document.addEventListener(
+    'keydown',
+    event => {
+      if (
+        event.defaultPrevented ||
+        event.isComposing ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        shouldIgnoreTrailShortcut(event)
+      ) {
+        pendingG = -Infinity
+        return
+      }
+      if (event.key === 't' && !event.repeat && event.timeStamp - pendingG < CHORD_WINDOW_MS) {
+        event.preventDefault()
+        pendingG = -Infinity
+        if (document.activeElement === toggle) toggle.blur()
+        setOpen(!isOpen)
+        return
+      }
+      pendingG = event.key === 'g' && !event.repeat ? event.timeStamp : -Infinity
+    },
+    { signal },
+  )
   window.addEventListener(
     'message',
     event => {
@@ -203,7 +274,7 @@ document.addEventListener('nav', () => {
     !document.querySelector('#visitor-weather-panel')?.matches(':popover-open') &&
     !root.querySelector('#homepage-moon-panel')?.matches(':popover-open') &&
     !root.querySelector('#homepage-visitor-panel')?.matches(':popover-open') &&
-    !trailScene(document)?.querySelector('.trail-visitor-popover:popover-open')
+    !trailScene(document)?.querySelector(':popover-open')
   scene.addEventListener(
     'keydown',
     event => {
@@ -215,7 +286,13 @@ document.addEventListener('nav', () => {
     { signal },
   )
   const disposeEscape = registerEscapeHandler(root, close, canClose)
-  setOpen(false)
+  let initiallyOpen = true
+  try {
+    initiallyOpen = localStorage.getItem(TRAIL_PREFERENCE_KEY) !== 'false'
+  } catch {
+    // Use the default when the browser blocks saved preferences.
+  }
+  setOpen(initiallyOpen, false)
   window.addCleanup(() => {
     controller.abort()
     disposeMoon()
