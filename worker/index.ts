@@ -103,7 +103,7 @@ import {
 } from './training-calendar'
 import { triathlonDataHtml } from './triathlon-data'
 import { handleWahooOAuthCallback } from './wahoo-oauth'
-import { handleWeather } from './weather'
+import { handleWeather, withVisitorDaylightCell } from './weather'
 
 const MIME = 'application/vnd.git-lfs+json'
 const KEEP_HEADERS = 'Cache-Control'
@@ -1359,8 +1359,8 @@ export default {
               : documentDiscoveryLink(url.pathname),
       })
       return url.hostname === TRIATHLON_HOSTNAME
-        ? triathlonHostHtmlResponse(documentResponse, url)
-        : documentResponse
+        ? triathlonHostHtmlResponse(withVisitorDaylightCell(request, documentResponse), url)
+        : withVisitorDaylightCell(request, documentResponse)
     }
     return withHeaders(resp, staticAssetHeaders)
   },
