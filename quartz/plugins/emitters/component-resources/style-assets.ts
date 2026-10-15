@@ -1,4 +1,3 @@
-import { Features, transform } from 'lightningcss'
 import path from 'path'
 import { compileAsync } from 'sass-embedded'
 import type { BuildCtx } from '../../../util/ctx'
@@ -13,6 +12,7 @@ import {
   registerExtractedStaticResource,
   shouldHashAssets,
 } from '../../../util/asset-manifest'
+import { minifyStylesheet } from '../../../util/minify-stylesheet'
 import { joinSegments } from '../../../util/path'
 import {
   componentCssBundleKey,
@@ -35,22 +35,6 @@ const componentCssBundleSlug = 'static/component'
 function extractedCssSlug(ctx: BuildCtx, index: number, content: string): FullSlug {
   if (shouldHashAssets(ctx)) return contentHashSlug(staticCssBundleSlug, content)
   return (index === 0 ? staticCssBundleSlug : `${staticCssBundleSlug}-${index}`) as FullSlug
-}
-
-export function minifyStylesheet(filename: string, stylesheet: string): string {
-  return transform({
-    filename,
-    code: Buffer.from(stylesheet),
-    minify: true,
-    targets: {
-      safari: (15 << 16) | (6 << 8),
-      ios_saf: (15 << 16) | (6 << 8),
-      edge: 115 << 16,
-      firefox: 102 << 16,
-      chrome: 109 << 16,
-    },
-    include: Features.MediaQueries,
-  }).code.toString()
 }
 
 async function compileStylesheet(sourcePath: string): Promise<string> {

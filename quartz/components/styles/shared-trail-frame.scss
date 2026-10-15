@@ -1,4 +1,3 @@
-@use '../../styles/mixin.scss' as *;
 @use './trail-wayfarers.scss';
 @use './trail-weather.scss';
 @use './trail-tree-climate.scss';
@@ -24,6 +23,7 @@
   .trail-scene {
     position: absolute;
     inset: 0;
+    contain: layout style paint;
     color: var(--darkgray);
     font: 10px/1.6 var(--codeFont);
   }
@@ -38,30 +38,21 @@
     display: block;
     width: 100%;
     height: 100%;
+    image-rendering: pixelated;
     pointer-events: none;
   }
   .trail-scene:not([data-trail-renderer='webgl']) .trail-compositor {
     display: none;
   }
-  // The SVG stays laid out as the scene model for journeys, the pet and camp hints. A zero clip
-  // skips its paint, layerization and raster, which `visibility` and `opacity` do not.
   .trail-scene[data-trail-renderer='webgl'] .trail-canvas {
     clip-path: inset(50%);
-  }
-  .trail-scene[data-trail-theme-live='true'],
-  .trail-scene[data-trail-opening-live='true'] {
-    .trail-canvas {
-      clip-path: none;
-    }
-    .trail-compositor {
-      visibility: hidden;
-    }
   }
   .trail-scene[data-trail-opening='pending'] {
     .trail-canvas {
       clip-path: inset(50%);
     }
-    .trail-compositor {
+    .trail-compositor,
+    .trail-campsite {
       visibility: hidden;
     }
   }
@@ -70,19 +61,13 @@
     visibility: hidden;
   }
   .trail-scene[data-trail-rendered='false']:not([data-trail-visible='true']) {
-    .trail-canvas,
-    .trail-compositor,
     .trail-tree-waterings,
     .trail-visitor-labels {
       visibility: hidden;
     }
-    .trail-canvas * {
-      animation-play-state: paused;
-    }
   }
   .trail-scene[data-camp-positioned='false'] {
-    .trail-campsite,
-    .trail-tree-toggle {
+    .trail-campsite {
       visibility: hidden;
     }
   }
@@ -413,291 +398,20 @@
   .trail-campsite {
     position: absolute;
     width: 128px;
-    transform: translate(-50%, -50%);
-    pointer-events: auto;
-  }
-  .trail-camp-toggle {
-    display: block;
-    width: 128px;
     height: 96px;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: inherit;
-    cursor: pointer;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
     svg {
       display: block;
       width: 128px;
       height: 96px;
       overflow: visible;
     }
-    &:focus-visible {
-      outline: 1px solid var(--darkgray);
-      outline-offset: -4px;
-    }
-  }
-  .trail-camp-tools {
-    position: absolute;
-    bottom: 48px;
-    right: -8px;
-    width: min(240px, calc(100vw - 32px));
-    font-size: 10px;
-  }
-  .trail-tree-toggle {
-    position: absolute;
-    display: grid;
-    place-items: end center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--darkgray);
-    cursor: pointer;
-    pointer-events: auto;
-    svg {
-      width: 44px;
-      height: 32px;
-      fill: currentColor;
-      shape-rendering: crispEdges;
-    }
-    &:focus-visible {
-      outline: 2px solid var(--dark);
-      outline-offset: 2px;
-    }
-  }
-  .trail-settings-rock-shade {
-    fill: color-mix(in srgb, var(--darkgray) 65%, var(--light));
-  }
-  .trail-settings-rock-face {
-    fill: color-mix(in srgb, var(--gray) 62%, var(--light));
-  }
-  .trail-settings-rock-light {
-    fill: color-mix(in srgb, var(--gray) 35%, var(--light));
-  }
-  .trail-settings-rock-moss {
-    fill: color-mix(in srgb, #7f9550 65%, var(--light));
-  }
-  .trail-tree-panel {
-    position: fixed;
-    z-index: 2;
-    left: max(16px, env(safe-area-inset-left));
-    bottom: max(16px, env(safe-area-inset-bottom));
-    box-sizing: border-box;
-    width: min(220px, calc(100vw - 32px));
-    border-radius: 0;
-    border: 1px solid var(--lightgray);
-    background: var(--light);
-    font-variant-numeric: tabular-nums;
-    pointer-events: auto;
-    --control-font-size: 1em;
-    --control-height: 1.75rem;
-  }
-  .trail-tree-hint {
-    display: none;
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translate(-50%, -100%);
-    color: var(--darkgray);
-    font: 10px/1.6 var(--codeFont);
-    white-space: nowrap;
-  }
-  .trail-scene[data-camp-tools='open'] .trail-tree-hint,
-  .trail-tree-toggle:hover .trail-tree-hint,
-  .trail-tree-toggle:focus-visible .trail-tree-hint {
-    display: block;
-  }
-  .trail-tree-panel-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 3px 8px 3px 12px;
-    border-bottom: 1px solid var(--lightgray);
-    color: var(--gray);
-    font-size: 9px;
-    span:first-child {
-      color: var(--darkgray);
-    }
-    span:nth-child(2) {
-      margin-left: auto;
-    }
-  }
-  .trail-tree-close svg {
-    width: 12px;
-    height: 12px;
-    fill: none;
-    stroke: currentColor;
-  }
-  .trail-tree-controls {
-    max-height: max(72px, min(400px, calc(100dvh - 100px)));
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: var(--gray) var(--light);
-    @supports selector(::-webkit-scrollbar) {
-      // Standard scrollbar properties override the custom thumb geometry.
-      scrollbar-width: auto;
-      scrollbar-color: auto;
-    }
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-    &::-webkit-scrollbar-thumb {
-      border: 1px solid var(--light);
-      border-radius: 0;
-      background: var(--gray);
-    }
-    &::-webkit-scrollbar-track {
-      border-radius: 0;
-      background: var(--light);
-    }
-  }
-  .trail-tree-control {
-    padding: 8px 12px;
-    & + .trail-tree-control {
-      border-top: 1px solid var(--lightgray);
-    }
-    label {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    output {
-      min-width: 3ch;
-      padding: 0 3px;
-      border: 1px solid var(--lightgray);
-      text-align: right;
-      color: var(--darkgray);
-    }
-    input {
-      @include stableRangeControl(
-        $track-color: linear-gradient(
-            to right,
-            var(--gray) var(--trail-control-progress),
-            var(--lightgray) var(--trail-control-progress)
-          ),
-        $thumb-color: var(--light)
-      );
-      display: block;
-      width: 100%;
-      height: 28px;
-      padding: 0;
-      margin: 3px 0 0;
-      cursor: pointer;
-      &::-webkit-slider-runnable-track {
-        height: 4px;
-      }
-      &::-webkit-slider-thumb {
-        box-sizing: border-box;
-        width: 12px;
-        height: 12px;
-        margin-top: -4px;
-        border-color: var(--darkgray);
-      }
-      &::-moz-range-track,
-      &::-moz-range-progress {
-        height: 4px;
-      }
-      &::-moz-range-thumb {
-        box-sizing: border-box;
-        width: 12px;
-        height: 12px;
-        border-color: var(--darkgray);
-      }
-      &:focus-visible {
-        outline: 1px solid var(--darkgray);
-        outline-offset: 2px;
-      }
-    }
-  }
-  .trail-control-section {
-    min-inline-size: 0;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    legend {
-      box-sizing: border-box;
-      width: 100%;
-      padding: 6px 12px;
-      border-top: 1px solid var(--lightgray);
-      border-bottom: 1px solid var(--lightgray);
-      color: var(--gray);
-      font-size: 9px;
-    }
-    // The panel head's bottom border already sits above the first legend.
-    &:first-child legend {
-      border-top: 0;
-    }
-  }
-  .trail-hint-fumes {
-    display: none;
-    fill: var(--darkgray);
-    font: inherit;
-    pointer-events: none;
-  }
-  .trail-scene[data-camp-tools='open'] .trail-hint-fumes {
-    display: inline;
-  }
-  .trail-hint-wisp-middle {
-    opacity: 0.88;
-  }
-  .trail-status {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-  .trail-tools {
-    position: absolute;
-    right: 64px;
-    bottom: -32px;
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-  }
-  .trail-tools button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0 6px;
-    border: 0;
-    color: inherit;
-    background: none;
-    font: inherit;
-    cursor: pointer;
-  }
-  .trail-tools button:disabled {
-    opacity: 0.35;
-    cursor: default;
-  }
-  .trail-tools button:focus-visible {
-    outline: 1px solid var(--darkgray);
-    outline-offset: -3px;
   }
   [hidden] {
     display: none !important;
   }
   @media (prefers-reduced-motion: no-preference) {
-    .trail-campsite {
-      animation: trail-arrive 400ms ease-out var(--trail-camp-arrival, 6000ms) both;
-    }
-    .trail-tree-toggle {
-      animation: trail-arrive 400ms ease-out var(--trail-camp-arrival, 6000ms) both;
-    }
-    .trail-tree-toggle:focus-visible {
-      animation: none;
-    }
-    .trail-tree-panel {
-      animation: trail-panel-rise 160ms ease-out both;
-    }
     .trail-cow-tail {
       animation: trail-tail-flick 9s steps(1, end) var(--trail-cow-delay) infinite;
     }
@@ -707,9 +421,6 @@
     }
     .trail-cat-tail {
       animation: trail-tail-flick 11s steps(1, end) var(--trail-animal-delay) infinite;
-    }
-    .trail-campsite[data-revealed='true'] {
-      animation: none;
     }
     .trail-flame-frame {
       animation: trail-fire 1050ms steps(1, end) var(--phase) infinite;
@@ -726,19 +437,6 @@
     .trail-ember-late {
       animation-duration: 2400ms;
       animation-delay: -1600ms;
-    }
-    .trail-hint-fumes {
-      animation: trail-hint-emerge 240ms ease-out both;
-    }
-  }
-  @keyframes trail-panel-rise {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
     }
   }
   @keyframes trail-tail-flick {
@@ -760,14 +458,6 @@
     }
     50% {
       transform: rotate(12deg);
-    }
-  }
-  @keyframes trail-arrive {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
     }
   }
   @keyframes trail-fire {
@@ -801,14 +491,6 @@
         calc(-16px + var(--trail-wind-strength, 0) * 10px + var(--trail-wind-y, 0px) * 0.3)
       );
       opacity: 0;
-    }
-  }
-  @keyframes trail-hint-emerge {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
     }
   }
 }

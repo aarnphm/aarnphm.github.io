@@ -1,0 +1,18 @@
+@use './controls.scss';
+@use './pet.scss';
+@use './shared-trail-frame.scss';
+@use './trail-lighting.scss';
+
+.homepage-trail-scene {
+  height: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
