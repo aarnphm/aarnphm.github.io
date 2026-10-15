@@ -14,6 +14,7 @@ import { EditorView, keymap, placeholder } from '@codemirror/view'
 import type { QuartzPluginData } from '../../plugins/vfile'
 import type { BaseFile } from '../../util/base/types'
 import { buildPropertyExpressionSource } from '../../util/base/compiler/properties'
+import { completionTheme } from '../../util/codemirror-completion-theme'
 import { isRecord } from '../../util/type-guards'
 
 export interface BaseQueryCatalog {
@@ -247,6 +248,7 @@ export function createBaseQueryEditor(options: {
         EditorView.contentAttributes.of({ 'aria-label': 'Filter expression' }),
         placeholder('true'),
         autocompletion({ override: [completions(options.catalog)], icons: false }),
+        completionTheme,
         Prec.highest(
           keymap.of([
             {
