@@ -411,6 +411,7 @@ export function mountMapReaderJourneys(scene: HTMLElement, host: HTMLElement, si
     },
     { signal },
   )
+  host.addEventListener('trail:show', schedule, { signal })
   signal.addEventListener('abort', pause, { once: true })
 
   return {

@@ -3,25 +3,15 @@ import { cowPixels } from './cows'
 import { onDryLand, type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
 import { riverBear, riverClearing, riverFish, riverFishingSites } from './river-life'
+import { sceneSettings, type AnimalSettings } from './scene-settings'
 import { trailBankWildlife } from './wetlands'
 
 export type RouteSites = { id: string; samples: Point[] }
-export type AnimalSettings = Record<TrailAnimalKind, number>
-
-export const defaultAnimalSettings: AnimalSettings = { cow: 3, dog: 1, cat: 1, goose: 3, bear: 2 }
-export const animalLimits = {
-  cow: { min: 0, max: 12, step: 1 },
-  dog: { min: 0, max: 6, step: 1 },
-  cat: { min: 0, max: 6, step: 1 },
-  goose: { min: 0, max: 8, step: 1 },
-  bear: { min: 0, max: 4, step: 1 },
-}
-
 export function trailPasture(
   landscape: Landscape,
   routes: RouteSites[],
   seed: number,
-  settings: AnimalSettings = defaultAnimalSettings,
+  settings: AnimalSettings = sceneSettings.animals,
 ) {
   const { width, meadowTop, camp, pond } = landscape
   const random = trailRandom(seed ^ 0x243f6a88)

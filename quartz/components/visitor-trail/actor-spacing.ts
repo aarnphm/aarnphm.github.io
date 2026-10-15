@@ -20,21 +20,36 @@ export type ActorSpacing = {
   yieldingTo: string | null
   yieldingThrough: string | null
   yieldEpisode: number
+  // The animal this walker has been yielding to and since when; cleared once it is out of the way.
+  waited: { id: string; since: number } | null
   placement: { bounds: SpacingBounds; grounded: (point: Point, radius: number) => boolean } | null
 }
 export type SpacingBounds = { left: number; right: number; top: number; bottom: number }
 
+const depthCache = new WeakMap<SVGGElement, { parent: Element | null; value: number }>()
+const trunkFrames = new WeakMap<
+  ParentNode,
+  { time: DocumentTimeline['currentTime']; trunks: CollisionActor[] }
+>()
+
+function elementDepth(element?: SVGGElement) {
+  if (!element) return 0
+  const parent = element.parentElement
+  const cached = depthCache.get(element)
+  if (cached && cached.parent === parent) return cached.value
+  const layer = element.closest<SVGGElement>('[data-trail-depth]')
+  const value = layer
+    ? layer.dataset.trailDepth === 'alpine'
+      ? parallaxDepth.alpine
+      : parallaxDepth.foothill
+    : 0
+  depthCache.set(element, { parent, value })
+  return value
+}
+
 function cameraClearance(element: SVGGElement, relativeTo?: SVGGElement) {
-  const depth = (element?: SVGGElement) => {
-    const layer = element?.closest<SVGGElement>('[data-trail-depth]')
-    return layer
-      ? layer.dataset.trailDepth === 'alpine'
-        ? parallaxDepth.alpine
-        : parallaxDepth.foothill
-      : 0
-  }
   // Reserve all camera positions so parallax cannot move a background body into a valley walker.
-  return Math.abs(depth(element) - depth(relativeTo)) * parallaxMovement.scroll
+  return Math.abs(elementDepth(element) - elementDepth(relativeTo)) * parallaxMovement.scroll
 }
 
 export function readActors(
@@ -95,43 +110,62 @@ export function readStationaryActors(scene: ParentNode, except: string): Collisi
   )
 }
 
+function readBaseTrunks(scene: ParentNode): CollisionActor[] {
+  const doc = 'ownerDocument' in scene ? scene.ownerDocument : null
+  const time = doc?.timeline?.currentTime
+  if (typeof time === 'number' && time > 0) {
+    const known = trunkFrames.get(scene)
+    if (known?.time === time && known.trunks.every(trunk => trunk.element?.isConnected))
+      return known.trunks
+  }
+  const trunks: CollisionActor[] = []
+  for (const element of scene.querySelectorAll<SVGGElement>('[data-camp-solid]')) {
+    trunks.push({
+      id: element.dataset.campSolid ?? '',
+      kind: 'trunk',
+      x: Number(element.dataset.groundX),
+      y: Number(element.dataset.groundY),
+      radius: Number(element.dataset.solidRadius),
+      element,
+    })
+  }
+  let index = 0
+  for (const element of scene.querySelectorAll<SVGGElement>('.trail-tree, .trail-woodland-tree')) {
+    const currentIndex = index++
+    if (!element.transform.baseVal.numberOfItems) continue
+    const matrix = element.transform.baseVal.getItem(0).matrix
+    const radius = Number(element.dataset.trunkRadius ?? 3 * Number(element.dataset.treeScale))
+    if (!Number.isFinite(radius)) continue
+    trunks.push({
+      id: `trunk-${element.dataset.treeId ?? element.dataset.woodlandId ?? currentIndex}`,
+      kind: 'trunk',
+      x: matrix.e,
+      y: matrix.f,
+      radius,
+      element,
+    })
+  }
+  if (typeof time === 'number' && time > 0) trunkFrames.set(scene, { time, trunks })
+  return trunks
+}
+
 export function readTrunks(
   scene: ParentNode,
   relativeTo?: SVGGElement,
   reserveCamera = true,
 ): CollisionActor[] {
-  const clearance = (element: SVGGElement) =>
-    reserveCamera ? cameraClearance(element, relativeTo) : 0
-  const solids: CollisionActor[] = Array.from(
-    scene.querySelectorAll<SVGGElement>('[data-camp-solid]'),
-  ).map(element => ({
-    id: element.dataset.campSolid ?? '',
-    kind: 'trunk',
-    x: Number(element.dataset.groundX),
-    y: Number(element.dataset.groundY),
-    radius: Number(element.dataset.solidRadius) + clearance(element),
-    element,
-  }))
+  const base = readBaseTrunks(scene)
+  const clocks = readClockObstacles(scene, relativeTo)
+  if (!reserveCamera) return [...clocks, ...base]
+  const relativeDepth = elementDepth(relativeTo)
   return [
-    ...readClockObstacles(scene, relativeTo),
-    ...solids,
-    ...Array.from(scene.querySelectorAll<SVGGElement>('.trail-tree, .trail-woodland-tree')).flatMap(
-      (element, index) => {
-        if (!element.transform.baseVal.numberOfItems) return []
-        const matrix = element.transform.baseVal.getItem(0).matrix
-        const radius = Number(element.dataset.trunkRadius ?? 3 * Number(element.dataset.treeScale))
-        if (!Number.isFinite(radius)) return []
-        const trunk: CollisionActor = {
-          id: `trunk-${element.dataset.treeId ?? element.dataset.woodlandId ?? index}`,
-          kind: 'trunk',
-          x: matrix.e,
-          y: matrix.f,
-          radius: radius + clearance(element),
-          element,
-        }
-        return [trunk]
-      },
-    ),
+    ...clocks,
+    ...base.map(trunk => {
+      const clearance = trunk.element
+        ? Math.abs(elementDepth(trunk.element) - relativeDepth) * parallaxMovement.scroll
+        : 0
+      return clearance ? { ...trunk, radius: trunk.radius + clearance } : trunk
+    }),
   ]
 }
 
@@ -206,15 +240,19 @@ export function canMove(
       continue
     const x = from.x - other.x
     const y = from.y - other.y
-    const initial = Math.hypot(x, y)
-    if (initial < limit - 0.01) {
+    const clearance = (limit - 0.01) ** 2
+    const initialSquared = x * x + y * y
+    if (initialSquared < clearance) {
       // A resize can tighten spacing. Escape must increase separation from its first step.
       if (x * dx + y * dy < -0.00001) return false
-      if (Math.hypot(to.x - other.x, to.y - other.y) <= initial + 0.00001) return false
+      if (Math.hypot(to.x - other.x, to.y - other.y) <= Math.sqrt(initialSquared) + 0.00001)
+        return false
       continue
     }
     const fraction = squared ? Math.max(0, Math.min(1, -(x * dx + y * dy) / squared)) : 0
-    if (Math.hypot(x + dx * fraction, y + dy * fraction) < limit - 0.01) return false
+    const nearX = x + dx * fraction
+    const nearY = y + dy * fraction
+    if (nearX * nearX + nearY * nearY < clearance) return false
   }
   return true
 }
@@ -229,6 +267,7 @@ export function actorSpacing(): ActorSpacing {
     yieldingTo: null,
     yieldingThrough: null,
     yieldEpisode: 0,
+    waited: null,
     placement: null,
   }
 }
@@ -362,6 +401,11 @@ export function queuedAnimal(
   return null
 }
 
+// A walker grants an animal the way for this long. An animal that rests across the path would
+// otherwise hold the walker for its whole nap, so after this it is passed like a trunk.
+export const yieldPatience = 5000
+const clock = () => (typeof performance === 'undefined' ? Date.now() : performance.now())
+
 export function spacedStep(
   id: string,
   base: Point,
@@ -390,6 +434,10 @@ export function spacedStep(
           point.y - Math.max(bounds.top, Math.min(bounds.bottom, point.y)),
         )
       : 0
+  const advance = (status: SpacingStatus) => {
+    spacing.status = status
+    return true
+  }
   const clears = (point: Point) => {
     const remaining = outside(point)
     return (
@@ -398,9 +446,14 @@ export function spacedStep(
       canMove(from, point, radius, others)
     )
   }
-  const animal = animalInWay(from, intended, radius, others, waitingFor)
+  const now = clock()
+  let animal = animalInWay(from, intended, radius, others, waitingFor)
+  if (!animal) spacing.waited = null
+  else if (spacing.waited?.id === animal.id && now - spacing.waited.since > yieldPatience)
+    animal = undefined
   if (animal) {
     if (waitingFor !== animal.id) spacing.yieldEpisode++
+    if (spacing.waited?.id !== animal.id) spacing.waited = { id: animal.id, since: now }
     spacing.blocker = animal.id
     spacing.yieldingTo = animal.id
     spacing.status = 'yielding'
@@ -452,12 +505,10 @@ export function spacedStep(
     const recovery = Math.hypot(recovered.x - spacing.offset.x, recovered.y - spacing.offset.y)
     if (distance + recovery <= budget + 0.00001 && clears(point)) {
       spacing.offset = recovered
-      spacing.status = Math.hypot(recovered.x, recovered.y) > 0.1 ? 'passing' : 'clear'
-      return true
+      return advance(Math.hypot(recovered.x, recovered.y) > 0.1 ? 'passing' : 'clear')
     }
     if (clears(intended)) {
-      spacing.status = 'passing'
-      return true
+      return advance('passing')
     }
     const returnToPath = towards(from, base, budget)
     if (
@@ -477,8 +528,7 @@ export function spacedStep(
   const queue = blocker.kind === 'traveler' ? queuedAnimal(id, blocker, others) : null
   if (queue && !intrusion) {
     if (clears(intended)) {
-      spacing.status = 'passing'
-      return true
+      return advance('passing')
     }
     spacing.yieldingTo = queue
     spacing.yieldingThrough = blocker.id
@@ -487,7 +537,7 @@ export function spacedStep(
   }
   if (yieldToTravelers && walking && blocker.kind === 'traveler' && id < blocker.id && !intrusion) {
     spacing.status = 'yielding'
-    return clears(intended)
+    return clears(intended) && advance('yielding')
   }
   if (spacing.blocker !== blocker.id) {
     spacing.blocker = blocker.id
@@ -510,8 +560,7 @@ export function spacedStep(
   }
   if (Math.hypot(spacing.lane.x - spacing.offset.x, spacing.lane.y - spacing.offset.y) < 0.05) {
     if (clears(intended)) {
-      spacing.status = 'passing'
-      return true
+      return advance('passing')
     }
     const normal = { x: -heading.y, y: heading.x }
     const sign = spacing.side
@@ -554,8 +603,7 @@ export function spacedStep(
     }
   }
   if (clears(intended)) {
-    spacing.status = 'passing'
-    return true
+    return advance('passing')
   }
   const clearance = (point: Point) =>
     Math.min(...others.map(other => circleClearance(point, radius, other)))

@@ -4,7 +4,7 @@ import { climberSprites } from './climber-art'
 import { buildClimbingRoutes, climbingPoint, type ClimbingRoute } from './climbing-route'
 import { pixels } from './pixels'
 import { trailRandom } from './random'
-import { travelerLimits } from './traveler-settings'
+import { alpineRouteCapacity } from './scene-settings'
 
 type Phase = 'ascending' | 'resting' | 'descending'
 type Climber = {
@@ -124,7 +124,7 @@ export function createAlpineClimbers(scene: HTMLElement, signal: AbortSignal) {
         availableRoutes = buildClimbingRoutes(
           alpine,
           nextSeed,
-          travelerLimits.alpinists.max,
+          Math.max(alpineRouteCapacity, count),
           ranges,
         )
         geometry = signature

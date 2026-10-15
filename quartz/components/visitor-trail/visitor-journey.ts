@@ -1,5 +1,5 @@
-import type { CampSettings } from './camp-settings'
 import type { JourneyRoute } from './hiker-journey'
+import type { CampSettings } from './scene-settings'
 import { svgPathGeometry } from '../../util/svg-geometry'
 import {
   actorSpacing,
