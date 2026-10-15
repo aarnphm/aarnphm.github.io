@@ -66,11 +66,14 @@ const css = transform({
 }).code.toString()
 const worker = await bundle('quartz/components/visitor-trail/tree-worker.ts')
 const navigation = await bundle('quartz/components/visitor-trail/navigation-worker.ts')
+// Baselines from before the scenery worker never read this define.
+const scenery = await bundle('quartz/components/visitor-trail/scenery-worker.ts').catch(() => null)
 const frame = await bundle('quartz/components/visitor-trail/frame.ts', {
   plugins: [patches],
   define: {
     TRAIL_TREE_WORKER_SOURCE: JSON.stringify(worker.outputFiles[0].text),
     TRAIL_NAVIGATION_WORKER_SOURCE: JSON.stringify(navigation.outputFiles[0].text),
+    TRAIL_SCENERY_WORKER_SOURCE: JSON.stringify(scenery?.outputFiles[0].text ?? ''),
     TRAIL_SCENE_STYLES: JSON.stringify(css),
   },
 })

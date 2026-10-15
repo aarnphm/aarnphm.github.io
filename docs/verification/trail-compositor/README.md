@@ -11,6 +11,7 @@ Task: make the homepage trail opening and the motion after it as smooth as possi
 - When hidden, the surface still releases its segment textures, but it keeps the retained frame state, because the restored pixels are identical. Reopening does not repaint everything.
 - `actor-spacing.ts`: `readActors` matches `[data-trail-collision]` once per frame instead of once per journey call.
 - `crown-wind.ts`: the gust step uses the scroll offset instead of `getBoundingClientRect()`, so it does not force layout after other writes.
+- `scenery-worker.ts` paints the terraces, hinterland, terrain (ravine, puddles, fords, meadow, wayside), mountain backdrop and foreground repoussoir trees off the main thread. It sends each part as soon as it is ready, while the main thread samples routes and plans the forest. If a worker cannot start or fails, `scenery-workers.ts` paints the remaining parts on the main thread when the scene needs them.
 
 ## Replay
 
@@ -47,7 +48,17 @@ Recorded on 2026-10-15 in a 4-core cloud VM with no GPU (Chromium 141, SwiftShad
 
 In this VM, software GL is the bottleneck. Display swaps take 200–400 ms, and uncapped `requestAnimationFrame` runs show multi-second backpressure stalls in both builds. Use these numbers as relative GPU and call load, not as expected frame rates on hardware. At DPR 2, SwiftShader presents about 1 frame per second, so changes accumulate between frames and most frames are near-full repaints. Repeat the DPR 2 runs on hardware.
 
+Page load until the hidden scene is ready, long animation frames (5 runs, median):
+
+|                              | Baseline       | Current |
+| ---------------------------- | -------------- | ------- |
+| Total blocking time          | 509 ms         | 257 ms  |
+| Total long-frame time        | 828 ms         | 559 ms  |
+| Generation slices over 80 ms | 3 (130–180 ms) | 0       |
+
+To check that the worker paints the same scenery, seed `Math.random`, `crypto.randomUUID` and `Date.now` identically in both builds. With live attributes removed (`data-motion-time`, `style`, `transform`, `data-phase`), the ground base, terrain, hinterland, backdrop and repoussoir markup is identical for seeds 1 and 9001. With `Worker` blocked, the fallback renders the scene without errors.
+
 Not changed:
 
 - Chrome 141 does not composite the opening `clip-path: circle()` animation (`compositeFailed`, `unsupportedProperties: ["clip-path"]`). Each opening frame is driven by the main thread and needs a masked pass of the scene layer. Journeys start after the opening, so the main thread is mostly idle during it.
-- Page load still has long tasks while the hidden scene is generated: about 230 ms to evaluate the frame script, generation slices of 130–180 ms (terrain, backdrop, wayside, repoussoir), and one forced layout of the generated SVG (about 300 ms in this VM).
+- The frame script's first evaluation is still one long frame, about 250 ms here. About 150 ms of that is `getContext('webgl2')` in SwiftShader, which is much shorter on a GPU.
