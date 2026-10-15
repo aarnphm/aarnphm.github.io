@@ -265,10 +265,11 @@ async function readPreviousCache(): Promise<WahooCache | null> {
 }
 
 export async function writeWahooCache(cache: WahooCache, path = WAHOO_CACHE_FILE): Promise<void> {
-  const temporary = `${path}.tmp-${process.pid}`
-  await fs.mkdir(dirname(path), { recursive: true })
+  const target = await fs.realpath(path).catch(() => path)
+  const temporary = `${target}.tmp-${process.pid}`
+  await fs.mkdir(dirname(target), { recursive: true })
   await fs.writeFile(temporary, JSON.stringify(cache, null, 2))
-  await fs.rename(temporary, path)
+  await fs.rename(temporary, target)
 }
 
 async function main(): Promise<void> {

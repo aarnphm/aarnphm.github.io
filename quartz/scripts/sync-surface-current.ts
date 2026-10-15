@@ -172,11 +172,12 @@ async function loadField(
 }
 
 async function mergeEstimate(estimate: SurfaceCurrentEstimate): Promise<boolean> {
-  await fs.mkdir(dirname(WEATHER), { recursive: true })
-  const path = `${WEATHER}.tmp-${process.pid}-${randomUUID()}`
+  const target = await fs.realpath(WEATHER).catch(() => WEATHER)
+  await fs.mkdir(dirname(target), { recursive: true })
+  const path = `${target}.tmp-${process.pid}-${randomUUID()}`
   try {
     for (let attempt = 0; attempt < 3; attempt += 1) {
-      const original = await fs.readFile(WEATHER, 'utf8')
+      const original = await fs.readFile(target, 'utf8')
       const latest: unknown = JSON.parse(original)
       if (!isRecord(latest) || !isRecord(latest.activities))
         throw new Error('Weather cache changed shape during sync')
@@ -199,8 +200,8 @@ async function mergeEstimate(estimate: SurfaceCurrentEstimate): Promise<boolean>
         },
       }
       await fs.writeFile(path, JSON.stringify(merged, null, 2))
-      if ((await fs.readFile(WEATHER, 'utf8')) !== original) continue
-      await fs.rename(path, WEATHER)
+      if ((await fs.readFile(target, 'utf8')) !== original) continue
+      await fs.rename(path, target)
       return true
     }
     throw new Error('Weather cache changed repeatedly during surface current merge')

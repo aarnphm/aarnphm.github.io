@@ -334,11 +334,12 @@ export async function writeActivityBridgeLedgerAtomic(
   ledger: ActivityBridgeLedger,
   path = ACTIVITY_BRIDGE_LEDGER_FILE,
 ): Promise<void> {
-  const temporary = `${path}.tmp-${process.pid}-${Date.now()}`
-  await fs.mkdir(dirname(path), { recursive: true })
+  const target = await fs.realpath(path).catch(() => path)
+  const temporary = `${target}.tmp-${process.pid}-${Date.now()}`
+  await fs.mkdir(dirname(target), { recursive: true })
   try {
     await fs.writeFile(temporary, JSON.stringify(ledger, null, 2))
-    await fs.rename(temporary, path)
+    await fs.rename(temporary, target)
   } finally {
     await fs.rm(temporary, { force: true })
   }

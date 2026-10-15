@@ -710,10 +710,11 @@ export async function writeWahooRefreshToken(
   refreshToken: string,
   path = WAHOO_REFRESH_TOKEN_FILE,
 ): Promise<void> {
-  const temporary = `${path}.tmp-${process.pid}`
-  await fs.mkdir(dirname(path), { recursive: true })
+  const target = await fs.realpath(path).catch(() => path)
+  const temporary = `${target}.tmp-${process.pid}`
+  await fs.mkdir(dirname(target), { recursive: true })
   await fs.writeFile(temporary, `${refreshToken}\n`, { mode: 0o600 })
-  await fs.rename(temporary, path)
+  await fs.rename(temporary, target)
 }
 
 export async function readWahooCloudCredentials(

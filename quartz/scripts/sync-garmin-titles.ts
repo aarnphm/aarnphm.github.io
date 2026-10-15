@@ -153,10 +153,11 @@ export async function persistGarminTitleUpdates(
     const title = titles.get(activity.id)
     if (title != null) activity.name = title
   }
-  const temporary = `${path}.${randomUUID()}.tmp`
+  const target = await fs.realpath(path).catch(() => path)
+  const temporary = `${target}.${randomUUID()}.tmp`
   try {
     await fs.writeFile(temporary, JSON.stringify(cache, null, 2))
-    await fs.rename(temporary, path)
+    await fs.rename(temporary, target)
   } finally {
     await fs.rm(temporary, { force: true })
   }

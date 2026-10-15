@@ -41,11 +41,12 @@ export function readStravaCacheFileSync(path: string): StravaRawCache | null {
 }
 
 export async function writeStravaCacheFile(path: string, cache: StravaRawCache): Promise<void> {
-  const temporary = `${path}.tmp-${process.pid}-${randomUUID()}`
-  await fsp.mkdir(dirname(path), { recursive: true })
+  const target = await fsp.realpath(path).catch(() => path)
+  const temporary = `${target}.tmp-${process.pid}-${randomUUID()}`
+  await fsp.mkdir(dirname(target), { recursive: true })
   try {
     await fsp.writeFile(temporary, JSON.stringify(cache, null, 2))
-    await fsp.rename(temporary, path)
+    await fsp.rename(temporary, target)
   } finally {
     await fsp.rm(temporary, { force: true })
   }
