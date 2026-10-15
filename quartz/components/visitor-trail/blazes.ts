@@ -6,13 +6,16 @@ import { trailIds } from './layout'
 // same link keeps the same blaze between visits.
 export function mountTrailBlazes(scene: HTMLElement, signal: AbortSignal) {
   const document = scene.ownerDocument
+  // The trail script runs in a srcdoc frame, whose own location has a null origin. The board's
+  // links are local when they share the page's origin.
+  const origin = document.location.origin
   const routes = new Map<string, number>()
   const blazeOf = (link: HTMLAnchorElement) => {
     const landing = link.closest('.landing')
-    if (!landing || link.origin !== location.origin) return null
+    if (!landing || link.origin !== origin) return null
     if (!routes.size)
       for (const other of landing.querySelectorAll<HTMLAnchorElement>('a[href]'))
-        if (other.origin === location.origin && !routes.has(other.pathname))
+        if (other.origin === origin && !routes.has(other.pathname))
           routes.set(other.pathname, routes.size % trailIds.length)
     return routes.get(link.pathname) ?? null
   }

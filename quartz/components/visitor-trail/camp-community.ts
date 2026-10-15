@@ -20,7 +20,6 @@ import {
   campRoutine,
   type CampRoutine,
 } from './camp-routine'
-import { defaultCampSettings, type CampSettings } from './camp-settings'
 import { campFigure, trailCampsite } from './campsite'
 import { bootImpression, footprintTransform } from './footprints'
 import {
@@ -33,6 +32,7 @@ import {
 } from './landscape'
 import { detourTrail, replanOccupiedWaypoints } from './obstacle-route'
 import { pixels } from './pixels'
+import { sceneSettings, type CampSettings } from './scene-settings'
 import { trailSnowBank } from './winter'
 
 type Person = {
@@ -126,7 +126,7 @@ export function mountCampCommunity(
   const canvas = scene.querySelector<SVGSVGElement>('.trail-canvas')
   const space = canvas ? createSvgSpace(canvas, signal) : null
   let landscape: Landscape | null = null
-  let settings = { ...defaultCampSettings }
+  let settings = { ...sceneSettings.camps }
   let seed = 0
   let sites: CampSite[] = []
   let fires: SVGGElement[] = []

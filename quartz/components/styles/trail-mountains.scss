@@ -2,6 +2,9 @@
   .trail-backdrop {
     pointer-events: none;
   }
+  [data-formation] {
+    shape-rendering: crispEdges;
+  }
   .trail-mountain-rock {
     fill: color-mix(in srgb, var(--gray) 24%, var(--light));
   }

@@ -80,6 +80,30 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
   let pet: DOMRect | null = null
   let petRead = 0
 
+  const treeBoxes = new WeakMap<SVGGElement, DOMRect>()
+  const spriteCache = new Map<string, HTMLCanvasElement>()
+  const leafSprite = (tone: string, shape: number, pose: number, cell: number) => {
+    const key = `${tone}:${shape}:${pose}:${cell}`
+    const cached = spriteCache.get(key)
+    if (cached) return cached
+    const rows = shapes[shape]![pose]!
+    const sprite = document.createElement('canvas')
+    sprite.width = (rows[0]?.length ?? 3) * cell
+    sprite.height = rows.length * cell
+    const paint = sprite.getContext('2d')
+    if (paint) {
+      paint.fillStyle = tone
+      for (let ry = 0; ry < rows.length; ry++) {
+        const row = rows[ry]!
+        for (let rx = 0; rx < row.length; rx++) {
+          if (row.charCodeAt(rx) === 35) paint.fillRect(rx * cell, ry * cell, cell, cell)
+        }
+      }
+    }
+    spriteCache.set(key, sprite)
+    return sprite
+  }
+
   // Trees move when the forest is redrawn, so the crowns are read again every few seconds.
   const measure = (time: number) => {
     measured = time
@@ -96,7 +120,11 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
     for (const tree of scene.querySelectorAll<SVGGElement>('.trail-tree[data-tree]')) {
       const tones = kinds[tree.dataset.tree ?? '']
       if (!tones) continue
-      const box = tree.getBBox()
+      let box = treeBoxes.get(tree)
+      if (!box) {
+        box = tree.getBBox()
+        treeBoxes.set(tree, box)
+      }
       const x = Number(tree.dataset.groundX)
       const ground = Number(tree.dataset.groundY)
       if (!box.width || !Number.isFinite(x) || !Number.isFinite(ground)) continue
@@ -139,7 +167,6 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
     const visible =
       scene.dataset.trailVisible === 'true' &&
       scene.dataset.trailOpening === 'complete' &&
-      (scene.dataset.trailRenderer !== 'webgl' || scene.dataset.trailAmbientReady === 'true') &&
       scene.dataset.foliageSeason === 'autumn' &&
       scene.dataset.weatherMotion !== 'paused'
     canvas.hidden = !visible
@@ -166,7 +193,7 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
           vy: 6 + random() * 6,
           sway: (3 + random() * 6) * cell,
           phase: random() * Math.PI * 2,
-          tone: tree.tones[Math.floor(random() * tree.tones.length)],
+          tone: tree.tones[Math.floor(random() * tree.tones.length)]!,
           shape: Math.floor(random() * shapes.length),
           cell,
           rest: null,
@@ -180,7 +207,7 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
           ?.getBoundingClientRect() ?? null
     }
     for (let index = leaves.length - 1; index >= 0; index--) {
-      const leaf = leaves[index]
+      const leaf = leaves[index]!
       if (leaf.rest !== null) {
         const x = leaf.x + bounds.left
         const y = leaf.y + bounds.top
@@ -196,7 +223,10 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
           leaf.vy = -28 - random() * 20
           leaf.vx = Math.sign(x - (pet.left + pet.right) / 2 || 1) * 60
           leaf.ground = leaf.y + random() * 4
-        } else if (time - leaf.rest > restLife) leaves.splice(index, 1)
+        } else if (time - leaf.rest > restLife) {
+          leaves[index] = leaves[leaves.length - 1]!
+          leaves.pop()
+        }
         continue
       }
       const gust = gustAt(time, leaf.x, leaf.y, air)
@@ -210,31 +240,31 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
         leaf.y = leaf.ground
         leaf.rest = time
       }
-      if (leaf.x < -20 || leaf.x > scene.clientWidth + 20) leaves.splice(index, 1)
+      if (leaf.x < -20 || leaf.x > scene.clientWidth + 20) {
+        leaves[index] = leaves[leaves.length - 1]!
+        leaves.pop()
+      }
     }
     context.clearRect(0, top, scene.clientWidth, bottom - top)
     for (const leaf of leaves) {
       if (leaf.y < top || leaf.y > bottom) continue
-      const frames = shapes[leaf.shape]
       // Resting leaves lie face up and fade; falling leaves turn edge-on for part of each sway.
-      const rows = leaf.rest !== null ? frames[0] : frames[Math.sin(leaf.phase * 2) > 0.3 ? 1 : 0]
+      const pose = leaf.rest !== null ? 0 : Math.sin(leaf.phase * 2) > 0.3 ? 1 : 0
+      const sprite = leafSprite(leaf.tone, leaf.shape, pose, leaf.cell)
       const { cell } = leaf
       const ox = Math.round(leaf.x / cell) * cell
-      const oy = Math.round((leaf.y - rows.length * cell) / cell) * cell
+      const oy = Math.round((leaf.y - sprite.height) / cell) * cell
       context.globalAlpha =
         leaf.rest === null ? 1 : Math.max(0, Math.min(1, (restLife - (time - leaf.rest)) / 4000))
-      context.fillStyle = leaf.tone
-      rows.forEach((row, ry) =>
-        [...row].forEach((mark, rx) => {
-          if (mark === '#') context.fillRect(ox + rx * cell, oy + ry * cell, cell, cell)
-        }),
-      )
+      context.drawImage(sprite, ox, oy)
     }
     context.globalAlpha = 1
     if (rate > 0 || leaves.length) frame = view.requestAnimationFrame(step)
     else {
       last = 0
-      context.clearRect(0, 0, scene.clientWidth, scene.clientHeight)
+      canvas.width = 1
+      canvas.height = 1
+      measured = -Infinity
     }
   }
   // A hidden page never runs its frames, so the fall waits for the page to show again.
@@ -252,7 +282,6 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
       'data-trail-visible',
       'data-weather-motion',
       'data-trail-opening',
-      'data-trail-ambient-ready',
     ],
   })
   view.addEventListener(
@@ -269,6 +298,9 @@ export function mountLeafFall(scene: HTMLElement, signal: AbortSignal) {
     () => {
       view.cancelAnimationFrame(frame)
       watch.disconnect()
+      canvas.width = 1
+      canvas.height = 1
+      spriteCache.clear()
       canvas.remove()
     },
     { once: true },
