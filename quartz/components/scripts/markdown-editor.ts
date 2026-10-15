@@ -5,6 +5,7 @@ import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language'
 import { EditorState, Prec, type Extension } from '@codemirror/state'
 import { EditorView, keymap, lineNumbers, placeholder } from '@codemirror/view'
 import TurndownService from 'turndown'
+import { completionTheme } from '../../util/codemirror-completion-theme'
 import { codemirrorCodeLanguage } from '../../util/codemirror-language'
 import { codemirrorChangedTextIsBlank, codemirrorTextIsBlank } from '../../util/codemirror-text'
 import { completionSources } from '../multiplayer/completions'
@@ -190,6 +191,7 @@ export class MarkdownEditor {
       extensions.unshift(markdown())
       extensions.push(
         autocompletion({ override: completionSources, closeOnBlur: false, activateOnTyping: true }),
+        completionTheme,
       )
       extensions.push(
         EditorView.domEventHandlers({

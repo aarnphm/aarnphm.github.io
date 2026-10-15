@@ -271,42 +271,6 @@ body[data-is-base='true'] #quartz-root > .page-body-grid > .page-header {
     .cm-selectionBackground {
       background: var(--base-query-selected);
     }
-
-    .cm-tooltip {
-      border: 1px solid var(--base-query-line);
-      border-radius: var(--radius-none);
-      box-shadow: none;
-      background: var(--light);
-      color: var(--dark);
-      max-width: min(32rem, 80vw);
-    }
-
-    .cm-tooltip-autocomplete > ul {
-      font: var(--text-meta) / 1.6 var(--codeFont);
-      max-width: 100%;
-    }
-
-    .cm-tooltip-autocomplete > ul > li {
-      padding: var(--space-1) var(--space-2);
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-
-    .cm-tooltip-autocomplete > ul > li[aria-selected] {
-      color: var(--dark);
-      background: var(--base-query-selected);
-    }
-
-    .cm-completionDetail {
-      color: var(--darkgray);
-      font-family: var(--bodyFont);
-    }
-
-    .cm-tooltip.cm-completionInfo {
-      padding: var(--space-2);
-      font-family: var(--bodyFont);
-      line-height: 1.5;
-    }
   }
 
   .base-query-sorts {
