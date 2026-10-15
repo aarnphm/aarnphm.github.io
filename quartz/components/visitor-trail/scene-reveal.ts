@@ -60,7 +60,7 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
   let animation: Animation | null = null
   const reduced = view.matchMedia('(prefers-reduced-motion: reduce)')
   const finish = () => {
-    const revealing = scene.dataset.trailReveal === 'revealing'
+    const phase = scene.dataset.trailReveal
     requested = false
     if (animation) {
       animation.onfinish = null
@@ -69,29 +69,45 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
     }
     host.style.removeProperty('clip-path')
     delete scene.dataset.trailReveal
-    if (revealing) host.dispatchEvent(new Event('trail:reveal-end'))
+    if (phase === 'closing') host.dispatchEvent(new Event('trail:closed'))
+    else if (phase === 'revealing') host.dispatchEvent(new Event('trail:reveal-end'))
+  }
+  const animate = (open: boolean) => {
+    scene.dataset.trailReveal = open ? 'revealing' : 'closing'
+    if (!animation) {
+      const center = `${origin.x}px ${origin.y}px`
+      animation = host.animate(
+        [
+          { clipPath: `circle(0px at ${center})` },
+          { clipPath: `circle(${Math.ceil(radius)}px at ${center})` },
+        ],
+        { duration: trailThemeDuration, easing: 'ease-out', fill: 'both' },
+      )
+      if (!open) animation.currentTime = trailThemeDuration
+      animation.onfinish = () => {
+        if (animation?.playState === 'finished') finish()
+      }
+    }
+    // Synchronize the current position before reversing an interrupted sweep.
+    animation.updatePlaybackRate(open ? 1 : -1)
   }
   const reveal = () => {
     if (!requested || host.hidden || scene.dataset.trailOpening !== 'complete') return
     requested = false
     if (reduced.matches) return finish()
-    scene.dataset.trailReveal = 'revealing'
-    const center = `${origin.x}px ${origin.y}px`
-    // Interpolate the reveal edge without rebuilding a stepped polygon each frame.
-    animation = host.animate(
-      [
-        { clipPath: `circle(0px at ${center})` },
-        { clipPath: `circle(${Math.ceil(radius)}px at ${center})` },
-      ],
-      { duration: trailThemeDuration, easing: 'ease-out', fill: 'both' },
-    )
-    animation.onfinish = finish
+    animate(true)
   }
   const open = () => {
-    finish()
+    if (animation) return animate(true)
     requested = true
     host.style.clipPath = 'inset(50%)'
     reveal()
+  }
+  const close = (event: Event) => {
+    requested = false
+    if (host.hidden || scene.dataset.trailOpening !== 'complete' || reduced.matches) return finish()
+    event.preventDefault()
+    animate(false)
   }
   const present = () => {
     if (
@@ -108,6 +124,7 @@ export function mountSceneReveal(scene: HTMLElement, host: HTMLElement, signal: 
     if (!host.hidden) host.dispatchEvent(new Event('trail:revealed'))
   }
   host.addEventListener('trail:open', open, { signal })
+  host.addEventListener('trail:close', close, { signal })
   host.addEventListener('trail:hide', finish, { signal })
   view.addEventListener('resize', finish, { signal })
   reduced.addEventListener('change', () => reduced.matches && finish(), { signal })

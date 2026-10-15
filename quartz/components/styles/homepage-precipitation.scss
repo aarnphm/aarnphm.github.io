@@ -20,8 +20,22 @@
     animation: homepage-weather-fall var(--homepage-weather-duration, 6s) linear infinite;
     animation-delay: var(--homepage-weather-delay, 0s);
   }
-  &[data-precipitation='rain'] {
+  &[data-precipitation='rain'],
+  &[data-precipitation='drizzle'] {
     color: color-mix(in srgb, var(--gray) 65%, #82918c);
+  }
+  &[data-precipitation='drizzle'] span {
+    opacity: 0.12;
+  }
+  // Lightning lifts the whole page for two strokes per storm period, on the trail bolt's clock.
+  // It stays faint: well under the general flash threshold and never more than twice in 11 s.
+  .homepage-storm-flash {
+    position: absolute;
+    inset: 0;
+    background: #f4efd8;
+    opacity: 0;
+    animation: homepage-storm-flash 11s linear infinite;
+    animation-delay: var(--homepage-storm-delay, 0s);
   }
   &[data-precipitation='snow'] span {
     box-sizing: border-box;
@@ -31,7 +45,8 @@
     border: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
     opacity: 0.38;
   }
-  &[data-motion='paused'] span {
+  &[data-motion='paused'] span,
+  &[data-motion='paused'] .homepage-storm-flash {
     animation-play-state: paused;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -46,5 +61,26 @@
   to {
     transform: translate3d(var(--homepage-weather-drift, 0px), calc(100dvh + 24px), 0)
       rotate(var(--homepage-rain-tilt, 0deg));
+  }
+}
+
+@keyframes homepage-storm-flash {
+  0%,
+  0.9%,
+  2.2%,
+  100% {
+    opacity: 0;
+  }
+  1%,
+  1.4% {
+    opacity: 0.1;
+  }
+  1.5%,
+  1.9% {
+    opacity: 0;
+  }
+  2%,
+  2.1% {
+    opacity: 0.07;
   }
 }

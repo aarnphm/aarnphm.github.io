@@ -608,6 +608,58 @@ $pet-looks: (
   }
 }
 
+// Heat where the visitor is (27 °C and over): sunglasses, in place of reading glasses; the
+// librarian and the film nerd keep their own pair, and after dark it takes them off. Its tan (pet.inline.ts) shows while it is hot.
+.pet-svg[data-heat]:not([data-outfit='library'], [data-outfit='cinema'], [data-lantern]) {
+  [data-part='sunglasses'] {
+    display: inline;
+  }
+
+  [data-part='glasses'] {
+    display: none;
+  }
+}
+
+.pet-svg[data-heat] [data-part='tan'] {
+  display: inline;
+  opacity: calc(var(--pet-tan, 0) * 0.5);
+}
+
+// On a sunny hot day, when it would get its laptop out, it lies back on a sun lounger instead,
+// turned 30° into the backrest with its legs out along the cushion, and tans as it lies there.
+.pet-svg[data-beach][data-state='work']:is([data-kind='stand'], [data-kind='floor']) {
+  [data-part='laptop'],
+  [data-part='legs'] {
+    display: none;
+  }
+
+  [data-part='lounger'] {
+    display: inline;
+  }
+
+  .pet-look {
+    translate: 0 0;
+  }
+
+  .pet-body {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    translate: 0 -0.1px;
+    rotate: 32deg;
+    animation: none;
+  }
+
+  .pet-tan {
+    animation: pet-tan var(--pet-tan-left, 120s) linear forwards;
+  }
+}
+
+@keyframes pet-tan {
+  to {
+    opacity: 0.5;
+  }
+}
+
 // The friend keeps its sprout, so it goes without the toque.
 .garden-pet-friend .pet-svg[data-cold] [data-part='toque'] {
   display: none;

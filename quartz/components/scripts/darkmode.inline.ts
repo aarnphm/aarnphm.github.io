@@ -33,12 +33,23 @@ const resolveTheme = (preference: ThemePreference): Theme =>
       ? getSystemTheme()
       : preference
 
+// The homepage trail draws the visitor's own sky, so that page follows their sun whatever the saved
+// preference says. The preference holds on every other page.
+const onHomepage = () => {
+  const slug = document.body?.dataset.slug
+  return slug ? slug === 'index' : /^\/(index(\.html)?)?$/.test(location.pathname)
+}
+const effectivePreference = (preference: ThemePreference): ThemePreference =>
+  onHomepage() ? 'daylight' : preference
+
 const nextPreference = (preference: ThemePreference): ThemePreference => {
   const index = preferenceOrder.indexOf(preference)
   return preferenceOrder[(index + 1) % preferenceOrder.length]
 }
 
 const describePreference = (preference: ThemePreference, resolved: Theme) => {
+  if (preference !== 'daylight' && onHomepage())
+    return `Theme preference: ${preference}; the homepage follows your sky (${resolved})`
   switch (preference) {
     case 'daylight':
       return `Theme preference: realtime (${resolved})`
@@ -94,7 +105,12 @@ let changeTheme = (update: () => void, _theme: Theme) => update()
 
 const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
   const event: CustomEventMap['toast'] = new CustomEvent('toast', {
-    detail: { message: `current theme: ${preference}` },
+    detail: {
+      message:
+        preference !== 'daylight' && onHomepage()
+          ? `current theme: ${preference} (the homepage follows your sky)`
+          : `current theme: ${preference}`,
+    },
   })
   document.dispatchEvent(event)
 }
@@ -128,10 +144,10 @@ const applyPreference = (
   options: { persist?: boolean; emit?: boolean; animate?: boolean } = {},
 ) => {
   activePreference = preference
-  const resolvedTheme = resolveTheme(preference)
+  const mode = effectivePreference(preference)
+  const resolvedTheme = resolveTheme(mode)
   const themeChanged = document.documentElement.getAttribute('saved-theme') !== resolvedTheme
-  const changed =
-    themeChanged || document.documentElement.getAttribute('data-theme-mode') !== preference
+  const changed = themeChanged || document.documentElement.getAttribute('data-theme-mode') !== mode
 
   if (localStorage.getItem(LEGACY_STORAGE_KEY) !== resolvedTheme)
     localStorage.setItem(LEGACY_STORAGE_KEY, resolvedTheme)
@@ -142,8 +158,8 @@ const applyPreference = (
   const update = () => {
     if (document.documentElement.getAttribute('saved-theme') !== resolvedTheme)
       document.documentElement.setAttribute('saved-theme', resolvedTheme)
-    if (document.documentElement.getAttribute('data-theme-mode') !== preference)
-      document.documentElement.setAttribute('data-theme-mode', preference)
+    if (document.documentElement.getAttribute('data-theme-mode') !== mode)
+      document.documentElement.setAttribute('data-theme-mode', mode)
     updateTogglePresentation(resolvedTheme, preference)
     if (changed && options.emit !== false) emitThemeChangeEvent(resolvedTheme)
   }
@@ -160,6 +176,8 @@ document.addEventListener('nav', () => {
   if (activeSignal === signal) return
   activeSignal = signal
   changeTheme = mountHomepageTheme(signal)
+  // Entering or leaving the homepage swaps between the sky and the saved preference.
+  applyPreference(activePreference, { persist: false })
 
   signal.addEventListener(
     'abort',
@@ -212,8 +230,13 @@ document.addEventListener('nav', () => {
       current.source === 'clock-estimate' && knownCell
         ? sampleVisitorDaylight(knownCell, current.at)
         : current
-    if (activePreference === 'daylight') applyPreference(activePreference, { persist: false })
-    else updateTogglePresentation(resolveTheme(activePreference), activePreference)
+    if (effectivePreference(activePreference) === 'daylight')
+      applyPreference(activePreference, { persist: false })
+    else
+      updateTogglePresentation(
+        resolveTheme(effectivePreference(activePreference)),
+        activePreference,
+      )
   }
   subscribeVisitorDaylight(
     document,
@@ -232,7 +255,7 @@ document.addEventListener('nav', () => {
     const timer = window.setInterval(tick, 60_000)
     signal.addEventListener('abort', () => window.clearInterval(timer), { once: true })
   }
-  updateTogglePresentation(resolveTheme(activePreference), activePreference)
+  updateTogglePresentation(resolveTheme(effectivePreference(activePreference)), activePreference)
 
   const weatherButton = document.querySelector<HTMLButtonElement>('.visitor-weather-toggle')
   weatherButton?.addEventListener(

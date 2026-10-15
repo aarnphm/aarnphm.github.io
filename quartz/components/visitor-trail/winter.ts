@@ -4,7 +4,7 @@ import { type Landscape, type Point } from './landscape'
 import { trailRandom } from './random'
 
 export function trailWinter(weather: TrailWeather | null, festiveSnow = false) {
-  const snowing = visitorPrecipitation(weather?.code).kind === 'snow'
+  const snowing = visitorPrecipitation(weather?.code).fall === 'snow'
   const temperature = weather?.temperatureC ?? null
   const forecastCover = Math.max(
     snowing ? (weather?.code === 75 || weather?.code === 86 ? 0.95 : 0.65) : 0,

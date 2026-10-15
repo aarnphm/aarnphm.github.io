@@ -118,6 +118,21 @@ export function trailCampsite(seated = true) {
     <path class="trail-smoke" d="M-2-33h3v3h-3Z"/>
     <path class="trail-smoke trail-smoke-late" d="M4-40h3v3H4Z"/>
     </g>
+    <g class="trail-smoulder" aria-hidden="true">
+      ${[
+        [-3, -8, 6],
+        [0, -15, 4],
+        [-3, -21, 6],
+        [1, -28, 4],
+        [-2, -35, 5],
+        [2, -42, 3],
+      ]
+        .map(
+          ([x, y, size], index) =>
+            `<path class="trail-smoulder-puff" style="--smoulder-delay:${(index * -1).toFixed(1)}s" d="M${x} ${y}h${size}v${size}h${-size}Z"/>`,
+        )
+        .join('')}
+    </g>
     <g class="trail-rocks">
       <path d="M-18 0h5v3h-5ZM13 0h5v3h-5ZM-10 9h5v3h-5ZM5 9h5v3H5Z"/>
     </g>

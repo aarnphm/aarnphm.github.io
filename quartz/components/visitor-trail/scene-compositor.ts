@@ -1971,7 +1971,7 @@ export function mountSceneCompositor(
     if (scene.dataset.trailRendered !== 'true' && scene.dataset.trailRasterReady !== 'true') return
     // The native reveal can present the retained buffer without resampling the live SVG.
     if (
-      scene.dataset.trailReveal === 'revealing' &&
+      scene.dataset.trailReveal !== undefined &&
       scene.dataset.trailOpening === 'complete' &&
       !sizeDirty &&
       !flush &&
@@ -2349,6 +2349,11 @@ export function mountSceneCompositor(
     { signal },
   )
   host.addEventListener('trail:reveal-end', schedule, { signal })
+  host.addEventListener(
+    'trail:close',
+    () => pauseAnimations(svg.getAnimations({ subtree: true })),
+    { signal },
+  )
   host.addEventListener(
     'trail:show',
     () => {

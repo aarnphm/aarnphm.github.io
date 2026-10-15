@@ -202,11 +202,18 @@ const state = (now: number): State => {
 // The weather where the visitor is, from the worker's /api/weather (cached there and in the browser
 // for 15 minutes). How cold: the wind chill, as Environment Canada works it out for 10 °C and under
 // with 5 km/h of wind or more; 10 °C and under is 'cool', 0 °C and under 'cold'. Rain: drizzle, rain
-// or a thunderstorm by its weather code, and snow. A lantern in fog, at dusk and at night (pet.scss).
+// or a thunderstorm by its weather code, and snow. A lantern in fog, at dusk and at night; sunglasses in the heat (pet.scss).
 let chill: '' | 'cool' | 'cold' = ''
 let rain = false
 let snow = false
 let lantern = false
+let heat = false
+let beach = false
+// How tanned it is, 0 to 1: it deepens while it lies on its lounger, full after tanMs of sun, and
+// lasts as long as the page is open.
+const tanMs = 120_000
+let tan = 0
+let tanFrom: number | null = null
 let weatherLoad: Promise<void> | null = null
 const loadWeather = () =>
   (weatherLoad ??= fetch('/api/weather')
@@ -229,6 +236,9 @@ const loadWeather = () =>
       const sun = nextSunEvent(forecast.solar, now)
       const dark = sun ? sun.kind === 'sunrise' || sun.at - now < 45 * 60_000 : w.day === false
       lantern = fog || dark
+      // 27 °C and over is heat; a clear or partly cloudy one by day is a day for the beach.
+      heat = w.temp >= 27
+      beach = heat && !lantern && fall === 'none' && w.code <= 2
       render()
     })
     .catch(() => {}))
@@ -238,6 +248,16 @@ const render = () => {
   const next = state(performance.now())
   if (svg.dataset.state !== next) svg.dataset.state = next
   svg.dataset.kind = perch?.kind ?? 'stand'
+  const now = performance.now()
+  const lying =
+    beach && next === 'work' && (svg.dataset.kind === 'stand' || svg.dataset.kind === 'floor')
+  if (lying && tanFrom === null) tanFrom = now
+  if (!lying && tanFrom !== null) {
+    tan = Math.min(1, tan + (now - tanFrom) / tanMs)
+    tanFrom = null
+  }
+  svg.style.setProperty('--pet-tan', tan.toFixed(3))
+  svg.style.setProperty('--pet-tan-left', `${Math.round((1 - tan) * tanMs)}ms`)
   // On the home page's trail it wears its walking hat, from the hop on until it leaves the path.
   svg.toggleAttribute('data-hat', !carry && !!perch?.el?.classList.contains('trail-path'))
   const outfit =
@@ -256,6 +276,8 @@ const render = () => {
   svg.toggleAttribute('data-rain', rain)
   svg.toggleAttribute('data-snow', snow)
   svg.toggleAttribute('data-lantern', lantern)
+  svg.toggleAttribute('data-heat', heat)
+  svg.toggleAttribute('data-beach', beach)
   svg.toggleAttribute('data-reading', document.documentElement.getAttribute('reader-mode') === 'on')
   // On the rail it faces the page, its back to the pole.
   root.style.setProperty('--pet-face', String(carry ? 1 : face))
@@ -599,6 +621,8 @@ const wander = () => {
   const free = s === 'idle' || s === 'wait' || s === 'work'
   if (!free || now - lastMove < 3000 || hop || carry || reducedMotion() || document.hidden) return
   if (document.body.dataset.slides === 'true') return
+  // A sunny hot day makes it lazy: it mostly stays put, so it gets to lie out on its lounger.
+  if (beach && Math.random() < 0.75) return
   settled = now
   armQuietTimer()
   if (trailWalk) {
@@ -2030,6 +2054,8 @@ function renderFriend() {
   friendSvg.toggleAttribute('data-rain', rain)
   friendSvg.toggleAttribute('data-snow', snow)
   friendSvg.toggleAttribute('data-lantern', lantern)
+  friendSvg.toggleAttribute('data-heat', heat)
+  friendSvg.toggleAttribute('data-beach', beach)
   friendSvg.toggleAttribute(
     'data-reading',
     document.documentElement.getAttribute('reader-mode') === 'on',
@@ -2553,7 +2579,7 @@ document.addEventListener('nav', () => {
     trailFrame = 0
     if (signal.aborted || !scene || scene.hidden || document.hidden || reducedMotion()) return
     const drawing = trailScene(document)
-    if (drawing?.dataset.trailOpening !== 'complete' || drawing.dataset.trailReveal === 'revealing')
+    if (drawing?.dataset.trailOpening !== 'complete' || drawing.dataset.trailReveal !== undefined)
       return
     if (scene.dataset.trailResizing === 'true') {
       trailWanted ||= !!trailWalk
@@ -2657,6 +2683,7 @@ document.addEventListener('nav', () => {
       queueTrail()
     }
     scene.addEventListener('trail:show', openTrail, { signal })
+    scene.addEventListener('trail:close', pausePageTrail, { signal })
     scene.addEventListener('trail:hide', closeTrail, { signal })
     scene.addEventListener('trail:dispose', closeTrail, { signal })
     scene.addEventListener('trail:reflow', queueTrail, { signal })

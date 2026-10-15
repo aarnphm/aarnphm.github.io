@@ -5,6 +5,7 @@
 // longitude from the clock's offset from UTC.
 
 import { lunarPhase } from '../../util/lunar-phase'
+import { visitorPrecipitation, type VisitorFall } from '../../util/visitor-precipitation'
 
 // Open-Meteo's current conditions, as the worker passes them on.
 export type Weather = {
@@ -21,7 +22,7 @@ export type Weather = {
 }
 export type Site = { lat: number; lon: number; place: string | null; weather: Weather | null }
 
-export type Fall = 'none' | 'drizzle' | 'rain' | 'snow'
+export type Fall = VisitorFall
 export type Sky = {
   cover: number
   fall: Fall
@@ -141,37 +142,11 @@ export function readSky(w: Weather | null): Sky {
       temp: null,
       snow: 0,
     }
-  const c = w.code
-  const steps = (codes: number[], at: number[]) => at[Math.max(0, codes.indexOf(c))]
-  let fall: Fall = 'none'
-  let heavy = 0
-  if (c >= 51 && c <= 57) {
-    fall = 'drizzle'
-    heavy = steps([51, 53, 55, 56, 57], [0.25, 0.4, 0.55, 0.3, 0.5])
-  } else if ((c >= 61 && c <= 67) || (c >= 80 && c <= 82) || c >= 95) {
-    fall = 'rain'
-    heavy = steps(
-      [61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99],
-      [0.35, 0.6, 0.9, 0.4, 0.7, 0.45, 0.7, 1, 0.8, 0.9, 1],
-    )
-  } else if ((c >= 71 && c <= 77) || c === 85 || c === 86) {
-    fall = 'snow'
-    heavy = steps([71, 73, 75, 77, 85, 86], [0.35, 0.6, 0.9, 0.2, 0.5, 0.9])
-  }
-  const fog = c === 45 || c === 48
+  const { fall, heavy, fog, storm } = visitorPrecipitation(w.code)
   // Showers and storms need cloud even when the cover reading lags behind them.
   const cover = Math.max(w.cloud, fall === 'none' ? 0 : 0.75, fog ? 0.9 : 0)
   const snow = typeof w.snow === 'number' && Number.isFinite(w.snow) ? Math.max(0, w.snow) : 0
-  return {
-    cover,
-    fall,
-    heavy,
-    fog,
-    storm: c >= 95,
-    wind: Math.min(1, w.wind / 45),
-    temp: w.temp,
-    snow,
-  }
+  return { cover, fall, heavy, fog, storm, wind: Math.min(1, w.wind / 45), temp: w.temp, snow }
 }
 
 // The snow season on the ranges, from about the middle of October to the middle of May: the ski hill
