@@ -60,6 +60,10 @@ export const analyticsForRange = (data: Analytics, range: AnalyticsRange): Analy
         ...data.engine.vo2max,
         trend: data.engine.vo2max.trend.filter(point => contains(point.weekStart)),
       },
+      lactateThreshold: {
+        ...data.engine.lactateThreshold,
+        heartRateSeries: dated(data.engine.lactateThreshold.heartRateSeries ?? []),
+      },
       abilities: {
         ...data.engine.abilities,
         sports: data.engine.abilities.sports.map(sport => ({

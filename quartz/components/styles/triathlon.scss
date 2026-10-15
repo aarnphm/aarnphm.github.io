@@ -11008,16 +11008,17 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 }
 
-.tri-ana-trend,
-.tri-ana-lactate {
+.tri-ana-trend {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
 }
 
-// The LTHR cap sits under the title with no chart above it, so the flex gap spaces it.
-.tri-ana-lactate > .tri-elev-cap {
-  margin-top: 0;
+.tri-ana-lactate {
+  --tri-lt-head-width: 10rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
 }
 
 .tri-trend-panel {
@@ -11032,13 +11033,34 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-lt-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  display: grid;
+  grid-template-columns: var(--tri-lt-head-width) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
 }
 
-.tri-ana-lactate .tri-trend-note {
-  flex-wrap: wrap;
+.tri-lt-row > .tri-trend-head {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.tri-lt-trend {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.tri-lt-spark {
+  display: block;
+  width: 100%;
+  height: 1.35rem;
+  overflow: visible;
+
+  .tri-trend-level {
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
 }
 
 .tri-trend-head {
