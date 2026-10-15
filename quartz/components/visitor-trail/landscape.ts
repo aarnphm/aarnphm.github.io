@@ -16,7 +16,7 @@ export type Landscape = {
   pond: Pond
   groves: Grove[]
   contours: Point[][]
-  // Alpine runoff meets a shallow cut through the central meadow. The second line joins the pond.
+  // Mountain runoff follows the valley; the pond is a separate basin.
   creek: Point[][]
   stream: Point[]
   // Rolling ridgelines across the meadow, back to front. Each follows a contour and swells into
@@ -75,7 +75,7 @@ export function trailGroundScale(y: number, landscape: Landscape) {
 
 // Rendering and stepping-stone crossings share the same banks. Perspective continues through
 // the valley, with pools and gravel bars varying the section instead of a fixed-width ribbon.
-export function creekSection(point: Point, landscape: Landscape, tributary = false) {
+export function creekSection(point: Point, landscape: Landscape) {
   const distance = Math.max(
     0,
     Math.min(
@@ -84,15 +84,15 @@ export function creekSection(point: Point, landscape: Landscape, tributary = fal
     ),
   )
   const depth = 0.24 + Math.sqrt(distance) * 0.76
-  const pool = (1 + Math.sin(point.x / 91 + point.y / 63 + landscape.relief.phase)) / 2
-  const swell = 0.85 + pool * 0.9 + Math.sin(point.x / 29 - point.y / 41) * 0.08
-  const cut = 0.7 + (1 - pool) * 0.35 + Math.sin(point.x / 137 + point.y / 83) * 0.18
-  const scale = tributary ? 0.62 : 1
+  const phase = landscape.relief.phase
+  const pool = (1 + Math.sin(distance * Math.PI * 7 + phase)) / 2
+  const cut = (1 + Math.sin(distance * Math.PI * 5 - phase * 0.7)) / 2
+  const scale = 0.8 + 0.2 * Math.min(1, landscape.width / 700)
   return {
-    waterHalf: (0.9 + depth * 3) * swell * scale,
-    farBank: (1.2 + depth * 2.4) * cut * scale,
-    nearBank: (2 + depth * 4.2) * cut * scale,
-    shoulder: (2 + depth * 5) * (0.8 + pool * 0.15) * scale,
+    waterHalf: (0.8 + depth * 7.2) * (0.35 + pool * pool * 1.1) * scale,
+    farBank: (0.8 + depth * 3.4) * (0.6 + cut * 0.9) * scale,
+    nearBank: (1.4 + depth * 6.2) * (0.6 + cut * 0.9) * scale,
+    shoulder: (1.5 + depth * 4) * (0.65 + pool * 0.6) * scale,
     depth,
   }
 }
@@ -161,7 +161,6 @@ export function trailLandscape(
     return points
   })
   const flow = trailRandom(seed ^ 0x2545f491)
-  const { pond } = landscape
   // A mountain stream rises on the flank of a peak near the chosen spot and runs down the face
   // toward it, hugging the ridge line at first and steepening as it nears the foot. The
   // background tier fades into the sky, so the stream keeps to the nearer ridges.
@@ -238,25 +237,7 @@ export function trailLandscape(
       course.push({ x: blend('x'), y: blend('y') })
     }
   }
-  // A short channel joins the pond to the creek where they pass closest.
-  const near = course.reduce((best, point) =>
-    pondDistance(point, pond) < pondDistance(best, pond) ? point : best,
-  )
-  const angle = Math.atan2((near.y - pond.y) / pond.ry, (near.x - pond.x) / pond.rx)
-  const mouth = {
-    x: pond.x + Math.cos(angle) * pond.rx * 0.8,
-    y: pond.y + Math.sin(angle) * pond.ry * 0.8,
-  }
-  const channel: Point[] = []
-  const reach = Math.max(2, Math.ceil(Math.hypot(near.x - mouth.x, near.y - mouth.y) / 6))
-  for (let step = 0; step <= reach; step++) {
-    const t = step / reach
-    channel.push({
-      x: mouth.x + (near.x - mouth.x) * t + Math.sin(t * Math.PI) * 4,
-      y: mouth.y + (near.y - mouth.y) * t,
-    })
-  }
-  landscape.creek = [course, channel]
+  landscape.creek = [course]
   landscape.rises = trailRises(landscape, seed)
   return landscape
 }

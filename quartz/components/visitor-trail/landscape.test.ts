@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { creekDistance, creekSection, trailLandscape } from './landscape'
+import { creekDistance, creekSection, pondDistance, trailLandscape } from './landscape'
 
 const seeds = [0, 1, 43, 8192, 2701974569, 4294967295]
 const widths = [320, 390, 700, 1280, 1920, 2880, 5760]
@@ -27,6 +27,9 @@ test('the ravine enters through the central foothills and stays connected to its
       }
       for (let index = 1; index < landscape.stream.length; index++)
         assert(landscape.stream[index].y >= landscape.stream[index - 1].y)
+      for (const line of landscape.creek)
+        for (const point of line)
+          assert(pondDistance(point, landscape.pond) > 1.2, 'The pond must remain separate')
     }
 })
 
@@ -59,9 +62,21 @@ test('the channel cross-section narrows in the distance and includes asymmetric 
   for (const line of landscape.creek)
     for (const point of line) {
       const section = creekSection(point, landscape)
-      const tributary = creekSection(point, landscape, true)
       assert(Object.values(section).every(value => Number.isFinite(value) && value > 0))
-      assert(section.waterHalf + section.nearBank + section.shoulder < 24)
-      assert(tributary.waterHalf < section.waterHalf)
+      assert(section.waterHalf + section.nearBank + section.shoulder < 40)
+    }
+})
+
+test('each valley channel has both confined sections and wider water with varying banks', () => {
+  for (const width of widths)
+    for (const seed of seeds) {
+      const landscape = trailLandscape(width, 1497, 380, { x: width * 0.72, y: 1360 }, seed)
+      const sections = landscape.creek[0]
+        .filter(point => point.y > landscape.meadowTop + 80)
+        .map(point => creekSection(point, landscape))
+      const water = sections.map(section => section.waterHalf)
+      const bank = sections.map(section => section.nearBank)
+      assert(Math.max(...water) / Math.min(...water) > 2, `Uniform water at ${width}, ${seed}`)
+      assert(Math.max(...bank) / Math.min(...bank) > 1.5, `Uniform bank at ${width}, ${seed}`)
     }
 })

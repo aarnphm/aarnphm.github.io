@@ -1,5 +1,6 @@
 import type { Landscape } from './landscape'
-import type { ForestSettings, TreePlacement } from './scenery'
+import type { ForestSettings } from './scene-settings'
+import type { TreePlacement } from './scenery'
 import type { TreeWorkerRequest, TreeWorkerResponse } from './tree-worker-types'
 
 declare const TRAIL_TREE_WORKER_SOURCE: string

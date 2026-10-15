@@ -1,6 +1,7 @@
 import type { JourneyRoute } from './hiker-journey'
 import {
   actorSpacing,
+  canMove,
   circleClearance,
   placeOnReflow,
   publishActor,
@@ -11,10 +12,14 @@ import {
   spacedStep,
   type ActorSpacing,
 } from './actor-spacing'
-import { campPatrolRoute } from './camp-routine'
+import { campPatrolRouteSteps } from './camp-routine'
 import { footprint, footprintTransform } from './footprints'
 import { pondDistance, trailGroundScale, type Landscape, type Point } from './landscape'
-import { replanOccupiedWaypoints } from './obstacle-route'
+import {
+  detourNeighbourhood,
+  replanOccupiedWaypointsSteps,
+  type TrailSearch,
+} from './obstacle-route'
 import { pixels } from './pixels'
 
 type Ranger = {
@@ -33,6 +38,7 @@ type Ranger = {
   failedPlan: string | null
   replans: number
   blocked: boolean
+  plan: { search: TrailSearch; from: Point; input: string | null } | null
 }
 type Stop = Point & { id: string }
 
@@ -148,6 +154,7 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
   const visit = (ranger: Ranger) => {
     if (!landscape || !stops.length) return
     ranger.failedPlan = null
+    ranger.plan = null
     ranger.blocked = false
     const goal = inspectionStop(ranger.site, Number(ranger.element.dataset.parkRanger), ranger.id)
     if (!goal) {
@@ -158,14 +165,51 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
     }
     ranger.phase = 'patrolling'
     ranger.goal = goal
-    ranger.route = campPatrolRoute(ranger.position, ranger.goal, routes, landscape, [
-      ...readTrunks(scene),
-      ...readStationaryActors(scene, ranger.id),
-    ])
+    ranger.route = []
+    const from = { ...ranger.position }
+    ranger.plan = {
+      from,
+      input: null,
+      search: campPatrolRouteSteps(from, goal, routes, landscape, [
+        ...readTrunks(scene),
+        ...readStationaryActors(scene, ranger.id),
+      ]),
+    }
   }
   const tick = (time: number) => {
     frame = 0
     if (host.hidden || document.hidden || signal.aborted || reduced.matches || !landscape) return
+    // All pending patrol searches share a frame budget. The collision step keeps ownership of
+    // movement while a search is suspended, and any movement invalidates its starting point.
+    const deadline = performance.now() + 3
+    for (const ranger of rangers) {
+      const plan = ranger.plan
+      if (!plan) continue
+      if (Math.hypot(ranger.position.x - plan.from.x, ranger.position.y - plan.from.y) > 0.1) {
+        ranger.plan = null
+        ranger.element.dataset.routePlanning = 'idle'
+        continue
+      }
+      while (performance.now() < deadline) {
+        const result = plan.search.next()
+        if (!result.done) continue
+        ranger.plan = null
+        const replacement = result.value
+        ranger.failedPlan = replacement?.length ? null : plan.input
+        if (replacement?.length) {
+          const endpoint = replacement[replacement.length - 1]
+          const camp = stops[ranger.site]
+          if (plan.input !== null && Math.hypot(endpoint.x - camp.x, endpoint.y - camp.y) > 210)
+            visit(ranger)
+          else {
+            ranger.route = replacement
+            ranger.goal = { ...ranger.goal, x: endpoint.x, y: endpoint.y }
+          }
+        }
+        break
+      }
+      ranger.element.dataset.routePlanning = ranger.plan ? 'searching' : 'idle'
+    }
     if (!last) last = time
     if (time - last >= 80) {
       const delta = Math.min(160, time - last)
@@ -189,11 +233,15 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
           }
         }
         if (ranger.phase === 'patrolling') {
+          if (ranger.plan && !ranger.route.length) {
+            render(ranger)
+            continue
+          }
           const scale = trailGroundScale(ranger.position.y, landscape)
-          let replacement: Point[] | null = null
           // The patrol route is already planned. Search again after stepping cannot advance;
           // unchanged failed geometry can wait while collision stepping continues below.
-          if (ranger.blocked) {
+          if (ranger.blocked && !ranger.plan) {
+            const goal = ranger.route[0] ?? ranger.goal
             const planningInput = JSON.stringify([
               ranger.position,
               ranger.route,
@@ -201,7 +249,12 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
               bounds(),
               ranger.spacing.yieldingTo,
               obstacles
-                .filter(body => body.id !== ranger.id)
+                .filter(
+                  body =>
+                    body.id !== ranger.id &&
+                    (body.kind === 'trunk' ||
+                      !canMove(ranger.position, goal, 18 * scale + detourNeighbourhood, [body])),
+                )
                 .map(body => [
                   body.id,
                   body.kind,
@@ -215,30 +268,21 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
             ])
             if (planningInput !== ranger.failedPlan) {
               ranger.replans++
-              replacement = replanOccupiedWaypoints(
-                ranger.id,
-                ranger.position,
-                ranger.route,
-                18 * scale,
-                obstacles,
-                bounds(),
-                ranger.spacing.yieldingTo,
-              )
-              ranger.failedPlan = replacement?.length ? null : planningInput
+              const from = { ...ranger.position }
+              ranger.plan = {
+                from,
+                input: planningInput,
+                search: replanOccupiedWaypointsSteps(
+                  ranger.id,
+                  from,
+                  ranger.route.slice(),
+                  18 * scale,
+                  obstacles,
+                  bounds(),
+                  ranger.spacing.yieldingTo,
+                ),
+              }
             }
-          }
-          if (replacement?.length) {
-            const endpoint = replacement[replacement.length - 1]
-            const camp = stops[ranger.site]
-            if (Math.hypot(endpoint.x - camp.x, endpoint.y - camp.y) > 210) visit(ranger)
-            else {
-              ranger.route = replacement
-              ranger.goal = { ...ranger.goal, x: endpoint.x, y: endpoint.y }
-            }
-          }
-          if (ranger.phase !== 'patrolling') {
-            render(ranger)
-            continue
           }
           const target = ranger.route[0] ?? ranger.goal
           const distance = Math.hypot(target.x - ranger.position.x, target.y - ranger.position.y)
@@ -308,6 +352,14 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
     view.cancelAnimationFrame(frame)
     frame = 0
     last = 0
+    for (const ranger of rangers) {
+      if (ranger.plan?.input === null) {
+        ranger.phase = 'holding'
+        ranger.remaining = 0
+      }
+      ranger.plan = null
+      ranger.element.dataset.routePlanning = 'idle'
+    }
     scene.dataset.parkMotion = 'paused'
   }
   const resume = () => {
@@ -318,6 +370,7 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
   }
   signal.addEventListener('abort', pause, { once: true })
   host.addEventListener('trail:hide', pause, { signal })
+  host.addEventListener('trail:show', resume, { signal })
   document.addEventListener('visibilitychange', () => (document.hidden ? pause() : resume()), {
     signal,
   })
@@ -374,6 +427,7 @@ export function mountParkPatrol(scene: HTMLElement, host: HTMLElement, signal: A
           failedPlan: null,
           replans: 0,
           blocked: false,
+          plan: null,
         }
         if (reduced.matches && goal) {
           ranger.position = place(element, id, ranger.goal, spacing)

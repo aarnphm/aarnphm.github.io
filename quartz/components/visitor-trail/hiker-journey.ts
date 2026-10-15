@@ -365,6 +365,7 @@ export function mountHikerJourney(scene: HTMLElement, host: HTMLElement, signal:
     },
     { signal },
   )
+  host.addEventListener('trail:show', schedule, { signal })
   signal.addEventListener('abort', pause, { once: true })
 
   return {

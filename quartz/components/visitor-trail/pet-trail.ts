@@ -1,8 +1,9 @@
 import type { Point } from './landscape'
 import { canMove, circleClearance, type CollisionActor, type SpacingBounds } from './actor-spacing'
-import { detourTrail } from './obstacle-route'
+import { detourTrailSteps } from './obstacle-route'
 
 export type PetTrailFoot = Point & { scale: number; progress: number }
+export type PetTrailSearch = Generator<void, PetTrailFoot[] | null, undefined>
 
 // Keep the sampled road's order at crossings. A bypass inherits its two endpoints' perspective
 // and journey progress by distance, rather than projecting onto a possibly earlier road leg.
@@ -12,9 +13,22 @@ export function detourPetTrail(
   obstacles: readonly CollisionActor[],
   bounds: SpacingBounds,
 ): PetTrailFoot[] | null {
+  const search = detourPetTrailSteps(road, body, obstacles, bounds)
+  let step = search.next()
+  while (!step.done) step = search.next()
+  return step.value
+}
+
+export function* detourPetTrailSteps(
+  road: readonly PetTrailFoot[],
+  body: number,
+  obstacles: readonly CollisionActor[],
+  bounds: SpacingBounds,
+): PetTrailSearch {
   if (!road.length) return null
   const feet = [road[0]]
   for (let index = 1; index < road.length; index++) {
+    yield
     const from = feet[feet.length - 1]
     let goal = road[index]
     let radius = body * Math.max(from.scale, goal.scale)
@@ -31,12 +45,24 @@ export function detourPetTrail(
       goal = road[++index]
       radius = Math.max(radius, body * goal.scale)
     }
-    let planned = detourTrail([from, goal], radius, obstacles, bounds, index === road.length - 1)
+    let planned = yield* detourTrailSteps(
+      [from, goal],
+      radius,
+      obstacles,
+      bounds,
+      index === road.length - 1,
+    )
     while (!planned || !canMove(from, planned.points[0], radius, obstacles)) {
       if (index === road.length - 1) return null
       goal = road[++index]
       radius = Math.max(radius, body * goal.scale)
-      planned = detourTrail([from, goal], radius, obstacles, bounds, index === road.length - 1)
+      planned = yield* detourTrailSteps(
+        [from, goal],
+        radius,
+        obstacles,
+        bounds,
+        index === road.length - 1,
+      )
     }
     const last = planned.points.at(-1)
     if (!last) return null

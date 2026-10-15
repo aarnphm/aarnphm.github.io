@@ -661,6 +661,7 @@ export function mountPastureWanderers(scene: HTMLElement, host: HTMLElement, sig
     },
     { signal },
   )
+  host.addEventListener('trail:show', schedule, { signal })
   signal.addEventListener('abort', pause, { once: true })
   host.addEventListener(
     'trail:climate',

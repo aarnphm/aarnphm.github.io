@@ -5,6 +5,7 @@ import {
   canMove,
   spacedPosition,
   spacedStep,
+  yieldPatience,
   type CollisionActor,
 } from './actor-spacing'
 
@@ -93,4 +94,41 @@ test('an actor swept into a fixed corner can leave without stepping deeper insid
   assert.equal(canMove({ x: 928, y: 670 }, { x: 928, y: 672 }, 18, [corner]), false)
   assert.equal(canMove({ x: 928, y: 670 }, { x: 900, y: 670 }, 18, [corner]), true)
   assert.equal(canMove({ x: 928, y: 698 }, { x: 928, y: 760 }, 18, [corner]), true)
+})
+
+test('a walker stops yielding to an animal that rests across its path past the patience', () => {
+  const goose = {
+    id: 'animal-goose-0',
+    kind: 'animal',
+    x: 40,
+    y: 8,
+    radius: 14,
+    resting: true,
+  } satisfies CollisionActor
+  const spacing = actorSpacing()
+  const walker = { x: 0, y: 0 }
+  // The owner moves the walker when a step advances, as the journeys do.
+  const step = () => {
+    const next = { x: walker.x + 2, y: walker.y }
+    const advanced = spacedStep('walker', walker, next, 18, 2, spacing, [goose])
+    if (advanced) Object.assign(walker, next)
+    return advanced
+  }
+  assert.equal(step(), false)
+  assert.equal(spacing.yieldingTo, goose.id)
+  assert.equal(step(), false)
+  assert.equal(spacing.yieldingTo, goose.id)
+  assert.ok(spacing.waited)
+  spacing.waited.since -= yieldPatience + 1
+  for (let index = 0; index < 60; index++) {
+    step()
+    assert.equal(spacing.yieldingTo, null)
+    assert.notEqual(spacing.status, 'yielding')
+  }
+  const point = spacedPosition(walker, spacing)
+  assert.ok(point.x >= 20, `walker reached x=${point.x.toFixed(1)}`)
+  assert.ok(
+    canMove(point, point, 18, [goose]) || Math.hypot(point.x - goose.x, point.y - goose.y) >= 32,
+    'walker is not inside the goose',
+  )
 })

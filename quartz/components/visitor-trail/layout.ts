@@ -57,6 +57,16 @@ export function clearSpace(width: number, height: number, obstacles: Rect[]) {
   return path
 }
 
+type CachedLanding = {
+  key: string
+  bottom: number
+  baseObstacles: Rect[]
+  clear: string
+  backdropClear: string
+  upperRoutes: string[]
+}
+const landingCache = new WeakMap<HTMLElement, CachedLanding>()
+
 export function trailLayout(
   scene: HTMLElement,
   seed: number,
@@ -71,37 +81,18 @@ export function trailLayout(
   const height = scene.clientHeight
   if (width < 1 || height < 1) return null
   const random = trailRandom(seed)
-  const text: Rect[] = []
-  const walker = document.createTreeWalker(landing, NodeFilter.SHOW_TEXT)
-  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-    if (!node.textContent?.trim() || !node.parentElement) continue
-    const style = view.getComputedStyle(node.parentElement)
-    if (style.visibility !== 'visible') continue
-    const range = document.createRange()
-    range.selectNodeContents(node)
-    for (const rect of range.getClientRects()) {
-      if (rect.width < 2 || rect.height < 2) continue
-      text.push({
-        left: rect.left - bounds.left,
-        top: rect.top - bounds.top,
-        right: rect.right - bounds.left,
-        bottom: rect.bottom - bounds.top,
-      })
-    }
-  }
-  // Protect the entire reading line, including whitespace between links and words.
-  const lines: Rect[] = []
-  for (const rect of text.sort((a, b) => a.top - b.top || a.left - b.left)) {
-    const line = lines.find(line => Math.abs(line.top - rect.top) < 4)
-    if (line) {
-      line.left = Math.min(line.left, rect.left)
-      line.right = Math.max(line.right, rect.right)
-      line.bottom = Math.max(line.bottom, rect.bottom)
-    } else lines.push({ ...rect })
-  }
+  const reading = landing.getBoundingClientRect()
   const board = landing.querySelector('.homepage-board')?.getBoundingClientRect()
-  const protectedLines = board
-    ? [
+  const controls = Array.from(
+    document.querySelectorAll('.visitor-weather-toggle, .homepage-trail-toggle'),
+    control => control.getBoundingClientRect(),
+  )
+  const cacheKey = `${seed}|${width}|${height}|${(reading.left - bounds.left).toFixed(1)}|${(reading.top - bounds.top).toFixed(1)}|${reading.width.toFixed(1)}|${reading.height.toFixed(1)}|${board ? `${(board.left - bounds.left).toFixed(1)}:${(board.top - bounds.top).toFixed(1)}:${board.width.toFixed(1)}:${board.height.toFixed(1)}` : 'none'}|${controls.map(rect => `${(rect.left - bounds.left).toFixed(1)}:${(rect.top - bounds.top).toFixed(1)}:${rect.width.toFixed(1)}:${rect.height.toFixed(1)}`).join(',')}`
+  let cached = landingCache.get(scene)
+  if (cached?.key !== cacheKey) {
+    let protectedLines: Rect[]
+    if (board) {
+      protectedLines = [
         {
           left: board.left - bounds.left,
           right: board.right - bounds.left,
@@ -109,23 +100,85 @@ export function trailLayout(
           bottom: board.bottom - bounds.top,
         },
       ]
-    : lines
-  const obstacles = protectedLines.map(line => ({
-    left: Math.max(0, line.left - (width < 700 ? 4 : 10)),
-    right: Math.min(width, line.right + (width < 700 ? 4 : 10)),
-    top: Math.max(0, line.top - 6),
-    bottom: line.bottom + 6,
-  }))
-  for (const control of document.querySelectorAll(
-    '.visitor-weather-toggle, .homepage-trail-toggle',
-  )) {
-    const rect = control.getBoundingClientRect()
-    obstacles.push({
-      left: rect.left - bounds.left,
-      right: rect.right - bounds.left,
-      top: rect.top - bounds.top,
-      bottom: rect.bottom - bounds.top,
-    })
+    } else {
+      const text: Rect[] = []
+      const walker = document.createTreeWalker(landing, NodeFilter.SHOW_TEXT)
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (!node.textContent?.trim() || !node.parentElement) continue
+        const style = view.getComputedStyle(node.parentElement)
+        if (style.visibility !== 'visible') continue
+        const range = document.createRange()
+        range.selectNodeContents(node)
+        for (const rect of range.getClientRects()) {
+          if (rect.width < 2 || rect.height < 2) continue
+          text.push({
+            left: rect.left - bounds.left,
+            top: rect.top - bounds.top,
+            right: rect.right - bounds.left,
+            bottom: rect.bottom - bounds.top,
+          })
+        }
+      }
+      // Protect the entire reading line, including whitespace between links and words.
+      const lines: Rect[] = []
+      for (const rect of text.sort((a, b) => a.top - b.top || a.left - b.left)) {
+        const line = lines.find(line => Math.abs(line.top - rect.top) < 4)
+        if (line) {
+          line.left = Math.min(line.left, rect.left)
+          line.right = Math.max(line.right, rect.right)
+          line.bottom = Math.max(line.bottom, rect.bottom)
+        } else lines.push({ ...rect })
+      }
+      protectedLines = lines
+    }
+    const baseObstacles = protectedLines.map(line => ({
+      left: Math.max(0, line.left - (width < 700 ? 4 : 10)),
+      right: Math.min(width, line.right + (width < 700 ? 4 : 10)),
+      top: Math.max(0, line.top - 6),
+      bottom: line.bottom + 6,
+    }))
+    const paintObstacles = [...baseObstacles]
+    for (const rect of controls) {
+      baseObstacles.push({
+        left: rect.left - bounds.left,
+        right: rect.right - bounds.left,
+        top: rect.top - bounds.top,
+        bottom: rect.bottom - bounds.top,
+      })
+    }
+    const hangers = landing.querySelector('.homepage-board-hangers')?.getBoundingClientRect()
+    if (board && hangers) {
+      for (const x of [hangers.left, hangers.right - 1]) {
+        paintObstacles.push({
+          left: x - bounds.left - 1,
+          right: x - bounds.left + 2,
+          top: 0,
+          bottom: board.top - bounds.top,
+        })
+      }
+    }
+    const bottom = Math.max(reading.bottom - bounds.top, 280)
+    const clear = clearSpace(width, height, paintObstacles)
+    const upperRoutes = readingRoutes(
+      width,
+      bottom,
+      reading.left - bounds.left,
+      reading.right - bounds.left,
+      protectedLines,
+      seed,
+      board ? protectedLines[0] : undefined,
+    )
+    const backdropClear = clearSpace(width, height, [
+      ...paintObstacles,
+      {
+        left: reading.left - bounds.left - 24,
+        right: reading.right - bounds.left + 24,
+        top: reading.top - bounds.top - 24,
+        bottom: reading.bottom - bounds.top + 24,
+      },
+    ])
+    cached = { key: cacheKey, bottom, baseObstacles, clear, backdropClear, upperRoutes }
+    landingCache.set(scene, cached)
   }
   const clockRegion = trailClockRegion(document)
   const clockExclusion = clockRegion
@@ -136,20 +189,10 @@ export function trailLayout(
         bottom: clockRegion.bottom - bounds.top,
       }
     : null
-  const paintObstacles = [...obstacles]
-  const hangers = landing.querySelector('.homepage-board-hangers')?.getBoundingClientRect()
-  if (board && hangers) {
-    for (const x of [hangers.left, hangers.right - 1]) {
-      paintObstacles.push({
-        left: x - bounds.left - 1,
-        right: x - bounds.left + 2,
-        top: 0,
-        bottom: board.top - bounds.top,
-      })
-    }
-  }
-  if (clockExclusion) obstacles.push(clockExclusion)
-  const bottom = Math.max(landing.getBoundingClientRect().bottom - bounds.top, 280)
+  const obstacles = clockExclusion
+    ? [...cached.baseObstacles, clockExclusion]
+    : [...cached.baseObstacles]
+  const { bottom, clear, backdropClear, upperRoutes } = cached
   const camp = world?.camp ?? {
     x: Math.min(width - 72, width * (0.64 + random() * 0.12)),
     y: Math.min(height - 80, Math.max(height - 112, bottom + 225)),
@@ -249,26 +292,6 @@ export function trailLayout(
       landscape,
     ),
   }
-  const clear = clearSpace(width, height, paintObstacles)
-  const reading = landing.getBoundingClientRect()
-  const upperRoutes = readingRoutes(
-    width,
-    bottom,
-    reading.left - bounds.left,
-    reading.right - bounds.left,
-    protectedLines,
-    seed,
-    board ? protectedLines[0] : undefined,
-  )
-  const backdropClear = clearSpace(width, height, [
-    ...paintObstacles,
-    {
-      left: reading.left - bounds.left - 24,
-      right: reading.right - bounds.left + 24,
-      top: reading.top - bounds.top - 24,
-      bottom: reading.bottom - bounds.top + 24,
-    },
-  ])
   return {
     width,
     height,
