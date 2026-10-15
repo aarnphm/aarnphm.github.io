@@ -119,6 +119,101 @@ export function garminRefreshStart(
   return overlapStart > configuredStart ? overlapStart : configuredStart
 }
 
+function sortedIsoDays(record: Readonly<Record<string, unknown>> | undefined): string[] {
+  return Object.keys(record ?? {})
+    .filter(day => /^\d{4}-\d{2}-\d{2}$/.test(day))
+    .sort()
+}
+
+function hasGarminHealthError(day: UnknownRecord | undefined): boolean {
+  if (!day) return true
+  for (const key of [
+    'bodyBattery',
+    'trainingReadiness',
+    'trainingStatus',
+    'enduranceScore',
+    'hillScore',
+  ]) {
+    const reading = day[key]
+    if (isRecord(reading) && reading.status === 'error') return true
+  }
+  return false
+}
+
+export function garminHealthRefreshStart(
+  previous: GarminCache | null,
+  configuredStart: string,
+  end: string,
+  refreshWindowDays: number,
+): string {
+  const days = sortedIsoDays(previous?.health)
+  if (!previous || (previous.version ?? 0) < CACHE_VERSION)
+    return days[0] != null && days[0] < configuredStart ? days[0] : configuredStart
+  if (days.length === 0) return configuredStart
+  const earliest = days[0] > configuredStart ? days[0] : configuredStart
+  const latest = days[days.length - 1]
+  const windowStart = shiftIsoDay(end, -refreshWindowDays)
+  const overlapStart = shiftIsoDay(latest, -refreshWindowDays)
+  let start = overlapStart < windowStart ? overlapStart : windowStart
+  for (let day = earliest; day <= latest; day = shiftIsoDay(day, 1)) {
+    const entry = previous.health?.[day]
+    if (!entry || hasGarminHealthError(entry as unknown as UnknownRecord)) {
+      if (day < start) start = day
+      break
+    }
+  }
+  const bounded = start > configuredStart ? start : configuredStart
+  return bounded <= end ? bounded : end
+}
+
+export function garminSleepRefreshStart(
+  previous: GarminCache | null,
+  configuredStart: string,
+  end: string,
+  refreshWindowDays: number,
+): string {
+  const days = sortedIsoDays(previous?.sleep)
+  if (!previous || (previous.version ?? 0) < CACHE_VERSION)
+    return days[0] != null && days[0] < configuredStart ? days[0] : configuredStart
+  if (days.length === 0 && !previous.sleepLastSync) return configuredStart
+  const windowStart = shiftIsoDay(end, -refreshWindowDays)
+  const anchorDay =
+    days[days.length - 1] ??
+    (previous.sleepLastSync ? localIsoDayOffset(0, previous.sleepLastSync) : end)
+  const overlapStart = shiftIsoDay(anchorDay, -refreshWindowDays)
+  let start = overlapStart < windowStart ? overlapStart : windowStart
+  if (sortedIsoDays(previous.health).length > 0) {
+    const healthGapStart = garminHealthRefreshStart(
+      previous,
+      configuredStart,
+      end,
+      refreshWindowDays,
+    )
+    if (healthGapStart < start) start = healthGapStart
+  }
+  const bounded = start > configuredStart ? start : configuredStart
+  return bounded <= end ? bounded : end
+}
+
+export function garminLactateThresholdRefreshStart(
+  previous: GarminRunningLactateThreshold | null | undefined,
+  configuredStart: string,
+  end: string,
+  refreshWindowDays: number,
+  stale = false,
+): string {
+  if (stale) return configuredStart
+  const latestSpeed = previous?.history?.speedMps.at(-1)?.date
+  const latestHr = previous?.history?.heartRateBpm.at(-1)?.date
+  if (!latestSpeed || !latestHr) return configuredStart
+  const anchor = latestSpeed < latestHr ? latestSpeed : latestHr
+  const windowStart = shiftIsoDay(end, -refreshWindowDays)
+  const overlapStart = shiftIsoDay(anchor, -refreshWindowDays)
+  const start = overlapStart < windowStart ? overlapStart : windowStart
+  const bounded = start > configuredStart ? start : configuredStart
+  return bounded <= end ? bounded : end
+}
+
 export function reconcileGarminActivities(
   previous: Readonly<Record<string, GarminActivity>> | undefined,
   start: string,
@@ -228,14 +323,6 @@ async function readTriathlonStart(): Promise<string | null> {
   } catch {
     return null
   }
-}
-
-async function startDate(previous: GarminCache | null, refreshWindowDays: number): Promise<string> {
-  const explicit =
-    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ?? cleanDay(process.env.GARMIN_CONNECT_SINCE)
-  if (explicit) return explicit
-  const configured = (await readTriathlonStart()) ?? localIsoDayOffset(-90)
-  return garminRefreshStart(previous, configured, refreshWindowDays)
 }
 
 function endDate(): string {
@@ -351,16 +438,19 @@ async function fetchRunningLactateThreshold(
   session: GarminConnectSession,
   base: string,
   previous?: GarminRunningLactateThreshold | null,
+  refreshWindowDays = syncRefreshDays(),
+  stale = false,
 ): Promise<GarminRunningLactateThreshold | null> {
   const latest = garminConnectRunningLactateThreshold(
     await fetchGarminJson(session, base, '/biometric-service/biometric/latestLactateThreshold'),
   )
-  const start =
-    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
-    cleanDay(process.env.GARMIN_CONNECT_SINCE) ??
-    (await readTriathlonStart()) ??
-    localIsoDayOffset(-90)
+  const explicit =
+    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ?? cleanDay(process.env.GARMIN_CONNECT_SINCE)
+  const configured = (await readTriathlonStart()) ?? localIsoDayOffset(-90)
   const end = endDate()
+  const start =
+    explicit ??
+    garminLactateThresholdRefreshStart(previous, configured, end, refreshWindowDays, stale)
   const history = {
     speedMps: previous?.history?.speedMps ?? [],
     heartRateBpm: previous?.history?.heartRateBpm ?? [],
@@ -476,12 +566,16 @@ async function main(): Promise<void> {
   const base = cleanGarminConnectBaseUrl(
     process.env.GARMIN_CONNECT_BASE_URL?.trim() || DEFAULT_GARMIN_CONNECT_BASE,
   )
+  const refreshWindowDays = syncRefreshDays()
+  const stale = !previous || (previous.version ?? 0) < CACHE_VERSION
   if (process.argv.includes('--lactate-threshold-only')) {
     if (!previous) throw new Error('Run a Garmin sync before refreshing lactate threshold only')
     const runningLactateThreshold = await fetchRunningLactateThreshold(
       session,
       base,
       previous.runningLactateThreshold,
+      refreshWindowDays,
+      stale,
     )
     const latest = await readCache()
     if (!latest) throw new Error('Garmin cache disappeared during lactate threshold refresh')
@@ -501,18 +595,20 @@ async function main(): Promise<void> {
   const delayMs = envNumber('GARMIN_CONNECT_DELAY_MS', DEFAULT_DELAY_MS)
   const maxActivities = envNumber('GARMIN_CONNECT_MAX_ACTIVITIES', 0)
   const fetchStreams = envFlag('GARMIN_CONNECT_FETCH_STREAMS', true)
-  const refreshWindowDays = syncRefreshDays()
-  const start = await startDate(previous, refreshWindowDays)
+  const explicitStart =
+    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ?? cleanDay(process.env.GARMIN_CONNECT_SINCE)
+  const configuredStart = (await readTriathlonStart()) ?? localIsoDayOffset(-90)
+  const start = explicitStart ?? garminRefreshStart(previous, configuredStart, refreshWindowDays)
   const end = endDate()
   if (start > end) throw new Error(`Garmin sync start ${start} is after end ${end}`)
+  const healthStart =
+    explicitStart ?? garminHealthRefreshStart(previous, configuredStart, end, refreshWindowDays)
+  const sleepStart =
+    explicitStart ?? garminSleepRefreshStart(previous, configuredStart, end, refreshWindowDays)
 
   let health = previous?.health
   let healthLastSync = previous?.healthLastSync
   if (!sleepOnly) {
-    const healthStart =
-      cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
-      cleanDay(process.env.GARMIN_CONNECT_SINCE) ??
-      shiftIsoDay(end, -refreshWindowDays)
     const result = await fetchGarminHealthRange(
       session,
       base,
@@ -543,10 +639,6 @@ async function main(): Promise<void> {
     }
   }
 
-  const sleepStart =
-    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
-    cleanDay(process.env.GARMIN_CONNECT_SINCE) ??
-    shiftIsoDay(end, -refreshWindowDays)
   let overnightSleep = previous?.sleep ?? {}
   let sleepLastSync = previous?.sleepLastSync
   let sleepFailedDays: string[] = []
@@ -758,7 +850,13 @@ async function main(): Promise<void> {
   try {
     lactateThresholdOutcome = {
       ok: true,
-      value: await fetchRunningLactateThreshold(session, base, previous?.runningLactateThreshold),
+      value: await fetchRunningLactateThreshold(
+        session,
+        base,
+        previous?.runningLactateThreshold,
+        refreshWindowDays,
+        stale,
+      ),
     }
   } catch (err) {
     console.warn(

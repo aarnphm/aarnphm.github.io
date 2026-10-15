@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { emptyOuraDaily, type OuraCache, type OuraDayDetail } from '../plugins/stores/oura'
 import {
   garminManualSleepPayload,
   manualSleepMatches,
   ouraSleepDurations,
+  parseArgs,
+  selectNights,
   seriesSamples,
   sleepStages,
 } from './sync-oura-garmin'
@@ -125,5 +128,57 @@ test('garminManualSleepPayload rejects invalid intervals and profile ids', () =>
         0,
       ),
     /positive integer/,
+  )
+})
+
+test('selectNights defaults to the SYNC_REFRESH_DAYS window and honors explicit --days', () => {
+  const detail = (date: string): OuraDayDetail => ({
+    date,
+    bedtimeStart: `${date}T01:00:00.000-04:00`,
+    bedtimeEnd: `${date}T08:00:00.000-04:00`,
+    phase5Min: '42213',
+    efficiency: 90,
+    latencyS: 300,
+    timeInBedS: 25_200,
+    totalSleepS: 22_800,
+    deepS: 5_400,
+    lightS: 12_000,
+    remS: 5_400,
+    awakeS: 2_400,
+    avgBreath: 14,
+    avgHr: 52,
+    avgHrv: 65,
+    lowestHr: 47,
+    restlessPeriods: 2,
+    hrv: null,
+    hr: null,
+    readinessScore: 84,
+    readinessContrib: null,
+    sleepScore: 86,
+    sleepContrib: null,
+  })
+  const cache: OuraCache = {
+    lastSync: Date.parse('2026-10-14T12:00:00Z'),
+    days: {
+      '2026-10-10': emptyOuraDaily('2026-10-10'),
+      '2026-10-12': emptyOuraDaily('2026-10-12'),
+      '2026-10-13': emptyOuraDaily('2026-10-13'),
+      '2026-10-14': emptyOuraDaily('2026-10-14'),
+    },
+    details: {
+      '2026-10-10': detail('2026-10-10'),
+      '2026-10-12': detail('2026-10-12'),
+      '2026-10-13': detail('2026-10-13'),
+      '2026-10-14': detail('2026-10-14'),
+    },
+  }
+  const now = Date.parse('2026-10-14T16:00:00Z')
+  assert.deepEqual(
+    selectNights(cache, parseArgs([]), 2, now).map(night => night.day),
+    ['2026-10-12', '2026-10-13', '2026-10-14'],
+  )
+  assert.deepEqual(
+    selectNights(cache, parseArgs(['--days', '1']), 2, now).map(night => night.day),
+    ['2026-10-14'],
   )
 })

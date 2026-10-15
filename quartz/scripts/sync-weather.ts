@@ -377,9 +377,19 @@ async function main(): Promise<void> {
   const delayMs = envNumber('WEATHERKIT_DELAY_MS', 250)
   const maxCalls = Math.floor(envNumber('WEATHERKIT_MAX_CALLS', 500))
   const force = envFlag('WEATHERKIT_FORCE', false)
-  const refreshWindowStartMs = Date.now() - weatherSyncRefreshDays() * 86_400_000
   const prev = await readWeatherCache()
   const activities: Record<string, WeatherActivity> = { ...prev?.activities }
+  const refreshDays = weatherSyncRefreshDays()
+  const latestCachedWeatherMs = Object.values(activities).reduce<number | null>((latest, item) => {
+    const startMs = Date.parse(item.start)
+    if (!Number.isFinite(startMs)) return latest
+    return latest === null || startMs > latest ? startMs : latest
+  }, null)
+  const windowCutoffMs = Date.now() - refreshDays * 86_400_000
+  const refreshWindowStartMs =
+    latestCachedWeatherMs === null
+      ? windowCutoffMs
+      : Math.min(windowCutoffMs, latestCachedWeatherMs - refreshDays * 86_400_000)
   let uvCalibration = prev?.uvCalibration ?? null
   let attribution = prev?.attribution ?? null
   try {

@@ -25,6 +25,49 @@ test('Oura schema refresh keeps the full daily backfill and bounded heart rate',
   })
 })
 
+test('Oura routine refresh bridges multi-day sync gaps and heals interior holes or failed health days', () => {
+  const oct9 = Date.parse('2026-10-09T16:00:00Z')
+  const laggedCache = {
+    lastSync: Date.parse('2026-10-02T12:00:00Z'),
+    days: {
+      '2026-10-01': emptyOuraDaily('2026-10-01'),
+      '2026-10-02': emptyOuraDaily('2026-10-02'),
+    },
+    details: {},
+    heartRate: [{ timestamp: '2026-10-02T11:55:00Z', bpm: 54, source: 'rest' as const }],
+  }
+  assert.deepEqual(ouraRefreshRange(false, 2, oct9, laggedCache), {
+    start: '2026-09-30',
+    end: '2026-10-09',
+    endExclusive: '2026-10-10',
+    heartRateStart: '2026-09-30',
+  })
+
+  const oct14 = Date.parse('2026-10-14T16:00:00Z')
+  const holeCache = {
+    lastSync: Date.parse('2026-10-14T12:00:00Z'),
+    days: {
+      '2026-10-02': emptyOuraDaily('2026-10-02'),
+      '2026-10-07': emptyOuraDaily('2026-10-07'),
+      '2026-10-08': emptyOuraDaily('2026-10-08'),
+      '2026-10-09': emptyOuraDaily('2026-10-09'),
+      '2026-10-10': emptyOuraDaily('2026-10-10'),
+      '2026-10-11': emptyOuraDaily('2026-10-11'),
+      '2026-10-12': emptyOuraDaily('2026-10-12'),
+      '2026-10-13': emptyOuraDaily('2026-10-13'),
+      '2026-10-14': emptyOuraDaily('2026-10-14'),
+    },
+    details: {},
+    heartRate: [{ timestamp: '2026-10-14T11:55:00Z', bpm: 52, source: 'rest' as const }],
+  }
+  assert.deepEqual(ouraRefreshRange(false, 2, oct14, holeCache), {
+    start: '2026-10-03',
+    end: '2026-10-14',
+    endExclusive: '2026-10-15',
+    heartRateStart: '2026-10-03',
+  })
+})
+
 const sleepRow = (id: string, type: string, start: string, seconds: number) => ({
   id,
   type,

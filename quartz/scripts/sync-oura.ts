@@ -14,7 +14,7 @@ import {
   ouraSleepCalendarDay,
   OuraUser,
 } from '../plugins/stores/oura'
-import { localDayStartUtcMs, localIsoDayOffset } from '../util/local-date'
+import { localDayStartUtcMs, localIsoDayOffset, shiftIsoDay } from '../util/local-date'
 import {
   applyOuraHealthRow,
   emptyOuraHealth,
@@ -347,19 +347,62 @@ export interface OuraRefreshRange {
   heartRateStart: string
 }
 
+export type OuraRefreshHistory = Pick<OuraCache, 'lastSync' | 'days' | 'details' | 'heartRate'>
+
 export function ouraRefreshRange(
   stale: boolean,
   refreshWindowDays: number,
   now = Date.now(),
+  previous?: OuraRefreshHistory | null,
 ): OuraRefreshRange {
-  return {
-    start: stale
-      ? localIsoDayOffset(-LOOKBACK_DAYS, now)
-      : calendarRefreshStart(refreshWindowDays, now),
-    end: localIsoDayOffset(0, now),
-    endExclusive: localIsoDayOffset(1, now),
-    heartRateStart: calendarRefreshStart(refreshWindowDays, now),
+  const end = localIsoDayOffset(0, now)
+  const endExclusive = localIsoDayOffset(1, now)
+  const lookbackStart = localIsoDayOffset(-LOOKBACK_DAYS, now)
+  const windowStart = calendarRefreshStart(refreshWindowDays, now)
+  if (stale) {
+    return { start: lookbackStart, end, endExclusive, heartRateStart: windowStart }
   }
+  let start = windowStart > lookbackStart ? windowStart : lookbackStart
+  let heartRateStart = start
+  if (previous) {
+    const cachedDays = Object.keys(previous.days ?? {})
+      .filter(day => /^\d{4}-\d{2}-\d{2}$/.test(day))
+      .sort()
+    if (cachedDays.length > 0) {
+      const earliest = cachedDays[0] > lookbackStart ? cachedDays[0] : lookbackStart
+      const latest = cachedDays[cachedDays.length - 1]
+      const overlapStart = shiftIsoDay(latest, -refreshWindowDays)
+      if (overlapStart < start) start = overlapStart
+      for (let day = earliest; day <= latest; day = shiftIsoDay(day, 1)) {
+        const failed = (previous.details?.[day]?.health?.failedCollections?.length ?? 0) > 0
+        if (!Object.hasOwn(previous.days, day) || failed) {
+          if (day < start) start = day
+          break
+        }
+      }
+    } else if (previous.lastSync > 0) {
+      const syncStart = shiftIsoDay(localIsoDayOffset(0, previous.lastSync), -refreshWindowDays)
+      if (syncStart < start) start = syncStart
+    }
+    if (start < lookbackStart) start = lookbackStart
+    if (start > end) start = end
+
+    const lastHrTimestamp = previous.heartRate?.at(-1)?.timestamp
+    const lastHrMs = lastHrTimestamp ? Date.parse(lastHrTimestamp) : NaN
+    const anchorMs = Number.isFinite(lastHrMs)
+      ? lastHrMs
+      : previous.lastSync > 0
+        ? previous.lastSync
+        : NaN
+    if (Number.isFinite(anchorMs)) {
+      const hrOverlapStart = shiftIsoDay(localIsoDayOffset(0, anchorMs), -refreshWindowDays)
+      if (hrOverlapStart < heartRateStart) heartRateStart = hrOverlapStart
+    }
+    if (start < heartRateStart) heartRateStart = start
+    if (heartRateStart < lookbackStart) heartRateStart = lookbackStart
+    if (heartRateStart > end) heartRateStart = end
+  }
+  return { start, end, endExclusive, heartRateStart }
 }
 
 async function main(): Promise<void> {
@@ -372,6 +415,7 @@ async function main(): Promise<void> {
     stale,
     refreshWindowDays,
     now,
+    prev,
   )
 
   const days: Record<string, OuraDaily> = {}
