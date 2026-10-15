@@ -1,5 +1,7 @@
 import { bayerThreshold } from '../../util/bayer'
 import { lunarPhase } from '../../util/lunar-phase'
+import { sceneNow } from '../../util/scene-clock'
+import { readTrailSeason, subscribeTrailSeason } from '../../util/trail-season'
 import {
   sampleVisitorDaylight,
   subscribeVisitorDaylight,
@@ -7,7 +9,11 @@ import {
 } from '../../util/visitor-daylight'
 import { subscribeVisitorMoon, type VisitorMoon } from '../../util/visitor-lunar'
 import { stormDelay, visitorPrecipitation, wetFall } from '../../util/visitor-precipitation'
-import { subscribeVisitorTrailWeather, type TrailWeather } from '../../util/visitor-trail-weather'
+import {
+  subscribeVisitorTrailWeather,
+  type TrailSeason,
+  type TrailWeather,
+} from '../../util/visitor-trail-weather'
 import { almanac, guessSite, type Body } from '../scripts/404-almanac'
 import { paintLunarDisc, stopLunarTransition } from '../scripts/lunar-disc'
 import { holidaySprite } from './holiday-sprites'
@@ -16,6 +22,9 @@ import { buildMountainRanges, mountainCrestAt, type MountainRange } from './moun
 import { trailRandom } from './random'
 import { skyBand } from './sky-band'
 import { trailWinter } from './winter'
+
+const isSeason = (value: unknown): value is TrailSeason =>
+  value === 'spring' || value === 'summer' || value === 'autumn' || value === 'winter'
 
 function decoration(weather: TrailWeather | null) {
   const precipitation = visitorPrecipitation(weather?.code)
@@ -57,6 +66,7 @@ function weatherMarks(
   seed: number,
   weather: TrailWeather | null,
   festiveSnow: boolean,
+  season: TrailSeason | null,
 ) {
   const random = trailRandom(seed ^ 0x34c4f69b)
   const { width, height, bottom, groves } = landscape
@@ -184,7 +194,7 @@ function weatherMarks(
       )
     }
   }
-  if (weather?.season === 'autumn' && gust > 0.06 && !snow && !festiveSnow) {
+  if (season === 'autumn' && gust > 0.06 && !snow && !festiveSnow) {
     const count = width < 700 ? 6 : 12
     for (let index = 0; index < count; index++) {
       const grove = groves[index % groves.length]
@@ -447,60 +457,20 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   const skyLayer = scene.querySelector<SVGGElement>('.trail-sky')
   const gateLayer = scene.querySelector<SVGGElement>('.trail-far-gate-layer')
   const motion = view?.matchMedia('(prefers-reduced-motion: reduce)')
-  // The ring is drawn in the composited canvas, so the link is a plain anchor laid over it in
-  // the scene. A full navigation: the 404 is its own page with its own palette.
+  // The ring is drawn in the composited canvas, with a native link over its painted position.
   const gateLink = document.createElement('a')
   gateLink.className = 'trail-far-gate-link'
   gateLink.href = '/404'
   gateLink.dataset.routerIgnore = ''
   gateLink.hidden = true
   scene.append(gateLink)
-  let gateSite: FarGateSite | null = null
-  // Stepping through: the scene closes on the ring until its portal fills the view, then the
-  // 404 loads. Modified clicks and reduced motion keep the plain navigation.
-  gateLink.addEventListener(
-    'click',
-    event => {
-      if (scene.dataset.trailGate === 'entering') return event.preventDefault()
-      if (
-        !view ||
-        !gateSite ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey ||
-        motion?.matches
-      )
-        return
-      event.preventDefault()
-      scene.style.setProperty('--trail-gate-x', `${gateSite.cx}px`)
-      scene.style.setProperty('--trail-gate-y', `${gateSite.cy}px`)
-      scene.dataset.trailGate = 'entering'
-      document.documentElement.dataset.trailGate = 'entering'
-      const href = gateLink.href
-      let timer = 0
-      const go = () => {
-        view.clearTimeout(timer)
-        view.location.assign(href)
-      }
-      scene.addEventListener(
-        'animationend',
-        function arrive(end) {
-          if (end.target !== scene || end.animationName !== 'trail-gate-enter') return
-          scene.removeEventListener('animationend', arrive)
-          go()
-        },
-        { signal },
-      )
-      timer = view.setTimeout(go, 1200)
-    },
-    { signal },
-  )
   let landscape: Landscape | null = null
   let seed = 0
   let weather: TrailWeather | null = null
   let festiveSnow = scene.dataset.holiday === 'christmas'
+  let seasonOverride = readTrailSeason(document.defaultView)
+  // A chosen winter brings the holiday's snow with it.
+  const snowy = () => festiveSnow || seasonOverride === 'winter'
   let moon: VisitorMoon = { ...lunarPhase(Date.now()), at: Date.now() }
   let paused = host.hidden
   let ranges: MountainRange[] = []
@@ -619,14 +589,13 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     gateLink.hidden = false
   }
   // The sun and moon move about a pixel a minute on a wide screen.
-  const renderSky = (now = Date.now()) => {
+  const renderSky = (now = sceneNow(document)) => {
     view?.clearTimeout(skyTimer)
     updateDamp()
     if (!skyLayer || !landscape || signal.aborted) return
     skyAt = now
     skyLayer.innerHTML = skyMarks(landscape, ranges, weather, now, seed)
     const gate = farGateSite(landscape, ranges)
-    gateSite = gate
     if (gateLayer) gateLayer.innerHTML = farGate(gate, ranges, now)
     placeGateLink(gate, now)
     paintMoon(false)
@@ -635,10 +604,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   const render = () => {
     const state = decoration(weather)
     if (state.rain > 0) wetUntil = Date.now() + 2 * 60 * 60 * 1000
-    const { cover, forecastCover, frozen, forecastFrozen, source } = trailWinter(
-      weather,
-      festiveSnow,
-    )
+    const { cover, forecastCover, frozen, forecastFrozen, source } = trailWinter(weather, snowy())
     const changedIce = scene.dataset.waterFrozen !== String(frozen)
     scene.dataset.waterFrozen = String(frozen)
     scene.dataset.forecastWaterFrozen = String(forecastFrozen)
@@ -658,12 +624,14 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     scene.dataset.weatherDirection = String(weather?.windFromDegrees ?? 'unknown')
     scene.dataset.weatherWindy = String(state.gust > 0.025)
     scene.dataset.season = weather?.season ?? 'unknown'
+    scene.dataset.seasonOverride = seasonOverride ?? 'auto'
     // The winter illustration keeps its snow and ice separate from the local forecast.
-    scene.dataset.foliageSeason = festiveSnow ? 'winter' : scene.dataset.season
+    const foliage = snowy() ? 'winter' : (seasonOverride ?? scene.dataset.season)
+    scene.dataset.foliageSeason = foliage
     // Early, mid or late in the season, by the month of the three it is in: leaves come out over
-    // the spring and fall over the autumn.
+    // the spring and fall over the autumn. A chosen season is shown at its height.
     const month = new Date().getMonth() + 1 + ((weather?.lat ?? 0) < 0 ? 6 : 0)
-    scene.dataset.seasonPhase = ['early', 'mid', 'late'][(month % 12) % 3]
+    scene.dataset.seasonPhase = seasonOverride ? 'mid' : ['early', 'mid', 'late'][(month % 12) % 3]
     scene.dataset.snowCover = cover.toFixed(3)
     scene.style.setProperty('--trail-rain-strength', state.rain.toFixed(3))
     scene.style.setProperty('--trail-wind-strength', state.wind.toFixed(3))
@@ -694,7 +662,14 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     )
     if (layer) {
       layer.dataset.trailWeather = state.mode
-      if (landscape) layer.innerHTML = weatherMarks(landscape, seed, weather, festiveSnow)
+      if (landscape)
+        layer.innerHTML = weatherMarks(
+          landscape,
+          seed,
+          weather,
+          snowy(),
+          isSeason(scene.dataset.foliageSeason) ? scene.dataset.foliageSeason : null,
+        )
     }
     renderSky()
     updateLighting()
@@ -703,6 +678,15 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     if (changedIce) host.dispatchEvent(new CustomEvent('trail:climate'))
   }
   document.addEventListener('themechange', updateLighting, { signal })
+  subscribeTrailSeason(
+    document,
+    next => {
+      if (next === seasonOverride) return
+      seasonOverride = next
+      render()
+    },
+    signal,
+  )
   host.addEventListener(
     'trail:holiday',
     event => {
@@ -784,7 +768,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     },
     resume() {
       paused = false
-      if (Date.now() - skyAt >= 60_000) renderSky()
+      if (Math.abs(sceneNow(document) - skyAt) >= 60_000) renderSky()
       updateMotion()
     },
   }

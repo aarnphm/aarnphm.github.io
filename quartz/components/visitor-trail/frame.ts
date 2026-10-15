@@ -41,6 +41,7 @@ import {
   trailFoothillWoodland,
   trailTreeSprites,
 } from './scenery'
+import { mountSeasonToggle } from './season-toggle'
 import { mountSharedGrove } from './shared-grove'
 import { trailTerrain, trailTerraces } from './terrain'
 import { prepareTreeSprites } from './tree-workers'
@@ -72,27 +73,21 @@ const clip = `trail-clear-${crypto.randomUUID()}`
 scene.innerHTML = `
     <svg class="trail-canvas" aria-hidden="true">
       <defs>
-        <clipPath id="${clip}-clock"><path data-trail-clock-clear clip-rule="evenodd"/></clipPath>
         <clipPath id="${clip}"><path data-trail-clear clip-rule="evenodd"/></clipPath>
         <clipPath id="${clip}-backdrop"><path data-trail-backdrop-clear clip-rule="evenodd"/></clipPath>
         <g data-trail-navigation></g>
       </defs>
-      <g class="trail-clock-source" data-trail-model clip-path="url(#${clip}-clock)">
+      <g data-trail-model>
       ${trailIds.map(id => `<path class="trail-path" data-trail-route="${id}"/>`).join('')}
       <g data-pet-walk-paths></g>
       <path class="trail-path" data-pet-expedition/>
       </g>
       <rect class="trail-paper" data-trail-layer="paper" width="100%" height="100%" fill="var(--light)"/>
-      <g clip-path="url(#${clip}-clock)">
       <g class="trail-sky" aria-hidden="true"></g>
-      </g>
       <g clip-path="url(#${clip})">
-      <g clip-path="url(#${clip}-clock)">
       <g data-trail-backdrop-container></g>
       <g class="trail-far-gate-layer" data-trail-layer="far-gate" aria-hidden="true"></g>
-      </g>
       <g class="trail-ground-base" data-trail-layer="ground-base"></g>
-      <g clip-path="url(#${clip}-clock)">
       <g class="trail-woodland" data-trail-depth="0.8"></g>
       <g class="trail-ground" data-trail-layer></g>
       <g class="trail-hinterland" data-trail-layer="hinterland"></g>
@@ -114,7 +109,6 @@ scene.innerHTML = `
       <g class="trail-visitors"></g>
       ${trailBackpacker()}
       <g class="trail-depth-objects"></g>
-      </g>
       </g>
     </svg>
     <div class="trail-visitor-labels"></div>
@@ -141,6 +135,12 @@ const forestClearings = (landscape: Landscape) =>
   campSites(landscape, sceneSeed, camps).flatMap(site => [
     { ...site, radius: 102 },
     ...site.tents.map(tent => ({ ...tent, radius: 38 })),
+  ])
+// The beeches keep clear of what a camp draws (hearth, people, tent), not the planner's room.
+const beechClearings = (landscape: Landscape) =>
+  campSites(landscape, sceneSeed, camps).flatMap(site => [
+    { ...site, radius: 64 },
+    ...site.tents.map(tent => ({ ...tent, radius: 52 })),
   ])
 const forestSprites = (landscape: Landscape) => {
   const clearings = forestClearings(landscape)
@@ -280,6 +280,7 @@ const pastureJourneys = mountPastureWanderers(scene, host, signal)
 const alpineJourneys = mountAlpineJourneys(scene, host, signal)
 const perspective = mountTrailPerspective(scene, host, signal)
 const weather = mountTrailWeather(scene, host, signal)
+mountSeasonToggle(scene, signal)
 const crowns = mountCrownWind(scene, signal)
 mountSceneCompositor(scene, host, signal, opening)
 mountSceneLighting(scene, signal)
@@ -313,15 +314,38 @@ const worldPatches = mountWorldPatches(
 )
 let retainedLayout: ReturnType<typeof trailLayout> = null
 let retainedSeed = 0
+const generationScheduler =
+  typeof TaskController === 'function' && typeof parent.scheduler?.postTask === 'function'
+    ? parent.scheduler
+    : null
 let rendering: AbortController | null = null
 const cancelRendering = () => {
   rendering?.abort()
   rendering = null
 }
 signal.addEventListener('abort', cancelRendering, { once: true })
+const prioritizeRendering = (priority: TaskPriority) => {
+  if (typeof TaskController === 'function' && rendering instanceof TaskController)
+    rendering.setPriority(priority)
+}
+host.addEventListener('trail:open', () => prioritizeRendering('user-visible'), { signal })
+host.addEventListener('trail:hide', () => prioritizeRendering('background'), { signal })
 let generationSlice = 0
 const yieldRender = (signal: AbortSignal, paint = false) => {
   if (!paint && performance.now() - generationSlice < 8) return Promise.resolve(!signal.aborted)
+  if (!paint && generationScheduler)
+    return generationScheduler
+      .postTask(
+        () => {
+          generationSlice = performance.now()
+          return !signal.aborted
+        },
+        { signal },
+      )
+      .catch(error => {
+        if (signal.aborted) return false
+        throw error
+      })
   return new Promise<boolean>(resolve => {
     if (signal.aborted) return resolve(false)
     let frame = 0
@@ -371,7 +395,6 @@ const drawScene = async () => {
     const node = svg.querySelector(selector)
     if (node && node.getAttribute('d') !== d) node.setAttribute('d', d)
   }
-  setPath('[data-trail-clock-clear]', layout.clockClear)
   setPath('[data-trail-clear]', layout.clear)
   setPath('[data-trail-backdrop-clear]', layout.backdropClear)
   opening.update(layout)
@@ -417,7 +440,10 @@ const drawScene = async () => {
     return
   }
   cancelRendering()
-  rendering = new AbortController()
+  // Closed scenery yields behind input; opening promotes the pending generation task.
+  rendering = generationScheduler
+    ? new TaskController({ priority: host.hidden ? 'background' : 'user-visible' })
+    : new AbortController()
   const renderSignal = rendering.signal
   scene.dataset.trailRendered = 'false'
   scene.dataset.trailRasterReady = 'false'
@@ -480,7 +506,7 @@ const drawScene = async () => {
     forestClearings(layout.landscape),
   )
   const sprites = [
-    ...repoussoirSprites(layout.landscape, sceneSeed, forestClearings(layout.landscape)),
+    ...repoussoirSprites(layout.landscape, sceneSeed, beechClearings(layout.landscape)),
     ...forestSprites(layout.landscape),
   ]
   const visibleTrees = new Set(sprites.map(sprite => sprite.id))

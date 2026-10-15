@@ -174,7 +174,7 @@ function plant(
   depth: number,
   scale: number,
   random: () => number,
-  index: number,
+  index: number | string,
 ) {
   const sprite = sprites[kind]
   const rows = kind === 'boulder' ? granite[Math.floor(random() * granite.length)] : sprite.rows
@@ -201,6 +201,20 @@ function plant(
 
 export function trailBoulder(point: Point, seed: number, index: number) {
   return plant('boulder', point, 1, 1, trailRandom(seed), index)
+}
+
+// The trunk a slot's last tree dropped. Its successor roots on the log, so the log lies across the
+// young trunk's foot until it rots.
+export function trailDeadfall(landscape: Landscape, tree: Point & { id: string }, seed: number) {
+  const { meadowTop, camp } = landscape
+  const depth = Math.max(0, Math.min(1, (tree.y - meadowTop) / Math.max(1, camp.y - meadowTop)))
+  const random = trailRandom(seed)
+  const point = { x: Math.round(tree.x + (random() - 0.5) * 12), y: tree.y - 1 }
+  return {
+    id: `deadfall-${tree.id}`,
+    bottom: point.y + 11,
+    markup: plant('log', point, depth, 0.55 + depth * 0.6, random, `deadfall-${tree.id}`),
+  }
 }
 
 export function* trailUnderstory(

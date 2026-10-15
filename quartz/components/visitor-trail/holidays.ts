@@ -1,4 +1,9 @@
+import type { HolidaySelection } from '../../util/visitor-holiday'
 import type { RouteSites } from './pasture'
+import {
+  readTrailHolidayChoice,
+  subscribeTrailHolidayChoice,
+} from '../../util/trail-holiday-choice'
 import { trailHost } from '../../util/trail-scene'
 import { subscribeVisitorHoliday, type TrailHoliday } from '../../util/visitor-holiday'
 import { circleClearance, readActors, readTrunks } from './actor-spacing'
@@ -153,7 +158,9 @@ function lanternGlow(width: number, depth: number) {
 
 export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, changed: () => void) {
   let automatic: TrailHoliday | null = null
-  const selection = sceneSettings.holiday
+  // The visitor's choice on the boulder switch wins over the authored setting.
+  let selection: HolidaySelection =
+    readTrailHolidayChoice(scene.ownerDocument.defaultView) ?? sceneSettings.holiday
   let decorated: SVGGElement[] = []
   const current = () => (selection === 'auto' ? automatic : selection === 'none' ? null : selection)
   const state = () => {
@@ -169,6 +176,18 @@ export function mountTrailHolidays(scene: HTMLElement, signal: AbortSignal, chan
       automatic = holiday
       state()
       if (selection === 'auto') changed()
+    },
+    signal,
+  )
+  subscribeTrailHolidayChoice(
+    scene.ownerDocument,
+    choice => {
+      const next = choice ?? sceneSettings.holiday
+      if (next === selection) return
+      const before = current()
+      selection = next
+      state()
+      if (current() !== before) changed()
     },
     signal,
   )
