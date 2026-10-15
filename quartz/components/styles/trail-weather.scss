@@ -108,6 +108,16 @@
   .trail-scene:not([data-trail-opening='complete']) .trail-far-gate-link {
     visibility: hidden;
   }
+  // Stepping through the gate: the scene scales up about the ring until the portal fills the
+  // view, at fourteen times the 32 px ring reads at the 404's size. The compositor's canvas is
+  // pixelated, so the cells stay crisp on the way in.
+  .trail-scene[data-trail-gate='entering'] {
+    transform-origin: var(--trail-gate-x) var(--trail-gate-y);
+    pointer-events: none;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: trail-gate-enter 760ms cubic-bezier(0.55, 0, 0.85, 0.35) forwards;
+    }
+  }
   // Fog is paper laid over the ranges through the dither screen.
   .trail-weather-fog {
     fill: var(--light);
@@ -253,6 +263,15 @@
   50% {
     opacity: 0.5;
     transform: translate(var(--trail-wind-x, 0px), var(--trail-wind-y, 0px));
+  }
+}
+
+@keyframes trail-gate-enter {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(14);
   }
 }
 

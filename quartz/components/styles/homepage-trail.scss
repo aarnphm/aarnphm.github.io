@@ -95,6 +95,16 @@
     background: currentColor;
   }
 }
+// The page steps back while the trail zooms into the far gate (see trail-weather.scss).
+html[data-trail-gate='entering'] {
+  #quartz-root,
+  .homepage-trail-toggle,
+  .trail-visitor-count,
+  .trail-local-time {
+    opacity: 0;
+    transition: opacity 320ms ease-out;
+  }
+}
 .homepage-trail-scene {
   position: absolute;
   top: 0;

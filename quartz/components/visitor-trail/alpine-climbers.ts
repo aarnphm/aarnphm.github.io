@@ -10,8 +10,7 @@ type Phase = 'ascending' | 'resting' | 'descending'
 type Climber = {
   element: SVGGElement
   figure: SVGGElement
-  rope: SVGPathElement
-  anchor: SVGPathElement
+  holds: SVGPathElement
   route: ClimbingRoute
   progress: number
   phase: Phase
@@ -24,23 +23,30 @@ type Climber = {
 }
 
 const tones = {
-  h: 'trail-climber-helmet',
+  h: 'trail-camper-hair',
   s: 'trail-camper-skin',
   c: 'trail-climber-coat',
-  p: 'trail-climber-pack',
+  w: 'trail-climber-chalk',
   d: 'trail-camper-trousers',
-  b: 'trail-hiker-boot',
-  a: 'trail-climber-harness',
-  m: 'trail-climber-tool-metal',
-  t: 'trail-climber-tool-shaft',
-  k: 'trail-climber-crampon',
+  b: 'trail-climber-shoe',
 }
-const artwork = Object.entries(climberSprites)
-  .map(
-    ([pose, rows]) =>
-      `<g data-climbing-pose="${pose}" transform="translate(-10.5 -30)">${pixels(rows, tones, 1.5)}</g>`,
-  )
-  .join('')
+const cell = 1.5
+const origin = { x: -10.5, y: -30 }
+// The resting pose dips a hand in the chalk bag; the puff rises off it.
+const artwork =
+  Object.entries(climberSprites)
+    .map(
+      ([pose, rows]) =>
+        `<g data-climbing-pose="${pose}" transform="translate(${origin.x} ${origin.y})">${pixels(rows, tones, cell)}</g>`,
+    )
+    .join('') +
+  '<path class="trail-climber-chalk-puff" d="M-2.5-17h1.5v1.5h-1.5ZM0-19.5h1.5v1.5H0Z"/>'
+// Cells of the planted hand in plantLeft and plantRight. The route chalks a hold under each, so
+// every reach lands on a mark that earlier ascents left on the rock.
+const plantedHands = [
+  { x: 1, y: 0, at: 0 },
+  { x: 12, y: 0, at: 0.5 },
+]
 
 const climbingCycle = [
   'liftLeft',
@@ -53,10 +59,29 @@ const climbingCycle = [
   'pullRight',
 ]
 
-function plantedProgress(route: ClimbingRoute, progress: number) {
+function routePitches(route: ClimbingRoute) {
   const rise = Math.abs(route.points[0].y - route.points[route.points.length - 1].y)
-  // A pull raises the torso one cell while the planted pick drops one cell in the sprite.
-  const pitches = Math.max(1, Math.round(rise / (3 * route.scale)))
+  // A pull raises the torso one cell while the planted hand drops one cell in the sprite.
+  return Math.max(1, Math.round(rise / (3 * route.scale)))
+}
+
+function chalkedHolds(route: ClimbingRoute) {
+  const pitches = routePitches(route)
+  const size = Math.max(0.6, cell * route.scale)
+  let d = ''
+  for (let pitch = 0; pitch < pitches; pitch++) {
+    for (const hand of plantedHands) {
+      const point = climbingPoint(route, (pitch + hand.at) / pitches)
+      const x = point.x + (origin.x + hand.x * cell) * route.scale
+      const y = point.y + (origin.y + hand.y * cell) * route.scale
+      d += `M${x.toFixed(2)} ${y.toFixed(2)}h${size.toFixed(2)}v${size.toFixed(2)}h${(-size).toFixed(2)}Z`
+    }
+  }
+  return d
+}
+
+function plantedProgress(route: ClimbingRoute, progress: number) {
+  const pitches = routePitches(route)
   const stride = progress * pitches
   const fraction = stride % 1
   const pull = (value: number) => value * value * (3 - 2 * value)
@@ -141,20 +166,17 @@ export function createAlpineClimbers(scene: HTMLElement, signal: AbortSignal) {
         const element = document.createElementNS('http://www.w3.org/2000/svg', 'g')
         element.dataset.alpineClimber = String(id)
         element.classList.add('trail-alpine-climber')
-        const anchor = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        anchor.classList.add('trail-climber-anchor')
-        const rope = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        rope.classList.add('trail-climber-rope')
+        const holds = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+        holds.classList.add('trail-climber-holds')
         const figure = document.createElementNS('http://www.w3.org/2000/svg', 'g')
         figure.classList.add('trail-climber-figure')
         figure.innerHTML = artwork
-        element.append(anchor, rope, figure)
+        element.append(holds, figure)
         const progress = 0.16 + random() * 0.42
         climbers.push({
           element,
           figure,
-          anchor,
-          rope,
+          holds,
           route,
           progress,
           phase: 'ascending',
@@ -169,7 +191,7 @@ export function createAlpineClimbers(scene: HTMLElement, signal: AbortSignal) {
       for (const climber of climbers) {
         const { route } = climber
         climber.painted = ''
-        climber.anchor.setAttribute('d', `M${route.anchor.x - 1} ${route.anchor.y - 1}h2v2h-2Z`)
+        climber.holds.setAttribute('d', chalkedHolds(route))
         climber.element.dataset.scale = String(route.scale)
         climber.element.dataset.mountainRange = String(route.rangeIndex)
         climber.element.dataset.climbingRoute = JSON.stringify(route)
@@ -210,15 +232,9 @@ export function createAlpineClimbers(scene: HTMLElement, signal: AbortSignal) {
         const signature = `${point.x}|${point.y}|${pose}|${climber.phase}|${motion}`
         if (signature === climber.painted) continue
         climber.painted = signature
-        const harness = { x: point.x + 0.75 * route.scale, y: point.y - 11.25 * route.scale }
         climber.figure.setAttribute(
           'transform',
           `translate(${point.x.toFixed(3)} ${point.y.toFixed(3)}) scale(${route.scale})`,
-        )
-        const bow = motion === 'still' || climber.phase === 'resting' ? 2.4 : 1.8
-        climber.rope.setAttribute(
-          'd',
-          `M${route.anchor.x} ${route.anchor.y}Q${((route.anchor.x + harness.x) / 2 + bow).toFixed(3)} ${((route.anchor.y + harness.y) / 2).toFixed(3)} ${harness.x.toFixed(3)} ${harness.y.toFixed(3)}`,
         )
         const data = climber.element.dataset
         if (data.phase !== climber.phase) data.phase = climber.phase

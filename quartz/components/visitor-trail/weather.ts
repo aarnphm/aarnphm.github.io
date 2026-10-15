@@ -446,6 +446,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   const layer = scene.querySelector<SVGGElement>('.trail-weather')
   const skyLayer = scene.querySelector<SVGGElement>('.trail-sky')
   const gateLayer = scene.querySelector<SVGGElement>('.trail-far-gate-layer')
+  const motion = view?.matchMedia('(prefers-reduced-motion: reduce)')
   // The ring is drawn in the composited canvas, so the link is a plain anchor laid over it in
   // the scene. A full navigation: the 404 is its own page with its own palette.
   const gateLink = document.createElement('a')
@@ -454,7 +455,48 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   gateLink.dataset.routerIgnore = ''
   gateLink.hidden = true
   scene.append(gateLink)
-  const motion = view?.matchMedia('(prefers-reduced-motion: reduce)')
+  let gateSite: FarGateSite | null = null
+  // Stepping through: the scene closes on the ring until its portal fills the view, then the
+  // 404 loads. Modified clicks and reduced motion keep the plain navigation.
+  gateLink.addEventListener(
+    'click',
+    event => {
+      if (scene.dataset.trailGate === 'entering') return event.preventDefault()
+      if (
+        !view ||
+        !gateSite ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        motion?.matches
+      )
+        return
+      event.preventDefault()
+      scene.style.setProperty('--trail-gate-x', `${gateSite.cx}px`)
+      scene.style.setProperty('--trail-gate-y', `${gateSite.cy}px`)
+      scene.dataset.trailGate = 'entering'
+      document.documentElement.dataset.trailGate = 'entering'
+      const href = gateLink.href
+      let timer = 0
+      const go = () => {
+        view.clearTimeout(timer)
+        view.location.assign(href)
+      }
+      scene.addEventListener(
+        'animationend',
+        function arrive(end) {
+          if (end.target !== scene || end.animationName !== 'trail-gate-enter') return
+          scene.removeEventListener('animationend', arrive)
+          go()
+        },
+        { signal },
+      )
+      timer = view.setTimeout(go, 1200)
+    },
+    { signal },
+  )
   let landscape: Landscape | null = null
   let seed = 0
   let weather: TrailWeather | null = null
@@ -584,6 +626,7 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     skyAt = now
     skyLayer.innerHTML = skyMarks(landscape, ranges, weather, now, seed)
     const gate = farGateSite(landscape, ranges)
+    gateSite = gate
     if (gateLayer) gateLayer.innerHTML = farGate(gate, ranges, now)
     placeGateLink(gate, now)
     paintMoon(false)
