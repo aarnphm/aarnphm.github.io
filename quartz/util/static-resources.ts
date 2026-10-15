@@ -29,19 +29,26 @@ export function getStaticResourcesFromPlugins(ctx: BuildCtx) {
         const socket = new WebSocket('${wsUrl}')
         let quartzReloading = false
         const quartzReloadDelay = ms => new Promise(resolve => setTimeout(resolve, ms))
+        // Any HTTP response means the server is up; a 404 page must still reload.
+        // Only a rejected fetch (server down) retries, and a dead server stops after 2 minutes.
         const waitForQuartzReloadTarget = async () => {
-          for (;;) {
+          const deadline = Date.now() + 120_000
+          while (Date.now() < deadline) {
             try {
-              const response = await fetch(window.location.href, { cache: "no-store" })
-              if (response.ok) return
+              await fetch(window.location.href, { cache: "no-store" })
+              return true
             } catch {}
             await quartzReloadDelay(250)
           }
+          return false
         }
         socket.addEventListener('message', () => {
           if (quartzReloading) return
           quartzReloading = true
-          waitForQuartzReloadTarget().then(() => window.location.reload())
+          waitForQuartzReloadTarget().then(ready => {
+            if (ready) window.location.reload()
+            else quartzReloading = false
+          })
         })
       `,
     })
