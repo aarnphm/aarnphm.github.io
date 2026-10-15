@@ -1,3 +1,4 @@
+import { bayerThreshold } from '../../util/bayer'
 import { lunarPhase } from '../../util/lunar-phase'
 import {
   sampleVisitorDaylight,
@@ -5,7 +6,7 @@ import {
   type VisitorDaylight,
 } from '../../util/visitor-daylight'
 import { subscribeVisitorMoon, type VisitorMoon } from '../../util/visitor-lunar'
-import { visitorPrecipitation } from '../../util/visitor-precipitation'
+import { stormDelay, visitorPrecipitation, wetFall } from '../../util/visitor-precipitation'
 import { subscribeVisitorTrailWeather, type TrailWeather } from '../../util/visitor-trail-weather'
 import { almanac, guessSite, type Body } from '../scripts/404-almanac'
 import { paintLunarDisc, stopLunarTransition } from '../scripts/lunar-disc'
@@ -18,8 +19,9 @@ import { trailWinter } from './winter'
 
 function decoration(weather: TrailWeather | null) {
   const precipitation = visitorPrecipitation(weather?.code)
-  const rain = precipitation.kind === 'rain' ? precipitation.strength : 0
-  const snow = precipitation.kind === 'snow' ? 1 : 0
+  const rain = wetFall(precipitation.fall) ? precipitation.heavy : 0
+  const snow = precipitation.fall === 'snow' ? 1 : 0
+  const { fog, storm } = precipitation
   const snowCover = trailWinter(weather).cover
   const sun =
     weather?.day && weather.code >= 0 && weather.code <= 2 && !rain && !snow
@@ -47,7 +49,7 @@ function decoration(weather: TrailWeather | null) {
           : sun
             ? 'sun'
             : 'cloud'
-  return { rain, snow, snowCover, sun, wind, gust, dx, dy, mode }
+  return { rain, snow, fog, storm, snowCover, sun, wind, gust, dx, dy, mode }
 }
 
 function weatherMarks(
@@ -58,8 +60,9 @@ function weatherMarks(
 ) {
   const random = trailRandom(seed ^ 0x34c4f69b)
   const { width, height, bottom, groves } = landscape
-  const { rain, snow, snowCover, gust, dx, dy } = decoration(weather)
+  const { rain, snow, fog, snowCover, gust, dx, dy } = decoration(weather)
   const marks: string[] = []
+  if (fog) marks.push(fogVeil(landscape))
   if (snowCover || festiveSnow) {
     const patches: string[] = []
     const count = width < 700 ? 28 : 56
@@ -208,7 +211,6 @@ function weatherMarks(
   return marks.join('')
 }
 
-const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
 const sunRadius = 6
 const moonRadius = 10
 
@@ -226,6 +228,140 @@ function hang(body: Body, radius: number, landscape: Landscape, ranges: readonly
       : crest - (body.alt / 1.5) * radius
   const visible = y - radius < crest && x > -radius * 2 && x < width + radius * 2
   return { x: Math.round(x), y: Math.round(y), visible }
+}
+
+// Fog settles in the valley and over the near ranges: a paper veil through the Bayer screen,
+// thickest at the foot of the mountains and thinning upward, so the crests show through it.
+function fogVeil(landscape: Landscape) {
+  const { width, alpine } = landscape
+  const cell = width < 700 ? 2 : 4
+  const top = alpine.top - 24
+  const depth = alpine.base - top + alpine.height * 0.35
+  const runs: string[] = []
+  for (let row = 0; row * cell < depth; row++) {
+    const y = top + row * cell
+    const level = 0.2 + 0.5 * ((row * cell) / depth) ** 0.8
+    let start = -1
+    for (let column = 0; column * cell <= width; column++) {
+      const on = level > bayerThreshold(column, row)
+      if (on && start < 0) start = column * cell
+      if (!on && start >= 0) {
+        runs.push(`M${start} ${y}h${column * cell - start}v${cell}h${start - column * cell}Z`)
+        start = -1
+      }
+    }
+    if (start >= 0) runs.push(`M${start} ${y}H${width + cell}v${cell}H${start}Z`)
+  }
+  return `<path class="trail-weather-fog" d="${runs.join('')}"/>`
+}
+
+// A storm's bolt drops from the cloud deck to a crest behind the ranges in 2 px steps, and shows
+// only at the flash (see trail-weather.scss), on the same clock as the page's flash.
+function boltMarks(landscape: Landscape, ranges: readonly MountainRange[], seed: number) {
+  const random = trailRandom(seed ^ 0x5b0c71a3)
+  const { width, bottom, alpine } = landscape
+  // The left half of the ranges, clear of the far gate on the right.
+  let x = Math.round((width * (0.15 + random() * 0.3)) / 2) * 2
+  const crest = mountainCrestAt(x, ranges) ?? alpine.base
+  let d = ''
+  for (let y = bottom + 10; y < crest; y += 6) {
+    d += `M${x} ${y}h2v6h-2Z`
+    x += (random() < 0.5 ? -2 : 2) * (random() < 0.3 ? 2 : 1)
+  }
+  return `<path class="trail-sky-bolt" d="${d}"/>`
+}
+
+// The 404's gate, seen from the trail: a stone ring on the flattest stretch of the right-hand
+// ranges' skyline, its portal dark and its hands keeping the visitor's time. It is drawn in front
+// of the ranges with its cells cut along the crest, so the ridge buries its foot the way the hill
+// buries the gate on the 404; behind the ranges it floated, because the crest band is near-paper
+// rock. Drawn in 2 px cells, redrawn with the sky each minute. The scene lays a link to the 404
+// over the ring.
+export type FarGateSite = { cx: number; cy: number; radius: number; cell: number }
+
+export function farGateSite(landscape: Landscape, ranges: readonly MountainRange[]): FarGateSite {
+  const { width, alpine } = landscape
+  const cell = 2
+  const radius = width < 700 ? 6 : 8
+  // The flattest window three ring widths wide between 72% and 90% of the scene: the smallest
+  // crest rise and fall, the higher stretch on a tie, so the ring stands on a shelf or a saddle
+  // instead of a peak.
+  const half = radius * cell * 3
+  const step = 4
+  let x = Math.round(width * 0.8)
+  let crest = mountainCrestAt(x, ranges) ?? alpine.base
+  let flattest = Infinity
+  for (let centre = Math.round(width * 0.72); centre <= width * 0.9; centre += step) {
+    let low = Infinity
+    let high = -Infinity
+    for (let probe = centre - half; probe <= centre + half; probe += step) {
+      const y = mountainCrestAt(probe, ranges)
+      if (y === undefined) {
+        low = Infinity
+        break
+      }
+      low = Math.min(low, y)
+      high = Math.max(high, y)
+    }
+    if (low === Infinity) continue
+    const spread = high - low
+    const y = mountainCrestAt(centre, ranges) ?? alpine.base
+    if (spread < flattest - 0.5 || (Math.abs(spread - flattest) <= 0.5 && y < crest))
+      [x, crest, flattest] = [centre, y, spread]
+  }
+  const cx = Math.round(x / cell) * cell
+  // The ranges' tops dissolve into dither, so the ring sinks four cells to stand in solid rock.
+  const cy = Math.round((crest - (radius - 4) * cell) / cell) * cell
+  return { cx, cy, radius, cell }
+}
+
+function farGate(site: FarGateSite, ranges: readonly MountainRange[], now: number) {
+  const { cx, cy, radius, cell } = site
+  const tones: Record<'stone' | 'joint' | 'portal' | 'star' | 'hand', string[]> = {
+    stone: [],
+    joint: [],
+    portal: [],
+    star: [],
+    hand: [],
+  }
+  // A cell whose centre lies under the skyline is rock, so the ring's foot stays buried.
+  const buried = (i: number, j: number) =>
+    cy + (j + 0.5) * cell > (mountainCrestAt(cx + (i + 0.5) * cell, ranges) ?? Infinity)
+  const plot = (tone: keyof typeof tones, i: number, j: number) => {
+    if (buried(i, j)) return
+    tones[tone].push(`M${cx + i * cell} ${cy + j * cell}h${cell}v${cell}h${-cell}Z`)
+  }
+  const random = trailRandom(0x404)
+  for (let j = -radius; j < radius; j++)
+    for (let i = -radius; i < radius; i++) {
+      const distance = Math.hypot(i + 0.5, j + 0.5)
+      if (distance > radius) continue
+      if (distance > radius - 2.2) {
+        // Twelve dressed stones with a dark joint between each.
+        const turn = (Math.atan2(j + 0.5, i + 0.5) / (2 * Math.PI) + 1) * 12
+        plot(turn % 1 < 0.14 ? 'joint' : 'stone', i, j)
+      } else plot(random() < 0.06 ? 'star' : 'portal', i, j)
+    }
+  const time = new Date(now)
+  const minute = time.getMinutes() + time.getSeconds() / 60
+  const hour = (time.getHours() % 12) + minute / 60
+  const hand = (turns: number, length: number) => {
+    const angle = turns * 2 * Math.PI
+    const seen = new Set<string>()
+    for (let t = 0; t <= length; t += 0.5) {
+      const i = Math.round(Math.sin(angle) * t - 0.5)
+      const j = Math.round(-Math.cos(angle) * t - 0.5)
+      if (seen.has(`${i},${j}`)) continue
+      seen.add(`${i},${j}`)
+      plot('hand', i, j)
+    }
+  }
+  hand(minute / 60, radius - 3)
+  hand(hour / 12, (radius - 3) * 0.6)
+  const paths = Object.entries(tones)
+    .map(([tone, runs]) => `<path class="trail-far-gate-${tone}" d="${runs.join('')}"/>`)
+    .join('')
+  return `<g class="trail-far-gate" data-far-gate="${time.getHours()}:${String(time.getMinutes()).padStart(2, '0')}">${paths}</g>`
 }
 
 // Twilight lights the sky behind the ranges, strongest low over the sun's bearing. A 4 × 4 Bayer
@@ -247,7 +383,7 @@ function duskGlow(landscape: Landscape, sunX: number, strength: number) {
       const x = column * cell
       const near = Math.max(0, 1 - Math.abs(x - sunX) / span) ** 1.5
       const level = strength * near * (0.25 + low * 0.75)
-      const threshold = (bayer[(row % 4) * 4 + (column % 4)] + 0.5) / 16
+      const threshold = bayerThreshold(column, row)
       const next = level > threshold ? (level > 0.55 ? 'inner' : 'outer') : null
       if (next === tone) continue
       if (tone) runs[tone].push(`M${start} ${y}h${x - start}v${cell}h${start - x}Z`)
@@ -271,7 +407,7 @@ function skyMarks(
       ? { lat: weather.lat, lon: weather.lon, place: null, weather: null }
       : guessSite()
   const sky = almanac(new Date(now), site)
-  const { rain, snow, wind, dx } = decoration(weather)
+  const { rain, snow, storm, wind, dx } = decoration(weather)
   const clear = rain || snow ? 0 : 1 - (weather?.cloud ?? 0.3)
   const sun = hang(sky.sun, sunRadius, landscape, ranges)
   const moon = hang(sky.moon, moonRadius, landscape, ranges)
@@ -284,6 +420,7 @@ function skyMarks(
     ),
     duskGlow(landscape, sun.x, sky.dusk * (0.35 + clear * 0.65)),
   ]
+  if (storm) marks.push(boltMarks(landscape, ranges, seed))
   if (sun.visible && clear > 0.15) {
     const rays = sky.sun.alt > 4 ? 'M-1-12h2v3h-2ZM-1 9h2v3h-2ZM-12-1h3v2h-3ZM9-1h3v2H9Z' : ''
     marks.push(
@@ -308,6 +445,15 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
   const view = document.defaultView
   const layer = scene.querySelector<SVGGElement>('.trail-weather')
   const skyLayer = scene.querySelector<SVGGElement>('.trail-sky')
+  const gateLayer = scene.querySelector<SVGGElement>('.trail-far-gate-layer')
+  // The ring is drawn in the composited canvas, so the link is a plain anchor laid over it in
+  // the scene. A full navigation: the 404 is its own page with its own palette.
+  const gateLink = document.createElement('a')
+  gateLink.className = 'trail-far-gate-link'
+  gateLink.href = '/404'
+  gateLink.dataset.routerIgnore = ''
+  gateLink.hidden = true
+  scene.append(gateLink)
   const motion = view?.matchMedia('(prefers-reduced-motion: reduce)')
   let landscape: Landscape | null = null
   let seed = 0
@@ -416,6 +562,20 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     })
     updateLighting()
   }
+  const placeGateLink = (gate: FarGateSite, now: number) => {
+    const pad = 4
+    const edge = gate.radius * gate.cell + pad
+    gateLink.style.left = `${gate.cx - edge}px`
+    gateLink.style.top = `${gate.cy - edge}px`
+    gateLink.style.width = `${edge * 2}px`
+    gateLink.style.height = `${edge * 2}px`
+    const time = new Date(now)
+    const clock = `${time.getHours()}:${String(time.getMinutes()).padStart(2, '0')}`
+    const label = `Stone clock on the far ridge, ${clock}. Step through to the 404`
+    gateLink.setAttribute('aria-label', label)
+    gateLink.title = label
+    gateLink.hidden = false
+  }
   // The sun and moon move about a pixel a minute on a wide screen.
   const renderSky = (now = Date.now()) => {
     view?.clearTimeout(skyTimer)
@@ -423,6 +583,9 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     if (!skyLayer || !landscape || signal.aborted) return
     skyAt = now
     skyLayer.innerHTML = skyMarks(landscape, ranges, weather, now, seed)
+    const gate = farGateSite(landscape, ranges)
+    if (gateLayer) gateLayer.innerHTML = farGate(gate, ranges, now)
+    placeGateLink(gate, now)
     paintMoon(false)
     if (view) skyTimer = view.setTimeout(() => renderSky(), 60_000)
   }
@@ -439,6 +602,10 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
     for (const frog of scene.querySelectorAll<SVGGElement>('[data-wetland-animal="frog"]'))
       frog.dataset.collisionActive = String(!frozen)
     scene.dataset.weatherMode = state.mode
+    scene.dataset.weatherFog = String(state.fog)
+    scene.dataset.weatherStorm = String(state.storm)
+    scene.dataset.fireWeather = state.rain || state.snow ? 'wet' : 'dry'
+    scene.style.setProperty('--trail-storm-delay', stormDelay())
     scene.dataset.snowSource = source
     scene.dataset.festiveSnow = String(festiveSnow)
     scene.dataset.forecastSnowCover = forecastCover.toFixed(3)
@@ -555,6 +722,8 @@ export function mountTrailWeather(scene: HTMLElement, host: HTMLElement, signal:
       view?.clearTimeout(skyTimer)
       layer?.replaceChildren()
       skyLayer?.replaceChildren()
+      gateLayer?.replaceChildren()
+      gateLink.remove()
     },
     { once: true },
   )

@@ -411,6 +411,9 @@ function weathered(p: Palette, s: Season, sky: Sky): Palette {
     // What leaves hang on through the winter are dead ones.
     crown: tint(p.crown, p.dun, s.bare * 0.85),
     autumn: tint(p.autumn, p.dun, s.bare * 0.5),
+    // Smoke shares the snow's grey; over lying snow it takes the dark of wet woodsmoke so the
+    // column still reads.
+    smoke: p.smoke.map(c => mix(c, INK, Math.min(1, s.ground * 1.15) * 0.45)),
   }
 }
 
@@ -1768,6 +1771,7 @@ function paintWater(
   ripples: Ripple[],
   clock: number,
   dark: boolean,
+  doused: boolean,
 ) {
   const { bw, bh, sx, sy } = g
   const shore = row(g, water)
@@ -1812,7 +1816,7 @@ function paintWater(
 
   const fc = col(g, FIRE.x)
   const beat = Math.floor(clock * 6)
-  for (let j = Math.max(0, shore + 1); j < bh; j++) {
+  for (let j = Math.max(0, shore + 1); j < bh && !doused; j++) {
     const depth = sy[j] - water
     const p = (1 - depth / 110) * (dark ? 0.85 : 0.45)
     if (p <= 0) break
@@ -1936,7 +1940,7 @@ function paintRings(
 
 // How the little people are lit: by day from the sun's side, at night by the campfire when they
 // are near it and otherwise by the open gate.
-type Rim = { side: number; color: RGB; contrast: number; night: boolean }
+type Rim = { side: number; color: RGB; contrast: number; night: boolean; fire: boolean }
 
 // Rim light and form shadow a pixel deep: an edge facing the light takes its colour, the edge
 // away from it darkens, so a figure four pixels wide reads as round. Pixel-wide limbs and inked
@@ -1953,7 +1957,7 @@ function relight(d: Uint8ClampedArray, g: Grid, rim: Rim, heat: number) {
       let strength = 0.4 * rim.contrast
       if (rim.night) {
         const x = sx[i]
-        const fire = Math.abs(x - FIRE.x) < 170
+        const fire = rim.fire && Math.abs(x - FIRE.x) < 170
         side = Math.sign((fire ? FIRE.x : GATE.x) - x) || 1
         color = fire ? FLAME[1] : ROSE
         strength = fire ? 0.45 : 0.15 + 0.3 * heat
@@ -2026,7 +2030,9 @@ function paintPool(
   water: number,
   clock: number,
   dark: boolean,
+  doused: boolean,
 ) {
+  if (doused) return
   const { bw, sx, sy } = g
   const strength = (dark ? 0.8 : 0.45) * (0.85 + 0.15 * noise(clock * 4, 0.5, 13))
   const [rx, up, down] = dark ? [130, 64, 34] : [60, 26, 16]
@@ -2052,10 +2058,11 @@ function paintCamp(
   w: Walker,
   clock: number,
   dark: boolean,
+  doused: boolean,
 ) {
   const foot = row(g, FIRE.y)
   const fc = col(g, FIRE.x)
-  const warmth = dark ? 0.5 : 0.2
+  const warmth = doused ? 0 : dark ? 0.5 : 0.2
   const lit = (c: RGB, i: number) => {
     const k = warmth * Math.max(0, 1 - Math.abs(g.sx[clampCol(g, i)] - FIRE.x) / 90)
     return k > 0 ? mix(c, FLAME[1], k) : dark ? mul(c, 0.8) : c
@@ -2076,7 +2083,9 @@ function paintCamp(
   for (const o of [-4, -3, 3, 4]) dot(d, g, fc + o, foot, lit(pal.far[o & 1 ? 1 : 0], fc + o))
   for (let o = -2; o <= 2; o++) dot(d, g, fc + o, foot, pal.bark[Math.abs(o) === 2 ? 2 : 0])
   const beat = Math.floor(clock * 9)
-  for (let o = -2; o <= 2; o++) {
+  // Doused, the logs lie charred in the ring.
+  if (doused) for (let o = -1; o <= 1; o++) dot(d, g, fc + o, foot - 1, mix(pal.bark[2], INK, 0.5))
+  for (let o = -2; o <= 2 && !doused; o++) {
     const h = Math.max(1, Math.round(FLAME_ROWS[o + 2] * (0.55 + 0.6 * hash(o, beat, 5))))
     for (let r = 0; r < h; r++) {
       const t = (r + 0.5) / h
@@ -2086,7 +2095,7 @@ function paintCamp(
     }
   }
   // Now and then a tongue tears off the tip.
-  if (hash(beat, 1, 7) < 0.35)
+  if (!doused && hash(beat, 1, 7) < 0.35)
     dot(d, g, fc - (hash(beat, 2, 7) < 0.5 ? 1 : 0), foot - 9 - (beat & 1), FLAME[2])
 
   CAMPERS.forEach((c, n) => {
@@ -2109,7 +2118,7 @@ function paintCamp(
       foot - 2 - Math.round((2 * s) / run),
       pal.bark[1],
     )
-  const toast = frac(clock / 14)
+  const toast = doused ? 0.9 : frac(clock / 14)
   dot(d, g, fc - 1, foot - 5, toast < 0.5 ? FLAME[0] : toast < 0.8 ? FLAME[1] : pal.bark[2])
 
   const rows = [...FIGURE, LEGS[w.walking ? Math.floor(w.stride / 0.22) % 2 : 2]]
@@ -2136,7 +2145,9 @@ type Puff = {
   life: number
   seed: number
 }
-type Hearth = { smoke: Puff[]; embers: Puff[]; spawn: number; spark: number }
+// Rain or snow puts the fire out: no flames, embers or firelight, and the wet logs send up a
+// heavier, slower column of smoke from the hearth itself.
+type Hearth = { smoke: Puff[]; embers: Puff[]; spawn: number; spark: number; doused: boolean }
 
 // Smoke rises off the fire and rides the same air as the sky strokes, so it leans with the wind,
 // curls through the cursor's eddies, and spirals into the gate while it is open. Each puff also
@@ -2145,19 +2156,19 @@ type Hearth = { smoke: Puff[]; embers: Puff[]; spawn: number; spark: number }
 function stepHearth(h: Hearth, air: Air, dt: number) {
   h.spawn -= dt
   while (h.spawn <= 0) {
-    h.spawn += 0.08
+    h.spawn += h.doused ? 0.06 : 0.08
     h.smoke.push({
       x: FIRE.x + (Math.random() - 0.5) * 6,
-      y: FIRE.y - 26,
+      y: FIRE.y - (h.doused ? 6 : 26),
       vx: 0,
-      vy: -20,
+      vy: h.doused ? -10 : -20,
       age: 0,
-      life: 5 + Math.random() * 2.5,
+      life: (h.doused ? 6.5 : 5) + Math.random() * 2.5,
       seed: Math.random(),
     })
   }
   h.spark -= dt
-  if (h.spark <= 0) {
+  if (h.spark <= 0 && !h.doused) {
     h.spark = 0.15 + Math.random() * 0.35
     h.embers.push({
       x: FIRE.x + (Math.random() - 0.5) * 10,
@@ -2172,8 +2183,10 @@ function stepHearth(h: Hearth, air: Air, dt: number) {
   const ease = Math.min(1, dt * 1.5)
   for (const p of h.smoke) {
     const a = airAngle(air, p.x, p.y)
-    const drift = 10 + 30 * air.pull
-    const rise = 24 * (1 - (0.5 * p.age) / p.life)
+    // A doused fire sends up a slow column of wet smoke that stands straight for a couple of
+    // seconds before the wind takes it; drifting from the start, it reads as a smear on the grass.
+    const drift = (10 + 30 * air.pull) * (h.doused ? Math.min(1, p.age / 2.5) : 1)
+    const rise = (h.doused ? 18 : 24) * (1 - (0.5 * p.age) / p.life)
     p.vx += (Math.cos(a) * drift + (p.seed - 0.5) * 18 - p.vx) * ease
     p.vy += (Math.sin(a) * drift - rise - p.vy) * ease
     p.x += p.vx * dt
@@ -3139,7 +3152,7 @@ export function setupLandscape(
   const air: Air = { drift: 0, time: 0, pull: 0, pole, vortices: [], body: null, cover: 0.3 }
   const walker: Walker = { x: 900, dir: 1, pause: 1.5, next: 9, stride: 0, walking: false }
   // Start with the fire already smoking, so the column is standing on the first frame.
-  const hearth: Hearth = { smoke: [], embers: [], spawn: 0, spark: 0 }
+  const hearth: Hearth = { smoke: [], embers: [], spawn: 0, spark: 0, doused: false }
   for (let n = 0; n < 105; n++) stepHearth(hearth, air, 1 / 15)
   const ripples = makeRipples(water)
   const splashes: Splash[] = []
@@ -3205,6 +3218,7 @@ export function setupLandscape(
   // lit as a result. Recomputed on every repaint and checked once a minute.
   let al: Almanac = almanac(new Date(), site)
   let weather: Sky = readSky(site.weather)
+  hearth.doused = weather.fall !== 'none'
   let times: Season = season(al, weather)
   // The bike park's day: who turns up comes from the date, so everyone looking on a given day sees
   // the same riders. With motion it has been open a while by the time anyone looks.
@@ -3243,7 +3257,7 @@ export function setupLandscape(
     frost: times.frost,
     thaw: times.thaw,
   }
-  let rim: Rim = { side: 1, color: CREAM, contrast: 1, night: false }
+  let rim: Rim = { side: 1, color: CREAM, contrast: 1, night: false, fire: true }
   let night = false
   let lightKey = ''
   let hung = ''
@@ -3434,15 +3448,15 @@ export function setupLandscape(
     for (let k = 3; k < people.length; k += 4)
       if (people[k] === 255) put(figures, k - 3, [people[k - 3], people[k - 2], people[k - 1]])
     d.fill(0)
-    paintPool(d, g, pal, water, clock, dark)
+    paintPool(d, g, pal, water, clock, dark, hearth.doused)
     const layers = [figures, same(ruin), same(field), same(well), same(ranges)]
-    paintWater(d, g, pal, water, ink, layers, ripples, clock, dark)
+    paintWater(d, g, pal, water, ink, layers, ripples, clock, dark, hearth.doused)
     paintGlitter(d, g, pal, water, rift.heat, clock, air.body)
     paintRings(d, g, water, weather, clock, mix(pal.water[2], pal.glint[0], 0.6))
     paintSplashes(d, g, splashes, ink)
     for (let k = 3; k < d.length; k += 4)
       if (figures[k] === 255) put(d, k - 3, [figures[k - 3], figures[k - 2], figures[k - 1]])
-    paintCamp(d, g, pal, water, walker, clock, dark)
+    paintCamp(d, g, pal, water, walker, clock, dark, hearth.doused)
     paintHearth(d, g, pal, hearth, clock)
     // Everyone else on the bank can be spoken to as well.
     const foot = row(g, FIRE.y)
@@ -3557,6 +3571,7 @@ export function setupLandscape(
   const repaint = () => {
     al = almanac(new Date(), site)
     weather = readSky(site.weather)
+    hearth.doused = weather.fall !== 'none'
     times = season(al, weather)
     park.env = parkEnv(al, weather, weekend())
     slopes.env = hillEnv(al, weather, weekend())
@@ -3583,7 +3598,13 @@ export function setupLandscape(
       frost: times.frost,
       thaw: times.thaw,
     }
-    rim = { side, color: mix(pal.sun[0], CREAM, 0.5), contrast, night: !sunUp }
+    rim = {
+      side,
+      color: mix(pal.sun[0], CREAM, 0.5),
+      contrast,
+      night: !sunUp,
+      fire: weather.fall === 'none',
+    }
     ranges = layer(back)
     if (ranges) {
       paintLand(ranges.img.data, ranges.g, pal, pines, relief)

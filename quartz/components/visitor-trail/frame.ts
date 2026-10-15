@@ -88,6 +88,7 @@ scene.innerHTML = `
       <g clip-path="url(#${clip})">
       <g clip-path="url(#${clip}-clock)">
       <g data-trail-backdrop-container></g>
+      <g class="trail-far-gate-layer" data-trail-layer="far-gate" aria-hidden="true"></g>
       </g>
       <g class="trail-ground-base" data-trail-layer="ground-base"></g>
       <g clip-path="url(#${clip}-clock)">
@@ -754,21 +755,19 @@ host.addEventListener(
   },
   { signal },
 )
-host.addEventListener(
-  'trail:hide',
-  () => {
-    scene.dataset.trailVisible = 'false'
-    journey.pause()
-    readerJourneys.pause()
-    pastureJourneys.pause()
-    alpineJourneys.pause()
-    perspective.pause()
-    groundDepth.pause()
-    weather.pause()
-    community.pause()
-    visitorJourneys.pause()
-    parkPatrol.pause()
-  },
-  { signal },
-)
+const pauseScene = () => {
+  scene.dataset.trailVisible = 'false'
+  journey.pause()
+  readerJourneys.pause()
+  pastureJourneys.pause()
+  alpineJourneys.pause()
+  perspective.pause()
+  groundDepth.pause()
+  weather.pause()
+  community.pause()
+  visitorJourneys.pause()
+  parkPatrol.pause()
+}
+host.addEventListener('trail:close', pauseScene, { signal })
+host.addEventListener('trail:hide', pauseScene, { signal })
 startConnection()

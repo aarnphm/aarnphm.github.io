@@ -114,6 +114,53 @@
   .trail-camp[data-fire-state='out'] .trail-log-lit {
     fill: var(--darkgray);
   }
+  // Rain or snow puts a lit fire out. The wet logs smoulder in a grey column that leans with the
+  // wind; a camp already doused or asleep stays cold.
+  .trail-smoulder {
+    visibility: hidden;
+  }
+  // The 404's wet-smoke blue-grey, dark enough to read against snow and paper.
+  .trail-smoulder-puff {
+    fill: color-mix(in srgb, var(--darkgray) 55%, #8f909c);
+    opacity: 0.6;
+    shape-rendering: crispEdges;
+  }
+  .trail-scene[data-fire-weather='wet'] .trail-camp:not([data-fire-state='out']) {
+    :is(.trail-fire, .trail-firelight, .trail-ember) {
+      visibility: hidden;
+    }
+    .trail-log-lit {
+      fill: var(--darkgray);
+    }
+    .trail-smoulder {
+      visibility: visible;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .trail-scene[data-fire-weather='wet']
+      .trail-camp:not([data-fire-state='out'])
+      .trail-smoulder-puff {
+      animation: trail-smoulder 5s steps(10, end) infinite;
+      animation-delay: var(--smoulder-delay, 0s);
+    }
+    [data-camp-motion='paused'] .trail-smoulder-puff,
+    .trail-scene[data-weather-motion='paused'] .trail-smoulder-puff {
+      animation-play-state: paused;
+    }
+  }
+  @keyframes trail-smoulder {
+    from {
+      transform: translate(0, 6px);
+      opacity: 0;
+    }
+    20% {
+      opacity: 0.8;
+    }
+    to {
+      transform: translate(calc(var(--trail-wind-x, 0px) * 1.6), -12px);
+      opacity: 0;
+    }
+  }
   .trail-tent[data-occupied='true'] .trail-tent-sleeper {
     visibility: visible;
   }

@@ -23,6 +23,7 @@ document.addEventListener('nav', () => {
 
   const controller = new AbortController()
   const { signal } = controller
+  let isOpen = false
   const holidayMarker = toggle.querySelector<HTMLElement>('[data-holiday-marker]')
   const holidayIcons: Record<TrailHoliday, HolidaySpriteName> = {
     thanksgiving: 'turkey',
@@ -35,7 +36,7 @@ document.addEventListener('nav', () => {
   const showHoliday = (holiday: TrailHoliday | null) => {
     if (shownHoliday === holiday) return
     shownHoliday = holiday
-    toggle.title = `${scene.hidden ? 'Show' : 'Hide'} walking trail${holiday ? ` · ${holidayLabels[holiday]}` : ''}`
+    toggle.title = `${isOpen ? 'Hide' : 'Show'} walking trail${holiday ? ` · ${holidayLabels[holiday]}` : ''}`
     if (!holidayMarker) return
     holidayMarker.hidden = !holiday
     if (!holiday) {
@@ -127,12 +128,13 @@ document.addEventListener('nav', () => {
     const drawing = scene.shadowRoot?.querySelector<HTMLElement>('.trail-scene')
     if (
       signal.aborted ||
+      !isOpen ||
       scene.hidden ||
       motionStarted ||
       openFrame ||
       openTimer ||
       drawing?.dataset.trailOpening !== 'complete' ||
-      drawing.dataset.trailReveal === 'revealing'
+      drawing.dataset.trailReveal !== undefined
     )
       return
     // Give the complete reveal one paint before walkers read their routes and start moving.
@@ -140,7 +142,7 @@ document.addEventListener('nav', () => {
       openFrame = 0
       openTimer = window.setTimeout(() => {
         openTimer = 0
-        if (!signal.aborted && !scene.hidden) {
+        if (!signal.aborted && isOpen && !scene.hidden) {
           motionStarted = true
           scene.dispatchEvent(new Event('trail:show'))
         }
@@ -149,14 +151,22 @@ document.addEventListener('nav', () => {
   }
   scene.addEventListener('trail:prepared', resumeScene, { signal })
   scene.addEventListener('trail:reveal-end', resumeScene, { signal })
+  const finishClose = () => {
+    if (isOpen) return
+    scene.hidden = true
+    scene.dispatchEvent(new Event('trail:hide'))
+  }
+  scene.addEventListener('trail:closed', finishClose, { signal })
   const setOpen = (open: boolean) => {
+    if (!open && scene.shadowRoot?.activeElement) toggle.focus({ preventScroll: true })
+    isOpen = open
     cancelResize()
     window.cancelAnimationFrame(openFrame)
     window.clearTimeout(openTimer)
     openFrame = openTimer = 0
     motionStarted = false
     if (open) align()
-    scene.hidden = !open
+    if (open) scene.hidden = false
     for (const control of scene.shadowRoot?.querySelector('.trail-scene')?.children ?? [])
       if (control instanceof HTMLElement) control.inert = !open
     scene.setAttribute('aria-hidden', String(!open))
@@ -167,14 +177,15 @@ document.addEventListener('nav', () => {
       scene.dispatchEvent(new Event('trail:open'))
       resumeScene()
     } else {
-      scene.dispatchEvent(new Event('trail:hide'))
+      // A ready surface keeps its pixels visible until the reverse reveal reaches the clock.
+      if (scene.dispatchEvent(new Event('trail:close', { cancelable: true }))) finishClose()
     }
   }
   const close = () => {
-    setOpen(false)
     toggle.focus({ preventScroll: true })
+    setOpen(false)
   }
-  toggle.addEventListener('click', () => setOpen(scene.hidden !== false), { signal })
+  toggle.addEventListener('click', () => setOpen(!isOpen), { signal })
   window.addEventListener(
     'message',
     event => {
@@ -187,16 +198,23 @@ document.addEventListener('nav', () => {
     },
     { signal },
   )
-  const disposeEscape = registerEscapeHandler(
-    root,
-    close,
-    () =>
-      !scene.hidden &&
-      !document.querySelector('#visitor-weather-panel')?.matches(':popover-open') &&
-      !root.querySelector('#homepage-moon-panel')?.matches(':popover-open') &&
-      !root.querySelector('#homepage-visitor-panel')?.matches(':popover-open') &&
-      !trailScene(document)?.querySelector('.trail-visitor-popover:popover-open'),
+  const canClose = () =>
+    isOpen &&
+    !document.querySelector('#visitor-weather-panel')?.matches(':popover-open') &&
+    !root.querySelector('#homepage-moon-panel')?.matches(':popover-open') &&
+    !root.querySelector('#homepage-visitor-panel')?.matches(':popover-open') &&
+    !trailScene(document)?.querySelector('.trail-visitor-popover:popover-open')
+  scene.addEventListener(
+    'keydown',
+    event => {
+      if (event.key !== 'Escape' || event.defaultPrevented || !canClose()) return
+      event.preventDefault()
+      event.stopPropagation()
+      close()
+    },
+    { signal },
   )
+  const disposeEscape = registerEscapeHandler(root, close, canClose)
   setOpen(false)
   window.addCleanup(() => {
     controller.abort()

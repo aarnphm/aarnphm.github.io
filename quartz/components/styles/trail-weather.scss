@@ -75,6 +75,51 @@
     opacity: 0.2;
     shape-rendering: crispEdges;
   }
+  // The 404's gate on a far crest, hazed back with the ranges around it.
+  .trail-far-gate {
+    opacity: 0.8;
+  }
+  .trail-far-gate-stone {
+    fill: color-mix(in srgb, var(--lightgray) 45%, #b9ae98);
+  }
+  .trail-far-gate-joint {
+    fill: color-mix(in srgb, var(--gray) 60%, #6f6656);
+  }
+  .trail-far-gate-portal {
+    fill: #2c2d55;
+  }
+  .trail-far-gate-star {
+    fill: #8b7ec8;
+  }
+  .trail-far-gate-hand {
+    fill: #f1d67e;
+  }
+  // The ring's link: an unpainted square over the composited ring, keyboard reachable.
+  .trail-far-gate-link {
+    position: absolute;
+    display: block;
+    pointer-events: auto;
+    cursor: pointer;
+    &:focus-visible {
+      outline: 1px dashed var(--darkgray);
+      outline-offset: 2px;
+    }
+  }
+  .trail-scene:not([data-trail-opening='complete']) .trail-far-gate-link {
+    visibility: hidden;
+  }
+  // Fog is paper laid over the ranges through the dither screen.
+  .trail-weather-fog {
+    fill: var(--light);
+    opacity: 0.9;
+    shape-rendering: crispEdges;
+  }
+  // The bolt shows only during the flash. Without motion it stays hidden; the storm still reads
+  // through the rain.
+  .trail-sky-bolt {
+    fill: color-mix(in srgb, var(--light) 30%, #f4efd8);
+    opacity: 0;
+  }
   .trail-weather-snow-ground {
     fill: color-mix(in srgb, var(--lightgray) 25%, #e9eee8);
     opacity: calc(var(--trail-snow-cover, 0) * 0.55);
@@ -104,6 +149,10 @@
     .trail-weather-snow {
       animation-duration: 6s;
     }
+    .trail-sky-bolt {
+      animation: trail-storm-bolt 11s linear infinite;
+      animation-delay: var(--trail-storm-delay, 0s);
+    }
     .trail-weather-dapple {
       animation: trail-weather-dapple 10s ease-in-out infinite;
       animation-delay: var(--trail-weather-delay, 0s);
@@ -114,7 +163,8 @@
       .trail-weather-paw,
       .trail-weather-snow,
       .trail-weather-leaf,
-      .trail-weather-dapple {
+      .trail-weather-dapple,
+      .trail-sky-bolt {
         animation-play-state: paused;
       }
     }
@@ -203,5 +253,27 @@
   50% {
     opacity: 0.5;
     transform: translate(var(--trail-wind-x, 0px), var(--trail-wind-y, 0px));
+  }
+}
+
+// Two strokes a tenth of a second apart, once per storm period; the page flash keeps the same beat.
+@keyframes trail-storm-bolt {
+  0%,
+  0.9%,
+  2.2%,
+  100% {
+    opacity: 0;
+  }
+  1%,
+  1.4% {
+    opacity: 1;
+  }
+  1.5%,
+  1.9% {
+    opacity: 0;
+  }
+  2%,
+  2.1% {
+    opacity: 0.8;
   }
 }

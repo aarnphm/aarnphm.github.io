@@ -65,7 +65,7 @@ export function sampleVisitorDaylight(
     bearing: sky.sun.bearing,
     daylight: sky.day,
     twilight: sky.dusk,
-    sunlight: sky.day * (1 - cloud) * (1 - precipitation.strength * 0.85),
+    sunlight: sky.day * (1 - cloud) * (1 - precipitation.heavy * 0.85),
     source: located ? 'forecast-cell' : 'clock-estimate',
     dark: sky.sun.alt < -4,
   }
