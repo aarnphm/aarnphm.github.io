@@ -1,4 +1,5 @@
 import type { Alpine, Landscape, Point } from './landscape'
+import { bayerThreshold } from '../../util/bayer'
 import { carvedTrails } from './carved-trail'
 import {
   buildMountainRanges,
@@ -43,7 +44,6 @@ type MountainColumn = {
   geology: Geology
 }
 
-const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
 const alpineTones: readonly RockTone[] = ['rock', 'shade', 'light', 'snow', 'fracture', 'lichen']
 const lowlandTones: readonly RockTone[] = [
   'rock',
@@ -211,8 +211,10 @@ export function trailMountainBackdrop(
   const random = trailRandom(seed ^ 0x2b992ddf)
   const phaseX = Math.floor(random() * 4)
   const phaseY = Math.floor(random() * 4)
+  // The rock tones were cut against a screen that starts at 0 rather than the cell centre, so this
+  // one keeps that half-step offset and its faces read as they always have.
   const thresholdAt = (column: number, row: number, range: MountainRange) =>
-    bayer[((row + phaseY + range.index) % 4) * 4 + ((column + phaseX + range.index * 3) % 4)] / 16
+    bayerThreshold(column + phaseX + range.index * 3, row + phaseY + range.index) - 0.5 / 16
 
   const surfaceAt = (worldX: number, worldY: number, column: number, alpineFace: boolean) =>
     rangesInColumn(worldX, column).find(candidate => {
