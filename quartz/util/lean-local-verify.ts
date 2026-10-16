@@ -129,6 +129,111 @@ function readPos(value: unknown): LeanPosition | undefined {
   return line !== undefined ? { line, column } : undefined
 }
 
+const LOCAL_MATHLIB_PRELUDE = [
+  'universe u v w',
+  'macro "Type*" : term => `(Type _)',
+  'def Set (α : Type u) := α → Prop',
+  'namespace Set',
+  'variable {α : Type u} {β : Type v}',
+  'protected def Mem (s : Set α) (a : α) : Prop := s a',
+  'instance : Membership α (Set α) := ⟨Set.Mem⟩',
+  'def setOf (p : α → Prop) : Set α := p',
+  'macro "{" x:ident " : " t:term " | " p:term "}" : term => `(Set.setOf (fun ($x : $t) => $p))',
+  'macro "{" x:ident " | " p:term "}" : term => `(Set.setOf (fun $x => $p))',
+  '@[ext] theorem ext {a b : Set α} (h : ∀ x, x ∈ a ↔ x ∈ b) : a = b := funext (fun x => propext (h x))',
+  'protected def Subset (a b : Set α) : Prop := ∀ ⦃x⦄, x ∈ a → x ∈ b',
+  'instance : HasSubset (Set α) := ⟨Set.Subset⟩',
+  'instance : EmptyCollection (Set α) := ⟨fun _ => False⟩',
+  'def univ : Set α := fun _ => True',
+  'instance : Union (Set α) := ⟨fun a b x => x ∈ a ∨ x ∈ b⟩',
+  'instance : Inter (Set α) := ⟨fun a b x => x ∈ a ∧ x ∈ b⟩',
+  'instance : SDiff (Set α) := ⟨fun a b x => x ∈ a ∧ x ∉ b⟩',
+  'def compl (s : Set α) : Set α := fun x => x ∉ s',
+  'postfix:max "ᶜ" => Set.compl',
+  '@[simp] theorem mem_setOf {x : α} {p : α → Prop} : x ∈ Set.setOf p ↔ p x := Iff.rfl',
+  '@[simp] theorem mem_union (x : α) (a b : Set α) : x ∈ a ∪ b ↔ x ∈ a ∨ x ∈ b := Iff.rfl',
+  '@[simp] theorem mem_inter_iff (x : α) (a b : Set α) : x ∈ a ∩ b ↔ x ∈ a ∧ x ∈ b := Iff.rfl',
+  '@[simp] theorem mem_diff (x : α) (a b : Set α) : x ∈ a \\ b ↔ x ∈ a ∧ x ∉ b := Iff.rfl',
+  '@[simp] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl',
+  '@[simp] theorem mem_empty_iff_false (x : α) : x ∈ (∅ : Set α) ↔ False := Iff.rfl',
+  '@[simp] theorem mem_univ (x : α) : x ∈ (univ : Set α) ↔ True := Iff.rfl',
+  'theorem diff_eq (s t : Set α) : s \\ t = s ∩ tᶜ := rfl',
+  'def preimage (f : α → β) (s : Set β) : Set α := fun x => f x ∈ s',
+  'infixl:80 " ⁻¹\' " => Set.preimage',
+  "@[simp] theorem mem_preimage {f : α → β} {s : Set β} {x : α} : x ∈ f ⁻¹' s ↔ f x ∈ s := Iff.rfl",
+  'def image (f : α → β) (s : Set α) : Set β := fun y => ∃ x, x ∈ s ∧ f x = y',
+  'infixl:80 " \'\' " => Set.image',
+  "@[simp] theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x, x ∈ s ∧ f x = y := Iff.rfl",
+  'end Set',
+].join('\n')
+
+const LOCAL_MATHLIB_PRELUDE_HASH = createHash('sha256')
+  .update(LOCAL_MATHLIB_PRELUDE)
+  .digest('hex')
+  .slice(0, 12)
+
+const preludeBuildPromises = new Map<string, Promise<string | null>>()
+
+async function ensurePrecompiledMathlibPrelude(
+  leanBin: string,
+  cacheDir: string,
+  timeoutMs: number,
+): Promise<string | null> {
+  const key = `${leanBin}\0${cacheDir}\0${LOCAL_MATHLIB_PRELUDE_HASH}`
+  const existing = preludeBuildPromises.get(key)
+  if (existing) return existing
+
+  const promise = (async () => {
+    const preludeDir = path.join(cacheDir, `prelude-${LOCAL_MATHLIB_PRELUDE_HASH}`)
+    const oleanPath = path.join(preludeDir, 'Mathlib.olean')
+    try {
+      await access(oleanPath, fsConstants.R_OK)
+      return preludeDir
+    } catch {
+      // Build Mathlib.olean below
+    }
+
+    try {
+      await mkdir(preludeDir, { recursive: true })
+      const leanSourcePath = path.join(preludeDir, 'Mathlib.lean')
+      await writeFile(leanSourcePath, `${LOCAL_MATHLIB_PRELUDE}\n`, 'utf8')
+      const built = await new Promise<boolean>(resolve => {
+        const child = spawn(leanBin, ['-R', preludeDir, '-o', oleanPath, leanSourcePath], {
+          stdio: ['ignore', 'ignore', 'ignore'],
+        })
+        const timer = setTimeout(() => {
+          child.kill('SIGKILL')
+          resolve(false)
+        }, timeoutMs)
+        child.on('error', () => {
+          clearTimeout(timer)
+          resolve(false)
+        })
+        child.on('close', code => {
+          clearTimeout(timer)
+          resolve(code === 0)
+        })
+      })
+      return built ? preludeDir : null
+    } catch {
+      return null
+    }
+  })()
+
+  preludeBuildPromises.set(key, promise)
+  return promise
+}
+
+function findMathlibImportLine(source: string): number | undefined {
+  const lines = source.split('\n')
+  for (let index = 0; index < lines.length; index++) {
+    if (/^\s*import\s+Mathlib(?:\.[A-Za-z0-9_']+)*\s*(?:--.*)?$/.test(lines[index])) {
+      return index + 1
+    }
+  }
+  return undefined
+}
+
 function elideMathlibImports(source: string): { code: string; elidedLine?: number } {
   const lines = source.split('\n')
   let elidedLine: number | undefined
@@ -146,12 +251,21 @@ async function runLeanJsonFile(
   leanBin: string,
   code: string,
   timeoutMs: number,
+  leanPath?: string,
 ): Promise<{ stdout: string; stderr: string; timedOut: boolean }> {
   const tmpFile = path.join(os.tmpdir(), `quartz-lean-${randomUUID()}.lean`)
   await writeFile(tmpFile, code, 'utf8')
   try {
     return await new Promise(resolve => {
-      const child = spawn(leanBin, ['--json', tmpFile], { stdio: ['ignore', 'pipe', 'pipe'] })
+      const env = leanPath
+        ? {
+            ...process.env,
+            LEAN_PATH: process.env.LEAN_PATH
+              ? `${process.env.LEAN_PATH}${path.delimiter}${leanPath}`
+              : leanPath,
+          }
+        : process.env
+      const child = spawn(leanBin, ['--json', tmpFile], { stdio: ['ignore', 'pipe', 'pipe'], env })
       const outChunks: Buffer[] = []
       const errChunks: Buffer[] = []
       let timedOut = false
@@ -189,7 +303,7 @@ export function parseLeanJsonLines(stdout: string, elidedMathlibLine?: number): 
       severity: 'info',
       pos: { line: elidedMathlibLine, column: 0 },
       endPos: { line: elidedMathlibLine, column: 0 },
-      data: 'import Mathlib elided for local core Lean 4 checking',
+      data: 'import Mathlib resolved via local core Lean 4 prelude',
     })
   }
 
@@ -351,14 +465,28 @@ export async function verifyLeanCodeLocal(
     }
   }
 
-  const hasLeanPath = Boolean(process.env.LEAN_PATH?.trim())
-  const prepared = hasLeanPath ? { code, elidedLine: undefined } : elideMathlibImports(code)
-  let runResult = await runLeanJsonFile(leanBin, prepared.code, timeoutMs)
-  let elidedLine = prepared.elidedLine
+  const hasUserLeanPath = Boolean(process.env.LEAN_PATH?.trim())
+  const mathlibLine = findMathlibImportLine(code)
+  let preludeDir: string | null = null
+  if (!hasUserLeanPath && mathlibLine !== undefined) {
+    preludeDir = await ensurePrecompiledMathlibPrelude(leanBin, cacheDir, timeoutMs)
+  }
+
+  const initialPrepared =
+    hasUserLeanPath || preludeDir !== null || mathlibLine === undefined
+      ? { code, elidedLine: mathlibLine }
+      : elideMathlibImports(code)
+
+  let runResult = await runLeanJsonFile(
+    leanBin,
+    initialPrepared.code,
+    timeoutMs,
+    preludeDir ?? undefined,
+  )
+  let elidedLine = initialPrepared.elidedLine
 
   if (
-    hasLeanPath &&
-    elidedLine === undefined &&
+    (hasUserLeanPath || preludeDir !== null) &&
     /unknown package 'Mathlib'|module Mathlib\b.*does not exist|unknown module prefix 'Mathlib'/i.test(
       `${runResult.stdout}\n${runResult.stderr}`,
     )
