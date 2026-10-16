@@ -10,7 +10,7 @@ import type { ContentLayout } from './contentIndex'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
 import HeaderConstructor from '../../components/Header'
 import StreamPageComponent from '../../components/pages/StreamPage'
-import { pageResources, renderPage } from '../../components/renderPage'
+import { pageResources, renderPage, renderPageWithMetadata } from '../../components/renderPage'
 import { renderProtectedEntryBody } from '../../components/stream/Entry'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
@@ -309,18 +309,21 @@ async function* processStreamIndex(
         tree,
         slug,
       )
-      return renderPage(ctx, slug, componentData, layout, externalResources, false)
+      return renderPageWithMetadata(ctx, slug, componentData, layout, externalResources, false)
     }
 
-    let html = renderGroupPage()
+    let rendered = renderGroupPage()
     if (streamPassword && rebasedEntries.some(isProtectedEntry)) {
       const streamData = fileDataForGroup.streamData
-      const protectedPayloads = protectedPayloadsForEntries(streamData?.entries ?? [])
+      const protectedPayloads = protectedPayloadsForEntries(
+        rendered.fileData.streamData?.entries ?? [],
+      )
       if (streamData && Object.keys(protectedPayloads).length > 0) {
         fileDataForGroup.streamData = { ...streamData, protectedPayloads }
-        html = renderGroupPage()
+        rendered = renderGroupPage()
       }
     }
+    const { html } = rendered
 
     const result = {
       slug,
