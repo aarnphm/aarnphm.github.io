@@ -15,14 +15,14 @@ Rapporter ce qui a été dit — B2. Les formules pour rapporter sont dans [[fr/
 
 Quand le verbe introducteur est au passé, tout recule d'un cran :
 
-| Discours direct | Discours rapporté | Exemple |
-|---|---|---|
-| présent | imparfait | {{`Il a dit qu'il était fatigué.`}} |
-| passé composé | plus-que-parfait | {{`Elle a dit qu'elle avait fini.`}} |
-| futur | conditionnel | {{`Il a dit qu'il viendrait.`}} |
-| futur antérieur | conditionnel passé | — |
-| impératif | {{`de`}} + infinitif | {{`Il lui a dit de faire ses devoirs.`}} |
-| subjonctif présent | subjonctif imparfait (littéraire) | rare — voir [[fr/registre-soutenu]] |
+| Discours direct    | Discours rapporté                 | Exemple                                  |
+| ------------------ | --------------------------------- | ---------------------------------------- |
+| présent            | imparfait                         | {{`Il a dit qu'il était fatigué.`}}      |
+| passé composé      | plus-que-parfait                  | {{`Elle a dit qu'elle avait fini.`}}     |
+| futur              | conditionnel                      | {{`Il a dit qu'il viendrait.`}}          |
+| futur antérieur    | conditionnel passé                | —                                        |
+| impératif          | {{`de`}} + infinitif              | {{`Il lui a dit de faire ses devoirs.`}} |
+| subjonctif présent | subjonctif imparfait (littéraire) | rare — voir [[fr/registre-soutenu]]      |
 
 ## Les questions rapportées
 
