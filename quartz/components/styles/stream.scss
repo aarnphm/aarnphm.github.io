@@ -13,6 +13,7 @@
   align-items: center;
   margin-top: 0.35rem;
   font-size: 0.85rem;
+  font-style: italic;
 
   a,
   button {
@@ -53,10 +54,6 @@
     display: inline-flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-
-    button {
-      text-decoration: underline;
-    }
   }
 
   .stream-unlock-icon {
