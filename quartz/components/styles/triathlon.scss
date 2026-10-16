@@ -15748,7 +15748,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
     display: inline;
   }
 
-  .tri-elev-wrap > .tri-elev-cap:has(> .tri-elev-d) {
+  .tri-elev-wrap > .tri-elev-cap:has(> .tri-elev-d):not(:has(> .tri-cycling-power-legend)) {
     flex-wrap: nowrap;
     column-gap: 0.45rem;
     min-width: 0;
@@ -17849,10 +17849,59 @@ a.tri-pop-date:hover {
     );
   }
 
-  .tri-workout-analysis {
+  .tri-torque-panel {
+    height: var(--tri-activity-graph-row-height);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+
+    > [data-torque-pane] > .tri-cax-frame {
+      min-height: 0;
+      grid-template-rows: minmax(0, 1fr) auto;
+
+      .tri-cax-plot,
+      svg {
+        height: 100%;
+        min-height: 0;
+      }
+    }
+  }
+
+  .tri-workout-analysis,
+  .tri-run-stride-panel {
     height: calc(
       var(--tri-activity-graph-row-height) + var(--tri-activity-graph-row-height) + 0.7rem
     );
+  }
+
+  .tri-shift-chart:not([data-shift-view='hist']) {
+    height: var(--tri-activity-graph-row-height);
+
+    > .tri-cycling-chart-pane {
+      flex: 1;
+      min-height: 0;
+
+      > .tri-cax-frame {
+        height: 100%;
+        grid-template-rows: minmax(0, 1fr) auto;
+
+        .tri-cax-plot,
+        svg {
+          height: 100%;
+          min-height: 0;
+        }
+      }
+    }
+
+    > .tri-cax-frame {
+      flex: 1;
+      min-height: 0;
+      grid-template-rows: minmax(0, 1fr) auto;
+
+      .tri-cax-plot,
+      svg {
+        height: 100%;
+        min-height: 0;
+      }
+    }
   }
 
   .tri-workout-stats {
@@ -18123,18 +18172,19 @@ a.tri-pop-date:hover {
   }
 }
 
-// Five keys do not fit beside the title on a narrow card; they take their own row under it.
-@container tri-day-card (max-width: 40rem) {
-  .tri-run-heart-cost > .tri-elev-cap {
+// Use the activity column's width, since a day card can contain several narrow columns.
+@container tri-activity (max-width: 40rem) {
+  .tri-cycling-power > .tri-elev-cap {
     flex-wrap: wrap;
+    gap: 0.35rem 0.6rem;
   }
 
-  .tri-run-heart-cost .tri-cycling-power-legend {
+  .tri-cycling-power .tri-cycling-power-legend {
     order: 1;
     flex-basis: 100%;
   }
 
-  .tri-run-heart-cost .tri-cycling-power-key {
+  .tri-cycling-power .tri-cycling-power-key {
     white-space: nowrap;
   }
 }
